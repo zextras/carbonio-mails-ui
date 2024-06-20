@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-use-before-define */
 /*
  * SPDX-FileCopyrightText: 2024 Zextras <https://www.zextras.com>
  *
@@ -8,278 +9,237 @@ import { SoapFault } from '@zextras/carbonio-shell-ui';
 
 import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { generateStore } from '../../../tests/generators/store';
-import { FetchConversationsParameters, SearchRequest, SearchResponse } from '../../../types';
+import {
+	Conversation,
+	MsgMapValue,
+	SearchRequest,
+	SearchResponse,
+	SoapConversation,
+	SoapIncompleteMessage
+} from '../../../types';
 import { searchByQuery } from '../searchByQuery';
 
-type FetchCase = {
-	description: string;
-	fetchParams: FetchConversationsParameters;
-	soapResponse: SearchResponse | SoapFault;
-	// expectedState type should be MailsStateType, but some filed in the state are missing
-	expectedState: any;
-};
-
 describe('searchByQuery', () => {
-	const queryParam: FetchConversationsParameters = {
-		query: 'aaaaaa',
-		limit: 100
-	};
-	const searchResponse: SearchResponse = {
-		c: [
-			{
-				id: '123',
-				n: 1,
-				u: 1,
-				f: 'flag',
-				tn: 'tag names',
-				d: 123,
-				m: [],
-				e: [],
-				su: 'Subject',
-				fr: 'fragment'
-			}
-		],
-		more: false
-	};
+	let store;
+
+	beforeEach(() => {
+		store = generateStore();
+	});
+
 	test('should call the searchAPI with the correct query', async () => {
-		const store = generateStore();
 		const interceptor = createSoapAPIInterceptor<SearchRequest>('Search');
 
-		const query = 'aaaaaa';
-		await store
-			.dispatch(
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-				// @ts-ignore
-				searchByQuery({ query })
-			)
-			.then(() => {
-				expect(store.getState().searches.query).toBe(query);
-			});
-		const request = await interceptor;
-		expect(request.query).toBe(query);
+		await store.dispatch(searchByQuery({ query: 'find-me', limit: 100 }));
+
+		expect((await interceptor).query).toBe('find-me');
+		expect(store.getState().searches.query).toBe('find-me');
 	});
 
-	test('should populate the store when the searchByQuery is successfull', async () => {
-		const store = generateStore();
-		createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', searchResponse);
-
-		await store
-			.dispatch(
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-				// @ts-ignore
-				searchByQuery(queryParam)
-			)
-			.then(() => {
-				expect(store.getState().searches.conversations).toEqual({
-					'123': {
-						date: 123,
-						flagged: true,
-						fragment: 'fragment',
-						hasAttachment: true,
-						id: '123',
-						messagesInConversation: 1,
-						participants: [],
-						read: true,
-						sortIndex: 0,
-						subject: 'Subject',
-						tags: ['nil:tag names'],
-						urgent: false
-					}
-				});
-			});
-	});
-
-	test('should not pollute the message and conversation stores', async () => {
-		const store = generateStore();
-		createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', searchResponse);
-
-		await store
-			.dispatch(
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-				// @ts-ignore
-				searchByQuery(queryParam)
-			)
-			.then(() => {
-				expect(store.getState().conversations.conversations).toEqual({});
-				expect(store.getState().messages.messages).toEqual({});
-			});
-	});
-});
-
-describe('searchByQuery check state - ', () => {
-	const initialConversationsAndMessagesState = {
-		conversations: {
-			currentFolder: '2',
-			conversations: {},
-			expandedStatus: {},
-			searchedInFolder: {},
-			searchRequestStatus: null
-		},
-		messages: {
-			messages: {},
-			searchRequestStatus: null
-		}
-	};
-	const initialSearchesState = {
-		searchResults: undefined,
-		searchResultsIds: [],
-		conversations: {},
-		messages: {},
-		more: false,
-		offset: 0,
-		limit: 100,
-		sortBy: 'dateDesc',
-		status: 'fulfilled',
-		loadingMessage: '',
-		parent: '',
-		error: undefined
-	};
-	const baseTestCase: FetchCase = {
-		description: 'Base Test Case',
-		fetchParams: {
-			query: 'aaaaaa',
-			limit: 100
-		},
-		soapResponse: {
-			c: [
-				{
-					id: '123',
-					n: 1,
-					u: 1,
-					f: 'flag',
-					tn: 'tag names',
-					d: 123,
-					m: [],
-					e: [],
-					su: 'Subject',
-					fr: 'fragment'
-				}
-			],
-			m: [
-				{
-					id: '456',
-					cid: '456',
-					l: '1',
-					s: 123,
-					d: 456
-				}
-			],
+	test('should populate the store when the searchByQuery returns a conversation successfully', async () => {
+		createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
+			c: [conversationFromAPI({ id: '123', su: 'Subject' })],
 			more: false
-		},
-		expectedState: {
-			...initialConversationsAndMessagesState,
-			searches: {
-				...initialSearchesState,
-				searchResultsIds: ['123'],
-				conversations: {
-					123: {
-						tags: ['nil:tag names'],
-						id: '123',
-						date: 123,
-						participants: [],
-						subject: 'Subject',
-						fragment: 'fragment',
-						read: true,
-						hasAttachment: true,
-						flagged: true,
-						urgent: false,
-						messagesInConversation: 1,
-						sortIndex: 0
-					}
-				},
-				query: 'aaaaaa'
-			}
-		}
-	};
-	const fetchCases: FetchCase[] = [
-		{
-			...baseTestCase,
-			description: 'if request type is missing, only conversations are set in the store'
-		},
-		{
-			...baseTestCase,
-			description: 'if request type is conversation, only conversations are set in the store',
-			fetchParams: {
+		});
+
+		await store.dispatch(searchByQuery({ query: 'any', limit: 100 }));
+
+		expect(store.getState().searches.conversations).toEqual({
+			'123': conversationFromStore({ id: '123', subject: 'Subject' })
+		});
+	});
+
+	test('should populate the store when the searchByQuery returns a message successfully', async () => {
+		createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
+			m: [messageFromAPI({ id: '456', su: 'Subject' })],
+			more: false
+		});
+
+		await store.dispatch(searchByQuery({ query: 'any', limit: 100, types: 'message' }));
+
+		expect(store.getState().searches.messages).toEqual({
+			'456': messageFromStore({ id: '456', subject: 'Subject' })
+		});
+	});
+
+	test('should not pollute the conversation stores', async () => {
+		createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
+			c: [conversationFromAPI({ id: '123' })],
+			more: false
+		});
+
+		await store.dispatch(searchByQuery({ query: 'any', limit: 100 }));
+
+		expect(store.getState().conversations.conversations).toEqual({});
+		expect(store.getState().messages.messages).toEqual({});
+	});
+
+	test('should not pollute the message stores', async () => {
+		createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
+			m: [messageFromAPI({ id: '123' })],
+			more: false
+		});
+
+		await store.dispatch(searchByQuery({ query: 'any', limit: 100 }));
+
+		expect(store.getState().conversations.conversations).toEqual({});
+		expect(store.getState().messages.messages).toEqual({});
+	});
+
+	test('should populate the searchResultsIds when a conversation is retrieved', async () => {
+		createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
+			c: [conversationFromAPI({ id: '123' })],
+			more: false
+		});
+
+		await store.dispatch(searchByQuery({ query: 'any', limit: 100 }));
+
+		expect(store.getState().searches.searchResultsIds).toEqual(['123']);
+	});
+
+	test('should populate the searchResultsIds when a message is retrieved', async () => {
+		createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
+			m: [messageFromAPI({ id: '456' })],
+			more: false
+		});
+
+		await store.dispatch(searchByQuery({ query: 'any', limit: 100, types: 'message' }));
+
+		expect(store.getState().searches.searchResultsIds).toEqual(['456']);
+	});
+
+	test('if request type is missing, only conversations are set in the store', async () => {
+		createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
+			c: [conversationFromAPI({ id: '123', su: 'Subject1' })],
+			m: [messageFromAPI({ id: '456', cid: '456' })],
+			more: false
+		});
+
+		await store.dispatch(searchByQuery({ query: 'aaaaaa', limit: 100 }));
+
+		expect(store.getState().searches.conversations['123']).toBeDefined();
+		expect(store.getState().searches.messages).toStrictEqual({});
+	});
+
+	test('if request type is conversation, only conversations are set in the store', async () => {
+		createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
+			c: [conversationFromAPI({ id: '123', su: 'Subject1' })],
+			m: [messageFromAPI({ id: '456', cid: '456' })],
+			more: false
+		});
+
+		await store.dispatch(
+			searchByQuery({
 				query: 'aaaaaa',
 				limit: 100,
 				types: 'conversation'
-			}
-		},
-		{
-			...baseTestCase,
-			description: 'if request type is message, messages are set in the searches store',
-			fetchParams: {
+			})
+		);
+
+		expect(store.getState().searches.conversations['123']).toBeDefined();
+		expect(store.getState().searches.messages).toStrictEqual({});
+	});
+
+	test('if request type is message, messages are set in the searches store', async () => {
+		createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
+			c: [conversationFromAPI({ id: '123', su: 'Subject1' })],
+			m: [messageFromAPI({ id: '456', cid: '456' })],
+			more: false
+		});
+
+		await store.dispatch(
+			searchByQuery({
 				query: 'aaaaaa',
 				limit: 100,
 				types: 'message'
-			},
-			expectedState: {
-				...initialConversationsAndMessagesState,
-				searches: {
-					...initialSearchesState,
-					searchResultsIds: ['456'],
-					messages: {
-						'456': {
-							conversation: '456',
-							id: '456',
-							date: 456,
-							size: 123,
-							parent: '1',
-							tags: [],
-							isComplete: false,
-							isScheduled: false,
-							read: true,
-							isReadReceiptRequested: true,
-							sortIndex: 0
-						}
-					},
-					query: 'aaaaaa'
-				}
-			}
-		},
-		{
-			description: 'if soap response fails store is unaltered',
-			fetchParams: {
-				query: 'aaaaaa',
-				limit: 100
-			},
-			soapResponse: {
-				Detail: {
-					Error: {
-						Code: 'ERROR',
-						Detail: 'The server failed for an unknown reason'
-					}
-				},
-				Reason: {
-					Text: 'It just failed!'
-				}
-			},
-			expectedState: {
-				...initialConversationsAndMessagesState,
-				searches: {
-					...initialSearchesState,
-					query: 'aaaaaa'
-				}
-			}
-		}
-	];
-
-	test.each(fetchCases)(`$description`, async (fetchCase) => {
-		const store = generateStore();
-		createSoapAPIInterceptor<SearchRequest, SearchResponse | SoapFault>(
-			'Search',
-			fetchCase.soapResponse
+			})
 		);
 
-		await store
-			.dispatch(
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-				// @ts-ignore
-				searchByQuery(fetchCase.fetchParams)
-			)
-			.then(() => {
-				const newStoreState = store.getState();
-				expect(newStoreState).toEqual(fetchCase.expectedState);
-			});
+		expect(store.getState().searches.messages['456']).toBeDefined();
+		expect(store.getState().searches.conversations).toStrictEqual({});
+	});
+
+	test('if soap response fails store is unaltered', async () => {
+		createSoapAPIInterceptor<SearchRequest, SoapFault>('Search', failFromAPI());
+
+		await store.dispatch(searchByQuery({ query: 'aaaaaa', limit: 100 }));
+
+		expect(store.getState().searches.messages).toStrictEqual({});
+		expect(store.getState().searches.conversations).toStrictEqual({});
 	});
 });
+
+function failFromAPI(): SoapFault {
+	return {
+		Detail: {
+			Error: {
+				Code: 'ERROR',
+				Detail: 'The server failed for an unknown reason'
+			}
+		},
+		Reason: {
+			Text: 'It just failed!'
+		}
+	};
+}
+
+function conversationFromAPI(params: Partial<SoapConversation> = {}): SoapConversation {
+	return {
+		id: '123',
+		n: 1,
+		u: 1,
+		f: 'flag',
+		tn: 'tag names',
+		d: 123,
+		m: [],
+		e: [],
+		su: 'Subject',
+		fr: 'fragment',
+		...params
+	};
+}
+
+function messageFromAPI(params: Partial<SoapIncompleteMessage> = {}): SoapIncompleteMessage {
+	return {
+		id: '456',
+		cid: '456',
+		l: '1',
+		s: 123,
+		d: 456,
+		...params
+	};
+}
+
+function conversationFromStore(params: Partial<Conversation> = {}): Conversation {
+	return {
+		tags: ['nil:tag names'],
+		id: '123',
+		date: 123,
+		participants: [],
+		subject: 'Subject',
+		fragment: 'fragment',
+		read: true,
+		hasAttachment: true,
+		flagged: true,
+		urgent: false,
+		messagesInConversation: 1,
+		sortIndex: 0,
+		...params
+	};
+}
+
+function messageFromStore(params: Partial<MsgMapValue>): MsgMapValue {
+	return {
+		conversation: '456',
+		id: '456',
+		date: 456,
+		size: 123,
+		parent: '1',
+		tags: [],
+		isComplete: false,
+		isScheduled: false,
+		read: true,
+		isReadReceiptRequested: true,
+		sortIndex: 0,
+		...params
+	};
+}
