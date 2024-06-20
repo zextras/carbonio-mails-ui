@@ -50,19 +50,11 @@
         }
     },
     "label": {
-        "attachment": "Anexo",
-        "attachment_plural": "Anexos",
         "cancel": "Cancelar",
-        "download_0": "Baixar",
-        "download_1": "Baixar tudo",
-        "download_2": "",
         "send": "Enviar",
         "share": "Compartilhar",
         "edit": "Editar",
         "me": "Eu",
-        "remove_0": "Remover",
-        "remove_1": "Remover tudo",
-        "remove_2": "",
         "save": "Salvar",
         "add_custom_message": "Adicionar mensagem personalizada",
         "allowed_actions": "Ações permitidas",
@@ -103,8 +95,6 @@
         "with_you": "com você",
         "would_like_to_share": "compartilhou seu",
         "revoke_access_without_notification": "Revogar acesso sem enviar notificação",
-        "advanced_filters": "Filtro avançado",
-        "advanced_filters_plural": "Filtros avançados",
         "create": "Criar",
         "delete": "Excluir",
         "delete_permanently": "Excluir permanentemente",
@@ -153,8 +143,6 @@
         "hide": "Ocultar",
         "loading_results": "Carregando resultados…",
         "mail_folder": "Pasta de e-mail",
-        "mail_selected": "{{count}} e-mail selecionado",
-        "mail_selected_plural": "{{count}} e-mails selecionados",
         "mail_settings": "Configurações de e-mails",
         "on_behalf_of": "em nome de",
         "search_activate_selection_mode": "Modo de seleção ainda não está disponível para resultados da busca",
@@ -265,8 +253,6 @@
         "no_signature": "Sem assinatura",
         "mark_read_message_immediately": "Marcar mensagem selecionada como lida imediatamente",
         "mark_read_message_manually": "A mensagem é marcada como lida após clicar no ícone",
-        "attachment_with_count": "{{count}} Anexo",
-        "attachment_with_count_plural": "{{count}} Anexos",
         "attachments_disclaimer": "Você está visualizando uma mensagem anexada. Sua autenticidade não pode ser verificada.",
         "choose_file": "Escolher arquivo",
         "deselect_all": "Desmarcar tudo",
@@ -351,8 +337,6 @@
             "folder_will_be_moved_in_time": "Esta pasta será movida dentro de {{remainingTime}}",
             "folder_restored": "Pasta restaurada",
             "mail_saved_to_drafts": "E-mail salvo nos rascunhos",
-            "sending_mail_in_count": "Enviando sua mensagem em {{count}} segundo",
-            "sending_mail_in_count_plural": "Enviando sua mensagem em {{count}} segundos",
             "tag_created": "Marcador \"{{name}}\" criado com sucesso",
             "tag_deleted": "Marcador \"{{name}}\" excluído com sucesso",
             "tag_not_updated": "Algo deu errado, o marcador não foi atualizado. Tente novamente.",
@@ -483,8 +467,6 @@
         },
         "new_mail_optn": {
             "manually": "Manualmente",
-            "minute": "{{count}} minuto",
-            "minute_plural": "{{count}} minutos",
             "when_arrive": "À medida que cheguem novos e-mails"
         },
         "read_rcpt_optn": {
@@ -591,13 +573,8 @@
             "console": "Console",
             "comic": "Comic"
         },
-        "font_size_0": "{{count}} pt",
-        "font_size_1": "pt",
-        "font_size_2": "pt",
         "mail_unsend_time": {
-            "no_delay": "Sem atraso",
-            "second": "{{count}} segundo",
-            "second_plural": "{{count}} segundos"
+            "no_delay": "Sem atraso"
         },
         "address": "Endereço",
         "address_required": "Preencha o campo \"Endereço\" para completar a ação \"Redirecionar para\".",
@@ -675,8 +652,6 @@
         "edit": "Editar propriedades do compartilhamento",
         "enable_rich_text": "Ativar editor de texto enriquecido",
         "enable_urgent": "Ativar Urgente",
-        "folder_sharing_status": "Compartilhado com {{count}} usuário",
-        "folder_sharing_status_plural": "Compartilhado com {{count}} usuários",
         "folder_linked_status": "Compartilhado comigo",
         "marked_as_important": "Marcar como importante"
     },

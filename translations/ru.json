@@ -27,9 +27,6 @@
             "email_restored": "письмо восстановлено в папке назначения",
             "marked_as_non_spam": "Вы отметили это письмо как Не Спам",
             "mail_saved_to_drafts": "Письмо сохранено в черновиках",
-            "sending_mail_in_count_0": "Отправка сообщения через {{count}} секунду",
-            "sending_mail_in_count_1": "Отправка сообщения через {{count}} секунды",
-            "sending_mail_in_count_2": "Отправка сообщения через {{count}} секунд",
             "folder_restored": "Папка восстановлена",
             "tag_created": "Тег {{name}} успешно создан",
             "tag_deleted": "{{name}} Тег успешно удален",
@@ -38,7 +35,10 @@
             "message_sending_aborted": "Отменено пользователем",
             "apply_filter_rules_started": "Фильтр «{{filterName}}» применяется к сообщениям папки «{{folderPath}}»",
             "apply_filter_rules_error": "Произошла ошибка при применении фильтра «{{filterName}}»",
-            "apply_filter_rules_completed": "Фильтр \"{{filterName}}\" успешно применен к сообщениям {{involvedMessagesCount}} в папке \"{{folderPath}}\""
+            "apply_filter_rules_completed": "Фильтр \"{{filterName}}\" успешно применен к сообщениям {{involvedMessagesCount}} в папке \"{{folderPath}}\"",
+            "sending_mail_in_count_one": "Отправка вашего сообщения через {{count}}секунду",
+            "sending_mail_in_count_few": "Отправка вашего сообщения через {{count}}секунд",
+            "sending_mail_in_count_many": "Отправка вашего сообщения через {{count}} секунд"
         },
         "modal": {
             "delete": {
@@ -67,9 +67,6 @@
             }
         },
         "no_content": "Это сообщение не имеет текстового содержания",
-        "invalid_address_0": "Этот адрес недействительным",
-        "invalid_address_1": "Эти адреса недействительны",
-        "invalid_address_2": "Эти адресов недействительны",
         "new_email": "Новое письмо",
         "permanent_delete_title": "Вы уверены, что хотите навсегда удалить этот элемент?",
         "permanent_delete_body": "Удалив этот элемент навсегда вы больше не сможете его восстановить, продолжить?",
@@ -90,7 +87,8 @@
         "enter_calendar_name": "Введите имя, чтобы принять календарь",
         "warning": {
             "sending_to_yourself": "Вы отправляете это сообщение самому себе"
-        }
+        },
+        "invalid_address": "Следующий адрес кажется недействительным"
     },
     "label": {
         "to": "Кому",
@@ -100,16 +98,7 @@
         "save": "Сохранить",
         "no_subject": "(без темы)",
         "from": "От",
-        "attachment_0": "Вложение",
-        "attachment_1": "Вложения",
-        "attachment_2": "Вложений",
-        "download_0": "Скачать",
-        "download_1": "Скачать",
-        "download_2": "Скачать",
         "cc": "копия",
-        "remove_0": "Удалить",
-        "remove_1": "Удалить все",
-        "remove_2": "Удалить все",
         "me": "Мне",
         "bcc": "ск",
         "cancel": "Отменить",
@@ -150,9 +139,6 @@
         "activate_selection_mode": "Активировать режим выбора",
         "error_address": "Требуется действующий адрес электронной почты",
         "administer": "Администрировать",
-        "mail_selected_0": "{{count}} выбранное письмо",
-        "mail_selected_1": "{{count}} выбранные письма",
-        "mail_selected_2": "{{count}} выбранных писем",
         "results_for_error": "Не удалось начать поиск, очистите его и повторите попытку: ",
         "shares_info": "Информация об общей папке",
         "add": "Добавить",
@@ -203,9 +189,6 @@
         "messages": "Сообщения",
         "sending": "Отправка",
         "wipe": "Очистить",
-        "advanced_filters_0": "Расширенный фильтр",
-        "advanced_filters_1": "Расширенных фильтра",
-        "advanced_filters_2": "Расширенных фильтра",
         "on_behalf_of": "от имени",
         "undo": "Отменить",
         "search_activate_selection_mode": "Режим выбора пока недоступен в результатах поиска",
@@ -309,9 +292,6 @@
         "mark_read_message_immediately": "Отметить сообщения как прочитанные",
         "mark_read_message_manually": "Отметьте сообщения вручную как прочитанные, нажав соответствующую кнопку",
         "no_signature": "Нет подписи",
-        "attachment_with_count_0": "{{count}} Вложение",
-        "attachment_with_count_1": "{{count}} Вложения",
-        "attachment_with_count_2": "{{count}} Вложения",
         "attachments_disclaimer": "Вы просматриваете прикрепленное сообщение. Подлинность вложенных сообщений проверить невозможно.",
         "choose_file": "Выбрать файл",
         "deselect_all": "ОТМЕНИТЬ выбрать все",
@@ -350,7 +330,25 @@
         "convert_to_smart_link": "Преобразовать в смарт-ссылку",
         "convert_back_to_attachment": "Преобразовать обратно во вложение",
         "create_smart_links": "создать умные ссылки",
-        "smart_links_created": "созданы умные ссылки"
+        "smart_links_created": "созданы умные ссылки",
+        "download_one": "Скачать",
+        "download_few": "Скачать все",
+        "download_many": "Скачать все",
+        "advanced_filters_one": "Расширенный фильтр",
+        "advanced_filters_few": "Расширенные фильтры",
+        "advanced_filters_many": "Расширенные фильтры",
+        "attachment_one": "Вложение",
+        "attachment_few": "Вложения",
+        "attachment_many": "Вложений",
+        "attachment_with_count_one": "{{count}} Вложение",
+        "attachment_with_count_few": "{{count}} Вложения",
+        "attachment_with_count_many": "{{count}} Вложений",
+        "mail_selected_one": "{{count}} выбранный адрес электронной почты",
+        "mail_selected_few": "{{count}} выбранных адреса электронной почты",
+        "mail_selected_many": "{{count}} выбранных адресов электронной почты",
+        "remove_one": "Удалить",
+        "remove_few": "Удалить все",
+        "remove_many": "Удалить все"
     },
     "header": {
         "warning": "Предупреждение",
@@ -405,11 +403,11 @@
         "resend": "Отправить уведомление об этой публикации",
         "revoke": "Отозвать доступ",
         "edit": "Изменить свойства общего доступа",
-        "folder_sharing_status_0": "Поделился с {{count}} пользователем",
-        "folder_sharing_status_1": "Поделился с {{count}} пользователями",
-        "folder_sharing_status_2": "Поделился с {{count}}пользователями",
         "marked_as_important": "Высокий приоритет",
-        "folder_linked_status": "Поделились со мной"
+        "folder_linked_status": "Поделились со мной",
+        "folder_sharing_status_one": "Общий доступ предоставлен {{count}} пользователю",
+        "folder_sharing_status_few": "Общий доступ предоставлен {{count}} пользователям",
+        "folder_sharing_status_many": "Общий доступ предоставлен {{count}} пользователям"
     },
     "composer": {
         "attachment": {
@@ -481,10 +479,10 @@
         },
         "new_mail_optn": {
             "when_arrive": "По мере поступления новой почты",
-            "minute_0": "{{count}} минута",
-            "minute_1": "{{count}} минуты",
-            "minute_2": "{{count}} минут",
-            "manually": "Вручную"
+            "manually": "Вручную",
+            "minute_one": "{{count}} минута",
+            "minute_few": "{{count}} минуты",
+            "minute_many": "{{count}} минут"
         },
         "notify_folder_optn": {
             "new_message_folder": "Отображать уведомления о новых сообщениях в любой папке",
@@ -589,14 +587,11 @@
             "wide_block": "Wide Block",
             "wide": "Широкий"
         },
-        "font_size_0": "{{count}}pt",
-        "font_size_1": "{{count}}pt",
-        "font_size_2": "{{count}}pt",
         "mail_unsend_time": {
-            "second_0": "{{count}} секунда",
-            "second_1": "{{count}} секунды",
-            "second_2": "{{count}} секунд",
-            "no_delay": "Без задержки"
+            "no_delay": "Без задержки",
+            "second_one": "{{count}} секунда",
+            "second_few": "{{count}} секунды",
+            "second_many": "{{count}} секунд"
         },
         "address": "Адрес",
         "address_required": "Заполните поле \"Адрес\" для завершения действия «Перенаправить на адрес».",

@@ -65,12 +65,9 @@
         "junk": "迷惑メール"
     },
     "label": {
-        "attachment": "添付ファイル",
         "cancel": "キャンセル",
-        "download": "すべてダウンロードする",
         "edit": "編集する",
         "me": "私",
-        "remove": "すべて削除する",
         "save": "保存する",
         "send": "送信",
         "share": "シェアする",
@@ -139,7 +136,6 @@
         "move": "移動",
         "add": "追加する",
         "administer": "管理者",
-        "advanced_filters": "高度なフィルタ",
         "back": "戻る",
         "create": "作成する",
         "email_perm_deleted": "メールが完全に削除されました",
@@ -152,7 +148,6 @@
         "discard_changes": "変更履歴を削除する",
         "search_activate_selection_mode": "選択モードは検索結果ではまだ利用できません",
         "addresses_not_accepted": "1つ以上のアドレスが承認されませんでした。 拒否されたアドレス:",
-        "mail_selected": "{{count}}メールが選択されました",
         "on_behalf_of": "代わりに",
         "results_for": "結果: ",
         "results_for_error": "検索を開始できません。クリアして再度お試しください: ",
@@ -271,7 +266,6 @@
         "no_signature": "署名なし",
         "mark_read_message_immediately": "ディスプレイヤーのメッセージをすぐに既読にする",
         "mark_read_message_manually": "このアイコンをクリックして手動で既読にする",
-        "attachment_with_count": "{{count}} 個の添付ファイル",
         "attachments_disclaimer": "添付メッセージを表示しています。添付されたメッセージの信憑性は確認できません。",
         "choose_file": "ファイルを選ぶ",
         "deselect_all": "すべての選択を解除",
@@ -352,7 +346,6 @@
             "message_redirected": "メッセージがリダイレクトされました",
             "mail_saved_to_drafts": "下書きに保存されたメール",
             "folder_restored": "フォルダが復元されました",
-            "sending_mail_in_count": "{{count}}秒でメッセージを送信する",
             "tag_created": "タグ{{name}}が作成されました",
             "tag_deleted": "{{name}}タグが削除されました",
             "tag_updated": "タグが更新されました",
@@ -488,7 +481,6 @@
         },
         "new_mail_optn": {
             "manually": "手動",
-            "minute": "{{count}}分",
             "when_arrive": "新着メールが届いた時"
         },
         "notify_folder_optn": {
@@ -600,16 +592,14 @@
             "comic": "Comic"
         },
         "mail_unsend_time": {
-            "no_delay": "遅延なし",
-            "second": "{{count}}秒"
+            "no_delay": "遅延なし"
         },
         "address": "アドレス",
         "address_required": "操作「アドレスにリダイレクト」を完了するために、[アドレス]欄に入力してください。",
         "folder_path_required": "操作「フォルダに移動」を完了するために、宛先フォルダを選択してください。",
         "remove_action": "この操作を削除する",
         "add_action": "新しいアクションを追加する",
-        "tag_name_required": "操作「タグ付けする」を完了するために、[タグ]欄に入力してください。",
-        "font_size_0": "{{count}} pt"
+        "tag_name_required": "操作「タグ付けする」を完了するために、[タグ]欄に入力してください。"
     },
     "snackbar": {
         "share_resend": "送信された招待を共有する",
@@ -629,7 +619,6 @@
         "edit": "共有プロパティを編集する",
         "enable_rich_text": "リッチテキストエディタを有効にする",
         "enable_urgent": "緊急を有効にする",
-        "folder_sharing_status": "{{count}}ユーザーと共有されました",
         "folder_linked_status": "共有されたファイル",
         "marked_as_important": "重要としてマークする"
     },
