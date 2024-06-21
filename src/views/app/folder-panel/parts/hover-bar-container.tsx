@@ -7,6 +7,11 @@
 import { Container } from '@zextras/carbonio-design-system';
 import styled, { DefaultTheme } from 'styled-components';
 
+type BackgroundAndThemeProps = {
+	background: keyof DefaultTheme['palette'];
+	theme: DefaultTheme;
+};
+
 export const HoverBarContainer = styled(Container)<{ background: keyof DefaultTheme['palette'] }>`
 	top: 0;
 	right: 0;
@@ -15,7 +20,7 @@ export const HoverBarContainer = styled(Container)<{ background: keyof DefaultTh
 	background: linear-gradient(
 		to right,
 		transparent,
-		${({ background, theme }): string => theme.palette[background].hover}
+		${({ background, theme }: BackgroundAndThemeProps): string => theme.palette[background].hover}
 	);
 	width: calc(100% - 4rem);
 	height: 45%;

@@ -77,8 +77,8 @@ export function useMsgConvActions({
 
 	const firstConversationMessage = isConv
 		? filter(item?.messages, (msg) => {
-				const folderId = getFolderIdParts(msg.parent).id ?? '';
-				return !isTrash(folderId) && !isDraft(folderId);
+				const folderIdParts = getFolderIdParts(msg.parent).id ?? '';
+				return !isTrash(folderIdParts) && !isDraft(folderIdParts);
 			})?.[0] ?? {}
 		: item;
 	const isSingleMsgConv = isSingleMessageConversation(item);
