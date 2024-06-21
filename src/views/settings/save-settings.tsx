@@ -3,17 +3,9 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { SoapBody, updateAccount, updateSettings, xmlSoapFetch } from '@zextras/carbonio-shell-ui';
-import type {
-	CreateIdentityResponse,
-	DeleteIdentityResponse,
-	IdentityMods,
-	ModifyIdentityResponse,
-	ModifyPrefsResponse,
-	ModifyPropertiesResponse,
-	Mods,
-	PropsMods
-} from '@zextras/carbonio-shell-ui/lib/types/network';
+import { updateAccount, updateSettings, xmlSoapFetch } from '@zextras/carbonio-shell-ui';
+import { EditSettingsBatchResponse } from '@zextras/carbonio-shell-ui/lib/network/edit-settings';
+import type { IdentityMods, Mods, PropsMods } from '@zextras/carbonio-shell-ui/lib/types/network';
 import { isArray, map } from 'lodash';
 
 import { MAIL_APP_ID } from '../../constants';
@@ -24,13 +16,13 @@ type MailMods = Mods & {
 	attrs?: AttrsMods;
 };
 
-export type SaveSettingsResponse = SoapBody<unknown> & {
-	ModifyPropertiesResponse?: ModifyPropertiesResponse[];
-	ModifyPrefsResponse?: ModifyPrefsResponse[];
-	ModifyIdentityResponse?: ModifyIdentityResponse[];
-	DeleteIdentityResponse?: DeleteIdentityResponse[];
-	CreateIdentityResponse?: CreateIdentityResponse[];
-};
+export type SaveSettingsResponse = Pick<
+	EditSettingsBatchResponse,
+	| 'ModifyPropertiesResponse'
+	| 'ModifyPrefsResponse'
+	| 'ModifyIdentityResponse'
+	| 'CreateIdentityResponse'
+>;
 
 function getRequestForProps(props: PropsMods | undefined, appId: string): string {
 	return props
