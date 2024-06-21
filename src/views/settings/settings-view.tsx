@@ -46,8 +46,8 @@ import type { AccountIdentity, PrefsType, PropsType, SignItemType } from '../../
  * To keep track of unsaved changes we compare updatedProps with currentProps
  *   */
 const SettingsView: FC = () => {
-	const { attrs, prefs, props, updateSettings } = useUserSettings();
-	const { updateAccount, ...account } = useUserAccount();
+	const { attrs, prefs, props } = useUserSettings();
+	const account = useUserAccount();
 	const { identity } = cloneDeep(account.identities);
 	const defaultAccount = remove(identity, (acc: AccountIdentity) => acc.name === 'DEFAULT');
 	const identities = defaultAccount.concat(identity);
@@ -175,6 +175,7 @@ const SettingsView: FC = () => {
 			Object.keys(identitiesToUpdate).length === 0,
 		[prefsToUpdate, disabled, propsToUpdate, identitiesToUpdate, attrsToUpdate]
 	);
+
 	const setNewOrForwardSignatureId = useCallback(
 		(itemsAdd, resp, oldSignatureId, isFowardSignature): void => {
 			const newOrForwardSignatureToSet = itemsAdd?.find(
@@ -192,19 +193,15 @@ const SettingsView: FC = () => {
 				const signatureKey = isFowardSignature
 					? 'zimbraPrefForwardReplySignatureId'
 					: 'zimbraPrefDefaultSignatureId';
-				saveSettings(
-					{
-						prefs: { [signatureKey]: realSignatureId }
-					},
-					updateSettings,
-					updateAccount
-				).then(() => {
+				saveSettings({
+					prefs: { [signatureKey]: realSignatureId }
+				}).then(() => {
 					setUpdatedPrefs({});
 					setUpdatedAttrs({});
 				});
 			}
 		},
-		[updateAccount, updateSettings]
+		[]
 	);
 
 	const saveChanges = useCallback<SettingsHeaderProps['onSave']>(() => {
@@ -319,7 +316,7 @@ const SettingsView: FC = () => {
 			changes = { ...changes, identity: { modifyList: identitiesToUpdate } };
 		}
 		if (!isEmpty(changes)) {
-			const editResult = saveSettings(changes, updateSettings, updateAccount)
+			const editResult = saveSettings(changes)
 				.then(() => {
 					createSnackbar({
 						key: `new`,
@@ -364,8 +361,6 @@ const SettingsView: FC = () => {
 		createSnackbar,
 		setNewOrForwardSignatureId,
 		flag,
-		updateSettings,
-		updateAccount,
 		updatedIdentities
 	]);
 

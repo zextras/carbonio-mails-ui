@@ -3,12 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import {
-	SoapBody,
-	useUserAccount,
-	useUserSettings,
-	xmlSoapFetch
-} from '@zextras/carbonio-shell-ui';
+import { SoapBody, updateAccount, updateSettings, xmlSoapFetch } from '@zextras/carbonio-shell-ui';
 import type {
 	CreateIdentityResponse,
 	DeleteIdentityResponse,
@@ -96,12 +91,7 @@ function getRequestForIdentities(identity: IdentityMods | undefined): string {
 	}`;
 }
 
-export const saveSettings = (
-	mods: MailMods,
-	updateSettings: ReturnType<typeof useUserSettings>['updateSettings'],
-	updateAccount: ReturnType<typeof useUserAccount>['updateAccount'],
-	appId = MAIL_APP_ID
-): Promise<SaveSettingsResponse> =>
+export const saveSettings = (mods: MailMods, appId = MAIL_APP_ID): Promise<SaveSettingsResponse> =>
 	xmlSoapFetch<string, SaveSettingsResponse>(
 		'Batch',
 		`<BatchRequest xmlns="urn:zimbra" onerror="stop">
