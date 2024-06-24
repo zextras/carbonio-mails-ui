@@ -10,12 +10,6 @@ import { isArray, map } from 'lodash';
 
 import { MAIL_APP_ID } from '../../constants';
 
-export type AttrsMods = Record<string, unknown>;
-
-type MailMods = Mods & {
-	attrs?: AttrsMods;
-};
-
 export type SaveSettingsResponse = Pick<
 	EditSettingsBatchResponse,
 	| 'ModifyPropertiesResponse'
@@ -67,7 +61,7 @@ function getRequestForIdentities(identity: IdentityMods | undefined): string {
 	}`;
 }
 
-export const saveSettings = (mods: MailMods, appId = MAIL_APP_ID): Promise<SaveSettingsResponse> =>
+export const saveSettings = (mods: Mods, appId = MAIL_APP_ID): Promise<SaveSettingsResponse> =>
 	xmlSoapFetch<string, SaveSettingsResponse>(
 		'Batch',
 		`<BatchRequest xmlns="urn:zimbra" onerror="stop">
