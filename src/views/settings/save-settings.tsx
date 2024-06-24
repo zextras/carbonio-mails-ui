@@ -4,8 +4,13 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { updateAccount, updateSettings, xmlSoapFetch } from '@zextras/carbonio-shell-ui';
-import { EditSettingsBatchResponse } from '@zextras/carbonio-shell-ui/lib/network/edit-settings';
-import type { IdentityMods, Mods, PropsMods } from '@zextras/carbonio-shell-ui/lib/types/network';
+import type {
+	EditSettingsBatchResponse,
+	IdentityMods,
+	Mods,
+	PropsMods,
+	AttrsMods
+} from '@zextras/carbonio-shell-ui';
 import { isArray, map } from 'lodash';
 
 import { MAIL_APP_ID } from '../../constants';

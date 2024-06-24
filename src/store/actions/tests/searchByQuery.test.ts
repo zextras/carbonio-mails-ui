@@ -6,7 +6,7 @@
  */
 
 import { AsyncThunkAction, EnhancedStore } from '@reduxjs/toolkit';
-import { SoapFault } from '@zextras/carbonio-shell-ui/lib/types/network/soap';
+import { SoapFault } from '@zextras/carbonio-shell-ui';
 
 import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { generateStore } from '../../../tests/generators/store';
