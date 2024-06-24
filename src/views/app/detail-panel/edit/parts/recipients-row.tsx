@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, useCallback } from 'react';
+import React, { ChangeEvent, ChangeEventHandler, FC, useCallback } from 'react';
 
 import { ChipInput, ChipItem } from '@zextras/carbonio-design-system';
 import { useIntegratedComponent } from '@zextras/carbonio-shell-ui';
@@ -11,10 +11,13 @@ import { map, reject, some } from 'lodash';
 
 import { ParticipantRoleType } from '../../../../../carbonio-ui-commons/constants/participants';
 import { Participant } from '../../../../../types';
+import styled from 'styled-components';
 
 const emailRegex =
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars, max-len, no-control-regex
 	/(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/;
+
+const REGEX = /[a-zA-Z0-9+._-]+@[a-zA-Z0-9._-]+.[a-zA-Z0-9_-]+/g;
 
 export interface ContactType extends ChipItem {
 	email: string;
@@ -44,6 +47,7 @@ export type RecipientsRowProps = {
  * @param orderedAccountIds
  * @constructor
  */
+
 export const RecipientsRow: FC<RecipientsRowProps> = ({
 	type,
 	label,
@@ -53,6 +57,17 @@ export const RecipientsRow: FC<RecipientsRowProps> = ({
 	orderedAccountIds
 }) => {
 	const [ContactInput, isAvailable] = useIntegratedComponent('contact-input');
+
+	const CustomContactInput = styled(ContactInput)`
+		input {
+			width: 100%;
+		}
+	`;
+	const CustomChipInput = styled(ChipInput)`
+		input {
+			width: 100%;
+		}
+	`;
 
 	const onContactInputChange = useCallback(
 		(contacts: Array<ContactType>): void => {
@@ -83,6 +98,15 @@ export const RecipientsRow: FC<RecipientsRowProps> = ({
 			? { label: value, error: !emailRegex.test(value) }
 			: { label: 'unknown data', error: true };
 
+	const onContactInputAdd = (e: ClipboardEvent): void => {
+		const data = e.clipboardData.getData('Text');
+		e.preventDefault();
+
+		// console.log(Array.from(data.matchAll(REGEX)));
+		// e.target.value = 'ciao@ciao.it, ciao@miao.bau';
+		// this.value = data.match(REGEX).toString();
+	};
+
 	const onChipInputChange = (contacts: Array<ChipItem>): void => {
 		const data = map(
 			reject(contacts, ['error', true]),
@@ -100,7 +124,7 @@ export const RecipientsRow: FC<RecipientsRowProps> = ({
 	return (
 		<>
 			{isAvailable ? (
-				<ContactInput
+				<CustomContactInput
 					data-testid={dataTestid}
 					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 					// @ts-ignore
@@ -112,9 +136,11 @@ export const RecipientsRow: FC<RecipientsRowProps> = ({
 					hasError={some(recipients || [], { error: true })}
 					dragAndDropEnabled
 					orderedAccountIds={orderedAccountIds}
+					className="carbonio-bypass-context-menu"
+					onPaste={onContactInputAdd}
 				/>
 			) : (
-				<ChipInput
+				<CustomChipInput
 					data-testid={dataTestid}
 					placeholder={label}
 					maxChips={null}
@@ -123,6 +149,7 @@ export const RecipientsRow: FC<RecipientsRowProps> = ({
 					defaultValue={chipInputValues}
 					background="gray5"
 					hasError={some(recipients || [], { error: true })}
+					className="carbonio-bypass-context-menu"
 				/>
 			)}
 		</>
