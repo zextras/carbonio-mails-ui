@@ -99,12 +99,10 @@ export const RecipientsRow: FC<RecipientsRowProps> = ({
 			: { label: 'unknown data', error: true };
 
 	const onContactInputAdd = (e: ClipboardEvent): void => {
-		const data = e.clipboardData.getData('Text');
-		e.preventDefault();
-
+		// const data = e.clipboardData.getData('Text');
 		// console.log(Array.from(data.matchAll(REGEX)));
-		// e.target.value = 'ciao@ciao.it, ciao@miao.bau';
-		// this.value = data.match(REGEX).toString();
+
+		console.log(e);
 	};
 
 	const onChipInputChange = (contacts: Array<ChipItem>): void => {
@@ -137,7 +135,10 @@ export const RecipientsRow: FC<RecipientsRowProps> = ({
 					dragAndDropEnabled
 					orderedAccountIds={orderedAccountIds}
 					className="carbonio-bypass-context-menu"
-					onPaste={onContactInputAdd}
+					onAdd={onContactInputAdd}
+					createChipOnPaste={false}
+
+					// onPaste={onContactInputAdd}
 				/>
 			) : (
 				<CustomChipInput
