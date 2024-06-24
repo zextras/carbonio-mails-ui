@@ -75,13 +75,10 @@ export const RecipientsRow: FC<RecipientsRowProps> = ({
 				contacts,
 				(contact) =>
 					({
-						...contact,
-						email: contact.email,
-						error: contact.error,
-						type,
-						address: contact.email,
-						name: contact.firstName,
-						fullName: contact.fullName
+						name: contact.label,
+						address: contact.label,
+						fullName: contact.label,
+						type
 					}) as Participant
 			);
 			onRecipientsChange(updatedRecipients);
@@ -98,12 +95,34 @@ export const RecipientsRow: FC<RecipientsRowProps> = ({
 			? { label: value, error: !emailRegex.test(value) }
 			: { label: 'unknown data', error: true };
 
-	const onContactInputAdd = (e: ClipboardEvent): void => {
-		// const data = e.clipboardData.getData('Text');
-		// console.log(Array.from(data.matchAll(REGEX)));
+	const handlePaste = useCallback(
+		(e: ClipboardEvent): void => {
+			const pastedData = e.clipboardData.getData('Text');
 
-		console.log(e);
-	};
+			const emails = pastedData.match(REGEX);
+
+			if (emails) {
+				const validEmails = emails.map((email) => ({
+					label: email,
+					error: !emailRegex.test(email)
+				}));
+
+				const updatedRecipients = map<ChipItem, Participant>(
+					validEmails,
+					(contact) =>
+						({
+							name: contact.label,
+							address: contact.label,
+							fullName: contact.label,
+							type
+						}) as Participant
+				);
+
+				onRecipientsChange([...recipients, ...updatedRecipients]);
+			}
+		},
+		[onRecipientsChange, recipients, type]
+	);
 
 	const onChipInputChange = (contacts: Array<ChipItem>): void => {
 		const data = map(
@@ -135,10 +154,8 @@ export const RecipientsRow: FC<RecipientsRowProps> = ({
 					dragAndDropEnabled
 					orderedAccountIds={orderedAccountIds}
 					className="carbonio-bypass-context-menu"
-					onAdd={onContactInputAdd}
 					createChipOnPaste={false}
-
-					// onPaste={onContactInputAdd}
+					onPaste={handlePaste}
 				/>
 			) : (
 				<CustomChipInput
