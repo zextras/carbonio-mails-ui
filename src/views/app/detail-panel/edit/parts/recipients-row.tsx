@@ -95,34 +95,32 @@ export const RecipientsRow: FC<RecipientsRowProps> = ({
 			? { label: value, error: !emailRegex.test(value) }
 			: { label: 'unknown data', error: true };
 
-	const handlePaste = useCallback(
-		(e: ClipboardEvent): void => {
-			const pastedData = e.clipboardData.getData('Text');
+	const handlePaste = (e: ClipboardEvent): void => {
+		const pastedData = e.clipboardData.getData('Text');
 
-			const emails = pastedData.match(REGEX);
+		const emails = pastedData.match(REGEX);
 
-			if (emails) {
-				const validEmails = emails.map((email) => ({
-					label: email,
-					error: !emailRegex.test(email)
-				}));
+		if (emails) {
+			const validEmails = emails.map((email) => ({
+				label: email,
+				error: !emailRegex.test(email)
+			}));
 
-				const updatedRecipients = map<ChipItem, Participant>(
-					validEmails,
-					(contact) =>
-						({
-							name: contact.label,
-							address: contact.label,
-							fullName: contact.label,
-							type
-						}) as Participant
-				);
+			const updatedRecipients = map<ChipItem, Participant>(
+				validEmails,
+				(contact) =>
+					({
+						address: contact.label,
+						name: contact.label,
+						fullName: contact.label,
+						type,
+						error: contact.error
+					}) as Participant
+			);
 
-				onRecipientsChange([...recipients, ...updatedRecipients]);
-			}
-		},
-		[onRecipientsChange, recipients, type]
-	);
+			onRecipientsChange([...recipients, ...updatedRecipients]);
+		}
+	};
 
 	const onChipInputChange = (contacts: Array<ChipItem>): void => {
 		const data = map(
