@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, memo, useCallback, useEffect, useMemo } from 'react';
+import React, { FC, memo, useCallback, useEffect, useMemo, useRef } from 'react';
 
 import { Container, Padding, Text } from '@zextras/carbonio-design-system';
 import { find, map, noop, reduce } from 'lodash';
@@ -135,6 +135,7 @@ export const MessageListComponent: FC<MessageListComponentProps> = memo(
 
 		const folder = useFolder(folderId);
 		const root = useRoot(folder?.id ?? '');
+		const firstRenderRef = useRef<boolean>(true);
 		const showBreadcrumbs = useMemo(
 			() =>
 				!isSearchModule ||
@@ -149,8 +150,13 @@ export const MessageListComponent: FC<MessageListComponentProps> = memo(
 		);
 
 		const onListBottom = useCallback((): void => {
-			loadMore && loadMore();
-		}, [loadMore]);
+			if (firstRenderRef.current) {
+				loadMore && loadMore();
+				firstRenderRef.current = false;
+			} else {
+				firstRenderRef.current = true;
+			}
+		}, [loadMore,firstRenderRef]);
 
 		return (
 			<>
