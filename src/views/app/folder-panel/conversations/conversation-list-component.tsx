@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React, { FC, RefObject, memo, useEffect, useMemo } from 'react';
+import React, { FC, RefObject, memo, useCallback, useEffect, useMemo, useRef } from 'react';
 
 import { Container, Divider, Padding, Text } from '@zextras/carbonio-design-system';
 import { find, map, noop, reduce } from 'lodash';
@@ -134,7 +134,7 @@ export const ConversationListComponent: FC<ConversationListComponentProps> = mem
 		}, [selected, setDraggedIds]);
 
 		const folder = useFolder(folderId);
-
+		const firstRenderRef = useRef<boolean>(true);
 		const folderPath = useMemo(() => {
 			if (isSearchModule) {
 				return '';
@@ -149,6 +149,15 @@ export const ConversationListComponent: FC<ConversationListComponentProps> = mem
 				(isSearchModule && totalConversations > 0),
 			[isSearchModule, totalConversations]
 		);
+
+		const onListBottom = useCallback((): void => {
+			if (firstRenderRef.current) {
+				loadMore && loadMore();
+				firstRenderRef.current = false;
+			} else {
+				firstRenderRef.current = true;
+			}
+		}, [loadMore,firstRenderRef]);
 
 		const selectedIds = useMemo(() => Object.keys(selected), [selected]);
 
@@ -182,9 +191,7 @@ export const ConversationListComponent: FC<ConversationListComponentProps> = mem
 						<Divider color="gray2" />
 						{totalConversations > 0 || hasMore ? (
 							<CustomList
-								onListBottom={(): void => {
-									loadMore && loadMore();
-								}}
+								onListBottom={onListBottom}
 								data-testid={`conversation-list-${folderId}`}
 								ref={listRef}
 							>
