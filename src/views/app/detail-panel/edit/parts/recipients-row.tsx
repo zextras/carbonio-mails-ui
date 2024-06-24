@@ -9,6 +9,7 @@ import { ChipInput, ChipItem } from '@zextras/carbonio-design-system';
 import { useIntegratedComponent } from '@zextras/carbonio-shell-ui';
 import { map, reject, some } from 'lodash';
 
+import { emailParser } from './email-parser';
 import { ParticipantRoleType } from '../../../../../carbonio-ui-commons/constants/participants';
 import { Participant } from '../../../../../types';
 import styled from 'styled-components';
@@ -96,26 +97,15 @@ export const RecipientsRow: FC<RecipientsRowProps> = ({
 			: { label: 'unknown data', error: true };
 
 	const handlePaste = (e: ClipboardEvent): void => {
-		const pastedData = e.clipboardData.getData('Text');
-		const emails = pastedData.match(emailsFromStringRegex);
-
-		if (emails) {
-			const validEmails = emails.map((email) => ({
-				label: email,
-				error: !emailRegex.test(email)
-			}));
-			const existingEmails = new Set(recipients.map((recipient) => recipient.address));
-			const uniqValidEmails = validEmails.filter((email) => !existingEmails.has(email.label));
-			const updatedRecipients = uniqValidEmails.map(
-				(contact) =>
-					({
-						address: contact.label,
-						name: contact.label,
-						fullName: contact.label,
-						type,
-						error: contact.error
-					}) as Participant
-			);
+		const pastedData = e.clipboardData?.getData('Text') || '';
+		const pastedRecipients = emailParser().parseMultipleEmails(pastedData);
+		if (pastedRecipients.length > 0) {
+			const existingRecipients = new Set(recipients.map((recipient) => recipient.address));
+			const updatedRecipients = pastedRecipients
+				.filter((email) => !existingRecipients.has(email))
+				.map(
+					(contact) => ({ address: contact, name: contact, fullName: contact, type }) as Participant
+				);
 
 			onRecipientsChange([...recipients, ...updatedRecipients]);
 		}
