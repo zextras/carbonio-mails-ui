@@ -30,6 +30,8 @@ import AttachmentsBlock from './attachments-block';
 import PreviewHeader from './parts/preview-header';
 import ReadReceiptModal from './read-receipt-modal';
 import { ParticipantRole } from '../../../../carbonio-ui-commons/constants/participants';
+import { isWriteAllowed } from '../../../../carbonio-ui-commons/helpers/folders';
+import { getFolder } from '../../../../carbonio-ui-commons/store/zustand/folder';
 import MailMessageRenderer from '../../../../commons/mail-message-renderer';
 import { MessageActionsDescriptors } from '../../../../constants';
 import { getAttachmentParts } from '../../../../helpers/attachments';
@@ -95,16 +97,19 @@ const MailContent: FC<{
 	);
 
 	const readReceiptSetting = useMemo(() => prefs?.zimbraPrefMailSendReadReceipts, [prefs]);
-	const showReadReceiptModal = useMemo(
-		() =>
+	const showReadReceiptModal = useMemo(() => {
+		const folder = getFolder(message.parent);
+		return (
 			(!!readReceiptRequester &&
+				folder &&
+				isWriteAllowed(folder) &&
 				showModal &&
 				message.isReadReceiptRequested &&
 				!message?.isSentByMe &&
 				readReceiptSetting === 'prompt') ??
-			false,
-		[readReceiptRequester, showModal, message, readReceiptSetting]
-	);
+			false
+		);
+	}, [readReceiptRequester, showModal, message, readReceiptSetting]);
 
 	const showShareInvite = useMemo(
 		() =>
