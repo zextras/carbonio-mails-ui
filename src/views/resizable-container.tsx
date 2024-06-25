@@ -8,7 +8,8 @@ import React, { CSSProperties, useMemo, useRef } from 'react';
 import { Container, ContainerProps } from '@zextras/carbonio-design-system';
 import styled, { css, SimpleInterpolation } from 'styled-components';
 
-import { useResize } from '../hooks/use-resize';
+import { BORDERS } from '../constants';
+import { Border, useResize } from '../hooks/use-resize';
 
 const MainContainer = styled(Container)`
 	position: relative;
@@ -19,6 +20,7 @@ const MainContainer = styled(Container)`
 interface ResizableContainerProps extends ContainerProps {
 	elementToResize: React.RefObject<HTMLElement>;
 	localStorageKey?: string;
+	border: Border;
 	keepSyncedWithStorage?: boolean;
 	disabled?: boolean;
 	minSize?: { width: number; height: number };
@@ -27,6 +29,7 @@ interface ResizableContainerProps extends ContainerProps {
 interface ResizableBorderProps {
 	elementToResize: React.RefObject<HTMLElement>;
 	localStorageKey?: string;
+	border: Border;
 	keepSyncedWithStorage?: boolean;
 }
 
@@ -64,11 +67,12 @@ const BorderWithResize = styled.div<
 
 const ResizableBorder = ({
 	elementToResize,
+	border,
 	localStorageKey,
 	keepSyncedWithStorage
 }: ResizableBorderProps): React.JSX.Element => {
 	const borderRef = useRef<HTMLDivElement>(null);
-	const resizeHandler = useResize(elementToResize, 'e', {
+	const resizeHandler = useResize(elementToResize, border, {
 		localStorageKey,
 		keepSyncedWithStorage
 	});
@@ -78,18 +82,24 @@ const ResizableBorder = ({
 	>(() => {
 		const $position: BorderWithResizeProps['$position'] = {};
 		const $translateTransform: BorderWithResizeProps['$translateTransform'] = {};
-		$position.right = 0;
-		$translateTransform.x = '50%';
+		if (border.includes(BORDERS.SOUTH)) {
+			$position.bottom = 0;
+			$translateTransform.y = '50%';
+		}
+		if (border.includes(BORDERS.EAST)) {
+			$position.right = 0;
+			$translateTransform.x = '50%';
+		}
 		return { $position, $translateTransform };
-	}, []);
+	}, [border]);
 
 	return (
 		<BorderWithResize
 			ref={borderRef}
-			$width={'0.25rem'}
-			$height={'100%'}
+			$width={border === BORDERS.EAST ? '0.25rem' : '100%'}
+			$height={border === BORDERS.EAST ? '100%' : '0.25rem'}
 			{...positions}
-			$cursor={'ew-resize'}
+			$cursor={border === BORDERS.EAST ? 'ew-resize' : 'ns-resize'}
 			onMouseDown={resizeHandler}
 		/>
 	);
@@ -98,6 +108,7 @@ const ResizableBorder = ({
 export const ResizableContainer = ({
 	elementToResize,
 	children,
+	border,
 	localStorageKey,
 	disabled = false,
 	keepSyncedWithStorage,
@@ -107,6 +118,7 @@ export const ResizableContainer = ({
 		{!disabled && (
 			<ResizableBorder
 				key={`resizable-border-e`}
+				border={border}
 				elementToResize={elementToResize}
 				localStorageKey={localStorageKey}
 				keepSyncedWithStorage={keepSyncedWithStorage}

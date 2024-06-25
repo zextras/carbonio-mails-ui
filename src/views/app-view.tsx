@@ -18,7 +18,7 @@ import moment from 'moment';
 import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom';
 
 import { ResizableContainer } from './resizable-container';
-import { LOCAL_STORAGE_COLUMN_SIZE } from '../constants';
+import { BORDERS, LOCAL_STORAGE_VIEW_SIZES } from '../constants';
 import { getFolderIdParts } from '../helpers/folders';
 import { useAppSelector } from '../hooks/redux';
 import { SizeAndPosition } from '../hooks/use-resize';
@@ -39,17 +39,10 @@ const AppView: FC = () => {
 	const currentFolderId = useAppSelector(selectCurrentFolder);
 	const containerRef = useRef<HTMLDivElement>(null);
 
-	const [lastSavedColumnWidth] = useLocalStorage<Partial<SizeAndPosition>>(
-		LOCAL_STORAGE_COLUMN_SIZE,
+	const [lastSavedViewSizes] = useLocalStorage<Partial<SizeAndPosition>>(
+		LOCAL_STORAGE_VIEW_SIZES,
 		{}
 	);
-
-	const width = useMemo(() => {
-		if (lastSavedColumnWidth) {
-			return `${lastSavedColumnWidth}px`;
-		}
-		return '40%';
-	}, [lastSavedColumnWidth]);
 
 	const isMessageView = useMemo(
 		() =>
@@ -66,12 +59,46 @@ const AppView: FC = () => {
 		setAppContext({ isMessageView, count, setCount });
 	}, [count, isMessageView]);
 
+	const isColumnView = false;
+
+	const orientation = useMemo(() => (isColumnView ? 'horizontal' : 'vertical'), [isColumnView]);
+
+	const width = useMemo(() => {
+		if (isColumnView) {
+			if (lastSavedViewSizes?.width) {
+				return `${lastSavedViewSizes?.width}px`;
+			}
+			return '40%';
+		}
+		return '100%';
+	}, [isColumnView, lastSavedViewSizes?.width]);
+
+	const height = useMemo(() => {
+		if (!isColumnView) {
+			if (lastSavedViewSizes?.height) {
+				return `${lastSavedViewSizes?.height}px`;
+			}
+			return '50%';
+		}
+		return '100%';
+	}, [isColumnView, lastSavedViewSizes?.height]);
+
+	const border = useMemo(() => (isColumnView ? BORDERS.EAST : BORDERS.SOUTH), [isColumnView]);
+
 	return (
-		<Container orientation="horizontal" mainAlignment="flex-start">
-			<Container width={width} ref={containerRef}>
+		<Container orientation={orientation} mainAlignment="flex-start">
+			<Container
+				ref={containerRef}
+				width={width}
+				height={height}
+				minHeight={'3rem'}
+				minWidth={'3rem'}
+				style={{ flexShrink: 0 }}
+			>
 				<ResizableContainer
+					border={border}
 					elementToResize={containerRef}
-					localStorageKey={LOCAL_STORAGE_COLUMN_SIZE}
+					localStorageKey={LOCAL_STORAGE_VIEW_SIZES}
 					keepSyncedWithStorage
 				>
 					<Switch>

@@ -16,12 +16,13 @@ export const NO_ACCOUNT_NAME = 'No account';
 
 export const RECOVER_MESSAGES_INTERVAL = 3;
 
-export const LOCAL_STORAGE_COLUMN_SIZE = 'carbonio-mails-ui-list-column-size';
-export const LOCAL_STORAGE_ROW_SIZE = 'carbonio-mails-ui-list-row-size';
+export const LOCAL_STORAGE_VIEW_SIZES = 'carbonio-mails-ui-list-view-sizes';
 
 export const BORDERS = {
 	EAST: 'e',
-	SOUTH: 's'
+	SOUTH: 's',
+	NORTH: 'n',
+	WEST: 'w'
 } as const;
 
 type AttachmentTypeItemsConstantProps = {
