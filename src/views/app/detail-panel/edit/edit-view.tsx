@@ -405,7 +405,12 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 						<EditViewSendButtons
 							onSendLater={onSendLaterClick}
 							onSendNow={onSendClick}
-							disabled={isMailSizeWarning || !sendAllowedStatus?.allowed || isConvertingToSmartLink}
+							disabled={
+								isMailSizeWarning ||
+								!sendAllowedStatus?.allowed ||
+								isConvertingToSmartLink ||
+								!draftId
+							}
 							tooltip={sendAllowedStatus?.reason ?? ''}
 							isLoading={isConvertingToSmartLink}
 						/>
