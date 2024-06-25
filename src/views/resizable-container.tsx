@@ -18,6 +18,7 @@ const MainContainer = styled(Container)`
 
 interface ResizableContainerProps extends ContainerProps {
 	elementToResize: React.RefObject<HTMLElement>;
+	localStorageKey?: string;
 	keepSyncedWithStorage?: boolean;
 	disabled?: boolean;
 	minSize?: { width: number; height: number };
@@ -25,6 +26,7 @@ interface ResizableContainerProps extends ContainerProps {
 
 interface ResizableBorderProps {
 	elementToResize: React.RefObject<HTMLElement>;
+	localStorageKey?: string;
 	keepSyncedWithStorage?: boolean;
 }
 
@@ -62,10 +64,12 @@ const BorderWithResize = styled.div<
 
 const ResizableBorder = ({
 	elementToResize,
+	localStorageKey,
 	keepSyncedWithStorage
 }: ResizableBorderProps): React.JSX.Element => {
 	const borderRef = useRef<HTMLDivElement>(null);
 	const resizeHandler = useResize(elementToResize, 'e', {
+		localStorageKey,
 		keepSyncedWithStorage
 	});
 
@@ -94,6 +98,7 @@ const ResizableBorder = ({
 export const ResizableContainer = ({
 	elementToResize,
 	children,
+	localStorageKey,
 	disabled = false,
 	keepSyncedWithStorage,
 	...rest
@@ -103,6 +108,7 @@ export const ResizableContainer = ({
 			<ResizableBorder
 				key={`resizable-border-e`}
 				elementToResize={elementToResize}
+				localStorageKey={localStorageKey}
 				keepSyncedWithStorage={keepSyncedWithStorage}
 			/>
 		)}

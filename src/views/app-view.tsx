@@ -6,14 +6,22 @@
 import React, { FC, Suspense, lazy, useEffect, useMemo, useState, useRef } from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
-import { FOLDERS, Spinner, setAppContext, useUserSettings } from '@zextras/carbonio-shell-ui';
+import {
+	FOLDERS,
+	Spinner,
+	setAppContext,
+	useUserSettings,
+	useLocalStorage
+} from '@zextras/carbonio-shell-ui';
 import { includes } from 'lodash';
 import moment from 'moment';
 import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom';
 
 import { ResizableContainer } from './resizable-container';
+import { LOCAL_STORAGE_COLUMN_SIZE } from '../constants';
 import { getFolderIdParts } from '../helpers/folders';
 import { useAppSelector } from '../hooks/redux';
+import { SizeAndPosition } from '../hooks/use-resize';
 import { selectCurrentFolder } from '../store/conversations-slice';
 
 const LazyFolderView = lazy(
@@ -30,6 +38,18 @@ const AppView: FC = () => {
 	const { zimbraPrefGroupMailBy, zimbraPrefLocale } = useUserSettings().prefs;
 	const currentFolderId = useAppSelector(selectCurrentFolder);
 	const containerRef = useRef<HTMLDivElement>(null);
+
+	const [lastSavedColumnWidth] = useLocalStorage<Partial<SizeAndPosition>>(
+		LOCAL_STORAGE_COLUMN_SIZE,
+		{}
+	);
+
+	const width = useMemo(() => {
+		if (lastSavedColumnWidth) {
+			return `${lastSavedColumnWidth}px`;
+		}
+		return '40%';
+	}, [lastSavedColumnWidth]);
 
 	const isMessageView = useMemo(
 		() =>
@@ -48,8 +68,12 @@ const AppView: FC = () => {
 
 	return (
 		<Container orientation="horizontal" mainAlignment="flex-start">
-			<Container width="40%" ref={containerRef}>
-				<ResizableContainer elementToResize={containerRef} keepSyncedWithStorage>
+			<Container width={width} ref={containerRef}>
+				<ResizableContainer
+					elementToResize={containerRef}
+					localStorageKey={LOCAL_STORAGE_COLUMN_SIZE}
+					keepSyncedWithStorage
+				>
 					<Switch>
 						<Route path={`${path}/folder/:folderId/:type?/:itemId?`}>
 							<Suspense fallback={<Spinner />}>
