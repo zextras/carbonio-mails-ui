@@ -5,23 +5,21 @@
  */
 /* eslint no-param-reassign: ["error", { "props": true, "ignorePropertyModificationsFor": ["conversation"] }] */
 
-import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
+import { createAsyncThunk } from '@reduxjs/toolkit';
 import { ErrorSoapBodyResponse, getTags, soapFetch } from '@zextras/carbonio-shell-ui';
 import { keyBy, map, reduce } from 'lodash';
 
 import { normalizeConversation } from '../../normalizations/normalize-conversation';
 import { normalizeMailMessageFromSoap } from '../../normalizations/normalize-message';
 import type {
-	Conversation,
 	FetchConversationsParameters,
 	FetchConversationsReturn,
 	SearchRequest,
 	SearchResponse
 } from '../../types';
 
-export function getSearchFactory(
-	name: string
-): AsyncThunk<FetchConversationsReturn | undefined, FetchConversationsParameters, any> {
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type, @typescript-eslint/explicit-module-boundary-types
+export function getSearchFactory(name: string) {
 	return createAsyncThunk<FetchConversationsReturn | undefined, FetchConversationsParameters>(
 		name,
 		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -114,7 +112,7 @@ export function getSearchFactory(
 					const conversations = map(result?.c ?? [], (obj, index) => ({
 						...normalizeConversation({ c: obj, tags }),
 						sortIndex: index + (offset ?? 0)
-					})) as unknown as Array<Conversation>;
+					}));
 					return {
 						conversations: keyBy(conversations, 'id'),
 						hasMore: result.more,
@@ -140,7 +138,7 @@ export function getSearchFactory(
 						types
 					};
 				}
-			} catch (err: any) {
+			} catch (err) {
 				return rejectWithValue(err);
 			}
 			return undefined;
