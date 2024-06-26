@@ -26,7 +26,7 @@ export const LayoutSelector = ({
 	containerRef,
 	isColumnView
 }: LayoutSelectorProps): React.JSX.Element => {
-	const hidePreview = true;
+	const hidePreview = false;
 
 	const [lastSavedViewSizes] = useLocalStorage<Partial<SizeAndPosition>>(
 		LOCAL_STORAGE_VIEW_SIZES,

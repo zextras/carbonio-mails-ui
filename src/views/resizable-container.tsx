@@ -96,8 +96,8 @@ const ResizableBorder = ({
 	return (
 		<BorderWithResize
 			ref={borderRef}
-			$width={border === BORDERS.EAST ? '0.25rem' : '100%'}
-			$height={border === BORDERS.EAST ? '100%' : '0.25rem'}
+			$width={border === BORDERS.EAST ? '1rem' : '100%'}
+			$height={border === BORDERS.EAST ? '100%' : '1rem'}
 			{...positions}
 			$cursor={border === BORDERS.EAST ? 'ew-resize' : 'ns-resize'}
 			onMouseDown={resizeHandler}
