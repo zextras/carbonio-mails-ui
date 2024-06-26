@@ -10,9 +10,9 @@ import { useIntegratedComponent } from '@zextras/carbonio-shell-ui';
 import { map, reject, some } from 'lodash';
 
 import { ParticipantRoleType } from '../../../../../carbonio-ui-commons/constants/participants';
-import { Participant } from '../../../../../types';
-import styled from 'styled-components';
 import { parseEmail } from '../../../../../carbonio-ui-commons/helpers/email-parser';
+import styled from 'styled-components';
+import { Participant } from '../../../../../types';
 
 const emailRegex =
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars, max-len, no-control-regex
@@ -46,7 +46,6 @@ export type RecipientsRowProps = {
  * @param orderedAccountIds
  * @constructor
  */
-
 export const RecipientsRow: FC<RecipientsRowProps> = ({
 	type,
 	label,
