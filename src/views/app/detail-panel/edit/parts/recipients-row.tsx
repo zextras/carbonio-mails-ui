@@ -12,6 +12,7 @@ import { map, reject, some } from 'lodash';
 import { ParticipantRoleType } from '../../../../../carbonio-ui-commons/constants/participants';
 import { Participant } from '../../../../../types';
 import styled from 'styled-components';
+import { parseEmail } from '../../../../../carbonio-ui-commons/helpers/email-parser';
 
 const emailRegex =
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars, max-len, no-control-regex
@@ -69,12 +70,9 @@ export const RecipientsRow: FC<RecipientsRowProps> = ({
 				(contact) =>
 					({
 						...contact,
-						email: contact.email,
-						error: contact.error,
 						type,
 						address: contact.email,
-						name: contact.firstName,
-						fullName: contact.fullName
+						name: contact.firstName
 					}) as Participant
 			);
 			onRecipientsChange(updatedRecipients);
@@ -89,13 +87,9 @@ export const RecipientsRow: FC<RecipientsRowProps> = ({
 		error: recipient.error
 	}));
 
-	const chipInputValues = map<Participant, ChipItem>(recipients, (recipient) => ({
-		label: recipient.address
-	}));
-
 	const onChipInputAdd = (value: string | unknown): ChipItem =>
 		typeof value === 'string'
-			? { label: value, error: !emailRegex.test(value) }
+			? { label: parseEmail(value) ?? value, error: !emailRegex.test(value) }
 			: { label: 'unknown data', error: true };
 
 	const onChipInputChange = (contacts: Array<ChipItem>): void => {
@@ -135,9 +129,17 @@ export const RecipientsRow: FC<RecipientsRowProps> = ({
 					maxChips={null}
 					onAdd={onChipInputAdd}
 					onChange={onChipInputChange}
-					defaultValue={chipInputValues}
+					defaultValue={recipientsAsContacts}
 					background="gray5"
 					hasError={some(recipients || [], { error: true })}
+					createChipOnPaste
+					pasteSeparators={[',', ';', ' ', '\n']}
+					separators={[
+						{ code: 'Enter', ctrlKey: false },
+						{ code: 'NumpadEnter', ctrlKey: false },
+						{ key: ',', ctrlKey: false },
+						{ key: ';', ctrlKey: false }
+					]}
 					className="carbonio-bypass-context-menu"
 				/>
 			)}
