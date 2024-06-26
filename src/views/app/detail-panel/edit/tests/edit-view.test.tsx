@@ -280,7 +280,7 @@ describe('Edit view', () => {
 			expect(getSoapMailBodyContent(msg, CT_PLAIN)).toBe(body);
 		}, 200000);
 
-		describe('send email with attachment to convert in smart link', () => {
+		describe('send email with attachment to convert to smart link', () => {
 			beforeAll(() => {
 				defaultBeforeAllTests({ onUnhandledRequest: 'error' });
 			});
@@ -350,13 +350,15 @@ describe('Edit view', () => {
 	 * Test the email drafts
 	 */
 	describe('Draft', () => {
-		test('is saved when user clicks on the save button', async () => {
+		beforeEach(() => {
 			createAPIInterceptor(
 				'post',
 				'/service/soap/GetShareInfoRequest',
 				HttpResponse.json(getEmptyMSWShareInfoResponse())
 			);
+		});
 
+		test('is saved when user clicks on the save button', async () => {
 			setupEditorStore({ editors: [] });
 			const reduxStore = generateStore();
 			const editor = generateNewMessageEditor(reduxStore.dispatch);
@@ -428,43 +430,34 @@ describe('Edit view', () => {
 			expect(msg.mp[0]?.content?._content).toBe(body);
 		}, 50000);
 
-		test.skip('is not autosaved if unchanged', async () => {
+		test('is not autosaved on initialization', async () => {
 			// Mock the saveDraft
 			const mockedSaveDraft = jest.spyOn(saveDraftAction, 'saveDraftV3');
 
-			// Mock the "action" query param
-			jest.spyOn(useQueryParam, 'useQueryParam').mockImplementation((param) => {
-				if (param === 'action') {
-					return 'new';
-				}
-				return undefined;
-			});
+			setupEditorStore({ editors: [] });
+			const reduxStore = generateStore();
+			const editor = generateNewMessageEditor(reduxStore.dispatch);
+			addEditor({ id: editor.id, editor });
 
 			const props = {
-				editorId: 'new-1',
-				folderId: FOLDERS.INBOX,
-				setHeader: noop,
-				toggleAppBoard: false
+				editorId: editor.id,
+				closeController: noop
 			};
 
-			// Generate the state store
-			const store = generateStore();
-
-			// Create and wait for the component to be rendered
-			setupTest(<EditView {...props} />, { store });
+			setupTest(<EditView {...props} />, { store: reduxStore });
 			await waitFor(
 				() => {
 					expect(screen.getByTestId('edit-view-editor')).toBeInTheDocument();
 				},
-				{ timeout: 30000 }
+				{ timeout: 30_000 }
 			);
 
 			// Wait few seconds
 			act(() => {
-				jest.advanceTimersByTime(10000);
+				jest.advanceTimersByTime(10_000);
 			});
 			expect(mockedSaveDraft).not.toBeCalled();
-		}, 50000);
+		}, 50_000);
 
 		test.skip('is autosaved if subject is changed', async () => {
 			// Mock the "action" query param
