@@ -3,25 +3,41 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { updateAccount, updateSettings, xmlSoapFetch } from '@zextras/carbonio-shell-ui';
-import type {
-	EditSettingsBatchResponse,
-	IdentityMods,
-	Mods,
-	PropsMods,
-	AttrsMods
-} from '@zextras/carbonio-shell-ui';
+import { Identity, updateAccount, updateSettings, xmlSoapFetch } from '@zextras/carbonio-shell-ui';
 import { isArray, map } from 'lodash';
 
 import { MAIL_APP_ID } from '../../constants';
 
-export type SaveSettingsResponse = Pick<
-	EditSettingsBatchResponse,
-	| 'ModifyPropertiesResponse'
-	| 'ModifyPrefsResponse'
-	| 'ModifyIdentityResponse'
-	| 'CreateIdentityResponse'
->;
+type AccountSettings = {
+	[key: string]: string | number | Array<string | number> | undefined;
+};
+
+type AccountSettingsPrefs = AccountSettings;
+type AccountSettingsAttrs = AccountSettings;
+type IdentityAttrs = AccountSettings;
+
+type PropsMods = Record<string, { app: string; value: unknown }>;
+type PrefsMods = Record<string, unknown> & AccountSettingsPrefs;
+type AttrsMods = Record<string, unknown> & AccountSettingsAttrs;
+
+type IdentityMods = {
+	modifyList?: Record<string, { id: string; prefs: Partial<IdentityAttrs> }>;
+	deleteList?: string[];
+	createList?: { prefs: Partial<IdentityAttrs> }[];
+};
+
+interface Mods extends Record<string, Record<string, unknown> | undefined> {
+	props?: PropsMods;
+	prefs?: PrefsMods;
+	attrs?: AttrsMods;
+	identity?: IdentityMods;
+}
+
+export type SaveSettingsResponse = {
+	CreateIdentityResponse?: {
+		identity: [Identity];
+	}[];
+};
 
 function getRequestForProps(props: PropsMods | undefined, appId: string): string {
 	return props
@@ -66,7 +82,14 @@ function getRequestForIdentities(identity: IdentityMods | undefined): string {
 	}`;
 }
 
-export const saveSettings = (mods: Mods, appId = MAIL_APP_ID): Promise<SaveSettingsResponse> =>
+export const saveSettings = (
+	mods: Mods,
+	appId = MAIL_APP_ID
+): Promise<{
+	CreateIdentityResponse?: {
+		identity: [Identity];
+	}[];
+}> =>
 	xmlSoapFetch<string, SaveSettingsResponse>(
 		'Batch',
 		`<BatchRequest xmlns="urn:zimbra" onerror="stop">
@@ -76,6 +99,11 @@ export const saveSettings = (mods: Mods, appId = MAIL_APP_ID): Promise<SaveSetti
 		</BatchRequest>`
 	).then((resp) => {
 		updateSettings(mods);
-		updateAccount(mods, resp);
+		if (mods.identity) {
+			updateAccount(
+				mods.identity,
+				resp.CreateIdentityResponse?.map((item) => item?.identity[0]) ?? []
+			);
+		}
 		return resp;
 	});
