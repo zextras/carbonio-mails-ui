@@ -15,6 +15,7 @@ import {
 	waitForElementToBeRemoved,
 	within
 } from '@testing-library/react';
+import { UserEvent } from '@testing-library/user-event';
 import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 import { find, noop } from 'lodash';
 import { HttpResponse } from 'msw';
@@ -125,6 +126,13 @@ const createSmartLinkFailureAPIInterceptor = (): Promise<CreateSmartLinksRequest
 			}
 		}
 	});
+
+const clearAndInsertText =
+	(user: UserEvent, target: Element, text: string) => async (): Promise<void> => {
+		await user.click(target);
+		await user.clear(target);
+		await user.type(target, text);
+	};
 
 /**
  * Test the EditView component in different scenarios
@@ -342,7 +350,13 @@ describe('Edit view', () => {
 	 * Test the email drafts
 	 */
 	describe('Draft', () => {
-		test.skip('is saved when user clicks on the save button', async () => {
+		test('is saved when user clicks on the save button', async () => {
+			createAPIInterceptor(
+				'post',
+				'/service/soap/GetShareInfoRequest',
+				HttpResponse.json(getEmptyMSWShareInfoResponse())
+			);
+
 			setupEditorStore({ editors: [] });
 			const reduxStore = generateStore();
 			const editor = generateNewMessageEditor(reduxStore.dispatch);
@@ -382,40 +396,21 @@ describe('Edit view', () => {
 			const subjectInputElement = within(subjectComponent).getByRole('textbox');
 			const editorTextareaElement = await screen.findByTestId('MailPlainTextEditor');
 
-			// Reset the content of the "to" component and type the address
-			await user.click(toInputElement);
-			await user.clear(toInputElement);
-			await user.type(toInputElement, recipient);
+			await act(clearAndInsertText(user, toInputElement, recipient));
 
-			// Click on the "CC" button to show CC Recipient field
-			await user.click(btnCc);
+			await act(async () => {
+				await user.click(btnCc);
+			});
+
 			const ccComponent = screen.getByTestId('RecipientCc');
 			const ccInputElement = within(ccComponent).getByRole('textbox');
 
-			// Reset the content of the "Cc" component and type the address
-			await user.click(ccInputElement);
-			await user.clear(ccInputElement);
-			await user.type(ccInputElement, cc);
+			await act(clearAndInsertText(user, ccInputElement, cc));
 
-			// Click on another component to trigger the change event
-			await user.click(subjectInputElement);
+			await act(clearAndInsertText(user, subjectInputElement, subject));
 
-			// Insert a subject
-			await user.type(subjectInputElement, subject);
-			act(() => {
-				jest.advanceTimersByTime(1000);
-			});
+			await act(clearAndInsertText(user, editorTextareaElement, body));
 
-			// Workaround of typing problem in the preset textarea
-			await user.clear(editorTextareaElement);
-
-			// Insert a text inside editor
-			await user.type(editorTextareaElement, body);
-			act(() => {
-				jest.advanceTimersByTime(1000);
-			});
-
-			// Click on the "save" button
 			await user.click(btnSave);
 
 			// Obtain the message from the rest handler
