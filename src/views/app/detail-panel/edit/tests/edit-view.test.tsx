@@ -141,7 +141,7 @@ describe('Edit view', () => {
 			setupEditorStore({ editors: [] });
 			const reduxStore = generateStore();
 			const editor = generateNewMessageEditor(reduxStore.dispatch);
-			addEditor({ id: editor.id, editor });
+			addEditor({ id: editor.id, editor: { ...editor, did: 'draft-id' } });
 
 			// Get the default identity address
 			const mocksContext = getMocksContext();
