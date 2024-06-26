@@ -117,7 +117,7 @@ export const ResizableContainer = ({
 	<MainContainer {...rest}>
 		{!disabled && (
 			<ResizableBorder
-				key={`resizable-border-e`}
+				key={`resizable-border-${border}`}
 				border={border}
 				elementToResize={elementToResize}
 				localStorageKey={localStorageKey}
