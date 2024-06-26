@@ -428,10 +428,9 @@ describe('Edit view', () => {
 				}
 			});
 			expect(msg.mp[0]?.content?._content).toBe(body);
-		}, 50000);
+		});
 
 		test('is not autosaved on initialization', async () => {
-			// Mock the saveDraft
 			const mockedSaveDraft = jest.spyOn(saveDraftAction, 'saveDraftV3');
 
 			setupEditorStore({ editors: [] });
@@ -452,59 +451,43 @@ describe('Edit view', () => {
 				{ timeout: 30_000 }
 			);
 
-			// Wait few seconds
 			act(() => {
 				jest.advanceTimersByTime(10_000);
 			});
 			expect(mockedSaveDraft).not.toBeCalled();
-		}, 50_000);
+		});
 
-		test.skip('is autosaved if subject is changed', async () => {
-			// Mock the "action" query param
+		test('is autosaved if subject is changed', async () => {
 			jest.spyOn(useQueryParam, 'useQueryParam').mockImplementation((param) => {
 				if (param === 'action') {
 					return 'new';
 				}
 				return undefined;
 			});
-
-			const props = {
-				editorId: 'new-1',
-				folderId: FOLDERS.INBOX,
-				setHeader: noop,
-				toggleAppBoard: false
-			};
-
-			// Generate the state store
-			const store = generateStore();
-
-			// Create and wait for the component to be rendered
-			const { user } = setupTest(<EditView {...props} />, { store });
-			await waitFor(
-				() => {
-					expect(screen.getByTestId('edit-view-editor')).toBeInTheDocument();
-				},
-				{ timeout: 30000 }
-			);
 			const draftSavingInterceptor = createSoapAPIInterceptor<{ m: SoapDraftMessageObj }>(
-				'SaveDraftRequest'
+				'SaveDraft'
 			);
-
+			setupEditorStore({ editors: [] });
+			const reduxStore = generateStore();
+			const editor = generateNewMessageEditor(reduxStore.dispatch);
+			addEditor({ id: editor.id, editor });
+			const props = {
+				editorId: editor.id,
+				closeController: noop
+			};
+			const { user } = setupTest(<EditView {...props} />, { store: reduxStore });
 			const subjectText =
 				"This is the most interesting subject ever! It's all about unicorns brewing beers for the elves";
-			const subjectComponent = screen.getByTestId('subject');
-			const subjectInputElement = within(subjectComponent).getByRole('textbox');
-			await user.click(subjectInputElement);
-			await user.type(subjectInputElement, subjectText);
+			const subjectInputElement = within(screen.getByTestId('subject')).getByRole('textbox');
+			await act(clearAndInsertText(user, subjectInputElement, subjectText));
 
-			// Wait few seconds
 			act(() => {
-				jest.advanceTimersByTime(10000);
+				jest.advanceTimersByTime(2_000);
 			});
 
 			const { m: msg } = await draftSavingInterceptor;
 			expect(msg.su._content).toBe(subjectText);
-		}, 50000);
+		});
 
 		test.skip('is autosaved if recipient (to) is changed', async () => {
 			// Mock the "action" query param
