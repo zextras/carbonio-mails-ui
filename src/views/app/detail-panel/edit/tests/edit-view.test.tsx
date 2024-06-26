@@ -489,63 +489,40 @@ describe('Edit view', () => {
 			expect(msg.su._content).toBe(subjectText);
 		});
 
-		test.skip('is autosaved if recipient (to) is changed', async () => {
-			// Mock the "action" query param
+		test('is autosaved if recipient (to) is changed', async () => {
 			jest.spyOn(useQueryParam, 'useQueryParam').mockImplementation((param) => {
 				if (param === 'action') {
 					return 'new';
 				}
 				return undefined;
 			});
-
-			const props = {
-				editorId: 'new-1',
-				folderId: FOLDERS.INBOX,
-				setHeader: noop,
-				toggleAppBoard: false
-			};
-
-			// Generate the state store
-			const store = generateStore();
-
-			// Create and wait for the component to be rendered
-			const { user } = setupTest(<EditView {...props} />, { store });
-			await waitFor(
-				() => {
-					expect(screen.getByTestId('edit-view-editor')).toBeInTheDocument();
-				},
-				{ timeout: 30000 }
-			);
 			const draftSavingInterceptor = createSoapAPIInterceptor<{ m: SoapDraftMessageObj }>(
-				'SaveDraftRequest'
+				'SaveDraft'
 			);
-
+			setupEditorStore({ editors: [] });
+			const reduxStore = generateStore();
+			const editor = generateNewMessageEditor(reduxStore.dispatch);
+			addEditor({ id: editor.id, editor });
+			const props = {
+				editorId: editor.id,
+				closeController: noop
+			};
+			const { user } = setupTest(<EditView {...props} />, { store: reduxStore });
 			const recipient = createFakeIdentity().email;
-			const subjectComponent = screen.getByTestId('subject');
-			const subjectInputElement = within(subjectComponent).getByRole('textbox');
-			const toComponent = screen.getByTestId('RecipientTo');
-			const toInputElement = within(toComponent).getByRole('textbox');
+			const toInputElement = within(screen.getByTestId('RecipientTo')).getByRole('textbox');
+			await act(clearAndInsertText(user, toInputElement, recipient));
+			await act(async () => {
+				await user.tab();
+			});
 
-			// Reset the content of the "to" component and type the address
-			await user.click(toInputElement);
-			await user.clear(toInputElement);
-			await user.type(toInputElement, recipient);
-
-			// Click on other component to trigger the chip creation
-			await user.click(subjectInputElement);
-
-			// Wait few seconds
 			act(() => {
-				jest.advanceTimersByTime(10000);
+				jest.advanceTimersByTime(10_000);
 			});
 
 			const { m: msg } = await draftSavingInterceptor;
-			const sentRecipient = msg.e.reduce((prev, participant) =>
-				participant.t === 't' ? participant : prev
-			);
-
-			expect(sentRecipient?.a).toBe(recipient);
-		}, 50000);
+			const sentRecipient = msg.e[0];
+			expect(sentRecipient.a).toBe(recipient);
+		});
 
 		test.skip('is autosaved if body is changed', async () => {
 			// Mock the "action" query param
