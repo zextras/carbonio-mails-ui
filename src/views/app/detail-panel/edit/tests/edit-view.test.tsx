@@ -50,6 +50,8 @@ import { generateMessage } from '../../../../../tests/generators/generateMessage
 import { generateStore } from '../../../../../tests/generators/store';
 import type {
 	CreateSmartLinksRequest,
+	SaveDraftRequest,
+	SaveDraftResponse,
 	SoapDraftMessageObj,
 	SoapEmailMessagePartObj,
 	SoapMailMessage,
@@ -271,7 +273,40 @@ describe('Edit view', () => {
 			// await screen.findByText('messages.snackbar.mail_sent', {}, { timeout: 5000 });
 			// await screen.findByText('label.error_try_again', {}, { timeout: 4000 });
 			expect(getSoapMailBodyContent(msg, CT_PLAIN)).toBe(body);
-		}, 200000);
+		});
+		it('should render an already saved editor when creating a new editor', async () => {
+			setupEditorStore({ editors: [] });
+			const reduxStore = generateStore();
+			const editor = generateNewMessageEditor(reduxStore.dispatch);
+			addEditor({
+				id: editor.id,
+				editor: { ...editor, action: EditViewActions.NEW }
+			});
+
+			const props: EditViewProp = {
+				editorId: editor.id,
+				closeController: noop
+			};
+
+			expect(editor.did).toBeUndefined();
+			const msg: SoapMailMessage = {
+				cid: '',
+				d: 0,
+				e: [],
+				fr: '',
+				id: '123-testId',
+				l: '',
+				mp: [],
+				s: 0,
+				su: ''
+			};
+			const response: SaveDraftResponse = {
+				m: [msg]
+			};
+			createSoapAPIInterceptor<SaveDraftRequest, SaveDraftResponse>('SaveDraft', response);
+			setupTest(<EditView {...props} />);
+			expect(await screen.findByText('message.email_saved_at')).toBeVisible();
+		});
 
 		describe('send email with attachment to convert to smart link', () => {
 			beforeAll(() => {
