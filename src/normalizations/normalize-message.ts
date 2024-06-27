@@ -290,7 +290,7 @@ const getTagIds = (t: string | undefined, tn: string | undefined): Array<string 
 	return [];
 };
 
-const haveReadReceipt = (
+export const haveReadReceipt = (
 	participants: Array<SoapMailParticipant> | undefined,
 	flags: string | undefined,
 	folderId: string
