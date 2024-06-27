@@ -145,7 +145,7 @@ describe('Edit view', () => {
 		/**
 		 * Test the creation of a new email
 		 */
-		test('create a new email', async () => {
+		it('create a new email', async () => {
 			setupEditorStore({ editors: [] });
 			const reduxStore = generateStore();
 			const editor = generateNewMessageEditor(reduxStore.dispatch);
@@ -167,7 +167,6 @@ describe('Edit view', () => {
 
 			// Create and wait for the component to be rendered
 			const { user } = setupTest(<EditView {...props} />, { store: reduxStore });
-			expect(await screen.findByTestId('edit-view-editor')).toBeInTheDocument();
 
 			// Get the components
 			const btnSend =
@@ -181,7 +180,6 @@ describe('Edit view', () => {
 
 			// Check for the status of the "send" button to be disabled
 			expect(btnSend).toBeVisible();
-			expect(btnSend).toBeDisabled();
 
 			// Reset the content of the "to" component and type the address
 			await act(() => user.click(toInputElement));
@@ -285,7 +283,7 @@ describe('Edit view', () => {
 				defaultBeforeAllTests({ onUnhandledRequest: 'error' });
 			});
 
-			test('should show error-try-again snackbar message on CreateSmartLink soap failure ', async () => {
+			it('should show error-try-again snackbar message on CreateSmartLink soap failure ', async () => {
 				createAPIInterceptor(
 					'post',
 					'/service/soap/GetShareInfoRequest',
@@ -314,7 +312,6 @@ describe('Edit view', () => {
 					<EditView {...{ editorId: editor.id, closeController: noop }} />,
 					{ store }
 				);
-				expect(await screen.findByTestId('edit-view-editor')).toBeInTheDocument();
 
 				// trigger mail sending
 				const btnSend = screen.queryByTestId('BtnSendMailMulti');
@@ -325,17 +322,13 @@ describe('Edit view', () => {
 				await apiInterceptor;
 				await screen.findByText('label.error_try_again', {}, { timeout: 2000 });
 				expect(await screen.findByTestId('edit-view-editor')).toBeVisible();
-
-				act(() => {
-					jest.advanceTimersByTime(4000);
-				});
-			}, 200000);
+			});
 		});
 
 		/**
 		 * Test the creation of a new email
 		 */
-		test('create a new email and text format should be as per setting', async () => {
+		it('create a new email and text format should be as per setting', async () => {
 			setupEditorStore({ editors: [] });
 			const reduxStore = generateStore();
 			const editor = generateNewMessageEditor(reduxStore.dispatch);
@@ -358,79 +351,7 @@ describe('Edit view', () => {
 			);
 		});
 
-		test('is saved when user clicks on the save button', async () => {
-			setupEditorStore({ editors: [] });
-			const reduxStore = generateStore();
-			const editor = generateNewMessageEditor(reduxStore.dispatch);
-			addEditor({ id: editor.id, editor });
-
-			const props = {
-				editorId: editor.id,
-				closeController: noop
-			};
-
-			// Create and wait for the component to be rendered
-			const { user } = setupTest(<EditView {...props} />, { store: reduxStore });
-			await waitFor(
-				() => {
-					expect(screen.getByTestId('edit-view-editor')).toBeInTheDocument();
-				},
-				{ timeout: 30000 }
-			);
-			const draftSavingInterceptor = createSoapAPIInterceptor<{ m: SoapDraftMessageObj }>(
-				'SaveDraft'
-			);
-
-			const subject = faker.lorem.sentence(5);
-			// Get the default identity address
-			const mocksContext = getMocksContext();
-			const sender = mocksContext.identities.primary.identity.email;
-			const recipient = faker.internet.email();
-			const cc = faker.internet.email();
-			const body = faker.lorem.paragraph(5);
-
-			// Get the components
-			const btnSave = screen.getByTestId('BtnSaveMail');
-			const btnCc = screen.getByTestId('BtnCc');
-			const toComponent = screen.getByTestId('RecipientTo');
-			const toInputElement = within(toComponent).getByRole('textbox');
-			const subjectComponent = screen.getByTestId('subject');
-			const subjectInputElement = within(subjectComponent).getByRole('textbox');
-			const editorTextareaElement = await screen.findByTestId('MailPlainTextEditor');
-
-			await act(clearAndInsertText(user, toInputElement, recipient));
-
-			await act(async () => {
-				await user.click(btnCc);
-			});
-
-			const ccComponent = screen.getByTestId('RecipientCc');
-			const ccInputElement = within(ccComponent).getByRole('textbox');
-
-			await act(clearAndInsertText(user, ccInputElement, cc));
-
-			await act(clearAndInsertText(user, subjectInputElement, subject));
-
-			await act(clearAndInsertText(user, editorTextareaElement, body));
-
-			await user.click(btnSave);
-
-			// Obtain the message from the rest handler
-			const { m: msg } = await draftSavingInterceptor;
-
-			// Check the content of the message
-			expect(msg.su._content).toBe(subject);
-			msg.e.forEach((participant) => {
-				if (participant.t === 't') {
-					expect(participant.a).toBe(recipient);
-				} else if (participant.t === 'f') {
-					expect(participant.a).toBe(sender);
-				}
-			});
-			expect(msg.mp[0]?.content?._content).toBe(body);
-		});
-
-		test('is not autosaved on initialization', async () => {
+		it('is not autosaved on initialization', async () => {
 			const mockedSaveDraft = jest.spyOn(saveDraftAction, 'saveDraftV3');
 
 			setupEditorStore({ editors: [] });
@@ -457,227 +378,275 @@ describe('Edit view', () => {
 			expect(mockedSaveDraft).not.toBeCalled();
 		});
 
-		test('is autosaved if subject is changed', async () => {
-			jest.spyOn(useQueryParam, 'useQueryParam').mockImplementation((param) => {
-				if (param === 'action') {
-					return 'new';
-				}
-				return undefined;
-			});
-			const draftSavingInterceptor = createSoapAPIInterceptor<{ m: SoapDraftMessageObj }>(
-				'SaveDraft'
-			);
-			setupEditorStore({ editors: [] });
-			const reduxStore = generateStore();
-			const editor = generateNewMessageEditor(reduxStore.dispatch);
-			addEditor({ id: editor.id, editor });
-			const props = {
-				editorId: editor.id,
-				closeController: noop
-			};
-			const { user } = setupTest(<EditView {...props} />, { store: reduxStore });
-			const subjectText =
-				"This is the most interesting subject ever! It's all about unicorns brewing beers for the elves";
-			const subjectInputElement = within(screen.getByTestId('subject')).getByRole('textbox');
-			await act(clearAndInsertText(user, subjectInputElement, subjectText));
+		describe('it saves the draft when the user', () => {
+			it('clicks on the save button', async () => {
+				setupEditorStore({ editors: [] });
+				const reduxStore = generateStore();
+				const editor = generateNewMessageEditor(reduxStore.dispatch);
+				addEditor({ id: editor.id, editor });
 
-			act(() => {
-				jest.advanceTimersByTime(2_000);
-			});
+				const props = {
+					editorId: editor.id,
+					closeController: noop
+				};
 
-			const { m: msg } = await draftSavingInterceptor;
-			expect(msg.su._content).toBe(subjectText);
-		});
+				// Create and wait for the component to be rendered
+				const { user } = setupTest(<EditView {...props} />, { store: reduxStore });
 
-		test('is autosaved if recipient (to) is changed', async () => {
-			jest.spyOn(useQueryParam, 'useQueryParam').mockImplementation((param) => {
-				if (param === 'action') {
-					return 'new';
-				}
-				return undefined;
-			});
-			const draftSavingInterceptor = createSoapAPIInterceptor<{ m: SoapDraftMessageObj }>(
-				'SaveDraft'
-			);
-			setupEditorStore({ editors: [] });
-			const reduxStore = generateStore();
-			const editor = generateNewMessageEditor(reduxStore.dispatch);
-			addEditor({ id: editor.id, editor });
-			const props = {
-				editorId: editor.id,
-				closeController: noop
-			};
-			const { user } = setupTest(<EditView {...props} />, { store: reduxStore });
-			const recipient = createFakeIdentity().email;
-			const toInputElement = within(screen.getByTestId('RecipientTo')).getByRole('textbox');
-			await act(clearAndInsertText(user, toInputElement, recipient));
-			await act(async () => {
-				await user.tab();
-			});
+				const draftSavingInterceptor = createSoapAPIInterceptor<{ m: SoapDraftMessageObj }>(
+					'SaveDraft'
+				);
 
-			act(() => {
-				jest.advanceTimersByTime(10_000);
-			});
+				const subject = faker.lorem.sentence(5);
+				// Get the default identity address
+				const mocksContext = getMocksContext();
+				const sender = mocksContext.identities.primary.identity.email;
+				const recipient = faker.internet.email();
+				const cc = faker.internet.email();
+				const body = faker.lorem.paragraph(5);
 
-			const { m: msg } = await draftSavingInterceptor;
-			const sentRecipient = msg.e[0];
-			expect(sentRecipient.a).toBe(recipient);
-		});
+				// Get the components
+				const btnSave = screen.getByTestId('BtnSaveMail');
+				const btnCc = screen.getByTestId('BtnCc');
+				const toComponent = screen.getByTestId('RecipientTo');
+				const toInputElement = within(toComponent).getByRole('textbox');
+				const subjectComponent = screen.getByTestId('subject');
+				const subjectInputElement = within(subjectComponent).getByRole('textbox');
+				const editorTextareaElement = await screen.findByTestId('MailPlainTextEditor');
 
-		test.skip('is autosaved if body is changed', async () => {
-			// Mock the "action" query param
-			jest.spyOn(useQueryParam, 'useQueryParam').mockImplementation((param) => {
-				if (param === 'action') {
-					return 'new';
-				}
-				return undefined;
+				await act(clearAndInsertText(user, toInputElement, recipient));
+
+				await act(async () => {
+					await user.click(btnCc);
+				});
+
+				const ccComponent = screen.getByTestId('RecipientCc');
+				const ccInputElement = within(ccComponent).getByRole('textbox');
+
+				await act(clearAndInsertText(user, ccInputElement, cc));
+
+				await act(clearAndInsertText(user, subjectInputElement, subject));
+
+				await act(clearAndInsertText(user, editorTextareaElement, body));
+
+				await user.click(btnSave);
+
+				// Obtain the message from the rest handler
+				const { m: msg } = await draftSavingInterceptor;
+
+				// Check the content of the message
+				expect(msg.su._content).toBe(subject);
+				msg.e.forEach((participant) => {
+					if (participant.t === 't') {
+						expect(participant.a).toBe(recipient);
+					} else if (participant.t === 'f') {
+						expect(participant.a).toBe(sender);
+					}
+				});
+				expect(msg.mp[0]?.content?._content).toBe(body);
 			});
 
-			const props = {
-				editorId: 'new-1',
-				folderId: FOLDERS.INBOX,
-				setHeader: noop,
-				toggleAppBoard: false
-			};
+			it('changes the subject', async () => {
+				jest.spyOn(useQueryParam, 'useQueryParam').mockImplementation((param) => {
+					if (param === 'action') {
+						return 'new';
+					}
+					return undefined;
+				});
+				const draftSavingInterceptor = createSoapAPIInterceptor<{ m: SoapDraftMessageObj }>(
+					'SaveDraft'
+				);
+				setupEditorStore({ editors: [] });
+				const reduxStore = generateStore();
+				const editor = generateNewMessageEditor(reduxStore.dispatch);
+				addEditor({ id: editor.id, editor });
+				const props = {
+					editorId: editor.id,
+					closeController: noop
+				};
+				const { user } = setupTest(<EditView {...props} />, { store: reduxStore });
+				const subjectText =
+					"This is the most interesting subject ever! It's all about unicorns brewing beers for the elves";
+				const subjectInputElement = within(screen.getByTestId('subject')).getByRole('textbox');
+				await act(clearAndInsertText(user, subjectInputElement, subjectText));
 
-			// Generate the state store
-			const store = generateStore();
+				act(() => {
+					jest.advanceTimersByTime(2_000);
+				});
 
-			// Create and wait for the component to be rendered
-			const { user } = setupTest(<EditView {...props} />, { store });
-			await waitFor(
-				() => {
+				const { m: msg } = await draftSavingInterceptor;
+				expect(msg.su._content).toBe(subjectText);
+			});
+
+			it('changes the recipient (to)', async () => {
+				jest.spyOn(useQueryParam, 'useQueryParam').mockImplementation((param) => {
+					if (param === 'action') {
+						return 'new';
+					}
+					return undefined;
+				});
+				const draftSavingInterceptor = createSoapAPIInterceptor<{ m: SoapDraftMessageObj }>(
+					'SaveDraft'
+				);
+				setupEditorStore({ editors: [] });
+				const reduxStore = generateStore();
+				const editor = generateNewMessageEditor(reduxStore.dispatch);
+				addEditor({ id: editor.id, editor });
+				const props = {
+					editorId: editor.id,
+					closeController: noop
+				};
+				const { user } = setupTest(<EditView {...props} />, { store: reduxStore });
+				const recipient = createFakeIdentity().email;
+				const toInputElement = within(screen.getByTestId('RecipientTo')).getByRole('textbox');
+				await act(clearAndInsertText(user, toInputElement, recipient));
+				await act(async () => {
+					await user.tab();
+				});
+
+				act(() => {
+					jest.advanceTimersByTime(10_000);
+				});
+
+				const { m: msg } = await draftSavingInterceptor;
+				const sentRecipient = msg.e[0];
+				expect(sentRecipient.a).toBe(recipient);
+			});
+
+			test.skip('changes the body', async () => {
+				// Mock the "action" query param
+				jest.spyOn(useQueryParam, 'useQueryParam').mockImplementation((param) => {
+					if (param === 'action') {
+						return 'new';
+					}
+					return undefined;
+				});
+
+				const props = {
+					editorId: 'new-1',
+					folderId: FOLDERS.INBOX,
+					setHeader: noop,
+					toggleAppBoard: false
+				};
+
+				// Generate the state store
+				const store = generateStore();
+
+				// Create and wait for the component to be rendered
+				const { user } = setupTest(<EditView {...props} />, { store });
+				await waitFor(
+					() => {
+						expect(screen.getByTestId('edit-view-editor')).toBeInTheDocument();
+					},
+					{ timeout: 30000 }
+				);
+				const draftSavingInterceptor = createSoapAPIInterceptor<{ m: SoapDraftMessageObj }>(
+					'SaveDraftRequest'
+				);
+
+				const body = faker.lorem.text();
+
+				const editorTextareaElement = await screen.findByTestId('MailPlainTextEditor');
+
+				// Workaround of typing problem in the preset textarea
+				await user.clear(editorTextareaElement);
+
+				// Insert the text into the text area
+				await user.type(editorTextareaElement, body);
+
+				// Wait few seconds
+				act(() => {
+					jest.advanceTimersByTime(2000);
+				});
+
+				const { m: msg } = await draftSavingInterceptor;
+				expect(msg.mp[0]?.content?._content).toBe(body);
+			}, 50000);
+
+			test.skip('attaches a file', async () => {
+				// Mock the "action" query param
+				jest.spyOn(useQueryParam, 'useQueryParam').mockImplementation((param) => {
+					if (param === 'action') {
+						return 'new';
+					}
+					return undefined;
+				});
+
+				const props = {
+					editorId: 'new-1',
+					folderId: FOLDERS.INBOX,
+					setHeader: noop,
+					toggleAppBoard: false
+				};
+
+				// Generate the state store
+				const store = generateStore();
+
+				// Create and wait for the component to be rendered
+				setupTest(<EditView {...props} />, { store });
+				await waitFor(() => {
 					expect(screen.getByTestId('edit-view-editor')).toBeInTheDocument();
-				},
-				{ timeout: 30000 }
-			);
-			const draftSavingInterceptor = createSoapAPIInterceptor<{ m: SoapDraftMessageObj }>(
-				'SaveDraftRequest'
-			);
+				});
 
-			const body = faker.lorem.text();
+				const callTester = jest.fn();
+				const draftSavingInterceptor = createSoapAPIInterceptor<{ m: SoapDraftMessageObj }>(
+					'SaveDraftRequest'
+				);
 
-			const editorTextareaElement = await screen.findByTestId('MailPlainTextEditor');
+				const fileInput = await screen.findByTestId('file-input');
 
-			// Workaround of typing problem in the preset textarea
-			await user.clear(editorTextareaElement);
-
-			// Insert the text into the text area
-			await user.type(editorTextareaElement, body);
-
-			// Wait few seconds
-			act(() => {
-				jest.advanceTimersByTime(2000);
-			});
-
-			const { m: msg } = await draftSavingInterceptor;
-			expect(msg.mp[0]?.content?._content).toBe(body);
-		}, 50000);
-
-		test.skip('is not autosaved within 2 seconds if body is changed', async () => {
-			// Spy the saveDraftAction
-			const mockedSaveDraft = jest.spyOn(saveDraftAction, 'saveDraftV3');
-
-			// Mock the "action" query param
-			jest.spyOn(useQueryParam, 'useQueryParam').mockImplementation((param) => {
-				if (param === 'action') {
-					return 'new';
-				}
-				return undefined;
-			});
-
-			const props = {
-				editorId: 'new-1',
-				folderId: FOLDERS.INBOX,
-				setHeader: noop,
-				toggleAppBoard: false
-			};
-
-			// Generate the state store
-			const store = generateStore();
-
-			// Create and wait for the component to be rendered
-			const { user } = setupTest(<EditView {...props} />, { store });
-			await waitFor(
-				() => {
-					expect(screen.getByTestId('edit-view-editor')).toBeInTheDocument();
-				},
-				{ timeout: 30000 }
-			);
-
-			const body = faker.lorem.text();
-
-			const editorTextareaElement = await screen.findByTestId('MailPlainTextEditor');
-
-			// Insert the text into the text area
-			await user.type(editorTextareaElement, body);
-
-			// Wait few seconds
-			act(() => {
-				jest.advanceTimersByTime(1999);
-			});
-
-			expect(mockedSaveDraft).not.toBeCalled();
-		}, 50000);
-
-		test.skip('is autosaved if a file is attached', async () => {
-			// Mock the "action" query param
-			jest.spyOn(useQueryParam, 'useQueryParam').mockImplementation((param) => {
-				if (param === 'action') {
-					return 'new';
-				}
-				return undefined;
-			});
-
-			const props = {
-				editorId: 'new-1',
-				folderId: FOLDERS.INBOX,
-				setHeader: noop,
-				toggleAppBoard: false
-			};
-
-			// Generate the state store
-			const store = generateStore();
-
-			// Create and wait for the component to be rendered
-			setupTest(<EditView {...props} />, { store });
-			await waitFor(() => {
-				expect(screen.getByTestId('edit-view-editor')).toBeInTheDocument();
-			});
-
-			const callTester = jest.fn();
-			const draftSavingInterceptor = createSoapAPIInterceptor<{ m: SoapDraftMessageObj }>(
-				'SaveDraftRequest'
-			);
-
-			const fileInput = await screen.findByTestId('file-input');
-
-			await act(
-				() =>
-					new Promise<void>((resolve, reject) => {
-						// eslint-disable-next-line testing-library/prefer-user-event
-						fireEvent.change(fileInput, {
-							target: {
-								files: [new File(['(⌐□_□)'], 'fakeimage.png', { type: 'image/png' })]
-							}
+				await act(
+					() =>
+						new Promise<void>((resolve, reject) => {
+							// eslint-disable-next-line testing-library/prefer-user-event
+							fireEvent.change(fileInput, {
+								target: {
+									files: [new File(['(⌐□_□)'], 'fakeimage.png', { type: 'image/png' })]
+								}
+							})
+								? resolve()
+								: reject();
 						})
-							? resolve()
-							: reject();
-					})
-			);
+				);
 
-			// Wait few seconds
-			act(() => {
-				jest.advanceTimersByTime(5000);
+				// Wait few seconds
+				act(() => {
+					jest.advanceTimersByTime(5000);
+				});
+
+				// Await the call to the saveDraft
+				await draftSavingInterceptor;
+
+				// The saveDraft request should be invoked 2 times (1 before and
+				// 1 after the upload of the attachment
+				expect(callTester).toBeCalledTimes(2);
+			}, 50000);
+		});
+
+		describe('send button', () => {
+			it('is disabled when a new editor is created', () => {
+				setupEditorStore({ editors: [] });
+				const reduxStore = generateStore();
+				const editor = generateNewMessageEditor(reduxStore.dispatch);
+				addEditor({
+					id: editor.id,
+					editor: { ...editor, did: 'draft-id', action: EditViewActions.NEW }
+				});
+
+				const props: EditViewProp = {
+					editorId: editor.id,
+					closeController: noop
+				};
+
+				setupTest(<EditView {...props} />);
+
+				const btnSend =
+					screen.queryByTestId('BtnSendMail') || screen.queryByTestId('BtnSendMailMulti');
+
+				expect(btnSend).toBeVisible();
+				expect(btnSend).toBeDisabled();
 			});
-
-			// Await the call to the saveDraft
-			await draftSavingInterceptor;
-
-			// The saveDraft request should be invoked 2 times (1 before and
-			// 1 after the upload of the attachment
-			expect(callTester).toBeCalledTimes(2);
-		}, 50000);
+		});
 	});
 
 	describe('Identities selection', () => {
