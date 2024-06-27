@@ -40,6 +40,7 @@ import * as useQueryParam from '../../../../../hooks/use-query-param';
 import * as saveDraftAction from '../../../../../store/actions/save-draft';
 import { addEditor } from '../../../../../store/zustand/editor';
 import {
+	generateEditAsNewEditor,
 	generateNewMessageEditor,
 	generateReplyAndReplyAllMsgEditor
 } from '../../../../../store/zustand/editor/editor-generators';
@@ -650,7 +651,7 @@ describe('Edit view', () => {
 				expect(btnSend).toBeDisabled();
 			});
 
-			it('is enabled when an editor is created with reply or replyAll action', async () => {
+			it('is enabled when an editor is created with "reply" or "replyAll" actions', async () => {
 				setupEditorStore({ editors: [] });
 				const reduxStore = generateStore();
 
@@ -660,6 +661,31 @@ describe('Edit view', () => {
 					message,
 					EditViewActions.REPLY
 				);
+
+				addEditor({
+					id: editor.id,
+					editor
+				});
+
+				const props: EditViewProp = {
+					editorId: editor.id,
+					closeController: noop
+				};
+
+				setupTest(<EditView {...props} />, { store: reduxStore });
+				const btnSend =
+					screen.queryByTestId('BtnSendMail') || screen.queryByTestId('BtnSendMailMulti');
+
+				expect(btnSend).toBeVisible();
+				expect(btnSend).toBeEnabled();
+			});
+
+			it('is enabled when an editor is created with "edit as new" action', async () => {
+				setupEditorStore({ editors: [] });
+				const reduxStore = generateStore();
+
+				const message = generateMessage({ isComplete: true });
+				const editor = generateEditAsNewEditor(reduxStore.dispatch, message);
 
 				addEditor({
 					id: editor.id,
