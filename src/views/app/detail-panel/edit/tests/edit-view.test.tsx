@@ -141,12 +141,30 @@ const clearAndInsertText =
 	};
 
 describe('Edit view', () => {
+	beforeEach(() => {
+		const msg: SoapMailMessage = {
+			cid: '',
+			d: 0,
+			e: [],
+			fr: '',
+			id: '123-testId',
+			l: '',
+			mp: [],
+			s: 0,
+			su: ''
+		};
+		const response: SaveDraftResponse = {
+			m: [msg]
+		};
+		createSoapAPIInterceptor<SaveDraftRequest, SaveDraftResponse>('SaveDraft', response);
+	});
+
 	describe('Mail creation', () => {
-		it('create a new email', async () => {
+		it('should correctly send a new email', async () => {
 			setupEditorStore({ editors: [] });
 			const reduxStore = generateStore();
 			const editor = generateNewMessageEditor(reduxStore.dispatch);
-			addEditor({ id: editor.id, editor: { ...editor, did: 'draft-id' } });
+			addEditor({ id: editor.id, editor: { ...editor } });
 
 			// Get the default identity address
 			const mocksContext = getMocksContext();
@@ -162,7 +180,6 @@ describe('Edit view', () => {
 				closeController: noop
 			};
 
-			// Create and wait for the component to be rendered
 			const { user } = setupTest(<EditView {...props} />, { store: reduxStore });
 
 			// Get the components
@@ -175,27 +192,20 @@ describe('Edit view', () => {
 			const subjectInputElement = within(subjectComponent).getByRole('textbox');
 			const editorTextareaElement = screen.getByTestId('MailPlainTextEditor') as HTMLInputElement;
 
-			// Check for the status of the "send" button to be disabled
 			expect(btnSend).toBeVisible();
 
-			// Reset the content of the "to" component and type the address
-			await act(() => user.click(toInputElement));
-			await act(() => user.clear(toInputElement));
-			await act(() => user.type(toInputElement, address));
+			await act(clearAndInsertText(user, toInputElement, address));
+			await act(() => user.tab());
 
 			// Click on the "CC" button to show CC Recipient field
 			await act(() => user.click(btnCc));
 			const ccComponent = screen.getByTestId('RecipientCc');
 			const ccInputElement = within(ccComponent).getByRole('textbox');
 
-			// Reset the content of the "Cc" component and type the address
-			await act(() => user.click(ccInputElement));
-			await act(() => user.clear(ccInputElement));
-			await act(() => user.type(ccInputElement, ccAddress));
+			await act(clearAndInsertText(user, ccInputElement, ccAddress));
 
 			// Insert a subject
-			await act(() => user.click(subjectInputElement));
-			await act(() => user.type(subjectInputElement, subject));
+			await act(clearAndInsertText(user, subjectInputElement, subject));
 
 			const optionIcon = screen.getByTestId('options-dropdown-icon');
 			expect(optionIcon).toBeInTheDocument();
@@ -208,15 +218,10 @@ describe('Edit view', () => {
 				jest.advanceTimersByTime(10000);
 			});
 
-			// Workaround of typing problem in the preset textarea
-			await act(() => user.clear(editorTextareaElement));
-
-			// Insert a text inside editor
-			await act(() => user.type(editorTextareaElement, body));
-			await act(() => user.click(subjectInputElement));
+			await act(clearAndInsertText(user, editorTextareaElement, body));
 
 			// Check for the status of the "send" button to be enabled
-			expect(btnSend).toBeEnabled();
+			await waitFor(() => expect(btnSend).toBeEnabled());
 
 			const response = {
 				m: [
@@ -235,16 +240,10 @@ describe('Edit view', () => {
 				expect(btnSend).toBeEnabled();
 			});
 
-			// Click on the "send" button
-			// The button's existence is already tested above
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-ignore
-			await user.click(btnSend);
+			await user.click(btnSend as HTMLElement);
 
-			// Check if a snackbar (countdown) will appear
 			await screen.findByText('messages.snackbar.sending_mail_in_count', {}, { timeout: 2000 });
 
-			// Wait for the snackbar to disappear
 			await waitForElementToBeRemoved(
 				() => screen.queryByText('messages.snackbar.sending_mail_in_count'),
 				{ timeout: 10000 }
@@ -254,10 +253,8 @@ describe('Edit view', () => {
 				jest.advanceTimersByTime(4000);
 			});
 
-			// Obtain the message from the rest handler
 			const { m: msg } = await sendMsgPromise;
 
-			// Check the content of the message
 			expect(msg.su._content).toBe(subject);
 
 			msg.e.forEach((participant) => {
@@ -269,9 +266,6 @@ describe('Edit view', () => {
 				}
 			});
 
-			// Check if a snackbar (email sent) will appear
-			// await screen.findByText('messages.snackbar.mail_sent', {}, { timeout: 5000 });
-			// await screen.findByText('label.error_try_again', {}, { timeout: 4000 });
 			expect(getSoapMailBodyContent(msg, CT_PLAIN)).toBe(body);
 		});
 		it('should render an already saved editor when creating a new editor', async () => {
