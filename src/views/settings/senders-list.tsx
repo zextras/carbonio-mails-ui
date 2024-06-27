@@ -14,7 +14,8 @@ import {
 	Button,
 	Row,
 	Input,
-	ListV2
+	ListV2,
+	Text
 } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import { filter } from 'lodash';
@@ -29,6 +30,7 @@ export type ListType = 'Allowed' | 'Blocked';
 
 export type SendersListProps = InputProps & {
 	listType: ListType;
+	showConflictText?: boolean;
 };
 
 function getMessage(listType: ListType): string {
@@ -47,7 +49,7 @@ function getPrefName(listType: ListType): string {
 	return listType === 'Allowed' ? 'amavisWhitelistSender' : 'amavisBlacklistSender';
 }
 
-function getList(list: string | string[] | undefined): string[] {
+export function getList(list: string | string[] | undefined): string[] {
 	if (!list) {
 		return [];
 	}
@@ -58,7 +60,8 @@ function getList(list: string | string[] | undefined): string[] {
 export const SendersList = ({
 	settingsObj,
 	updateSettings,
-	listType
+	listType,
+	showConflictText = false
 }: SendersListProps): React.JSX.Element => {
 	const [address, setAddress] = useState<string>('');
 	const [sendersList, setSendersList] = useState<string[]>(
@@ -147,9 +150,19 @@ export const SendersList = ({
 					</Tooltip>
 				</Padding>
 			</Container>
+			{showConflictText ? (
+				<Container>
+					<Text>
+						{t(
+							'message.senderslist_conflict',
+							'If the same address is added to both allowed and blocked senders lists, the system will prioritize the allowed senders list.'
+						)}
+					</Text>
+				</Container>
+			) : null}
 			<Container
 				padding={{ horizontal: 'medium', bottom: 'small' }}
-				orientation="horizontal"
+				orientation="vertical"
 				mainAlignment="flex-start"
 			>
 				<ListV2 data-testid={'senders-list'}>
@@ -157,6 +170,14 @@ export const SendersList = ({
 						<SendersListItem key={idx} value={address} onRemove={onRemove} />
 					))}
 				</ListV2>
+
+				{sendersList.length === 0 ? (
+					<Container>
+						<Text>
+							{t('message.senderslist_empty', 'No addresses have been included in the list yet')}
+						</Text>
+					</Container>
+				) : null}
 			</Container>
 		</Container>
 	);

@@ -28,7 +28,7 @@ import { useSignatureSettings } from './hooks/use-signature-settings';
 import ReceivingMessagesSettings from './receiving-messages-settings';
 import { RecoverMessages } from './recover-messages';
 import { saveSettings } from './save-settings';
-import { SendersList } from './senders-list';
+import { SendersList, getList } from './senders-list';
 import SignatureSettings from './signature-settings';
 import TrusteeAddresses from './trustee-addresses';
 import { TIMEOUTS } from '../../constants';
@@ -365,6 +365,15 @@ const SettingsView: FC = () => {
 	]);
 
 	const title = useMemo(() => t('label.mail_settings', 'Mails settings'), []);
+	const addressesConflict = useMemo(() => {
+		const allowed = getList(currentAttrs?.amavisWhitelistSender as string[] | undefined);
+		const blocked = getList(currentAttrs?.amavisBlacklistSender as string[] | undefined);
+		return (
+			allowed.length > 0 &&
+			blocked.length > 0 &&
+			allowed.some((address) => blocked.includes(address))
+		);
+	}, [currentAttrs]);
 	return (
 		<>
 			<SettingsHeader onSave={saveChanges} onCancel={onClose} isDirty={!isDisabled} title={title} />
@@ -410,7 +419,12 @@ const SettingsView: FC = () => {
 					<FilterModule />
 					<TrusteeAddresses settingsObj={currentPrefs} updateSettings={updatePrefs} />
 					<SendersList settingsObj={currentAttrs} updateSettings={updateAttrs} listType="Allowed" />
-					<SendersList settingsObj={currentAttrs} updateSettings={updateAttrs} listType="Blocked" />
+					<SendersList
+						settingsObj={currentAttrs}
+						updateSettings={updateAttrs}
+						listType="Blocked"
+						showConflictText={addressesConflict}
+					/>
 				</FormSection>
 			</Container>
 		</>
