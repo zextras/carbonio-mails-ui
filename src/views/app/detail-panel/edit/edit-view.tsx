@@ -365,7 +365,6 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 			onSendError
 		]
 	);
-	const { action } = useEditorsStore.getState().editors[editorId];
 	return (
 		<Container
 			data-testid={'edit-view-editor'}
@@ -415,7 +414,7 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 								isMailSizeWarning ||
 								!sendAllowedStatus?.allowed ||
 								isConvertingToSmartLink ||
-								(!draftId && action === EditViewActions.NEW)
+								!draftId
 							}
 							tooltip={sendAllowedStatus?.reason ?? ''}
 							isLoading={isConvertingToSmartLink}
