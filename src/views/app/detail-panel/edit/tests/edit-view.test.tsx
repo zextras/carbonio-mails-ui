@@ -624,13 +624,13 @@ describe('Edit view', () => {
 		});
 
 		describe('send button', () => {
-			it('is disabled when a new editor is created', () => {
+			it('is disabled when a new editor is created with a "new" action', () => {
 				setupEditorStore({ editors: [] });
 				const reduxStore = generateStore();
 				const editor = generateNewMessageEditor(reduxStore.dispatch);
 				addEditor({
 					id: editor.id,
-					editor: { ...editor, did: 'draft-id', action: EditViewActions.NEW }
+					editor: { ...editor, action: EditViewActions.NEW }
 				});
 
 				const props: EditViewProp = {
@@ -645,6 +645,29 @@ describe('Edit view', () => {
 
 				expect(btnSend).toBeVisible();
 				expect(btnSend).toBeDisabled();
+			});
+
+			it('is enabled when an editor is created with an action other than "new"', async () => {
+				setupEditorStore({ editors: [] });
+				const reduxStore = generateStore();
+				const editor = generateNewMessageEditor(reduxStore.dispatch);
+				addEditor({
+					id: editor.id,
+					editor: { ...editor, did: 'draft-id', action: EditViewActions.REPLY }
+				});
+
+				const props: EditViewProp = {
+					editorId: editor.id,
+					closeController: noop
+				};
+
+				setupTest(<EditView {...props} />, { store: reduxStore });
+
+				const btnSend =
+					screen.queryByTestId('BtnSendMail') || screen.queryByTestId('BtnSendMailMulti');
+
+				expect(btnSend).toBeVisible();
+				expect(btnSend).toBeEnabled();
 			});
 		});
 	});
