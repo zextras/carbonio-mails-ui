@@ -138,17 +138,8 @@ const clearAndInsertText =
 		await user.type(target, text);
 	};
 
-/**
- * Test the EditView component in different scenarios
- */
 describe('Edit view', () => {
-	/**
-	 * Creation of emails
-	 */
 	describe('Mail creation', () => {
-		/**
-		 * Test the creation of a new email
-		 */
 		it('create a new email', async () => {
 			setupEditorStore({ editors: [] });
 			const reduxStore = generateStore();
@@ -329,9 +320,6 @@ describe('Edit view', () => {
 			});
 		});
 
-		/**
-		 * Test the creation of a new email
-		 */
 		it('create a new email and text format should be as per setting', async () => {
 			setupEditorStore({ editors: [] });
 			const reduxStore = generateStore();
@@ -340,12 +328,9 @@ describe('Edit view', () => {
 
 			// Text format should be plain as per the settings done
 			expect(editor.isRichText).toBe(false);
-		}, 20000);
+		});
 	});
 
-	/**
-	 * Test the email drafts
-	 */
 	describe('Draft', () => {
 		beforeEach(() => {
 			createAPIInterceptor(
