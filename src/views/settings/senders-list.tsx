@@ -151,8 +151,8 @@ export const SendersList = ({
 				</Padding>
 			</Container>
 			{showConflictText ? (
-				<Container>
-					<Text>
+				<Container crossAlignment="flex-start" padding="0 1rem">
+					<Text size="small">
 						{t(
 							'message.senderslist_conflict',
 							'If the same address is added to both allowed and blocked senders lists, the system will prioritize the allowed senders list.'
