@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.16.1](https://github.com/zextras/carbonio-mails-ui/compare/v1.16.0...v1.16.1) (2024-06-26)
+
+
+### Bug Fixes
+
+* getSearchFactory type ([9b9ed62](https://github.com/zextras/carbonio-mails-ui/commit/9b9ed622b0c42d82f3aeb0d18d054173905083d2))
+
 ## [1.16.0](https://github.com/zextras/carbonio-mails-ui/compare/v1.15.1...v1.16.0) (2024-06-19)
 
 
