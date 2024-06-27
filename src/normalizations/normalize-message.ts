@@ -10,6 +10,8 @@ import {
 	ParticipantRole,
 	ParticipantRoleType
 } from '../carbonio-ui-commons/constants/participants';
+import { getFolder } from '../carbonio-ui-commons/store/zustand/folder/hooks';
+import { useFolderStore } from '../carbonio-ui-commons/store/zustand/folder/store';
 import type {
 	AttachmentPart,
 	IncompleteMessage,
@@ -275,6 +277,35 @@ const getTagIds = (t: string | undefined, tn: string | undefined): Array<string 
 	return [];
 };
 
+const haveReadReceipt = (
+	participants: Array<SoapMailParticipant> | undefined,
+	flags: string | undefined,
+	folderId: string
+): boolean => {
+	const folder = getFolder(folderId);
+	if (isNil(participants)) return false;
+	if (isNil(folder)) {
+		// if folder is nill, filter it inside folder maps by zuid and rid and check for permission
+		// we need to get folder link that contains zid
+		const state = useFolderStore.getState();
+		const linkFolder = state.linksIdMap[folderId] ?? null;
+		if (!isNil(linkFolder)) {
+			const sharedFolder = getFolder(linkFolder);
+			if (!isNil(sharedFolder) && sharedFolder.perm === 'r') {
+				return false;
+			}
+		}
+	} else {
+		const folderPerm = folder.perm;
+		if (!isNil(folderPerm) && folderPerm === 'r') {
+			return false;
+		}
+	}
+	return participants.some(
+		(participant) => !!(participant.t === 'n' && (isNil(flags) || !/n/.test(flags)))
+	);
+};
+
 export const normalizeMailMessageFromSoap = (
 	m: SoapIncompleteMessage,
 	isComplete?: boolean
@@ -307,7 +338,7 @@ export const normalizeMailMessageFromSoap = (
 			isSentByMe: !isNil(m.f) ? /s/.test(m.f) : undefined,
 			isInvite: !isNil(m.f) ? /v/.test(m.f) : undefined,
 			isReplied: !isNil(m.f) ? /r/.test(m.f) : undefined,
-			isReadReceiptRequested: !isNil(m.f) ? !/n/.test(m.f) : true
+			isReadReceiptRequested: haveReadReceipt(m.e, m.f, m.l) && !isNil(isComplete) && isComplete
 		},
 		isNil
 	);

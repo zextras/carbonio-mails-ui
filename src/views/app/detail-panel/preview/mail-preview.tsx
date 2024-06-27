@@ -22,16 +22,13 @@ import {
 	useUserAccounts,
 	useUserSettings
 } from '@zextras/carbonio-shell-ui';
-import { filter, find } from 'lodash';
+import { filter } from 'lodash';
 /* eslint-disable no-nested-ternary */
 import { useParams } from 'react-router-dom';
 
 import AttachmentsBlock from './attachments-block';
 import PreviewHeader from './parts/preview-header';
 import ReadReceiptModal from './read-receipt-modal';
-import { ParticipantRole } from '../../../../carbonio-ui-commons/constants/participants';
-import { isWriteAllowed } from '../../../../carbonio-ui-commons/helpers/folders';
-import { getFolder } from '../../../../carbonio-ui-commons/store/zustand/folder';
 import MailMessageRenderer from '../../../../commons/mail-message-renderer';
 import { MessageActionsDescriptors } from '../../../../constants';
 import { getAttachmentParts } from '../../../../helpers/attachments';
@@ -91,25 +88,17 @@ const MailContent: FC<{
 			InviteResponse,
 		[message]
 	);
-	const readReceiptRequester = useMemo(
-		() => find(message?.participants, { type: ParticipantRole.READ_RECEIPT_NOTIFICATION }),
-		[message?.participants]
-	);
 
 	const readReceiptSetting = useMemo(() => prefs?.zimbraPrefMailSendReadReceipts, [prefs]);
-	const showReadReceiptModal = useMemo(() => {
-		const folder = getFolder(message.parent);
-		return (
-			(!!readReceiptRequester &&
-				folder &&
-				isWriteAllowed(folder) &&
-				showModal &&
+	const showReadReceiptModal = useMemo(
+		() =>
+			(showModal &&
 				message.isReadReceiptRequested &&
 				!message?.isSentByMe &&
 				readReceiptSetting === 'prompt') ??
-			false
-		);
-	}, [readReceiptRequester, showModal, message, readReceiptSetting]);
+			false,
+		[showModal, message, readReceiptSetting]
+	);
 
 	const showShareInvite = useMemo(
 		() =>
