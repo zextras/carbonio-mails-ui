@@ -203,7 +203,7 @@ export const generateIntegratedNewEditor = (
 /**
  *
  */
-export const generateReplyAndReplyAllMsgEditor = (
+const generateReplyAndReplyAllMsgEditor = (
 	messagesStoreDispatch: AppDispatch,
 	originalMessage: MailMessage,
 	action: EditViewActionsType
@@ -272,6 +272,21 @@ export const generateReplyAndReplyAllMsgEditor = (
 	return editor;
 };
 
+export const generateReplyMsgEditor = (
+	messagesStoreDispatch: AppDispatch,
+	originalMessage: MailMessage
+): MailsEditorV2 =>
+	generateReplyAndReplyAllMsgEditor(messagesStoreDispatch, originalMessage, EditViewActions.REPLY);
+
+export const generateReplyAllMsgEditor = (
+	messagesStoreDispatch: AppDispatch,
+	originalMessage: MailMessage
+): MailsEditorV2 =>
+	generateReplyAndReplyAllMsgEditor(
+		messagesStoreDispatch,
+		originalMessage,
+		EditViewActions.REPLY_ALL
+	);
 /**
  *
  */
@@ -462,7 +477,7 @@ export const generateEditor = ({
 				throw new Error('Cannot generate a reply editor without a message id');
 			}
 			if (message) {
-				return generateReplyAndReplyAllMsgEditor(messagesStoreDispatch, message, action);
+				return generateReplyMsgEditor(messagesStoreDispatch, message);
 			}
 			break;
 		case EditViewActions.REPLY_ALL:
@@ -470,7 +485,7 @@ export const generateEditor = ({
 				throw new Error('Cannot generate a reply all editor without a message id');
 			}
 			if (message) {
-				return generateReplyAndReplyAllMsgEditor(messagesStoreDispatch, message, action);
+				return generateReplyAllMsgEditor(messagesStoreDispatch, message);
 			}
 			break;
 		case EditViewActions.FORWARD:

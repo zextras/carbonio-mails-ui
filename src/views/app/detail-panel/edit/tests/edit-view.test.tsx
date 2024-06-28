@@ -42,7 +42,7 @@ import { addEditor } from '../../../../../store/zustand/editor';
 import {
 	generateEditAsNewEditor,
 	generateNewMessageEditor,
-	generateReplyAndReplyAllMsgEditor
+	generateReplyMsgEditor
 } from '../../../../../store/zustand/editor/editor-generators';
 import { setupEditorStore } from '../../../../../tests/generators/editor-store';
 import { readyToBeSentEditorTestCase } from '../../../../../tests/generators/editors';
@@ -64,7 +64,6 @@ import { EditView, EditViewProp } from '../edit-view';
 const CT_HTML = 'text/html' as const;
 const CT_PLAIN = 'text/plain' as const;
 const CT_MULTIPART_ALTERNATIVE = 'multipart/alternative';
-const FAKE_MESSAGE_ID = '11215';
 
 const extractPartContent = (content: string | { _content: string } | undefined): string => {
 	if (!content) {
@@ -595,24 +594,14 @@ describe('Edit view', () => {
 		});
 
 		describe('send button', () => {
-			it.each<EditViewActionsType>([
-				EditViewActions.NEW,
-				EditViewActions.EDIT_AS_NEW,
-				EditViewActions.REPLY,
-				EditViewActions.REPLY_ALL,
-				EditViewActions.RESUME,
-				EditViewActions.COMPOSE,
-				EditViewActions.FORWARD,
-				EditViewActions.EDIT_AS_DRAFT,
-				EditViewActions.PREFILL_COMPOSE
-			])('is disabled when action is "%s" and a draft cannot be saved', async (editorAction) => {
+			it('is disabled when "new editor" and a draft cannot be saved', async () => {
 				const firstSaveDraft = aFailingSaveDraft();
 				setupEditorStore({ editors: [] });
 				const reduxStore = generateStore();
 				const editor = generateNewMessageEditor(reduxStore.dispatch);
 				addEditor({
 					id: editor.id,
-					editor: { ...editor, action: editorAction }
+					editor
 				});
 
 				const props: EditViewProp = {
@@ -629,16 +618,66 @@ describe('Edit view', () => {
 				expect(btnSend).toBeDisabled();
 			});
 
+			it('is disabled when "reply" and a draft cannot be saved', async () => {
+				const firstSaveDraft = aFailingSaveDraft();
+				setupEditorStore({ editors: [] });
+				const reduxStore = generateStore();
+				const message = generateMessage({
+					isComplete: true
+				});
+				const editor = generateReplyMsgEditor(reduxStore.dispatch, message);
+				addEditor({
+					id: editor.id,
+					editor
+				});
+
+				const props: EditViewProp = {
+					editorId: editor.id,
+					closeController: noop
+				};
+
+				setupTest(<EditView {...props} />);
+
+				const btnSend =
+					screen.queryByTestId('BtnSendMail') || screen.queryByTestId('BtnSendMailMulti');
+				await firstSaveDraft;
+				expect(btnSend).toBeVisible();
+				expect(btnSend).toBeDisabled();
+			});
+
+			it.each<EditViewActionsType>([EditViewActions.REPLY, EditViewActions.REPLY_ALL])(
+				'is enabled when action is "%s" and a draft is saved',
+				async (editorAction) => {
+					const firstSaveDraft = aSuccessfullSaveDraft();
+					setupEditorStore({ editors: [] });
+					const reduxStore = generateStore();
+					const editor = generateNewMessageEditor(reduxStore.dispatch);
+					addEditor({
+						id: editor.id,
+						editor: { ...editor, action: editorAction }
+					});
+
+					const props: EditViewProp = {
+						editorId: editor.id,
+						closeController: noop
+					};
+
+					setupTest(<EditView {...props} />);
+
+					await firstSaveDraft;
+					const btnSend =
+						screen.queryByTestId('BtnSendMail') || screen.queryByTestId('BtnSendMailMulti');
+					expect(btnSend).toBeVisible();
+					expect(btnSend).toBeEnabled();
+				}
+			);
+
 			it('is enabled when an editor is created with "reply" or "replyAll" actions', async () => {
 				setupEditorStore({ editors: [] });
 				const reduxStore = generateStore();
 
 				const message = generateMessage({ isComplete: true });
-				const editor = generateReplyAndReplyAllMsgEditor(
-					reduxStore.dispatch,
-					message,
-					EditViewActions.REPLY
-				);
+				const editor = generateReplyMsgEditor(reduxStore.dispatch, message);
 
 				addEditor({
 					id: editor.id,
