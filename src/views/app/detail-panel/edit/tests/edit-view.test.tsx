@@ -50,6 +50,7 @@ import { generateMessage } from '../../../../../tests/generators/generateMessage
 import { generateStore } from '../../../../../tests/generators/store';
 import type {
 	CreateSmartLinksRequest,
+	EditViewActionsType,
 	SaveDraftRequest,
 	SaveDraftResponse,
 	SoapDraftMessageObj,
@@ -161,6 +162,17 @@ function aSuccessfullSaveDraft(): Promise<SaveDraftRequest> {
 		m: [msg]
 	};
 	return createSoapAPIInterceptor<SaveDraftRequest, SaveDraftResponse>('SaveDraft', response);
+}
+
+function aFailingSaveDraft(): Promise<SaveDraftRequest> {
+	return createSoapAPIInterceptor<SaveDraftRequest, SaveDraftResponse>('SaveDraft', {
+		Fault: {
+			Reason: { Text: 'Failed upload to Files' },
+			Detail: {
+				Error: { Code: '123', Detail: 'Failed due to connection timeout' }
+			}
+		}
+	});
 }
 
 describe('Edit view', () => {
@@ -583,13 +595,24 @@ describe('Edit view', () => {
 		});
 
 		describe('send button', () => {
-			it('is disabled when a new editor is created with a "new" action', () => {
+			it.each<EditViewActionsType>([
+				EditViewActions.NEW,
+				EditViewActions.EDIT_AS_NEW,
+				EditViewActions.REPLY,
+				EditViewActions.REPLY_ALL,
+				EditViewActions.RESUME,
+				EditViewActions.COMPOSE,
+				EditViewActions.FORWARD,
+				EditViewActions.EDIT_AS_DRAFT,
+				EditViewActions.PREFILL_COMPOSE
+			])('is disabled when action is "%s" and a draft cannot be saved', async (editorAction) => {
+				const firstSaveDraft = aFailingSaveDraft();
 				setupEditorStore({ editors: [] });
 				const reduxStore = generateStore();
 				const editor = generateNewMessageEditor(reduxStore.dispatch);
 				addEditor({
 					id: editor.id,
-					editor: { ...editor, action: EditViewActions.NEW }
+					editor: { ...editor, action: editorAction }
 				});
 
 				const props: EditViewProp = {
@@ -601,7 +624,7 @@ describe('Edit view', () => {
 
 				const btnSend =
 					screen.queryByTestId('BtnSendMail') || screen.queryByTestId('BtnSendMailMulti');
-
+				await firstSaveDraft;
 				expect(btnSend).toBeVisible();
 				expect(btnSend).toBeDisabled();
 			});
