@@ -141,30 +141,29 @@ const clearAndInsertText =
 	};
 
 describe('Edit view', () => {
-	beforeEach(() => {
-		const msg: SoapMailMessage = {
-			cid: '',
-			d: 0,
-			e: [],
-			fr: '',
-			id: '123-testId',
-			l: '',
-			mp: [],
-			s: 0,
-			su: ''
-		};
-		const response: SaveDraftResponse = {
-			m: [msg]
-		};
-		createSoapAPIInterceptor<SaveDraftRequest, SaveDraftResponse>('SaveDraft', response);
-	});
-
 	describe('Mail creation', () => {
+		beforeEach(() => {
+			const msg: SoapMailMessage = {
+				cid: '',
+				d: 0,
+				e: [],
+				fr: '',
+				id: '123-testId',
+				l: '',
+				mp: [],
+				s: 0,
+				su: ''
+			};
+			const response: SaveDraftResponse = {
+				m: [msg]
+			};
+			createSoapAPIInterceptor<SaveDraftRequest, SaveDraftResponse>('SaveDraft', response);
+		});
 		it('should correctly send a new email', async () => {
 			setupEditorStore({ editors: [] });
 			const reduxStore = generateStore();
 			const editor = generateNewMessageEditor(reduxStore.dispatch);
-			addEditor({ id: editor.id, editor: { ...editor } });
+			addEditor({ id: editor.id, editor });
 
 			// Get the default identity address
 			const mocksContext = getMocksContext();
@@ -277,29 +276,26 @@ describe('Edit view', () => {
 				editor: { ...editor, action: EditViewActions.NEW }
 			});
 
-			const props: EditViewProp = {
-				editorId: editor.id,
-				closeController: noop
-			};
-
 			expect(editor.did).toBeUndefined();
-			const msg: SoapMailMessage = {
-				cid: '',
-				d: 0,
-				e: [],
-				fr: '',
-				id: '123-testId',
-				l: '',
-				mp: [],
-				s: 0,
-				su: ''
-			};
-			const response: SaveDraftResponse = {
-				m: [msg]
-			};
-			createSoapAPIInterceptor<SaveDraftRequest, SaveDraftResponse>('SaveDraft', response);
-			setupTest(<EditView {...props} />);
+			setupTest(
+				<EditView
+					{...{
+						editorId: editor.id,
+						closeController: noop
+					}}
+				/>
+			);
 			expect(await screen.findByText('message.email_saved_at')).toBeVisible();
+		});
+
+		it('create a new email and text format should be as per setting', async () => {
+			setupEditorStore({ editors: [] });
+			const reduxStore = generateStore();
+			const editor = generateNewMessageEditor(reduxStore.dispatch);
+			addEditor({ id: editor.id, editor });
+
+			// Text format should be plain as per the settings done
+			expect(editor.isRichText).toBe(false);
 		});
 
 		describe('send email with attachment to convert to smart link', () => {
@@ -318,6 +314,7 @@ describe('Edit view', () => {
 				setupEditorStore({ editors: [] });
 				const store = generateStore();
 				const editor = await readyToBeSentEditorTestCase(store.dispatch, {
+					id: '123-testId',
 					savedAttachments: [
 						{
 							filename: 'large-document.pdf',
@@ -331,32 +328,20 @@ describe('Edit view', () => {
 					]
 				});
 				addEditor({ id: editor.id, editor });
-				// render the component
-				const { user } = setupTest(
+
+				const { user, rerender } = setupTest(
 					<EditView {...{ editorId: editor.id, closeController: noop }} />,
 					{ store }
 				);
-
-				// trigger mail sending
 				const btnSend = screen.queryByTestId('BtnSendMailMulti');
-				expect(btnSend).toBeEnabled();
-				await user.click(btnSend as Element);
+				await waitFor(() => expect(btnSend).toBeEnabled());
+				await act(() => user.click(btnSend as Element));
 
 				// assertions
 				await apiInterceptor;
 				await screen.findByText('label.error_try_again', {}, { timeout: 2000 });
 				expect(await screen.findByTestId('edit-view-editor')).toBeVisible();
 			});
-		});
-
-		it('create a new email and text format should be as per setting', async () => {
-			setupEditorStore({ editors: [] });
-			const reduxStore = generateStore();
-			const editor = generateNewMessageEditor(reduxStore.dispatch);
-			addEditor({ id: editor.id, editor });
-
-			// Text format should be plain as per the settings done
-			expect(editor.isRichText).toBe(false);
 		});
 	});
 
