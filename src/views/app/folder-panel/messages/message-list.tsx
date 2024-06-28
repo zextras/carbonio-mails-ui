@@ -69,15 +69,16 @@ export const MessageList: FC = () => {
 	const loadMore = useCallback(() => {
 		if (!hasMore) return;
 		const offset = messages.length;
-		dispatch(
-			search({
-				folderId,
-				sortBy: sortOrder,
-				offset,
-				limit: LIST_LIMIT.LOAD_MORE_LIMIT,
-				types: 'message'
-			})
-		);
+		setTimeout(() =>
+			dispatch(
+				search({
+					folderId,
+					sortBy: sortOrder,
+					offset,
+					limit: LIST_LIMIT.LOAD_MORE_LIMIT,
+					types: 'message'
+				})
+			),100);
 	}, [dispatch, folderId, hasMore, messages.length, sortOrder]);
 
 	const displayerTitle = useMemo(() => {

@@ -46,13 +46,15 @@ export const useMessageList = (): Array<MailMessage> => {
 
 	useEffect(() => {
 		if (searchRequestStatus !== null) return;
-		dispatch(
-			search({
-				folderId,
-				limit: LIST_LIMIT.INITIAL_LIMIT + 1,
-				sortBy: sortOrder,
-				types: 'message'
-			})
+		setTimeout(() =>
+			dispatch(
+				search({
+					folderId,
+					limit: LIST_LIMIT.INITIAL_LIMIT + 1,
+					sortBy: sortOrder,
+					types: 'message'
+				})
+			), 150
 		);
 	}, [dispatch, folderId, searchRequestStatus, sortOrder]);
 

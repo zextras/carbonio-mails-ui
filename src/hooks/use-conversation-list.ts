@@ -58,13 +58,15 @@ export const useConversationListItems = (): Array<Conversation> => {
 	// this useEffect is used to trigger the search action when the folder is changed
 	useEffect(() => {
 		if (searchRequestStatus !== null) return;
-		dispatch(
-			search({
-				folderId,
-				limit: LIST_LIMIT.INITIAL_LIMIT,
-				sortBy: sortOrder,
-				types: 'conversation'
-			})
+		setTimeout(() =>
+			dispatch(
+				search({
+					folderId,
+					limit: LIST_LIMIT.INITIAL_LIMIT + 1,
+					sortBy: sortOrder,
+					types: 'conversation'
+				})
+			), 150
 		);
 	}, [dispatch, folderId, searchRequestStatus, sortOrder]);
 
