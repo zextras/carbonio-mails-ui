@@ -218,16 +218,18 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item }) => {
 	const onClick = useCallback((): void => {
 		pushHistory(`/folder/${item.id}`);
 		const { sortOrder } = parseMessageSortingOptions(item.id, prefs.zimbraPrefSortOrder as string);
-		dispatch(
-			search({
-				folderId: item.id,
-				limit: LIST_LIMIT.INITIAL_LIMIT,
-				sortBy: sortOrder,
-				types:
-					item.id === FOLDERS.DRAFTS || typeof zimbraPrefGroupMailBy !== 'string'
-						? 'message'
-						: zimbraPrefGroupMailBy
-			})
+		setTimeout(() =>
+			dispatch(
+				search({
+					folderId: item.id,
+					limit: LIST_LIMIT.INITIAL_LIMIT,
+					sortBy: sortOrder,
+					types:
+						item.id === FOLDERS.DRAFTS || typeof zimbraPrefGroupMailBy !== 'string'
+							? 'message'
+							: zimbraPrefGroupMailBy
+				})
+			), 150
 		);
 	}, [dispatch, item.id, prefs.zimbraPrefSortOrder, zimbraPrefGroupMailBy]);
 

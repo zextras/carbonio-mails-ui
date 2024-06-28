@@ -65,7 +65,7 @@ export const ConversationList: FC = () => {
 	const loadMore = useCallback(() => {
 		if (!hasMore) return;
 		const offset = conversations.length;
-		dispatch(search({ folderId, offset, sortBy: sortOrder, limit: LIST_LIMIT.LOAD_MORE_LIMIT }));
+		setTimeout(() => dispatch(search({ folderId, offset, sortBy: sortOrder, limit: LIST_LIMIT.LOAD_MORE_LIMIT })),100);
 	}, [hasMore, conversations.length, dispatch, folderId, sortOrder]);
 
 	useEffect(() => {
