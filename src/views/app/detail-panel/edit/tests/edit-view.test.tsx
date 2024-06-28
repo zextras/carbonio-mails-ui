@@ -528,6 +528,7 @@ describe('Edit view', () => {
 
 			it.only('attaches a file', async () => {
 				setupEditorStore({ editors: [] });
+				createAPIInterceptor('post', '/service/upload', new HttpResponse(null, { status: 200 }));
 				const reduxStore = generateStore();
 				const editor = generateNewMessageEditor(reduxStore.dispatch);
 				addEditor({ id: editor.id, editor });
@@ -535,11 +536,11 @@ describe('Edit view', () => {
 					editorId: editor.id,
 					closeController: noop
 				};
-				// const saveDraftSpy = jest.spyOn(saveDraftAction, 'saveDraftV3');
-				const firstSaveDraftInterceptor = aSuccessfullSaveDraft();
-				const { user } = setupTest(<EditView {...props} />, { store: reduxStore });
-				await firstSaveDraftInterceptor;
+				const saveDraftSpy = jest.spyOn(saveDraftAction, 'saveDraftV3');
+				const firstSaveDraft = aSuccessfullSaveDraft();
 
+				const { user } = setupTest(<EditView {...props} />, { store: reduxStore });
+				await firstSaveDraft;
 				const draftSavingInterceptor = aSuccessfullSaveDraft();
 				const fileInput = screen.getByTestId('file-input');
 				await act(async () => {
@@ -548,17 +549,9 @@ describe('Edit view', () => {
 						new File(['test string'], 'test.txt', { type: 'text/plain' })
 					);
 				});
-
-				act(() => {
-					user.tab();
-				});
-				awaitDebouncedSaveDraft();
-				awaitDebouncedSaveDraft();
 				awaitDebouncedSaveDraft();
 				await draftSavingInterceptor;
-				// The saveDraft request should be invoked 2 times (1 before and
-				// 1 after the upload of the attachment
-				// expect(saveDraftSpy).toBeCalled();
+				expect(saveDraftSpy).toHaveBeenCalledTimes(2);
 			});
 		});
 
