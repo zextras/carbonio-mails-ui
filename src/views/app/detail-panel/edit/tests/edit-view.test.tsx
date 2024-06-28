@@ -271,26 +271,7 @@ describe('Edit view', () => {
 
 			expect(getSoapMailBodyContent(msg, CT_PLAIN)).toBe(body);
 		});
-		it('should render an already saved editor when creating a new editor', async () => {
-			setupEditorStore({ editors: [] });
-			const reduxStore = generateStore();
-			const editor = generateNewMessageEditor(reduxStore.dispatch);
-			addEditor({
-				id: editor.id,
-				editor: { ...editor, action: EditViewActions.NEW }
-			});
 
-			expect(editor.did).toBeUndefined();
-			setupTest(
-				<EditView
-					{...{
-						editorId: editor.id,
-						closeController: noop
-					}}
-				/>
-			);
-			expect(await screen.findByText('message.email_saved_at')).toBeVisible();
-		});
 		it('create a new email and text format should be as per setting', async () => {
 			setupEditorStore({ editors: [] });
 			const reduxStore = generateStore();
@@ -355,31 +336,32 @@ describe('Edit view', () => {
 			);
 		});
 
-		it('is not autosaved on initialization', async () => {
+		it('is not autosaved on initialization if draft id is present', async () => {
 			const mockedSaveDraft = jest.spyOn(saveDraftAction, 'saveDraftV3');
 
+			aSuccessfullSaveDraft();
+			setupEditorStore({ editors: [] });
+			const reduxStore = generateStore();
+			const editor = generateNewMessageEditor(reduxStore.dispatch);
+			addEditor({ id: editor.id, editor: { ...editor, did: '123' } });
+
+			setupTest(<EditView editorId={editor.id} closeController={noop} />, { store: reduxStore });
+			act(() => {
+				jest.advanceTimersByTime(5_000);
+			});
+			expect(mockedSaveDraft).not.toBeCalled();
+		});
+
+		it('is autosaved on initialization if draft id is not present', async () => {
+			const interceptor = aSuccessfullSaveDraft();
 			setupEditorStore({ editors: [] });
 			const reduxStore = generateStore();
 			const editor = generateNewMessageEditor(reduxStore.dispatch);
 			addEditor({ id: editor.id, editor });
 
-			const props = {
-				editorId: editor.id,
-				closeController: noop
-			};
-
-			setupTest(<EditView {...props} />, { store: reduxStore });
-			await waitFor(
-				() => {
-					expect(screen.getByTestId('edit-view-editor')).toBeInTheDocument();
-				},
-				{ timeout: 30_000 }
-			);
-
-			act(() => {
-				jest.advanceTimersByTime(10_000);
-			});
-			expect(mockedSaveDraft).not.toBeCalled();
+			setupTest(<EditView editorId={editor.id} closeController={noop} />, { store: reduxStore });
+			await interceptor;
+			expect(await screen.findByText('message.email_saved_at')).toBeVisible();
 		});
 
 		describe('it saves the draft when the user', () => {
