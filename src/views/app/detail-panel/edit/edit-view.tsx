@@ -123,8 +123,8 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 	const { did: draftId } = useEditorDid(editorId);
 
 	useEffect(() => {
-		saveDraft();
-	}, [saveDraft]);
+		if (!draftId) saveDraft();
+	}, [draftId, saveDraft]);
 
 	const { status: sendAllowedStatus, send: sendMessage } = useEditorSend(editorId);
 	const draftSaveProcessStatus = useEditorDraftSaveProcessStatus(editorId);
