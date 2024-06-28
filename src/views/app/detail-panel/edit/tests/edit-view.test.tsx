@@ -307,15 +307,6 @@ describe('Edit view', () => {
 		});
 
 		it('should show error-try-again snackbar message on CreateSmartLink soap failure ', async () => {
-			// TODO: avoid calling savedraft first time if editor already has draftid. Add another test for this scenario
-			// createSoapAPIInterceptor<SaveDraftRequest, SaveDraftResponse>('SaveDraft', {
-			// 	Fault: {
-			// 		Reason: { Text: 'Failed upload to Files' },
-			// 		Detail: {
-			// 			Error: { Code: '123', Detail: 'Failed due to connection timeout' }
-			// 		}
-			// 	}
-			// });
 			createAPIInterceptor(
 				'post',
 				'/service/soap/GetShareInfoRequest',
