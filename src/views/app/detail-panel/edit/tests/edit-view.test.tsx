@@ -660,7 +660,8 @@ describe('Edit view', () => {
 				expect(btnSend).toBeEnabled();
 			});
 
-			it('is enabled when an editor is created with "edit as new" action', async () => {
+			it('is enabled when an editor is created with "edit as new" action and a draft is saved', async () => {
+				aSuccessfullSaveDraft();
 				setupEditorStore({ editors: [] });
 				const reduxStore = generateStore();
 
@@ -678,9 +679,9 @@ describe('Edit view', () => {
 				};
 
 				setupTest(<EditView {...props} />, { store: reduxStore });
+				expect(await screen.findByText('message.email_saved_at')).toBeVisible();
 				const btnSend =
 					screen.queryByTestId('BtnSendMail') || screen.queryByTestId('BtnSendMailMulti');
-
 				expect(btnSend).toBeVisible();
 				expect(btnSend).toBeEnabled();
 			});
