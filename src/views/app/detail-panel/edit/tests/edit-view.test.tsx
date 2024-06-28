@@ -526,7 +526,7 @@ describe('Edit view', () => {
 				expect(msg.mp[0]?.content?._content).toBe(body);
 			});
 
-			it.only('attaches a file', async () => {
+			it('attaches a file', async () => {
 				setupEditorStore({ editors: [] });
 				createAPIInterceptor('post', '/service/upload', new HttpResponse(null, { status: 200 }));
 				const reduxStore = generateStore();
