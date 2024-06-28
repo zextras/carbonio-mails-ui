@@ -76,6 +76,11 @@ const extractPartContent = (content: string | { _content: string } | undefined):
 
 	return content._content;
 };
+function awaitDebouncedSaveDraft(): void {
+	act(() => {
+		jest.advanceTimersByTime(2_000);
+	});
+}
 
 /**
  * Extracts the content of the mail message body, if it is found,
@@ -365,6 +370,14 @@ describe('Edit view', () => {
 		});
 
 		describe('it saves the draft when the user', () => {
+			beforeEach(() => {
+				jest.spyOn(useQueryParam, 'useQueryParam').mockImplementation((param) => {
+					if (param === 'action') {
+						return 'new';
+					}
+					return undefined;
+				});
+			});
 			it('clicks on the save button', async () => {
 				setupEditorStore({ editors: [] });
 				const reduxStore = generateStore();
@@ -376,12 +389,11 @@ describe('Edit view', () => {
 					closeController: noop
 				};
 
-				// Create and wait for the component to be rendered
+				const firstSaveDraftInterceptor = aSuccessfullSaveDraft();
 				const { user } = setupTest(<EditView {...props} />, { store: reduxStore });
 
-				const draftSavingInterceptor = createSoapAPIInterceptor<{ m: SoapDraftMessageObj }>(
-					'SaveDraft'
-				);
+				await firstSaveDraftInterceptor;
+				const draftSavingInterceptor = aSuccessfullSaveDraft();
 
 				const subject = faker.lorem.sentence(5);
 				// Get the default identity address
@@ -433,15 +445,6 @@ describe('Edit view', () => {
 			});
 
 			it('changes the subject', async () => {
-				jest.spyOn(useQueryParam, 'useQueryParam').mockImplementation((param) => {
-					if (param === 'action') {
-						return 'new';
-					}
-					return undefined;
-				});
-				const draftSavingInterceptor = createSoapAPIInterceptor<{ m: SoapDraftMessageObj }>(
-					'SaveDraft'
-				);
 				setupEditorStore({ editors: [] });
 				const reduxStore = generateStore();
 				const editor = generateNewMessageEditor(reduxStore.dispatch);
@@ -450,30 +453,22 @@ describe('Edit view', () => {
 					editorId: editor.id,
 					closeController: noop
 				};
+				const firstSaveDraftInterceptor = aSuccessfullSaveDraft();
 				const { user } = setupTest(<EditView {...props} />, { store: reduxStore });
+				await firstSaveDraftInterceptor;
+				const draftSavingInterceptor = aSuccessfullSaveDraft();
 				const subjectText =
 					"This is the most interesting subject ever! It's all about unicorns brewing beers for the elves";
 				const subjectInputElement = within(screen.getByTestId('subject')).getByRole('textbox');
 				await act(clearAndInsertText(user, subjectInputElement, subjectText));
 
-				act(() => {
-					jest.advanceTimersByTime(2_000);
-				});
+				awaitDebouncedSaveDraft();
 
 				const { m: msg } = await draftSavingInterceptor;
 				expect(msg.su._content).toBe(subjectText);
 			});
 
 			it('changes the recipient (to)', async () => {
-				jest.spyOn(useQueryParam, 'useQueryParam').mockImplementation((param) => {
-					if (param === 'action') {
-						return 'new';
-					}
-					return undefined;
-				});
-				const draftSavingInterceptor = createSoapAPIInterceptor<{ m: SoapDraftMessageObj }>(
-					'SaveDraft'
-				);
 				setupEditorStore({ editors: [] });
 				const reduxStore = generateStore();
 				const editor = generateNewMessageEditor(reduxStore.dispatch);
@@ -482,7 +477,10 @@ describe('Edit view', () => {
 					editorId: editor.id,
 					closeController: noop
 				};
+				const firstSaveDraftInterceptor = aSuccessfullSaveDraft();
 				const { user } = setupTest(<EditView {...props} />, { store: reduxStore });
+				await firstSaveDraftInterceptor;
+				const draftSavingInterceptor = aSuccessfullSaveDraft();
 				const recipient = createFakeIdentity().email;
 				const toInputElement = within(screen.getByTestId('RecipientTo')).getByRole('textbox');
 				await act(clearAndInsertText(user, toInputElement, recipient));
@@ -490,46 +488,26 @@ describe('Edit view', () => {
 					await user.tab();
 				});
 
-				act(() => {
-					jest.advanceTimersByTime(10_000);
-				});
+				awaitDebouncedSaveDraft();
 
 				const { m: msg } = await draftSavingInterceptor;
 				const sentRecipient = msg.e[0];
 				expect(sentRecipient.a).toBe(recipient);
 			});
 
-			test.skip('changes the body', async () => {
-				// Mock the "action" query param
-				jest.spyOn(useQueryParam, 'useQueryParam').mockImplementation((param) => {
-					if (param === 'action') {
-						return 'new';
-					}
-					return undefined;
-				});
-
+			it('changes the body', async () => {
+				setupEditorStore({ editors: [] });
+				const reduxStore = generateStore();
+				const editor = generateNewMessageEditor(reduxStore.dispatch);
+				addEditor({ id: editor.id, editor });
 				const props = {
-					editorId: 'new-1',
-					folderId: FOLDERS.INBOX,
-					setHeader: noop,
-					toggleAppBoard: false
+					editorId: editor.id,
+					closeController: noop
 				};
-
-				// Generate the state store
-				const store = generateStore();
-
-				// Create and wait for the component to be rendered
-				const { user } = setupTest(<EditView {...props} />, { store });
-				await waitFor(
-					() => {
-						expect(screen.getByTestId('edit-view-editor')).toBeInTheDocument();
-					},
-					{ timeout: 30000 }
-				);
-				const draftSavingInterceptor = createSoapAPIInterceptor<{ m: SoapDraftMessageObj }>(
-					'SaveDraftRequest'
-				);
-
+				const firstSaveDraftInterceptor = aSuccessfullSaveDraft();
+				const { user } = setupTest(<EditView {...props} />, { store: reduxStore });
+				await firstSaveDraftInterceptor;
+				const draftSavingInterceptor = aSuccessfullSaveDraft();
 				const body = faker.lorem.text();
 
 				const editorTextareaElement = await screen.findByTestId('MailPlainTextEditor');
@@ -539,12 +517,7 @@ describe('Edit view', () => {
 
 				// Insert the text into the text area
 				await user.type(editorTextareaElement, body);
-
-				// Wait few seconds
-				act(() => {
-					jest.advanceTimersByTime(2000);
-				});
-
+				awaitDebouncedSaveDraft();
 				const { m: msg } = await draftSavingInterceptor;
 				expect(msg.mp[0]?.content?._content).toBe(body);
 			}, 50000);
