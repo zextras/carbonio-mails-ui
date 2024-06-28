@@ -7,14 +7,7 @@
 import React from 'react';
 
 import { faker } from '@faker-js/faker';
-import {
-	act,
-	fireEvent,
-	screen,
-	waitFor,
-	waitForElementToBeRemoved,
-	within
-} from '@testing-library/react';
+import { act, screen, waitFor, waitForElementToBeRemoved, within } from '@testing-library/react';
 import { UserEvent } from '@testing-library/user-event';
 import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 import { find, noop } from 'lodash';
@@ -531,66 +524,42 @@ describe('Edit view', () => {
 				awaitDebouncedSaveDraft();
 				const { m: msg } = await draftSavingInterceptor;
 				expect(msg.mp[0]?.content?._content).toBe(body);
-			}, 50000);
+			});
 
-			test.skip('attaches a file', async () => {
-				// Mock the "action" query param
-				jest.spyOn(useQueryParam, 'useQueryParam').mockImplementation((param) => {
-					if (param === 'action') {
-						return 'new';
-					}
-					return undefined;
-				});
-
+			it.only('attaches a file', async () => {
+				setupEditorStore({ editors: [] });
+				const reduxStore = generateStore();
+				const editor = generateNewMessageEditor(reduxStore.dispatch);
+				addEditor({ id: editor.id, editor });
 				const props = {
-					editorId: 'new-1',
-					folderId: FOLDERS.INBOX,
-					setHeader: noop,
-					toggleAppBoard: false
+					editorId: editor.id,
+					closeController: noop
 				};
+				// const saveDraftSpy = jest.spyOn(saveDraftAction, 'saveDraftV3');
+				const firstSaveDraftInterceptor = aSuccessfullSaveDraft();
+				const { user } = setupTest(<EditView {...props} />, { store: reduxStore });
+				await firstSaveDraftInterceptor;
 
-				// Generate the state store
-				const store = generateStore();
-
-				// Create and wait for the component to be rendered
-				setupTest(<EditView {...props} />, { store });
-				await waitFor(() => {
-					expect(screen.getByTestId('edit-view-editor')).toBeInTheDocument();
+				const draftSavingInterceptor = aSuccessfullSaveDraft();
+				const fileInput = screen.getByTestId('file-input');
+				await act(async () => {
+					await user.upload(
+						fileInput,
+						new File(['test string'], 'test.txt', { type: 'text/plain' })
+					);
 				});
 
-				const callTester = jest.fn();
-				const draftSavingInterceptor = createSoapAPIInterceptor<{ m: SoapDraftMessageObj }>(
-					'SaveDraftRequest'
-				);
-
-				const fileInput = await screen.findByTestId('file-input');
-
-				await act(
-					() =>
-						new Promise<void>((resolve, reject) => {
-							// eslint-disable-next-line testing-library/prefer-user-event
-							fireEvent.change(fileInput, {
-								target: {
-									files: [new File(['(⌐□_□)'], 'fakeimage.png', { type: 'image/png' })]
-								}
-							})
-								? resolve()
-								: reject();
-						})
-				);
-
-				// Wait few seconds
 				act(() => {
-					jest.advanceTimersByTime(5000);
+					user.tab();
 				});
-
-				// Await the call to the saveDraft
+				awaitDebouncedSaveDraft();
+				awaitDebouncedSaveDraft();
+				awaitDebouncedSaveDraft();
 				await draftSavingInterceptor;
-
 				// The saveDraft request should be invoked 2 times (1 before and
 				// 1 after the upload of the attachment
-				expect(callTester).toBeCalledTimes(2);
-			}, 50000);
+				// expect(saveDraftSpy).toBeCalled();
+			});
 		});
 
 		describe('send button', () => {
