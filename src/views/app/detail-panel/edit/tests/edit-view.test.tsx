@@ -140,24 +140,28 @@ const clearAndInsertText =
 		await user.type(target, text);
 	};
 
+function aSuccessfullSaveDraft(): Promise<SaveDraftRequest> {
+	const msg: SoapMailMessage = {
+		cid: '',
+		d: 0,
+		e: [],
+		fr: '',
+		id: '123-testId',
+		l: '',
+		mp: [],
+		s: 0,
+		su: ''
+	};
+	const response: SaveDraftResponse = {
+		m: [msg]
+	};
+	return createSoapAPIInterceptor<SaveDraftRequest, SaveDraftResponse>('SaveDraft', response);
+}
+
 describe('Edit view', () => {
 	describe('Mail creation', () => {
 		beforeEach(() => {
-			const msg: SoapMailMessage = {
-				cid: '',
-				d: 0,
-				e: [],
-				fr: '',
-				id: '123-testId',
-				l: '',
-				mp: [],
-				s: 0,
-				su: ''
-			};
-			const response: SaveDraftResponse = {
-				m: [msg]
-			};
-			createSoapAPIInterceptor<SaveDraftRequest, SaveDraftResponse>('SaveDraft', response);
+			aSuccessfullSaveDraft();
 		});
 		it('should correctly send a new email', async () => {
 			setupEditorStore({ editors: [] });
@@ -287,7 +291,6 @@ describe('Edit view', () => {
 			);
 			expect(await screen.findByText('message.email_saved_at')).toBeVisible();
 		});
-
 		it('create a new email and text format should be as per setting', async () => {
 			setupEditorStore({ editors: [] });
 			const reduxStore = generateStore();
@@ -297,51 +300,58 @@ describe('Edit view', () => {
 			// Text format should be plain as per the settings done
 			expect(editor.isRichText).toBe(false);
 		});
+	});
+	describe('send email with attachment to convert to smart link', () => {
+		beforeAll(() => {
+			defaultBeforeAllTests({ onUnhandledRequest: 'error' });
+		});
 
-		describe('send email with attachment to convert to smart link', () => {
-			beforeAll(() => {
-				defaultBeforeAllTests({ onUnhandledRequest: 'error' });
+		it('should show error-try-again snackbar message on CreateSmartLink soap failure ', async () => {
+			// TODO: avoid calling savedraft first time if editor already has draftid. Add another test for this scenario
+			// createSoapAPIInterceptor<SaveDraftRequest, SaveDraftResponse>('SaveDraft', {
+			// 	Fault: {
+			// 		Reason: { Text: 'Failed upload to Files' },
+			// 		Detail: {
+			// 			Error: { Code: '123', Detail: 'Failed due to connection timeout' }
+			// 		}
+			// 	}
+			// });
+			createAPIInterceptor(
+				'post',
+				'/service/soap/GetShareInfoRequest',
+				HttpResponse.json(getEmptyMSWShareInfoResponse())
+			);
+			// setup api interceptor and mail to send editor
+			const apiInterceptor = createSmartLinkFailureAPIInterceptor();
+			setupEditorStore({ editors: [] });
+			const store = generateStore();
+			const editor = await readyToBeSentEditorTestCase(store.dispatch, {
+				id: '123-testId',
+				did: '123-testId',
+				savedAttachments: [
+					{
+						filename: 'large-document.pdf',
+						contentType: 'application/pdf',
+						requiresSmartLinkConversion: true,
+						size: 81290955,
+						messageId: '123-testId',
+						partName: '2',
+						isInline: false
+					}
+				]
 			});
+			addEditor({ id: editor.id, editor });
 
-			it('should show error-try-again snackbar message on CreateSmartLink soap failure ', async () => {
-				createAPIInterceptor(
-					'post',
-					'/service/soap/GetShareInfoRequest',
-					HttpResponse.json(getEmptyMSWShareInfoResponse())
-				);
-				// setup api interceptor and mail to send editor
-				const apiInterceptor = createSmartLinkFailureAPIInterceptor();
-				setupEditorStore({ editors: [] });
-				const store = generateStore();
-				const editor = await readyToBeSentEditorTestCase(store.dispatch, {
-					id: '123-testId',
-					savedAttachments: [
-						{
-							filename: 'large-document.pdf',
-							contentType: 'application/pdf',
-							requiresSmartLinkConversion: true,
-							size: 81290955,
-							messageId: FAKE_MESSAGE_ID,
-							partName: '2',
-							isInline: false
-						}
-					]
-				});
-				addEditor({ id: editor.id, editor });
-
-				const { user, rerender } = setupTest(
-					<EditView {...{ editorId: editor.id, closeController: noop }} />,
-					{ store }
-				);
-				const btnSend = screen.queryByTestId('BtnSendMailMulti');
-				await waitFor(() => expect(btnSend).toBeEnabled());
-				await act(() => user.click(btnSend as Element));
-
-				// assertions
-				await apiInterceptor;
-				await screen.findByText('label.error_try_again', {}, { timeout: 2000 });
-				expect(await screen.findByTestId('edit-view-editor')).toBeVisible();
+			const { user } = setupTest(<EditView {...{ editorId: editor.id, closeController: noop }} />, {
+				store
 			});
+			const btnSend = screen.queryByTestId('BtnSendMailMulti');
+			await waitFor(() => expect(btnSend).toBeEnabled());
+			await act(() => user.click(btnSend as Element));
+
+			await apiInterceptor;
+			await screen.findByText('label.error_try_again', {}, { timeout: 2000 });
+			expect(await screen.findByTestId('edit-view-editor')).toBeVisible();
 		});
 	});
 
