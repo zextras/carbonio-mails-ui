@@ -20,11 +20,6 @@ import { selectCurrentFolder } from '../store/conversations-slice';
 type FolderViewProps = {
 	containerRef: React.RefObject<HTMLDivElement>;
 	isColumnView: boolean;
-	hidePreview: boolean;
-};
-
-type DetailPanelProps = {
-	hidePreview: boolean;
 };
 
 const LazyFolderView = lazy(
@@ -35,25 +30,19 @@ const LazyDetailPanel = lazy(
 	() => import(/* webpackChunkName: "folder-panel-view" */ './app/detail-panel')
 );
 
-const DetailPanel = ({ hidePreview }: DetailPanelProps): React.JSX.Element | null =>
-	!hidePreview ? (
-		<Suspense fallback={<Spinner />}>
-			<LazyDetailPanel />
-		</Suspense>
-	) : null;
+const DetailPanel = (): React.JSX.Element => (
+	<Suspense fallback={<Spinner />}>
+		<LazyDetailPanel />
+	</Suspense>
+);
 
-const FolderView = ({
-	isColumnView,
-	hidePreview,
-	containerRef
-}: FolderViewProps): React.JSX.Element => {
+const FolderView = ({ isColumnView, containerRef }: FolderViewProps): React.JSX.Element => {
 	const { path } = useRouteMatch();
 	const border = useMemo(() => (isColumnView ? BORDERS.EAST : BORDERS.SOUTH), [isColumnView]);
 
 	return (
 		<ResizableContainer
 			border={border}
-			disabled={hidePreview}
 			elementToResize={containerRef}
 			localStorageKey={LOCAL_STORAGE_VIEW_SIZES}
 			keepSyncedWithStorage
@@ -90,21 +79,13 @@ const AppView: FC = () => {
 		setAppContext({ isMessageView, count, setCount });
 	}, [count, isMessageView]);
 
-	const isColumnView = false;
-	const hidePreview = false;
+	const isColumnView = true;
 
 	return (
 		<LayoutSelector
 			isColumnView={isColumnView}
-			hidePreview={hidePreview}
-			folderView={
-				<FolderView
-					isColumnView={isColumnView}
-					hidePreview={hidePreview}
-					containerRef={containerRef}
-				/>
-			}
-			detailPanel={<DetailPanel hidePreview={hidePreview} />}
+			folderView={<FolderView isColumnView={isColumnView} containerRef={containerRef} />}
+			detailPanel={<DetailPanel />}
 			containerRef={containerRef}
 		/>
 	);

@@ -14,7 +14,6 @@ import { SizeAndPosition } from '../hooks/use-resize';
 type LayoutSelectorProps = {
 	containerRef: React.RefObject<HTMLDivElement>;
 	isColumnView: boolean;
-	hidePreview: boolean;
 	folderView: React.ReactNode;
 	detailPanel: React.ReactNode;
 };
@@ -23,8 +22,7 @@ export const LayoutSelector = ({
 	folderView,
 	detailPanel,
 	containerRef,
-	isColumnView,
-	hidePreview
+	isColumnView
 }: LayoutSelectorProps): React.JSX.Element => {
 	const [lastSavedViewSizes] = useLocalStorage<Partial<SizeAndPosition>>(
 		LOCAL_STORAGE_VIEW_SIZES,
@@ -35,15 +33,13 @@ export const LayoutSelector = ({
 
 	const width = useMemo(() => {
 		if (isColumnView) {
-			if (lastSavedViewSizes?.width && !hidePreview) {
+			if (lastSavedViewSizes?.width) {
 				return `${lastSavedViewSizes?.width}px`;
 			}
-			if (!hidePreview) {
-				return '40%';
-			}
+			return '60%';
 		}
 		return '100%';
-	}, [hidePreview, isColumnView, lastSavedViewSizes?.width]);
+	}, [isColumnView, lastSavedViewSizes?.width]);
 
 	const height = useMemo(() => {
 		if (!isColumnView) {
