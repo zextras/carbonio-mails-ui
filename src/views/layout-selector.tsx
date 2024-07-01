@@ -18,16 +18,16 @@ const LazyDetailPanel = lazy(
 type LayoutSelectorProps = {
 	containerRef: React.RefObject<HTMLDivElement>;
 	isColumnView: boolean;
+	hidePreview: boolean;
 	children: React.ReactNode;
 };
 
 export const LayoutSelector = ({
 	children,
 	containerRef,
-	isColumnView
+	isColumnView,
+	hidePreview
 }: LayoutSelectorProps): React.JSX.Element => {
-	const hidePreview = false;
-
 	const [lastSavedViewSizes] = useLocalStorage<Partial<SizeAndPosition>>(
 		LOCAL_STORAGE_VIEW_SIZES,
 		{}
@@ -37,13 +37,15 @@ export const LayoutSelector = ({
 
 	const width = useMemo(() => {
 		if (isColumnView) {
-			if (lastSavedViewSizes?.width) {
+			if (lastSavedViewSizes?.width && !hidePreview) {
 				return `${lastSavedViewSizes?.width}px`;
 			}
-			return '40%';
+			if (!hidePreview) {
+				return '40%';
+			}
 		}
 		return '100%';
-	}, [isColumnView, lastSavedViewSizes?.width]);
+	}, [hidePreview, isColumnView, lastSavedViewSizes?.width]);
 
 	const height = useMemo(() => {
 		if (!isColumnView) {
@@ -61,7 +63,7 @@ export const LayoutSelector = ({
 				ref={containerRef}
 				width={width}
 				height={height}
-				minHeight={'3rem'}
+				minHeight={'5rem'}
 				minWidth={'3rem'}
 				style={{ flexShrink: 0 }}
 			>

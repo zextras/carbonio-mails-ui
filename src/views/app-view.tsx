@@ -44,12 +44,18 @@ const AppView: FC = () => {
 	}, [count, isMessageView]);
 
 	const isColumnView = true;
+	const hidePreview = true;
 
 	const border = useMemo(() => (isColumnView ? BORDERS.EAST : BORDERS.SOUTH), [isColumnView]);
 	return (
-		<LayoutSelector isColumnView={isColumnView} containerRef={containerRef}>
+		<LayoutSelector
+			isColumnView={isColumnView}
+			hidePreview={hidePreview}
+			containerRef={containerRef}
+		>
 			<ResizableContainer
 				border={border}
+				disabled={hidePreview}
 				elementToResize={containerRef}
 				localStorageKey={LOCAL_STORAGE_VIEW_SIZES}
 				keepSyncedWithStorage
