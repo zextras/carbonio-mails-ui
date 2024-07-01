@@ -88,7 +88,7 @@ export const generateNewMessageEditor = (messagesStoreDispatch: AppDispatch): Ma
 		subject: '',
 		text: textWithSignature,
 		requestReadReceipt: false,
-		// signature,
+		signatureId: defaultIdentity.defaultSignatureId,
 		messagesStoreDispatch,
 		size: 0,
 		totalSmartLinksSize: 0
@@ -192,7 +192,8 @@ export const generateIntegratedNewEditor = (
 		requestReadReceipt: false,
 		messagesStoreDispatch,
 		size: 0,
-		totalSmartLinksSize: 0
+		totalSmartLinksSize: 0,
+		signatureId: defaultIdentity.defaultSignatureId
 	} as MailsEditorV2;
 
 	editor.draftSaveAllowedStatus = computeDraftSaveAllowedStatus(editor);
@@ -263,7 +264,8 @@ const generateReplyAndReplyAllMsgEditor = (
 		originalMessage,
 		messagesStoreDispatch,
 		size: originalMessage.size,
-		totalSmartLinksSize: 0
+		totalSmartLinksSize: 0,
+		signatureId
 	} as MailsEditorV2;
 
 	editor.draftSaveAllowedStatus = computeDraftSaveAllowedStatus(editor);
@@ -339,7 +341,8 @@ export const generateForwardMsgEditor = (
 		originalMessage,
 		messagesStoreDispatch,
 		size: originalMessage.size,
-		totalSmartLinksSize: 0
+		totalSmartLinksSize: 0,
+		signatureId
 	} as MailsEditorV2;
 
 	editor.draftSaveAllowedStatus = computeDraftSaveAllowedStatus(editor);

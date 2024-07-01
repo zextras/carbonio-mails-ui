@@ -22,6 +22,7 @@ import { checkSubjectAndAttachment } from './check-subject-attachment';
 import DropZoneAttachment from './dropzone-attachment';
 import { EditAttachmentsBlock } from './edit-attachments-block';
 import { AddAttachmentsDropdown } from './parts/add-attachments-dropdown';
+import { ChangeSignaturesDropdown } from './parts/change-signatures-dropdown';
 import { useKeepOrDiscardDraft } from './parts/delete-draft';
 import { EditViewDraftSaveInfo } from './parts/edit-view-draft-save-info';
 import { EditViewIdentitySelector } from './parts/edit-view-identity-selector';
@@ -71,6 +72,7 @@ const MemoizedTextEditorContainer = memo(TextEditorContainer);
 const MemoizedRecipientsRows = memo(RecipientsRows);
 const MemoizedSubjectRow = memo(SubjectRow);
 const MemoizedOptionsDropdown = memo(OptionsDropdown);
+const MemoizedChangeSignaturesDropdown = memo(ChangeSignaturesDropdown);
 const MemoizedAddAttachmentsDropdown = memo(AddAttachmentsDropdown);
 const MemoizedEditViewIdentitySelector = memo(EditViewIdentitySelector);
 
@@ -394,6 +396,7 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 
 					<GapRow mainAlignment={'flex-end'} gap={'medium'}>
 						<MemoizedAddAttachmentsDropdown editorId={editorId} />
+						<MemoizedChangeSignaturesDropdown editorId={editorId} />
 						<MemoizedOptionsDropdown editorId={editorId} />
 						<Tooltip
 							label={saveDraftAllowedStatus?.reason}

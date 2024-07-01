@@ -27,7 +27,11 @@ import {
 	IdentityDescriptor
 } from '../../../../../helpers/identities';
 import { getMailBodyWithSignature } from '../../../../../helpers/signatures';
-import { useEditorIdentityId, useEditorText } from '../../../../../store/zustand/editor';
+import {
+	useEditorIdentityId,
+	useEditorSignatureId,
+	useEditorText
+} from '../../../../../store/zustand/editor';
 import { MailsEditorV2 } from '../../../../../types';
 
 const SelectorContainer = styled(Row)`
@@ -76,6 +80,7 @@ export type EditViewIdentitySelectorProps = {
 export const EditViewIdentitySelector: FC<EditViewIdentitySelectorProps> = ({ editorId }) => {
 	const { identityId, setIdentityId } = useEditorIdentityId(editorId);
 	const { text, setText } = useEditorText(editorId);
+	const { setSignatureId } = useEditorSignatureId(editorId);
 
 	const [open, setOpen] = useState(false);
 
@@ -92,8 +97,9 @@ export const EditViewIdentitySelector: FC<EditViewIdentitySelectorProps> = ({ ed
 			setIdentityId(identity.id);
 			const textWithSignature = getMailBodyWithSignature(text, identity.defaultSignatureId);
 			setText(textWithSignature);
+			setSignatureId(identity.defaultSignatureId);
 		},
-		[setIdentityId, setText, text]
+		[setIdentityId, setSignatureId, setText, text]
 	);
 
 	const toggleOpen = useCallback(() => {
