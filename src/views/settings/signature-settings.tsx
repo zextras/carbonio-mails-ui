@@ -15,7 +15,8 @@ import {
 	Button,
 	Padding,
 	SelectItem,
-	ButtonProps
+	ButtonProps,
+	useSnackbar
 } from '@zextras/carbonio-design-system';
 import { t, useIntegratedComponent } from '@zextras/carbonio-shell-ui';
 import { map, unescape, reject, concat } from 'lodash';
@@ -24,6 +25,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 import SelectIdentitySignature from './components/select-identity-signature';
 import { signaturesSubSection, setDefaultSignaturesSubSection } from './subsections';
+import { TIMEOUTS } from '../../constants';
 import { NO_SIGNATURE_ID, NO_SIGNATURE_LABEL } from '../../helpers/signatures';
 import { GetAllSignatures } from '../../store/actions/signatures';
 import type { SignatureSettingsPropsType, SignItemType } from '../../types';
@@ -81,6 +83,7 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 	const setEditor = (editor: EditorType): void => {
 		editorRef.current.editor = editor;
 	};
+	const createSnackbar = useSnackbar();
 
 	const onSignaturesLoaded = useCallback(
 		(signs: Array<SignItemType>) => {
@@ -113,8 +116,19 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 			.then(({ signature: signs }) => onSignaturesLoaded(signs))
 			.catch((err) => {
 				console.error(err);
+				createSnackbar({
+					key: `get-all-signature`,
+					replace: true,
+					type: 'error',
+					label: t(
+						'label.error_unable_load_signatures',
+						'Unable to load signatures. Please reload or try again later.'
+					),
+					autoHideTimeout: TIMEOUTS.SNACKBAR_DEFAULT_TIMEOUT,
+					hideButton: true
+				});
 			});
-	}, [onSignaturesLoaded]);
+	}, [createSnackbar, onSignaturesLoaded]);
 
 	// Set the default current signature if missing
 	useEffect(() => {
