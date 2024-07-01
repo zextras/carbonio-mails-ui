@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React, { memo, useCallback, useImperativeHandle, useMemo, useState } from 'react';
+import React, { memo, useCallback, useEffect, useImperativeHandle, useMemo, useState } from 'react';
 
 import {
 	Button,
@@ -123,6 +123,11 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 	const [isMailSizeWarning, setIsMailSizeWarning] = useState<boolean>(false);
 	const { status: saveDraftAllowedStatus, saveDraft } = useEditorDraftSave(editorId);
 	const { did: draftId } = useEditorDid(editorId);
+
+	useEffect(() => {
+		if (!draftId) saveDraft();
+	}, [draftId, saveDraft]);
+
 	const { status: sendAllowedStatus, send: sendMessage } = useEditorSend(editorId);
 	const draftSaveProcessStatus = useEditorDraftSaveProcessStatus(editorId);
 	const createSnackbar = useSnackbar();
