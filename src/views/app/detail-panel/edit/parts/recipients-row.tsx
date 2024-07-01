@@ -81,7 +81,6 @@ export const RecipientsRow: FC<RecipientsRowProps> = ({
 
 	const recipientsAsContacts = map<Participant, ContactType>(recipients, (recipient) => ({
 		...recipient,
-		id: recipient.address,
 		label: recipient.address,
 		email: recipient.address,
 		error: recipient.error
