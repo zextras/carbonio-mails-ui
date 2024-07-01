@@ -17,12 +17,59 @@ import { getFolderIdParts } from '../helpers/folders';
 import { useAppSelector } from '../hooks/redux';
 import { selectCurrentFolder } from '../store/conversations-slice';
 
+type FolderViewProps = {
+	containerRef: React.RefObject<HTMLDivElement>;
+	isColumnView: boolean;
+	hidePreview: boolean;
+};
+
+type DetailPanelProps = {
+	hidePreview: boolean;
+};
+
 const LazyFolderView = lazy(
 	() => import(/* webpackChunkName: "folder-panel-view" */ './app/folder-panel')
 );
 
-const AppView: FC = () => {
+const LazyDetailPanel = lazy(
+	() => import(/* webpackChunkName: "folder-panel-view" */ './app/detail-panel')
+);
+
+const DetailPanel = ({ hidePreview }: DetailPanelProps): React.JSX.Element | null =>
+	!hidePreview ? (
+		<Suspense fallback={<Spinner />}>
+			<LazyDetailPanel />
+		</Suspense>
+	) : null;
+
+const FolderView = ({
+	isColumnView,
+	hidePreview,
+	containerRef
+}: FolderViewProps): React.JSX.Element => {
 	const { path } = useRouteMatch();
+	const border = useMemo(() => (isColumnView ? BORDERS.EAST : BORDERS.SOUTH), [isColumnView]);
+
+	return (
+		<ResizableContainer
+			border={border}
+			disabled={hidePreview}
+			elementToResize={containerRef}
+			localStorageKey={LOCAL_STORAGE_VIEW_SIZES}
+			keepSyncedWithStorage
+		>
+			<Switch>
+				<Route path={`${path}/folder/:folderId/:type?/:itemId?`}>
+					<Suspense fallback={<Spinner />}>
+						<LazyFolderView />
+					</Suspense>
+				</Route>
+				<Redirect strict from={path} to={`${path}/folder/2`} />
+			</Switch>
+		</ResizableContainer>
+	);
+};
+const AppView: FC = () => {
 	const [count, setCount] = useState(0);
 	const { zimbraPrefGroupMailBy, zimbraPrefLocale } = useUserSettings().prefs;
 	const currentFolderId = useAppSelector(selectCurrentFolder);
@@ -43,33 +90,23 @@ const AppView: FC = () => {
 		setAppContext({ isMessageView, count, setCount });
 	}, [count, isMessageView]);
 
-	const isColumnView = true;
-	const hidePreview = true;
+	const isColumnView = false;
+	const hidePreview = false;
 
-	const border = useMemo(() => (isColumnView ? BORDERS.EAST : BORDERS.SOUTH), [isColumnView]);
 	return (
 		<LayoutSelector
 			isColumnView={isColumnView}
 			hidePreview={hidePreview}
+			folderView={
+				<FolderView
+					isColumnView={isColumnView}
+					hidePreview={hidePreview}
+					containerRef={containerRef}
+				/>
+			}
+			detailPanel={<DetailPanel hidePreview={hidePreview} />}
 			containerRef={containerRef}
-		>
-			<ResizableContainer
-				border={border}
-				disabled={hidePreview}
-				elementToResize={containerRef}
-				localStorageKey={LOCAL_STORAGE_VIEW_SIZES}
-				keepSyncedWithStorage
-			>
-				<Switch>
-					<Route path={`${path}/folder/:folderId/:type?/:itemId?`}>
-						<Suspense fallback={<Spinner />}>
-							<LazyFolderView />
-						</Suspense>
-					</Route>
-					<Redirect strict from={path} to={`${path}/folder/2`} />
-				</Switch>
-			</ResizableContainer>
-		</LayoutSelector>
+		/>
 	);
 };
 

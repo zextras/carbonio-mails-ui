@@ -3,27 +3,25 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { lazy, Suspense, useMemo } from 'react';
+import React, { useMemo } from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
-import { Spinner, useLocalStorage } from '@zextras/carbonio-shell-ui';
+import { useLocalStorage } from '@zextras/carbonio-shell-ui';
 
 import { LOCAL_STORAGE_VIEW_SIZES } from '../constants';
 import { SizeAndPosition } from '../hooks/use-resize';
-
-const LazyDetailPanel = lazy(
-	() => import(/* webpackChunkName: "folder-panel-view" */ './app/detail-panel')
-);
 
 type LayoutSelectorProps = {
 	containerRef: React.RefObject<HTMLDivElement>;
 	isColumnView: boolean;
 	hidePreview: boolean;
-	children: React.ReactNode;
+	folderView: React.ReactNode;
+	detailPanel: React.ReactNode;
 };
 
 export const LayoutSelector = ({
-	children,
+	folderView,
+	detailPanel,
 	containerRef,
 	isColumnView,
 	hidePreview
@@ -67,13 +65,9 @@ export const LayoutSelector = ({
 				minWidth={'3rem'}
 				style={{ flexShrink: 0 }}
 			>
-				{children}
+				{folderView}
 			</Container>
-			{!hidePreview && (
-				<Suspense fallback={<Spinner />}>
-					<LazyDetailPanel />
-				</Suspense>
-			)}
+			{detailPanel}
 		</Container>
 	);
 };
