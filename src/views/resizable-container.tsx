@@ -58,6 +58,11 @@ const BorderWithResize = styled.div<
 	width: ${({ $width }): string => $width};
 	height: ${({ $height }): string => $height};
 	${({ $position }): SimpleInterpolation => $position};
+	border-right: ${({ theme }): string => `1px solid ${theme.palette.gray2.regular}`};
+	transition: 0.2s ease-out;
+	&:hover {
+		border-right: ${({ theme }): string => `1px solid ${theme.palette.primary.regular}`};
+	}
 	${({ $translateTransform }): SimpleInterpolation =>
 		($translateTransform?.x || $translateTransform?.y) &&
 		css`
