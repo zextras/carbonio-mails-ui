@@ -59,8 +59,8 @@ const ContactName: FC<{
 					overflow: 'hidden'
 				}}
 			>
-				{map(contacts, (contact) => (
-					<Tooltip label={contact.address} key={contact.address}>
+				{map(contacts, (contact, index) => (
+					<Tooltip label={contact.address} key={index}>
 						<ContactSubText color="secondary" size="small">
 							{capitalize(participantToString(contact, accounts))}
 						</ContactSubText>
