@@ -5,7 +5,7 @@
  */
 import React, { ReactElement } from 'react';
 
-import { screen } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import { ErrorSoapBodyResponse, QueryChip, SearchViewProps } from '@zextras/carbonio-shell-ui';
 import { noop } from 'lodash';
 
@@ -19,7 +19,7 @@ import SearchView from '../search-view';
 describe('SearchView', () => {
 	it('should display Results for when soap API fulfilled', async () => {
 		const store = generateStore();
-		createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
+		const searchInterceptor = createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
 			c: [
 				{
 					id: '123',
@@ -51,29 +51,14 @@ describe('SearchView', () => {
 		setupTest(<SearchView {...searchViewProps} />, {
 			store
 		});
+		await searchInterceptor;
 
 		expect(await screen.findByText('label.results_for')).toBeInTheDocument();
 	});
 
 	it('should display a disabled Advanced Filters button when SearchDisabled is true', async () => {
 		const store = generateStore();
-		createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
-			c: [
-				{
-					id: '123',
-					n: 1,
-					u: 1,
-					f: 'flag',
-					tn: 'tag names',
-					d: 123,
-					m: [],
-					e: [],
-					su: 'Subject',
-					fr: 'fragment'
-				}
-			],
-			more: false
-		});
+
 		const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
 		const searchViewProps: SearchViewProps = {
 			useQuery: () => [[], noop],
@@ -84,7 +69,6 @@ describe('SearchView', () => {
 		setupTest(<SearchView {...searchViewProps} />, {
 			store
 		});
-
 		const advancedFiltersButton = screen.getByRole('button', {
 			name: /label\.single_advanced_filter/i
 		});
@@ -126,8 +110,13 @@ describe('SearchView', () => {
 		});
 		const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
 		const setSearchDisabled = jest.fn();
+		const queryChip: QueryChip = {
+			hasAvatar: false,
+			id: '0',
+			label: 'ciao'
+		};
 		const searchViewProps: SearchViewProps = {
-			useQuery: () => [[], noop],
+			useQuery: () => [[queryChip], noop],
 			useDisableSearch: () => [false, setSearchDisabled],
 			ResultsHeader: resultsHeader
 		};
@@ -136,6 +125,6 @@ describe('SearchView', () => {
 			store
 		});
 		await interceptor;
-		expect(setSearchDisabled).toBeCalled();
+		await waitFor(() => expect(setSearchDisabled).toBeCalled());
 	});
 });
