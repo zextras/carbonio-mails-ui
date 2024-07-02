@@ -3,15 +3,15 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { ChangeEvent, ChangeEventHandler, FC, useCallback } from 'react';
+import React, { FC, useCallback } from 'react';
 
 import { ChipInput, ChipItem } from '@zextras/carbonio-design-system';
 import { useIntegratedComponent } from '@zextras/carbonio-shell-ui';
 import { map, reject, some } from 'lodash';
+import styled from 'styled-components';
 
 import { ParticipantRoleType } from '../../../../../carbonio-ui-commons/constants/participants';
 import { parseEmail } from '../../../../../carbonio-ui-commons/helpers/email-parser';
-import styled from 'styled-components';
 import { Participant } from '../../../../../types';
 
 const emailRegex =
