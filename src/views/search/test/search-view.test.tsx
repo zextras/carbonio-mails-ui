@@ -5,7 +5,7 @@
  */
 import React, { ReactElement } from 'react';
 
-import { screen, waitFor } from '@testing-library/react';
+import { act, screen, waitFor } from '@testing-library/react';
 import { ErrorSoapBodyResponse, QueryChip, SearchViewProps } from '@zextras/carbonio-shell-ui';
 import { noop } from 'lodash';
 
@@ -69,6 +69,7 @@ describe('SearchView', () => {
 		setupTest(<SearchView {...searchViewProps} />, {
 			store
 		});
+		screen.logTestingPlaygroundURL();
 		const advancedFiltersButton = screen.getByRole('button', {
 			name: /label\.single_advanced_filter/i
 		});
@@ -126,5 +127,40 @@ describe('SearchView', () => {
 		});
 		await interceptor;
 		await waitFor(() => expect(setSearchDisabled).toBeCalled());
+	});
+
+	it('should not call setSearchDisabled button if Search API fails with another error', async () => {
+		const store = generateStore();
+		const interceptor = createSoapAPIInterceptor<SearchRequest, ErrorSoapBodyResponse>('Search', {
+			Fault: {
+				Reason: { Text: 'Failed to execute search' },
+				Detail: {
+					Error: { Code: 'Other code', Detail: 'Failed' }
+				}
+			}
+		});
+		const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
+		const setSearchDisabled = jest.fn();
+		const queryChip: QueryChip = {
+			hasAvatar: false,
+			id: '0',
+			label: 'ciao'
+		};
+		const searchViewProps: SearchViewProps = {
+			useQuery: () => [[queryChip], noop],
+			useDisableSearch: () => [false, setSearchDisabled],
+			ResultsHeader: resultsHeader
+		};
+
+		setupTest(<SearchView {...searchViewProps} />, {
+			store
+		});
+
+		await interceptor;
+		act(() => {
+			jest.advanceTimersByTime(10_000);
+		});
+
+		expect(setSearchDisabled).not.toBeCalled();
 	});
 });
