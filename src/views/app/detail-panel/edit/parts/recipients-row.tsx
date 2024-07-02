@@ -8,7 +8,6 @@ import React, { FC, useCallback } from 'react';
 import { ChipInput, ChipItem } from '@zextras/carbonio-design-system';
 import { useIntegratedComponent } from '@zextras/carbonio-shell-ui';
 import { map, reject, some } from 'lodash';
-import styled from 'styled-components';
 
 import { ParticipantRoleType } from '../../../../../carbonio-ui-commons/constants/participants';
 import { isValidEmail, parseEmail } from '../../../../../carbonio-ui-commons/helpers/email-parser';
@@ -31,12 +30,6 @@ export type RecipientsRowProps = {
 	dataTestid?: string;
 	orderedAccountIds?: Array<string>;
 };
-
-const CustomChipInput = styled(ChipInput)`
-	input {
-		width: 100%;
-	}
-`;
 
 /**
  * The component handle the input for participants of the given type
@@ -121,7 +114,7 @@ export const RecipientsRow: FC<RecipientsRowProps> = ({
 					orderedAccountIds={orderedAccountIds}
 				/>
 			) : (
-				<CustomChipInput
+				<ChipInput
 					data-testid={dataTestid}
 					placeholder={label}
 					maxChips={null}
@@ -138,7 +131,6 @@ export const RecipientsRow: FC<RecipientsRowProps> = ({
 						{ key: ',', ctrlKey: false },
 						{ key: ';', ctrlKey: false }
 					]}
-					className="carbonio-bypass-context-menu"
 				/>
 			)}
 		</>
