@@ -10,7 +10,7 @@ import { ACTION_TYPES, addBoard, registerActions, t } from '@zextras/carbonio-sh
 import { isArray, some } from 'lodash';
 
 import { ParticipantRole } from '../carbonio-ui-commons/constants/participants';
-import { EditViewActions, MAILS_ROUTE, MAIL_APP_ID } from '../constants';
+import { EditViewActions, MAIL_APP_ID, MAILS_BOARD_VIEW_ID } from '../constants';
 import { mailToSharedFunction } from '../integrations/shared-functions';
 
 type MailToActionType = {
@@ -65,7 +65,10 @@ export const newEmailActionOnClick = (
 ): void => {
 	e?.preventDefault?.();
 	addBoard({
-		url: `${MAILS_ROUTE}/edit?action=${EditViewActions.NEW}`,
+		boardViewId: MAILS_BOARD_VIEW_ID,
+		context: {
+			action: EditViewActions.NEW
+		},
 		title: t('label.new_email', 'New E-mail')
 		// TOFIX provide the context filled with the current folder id
 	});

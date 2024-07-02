@@ -13,7 +13,7 @@ import {
 	useBoard,
 	useBoardHooks
 } from '@zextras/carbonio-shell-ui';
-import { noop } from 'lodash';
+import { includes, noop } from 'lodash';
 
 import { EditView, EditViewHandle } from './edit-view';
 import { EditViewActions } from '../../../../constants';
@@ -40,13 +40,16 @@ const parseAndValidateParams = (
 };
 
 const isActionRequiringMessage = (action: EditViewActionsType): boolean =>
-	[
-		EditViewActions.REPLY,
-		EditViewActions.REPLY_ALL,
-		EditViewActions.FORWARD,
-		EditViewActions.EDIT_AS_NEW,
-		EditViewActions.EDIT_AS_DRAFT
-	].includes(action);
+	includes(
+		[
+			EditViewActions.REPLY,
+			EditViewActions.REPLY_ALL,
+			EditViewActions.FORWARD,
+			EditViewActions.EDIT_AS_NEW,
+			EditViewActions.EDIT_AS_DRAFT
+		],
+		action
+	);
 
 type EditViewControllerCoreProps = {
 	action: EditViewActionsType;

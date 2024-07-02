@@ -6,7 +6,7 @@
 import type { TextProps } from '@zextras/carbonio-design-system';
 
 import type { Folder } from '../../carbonio-ui-commons/types/folder';
-import { EditorPrefillData } from '../editor';
+import { EditorPrefillData, EditViewActionsType } from '../editor';
 
 export type ModalProps = {
 	folder: Folder;
@@ -37,8 +37,8 @@ export type EditViewBoardContext = {
 };
 
 export type BoardContext = {
-	mailId: string | MessageActionIdsType | undefined;
-	folderId: string | undefined;
+	action: EditViewActionsType;
+	id?: string;
 };
 
 export type ThemeObj = {

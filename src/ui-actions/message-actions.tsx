@@ -22,7 +22,12 @@ import MoveConvMessage from './move-conv-msg';
 import RedirectAction from './redirect-message-action';
 import { getRoot } from '../carbonio-ui-commons/store/zustand/folder';
 import { getContentForPrint } from '../commons/print-conversation/print-conversation';
-import { EditViewActions, MAILS_ROUTE, MessageActionsDescriptors, TIMEOUTS } from '../constants';
+import {
+	EditViewActions,
+	MAILS_BOARD_VIEW_ID,
+	MessageActionsDescriptors,
+	TIMEOUTS
+} from '../constants';
 import { getAttendees, getOptionalsAttendees, getSenderByOwner } from '../helpers/appointmemt';
 import { useUiUtilities } from '../hooks/use-ui-utilities';
 import { getMsgCall, getMsgsForPrint, msgAction } from '../store/actions';
@@ -492,8 +497,11 @@ export function replyMsg({ id }: Pick<MessageActionPropType, 'id'>): MessageActi
 		onClick: (ev): void => {
 			if (ev) ev.preventDefault();
 			addBoard<BoardContext>({
-				url: `${MAILS_ROUTE}/edit?action=${EditViewActions.REPLY}&id=${id}`,
-				// context: { mailId: id, folderId },
+				boardViewId: MAILS_BOARD_VIEW_ID,
+				context: {
+					action: EditViewActions.REPLY,
+					id: `${id}`
+				},
 				title: ''
 			});
 		}
@@ -509,8 +517,11 @@ export function replyAllMsg({ id }: Pick<MessageActionPropType, 'id'>): MessageA
 		onClick: (ev): void => {
 			if (ev) ev.preventDefault();
 			addBoard<BoardContext>({
-				url: `${MAILS_ROUTE}/edit?action=${EditViewActions.REPLY_ALL}&id=${id}`,
-				// context: { mailId: id, folderId },
+				boardViewId: MAILS_BOARD_VIEW_ID,
+				context: {
+					action: EditViewActions.REPLY_ALL,
+					id: `${id}`
+				},
 				title: ''
 			});
 		}
@@ -526,8 +537,11 @@ export function forwardMsg({ id }: Pick<MessageActionPropType, 'id'>): MessageAc
 		onClick: (ev): void => {
 			if (ev) ev.preventDefault();
 			addBoard<BoardContext>({
-				url: `${MAILS_ROUTE}/edit?action=${EditViewActions.FORWARD}&id=${id}`,
-				// context: { mailId: id, folderId },
+				boardViewId: MAILS_BOARD_VIEW_ID,
+				context: {
+					action: EditViewActions.FORWARD,
+					id: `${id}`
+				},
 				title: ''
 			});
 		}
@@ -543,8 +557,11 @@ export function editAsNewMsg({ id }: Pick<MessageActionPropType, 'id'>): Message
 		onClick: (ev): void => {
 			if (ev) ev.preventDefault();
 			addBoard<BoardContext>({
-				url: `${MAILS_ROUTE}/edit?action=${EditViewActions.EDIT_AS_NEW}&id=${id}`,
-				// context: { mailId: id, folderId },
+				boardViewId: MAILS_BOARD_VIEW_ID,
+				context: {
+					action: EditViewActions.EDIT_AS_NEW,
+					id: `${id}`
+				},
 				title: ''
 			});
 		}
@@ -556,7 +573,7 @@ export const useEditDraft = (): ((
 ) => MessageActionReturnType) => {
 	const { createModal } = useUiUtilities();
 	return useCallback(
-		({ id, folderId, message }): MessageActionReturnType => {
+		({ id, message }): MessageActionReturnType => {
 			const actDescriptor = MessageActionsDescriptors.EDIT_DRAFT;
 			return {
 				id: actDescriptor.id,
@@ -571,8 +588,11 @@ export const useEditDraft = (): ((
 							onConfirm: () => {
 								closeModal();
 								addBoard<BoardContext>({
-									url: `${MAILS_ROUTE}/edit?action=${EditViewActions.EDIT_AS_DRAFT}&id=${id}`,
-									// context: { mailId: id, folderId },
+									boardViewId: MAILS_BOARD_VIEW_ID,
+									context: {
+										action: EditViewActions.EDIT_AS_DRAFT,
+										id: `${id}`
+									},
 									title: ''
 								});
 							},
@@ -593,8 +613,11 @@ export const useEditDraft = (): ((
 						});
 					} else {
 						addBoard<BoardContext>({
-							url: `${MAILS_ROUTE}/edit?action=${EditViewActions.EDIT_AS_DRAFT}&id=${id}`,
-							// context: { mailId: id, folderId },
+							boardViewId: MAILS_BOARD_VIEW_ID,
+							context: {
+								action: EditViewActions.EDIT_AS_DRAFT,
+								id: `${id}`
+							},
 							title: ''
 						});
 					}

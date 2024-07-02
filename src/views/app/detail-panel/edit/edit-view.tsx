@@ -36,7 +36,7 @@ import { GapContainer, GapRow } from '../../../../commons/gap-container';
 import {
 	EDIT_VIEW_CLOSING_REASONS,
 	EditViewActions,
-	MAILS_ROUTE,
+	MAILS_BOARD_VIEW_ID,
 	TIMEOUTS
 } from '../../../../constants';
 import { buildArrayFromFileList } from '../../../../helpers/files';
@@ -182,7 +182,11 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 					cancel();
 					// TODO move outside the component (editor-utils or a new help module?)
 					addBoard<BoardContext>({
-						url: `${MAILS_ROUTE}/edit?action=${EditViewActions.RESUME}&id=${editorId}`,
+						boardViewId: MAILS_BOARD_VIEW_ID,
+						context: {
+							action: EditViewActions.RESUME,
+							id: editorId
+						},
 						title: ''
 					});
 				}
@@ -202,7 +206,11 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 		});
 		// TODO move outside the component (editor-utils or a new help module?)
 		addBoard<BoardContext>({
-			url: `${MAILS_ROUTE}/edit?action=${EditViewActions.RESUME}&id=${editorId}`,
+			boardViewId: MAILS_BOARD_VIEW_ID,
+			context: {
+				action: EditViewActions.RESUME,
+				id: editorId
+			},
 			title: ''
 		});
 	}, [createSnackbar, editorId]);

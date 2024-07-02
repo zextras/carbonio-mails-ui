@@ -29,7 +29,7 @@ import moment from 'moment';
 
 import { useFolder } from '../../../../carbonio-ui-commons/store/zustand/folder/hooks';
 import { getTimeLabel, participantToString } from '../../../../commons/utils';
-import { EditViewActions, MAILS_ROUTE } from '../../../../constants';
+import { EditViewActions, MAILS_BOARD_VIEW_ID } from '../../../../constants';
 import { useAppDispatch } from '../../../../hooks/redux';
 import { useMessageActions } from '../../../../hooks/use-message-actions';
 import type { BoardContext, MessageListItemProps, TextReadValuesType } from '../../../../types';
@@ -79,7 +79,11 @@ export const MessageListItem: FC<MessageListItemProps> = memo(function MessageLi
 				const { id, isDraft } = item;
 				if (isDraft) {
 					addBoard<BoardContext>({
-						url: `${MAILS_ROUTE}/edit?action=${EditViewActions.EDIT_AS_DRAFT}&id=${id}`,
+						boardViewId: MAILS_BOARD_VIEW_ID,
+						context: {
+							action: EditViewActions.EDIT_AS_DRAFT,
+							id
+						},
 						title: ''
 					});
 				} else {
