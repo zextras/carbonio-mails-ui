@@ -11,12 +11,8 @@ import { map, reject, some } from 'lodash';
 import styled from 'styled-components';
 
 import { ParticipantRoleType } from '../../../../../carbonio-ui-commons/constants/participants';
-import { parseEmail } from '../../../../../carbonio-ui-commons/helpers/email-parser';
+import { isValidEmail, parseEmail } from '../../../../../carbonio-ui-commons/helpers/email-parser';
 import { Participant } from '../../../../../types';
-
-const emailRegex =
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars, max-len, no-control-regex
-	/(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/;
 
 export interface ContactType extends ChipItem {
 	email: string;
@@ -86,10 +82,13 @@ export const RecipientsRow: FC<RecipientsRowProps> = ({
 		error: recipient.error
 	}));
 
-	const onChipInputAdd = (value: string | unknown): ChipItem =>
-		typeof value === 'string'
-			? { label: parseEmail(value) ?? value, error: !emailRegex.test(value) }
-			: { label: 'unknown data', error: true };
+	const onChipInputAdd = (value: string | unknown): ChipItem => {
+		if (typeof value === 'string') {
+			const parsed = parseEmail(value) ?? value;
+			return { label: parsed, error: !isValidEmail(parsed) };
+		}
+		return { label: 'unknown data', error: true };
+	};
 
 	const onChipInputChange = (contacts: Array<ChipItem>): void => {
 		const data = map(
