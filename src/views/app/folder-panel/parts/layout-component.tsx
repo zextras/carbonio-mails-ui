@@ -17,7 +17,7 @@ export const LayoutComponent = (): React.JSX.Element => {
 		MAILS_VIEW_LAYOUTS.VERTICAL
 	);
 	const tooltipLabel = useMemo(
-		() => (listLayout === MAILS_VIEW_LAYOUTS.VERTICAL ? 'Show Horizontal' : 'Show Vertical'),
+		() => (listLayout === MAILS_VIEW_LAYOUTS.VERTICAL ? 'Horizontal view' : 'Vertical view'),
 		[listLayout]
 	);
 
@@ -30,8 +30,7 @@ export const LayoutComponent = (): React.JSX.Element => {
 	}, [setListLayout]);
 
 	const icon = useMemo(
-		() =>
-			listLayout === MAILS_VIEW_LAYOUTS.VERTICAL ? 'BottomViewOutline' : 'VerticalViewOutline',
+		() => (listLayout === MAILS_VIEW_LAYOUTS.VERTICAL ? 'BottomViewOutline' : 'LayoutOutline'),
 		[listLayout]
 	);
 
