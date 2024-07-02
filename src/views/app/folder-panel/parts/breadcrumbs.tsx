@@ -16,6 +16,7 @@ import {
 import { t } from '@zextras/carbonio-shell-ui';
 import styled from 'styled-components';
 
+import { LayoutComponent } from './layout-component';
 import { SortingComponent } from './sorting-component';
 import { getFolderPathForBreadcrumb } from '../../../../helpers/folders';
 
@@ -77,7 +78,7 @@ export const Breadcrumbs: FC<{
 
 	return (
 		<Container
-			background="gray5"
+			background={'gray5'}
 			mainAlignment="flex-start"
 			crossAlignment="flex-start"
 			height="3rem"
@@ -126,6 +127,7 @@ export const Breadcrumbs: FC<{
 					{itemsCount > 100 ? '100+' : itemsCount}
 				</Text>
 				<Padding right="large" />
+				{!isSearchModule && <LayoutComponent />}
 				{!isSearchModule && <SortingComponent folderId={folderId} />}
 			</Row>
 		</Container>

@@ -34,8 +34,6 @@ type ResizeOptions = {
 	keepSyncedWithStorage?: boolean;
 };
 
-export const BORDERS: Border[] = ['n', 's', 'e', 'w', 'ne', 'se', 'sw', 'nw'];
-
 export function getCursorFromBorder(border: Border): NonNullable<CSSProperties['cursor']> {
 	const direction = find(
 		[
