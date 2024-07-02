@@ -13,6 +13,7 @@ import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 import { find, noop } from 'lodash';
 import { HttpResponse } from 'msw';
 
+import { aFailingSaveDraft, aSuccessfullSaveDraft } from './utils/utils';
 import { ParticipantRole } from '../../../../../carbonio-ui-commons/constants/participants';
 import { defaultBeforeAllTests } from '../../../../../carbonio-ui-commons/test/jest-setup';
 import { createFakeIdentity } from '../../../../../carbonio-ui-commons/test/mocks/accounts/fakeAccounts';
@@ -47,7 +48,6 @@ import type {
 	CreateSmartLinksRequest,
 	MailsEditorV2,
 	SaveDraftRequest,
-	SaveDraftResponse,
 	SoapDraftMessageObj,
 	SoapEmailMessagePartObj,
 	SoapMailMessage,
@@ -139,35 +139,6 @@ const clearAndInsertText =
 		await user.clear(target);
 		await user.type(target, text);
 	};
-
-function aSuccessfullSaveDraft(): Promise<SaveDraftRequest> {
-	const msg: SoapMailMessage = {
-		cid: '',
-		d: 0,
-		e: [],
-		fr: '',
-		id: '123-testId',
-		l: '',
-		mp: [],
-		s: 0,
-		su: ''
-	};
-	const response: SaveDraftResponse = {
-		m: [msg]
-	};
-	return createSoapAPIInterceptor<SaveDraftRequest, SaveDraftResponse>('SaveDraft', response);
-}
-
-function aFailingSaveDraft(): Promise<SaveDraftRequest> {
-	return createSoapAPIInterceptor<SaveDraftRequest, SaveDraftResponse>('SaveDraft', {
-		Fault: {
-			Reason: { Text: 'Failed to save draft' },
-			Detail: {
-				Error: { Code: '123', Detail: 'Failed due to connection timeout' }
-			}
-		}
-	});
-}
 
 describe('Edit view', () => {
 	describe('Mail creation', () => {
