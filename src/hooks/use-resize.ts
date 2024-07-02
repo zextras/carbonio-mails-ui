@@ -3,12 +3,13 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import type { CSSProperties } from 'react';
 import type React from 'react';
-import { useCallback, useEffect, useRef } from 'react';
+import { CSSProperties, useEffect, useCallback, useRef } from 'react';
 
 import { useLocalStorage } from '@zextras/carbonio-shell-ui';
-import { find, forEach } from 'lodash';
+import { find } from 'lodash';
+
+import { BORDERS } from '../constants';
 
 /**
  * Define the border following the cardinal points (north, south, west, east).
@@ -77,15 +78,6 @@ function calcNewSizeAndPosition(
 	return newSizeAndPosition;
 }
 
-export function setElementSizeAndPosition(
-	element: HTMLElement,
-	key: keyof SizeAndPosition,
-	value: number | undefined
-): void {
-	// eslint-disable-next-line no-param-reassign
-	element.style[key] = value !== undefined ? `${value}px` : '';
-}
-
 export function setGlobalCursor(cursor: CSSProperties['cursor']): void {
 	// remove previously set cursor
 	const cursors: string[] = [];
@@ -127,17 +119,18 @@ export const useResize = (
 				const computedStyle = getComputedStyle(elementToResizeRef.current);
 				const minHeight = parseFloat(computedStyle.minHeight) || 0;
 				const minWidth = parseFloat(computedStyle.minWidth) || 0;
-				if (top >= 0 && height >= minHeight) {
+				if (top >= 0 && height >= minHeight && border === BORDERS.SOUTH) {
 					sizeAndPositionToApply.height = height;
 					sizeAndPositionToApply.top = top;
+					elementToResize.style.height = `${height}px`;
+					elementToResize.style.top = `${top}px`;
 				}
-				if (left >= 0 && width >= minWidth) {
+				if (left >= 0 && width >= minWidth && border === BORDERS.EAST) {
 					sizeAndPositionToApply.width = width;
 					sizeAndPositionToApply.left = left;
+					elementToResize.style.width = `${width}px`;
+					elementToResize.style.left = `${left}px`;
 				}
-				forEach(sizeAndPositionToApply, (value, key) => {
-					setElementSizeAndPosition(elementToResize, key as keyof SizeAndPosition, value);
-				});
 				// reset bottom in favor of top
 				elementToResize.style.bottom = '';
 				// reset right in favor of left
@@ -145,7 +138,7 @@ export const useResize = (
 				lastSizeAndPositionRef.current = sizeAndPositionToApply;
 			}
 		},
-		[elementToResizeRef]
+		[border, elementToResizeRef]
 	);
 
 	const onMouseMove = useCallback(
@@ -177,8 +170,9 @@ export const useResize = (
 				mouseDownEvent.preventDefault();
 				const clientRect = elementToResizeRef.current.getBoundingClientRect();
 				initialSizeAndPositionRef.current = {
+					height: initialSizeAndPositionRef?.current?.height ?? 0,
 					width: elementToResizeRef.current.offsetWidth,
-					height: elementToResizeRef.current.offsetHeight,
+					// height: elementToResizeRef.current.offsetHeight,
 					top: elementToResizeRef.current.offsetTop,
 					left: elementToResizeRef.current.offsetLeft,
 					clientTop: clientRect.top,
