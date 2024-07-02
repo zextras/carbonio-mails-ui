@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import React, { FC, useMemo } from 'react';
 
 import {
 	Container,
@@ -34,41 +34,6 @@ export const Breadcrumbs: FC<{
 	folderId?: string;
 	isSearchModule?: boolean;
 }> = ({ itemsCount, isSelectModeOn, setIsSelectModeOn, folderPath, folderId, isSearchModule }) => {
-	const containerRef = useRef<HTMLDivElement>(null);
-	const folderPathLastPartRef = useRef<HTMLDivElement>(null);
-
-	const [availableWidth, setAvailableWidth] = useState('0');
-
-	useLayoutEffect(() => {
-		const calculateAvailableWidth = (): void => {
-			if (containerRef && containerRef.current) {
-				setAvailableWidth(
-					`${
-						((containerRef?.current?.offsetWidth ?? 0) -
-							(folderPathLastPartRef?.current?.offsetWidth ?? 0) -
-							120) /
-						16
-					}rem`
-				);
-			}
-		};
-		window.addEventListener('resize', calculateAvailableWidth);
-		return (): void => window.removeEventListener('resize', calculateAvailableWidth);
-	}, [containerRef.current?.offsetWidth]);
-
-	useEffect(() => {
-		if (containerRef?.current && folderPathLastPartRef?.current) {
-			setAvailableWidth(
-				`${
-					((containerRef?.current?.offsetWidth ?? 0) -
-						(folderPathLastPartRef?.current?.offsetWidth ?? 0) -
-						120) /
-					16
-				}rem`
-			);
-		}
-	}, []);
-
 	const iconCheckboxLabel = useMemo(
 		() => t('label.activate_selection_mode', 'Activate selection mode'),
 		[]
@@ -82,16 +47,20 @@ export const Breadcrumbs: FC<{
 			mainAlignment="flex-start"
 			crossAlignment="flex-start"
 			height="3rem"
-			ref={containerRef}
 		>
 			<Row
 				height="100%"
 				width="fill"
 				padding={{ all: 'extrasmall' }}
 				mainAlignment="space-between"
-				takeAvailableSpace
+				wrap={'nowrap'}
 			>
-				<Row mainAlignment="flex-start" padding={{ right: 'medium' }} takeAvailableSpace>
+				<Row
+					mainAlignment="flex-start"
+					padding={{ right: 'medium' }}
+					takeAvailableSpace
+					wrap={'nowrap'}
+				>
 					<Tooltip label={iconCheckboxLabel} maxWidth="100%">
 						<SelectIconCheckbox
 							borderRadius="regular"
@@ -104,31 +73,23 @@ export const Breadcrumbs: FC<{
 							}}
 						/>
 					</Tooltip>
-					<Row maxWidth={availableWidth} mainAlignment="flex-start">
-						<Text
-							size="medium"
-							style={{ marginLeft: '0.5rem' }}
-							data-testid="BreadcrumbPath"
-							color="gray1"
-						>
-							{folderPathFirstPart}
-						</Text>
-					</Row>
 					<Text
 						size="medium"
 						style={{ marginLeft: '0.5rem' }}
 						data-testid="BreadcrumbPath"
-						ref={folderPathLastPartRef}
+						color="gray1"
 					>
-						{folderPathLastPart}
+						{folderPathFirstPart.concat(folderPathLastPart)}
 					</Text>
 				</Row>
-				<Text size="extrasmall" data-testid="BreadcrumbCount">
-					{itemsCount > 100 ? '100+' : itemsCount}
-				</Text>
-				<Padding right="large" />
-				{!isSearchModule && <LayoutComponent />}
-				{!isSearchModule && <SortingComponent folderId={folderId} />}
+				<Row>
+					<Text size="extrasmall" data-testid="BreadcrumbCount">
+						{itemsCount > 100 ? '100+' : itemsCount}
+					</Text>
+					<Padding right="large" />
+					{!isSearchModule && <LayoutComponent />}
+					{!isSearchModule && <SortingComponent folderId={folderId} />}
+				</Row>
 			</Row>
 		</Container>
 	);
