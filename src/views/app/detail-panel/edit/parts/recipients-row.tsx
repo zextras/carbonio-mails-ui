@@ -36,6 +36,12 @@ export type RecipientsRowProps = {
 	orderedAccountIds?: Array<string>;
 };
 
+const CustomChipInput = styled(ChipInput)`
+	input {
+		width: 100%;
+	}
+`;
+
 /**
  * The component handle the input for participants of the given type
  * @param type
@@ -55,12 +61,6 @@ export const RecipientsRow: FC<RecipientsRowProps> = ({
 	orderedAccountIds
 }) => {
 	const [ContactInput, isAvailable] = useIntegratedComponent('contact-input');
-
-	const CustomChipInput = styled(ChipInput)`
-		input {
-			width: 100%;
-		}
-	`;
 
 	const onContactInputChange = useCallback(
 		(contacts: Array<ContactType>): void => {
