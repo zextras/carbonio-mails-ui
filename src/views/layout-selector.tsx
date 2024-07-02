@@ -3,17 +3,18 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
 import { useLocalStorage } from '@zextras/carbonio-shell-ui';
 
-import { LOCAL_STORAGE_VIEW_SIZES } from '../constants';
+import type { MailsListLayout } from './app-view';
+import { LOCAL_STORAGE_VIEW_SIZES, MAILS_VIEW_LAYOUTS } from '../constants';
 import { SizeAndPosition } from '../hooks/use-resize';
 
 type LayoutSelectorProps = {
 	containerRef: React.RefObject<HTMLDivElement>;
-	isColumnView: boolean;
+	listLayout: MailsListLayout;
 	folderView: React.ReactNode;
 	detailPanel: React.ReactNode;
 };
@@ -22,45 +23,60 @@ export const LayoutSelector = ({
 	folderView,
 	detailPanel,
 	containerRef,
-	isColumnView
+	listLayout
 }: LayoutSelectorProps): React.JSX.Element => {
 	const [lastSavedViewSizes] = useLocalStorage<Partial<SizeAndPosition>>(
 		LOCAL_STORAGE_VIEW_SIZES,
 		{}
 	);
 
-	const orientation = useMemo(() => (isColumnView ? 'horizontal' : 'vertical'), [isColumnView]);
-
-	const width = useMemo(() => {
-		if (isColumnView) {
-			if (lastSavedViewSizes?.width) {
-				return `${lastSavedViewSizes?.width}px`;
-			}
-			return '60%';
+	const orientation = useMemo(() => {
+		if (listLayout === MAILS_VIEW_LAYOUTS.VERTICAL) {
+			return MAILS_VIEW_LAYOUTS.HORIZONTAL;
 		}
-		return '100%';
-	}, [isColumnView, lastSavedViewSizes?.width]);
-
-	const height = useMemo(() => {
-		if (!isColumnView) {
-			if (lastSavedViewSizes?.height) {
-				return `${lastSavedViewSizes?.height}px`;
-			}
-			return '50%';
+		if (listLayout === MAILS_VIEW_LAYOUTS.HORIZONTAL) {
+			return MAILS_VIEW_LAYOUTS.VERTICAL;
 		}
-		return '100%';
-	}, [isColumnView, lastSavedViewSizes?.height]);
+		return MAILS_VIEW_LAYOUTS.DEFAULT;
+	}, [listLayout]);
+
+	useEffect(() => {
+		if (containerRef.current) {
+			if (listLayout === MAILS_VIEW_LAYOUTS.VERTICAL) {
+				if (lastSavedViewSizes?.width) {
+					// eslint-disable-next-line no-param-reassign
+					containerRef.current.style.width = `${lastSavedViewSizes?.width}px`;
+				} else {
+					// eslint-disable-next-line no-param-reassign
+					containerRef.current.style.width = `60%`;
+				}
+			} else {
+				// eslint-disable-next-line no-param-reassign
+				containerRef.current.style.width = `100%`;
+			}
+		}
+	}, [containerRef, listLayout, lastSavedViewSizes?.width]);
+
+	useEffect(() => {
+		if (containerRef.current) {
+			if (listLayout === MAILS_VIEW_LAYOUTS.HORIZONTAL) {
+				if (lastSavedViewSizes?.height) {
+					// eslint-disable-next-line no-param-reassign
+					containerRef.current.style.height = `${lastSavedViewSizes?.height}px`;
+				} else {
+					// eslint-disable-next-line no-param-reassign
+					containerRef.current.style.height = `50%`;
+				}
+			} else {
+				// eslint-disable-next-line no-param-reassign
+				containerRef.current.style.height = `100%`;
+			}
+		}
+	}, [listLayout, lastSavedViewSizes?.height, containerRef]);
 
 	return (
 		<Container orientation={orientation} mainAlignment="flex-start">
-			<Container
-				ref={containerRef}
-				width={width}
-				height={height}
-				minHeight={'5rem'}
-				minWidth={'3rem'}
-				style={{ flexShrink: 0 }}
-			>
+			<Container ref={containerRef} minHeight={'3rem'} minWidth={'3rem'} style={{ flexShrink: 0 }}>
 				{folderView}
 			</Container>
 			{detailPanel}

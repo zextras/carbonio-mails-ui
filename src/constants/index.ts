@@ -18,6 +18,14 @@ export const RECOVER_MESSAGES_INTERVAL = 3;
 
 export const LOCAL_STORAGE_VIEW_SIZES = 'carbonio-mails-ui-list-view-sizes';
 
+export const LOCAL_STORAGE_LAYOUT = 'carbonio-mails-ui-layout';
+
+export const MAILS_VIEW_LAYOUTS = {
+	DEFAULT: 'horizontal',
+	VERTICAL: 'vertical',
+	HORIZONTAL: 'horizontal'
+} as const;
+
 export const BORDERS = {
 	EAST: 'e',
 	SOUTH: 's',

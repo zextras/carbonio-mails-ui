@@ -5,21 +5,32 @@
  */
 import React, { FC, Suspense, lazy, useEffect, useMemo, useState, useRef } from 'react';
 
-import { FOLDERS, Spinner, setAppContext, useUserSettings } from '@zextras/carbonio-shell-ui';
+import {
+	FOLDERS,
+	Spinner,
+	setAppContext,
+	useUserSettings,
+	useLocalStorage
+} from '@zextras/carbonio-shell-ui';
 import { includes } from 'lodash';
 import moment from 'moment';
 import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom';
 
 import { LayoutSelector } from './layout-selector';
 import { ResizableContainer } from './resizable-container';
-import { BORDERS, LOCAL_STORAGE_VIEW_SIZES } from '../constants';
+import {
+	BORDERS,
+	LOCAL_STORAGE_LAYOUT,
+	LOCAL_STORAGE_VIEW_SIZES,
+	MAILS_VIEW_LAYOUTS
+} from '../constants';
 import { getFolderIdParts } from '../helpers/folders';
 import { useAppSelector } from '../hooks/redux';
 import { selectCurrentFolder } from '../store/conversations-slice';
 
 type FolderViewProps = {
 	containerRef: React.RefObject<HTMLDivElement>;
-	isColumnView: boolean;
+	listLayout: MailsListLayout;
 };
 
 const LazyFolderView = lazy(
@@ -36,9 +47,14 @@ const DetailPanel = (): React.JSX.Element => (
 	</Suspense>
 );
 
-const FolderView = ({ isColumnView, containerRef }: FolderViewProps): React.JSX.Element => {
+export type MailsListLayout = (typeof MAILS_VIEW_LAYOUTS)[keyof typeof MAILS_VIEW_LAYOUTS];
+
+const FolderView = ({ listLayout, containerRef }: FolderViewProps): React.JSX.Element => {
 	const { path } = useRouteMatch();
-	const border = useMemo(() => (isColumnView ? BORDERS.EAST : BORDERS.SOUTH), [isColumnView]);
+	const border = useMemo(
+		() => (listLayout === MAILS_VIEW_LAYOUTS.VERTICAL ? BORDERS.EAST : BORDERS.SOUTH),
+		[listLayout]
+	);
 
 	return (
 		<ResizableContainer
@@ -64,6 +80,11 @@ const AppView: FC = () => {
 	const currentFolderId = useAppSelector(selectCurrentFolder);
 	const containerRef = useRef<HTMLDivElement>(null);
 
+	const [listLayout] = useLocalStorage<MailsListLayout>(
+		LOCAL_STORAGE_LAYOUT,
+		MAILS_VIEW_LAYOUTS.VERTICAL
+	);
+
 	const isMessageView = useMemo(
 		() =>
 			(zimbraPrefGroupMailBy && zimbraPrefGroupMailBy === 'message') ||
@@ -79,12 +100,10 @@ const AppView: FC = () => {
 		setAppContext({ isMessageView, count, setCount });
 	}, [count, isMessageView]);
 
-	const isColumnView = true;
-
 	return (
 		<LayoutSelector
-			isColumnView={isColumnView}
-			folderView={<FolderView isColumnView={isColumnView} containerRef={containerRef} />}
+			listLayout={listLayout}
+			folderView={<FolderView listLayout={listLayout} containerRef={containerRef} />}
 			detailPanel={<DetailPanel />}
 			containerRef={containerRef}
 		/>
