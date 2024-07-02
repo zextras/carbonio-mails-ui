@@ -69,7 +69,6 @@ describe('SearchView', () => {
 		setupTest(<SearchView {...searchViewProps} />, {
 			store
 		});
-		screen.logTestingPlaygroundURL();
 		const advancedFiltersButton = screen.getByRole('button', {
 			name: /label\.single_advanced_filter/i
 		});
