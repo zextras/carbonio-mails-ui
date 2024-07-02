@@ -53,4 +53,41 @@ describe('SearchView', () => {
 
 		expect(await screen.findByText('label.results_for')).toBeInTheDocument();
 	});
+
+	it('should display a disabled Advanced Filters button when SearchDisabled is true', async () => {
+		const store = generateStore();
+		createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
+			c: [
+				{
+					id: '123',
+					n: 1,
+					u: 1,
+					f: 'flag',
+					tn: 'tag names',
+					d: 123,
+					m: [],
+					e: [],
+					su: 'Subject',
+					fr: 'fragment'
+				}
+			],
+			more: false
+		});
+		const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
+		const searchViewProps: SearchViewProps = {
+			useQuery: () => [[], noop],
+			useDisableSearch: () => [true, noop],
+			ResultsHeader: resultsHeader
+		};
+
+		setupTest(<SearchView {...searchViewProps} />, {
+			store
+		});
+
+		const advancedFiltersButton = screen.getByRole('button', {
+			name: /label\.single_advanced_filter/i
+		});
+		expect(advancedFiltersButton).toBeVisible();
+		expect(advancedFiltersButton).toBeDisabled();
+	});
 });
