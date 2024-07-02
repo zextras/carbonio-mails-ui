@@ -113,7 +113,6 @@ export function getSearchFactory(name: string) {
 						...normalizeConversation({ c: obj, tags }),
 						sortIndex: index + (offset ?? 0)
 					}));
-
 					return {
 						conversations: keyBy(conversations, 'id'),
 						hasMore: result.more,
