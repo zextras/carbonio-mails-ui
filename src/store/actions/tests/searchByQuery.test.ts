@@ -312,7 +312,7 @@ function messageFromStore(params: Partial<MsgMapValue> = {}): MsgMapValue {
 		isComplete: false,
 		isScheduled: false,
 		read: true,
-		isReadReceiptRequested: true,
+		isReadReceiptRequested: false,
 		sortIndex: 0,
 		...params
 	};

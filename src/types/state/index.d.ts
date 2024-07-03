@@ -83,6 +83,7 @@ export type EditorsStateTypeV2 = {
 	clearStandardAttachments: (id: MailsEditorV2['id']) => void;
 	setMessagesStoreDispatch: (id: MailsEditorV2['id'], dispatch: AppDispatch) => void;
 	toggleSmartLink: (id: MailsEditorV2['id'], partName: string) => void;
+	setSignatureId: (id: MailsEditorV2['id'], signId: MailsEditorV2['signatureId']) => void;
 };
 
 export type MsgStateType = {

@@ -169,8 +169,8 @@ export type MailsEditorV2 = {
 	sendAllowedStatus?: EditorOperationAllowedStatus;
 	// status of the message send
 	sendProcessStatus?: SendProcessStatus;
-	// value of the current signature
-	signature?: string;
+	// Id of the current selectesignature
+	signatureId?: string;
 	// dispatch function for the messages store
 	messagesStoreDispatch: AppDispatch;
 	// the size of the draft

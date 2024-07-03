@@ -5,6 +5,7 @@
  */
 import React, { FC, Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 
+import { isRejected } from '@reduxjs/toolkit';
 import { Container, Spinner } from '@zextras/carbonio-design-system';
 import {
 	SEARCH_APP_ID,
@@ -117,17 +118,14 @@ const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHe
 					locale: prefLocale
 				})
 			);
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-ignore
-			if (searchByQuery.rejected.match(resultAction)) {
-				if (
-					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-					// @ts-ignore
-					resultAction?.payload?.Detail?.Error?.Code === 'mail.QUERY_PARSE_ERROR'
-				) {
-					setIsInvalidQuery(true);
-					setSearchDisabled(true, invalidQueryTooltip);
-				}
+			if (
+				isRejected(resultAction) &&
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// @ts-ignore
+				resultAction?.payload?.Detail?.Error?.Code === 'mail.QUERY_PARSE_ERROR'
+			) {
+				setIsInvalidQuery(true);
+				setSearchDisabled(true, invalidQueryTooltip);
 			}
 		},
 		[
@@ -201,6 +199,7 @@ const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHe
 	useEffect(() => {
 		if (query?.length > 0 && !isInvalidQuery) {
 			setFilterCount(query.length);
+			searchQuery(queryToString, true);
 		}
 		if (query?.length === 0) {
 			setFilterCount(0);
@@ -211,11 +210,7 @@ const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHe
 				route: SEARCH_APP_ID
 			});
 		}
-	}, [dispatch, isInvalidQuery, query.length]);
-
-	useEffect(() => {
-		searchQuery(queryToString, true);
-	}, [queryToString, searchQuery]);
+	}, [dispatch, isInvalidQuery, query.length, queryToString, searchQuery]);
 
 	const { path } = useRouteMatch();
 	const resultLabelType = isInvalidQuery ? 'warning' : undefined;
