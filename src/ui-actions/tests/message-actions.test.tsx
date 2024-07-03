@@ -23,7 +23,7 @@ import {
 	setupTest,
 	setupHook
 } from '../../carbonio-ui-commons/test/test-setup';
-import { API_REQUEST_STATUS, EditViewActions, MAILS_ROUTE, TIMEOUTS } from '../../constants';
+import { API_REQUEST_STATUS, EditViewActions, TIMEOUTS } from '../../constants';
 import { useUiUtilities } from '../../hooks/use-ui-utilities';
 import * as getMsgsForPrint from '../../store/actions/get-msg-for-print';
 import { generateMessage } from '../../tests/generators/generateMessage';
@@ -852,7 +852,10 @@ describe('Messages actions calls', () => {
 
 		expect(addBoard).toBeCalledWith(
 			expect.objectContaining({
-				url: `${MAILS_ROUTE}/edit?action=${EditViewActions.REPLY}&id=${msg.id}`,
+				context: {
+					action: EditViewActions.REPLY,
+					id: msg.id
+				},
 				title: ''
 			})
 		);
@@ -881,7 +884,10 @@ describe('Messages actions calls', () => {
 
 		expect(addBoard).toBeCalledWith(
 			expect.objectContaining({
-				url: `${MAILS_ROUTE}/edit?action=${EditViewActions.REPLY_ALL}&id=${msg.id}`,
+				context: {
+					action: EditViewActions.REPLY_ALL,
+					id: msg.id
+				},
 				title: ''
 			})
 		);
@@ -908,7 +914,10 @@ describe('Messages actions calls', () => {
 
 		expect(addBoard).toBeCalledWith(
 			expect.objectContaining({
-				url: `${MAILS_ROUTE}/edit?action=${EditViewActions.FORWARD}&id=${msg.id}`,
+				context: {
+					action: EditViewActions.FORWARD,
+					id: msg.id
+				},
 				title: ''
 			})
 		);
@@ -938,7 +947,10 @@ describe('Messages actions calls', () => {
 
 		expect(addBoard).toBeCalledWith(
 			expect.objectContaining({
-				url: `${MAILS_ROUTE}/edit?action=${EditViewActions.EDIT_AS_DRAFT}&id=${msg.id}`,
+				context: {
+					action: EditViewActions.EDIT_AS_DRAFT,
+					id: msg.id
+				},
 				title: ''
 			})
 		);
@@ -965,7 +977,10 @@ describe('Messages actions calls', () => {
 
 		expect(addBoard).toBeCalledWith(
 			expect.objectContaining({
-				url: `${MAILS_ROUTE}/edit?action=${EditViewActions.EDIT_AS_NEW}&id=${msg.id}`,
+				context: {
+					action: EditViewActions.EDIT_AS_NEW,
+					id: msg.id
+				},
 				title: ''
 			})
 		);

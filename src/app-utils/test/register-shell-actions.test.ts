@@ -99,7 +99,10 @@ describe('newEmailActionOnClick', () => {
 	it('when called it should invoke addBoard with the correct parameters', async () => {
 		newEmailActionOnClick({} as KeyboardEvent);
 		expect(addBoard).toHaveBeenCalledWith({
-			url: 'mails/edit?action=new',
+			boardViewId: 'mails_editor_board_view',
+			context: {
+				action: 'new'
+			},
 			title: 'label.new_email'
 		});
 	});
