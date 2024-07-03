@@ -87,7 +87,18 @@ export const SendersList = ({
 		setSendersList([...sendersList, address]);
 	};
 
-	const isAddEnabled = useMemo(() => isValidEmail(address), [address]);
+	const itemsCount = sendersList?.length || 0;
+	const maxItems =
+		(listType === 'Allowed'
+			? settingsObj?.zimbraMailWhitelistMaxNumEntries
+			: settingsObj?.zimbraMailBlacklistMaxNumEntries) || 100;
+
+	const isInsertDisabled = useMemo(() => itemsCount >= maxItems, [itemsCount, maxItems]);
+
+	const isAddEnabled = useMemo(
+		() => isValidEmail(address) && !isInsertDisabled,
+		[address, isInsertDisabled]
+	);
 	const isInputValid = useMemo(() => isAddEnabled || address === '', [isAddEnabled, address]);
 
 	const warningMessage = useMemo(
@@ -112,11 +123,6 @@ export const SendersList = ({
 		},
 		[sendersList, updateSettings, listType]
 	);
-
-	const maxItems =
-		(listType === 'Allowed'
-			? settingsObj?.zimbraMailWhitelistMaxNumEntries
-			: settingsObj?.zimbraMailBlacklistMaxNumEntries) || 100;
 
 	return (
 		<Container background="gray6" padding={{ horizontal: 'medium', bottom: 'large' }}>
@@ -146,6 +152,7 @@ export const SendersList = ({
 							onChange={(e: React.ChangeEvent<HTMLInputElement>): void =>
 								setAddress(e.target.value)
 							}
+							disabled={isInsertDisabled}
 						/>
 					</Row>
 					<Padding left="medium" top="extrasmall">
@@ -199,7 +206,7 @@ export const SendersList = ({
 				>
 					<Text size="small">
 						{t('label.senderslist_numentries', {
-							count: sendersList?.length || 0,
+							count: itemsCount,
 							max: maxItems,
 							defaultValue_one: '{{count}} of {{max}}',
 							defaultValue_other: '{{count}} of {{max}}'
