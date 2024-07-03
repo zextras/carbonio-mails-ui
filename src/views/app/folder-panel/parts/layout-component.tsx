@@ -10,7 +10,7 @@ import { useLocalStorage } from '@zextras/carbonio-shell-ui';
 import { useTranslation } from 'react-i18next';
 
 import { LOCAL_STORAGE_LAYOUT, MAILS_VIEW_LAYOUTS } from '../../../../constants';
-import type { MailsListLayout } from '../../../app-view';
+import type { MailsListLayout } from '../../../folder-view';
 
 export const LayoutComponent = (): React.JSX.Element => {
 	const [t] = useTranslation();
