@@ -88,10 +88,10 @@ export const SendersList = ({
 	};
 
 	const itemsCount = sendersList?.length || 0;
-	const maxItems = 5;
-	/* (listType === 'Allowed'
+	const maxItems =
+		(listType === 'Allowed'
 			? settingsObj?.zimbraMailWhitelistMaxNumEntries
-			: settingsObj?.zimbraMailBlacklistMaxNumEntries) || 100; */
+			: settingsObj?.zimbraMailBlacklistMaxNumEntries) || 100;
 
 	const isInsertEnabled = useMemo(() => itemsCount < maxItems, [itemsCount, maxItems]);
 
