@@ -14,28 +14,13 @@ import {
 } from '@zextras/carbonio-shell-ui';
 import { includes } from 'lodash';
 import moment from 'moment';
-import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom';
 
+import { FolderView, MailsListLayout } from './folder-view';
 import { LayoutSelector } from './layout-selector';
-import { ResizableContainer } from './resizable-container';
-import {
-	BORDERS,
-	LOCAL_STORAGE_LAYOUT,
-	LOCAL_STORAGE_VIEW_SIZES,
-	MAILS_VIEW_LAYOUTS
-} from '../constants';
+import { LOCAL_STORAGE_LAYOUT, MAILS_VIEW_LAYOUTS } from '../constants';
 import { getFolderIdParts } from '../helpers/folders';
 import { useAppSelector } from '../hooks/redux';
 import { selectCurrentFolder } from '../store/conversations-slice';
-
-type FolderViewProps = {
-	containerRef: React.RefObject<HTMLDivElement>;
-	listLayout: MailsListLayout;
-};
-
-const LazyFolderView = lazy(
-	() => import(/* webpackChunkName: "folder-panel-view" */ './app/folder-panel')
-);
 
 const LazyDetailPanel = lazy(
 	() => import(/* webpackChunkName: "folder-panel-view" */ './app/detail-panel')
@@ -47,33 +32,6 @@ const DetailPanel = (): React.JSX.Element => (
 	</Suspense>
 );
 
-export type MailsListLayout = (typeof MAILS_VIEW_LAYOUTS)[keyof typeof MAILS_VIEW_LAYOUTS];
-
-const FolderView = ({ listLayout, containerRef }: FolderViewProps): React.JSX.Element => {
-	const { path } = useRouteMatch();
-	const border = useMemo(
-		() => (listLayout === MAILS_VIEW_LAYOUTS.VERTICAL ? BORDERS.EAST : BORDERS.SOUTH),
-		[listLayout]
-	);
-
-	return (
-		<ResizableContainer
-			border={border}
-			elementToResize={containerRef}
-			localStorageKey={LOCAL_STORAGE_VIEW_SIZES}
-			keepSyncedWithStorage
-		>
-			<Switch>
-				<Route path={`${path}/folder/:folderId/:type?/:itemId?`}>
-					<Suspense fallback={<Spinner />}>
-						<LazyFolderView />
-					</Suspense>
-				</Route>
-				<Redirect strict from={path} to={`${path}/folder/2`} />
-			</Switch>
-		</ResizableContainer>
-	);
-};
 const AppView: FC = () => {
 	const [count, setCount] = useState(0);
 	const { zimbraPrefGroupMailBy, zimbraPrefLocale } = useUserSettings().prefs;
