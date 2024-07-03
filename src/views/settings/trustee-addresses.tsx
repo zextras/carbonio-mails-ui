@@ -17,7 +17,7 @@ import {
 	ListV2
 } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
-import { filter, find, map } from 'lodash';
+import { filter, find } from 'lodash';
 
 import { SendersListItem } from './components/senders-list-item';
 import Heading from './components/settings-heading';
@@ -88,16 +88,6 @@ const TrusteeAddresses = ({ settingsObj, updateSettings }: InputProps): React.JS
 		[isInvalid]
 	);
 
-	const trusteeAddressesListItems = useMemo(
-		() =>
-			map(trusteeAddressesList, (el) => ({
-				id: el,
-				value: el,
-				label: el
-			})),
-		[trusteeAddressesList]
-	);
-
 	return (
 		<Container background="gray6" padding={{ horizontal: 'medium', bottom: 'large' }}>
 			<Container orientation="horizontal" padding={{ horizontal: 'medium', top: 'medium' }}>
@@ -113,6 +103,7 @@ const TrusteeAddresses = ({ settingsObj, updateSettings }: InputProps): React.JS
 				padding={{ all: 'medium', bottom: 'small' }}
 				orientation="horizontal"
 				mainAlignment="flex-start"
+				crossAlignment="flex-start"
 			>
 				<Row mainAlignment="flex-start" width="50vw">
 					<Input
@@ -124,7 +115,7 @@ const TrusteeAddresses = ({ settingsObj, updateSettings }: InputProps): React.JS
 						onChange={(e: React.ChangeEvent<HTMLInputElement>): void => setAddress(e.target.value)}
 					/>
 				</Row>
-				<Padding left="medium">
+				<Padding left="medium" top="extrasmall">
 					<Tooltip label={warningMessage} disabled={!isInvalid} maxWidth="100%">
 						<Button
 							label={t('label.add', 'Add')}
