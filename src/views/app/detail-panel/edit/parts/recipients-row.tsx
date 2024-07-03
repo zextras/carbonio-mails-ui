@@ -124,7 +124,7 @@ export const RecipientsRow: FC<RecipientsRowProps> = ({
 					background="gray5"
 					hasError={some(recipients || [], { error: true })}
 					createChipOnPaste
-					pasteSeparators={[',', ';', ' ', '\n']}
+					pasteSeparators={[',', ';', '\n']}
 					separators={[
 						{ code: 'Enter', ctrlKey: false },
 						{ code: 'NumpadEnter', ctrlKey: false },
