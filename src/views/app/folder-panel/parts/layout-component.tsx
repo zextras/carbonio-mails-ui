@@ -7,18 +7,23 @@ import React, { useCallback, useMemo } from 'react';
 
 import { IconButton, Tooltip } from '@zextras/carbonio-design-system';
 import { useLocalStorage } from '@zextras/carbonio-shell-ui';
+import { useTranslation } from 'react-i18next';
 
 import { LOCAL_STORAGE_LAYOUT, MAILS_VIEW_LAYOUTS } from '../../../../constants';
 import type { MailsListLayout } from '../../../app-view';
 
 export const LayoutComponent = (): React.JSX.Element => {
+	const [t] = useTranslation();
 	const [listLayout, setListLayout] = useLocalStorage<MailsListLayout>(
 		LOCAL_STORAGE_LAYOUT,
 		MAILS_VIEW_LAYOUTS.VERTICAL
 	);
 	const tooltipLabel = useMemo(
-		() => (listLayout === MAILS_VIEW_LAYOUTS.VERTICAL ? 'Horizontal view' : 'Vertical view'),
-		[listLayout]
+		() =>
+			listLayout === MAILS_VIEW_LAYOUTS.VERTICAL
+				? t('layoutView.tooltip.horizontal', 'Horizontal view')
+				: t('layoutView.tooltip.vertical', 'Vertical view'),
+		[t, listLayout]
 	);
 
 	const onClick = useCallback(() => {

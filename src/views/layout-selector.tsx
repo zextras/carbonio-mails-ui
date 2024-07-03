@@ -78,7 +78,7 @@ export const LayoutSelector = ({
 		<Container orientation={orientation} mainAlignment="flex-start">
 			<Container
 				ref={containerRef}
-				minHeight={'3rem'}
+				minHeight={'11.25rem'}
 				minWidth={'22.5rem'}
 				style={{ flexShrink: 0 }}
 			>
