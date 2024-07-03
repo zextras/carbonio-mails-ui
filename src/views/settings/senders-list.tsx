@@ -113,6 +113,11 @@ export const SendersList = ({
 		[sendersList, updateSettings, listType]
 	);
 
+	const maxItems =
+		(listType === 'Allowed'
+			? settingsObj?.zimbraMailWhitelistMaxNumEntries
+			: settingsObj?.zimbraMailBlacklistMaxNumEntries) || 100;
+
 	return (
 		<Container background="gray6" padding={{ horizontal: 'medium', bottom: 'large' }}>
 			<Container orientation="vertical" padding={{ all: 'medium', top: 'medium' }}>
@@ -126,7 +131,7 @@ export const SendersList = ({
 			<Divider />
 			<Container orientation="vertical">
 				<Container
-					padding={{ top: 'medium', horizontal: 'medium', bottom: '0.3rem' }}
+					padding={{ top: 'medium', horizontal: 'medium', bottom: 'extrasmall' }}
 					orientation="horizontal"
 					mainAlignment="flex-start"
 					crossAlignment="flex-start"
@@ -143,7 +148,7 @@ export const SendersList = ({
 							}
 						/>
 					</Row>
-					<Padding left="medium" top="0.30rem">
+					<Padding left="medium" top="extrasmall">
 						<Tooltip label={warningMessage} disabled={isAddEnabled} maxWidth="100%">
 							<Button
 								label={t('label.add', 'Add')}
@@ -157,7 +162,7 @@ export const SendersList = ({
 				{showConflictText ? (
 					<Container
 						crossAlignment="flex-start"
-						padding={{ bottom: '1rem', horizontal: '0.75rem' }}
+						padding={{ bottom: 'large', horizontal: 'medium' }}
 					>
 						<Text size="small" color="gray1">
 							{t(
@@ -172,6 +177,7 @@ export const SendersList = ({
 				padding={{ horizontal: 'medium', bottom: 'small' }}
 				orientation="vertical"
 				mainAlignment="flex-start"
+				crossAlignment="flex-start"
 			>
 				<ListV2 data-testid={'senders-list'}>
 					{sendersList.map((address, idx) => (
@@ -180,12 +186,26 @@ export const SendersList = ({
 				</ListV2>
 
 				{sendersList.length === 0 ? (
-					<Container>
-						<Text>
+					<Container padding={{ top: '1.9rem' }}>
+						<Text color="secondary">
 							{t('message.senderslist_empty', 'No addresses have been included in the list yet')}
 						</Text>
 					</Container>
 				) : null}
+				<Container
+					mainAlignment="flex-start"
+					crossAlignment="flex-start"
+					padding={{ top: 'extralarge', left: 'small' }}
+				>
+					<Text size="small">
+						{t('label.senderslist_numentries', {
+							count: sendersList?.length || 0,
+							max: maxItems,
+							defaultValue_one: '{{count}} of {{max}}',
+							defaultValue_other: '{{count}} of {{max}}'
+						})}
+					</Text>
+				</Container>
 			</Container>
 		</Container>
 	);
