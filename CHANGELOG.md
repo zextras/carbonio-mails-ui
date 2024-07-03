@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.16.3](https://github.com/zextras/carbonio-mails-ui/compare/v1.16.2...v1.16.3) (2024-07-02)
+
+
+### Bug Fixes
+
+* searchByQuery in SearchView is called only when query is valid ([d0b0e69](https://github.com/zextras/carbonio-mails-ui/commit/d0b0e695abb96b2d87f210279144ee1903efbebe))
+
 ### [1.16.2](https://github.com/zextras/carbonio-mails-ui/compare/v1.16.1...v1.16.2) (2024-06-27)
 
 
