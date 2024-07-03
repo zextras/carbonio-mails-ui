@@ -10,6 +10,8 @@ import {
 	ParticipantRole,
 	ParticipantRoleType
 } from '../carbonio-ui-commons/constants/participants';
+import { getFolder } from '../carbonio-ui-commons/store/zustand/folder/hooks';
+import { useFolderStore } from '../carbonio-ui-commons/store/zustand/folder/store';
 import type {
 	AttachmentPart,
 	IncompleteMessage,
@@ -20,6 +22,19 @@ import type {
 	SoapMailMessagePart,
 	SoapMailParticipant
 } from '../types';
+
+type Flags = {
+	read: boolean;
+	hasAttachment?: boolean;
+	flagged?: boolean;
+	urgent?: boolean;
+	isDeleted?: boolean;
+	isDraft?: boolean;
+	isForwarded?: boolean;
+	isSentByMe?: boolean;
+	isInvite?: boolean;
+	isReplied?: boolean;
+};
 
 // extract ids of attachments from html content. the ids are preceded by "cid: and end with " or with &
 export const extractAttachmentIdsFromHtmlContent = (content: string): Array<string> => {
@@ -275,10 +290,53 @@ const getTagIds = (t: string | undefined, tn: string | undefined): Array<string 
 	return [];
 };
 
+export const haveReadReceipt = (
+	participants: Array<SoapMailParticipant> | undefined,
+	flags: string | undefined,
+	folderId: string
+): boolean => {
+	const folder = getFolder(folderId);
+	if (isNil(participants)) return false;
+	if (isNil(folder)) {
+		const state = useFolderStore.getState();
+		const linkFolder = state.linksIdMap[folderId] ?? null;
+		if (!isNil(linkFolder)) {
+			const sharedFolder = getFolder(linkFolder);
+			if (!isNil(sharedFolder) && sharedFolder.perm === 'r') {
+				return false;
+			}
+		}
+	} else {
+		const folderPerm = folder.perm;
+		if (!isNil(folderPerm) && folderPerm === 'r') {
+			return false;
+		}
+	}
+	return participants.some(
+		(participant) => !!(participant.t === 'n' && (isNil(flags) || !/n/.test(flags)))
+	);
+};
+
+const getFlags = (flags: string | undefined): Flags => ({
+	read: !isNil(flags) ? !/u/.test(flags) : true,
+	hasAttachment: !isNil(flags) ? /a/.test(flags) : undefined,
+	flagged: !isNil(flags) ? /f/.test(flags) : undefined,
+	urgent: !isNil(flags) ? /!/.test(flags) : undefined,
+	isDeleted: !isNil(flags) ? /x/.test(flags) : undefined,
+	isDraft: !isNil(flags) ? /d/.test(flags) : undefined,
+	isForwarded: !isNil(flags) ? /w/.test(flags) : undefined,
+	isSentByMe: !isNil(flags) ? /s/.test(flags) : undefined,
+	isInvite: !isNil(flags) ? /v/.test(flags) : undefined,
+	isReplied: !isNil(flags) ? /r/.test(flags) : undefined
+});
+
 export const normalizeMailMessageFromSoap = (
 	m: SoapIncompleteMessage,
 	isComplete?: boolean
-): IncompleteMessage => <IncompleteMessage>omitBy(
+): IncompleteMessage => {
+	const flags = getFlags(m.f);
+
+	return <IncompleteMessage>omitBy(
 		{
 			conversation: m.cid,
 			id: m.id,
@@ -297,17 +355,9 @@ export const normalizeMailMessageFromSoap = (
 			isComplete,
 			isScheduled: !!m.autoSendTime,
 			autoSendTime: m.autoSendTime,
-			read: !isNil(m.f) ? !/u/.test(m.f) : true,
-			hasAttachment: !isNil(m.f) ? /a/.test(m.f) : undefined,
-			flagged: !isNil(m.f) ? /f/.test(m.f) : undefined,
-			urgent: !isNil(m.f) ? /!/.test(m.f) : undefined,
-			isDeleted: !isNil(m.f) ? /x/.test(m.f) : undefined,
-			isDraft: !isNil(m.f) ? /d/.test(m.f) : undefined,
-			isForwarded: !isNil(m.f) ? /w/.test(m.f) : undefined,
-			isSentByMe: !isNil(m.f) ? /s/.test(m.f) : undefined,
-			isInvite: !isNil(m.f) ? /v/.test(m.f) : undefined,
-			isReplied: !isNil(m.f) ? /r/.test(m.f) : undefined,
-			isReadReceiptRequested: !isNil(m.f) ? !/n/.test(m.f) : true
+			...flags,
+			isReadReceiptRequested: haveReadReceipt(m.e, m.f, m.l) && !isNil(isComplete) && isComplete
 		},
 		isNil
 	);
+};

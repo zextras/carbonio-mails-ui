@@ -168,7 +168,7 @@ export const useMoveToTrashAction = (): ((arg: {
 		({ isConversation, id, dispatch, folderId, deselectAll, foldersExcludedTrash }) => {
 			const action = isConversation
 				? moveConversationToTrash({ ids: [id], dispatch, folderId, deselectAll })
-				: moveMsgToTrash({ ids: [id], dispatch, deselectAll });
+				: moveMsgToTrash({ ids: [id], dispatch, deselectAll, folderId, closeEditor: true });
 			return !foldersExcludedTrash.includes(getFolderIdParts(folderId).id ?? '0') && action;
 		},
 		[moveConversationToTrash, moveMsgToTrash]
