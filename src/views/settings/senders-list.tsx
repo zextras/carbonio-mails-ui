@@ -124,42 +124,50 @@ export const SendersList = ({
 				</Container>
 			</Container>
 			<Divider />
-			<Container
-				padding={{ all: 'medium', bottom: 'small' }}
-				orientation="horizontal"
-				mainAlignment="flex-start"
-			>
-				<Row mainAlignment="flex-start" width="50vw">
-					<Input
-						label={t('label.enter_single_email_address', 'Enter email address')}
-						value={address}
-						hasError={!isInputValid}
-						description={warningMessage}
-						backgroundColor="gray5"
-						onChange={(e: React.ChangeEvent<HTMLInputElement>): void => setAddress(e.target.value)}
-					/>
-				</Row>
-				<Padding left="medium">
-					<Tooltip label={warningMessage} disabled={isAddEnabled} maxWidth="100%">
-						<Button
-							label={t('label.add', 'Add')}
-							type="outlined"
-							onClick={onAdd}
-							disabled={!isAddEnabled}
+			<Container orientation="vertical">
+				<Container
+					padding={{ top: 'medium', horizontal: 'medium', bottom: '0.3rem' }}
+					orientation="horizontal"
+					mainAlignment="flex-start"
+					crossAlignment="flex-start"
+				>
+					<Row mainAlignment="flex-start" width="50vw">
+						<Input
+							label={t('label.enter_single_email_address', 'Enter email address')}
+							value={address}
+							hasError={!isInputValid}
+							description={warningMessage || undefined}
+							backgroundColor="gray5"
+							onChange={(e: React.ChangeEvent<HTMLInputElement>): void =>
+								setAddress(e.target.value)
+							}
 						/>
-					</Tooltip>
-				</Padding>
-			</Container>
-			{showConflictText ? (
-				<Container crossAlignment="flex-start" padding="0 1rem">
-					<Text size="small">
-						{t(
-							'message.senderslist_conflict',
-							'If the same address is added to both allowed and blocked senders lists, the system will prioritize the allowed senders list.'
-						)}
-					</Text>
+					</Row>
+					<Padding left="medium" top="0.30rem">
+						<Tooltip label={warningMessage} disabled={isAddEnabled} maxWidth="100%">
+							<Button
+								label={t('label.add', 'Add')}
+								type="outlined"
+								onClick={onAdd}
+								disabled={!isAddEnabled}
+							/>
+						</Tooltip>
+					</Padding>
 				</Container>
-			) : null}
+				{showConflictText ? (
+					<Container
+						crossAlignment="flex-start"
+						padding={{ bottom: '1rem', horizontal: '0.75rem' }}
+					>
+						<Text size="small" color="gray1">
+							{t(
+								'message.senderslist_conflict',
+								'If the same address is added to both allowed and blocked senders lists, the system will prioritize the allowed senders list.'
+							)}
+						</Text>
+					</Container>
+				) : null}
+			</Container>
 			<Container
 				padding={{ horizontal: 'medium', bottom: 'small' }}
 				orientation="vertical"

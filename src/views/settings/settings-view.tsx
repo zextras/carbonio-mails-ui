@@ -418,7 +418,12 @@ const SettingsView: FC = () => {
 					<ComposeMessage settingsObj={currentPrefs} updateSettings={updatePrefs} />
 					<FilterModule />
 					<TrusteeAddresses settingsObj={currentPrefs} updateSettings={updatePrefs} />
-					<SendersList settingsObj={currentAttrs} updateSettings={updateAttrs} listType="Allowed" />
+					<SendersList
+						settingsObj={currentAttrs}
+						updateSettings={updateAttrs}
+						listType="Allowed"
+						showConflictText={addressesConflict}
+					/>
 					<SendersList
 						settingsObj={currentAttrs}
 						updateSettings={updateAttrs}
