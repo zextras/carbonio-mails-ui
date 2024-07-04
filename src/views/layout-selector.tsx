@@ -8,7 +8,7 @@ import React, { useEffect, useMemo } from 'react';
 import { Container } from '@zextras/carbonio-design-system';
 import { useLocalStorage } from '@zextras/carbonio-shell-ui';
 
-import type { MailsListLayout } from './app-view';
+import type { MailsListLayout } from './folder-view';
 import { LOCAL_STORAGE_VIEW_SIZES, MAILS_VIEW_LAYOUTS } from '../constants';
 import { SizeAndPosition } from '../hooks/use-resize';
 
@@ -32,10 +32,10 @@ export const LayoutSelector = ({
 
 	const orientation = useMemo(() => {
 		if (listLayout === MAILS_VIEW_LAYOUTS.VERTICAL) {
-			return MAILS_VIEW_LAYOUTS.HORIZONTAL;
+			return MAILS_VIEW_LAYOUTS.VERTICAL;
 		}
 		if (listLayout === MAILS_VIEW_LAYOUTS.HORIZONTAL) {
-			return MAILS_VIEW_LAYOUTS.VERTICAL;
+			return MAILS_VIEW_LAYOUTS.HORIZONTAL;
 		}
 		return MAILS_VIEW_LAYOUTS.DEFAULT;
 	}, [listLayout]);
@@ -75,8 +75,13 @@ export const LayoutSelector = ({
 	}, [listLayout, lastSavedViewSizes?.height, containerRef]);
 
 	return (
-		<Container orientation={orientation} mainAlignment="flex-start">
+		<Container
+			data-testid={'LayoutSelectorOuterContainer'}
+			orientation={orientation}
+			mainAlignment="flex-start"
+		>
 			<Container
+				data-testid={'LayoutSelectorInnerContainer'}
 				ref={containerRef}
 				minHeight={'11.25rem'}
 				minWidth={'22.5rem'}

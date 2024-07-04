@@ -21,7 +21,7 @@ export const LOCAL_STORAGE_VIEW_SIZES = 'carbonio-mails-ui-list-view-sizes';
 export const LOCAL_STORAGE_LAYOUT = 'carbonio-mails-ui-layout';
 
 export const MAILS_VIEW_LAYOUTS = {
-	DEFAULT: 'horizontal',
+	DEFAULT: 'vertical',
 	VERTICAL: 'vertical',
 	HORIZONTAL: 'horizontal'
 } as const;
