@@ -18,7 +18,7 @@ import {
 } from '@zextras/carbonio-shell-ui';
 
 import { advancedAccountAPI } from '../api/advanced-account';
-import { MAILS_ROUTE } from '../constants';
+import { MAILS_BOARD_VIEW_ID, MAILS_ROUTE } from '../constants';
 import { StoreProvider } from '../store/redux';
 import { ExtraWindowsManager } from '../views/app/extra-windows/extra-window-manager';
 import { getSettingsSubSections } from '../views/settings/subsections';
@@ -117,7 +117,7 @@ export const addComponentsToShell = async (): Promise<void> => {
 		label
 	});
 	addBoardView({
-		route: MAILS_ROUTE,
+		id: MAILS_BOARD_VIEW_ID,
 		component: EditView
 	});
 	const { backupSelfUndeleteAllowed } = await advancedAccountAPI();
