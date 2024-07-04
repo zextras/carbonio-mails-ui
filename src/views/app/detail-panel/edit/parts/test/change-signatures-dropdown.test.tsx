@@ -19,13 +19,15 @@ import { generateStore } from '../../../../../../tests/generators/store';
 import { handleGetSignaturesRequest } from '../../../../../../tests/mocks/network/msw/handle-get-signatures';
 import { SignItemType } from '../../../../../../types';
 import { EditView, EditViewProp } from '../../edit-view';
+import { aSuccessfullSaveDraft } from '../../tests/utils/utils';
 
 describe('Change signature while composing mail', () => {
 	/**
 	 * Test the creation of a new email with change signature option
 	 */
-	it('Change singnatures icon should show if user have signatures', async () => {
+	it('Change signatures icon should show if user have signatures', async () => {
 		createSoapAPIInterceptor('GetShareInfo');
+		const interceptor = aSuccessfullSaveDraft();
 		setupEditorStore({ editors: [] });
 		const reduxStore = generateStore();
 		const editor = generateNewMessageEditor(reduxStore.dispatch);
@@ -38,6 +40,7 @@ describe('Change signature while composing mail', () => {
 			closeController: noop
 		};
 		setupTest(<EditView {...props} />, { store: reduxStore });
+		await interceptor;
 		expect(await screen.findByTestId('edit-view-editor')).toBeInTheDocument();
 
 		const btnSend = screen.queryByTestId('BtnSendMail') || screen.queryByTestId('BtnSendMailMulti');
@@ -48,8 +51,9 @@ describe('Change signature while composing mail', () => {
 		expect(changeSignaturesIcon).toBeVisible();
 	});
 
-	test('Change singnatures icon should not show if user do not have signatures', async () => {
+	test('Change signatures icon should not show if user do not have signatures', async () => {
 		createSoapAPIInterceptor('GetShareInfo');
+		const interceptor = aSuccessfullSaveDraft();
 		setupEditorStore({ editors: [] });
 		const reduxStore = generateStore();
 		const editor = generateNewMessageEditor(reduxStore.dispatch);
@@ -61,12 +65,13 @@ describe('Change signature while composing mail', () => {
 			closeController: noop
 		};
 		setupTest(<EditView {...props} />, { store: reduxStore });
+		await interceptor;
 		expect(await screen.findByTestId('edit-view-editor')).toBeInTheDocument();
 
 		expect(screen.queryByTestId('change-sign-dropdown-icon')).not.toBeInTheDocument();
 	}, 200000);
 
-	it('Singnatures should be display in dropdown list', async () => {
+	it('Signatures should be display in dropdown list', async () => {
 		createSoapAPIInterceptor('GetShareInfo');
 		setupEditorStore({ editors: [] });
 		const reduxStore = generateStore();
