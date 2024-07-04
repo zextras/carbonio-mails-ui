@@ -33,6 +33,7 @@ import {
 import { getEmptyMSWShareInfoResponse } from '../../../../../carbonio-ui-commons/test/mocks/network/msw/handle-get-share-info';
 import { populateFoldersStore } from '../../../../../carbonio-ui-commons/test/mocks/store/folders';
 import { getMocksContext } from '../../../../../carbonio-ui-commons/test/mocks/utils/mocks-context';
+import { buildSoapErrorResponseBody } from '../../../../../carbonio-ui-commons/test/mocks/utils/soap';
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
 import { EditViewActions, MAILS_ROUTE } from '../../../../../constants';
 import * as useQueryParam from '../../../../../hooks/use-query-param';
@@ -118,14 +119,14 @@ const getSoapMailBodyContent = (
 };
 
 const createSmartLinkFailureAPIInterceptor = (): Promise<CreateSmartLinksRequest> =>
-	createSoapAPIInterceptor<CreateSmartLinksRequest, ErrorSoapBodyResponse>('CreateSmartLinks', {
-		Fault: {
-			Reason: { Text: 'Failed upload to Files' },
-			Detail: {
-				Error: { Code: '123', Detail: 'Failed due to connection timeout' }
-			}
-		}
-	});
+	createSoapAPIInterceptor<CreateSmartLinksRequest, ErrorSoapBodyResponse>(
+		'CreateSmartLinks',
+		buildSoapErrorResponseBody({
+			detailCode: 'Failed upload to Files',
+			code: '123',
+			reason: 'Failed due to connection timeout'
+		})
+	);
 
 /**
  * Test the EditView component in different scenarios
