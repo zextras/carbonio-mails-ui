@@ -15,6 +15,22 @@ const bottomViewOutlineIcon = 'icon: BottomViewOutline';
 const layoutOutlineIcon = 'icon: LayoutOutline';
 
 describe('LayoutComponent', () => {
+	test('the icon has width 1.25rem', async () => {
+		useLocalStorage.mockImplementation(() => [MAILS_VIEW_LAYOUTS.DEFAULT, jest.fn()]);
+		const store = generateStore();
+
+		setupTest(<LayoutComponent />, { store });
+
+		expect(await screen.findByTestId(layoutOutlineIcon)).toHaveStyle({ width: '1.25rem' });
+	});
+	test('the icon has height 1.25rem', async () => {
+		useLocalStorage.mockImplementation(() => [MAILS_VIEW_LAYOUTS.DEFAULT, jest.fn()]);
+		const store = generateStore();
+
+		setupTest(<LayoutComponent />, { store });
+
+		expect(await screen.findByTestId(layoutOutlineIcon)).toHaveStyle({ height: '1.25rem' });
+	});
 	test('By default it should render LayoutOutlineIcon icon', async () => {
 		useLocalStorage.mockImplementation(() => [MAILS_VIEW_LAYOUTS.DEFAULT, jest.fn()]);
 		const store = generateStore();
