@@ -16,11 +16,11 @@ export const LayoutComponent = (): React.JSX.Element => {
 	const [t] = useTranslation();
 	const [listLayout, setListLayout] = useLocalStorage<MailsListLayout>(
 		LOCAL_STORAGE_LAYOUT,
-		MAILS_VIEW_LAYOUTS.VERTICAL
+		MAILS_VIEW_LAYOUTS.LEFT_TO_RIGHT
 	);
 	const tooltipLabel = useMemo(
 		() =>
-			listLayout === MAILS_VIEW_LAYOUTS.VERTICAL
+			listLayout === MAILS_VIEW_LAYOUTS.LEFT_TO_RIGHT
 				? t('layoutView.tooltip.horizontal', 'Horizontal view')
 				: t('layoutView.tooltip.vertical', 'Vertical view'),
 		[t, listLayout]
@@ -28,14 +28,14 @@ export const LayoutComponent = (): React.JSX.Element => {
 
 	const onClick = useCallback(() => {
 		setListLayout((prevValue) =>
-			prevValue === MAILS_VIEW_LAYOUTS.VERTICAL
-				? MAILS_VIEW_LAYOUTS.HORIZONTAL
-				: MAILS_VIEW_LAYOUTS.VERTICAL
+			prevValue === MAILS_VIEW_LAYOUTS.LEFT_TO_RIGHT
+				? MAILS_VIEW_LAYOUTS.TOP_TO_BOTTOM
+				: MAILS_VIEW_LAYOUTS.LEFT_TO_RIGHT
 		);
 	}, [setListLayout]);
 
 	const icon = useMemo(
-		() => (listLayout === MAILS_VIEW_LAYOUTS.VERTICAL ? 'BottomViewOutline' : 'LayoutOutline'),
+		() => (listLayout === MAILS_VIEW_LAYOUTS.LEFT_TO_RIGHT ? 'BottomViewOutline' : 'LayoutOutline'),
 		[listLayout]
 	);
 

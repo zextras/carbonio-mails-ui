@@ -9,7 +9,11 @@ import { Container } from '@zextras/carbonio-design-system';
 import { useLocalStorage } from '@zextras/carbonio-shell-ui';
 
 import type { MailsListLayout } from './folder-view';
-import { LOCAL_STORAGE_VIEW_SIZES, MAILS_VIEW_LAYOUTS } from '../constants';
+import {
+	LOCAL_STORAGE_VIEW_SIZES,
+	MAILS_VIEW_LAYOUTS,
+	MAILS_VIEW_ORIENTATIONS
+} from '../constants';
 import { SizeAndPosition } from '../hooks/use-resize';
 
 type LayoutSelectorProps = {
@@ -31,18 +35,18 @@ export const LayoutSelector = ({
 	);
 
 	const orientation = useMemo(() => {
-		if (listLayout === MAILS_VIEW_LAYOUTS.VERTICAL) {
-			return MAILS_VIEW_LAYOUTS.VERTICAL;
+		if (listLayout === MAILS_VIEW_LAYOUTS.LEFT_TO_RIGHT) {
+			return MAILS_VIEW_ORIENTATIONS.HORIZONTAL;
 		}
-		if (listLayout === MAILS_VIEW_LAYOUTS.HORIZONTAL) {
-			return MAILS_VIEW_LAYOUTS.HORIZONTAL;
+		if (listLayout === MAILS_VIEW_LAYOUTS.TOP_TO_BOTTOM) {
+			return MAILS_VIEW_ORIENTATIONS.VERTICAL;
 		}
-		return MAILS_VIEW_LAYOUTS.DEFAULT;
+		return MAILS_VIEW_ORIENTATIONS.VERTICAL;
 	}, [listLayout]);
 
 	useEffect(() => {
 		if (containerRef.current) {
-			if (listLayout === MAILS_VIEW_LAYOUTS.VERTICAL) {
+			if (listLayout === MAILS_VIEW_LAYOUTS.LEFT_TO_RIGHT) {
 				if (lastSavedViewSizes?.width) {
 					// eslint-disable-next-line no-param-reassign
 					containerRef.current.style.width = `${lastSavedViewSizes?.width}px`;
@@ -59,7 +63,7 @@ export const LayoutSelector = ({
 
 	useEffect(() => {
 		if (containerRef.current) {
-			if (listLayout === MAILS_VIEW_LAYOUTS.HORIZONTAL) {
+			if (listLayout === MAILS_VIEW_LAYOUTS.TOP_TO_BOTTOM) {
 				if (lastSavedViewSizes?.height) {
 					// eslint-disable-next-line no-param-reassign
 					containerRef.current.style.height = `${lastSavedViewSizes?.height}px`;

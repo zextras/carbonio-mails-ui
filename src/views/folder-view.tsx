@@ -25,7 +25,7 @@ const LazyFolderView = lazy(
 export const FolderView = ({ listLayout, containerRef }: FolderViewProps): React.JSX.Element => {
 	const { path } = useRouteMatch();
 	const border = useMemo(
-		() => (listLayout === MAILS_VIEW_LAYOUTS.VERTICAL ? BORDERS.EAST : BORDERS.SOUTH),
+		() => (listLayout === MAILS_VIEW_LAYOUTS.LEFT_TO_RIGHT ? BORDERS.EAST : BORDERS.SOUTH),
 		[listLayout]
 	);
 

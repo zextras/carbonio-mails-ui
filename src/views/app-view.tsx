@@ -40,7 +40,7 @@ const AppView: FC = () => {
 
 	const [listLayout] = useLocalStorage<MailsListLayout>(
 		LOCAL_STORAGE_LAYOUT,
-		MAILS_VIEW_LAYOUTS.VERTICAL
+		MAILS_VIEW_LAYOUTS.LEFT_TO_RIGHT
 	);
 
 	const isMessageView = useMemo(

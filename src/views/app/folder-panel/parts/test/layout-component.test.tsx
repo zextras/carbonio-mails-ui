@@ -40,7 +40,7 @@ describe('LayoutComponent', () => {
 		expect(await screen.findByTestId(layoutOutlineIcon)).toBeInTheDocument();
 	});
 	test('When the value saved in the local storage is horizontal it should render LayoutOutlineIcon icon', async () => {
-		useLocalStorage.mockImplementation(() => [MAILS_VIEW_LAYOUTS.HORIZONTAL, jest.fn()]);
+		useLocalStorage.mockImplementation(() => [MAILS_VIEW_LAYOUTS.TOP_TO_BOTTOM, jest.fn()]);
 		const store = generateStore();
 
 		setupTest(<LayoutComponent />, { store });
@@ -48,7 +48,7 @@ describe('LayoutComponent', () => {
 		expect(await screen.findByTestId(layoutOutlineIcon)).toBeInTheDocument();
 	});
 	test('When the value saved in the local storage is vertical it should render BottomViewOutline icon', async () => {
-		useLocalStorage.mockImplementation(() => [MAILS_VIEW_LAYOUTS.VERTICAL, jest.fn()]);
+		useLocalStorage.mockImplementation(() => [MAILS_VIEW_LAYOUTS.LEFT_TO_RIGHT, jest.fn()]);
 		const store = generateStore();
 
 		setupTest(<LayoutComponent />, { store });
@@ -57,7 +57,7 @@ describe('LayoutComponent', () => {
 	});
 	test('onClick it should call the local storage function', async () => {
 		const cb = jest.fn();
-		useLocalStorage.mockImplementation(() => [MAILS_VIEW_LAYOUTS.VERTICAL, cb]);
+		useLocalStorage.mockImplementation(() => [MAILS_VIEW_LAYOUTS.LEFT_TO_RIGHT, cb]);
 		const store = generateStore();
 
 		const { user } = setupTest(<LayoutComponent />, { store });
@@ -67,7 +67,7 @@ describe('LayoutComponent', () => {
 		expect(cb).toHaveBeenCalledTimes(1);
 	});
 	test('onHover during horizontal view it should render "Show vertical"', async () => {
-		useLocalStorage.mockImplementation(() => [MAILS_VIEW_LAYOUTS.HORIZONTAL, jest.fn()]);
+		useLocalStorage.mockImplementation(() => [MAILS_VIEW_LAYOUTS.TOP_TO_BOTTOM, jest.fn()]);
 		const store = generateStore();
 
 		const { user } = setupTest(<LayoutComponent />, { store });
@@ -78,7 +78,7 @@ describe('LayoutComponent', () => {
 		expect(tooltip).toBeVisible();
 	});
 	test('onHover during vertical view it should render "Show horizontal"', async () => {
-		useLocalStorage.mockImplementation(() => [MAILS_VIEW_LAYOUTS.VERTICAL, jest.fn()]);
+		useLocalStorage.mockImplementation(() => [MAILS_VIEW_LAYOUTS.LEFT_TO_RIGHT, jest.fn()]);
 		const store = generateStore();
 
 		const { user } = setupTest(<LayoutComponent />, { store });
