@@ -20,65 +20,67 @@ const SELECTORS = {
 };
 
 describe('LayoutSelector', () => {
-	test('should render outer container correctly', async () => {
-		const ref = { current: null };
+	describe('It should render all of its parts', () => {
+		test('outer container', async () => {
+			const ref = { current: null };
 
-		setupTest(
-			<LayoutSelector
-				listLayout={MAILS_VIEW_LAYOUTS.LEFT_TO_RIGHT}
-				folderView={<MockedView />}
-				detailPanel={<MockedView />}
-				containerRef={ref}
-			/>
-		);
-		const layoutSelectorComponent = screen.getByTestId(SELECTORS.OUTER);
-		expect(layoutSelectorComponent).toBeVisible();
-	});
-	test('should render inner container correctly', async () => {
-		const ref = { current: null };
+			setupTest(
+				<LayoutSelector
+					listLayout={MAILS_VIEW_LAYOUTS.LEFT_TO_RIGHT}
+					folderView={<MockedView />}
+					detailPanel={<MockedView />}
+					containerRef={ref}
+				/>
+			);
+			const layoutSelectorComponent = screen.getByTestId(SELECTORS.OUTER);
+			expect(layoutSelectorComponent).toBeVisible();
+		});
+		test('inner container', async () => {
+			const ref = { current: null };
 
-		setupTest(
-			<LayoutSelector
-				listLayout={MAILS_VIEW_LAYOUTS.LEFT_TO_RIGHT}
-				folderView={<MockedView />}
-				detailPanel={<MockedView />}
-				containerRef={ref}
-			/>
-		);
-		const layoutSelectorComponent = screen.getByTestId(SELECTORS.INNER);
-		expect(layoutSelectorComponent).toBeVisible();
-	});
-	test('should render folderView correctly', async () => {
-		const ref = { current: null };
-		const id = '1';
+			setupTest(
+				<LayoutSelector
+					listLayout={MAILS_VIEW_LAYOUTS.LEFT_TO_RIGHT}
+					folderView={<MockedView />}
+					detailPanel={<MockedView />}
+					containerRef={ref}
+				/>
+			);
+			const layoutSelectorComponent = screen.getByTestId(SELECTORS.INNER);
+			expect(layoutSelectorComponent).toBeVisible();
+		});
+		test('folderView', async () => {
+			const ref = { current: null };
+			const id = '1';
 
-		setupTest(
-			<LayoutSelector
-				listLayout={MAILS_VIEW_LAYOUTS.LEFT_TO_RIGHT}
-				folderView={<MockedView id={id} />}
-				detailPanel={<MockedView />}
-				containerRef={ref}
-			/>
-		);
-		const folderView = screen.getByTestId(`MockedView${id}`);
-		expect(folderView).toBeVisible();
-	});
-	test('should render detailPanel correctly', async () => {
-		const ref = { current: null };
-		const id = '1';
+			setupTest(
+				<LayoutSelector
+					listLayout={MAILS_VIEW_LAYOUTS.LEFT_TO_RIGHT}
+					folderView={<MockedView id={id} />}
+					detailPanel={<MockedView />}
+					containerRef={ref}
+				/>
+			);
+			const folderView = screen.getByTestId(`MockedView${id}`);
+			expect(folderView).toBeVisible();
+		});
+		test('detailPanel', async () => {
+			const ref = { current: null };
+			const id = '1';
 
-		setupTest(
-			<LayoutSelector
-				listLayout={MAILS_VIEW_LAYOUTS.LEFT_TO_RIGHT}
-				folderView={<MockedView />}
-				detailPanel={<MockedView id={id} />}
-				containerRef={ref}
-			/>
-		);
-		const detailPanel = screen.getByTestId(`MockedView${id}`);
-		expect(detailPanel).toBeVisible();
+			setupTest(
+				<LayoutSelector
+					listLayout={MAILS_VIEW_LAYOUTS.LEFT_TO_RIGHT}
+					folderView={<MockedView />}
+					detailPanel={<MockedView id={id} />}
+					containerRef={ref}
+				/>
+			);
+			const detailPanel = screen.getByTestId(`MockedView${id}`);
+			expect(detailPanel).toBeVisible();
+		});
 	});
-	test('The width of the outer container is 100%', async () => {
+	test('The outer container has width 100%', async () => {
 		const ref = { current: null };
 
 		setupTest(
@@ -93,7 +95,7 @@ describe('LayoutSelector', () => {
 
 		expect(component).toHaveStyle({ width: '100%' });
 	});
-	test('The height of the outer container is vertical', async () => {
+	test('The outer container has height 100%', async () => {
 		const ref = { current: null };
 
 		setupTest(
@@ -108,7 +110,7 @@ describe('LayoutSelector', () => {
 
 		expect(component).toHaveStyle({ height: '100%' });
 	});
-	test('By default the orientation of the outer container is vertical', async () => {
+	test('The inner container has minWidth 22.5rem', async () => {
 		const ref = { current: null };
 
 		setupTest(
@@ -119,11 +121,11 @@ describe('LayoutSelector', () => {
 				containerRef={ref}
 			/>
 		);
-		const component = screen.getByTestId(SELECTORS.OUTER);
+		const component = screen.getByTestId(SELECTORS.INNER);
 
-		expect(component).toHaveAttribute('orientation', 'row');
+		expect(component).toHaveStyle({ minWidth: '22.5rem' });
 	});
-	test('If the layout is left to right the orientation of the outer container is vertical', async () => {
+	test('The inner container has minHeight 11.25rem', async () => {
 		const ref = { current: null };
 
 		setupTest(
@@ -134,24 +136,9 @@ describe('LayoutSelector', () => {
 				containerRef={ref}
 			/>
 		);
-		const component = screen.getByTestId(SELECTORS.OUTER);
+		const component = screen.getByTestId(SELECTORS.INNER);
 
-		expect(component).toHaveAttribute('orientation', 'row');
-	});
-	test('If the layout is top to bottom the orientation of the outer container is horizontal', async () => {
-		const ref = { current: null };
-
-		setupTest(
-			<LayoutSelector
-				listLayout={MAILS_VIEW_LAYOUTS.TOP_TO_BOTTOM}
-				folderView={<MockedView />}
-				detailPanel={<MockedView />}
-				containerRef={ref}
-			/>
-		);
-		const component = screen.getByTestId(SELECTORS.OUTER);
-
-		expect(component).toHaveAttribute('orientation', 'column');
+		expect(component).toHaveStyle({ minHeight: '11.25rem' });
 	});
 	test('The inner container has the attribute flex shrink to 0 to properly resize following the cursor icon', async () => {
 		const ref = { current: null };
@@ -168,138 +155,179 @@ describe('LayoutSelector', () => {
 
 		expect(component).toHaveStyle({ flexShrink: 0 });
 	});
-	test('By default the inner container has height 100%', async () => {
-		const ref = { current: null };
+	describe('If the orientation is left to right', () => {
+		test('the outer container orientation value is row', async () => {
+			const ref = { current: null };
 
-		setupTest(
-			<LayoutSelector
-				listLayout={MAILS_VIEW_LAYOUTS.LEFT_TO_RIGHT}
-				folderView={<MockedView />}
-				detailPanel={<MockedView />}
-				containerRef={ref}
-			/>
-		);
-		const component = screen.getByTestId(SELECTORS.INNER);
+			setupTest(
+				<LayoutSelector
+					listLayout={MAILS_VIEW_LAYOUTS.LEFT_TO_RIGHT}
+					folderView={<MockedView />}
+					detailPanel={<MockedView />}
+					containerRef={ref}
+				/>
+			);
+			const component = screen.getByTestId(SELECTORS.OUTER);
 
-		expect(component).toHaveStyle({ height: '100%' });
+			expect(component).toHaveAttribute('orientation', 'row');
+		});
+		test('and there is not a stored value, the mails width is 60%', () => {
+			const ref = { current: null };
+
+			setupTest(
+				<LayoutSelector
+					listLayout={MAILS_VIEW_LAYOUTS.LEFT_TO_RIGHT}
+					folderView={<MockedView />}
+					detailPanel={<MockedView />}
+					containerRef={ref}
+				/>
+			);
+			const component = screen.getByTestId(SELECTORS.INNER);
+
+			expect(component).toHaveStyle({ width: '60%' });
+		});
+		test('and there is a stored value, the mails view width is equal to that value', async () => {
+			const ref = { current: null };
+
+			useLocalStorage.mockImplementation((key: string) => [
+				key === LOCAL_STORAGE_VIEW_SIZES ? { width: '500' } : MAILS_VIEW_LAYOUTS.LEFT_TO_RIGHT,
+				jest.fn()
+			]);
+
+			setupTest(
+				<LayoutSelector
+					listLayout={MAILS_VIEW_LAYOUTS.LEFT_TO_RIGHT}
+					folderView={<MockedView />}
+					detailPanel={<MockedView />}
+					containerRef={ref}
+				/>
+			);
+			const component = screen.getByTestId(SELECTORS.INNER);
+
+			expect(component).toHaveStyle({ width: '500px' });
+		});
+		test('the height of the inner container is 100%', () => {
+			const ref = { current: null };
+
+			setupTest(
+				<LayoutSelector
+					listLayout={MAILS_VIEW_LAYOUTS.LEFT_TO_RIGHT}
+					folderView={<MockedView />}
+					detailPanel={<MockedView />}
+					containerRef={ref}
+				/>
+			);
+			const component = screen.getByTestId(SELECTORS.INNER);
+
+			expect(component).toHaveStyle({ height: '100%' });
+		});
+		test('the height of the inner container wont depend from the stored value', () => {
+			const ref = { current: null };
+
+			useLocalStorage.mockImplementation((key: string) => [
+				key === LOCAL_STORAGE_VIEW_SIZES ? { height: '500' } : MAILS_VIEW_LAYOUTS.LEFT_TO_RIGHT,
+				jest.fn()
+			]);
+
+			setupTest(
+				<LayoutSelector
+					listLayout={MAILS_VIEW_LAYOUTS.LEFT_TO_RIGHT}
+					folderView={<MockedView />}
+					detailPanel={<MockedView />}
+					containerRef={ref}
+				/>
+			);
+			const component = screen.getByTestId(SELECTORS.INNER);
+
+			expect(component).not.toHaveStyle({ height: '500px' });
+		});
 	});
-	test('By default the inner container has width 60%', async () => {
-		const ref = { current: null };
 
-		setupTest(
-			<LayoutSelector
-				listLayout={MAILS_VIEW_LAYOUTS.LEFT_TO_RIGHT}
-				folderView={<MockedView />}
-				detailPanel={<MockedView />}
-				containerRef={ref}
-			/>
-		);
-		const component = screen.getByTestId(SELECTORS.INNER);
+	describe('If the orientation is top to bottom', () => {
+		test('the outer container orientation value is column', async () => {
+			const ref = { current: null };
 
-		expect(component).toHaveStyle({ width: '60%' });
-	});
-	test('If the orientation is vertical the width of the inner container is 60%', () => {
-		const ref = { current: null };
+			setupTest(
+				<LayoutSelector
+					listLayout={MAILS_VIEW_LAYOUTS.TOP_TO_BOTTOM}
+					folderView={<MockedView />}
+					detailPanel={<MockedView />}
+					containerRef={ref}
+				/>
+			);
+			const component = screen.getByTestId(SELECTORS.OUTER);
 
-		setupTest(
-			<LayoutSelector
-				listLayout={MAILS_VIEW_LAYOUTS.LEFT_TO_RIGHT}
-				folderView={<MockedView />}
-				detailPanel={<MockedView />}
-				containerRef={ref}
-			/>
-		);
-		const component = screen.getByTestId(SELECTORS.INNER);
+			expect(component).toHaveAttribute('orientation', 'column');
+		});
+		test('and there is not a stored value, the height is 50%', () => {
+			const ref = { current: null };
 
-		expect(component).toHaveStyle({ width: '60%' });
-	});
-	test('If the orientation is vertical the height of the inner container is 100%', () => {
-		const ref = { current: null };
+			setupTest(
+				<LayoutSelector
+					listLayout={MAILS_VIEW_LAYOUTS.TOP_TO_BOTTOM}
+					folderView={<MockedView />}
+					detailPanel={<MockedView />}
+					containerRef={ref}
+				/>
+			);
+			const component = screen.getByTestId(SELECTORS.INNER);
 
-		setupTest(
-			<LayoutSelector
-				listLayout={MAILS_VIEW_LAYOUTS.LEFT_TO_RIGHT}
-				folderView={<MockedView />}
-				detailPanel={<MockedView />}
-				containerRef={ref}
-			/>
-		);
-		const component = screen.getByTestId(SELECTORS.INNER);
+			expect(component).toHaveStyle({ width: '100%' });
+		});
+		test('and there is a stored value, the mails view height is equal to that value', () => {
+			const ref = { current: null };
 
-		expect(component).toHaveStyle({ height: '100%' });
-	});
-	test('If the orientation is horizontal the width of the inner container is 100%', () => {
-		const ref = { current: null };
+			useLocalStorage.mockImplementation((key: string) => [
+				key === LOCAL_STORAGE_VIEW_SIZES ? { height: '500' } : MAILS_VIEW_LAYOUTS.LEFT_TO_RIGHT,
+				jest.fn()
+			]);
 
-		setupTest(
-			<LayoutSelector
-				listLayout={MAILS_VIEW_LAYOUTS.TOP_TO_BOTTOM}
-				folderView={<MockedView />}
-				detailPanel={<MockedView />}
-				containerRef={ref}
-			/>
-		);
-		const component = screen.getByTestId(SELECTORS.INNER);
+			setupTest(
+				<LayoutSelector
+					listLayout={MAILS_VIEW_LAYOUTS.TOP_TO_BOTTOM}
+					folderView={<MockedView />}
+					detailPanel={<MockedView />}
+					containerRef={ref}
+				/>
+			);
+			const component = screen.getByTestId(SELECTORS.INNER);
 
-		expect(component).toHaveStyle({ width: '100%' });
-	});
-	test('If the orientation is horizontal the height of the inner container is 50%', () => {
-		const ref = { current: null };
+			expect(component).toHaveStyle({ height: '500px' });
+		});
+		test('the width of the inner container is 100%', () => {
+			const ref = { current: null };
 
-		setupTest(
-			<LayoutSelector
-				listLayout={MAILS_VIEW_LAYOUTS.TOP_TO_BOTTOM}
-				folderView={<MockedView />}
-				detailPanel={<MockedView />}
-				containerRef={ref}
-			/>
-		);
-		const component = screen.getByTestId(SELECTORS.INNER);
+			setupTest(
+				<LayoutSelector
+					listLayout={MAILS_VIEW_LAYOUTS.TOP_TO_BOTTOM}
+					folderView={<MockedView />}
+					detailPanel={<MockedView />}
+					containerRef={ref}
+				/>
+			);
+			const component = screen.getByTestId(SELECTORS.INNER);
 
-		expect(component).toHaveStyle({ height: '50%' });
-	});
-	test('The mails view height depends from the stored value', async () => {
-		const ref = { current: null };
+			expect(component).toHaveStyle({ width: '100%' });
+		});
+		test('the width of the inner container wont depend from the stored value', () => {
+			const ref = { current: null };
 
-		useLocalStorage.mockImplementation((key: string) => [
-			key === LOCAL_STORAGE_VIEW_SIZES
-				? { width: '500', height: '800' }
-				: MAILS_VIEW_LAYOUTS.LEFT_TO_RIGHT,
-			jest.fn()
-		]);
+			useLocalStorage.mockImplementation((key: string) => [
+				key === LOCAL_STORAGE_VIEW_SIZES ? { width: '500' } : MAILS_VIEW_LAYOUTS.LEFT_TO_RIGHT,
+				jest.fn()
+			]);
 
-		setupTest(
-			<LayoutSelector
-				listLayout={MAILS_VIEW_LAYOUTS.TOP_TO_BOTTOM}
-				folderView={<MockedView />}
-				detailPanel={<MockedView />}
-				containerRef={ref}
-			/>
-		);
-		const component = screen.getByTestId(SELECTORS.INNER);
+			setupTest(
+				<LayoutSelector
+					listLayout={MAILS_VIEW_LAYOUTS.TOP_TO_BOTTOM}
+					folderView={<MockedView />}
+					detailPanel={<MockedView />}
+					containerRef={ref}
+				/>
+			);
+			const component = screen.getByTestId(SELECTORS.INNER);
 
-		expect(component).toHaveStyle({ height: '800px' });
-	});
-	test('The mails view width depends from the stored value', async () => {
-		const ref = { current: null };
-
-		useLocalStorage.mockImplementation((key: string) => [
-			key === LOCAL_STORAGE_VIEW_SIZES
-				? { width: '500', height: '800' }
-				: MAILS_VIEW_LAYOUTS.LEFT_TO_RIGHT,
-			jest.fn()
-		]);
-
-		setupTest(
-			<LayoutSelector
-				listLayout={MAILS_VIEW_LAYOUTS.LEFT_TO_RIGHT}
-				folderView={<MockedView />}
-				detailPanel={<MockedView />}
-				containerRef={ref}
-			/>
-		);
-		const component = screen.getByTestId(SELECTORS.INNER);
-
-		expect(component).toHaveStyle({ width: '500px' });
+			expect(component).not.toHaveStyle({ width: '500px' });
+		});
 	});
 });

@@ -16,30 +16,22 @@ const layoutOutlineIcon = 'icon: LayoutOutline';
 
 describe('LayoutComponent', () => {
 	test('the icon has width 1.25rem', async () => {
-		useLocalStorage.mockImplementation(() => [MAILS_VIEW_LAYOUTS.DEFAULT, jest.fn()]);
+		useLocalStorage.mockImplementation(() => [MAILS_VIEW_LAYOUTS.LEFT_TO_RIGHT, jest.fn()]);
 		const store = generateStore();
 
 		setupTest(<LayoutComponent />, { store });
 
-		expect(await screen.findByTestId(layoutOutlineIcon)).toHaveStyle({ width: '1.25rem' });
+		expect(await screen.findByTestId(bottomViewOutlineIcon)).toHaveStyle({ width: '1.25rem' });
 	});
 	test('the icon has height 1.25rem', async () => {
-		useLocalStorage.mockImplementation(() => [MAILS_VIEW_LAYOUTS.DEFAULT, jest.fn()]);
+		useLocalStorage.mockImplementation(() => [MAILS_VIEW_LAYOUTS.LEFT_TO_RIGHT, jest.fn()]);
 		const store = generateStore();
 
 		setupTest(<LayoutComponent />, { store });
 
-		expect(await screen.findByTestId(layoutOutlineIcon)).toHaveStyle({ height: '1.25rem' });
+		expect(await screen.findByTestId(bottomViewOutlineIcon)).toHaveStyle({ height: '1.25rem' });
 	});
-	test('By default it should render LayoutOutlineIcon icon', async () => {
-		useLocalStorage.mockImplementation(() => [MAILS_VIEW_LAYOUTS.DEFAULT, jest.fn()]);
-		const store = generateStore();
-
-		setupTest(<LayoutComponent />, { store });
-
-		expect(await screen.findByTestId(layoutOutlineIcon)).toBeInTheDocument();
-	});
-	test('When the value saved in the local storage is horizontal it should render LayoutOutlineIcon icon', async () => {
+	test('in top to bottom layout icon will render LayoutOutlineIcon icon', async () => {
 		useLocalStorage.mockImplementation(() => [MAILS_VIEW_LAYOUTS.TOP_TO_BOTTOM, jest.fn()]);
 		const store = generateStore();
 
@@ -47,7 +39,7 @@ describe('LayoutComponent', () => {
 
 		expect(await screen.findByTestId(layoutOutlineIcon)).toBeInTheDocument();
 	});
-	test('When the value saved in the local storage is vertical it should render BottomViewOutline icon', async () => {
+	test('In left to right layout icon will render BottomViewOutline icon', async () => {
 		useLocalStorage.mockImplementation(() => [MAILS_VIEW_LAYOUTS.LEFT_TO_RIGHT, jest.fn()]);
 		const store = generateStore();
 
@@ -55,7 +47,7 @@ describe('LayoutComponent', () => {
 
 		expect(await screen.findByTestId(bottomViewOutlineIcon)).toBeInTheDocument();
 	});
-	test('onClick it should call the local storage function', async () => {
+	test('onClick will call the local storage function', async () => {
 		const cb = jest.fn();
 		useLocalStorage.mockImplementation(() => [MAILS_VIEW_LAYOUTS.LEFT_TO_RIGHT, cb]);
 		const store = generateStore();
@@ -66,7 +58,7 @@ describe('LayoutComponent', () => {
 
 		expect(cb).toHaveBeenCalledTimes(1);
 	});
-	test('onHover during horizontal view it should render "Show vertical"', async () => {
+	test('onHover tooltip will render "Show vertical"', async () => {
 		useLocalStorage.mockImplementation(() => [MAILS_VIEW_LAYOUTS.TOP_TO_BOTTOM, jest.fn()]);
 		const store = generateStore();
 
@@ -77,7 +69,7 @@ describe('LayoutComponent', () => {
 		const tooltip = await screen.findByText('Vertical view');
 		expect(tooltip).toBeVisible();
 	});
-	test('onHover during vertical view it should render "Show horizontal"', async () => {
+	test('onHover tooltip will render "Show horizontal"', async () => {
 		useLocalStorage.mockImplementation(() => [MAILS_VIEW_LAYOUTS.LEFT_TO_RIGHT, jest.fn()]);
 		const store = generateStore();
 
