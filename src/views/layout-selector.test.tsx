@@ -80,7 +80,7 @@ describe('LayoutSelector', () => {
 			expect(detailPanel).toBeVisible();
 		});
 	});
-	test('The outer container has width 100%', async () => {
+	test('The outer container has a width set', async () => {
 		const ref = { current: null };
 
 		setupTest(
@@ -95,7 +95,7 @@ describe('LayoutSelector', () => {
 
 		expect(component).toHaveStyle({ width: '100%' });
 	});
-	test('The outer container has height 100%', async () => {
+	test('The outer container has a height set', async () => {
 		const ref = { current: null };
 
 		setupTest(
@@ -110,7 +110,7 @@ describe('LayoutSelector', () => {
 
 		expect(component).toHaveStyle({ height: '100%' });
 	});
-	test('The inner container has minWidth 22.5rem', async () => {
+	test('The inner container has a minWidth set', async () => {
 		const ref = { current: null };
 
 		setupTest(
@@ -125,7 +125,7 @@ describe('LayoutSelector', () => {
 
 		expect(component).toHaveStyle({ minWidth: '22.5rem' });
 	});
-	test('The inner container has minHeight 11.25rem', async () => {
+	test('The inner container has a minHeight set', async () => {
 		const ref = { current: null };
 
 		setupTest(

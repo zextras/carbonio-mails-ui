@@ -89,6 +89,10 @@ export const LayoutSelector = ({
 				ref={containerRef}
 				minHeight={'11.25rem'}
 				minWidth={'22.5rem'}
+				maxHeight={
+					listLayout === MAILS_VIEW_LAYOUTS.LEFT_TO_RIGHT ? '100%' : 'calc(100% - 11.25rem)'
+				}
+				maxWidth={listLayout === MAILS_VIEW_LAYOUTS.LEFT_TO_RIGHT ? 'calc(100% - 22.5rem)' : '100%'}
 				style={{ flexShrink: 0 }}
 			>
 				{folderView}

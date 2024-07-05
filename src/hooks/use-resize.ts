@@ -116,20 +116,13 @@ export const useResize = (
 			if (elementToResizeRef.current) {
 				const elementToResize = elementToResizeRef.current;
 				const sizeAndPositionToApply: Partial<SizeAndPosition> = lastSizeAndPositionRef.current;
-				const computedStyle = getComputedStyle(elementToResizeRef.current);
-				const minHeight = parseFloat(computedStyle.minHeight) || 0;
-				const minWidth = parseFloat(computedStyle.minWidth) || 0;
-				const maxHeight =
-					window.innerHeight - (initialSizeAndPositionRef?.current?.clientTop ?? 0) - minHeight;
-				const maxWidth =
-					window.innerWidth - (initialSizeAndPositionRef?.current?.clientLeft ?? 0) - minWidth;
-				if (top >= 0 && height >= minHeight && height <= maxHeight && border === BORDERS.SOUTH) {
+				if (top >= 0 && border === BORDERS.SOUTH) {
 					sizeAndPositionToApply.height = height;
 					sizeAndPositionToApply.top = top;
 					elementToResize.style.height = `${height}px`;
 					elementToResize.style.top = `${top}px`;
 				}
-				if (left >= 0 && width >= minWidth && width <= maxWidth && border === BORDERS.EAST) {
+				if (left >= 0 && border === BORDERS.EAST) {
 					sizeAndPositionToApply.width = width;
 					sizeAndPositionToApply.left = left;
 					elementToResize.style.width = `${width}px`;
