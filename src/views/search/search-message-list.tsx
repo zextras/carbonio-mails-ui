@@ -114,7 +114,7 @@ export const SearchMessageList: FC<SearchListProps> = ({
 									visible={visible}
 								/>
 							) : (
-								<div style={{ height: '4rem' }} />
+								<div style={{ height: '4rem' }} data-testid={`invisible-message-${message.id}`} />
 							)
 						}
 					</CustomListItem>
