@@ -150,15 +150,15 @@ export const MessageListComponent: FC<MessageListComponentProps> = memo(
 			return (
 				folder?.absFolderPath
 					?.split('/')
-					?.map((p) =>
+					?.map((p, idx) =>
 						getFolderTranslatedName({
-							folderId: root?.id,
+							folderId: idx === 1 ? root?.id : folderId,
 							folderName: p
 						})
 					)
 					.join(' / ') ?? ''
 			);
-		}, [root?.id, folder?.absFolderPath, isSearchModule]);
+		}, [root?.id, folderId, folder?.absFolderPath, isSearchModule]);
 
 		const onListBottom = useCallback((): void => {
 			loadMore && loadMore();
