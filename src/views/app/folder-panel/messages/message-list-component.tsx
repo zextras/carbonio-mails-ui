@@ -11,10 +11,11 @@ import styled from 'styled-components';
 
 import { MessageListItem } from './message-list-item';
 import { CustomList } from '../../../../carbonio-ui-commons/components/list/list';
-import { useFolder } from '../../../../carbonio-ui-commons/store/zustand/folder/hooks';
+import { useFolder, useRoot } from '../../../../carbonio-ui-commons/store/zustand/folder/hooks';
 import type { IncompleteMessage, MailMessage, MessageListItemProps } from '../../../../types';
 import { MultipleSelectionActionsPanel } from '../../../../ui-actions/multiple-selection-actions-panel';
 import ShimmerList from '../../../search/shimmer-list';
+import { getFolderTranslatedName } from '../../../sidebar/utils';
 import { Breadcrumbs } from '../parts/breadcrumbs';
 
 const DragImageContainer = styled.div`
@@ -133,6 +134,7 @@ export const MessageListComponent: FC<MessageListComponentProps> = memo(
 		}, [selected, setDraggedIds]);
 
 		const folder = useFolder(folderId);
+		const root = useRoot(folder?.id ?? '');
 		const showBreadcrumbs = useMemo(
 			() =>
 				!isSearchModule ||
@@ -145,8 +147,18 @@ export const MessageListComponent: FC<MessageListComponentProps> = memo(
 			if (isSearchModule) {
 				return '';
 			}
-			return folder?.absFolderPath?.split('/')?.join(' / ') ?? '';
-		}, [folder?.absFolderPath, isSearchModule]);
+			return (
+				folder?.absFolderPath
+					?.split('/')
+					?.map((p) =>
+						getFolderTranslatedName({
+							folderId: root?.id,
+							folderName: p
+						})
+					)
+					.join(' / ') ?? ''
+			);
+		}, [root?.id, folder?.absFolderPath, isSearchModule]);
 
 		const onListBottom = useCallback((): void => {
 			loadMore && loadMore();
