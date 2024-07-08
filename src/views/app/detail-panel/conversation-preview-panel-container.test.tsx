@@ -6,7 +6,7 @@
 import React from 'react';
 
 import { screen } from '@testing-library/react';
-import { useParams } from 'react-router-dom';
+import { useParams, useRouteMatch } from 'react-router-dom';
 
 import { ConversationPreviewPanelContainer } from './conversation-preview-panel-container';
 import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
@@ -16,117 +16,105 @@ import { MailsStateType } from '../../../types';
 
 jest.mock('react-router-dom', () => ({
 	...jest.requireActual('react-router-dom'),
-	useParams: jest.fn()
+	useParams: jest.fn(),
+	useRouteMatch: jest.fn()
 }));
 
 describe('Conversation Preview Panel', () => {
-	it.skip('should display the conversation in searches', async () => {
-		const conversationSubject = 'Test conversation';
-		const initialState: Partial<MailsStateType> = {
-			messages: {
-				messages: { 100: {} },
-				searchRequestStatus: API_REQUEST_STATUS.fulfilled,
-				searchedInFolder: {}
-			},
-			conversations: {
-				conversations: {},
-				currentFolder: '2',
-				expandedStatus: {
-					'1': API_REQUEST_STATUS.fulfilled
-				},
-				searchRequestStatus: API_REQUEST_STATUS.fulfilled,
-				searchedInFolder: {}
-			},
-			searches: {
-				searchResults: undefined,
-				searchResultsIds: [],
+	describe('when route is "search"', () => {
+		it('should display the conversation from searches slice', async () => {
+			const conversationSubject = 'Test conversation';
+			const initialState: Partial<MailsStateType> = {
+				searches: {
+					searchResults: undefined,
+					searchResultsIds: [],
+					messages: {},
+					conversations: {
+						1: {
+							id: '1',
+							date: 0,
+							messages: [
+								{
+									id: '100',
+									parent: '1',
+									date: 0
+								}
+							],
+							participants: [],
+							subject: conversationSubject,
+							fragment: '',
+							read: false,
+							hasAttachment: false,
+							flagged: false,
+							urgent: false,
+							tags: [],
+							parent: '2',
+							messagesInConversation: 0,
+							sortIndex: 0
+						}
+					},
+					more: false,
+					offset: 0,
+					status: API_REQUEST_STATUS.fulfilled
+				}
+			};
+			const store = generateStore(initialState);
+			(useParams as jest.Mock).mockReturnValue({ folderId: '2', conversationId: '1' });
+			(useRouteMatch as jest.Mock).mockReturnValue({ path: 'search' });
+
+			setupTest(<ConversationPreviewPanelContainer />, { store });
+			expect(await screen.findByText(conversationSubject)).toBeVisible();
+		});
+	});
+
+	describe('when route is "mails"', () => {
+		it('should display the conversation from conversations slice', async () => {
+			const conversationSubject = 'Test conversation';
+			const initialState: Partial<MailsStateType> = {
 				messages: {
 					messages: { 100: {} },
 					searchRequestStatus: API_REQUEST_STATUS.fulfilled,
 					searchedInFolder: {}
 				},
 				conversations: {
-					1: {
-						id: '1',
-						date: 0,
-						messages: [
-							{
-								id: '100',
-								parent: '1',
-								date: 0
-							}
-						],
-						participants: [],
-						subject: conversationSubject,
-						fragment: '',
-						read: false,
-						hasAttachment: false,
-						flagged: false,
-						urgent: false,
-						tags: [],
-						parent: '2',
-						messagesInConversation: 0,
-						sortIndex: 0
-					}
-				},
-				more: false,
-				offset: 0,
-				status: API_REQUEST_STATUS.fulfilled
-			}
-		};
-		const store = generateStore(initialState);
-		// ${path}/folder/:folderId/conversation/:conversationId
-		(useParams as jest.Mock).mockReturnValue({ folderId: '2', conversationId: '1' });
+					conversations: {
+						'1': {
+							id: '1',
+							date: 0,
+							messages: [
+								{
+									id: '100',
+									parent: '1',
+									date: 0
+								}
+							],
+							participants: [],
+							subject: conversationSubject,
+							fragment: '',
+							read: false,
+							hasAttachment: false,
+							flagged: false,
+							urgent: false,
+							tags: [],
+							parent: '2',
+							messagesInConversation: 0,
+							sortIndex: 0
+						}
+					},
+					currentFolder: '2',
+					expandedStatus: {
+						'1': API_REQUEST_STATUS.fulfilled
+					},
+					searchRequestStatus: API_REQUEST_STATUS.fulfilled,
+					searchedInFolder: {}
+				}
+			};
+			const store = generateStore(initialState);
+			(useParams as jest.Mock).mockReturnValue({ folderId: '2', conversationId: '1' });
 
-		setupTest(<ConversationPreviewPanelContainer />, { store });
-		expect(await screen.findByText(conversationSubject)).toBeVisible();
-	});
-
-	it('should display the conversation in conversations slice', async () => {
-		const conversationSubject = 'Test conversation';
-		const initialState: Partial<MailsStateType> = {
-			messages: {
-				messages: { 100: {} },
-				searchRequestStatus: API_REQUEST_STATUS.fulfilled,
-				searchedInFolder: {}
-			},
-			conversations: {
-				conversations: {
-					'1': {
-						id: '1',
-						date: 0,
-						messages: [
-							{
-								id: '100',
-								parent: '1',
-								date: 0
-							}
-						],
-						participants: [],
-						subject: conversationSubject,
-						fragment: '',
-						read: false,
-						hasAttachment: false,
-						flagged: false,
-						urgent: false,
-						tags: [],
-						parent: '2',
-						messagesInConversation: 0,
-						sortIndex: 0
-					}
-				},
-				currentFolder: '2',
-				expandedStatus: {
-					'1': API_REQUEST_STATUS.fulfilled
-				},
-				searchRequestStatus: API_REQUEST_STATUS.fulfilled,
-				searchedInFolder: {}
-			}
-		};
-		const store = generateStore(initialState);
-		(useParams as jest.Mock).mockReturnValue({ folderId: '2', conversationId: '1' });
-
-		setupTest(<ConversationPreviewPanelContainer />, { store });
-		expect(await screen.findByText(conversationSubject)).toBeVisible();
+			(useRouteMatch as jest.Mock).mockReturnValue({ path: 'mails' });
+			setupTest(<ConversationPreviewPanelContainer />, { store });
+			expect(await screen.findByText(conversationSubject)).toBeVisible();
+		});
 	});
 });
