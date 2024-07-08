@@ -6,18 +6,38 @@
 import React, { ReactElement } from 'react';
 
 import { act, screen, waitFor } from '@testing-library/react';
-import { ErrorSoapBodyResponse, QueryChip, SearchViewProps } from '@zextras/carbonio-shell-ui';
+import * as hooks from '@zextras/carbonio-shell-ui';
+import {
+	AccountSettings,
+	ErrorSoapBodyResponse,
+	QueryChip,
+	SearchViewProps
+} from '@zextras/carbonio-shell-ui';
 import { noop } from 'lodash';
 
 import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
+import { generateSettings } from '../../../carbonio-ui-commons/test/mocks/settings/settings-generator';
 import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
 import * as searchByQuery from '../../../store/actions/searchByQuery';
 import { generateStore } from '../../../tests/generators/store';
 import { SearchRequest, SearchResponse } from '../../../types';
 import SearchView from '../search-view';
 
+const aSoapMessage = {
+	id: '53034',
+	cid: '123',
+	e: [],
+	su: 'message Subject',
+	s: 71116,
+	l: '44802',
+	f: 'au',
+	fr: 'fragment',
+	mp: [],
+	d: 1717752296000
+};
+
 describe('SearchView', () => {
-	it('should display Results for when soap API fulfilled', async () => {
+	it('should display label "Results for" when soap API fulfilled', async () => {
 		const store = generateStore();
 		const searchInterceptor = createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
 			c: [
@@ -54,6 +74,51 @@ describe('SearchView', () => {
 		await searchInterceptor;
 
 		expect(await screen.findByText('label.results_for')).toBeInTheDocument();
+	});
+
+	it('should display conversations when soap API fulfilled and settings is "display by conversation"', async () => {
+		const store = generateStore();
+		createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
+			c: [
+				{
+					id: '123',
+					n: 1,
+					u: 1,
+					f: 'flag',
+					tn: 'tag names',
+					d: 123,
+					m: [],
+					e: [],
+					su: 'conversations Subject',
+					fr: 'fragment'
+				}
+			],
+			more: false
+		});
+		const queryChip: QueryChip = {
+			hasAvatar: false,
+			id: '0',
+			label: 'ciao'
+		};
+		const customSettings: Partial<AccountSettings> = {
+			prefs: {
+				zimbraPrefGroupMailBy: 'conversation'
+			}
+		};
+		const settings = generateSettings(customSettings);
+		jest.spyOn(hooks, 'useUserSettings').mockReturnValue(settings);
+
+		const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
+		const searchViewProps: SearchViewProps = {
+			useQuery: () => [[queryChip], noop],
+			useDisableSearch: () => [false, noop],
+			ResultsHeader: resultsHeader
+		};
+
+		setupTest(<SearchView {...searchViewProps} />, {
+			store
+		});
+		expect(await screen.findByText('conversations Subject')).toBeInTheDocument();
 	});
 
 	it('should display a disabled Advanced Filters button when SearchDisabled is true', async () => {
