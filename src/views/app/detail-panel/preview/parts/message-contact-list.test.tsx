@@ -12,7 +12,6 @@ import { filter } from 'lodash';
 
 import MessageContactList from './message-contact-list';
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
-import { MAILS_ROUTE } from '../../../../../constants';
 import { getMsg } from '../../../../../store/actions';
 import { selectMessage } from '../../../../../store/messages-slice';
 import { generateStore } from '../../../../../tests/generators/store';
@@ -45,14 +44,18 @@ describe('Message contacts list', () => {
 		expect(ccContact).toBeInTheDocument();
 		await user.click(ccContact);
 		const updatedContact = [{ ...ccContacts, type: 't' }];
-		expect(addBoard).toBeCalledWith({
-			url: `${MAILS_ROUTE}/new?action=mailTo`,
-			context: {
-				compositionData: {
-					recipients: updatedContact
-				}
-			}
-		});
+		expect(addBoard).toHaveBeenCalledWith(
+			expect.objectContaining({
+				boardViewId: 'mails_editor_board_view',
+				context: {
+					originAction: 'mailTo',
+					compositionData: {
+						recipients: updatedContact
+					}
+				},
+				title: ''
+			})
+		);
 	});
 	test(`send e-mail from the BCC participant`, async () => {
 		const store = generateStore();
@@ -81,13 +84,17 @@ describe('Message contacts list', () => {
 		expect(ccContact).toBeInTheDocument();
 		await user.click(ccContact);
 		const updatedContact = [{ ...bccContacts, type: 't' }];
-		expect(addBoard).toBeCalledWith({
-			url: `${MAILS_ROUTE}/new?action=mailTo`,
-			context: {
-				compositionData: {
-					recipients: updatedContact
-				}
-			}
-		});
+		expect(addBoard).toHaveBeenCalledWith(
+			expect.objectContaining({
+				boardViewId: 'mails_editor_board_view',
+				context: {
+					originAction: 'mailTo',
+					compositionData: {
+						recipients: updatedContact
+					}
+				},
+				title: ''
+			})
+		);
 	});
 });
