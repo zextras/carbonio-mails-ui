@@ -11,6 +11,7 @@ import { useParams, useRouteMatch } from 'react-router-dom';
 import { ConversationPreviewPanelContainer } from './conversation-preview-panel-container';
 import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
 import { API_REQUEST_STATUS } from '../../../constants';
+import { useSearchStore } from '../../../store/zustand/search/store';
 import { generateStore } from '../../../tests/generators/store';
 import { MailsStateType } from '../../../types';
 
@@ -24,45 +25,36 @@ describe('Conversation Preview Panel', () => {
 	describe('when route is "search"', () => {
 		it('should display the conversation from searches slice', async () => {
 			const conversationSubject = 'Test conversation';
-			const initialState: Partial<MailsStateType> = {
-				searches: {
-					searchResults: undefined,
-					searchResultsIds: [],
-					messages: {},
-					conversations: {
-						1: {
-							id: '1',
-							date: 0,
-							messages: [
-								{
-									id: '100',
-									parent: '1',
-									date: 0
-								}
-							],
-							participants: [],
-							subject: conversationSubject,
-							fragment: '',
-							read: false,
-							hasAttachment: false,
-							flagged: false,
-							urgent: false,
-							tags: [],
-							parent: '2',
-							messagesInConversation: 0,
-							sortIndex: 0
-						}
-					},
-					more: false,
-					offset: 0,
-					status: API_REQUEST_STATUS.fulfilled
-				}
+			const conversation = {
+				id: '1',
+				date: 0,
+				messages: [
+					{
+						id: '100',
+						parent: '1',
+						date: 0
+					}
+				],
+				participants: [],
+				subject: conversationSubject,
+				fragment: '',
+				read: false,
+				hasAttachment: false,
+				flagged: false,
+				urgent: false,
+				tags: [],
+				parent: '2',
+				messagesInConversation: 0,
+				sortIndex: 0
 			};
-			const store = generateStore(initialState);
+			const store = useSearchStore();
+			store.addConversation(conversation);
+			store.setStatus(API_REQUEST_STATUS.fulfilled);
+
 			(useParams as jest.Mock).mockReturnValue({ folderId: '2', conversationId: '1' });
 			(useRouteMatch as jest.Mock).mockReturnValue({ path: 'search' });
 
-			setupTest(<ConversationPreviewPanelContainer />, { store });
+			setupTest(<ConversationPreviewPanelContainer />);
 			expect(await screen.findByText(conversationSubject)).toBeVisible();
 		});
 	});

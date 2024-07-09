@@ -20,7 +20,7 @@ import {
 	selectConversation,
 	selectConversationExpandedStatus
 } from '../../../store/conversations-slice';
-import { selectSearchesConversation } from '../../../store/searches-slice';
+import { useSearchStore } from '../../../store/zustand/search/store';
 import type { MailsStateType } from '../../../types';
 import { useExtraWindow } from '../extra-windows/use-extra-window';
 
@@ -37,6 +37,8 @@ const useConversationPreviewPanelParameters = (
 };
 
 export const ConversationPreviewPanelContainer: FC<ConversationPreviewPanelProps> = (props) => {
+	const searchesStore = useSearchStore();
+
 	const { path } = useRouteMatch();
 	const { conversationId, folderId } = useConversationPreviewPanelParameters(props);
 	const tagsFromStore = useTags();
@@ -48,10 +50,10 @@ export const ConversationPreviewPanelContainer: FC<ConversationPreviewPanelProps
 
 	const conversationFromConversationsSlice = useAppSelector(selectConversation(conversationId));
 
-	const conversationFromSearchesSlice = useAppSelector(selectSearchesConversation(conversationId));
+	const conversationFromSearches = searchesStore.getConversation(conversationId);
 
 	const conversation =
-		path === SEARCH_ROUTE ? conversationFromSearchesSlice : conversationFromConversationsSlice;
+		path === SEARCH_ROUTE ? conversationFromSearches : conversationFromConversationsSlice;
 	const settings = useUserSettings();
 	const convSortOrder = settings.prefs.zimbraPrefConversationOrder as string;
 
