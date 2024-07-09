@@ -47,14 +47,16 @@ describe('Conversation Preview Panel', () => {
 				messagesInConversation: 0,
 				sortIndex: 0
 			};
-			const store = useSearchStore();
-			store.addConversation(conversation);
-			store.setStatus(API_REQUEST_STATUS.fulfilled);
+
+			useSearchStore.setState({
+				conversations: { [conversation.id]: conversation },
+				status: API_REQUEST_STATUS.fulfilled
+			});
 
 			(useParams as jest.Mock).mockReturnValue({ folderId: '2', conversationId: '1' });
 			(useRouteMatch as jest.Mock).mockReturnValue({ path: 'search' });
 
-			setupTest(<ConversationPreviewPanelContainer />);
+			setupTest(<ConversationPreviewPanelContainer />, { store: generateStore({}) });
 			expect(await screen.findByText(conversationSubject)).toBeVisible();
 		});
 	});
