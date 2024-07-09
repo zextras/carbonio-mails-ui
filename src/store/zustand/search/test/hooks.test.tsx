@@ -7,9 +7,10 @@
 import React, { ReactElement } from 'react';
 
 import { act, screen } from '@testing-library/react';
+import { renderHook } from '@testing-library/react-hooks';
 
 import { setupTest } from '../../../../carbonio-ui-commons/test/test-setup';
-import { useConversation } from '../hooks/hooks';
+import { useConversation, useHandleSearchResults } from '../hooks/hooks';
 import { useSearchStore } from '../store';
 
 const TestComponent = (props: { id: string }): ReactElement => {
@@ -17,7 +18,22 @@ const TestComponent = (props: { id: string }): ReactElement => {
 	return <>{subject}</>;
 };
 
-describe('Searches store', () => {
+function conversationFromAPI(params: Partial<SoapConversation> = {}): SoapConversation {
+	return {
+		id: '123',
+		n: 1,
+		u: 1,
+		f: 'flag',
+		tn: 'tag names',
+		d: 123,
+		m: [],
+		e: [],
+		su: 'Subject',
+		fr: 'fragment',
+		...params
+	};
+}
+describe('Searches store hooks', () => {
 	it('useConversation should return a conversation', () => {
 		const conversation = {
 			id: '1',
@@ -86,5 +102,15 @@ describe('Searches store', () => {
 			});
 		});
 		expect(await screen.findByText('New subject')).toBeInTheDocument();
+	});
+
+	it('useHandleSearchResults should update the store', () => {
+		const searchResponse = {
+			c: [conversationFromAPI({ id: '123', su: 'Subject' })],
+			more: false
+		};
+		const { result } = renderHook(() => useHandleSearchResults({ searchResponse, offset: 0 }));
+		expect(result.current).toBeUndefined();
+		expect(useSearchStore.getState().conversations['123']).toBeDefined();
 	});
 });
