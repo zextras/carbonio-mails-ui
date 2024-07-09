@@ -12,6 +12,8 @@ export const BACKUP_SEARCH_ROUTE = 'backup-search';
 
 export const MAIL_APP_ID = 'carbonio-mails-ui';
 
+export const MAILS_BOARD_VIEW_ID = 'mails_editor_board_view';
+
 export const NO_ACCOUNT_NAME = 'No account';
 
 export const RECOVER_MESSAGES_INTERVAL = 3;
