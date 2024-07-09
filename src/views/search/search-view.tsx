@@ -27,8 +27,9 @@ import { useFoldersMap } from '../../carbonio-ui-commons/store/zustand/folder/ho
 import type { Folder } from '../../carbonio-ui-commons/types/folder';
 import { LIST_LIMIT, MAILS_ROUTE } from '../../constants';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux';
-import { searchByQuery } from '../../store/actions/searchByQuery';
+import { searchNew } from '../../store/actions/search-new';
 import { resetSearchResults, selectSearches } from '../../store/searches-slice';
+import { useHandleSearchResults } from '../../store/zustand/search/hooks/hooks';
 
 const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHeader }) => {
 	const [query, updateQuery] = useQuery();
@@ -107,19 +108,18 @@ const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHe
 
 	const searchQuery = useCallback(
 		async (queryString: string, reset: boolean) => {
-			const resultAction = await dispatch(
-				searchByQuery({
-					query: queryString,
-					limit: LIST_LIMIT.INITIAL_LIMIT,
-					sortBy: 'dateDesc',
-					types: isMessageView ? 'message' : 'conversation',
-					offset: reset ? 0 : searchResults.offset,
-					recip: '0',
-					locale: prefLocale
-				})
-			);
+			const offset = reset ? 0 : searchResults.offset;
+			const soapSearchResults = await searchNew({
+				query: queryString,
+				limit: LIST_LIMIT.INITIAL_LIMIT,
+				sortBy: 'dateDesc',
+				types: isMessageView ? 'message' : 'conversation',
+				offset,
+				recip: '0',
+				locale: prefLocale
+			});
 			if (
-				isRejected(resultAction) &&
+				isRejected(soapSearchResults) &&
 				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 				// @ts-ignore
 				resultAction?.payload?.Detail?.Error?.Code === 'mail.QUERY_PARSE_ERROR'
@@ -127,15 +127,9 @@ const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHe
 				setIsInvalidQuery(true);
 				setSearchDisabled(true, invalidQueryTooltip);
 			}
+			useHandleSearchResults({ searchResponse: soapSearchResults, offset });
 		},
-		[
-			dispatch,
-			invalidQueryTooltip,
-			isMessageView,
-			prefLocale,
-			searchResults.offset,
-			setSearchDisabled
-		]
+		[invalidQueryTooltip, isMessageView, prefLocale, searchResults.offset, setSearchDisabled]
 	);
 
 	const queryArray = useMemo(() => ['has:attachment', 'is:flagged', 'is:unread'], []);
