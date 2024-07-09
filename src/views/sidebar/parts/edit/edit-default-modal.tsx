@@ -26,6 +26,10 @@ import { folderAction } from '../../../../store/actions/folder-action';
 import { translatedSystemFolders } from '../../utils';
 
 const numberRegex = /^\d+$/;
+const DAYS_LABEL = 'label.days';
+const WEEKS_LABEL = 'label.weeks';
+const MONTHS_LABEL = 'label.months';
+const YEARS_LABEL = 'label.years';
 
 const MainEditModal: FC<MainEditModalPropType> = ({ folder, onClose, setActiveModal }) => {
 	const [inputValue, setInputValue] = useState(folder.name);
@@ -44,19 +48,19 @@ const MainEditModal: FC<MainEditModalPropType> = ({ folder, onClose, setActiveMo
 
 	const retentionPeriod = [
 		{
-			label: t('label.retention_days', 'Days'),
+			label: t(DAYS_LABEL, 'Days'),
 			value: 'd'
 		},
 		{
-			label: t('label.retention_weeks', 'Weeks'),
+			label: t(WEEKS_LABEL, 'Weeks'),
 			value: 'w'
 		},
 		{
-			label: t('label.retention_months', 'Months'),
+			label: t(MONTHS_LABEL, 'Months'),
 			value: 'm'
 		},
 		{
-			label: t('label.retention_years', 'Years'),
+			label: t(YEARS_LABEL, 'Years'),
 			value: 'y'
 		}
 	];
@@ -82,23 +86,23 @@ const MainEditModal: FC<MainEditModalPropType> = ({ folder, onClose, setActiveMo
 			if (d % 365 === 0) {
 				setRtnYear('y');
 				setRtnValue(d / 365);
-				setRtnRange(t('label.retention_years', 'Years'));
+				setRtnRange(t(YEARS_LABEL, 'Years'));
 			} else if (d % 31 === 0) {
 				setRtnYear('m');
 				setRtnValue(d / 31);
-				setRtnRange(t('label.retention_months', 'Months'));
+				setRtnRange(t(MONTHS_LABEL, 'Months'));
 			} else if (d % 7 === 0) {
 				setRtnYear('w');
 				setRtnValue(d / 7);
-				setRtnRange(t('label.retention_weeks', 'Weeks'));
+				setRtnRange(t(WEEKS_LABEL, 'Weeks'));
 			} else {
 				setRtnYear('d');
 				setRtnValue(d);
-				setRtnRange(t('label.retention_days', 'Days'));
+				setRtnRange(t(DAYS_LABEL, 'Days'));
 			}
 		} else {
 			setRtnYear('d');
-			setRtnRange(t('label.retention_days', 'Days'));
+			setRtnRange(t(DAYS_LABEL, 'Days'));
 		}
 
 		if (
@@ -116,23 +120,23 @@ const MainEditModal: FC<MainEditModalPropType> = ({ folder, onClose, setActiveMo
 			if (d % 365 === 0) {
 				setDspYear('y');
 				setPurgeValue(d / 365);
-				setDspRange(t('label.retention_years', 'Years'));
+				setDspRange(t(YEARS_LABEL, 'Years'));
 			} else if (d % 31 === 0) {
 				setDspYear('m');
 				setPurgeValue(d / 31);
-				setDspRange(t('label.retention_months', 'Months'));
+				setDspRange(t(MONTHS_LABEL, 'Months'));
 			} else if (d % 7 === 0) {
 				setDspYear('w');
 				setPurgeValue(d / 7);
-				setDspRange(t('label.retention_weeks', 'Weeks'));
+				setDspRange(t(WEEKS_LABEL, 'Weeks'));
 			} else {
 				setDspYear('d');
 				setPurgeValue(d);
-				setDspRange(t('label.retention_days', 'Days'));
+				setDspRange(t(DAYS_LABEL, 'Days'));
 			}
 		} else {
 			setDspYear('d');
-			setDspRange(t('label.retention_days', 'Days'));
+			setDspRange(t(DAYS_LABEL, 'Days'));
 		}
 	}, [folder.retentionPolicy]);
 
