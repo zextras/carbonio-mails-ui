@@ -10,6 +10,7 @@ import { act, screen } from '@testing-library/react';
 import { renderHook } from '@testing-library/react-hooks';
 
 import { setupTest } from '../../../../carbonio-ui-commons/test/test-setup';
+import { SoapConversation } from '../../../../types';
 import { useConversation, useHandleSearchResults } from '../hooks/hooks';
 import { useSearchStore } from '../store';
 
