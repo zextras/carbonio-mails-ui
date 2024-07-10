@@ -26,7 +26,7 @@ import { CustomListItem } from '../../carbonio-ui-commons/components/list/list-i
 import { LIST_LIMIT } from '../../constants';
 import { useAppDispatch } from '../../hooks/redux';
 import { useSelection } from '../../hooks/use-selection';
-import { searchByQuery } from '../../store/actions/searchByQuery';
+import { search } from '../../store/actions/search';
 import type { AppContext, SearchListProps } from '../../types';
 import { MessageListComponent } from '../app/folder-panel/messages/message-list-component';
 import { MessageListItemComponent } from '../app/folder-panel/messages/message-list-item-component';
@@ -138,7 +138,7 @@ export const SearchMessageList: FC<SearchListProps> = ({
 		if (searchResults.more && !isLoading) {
 			setIsLoading(true);
 			dispatch(
-				searchByQuery({
+				search({
 					query,
 					limit: LIST_LIMIT.LOAD_MORE_LIMIT,
 					sortBy: 'dateDesc',
