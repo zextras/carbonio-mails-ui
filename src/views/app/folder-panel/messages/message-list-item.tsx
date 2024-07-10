@@ -17,7 +17,6 @@ import {
 import {
 	Tag,
 	ZIMBRA_STANDARD_COLORS,
-	addBoard,
 	replaceHistory,
 	t,
 	useTags,
@@ -29,16 +28,17 @@ import moment from 'moment';
 
 import { useFolder } from '../../../../carbonio-ui-commons/store/zustand/folder/hooks';
 import { getTimeLabel, participantToString } from '../../../../commons/utils';
-import { EditViewActions, MAILS_BOARD_VIEW_ID } from '../../../../constants';
+import { EditViewActions } from '../../../../constants';
 import { useAppDispatch } from '../../../../hooks/redux';
 import { useMessageActions } from '../../../../hooks/use-message-actions';
-import type { BoardContext, MessageListItemProps, TextReadValuesType } from '../../../../types';
+import type { MessageListItemProps, TextReadValuesType } from '../../../../types';
 import {
 	previewMessageOnSeparatedWindow,
 	setMsgRead
 } from '../../../../ui-actions/message-actions';
 import { useTagExist } from '../../../../ui-actions/tag-actions';
 import { getFolderTranslatedName } from '../../../sidebar/utils';
+import { createEditBoard } from '../../detail-panel/edit/edit-view-board';
 import { useGlobalExtraWindowManager } from '../../extra-windows/global-extra-window-manager';
 import { ItemAvatar } from '../parts/item-avatar';
 import { ListItemActionWrapper } from '../parts/list-item-actions-wrapper';
@@ -78,13 +78,9 @@ export const MessageListItem: FC<MessageListItemProps> = memo(function MessageLi
 			if (!e.isDefaultPrevented()) {
 				const { id, isDraft } = item;
 				if (isDraft) {
-					addBoard<BoardContext>({
-						boardViewId: MAILS_BOARD_VIEW_ID,
-						context: {
-							action: EditViewActions.EDIT_AS_DRAFT,
-							id
-						},
-						title: ''
+					createEditBoard({
+						action: EditViewActions.EDIT_AS_DRAFT,
+						actionTargetId: id
 					});
 				} else {
 					previewMessageOnSeparatedWindow(

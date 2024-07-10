@@ -16,14 +16,13 @@ import {
 import { includes, noop } from 'lodash';
 
 import { EditView, EditViewHandle } from './edit-view';
+import { EditViewBoardContext } from './edit-view-board';
 import { EditViewActions } from '../../../../constants';
 import { useAppDispatch, useAppSelector } from '../../../../hooks/redux';
-import { useQueryParam } from '../../../../hooks/use-query-param';
 import { getMsg } from '../../../../store/actions';
 import { selectMessage } from '../../../../store/messages-slice';
 import { addEditor, useEditorSubject } from '../../../../store/zustand/editor';
 import { generateEditor } from '../../../../store/zustand/editor/editor-generators';
-import { EditViewBoardContext } from '../../../../types';
 import type { EditViewActionsType, MailMessage } from '../../../../types';
 
 const parseAndValidateParams = (
@@ -157,8 +156,11 @@ const MemoizedEditViewControllerCore = memo(EditViewControllerCore);
 const EditViewController: FC = () => {
 	const messagesStoreDispatch = useAppDispatch();
 
-	// TODO check why the useQueryParams triggers 2 renders
-	const { action, id } = parseAndValidateParams(useQueryParam('action'), useQueryParam('id'));
+	const boardContext = useBoard<EditViewBoardContext>().context;
+	const { action, id } = parseAndValidateParams(
+		boardContext?.originAction,
+		boardContext?.originActionTargetId
+	);
 
 	const isMessageRequired = useMemo<boolean>(
 		(): boolean => isActionRequiringMessage(action) && !!id,

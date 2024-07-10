@@ -7,13 +7,7 @@ import React, { useCallback } from 'react';
 
 import { AsyncThunkAction, Dispatch } from '@reduxjs/toolkit';
 import { Text, useSnackbar } from '@zextras/carbonio-design-system';
-import {
-	t,
-	addBoard,
-	FOLDERS,
-	replaceHistory,
-	useIntegratedFunction
-} from '@zextras/carbonio-shell-ui';
+import { t, FOLDERS, replaceHistory, useIntegratedFunction } from '@zextras/carbonio-shell-ui';
 import { isNull, map, noop } from 'lodash';
 
 import DeleteConvConfirm from './delete-conv-modal';
@@ -22,12 +16,7 @@ import MoveConvMessage from './move-conv-msg';
 import RedirectAction from './redirect-message-action';
 import { getRoot } from '../carbonio-ui-commons/store/zustand/folder';
 import { getContentForPrint } from '../commons/print-conversation/print-conversation';
-import {
-	EditViewActions,
-	MAILS_BOARD_VIEW_ID,
-	MessageActionsDescriptors,
-	TIMEOUTS
-} from '../constants';
+import { EditViewActions, MessageActionsDescriptors, TIMEOUTS } from '../constants';
 import { getAttendees, getOptionalsAttendees, getSenderByOwner } from '../helpers/appointmemt';
 import { useUiUtilities } from '../hooks/use-ui-utilities';
 import { getMsgCall, getMsgsForPrint, msgAction } from '../store/actions';
@@ -35,7 +24,6 @@ import { sendMsg, sendMsgFromEditor } from '../store/actions/send-msg';
 import { extractBody } from '../store/editor-slice-utils';
 import { AppDispatch, StoreProvider } from '../store/redux';
 import type {
-	BoardContext,
 	MailMessage,
 	MailsEditorV2,
 	MessageAction,
@@ -45,6 +33,7 @@ import type {
 } from '../types';
 import { ConvActionReturnType, ExtraWindowCreationParams, ExtraWindowsContextType } from '../types';
 import { CalendarType, SenderType } from '../types/calendar';
+import { createEditBoard } from '../views/app/detail-panel/edit/edit-view-board';
 import { MessagePreviewPanel } from '../views/app/detail-panel/message-preview-panel';
 import { getLocationOrigin } from '../views/app/detail-panel/preview/utils';
 
@@ -496,13 +485,9 @@ export function replyMsg({ id }: Pick<MessageActionPropType, 'id'>): MessageActi
 		label: t('action.reply', 'Reply'),
 		onClick: (ev): void => {
 			if (ev) ev.preventDefault();
-			addBoard<BoardContext>({
-				boardViewId: MAILS_BOARD_VIEW_ID,
-				context: {
-					action: EditViewActions.REPLY,
-					id: `${id}`
-				},
-				title: ''
+			createEditBoard({
+				action: EditViewActions.REPLY,
+				actionTargetId: `${id}`
 			});
 		}
 	};
@@ -516,13 +501,9 @@ export function replyAllMsg({ id }: Pick<MessageActionPropType, 'id'>): MessageA
 		label: t('action.reply_all', 'Reply all'),
 		onClick: (ev): void => {
 			if (ev) ev.preventDefault();
-			addBoard<BoardContext>({
-				boardViewId: MAILS_BOARD_VIEW_ID,
-				context: {
-					action: EditViewActions.REPLY_ALL,
-					id: `${id}`
-				},
-				title: ''
+			createEditBoard({
+				action: EditViewActions.REPLY_ALL,
+				actionTargetId: `${id}`
 			});
 		}
 	};
@@ -536,13 +517,9 @@ export function forwardMsg({ id }: Pick<MessageActionPropType, 'id'>): MessageAc
 		label: t('action.forward', 'Forward'),
 		onClick: (ev): void => {
 			if (ev) ev.preventDefault();
-			addBoard<BoardContext>({
-				boardViewId: MAILS_BOARD_VIEW_ID,
-				context: {
-					action: EditViewActions.FORWARD,
-					id: `${id}`
-				},
-				title: ''
+			createEditBoard({
+				action: EditViewActions.FORWARD,
+				actionTargetId: `${id}`
 			});
 		}
 	};
@@ -556,13 +533,9 @@ export function editAsNewMsg({ id }: Pick<MessageActionPropType, 'id'>): Message
 		label: t('action.edit_as_new', 'Edit as new'),
 		onClick: (ev): void => {
 			if (ev) ev.preventDefault();
-			addBoard<BoardContext>({
-				boardViewId: MAILS_BOARD_VIEW_ID,
-				context: {
-					action: EditViewActions.EDIT_AS_NEW,
-					id: `${id}`
-				},
-				title: ''
+			createEditBoard({
+				action: EditViewActions.EDIT_AS_NEW,
+				actionTargetId: `${id}`
 			});
 		}
 	};
@@ -587,13 +560,9 @@ export const useEditDraft = (): ((
 							confirmLabel: t('action.edit_anyway', 'Edit anyway'),
 							onConfirm: () => {
 								closeModal();
-								addBoard<BoardContext>({
-									boardViewId: MAILS_BOARD_VIEW_ID,
-									context: {
-										action: EditViewActions.EDIT_AS_DRAFT,
-										id: `${id}`
-									},
-									title: ''
+								createEditBoard({
+									action: EditViewActions.EDIT_AS_DRAFT,
+									actionTargetId: `${id}`
 								});
 							},
 							onClose: () => {
@@ -612,13 +581,9 @@ export const useEditDraft = (): ((
 							)
 						});
 					} else {
-						addBoard<BoardContext>({
-							boardViewId: MAILS_BOARD_VIEW_ID,
-							context: {
-								action: EditViewActions.EDIT_AS_DRAFT,
-								id: `${id}`
-							},
-							title: ''
+						createEditBoard({
+							action: EditViewActions.EDIT_AS_DRAFT,
+							actionTargetId: `${id}`
 						});
 					}
 				}

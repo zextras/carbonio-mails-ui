@@ -23,7 +23,7 @@ import {
 	setupTest,
 	setupHook
 } from '../../carbonio-ui-commons/test/test-setup';
-import { API_REQUEST_STATUS, EditViewActions, TIMEOUTS } from '../../constants';
+import { API_REQUEST_STATUS, TIMEOUTS } from '../../constants';
 import { useUiUtilities } from '../../hooks/use-ui-utilities';
 import * as getMsgsForPrint from '../../store/actions/get-msg-for-print';
 import { generateMessage } from '../../tests/generators/generateMessage';
@@ -852,9 +852,10 @@ describe('Messages actions calls', () => {
 
 		expect(addBoard).toBeCalledWith(
 			expect.objectContaining({
+				boardViewId: 'mails_editor_board_view',
 				context: {
-					action: EditViewActions.REPLY,
-					id: msg.id
+					originAction: 'reply',
+					originActionTargetId: msg.id
 				},
 				title: ''
 			})
@@ -884,9 +885,10 @@ describe('Messages actions calls', () => {
 
 		expect(addBoard).toBeCalledWith(
 			expect.objectContaining({
+				boardViewId: 'mails_editor_board_view',
 				context: {
-					action: EditViewActions.REPLY_ALL,
-					id: msg.id
+					originAction: 'replyAll',
+					originActionTargetId: msg.id
 				},
 				title: ''
 			})
@@ -914,9 +916,10 @@ describe('Messages actions calls', () => {
 
 		expect(addBoard).toBeCalledWith(
 			expect.objectContaining({
+				boardViewId: 'mails_editor_board_view',
 				context: {
-					action: EditViewActions.FORWARD,
-					id: msg.id
+					originAction: 'forward',
+					originActionTargetId: msg.id
 				},
 				title: ''
 			})
@@ -947,9 +950,10 @@ describe('Messages actions calls', () => {
 
 		expect(addBoard).toBeCalledWith(
 			expect.objectContaining({
+				boardViewId: 'mails_editor_board_view',
 				context: {
-					action: EditViewActions.EDIT_AS_DRAFT,
-					id: msg.id
+					originAction: 'editAsDraft',
+					originActionTargetId: msg.id
 				},
 				title: ''
 			})
@@ -977,9 +981,10 @@ describe('Messages actions calls', () => {
 
 		expect(addBoard).toBeCalledWith(
 			expect.objectContaining({
+				boardViewId: 'mails_editor_board_view',
 				context: {
-					action: EditViewActions.EDIT_AS_NEW,
-					id: msg.id
+					originAction: 'editAsNew',
+					originActionTargetId: msg.id
 				},
 				title: ''
 			})
