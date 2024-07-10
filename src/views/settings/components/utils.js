@@ -9,12 +9,18 @@ import { filter, find, isEqual, isObject, map, reduce, transform } from 'lodash'
 
 import { NO_SIGNATURE_ID } from '../../../helpers/signatures';
 
+const arraysProps = [
+	'zimbraPrefMailTrustedSenderList',
+	'amavisWhitelistSender',
+	'amavisBlacklistSender'
+];
+
 export const differenceObject = (object, base) => {
 	// eslint-disable-next-line no-shadow
 	function changes(object, base) {
 		return transform(object, (result, value, key) => {
 			if (!isEqual(value, base[key])) {
-				if (key === 'zimbraPrefMailTrustedSenderList') {
+				if (arraysProps.includes(key)) {
 					// eslint-disable-next-line no-param-reassign
 					result[key] = value;
 				} else {

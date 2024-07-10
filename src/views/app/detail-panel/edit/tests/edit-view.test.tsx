@@ -33,6 +33,10 @@ import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
 import { EditViewActions, MAILS_ROUTE } from '../../../../../constants';
 import * as useQueryParam from '../../../../../hooks/use-query-param';
 import * as saveDraftAction from '../../../../../store/actions/save-draft';
+import {
+	GetSignaturesRequest,
+	GetSignaturesResponse
+} from '../../../../../store/actions/signatures';
 import { addEditor } from '../../../../../store/zustand/editor';
 import {
 	generateEditAsNewEditor,
@@ -374,6 +378,10 @@ describe('Edit view', () => {
 
 				await firstSaveDraftInterceptor;
 				const draftSavingInterceptor = aSuccessfullSaveDraft();
+				createSoapAPIInterceptor<GetSignaturesRequest, GetSignaturesResponse>('GetSignatures', {
+					signature: [],
+					_jsns: 'urn:zimbraAccount'
+				});
 
 				const subject = faker.lorem.sentence(5);
 				// Get the default identity address

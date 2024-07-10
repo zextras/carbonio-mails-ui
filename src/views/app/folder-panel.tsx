@@ -40,7 +40,7 @@ const FolderPanel: FC = () => {
 			crossAlignment="flex-start"
 			mainAlignment="flex-start"
 			width="fill"
-			background="gray6"
+			background={'gray6'}
 			borderRadius="none"
 			style={{
 				maxHeight: '100%'

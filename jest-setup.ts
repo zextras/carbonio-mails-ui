@@ -15,6 +15,7 @@ import {
 	defaultBeforeEachTest,
 	getFailOnConsoleDefaultConfig
 } from './src/carbonio-ui-commons/test/jest-setup';
+import { useLocalStorage } from './src/carbonio-ui-commons/test/mocks/carbonio-shell-ui';
 import { registerRestHandler } from './src/carbonio-ui-commons/test/mocks/network/msw/handlers';
 import { handleGetConvRequest } from './src/tests/mocks/network/msw/handle-get-conv';
 import { handleGetMsgRequest } from './src/tests/mocks/network/msw/handle-get-msg';
@@ -31,6 +32,7 @@ beforeAll(() => {
 	registerRestHandler(h);
 	registerRestHandler(j);
 	defaultBeforeAllTests();
+	useLocalStorage.mockReturnValue([jest.fn(), jest.fn()]);
 });
 
 beforeEach(() => {

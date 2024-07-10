@@ -11,6 +11,7 @@
 /junit.xml
 /coverage
 .DS_Store
+.tool-versions
 .vscode/
 coverage
 zextras-carbonio-*.tgz
