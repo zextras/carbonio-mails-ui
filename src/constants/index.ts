@@ -19,6 +19,27 @@ export const NO_ACCOUNT_NAME = 'No account';
 
 export const RECOVER_MESSAGES_INTERVAL = 3;
 
+export const LOCAL_STORAGE_VIEW_SIZES = 'carbonio-mails-ui-list-view-sizes';
+
+export const LOCAL_STORAGE_LAYOUT = 'carbonio-mails-ui-layout';
+
+export const MAILS_VIEW_LAYOUTS = {
+	LEFT_TO_RIGHT: 'leftToRight',
+	TOP_TO_BOTTOM: 'topToBottom'
+} as const;
+
+export const MAILS_VIEW_ORIENTATIONS = {
+	VERTICAL: 'vertical',
+	HORIZONTAL: 'horizontal'
+} as const;
+
+export const BORDERS = {
+	EAST: 'e',
+	SOUTH: 's',
+	NORTH: 'n',
+	WEST: 'w'
+} as const;
+
 type AttachmentTypeItemsConstantProps = {
 	id: string;
 	label: string;
