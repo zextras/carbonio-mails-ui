@@ -187,7 +187,7 @@ const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHe
 				updateQuery(modifiedQuery);
 			}
 		}
-	}, [searchResults, queryArray, updateQuery, findIcon, isInvalidQuery, query, queryToString]);
+	}, [findIcon, isInvalidQuery, query, queryArray, updateQuery]);
 
 	useEffect(() => {
 		if (searchResults.status === 'pending') {
@@ -210,15 +210,7 @@ const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHe
 				route: SEARCH_APP_ID
 			});
 		}
-	}, [
-		query,
-		queryArray,
-		isInvalidQuery,
-		searchQuery,
-		searchResults.query,
-		queryToString,
-		dispatch
-	]);
+	}, [dispatch, isInvalidQuery, query.length, queryToString, searchQuery]);
 
 	const { path } = useRouteMatch();
 	const resultLabelType = isInvalidQuery ? 'warning' : undefined;
