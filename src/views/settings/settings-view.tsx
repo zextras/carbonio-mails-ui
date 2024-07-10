@@ -15,6 +15,7 @@ import {
 	SettingsHeaderProps,
 	editSettings,
 	t,
+	updateAccount,
 	useUserAccount,
 	useUserSettings
 } from '@zextras/carbonio-shell-ui';
@@ -34,7 +35,7 @@ import { NO_SIGNATURE_ID } from '../../helpers/signatures';
 import { useAppDispatch } from '../../hooks/redux';
 import { useUiUtilities } from '../../hooks/use-ui-utilities';
 import { GetAllSignatures, SignatureRequest } from '../../store/actions/signatures';
-import type { AccountIdentity, PropsType, SignItemType } from '../../types';
+import type { AccountIdentity, PropsType, SignItemType, Signature } from '../../types';
 
 /* to keep track of changes done to props we use 3 different values:
  * - originalProps is the status of the props when you open the settings for the first time
@@ -182,10 +183,10 @@ const SettingsView: FC = () => {
 	);
 
 	const onSignaturesLoaded = useCallback(
-		(signs: Array<SignItemType>) => {
+		(signs: Array<Signature>) => {
 			const signaturesItems = map(
 				signs,
-				(item: SignItemType, idx) =>
+				(item: Signature, idx) =>
 					({
 						label: item.name,
 						name: item.name,
@@ -301,7 +302,10 @@ const SettingsView: FC = () => {
 					setFlag(!flag);
 					setDisabled(true);
 					GetAllSignatures()
-						.then(({ signature: signs }) => onSignaturesLoaded(signs))
+						.then(({ signature: signs }) => {
+							onSignaturesLoaded(signs);
+							updateAccount({ signatures: signs });
+						})
 						.catch((err) => {
 							console.error(err);
 						});

@@ -199,6 +199,17 @@ export type SignItemType = {
 	];
 };
 
+export type Signature = {
+	name: string;
+	id: string;
+	content?: [
+		{
+			type: 'text/plain' | 'text/html';
+			_content: string;
+		}
+	];
+};
+
 type AccountIdentity = Account['identities']['identity'][number];
 
 type IdentityProps = AccountIdentity['_attrs'];

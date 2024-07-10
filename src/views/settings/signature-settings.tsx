@@ -15,8 +15,7 @@ import {
 	Button,
 	Padding,
 	SelectItem,
-	ButtonProps,
-	useSnackbar
+	ButtonProps
 } from '@zextras/carbonio-design-system';
 import { t, useIntegratedComponent } from '@zextras/carbonio-shell-ui';
 import { map, reject, concat } from 'lodash';
@@ -81,7 +80,6 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 	const setEditor = (editor: EditorType): void => {
 		editorRef.current.editor = editor;
 	};
-	const createSnackbar = useSnackbar();
 
 	// Set the default current signature if missing
 	useEffect(() => {
