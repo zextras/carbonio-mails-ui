@@ -8,11 +8,12 @@ import { FOLDERS } from '@zextras/carbonio-shell-ui';
 import { TFunction } from 'i18next';
 
 export const MAILS_ROUTE = 'mails';
+
+export const MAILS_BOARD_VIEW_ID = 'mails_editor_board_view';
+
 export const BACKUP_SEARCH_ROUTE = 'backup-search';
 
 export const MAIL_APP_ID = 'carbonio-mails-ui';
-
-export const MAILS_BOARD_VIEW_ID = 'mails_editor_board_view';
 
 export const NO_ACCOUNT_NAME = 'No account';
 
