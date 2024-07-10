@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.16.4](https://github.com/zextras/carbonio-mails-ui/compare/v1.16.3...v1.16.4) (2024-07-10)
+
+
+### Bug Fixes
+
+* undo regression on message slice ([e8faa62](https://github.com/zextras/carbonio-mails-ui/commit/e8faa62752ec4a3c02877565851750a0d6142106))
+* update search view dependencies ([a204434](https://github.com/zextras/carbonio-mails-ui/commit/a2044349b435d02679460b66e2cea6596dc8e35d))
+
 ### [1.16.3](https://github.com/zextras/carbonio-mails-ui/compare/v1.16.2...v1.16.3) (2024-07-02)
 
 
