@@ -6,7 +6,6 @@
 import type { TextProps } from '@zextras/carbonio-design-system';
 
 import type { Folder } from '../../carbonio-ui-commons/types/folder';
-import { EditorPrefillData } from '../editor';
 
 export type ModalProps = {
 	folder: Folder;
@@ -28,17 +27,6 @@ export type AppContext = {
 	isMessageView: boolean;
 	count: number;
 	setCount: (arg: number | ((prevState: number) => number)) => void;
-};
-
-export type EditViewBoardContext = {
-	editorId?: string;
-	compositionData?: EditorPrefillData;
-	onConfirm?: (param: { editor: { text: [string, string] }; onBoardClose: () => void }) => void;
-};
-
-export type BoardContext = {
-	mailId: string | MessageActionIdsType | undefined;
-	folderId: string | undefined;
 };
 
 export type ThemeObj = {

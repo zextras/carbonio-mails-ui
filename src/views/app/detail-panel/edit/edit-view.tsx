@@ -14,13 +14,14 @@ import {
 	useSnackbar,
 	useModal
 } from '@zextras/carbonio-design-system';
-import { addBoard, t } from '@zextras/carbonio-shell-ui';
+import { t } from '@zextras/carbonio-shell-ui';
 import { filter, map } from 'lodash';
 import type { TinyMCE } from 'tinymce/tinymce';
 
 import { checkSubjectAndAttachment } from './check-subject-attachment';
 import DropZoneAttachment from './dropzone-attachment';
 import { EditAttachmentsBlock } from './edit-attachments-block';
+import { createEditBoard } from './edit-view-board';
 import { AddAttachmentsDropdown } from './parts/add-attachments-dropdown';
 import { ChangeSignaturesDropdown } from './parts/change-signatures-dropdown';
 import { useKeepOrDiscardDraft } from './parts/delete-draft';
@@ -34,12 +35,7 @@ import { SubjectRow } from './parts/subject-row';
 import { TextEditorContainer } from './parts/text-editor-container';
 import { WarningBanner } from './parts/warning-banner';
 import { GapContainer, GapRow } from '../../../../commons/gap-container';
-import {
-	EDIT_VIEW_CLOSING_REASONS,
-	EditViewActions,
-	MAILS_ROUTE,
-	TIMEOUTS
-} from '../../../../constants';
+import { EDIT_VIEW_CLOSING_REASONS, EditViewActions, TIMEOUTS } from '../../../../constants';
 import { buildArrayFromFileList } from '../../../../helpers/files';
 import { getAvailableAddresses, getIdentitiesDescriptors } from '../../../../helpers/identities';
 import {
@@ -52,7 +48,7 @@ import {
 	useEditorDid,
 	useEditorsStore
 } from '../../../../store/zustand/editor';
-import { BoardContext, EditViewClosingReasons } from '../../../../types';
+import { EditViewClosingReasons } from '../../../../types';
 import { updateEditorWithSmartLinks } from '../../../../ui-actions/utils';
 
 export type EditViewProp = {
@@ -187,10 +183,9 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 				actionLabel: t('label.undo', 'Undo'),
 				onActionClick: () => {
 					cancel();
-					// TODO move outside the component (editor-utils or a new help module?)
-					addBoard<BoardContext>({
-						url: `${MAILS_ROUTE}/edit?action=${EditViewActions.RESUME}&id=${editorId}`,
-						title: ''
+					createEditBoard({
+						action: EditViewActions.RESUME,
+						actionTargetId: editorId
 					});
 				}
 			});
@@ -207,10 +202,9 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 			autoHideTimeout: TIMEOUTS.SNACKBAR_DEFAULT_TIMEOUT,
 			hideButton: true
 		});
-		// TODO move outside the component (editor-utils or a new help module?)
-		addBoard<BoardContext>({
-			url: `${MAILS_ROUTE}/edit?action=${EditViewActions.RESUME}&id=${editorId}`,
-			title: ''
+		createEditBoard({
+			action: EditViewActions.RESUME,
+			actionTargetId: editorId
 		});
 	}, [createSnackbar, editorId]);
 

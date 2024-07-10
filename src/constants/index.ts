@@ -8,6 +8,9 @@ import { FOLDERS } from '@zextras/carbonio-shell-ui';
 import { TFunction } from 'i18next';
 
 export const MAILS_ROUTE = 'mails';
+
+export const MAILS_BOARD_VIEW_ID = 'mails_editor_board_view';
+
 export const BACKUP_SEARCH_ROUTE = 'backup-search';
 
 export const MAIL_APP_ID = 'carbonio-mails-ui';
@@ -15,6 +18,27 @@ export const MAIL_APP_ID = 'carbonio-mails-ui';
 export const NO_ACCOUNT_NAME = 'No account';
 
 export const RECOVER_MESSAGES_INTERVAL = 3;
+
+export const LOCAL_STORAGE_VIEW_SIZES = 'carbonio-mails-ui-list-view-sizes';
+
+export const LOCAL_STORAGE_LAYOUT = 'carbonio-mails-ui-layout';
+
+export const MAILS_VIEW_LAYOUTS = {
+	LEFT_TO_RIGHT: 'leftToRight',
+	TOP_TO_BOTTOM: 'topToBottom'
+} as const;
+
+export const MAILS_VIEW_ORIENTATIONS = {
+	VERTICAL: 'vertical',
+	HORIZONTAL: 'horizontal'
+} as const;
+
+export const BORDERS = {
+	EAST: 'e',
+	SOUTH: 's',
+	NORTH: 'n',
+	WEST: 'w'
+} as const;
 
 type AttachmentTypeItemsConstantProps = {
 	id: string;

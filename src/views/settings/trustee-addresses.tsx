@@ -12,17 +12,17 @@ import {
 	Divider,
 	Button,
 	Tooltip,
-	List,
 	TextWithTooltip,
-	Row
+	Row,
+	ListV2
 } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
-import { filter, find, map } from 'lodash';
+import { filter, find } from 'lodash';
 
+import { SendersListItem } from './components/senders-list-item';
 import Heading from './components/settings-heading';
-import TrusteeListItem from './components/trustee-list-item';
 import LoadingShimmer from './filters/parts/loading-shimmer';
-import { domainWhitelistSubSection } from './subsections';
+import { trustedAddressesSubSection } from './subsections';
 import type { InputProps } from '../../types';
 
 const NonSupportedCharacters = /[!#$%^&*()+=[\]{};':"\\|,<>/?|/^\s*$/]+/;
@@ -30,7 +30,7 @@ const TrusteeAddresses = ({ settingsObj, updateSettings }: InputProps): React.JS
 	const [address, setAddress] = useState('');
 	const [isLoading, setIsLoading] = useState(true);
 	const [trusteeAddressesList, setTrusteeAddressList] = useState<string[]>([]);
-	const sectionTitle = useMemo(() => domainWhitelistSubSection(), []);
+	const sectionTitle = useMemo(() => trustedAddressesSubSection(), []);
 	const message = useMemo(
 		() =>
 			t(
@@ -88,16 +88,6 @@ const TrusteeAddresses = ({ settingsObj, updateSettings }: InputProps): React.JS
 		[isInvalid]
 	);
 
-	const trusteeAddressesListItems = useMemo(
-		() =>
-			map(trusteeAddressesList, (el) => ({
-				id: el,
-				value: el,
-				label: el
-			})),
-		[trusteeAddressesList]
-	);
-
 	return (
 		<Container background="gray6" padding={{ horizontal: 'medium', bottom: 'large' }}>
 			<Container orientation="horizontal" padding={{ horizontal: 'medium', top: 'medium' }}>
@@ -113,6 +103,7 @@ const TrusteeAddresses = ({ settingsObj, updateSettings }: InputProps): React.JS
 				padding={{ all: 'medium', bottom: 'small' }}
 				orientation="horizontal"
 				mainAlignment="flex-start"
+				crossAlignment="flex-start"
 			>
 				<Row mainAlignment="flex-start" width="50vw">
 					<Input
@@ -124,7 +115,7 @@ const TrusteeAddresses = ({ settingsObj, updateSettings }: InputProps): React.JS
 						onChange={(e: React.ChangeEvent<HTMLInputElement>): void => setAddress(e.target.value)}
 					/>
 				</Row>
-				<Padding left="medium">
+				<Padding left="medium" top="extrasmall">
 					<Tooltip label={warningMessage} disabled={!isInvalid} maxWidth="100%">
 						<Button
 							label={t('label.add', 'Add')}
@@ -143,12 +134,11 @@ const TrusteeAddresses = ({ settingsObj, updateSettings }: InputProps): React.JS
 				{isLoading ? (
 					<LoadingShimmer />
 				) : (
-					<List
-						items={trusteeAddressesListItems}
-						ItemComponent={TrusteeListItem}
-						itemProps={{ onRemove }}
-						data-testid={'trustee-list'}
-					/>
+					<ListV2 data-testid={'trustee-list'}>
+						{trusteeAddressesList.map((trustee, idx) => (
+							<SendersListItem key={idx} value={trustee} onRemove={onRemove} />
+						))}
+					</ListV2>
 				)}
 			</Container>
 		</Container>
