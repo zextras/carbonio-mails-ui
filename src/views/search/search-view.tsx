@@ -187,7 +187,7 @@ const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHe
 				updateQuery(modifiedQuery);
 			}
 		}
-	}, [findIcon, isInvalidQuery, query, queryArray, updateQuery]);
+	}, [searchResults, queryArray, updateQuery, findIcon, isInvalidQuery, query, queryToString]);
 
 	useEffect(() => {
 		if (searchResults.status === 'pending') {
@@ -199,7 +199,7 @@ const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHe
 	useEffect(() => {
 		if (query?.length > 0 && !isInvalidQuery) {
 			setFilterCount(query.length);
-			searchQuery(queryToString, true);
+			searchQuery(queryToString, false);
 		}
 		if (query?.length === 0) {
 			setFilterCount(0);
@@ -210,7 +210,15 @@ const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHe
 				route: SEARCH_APP_ID
 			});
 		}
-	}, [dispatch, isInvalidQuery, query.length, queryToString, searchQuery]);
+	}, [
+		query,
+		queryArray,
+		isInvalidQuery,
+		searchQuery,
+		searchResults.query,
+		queryToString,
+		dispatch
+	]);
 
 	const { path } = useRouteMatch();
 	const resultLabelType = isInvalidQuery ? 'warning' : undefined;
@@ -237,7 +245,6 @@ const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHe
 								<SearchMessageList
 									searchDisabled={searchDisabled}
 									searchResults={searchResults}
-									search={searchQuery}
 									query={queryToString}
 									loading={loading}
 									filterCount={filterCount}
@@ -249,7 +256,6 @@ const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHe
 								<SearchConversationList
 									searchDisabled={searchDisabled}
 									searchResults={searchResults}
-									search={searchQuery}
 									query={queryToString}
 									loading={loading}
 									filterCount={filterCount}
