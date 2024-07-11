@@ -7,7 +7,7 @@
 import React, { useCallback } from 'react';
 
 import { Padding, Text } from '@zextras/carbonio-design-system';
-import { FOLDERS, t } from '@zextras/carbonio-shell-ui';
+import { t } from '@zextras/carbonio-shell-ui';
 
 import ModalFooter from '../../../../../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../../../../../carbonio-ui-commons/components/modals/modal-header';
@@ -17,6 +17,7 @@ import { deleteEditor } from '../../../../../store/zustand/editor';
 import { MailsEditorV2 } from '../../../../../types';
 import { useMoveMsgToTrash } from '../../../../../ui-actions/message-actions';
 import { useGlobalModal } from '../../../../global-modal-manager';
+import { FOLDERS } from '../../../../../carbonio-ui-commons/constants/folders';
 
 type DeleteDraftModalProps = {
 	ids: Array<string>;

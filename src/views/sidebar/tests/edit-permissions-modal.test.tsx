@@ -7,7 +7,6 @@ import React from 'react';
 
 import { faker } from '@faker-js/faker';
 import { act, screen, within } from '@testing-library/react';
-import { FOLDERS } from '@zextras/carbonio-shell-ui';
 
 import { getFolder } from '../../../carbonio-ui-commons/store/zustand/folder';
 import { populateFoldersStore } from '../../../carbonio-ui-commons/test/mocks/store/folders';
@@ -15,6 +14,7 @@ import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
 import * as shareFolderModule from '../../../store/actions/share-folder';
 import { generateStore } from '../../../tests/generators/store';
 import EditPermissionsModal from '../edit-permissions-modal';
+import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
 
 describe('edit-permissions-modal', () => {
 	test('role field has 4 options, viewer role is set by default ', async () => {

@@ -14,7 +14,6 @@ import {
 	getFoldersMap,
 	getRootsMap
 } from '../../../../carbonio-ui-commons/store/zustand/folder';
-import { FOLDERS } from '../../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui-constants';
 import { populateFoldersStore } from '../../../../carbonio-ui-commons/test/mocks/store/folders';
 import { makeListItemsVisible, setupTest } from '../../../../carbonio-ui-commons/test/test-setup';
 import { Folder } from '../../../../carbonio-ui-commons/types/folder';
@@ -29,6 +28,7 @@ import {
 import { generateStore } from '../../../../tests/generators/store';
 import { getSystemFolderTranslatedName } from '../../utils';
 import { FolderSelector, FolderSelectorProps } from '../folder-selector';
+import { FOLDERS } from '../../../../carbonio-ui-commons/constants/folders';
 
 describe('Folder selector', () => {
 	const store = generateStore();

@@ -7,10 +7,9 @@ import React from 'react';
 
 import { fireEvent, screen } from '@testing-library/react';
 
-import { FolderActionsType } from '../../../carbonio-ui-commons/constants/folders';
+import { FolderActionsType, FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
 import * as shellMock from '../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
 import { useLocalStorage } from '../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
-import { FOLDERS } from '../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui-constants';
 import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { populateFoldersStore } from '../../../carbonio-ui-commons/test/mocks/store/folders';
 import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';

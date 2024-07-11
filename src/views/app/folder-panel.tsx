@@ -8,7 +8,7 @@
 import React, { FC, useEffect } from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
-import { FOLDERS, useAppContext } from '@zextras/carbonio-shell-ui';
+import { useAppContext } from '@zextras/carbonio-shell-ui';
 import { isNil } from 'lodash';
 import { useParams } from 'react-router-dom';
 
@@ -17,6 +17,7 @@ import { MessageList } from './folder-panel/messages/message-list';
 import { useAppDispatch } from '../../hooks/redux';
 import type { AppContext } from '../../types';
 import ShimmerList from '../search/shimmer-list';
+import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
 
 const FolderPanel: FC = () => {
 	const { folderId } = useParams<{ folderId: string }>();

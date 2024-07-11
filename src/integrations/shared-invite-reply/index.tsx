@@ -13,9 +13,10 @@ import {
 	Row,
 	Text
 } from '@zextras/carbonio-design-system';
-import { FOLDERS, t } from '@zextras/carbonio-shell-ui';
+import { t } from '@zextras/carbonio-shell-ui';
 import React, { FC, ReactElement, useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
+import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
 import { useAppDispatch } from '../../hooks/redux';
 import type { MailMessage } from '../../types';
 import LabelRow from './parts/label-row';

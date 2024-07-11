@@ -6,7 +6,6 @@
 import React from 'react';
 
 import { screen } from '@testing-library/react';
-import { FOLDERS } from '@zextras/carbonio-shell-ui';
 import { times } from 'lodash';
 
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
@@ -19,6 +18,7 @@ import {
 	ConversationListComponentProps
 } from '../conversation-list-component';
 import { ConversationListItemComponent } from '../conversation-list-item-component';
+import { FOLDERS } from '../../../../../carbonio-ui-commons/constants/folders';
 
 describe.each`
 	type                          | isSearchModule

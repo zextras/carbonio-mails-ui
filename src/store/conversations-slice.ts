@@ -8,7 +8,6 @@
 /* eslint no-param-reassign: ["error", { "props": true, "ignorePropertyModificationsFor": ["state", "conversation", "message", "cache"] }] */
 
 import { createSelector, createSlice } from '@reduxjs/toolkit';
-import { FOLDERS } from '@zextras/carbonio-shell-ui';
 import produce from 'immer';
 import { forEach, merge, reduce } from 'lodash';
 
@@ -33,6 +32,7 @@ import type {
 	Conversation,
 	SearchRequestStatus
 } from '../types';
+import { FOLDERS } from '../carbonio-ui-commons/constants/folders';
 
 function fetchConversationsPending(state: ConversationsStateType, { payload, meta }: any): void {
 	if (meta?.arg?.types === 'conversation') {

@@ -6,7 +6,7 @@
 import React, { FC, useCallback } from 'react';
 
 import { Container, Divider, Text } from '@zextras/carbonio-design-system';
-import { FOLDERS, report, t } from '@zextras/carbonio-shell-ui';
+import { report, t } from '@zextras/carbonio-shell-ui';
 import { startsWith } from 'lodash';
 
 import ModalFooter from '../../carbonio-ui-commons/components/modals/modal-footer';
@@ -16,6 +16,7 @@ import { isSharedAccountFolder, isTrashed } from '../../helpers/folders';
 import { useUiUtilities } from '../../hooks/use-ui-utilities';
 import { folderAction } from '../../store/actions/folder-action';
 import type { ModalProps } from '../../types';
+import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
 
 export const DeleteModal: FC<ModalProps> = ({ folder, onClose }) => {
 	const { createSnackbar } = useUiUtilities();

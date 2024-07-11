@@ -6,10 +6,10 @@
 
 import { faker } from '@faker-js/faker';
 import { http, HttpResponse } from 'msw';
+import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
 
 import { getFolder } from '../../../carbonio-ui-commons/store/zustand/folder/hooks';
 import { getSetupServer } from '../../../carbonio-ui-commons/test/jest-setup';
-import { FOLDERS } from '../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui-constants';
 import { populateFoldersStore } from '../../../carbonio-ui-commons/test/mocks/store/folders';
 import { Folder } from '../../../carbonio-ui-commons/types/folder';
 import { generateStore } from '../../../tests/generators/store';

@@ -6,7 +6,6 @@
 import React, { FC, useMemo } from 'react';
 
 import { IconButton, Row, Tooltip } from '@zextras/carbonio-design-system';
-import { FOLDERS } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
 import styled from 'styled-components';
 
@@ -21,6 +20,7 @@ import {
 	setMsgRead
 } from './message-actions';
 import { useAppDispatch } from '../hooks/redux';
+import { FOLDERS } from '../carbonio-ui-commons/constants/folders';
 
 const ButtonBar = styled(Row)`
 	position: absolute;

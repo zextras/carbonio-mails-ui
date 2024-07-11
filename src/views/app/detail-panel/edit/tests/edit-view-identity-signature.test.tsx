@@ -7,7 +7,7 @@
 import React from 'react';
 
 import { screen, waitFor } from '@testing-library/react';
-import { FOLDERS, getUserAccount } from '@zextras/carbonio-shell-ui';
+import { getUserAccount } from '@zextras/carbonio-shell-ui';
 
 import { ParticipantRole } from '../../../../../carbonio-ui-commons/constants/participants';
 import { useBoard as mockedUseBoard } from '../../../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
@@ -24,6 +24,7 @@ import * as useQueryParam from '../../../../../hooks/use-query-param';
 import { generateMessage } from '../../../../../tests/generators/generateMessage';
 import { generateStore } from '../../../../../tests/generators/store';
 import { EditView, EditViewProp } from '../edit-view';
+import { FOLDERS } from '../../../../../carbonio-ui-commons/constants/folders';
 
 /**
  * Test the EditView component for set signature for selected from identity

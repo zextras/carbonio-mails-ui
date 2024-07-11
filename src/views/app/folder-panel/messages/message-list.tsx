@@ -5,13 +5,14 @@
  */
 import React, { FC, ReactElement, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-import { FOLDERS, t, useAppContext, useUserSettings } from '@zextras/carbonio-shell-ui';
+import { t, useAppContext, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
 import { useParams } from 'react-router-dom';
 
 import { MessageListComponent } from './message-list-component';
 import { MessageListItemComponent } from './message-list-item-component';
 import { CustomListItem } from '../../../../carbonio-ui-commons/components/list/list-item';
+import { FOLDERS } from '../../../../carbonio-ui-commons/constants/folders';
 import { useFolder } from '../../../../carbonio-ui-commons/store/zustand/folder/hooks';
 import {
 	API_REQUEST_STATUS,

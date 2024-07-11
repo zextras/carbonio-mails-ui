@@ -6,7 +6,6 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 
 import { createSlice } from '@reduxjs/toolkit';
-import { FOLDERS } from '@zextras/carbonio-shell-ui';
 import produce from 'immer';
 import { forEach } from 'lodash';
 
@@ -31,6 +30,7 @@ import type {
 	SearchesStateType,
 	MailsStateType
 } from '../types';
+import { FOLDERS } from '../carbonio-ui-commons/constants/folders';
 
 export const getSearchSliceInitialiState = (): SearchesStateType =>
 	({
