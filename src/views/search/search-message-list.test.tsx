@@ -43,7 +43,7 @@ describe('Search items list', () => {
 	it('should display messages with subject', async () => {
 		useSearchStore.setState({
 			conversations: {},
-			messages: new Set(['1', '2', '3']),
+			messageIds: new Set(['1', '2', '3']),
 			more: false,
 			offset: 0,
 			status: 'fulfilled'
@@ -63,13 +63,13 @@ describe('Search items list', () => {
 				query={'hello_there'}
 				loading={false}
 				filterCount={0}
-				setShowAdvanceFilters={() => true}
+				setShowAdvanceFilters={(): boolean => true}
 				isInvalidQuery={false}
 				searchDisabled={false}
 			/>,
 			{ store }
 		);
 
-		expect(screen.queryAllByTestId(/MessageListItem-/).length).toEqual(3);
+		expect((await screen.findAllByTestId(/invisible-message*/)).length).toEqual(3);
 	});
 });
