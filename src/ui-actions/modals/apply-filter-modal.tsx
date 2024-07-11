@@ -106,22 +106,21 @@ export const ApplyFilterModal: FC<ApplyFilterModalProps> = ({ criteria, closeMod
 
 	const onAddFolder = (): void => {
 		const action = getSelectFoldersUIAction();
-		action.execute &&
-			action.execute({
-				config: {
-					allowRootSelection: false,
-					showSharedAccounts: false,
-					allowFolderCreation: false,
-					showThrashFolder: true,
-					showSpamFolder: true
-				},
-				uiUtilities: {
-					createModal
-				},
-				callbacks: {
-					onComplete: setFolder
-				}
-			});
+		action?.openModal?.({
+			config: {
+				allowRootSelection: false,
+				showSharedAccounts: false,
+				allowFolderCreation: false,
+				showThrashFolder: true,
+				showSpamFolder: true
+			},
+			uiUtilities: {
+				createModal
+			},
+			callbacks: {
+				onComplete: setFolder
+			}
+		});
 	};
 
 	const folderChips = useMemo<Array<ChipItem>>(
