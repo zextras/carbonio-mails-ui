@@ -276,5 +276,4 @@ export type SearchStoreState = {
 	error?: ErrorType;
 	addConversation: (conversation: Conversation) => void;
 	setStatus: (status: SearchRequestStatus) => void;
-	getConversation: (conversationId: string) => Conversation;
 };

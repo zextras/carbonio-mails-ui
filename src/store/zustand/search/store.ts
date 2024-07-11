@@ -24,8 +24,5 @@ export const useSearchItemListStore = create<SearchStoreState>()((set, getState)
 		set(({ conversations }) => ({
 			...conversations,
 			[conversation.id]: conversation
-		})),
-	getConversation(conversationId: string): Conversation {
-		return getState().conversations[conversationId];
-	}
+		}))
 }));
