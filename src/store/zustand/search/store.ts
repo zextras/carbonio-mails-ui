@@ -5,9 +5,9 @@
  */
 import { create } from 'zustand';
 
-import { Conversation, SearchRequestStatus, SearchStoreState } from '../../../types';
+import { SearchStoreState } from '../../../types';
 
-export const useSearchItemListStore = create<SearchStoreState>()((set) => ({
+export const useSearchItemListStore = create<SearchStoreState>()(() => ({
 	conversations: {},
 	messages: new Set(),
 	more: false,
@@ -17,12 +17,5 @@ export const useSearchItemListStore = create<SearchStoreState>()((set) => ({
 	status: null,
 	parent: '',
 	tagName: '',
-	error: undefined,
-
-	setStatus: (status: SearchRequestStatus): void => set({ status }),
-	addConversation: (conversation: Conversation): void =>
-		set(({ conversations }) => ({
-			...conversations,
-			[conversation.id]: conversation
-		}))
+	error: undefined
 }));

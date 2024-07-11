@@ -274,6 +274,4 @@ export type SearchStoreState = {
 	parent?: string;
 	tagName?: string;
 	error?: ErrorType;
-	addConversation: (conversation: Conversation) => void;
-	setStatus: (status: SearchRequestStatus) => void;
 };
