@@ -4,15 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React, {
-	FC,
-	ReactElement,
-	useCallback,
-	useLayoutEffect,
-	useMemo,
-	useRef,
-	useState
-} from 'react';
+import React, { FC, useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
 import { t, useAppContext } from '@zextras/carbonio-shell-ui';
@@ -20,15 +12,14 @@ import { isArray, isEmpty, map, noop, sortBy } from 'lodash';
 import { useParams } from 'react-router-dom';
 
 import { AdvancedFilterButton } from './parts/advanced-filter-button';
+import { SearchMessageItem } from './search-message-item';
 import ShimmerList from './shimmer-list';
-import { CustomListItem } from '../../carbonio-ui-commons/components/list/list-item';
 import { LIST_LIMIT } from '../../constants';
 import { useAppDispatch } from '../../hooks/redux';
 import { useSelection } from '../../hooks/use-selection';
 import { search } from '../../store/actions/search';
 import type { AppContext, SearchListProps } from '../../types';
 import { MessageListComponent } from '../app/folder-panel/messages/message-list-component';
-import { MessageListItemComponent } from '../app/folder-panel/messages/message-list-item-component';
 
 export const SearchMessageList: FC<SearchListProps> = ({
 	searchDisabled,
@@ -85,30 +76,15 @@ export const SearchMessageList: FC<SearchListProps> = ({
 				const active = itemId === message.id;
 				const isSelected = selected[message.id];
 				return (
-					<CustomListItem
-						key={message.id}
-						selected={isSelected}
+					<SearchMessageItem
+						message={message}
+						selected={selected}
+						isSelected={isSelected}
 						active={active}
-						background={message.read ? 'gray6' : 'gray5'}
-					>
-						{(visible: boolean): ReactElement =>
-							visible ? (
-								<MessageListItemComponent
-									message={message}
-									selected={selected}
-									isSelected={isSelected}
-									active={active}
-									toggle={toggle}
-									isSelectModeOn={isSelectModeOn}
-									isSearchModule
-									deselectAll={deselectAll}
-									visible={visible}
-								/>
-							) : (
-								<div style={{ height: '4rem' }} data-testid={`invisible-message-${message.id}`} />
-							)
-						}
-					</CustomListItem>
+						toggle={toggle}
+						isSelectModeOn={isSelectModeOn}
+						deselectAll={deselectAll}
+					/>
 				);
 			}),
 		[deselectAll, isSelectModeOn, itemId, messageList, selected, toggle]
