@@ -48,7 +48,7 @@ const FilterTestConditionRow: FC<FilterTestConditionRowProps> = ({ compProps }):
 						/>
 					</Row>
 					<Row padding={{ right: 'small' }}>
-						<Text>{t('settings.condition_met')}</Text>
+						<Text>{t('settings.condition_met', 'of the following conditions are met:')}</Text>
 					</Row>
 				</Row>
 			</Container>

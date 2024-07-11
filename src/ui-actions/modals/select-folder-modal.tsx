@@ -77,6 +77,7 @@ export const SelectFolderModal: FC<SelectFolderModalProps> = ({
 		>
 			<ModalHeader onClose={onClose} title={headerTitle} />
 			<Container
+				data-testid="select-folder-modal"
 				padding={{ all: 'small' }}
 				mainAlignment="center"
 				crossAlignment="flex-start"
