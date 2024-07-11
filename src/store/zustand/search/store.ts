@@ -7,7 +7,7 @@ import { create } from 'zustand';
 
 import { SearchStoreState } from '../../../types';
 
-export const useSearchItemListStore = create<SearchStoreState>()(() => ({
+export const useSearchStore = create<SearchStoreState>()(() => ({
 	conversations: {},
 	messages: new Set(),
 	more: false,

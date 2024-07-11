@@ -12,7 +12,7 @@ import { ConversationPreviewPanelContainer } from './conversation-preview-panel-
 import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
 import { API_REQUEST_STATUS } from '../../../constants';
 import * as getConv from '../../../store/actions/get-conv';
-import { useSearchItemListStore } from '../../../store/zustand/search/store';
+import { useSearchStore } from '../../../store/zustand/search/store';
 import { generateStore } from '../../../tests/generators/store';
 import { MailsStateType } from '../../../types';
 
@@ -50,7 +50,7 @@ describe('Conversation Preview Panel', () => {
 					sortIndex: 0
 				};
 
-				useSearchItemListStore.setState({
+				useSearchStore.setState({
 					conversations: { [conversation.id]: conversation },
 					status: API_REQUEST_STATUS.fulfilled
 				});
@@ -87,7 +87,7 @@ describe('Conversation Preview Panel', () => {
 					sortIndex: 0
 				};
 
-				useSearchItemListStore.setState({
+				useSearchStore.setState({
 					conversations: { [conversation.id]: conversation },
 					status: API_REQUEST_STATUS.fulfilled
 				});

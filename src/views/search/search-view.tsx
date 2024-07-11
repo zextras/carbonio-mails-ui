@@ -29,7 +29,7 @@ import { useAppDispatch } from '../../hooks/redux';
 import { searchNew } from '../../store/actions/search-new';
 import { resetSearchResults } from '../../store/searches-slice';
 import { handleSearchResults } from '../../store/zustand/search/hooks/hooks';
-import { useSearchItemListStore } from '../../store/zustand/search/store';
+import { useSearchStore } from '../../store/zustand/search/store';
 
 const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHeader }) => {
 	const [query, updateQuery] = useQuery();
@@ -78,7 +78,7 @@ const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHe
 	);
 	const [isInvalidQuery, setIsInvalidQuery] = useState<boolean>(false);
 	// const searchResults = useAppSelector(selectSearches);
-	const searchResults = useSearchItemListStore();
+	const searchResults = useSearchStore();
 
 	const invalidQueryTooltip = useMemo(
 		() => t('label.invalid_query', 'Unable to parse the search query, clear it and retry'),

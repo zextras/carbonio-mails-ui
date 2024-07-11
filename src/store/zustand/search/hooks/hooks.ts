@@ -10,10 +10,10 @@ import { reduce } from 'lodash';
 import { normalizeConversation } from '../../../../normalizations/normalize-conversation';
 import { normalizeMailMessageFromSoap } from '../../../../normalizations/normalize-message';
 import { Conversation, SearchResponse } from '../../../../types';
-import { useSearchItemListStore } from '../store';
+import { useSearchStore } from '../store';
 
 export function useConversation(id: string): Conversation {
-	return useSearchItemListStore(({ conversations }) => conversations[id]);
+	return useSearchStore(({ conversations }) => conversations[id]);
 }
 
 function handleConversationResults({
@@ -36,7 +36,7 @@ function handleConversationResults({
 		},
 		{}
 	);
-	useSearchItemListStore.setState({
+	useSearchStore.setState({
 		conversations,
 		offset: searchResponse.offset
 	});
@@ -64,7 +64,7 @@ function handleMessagesResults({
 		hasMore: searchResponse.more,
 		offset: searchResponse.offset
 	};
-	useSearchItemListStore.setState({
+	useSearchStore.setState({
 		messages: new Set(Object.keys(normalizedMessages)),
 		offset: searchResponse.offset
 	});

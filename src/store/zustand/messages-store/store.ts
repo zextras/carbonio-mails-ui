@@ -8,6 +8,6 @@ import { create } from 'zustand';
 
 import { MessagesStoreState } from '../../../types';
 
-export const useCompleteMessagesStore = create<MessagesStoreState>()((set, getState) => ({
+export const useMessagesStore = create<MessagesStoreState>()((set, getState) => ({
 	messages: {}
 }));
