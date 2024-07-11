@@ -8,7 +8,6 @@ import React, {
 	FC,
 	ReactElement,
 	useCallback,
-	useEffect,
 	useLayoutEffect,
 	useMemo,
 	useRef,
@@ -60,27 +59,19 @@ export const SearchMessageList: FC<SearchListProps> = ({
 		items: [...Object.values(searchResults.messages ?? {})]
 	});
 
-	const [randomListIndex, setRandomListIndex] = useState(0);
 	const [isLoading, setIsLoading] = useState(false);
 	const listRef = useRef<HTMLDivElement>(null);
 	const dispatch = useAppDispatch();
 
-	useEffect(() => {
-		setRandomListIndex(Math.round(Math.random()));
-	}, [searchResults.conversations, query]);
-
 	const displayerTitle = useMemo(() => {
 		if (!isInvalidQuery && isEmpty(searchResults.messages)) {
-			if (randomListIndex === 0) {
-				return t(
-					'displayer.search_list_title1',
-					'It looks like there are no results. Keep searching!'
-				);
-			}
-			return t('displayer.search_list_title2', 'None of your items matches your search.');
+			return t(
+				'displayer.search_list_title1',
+				'It looks like there are no results. Keep searching!'
+			);
 		}
 		return null;
-	}, [isInvalidQuery, searchResults.messages, randomListIndex]);
+	}, [isInvalidQuery, searchResults.messages]);
 
 	const messageList = useMemo(
 		() => sortBy(Object.values(searchResults?.messages ?? []), 'sortIndex'),

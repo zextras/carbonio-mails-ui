@@ -26,10 +26,11 @@ import SearchPanel from './search-panel';
 import { useFoldersMap } from '../../carbonio-ui-commons/store/zustand/folder/hooks';
 import type { Folder } from '../../carbonio-ui-commons/types/folder';
 import { LIST_LIMIT, MAILS_ROUTE } from '../../constants';
-import { useAppDispatch, useAppSelector } from '../../hooks/redux';
-import { search } from '../../store/actions/search';
-import { resetSearchResults, selectSearches } from '../../store/searches-slice';
-import { useHandleSearchResults } from '../../store/zustand/search/hooks/hooks';
+import { useAppDispatch } from '../../hooks/redux';
+import { searchNew } from '../../store/actions/search-new';
+import { resetSearchResults } from '../../store/searches-slice';
+import { handleSearchResults } from '../../store/zustand/search/hooks/hooks';
+import { useSearchItemListStore } from '../../store/zustand/search/store';
 
 const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHeader }) => {
 	const [query, updateQuery] = useQuery();
@@ -77,7 +78,8 @@ const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHe
 		includeSharedItemsInSearch
 	);
 	const [isInvalidQuery, setIsInvalidQuery] = useState<boolean>(false);
-	const searchResults = useAppSelector(selectSearches);
+	// const searchResults = useAppSelector(selectSearches);
+	const searchResults = useSearchItemListStore();
 
 	const invalidQueryTooltip = useMemo(
 		() => t('label.invalid_query', 'Unable to parse the search query, clear it and retry'),
@@ -108,17 +110,15 @@ const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHe
 
 	const searchQuery = useCallback(
 		async (queryString: string, reset: boolean) => {
-			const resultAction = await dispatch(
-				search({
-					query: queryString,
-					limit: LIST_LIMIT.INITIAL_LIMIT,
-					sortBy: 'dateDesc',
-					types: isMessageView ? 'message' : 'conversation',
-					offset: reset ? 0 : searchResults.offset,
-					recip: '0',
-					locale: prefLocale
-				})
-			);
+			const resultAction = await searchNew({
+				query: queryString,
+				limit: LIST_LIMIT.INITIAL_LIMIT,
+				sortBy: 'dateDesc',
+				types: isMessageView ? 'message' : 'conversation',
+				offset: reset ? 0 : searchResults.offset,
+				recip: '0',
+				locale: prefLocale
+			});
 			if (
 				isRejected(soapSearchResults) &&
 				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -128,9 +128,16 @@ const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHe
 				setIsInvalidQuery(true);
 				setSearchDisabled(true, invalidQueryTooltip);
 			}
-			useHandleSearchResults({ searchResponse: soapSearchResults, offset });
+			handleSearchResults({ searchResponse: soapSearchResults, offset });
 		},
-		[invalidQueryTooltip, isMessageView, prefLocale, searchResults.offset, setSearchDisabled]
+		[
+			dispatch,
+			invalidQueryTooltip,
+			isMessageView,
+			prefLocale,
+			searchResults.offset,
+			setSearchDisabled
+		]
 	);
 
 	const queryArray = useMemo(() => ['has:attachment', 'is:flagged', 'is:unread'], []);

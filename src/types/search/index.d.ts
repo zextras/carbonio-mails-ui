@@ -264,8 +264,8 @@ export type ChipType = {
 };
 
 export type SearchStoreState = {
-	conversations: Record<string, Conversation>;
-	messages: Record<string, Partial<MailMessage> & Pick<MailMessage, 'id', 'parent'>>;
+	conversations: Record<string, { id: string }>;
+	messages: Set<string>;
 	more: boolean;
 	offset: number;
 	sortBy?: SortBy;

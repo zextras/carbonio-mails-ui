@@ -25,3 +25,4 @@ export * from './utils';
 export * from './attachments';
 export * from './sorting';
 export * from './backup-search';
+export * from './complete-message-store';
