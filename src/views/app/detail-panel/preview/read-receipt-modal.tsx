@@ -78,9 +78,9 @@ const ReadReceiptModal: FC<CompProps> = ({
 	);
 
 	return (
-		<CustomModal open={open} onClose={(): null => null} maxHeight="90vh">
+		<CustomModal open={open} onClose={onClose} maxHeight="90vh">
 			<Container padding={{ all: 'large' }}>
-				<ModalHeader title={title} />
+				<ModalHeader title={title} showCloseIcon onClose={onClose} />
 				<Container crossAlignment="flex-start">
 					<Text overflow="break-word">{messageLineOne}</Text>
 					<Padding top="large">

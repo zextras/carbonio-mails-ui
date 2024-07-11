@@ -4,7 +4,8 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
+import { faker } from '@faker-js/faker';
+import { ErrorSoapBodyResponse, SoapFault } from '@zextras/carbonio-shell-ui';
 
 import { createSoapAPIInterceptor } from '../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { parseTextToHTMLDocument } from '../../helpers/text';
@@ -236,10 +237,13 @@ describe('createSmartLink', () => {
 		const attachmentToConvert = oldSavedAttachments[0];
 		attachmentToConvert.requiresSmartLinkConversion = true;
 		setupEditorStore({ editors: [editor] });
-		const expectedRejectReason = {
-			Reason: { Text: 'Failed upload to Files' },
+		const expectedRejectReason: SoapFault = {
+			Reason: { Text: 'Failed due to connection timeout' },
 			Detail: {
-				Error: { Code: '123', Detail: 'Failed due to connection timeout' }
+				Error: { Code: 'Failed upload to Files', Trace: faker.string.uuid() }
+			},
+			Code: {
+				Value: '123'
 			}
 		};
 

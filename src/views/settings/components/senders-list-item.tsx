@@ -21,19 +21,24 @@ const ListItem = styled(Row)`
 	}
 `;
 
-// TODO remove the any after the DS
-const TrusteeListItem: FC<any> = ({ item, onRemove }): ReactElement => {
+export type SendersListItemProps = {
+	value: string;
+	onRemove: (sender: string) => void;
+};
+
+export const SendersListItem: FC<SendersListItemProps> = ({ value, onRemove }): ReactElement => {
 	const [hovered, setHovered] = useState(false);
 
 	const onMouseEnter = useCallback(() => setHovered(true), []);
 	const onMouseLeave = useCallback(() => setHovered(false), []);
 
 	const onClick = useCallback(() => {
-		onRemove(item.value);
-	}, [item, onRemove]);
+		onRemove(value);
+	}, [onRemove, value]);
 
 	return (
 		<ListItem
+			data-testid="senders-list-item"
 			height="fit"
 			orientation="horizontal"
 			onMouseEnter={onMouseEnter}
@@ -41,7 +46,7 @@ const TrusteeListItem: FC<any> = ({ item, onRemove }): ReactElement => {
 		>
 			<Row height="2.5rem" padding={{ all: 'small' }}>
 				<Container width="80%" crossAlignment="flex-start">
-					<Text size="small">{item.value}</Text>
+					<Text size="small">{value}</Text>
 				</Container>
 
 				<Container width="20%" orientation="horizontal" mainAlignment="flex-end">
@@ -59,5 +64,3 @@ const TrusteeListItem: FC<any> = ({ item, onRemove }): ReactElement => {
 		</ListItem>
 	);
 };
-
-export default TrusteeListItem;

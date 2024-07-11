@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { Account, BatchRequest, soapFetch } from '@zextras/carbonio-shell-ui';
-import { BatchResponse } from '@zextras/carbonio-shell-ui/lib/types/network';
+import { soapFetch } from '@zextras/carbonio-shell-ui';
+import type { Account, BatchRequest, BatchResponse } from '@zextras/carbonio-shell-ui';
 import { trim } from 'lodash';
 
 import { Folder } from '../../carbonio-ui-commons/types/folder';

@@ -22,7 +22,7 @@ export const recoverMessagesSubSection = (): SettingsSubSection => ({
 	id: 'recover_messages'
 });
 
-export const domainWhitelistSubSection = (): SettingsSubSection => ({
+export const trustedAddressesSubSection = (): SettingsSubSection => ({
 	label: t('label.trusted_addresses', 'Trusted addresses'),
 	id: 'trusted_addresses'
 });
@@ -39,12 +39,29 @@ export const filtersSubSection = (): SettingsSubSection => ({
 	id: 'filters'
 });
 
+export const allowedSendersSubSection = (): SettingsSubSection => ({
+	label: t('label.allowed_addresses', 'Allowed senders list'),
+	id: 'allowed_addresses'
+});
+
+export const blockedSendersSubSection = (): SettingsSubSection => ({
+	label: t('label.blocked_addresses', 'Blocked senders list'),
+	id: 'blocked_addresses'
+});
+
 export const getSettingsSubSections = (
 	backupSelfUndeleteAllowed: AdvancedAccountStore['backupSelfUndeleteAllowed']
 ): Array<SettingsSubSection> =>
 	[displayingMessagesSubSection(), receivingMessagesSubSection()]
 		.concat(backupSelfUndeleteAllowed ? recoverMessagesSubSection() : [])
-		.concat([signaturesSubSection(), setDefaultSignaturesSubSection(), filtersSubSection()]);
+		.concat([
+			signaturesSubSection(),
+			setDefaultSignaturesSubSection(),
+			filtersSubSection(),
+			trustedAddressesSubSection(),
+			allowedSendersSubSection(),
+			blockedSendersSubSection()
+		]);
 
 export const composingMsgSubSection = (): SettingsSubSection => ({
 	label: t('labels.composing_messages', 'Composing Messages'),
