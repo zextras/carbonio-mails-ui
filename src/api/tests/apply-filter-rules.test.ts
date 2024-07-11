@@ -6,6 +6,7 @@
 import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 
 import { createSoapAPIInterceptor } from '../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
+import { buildSoapErrorResponseBody } from '../../carbonio-ui-commons/test/mocks/utils/soap';
 import {
 	applyFilterRules,
 	ApplyFilterRulesSoapRequest,
@@ -69,12 +70,7 @@ describe('extractMessagesIdFromSoapResponse', () => {
 	});
 
 	it('returns an empty array if SOAP error is provided as response', () => {
-		const response: ErrorSoapBodyResponse = {
-			Fault: {
-				Detail: { Error: { Code: 'code', Detail: 'detail' } },
-				Reason: { Text: 'something horrible happened' }
-			}
-		};
+		const response: ErrorSoapBodyResponse = buildSoapErrorResponseBody();
 		const result = extractMessagesIdFromSoapResponse(response);
 		expect(result).toEqual([]);
 	});

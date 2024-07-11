@@ -88,7 +88,7 @@ export const generateNewMessageEditor = (messagesStoreDispatch: AppDispatch): Ma
 		subject: '',
 		text: textWithSignature,
 		requestReadReceipt: false,
-		// signature,
+		signatureId: defaultIdentity.defaultSignatureId,
 		messagesStoreDispatch,
 		size: 0,
 		totalSmartLinksSize: 0
@@ -192,7 +192,8 @@ export const generateIntegratedNewEditor = (
 		requestReadReceipt: false,
 		messagesStoreDispatch,
 		size: 0,
-		totalSmartLinksSize: 0
+		totalSmartLinksSize: 0,
+		signatureId: defaultIdentity.defaultSignatureId
 	} as MailsEditorV2;
 
 	editor.draftSaveAllowedStatus = computeDraftSaveAllowedStatus(editor);
@@ -203,7 +204,7 @@ export const generateIntegratedNewEditor = (
 /**
  *
  */
-export const generateReplyAndReplyAllMsgEditor = (
+const generateReplyAndReplyAllMsgEditor = (
 	messagesStoreDispatch: AppDispatch,
 	originalMessage: MailMessage,
 	action: EditViewActionsType
@@ -263,7 +264,8 @@ export const generateReplyAndReplyAllMsgEditor = (
 		originalMessage,
 		messagesStoreDispatch,
 		size: originalMessage.size,
-		totalSmartLinksSize: 0
+		totalSmartLinksSize: 0,
+		signatureId
 	} as MailsEditorV2;
 
 	editor.draftSaveAllowedStatus = computeDraftSaveAllowedStatus(editor);
@@ -272,6 +274,21 @@ export const generateReplyAndReplyAllMsgEditor = (
 	return editor;
 };
 
+export const generateReplyMsgEditor = (
+	messagesStoreDispatch: AppDispatch,
+	originalMessage: MailMessage
+): MailsEditorV2 =>
+	generateReplyAndReplyAllMsgEditor(messagesStoreDispatch, originalMessage, EditViewActions.REPLY);
+
+export const generateReplyAllMsgEditor = (
+	messagesStoreDispatch: AppDispatch,
+	originalMessage: MailMessage
+): MailsEditorV2 =>
+	generateReplyAndReplyAllMsgEditor(
+		messagesStoreDispatch,
+		originalMessage,
+		EditViewActions.REPLY_ALL
+	);
 /**
  *
  */
@@ -324,7 +341,8 @@ export const generateForwardMsgEditor = (
 		originalMessage,
 		messagesStoreDispatch,
 		size: originalMessage.size,
-		totalSmartLinksSize: 0
+		totalSmartLinksSize: 0,
+		signatureId
 	} as MailsEditorV2;
 
 	editor.draftSaveAllowedStatus = computeDraftSaveAllowedStatus(editor);
@@ -462,7 +480,7 @@ export const generateEditor = ({
 				throw new Error('Cannot generate a reply editor without a message id');
 			}
 			if (message) {
-				return generateReplyAndReplyAllMsgEditor(messagesStoreDispatch, message, action);
+				return generateReplyMsgEditor(messagesStoreDispatch, message);
 			}
 			break;
 		case EditViewActions.REPLY_ALL:
@@ -470,7 +488,7 @@ export const generateEditor = ({
 				throw new Error('Cannot generate a reply all editor without a message id');
 			}
 			if (message) {
-				return generateReplyAndReplyAllMsgEditor(messagesStoreDispatch, message, action);
+				return generateReplyAllMsgEditor(messagesStoreDispatch, message);
 			}
 			break;
 		case EditViewActions.FORWARD:

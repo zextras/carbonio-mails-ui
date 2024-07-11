@@ -6,12 +6,13 @@
 
 import { SyntheticEvent } from 'react';
 
-import { ACTION_TYPES, addBoard, registerActions, t } from '@zextras/carbonio-shell-ui';
+import { ACTION_TYPES, registerActions, t } from '@zextras/carbonio-shell-ui';
 import { isArray, some } from 'lodash';
 
 import { ParticipantRole } from '../carbonio-ui-commons/constants/participants';
-import { EditViewActions, MAILS_ROUTE, MAIL_APP_ID } from '../constants';
+import { EditViewActions, MAIL_APP_ID } from '../constants';
 import { mailToSharedFunction } from '../integrations/shared-functions';
+import { createEditBoard } from '../views/app/detail-panel/edit/edit-view-board';
 
 type MailToActionType = {
 	id: string;
@@ -64,10 +65,9 @@ export const newEmailActionOnClick = (
 	e: SyntheticEvent<HTMLElement, Event> | KeyboardEvent
 ): void => {
 	e?.preventDefault?.();
-	addBoard({
-		url: `${MAILS_ROUTE}/edit?action=${EditViewActions.NEW}`,
+	createEditBoard({
+		action: EditViewActions.NEW,
 		title: t('label.new_email', 'New E-mail')
-		// TOFIX provide the context filled with the current folder id
 	});
 };
 
@@ -84,8 +84,6 @@ export const newEmailAction = (): NewEmailActionType => ({
 export const registerShellActions = (): void => {
 	registerActions(
 		{
-			// TOFIX-SHELL: update the action type definition
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			action: mailToAction,
 			id: 'mail-to',
 			type: 'contact-list'
