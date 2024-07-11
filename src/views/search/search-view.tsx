@@ -5,7 +5,6 @@
  */
 import React, { FC, Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 
-import { isRejected } from '@reduxjs/toolkit';
 import { Container, Spinner } from '@zextras/carbonio-design-system';
 import {
 	SEARCH_APP_ID,
@@ -110,34 +109,28 @@ const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHe
 
 	const searchQuery = useCallback(
 		async (queryString: string, reset: boolean) => {
-			const resultAction = await searchNew({
+			const offset = reset ? 0 : searchResults.offset;
+			const searchResponse = await searchNew({
 				query: queryString,
 				limit: LIST_LIMIT.INITIAL_LIMIT,
 				sortBy: 'dateDesc',
 				types: isMessageView ? 'message' : 'conversation',
-				offset: reset ? 0 : searchResults.offset,
+				offset,
 				recip: '0',
 				locale: prefLocale
 			});
 			if (
-				isRejected(soapSearchResults) &&
+				'Fault' in searchResponse &&
 				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 				// @ts-ignore
-				resultAction?.payload?.Detail?.Error?.Code === 'mail.QUERY_PARSE_ERROR'
+				searchResponse?.payload?.Detail?.Error?.Code === 'mail.QUERY_PARSE_ERROR'
 			) {
 				setIsInvalidQuery(true);
 				setSearchDisabled(true, invalidQueryTooltip);
 			}
-			handleSearchResults({ searchResponse: soapSearchResults, offset });
+			handleSearchResults({ searchResponse, offset });
 		},
-		[
-			dispatch,
-			invalidQueryTooltip,
-			isMessageView,
-			prefLocale,
-			searchResults.offset,
-			setSearchDisabled
-		]
+		[invalidQueryTooltip, isMessageView, prefLocale, searchResults.offset, setSearchDisabled]
 	);
 
 	const queryArray = useMemo(() => ['has:attachment', 'is:flagged', 'is:unread'], []);

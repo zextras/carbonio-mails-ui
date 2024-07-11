@@ -13,7 +13,7 @@ import { SortBy } from '../../carbonio-ui-commons/types/folder';
 import { Conversation } from '../conversations';
 import { KeywordState } from '../filters';
 import { MailMessage } from '../messages';
-import { ErrorType, SearchesStateType, SearchRequestStatus } from '../state';
+import { ErrorType, SearchRequestStatus } from '../state';
 
 export type SearchResults = {
 	messages?: Record<string, MailMessage>;
@@ -31,7 +31,7 @@ export type SearchResults = {
 };
 
 export type SearchListProps = {
-	searchResults: SearchesStateType;
+	searchResults: SearchStoreState;
 	query: string;
 	loading: boolean;
 	filterCount: number;
@@ -54,7 +54,7 @@ type SearchProps = {
 };
 
 export type SearchPanelProps = {
-	searchResults: SearchesStateType;
+	searchResults: SearchStoreState;
 	query: Array<QueryChip>;
 };
 

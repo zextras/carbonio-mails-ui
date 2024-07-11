@@ -7,9 +7,9 @@ import { create } from 'zustand';
 
 import { Conversation, SearchRequestStatus, SearchStoreState } from '../../../types';
 
-export const useSearchItemListStore = create<SearchStoreState>()((set, getState) => ({
+export const useSearchItemListStore = create<SearchStoreState>()((set) => ({
 	conversations: {},
-	messages: {},
+	messages: new Set(),
 	more: false,
 	offset: 0,
 	sortBy: 'dateDesc',
