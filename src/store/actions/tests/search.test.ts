@@ -26,9 +26,9 @@ import {
 	SoapMailMessagePart,
 	SoapMailParticipant
 } from '../../../types';
-import { searchByQuery } from '../searchByQuery';
+import { search } from '../search';
 
-describe('searchByQuery', () => {
+describe('search', () => {
 	let store: EnhancedStore<MailsStateType>;
 
 	beforeEach(() => {
@@ -38,19 +38,19 @@ describe('searchByQuery', () => {
 	test('should call the searchAPI with the correct query', async () => {
 		const interceptor = createSoapAPIInterceptor<SearchRequest>('Search');
 
-		await storeDispatch(searchByQuery({ query: 'find-me', limit: 100 }));
+		await storeDispatch(search({ query: 'find-me', limit: 100 }));
 
 		expect((await interceptor).query).toBe('find-me');
 		expect(store.getState().searches.query).toBe('find-me');
 	});
 
-	test('should populate the store when the searchByQuery returns a conversation successfully', async () => {
+	test('should populate the store when the search returns a conversation successfully', async () => {
 		createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
 			c: [conversationFromAPI({ id: '123', su: 'Subject' })],
 			more: false
 		});
 
-		await storeDispatch(searchByQuery({ query: 'any', limit: 100 }));
+		await storeDispatch(search({ query: 'any', limit: 100 }));
 
 		expect(store.getState().searches.conversations).toEqual({
 			'123': conversationFromStore({ id: '123', subject: 'Subject' })
@@ -63,35 +63,36 @@ describe('searchByQuery', () => {
 			more: false
 		});
 
-		await storeDispatch(searchByQuery({ query: 'any', limit: 100 }));
+		await storeDispatch(search({ query: 'any', limit: 100 }));
 
 		expect(store.getState().searches.conversations?.['123'].messages).toEqual([
 			convMessageFromStore({ id: '987', parent: 'folder2' })
 		]);
 	});
 
-	test('should populate the store when the searchByQuery returns a message successfully', async () => {
+	test('should populate the store when the search returns a message successfully', async () => {
 		createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
 			m: [messageFromAPI({ id: '456', su: 'Subject' })],
 			more: false
 		});
-		await storeDispatch(searchByQuery({ query: 'any', limit: 100, types: 'message' }));
+		await storeDispatch(search({ query: 'any', limit: 100, types: 'message' }));
 
 		expect(store.getState().searches.messages).toEqual({
 			'456': messageFromStore({ id: '456', subject: 'Subject' })
 		});
 	});
 
-	test('should not pollute the conversation stores', async () => {
+	test('should pollute the conversation stores', async () => {
 		createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
 			c: [conversationFromAPI({ id: '123' })],
 			more: false
 		});
 
-		await storeDispatch(searchByQuery({ query: 'any', limit: 100 }));
+		await storeDispatch(search({ query: 'any', limit: 100 }));
 
-		expect(store.getState().conversations.conversations).toEqual({});
-		expect(store.getState().messages.messages).toEqual({});
+		expect(store.getState().conversations.conversations).toEqual({
+			'123': conversationFromStore({ id: '123', subject: 'Subject' })
+		});
 	});
 
 	test('should not pollute the message stores', async () => {
@@ -100,7 +101,7 @@ describe('searchByQuery', () => {
 			more: false
 		});
 
-		await storeDispatch(searchByQuery({ query: 'any', limit: 100 }));
+		await storeDispatch(search({ query: 'any', limit: 100 }));
 
 		expect(store.getState().conversations.conversations).toEqual({});
 		expect(store.getState().messages.messages).toEqual({});
@@ -112,7 +113,7 @@ describe('searchByQuery', () => {
 			more: false
 		});
 
-		await storeDispatch(searchByQuery({ query: 'any', limit: 100 }));
+		await storeDispatch(search({ query: 'any', limit: 100 }));
 
 		expect(store.getState().searches.searchResultsIds).toEqual(['123', '987']);
 	});
@@ -123,7 +124,7 @@ describe('searchByQuery', () => {
 			more: false
 		});
 
-		await storeDispatch(searchByQuery({ query: 'any', limit: 100, types: 'message' }));
+		await storeDispatch(search({ query: 'any', limit: 100, types: 'message' }));
 
 		expect(store.getState().searches.searchResultsIds).toEqual(['456']);
 	});
@@ -135,7 +136,7 @@ describe('searchByQuery', () => {
 			more: false
 		});
 
-		await storeDispatch(searchByQuery({ query: 'aaaaaa', limit: 100 }));
+		await storeDispatch(search({ query: 'aaaaaa', limit: 100 }));
 
 		expect(store.getState().searches.conversations?.['123']).toBeDefined();
 		expect(store.getState().searches.messages).toStrictEqual({});
@@ -149,7 +150,7 @@ describe('searchByQuery', () => {
 		});
 
 		await storeDispatch(
-			searchByQuery({
+			search({
 				query: 'aaaaaa',
 				limit: 100,
 				types: 'conversation'
@@ -168,7 +169,7 @@ describe('searchByQuery', () => {
 		});
 
 		await storeDispatch(
-			searchByQuery({
+			search({
 				query: 'aaaaaa',
 				limit: 100,
 				types: 'message'
@@ -185,7 +186,7 @@ describe('searchByQuery', () => {
 			buildSoapErrorResponseBody()
 		);
 
-		await storeDispatch(searchByQuery({ query: 'aaaaaa', limit: 100 }));
+		await storeDispatch(search({ query: 'aaaaaa', limit: 100 }));
 
 		expect(store.getState().searches.messages).toStrictEqual({});
 		expect(store.getState().searches.conversations).toStrictEqual({});

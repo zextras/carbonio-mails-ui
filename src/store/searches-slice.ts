@@ -11,7 +11,7 @@ import produce from 'immer';
 import { forEach } from 'lodash';
 
 import { msgAction } from './actions';
-import { searchByQuery } from './actions/searchByQuery';
+import { search } from './actions/search';
 import {
 	handleAddMessagesInConversationReducer,
 	handleCreatedConversationsReducer,
@@ -157,9 +157,9 @@ export const searchesSlice = createSlice({
 		handleDeletedSearchMessages: produce(handleDeletedMessagesReducer)
 	},
 	extraReducers: (builder) => {
-		builder.addCase(searchByQuery.pending, produce(fetchSearchesPending));
-		builder.addCase(searchByQuery.fulfilled, produce(fetchSearchesFulfilled));
-		builder.addCase(searchByQuery.rejected, produce(fetchSearchesRejected));
+		builder.addCase(search.pending, produce(fetchSearchesPending));
+		builder.addCase(search.fulfilled, produce(fetchSearchesFulfilled));
+		builder.addCase(search.rejected, produce(fetchSearchesRejected));
 		builder.addCase(msgAction.fulfilled, produce(msgActionFulfilled));
 	}
 });
