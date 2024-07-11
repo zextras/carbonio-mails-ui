@@ -13,7 +13,7 @@ import { SortBy } from '../../carbonio-ui-commons/types/folder';
 import { Conversation } from '../conversations';
 import { KeywordState } from '../filters';
 import { MailMessage } from '../messages';
-import { SearchesStateType } from '../state';
+import { ErrorType, SearchesStateType, SearchRequestStatus } from '../state';
 
 export type SearchResults = {
 	messages?: Record<string, MailMessage>;
@@ -261,4 +261,20 @@ export type ChipType = {
 	avatarIcon?: string;
 	avatarBackground?: ChipProps['background'];
 	hasError?: boolean;
+};
+
+export type SearchStoreState = {
+	conversations: Record<string, Conversation>;
+	messages: Record<string, Partial<MailMessage> & Pick<MailMessage, 'id', 'parent'>>;
+	more: boolean;
+	offset: number;
+	sortBy?: SortBy;
+	query?: string;
+	status: SearchRequestStatus;
+	parent?: string;
+	tagName?: string;
+	error?: ErrorType;
+	addConversation: (conversation: Conversation) => void;
+	setStatus: (status: SearchRequestStatus) => void;
+	getConversation: (conversationId: string) => Conversation;
 };

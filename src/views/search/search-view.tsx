@@ -29,6 +29,7 @@ import { LIST_LIMIT, MAILS_ROUTE } from '../../constants';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import { search } from '../../store/actions/search';
 import { resetSearchResults, selectSearches } from '../../store/searches-slice';
+import { useHandleSearchResults } from '../../store/zustand/search/hooks/hooks';
 
 const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHeader }) => {
 	const [query, updateQuery] = useQuery();
@@ -119,7 +120,7 @@ const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHe
 				})
 			);
 			if (
-				isRejected(resultAction) &&
+				isRejected(soapSearchResults) &&
 				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 				// @ts-ignore
 				resultAction?.payload?.Detail?.Error?.Code === 'mail.QUERY_PARSE_ERROR'
@@ -127,15 +128,9 @@ const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHe
 				setIsInvalidQuery(true);
 				setSearchDisabled(true, invalidQueryTooltip);
 			}
+			useHandleSearchResults({ searchResponse: soapSearchResults, offset });
 		},
-		[
-			dispatch,
-			invalidQueryTooltip,
-			isMessageView,
-			prefLocale,
-			searchResults.offset,
-			setSearchDisabled
-		]
+		[invalidQueryTooltip, isMessageView, prefLocale, searchResults.offset, setSearchDisabled]
 	);
 
 	const queryArray = useMemo(() => ['has:attachment', 'is:flagged', 'is:unread'], []);

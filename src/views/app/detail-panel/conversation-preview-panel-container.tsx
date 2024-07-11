@@ -8,11 +8,11 @@ import React, { FC, useEffect, useMemo } from 'react';
 import { Container } from '@zextras/carbonio-design-system';
 import { FOLDERS, useTags, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { filter } from 'lodash';
-import { useParams } from 'react-router-dom';
+import { useParams, useRouteMatch } from 'react-router-dom';
 
 import { ConversationPreviewPanel } from './conversation-preview-panel';
 import PreviewPanelHeader from './preview/preview-panel-header';
-import { API_REQUEST_STATUS } from '../../../constants';
+import { API_REQUEST_STATUS, SEARCH_ROUTE } from '../../../constants';
 import { getFolderIdParts } from '../../../helpers/folders';
 import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
 import { getConv, searchConv } from '../../../store/actions';
@@ -20,6 +20,7 @@ import {
 	selectConversation,
 	selectConversationExpandedStatus
 } from '../../../store/conversations-slice';
+import { useConversation } from '../../../store/zustand/search/hooks/hooks';
 import type { MailsStateType } from '../../../types';
 import { useExtraWindow } from '../extra-windows/use-extra-window';
 
@@ -36,6 +37,7 @@ const useConversationPreviewPanelParameters = (
 };
 
 export const ConversationPreviewPanelContainer: FC<ConversationPreviewPanelProps> = (props) => {
+	const { path } = useRouteMatch();
 	const { conversationId, folderId } = useConversationPreviewPanelParameters(props);
 	const tagsFromStore = useTags();
 	const { isInsideExtraWindow } = useExtraWindow();
@@ -44,9 +46,15 @@ export const ConversationPreviewPanelContainer: FC<ConversationPreviewPanelProps
 		selectConversationExpandedStatus(state, conversationId)
 	);
 
-	const conversation = useAppSelector(selectConversation(conversationId));
+	const conversationFromConversationsSlice = useAppSelector(selectConversation(conversationId));
+
+	const conversationFromSearches = useConversation(conversationId);
+
+	const conversation =
+		path === SEARCH_ROUTE ? conversationFromSearches : conversationFromConversationsSlice;
 	const settings = useUserSettings();
 	const convSortOrder = settings.prefs.zimbraPrefConversationOrder as string;
+
 	useEffect(() => {
 		if (!conversation) {
 			dispatch(getConv({ conversationId }));

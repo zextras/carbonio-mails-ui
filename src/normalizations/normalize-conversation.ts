@@ -38,7 +38,7 @@ export const normalizeConversation = ({
 	c,
 	m,
 	tags
-}: NormalizeConversationProps): Partial<Conversation> => {
+}: NormalizeConversationProps): Partial<Conversation> & { id: string } => {
 	const filteredMsgs = c?.m ?? filter(m ?? [], ['cid', c?.id]);
 	const messages = filteredMsgs?.length
 		? map(filteredMsgs, (msg) => ({
