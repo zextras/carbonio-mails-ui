@@ -37,7 +37,7 @@ export const computeDraftSaveAllowedStatus = (
 	) {
 		return {
 			allowed: false,
-			reason: t('label.attachment_error_status.uploading', 'Attachments are being uploaded') // TODO check strings with designer
+			reason: t('label.attachment_error_status.uploading', 'Attachments are being uploaded')
 		};
 	}
 
@@ -49,7 +49,7 @@ export const computeDraftSaveAllowedStatus = (
 	) {
 		return {
 			allowed: false,
-			reason: t('label.attachment_error_status.failed', 'one or more attachments failed to upload') // TODO check strings with designer
+			reason: t('label.attachment_error_status.failed', 'one or more attachments failed to upload')
 		};
 	}
 
@@ -78,7 +78,7 @@ export const computeSendAllowedStatus = (editor: MailsEditorV2): EditorOperation
 	if (!editor.identityId) {
 		return {
 			allowed: false,
-			reason: t('label.missing_sender', 'the identity of the sender is not set') // TODO check strings with designer
+			reason: t('label.missing_sender', 'the identity of the sender is not set')
 		};
 	}
 
@@ -109,7 +109,7 @@ export const computeSendAllowedStatus = (editor: MailsEditorV2): EditorOperation
 	) {
 		return {
 			allowed: false,
-			reason: t('label.attachment_error_status.uploading', 'Attachments are being uploaded') // TODO check strings with designer
+			reason: t('label.attachment_error_status.uploading', 'Attachments are being uploaded')
 		};
 	}
 
@@ -121,7 +121,7 @@ export const computeSendAllowedStatus = (editor: MailsEditorV2): EditorOperation
 	) {
 		return {
 			allowed: false,
-			reason: t('label.attachment_error_status.failed', 'one or more attachments failed to upload') // TODO check strings with designer
+			reason: t('label.attachment_error_status.failed', 'one or more attachments failed to upload')
 		};
 	}
 

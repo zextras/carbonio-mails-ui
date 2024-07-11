@@ -5,7 +5,7 @@
  */
 import React from 'react';
 
-import { CreateModalFn } from '@zextras/carbonio-design-system';
+import { CreateModalFn, ModalManager } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 
 import { SelectFolderModal } from './modals/select-folder-modal';
@@ -64,37 +64,39 @@ export const getSelectFoldersUIAction = (): UIAction<SelectFoldersUIActionExecut
 		id: descriptor.id,
 		icon: 'FolderOutline',
 		label: t('action.select_folders', 'Select folders'),
-		execute: (params): void => {
+		openModal: (params): void => {
 			const { uiUtilities, callbacks } = params;
 			const config = mergeDefaultExecutionConfig(params.config);
 			const closeModal = uiUtilities.createModal(
 				{
 					size: 'medium',
 					children: (
-						<SelectFolderModal
-							folder={config.selectedFolder}
-							onClose={(): void => {
-								closeModal();
-								callbacks.onCancel && callbacks.onCancel();
-							}}
-							headerTitle={config.title}
-							inputLabel={config.hintText}
-							actionLabel={config.confirmActionLabel}
-							confirmAction={(folder): void => {
-								if (!folder) {
-									return;
-								}
-								closeModal();
-								callbacks.onComplete && callbacks.onComplete(folder);
-							}}
-							actionTooltip={config.confirmActionTooltip}
-							disabledActionTooltip={config.disabledConfirmActionTooltip}
-							allowRootSelection={config.allowRootSelection}
-							allowFolderCreation={config.allowFolderCreation}
-							showSharedAccounts={config.showSharedAccounts}
-							showTrashFolder={config.showThrashFolder}
-							showSpamFolder={config.showSpamFolder}
-						></SelectFolderModal>
+						<ModalManager>
+							<SelectFolderModal
+								folder={config.selectedFolder}
+								onClose={(): void => {
+									closeModal();
+									callbacks.onCancel && callbacks.onCancel();
+								}}
+								headerTitle={config.title}
+								inputLabel={config.hintText}
+								actionLabel={config.confirmActionLabel}
+								confirmAction={(folder): void => {
+									if (!folder) {
+										return;
+									}
+									closeModal();
+									callbacks.onComplete && callbacks.onComplete(folder);
+								}}
+								actionTooltip={config.confirmActionTooltip}
+								disabledActionTooltip={config.disabledConfirmActionTooltip}
+								allowRootSelection={config.allowRootSelection}
+								allowFolderCreation={config.allowFolderCreation}
+								showSharedAccounts={config.showSharedAccounts}
+								showTrashFolder={config.showThrashFolder}
+								showSpamFolder={config.showSpamFolder}
+							></SelectFolderModal>
+						</ModalManager>
 					)
 				},
 				true
