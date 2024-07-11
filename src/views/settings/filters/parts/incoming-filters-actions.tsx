@@ -44,7 +44,7 @@ type ComponentProps = {
 		t: TFunction;
 		availableList: ListType;
 		activeList: ListType;
-		incomingFilters: ListType;
+		incomingFilters: FilterListType[];
 	};
 };
 
