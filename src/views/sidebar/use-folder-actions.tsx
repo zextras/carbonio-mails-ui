@@ -3,9 +3,9 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { SyntheticEvent, useContext, useMemo } from 'react';
+import React, { SyntheticEvent, useMemo } from 'react';
 
-import { ModalManagerContext } from '@zextras/carbonio-design-system';
+import { useModal } from '@zextras/carbonio-design-system';
 import { FOLDERS, t, useAppContext } from '@zextras/carbonio-shell-ui';
 import { noop, startsWith } from 'lodash';
 
@@ -39,7 +39,7 @@ type FolderActionsProps = {
 export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 	const dispatch = useAppDispatch();
 	// eslint-disable-next-line @typescript-eslint/ban-types
-	const createModal = useContext(ModalManagerContext) as Function;
+	const createModal = useModal();
 	const folderIsTrash = getFolderIdParts(folder.id ?? '0').id === FOLDERS.TRASH;
 	const messages = useAppSelector(selectMessagesArray);
 	const trashMessages = messages.filter(

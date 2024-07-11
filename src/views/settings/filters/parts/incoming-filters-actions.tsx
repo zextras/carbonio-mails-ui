@@ -101,7 +101,7 @@ const IncomingFilterActions: FC<ComponentProps> = ({ compProps }): ReactElement 
 				filterName: selectedActiveFilterName
 			}
 		};
-		action.execute && action.execute(executionParams);
+		action?.openModal?.(executionParams);
 	}, [createModal, selectedActiveFilterName]);
 
 	const openCreateModal = useCallback(() => {
