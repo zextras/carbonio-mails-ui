@@ -90,7 +90,7 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 	// Creates an empty signature
 	const createEmptySignature = useCallback(
 		(): SignItemType => ({
-			id: uuidv4(),
+			id: `unsaved-signature-${uuidv4()}`,
 			label: t('label.enter_name', 'Enter Name'),
 			name: t('label.enter_name', 'Enter Name'),
 			description: ''
@@ -121,10 +121,12 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 	// Composes the SelectItem array for the signature selects
 	const signatureSelectItems: SelectItem[] = useMemo(
 		(): SelectItem[] =>
-			concat(noSignature, signatures).map((signature) => ({
-				label: signature.label,
-				value: signature.id
-			})),
+			concat(noSignature, signatures)
+				.filter((signature) => !signature.id.includes('unsaved-signature-'))
+				.map((signature) => ({
+					label: signature.label,
+					value: signature.id
+				})),
 		[noSignature, signatures]
 	);
 
