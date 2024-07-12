@@ -8,7 +8,7 @@ import React, { FC, useCallback, useLayoutEffect, useMemo, useRef, useState } fr
 
 import { Container } from '@zextras/carbonio-design-system';
 import { t, useAppContext } from '@zextras/carbonio-shell-ui';
-import { isArray, isEmpty, map, noop, sortBy } from 'lodash';
+import { isEmpty, map, noop } from 'lodash';
 import { useParams } from 'react-router-dom';
 
 import { AdvancedFilterButton } from './parts/advanced-filter-button';
@@ -47,7 +47,7 @@ export const SearchMessageList: FC<SearchListProps> = ({
 		currentFolderId: folderId,
 		setCount,
 		count,
-		items: [...Object.values(searchResults.messages ?? {})]
+		items: [...searchResults.messageIds].map((message) => ({ id: message }))
 	});
 
 	const [isLoading, setIsLoading] = useState(false);
@@ -55,29 +55,27 @@ export const SearchMessageList: FC<SearchListProps> = ({
 	const dispatch = useAppDispatch();
 
 	const displayerTitle = useMemo(() => {
-		if (!isInvalidQuery && isEmpty(searchResults.messages)) {
+		if (!isInvalidQuery && isEmpty(searchResults.messageIds)) {
 			return t(
 				'displayer.search_list_title1',
 				'It looks like there are no results. Keep searching!'
 			);
 		}
 		return null;
-	}, [isInvalidQuery, searchResults.messages]);
+	}, [isInvalidQuery, searchResults.messageIds]);
 
-	const messageList = useMemo(
-		() => sortBy(Object.values(searchResults?.messages ?? []), 'sortIndex'),
-
-		[searchResults?.messages]
-	);
+	const messageIds = useMemo(() => [...searchResults.messageIds], [searchResults?.messageIds]);
 
 	const listItems = useMemo(
 		() =>
-			map(messageList, (message) => {
-				const active = itemId === message.id;
-				const isSelected = selected[message.id];
+			map(messageIds, (messageId) => {
+				console.log('#####', messageId);
+				const active = itemId === messageId;
+				const isSelected = selected[messageId];
 				return (
 					<SearchMessageItem
-						message={message}
+						messageId={messageId}
+						key={messageId}
 						selected={selected}
 						isSelected={isSelected}
 						active={active}
@@ -87,15 +85,10 @@ export const SearchMessageList: FC<SearchListProps> = ({
 					/>
 				);
 			}),
-		[deselectAll, isSelectModeOn, itemId, messageList, selected, toggle]
+		[deselectAll, isSelectModeOn, itemId, messageIds, selected, toggle]
 	);
 
-	const totalMessages = useMemo(() => {
-		if (searchResults && searchResults.messages) {
-			return Object.keys(searchResults.messages).length;
-		}
-		return 0;
-	}, [searchResults]);
+	const totalMessages = useMemo(() => searchResults.messageIds.size, [searchResults]);
 
 	useLayoutEffect(() => {
 		listRef?.current && (listRef.current.children[0].scrollTop = 0);
@@ -119,14 +112,15 @@ export const SearchMessageList: FC<SearchListProps> = ({
 		}
 	}, [dispatch, isLoading, query, searchResults, totalMessages]);
 
-	const messagesLoadingCompleted = useMemo(
-		() => !isArray(searchResults?.messages),
-		[searchResults?.messages]
-	);
+	const messagesLoadingCompleted = true;
+	//  useMemo(
+	// 	() => !isArray(searchResults?.messageIds),
+	// 	[searchResults?.messageIds]
+	// );
 	const selectedIds = useMemo(() => Object.keys(selected), [selected]);
 	const messages = useMemo(
-		() => Object.values(searchResults?.messages ?? {}),
-		[searchResults?.messages]
+		() => [...searchResults.messageIds].map((id) => ({ id })),
+		[searchResults?.messageIds]
 	);
 
 	return (

@@ -9,7 +9,7 @@ import { SearchStoreState } from '../../../types';
 
 export const useSearchStore = create<SearchStoreState>()(() => ({
 	conversations: {},
-	messages: new Set(),
+	messageIds: new Set(),
 	more: false,
 	offset: 0,
 	sortBy: 'dateDesc',

@@ -53,7 +53,7 @@ export const MessageListItemComponent: FC<ListItemComponentProps> = memo(
 				deselectAll={deselectAll}
 			>
 				<MessageListItem
-					item={message}
+					itemId={message.id}
 					selected={isSelected}
 					selecting={isSelectModeOn}
 					isConvChildren={false}

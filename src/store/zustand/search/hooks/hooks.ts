@@ -65,7 +65,7 @@ function handleMessagesResults({
 		offset: searchResponse.offset
 	};
 	useSearchStore.setState({
-		messages: new Set(Object.keys(normalizedMessages)),
+		messageIds: new Set(Object.keys(normalizedMessages)),
 		offset: searchResponse.offset
 	});
 }

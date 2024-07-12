@@ -12,7 +12,6 @@ import styled from 'styled-components';
 import { MessageListItem } from './message-list-item';
 import { CustomList } from '../../../../carbonio-ui-commons/components/list/list';
 import { useFolder } from '../../../../carbonio-ui-commons/store/zustand/folder/hooks';
-import type { IncompleteMessage, MailMessage, MessageListItemProps } from '../../../../types';
 import { MultipleSelectionActionsPanel } from '../../../../ui-actions/multiple-selection-actions-panel';
 import ShimmerList from '../../../search/shimmer-list';
 import { Breadcrumbs } from '../parts/breadcrumbs';
@@ -25,12 +24,16 @@ const DragImageContainer = styled.div`
 	width: 35vw;
 `;
 
-const DragItems: FC<{
-	messages: IncompleteMessage[];
+const DragItems = ({
+	messages,
+	draggedIds,
+	folderId
+}: {
+	messages: Array<{ id: string }>;
 	draggedIds: Record<string, boolean>;
 	folderId: string;
-}> = ({ messages, draggedIds, folderId }) => {
-	const items = reduce<typeof draggedIds, MessageListItemProps['item'][]>(
+}): React.JSX.Element => {
+	const items = reduce<typeof draggedIds, Array<{ id: string }>>(
 		draggedIds,
 		(acc, v, k) => {
 			const obj = find(messages, ['id', k]);
@@ -46,7 +49,7 @@ const DragItems: FC<{
 		<>
 			{map(items, (item) => (
 				<MessageListItem
-					item={item}
+					itemId={item.id}
 					key={item.id}
 					isConvChildren={false}
 					toggle={noop}
@@ -77,7 +80,7 @@ export type MessageListComponentProps = {
 	// the id of the current folder
 	folderId: string;
 	// the messages to display
-	messages: MailMessage[];
+	messages: Array<{ id: string }>;
 	// the ids of the messages being dragged
 	draggedIds?: Record<string, boolean>;
 	// the function to call when the user starts dragging a message

@@ -7,11 +7,10 @@ import React, { ReactElement } from 'react';
 
 import { CustomListItem } from '../../carbonio-ui-commons/components/list/list-item';
 import { useMessagesStore } from '../../store/zustand/messages-store/store';
-import type { IncompleteMessage } from '../../types';
 import { MessageListItemComponent } from '../app/folder-panel/messages/message-list-item-component';
 
 type SearchMessageItemProps = {
-	message: IncompleteMessage;
+	messageId: string;
 	selected: Record<string, boolean>;
 	isSelected: boolean;
 	active: boolean;
@@ -20,7 +19,7 @@ type SearchMessageItemProps = {
 	deselectAll: () => void;
 };
 export const SearchMessageItem = ({
-	message,
+	messageId,
 	isSelected,
 	selected,
 	active,
@@ -28,8 +27,8 @@ export const SearchMessageItem = ({
 	isSelectModeOn,
 	deselectAll
 }: SearchMessageItemProps): React.JSX.Element => {
-	const completeMessage = useMessagesStore.getState().messages[message.id];
-
+	const completeMessage = useMessagesStore.getState().messages[messageId];
+	console.log('@@@@@@@@@@@@@@@@@@@@@@@', completeMessage);
 	return (
 		<CustomListItem
 			key={completeMessage.id}
