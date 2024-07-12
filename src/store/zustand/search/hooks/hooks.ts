@@ -39,7 +39,7 @@ function handleConversationResults({
 	);
 	useMessagesStore.setState({ conversations });
 	useSearchStore.setState({
-		conversations: new Set(Object.keys(conversations)),
+		conversationIds: new Set(Object.keys(conversations)),
 		offset: searchResponse.offset
 	});
 }

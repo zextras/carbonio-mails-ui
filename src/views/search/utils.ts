@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { TFunction } from 'i18next';
 import { reduce } from 'lodash';
 import { v4 as uuid } from 'uuid';
 
@@ -16,39 +15,6 @@ import {
 	Query,
 	SearchQueryItem
 } from '../../types';
-
-type EmptyListMessages = { title: string; description: string }[];
-
-export const EmptyListMessages = (t: TFunction): EmptyListMessages => [
-	{
-		title: t('displayer.search_title1', 'Start another search'),
-		description: t(
-			'displayer.search_description1',
-			'Or select “Advanced Filters” to refine your search.'
-		)
-	},
-	{
-		title: t('displayer.search_title2', 'We’re sorry but there are no results for your search'),
-		description: t('displayer.search_description2', 'Try to start another search.')
-	},
-	{
-		title: t('displayer.search_title3', 'There are no results for your search.'),
-		description: t(
-			'displayer.search_description3',
-			'Check the spelling and the filters options or try with another keyword.'
-		)
-	}
-];
-
-export const EmptyFieldMessages = (t: TFunction): EmptyListMessages => [
-	{
-		title: t(
-			'displayer.search_title4',
-			'Select one or more results to perform actions or display details.'
-		),
-		description: ''
-	}
-];
 
 function getRegex(prefix?: string): RegExp {
 	return new RegExp(`^${prefix}:.*`, 'i');

@@ -50,7 +50,7 @@ describe('Conversation Preview Panel', () => {
 			};
 
 			useSearchStore.setState({
-				conversations: new Set([conversation.id]),
+				conversationIds: new Set([conversation.id]),
 				status: API_REQUEST_STATUS.fulfilled
 			});
 			useMessagesStore.setState({ conversations: { [conversation.id]: conversation } });
@@ -88,7 +88,7 @@ describe('Conversation Preview Panel', () => {
 			};
 
 			useSearchStore.setState({
-				conversations: new Set([conversation.id]),
+				conversationIds: new Set([conversation.id]),
 				status: API_REQUEST_STATUS.fulfilled
 			});
 			useMessagesStore.setState({ conversations: { [conversation.id]: conversation } });

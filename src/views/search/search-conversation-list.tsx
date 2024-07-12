@@ -34,7 +34,7 @@ const SearchConversationList: FC<SearchListProps> = ({
 }) => {
 	const { itemId, folderId } = useParams<{ itemId: string; folderId: string }>();
 	const { setCount, count } = useAppContext<AppContext>();
-	const items = [...searchResults.conversations].map((conversation) => ({
+	const items = [...searchResults.conversationIds].map((conversation) => ({
 		id: conversation
 	}));
 	const dispatch = useAppDispatch();
@@ -70,7 +70,7 @@ const SearchConversationList: FC<SearchListProps> = ({
 			return null;
 		}
 		// If there are no results, return a title
-		if (isEmpty(searchResults.conversations)) {
+		if (isEmpty(searchResults.conversationIds)) {
 			if (randomListIndex === 0) {
 				return t(
 					'displayer.search_list_title1',
@@ -81,17 +81,17 @@ const SearchConversationList: FC<SearchListProps> = ({
 		}
 		// If there are results, don't return a title
 		return null;
-	}, [isInvalidQuery, searchResults.conversations, randomListIndex]);
+	}, [isInvalidQuery, searchResults.conversationIds, randomListIndex]);
 
 	const conversationIds = useMemo(
-		() => sortBy(filter(Object.values(searchResults?.conversations ?? [])), 'sortIndex'),
-		[searchResults?.conversations]
+		() => sortBy(filter(Object.values(searchResults?.conversationIds ?? [])), 'sortIndex'),
+		[searchResults?.conversationIds]
 	);
 
 	// totalConversations: length of conversations object
 	const totalConversations = useMemo(
-		() => Object.keys(searchResults?.conversations ?? {}).length ?? 0,
-		[searchResults?.conversations]
+		() => Object.keys(searchResults?.conversationIds ?? {}).length ?? 0,
+		[searchResults?.conversationIds]
 	);
 
 	// If the search results have completed loading, we can display the search results.
@@ -102,8 +102,8 @@ const SearchConversationList: FC<SearchListProps> = ({
 	);
 
 	const conversations = useMemo(
-		() => Object.values(searchResults?.conversations ?? {}),
-		[searchResults?.conversations]
+		() => Object.values(searchResults?.conversationIds ?? {}),
+		[searchResults?.conversationIds]
 	);
 
 	useLayoutEffect(() => {

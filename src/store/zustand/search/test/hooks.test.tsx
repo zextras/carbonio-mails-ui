@@ -11,6 +11,7 @@ import { renderHook } from '@testing-library/react-hooks';
 
 import { setupTest } from '../../../../carbonio-ui-commons/test/test-setup';
 import { SoapConversation } from '../../../../types';
+import { useMessagesStore } from '../../messages-store/store';
 import { useConversation, handleSearchResults } from '../hooks/hooks';
 import { useSearchStore } from '../store';
 
@@ -59,10 +60,9 @@ describe('Searches store hooks', () => {
 			sortIndex: 0
 		};
 		useSearchStore.setState({
-			conversations: {
-				[conversation.id]: conversation
-			}
+			conversationIds: new Set([conversation.id])
 		});
+		useMessagesStore.setState({ conversations: { [conversation.id]: conversation } });
 		setupTest(<TestComponent id="1" />);
 		expect(screen.getByText('Test conversation')).toBeInTheDocument();
 	});
@@ -91,14 +91,13 @@ describe('Searches store hooks', () => {
 			sortIndex: 0
 		};
 		useSearchStore.setState({
-			conversations: {
-				[conversation.id]: conversation
-			}
+			conversationIds: new Set([conversation.id])
 		});
+		useMessagesStore.setState({ conversations: { [conversation.id]: conversation } });
 		setupTest(<TestComponent id="1" />);
 		expect(screen.getByText('Test conversation')).toBeInTheDocument();
 		act(() => {
-			useSearchStore.setState({
+			useMessagesStore.setState({
 				conversations: { [conversation.id]: { ...conversation, subject: 'New subject' } }
 			});
 		});
@@ -112,6 +111,6 @@ describe('Searches store hooks', () => {
 		};
 		const { result } = renderHook(() => handleSearchResults({ searchResponse, offset: 0 }));
 		expect(result.current).toBeUndefined();
-		expect(useSearchStore.getState().conversations['123']).toBeDefined();
+		expect(useMessagesStore.getState().conversations['123']).toBeDefined();
 	});
 });

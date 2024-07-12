@@ -264,7 +264,7 @@ export type ChipType = {
 };
 
 export type SearchStoreState = {
-	conversations: Set<string>;
+	conversationIds: Set<string>;
 	messageIds: Set<string>;
 	more: boolean;
 	offset: number;
