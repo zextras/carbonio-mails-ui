@@ -10,8 +10,9 @@ import { ErrorSoapBodyResponse, QueryChip, SearchViewProps } from '@zextras/carb
 import { noop } from 'lodash';
 
 import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
+import { buildSoapErrorResponseBody } from '../../../carbonio-ui-commons/test/mocks/utils/soap';
 import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
-import * as searchByQuery from '../../../store/actions/searchByQuery';
+import * as search from '../../../store/actions/search';
 import { generateStore } from '../../../tests/generators/store';
 import { SearchRequest, SearchResponse } from '../../../types';
 import SearchView from '../search-view';
@@ -78,7 +79,7 @@ describe('SearchView', () => {
 
 	it('should not call search API if query empty', async () => {
 		const store = generateStore();
-		const spySearchByQuery = jest.spyOn(searchByQuery, 'searchByQuery');
+		const spySearch = jest.spyOn(search, 'search');
 		const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
 		const searchViewProps: SearchViewProps = {
 			useQuery: () => [[], noop],
@@ -95,19 +96,18 @@ describe('SearchView', () => {
 		});
 		expect(advancedFiltersButton).toBeVisible();
 		expect(advancedFiltersButton).toBeEnabled();
-		expect(spySearchByQuery).not.toBeCalled();
+		expect(spySearch).not.toBeCalled();
 	});
 
 	it('should call setSearchDisabled button if Search API fails with mail.QUERY_PARSE_ERROR', async () => {
 		const store = generateStore();
-		const interceptor = createSoapAPIInterceptor<SearchRequest, ErrorSoapBodyResponse>('Search', {
-			Fault: {
-				Reason: { Text: 'Failed to execute search' },
-				Detail: {
-					Error: { Code: 'mail.QUERY_PARSE_ERROR', Detail: 'Failed' }
-				}
-			}
-		});
+		const interceptor = createSoapAPIInterceptor<SearchRequest, ErrorSoapBodyResponse>(
+			'Search',
+			buildSoapErrorResponseBody({
+				detailCode: 'mail.QUERY_PARSE_ERROR',
+				reason: 'Failed to execute search'
+			})
+		);
 		const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
 		const setSearchDisabled = jest.fn();
 		const queryChip: QueryChip = {
@@ -130,14 +130,13 @@ describe('SearchView', () => {
 
 	it('should not call setSearchDisabled button if Search API fails with another error', async () => {
 		const store = generateStore();
-		const interceptor = createSoapAPIInterceptor<SearchRequest, ErrorSoapBodyResponse>('Search', {
-			Fault: {
-				Reason: { Text: 'Failed to execute search' },
-				Detail: {
-					Error: { Code: 'Other code', Detail: 'Failed' }
-				}
-			}
-		});
+		const interceptor = createSoapAPIInterceptor<SearchRequest, ErrorSoapBodyResponse>(
+			'Search',
+			buildSoapErrorResponseBody({
+				detailCode: 'Other code',
+				reason: 'Failed to execute search'
+			})
+		);
 		const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
 		const setSearchDisabled = jest.fn();
 		const queryChip: QueryChip = {

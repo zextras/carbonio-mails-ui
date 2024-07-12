@@ -32,7 +32,6 @@ export type SearchResults = {
 
 export type SearchListProps = {
 	searchResults: SearchesStateType;
-	search: (query: string, loadMore: boolean) => void;
 	query: string;
 	loading: boolean;
 	filterCount: number;

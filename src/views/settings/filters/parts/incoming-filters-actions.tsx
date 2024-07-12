@@ -44,7 +44,7 @@ type ComponentProps = {
 		t: TFunction;
 		availableList: ListType;
 		activeList: ListType;
-		incomingFilters: ListType;
+		incomingFilters: FilterListType[];
 	};
 };
 
@@ -101,7 +101,7 @@ const IncomingFilterActions: FC<ComponentProps> = ({ compProps }): ReactElement 
 				filterName: selectedActiveFilterName
 			}
 		};
-		action.execute && action.execute(executionParams);
+		action?.openModal?.(executionParams);
 	}, [createModal, selectedActiveFilterName]);
 
 	const openCreateModal = useCallback(() => {

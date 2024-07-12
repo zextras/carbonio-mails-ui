@@ -28,10 +28,15 @@ import {
 import { getEmptyMSWShareInfoResponse } from '../../../../../carbonio-ui-commons/test/mocks/network/msw/handle-get-share-info';
 import { populateFoldersStore } from '../../../../../carbonio-ui-commons/test/mocks/store/folders';
 import { getMocksContext } from '../../../../../carbonio-ui-commons/test/mocks/utils/mocks-context';
+import { buildSoapErrorResponseBody } from '../../../../../carbonio-ui-commons/test/mocks/utils/soap';
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
 import { EditViewActions, MAILS_ROUTE } from '../../../../../constants';
 import * as useQueryParam from '../../../../../hooks/use-query-param';
 import * as saveDraftAction from '../../../../../store/actions/save-draft';
+import {
+	GetSignaturesRequest,
+	GetSignaturesResponse
+} from '../../../../../store/actions/signatures';
 import { addEditor } from '../../../../../store/zustand/editor';
 import {
 	generateEditAsNewEditor,
@@ -123,14 +128,14 @@ const getSoapMailBodyContent = (
 };
 
 const createSmartLinkFailureAPIInterceptor = (): Promise<CreateSmartLinksRequest> =>
-	createSoapAPIInterceptor<CreateSmartLinksRequest, ErrorSoapBodyResponse>('CreateSmartLinks', {
-		Fault: {
-			Reason: { Text: 'Failed upload to Files' },
-			Detail: {
-				Error: { Code: '123', Detail: 'Failed due to connection timeout' }
-			}
-		}
-	});
+	createSoapAPIInterceptor<CreateSmartLinksRequest, ErrorSoapBodyResponse>(
+		'CreateSmartLinks',
+		buildSoapErrorResponseBody({
+			detailCode: 'Failed upload to Files',
+			code: '123',
+			reason: 'Failed due to connection timeout'
+		})
+	);
 
 const clearAndInsertText =
 	(user: UserEvent, target: Element, text: string) => async (): Promise<void> => {
@@ -370,6 +375,10 @@ describe('Edit view', () => {
 
 				await firstSaveDraftInterceptor;
 				const draftSavingInterceptor = aSuccessfullSaveDraft();
+				createSoapAPIInterceptor<GetSignaturesRequest, GetSignaturesResponse>('GetSignatures', {
+					signature: [],
+					_jsns: 'urn:zimbraAccount'
+				});
 
 				const subject = faker.lorem.sentence(5);
 				// Get the default identity address

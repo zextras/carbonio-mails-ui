@@ -36,7 +36,7 @@ export type UIAction<ExecutionParams extends UIActionExecutionParams> = {
 	id: string;
 	icon: string;
 	label: string;
-	execute?: (params: ExecutionParams) => void;
+	openModal?: (params: ExecutionParams) => void;
 };
 
 export type MessageActionReturnType = UIAction<never> & {

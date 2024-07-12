@@ -27,7 +27,7 @@ import { useFoldersMap } from '../../carbonio-ui-commons/store/zustand/folder/ho
 import type { Folder } from '../../carbonio-ui-commons/types/folder';
 import { LIST_LIMIT, MAILS_ROUTE } from '../../constants';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux';
-import { searchByQuery } from '../../store/actions/searchByQuery';
+import { search } from '../../store/actions/search';
 import { resetSearchResults, selectSearches } from '../../store/searches-slice';
 
 const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHeader }) => {
@@ -108,7 +108,7 @@ const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHe
 	const searchQuery = useCallback(
 		async (queryString: string, reset: boolean) => {
 			const resultAction = await dispatch(
-				searchByQuery({
+				search({
 					query: queryString,
 					limit: LIST_LIMIT.INITIAL_LIMIT,
 					sortBy: 'dateDesc',
@@ -199,7 +199,7 @@ const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHe
 	useEffect(() => {
 		if (query?.length > 0 && !isInvalidQuery) {
 			setFilterCount(query.length);
-			searchQuery(queryToString, true);
+			searchQuery(queryToString, false);
 		}
 		if (query?.length === 0) {
 			setFilterCount(0);
@@ -237,7 +237,6 @@ const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHe
 								<SearchMessageList
 									searchDisabled={searchDisabled}
 									searchResults={searchResults}
-									search={searchQuery}
 									query={queryToString}
 									loading={loading}
 									filterCount={filterCount}
@@ -249,7 +248,6 @@ const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHe
 								<SearchConversationList
 									searchDisabled={searchDisabled}
 									searchResults={searchResults}
-									search={searchQuery}
 									query={queryToString}
 									loading={loading}
 									filterCount={filterCount}
