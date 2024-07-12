@@ -11,11 +11,10 @@ import { API_REQUEST_STATUS } from '../../../../constants';
 import { normalizeConversation } from '../../../../normalizations/normalize-conversation';
 import { normalizeMailMessageFromSoap } from '../../../../normalizations/normalize-message';
 import { Conversation, SearchResponse } from '../../../../types';
-import { useMessagesStore } from '../../messages-store/store';
-import { useSearchStore } from '../store';
+import { useMessageStore } from '../../message-store/store';
 
 export function useConversation(id: string): Conversation {
-	return useMessagesStore(({ conversations }) => conversations[id]);
+	return useMessageStore(({ conversations }) => conversations[id]);
 }
 
 function handleFulFilledConversationResults({
@@ -39,12 +38,12 @@ function handleFulFilledConversationResults({
 		{}
 	);
 	const conversationIds = new Set(searchResponse.c?.map((conv) => conv.id));
-	useMessagesStore.getState().setConversations(conversations);
-	useSearchStore.getState().setState({
+	useMessageStore.getState().setState({
 		conversationIds,
 		offset: searchResponse.offset,
 		status: API_REQUEST_STATUS.fulfilled
 	});
+	useMessageStore.getState().setConversations(conversations);
 }
 
 function handleFulFilledMessagesResults({
@@ -69,7 +68,7 @@ function handleFulFilledMessagesResults({
 		hasMore: searchResponse.more,
 		offset: searchResponse.offset
 	};
-	useSearchStore.setState({
+	useSearchSlice.setState({
 		messageIds: new Set(Object.keys(normalizedMessages)),
 		offset: searchResponse.offset
 	});

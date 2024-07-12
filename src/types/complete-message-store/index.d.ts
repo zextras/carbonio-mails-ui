@@ -7,7 +7,7 @@
 import { Conversation } from '../conversations';
 import { IncompleteMessage, MailMessage } from '../messages';
 
-export type MessagesStoreState = {
+export type MessagesSliceState = {
 	messages: Record<string, MailMessage | IncompleteMessage>;
 	conversations: Record<string, Conversation>;
 	setConversations: (conversations: Record<string, Conversation>) => void;

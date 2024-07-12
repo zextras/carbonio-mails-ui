@@ -25,10 +25,9 @@ import SearchPanel from './search-panel';
 import { useFoldersMap } from '../../carbonio-ui-commons/store/zustand/folder/hooks';
 import type { Folder } from '../../carbonio-ui-commons/types/folder';
 import { LIST_LIMIT, MAILS_ROUTE } from '../../constants';
-import { useAppDispatch } from '../../hooks/redux';
 import { searchNew } from '../../store/actions/search-new';
+import { useMessageStore } from '../../store/zustand/message-store/store';
 import { handleSearchResults } from '../../store/zustand/search/hooks/hooks';
-import { useSearchStore } from '../../store/zustand/search/store';
 
 const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHeader }) => {
 	const [query, updateQuery] = useQuery();
@@ -68,7 +67,6 @@ const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHe
 		[searchInFolders]
 	);
 
-	const dispatch = useAppDispatch();
 	const [loading, setLoading] = useState(false);
 	const [filterCount, setFilterCount] = useState(0);
 	const [showAdvanceFilters, setShowAdvanceFilters] = useState(false);
@@ -76,8 +74,7 @@ const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHe
 		includeSharedItemsInSearch
 	);
 	const [isInvalidQuery, setIsInvalidQuery] = useState<boolean>(false);
-	// const searchResults = useAppSelector(selectSearches);
-	const searchResults = useSearchStore();
+	const searchResults = useMessageStore((state) => state.search);
 
 	const invalidQueryTooltip = useMemo(
 		() => t('label.invalid_query', 'Unable to parse the search query, clear it and retry'),
@@ -231,7 +228,7 @@ const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHe
 							{isMessageView ? (
 								<SearchMessageList
 									searchDisabled={searchDisabled}
-									searchResults={searchResults}
+									searchResults={searchResults.messageIds}
 									query={queryToString}
 									loading={loading}
 									filterCount={filterCount}
@@ -242,7 +239,7 @@ const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHe
 							) : (
 								<SearchConversationList
 									searchDisabled={searchDisabled}
-									searchResults={searchResults}
+									searchResults={searchResults.conversationIds}
 									query={queryToString}
 									loading={loading}
 									filterCount={filterCount}

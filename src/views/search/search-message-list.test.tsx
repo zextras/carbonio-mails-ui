@@ -9,8 +9,7 @@ import { screen } from '@testing-library/react';
 
 import { SearchMessageList } from './search-message-list';
 import { setupTest } from '../../carbonio-ui-commons/test/test-setup';
-import { useMessagesStore } from '../../store/zustand/messages-store/store';
-import { useSearchStore } from '../../store/zustand/search/store';
+import { useMessageStore } from '../../store/zustand/message-store/store';
 import { generateStore } from '../../tests/generators/store';
 import { IncompleteMessage } from '../../types';
 
@@ -41,21 +40,21 @@ const incompleteMessage: IncompleteMessage = {
 describe('Search items list', () => {
 	const store = generateStore();
 	it('should display messages with subject', async () => {
-		useSearchStore.setState({
+		useMessageStore.setState({
 			conversationIds: new Set(),
 			messageIds: new Set(['1', '2', '3']),
 			more: false,
 			offset: 0,
 			status: 'fulfilled'
 		});
-		useMessagesStore.setState({
+		useMessageStore.setState({
 			messages: {
 				'1': { ...incompleteMessage, id: '1', subject: 'Message 1' },
 				'2': { ...incompleteMessage, id: '2', subject: 'Message 2' },
 				'3': { ...incompleteMessage, id: '3', subject: 'Message 3' }
 			}
 		});
-		const state = useSearchStore.getState();
+		const state = useMessageStore.getState();
 
 		setupTest(
 			<SearchMessageList

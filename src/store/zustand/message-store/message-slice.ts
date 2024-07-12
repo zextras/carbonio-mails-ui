@@ -5,18 +5,23 @@
  */
 
 import produce from 'immer';
-import { create } from 'zustand';
+import { StateCreator } from 'zustand';
 
-import { Conversation, MessagesStoreState } from '../../../types';
+import { Conversation, MessagesSliceState, SearchSliceState } from '../../../types';
 
-export const useMessagesStore = create<MessagesStoreState>()((set, getState) => ({
+export const createMessageSlice: StateCreator<
+	MessagesSliceState & SearchSliceState,
+	[],
+	[],
+	MessagesSliceState
+> = (set) => ({
 	messages: {},
 	conversations: {},
 	setConversations(conversations: Record<string, Conversation>): void {
 		set(
-			produce((state: MessagesStoreState) => {
+			produce((state: MessagesSliceState) => {
 				state.conversations = conversations;
 			})
 		);
 	}
-}));
+});

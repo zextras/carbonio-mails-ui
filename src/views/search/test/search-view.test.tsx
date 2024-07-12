@@ -223,7 +223,6 @@ describe('SearchView', () => {
 				store
 			});
 			expect(await screen.findByText('label.results_for')).toBeInTheDocument();
-			screen.logTestingPlaygroundURL();
 			expect(await screen.findByTestId('invisible-message-10')).toBeInTheDocument();
 			expect(await screen.findByTestId('invisible-message-11')).toBeInTheDocument();
 		});

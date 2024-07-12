@@ -31,7 +31,7 @@ export type SearchResults = {
 };
 
 export type SearchListProps = {
-	searchResults: SearchStoreState;
+	searchResults: SearchSliceState['search']['messageIds'];
 	query: string;
 	loading: boolean;
 	filterCount: number;
@@ -54,7 +54,7 @@ type SearchProps = {
 };
 
 export type SearchPanelProps = {
-	searchResults: SearchStoreState;
+	searchResults: SearchSliceState['search'];
 	query: Array<QueryChip>;
 };
 
@@ -263,16 +263,18 @@ export type ChipType = {
 	hasError?: boolean;
 };
 
-export type SearchStoreState = {
-	conversationIds: Set<string>;
-	messageIds: Set<string>;
-	more: boolean;
-	offset: number;
-	sortBy?: SortBy;
-	query?: string;
-	status: SearchRequestStatus;
-	parent?: string;
-	tagName?: string;
-	error?: ErrorType;
-	setState: (param: Partial<SearchStoreState>) => void;
+export type SearchSliceState = {
+	search: {
+		conversationIds: Set<string>;
+		messageIds: Set<string>;
+		more: boolean;
+		offset: number;
+		sortBy?: SortBy;
+		query?: string;
+		status: SearchRequestStatus;
+		parent?: string;
+		tagName?: string;
+		error?: ErrorType;
+		setState: (param: Partial<SearchSliceState>) => void;
+	};
 };

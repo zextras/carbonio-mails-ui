@@ -31,7 +31,7 @@ import { getTimeLabel, participantToString } from '../../../../commons/utils';
 import { EditViewActions } from '../../../../constants';
 import { useAppDispatch } from '../../../../hooks/redux';
 import { useMessageActions } from '../../../../hooks/use-message-actions';
-import { useMessagesStore } from '../../../../store/zustand/messages-store/store';
+import { useMessageStore } from '../../../../store/zustand/message-store/store';
 import type { MessageListItemProps, TextReadValuesType } from '../../../../types';
 import {
 	previewMessageOnSeparatedWindow,
@@ -56,7 +56,7 @@ export const MessageListItem: FC<MessageListItemProps> = memo(function MessageLi
 	deselectAll,
 	currentFolderId
 }) {
-	const item = useMessagesStore((state) => state.messages[itemId]);
+	const item = useMessageStore((state) => state.messages[itemId]);
 	const firstChildFolderId = currentFolderId ?? item.parent;
 
 	const dispatch = useAppDispatch();

@@ -15,7 +15,7 @@ import { generateFolders } from '../../../../../carbonio-ui-commons/test/mocks/f
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
 import type { Folder } from '../../../../../carbonio-ui-commons/types/folder';
 import { FOLDERS_DESCRIPTORS } from '../../../../../constants';
-import { useMessagesStore } from '../../../../../store/zustand/messages-store/store';
+import { useMessageStore } from '../../../../../store/zustand/message-store/store';
 import { ASSERTIONS } from '../../../../../tests/constants';
 import { generateMessage } from '../../../../../tests/generators/generateMessage';
 import { generateStore } from '../../../../../tests/generators/store';
@@ -548,7 +548,7 @@ describe('in the trash folder', () => {
 			deselectAll: noop,
 			currentFolderId: folderId
 		};
-		useMessagesStore.setState({
+		useMessageStore.setState({
 			messages: {
 				[msg.id]: msg
 			}

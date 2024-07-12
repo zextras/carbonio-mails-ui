@@ -12,8 +12,7 @@ import { ConversationPreviewPanelContainer } from './conversation-preview-panel-
 import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
 import { API_REQUEST_STATUS } from '../../../constants';
 import * as getConv from '../../../store/actions/get-conv';
-import { useMessagesStore } from '../../../store/zustand/messages-store/store';
-import { useSearchStore } from '../../../store/zustand/search/store';
+import { useMessageStore } from '../../../store/zustand/message-store/store';
 import { generateStore } from '../../../tests/generators/store';
 
 jest.mock('react-router-dom', () => ({
@@ -49,11 +48,11 @@ describe('Conversation Preview Panel', () => {
 				sortIndex: 0
 			};
 
-			useSearchStore.setState({
+			useMessageStore.setState({
 				conversationIds: new Set([conversation.id]),
 				status: API_REQUEST_STATUS.fulfilled
 			});
-			useMessagesStore.setState({ conversations: { [conversation.id]: conversation } });
+			useMessageStore.setState({ conversations: { [conversation.id]: conversation } });
 
 			(useParams as jest.Mock).mockReturnValue({ folderId: '2', conversationId: '1' });
 			(useRouteMatch as jest.Mock).mockReturnValue({ path: 'search' });
@@ -87,11 +86,11 @@ describe('Conversation Preview Panel', () => {
 				sortIndex: 0
 			};
 
-			useSearchStore.setState({
+			useMessageStore.setState({
 				conversationIds: new Set([conversation.id]),
 				status: API_REQUEST_STATUS.fulfilled
 			});
-			useMessagesStore.setState({ conversations: { [conversation.id]: conversation } });
+			useMessageStore.setState({ conversations: { [conversation.id]: conversation } });
 
 			(useParams as jest.Mock).mockReturnValue({ folderId: '2', conversationId: '1' });
 			// (useRouteMatch as jest.Mock).mockReturnValue({ path: 'search' });

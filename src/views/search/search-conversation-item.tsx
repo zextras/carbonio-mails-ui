@@ -8,7 +8,7 @@ import React from 'react';
 import { noop } from 'lodash';
 
 import { CustomListItem } from '../../carbonio-ui-commons/components/list/list-item';
-import { useMessagesStore } from '../../store/zustand/messages-store/store';
+import { useMessageStore } from '../../store/zustand/message-store/store';
 import { ConversationListItemComponent } from '../app/folder-panel/conversations/conversation-list-item-component';
 
 type SearchConversationItemProps = {
@@ -29,7 +29,7 @@ export const SearchConversationItem = ({
 	isSelectModeOn,
 	deselectAll
 }: SearchConversationItemProps): React.JSX.Element => {
-	const conversation = useMessagesStore().conversations[conversationId];
+	const conversation = useMessageStore().conversations[conversationId];
 	// TODO:  should we use an invisible item like in search-message-item ?
 	return (
 		<CustomListItem
