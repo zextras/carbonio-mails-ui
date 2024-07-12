@@ -111,7 +111,7 @@ describe('SearchView', () => {
 			expect(await screen.findByText('label.results_for')).toBeInTheDocument();
 		});
 
-		it('should display conversations when soap API fulfilled and settings is "display by conversation"', async () => {
+		it('should display conversation subject when soap API fulfilled and settings is "display by conversation"', async () => {
 			const store = generateStore();
 			createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
 				c: [getSoapConversation('123')],
@@ -140,7 +140,8 @@ describe('SearchView', () => {
 			setupTest(<SearchView {...searchViewProps} />, {
 				store
 			});
-			expect(await screen.findByText('conversations Subject')).toBeInTheDocument();
+			const conversation = await screen.findByText('conversations Subject');
+			expect(conversation).toBeInTheDocument();
 		});
 
 		it('should display the number of messages in a conversation when soap API fulfilled', async () => {

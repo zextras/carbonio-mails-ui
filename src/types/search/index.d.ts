@@ -274,4 +274,5 @@ export type SearchStoreState = {
 	parent?: string;
 	tagName?: string;
 	error?: ErrorType;
+	setState: (param: Partial<SearchStoreState>) => void;
 };

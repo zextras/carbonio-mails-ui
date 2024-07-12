@@ -7,7 +7,7 @@ import { create } from 'zustand';
 
 import { SearchStoreState } from '../../../types';
 
-export const useSearchStore = create<SearchStoreState>()(() => ({
+export const useSearchStore = create<SearchStoreState>()((set) => ({
 	conversationIds: new Set(),
 	messageIds: new Set(),
 	more: false,
@@ -17,5 +17,8 @@ export const useSearchStore = create<SearchStoreState>()(() => ({
 	status: null,
 	parent: '',
 	tagName: '',
-	error: undefined
+	error: undefined,
+	setState(newState: Partial<SearchStoreState>): void {
+		set(newState);
+	}
 }));

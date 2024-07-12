@@ -4,11 +4,19 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import produce from 'immer';
 import { create } from 'zustand';
 
-import { MessagesStoreState } from '../../../types';
+import { Conversation, MessagesStoreState } from '../../../types';
 
 export const useMessagesStore = create<MessagesStoreState>()((set, getState) => ({
 	messages: {},
-	conversations: {}
+	conversations: {},
+	setConversations(conversations: Record<string, Conversation>): void {
+		set(
+			produce((state: MessagesStoreState) => {
+				state.conversations = conversations;
+			})
+		);
+	}
 }));

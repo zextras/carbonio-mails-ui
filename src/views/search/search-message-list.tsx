@@ -69,7 +69,6 @@ export const SearchMessageList: FC<SearchListProps> = ({
 	const listItems = useMemo(
 		() =>
 			map(messageIds, (messageId) => {
-				console.log('#####', messageId);
 				const active = itemId === messageId;
 				const isSelected = selected[messageId];
 				return (

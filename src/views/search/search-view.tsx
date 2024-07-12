@@ -27,7 +27,6 @@ import type { Folder } from '../../carbonio-ui-commons/types/folder';
 import { LIST_LIMIT, MAILS_ROUTE } from '../../constants';
 import { useAppDispatch } from '../../hooks/redux';
 import { searchNew } from '../../store/actions/search-new';
-import { resetSearchResults } from '../../store/searches-slice';
 import { handleSearchResults } from '../../store/zustand/search/hooks/hooks';
 import { useSearchStore } from '../../store/zustand/search/store';
 
@@ -199,13 +198,14 @@ const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHe
 		if (query?.length === 0) {
 			setFilterCount(0);
 			setIsInvalidQuery(false);
-			dispatch(resetSearchResults());
+			// TODO: CO-1144 reset searches
+			// dispatch(resetSearchResults());
 			replaceHistory({
 				path: MAILS_ROUTE,
 				route: SEARCH_APP_ID
 			});
 		}
-	}, [dispatch, isInvalidQuery, query.length, queryToString, searchQuery]);
+	}, [isInvalidQuery, query.length, queryToString, searchQuery]);
 
 	const { path } = useRouteMatch();
 	const resultLabelType = isInvalidQuery ? 'warning' : undefined;

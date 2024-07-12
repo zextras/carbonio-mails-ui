@@ -7,12 +7,12 @@ import React, { FC, useCallback, useLayoutEffect, useMemo, useRef, useState } fr
 
 import { Container } from '@zextras/carbonio-design-system';
 import { t, useAppContext } from '@zextras/carbonio-shell-ui';
-import { filter, isEmpty, map, noop, sortBy } from 'lodash';
+import { isEmpty, map, noop } from 'lodash';
 import { useParams } from 'react-router-dom';
 
 import { AdvancedFilterButton } from './parts/advanced-filter-button';
+import { SearchConversationItem } from './search-conversation-item';
 import ShimmerList from './shimmer-list';
-import { CustomListItem } from '../../carbonio-ui-commons/components/list/list-item';
 import { LIST_LIMIT } from '../../constants';
 import { useAppDispatch } from '../../hooks/redux';
 import { useSelection } from '../../hooks/use-selection';
@@ -20,7 +20,6 @@ import { search } from '../../store/actions/search';
 import type { AppContext, SearchListProps } from '../../types';
 import { getFolderParentId } from '../../ui-actions/utils';
 import { ConversationListComponent } from '../app/folder-panel/conversations/conversation-list-component';
-import { ConversationListItemComponent } from '../app/folder-panel/conversations/conversation-list-item-component';
 
 const SearchConversationList: FC<SearchListProps> = ({
 	searchResults,
@@ -34,8 +33,8 @@ const SearchConversationList: FC<SearchListProps> = ({
 }) => {
 	const { itemId, folderId } = useParams<{ itemId: string; folderId: string }>();
 	const { setCount, count } = useAppContext<AppContext>();
-	const items = [...searchResults.conversationIds].map((conversation) => ({
-		id: conversation
+	const items = [...searchResults.conversationIds].map((conversationId) => ({
+		id: conversationId
 	}));
 	const dispatch = useAppDispatch();
 	const parentId = getFolderParentId({ folderId, isConversation: true, items });
@@ -84,13 +83,13 @@ const SearchConversationList: FC<SearchListProps> = ({
 	}, [isInvalidQuery, searchResults.conversationIds, randomListIndex]);
 
 	const conversationIds = useMemo(
-		() => sortBy(filter(Object.values(searchResults?.conversationIds ?? [])), 'sortIndex'),
+		() => [...searchResults.conversationIds],
 		[searchResults?.conversationIds]
 	);
 
 	// totalConversations: length of conversations object
 	const totalConversations = useMemo(
-		() => Object.keys(searchResults?.conversationIds ?? {}).length ?? 0,
+		() => searchResults.conversationIds.size,
 		[searchResults?.conversationIds]
 	);
 
@@ -130,33 +129,20 @@ const SearchConversationList: FC<SearchListProps> = ({
 	// This is used to render the list items. It maps the conversationList array and returns a list item for each conversation.
 	const listItems = useMemo(
 		() =>
-			map(conversationIds, (conversation) => {
-				const active = itemId === conversation.id;
-				const isSelected = selected[conversation.id];
-
+			map(conversationIds, (conversationId) => {
+				const active = itemId === conversationId;
+				const isSelected = selected[conversationId];
 				return (
-					<CustomListItem
+					<SearchConversationItem
+						key={conversationId}
+						conversationId={conversationId}
+						itemId={itemId}
+						isSelected={isSelected}
 						active={active}
-						selected={isSelected}
-						key={conversation.id}
-						background={'transparent'}
-					>
-						{(visible: boolean): React.JSX.Element => (
-							<ConversationListItemComponent
-								item={conversation}
-								selected={isSelected}
-								selecting={isSelectModeOn}
-								active={active}
-								toggle={toggle}
-								activeItemId={itemId}
-								isSearchModule
-								deselectAll={deselectAll}
-								folderId=""
-								visible={visible}
-								setDraggedIds={noop}
-							/>
-						)}
-					</CustomListItem>
+						toggle={toggle}
+						isSelectModeOn={isSelectModeOn}
+						deselectAll={deselectAll}
+					/>
 				);
 			}),
 		[conversationIds, deselectAll, isSelectModeOn, itemId, selected, toggle]

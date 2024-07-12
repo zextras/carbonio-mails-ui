@@ -28,7 +28,6 @@ export const SearchMessageItem = ({
 	deselectAll
 }: SearchMessageItemProps): React.JSX.Element => {
 	const completeMessage = useMessagesStore.getState().messages[messageId];
-	console.log('@@@@@@@@@@@@@@@@@@@@@@@', completeMessage);
 	return (
 		<CustomListItem
 			key={completeMessage.id}

@@ -10,4 +10,5 @@ import { IncompleteMessage, MailMessage } from '../messages';
 export type MessagesStoreState = {
 	messages: Record<string, MailMessage | IncompleteMessage>;
 	conversations: Record<string, Conversation>;
+	setConversations: (conversations: Record<string, Conversation>) => void;
 };

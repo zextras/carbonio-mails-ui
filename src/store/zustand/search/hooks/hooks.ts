@@ -7,6 +7,7 @@
 import { type ErrorSoapBodyResponse, getTags, Tags } from '@zextras/carbonio-shell-ui';
 import { reduce } from 'lodash';
 
+import { API_REQUEST_STATUS } from '../../../../constants';
 import { normalizeConversation } from '../../../../normalizations/normalize-conversation';
 import { normalizeMailMessageFromSoap } from '../../../../normalizations/normalize-message';
 import { Conversation, SearchResponse } from '../../../../types';
@@ -17,7 +18,7 @@ export function useConversation(id: string): Conversation {
 	return useMessagesStore(({ conversations }) => conversations[id]);
 }
 
-function handleConversationResults({
+function handleFulFilledConversationResults({
 	searchResponse,
 	offset,
 	tags
@@ -37,14 +38,16 @@ function handleConversationResults({
 		},
 		{}
 	);
-	useMessagesStore.setState({ conversations });
-	useSearchStore.setState({
-		conversationIds: new Set(Object.keys(conversations)),
-		offset: searchResponse.offset
+	const conversationIds = new Set(searchResponse.c?.map((conv) => conv.id));
+	useMessagesStore.getState().setConversations(conversations);
+	useSearchStore.getState().setState({
+		conversationIds,
+		offset: searchResponse.offset,
+		status: API_REQUEST_STATUS.fulfilled
 	});
 }
 
-function handleMessagesResults({
+function handleFulFilledMessagesResults({
 	searchResponse,
 	offset
 }: {
@@ -85,10 +88,10 @@ export function handleSearchResults({
 	const tags = getTags();
 
 	if (searchResponse.c) {
-		handleConversationResults({ searchResponse, offset, tags });
+		handleFulFilledConversationResults({ searchResponse, offset, tags });
 	}
 
 	if (searchResponse.m) {
-		handleMessagesResults({ searchResponse, offset });
+		handleFulFilledMessagesResults({ searchResponse, offset });
 	}
 }
