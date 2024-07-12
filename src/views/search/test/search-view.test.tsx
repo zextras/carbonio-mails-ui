@@ -16,6 +16,7 @@ import {
 import { noop } from 'lodash';
 
 import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
+import { generateSettings } from '../../../carbonio-ui-commons/test/mocks/settings/settings-generator';
 import { buildSoapErrorResponseBody } from '../../../carbonio-ui-commons/test/mocks/utils/soap';
 import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
 import * as search from '../../../store/actions/search';

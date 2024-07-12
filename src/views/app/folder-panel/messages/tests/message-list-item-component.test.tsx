@@ -15,6 +15,7 @@ import { generateFolders } from '../../../../../carbonio-ui-commons/test/mocks/f
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
 import type { Folder } from '../../../../../carbonio-ui-commons/types/folder';
 import { FOLDERS_DESCRIPTORS } from '../../../../../constants';
+import { useMessagesStore } from '../../../../../store/zustand/messages-store/store';
 import { ASSERTIONS } from '../../../../../tests/constants';
 import { generateMessage } from '../../../../../tests/generators/generateMessage';
 import { generateStore } from '../../../../../tests/generators/store';
@@ -62,7 +63,7 @@ describe.each`
 				const msg = generateMessage({ folderId: folder.id });
 
 				const props: MessageListItemProps = {
-					item: msg,
+					itemId: msg.id,
 					selected: false,
 					selecting: false,
 					isConvChildren: false,
@@ -104,7 +105,7 @@ describe.each`
 				const msg = generateMessage({ receiveDate, folderId: folder.id });
 
 				const props: MessageListItemProps = {
-					item: msg,
+					itemId: msg.id,
 					selected: false,
 					selecting: false,
 					isConvChildren: false,
@@ -150,7 +151,7 @@ describe.each`
 				const msg = generateMessage({ subject, folderId: folder.id });
 
 				const props: MessageListItemProps = {
-					item: msg,
+					itemId: msg.id,
 					selected: false,
 					selecting: false,
 					isConvChildren: false,
@@ -197,7 +198,7 @@ describe.each`
 				const msg = generateMessage({ subject, folderId: folder.id });
 
 				const props: MessageListItemProps = {
-					item: msg,
+					itemId: msg.id,
 					selected: false,
 					selecting: false,
 					isConvChildren: false,
@@ -243,7 +244,7 @@ describe.each`
 				const msg = generateMessage({ folderId: folder.id });
 
 				const props: MessageListItemProps = {
-					item: msg,
+					itemId: msg.id,
 					selected: false,
 					selecting: false,
 					isConvChildren: false,
@@ -288,7 +289,7 @@ describe.each`
 				const msg = generateMessage({ from, folderId: folder.id });
 
 				const props: MessageListItemProps = {
-					item: msg,
+					itemId: msg.id,
 					selected: false,
 					selecting: false,
 					isConvChildren: false,
@@ -322,7 +323,7 @@ describe.each`
 		// 	const msgId = msg.id;
 		//
 		// 	const props: MessageListItemProps = {
-		// 		item: msg,
+		// 		itemId: msg.id,
 		// 		selected: false,
 		// 		selecting: false,
 		// 		isConvChildren: false,
@@ -365,7 +366,7 @@ describe.each`
 			const msgId = msg.id;
 
 			const props: MessageListItemProps = {
-				item: msg,
+				itemId: msg.id,
 				selected: false,
 				selecting: false,
 				isConvChildren: false,
@@ -412,7 +413,7 @@ describe('in the drafts folder', () => {
 			const msg = generateMessage({ folderId });
 
 			const props: MessageListItemProps = {
-				item: msg,
+				itemId: msg.id,
 				selected: false,
 				selecting: false,
 				isConvChildren: false,
@@ -453,7 +454,7 @@ describe('in the drafts folder', () => {
 			const msg = generateMessage({ to, folderId });
 
 			const props: MessageListItemProps = {
-				item: msg,
+				itemId: msg.id,
 				selected: false,
 				selecting: false,
 				isConvChildren: false,
@@ -495,7 +496,7 @@ describe('in the drafts folder', () => {
 			const msg = generateMessage({ body, folderId });
 
 			const props: MessageListItemProps = {
-				item: msg,
+				itemId: msg.id,
 				selected: false,
 				selecting: false,
 				isConvChildren: false,
@@ -537,7 +538,7 @@ describe('in the trash folder', () => {
 		const msg = generateMessage({ to, folderId });
 
 		const props: MessageListItemProps = {
-			item: msg,
+			itemId: msg.id,
 			selected: false,
 			selecting: false,
 			isConvChildren: false,
@@ -547,7 +548,11 @@ describe('in the trash folder', () => {
 			deselectAll: noop,
 			currentFolderId: folderId
 		};
-
+		useMessagesStore.setState({
+			messages: {
+				[msg.id]: msg
+			}
+		});
 		const store = generateStore({
 			messages: {
 				searchedInFolder: {},
@@ -573,7 +578,7 @@ describe('in the trash folder', () => {
 			const msg = generateMessage({ body, folderId });
 
 			const props: MessageListItemProps = {
-				item: msg,
+				itemId: msg.id,
 				selected: false,
 				selecting: false,
 				isConvChildren: false,
