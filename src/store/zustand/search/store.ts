@@ -8,7 +8,7 @@ import { create } from 'zustand';
 import { SearchStoreState } from '../../../types';
 
 export const useSearchStore = create<SearchStoreState>()(() => ({
-	conversations: {},
+	conversations: new Set(),
 	messageIds: new Set(),
 	more: false,
 	offset: 0,

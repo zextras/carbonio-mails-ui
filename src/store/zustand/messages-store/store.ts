@@ -9,5 +9,6 @@ import { create } from 'zustand';
 import { MessagesStoreState } from '../../../types';
 
 export const useMessagesStore = create<MessagesStoreState>()((set, getState) => ({
-	messages: {}
+	messages: {},
+	conversations: {}
 }));

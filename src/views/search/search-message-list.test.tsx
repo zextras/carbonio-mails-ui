@@ -42,7 +42,7 @@ describe('Search items list', () => {
 	const store = generateStore();
 	it('should display messages with subject', async () => {
 		useSearchStore.setState({
-			conversations: {},
+			conversations: new Set(),
 			messageIds: new Set(['1', '2', '3']),
 			more: false,
 			offset: 0,

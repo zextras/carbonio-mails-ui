@@ -34,7 +34,9 @@ const SearchConversationList: FC<SearchListProps> = ({
 }) => {
 	const { itemId, folderId } = useParams<{ itemId: string; folderId: string }>();
 	const { setCount, count } = useAppContext<AppContext>();
-	const items = [...Object.values(searchResults.conversations ?? {})];
+	const items = [...searchResults.conversations].map((conversation) => ({
+		id: conversation
+	}));
 	const dispatch = useAppDispatch();
 	const parentId = getFolderParentId({ folderId, isConversation: true, items });
 	const [isLoading, setIsLoading] = useState(false);
@@ -81,7 +83,7 @@ const SearchConversationList: FC<SearchListProps> = ({
 		return null;
 	}, [isInvalidQuery, searchResults.conversations, randomListIndex]);
 
-	const conversationList = useMemo(
+	const conversationIds = useMemo(
 		() => sortBy(filter(Object.values(searchResults?.conversations ?? [])), 'sortIndex'),
 		[searchResults?.conversations]
 	);
@@ -128,7 +130,7 @@ const SearchConversationList: FC<SearchListProps> = ({
 	// This is used to render the list items. It maps the conversationList array and returns a list item for each conversation.
 	const listItems = useMemo(
 		() =>
-			map(conversationList, (conversation) => {
+			map(conversationIds, (conversation) => {
 				const active = itemId === conversation.id;
 				const isSelected = selected[conversation.id];
 
@@ -157,7 +159,7 @@ const SearchConversationList: FC<SearchListProps> = ({
 					</CustomListItem>
 				);
 			}),
-		[conversationList, deselectAll, isSelectModeOn, itemId, selected, toggle]
+		[conversationIds, deselectAll, isSelectModeOn, itemId, selected, toggle]
 	);
 
 	return (
