@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, useCallback, useMemo, useState } from 'react';
+import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
 
 import { Container, FormSection } from '@zextras/carbonio-design-system';
 import {
@@ -15,10 +15,11 @@ import {
 	// @ts-ignore
 	SettingsHeaderProps,
 	t,
+	updateAccount,
 	useUserAccount,
 	useUserSettings
 } from '@zextras/carbonio-shell-ui';
-import { cloneDeep, filter, find, isEmpty, isEqual, map, reduce, remove } from 'lodash';
+import { cloneDeep, filter, find, isEmpty, isEqual, map, reduce, remove, unescape } from 'lodash';
 
 import { differenceIdentities, differenceObject, getPropsDiff } from './components/utils';
 import ComposeMessage from './compose-msg-settings';
@@ -35,8 +36,8 @@ import { TIMEOUTS } from '../../constants';
 import { NO_SIGNATURE_ID } from '../../helpers/signatures';
 import { useAppDispatch } from '../../hooks/redux';
 import { useUiUtilities } from '../../hooks/use-ui-utilities';
-import { SignatureRequest } from '../../store/actions/signatures';
-import type { AccountIdentity, PrefsType, PropsType, SignItemType } from '../../types';
+import { GetAllSignatures, SignatureRequest } from '../../store/actions/signatures';
+import type { AccountIdentity, PrefsType, PropsType, SignItemType, Signature } from '../../types';
 
 /* to keep track of changes done to props we use 3 different values:
  * - originalProps is the status of the props when you open the settings for the first time
@@ -77,7 +78,7 @@ const SettingsView: FC = () => {
 	const [currentIdentities, setCurrentIdentities] = useState(identities);
 	const [updatedIdentities, setUpdatedIdentities] = useState(identities);
 	const [signatures, setSignatures] = useState<SignItemType[]>(() => []);
-	const [originalSignatures, setOriginalSignatures] = useState(() => []);
+	const [originalSignatures, setOriginalSignatures] = useState<SignItemType[]>(() => []);
 	const [disabled, setDisabled] = useState(true);
 	const [flag, setFlag] = useState(false);
 
@@ -204,6 +205,40 @@ const SettingsView: FC = () => {
 		[]
 	);
 
+	const onSignaturesLoaded = useCallback(
+		(signs: Array<Signature>) => {
+			const signaturesItems = map(
+				signs,
+				(item: Signature, idx) =>
+					({
+						label: item.name,
+						name: item.name,
+						id: item.id,
+						description: unescape(item?.content?.[0]?._content)
+					}) as SignItemType
+			);
+			setSignatures(signaturesItems);
+			setOriginalSignatures(
+				signaturesItems.map((el) => ({
+					id: el.id,
+					name: el.label ?? '',
+					label: el.label ?? '',
+					description: el.description ?? ''
+				}))
+			);
+		},
+		[setOriginalSignatures, setSignatures]
+	);
+
+	// Fetches signatures from the BE
+	useEffect(() => {
+		GetAllSignatures()
+			.then(({ signature: signs }) => onSignaturesLoaded(signs))
+			.catch((err) => {
+				console.error(err);
+			});
+	}, [onSignaturesLoaded]);
+
 	const saveChanges = useCallback<SettingsHeaderProps['onSave']>(() => {
 		if (!isEqual(signatures, originalSignatures)) {
 			const validationResult = validateSignatures(signatures);
@@ -289,6 +324,14 @@ const SettingsView: FC = () => {
 					});
 					setFlag(!flag);
 					setDisabled(true);
+					GetAllSignatures()
+						.then(({ signature: signs }) => {
+							onSignaturesLoaded(signs);
+							updateAccount({ signatures: signs });
+						})
+						.catch((err) => {
+							console.error(err);
+						});
 				} else {
 					createSnackbar({
 						key: `new`,
@@ -361,6 +404,7 @@ const SettingsView: FC = () => {
 		createSnackbar,
 		setNewOrForwardSignatureId,
 		flag,
+		onSignaturesLoaded,
 		updatedIdentities
 	]);
 
@@ -401,17 +445,13 @@ const SettingsView: FC = () => {
 					/>
 					<RecoverMessages />
 					<SignatureSettings
-						settingsObj={currentPrefs}
 						setSignatures={setSignatures}
 						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 						// @ts-ignore
-						setOriginalSignatures={setOriginalSignatures}
-						updateSettings={updatePrefs}
 						updatedIdentities={updatedIdentities}
 						updateIdentities={updateIdentities}
 						setDisabled={setDisabled}
 						signatures={signatures}
-						flag={flag}
 					/>
 					{/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
 					{/* @ts-ignore */}

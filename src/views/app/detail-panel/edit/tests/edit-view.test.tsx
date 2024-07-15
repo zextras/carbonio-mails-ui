@@ -48,7 +48,6 @@ import { setupEditorStore } from '../../../../../tests/generators/editor-store';
 import { readyToBeSentEditorTestCase } from '../../../../../tests/generators/editors';
 import { generateMessage } from '../../../../../tests/generators/generateMessage';
 import { generateStore } from '../../../../../tests/generators/store';
-import { handleGetSignaturesRequest } from '../../../../../tests/mocks/network/msw/handle-get-signatures';
 import type {
 	CreateSmartLinksRequest,
 	MailsEditorV2,
@@ -155,7 +154,6 @@ describe('Edit view', () => {
 			const reduxStore = generateStore();
 			const editor = generateNewMessageEditor(reduxStore.dispatch);
 			addEditor({ id: editor.id, editor });
-			handleGetSignaturesRequest([]);
 
 			// Get the default identity address
 			const mocksContext = getMocksContext();
@@ -276,7 +274,6 @@ describe('Edit view', () => {
 		});
 
 		test('should show error-try-again snackbar message on CreateSmartLink soap failure ', async () => {
-			handleGetSignaturesRequest([]);
 			createAPIInterceptor(
 				'post',
 				'/service/soap/GetShareInfoRequest',
