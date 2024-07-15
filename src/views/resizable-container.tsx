@@ -69,7 +69,7 @@ const BorderWithResize = styled.div<
 	}
 >`
 	position: absolute;
-	z-index: 2;
+	z-index: 0;
 	cursor: ${({ $cursor }): CSSProperties['cursor'] => $cursor};
 	width: ${({ $width }): string => $width};
 	height: ${({ $height }): string => $height};
@@ -112,8 +112,8 @@ const ResizableBorder = ({
 	return (
 		<BorderWithResize
 			ref={borderRef}
-			$width={border === BORDERS.EAST ? '1rem' : '100%'}
-			$height={border === BORDERS.EAST ? '100%' : '1rem'}
+			$width={border === BORDERS.EAST ? '2rem' : '100%'}
+			$height={border === BORDERS.EAST ? '100%' : '2rem'}
 			{...positions}
 			$cursor={border === BORDERS.EAST ? 'ew-resize' : 'ns-resize'}
 			onMouseDown={resizeHandler}
