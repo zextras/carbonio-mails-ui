@@ -85,6 +85,11 @@ function getSoapConversation(id: string): SoapConversation {
 }
 describe('SearchView', () => {
 	describe('view by conversations', () => {
+		beforeEach(() => {
+			jest
+				.spyOn(hooks, 'useUserSettings')
+				.mockReturnValue(generateSettings({ prefs: { zimbraPrefGroupMailBy: 'conversation' } }));
+		});
 		it('should display label "Results for" when soap API fulfilled', async () => {
 			const store = generateStore();
 			const searchInterceptor = createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {

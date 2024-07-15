@@ -275,6 +275,8 @@ export type SearchSliceState = {
 		parent?: string;
 		tagName?: string;
 		error?: ErrorType;
-		setState: (param: Partial<SearchSliceState>) => void;
+		setSearchConvResults: (
+			conversations: Array<Partial<Conversation> & Pick<Conversation, 'id'>>
+		) => void;
 	};
 };

@@ -15,13 +15,15 @@ export const createMessageSlice: StateCreator<
 	[],
 	MessagesSliceState
 > = (set) => ({
-	messages: {},
-	conversations: {},
-	setConversations(conversations: Record<string, Conversation>): void {
-		set(
-			produce((state: MessagesSliceState) => {
-				state.conversations = conversations;
-			})
-		);
+	messages: {
+		messages: {},
+		conversations: {},
+		setConversations(conversations: Record<string, Conversation>): void {
+			set(
+				produce((state: MessagesSliceState) => {
+					state.messages.conversations = conversations;
+				})
+			);
+		}
 	}
 });

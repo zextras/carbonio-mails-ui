@@ -5,9 +5,8 @@
  */
 
 import { type ErrorSoapBodyResponse, getTags, Tags } from '@zextras/carbonio-shell-ui';
-import { reduce } from 'lodash';
+import { map, reduce } from 'lodash';
 
-import { API_REQUEST_STATUS } from '../../../../constants';
 import { normalizeConversation } from '../../../../normalizations/normalize-conversation';
 import { normalizeMailMessageFromSoap } from '../../../../normalizations/normalize-message';
 import { Conversation, SearchResponse } from '../../../../types';
@@ -26,24 +25,8 @@ function handleFulFilledConversationResults({
 	offset: number;
 	tags: Tags;
 }): void {
-	const conversations = reduce(
-		searchResponse.c ?? [],
-		(acc, conv, index) => {
-			const normalizedConversation = {
-				...normalizeConversation({ c: conv, tags }),
-				sortIndex: index + (offset ?? 0)
-			};
-			return { ...acc, [normalizedConversation.id]: normalizedConversation };
-		},
-		{}
-	);
-	const conversationIds = new Set(searchResponse.c?.map((conv) => conv.id));
-	useMessageStore.getState().setState({
-		conversationIds,
-		offset: searchResponse.offset,
-		status: API_REQUEST_STATUS.fulfilled
-	});
-	useMessageStore.getState().setConversations(conversations);
+	const conversations = map(searchResponse.c, (conv) => normalizeConversation({ c: conv, tags }));
+	useMessageStore.getState().search.setSearchConvResults(conversations);
 }
 
 function handleFulFilledMessagesResults({
@@ -68,7 +51,7 @@ function handleFulFilledMessagesResults({
 		hasMore: searchResponse.more,
 		offset: searchResponse.offset
 	};
-	useSearchSlice.setState({
+	useMessageStore.getState().search.setSearchConvResults({
 		messageIds: new Set(Object.keys(normalizedMessages)),
 		offset: searchResponse.offset
 	});
