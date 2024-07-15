@@ -50,7 +50,7 @@ const TrusteeListItem: FC<any> = ({ item, onRemove }): ReactElement => {
 							size="small"
 							color="error"
 							type="outlined"
-							label={t('label.remove', 'Remove')}
+							label={t('label.remove_one', 'Remove')}
 							onClick={onClick}
 						/>
 					)}
