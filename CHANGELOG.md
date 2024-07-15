@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.16.6](https://github.com/zextras/carbonio-mails-ui/compare/v1.16.5...v1.16.6) (2024-07-15)
+
+
+### Bug Fixes
+
+* translated folder names in breadcrumbs and retention policy options ([668147a](https://github.com/zextras/carbonio-mails-ui/commit/668147adeb71727b1f1a6cc6b9f38b92743e8011))
+
 ### [1.16.5](https://github.com/zextras/carbonio-mails-ui/compare/v1.16.4...v1.16.5) (2024-07-11)
 
 
