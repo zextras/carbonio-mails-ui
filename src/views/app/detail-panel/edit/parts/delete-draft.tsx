@@ -11,13 +11,13 @@ import { t } from '@zextras/carbonio-shell-ui';
 
 import ModalFooter from '../../../../../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../../../../../carbonio-ui-commons/components/modals/modal-header';
+import { FOLDERS } from '../../../../../carbonio-ui-commons/constants/folders';
 import { useAppDispatch } from '../../../../../hooks/redux';
 import { StoreProvider } from '../../../../../store/redux';
 import { deleteEditor } from '../../../../../store/zustand/editor';
 import { MailsEditorV2 } from '../../../../../types';
 import { useMoveMsgToTrash } from '../../../../../ui-actions/message-actions';
 import { useGlobalModal } from '../../../../global-modal-manager';
-import { FOLDERS } from '../../../../../carbonio-ui-commons/constants/folders';
 
 type DeleteDraftModalProps = {
 	ids: Array<string>;

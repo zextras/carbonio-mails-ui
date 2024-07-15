@@ -6,8 +6,8 @@
 
 import { faker } from '@faker-js/faker';
 import { http, HttpResponse } from 'msw';
-import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
 
+import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
 import { getFolder } from '../../../carbonio-ui-commons/store/zustand/folder/hooks';
 import { getSetupServer } from '../../../carbonio-ui-commons/test/jest-setup';
 import { populateFoldersStore } from '../../../carbonio-ui-commons/test/mocks/store/folders';

@@ -11,12 +11,12 @@ import { startsWith } from 'lodash';
 
 import ModalFooter from '../../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../../carbonio-ui-commons/components/modals/modal-header';
+import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
 import { FOLDER_ACTIONS } from '../../commons/utilities';
 import { isSharedAccountFolder, isTrashed } from '../../helpers/folders';
 import { useUiUtilities } from '../../hooks/use-ui-utilities';
 import { folderAction } from '../../store/actions/folder-action';
 import type { ModalProps } from '../../types';
-import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
 
 export const DeleteModal: FC<ModalProps> = ({ folder, onClose }) => {
 	const { createSnackbar } = useUiUtilities();

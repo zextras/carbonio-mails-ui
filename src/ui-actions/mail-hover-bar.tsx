@@ -19,8 +19,8 @@ import {
 	setMsgFlag,
 	setMsgRead
 } from './message-actions';
-import { useAppDispatch } from '../hooks/redux';
 import { FOLDERS } from '../carbonio-ui-commons/constants/folders';
+import { useAppDispatch } from '../hooks/redux';
 
 const ButtonBar = styled(Row)`
 	position: absolute;

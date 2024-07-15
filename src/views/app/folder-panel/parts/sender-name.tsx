@@ -9,11 +9,11 @@ import { Padding, Row, Text, Tooltip } from '@zextras/carbonio-design-system';
 import { t, useUserAccount } from '@zextras/carbonio-shell-ui';
 import { filter, findIndex, reduce, trimStart, uniqBy } from 'lodash';
 
+import { FOLDERS } from '../../../../carbonio-ui-commons/constants/folders';
 import { ParticipantRole } from '../../../../carbonio-ui-commons/constants/participants';
 import { participantToString } from '../../../../commons/utils';
 import { getFolderIdParts } from '../../../../helpers/folders';
 import type { SenderNameProps } from '../../../../types';
-import { FOLDERS } from '../../../../carbonio-ui-commons/constants/folders';
 
 // TODO since it renders also the recipients we should rename it to ParticipantsName
 export const SenderName: FC<SenderNameProps> = ({ item, textValues, isSearchModule = false }) => {

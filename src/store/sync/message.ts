@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import {
-	FOLDERS,
 	t,
 	getNotificationManager,
 	getUserSettings,
@@ -25,6 +24,7 @@ import {
 	reject
 } from 'lodash';
 
+import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
 import { MAILS_ROUTE } from '../../constants';
 import { normalizeMailMessageFromSoap } from '../../normalizations/normalize-message';
 import type { SoapIncompleteMessage, MsgStateType, IncompleteMessage, Payload } from '../../types';

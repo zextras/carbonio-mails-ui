@@ -7,8 +7,9 @@ import React from 'react';
 
 import { faker } from '@faker-js/faker';
 import { screen, within } from '@testing-library/react';
-import { ErrorSoapBodyResponse, FOLDERS, ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-shell-ui';
+import { ErrorSoapBodyResponse, ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-shell-ui';
 
+import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
 import { getFolder } from '../../../carbonio-ui-commons/store/zustand/folder';
 import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { populateFoldersStore } from '../../../carbonio-ui-commons/test/mocks/store/folders';

@@ -14,10 +14,10 @@ import { useParams } from 'react-router-dom';
 
 import { ConversationList } from './folder-panel/conversations/conversation-list';
 import { MessageList } from './folder-panel/messages/message-list';
+import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
 import { useAppDispatch } from '../../hooks/redux';
 import type { AppContext } from '../../types';
 import ShimmerList from '../search/shimmer-list';
-import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
 
 const FolderPanel: FC = () => {
 	const { folderId } = useParams<{ folderId: string }>();

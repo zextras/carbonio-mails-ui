@@ -8,6 +8,7 @@ import React from 'react';
 import { screen } from '@testing-library/react';
 
 import { FOLDER_VIEW } from '../../../../carbonio-ui-commons/constants';
+import { FOLDERS } from '../../../../carbonio-ui-commons/constants/folders';
 import {
 	getFolder,
 	getFoldersArrayByRoot,
@@ -28,7 +29,6 @@ import {
 import { generateStore } from '../../../../tests/generators/store';
 import { getSystemFolderTranslatedName } from '../../utils';
 import { FolderSelector, FolderSelectorProps } from '../folder-selector';
-import { FOLDERS } from '../../../../carbonio-ui-commons/constants/folders';
 
 describe('Folder selector', () => {
 	const store = generateStore();

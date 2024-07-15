@@ -6,9 +6,9 @@
 import { type AccordionItemType } from '@zextras/carbonio-design-system';
 import { ZIMBRA_STANDARD_COLORS, t } from '@zextras/carbonio-shell-ui';
 import { isNil, omitBy, reduce } from 'lodash';
+
 import { ROOT_NAME } from '../../carbonio-ui-commons/constants';
 import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
-
 import { isSystemFolder } from '../../carbonio-ui-commons/helpers/folders';
 import {
 	type AccordionFolder,

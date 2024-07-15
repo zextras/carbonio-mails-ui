@@ -5,7 +5,7 @@
  */
 
 import { useSnackbar } from '@zextras/carbonio-design-system';
-import { FOLDERS, useIntegratedFunction, useTags } from '@zextras/carbonio-shell-ui';
+import { useIntegratedFunction, useTags } from '@zextras/carbonio-shell-ui';
 import { filter } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
@@ -30,6 +30,7 @@ import {
 	getSendDraftAction,
 	getShowOriginalAction
 } from './get-msg-conv-actions-functions';
+import { FOLDERS } from '../carbonio-ui-commons/constants/folders';
 import { isTrash } from '../carbonio-ui-commons/helpers/folders';
 import { getFolderIdParts, getParentFolderId, isDraft } from '../helpers/folders';
 import { isConversation, isSingleMessageConversation } from '../helpers/messages';

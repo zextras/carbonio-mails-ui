@@ -22,6 +22,7 @@ import {
 	handleModifiedMessagesInConversationReducer
 } from './search-slice-reducers';
 import { extractIds, isItemInSearches } from './utils';
+import { FOLDERS } from '../carbonio-ui-commons/constants/folders';
 import { CONVACTIONS } from '../commons/utilities';
 import { LIST_LIMIT } from '../constants';
 import type {
@@ -30,7 +31,6 @@ import type {
 	SearchesStateType,
 	MailsStateType
 } from '../types';
-import { FOLDERS } from '../carbonio-ui-commons/constants/folders';
 
 export const getSearchSliceInitialiState = (): SearchesStateType =>
 	({

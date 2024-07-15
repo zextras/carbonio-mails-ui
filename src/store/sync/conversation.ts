@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { FOLDERS } from '@zextras/carbonio-shell-ui';
+import { FOLDERS } from '@zextras/carbonio-shell-ui/lib/constants';
 import { filter, find, forEach, map, merge, omit, reduce, some, last, sortBy } from 'lodash';
 
 import type { ConvMessage, ConversationsStateType, Payload } from '../../types';

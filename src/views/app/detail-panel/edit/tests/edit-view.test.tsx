@@ -14,13 +14,11 @@ import { find, noop } from 'lodash';
 import { HttpResponse } from 'msw';
 
 import { aFailingSaveDraft, aSuccessfullSaveDraft } from './utils/utils';
+import { FOLDERS } from '../../../../../carbonio-ui-commons/constants/folders';
 import { ParticipantRole } from '../../../../../carbonio-ui-commons/constants/participants';
 import { defaultBeforeAllTests } from '../../../../../carbonio-ui-commons/test/jest-setup';
 import { createFakeIdentity } from '../../../../../carbonio-ui-commons/test/mocks/accounts/fakeAccounts';
-import {
-	FOLDERS,
-	useBoard as mockedUseBoard
-} from '../../../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
+import { useBoard as mockedUseBoard } from '../../../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
 import {
 	createAPIInterceptor,
 	createSoapAPIInterceptor

@@ -8,6 +8,7 @@ import React from 'react';
 import { screen } from '@testing-library/react';
 import { times } from 'lodash';
 
+import { FOLDERS } from '../../../../../carbonio-ui-commons/constants/folders';
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
 import { API_REQUEST_STATUS } from '../../../../../constants';
 import { generateConversation } from '../../../../../tests/generators/generateConversation';
@@ -18,7 +19,6 @@ import {
 	ConversationListComponentProps
 } from '../conversation-list-component';
 import { ConversationListItemComponent } from '../conversation-list-item-component';
-import { FOLDERS } from '../../../../../carbonio-ui-commons/constants/folders';
 
 describe.each`
 	type                          | isSearchModule
