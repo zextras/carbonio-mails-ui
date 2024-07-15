@@ -3,22 +3,23 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, useCallback, useMemo, useState } from 'react';
+import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
 
 import { Container, FormSection } from '@zextras/carbonio-design-system';
 import {
+	AccountSettings,
 	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 	// @ts-ignore
 	SettingsHeader,
 	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 	// @ts-ignore
 	SettingsHeaderProps,
-	editSettings,
 	t,
+	updateAccount,
 	useUserAccount,
 	useUserSettings
 } from '@zextras/carbonio-shell-ui';
-import { cloneDeep, filter, find, isEmpty, isEqual, map, reduce, remove } from 'lodash';
+import { cloneDeep, filter, find, isEmpty, isEqual, map, reduce, remove, unescape } from 'lodash';
 
 import { differenceIdentities, differenceObject, getPropsDiff } from './components/utils';
 import ComposeMessage from './compose-msg-settings';
@@ -27,14 +28,16 @@ import FilterModule from './filters';
 import { useSignatureSettings } from './hooks/use-signature-settings';
 import ReceivingMessagesSettings from './receiving-messages-settings';
 import { RecoverMessages } from './recover-messages';
+import { saveSettings } from './save-settings';
+import { SendersList, getList } from './senders-list';
 import SignatureSettings from './signature-settings';
 import TrusteeAddresses from './trustee-addresses';
 import { TIMEOUTS } from '../../constants';
 import { NO_SIGNATURE_ID } from '../../helpers/signatures';
 import { useAppDispatch } from '../../hooks/redux';
 import { useUiUtilities } from '../../hooks/use-ui-utilities';
-import { SignatureRequest } from '../../store/actions/signatures';
-import type { AccountIdentity, PropsType, SignItemType } from '../../types';
+import { GetAllSignatures, SignatureRequest } from '../../store/actions/signatures';
+import type { AccountIdentity, PrefsType, PropsType, SignItemType, Signature } from '../../types';
 
 /* to keep track of changes done to props we use 3 different values:
  * - originalProps is the status of the props when you open the settings for the first time
@@ -44,17 +47,20 @@ import type { AccountIdentity, PropsType, SignItemType } from '../../types';
  * To keep track of unsaved changes we compare updatedProps with currentProps
  *   */
 const SettingsView: FC = () => {
-	const { prefs, props, attrs } = useUserSettings();
+	const { attrs, prefs, props } = useUserSettings();
 	const account = useUserAccount();
 	const { identity } = cloneDeep(account.identities);
 	const defaultAccount = remove(identity, (acc: AccountIdentity) => acc.name === 'DEFAULT');
 	const identities = defaultAccount.concat(identity);
 	const { validate: validateSignatures } = useSignatureSettings();
 
-	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-	// @ts-ignore
-	const [settingsObj, setSettingsObj] = useState<AccountSettingsPrefs>({ ...prefs });
-	const [updatedSettings, setUpdatedSettings] = useState({});
+	const [currentPrefs, setCurrentPrefs] = useState<AccountSettings['prefs']>({ ...prefs });
+	const [updatedPrefs, setUpdatedPrefs] = useState({});
+
+	const [currentAttrs, setCurrentAttrs] = useState<AccountSettings['attrs']>({ ...attrs });
+	const [updatedAttrs, setUpdatedAttrs] = useState({});
+	const originalAttrs = useMemo(() => cloneDeep(attrs), [attrs]);
+
 	const originalProps = useMemo(
 		() =>
 			reduce(
@@ -72,7 +78,7 @@ const SettingsView: FC = () => {
 	const [currentIdentities, setCurrentIdentities] = useState(identities);
 	const [updatedIdentities, setUpdatedIdentities] = useState(identities);
 	const [signatures, setSignatures] = useState<SignItemType[]>(() => []);
-	const [originalSignatures, setOriginalSignatures] = useState(() => []);
+	const [originalSignatures, setOriginalSignatures] = useState<SignItemType[]>(() => []);
 	const [disabled, setDisabled] = useState(true);
 	const [flag, setFlag] = useState(false);
 
@@ -80,7 +86,7 @@ const SettingsView: FC = () => {
 
 	const { createSnackbar } = useUiUtilities();
 
-	const oldSettings = useMemo(() => {
+	const originalPrefs = useMemo(() => {
 		const s = cloneDeep(prefs);
 		if (s?.zimbraPrefNewMailNotificationAddress === undefined) {
 			s.zimbraPrefNewMailNotificationAddress = '';
@@ -97,19 +103,29 @@ const SettingsView: FC = () => {
 	const onClose = useCallback(() => {
 		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 		// @ts-ignore
-		setSettingsObj({ ...prefs });
-		setUpdatedSettings({});
+		setCurrentPrefs({ ...prefs });
+		setUpdatedPrefs({});
+		setCurrentAttrs({ ...attrs });
+		setUpdatedAttrs({});
 		// we discard only latest updates keeping successfully saved changes
 		setUpdatedProps(currentProps);
 		setUpdatedIdentities(identities);
-	}, [currentProps, identities, prefs]);
+	}, [currentProps, identities, prefs, attrs]);
 
-	const updateSettings = useCallback(
+	const updatePrefs = useCallback(
 		(e) => {
-			setSettingsObj({ ...settingsObj, [e.target.name]: e.target.value });
-			setUpdatedSettings({ ...updatedSettings, [e.target.name]: e.target.value });
+			setCurrentPrefs({ ...currentPrefs, [e.target.name]: e.target.value });
+			setUpdatedPrefs({ ...updatedPrefs, [e.target.name]: e.target.value });
 		},
-		[settingsObj, updatedSettings]
+		[currentPrefs, updatedPrefs]
+	);
+
+	const updateAttrs = useCallback(
+		(e) => {
+			setCurrentAttrs({ ...currentAttrs, [e.target.name]: e.target.value });
+			setUpdatedAttrs({ ...updatedAttrs, [e.target.name]: e.target.value });
+		},
+		[currentAttrs, updatedAttrs]
 	);
 
 	const updateProps = useCallback(
@@ -132,9 +148,14 @@ const SettingsView: FC = () => {
 		[updatedIdentities]
 	);
 
-	const settingsToUpdate = useMemo(
-		() => differenceObject(updatedSettings, oldSettings),
-		[updatedSettings, oldSettings]
+	const prefsToUpdate = useMemo(
+		() => differenceObject(updatedPrefs, originalPrefs),
+		[updatedPrefs, originalPrefs]
+	);
+
+	const attrsToUpdate = useMemo(
+		() => differenceObject(updatedAttrs, originalAttrs),
+		[updatedAttrs, originalAttrs]
 	);
 
 	const propsToUpdate = useMemo(
@@ -148,12 +169,14 @@ const SettingsView: FC = () => {
 
 	const isDisabled = useMemo(
 		() =>
-			Object.keys(settingsToUpdate).length === 0 &&
+			Object.keys(prefsToUpdate).length === 0 &&
+			Object.keys(attrsToUpdate).length === 0 &&
 			disabled &&
 			Object.keys(propsToUpdate).length === 0 &&
 			Object.keys(identitiesToUpdate).length === 0,
-		[settingsToUpdate, disabled, propsToUpdate, identitiesToUpdate]
+		[prefsToUpdate, disabled, propsToUpdate, identitiesToUpdate, attrsToUpdate]
 	);
+
 	const setNewOrForwardSignatureId = useCallback(
 		(itemsAdd, resp, oldSignatureId, isFowardSignature): void => {
 			const newOrForwardSignatureToSet = itemsAdd?.find(
@@ -171,15 +194,50 @@ const SettingsView: FC = () => {
 				const signatureKey = isFowardSignature
 					? 'zimbraPrefForwardReplySignatureId'
 					: 'zimbraPrefDefaultSignatureId';
-				editSettings({
+				saveSettings({
 					prefs: { [signatureKey]: realSignatureId }
 				}).then(() => {
-					setUpdatedSettings({});
+					setUpdatedPrefs({});
+					setUpdatedAttrs({});
 				});
 			}
 		},
 		[]
 	);
+
+	const onSignaturesLoaded = useCallback(
+		(signs: Array<Signature>) => {
+			const signaturesItems = map(
+				signs,
+				(item: Signature, idx) =>
+					({
+						label: item.name,
+						name: item.name,
+						id: item.id,
+						description: unescape(item?.content?.[0]?._content)
+					}) as SignItemType
+			);
+			setSignatures(signaturesItems);
+			setOriginalSignatures(
+				signaturesItems.map((el) => ({
+					id: el.id,
+					name: el.label ?? '',
+					label: el.label ?? '',
+					description: el.description ?? ''
+				}))
+			);
+		},
+		[setOriginalSignatures, setSignatures]
+	);
+
+	// Fetches signatures from the BE
+	useEffect(() => {
+		GetAllSignatures()
+			.then(({ signature: signs }) => onSignaturesLoaded(signs))
+			.catch((err) => {
+				console.error(err);
+			});
+	}, [onSignaturesLoaded]);
 
 	const saveChanges = useCallback<SettingsHeaderProps['onSave']>(() => {
 		if (!isEqual(signatures, originalSignatures)) {
@@ -220,30 +278,30 @@ const SettingsView: FC = () => {
 				)
 			);
 
-			const isReplySignaturePrefisNew = settingsToUpdate.zimbraPrefForwardReplySignatureId;
+			const isReplySignaturePrefisNew = prefsToUpdate.zimbraPrefForwardReplySignatureId;
 			let setForwardReplySignatureId = '';
 			if (
 				isReplySignaturePrefisNew &&
 				itemsAdd.length > 0 &&
 				itemsAdd.findIndex(
-					(item: any) => item?.id === settingsToUpdate.zimbraPrefForwardReplySignatureId
+					(item: any) => item?.id === prefsToUpdate.zimbraPrefForwardReplySignatureId
 				) !== -1
 			) {
-				setForwardReplySignatureId = settingsToUpdate.zimbraPrefForwardReplySignatureId;
-				delete settingsToUpdate.zimbraPrefForwardReplySignatureId;
+				setForwardReplySignatureId = prefsToUpdate.zimbraPrefForwardReplySignatureId;
+				delete prefsToUpdate.zimbraPrefForwardReplySignatureId;
 			}
 
-			const isDefaultSignaturePref = settingsToUpdate.zimbraPrefDefaultSignatureId;
+			const isDefaultSignaturePref = prefsToUpdate.zimbraPrefDefaultSignatureId;
 			let setDefaultSignatureId = '';
 			if (
 				isDefaultSignaturePref &&
 				itemsAdd.length > 0 &&
 				itemsAdd.findIndex(
-					(item: any) => item.id === settingsToUpdate.zimbraPrefDefaultSignatureId
+					(item: any) => item.id === prefsToUpdate.zimbraPrefDefaultSignatureId
 				) !== -1
 			) {
-				setDefaultSignatureId = settingsToUpdate.zimbraPrefDefaultSignatureId;
-				delete settingsToUpdate.zimbraPrefDefaultSignatureId;
+				setDefaultSignatureId = prefsToUpdate.zimbraPrefDefaultSignatureId;
+				delete prefsToUpdate.zimbraPrefDefaultSignatureId;
 			}
 			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 			// @ts-ignore
@@ -266,6 +324,14 @@ const SettingsView: FC = () => {
 					});
 					setFlag(!flag);
 					setDisabled(true);
+					GetAllSignatures()
+						.then(({ signature: signs }) => {
+							onSignaturesLoaded(signs);
+							updateAccount({ signatures: signs });
+						})
+						.catch((err) => {
+							console.error(err);
+						});
 				} else {
 					createSnackbar({
 						key: `new`,
@@ -280,8 +346,11 @@ const SettingsView: FC = () => {
 		}
 
 		let changes = {};
-		if (Object.keys(settingsToUpdate).length > 0) {
-			changes = { ...changes, prefs: settingsToUpdate };
+		if (Object.keys(prefsToUpdate).length > 0) {
+			changes = { ...changes, prefs: prefsToUpdate };
+		}
+		if (Object.keys(attrsToUpdate).length > 0) {
+			changes = { ...changes, attrs: attrsToUpdate };
 		}
 		if (Object.keys(propsToUpdate).length > 0) {
 			changes = { ...changes, props: propsToUpdate };
@@ -290,8 +359,8 @@ const SettingsView: FC = () => {
 			changes = { ...changes, identity: { modifyList: identitiesToUpdate } };
 		}
 		if (!isEmpty(changes)) {
-			const editResult = editSettings(changes).then((res) => {
-				if (res.type.includes('fulfilled')) {
+			const editResult = saveSettings(changes)
+				.then(() => {
 					createSnackbar({
 						key: `new`,
 						replace: true,
@@ -302,13 +371,14 @@ const SettingsView: FC = () => {
 					});
 					// saving new values only when request is performed successfully
 					setCurrentProps((a) => ({ ...a, ...propsToUpdate }));
+					setUpdatedAttrs({});
 					/* Update the current Identities with changes if identities updated
-						and request is performed successfully
-					*/
+					and request is performed successfully */
 					if (Object.keys(identitiesToUpdate).length > 0) {
 						setCurrentIdentities(updatedIdentities);
 					}
-				} else {
+				})
+				.catch(() => {
 					createSnackbar({
 						key: `new`,
 						replace: true,
@@ -317,15 +387,15 @@ const SettingsView: FC = () => {
 						autoHideTimeout: 3000,
 						hideButton: true
 					});
-				}
-			});
+				});
 			return Promise.allSettled([editResult]);
 		}
 		return Promise.allSettled([Promise.resolve()]);
 	}, [
 		signatures,
 		originalSignatures,
-		settingsToUpdate,
+		prefsToUpdate,
+		attrsToUpdate,
 		propsToUpdate,
 		identitiesToUpdate,
 		validateSignatures,
@@ -334,10 +404,20 @@ const SettingsView: FC = () => {
 		createSnackbar,
 		setNewOrForwardSignatureId,
 		flag,
+		onSignaturesLoaded,
 		updatedIdentities
 	]);
 
 	const title = useMemo(() => t('label.mail_settings', 'Mails settings'), []);
+	const addressesConflict = useMemo(() => {
+		const allowed = getList(currentAttrs?.amavisWhitelistSender as string[] | undefined);
+		const blocked = getList(currentAttrs?.amavisBlacklistSender as string[] | undefined);
+		return (
+			allowed.length > 0 &&
+			blocked.length > 0 &&
+			allowed.some((address) => blocked.includes(address))
+		);
+	}, [currentAttrs]);
 	return (
 		<>
 			<SettingsHeader onSave={saveChanges} onCancel={onClose} isDirty={!isDisabled} title={title} />
@@ -352,36 +432,44 @@ const SettingsView: FC = () => {
 					<DisplayMessagesSettings
 						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 						// @ts-ignore
-						settingsObj={settingsObj}
-						updateSettings={updateSettings}
+						settingsObj={currentPrefs}
+						updateSettings={updatePrefs}
 						updatedProps={updatedProps}
 						updateProps={updateProps}
 					/>
 					<ReceivingMessagesSettings
-						settingsObj={settingsObj}
-						updateSettings={updateSettings}
+						settingsObj={currentPrefs as PrefsType}
+						updateSettings={updatePrefs}
 						updatedProps={updatedProps}
 						updateProps={updateProps}
 					/>
 					<RecoverMessages />
 					<SignatureSettings
-						settingsObj={settingsObj}
 						setSignatures={setSignatures}
 						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 						// @ts-ignore
-						setOriginalSignatures={setOriginalSignatures}
-						updateSettings={updateSettings}
 						updatedIdentities={updatedIdentities}
 						updateIdentities={updateIdentities}
 						setDisabled={setDisabled}
 						signatures={signatures}
-						flag={flag}
 					/>
 					{/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
 					{/* @ts-ignore */}
-					<ComposeMessage settingsObj={settingsObj} updateSettings={updateSettings} />
+					<ComposeMessage settingsObj={currentPrefs} updateSettings={updatePrefs} />
 					<FilterModule />
-					<TrusteeAddresses settingsObj={settingsObj} updateSettings={updateSettings} />
+					<TrusteeAddresses settingsObj={currentPrefs} updateSettings={updatePrefs} />
+					<SendersList
+						settingsObj={currentAttrs}
+						updateSettings={updateAttrs}
+						listType="Allowed"
+						showConflictText={addressesConflict}
+					/>
+					<SendersList
+						settingsObj={currentAttrs}
+						updateSettings={updateAttrs}
+						listType="Blocked"
+						showConflictText={addressesConflict}
+					/>
 				</FormSection>
 			</Container>
 		</>

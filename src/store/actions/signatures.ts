@@ -4,24 +4,33 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { JSNS, soapFetch } from '@zextras/carbonio-shell-ui';
+import { ErrorSoapBodyResponse, JSNS, soapFetch } from '@zextras/carbonio-shell-ui';
 import { map, escape } from 'lodash';
 
-import { SignItemType } from '../../types';
+import { Signature } from '../../types';
 
 export type GetSignaturesRequest = {
 	_jsns: typeof JSNS.account;
 };
 
 export type GetSignaturesResponse = {
-	signature: Array<SignItemType>;
+	signature: Array<Signature>;
 	_jsns: typeof JSNS.account;
 };
 
-export const GetAllSignatures = (): Promise<GetSignaturesResponse> =>
-	soapFetch('GetSignatures', {
-		_jsns: 'urn:zimbraAccount'
+export async function GetAllSignatures(): Promise<GetSignaturesResponse> {
+	return soapFetch<GetSignaturesRequest, GetSignaturesResponse | ErrorSoapBodyResponse>(
+		'GetSignatures',
+		{
+			_jsns: 'urn:zimbraAccount'
+		}
+	).then((resp) => {
+		if ('Fault' in resp) {
+			return Promise.reject(resp.Fault);
+		}
+		return resp;
 	});
+}
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const SignatureRequest = createAsyncThunk('SignatureRequest', async (data: any) => {

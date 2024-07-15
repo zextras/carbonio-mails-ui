@@ -18,7 +18,7 @@ const DetailPanel: FC = () => {
 	const { path } = useRouteMatch();
 	const { count } = useAppContext<AppContext>();
 	return (
-		<Container width="60%" data-testid="third-panel">
+		<Container width="fill" data-testid="third-panel" style={{ overflowY: 'auto' }}>
 			<Switch>
 				<Route exact path={`${path}/folder/:folderId`}>
 					<SelectionInteractive count={count} />

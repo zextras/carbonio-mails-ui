@@ -6,9 +6,10 @@
  */
 
 import { AsyncThunkAction, EnhancedStore } from '@reduxjs/toolkit';
-import { SoapFault } from '@zextras/carbonio-shell-ui/lib/types/network/soap';
+import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 
 import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
+import { buildSoapErrorResponseBody } from '../../../carbonio-ui-commons/test/mocks/utils/soap';
 import { generateStore } from '../../../tests/generators/store';
 import {
 	ConvMessage,
@@ -180,7 +181,10 @@ describe('search', () => {
 	});
 
 	test('if soap response fails store is unaltered', async () => {
-		createSoapAPIInterceptor<SearchRequest, SoapFault>('Search', failFromAPI());
+		createSoapAPIInterceptor<SearchRequest, ErrorSoapBodyResponse>(
+			'Search',
+			buildSoapErrorResponseBody()
+		);
 
 		await storeDispatch(search({ query: 'aaaaaa', limit: 100 }));
 
@@ -200,20 +204,6 @@ describe('search', () => {
 		await store.dispatch(action);
 	}
 });
-
-function failFromAPI(): SoapFault {
-	return {
-		Detail: {
-			Error: {
-				Code: 'ERROR',
-				Detail: 'The server failed for an unknown reason'
-			}
-		},
-		Reason: {
-			Text: 'It just failed!'
-		}
-	};
-}
 
 function conversationFromAPI(params: Partial<SoapConversation> = {}): SoapConversation {
 	return {
@@ -323,7 +313,7 @@ function messageFromStore(params: Partial<MsgMapValue> = {}): MsgMapValue {
 		isComplete: false,
 		isScheduled: false,
 		read: true,
-		isReadReceiptRequested: true,
+		isReadReceiptRequested: false,
 		sortIndex: 0,
 		...params
 	};
