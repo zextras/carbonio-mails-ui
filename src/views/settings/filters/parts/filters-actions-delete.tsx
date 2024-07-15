@@ -163,7 +163,7 @@ const FilterActions: FC<ComponentProps> = ({ compProps }): ReactElement => {
 			/>
 			<Padding bottom="medium" />
 			<Button
-				label={t('label.remove', 'REMOVE')}
+				label={t('label.remove_one', 'REMOVE')}
 				type="outlined"
 				color="error"
 				icon="ArrowheadRightOutline"
