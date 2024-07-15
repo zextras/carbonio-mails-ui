@@ -7,11 +7,11 @@ import { getUserAccount } from '@zextras/carbonio-shell-ui';
 import { find } from 'lodash';
 
 import { isConversation } from './messages';
+import { FOLDERS } from '../carbonio-ui-commons/constants/folders';
 import { useFolderStore } from '../carbonio-ui-commons/store/zustand/folder/store';
 import type { Folder, Folders } from '../carbonio-ui-commons/types/folder';
 import { NO_ACCOUNT_NAME } from '../constants';
 import type { MailMessage, Conversation } from '../types';
-import { FOLDERS } from '../carbonio-ui-commons/constants/folders';
 
 /*
  * Describe the folder id syntax

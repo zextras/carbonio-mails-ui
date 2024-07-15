@@ -8,7 +8,6 @@
  */
 
 import { createSelector, createSlice } from '@reduxjs/toolkit';
-import { FOLDERS } from '@zextras/carbonio-shell-ui';
 import produce from 'immer';
 import { forEach, map, merge } from 'lodash';
 
@@ -35,6 +34,7 @@ import type {
 	MsgMapValue,
 	SaveDraftResponse
 } from '../types';
+import { FOLDERS } from '@zextras/carbonio-shell-ui/lib/constants';
 
 function getMsgFulfilled({ messages }: MsgStateType, { payload }: { payload: MailMessage }): void {
 	if (payload?.id) {

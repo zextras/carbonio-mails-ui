@@ -21,6 +21,7 @@ import {
 	handleModifiedConversationsReducer,
 	handleModifiedMessagesInConversationReducer
 } from './sync/conversation';
+import { FOLDERS } from '../carbonio-ui-commons/constants/folders';
 import { API_REQUEST_STATUS, SEARCHED_FOLDER_STATE_STATUS } from '../constants';
 import type {
 	ConversationsStateType,
@@ -32,7 +33,6 @@ import type {
 	Conversation,
 	SearchRequestStatus
 } from '../types';
-import { FOLDERS } from '../carbonio-ui-commons/constants/folders';
 
 function fetchConversationsPending(state: ConversationsStateType, { payload, meta }: any): void {
 	if (meta?.arg?.types === 'conversation') {
