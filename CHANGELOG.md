@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.16.7](https://github.com/zextras/carbonio-mails-ui/compare/v1.16.6...v1.16.7) (2024-07-15)
+
+
+### Bug Fixes
+
+* fixed usage of label.remove translation in many places ([c1a0ce8](https://github.com/zextras/carbonio-mails-ui/commit/c1a0ce8f260ae6ebceb1ec8c17c6a825e34b5a17))
+
 ### [1.16.6](https://github.com/zextras/carbonio-mails-ui/compare/v1.16.5...v1.16.6) (2024-07-15)
 
 

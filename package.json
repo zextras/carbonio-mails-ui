@@ -1,6 +1,6 @@
 {
 	"name": "carbonio-mails-ui",
-	"version": "1.16.6",
+	"version": "1.16.7",
 	"description": "Mails module",
 	"main": "src/app.tsx",
 	"engines": {
