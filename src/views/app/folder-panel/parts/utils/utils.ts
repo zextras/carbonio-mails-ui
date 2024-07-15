@@ -7,6 +7,8 @@
 import { t } from '@zextras/carbonio-shell-ui';
 
 import { SORTING_DIRECTION, SORTING_OPTIONS } from '../../../../../constants';
+import { Folder } from '../../../../../types';
+import { getFolderTranslatedName } from '../../../../sidebar/utils';
 
 export function getTooltipLabel(sortingType: string, sortingDirection: string): string {
 	const sortingString = `${sortingType}${sortingDirection}`;
@@ -51,3 +53,24 @@ export function getTooltipLabel(sortingType: string, sortingDirection: string): 
 			return '';
 	}
 }
+
+export const getFolderPath = (
+	folder: Folder | undefined,
+	root: Folder | undefined,
+	isSearchModule = false
+): string => {
+	if (isSearchModule) {
+		return '';
+	}
+	return (
+		folder?.absFolderPath
+			?.split('/')
+			?.map((p, idx) =>
+				getFolderTranslatedName({
+					folderId: idx === 1 ? root?.id : folder?.id,
+					folderName: p
+				})
+			)
+			.join(' / ') ?? ''
+	);
+};
