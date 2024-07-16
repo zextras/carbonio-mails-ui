@@ -16,8 +16,10 @@ import { API_REQUEST_STATUS } from '../../../constants';
 import { getFolderIdParts } from '../../../helpers/folders';
 import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
 import { getConv, searchConv } from '../../../store/actions';
-import { selectConversationExpandedStatus } from '../../../store/conversations-slice';
-import { useConversation } from '../../../store/zustand/search/hooks/hooks';
+import {
+	selectConversation,
+	selectConversationExpandedStatus
+} from '../../../store/conversations-slice';
 import type { MailsStateType } from '../../../types';
 import { useExtraWindow } from '../extra-windows/use-extra-window';
 
@@ -42,11 +44,9 @@ export const ConversationPreviewPanelContainer: FC<ConversationPreviewPanelProps
 		selectConversationExpandedStatus(state, conversationId)
 	);
 
-	const conversation = useConversation(conversationId);
-
+	const conversation = useAppSelector(selectConversation(conversationId));
 	const settings = useUserSettings();
 	const convSortOrder = settings.prefs.zimbraPrefConversationOrder as string;
-
 	useEffect(() => {
 		if (!conversation) {
 			dispatch(getConv({ conversationId }));

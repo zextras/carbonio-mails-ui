@@ -62,7 +62,7 @@ export const ConversationMessagesList: FC<ConversationMessagesListProps> = memo(
 										deselectAll={deselectAll}
 									>
 										<MessageListItem
-											itemId={message.id}
+											item={message}
 											selected={isSelected}
 											selecting={isSelectModeOn}
 											visible={visible}

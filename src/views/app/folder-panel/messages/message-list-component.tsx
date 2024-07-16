@@ -26,16 +26,12 @@ const DragImageContainer = styled.div`
 	width: 35vw;
 `;
 
-const DragItems = ({
-	messages,
-	draggedIds,
-	folderId
-}: {
-	messages: Array<{ id: string }>;
+const DragItems: FC<{
+	messages: IncompleteMessage[];
 	draggedIds: Record<string, boolean>;
 	folderId: string;
-}): React.JSX.Element => {
-	const items = reduce<typeof draggedIds, Array<{ id: string }>>(
+}> = ({ messages, draggedIds, folderId }) => {
+	const items = reduce<typeof draggedIds, MessageListItemProps['item'][]>(
 		draggedIds,
 		(acc, v, k) => {
 			const obj = find(messages, ['id', k]);
@@ -51,7 +47,7 @@ const DragItems = ({
 		<>
 			{map(items, (item) => (
 				<MessageListItem
-					itemId={item.id}
+					item={item}
 					key={item.id}
 					isConvChildren={false}
 					toggle={noop}
@@ -82,7 +78,7 @@ export type MessageListComponentProps = {
 	// the id of the current folder
 	folderId: string;
 	// the messages to display
-	messages: Array<{ id: string }>;
+	messages: MailMessage[];
 	// the ids of the messages being dragged
 	draggedIds?: Record<string, boolean>;
 	// the function to call when the user starts dragging a message
