@@ -22,10 +22,10 @@ import { findIconFromChip } from './parts/use-find-icon';
 import SearchConversationList from './search-conversation-list';
 import { SearchMessageList } from './search-message-list';
 import SearchPanel from './search-panel';
+import { searchNew } from '../../api/search-new';
 import { useFoldersMap } from '../../carbonio-ui-commons/store/zustand/folder/hooks';
 import type { Folder } from '../../carbonio-ui-commons/types/folder';
 import { LIST_LIMIT, MAILS_ROUTE } from '../../constants';
-import { searchNew } from '../../store/actions/search-new';
 import { useMessageStore } from '../../store/zustand/message-store/store';
 import { handleSearchResults } from '../../store/zustand/search/hooks/hooks';
 
