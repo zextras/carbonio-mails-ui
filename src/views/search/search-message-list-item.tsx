@@ -26,26 +26,24 @@ import {
 import { find, includes, isEmpty, noop, reduce } from 'lodash';
 import moment from 'moment';
 
-import { useFolder } from '../../../../carbonio-ui-commons/store/zustand/folder/hooks';
-import { getTimeLabel, participantToString } from '../../../../commons/utils';
-import { EditViewActions } from '../../../../constants';
-import { useAppDispatch } from '../../../../hooks/redux';
-import { useMessageActions } from '../../../../hooks/use-message-actions';
-import type { MessageListItemProps, TextReadValuesType } from '../../../../types';
-import {
-	previewMessageOnSeparatedWindow,
-	setMsgRead
-} from '../../../../ui-actions/message-actions';
-import { useTagExist } from '../../../../ui-actions/tag-actions';
-import { getFolderTranslatedName } from '../../../sidebar/utils';
-import { createEditBoard } from '../../detail-panel/edit/edit-view-board';
-import { useGlobalExtraWindowManager } from '../../extra-windows/global-extra-window-manager';
-import { ItemAvatar } from '../parts/item-avatar';
-import { ListItemActionWrapper } from '../parts/list-item-actions-wrapper';
-import { SenderName } from '../parts/sender-name';
+import { useFolder } from '../../carbonio-ui-commons/store/zustand/folder';
+import { getTimeLabel, participantToString } from '../../commons/utils';
+import { EditViewActions } from '../../constants';
+import { useAppDispatch } from '../../hooks/redux';
+import { useMessageActions } from '../../hooks/use-message-actions';
+import { useMessageStore } from '../../store/zustand/message-store/store';
+import { MessageListItemProps, TextReadValuesType } from '../../types';
+import { previewMessageOnSeparatedWindow, setMsgRead } from '../../ui-actions/message-actions';
+import { useTagExist } from '../../ui-actions/tag-actions';
+import { createEditBoard } from '../app/detail-panel/edit/edit-view-board';
+import { useGlobalExtraWindowManager } from '../app/extra-windows/global-extra-window-manager';
+import { ItemAvatar } from '../app/folder-panel/parts/item-avatar';
+import { ListItemActionWrapper } from '../app/folder-panel/parts/list-item-actions-wrapper';
+import { SenderName } from '../app/folder-panel/parts/sender-name';
+import { getFolderTranslatedName } from '../sidebar/utils';
 
-export const MessageListItem: FC<MessageListItemProps> = memo(function MessageListItem({
-	item,
+export const SearchMessageListItem: FC<MessageListItemProps> = memo(function MessageListItem({
+	itemId,
 	selected,
 	selecting,
 	toggle,
@@ -55,6 +53,7 @@ export const MessageListItem: FC<MessageListItemProps> = memo(function MessageLi
 	deselectAll,
 	currentFolderId
 }) {
+	const item = useMessageStore((state) => state.messages[itemId]);
 	const firstChildFolderId = currentFolderId ?? item.parent;
 
 	const dispatch = useAppDispatch();

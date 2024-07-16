@@ -23,7 +23,7 @@ export type SenderNameProps = {
 };
 
 export type MessageListItemProps = {
-	itemId: string;
+	item: IncompleteMessage & { isSearchModule?: boolean };
 	selected: boolean;
 	selecting: boolean;
 	toggle: (id: string) => void;

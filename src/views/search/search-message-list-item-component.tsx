@@ -7,11 +7,11 @@ import React, { FC, memo } from 'react';
 
 import { noop } from 'lodash';
 
-import { MessageListItem } from './message-list-item';
-import type { IncompleteMessage } from '../../../../types';
-import { DragItemWrapper } from '../parts/drag-item-wrapper';
+import { SearchMessageListItem } from './search-message-list-item';
+import { IncompleteMessage } from '../../types';
+import { DragItemWrapper } from '../app/folder-panel/parts/drag-item-wrapper';
 
-export type ListItemComponentProps = {
+type SearchListItemComponentProps = {
 	message: IncompleteMessage;
 	selected: Record<string, boolean>;
 	isSelected: boolean;
@@ -27,8 +27,8 @@ export type ListItemComponentProps = {
 	currentFolderId?: string;
 };
 
-export const MessageListItemComponent: FC<ListItemComponentProps> = memo(
-	function MessageListItemComponent({
+export const SearchMessageListItemComponent: FC<SearchListItemComponentProps> = memo(
+	function SearchMessageListItemComponent({
 		message,
 		selected,
 		isSelected,
@@ -52,8 +52,8 @@ export const MessageListItemComponent: FC<ListItemComponentProps> = memo(
 				dragAndDropIsDisabled={!!isSearchModule}
 				deselectAll={deselectAll}
 			>
-				<MessageListItem
-					item={message}
+				<SearchMessageListItem
+					itemId={message.id}
 					selected={isSelected}
 					selecting={isSelectModeOn}
 					isConvChildren={false}

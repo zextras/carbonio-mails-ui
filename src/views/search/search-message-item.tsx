@@ -5,9 +5,9 @@
  */
 import React, { ReactElement } from 'react';
 
+import { SearchMessageListItemComponent } from './search-message-list-item-component';
 import { CustomListItem } from '../../carbonio-ui-commons/components/list/list-item';
 import { useMessageStore } from '../../store/zustand/message-store/store';
-import { MessageListItemComponent } from '../app/folder-panel/messages/message-list-item-component';
 
 type SearchMessageItemProps = {
 	messageId: string;
@@ -37,7 +37,7 @@ export const SearchMessageItem = ({
 		>
 			{(visible: boolean): ReactElement =>
 				visible ? (
-					<MessageListItemComponent
+					<SearchMessageListItemComponent
 						message={completeMessage}
 						selected={selected}
 						isSelected={isSelected}
