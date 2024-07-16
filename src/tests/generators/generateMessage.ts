@@ -5,8 +5,8 @@
  */
 
 import { faker } from '@faker-js/faker';
-import { FOLDERS } from '@zextras/carbonio-shell-ui';
 
+import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
 import { ParticipantRole } from '../../carbonio-ui-commons/constants/participants';
 import { convertHtmlToPlainText } from '../../carbonio-ui-commons/utils/text/html';
 import type { MailMessage, Participant } from '../../types';

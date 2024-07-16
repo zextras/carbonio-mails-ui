@@ -7,7 +7,6 @@ import React from 'react';
 
 import { faker } from '@faker-js/faker';
 import { screen, within } from '@testing-library/react';
-import { FOLDERS } from '@zextras/carbonio-shell-ui';
 
 import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { populateFoldersStore } from '../../../carbonio-ui-commons/test/mocks/store/folders';
@@ -16,6 +15,7 @@ import { Folder, SoapFolder } from '../../../carbonio-ui-commons/types/folder';
 import { generateStore } from '../../../tests/generators/store';
 import { NewModal } from '../new-modal';
 import { act } from 'react-dom/test-utils';
+import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
 
 describe('new-modal', () => {
 	test('add folder name and create button should enabled', async () => {

@@ -3,9 +3,10 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { AccountSettingsPrefs, FOLDERS } from '@zextras/carbonio-shell-ui';
+import { AccountSettingsPrefs } from '@zextras/carbonio-shell-ui';
 import { concat, filter, find, forEach, isEmpty, map, reduce, some } from 'lodash';
 import moment from 'moment';
+import { FOLDERS } from '../carbonio-ui-commons/constants/folders';
 
 import {
 	ParticipantRole,

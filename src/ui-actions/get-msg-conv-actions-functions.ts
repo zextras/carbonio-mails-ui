@@ -7,7 +7,7 @@
 import { useCallback } from 'react';
 
 import { CreateSnackbarFn } from '@zextras/carbonio-design-system';
-import { FOLDERS, Tags, useIntegratedFunction } from '@zextras/carbonio-shell-ui';
+import { Tags, useIntegratedFunction } from '@zextras/carbonio-shell-ui';
 import { TFunction } from 'i18next';
 
 import {
@@ -42,6 +42,7 @@ import {
 } from './message-actions';
 import { applyTag } from './tag-actions';
 import { updateEditorWithSmartLinks } from './utils';
+import { FOLDERS } from '../carbonio-ui-commons/constants/folders';
 import { EditViewActions } from '../constants';
 import { getFolderIdParts } from '../helpers/folders';
 import { AppDispatch } from '../store/redux';

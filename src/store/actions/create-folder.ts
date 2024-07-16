@@ -3,8 +3,9 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { FOLDERS, soapFetch } from '@zextras/carbonio-shell-ui';
+import { soapFetch } from '@zextras/carbonio-shell-ui';
 
+import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
 import { type CreateFolderResponse } from '../../types';
 
 export function createFolder({

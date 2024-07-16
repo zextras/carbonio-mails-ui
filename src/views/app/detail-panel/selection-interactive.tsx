@@ -6,7 +6,7 @@
 import React, { FC, useEffect, useMemo, useState } from 'react';
 
 import { Container, Padding, Text } from '@zextras/carbonio-design-system';
-import { FOLDERS, t } from '@zextras/carbonio-shell-ui';
+import { t } from '@zextras/carbonio-shell-ui';
 import { useParams } from 'react-router-dom';
 
 import {
@@ -17,6 +17,7 @@ import {
 	SpamMessages,
 	TrashMessages
 } from './utils';
+import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
 import { getFolderIdParts } from '../../../helpers/folders';
 import { useAppSelector } from '../../../hooks/redux';
 import { selectConversationsArray } from '../../../store/conversations-slice';

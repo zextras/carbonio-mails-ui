@@ -6,7 +6,7 @@
 import React, { FC, useEffect, useMemo } from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
-import { FOLDERS, useTags, useUserSettings } from '@zextras/carbonio-shell-ui';
+import { useTags, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { filter } from 'lodash';
 import { useParams } from 'react-router-dom';
 
@@ -22,6 +22,7 @@ import {
 } from '../../../store/conversations-slice';
 import type { MailsStateType } from '../../../types';
 import { useExtraWindow } from '../extra-windows/use-extra-window';
+import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
 
 type ConversationPreviewPanelProps = { conversationId?: string; folderId?: string };
 

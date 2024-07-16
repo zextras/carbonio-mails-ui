@@ -6,7 +6,7 @@
 import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
-import { FOLDERS, t } from '@zextras/carbonio-shell-ui';
+import { t } from '@zextras/carbonio-shell-ui';
 import { includes, isEmpty } from 'lodash';
 
 import { FolderDetails } from './folder-details';
@@ -15,7 +15,7 @@ import RetentionPolicies from './retention-policies';
 import { ShareFolderProperties } from './share-folder-properties';
 import ModalFooter from '../../../../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../../../../carbonio-ui-commons/components/modals/modal-header';
-import { FolderActionsType } from '../../../../carbonio-ui-commons/constants/folders';
+import { FolderActionsType, FOLDERS } from '../../../../carbonio-ui-commons/constants/folders';
 import type { MainEditModalPropType } from '../../../../carbonio-ui-commons/types/sidebar';
 import {
 	allowedActionOnSharedAccount,

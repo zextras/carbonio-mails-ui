@@ -5,10 +5,10 @@
  */
 
 import { faker } from '@faker-js/faker';
-import { FOLDERS } from '@zextras/carbonio-shell-ui';
 import { times } from 'lodash';
 
 import { generateMessage } from './generateMessage';
+import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
 import {
 	ParticipantRole,
 	ParticipantRoleType

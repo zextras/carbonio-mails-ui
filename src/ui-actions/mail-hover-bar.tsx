@@ -6,7 +6,6 @@
 import React, { FC, useMemo } from 'react';
 
 import { IconButton, Row, Tooltip } from '@zextras/carbonio-design-system';
-import { FOLDERS } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
 import styled from 'styled-components';
 
@@ -20,6 +19,7 @@ import {
 	setMsgFlag,
 	setMsgRead
 } from './message-actions';
+import { FOLDERS } from '../carbonio-ui-commons/constants/folders';
 import { useAppDispatch } from '../hooks/redux';
 
 const ButtonBar = styled(Row)`

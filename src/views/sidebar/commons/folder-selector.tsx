@@ -6,11 +6,12 @@
 import React, { ChangeEvent, ReactElement, useMemo, useState } from 'react';
 
 import { Button, Container, Input, Padding } from '@zextras/carbonio-design-system';
-import { FOLDERS, t } from '@zextras/carbonio-shell-ui';
+import { t } from '@zextras/carbonio-shell-ui';
 import { filter, startsWith } from 'lodash';
 import styled from 'styled-components';
 
 import { FlatFoldersAccordion } from './flat-folders-accordion/flat-folders-accordion';
+import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
 import { getFolder, useRootsArray } from '../../../carbonio-ui-commons/store/zustand/folder/hooks';
 import type { Folder } from '../../../carbonio-ui-commons/types/folder';
 import { isRoot, isSpam, isTrash, isTrashed } from '../../../helpers/folders';

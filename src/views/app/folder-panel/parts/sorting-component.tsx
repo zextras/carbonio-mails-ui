@@ -7,16 +7,11 @@
 import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { Dropdown, DropdownItem, IconButton, Tooltip } from '@zextras/carbonio-design-system';
-import {
-	FOLDERS,
-	t,
-	useUserSettings,
-	useAppContext,
-	replaceHistory
-} from '@zextras/carbonio-shell-ui';
+import { t, useUserSettings, useAppContext, replaceHistory } from '@zextras/carbonio-shell-ui';
 import { noop } from 'lodash';
 
 import { getTooltipLabel } from './utils/utils';
+import { FOLDERS } from '../../../../carbonio-ui-commons/constants/folders';
 import { SORTING_DIRECTION, SORTING_OPTIONS, SORT_ICONS } from '../../../../constants';
 import { parseMessageSortingOptions, updateSortingSettings } from '../../../../helpers/sorting';
 import { useAppDispatch } from '../../../../hooks/redux';

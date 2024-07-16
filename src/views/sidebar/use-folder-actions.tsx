@@ -6,7 +6,7 @@
 import React, { SyntheticEvent, useMemo } from 'react';
 
 import { useModal } from '@zextras/carbonio-design-system';
-import { FOLDERS, t, useAppContext } from '@zextras/carbonio-shell-ui';
+import { t, useAppContext } from '@zextras/carbonio-shell-ui';
 import { noop, startsWith } from 'lodash';
 
 import { DeleteModal } from './delete-modal';
@@ -14,7 +14,7 @@ import { EditModal } from './edit-modal';
 import { EmptyModal } from './empty-modal';
 import { NewModal } from './new-modal';
 import { SharesInfoModal } from './shares-info-modal';
-import { FolderActionsType } from '../../carbonio-ui-commons/constants/folders';
+import { FolderActionsType, FOLDERS } from '../../carbonio-ui-commons/constants/folders';
 import type { Folder } from '../../carbonio-ui-commons/types/folder';
 import { allowedActionOnSharedAccount } from '../../carbonio-ui-commons/utils/utils';
 import { getFolderIdParts } from '../../helpers/folders';

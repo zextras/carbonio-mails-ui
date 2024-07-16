@@ -18,7 +18,6 @@ import {
 	Tooltip
 } from '@zextras/carbonio-design-system';
 import {
-	FOLDERS,
 	Tag,
 	ZIMBRA_STANDARD_COLORS,
 	pushHistory,
@@ -32,6 +31,7 @@ import styled from 'styled-components';
 
 import { ConversationMessagesList } from './conversation-messages-list';
 import { getFolderParentId } from './utils';
+import { FOLDERS } from '../../../../carbonio-ui-commons/constants/folders';
 import { participantToString } from '../../../../commons/utils';
 import { API_REQUEST_STATUS } from '../../../../constants';
 import { getFolderIdParts } from '../../../../helpers/folders';
