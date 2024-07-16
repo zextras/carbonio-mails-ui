@@ -84,7 +84,7 @@ export const getFolderIconColorForAccordionFolder = (f: AccordionFolder): string
 	if (f?.folder?.color) {
 		return f.folder.color < 10
 			? ZIMBRA_STANDARD_COLORS[f.folder.color].hex
-			: f?.folder.rgb ?? ZIMBRA_STANDARD_COLORS[0].hex;
+			: (f?.folder.rgb ?? ZIMBRA_STANDARD_COLORS[0].hex);
 	}
 	return ZIMBRA_STANDARD_COLORS[0].hex;
 };
@@ -93,7 +93,7 @@ export const getFolderIconColor = (f: Folder | AccordionItemType): string => {
 	if ('color' in f && f?.color) {
 		return Number(f.color) < 10
 			? ZIMBRA_STANDARD_COLORS[Number(f.color)].hex
-			: f?.rgb ?? ZIMBRA_STANDARD_COLORS[0].hex;
+			: (f?.rgb ?? ZIMBRA_STANDARD_COLORS[0].hex);
 	}
 	return ZIMBRA_STANDARD_COLORS[0].hex;
 };

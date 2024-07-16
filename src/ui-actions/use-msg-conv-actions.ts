@@ -76,10 +76,10 @@ export function useMsgConvActions({
 	}
 
 	const firstConversationMessage = isConv
-		? filter(item?.messages, (msg) => {
+		? (filter(item?.messages, (msg) => {
 				const folderIdParts = getFolderIdParts(msg.parent).id ?? '';
 				return !isTrash(folderIdParts) && !isDraft(folderIdParts);
-			})?.[0] ?? {}
+			})?.[0] ?? {})
 		: item;
 	const isSingleMsgConv = isSingleMessageConversation(item);
 	const { id } = item;
