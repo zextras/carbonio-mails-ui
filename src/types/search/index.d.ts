@@ -265,8 +265,8 @@ export type ChipType = {
 
 export type SearchSliceState = {
 	search: {
-		conversationIds: Set<string>;
-		messageIds: Set<string>;
+		conversationIds: Set<string | Record<string, never>>;
+		messageIds: Set<string | Record<string, never>>;
 		more: boolean;
 		offset: number;
 		sortBy?: SortBy;
@@ -276,7 +276,8 @@ export type SearchSliceState = {
 		tagName?: string;
 		error?: ErrorType;
 		setSearchConvResults: (
-			conversations: Array<Partial<Conversation> & Pick<Conversation, 'id'>>
+			conversations: Array<<Conversation> & Pick<Conversation, 'id'>>,
+			offset: number
 		) => void;
 	};
 };

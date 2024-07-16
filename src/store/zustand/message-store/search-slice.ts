@@ -6,7 +6,7 @@
 
 import { StateCreator } from 'zustand';
 
-import { MessageStoreState } from './store';
+import type { MessageStoreState } from './store';
 import { Conversation, MessagesSliceState, SearchSliceState } from '../../../types';
 
 export const createSearchSlice: StateCreator<
@@ -26,7 +26,10 @@ export const createSearchSlice: StateCreator<
 		parent: '',
 		tagName: '',
 		error: undefined,
-		setSearchConvResults(conversations: Array<Conversation>): void {
+		setSearchConvResults(
+			conversations: Array<Partial<Conversation> & Pick<Conversation, 'id' | 'date'>>,
+			offset: number
+		): void {
 			set((state: MessageStoreState) => ({
 				search: {
 					...state.search,

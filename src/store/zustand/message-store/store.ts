@@ -7,8 +7,8 @@
 import { create } from 'zustand';
 
 import { createMessageSlice } from './message-slice';
-import { createSearchSlice } from './searchSlice';
-import { MessagesSliceState, SearchSliceState } from '../../../types';
+import { createSearchSlice } from './search-slice';
+import { type MessagesSliceState, type SearchSliceState } from '../../../types';
 
 export type MessageStoreState = MessagesSliceState & SearchSliceState;
 

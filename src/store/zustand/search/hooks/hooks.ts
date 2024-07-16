@@ -26,7 +26,7 @@ function handleFulFilledConversationResults({
 	tags: Tags;
 }): void {
 	const conversations = map(searchResponse.c, (conv) => normalizeConversation({ c: conv, tags }));
-	useMessageStore.getState().search.setSearchConvResults(conversations);
+	useMessageStore.getState().search.setSearchConvResults(conversations, offset);
 }
 
 function handleFulFilledMessagesResults({
@@ -49,11 +49,10 @@ function handleFulFilledMessagesResults({
 			{}
 		),
 		hasMore: searchResponse.more,
-		offset: searchResponse.offset
+		offset
 	};
 	useMessageStore.getState().search.setSearchConvResults({
-		messageIds: new Set(Object.keys(normalizedMessages)),
-		offset: searchResponse.offset
+		search: { messageIds: new Set(Object.keys(normalizedMessages)), offset: searchResponse.offset }
 	});
 }
 
