@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.16.7](https://github.com/zextras/carbonio-mails-ui/compare/v1.16.6...v1.16.7) (2024-07-15)
+
+
+### Bug Fixes
+
+* fixed usage of label.remove translation in many places ([c1a0ce8](https://github.com/zextras/carbonio-mails-ui/commit/c1a0ce8f260ae6ebceb1ec8c17c6a825e34b5a17))
+
+### [1.16.6](https://github.com/zextras/carbonio-mails-ui/compare/v1.16.5...v1.16.6) (2024-07-15)
+
+
+### Bug Fixes
+
+* translated folder names in breadcrumbs and retention policy options ([668147a](https://github.com/zextras/carbonio-mails-ui/commit/668147adeb71727b1f1a6cc6b9f38b92743e8011))
+
+### [1.16.5](https://github.com/zextras/carbonio-mails-ui/compare/v1.16.4...v1.16.5) (2024-07-11)
+
+
+### Bug Fixes
+
+* modal filter selection and related tests ([b0c99a9](https://github.com/zextras/carbonio-mails-ui/commit/b0c99a9351355880b7ed7635a1d44eb02fa97d7c))
+
 ### [1.16.4](https://github.com/zextras/carbonio-mails-ui/compare/v1.16.3...v1.16.4) (2024-07-10)
 
 

@@ -100,10 +100,11 @@ export const saveSettings = (
 	).then((resp) => {
 		updateSettings(mods);
 		if (mods.identity) {
-			updateAccount(
-				mods.identity,
-				resp.CreateIdentityResponse?.map((item) => item?.identity[0]) ?? []
-			);
+			const identities = {
+				identitiesMods: mods.identity,
+				newIdentities: resp.CreateIdentityResponse?.map((item) => item?.identity[0]) ?? []
+			};
+			updateAccount({ identities });
 		}
 		return resp;
 	});

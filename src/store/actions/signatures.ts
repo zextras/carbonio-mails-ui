@@ -7,14 +7,14 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import { ErrorSoapBodyResponse, JSNS, soapFetch } from '@zextras/carbonio-shell-ui';
 import { map, escape } from 'lodash';
 
-import { SignItemType } from '../../types';
+import { Signature } from '../../types';
 
 export type GetSignaturesRequest = {
 	_jsns: typeof JSNS.account;
 };
 
 export type GetSignaturesResponse = {
-	signature: Array<SignItemType>;
+	signature: Array<Signature>;
 	_jsns: typeof JSNS.account;
 };
 

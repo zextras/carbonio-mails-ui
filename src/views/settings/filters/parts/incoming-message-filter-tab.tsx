@@ -4,17 +4,18 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { FC, ReactElement, useContext, useMemo } from 'react';
+
 import { List, Container } from '@zextras/carbonio-design-system';
 import type { TFunction } from 'i18next';
 import { filter, map } from 'lodash';
-import FilterItem from './filter-item';
-import { useFilterSelection } from './use-filter-selection';
-import Heading from '../../components/settings-heading';
-import { FilterContext } from './filter-context';
-import LoadingShimmer from './loading-shimmer';
-import { modifyFilterRules } from '../../../../store/actions/modify-filter-rules';
 
+import { FilterContext } from './filter-context';
+import FilterItem from './filter-item';
 import IncomingFilterActions from './incoming-filters-actions';
+import LoadingShimmer from './loading-shimmer';
+import { useFilterSelection } from './use-filter-selection';
+import { modifyFilterRules } from '../../../../store/actions/modify-filter-rules';
+import Heading from '../../components/settings-heading';
 
 type ComponentProps = {
 	t: TFunction;

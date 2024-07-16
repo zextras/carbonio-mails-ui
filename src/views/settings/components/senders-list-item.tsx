@@ -55,7 +55,7 @@ export const SendersListItem: FC<SendersListItemProps> = ({ value, onRemove }): 
 							size="small"
 							color="error"
 							type="outlined"
-							label={t('label.remove', 'Remove')}
+							label={t('label.remove_one', 'Remove')}
 							onClick={onClick}
 						/>
 					)}

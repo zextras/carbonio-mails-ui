@@ -3,14 +3,13 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { FC, useCallback, useMemo } from 'react';
 
 import { Dropdown, DropdownItem, IconButton } from '@zextras/carbonio-design-system';
-import { t } from '@zextras/carbonio-shell-ui';
+import { getUserAccount, t } from '@zextras/carbonio-shell-ui';
 import { map, noop, unescape } from 'lodash';
 
 import { getMailBodyWithSignature } from '../../../../../helpers/signatures';
-import { GetAllSignatures } from '../../../../../store/actions/signatures';
 import { useEditorSignatureId, useEditorText } from '../../../../../store/zustand/editor';
 import { MailsEditorV2, SignItemType } from '../../../../../types';
 
@@ -19,39 +18,29 @@ export type SignaturesDropdownProps = {
 };
 
 export const ChangeSignaturesDropdown: FC<SignaturesDropdownProps> = ({ editorId }) => {
-	const [signatures, setSignatures] = useState<SignItemType[]>(() => []);
+	const account = getUserAccount();
 	const { signatureId, setSignatureId } = useEditorSignatureId(editorId);
 	const { text, setText } = useEditorText(editorId);
 	const doNotUseSignatureLabel = t('label.do_not_use_signature', 'Do not use a signature');
 
-	const onSignaturesLoaded = useCallback(
-		(signs: Array<SignItemType>) => {
-			const signaturesItems = map(signs, (item: SignItemType, idx) => ({
-				label: item.name,
-				name: item.name,
-				id: item.id,
-				description: unescape(item?.content?.[0]?._content)
-			}));
-			signaturesItems.push({
-				label: doNotUseSignatureLabel,
-				name: doNotUseSignatureLabel,
-				id: '',
-				description: ''
-			});
-			setSignatures(signaturesItems);
-		},
-		[doNotUseSignatureLabel]
+	const signaturesItems = useMemo(
+		() =>
+			[
+				...map(account?.signatures?.signature, (item: SignItemType, idx) => ({
+					label: item.name,
+					name: item.name,
+					id: item.id,
+					description: unescape(item?.content?.[0]?._content)
+				})),
+				{
+					label: doNotUseSignatureLabel,
+					name: doNotUseSignatureLabel,
+					id: '',
+					description: ''
+				}
+			] as SignItemType[],
+		[account?.signatures?.signature, doNotUseSignatureLabel]
 	);
-
-	useEffect(() => {
-		GetAllSignatures()
-			.then(({ signature: signs }) => {
-				onSignaturesLoaded(signs);
-			})
-			.catch((err) => {
-				console.error(err);
-			});
-	}, [onSignaturesLoaded]);
 
 	const onSignatureSelected = useCallback(
 		(signature: SignItemType): void => {
@@ -64,7 +53,7 @@ export const ChangeSignaturesDropdown: FC<SignaturesDropdownProps> = ({ editorId
 
 	const dropdownEntries = useMemo<Array<DropdownItem>>(
 		() =>
-			signatures.map((signature) => ({
+			signaturesItems.map((signature) => ({
 				id: signature.id,
 				label: signature.name,
 				selected: signature.id === signatureId,
@@ -72,7 +61,7 @@ export const ChangeSignaturesDropdown: FC<SignaturesDropdownProps> = ({ editorId
 					onSignatureSelected(signature);
 				}
 			})),
-		[onSignatureSelected, signatureId, signatures]
+		[onSignatureSelected, signatureId, signaturesItems]
 	);
 	return (
 		<>

@@ -93,7 +93,7 @@ describe('Trustee addresses settings', () => {
 		await act(async () => {
 			await user.hover(listItem);
 		});
-		const button = await screen.findByRole('button', { name: 'label.remove' });
+		const button = await screen.findByRole('button', { name: 'label.remove_one' });
 		expect(button).toBeVisible();
 	});
 
@@ -121,7 +121,7 @@ describe('Trustee addresses settings', () => {
 		await act(async () => {
 			await user.hover(listItem);
 		});
-		const button = await screen.findByRole('button', { name: 'label.remove' });
+		const button = await screen.findByRole('button', { name: 'label.remove_one' });
 		expect(button).toBeVisible();
 		user.click(button);
 	});
