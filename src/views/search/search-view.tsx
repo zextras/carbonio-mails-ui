@@ -5,6 +5,7 @@
  */
 import React, { FC, Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 
+import { isRejected } from '@reduxjs/toolkit';
 import { Container, Spinner } from '@zextras/carbonio-design-system';
 import {
 	SEARCH_APP_ID,
@@ -25,9 +26,9 @@ import SearchPanel from './search-panel';
 import { useFoldersMap } from '../../carbonio-ui-commons/store/zustand/folder/hooks';
 import type { Folder } from '../../carbonio-ui-commons/types/folder';
 import { LIST_LIMIT, MAILS_ROUTE } from '../../constants';
-import { searchNew } from '../../store/actions/search-new';
-import { useMessageStore } from '../../store/zustand/message-store/store';
-import { handleSearchResults } from '../../store/zustand/search/hooks/hooks';
+import { useAppDispatch, useAppSelector } from '../../hooks/redux';
+import { search } from '../../store/actions/search';
+import { resetSearchResults, selectSearches } from '../../store/searches-slice';
 
 const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHeader }) => {
 	const [query, updateQuery] = useQuery();
@@ -67,6 +68,7 @@ const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHe
 		[searchInFolders]
 	);
 
+	const dispatch = useAppDispatch();
 	const [loading, setLoading] = useState(false);
 	const [filterCount, setFilterCount] = useState(0);
 	const [showAdvanceFilters, setShowAdvanceFilters] = useState(false);
@@ -74,7 +76,7 @@ const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHe
 		includeSharedItemsInSearch
 	);
 	const [isInvalidQuery, setIsInvalidQuery] = useState<boolean>(false);
-	const searchResults = useMessageStore((state) => state.search);
+	const searchResults = useAppSelector(selectSearches);
 
 	const invalidQueryTooltip = useMemo(
 		() => t('label.invalid_query', 'Unable to parse the search query, clear it and retry'),
@@ -105,28 +107,35 @@ const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHe
 
 	const searchQuery = useCallback(
 		async (queryString: string, reset: boolean) => {
-			const offset = reset ? 0 : searchResults.offset;
-			const searchResponse = await searchNew({
-				query: queryString,
-				limit: LIST_LIMIT.INITIAL_LIMIT,
-				sortBy: 'dateDesc',
-				types: isMessageView ? 'message' : 'conversation',
-				offset,
-				recip: '0',
-				locale: prefLocale
-			});
+			const resultAction = await dispatch(
+				search({
+					query: queryString,
+					limit: LIST_LIMIT.INITIAL_LIMIT,
+					sortBy: 'dateDesc',
+					types: isMessageView ? 'message' : 'conversation',
+					offset: reset ? 0 : searchResults.offset,
+					recip: '0',
+					locale: prefLocale
+				})
+			);
 			if (
-				'Fault' in searchResponse &&
+				isRejected(resultAction) &&
 				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 				// @ts-ignore
-				searchResponse?.Detail?.Error?.Code === 'mail.QUERY_PARSE_ERROR'
+				resultAction?.payload?.Detail?.Error?.Code === 'mail.QUERY_PARSE_ERROR'
 			) {
 				setIsInvalidQuery(true);
 				setSearchDisabled(true, invalidQueryTooltip);
 			}
-			handleSearchResults({ searchResponse, offset });
 		},
-		[invalidQueryTooltip, isMessageView, prefLocale, searchResults.offset, setSearchDisabled]
+		[
+			dispatch,
+			invalidQueryTooltip,
+			isMessageView,
+			prefLocale,
+			searchResults.offset,
+			setSearchDisabled
+		]
 	);
 
 	const queryArray = useMemo(() => ['has:attachment', 'is:flagged', 'is:unread'], []);
@@ -195,14 +204,13 @@ const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHe
 		if (query?.length === 0) {
 			setFilterCount(0);
 			setIsInvalidQuery(false);
-			// TODO: CO-1144 reset searches
-			// dispatch(resetSearchResults());
+			dispatch(resetSearchResults());
 			replaceHistory({
 				path: MAILS_ROUTE,
 				route: SEARCH_APP_ID
 			});
 		}
-	}, [isInvalidQuery, query.length, queryToString, searchQuery]);
+	}, [dispatch, isInvalidQuery, query.length, queryToString, searchQuery]);
 
 	const { path } = useRouteMatch();
 	const resultLabelType = isInvalidQuery ? 'warning' : undefined;
@@ -228,7 +236,7 @@ const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHe
 							{isMessageView ? (
 								<SearchMessageList
 									searchDisabled={searchDisabled}
-									searchResults={searchResults.messageIds}
+									searchResults={searchResults}
 									query={queryToString}
 									loading={loading}
 									filterCount={filterCount}
@@ -239,7 +247,7 @@ const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHe
 							) : (
 								<SearchConversationList
 									searchDisabled={searchDisabled}
-									searchResults={searchResults.conversationIds}
+									searchResults={searchResults}
 									query={queryToString}
 									loading={loading}
 									filterCount={filterCount}
