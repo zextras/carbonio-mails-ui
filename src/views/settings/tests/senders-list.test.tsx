@@ -218,7 +218,7 @@ describe.each`
 			await act(async () => {
 				await user.hover(listItem);
 			});
-			const button = await screen.findByRole('button', { name: 'label.remove' });
+			const button = await screen.findByRole('button', { name: 'label.remove_one' });
 			expect(button).toBeVisible();
 
 			fireEvent(button, new MouseEvent('click', { bubbles: true, cancelable: true }));

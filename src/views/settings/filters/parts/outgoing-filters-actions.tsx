@@ -227,7 +227,7 @@ const OutgoingFilterActions: FC<ComponentProps> = ({ compProps }): ReactElement 
 			/>
 			<Padding bottom="medium" />
 			<Button
-				label={t('label.remove', 'Remove')}
+				label={t('label.remove_one', 'Remove')}
 				type="outlined"
 				color="error"
 				icon="ArrowheadRightOutline"

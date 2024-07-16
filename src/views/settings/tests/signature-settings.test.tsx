@@ -23,15 +23,13 @@ const buildProps = ({
 	updateIdentities = jest.fn(),
 	setDisabled = jest.fn(),
 	signatures = [],
-	setSignatures = jest.fn(),
-	setOriginalSignatures = jest.fn()
+	setSignatures = jest.fn()
 }: Partial<SignatureSettingsPropsType>): SignatureSettingsPropsType => ({
 	updatedIdentities,
 	updateIdentities,
 	setDisabled,
 	signatures,
-	setSignatures,
-	setOriginalSignatures
+	setSignatures
 });
 
 const SettingsViewMock = ({
@@ -42,7 +40,6 @@ const SettingsViewMock = ({
 	const updatedIdentities = useMemo(() => [], []);
 	const updateIdentities = useCallback(() => jest.fn(), []);
 	const setDisabled = useCallback(() => jest.fn(), []);
-	const [, setOriginalSignatures] = useState<Array<SignItemType>>(preloadedSignatures);
 	const [signatures, setSignatures] = useState<Array<SignItemType>>(preloadedSignatures);
 	return (
 		<SignatureSettings
@@ -51,7 +48,6 @@ const SettingsViewMock = ({
 			setDisabled={setDisabled}
 			signatures={signatures}
 			setSignatures={setSignatures}
-			setOriginalSignatures={setOriginalSignatures}
 		/>
 	);
 };

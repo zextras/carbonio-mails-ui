@@ -25,25 +25,11 @@ import { useUiUtilities } from '../../../../hooks/use-ui-utilities';
 import { folderAction } from '../../../../store/actions/folder-action';
 import { translatedSystemFolders } from '../../utils';
 
-const retentionPeriod = [
-	{
-		label: 'Days',
-		value: 'd'
-	},
-	{
-		label: 'Weeks',
-		value: 'w'
-	},
-	{
-		label: 'Months',
-		value: 'm'
-	},
-	{
-		label: 'Years',
-		value: 'y'
-	}
-];
 const numberRegex = /^\d+$/;
+const DAYS_LABEL = 'label.days';
+const WEEKS_LABEL = 'label.weeks';
+const MONTHS_LABEL = 'label.months';
+const YEARS_LABEL = 'label.years';
 
 const MainEditModal: FC<MainEditModalPropType> = ({ folder, onClose, setActiveModal }) => {
 	const [inputValue, setInputValue] = useState(folder.name);
@@ -59,6 +45,25 @@ const MainEditModal: FC<MainEditModalPropType> = ({ folder, onClose, setActiveMo
 	const [emptyRtnValue, setEmptyRtnValue] = useState(false);
 	const [emptyDisValue, setEmptyDisValue] = useState(false);
 	const [folderColor, setFolderColor] = useState(folder?.color ?? 0);
+
+	const retentionPeriod = [
+		{
+			label: t(DAYS_LABEL, 'Days'),
+			value: 'd'
+		},
+		{
+			label: t(WEEKS_LABEL, 'Weeks'),
+			value: 'w'
+		},
+		{
+			label: t(MONTHS_LABEL, 'Months'),
+			value: 'm'
+		},
+		{
+			label: t(YEARS_LABEL, 'Years'),
+			value: 'y'
+		}
+	];
 
 	const { createSnackbar } = useUiUtilities();
 
@@ -81,23 +86,23 @@ const MainEditModal: FC<MainEditModalPropType> = ({ folder, onClose, setActiveMo
 			if (d % 365 === 0) {
 				setRtnYear('y');
 				setRtnValue(d / 365);
-				setRtnRange('Years');
+				setRtnRange(t(YEARS_LABEL, 'Years'));
 			} else if (d % 31 === 0) {
 				setRtnYear('m');
 				setRtnValue(d / 31);
-				setRtnRange('Months');
+				setRtnRange(t(MONTHS_LABEL, 'Months'));
 			} else if (d % 7 === 0) {
 				setRtnYear('w');
 				setRtnValue(d / 7);
-				setRtnRange('Weeks');
+				setRtnRange(t(WEEKS_LABEL, 'Weeks'));
 			} else {
 				setRtnYear('d');
 				setRtnValue(d);
-				setRtnRange('Days');
+				setRtnRange(t(DAYS_LABEL, 'Days'));
 			}
 		} else {
 			setRtnYear('d');
-			setRtnRange('Days');
+			setRtnRange(t(DAYS_LABEL, 'Days'));
 		}
 
 		if (
@@ -115,23 +120,23 @@ const MainEditModal: FC<MainEditModalPropType> = ({ folder, onClose, setActiveMo
 			if (d % 365 === 0) {
 				setDspYear('y');
 				setPurgeValue(d / 365);
-				setDspRange('Years');
+				setDspRange(t(YEARS_LABEL, 'Years'));
 			} else if (d % 31 === 0) {
 				setDspYear('m');
 				setPurgeValue(d / 31);
-				setDspRange('Months');
+				setDspRange(t(MONTHS_LABEL, 'Months'));
 			} else if (d % 7 === 0) {
 				setDspYear('w');
 				setPurgeValue(d / 7);
-				setDspRange('Weeks');
+				setDspRange(t(WEEKS_LABEL, 'Weeks'));
 			} else {
 				setDspYear('d');
 				setPurgeValue(d);
-				setDspRange('Days');
+				setDspRange(t(DAYS_LABEL, 'Days'));
 			}
 		} else {
 			setDspYear('d');
-			setDspRange('Days');
+			setDspRange(t(DAYS_LABEL, 'Days'));
 		}
 	}, [folder.retentionPolicy]);
 

@@ -12,11 +12,12 @@ import styled from 'styled-components';
 
 import { ConversationListItemComponent } from './conversation-list-item-component';
 import { CustomList } from '../../../../carbonio-ui-commons/components/list/list';
-import { useFolder } from '../../../../carbonio-ui-commons/store/zustand/folder/hooks';
+import { useFolder, useRoot } from '../../../../carbonio-ui-commons/store/zustand/folder/hooks';
 import type { Conversation } from '../../../../types';
 import { MultipleSelectionActionsPanel } from '../../../../ui-actions/multiple-selection-actions-panel';
 import ShimmerList from '../../../search/shimmer-list';
 import { Breadcrumbs } from '../parts/breadcrumbs';
+import { getFolderPath } from '../parts/utils/utils';
 
 const DragImageContainer = styled.div`
 	position: absolute;
@@ -134,13 +135,12 @@ export const ConversationListComponent: FC<ConversationListComponentProps> = mem
 		}, [selected, setDraggedIds]);
 
 		const folder = useFolder(folderId);
+		const root = useRoot(folder?.id ?? '');
 
-		const folderPath = useMemo(() => {
-			if (isSearchModule) {
-				return '';
-			}
-			return folder?.absFolderPath?.split('/')?.join(' / ') ?? '';
-		}, [folder?.absFolderPath, isSearchModule]);
+		const folderPath = useMemo(
+			() => getFolderPath(folder, root, isSearchModule),
+			[root, folder, isSearchModule]
+		);
 
 		const showBreadcrumbs = useMemo(
 			() =>
