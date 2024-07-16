@@ -19,6 +19,7 @@ import {
 	handleModifiedMessagesReducer,
 	handleDeletedMessagesReducer
 } from './sync/message';
+import { FOLDERS } from '../carbonio-ui-commons/constants/folders';
 import { CONVACTIONS } from '../commons/utilities';
 import { SEARCHED_FOLDER_STATE_STATUS } from '../constants';
 import { normalizeMailMessageFromSoap } from '../normalizations/normalize-message';
@@ -34,7 +35,6 @@ import type {
 	MsgMapValue,
 	SaveDraftResponse
 } from '../types';
-import { FOLDERS } from '@zextras/carbonio-shell-ui/lib/constants';
 
 function getMsgFulfilled({ messages }: MsgStateType, { payload }: { payload: MailMessage }): void {
 	if (payload?.id) {

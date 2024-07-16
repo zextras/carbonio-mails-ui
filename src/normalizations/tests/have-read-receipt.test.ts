@@ -3,8 +3,8 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { FOLDERS } from '@zextras/carbonio-shell-ui/lib/constants';
 
+import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
 import { haveReadReceipt } from '../normalize-message';
 
 describe('Have Read Receipt', () => {

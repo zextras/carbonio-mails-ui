@@ -8,6 +8,7 @@ import React from 'react';
 import { faker } from '@faker-js/faker';
 import { screen } from '@testing-library/react';
 
+import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
 import { getFolder } from '../../../carbonio-ui-commons/store/zustand/folder';
 import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { populateFoldersStore } from '../../../carbonio-ui-commons/test/mocks/store/folders';
@@ -18,7 +19,6 @@ import { getFolders } from '../../../hooks/use-folders';
 import { generateStore } from '../../../tests/generators/store';
 import { SoapFolderAction } from '../../../types';
 import { DeleteModal } from '../delete-modal';
-import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
 
 describe('delete-modal', () => {
 	test('delete the folder except the child of trash folder', async () => {
