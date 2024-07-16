@@ -276,7 +276,7 @@ export type SearchSliceState = {
 		tagName?: string;
 		error?: ErrorType;
 		setSearchConvResults: (
-			conversations: Array<<Conversation> & Pick<Conversation, 'id'>>,
+			conversations: Array<Conversation & Pick<Conversation, 'id'>>,
 			offset: number
 		) => void;
 	};
