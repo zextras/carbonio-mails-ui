@@ -29,8 +29,7 @@ import type {
 	ConvActionParameters,
 	FetchConversationsReturn,
 	SearchesStateType,
-	MailsStateType,
-	Conversation
+	MailsStateType
 } from '../types';
 
 export const getSearchSliceInitialiState = (): SearchesStateType =>
@@ -177,10 +176,5 @@ export const {
 } = searchesSlice.actions;
 export const searchesSliceReducer = searchesSlice.reducer;
 export const selectSearches = ({ searches }: MailsStateType): SearchesStateType => searches;
-export const selectSearchesConversation =
-	(id: string) =>
-	({ searches }: MailsStateType): Conversation =>
-		searches?.conversations?.[id];
-
 export const { resetSearchResults } = searchesSlice.actions;
 export const selectSearchesStatus = ({ searches }: MailsStateType): string => searches.status;
