@@ -7,10 +7,12 @@ import { useCallback, useMemo, useRef, useState } from 'react';
 
 import { map, omit } from 'lodash';
 
+import type { BackupSearchMessage, Conversation, IncompleteMessage } from '../types';
+
 type UseSelectionProps = {
 	currentFolderId: string;
 	count: number;
-	items?: Array<{ id: string }>;
+	items?: Array<IncompleteMessage | Conversation | BackupSearchMessage>;
 	setCount: (value: number | ((prevState: number) => number)) => void;
 };
 
