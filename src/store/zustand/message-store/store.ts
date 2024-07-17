@@ -9,6 +9,8 @@ import { create } from 'zustand';
 import { createMessageSlice as createPopulatedItemsSlice } from './message-slice';
 import { createSearchSlice } from './search-slice';
 import {
+	IncompleteMessage,
+	MailMessage,
 	NormalizedConversation,
 	type PopulatedItemsSliceState,
 	type SearchSliceState
@@ -16,21 +18,27 @@ import {
 
 export type MessageStoreState = PopulatedItemsSliceState & SearchSliceState;
 
-export const useMessageStore = create<MessageStoreState>()((...a) => ({
+const useMessageStore = create<MessageStoreState>()((...a) => ({
 	...createSearchSlice(...a),
 	...createPopulatedItemsSlice(...a)
 }));
 
-type MessageStoreActions = {
-	updateConversations: (conversations: Array<NormalizedConversation>, offset: number) => void;
-};
-function createStoreActions(store: MessageStoreState): MessageStoreActions {
-	return {
-		updateConversations: store.search.setSearchConvResults
-	};
+// TODO: avoid use methods only for tests
+export function getConversationById(id: string): NormalizedConversation {
+	return useMessageStore.getState().populatedItems.conversations[id];
 }
 
-export const useMessageStoreActions = (): MessageStoreActions =>
-	useMessageStore((state) => createStoreActions(state));
+export function useConversationById(id: string): NormalizedConversation {
+	return useMessageStore((state) => state.populatedItems.conversations[id]);
+}
 
-export const messageStoreActions = createStoreActions(useMessageStore.getState());
+export function useMessageById(id: string): IncompleteMessage | MailMessage {
+	return useMessageStore((state) => state.populatedItems.messages[id]);
+}
+
+export function useSearchResults(): SearchSliceState['search'] {
+	return useMessageStore((state) => state.search);
+}
+
+export const messageStoreActions: PopulatedItemsSliceState['actions'] =
+	useMessageStore.getState().actions;

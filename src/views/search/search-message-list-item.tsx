@@ -31,7 +31,7 @@ import { getTimeLabel, participantToString } from '../../commons/utils';
 import { EditViewActions } from '../../constants';
 import { useAppDispatch } from '../../hooks/redux';
 import { useMessageActions } from '../../hooks/use-message-actions';
-import { useMessageStore } from '../../store/zustand/message-store/store';
+import { useMessageById } from '../../store/zustand/message-store/store';
 import { TextReadValuesType } from '../../types';
 import { previewMessageOnSeparatedWindow, setMsgRead } from '../../ui-actions/message-actions';
 import { useTagExist } from '../../ui-actions/tag-actions';
@@ -66,7 +66,7 @@ export const SearchMessageListItem: FC<SearchMessageListItemProps> = memo(functi
 	deselectAll,
 	currentFolderId
 }) {
-	const item = useMessageStore((state) => state.populatedItems.messages[itemId]);
+	const item = useMessageById(itemId);
 	const firstChildFolderId = currentFolderId ?? item.parent;
 
 	const dispatch = useAppDispatch();

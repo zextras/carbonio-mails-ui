@@ -9,12 +9,8 @@ import { map, reduce } from 'lodash';
 
 import { normalizeConversation } from '../../../../normalizations/normalize-conversation';
 import { normalizeMailMessageFromSoap } from '../../../../normalizations/normalize-message';
-import { NormalizedConversation, SearchResponse } from '../../../../types';
-import { messageStoreActions, useMessageStore } from '../../message-store/store';
-
-export function useConversation(id: string): NormalizedConversation {
-	return useMessageStore((state) => state.populatedItems.conversations[id]);
-}
+import { SearchResponse } from '../../../../types';
+import { messageStoreActions } from '../../message-store/store';
 
 function handleFulFilledConversationResults({
 	searchResponse,

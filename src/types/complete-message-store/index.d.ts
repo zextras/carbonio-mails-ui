@@ -14,4 +14,7 @@ export type PopulatedItemsSliceState = {
 		// setConversations: (conversations: Record<string, NormalizedConversation>) => void;
 		// setMessages: (conversations: Record<string, NormalizedConversation>) => void;
 	};
+	actions: {
+		updateConversations: (conversations: Array<NormalizedConversation>, offset: number) => void;
+	};
 };

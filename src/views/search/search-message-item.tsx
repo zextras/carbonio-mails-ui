@@ -7,7 +7,7 @@ import React, { ReactElement } from 'react';
 
 import { SearchMessageListItemComponent } from './search-message-list-item-component';
 import { CustomListItem } from '../../carbonio-ui-commons/components/list/list-item';
-import { useMessageStore } from '../../store/zustand/message-store/store';
+import { useMessageById } from '../../store/zustand/message-store/store';
 
 type SearchMessageItemProps = {
 	messageId: string;
@@ -27,7 +27,7 @@ export const SearchMessageItem = ({
 	isSelectModeOn,
 	deselectAll
 }: SearchMessageItemProps): React.JSX.Element => {
-	const completeMessage = useMessageStore((state) => state.populatedItems.messages[messageId]);
+	const completeMessage = useMessageById(messageId);
 	return (
 		<CustomListItem
 			key={completeMessage.id}

@@ -26,7 +26,7 @@ import { searchNew } from '../../api/search-new';
 import { useFoldersMap } from '../../carbonio-ui-commons/store/zustand/folder/hooks';
 import type { Folder } from '../../carbonio-ui-commons/types/folder';
 import { LIST_LIMIT, MAILS_ROUTE } from '../../constants';
-import { useMessageStore } from '../../store/zustand/message-store/store';
+import { useSearchResults } from '../../store/zustand/message-store/store';
 import { handleSearchResults } from '../../store/zustand/search/hooks/hooks';
 
 const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHeader }) => {
@@ -74,7 +74,7 @@ const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHe
 		includeSharedItemsInSearch
 	);
 	const [isInvalidQuery, setIsInvalidQuery] = useState<boolean>(false);
-	const searchResults = useMessageStore((state) => state.search);
+	const searchResults = useSearchResults();
 
 	const invalidQueryTooltip = useMemo(
 		() => t('label.invalid_query', 'Unable to parse the search query, clear it and retry'),

@@ -25,26 +25,6 @@ export const createSearchSlice: StateCreator<
 		status: null,
 		parent: '',
 		tagName: '',
-		error: undefined,
-		setSearchConvResults(conversations: Array<NormalizedConversation>, offset: number): void {
-			set((state: MessageStoreState) => ({
-				search: {
-					...state.search,
-					conversationIds: new Set(conversations.map((c) => c.id))
-				},
-				populatedItems: {
-					...state.populatedItems,
-					offset,
-					conversations: conversations.reduce(
-						(acc, conv) => {
-							// eslint-disable-next-line no-param-reassign
-							acc[conv.id] = conv;
-							return acc;
-						},
-						{} as Record<string, NormalizedConversation>
-					)
-				}
-			}));
-		}
+		error: undefined
 	}
 });

@@ -276,6 +276,5 @@ export type SearchSliceState = {
 		parent?: string;
 		tagName?: string;
 		error?: ErrorType;
-		setSearchConvResults: (conversations: Array<NormalizedConversation>, offset: number) => void;
 	};
 };
