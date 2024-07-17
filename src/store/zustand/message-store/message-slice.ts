@@ -7,7 +7,7 @@
 import produce from 'immer';
 import { StateCreator } from 'zustand';
 
-import { Conversation, MessagesSliceState, SearchSliceState } from '../../../types';
+import { NormalizedConversation, MessagesSliceState, SearchSliceState } from '../../../types';
 
 export const createMessageSlice: StateCreator<
 	MessagesSliceState & SearchSliceState,
@@ -18,7 +18,7 @@ export const createMessageSlice: StateCreator<
 	populatedItems: {
 		messages: {},
 		conversations: {},
-		setConversations(conversations: Record<string, Conversation>): void {
+		setConversations(conversations: Record<string, NormalizedConversation>): void {
 			set(
 				produce((state: MessagesSliceState) => {
 					state.populatedItems.conversations = conversations;

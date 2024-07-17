@@ -12,7 +12,7 @@ import { type MessagesSliceState, type SearchSliceState } from '../../../types';
 
 export type MessageStoreState = MessagesSliceState & SearchSliceState;
 
-export const useMessageStore = create<MessageStoreState>((...a) => ({
+export const useMessageStore = create<MessageStoreState>()((...a) => ({
 	...createSearchSlice(...a),
 	...createMessageSlice(...a)
 }));
