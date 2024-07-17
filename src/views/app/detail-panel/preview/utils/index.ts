@@ -75,7 +75,7 @@ export const getAttachmentsDownloadLink = ({
 	attachments
 }: GetAttachmentsDownloadLinkProps): string => {
 	if (attachments?.length > 1) {
-		return `${getLocationOrigin()}/service/home/~/?auth=co&id=${messageId}&filename=${messageSubject}&charset=UTF-8&part=${attachments.join(
+		return `${getLocationOrigin()}/service/home/~/?auth=co&id=${messageId}&filename=${encodeURIComponent(messageSubject)}&charset=UTF-8&part=${attachments.join(
 			','
 		)}&disp=a&fmt=zip`;
 	}
