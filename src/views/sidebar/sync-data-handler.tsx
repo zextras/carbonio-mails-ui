@@ -17,7 +17,7 @@ import { filter, find, forEach, isEmpty, keyBy, map, reduce, sortBy } from 'loda
 import { useFolder } from '../../carbonio-ui-commons/store/zustand/folder';
 import { MAILS_ROUTE } from '../../constants';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux';
-import { normalizeConversation } from '../../normalizations/normalize-conversation';
+import { normalizeConversationOld } from '../../normalizations/normalize-conversation';
 import { normalizeMailMessageFromSoap } from '../../normalizations/normalize-message';
 import {
 	handleAddMessagesInConversation,
@@ -97,7 +97,7 @@ export const SyncDataHandler: FC = () => {
 						if (notify.created) {
 							if (notify.created.c && notify.created.m) {
 								const conversations = map(notify.created.c, (i) =>
-									normalizeConversation({ c: i, m: notify.created.m, tags })
+									normalizeConversationOld({ c: i, m: notify.created.m, tags })
 								);
 								// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 								// @ts-ignore
@@ -115,7 +115,7 @@ export const SyncDataHandler: FC = () => {
 						if (notify.modified) {
 							if (notify.modified.c) {
 								const conversations = map(notify.modified.c, (i) =>
-									normalizeConversation({ c: i, tags })
+									normalizeConversationOld({ c: i, tags })
 								);
 								// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 								// @ts-ignore

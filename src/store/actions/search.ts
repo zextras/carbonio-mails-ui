@@ -9,7 +9,7 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import { ErrorSoapBodyResponse, getTags, soapFetch } from '@zextras/carbonio-shell-ui';
 import { keyBy, map, reduce } from 'lodash';
 
-import { normalizeConversation } from '../../normalizations/normalize-conversation';
+import { normalizeConversationOld } from '../../normalizations/normalize-conversation';
 import { normalizeMailMessageFromSoap } from '../../normalizations/normalize-message';
 import type {
 	FetchConversationsParameters,
@@ -112,7 +112,7 @@ export const search = createAsyncThunk<
 			const tags = getTags();
 			if (types === 'conversation') {
 				const conversations = map(result?.c ?? [], (obj, index) => ({
-					...normalizeConversation({ c: obj, tags }),
+					...normalizeConversationOld({ c: obj, tags }),
 					sortIndex: index + (offset ?? 0)
 				}));
 				return {

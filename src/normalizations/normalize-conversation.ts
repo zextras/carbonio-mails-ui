@@ -8,7 +8,12 @@ import { filter, find, isNil, map } from 'lodash';
 
 import { normalizeParticipantsFromSoap } from './normalize-message';
 import { omitBy } from '../commons/utils';
-import type { Conversation, SoapConversation, SoapIncompleteMessage } from '../types';
+import type {
+	Conversation,
+	NormalizedConversation,
+	SoapConversation,
+	SoapIncompleteMessage
+} from '../types';
 
 const getTagIdsFromName = (names: string | undefined, tags?: Tags): Array<string | undefined> =>
 	map(names?.split(','), (name) =>
@@ -35,7 +40,7 @@ export type NormalizeConversationProps = {
 };
 
 // @deprecated
-export const normalizeConversation = ({
+export const normalizeConversationOld = ({
 	c,
 	m,
 	tags
@@ -79,11 +84,11 @@ function removeUndefinedValues<T>(items: (T | undefined)[]): T[] {
 	return definedItems;
 }
 
-export const normalizeConversation2 = ({
+export const normalizeConversation = ({
 	c,
 	m,
 	tags
-}: NormalizeConversationProps): Omit<Conversation, 'sortIndex'> => {
+}: NormalizeConversationProps): NormalizedConversation => {
 	const filteredMsgs = c?.m ?? filter(m ?? [], ['cid', c?.id]);
 	const messages = filteredMsgs?.length
 		? map(filteredMsgs, (msg) => ({

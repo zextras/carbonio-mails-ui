@@ -7,7 +7,7 @@
 import { StateCreator } from 'zustand';
 
 import type { MessageStoreState } from './store';
-import { Conversation, MessagesSliceState, SearchSliceState } from '../../../types';
+import { MessagesSliceState, NormalizedConversation, SearchSliceState } from '../../../types';
 
 export const createSearchSlice: StateCreator<
 	SearchSliceState & MessagesSliceState,
@@ -26,24 +26,22 @@ export const createSearchSlice: StateCreator<
 		parent: '',
 		tagName: '',
 		error: undefined,
-		setSearchConvResults(
-			conversations: Array<Partial<Conversation> & Pick<Conversation, 'id' | 'date'>>,
-			offset: number
-		): void {
+		setSearchConvResults(conversations: Array<NormalizedConversation>, offset: number): void {
 			set((state: MessageStoreState) => ({
 				search: {
 					...state.search,
 					conversationIds: new Set(conversations.map((c) => c.id))
 				},
-				messages: {
-					...state.messages,
+				populatedItems: {
+					...state.populatedItems,
+					offset,
 					conversations: conversations.reduce(
 						(acc, conv) => {
 							// eslint-disable-next-line no-param-reassign
 							acc[conv.id] = conv;
 							return acc;
 						},
-						{} as Record<string, Conversation>
+						{} as Record<string, NormalizedConversation>
 					)
 				}
 			}));

@@ -9,11 +9,11 @@ import { map, reduce } from 'lodash';
 
 import { normalizeConversation } from '../../../../normalizations/normalize-conversation';
 import { normalizeMailMessageFromSoap } from '../../../../normalizations/normalize-message';
-import { Conversation, SearchResponse } from '../../../../types';
+import { NormalizedConversation, SearchResponse } from '../../../../types';
 import { useMessageStore } from '../../message-store/store';
 
-export function useConversation(id: string): Conversation {
-	return useMessageStore(({ conversations }) => conversations[id]);
+export function useConversation(id: string): NormalizedConversation {
+	return useMessageStore((state) => state.populatedItems.conversations[id]);
 }
 
 function handleFulFilledConversationResults({
@@ -51,9 +51,6 @@ function handleFulFilledMessagesResults({
 		hasMore: searchResponse.more,
 		offset
 	};
-	useMessageStore.getState().search.setSearchConvResults({
-		search: { messageIds: new Set(Object.keys(normalizedMessages)), offset: searchResponse.offset }
-	});
 }
 
 export function handleSearchResults({

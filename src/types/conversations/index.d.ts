@@ -30,6 +30,8 @@ export type Conversation = {
 	sortIndex: number;
 };
 
+export type NormalizedConversation = Omit<Conversation, 'sortIndex'>;
+
 export type ConvActionParameters = {
 	ids: Array<string>;
 	operation: ConvActionOperation;

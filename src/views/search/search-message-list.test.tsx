@@ -48,7 +48,7 @@ describe('Search items list', () => {
 			status: 'fulfilled'
 		});
 		useMessageStore.setState({
-			messages: {
+			populatedItems: {
 				'1': { ...incompleteMessage, id: '1', subject: 'Message 1' },
 				'2': { ...incompleteMessage, id: '2', subject: 'Message 2' },
 				'3': { ...incompleteMessage, id: '3', subject: 'Message 3' }

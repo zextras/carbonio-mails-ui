@@ -53,7 +53,7 @@ export const SearchMessageListItem: FC<MessageListItemProps> = memo(function Mes
 	deselectAll,
 	currentFolderId
 }) {
-	const item = useMessageStore((state) => state.messages[itemId]);
+	const item = useMessageStore((state) => state.populatedItems[itemId]);
 	const firstChildFolderId = currentFolderId ?? item.parent;
 
 	const dispatch = useAppDispatch();

@@ -8,7 +8,7 @@ import { getTags, soapFetch } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
 
 import { API_REQUEST_STATUS } from '../../constants';
-import { normalizeConversation } from '../../normalizations/normalize-conversation';
+import { normalizeConversationOld } from '../../normalizations/normalize-conversation';
 import { normalizeMailMessageFromSoap } from '../../normalizations/normalize-message';
 import type {
 	Conversation,
@@ -34,7 +34,7 @@ export const getConv = createAsyncThunk<
 			}
 		})) as GetConvResponse;
 		const tags = getTags();
-		const conversation = normalizeConversation({ c: result.c[0], tags });
+		const conversation = normalizeConversationOld({ c: result.c[0], tags });
 		const messages = map(result.c[0].m, (item) =>
 			normalizeMailMessageFromSoap(item, false)
 		) as unknown as Array<IncompleteMessage>;

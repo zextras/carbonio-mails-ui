@@ -4,13 +4,14 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { Conversation } from '../conversations';
+import { NormalizedConversation } from '../conversations';
 import { IncompleteMessage, MailMessage } from '../messages';
 
 export type MessagesSliceState = {
-	messages: {
+	populatedItems: {
 		messages: Record<string, MailMessage | IncompleteMessage>;
-		conversations: Record<string, Conversation>;
-		setConversations: (conversations: Record<string, Conversation>) => void;
+		conversations: Record<string, NormalizedConversation>;
+		setConversations: (conversations: Record<string, NormalizedConversation>) => void;
+		// setMessages: (conversations: Record<string, NormalizedConversation>) => void;
 	};
 };
