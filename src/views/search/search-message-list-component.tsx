@@ -9,11 +9,11 @@ import { Container, Padding, Text } from '@zextras/carbonio-design-system';
 import { find, map, noop, reduce } from 'lodash';
 import styled from 'styled-components';
 
+import { SearchMessageListItem } from './search-message-list-item';
 import ShimmerList from './shimmer-list';
 import { CustomList } from '../../carbonio-ui-commons/components/list/list';
 import { useFolder } from '../../carbonio-ui-commons/store/zustand/folder';
 import { MultipleSelectionActionsPanel } from '../../ui-actions/multiple-selection-actions-panel';
-import { MessageListItem } from '../app/folder-panel/messages/message-list-item';
 import { Breadcrumbs } from '../app/folder-panel/parts/breadcrumbs';
 
 const DragImageContainer = styled.div`
@@ -48,7 +48,7 @@ const DragItems = ({
 	return (
 		<>
 			{map(items, (item) => (
-				<MessageListItem
+				<SearchMessageListItem
 					itemId={item.id}
 					key={item.id}
 					isConvChildren={false}

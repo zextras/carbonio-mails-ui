@@ -13,13 +13,13 @@ import { useParams } from 'react-router-dom';
 
 import { AdvancedFilterButton } from './parts/advanced-filter-button';
 import { SearchMessageItem } from './search-message-item';
+import { SearchMessageListComponent } from './search-message-list-component';
 import ShimmerList from './shimmer-list';
 import { LIST_LIMIT } from '../../constants';
 import { useAppDispatch } from '../../hooks/redux';
 import { useSelection } from '../../hooks/use-selection';
 import { search } from '../../store/actions/search';
 import type { AppContext, SearchListProps } from '../../types';
-import { MessageListComponent } from '../app/folder-panel/messages/message-list-component';
 
 export const SearchMessageList: FC<SearchListProps> = ({
 	searchDisabled,
@@ -29,7 +29,8 @@ export const SearchMessageList: FC<SearchListProps> = ({
 	filterCount,
 	setShowAdvanceFilters,
 	isInvalidQuery,
-	invalidQueryTooltip
+	invalidQueryTooltip,
+	hasMore
 }) => {
 	const { itemId, folderId } = useParams<{ itemId: string; folderId: string }>();
 	const { setCount, count } = useAppContext<AppContext>();
@@ -47,7 +48,7 @@ export const SearchMessageList: FC<SearchListProps> = ({
 		currentFolderId: folderId,
 		setCount,
 		count,
-		items: [...searchResults.messageIds].map((message) => ({ id: message }))
+		items: [...searchResults].map((message) => ({ id: message }))
 	});
 
 	const [isLoading, setIsLoading] = useState(false);
@@ -55,16 +56,16 @@ export const SearchMessageList: FC<SearchListProps> = ({
 	const dispatch = useAppDispatch();
 
 	const displayerTitle = useMemo(() => {
-		if (!isInvalidQuery && isEmpty(searchResults.messageIds)) {
+		if (!isInvalidQuery && isEmpty(searchResults)) {
 			return t(
 				'displayer.search_list_title1',
 				'It looks like there are no results. Keep searching!'
 			);
 		}
 		return null;
-	}, [isInvalidQuery, searchResults.messageIds]);
+	}, [isInvalidQuery, searchResults]);
 
-	const messageIds = useMemo(() => [...searchResults.messageIds], [searchResults?.messageIds]);
+	const messageIds = useMemo(() => [...searchResults], [searchResults]);
 
 	const listItems = useMemo(
 		() =>
@@ -87,14 +88,14 @@ export const SearchMessageList: FC<SearchListProps> = ({
 		[deselectAll, isSelectModeOn, itemId, messageIds, selected, toggle]
 	);
 
-	const totalMessages = useMemo(() => searchResults.messageIds.size, [searchResults]);
+	const totalMessages = useMemo(() => searchResults.size, [searchResults]);
 
 	useLayoutEffect(() => {
 		listRef?.current && (listRef.current.children[0].scrollTop = 0);
-	}, [searchResults.query]);
+	}, [searchResults]);
 
 	const onScrollBottom = useCallback(() => {
-		if (searchResults.more && !isLoading) {
+		if (hasMore && !isLoading) {
 			setIsLoading(true);
 			dispatch(
 				search({
@@ -109,7 +110,7 @@ export const SearchMessageList: FC<SearchListProps> = ({
 				setIsLoading(false);
 			});
 		}
-	}, [dispatch, isLoading, query, searchResults, totalMessages]);
+	}, [dispatch, isLoading, query, hasMore, totalMessages]);
 
 	const messagesLoadingCompleted = true;
 	//  useMemo(
@@ -117,10 +118,7 @@ export const SearchMessageList: FC<SearchListProps> = ({
 	// 	[searchResults?.messageIds]
 	// );
 	const selectedIds = useMemo(() => Object.keys(selected), [selected]);
-	const messages = useMemo(
-		() => [...searchResults.messageIds].map((id) => ({ id })),
-		[searchResults?.messageIds]
-	);
+	const messages = useMemo(() => [...searchResults].map((id) => ({ id })), [searchResults]);
 
 	return (
 		<Container
@@ -136,7 +134,7 @@ export const SearchMessageList: FC<SearchListProps> = ({
 				searchDisabled={searchDisabled}
 				invalidQueryTooltip={invalidQueryTooltip}
 			/>
-			<MessageListComponent
+			<SearchMessageListComponent
 				totalMessages={totalMessages}
 				displayerTitle={displayerTitle}
 				listItems={listItems}

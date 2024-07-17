@@ -29,13 +29,12 @@ const SearchConversationList: FC<SearchListProps> = ({
 	setShowAdvanceFilters,
 	isInvalidQuery,
 	searchDisabled,
-	invalidQueryTooltip
+	invalidQueryTooltip,
+	hasMore
 }) => {
 	const { itemId, folderId } = useParams<{ itemId: string; folderId: string }>();
 	const { setCount, count } = useAppContext<AppContext>();
-	const items = [...searchResults.conversationIds].map((conversationId) => ({
-		id: conversationId
-	}));
+	const items = [...searchResults].map((conversationId) => ({ id: conversationId }));
 	const dispatch = useAppDispatch();
 	const parentId = getFolderParentId({ folderId, isConversation: true, items });
 	const [isLoading, setIsLoading] = useState(false);
@@ -69,7 +68,7 @@ const SearchConversationList: FC<SearchListProps> = ({
 			return null;
 		}
 		// If there are no results, return a title
-		if (isEmpty(searchResults.conversationIds)) {
+		if (isEmpty(searchResults)) {
 			if (randomListIndex === 0) {
 				return t(
 					'displayer.search_list_title1',
@@ -80,37 +79,21 @@ const SearchConversationList: FC<SearchListProps> = ({
 		}
 		// If there are results, don't return a title
 		return null;
-	}, [isInvalidQuery, searchResults.conversationIds, randomListIndex]);
+	}, [isInvalidQuery, searchResults, randomListIndex]);
 
-	const conversationIds = useMemo(
-		() => [...searchResults.conversationIds],
-		[searchResults?.conversationIds]
-	);
+	const conversationIds = useMemo(() => [...searchResults], [searchResults]);
 
 	// totalConversations: length of conversations object
-	const totalConversations = useMemo(
-		() => searchResults.conversationIds.size,
-		[searchResults?.conversationIds]
-	);
+	const totalConversations = useMemo(() => searchResults.size, [searchResults]);
 
-	// If the search results have completed loading, we can display the search results.
-	// Otherwise, we display a loading indicator.
-	const conversationsLoadingCompleted = useMemo(
-		() => searchResults?.status === 'fulfilled',
-		[searchResults?.status]
-	);
-
-	const conversations = useMemo(
-		() => Object.values(searchResults?.conversationIds ?? {}),
-		[searchResults?.conversationIds]
-	);
+	const conversations = useMemo(() => Object.values(searchResults ?? {}), [searchResults]);
 
 	useLayoutEffect(() => {
 		listRef?.current && (listRef.current.children[0].scrollTop = 0);
-	}, [searchResults.query]);
+	}, [searchResults]);
 
 	const onScrollBottom = useCallback(() => {
-		if (searchResults.more && !isLoading) {
+		if (hasMore && !isLoading) {
 			setIsLoading(true);
 			dispatch(
 				search({
@@ -125,7 +108,7 @@ const SearchConversationList: FC<SearchListProps> = ({
 				setIsLoading(false);
 			});
 		}
-	}, [dispatch, isLoading, query, searchResults, totalConversations]);
+	}, [dispatch, isLoading, query, hasMore, totalConversations]);
 	// This is used to render the list items. It maps the conversationList array and returns a list item for each conversation.
 	const listItems = useMemo(
 		() =>

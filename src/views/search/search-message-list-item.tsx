@@ -32,7 +32,7 @@ import { EditViewActions } from '../../constants';
 import { useAppDispatch } from '../../hooks/redux';
 import { useMessageActions } from '../../hooks/use-message-actions';
 import { useMessageStore } from '../../store/zustand/message-store/store';
-import { MessageListItemProps, TextReadValuesType } from '../../types';
+import { TextReadValuesType } from '../../types';
 import { previewMessageOnSeparatedWindow, setMsgRead } from '../../ui-actions/message-actions';
 import { useTagExist } from '../../ui-actions/tag-actions';
 import { createEditBoard } from '../app/detail-panel/edit/edit-view-board';
@@ -42,7 +42,20 @@ import { ListItemActionWrapper } from '../app/folder-panel/parts/list-item-actio
 import { SenderName } from '../app/folder-panel/parts/sender-name';
 import { getFolderTranslatedName } from '../sidebar/utils';
 
-export const SearchMessageListItem: FC<MessageListItemProps> = memo(function MessageListItem({
+type SearchMessageListItemProps = {
+	itemId: string;
+	selected: boolean;
+	selecting: boolean;
+	toggle: (id: string) => void;
+	visible: boolean;
+	isConvChildren: boolean;
+	active?: boolean;
+	isSearchModule?: boolean;
+	isConversation?: boolean;
+	deselectAll: () => void;
+	currentFolderId?: string;
+};
+export const SearchMessageListItem: FC<SearchMessageListItemProps> = memo(function MessageListItem({
 	itemId,
 	selected,
 	selecting,
@@ -53,7 +66,7 @@ export const SearchMessageListItem: FC<MessageListItemProps> = memo(function Mes
 	deselectAll,
 	currentFolderId
 }) {
-	const item = useMessageStore((state) => state.populatedItems[itemId]);
+	const item = useMessageStore((state) => state.populatedItems.messages[itemId]);
 	const firstChildFolderId = currentFolderId ?? item.parent;
 
 	const dispatch = useAppDispatch();

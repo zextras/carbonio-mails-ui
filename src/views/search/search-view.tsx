@@ -235,6 +235,7 @@ const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHe
 									setShowAdvanceFilters={setShowAdvanceFilters}
 									isInvalidQuery={isInvalidQuery}
 									invalidQueryTooltip={invalidQueryTooltip}
+									hasMore={searchResults.more}
 								/>
 							) : (
 								<SearchConversationList
@@ -246,6 +247,7 @@ const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHe
 									setShowAdvanceFilters={setShowAdvanceFilters}
 									isInvalidQuery={isInvalidQuery}
 									invalidQueryTooltip={invalidQueryTooltip}
+									hasMore={searchResults.more}
 								/>
 							)}
 						</Route>

@@ -16,8 +16,8 @@ export const createSearchSlice: StateCreator<
 	SearchSliceState
 > = (set) => ({
 	search: {
-		conversationIds: new Set(),
-		messageIds: new Set(),
+		conversationIds: new Set<string>(),
+		messageIds: new Set<string>(),
 		more: false,
 		offset: 0,
 		sortBy: 'dateDesc',

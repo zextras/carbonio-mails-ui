@@ -31,7 +31,7 @@ export type SearchResults = {
 };
 
 export type SearchListProps = {
-	searchResults: SearchSliceState['search']['messageIds'];
+	searchResults: Set<string>;
 	query: string;
 	loading: boolean;
 	filterCount: number;
@@ -39,6 +39,7 @@ export type SearchListProps = {
 	isInvalidQuery: boolean;
 	searchDisabled: boolean;
 	invalidQueryTooltip?: string;
+	hasMore?: boolean;
 };
 
 export type SearchChipItem = ChipItem & {
@@ -265,8 +266,8 @@ export type ChipType = {
 
 export type SearchSliceState = {
 	search: {
-		conversationIds: Set<string | Record<string, never>>;
-		messageIds: Set<string | Record<string, never>>;
+		conversationIds: Set<string>;
+		messageIds: Set<string>;
 		more: boolean;
 		offset: number;
 		sortBy?: SortBy;
