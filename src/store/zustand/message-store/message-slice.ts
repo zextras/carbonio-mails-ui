@@ -4,26 +4,18 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import produce from 'immer';
 import { StateCreator } from 'zustand';
 
-import { NormalizedConversation, MessagesSliceState, SearchSliceState } from '../../../types';
+import { PopulatedItemsSliceState, SearchSliceState } from '../../../types';
 
 export const createMessageSlice: StateCreator<
-	MessagesSliceState & SearchSliceState,
+	PopulatedItemsSliceState & SearchSliceState,
 	[],
 	[],
-	MessagesSliceState
-> = (set) => ({
+	PopulatedItemsSliceState
+> = () => ({
 	populatedItems: {
 		messages: {},
-		conversations: {},
-		setConversations(conversations: Record<string, NormalizedConversation>): void {
-			set(
-				produce((state: MessagesSliceState) => {
-					state.populatedItems.conversations = conversations;
-				})
-			);
-		}
+		conversations: {}
 	}
 });

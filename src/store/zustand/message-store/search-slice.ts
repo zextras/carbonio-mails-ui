@@ -7,10 +7,10 @@
 import { StateCreator } from 'zustand';
 
 import type { MessageStoreState } from './store';
-import { MessagesSliceState, NormalizedConversation, SearchSliceState } from '../../../types';
+import { PopulatedItemsSliceState, NormalizedConversation, SearchSliceState } from '../../../types';
 
 export const createSearchSlice: StateCreator<
-	SearchSliceState & MessagesSliceState,
+	SearchSliceState & PopulatedItemsSliceState,
 	[],
 	[],
 	SearchSliceState

@@ -10,7 +10,7 @@ import { map, reduce } from 'lodash';
 import { normalizeConversation } from '../../../../normalizations/normalize-conversation';
 import { normalizeMailMessageFromSoap } from '../../../../normalizations/normalize-message';
 import { NormalizedConversation, SearchResponse } from '../../../../types';
-import { useMessageStore } from '../../message-store/store';
+import { messageStoreActions, useMessageStore } from '../../message-store/store';
 
 export function useConversation(id: string): NormalizedConversation {
 	return useMessageStore((state) => state.populatedItems.conversations[id]);
@@ -26,7 +26,7 @@ function handleFulFilledConversationResults({
 	tags: Tags;
 }): void {
 	const conversations = map(searchResponse.c, (conv) => normalizeConversation({ c: conv, tags }));
-	useMessageStore.getState().search.setSearchConvResults(conversations, offset);
+	messageStoreActions.updateConversations(conversations, offset);
 }
 
 function handleFulFilledMessagesResults({

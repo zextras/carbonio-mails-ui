@@ -6,13 +6,31 @@
 
 import { create } from 'zustand';
 
-import { createMessageSlice } from './message-slice';
+import { createMessageSlice as createPopulatedItemsSlice } from './message-slice';
 import { createSearchSlice } from './search-slice';
-import { type MessagesSliceState, type SearchSliceState } from '../../../types';
+import {
+	NormalizedConversation,
+	type PopulatedItemsSliceState,
+	type SearchSliceState
+} from '../../../types';
 
-export type MessageStoreState = MessagesSliceState & SearchSliceState;
+export type MessageStoreState = PopulatedItemsSliceState & SearchSliceState;
 
 export const useMessageStore = create<MessageStoreState>()((...a) => ({
 	...createSearchSlice(...a),
-	...createMessageSlice(...a)
+	...createPopulatedItemsSlice(...a)
 }));
+
+type MessageStoreActions = {
+	updateConversations: (conversations: Array<NormalizedConversation>, offset: number) => void;
+};
+function createStoreActions(store: MessageStoreState): MessageStoreActions {
+	return {
+		updateConversations: store.search.setSearchConvResults
+	};
+}
+
+export const useMessageStoreActions = (): MessageStoreActions =>
+	useMessageStore((state) => createStoreActions(state));
+
+export const messageStoreActions = createStoreActions(useMessageStore.getState());

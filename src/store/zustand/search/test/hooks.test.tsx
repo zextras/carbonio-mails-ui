@@ -8,7 +8,7 @@ import { renderHook } from '@testing-library/react-hooks';
 
 import { generateConversation } from '../../../../tests/generators/generateConversation';
 import { SoapConversation } from '../../../../types';
-import { useMessageStore } from '../../message-store/store';
+import { messageStoreActions, useMessageStore } from '../../message-store/store';
 import { handleSearchResults, useConversation } from '../hooks/hooks';
 
 function conversationFromAPI(params: Partial<SoapConversation> = {}): SoapConversation {
@@ -29,8 +29,7 @@ function conversationFromAPI(params: Partial<SoapConversation> = {}): SoapConver
 describe('Searches store hooks', () => {
 	it('useConversation should return a conversation', () => {
 		const conversation = generateConversation({ id: '1', subject: 'Test conversation' });
-		useMessageStore.getState().search.setSearchConvResults([conversation], 0);
-		useMessageStore.getState().populatedItems.setConversations({ [conversation.id]: conversation });
+		messageStoreActions.updateConversations([conversation], 0);
 		const { result } = renderHook(() => useConversation('1'));
 		expect(result.current).toEqual(conversation);
 	});

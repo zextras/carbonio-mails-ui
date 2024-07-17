@@ -7,11 +7,11 @@
 import { NormalizedConversation } from '../conversations';
 import { IncompleteMessage, MailMessage } from '../messages';
 
-export type MessagesSliceState = {
+export type PopulatedItemsSliceState = {
 	populatedItems: {
 		messages: Record<string, MailMessage | IncompleteMessage>;
 		conversations: Record<string, NormalizedConversation>;
-		setConversations: (conversations: Record<string, NormalizedConversation>) => void;
+		// setConversations: (conversations: Record<string, NormalizedConversation>) => void;
 		// setMessages: (conversations: Record<string, NormalizedConversation>) => void;
 	};
 };
