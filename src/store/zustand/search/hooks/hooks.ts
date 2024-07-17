@@ -5,7 +5,7 @@
  */
 
 import { type ErrorSoapBodyResponse, getTags, Tags } from '@zextras/carbonio-shell-ui';
-import { map, reduce } from 'lodash';
+import { map } from 'lodash';
 
 import { normalizeConversation } from '../../../../normalizations/normalize-conversation';
 import { normalizeMailMessageFromSoap } from '../../../../normalizations/normalize-message';
@@ -32,21 +32,11 @@ function handleFulFilledMessagesResults({
 	searchResponse: SearchResponse;
 	offset: number;
 }): void {
-	const normalizedMessages = {
-		messages: reduce(
-			searchResponse.m ?? [],
-			(acc, msg, index) => {
-				const normalized = {
-					...normalizeMailMessageFromSoap(msg, false),
-					sortIndex: index + (offset ?? 0)
-				};
-				return { ...acc, [normalized.id]: normalized };
-			},
-			{}
-		),
-		hasMore: searchResponse.more,
-		offset
-	};
+	const normalizedMessages = map(searchResponse.m, (msg) =>
+		normalizeMailMessageFromSoap(msg, false)
+	);
+
+	messageStoreActions.updateMessages(normalizedMessages, offset);
 }
 
 export function handleSearchResults({

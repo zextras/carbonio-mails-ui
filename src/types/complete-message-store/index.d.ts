@@ -16,5 +16,6 @@ export type PopulatedItemsSliceState = {
 	};
 	actions: {
 		updateConversations: (conversations: Array<NormalizedConversation>, offset: number) => void;
+		updateMessages: (messages: Array<MailMessage | IncompleteMessage>, offset: number) => void;
 	};
 };

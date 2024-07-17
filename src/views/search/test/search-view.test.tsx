@@ -53,7 +53,7 @@ function getSoapConversationMessage(messageId: string, conversationId: string): 
 function getSoapMessage(
 	messageId: string,
 	initialData?: Partial<SoapIncompleteMessage>
-): SoapIncompleteMessage {
+): SoapMailMessage {
 	return {
 		id: messageId,
 		cid: '1',
@@ -77,7 +77,7 @@ function getSoapConversation(id: string): SoapConversation {
 		f: 'flag',
 		tn: 'tag names',
 		d: 123,
-		m: [],
+		m: [getSoapMessage('123')],
 		e: [],
 		su: 'conversations Subject',
 		fr: 'fragment'

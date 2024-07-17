@@ -7,7 +7,14 @@
 import { StateCreator } from 'zustand';
 
 import { type MessageStoreState } from './store';
-import { NormalizedConversation, PopulatedItemsSliceState, SearchSliceState } from '../../../types';
+import { API_REQUEST_STATUS } from '../../../constants';
+import {
+	IncompleteMessage,
+	MailMessage,
+	NormalizedConversation,
+	PopulatedItemsSliceState,
+	SearchSliceState
+} from '../../../types';
 
 export const createMessageSlice: StateCreator<
 	PopulatedItemsSliceState & SearchSliceState,
@@ -24,6 +31,7 @@ export const createMessageSlice: StateCreator<
 			set((state: MessageStoreState) => ({
 				search: {
 					...state.search,
+					status: API_REQUEST_STATUS.fulfilled,
 					conversationIds: new Set(conversations.map((c) => c.id))
 				},
 				populatedItems: {
@@ -36,6 +44,27 @@ export const createMessageSlice: StateCreator<
 							return acc;
 						},
 						{} as Record<string, NormalizedConversation>
+					)
+				}
+			}));
+		},
+		updateMessages(messages: Array<MailMessage | IncompleteMessage>, offset: number): void {
+			set((state: MessageStoreState) => ({
+				search: {
+					...state.search,
+					status: API_REQUEST_STATUS.fulfilled,
+					messageIds: new Set(messages.map((c) => c.id))
+				},
+				populatedItems: {
+					...state.populatedItems,
+					offset,
+					messages: messages.reduce(
+						(acc, msg) => {
+							// eslint-disable-next-line no-param-reassign
+							acc[msg.id] = msg;
+							return acc;
+						},
+						{} as Record<string, MailMessage | IncompleteMessage>
 					)
 				}
 			}));

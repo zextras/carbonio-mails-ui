@@ -119,12 +119,13 @@ const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHe
 				'Fault' in searchResponse &&
 				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 				// @ts-ignore
-				searchResponse?.Detail?.Error?.Code === 'mail.QUERY_PARSE_ERROR'
+				searchResponse?.Fault?.Detail?.Error?.Code === 'mail.QUERY_PARSE_ERROR'
 			) {
 				setIsInvalidQuery(true);
 				setSearchDisabled(true, invalidQueryTooltip);
+			} else {
+				handleSearchResults({ searchResponse, offset });
 			}
-			handleSearchResults({ searchResponse, offset });
 		},
 		[invalidQueryTooltip, isMessageView, prefLocale, searchResults.offset, setSearchDisabled]
 	);
