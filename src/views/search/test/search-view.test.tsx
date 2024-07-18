@@ -83,6 +83,7 @@ function getSoapConversation(id: string): SoapConversation {
 		fr: 'fragment'
 	};
 }
+
 describe('SearchView', () => {
 	describe('view by conversations', () => {
 		beforeEach(() => {
@@ -189,6 +190,61 @@ describe('SearchView', () => {
 			expect(chevron).toBeInTheDocument();
 			expect(badge).toBeInTheDocument();
 			expect(badge).toHaveTextContent('2');
+		});
+
+		it('should display the panel when user clicks on a conversation', async () => {
+			const store = generateStore();
+			const defaultConversation = getSoapConversation('123');
+			const message1 = getSoapConversationMessage('100', '123');
+			const message2 = getSoapConversationMessage('200', '123');
+
+			const conversation = { ...defaultConversation, n: 2, m: [message1, message2] };
+			createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
+				c: [conversation],
+				more: false
+			});
+			const queryChip: QueryChip = {
+				hasAvatar: false,
+				id: '0',
+				label: 'ciao'
+			};
+			const customSettings: Partial<AccountSettings> = {
+				prefs: {
+					zimbraPrefGroupMailBy: 'conversation'
+				}
+			};
+			const settings = generateSettings(customSettings);
+			jest.spyOn(hooks, 'useUserSettings').mockReturnValue(settings);
+			const spyPushHistory = jest.spyOn(hooks, 'pushHistory');
+
+			// (useParams as jest.Mock).mockReturnValue({ type: 'conversation', itemId: message1.id });
+			const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
+			const searchViewProps: SearchViewProps = {
+				useQuery: () => [[queryChip], noop],
+				useDisableSearch: () => [false, noop],
+				ResultsHeader: resultsHeader
+			};
+
+			const { user } = setupTest(<SearchView {...searchViewProps} />, {
+				store
+			});
+			expect(await screen.findByText('conversations Subject')).toBeInTheDocument();
+			const conversationContainer = await screen.findByTestId(
+				`ConversationListItem-${conversation.id}`
+			);
+
+			await act(async () => {
+				await user.hover(conversationContainer);
+			});
+
+			const clickableConversation = await screen.findByTestId(`hover-container-${conversation.id}`);
+			await act(async () => {
+				await user.click(clickableConversation);
+			});
+			expect(spyPushHistory).toBeCalledWith('/folder/2/conversation/123');
+			// 	expect(
+			// 		await screen.findByTestId(`conversation-preview-panel-${conversation.id}`)
+			// 	).toBeInTheDocument();
 		});
 	});
 

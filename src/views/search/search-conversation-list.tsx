@@ -12,6 +12,7 @@ import { useParams } from 'react-router-dom';
 
 import { AdvancedFilterButton } from './parts/advanced-filter-button';
 import { SearchConversationItem } from './search-conversation-item';
+import { SearchConversationListComponent } from './search-conversation-list-component';
 import ShimmerList from './shimmer-list';
 import { LIST_LIMIT } from '../../constants';
 import { useAppDispatch } from '../../hooks/redux';
@@ -19,7 +20,6 @@ import { useSelection } from '../../hooks/use-selection';
 import { search } from '../../store/actions/search';
 import type { AppContext, SearchListProps } from '../../types';
 import { getFolderParentId } from '../../ui-actions/utils';
-import { ConversationListComponent } from '../app/folder-panel/conversations/conversation-list-component';
 
 const SearchConversationList: FC<SearchListProps> = ({
 	searchResults,
@@ -140,7 +140,7 @@ const SearchConversationList: FC<SearchListProps> = ({
 				invalidQueryTooltip={invalidQueryTooltip}
 			/>
 			{!isInvalidQuery && (
-				<ConversationListComponent
+				<SearchConversationListComponent
 					displayerTitle={displayerTitle}
 					listItems={listItems}
 					totalConversations={totalConversations}

@@ -11,6 +11,7 @@ import MailPreview from './preview/mail-preview';
 import { useAppSelector } from '../../../hooks/redux';
 import { useMessageActions } from '../../../hooks/use-message-actions';
 import { selectMessage } from '../../../store/messages-slice';
+import { useMessageById } from '../../../store/zustand/message-store/store';
 import { ConvMessage, MailsStateType } from '../../../types';
 
 export type ConversationMessagePreviewProps = {
@@ -26,7 +27,11 @@ export const ConversationMessagePreview: FC<ConversationMessagePreviewProps> = (
 	isAlone,
 	isInsideExtraWindow
 }) => {
-	const message = useAppSelector((state: MailsStateType) => selectMessage(state, convMessage.id));
+	const messageFromReduxStore = useAppSelector((state: MailsStateType) =>
+		selectMessage(state, convMessage.id)
+	);
+	const messageFromSearchStore = useMessageById(convMessage.id);
+	const message = messageFromReduxStore || messageFromSearchStore;
 	const messageActions = useMessageActions(message, isAlone);
 	return (
 		<Padding bottom="medium" width="100%" data-testid={`ConversationMessagePreview-${message.id}`}>

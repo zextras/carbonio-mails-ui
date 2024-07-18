@@ -20,6 +20,7 @@ import {
 	selectConversation,
 	selectConversationExpandedStatus
 } from '../../../store/conversations-slice';
+import { useConversationById } from '../../../store/zustand/message-store/store';
 import type { MailsStateType } from '../../../types';
 import { useExtraWindow } from '../extra-windows/use-extra-window';
 
@@ -44,7 +45,9 @@ export const ConversationPreviewPanelContainer: FC<ConversationPreviewPanelProps
 		selectConversationExpandedStatus(state, conversationId)
 	);
 
-	const conversation = useAppSelector(selectConversation(conversationId));
+	const conversationFromReduxStore = useAppSelector(selectConversation(conversationId));
+	const conversationFromSearchStore = useConversationById(conversationId);
+	const conversation = conversationFromReduxStore || conversationFromSearchStore;
 	const settings = useUserSettings();
 	const convSortOrder = settings.prefs.zimbraPrefConversationOrder as string;
 	useEffect(() => {
@@ -78,6 +81,7 @@ export const ConversationPreviewPanelContainer: FC<ConversationPreviewPanelProps
 				<>
 					{!isInsideExtraWindow && <PreviewPanelHeader item={conversation} folderId={folderId} />}
 					<ConversationPreviewPanel
+						data-testid={`conversation-preview-panel-${conversationId}`}
 						conversation={conversation}
 						isInsideExtraWindow={isInsideExtraWindow}
 						convSortOrder={convSortOrder}
