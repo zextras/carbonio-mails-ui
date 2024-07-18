@@ -192,7 +192,7 @@ describe('SearchView', () => {
 			expect(badge).toHaveTextContent('2');
 		});
 
-		it('should display the panel when user clicks on a conversation', async () => {
+		it('should change the route when clicking a conversation in the list', async () => {
 			const store = generateStore();
 			const defaultConversation = getSoapConversation('123');
 			const message1 = getSoapConversationMessage('100', '123');
@@ -217,7 +217,6 @@ describe('SearchView', () => {
 			jest.spyOn(hooks, 'useUserSettings').mockReturnValue(settings);
 			const spyPushHistory = jest.spyOn(hooks, 'pushHistory');
 
-			// (useParams as jest.Mock).mockReturnValue({ type: 'conversation', itemId: message1.id });
 			const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
 			const searchViewProps: SearchViewProps = {
 				useQuery: () => [[queryChip], noop],
