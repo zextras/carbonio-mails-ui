@@ -13,6 +13,7 @@ import {
 	MailMessage,
 	NormalizedConversation,
 	type PopulatedItemsSliceState,
+	SearchRequestStatus,
 	type SearchSliceState
 } from '../../../types';
 
@@ -38,6 +39,10 @@ export function useMessageById(id: string): IncompleteMessage | MailMessage {
 
 export function useSearchResults(): SearchSliceState['search'] {
 	return useMessageStore((state) => state.search);
+}
+
+export function useSearchResultStatus(): SearchRequestStatus {
+	return useMessageStore.getState().search.status;
 }
 
 export const messageStoreActions: PopulatedItemsSliceState['actions'] =

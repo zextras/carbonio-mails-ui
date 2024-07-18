@@ -9,8 +9,8 @@ import { Container, Padding, Text } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import { useRouteMatch, Switch, Route } from 'react-router-dom';
 
+import { SearchConversationPreviewPanelContainer } from './parts/search-conversation-preview-panel-container';
 import type { SearchPanelProps } from '../../types';
-import { ConversationPreviewPanelContainer } from '../app/detail-panel/conversation-preview-panel-container';
 import { MessagePreviewPanelContainer } from '../app/detail-panel/message-preview-panel-container';
 
 const SearchPanel: FC<SearchPanelProps> = ({ searchResults }) => {
@@ -42,7 +42,7 @@ const SearchPanel: FC<SearchPanelProps> = ({ searchResults }) => {
 	return (
 		<Switch>
 			<Route path={`${path}/folder/:folderId/conversation/:conversationId`}>
-				<ConversationPreviewPanelContainer />
+				<SearchConversationPreviewPanelContainer />
 			</Route>
 			<Route path={`${path}/folder/:folderId/message/:messageId`}>
 				<MessagePreviewPanelContainer />
