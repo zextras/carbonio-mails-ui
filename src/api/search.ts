@@ -9,7 +9,7 @@ import { ErrorSoapBodyResponse, soapFetch } from '@zextras/carbonio-shell-ui';
 
 import type { FetchConversationsParameters, SearchRequest, SearchResponse } from '../types';
 
-export async function searchNew({
+export async function searchSoapApi({
 	folderId,
 	limit = 100,
 	before,

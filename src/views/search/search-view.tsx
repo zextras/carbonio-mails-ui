@@ -22,7 +22,7 @@ import SearchPanel from './panel/search-panel';
 import { findIconFromChip } from './parts/use-find-icon';
 import SearchConversationList from './search-conversation-list';
 import { SearchMessageList } from './search-message-list';
-import { searchNew } from '../../api/search-new';
+import { searchSoapApi } from '../../api/search';
 import { useFoldersMap } from '../../carbonio-ui-commons/store/zustand/folder/hooks';
 import type { Folder } from '../../carbonio-ui-commons/types/folder';
 import { LIST_LIMIT, MAILS_ROUTE } from '../../constants';
@@ -106,7 +106,7 @@ const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHe
 	const searchQuery = useCallback(
 		async (queryString: string, reset: boolean) => {
 			const offset = reset ? 0 : searchResults.offset;
-			const searchResponse = await searchNew({
+			const searchResponse = await searchSoapApi({
 				query: queryString,
 				limit: LIST_LIMIT.INITIAL_LIMIT,
 				sortBy: 'dateDesc',
