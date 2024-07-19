@@ -13,7 +13,7 @@ import { useParams } from 'react-router-dom';
 import { SearchConversationMessagePanel } from './search-conversation-message-panel';
 import { API_REQUEST_STATUS } from '../../../constants';
 import { getFolderIdParts } from '../../../helpers/folders';
-import { getConv, searchConv } from '../../../store/actions';
+import { searchConv } from '../../../store/actions';
 import { useConversationById } from '../../../store/zustand/message-store/store';
 import PreviewPanelHeader from '../../app/detail-panel/preview/preview-panel-header';
 import { useExtraWindow } from '../../app/extra-windows/use-extra-window';
@@ -41,15 +41,9 @@ export const SearchConversationPanel: FC<SearchConversationPanelProps> = (props)
 	const conversation = useConversationById(conversationId);
 	const settings = useUserSettings();
 	const convSortOrder = settings.prefs.zimbraPrefConversationOrder as string;
-	useEffect(() => {
-		if (!conversation) {
-			getConv({ conversationId });
-		}
-	}, [conversation, conversationId]);
 
 	const conversationStatus = API_REQUEST_STATUS.fulfilled;
 
-	// searchConv retrieves the full messages of a conversation
 	useEffect(() => {
 		if (
 			(conversationStatus !== API_REQUEST_STATUS.fulfilled &&
