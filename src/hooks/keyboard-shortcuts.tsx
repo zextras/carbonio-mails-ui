@@ -10,153 +10,247 @@ import { noop } from 'lodash';
 import { AppDispatch } from '../store/redux';
 import {
 	setConversationsFlag,
-	useConversationsRead,
-	useMoveConversationToTrash,
-	useSetConversationAsSpam
+	setConversationsRead,
+	useSetConversationAsSpam,
+	useDeleteConversationPermanently,
+	useMoveConversationToFolder,
+	useMoveConversationToTrash
 } from '../ui-actions/conversation-actions';
+import {
+	useDeleteMessagePermanently,
+	useMoveMessageToFolder,
+	useMoveMsgToTrash
+} from '../ui-actions/message-actions';
+
+import { isConversation, isSingleMessageConversation } from '../helpers/messages';
 
 type HandleKeyboardShortcutsProps = {
-	event: KeyboardEvent;
+	event: any;
 	itemId: string;
 	folderId: string;
 	dispatch: AppDispatch;
 	deselectAll: () => void;
-	conversations: Array<{ id: string; flagged: boolean }>;
+	conversations: Array<any>;
 };
 
-const modifierKeysFirstTier: string[] = ['v', 'm', '.', 'n'];
-const modifierKeysSecondTier: string[] = [];
+const modifierKeysFirstTier = ['v', 'm', '.', 'n'];
+const modifierKeysSecondTier: Array<any> = [];
+const modifierKeysThirdTier = ['Delete','ShiftDelete'];
 
 let keySequence = '';
 export const useKeyboardShortcuts = (): ((args: HandleKeyboardShortcutsProps) => void) => {
 	const setConversationAsSpam = useSetConversationAsSpam();
 	const moveConversationToTrash = useMoveConversationToTrash();
-	const setConversationRead = useConversationsRead();
+	const moveMessageToTrash = useMoveMsgToTrash();
+	const moveConversationToFolder = useMoveConversationToFolder();
+	const moveMessageToFolder = useMoveMessageToFolder();
+	const deleteConversationPermanently = useDeleteConversationPermanently();
+	const deleteMessagePermanently = useDeleteMessagePermanently();
+
 	return useCallback(
-		({ event, itemId, conversations, dispatch, deselectAll, folderId }) => {
-			const conversationFlag = conversations.filter(
-				(conversation) => conversation.id === itemId
-			)?.[0]?.flagged;
+	({ event, itemId, conversations, dispatch, deselectAll, folderId }) => {
+		const conversationFlag = conversations.filter((conversation) => conversation.id === itemId)?.[0]
+			?.flagged;
 
-			const eventActions = (): void => {
-				event.preventDefault();
-				event.stopImmediatePropagation();
-			};
+		const eventActions = (): void => {
+			event.preventDefault();
+			event.stopImmediatePropagation();
+		};
 
-			const isGlobalContext =
-				event.target instanceof HTMLElement &&
-				!event.target.isContentEditable &&
-				event.target.nodeName !== 'INPUT' &&
-				event.target.nodeName !== 'TEXTAREA';
+		const isGlobalContext =
+			event?.target?.isContentEditable === false &&
+			event?.target?.nodeName !== 'INPUT' &&
+			event.target.nodeName !== 'TEXTAREA';
 
-			const callKeyboardShortcutAction = (): void => {
-				switch (keySequence) {
-					case 'mr': // Mark read
-					case 'z': // Mark read
-						if (isGlobalContext) {
-							eventActions();
-							setConversationRead({
-								ids: [itemId],
-								value: false,
-								dispatch,
-								deselectAll: noop,
-								shouldReplaceHistory: false,
-								folderId
-							}).onClick(event);
-						}
-						break;
-					case 'mu': // Mark unread
-						if (isGlobalContext) {
-							eventActions();
-							setConversationRead({
-								ids: [itemId],
-								value: true,
-								dispatch,
-								deselectAll: noop,
-								shouldReplaceHistory: false,
-								folderId
-							}).onClick(event);
-						}
-						break;
-					case 'x': // Mark unread
-						if (isGlobalContext && itemId) {
-							eventActions();
-							setConversationRead({
-								ids: [itemId],
-								value: true,
-								dispatch,
-								deselectAll: noop,
-								shouldReplaceHistory: false,
-								folderId
-							}).onClick(event);
-						}
-						break;
-					case 'mf': // Flag/Unflag messages
-						if (isGlobalContext && itemId) {
-							eventActions();
-							setConversationsFlag({ ids: [itemId], value: conversationFlag, dispatch }).onClick(
-								event
-							);
-						}
-						break;
-					case 'ms': // Report (mark as) spam
-						if (isGlobalContext && itemId) {
-							eventActions();
-							setConversationAsSpam({
-								ids: [itemId],
-								value: false,
-								dispatch,
-								deselectAll
-							}).onClick(event);
-						}
-						break;
-					case '.t': // Move to Trash
-						if (isGlobalContext && itemId) {
-							eventActions();
-							moveConversationToTrash({
+		const callKeyboardShortcutAction = (): void => {
+			const findMsg = conversations.find(item => item.id === itemId);
+			let isSingleMessage, isFullConv = false;
+			if (typeof findMsg !== 'undefined') {  
+				isSingleMessage = isSingleMessageConversation(findMsg);
+				isFullConv = isConversation(findMsg);
+			}
+			if (!isGlobalContext ){
+				keySequence = '';
+				return;
+			}
+			switch (keySequence) {
+				case 'mr': // Mark read
+					if (isGlobalContext && (isFullConv || isSingleMessage)) {
+						eventActions();
+						setConversationsRead({
+							ids: [itemId],
+							value: false,
+							dispatch,
+							deselectAll: noop
+						}).onClick(event);
+					}
+					break;
+				case 'z': // Mark read
+					if (isGlobalContext && (isFullConv || isSingleMessage)) {
+						eventActions();
+						setConversationsRead({
+							ids: [itemId],
+							value: false,
+							dispatch,
+							deselectAll: noop
+						}).onClick(event);
+					}
+					break;
+				case 'mu': // Mark unread
+					if (isGlobalContext && (isFullConv || isSingleMessage)) {
+						eventActions();
+						setConversationsRead({
+							ids: [itemId],
+							value: true,
+							dispatch,
+							deselectAll: noop
+						}).onClick(event);
+					}
+					break;
+				case 'x': // Mark unread
+					if (isGlobalContext && itemId && (isFullConv || isSingleMessage)) {
+						eventActions();
+						setConversationsRead({
+							ids: [itemId],
+							value: true,
+							dispatch,
+							deselectAll: noop
+						}).onClick(event);
+					}
+					break;
+				case 'mf': // Flag/Unflag messages
+					if (isGlobalContext && itemId && (isFullConv || isSingleMessage)) {
+						eventActions();
+						setConversationsFlag({ ids: [itemId], value: conversationFlag, dispatch }).onClick(event);
+					}
+					break;
+				case 'ms': // Report (mark as) spam
+					if (isGlobalContext && itemId && (isFullConv || isSingleMessage)) {
+						eventActions();
+						setConversationAsSpam({
+							ids: [itemId],
+							value: false,
+							dispatch,
+							deselectAll
+						}).onClick(event);
+					}
+					break;
+				case '.t': // Move to Trash
+					if (isGlobalContext && itemId) {
+						eventActions();
+						moveConversationToTrash({
+							ids: [itemId],
+							dispatch,
+							deselectAll,
+							folderId
+						}).onClick(event);
+					}
+					break;
+				case '.i': // Move to Inbox
+					if (isGlobalContext) {
+						eventActions();
+					}
+					break;
+				case 'r': // Reply
+					if (isGlobalContext) {
+						eventActions();
+					}
+					break;
+				case 'a': // Reply all
+					if (isGlobalContext) {
+						eventActions();
+					}
+					break;
+				case 'f': // Forward message
+					if (isGlobalContext) {
+						eventActions();
+					}
+					break;
+				case 'nf': // New folder
+					if (isGlobalContext) {
+						eventActions();
+					}
+					break;
+				case 'mm': // Move Message
+					if (isGlobalContext && (isFullConv || isSingleMessage)) {
+						eventActions();
+						isFullConv
+						? moveConversationToFolder({
 								ids: [itemId],
 								dispatch,
 								deselectAll,
-								folderId
-							}).onClick(event);
-						}
-						break;
-					case '.i': // Move to Inbox
-					case 'r': // Reply
-					case 'a': // Reply all
-					case 'f': // Forward message
-					case 'nf': // New folder
-						if (isGlobalContext) {
-							eventActions();
-						}
-						break;
-					default:
-						break;
-				}
-				keySequence = '';
-			};
-
-			keySequence = keySequence.concat(event.key);
-			const timer = setTimeout(callKeyboardShortcutAction, 1000);
-
-			switch (keySequence.length) {
-				case 1:
-					if (modifierKeysFirstTier.indexOf(event.key) === -1) {
-						clearTimeout(timer);
-						callKeyboardShortcutAction();
+								folderId,
+								isRestore: false
+						}).onClick(event)
+						: moveMessageToFolder({
+								id: [itemId],
+								folderId,
+								dispatch,
+								isRestore: false,
+								deselectAll
+						}).onClick(event);
 					}
 					break;
-				case 2:
-					// FIXME: modifierKeysSecondTier can only be empty here, so the if condition is always true
-					if (modifierKeysSecondTier.indexOf(event.key) === -1) {
-						clearTimeout(timer);
-						callKeyboardShortcutAction();
+				case 'Delete': //Delete
+					if (isGlobalContext && (isFullConv || isSingleMessage)) {
+						eventActions();
+						isFullConv
+						? moveConversationToTrash({ ids: [itemId], 
+							dispatch, 
+							folderId, 
+							deselectAll }).onClick(event)
+						: moveMessageToTrash({ ids: [itemId], 
+							dispatch, 
+							deselectAll }).onClick(event);
 					}
 					break;
-
+				case 'ShiftDelete': //DeletePermantely
+					if (isGlobalContext && (isFullConv || isSingleMessage)) {
+						eventActions();
+						isFullConv
+						? deleteConversationPermanently({ ids: [itemId], 
+							deselectAll }).onClick(event)
+						: deleteMessagePermanently({ ids: [itemId], 
+							dispatch,
+							deselectAll }).onClick(event);
+					}
+					break;
 				default:
 			}
-		},
-		[moveConversationToTrash, setConversationAsSpam, setConversationRead]
-	);
+			keySequence = '';
+		};
+
+		keySequence = keySequence.concat(event.key);
+		const timer = setTimeout(callKeyboardShortcutAction, 1000);
+
+		switch (keySequence.length) {
+			case 1:
+				if (modifierKeysFirstTier.indexOf(event.key) === -1) {
+					clearTimeout(timer);
+					callKeyboardShortcutAction();
+				}
+				break;
+			case 2:
+				if (modifierKeysSecondTier.indexOf(event.key) === -1) {
+					clearTimeout(timer);
+					callKeyboardShortcutAction();
+				}
+				break;
+			default:
+				if (modifierKeysThirdTier.indexOf(event.key) !== -1 && keySequence.length > 2 ) {
+					clearTimeout(timer);
+					callKeyboardShortcutAction();
+				}
+				break;
+		}
+	},
+	[
+		setConversationAsSpam,
+		moveConversationToTrash,
+		moveMessageToTrash,
+		moveConversationToFolder,
+		moveMessageToFolder,
+		deleteConversationPermanently,
+		deleteMessagePermanently
+	]);
 };
