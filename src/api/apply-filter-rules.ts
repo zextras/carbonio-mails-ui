@@ -155,6 +155,6 @@ export const applyFilterRules = async ({
 		const ids = extractMessagesIdFromSoapResponse(soapResult);
 		return Promise.resolve<ApplyFilterRulesResult>({ messagesId: ids });
 	} catch (err) {
-		return Promise.reject(new Error(''));
+		return Promise.reject(new Error('').message);
 	}
 };
