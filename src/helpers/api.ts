@@ -1,0 +1,92 @@
+/* eslint-disable @typescript-eslint/no-use-before-define */
+/*
+ * SPDX-FileCopyrightText: 2024 Zextras <https://www.zextras.com>
+ *
+ * SPDX-License-Identifier: AGPL-3.0-only
+ */
+
+import {
+	SoapConversation,
+	SoapIncompleteMessage,
+	SoapMailMessage,
+	SoapMailMessagePart,
+	SoapMailParticipant
+} from '../types';
+
+export function generateMessagePartFromAPI(
+	params: Partial<SoapMailMessagePart> = {}
+): SoapMailMessagePart {
+	return {
+		part: 'part',
+		ct: 'ct',
+		requiresSmartLinkConversion: false,
+		...params
+	};
+}
+
+export function generateConversationFromAPI(
+	params: Partial<SoapConversation> = {}
+): SoapConversation {
+	return {
+		id: '123',
+		n: 1,
+		u: 1,
+		f: 'flag',
+		tn: 'tag names',
+		d: 123,
+		m: [generateConvMessageFromAPI()],
+		e: [],
+		su: 'Subject',
+		fr: 'fragment',
+		...params
+	};
+}
+
+export function generateConvMessageFromAPI(params: Partial<SoapMailMessage> = {}): SoapMailMessage {
+	return {
+		...generateMessageFromAPI({ id: '987', d: 987 }),
+		su: 'Subject',
+		fr: 'Fragment',
+		e: [
+			generateFromParticipantFromAPI({ a: 'from@loc.al' }),
+			generateToParticipantFromAPI({ a: 'to@loc.al' })
+		],
+		mp: [generateMessagePartFromAPI()],
+		...params
+	};
+}
+
+export function generateFromParticipantFromAPI(
+	params: Partial<SoapMailParticipant> = {}
+): SoapMailParticipant {
+	return {
+		a: 'add@re.ss',
+		p: 'p',
+		t: 'f',
+		...params
+	};
+}
+
+export function generateToParticipantFromAPI(
+	params: Partial<SoapMailParticipant> = {}
+): SoapMailParticipant {
+	return {
+		a: 'add@re.ss',
+		p: 'p',
+		t: 't',
+		...params
+	};
+}
+
+export function generateMessageFromAPI(
+	params: Partial<SoapIncompleteMessage> = {}
+): SoapIncompleteMessage {
+	return {
+		id: '456',
+		cid: '456',
+		l: 'folder1',
+		s: 123,
+		d: 456,
+		...params
+	};
+}

@@ -10,6 +10,11 @@ import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 
 import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { buildSoapErrorResponseBody } from '../../../carbonio-ui-commons/test/mocks/utils/soap';
+import {
+	generateConversationFromAPI,
+	generateConvMessageFromAPI,
+	generateMessageFromAPI
+} from '../../../helpers/api';
 import { generateStore } from '../../../tests/generators/store';
 import {
 	ConvMessage,
@@ -19,12 +24,7 @@ import {
 	MailsStateType,
 	MsgMapValue,
 	SearchRequest,
-	SearchResponse,
-	SoapConversation,
-	SoapIncompleteMessage,
-	SoapMailMessage,
-	SoapMailMessagePart,
-	SoapMailParticipant
+	SearchResponse
 } from '../../../types';
 import { search } from '../search';
 
@@ -46,7 +46,7 @@ describe('search', () => {
 
 	test('should populate the store when the search returns a conversation successfully', async () => {
 		createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
-			c: [conversationFromAPI({ id: '123', su: 'Subject' })],
+			c: [generateConversationFromAPI({ id: '123', su: 'Subject' })],
 			more: false
 		});
 
@@ -59,7 +59,12 @@ describe('search', () => {
 
 	test('should populate the store with the conversation messages', async () => {
 		createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
-			c: [conversationFromAPI({ id: '123', m: [convMessageFromAPI({ id: '987', l: 'folder2' })] })],
+			c: [
+				generateConversationFromAPI({
+					id: '123',
+					m: [generateConvMessageFromAPI({ id: '987', l: 'folder2' })]
+				})
+			],
 			more: false
 		});
 
@@ -72,7 +77,7 @@ describe('search', () => {
 
 	test('should populate the store when the search returns a message successfully', async () => {
 		createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
-			m: [messageFromAPI({ id: '456', su: 'Subject' })],
+			m: [generateMessageFromAPI({ id: '456', su: 'Subject' })],
 			more: false
 		});
 		await storeDispatch(search({ query: 'any', limit: 100, types: 'message' }));
@@ -84,7 +89,7 @@ describe('search', () => {
 
 	test('should pollute the conversation stores', async () => {
 		createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
-			c: [conversationFromAPI({ id: '123' })],
+			c: [generateConversationFromAPI({ id: '123' })],
 			more: false
 		});
 
@@ -97,7 +102,7 @@ describe('search', () => {
 
 	test('should not pollute the message stores', async () => {
 		createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
-			m: [messageFromAPI({ id: '123' })],
+			m: [generateMessageFromAPI({ id: '123' })],
 			more: false
 		});
 
@@ -109,7 +114,7 @@ describe('search', () => {
 
 	test('should populate the searchResultsIds when a conversation is retrieved including also its child messages', async () => {
 		createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
-			c: [conversationFromAPI({ id: '123' })],
+			c: [generateConversationFromAPI({ id: '123' })],
 			more: false
 		});
 
@@ -120,7 +125,7 @@ describe('search', () => {
 
 	test('should populate the searchResultsIds when a message is retrieved', async () => {
 		createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
-			m: [messageFromAPI({ id: '456' })],
+			m: [generateMessageFromAPI({ id: '456' })],
 			more: false
 		});
 
@@ -131,8 +136,8 @@ describe('search', () => {
 
 	test('if request type is missing, only conversations are set in the store', async () => {
 		createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
-			c: [conversationFromAPI({ id: '123', su: 'Subject1' })],
-			m: [messageFromAPI({ id: '456', cid: '456' })],
+			c: [generateConversationFromAPI({ id: '123', su: 'Subject1' })],
+			m: [generateMessageFromAPI({ id: '456', cid: '456' })],
 			more: false
 		});
 
@@ -144,8 +149,8 @@ describe('search', () => {
 
 	test('if request type is conversation, only conversations are set in the store', async () => {
 		createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
-			c: [conversationFromAPI({ id: '123', su: 'Subject1' })],
-			m: [messageFromAPI({ id: '456', cid: '456' })],
+			c: [generateConversationFromAPI({ id: '123', su: 'Subject1' })],
+			m: [generateMessageFromAPI({ id: '456', cid: '456' })],
 			more: false
 		});
 
@@ -163,8 +168,8 @@ describe('search', () => {
 
 	test('if request type is message, messages are set in the searches store', async () => {
 		createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
-			c: [conversationFromAPI({ id: '123', su: 'Subject1' })],
-			m: [messageFromAPI({ id: '456', cid: '456' })],
+			c: [generateConversationFromAPI({ id: '123', su: 'Subject1' })],
+			m: [generateMessageFromAPI({ id: '456', cid: '456' })],
 			more: false
 		});
 
@@ -204,71 +209,6 @@ describe('search', () => {
 		await store.dispatch(action);
 	}
 });
-
-function conversationFromAPI(params: Partial<SoapConversation> = {}): SoapConversation {
-	return {
-		id: '123',
-		n: 1,
-		u: 1,
-		f: 'flag',
-		tn: 'tag names',
-		d: 123,
-		m: [convMessageFromAPI()],
-		e: [],
-		su: 'Subject',
-		fr: 'fragment',
-		...params
-	};
-}
-
-function convMessageFromAPI(params: Partial<SoapMailMessage> = {}): SoapMailMessage {
-	return {
-		...messageFromAPI({ id: '987', d: 987 }),
-		su: 'Subject',
-		fr: 'Fragment',
-		e: [fromParticipantFromAPI({ a: 'from@loc.al' }), toParticipantFromAPI({ a: 'to@loc.al' })],
-		mp: [messagePartFromAPI()],
-		...params
-	};
-}
-
-function fromParticipantFromAPI(params: Partial<SoapMailParticipant> = {}): SoapMailParticipant {
-	return {
-		a: 'add@re.ss',
-		p: 'p',
-		t: 'f',
-		...params
-	};
-}
-
-function toParticipantFromAPI(params: Partial<SoapMailParticipant> = {}): SoapMailParticipant {
-	return {
-		a: 'add@re.ss',
-		p: 'p',
-		t: 't',
-		...params
-	};
-}
-
-function messagePartFromAPI(params: Partial<SoapMailMessagePart> = {}): SoapMailMessagePart {
-	return {
-		part: 'part',
-		ct: 'ct',
-		requiresSmartLinkConversion: false,
-		...params
-	};
-}
-
-function messageFromAPI(params: Partial<SoapIncompleteMessage> = {}): SoapIncompleteMessage {
-	return {
-		id: '456',
-		cid: '456',
-		l: 'folder1',
-		s: 123,
-		d: 456,
-		...params
-	};
-}
 
 /* FIXME:
  * We had to use Partial<Conversation> as return statement
