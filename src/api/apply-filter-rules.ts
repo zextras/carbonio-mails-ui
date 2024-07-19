@@ -131,27 +131,30 @@ export const applyFilterRules = async ({
 	const folderCriteria = composeFoldersIdSoapCriteria(foldersId);
 	const messagesCriteria =
 		folderCriteria === undefined ? composeMessagesIdSoapCriteria(messagesId) : undefined;
-
-	const soapResult = await soapFetch<ApplyFilterRulesSoapRequest, ApplyFilterRulesSoapResponse>(
-		'ApplyFilterRules',
-		{
-			filterRules: [
-				{
-					filterRule: {
-						name: ruleName
+	try {
+		const soapResult = await soapFetch<ApplyFilterRulesSoapRequest, ApplyFilterRulesSoapResponse>(
+			'ApplyFilterRules',
+			{
+				filterRules: [
+					{
+						filterRule: {
+							name: ruleName
+						}
 					}
-				}
-			],
-			...(messagesCriteria && { m: messagesCriteria }),
-			...(folderCriteria && { query: folderCriteria }),
-			_jsns: 'urn:zimbraMail'
+				],
+				...(messagesCriteria && { m: messagesCriteria }),
+				...(folderCriteria && { query: folderCriteria }),
+				_jsns: 'urn:zimbraMail'
+			}
+		);
+
+		if (isSoapError(soapResult)) {
+			return Promise.reject(soapResult.Fault.Reason.Text);
 		}
-	);
 
-	if (isSoapError(soapResult)) {
-		return Promise.reject(soapResult.Fault.Reason.Text);
+		const ids = extractMessagesIdFromSoapResponse(soapResult);
+		return Promise.resolve<ApplyFilterRulesResult>({ messagesId: ids });
+	} catch (err) {
+		return Promise.reject();
 	}
-
-	const ids = extractMessagesIdFromSoapResponse(soapResult);
-	return Promise.resolve<ApplyFilterRulesResult>({ messagesId: ids });
 };

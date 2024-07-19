@@ -76,10 +76,12 @@ export const ApplyFilterModal: FC<ApplyFilterModalProps> = ({ criteria, closeMod
 				createSnackbar({
 					key: `applyFilter-${criteria.filterName}-error`,
 					type: 'error',
-					label: t('messages.snackbar.apply_filter_rules_error', {
-						filterName: criteria.filterName,
-						defaultValue: "An error occurred while applying the filter '{{filterName}}'"
-					}),
+					label:
+						err ??
+						t(
+							'messages.snackbar.apply_filter_error',
+							`filter is still running on the server but it’s taking too much time to report the affected items. The filter keeps working on the server without additional information`
+						),
 					replace: true,
 					autoHideTimeout: TIMEOUTS.SNACKBAR_DEFAULT_TIMEOUT,
 					hideButton: true
