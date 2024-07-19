@@ -96,7 +96,7 @@ export const SearchConversationPanel: FC<SearchConversationPanelProps> = (props)
 						mainAlignment="flex-start"
 					>
 						<Container height="fit" mainAlignment="flex-start" background="gray5">
-							{conversation ? (
+							{conversation && conversationStatus ? (
 								<>
 									{map(messages, (message, index) =>
 										message ? (
