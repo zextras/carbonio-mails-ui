@@ -3,15 +3,15 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, ReactElement, useMemo } from 'react';
+import React, { FC, useMemo } from 'react';
 
 import { Container, Padding, Text } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import { useRouteMatch, Switch, Route } from 'react-router-dom';
 
-import { SearchConversationPreviewPanelContainer } from './parts/search-conversation-preview-panel-container';
-import type { SearchPanelProps } from '../../types';
-import { MessagePreviewPanelContainer } from '../app/detail-panel/message-preview-panel-container';
+import { SearchConversationPanel } from './search-conversation-panel';
+import { SearchPanelProps } from '../../../types';
+import { MessagePreviewPanelContainer } from '../../app/detail-panel/message-preview-panel-container';
 
 const SearchPanel: FC<SearchPanelProps> = ({ searchResults }) => {
 	const { path } = useRouteMatch();
@@ -42,37 +42,34 @@ const SearchPanel: FC<SearchPanelProps> = ({ searchResults }) => {
 	return (
 		<Switch>
 			<Route path={`${path}/folder/:folderId/conversation/:conversationId`}>
-				<SearchConversationPreviewPanelContainer />
+				<SearchConversationPanel />
 			</Route>
 			<Route path={`${path}/folder/:folderId/message/:messageId`}>
 				<MessagePreviewPanelContainer />
 			</Route>
-			<Route
-				path={path}
-				render={(): ReactElement => (
-					<Container background="gray5">
-						<Padding all="medium">
-							<Text
-								color="gray1"
-								overflow="break-word"
-								weight="bold"
-								size="large"
-								style={{ whiteSpace: 'pre-line', textAlign: 'center' }}
-							>
-								{displayerTitle}
-							</Text>
-						</Padding>
+			<Route path={path}>
+				<Container background="gray5">
+					<Padding all="medium">
 						<Text
-							size="small"
 							color="gray1"
 							overflow="break-word"
+							weight="bold"
+							size="large"
 							style={{ whiteSpace: 'pre-line', textAlign: 'center' }}
 						>
-							{displayerDescription}
+							{displayerTitle}
 						</Text>
-					</Container>
-				)}
-			/>
+					</Padding>
+					<Text
+						size="small"
+						color="gray1"
+						overflow="break-word"
+						style={{ whiteSpace: 'pre-line', textAlign: 'center' }}
+					>
+						{displayerDescription}
+					</Text>
+				</Container>
+			</Route>
 		</Switch>
 	);
 };

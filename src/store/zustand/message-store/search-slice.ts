@@ -6,15 +6,14 @@
 
 import { StateCreator } from 'zustand';
 
-import type { MessageStoreState } from './store';
-import { PopulatedItemsSliceState, NormalizedConversation, SearchSliceState } from '../../../types';
+import { PopulatedItemsSliceState, SearchSliceState } from '../../../types';
 
 export const createSearchSlice: StateCreator<
 	SearchSliceState & PopulatedItemsSliceState,
 	[],
 	[],
 	SearchSliceState
-> = (set) => ({
+> = () => ({
 	search: {
 		conversationIds: new Set<string>(),
 		messageIds: new Set<string>(),

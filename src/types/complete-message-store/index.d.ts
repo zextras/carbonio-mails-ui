@@ -11,8 +11,6 @@ export type PopulatedItemsSliceState = {
 	populatedItems: {
 		messages: Record<string, MailMessage | IncompleteMessage>;
 		conversations: Record<string, NormalizedConversation>;
-		// setConversations: (conversations: Record<string, NormalizedConversation>) => void;
-		// setMessages: (conversations: Record<string, NormalizedConversation>) => void;
 	};
 	actions: {
 		updateConversations: (conversations: Array<NormalizedConversation>, offset: number) => void;
