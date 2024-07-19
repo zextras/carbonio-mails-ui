@@ -41,6 +41,7 @@ let keySequence = '';
 export const useKeyboardShortcuts = (): ((args: HandleKeyboardShortcutsProps) => void) => {
 	const setConversationAsSpam = useSetConversationAsSpam();
 	const moveConversationToTrash = useMoveConversationToTrash();
+	const moveMessageToTrash = useMoveMsgToTrash();
 	const moveConversationToFolder = useMoveConversationToFolder();
 	const moveMessageToFolder = useMoveMessageToFolder();
 	const deleteConversationPermanently = useDeleteConversationPermanently();
@@ -201,14 +202,12 @@ export const useKeyboardShortcuts = (): ((args: HandleKeyboardShortcutsProps) =>
 				case 'Delete': //Delete
 					if (isGlobalContext && (isFullConv || isSingleMessage)) {
 						eventActions();
-						const moveConversationToTrash = useMoveConversationToTrash();
-						const moveMsgToTrash = useMoveMsgToTrash();
 						isFullConv
 						? moveConversationToTrash({ ids: [itemId], 
 							dispatch, 
 							folderId, 
 							deselectAll }).onClick(event)
-						: moveMsgToTrash({ ids: [itemId], 
+						: moveMessageToTrash({ ids: [itemId], 
 							dispatch, 
 							deselectAll }).onClick(event);
 					}
@@ -216,8 +215,6 @@ export const useKeyboardShortcuts = (): ((args: HandleKeyboardShortcutsProps) =>
 				case 'ShiftDelete': //DeletePermantely
 					if (isGlobalContext && (isFullConv || isSingleMessage)) {
 						eventActions();
-						const deleteConversationPermanently = useDeleteConversationPermanently();
-						const deleteMessagePermanently = useDeleteMessagePermanently();
 						isFullConv
 						? deleteConversationPermanently({ ids: [itemId], 
 							deselectAll }).onClick(event)
@@ -258,6 +255,7 @@ export const useKeyboardShortcuts = (): ((args: HandleKeyboardShortcutsProps) =>
 	[
 		setConversationAsSpam,
 		moveConversationToTrash,
+		moveMessageToTrash,
 		moveConversationToFolder,
 		moveMessageToFolder,
 		deleteConversationPermanently,
