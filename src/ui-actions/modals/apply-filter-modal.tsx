@@ -81,7 +81,7 @@ export const ApplyFilterModal: FC<ApplyFilterModalProps> = ({ criteria, closeMod
 							? err
 							: t(
 									'messages.snackbar.apply_filter_error',
-									`filter is still running on the server but it’s taking too much time to report the affected items. The filter keeps working on the server without additional information`
+									`Filter is still running on the server but it’s taking too much time to report the affected items. The filter keeps working on the server without additional information`
 								),
 					replace: true,
 					autoHideTimeout: TIMEOUTS.SNACKBAR_DEFAULT_TIMEOUT,
