@@ -250,40 +250,9 @@ const MailPreviewBlock: FC<MailPreviewBlockType> = ({
 		() => ({ message, onClick, open, isExternalMessage, isInsideExtraWindow }),
 		[message, onClick, open, isExternalMessage, isInsideExtraWindow]
 	);
-	const markAsNotSpam = findMessageActionById(
-		messageActions,
-		MessageActionsDescriptors.MARK_AS_NOT_SPAM.id
-	);
 
 	return (
 		<>
-			{getFolderIdParts(folderId).id === FOLDERS.SPAM && (
-				<Container
-					mainAlignment="flex-start"
-					crossAlignment="flex-start"
-					height="fit"
-					padding={{ bottom: 'medium' }}
-				>
-					<Container background="gray6" orientation="horizontal" padding={{ all: 'small' }}>
-						<Row width="50%" display="flex" crossAlignment="center" mainAlignment="baseline">
-							<Padding right="small">
-								<Icon icon="AlertCircleOutline" size="medium" />
-							</Padding>
-							<Text>
-								{t('messages.snackbar.marked_as_spam', 'You’ve marked this e-mail as Spam')}
-							</Text>
-						</Row>
-						<Row width="50%" mainAlignment="flex-end">
-							<Button
-								type="ghost"
-								label={t('action.mark_as_non_spam', 'Not Spam')}
-								color="primary"
-								onClick={markAsNotSpam}
-							/>
-						</Row>
-					</Container>
-				</Container>
-			)}
 			{message && (
 				<Row width="fill">
 					<PreviewHeader compProps={compProps} actions={messageActions} />
