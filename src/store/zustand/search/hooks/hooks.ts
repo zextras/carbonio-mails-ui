@@ -9,7 +9,7 @@ import { map } from 'lodash';
 
 import { normalizeConversation } from '../../../../normalizations/normalize-conversation';
 import { normalizeMailMessageFromSoap } from '../../../../normalizations/normalize-message';
-import { SearchResponse } from '../../../../types';
+import { SearchConvResponse, SearchResponse } from '../../../../types';
 import { messageStoreActions } from '../../message-store/store';
 
 function handleFulFilledConversationResults({
@@ -58,4 +58,12 @@ export function handleSearchResults({
 	if (searchResponse.m) {
 		handleFulFilledMessagesResults({ searchResponse, offset });
 	}
+}
+
+export function handleSearchConvResponse(
+	conversationId: string,
+	response: SearchConvResponse
+): void {
+	const messages = map(response?.m ?? [], (msg) => normalizeMailMessageFromSoap(msg, true));
+	messageStoreActions.updateConversationMessages(conversationId, messages);
 }

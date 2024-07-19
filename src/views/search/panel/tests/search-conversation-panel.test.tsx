@@ -12,12 +12,12 @@ import { useParams } from 'react-router-dom';
 import { createSoapAPIInterceptor } from '../../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { setupTest } from '../../../../carbonio-ui-commons/test/test-setup';
 import { API_REQUEST_STATUS } from '../../../../constants';
-import { generateConversationFromAPI, generateConvMessageFromAPI } from '../../../../helpers/api';
+import { generateConvMessageFromAPI } from '../../../../helpers/api';
 import { MessageStoreState, useMessageStore } from '../../../../store/zustand/message-store/store';
 import { generateConversation } from '../../../../tests/generators/generateConversation';
 import { generateMessage } from '../../../../tests/generators/generateMessage';
 import { generateStore } from '../../../../tests/generators/store';
-import { GetConvResponse, PopulatedItemsSliceState, SearchSliceState } from '../../../../types';
+import { PopulatedItemsSliceState, SearchConvResponse, SearchSliceState } from '../../../../types';
 import { SearchConversationPanel } from '../search-conversation-panel';
 
 jest.mock('react-router-dom', () => ({
@@ -38,11 +38,14 @@ function generateInitialStoreState(): MessageStoreState {
 	const populatedItemsSliceState: PopulatedItemsSliceState = {
 		populatedItems: {
 			messages: {},
-			conversations: {}
+			conversations: {},
+			conversationsStatus: {}
 		},
 		actions: {
 			updateMessages: noop,
-			updateConversations: noop
+			updateConversations: noop,
+			updateConversationMessages: noop,
+			updateConversationStatus: noop
 		}
 	};
 	return { ...searchSliceState, ...populatedItemsSliceState };
@@ -79,20 +82,19 @@ describe('Conversation Preview', () => {
 	describe('when the conversation is not in the store', () => {
 		it('should render a conversation with its messages', async () => {
 			const initialState = generateInitialStoreState();
+			initialState.search.conversationIds = new Set('1');
 			useMessageStore.setState({
 				...initialState
 			});
 			(useParams as jest.Mock).mockReturnValue({ folderId: '2' });
 
-			const conversation = generateConversationFromAPI({
-				id: '123',
+			const response: SearchConvResponse = {
 				m: [generateConvMessageFromAPI({ id: '1' }), generateConvMessageFromAPI({ id: '2' })],
-				su: 'Test Conversation'
-			});
-			const response: GetConvResponse = {
-				c: [conversation]
+				more: false,
+				offset: '',
+				orderBy: ''
 			};
-			const interceptor = createSoapAPIInterceptor('GetConvRequest', response);
+			const interceptor = createSoapAPIInterceptor('SearchConvRequest', response);
 			const store = generateStore();
 			setupTest(<SearchConversationPanel conversationId="123" folderId="2" />, { store });
 			await interceptor;

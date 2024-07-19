@@ -13,6 +13,7 @@ import {
 	MailMessage,
 	NormalizedConversation,
 	PopulatedItemsSliceState,
+	SearchRequestStatus,
 	SearchSliceState
 } from '../../../types';
 
@@ -24,7 +25,8 @@ export const createMessageSlice: StateCreator<
 > = (set) => ({
 	populatedItems: {
 		messages: {},
-		conversations: {}
+		conversations: {},
+		conversationsStatus: {}
 	},
 	actions: {
 		updateConversations(conversations: Array<NormalizedConversation>, offset: number): void {
@@ -68,6 +70,30 @@ export const createMessageSlice: StateCreator<
 					)
 				}
 			}));
+		},
+		updateConversationMessages(conversationId: string, messages: IncompleteMessage[]): void {
+			set((state: MessageStoreState) => {
+				state.populatedItems.conversations[conversationId].messages = messages;
+				return {
+					populatedItems: {
+						...state.populatedItems,
+						messages: messages.reduce(
+							(acc, msg) => {
+								// eslint-disable-next-line no-param-reassign
+								acc[msg.id] = msg;
+								return acc;
+							},
+							{} as Record<string, MailMessage | IncompleteMessage>
+						)
+					}
+				};
+			});
+		},
+		updateConversationStatus(conversationId: string, status: SearchRequestStatus): void {
+			set((state: MessageStoreState) => {
+				state.populatedItems.conversationsStatus[conversationId] = status;
+				return state;
+			});
 		}
 	}
 });

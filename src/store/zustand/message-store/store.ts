@@ -32,6 +32,13 @@ export function getConversationById(id: string): NormalizedConversation {
 export function useConversationById(id: string): NormalizedConversation {
 	return useMessageStore((state) => state.populatedItems.conversations[id]);
 }
+export function useConversationStatus(id: string): SearchRequestStatus {
+	return useMessageStore((state) => state.populatedItems.conversationsStatus?.[id]);
+}
+
+export function setConversationStatus(id: string, status: SearchRequestStatus): void {
+	useMessageStore.getState().actions.updateConversationStatus(id, status);
+}
 
 export function useMessageById(id: string): IncompleteMessage | MailMessage {
 	return useMessageStore((state) => state.populatedItems.messages[id]);

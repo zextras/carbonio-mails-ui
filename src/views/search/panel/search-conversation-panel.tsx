@@ -11,10 +11,15 @@ import { filter, map } from 'lodash';
 import { useParams } from 'react-router-dom';
 
 import { SearchConversationMessagePanel } from './search-conversation-message-panel';
+import { searchConvSoapAPI } from '../../../api/search-conv';
 import { API_REQUEST_STATUS } from '../../../constants';
 import { getFolderIdParts } from '../../../helpers/folders';
-import { searchConv } from '../../../store/actions';
-import { useConversationById } from '../../../store/zustand/message-store/store';
+import {
+	useConversationById,
+	useConversationStatus,
+	setConversationStatus
+} from '../../../store/zustand/message-store/store';
+import { handleSearchConvResponse } from '../../../store/zustand/search/hooks/hooks';
 import PreviewPanelHeader from '../../app/detail-panel/preview/preview-panel-header';
 import { useExtraWindow } from '../../app/extra-windows/use-extra-window';
 
@@ -42,17 +47,20 @@ export const SearchConversationPanel: FC<SearchConversationPanelProps> = (props)
 	const settings = useUserSettings();
 	const convSortOrder = settings.prefs.zimbraPrefConversationOrder as string;
 
-	const conversationStatus = API_REQUEST_STATUS.fulfilled;
-
+	const conversationStatus = useConversationStatus(conversationId);
 	useEffect(() => {
-		if (
-			(conversationStatus !== API_REQUEST_STATUS.fulfilled &&
-				conversationStatus !== API_REQUEST_STATUS.pending) ||
-			!conversationStatus
-		) {
-			searchConv({ conversationId, fetch: 'all', folderId, tags: tagsFromStore });
+		if (!conversationStatus) {
+			setConversationStatus(conversationId, API_REQUEST_STATUS.pending);
+			searchConvSoapAPI({ conversationId, fetch: 'all', folderId }).then((response) => {
+				if ('Fault' in response) {
+					setConversationStatus(conversationId, API_REQUEST_STATUS.error);
+					return;
+				}
+				handleSearchConvResponse(conversationId, response);
+				setConversationStatus(conversationId, API_REQUEST_STATUS.fulfilled);
+			});
 		}
-	}, [conversationId, conversationStatus, folderId, tagsFromStore]);
+	}, [conversation, conversationId, conversationStatus, folderId]);
 
 	const showPreviewPanel = useMemo(
 		(): boolean | undefined =>
@@ -88,7 +96,7 @@ export const SearchConversationPanel: FC<SearchConversationPanelProps> = (props)
 						mainAlignment="flex-start"
 					>
 						<Container height="fit" mainAlignment="flex-start" background="gray5">
-							{conversation && conversationStatus === API_REQUEST_STATUS.fulfilled ? (
+							{conversation ? (
 								<>
 									{map(messages, (message, index) =>
 										message ? (
