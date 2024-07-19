@@ -13,7 +13,7 @@ describe('getTimeLabel', () => {
 		test.each([
 			{ locale: 'en', output: 'MM/DD/YYYY', expected: '07/01/2020 12:00 AM' },
 			{ locale: 'it', output: 'DD/MM/YYYY', expected: '01/07/2020 00:00' }
-		])('when locale is $locale the output is $output', ({ locale, output, expected }) => {
+		])('when locale is $locale the output is $output', ({ locale, expected }) => {
 			shell.getUserSettings.mockImplementation(() => ({
 				...defaultSettings,
 				prefs: {
@@ -27,6 +27,12 @@ describe('getTimeLabel', () => {
 			expect(timeLabel).toBe(expected);
 		});
 	});
-	test.todo('if the date is today it will shows only the hours');
+	test('if the date is today it will shows only the hours', () => {
+		jest.setSystemTime(new Date('2022-01-01'));
+		const date = Date.now();
+		const expected = '1:00 AM';
+		const timeLabel = getTimeLabel(date);
+		expect(timeLabel).toBe(expected);
+	});
 	test.todo('if the date is not today it will shows date and hours');
 });
