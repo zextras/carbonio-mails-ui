@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, useCallback, useEffect, useMemo } from 'react';
+import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
 
 import { Container, Shimmer } from '@zextras/carbonio-design-system';
 import { FOLDERS, useUserSettings } from '@zextras/carbonio-shell-ui';
@@ -14,12 +14,9 @@ import { SearchConversationMessagePanel } from './search-conversation-message-pa
 import { searchConvSoapAPI } from '../../../api/search-conv';
 import { API_REQUEST_STATUS } from '../../../constants';
 import { getFolderIdParts } from '../../../helpers/folders';
-import {
-	useConversationById,
-	useConversationStatus,
-	setConversationStatus
-} from '../../../store/zustand/message-store/store';
+import { useConversationById } from '../../../store/zustand/message-store/store';
 import { handleSearchConvResponse } from '../../../store/zustand/search/hooks/hooks';
+import { SearchRequestStatus } from '../../../types';
 import PreviewPanelHeader from '../../app/detail-panel/preview/preview-panel-header';
 import { useExtraWindow } from '../../app/extra-windows/use-extra-window';
 
@@ -40,31 +37,30 @@ const useConversationPreviewPanelParameters = (
 
 export const SearchConversationPanel: FC<SearchConversationPanelProps> = (props) => {
 	const { conversationId, folderId } = useConversationPreviewPanelParameters(props);
+	const [apiCallStatus, setApiCallStatus] = useState<SearchRequestStatus>(null);
 
 	const { isInsideExtraWindow } = useExtraWindow();
 	const conversation = useConversationById(conversationId);
 	const settings = useUserSettings();
 	const convSortOrder = settings.prefs.zimbraPrefConversationOrder as string;
 
-	const conversationStatus = useConversationStatus(conversationId);
-
 	useEffect(() => {
-		if (!conversationStatus) {
-			setConversationStatus(conversationId, API_REQUEST_STATUS.pending);
+		if (!apiCallStatus) {
+			setApiCallStatus(API_REQUEST_STATUS.pending);
 			searchConvSoapAPI({ conversationId, fetch: 'all', folderId })
 				.then((response) => {
 					if ('Fault' in response) {
-						setConversationStatus(conversationId, API_REQUEST_STATUS.error);
+						setApiCallStatus(API_REQUEST_STATUS.error);
 						return;
 					}
 					handleSearchConvResponse(conversationId, response);
-					setConversationStatus(conversationId, API_REQUEST_STATUS.fulfilled);
+					setApiCallStatus(API_REQUEST_STATUS.fulfilled);
 				})
 				.catch(() => {
-					setConversationStatus(conversationId, API_REQUEST_STATUS.error);
+					setApiCallStatus(API_REQUEST_STATUS.error);
 				});
 		}
-	}, [conversation, conversationId, conversationStatus, folderId]);
+	}, [apiCallStatus, conversation, conversationId, folderId]);
 
 	const showPreviewPanel = useMemo(
 		(): boolean | undefined =>
@@ -84,6 +80,9 @@ export const SearchConversationPanel: FC<SearchConversationPanelProps> = (props)
 		},
 		[convSortOrder, conversation.messages.length]
 	);
+	useEffect(() => {
+		console.log('====================', apiCallStatus);
+	}, [apiCallStatus]);
 
 	const { messages } = conversation;
 
@@ -100,23 +99,23 @@ export const SearchConversationPanel: FC<SearchConversationPanelProps> = (props)
 						mainAlignment="flex-start"
 					>
 						<Container height="fit" mainAlignment="flex-start" background="gray5">
-							{conversation && conversationStatus ? (
+							{conversation && apiCallStatus === API_REQUEST_STATUS.fulfilled && (
 								<>
-									{map(messages, (message, index) =>
-										message ? (
-											<SearchConversationMessagePanel
-												key={message.id}
-												convMessage={message}
-												isExpanded={isExpanded(index)}
-												isAlone={conversation.messages?.length === 1}
-												isInsideExtraWindow={isInsideExtraWindow}
-											/>
-										) : (
-											<Shimmer.Logo size="large" />
-										)
-									)}
+									{map(messages, (message, index) => (
+										<SearchConversationMessagePanel
+											key={message.id}
+											convMessage={message}
+											isExpanded={isExpanded(index)}
+											isAlone={conversation.messages?.length === 1}
+											isInsideExtraWindow={isInsideExtraWindow}
+										/>
+									))}
 								</>
-							) : (
+							)}
+							{apiCallStatus === API_REQUEST_STATUS.pending && (
+								<Shimmer.Logo size="large" data-testid={`shimmer-conversation-${conversationId}`} />
+							)}
+							{(apiCallStatus === API_REQUEST_STATUS.error || apiCallStatus === null) && (
 								<div data-testid="empty-fragment" />
 							)}
 						</Container>

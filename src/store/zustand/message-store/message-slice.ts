@@ -74,6 +74,7 @@ export const createMessageSlice: StateCreator<
 		updateConversationMessages(conversationId: string, messages: IncompleteMessage[]): void {
 			set((state: MessageStoreState) => {
 				state.populatedItems.conversations[conversationId].messages = messages;
+				state.populatedItems.conversationsStatus[conversationId] = API_REQUEST_STATUS.fulfilled;
 				return {
 					populatedItems: {
 						...state.populatedItems,
