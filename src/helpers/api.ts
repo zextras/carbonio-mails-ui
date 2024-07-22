@@ -5,6 +5,9 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import { DefaultBodyType, http, HttpResponse } from 'msw';
+
+import { getSetupServer } from '../carbonio-ui-commons/test/jest-setup';
 import {
 	SoapConversation,
 	SoapIncompleteMessage,
@@ -90,3 +93,26 @@ export function generateMessageFromAPI(
 		...params
 	};
 }
+
+type HandlerRequest<T> = DefaultBodyType & {
+	Body: Record<string, T>;
+};
+
+export const createSoapAPIInterceptorWithError = <RequestParamsType>(
+	apiAction: string
+): Promise<RequestParamsType> =>
+	new Promise<RequestParamsType>((resolve) => {
+		getSetupServer().use(
+			http.post<never, HandlerRequest<RequestParamsType>>(
+				`/service/soap/${apiAction}Request`,
+				async ({ request }) => {
+					const reqActionParamWrapper = `${apiAction}Request`;
+					const requestContent = await request.json();
+					const params = requestContent?.Body?.[reqActionParamWrapper];
+					resolve(params);
+
+					return HttpResponse.error();
+				}
+			)
+		);
+	});

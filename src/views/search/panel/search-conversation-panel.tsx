@@ -47,17 +47,22 @@ export const SearchConversationPanel: FC<SearchConversationPanelProps> = (props)
 	const convSortOrder = settings.prefs.zimbraPrefConversationOrder as string;
 
 	const conversationStatus = useConversationStatus(conversationId);
+
 	useEffect(() => {
 		if (!conversationStatus) {
 			setConversationStatus(conversationId, API_REQUEST_STATUS.pending);
-			searchConvSoapAPI({ conversationId, fetch: 'all', folderId }).then((response) => {
-				if ('Fault' in response) {
+			searchConvSoapAPI({ conversationId, fetch: 'all', folderId })
+				.then((response) => {
+					if ('Fault' in response) {
+						setConversationStatus(conversationId, API_REQUEST_STATUS.error);
+						return;
+					}
+					handleSearchConvResponse(conversationId, response);
+					setConversationStatus(conversationId, API_REQUEST_STATUS.fulfilled);
+				})
+				.catch(() => {
 					setConversationStatus(conversationId, API_REQUEST_STATUS.error);
-					return;
-				}
-				handleSearchConvResponse(conversationId, response);
-				setConversationStatus(conversationId, API_REQUEST_STATUS.fulfilled);
-			});
+				});
 		}
 	}, [conversation, conversationId, conversationStatus, folderId]);
 
@@ -112,7 +117,7 @@ export const SearchConversationPanel: FC<SearchConversationPanelProps> = (props)
 									)}
 								</>
 							) : (
-								<></>
+								<div data-testid="empty-fragment" />
 							)}
 						</Container>
 					</Container>
