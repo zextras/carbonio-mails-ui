@@ -29,7 +29,7 @@ jest.mock('react-router-dom', () => ({
 }));
 
 describe('Conversation Preview', () => {
-	it('should render a conversation with its messages when the API returns a valid response', async () => {
+	it('should render a conversation with its messages when SearchConv API returns a valid response', async () => {
 		const initialState = useMessageStore.getState();
 		initialState.search.conversationIds = new Set(['123']);
 		const message1 = generateMessage({ id: '1', subject: 'Test Message 1' });
@@ -65,7 +65,7 @@ describe('Conversation Preview', () => {
 		expect(await screen.findByTestId('MailPreview-10')).toBeVisible();
 	});
 
-	it('should render an empty fragment when the API call returns Fault', async () => {
+	it('should render an empty fragment when SearchConv API call returns Fault', async () => {
 		const initialState = useMessageStore.getState();
 		initialState.search.conversationIds = new Set(['123']);
 		const message1 = generateMessage({ id: '1', subject: 'Test Message 1' });
@@ -95,7 +95,7 @@ describe('Conversation Preview', () => {
 		expect(await screen.findByTestId('empty-fragment')).toBeInTheDocument();
 	});
 
-	it('should render an empty fragment when the API call throws an error', async () => {
+	it('should render an empty fragment when SearchConv API call throws an error', async () => {
 		const initialState = useMessageStore.getState();
 		initialState.search.conversationIds = new Set(['123']);
 		const message1 = generateMessage({ id: '1', subject: 'Test Message 1' });
@@ -122,7 +122,7 @@ describe('Conversation Preview', () => {
 		expect(await screen.findByTestId('empty-fragment')).toBeInTheDocument();
 	});
 
-	it('should render a shimmer component when conversationStatus is pending', async () => {
+	it('should render a shimmer component when SearchConv API call is pending', async () => {
 		const initialState = useMessageStore.getState();
 		initialState.search.conversationIds = new Set(['123']);
 		const message1 = generateMessage({ id: '1', subject: 'Test Message 1' });
