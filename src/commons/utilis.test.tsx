@@ -14,13 +14,13 @@ describe('getTimeLabel', () => {
 			{ locale: 'en', output: 'MM/DD/YYYY', expected: '07/01/2020 12:00 AM' },
 			{ locale: 'it', output: 'DD/MM/YYYY', expected: '01/07/2020 00:00' }
 		])('when locale is $locale the output is $output', ({ locale, expected }) => {
-			shell.getUserSettings.mockImplementation(() => ({
+			shell.getUserSettings.mockReturnValueOnce({
 				...defaultSettings,
 				prefs: {
 					...defaultSettings.prefs,
 					zimbraPrefLocale: locale
 				}
-			}));
+			});
 			const date = 1593554400000;
 			const timeLabel = getTimeLabel(date);
 
@@ -34,5 +34,11 @@ describe('getTimeLabel', () => {
 		const timeLabel = getTimeLabel(date);
 		expect(timeLabel).toBe(expected);
 	});
-	test.todo('if the date is not today it will shows date and hours');
+	test('if the date is not today it will shows date and hours', () => {
+		jest.setSystemTime(new Date('2022-01-01'));
+		const date = new Date('2021-01-01');
+		const expected = '01/01/2021 1:00 AM';
+		const timeLabel = getTimeLabel(date.getTime());
+		expect(timeLabel).toBe(expected);
+	});
 });
