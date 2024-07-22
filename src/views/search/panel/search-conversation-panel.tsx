@@ -80,9 +80,6 @@ export const SearchConversationPanel: FC<SearchConversationPanelProps> = (props)
 		},
 		[convSortOrder, conversation.messages.length]
 	);
-	useEffect(() => {
-		console.log('====================', apiCallStatus);
-	}, [apiCallStatus]);
 
 	const { messages } = conversation;
 
