@@ -325,7 +325,7 @@ const SettingsView: FC = () => {
 					hideButton: true,
 					replace: true
 				});
-				return false;
+				return Promise.allSettled([Promise.reject(new Error('Invalid signature'))]);
 			}
 
 			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -335,7 +335,7 @@ const SettingsView: FC = () => {
 				//check payload error
 				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 				// @ts-ignore
-				if ( typeof(resp.payload.response.BatchResponse) !== undefined ) {
+				if ( typeof(resp.payload?.response.BatchResponse) !== undefined ) {
 					const [payloadError,reason] = checkPayloadErrors(resp);
 					if (payloadError){
 						createSnackbar({
@@ -346,7 +346,7 @@ const SettingsView: FC = () => {
 							autoHideTimeout: 3000,
 							hideButton: true
 						});
-						return false;
+						return Promise.allSettled([Promise.reject(new Error(reason))]);
 					}
 				}
 
