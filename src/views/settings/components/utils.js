@@ -330,54 +330,75 @@ export const getFontSizesOptions = () => [
 
 export const getFonts = () => [
 	{
-		label: t('settings.fonts.sans_serif', 'Sans Serif'),
-		value: 'arial,helvetica,sans-serif'
+		label: 'Andale Mono',
+		value: 'Andale Mono=andale mono,times;'
 	},
 	{
-		label: t('settings.fonts.serif', 'Serif'),
-		value: 'times new roman,new york,times,serif'
+		label: 'Arial',
+		value: 'arial,helvetica,sans-serif;'
 	},
 	{
-		label: t('settings.fonts.wide_block', 'Wide Block'),
-		value: 'arial black,avant garde'
+		label: 'Arial Black',
+		value: 'arial black,avant garde;'
 	},
 	{
-		label: t('settings.fonts.monospaced', 'Monospaced'),
-		value: 'courier new,courier,monaco,monospace,sans-serif'
+		label: 'Book Antiqua',
+		value: 'book antiqua,palatino;'
 	},
 	{
-		label: t('settings.fonts.comic', 'Comic'),
-		value: 'comic sans ms,comic sans,sans-serif'
+		label: 'Comic Sans MS',
+		value: 'comic sans ms,sans-serif;'
 	},
 	{
-		label: t('settings.fonts.console', 'Console'),
-		value: 'lucida console,sans-serif'
+		label: 'Courier New',
+		value: 'courier new,courier;'
 	},
 	{
-		label: t('settings.fonts.garamond', 'Garamond'),
-		value: 'garamond,new york,times,serif'
+		label: 'Georgia',
+		value: 'georgia,palatino;'
 	},
 	{
-		label: t('settings.fonts.elegant', 'Elegant'),
-		value: 'georgia,serif'
+		label: 'Helvetica',
+		value: 'helvetica;'
 	},
 	{
-		label: t('settings.fonts.professional', 'Professional'),
-		value: 'tahoma,new york,times,serif'
+		label: 'Impact',
+		value: 'impact,chicago;'
 	},
 	{
-		label: t('settings.fonts.terminal', 'Terminal'),
-		value: 'terminal,monaco'
+		label: 'Symbol',
+		value: 'symbol;'
 	},
 	{
-		label: t('settings.fonts.modern', 'Modern'),
-		value: 'trebuchet ms,sans-serif'
+		label: 'Tahoma',
+		value: 'tahoma,arial,helvetica,sans-serif;'
 	},
 	{
-		label: t('settings.fonts.wide', 'Wide'),
-		value: 'verdana,helvetica,sans-serif'
+		label: 'Terminal',
+		value: 'terminal,monaco;'
+	},
+	{
+		label: 'Times New Roman',
+		value: 'times new roman,times;'
+	},
+	{
+		label: 'Trebuchet MS',
+		value: 'trebuchet ms,geneva;'
+	},
+	{
+		label: 'Verdana',
+		value: 'verdana,geneva;'
+	},
+	{
+		label: 'Webdings',
+		value: 'webdings;'
+	},
+	{
+		label: 'Wingdings',
+		value: 'wingdings,zapf dingbats;'
 	}
 ];
+
 export const ConversationSortingSettings = () => [
 	{ label: t('settings.conv_sort_option.desc', 'From new to old'), value: 'dateDesc' },
 	{ label: t('settings.conv_sort_option.asc', 'From old to new'), value: 'dateAsc' }
