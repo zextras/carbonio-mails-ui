@@ -5,13 +5,13 @@
  */
 import React from 'react';
 
-import { screen } from '@testing-library/react';
+import { act } from '@testing-library/react';
 import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 import { useParams } from 'react-router-dom';
 
 import { createSoapAPIInterceptor } from '../../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { buildSoapErrorResponseBody } from '../../../../carbonio-ui-commons/test/mocks/utils/soap';
-import { setupTest } from '../../../../carbonio-ui-commons/test/test-setup';
+import { setupTest, screen } from '../../../../carbonio-ui-commons/test/test-setup';
 import {
 	createSoapAPIInterceptorWithError,
 	generateConvMessageFromAPI
@@ -154,5 +154,49 @@ describe('Conversation Preview', () => {
 		await interceptor;
 
 		expect(screen.getByTestId('shimmer-conversation-123')).toBeInTheDocument();
+	});
+
+	describe('Single conversation mode', () => {
+		it('should display "Trash" badge when clicking delete button', async () => {
+			const initialState = useMessageStore.getState();
+			initialState.search.conversationIds = new Set(['123']);
+			const message1 = generateMessage({ id: '1', subject: 'Test Message 1' });
+			const conversation = generateConversation({
+				id: '123',
+				messages: [message1],
+				subject: 'Test Conversation'
+			});
+			initialState.populatedItems.conversations = { '123': conversation };
+			initialState.populatedItems.messages = { '1': message1 };
+			useMessageStore.setState({
+				...initialState
+			});
+			(useParams as jest.Mock).mockReturnValue({ folderId: '2' });
+			const response: SearchConvResponse = {
+				m: [generateConvMessageFromAPI({ id: '1' })],
+				more: false,
+				offset: '',
+				orderBy: ''
+			};
+			const interceptor = createSoapAPIInterceptor<SearchConvRequest, SearchConvResponse>(
+				'SearchConv',
+				response
+			);
+
+			const store = generateStore();
+			const { user } = setupTest(<SearchConversationPanel conversationId="123" folderId="2" />, {
+				store
+			});
+			await interceptor;
+			expect(await screen.findByTestId(/MailPreview-1/)).toBeInTheDocument();
+			screen.logTestingPlaygroundURL();
+			const trashButton = await screen.findByRoleWithIcon('button', { icon: /Trash2Outline/i });
+
+			act(() => {
+				user.click(trashButton);
+			});
+			expect(trashButton).toBeVisible();
+			screen.logTestingPlaygroundURL();
+		});
 	});
 });
