@@ -6,7 +6,7 @@
 import React, { FC, useCallback, useEffect, useMemo } from 'react';
 
 import { Container, Shimmer } from '@zextras/carbonio-design-system';
-import { FOLDERS, useTags, useUserSettings } from '@zextras/carbonio-shell-ui';
+import { FOLDERS, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { filter, map } from 'lodash';
 import { useParams } from 'react-router-dom';
 
@@ -41,7 +41,6 @@ const useConversationPreviewPanelParameters = (
 export const SearchConversationPanel: FC<SearchConversationPanelProps> = (props) => {
 	const { conversationId, folderId } = useConversationPreviewPanelParameters(props);
 
-	const tagsFromStore = useTags();
 	const { isInsideExtraWindow } = useExtraWindow();
 	const conversation = useConversationById(conversationId);
 	const settings = useUserSettings();
