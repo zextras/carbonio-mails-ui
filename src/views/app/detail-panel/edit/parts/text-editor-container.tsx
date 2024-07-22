@@ -14,6 +14,7 @@ import * as StyledComp from './edit-view-styled-components';
 import { plainTextToHTML } from '../../../../../commons/mail-message-renderer';
 import { useEditorIsRichText, useEditorText } from '../../../../../store/zustand/editor';
 import { MailsEditorV2 } from '../../../../../types';
+import { getFontSizesOptions, getFonts } from '../../../../settings/components/utils';
 
 export type TextEditorContent = { plainText: string; richText: string };
 
@@ -45,15 +46,26 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 	);
 
 	const { prefs } = useUserSettings();
-	const defaultFontFamily = useMemo<string>(
-		() => String(prefs?.zimbraPrefHtmlEditorDefaultFontFamily) ?? 'sans-serif',
-		[prefs]
-	);
+
+	const fontSizesOptions = getFontSizesOptions();
+	const fontFamilyOptions = getFonts();
+	const defaultFontFamily: string = prefs?.zimbraPrefHtmlEditorDefaultFontFamily ?? 'sans-serif';
+	const defaultFontSize: string = prefs?.zimbraPrefHtmlEditorDefaultFontSize ?? '12pt';
+	const defaultColor: string = prefs?.zimbraPrefHtmlEditorDefaultFontColor ?? 'black';
+
+	const fontSizesOptionsToString = fontSizesOptions
+		.map((size: { value: string }) => size.value)
+		.join(' ');
+	const fontsOptionsToString = fontFamilyOptions
+		.map((font: { value: string }) => font.value)
+		.join('; ');
 
 	const composerCustomOptions = {
 		toolbar_sticky: true,
 		ui_mode: 'split',
-		content_style: 'p { margin: 0; }'
+		font_size_formats: fontSizesOptionsToString,
+		font_family_formats: fontsOptionsToString,
+		content_style: `p  {margin: 0;  color: ${defaultColor}; font-size: ${defaultFontSize}; font-family: ${defaultFontFamily}; }`
 	};
 
 	return (
