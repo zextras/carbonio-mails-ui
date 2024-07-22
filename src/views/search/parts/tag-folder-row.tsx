@@ -6,9 +6,10 @@
 import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
 
 import { ChipInput, Container, CustomModal } from '@zextras/carbonio-design-system';
-import { ZIMBRA_STANDARD_COLORS, t } from '@zextras/carbonio-shell-ui';
+import { t } from '@zextras/carbonio-shell-ui';
 import { filter } from 'lodash';
 
+import { ZIMBRA_STANDARD_COLORS } from '../../../carbonio-ui-commons/constants/utils';
 import { isSharedAccountFolder } from '../../../helpers/folders';
 import type { ChipOnAdd, TagFolderRowProps } from '../../../types';
 import { SelectFolderModal } from '../../../ui-actions/modals/select-folder-modal';

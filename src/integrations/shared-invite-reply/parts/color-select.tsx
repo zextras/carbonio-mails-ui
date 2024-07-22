@@ -7,9 +7,10 @@ import React, { useMemo } from 'react';
 
 import type { SingleSelectionOnChange } from '@zextras/carbonio-design-system';
 import { Container, Icon, Padding, Row, Select, Text } from '@zextras/carbonio-design-system';
-import { ZIMBRA_STANDARD_COLORS, t } from '@zextras/carbonio-shell-ui';
+import { t } from '@zextras/carbonio-shell-ui';
 
 import { ColorContainer, Square, TextUpperCase } from './styled-components';
+import { ZIMBRA_STANDARD_COLORS } from '../../../carbonio-ui-commons/constants/utils';
 import { CustomLabelFactoryProps } from '../../../carbonio-ui-commons/types/select';
 
 const LabelFactory = ({

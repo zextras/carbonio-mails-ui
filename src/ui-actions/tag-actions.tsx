@@ -13,17 +13,11 @@ import {
 	Row,
 	Text
 } from '@zextras/carbonio-design-system';
-import {
-	Tag,
-	ZIMBRA_STANDARD_COLORS,
-	replaceHistory,
-	t,
-	useTags
-} from '@zextras/carbonio-shell-ui';
+import { Tag, replaceHistory, t, useTags } from '@zextras/carbonio-shell-ui';
 import { every, find, includes, map, reduce, some } from 'lodash';
 
 import DeleteTagModal from '../carbonio-ui-commons/components/tags/delete-tag-modal';
-import { TagsActionsType } from '../carbonio-ui-commons/constants';
+import { TagsActionsType, ZIMBRA_STANDARD_COLORS } from '../carbonio-ui-commons/constants';
 import { useAppDispatch } from '../hooks/redux';
 import { useUiUtilities } from '../hooks/use-ui-utilities';
 import { convAction, msgAction } from '../store/actions';
