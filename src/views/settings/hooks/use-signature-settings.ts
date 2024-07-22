@@ -30,7 +30,7 @@ export const getContentLengthErrorMessageKey = (
 	limit: number | undefined,
 	t: TFunction
 ): string | null => {
-	if (!signature.description || signature.description.trim() === '') {
+	if (!signature.label || signature.label.trim() === '') {
 		return t('label.signature_required', 'Signature information is required.');
 	}
 
@@ -38,7 +38,7 @@ export const getContentLengthErrorMessageKey = (
 		return null;
 	}
 
-	if (signature.description.trim().length > limit) {
+	if (signature.label.trim().length > limit) {
 		return t('label.signature_size_exceed', 'One or more signatures exceed the size limit.');
 	}
 	return null;
