@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { FC, useCallback, useMemo } from 'react';
 
 import { Container, Shimmer } from '@zextras/carbonio-design-system';
 import { FOLDERS, useUserSettings } from '@zextras/carbonio-shell-ui';
@@ -11,19 +11,13 @@ import { filter, map } from 'lodash';
 import { useParams } from 'react-router-dom';
 
 import { SearchConversationMessagePanel } from './search-conversation-message-panel';
-import { searchConvSoapAPI } from '../../../api/search-conv';
 import { API_REQUEST_STATUS } from '../../../constants';
 import { getFolderIdParts } from '../../../helpers/folders';
 import {
-	setConversationStatus,
 	useConversationById,
 	useConversationStatus
 } from '../../../store/zustand/message-store/store';
-import {
-	handleSearchConvResponse,
-	useLoadConversation
-} from '../../../store/zustand/search/hooks/hooks';
-import { SearchRequestStatus } from '../../../types';
+import { useLoadConversation } from '../../../store/zustand/search/hooks/hooks';
 import PreviewPanelHeader from '../../app/detail-panel/preview/preview-panel-header';
 import { useExtraWindow } from '../../app/extra-windows/use-extra-window';
 
@@ -44,7 +38,6 @@ const useConversationPreviewPanelParameters = (
 
 export const SearchConversationPanel: FC<SearchConversationPanelProps> = (props) => {
 	const { conversationId, folderId } = useConversationPreviewPanelParameters(props);
-	// const [apiCallStatus, setApiCallStatus] = useState<SearchRequestStatus>(null);
 	const conversationStatus = useConversationStatus(conversationId);
 
 	const { isInsideExtraWindow } = useExtraWindow();

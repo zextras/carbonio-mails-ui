@@ -93,7 +93,9 @@ export const createMessageSlice: StateCreator<
 		updateConversationStatus(conversationId: string, status: SearchRequestStatus): void {
 			set((state: MessageStoreState) => {
 				state.populatedItems.conversationsStatus[conversationId] = status;
-				return state;
+				return {
+					populatedItems: { ...state.populatedItems }
+				};
 			});
 		}
 	}

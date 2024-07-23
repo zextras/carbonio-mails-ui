@@ -16,7 +16,6 @@ import {
 	SearchRequestStatus,
 	SearchSliceState
 } from '../../../types';
-import { StarRateOutlined } from '@mui/icons-material';
 
 export type MessageStoreState = PopulatedItemsSliceState & SearchSliceState;
 
@@ -24,6 +23,9 @@ export const useMessageStore = create<MessageStoreState>()((...a) => ({
 	...createSearchSlice(...a),
 	...createPopulatedItemsSlice(...a)
 }));
+
+export const messageStoreActions: PopulatedItemsSliceState['actions'] =
+	useMessageStore.getState().actions;
 
 // TODO: avoid use methods only for tests
 export function getConversationById(id: string): NormalizedConversation {
@@ -38,7 +40,7 @@ export function useConversationStatus(id: string): SearchRequestStatus {
 }
 
 export function setConversationStatus(id: string, status: SearchRequestStatus): void {
-	useMessageStore.getState().actions.updateConversationStatus(id, status);
+	messageStoreActions.updateConversationStatus(id, status);
 }
 
 export function useMessageById(id: string): IncompleteMessage | MailMessage {
@@ -52,6 +54,3 @@ export function useSearchResults(): SearchSliceState['search'] {
 export function useSearchResultStatus(): SearchRequestStatus {
 	return useMessageStore.getState().search.status;
 }
-
-export const messageStoreActions: PopulatedItemsSliceState['actions'] =
-	useMessageStore.getState().actions;

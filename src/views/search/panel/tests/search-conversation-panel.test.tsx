@@ -12,6 +12,7 @@ import { useParams } from 'react-router-dom';
 import { createSoapAPIInterceptor } from '../../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { buildSoapErrorResponseBody } from '../../../../carbonio-ui-commons/test/mocks/utils/soap';
 import { setupTest, screen } from '../../../../carbonio-ui-commons/test/test-setup';
+import { API_REQUEST_STATUS } from '../../../../constants';
 import {
 	createSoapAPIInterceptorWithError,
 	generateConvMessageFromAPI
@@ -134,25 +135,15 @@ describe('Conversation Preview', () => {
 			subject: 'Test Conversation'
 		});
 		initialState.populatedItems.conversations = { '123': conversation };
+		initialState.populatedItems.conversationsStatus = { '123': API_REQUEST_STATUS.pending };
 		initialState.populatedItems.messages = { '1': message1 };
 		useMessageStore.setState({
 			...initialState
 		});
 		(useParams as jest.Mock).mockReturnValue({ folderId: '2' });
-		const response: SearchConvResponse = {
-			m: [generateConvMessageFromAPI({ id: '10' }), generateConvMessageFromAPI({ id: '2' })],
-			more: false,
-			offset: '',
-			orderBy: ''
-		};
-		const interceptor = createSoapAPIInterceptor<SearchConvRequest, SearchConvResponse>(
-			'SearchConv',
-			response
-		);
 
 		const store = generateStore();
 		setupTest(<SearchConversationPanel conversationId="123" folderId="2" />, { store });
-		await interceptor;
 
 		expect(screen.getByTestId('shimmer-conversation-123')).toBeInTheDocument();
 	});
@@ -190,14 +181,12 @@ describe('Conversation Preview', () => {
 			});
 			await interceptor;
 			expect(await screen.findByTestId(/MailPreview-1/)).toBeInTheDocument();
-			// screen.logTestingPlaygroundURL();
 			const trashButton = await screen.findByRoleWithIcon('button', { icon: /Trash2Outline/i });
 
 			act(() => {
 				user.click(trashButton);
 			});
 			expect(trashButton).toBeVisible();
-			// screen.logTestingPlaygroundURL();
 		});
 	});
 });
