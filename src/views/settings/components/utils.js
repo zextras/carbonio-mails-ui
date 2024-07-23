@@ -331,7 +331,7 @@ export const getFontSizesOptions = () => [
 export const getFonts = () => [
 	{
 		label: 'Andale Mono',
-		value: 'Andale Mono=andale mono,times;'
+		value: 'andale mono,times;'
 	},
 	{
 		label: 'Arial',
