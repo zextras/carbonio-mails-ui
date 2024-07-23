@@ -6,14 +6,20 @@
 
 import { renderHook } from '@testing-library/react-hooks';
 
+import { createSoapAPIInterceptor } from '../../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
+import { API_REQUEST_STATUS } from '../../../../constants';
+import { generateConvMessageFromAPI } from '../../../../helpers/api';
 import { generateConversation } from '../../../../tests/generators/generateConversation';
-import { SoapConversation } from '../../../../types';
+import { generateMessage } from '../../../../tests/generators/generateMessage';
+import { SearchConvRequest, SearchConvResponse, SoapConversation } from '../../../../types';
 import {
 	getConversationById,
 	messageStoreActions,
-	useConversationById
+	useConversationById,
+	useConversationStatus,
+	useMessageStore
 } from '../../message-store/store';
-import { handleSearchResults, loadConversation } from '../hooks/hooks';
+import { handleSearchResults, useLoadConversation } from '../hooks/hooks';
 
 function conversationFromAPI(params: Partial<SoapConversation> = {}): SoapConversation {
 	return {
@@ -46,10 +52,63 @@ describe('Searches store hooks', () => {
 		handleSearchResults({ searchResponse, offset: 0 });
 		expect(getConversationById('123')).toBeDefined();
 	});
-	it('loadConversation should update conversation store if conversation status is undefined', () => {
-        loadConversation(
-           conversationId: 'string',
-            folderId: ''
-        ):
-    });
+
+	it('loadConversation should update conversation status if conversation status is undefined', async () => {
+		const state = useMessageStore.getState();
+		state.search.conversationIds = new Set(['123']);
+		const message1 = generateMessage({ id: '1', subject: 'Test Message 1' });
+
+		const conversation = generateConversation({
+			id: '123',
+			messages: [message1],
+			subject: 'Test Conversation'
+		});
+		state.populatedItems.conversations = { '123': conversation };
+		state.populatedItems.conversationsStatus = {};
+		state.populatedItems.messages = { '1': message1 };
+		useMessageStore.setState(state);
+		const response: SearchConvResponse = {
+			m: [generateConvMessageFromAPI({ id: '10' }), generateConvMessageFromAPI({ id: '2' })],
+			more: false,
+			offset: '',
+			orderBy: ''
+		};
+		createSoapAPIInterceptor<SearchConvRequest, SearchConvResponse>('SearchConv', response);
+
+		const { result, waitFor } = renderHook(() => useConversationStatus('123'));
+		renderHook(() => useLoadConversation('123', '2'));
+		await waitFor(() => {
+			expect(result.current).toBe(API_REQUEST_STATUS.fulfilled);
+		});
+	});
+
+	it('loadConversation should not update conversation status if conversation status is already defined', async () => {
+		const state = useMessageStore.getState();
+		state.search.conversationIds = new Set(['123']);
+		const message1 = generateMessage({ id: '1', subject: 'Test Message 1' });
+
+		const conversation = generateConversation({
+			id: '123',
+			messages: [message1],
+			subject: 'Test Conversation'
+		});
+		state.populatedItems.conversations = { '123': conversation };
+		state.populatedItems.conversationsStatus = { '123': API_REQUEST_STATUS.pending };
+		state.populatedItems.messages = { '1': message1 };
+		useMessageStore.setState(state);
+		const response: SearchConvResponse = {
+			m: [generateConvMessageFromAPI({ id: '10' }), generateConvMessageFromAPI({ id: '2' })],
+			more: false,
+			offset: '',
+			orderBy: ''
+		};
+		// TODO: make a wat to check API not called
+		createSoapAPIInterceptor<SearchConvRequest, SearchConvResponse>('SearchConv', response);
+
+		const { result, waitFor } = renderHook(() => useConversationStatus('123'));
+		renderHook(() => useLoadConversation('123', '2'));
+		await waitFor(() => {
+			expect(result.current).toBe(API_REQUEST_STATUS.pending);
+		});
+	});
 });

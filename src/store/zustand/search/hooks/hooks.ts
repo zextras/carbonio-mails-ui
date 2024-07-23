@@ -4,15 +4,16 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import { useEffect } from 'react';
+
 import { type ErrorSoapBodyResponse, getTags, Tags } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
-import { useEffect } from 'react';
 
 import { searchConvSoapAPI } from '../../../../api/search-conv';
 import { API_REQUEST_STATUS } from '../../../../constants';
 import { normalizeConversation } from '../../../../normalizations/normalize-conversation';
 import { normalizeMailMessageFromSoap } from '../../../../normalizations/normalize-message';
-import { SearchConvResponse, SearchRequestStatus, SearchResponse } from '../../../../types';
+import { SearchConvResponse, SearchResponse } from '../../../../types';
 import {
 	messageStoreActions,
 	setConversationStatus,
@@ -87,7 +88,6 @@ export function useLoadConversation(conversationId: string, folderId: string): v
 						return;
 					}
 					handleSearchConvResponse(conversationId, response);
-					setConversationStatus(conversationId, API_REQUEST_STATUS.fulfilled);
 				})
 				.catch(() => {
 					setConversationStatus(conversationId, API_REQUEST_STATUS.error);
