@@ -14,8 +14,15 @@ import { SearchConversationMessagePanel } from './search-conversation-message-pa
 import { searchConvSoapAPI } from '../../../api/search-conv';
 import { API_REQUEST_STATUS } from '../../../constants';
 import { getFolderIdParts } from '../../../helpers/folders';
-import { useConversationById } from '../../../store/zustand/message-store/store';
-import { handleSearchConvResponse } from '../../../store/zustand/search/hooks/hooks';
+import {
+	setConversationStatus,
+	useConversationById,
+	useConversationStatus
+} from '../../../store/zustand/message-store/store';
+import {
+	handleSearchConvResponse,
+	useLoadConversation
+} from '../../../store/zustand/search/hooks/hooks';
 import { SearchRequestStatus } from '../../../types';
 import PreviewPanelHeader from '../../app/detail-panel/preview/preview-panel-header';
 import { useExtraWindow } from '../../app/extra-windows/use-extra-window';
@@ -37,30 +44,15 @@ const useConversationPreviewPanelParameters = (
 
 export const SearchConversationPanel: FC<SearchConversationPanelProps> = (props) => {
 	const { conversationId, folderId } = useConversationPreviewPanelParameters(props);
-	const [apiCallStatus, setApiCallStatus] = useState<SearchRequestStatus>(null);
+	// const [apiCallStatus, setApiCallStatus] = useState<SearchRequestStatus>(null);
+	const conversationStatus = useConversationStatus(conversationId);
 
 	const { isInsideExtraWindow } = useExtraWindow();
 	const conversation = useConversationById(conversationId);
 	const settings = useUserSettings();
 	const convSortOrder = settings.prefs.zimbraPrefConversationOrder as string;
 
-	useEffect(() => {
-		if (!apiCallStatus) {
-			setApiCallStatus(API_REQUEST_STATUS.pending);
-			searchConvSoapAPI({ conversationId, fetch: 'all', folderId })
-				.then((response) => {
-					if ('Fault' in response) {
-						setApiCallStatus(API_REQUEST_STATUS.error);
-						return;
-					}
-					handleSearchConvResponse(conversationId, response);
-					setApiCallStatus(API_REQUEST_STATUS.fulfilled);
-				})
-				.catch(() => {
-					setApiCallStatus(API_REQUEST_STATUS.error);
-				});
-		}
-	}, [apiCallStatus, conversation, conversationId, folderId]);
+	useLoadConversation(conversationId, folderId);
 
 	const showPreviewPanel = useMemo(
 		(): boolean | undefined =>
@@ -96,7 +88,7 @@ export const SearchConversationPanel: FC<SearchConversationPanelProps> = (props)
 						mainAlignment="flex-start"
 					>
 						<Container height="fit" mainAlignment="flex-start" background="gray5">
-							{conversation && apiCallStatus === API_REQUEST_STATUS.fulfilled && (
+							{conversation && conversationStatus === API_REQUEST_STATUS.fulfilled && (
 								<>
 									{map(messages, (message, index) => (
 										<SearchConversationMessagePanel
@@ -109,10 +101,10 @@ export const SearchConversationPanel: FC<SearchConversationPanelProps> = (props)
 									))}
 								</>
 							)}
-							{apiCallStatus === API_REQUEST_STATUS.pending && (
+							{conversationStatus === API_REQUEST_STATUS.pending && (
 								<Shimmer.Logo size="large" data-testid={`shimmer-conversation-${conversationId}`} />
 							)}
-							{(apiCallStatus === API_REQUEST_STATUS.error || apiCallStatus === null) && (
+							{(conversationStatus === API_REQUEST_STATUS.error || conversationStatus === null) && (
 								<div data-testid="empty-fragment" />
 							)}
 						</Container>

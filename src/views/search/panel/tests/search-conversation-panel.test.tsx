@@ -89,6 +89,7 @@ describe('Conversation Preview', () => {
 		);
 		const store = generateStore();
 		setupTest(<SearchConversationPanel conversationId="123" folderId="2" />, { store });
+
 		await interceptor;
 
 		expect(screen.queryByTestId(/MailPreview-1/)).not.toBeInTheDocument();
@@ -189,14 +190,14 @@ describe('Conversation Preview', () => {
 			});
 			await interceptor;
 			expect(await screen.findByTestId(/MailPreview-1/)).toBeInTheDocument();
-			screen.logTestingPlaygroundURL();
+			// screen.logTestingPlaygroundURL();
 			const trashButton = await screen.findByRoleWithIcon('button', { icon: /Trash2Outline/i });
 
 			act(() => {
 				user.click(trashButton);
 			});
 			expect(trashButton).toBeVisible();
-			screen.logTestingPlaygroundURL();
+			// screen.logTestingPlaygroundURL();
 		});
 	});
 });

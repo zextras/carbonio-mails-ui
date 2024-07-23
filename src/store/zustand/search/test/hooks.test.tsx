@@ -13,7 +13,7 @@ import {
 	messageStoreActions,
 	useConversationById
 } from '../../message-store/store';
-import { handleSearchResults } from '../hooks/hooks';
+import { handleSearchResults, loadConversation } from '../hooks/hooks';
 
 function conversationFromAPI(params: Partial<SoapConversation> = {}): SoapConversation {
 	return {
@@ -46,4 +46,10 @@ describe('Searches store hooks', () => {
 		handleSearchResults({ searchResponse, offset: 0 });
 		expect(getConversationById('123')).toBeDefined();
 	});
+	it('loadConversation should update conversation store if conversation status is undefined', () => {
+        loadConversation(
+           conversationId: 'string',
+            folderId: ''
+        ):
+    });
 });

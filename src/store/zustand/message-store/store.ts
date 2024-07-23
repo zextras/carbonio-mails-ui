@@ -12,10 +12,11 @@ import {
 	IncompleteMessage,
 	MailMessage,
 	NormalizedConversation,
-	type PopulatedItemsSliceState,
+	PopulatedItemsSliceState,
 	SearchRequestStatus,
-	type SearchSliceState
+	SearchSliceState
 } from '../../../types';
+import { StarRateOutlined } from '@mui/icons-material';
 
 export type MessageStoreState = PopulatedItemsSliceState & SearchSliceState;
 

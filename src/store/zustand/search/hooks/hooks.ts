@@ -6,11 +6,18 @@
 
 import { type ErrorSoapBodyResponse, getTags, Tags } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
+import { useEffect } from 'react';
 
+import { searchConvSoapAPI } from '../../../../api/search-conv';
+import { API_REQUEST_STATUS } from '../../../../constants';
 import { normalizeConversation } from '../../../../normalizations/normalize-conversation';
 import { normalizeMailMessageFromSoap } from '../../../../normalizations/normalize-message';
-import { SearchConvResponse, SearchResponse } from '../../../../types';
-import { messageStoreActions } from '../../message-store/store';
+import { SearchConvResponse, SearchRequestStatus, SearchResponse } from '../../../../types';
+import {
+	messageStoreActions,
+	setConversationStatus,
+	useConversationStatus
+} from '../../message-store/store';
 
 function handleFulFilledConversationResults({
 	searchResponse,
@@ -66,4 +73,25 @@ export function handleSearchConvResponse(
 ): void {
 	const messages = map(response?.m ?? [], (msg) => normalizeMailMessageFromSoap(msg, true));
 	messageStoreActions.updateConversationMessages(conversationId, messages);
+}
+
+export function useLoadConversation(conversationId: string, folderId: string): void {
+	const conversationStatus = useConversationStatus(conversationId);
+	useEffect(() => {
+		if (!conversationStatus) {
+			setConversationStatus(conversationId, API_REQUEST_STATUS.pending);
+			searchConvSoapAPI({ conversationId, fetch: 'all', folderId })
+				.then((response) => {
+					if ('Fault' in response) {
+						setConversationStatus(conversationId, API_REQUEST_STATUS.error);
+						return;
+					}
+					handleSearchConvResponse(conversationId, response);
+					setConversationStatus(conversationId, API_REQUEST_STATUS.fulfilled);
+				})
+				.catch(() => {
+					setConversationStatus(conversationId, API_REQUEST_STATUS.error);
+				});
+		}
+	}, [conversationId, conversationStatus, folderId]);
 }
