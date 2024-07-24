@@ -13,11 +13,7 @@ import { useParams } from 'react-router-dom';
 import { SearchConversationMessagePanel } from './search-conversation-message-panel';
 import { API_REQUEST_STATUS } from '../../../constants';
 import { getFolderIdParts } from '../../../helpers/folders';
-import {
-	useConversationById,
-	useConversationStatus
-} from '../../../store/zustand/message-store/store';
-import { useLoadConversation } from '../../../store/zustand/search/hooks/hooks';
+import { useCompleteConversation } from '../../../store/zustand/search/hooks/hooks';
 import PreviewPanelHeader from '../../app/detail-panel/preview/preview-panel-header';
 import { useExtraWindow } from '../../app/extra-windows/use-extra-window';
 
@@ -38,14 +34,14 @@ const useConversationPreviewPanelParameters = (
 
 export const SearchConversationPanel: FC<SearchConversationPanelProps> = (props) => {
 	const { conversationId, folderId } = useConversationPreviewPanelParameters(props);
-	const conversationStatus = useConversationStatus(conversationId);
 
 	const { isInsideExtraWindow } = useExtraWindow();
-	const conversation = useConversationById(conversationId);
+	const { conversation, conversationStatus } = useCompleteConversation(conversationId, folderId);
+
 	const settings = useUserSettings();
 	const convSortOrder = settings.prefs.zimbraPrefConversationOrder as string;
 
-	useLoadConversation(conversationId, folderId);
+	useCompleteConversation(conversationId, folderId);
 
 	const showPreviewPanel = useMemo(
 		(): boolean | undefined =>

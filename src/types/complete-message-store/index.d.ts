@@ -14,10 +14,4 @@ export type PopulatedItemsSliceState = {
 		conversations: Record<string, NormalizedConversation>;
 		conversationsStatus: Record<string, SearchRequestStatus>;
 	};
-	actions: {
-		updateConversations: (conversations: Array<NormalizedConversation>, offset: number) => void;
-		updateMessages: (messages: Array<MailMessage | IncompleteMessage>, offset: number) => void;
-		updateConversationMessages: (conversationId: string, messages: IncompleteMessage[]) => void;
-		updateConversationStatus: (conversationId: string, status: SearchRequestStatus) => void;
-	};
 };

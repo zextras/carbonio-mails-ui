@@ -13,7 +13,6 @@ import {
 	MailMessage,
 	NormalizedConversation,
 	PopulatedItemsSliceState,
-	SearchRequestStatus,
 	SearchSliceState
 } from '../../../types';
 
@@ -24,23 +23,8 @@ export const useMessageStore = create<MessageStoreState>()((...a) => ({
 	...createPopulatedItemsSlice(...a)
 }));
 
-export const messageStoreActions: PopulatedItemsSliceState['actions'] =
-	useMessageStore.getState().actions;
-
-// TODO: avoid use methods only for tests
-export function getConversationById(id: string): NormalizedConversation {
-	return useMessageStore.getState().populatedItems.conversations[id];
-}
-
 export function useConversationById(id: string): NormalizedConversation {
 	return useMessageStore((state) => state.populatedItems.conversations[id]);
-}
-export function useConversationStatus(id: string): SearchRequestStatus {
-	return useMessageStore((state) => state.populatedItems.conversationsStatus?.[id]);
-}
-
-export function setConversationStatus(id: string, status: SearchRequestStatus): void {
-	messageStoreActions.updateConversationStatus(id, status);
 }
 
 export function useMessageById(id: string): IncompleteMessage | MailMessage {
@@ -49,8 +33,4 @@ export function useMessageById(id: string): IncompleteMessage | MailMessage {
 
 export function useSearchResults(): SearchSliceState['search'] {
 	return useMessageStore((state) => state.search);
-}
-
-export function useSearchResultStatus(): SearchRequestStatus {
-	return useMessageStore.getState().search.status;
 }

@@ -290,7 +290,7 @@ export const useEditorAttachments = (editorId: MailsEditorV2['id']): EditorAttac
 				const inlineInfo = savedInlineAttachments.map((savedInlineAttachment) => ({
 					contentId: savedInlineAttachment.contentId,
 					cidUrl: savedInlineAttachment.contentId
-						? (composeCidUrlFromContentId(savedInlineAttachment.contentId) ?? undefined)
+						? composeCidUrlFromContentId(savedInlineAttachment.contentId) ?? undefined
 						: undefined,
 					downloadServiceUrl: composeAttachmentDownloadUrl(savedInlineAttachment)
 				}));
