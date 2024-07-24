@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React, { ReactNode } from 'react';
+import React, { ReactElement, ReactNode } from 'react';
 
 import { renderHook } from '@testing-library/react-hooks';
 import { FOLDERS } from '@zextras/carbonio-shell-ui';
@@ -37,7 +37,7 @@ describe('useMsgConvActions', () => {
 					messageActionsForExtraWindow: []
 				}),
 			{
-				wrapper: ({ children }: { children: ReactNode }): ReactNode => (
+				wrapper: ({ children }: { children: ReactNode }): ReactElement => (
 					<I18nextProvider i18n={getAppI18n()}>
 						<Provider store={generateStore()}>{children}</Provider>
 					</I18nextProvider>
