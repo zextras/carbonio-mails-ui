@@ -7,7 +7,6 @@
 import React, { ReactElement, ReactNode } from 'react';
 
 import { renderHook } from '@testing-library/react-hooks';
-import { FOLDERS } from '@zextras/carbonio-shell-ui';
 import { I18nextProvider } from 'react-i18next';
 import { Provider } from 'react-redux';
 
@@ -48,16 +47,21 @@ describe('useMsgConvActions', () => {
 		expect(result.current).toEqual([[], []]);
 	});
 
-	it('should return primary and secondary actions for a mail message', () => {
-		const { result } = renderHook(() =>
-			useMsgConvActions({
-				item: {
-					id: '1',
-					parent: FOLDERS.INBOX
-				},
-				deselectAll: jest.fn(),
-				messageActionsForExtraWindow: []
-			})
+	it('should return primary and secondary actions for a conversation', () => {
+		const { result } = renderHook(
+			() =>
+				useMsgConvActions({
+					item: generateConversation({}),
+					deselectAll: jest.fn(),
+					messageActionsForExtraWindow: []
+				}),
+			{
+				wrapper: ({ children }: { children: ReactNode }): ReactElement => (
+					<I18nextProvider i18n={getAppI18n()}>
+						<Provider store={generateStore()}>{children}</Provider>
+					</I18nextProvider>
+				)
+			}
 		);
 
 		const [primaryActions, secondaryActions] = result.current;
@@ -65,21 +69,21 @@ describe('useMsgConvActions', () => {
 		expect(secondaryActions).not.toEqual([]);
 	});
 
-	it('should return primary and secondary actions for a conversation', () => {
-		const { result } = renderHook(() =>
-			useMsgConvActions({
-				item: {
-					id: '1',
-					messages: [
-						{
-							id: '1',
-							parent: FOLDERS.INBOX
-						}
-					]
-				},
-				deselectAll: jest.fn(),
-				messageActionsForExtraWindow: []
-			})
+	it('should return primary and secondary actions for a message', () => {
+		const { result } = renderHook(
+			() =>
+				useMsgConvActions({
+					item: generateMessage({}),
+					deselectAll: jest.fn(),
+					messageActionsForExtraWindow: []
+				}),
+			{
+				wrapper: ({ children }: { children: ReactNode }): ReactElement => (
+					<I18nextProvider i18n={getAppI18n()}>
+						<Provider store={generateStore()}>{children}</Provider>
+					</I18nextProvider>
+				)
+			}
 		);
 
 		const [primaryActions, secondaryActions] = result.current;
