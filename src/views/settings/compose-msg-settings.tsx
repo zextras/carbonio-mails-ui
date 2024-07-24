@@ -8,13 +8,13 @@ import React, { FC, useCallback, useMemo, useState } from 'react';
 
 import { Container, FormSubSection, RadioGroup, Radio } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
+import { map } from 'lodash';
 
 import Heading from './components/settings-heading';
 import { getFontSizesOptions, findLabel, getFonts } from './components/utils';
 import CustomSelect from './filters/parts/custom-select';
 import { composingMsgSubSection } from './subsections';
 import { ColorPicker } from '../../commons/color-picker';
-import { map } from 'lodash';
 
 type UpdateSettingsProps = {
 	target: {
@@ -50,7 +50,6 @@ const ComposeMessage: FC<ComposeMessagesProps> = ({ settingsObj, updateSettings 
 		[updateSettings]
 	);
 
-	// TODO: DEFINE WHAT TO DO WITHT THOSE VALUES FALLBACKS
 	const defaultSelectionFontSize = useMemo(
 		() => ({
 			label: settingsObj.zimbraPrefHtmlEditorDefaultFontSize,
