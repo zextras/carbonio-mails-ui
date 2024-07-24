@@ -1,9 +1,11 @@
+/* eslint-disable no-param-reassign */
 /*
  * SPDX-FileCopyrightText: 2024 Zextras <https://www.zextras.com>
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import produce from 'immer';
 import { StateCreator } from 'zustand';
 
 import { type MessageStoreState } from './store';
@@ -72,31 +74,26 @@ export const createMessageSlice: StateCreator<
 			}));
 		},
 		updateConversationMessages(conversationId: string, messages: IncompleteMessage[]): void {
-			set((state: MessageStoreState) => {
-				state.populatedItems.conversations[conversationId].messages = messages;
-				state.populatedItems.conversationsStatus[conversationId] = API_REQUEST_STATUS.fulfilled;
-				return {
-					populatedItems: {
-						...state.populatedItems,
-						messages: messages.reduce(
-							(acc, msg) => {
-								// eslint-disable-next-line no-param-reassign
-								acc[msg.id] = msg;
-								return acc;
-							},
-							{} as Record<string, MailMessage | IncompleteMessage>
-						)
-					}
-				};
-			});
+			set(
+				produce(({ populatedItems }) => {
+					populatedItems.conversations[conversationId].messages = messages;
+					populatedItems.conversationsStatus[conversationId] = API_REQUEST_STATUS.fulfilled;
+					populatedItems.messages = messages.reduce(
+						(acc, msg) => {
+							acc[msg.id] = msg;
+							return acc;
+						},
+						{} as Record<string, MailMessage | IncompleteMessage>
+					);
+				})
+			);
 		},
 		updateConversationStatus(conversationId: string, status: SearchRequestStatus): void {
-			set((state: MessageStoreState) => {
-				state.populatedItems.conversationsStatus[conversationId] = status;
-				return {
-					populatedItems: { ...state.populatedItems }
-				};
-			});
+			set(
+				produce(({ populatedItems }) => {
+					populatedItems.conversationsStatus[conversationId] = status;
+				})
+			);
 		}
 	}
 });
