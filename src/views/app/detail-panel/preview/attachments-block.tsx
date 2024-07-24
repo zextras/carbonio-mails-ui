@@ -53,18 +53,6 @@ import type {
 } from '../../../../types';
 import { useExtraWindow } from '../../extra-windows/use-extra-window';
 
-/**
- * The BE currently doesn't support the preview of PDF attachments
- * whose part name consists in more than 2 numbers (which is common
- * for attachments nested inside an EML. Example: 1.3.2)
- *
- * As a workaround we intercept those cases and handle them
- * with the browser pdf preview
- *
- * TODO remove it when IRIS-3918 will be implemented
- */
-const UNSUPPORTED_PDF_ATTACHMENT_PARTNAME_PATTERN = /\d+\.\d+\../;
-
 const AttachmentHoverBarContainer = styled(Container)`
 	display: none;
 	height: 0;
@@ -284,39 +272,32 @@ const Attachment: FC<AttachmentType> = ({
 	const preview = useCallback(
 		(ev) => {
 			ev.preventDefault();
-			const pType = previewType(att.contentType);
-
 			if (pType === 'pdf' || pType === 'image') {
-				// TODO remove the condition and the conditional block when IRIS-3918 will be implemented
-				if (pType === 'pdf' && att.name.match(UNSUPPORTED_PDF_ATTACHMENT_PARTNAME_PATTERN)) {
-					browserPdfPreview();
-				} else {
-					createPreview({
-						src: link,
-						previewType: pType,
-						/** Left Action for the preview */
-						closeAction: {
-							id: 'close',
-							icon: 'ArrowBack',
-							tooltipLabel: t('preview.close', 'Close Preview')
-						},
-						/** Actions for the preview */
-						actions: [
-							{
-								icon: 'DownloadOutline',
-								tooltipLabel: t('label.download', 'Download'),
-								id: 'DownloadOutline',
-								onClick: downloadAttachment
-							}
-						],
-						/** Extension of the file, shown as info */
-						extension: att.filename.substring(att.filename.lastIndexOf('.') + 1),
-						/** Name of the file, shown as info */
-						filename: att.filename,
-						/** Size of the file, shown as info */
-						size: humanFileSize(att.size)
-					});
-				}
+				createPreview({
+					src: link,
+					previewType: pType,
+					/** Left Action for the preview */
+					closeAction: {
+						id: 'close',
+						icon: 'ArrowBack',
+						tooltipLabel: t('preview.close', 'Close Preview')
+					},
+					/** Actions for the preview */
+					actions: [
+						{
+							icon: 'DownloadOutline',
+							tooltipLabel: t('label.download', 'Download'),
+							id: 'DownloadOutline',
+							onClick: downloadAttachment
+						}
+					],
+					/** Extension of the file, shown as info */
+					extension: att.filename.substring(att.filename.lastIndexOf('.') + 1),
+					/** Name of the file, shown as info */
+					filename: att.filename,
+					/** Size of the file, shown as info */
+					size: humanFileSize(att.size)
+				});
 			} else if (isEML) {
 				showEMLPreview();
 			} else if (inputRef2.current) {
@@ -326,18 +307,7 @@ const Attachment: FC<AttachmentType> = ({
 				inputRef2.current.click();
 			}
 		},
-		[
-			att.contentType,
-			att.filename,
-			att.name,
-			att.size,
-			browserPdfPreview,
-			createPreview,
-			downloadAttachment,
-			isEML,
-			link,
-			showEMLPreview
-		]
+		[att.filename, att.size, createPreview, downloadAttachment, isEML, link, pType, showEMLPreview]
 	);
 
 	const theme = useTheme();
