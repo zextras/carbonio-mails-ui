@@ -4,9 +4,11 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { FC, useCallback, useRef, useState } from 'react';
+
+import { Container, ContainerProps, Icon } from '@zextras/carbonio-design-system';
 import { HexColorPicker } from 'react-colorful';
 import styled from 'styled-components';
-import { Container, ContainerProps, Icon } from '@zextras/carbonio-design-system';
+
 import useClickOutside from '../hooks/use-click-outside-picker';
 import { ColorContainer } from '../integrations/shared-invite-reply/parts/styled-components';
 
@@ -58,7 +60,7 @@ export const ColorPicker: FC<{
 			height="3rem"
 		>
 			<Container style={{ position: 'relative' }} orientation="horizontal" width="fit">
-				<ColorBox color={color} disabled={disabled} />
+				<ColorBox color={color} disabled={disabled} data-testid="color-picker-color-box" />
 				{isOpen && (
 					<PopOver ref={popover}>
 						<HexColorPicker color={color} onChange={onChange} />
