@@ -116,7 +116,7 @@ export const MailMsgPreviewActions: FC<MailMsgPreviewActionsType> = ({
 			{firstActions?.length > 0 &&
 				map(firstActions, (action) =>
 					action.items ? (
-						<Padding right="small">
+						<Padding key={action.label} right="small">
 							<Tooltip label={action.label}>
 								<Dropdown items={action.items}>
 									<IconButton icon={action.icon} size="small" onClick={noop} />

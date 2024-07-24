@@ -7,8 +7,10 @@
 import React from 'react';
 
 import { act } from '@testing-library/react';
+import * as hooks from '@zextras/carbonio-shell-ui';
 import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 import produce from 'immer';
+import { noop } from 'lodash';
 import { useParams } from 'react-router-dom';
 
 import { createSoapAPIInterceptor } from '../../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
@@ -19,11 +21,17 @@ import {
 	createSoapAPIInterceptorWithError,
 	generateConvMessageFromAPI
 } from '../../../../helpers/api';
+import * as visibleActionsCount from '../../../../hooks/use-visible-actions-count';
 import { useMessageStore } from '../../../../store/zustand/message-store/store';
 import { generateConversation } from '../../../../tests/generators/generateConversation';
 import { generateMessage } from '../../../../tests/generators/generateMessage';
 import { generateStore } from '../../../../tests/generators/store';
-import { SearchConvRequest, SearchConvResponse } from '../../../../types';
+import {
+	MsgActionRequest,
+	MsgActionResponse,
+	SearchConvRequest,
+	SearchConvResponse
+} from '../../../../types';
 import { SearchConversationPanel } from '../search-conversation-panel';
 
 jest.mock('react-router-dom', () => ({
@@ -155,9 +163,10 @@ describe('Conversation Preview', () => {
 
 	describe('Single conversation mode', () => {
 		it('should display "Trash" badge when clicking delete button', async () => {
-			const message1 = generateMessage({ id: '1', subject: 'Test Message 1' });
+			const message1 = generateMessage({ id: '1', subject: 'Test Message 1', folderId: '2' });
 			const conversation = generateConversation({
 				id: '123',
+				folderId: '2',
 				messages: [message1],
 				subject: 'Test Conversation'
 			});
@@ -168,9 +177,11 @@ describe('Conversation Preview', () => {
 					initialState.populatedItems.messages = { '1': message1 };
 				})
 			);
-			(useParams as jest.Mock).mockReturnValue({ folderId: '2' });
+			(useParams as jest.Mock).mockReturnValue({ folderId: '2', conversationId: '123' });
+			jest.spyOn(hooks, 'useAppContext').mockReturnValue({ setCount: noop });
+			jest.spyOn(visibleActionsCount, 'useVisibleActionsCount').mockReturnValue([16, noop]);
 			const response: SearchConvResponse = {
-				m: [generateConvMessageFromAPI({ id: '1' })],
+				m: [generateConvMessageFromAPI({ id: '1', cid: '123' })],
 				more: false,
 				offset: '',
 				orderBy: ''
@@ -179,19 +190,26 @@ describe('Conversation Preview', () => {
 				'SearchConv',
 				response
 			);
+			const msgActionInterceptor = createSoapAPIInterceptor<MsgActionRequest, MsgActionResponse>(
+				'MsgAction',
+				{ action: { id: '123', op: 'trash' } }
+			);
 
-			const store = generateStore();
-			const { user } = setupTest(<SearchConversationPanel conversationId="123" folderId="2" />, {
-				store
+			const { user } = setupTest(<SearchConversationPanel />, {
+				store: generateStore()
 			});
+
 			await interceptor;
 			expect(await screen.findByTestId(/MailPreview-1/)).toBeInTheDocument();
 			const trashButton = await screen.findByRoleWithIcon('button', { icon: /Trash2Outline/i });
-
+			expect(trashButton).toBeVisible();
 			act(() => {
 				user.click(trashButton);
 			});
-			expect(trashButton).toBeVisible();
+			await msgActionInterceptor;
+			const trashBadge = await screen.findByTestId('FolderBadge');
+			// const trashBadge = await screen.findByText('Trash');
+			expect(trashBadge).toBeVisible();
 		});
 	});
 });

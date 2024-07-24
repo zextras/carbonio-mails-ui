@@ -41,8 +41,6 @@ export const SearchConversationPanel: FC<SearchConversationPanelProps> = (props)
 	const settings = useUserSettings();
 	const convSortOrder = settings.prefs.zimbraPrefConversationOrder as string;
 
-	useCompleteConversation(conversationId, folderId);
-
 	const showPreviewPanel = useMemo(
 		(): boolean | undefined =>
 			getFolderIdParts(folderId).id === FOLDERS.TRASH
