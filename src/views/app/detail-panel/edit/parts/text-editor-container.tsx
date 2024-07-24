@@ -47,15 +47,15 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 
 	const { prefs } = useUserSettings();
 
+	// TODO: DEFINE WHAT TO DO WITHT THOSE VALUES FALLBACKS
 	const fontSizesOptions = getFontSizesOptions();
 	const fontFamilyOptions = getFonts();
-	const defaultFontFamily: string = prefs?.zimbraPrefHtmlEditorDefaultFontFamily ?? 'sans-serif';
-	const defaultFontSize: string = prefs?.zimbraPrefHtmlEditorDefaultFontSize ?? '12pt';
+	const defaultFontFamily: string =
+		prefs?.zimbraPrefHtmlEditorDefaultFontFamily ?? fontFamilyOptions[0];
+	const defaultFontSize: string = prefs?.zimbraPrefHtmlEditorDefaultFontSize ?? fontSizesOptions[0];
 	const defaultColor: string = prefs?.zimbraPrefHtmlEditorDefaultFontColor ?? 'black';
 
-	const fontSizesOptionsToString = fontSizesOptions
-		.map((size: { value: string }) => size.value)
-		.join(' ');
+	const fontSizesOptionsToString = fontSizesOptions.map((fontSize: string) => fontSize).join(' ');
 	const fontsOptionsToString = fontFamilyOptions
 		.map((font: { value: string }) => font.value)
 		.join('; ');

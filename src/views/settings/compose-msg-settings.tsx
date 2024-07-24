@@ -14,6 +14,7 @@ import { getFontSizesOptions, findLabel, getFonts } from './components/utils';
 import CustomSelect from './filters/parts/custom-select';
 import { composingMsgSubSection } from './subsections';
 import { ColorPicker } from '../../commons/color-picker';
+import { map } from 'lodash';
 
 type UpdateSettingsProps = {
 	target: {
@@ -36,6 +37,13 @@ const ComposeMessage: FC<ComposeMessagesProps> = ({ settingsObj, updateSettings 
 	const fontSizesOptions = useMemo(() => getFontSizesOptions(), []);
 	const fontsOptions = useMemo(() => getFonts(), []);
 
+	const fontSizesOptionsArray = map(fontSizesOptions, (value) => ({
+		label: value,
+		value
+	}));
+
+	console.log('fontSizesOptionsArray: ', fontSizesOptionsArray);
+
 	const onColorChange = useCallback(
 		(value) => {
 			setColor(value);
@@ -44,12 +52,13 @@ const ComposeMessage: FC<ComposeMessagesProps> = ({ settingsObj, updateSettings 
 		[updateSettings]
 	);
 
+	// TODO: DEFINE WHAT TO DO WITHT THOSE VALUES FALLBACKS
 	const defaultSelectionFontSize = useMemo(
 		() => ({
-			label: findLabel(fontSizesOptions, settingsObj.zimbraPrefHtmlEditorDefaultFontSize),
+			label: settingsObj.zimbraPrefHtmlEditorDefaultFontSize,
 			value: settingsObj.zimbraPrefHtmlEditorDefaultFontSize
 		}),
-		[fontSizesOptions, settingsObj.zimbraPrefHtmlEditorDefaultFontSize]
+		[settingsObj.zimbraPrefHtmlEditorDefaultFontSize]
 	);
 
 	const defaultSelectionFont = useMemo(
@@ -114,7 +123,7 @@ const ComposeMessage: FC<ComposeMessagesProps> = ({ settingsObj, updateSettings 
 
 						<Container padding={{ right: 'small' }} minWidth="6.25rem">
 							<CustomSelect
-								items={fontSizesOptions}
+								items={fontSizesOptionsArray}
 								background="gray5"
 								label={t('label.size', 'Size')}
 								defaultSelection={defaultSelectionFontSize}

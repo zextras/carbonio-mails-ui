@@ -242,90 +242,18 @@ export const ReadSignatureSettings = () => [
 ];
 
 export const getFontSizesOptions = () => [
-	{
-		label: t('settings.font_size', {
-			count: '8',
-			defaultValue: '{{count}} pt'
-		}),
-		value: '8pt'
-	},
-	{
-		label: t('settings.font_size', {
-			count: '9',
-			defaultValue: '{{count}} pt'
-		}),
-		value: '9pt'
-	},
-	{
-		label: t('settings.font_size', {
-			count: '10',
-			defaultValue: '{{count}} pt'
-		}),
-		value: '10pt'
-	},
-	{
-		label: t('settings.font_size', {
-			count: '11',
-			defaultValue: '{{count}} pt'
-		}),
-		value: '11pt'
-	},
-	{
-		label: t('settings.font_size', {
-			count: '12',
-			defaultValue: '{{count}} pt'
-		}),
-		value: '12pt'
-	},
-	{
-		label: t('settings.font_size', {
-			count: '13',
-			defaultValue: '{{count}} pt'
-		}),
-		value: '13pt'
-	},
-	{
-		label: t('settings.font_size', {
-			count: '14',
-			defaultValue: '{{count}} pt'
-		}),
-		value: '14pt'
-	},
-	{
-		label: t('settings.font_size', {
-			count: '16',
-			defaultValue: '{{count}} pt'
-		}),
-		value: '16pt'
-	},
-	{
-		label: t('settings.font_size', {
-			count: '18',
-			defaultValue: '{{count}} pt'
-		}),
-		value: '18pt'
-	},
-	{
-		label: t('settings.font_size', {
-			count: '24',
-			defaultValue: '{{count}} pt'
-		}),
-		value: '24pt'
-	},
-	{
-		label: t('settings.font_size', {
-			count: '36',
-			defaultValue: '{{count}} pt'
-		}),
-		value: '36pt'
-	},
-	{
-		label: t('settings.font_size', {
-			count: '48',
-			defaultValue: '{{count}} pt'
-		}),
-		value: '48pt'
-	}
+	'8pt',
+	'9pt',
+	'10pt',
+	'11pt',
+	'12pt',
+	'13pt',
+	'14pt',
+	'16pt',
+	'18pt',
+	'24pt',
+	'36pt',
+	'48pt'
 ];
 
 export const getFonts = () => [
