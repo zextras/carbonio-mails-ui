@@ -46,19 +46,17 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 	);
 
 	const { prefs } = useUserSettings();
-
-	// TODO: DEFINE WHAT TO DO WITHT THOSE VALUES FALLBACKS
 	const fontSizesOptions = getFontSizesOptions();
 	const fontFamilyOptions = getFonts();
-	const defaultFontFamily: string =
-		prefs?.zimbraPrefHtmlEditorDefaultFontFamily ?? fontFamilyOptions[0];
-	const defaultFontSize: string = prefs?.zimbraPrefHtmlEditorDefaultFontSize ?? fontSizesOptions[0];
-	const defaultColor: string = prefs?.zimbraPrefHtmlEditorDefaultFontColor ?? 'black';
+
+	const defaultFontFamily = prefs?.zimbraPrefHtmlEditorDefaultFontFamily;
+	const defaultFontSize = prefs?.zimbraPrefHtmlEditorDefaultFontSize;
+	const defaultColor = prefs?.zimbraPrefHtmlEditorDefaultFontColor;
 
 	const fontSizesOptionsToString = fontSizesOptions.map((fontSize: string) => fontSize).join(' ');
-	const fontsOptionsToString = fontFamilyOptions
-		.map((font: { value: string }) => font.value)
-		.join('; ');
+	const fontsOptionsToString = fontFamilyOptions.map(
+		(font: { label: string; value: string }) => `${font.label}=${font.value};`
+	);
 
 	const composerCustomOptions = {
 		toolbar_sticky: true,

@@ -42,8 +42,6 @@ const ComposeMessage: FC<ComposeMessagesProps> = ({ settingsObj, updateSettings 
 		value
 	}));
 
-	console.log('fontSizesOptionsArray: ', fontSizesOptionsArray);
-
 	const onColorChange = useCallback(
 		(value) => {
 			setColor(value);

@@ -259,71 +259,71 @@ export const getFontSizesOptions = () => [
 export const getFonts = () => [
 	{
 		label: 'Andale Mono',
-		value: 'andale mono,times;'
+		value: 'andale mono, times'
 	},
 	{
 		label: 'Arial',
-		value: 'arial,helvetica,sans-serif;'
+		value: 'arial, helvetica, sans-serif'
 	},
 	{
 		label: 'Arial Black',
-		value: 'arial black,avant garde;'
+		value: 'arial black, avant garde'
 	},
 	{
 		label: 'Book Antiqua',
-		value: 'book antiqua,palatino;'
+		value: 'book antiqua, palatino'
 	},
 	{
 		label: 'Comic Sans MS',
-		value: 'comic sans ms,sans-serif;'
+		value: 'comic sans ms, sans-serif'
 	},
 	{
 		label: 'Courier New',
-		value: 'courier new,courier;'
+		value: 'courier new, courier'
 	},
 	{
 		label: 'Georgia',
-		value: 'georgia,palatino;'
+		value: 'georgia, palatino'
 	},
 	{
 		label: 'Helvetica',
-		value: 'helvetica;'
+		value: 'helvetica'
 	},
 	{
 		label: 'Impact',
-		value: 'impact,chicago;'
+		value: 'impact, chicago'
 	},
 	{
 		label: 'Symbol',
-		value: 'symbol;'
+		value: 'symbol'
 	},
 	{
 		label: 'Tahoma',
-		value: 'tahoma,arial,helvetica,sans-serif;'
+		value: 'tahoma, arial, helvetica, sans-serif'
 	},
 	{
 		label: 'Terminal',
-		value: 'terminal,monaco;'
+		value: 'terminal, monaco'
 	},
 	{
 		label: 'Times New Roman',
-		value: 'times new roman,times;'
+		value: 'times new roman, times'
 	},
 	{
 		label: 'Trebuchet MS',
-		value: 'trebuchet ms,geneva;'
+		value: 'trebuchet ms, geneva'
 	},
 	{
 		label: 'Verdana',
-		value: 'verdana,geneva;'
+		value: 'verdana, geneva'
 	},
 	{
 		label: 'Webdings',
-		value: 'webdings;'
+		value: 'webdings'
 	},
 	{
 		label: 'Wingdings',
-		value: 'wingdings,zapf dingbats;'
+		value: 'wingdings, zapf dingbats'
 	}
 ];
 
