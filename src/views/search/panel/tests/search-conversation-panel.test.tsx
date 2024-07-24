@@ -6,7 +6,7 @@
  */
 import React from 'react';
 
-import { act } from '@testing-library/react';
+import { act, waitFor } from '@testing-library/react';
 import * as hooks from '@zextras/carbonio-shell-ui';
 import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 import produce from 'immer';
@@ -207,8 +207,14 @@ describe('Conversation Preview', () => {
 				user.click(trashButton);
 			});
 			await msgActionInterceptor;
+			act(() => {
+				jest.advanceTimersByTime(1_000);
+			});
+			await waitFor(() => {
+				const messageParent = useMessageStore.getState().populatedItems.messages['1'].parent;
+				expect(messageParent).toBe('3');
+			});
 			const trashBadge = await screen.findByTestId('FolderBadge');
-			// const trashBadge = await screen.findByText('Trash');
 			expect(trashBadge).toBeVisible();
 		});
 	});
