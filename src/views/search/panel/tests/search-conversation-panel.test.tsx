@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 /*
  * SPDX-FileCopyrightText: 2024 Zextras <https://www.zextras.com>
  *
@@ -7,6 +8,7 @@ import React from 'react';
 
 import { act } from '@testing-library/react';
 import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
+import produce from 'immer';
 import { useParams } from 'react-router-dom';
 
 import { createSoapAPIInterceptor } from '../../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
@@ -31,8 +33,6 @@ jest.mock('react-router-dom', () => ({
 
 describe('Conversation Preview', () => {
 	it('should render a conversation with its messages when SearchConv API returns a valid response', async () => {
-		const initialState = useMessageStore.getState();
-		initialState.search.conversationIds = new Set(['123']);
 		const message1 = generateMessage({ id: '1', subject: 'Test Message 1' });
 
 		const conversation = generateConversation({
@@ -40,12 +40,14 @@ describe('Conversation Preview', () => {
 			messages: [message1],
 			subject: 'Test Conversation'
 		});
-		initialState.populatedItems.conversations = { '123': conversation };
-		initialState.populatedItems.conversationsStatus = {};
-		initialState.populatedItems.messages = { '1': message1 };
-		useMessageStore.setState({
-			...initialState
-		});
+		useMessageStore.setState(
+			produce((state) => {
+				state.search.conversationIds = new Set(['123']);
+				state.populatedItems.conversations = { '123': conversation };
+				state.populatedItems.conversationsStatus = {};
+				state.populatedItems.messages = { '1': message1 };
+			})
+		);
 		(useParams as jest.Mock).mockReturnValue({ folderId: '2' });
 
 		const response: SearchConvResponse = {
@@ -67,8 +69,6 @@ describe('Conversation Preview', () => {
 	});
 
 	it('should render an empty fragment when SearchConv API call returns Fault', async () => {
-		const initialState = useMessageStore.getState();
-		initialState.search.conversationIds = new Set(['123']);
 		const message1 = generateMessage({ id: '1', subject: 'Test Message 1' });
 
 		const conversation = generateConversation({
@@ -76,12 +76,15 @@ describe('Conversation Preview', () => {
 			messages: [message1],
 			subject: 'Test Conversation'
 		});
-		initialState.populatedItems.conversations = { '123': conversation };
-		initialState.populatedItems.conversationsStatus = {};
-		initialState.populatedItems.messages = { '1': message1 };
-		useMessageStore.setState({
-			...initialState
-		});
+		useMessageStore.setState(
+			produce((initialState) => {
+				initialState.search.conversationIds = new Set(['123']);
+				initialState.populatedItems.conversations = { '123': conversation };
+				initialState.populatedItems.conversationsStatus = {};
+				initialState.populatedItems.messages = { '1': message1 };
+			})
+		);
+
 		(useParams as jest.Mock).mockReturnValue({ folderId: '2' });
 
 		const interceptor = createSoapAPIInterceptor<SearchConvRequest, ErrorSoapBodyResponse>(
@@ -98,8 +101,6 @@ describe('Conversation Preview', () => {
 	});
 
 	it('should render an empty fragment when SearchConv API call throws an error', async () => {
-		const initialState = useMessageStore.getState();
-		initialState.search.conversationIds = new Set(['123']);
 		const message1 = generateMessage({ id: '1', subject: 'Test Message 1' });
 
 		const conversation = generateConversation({
@@ -107,12 +108,15 @@ describe('Conversation Preview', () => {
 			messages: [message1],
 			subject: 'Test Conversation'
 		});
-		initialState.populatedItems.conversations = { '123': conversation };
-		initialState.populatedItems.conversationsStatus = {};
-		initialState.populatedItems.messages = { '1': message1 };
-		useMessageStore.setState({
-			...initialState
-		});
+		useMessageStore.setState(
+			produce((initialState) => {
+				initialState.search.conversationIds = new Set(['123']);
+				initialState.populatedItems.conversations = { '123': conversation };
+				initialState.populatedItems.conversationsStatus = {};
+				initialState.populatedItems.messages = { '1': message1 };
+			})
+		);
+
 		(useParams as jest.Mock).mockReturnValue({ folderId: '2' });
 
 		const interceptor = createSoapAPIInterceptorWithError('SearchConv');
@@ -125,8 +129,6 @@ describe('Conversation Preview', () => {
 	});
 
 	it('should render a shimmer component when SearchConv API call is pending', async () => {
-		const initialState = useMessageStore.getState();
-		initialState.search.conversationIds = new Set(['123']);
 		const message1 = generateMessage({ id: '1', subject: 'Test Message 1' });
 
 		const conversation = generateConversation({
@@ -134,12 +136,15 @@ describe('Conversation Preview', () => {
 			messages: [message1],
 			subject: 'Test Conversation'
 		});
-		initialState.populatedItems.conversations = { '123': conversation };
-		initialState.populatedItems.conversationsStatus = { '123': API_REQUEST_STATUS.pending };
-		initialState.populatedItems.messages = { '1': message1 };
-		useMessageStore.setState({
-			...initialState
-		});
+		useMessageStore.setState(
+			produce((initialState) => {
+				initialState.search.conversationIds = new Set(['123']);
+				initialState.populatedItems.conversations = { '123': conversation };
+				initialState.populatedItems.conversationsStatus = { '123': API_REQUEST_STATUS.pending };
+				initialState.populatedItems.messages = { '1': message1 };
+			})
+		);
+
 		(useParams as jest.Mock).mockReturnValue({ folderId: '2' });
 
 		const store = generateStore();
@@ -150,19 +155,19 @@ describe('Conversation Preview', () => {
 
 	describe('Single conversation mode', () => {
 		it('should display "Trash" badge when clicking delete button', async () => {
-			const initialState = useMessageStore.getState();
-			initialState.search.conversationIds = new Set(['123']);
 			const message1 = generateMessage({ id: '1', subject: 'Test Message 1' });
 			const conversation = generateConversation({
 				id: '123',
 				messages: [message1],
 				subject: 'Test Conversation'
 			});
-			initialState.populatedItems.conversations = { '123': conversation };
-			initialState.populatedItems.messages = { '1': message1 };
-			useMessageStore.setState({
-				...initialState
-			});
+			useMessageStore.setState(
+				produce((initialState) => {
+					initialState.search.conversationIds = new Set(['123']);
+					initialState.populatedItems.conversations = { '123': conversation };
+					initialState.populatedItems.messages = { '1': message1 };
+				})
+			);
 			(useParams as jest.Mock).mockReturnValue({ folderId: '2' });
 			const response: SearchConvResponse = {
 				m: [generateConvMessageFromAPI({ id: '1' })],
