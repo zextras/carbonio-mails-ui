@@ -1,21 +1,23 @@
 /* eslint-disable no-param-reassign */
+import React from 'react';
+
+import { act, waitFor, within } from '@testing-library/react';
 /*
  * SPDX-FileCopyrightText: 2024 Zextras <https://www.zextras.com>
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React from 'react';
-
-import { act, waitFor } from '@testing-library/react';
 import * as hooks from '@zextras/carbonio-shell-ui';
 import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 import produce from 'immer';
 import { noop } from 'lodash';
 import { useParams } from 'react-router-dom';
 
+import { useFolderStore } from '../../../../carbonio-ui-commons/store/zustand/folder';
+import { generateFolders } from '../../../../carbonio-ui-commons/test/mocks/folders/folders-generator';
 import { createSoapAPIInterceptor } from '../../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { buildSoapErrorResponseBody } from '../../../../carbonio-ui-commons/test/mocks/utils/soap';
-import { setupTest, screen } from '../../../../carbonio-ui-commons/test/test-setup';
+import { screen, setupTest } from '../../../../carbonio-ui-commons/test/test-setup';
 import { API_REQUEST_STATUS } from '../../../../constants';
 import {
 	createSoapAPIInterceptorWithError,
@@ -161,8 +163,70 @@ describe('Conversation Preview', () => {
 		expect(screen.getByTestId('shimmer-conversation-123')).toBeInTheDocument();
 	});
 
-	describe('Single conversation mode', () => {
-		it('should display "Trash" badge when clicking delete button', async () => {
+	describe('Actions', () => {
+		beforeEach(() => {
+			useFolderStore.setState(
+				produce((initialState) => {
+					initialState.folders = generateFolders();
+				})
+			);
+			jest.spyOn(hooks, 'useAppContext').mockReturnValue({ setCount: noop });
+			jest.spyOn(visibleActionsCount, 'useVisibleActionsCount').mockReturnValue([16, noop]);
+			(useParams as jest.Mock).mockReturnValue({ folderId: '2', conversationId: '123' });
+		});
+		it('should display "Trash" badge on single message deleting it', async () => {
+			const message1 = generateMessage({ id: '1', subject: 'Test Message 1', folderId: '2' });
+			const message2 = generateMessage({ id: '2', subject: 'Test Message 2', folderId: '2' });
+			const conversation = generateConversation({
+				id: '123',
+				folderId: '2',
+				messages: [message1, message2],
+				subject: 'Test Conversation'
+			});
+			useMessageStore.setState(
+				produce((initialState) => {
+					initialState.search.conversationIds = new Set(['123']);
+					initialState.populatedItems.conversations = { '123': conversation };
+					initialState.populatedItems.messages = { '1': message1, '2': message2 };
+				})
+			);
+			const response: SearchConvResponse = {
+				m: [
+					generateConvMessageFromAPI({ id: '1', cid: '123' }),
+					generateConvMessageFromAPI({ id: '2', cid: '123' })
+				],
+				more: false,
+				offset: '',
+				orderBy: ''
+			};
+			const interceptor = createSoapAPIInterceptor<SearchConvRequest, SearchConvResponse>(
+				'SearchConv',
+				response
+			);
+			const msgActionInterceptor = createSoapAPIInterceptor<MsgActionRequest, MsgActionResponse>(
+				'MsgAction',
+				{ action: { id: '123', op: 'trash' } }
+			);
+
+			const { user } = setupTest(<SearchConversationPanel />, {
+				store: generateStore()
+			});
+
+			await interceptor;
+			const mail1Panel = await screen.findByTestId(/MailPreview-1/);
+			const trashButton = await within(mail1Panel).findByTestId('icon: Trash2Outline');
+			expect(trashButton).toBeVisible();
+			act(() => {
+				user.click(trashButton);
+			});
+			await msgActionInterceptor;
+			await waitFor(() => {
+				const messageParent = useMessageStore.getState().populatedItems.messages['1'].parent;
+				expect(messageParent).toBe('3');
+			});
+			expect(await within(mail1Panel).findByText(/folders\.trash/i)).toBeVisible();
+		});
+		it('should display "Trash" badge on single message conversation when deleting message', async () => {
 			const message1 = generateMessage({ id: '1', subject: 'Test Message 1', folderId: '2' });
 			const conversation = generateConversation({
 				id: '123',
@@ -177,9 +241,6 @@ describe('Conversation Preview', () => {
 					initialState.populatedItems.messages = { '1': message1 };
 				})
 			);
-			(useParams as jest.Mock).mockReturnValue({ folderId: '2', conversationId: '123' });
-			jest.spyOn(hooks, 'useAppContext').mockReturnValue({ setCount: noop });
-			jest.spyOn(visibleActionsCount, 'useVisibleActionsCount').mockReturnValue([16, noop]);
 			const response: SearchConvResponse = {
 				m: [generateConvMessageFromAPI({ id: '1', cid: '123' })],
 				more: false,
@@ -200,22 +261,18 @@ describe('Conversation Preview', () => {
 			});
 
 			await interceptor;
-			expect(await screen.findByTestId(/MailPreview-1/)).toBeInTheDocument();
-			const trashButton = await screen.findByRoleWithIcon('button', { icon: /Trash2Outline/i });
+			const mail1Panel = await screen.findByTestId(/MailPreview-1/);
+			const trashButton = await within(mail1Panel).findByTestId('icon: Trash2Outline');
 			expect(trashButton).toBeVisible();
 			act(() => {
 				user.click(trashButton);
 			});
 			await msgActionInterceptor;
-			act(() => {
-				jest.advanceTimersByTime(1_000);
-			});
 			await waitFor(() => {
 				const messageParent = useMessageStore.getState().populatedItems.messages['1'].parent;
 				expect(messageParent).toBe('3');
 			});
-			const trashBadge = await screen.findByTestId('FolderBadge');
-			expect(trashBadge).toBeVisible();
+			expect(await within(mail1Panel).findByText(/folders\.trash/i)).toBeVisible();
 		});
 	});
 });
