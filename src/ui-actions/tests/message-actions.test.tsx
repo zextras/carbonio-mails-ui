@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 /*
  * SPDX-FileCopyrightText: 2023 Zextras <https://www.zextras.com>
  *
@@ -6,8 +7,10 @@
 import React from 'react';
 
 import { faker } from '@faker-js/faker';
-import { act, screen, within } from '@testing-library/react';
+import { act, screen, waitFor, within } from '@testing-library/react';
+import { renderHook } from '@testing-library/react-hooks';
 import { addBoard } from '@zextras/carbonio-shell-ui';
+import produce from 'immer';
 import { times } from 'lodash';
 
 import { FOLDER_VIEW } from '../../carbonio-ui-commons/constants';
@@ -26,6 +29,7 @@ import {
 import { API_REQUEST_STATUS, TIMEOUTS } from '../../constants';
 import { useUiUtilities } from '../../hooks/use-ui-utilities';
 import * as getMsgsForPrint from '../../store/actions/get-msg-for-print';
+import { MessageStoreState, useMessageStore } from '../../store/zustand/message-store/store';
 import { generateMessage } from '../../tests/generators/generateMessage';
 import { generateStore } from '../../tests/generators/store';
 import {
@@ -619,6 +623,44 @@ describe('Messages actions calls', () => {
 			expect(requestParameter.action.l).toBeUndefined();
 			expect(requestParameter.action.f).toBeUndefined();
 			expect(requestParameter.action.tn).toBeUndefined();
+		});
+
+		it('should populate the message slice store', async () => {
+			populateFoldersStore({ view: FOLDER_VIEW.message });
+			const store = generateStore({});
+
+			useMessageStore.setState(
+				produce(({ populatedItems }: MessageStoreState) => {
+					populatedItems.messages[1] = generateMessage({ id: '1' });
+				})
+			);
+
+			const {
+				result: { current: moveMsgToTrash }
+			} = renderHook(useMoveMsgToTrash);
+
+			const action = moveMsgToTrash({
+				ids: ['1'],
+				dispatch: store.dispatch,
+				folderId: FOLDERS.INBOX
+			});
+
+			const apiInterceptor = createSoapAPIInterceptor<MsgActionRequest, MsgActionResponse>(
+				'MsgAction',
+				{
+					action: { id: '1', op: 'trash' }
+				}
+			);
+
+			act(() => {
+				action.onClick();
+			});
+
+			await apiInterceptor;
+
+			await waitFor(() => {
+				expect(useMessageStore.getState().populatedItems.messages[1].parent).toBe('3');
+			});
 		});
 	});
 
