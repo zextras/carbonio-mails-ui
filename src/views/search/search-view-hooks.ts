@@ -29,6 +29,7 @@ type RunSearchCallback = {
 	// eslint-disable-next-line @typescript-eslint/ban-types
 	useDisableSearch: () => [boolean, Function];
 	invalidQueryTooltip: string;
+	isSharedFolderIncluded: boolean;
 };
 
 export function useIsMessageView(): boolean {
@@ -39,10 +40,9 @@ export function useIsMessageView(): boolean {
 export function useRunSearch({
 	useQuery,
 	useDisableSearch,
-	invalidQueryTooltip
+	invalidQueryTooltip,
+	isSharedFolderIncluded
 }: RunSearchCallback): {
-	isSharedFolderIncluded: boolean;
-	setIsSharedFolderIncluded: (value: ((prevState: boolean) => boolean) | boolean) => void;
 	query: QueryChip[];
 	searchDisabled: boolean;
 	queryToString: string;
@@ -55,7 +55,6 @@ export function useRunSearch({
 	const [searchDisabled, setSearchDisabled] = useDisableSearch();
 	const settings = useUserSettings();
 	const isMessageView = useIsMessageView();
-	const includeSharedItemsInSearch = settings.prefs.zimbraPrefIncludeSharedItemsInSearch === 'TRUE';
 	const folders = useFoldersMap();
 	const [count, setCount] = useState(0);
 
@@ -90,9 +89,7 @@ export function useRunSearch({
 
 	const [loading, setLoading] = useState(false);
 	const [filterCount, setFilterCount] = useState(0);
-	const [isSharedFolderIncluded, setIsSharedFolderIncluded] = useState<boolean>(
-		includeSharedItemsInSearch
-	);
+
 	const [isInvalidQuery, setIsInvalidQuery] = useState<boolean>(false);
 	const searchResults = useSearchResults();
 
@@ -213,9 +210,6 @@ export function useRunSearch({
 		searchResults,
 		loading,
 		isInvalidQuery,
-		queryToString,
-		// TODO: these do not belong to this domain, probably better to move them in the advanced filter
-		isSharedFolderIncluded,
-		setIsSharedFolderIncluded
+		queryToString
 	};
 }

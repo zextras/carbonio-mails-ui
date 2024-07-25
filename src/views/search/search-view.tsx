@@ -6,7 +6,7 @@
 import React, { FC, Suspense, useMemo, useState } from 'react';
 
 import { Container, Spinner } from '@zextras/carbonio-design-system';
-import { SearchViewProps, t } from '@zextras/carbonio-shell-ui';
+import { SearchViewProps, t, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { Route, Switch, useRouteMatch } from 'react-router-dom';
 
 import { AdvancedFilterModal } from './advanced-filter-modal';
@@ -16,7 +16,15 @@ import { SearchMessageList } from './search-message-list';
 import { useIsMessageView, useRunSearch } from './search-view-hooks';
 
 const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHeader }) => {
+	const { path } = useRouteMatch();
 	const [updateQuery] = useQuery();
+	const isMessageView = useIsMessageView();
+	const [showAdvanceFilters, setShowAdvanceFilters] = useState(false);
+	const settings = useUserSettings();
+	const includeSharedItemsInSearch = settings.prefs.zimbraPrefIncludeSharedItemsInSearch === 'TRUE';
+	const [isSharedFolderIncluded, setIsSharedFolderIncluded] = useState<boolean>(
+		includeSharedItemsInSearch
+	);
 	const invalidQueryTooltip = useMemo(
 		() => t('label.invalid_query', 'Unable to parse the search query, clear it and retry'),
 		[]
@@ -28,14 +36,14 @@ const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHe
 		query,
 		searchDisabled,
 		searchResults,
-		filterCount,
-		setIsSharedFolderIncluded,
-		isSharedFolderIncluded
+		filterCount
 	} = useRunSearch({
 		useQuery,
 		useDisableSearch,
-		invalidQueryTooltip
+		invalidQueryTooltip,
+		isSharedFolderIncluded
 	});
+
 	const resultLabelType = isInvalidQuery ? 'warning' : undefined;
 	const resultLabel = useMemo(() => {
 		if (isInvalidQuery) {
@@ -50,9 +58,7 @@ const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHe
 		}
 		return '';
 	}, [isInvalidQuery, searchResults.status, invalidQueryTooltip]);
-	const isMessageView = useIsMessageView();
-	const [showAdvanceFilters, setShowAdvanceFilters] = useState(false);
-	const { path } = useRouteMatch();
+
 	return (
 		<>
 			<Container>
