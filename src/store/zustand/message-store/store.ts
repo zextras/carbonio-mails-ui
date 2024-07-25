@@ -36,7 +36,7 @@ export function useMessageById(id: string): IncompleteMessage | MailMessage {
 
 export function updateMessagesParent(folder: string, messageIds: Array<string>): void {
 	useMessageStore.setState(
-		produce((state) => {
+		produce((state: MessageStoreState) => {
 			messageIds.forEach((msgId) => {
 				state.populatedItems.messages[msgId].parent = folder;
 			});

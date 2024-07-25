@@ -1,9 +1,4 @@
 /* eslint-disable no-param-reassign */
-/*
- * SPDX-FileCopyrightText: 2023 Zextras <https://www.zextras.com>
- *
- * SPDX-License-Identifier: AGPL-3.0-only
- */
 import React from 'react';
 
 import { faker } from '@faker-js/faker';
@@ -11,6 +6,11 @@ import { act, screen, within } from '@testing-library/react';
 import { renderHook } from '@testing-library/react-hooks';
 import { addBoard } from '@zextras/carbonio-shell-ui';
 import { times } from 'lodash';
+/*
+ * SPDX-FileCopyrightText: 2023 Zextras <https://www.zextras.com>
+ *
+ * SPDX-License-Identifier: AGPL-3.0-only
+ */
 
 import { FOLDER_VIEW } from '../../carbonio-ui-commons/constants';
 import { ParticipantRole } from '../../carbonio-ui-commons/constants/participants';
@@ -22,16 +22,23 @@ import { createSoapAPIInterceptor } from '../../carbonio-ui-commons/test/mocks/n
 import { populateFoldersStore } from '../../carbonio-ui-commons/test/mocks/store/folders';
 import {
 	makeListItemsVisible,
-	setupTest,
-	setupHook
+	setupHook,
+	setupTest
 } from '../../carbonio-ui-commons/test/test-setup';
 import { API_REQUEST_STATUS, TIMEOUTS } from '../../constants';
 import { useUiUtilities } from '../../hooks/use-ui-utilities';
 import * as getMsgsForPrint from '../../store/actions/get-msg-for-print';
-import { updateMessages, useMessageById } from '../../store/zustand/message-store/store';
+import {
+	updateConversations,
+	updateMessages,
+	useMessageById
+} from '../../store/zustand/message-store/store';
+import { generateConversation } from '../../tests/generators/generateConversation';
 import { generateMessage } from '../../tests/generators/generateMessage';
 import { generateStore } from '../../tests/generators/store';
 import {
+	type ConvActionRequest,
+	ConvActionResponse,
 	MailMessage,
 	MsgActionRequest,
 	MsgActionResponse,
@@ -46,12 +53,12 @@ import {
 	replyAllMsg,
 	replyMsg,
 	sendDraft,
-	useSetMsgAsSpam,
 	setMsgFlag,
 	setMsgRead,
 	showOriginalMsg,
+	useEditDraft,
 	useMoveMsgToTrash,
-	useEditDraft
+	useSetMsgAsSpam
 } from '../message-actions';
 import MoveConvMessage from '../move-conv-msg';
 import RedirectMessageAction from '../redirect-message-action';
@@ -783,6 +790,63 @@ describe('Messages actions calls', () => {
 			expect(requestParameter.action.l).toBe(destinationFolder);
 			expect(requestParameter.action.f).toBeUndefined();
 			expect(requestParameter.action.tn).toBeUndefined();
+		});
+
+		it('should update messages parent to destination folder when moving conversation', async () => {
+			populateFoldersStore({ view: FOLDER_VIEW.message });
+			updateConversations([generateConversation({ id: '123' })], 0);
+			updateMessages(
+				[
+					generateMessage({ id: '1', folderId: FOLDERS.INBOX }),
+					generateMessage({ id: '2', folderId: FOLDERS.INBOX })
+				],
+				0
+			);
+			const destinationFolder = FOLDERS.INBOX;
+			const store = generateStore();
+			const interceptor = createSoapAPIInterceptor<ConvActionRequest, ConvActionResponse>(
+				'ConvAction',
+				{
+					action: {
+						id: 'actionId',
+						op: 'move'
+					}
+				}
+			);
+			const { user } = setupTest(
+				<MoveConvMessage
+					folderId={FOLDERS.SPAM}
+					selectedIDs={['1', '2']}
+					onClose={jest.fn()}
+					isMessageView={false}
+					isRestore={false}
+					deselectAll={jest.fn()}
+					dispatch={store.dispatch}
+				/>,
+				{ store }
+			);
+			makeListItemsVisible();
+			const inboxFolderListItem = await screen.findByTestId(
+				`folder-accordion-item-${destinationFolder}`
+			);
+			act(() => {
+				jest.advanceTimersByTime(1000);
+			});
+			await user.click(inboxFolderListItem);
+			const button = screen.getByRole('button', {
+				name: /label\.move/i
+			});
+			expect(button).toBeEnabled();
+			await act(async () => {
+				await user.click(button);
+			});
+			await interceptor;
+
+			const msg1 = renderHook(() => useMessageById('1')).result.current;
+			const msg2 = renderHook(() => useMessageById('1')).result.current;
+
+			expect(msg1.parent).toBe(FOLDERS.SPAM);
+			expect(msg2.parent).toBe(FOLDERS.SPAM);
 		});
 
 		test('Multiple ids', async () => {
