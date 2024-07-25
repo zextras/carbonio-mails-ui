@@ -7,7 +7,7 @@
 
 import React from 'react';
 
-import { act, screen, waitFor } from '@testing-library/react';
+import { act, fireEvent, screen, waitFor } from '@testing-library/react';
 
 import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
 import { UpdateSettingsProps } from '../../../types/settings';
@@ -132,43 +132,6 @@ describe('compose-msg-settings', () => {
 			})
 		);
 	});
-
-	// TODO: fix me
-	// it('should call update settings when composer font color is changed', async () => {
-	// const settingObject = generateSettingObject();
-
-	// 	const { user } = setupTest(
-	// 		<ComposeMessage settingsObj={settingObject} updateSettings={mockUpdateSettings} />,
-	// 		{}
-	// 	);
-	//
-	// 	expect(screen.getByRole('radio', { name: 'label.as_html' })).toBeChecked();
-	//
-	// 	act(() => {
-	// 		user.click(screen.getByTestId('color-picker-color-box'));
-	// 	});
-	//
-	// 	expect(await screen.findByTestId('hex-color-picker-popover')).toBeInTheDocument();
-	//
-	// 	// eslint-disable-next-line testing-library/prefer-user-event
-	// 	fireEvent.change(screen.getByTestId('hex-color-picker-popover'), {
-	// 		target: { color: '#000000' }
-	// 	});
-	//
-	// 	// eslint-disable-next-line testing-library/prefer-user-event
-	// 	fireEvent.change(screen.getByTestId('color-picker-color-box'), {
-	// 		target: { color: '#000000' }
-	// 	});
-	//
-	// 	// await waitFor(() =>
-	// 	// 	expect(mockUpdateSettings).toHaveBeenCalledWith({
-	// 	// 		target: {
-	// 	// 			name: 'zimbraPrefHtmlEditorDefaultFontColor',
-	// 	// 			value: '#000000'
-	// 	// 		}
-	// 	// 	})
-	// 	// );
-	// });
 
 	it('compose format radio buttons should be exclusive', async () => {
 		const settingObject = generateSettingObject();
