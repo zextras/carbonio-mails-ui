@@ -2,7 +2,7 @@
 /* eslint-disable no-param-reassign */
 import React from 'react';
 
-import { act, waitFor, within } from '@testing-library/react';
+import { act, within } from '@testing-library/react';
 /*
  * SPDX-FileCopyrightText: 2024 Zextras <https://www.zextras.com>
  *
@@ -109,6 +109,29 @@ describe('Conversation Preview', () => {
 		setupTest(<SearchConversationPanel />, { store });
 
 		expect(screen.getByTestId('shimmer-conversation-123')).toBeInTheDocument();
+	});
+
+	it('should open both message previews', async () => {
+		(useParams as jest.Mock).mockReturnValue({ conversationId: '123', folderId: FOLDERS.INBOX });
+		const conversation = generateConversation({
+			id: '123',
+			folderId: FOLDERS.INBOX,
+			messages: [
+				generateMessage({ id: '1', folderId: FOLDERS.INBOX, body: 'Message Body 1' }),
+				generateMessage({ id: '2', folderId: FOLDERS.INBOX, body: 'Message Body 2' })
+			]
+		});
+		addConversationInStore(conversation, { '123': API_REQUEST_STATUS.fulfilled });
+		const { user } = setupTest(<SearchConversationPanel />, { store });
+
+		const mail1Panel = await screen.findByTestId(/MailPreview-1/);
+		const mail2Panel = await screen.findByTestId(/MailPreview-2/);
+		const mail1ClosedPanel = await screen.findByTestId(/open-message-1/);
+
+		await act(() => user.click(mail1ClosedPanel));
+
+		expect(await within(mail1Panel).findByText('Message Body 1')).toBeVisible();
+		expect(await within(mail2Panel).findByText('Message Body 2')).toBeVisible();
 	});
 
 	describe('Actions', () => {
