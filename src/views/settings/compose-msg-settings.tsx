@@ -15,13 +15,7 @@ import { getFontSizesOptions, findLabel, getFonts } from './components/utils';
 import CustomSelect from './filters/parts/custom-select';
 import { composingMsgSubSection } from './subsections';
 import { ColorPicker } from '../../commons/color-picker';
-
-type UpdateSettingsProps = {
-	target: {
-		name: string;
-		value: string;
-	};
-};
+import { UpdateSettingsProps } from '../../types';
 
 type ComposeMessagesProps = {
 	settingsObj: Record<string, string>;

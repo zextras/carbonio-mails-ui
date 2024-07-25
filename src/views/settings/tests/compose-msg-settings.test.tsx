@@ -10,6 +10,7 @@ import React from 'react';
 import { act, screen, waitFor } from '@testing-library/react';
 
 import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
+import { UpdateSettingsProps } from '../../../types/settings';
 import ComposeMessage from '../compose-msg-settings';
 
 jest.mock('@zextras/carbonio-shell-ui', () => ({
@@ -17,9 +18,8 @@ jest.mock('@zextras/carbonio-shell-ui', () => ({
 }));
 
 describe('compose-msg-settings', () => {
-	const mockUpdateSettings = jest.fn((changedKeyValue) => {
-		const { name, value } = changedKeyValue.target;
-		settingObject[name] = value;
+	beforeEach(() => {
+		jest.clearAllMocks();
 	});
 
 	const settingObjectEmpty: Record<string, string> = {
@@ -29,18 +29,9 @@ describe('compose-msg-settings', () => {
 		zimbraPrefComposeFormat: ''
 	};
 
-	const settingObject: Record<string, string> = {
-		zimbraPrefHtmlEditorDefaultFontFamily: 'arial, helvetica, sans-serif', // Arial
-		zimbraPrefHtmlEditorDefaultFontSize: '12pt',
-		zimbraPrefHtmlEditorDefaultFontColor: '#24cb77',
-		zimbraPrefComposeFormat: 'html'
-	};
-
-	beforeEach(() => {
-		jest.clearAllMocks();
-	});
-
 	it('should render correctly', async () => {
+		const mockUpdateSettings = getMockUpdateSettings(settingObjectEmpty);
+
 		setupTest(
 			<ComposeMessage settingsObj={settingObjectEmpty} updateSettings={mockUpdateSettings} />,
 			{}
@@ -56,6 +47,9 @@ describe('compose-msg-settings', () => {
 	});
 
 	it('should render correctly with default values from the pref(s) attributes', async () => {
+		const settingObject = generateSettingObject();
+		const mockUpdateSettings = getMockUpdateSettings(settingObject);
+
 		setupTest(
 			<ComposeMessage settingsObj={settingObject} updateSettings={mockUpdateSettings} />,
 			{}
@@ -69,6 +63,9 @@ describe('compose-msg-settings', () => {
 	});
 
 	it('should call update settings with modified settings', async () => {
+		const settingObject = generateSettingObject();
+		const mockUpdateSettings = getMockUpdateSettings(settingObject);
+
 		const { user } = setupTest(
 			<ComposeMessage settingsObj={settingObject} updateSettings={mockUpdateSettings} />,
 			{}
@@ -114,6 +111,9 @@ describe('compose-msg-settings', () => {
 	});
 
 	it('should call update settings when composer format is changed', async () => {
+		const settingObject = generateSettingObject();
+		const mockUpdateSettings = getMockUpdateSettings(settingObject);
+
 		const { user } = setupTest(
 			<ComposeMessage settingsObj={settingObject} updateSettings={mockUpdateSettings} />,
 			{}
@@ -135,6 +135,8 @@ describe('compose-msg-settings', () => {
 
 	// TODO: fix me
 	// it('should call update settings when composer font color is changed', async () => {
+	// const settingObject = generateSettingObject();
+
 	// 	const { user } = setupTest(
 	// 		<ComposeMessage settingsObj={settingObject} updateSettings={mockUpdateSettings} />,
 	// 		{}
@@ -169,20 +171,40 @@ describe('compose-msg-settings', () => {
 	// });
 
 	it('compose format radio buttons should be exclusive', async () => {
+		const settingObject = generateSettingObject();
+		const mockUpdateSettings = getMockUpdateSettings(settingObject);
+
 		const { user, rerender } = setupTest(
 			<ComposeMessage settingsObj={settingObject} updateSettings={mockUpdateSettings} />,
 			{}
 		);
 
-		// TODO: avoid relying on global state constant settingObject
-		// expect(screen.getByRole('radio', { name: 'label.as_html' })).toBeChecked();
+		expect(screen.getByRole('radio', { name: 'label.as_html' })).toBeChecked();
 
 		await user.click(screen.getByRole('radio', { name: 'label.as_text' }));
 
 		rerender(<ComposeMessage settingsObj={settingObject} updateSettings={mockUpdateSettings} />);
 
 		expect(screen.getByRole('radio', { name: 'label.as_text' })).toBeChecked();
-
 		expect(screen.getByRole('radio', { name: 'label.as_html' })).not.toBeChecked();
 	});
+
+	function getMockUpdateSettings(
+		settingObject: Record<string, string>
+	): jest.Mock<void, [changedKeyValue: UpdateSettingsProps]> {
+		return jest.fn((changedKeyValue) => {
+			const { name, value } = changedKeyValue.target;
+			const updatedSettings = { ...settingObject, [name]: value as string };
+			Object.assign(settingObject, updatedSettings);
+		});
+	}
+
+	function generateSettingObject(): Record<string, string> {
+		return {
+			zimbraPrefHtmlEditorDefaultFontFamily: 'arial, helvetica, sans-serif',
+			zimbraPrefHtmlEditorDefaultFontSize: '12pt',
+			zimbraPrefHtmlEditorDefaultFontColor: '#24cb77',
+			zimbraPrefComposeFormat: 'html'
+		};
+	}
 });
