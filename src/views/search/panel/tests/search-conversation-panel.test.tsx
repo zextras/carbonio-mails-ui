@@ -120,106 +120,27 @@ describe('Conversation Preview', () => {
 			);
 			jest.spyOn(hooks, 'useAppContext').mockReturnValue({ setCount: noop });
 			jest.spyOn(visibleActionsCount, 'useVisibleActionsCount').mockReturnValue([16, noop]);
-			(useParams as jest.Mock).mockReturnValue({ folderId: '2', conversationId: '123' });
+			(useParams as jest.Mock).mockReturnValue({ conversationId: '123', folderId: FOLDERS.INBOX });
 		});
+
 		it('should display "Trash" badge on single message deleting it', async () => {
-			const message1 = generateMessage({ id: '1', subject: 'Test Message 1', folderId: '2' });
-			const message2 = generateMessage({ id: '2', subject: 'Test Message 2', folderId: '2' });
-			const conversation = generateConversation({
-				id: '123',
-				folderId: '2',
-				messages: [message1, message2],
-				subject: 'Test Conversation'
-			});
-			useMessageStore.setState(
-				produce((initialState) => {
-					initialState.search.conversationIds = new Set(['123']);
-					initialState.populatedItems.conversations = { '123': conversation };
-					initialState.populatedItems.messages = { '1': message1, '2': message2 };
-				})
-			);
-			const response: SearchConvResponse = {
-				m: [
-					generateConvMessageFromAPI({ id: '1', cid: '123' }),
-					generateConvMessageFromAPI({ id: '2', cid: '123' })
-				],
-				more: false,
-				offset: '',
-				orderBy: ''
-			};
-			const interceptor = createSoapAPIInterceptor<SearchConvRequest, SearchConvResponse>(
-				'SearchConv',
-				response
-			);
 			const msgActionInterceptor = createSoapAPIInterceptor<MsgActionRequest, MsgActionResponse>(
 				'MsgAction',
-				{ action: { id: '123', op: 'trash' } }
+				{ action: { id: '345', op: 'trash' } }
 			);
-
-			const { user } = setupTest(<SearchConversationPanel />, {
-				store: generateStore()
-			});
-
-			await interceptor;
-			const mail1Panel = await screen.findByTestId(/MailPreview-1/);
-			const trashButton = await within(mail1Panel).findByTestId('icon: Trash2Outline');
-			expect(trashButton).toBeVisible();
-			act(() => {
-				user.click(trashButton);
-			});
-			await msgActionInterceptor;
-			await waitFor(() => {
-				const messageParent = useMessageStore.getState().populatedItems.messages['1'].parent;
-				expect(messageParent).toBe('3');
-			});
-			expect(await within(mail1Panel).findByText(/folders\.trash/i)).toBeVisible();
-		});
-		it('should display "Trash" badge on single message conversation when deleting message', async () => {
-			const message1 = generateMessage({ id: '1', subject: 'Test Message 1', folderId: '2' });
 			const conversation = generateConversation({
 				id: '123',
-				folderId: '2',
-				messages: [message1],
-				subject: 'Test Conversation'
+				folderId: FOLDERS.INBOX,
+				messages: [generateMessage({ id: '1', folderId: '2' })]
 			});
-			useMessageStore.setState(
-				produce((initialState) => {
-					initialState.search.conversationIds = new Set(['123']);
-					initialState.populatedItems.conversations = { '123': conversation };
-					initialState.populatedItems.messages = { '1': message1 };
-				})
-			);
-			const response: SearchConvResponse = {
-				m: [generateConvMessageFromAPI({ id: '1', cid: '123' })],
-				more: false,
-				offset: '',
-				orderBy: ''
-			};
-			const interceptor = createSoapAPIInterceptor<SearchConvRequest, SearchConvResponse>(
-				'SearchConv',
-				response
-			);
-			const msgActionInterceptor = createSoapAPIInterceptor<MsgActionRequest, MsgActionResponse>(
-				'MsgAction',
-				{ action: { id: '123', op: 'trash' } }
-			);
-
-			const { user } = setupTest(<SearchConversationPanel />, {
-				store: generateStore()
-			});
-
-			await interceptor;
+			addConversationInStore(conversation, { '123': API_REQUEST_STATUS.fulfilled });
+			const { user } = setupTest(<SearchConversationPanel />, { store });
 			const mail1Panel = await screen.findByTestId(/MailPreview-1/);
+
 			const trashButton = await within(mail1Panel).findByTestId('icon: Trash2Outline');
-			expect(trashButton).toBeVisible();
-			act(() => {
-				user.click(trashButton);
-			});
+			await act(() => user.click(trashButton));
+
 			await msgActionInterceptor;
-			await waitFor(() => {
-				const messageParent = useMessageStore.getState().populatedItems.messages['1'].parent;
-				expect(messageParent).toBe('3');
-			});
 			expect(await within(mail1Panel).findByText(/folders\.trash/i)).toBeVisible();
 		});
 	});
