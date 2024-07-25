@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-use-before-define */
+/* eslint-disable @typescript-eslint/no-use-before-define,sonarjs/no-duplicate-string */
 /*
  * SPDX-FileCopyrightText: 2024 Zextras <https://www.zextras.com>
  *
@@ -10,7 +10,6 @@ import React from 'react';
 import { act, screen, waitFor } from '@testing-library/react';
 
 import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
-import { generateStore } from '../../../tests/generators/store';
 import ComposeMessage from '../compose-msg-settings';
 
 jest.mock('@zextras/carbonio-shell-ui', () => ({
@@ -18,17 +17,19 @@ jest.mock('@zextras/carbonio-shell-ui', () => ({
 }));
 
 describe('compose-msg-settings', () => {
-	const mockUpdateSettings = jest.fn();
-	const store = generateStore();
+	const mockUpdateSettings = jest.fn((changedKeyValue) => {
+		const { name, value } = changedKeyValue.target;
+		settingObject[name] = value;
+	});
 
-	const settingObjectEmpty = {
+	const settingObjectEmpty: Record<string, string> = {
 		zimbraPrefHtmlEditorDefaultFontFamily: '',
 		zimbraPrefHtmlEditorDefaultFontSize: '',
 		zimbraPrefHtmlEditorDefaultFontColor: '',
 		zimbraPrefComposeFormat: ''
 	};
 
-	const settingObject = {
+	const settingObject: Record<string, string> = {
 		zimbraPrefHtmlEditorDefaultFontFamily: 'arial, helvetica, sans-serif', // Arial
 		zimbraPrefHtmlEditorDefaultFontSize: '12pt',
 		zimbraPrefHtmlEditorDefaultFontColor: '#24cb77',
@@ -42,9 +43,7 @@ describe('compose-msg-settings', () => {
 	it('should render correctly', async () => {
 		setupTest(
 			<ComposeMessage settingsObj={settingObjectEmpty} updateSettings={mockUpdateSettings} />,
-			{
-				store
-			}
+			{}
 		);
 
 		expect(screen.getByText('labels.composing_messages')).toBeInTheDocument();
@@ -57,9 +56,10 @@ describe('compose-msg-settings', () => {
 	});
 
 	it('should render correctly with default values from the pref(s) attributes', async () => {
-		setupTest(<ComposeMessage settingsObj={settingObject} updateSettings={mockUpdateSettings} />, {
-			store
-		});
+		setupTest(
+			<ComposeMessage settingsObj={settingObject} updateSettings={mockUpdateSettings} />,
+			{}
+		);
 
 		expect(screen.getByText('Arial')).toBeInTheDocument();
 		expect(screen.getByText('12pt')).toBeInTheDocument();
@@ -71,9 +71,7 @@ describe('compose-msg-settings', () => {
 	it('should call update settings with modified settings', async () => {
 		const { user } = setupTest(
 			<ComposeMessage settingsObj={settingObject} updateSettings={mockUpdateSettings} />,
-			{
-				store
-			}
+			{}
 		);
 
 		// Font Family
@@ -118,9 +116,7 @@ describe('compose-msg-settings', () => {
 	it('should call update settings when composer format is changed', async () => {
 		const { user } = setupTest(
 			<ComposeMessage settingsObj={settingObject} updateSettings={mockUpdateSettings} />,
-			{
-				store
-			}
+			{}
 		);
 
 		act(() => {
@@ -137,38 +133,56 @@ describe('compose-msg-settings', () => {
 		);
 	});
 
-	// TODO: fix this test
-	// it('should disable the setting inputs when the compose format is text', async () => {
+	// TODO: fix me
+	// it('should call update settings when composer font color is changed', async () => {
 	// 	const { user } = setupTest(
 	// 		<ComposeMessage settingsObj={settingObject} updateSettings={mockUpdateSettings} />,
-	// 		{
-	// 			store
-	// 		}
+	// 		{}
 	// 	);
 	//
-	// 	// screen.logTestingPlaygroundURL();
+	// 	expect(screen.getByRole('radio', { name: 'label.as_html' })).toBeChecked();
 	//
-	// 	await user.click(
-	// 		screen.getByRole('radio', {
-	// 			name: /label\.as_text/i
-	// 		})
-	// 	);
-	// 	expect(
-	// 		screen.getByRole('radio', {
-	// 			name: /label\.as_text/i
-	// 		})
-	// 	).toBeChecked();
+	// 	act(() => {
+	// 		user.click(screen.getByTestId('color-picker-color-box'));
+	// 	});
 	//
-	// 	// const radioText = screen.getByRole('radio', { name: 'label.as_text' });
-	// 	//
-	// 	// await act(async () => {
-	// 	// 	await user.click(radioText);
-	// 	// });
-	// 	//
-	// 	// act(() => {
-	// 	// 	jest.advanceTimersByTime(1000);
-	// 	// });
-	// 	//
-	// 	// await waitFor(() => expect(screen.getByLabelText('label.as_text')).toBeChecked());
+	// 	expect(await screen.findByTestId('hex-color-picker-popover')).toBeInTheDocument();
+	//
+	// 	// eslint-disable-next-line testing-library/prefer-user-event
+	// 	fireEvent.change(screen.getByTestId('hex-color-picker-popover'), {
+	// 		target: { color: '#000000' }
+	// 	});
+	//
+	// 	// eslint-disable-next-line testing-library/prefer-user-event
+	// 	fireEvent.change(screen.getByTestId('color-picker-color-box'), {
+	// 		target: { color: '#000000' }
+	// 	});
+	//
+	// 	// await waitFor(() =>
+	// 	// 	expect(mockUpdateSettings).toHaveBeenCalledWith({
+	// 	// 		target: {
+	// 	// 			name: 'zimbraPrefHtmlEditorDefaultFontColor',
+	// 	// 			value: '#000000'
+	// 	// 		}
+	// 	// 	})
+	// 	// );
 	// });
+
+	it('compose format radio buttons should be exclusive', async () => {
+		const { user, rerender } = setupTest(
+			<ComposeMessage settingsObj={settingObject} updateSettings={mockUpdateSettings} />,
+			{}
+		);
+
+		// TODO: avoid relying on global state constant settingObject
+		// expect(screen.getByRole('radio', { name: 'label.as_html' })).toBeChecked();
+
+		await user.click(screen.getByRole('radio', { name: 'label.as_text' }));
+
+		rerender(<ComposeMessage settingsObj={settingObject} updateSettings={mockUpdateSettings} />);
+
+		expect(screen.getByRole('radio', { name: 'label.as_text' })).toBeChecked();
+
+		expect(screen.getByRole('radio', { name: 'label.as_html' })).not.toBeChecked();
+	});
 });
