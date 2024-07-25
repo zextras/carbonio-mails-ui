@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-use-before-define */
 /* eslint-disable no-param-reassign */
 import React from 'react';
 
@@ -14,6 +15,7 @@ import { noop } from 'lodash';
 import { useParams } from 'react-router-dom';
 
 import { useFolderStore } from '../../../../carbonio-ui-commons/store/zustand/folder';
+import { FOLDERS } from '../../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui-constants';
 import { generateFolders } from '../../../../carbonio-ui-commons/test/mocks/folders/folders-generator';
 import { createSoapAPIInterceptor } from '../../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { buildSoapErrorResponseBody } from '../../../../carbonio-ui-commons/test/mocks/utils/soap';
@@ -21,7 +23,8 @@ import { screen, setupTest } from '../../../../carbonio-ui-commons/test/test-set
 import { API_REQUEST_STATUS } from '../../../../constants';
 import {
 	createSoapAPIInterceptorWithError,
-	generateConvMessageFromAPI
+	generateConvMessageFromAPI,
+	generateMessagePartFromAPI
 } from '../../../../helpers/api';
 import * as visibleActionsCount from '../../../../hooks/use-visible-actions-count';
 import { useMessageStore } from '../../../../store/zustand/message-store/store';
@@ -29,10 +32,13 @@ import { generateConversation } from '../../../../tests/generators/generateConve
 import { generateMessage } from '../../../../tests/generators/generateMessage';
 import { generateStore } from '../../../../tests/generators/store';
 import {
+	Conversation,
 	MsgActionRequest,
 	MsgActionResponse,
 	SearchConvRequest,
-	SearchConvResponse
+	SearchConvResponse,
+	SearchRequestStatus,
+	SoapMailMessage
 } from '../../../../types';
 import { SearchConversationPanel } from '../search-conversation-panel';
 
@@ -42,123 +48,65 @@ jest.mock('react-router-dom', () => ({
 }));
 
 describe('Conversation Preview', () => {
+	let store: ReturnType<typeof generateStore>;
+
+	beforeEach(() => {
+		store = generateStore();
+	});
+
 	it('should render a conversation with its messages when SearchConv API returns a valid response', async () => {
-		const message1 = generateMessage({ id: '1', subject: 'Test Message 1' });
-
-		const conversation = generateConversation({
-			id: '123',
-			messages: [message1],
-			subject: 'Test Conversation'
-		});
-		useMessageStore.setState(
-			produce((state) => {
-				state.search.conversationIds = new Set(['123']);
-				state.populatedItems.conversations = { '123': conversation };
-				state.populatedItems.conversationsStatus = {};
-				state.populatedItems.messages = { '1': message1 };
-			})
-		);
-		(useParams as jest.Mock).mockReturnValue({ folderId: '2' });
-
-		const response: SearchConvResponse = {
-			m: [generateConvMessageFromAPI({ id: '10' }), generateConvMessageFromAPI({ id: '2' })],
-			more: false,
-			offset: '',
-			orderBy: ''
-		};
+		(useParams as jest.Mock).mockReturnValue({ conversationId: '123', folderId: FOLDERS.INBOX });
+		addConversationInStore(generateConversation({ id: '123', folderId: FOLDERS.INBOX }));
 		const interceptor = createSoapAPIInterceptor<SearchConvRequest, SearchConvResponse>(
 			'SearchConv',
-			response
+			searchConversationFromApi([
+				textConversationMessageFromAPI('1', 'Test Message body'),
+				textConversationMessageFromAPI('10', 'Another message')
+			])
 		);
-		const store = generateStore();
-		setupTest(<SearchConversationPanel conversationId="123" folderId="2" />, { store });
-		await interceptor;
 
+		setupTest(<SearchConversationPanel />, { store });
+
+		await interceptor;
 		expect(await screen.findAllByTestId(/MailPreview-/)).toHaveLength(2);
 		expect(await screen.findByTestId('MailPreview-10')).toBeVisible();
+		expect(await screen.findByText('Test Message body')).toBeInTheDocument();
 	});
 
 	it('should render an empty fragment when SearchConv API call returns Fault', async () => {
-		const message1 = generateMessage({ id: '1', subject: 'Test Message 1' });
-
-		const conversation = generateConversation({
-			id: '123',
-			messages: [message1],
-			subject: 'Test Conversation'
-		});
-		useMessageStore.setState(
-			produce((initialState) => {
-				initialState.search.conversationIds = new Set(['123']);
-				initialState.populatedItems.conversations = { '123': conversation };
-				initialState.populatedItems.conversationsStatus = {};
-				initialState.populatedItems.messages = { '1': message1 };
-			})
-		);
-
-		(useParams as jest.Mock).mockReturnValue({ folderId: '2' });
-
+		(useParams as jest.Mock).mockReturnValue({ conversationId: '123', folderId: FOLDERS.INBOX });
+		addConversationInStore(generateConversation({ id: '123', folderId: FOLDERS.INBOX }));
 		const interceptor = createSoapAPIInterceptor<SearchConvRequest, ErrorSoapBodyResponse>(
 			'SearchConv',
 			buildSoapErrorResponseBody()
 		);
-		const store = generateStore();
-		setupTest(<SearchConversationPanel conversationId="123" folderId="2" />, { store });
+
+		setupTest(<SearchConversationPanel />, { store });
 
 		await interceptor;
-
 		expect(screen.queryByTestId(/MailPreview-1/)).not.toBeInTheDocument();
 		expect(await screen.findByTestId('empty-fragment')).toBeInTheDocument();
 	});
 
 	it('should render an empty fragment when SearchConv API call throws an error', async () => {
-		const message1 = generateMessage({ id: '1', subject: 'Test Message 1' });
-
-		const conversation = generateConversation({
-			id: '123',
-			messages: [message1],
-			subject: 'Test Conversation'
-		});
-		useMessageStore.setState(
-			produce((initialState) => {
-				initialState.search.conversationIds = new Set(['123']);
-				initialState.populatedItems.conversations = { '123': conversation };
-				initialState.populatedItems.conversationsStatus = {};
-				initialState.populatedItems.messages = { '1': message1 };
-			})
-		);
-
-		(useParams as jest.Mock).mockReturnValue({ folderId: '2' });
-
+		(useParams as jest.Mock).mockReturnValue({ conversationId: '123', folderId: FOLDERS.INBOX });
+		addConversationInStore(generateConversation({ id: '123', folderId: FOLDERS.INBOX }));
 		const interceptor = createSoapAPIInterceptorWithError('SearchConv');
-		const store = generateStore();
-		setupTest(<SearchConversationPanel conversationId="123" folderId="2" />, { store });
-		await interceptor;
 
+		setupTest(<SearchConversationPanel />, { store });
+
+		await interceptor;
 		expect(screen.queryByTestId(/MailPreview-1/)).not.toBeInTheDocument();
 		expect(await screen.findByTestId('empty-fragment')).toBeInTheDocument();
 	});
 
 	it('should render a shimmer component when SearchConv API call is pending', async () => {
-		const message1 = generateMessage({ id: '1', subject: 'Test Message 1' });
-
-		const conversation = generateConversation({
-			id: '123',
-			messages: [message1],
-			subject: 'Test Conversation'
+		(useParams as jest.Mock).mockReturnValue({ conversationId: '123', folderId: FOLDERS.INBOX });
+		addConversationInStore(generateConversation({ id: '123', folderId: FOLDERS.INBOX }), {
+			'123': API_REQUEST_STATUS.pending
 		});
-		useMessageStore.setState(
-			produce((initialState) => {
-				initialState.search.conversationIds = new Set(['123']);
-				initialState.populatedItems.conversations = { '123': conversation };
-				initialState.populatedItems.conversationsStatus = { '123': API_REQUEST_STATUS.pending };
-				initialState.populatedItems.messages = { '1': message1 };
-			})
-		);
 
-		(useParams as jest.Mock).mockReturnValue({ folderId: '2' });
-
-		const store = generateStore();
-		setupTest(<SearchConversationPanel conversationId="123" folderId="2" />, { store });
+		setupTest(<SearchConversationPanel />, { store });
 
 		expect(screen.getByTestId('shimmer-conversation-123')).toBeInTheDocument();
 	});
@@ -276,3 +224,42 @@ describe('Conversation Preview', () => {
 		});
 	});
 });
+
+function searchConversationFromApi(messages: Array<SoapMailMessage>): SearchConvResponse {
+	return {
+		m: messages,
+		more: false,
+		offset: '',
+		orderBy: ''
+	};
+}
+
+function textConversationMessageFromAPI(id: string, content: string): SoapMailMessage {
+	return generateConvMessageFromAPI({
+		id,
+		mp: [
+			generateMessagePartFromAPI({
+				part: '1',
+				ct: 'text/plain',
+				body: true,
+				content
+			})
+		]
+	});
+}
+
+function addConversationInStore(
+	conversation: Conversation,
+	status: Record<string, SearchRequestStatus> = {}
+): void {
+	const messages = Object.fromEntries(conversation.messages.map((msg) => [msg.id, msg]));
+
+	useMessageStore.setState(
+		produce((initialState) => {
+			initialState.search.conversationIds = new Set([conversation.id]);
+			initialState.populatedItems.conversations = { [conversation.id]: conversation };
+			initialState.populatedItems.conversationsStatus = status;
+			initialState.populatedItems.messages = messages;
+		})
+	);
+}
