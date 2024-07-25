@@ -111,27 +111,36 @@ describe('Conversation Preview', () => {
 		expect(screen.getByTestId('shimmer-conversation-123')).toBeInTheDocument();
 	});
 
-	it('should open both message previews', async () => {
+	it('should show message body on opened messages only if they are complete', async () => {
 		(useParams as jest.Mock).mockReturnValue({ conversationId: '123', folderId: FOLDERS.INBOX });
 		const conversation = generateConversation({
 			id: '123',
 			folderId: FOLDERS.INBOX,
 			messages: [
-				generateMessage({ id: '1', folderId: FOLDERS.INBOX, body: 'Message Body 1' }),
-				generateMessage({ id: '2', folderId: FOLDERS.INBOX, body: 'Message Body 2' })
+				generateMessage({
+					id: '1',
+					folderId: FOLDERS.INBOX,
+					body: 'Message Body 1',
+					isComplete: true
+				}),
+				generateMessage({
+					id: '2',
+					folderId: FOLDERS.INBOX,
+					body: 'Message Body 2',
+					isComplete: false
+				})
 			]
 		});
 		addConversationInStore(conversation, { '123': API_REQUEST_STATUS.fulfilled });
+
 		const { user } = setupTest(<SearchConversationPanel />, { store });
+		const mail2ClosedPanel = await screen.findByTestId(/open-message-2/);
+		await act(() => user.click(mail2ClosedPanel));
 
 		const mail1Panel = await screen.findByTestId(/MailPreview-1/);
 		const mail2Panel = await screen.findByTestId(/MailPreview-2/);
-		const mail1ClosedPanel = await screen.findByTestId(/open-message-1/);
-
-		await act(() => user.click(mail1ClosedPanel));
-
 		expect(await within(mail1Panel).findByText('Message Body 1')).toBeVisible();
-		expect(await within(mail2Panel).findByText('Message Body 2')).toBeVisible();
+		expect(within(mail2Panel).queryByText('Message Body 2')).not.toBeInTheDocument();
 	});
 
 	describe('Actions', () => {
@@ -146,7 +155,7 @@ describe('Conversation Preview', () => {
 			(useParams as jest.Mock).mockReturnValue({ conversationId: '123', folderId: FOLDERS.INBOX });
 		});
 
-		it('should display "Trash" badge on single message deleting it', async () => {
+		it('should display "Trash" badge on single message after deleting it', async () => {
 			const msgActionInterceptor = createSoapAPIInterceptor<MsgActionRequest, MsgActionResponse>(
 				'MsgAction',
 				{ action: { id: '345', op: 'trash' } }
@@ -157,14 +166,33 @@ describe('Conversation Preview', () => {
 				messages: [generateMessage({ id: '1', folderId: '2' })]
 			});
 			addConversationInStore(conversation, { '123': API_REQUEST_STATUS.fulfilled });
+
 			const { user } = setupTest(<SearchConversationPanel />, { store });
 			const mail1Panel = await screen.findByTestId(/MailPreview-1/);
-
 			const trashButton = await within(mail1Panel).findByTestId('icon: Trash2Outline');
 			await act(() => user.click(trashButton));
 
 			await msgActionInterceptor;
 			expect(await within(mail1Panel).findByText(/folders\.trash/i)).toBeVisible();
+		});
+
+		it('should display actions only on opened messages', async () => {
+			const conversation = generateConversation({
+				id: '123',
+				folderId: FOLDERS.INBOX,
+				messages: [
+					generateMessage({ id: '1', folderId: '2', body: 'Body 1' }),
+					generateMessage({ id: '2', folderId: '2', body: 'Body 2' })
+				]
+			});
+			addConversationInStore(conversation, { '123': API_REQUEST_STATUS.fulfilled });
+
+			setupTest(<SearchConversationPanel />, { store });
+
+			const mail1PanelOpened = await screen.findByTestId(/MailPreview-1/);
+			const mail2PanelClosed = await screen.findByTestId(/MailPreview-2/);
+			expect(await within(mail1PanelOpened).findByTestId('icon: Trash2Outline')).toBeVisible();
+			expect(within(mail2PanelClosed).queryByTestId('icon: Trash2Outline')).not.toBeInTheDocument();
 		});
 	});
 });
