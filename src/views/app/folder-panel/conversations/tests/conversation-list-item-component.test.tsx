@@ -7,10 +7,9 @@ import React from 'react';
 
 import { fireEvent, screen } from '@testing-library/react';
 import { FOLDERS } from '@zextras/carbonio-shell-ui';
-import { noop, times } from 'lodash';
+import { noop } from 'lodash';
 
 import { ParticipantRole } from '../../../../../carbonio-ui-commons/constants/participants';
-import { getMocksContext } from '../../../../../carbonio-ui-commons/test/mocks/utils/mocks-context';
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
 import { API_REQUEST_STATUS, FOLDERS_DESCRIPTORS } from '../../../../../constants';
 import { ASSERTIONS } from '../../../../../tests/constants';
@@ -384,18 +383,20 @@ describe.each`
 		);
 
 		test("(case #8) if the conversation contains more than 1 message then all the recipients' names are visible", async () => {
-			const folderId = FOLDERS.INBOX;
-			const MESSAGES_COUNT = 3;
-			const me = getMocksContext().identities.primary.identity.email;
-			const participants = ['mario@foo.baz', 'luigi@foo.baz', 'bowser@foo.baz'];
-			const messages = times(MESSAGES_COUNT, (i) =>
-				generateMessage({
-					folderId,
-					to: [{ type: ParticipantRole.TO, address: me }],
-					from: { type: ParticipantRole.FROM, address: participants[i] }
-				})
-			);
-			const conversation = generateConversation({ folderId, messages });
+			const fromMario = { type: ParticipantRole.FROM, address: 'mario@foo.baz' };
+			const fromLuigi = { type: ParticipantRole.FROM, address: 'luigi@foo.baz' };
+			const fromBowser = { type: ParticipantRole.FROM, address: 'bowser@foo.baz' };
+			const toMyself = { type: ParticipantRole.TO, address: `me@myself.com` };
+			const conversation = generateConversation({
+				folderId: FOLDERS.INBOX,
+				messages: [
+					generateMessage({ folderId: FOLDERS.INBOX, to: [toMyself], from: fromMario }),
+					generateMessage({ folderId: FOLDERS.INBOX, to: [toMyself], from: fromLuigi }),
+					generateMessage({ folderId: FOLDERS.INBOX, to: [toMyself], from: fromBowser })
+				],
+				to: [toMyself],
+				from: [fromMario, fromLuigi, fromBowser]
+			});
 
 			const props: ConversationListItemProps = {
 				item: conversation,
@@ -406,12 +407,12 @@ describe.each`
 				activeItemId: '',
 				deselectAll: noop,
 				isSearchModule,
-				folderId
+				folderId: FOLDERS.INBOX
 			};
 
 			const store = generateStore({
 				conversations: {
-					currentFolder: folderId,
+					currentFolder: FOLDERS.INBOX,
 					expandedStatus: {
 						[conversation.id]: API_REQUEST_STATUS.fulfilled
 					},

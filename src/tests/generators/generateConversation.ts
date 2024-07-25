@@ -13,8 +13,7 @@ import {
 	ParticipantRole,
 	ParticipantRoleType
 } from '../../carbonio-ui-commons/constants/participants';
-import { getParticipantsFromMessages } from '../../helpers/messages';
-import type { Conversation, MailMessage, Participant } from '../../types';
+import type { Conversation, ConvMessage, Participant } from '../../types';
 
 /**
  *
@@ -31,7 +30,7 @@ type ConversationGenerationParams = {
 	isFlagged?: boolean;
 	isSingleMessageConversation?: boolean;
 	// TODO: messages should be of type ConvMessage
-	messages?: Array<MailMessage>;
+	messages?: Array<ConvMessage>;
 	messageGenerationCount?: number;
 	tags?: Array<string>;
 };
@@ -75,20 +74,10 @@ const generateConversation = ({
 	tags = []
 }: ConversationGenerationParams): Conversation => {
 	const finalFrom =
-		from ??
-		(messages && messages.length
-			? getParticipantsFromMessages(messages, ParticipantRole.FROM)
-			: generateRandomParticipants(messageGenerationCount, ParticipantRole.FROM));
-	const finalTo =
-		to ??
-		(messages && messages.length
-			? getParticipantsFromMessages(messages, ParticipantRole.TO)
-			: generateRandomParticipants(messageGenerationCount, ParticipantRole.TO));
+		from ?? generateRandomParticipants(messageGenerationCount, ParticipantRole.FROM);
+	const finalTo = to ?? generateRandomParticipants(messageGenerationCount, ParticipantRole.TO);
 	const finalCc =
-		cc ??
-		(messages && messages.length
-			? getParticipantsFromMessages(messages, ParticipantRole.CARBON_COPY)
-			: generateRandomParticipants(messageGenerationCount, ParticipantRole.CARBON_COPY));
+		cc ?? generateRandomParticipants(messageGenerationCount, ParticipantRole.CARBON_COPY);
 	const finalMessages =
 		messages ?? times(messageGenerationCount, () => generateMessage({ folderId }));
 
