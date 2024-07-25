@@ -21,7 +21,7 @@ import {
 
 export type MessageStoreState = PopulatedItemsSliceState & SearchSliceState;
 
-export const useMessageStore = create<MessageStoreState>()((...a) => ({
+const useMessageStore = create<MessageStoreState>()((...a) => ({
 	...createSearchSlice(...a),
 	...createPopulatedItemsSlice(...a)
 }));

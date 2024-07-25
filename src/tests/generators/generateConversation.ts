@@ -30,6 +30,7 @@ type ConversationGenerationParams = {
 	isRead?: boolean;
 	isFlagged?: boolean;
 	isSingleMessageConversation?: boolean;
+	// TODO: messages should be of type ConvMessage
 	messages?: Array<MailMessage>;
 	messageGenerationCount?: number;
 	tags?: Array<string>;

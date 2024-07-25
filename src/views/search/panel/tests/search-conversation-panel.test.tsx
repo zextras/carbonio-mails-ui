@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
-/* eslint-disable no-param-reassign */
 import React from 'react';
 
 import { act, within } from '@testing-library/react';
@@ -12,6 +11,7 @@ import * as hooks from '@zextras/carbonio-shell-ui';
 import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 import produce from 'immer';
 import { noop } from 'lodash';
+/* eslint-disable no-param-reassign */
 import { useParams } from 'react-router-dom';
 
 import { useFolderStore } from '../../../../carbonio-ui-commons/store/zustand/folder';
@@ -27,17 +27,19 @@ import {
 	generateMessagePartFromAPI
 } from '../../../../helpers/api';
 import * as visibleActionsCount from '../../../../hooks/use-visible-actions-count';
-import { useMessageStore } from '../../../../store/zustand/message-store/store';
+import {
+	updateConversations,
+	updateConversationStatus,
+	updateMessages
+} from '../../../../store/zustand/message-store/store';
 import { generateConversation } from '../../../../tests/generators/generateConversation';
 import { generateMessage } from '../../../../tests/generators/generateMessage';
 import { generateStore } from '../../../../tests/generators/store';
 import {
-	Conversation,
 	MsgActionRequest,
 	MsgActionResponse,
 	SearchConvRequest,
 	SearchConvResponse,
-	SearchRequestStatus,
 	SoapMailMessage
 } from '../../../../types';
 import { SearchConversationPanel } from '../search-conversation-panel';
@@ -56,7 +58,7 @@ describe('Conversation Preview', () => {
 
 	it('should render a conversation with its messages when SearchConv API returns a valid response', async () => {
 		(useParams as jest.Mock).mockReturnValue({ conversationId: '123', folderId: FOLDERS.INBOX });
-		addConversationInStore(generateConversation({ id: '123', folderId: FOLDERS.INBOX }));
+		updateConversations([generateConversation({ id: '123', folderId: FOLDERS.INBOX })], 0);
 		const interceptor = createSoapAPIInterceptor<SearchConvRequest, SearchConvResponse>(
 			'SearchConv',
 			searchConversationFromApi([
@@ -75,7 +77,7 @@ describe('Conversation Preview', () => {
 
 	it('should render an empty fragment when SearchConv API call returns Fault', async () => {
 		(useParams as jest.Mock).mockReturnValue({ conversationId: '123', folderId: FOLDERS.INBOX });
-		addConversationInStore(generateConversation({ id: '123', folderId: FOLDERS.INBOX }));
+		updateConversations([generateConversation({ id: '123', folderId: FOLDERS.INBOX })], 0);
 		const interceptor = createSoapAPIInterceptor<SearchConvRequest, ErrorSoapBodyResponse>(
 			'SearchConv',
 			buildSoapErrorResponseBody()
@@ -90,7 +92,7 @@ describe('Conversation Preview', () => {
 
 	it('should render an empty fragment when SearchConv API call throws an error', async () => {
 		(useParams as jest.Mock).mockReturnValue({ conversationId: '123', folderId: FOLDERS.INBOX });
-		addConversationInStore(generateConversation({ id: '123', folderId: FOLDERS.INBOX }));
+		updateConversations([generateConversation({ id: '123', folderId: FOLDERS.INBOX })], 0);
 		const interceptor = createSoapAPIInterceptorWithError('SearchConv');
 
 		setupTest(<SearchConversationPanel />, { store });
@@ -102,9 +104,9 @@ describe('Conversation Preview', () => {
 
 	it('should render a shimmer component when SearchConv API call is pending', async () => {
 		(useParams as jest.Mock).mockReturnValue({ conversationId: '123', folderId: FOLDERS.INBOX });
-		addConversationInStore(generateConversation({ id: '123', folderId: FOLDERS.INBOX }), {
-			'123': API_REQUEST_STATUS.pending
-		});
+		const conversation = generateConversation({ id: '123', folderId: FOLDERS.INBOX });
+		updateConversations([conversation], 0);
+		updateConversationStatus(conversation.id, API_REQUEST_STATUS.pending);
 
 		setupTest(<SearchConversationPanel />, { store });
 
@@ -113,25 +115,26 @@ describe('Conversation Preview', () => {
 
 	it('should show message body on opened messages only if they are complete', async () => {
 		(useParams as jest.Mock).mockReturnValue({ conversationId: '123', folderId: FOLDERS.INBOX });
+		const message2 = generateMessage({
+			id: '2',
+			folderId: FOLDERS.INBOX,
+			body: 'Message Body 2',
+			isComplete: false
+		});
+		const message1 = generateMessage({
+			id: '1',
+			folderId: FOLDERS.INBOX,
+			body: 'Message Body 1',
+			isComplete: true
+		});
 		const conversation = generateConversation({
 			id: '123',
 			folderId: FOLDERS.INBOX,
-			messages: [
-				generateMessage({
-					id: '1',
-					folderId: FOLDERS.INBOX,
-					body: 'Message Body 1',
-					isComplete: true
-				}),
-				generateMessage({
-					id: '2',
-					folderId: FOLDERS.INBOX,
-					body: 'Message Body 2',
-					isComplete: false
-				})
-			]
+			messages: [message1, message2]
 		});
-		addConversationInStore(conversation, { '123': API_REQUEST_STATUS.fulfilled });
+		updateConversations([conversation], 0);
+		updateConversationStatus(conversation.id, API_REQUEST_STATUS.fulfilled);
+		updateMessages([message1, message2], 0);
 
 		const { user } = setupTest(<SearchConversationPanel />, { store });
 		const mail2ClosedPanel = await screen.findByTestId(/open-message-2/);
@@ -160,12 +163,15 @@ describe('Conversation Preview', () => {
 				'MsgAction',
 				{ action: { id: '345', op: 'trash' } }
 			);
+			const messages = [generateMessage({ id: '1', folderId: '2' })];
 			const conversation = generateConversation({
 				id: '123',
 				folderId: FOLDERS.INBOX,
-				messages: [generateMessage({ id: '1', folderId: '2' })]
+				messages
 			});
-			addConversationInStore(conversation, { '123': API_REQUEST_STATUS.fulfilled });
+			updateConversations([conversation], 0);
+			updateConversationStatus(conversation.id, API_REQUEST_STATUS.fulfilled);
+			updateMessages(messages, 0);
 
 			const { user } = setupTest(<SearchConversationPanel />, { store });
 			const mail1Panel = await screen.findByTestId(/MailPreview-1/);
@@ -177,15 +183,16 @@ describe('Conversation Preview', () => {
 		});
 
 		it('should display actions only on opened messages', async () => {
+			const message1 = generateMessage({ id: '1', folderId: '2', body: 'Body 1' });
+			const message2 = generateMessage({ id: '2', folderId: '2', body: 'Body 2' });
 			const conversation = generateConversation({
 				id: '123',
 				folderId: FOLDERS.INBOX,
-				messages: [
-					generateMessage({ id: '1', folderId: '2', body: 'Body 1' }),
-					generateMessage({ id: '2', folderId: '2', body: 'Body 2' })
-				]
+				messages: [message1, message2]
 			});
-			addConversationInStore(conversation, { '123': API_REQUEST_STATUS.fulfilled });
+			updateConversations([conversation], 0);
+			updateConversationStatus(conversation.id, API_REQUEST_STATUS.fulfilled);
+			updateMessages([message1, message2], 0);
 
 			setupTest(<SearchConversationPanel />, { store });
 
@@ -218,20 +225,4 @@ function textConversationMessageFromAPI(id: string, content: string): SoapMailMe
 			})
 		]
 	});
-}
-
-function addConversationInStore(
-	conversation: Conversation,
-	status: Record<string, SearchRequestStatus> = {}
-): void {
-	const messages = Object.fromEntries(conversation.messages.map((msg) => [msg.id, msg]));
-
-	useMessageStore.setState(
-		produce((initialState) => {
-			initialState.search.conversationIds = new Set([conversation.id]);
-			initialState.populatedItems.conversations = { [conversation.id]: conversation };
-			initialState.populatedItems.conversationsStatus = status;
-			initialState.populatedItems.messages = messages;
-		})
-	);
 }
