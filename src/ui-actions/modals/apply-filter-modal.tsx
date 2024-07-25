@@ -75,7 +75,7 @@ export const ApplyFilterModal: FC<ApplyFilterModalProps> = ({ criteria, closeMod
 			.catch((err) => {
 				createSnackbar({
 					key: `applyFilter-${criteria.filterName}-error`,
-					type: 'error',
+					type: 'info',
 					label:
 						err && err !== ''
 							? err
@@ -183,6 +183,11 @@ export const ApplyFilterModal: FC<ApplyFilterModalProps> = ({ criteria, closeMod
 							>
 								<TextStyler bold>{{ involvedMessagesCount }} messages</TextStyler> will be processed
 								inside the selected folder.
+							</Trans>
+						</Text>
+						<Text>
+							<Trans t={t} i18nKey="modals.apply_filters.label_confirm_msg">
+								The more messages are present, the more time will be required to apply the filter.
 							</Trans>
 						</Text>
 						<Text>
