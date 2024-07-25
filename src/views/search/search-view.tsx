@@ -17,7 +17,7 @@ import { useIsMessageView, useRunSearch } from './search-view-hooks';
 
 const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHeader }) => {
 	const { path } = useRouteMatch();
-	const [updateQuery] = useQuery();
+	const [query, updateQuery] = useQuery();
 	const isMessageView = useIsMessageView();
 	const [showAdvanceFilters, setShowAdvanceFilters] = useState(false);
 	const settings = useUserSettings();
@@ -29,20 +29,14 @@ const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHe
 		() => t('label.invalid_query', 'Unable to parse the search query, clear it and retry'),
 		[]
 	);
-	const {
-		queryToString,
-		isInvalidQuery,
-		loading,
-		query,
-		searchDisabled,
-		searchResults,
-		filterCount
-	} = useRunSearch({
-		useQuery,
-		useDisableSearch,
-		invalidQueryTooltip,
-		isSharedFolderIncluded
-	});
+	const { queryToString, isInvalidQuery, loading, searchDisabled, searchResults, filterCount } =
+		useRunSearch({
+			query,
+			updateQuery,
+			useDisableSearch,
+			invalidQueryTooltip,
+			isSharedFolderIncluded
+		});
 
 	const resultLabelType = isInvalidQuery ? 'warning' : undefined;
 	const resultLabel = useMemo(() => {

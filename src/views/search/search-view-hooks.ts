@@ -24,8 +24,9 @@ import { handleSearchResults } from '../../store/zustand/search/hooks/hooks';
 import { SearchSliceState } from '../../types';
 
 type RunSearchCallback = {
+	query: QueryChip[];
 	// eslint-disable-next-line @typescript-eslint/ban-types
-	useQuery: () => [QueryChip[], Function];
+	updateQuery: Function;
 	// eslint-disable-next-line @typescript-eslint/ban-types
 	useDisableSearch: () => [boolean, Function];
 	invalidQueryTooltip: string;
@@ -38,12 +39,12 @@ export function useIsMessageView(): boolean {
 }
 
 export function useRunSearch({
-	useQuery,
+	query,
+	updateQuery,
 	useDisableSearch,
 	invalidQueryTooltip,
 	isSharedFolderIncluded
 }: RunSearchCallback): {
-	query: QueryChip[];
 	searchDisabled: boolean;
 	queryToString: string;
 	loading: boolean;
@@ -51,7 +52,6 @@ export function useRunSearch({
 	isInvalidQuery: boolean;
 	filterCount: number;
 } {
-	const [query, updateQuery] = useQuery();
 	const [searchDisabled, setSearchDisabled] = useDisableSearch();
 	const settings = useUserSettings();
 	const isMessageView = useIsMessageView();
@@ -204,7 +204,6 @@ export function useRunSearch({
 	}, [isInvalidQuery, query.length, queryToString, searchQuery]);
 
 	return {
-		query,
 		searchDisabled,
 		filterCount,
 		searchResults,
