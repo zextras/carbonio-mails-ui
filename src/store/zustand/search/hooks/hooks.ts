@@ -96,7 +96,7 @@ export function useCompleteConversation(
 	const conversation = useConversationById(conversationId);
 	const conversationStatus = useConversationStatus(conversationId);
 	useEffect(() => {
-		if (!conversationStatus) {
+		if (conversation && !conversationStatus) {
 			updateConversationStatus(conversationId, API_REQUEST_STATUS.pending);
 			searchConvSoapAPI({ conversationId, fetch: 'all', folderId })
 				.then((response) => {
@@ -110,7 +110,7 @@ export function useCompleteConversation(
 					updateConversationStatus(conversationId, API_REQUEST_STATUS.error);
 				});
 		}
-	}, [conversationId, conversationStatus, folderId]);
+	}, [conversation, conversationId, conversationStatus, folderId]);
 	return {
 		conversation,
 		conversationStatus
