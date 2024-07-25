@@ -8,7 +8,6 @@ import React, { useCallback } from 'react';
 import { AsyncThunkAction, Dispatch } from '@reduxjs/toolkit';
 import { Text, useSnackbar } from '@zextras/carbonio-design-system';
 import { t, FOLDERS, replaceHistory, useIntegratedFunction } from '@zextras/carbonio-shell-ui';
-import produce from 'immer';
 import { isNull, map, noop } from 'lodash';
 
 import DeleteConvConfirm from './delete-conv-modal';
@@ -24,7 +23,7 @@ import { getMsgCall, getMsgsForPrint, msgAction } from '../store/actions';
 import { sendMsg, sendMsgFromEditor } from '../store/actions/send-msg';
 import { extractBody } from '../store/editor-slice-utils';
 import { AppDispatch, StoreProvider } from '../store/redux';
-import { useMessageStore } from '../store/zustand/message-store/store';
+import { updateMessagesParent } from '../store/zustand/message-store/store';
 import type {
 	MailMessage,
 	MailsEditorV2,
@@ -370,13 +369,7 @@ export const useMoveMsgToTrash = (): ((arg: MessageActionPropType) => MessageAct
 						})
 					).then((res) => {
 						if (res.type.includes('fulfilled')) {
-							ids.forEach((id) => {
-								useMessageStore.setState(
-									produce((state) => {
-										state.populatedItems.messages[id].parent = FOLDERS.TRASH;
-									})
-								);
-							});
+							updateMessagesParent(FOLDERS.TRASH, ids);
 							deselectAll && deselectAll();
 							closeEditor && replaceHistory(`/folder/${folderId}`);
 							createSnackbar({

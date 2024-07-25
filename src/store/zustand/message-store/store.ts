@@ -34,6 +34,16 @@ export function useMessageById(id: string): IncompleteMessage | MailMessage {
 	return useMessageStore((state) => state.populatedItems.messages[id]);
 }
 
+export function updateMessagesParent(folder: string, messageIds: Array<string>): void {
+	useMessageStore.setState(
+		produce((state) => {
+			messageIds.forEach((msgId) => {
+				state.populatedItems.messages[msgId].parent = folder;
+			});
+		})
+	);
+}
+
 export function useSearchResults(): SearchSliceState['search'] {
 	return useMessageStore((state) => state.search);
 }
