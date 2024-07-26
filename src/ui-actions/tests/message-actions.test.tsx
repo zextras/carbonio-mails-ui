@@ -466,6 +466,52 @@ describe('Messages actions calls', () => {
 			expect(requestParameter.action.f).toBeUndefined();
 			expect(requestParameter.action.tn).toBeUndefined();
 		});
+
+		test('multiple messages in zustand search store', async () => {
+			populateFoldersStore({ view: FOLDER_VIEW.message });
+			updateMessages(
+				[
+					generateMessage({ id: '1', folderId: FOLDERS.INBOX }),
+					generateMessage({ id: '2', folderId: FOLDERS.INBOX })
+				],
+				0
+			);
+			const store = generateStore();
+			const {
+				result: { current: setMsgAsSpam }
+			} = setupHook(useSetMsgAsSpam);
+			const action = setMsgAsSpam({
+				ids: ['1', '2'],
+				dispatch: store.dispatch,
+				value: true,
+				folderId: FOLDERS.INBOX
+			});
+			const apiInterceptor = createSoapAPIInterceptor<MsgActionRequest, MsgActionResponse>(
+				'MsgAction',
+				{
+					action: {
+						id: 'whatever',
+						op: 'spam'
+					}
+				}
+			);
+
+			act(() => {
+				action.onClick();
+				jest.advanceTimersByTime(TIMEOUTS.SET_AS_SPAM);
+			});
+
+			await apiInterceptor;
+
+			const msg1Result = renderHook(() => useMessageById('1')).result;
+			const msg2Result = renderHook(() => useMessageById('2')).result;
+			await waitFor(() => {
+				expect(msg1Result.current.parent).toBe(FOLDERS.SPAM);
+			});
+			await waitFor(() => {
+				expect(msg2Result.current.parent).toBe(FOLDERS.SPAM);
+			});
+		});
 	});
 
 	describe('Mark as not spam action', () => {

@@ -147,9 +147,13 @@ export const useSetMsgAsSpam = (): ((arg: MessageActionPropType) => MessageActio
 					ids
 				})
 			).then((res) => {
-				if (res.type.includes('fulfilled') && shouldReplaceHistory) {
-					replaceHistory(`/folder/${folderId}`);
+				if (res.type.includes('fulfilled')) {
+					updateMessagesParent(FOLDERS.SPAM, ids);
+					if (shouldReplaceHistory) {
+						replaceHistory(`/folder/${folderId}`);
+					}
 				}
+
 				if (!res.type.includes('fulfilled')) {
 					createSnackbar({
 						key: `trash-${ids}`,
