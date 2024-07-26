@@ -44,18 +44,6 @@ export function updateMessagesParent(folder: string, messageIds: Array<string>):
 	);
 }
 
-export function updateConversationsParent(folder: string, conversationIds: Array<string>): void {
-	useMessageStore.setState(
-		produce((state: MessageStoreState) => {
-			conversationIds.forEach((conversationId) => {
-				state.populatedItems.conversations[conversationId].messages.forEach((message) => {
-					state.populatedItems.messages[message.id].parent = folder;
-				});
-			});
-		})
-	);
-}
-
 export function useSearchResults(): SearchSliceState['search'] {
 	return useMessageStore((state) => state.search);
 }

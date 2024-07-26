@@ -7,7 +7,6 @@ import React from 'react';
 
 import { faker } from '@faker-js/faker';
 import { act, screen } from '@testing-library/react';
-import { renderHook } from '@testing-library/react-hooks';
 import { noop, times } from 'lodash';
 
 import { FOLDER_VIEW } from '../../carbonio-ui-commons/constants';
@@ -24,20 +23,9 @@ import {
 import { TIMEOUTS, API_REQUEST_STATUS } from '../../constants';
 import { useUiUtilities } from '../../hooks/use-ui-utilities';
 import * as getMsgsForPrint from '../../store/actions/get-msg-for-print';
-import {
-	updateConversations,
-	updateMessages,
-	useMessageById
-} from '../../store/zustand/message-store/store';
 import { generateConversation } from '../../tests/generators/generateConversation';
-import { generateMessage } from '../../tests/generators/generateMessage';
 import { generateStore } from '../../tests/generators/store';
-import {
-	ConvActionRequest,
-	ConvActionResponse,
-	Conversation,
-	SearchRequestStatus
-} from '../../types';
+import { ConvActionRequest, Conversation, SearchRequestStatus } from '../../types';
 import {
 	printConversation,
 	setConversationsFlag,
@@ -490,56 +478,6 @@ describe('Conversation actions calls', () => {
 			expect(requestParameter.action.op).toBe('spam');
 			expect(requestParameter.action.l).toBeUndefined();
 			expect(requestParameter.action.tn).toBeUndefined();
-		});
-
-		it('should move all messages to SPAM', async () => {
-			populateFoldersStore({ view: FOLDER_VIEW.message });
-			updateConversations([generateConversation({ id: '1' })], 0);
-			const messages = [
-				generateMessage({ id: '1', folderId: FOLDERS.INBOX }),
-				generateMessage({ id: '2', folderId: FOLDERS.INBOX })
-			];
-			updateMessages(messages, 0);
-			updateConversations(
-				[generateConversation({ id: '123', messages, folderId: FOLDERS.INBOX })],
-				0
-			);
-			const store = generateStore();
-			const {
-				result: { current: setConversationAsSpam }
-			} = setupHook(useSetConversationAsSpam);
-			const action = setConversationAsSpam({
-				ids: ['123'],
-				dispatch: store.dispatch,
-				value: false,
-				deselectAll: noop
-			});
-
-			const apiInterceptor = createSoapAPIInterceptor<ConvActionRequest, ConvActionResponse>(
-				'ConvAction',
-				{
-					action: {
-						id: 'asdsadsa',
-						op: 'spam'
-					}
-				}
-			);
-
-			act(() => {
-				action.onClick();
-				jest.advanceTimersByTime(TIMEOUTS.SET_AS_SPAM);
-			});
-
-			await apiInterceptor;
-			const { result: msg1, waitFor } = renderHook(() => useMessageById('1'));
-			const msg2 = renderHook(() => useMessageById('2')).result;
-
-			await waitFor(() => {
-				expect(msg1.current.parent).toBe(FOLDERS.SPAM);
-			});
-			await waitFor(() => {
-				expect(msg2.current.parent).toBe(FOLDERS.SPAM);
-			});
 		});
 	});
 

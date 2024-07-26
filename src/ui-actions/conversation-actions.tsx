@@ -5,7 +5,7 @@
  */
 import React, { useCallback } from 'react';
 
-import { FOLDERS, replaceHistory, t } from '@zextras/carbonio-shell-ui';
+import { replaceHistory, t } from '@zextras/carbonio-shell-ui';
 import { forEach, isArray, map } from 'lodash';
 
 import DeleteConvConfirm from './delete-conv-modal';
@@ -16,7 +16,6 @@ import { ConversationActionsDescriptors } from '../constants';
 import { useUiUtilities } from '../hooks/use-ui-utilities';
 import { convAction, getMsgsForPrint } from '../store/actions';
 import { AppDispatch, StoreProvider } from '../store/redux';
-import { updateConversationsParent } from '../store/zustand/message-store/store';
 import type {
 	ConvActionReturnType,
 	Conversation,
@@ -269,8 +268,6 @@ export const useSetConversationAsSpam = (): ((
 							})
 						).then((res) => {
 							if (res.type.includes('fulfilled')) {
-								const conversationIds = ids.map((conversationId) => conversationId);
-								updateConversationsParent(FOLDERS.SPAM, conversationIds);
 								deselectAll();
 							} else {
 								createSnackbar({
