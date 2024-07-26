@@ -15,7 +15,7 @@ import {
 	Divider,
 	ModalFooter
 } from '@zextras/carbonio-design-system';
-import { getTags, QueryChip, ZIMBRA_STANDARD_COLORS, t } from '@zextras/carbonio-shell-ui';
+import { getTags, QueryChip, t } from '@zextras/carbonio-shell-ui';
 import { concat, filter, includes, map } from 'lodash';
 
 import AttachmentTypeEmailStatusRow from './parts/attachment-type-email-status-row';
@@ -27,6 +27,7 @@ import TagFolderRow from './parts/tag-folder-row';
 import ToggleFilters from './parts/toggle-filters';
 import { useDisabled, useSecondaryDisabled } from './parts/use-disable-hooks';
 import { getChipItems } from './utils';
+import { ZIMBRA_STANDARD_COLORS } from '../../carbonio-ui-commons/constants/utils';
 import { ScrollableContainer } from '../../commons/scrollable-container';
 import type { AdvancedFilterModalProps, KeywordState } from '../../types';
 
