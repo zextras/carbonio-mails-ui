@@ -4,6 +4,7 @@ import React from 'react';
 import { faker } from '@faker-js/faker';
 import { act, screen, waitFor, within } from '@testing-library/react';
 import { renderHook } from '@testing-library/react-hooks';
+import { Container } from '@zextras/carbonio-design-system';
 import { addBoard } from '@zextras/carbonio-shell-ui';
 import { times } from 'lodash';
 /*
@@ -26,6 +27,7 @@ import {
 	setupTest
 } from '../../carbonio-ui-commons/test/test-setup';
 import { API_REQUEST_STATUS, TIMEOUTS } from '../../constants';
+import { useAppDispatch } from '../../hooks/redux';
 import { useUiUtilities } from '../../hooks/use-ui-utilities';
 import * as getMsgsForPrint from '../../store/actions/get-msg-for-print';
 import {
@@ -45,6 +47,7 @@ import {
 	RedirectMessageActionRequest,
 	SaveDraftRequest
 } from '../../types';
+import { GlobalModalManager } from '../../views/global-modal-manager';
 import DeleteConvConfirm from '../delete-conv-modal';
 import {
 	editAsNewMsg,
@@ -56,6 +59,7 @@ import {
 	setMsgFlag,
 	setMsgRead,
 	showOriginalMsg,
+	useDeleteMsg,
 	useEditDraft,
 	useMoveMsgToTrash,
 	useSetMsgAsSpam
@@ -1482,6 +1486,64 @@ describe('Messages actions calls', () => {
 			expect(requestParameter.action.l).toBeUndefined();
 			expect(requestParameter.action.f).toBeUndefined();
 			expect(requestParameter.action.tn).toBe(tag.name);
+		});
+	});
+
+	describe('useDeleteMsg', () => {
+		it.skip('should remove messages from zustand store', async () => {
+			populateFoldersStore({ view: FOLDER_VIEW.message });
+			updateMessages([generateMessage({ id: '1' }), generateMessage({ id: '2' })], 0);
+			const store = generateStore();
+			const apiInterceptor = createSoapAPIInterceptor<MsgActionRequest, MsgActionResponse>(
+				'MsgAction',
+				{
+					action: {
+						id: 'someId',
+						op: 'delete'
+					}
+				}
+			);
+
+			// TODO: how to render the modal? Action can be tested only with a UI
+			const TestComponent = (): React.JSX.Element => {
+				const deleteMsg = useDeleteMsg();
+				const deleteAction = deleteMsg({
+					ids: ['1', '2'],
+					dispatch: useAppDispatch()
+				});
+				return (
+					<GlobalModalManager>
+						<Container>{deleteAction.onClick()}</Container>
+					</GlobalModalManager>
+				);
+			};
+
+			const { user } = setupTest(<TestComponent />, { store });
+
+			await screen.findByText('header.delete_email');
+			screen.logTestingPlaygroundURL();
+			const confirmDeleteButton = await screen.findByRole('button', {
+				name: /action\.ok/i
+			});
+			act(() => {
+				user.click(confirmDeleteButton);
+			});
+
+			//
+			// await act(async () => {
+			// 	await user.click(button);
+			// });
+
+			await apiInterceptor;
+
+			const msg1Result = renderHook(() => useMessageById('1')).result;
+			const msg2Result = renderHook(() => useMessageById('2')).result;
+			await waitFor(() => {
+				expect(msg1Result.current).toBeUndefined();
+			});
+			await waitFor(() => {
+				expect(msg2Result.current).toBeUndefined();
+			});
 		});
 	});
 });
