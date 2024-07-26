@@ -168,7 +168,16 @@ export function updateConversationsFlaggedStatus(
 	useMessageStore.setState(
 		produce((state: MessageStoreState) => {
 			conversationIds.forEach((conversationId) => {
-				state.populatedItems.conversations[conversationId].flagged = isFlagged;
+				const conversation = state.populatedItems.conversations[conversationId];
+				if (conversation) {
+					conversation.flagged = isFlagged;
+					conversation.messages.forEach((message) => {
+						const msg = state.populatedItems.messages[message.id];
+						if (msg) {
+							msg.flagged = isFlagged;
+						}
+					});
+				}
 			});
 		})
 	);
