@@ -24,6 +24,7 @@ import { sendMsg, sendMsgFromEditor } from '../store/actions/send-msg';
 import { extractBody } from '../store/editor-slice-utils';
 import { AppDispatch, StoreProvider } from '../store/redux';
 import {
+	removeMessages,
 	updateMessagesFlaggedStatus,
 	updateMessagesParent,
 	updateMessagesReadStatus
@@ -456,6 +457,7 @@ export const useDeleteMsg = (): ((
 							).then((res) => {
 								closeModal();
 								if (res.type.includes('fulfilled')) {
+									removeMessages(ids);
 									createSnackbar({
 										key: `trash-${ids}`,
 										replace: true,

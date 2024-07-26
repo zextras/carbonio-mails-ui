@@ -150,3 +150,13 @@ export function updateMessagesReadStatus(messageIds: Array<string>, isRead: bool
 		})
 	);
 }
+
+export function removeMessages(messageIds: Array<string>): void {
+	useMessageStore.setState(
+		produce((state: MessageStoreState) => {
+			messageIds.forEach((messageId) => {
+				delete state.populatedItems.messages[messageId];
+			});
+		})
+	);
+}

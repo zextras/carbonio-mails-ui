@@ -108,16 +108,19 @@ const msgActionFulfilled = (
 		const message = state?.messages?.[id];
 		const { conversations } = state;
 
+		// Done
 		if (operation.includes(CONVACTIONS.FLAG)) {
 			message.flagged = !operation.startsWith('!');
 			if (conversations) conversations[id].flagged = !operation.startsWith('!');
 		}
 
+		// Done
 		if (operation.includes(CONVACTIONS.MARK_READ)) {
 			message.read = !operation.startsWith('!');
 			if (conversations) conversations[id].read = !operation.startsWith('!');
 		}
 
+		// Done
 		if (operation === CONVACTIONS.TRASH) {
 			message.parent = FOLDERS.TRASH;
 		}
@@ -126,14 +129,17 @@ const msgActionFulfilled = (
 			delete message[id];
 		}
 
+		// Done
 		if (operation === CONVACTIONS.MOVE) {
 			message.parent = meta.arg.parent;
 		}
 
+		// Done
 		if (operation === CONVACTIONS.MARK_SPAM) {
 			message.parent = FOLDERS.SPAM;
 		}
 
+		// Done
 		if (operation === CONVACTIONS.MARK_NOT_SPAM) {
 			message.parent = FOLDERS.INBOX;
 		}
