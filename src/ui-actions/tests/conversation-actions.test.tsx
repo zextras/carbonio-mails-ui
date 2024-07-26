@@ -6,7 +6,8 @@
 import React from 'react';
 
 import { faker } from '@faker-js/faker';
-import { act, screen } from '@testing-library/react';
+import { act, screen, waitFor } from '@testing-library/react';
+import { renderHook } from '@testing-library/react-hooks';
 import { noop, times } from 'lodash';
 
 import { FOLDER_VIEW } from '../../carbonio-ui-commons/constants';
@@ -23,9 +24,15 @@ import {
 import { TIMEOUTS, API_REQUEST_STATUS } from '../../constants';
 import { useUiUtilities } from '../../hooks/use-ui-utilities';
 import * as getMsgsForPrint from '../../store/actions/get-msg-for-print';
+import { updateConversations, useConversationById } from '../../store/zustand/message-store/store';
 import { generateConversation } from '../../tests/generators/generateConversation';
 import { generateStore } from '../../tests/generators/store';
-import { ConvActionRequest, Conversation, SearchRequestStatus } from '../../types';
+import {
+	ConvActionRequest,
+	ConvActionResponse,
+	Conversation,
+	SearchRequestStatus
+} from '../../types';
 import {
 	printConversation,
 	setConversationsFlag,
@@ -125,6 +132,45 @@ describe('Conversation actions calls', () => {
 			expect(requestParameter.action.op).toBe('flag');
 			expect(requestParameter.action.l).toBeUndefined();
 			expect(requestParameter.action.tn).toBeUndefined();
+		});
+
+		test('conversations in zustand search store should be flagged', async () => {
+			populateFoldersStore({ view: FOLDER_VIEW.message });
+			updateConversations(
+				[
+					generateConversation({ id: '1', isFlagged: false }),
+					generateConversation({ id: '2', isFlagged: false })
+				],
+				0
+			);
+			const store = generateStore();
+			const action = setConversationsFlag({
+				ids: ['1', '2'],
+				dispatch: store.dispatch,
+				value: false
+			});
+			const apiInterceptor = createSoapAPIInterceptor<ConvActionRequest, ConvActionResponse>(
+				'ConvAction',
+				{
+					action: {
+						id: 'operationId',
+						op: 'flag'
+					}
+				}
+			);
+			act(() => {
+				action.onClick();
+			});
+
+			await apiInterceptor;
+			const conversation1result = renderHook(() => useConversationById('1')).result;
+			const conversation2Result = renderHook(() => useConversationById('2')).result;
+			await waitFor(() => {
+				expect(conversation1result.current.flagged).toBe(true);
+			});
+			await waitFor(() => {
+				expect(conversation2Result.current.flagged).toBe(true);
+			});
 		});
 	});
 

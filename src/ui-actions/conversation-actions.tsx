@@ -16,7 +16,9 @@ import { ConversationActionsDescriptors } from '../constants';
 import { useUiUtilities } from '../hooks/use-ui-utilities';
 import { convAction, getMsgsForPrint } from '../store/actions';
 import { AppDispatch, StoreProvider } from '../store/redux';
+import { updateConversationsFlaggedStatus } from '../store/zustand/message-store/store';
 import type {
+	ConvActionOperation,
 	ConvActionReturnType,
 	Conversation,
 	ExtraWindowCreationParams,
@@ -57,12 +59,18 @@ export function setConversationsFlag({
 		icon: value ? 'Flag' : 'FlagOutline',
 		label: value ? t('action.unflag', 'Add flag') : t('action.flag', 'Remove flag'),
 		onClick: (): void => {
+			const operation: ConvActionOperation = `${value ? '!' : ''}flag`;
 			dispatch(
 				convAction({
-					operation: `${value ? '!' : ''}flag`,
+					operation,
 					ids
 				})
-			);
+			).then((response) => {
+				if (response.type.includes('fulfilled')) {
+					const isFlagged = !operation.startsWith('!');
+					updateConversationsFlaggedStatus(ids, isFlagged);
+				}
+			});
 		}
 	};
 }

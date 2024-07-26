@@ -10,6 +10,7 @@ import {
 	removeMessages,
 	updateConversationMessages,
 	updateConversations,
+	updateConversationsFlaggedStatus,
 	updateConversationStatus,
 	updateMessages,
 	updateMessagesFlaggedStatus,
@@ -59,6 +60,21 @@ describe('message store', () => {
 
 			expect(result.current.messages).toHaveLength(1);
 			expect(result.current.messages[0]).toBe(message);
+		});
+
+		it('should flag all conversations', () => {
+			updateConversations(
+				[
+					generateConversation({ id: '1', isFlagged: false }),
+					generateConversation({ id: '2', isFlagged: false })
+				],
+				0
+			);
+
+			updateConversationsFlaggedStatus(['1', '2'], true);
+
+			expect(renderHook(() => useConversationById('1')).result.current.flagged).toBe(true);
+			expect(renderHook(() => useConversationById('2')).result.current.flagged).toBe(true);
 		});
 	});
 

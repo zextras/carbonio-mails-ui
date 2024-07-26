@@ -160,3 +160,16 @@ export function removeMessages(messageIds: Array<string>): void {
 		})
 	);
 }
+
+export function updateConversationsFlaggedStatus(
+	conversationIds: Array<string>,
+	isFlagged: boolean
+): void {
+	useMessageStore.setState(
+		produce((state: MessageStoreState) => {
+			conversationIds.forEach((conversationId) => {
+				state.populatedItems.conversations[conversationId].flagged = isFlagged;
+			});
+		})
+	);
+}
