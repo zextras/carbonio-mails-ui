@@ -3,9 +3,11 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import { act } from '@testing-library/react';
 import { renderHook } from '@testing-library/react-hooks';
 
 import {
+	removeMessages,
 	updateConversationMessages,
 	updateConversations,
 	updateConversationStatus,
@@ -105,6 +107,26 @@ describe('message store', () => {
 
 			expect(renderHook(() => useMessageById('1')).result.current.read).toBe(true);
 			expect(renderHook(() => useMessageById('2')).result.current.read).toBe(true);
+		});
+
+		it('should delete all messages', () => {
+			act(() => {
+				updateMessages([generateMessage({ id: '1' }), generateMessage({ id: '2' })], 0);
+			});
+
+			const { result: _message1 } = renderHook(() => useMessageById('1'));
+			expect(_message1.current).not.toBeUndefined();
+			const { result: _message2 } = renderHook(() => useMessageById('1'));
+			expect(_message2.current).not.toBeUndefined();
+
+			act(() => {
+				removeMessages(['1', '2']);
+			});
+
+			const { result: message1 } = renderHook(() => useMessageById('1'));
+			expect(message1.current).toBeUndefined();
+			const { result: message2 } = renderHook(() => useMessageById('2'));
+			expect(message2.current).toBeUndefined();
 		});
 	});
 });
