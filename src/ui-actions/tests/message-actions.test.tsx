@@ -499,6 +499,7 @@ describe('Messages actions calls', () => {
 
 			const requestParameter = await apiInterceptor;
 			expect(requestParameter.action.id).toBe(msgIds.join(','));
+			// TODO: why tests called mark as spam results in a call wih "!spam"? See also the comment in message-actions
 			expect(requestParameter.action.op).toBe('!spam');
 			expect(requestParameter.action.l).toBeUndefined();
 			expect(requestParameter.action.f).toBeUndefined();
@@ -521,7 +522,7 @@ describe('Messages actions calls', () => {
 			const action = setMsgAsSpam({
 				ids: ['1', '2'],
 				dispatch: store.dispatch,
-				value: true,
+				value: false,
 				folderId: FOLDERS.INBOX
 			});
 			const apiInterceptor = createSoapAPIInterceptor<MsgActionRequest, MsgActionResponse>(
@@ -628,6 +629,51 @@ describe('Messages actions calls', () => {
 			expect(requestParameter.action.l).toBeUndefined();
 			expect(requestParameter.action.f).toBeUndefined();
 			expect(requestParameter.action.tn).toBeUndefined();
+		});
+		test('multiple messages in zustand search store', async () => {
+			populateFoldersStore({ view: FOLDER_VIEW.message });
+			updateMessages(
+				[
+					generateMessage({ id: '1', folderId: FOLDERS.SPAM }),
+					generateMessage({ id: '2', folderId: FOLDERS.SPAM })
+				],
+				0
+			);
+			const store = generateStore();
+			const {
+				result: { current: setMsgAsSpam }
+			} = setupHook(useSetMsgAsSpam);
+			const action = setMsgAsSpam({
+				ids: ['1', '2'],
+				dispatch: store.dispatch,
+				value: true,
+				folderId: FOLDERS.INBOX
+			});
+			const apiInterceptor = createSoapAPIInterceptor<MsgActionRequest, MsgActionResponse>(
+				'MsgAction',
+				{
+					action: {
+						id: 'whatever',
+						op: '!spam'
+					}
+				}
+			);
+
+			act(() => {
+				action.onClick();
+				jest.advanceTimersByTime(TIMEOUTS.SET_AS_SPAM);
+			});
+
+			await apiInterceptor;
+
+			const msg1Result = renderHook(() => useMessageById('1')).result;
+			const msg2Result = renderHook(() => useMessageById('2')).result;
+			await waitFor(() => {
+				expect(msg1Result.current.parent).toBe(FOLDERS.INBOX);
+			});
+			await waitFor(() => {
+				expect(msg2Result.current.parent).toBe(FOLDERS.INBOX);
+			});
 		});
 	});
 

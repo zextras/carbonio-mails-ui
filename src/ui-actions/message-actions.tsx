@@ -148,14 +148,19 @@ export const useSetMsgAsSpam = (): ((arg: MessageActionPropType) => MessageActio
 	const setAsSpam = useCallback(
 		({ notCanceled, value, dispatch, ids, shouldReplaceHistory, folderId }: SetAsSpamProps) => {
 			if (!notCanceled) return;
+			const operation: MsgActionOperation = `${value ? '!' : ''}spam`;
 			dispatch(
 				msgAction({
-					operation: `${value ? '!' : ''}spam`,
+					operation,
 					ids
 				})
 			).then((res) => {
 				if (res.type.includes('fulfilled')) {
-					updateMessagesParent(FOLDERS.SPAM, ids);
+					if (!operation.startsWith('!')) {
+						updateMessagesParent(FOLDERS.SPAM, ids);
+					} else {
+						updateMessagesParent(FOLDERS.INBOX, ids);
+					}
 					if (shouldReplaceHistory) {
 						replaceHistory(`/folder/${folderId}`);
 					}
