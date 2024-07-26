@@ -23,12 +23,16 @@ import { getMsgCall, getMsgsForPrint, msgAction } from '../store/actions';
 import { sendMsg, sendMsgFromEditor } from '../store/actions/send-msg';
 import { extractBody } from '../store/editor-slice-utils';
 import { AppDispatch, StoreProvider } from '../store/redux';
-import { updateMessagesParent } from '../store/zustand/message-store/store';
+import {
+	updateMessagesFlaggedStatus,
+	updateMessagesParent
+} from '../store/zustand/message-store/store';
 import type {
 	MailMessage,
 	MailsEditorV2,
 	MessageAction,
 	MessageActionReturnType,
+	MsgActionOperation,
 	MsgActionParameters,
 	MsgActionResult
 } from '../types';
@@ -107,12 +111,18 @@ export function setMsgFlag({
 		label: value ? t('action.unflag', 'Remove flag') : t('action.flag', 'Add flag'),
 		onClick: (ev): void => {
 			if (ev) ev.preventDefault();
+			const operation: MsgActionOperation = `${value ? '!' : ''}flag`;
 			dispatch(
 				msgAction({
-					operation: `${value ? '!' : ''}flag`,
+					operation,
 					ids
 				})
-			);
+			).then((response) => {
+				if (response.type.includes('fulfilled')) {
+					const isFlagged = !operation.startsWith('!');
+					updateMessagesFlaggedStatus(ids, isFlagged);
+				}
+			});
 		}
 	};
 }

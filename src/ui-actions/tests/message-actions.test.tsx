@@ -2,7 +2,7 @@
 import React from 'react';
 
 import { faker } from '@faker-js/faker';
-import { act, screen, within } from '@testing-library/react';
+import { act, screen, waitFor, within } from '@testing-library/react';
 import { renderHook } from '@testing-library/react-hooks';
 import { addBoard } from '@zextras/carbonio-shell-ui';
 import { times } from 'lodash';
@@ -140,6 +140,47 @@ describe('Messages actions calls', () => {
 			expect(requestParameter.action.l).toBeUndefined();
 			expect(requestParameter.action.f).toBeUndefined();
 			expect(requestParameter.action.tn).toBeUndefined();
+		});
+
+		test('Multiple messages in search', async () => {
+			populateFoldersStore({ view: FOLDER_VIEW.message });
+			updateMessages(
+				[
+					generateMessage({ id: '1', isFlagged: false }),
+					generateMessage({ id: '2', isFlagged: false })
+				],
+				0
+			);
+			const store = generateStore();
+			const action = setMsgFlag({
+				ids: ['1', '2'],
+				dispatch: store.dispatch,
+				value: false
+			});
+			const apiInterceptor = createSoapAPIInterceptor<MsgActionRequest, MsgActionResponse>(
+				'MsgAction',
+				{
+					action: {
+						id: 'someId',
+						op: 'flag'
+					}
+				}
+			);
+
+			act(() => {
+				action.onClick();
+			});
+
+			await apiInterceptor;
+
+			const msg1Result = renderHook(() => useMessageById('1')).result;
+			const msg2Result = renderHook(() => useMessageById('2')).result;
+			await waitFor(() => {
+				expect(msg1Result.current.flagged).toBe(true);
+			});
+			await waitFor(() => {
+				expect(msg2Result.current.flagged).toBe(true);
+			});
 		});
 	});
 

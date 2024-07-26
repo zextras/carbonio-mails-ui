@@ -10,6 +10,7 @@ import {
 	updateConversations,
 	updateConversationStatus,
 	updateMessages,
+	updateMessagesFlaggedStatus,
 	updateMessagesParent,
 	useConversationById,
 	useConversationStatus,
@@ -76,6 +77,21 @@ describe('message store', () => {
 
 			expect(renderHook(() => useMessageById('1')).result.current.parent).toBe(newFolder);
 			expect(renderHook(() => useMessageById('2')).result.current.parent).toBe(newFolder);
+		});
+
+		it('should flag all messages', () => {
+			updateMessages(
+				[
+					generateMessage({ id: '1', isFlagged: false }),
+					generateMessage({ id: '2', isFlagged: false })
+				],
+				0
+			);
+
+			updateMessagesFlaggedStatus(['1', '2'], true);
+
+			expect(renderHook(() => useMessageById('1')).result.current.flagged).toBe(true);
+			expect(renderHook(() => useMessageById('2')).result.current.flagged).toBe(true);
 		});
 	});
 });
