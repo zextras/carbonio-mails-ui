@@ -75,11 +75,14 @@ export const ApplyFilterModal: FC<ApplyFilterModalProps> = ({ criteria, closeMod
 			.catch((err) => {
 				createSnackbar({
 					key: `applyFilter-${criteria.filterName}-error`,
-					type: 'error',
-					label: t('messages.snackbar.apply_filter_rules_error', {
-						filterName: criteria.filterName,
-						defaultValue: "An error occurred while applying the filter '{{filterName}}'"
-					}),
+					type: 'info',
+					label:
+						err && err !== ''
+							? err
+							: t(
+									'messages.snackbar.apply_filter_error',
+									`Filter is still running on the server but it’s taking too much time to report the affected items. The filter keeps working on the server without additional information`
+								),
 					replace: true,
 					autoHideTimeout: TIMEOUTS.SNACKBAR_DEFAULT_TIMEOUT,
 					hideButton: true
@@ -180,6 +183,11 @@ export const ApplyFilterModal: FC<ApplyFilterModalProps> = ({ criteria, closeMod
 							>
 								<TextStyler bold>{{ involvedMessagesCount }} messages</TextStyler> will be processed
 								inside the selected folder.
+							</Trans>
+						</Text>
+						<Text>
+							<Trans t={t} i18nKey="modals.apply_filters.label_confirm_msg">
+								The more messages are present, the more time will be required to apply the filter.
 							</Trans>
 						</Text>
 						<Text>
