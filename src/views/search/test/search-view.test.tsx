@@ -135,7 +135,6 @@ describe('SearchView', () => {
 			};
 			const settings = generateSettings(customSettings);
 			jest.spyOn(hooks, 'useUserSettings').mockReturnValue(settings);
-
 			const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
 			const searchViewProps: SearchViewProps = {
 				useQuery: () => [[queryChip], noop],
@@ -146,17 +145,16 @@ describe('SearchView', () => {
 			setupTest(<SearchView {...searchViewProps} />, {
 				store
 			});
+
 			const conversation = await screen.findByText('conversations Subject');
 			expect(conversation).toBeInTheDocument();
 		});
 
 		it('should display the number of messages in a conversation when soap API fulfilled', async () => {
 			const store = generateStore();
-			const defaultConversation = getSoapConversation('123');
 			const message1 = getSoapConversationMessage('100', '123');
 			const message2 = getSoapConversationMessage('200', '123');
-
-			const conversation = { ...defaultConversation, n: 2, m: [message1, message2] };
+			const conversation = { ...getSoapConversation('123'), n: 2, m: [message1, message2] };
 			createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
 				c: [conversation],
 				more: false

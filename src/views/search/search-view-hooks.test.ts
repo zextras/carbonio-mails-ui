@@ -36,6 +36,7 @@ describe('search view hooks', () => {
 		});
 		// eslint-disable-next-line @typescript-eslint/ban-types
 		const useDisableSearch = (): [boolean, Function] => [false, noop];
+
 		const { result, waitFor } = renderHook(() =>
 			useRunSearch({
 				query: [queryChip],
@@ -45,6 +46,7 @@ describe('search view hooks', () => {
 				isSharedFolderIncluded: false
 			})
 		);
+
 		await searchInterceptor;
 		await waitFor(() => {
 			expect(result.current.searchResults.conversationIds.size).toBe(0);
