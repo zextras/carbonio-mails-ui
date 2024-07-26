@@ -56,25 +56,27 @@ export function updateConversations(
 	conversations: Array<NormalizedConversation>,
 	offset: number
 ): void {
-	useMessageStore.setState((state: MessageStoreState) => ({
-		search: {
-			...state.search,
-			status: API_REQUEST_STATUS.fulfilled,
-			conversationIds: new Set(conversations.map((c) => c.id))
-		},
-		populatedItems: {
-			...state.populatedItems,
-			offset,
-			conversations: conversations.reduce(
+	useMessageStore.setState(
+		produce((state: MessageStoreState) => {
+			state.search.status = API_REQUEST_STATUS.fulfilled;
+			state.search.conversationIds = new Set(conversations.map((c) => c.id));
+			state.search.offset = offset;
+			state.populatedItems.conversations = conversations.reduce(
 				(acc, conv) => {
 					// eslint-disable-next-line no-param-reassign
 					acc[conv.id] = conv;
 					return acc;
 				},
 				{} as Record<string, NormalizedConversation>
-			)
-		}
-	}));
+			);
+			// TODO: fix adding the messages from conversation to store
+			// conversations.forEach((conversation) => {
+			// 	conversation.messages.forEach(
+			// 		(message) => (state.populatedItems.messages[message.id] = message)
+			// 	);
+			// });
+		})
+	);
 }
 
 export function updateMessages(
