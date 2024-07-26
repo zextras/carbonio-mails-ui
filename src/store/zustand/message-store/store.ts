@@ -69,12 +69,6 @@ export function updateConversations(
 				},
 				{} as Record<string, NormalizedConversation>
 			);
-			// TODO: fix adding the messages from conversation to store
-			// conversations.forEach((conversation) => {
-			// 	conversation.messages.forEach(
-			// 		(message) => (state.populatedItems.messages[message.id] = message)
-			// 	);
-			// });
 		})
 	);
 }

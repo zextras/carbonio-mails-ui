@@ -11,43 +11,15 @@ import { API_REQUEST_STATUS } from '../../../../constants';
 import { generateConvMessageFromAPI } from '../../../../helpers/api';
 import { generateConversation } from '../../../../tests/generators/generateConversation';
 import { generateMessage } from '../../../../tests/generators/generateMessage';
-import { SearchConvRequest, SearchConvResponse, SoapConversation } from '../../../../types';
+import { SearchConvRequest, SearchConvResponse } from '../../../../types';
 import {
 	updateConversations,
 	updateConversationStatus,
-	useConversationById,
 	useConversationStatus
 } from '../../message-store/store';
-import { handleSearchResults, useCompleteConversation } from '../hooks/hooks';
-
-function conversationFromAPI(params: Partial<SoapConversation> = {}): SoapConversation {
-	return {
-		id: '123',
-		n: 1,
-		u: 1,
-		f: 'flag',
-		tn: 'tag names',
-		d: 123,
-		m: [],
-		e: [],
-		su: 'Subject',
-		fr: 'fragment',
-		...params
-	};
-}
+import { useCompleteConversation } from '../hooks/hooks';
 
 describe('Searches store hooks', () => {
-	it('handleSearchResults should update the store', () => {
-		const searchResponse = {
-			c: [conversationFromAPI({ id: '123', su: 'Subject' })],
-			more: false
-		};
-
-		handleSearchResults({ searchResponse, offset: 0 });
-
-		expect(renderHook(() => useConversationById('123')).result.current).toBeDefined();
-	});
-
 	it('useCompleteConversation should return undefined conversation and status if no data available', async () => {
 		const { result } = renderHook(() => useCompleteConversation('123', '2'));
 

@@ -6,10 +6,13 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import {
+	ErrorSoapBodyResponse,
+	getTags,
 	QueryChip,
 	replaceHistory,
 	SEARCH_APP_ID,
 	setAppContext,
+	Tags,
 	useUserSettings
 } from '@zextras/carbonio-shell-ui';
 import { includes, map, reduce } from 'lodash';
@@ -19,9 +22,14 @@ import { searchSoapApi } from '../../api/search';
 import { useFoldersMap } from '../../carbonio-ui-commons/store/zustand/folder';
 import type { Folder } from '../../carbonio-ui-commons/types';
 import { LIST_LIMIT, MAILS_ROUTE } from '../../constants';
-import { useSearchResults } from '../../store/zustand/message-store/store';
-import { handleSearchResults } from '../../store/zustand/search/hooks/hooks';
-import { SearchSliceState } from '../../types';
+import { normalizeConversation } from '../../normalizations/normalize-conversation';
+import { normalizeMailMessageFromSoap } from '../../normalizations/normalize-message';
+import {
+	updateConversations,
+	updateMessages,
+	useSearchResults
+} from '../../store/zustand/message-store/store';
+import { IncompleteMessage, MailMessage, SearchResponse, SearchSliceState } from '../../types';
 
 type RunSearchCallback = {
 	query: QueryChip[];
@@ -32,6 +40,61 @@ type RunSearchCallback = {
 	invalidQueryTooltip: string;
 	isSharedFolderIncluded: boolean;
 };
+
+function handleFulFilledConversationResults({
+	searchResponse,
+	offset,
+	tags
+}: {
+	searchResponse: SearchResponse;
+	offset: number;
+	tags: Tags;
+}): void {
+	const conversations = map(searchResponse.c, (conv) => normalizeConversation({ c: conv, tags }));
+	const messages: (IncompleteMessage | MailMessage)[] = [];
+	searchResponse.c?.forEach((soapConversation) =>
+		soapConversation.m.forEach((soapMessage) =>
+			messages.push(normalizeMailMessageFromSoap(soapMessage, false))
+		)
+	);
+	updateConversations(conversations, offset);
+	updateMessages(messages, offset);
+}
+
+function handleFulFilledMessagesResults({
+	searchResponse,
+	offset
+}: {
+	searchResponse: SearchResponse;
+	offset: number;
+}): void {
+	const normalizedMessages = map(searchResponse.m, (msg) =>
+		normalizeMailMessageFromSoap(msg, false)
+	);
+
+	updateMessages(normalizedMessages, offset);
+}
+
+function handleSearchResults({
+	searchResponse,
+	offset
+}: {
+	searchResponse: SearchResponse | ErrorSoapBodyResponse;
+	offset: number;
+}): void {
+	if ('Fault' in searchResponse) {
+		return;
+	}
+	const tags = getTags();
+
+	if (searchResponse.c) {
+		handleFulFilledConversationResults({ searchResponse, offset, tags });
+	}
+
+	if (searchResponse.m) {
+		handleFulFilledMessagesResults({ searchResponse, offset });
+	}
+}
 
 export function useIsMessageView(): boolean {
 	const settings = useUserSettings();
