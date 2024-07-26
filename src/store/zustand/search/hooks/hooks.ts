@@ -6,7 +6,7 @@
 
 import { useEffect } from 'react';
 
-import { type ErrorSoapBodyResponse, getTags, Tags } from '@zextras/carbonio-shell-ui';
+import { ErrorSoapBodyResponse, getTags, Tags } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
 
 import { searchConvSoapAPI } from '../../../../api/search-conv';
@@ -76,10 +76,7 @@ export function handleSearchResults({
 	}
 }
 
-export function handleSearchConvResponse(
-	conversationId: string,
-	response: SearchConvResponse
-): void {
+function handleSearchConvResponse(conversationId: string, response: SearchConvResponse): void {
 	const messages = map(response?.m ?? [], (msg) => normalizeMailMessageFromSoap(msg, true));
 	updateConversationMessages(conversationId, messages);
 }
