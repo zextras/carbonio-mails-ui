@@ -25,7 +25,8 @@ import { extractBody } from '../store/editor-slice-utils';
 import { AppDispatch, StoreProvider } from '../store/redux';
 import {
 	updateMessagesFlaggedStatus,
-	updateMessagesParent
+	updateMessagesParent,
+	updateMessagesReadStatus
 } from '../store/zustand/message-store/store';
 import type {
 	MailMessage,
@@ -80,15 +81,21 @@ export const setMsgRead = ({
 			: t('action.mark_as_read', 'Mark as read'),
 		onClick: (ev): void => {
 			if (ev) ev.preventDefault();
+			// TODO: the logic is inverted: setMsgRead with value true results in !read, why?
+			const operation: MsgActionOperation = `${value ? '!' : ''}read`;
 			dispatch(
 				msgAction({
-					operation: `${value ? '!' : ''}read`,
+					operation,
 					ids
 				})
 			).then((res) => {
 				deselectAll && deselectAll();
-				if (res.type.includes('fulfilled') && shouldReplaceHistory) {
-					replaceHistory(`/folder/${folderId}`);
+				if (res.type.includes('fulfilled')) {
+					const isRead = !operation.startsWith('!');
+					updateMessagesReadStatus(ids, isRead);
+					if (shouldReplaceHistory) {
+						replaceHistory(`/folder/${folderId}`);
+					}
 				}
 			});
 		}

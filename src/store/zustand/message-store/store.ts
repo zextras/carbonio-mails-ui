@@ -153,3 +153,12 @@ export function updateMessagesFlaggedStatus(messageIds: Array<string>, isFlagged
 		})
 	);
 }
+export function updateMessagesReadStatus(messageIds: Array<string>, isRead: boolean): void {
+	useMessageStore.setState(
+		produce((state: MessageStoreState) => {
+			messageIds.forEach((messageId) => {
+				state.populatedItems.messages[messageId].read = isRead;
+			});
+		})
+	);
+}

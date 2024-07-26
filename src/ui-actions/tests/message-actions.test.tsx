@@ -284,6 +284,44 @@ describe('Messages actions calls', () => {
 			expect(requestParameter.action.tn).toBeUndefined();
 		});
 
+		test('multiple messages are mark as read in search zustand store', async () => {
+			populateFoldersStore({ view: FOLDER_VIEW.message });
+			updateMessages(
+				[generateMessage({ id: '1', isRead: false }), generateMessage({ id: '2', isRead: false })],
+				0
+			);
+			const store = generateStore();
+			const action = setMsgRead({
+				ids: ['1', '2'],
+				dispatch: store.dispatch,
+				value: false
+			});
+
+			const apiInterceptor = createSoapAPIInterceptor<MsgActionRequest, MsgActionResponse>(
+				'MsgAction',
+				{
+					action: {
+						id: 'readOperationId',
+						op: 'read'
+					}
+				}
+			);
+
+			act(() => {
+				action.onClick();
+			});
+
+			await apiInterceptor;
+			const msg1Result = renderHook(() => useMessageById('1')).result;
+			const msg2Result = renderHook(() => useMessageById('2')).result;
+			await waitFor(() => {
+				expect(msg1Result.current.read).toBe(true);
+			});
+			await waitFor(() => {
+				expect(msg2Result.current.read).toBe(true);
+			});
+		});
+
 		test('Multiple ids', async () => {
 			populateFoldersStore({ view: FOLDER_VIEW.message });
 			const msgs: Array<MailMessage> = times(10, () => generateMessage({}));

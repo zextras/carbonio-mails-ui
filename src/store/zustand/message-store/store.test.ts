@@ -12,6 +12,7 @@ import {
 	updateMessages,
 	updateMessagesFlaggedStatus,
 	updateMessagesParent,
+	updateMessagesReadStatus,
 	useConversationById,
 	useConversationStatus,
 	useMessageById
@@ -92,6 +93,18 @@ describe('message store', () => {
 
 			expect(renderHook(() => useMessageById('1')).result.current.flagged).toBe(true);
 			expect(renderHook(() => useMessageById('2')).result.current.flagged).toBe(true);
+		});
+
+		it('should mark as read all messages', () => {
+			updateMessages(
+				[generateMessage({ id: '1', isRead: false }), generateMessage({ id: '2', isRead: false })],
+				0
+			);
+
+			updateMessagesReadStatus(['1', '2'], true);
+
+			expect(renderHook(() => useMessageById('1')).result.current.read).toBe(true);
+			expect(renderHook(() => useMessageById('2')).result.current.read).toBe(true);
 		});
 	});
 });
