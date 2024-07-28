@@ -48,6 +48,15 @@ function getRequestForProps(props: PropsMods | undefined, appId: string): string
 		: '';
 }
 
+function getRequestForPrefs(prefs: PrefsMods | undefined): string {
+	return prefs
+		? `<ModifyPrefsRequest xmlns="urn:zimbraAccount">${map(
+				prefs,
+				(value, key) => `<pref name="${key}">${value}</pref>`
+			).join('')}</ModifyPrefsRequest>`
+		: '';
+}
+
 function getRequestForAmavisSendersListAttrs(attrs: AttrsMods | undefined): string {
 	return attrs?.amavisWhitelistSender || attrs?.amavisBlacklistSender
 		? `<ModifyWhiteBlackListRequest xmlns="urn:zimbraAccount">${
@@ -94,6 +103,7 @@ export const saveSettings = (
 		'Batch',
 		`<BatchRequest xmlns="urn:zimbra" onerror="stop">
 				${getRequestForProps(mods.props, appId)}
+                ${getRequestForPrefs(mods.prefs)}   
 				${getRequestForAmavisSendersListAttrs(mods.attrs)}
 				${getRequestForIdentities(mods.identity)}
 		</BatchRequest>`
