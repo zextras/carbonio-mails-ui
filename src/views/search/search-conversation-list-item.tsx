@@ -93,11 +93,16 @@ export const SearchConversationListItem: FC<SearchConversationListItemProps> = m
 		const dispatch = useAppDispatch();
 		const [open, setOpen] = useState(false);
 		const accounts = useUserAccounts();
+
 		const messages = useAppSelector(selectMessages);
-		const isConversation = 'messages' in (item || {});
+
 		const { createWindow } = useGlobalExtraWindowManager();
 
-		const folderParent = getFolderParentId({ folderId: folderId ?? '', isConversation, item });
+		const folderParent = getFolderParentId({
+			folderId: folderId ?? '',
+			isConversation: true,
+			item
+		});
 
 		const conversationStatus = useAppSelector((state: MailsStateType) =>
 			selectConversationExpandedStatus(state, item.id)

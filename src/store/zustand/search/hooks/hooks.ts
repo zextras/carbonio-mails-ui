@@ -29,6 +29,21 @@ type ConversationWithStatus = {
 	conversationStatus: SearchRequestStatus;
 };
 
+export function retrieveConversation(conversationId: string, folderId: string): void {
+	updateConversationStatus(conversationId, API_REQUEST_STATUS.pending);
+	searchConvSoapAPI({ conversationId, fetch: 'all', folderId })
+		.then((response) => {
+			if ('Fault' in response) {
+				updateConversationStatus(conversationId, API_REQUEST_STATUS.error);
+				return;
+			}
+			handleSearchConvResponse(conversationId, response);
+		})
+		.catch(() => {
+			updateConversationStatus(conversationId, API_REQUEST_STATUS.error);
+		});
+}
+
 export function useCompleteConversation(
 	conversationId: string,
 	folderId: string
@@ -37,18 +52,7 @@ export function useCompleteConversation(
 	const conversationStatus = useConversationStatus(conversationId);
 	useEffect(() => {
 		if (conversation && !conversationStatus) {
-			updateConversationStatus(conversationId, API_REQUEST_STATUS.pending);
-			searchConvSoapAPI({ conversationId, fetch: 'all', folderId })
-				.then((response) => {
-					if ('Fault' in response) {
-						updateConversationStatus(conversationId, API_REQUEST_STATUS.error);
-						return;
-					}
-					handleSearchConvResponse(conversationId, response);
-				})
-				.catch(() => {
-					updateConversationStatus(conversationId, API_REQUEST_STATUS.error);
-				});
+			retrieveConversation(conversationId, folderId);
 		}
 	}, [conversation, conversationId, conversationStatus, folderId]);
 	return {

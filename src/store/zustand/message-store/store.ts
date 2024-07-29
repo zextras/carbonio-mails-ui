@@ -48,6 +48,13 @@ export function useSearchResults(): SearchSliceState['search'] {
 	return useMessageStore((state) => state.search);
 }
 
+export function useConversationMessages(
+	conversationId: string
+): Array<IncompleteMessage | MailMessage> {
+	// TODO: implement me!
+	return [];
+}
+
 export function useConversationStatus(id: string): SearchRequestStatus {
 	return useMessageStore((state) => state.populatedItems.conversationsStatus?.[id]);
 }
