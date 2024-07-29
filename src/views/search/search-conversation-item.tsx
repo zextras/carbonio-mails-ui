@@ -5,9 +5,7 @@
  */
 import React from 'react';
 
-import { noop } from 'lodash';
-
-import { SearchConversationListItemComponent } from './search-conversation-list-item-component';
+import { SearchConversationListItem } from './search-conversation-list-item';
 import { CustomListItem } from '../../carbonio-ui-commons/components/list/list-item';
 import { useConversationById } from '../../store/zustand/message-store/store';
 
@@ -39,18 +37,18 @@ export const SearchConversationItem = ({
 			background={'transparent'}
 		>
 			{(visible: boolean): React.JSX.Element => (
-				<SearchConversationListItemComponent
+				<SearchConversationListItem
+					activeItemId={itemId}
 					item={conversation}
 					selected={isSelected}
 					selecting={isSelectModeOn}
-					active={active}
 					toggle={toggle}
-					activeItemId={itemId}
+					active={active}
 					isSearchModule
+					isConvChildren
 					deselectAll={deselectAll}
-					folderId=""
+					folderId={''}
 					visible={visible}
-					setDraggedIds={noop}
 				/>
 			)}
 		</CustomListItem>
