@@ -7,7 +7,10 @@
 import produce from 'immer';
 import { create } from 'zustand';
 
-import { createMessageSlice as createPopulatedItemsSlice } from './message-slice';
+import {
+	createMessageSlice as createPopulatedItemsSlice,
+	POPULATED_ITEMS_INITIAL_STATE
+} from './message-slice';
 import { createSearchSlice, SEARCH_INITIAL_STATE } from './search-slice';
 import { API_REQUEST_STATUS } from '../../../constants';
 import {
@@ -34,6 +37,7 @@ export function resetSearch(): void {
 	useMessageStore.setState(
 		produce((state: MessageStoreState) => {
 			state.search = SEARCH_INITIAL_STATE;
+			state.populatedItems = POPULATED_ITEMS_INITIAL_STATE;
 		})
 	);
 }

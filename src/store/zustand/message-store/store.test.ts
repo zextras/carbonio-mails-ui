@@ -8,6 +8,7 @@ import { renderHook } from '@testing-library/react-hooks';
 
 import {
 	removeMessages,
+	resetSearch,
 	updateConversationMessages,
 	updateConversations,
 	updateConversationsFlaggedStatus,
@@ -97,6 +98,18 @@ describe('message store', () => {
 
 			expect(renderHook(() => useConversationById('1')).result.current.flagged).toBe(true);
 			expect(renderHook(() => useConversationById('2')).result.current.flagged).toBe(true);
+		});
+
+		it('should reset the searches and populated items', () => {
+			updateConversations([generateConversation({ id: '1', messages: [] })], 0);
+			updateConversationStatus('1', API_REQUEST_STATUS.fulfilled);
+			updateMessages([generateMessage({ id: '100' })], 0);
+
+			resetSearch();
+
+			expect(renderHook(() => useConversationById('1')).result.current).toBeUndefined();
+			expect(renderHook(() => useConversationStatus('1')).result.current).toBeUndefined();
+			expect(renderHook(() => useMessageById('100')).result.current).toBeUndefined();
 		});
 
 		it('should flag conversation and all messages in it', () => {
