@@ -28,7 +28,6 @@ export const SearchConversationItem = ({
 	deselectAll
 }: SearchConversationItemProps): React.JSX.Element => {
 	const conversation = useConversationById(conversationId);
-	// TODO:  should we use an invisible item like in search-message-item ?
 	return (
 		<CustomListItem
 			active={active}
@@ -36,21 +35,27 @@ export const SearchConversationItem = ({
 			key={conversationId}
 			background={'transparent'}
 		>
-			{(visible: boolean): React.JSX.Element => (
-				<SearchConversationListItem
-					activeItemId={itemId}
-					item={conversation}
-					selected={isSelected}
-					selecting={isSelectModeOn}
-					toggle={toggle}
-					active={active}
-					isSearchModule
-					isConvChildren
-					deselectAll={deselectAll}
-					folderId={''}
-					visible={visible}
-				/>
-			)}
+			{(visible: boolean): React.JSX.Element =>
+				visible ? (
+					<SearchConversationListItem
+						activeItemId={itemId}
+						item={conversation}
+						selected={isSelected}
+						selecting={isSelectModeOn}
+						toggle={toggle}
+						active={active}
+						isSearchModule
+						isConvChildren
+						deselectAll={deselectAll}
+						folderId={''}
+					/>
+				) : (
+					<div
+						style={{ height: '4rem' }}
+						data-testid={`invisible-conversation-${conversationId}`}
+					/>
+				)
+			}
 		</CustomListItem>
 	);
 };
