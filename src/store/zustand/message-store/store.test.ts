@@ -17,6 +17,7 @@ import {
 	updateMessagesParent,
 	updateMessagesReadStatus,
 	useConversationById,
+	useConversationMessages,
 	useConversationStatus,
 	useMessageById
 } from './store';
@@ -60,6 +61,27 @@ describe('message store', () => {
 
 			expect(result.current.messages).toHaveLength(1);
 			expect(result.current.messages[0]).toBe(message);
+		});
+
+		it('should not override other conversation messages', async () => {
+			const conversation1Messages = [
+				generateMessage({ id: '1' }),
+				generateMessage({ id: '2' }),
+				generateMessage({ id: '3' })
+			];
+			const conversation1 = generateConversation({ id: '1', messages: conversation1Messages });
+			const conversation2Messages = [generateMessage({ id: '4' }), generateMessage({ id: '5' })];
+			const conversation2 = generateConversation({ id: '2', messages: conversation2Messages });
+			updateConversations([conversation1, conversation2], 0);
+			updateMessages([...conversation1Messages, ...conversation2Messages], 0);
+
+			updateConversationMessages('1', [generateMessage({ id: '100' })]);
+
+			const { result: conversation2StoreMessages } = renderHook(() => useConversationMessages('2'));
+			const messages2 = conversation2StoreMessages.current;
+			expect(messages2).toHaveLength(2);
+			expect(messages2[0].id).toBe('4');
+			expect(messages2[1].id).toBe('5');
 		});
 
 		it('should flag all conversations', () => {

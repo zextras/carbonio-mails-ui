@@ -116,13 +116,9 @@ export function updateConversationMessages(
 		produce(({ populatedItems }) => {
 			populatedItems.conversations[conversationId].messages = messages;
 			populatedItems.conversationsStatus[conversationId] = API_REQUEST_STATUS.fulfilled;
-			populatedItems.messages = messages.reduce(
-				(acc, msg) => {
-					acc[msg.id] = msg;
-					return acc;
-				},
-				{} as Record<string, MailMessage | IncompleteMessage>
-			);
+			messages.forEach((message) => {
+				populatedItems.messages[message.id] = message;
+			});
 		})
 	);
 }
