@@ -7,7 +7,7 @@ import React, { FC, useCallback, useLayoutEffect, useMemo, useRef, useState } fr
 
 import { Container } from '@zextras/carbonio-design-system';
 import { t, useAppContext } from '@zextras/carbonio-shell-ui';
-import { isEmpty, map, noop } from 'lodash';
+import { isEmpty, map } from 'lodash';
 import { useParams } from 'react-router-dom';
 
 import { AdvancedFilterButton } from './parts/advanced-filter-button';
@@ -157,7 +157,6 @@ const SearchConversationList: FC<SearchListProps> = ({
 					setIsSelectModeOn={setIsSelectModeOn}
 					loadMore={onScrollBottom}
 					isSearchModule
-					setDraggedIds={noop}
 					listRef={listRef}
 				/>
 			)}

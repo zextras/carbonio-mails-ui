@@ -4,13 +4,11 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React, { FC, RefObject, memo, useEffect, useMemo } from 'react';
+import React, { FC, memo, useMemo } from 'react';
 
 import { Container, Divider, Padding, Text } from '@zextras/carbonio-design-system';
-import { find, map, noop, reduce } from 'lodash';
-import styled from 'styled-components';
+import { noop } from 'lodash';
 
-import { SearchConversationListItemComponent } from './search-conversation-list-item-component';
 import ShimmerList from './shimmer-list';
 import { CustomList } from '../../carbonio-ui-commons/components/list/list';
 import { useFolder, useRoot } from '../../carbonio-ui-commons/store/zustand/folder/hooks';
@@ -18,51 +16,6 @@ import { NormalizedConversation } from '../../types';
 import { MultipleSelectionActionsPanel } from '../../ui-actions/multiple-selection-actions-panel';
 import { Breadcrumbs } from '../app/folder-panel/parts/breadcrumbs';
 import { getFolderPath } from '../app/folder-panel/parts/utils/utils';
-
-const DragImageContainer = styled.div`
-	position: absolute;
-	top: -312.5rem;
-	left: -312.5rem;
-	transform: translate(-100%, -100%);
-	width: 35vw;
-`;
-
-const DragItems: FC<{
-	conversations: Array<NormalizedConversation>;
-	draggedIds: Record<string, boolean> | undefined;
-}> = ({ conversations, draggedIds }) => {
-	const items = reduce(
-		draggedIds,
-		(acc: Array<NormalizedConversation>, v, k) => {
-			const obj = find(conversations, ['id', k]);
-			if (obj) {
-				return [...acc, obj];
-			}
-			return acc;
-		},
-		[]
-	);
-
-	return (
-		<>
-			{map(items, (item) => (
-				<SearchConversationListItemComponent
-					item={item}
-					key={item.id}
-					draggedIds={draggedIds}
-					activeItemId={item.id}
-					selected={false}
-					selecting={false}
-					toggle={noop}
-					selectedIds={[]}
-					deselectAll={noop}
-					folderId=""
-					setDraggedIds={noop}
-				/>
-			))}
-		</>
-	);
-};
 
 export type SearchConversationListComponentProps = {
 	// the text to display in the side panel
@@ -81,10 +34,6 @@ export type SearchConversationListComponentProps = {
 	folderId: string;
 	// the conversations to display
 	conversations: Array<NormalizedConversation>;
-	// the ids of the conversations being dragged
-	draggedIds?: Record<string, boolean>;
-	// the function to call when the user starts dragging a conversation
-	setDraggedIds?: (ids: Record<string, boolean>) => void;
 	// true if the component is in the search module
 	isSearchModule?: boolean;
 	// true if the user is in select mode
@@ -101,8 +50,6 @@ export type SearchConversationListComponentProps = {
 	selectAllModeOff: () => void;
 	// the function to call when the user toggles select mode
 	setIsSelectModeOn: (ev: boolean | ((prevState: boolean) => boolean)) => void;
-	// the reference to the dragged item
-	dragImageRef?: RefObject<HTMLInputElement>;
 	listRef?: React.RefObject<HTMLDivElement>;
 	hasMore?: boolean;
 };
@@ -121,19 +68,12 @@ export const SearchConversationListComponent: FC<SearchConversationListComponent
 		selectAllModeOff,
 		setIsSelectModeOn,
 		conversationsLoadingCompleted,
-		draggedIds,
-		setDraggedIds,
 		loadMore = noop,
 		listItems,
 		totalConversations,
-		dragImageRef,
 		listRef,
 		hasMore
 	}) {
-		useEffect(() => {
-			setDraggedIds && setDraggedIds(selected);
-		}, [selected, setDraggedIds]);
-
 		const folder = useFolder(folderId);
 		const root = useRoot(folder?.id ?? '');
 
@@ -204,9 +144,6 @@ export const SearchConversationListComponent: FC<SearchConversationListComponent
 								</Padding>
 							</Container>
 						)}
-						<DragImageContainer ref={dragImageRef}>
-							<DragItems conversations={conversations} draggedIds={draggedIds} />
-						</DragImageContainer>
 					</>
 				) : (
 					<ShimmerList count={totalConversations} delay={500} />
