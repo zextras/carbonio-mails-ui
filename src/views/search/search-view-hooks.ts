@@ -87,10 +87,7 @@ function handleSearchResults({
 		return;
 	}
 	const tags = getTags();
-
-	if (!searchResponse.c && !searchResponse.m) {
-		resetSearch();
-	}
+	resetSearch();
 
 	if (searchResponse.c) {
 		handleFulFilledConversationResults({ searchResponse, offset, tags });
