@@ -65,7 +65,6 @@ type SearchConversationListItemProps = {
 	selected: boolean;
 	selecting: boolean;
 	toggle: (id: string) => void;
-	visible?: boolean;
 	isConvChildren: boolean;
 	active?: boolean;
 	isSearchModule?: boolean;
