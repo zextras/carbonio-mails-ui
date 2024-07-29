@@ -10,7 +10,7 @@ import { ChipProps, ChipItem } from '@zextras/carbonio-design-system';
 import { QueryChip } from '@zextras/carbonio-shell-ui';
 
 import { SortBy } from '../../carbonio-ui-commons/types/folder';
-import { Conversation, NormalizedConversation } from '../conversations';
+import { Conversation } from '../conversations';
 import { KeywordState } from '../filters';
 import { MailMessage } from '../messages';
 import { ErrorType, SearchRequestStatus } from '../state';

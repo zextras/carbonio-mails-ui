@@ -45,7 +45,6 @@ import {
 } from '../../../../ui-actions/conversation-actions';
 import { useGlobalExtraWindowManager } from '../../../app/extra-windows/global-extra-window-manager';
 import { ConversationMessagesList } from '../../../app/folder-panel/conversations/conversation-messages-list';
-import { getFolderParentId } from '../../../app/folder-panel/conversations/utils';
 import { ItemAvatar } from '../../../app/folder-panel/parts/item-avatar';
 import { ListItemActionWrapper } from '../../../app/folder-panel/parts/list-item-actions-wrapper';
 import { RowInfo } from '../../../app/folder-panel/parts/row-info';
@@ -55,7 +54,7 @@ const CollapseElement = styled(Container)<ContainerProps & { open: boolean }>`
 	display: ${({ open }): string => (open ? 'block' : 'none')};
 `;
 type SearchConversationListItemProps = {
-	item: NormalizedConversation;
+	conversation: NormalizedConversation;
 	selected: boolean;
 	selecting: boolean;
 	toggle: (id: string) => void;
@@ -68,11 +67,10 @@ type SearchConversationListItemProps = {
 	draggedIds?: Record<string, boolean> | undefined;
 	selectedItems?: Record<string, boolean>;
 	deselectAll: () => void;
-	folderId: string;
 };
 export const SearchConversationListItem: FC<SearchConversationListItemProps> = memo(
 	function ConversationListItem({
-		item: conversation,
+		conversation,
 		selected,
 		selecting,
 		toggle,
@@ -81,7 +79,6 @@ export const SearchConversationListItem: FC<SearchConversationListItemProps> = m
 		activeItemId,
 		dragImageRef,
 		deselectAll,
-		folderId,
 		setDraggedIds
 	}) {
 		const dispatch = useAppDispatch();
@@ -90,11 +87,7 @@ export const SearchConversationListItem: FC<SearchConversationListItemProps> = m
 		const conversationId = conversation.id;
 		const messages = useConversationMessages(conversationId);
 		const { createWindow } = useGlobalExtraWindowManager();
-		const folderParent = getFolderParentId({
-			folderId: folderId ?? '',
-			isConversation: true,
-			item: conversation
-		});
+		const folderId = conversation.parent;
 		const conversationStatus = useConversationStatus(conversationId);
 		const tagsFromStore = useTags();
 		const tags = useMemo(
@@ -167,24 +160,17 @@ export const SearchConversationListItem: FC<SearchConversationListItemProps> = m
 							ids: [conversationId],
 							value: false,
 							dispatch,
-							folderId: folderParent,
+							folderId,
 							deselectAll,
 							shouldReplaceHistory: false
 							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 							// @ts-ignore
 						}).onClick();
 					}
-					pushHistory(`/folder/${folderParent}/conversation/${conversationId}`);
+					pushHistory(`/folder/${folderId}/conversation/${conversationId}`);
 				}
 			},
-			[
-				conversation?.read,
-				conversationId,
-				zimbraPrefMarkMsgRead,
-				folderParent,
-				dispatch,
-				deselectAll
-			]
+			[conversation?.read, conversationId, zimbraPrefMarkMsgRead, folderId, dispatch, deselectAll]
 		);
 
 		const _onDoubleClick = useCallback(
@@ -195,18 +181,18 @@ export const SearchConversationListItem: FC<SearchConversationListItemProps> = m
 
 				const { id, isDraft } = conversation.messages[0];
 				if (isDraft) {
-					pushHistory(`/folder/${folderParent}/edit/${id}?action=editAsDraft`);
+					pushHistory(`/folder/${folderId}/edit/${id}?action=editAsDraft`);
 				} else {
 					previewConversationOnSeparatedWindowAction(
 						conversationId,
-						folderParent,
+						folderId,
 						conversation.subject,
 						createWindow
 					).onClick();
 				}
 			},
 
-			[createWindow, folderParent, conversationId, conversation.messages, conversation.subject]
+			[createWindow, folderId, conversationId, conversation.messages, conversation.subject]
 		);
 
 		const toggleExpandButtonLabel = useMemo(
@@ -268,7 +254,7 @@ export const SearchConversationListItem: FC<SearchConversationListItemProps> = m
 							selected={selected}
 							selecting={selecting}
 							toggle={toggle}
-							folderId={folderParent}
+							folderId={folderId}
 						/>
 						<Padding horizontal="extrasmall" />
 					</div>
@@ -341,7 +327,7 @@ export const SearchConversationListItem: FC<SearchConversationListItemProps> = m
 							length={conversation.messagesInConversation}
 							messages={messages}
 							conversationStatus={conversationStatus}
-							folderId={folderParent}
+							folderId={folderId}
 							dragImageRef={dragImageRef}
 							isSearchModule={isSearchModule}
 							setDraggedIds={setDraggedIds}

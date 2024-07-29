@@ -22,7 +22,7 @@ import { AdvancedFilterButton } from '../../parts/advanced-filter-button';
 import ShimmerList from '../../shimmer-list';
 
 const SearchConversationList: FC<SearchListProps> = ({
-	searchResults,
+	searchResults: conversationIds,
 	query,
 	loading,
 	filterCount,
@@ -34,7 +34,7 @@ const SearchConversationList: FC<SearchListProps> = ({
 }) => {
 	const { itemId, folderId } = useParams<{ itemId: string; folderId: string }>();
 	const { setCount, count } = useAppContext<AppContext>();
-	const items = [...searchResults].map((conversationId) => ({ id: conversationId }));
+	const items = [...conversationIds].map((conversationId) => ({ id: conversationId }));
 	const dispatch = useAppDispatch();
 	const parentId = getFolderParentId({ folderId, isConversation: true, items });
 	const [isLoading, setIsLoading] = useState(false);
@@ -68,7 +68,7 @@ const SearchConversationList: FC<SearchListProps> = ({
 			return null;
 		}
 		// If there are no results, return a title
-		if (isEmpty(searchResults)) {
+		if (isEmpty(conversationIds)) {
 			if (randomListIndex === 0) {
 				return t(
 					'displayer.search_list_title1',
@@ -79,18 +79,16 @@ const SearchConversationList: FC<SearchListProps> = ({
 		}
 		// If there are results, don't return a title
 		return null;
-	}, [isInvalidQuery, searchResults, randomListIndex]);
-
-	const conversationIds = useMemo(() => [...searchResults], [searchResults]);
+	}, [isInvalidQuery, conversationIds, randomListIndex]);
 
 	// totalConversations: length of conversations object
-	const totalConversations = useMemo(() => searchResults.size, [searchResults]);
+	const totalConversations = useMemo(() => conversationIds.size, [conversationIds]);
 
-	const conversations = useMemo(() => Object.values(searchResults ?? {}), [searchResults]);
+	const conversations = useMemo(() => Object.values(conversationIds ?? {}), [conversationIds]);
 
 	useLayoutEffect(() => {
 		listRef?.current && (listRef.current.children[0].scrollTop = 0);
-	}, [searchResults]);
+	}, [conversationIds]);
 
 	const onScrollBottom = useCallback(() => {
 		if (hasMore && !isLoading) {
@@ -112,7 +110,7 @@ const SearchConversationList: FC<SearchListProps> = ({
 	// This is used to render the list items. It maps the conversationList array and returns a list item for each conversation.
 	const listItems = useMemo(
 		() =>
-			map(conversationIds, (conversationId) => {
+			map([...conversationIds], (conversationId) => {
 				const active = itemId === conversationId;
 				const isSelected = selected[conversationId];
 				return (
