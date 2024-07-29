@@ -28,6 +28,7 @@ export const SearchConversationItem = ({
 	deselectAll
 }: SearchConversationItemProps): React.JSX.Element => {
 	const conversation = useConversationById(conversationId);
+	// TODO: find out the visibility thing, using invisible component does not show items
 	return (
 		<CustomListItem
 			active={active}
@@ -35,27 +36,20 @@ export const SearchConversationItem = ({
 			key={conversationId}
 			background={'transparent'}
 		>
-			{(visible: boolean): React.JSX.Element =>
-				visible ? (
-					<SearchConversationListItem
-						activeItemId={itemId}
-						item={conversation}
-						selected={isSelected}
-						selecting={isSelectModeOn}
-						toggle={toggle}
-						active={active}
-						isSearchModule
-						isConvChildren
-						deselectAll={deselectAll}
-						folderId={''}
-					/>
-				) : (
-					<div
-						style={{ height: '4rem' }}
-						data-testid={`invisible-conversation-${conversationId}`}
-					/>
-				)
-			}
+			{(visible: boolean): React.JSX.Element => (
+				<SearchConversationListItem
+					activeItemId={itemId}
+					item={conversation}
+					selected={isSelected}
+					selecting={isSelectModeOn}
+					toggle={toggle}
+					active={active}
+					isSearchModule
+					isConvChildren
+					deselectAll={deselectAll}
+					folderId={''}
+				/>
+			)}
 		</CustomListItem>
 	);
 };
