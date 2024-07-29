@@ -23,6 +23,7 @@ import { findIconFromChip } from './parts/use-find-icon';
 import SearchConversationList from './search-conversation-list';
 import { SearchMessageList } from './search-message-list';
 import SearchPanel from './search-panel';
+import { useUpdateView } from '../../carbonio-ui-commons/hooks/use-update-view';
 import { useFoldersMap } from '../../carbonio-ui-commons/store/zustand/folder/hooks';
 import type { Folder } from '../../carbonio-ui-commons/types/folder';
 import { LIST_LIMIT, MAILS_ROUTE } from '../../constants';
@@ -31,6 +32,7 @@ import { search } from '../../store/actions/search';
 import { resetSearchResults, selectSearches } from '../../store/searches-slice';
 
 const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHeader }) => {
+	useUpdateView();
 	const [query, updateQuery] = useQuery();
 	const [searchDisabled, setSearchDisabled] = useDisableSearch();
 	const settings = useUserSettings();

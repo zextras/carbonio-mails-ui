@@ -32,6 +32,7 @@ import { saveSettings } from './save-settings';
 import { SendersList, getList } from './senders-list';
 import SignatureSettings from './signature-settings';
 import TrusteeAddresses from './trustee-addresses';
+import { useUpdateView } from '../../carbonio-ui-commons/hooks/use-update-view';
 import { TIMEOUTS } from '../../constants';
 import { NO_SIGNATURE_ID } from '../../helpers/signatures';
 import { useAppDispatch } from '../../hooks/redux';
@@ -47,13 +48,13 @@ import type { AccountIdentity, PrefsType, PropsType, SignItemType, Signature } f
  * To keep track of unsaved changes we compare updatedProps with currentProps
  *   */
 const SettingsView: FC = () => {
+	useUpdateView();
 	const { attrs, prefs, props } = useUserSettings();
 	const account = useUserAccount();
 	const { identity } = cloneDeep(account.identities);
 	const defaultAccount = remove(identity, (acc: AccountIdentity) => acc.name === 'DEFAULT');
 	const identities = defaultAccount.concat(identity);
 	const { validate: validateSignatures } = useSignatureSettings();
-
 	const [currentPrefs, setCurrentPrefs] = useState<AccountSettings['prefs']>({ ...prefs });
 	const [updatedPrefs, setUpdatedPrefs] = useState({});
 
