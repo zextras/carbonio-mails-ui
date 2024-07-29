@@ -50,9 +50,12 @@ export function useSearchResults(): SearchSliceState['search'] {
 
 export function useConversationMessages(
 	conversationId: string
-): Array<IncompleteMessage | MailMessage> {
-	// TODO: implement me!
-	return [];
+): Array<MailMessage | IncompleteMessage> {
+	return useMessageStore((state) =>
+		state.populatedItems.conversations[conversationId].messages.map(
+			(message) => state.populatedItems.messages[message.id]
+		)
+	);
 }
 
 export function useConversationStatus(id: string): SearchRequestStatus {
