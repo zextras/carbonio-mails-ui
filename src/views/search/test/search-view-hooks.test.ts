@@ -58,6 +58,41 @@ describe('search view hooks', () => {
 		});
 	});
 
+	it('should reset conversations list when no conversation field in API response', async () => {
+		updateConversations([generateConversation({ id: '1' })], 0);
+		const queryChip: QueryChip = {
+			hasAvatar: false,
+			id: '0',
+			label: 'ciao'
+		};
+		const settings = generateSettings({
+			prefs: {
+				zimbraPrefGroupMailBy: 'conversation'
+			}
+		});
+		jest.spyOn(hooks, 'useUserSettings').mockReturnValue(settings);
+		const searchInterceptor = createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
+			more: false
+		});
+		// eslint-disable-next-line @typescript-eslint/ban-types
+		const useDisableSearch = (): [boolean, Function] => [false, noop];
+
+		const { result, waitFor } = renderHook(() =>
+			useRunSearch({
+				query: [queryChip],
+				updateQuery: noop,
+				useDisableSearch,
+				invalidQueryTooltip: 'INVALID',
+				isSharedFolderIncluded: false
+			})
+		);
+
+		await searchInterceptor;
+		await waitFor(() => {
+			expect(result.current.searchResults.conversationIds.size).toBe(0);
+		});
+	});
+
 	it('should set invalid query if API query error', async () => {
 		updateConversations([generateConversation({ id: '1' })], 0);
 		const settings = generateSettings({

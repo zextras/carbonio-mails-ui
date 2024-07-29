@@ -25,6 +25,7 @@ import { LIST_LIMIT, MAILS_ROUTE } from '../../constants';
 import { normalizeConversation } from '../../normalizations/normalize-conversation';
 import { normalizeMailMessageFromSoap } from '../../normalizations/normalize-message';
 import {
+	resetSearch,
 	updateConversations,
 	updateMessages,
 	useSearchResults
@@ -86,6 +87,10 @@ function handleSearchResults({
 		return;
 	}
 	const tags = getTags();
+
+	if (!searchResponse.c && !searchResponse.m) {
+		resetSearch();
+	}
 
 	if (searchResponse.c) {
 		handleFulFilledConversationResults({ searchResponse, offset, tags });

@@ -8,7 +8,7 @@ import produce from 'immer';
 import { create } from 'zustand';
 
 import { createMessageSlice as createPopulatedItemsSlice } from './message-slice';
-import { createSearchSlice } from './search-slice';
+import { createSearchSlice, SEARCH_INITIAL_STATE } from './search-slice';
 import { API_REQUEST_STATUS } from '../../../constants';
 import {
 	IncompleteMessage,
@@ -28,6 +28,14 @@ const useMessageStore = create<MessageStoreState>()((...a) => ({
 
 export function useConversationById(id: string): NormalizedConversation {
 	return useMessageStore((state) => state.populatedItems.conversations[id]);
+}
+
+export function resetSearch(): void {
+	useMessageStore.setState(
+		produce((state: MessageStoreState) => {
+			state.search = SEARCH_INITIAL_STATE;
+		})
+	);
 }
 
 export function useMessageById(id: string): IncompleteMessage | MailMessage {
