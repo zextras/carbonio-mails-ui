@@ -97,5 +97,5 @@ export type ConversationListItemProps = {
 	draggedIds?: Record<string, boolean> | undefined;
 	selectedItems?: Record<string, boolean>;
 	deselectAll: () => void;
-	folderId: string;
+	folderId?: string;
 };

@@ -18,7 +18,6 @@ import {
 	Tooltip
 } from '@zextras/carbonio-design-system';
 import {
-	FOLDERS,
 	Tag,
 	ZIMBRA_STANDARD_COLORS,
 	pushHistory,
@@ -27,23 +26,18 @@ import {
 	useUserAccounts,
 	useUserSettings
 } from '@zextras/carbonio-shell-ui';
-import { filter, find, forEach, includes, isEmpty, reduce, trimStart, uniqBy } from 'lodash';
+import { filter, forEach, includes, isEmpty, reduce, trimStart, uniqBy } from 'lodash';
 import styled from 'styled-components';
 
 import { participantToString } from '../../commons/utils';
 import { API_REQUEST_STATUS } from '../../constants';
-import { getFolderIdParts } from '../../helpers/folders';
-import { useAppDispatch, useAppSelector } from '../../hooks/redux';
-import { searchConv } from '../../store/actions';
-import { selectConversationExpandedStatus } from '../../store/conversations-slice';
-import { selectMessages } from '../../store/messages-slice';
-import type {
-	Conversation,
-	ConvMessage,
-	IncompleteMessage,
-	MailsStateType,
-	TextReadValuesProps
-} from '../../types';
+import { useAppDispatch } from '../../hooks/redux';
+import {
+	useConversationMessages,
+	useConversationStatus
+} from '../../store/zustand/message-store/store';
+import { retrieveConversation } from '../../store/zustand/search/hooks/hooks';
+import type { Conversation, TextReadValuesProps } from '../../types';
 import { NormalizedConversation } from '../../types';
 import {
 	previewConversationOnSeparatedWindowAction,
@@ -74,11 +68,11 @@ type SearchConversationListItemProps = {
 	draggedIds?: Record<string, boolean> | undefined;
 	selectedItems?: Record<string, boolean>;
 	deselectAll: () => void;
-	folderId?: string;
+	folderId: string;
 };
 export const SearchConversationListItem: FC<SearchConversationListItemProps> = memo(
 	function ConversationListItem({
-		item,
+		item: conversation,
 		selected,
 		selecting,
 		toggle,
@@ -93,20 +87,15 @@ export const SearchConversationListItem: FC<SearchConversationListItemProps> = m
 		const dispatch = useAppDispatch();
 		const [open, setOpen] = useState(false);
 		const accounts = useUserAccounts();
-
-		const messages = useAppSelector(selectMessages);
-
+		const conversationId = conversation.id;
+		const messages = useConversationMessages(conversationId);
 		const { createWindow } = useGlobalExtraWindowManager();
-
 		const folderParent = getFolderParentId({
 			folderId: folderId ?? '',
 			isConversation: true,
-			item
+			item: conversation
 		});
-
-		const conversationStatus = useAppSelector((state: MailsStateType) =>
-			selectConversationExpandedStatus(state, item.id)
-		);
+		const conversationStatus = useConversationStatus(conversationId);
 		const tagsFromStore = useTags();
 		const tags = useMemo(
 			() =>
@@ -114,16 +103,16 @@ export const SearchConversationListItem: FC<SearchConversationListItemProps> = m
 					reduce(
 						tagsFromStore,
 						(acc: Array<Tag>, v) => {
-							if (includes(item.tags, v.id)) {
+							if (includes(conversation.tags, v.id)) {
 								acc.push({
 									...v,
 									// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 									// @ts-ignore
 									color: ZIMBRA_STANDARD_COLORS[v.color || 0].hex
 								});
-							} else if (item.tags?.length > 0 && !includes(item.tags, v.id)) {
+							} else if (conversation.tags?.length > 0 && !includes(conversation.tags, v.id)) {
 								forEach(
-									filter(item.tags, (tn) => tn.includes('nil:')),
+									filter(conversation.tags, (tn) => tn.includes('nil:')),
 									(tagNotInList) => {
 										acc.push({
 											id: tagNotInList,
@@ -139,22 +128,21 @@ export const SearchConversationListItem: FC<SearchConversationListItemProps> = m
 					),
 					'id'
 				),
-			[item.tags, tagsFromStore]
+			[conversation.tags, tagsFromStore]
 		);
 
-		const sortBy = useUserSettings()?.prefs?.zimbraPrefConversationOrder || 'dateDesc';
 		const zimbraPrefMarkMsgRead = useUserSettings()?.prefs?.zimbraPrefMarkMsgRead !== '-1';
 		const participantsString = useMemo(
 			() =>
 				reduce(
-					uniqBy(item.participants, (em) => em.address),
+					uniqBy(conversation.participants, (em) => em.address),
 					(acc, part) => trimStart(`${acc}, ${participantToString(part, accounts)}`, ', '),
 					''
 				),
-			[item.participants, accounts]
+			[conversation.participants, accounts]
 		);
 
-		const toggleOpen = useCallback(
+		const expandConversation = useCallback(
 			(e) => {
 				e.preventDefault();
 				setOpen((currentlyOpen) => {
@@ -163,20 +151,20 @@ export const SearchConversationListItem: FC<SearchConversationListItemProps> = m
 						conversationStatus !== API_REQUEST_STATUS.fulfilled &&
 						conversationStatus !== API_REQUEST_STATUS.pending
 					) {
-						dispatch(searchConv({ folderId: folderParent, conversationId: item.id, fetch: 'all' }));
+						retrieveConversation(conversationId, folderId);
 					}
 					return !currentlyOpen;
 				});
 			},
-			[conversationStatus, dispatch, folderParent, item.id]
+			[conversationId, conversationStatus, folderId]
 		);
 
 		const _onClick = useCallback(
 			(e) => {
 				if (!e.isDefaultPrevented()) {
-					if (item?.read === false && zimbraPrefMarkMsgRead) {
+					if (conversation?.read === false && zimbraPrefMarkMsgRead) {
 						setConversationsRead({
-							ids: [item.id],
+							ids: [conversationId],
 							value: false,
 							dispatch,
 							folderId: folderParent,
@@ -186,10 +174,17 @@ export const SearchConversationListItem: FC<SearchConversationListItemProps> = m
 							// @ts-ignore
 						}).onClick();
 					}
-					pushHistory(`/folder/${folderParent}/conversation/${item.id}`);
+					pushHistory(`/folder/${folderParent}/conversation/${conversationId}`);
 				}
 			},
-			[item?.read, item.id, zimbraPrefMarkMsgRead, folderParent, dispatch, deselectAll]
+			[
+				conversation?.read,
+				conversationId,
+				zimbraPrefMarkMsgRead,
+				folderParent,
+				dispatch,
+				deselectAll
+			]
 		);
 
 		const _onDoubleClick = useCallback(
@@ -198,20 +193,20 @@ export const SearchConversationListItem: FC<SearchConversationListItemProps> = m
 					return;
 				}
 
-				const { id, isDraft } = item.messages[0];
+				const { id, isDraft } = conversation.messages[0];
 				if (isDraft) {
 					pushHistory(`/folder/${folderParent}/edit/${id}?action=editAsDraft`);
 				} else {
 					previewConversationOnSeparatedWindowAction(
-						item.id,
+						conversationId,
 						folderParent,
-						item.subject,
+						conversation.subject,
 						createWindow
 					).onClick();
 				}
 			},
 
-			[createWindow, folderParent, item.id, item.messages, item.subject]
+			[createWindow, folderParent, conversationId, conversation.messages, conversation.subject]
 		);
 
 		const toggleExpandButtonLabel = useMemo(
@@ -219,39 +214,12 @@ export const SearchConversationListItem: FC<SearchConversationListItemProps> = m
 			[open]
 		);
 		const subject = useMemo(
-			() => item.subject || t('label.no_subject_with_tags', '<No Subject>'),
-			[item.subject]
+			() => conversation.subject || t('label.no_subject_with_tags', '<No Subject>'),
+			[conversation.subject]
 		);
 		const subFragmentTooltipLabel = useMemo(
-			() => (!isEmpty(item.fragment) ? item.fragment : subject),
-			[subject, item.fragment]
-		);
-		const sortSign = useMemo(() => (sortBy === 'dateDesc' ? -1 : 1), [sortBy]);
-
-		// this is the array of all the messages of this conversation to render in this folder
-		const messagesToRender = useMemo(
-			() =>
-				uniqBy(
-					reduce<ConvMessage, IncompleteMessage[]>(
-						item.messages,
-						(acc, v) => {
-							const msg = find(messages, ['id', v.id]);
-
-							if (msg) {
-								// in trash, we show all messages of the conversation even if only one is deleted
-								if (getFolderIdParts(folderParent).id === FOLDERS.TRASH) {
-									return [...acc, msg];
-								}
-								// all other messages are valid and must be showed in the conversation
-								return [...acc, msg];
-							}
-							return acc;
-						},
-						[]
-					).sort((a, b) => (a.date && b.date ? sortSign * (a.date - b.date) : 1)),
-					'id'
-				),
-			[item, messages, folderParent, sortSign]
+			() => (!isEmpty(conversation.fragment) ? conversation.fragment : subject),
+			[subject, conversation.fragment]
 		);
 
 		/**
@@ -259,29 +227,32 @@ export const SearchConversationListItem: FC<SearchConversationListItemProps> = m
 		 * In search module we check if the user has enabled the option to show trashed and/or spam messages
 		 * @returns {number}
 		 */
-		const getmsgToDisplayCount = useCallback((): number => item.messagesInConversation, [item]);
+		const getmsgToDisplayCount = useCallback(
+			(): number => conversation.messagesInConversation,
+			[conversation]
+		);
 
 		const textReadValues: TextReadValuesProps = useMemo(() => {
-			if (typeof item.read === 'undefined')
+			if (typeof conversation.read === 'undefined')
 				return { color: 'text', weight: 'regular', badge: 'read' };
-			return item.read
+			return conversation.read
 				? { color: 'text', weight: 'regular', badge: 'read' }
 				: { color: 'primary', weight: 'bold', badge: 'unread' };
-		}, [item.read]);
+		}, [conversation.read]);
 
 		const renderBadge = useMemo(() => {
-			if (item.messagesInConversation === 1) return textReadValues.badge === 'unread';
-			if (item.messagesInConversation > 0) return true;
-			if (item?.messages?.length === 1) {
+			if (conversation.messagesInConversation === 1) return textReadValues.badge === 'unread';
+			if (conversation.messagesInConversation > 0) return true;
+			if (conversation?.messages?.length === 1) {
 				return textReadValues.badge === 'unread';
 			}
-			return item?.messages?.length > 0;
-		}, [item?.messages?.length, item.messagesInConversation, textReadValues.badge]);
+			return conversation?.messages?.length > 0;
+		}, [conversation?.messages?.length, conversation.messagesInConversation, textReadValues.badge]);
 
 		return (
-			<Container mainAlignment="flex-start" data-testid={`ConversationListItem-${item.id}`}>
+			<Container mainAlignment="flex-start" data-testid={`ConversationListItem-${conversationId}`}>
 				<ListItemActionWrapper
-					item={item as Conversation}
+					item={conversation as Conversation}
 					active={active}
 					onClick={_onClick}
 					onDoubleClick={_onDoubleClick}
@@ -290,10 +261,10 @@ export const SearchConversationListItem: FC<SearchConversationListItemProps> = m
 				>
 					<div
 						style={{ alignSelf: 'center' }}
-						data-testid={`conversation-list-item-avatar-${item.id}`}
+						data-testid={`conversation-list-item-avatar-${conversationId}`}
 					>
 						<ItemAvatar
-							item={item}
+							item={conversation}
 							selected={selected}
 							selecting={selecting}
 							toggle={toggle}
@@ -308,15 +279,15 @@ export const SearchConversationListItem: FC<SearchConversationListItemProps> = m
 						padding={{ left: 'small', top: 'small', bottom: 'small', right: 'large' }}
 					>
 						<Container orientation="horizontal" height="fit" width="fill">
-							<SenderName item={item as Conversation} textValues={textReadValues} />
-							<RowInfo item={item as Conversation} tags={tags} />
+							<SenderName item={conversation as Conversation} textValues={textReadValues} />
+							<RowInfo item={conversation as Conversation} tags={tags} />
 						</Container>
 						<Container orientation="horizontal" height="fit" width="fill" crossAlignment="center">
 							{renderBadge && (
 								<Row>
 									<Padding right="extrasmall">
 										<Badge
-											data-testid={`conversation-messages-count-${item.id}`}
+											data-testid={`conversation-messages-count-${conversationId}`}
 											value={getmsgToDisplayCount()}
 											type={textReadValues.badge}
 										/>
@@ -334,21 +305,23 @@ export const SearchConversationListItem: FC<SearchConversationListItemProps> = m
 									<Text
 										data-testid="Subject"
 										weight={textReadValues.weight}
-										color={item.subject ? 'text' : 'secondary'}
+										color={conversation.subject ? 'text' : 'secondary'}
 									>
 										{subject}
 									</Text>
 								</Row>
 							</Tooltip>
 							<Row>
-								{item.urgent && <Icon data-testid="UrgentIcon" icon="ArrowUpward" color="error" />}
-								{item.messagesInConversation > 1 && (
+								{conversation.urgent && (
+									<Icon data-testid="UrgentIcon" icon="ArrowUpward" color="error" />
+								)}
+								{conversation.messagesInConversation > 1 && (
 									<Tooltip label={toggleExpandButtonLabel}>
 										<IconButton
 											data-testid="ToggleExpand"
 											size="small"
 											icon={open ? 'ArrowIosUpward' : 'ArrowIosDownward'}
-											onClick={toggleOpen}
+											onClick={expandConversation}
 										/>
 									</Tooltip>
 								)}
@@ -365,8 +338,8 @@ export const SearchConversationListItem: FC<SearchConversationListItemProps> = m
 					>
 						<ConversationMessagesList
 							active={activeItemId}
-							length={item.messagesInConversation}
-							messages={messagesToRender}
+							length={conversation.messagesInConversation}
+							messages={messages}
 							conversationStatus={conversationStatus}
 							folderId={folderParent}
 							dragImageRef={dragImageRef}
