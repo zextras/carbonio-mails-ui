@@ -18,6 +18,7 @@ import {
 	Tooltip
 } from '@zextras/carbonio-design-system';
 import {
+	FOLDERS,
 	Tag,
 	ZIMBRA_STANDARD_COLORS,
 	pushHistory,
@@ -26,20 +27,25 @@ import {
 	useUserAccounts,
 	useUserSettings
 } from '@zextras/carbonio-shell-ui';
-import { filter, forEach, includes, isEmpty, reduce, trimStart, uniqBy } from 'lodash';
+import { filter, find, forEach, includes, isEmpty, reduce, trimStart, uniqBy } from 'lodash';
 import styled from 'styled-components';
 
 import { ConversationMessagesList } from './conversation-messages-list';
 import { getFolderParentId } from './utils';
 import { participantToString } from '../../../../commons/utils';
 import { API_REQUEST_STATUS } from '../../../../constants';
-import { useAppDispatch } from '../../../../hooks/redux';
-import {
-	useConversationMessages,
-	useConversationStatus
-} from '../../../../store/zustand/message-store/store';
-import { retrieveConversation } from '../../../../store/zustand/search/hooks/hooks';
-import type { ConversationListItemProps, TextReadValuesProps } from '../../../../types';
+import { getFolderIdParts } from '../../../../helpers/folders';
+import { useAppDispatch, useAppSelector } from '../../../../hooks/redux';
+import { searchConv } from '../../../../store/actions';
+import { selectConversationExpandedStatus } from '../../../../store/conversations-slice';
+import { selectMessages } from '../../../../store/messages-slice';
+import type {
+	ConvMessage,
+	ConversationListItemProps,
+	IncompleteMessage,
+	MailsStateType,
+	TextReadValuesProps
+} from '../../../../types';
 import {
 	previewConversationOnSeparatedWindowAction,
 	setConversationsRead
@@ -71,16 +77,16 @@ export const ConversationListItem: FC<ConversationListItemProps> = memo(
 		const dispatch = useAppDispatch();
 		const [open, setOpen] = useState(false);
 		const accounts = useUserAccounts();
-		const messages = useConversationMessages(item.id);
+		const messages = useAppSelector(selectMessages);
+		const isConversation = 'messages' in (item || {});
 		const { createWindow } = useGlobalExtraWindowManager();
-		const folderParent = getFolderParentId({
-			folderId: folderId ?? '',
-			isConversation: true,
-			item
-		});
-		const conversationStatus = useConversationStatus(item.id);
-		const tagsFromStore = useTags();
 
+		const folderParent = getFolderParentId({ folderId: folderId ?? '', isConversation, item });
+
+		const conversationStatus = useAppSelector((state: MailsStateType) =>
+			selectConversationExpandedStatus(state, item.id)
+		);
+		const tagsFromStore = useTags();
 		const tags = useMemo(
 			() =>
 				uniqBy(
@@ -136,12 +142,12 @@ export const ConversationListItem: FC<ConversationListItemProps> = memo(
 						conversationStatus !== API_REQUEST_STATUS.fulfilled &&
 						conversationStatus !== API_REQUEST_STATUS.pending
 					) {
-						retrieveConversation(item.id, folderId);
+						dispatch(searchConv({ folderId: folderParent, conversationId: item.id, fetch: 'all' }));
 					}
 					return !currentlyOpen;
 				});
 			},
-			[conversationStatus, folderId, item.id]
+			[conversationStatus, dispatch, folderParent, item.id]
 		);
 
 		const _onClick = useCallback(
@@ -198,6 +204,33 @@ export const ConversationListItem: FC<ConversationListItemProps> = memo(
 		const subFragmentTooltipLabel = useMemo(
 			() => (!isEmpty(item.fragment) ? item.fragment : subject),
 			[subject, item.fragment]
+		);
+		const sortSign = useMemo(() => (sortBy === 'dateDesc' ? -1 : 1), [sortBy]);
+
+		// this is the array of all the messages of this conversation to render in this folder
+		const messagesToRender = useMemo(
+			() =>
+				uniqBy(
+					reduce<ConvMessage, IncompleteMessage[]>(
+						item.messages,
+						(acc, v) => {
+							const msg = find(messages, ['id', v.id]);
+
+							if (msg) {
+								// in trash, we show all messages of the conversation even if only one is deleted
+								if (getFolderIdParts(folderParent).id === FOLDERS.TRASH) {
+									return [...acc, msg];
+								}
+								// all other messages are valid and must be showed in the conversation
+								return [...acc, msg];
+							}
+							return acc;
+						},
+						[]
+					).sort((a, b) => (a.date && b.date ? sortSign * (a.date - b.date) : 1)),
+					'id'
+				),
+			[item, messages, folderParent, sortSign]
 		);
 
 		/**
@@ -312,7 +345,7 @@ export const ConversationListItem: FC<ConversationListItemProps> = memo(
 						<ConversationMessagesList
 							active={activeItemId}
 							length={item.messagesInConversation}
-							messages={messages}
+							messages={messagesToRender}
 							conversationStatus={conversationStatus}
 							folderId={folderParent}
 							dragImageRef={dragImageRef}
