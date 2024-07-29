@@ -6,8 +6,8 @@
 import React, { ReactElement } from 'react';
 
 import { SearchMessageListItemComponent } from './search-message-list-item-component';
-import { CustomListItem } from '../../carbonio-ui-commons/components/list/list-item';
-import { useMessageById } from '../../store/zustand/message-store/store';
+import { CustomListItem } from '../../../../carbonio-ui-commons/components/list/list-item';
+import { useMessageById } from '../../../../store/zustand/message-store/store';
 
 type SearchMessageItemProps = {
 	messageId: string;

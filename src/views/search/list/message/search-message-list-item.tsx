@@ -26,21 +26,24 @@ import {
 import { find, includes, isEmpty, noop, reduce } from 'lodash';
 import moment from 'moment';
 
-import { useFolder } from '../../carbonio-ui-commons/store/zustand/folder';
-import { getTimeLabel, participantToString } from '../../commons/utils';
-import { EditViewActions } from '../../constants';
-import { useAppDispatch } from '../../hooks/redux';
-import { useMessageActions } from '../../hooks/use-message-actions';
-import { useMessageById } from '../../store/zustand/message-store/store';
-import { TextReadValuesType } from '../../types';
-import { previewMessageOnSeparatedWindow, setMsgRead } from '../../ui-actions/message-actions';
-import { useTagExist } from '../../ui-actions/tag-actions';
-import { createEditBoard } from '../app/detail-panel/edit/edit-view-board';
-import { useGlobalExtraWindowManager } from '../app/extra-windows/global-extra-window-manager';
-import { ItemAvatar } from '../app/folder-panel/parts/item-avatar';
-import { ListItemActionWrapper } from '../app/folder-panel/parts/list-item-actions-wrapper';
-import { SenderName } from '../app/folder-panel/parts/sender-name';
-import { getFolderTranslatedName } from '../sidebar/utils';
+import { useFolder } from '../../../../carbonio-ui-commons/store/zustand/folder';
+import { getTimeLabel, participantToString } from '../../../../commons/utils';
+import { EditViewActions } from '../../../../constants';
+import { useAppDispatch } from '../../../../hooks/redux';
+import { useMessageActions } from '../../../../hooks/use-message-actions';
+import { useMessageById } from '../../../../store/zustand/message-store/store';
+import { TextReadValuesType } from '../../../../types';
+import {
+	previewMessageOnSeparatedWindow,
+	setMsgRead
+} from '../../../../ui-actions/message-actions';
+import { useTagExist } from '../../../../ui-actions/tag-actions';
+import { createEditBoard } from '../../../app/detail-panel/edit/edit-view-board';
+import { useGlobalExtraWindowManager } from '../../../app/extra-windows/global-extra-window-manager';
+import { ItemAvatar } from '../../../app/folder-panel/parts/item-avatar';
+import { ListItemActionWrapper } from '../../../app/folder-panel/parts/list-item-actions-wrapper';
+import { SenderName } from '../../../app/folder-panel/parts/sender-name';
+import { getFolderTranslatedName } from '../../../sidebar/utils';
 
 type SearchMessageListItemProps = {
 	itemId: string;

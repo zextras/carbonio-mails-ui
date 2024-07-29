@@ -10,9 +10,9 @@ import { SearchViewProps, t, useUserSettings } from '@zextras/carbonio-shell-ui'
 import { Route, Switch, useRouteMatch } from 'react-router-dom';
 
 import { AdvancedFilterModal } from './advanced-filter-modal';
+import SearchConversationList from './list/conversation/search-conversation-list';
+import { SearchMessageList } from './list/message/search-message-list';
 import SearchPanel from './panel/search-panel';
-import SearchConversationList from './search-conversation-list';
-import { SearchMessageList } from './search-message-list';
 import { useIsMessageView, useRunSearch } from './search-view-hooks';
 
 const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHeader }) => {

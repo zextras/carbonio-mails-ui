@@ -9,13 +9,13 @@ import React, { FC, memo, useMemo } from 'react';
 import { Container, Divider, Padding, Text } from '@zextras/carbonio-design-system';
 import { noop } from 'lodash';
 
-import ShimmerList from './shimmer-list';
-import { CustomList } from '../../carbonio-ui-commons/components/list/list';
-import { useFolder, useRoot } from '../../carbonio-ui-commons/store/zustand/folder/hooks';
-import { NormalizedConversation } from '../../types';
-import { MultipleSelectionActionsPanel } from '../../ui-actions/multiple-selection-actions-panel';
-import { Breadcrumbs } from '../app/folder-panel/parts/breadcrumbs';
-import { getFolderPath } from '../app/folder-panel/parts/utils/utils';
+import { CustomList } from '../../../../carbonio-ui-commons/components/list/list';
+import { useFolder, useRoot } from '../../../../carbonio-ui-commons/store/zustand/folder/hooks';
+import { NormalizedConversation } from '../../../../types';
+import { MultipleSelectionActionsPanel } from '../../../../ui-actions/multiple-selection-actions-panel';
+import { Breadcrumbs } from '../../../app/folder-panel/parts/breadcrumbs';
+import { getFolderPath } from '../../../app/folder-panel/parts/utils/utils';
+import ShimmerList from '../../shimmer-list';
 
 export type SearchConversationListComponentProps = {
 	// the text to display in the side panel

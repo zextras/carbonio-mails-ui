@@ -10,11 +10,11 @@ import { find, map, noop, reduce } from 'lodash';
 import styled from 'styled-components';
 
 import { SearchMessageListItem } from './search-message-list-item';
-import ShimmerList from './shimmer-list';
-import { CustomList } from '../../carbonio-ui-commons/components/list/list';
-import { useFolder } from '../../carbonio-ui-commons/store/zustand/folder';
-import { MultipleSelectionActionsPanel } from '../../ui-actions/multiple-selection-actions-panel';
-import { Breadcrumbs } from '../app/folder-panel/parts/breadcrumbs';
+import { CustomList } from '../../../../carbonio-ui-commons/components/list/list';
+import { useFolder } from '../../../../carbonio-ui-commons/store/zustand/folder';
+import { MultipleSelectionActionsPanel } from '../../../../ui-actions/multiple-selection-actions-panel';
+import { Breadcrumbs } from '../../../app/folder-panel/parts/breadcrumbs';
+import ShimmerList from '../../shimmer-list';
 
 const DragImageContainer = styled.div`
 	position: absolute;

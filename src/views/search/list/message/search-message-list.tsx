@@ -11,15 +11,15 @@ import { t, useAppContext } from '@zextras/carbonio-shell-ui';
 import { isEmpty, map, noop } from 'lodash';
 import { useParams } from 'react-router-dom';
 
-import { AdvancedFilterButton } from './parts/advanced-filter-button';
 import { SearchMessageItem } from './search-message-item';
 import { SearchMessageListComponent } from './search-message-list-component';
-import ShimmerList from './shimmer-list';
-import { LIST_LIMIT } from '../../constants';
-import { useAppDispatch } from '../../hooks/redux';
-import { useSelection } from '../../hooks/use-selection';
-import { search } from '../../store/actions/search';
-import type { AppContext, SearchListProps } from '../../types';
+import { LIST_LIMIT } from '../../../../constants';
+import { useAppDispatch } from '../../../../hooks/redux';
+import { useSelection } from '../../../../hooks/use-selection';
+import { search } from '../../../../store/actions/search';
+import type { AppContext, SearchListProps } from '../../../../types';
+import { AdvancedFilterButton } from '../../parts/advanced-filter-button';
+import ShimmerList from '../../shimmer-list';
 
 export const SearchMessageList: FC<SearchListProps> = ({
 	searchDisabled,

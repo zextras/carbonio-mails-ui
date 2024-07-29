@@ -8,8 +8,8 @@ import React, { FC, memo } from 'react';
 import { noop } from 'lodash';
 
 import { SearchMessageListItem } from './search-message-list-item';
-import { IncompleteMessage } from '../../types';
-import { DragItemWrapper } from '../app/folder-panel/parts/drag-item-wrapper';
+import { IncompleteMessage } from '../../../../types';
+import { DragItemWrapper } from '../../../app/folder-panel/parts/drag-item-wrapper';
 
 type SearchListItemComponentProps = {
 	message: IncompleteMessage;

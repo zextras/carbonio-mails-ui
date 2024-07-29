@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { IncompleteMessage } from '../../types';
+import { IncompleteMessage } from '../../../../../types';
 
 const incompleteMessage: IncompleteMessage = {
 	body: { content: '', contentType: '' },

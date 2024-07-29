@@ -10,16 +10,16 @@ import { t, useAppContext } from '@zextras/carbonio-shell-ui';
 import { isEmpty, map } from 'lodash';
 import { useParams } from 'react-router-dom';
 
-import { AdvancedFilterButton } from './parts/advanced-filter-button';
 import { SearchConversationItem } from './search-conversation-item';
 import { SearchConversationListComponent } from './search-conversation-list-component';
-import ShimmerList from './shimmer-list';
-import { LIST_LIMIT } from '../../constants';
-import { useAppDispatch } from '../../hooks/redux';
-import { useSelection } from '../../hooks/use-selection';
-import { search } from '../../store/actions/search';
-import type { AppContext, SearchListProps } from '../../types';
-import { getFolderParentId } from '../../ui-actions/utils';
+import { LIST_LIMIT } from '../../../../constants';
+import { useAppDispatch } from '../../../../hooks/redux';
+import { useSelection } from '../../../../hooks/use-selection';
+import { search } from '../../../../store/actions/search';
+import type { AppContext, SearchListProps } from '../../../../types';
+import { getFolderParentId } from '../../../../ui-actions/utils';
+import { AdvancedFilterButton } from '../../parts/advanced-filter-button';
+import ShimmerList from '../../shimmer-list';
 
 const SearchConversationList: FC<SearchListProps> = ({
 	searchResults,

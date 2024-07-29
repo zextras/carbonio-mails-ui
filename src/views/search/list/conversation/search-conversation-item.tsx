@@ -6,8 +6,8 @@
 import React from 'react';
 
 import { SearchConversationListItem } from './search-conversation-list-item';
-import { CustomListItem } from '../../carbonio-ui-commons/components/list/list-item';
-import { useConversationById } from '../../store/zustand/message-store/store';
+import { CustomListItem } from '../../../../carbonio-ui-commons/components/list/list-item';
+import { useConversationById } from '../../../../store/zustand/message-store/store';
 
 type SearchConversationItemProps = {
 	conversationId: string;

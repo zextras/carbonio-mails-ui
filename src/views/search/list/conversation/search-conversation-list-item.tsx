@@ -29,27 +29,27 @@ import {
 import { filter, forEach, includes, isEmpty, reduce, trimStart, uniqBy } from 'lodash';
 import styled from 'styled-components';
 
-import { participantToString } from '../../commons/utils';
-import { API_REQUEST_STATUS } from '../../constants';
-import { useAppDispatch } from '../../hooks/redux';
+import { participantToString } from '../../../../commons/utils';
+import { API_REQUEST_STATUS } from '../../../../constants';
+import { useAppDispatch } from '../../../../hooks/redux';
 import {
 	useConversationMessages,
 	useConversationStatus
-} from '../../store/zustand/message-store/store';
-import { retrieveConversation } from '../../store/zustand/search/hooks/hooks';
-import type { Conversation, TextReadValuesProps } from '../../types';
-import { NormalizedConversation } from '../../types';
+} from '../../../../store/zustand/message-store/store';
+import { retrieveConversation } from '../../../../store/zustand/search/hooks/hooks';
+import type { Conversation, TextReadValuesProps } from '../../../../types';
+import { NormalizedConversation } from '../../../../types';
 import {
 	previewConversationOnSeparatedWindowAction,
 	setConversationsRead
-} from '../../ui-actions/conversation-actions';
-import { useGlobalExtraWindowManager } from '../app/extra-windows/global-extra-window-manager';
-import { ConversationMessagesList } from '../app/folder-panel/conversations/conversation-messages-list';
-import { getFolderParentId } from '../app/folder-panel/conversations/utils';
-import { ItemAvatar } from '../app/folder-panel/parts/item-avatar';
-import { ListItemActionWrapper } from '../app/folder-panel/parts/list-item-actions-wrapper';
-import { RowInfo } from '../app/folder-panel/parts/row-info';
-import { SenderName } from '../app/folder-panel/parts/sender-name';
+} from '../../../../ui-actions/conversation-actions';
+import { useGlobalExtraWindowManager } from '../../../app/extra-windows/global-extra-window-manager';
+import { ConversationMessagesList } from '../../../app/folder-panel/conversations/conversation-messages-list';
+import { getFolderParentId } from '../../../app/folder-panel/conversations/utils';
+import { ItemAvatar } from '../../../app/folder-panel/parts/item-avatar';
+import { ListItemActionWrapper } from '../../../app/folder-panel/parts/list-item-actions-wrapper';
+import { RowInfo } from '../../../app/folder-panel/parts/row-info';
+import { SenderName } from '../../../app/folder-panel/parts/sender-name';
 
 const CollapseElement = styled(Container)<ContainerProps & { open: boolean }>`
 	display: ${({ open }): string => (open ? 'block' : 'none')};
