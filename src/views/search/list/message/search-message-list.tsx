@@ -11,8 +11,8 @@ import { t, useAppContext } from '@zextras/carbonio-shell-ui';
 import { isEmpty, map, noop } from 'lodash';
 import { useParams } from 'react-router-dom';
 
-import { SearchMessageItem } from './search-message-item';
 import { SearchMessageListComponent } from './search-message-list-component';
+import { SearchMessageListItem } from './search-message-list-item';
 import { LIST_LIMIT } from '../../../../constants';
 import { useAppDispatch } from '../../../../hooks/redux';
 import { useSelection } from '../../../../hooks/use-selection';
@@ -72,14 +72,15 @@ export const SearchMessageList: FC<SearchListProps> = ({
 				const active = itemId === messageId;
 				const isSelected = selected[messageId];
 				return (
-					<SearchMessageItem
-						messageId={messageId}
+					<SearchMessageListItem
+						itemId={messageId}
 						key={messageId}
-						selected={selected}
-						isSelected={isSelected}
-						active={active}
+						selected={isSelected}
+						selecting={isSelectModeOn}
+						isConvChildren={false}
 						toggle={toggle}
-						isSelectModeOn={isSelectModeOn}
+						active={active}
+						isSearchModule
 						deselectAll={deselectAll}
 					/>
 				);
