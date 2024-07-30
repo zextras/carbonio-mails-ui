@@ -33,7 +33,6 @@ import { CustomListItem } from '../../../../carbonio-ui-commons/components/list/
 import { participantToString } from '../../../../commons/utils';
 import { API_REQUEST_STATUS } from '../../../../constants';
 import { useAppDispatch } from '../../../../hooks/redux';
-import { useSelection } from '../../../../hooks/use-selection';
 import {
 	useConversationById,
 	useConversationMessages,
@@ -60,25 +59,21 @@ type SearchConversationListItemProps = {
 	selecting: boolean;
 	active: boolean;
 	activeItemId: string;
-	count: number;
-	setCount: (value: number | ((prevState: number) => number)) => void;
-	items: Array<{ id: string }>;
+	toggle: (id: string) => void;
+	selected: boolean;
+	deselectAll: () => void;
 };
+
 export const SearchConversationListItem: FC<SearchConversationListItemProps> = memo(
 	function ConversationListItem({
 		conversationId,
 		selecting,
 		active,
 		activeItemId,
-		count,
-		setCount,
-		items
+		toggle,
+		selected,
+		deselectAll
 	}) {
-		const { selected, toggle, deselectAll } = useSelection({
-			count,
-			setCount,
-			items
-		});
 		const conversation = useConversationById(conversationId);
 		const dispatch = useAppDispatch();
 		const [open, setOpen] = useState(false);

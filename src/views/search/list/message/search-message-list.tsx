@@ -18,10 +18,9 @@ import { useAppDispatch } from '../../../../hooks/redux';
 import { useSelection } from '../../../../hooks/use-selection';
 import { search } from '../../../../store/actions';
 import type { AppContext, SearchListProps } from '../../../../types';
-import { MultipleSelectionActionsPanel } from '../../../../ui-actions/multiple-selection-actions-panel';
-import { Breadcrumbs } from '../../../app/folder-panel/parts/breadcrumbs';
 import { AdvancedFilterButton } from '../../parts/advanced-filter-button';
 import ShimmerList from '../../shimmer-list';
+import { SearchListHeader } from '../parts/search-list-header';
 
 export const SearchMessageList: FC<SearchListProps> = ({
 	searchDisabled,
@@ -115,9 +114,7 @@ export const SearchMessageList: FC<SearchListProps> = ({
 	}, [dispatch, isLoading, query, hasMore, totalMessages]);
 
 	const messagesLoadingCompleted = true;
-	const selectedIds = useMemo(() => Object.keys(selected), [selected]);
 	const messages = useMemo(() => [...searchResults].map((id) => ({ id })), [searchResults]);
-	const showBreadcrumbs = useMemo(() => totalMessages > 0, [totalMessages]);
 	const onListBottom = useCallback((): void => {
 		onScrollBottom();
 	}, [onScrollBottom]);
@@ -135,29 +132,19 @@ export const SearchMessageList: FC<SearchListProps> = ({
 				searchDisabled={searchDisabled}
 				invalidQueryTooltip={invalidQueryTooltip}
 			/>
-			{isSelectModeOn ? (
-				<MultipleSelectionActionsPanel
-					items={messages}
-					selectedIds={selectedIds}
-					deselectAll={deselectAll}
-					selectAll={selectAll}
-					isAllSelected={isAllSelected}
-					selectAllModeOff={selectAllModeOff}
-					setIsSelectModeOn={setIsSelectModeOn}
-					folderId={folderId}
-				/>
-			) : (
-				showBreadcrumbs && (
-					<Breadcrumbs
-						folderPath={''}
-						itemsCount={totalMessages}
-						isSelectModeOn={isSelectModeOn}
-						setIsSelectModeOn={setIsSelectModeOn}
-						folderId={folderId}
-						isSearchModule
-					/>
-				)
-			)}
+
+			<SearchListHeader
+				items={messages}
+				folderId={folderId}
+				selected={selected}
+				deselectAll={deselectAll}
+				isSelectModeOn={isSelectModeOn}
+				setIsSelectModeOn={setIsSelectModeOn}
+				selectAll={selectAll}
+				isAllSelected={isAllSelected}
+				selectAllModeOff={selectAllModeOff}
+			/>
+
 			{messagesLoadingCompleted && (
 				<>
 					{totalMessages > 0 || hasMore ? (

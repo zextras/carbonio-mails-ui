@@ -10,16 +10,17 @@ import { t, useAppContext } from '@zextras/carbonio-shell-ui';
 import { isEmpty, map } from 'lodash';
 import { useParams } from 'react-router-dom';
 
-import { SearchConversationListHeader } from './search-conversation-list-header';
 import { SearchConversationListItem } from './search-conversation-list-item';
 import { CustomList } from '../../../../carbonio-ui-commons/components/list/list';
 import { LIST_LIMIT } from '../../../../constants';
 import { useAppDispatch } from '../../../../hooks/redux';
+import { useSelection } from '../../../../hooks/use-selection';
 import { search } from '../../../../store/actions';
 import type { AppContext, SearchListProps } from '../../../../types';
 import { Divider } from '../../../app/detail-panel/edit/parts/edit-view-styled-components';
 import { AdvancedFilterButton } from '../../parts/advanced-filter-button';
 import ShimmerList from '../../shimmer-list';
+import { SearchListHeader } from '../parts/search-list-header';
 
 export const SearchConversationList: FC<SearchListProps> = ({
 	searchResults: conversationIds,
@@ -40,7 +41,21 @@ export const SearchConversationList: FC<SearchListProps> = ({
 	const randomListIndex = useMemo(() => Math.floor(Math.random() * 2), []);
 	const listRef = useRef<HTMLDivElement>(null);
 	const totalConversations = useMemo(() => conversationIds.size, [conversationIds]);
-	const conversations = useMemo(() => Object.values(conversationIds ?? {}), [conversationIds]);
+
+	const {
+		selected,
+		toggle,
+		deselectAll,
+		isSelectModeOn,
+		setIsSelectModeOn,
+		selectAll,
+		isAllSelected,
+		selectAllModeOff
+	} = useSelection({
+		setCount,
+		count,
+		items
+	});
 
 	const displayerTitle = useMemo(() => {
 		if (isInvalidQuery) {
@@ -90,15 +105,14 @@ export const SearchConversationList: FC<SearchListProps> = ({
 						conversationId={conversationId}
 						selecting={false}
 						activeItemId={''}
-						count={count}
-						setCount={setCount}
-						items={conversations}
+						toggle={toggle}
+						selected={selected[conversationId]}
+						deselectAll={deselectAll}
 					/>
 				);
 			}),
-		[conversationIds, conversations, count, itemId, setCount]
+		[conversationIds, deselectAll, itemId, selected, toggle]
 	);
-
 	return (
 		<Container background="gray6" width="25%" height="fill" mainAlignment="flex-start">
 			<AdvancedFilterButton
@@ -109,11 +123,16 @@ export const SearchConversationList: FC<SearchListProps> = ({
 			/>
 			{!isInvalidQuery && (
 				<>
-					<SearchConversationListHeader
-						conversations={conversations}
-						count={count}
-						setCount={setCount}
+					<SearchListHeader
 						items={items}
+						folderId={folderId}
+						selected={selected}
+						deselectAll={deselectAll}
+						isSelectModeOn={isSelectModeOn}
+						setIsSelectModeOn={setIsSelectModeOn}
+						selectAll={selectAll}
+						isAllSelected={isAllSelected}
+						selectAllModeOff={selectAllModeOff}
 					/>
 					<Divider color="gray2" />
 					{totalConversations > 0 || hasMore ? (
