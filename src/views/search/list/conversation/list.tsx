@@ -15,8 +15,7 @@ import { SearchConversationListItem } from './item';
 import { CustomList } from '../../../../carbonio-ui-commons/components/list/list';
 import { LIST_LIMIT } from '../../../../constants';
 import { useAppDispatch } from '../../../../hooks/redux';
-import { useSelection } from '../../../../hooks/use-selection';
-import { search } from '../../../../store/actions/search';
+import { search } from '../../../../store/actions';
 import type { AppContext, SearchListProps } from '../../../../types';
 import { Divider } from '../../../app/detail-panel/edit/parts/edit-view-styled-components';
 import { AdvancedFilterButton } from '../../parts/advanced-filter-button';
@@ -38,25 +37,13 @@ export const SearchConversationList: FC<SearchListProps> = ({
 	const items = [...conversationIds].map((conversationId) => ({ id: conversationId }));
 	const dispatch = useAppDispatch();
 	const [isLoading, setIsLoading] = useState(false);
-
-	const { selected, toggle, deselectAll } = useSelection({
-		setCount,
-		count,
-		items
-	});
-
-	// selectedIds is an array of the ids of the selected conversations for multiple selection actions
-
-	// This line of code assigns a random integer between 0 and 1 to the const randomListIndex
 	const randomListIndex = useMemo(() => Math.floor(Math.random() * 2), []);
 	const listRef = useRef<HTMLDivElement>(null);
 
 	const displayerTitle = useMemo(() => {
-		// If the query is invalid, don't return a title
 		if (isInvalidQuery) {
 			return null;
 		}
-		// If there are no results, return a title
 		if (isEmpty(conversationIds)) {
 			if (randomListIndex === 0) {
 				return t(
@@ -66,7 +53,6 @@ export const SearchConversationList: FC<SearchListProps> = ({
 			}
 			return t('displayer.search_list_title2', 'None of your items matches your search.');
 		}
-		// If there are results, don't return a title
 		return null;
 	}, [isInvalidQuery, conversationIds, randomListIndex]);
 
@@ -96,7 +82,6 @@ export const SearchConversationList: FC<SearchListProps> = ({
 			});
 		}
 	}, [dispatch, isLoading, query, hasMore, totalConversations]);
-	// This is used to render the list items. It maps the conversationList array and returns a list item for each conversation.
 	const listItems = useMemo(
 		() =>
 			map([...conversationIds], (conversationId) => {
