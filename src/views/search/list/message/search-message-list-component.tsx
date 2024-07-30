@@ -6,63 +6,13 @@
 import React, { FC, memo, useCallback, useEffect, useMemo } from 'react';
 
 import { Container, Padding, Text } from '@zextras/carbonio-design-system';
-import { find, map, noop, reduce } from 'lodash';
-import styled from 'styled-components';
+import { noop } from 'lodash';
 
-import { SearchMessageListItem } from './search-message-list-item';
 import { CustomList } from '../../../../carbonio-ui-commons/components/list/list';
 import { useFolder } from '../../../../carbonio-ui-commons/store/zustand/folder';
 import { MultipleSelectionActionsPanel } from '../../../../ui-actions/multiple-selection-actions-panel';
 import { Breadcrumbs } from '../../../app/folder-panel/parts/breadcrumbs';
 import ShimmerList from '../../shimmer-list';
-
-const DragImageContainer = styled.div`
-	position: absolute;
-	top: -312.5rem;
-	left: -312.5rem;
-	transform: translate(-100%, -100%);
-	width: 35vw;
-`;
-
-const DragItems = ({
-	messages,
-	draggedIds,
-	folderId
-}: {
-	messages: Array<{ id: string }>;
-	draggedIds: Record<string, boolean>;
-	folderId: string;
-}): React.JSX.Element => {
-	const items = reduce<typeof draggedIds, Array<{ id: string }>>(
-		draggedIds,
-		(acc, v, k) => {
-			const obj = find(messages, ['id', k]);
-			if (obj) {
-				return [...acc, obj];
-			}
-			return acc;
-		},
-		[]
-	);
-
-	return (
-		<>
-			{map(items, (item) => (
-				<SearchMessageListItem
-					itemId={item.id}
-					key={item.id}
-					isConvChildren={false}
-					toggle={noop}
-					selected={false}
-					selecting={false}
-					visible={false}
-					deselectAll={noop}
-					currentFolderId={folderId}
-				/>
-			))}
-		</>
-	);
-};
 
 type SearchMessageListComponentProps = {
 	// the text to display in the side panel
@@ -204,9 +154,6 @@ export const SearchMessageListComponent: FC<SearchMessageListComponentProps> = m
 								</Padding>
 							</Container>
 						)}
-						<DragImageContainer ref={dragImageRef}>
-							<DragItems messages={messages} draggedIds={draggedIds ?? {}} folderId={folderId} />
-						</DragImageContainer>
 					</>
 				) : (
 					<ShimmerList count={totalMessages} />

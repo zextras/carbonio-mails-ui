@@ -56,7 +56,6 @@ type SearchMessageListItemProps = {
 	isSearchModule?: boolean;
 	isConversation?: boolean;
 	deselectAll: () => void;
-	currentFolderId?: string;
 };
 export const SearchMessageListItem: FC<SearchMessageListItemProps> = memo(function MessageListItem({
 	itemId,
@@ -66,11 +65,10 @@ export const SearchMessageListItem: FC<SearchMessageListItemProps> = memo(functi
 	isConvChildren,
 	active,
 	isSearchModule,
-	deselectAll,
-	currentFolderId
+	deselectAll
 }) {
 	const item = useMessageById(itemId);
-	const firstChildFolderId = currentFolderId ?? item.parent;
+	const firstChildFolderId = item.parent;
 
 	const dispatch = useAppDispatch();
 	const zimbraPrefMarkMsgRead = useUserSettings()?.prefs?.zimbraPrefMarkMsgRead !== '-1';

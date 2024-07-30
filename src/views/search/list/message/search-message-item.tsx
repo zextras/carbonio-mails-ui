@@ -5,7 +5,7 @@
  */
 import React, { ReactElement } from 'react';
 
-import { SearchMessageListItemComponent } from './search-message-list-item-component';
+import { SearchMessageListItem } from './search-message-list-item';
 import { CustomListItem } from '../../../../carbonio-ui-commons/components/list/list-item';
 import { useMessageById } from '../../../../store/zustand/message-store/store';
 
@@ -21,7 +21,6 @@ type SearchMessageItemProps = {
 export const SearchMessageItem = ({
 	messageId,
 	isSelected,
-	selected,
 	active,
 	toggle,
 	isSelectModeOn,
@@ -37,16 +36,16 @@ export const SearchMessageItem = ({
 		>
 			{(visible: boolean): ReactElement =>
 				visible ? (
-					<SearchMessageListItemComponent
-						message={completeMessage}
-						selected={selected}
-						isSelected={isSelected}
-						active={active}
+					<SearchMessageListItem
+						itemId={completeMessage.id}
+						selected={isSelected} // rename it
+						selecting={isSelectModeOn} // rename it
+						isConvChildren={false}
 						toggle={toggle}
-						isSelectModeOn={isSelectModeOn}
+						active={active}
+						visible={visible}
 						isSearchModule
 						deselectAll={deselectAll}
-						visible={visible}
 					/>
 				) : (
 					<div style={{ height: '4rem' }} data-testid={`invisible-message-${completeMessage.id}`} />
