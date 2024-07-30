@@ -92,7 +92,7 @@ const MoveConvMessage = ({
 				})
 				.catch(() => noop);
 		},
-		[dispatch, selectedIDs, onCloseModal, deselectAll, createSnackbar, isRestore]
+		[dispatch, selectedIDs, onCloseModal, folderId, deselectAll, createSnackbar, isRestore]
 	);
 
 	const onConfirmMessageMove = useCallback(
