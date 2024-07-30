@@ -5,23 +5,24 @@
  */
 import React, { FC, useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react';
 
-import { Container } from '@zextras/carbonio-design-system';
+import { Container, Padding, Text } from '@zextras/carbonio-design-system';
 import { t, useAppContext } from '@zextras/carbonio-shell-ui';
 import { isEmpty, map } from 'lodash';
 import { useParams } from 'react-router-dom';
 
-import { SearchConversationItem } from './search-conversation-item';
-import { SearchConversationListComponent } from './search-conversation-list-component';
+import { SearchConversationListHeader } from './header';
+import { SearchConversationListItem } from './item';
+import { CustomList } from '../../../../carbonio-ui-commons/components/list/list';
 import { LIST_LIMIT } from '../../../../constants';
 import { useAppDispatch } from '../../../../hooks/redux';
 import { useSelection } from '../../../../hooks/use-selection';
 import { search } from '../../../../store/actions/search';
 import type { AppContext, SearchListProps } from '../../../../types';
-import { getFolderParentId } from '../../../../ui-actions/utils';
+import { Divider } from '../../../app/detail-panel/edit/parts/edit-view-styled-components';
 import { AdvancedFilterButton } from '../../parts/advanced-filter-button';
 import ShimmerList from '../../shimmer-list';
 
-const SearchConversationList: FC<SearchListProps> = ({
+export const SearchConversationList: FC<SearchListProps> = ({
 	searchResults: conversationIds,
 	query,
 	loading,
@@ -36,27 +37,15 @@ const SearchConversationList: FC<SearchListProps> = ({
 	const { setCount, count } = useAppContext<AppContext>();
 	const items = [...conversationIds].map((conversationId) => ({ id: conversationId }));
 	const dispatch = useAppDispatch();
-	const parentId = getFolderParentId({ folderId, isConversation: true, items });
 	const [isLoading, setIsLoading] = useState(false);
 
-	const {
-		selected,
-		toggle,
-		deselectAll,
-		isSelectModeOn,
-		setIsSelectModeOn,
-		selectAll,
-		isAllSelected,
-		selectAllModeOff
-	} = useSelection({
-		currentFolderId: folderId,
+	const { selected, toggle, deselectAll } = useSelection({
 		setCount,
 		count,
 		items
 	});
 
 	// selectedIds is an array of the ids of the selected conversations for multiple selection actions
-	const selectedIds = useMemo(() => Object.keys(selected), [selected]);
 
 	// This line of code assigns a random integer between 0 and 1 to the const randomListIndex
 	const randomListIndex = useMemo(() => Math.floor(Math.random() * 2), []);
@@ -112,21 +101,20 @@ const SearchConversationList: FC<SearchListProps> = ({
 		() =>
 			map([...conversationIds], (conversationId) => {
 				const active = itemId === conversationId;
-				const isSelected = selected[conversationId];
 				return (
-					<SearchConversationItem
+					<SearchConversationListItem
 						key={conversationId}
-						conversationId={conversationId}
-						itemId={itemId}
-						isSelected={isSelected}
 						active={active}
-						toggle={toggle}
-						isSelectModeOn={isSelectModeOn}
-						deselectAll={deselectAll}
+						conversationId={conversationId}
+						selecting={false}
+						activeItemId={''}
+						count={count}
+						setCount={setCount}
+						items={conversations}
 					/>
 				);
 			}),
-		[conversationIds, deselectAll, isSelectModeOn, itemId, selected, toggle]
+		[conversationIds, conversations, count, itemId, setCount]
 	);
 
 	return (
@@ -138,28 +126,41 @@ const SearchConversationList: FC<SearchListProps> = ({
 				invalidQueryTooltip={invalidQueryTooltip}
 			/>
 			{!isInvalidQuery && (
-				<SearchConversationListComponent
-					displayerTitle={displayerTitle}
-					listItems={listItems}
-					totalConversations={totalConversations}
-					conversationsLoadingCompleted
-					selectedIds={selectedIds}
-					folderId={parentId}
-					conversations={conversations}
-					isSelectModeOn={isSelectModeOn}
-					selected={selected}
-					deselectAll={deselectAll}
-					selectAll={selectAll}
-					isAllSelected={isAllSelected}
-					selectAllModeOff={selectAllModeOff}
-					setIsSelectModeOn={setIsSelectModeOn}
-					loadMore={onScrollBottom}
-					isSearchModule
-					listRef={listRef}
-				/>
+				<>
+					<SearchConversationListHeader
+						conversations={conversations}
+						count={count}
+						setCount={setCount}
+						items={items}
+					/>
+					<Divider color="gray2" />
+					{totalConversations > 0 || hasMore ? (
+						<CustomList
+							onListBottom={(): void => {
+								onScrollBottom();
+							}}
+							data-testid={`conversation-list-${folderId}`}
+							ref={listRef}
+						>
+							{listItems}
+						</CustomList>
+					) : (
+						<Container>
+							<Padding top="medium">
+								<Text
+									color="gray1"
+									overflow="break-word"
+									size="small"
+									style={{ whiteSpace: 'pre-line', textAlign: 'center', paddingTop: '2rem' }}
+								>
+									{displayerTitle}
+								</Text>
+							</Padding>
+						</Container>
+					)}
+				</>
 			)}
 			{loading && <ShimmerList count={33} delay={0} />}
 		</Container>
 	);
 };
-export default SearchConversationList;
