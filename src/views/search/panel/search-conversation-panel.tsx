@@ -6,11 +6,12 @@
 import React, { FC, useCallback, useMemo } from 'react';
 
 import { Container, Shimmer } from '@zextras/carbonio-design-system';
-import { FOLDERS, useUserSettings } from '@zextras/carbonio-shell-ui';
+import { useUserSettings } from '@zextras/carbonio-shell-ui';
 import { filter, map } from 'lodash';
 import { useParams } from 'react-router-dom';
 
 import { SearchConversationMessagePanel } from './search-conversation-message-panel';
+import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
 import { API_REQUEST_STATUS } from '../../../constants';
 import { getFolderIdParts } from '../../../helpers/folders';
 import { useCompleteConversation } from '../../../store/zustand/search/hooks/hooks';
