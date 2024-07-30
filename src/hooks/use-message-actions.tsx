@@ -6,13 +6,7 @@
 import { useCallback, useMemo } from 'react';
 
 import { Dispatch } from '@reduxjs/toolkit';
-import {
-	FOLDERS,
-	Tags,
-	useAppContext,
-	useIntegratedFunction,
-	useTags
-} from '@zextras/carbonio-shell-ui';
+import { Tags, useAppContext, useIntegratedFunction, useTags } from '@zextras/carbonio-shell-ui';
 import { includes } from 'lodash';
 import { useParams } from 'react-router-dom';
 
@@ -45,6 +39,7 @@ import {
 import { applyTag } from '../ui-actions/tag-actions';
 import { useGlobalExtraWindowManager } from '../views/app/extra-windows/global-extra-window-manager';
 import { useExtraWindow } from '../views/app/extra-windows/use-extra-window';
+import { FOLDERS } from '../carbonio-ui-commons/constants/folders';
 
 type ActionGeneratorProps = {
 	isInsideExtraWindow: boolean;

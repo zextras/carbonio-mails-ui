@@ -23,10 +23,10 @@ import {
 	ThemeContext,
 	Tooltip
 } from '@zextras/carbonio-design-system';
-import { FOLDERS } from '@zextras/carbonio-shell-ui';
 import { difference, map, noop, slice } from 'lodash';
 import { useParams } from 'react-router-dom';
 
+import { FOLDERS } from '../carbonio-ui-commons/constants/folders';
 import { getFolderIdParts } from '../helpers/folders';
 import { useVisibleActionsCount } from '../hooks/use-visible-actions-count';
 

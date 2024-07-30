@@ -4,9 +4,11 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { type AccordionItemType } from '@zextras/carbonio-design-system';
-import { FOLDERS, ROOT_NAME, ZIMBRA_STANDARD_COLORS, t } from '@zextras/carbonio-shell-ui';
+import { t } from '@zextras/carbonio-shell-ui';
 import { isNil, omitBy, reduce } from 'lodash';
 
+import { ROOT_NAME, ZIMBRA_STANDARD_COLORS } from '../../carbonio-ui-commons/constants';
+import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
 import { isSystemFolder } from '../../carbonio-ui-commons/helpers/folders';
 import {
 	type AccordionFolder,

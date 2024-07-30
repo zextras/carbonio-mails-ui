@@ -5,13 +5,7 @@
  */
 import React, { FC, useEffect, useState } from 'react';
 
-import {
-	FOLDERS,
-	getTags,
-	updatePrimaryBadge,
-	useNotify,
-	useRefresh
-} from '@zextras/carbonio-shell-ui';
+import { getTags, updatePrimaryBadge, useNotify, useRefresh } from '@zextras/carbonio-shell-ui';
 import { filter, find, forEach, isEmpty, keyBy, map, reduce, sortBy } from 'lodash';
 
 import { useFolder } from '../../carbonio-ui-commons/store/zustand/folder';
@@ -47,6 +41,7 @@ import {
 	handleNotifyModifiedSearchConversations
 } from '../../store/searches-slice';
 import type { Conversation } from '../../types';
+import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
 
 const InboxBadgeUpdater = (): null => {
 	const inbox = useFolder(FOLDERS.INBOX);

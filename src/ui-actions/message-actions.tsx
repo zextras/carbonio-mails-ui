@@ -7,13 +7,14 @@ import React, { useCallback } from 'react';
 
 import { AsyncThunkAction, Dispatch } from '@reduxjs/toolkit';
 import { Text, useSnackbar } from '@zextras/carbonio-design-system';
-import { t, FOLDERS, replaceHistory, useIntegratedFunction } from '@zextras/carbonio-shell-ui';
+import { t, replaceHistory, useIntegratedFunction } from '@zextras/carbonio-shell-ui';
 import { isNull, map, noop } from 'lodash';
 
 import DeleteConvConfirm from './delete-conv-modal';
 import { errorPage } from './error-page';
 import MoveConvMessage from './move-conv-msg';
 import RedirectAction from './redirect-message-action';
+import { FOLDERS } from '../carbonio-ui-commons/constants/folders';
 import { getRoot } from '../carbonio-ui-commons/store/zustand/folder';
 import { getContentForPrint } from '../commons/print-conversation/print-conversation';
 import { EditViewActions, MessageActionsDescriptors, TIMEOUTS } from '../constants';

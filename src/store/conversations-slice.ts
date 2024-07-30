@@ -8,7 +8,6 @@
 /* eslint no-param-reassign: ["error", { "props": true, "ignorePropertyModificationsFor": ["state", "conversation", "message", "cache"] }] */
 
 import { createSelector, createSlice } from '@reduxjs/toolkit';
-import { FOLDERS } from '@zextras/carbonio-shell-ui';
 import produce from 'immer';
 import { forEach, merge, reduce } from 'lodash';
 
@@ -22,6 +21,7 @@ import {
 	handleModifiedConversationsReducer,
 	handleModifiedMessagesInConversationReducer
 } from './sync/conversation';
+import { FOLDERS } from '../carbonio-ui-commons/constants/folders';
 import { API_REQUEST_STATUS, SEARCHED_FOLDER_STATE_STATUS } from '../constants';
 import type {
 	ConversationsStateType,

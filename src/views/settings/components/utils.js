@@ -242,142 +242,91 @@ export const ReadSignatureSettings = () => [
 ];
 
 export const getFontSizesOptions = () => [
-	{
-		label: t('settings.font_size', {
-			count: '8',
-			defaultValue: '{{count}} pt'
-		}),
-		value: '8pt'
-	},
-	{
-		label: t('settings.font_size', {
-			count: '9',
-			defaultValue: '{{count}} pt'
-		}),
-		value: '9pt'
-	},
-	{
-		label: t('settings.font_size', {
-			count: '10',
-			defaultValue: '{{count}} pt'
-		}),
-		value: '10pt'
-	},
-	{
-		label: t('settings.font_size', {
-			count: '11',
-			defaultValue: '{{count}} pt'
-		}),
-		value: '11pt'
-	},
-	{
-		label: t('settings.font_size', {
-			count: '12',
-			defaultValue: '{{count}} pt'
-		}),
-		value: '12pt'
-	},
-	{
-		label: t('settings.font_size', {
-			count: '13',
-			defaultValue: '{{count}} pt'
-		}),
-		value: '13pt'
-	},
-	{
-		label: t('settings.font_size', {
-			count: '14',
-			defaultValue: '{{count}} pt'
-		}),
-		value: '14pt'
-	},
-	{
-		label: t('settings.font_size', {
-			count: '16',
-			defaultValue: '{{count}} pt'
-		}),
-		value: '16pt'
-	},
-	{
-		label: t('settings.font_size', {
-			count: '18',
-			defaultValue: '{{count}} pt'
-		}),
-		value: '18pt'
-	},
-	{
-		label: t('settings.font_size', {
-			count: '24',
-			defaultValue: '{{count}} pt'
-		}),
-		value: '24pt'
-	},
-	{
-		label: t('settings.font_size', {
-			count: '36',
-			defaultValue: '{{count}} pt'
-		}),
-		value: '36pt'
-	},
-	{
-		label: t('settings.font_size', {
-			count: '48',
-			defaultValue: '{{count}} pt'
-		}),
-		value: '48pt'
-	}
+	'8pt',
+	'9pt',
+	'10pt',
+	'11pt',
+	'12pt',
+	'13pt',
+	'14pt',
+	'16pt',
+	'18pt',
+	'24pt',
+	'36pt',
+	'48pt'
 ];
 
 export const getFonts = () => [
 	{
-		label: t('settings.fonts.sans_serif', 'Sans Serif'),
-		value: 'arial,helvetica,sans-serif'
+		label: 'Andale Mono',
+		value: 'andale mono, times'
 	},
 	{
-		label: t('settings.fonts.serif', 'Serif'),
-		value: 'times new roman,new york,times,serif'
+		label: 'Arial',
+		value: 'arial, helvetica, sans-serif'
 	},
 	{
-		label: t('settings.fonts.wide_block', 'Wide Block'),
-		value: 'arial black,avant garde'
+		label: 'Arial Black',
+		value: 'arial black, avant garde'
 	},
 	{
-		label: t('settings.fonts.monospaced', 'Monospaced'),
-		value: 'courier new,courier,monaco,monospace,sans-serif'
+		label: 'Book Antiqua',
+		value: 'book antiqua, palatino'
 	},
 	{
-		label: t('settings.fonts.comic', 'Comic'),
-		value: 'comic sans ms,comic sans,sans-serif'
+		label: 'Comic Sans MS',
+		value: 'comic sans ms, sans-serif'
 	},
 	{
-		label: t('settings.fonts.console', 'Console'),
-		value: 'lucida console,sans-serif'
+		label: 'Courier New',
+		value: 'courier new, courier'
 	},
 	{
-		label: t('settings.fonts.garamond', 'Garamond'),
-		value: 'garamond,new york,times,serif'
+		label: 'Georgia',
+		value: 'georgia, palatino'
 	},
 	{
-		label: t('settings.fonts.elegant', 'Elegant'),
-		value: 'georgia,serif'
+		label: 'Helvetica',
+		value: 'helvetica'
 	},
 	{
-		label: t('settings.fonts.professional', 'Professional'),
-		value: 'tahoma,new york,times,serif'
+		label: 'Impact',
+		value: 'impact, chicago'
 	},
 	{
-		label: t('settings.fonts.terminal', 'Terminal'),
-		value: 'terminal,monaco'
+		label: 'Symbol',
+		value: 'symbol'
 	},
 	{
-		label: t('settings.fonts.modern', 'Modern'),
-		value: 'trebuchet ms,sans-serif'
+		label: 'Tahoma',
+		value: 'tahoma, arial, helvetica, sans-serif'
 	},
 	{
-		label: t('settings.fonts.wide', 'Wide'),
-		value: 'verdana,helvetica,sans-serif'
+		label: 'Terminal',
+		value: 'terminal, monaco'
+	},
+	{
+		label: 'Times New Roman',
+		value: 'times new roman, times'
+	},
+	{
+		label: 'Trebuchet MS',
+		value: 'trebuchet ms, geneva'
+	},
+	{
+		label: 'Verdana',
+		value: 'verdana, geneva'
+	},
+	{
+		label: 'Webdings',
+		value: 'webdings'
+	},
+	{
+		label: 'Wingdings',
+		value: 'wingdings, zapf dingbats'
 	}
 ];
+
 export const ConversationSortingSettings = () => [
 	{ label: t('settings.conv_sort_option.desc', 'From new to old'), value: 'dateDesc' },
 	{ label: t('settings.conv_sort_option.asc', 'From old to new'), value: 'dateAsc' }

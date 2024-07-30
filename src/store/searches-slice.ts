@@ -6,7 +6,6 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 
 import { createSlice } from '@reduxjs/toolkit';
-import { FOLDERS } from '@zextras/carbonio-shell-ui';
 import produce from 'immer';
 import { forEach } from 'lodash';
 
@@ -23,6 +22,7 @@ import {
 	handleModifiedMessagesInConversationReducer
 } from './search-slice-reducers';
 import { extractIds, isItemInSearches } from './utils';
+import { FOLDERS } from '../carbonio-ui-commons/constants/folders';
 import { CONVACTIONS } from '../commons/utilities';
 import { LIST_LIMIT } from '../constants';
 import type {

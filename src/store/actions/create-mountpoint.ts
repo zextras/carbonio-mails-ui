@@ -3,12 +3,14 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { FOLDERS, soapFetch } from '@zextras/carbonio-shell-ui';
+import { soapFetch } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
+
+import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
 import { SharedObject } from '../../carbonio-ui-commons/types/sidebar';
 
-export const createMountpoint = async (links: Array<SharedObject>): Promise<unknown> => {
-	const res = await soapFetch('Batch', {
+export const createMountpoint = async (links: Array<SharedObject>): Promise<unknown> =>
+	soapFetch('Batch', {
 		CreateMountpointRequest: map(links, (link) => ({
 			link: {
 				l: FOLDERS.USER_ROOT,
@@ -21,5 +23,3 @@ export const createMountpoint = async (links: Array<SharedObject>): Promise<unkn
 		})),
 		_jsns: 'urn:zimbra'
 	});
-	return res;
-};

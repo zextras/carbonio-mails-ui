@@ -7,8 +7,9 @@
 import React from 'react';
 
 import { screen, waitFor } from '@testing-library/react';
-import { FOLDERS, getUserAccount } from '@zextras/carbonio-shell-ui';
+import { getUserAccount } from '@zextras/carbonio-shell-ui';
 
+import { FOLDERS } from '../../../../../carbonio-ui-commons/constants/folders';
 import { ParticipantRole } from '../../../../../carbonio-ui-commons/constants/participants';
 import { useBoard as mockedUseBoard } from '../../../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
 import { populateFoldersStore } from '../../../../../carbonio-ui-commons/test/mocks/store/folders';

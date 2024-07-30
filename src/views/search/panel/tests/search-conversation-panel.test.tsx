@@ -14,8 +14,8 @@ import { noop } from 'lodash';
 /* eslint-disable no-param-reassign */
 import { useParams } from 'react-router-dom';
 
+import { FOLDERS } from '../../../../carbonio-ui-commons/constants/folders';
 import { useFolderStore } from '../../../../carbonio-ui-commons/store/zustand/folder';
-import { FOLDERS } from '../../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui-constants';
 import { generateFolders } from '../../../../carbonio-ui-commons/test/mocks/folders/folders-generator';
 import { createSoapAPIInterceptor } from '../../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { buildSoapErrorResponseBody } from '../../../../carbonio-ui-commons/test/mocks/utils/soap';

@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { faker } from '@faker-js/faker';
-import { FOLDERS } from '@zextras/carbonio-shell-ui';
+import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
 
 import { ParticipantRole } from '../../carbonio-ui-commons/constants/participants';
 import { getRootsMap } from '../../carbonio-ui-commons/store/zustand/folder/hooks';

@@ -16,7 +16,6 @@ import {
 	Text
 } from '@zextras/carbonio-design-system';
 import {
-	FOLDERS,
 	getIntegratedComponent,
 	t,
 	useUserAccounts,
@@ -29,6 +28,7 @@ import { useParams } from 'react-router-dom';
 import AttachmentsBlock from './attachments-block';
 import PreviewHeader from './parts/preview-header';
 import ReadReceiptModal from './read-receipt-modal';
+import { FOLDERS } from '../../../../carbonio-ui-commons/constants/folders';
 import MailMessageRenderer from '../../../../commons/mail-message-renderer';
 import { MessageActionsDescriptors } from '../../../../constants';
 import { getAttachmentParts } from '../../../../helpers/attachments';

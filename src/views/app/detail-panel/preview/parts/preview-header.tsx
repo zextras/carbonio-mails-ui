@@ -30,13 +30,7 @@ import {
 	IconButton,
 	getColor
 } from '@zextras/carbonio-design-system';
-import {
-	useTags,
-	useUserAccounts,
-	ZIMBRA_STANDARD_COLORS,
-	runSearch,
-	t
-} from '@zextras/carbonio-shell-ui';
+import { useTags, useUserAccounts, runSearch, t } from '@zextras/carbonio-shell-ui';
 import {
 	capitalize,
 	every,
@@ -57,6 +51,7 @@ import { ContactNameChip } from './contact-names-chips';
 import MessageContactsList from './message-contact-list';
 import OnBehalfOfDisplayer from './on-behalf-of-displayer';
 import { ParticipantRole } from '../../../../../carbonio-ui-commons/constants/participants';
+import { ZIMBRA_STANDARD_COLORS } from '../../../../../carbonio-ui-commons/constants/utils';
 import { getTimeLabel, participantToString } from '../../../../../commons/utils';
 import { getNoIdentityPlaceholder } from '../../../../../helpers/identities';
 import { retrieveAttachmentsType } from '../../../../../store/editor-slice-utils';

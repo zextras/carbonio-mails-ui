@@ -14,8 +14,10 @@ import { SearchConversationList } from './list/conversation/list';
 import { SearchMessageList } from './list/message/search-message-list';
 import SearchPanel from './panel/search-panel';
 import { useIsMessageView, useRunSearch } from './search-view-hooks';
+import { useUpdateView } from '../../carbonio-ui-commons/hooks/use-update-view';
 
 const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHeader }) => {
+	useUpdateView();
 	const { path } = useRouteMatch();
 	const [query, updateQuery] = useQuery();
 	const isMessageView = useIsMessageView();

@@ -4,12 +4,14 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { FC, ReactElement, useMemo } from 'react';
+
 import { Container, Text, Icon, Row, Padding } from '@zextras/carbonio-design-system';
+import { getTags } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
 
-import { getTags, ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-shell-ui';
-import Heading from '../../components/settings-heading';
 import FilterActionRows from './filter-action-rows';
+import { ZIMBRA_STANDARD_COLORS } from '../../../../carbonio-ui-commons/constants/utils';
+import Heading from '../../components/settings-heading';
 
 type ComponentProps = any;
 

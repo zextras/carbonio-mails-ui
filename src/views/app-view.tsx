@@ -6,7 +6,6 @@
 import React, { FC, Suspense, lazy, useEffect, useMemo, useState, useRef } from 'react';
 
 import {
-	FOLDERS,
 	Spinner,
 	setAppContext,
 	useUserSettings,
@@ -17,6 +16,8 @@ import moment from 'moment';
 
 import { FolderView, MailsListLayout } from './folder-view';
 import { LayoutSelector } from './layout-selector';
+import { FOLDERS } from '../carbonio-ui-commons/constants/folders';
+import { useUpdateView } from '../carbonio-ui-commons/hooks/use-update-view';
 import { LOCAL_STORAGE_LAYOUT, MAILS_VIEW_LAYOUTS } from '../constants';
 import { getFolderIdParts } from '../helpers/folders';
 import { useAppSelector } from '../hooks/redux';
@@ -37,6 +38,7 @@ const AppView: FC = () => {
 	const { zimbraPrefGroupMailBy, zimbraPrefLocale } = useUserSettings().prefs;
 	const currentFolderId = useAppSelector(selectCurrentFolder);
 	const containerRef = useRef<HTMLDivElement>(null);
+	useUpdateView();
 
 	const [listLayout] = useLocalStorage<MailsListLayout>(
 		LOCAL_STORAGE_LAYOUT,

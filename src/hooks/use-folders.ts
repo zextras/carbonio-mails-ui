@@ -4,9 +4,11 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { FOLDERS } from '@zextras/carbonio-shell-ui';
-import { sortBy } from 'lodash';
 import { useMemo } from 'react';
+
+import { sortBy } from 'lodash';
+
+import { FOLDERS } from '../carbonio-ui-commons/constants/folders';
 import { getRootsArray, useRootsArray } from '../carbonio-ui-commons/store/zustand/folder/hooks';
 import { Folder } from '../carbonio-ui-commons/types/folder';
 import { getFolderIdParts } from '../helpers/folders';

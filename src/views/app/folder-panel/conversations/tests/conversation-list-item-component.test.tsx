@@ -6,9 +6,9 @@
 import React from 'react';
 
 import { fireEvent, screen } from '@testing-library/react';
-import { FOLDERS } from '@zextras/carbonio-shell-ui';
 import { noop } from 'lodash';
 
+import { FOLDERS } from '../../../../../carbonio-ui-commons/constants/folders';
 import { ParticipantRole } from '../../../../../carbonio-ui-commons/constants/participants';
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
 import { API_REQUEST_STATUS, FOLDERS_DESCRIPTORS } from '../../../../../constants';

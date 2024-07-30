@@ -6,10 +6,11 @@
 import React, { FC, SyntheticEvent, useCallback, useMemo } from 'react';
 
 import { Avatar, Container } from '@zextras/carbonio-design-system';
-import { FOLDERS, t } from '@zextras/carbonio-shell-ui';
+import { t } from '@zextras/carbonio-shell-ui';
 import styled from 'styled-components';
 
 import { TooltipWrapper } from './tooltip-wrapper';
+import { FOLDERS } from '../../../../carbonio-ui-commons/constants/folders';
 import { ParticipantRole } from '../../../../carbonio-ui-commons/constants/participants';
 import { getFolderIdParts } from '../../../../helpers/folders';
 import type { ItemAvatarType, Participant } from '../../../../types';
