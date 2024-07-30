@@ -6,18 +6,20 @@
 
 import React, { FC, useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react';
 
-import { Container } from '@zextras/carbonio-design-system';
+import { Container, Padding, Text } from '@zextras/carbonio-design-system';
 import { t, useAppContext } from '@zextras/carbonio-shell-ui';
-import { isEmpty, map, noop } from 'lodash';
+import { isEmpty, map } from 'lodash';
 import { useParams } from 'react-router-dom';
 
-import { SearchMessageListComponent } from './search-message-list-component';
 import { SearchMessageListItem } from './search-message-list-item';
+import { CustomList } from '../../../../carbonio-ui-commons/components/list/list';
 import { LIST_LIMIT } from '../../../../constants';
 import { useAppDispatch } from '../../../../hooks/redux';
 import { useSelection } from '../../../../hooks/use-selection';
-import { search } from '../../../../store/actions/search';
+import { search } from '../../../../store/actions';
 import type { AppContext, SearchListProps } from '../../../../types';
+import { MultipleSelectionActionsPanel } from '../../../../ui-actions/multiple-selection-actions-panel';
+import { Breadcrumbs } from '../../../app/folder-panel/parts/breadcrumbs';
 import { AdvancedFilterButton } from '../../parts/advanced-filter-button';
 import ShimmerList from '../../shimmer-list';
 
@@ -113,16 +115,15 @@ export const SearchMessageList: FC<SearchListProps> = ({
 	}, [dispatch, isLoading, query, hasMore, totalMessages]);
 
 	const messagesLoadingCompleted = true;
-	//  useMemo(
-	// 	() => !isArray(searchResults?.messageIds),
-	// 	[searchResults?.messageIds]
-	// );
 	const selectedIds = useMemo(() => Object.keys(selected), [selected]);
 	const messages = useMemo(() => [...searchResults].map((id) => ({ id })), [searchResults]);
-
+	const showBreadcrumbs = useMemo(() => totalMessages > 0, [totalMessages]);
+	const onListBottom = useCallback((): void => {
+		onScrollBottom();
+	}, [onScrollBottom]);
 	return (
 		<Container
-			background="gray6"
+			background={'gray6'}
 			width="25%"
 			height="fill"
 			mainAlignment="flex-start"
@@ -134,26 +135,56 @@ export const SearchMessageList: FC<SearchListProps> = ({
 				searchDisabled={searchDisabled}
 				invalidQueryTooltip={invalidQueryTooltip}
 			/>
-			<SearchMessageListComponent
-				totalMessages={totalMessages}
-				displayerTitle={displayerTitle}
-				listItems={listItems}
-				messagesLoadingCompleted={messagesLoadingCompleted}
-				selectedIds={selectedIds}
-				folderId={folderId}
-				messages={messages}
-				isSelectModeOn={isSelectModeOn}
-				setIsSelectModeOn={setIsSelectModeOn}
-				isAllSelected={isAllSelected}
-				selectAll={selectAll}
-				deselectAll={deselectAll}
-				selected={selected}
-				selectAllModeOff={selectAllModeOff}
-				isSearchModule
-				setDraggedIds={noop}
-				loadMore={onScrollBottom}
-				listRef={listRef}
-			/>
+			{isSelectModeOn ? (
+				<MultipleSelectionActionsPanel
+					items={messages}
+					selectedIds={selectedIds}
+					deselectAll={deselectAll}
+					selectAll={selectAll}
+					isAllSelected={isAllSelected}
+					selectAllModeOff={selectAllModeOff}
+					setIsSelectModeOn={setIsSelectModeOn}
+					folderId={folderId}
+				/>
+			) : (
+				showBreadcrumbs && (
+					<Breadcrumbs
+						folderPath={''}
+						itemsCount={totalMessages}
+						isSelectModeOn={isSelectModeOn}
+						setIsSelectModeOn={setIsSelectModeOn}
+						folderId={folderId}
+						isSearchModule
+					/>
+				)
+			)}
+			{messagesLoadingCompleted && (
+				<>
+					{totalMessages > 0 || hasMore ? (
+						<CustomList
+							onListBottom={onListBottom}
+							data-testid={`message-list-${folderId}`}
+							ref={listRef}
+						>
+							{listItems}
+						</CustomList>
+					) : (
+						<Container>
+							<Padding top="medium">
+								<Text
+									color="gray1"
+									overflow="break-word"
+									size="small"
+									style={{ whiteSpace: 'pre-line', textAlign: 'center', paddingTop: '2rem' }}
+								>
+									{displayerTitle}
+								</Text>
+							</Padding>
+						</Container>
+					)}
+				</>
+			)}
+
 			{loading && <ShimmerList count={33} delay={0} />}
 		</Container>
 	);
