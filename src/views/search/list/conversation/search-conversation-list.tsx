@@ -10,8 +10,8 @@ import { t, useAppContext } from '@zextras/carbonio-shell-ui';
 import { isEmpty, map } from 'lodash';
 import { useParams } from 'react-router-dom';
 
-import { SearchConversationListHeader } from './header';
-import { SearchConversationListItem } from './item';
+import { SearchConversationListHeader } from './search-conversation-list-header';
+import { SearchConversationListItem } from './search-conversation-list-item';
 import { CustomList } from '../../../../carbonio-ui-commons/components/list/list';
 import { LIST_LIMIT } from '../../../../constants';
 import { useAppDispatch } from '../../../../hooks/redux';
