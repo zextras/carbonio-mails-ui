@@ -39,6 +39,8 @@ export const SearchConversationList: FC<SearchListProps> = ({
 	const [isLoading, setIsLoading] = useState(false);
 	const randomListIndex = useMemo(() => Math.floor(Math.random() * 2), []);
 	const listRef = useRef<HTMLDivElement>(null);
+	const totalConversations = useMemo(() => conversationIds.size, [conversationIds]);
+	const conversations = useMemo(() => Object.values(conversationIds ?? {}), [conversationIds]);
 
 	const displayerTitle = useMemo(() => {
 		if (isInvalidQuery) {
@@ -55,11 +57,6 @@ export const SearchConversationList: FC<SearchListProps> = ({
 		}
 		return null;
 	}, [isInvalidQuery, conversationIds, randomListIndex]);
-
-	// totalConversations: length of conversations object
-	const totalConversations = useMemo(() => conversationIds.size, [conversationIds]);
-
-	const conversations = useMemo(() => Object.values(conversationIds ?? {}), [conversationIds]);
 
 	useLayoutEffect(() => {
 		listRef?.current && (listRef.current.children[0].scrollTop = 0);

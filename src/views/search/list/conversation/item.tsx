@@ -206,12 +206,7 @@ export const SearchConversationListItem: FC<SearchConversationListItemProps> = m
 			[subject, conversation.fragment]
 		);
 
-		/**
-		 * This is the number of messages to display in the conversation badge.
-		 * In search module we check if the user has enabled the option to show trashed and/or spam messages
-		 * @returns {number}
-		 */
-		const getmsgToDisplayCount = useCallback(
+		const badgeTotalConversationMessages = useCallback(
 			(): number => conversation.messagesInConversation,
 			[conversation]
 		);
@@ -288,7 +283,7 @@ export const SearchConversationListItem: FC<SearchConversationListItemProps> = m
 											<Padding right="extrasmall">
 												<Badge
 													data-testid={`conversation-messages-count-${conversationId}`}
-													value={getmsgToDisplayCount()}
+													value={badgeTotalConversationMessages()}
 													type={textReadValues.badge}
 												/>
 											</Padding>
