@@ -8,7 +8,6 @@ import { useCallback, useMemo, useRef, useState } from 'react';
 import { map, omit } from 'lodash';
 
 type UseSelectionProps = {
-	currentFolderId: string;
 	count: number;
 	items?: Array<{ id: string }>;
 	setCount: (value: number | ((prevState: number) => number)) => void;

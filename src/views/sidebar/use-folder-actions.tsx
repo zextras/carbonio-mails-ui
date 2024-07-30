@@ -51,7 +51,7 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 	);
 	const { setCount } = useAppContext<AppContext>();
 
-	const { deselectAll } = useSelection({ currentFolderId: folder.id, setCount, count: 0 });
+	const { deselectAll } = useSelection({ setCount, count: 0 });
 
 	const { createSnackbar } = useUiUtilities();
 

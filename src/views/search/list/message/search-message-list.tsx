@@ -45,7 +45,6 @@ export const SearchMessageList: FC<SearchListProps> = ({
 		isAllSelected,
 		selectAllModeOff
 	} = useSelection({
-		currentFolderId: folderId,
 		setCount,
 		count,
 		items: [...searchResults].map((message) => ({ id: message }))

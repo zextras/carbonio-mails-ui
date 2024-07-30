@@ -20,7 +20,7 @@ export const MessagePreviewPanelContainer: FC = () => {
 	const { folderId, messageId } = useParams<{ folderId: string; messageId: string }>();
 	const message = useAppSelector((state: MailsStateType) => selectMessage(state, messageId));
 	const { setCount } = useAppContext<AppContext>();
-	const { deselectAll } = useSelection({ currentFolderId: folderId, setCount, count: 0 });
+	const { deselectAll } = useSelection({ setCount, count: 0 });
 
 	const messageActionsForExtraWindow = useMessageActions(message, true);
 	const messageActions = useMsgConvActions({

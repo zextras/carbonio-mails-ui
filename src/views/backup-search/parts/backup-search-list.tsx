@@ -27,7 +27,6 @@ import { BACKUP_SEARCH_STATUS, MAILS_ROUTE } from '../../../constants';
 import { useSelection } from '../../../hooks/use-selection';
 import { StoreProvider } from '../../../store/redux';
 import { useBackupSearchStore } from '../../../store/zustand/backup-search/store';
-import { DragItemWrapper } from '../../app/folder-panel/parts/drag-item-wrapper';
 
 export const BackupSearchList = (): React.JSX.Element => {
 	const [count, setCount] = useState(0);
@@ -41,7 +40,6 @@ export const BackupSearchList = (): React.JSX.Element => {
 		selectAll,
 		isAllSelected
 	} = useSelection({
-		currentFolderId: 'backup-search',
 		setCount,
 		count,
 		items: [...Object.values(messages ?? {})]
