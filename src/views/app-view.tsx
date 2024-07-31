@@ -52,7 +52,7 @@ const AppView: FC = () => {
 
 	const [splitLayoutOrientation] = useLocalStorage<MailsSplitLayoutOrientation>(
 		LOCAL_STORAGE_SPLIT_LAYOUT_ORIENTATION,
-		MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS.HORIZONTAL
+		MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS.VERTICAL
 	);
 
 	const isMessageView = useMemo(
