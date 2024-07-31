@@ -93,7 +93,13 @@ export const LayoutComponent = (): React.JSX.Element => {
 
 	return (
 		<Tooltip label={tooltipLabel} placement="top">
-			<MultiButton primaryIcon={icon} type={'ghost'} onClick={onToggle} items={layoutOptions} />
+			<MultiButton
+				size={'large'}
+				primaryIcon={icon}
+				type={'ghost'}
+				onClick={onToggle}
+				items={layoutOptions}
+			/>
 		</Tooltip>
 	);
 };
