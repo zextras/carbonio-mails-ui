@@ -158,6 +158,7 @@ const MailContent: FC<{
 			orientation="vertical"
 			disableTransition
 			data-testid="MailMessageRendererCollapse"
+			// style={{ overflow: 'auto', height: '100%' }}
 		>
 			{message.isComplete && (
 				<Container
@@ -392,9 +393,9 @@ const MailPreview: FC<MailPreviewProps> = ({
 			<Container
 				width="fill"
 				height="fit"
-				style={{
-					overflowY: 'auto'
-				}}
+				// style={{
+				// 	overflowY: 'auto'
+				// }}
 			>
 				{(open || isAlone) && (
 					<MailContent

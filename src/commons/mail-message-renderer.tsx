@@ -25,7 +25,7 @@ import {
 	Text
 } from '@zextras/carbonio-design-system';
 import { editSettings, t, useUserSettings } from '@zextras/carbonio-shell-ui';
-import { filter, forEach, isArray, isNull, reduce, some } from 'lodash';
+import { debounce, filter, forEach, isArray, isNull, reduce, some } from 'lodash';
 import { Trans } from 'react-i18next';
 import styled from 'styled-components';
 
@@ -331,7 +331,7 @@ const _HtmlMessageRenderer: FC<_HtmlMessageRendererType> = ({
 				}
 			});
 
-		const resizeObserver = new ResizeObserver(calculateHeight);
+		const resizeObserver = new ResizeObserver(debounce(calculateHeight, 100));
 		divRef.current && resizeObserver.observe(divRef.current);
 
 		return () => resizeObserver.disconnect();
@@ -411,7 +411,9 @@ const _HtmlMessageRenderer: FC<_HtmlMessageRendererType> = ({
 				</BannerContainer>
 			)}
 			<iframe
+				id="msgRenderIframe"
 				data-testid="message-renderer-iframe"
+				scrolling="no"
 				title={msgId}
 				ref={iframeRef}
 				onLoad={calculateHeight}
