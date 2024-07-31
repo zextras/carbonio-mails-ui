@@ -9,34 +9,62 @@ import { act } from '@testing-library/react';
 
 import { useLocalStorage } from '../../../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
 import { screen, setupTest, within } from '../../../../../carbonio-ui-commons/test/test-setup';
-import { MAILS_VIEW_LAYOUTS } from '../../../../../constants';
+import {
+	LOCAL_STORAGE_LAYOUT,
+	LOCAL_STORAGE_SPLIT_LAYOUT_ORIENTATION,
+	MAILS_VIEW_LAYOUTS,
+	MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS
+} from '../../../../../constants';
 import { TESTID_SELECTORS } from '../../../../../tests/constants';
-import { generateStore } from '../../../../../tests/generators/store';
+import { MailsListLayout, MailsSplitLayoutOrientation } from '../../../../folder-view';
 import { LayoutComponent } from '../layout-component';
 
-const bottomViewOutlineIcon = 'icon: BottomViewOutline';
-const layoutOutlineIcon = 'icon: LayoutOutline';
+const mockLayoutStorage = ({
+	layout = MAILS_VIEW_LAYOUTS.SPLIT,
+	splitOrientation = MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS.VERTICAL,
+	callback = jest.fn()
+}: {
+	layout?: MailsListLayout;
+	splitOrientation?: MailsSplitLayoutOrientation;
+	callback?: typeof jest.fn;
+} = {}): void => {
+	useLocalStorage.mockImplementation(
+		(key): [MailsListLayout | MailsSplitLayoutOrientation | undefined, typeof jest.fn] => {
+			if (key === LOCAL_STORAGE_LAYOUT) {
+				return [layout, callback];
+			}
+			if (key === LOCAL_STORAGE_SPLIT_LAYOUT_ORIENTATION) {
+				return [splitOrientation, callback];
+			}
+
+			return [undefined, callback];
+		}
+	);
+};
 
 describe('LayoutComponent', () => {
 	test('the icon has width 1.25rem', async () => {
-		useLocalStorage.mockImplementation(() => [MAILS_VIEW_LAYOUTS.LEFT_TO_RIGHT, jest.fn()]);
-		const store = generateStore();
+		mockLayoutStorage();
 
-		setupTest(<LayoutComponent />, { store });
+		setupTest(<LayoutComponent />);
 
-		expect(await screen.findByTestId(bottomViewOutlineIcon)).toHaveStyle({ width: '1.25rem' });
+		expect(await screen.findByTestId(TESTID_SELECTORS.icons.layoutHidePreview)).toHaveStyle({
+			width: '1.25rem'
+		});
 	});
+
 	test('the icon has height 1.25rem', async () => {
-		useLocalStorage.mockImplementation(() => [MAILS_VIEW_LAYOUTS.LEFT_TO_RIGHT, jest.fn()]);
-		const store = generateStore();
+		mockLayoutStorage();
 
-		setupTest(<LayoutComponent />, { store });
+		setupTest(<LayoutComponent />);
 
-		expect(await screen.findByTestId(bottomViewOutlineIcon)).toHaveStyle({ height: '1.25rem' });
+		expect(await screen.findByTestId(TESTID_SELECTORS.icons.layoutHidePreview)).toHaveStyle({
+			height: '1.25rem'
+		});
 	});
 
 	test('a chevron icon is displayed', () => {
-		useLocalStorage.mockImplementation(() => [MAILS_VIEW_LAYOUTS.LEFT_TO_RIGHT, jest.fn()]);
+		mockLayoutStorage();
 
 		setupTest(<LayoutComponent />);
 
@@ -46,19 +74,18 @@ describe('LayoutComponent', () => {
 	});
 
 	test('the layouts options are visible if the chevron is clicked', async () => {
-		useLocalStorage.mockImplementation(() => [MAILS_VIEW_LAYOUTS.LEFT_TO_RIGHT, jest.fn()]);
+		mockLayoutStorage();
 
 		const { user } = setupTest(<LayoutComponent />);
-
 		const chevron = screen.getByRoleWithIcon('button', {
 			icon: TESTID_SELECTORS.icons.chevronDown
 		});
 		await act(async () => {
 			await user.click(chevron);
 		});
+		const list = screen.getByTestId('dropdown-popper-list');
 
 		// Check the dropdown has only 3 children
-		const list = screen.getByTestId('dropdown-popper-list');
 		expect(list.childNodes).toHaveLength(3);
 
 		// Check each item
@@ -70,53 +97,76 @@ describe('LayoutComponent', () => {
 		expect(within(list).getByTestId(TESTID_SELECTORS.icons.layoutHidePreview)).toBeVisible();
 	});
 
-	test('in top to bottom layout icon will render LayoutOutlineIcon icon', async () => {
-		useLocalStorage.mockImplementation(() => [MAILS_VIEW_LAYOUTS.TOP_TO_BOTTOM, jest.fn()]);
-		const store = generateStore();
+	test('if the current layout is "split" the button will render the "NoSplit" icon', async () => {
+		mockLayoutStorage({ layout: MAILS_VIEW_LAYOUTS.SPLIT });
+		setupTest(<LayoutComponent />);
 
-		setupTest(<LayoutComponent />, { store });
-
-		expect(await screen.findByTestId(layoutOutlineIcon)).toBeInTheDocument();
+		expect(await screen.findByTestId(TESTID_SELECTORS.icons.layoutHidePreview)).toBeInTheDocument();
 	});
-	test('In left to right layout icon will render BottomViewOutline icon', async () => {
-		useLocalStorage.mockImplementation(() => [MAILS_VIEW_LAYOUTS.LEFT_TO_RIGHT, jest.fn()]);
-		const store = generateStore();
 
-		setupTest(<LayoutComponent />, { store });
+	test('if the current layout is "no split", and the last split orientation was vertical, the button will render the "vertical" icon', async () => {
+		mockLayoutStorage({
+			layout: MAILS_VIEW_LAYOUTS.FULL,
+			splitOrientation: MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS.VERTICAL
+		});
+		setupTest(<LayoutComponent />);
 
-		expect(await screen.findByTestId(bottomViewOutlineIcon)).toBeInTheDocument();
+		expect(await screen.findByTestId(TESTID_SELECTORS.icons.layoutVertical)).toBeInTheDocument();
 	});
+
+	test('if the current layout is "no split", and the last split orientation was horizontal, the button will render the "horizontal" icon', async () => {
+		mockLayoutStorage({
+			layout: MAILS_VIEW_LAYOUTS.FULL,
+			splitOrientation: MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS.HORIZONTAL
+		});
+		setupTest(<LayoutComponent />);
+
+		expect(await screen.findByTestId(TESTID_SELECTORS.icons.layoutHorizontal)).toBeInTheDocument();
+	});
+
 	test('onClick will call the local storage function', async () => {
-		const cb = jest.fn();
-		useLocalStorage.mockImplementation(() => [MAILS_VIEW_LAYOUTS.LEFT_TO_RIGHT, cb]);
-		const store = generateStore();
+		const callback = jest.fn();
+		mockLayoutStorage({ callback });
 
-		const { user } = setupTest(<LayoutComponent />, { store });
+		const { user } = setupTest(<LayoutComponent />);
+		await user.click(screen.getByTestId(TESTID_SELECTORS.icons.layoutHidePreview));
 
-		await user.click(screen.getByTestId(bottomViewOutlineIcon));
-
-		expect(cb).toHaveBeenCalledTimes(1);
+		expect(callback).toHaveBeenCalledTimes(1);
 	});
-	test('onHover tooltip will render "Show vertical"', async () => {
-		useLocalStorage.mockImplementation(() => [MAILS_VIEW_LAYOUTS.TOP_TO_BOTTOM, jest.fn()]);
-		const store = generateStore();
 
-		const { user } = setupTest(<LayoutComponent />, { store });
+	test('onHover tooltip will render "Hide preview"', async () => {
+		mockLayoutStorage();
 
-		await user.hover(screen.getByTestId(layoutOutlineIcon));
+		const { user } = setupTest(<LayoutComponent />);
+		await user.hover(screen.getByTestId(TESTID_SELECTORS.icons.layoutHidePreview));
+		const tooltip = await screen.findByText('Hide preview');
 
-		const tooltip = await screen.findByText('Vertical view');
 		expect(tooltip).toBeVisible();
 	});
-	test('onHover tooltip will render "Show horizontal"', async () => {
-		useLocalStorage.mockImplementation(() => [MAILS_VIEW_LAYOUTS.LEFT_TO_RIGHT, jest.fn()]);
-		const store = generateStore();
 
-		const { user } = setupTest(<LayoutComponent />, { store });
+	test('onHover tooltip will render "Switch to vertical"', async () => {
+		mockLayoutStorage({
+			layout: MAILS_VIEW_LAYOUTS.FULL,
+			splitOrientation: MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS.VERTICAL
+		});
 
-		await user.hover(screen.getByTestId(bottomViewOutlineIcon));
+		const { user } = setupTest(<LayoutComponent />);
+		await user.hover(screen.getByTestId(TESTID_SELECTORS.icons.layoutVertical));
+		const tooltip = await screen.findByText('Switch to vertical');
 
-		const tooltip = await screen.findByText('Horizontal view');
+		expect(tooltip).toBeVisible();
+	});
+
+	test('onHover tooltip will render "Switch to horizontal"', async () => {
+		mockLayoutStorage({
+			layout: MAILS_VIEW_LAYOUTS.FULL,
+			splitOrientation: MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS.HORIZONTAL
+		});
+
+		const { user } = setupTest(<LayoutComponent />);
+		await user.hover(screen.getByTestId(TESTID_SELECTORS.icons.layoutHorizontal));
+		const tooltip = await screen.findByText('Switch to horizontal');
+
 		expect(tooltip).toBeVisible();
 	});
 });
