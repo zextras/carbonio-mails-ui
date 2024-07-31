@@ -98,6 +98,7 @@ export const SearchConversationList: FC<SearchListProps> = ({
 		() =>
 			map([...conversationIds], (conversationId) => {
 				const active = itemId === conversationId;
+				const isSelected = selected[conversationId];
 				return (
 					<SearchConversationListItem
 						key={conversationId}
@@ -106,7 +107,7 @@ export const SearchConversationList: FC<SearchListProps> = ({
 						selecting={false}
 						activeItemId={''}
 						toggle={toggle}
-						selected={selected[conversationId]}
+						selected={isSelected}
 						deselectAll={deselectAll}
 					/>
 				);

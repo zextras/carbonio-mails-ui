@@ -222,12 +222,10 @@ export const SearchConversationListItem: FC<SearchConversationListItemProps> = m
 			}
 			return conversation?.messages?.length > 0;
 		}, [conversation?.messages?.length, conversation.messagesInConversation, textReadValues.badge]);
-
-		const isSelected = selected[conversationId];
 		return (
 			<CustomListItem
 				active={active}
-				selected={isSelected}
+				selected={selected}
 				key={conversationId}
 				background={'transparent'}
 			>
@@ -250,7 +248,7 @@ export const SearchConversationListItem: FC<SearchConversationListItemProps> = m
 							>
 								<ItemAvatar
 									item={conversation}
-									selected={isSelected}
+									selected={selected}
 									selecting={selecting}
 									toggle={toggle}
 									folderId={folderId}
