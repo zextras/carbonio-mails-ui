@@ -104,15 +104,15 @@ export const SearchConversationList: FC<SearchListProps> = ({
 						key={conversationId}
 						active={active}
 						conversationId={conversationId}
-						selecting={false}
-						activeItemId={''}
+						selecting={isSelectModeOn}
+						activeItemId={itemId}
 						toggle={toggle}
 						selected={isSelected}
 						deselectAll={deselectAll}
 					/>
 				);
 			}),
-		[conversationIds, deselectAll, itemId, selected, toggle]
+		[conversationIds, deselectAll, isSelectModeOn, itemId, selected, toggle]
 	);
 	return (
 		<Container background="gray6" width="25%" height="fill" mainAlignment="flex-start">

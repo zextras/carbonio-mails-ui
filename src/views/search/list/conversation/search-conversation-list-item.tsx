@@ -222,6 +222,7 @@ export const SearchConversationListItem: FC<SearchConversationListItemProps> = m
 			}
 			return conversation?.messages?.length > 0;
 		}, [conversation?.messages?.length, conversation.messagesInConversation, textReadValues.badge]);
+		console.log(`Conversation with id:${conversationId}is Selected: ${selected}`);
 		return (
 			<CustomListItem
 				active={active}
