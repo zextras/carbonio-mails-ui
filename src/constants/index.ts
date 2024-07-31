@@ -26,7 +26,8 @@ export const LOCAL_STORAGE_LAYOUT = 'carbonio-mails-ui-layout';
 
 export const MAILS_VIEW_LAYOUTS = {
 	LEFT_TO_RIGHT: 'leftToRight',
-	TOP_TO_BOTTOM: 'topToBottom'
+	TOP_TO_BOTTOM: 'topToBottom',
+	HIDE_PREVIEW: 'hidePreview'
 } as const;
 
 export const MAILS_VIEW_ORIENTATIONS = {
