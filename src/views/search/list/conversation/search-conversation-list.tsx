@@ -123,7 +123,7 @@ export const SearchConversationList: FC<SearchListProps> = ({
 							) : (
 								<div
 									style={{ height: '4rem' }}
-									data-testid={`invisible-message-${conversationId}`}
+									data-testid={`invisible-conversation-${conversationId}`}
 								/>
 							)
 						}

@@ -95,6 +95,30 @@ function fakeCounter(): { count: number; setCount: (value: number) => void } {
 	return { count, setCount };
 }
 
+function makeItemsVisible(): void {
+	const { calls, instances } = (
+		window.IntersectionObserver as jest.Mock<
+			IntersectionObserver,
+			[callback: IntersectionObserverCallback, options?: IntersectionObserverInit]
+		>
+	).mock;
+	calls.forEach((call, index) => {
+		const [onChange] = call;
+		// trigger the intersection on the observed element
+		act(() => {
+			onChange(
+				[
+					{
+						intersectionRatio: 0,
+						isIntersecting: true
+					} as IntersectionObserverEntry
+				],
+				instances[index]
+			);
+		});
+	});
+}
+
 describe('SearchView', () => {
 	describe('view by conversations', () => {
 		beforeEach(() => {
@@ -156,6 +180,7 @@ describe('SearchView', () => {
 			setupTest(<SearchView {...searchViewProps} />, {
 				store
 			});
+			makeItemsVisible();
 
 			const conversation = await screen.findByText('conversations Subject');
 			expect(conversation).toBeInTheDocument();
