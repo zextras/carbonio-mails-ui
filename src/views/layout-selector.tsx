@@ -8,17 +8,18 @@ import React, { useEffect, useMemo } from 'react';
 import { Container } from '@zextras/carbonio-design-system';
 import { useLocalStorage } from '@zextras/carbonio-shell-ui';
 
-import type { MailsListLayout } from './folder-view';
+import type { MailsListLayout, MailsSplitLayoutOrientation } from './folder-view';
 import {
 	LOCAL_STORAGE_VIEW_SIZES,
 	MAILS_VIEW_LAYOUTS,
-	MAILS_VIEW_ORIENTATIONS
+	MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS
 } from '../constants';
 import { SizeAndPosition } from '../hooks/use-resize';
 
 type LayoutSelectorProps = {
 	containerRef: React.RefObject<HTMLDivElement>;
 	listLayout: MailsListLayout;
+	splitLayoutOrientation: MailsSplitLayoutOrientation;
 	folderView: React.ReactNode;
 	detailPanel: React.ReactNode;
 };
@@ -27,26 +28,47 @@ export const LayoutSelector = ({
 	folderView,
 	detailPanel,
 	containerRef,
-	listLayout
+	listLayout,
+	splitLayoutOrientation
 }: LayoutSelectorProps): React.JSX.Element => {
 	const [lastSavedViewSizes] = useLocalStorage<Partial<SizeAndPosition>>(
 		LOCAL_STORAGE_VIEW_SIZES,
 		{}
 	);
 
-	const orientation = useMemo(() => {
-		if (listLayout === MAILS_VIEW_LAYOUTS.LEFT_TO_RIGHT) {
-			return MAILS_VIEW_ORIENTATIONS.HORIZONTAL;
+	const isVerticalSplit = useMemo(
+		() =>
+			listLayout === MAILS_VIEW_LAYOUTS.SPLIT &&
+			splitLayoutOrientation === MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS.VERTICAL,
+		[listLayout, splitLayoutOrientation]
+	);
+
+	const isHorizontalSplit = useMemo(
+		() =>
+			listLayout === MAILS_VIEW_LAYOUTS.SPLIT &&
+			splitLayoutOrientation === MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS.HORIZONTAL,
+		[listLayout, splitLayoutOrientation]
+	);
+
+	const containerOrientation = useMemo(() => {
+		if (isVerticalSplit) {
+			return 'horizontal';
 		}
-		if (listLayout === MAILS_VIEW_LAYOUTS.TOP_TO_BOTTOM) {
-			return MAILS_VIEW_ORIENTATIONS.VERTICAL;
+
+		if (isHorizontalSplit) {
+			return 'vertical';
 		}
-		return MAILS_VIEW_ORIENTATIONS.VERTICAL;
-	}, [listLayout]);
+
+		return 'vertical';
+	}, [isHorizontalSplit, isVerticalSplit]);
+
+	const maxWidth = isVerticalSplit ? 'calc(100% - 22.5rem)' : '100%';
+
+	const maxHeight = isHorizontalSplit ? 'calc(100% - 11.25rem)' : '100%';
 
 	useEffect(() => {
 		if (containerRef.current) {
-			if (listLayout === MAILS_VIEW_LAYOUTS.LEFT_TO_RIGHT) {
+			if (isVerticalSplit) {
 				if (lastSavedViewSizes?.width) {
 					// eslint-disable-next-line no-param-reassign
 					containerRef.current.style.width = `${lastSavedViewSizes?.width}px`;
@@ -59,11 +81,17 @@ export const LayoutSelector = ({
 				containerRef.current.style.width = `100%`;
 			}
 		}
-	}, [containerRef, listLayout, lastSavedViewSizes?.width]);
+	}, [
+		containerRef,
+		listLayout,
+		lastSavedViewSizes?.width,
+		splitLayoutOrientation,
+		isVerticalSplit
+	]);
 
 	useEffect(() => {
 		if (containerRef.current) {
-			if (listLayout === MAILS_VIEW_LAYOUTS.TOP_TO_BOTTOM) {
+			if (isHorizontalSplit) {
 				if (lastSavedViewSizes?.height) {
 					// eslint-disable-next-line no-param-reassign
 					containerRef.current.style.height = `${lastSavedViewSizes?.height}px`;
@@ -76,12 +104,18 @@ export const LayoutSelector = ({
 				containerRef.current.style.height = `100%`;
 			}
 		}
-	}, [listLayout, lastSavedViewSizes?.height, containerRef]);
+	}, [
+		listLayout,
+		lastSavedViewSizes?.height,
+		containerRef,
+		splitLayoutOrientation,
+		isHorizontalSplit
+	]);
 
 	return (
 		<Container
 			data-testid={'LayoutSelectorOuterContainer'}
-			orientation={orientation}
+			orientation={containerOrientation}
 			mainAlignment="flex-start"
 		>
 			<Container
@@ -89,10 +123,8 @@ export const LayoutSelector = ({
 				ref={containerRef}
 				minHeight={'11.25rem'}
 				minWidth={'22.5rem'}
-				maxHeight={
-					listLayout === MAILS_VIEW_LAYOUTS.LEFT_TO_RIGHT ? '100%' : 'calc(100% - 11.25rem)'
-				}
-				maxWidth={listLayout === MAILS_VIEW_LAYOUTS.LEFT_TO_RIGHT ? 'calc(100% - 22.5rem)' : '100%'}
+				maxHeight={maxHeight}
+				maxWidth={maxWidth}
 				style={{ flexShrink: 0 }}
 			>
 				{folderView}

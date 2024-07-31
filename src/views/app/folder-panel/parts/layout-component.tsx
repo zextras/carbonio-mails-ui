@@ -9,82 +9,91 @@ import { DropdownItem, MultiButton, Tooltip } from '@zextras/carbonio-design-sys
 import { useLocalStorage } from '@zextras/carbonio-shell-ui';
 import { useTranslation } from 'react-i18next';
 
-import { LOCAL_STORAGE_LAYOUT, MAILS_VIEW_LAYOUTS } from '../../../../constants';
-import type { MailsListLayout } from '../../../folder-view';
+import {
+	LOCAL_STORAGE_LAYOUT,
+	LOCAL_STORAGE_SPLIT_LAYOUT_ORIENTATION,
+	MAILS_VIEW_LAYOUTS,
+	MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS
+} from '../../../../constants';
+import type { MailsListLayout, MailsSplitLayoutOrientation } from '../../../folder-view';
 
 export const LayoutComponent = (): React.JSX.Element => {
 	const [t] = useTranslation();
 	const [listLayout, setListLayout] = useLocalStorage<MailsListLayout>(
 		LOCAL_STORAGE_LAYOUT,
-		MAILS_VIEW_LAYOUTS.LEFT_TO_RIGHT
+		MAILS_VIEW_LAYOUTS.SPLIT
 	);
 
-	const layoutsInfo = {
-		vertical: {
-			id: MAILS_VIEW_LAYOUTS.TOP_TO_BOTTOM,
-			label: t('layoutView.tooltip.vertical', 'Vertical view'),
-			icon: 'LayoutOutline'
-		},
-		horizontal: {
-			id: MAILS_VIEW_LAYOUTS.LEFT_TO_RIGHT,
-			label: t('layoutView.tooltip.horizontal', 'Horizontal view'),
-			icon: 'BottomViewOutline'
-		},
-		hidePreview: {
-			id: MAILS_VIEW_LAYOUTS.HIDE_PREVIEW,
-			label: t('layoutView.tooltip.hidePreview', 'Hide preview'),
-			icon: 'Airplane'
+	const [splitLayoutOrientation, setSplitLayoutOrientation] =
+		useLocalStorage<MailsSplitLayoutOrientation>(
+			LOCAL_STORAGE_SPLIT_LAYOUT_ORIENTATION,
+			MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS.VERTICAL
+		);
+
+	const tooltipLabel = useMemo(() => {
+		if (listLayout === MAILS_VIEW_LAYOUTS.SPLIT) {
+			return t('layoutView.tooltip.switchToFull', 'Hide preview');
 		}
-	};
+		if (splitLayoutOrientation === MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS.HORIZONTAL) {
+			return t('layoutView.tooltip.switchToHorizontal', 'Switch to horizontal');
+		}
+		return t('layoutView.tooltip.switchToVertical', 'Switch to vertical');
+	}, [listLayout, splitLayoutOrientation, t]);
 
-	// FIXME
-	const tooltipLabel = useMemo(
-		() =>
-			listLayout === MAILS_VIEW_LAYOUTS.LEFT_TO_RIGHT
-				? t('layoutView.tooltip.horizontal', 'Horizontal view')
-				: t('layoutView.tooltip.vertical', 'Vertical view'),
-		[t, listLayout]
-	);
+	const icon = useMemo(() => {
+		if (listLayout === MAILS_VIEW_LAYOUTS.SPLIT) {
+			return 'Airplane';
+		}
+		if (splitLayoutOrientation === MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS.HORIZONTAL) {
+			return 'BottomViewOutline';
+		}
+		return 'LayoutOutline';
+	}, [listLayout, splitLayoutOrientation]);
 
-	// FIXME
-	const onClick = useCallback(() => {
+	const onToggle = useCallback(() => {
 		setListLayout((prevValue) =>
-			prevValue === MAILS_VIEW_LAYOUTS.LEFT_TO_RIGHT
-				? MAILS_VIEW_LAYOUTS.TOP_TO_BOTTOM
-				: MAILS_VIEW_LAYOUTS.LEFT_TO_RIGHT
+			prevValue === MAILS_VIEW_LAYOUTS.FULL ? MAILS_VIEW_LAYOUTS.SPLIT : MAILS_VIEW_LAYOUTS.FULL
 		);
 	}, [setListLayout]);
 
-	// FIXME
-	const icon = useMemo(
-		() => (listLayout === MAILS_VIEW_LAYOUTS.LEFT_TO_RIGHT ? 'BottomViewOutline' : 'LayoutOutline'),
-		[listLayout]
-	);
+	const onClickVerticalSplit = useCallback(() => {
+		setListLayout(MAILS_VIEW_LAYOUTS.SPLIT);
+		setSplitLayoutOrientation(MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS.VERTICAL);
+	}, [setListLayout, setSplitLayoutOrientation]);
+
+	const onClickHorizontalSplit = useCallback(() => {
+		setListLayout(MAILS_VIEW_LAYOUTS.SPLIT);
+		setSplitLayoutOrientation(MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS.HORIZONTAL);
+	}, [setListLayout, setSplitLayoutOrientation]);
+
+	const onClickHidePreview = useCallback(() => {
+		setListLayout(MAILS_VIEW_LAYOUTS.FULL);
+	}, [setListLayout]);
 
 	const layoutOptions: Array<DropdownItem> = [
 		{
-			id: MAILS_VIEW_LAYOUTS.TOP_TO_BOTTOM,
-			label: layoutsInfo.vertical.label,
-			icon: layoutsInfo.vertical.icon,
-			onClick: () => console.log('secondary action')
+			id: 'vertical',
+			label: t('layoutView.tooltip.vertical', 'Vertical view'),
+			icon: 'LayoutOutline',
+			onClick: onClickVerticalSplit
 		},
 		{
-			id: MAILS_VIEW_LAYOUTS.LEFT_TO_RIGHT,
-			label: layoutsInfo.horizontal.label,
-			icon: layoutsInfo.horizontal.icon,
-			onClick: () => console.log('secondary action')
+			id: 'horizontal',
+			label: t('layoutView.tooltip.horizontal', 'Horizontal view'),
+			icon: 'BottomViewOutline',
+			onClick: onClickHorizontalSplit
 		},
 		{
-			id: MAILS_VIEW_LAYOUTS.HIDE_PREVIEW,
-			label: layoutsInfo.hidePreview.label,
-			icon: layoutsInfo.hidePreview.icon,
-			onClick: () => console.log('secondary action')
+			id: 'hidePreview',
+			label: t('layoutView.tooltip.hidePreview', 'Hide preview'),
+			icon: 'Airplane',
+			onClick: onClickHidePreview
 		}
 	];
 
 	return (
 		<Tooltip label={tooltipLabel} placement="top">
-			<MultiButton primaryIcon={icon} type={'ghost'} onClick={onClick} items={layoutOptions} />
+			<MultiButton primaryIcon={icon} type={'ghost'} onClick={onToggle} items={layoutOptions} />
 		</Tooltip>
 	);
 };
