@@ -5,9 +5,12 @@
  */
 import React from 'react';
 
+import { act } from '@testing-library/react';
+
 import { useLocalStorage } from '../../../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
-import { screen, setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
+import { screen, setupTest, within } from '../../../../../carbonio-ui-commons/test/test-setup';
 import { MAILS_VIEW_LAYOUTS } from '../../../../../constants';
+import { TESTID_SELECTORS } from '../../../../../tests/constants';
 import { generateStore } from '../../../../../tests/generators/store';
 import { LayoutComponent } from '../layout-component';
 
@@ -31,6 +34,42 @@ describe('LayoutComponent', () => {
 
 		expect(await screen.findByTestId(bottomViewOutlineIcon)).toHaveStyle({ height: '1.25rem' });
 	});
+
+	test('a chevron icon is displayed', () => {
+		useLocalStorage.mockImplementation(() => [MAILS_VIEW_LAYOUTS.LEFT_TO_RIGHT, jest.fn()]);
+
+		setupTest(<LayoutComponent />);
+
+		expect(
+			screen.getByRoleWithIcon('button', { icon: TESTID_SELECTORS.icons.chevronDown })
+		).toBeVisible();
+	});
+
+	test('the layouts options are visible if the chevron is clicked', async () => {
+		useLocalStorage.mockImplementation(() => [MAILS_VIEW_LAYOUTS.LEFT_TO_RIGHT, jest.fn()]);
+
+		const { user } = setupTest(<LayoutComponent />);
+
+		const chevron = screen.getByRoleWithIcon('button', {
+			icon: TESTID_SELECTORS.icons.chevronDown
+		});
+		await act(async () => {
+			await user.click(chevron);
+		});
+
+		// Check the dropdown has only 3 children
+		const list = screen.getByTestId('dropdown-popper-list');
+		expect(list.childNodes).toHaveLength(3);
+
+		// Check each item
+		expect(within(list).getByText('Vertical view')).toBeVisible();
+		expect(within(list).getByTestId(TESTID_SELECTORS.icons.layoutVertical)).toBeVisible();
+		expect(within(list).getByText('Horizontal view')).toBeVisible();
+		expect(within(list).getByTestId(TESTID_SELECTORS.icons.layoutHorizontal)).toBeVisible();
+		expect(within(list).getByText('Hide preview')).toBeVisible();
+		expect(within(list).getByTestId(TESTID_SELECTORS.icons.layoutHidePreview)).toBeVisible();
+	});
+
 	test('in top to bottom layout icon will render LayoutOutlineIcon icon', async () => {
 		useLocalStorage.mockImplementation(() => [MAILS_VIEW_LAYOUTS.TOP_TO_BOTTOM, jest.fn()]);
 		const store = generateStore();
