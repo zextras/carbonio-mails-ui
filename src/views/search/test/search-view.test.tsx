@@ -6,6 +6,7 @@
 import React, { ReactElement } from 'react';
 
 import { act, screen, waitFor, within } from '@testing-library/react';
+import { ListItemProps } from '@zextras/carbonio-design-system';
 import * as hooks from '@zextras/carbonio-shell-ui';
 import {
 	AccountSettings,
@@ -36,7 +37,13 @@ import {
 	SoapIncompleteMessage,
 	SoapMailMessage
 } from '../../../types';
+import * as customList from '../list/conversation/list';
 import SearchView from '../search-view';
+
+const FakeCustomList = ({ children }: ListItemProps): React.JSX.Element => {
+	const a = 'aaaa';
+	return <div data-testid={'fake-custom-list'}>{children(true)}</div>;
+};
 
 function getSoapConversationMessage(messageId: string, conversationId: string): SoapMailMessage {
 	return {
@@ -170,6 +177,7 @@ describe('SearchView', () => {
 			};
 			const settings = generateSettings(customSettings);
 			jest.spyOn(hooks, 'useUserSettings').mockReturnValue(settings);
+			jest.spyOn(customList, 'getCustomListItem').mockReturnValue(FakeCustomList);
 			const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
 			const searchViewProps: SearchViewProps = {
 				useQuery: () => [[queryChip], noop],
