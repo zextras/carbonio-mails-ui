@@ -5,7 +5,7 @@
  */
 import React, { ReactElement } from 'react';
 
-import { act, screen, waitFor } from '@testing-library/react';
+import { act, screen, waitFor, within } from '@testing-library/react';
 import * as hooks from '@zextras/carbonio-shell-ui';
 import {
 	AccountSettings,
@@ -19,7 +19,15 @@ import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mock
 import { generateSettings } from '../../../carbonio-ui-commons/test/mocks/settings/settings-generator';
 import { buildSoapErrorResponseBody } from '../../../carbonio-ui-commons/test/mocks/utils/soap';
 import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
+import { API_REQUEST_STATUS } from '../../../constants';
 import * as search from '../../../store/actions/search';
+import {
+	updateConversations,
+	updateConversationStatus,
+	updateMessages
+} from '../../../store/zustand/message-store/store';
+import { generateConversation } from '../../../tests/generators/generateConversation';
+import { generateMessage } from '../../../tests/generators/generateMessage';
 import { generateStore } from '../../../tests/generators/store';
 import {
 	SearchRequest,
@@ -29,11 +37,6 @@ import {
 	SoapMailMessage
 } from '../../../types';
 import SearchView from '../search-view';
-//
-// jest.mock('react-router-dom', () => ({
-// 	...jest.requireActual('react-router-dom'),
-// 	useParams: jest.fn()
-// }));
 
 function getSoapConversationMessage(messageId: string, conversationId: string): SoapMailMessage {
 	return {
@@ -82,6 +85,14 @@ function getSoapConversation(id: string): SoapConversation {
 		su: 'conversations Subject',
 		fr: 'fragment'
 	};
+}
+
+function fakeCounter(): { count: number; setCount: (value: number) => void } {
+	let count = 0;
+	const setCount = (value: number): void => {
+		count = value;
+	};
+	return { count, setCount };
 }
 
 describe('SearchView', () => {
@@ -243,6 +254,39 @@ describe('SearchView', () => {
 			// 		await screen.findByTestId(`conversation-preview-panel-${conversation.id}`)
 			// 	).toBeInTheDocument();
 		});
+
+		it('should display conversation as selected when in selecting it', async () => {
+			const store = generateStore();
+			const message = generateMessage({ id: '1' });
+			updateConversations([generateConversation({ id: '123', messages: [message] })], 0);
+			updateMessages([message], 0);
+			updateConversationStatus('123', API_REQUEST_STATUS.fulfilled);
+			const customSettings: Partial<AccountSettings> = {
+				prefs: {
+					zimbraPrefGroupMailBy: 'conversation'
+				}
+			};
+			const settings = generateSettings(customSettings);
+			jest.spyOn(hooks, 'useUserSettings').mockReturnValue(settings);
+			const searchViewProps: SearchViewProps = {
+				useQuery: () => [[], noop],
+				useDisableSearch: () => [false, noop],
+				ResultsHeader: (props: { label: string }): ReactElement => <>{props.label}</>
+			};
+			const { count, setCount } = fakeCounter();
+			jest.spyOn(hooks, 'useAppContext').mockReturnValue({ count, setCount });
+
+			const { user } = setupTest(<SearchView {...searchViewProps} />, {
+				store
+			});
+			const itemAvatar = await screen.findByTestId('conversation-list-item-avatar-123');
+			const avatar = within(itemAvatar).getByTestId('avatar');
+			await act(async () => {
+				await user.click(avatar);
+			});
+
+			expect(await within(itemAvatar).findByTestId('icon: Checkmark')).toBeVisible();
+		});
 	});
 
 	describe('view by messages', () => {
@@ -267,8 +311,6 @@ describe('SearchView', () => {
 			};
 			const settings = generateSettings(customSettings);
 			jest.spyOn(hooks, 'useUserSettings').mockReturnValue(settings);
-
-			// (useParams as jest.Mock).mockReturnValue({ folderId: '2', conversationId: '1' });
 
 			const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
 			const searchViewProps: SearchViewProps = {
