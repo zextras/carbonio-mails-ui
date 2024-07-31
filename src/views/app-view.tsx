@@ -14,11 +14,16 @@ import {
 import { includes } from 'lodash';
 import moment from 'moment';
 
-import { FolderView, MailsListLayout } from './folder-view';
+import { FolderView, MailsListLayout, MailsSplitLayoutOrientation } from './folder-view';
 import { LayoutSelector } from './layout-selector';
 import { FOLDERS } from '../carbonio-ui-commons/constants/folders';
 import { useUpdateView } from '../carbonio-ui-commons/hooks/use-update-view';
-import { LOCAL_STORAGE_LAYOUT, MAILS_VIEW_LAYOUTS } from '../constants';
+import {
+	LOCAL_STORAGE_LAYOUT,
+	LOCAL_STORAGE_SPLIT_LAYOUT_ORIENTATION,
+	MAILS_VIEW_LAYOUTS,
+	MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS
+} from '../constants';
 import { getFolderIdParts } from '../helpers/folders';
 import { useAppSelector } from '../hooks/redux';
 import { selectCurrentFolder } from '../store/conversations-slice';
@@ -42,7 +47,12 @@ const AppView: FC = () => {
 
 	const [listLayout] = useLocalStorage<MailsListLayout>(
 		LOCAL_STORAGE_LAYOUT,
-		MAILS_VIEW_LAYOUTS.LEFT_TO_RIGHT
+		MAILS_VIEW_LAYOUTS.SPLIT
+	);
+
+	const [splitLayoutOrientation] = useLocalStorage<MailsSplitLayoutOrientation>(
+		LOCAL_STORAGE_SPLIT_LAYOUT_ORIENTATION,
+		MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS.HORIZONTAL
 	);
 
 	const isMessageView = useMemo(
@@ -63,7 +73,14 @@ const AppView: FC = () => {
 	return (
 		<LayoutSelector
 			listLayout={listLayout}
-			folderView={<FolderView listLayout={listLayout} containerRef={containerRef} />}
+			splitLayoutOrientation={splitLayoutOrientation}
+			folderView={
+				<FolderView
+					listLayout={listLayout}
+					splitLayoutOrientation={splitLayoutOrientation}
+					containerRef={containerRef}
+				/>
+			}
 			detailPanel={<DetailPanel />}
 			containerRef={containerRef}
 		/>
