@@ -29,7 +29,6 @@ import {
 import { filter, forEach, includes, isEmpty, reduce, trimStart, uniqBy } from 'lodash';
 import styled from 'styled-components';
 
-import { CustomListItem } from '../../../../carbonio-ui-commons/components/list/list-item';
 import { participantToString } from '../../../../commons/utils';
 import { API_REQUEST_STATUS } from '../../../../constants';
 import { useAppDispatch } from '../../../../hooks/redux';
@@ -223,120 +222,103 @@ export const SearchConversationListItem: FC<SearchConversationListItemProps> = m
 			return conversation?.messages?.length > 0;
 		}, [conversation?.messages?.length, conversation.messagesInConversation, textReadValues.badge]);
 		return (
-			<CustomListItem
-				active={active}
-				selected={selected}
-				key={conversationId}
-				background={'transparent'}
-			>
-				{(visible: boolean): React.JSX.Element => (
-					<Container
-						mainAlignment="flex-start"
-						data-testid={`ConversationListItem-${conversationId}`}
+			<Container mainAlignment="flex-start" data-testid={`ConversationListItem-${conversationId}`}>
+				<ListItemActionWrapper
+					item={conversation as Conversation}
+					active={active}
+					onClick={_onClick}
+					onDoubleClick={_onDoubleClick}
+					hoverTooltipLabel={participantsString}
+					deselectAll={deselectAll}
+				>
+					<div
+						style={{ alignSelf: 'center' }}
+						data-testid={`conversation-list-item-avatar-${conversationId}`}
 					>
-						<ListItemActionWrapper
-							item={conversation as Conversation}
-							active={active}
-							onClick={_onClick}
-							onDoubleClick={_onDoubleClick}
-							hoverTooltipLabel={participantsString}
-							deselectAll={deselectAll}
-						>
-							<div
-								style={{ alignSelf: 'center' }}
-								data-testid={`conversation-list-item-avatar-${conversationId}`}
-							>
-								<ItemAvatar
-									item={conversation}
-									selected={selected}
-									selecting={selecting}
-									toggle={toggle}
-									folderId={folderId}
-								/>
-								<Padding horizontal="extrasmall" />
-							</div>
-							<Row
-								takeAvailableSpace
-								orientation="horizontal"
-								wrap="wrap"
-								padding={{ left: 'small', top: 'small', bottom: 'small', right: 'large' }}
-							>
-								<Container orientation="horizontal" height="fit" width="fill">
-									<SenderName item={conversation as Conversation} textValues={textReadValues} />
-									<RowInfo item={conversation as Conversation} tags={tags} />
-								</Container>
-								<Container
-									orientation="horizontal"
-									height="fit"
-									width="fill"
-									crossAlignment="center"
-								>
-									{renderBadge && (
-										<Row>
-											<Padding right="extrasmall">
-												<Badge
-													data-testid={`conversation-messages-count-${conversationId}`}
-													value={badgeTotalConversationMessages()}
-													type={textReadValues.badge}
-												/>
-											</Padding>
-										</Row>
-									)}
+						<ItemAvatar
+							item={conversation}
+							selected={selected}
+							selecting={selecting}
+							toggle={toggle}
+							folderId={folderId}
+						/>
+						<Padding horizontal="extrasmall" />
+					</div>
+					<Row
+						takeAvailableSpace
+						orientation="horizontal"
+						wrap="wrap"
+						padding={{ left: 'small', top: 'small', bottom: 'small', right: 'large' }}
+					>
+						<Container orientation="horizontal" height="fit" width="fill">
+							<SenderName item={conversation as Conversation} textValues={textReadValues} />
+							<RowInfo item={conversation as Conversation} tags={tags} />
+						</Container>
+						<Container orientation="horizontal" height="fit" width="fill" crossAlignment="center">
+							{renderBadge && (
+								<Row>
+									<Padding right="extrasmall">
+										<Badge
+											data-testid={`conversation-messages-count-${conversationId}`}
+											value={badgeTotalConversationMessages()}
+											type={textReadValues.badge}
+										/>
+									</Padding>
+								</Row>
+							)}
 
-									<Tooltip label={subFragmentTooltipLabel} overflow="break-word" maxWidth="60vw">
-										<Row
-											wrap="nowrap"
-											takeAvailableSpace
-											mainAlignment="flex-start"
-											crossAlignment="baseline"
-										>
-											<Text
-												data-testid="Subject"
-												weight={textReadValues.weight}
-												color={conversation.subject ? 'text' : 'secondary'}
-											>
-												{subject}
-											</Text>
-										</Row>
+							<Tooltip label={subFragmentTooltipLabel} overflow="break-word" maxWidth="60vw">
+								<Row
+									wrap="nowrap"
+									takeAvailableSpace
+									mainAlignment="flex-start"
+									crossAlignment="baseline"
+								>
+									<Text
+										data-testid="Subject"
+										weight={textReadValues.weight}
+										color={conversation.subject ? 'text' : 'secondary'}
+									>
+										{subject}
+									</Text>
+								</Row>
+							</Tooltip>
+							<Row>
+								{conversation.urgent && (
+									<Icon data-testid="UrgentIcon" icon="ArrowUpward" color="error" />
+								)}
+								{conversation.messagesInConversation > 1 && (
+									<Tooltip label={toggleExpandButtonLabel}>
+										<IconButton
+											data-testid="ToggleExpand"
+											size="small"
+											icon={open ? 'ArrowIosUpward' : 'ArrowIosDownward'}
+											onClick={expandConversation}
+										/>
 									</Tooltip>
-									<Row>
-										{conversation.urgent && (
-											<Icon data-testid="UrgentIcon" icon="ArrowUpward" color="error" />
-										)}
-										{conversation.messagesInConversation > 1 && (
-											<Tooltip label={toggleExpandButtonLabel}>
-												<IconButton
-													data-testid="ToggleExpand"
-													size="small"
-													icon={open ? 'ArrowIosUpward' : 'ArrowIosDownward'}
-													onClick={expandConversation}
-												/>
-											</Tooltip>
-										)}
-									</Row>
-								</Container>
+								)}
 							</Row>
-						</ListItemActionWrapper>
-						{open && (
-							<CollapseElement
-								open={open}
-								data-testid="ConversationExpander"
-								padding={{ left: 'extralarge' }}
-								height="auto"
-							>
-								<ConversationMessagesList
-									active={activeItemId}
-									length={conversation.messagesInConversation}
-									messages={messages}
-									conversationStatus={conversationStatus}
-									folderId={folderId}
-									isSearchModule
-								/>
-							</CollapseElement>
-						)}
-					</Container>
+						</Container>
+					</Row>
+				</ListItemActionWrapper>
+				{open && (
+					<CollapseElement
+						open={open}
+						data-testid="ConversationExpander"
+						padding={{ left: 'extralarge' }}
+						height="auto"
+					>
+						<ConversationMessagesList
+							active={activeItemId}
+							length={conversation.messagesInConversation}
+							messages={messages}
+							conversationStatus={conversationStatus}
+							folderId={folderId}
+							isSearchModule
+						/>
+					</CollapseElement>
 				)}
-			</CustomListItem>
+			</Container>
 		);
 	}
 );
