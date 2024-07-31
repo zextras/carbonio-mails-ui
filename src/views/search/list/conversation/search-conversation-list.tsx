@@ -5,13 +5,13 @@
  */
 import React, { FC, useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react';
 
-import { Container, Padding, Text, useIsVisible } from '@zextras/carbonio-design-system';
+import { Container, Padding, Text } from '@zextras/carbonio-design-system';
 import { t, useAppContext } from '@zextras/carbonio-shell-ui';
 import { isEmpty, map } from 'lodash';
 import { useParams } from 'react-router-dom';
 
-import { getSearchCustomList } from './list';
 import { SearchConversationListItem } from './search-conversation-list-item';
+import { CustomList } from '../../../../carbonio-ui-commons/components/list/list';
 import { CustomListItem } from '../../../../carbonio-ui-commons/components/list/list-item';
 import { LIST_LIMIT } from '../../../../constants';
 import { useAppDispatch } from '../../../../hooks/redux';
@@ -78,8 +78,6 @@ export const SearchConversationList: FC<SearchListProps> = ({
 		listRef?.current && (listRef.current.children[0].scrollTop = 0);
 	}, [conversationIds]);
 
-	const isReallyVisible = useIsVisible(listRef);
-
 	const onScrollBottom = useCallback(() => {
 		if (hasMore && !isLoading) {
 			setIsLoading(true);
@@ -97,7 +95,6 @@ export const SearchConversationList: FC<SearchListProps> = ({
 			});
 		}
 	}, [dispatch, isLoading, query, hasMore, totalConversations]);
-	const CustomList = getSearchCustomList({});
 	const listItems = useMemo(
 		() =>
 			map([...conversationIds], (conversationId) => {
