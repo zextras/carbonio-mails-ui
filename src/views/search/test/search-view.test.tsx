@@ -58,6 +58,11 @@ async function waitAndMakeConversationVisible(conversationId: string): Promise<v
 	makeListItemsVisible();
 }
 
+async function waitAndMakeMessageVisible(messageId: string): Promise<void> {
+	await screen.findByTestId(`invisible-message-${messageId}`);
+	makeListItemsVisible();
+}
+
 function getSoapMessage(
 	messageId: string,
 	initialData?: Partial<SoapIncompleteMessage>
@@ -327,9 +332,12 @@ describe('SearchView', () => {
 			setupTest(<SearchView {...searchViewProps} />, {
 				store
 			});
+
 			expect(await screen.findByText('label.results_for')).toBeInTheDocument();
-			expect(await screen.findByTestId('invisible-message-10')).toBeInTheDocument();
-			expect(await screen.findByTestId('invisible-message-11')).toBeInTheDocument();
+
+			await waitAndMakeMessageVisible('10');
+			expect(await screen.findByTestId('MessageListItem-10')).toBeInTheDocument();
+			expect(await screen.findByTestId('MessageListItem-11')).toBeInTheDocument();
 		});
 	});
 

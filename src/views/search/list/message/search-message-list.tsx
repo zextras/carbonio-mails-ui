@@ -4,7 +4,15 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React, { FC, useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import React, {
+	FC,
+	ReactElement,
+	useCallback,
+	useLayoutEffect,
+	useMemo,
+	useRef,
+	useState
+} from 'react';
 
 import { Container, Padding, Text } from '@zextras/carbonio-design-system';
 import { t, useAppContext } from '@zextras/carbonio-shell-ui';
@@ -13,6 +21,7 @@ import { useParams } from 'react-router-dom';
 
 import { SearchMessageListItem } from './search-message-list-item';
 import { CustomList } from '../../../../carbonio-ui-commons/components/list/list';
+import { CustomListItem } from '../../../../carbonio-ui-commons/components/list/list-item';
 import { LIST_LIMIT } from '../../../../constants';
 import { useAppDispatch } from '../../../../hooks/redux';
 import { useSelection } from '../../../../hooks/use-selection';
@@ -73,17 +82,32 @@ export const SearchMessageList: FC<SearchListProps> = ({
 				const active = itemId === messageId;
 				const isSelected = selected[messageId];
 				return (
-					<SearchMessageListItem
-						itemId={messageId}
+					<CustomListItem
 						key={messageId}
 						selected={isSelected}
-						selecting={isSelectModeOn}
-						isConvChildren={false}
-						toggle={toggle}
 						active={active}
-						isSearchModule
-						deselectAll={deselectAll}
-					/>
+						// TODO: need message to find out if it is read or not
+						// background={completeMessage.read ? 'gray6' : 'gray5'}
+						background={'transparent'}
+					>
+						{(visible: boolean): ReactElement =>
+							visible ? (
+								<SearchMessageListItem
+									itemId={messageId}
+									key={messageId}
+									selected={isSelected}
+									selecting={isSelectModeOn}
+									isConvChildren={false}
+									toggle={toggle}
+									active={active}
+									isSearchModule
+									deselectAll={deselectAll}
+								/>
+							) : (
+								<div style={{ height: '4rem' }} data-testid={`invisible-message-${messageId}`} />
+							)
+						}
+					</CustomListItem>
 				);
 			}),
 		[deselectAll, isSelectModeOn, itemId, messageIds, selected, toggle]

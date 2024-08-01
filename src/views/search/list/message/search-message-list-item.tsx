@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, memo, ReactElement, useCallback, useMemo } from 'react';
+import React, { FC, memo, useCallback, useMemo } from 'react';
 
 import {
 	Badge,
@@ -26,7 +26,6 @@ import {
 import { find, includes, isEmpty, noop, reduce } from 'lodash';
 import moment from 'moment';
 
-import { CustomListItem } from '../../../../carbonio-ui-commons/components/list/list-item';
 import { useFolder } from '../../../../carbonio-ui-commons/store/zustand/folder';
 import { getTimeLabel, participantToString } from '../../../../commons/utils';
 import { EditViewActions } from '../../../../constants';
@@ -221,175 +220,153 @@ export const SearchMessageListItem: FC<SearchMessageListItemProps> = memo(functi
 	const onToggle = useMemo(() => (isConvChildren ? noop : toggle), [isConvChildren, toggle]);
 
 	return (
-		<CustomListItem
-			key={completeMessage.id}
-			selected={selected}
-			active={active}
-			background={completeMessage.read ? 'gray6' : 'gray5'}
-		>
-			{(visible: boolean): ReactElement =>
-				visible ? (
-					<Container
-						mainAlignment="flex-start"
-						data-testid={`MessageListItem-${completeMessage.id}`}
-					>
-						<ListItemActionWrapper
+		<Container mainAlignment="flex-start" data-testid={`MessageListItem-${completeMessage.id}`}>
+			<ListItemActionWrapper
+				item={completeMessage}
+				active={active}
+				onClick={onClick}
+				onDoubleClick={onDoubleClick}
+				deselectAll={deselectAll}
+			>
+				<div
+					style={{ alignSelf: 'center' }}
+					data-testid={`message-list-item-avatar-${completeMessage.id}`}
+				>
+					<ItemAvatar
+						item={completeMessage}
+						selected={selected}
+						selecting={selecting}
+						toggle={onToggle}
+						folderId={firstChildFolderId}
+					/>
+					<Padding horizontal="extrasmall" />
+				</div>
+				<Row
+					wrap="wrap"
+					orientation="horizontal"
+					takeAvailableSpace
+					padding={{ left: 'small', top: 'small', bottom: 'small', right: 'large' }}
+				>
+					<Container orientation="horizontal" height="fit" width="fill">
+						<SenderName
 							item={completeMessage}
-							active={active}
-							onClick={onClick}
-							onDoubleClick={onDoubleClick}
-							deselectAll={deselectAll}
-						>
-							<div
-								style={{ alignSelf: 'center' }}
-								data-testid={`message-list-item-avatar-${completeMessage.id}`}
-							>
-								<ItemAvatar
-									item={completeMessage}
-									selected={selected}
-									selecting={selecting}
-									toggle={onToggle}
-									folderId={firstChildFolderId}
-								/>
-								<Padding horizontal="extrasmall" />
-							</div>
-							<Row
-								wrap="wrap"
-								orientation="horizontal"
-								takeAvailableSpace
-								padding={{ left: 'small', top: 'small', bottom: 'small', right: 'large' }}
-							>
-								<Container orientation="horizontal" height="fit" width="fill">
-									<SenderName
-										item={completeMessage}
-										textValues={textReadValues}
-										isSearchModule={isSearchModule}
-									/>
+							textValues={textReadValues}
+							isSearchModule={isSearchModule}
+						/>
+						<Row>
+							{showTagIcon && (
+								<Padding left="small">
+									<Icon data-testid="TagIcon" icon={tagIcon} color={tagIconColor} />
+								</Padding>
+							)}
+							{completeMessage.hasAttachment && (
+								<Padding left="small">
+									<Icon data-testid="AttachmentIcon" icon="AttachOutline" />
+								</Padding>
+							)}
+							{completeMessage.flagged && (
+								<Padding left="small">
+									<Icon data-testid="FlagIcon" color="error" icon="Flag" />
+								</Padding>
+							)}
+							<Padding left="small">
+								{completeMessage?.isScheduled ? (
 									<Row>
-										{showTagIcon && (
-											<Padding left="small">
-												<Icon data-testid="TagIcon" icon={tagIcon} color={tagIconColor} />
-											</Padding>
-										)}
-										{completeMessage.hasAttachment && (
-											<Padding left="small">
-												<Icon data-testid="AttachmentIcon" icon="AttachOutline" />
-											</Padding>
-										)}
-										{completeMessage.flagged && (
-											<Padding left="small">
-												<Icon data-testid="FlagIcon" color="error" icon="Flag" />
-											</Padding>
-										)}
-										<Padding left="small">
-											{completeMessage?.isScheduled ? (
-												<Row>
-													<Padding right="extrasmall">
-														<Icon data-testid={iconId} icon="SendDelayedOutline" color="primary" />
-													</Padding>
-													<Text data-testid="DelayedMailLabel" size="extrasmall" color="primary">
-														{t('label.send_scheduled', 'Send Scheduled')}
-													</Text>
-												</Row>
-											) : (
-												<Text data-testid="DateLabel" size="extrasmall">
-													{date}
-												</Text>
-											)}
+										<Padding right="extrasmall">
+											<Icon data-testid={iconId} icon="SendDelayedOutline" color="primary" />
 										</Padding>
+										<Text data-testid="DelayedMailLabel" size="extrasmall" color="primary">
+											{t('label.send_scheduled', 'Send Scheduled')}
+										</Text>
 									</Row>
-								</Container>
-								<Container
-									orientation="horizontal"
-									height="fit"
-									width="fill"
-									crossAlignment="center"
-								>
-									<Row
-										wrap="nowrap"
-										takeAvailableSpace
-										mainAlignment="flex-start"
-										crossAlignment="center"
-									>
-										{showIcon && (
-											<Tooltip label={iconTooltip} placement="bottom">
-												<Padding right="extrasmall">
-													<Icon data-testid={iconId} icon={icon} color={color} />
-												</Padding>
-											</Tooltip>
-										)}
-										<Tooltip label={subFragmentTooltipLabel} overflow="break-word" maxWidth="60vw">
-											<Row
-												wrap="nowrap"
-												takeAvailableSpace
-												mainAlignment="flex-start"
-												crossAlignment="baseline"
-											>
-												{!isConvChildren && (
-													<Text
-														data-testid="Subject"
-														weight={textReadValues.weight}
-														color={completeMessage.subject ? 'text' : 'secondary'}
-													>
-														{subject}
-													</Text>
-												)}
-
-												{!isEmpty(completeMessage.fragment) && (
-													<Row
-														takeAvailableSpace
-														mainAlignment="flex-start"
-														padding={{ left: 'extrasmall' }}
-													>
-														<Text
-															data-testid="Fragment"
-															size="small"
-															color="secondary"
-															weight={textReadValues.weight}
-														>
-															{fragmentLabel}
-														</Text>
-													</Row>
-												)}
-											</Row>
-										</Tooltip>
-									</Row>
-									<Row>
-										{completeMessage.urgent && (
-											<Padding left="extrasmall">
-												<Icon data-testid="UrgentIcon" icon="ArrowUpward" color="error" />
-											</Padding>
-										)}
-
-										{completeMessage?.isScheduled && (
-											<Tooltip label={scheduledTime}>
-												<Text data-testid="DelayedMailLabel" size="extrasmall" color="primary">
-													{scheduledTime}
-												</Text>
-											</Tooltip>
-										)}
-										{((messageFolder && messageFolder.id !== firstChildFolderId) ||
-											isSearchModule) && (
-											<Padding left="small">
-												<Badge
-													data-testid="FolderBadge"
-													value={getFolderTranslatedName({
-														folderId: firstChildFolderId,
-														folderName: messageFolder?.name ?? ''
-													})}
-													type={textReadValues.badge}
-												/>
-											</Padding>
-										)}
-									</Row>
-								</Container>
-							</Row>
-						</ListItemActionWrapper>
+								) : (
+									<Text data-testid="DateLabel" size="extrasmall">
+										{date}
+									</Text>
+								)}
+							</Padding>
+						</Row>
 					</Container>
-				) : (
-					<div style={{ height: '4rem' }} data-testid={`invisible-message-${completeMessage.id}`} />
-				)
-			}
-		</CustomListItem>
+					<Container orientation="horizontal" height="fit" width="fill" crossAlignment="center">
+						<Row
+							wrap="nowrap"
+							takeAvailableSpace
+							mainAlignment="flex-start"
+							crossAlignment="center"
+						>
+							{showIcon && (
+								<Tooltip label={iconTooltip} placement="bottom">
+									<Padding right="extrasmall">
+										<Icon data-testid={iconId} icon={icon} color={color} />
+									</Padding>
+								</Tooltip>
+							)}
+							<Tooltip label={subFragmentTooltipLabel} overflow="break-word" maxWidth="60vw">
+								<Row
+									wrap="nowrap"
+									takeAvailableSpace
+									mainAlignment="flex-start"
+									crossAlignment="baseline"
+								>
+									{!isConvChildren && (
+										<Text
+											data-testid="Subject"
+											weight={textReadValues.weight}
+											color={completeMessage.subject ? 'text' : 'secondary'}
+										>
+											{subject}
+										</Text>
+									)}
+
+									{!isEmpty(completeMessage.fragment) && (
+										<Row
+											takeAvailableSpace
+											mainAlignment="flex-start"
+											padding={{ left: 'extrasmall' }}
+										>
+											<Text
+												data-testid="Fragment"
+												size="small"
+												color="secondary"
+												weight={textReadValues.weight}
+											>
+												{fragmentLabel}
+											</Text>
+										</Row>
+									)}
+								</Row>
+							</Tooltip>
+						</Row>
+						<Row>
+							{completeMessage.urgent && (
+								<Padding left="extrasmall">
+									<Icon data-testid="UrgentIcon" icon="ArrowUpward" color="error" />
+								</Padding>
+							)}
+
+							{completeMessage?.isScheduled && (
+								<Tooltip label={scheduledTime}>
+									<Text data-testid="DelayedMailLabel" size="extrasmall" color="primary">
+										{scheduledTime}
+									</Text>
+								</Tooltip>
+							)}
+							{((messageFolder && messageFolder.id !== firstChildFolderId) || isSearchModule) && (
+								<Padding left="small">
+									<Badge
+										data-testid="FolderBadge"
+										value={getFolderTranslatedName({
+											folderId: firstChildFolderId,
+											folderName: messageFolder?.name ?? ''
+										})}
+										type={textReadValues.badge}
+									/>
+								</Padding>
+							)}
+						</Row>
+					</Container>
+				</Row>
+			</ListItemActionWrapper>
+		</Container>
 	);
 });
