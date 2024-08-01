@@ -36,7 +36,6 @@ import React from 'react';
 
 import PropTypes from 'prop-types';
 import ReactDOM from 'react-dom';
-import { calculateHeight } from '../../../commons/mail-message-renderer';
 
 /**
  * Make keyframe rules.
@@ -306,12 +305,6 @@ class NewWindow extends React.PureComponent {
 			if (typeof onOpen === 'function') {
 				onOpen(this.window);
 			}
-
-			// resize event
-			this.window.addEventListener('resize', () => {
-				const msgRenderIframe = this.window.document.querySelector('iframe#msgRenderIframe');
-				calculateHeight(msgRenderIframe);
-			});
 
 			// Release anything bound to this component before the new window unload.
 			this.window.addEventListener('beforeunload', () => this.release());

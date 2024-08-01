@@ -25,7 +25,7 @@ import {
 	Text
 } from '@zextras/carbonio-design-system';
 import { editSettings, t, useUserSettings } from '@zextras/carbonio-shell-ui';
-import { debounce, filter, forEach, isArray, isNull, reduce, some } from 'lodash';
+import { filter, forEach, isArray, isNull, reduce, some } from 'lodash';
 import { Trans } from 'react-i18next';
 import styled from 'styled-components';
 
@@ -128,13 +128,6 @@ const _TextMessageRenderer: FC<{ body: { content: string; contentType: string } 
 			)}
 		</>
 	);
-};
-
-export const calculateHeight = (iframe: HTMLIFrameElement | null): void => {
-	if (iframe) {
-		iframe.style.height = '0px';
-		iframe.style.height = `${iframe.contentDocument?.body?.scrollHeight}px`;
-	}
 };
 
 type _HtmlMessageRendererType = {
@@ -299,8 +292,6 @@ const _HtmlMessageRenderer: FC<_HtmlMessageRendererType> = ({
 		// 	iframeRef.current.contentDocument.body.append(darkScriptEnable);
 		// }
 
-		calculateHeight(iframeRef.current);
-
 		const imgMap = reduce(
 			parts,
 			(r, v) => {
@@ -328,13 +319,6 @@ const _HtmlMessageRenderer: FC<_HtmlMessageRendererType> = ({
 					p.setAttribute('src', `/service/home/~/?auth=co&id=${msgId}&part=${part.name}`);
 				}
 			});
-
-		const resizeObserver = new ResizeObserver(
-			debounce(() => calculateHeight(iframeRef.current), 100)
-		);
-		divRef.current && resizeObserver.observe(divRef.current);
-
-		return () => resizeObserver.disconnect();
 	}, [contentToDisplay, msgId, parts, showImage]);
 
 	const multiBtnLabel = useMemo(() => t('label.view_images', 'VIEW IMAGES'), []);
@@ -411,14 +395,13 @@ const _HtmlMessageRenderer: FC<_HtmlMessageRendererType> = ({
 				</BannerContainer>
 			)}
 			<iframe
-				id="msgRenderIframe"
 				data-testid="message-renderer-iframe"
 				title={msgId}
 				ref={iframeRef}
-				onLoad={(): void => calculateHeight(iframeRef.current)}
 				style={{
 					border: 'none',
 					width: '100%',
+					height: '100%',
 					display: 'block',
 					maxWidth: '100%'
 				}}

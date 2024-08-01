@@ -158,13 +158,13 @@ const MailContent: FC<{
 			orientation="vertical"
 			disableTransition
 			data-testid="MailMessageRendererCollapse"
-			// style={{ overflow: 'auto', height: '100%' }}
+			style={{ height: '100%' }}
 		>
 			{message.isComplete && (
 				<Container
 					data-testid="MessageBody"
 					width="100%"
-					height="fit"
+					height="100%"
 					crossAlignment="stretch"
 					padding={
 						isInsideExtraWindow ? { vertical: 'small' } : { horizontal: 'large', vertical: 'small' }
@@ -178,7 +178,7 @@ const MailContent: FC<{
 							openEmlPreview={openEmlPreview}
 						/>
 					</Row>
-					<Padding style={{ width: '100%' }} vertical="medium">
+					<Padding height="100%" width="100%" vertical="medium">
 						{showAppointmentInvite ? (
 							<Container width="100%">
 								<InviteResponse
@@ -287,7 +287,7 @@ const MailPreviewBlock: FC<MailPreviewBlockType> = ({
 
 			{/* External message disclaimer */}
 			{isExternalMessage && (
-				<Container background="white" padding={{ top: 'large', bottom: 'large' }}>
+				<Container height="fit" background="white" padding={{ top: 'large', bottom: 'large' }}>
 					<Row
 						background="gray2"
 						width="fill"
@@ -376,7 +376,7 @@ const MailPreview: FC<MailPreviewProps> = ({
 	return (
 		<Container
 			ref={mailContainerRef}
-			height="fit"
+			height="100%"
 			data-testid={`MailPreview-${message.id}`}
 			padding={isInsideExtraWindow ? { all: 'large' } : undefined}
 			background="white"
@@ -393,9 +393,9 @@ const MailPreview: FC<MailPreviewProps> = ({
 			<Container
 				width="fill"
 				height="fit"
-				// style={{
-				// 	overflowY: 'auto'
-				// }}
+				style={{
+					flex: '1'
+				}}
 			>
 				{(open || isAlone) && (
 					<MailContent
