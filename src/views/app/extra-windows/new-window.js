@@ -33,8 +33,9 @@
  */
 
 import React from 'react';
-import ReactDOM from 'react-dom';
+
 import PropTypes from 'prop-types';
+import ReactDOM from 'react-dom';
 
 /**
  * Make keyframe rules.
@@ -287,8 +288,6 @@ class NewWindow extends React.PureComponent {
 			if (this.container === null) {
 				this.container = this.window.document.createElement('div');
 				this.container.setAttribute('id', 'new-window-container');
-				this.container.style.overflow = 'auto';
-				this.container.style.height = '100%';
 				this.window.document.body.appendChild(this.container);
 			} else {
 				// Remove any existing content
@@ -305,15 +304,16 @@ class NewWindow extends React.PureComponent {
 				onOpen(this.window);
 			}
 
-			// resize event
-			this.window.addEventListener('resize', () => {
-				const msgRenderIframe = this.window.document.querySelector('iframe#msgRenderIframe');
-				if (msgRenderIframe) {
-					msgRenderIframe.style.height = `${
-						msgRenderIframe?.contentDocument?.body?.scrollHeight
-					}px`;
-				}
-			});
+			// // resize event
+			// this.window.addEventListener('resize', () => {
+			// 	const msgRenderIframe = this.window.document.querySelector('iframe#msgRenderIframe');
+			// 	if (msgRenderIframe) {
+			// 		msgRenderIframe.style.height = '0px';
+			// 		msgRenderIframe.style.height = `${
+			// 			msgRenderIframe?.contentDocument?.body?.scrollHeight
+			// 		}px`;
+			// 	}
+			// });
 
 			// Release anything bound to this component before the new window unload.
 			this.window.addEventListener('beforeunload', () => this.release());

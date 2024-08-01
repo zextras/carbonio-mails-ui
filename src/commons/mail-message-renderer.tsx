@@ -188,10 +188,10 @@ const _HtmlMessageRenderer: FC<_HtmlMessageRendererType> = ({
 
 	const calculateHeight = (): void => {
 		if (!isNull(iframeRef.current)) {
-			iframeRef.current.style.height = '0';
+			iframeRef.current.style.height = '0px';
 			iframeRef.current.style.height = `${
-				(iframeRef?.current?.contentDocument?.body?.scrollHeight || 0) / 16 + 24 / 16
-			}rem`;
+				iframeRef.current?.contentDocument?.body?.scrollHeight
+			}px`;
 		}
 	};
 
@@ -413,7 +413,6 @@ const _HtmlMessageRenderer: FC<_HtmlMessageRendererType> = ({
 			<iframe
 				id="msgRenderIframe"
 				data-testid="message-renderer-iframe"
-				scrolling="no"
 				title={msgId}
 				ref={iframeRef}
 				onLoad={calculateHeight}
