@@ -7,11 +7,12 @@ import React, { FC, useEffect, useMemo } from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
 import { useTags, useUserSettings } from '@zextras/carbonio-shell-ui';
-import { filter } from 'lodash';
+import { filter, isEmpty } from 'lodash';
 import { useParams } from 'react-router-dom';
 
 import { ConversationPreviewPanel } from './conversation-preview-panel';
 import PreviewPanelHeader from './preview/preview-panel-header';
+import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
 import { API_REQUEST_STATUS } from '../../../constants';
 import { getFolderIdParts } from '../../../helpers/folders';
 import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
@@ -22,7 +23,6 @@ import {
 } from '../../../store/conversations-slice';
 import type { MailsStateType } from '../../../types';
 import { useExtraWindow } from '../extra-windows/use-extra-window';
-import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
 
 type ConversationPreviewPanelProps = { conversationId?: string; folderId?: string };
 
@@ -49,7 +49,7 @@ export const ConversationPreviewPanelContainer: FC<ConversationPreviewPanelProps
 	const settings = useUserSettings();
 	const convSortOrder = settings.prefs.zimbraPrefConversationOrder as string;
 	useEffect(() => {
-		if (!conversation) {
+		if (isEmpty(conversation)) {
 			dispatch(getConv({ conversationId }));
 		}
 	}, [conversation, dispatch, conversationId]);
