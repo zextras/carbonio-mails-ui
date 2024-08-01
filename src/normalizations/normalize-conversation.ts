@@ -116,3 +116,9 @@ export const normalizeConversation = ({
 		parent: parentId
 	};
 };
+
+export const normalizeConversations = (
+	soapConversations: Array<SoapConversation>,
+	tags: Tags
+): Array<NormalizedConversation> =>
+	map(soapConversations, (conv) => normalizeConversation({ c: conv, tags }));

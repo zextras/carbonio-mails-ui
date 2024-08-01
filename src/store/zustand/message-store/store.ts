@@ -5,6 +5,7 @@
  */
 
 import produce from 'immer';
+import { merge } from 'lodash';
 import { create } from 'zustand';
 
 import {
@@ -91,6 +92,19 @@ export function updateConversations(
 				},
 				{} as Record<string, NormalizedConversation>
 			);
+		})
+	);
+}
+
+export function updateConversationsOnly(conversations: Array<NormalizedConversation>): void {
+	useMessageStore.setState(
+		produce((state: MessageStoreState) => {
+			conversations.forEach((conversation) => {
+				state.populatedItems.conversations[conversation.id] = merge(
+					state.populatedItems.conversations[conversation.id],
+					conversation
+				);
+			});
 		})
 	);
 }
