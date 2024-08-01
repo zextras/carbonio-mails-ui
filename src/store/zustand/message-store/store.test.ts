@@ -12,9 +12,11 @@ import {
 	updateConversationMessages,
 	updateConversations,
 	updateConversationsFlaggedStatus,
+	updateConversationsOnly,
 	updateConversationStatus,
 	updateMessages,
 	updateMessagesFlaggedStatus,
+	updateMessagesOnly,
 	updateMessagesParent,
 	updateMessagesReadStatus,
 	useConversationById,
@@ -22,6 +24,7 @@ import {
 	useConversationStatus,
 	useMessageById
 } from './store';
+import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
 import { API_REQUEST_STATUS } from '../../../constants';
 import { generateConversation } from '../../../tests/generators/generateConversation';
 import { generateMessage } from '../../../tests/generators/generateMessage';
@@ -35,6 +38,15 @@ describe('message store', () => {
 			const { result } = renderHook(() => useConversationById('1'));
 
 			expect(result.current).toEqual(conversation);
+		});
+
+		it('should not unset fields on conversation', () => {
+			updateConversations([generateConversation({ id: '1', folderId: FOLDERS.INBOX })], 0);
+			updateConversationsOnly([generateConversation({ id: '1', folderId: undefined })]);
+
+			const { result } = renderHook(() => useConversationById('1'));
+
+			expect(result.current.parent).toEqual(FOLDERS.INBOX);
 		});
 
 		it('should get undefined if conversation loading status not present', () => {
@@ -161,6 +173,16 @@ describe('message store', () => {
 			const { result } = renderHook(() => useMessageById('1'));
 
 			expect(result.current).toEqual(message);
+		});
+
+		it('should not unset fields on message', () => {
+			updateMessages([generateMessage({ id: '1', folderId: FOLDERS.INBOX })], 0);
+
+			updateMessagesOnly([generateMessage({ id: '1', folderId: undefined })]);
+
+			const { result } = renderHook(() => useMessageById('1'));
+
+			expect(result.current.parent).toEqual(FOLDERS.INBOX);
 		});
 
 		it('should update and return messages parent', () => {
