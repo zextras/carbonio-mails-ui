@@ -11,6 +11,7 @@ import { noop } from 'lodash';
 
 import {
 	useEditorIsRichText,
+	useEditorIsSmimeSign,
 	useEditorIsUrgent,
 	useEditorRequestReadReceipt
 } from '../../../../../store/zustand/editor';
@@ -24,6 +25,7 @@ export const OptionsDropdown: FC<OptionsDropdownProps> = ({ editorId }) => {
 	const { isRichText, setIsRichText } = useEditorIsRichText(editorId);
 	const { isUrgent, setIsUrgent } = useEditorIsUrgent(editorId);
 	const { requestReadReceipt, setRequestReadReceipt } = useEditorRequestReadReceipt(editorId);
+	const { isSmimeSign, setIsSmimeSign } = useEditorIsSmimeSign(editorId);
 
 	const toggleRichTextEditor = useCallback(() => {
 		setIsRichText(!isRichText);
@@ -36,6 +38,10 @@ export const OptionsDropdown: FC<OptionsDropdownProps> = ({ editorId }) => {
 	const toggleReceiptRequest = useCallback(() => {
 		setRequestReadReceipt(!requestReadReceipt);
 	}, [requestReadReceipt, setRequestReadReceipt]);
+
+	const toggleUseSmimeCertificateRequest = useCallback(() => {
+		setIsSmimeSign(!isSmimeSign);
+	}, [isSmimeSign, setIsSmimeSign]);
 
 	const options = useMemo(
 		() => [
@@ -54,6 +60,13 @@ export const OptionsDropdown: FC<OptionsDropdownProps> = ({ editorId }) => {
 				onClick: toggleImportant
 			},
 			{
+				id: 'is_smimesign',
+				label: isSmimeSign
+					? t('label.remove_use_certificate_to_sign', 'Remove certificate to sign (S/MIME)')
+					: t('label.use_certificate_to_sign', 'Use certificate to sign (S/MIME)'),
+				onClick: toggleUseSmimeCertificateRequest
+			},
+			{
 				id: 'read_receipt',
 				label: requestReadReceipt
 					? t('label.remove_request_receipt', 'Remove read receipt request')
@@ -66,6 +79,8 @@ export const OptionsDropdown: FC<OptionsDropdownProps> = ({ editorId }) => {
 			toggleRichTextEditor,
 			isUrgent,
 			toggleImportant,
+			isSmimeSign,
+			toggleUseSmimeCertificateRequest,
 			requestReadReceipt,
 			toggleReceiptRequest
 		]
