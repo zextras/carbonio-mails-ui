@@ -7,10 +7,12 @@ import React, { useEffect, useMemo } from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
 import { useLocalStorage } from '@zextras/carbonio-shell-ui';
+import { matchPath, useLocation } from 'react-router-dom';
 
 import type { MailsListLayout, MailsSplitLayoutOrientation } from './folder-view';
 import {
 	LOCAL_STORAGE_VIEW_SIZES,
+	MAILS_ROUTE,
 	MAILS_VIEW_LAYOUTS,
 	MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS
 } from '../constants';
@@ -112,24 +114,35 @@ export const LayoutSelector = ({
 		isHorizontalSplit
 	]);
 
+	const { pathname } = useLocation();
+	const match = matchPath<{ itemId?: string }>(
+		pathname,
+		`/${MAILS_ROUTE}/folder/:folderId/:type?/:itemId?`
+	);
 	return (
 		<Container
 			data-testid={'LayoutSelectorOuterContainer'}
 			orientation={containerOrientation}
 			mainAlignment="flex-start"
 		>
-			<Container
-				data-testid={'LayoutSelectorInnerContainer'}
-				ref={containerRef}
-				minHeight={'11.25rem'}
-				minWidth={'22.5rem'}
-				maxHeight={maxHeight}
-				maxWidth={maxWidth}
-				style={{ flexShrink: 0 }}
-			>
-				{folderView}
-			</Container>
-			{detailPanel}
+			{(listLayout === MAILS_VIEW_LAYOUTS.SPLIT ||
+				(!match?.params?.itemId && listLayout === MAILS_VIEW_LAYOUTS.FULL)) && (
+				<Container
+					data-testid={'LayoutSelectorInnerContainer'}
+					ref={containerRef}
+					minHeight={'11.25rem'}
+					minWidth={'22.5rem'}
+					maxHeight={maxHeight}
+					maxWidth={maxWidth}
+					style={{ flexShrink: 0 }}
+				>
+					{folderView}
+				</Container>
+			)}
+			{}
+			{(listLayout === MAILS_VIEW_LAYOUTS.SPLIT ||
+				(match?.params?.itemId && listLayout === MAILS_VIEW_LAYOUTS.FULL)) &&
+				detailPanel}
 		</Container>
 	);
 };
