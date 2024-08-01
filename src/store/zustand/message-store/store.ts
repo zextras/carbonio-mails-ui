@@ -109,6 +109,19 @@ export function updateConversationsOnly(conversations: Array<NormalizedConversat
 	);
 }
 
+export function updateMessagesOnly(messages: Array<IncompleteMessage>): void {
+	useMessageStore.setState(
+		produce((state: MessageStoreState) => {
+			messages.forEach((message) => {
+				state.populatedItems.messages[message.id] = merge(
+					state.populatedItems.messages[message.id],
+					message
+				);
+			});
+		})
+	);
+}
+
 export function updateMessages(
 	messages: Array<MailMessage | IncompleteMessage>,
 	offset: number

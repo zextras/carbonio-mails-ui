@@ -41,7 +41,10 @@ import {
 	handleNotifyDeletedSearchConversations,
 	handleNotifyModifiedSearchConversations
 } from '../../../store/searches-slice';
-import { updateConversationsOnly } from '../../../store/zustand/message-store/store';
+import {
+	updateConversationsOnly,
+	updateMessagesOnly
+} from '../../../store/zustand/message-store/store';
 import type { Conversation } from '../../../types';
 
 export const useSyncDataHandler = (): void => {
@@ -111,6 +114,7 @@ export const useSyncDataHandler = (): void => {
 								// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 								// @ts-ignore
 								dispatch(handleModifiedMessages(messages));
+								updateMessagesOnly(messages);
 
 								// the condition filters messages with parent property (the only ones we need to update)
 								const toUpdate = filter(messages, 'parent');
