@@ -7,8 +7,7 @@ import React, { ReactElement, ReactNode } from 'react';
 
 import { waitFor } from '@testing-library/react';
 import { renderHook } from '@testing-library/react-hooks';
-import { SoapNotify, useRefresh } from '@zextras/carbonio-shell-ui';
-import { SoapRefresh } from '@zextras/carbonio-shell-ui/lib/types/network';
+import { useRefresh } from '@zextras/carbonio-shell-ui';
 import { Provider } from 'react-redux';
 
 import { useSyncDataHandler } from './commons/sync-data-handler-hooks';
@@ -33,10 +32,30 @@ function getWrapper() {
 	);
 }
 
-function getSoapRefresh(mailbox: number): SoapRefresh {
-	return {
+function mockSoapRefresh(mailbox: number): void {
+	(useRefresh as jest.Mock).mockReturnValue({
 		mbx: [{ s: mailbox }]
+	});
+}
+
+function mockSoapModifyForConversationAction(mailboxNumber: number, actions: Array<string>): void {
+	mockSoapRefresh(mailboxNumber);
+	const action = actions.join('');
+	const soapNotify = {
+		deleted: [],
+		seq: 0,
+		modified: {
+			// TODO: mbx is optional and not always received from API, consider removing it in shell-ui
+			mbx: [{ s: mailboxNumber }],
+			c: [
+				{
+					id: '123',
+					f: `s${action}`
+				}
+			]
+		}
 	};
+	(useNotify as jest.Mock).mockReturnValue([soapNotify]);
 }
 
 describe('sync data handler', () => {
@@ -49,25 +68,8 @@ describe('sync data handler', () => {
 				0
 			);
 			updateMessages([message], 0);
-			const numberOfUnreadMessages = 1;
-			const soapRefresh: SoapRefresh = getSoapRefresh(mailboxNumber);
-			const soapNotify: SoapNotify = {
-				deleted: [],
-				seq: 0,
-				modified: {
-					// TODO: mbx is optional and not always received from API, consider removing it in shell-ui
-					mbx: [{ s: mailboxNumber }],
-					c: [
-						{
-							id: '123',
-							f: `s${UNREAD}`,
-							u: numberOfUnreadMessages
-						}
-					]
-				}
-			};
-			(useNotify as jest.Mock).mockReturnValue([soapNotify]);
-			(useRefresh as jest.Mock).mockReturnValue(soapRefresh);
+			mockSoapModifyForConversationAction(mailboxNumber, [UNREAD]);
+
 			renderHook(() => useSyncDataHandler(), {
 				wrapper: getWrapper()
 			});
