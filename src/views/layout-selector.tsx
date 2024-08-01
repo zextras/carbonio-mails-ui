@@ -139,7 +139,6 @@ export const LayoutSelector = ({
 					{folderView}
 				</Container>
 			)}
-			{}
 			{(listLayout === MAILS_VIEW_LAYOUTS.SPLIT ||
 				(match?.params?.itemId && listLayout === MAILS_VIEW_LAYOUTS.FULL)) &&
 				detailPanel}
