@@ -24,11 +24,7 @@ import { getMsgCall, getMsgsForPrint, msgAction } from '../store/actions';
 import { sendMsg, sendMsgFromEditor } from '../store/actions/send-msg';
 import { extractBody } from '../store/editor-slice-utils';
 import { AppDispatch, StoreProvider } from '../store/redux';
-import {
-	removeMessages,
-	updateMessagesParent,
-	updateMessagesReadStatus
-} from '../store/zustand/message-store/store';
+import { removeMessages, updateMessagesParent } from '../store/zustand/message-store/store';
 import type {
 	MailMessage,
 	MailsEditorV2,
@@ -91,12 +87,8 @@ export const setMsgRead = ({
 				})
 			).then((res) => {
 				deselectAll && deselectAll();
-				if (res.type.includes('fulfilled')) {
-					const isRead = !operation.startsWith('!');
-					updateMessagesReadStatus(ids, isRead);
-					if (shouldReplaceHistory) {
-						replaceHistory(`/folder/${folderId}`);
-					}
+				if (res.type.includes('fulfilled') && shouldReplaceHistory) {
+					replaceHistory(`/folder/${folderId}`);
 				}
 			});
 		}

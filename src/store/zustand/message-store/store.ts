@@ -177,16 +177,6 @@ export function updateConversationStatus(
 	);
 }
 
-export function updateMessagesReadStatus(messageIds: Array<string>, isRead: boolean): void {
-	useMessageStore.setState(
-		produce((state: MessageStoreState) => {
-			messageIds.forEach((messageId) => {
-				state.populatedItems.messages[messageId].read = isRead;
-			});
-		})
-	);
-}
-
 export function removeMessages(messageIds: Array<string>): void {
 	useMessageStore.setState(
 		produce((state: MessageStoreState) => {
