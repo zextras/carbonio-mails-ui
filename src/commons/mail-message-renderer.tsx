@@ -130,6 +130,13 @@ const _TextMessageRenderer: FC<{ body: { content: string; contentType: string } 
 	);
 };
 
+export const calculateHeight = (iframe: HTMLIFrameElement | null): void => {
+	if (iframe) {
+		iframe.style.height = '0px';
+		iframe.style.height = `${iframe.contentDocument?.body?.scrollHeight}px`;
+	}
+};
+
 type _HtmlMessageRendererType = {
 	msgId: string;
 	body: { content: string; contentType: string };
@@ -185,15 +192,6 @@ const _HtmlMessageRenderer: FC<_HtmlMessageRendererType> = ({
 		if (isAvailableInTrusteeList(settingsPref.zimbraPrefMailTrustedSenderList ?? '', from))
 			setShowExternalImage(true);
 	}, [from, settingsPref.zimbraPrefMailTrustedSenderList]);
-
-	const calculateHeight = (): void => {
-		if (!isNull(iframeRef.current)) {
-			iframeRef.current.style.height = '0px';
-			iframeRef.current.style.height = `${
-				iframeRef.current?.contentDocument?.body?.scrollHeight
-			}px`;
-		}
-	};
 
 	const saveTrustee = useCallback(
 		(trustee) => {
@@ -301,7 +299,7 @@ const _HtmlMessageRenderer: FC<_HtmlMessageRendererType> = ({
 		// 	iframeRef.current.contentDocument.body.append(darkScriptEnable);
 		// }
 
-		calculateHeight();
+		calculateHeight(iframeRef.current);
 
 		const imgMap = reduce(
 			parts,
@@ -331,7 +329,9 @@ const _HtmlMessageRenderer: FC<_HtmlMessageRendererType> = ({
 				}
 			});
 
-		const resizeObserver = new ResizeObserver(debounce(calculateHeight, 100));
+		const resizeObserver = new ResizeObserver(
+			debounce(() => calculateHeight(iframeRef.current), 100)
+		);
 		divRef.current && resizeObserver.observe(divRef.current);
 
 		return () => resizeObserver.disconnect();
@@ -415,7 +415,7 @@ const _HtmlMessageRenderer: FC<_HtmlMessageRendererType> = ({
 				data-testid="message-renderer-iframe"
 				title={msgId}
 				ref={iframeRef}
-				onLoad={calculateHeight}
+				onLoad={(): void => calculateHeight(iframeRef.current)}
 				style={{
 					border: 'none',
 					width: '100%',
