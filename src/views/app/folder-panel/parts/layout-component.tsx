@@ -32,17 +32,17 @@ export const LayoutComponent = (): React.JSX.Element => {
 
 	const tooltipLabel = useMemo(() => {
 		if (listLayout === MAILS_VIEW_LAYOUTS.SPLIT) {
-			return t('layoutView.tooltip.switchToFull', 'Hide preview');
+			return t('layoutView.tooltip.switchToNoSplit', 'Switch to no split');
 		}
 		if (splitLayoutOrientation === MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS.HORIZONTAL) {
-			return t('layoutView.tooltip.switchToHorizontal', 'Switch to horizontal');
+			return t('layoutView.tooltip.switchToHorizontal', 'Switch to horizontal split');
 		}
-		return t('layoutView.tooltip.switchToVertical', 'Switch to vertical');
+		return t('layoutView.tooltip.switchToVertical', 'Switch to vertical split');
 	}, [listLayout, splitLayoutOrientation, t]);
 
 	const icon = useMemo(() => {
 		if (listLayout === MAILS_VIEW_LAYOUTS.SPLIT) {
-			return 'Airplane';
+			return 'ViewOffOutline';
 		}
 		if (splitLayoutOrientation === MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS.HORIZONTAL) {
 			return 'BottomViewOutline';
@@ -73,20 +73,20 @@ export const LayoutComponent = (): React.JSX.Element => {
 	const layoutOptions: Array<DropdownItem> = [
 		{
 			id: 'vertical',
-			label: t('layoutView.tooltip.vertical', 'Vertical view'),
+			label: t('layoutView.tooltip.verticalSplit', 'Vertical split'),
 			icon: 'LayoutOutline',
 			onClick: onClickVerticalSplit
 		},
 		{
 			id: 'horizontal',
-			label: t('layoutView.tooltip.horizontal', 'Horizontal view'),
+			label: t('layoutView.tooltip.horizontalSplit', 'Horizontal split'),
 			icon: 'BottomViewOutline',
 			onClick: onClickHorizontalSplit
 		},
 		{
-			id: 'hidePreview',
-			label: t('layoutView.tooltip.hidePreview', 'Hide preview'),
-			icon: 'Airplane',
+			id: 'noSplit',
+			label: t('layoutView.tooltip.noSplit', 'No split'),
+			icon: 'ViewOffOutline',
 			onClick: onClickHidePreview
 		}
 	];
@@ -98,6 +98,7 @@ export const LayoutComponent = (): React.JSX.Element => {
 				primaryIcon={icon}
 				type={'ghost'}
 				onClick={onToggle}
+				color={'gray0'}
 				items={layoutOptions}
 			/>
 		</Tooltip>
