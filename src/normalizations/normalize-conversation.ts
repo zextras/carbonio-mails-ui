@@ -97,7 +97,8 @@ export const normalizeConversation = ({
 				date: Number(msg?.d)
 			}))
 		: undefined;
-	const parentId = messages ? messages[0].parent : '';
+
+	const parentId = messages ? messages[0].parent : undefined;
 
 	return {
 		tags: removeUndefinedValues(getTagIds(c.t, c.tn, tags)),

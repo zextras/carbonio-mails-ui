@@ -25,7 +25,7 @@ export type Conversation = {
 	flagged: boolean;
 	urgent: boolean;
 	tags: string[];
-	parent: string;
+	parent?: string;
 	messagesInConversation: number;
 	sortIndex: number;
 };

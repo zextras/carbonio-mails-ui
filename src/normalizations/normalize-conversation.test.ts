@@ -62,7 +62,7 @@ describe('normalize conversation', () => {
 	});
 
 	describe('normalizeConversation', () => {
-		it('should return a conversation with empty parent if no messages', () => {
+		it('should return a conversation with undefined parent if no messages', () => {
 			const soapConversation: SoapConversation = {
 				d: 0,
 				e: [],
@@ -78,7 +78,7 @@ describe('normalize conversation', () => {
 
 			const normalized = normalizeConversation({ c: soapConversation, tags: {} });
 
-			expect(normalized.parent).toBe('');
+			expect(normalized.parent).toBeUndefined();
 		});
 
 		it('should return a conversation with parent equal to first message parent', () => {
