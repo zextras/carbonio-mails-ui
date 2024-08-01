@@ -168,5 +168,32 @@ describe('sync data handler', () => {
 				expect(result.current.read).toBe(false);
 			});
 		});
+
+		it('should mark messages as flagged', async () => {
+			updateMessages([generateMessage({ id: '1', isFlagged: false })], 0);
+			mockSoapModifyMessageAction(mailboxNumber, '1', [FLAGGED]);
+
+			renderHook(() => useSyncDataHandler(), {
+				wrapper: getWrapper()
+			});
+
+			const { result } = renderHook(() => useMessageById('1'));
+			await waitFor(() => {
+				expect(result.current.flagged).toBe(true);
+			});
+		});
+		it('should mark messages as not flagged', async () => {
+			updateMessages([generateMessage({ id: '1', isFlagged: true })], 0);
+			mockSoapModifyMessageAction(mailboxNumber, '1', [NOTFLAGGED]);
+
+			renderHook(() => useSyncDataHandler(), {
+				wrapper: getWrapper()
+			});
+
+			const { result } = renderHook(() => useMessageById('1'));
+			await waitFor(() => {
+				expect(result.current.flagged).toBe(false);
+			});
+		});
 	});
 });
