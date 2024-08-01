@@ -11,7 +11,6 @@ import {
 	resetSearch,
 	updateConversationMessages,
 	updateConversations,
-	updateConversationsFlaggedStatus,
 	updateConversationsOnly,
 	updateConversationStatus,
 	updateMessages,
@@ -95,21 +94,6 @@ describe('message store', () => {
 			expect(messages2[1].id).toBe('5');
 		});
 
-		it('should flag all conversations', () => {
-			updateConversations(
-				[
-					generateConversation({ id: '1', isFlagged: false, messages: [] }),
-					generateConversation({ id: '2', isFlagged: false, messages: [] })
-				],
-				0
-			);
-
-			updateConversationsFlaggedStatus(['1', '2'], true);
-
-			expect(renderHook(() => useConversationById('1')).result.current.flagged).toBe(true);
-			expect(renderHook(() => useConversationById('2')).result.current.flagged).toBe(true);
-		});
-
 		it('should reset the searches and populated items', () => {
 			updateConversations([generateConversation({ id: '1', messages: [] })], 0);
 			updateConversationStatus('1', API_REQUEST_STATUS.fulfilled);
@@ -120,46 +104,6 @@ describe('message store', () => {
 			expect(renderHook(() => useConversationById('1')).result.current).toBeUndefined();
 			expect(renderHook(() => useConversationStatus('1')).result.current).toBeUndefined();
 			expect(renderHook(() => useMessageById('100')).result.current).toBeUndefined();
-		});
-
-		it('should flag conversation and all messages in it', () => {
-			const message11 = generateMessage({ id: '11', isFlagged: false });
-			updateConversations(
-				[
-					generateConversation({
-						id: '1',
-						isFlagged: false,
-						messages: [message11]
-					})
-				],
-				0
-			);
-			updateMessages([message11], 0);
-			updateConversationsFlaggedStatus(['1'], true);
-
-			expect(renderHook(() => useConversationById('1')).result.current.flagged).toBe(true);
-			expect(renderHook(() => useMessageById('11')).result.current.flagged).toBe(true);
-		});
-
-		it('should not fail if cannot access conversation while flagging', () => {
-			expect(() => updateConversationsFlaggedStatus(['1'], true)).not.toThrow();
-		});
-
-		it('should not fail if cannot access message in conversation while flagging', () => {
-			const message11 = generateMessage({ id: '11', isFlagged: false });
-			updateConversations(
-				[
-					generateConversation({
-						id: '1',
-						isFlagged: false,
-						messages: [message11]
-					})
-				],
-				0
-			);
-			updateConversationsFlaggedStatus(['1'], true);
-
-			expect(renderHook(() => useConversationById('1')).result.current.flagged).toBe(true);
 		});
 	});
 

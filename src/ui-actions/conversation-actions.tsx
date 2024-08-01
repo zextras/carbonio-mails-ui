@@ -16,7 +16,6 @@ import { ConversationActionsDescriptors } from '../constants';
 import { useUiUtilities } from '../hooks/use-ui-utilities';
 import { convAction, getMsgsForPrint } from '../store/actions';
 import { AppDispatch, StoreProvider } from '../store/redux';
-import { updateConversationsFlaggedStatus } from '../store/zustand/message-store/store';
 import type {
 	ConvActionOperation,
 	ConvActionReturnType,
@@ -65,12 +64,7 @@ export function setConversationsFlag({
 					operation,
 					ids
 				})
-			).then((response) => {
-				if (response.type.includes('fulfilled')) {
-					const isFlagged = !operation.startsWith('!');
-					updateConversationsFlaggedStatus(ids, isFlagged);
-				}
-			});
+			);
 		}
 	};
 }

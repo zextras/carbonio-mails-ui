@@ -186,25 +186,3 @@ export function removeMessages(messageIds: Array<string>): void {
 		})
 	);
 }
-
-export function updateConversationsFlaggedStatus(
-	conversationIds: Array<string>,
-	isFlagged: boolean
-): void {
-	useMessageStore.setState(
-		produce((state: MessageStoreState) => {
-			conversationIds.forEach((conversationId) => {
-				const conversation = state.populatedItems.conversations[conversationId];
-				if (conversation) {
-					conversation.flagged = isFlagged;
-					conversation.messages.forEach((message) => {
-						const msg = state.populatedItems.messages[message.id];
-						if (msg) {
-							msg.flagged = isFlagged;
-						}
-					});
-				}
-			});
-		})
-	);
-}
