@@ -26,7 +26,6 @@ import { extractBody } from '../store/editor-slice-utils';
 import { AppDispatch, StoreProvider } from '../store/redux';
 import {
 	removeMessages,
-	updateMessagesFlaggedStatus,
 	updateMessagesParent,
 	updateMessagesReadStatus
 } from '../store/zustand/message-store/store';
@@ -126,12 +125,7 @@ export function setMsgFlag({
 					operation,
 					ids
 				})
-			).then((response) => {
-				if (response.type.includes('fulfilled')) {
-					const isFlagged = !operation.startsWith('!');
-					updateMessagesFlaggedStatus(ids, isFlagged);
-				}
-			});
+			);
 		}
 	};
 }
