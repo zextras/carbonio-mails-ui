@@ -12,18 +12,14 @@ import { Provider } from 'react-redux';
 
 import { useSyncDataHandler } from './commons/sync-data-handler-hooks';
 import { useNotify } from '../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
-import {
-	updateConversations,
-	updateMessages,
-	useConversationById
-} from '../../store/zustand/message-store/store';
+import { updateConversations, useConversationById } from '../../store/zustand/message-store/store';
 import { generateConversation } from '../../tests/generators/generateConversation';
-import { generateMessage } from '../../tests/generators/generateMessage';
 import { generateStore } from '../../tests/generators/store';
 
 const UNREAD = 'u';
 const READ = '';
 const FLAGGED = 'f';
+const UNFLAGGED = '';
 
 function getWrapper() {
 	// eslint-disable-next-line react/display-name
@@ -61,13 +57,21 @@ function mockSoapModifyForConversationAction(mailboxNumber: number, actions: Arr
 describe('sync data handler', () => {
 	const mailboxNumber = 1000;
 	describe('conversations', () => {
+		it('should mark conversation as read', async () => {
+			updateConversations([generateConversation({ id: '123', messages: [], isRead: false })], 0);
+			mockSoapModifyForConversationAction(mailboxNumber, [READ]);
+
+			renderHook(() => useSyncDataHandler(), {
+				wrapper: getWrapper()
+			});
+
+			const { result } = renderHook(() => useConversationById('123'));
+			await waitFor(() => {
+				expect(result.current.read).toBe(true);
+			});
+		});
 		it('should mark conversation as unread', async () => {
-			const message = generateMessage({ id: '100', isRead: true });
-			updateConversations(
-				[generateConversation({ id: '123', messages: [message], isRead: true })],
-				0
-			);
-			updateMessages([message], 0);
+			updateConversations([generateConversation({ id: '123', messages: [], isRead: true })], 0);
 			mockSoapModifyForConversationAction(mailboxNumber, [UNREAD]);
 
 			renderHook(() => useSyncDataHandler(), {
@@ -77,6 +81,33 @@ describe('sync data handler', () => {
 			const { result } = renderHook(() => useConversationById('123'));
 			await waitFor(() => {
 				expect(result.current.read).toBe(false);
+			});
+		});
+
+		it('should mark conversation as flagged', async () => {
+			updateConversations([generateConversation({ id: '123', messages: [], isFlagged: false })], 0);
+			mockSoapModifyForConversationAction(mailboxNumber, [FLAGGED]);
+
+			renderHook(() => useSyncDataHandler(), {
+				wrapper: getWrapper()
+			});
+
+			const { result } = renderHook(() => useConversationById('123'));
+			await waitFor(() => {
+				expect(result.current.flagged).toBe(true);
+			});
+		});
+		it('should mark conversation as unflagged', async () => {
+			updateConversations([generateConversation({ id: '123', messages: [], isFlagged: true })], 0);
+			mockSoapModifyForConversationAction(mailboxNumber, [UNFLAGGED]);
+
+			renderHook(() => useSyncDataHandler(), {
+				wrapper: getWrapper()
+			});
+
+			const { result } = renderHook(() => useConversationById('123'));
+			await waitFor(() => {
+				expect(result.current.flagged).toBe(false);
 			});
 		});
 	});
