@@ -75,6 +75,7 @@ export function useConversationStatus(id: string): SearchRequestStatus {
 	return useMessageStore((state) => state.populatedItems.conversationsStatus?.[id]);
 }
 
+// TODO: rename me, probably setConversations
 export function updateConversations(
 	conversations: Array<NormalizedConversation>,
 	offset: number
@@ -96,6 +97,7 @@ export function updateConversations(
 	);
 }
 
+// TODO: rename me
 export function updateConversationsOnly(conversations: Array<NormalizedConversation>): void {
 	useMessageStore.setState(
 		produce((state: MessageStoreState) => {
@@ -109,6 +111,7 @@ export function updateConversationsOnly(conversations: Array<NormalizedConversat
 	);
 }
 
+// TODO: rename me (find a better name)
 export function updateMessagesOnly(messages: Array<IncompleteMessage>): void {
 	useMessageStore.setState(
 		produce((state: MessageStoreState) => {
@@ -122,6 +125,7 @@ export function updateMessagesOnly(messages: Array<IncompleteMessage>): void {
 	);
 }
 
+// TODO: rename me, probably setMessages
 export function updateMessages(
 	messages: Array<MailMessage | IncompleteMessage>,
 	offset: number
