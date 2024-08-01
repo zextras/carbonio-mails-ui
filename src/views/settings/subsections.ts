@@ -49,6 +49,11 @@ export const blockedSendersSubSection = (): SettingsSubSection => ({
 	id: 'blocked_addresses'
 });
 
+export const sMimeCertificateSubSection = (): SettingsSubSection => ({
+	label: t('label.smime_certificate', 'S/MIME Certificate'),
+	id: 'smime_certificate'
+});
+
 export const getSettingsSubSections = (
 	backupSelfUndeleteAllowed: AdvancedAccountStore['backupSelfUndeleteAllowed']
 ): Array<SettingsSubSection> =>
@@ -57,6 +62,7 @@ export const getSettingsSubSections = (
 		.concat([
 			signaturesSubSection(),
 			setDefaultSignaturesSubSection(),
+			sMimeCertificateSubSection(),
 			filtersSubSection(),
 			trustedAddressesSubSection(),
 			allowedSendersSubSection(),

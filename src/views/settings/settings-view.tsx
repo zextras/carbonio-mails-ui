@@ -31,6 +31,7 @@ import { RecoverMessages } from './recover-messages';
 import { saveSettings } from './save-settings';
 import { SendersList, getList } from './senders-list';
 import SignatureSettings from './signature-settings';
+import SmimeCertificateUpload from './smime-certificate-upload';
 import TrusteeAddresses from './trustee-addresses';
 import { useUpdateView } from '../../carbonio-ui-commons/hooks/use-update-view';
 import { TIMEOUTS } from '../../constants';
@@ -454,6 +455,7 @@ const SettingsView: FC = () => {
 						setDisabled={setDisabled}
 						signatures={signatures}
 					/>
+					<SmimeCertificateUpload />
 					{/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
 					{/* @ts-ignore */}
 					<ComposeMessage settingsObj={currentPrefs} updateSettings={updatePrefs} />
