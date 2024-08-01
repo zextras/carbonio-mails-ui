@@ -10,9 +10,9 @@ import { t, useAppContext } from '@zextras/carbonio-shell-ui';
 import { isEmpty, map } from 'lodash';
 import { useParams } from 'react-router-dom';
 
-import { getCustomListItem } from './list';
 import { SearchConversationListItem } from './search-conversation-list-item';
 import { CustomList } from '../../../../carbonio-ui-commons/components/list/list';
+import { CustomListItem } from '../../../../carbonio-ui-commons/components/list/list-item';
 import { LIST_LIMIT } from '../../../../constants';
 import { useAppDispatch } from '../../../../hooks/redux';
 import { useSelection } from '../../../../hooks/use-selection';
@@ -95,7 +95,6 @@ export const SearchConversationList: FC<SearchListProps> = ({
 			});
 		}
 	}, [dispatch, isLoading, query, hasMore, totalConversations]);
-	const CustomListItem = getCustomListItem();
 	const listItems = useMemo(
 		() =>
 			map([...conversationIds], (conversationId) => {

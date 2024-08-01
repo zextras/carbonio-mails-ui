@@ -6,7 +6,6 @@
 import React, { ReactElement } from 'react';
 
 import { act, screen, waitFor, within } from '@testing-library/react';
-import { ListItemProps } from '@zextras/carbonio-design-system';
 import * as hooks from '@zextras/carbonio-shell-ui';
 import {
 	AccountSettings,
@@ -19,7 +18,7 @@ import { noop } from 'lodash';
 import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { generateSettings } from '../../../carbonio-ui-commons/test/mocks/settings/settings-generator';
 import { buildSoapErrorResponseBody } from '../../../carbonio-ui-commons/test/mocks/utils/soap';
-import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
+import { makeListItemsVisible, setupTest } from '../../../carbonio-ui-commons/test/test-setup';
 import { API_REQUEST_STATUS } from '../../../constants';
 import * as search from '../../../store/actions/search';
 import {
@@ -37,13 +36,7 @@ import {
 	SoapIncompleteMessage,
 	SoapMailMessage
 } from '../../../types';
-import * as customList from '../list/conversation/list';
 import SearchView from '../search-view';
-
-const FakeCustomList = ({ children }: ListItemProps): React.JSX.Element => {
-	const a = 'aaaa';
-	return <div data-testid={'fake-custom-list'}>{children(true)}</div>;
-};
 
 function getSoapConversationMessage(messageId: string, conversationId: string): SoapMailMessage {
 	return {
@@ -58,6 +51,11 @@ function getSoapConversationMessage(messageId: string, conversationId: string): 
 		mp: [],
 		d: 1717752296000
 	};
+}
+
+async function waitAndMakeConversationVisible(conversationId: string): Promise<void> {
+	await screen.findByTestId(`invisible-conversation-${conversationId}`);
+	makeListItemsVisible();
 }
 
 function getSoapMessage(
@@ -100,30 +98,6 @@ function fakeCounter(): { count: number; setCount: (value: number) => void } {
 		count = value;
 	};
 	return { count, setCount };
-}
-
-function makeItemsVisible(): void {
-	const { calls, instances } = (
-		window.IntersectionObserver as jest.Mock<
-			IntersectionObserver,
-			[callback: IntersectionObserverCallback, options?: IntersectionObserverInit]
-		>
-	).mock;
-	calls.forEach((call, index) => {
-		const [onChange] = call;
-		// trigger the intersection on the observed element
-		act(() => {
-			onChange(
-				[
-					{
-						intersectionRatio: 0,
-						isIntersecting: true
-					} as IntersectionObserverEntry
-				],
-				instances[index]
-			);
-		});
-	});
 }
 
 describe('SearchView', () => {
@@ -177,7 +151,6 @@ describe('SearchView', () => {
 			};
 			const settings = generateSettings(customSettings);
 			jest.spyOn(hooks, 'useUserSettings').mockReturnValue(settings);
-			jest.spyOn(customList, 'getCustomListItem').mockReturnValue(FakeCustomList);
 			const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
 			const searchViewProps: SearchViewProps = {
 				useQuery: () => [[queryChip], noop],
@@ -188,8 +161,7 @@ describe('SearchView', () => {
 			setupTest(<SearchView {...searchViewProps} />, {
 				store
 			});
-			makeItemsVisible();
-
+			await waitAndMakeConversationVisible('123');
 			const conversation = await screen.findByText('conversations Subject');
 			expect(conversation).toBeInTheDocument();
 		});
@@ -226,6 +198,7 @@ describe('SearchView', () => {
 			setupTest(<SearchView {...searchViewProps} />, {
 				store
 			});
+			await waitAndMakeConversationVisible('123');
 			expect(await screen.findByText('conversations Subject')).toBeInTheDocument();
 			const chevron = await screen.findByTestId(`ToggleExpand`);
 			const badge = await screen.findByTestId(`conversation-messages-count-${conversation.id}`);
@@ -269,6 +242,7 @@ describe('SearchView', () => {
 			const { user } = setupTest(<SearchView {...searchViewProps} />, {
 				store
 			});
+			await waitAndMakeConversationVisible('123');
 			expect(await screen.findByText('conversations Subject')).toBeInTheDocument();
 			const conversationContainer = await screen.findByTestId(
 				`ConversationListItem-${conversation.id}`
@@ -283,9 +257,6 @@ describe('SearchView', () => {
 				await user.click(clickableConversation);
 			});
 			expect(spyPushHistory).toBeCalledWith('/folder/2/conversation/123');
-			// 	expect(
-			// 		await screen.findByTestId(`conversation-preview-panel-${conversation.id}`)
-			// 	).toBeInTheDocument();
 		});
 
 		it('should display conversation as selected when in selecting it', async () => {
@@ -312,6 +283,7 @@ describe('SearchView', () => {
 			const { user } = setupTest(<SearchView {...searchViewProps} />, {
 				store
 			});
+			await waitAndMakeConversationVisible('123');
 			const itemAvatar = await screen.findByTestId('conversation-list-item-avatar-123');
 			const avatar = within(itemAvatar).getByTestId('avatar');
 			await act(async () => {
