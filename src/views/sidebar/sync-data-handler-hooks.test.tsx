@@ -27,8 +27,6 @@ const UNREAD = 'u';
 const READ = '';
 const FLAGGED = 'f';
 const NOTFLAGGED = '';
-const MARK_AS_SPAM = 's';
-const NOT_SPAM = '';
 
 function getWrapper() {
 	// eslint-disable-next-line react/display-name
@@ -111,27 +109,6 @@ function mockSoapModifyMessageFolder(
 	(useNotify as jest.Mock).mockReturnValue([soapNotify]);
 }
 
-function mockSoapModifyConversationFolder(
-	mailboxNumber: number,
-	messageId: string,
-	folder: string
-): void {
-	mockSoapRefresh(mailboxNumber);
-	const soapNotify = generateSoapAction({
-		modified: {
-			// TODO: mbx is optional and not always received from API, consider removing it in shell-ui
-			mbx: [{ s: mailboxNumber }],
-			c: [
-				{
-					id: messageId,
-					l: folder
-				}
-			]
-		}
-	});
-	(useNotify as jest.Mock).mockReturnValue([soapNotify]);
-}
-
 describe('sync data handler', () => {
 	const mailboxNumber = 1000;
 	describe('conversations', () => {
@@ -186,40 +163,6 @@ describe('sync data handler', () => {
 			const { result } = renderHook(() => useConversationById('123'));
 			await waitFor(() => {
 				expect(result.current.flagged).toBe(false);
-			});
-		});
-
-		// DOUBT: is it possible to mark a whole conversation as SPAM?
-		it.skip('should mark conversation as spam', async () => {
-			updateConversations(
-				[generateConversation({ id: '123', folderId: FOLDERS.INBOX, messages: [] })],
-				0
-			);
-			mockSoapModifyConversationFolder(mailboxNumber, '123', FOLDERS.SPAM);
-
-			renderHook(() => useSyncDataHandler(), {
-				wrapper: getWrapper()
-			});
-
-			const { result } = renderHook(() => useConversationById('123'));
-			await waitFor(() => {
-				expect(result.current.parent).toBe(FOLDERS.SPAM);
-			});
-		});
-		it.skip('should mark conversation as not spam', async () => {
-			updateConversations(
-				[generateConversation({ id: '123', folderId: FOLDERS.SPAM, messages: [] })],
-				0
-			);
-			mockSoapModifyConversationFolder(mailboxNumber, '123', FOLDERS.INBOX);
-
-			renderHook(() => useSyncDataHandler(), {
-				wrapper: getWrapper()
-			});
-
-			const { result } = renderHook(() => useConversationById('123'));
-			await waitFor(() => {
-				expect(result.current.parent).toBe(FOLDERS.INBOX);
 			});
 		});
 	});
@@ -303,6 +246,48 @@ describe('sync data handler', () => {
 			const { result } = renderHook(() => useMessageById('1'));
 			await waitFor(() => {
 				expect(result.current.parent).toBe(FOLDERS.INBOX);
+			});
+		});
+
+		it('should move message to trash', async () => {
+			updateMessages([generateMessage({ id: '1', folderId: FOLDERS.INBOX })], 0);
+			mockSoapModifyMessageFolder(mailboxNumber, '1', FOLDERS.TRASH);
+
+			renderHook(() => useSyncDataHandler(), {
+				wrapper: getWrapper()
+			});
+
+			const { result } = renderHook(() => useMessageById('1'));
+			await waitFor(() => {
+				expect(result.current.parent).toBe(FOLDERS.TRASH);
+			});
+		});
+
+		it('should restore message', async () => {
+			updateMessages([generateMessage({ id: '1', folderId: FOLDERS.TRASH })], 0);
+			mockSoapModifyMessageFolder(mailboxNumber, '1', FOLDERS.INBOX);
+
+			renderHook(() => useSyncDataHandler(), {
+				wrapper: getWrapper()
+			});
+
+			const { result } = renderHook(() => useMessageById('1'));
+			await waitFor(() => {
+				expect(result.current.parent).toBe(FOLDERS.INBOX);
+			});
+		});
+
+		it('should move message to a folder', async () => {
+			updateMessages([generateMessage({ id: '1', folderId: 'aaa' })], 0);
+			mockSoapModifyMessageFolder(mailboxNumber, '1', 'bbb');
+
+			renderHook(() => useSyncDataHandler(), {
+				wrapper: getWrapper()
+			});
+
+			const { result } = renderHook(() => useMessageById('1'));
+			await waitFor(() => {
+				expect(result.current.parent).toBe('bbb');
 			});
 		});
 	});
