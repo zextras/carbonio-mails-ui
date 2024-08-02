@@ -3,11 +3,11 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, useEffect, useMemo } from 'react';
+import React, { FC, useCallback, useEffect, useMemo } from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
-import { useTags, useUserSettings } from '@zextras/carbonio-shell-ui';
-import { filter, isEmpty } from 'lodash';
+import { replaceHistory, useTags, useUserSettings } from '@zextras/carbonio-shell-ui';
+import { filter, findIndex, isEmpty } from 'lodash';
 import { useParams } from 'react-router-dom';
 
 import { ConversationPreviewPanel } from './conversation-preview-panel';
@@ -16,6 +16,7 @@ import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
 import { API_REQUEST_STATUS } from '../../../constants';
 import { getFolderIdParts } from '../../../helpers/folders';
 import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
+import { useFolderSortedConversations } from '../../../hooks/use-folder-sorted-conversations';
 import { getConv, searchConv } from '../../../store/actions';
 import {
 	selectConversation,
@@ -45,7 +46,10 @@ export const ConversationPreviewPanelContainer: FC<ConversationPreviewPanelProps
 		selectConversationExpandedStatus(state, conversationId)
 	);
 
+	const conversations = useFolderSortedConversations(folderId);
 	const conversation = useAppSelector(selectConversation(conversationId));
+
+	const conversationIndex = findIndex(conversations, (conv) => conv.id === conversationId);
 	const settings = useUserSettings();
 	const convSortOrder = settings.prefs.zimbraPrefConversationOrder as string;
 	useEffect(() => {
@@ -73,12 +77,33 @@ export const ConversationPreviewPanelContainer: FC<ConversationPreviewPanelProps
 		[conversation, folderId]
 	);
 
+	const onGoForward = useCallback(() => {
+		if (conversationIndex === conversations.length - 1) return;
+		const offSet = 5;
+		const hasMore = true;
+		if (conversationIndex === conversations.length - offSet && hasMore) {
+			// todo: implement loadMore
+		}
+		const nextIndex = conversationIndex + 1;
+		const newConvId = conversations[nextIndex]?.id;
+		replaceHistory(`/folder/${folderId}/conversation/${newConvId}`);
+	}, [conversationIndex, conversations, folderId]);
+
+	const onGoBack = useCallback(() => {
+		if (conversationIndex <= 0) return;
+		const nextIndex = conversationIndex - 1;
+		const newConvId = conversations[nextIndex]?.id;
+		replaceHistory(`/folder/${folderId}/conversation/${newConvId}`);
+	}, [conversationIndex, conversations, folderId]);
+
 	return (
 		<Container orientation="vertical" mainAlignment="flex-start" crossAlignment="flex-start">
 			{showPreviewPanel && (
 				<>
 					{!isInsideExtraWindow && (
 						<PreviewPanelHeader
+							onGoBack={onGoBack}
+							onGoForward={onGoForward}
 							subject={conversation.subject}
 							isRead={conversation.read}
 							folderId={folderId}

@@ -10,7 +10,6 @@ import {
 	Divider,
 	Icon,
 	IconButton,
-	Padding,
 	Row,
 	Text,
 	Tooltip
@@ -26,10 +25,12 @@ import { getFolderTranslatedName } from '../../../sidebar/utils';
 import { LayoutComponent } from '../../folder-panel/parts/layout-component';
 
 const PreviewPanelHeader: FC<{
+	onGoBack?: () => void;
+	onGoForward?: () => void;
 	subject?: MailMessage['subject'];
 	isRead?: MailMessage['read'];
 	folderId: string;
-}> = ({ subject, isRead, folderId }) => {
+}> = ({ subject, isRead, folderId, onGoBack, onGoForward }) => {
 	const [t] = useTranslation();
 
 	const replaceHistoryCallback = useCallback(
@@ -67,23 +68,37 @@ const PreviewPanelHeader: FC<{
 				style={{ minHeight: '3rem' }}
 			>
 				{listLayout === MAILS_VIEW_LAYOUTS.NO_SPLIT && (
-					<Padding right={'large'}>
-						<Tooltip label={tooltipLabel}>
-							<IconButton
-								onClick={replaceHistoryCallback}
-								customSize={{
-									iconSize: 'medium',
-									paddingSize: 'small'
-								}}
-								icon="ArrowBackOutline"
-							/>
-						</Tooltip>
-					</Padding>
+					<Row padding={{ right: 'large' }}>
+						{onGoBack && (
+							<Tooltip label={tooltipLabel}>
+								<IconButton
+									onClick={onGoBack}
+									customSize={{
+										iconSize: 'medium',
+										paddingSize: 'small'
+									}}
+									icon="ArrowIosBack"
+								/>
+							</Tooltip>
+						)}
+						{onGoForward && (
+							<Tooltip label={tooltipLabel}>
+								<IconButton
+									onClick={onGoForward}
+									customSize={{
+										iconSize: 'medium',
+										paddingSize: 'small'
+									}}
+									icon="ArrowIosForward"
+								/>
+							</Tooltip>
+						)}
+					</Row>
 				)}
 				<Icon
-					style={{ width: '1.125rem' }}
 					icon={isRead ? 'EmailReadOutline' : 'EmailOutline'}
 					data-testid={isRead ? 'EmailReadIcon' : 'EmailUnreadIcon'}
+					size={'medium'}
 				/>
 				<Row mainAlignment="flex-start" padding={{ left: 'large' }} takeAvailableSpace>
 					<Tooltip label={subjectLabel}>
