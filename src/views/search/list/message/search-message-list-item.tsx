@@ -80,7 +80,7 @@ export const SearchMessageListItem: FC<SearchMessageListItemProps> = memo(functi
 				if (completeMessage.read === false && zimbraPrefMarkMsgRead) {
 					setMsgRead({ ids: [completeMessage.id], value: false, dispatch }).onClick(e);
 				}
-				replaceHistory(`/folder/${firstChildFolderId}/message/${completeMessage.id}`);
+				replaceHistory(`/message/${completeMessage.id}`);
 			}
 		},
 		[completeMessage.read, completeMessage.id, zimbraPrefMarkMsgRead, firstChildFolderId, dispatch]
