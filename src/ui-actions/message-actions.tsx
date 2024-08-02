@@ -24,13 +24,11 @@ import { getMsgCall, getMsgsForPrint, msgAction } from '../store/actions';
 import { sendMsg, sendMsgFromEditor } from '../store/actions/send-msg';
 import { extractBody } from '../store/editor-slice-utils';
 import { AppDispatch, StoreProvider } from '../store/redux';
-import { updateMessagesParent } from '../store/zustand/message-store/store';
 import type {
 	MailMessage,
 	MailsEditorV2,
 	MessageAction,
 	MessageActionReturnType,
-	MsgActionOperation,
 	MsgActionParameters,
 	MsgActionResult
 } from '../types';
@@ -78,11 +76,9 @@ export const setMsgRead = ({
 			: t('action.mark_as_read', 'Mark as read'),
 		onClick: (ev): void => {
 			if (ev) ev.preventDefault();
-			// TODO: the logic is inverted: setMsgRead with value true results in !read, why?
-			const operation: MsgActionOperation = `${value ? '!' : ''}read`;
 			dispatch(
 				msgAction({
-					operation,
+					operation: `${value ? '!' : ''}read`,
 					ids
 				})
 			).then((res) => {
@@ -111,10 +107,9 @@ export function setMsgFlag({
 		label: value ? t('action.unflag', 'Remove flag') : t('action.flag', 'Add flag'),
 		onClick: (ev): void => {
 			if (ev) ev.preventDefault();
-			const operation: MsgActionOperation = `${value ? '!' : ''}flag`;
 			dispatch(
 				msgAction({
-					operation,
+					operation: `${value ? '!' : ''}flag`,
 					ids
 				})
 			);
@@ -136,24 +131,15 @@ export const useSetMsgAsSpam = (): ((arg: MessageActionPropType) => MessageActio
 	const setAsSpam = useCallback(
 		({ notCanceled, value, dispatch, ids, shouldReplaceHistory, folderId }: SetAsSpamProps) => {
 			if (!notCanceled) return;
-			const operation: MsgActionOperation = `${value ? '!' : ''}spam`;
 			dispatch(
 				msgAction({
-					operation,
+					operation: `${value ? '!' : ''}spam`,
 					ids
 				})
 			).then((res) => {
-				if (res.type.includes('fulfilled')) {
-					if (!operation.startsWith('!')) {
-						updateMessagesParent(FOLDERS.SPAM, ids);
-					} else {
-						updateMessagesParent(FOLDERS.INBOX, ids);
-					}
-					if (shouldReplaceHistory) {
-						replaceHistory(`/folder/${folderId}`);
-					}
+				if (res.type.includes('fulfilled') && shouldReplaceHistory) {
+					replaceHistory(`/folder/${folderId}`);
 				}
-
 				if (!res.type.includes('fulfilled')) {
 					createSnackbar({
 						key: `trash-${ids}`,
@@ -383,7 +369,6 @@ export const useMoveMsgToTrash = (): ((arg: MessageActionPropType) => MessageAct
 						})
 					).then((res) => {
 						if (res.type.includes('fulfilled')) {
-							updateMessagesParent(FOLDERS.TRASH, ids);
 							deselectAll && deselectAll();
 							closeEditor && replaceHistory(`/folder/${folderId}`);
 							createSnackbar({

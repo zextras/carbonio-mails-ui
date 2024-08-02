@@ -18,7 +18,6 @@ import { useUiUtilities } from '../hooks/use-ui-utilities';
 import { convAction, getMsgsForPrint } from '../store/actions';
 import { AppDispatch, StoreProvider } from '../store/redux';
 import type {
-	ConvActionOperation,
 	ConvActionReturnType,
 	Conversation,
 	ExtraWindowCreationParams,
@@ -59,10 +58,9 @@ export function setConversationsFlag({
 		icon: value ? 'Flag' : 'FlagOutline',
 		label: value ? t('action.unflag', 'Add flag') : t('action.flag', 'Remove flag'),
 		onClick: (): void => {
-			const operation: ConvActionOperation = `${value ? '!' : ''}flag`;
 			dispatch(
 				convAction({
-					operation,
+					operation: `${value ? '!' : ''}flag`,
 					ids
 				})
 			);

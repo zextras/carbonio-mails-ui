@@ -14,7 +14,6 @@ import {
 	updateConversationStatus,
 	updateMessages,
 	updateMessagesOnly,
-	updateMessagesParent,
 	useConversationById,
 	useConversationMessages,
 	useConversationStatus,
@@ -115,16 +114,6 @@ describe('message store', () => {
 			const { result } = renderHook(() => useMessageById('1'));
 
 			expect(result.current.parent).toEqual(FOLDERS.INBOX);
-		});
-
-		it('should update and return messages parent', () => {
-			updateMessages([generateMessage({ id: '1' }), generateMessage({ id: '2' })], 0);
-
-			const newFolder = 'newFolder';
-			updateMessagesParent(newFolder, ['1', '2']);
-
-			expect(renderHook(() => useMessageById('1')).result.current.parent).toBe(newFolder);
-			expect(renderHook(() => useMessageById('2')).result.current.parent).toBe(newFolder);
 		});
 
 		it('should delete all messages', () => {

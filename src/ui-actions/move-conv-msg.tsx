@@ -17,7 +17,6 @@ import { useUiUtilities } from '../hooks/use-ui-utilities';
 import { convAction, msgAction } from '../store/actions';
 import { createFolder } from '../store/actions/create-folder';
 import { AppDispatch } from '../store/redux';
-import { updateMessagesParent } from '../store/zustand/message-store/store';
 import { FolderSelector } from '../views/sidebar/commons/folder-selector';
 
 type MoveConvMessageProps = {
@@ -62,7 +61,6 @@ const MoveConvMessage = ({
 			)
 				.then((res) => {
 					if (res.type.includes('fulfilled')) {
-						updateMessagesParent(folderId, selectedIDs);
 						deselectAll?.();
 						createSnackbar({
 							key: `edit`,
@@ -92,7 +90,7 @@ const MoveConvMessage = ({
 				})
 				.catch(() => noop);
 		},
-		[dispatch, selectedIDs, onCloseModal, folderId, deselectAll, createSnackbar, isRestore]
+		[dispatch, selectedIDs, onCloseModal, deselectAll, createSnackbar, isRestore]
 	);
 
 	const onConfirmMessageMove = useCallback(
