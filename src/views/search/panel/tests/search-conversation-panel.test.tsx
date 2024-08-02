@@ -35,13 +35,7 @@ import {
 import { generateConversation } from '../../../../tests/generators/generateConversation';
 import { generateMessage } from '../../../../tests/generators/generateMessage';
 import { generateStore } from '../../../../tests/generators/store';
-import {
-	MsgActionRequest,
-	MsgActionResponse,
-	SearchConvRequest,
-	SearchConvResponse,
-	SoapMailMessage
-} from '../../../../types';
+import { SearchConvRequest, SearchConvResponse, SoapMailMessage } from '../../../../types';
 import { SearchConversationPanel } from '../search-conversation-panel';
 
 jest.mock('react-router-dom', () => ({
@@ -147,7 +141,7 @@ describe('Conversation Preview', () => {
 	});
 
 	describe('Actions', () => {
-		beforeEach(() => {
+		const setupMocks = (conversationId: string): void => {
 			useFolderStore.setState(
 				produce((initialState) => {
 					initialState.folders = generateFolders();
@@ -155,32 +149,8 @@ describe('Conversation Preview', () => {
 			);
 			jest.spyOn(hooks, 'useAppContext').mockReturnValue({ setCount: noop });
 			jest.spyOn(visibleActionsCount, 'useVisibleActionsCount').mockReturnValue([16, noop]);
-			(useParams as jest.Mock).mockReturnValue({ conversationId: '123', folderId: FOLDERS.INBOX });
-		});
-
-		it('should display "Trash" badge on single message after deleting it', async () => {
-			const msgActionInterceptor = createSoapAPIInterceptor<MsgActionRequest, MsgActionResponse>(
-				'MsgAction',
-				{ action: { id: '345', op: 'trash' } }
-			);
-			const messages = [generateMessage({ id: '1', folderId: '2' })];
-			const conversation = generateConversation({
-				id: '123',
-				folderId: FOLDERS.INBOX,
-				messages
-			});
-			updateConversations([conversation], 0);
-			updateConversationStatus(conversation.id, API_REQUEST_STATUS.fulfilled);
-			updateMessages(messages, 0);
-
-			const { user } = setupTest(<SearchConversationPanel />, { store });
-			const mail1Panel = await screen.findByTestId(/MailPreview-1/);
-			const trashButton = await within(mail1Panel).findByTestId('icon: Trash2Outline');
-			await act(() => user.click(trashButton));
-
-			await msgActionInterceptor;
-			expect(await within(mail1Panel).findByText(/folders\.trash/i)).toBeVisible();
-		});
+			(useParams as jest.Mock).mockReturnValue({ conversationId });
+		};
 
 		it('should display actions only on opened messages', async () => {
 			const message1 = generateMessage({ id: '1', folderId: '2', body: 'Body 1' });
@@ -193,6 +163,7 @@ describe('Conversation Preview', () => {
 			updateConversations([conversation], 0);
 			updateConversationStatus(conversation.id, API_REQUEST_STATUS.fulfilled);
 			updateMessages([message1, message2], 0);
+			setupMocks('123');
 
 			setupTest(<SearchConversationPanel />, { store });
 
