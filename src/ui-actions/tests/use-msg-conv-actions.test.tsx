@@ -9,6 +9,7 @@ import React, { ReactElement, ReactNode } from 'react';
 import { renderHook } from '@testing-library/react-hooks';
 import { I18nextProvider } from 'react-i18next';
 import { Provider } from 'react-redux';
+import { useLocation } from 'react-router-dom';
 
 import { getAppI18n } from '../../carbonio-ui-commons/test/i18n/i18n-test-factory';
 import { generateConversation } from '../../tests/generators/generateConversation';
@@ -16,7 +17,13 @@ import { generateMessage } from '../../tests/generators/generateMessage';
 import { generateStore } from '../../tests/generators/store';
 import { useMsgConvActions } from '../use-msg-conv-actions';
 
+jest.mock('react-router-dom', () => ({
+	...jest.requireActual('react-router-dom'),
+	useLocation: jest.fn()
+}));
+
 describe('useMsgConvActions', () => {
+	(useLocation as jest.Mock).mockReturnValue({ pathname: '/test/path' });
 	it('should return empty arrays if folderId is not available', () => {
 		const message = generateMessage({});
 		const messageWithoutFolderId = { ...message, parent: undefined };

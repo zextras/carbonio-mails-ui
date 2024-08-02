@@ -261,7 +261,7 @@ describe('SearchView', () => {
 			await act(async () => {
 				await user.click(clickableConversation);
 			});
-			expect(spyPushHistory).toBeCalledWith('/folder/2/conversation/123');
+			expect(spyPushHistory).toBeCalledWith('conversation/123');
 		});
 
 		it('should display conversation as selected when in selecting it', async () => {
