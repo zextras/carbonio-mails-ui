@@ -75,9 +75,6 @@ export const useSyncDataHandler = (): void => {
 								// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 								// @ts-ignore
 								dispatch(handleNotifyCreatedConversations(conversations));
-								// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-								// @ts-ignore
-								dispatch(handleNotifyCreatedSearchConversations(keyBy(conversations, 'id')));
 							}
 							if (notify.created.m) {
 								dispatch(handleCreatedMessages({ m: notify.created.m }));
@@ -93,9 +90,6 @@ export const useSyncDataHandler = (): void => {
 								// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 								// @ts-ignore
 								dispatch(handleNotifyModifiedConversations(keyBy(conversations, 'id')));
-								// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-								// @ts-ignore
-								dispatch(handleNotifyModifiedSearchConversations(keyBy(conversations, 'id')));
 								updateConversationsOnly(normalizeConversations(soapModifiedConversations, tags));
 							}
 							const soapModifiedMessages = notify.modified.m;
@@ -115,9 +109,6 @@ export const useSyncDataHandler = (): void => {
 									// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 									// @ts-ignore
 									dispatch(handleModifiedMessagesInConversation(toUpdate));
-									// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-									// @ts-ignore
-									dispatch(handleModifiedMessagesInSearchConversation(toUpdate));
 								}
 								// the condition filters messages with conversation property (the only ones we need to add to conversation)
 								const conversationToUpdate = filter(messages, 'conversation');
@@ -151,9 +142,6 @@ export const useSyncDataHandler = (): void => {
 									// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 									// @ts-ignore
 									dispatch(handleAddMessagesInConversation(msgsReference));
-									// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-									// @ts-ignore
-									dispatch(handleAddMessagesInSearchConversation(msgsReference));
 								}
 							}
 						}
