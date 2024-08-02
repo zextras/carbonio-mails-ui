@@ -51,7 +51,13 @@ export const MessagePreviewPanel: FC<MessagePreviewPanelProps> = ({
 		<Container orientation="vertical" mainAlignment="flex-start" crossAlignment="flex-start">
 			{message && (
 				<>
-					{!isInsideExtraWindow && <PreviewPanelHeader item={message} folderId={folderId} />}
+					{!isInsideExtraWindow && (
+						<PreviewPanelHeader
+							subject={message.subject}
+							isRead={message.read}
+							folderId={folderId}
+						/>
+					)}
 					<Container
 						style={{ overflowY: 'auto' }}
 						height="fill"

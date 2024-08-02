@@ -15,27 +15,31 @@ import {
 	Text,
 	Tooltip
 } from '@zextras/carbonio-design-system';
-import { replaceHistory, t, useLocalStorage } from '@zextras/carbonio-shell-ui';
+import { replaceHistory, useLocalStorage } from '@zextras/carbonio-shell-ui';
+import { useTranslation } from 'react-i18next';
 
 import { useFolder } from '../../../../carbonio-ui-commons/store/zustand/folder';
 import { LOCAL_STORAGE_LAYOUT, MAILS_VIEW_LAYOUTS } from '../../../../constants';
-import type { Conversation, MailMessage } from '../../../../types';
+import type { MailMessage } from '../../../../types';
 import type { MailsListLayout } from '../../../folder-view';
 import { getFolderTranslatedName } from '../../../sidebar/utils';
 import { LayoutComponent } from '../../folder-panel/parts/layout-component';
 
 const PreviewPanelHeader: FC<{
-	item: Conversation | (Partial<MailMessage> & Pick<MailMessage, 'id'>);
+	subject?: MailMessage['subject'];
+	isRead?: MailMessage['read'];
 	folderId: string;
-}> = ({ item, folderId }) => {
+}> = ({ subject, isRead, folderId }) => {
+	const [t] = useTranslation();
+
 	const replaceHistoryCallback = useCallback(
 		() => replaceHistory(`/folder/${folderId}`),
 		[folderId]
 	);
 
-	const subject = useMemo(
-		() => item?.subject || t('label.no_subject_with_tags', '<No Subject>'),
-		[item?.subject]
+	const subjectLabel = useMemo(
+		() => subject || t('label.no_subject_with_tags', '<No Subject>'),
+		[subject]
 	);
 
 	const [listLayout] = useLocalStorage<MailsListLayout>(
@@ -78,13 +82,13 @@ const PreviewPanelHeader: FC<{
 				)}
 				<Icon
 					style={{ width: '1.125rem' }}
-					icon={item?.read ? 'EmailReadOutline' : 'EmailOutline'}
-					data-testid={item?.read ? 'EmailReadIcon' : 'EmailUnreadIcon'}
+					icon={isRead ? 'EmailReadOutline' : 'EmailOutline'}
+					data-testid={isRead ? 'EmailReadIcon' : 'EmailUnreadIcon'}
 				/>
 				<Row mainAlignment="flex-start" padding={{ left: 'large' }} takeAvailableSpace>
-					<Tooltip label={subject}>
-						<Text size="medium" data-testid="Subject" color={item?.subject ? 'text' : 'secondary'}>
-							{subject}
+					<Tooltip label={subjectLabel}>
+						<Text size="medium" data-testid="Subject" color={subject ? 'text' : 'secondary'}>
+							{subjectLabel}
 						</Text>
 					</Tooltip>
 				</Row>

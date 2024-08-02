@@ -77,7 +77,13 @@ export const ConversationPreviewPanelContainer: FC<ConversationPreviewPanelProps
 		<Container orientation="vertical" mainAlignment="flex-start" crossAlignment="flex-start">
 			{showPreviewPanel && (
 				<>
-					{!isInsideExtraWindow && <PreviewPanelHeader item={conversation} folderId={folderId} />}
+					{!isInsideExtraWindow && (
+						<PreviewPanelHeader
+							subject={conversation.subject}
+							isRead={conversation.read}
+							folderId={folderId}
+						/>
+					)}
 					<ConversationPreviewPanel
 						conversation={conversation}
 						isInsideExtraWindow={isInsideExtraWindow}
