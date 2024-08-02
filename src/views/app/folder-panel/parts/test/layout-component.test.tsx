@@ -78,7 +78,7 @@ describe('LayoutComponent', () => {
 
 	test('if the current layout is "no split", and the last split orientation was vertical, the button will render the "vertical" icon', async () => {
 		mockLayoutStorage({
-			layout: MAILS_VIEW_LAYOUTS.FULL,
+			layout: MAILS_VIEW_LAYOUTS.NO_SPLIT,
 			splitOrientation: MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS.VERTICAL
 		});
 
@@ -91,7 +91,7 @@ describe('LayoutComponent', () => {
 
 	test('if the current layout is "no split", and the last split orientation was horizontal, the button will render the "horizontal" icon', async () => {
 		mockLayoutStorage({
-			layout: MAILS_VIEW_LAYOUTS.FULL,
+			layout: MAILS_VIEW_LAYOUTS.NO_SPLIT,
 			splitOrientation: MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS.HORIZONTAL
 		});
 
@@ -124,7 +124,7 @@ describe('LayoutComponent', () => {
 
 	test('onHover tooltip will render "Switch to vertical split"', async () => {
 		mockLayoutStorage({
-			layout: MAILS_VIEW_LAYOUTS.FULL,
+			layout: MAILS_VIEW_LAYOUTS.NO_SPLIT,
 			splitOrientation: MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS.VERTICAL
 		});
 
@@ -137,7 +137,7 @@ describe('LayoutComponent', () => {
 
 	test('onHover tooltip will render "Switch to horizontal split"', async () => {
 		mockLayoutStorage({
-			layout: MAILS_VIEW_LAYOUTS.FULL,
+			layout: MAILS_VIEW_LAYOUTS.NO_SPLIT,
 			splitOrientation: MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS.HORIZONTAL
 		});
 
@@ -188,7 +188,7 @@ describe('LayoutComponent', () => {
 
 	test('the no-split option should be highlighted if it is the current layout', async () => {
 		mockLayoutStorage({
-			layout: MAILS_VIEW_LAYOUTS.FULL
+			layout: MAILS_VIEW_LAYOUTS.NO_SPLIT
 		});
 
 		const { user } = setupTest(<LayoutComponent />);

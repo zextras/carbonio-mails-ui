@@ -52,7 +52,9 @@ export const LayoutComponent = (): React.JSX.Element => {
 
 	const onToggle = useCallback(() => {
 		setListLayout((prevValue) =>
-			prevValue === MAILS_VIEW_LAYOUTS.FULL ? MAILS_VIEW_LAYOUTS.SPLIT : MAILS_VIEW_LAYOUTS.FULL
+			prevValue === MAILS_VIEW_LAYOUTS.NO_SPLIT
+				? MAILS_VIEW_LAYOUTS.SPLIT
+				: MAILS_VIEW_LAYOUTS.NO_SPLIT
 		);
 	}, [setListLayout]);
 
@@ -67,7 +69,7 @@ export const LayoutComponent = (): React.JSX.Element => {
 	}, [setListLayout, setSplitLayoutOrientation]);
 
 	const onClickHidePreview = useCallback(() => {
-		setListLayout(MAILS_VIEW_LAYOUTS.FULL);
+		setListLayout(MAILS_VIEW_LAYOUTS.NO_SPLIT);
 	}, [setListLayout]);
 
 	const layoutOptions: Array<DropdownItem> = [
@@ -94,7 +96,7 @@ export const LayoutComponent = (): React.JSX.Element => {
 			label: t('layoutView.tooltip.noSplit', 'No split'),
 			icon: 'ViewOffOutline',
 			onClick: onClickHidePreview,
-			selected: listLayout === MAILS_VIEW_LAYOUTS.FULL
+			selected: listLayout === MAILS_VIEW_LAYOUTS.NO_SPLIT
 		}
 	];
 

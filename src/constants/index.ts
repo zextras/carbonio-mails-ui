@@ -27,7 +27,7 @@ export const LOCAL_STORAGE_LAYOUT = 'carbonio-mails-ui-layout';
 export const LOCAL_STORAGE_SPLIT_LAYOUT_ORIENTATION = 'carbonio-mails-ui-split-layout_orientation';
 
 export const MAILS_VIEW_LAYOUTS = {
-	FULL: 'full',
+	NO_SPLIT: 'no-split',
 	SPLIT: 'split'
 } as const;
 

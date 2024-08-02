@@ -126,7 +126,7 @@ export const LayoutSelector = ({
 			mainAlignment="flex-start"
 		>
 			{(listLayout === MAILS_VIEW_LAYOUTS.SPLIT ||
-				(!match?.params?.itemId && listLayout === MAILS_VIEW_LAYOUTS.FULL)) && (
+				(!match?.params?.itemId && listLayout === MAILS_VIEW_LAYOUTS.NO_SPLIT)) && (
 				<Container
 					data-testid={'LayoutSelectorInnerContainer'}
 					ref={containerRef}
@@ -140,7 +140,7 @@ export const LayoutSelector = ({
 				</Container>
 			)}
 			{(listLayout === MAILS_VIEW_LAYOUTS.SPLIT ||
-				(match?.params?.itemId && listLayout === MAILS_VIEW_LAYOUTS.FULL)) &&
+				(match?.params?.itemId && listLayout === MAILS_VIEW_LAYOUTS.NO_SPLIT)) &&
 				detailPanel}
 		</Container>
 	);

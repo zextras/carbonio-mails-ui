@@ -62,7 +62,7 @@ const PreviewPanelHeader: FC<{
 				padding={{ left: 'large', right: 'extrasmall' }}
 				style={{ minHeight: '3rem' }}
 			>
-				{listLayout === MAILS_VIEW_LAYOUTS.FULL && (
+				{listLayout === MAILS_VIEW_LAYOUTS.NO_SPLIT && (
 					<Padding right={'large'}>
 						<Tooltip label={tooltipLabel}>
 							<IconButton
@@ -88,7 +88,7 @@ const PreviewPanelHeader: FC<{
 						</Text>
 					</Tooltip>
 				</Row>
-				{listLayout === MAILS_VIEW_LAYOUTS.FULL && <LayoutComponent />}
+				{listLayout === MAILS_VIEW_LAYOUTS.NO_SPLIT && <LayoutComponent />}
 				<IconButton
 					data-testid="PreviewPanelCloseIcon"
 					icon="CloseOutline"
