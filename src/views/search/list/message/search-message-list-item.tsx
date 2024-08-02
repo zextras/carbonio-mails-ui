@@ -67,7 +67,7 @@ export const SearchMessageListItem: FC<SearchMessageListItemProps> = memo(functi
 	deselectAll
 }) {
 	const completeMessage = useMessageById(itemId);
-	const firstChildFolderId = completeMessage.parent;
+	const folderId = completeMessage.parent;
 
 	const dispatch = useAppDispatch();
 	const zimbraPrefMarkMsgRead = useUserSettings()?.prefs?.zimbraPrefMarkMsgRead !== '-1';
@@ -83,7 +83,7 @@ export const SearchMessageListItem: FC<SearchMessageListItemProps> = memo(functi
 				replaceHistory(`/message/${completeMessage.id}`);
 			}
 		},
-		[completeMessage.read, completeMessage.id, zimbraPrefMarkMsgRead, firstChildFolderId, dispatch]
+		[completeMessage.read, completeMessage.id, zimbraPrefMarkMsgRead, dispatch]
 	);
 	const onDoubleClick = useCallback(
 		(e) => {
@@ -97,7 +97,7 @@ export const SearchMessageListItem: FC<SearchMessageListItemProps> = memo(functi
 				} else {
 					previewMessageOnSeparatedWindow(
 						id,
-						firstChildFolderId,
+						folderId,
 						completeMessage.subject,
 						createWindow,
 						messageActions
@@ -105,7 +105,7 @@ export const SearchMessageListItem: FC<SearchMessageListItemProps> = memo(functi
 				}
 			}
 		},
-		[createWindow, firstChildFolderId, completeMessage, messageActions]
+		[createWindow, folderId, completeMessage, messageActions]
 	);
 
 	const accounts = useUserAccounts();
@@ -237,7 +237,7 @@ export const SearchMessageListItem: FC<SearchMessageListItemProps> = memo(functi
 						selected={selected}
 						selecting={selecting}
 						toggle={onToggle}
-						folderId={firstChildFolderId}
+						folderId={folderId}
 					/>
 					<Padding horizontal="extrasmall" />
 				</div>
@@ -351,12 +351,12 @@ export const SearchMessageListItem: FC<SearchMessageListItemProps> = memo(functi
 									</Text>
 								</Tooltip>
 							)}
-							{((messageFolder && messageFolder.id !== firstChildFolderId) || isSearchModule) && (
+							{((messageFolder && messageFolder.id !== folderId) || isSearchModule) && (
 								<Padding left="small">
 									<Badge
 										data-testid="FolderBadge"
 										value={getFolderTranslatedName({
-											folderId: firstChildFolderId,
+											folderId,
 											folderName: messageFolder?.name ?? ''
 										})}
 										type={textReadValues.badge}
