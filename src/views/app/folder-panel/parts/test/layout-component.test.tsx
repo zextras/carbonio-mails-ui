@@ -144,4 +144,60 @@ describe('LayoutComponent', () => {
 
 		expect(tooltip).toBeVisible();
 	});
+
+	test('the vertical split option should be highlighted if it is the current layout', async () => {
+		mockLayoutStorage({
+			layout: MAILS_VIEW_LAYOUTS.SPLIT,
+			splitOrientation: MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS.VERTICAL
+		});
+
+		const { user } = setupTest(<LayoutComponent />);
+		const chevron = screen.getByRoleWithIcon('button', {
+			icon: TESTID_SELECTORS.icons.chevronDown
+		});
+		await act(async () => {
+			await user.click(chevron);
+		});
+		const list = screen.getByTestId('dropdown-popper-list');
+		const option = within(list).getByText('Vertical split');
+
+		expect(option).toHaveStyle({ fontWeight: 700 });
+	});
+
+	test('the horizontal split option should be highlighted if it is the current layout', async () => {
+		mockLayoutStorage({
+			layout: MAILS_VIEW_LAYOUTS.SPLIT,
+			splitOrientation: MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS.HORIZONTAL
+		});
+
+		const { user } = setupTest(<LayoutComponent />);
+		const chevron = screen.getByRoleWithIcon('button', {
+			icon: TESTID_SELECTORS.icons.chevronDown
+		});
+		await act(async () => {
+			await user.click(chevron);
+		});
+		const list = screen.getByTestId('dropdown-popper-list');
+		const option = within(list).getByText('Horizontal split');
+
+		expect(option).toHaveStyle({ fontWeight: 700 });
+	});
+
+	test('the no-split option should be highlighted if it is the current layout', async () => {
+		mockLayoutStorage({
+			layout: MAILS_VIEW_LAYOUTS.FULL
+		});
+
+		const { user } = setupTest(<LayoutComponent />);
+		const chevron = screen.getByRoleWithIcon('button', {
+			icon: TESTID_SELECTORS.icons.chevronDown
+		});
+		await act(async () => {
+			await user.click(chevron);
+		});
+		const list = screen.getByTestId('dropdown-popper-list');
+		const option = within(list).getByText('No split');
+
+		expect(option).toHaveStyle({ fontWeight: 700 });
+	});
 });

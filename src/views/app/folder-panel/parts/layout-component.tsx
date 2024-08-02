@@ -75,19 +75,26 @@ export const LayoutComponent = (): React.JSX.Element => {
 			id: 'vertical',
 			label: t('layoutView.tooltip.verticalSplit', 'Vertical split'),
 			icon: 'LayoutOutline',
-			onClick: onClickVerticalSplit
+			onClick: onClickVerticalSplit,
+			selected:
+				listLayout === MAILS_VIEW_LAYOUTS.SPLIT &&
+				splitLayoutOrientation === MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS.VERTICAL
 		},
 		{
 			id: 'horizontal',
 			label: t('layoutView.tooltip.horizontalSplit', 'Horizontal split'),
 			icon: 'BottomViewOutline',
-			onClick: onClickHorizontalSplit
+			onClick: onClickHorizontalSplit,
+			selected:
+				listLayout === MAILS_VIEW_LAYOUTS.SPLIT &&
+				splitLayoutOrientation === MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS.HORIZONTAL
 		},
 		{
 			id: 'noSplit',
 			label: t('layoutView.tooltip.noSplit', 'No split'),
 			icon: 'ViewOffOutline',
-			onClick: onClickHidePreview
+			onClick: onClickHidePreview,
+			selected: listLayout === MAILS_VIEW_LAYOUTS.FULL
 		}
 	];
 
