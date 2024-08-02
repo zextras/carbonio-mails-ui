@@ -32,16 +32,6 @@ import {
 	selectMessages
 } from '../../../store/messages-slice';
 import {
-	handleAddMessagesInSearchConversation,
-	handleCreatedMessagesInSearchConversation,
-	handleDeletedMessagesInSearchConversation,
-	handleDeletedSearchMessages,
-	handleModifiedMessagesInSearchConversation,
-	handleNotifyCreatedSearchConversations,
-	handleNotifyDeletedSearchConversations,
-	handleNotifyModifiedSearchConversations
-} from '../../../store/searches-slice';
-import {
 	updateConversationsOnly,
 	updateMessagesOnly
 } from '../../../store/zustand/message-store/store';
@@ -92,7 +82,6 @@ export const useSyncDataHandler = (): void => {
 							if (notify.created.m) {
 								dispatch(handleCreatedMessages({ m: notify.created.m }));
 								dispatch(handleCreatedMessagesInConversation({ m: notify.created.m }));
-								dispatch(handleCreatedMessagesInSearchConversation({ m: notify.created.m }));
 							}
 						}
 						if (notify.modified) {
@@ -170,11 +159,8 @@ export const useSyncDataHandler = (): void => {
 						}
 						if (notify.deleted) {
 							dispatch(handleNotifyDeletedConversations(notify.deleted));
-							dispatch(handleNotifyDeletedSearchConversations(notify.deleted));
 							dispatch(handleDeletedMessages(notify.deleted));
-							dispatch(handleDeletedSearchMessages(notify.deleted));
 							dispatch(handleDeletedMessagesInConversation(notify.deleted));
-							dispatch(handleDeletedMessagesInSearchConversation(notify.deleted));
 						}
 						setSeq(notify.seq);
 					}

@@ -11,7 +11,6 @@ import { MAIL_APP_ID } from '../../constants';
 import { getConversationsSliceInitialState } from '../../store/conversations-slice';
 import { getMessagesSliceInitialState } from '../../store/messages-slice';
 import { storeReducers } from '../../store/reducers';
-import { getSearchSliceInitialiState } from '../../store/searches-slice';
 import type { MailsStateType } from '../../types';
 
 /**
@@ -19,10 +18,6 @@ import type { MailsStateType } from '../../types';
  * @param state
  */
 export const generateState = (state?: Partial<MailsStateType>): MailsStateType => ({
-	searches: {
-		...getSearchSliceInitialiState(),
-		...state?.searches
-	},
 	conversations: {
 		...getConversationsSliceInitialState(),
 		...state?.conversations

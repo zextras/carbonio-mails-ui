@@ -4,19 +4,17 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { SortBy } from '../../carbonio-ui-commons/types/folder';
 import { API_REQUEST_STATUS } from '../../constants';
 import type { AppDispatch } from '../../store/redux';
 import type { SavedAttachment, UnsavedAttachment } from '../attachments';
 import type { Conversation } from '../conversations';
-import { AttachmentUploadProcessStatus, MailsEditor, MailsEditorV2 } from '../editor';
+import { AttachmentUploadProcessStatus, MailsEditorV2 } from '../editor';
 import { MailMessage } from '../messages';
 import { SoapIncompleteMessage } from '../soap';
 
 export type MailsStateType = {
 	conversations: ConversationsStateType;
 	messages: MsgStateType;
-	searches: SearchesStateType;
 };
 
 export type EditorsStateTypeV2 = {
@@ -105,24 +103,7 @@ export type ConversationsStateType = {
 	searchRequestStatus: SearchRequestStatus;
 };
 
-export type SearchesStateType = {
-	searchResults: any;
-	searchResultsIds: Array<string>;
-	conversations: Record<string, Conversation>;
-	messages: Record<string, Partial<MailMessage> & Pick<MailMessage, 'id', 'parent'>>;
-	more: boolean;
-	offset: number;
-	sortBy?: SortBy;
-	query?: string;
-	status: string;
-	parent?: string;
-	tagName?: string;
-	error?: ErrorType;
-};
-
 export type MsgMapValue = Partial<MailMessage> & Pick<MailMessage, 'id', 'parent'>;
-
-export type MailsEditorMap = Record<string, MailsEditor>;
 
 export type MailsEditorMapV2 = Record<string, MailsEditorV2>;
 
