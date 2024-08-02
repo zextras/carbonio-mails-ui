@@ -6,9 +6,10 @@
 import React from 'react';
 
 import { LayoutSelector } from './layout-selector';
-import { useLocalStorage } from '../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
 import { screen, setupTest } from '../carbonio-ui-commons/test/test-setup';
-import { LOCAL_STORAGE_VIEW_SIZES, MAILS_VIEW_LAYOUTS } from '../constants';
+import { MAILS_VIEW_LAYOUTS, MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS } from '../constants';
+import { mockLayoutStorage } from '../tests/layouts-utils';
+import mock = jest.mock;
 
 const MockedView = ({ id = '0' }: { id?: string }): React.JSX.Element => (
 	<div data-testid={`MockedView${id}`} />
@@ -26,7 +27,8 @@ describe('LayoutSelector', () => {
 
 			setupTest(
 				<LayoutSelector
-					listLayout={MAILS_VIEW_LAYOUTS.LEFT_TO_RIGHT}
+					listLayout={MAILS_VIEW_LAYOUTS.SPLIT}
+					splitLayoutOrientation={MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS.VERTICAL}
 					folderView={<MockedView />}
 					detailPanel={<MockedView />}
 					containerRef={ref}
@@ -35,12 +37,14 @@ describe('LayoutSelector', () => {
 			const layoutSelectorComponent = screen.getByTestId(SELECTORS.OUTER);
 			expect(layoutSelectorComponent).toBeVisible();
 		});
+
 		test('inner container', async () => {
 			const ref = { current: null };
 
 			setupTest(
 				<LayoutSelector
-					listLayout={MAILS_VIEW_LAYOUTS.LEFT_TO_RIGHT}
+					listLayout={MAILS_VIEW_LAYOUTS.SPLIT}
+					splitLayoutOrientation={MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS.VERTICAL}
 					folderView={<MockedView />}
 					detailPanel={<MockedView />}
 					containerRef={ref}
@@ -55,7 +59,8 @@ describe('LayoutSelector', () => {
 
 			setupTest(
 				<LayoutSelector
-					listLayout={MAILS_VIEW_LAYOUTS.LEFT_TO_RIGHT}
+					listLayout={MAILS_VIEW_LAYOUTS.SPLIT}
+					splitLayoutOrientation={MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS.VERTICAL}
 					folderView={<MockedView id={id} />}
 					detailPanel={<MockedView />}
 					containerRef={ref}
@@ -70,7 +75,8 @@ describe('LayoutSelector', () => {
 
 			setupTest(
 				<LayoutSelector
-					listLayout={MAILS_VIEW_LAYOUTS.LEFT_TO_RIGHT}
+					listLayout={MAILS_VIEW_LAYOUTS.SPLIT}
+					splitLayoutOrientation={MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS.VERTICAL}
 					folderView={<MockedView />}
 					detailPanel={<MockedView id={id} />}
 					containerRef={ref}
@@ -85,7 +91,8 @@ describe('LayoutSelector', () => {
 
 		setupTest(
 			<LayoutSelector
-				listLayout={MAILS_VIEW_LAYOUTS.LEFT_TO_RIGHT}
+				listLayout={MAILS_VIEW_LAYOUTS.SPLIT}
+				splitLayoutOrientation={MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS.VERTICAL}
 				folderView={<MockedView />}
 				detailPanel={<MockedView />}
 				containerRef={ref}
@@ -100,7 +107,8 @@ describe('LayoutSelector', () => {
 
 		setupTest(
 			<LayoutSelector
-				listLayout={MAILS_VIEW_LAYOUTS.LEFT_TO_RIGHT}
+				listLayout={MAILS_VIEW_LAYOUTS.SPLIT}
+				splitLayoutOrientation={MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS.VERTICAL}
 				folderView={<MockedView />}
 				detailPanel={<MockedView />}
 				containerRef={ref}
@@ -115,7 +123,8 @@ describe('LayoutSelector', () => {
 
 		setupTest(
 			<LayoutSelector
-				listLayout={MAILS_VIEW_LAYOUTS.LEFT_TO_RIGHT}
+				listLayout={MAILS_VIEW_LAYOUTS.SPLIT}
+				splitLayoutOrientation={MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS.VERTICAL}
 				folderView={<MockedView />}
 				detailPanel={<MockedView />}
 				containerRef={ref}
@@ -130,7 +139,8 @@ describe('LayoutSelector', () => {
 
 		setupTest(
 			<LayoutSelector
-				listLayout={MAILS_VIEW_LAYOUTS.LEFT_TO_RIGHT}
+				listLayout={MAILS_VIEW_LAYOUTS.SPLIT}
+				splitLayoutOrientation={MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS.VERTICAL}
 				folderView={<MockedView />}
 				detailPanel={<MockedView />}
 				containerRef={ref}
@@ -145,7 +155,8 @@ describe('LayoutSelector', () => {
 
 		setupTest(
 			<LayoutSelector
-				listLayout={MAILS_VIEW_LAYOUTS.LEFT_TO_RIGHT}
+				listLayout={MAILS_VIEW_LAYOUTS.SPLIT}
+				splitLayoutOrientation={MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS.VERTICAL}
 				folderView={<MockedView />}
 				detailPanel={<MockedView />}
 				containerRef={ref}
@@ -161,7 +172,8 @@ describe('LayoutSelector', () => {
 
 			setupTest(
 				<LayoutSelector
-					listLayout={MAILS_VIEW_LAYOUTS.LEFT_TO_RIGHT}
+					listLayout={MAILS_VIEW_LAYOUTS.SPLIT}
+					splitLayoutOrientation={MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS.VERTICAL}
 					folderView={<MockedView />}
 					detailPanel={<MockedView />}
 					containerRef={ref}
@@ -176,7 +188,8 @@ describe('LayoutSelector', () => {
 
 			setupTest(
 				<LayoutSelector
-					listLayout={MAILS_VIEW_LAYOUTS.LEFT_TO_RIGHT}
+					listLayout={MAILS_VIEW_LAYOUTS.SPLIT}
+					splitLayoutOrientation={MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS.VERTICAL}
 					folderView={<MockedView />}
 					detailPanel={<MockedView />}
 					containerRef={ref}
@@ -189,14 +202,12 @@ describe('LayoutSelector', () => {
 		test('and there is a stored value, the mails view width is equal to that value', async () => {
 			const ref = { current: null };
 
-			useLocalStorage.mockImplementation((key: string) => [
-				key === LOCAL_STORAGE_VIEW_SIZES ? { width: '500' } : MAILS_VIEW_LAYOUTS.LEFT_TO_RIGHT,
-				jest.fn()
-			]);
+			mockLayoutStorage({ width: 500 });
 
 			setupTest(
 				<LayoutSelector
-					listLayout={MAILS_VIEW_LAYOUTS.LEFT_TO_RIGHT}
+					listLayout={MAILS_VIEW_LAYOUTS.SPLIT}
+					splitLayoutOrientation={MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS.VERTICAL}
 					folderView={<MockedView />}
 					detailPanel={<MockedView />}
 					containerRef={ref}
@@ -211,7 +222,8 @@ describe('LayoutSelector', () => {
 
 			setupTest(
 				<LayoutSelector
-					listLayout={MAILS_VIEW_LAYOUTS.LEFT_TO_RIGHT}
+					listLayout={MAILS_VIEW_LAYOUTS.SPLIT}
+					splitLayoutOrientation={MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS.VERTICAL}
 					folderView={<MockedView />}
 					detailPanel={<MockedView />}
 					containerRef={ref}
@@ -224,14 +236,12 @@ describe('LayoutSelector', () => {
 		test('the height of the inner container wont depend from the stored value', () => {
 			const ref = { current: null };
 
-			useLocalStorage.mockImplementation((key: string) => [
-				key === LOCAL_STORAGE_VIEW_SIZES ? { height: '500' } : MAILS_VIEW_LAYOUTS.LEFT_TO_RIGHT,
-				jest.fn()
-			]);
+			mockLayoutStorage({ height: 500 });
 
 			setupTest(
 				<LayoutSelector
-					listLayout={MAILS_VIEW_LAYOUTS.LEFT_TO_RIGHT}
+					listLayout={MAILS_VIEW_LAYOUTS.SPLIT}
+					splitLayoutOrientation={MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS.VERTICAL}
 					folderView={<MockedView />}
 					detailPanel={<MockedView />}
 					containerRef={ref}
@@ -249,7 +259,8 @@ describe('LayoutSelector', () => {
 
 			setupTest(
 				<LayoutSelector
-					listLayout={MAILS_VIEW_LAYOUTS.TOP_TO_BOTTOM}
+					listLayout={MAILS_VIEW_LAYOUTS.SPLIT}
+					splitLayoutOrientation={MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS.HORIZONTAL}
 					folderView={<MockedView />}
 					detailPanel={<MockedView />}
 					containerRef={ref}
@@ -264,7 +275,8 @@ describe('LayoutSelector', () => {
 
 			setupTest(
 				<LayoutSelector
-					listLayout={MAILS_VIEW_LAYOUTS.TOP_TO_BOTTOM}
+					listLayout={MAILS_VIEW_LAYOUTS.SPLIT}
+					splitLayoutOrientation={MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS.HORIZONTAL}
 					folderView={<MockedView />}
 					detailPanel={<MockedView />}
 					containerRef={ref}
@@ -277,14 +289,12 @@ describe('LayoutSelector', () => {
 		test('and there is a stored value, the mails view height is equal to that value', () => {
 			const ref = { current: null };
 
-			useLocalStorage.mockImplementation((key: string) => [
-				key === LOCAL_STORAGE_VIEW_SIZES ? { height: '500' } : MAILS_VIEW_LAYOUTS.LEFT_TO_RIGHT,
-				jest.fn()
-			]);
+			mockLayoutStorage({ height: 500 });
 
 			setupTest(
 				<LayoutSelector
-					listLayout={MAILS_VIEW_LAYOUTS.TOP_TO_BOTTOM}
+					listLayout={MAILS_VIEW_LAYOUTS.SPLIT}
+					splitLayoutOrientation={MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS.HORIZONTAL}
 					folderView={<MockedView />}
 					detailPanel={<MockedView />}
 					containerRef={ref}
@@ -299,7 +309,8 @@ describe('LayoutSelector', () => {
 
 			setupTest(
 				<LayoutSelector
-					listLayout={MAILS_VIEW_LAYOUTS.TOP_TO_BOTTOM}
+					listLayout={MAILS_VIEW_LAYOUTS.SPLIT}
+					splitLayoutOrientation={MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS.HORIZONTAL}
 					folderView={<MockedView />}
 					detailPanel={<MockedView />}
 					containerRef={ref}
@@ -312,14 +323,12 @@ describe('LayoutSelector', () => {
 		test('the width of the inner container wont depend from the stored value', () => {
 			const ref = { current: null };
 
-			useLocalStorage.mockImplementation((key: string) => [
-				key === LOCAL_STORAGE_VIEW_SIZES ? { width: '500' } : MAILS_VIEW_LAYOUTS.LEFT_TO_RIGHT,
-				jest.fn()
-			]);
+			mockLayoutStorage({ width: 500 });
 
 			setupTest(
 				<LayoutSelector
-					listLayout={MAILS_VIEW_LAYOUTS.TOP_TO_BOTTOM}
+					listLayout={MAILS_VIEW_LAYOUTS.SPLIT}
+					splitLayoutOrientation={MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS.HORIZONTAL}
 					folderView={<MockedView />}
 					detailPanel={<MockedView />}
 					containerRef={ref}

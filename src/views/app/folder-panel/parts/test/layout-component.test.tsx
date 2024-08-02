@@ -7,40 +7,11 @@ import React from 'react';
 
 import { act } from '@testing-library/react';
 
-import { useLocalStorage } from '../../../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
 import { screen, setupTest, within } from '../../../../../carbonio-ui-commons/test/test-setup';
-import {
-	LOCAL_STORAGE_LAYOUT,
-	LOCAL_STORAGE_SPLIT_LAYOUT_ORIENTATION,
-	MAILS_VIEW_LAYOUTS,
-	MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS
-} from '../../../../../constants';
+import { MAILS_VIEW_LAYOUTS, MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS } from '../../../../../constants';
 import { TESTID_SELECTORS } from '../../../../../tests/constants';
-import { MailsListLayout, MailsSplitLayoutOrientation } from '../../../../folder-view';
+import { mockLayoutStorage } from '../../../../../tests/layouts-utils';
 import { LayoutComponent } from '../layout-component';
-
-const mockLayoutStorage = ({
-	layout = MAILS_VIEW_LAYOUTS.SPLIT,
-	splitOrientation = MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS.VERTICAL,
-	callback = jest.fn()
-}: {
-	layout?: MailsListLayout;
-	splitOrientation?: MailsSplitLayoutOrientation;
-	callback?: typeof jest.fn;
-} = {}): void => {
-	useLocalStorage.mockImplementation(
-		(key): [MailsListLayout | MailsSplitLayoutOrientation | undefined, typeof jest.fn] => {
-			if (key === LOCAL_STORAGE_LAYOUT) {
-				return [layout, callback];
-			}
-			if (key === LOCAL_STORAGE_SPLIT_LAYOUT_ORIENTATION) {
-				return [splitOrientation, callback];
-			}
-
-			return [undefined, callback];
-		}
-	);
-};
 
 describe('LayoutComponent', () => {
 	test('the icon has width 1.25rem', async () => {
@@ -138,17 +109,17 @@ describe('LayoutComponent', () => {
 		expect(callback).toHaveBeenCalledTimes(1);
 	});
 
-	test('onHover tooltip will render "Hide preview"', async () => {
+	test('onHover tooltip will render "Switch to no split"', async () => {
 		mockLayoutStorage();
 
 		const { user } = setupTest(<LayoutComponent />);
 		await user.hover(screen.getByTestId(TESTID_SELECTORS.icons.layoutNoSplit));
-		const tooltip = await screen.findByText('Hide preview');
+		const tooltip = await screen.findByText('Switch to no split');
 
 		expect(tooltip).toBeVisible();
 	});
 
-	test('onHover tooltip will render "Switch to vertical"', async () => {
+	test('onHover tooltip will render "Switch to vertical split"', async () => {
 		mockLayoutStorage({
 			layout: MAILS_VIEW_LAYOUTS.FULL,
 			splitOrientation: MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS.VERTICAL
@@ -156,12 +127,12 @@ describe('LayoutComponent', () => {
 
 		const { user } = setupTest(<LayoutComponent />);
 		await user.hover(screen.getByTestId(TESTID_SELECTORS.icons.layoutVerticalSplit));
-		const tooltip = await screen.findByText('Switch to vertical');
+		const tooltip = await screen.findByText('Switch to vertical split');
 
 		expect(tooltip).toBeVisible();
 	});
 
-	test('onHover tooltip will render "Switch to horizontal"', async () => {
+	test('onHover tooltip will render "Switch to horizontal split"', async () => {
 		mockLayoutStorage({
 			layout: MAILS_VIEW_LAYOUTS.FULL,
 			splitOrientation: MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS.HORIZONTAL
@@ -169,7 +140,7 @@ describe('LayoutComponent', () => {
 
 		const { user } = setupTest(<LayoutComponent />);
 		await user.hover(screen.getByTestId(TESTID_SELECTORS.icons.layoutHorizontalSplit));
-		const tooltip = await screen.findByText('Switch to horizontal');
+		const tooltip = await screen.findByText('Switch to horizontal split');
 
 		expect(tooltip).toBeVisible();
 	});
