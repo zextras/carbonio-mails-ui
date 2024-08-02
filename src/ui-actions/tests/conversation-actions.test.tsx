@@ -286,7 +286,8 @@ describe('Conversation actions calls', () => {
 				ids: [conv.id],
 				dispatch: store.dispatch,
 				value: false,
-				folderId: conv.parent,
+				// folderId is used only for routing
+				folderId: '1',
 				shouldReplaceHistory: false,
 				deselectAll: noop
 			});
@@ -375,7 +376,7 @@ describe('Conversation actions calls', () => {
 				ids: [conv.id],
 				dispatch: store.dispatch,
 				value: true,
-				folderId: conv.parent,
+				folderId: '1',
 				shouldReplaceHistory: false,
 				deselectAll: noop
 			});
@@ -669,7 +670,7 @@ describe('Conversation actions calls', () => {
 			const action = moveConversationToTrash({
 				ids: [conv.id],
 				dispatch: store.dispatch,
-				folderId: conv.parent,
+				folderId: '1',
 				deselectAll: noop
 			});
 
