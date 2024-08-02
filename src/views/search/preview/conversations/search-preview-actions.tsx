@@ -7,13 +7,13 @@ import React from 'react';
 
 import { t } from '@zextras/carbonio-shell-ui';
 
-import { ConversationActionsDescriptors } from '../../../constants';
+import { SearchConversationPreviewPanelContainer } from './search-conversation-preview-panel';
+import { ConversationActionsDescriptors } from '../../../../constants';
 import type {
 	ConvActionReturnType,
 	ExtraWindowCreationParams,
 	ExtraWindowsContextType
-} from '../../../types';
-import { ConversationPreviewPanelContainer } from '../../app/detail-panel/conversation-preview-panel-container';
+} from '../../../../types';
 
 const previewConversationOnSeparatedWindow = (
 	conversationId: string,
@@ -27,7 +27,7 @@ const previewConversationOnSeparatedWindow = (
 	const createWindowParams: ExtraWindowCreationParams = {
 		name: `conversation-${conversationId}`,
 		returnComponent: false,
-		children: <ConversationPreviewPanelContainer conversationId={conversationId} />,
+		children: <SearchConversationPreviewPanelContainer conversationId={conversationId} />,
 		title: subject,
 		closeOnUnmount: false
 	};

@@ -46,7 +46,7 @@ import { ItemAvatar } from '../../../app/folder-panel/parts/item-avatar';
 import { ListItemActionWrapper } from '../../../app/folder-panel/parts/list-item-actions-wrapper';
 import { RowInfo } from '../../../app/folder-panel/parts/row-info';
 import { SenderName } from '../../../app/folder-panel/parts/sender-name';
-import { previewConversationOnSeparatedWindowAction } from '../../preview/search-preview-actions';
+import { previewConversationOnSeparatedWindowAction } from '../../preview/conversations/search-preview-actions';
 
 const CollapseElement = styled(Container)<ContainerProps & { open: boolean }>`
 	display: ${({ open }): string => (open ? 'block' : 'none')};
