@@ -39,7 +39,7 @@ const PreviewPanelHeader: FC<{
 
 	const subjectLabel = useMemo(
 		() => subject || t('label.no_subject_with_tags', '<No Subject>'),
-		[subject]
+		[subject, t]
 	);
 
 	const [listLayout] = useLocalStorage<MailsListLayout>(
