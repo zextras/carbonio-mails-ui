@@ -53,7 +53,8 @@ export const MessageListItem: FC<MessageListItemProps> = memo(function MessageLi
 	active,
 	isSearchModule,
 	deselectAll,
-	currentFolderId
+	currentFolderId,
+	replaceHistoryAction
 }) {
 	const firstChildFolderId = currentFolderId ?? item.parent;
 
@@ -68,10 +69,14 @@ export const MessageListItem: FC<MessageListItemProps> = memo(function MessageLi
 				if (item.read === false && zimbraPrefMarkMsgRead) {
 					setMsgRead({ ids: [item.id], value: false, dispatch }).onClick(e);
 				}
-				replaceHistory(`/folder/${firstChildFolderId}/message/${item.id}`);
+				if (replaceHistoryAction) {
+					replaceHistoryAction();
+				} else {
+					replaceHistory(`/folder/${firstChildFolderId}/message/${item.id}`);
+				}
 			}
 		},
-		[item.read, item.id, zimbraPrefMarkMsgRead, firstChildFolderId, dispatch]
+		[item.read, item.id, zimbraPrefMarkMsgRead, replaceHistoryAction, dispatch, firstChildFolderId]
 	);
 	const onDoubleClick = useCallback(
 		(e) => {

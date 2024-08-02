@@ -150,17 +150,25 @@ export function unSetMultipleConversationsFlag({
 	};
 }
 
-export function setConversationsRead({
+// TODO: find a way to reuse the method without changing history.
+//  The search module noes not require it, but we are forced to pass a folderId just because the replace history needs it.
+//  Consider using a callback/supplier
+
+type SetConversationReadParameters = {
+	ids: ConvActionIdsType;
+	dispatch: AppDispatch;
+	value: ConvActionValueType;
+	deselectAll: DeselectAllType;
+	onFulFilled?: () => void;
+};
+
+export function setConversationsReadWithCallback({
 	ids,
 	value,
 	dispatch,
-	folderId,
-	shouldReplaceHistory,
-	deselectAll
-}: Pick<
-	ConvActionPropType,
-	'ids' | 'dispatch' | 'value' | 'folderId' | 'shouldReplaceHistory' | 'deselectAll'
->): ConvActionReturnType {
+	deselectAll,
+	onFulFilled
+}: SetConversationReadParameters): ConvActionReturnType {
 	const actDescriptor = value
 		? ConversationActionsDescriptors.MARK_AS_UNREAD.id
 		: ConversationActionsDescriptors.MARK_AS_READ.id;
@@ -178,12 +186,37 @@ export function setConversationsRead({
 				})
 			).then((res) => {
 				deselectAll && deselectAll();
-				if (res.type.includes('fulfilled') && shouldReplaceHistory) {
-					replaceHistory(`/folder/${folderId}`);
+				if (res.type.includes('fulfilled')) {
+					onFulFilled?.();
 				}
 			});
 		}
 	};
+}
+
+export function setConversationsRead({
+	ids,
+	value,
+	dispatch,
+	folderId,
+	shouldReplaceHistory,
+	deselectAll
+}: Pick<
+	ConvActionPropType,
+	'ids' | 'dispatch' | 'value' | 'folderId' | 'shouldReplaceHistory' | 'deselectAll'
+>): ConvActionReturnType {
+	const conditionalReplaceHistory = (): void => {
+		if (shouldReplaceHistory) {
+			replaceHistory(`/folder/${folderId}`);
+		}
+	};
+	return setConversationsReadWithCallback({
+		ids,
+		value,
+		dispatch,
+		deselectAll,
+		onFulFilled: () => conditionalReplaceHistory()
+	});
 }
 
 export function printConversation({

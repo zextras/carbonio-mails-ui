@@ -9,19 +9,18 @@ import type { SearchConvRequest, SearchConvResponse } from '../types';
 
 type SearchConvParameters = {
 	conversationId: string;
-	folderId: string;
+	folderId?: string;
 	fetch: string;
 };
 
 export async function searchConvSoapAPI({
 	conversationId,
-	folderId,
-	fetch = 'all'
+	fetch = 'all',
+	folderId
 }: SearchConvParameters): Promise<SearchConvResponse> {
-	return soapFetch<SearchConvRequest, SearchConvResponse>('SearchConv', {
+	const request: SearchConvRequest = {
 		_jsns: 'urn:zimbraMail',
 		cid: conversationId,
-		query: `inId: "${folderId}"`,
 		recip: '2',
 		sortBy: 'dateDesc',
 		offset: 0,
@@ -29,5 +28,9 @@ export async function searchConvSoapAPI({
 		needExp: 1,
 		limit: 250,
 		html: 1
-	});
+	};
+	if (folderId) {
+		request.query = `inId: "${folderId}"`;
+	}
+	return soapFetch<SearchConvRequest, SearchConvResponse>('SearchConv', request);
 }

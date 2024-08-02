@@ -15,7 +15,7 @@ export type SearchConvRequest = ZimbraRequest & {
 	offset: number;
 	sortBy: string;
 	limit: number;
-	query: string;
+	query?: string;
 	cid: string;
 	fetch: string;
 	html: 1 | 0;

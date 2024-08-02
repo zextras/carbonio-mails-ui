@@ -29,7 +29,7 @@ type ConversationWithStatus = {
 	conversationStatus: SearchRequestStatus;
 };
 
-export function retrieveConversation(conversationId: string, folderId: string): void {
+export function retrieveConversation(conversationId: string, folderId?: string): void {
 	updateConversationStatus(conversationId, API_REQUEST_STATUS.pending);
 	searchConvSoapAPI({ conversationId, fetch: 'all', folderId })
 		.then((response) => {
@@ -46,7 +46,7 @@ export function retrieveConversation(conversationId: string, folderId: string): 
 
 export function useCompleteConversation(
 	conversationId: string,
-	folderId: string
+	folderId?: string
 ): ConversationWithStatus {
 	const conversation = useConversationById(conversationId);
 	const conversationStatus = useConversationStatus(conversationId);

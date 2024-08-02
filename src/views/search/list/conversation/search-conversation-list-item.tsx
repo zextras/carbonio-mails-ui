@@ -29,6 +29,7 @@ import {
 import { filter, forEach, includes, isEmpty, reduce, trimStart, uniqBy } from 'lodash';
 import styled from 'styled-components';
 
+import { SearchConversationMessagesList } from './search-conversation-messages-list';
 import { participantToString } from '../../../../commons/utils';
 import { API_REQUEST_STATUS } from '../../../../constants';
 import { useAppDispatch } from '../../../../hooks/redux';
@@ -39,16 +40,13 @@ import {
 } from '../../../../store/zustand/message-store/store';
 import { retrieveConversation } from '../../../../store/zustand/search/hooks/hooks';
 import type { Conversation, TextReadValuesProps } from '../../../../types';
-import {
-	previewConversationOnSeparatedWindowAction,
-	setConversationsRead
-} from '../../../../ui-actions/conversation-actions';
+import { setConversationsReadWithCallback } from '../../../../ui-actions/conversation-actions';
 import { useGlobalExtraWindowManager } from '../../../app/extra-windows/global-extra-window-manager';
-import { ConversationMessagesList } from '../../../app/folder-panel/conversations/conversation-messages-list';
 import { ItemAvatar } from '../../../app/folder-panel/parts/item-avatar';
 import { ListItemActionWrapper } from '../../../app/folder-panel/parts/list-item-actions-wrapper';
 import { RowInfo } from '../../../app/folder-panel/parts/row-info';
 import { SenderName } from '../../../app/folder-panel/parts/sender-name';
+import { previewConversationOnSeparatedWindowAction } from '../../preview/search-preview-actions';
 
 const CollapseElement = styled(Container)<ContainerProps & { open: boolean }>`
 	display: ${({ open }): string => (open ? 'block' : 'none')};
@@ -79,7 +77,6 @@ export const SearchConversationListItem: FC<SearchConversationListItemProps> = m
 		const accounts = useUserAccounts();
 		const messages = useConversationMessages(conversationId);
 		const { createWindow } = useGlobalExtraWindowManager();
-		const folderId = conversation.parent;
 		const conversationStatus = useConversationStatus(conversationId);
 		const tagsFromStore = useTags();
 		const tags = useMemo(
@@ -136,33 +133,29 @@ export const SearchConversationListItem: FC<SearchConversationListItemProps> = m
 						conversationStatus !== API_REQUEST_STATUS.fulfilled &&
 						conversationStatus !== API_REQUEST_STATUS.pending
 					) {
-						retrieveConversation(conversationId, folderId);
+						retrieveConversation(conversationId);
 					}
 					return !currentlyOpen;
 				});
 			},
-			[conversationId, conversationStatus, folderId]
+			[conversationId, conversationStatus]
 		);
 
 		const _onClick = useCallback(
 			(e) => {
 				if (!e.isDefaultPrevented()) {
 					if (conversation?.read === false && zimbraPrefMarkMsgRead) {
-						setConversationsRead({
+						setConversationsReadWithCallback({
 							ids: [conversationId],
 							value: false,
 							dispatch,
-							folderId,
-							deselectAll,
-							shouldReplaceHistory: false
-							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-							// @ts-ignore
+							deselectAll
 						}).onClick();
 					}
-					pushHistory(`/folder/${folderId}/conversation/${conversationId}`);
+					pushHistory(`conversation/${conversationId}`);
 				}
 			},
-			[conversation?.read, conversationId, zimbraPrefMarkMsgRead, folderId, dispatch, deselectAll]
+			[conversation?.read, conversationId, zimbraPrefMarkMsgRead, dispatch, deselectAll]
 		);
 
 		const _onDoubleClick = useCallback(
@@ -171,20 +164,19 @@ export const SearchConversationListItem: FC<SearchConversationListItemProps> = m
 					return;
 				}
 
-				const { id, isDraft } = conversation.messages[0];
+				const { id, isDraft, parent } = conversation.messages[0];
 				if (isDraft) {
-					pushHistory(`/folder/${folderId}/edit/${id}?action=editAsDraft`);
+					pushHistory(`/folder/${parent}/edit/${id}?action=editAsDraft`);
 				} else {
 					previewConversationOnSeparatedWindowAction(
 						conversationId,
-						folderId,
 						conversation.subject,
 						createWindow
 					).onClick();
 				}
 			},
 
-			[createWindow, folderId, conversationId, conversation.messages, conversation.subject]
+			[createWindow, conversationId, conversation.messages, conversation.subject]
 		);
 
 		const toggleExpandButtonLabel = useMemo(
@@ -221,6 +213,9 @@ export const SearchConversationListItem: FC<SearchConversationListItemProps> = m
 			}
 			return conversation?.messages?.length > 0;
 		}, [conversation?.messages?.length, conversation.messagesInConversation, textReadValues.badge]);
+
+		const avatarFolderId =
+			conversation.messages.length === 1 ? conversation.messages[0].parent : '';
 		return (
 			<Container mainAlignment="flex-start" data-testid={`ConversationListItem-${conversationId}`}>
 				<ListItemActionWrapper
@@ -240,7 +235,7 @@ export const SearchConversationListItem: FC<SearchConversationListItemProps> = m
 							selected={selected}
 							selecting={selecting}
 							toggle={toggle}
-							folderId={folderId}
+							folderId={avatarFolderId}
 						/>
 						<Padding horizontal="extrasmall" />
 					</div>
@@ -308,13 +303,11 @@ export const SearchConversationListItem: FC<SearchConversationListItemProps> = m
 						padding={{ left: 'extralarge' }}
 						height="auto"
 					>
-						<ConversationMessagesList
+						<SearchConversationMessagesList
 							active={activeItemId}
 							length={conversation.messagesInConversation}
 							messages={messages}
 							conversationStatus={conversationStatus}
-							folderId={folderId}
-							isSearchModule
 						/>
 					</CollapseElement>
 				)}

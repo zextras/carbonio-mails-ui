@@ -41,10 +41,10 @@ const SearchPanel: FC<SearchPanelProps> = ({ searchResults }) => {
 	);
 	return (
 		<Switch>
-			<Route path={`${path}/folder/:folderId/conversation/:conversationId`}>
+			<Route path={`${path}/conversation/:conversationId`}>
 				<SearchConversationPanel />
 			</Route>
-			<Route path={`${path}/folder/:folderId/message/:messageId`}>
+			<Route path={`${path}/message/:messageId`}>
 				<MessagePreviewPanelContainer />
 			</Route>
 			<Route path={path}>
