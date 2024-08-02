@@ -48,7 +48,7 @@ describe('LayoutComponent', () => {
 
 		setupTest(<LayoutComponent />);
 
-		expect(await screen.findByTestId(TESTID_SELECTORS.icons.layoutHidePreview)).toHaveStyle({
+		expect(await screen.findByTestId(TESTID_SELECTORS.icons.layoutNoSplit)).toHaveStyle({
 			width: '1.25rem'
 		});
 	});
@@ -58,7 +58,7 @@ describe('LayoutComponent', () => {
 
 		setupTest(<LayoutComponent />);
 
-		expect(await screen.findByTestId(TESTID_SELECTORS.icons.layoutHidePreview)).toHaveStyle({
+		expect(await screen.findByTestId(TESTID_SELECTORS.icons.layoutNoSplit)).toHaveStyle({
 			height: '1.25rem'
 		});
 	});
@@ -90,18 +90,18 @@ describe('LayoutComponent', () => {
 
 		// Check each item
 		expect(within(list).getByText('Vertical view')).toBeVisible();
-		expect(within(list).getByTestId(TESTID_SELECTORS.icons.layoutVertical)).toBeVisible();
+		expect(within(list).getByTestId(TESTID_SELECTORS.icons.layoutVerticalSplit)).toBeVisible();
 		expect(within(list).getByText('Horizontal view')).toBeVisible();
-		expect(within(list).getByTestId(TESTID_SELECTORS.icons.layoutHorizontal)).toBeVisible();
+		expect(within(list).getByTestId(TESTID_SELECTORS.icons.layoutHorizontalSplit)).toBeVisible();
 		expect(within(list).getByText('Hide preview')).toBeVisible();
-		expect(within(list).getByTestId(TESTID_SELECTORS.icons.layoutHidePreview)).toBeVisible();
+		expect(within(list).getByTestId(TESTID_SELECTORS.icons.layoutNoSplit)).toBeVisible();
 	});
 
 	test('if the current layout is "split" the button will render the "NoSplit" icon', async () => {
 		mockLayoutStorage({ layout: MAILS_VIEW_LAYOUTS.SPLIT });
 		setupTest(<LayoutComponent />);
 
-		expect(await screen.findByTestId(TESTID_SELECTORS.icons.layoutHidePreview)).toBeInTheDocument();
+		expect(await screen.findByTestId(TESTID_SELECTORS.icons.layoutNoSplit)).toBeInTheDocument();
 	});
 
 	test('if the current layout is "no split", and the last split orientation was vertical, the button will render the "vertical" icon', async () => {
@@ -111,7 +111,9 @@ describe('LayoutComponent', () => {
 		});
 		setupTest(<LayoutComponent />);
 
-		expect(await screen.findByTestId(TESTID_SELECTORS.icons.layoutVertical)).toBeInTheDocument();
+		expect(
+			await screen.findByTestId(TESTID_SELECTORS.icons.layoutVerticalSplit)
+		).toBeInTheDocument();
 	});
 
 	test('if the current layout is "no split", and the last split orientation was horizontal, the button will render the "horizontal" icon', async () => {
@@ -121,7 +123,9 @@ describe('LayoutComponent', () => {
 		});
 		setupTest(<LayoutComponent />);
 
-		expect(await screen.findByTestId(TESTID_SELECTORS.icons.layoutHorizontal)).toBeInTheDocument();
+		expect(
+			await screen.findByTestId(TESTID_SELECTORS.icons.layoutHorizontalSplit)
+		).toBeInTheDocument();
 	});
 
 	test('onClick will call the local storage function', async () => {
@@ -129,7 +133,7 @@ describe('LayoutComponent', () => {
 		mockLayoutStorage({ callback });
 
 		const { user } = setupTest(<LayoutComponent />);
-		await user.click(screen.getByTestId(TESTID_SELECTORS.icons.layoutHidePreview));
+		await user.click(screen.getByTestId(TESTID_SELECTORS.icons.layoutNoSplit));
 
 		expect(callback).toHaveBeenCalledTimes(1);
 	});
@@ -138,7 +142,7 @@ describe('LayoutComponent', () => {
 		mockLayoutStorage();
 
 		const { user } = setupTest(<LayoutComponent />);
-		await user.hover(screen.getByTestId(TESTID_SELECTORS.icons.layoutHidePreview));
+		await user.hover(screen.getByTestId(TESTID_SELECTORS.icons.layoutNoSplit));
 		const tooltip = await screen.findByText('Hide preview');
 
 		expect(tooltip).toBeVisible();
@@ -151,7 +155,7 @@ describe('LayoutComponent', () => {
 		});
 
 		const { user } = setupTest(<LayoutComponent />);
-		await user.hover(screen.getByTestId(TESTID_SELECTORS.icons.layoutVertical));
+		await user.hover(screen.getByTestId(TESTID_SELECTORS.icons.layoutVerticalSplit));
 		const tooltip = await screen.findByText('Switch to vertical');
 
 		expect(tooltip).toBeVisible();
@@ -164,7 +168,7 @@ describe('LayoutComponent', () => {
 		});
 
 		const { user } = setupTest(<LayoutComponent />);
-		await user.hover(screen.getByTestId(TESTID_SELECTORS.icons.layoutHorizontal));
+		await user.hover(screen.getByTestId(TESTID_SELECTORS.icons.layoutHorizontalSplit));
 		const tooltip = await screen.findByText('Switch to horizontal');
 
 		expect(tooltip).toBeVisible();
