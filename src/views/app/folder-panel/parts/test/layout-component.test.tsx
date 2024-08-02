@@ -89,11 +89,11 @@ describe('LayoutComponent', () => {
 		expect(list.childNodes).toHaveLength(3);
 
 		// Check each item
-		expect(within(list).getByText('Vertical view')).toBeVisible();
+		expect(within(list).getByText('Vertical split')).toBeVisible();
 		expect(within(list).getByTestId(TESTID_SELECTORS.icons.layoutVerticalSplit)).toBeVisible();
-		expect(within(list).getByText('Horizontal view')).toBeVisible();
+		expect(within(list).getByText('Horizontal split')).toBeVisible();
 		expect(within(list).getByTestId(TESTID_SELECTORS.icons.layoutHorizontalSplit)).toBeVisible();
-		expect(within(list).getByText('Hide preview')).toBeVisible();
+		expect(within(list).getByText('No split')).toBeVisible();
 		expect(within(list).getByTestId(TESTID_SELECTORS.icons.layoutNoSplit)).toBeVisible();
 	});
 
