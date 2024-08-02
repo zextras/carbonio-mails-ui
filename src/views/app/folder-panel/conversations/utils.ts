@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import type { Conversation, NormalizedConversation } from '../../../../types';
+import type { Conversation } from '../../../../types';
 
 export function getFolderParentId({
 	folderId,
@@ -13,7 +13,7 @@ export function getFolderParentId({
 }: {
 	folderId: string | undefined;
 	isConversation: boolean;
-	item: Conversation | NormalizedConversation;
+	item: Conversation;
 }): string {
 	if (folderId) return folderId;
 	if (isConversation) return item?.messages?.[0]?.parent;

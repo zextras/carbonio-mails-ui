@@ -11,7 +11,6 @@ import {
 	resetSearch,
 	updateConversationMessages,
 	updateConversations,
-	updateConversationsOnly,
 	updateConversationStatus,
 	updateMessages,
 	updateMessagesOnly,
@@ -35,15 +34,6 @@ describe('message store', () => {
 			const { result } = renderHook(() => useConversationById('1'));
 
 			expect(result.current).toEqual(conversation);
-		});
-
-		it('should not unset fields on conversation', () => {
-			updateConversations([generateConversation({ id: '1', folderId: FOLDERS.INBOX })], 0);
-			updateConversationsOnly([generateConversation({ id: '1', folderId: undefined })]);
-
-			const { result } = renderHook(() => useConversationById('1'));
-
-			expect(result.current.parent).toEqual(FOLDERS.INBOX);
 		});
 
 		it('should get undefined if conversation loading status not present', () => {
