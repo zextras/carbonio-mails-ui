@@ -21,16 +21,6 @@ type SearchConversationPanelProps = {
 	folderId?: string;
 };
 
-const useConversationPreviewPanelParameters = (
-	props: SearchConversationPanelProps
-): { conversationId: string; folderId: string } => {
-	const params = useParams<{ conversationId: string; folderId: string }>();
-	return {
-		conversationId: props.conversationId ?? params.conversationId,
-		folderId: props.folderId ?? params.folderId
-	};
-};
-
 export const SearchConversationPanel: FC<SearchConversationPanelProps> = (props) => {
 	const { conversationId } = useParams<{ conversationId: string }>();
 

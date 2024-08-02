@@ -98,8 +98,6 @@ export const normalizeConversation = ({
 			}))
 		: undefined;
 
-	const parentId = messages ? messages[0].parent : undefined;
-
 	return {
 		tags: removeUndefinedValues(getTagIds(c.t, c.tn, tags)),
 		id: c.id,
@@ -113,8 +111,7 @@ export const normalizeConversation = ({
 		flagged: !isNil(c.f) ? /f/.test(c.f) : false,
 		urgent: !isNil(c.f) ? /!/.test(c.f) : false,
 		// Number of (nondeleted) messages. messages in trash or spam are in the count
-		messagesInConversation: c.n,
-		parent: parentId
+		messagesInConversation: c.n
 	};
 };
 

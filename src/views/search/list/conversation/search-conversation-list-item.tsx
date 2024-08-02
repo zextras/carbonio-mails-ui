@@ -39,7 +39,7 @@ import {
 	useConversationStatus
 } from '../../../../store/zustand/message-store/store';
 import { retrieveConversation } from '../../../../store/zustand/search/hooks/hooks';
-import type { Conversation, TextReadValuesProps } from '../../../../types';
+import type { Conversation, Participant, TextReadValuesProps } from '../../../../types';
 import { setConversationsReadWithCallback } from '../../../../ui-actions/conversation-actions';
 import { useGlobalExtraWindowManager } from '../../../app/extra-windows/global-extra-window-manager';
 import { ItemAvatar } from '../../../app/folder-panel/parts/item-avatar';
@@ -117,7 +117,7 @@ export const SearchConversationListItem: FC<SearchConversationListItemProps> = m
 		const participantsString = useMemo(
 			() =>
 				reduce(
-					uniqBy(conversation.participants, (em) => em.address),
+					uniqBy(conversation.participants, (em: Participant) => em.address),
 					(acc, part) => trimStart(`${acc}, ${participantToString(part, accounts)}`, ', '),
 					''
 				),

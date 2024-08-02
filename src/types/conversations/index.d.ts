@@ -25,12 +25,13 @@ export type Conversation = {
 	flagged: boolean;
 	urgent: boolean;
 	tags: string[];
-	parent?: string;
+	parent: string;
 	messagesInConversation: number;
 	sortIndex: number;
 };
 
-export type NormalizedConversation = Omit<Conversation, 'sortIndex'>;
+// A Conversation has no parent/folder. Only the messages in it have it.
+export type NormalizedConversation = Omit<Conversation, 'sortIndex', 'parent'>;
 
 export type ConvActionParameters = {
 	ids: Array<string>;

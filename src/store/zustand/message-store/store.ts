@@ -64,7 +64,7 @@ export function useSearchResults(): SearchSliceState['search'] {
 export function useConversationMessages(
 	conversationId: string
 ): Array<MailMessage | IncompleteMessage> {
-	return useMessageStore((state) =>
+	return useMessageStore((state: MessageStoreState) =>
 		state.populatedItems.conversations[conversationId].messages.map(
 			(message) => state.populatedItems.messages[message.id]
 		)
