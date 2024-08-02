@@ -48,7 +48,9 @@ export const TESTID_SELECTORS = {
 		chevronDown: 'icon: ChevronDownOutline',
 		layoutVerticalSplit: 'icon: LayoutOutline',
 		layoutHorizontalSplit: 'icon: BottomViewOutline',
-		layoutNoSplit: 'icon: ViewOffOutline'
+		layoutNoSplit: 'icon: ViewOffOutline',
+		navigateNext: 'icon: ArrowIosForward',
+		navigatePrevious: 'icon: ArrowIosBack'
 	},
 
 	signatureEditor: 'signature-editor',
