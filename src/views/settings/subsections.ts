@@ -55,14 +55,15 @@ export const sMimeCertificateSubSection = (): SettingsSubSection => ({
 });
 
 export const getSettingsSubSections = (
-	backupSelfUndeleteAllowed: AdvancedAccountStore['backupSelfUndeleteAllowed']
+	backupSelfUndeleteAllowed: AdvancedAccountStore['backupSelfUndeleteAllowed'],
+	isCarbonioCE: boolean | undefined
 ): Array<SettingsSubSection> =>
 	[displayingMessagesSubSection(), receivingMessagesSubSection()]
 		.concat(backupSelfUndeleteAllowed ? recoverMessagesSubSection() : [])
 		.concat([
 			signaturesSubSection(),
 			setDefaultSignaturesSubSection(),
-			sMimeCertificateSubSection(),
+			...(isCarbonioCE === false ? [sMimeCertificateSubSection()] : []),
 			filtersSubSection(),
 			trustedAddressesSubSection(),
 			allowedSendersSubSection(),

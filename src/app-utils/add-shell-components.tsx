@@ -100,7 +100,7 @@ const SidebarView = (props: SecondaryBarComponentProps): React.JSX.Element => (
 	</Suspense>
 );
 
-export const addComponentsToShell = async (): Promise<void> => {
+export const addComponentsToShell = async (isCarbonioCE: boolean | undefined): Promise<void> => {
 	const label = t('label.app_name', 'Mails');
 	addRoute({
 		route: MAILS_ROUTE,
@@ -124,7 +124,7 @@ export const addComponentsToShell = async (): Promise<void> => {
 	addSettingsView({
 		route: MAILS_ROUTE,
 		label,
-		subSections: getSettingsSubSections(backupSelfUndeleteAllowed),
+		subSections: getSettingsSubSections(backupSelfUndeleteAllowed, isCarbonioCE),
 		component: SettingsView
 	});
 };

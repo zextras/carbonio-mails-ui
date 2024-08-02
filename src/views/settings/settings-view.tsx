@@ -16,6 +16,7 @@ import {
 	SettingsHeaderProps,
 	t,
 	updateAccount,
+	useIsCarbonioCE,
 	useUserAccount,
 	useUserSettings
 } from '@zextras/carbonio-shell-ui';
@@ -62,6 +63,7 @@ const SettingsView: FC = () => {
 	const [currentAttrs, setCurrentAttrs] = useState<AccountSettings['attrs']>({ ...attrs });
 	const [updatedAttrs, setUpdatedAttrs] = useState({});
 	const originalAttrs = useMemo(() => cloneDeep(attrs), [attrs]);
+	const isCarbonioCE = useIsCarbonioCE();
 
 	const originalProps = useMemo(
 		() =>
@@ -455,7 +457,7 @@ const SettingsView: FC = () => {
 						setDisabled={setDisabled}
 						signatures={signatures}
 					/>
-					<SmimeCertificateUpload />
+					{isCarbonioCE === false && <SmimeCertificateUpload />}
 					{/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
 					{/* @ts-ignore */}
 					<ComposeMessage settingsObj={currentPrefs} updateSettings={updatePrefs} />

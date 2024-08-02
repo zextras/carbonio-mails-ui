@@ -6,6 +6,7 @@
 
 import React, { useEffect } from 'react';
 
+import { useIsCarbonioCE } from '@zextras/carbonio-shell-ui';
 import { isEmpty } from 'lodash';
 
 import { addComponentsToShell } from './app-utils/add-shell-components';
@@ -22,9 +23,13 @@ import { SyncDataHandler } from './views/sidebar/sync-data-handler';
 
 const App = (): React.JSX.Element => {
 	const hasBackupSearchMessages = !isEmpty(useBackupSearchStore().messages);
+	const isCarbonioCE = useIsCarbonioCE();
 
 	useEffect(() => {
-		addComponentsToShell();
+		addComponentsToShell(isCarbonioCE);
+	}, [isCarbonioCE]);
+
+	useEffect(() => {
 		registerShellIntegrations();
 		registerShellActions();
 	}, []);
