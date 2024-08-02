@@ -10,7 +10,7 @@ import { filter, find, forEach, isEmpty, keyBy, map, reduce, sortBy } from 'loda
 
 import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
 import {
-	normalizeConversationOld,
+	normalizeConversation,
 	normalizeConversations
 } from '../../../normalizations/normalize-conversation';
 import { normalizeMailMessageFromSoap } from '../../../normalizations/normalize-message';
@@ -80,7 +80,7 @@ export const useSyncDataHandler = (): void => {
 						if (notify.created) {
 							if (notify.created.c && notify.created.m) {
 								const conversations = map(notify.created.c, (i) =>
-									normalizeConversationOld({ c: i, m: notify.created.m, tags })
+									normalizeConversation({ c: i, m: notify.created.m, tags })
 								);
 								// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 								// @ts-ignore
@@ -99,7 +99,7 @@ export const useSyncDataHandler = (): void => {
 							const soapModifiedConversations = notify.modified.c;
 							if (soapModifiedConversations) {
 								const conversations = map(soapModifiedConversations, (i) =>
-									normalizeConversationOld({ c: i, tags })
+									normalizeConversation({ c: i, tags })
 								);
 								// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 								// @ts-ignore

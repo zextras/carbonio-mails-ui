@@ -40,7 +40,7 @@ export type NormalizeConversationProps = {
 };
 
 // @deprecated
-export const normalizeConversationOld = ({
+export const normalizeConversation = ({
 	c,
 	m,
 	tags
@@ -84,7 +84,7 @@ function removeUndefinedValues<T>(items: (T | undefined)[]): T[] {
 	return definedItems;
 }
 
-export const normalizeConversation = ({
+export const mapToNormalizedConversation = ({
 	c,
 	m,
 	tags
@@ -119,4 +119,4 @@ export const normalizeConversations = (
 	soapConversations: Array<SoapConversation>,
 	tags: Tags
 ): Array<NormalizedConversation> =>
-	map(soapConversations, (conv) => normalizeConversation({ c: conv, tags }));
+	map(soapConversations, (conv) => mapToNormalizedConversation({ c: conv, tags }));

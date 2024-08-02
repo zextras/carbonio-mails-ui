@@ -22,7 +22,7 @@ import { searchSoapApi } from '../../api/search';
 import { useFoldersMap } from '../../carbonio-ui-commons/store/zustand/folder';
 import type { Folder } from '../../carbonio-ui-commons/types';
 import { LIST_LIMIT, MAILS_ROUTE } from '../../constants';
-import { normalizeConversation } from '../../normalizations/normalize-conversation';
+import { mapToNormalizedConversation } from '../../normalizations/normalize-conversation';
 import { normalizeMailMessageFromSoap } from '../../normalizations/normalize-message';
 import {
 	resetSearch,
@@ -51,7 +51,9 @@ function handleFulFilledConversationResults({
 	offset: number;
 	tags: Tags;
 }): void {
-	const conversations = map(searchResponse.c, (conv) => normalizeConversation({ c: conv, tags }));
+	const conversations = map(searchResponse.c, (conv) =>
+		mapToNormalizedConversation({ c: conv, tags })
+	);
 	const messages: (IncompleteMessage | MailMessage)[] = [];
 	searchResponse.c?.forEach((soapConversation) =>
 		soapConversation.m.forEach((soapMessage) =>

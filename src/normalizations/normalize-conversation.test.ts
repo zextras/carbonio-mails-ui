@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { normalizeConversationOld } from './normalize-conversation';
+import { normalizeConversation } from './normalize-conversation';
 import { SoapConversation } from '../types';
 
 describe('normalize conversation', () => {
@@ -23,7 +23,7 @@ describe('normalize conversation', () => {
 				u: 0
 			};
 
-			const normalized = normalizeConversationOld({ c: soapConversation, tags: {} });
+			const normalized = normalizeConversation({ c: soapConversation, tags: {} });
 
 			expect(normalized.parent).toBeUndefined();
 		});
@@ -55,7 +55,7 @@ describe('normalize conversation', () => {
 				u: 0
 			};
 
-			const normalized = normalizeConversationOld({ c: soapConversation, tags: {} });
+			const normalized = normalizeConversation({ c: soapConversation, tags: {} });
 
 			expect(normalized.parent).toBeUndefined();
 		});
