@@ -70,6 +70,7 @@ describe('LayoutComponent', () => {
 
 	test('if the current layout is "split" the button will render the "NoSplit" icon', async () => {
 		mockLayoutStorage({ layout: MAILS_VIEW_LAYOUTS.SPLIT });
+
 		setupTest(<LayoutComponent />);
 
 		expect(await screen.findByTestId(TESTID_SELECTORS.icons.layoutNoSplit)).toBeInTheDocument();
@@ -80,6 +81,7 @@ describe('LayoutComponent', () => {
 			layout: MAILS_VIEW_LAYOUTS.FULL,
 			splitOrientation: MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS.VERTICAL
 		});
+
 		setupTest(<LayoutComponent />);
 
 		expect(
@@ -92,6 +94,7 @@ describe('LayoutComponent', () => {
 			layout: MAILS_VIEW_LAYOUTS.FULL,
 			splitOrientation: MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS.HORIZONTAL
 		});
+
 		setupTest(<LayoutComponent />);
 
 		expect(
