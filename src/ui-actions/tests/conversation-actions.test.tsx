@@ -8,7 +8,9 @@ import React from 'react';
 import { faker } from '@faker-js/faker';
 import { act, screen, waitFor } from '@testing-library/react';
 import { renderHook } from '@testing-library/react-hooks';
+import * as hooks from '@zextras/carbonio-shell-ui';
 import { noop, times } from 'lodash';
+import { useLocation } from 'react-router-dom';
 
 import { FOLDER_VIEW } from '../../carbonio-ui-commons/constants';
 import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
@@ -49,6 +51,11 @@ jest.mock<typeof import('../../hooks/use-ui-utilities')>('../../hooks/use-ui-uti
 		createSnackbar: jest.fn(),
 		createModal: jest.fn()
 	})
+}));
+
+jest.mock('react-router-dom', () => ({
+	...jest.requireActual('react-router-dom'),
+	useLocation: jest.fn()
 }));
 
 describe('Conversation actions calls', () => {
@@ -725,6 +732,74 @@ describe('Conversation actions calls', () => {
 			expect(requestParameter.action.op).toBe('trash');
 			expect(requestParameter.action.l).toBeUndefined();
 			expect(requestParameter.action.tn).toBeUndefined();
+		});
+
+		test('do not replace history if in /search', async () => {
+			populateFoldersStore({ view: FOLDER_VIEW.message });
+			updateConversations([generateConversation({ id: '1' })], 0);
+			const store = generateStore();
+			const spyReplaceHistory = jest.spyOn(hooks, 'replaceHistory');
+			(useLocation as jest.Mock).mockReturnValue({ pathname: '/search/test' });
+			const {
+				result: { current: moveConversationToTrash }
+			} = setupHook(useMoveConversationToTrash);
+			const action = moveConversationToTrash({
+				ids: ['1'],
+				dispatch: store.dispatch,
+				folderId: FOLDERS.INBOX,
+				deselectAll: noop
+			});
+			const apiInterceptor = createSoapAPIInterceptor<ConvActionRequest, ConvActionResponse>(
+				'ConvAction',
+				{
+					action: {
+						id: 'test',
+						op: 'trash'
+					}
+				}
+			);
+			act(() => {
+				action.onClick();
+			});
+
+			await apiInterceptor;
+			await waitFor(() => {
+				expect(spyReplaceHistory).not.toBeCalled();
+			});
+		});
+
+		test('replace history if location does not start with /search', async () => {
+			populateFoldersStore({ view: FOLDER_VIEW.message });
+			updateConversations([generateConversation({ id: '1' })], 0);
+			const store = generateStore();
+			(useLocation as jest.Mock).mockReturnValue({ pathname: '/mails/test' });
+			const spyReplaceHistory = jest.spyOn(hooks, 'replaceHistory');
+			const {
+				result: { current: moveConversationToTrash }
+			} = setupHook(useMoveConversationToTrash);
+			const action = moveConversationToTrash({
+				ids: ['1'],
+				dispatch: store.dispatch,
+				folderId: FOLDERS.TRASH,
+				deselectAll: noop
+			});
+			const apiInterceptor = createSoapAPIInterceptor<ConvActionRequest, ConvActionResponse>(
+				'ConvAction',
+				{
+					action: {
+						id: 'test',
+						op: 'trash'
+					}
+				}
+			);
+			act(() => {
+				action.onClick();
+			});
+
+			await apiInterceptor;
+			await waitFor(() => {
+				expect(spyReplaceHistory).toBeCalledWith(`/folder/${FOLDERS.TRASH}/`);
+			});
 		});
 	});
 

@@ -7,6 +7,7 @@ import React, { useCallback } from 'react';
 
 import { replaceHistory, t } from '@zextras/carbonio-shell-ui';
 import { forEach, isArray, map } from 'lodash';
+import { useLocation } from 'react-router-dom';
 
 import DeleteConvConfirm from './delete-conv-modal';
 import { errorPage } from './error-page';
@@ -322,15 +323,19 @@ export const useSetConversationAsSpam = (): ((
 	);
 };
 
+function isSearchModule(currentPath: string): boolean {
+	return currentPath.startsWith('/search');
+}
+
 export const useMoveConversationToTrash = (): ((
 	conversation: Pick<ConvActionPropType, 'ids' | 'dispatch' | 'deselectAll' | 'folderId'>
 ) => ConvActionReturnType) => {
 	const { createSnackbar } = useUiUtilities();
+	const currentPath = useLocation().pathname;
 
 	return useCallback(
 		({ ids, dispatch, deselectAll, folderId }) => {
 			const actDescriptor = ConversationActionsDescriptors.MOVE_TO_TRASH.id;
-
 			return {
 				id: actDescriptor,
 				icon: 'Trash2Outline',
@@ -346,7 +351,9 @@ export const useMoveConversationToTrash = (): ((
 						).then((res) => {
 							if (res.type.includes('fulfilled')) {
 								deselectAll();
-								replaceHistory(`/folder/${folderId}/conversation/${ids[0]}`);
+								if (!isSearchModule(currentPath)) {
+									replaceHistory(`/folder/${folderId}/conversation/${ids[0]}`);
+								}
 								createSnackbar({
 									key: `edit`,
 									replace: true,
@@ -378,7 +385,10 @@ export const useMoveConversationToTrash = (): ((
 					).then((res) => {
 						if (res.type.includes('fulfilled')) {
 							deselectAll();
-							replaceHistory(`/folder/${folderId}/`);
+							// TODO: putting the logic here is a bad choice, when possible create a specific action for the search
+							if (!isSearchModule(currentPath)) {
+								replaceHistory(`/folder/${folderId}/`);
+							}
 							createSnackbar({
 								key: `trash-${ids}`,
 								replace: true,
@@ -402,7 +412,7 @@ export const useMoveConversationToTrash = (): ((
 				}
 			};
 		},
-		[createSnackbar]
+		[createSnackbar, currentPath]
 	);
 };
 
