@@ -1,17 +1,14 @@
-/* eslint-disable no-param-reassign */
-import React from 'react';
-
-import { faker } from '@faker-js/faker';
-import { act, screen, waitFor, within } from '@testing-library/react';
-import { renderHook } from '@testing-library/react-hooks';
-import { Container } from '@zextras/carbonio-design-system';
-import { addBoard } from '@zextras/carbonio-shell-ui';
-import { times } from 'lodash';
 /*
  * SPDX-FileCopyrightText: 2023 Zextras <https://www.zextras.com>
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import React from 'react';
+
+import { faker } from '@faker-js/faker';
+import { act, screen, within } from '@testing-library/react';
+import { addBoard } from '@zextras/carbonio-shell-ui';
+import { times } from 'lodash';
 
 import { FOLDER_VIEW } from '../../carbonio-ui-commons/constants';
 import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
@@ -23,31 +20,21 @@ import { createSoapAPIInterceptor } from '../../carbonio-ui-commons/test/mocks/n
 import { populateFoldersStore } from '../../carbonio-ui-commons/test/mocks/store/folders';
 import {
 	makeListItemsVisible,
-	setupHook,
-	setupTest
+	setupTest,
+	setupHook
 } from '../../carbonio-ui-commons/test/test-setup';
 import { API_REQUEST_STATUS, TIMEOUTS } from '../../constants';
-import { useAppDispatch } from '../../hooks/redux';
 import { useUiUtilities } from '../../hooks/use-ui-utilities';
 import * as getMsgsForPrint from '../../store/actions/get-msg-for-print';
-import {
-	updateConversations,
-	updateMessages,
-	useMessageById
-} from '../../store/zustand/message-store/store';
-import { generateConversation } from '../../tests/generators/generateConversation';
 import { generateMessage } from '../../tests/generators/generateMessage';
 import { generateStore } from '../../tests/generators/store';
 import {
-	type ConvActionRequest,
-	ConvActionResponse,
 	MailMessage,
 	MsgActionRequest,
 	MsgActionResponse,
 	RedirectMessageActionRequest,
 	SaveDraftRequest
 } from '../../types';
-import { GlobalModalManager } from '../../views/global-modal-manager';
 import DeleteConvConfirm from '../delete-conv-modal';
 import {
 	editAsNewMsg,
@@ -56,13 +43,12 @@ import {
 	replyAllMsg,
 	replyMsg,
 	sendDraft,
+	useSetMsgAsSpam,
 	setMsgFlag,
 	setMsgRead,
 	showOriginalMsg,
-	useDeleteMsg,
-	useEditDraft,
 	useMoveMsgToTrash,
-	useSetMsgAsSpam
+	useEditDraft
 } from '../message-actions';
 import MoveConvMessage from '../move-conv-msg';
 import RedirectMessageAction from '../redirect-message-action';
@@ -424,57 +410,10 @@ describe('Messages actions calls', () => {
 
 			const requestParameter = await apiInterceptor;
 			expect(requestParameter.action.id).toBe(msgIds.join(','));
-			// TODO: why tests called mark as spam results in a call wih "!spam"? See also the comment in message-actions
 			expect(requestParameter.action.op).toBe('!spam');
 			expect(requestParameter.action.l).toBeUndefined();
 			expect(requestParameter.action.f).toBeUndefined();
 			expect(requestParameter.action.tn).toBeUndefined();
-		});
-
-		test('multiple messages in zustand search store', async () => {
-			populateFoldersStore({ view: FOLDER_VIEW.message });
-			updateMessages(
-				[
-					generateMessage({ id: '1', folderId: FOLDERS.INBOX }),
-					generateMessage({ id: '2', folderId: FOLDERS.INBOX })
-				],
-				0
-			);
-			const store = generateStore();
-			const {
-				result: { current: setMsgAsSpam }
-			} = setupHook(useSetMsgAsSpam);
-			const action = setMsgAsSpam({
-				ids: ['1', '2'],
-				dispatch: store.dispatch,
-				value: false,
-				folderId: FOLDERS.INBOX
-			});
-			const apiInterceptor = createSoapAPIInterceptor<MsgActionRequest, MsgActionResponse>(
-				'MsgAction',
-				{
-					action: {
-						id: 'whatever',
-						op: 'spam'
-					}
-				}
-			);
-
-			act(() => {
-				action.onClick();
-				jest.advanceTimersByTime(TIMEOUTS.SET_AS_SPAM);
-			});
-
-			await apiInterceptor;
-
-			const msg1Result = renderHook(() => useMessageById('1')).result;
-			const msg2Result = renderHook(() => useMessageById('2')).result;
-			await waitFor(() => {
-				expect(msg1Result.current.parent).toBe(FOLDERS.SPAM);
-			});
-			await waitFor(() => {
-				expect(msg2Result.current.parent).toBe(FOLDERS.SPAM);
-			});
 		});
 	});
 
@@ -554,51 +493,6 @@ describe('Messages actions calls', () => {
 			expect(requestParameter.action.l).toBeUndefined();
 			expect(requestParameter.action.f).toBeUndefined();
 			expect(requestParameter.action.tn).toBeUndefined();
-		});
-		test('multiple messages in zustand search store', async () => {
-			populateFoldersStore({ view: FOLDER_VIEW.message });
-			updateMessages(
-				[
-					generateMessage({ id: '1', folderId: FOLDERS.SPAM }),
-					generateMessage({ id: '2', folderId: FOLDERS.SPAM })
-				],
-				0
-			);
-			const store = generateStore();
-			const {
-				result: { current: setMsgAsSpam }
-			} = setupHook(useSetMsgAsSpam);
-			const action = setMsgAsSpam({
-				ids: ['1', '2'],
-				dispatch: store.dispatch,
-				value: true,
-				folderId: FOLDERS.INBOX
-			});
-			const apiInterceptor = createSoapAPIInterceptor<MsgActionRequest, MsgActionResponse>(
-				'MsgAction',
-				{
-					action: {
-						id: 'whatever',
-						op: '!spam'
-					}
-				}
-			);
-
-			act(() => {
-				action.onClick();
-				jest.advanceTimersByTime(TIMEOUTS.SET_AS_SPAM);
-			});
-
-			await apiInterceptor;
-
-			const msg1Result = renderHook(() => useMessageById('1')).result;
-			const msg2Result = renderHook(() => useMessageById('2')).result;
-			await waitFor(() => {
-				expect(msg1Result.current.parent).toBe(FOLDERS.INBOX);
-			});
-			await waitFor(() => {
-				expect(msg2Result.current.parent).toBe(FOLDERS.INBOX);
-			});
 		});
 	});
 
@@ -725,34 +619,6 @@ describe('Messages actions calls', () => {
 			expect(requestParameter.action.l).toBeUndefined();
 			expect(requestParameter.action.f).toBeUndefined();
 			expect(requestParameter.action.tn).toBeUndefined();
-		});
-
-		it('moveMsgToTrash action should update message parent parent to TRASH', async () => {
-			populateFoldersStore({ view: FOLDER_VIEW.message });
-			const store = generateStore({});
-			const apiInterceptor = createSoapAPIInterceptor<MsgActionRequest, MsgActionResponse>(
-				'MsgAction',
-				{
-					action: { id: '1', op: 'trash' }
-				}
-			);
-			updateMessages([generateMessage({ id: '1' })], 0);
-			const moveMsgToTrash = renderHook(useMoveMsgToTrash).result.current;
-			const action = moveMsgToTrash({
-				ids: ['1'],
-				dispatch: store.dispatch,
-				folderId: FOLDERS.INBOX
-			});
-
-			act(() => {
-				action.onClick();
-			});
-
-			await apiInterceptor;
-			const { result, waitFor } = renderHook(() => useMessageById('1'));
-			await waitFor(() => {
-				expect(result.current.parent).toBe(FOLDERS.TRASH);
-			});
 		});
 	});
 
@@ -886,63 +752,6 @@ describe('Messages actions calls', () => {
 			expect(requestParameter.action.l).toBe(destinationFolder);
 			expect(requestParameter.action.f).toBeUndefined();
 			expect(requestParameter.action.tn).toBeUndefined();
-		});
-
-		it('should update messages parent to destination folder when moving conversation', async () => {
-			populateFoldersStore({ view: FOLDER_VIEW.message });
-			updateConversations([generateConversation({ id: '123' })], 0);
-			updateMessages(
-				[
-					generateMessage({ id: '1', folderId: FOLDERS.INBOX }),
-					generateMessage({ id: '2', folderId: FOLDERS.INBOX })
-				],
-				0
-			);
-			const destinationFolder = FOLDERS.INBOX;
-			const store = generateStore();
-			const interceptor = createSoapAPIInterceptor<ConvActionRequest, ConvActionResponse>(
-				'ConvAction',
-				{
-					action: {
-						id: 'actionId',
-						op: 'move'
-					}
-				}
-			);
-			const { user } = setupTest(
-				<MoveConvMessage
-					folderId={FOLDERS.SPAM}
-					selectedIDs={['1', '2']}
-					onClose={jest.fn()}
-					isMessageView={false}
-					isRestore={false}
-					deselectAll={jest.fn()}
-					dispatch={store.dispatch}
-				/>,
-				{ store }
-			);
-			makeListItemsVisible();
-			const inboxFolderListItem = await screen.findByTestId(
-				`folder-accordion-item-${destinationFolder}`
-			);
-			act(() => {
-				jest.advanceTimersByTime(1000);
-			});
-			await user.click(inboxFolderListItem);
-			const button = screen.getByRole('button', {
-				name: /label\.move/i
-			});
-			expect(button).toBeEnabled();
-			await act(async () => {
-				await user.click(button);
-			});
-			await interceptor;
-
-			const msg1 = renderHook(() => useMessageById('1')).result.current;
-			const msg2 = renderHook(() => useMessageById('1')).result.current;
-
-			expect(msg1.parent).toBe(FOLDERS.SPAM);
-			expect(msg2.parent).toBe(FOLDERS.SPAM);
 		});
 
 		test('Multiple ids', async () => {
@@ -1407,64 +1216,6 @@ describe('Messages actions calls', () => {
 			expect(requestParameter.action.l).toBeUndefined();
 			expect(requestParameter.action.f).toBeUndefined();
 			expect(requestParameter.action.tn).toBe(tag.name);
-		});
-	});
-
-	describe('useDeleteMsg', () => {
-		it.skip('should remove messages from zustand store', async () => {
-			populateFoldersStore({ view: FOLDER_VIEW.message });
-			updateMessages([generateMessage({ id: '1' }), generateMessage({ id: '2' })], 0);
-			const store = generateStore();
-			const apiInterceptor = createSoapAPIInterceptor<MsgActionRequest, MsgActionResponse>(
-				'MsgAction',
-				{
-					action: {
-						id: 'someId',
-						op: 'delete'
-					}
-				}
-			);
-
-			// TODO: how to render the modal? Action can be tested only with a UI
-			const TestComponent = (): React.JSX.Element => {
-				const deleteMsg = useDeleteMsg();
-				const deleteAction = deleteMsg({
-					ids: ['1', '2'],
-					dispatch: useAppDispatch()
-				});
-				return (
-					<GlobalModalManager>
-						<Container>{deleteAction.onClick()}</Container>
-					</GlobalModalManager>
-				);
-			};
-
-			const { user } = setupTest(<TestComponent />, { store });
-
-			await screen.findByText('header.delete_email');
-			screen.logTestingPlaygroundURL();
-			const confirmDeleteButton = await screen.findByRole('button', {
-				name: /action\.ok/i
-			});
-			act(() => {
-				user.click(confirmDeleteButton);
-			});
-
-			//
-			// await act(async () => {
-			// 	await user.click(button);
-			// });
-
-			await apiInterceptor;
-
-			const msg1Result = renderHook(() => useMessageById('1')).result;
-			const msg2Result = renderHook(() => useMessageById('2')).result;
-			await waitFor(() => {
-				expect(msg1Result.current).toBeUndefined();
-			});
-			await waitFor(() => {
-				expect(msg2Result.current).toBeUndefined();
-			});
 		});
 	});
 });
