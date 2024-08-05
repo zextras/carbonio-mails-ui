@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, useEffect } from 'react';
+import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
 
 import { Container, Padding } from '@zextras/carbonio-design-system';
 import { uniqBy } from 'lodash';
@@ -41,6 +41,16 @@ export const MessagePreviewPanel: FC<MessagePreviewPanelProps> = ({
 
 	const message = useAppSelector((state: MailsStateType) => selectMessage(state, messageId));
 
+	const [flexGrow, setFlexGrow] = useState('unset');
+	const mailPreviewRef = useRef<HTMLDivElement>(null);
+	const handleHeightChange = useCallback(() => {
+		console.log('Pre-updateFlexGrow');
+		if (mailPreviewRef.current && isInsideExtraWindow) {
+			console.log('In-updateFlexGrow');
+			setFlexGrow('1');
+		}
+	}, [isInsideExtraWindow]);
+
 	useEffect(() => {
 		if (!message?.isComplete) {
 			dispatch(getMsg({ msgId: messageId }));
@@ -59,15 +69,22 @@ export const MessagePreviewPanel: FC<MessagePreviewPanelProps> = ({
 						padding={{ horizontal: 'large', bottom: 'small', top: 'large' }}
 						mainAlignment="flex-start"
 					>
-						<Container height="fit" mainAlignment="flex-start" background="gray5">
-							<Padding bottom="medium" width="100%">
+						<Container
+							flexGrow={flexGrow}
+							height="fit"
+							mainAlignment="flex-start"
+							background="gray5"
+						>
+							<Padding bottom="medium" width="100%" style={{ flexGrow }}>
 								<MailPreview
+									ref={mailPreviewRef}
 									message={message}
 									expanded
 									isAlone
 									messageActions={actions}
 									isMessageView
 									isInsideExtraWindow={isInsideExtraWindow}
+									onHeightChange={handleHeightChange}
 								/>
 							</Padding>
 						</Container>

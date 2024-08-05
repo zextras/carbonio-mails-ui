@@ -135,12 +135,14 @@ type _HtmlMessageRendererType = {
 	body: { content: string; contentType: string };
 	parts: MailMessagePart[];
 	participants: Participant[] | undefined;
+	isInsideExtraWindow?: boolean;
 };
 const _HtmlMessageRenderer: FC<_HtmlMessageRendererType> = ({
 	msgId,
 	body,
 	parts,
-	participants
+	participants,
+	isInsideExtraWindow = false
 }) => {
 	const divRef = useRef<HTMLDivElement>(null);
 	const iframeRef = useRef<HTMLIFrameElement>(null);
@@ -241,12 +243,27 @@ const _HtmlMessageRenderer: FC<_HtmlMessageRendererType> = ({
 		[displayBanner, showExternalImage]
 	);
 
+	const handleIframeLoad = useCallback(() => {
+		if (iframeRef.current && iframeRef.current.contentDocument) {
+			const iframeDocument = iframeRef.current.contentDocument;
+			const height = iframeDocument.documentElement.scrollHeight;
+			const iframeHeightAdjustmentPx = 24;
+			if (isInsideExtraWindow) {
+				iframeRef.current.style.height = '100%';
+			} else {
+				iframeRef.current.style.height = `${height + iframeHeightAdjustmentPx}px`;
+			}
+		}
+	}, [isInsideExtraWindow]);
+
 	useLayoutEffect(() => {
 		if (!isNull(iframeRef.current) && !isNull(iframeRef.current.contentDocument)) {
 			iframeRef.current.contentDocument.open();
 			iframeRef.current.contentDocument.write(contentToDisplay);
 			iframeRef.current.contentDocument.close();
 		}
+
+		// TODO: this stylesheet is broken since last 2 years and should be removed as dead code
 		const styleTag = document.createElement('style');
 		const styles = `
 			max-width: 100% !important;
@@ -323,7 +340,7 @@ const _HtmlMessageRenderer: FC<_HtmlMessageRendererType> = ({
 
 	const multiBtnLabel = useMemo(() => t('label.view_images', 'VIEW IMAGES'), []);
 	return (
-		<div ref={divRef} className="force-white-bg">
+		<div ref={divRef} className="force-white-bg" style={{ height: '100%' }}>
 			{showBanner && !showExternalImage && (
 				<BannerContainer
 					orientation="horizontal"
@@ -405,6 +422,7 @@ const _HtmlMessageRenderer: FC<_HtmlMessageRendererType> = ({
 					display: 'block',
 					maxWidth: '100%'
 				}}
+				onLoad={handleIframeLoad}
 			/>
 			{!showQuotedText && quoted.length > 0 && (
 				<Row mainAlignment="center" crossAlignment="center">
@@ -433,17 +451,24 @@ type MailMessageRendererProps = {
 	id: string;
 	fragment?: string;
 	participants?: Participant[];
+	isInsideExtraWindow?: boolean;
 };
 
 const MailMessageRenderer: FC<MailMessageRendererProps> = memo(
-	({ parts, body, id, fragment, participants }) => {
+	({ parts, body, id, fragment, participants, isInsideExtraWindow = false }) => {
 		if (!body?.content?.length && !fragment) {
 			return <EmptyBody />;
 		}
 
 		if (body?.contentType === 'text/html') {
 			return (
-				<_HtmlMessageRenderer msgId={id} body={body} parts={parts} participants={participants} />
+				<_HtmlMessageRenderer
+					msgId={id}
+					body={body}
+					parts={parts}
+					participants={participants}
+					isInsideExtraWindow={isInsideExtraWindow}
+				/>
 			);
 		}
 		if (body?.contentType === 'text/plain') {
