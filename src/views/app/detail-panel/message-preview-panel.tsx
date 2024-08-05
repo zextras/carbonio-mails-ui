@@ -47,36 +47,30 @@ export const MessagePreviewPanel: FC<MessagePreviewPanelProps> = ({
 	const messageIndex = findIndex(messages, (msg) => msg.id === messageId);
 	const zimbraPrefMarkMsgRead = useUserSettings()?.prefs?.zimbraPrefMarkMsgRead !== '-1';
 
-	const onGoForward = useCallback(
-		(e) => {
-			if (messageIndex === messages.length - 1) return;
-			const offSet = 5;
-			const hasMore = true;
-			if (messageIndex === messages.length - offSet && hasMore) {
-				// todo: implement loadMore
-			}
-			const nextIndex = messageIndex + 1;
-			const newMsg = messages[nextIndex];
-			if (newMsg.read === false && zimbraPrefMarkMsgRead) {
-				setMsgRead({ ids: [newMsg.id], value: false, dispatch }).onClick(e);
-			}
-			replaceHistory(`/folder/${folderId}/message/${newMsg.id}`);
-		},
-		[messageIndex, messages, zimbraPrefMarkMsgRead, folderId, dispatch]
-	);
+	const onGoForward = useCallback(() => {
+		if (messageIndex === messages.length - 1) return;
+		const offSet = 5;
+		const hasMore = true;
+		if (messageIndex === messages.length - offSet && hasMore) {
+			// todo: implement loadMore
+		}
+		const nextIndex = messageIndex + 1;
+		const newMsg = messages[nextIndex];
+		if (newMsg.read === false && zimbraPrefMarkMsgRead) {
+			setMsgRead({ ids: [newMsg.id], value: false, dispatch }).onClick();
+		}
+		replaceHistory(`/folder/${folderId}/message/${newMsg.id}`);
+	}, [messageIndex, messages, zimbraPrefMarkMsgRead, folderId, dispatch]);
 
-	const onGoBack = useCallback(
-		(e) => {
-			if (messageIndex <= 0) return;
-			const nextIndex = messageIndex - 1;
-			const newMsg = messages[nextIndex];
-			if (newMsg.read === false && zimbraPrefMarkMsgRead) {
-				setMsgRead({ ids: [newMsg.id], value: false, dispatch }).onClick(e);
-			}
-			replaceHistory(`/folder/${folderId}/message/${newMsg.id}`);
-		},
-		[messageIndex, messages, zimbraPrefMarkMsgRead, folderId, dispatch]
-	);
+	const onGoBack = useCallback(() => {
+		if (messageIndex <= 0) return;
+		const nextIndex = messageIndex - 1;
+		const newMsg = messages[nextIndex];
+		if (newMsg.read === false && zimbraPrefMarkMsgRead) {
+			setMsgRead({ ids: [newMsg.id], value: false, dispatch }).onClick();
+		}
+		replaceHistory(`/folder/${folderId}/message/${newMsg.id}`);
+	}, [messageIndex, messages, zimbraPrefMarkMsgRead, folderId, dispatch]);
 
 	useEffect(() => {
 		if (!message?.isComplete) {

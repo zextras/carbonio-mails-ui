@@ -23,6 +23,7 @@ import {
 	selectConversationExpandedStatus
 } from '../../../store/conversations-slice';
 import type { MailsStateType } from '../../../types';
+import { setConversationsRead } from '../../../ui-actions/conversation-actions';
 import { useExtraWindow } from '../extra-windows/use-extra-window';
 
 type ConversationPreviewPanelProps = { conversationId?: string; folderId?: string };
@@ -76,6 +77,7 @@ export const ConversationPreviewPanelContainer: FC<ConversationPreviewPanelProps
 						.length > 0,
 		[conversation, folderId]
 	);
+	const zimbraPrefMarkMsgRead = useUserSettings()?.prefs?.zimbraPrefMarkMsgRead !== '-1';
 
 	const onGoForward = useCallback(() => {
 		if (conversationIndex === conversations.length - 1) return;
@@ -85,16 +87,34 @@ export const ConversationPreviewPanelContainer: FC<ConversationPreviewPanelProps
 			// todo: implement loadMore
 		}
 		const nextIndex = conversationIndex + 1;
-		const newConvId = conversations[nextIndex]?.id;
-		replaceHistory(`/folder/${folderId}/conversation/${newConvId}`);
-	}, [conversationIndex, conversations, folderId]);
+		const newConv = conversations[nextIndex];
+		if (newConv?.read === false && zimbraPrefMarkMsgRead) {
+			setConversationsRead({
+				ids: [newConv.id],
+				value: false,
+				dispatch,
+				folderId,
+				shouldReplaceHistory: false
+			}).onClick();
+		}
+		replaceHistory(`/folder/${folderId}/conversation/${newConv.id}`);
+	}, [conversationIndex, conversations, dispatch, folderId, zimbraPrefMarkMsgRead]);
 
 	const onGoBack = useCallback(() => {
 		if (conversationIndex <= 0) return;
 		const nextIndex = conversationIndex - 1;
-		const newConvId = conversations[nextIndex]?.id;
-		replaceHistory(`/folder/${folderId}/conversation/${newConvId}`);
-	}, [conversationIndex, conversations, folderId]);
+		const newConv = conversations[nextIndex];
+		if (newConv?.read === false && zimbraPrefMarkMsgRead) {
+			setConversationsRead({
+				ids: [newConv.id],
+				value: false,
+				dispatch,
+				folderId,
+				shouldReplaceHistory: false
+			}).onClick();
+		}
+		replaceHistory(`/folder/${folderId}/conversation/${newConv.id}`);
+	}, [conversationIndex, conversations, dispatch, folderId, zimbraPrefMarkMsgRead]);
 
 	return (
 		<Container orientation="vertical" mainAlignment="flex-start" crossAlignment="flex-start">

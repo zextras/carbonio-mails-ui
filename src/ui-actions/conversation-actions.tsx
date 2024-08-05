@@ -36,7 +36,7 @@ export type ConvActionPropType = {
 	dispatch: AppDispatch;
 	folderId: string;
 	shouldReplaceHistory: boolean;
-	deselectAll: DeselectAllType;
+	deselectAll?: DeselectAllType;
 	conversationId: string;
 	closeEditor: CloseEditorType;
 	isRestore: boolean;
