@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, useCallback, useRef, useState } from 'react';
+import React, { FC } from 'react';
 
 import { Padding } from '@zextras/carbonio-design-system';
 
@@ -29,31 +29,20 @@ export const ConversationMessagePreview: FC<ConversationMessagePreviewProps> = (
 	const message = useAppSelector((state: MailsStateType) => selectMessage(state, convMessage.id));
 	const messageActions = useMessageActions(message, isAlone);
 
-	const [flexGrow, setFlexGrow] = useState('unset');
-	const mailPreviewRef = useRef<HTMLDivElement>(null);
-	const handleMailPreviewOpen = useCallback(() => {
-		if (mailPreviewRef.current && isInsideExtraWindow) {
-			setFlexGrow('1');
-		}
-	}, [isInsideExtraWindow]);
-
 	return (
 		<Padding
-			style={{ flexGrow }}
 			height="fit"
 			bottom="medium"
 			width="100%"
 			data-testid={`ConversationMessagePreview-${message.id}`}
 		>
 			<MailPreview
-				ref={mailPreviewRef}
 				message={message}
 				expanded={isExpanded}
 				isAlone={isAlone}
 				messageActions={messageActions}
 				isMessageView={false}
 				isInsideExtraWindow={isInsideExtraWindow}
-				onMailPreviewOpen={handleMailPreviewOpen}
 			/>
 		</Padding>
 	);

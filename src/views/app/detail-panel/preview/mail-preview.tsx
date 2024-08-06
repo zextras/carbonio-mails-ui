@@ -49,12 +49,14 @@ const MailContent: FC<{
 	isExternalMessage?: boolean;
 	isInsideExtraWindow?: boolean;
 	openEmlPreview?: OpenEmlPreviewType;
+	showingEml?: boolean;
 }> = ({
 	message,
 	isMailPreviewOpen,
 	isExternalMessage = false,
 	openEmlPreview,
-	isInsideExtraWindow = false
+	isInsideExtraWindow = false,
+	showingEml = false
 }) => {
 	const [showModal, setShowModal] = useState(true);
 	const dispatch = useAppDispatch();
@@ -210,6 +212,7 @@ const MailContent: FC<{
 								fragment={message.fragment}
 								participants={participants}
 								isInsideExtraWindow={isInsideExtraWindow}
+								showingEml={showingEml}
 							/>
 						)}
 					</Padding>
@@ -320,127 +323,107 @@ export type MailPreviewProps = {
 	isMessageView: boolean;
 	isExternalMessage?: boolean;
 	isInsideExtraWindow?: boolean;
-	onMailPreviewOpen?: () => void;
+	showingEml?: boolean;
 };
 
-export interface MailPreviewPropsWithRef extends MailPreviewProps {
-	ref?: React.Ref<HTMLDivElement>;
-}
+const MailPreview: FC<MailPreviewProps> = ({
+	message,
+	expanded,
+	messageActions,
+	isAlone,
+	isMessageView,
+	isExternalMessage = false,
+	isInsideExtraWindow = false,
+	showingEml = false
+}) => {
+	const mailContainerRef = useRef<HTMLDivElement>(null);
+	const [open, setOpen] = useState(expanded || isAlone);
+	const { createWindow } = useGlobalExtraWindowManager();
 
-const MailPreview: FC<MailPreviewPropsWithRef> = React.forwardRef<
-	HTMLDivElement,
-	MailPreviewPropsWithRef
->(
-	(
-		{
-			message,
-			expanded,
-			messageActions,
-			isAlone,
-			isMessageView,
-			isExternalMessage = false,
-			isInsideExtraWindow = false,
-			onMailPreviewOpen
+	const onClick = useCallback(() => {
+		setOpen((o) => !o);
+	}, []);
+
+	const isMailPreviewOpen = useMemo(
+		() => (isMessageView ? true : isAlone ? true : open),
+		[isAlone, isMessageView, open]
+	);
+
+	/**
+	 * To avoid component dependency cycles we define here, outside the
+	 * AttachmentsBlock component, the function that open the EML preview
+	 */
+	const openEmlPreview: OpenEmlPreviewType = useCallback<OpenEmlPreviewType>(
+		(parentMessageId: string, attachmentName: string, emlMessage: MailMessage): void => {
+			const createWindowParams: ExtraWindowCreationParams = {
+				name: `${parentMessageId}-${attachmentName}`,
+				returnComponent: false,
+				children: (
+					<MailPreview
+						message={emlMessage}
+						expanded={false}
+						isAlone
+						messageActions={messageActions}
+						isMessageView
+						isExternalMessage
+						isInsideExtraWindow
+						showingEml
+					/>
+				),
+				title: emlMessage.subject,
+				closeOnUnmount: false
+			};
+			if (createWindow) {
+				createWindow(createWindowParams);
+			}
 		},
-		ref
-	) => {
-		const internalRef = useRef<HTMLDivElement>(null);
-		const mailContainerRef = ref || internalRef;
-		const [open, setOpen] = useState(expanded || isAlone);
-		const { createWindow } = useGlobalExtraWindowManager();
+		[createWindow, messageActions]
+	);
 
-		const onClick = useCallback(() => {
-			setOpen((o) => {
-				const newOpen = !o;
-				onMailPreviewOpen?.();
-				return newOpen;
-			});
-		}, [onMailPreviewOpen]);
+	const [containerHeight, setHeight] = useState(open ? '100%' : 'fit-content');
 
-		const isMailPreviewOpen = useMemo(
-			() => (isMessageView ? true : isAlone ? true : open),
-			[isAlone, isMessageView, open]
-		);
+	useEffect(() => {
+		setHeight(open ? '100%' : 'fit-content');
+	}, [open]);
 
-		/**
-		 * To avoid component dependency cycles we define here, outside the
-		 * AttachmentsBlock component, the function that open the EML preview
-		 */
-		const openEmlPreview: OpenEmlPreviewType = useCallback<OpenEmlPreviewType>(
-			(parentMessageId: string, attachmentName: string, emlMessage: MailMessage): void => {
-				const createWindowParams: ExtraWindowCreationParams = {
-					name: `${parentMessageId}-${attachmentName}`,
-					returnComponent: false,
-					children: (
-						<MailPreview
-							message={emlMessage}
-							expanded={false}
-							isAlone
-							messageActions={messageActions}
-							isMessageView
-							isExternalMessage
-							isInsideExtraWindow
-							onMailPreviewOpen={onMailPreviewOpen}
-						/>
-					),
-					title: emlMessage.subject,
-					closeOnUnmount: false
-				};
-				if (createWindow) {
-					createWindow(createWindowParams);
-				}
-			},
-			[createWindow, messageActions, onMailPreviewOpen]
-		);
+	return (
+		<Container
+			ref={mailContainerRef}
+			height={containerHeight}
+			data-testid={`MailPreview-${message.id}`}
+			padding={isInsideExtraWindow ? { all: 'large' } : undefined}
+			background="white"
+		>
+			<MailPreviewBlock
+				onClick={onClick}
+				message={message}
+				open={isMailPreviewOpen}
+				messageActions={messageActions}
+				isExternalMessage={isExternalMessage}
+				isInsideExtraWindow={isInsideExtraWindow}
+			/>
 
-		const [containerHeight, setHeight] = useState(open ? '100%' : 'fit-content');
-
-		useEffect(() => {
-			setHeight(open ? '100%' : 'fit-content');
-		}, [open]);
-
-		useEffect(() => {
-			onMailPreviewOpen?.();
-		}, [open, onMailPreviewOpen]);
-
-		return (
 			<Container
-				ref={mailContainerRef}
-				height={containerHeight}
-				data-testid={`MailPreview-${message.id}`}
-				padding={isInsideExtraWindow ? { all: 'large' } : undefined}
-				background="white"
+				width="fill"
+				height="fit"
+				style={{
+					flex: '1'
+				}}
 			>
-				<MailPreviewBlock
-					onClick={onClick}
-					message={message}
-					open={isMailPreviewOpen}
-					messageActions={messageActions}
-					isExternalMessage={isExternalMessage}
-					isInsideExtraWindow={isInsideExtraWindow}
-				/>
-
-				<Container
-					width="fill"
-					height="fit"
-					style={{
-						flex: '1'
-					}}
-				>
-					{(open || isAlone) && (
-						<MailContent
-							message={message}
-							isMailPreviewOpen={isMailPreviewOpen}
-							openEmlPreview={openEmlPreview}
-							isExternalMessage={isExternalMessage}
-							isInsideExtraWindow={isInsideExtraWindow}
-						/>
-					)}
-				</Container>
+				{(open || isAlone) && (
+					<MailContent
+						message={message}
+						isMailPreviewOpen={isMailPreviewOpen}
+						openEmlPreview={openEmlPreview}
+						isExternalMessage={isExternalMessage}
+						isInsideExtraWindow={isInsideExtraWindow}
+						showingEml={showingEml}
+					/>
+				)}
 			</Container>
-		);
-	}
-);
+		</Container>
+	);
+};
 
 MailPreview.displayName = 'MailPreview';
 

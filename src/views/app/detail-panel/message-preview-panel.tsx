@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
+import React, { FC, useEffect } from 'react';
 
 import { Container, Padding } from '@zextras/carbonio-design-system';
 import { uniqBy } from 'lodash';
@@ -41,14 +41,6 @@ export const MessagePreviewPanel: FC<MessagePreviewPanelProps> = ({
 
 	const message = useAppSelector((state: MailsStateType) => selectMessage(state, messageId));
 
-	const [flexGrow, setFlexGrow] = useState('unset');
-	const mailPreviewRef = useRef<HTMLDivElement>(null);
-	const onMailPreviewOpen = useCallback(() => {
-		if (mailPreviewRef.current && isInsideExtraWindow) {
-			setFlexGrow('1');
-		}
-	}, [isInsideExtraWindow]);
-
 	useEffect(() => {
 		if (!message?.isComplete) {
 			dispatch(getMsg({ msgId: messageId }));
@@ -67,22 +59,15 @@ export const MessagePreviewPanel: FC<MessagePreviewPanelProps> = ({
 						padding={{ horizontal: 'large', bottom: 'small', top: 'large' }}
 						mainAlignment="flex-start"
 					>
-						<Container
-							flexGrow={flexGrow}
-							height="fit"
-							mainAlignment="flex-start"
-							background="gray5"
-						>
-							<Padding bottom="medium" width="100%" style={{ flexGrow }}>
+						<Container height="fit" mainAlignment="flex-start" background="gray5">
+							<Padding bottom="medium" width="100%">
 								<MailPreview
-									ref={mailPreviewRef}
 									message={message}
 									expanded
 									isAlone
 									messageActions={actions}
 									isMessageView
 									isInsideExtraWindow={isInsideExtraWindow}
-									onMailPreviewOpen={onMailPreviewOpen}
 								/>
 							</Padding>
 						</Container>

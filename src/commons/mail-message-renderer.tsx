@@ -136,13 +136,15 @@ type _HtmlMessageRendererType = {
 	parts: MailMessagePart[];
 	participants: Participant[] | undefined;
 	isInsideExtraWindow?: boolean;
+	showingEml?: boolean;
 };
 const _HtmlMessageRenderer: FC<_HtmlMessageRendererType> = ({
 	msgId,
 	body,
 	parts,
 	participants,
-	isInsideExtraWindow = false
+	isInsideExtraWindow = false,
+	showingEml = false
 }) => {
 	const divRef = useRef<HTMLDivElement>(null);
 	const iframeRef = useRef<HTMLIFrameElement>(null);
@@ -155,17 +157,13 @@ const _HtmlMessageRenderer: FC<_HtmlMessageRendererType> = ({
 
 	const [showExternalImage, setShowExternalImage] = useState(false);
 	const [displayBanner, setDisplayBanner] = useState(true);
-	// const darkMode = useMemo(
-	// 	() => find(settings.props, ['name', 'zappDarkreaderMode'])?._content,
-	// 	[settings]
-	// );
 
-	const orignalText = getOriginalContent(body.content, true);
+	const originalContent = getOriginalContent(body.content, true);
 	const quoted = getQuotedTextOnly(body.content, true);
 
 	const contentToDisplay = useMemo(
-		() => (showQuotedText ? body.content : orignalText),
-		[showQuotedText, body.content, orignalText]
+		() => (showQuotedText ? body.content : originalContent),
+		[showQuotedText, body.content, originalContent]
 	);
 
 	const hasExternalImages = useMemo(() => {
@@ -244,17 +242,18 @@ const _HtmlMessageRenderer: FC<_HtmlMessageRendererType> = ({
 	);
 
 	const handleIframeLoad = useCallback(() => {
-		const iframeDocument = iframeRef?.current?.contentDocument;
-		if (iframeDocument) {
+		const iframe = iframeRef.current;
+		if (iframe && iframe.contentDocument) {
+			const iframeDocument = iframe.contentDocument;
 			const documentScrollHeight = iframeDocument.documentElement.scrollHeight;
 			const iframeHeightAdjustmentPx = 24;
-			if (isInsideExtraWindow) {
-				iframeRef.current.style.height = '100%';
+			if (isInsideExtraWindow && showingEml) {
+				iframe.style.height = '100%';
 			} else {
-				iframeRef.current.style.height = `${documentScrollHeight + iframeHeightAdjustmentPx}px`;
+				iframe.style.height = `${documentScrollHeight + iframeHeightAdjustmentPx}px`;
 			}
 		}
-	}, [isInsideExtraWindow]);
+	}, [isInsideExtraWindow, showingEml]);
 
 	useLayoutEffect(() => {
 		const contentDocument = iframeRef?.current?.contentDocument;
@@ -407,10 +406,19 @@ type MailMessageRendererProps = {
 	fragment?: string;
 	participants?: Participant[];
 	isInsideExtraWindow?: boolean;
+	showingEml?: boolean;
 };
 
 const MailMessageRenderer: FC<MailMessageRendererProps> = memo(
-	({ parts, body, id, fragment, participants, isInsideExtraWindow = false }) => {
+	({
+		parts,
+		body,
+		id,
+		fragment,
+		participants,
+		isInsideExtraWindow = false,
+		showingEml = false
+	}) => {
 		if (!body?.content?.length && !fragment) {
 			return <EmptyBody />;
 		}
@@ -423,6 +431,7 @@ const MailMessageRenderer: FC<MailMessageRendererProps> = memo(
 					parts={parts}
 					participants={participants}
 					isInsideExtraWindow={isInsideExtraWindow}
+					showingEml={showingEml}
 				/>
 			);
 		}
