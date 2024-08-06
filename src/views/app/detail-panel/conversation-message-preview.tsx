@@ -31,7 +31,7 @@ export const ConversationMessagePreview: FC<ConversationMessagePreviewProps> = (
 
 	const [flexGrow, setFlexGrow] = useState('unset');
 	const mailPreviewRef = useRef<HTMLDivElement>(null);
-	const handleHeightChange = useCallback(() => {
+	const handleMailPreviewOpen = useCallback(() => {
 		if (mailPreviewRef.current && isInsideExtraWindow) {
 			setFlexGrow('1');
 		}
@@ -53,7 +53,7 @@ export const ConversationMessagePreview: FC<ConversationMessagePreviewProps> = (
 				messageActions={messageActions}
 				isMessageView={false}
 				isInsideExtraWindow={isInsideExtraWindow}
-				onHeightChange={handleHeightChange}
+				onMailPreviewOpen={handleMailPreviewOpen}
 			/>
 		</Padding>
 	);

@@ -43,10 +43,8 @@ export const MessagePreviewPanel: FC<MessagePreviewPanelProps> = ({
 
 	const [flexGrow, setFlexGrow] = useState('unset');
 	const mailPreviewRef = useRef<HTMLDivElement>(null);
-	const handleHeightChange = useCallback(() => {
-		console.log('Pre-updateFlexGrow');
+	const onMailPreviewOpen = useCallback(() => {
 		if (mailPreviewRef.current && isInsideExtraWindow) {
-			console.log('In-updateFlexGrow');
 			setFlexGrow('1');
 		}
 	}, [isInsideExtraWindow]);
@@ -84,7 +82,7 @@ export const MessagePreviewPanel: FC<MessagePreviewPanelProps> = ({
 									messageActions={actions}
 									isMessageView
 									isInsideExtraWindow={isInsideExtraWindow}
-									onHeightChange={handleHeightChange}
+									onMailPreviewOpen={onMailPreviewOpen}
 								/>
 							</Padding>
 						</Container>

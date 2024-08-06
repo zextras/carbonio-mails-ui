@@ -320,7 +320,7 @@ export type MailPreviewProps = {
 	isMessageView: boolean;
 	isExternalMessage?: boolean;
 	isInsideExtraWindow?: boolean;
-	onHeightChange: () => void;
+	onMailPreviewOpen: () => void;
 };
 
 export interface MailPreviewPropsWithRef extends MailPreviewProps {
@@ -340,21 +340,22 @@ const MailPreview: FC<MailPreviewPropsWithRef> = React.forwardRef<
 			isMessageView,
 			isExternalMessage = false,
 			isInsideExtraWindow = false,
-			onHeightChange
+			onMailPreviewOpen
 		},
 		ref
 	) => {
-		const mailContainerRef = ref || useRef<HTMLDivElement>(null);
+		const internalRef = useRef<HTMLDivElement>(null);
+		const mailContainerRef = ref || internalRef;
 		const [open, setOpen] = useState(expanded || isAlone);
 		const { createWindow } = useGlobalExtraWindowManager();
 
 		const onClick = useCallback(() => {
 			setOpen((o) => {
 				const newOpen = !o;
-				onHeightChange();
+				onMailPreviewOpen();
 				return newOpen;
 			});
-		}, [onHeightChange]);
+		}, [onMailPreviewOpen]);
 
 		const isMailPreviewOpen = useMemo(
 			() => (isMessageView ? true : isAlone ? true : open),
@@ -379,7 +380,7 @@ const MailPreview: FC<MailPreviewPropsWithRef> = React.forwardRef<
 							isMessageView
 							isExternalMessage
 							isInsideExtraWindow
-							onHeightChange={onHeightChange}
+							onMailPreviewOpen={onMailPreviewOpen}
 						/>
 					),
 					title: emlMessage.subject,
@@ -389,7 +390,7 @@ const MailPreview: FC<MailPreviewPropsWithRef> = React.forwardRef<
 					createWindow(createWindowParams);
 				}
 			},
-			[createWindow, messageActions, onHeightChange]
+			[createWindow, messageActions, onMailPreviewOpen]
 		);
 
 		const [containerHeight, setHeight] = useState(open ? '100%' : 'fit-content');
@@ -399,8 +400,8 @@ const MailPreview: FC<MailPreviewPropsWithRef> = React.forwardRef<
 		}, [open]);
 
 		useEffect(() => {
-			onHeightChange();
-		}, [open, onHeightChange]);
+			onMailPreviewOpen();
+		}, [open, onMailPreviewOpen]);
 
 		return (
 			<Container
@@ -440,5 +441,7 @@ const MailPreview: FC<MailPreviewPropsWithRef> = React.forwardRef<
 		);
 	}
 );
+
+MailPreview.displayName = 'MailPreview';
 
 export default MailPreview;
