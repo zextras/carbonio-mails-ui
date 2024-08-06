@@ -81,7 +81,7 @@
 		"@types/webpack": "^5.28.2",
 		"@types/webpack-env": "^1.18.1",
 		"@zextras/carbonio-design-system": "^5.1.0",
-		"@zextras/carbonio-shell-ui": "devel",
+		"@zextras/carbonio-shell-ui": "7.0.1-devel.1722860342095",
 		"@zextras/carbonio-ui-preview": "^1.2.5",
 		"axios": "^1.6.7",
 		"babel-jest": "^29.4.3",
