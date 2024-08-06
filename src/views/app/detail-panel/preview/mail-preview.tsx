@@ -320,7 +320,7 @@ export type MailPreviewProps = {
 	isMessageView: boolean;
 	isExternalMessage?: boolean;
 	isInsideExtraWindow?: boolean;
-	onMailPreviewOpen: () => void;
+	onMailPreviewOpen?: () => void;
 };
 
 export interface MailPreviewPropsWithRef extends MailPreviewProps {
@@ -352,7 +352,7 @@ const MailPreview: FC<MailPreviewPropsWithRef> = React.forwardRef<
 		const onClick = useCallback(() => {
 			setOpen((o) => {
 				const newOpen = !o;
-				onMailPreviewOpen();
+				onMailPreviewOpen?.();
 				return newOpen;
 			});
 		}, [onMailPreviewOpen]);
@@ -400,7 +400,7 @@ const MailPreview: FC<MailPreviewPropsWithRef> = React.forwardRef<
 		}, [open]);
 
 		useEffect(() => {
-			onMailPreviewOpen();
+			onMailPreviewOpen?.();
 		}, [open, onMailPreviewOpen]);
 
 		return (
