@@ -92,7 +92,7 @@ const replaceLinkToAnchor = (content: string): string => {
 	});
 };
 
-const _TextMessageRenderer: FC<{ body: { content: string; contentType: string } }> = ({ body }) => {
+const TextMessageRenderer: FC<{ body: { content: string; contentType: string } }> = ({ body }) => {
 	const [showQuotedText, setShowQuotedText] = useState(false);
 	const orignalText = getOriginalContent(body.content, false);
 	const quoted = getQuotedTextOnly(body.content, false);
@@ -130,7 +130,7 @@ const _TextMessageRenderer: FC<{ body: { content: string; contentType: string } 
 	);
 };
 
-type _HtmlMessageRendererType = {
+type HtmlMessageRendererType = {
 	msgId: string;
 	body: { content: string; contentType: string };
 	parts: MailMessagePart[];
@@ -138,7 +138,7 @@ type _HtmlMessageRendererType = {
 	isInsideExtraWindow?: boolean;
 	showingEml?: boolean;
 };
-const _HtmlMessageRenderer: FC<_HtmlMessageRendererType> = ({
+const HtmlMessageRenderer: FC<HtmlMessageRendererType> = ({
 	msgId,
 	body,
 	parts,
@@ -425,7 +425,7 @@ const MailMessageRenderer: FC<MailMessageRendererProps> = memo(
 
 		if (body?.contentType === 'text/html') {
 			return (
-				<_HtmlMessageRenderer
+				<HtmlMessageRenderer
 					msgId={id}
 					body={body}
 					parts={parts}
@@ -436,7 +436,7 @@ const MailMessageRenderer: FC<MailMessageRendererProps> = memo(
 			);
 		}
 		if (body?.contentType === 'text/plain') {
-			return <_TextMessageRenderer body={body} />;
+			return <TextMessageRenderer body={body} />;
 		}
 		return <EmptyBody />;
 	}

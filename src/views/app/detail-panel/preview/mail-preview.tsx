@@ -380,10 +380,10 @@ const MailPreview: FC<MailPreviewProps> = ({
 		[createWindow, messageActions]
 	);
 
-	const [containerHeight, setHeight] = useState(open ? '100%' : 'fit-content');
+	const [containerHeight, setContainerHeight] = useState(open ? '100%' : 'fit-content');
 
 	useEffect(() => {
-		setHeight(open ? '100%' : 'fit-content');
+		setContainerHeight(open ? '100%' : 'fit-content');
 	}, [open]);
 
 	return (
