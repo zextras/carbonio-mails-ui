@@ -25,7 +25,7 @@ import {
 	Text
 } from '@zextras/carbonio-design-system';
 import { editSettings, t, useUserSettings } from '@zextras/carbonio-shell-ui';
-import { filter, forEach, isArray, isNull, reduce, some } from 'lodash';
+import { filter, forEach, isArray, reduce, some } from 'lodash';
 import { Trans } from 'react-i18next';
 import styled from 'styled-components';
 
@@ -244,70 +244,25 @@ const _HtmlMessageRenderer: FC<_HtmlMessageRendererType> = ({
 	);
 
 	const handleIframeLoad = useCallback(() => {
-		if (iframeRef.current && iframeRef.current.contentDocument) {
-			const iframeDocument = iframeRef.current.contentDocument;
-			const height = iframeDocument.documentElement.scrollHeight;
+		const iframeDocument = iframeRef?.current?.contentDocument;
+		if (iframeDocument) {
+			const documentScrollHeight = iframeDocument.documentElement.scrollHeight;
 			const iframeHeightAdjustmentPx = 24;
 			if (isInsideExtraWindow) {
 				iframeRef.current.style.height = '100%';
 			} else {
-				iframeRef.current.style.height = `${height + iframeHeightAdjustmentPx}px`;
+				iframeRef.current.style.height = `${documentScrollHeight + iframeHeightAdjustmentPx}px`;
 			}
 		}
 	}, [isInsideExtraWindow]);
 
 	useLayoutEffect(() => {
-		if (!isNull(iframeRef.current) && !isNull(iframeRef.current.contentDocument)) {
-			iframeRef.current.contentDocument.open();
-			iframeRef.current.contentDocument.write(contentToDisplay);
-			iframeRef.current.contentDocument.close();
+		const contentDocument = iframeRef?.current?.contentDocument;
+		if (contentDocument) {
+			contentDocument.open();
+			contentDocument.write(contentToDisplay);
+			contentDocument.close();
 		}
-
-		// TODO: this stylesheet is broken since last 2 years and should be removed as dead code
-		const styleTag = document.createElement('style');
-		const styles = `
-			max-width: 100% !important;
-			body {
-				max-width: 100% !important;
-				margin: 0;
-				overflow-y: hidden;
-				font-family: Roboto, sans-serif;
-				font-size: 0.875rem;
-				${/* visibility: ${darkMode && darkMode !== 'disabled' ? 'hidden' : 'visible'}; */ ''}
-				background-color: #ffffff;
-			}
-			body pre, body pre * {
-				white-space: pre-wrap;
-				word-wrap: anywhere !important;
-				text-wrap: suppress !important;
-			}
-			img {
-				max-width: 100%
-			}
-			tbody{position:relative !important}
-			td{
-				max-width: 100% !important;
-				overflow-wrap: anywhere !important;
-			}
-			#bodyTable {
-				height: fit-content
-			}
-		`;
-		styleTag.textContent = styles;
-		if (!isNull(iframeRef.current) && !isNull(iframeRef.current.contentDocument))
-			iframeRef.current.contentDocument.head.append(styleTag);
-
-		// TODO: fix Dark Reader inside iframes
-		// if (darkMode && darkMode !== 'disabled') {
-		// 	const modeSetting = darkMode === 'enabled' ? 'enable' : 'auto';
-		// 	const darkReaderScript = document.createElement('script');
-		// 	darkReaderScript.src = 'https://cdn.jsdelivr.net/npm/darkreader@4.9.32/darkreader.min.js';
-		// 	darkReaderScript.type = 'application/javascript';
-		// 	iframeRef.current.contentDocument.body.append(darkReaderScript);
-		// 	const darkScriptEnable = document.createElement('script');
-		// 	darkScriptEnable.textContent = `if (document.readyState === 'complete') {document.body.style.visibility = 'visible';} else {window.onload = function(){ DarkReader.${modeSetting}();document.body.style.visibility = 'visible';}}`;
-		// 	iframeRef.current.contentDocument.body.append(darkScriptEnable);
-		// }
 
 		const imgMap = reduce(
 			parts,
