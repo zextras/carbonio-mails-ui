@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, useCallback, useEffect, useMemo } from 'react';
+import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
 import { replaceHistory, useTags, useUserSettings } from '@zextras/carbonio-shell-ui';
@@ -13,14 +13,16 @@ import { useParams } from 'react-router-dom';
 import { ConversationPreviewPanel } from './conversation-preview-panel';
 import PreviewPanelHeader from './preview/preview-panel-header';
 import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
-import { API_REQUEST_STATUS } from '../../../constants';
+import { API_REQUEST_STATUS, SEARCHED_FOLDER_STATE_STATUS } from '../../../constants';
 import { getFolderIdParts } from '../../../helpers/folders';
+import { parseMessageSortingOptions } from '../../../helpers/sorting';
 import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
 import { useFolderSortedConversations } from '../../../hooks/use-folder-sorted-conversations';
 import { getConv, searchConv } from '../../../store/actions';
 import {
 	selectConversation,
-	selectConversationExpandedStatus
+	selectConversationExpandedStatus,
+	selectFolderSearchStatus
 } from '../../../store/conversations-slice';
 import type { MailsStateType } from '../../../types';
 import { setConversationsRead } from '../../../ui-actions/conversation-actions';
@@ -49,8 +51,19 @@ export const ConversationPreviewPanelContainer: FC<ConversationPreviewPanelProps
 
 	const conversations = useFolderSortedConversations(folderId);
 	const conversation = useAppSelector(selectConversation(conversationId));
+	const searchedInFolderStatus = useAppSelector(selectFolderSearchStatus(folderId));
 
-	const conversationIndex = findIndex(conversations, (conv) => conv.id === conversationId);
+	const hasMore = useMemo(
+		() => searchedInFolderStatus === SEARCHED_FOLDER_STATE_STATUS.hasMore,
+		[searchedInFolderStatus]
+	);
+	const conversationIndex = useMemo(() => {
+		const index = findIndex(conversations, (conv) => conv.id === conversationId);
+		return index === -1 ? 0 : index;
+	}, [conversationId, conversations]);
+
+	const [currentConversationIndex, setCurrentConversationIndex] = useState(conversationIndex);
+
 	const settings = useUserSettings();
 	const convSortOrder = settings.prefs.zimbraPrefConversationOrder as string;
 	useEffect(() => {
@@ -77,15 +90,12 @@ export const ConversationPreviewPanelContainer: FC<ConversationPreviewPanelProps
 						.length > 0,
 		[conversation, folderId]
 	);
-	const zimbraPrefMarkMsgRead = useUserSettings()?.prefs?.zimbraPrefMarkMsgRead !== '-1';
+	const { prefs } = useUserSettings();
 
-	const onGoForward = useCallback(() => {
-		if (conversationIndex === conversations.length - 1) return;
-		const offSet = 5;
-		const hasMore = true;
-		if (conversationIndex === conversations.length - offSet && hasMore) {
-			// todo: implement loadMore
-		}
+	const zimbraPrefMarkMsgRead = useUserSettings()?.prefs?.zimbraPrefMarkMsgRead !== '-1';
+	const { sortOrder } = parseMessageSortingOptions(folderId, prefs.zimbraPrefSortOrder as string);
+
+	const setReadAndPush = useCallback((): void => {
 		const nextIndex = conversationIndex + 1;
 		const newConv = conversations[nextIndex];
 		if (newConv?.read === false && zimbraPrefMarkMsgRead) {
@@ -100,7 +110,40 @@ export const ConversationPreviewPanelContainer: FC<ConversationPreviewPanelProps
 		replaceHistory(`/folder/${folderId}/conversation/${newConv.id}`);
 	}, [conversationIndex, conversations, dispatch, folderId, zimbraPrefMarkMsgRead]);
 
+	const onGoForward = useCallback(() => {
+		if (conversationIndex === conversations.length - 1 && !hasMore) return;
+		setCurrentConversationIndex((prevValue) => prevValue + 1);
+	}, [conversationIndex, conversations?.length, hasMore]);
+
 	const onGoBack = useCallback(() => {
+		if (conversationIndex <= 0) return;
+		setCurrentConversationIndex((prevValue) => prevValue - 1);
+	}, [conversationIndex]);
+
+	/*	const onGoForward = useCallback(() => {
+		if (conversationIndex === conversations.length - 1 && !hasMore) return;
+		const listOffSet = 5;
+		if (conversationIndex >= conversations.length - 1 - listOffSet && hasMore) {
+			const offset = conversations.length;
+			dispatch(
+				search({ folderId, offset, sortBy: sortOrder, limit: LIST_LIMIT.LOAD_MORE_LIMIT })
+			).then(() => {
+				setReadAndPush();
+			});
+		} else {
+			setReadAndPush();
+		}
+	}, [
+		conversationIndex,
+		conversations.length,
+		dispatch,
+		folderId,
+		hasMore,
+		setReadAndPush,
+		sortOrder
+	]); */
+
+	/*	const onGoBack = useCallback(() => {
 		if (conversationIndex <= 0) return;
 		const nextIndex = conversationIndex - 1;
 		const newConv = conversations[nextIndex];
@@ -114,7 +157,7 @@ export const ConversationPreviewPanelContainer: FC<ConversationPreviewPanelProps
 			}).onClick();
 		}
 		replaceHistory(`/folder/${folderId}/conversation/${newConv.id}`);
-	}, [conversationIndex, conversations, dispatch, folderId, zimbraPrefMarkMsgRead]);
+	}, [conversationIndex, conversations, dispatch, folderId, zimbraPrefMarkMsgRead]); */
 
 	return (
 		<Container orientation="vertical" mainAlignment="flex-start" crossAlignment="flex-start">

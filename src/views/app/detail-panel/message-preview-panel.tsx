@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, useCallback, useEffect } from 'react';
+import React, { FC, useCallback, useEffect, useMemo } from 'react';
 
 import { Container, Padding } from '@zextras/carbonio-design-system';
 import { replaceHistory, useUserSettings } from '@zextras/carbonio-shell-ui';
@@ -11,11 +11,11 @@ import { findIndex, uniqBy } from 'lodash';
 
 import MailPreview from './preview/mail-preview';
 import PreviewPanelHeader from './preview/preview-panel-header';
-import { EXTRA_WINDOW_ACTION_ID } from '../../../constants';
+import { EXTRA_WINDOW_ACTION_ID, SEARCHED_FOLDER_STATE_STATUS } from '../../../constants';
 import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
-import { useMessageList } from '../../../hooks/use-message-list';
+import { useFolderSortedMessages } from '../../../hooks/use-folder-sorted-messages';
 import { getMsg } from '../../../store/actions';
-import { selectMessage } from '../../../store/messages-slice';
+import { selectFolderMsgSearchStatus, selectMessage } from '../../../store/messages-slice';
 import type { MailsStateType, MessageAction } from '../../../types';
 import { setMsgRead } from '../../../ui-actions/message-actions';
 import { useExtraWindow } from '../extra-windows/use-extra-window';
@@ -42,16 +42,28 @@ export const MessagePreviewPanel: FC<MessagePreviewPanelProps> = ({
 		? messageActions.filter((action: MessageAction) => action.id !== EXTRA_WINDOW_ACTION_ID)
 		: uniqBy([...messageActions[0], ...messageActions[1]], 'id');
 
-	const messages = useMessageList();
+	const messages = useFolderSortedMessages(folderId);
 	const message = useAppSelector((state: MailsStateType) => selectMessage(state, messageId));
 	const messageIndex = findIndex(messages, (msg) => msg.id === messageId);
 	const zimbraPrefMarkMsgRead = useUserSettings()?.prefs?.zimbraPrefMarkMsgRead !== '-1';
+	const searchedInFolderStatus = useAppSelector(selectFolderMsgSearchStatus(folderId));
 
+	const hasMore = useMemo(
+		() => searchedInFolderStatus === SEARCHED_FOLDER_STATE_STATUS.hasMore,
+		[searchedInFolderStatus]
+	);
+	const isTheFirstListItem = useMemo(() => messageIndex <= 0, [messageIndex]);
+	const isTheLastListItem = useMemo(
+		() => messageIndex === messages.length - 1 && !hasMore,
+		[hasMore, messageIndex, messages.length]
+	);
+	const isLoadMoreNeeded = useMemo(
+		() => messageIndex === messages.length - 1 && hasMore,
+		[hasMore, messageIndex, messages.length]
+	);
 	const onGoForward = useCallback(() => {
-		if (messageIndex === messages.length - 1) return;
-		const offSet = 5;
-		const hasMore = true;
-		if (messageIndex === messages.length - offSet && hasMore) {
+		if (isTheLastListItem) return;
+		if (isLoadMoreNeeded) {
 			// todo: implement loadMore
 		}
 		const nextIndex = messageIndex + 1;
@@ -60,17 +72,25 @@ export const MessagePreviewPanel: FC<MessagePreviewPanelProps> = ({
 			setMsgRead({ ids: [newMsg.id], value: false, dispatch }).onClick();
 		}
 		replaceHistory(`/folder/${folderId}/message/${newMsg.id}`);
-	}, [messageIndex, messages, zimbraPrefMarkMsgRead, folderId, dispatch]);
+	}, [
+		isTheLastListItem,
+		isLoadMoreNeeded,
+		messageIndex,
+		messages,
+		zimbraPrefMarkMsgRead,
+		folderId,
+		dispatch
+	]);
 
 	const onGoBack = useCallback(() => {
-		if (messageIndex <= 0) return;
+		if (isTheFirstListItem) return;
 		const nextIndex = messageIndex - 1;
 		const newMsg = messages[nextIndex];
 		if (newMsg.read === false && zimbraPrefMarkMsgRead) {
 			setMsgRead({ ids: [newMsg.id], value: false, dispatch }).onClick();
 		}
 		replaceHistory(`/folder/${folderId}/message/${newMsg.id}`);
-	}, [messageIndex, messages, zimbraPrefMarkMsgRead, folderId, dispatch]);
+	}, [isTheFirstListItem, messageIndex, messages, zimbraPrefMarkMsgRead, folderId, dispatch]);
 
 	useEffect(() => {
 		if (!message?.isComplete) {
@@ -84,8 +104,8 @@ export const MessagePreviewPanel: FC<MessagePreviewPanelProps> = ({
 				<>
 					{!isInsideExtraWindow && (
 						<PreviewPanelHeader
-							onGoForward={onGoForward}
-							onGoBack={onGoBack}
+							onGoForward={isTheLastListItem ? undefined : onGoForward}
+							onGoBack={isTheFirstListItem ? undefined : onGoBack}
 							subject={message.subject}
 							isRead={message.read}
 							folderId={folderId}

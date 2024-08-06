@@ -15,6 +15,7 @@ import {
 	Tooltip
 } from '@zextras/carbonio-design-system';
 import { replaceHistory, useLocalStorage } from '@zextras/carbonio-shell-ui';
+import { noop } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
 import { useFolder } from '../../../../carbonio-ui-commons/store/zustand/folder';
@@ -69,30 +70,28 @@ const PreviewPanelHeader: FC<{
 			>
 				{listLayout === MAILS_VIEW_LAYOUTS.NO_SPLIT && (
 					<Row padding={{ right: 'large' }}>
-						{onGoBack && (
-							<Tooltip label={tooltipLabel}>
-								<IconButton
-									onClick={onGoBack}
-									customSize={{
-										iconSize: 'medium',
-										paddingSize: 'small'
-									}}
-									icon="ArrowIosBack"
-								/>
-							</Tooltip>
-						)}
-						{onGoForward && (
-							<Tooltip label={tooltipLabel}>
-								<IconButton
-									onClick={onGoForward}
-									customSize={{
-										iconSize: 'medium',
-										paddingSize: 'small'
-									}}
-									icon="ArrowIosForward"
-								/>
-							</Tooltip>
-						)}
+						<Tooltip label={tooltipLabel}>
+							<IconButton
+								onClick={onGoBack ?? noop}
+								customSize={{
+									iconSize: 'medium',
+									paddingSize: 'small'
+								}}
+								disabled={!onGoBack}
+								icon="ArrowIosBack"
+							/>
+						</Tooltip>
+						<Tooltip label={tooltipLabel}>
+							<IconButton
+								onClick={onGoForward ?? noop}
+								customSize={{
+									iconSize: 'medium',
+									paddingSize: 'small'
+								}}
+								disabled={!onGoForward}
+								icon="ArrowIosForward"
+							/>
+						</Tooltip>
 					</Row>
 				)}
 				<Icon

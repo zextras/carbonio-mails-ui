@@ -268,7 +268,7 @@ export const useSetConversationAsSpam = (): ((
 							})
 						).then((res) => {
 							if (res.type.includes('fulfilled')) {
-								deselectAll();
+								deselectAll?.();
 							} else {
 								createSnackbar({
 									key: `trash-${ids}`,
@@ -310,7 +310,7 @@ export const useMoveConversationToTrash = (): ((
 							})
 						).then((res) => {
 							if (res.type.includes('fulfilled')) {
-								deselectAll();
+								deselectAll?.();
 								replaceHistory(`/folder/${folderId}/conversation/${ids[0]}`);
 								createSnackbar({
 									key: `edit`,
@@ -342,7 +342,7 @@ export const useMoveConversationToTrash = (): ((
 						})
 					).then((res) => {
 						if (res.type.includes('fulfilled')) {
-							deselectAll();
+							deselectAll?.();
 							replaceHistory(`/folder/${folderId}/`);
 							createSnackbar({
 								key: `trash-${ids}`,
@@ -428,8 +428,6 @@ export const useDeleteConversationPermanently = (): ((
 								<DeleteConvConfirm
 									selectedIDs={ids}
 									isMessageView={false}
-									// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-									// @ts-ignore
 									onClose={(): void => closeModal()}
 									deselectAll={deselectAll}
 								/>
