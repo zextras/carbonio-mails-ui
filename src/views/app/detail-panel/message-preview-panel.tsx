@@ -9,10 +9,9 @@ import { Container, Padding } from '@zextras/carbonio-design-system';
 import { uniqBy } from 'lodash';
 
 import MailPreview from './preview/mail-preview';
-import PreviewPanelHeader from './preview/preview-panel-header';
+import { MessagePreviewPanelHeader } from './preview/message-preview-panel-header';
 import { EXTRA_WINDOW_ACTION_ID } from '../../../constants';
 import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
-import { useMessagePreviewHeaderNavigation } from '../../../hooks/use-message-preview-header-navigation';
 import { getMsg } from '../../../store/actions';
 import { selectMessage } from '../../../store/messages-slice';
 import type { MailsStateType, MessageAction } from '../../../types';
@@ -46,19 +45,13 @@ export const MessagePreviewPanel: FC<MessagePreviewPanelProps> = ({
 		}
 	}, [dispatch, folderId, message, messageId]);
 
-	const { previousActionItem, nextActionItem } = useMessagePreviewHeaderNavigation(
-		folderId,
-		messageId
-	);
-
 	return (
 		<Container orientation="vertical" mainAlignment="flex-start" crossAlignment="flex-start">
 			{message && (
 				<>
 					{!isInsideExtraWindow && (
-						<PreviewPanelHeader
-							previousActionItem={previousActionItem}
-							nextActionItem={nextActionItem}
+						<MessagePreviewPanelHeader
+							messageId={messageId}
 							subject={message.subject}
 							isRead={message.read}
 							folderId={folderId}
