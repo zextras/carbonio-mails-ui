@@ -120,7 +120,7 @@ const SmimeCertificateUpload: FC = () => {
 				<Container orientation="horizontal" mainAlignment="flex-start">
 					<Row mainAlignment="flex-start" width="30vw">
 						<Input
-							label={t('settings.smime_certificate', 'S/MIME Certificate')}
+							label={t('label.certificate_password', 'S/MIME Certificate (i.e. certificate.pfx)')}
 							value={selectedFile ? selectedFile.name : ''}
 							hideBorder
 						/>
@@ -141,7 +141,7 @@ const SmimeCertificateUpload: FC = () => {
 							onChange={(ev): void => {
 								setPassword(ev.target.value);
 							}}
-							label={`${t('label.certificate_password', 'S/MIME Certificate (i.e. certificate.pfx)')}`}
+							label={t('label.certificate_password', 'Certificate Password')}
 						/>
 					</Row>
 					<Padding left="medium">
