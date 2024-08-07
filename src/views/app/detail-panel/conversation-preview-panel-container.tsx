@@ -6,7 +6,6 @@
 import React, { FC, useEffect, useMemo } from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
-import { useTags } from '@zextras/carbonio-shell-ui';
 import { filter, isEmpty } from 'lodash';
 import { useParams } from 'react-router-dom';
 
@@ -38,7 +37,6 @@ const useConversationPreviewPanelParameters = (
 
 export const ConversationPreviewPanelContainer: FC<ConversationPreviewPanelProps> = (props) => {
 	const { conversationId, folderId } = useConversationPreviewPanelParameters(props);
-	const tagsFromStore = useTags();
 	const { isInsideExtraWindow } = useExtraWindow();
 	const dispatch = useAppDispatch();
 	const conversationsStatus = useAppSelector((state: MailsStateType) =>
@@ -58,9 +56,9 @@ export const ConversationPreviewPanelContainer: FC<ConversationPreviewPanelProps
 				conversationsStatus !== API_REQUEST_STATUS.pending) ||
 			!conversationsStatus
 		) {
-			dispatch(searchConv({ conversationId, fetch: 'all', folderId, tags: tagsFromStore }));
+			dispatch(searchConv({ conversationId, fetch: 'all', folderId }));
 		}
-	}, [conversationId, conversationsStatus, dispatch, folderId, tagsFromStore]);
+	}, [conversationId, conversationsStatus, dispatch, folderId]);
 
 	const showPreviewPanel = useMemo(
 		(): boolean | undefined =>
