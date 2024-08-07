@@ -6,6 +6,7 @@
 import { useCallback, useEffect, useMemo } from 'react';
 
 import { replaceHistory, useUserSettings } from '@zextras/carbonio-shell-ui';
+import { findIndex } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
 import { useAppDispatch } from './redux';
@@ -17,15 +18,13 @@ import { setMsgRead } from '../ui-actions/message-actions';
 export const usePreviewHeaderNavigation = ({
 	items,
 	folderId,
-	index,
-	length,
+	currentItemId,
 	types,
 	searchedInFolderStatus
 }: {
-	items: Array<{ id: string; read: boolean }>;
+	items: Array<{ id: string; read: boolean | string }>;
 	folderId: string;
-	index: number;
-	length: number;
+	currentItemId: string;
 	types: string;
 	searchedInFolderStatus: string | undefined;
 }): {
@@ -41,6 +40,8 @@ export const usePreviewHeaderNavigation = ({
 	const settings = useUserSettings();
 	const zimbraPrefMarkMsgRead = settings?.prefs?.zimbraPrefMarkMsgRead !== '-1';
 
+	const itemIndex = findIndex(items, (item) => item.id === currentItemId);
+
 	const { sortOrder } = parseMessageSortingOptions(
 		folderId,
 		settings.prefs.zimbraPrefSortOrder as string
@@ -51,14 +52,17 @@ export const usePreviewHeaderNavigation = ({
 		[searchedInFolderStatus]
 	);
 
-	const isTheFirstListItem = useMemo(() => index <= 0, [index]);
+	const isTheFirstListItem = useMemo(() => itemIndex <= 0, [itemIndex]);
 
 	const isTheLastListItem = useMemo(
-		() => index === length - 1 && !hasMore,
-		[hasMore, index, length]
+		() => itemIndex === items.length - 1 && !hasMore,
+		[hasMore, itemIndex, items.length]
 	);
 
-	const isLoadMoreNeeded = useMemo(() => index >= length - 1 && hasMore, [index, length, hasMore]);
+	const isLoadMoreNeeded = useMemo(
+		() => itemIndex >= items.length - 1 && hasMore,
+		[itemIndex, items.length, hasMore]
+	);
 
 	const onGoBackTooltip = useMemo(() => {
 		if (!searchedInFolderStatus) {
@@ -81,29 +85,29 @@ export const usePreviewHeaderNavigation = ({
 	}, [isTheLastListItem, searchedInFolderStatus, t]);
 
 	const onGoForwardDisabled = useMemo(
-		() => isTheLastListItem || index >= length - 1,
-		[index, length, isTheLastListItem]
+		() => isTheLastListItem || itemIndex >= items.length - 1,
+		[itemIndex, items.length, isTheLastListItem]
 	);
 	const onGoBackDisabled = useMemo(() => isTheFirstListItem, [isTheFirstListItem]);
 	const onGoForward = useCallback(() => {
 		if (isTheLastListItem) return;
-		const nextIndex = index + 1;
+		const nextIndex = itemIndex + 1;
 		const nextItem = items[nextIndex];
 		if (!nextItem.read && zimbraPrefMarkMsgRead) {
 			setMsgRead({ ids: [nextItem.id], value: false, dispatch }).onClick();
 		}
-		replaceHistory(`/folder/${folderId}/conversation/${nextItem.id}`);
-	}, [dispatch, folderId, isTheLastListItem, index, items, zimbraPrefMarkMsgRead]);
+		replaceHistory(`/folder/${folderId}/${types}/${nextItem.id}`);
+	}, [isTheLastListItem, itemIndex, items, zimbraPrefMarkMsgRead, folderId, types, dispatch]);
 
 	const onGoBack = useCallback(() => {
 		if (isTheFirstListItem) return;
-		const previousIndex = index - 1;
+		const previousIndex = itemIndex - 1;
 		const previousItem = items[previousIndex];
 		if (!previousItem.read && zimbraPrefMarkMsgRead) {
 			setMsgRead({ ids: [previousItem.id], value: false, dispatch }).onClick();
 		}
-		replaceHistory(`/folder/${folderId}/conversation/${previousItem.id}`);
-	}, [isTheFirstListItem, index, items, zimbraPrefMarkMsgRead, folderId, dispatch]);
+		replaceHistory(`/folder/${folderId}/${types}/${previousItem.id}`);
+	}, [isTheFirstListItem, itemIndex, items, zimbraPrefMarkMsgRead, folderId, types, dispatch]);
 
 	useEffect(() => {
 		if (isLoadMoreNeeded) {
@@ -113,11 +117,11 @@ export const usePreviewHeaderNavigation = ({
 					limit: LIST_LIMIT.LOAD_MORE_LIMIT,
 					sortBy: sortOrder,
 					types,
-					offset: length
+					offset: items.length
 				})
 			);
 		}
-	}, [dispatch, folderId, isLoadMoreNeeded, length, sortOrder, types]);
+	}, [dispatch, folderId, isLoadMoreNeeded, items.length, sortOrder, types]);
 
 	return {
 		onGoBackTooltip,

@@ -3,15 +3,14 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-
 import { useAppSelector } from './redux';
-import { useFolderSortedConversations } from './use-folder-sorted-conversations';
+import { useFolderSortedMessages } from './use-folder-sorted-messages';
 import { usePreviewHeaderNavigation } from './use-preview-header-navigation';
-import { selectFolderSearchStatus } from '../store/conversations-slice';
+import { selectFolderMsgSearchStatus } from '../store/messages-slice';
 
-export const useConversationPreviewHeaderNavigation = (
+export const useMessagePreviewHeaderNavigation = (
 	folderId: string,
-	conversationId: string
+	messageId: string
 ): {
 	onGoBackTooltip: string | undefined;
 	onGoForwardTooltip: string | undefined;
@@ -20,14 +19,14 @@ export const useConversationPreviewHeaderNavigation = (
 	onGoForward: () => void;
 	onGoBack: () => void;
 } => {
-	const conversations = useFolderSortedConversations(folderId);
-	const searchedInFolderStatus = useAppSelector(selectFolderSearchStatus(folderId));
+	const messages = useFolderSortedMessages(folderId);
+	const searchedInFolderStatus = useAppSelector(selectFolderMsgSearchStatus(folderId));
 
 	return usePreviewHeaderNavigation({
-		items: conversations,
+		items: messages,
 		folderId,
-		currentItemId: conversationId,
+		currentItemId: messageId,
 		searchedInFolderStatus,
-		types: 'conversation'
+		types: 'message'
 	});
 };
