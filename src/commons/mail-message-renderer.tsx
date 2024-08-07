@@ -76,9 +76,8 @@ export const replaceLinkToAnchor = (content: string): string => {
 	if (content === '') {
 		return '';
 	}
-	const LINK_REGEX =
-		/(?:https?:\/\/|www\.)+(?![^\s]*?")([\w.,@?!^=%&amp;:()/~+#-]*[\w@?!^=%&amp;()/~+#-])?/gi;
-	return content.replace(LINK_REGEX, (url) => {
+	const linkRegexp = /(https?:\/\/[^\s]+|www\.[^\s]+)/g;
+	return content.replace(linkRegexp, (url) => {
 		const wrap = document.createElement('div');
 		const anchor = document.createElement('a');
 
