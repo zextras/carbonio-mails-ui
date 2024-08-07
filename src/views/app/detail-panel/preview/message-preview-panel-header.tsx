@@ -6,7 +6,10 @@
 import React from 'react';
 
 import PreviewPanelHeader from './preview-panel-header';
-import { useMessagePreviewHeaderNavigation } from '../../../../hooks/use-message-preview-header-navigation';
+import { useAppSelector } from '../../../../hooks/redux';
+import { useFolderSortedMessages } from '../../../../hooks/use-folder-sorted-messages';
+import { usePreviewHeaderNavigation } from '../../../../hooks/use-preview-header-navigation';
+import { selectFolderMsgSearchStatus } from '../../../../store/messages-slice';
 import type { MailMessage } from '../../../../types';
 
 export type MessagePreviewPanelHeaderProps = {
@@ -22,10 +25,16 @@ export const MessagePreviewPanelHeader = ({
 	isRead,
 	folderId
 }: MessagePreviewPanelHeaderProps): React.JSX.Element => {
-	const { previousActionItem, nextActionItem } = useMessagePreviewHeaderNavigation(
+	const messages = useFolderSortedMessages(folderId);
+	const searchedInFolderStatus = useAppSelector(selectFolderMsgSearchStatus(folderId));
+
+	const { previousActionItem, nextActionItem } = usePreviewHeaderNavigation({
+		items: messages,
 		folderId,
-		messageId
-	);
+		currentItemId: messageId,
+		searchedInFolderStatus,
+		types: 'message'
+	});
 
 	return (
 		<PreviewPanelHeader
