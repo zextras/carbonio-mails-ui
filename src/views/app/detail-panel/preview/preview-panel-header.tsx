@@ -18,20 +18,28 @@ import { replaceHistory, useLocalStorage } from '@zextras/carbonio-shell-ui';
 import { noop } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
-import { useFolder } from '../../../../carbonio-ui-commons/store/zustand/folder';
 import { LOCAL_STORAGE_LAYOUT, MAILS_VIEW_LAYOUTS } from '../../../../constants';
 import type { MailMessage } from '../../../../types';
 import type { MailsListLayout } from '../../../folder-view';
-import { getFolderTranslatedName } from '../../../sidebar/utils';
 import { LayoutComponent } from '../../folder-panel/parts/layout-component';
 
 const PreviewPanelHeader: FC<{
+	onGoBackTooltip?: string;
+	onGoForwardTooltip?: string;
 	onGoBack?: () => void;
 	onGoForward?: () => void;
 	subject?: MailMessage['subject'];
 	isRead?: MailMessage['read'];
 	folderId: string;
-}> = ({ subject, isRead, folderId, onGoBack, onGoForward }) => {
+}> = ({
+	subject,
+	isRead,
+	folderId,
+	onGoBack,
+	onGoForward,
+	onGoBackTooltip,
+	onGoForwardTooltip
+}) => {
 	const [t] = useTranslation();
 
 	const replaceHistoryCallback = useCallback(
@@ -49,13 +57,12 @@ const PreviewPanelHeader: FC<{
 		MAILS_VIEW_LAYOUTS.SPLIT
 	);
 
-	const folderName = useFolder(folderId)?.name ?? '';
-	const translatedName = getFolderTranslatedName({ folderId, folderName });
+	const onBackTooltipLabel =
+		onGoBackTooltip ?? t('tooltip.list_navigation.onGoBack', 'Go to previous email');
 
-	const tooltipLabel = t('tooltip.backToFolder', {
-		translatedName,
-		defaultValue: `Go back to {{translatedName}}`
-	});
+	const onForwardTooltipLabel =
+		onGoForwardTooltip ?? t('tooltip.list_navigation.onGoForward', 'Go to next email');
+
 	return (
 		<>
 			<Container
@@ -70,7 +77,7 @@ const PreviewPanelHeader: FC<{
 			>
 				{listLayout === MAILS_VIEW_LAYOUTS.NO_SPLIT && (
 					<Row padding={{ right: 'large' }}>
-						<Tooltip label={tooltipLabel}>
+						<Tooltip label={onBackTooltipLabel}>
 							<IconButton
 								onClick={onGoBack ?? noop}
 								customSize={{
@@ -81,7 +88,7 @@ const PreviewPanelHeader: FC<{
 								icon="ArrowIosBack"
 							/>
 						</Tooltip>
-						<Tooltip label={tooltipLabel}>
+						<Tooltip label={onForwardTooltipLabel}>
 							<IconButton
 								onClick={onGoForward ?? noop}
 								customSize={{

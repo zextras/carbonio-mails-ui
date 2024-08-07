@@ -8,13 +8,19 @@ import React, { FC, useCallback, useEffect, useMemo } from 'react';
 import { Container, Padding } from '@zextras/carbonio-design-system';
 import { replaceHistory, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { findIndex, uniqBy } from 'lodash';
+import { useTranslation } from 'react-i18next';
 
 import MailPreview from './preview/mail-preview';
 import PreviewPanelHeader from './preview/preview-panel-header';
-import { EXTRA_WINDOW_ACTION_ID, SEARCHED_FOLDER_STATE_STATUS } from '../../../constants';
+import {
+	EXTRA_WINDOW_ACTION_ID,
+	LIST_LIMIT,
+	SEARCHED_FOLDER_STATE_STATUS
+} from '../../../constants';
+import { parseMessageSortingOptions } from '../../../helpers/sorting';
 import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
 import { useFolderSortedMessages } from '../../../hooks/use-folder-sorted-messages';
-import { getMsg } from '../../../store/actions';
+import { getMsg, search } from '../../../store/actions';
 import { selectFolderMsgSearchStatus, selectMessage } from '../../../store/messages-slice';
 import type { MailsStateType, MessageAction } from '../../../types';
 import { setMsgRead } from '../../../ui-actions/message-actions';
@@ -33,11 +39,12 @@ export const MessagePreviewPanel: FC<MessagePreviewPanelProps> = ({
 }) => {
 	const { isInsideExtraWindow } = useExtraWindow();
 	const dispatch = useAppDispatch();
-
+	const [t] = useTranslation();
 	const isExtraWindowActions = messageActions.some(
 		(action: MessageAction) => action.id === EXTRA_WINDOW_ACTION_ID
 	);
-
+	const { prefs } = useUserSettings();
+	const { sortOrder } = parseMessageSortingOptions(folderId, prefs.zimbraPrefSortOrder as string);
 	const actions = isExtraWindowActions
 		? messageActions.filter((action: MessageAction) => action.id !== EXTRA_WINDOW_ACTION_ID)
 		: uniqBy([...messageActions[0], ...messageActions[1]], 'id');
@@ -58,29 +65,18 @@ export const MessagePreviewPanel: FC<MessagePreviewPanelProps> = ({
 		[hasMore, messageIndex, messages.length]
 	);
 	const isLoadMoreNeeded = useMemo(
-		() => messageIndex === messages.length - 1 && hasMore,
+		() => messageIndex >= messages.length - 1 && hasMore,
 		[hasMore, messageIndex, messages.length]
 	);
 	const onGoForward = useCallback(() => {
 		if (isTheLastListItem) return;
-		if (isLoadMoreNeeded) {
-			// todo: implement loadMore
-		}
 		const nextIndex = messageIndex + 1;
 		const newMsg = messages[nextIndex];
 		if (newMsg.read === false && zimbraPrefMarkMsgRead) {
 			setMsgRead({ ids: [newMsg.id], value: false, dispatch }).onClick();
 		}
 		replaceHistory(`/folder/${folderId}/message/${newMsg.id}`);
-	}, [
-		isTheLastListItem,
-		isLoadMoreNeeded,
-		messageIndex,
-		messages,
-		zimbraPrefMarkMsgRead,
-		folderId,
-		dispatch
-	]);
+	}, [dispatch, folderId, isTheLastListItem, messageIndex, messages, zimbraPrefMarkMsgRead]);
 
 	const onGoBack = useCallback(() => {
 		if (isTheFirstListItem) return;
@@ -92,11 +88,46 @@ export const MessagePreviewPanel: FC<MessagePreviewPanelProps> = ({
 		replaceHistory(`/folder/${folderId}/message/${newMsg.id}`);
 	}, [isTheFirstListItem, messageIndex, messages, zimbraPrefMarkMsgRead, folderId, dispatch]);
 
+	const onGoBackTooltip = useMemo(() => {
+		if (!searchedInFolderStatus) {
+			return t('tooltip.list_navigation.closeToNavigate', 'Close this email to navigate');
+		}
+		if (isTheFirstListItem) {
+			return t('tooltip.list_navigation.noPreviousEmails', 'There are no previous emails');
+		}
+		return undefined;
+	}, [isTheFirstListItem, searchedInFolderStatus, t]);
+
+	const onGoForwardTooltip = useMemo(() => {
+		if (!searchedInFolderStatus) {
+			return t('tooltip.list_navigation.closeToNavigate', 'Close this email to navigate');
+		}
+		if (isTheLastListItem) {
+			return t('tooltip.list_navigation.noMoreEmails', 'There are no more emails');
+		}
+		return undefined;
+	}, [isTheLastListItem, searchedInFolderStatus, t]);
+
 	useEffect(() => {
 		if (!message?.isComplete) {
 			dispatch(getMsg({ msgId: messageId }));
 		}
 	}, [dispatch, folderId, message, messageId]);
+
+	useEffect(() => {
+		if (isLoadMoreNeeded) {
+			const offset = messages.length;
+			dispatch(
+				search({
+					folderId,
+					offset,
+					limit: LIST_LIMIT.LOAD_MORE_LIMIT,
+					sortBy: sortOrder,
+					types: 'message'
+				})
+			);
+		}
+	}, [dispatch, folderId, isLoadMoreNeeded, messages.length, sortOrder]);
 
 	return (
 		<Container orientation="vertical" mainAlignment="flex-start" crossAlignment="flex-start">
@@ -104,7 +135,11 @@ export const MessagePreviewPanel: FC<MessagePreviewPanelProps> = ({
 				<>
 					{!isInsideExtraWindow && (
 						<PreviewPanelHeader
-							onGoForward={isTheLastListItem ? undefined : onGoForward}
+							onGoForwardTooltip={onGoForwardTooltip}
+							onGoBackTooltip={onGoBackTooltip}
+							onGoForward={
+								isTheLastListItem || messageIndex >= messages.length - 1 ? undefined : onGoForward
+							}
 							onGoBack={isTheFirstListItem ? undefined : onGoBack}
 							subject={message.subject}
 							isRead={message.read}
