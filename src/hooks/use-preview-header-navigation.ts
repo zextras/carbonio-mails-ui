@@ -83,11 +83,14 @@ export const usePreviewHeaderNavigation = ({
 		if (!searchedInFolderStatus) {
 			return t('tooltip.list_navigation.closeToNavigate', 'Close this email to navigate');
 		}
+		if (isLoadMoreNeeded) {
+			return t('tooltip.list_navigation.loadingEmail', 'Loading next email');
+		}
 		if (isTheLastListItem) {
 			return t('tooltip.list_navigation.noMoreEmails', 'There are no more emails');
 		}
 		return t('tooltip.list_navigation.onGoForward', 'Go to next email');
-	}, [isTheLastListItem, searchedInFolderStatus, t]);
+	}, [isLoadMoreNeeded, isTheLastListItem, searchedInFolderStatus, t]);
 
 	const onGoForwardDisabled = useMemo(
 		() => isTheLastListItem || itemIndex >= items.length - 1,
