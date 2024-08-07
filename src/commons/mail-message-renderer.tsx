@@ -72,46 +72,24 @@ const StyledMultiBtn = styled(MultiButton)`
 	}
 `;
 
-// export const replaceLinkToAnchor = (content: string): string => {
-// 	if (content === '') {
-// 		return '';
-// 	}
-// 	return content.replace(LINK_REGEX, (url) => {
-// 		const wrap = document.createElement('div');
-// 		const anchor = document.createElement('a');
-// 		let href = url.replace(/&amp;/g, '&');
-// 		if (!url.startsWith('http') && !url.startsWith('https')) {
-// 			href = `http://${url}`;
-// 		}
-// 		anchor.href = href.replace(/&#64;/g, '@').replace(/&#61;/g, '=');
-// 		anchor.target = '_blank';
-// 		anchor.innerHTML = url;
-// 		wrap.appendChild(anchor);
-// 		return wrap.innerHTML;
-// 	});
-// };
-
 export const replaceLinkToAnchor = (content: string): string => {
-	if (content === '' || content === undefined) {
+	if (content === '') {
 		return '';
 	}
-
-	// const LINK_REGEX =
-	// 	/(?:https?:\/\/|www\.)+(?![^\s]*?")([\w.,@?!^=%&amp;:()/~+#-]*[\w@?!^=%&amp;()/~+#-])?/gi;
-	const LINK_REGEX = /(https?:\/\/[^\s]+|www\.[^\s]+)/g;
+	const LINK_REGEX =
+		/(?:https?:\/\/|www\.)+(?![^\s]*?")([\w.,@?!^=%&amp;:()/~+#-]*[\w@?!^=%&amp;()/~+#-])?/gi;
 	return content.replace(LINK_REGEX, (url) => {
 		const wrap = document.createElement('div');
 		const anchor = document.createElement('a');
 
-		let newUrl = url;
-		const newInnerHTML = url.replace(/&amp;/g, '&');
-
+		const newInnerHtml = url.replace(/&#64;/g, '@').replace(/&#61;/g, '=');
+		let href = url;
 		if (!url.startsWith('http') && !url.startsWith('https')) {
-			newUrl = `http://${url}`;
+			href = `http://${url}`;
 		}
-		anchor.href = newUrl.replace(/&#64;/g, '@').replace(/&#61;/g, '=');
+		anchor.href = href;
 		anchor.target = '_blank';
-		anchor.innerHTML = newInnerHTML;
+		anchor.innerHTML = newInnerHtml;
 		wrap.appendChild(anchor);
 		return wrap.innerHTML;
 	});

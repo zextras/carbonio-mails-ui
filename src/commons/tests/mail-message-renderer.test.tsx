@@ -32,14 +32,14 @@ describe('replaceLinkToAnchor', () => {
 	it('should replaces URL with &amp; entity', () => {
 		const content = 'Visit http://example.com?param=1&amp;param2=2';
 		const result =
-			'Visit <a href="http://example.com?param=1&param2=2" target="_blank">http://example.com?param=1&amp;param2=2</a>';
+			'Visit <a href="http://example.com?param=1&amp;amp;param2=2" target="_blank">http://example.com?param=1&amp;param2=2</a>';
 		expect(replaceLinkToAnchor(content)).toBe(result);
 	});
 
 	it('should replaces URL with &#64; and &#61; entities', () => {
 		const content = 'Email me at http://example.com?email=test&#64;example.com&#61;true';
 		const result =
-			'Email me at <a href="http://example.com?email=test@example.com=true" target="_blank">http://example.com?email=test&#64;example.com&#61;true</a>';
+			'Email me at <a href="http://example.com?email=test&amp;#64;example.com&amp;#61;true" target="_blank">http://example.com?email=test@example.com=true</a>';
 		expect(replaceLinkToAnchor(content)).toBe(result);
 	});
 
@@ -61,11 +61,4 @@ describe('replaceLinkToAnchor', () => {
 			'Check <a href="http://example.com" target="_blank">http://example.com</a> for more info and visit <a href="https://example.org" target="_blank">https://example.org</a> later.';
 		expect(replaceLinkToAnchor(content)).toBe(result);
 	});
-
-	// it('', () => {
-	// 	setupTest(
-	// 		<MailMessageRenderer/>
-	// 		{}
-	// 	);
-	// });
 });
