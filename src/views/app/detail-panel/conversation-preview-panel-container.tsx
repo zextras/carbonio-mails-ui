@@ -3,29 +3,30 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { FC, useCallback, useEffect, useMemo } from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
 import { replaceHistory, useTags, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { filter, findIndex, isEmpty } from 'lodash';
+import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 
 import { ConversationPreviewPanel } from './conversation-preview-panel';
 import PreviewPanelHeader from './preview/preview-panel-header';
 import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
-import { API_REQUEST_STATUS, SEARCHED_FOLDER_STATE_STATUS } from '../../../constants';
+import { API_REQUEST_STATUS, LIST_LIMIT, SEARCHED_FOLDER_STATE_STATUS } from '../../../constants';
 import { getFolderIdParts } from '../../../helpers/folders';
 import { parseMessageSortingOptions } from '../../../helpers/sorting';
 import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
 import { useFolderSortedConversations } from '../../../hooks/use-folder-sorted-conversations';
-import { getConv, searchConv } from '../../../store/actions';
+import { getConv, search, searchConv } from '../../../store/actions';
 import {
 	selectConversation,
 	selectConversationExpandedStatus,
 	selectFolderSearchStatus
 } from '../../../store/conversations-slice';
 import type { MailsStateType } from '../../../types';
-import { setConversationsRead } from '../../../ui-actions/conversation-actions';
+import { setMsgRead } from '../../../ui-actions/message-actions';
 import { useExtraWindow } from '../extra-windows/use-extra-window';
 
 type ConversationPreviewPanelProps = { conversationId?: string; folderId?: string };
@@ -42,30 +43,21 @@ const useConversationPreviewPanelParameters = (
 
 export const ConversationPreviewPanelContainer: FC<ConversationPreviewPanelProps> = (props) => {
 	const { conversationId, folderId } = useConversationPreviewPanelParameters(props);
+	const [t] = useTranslation();
 	const tagsFromStore = useTags();
 	const { isInsideExtraWindow } = useExtraWindow();
 	const dispatch = useAppDispatch();
 	const conversationsStatus = useAppSelector((state: MailsStateType) =>
 		selectConversationExpandedStatus(state, conversationId)
 	);
-
+	const searchedInFolderStatus = useAppSelector(selectFolderSearchStatus(folderId));
 	const conversations = useFolderSortedConversations(folderId);
 	const conversation = useAppSelector(selectConversation(conversationId));
-	const searchedInFolderStatus = useAppSelector(selectFolderSearchStatus(folderId));
-
-	const hasMore = useMemo(
-		() => searchedInFolderStatus === SEARCHED_FOLDER_STATE_STATUS.hasMore,
-		[searchedInFolderStatus]
-	);
-	const conversationIndex = useMemo(() => {
-		const index = findIndex(conversations, (conv) => conv.id === conversationId);
-		return index === -1 ? 0 : index;
-	}, [conversationId, conversations]);
-
-	const [currentConversationIndex, setCurrentConversationIndex] = useState(conversationIndex);
 
 	const settings = useUserSettings();
 	const convSortOrder = settings.prefs.zimbraPrefConversationOrder as string;
+	const zimbraPrefMarkMsgRead = settings?.prefs?.zimbraPrefMarkMsgRead !== '-1';
+
 	useEffect(() => {
 		if (isEmpty(conversation)) {
 			dispatch(getConv({ conversationId }));
@@ -90,74 +82,93 @@ export const ConversationPreviewPanelContainer: FC<ConversationPreviewPanelProps
 						.length > 0,
 		[conversation, folderId]
 	);
-	const { prefs } = useUserSettings();
+	const conversationIndex = findIndex(conversations, (conv) => conv.id === conversationId);
+	const hasMore = useMemo(
+		() => searchedInFolderStatus === SEARCHED_FOLDER_STATE_STATUS.hasMore,
+		[searchedInFolderStatus]
+	);
+	const isTheFirstListItem = useMemo(() => conversationIndex <= 0, [conversationIndex]);
+	const isTheLastListItem = useMemo(
+		() => conversationIndex === conversations.length - 1 && !hasMore,
+		[hasMore, conversationIndex, conversations.length]
+	);
 
-	const zimbraPrefMarkMsgRead = useUserSettings()?.prefs?.zimbraPrefMarkMsgRead !== '-1';
-	const { sortOrder } = parseMessageSortingOptions(folderId, prefs.zimbraPrefSortOrder as string);
-
-	const setReadAndPush = useCallback((): void => {
-		const nextIndex = conversationIndex + 1;
-		const newConv = conversations[nextIndex];
-		if (newConv?.read === false && zimbraPrefMarkMsgRead) {
-			setConversationsRead({
-				ids: [newConv.id],
-				value: false,
-				dispatch,
-				folderId,
-				shouldReplaceHistory: false
-			}).onClick();
+	const onGoBackTooltip = useMemo(() => {
+		if (!searchedInFolderStatus) {
+			return t('tooltip.list_navigation.closeToNavigate', 'Close this email to navigate');
 		}
-		replaceHistory(`/folder/${folderId}/conversation/${newConv.id}`);
-	}, [conversationIndex, conversations, dispatch, folderId, zimbraPrefMarkMsgRead]);
+		if (isTheFirstListItem) {
+			return t('tooltip.list_navigation.noPreviousEmails', 'There are no previous emails');
+		}
+		return undefined;
+	}, [isTheFirstListItem, searchedInFolderStatus, t]);
+
+	const onGoForwardTooltip = useMemo(() => {
+		if (!searchedInFolderStatus) {
+			return t('tooltip.list_navigation.closeToNavigate', 'Close this email to navigate');
+		}
+		if (isTheLastListItem) {
+			return t('tooltip.list_navigation.noMoreEmails', 'There are no more emails');
+		}
+		return undefined;
+	}, [isTheLastListItem, searchedInFolderStatus, t]);
 
 	const onGoForward = useCallback(() => {
-		if (conversationIndex === conversations.length - 1 && !hasMore) return;
-		setCurrentConversationIndex((prevValue) => prevValue + 1);
-	}, [conversationIndex, conversations?.length, hasMore]);
-
-	const onGoBack = useCallback(() => {
-		if (conversationIndex <= 0) return;
-		setCurrentConversationIndex((prevValue) => prevValue - 1);
-	}, [conversationIndex]);
-
-	/*	const onGoForward = useCallback(() => {
-		if (conversationIndex === conversations.length - 1 && !hasMore) return;
-		const listOffSet = 5;
-		if (conversationIndex >= conversations.length - 1 - listOffSet && hasMore) {
-			const offset = conversations.length;
-			dispatch(
-				search({ folderId, offset, sortBy: sortOrder, limit: LIST_LIMIT.LOAD_MORE_LIMIT })
-			).then(() => {
-				setReadAndPush();
-			});
-		} else {
-			setReadAndPush();
+		if (isTheLastListItem) return;
+		const nextIndex = conversationIndex + 1;
+		const newMsg = conversations[nextIndex];
+		if (!newMsg.read && zimbraPrefMarkMsgRead) {
+			setMsgRead({ ids: [newMsg.id], value: false, dispatch }).onClick();
 		}
+		replaceHistory(`/folder/${folderId}/conversation/${newMsg.id}`);
 	}, [
-		conversationIndex,
-		conversations.length,
 		dispatch,
 		folderId,
-		hasMore,
-		setReadAndPush,
-		sortOrder
-	]); */
+		isTheLastListItem,
+		conversationIndex,
+		conversations,
+		zimbraPrefMarkMsgRead
+	]);
 
-	/*	const onGoBack = useCallback(() => {
-		if (conversationIndex <= 0) return;
+	const onGoBack = useCallback(() => {
+		if (isTheFirstListItem) return;
 		const nextIndex = conversationIndex - 1;
-		const newConv = conversations[nextIndex];
-		if (newConv?.read === false && zimbraPrefMarkMsgRead) {
-			setConversationsRead({
-				ids: [newConv.id],
-				value: false,
-				dispatch,
-				folderId,
-				shouldReplaceHistory: false
-			}).onClick();
+		const newMsg = conversations[nextIndex];
+		if (!newMsg.read && zimbraPrefMarkMsgRead) {
+			setMsgRead({ ids: [newMsg.id], value: false, dispatch }).onClick();
 		}
-		replaceHistory(`/folder/${folderId}/conversation/${newConv.id}`);
-	}, [conversationIndex, conversations, dispatch, folderId, zimbraPrefMarkMsgRead]); */
+		replaceHistory(`/folder/${folderId}/conversation/${newMsg.id}`);
+	}, [
+		isTheFirstListItem,
+		conversationIndex,
+		conversations,
+		zimbraPrefMarkMsgRead,
+		folderId,
+		dispatch
+	]);
+
+	const isLoadMoreNeeded = useMemo(
+		() => conversationIndex >= conversations.length - 1 && hasMore,
+		[hasMore, conversationIndex, conversations.length]
+	);
+	const { sortOrder } = parseMessageSortingOptions(
+		folderId,
+		settings.prefs.zimbraPrefSortOrder as string
+	);
+	useEffect(() => {
+		if (isLoadMoreNeeded) {
+			const offset = conversations.length;
+			dispatch(
+				search({
+					folderId,
+					limit: LIST_LIMIT.LOAD_MORE_LIMIT,
+					sortBy: sortOrder,
+					types: 'conversation',
+					offset
+				})
+			);
+		}
+	}, [dispatch, folderId, isLoadMoreNeeded, conversations.length, sortOrder]);
 
 	return (
 		<Container orientation="vertical" mainAlignment="flex-start" crossAlignment="flex-start">
@@ -165,8 +176,14 @@ export const ConversationPreviewPanelContainer: FC<ConversationPreviewPanelProps
 				<>
 					{!isInsideExtraWindow && (
 						<PreviewPanelHeader
-							onGoBack={onGoBack}
-							onGoForward={onGoForward}
+							onGoForwardTooltip={onGoForwardTooltip}
+							onGoBackTooltip={onGoBackTooltip}
+							onGoForward={
+								isTheLastListItem || conversationIndex >= conversations.length - 1
+									? undefined
+									: onGoForward
+							}
+							onGoBack={isTheFirstListItem ? undefined : onGoBack}
 							subject={conversation.subject}
 							isRead={conversation.read}
 							folderId={folderId}
