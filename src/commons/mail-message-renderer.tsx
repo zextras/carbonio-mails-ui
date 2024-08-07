@@ -37,8 +37,7 @@ import type { MailMessagePart, Participant } from '../types';
 
 export const _CI_REGEX = /^<(.*)>$/;
 export const _CI_SRC_REGEX = /^cid:(.*)$/;
-const LINK_REGEX =
-	/(?:https?:\/\/|www\.)+(?![^\s]*?")([\w.,@?!^=%&amp;:()/~+#-]*[\w@?!^=%&amp;()/~+#-])?/gi;
+
 const LINE_BREAK_REGEX = /(?:\r\n|\r|\n)/g;
 
 export const plainTextToHTML = (str: string): string => {
@@ -73,20 +72,46 @@ const StyledMultiBtn = styled(MultiButton)`
 	}
 `;
 
-const replaceLinkToAnchor = (content: string): string => {
+// export const replaceLinkToAnchor = (content: string): string => {
+// 	if (content === '') {
+// 		return '';
+// 	}
+// 	return content.replace(LINK_REGEX, (url) => {
+// 		const wrap = document.createElement('div');
+// 		const anchor = document.createElement('a');
+// 		let href = url.replace(/&amp;/g, '&');
+// 		if (!url.startsWith('http') && !url.startsWith('https')) {
+// 			href = `http://${url}`;
+// 		}
+// 		anchor.href = href.replace(/&#64;/g, '@').replace(/&#61;/g, '=');
+// 		anchor.target = '_blank';
+// 		anchor.innerHTML = url;
+// 		wrap.appendChild(anchor);
+// 		return wrap.innerHTML;
+// 	});
+// };
+
+export const replaceLinkToAnchor = (content: string): string => {
 	if (content === '' || content === undefined) {
 		return '';
 	}
+
+	// const LINK_REGEX =
+	// 	/(?:https?:\/\/|www\.)+(?![^\s]*?")([\w.,@?!^=%&amp;:()/~+#-]*[\w@?!^=%&amp;()/~+#-])?/gi;
+	const LINK_REGEX = /(https?:\/\/[^\s]+|www\.[^\s]+)/g;
 	return content.replace(LINK_REGEX, (url) => {
 		const wrap = document.createElement('div');
 		const anchor = document.createElement('a');
-		let href = url.replace(/&amp;/g, '&');
+
+		let newUrl = url;
+		const newInnerHTML = url.replace(/&amp;/g, '&');
+
 		if (!url.startsWith('http') && !url.startsWith('https')) {
-			href = `http://${url}`;
+			newUrl = `http://${url}`;
 		}
-		anchor.href = href.replace(/&#64;/g, '@').replace(/&#61;/g, '=');
+		anchor.href = newUrl.replace(/&#64;/g, '@').replace(/&#61;/g, '=');
 		anchor.target = '_blank';
-		anchor.innerHTML = url;
+		anchor.innerHTML = newInnerHTML;
 		wrap.appendChild(anchor);
 		return wrap.innerHTML;
 	});
