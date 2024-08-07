@@ -33,7 +33,7 @@ export const ConversationPreviewPanelHeader = ({
 		folderId,
 		currentItemId: conversationId,
 		searchedInFolderStatus,
-		types: 'conversation'
+		itemsType: 'conversation'
 	});
 
 	return (

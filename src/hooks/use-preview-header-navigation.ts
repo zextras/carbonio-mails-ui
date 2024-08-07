@@ -31,19 +31,19 @@ export const usePreviewHeaderNavigation = ({
 	items,
 	folderId,
 	currentItemId,
-	types,
+	itemsType,
 	searchedInFolderStatus
 }: {
 	items: Array<{ id: string; read: boolean | string }>;
 	folderId: string;
 	currentItemId: string;
-	types: string;
+	itemsType: 'conversation' | 'message';
 	searchedInFolderStatus: string | undefined;
 }): PreviewHeaderNavigationActions => {
 	const dispatch = useAppDispatch();
 	const [t] = useTranslation();
 	const settings = useUserSettings();
-	const zimbraPrefMarkMsgRead = settings?.prefs?.zimbraPrefMarkMsgRead !== '-1';
+	const prefMarkMsgRead = settings?.prefs?.zimbraPrefMarkMsgRead !== '-1';
 
 	const itemIndex = findIndex(items, (item) => item.id === currentItemId);
 
@@ -69,17 +69,17 @@ export const usePreviewHeaderNavigation = ({
 		[itemIndex, items.length, hasMore]
 	);
 
-	const onGoBackTooltip = useMemo(() => {
+	const previousActionTooltipLabel = useMemo(() => {
 		if (!searchedInFolderStatus) {
 			return t('tooltip.list_navigation.closeToNavigate', 'Close this email to navigate');
 		}
 		if (isTheFirstListItem) {
 			return t('tooltip.list_navigation.noPreviousEmails', 'There are no previous emails');
 		}
-		return t('tooltip.list_navigation.onGoBack', 'Go to previous email');
+		return t('tooltip.list_navigation.goToPreviews', 'Go to previous email');
 	}, [isTheFirstListItem, searchedInFolderStatus, t]);
 
-	const onGoForwardTooltip = useMemo(() => {
+	const nextActionTooltipLabel = useMemo(() => {
 		if (!searchedInFolderStatus) {
 			return t('tooltip.list_navigation.closeToNavigate', 'Close this email to navigate');
 		}
@@ -89,33 +89,35 @@ export const usePreviewHeaderNavigation = ({
 		if (isTheLastListItem) {
 			return t('tooltip.list_navigation.noMoreEmails', 'There are no more emails');
 		}
-		return t('tooltip.list_navigation.onGoForward', 'Go to next email');
+		return t('tooltip.list_navigation.goToNext', 'Go to next email');
 	}, [isLoadMoreNeeded, isTheLastListItem, searchedInFolderStatus, t]);
 
-	const onGoForwardDisabled = useMemo(
+	const isNextActionDisabled = useMemo(
 		() => isTheLastListItem || itemIndex >= items.length - 1,
 		[itemIndex, items.length, isTheLastListItem]
 	);
-	const onGoBackDisabled = useMemo(() => isTheFirstListItem, [isTheFirstListItem]);
-	const onGoForward = useCallback(() => {
+
+	const isPreviousActionDisabled = useMemo(() => isTheFirstListItem, [isTheFirstListItem]);
+
+	const onNextAction = useCallback(() => {
 		if (isTheLastListItem) return;
 		const nextIndex = itemIndex + 1;
 		const nextItem = items[nextIndex];
-		if (!nextItem.read && zimbraPrefMarkMsgRead) {
+		if (!nextItem.read && prefMarkMsgRead) {
 			setMsgRead({ ids: [nextItem.id], value: false, dispatch }).onClick();
 		}
-		replaceHistory(`/folder/${folderId}/${types}/${nextItem.id}`);
-	}, [isTheLastListItem, itemIndex, items, zimbraPrefMarkMsgRead, folderId, types, dispatch]);
+		replaceHistory(`/folder/${folderId}/${itemsType}/${nextItem.id}`);
+	}, [isTheLastListItem, itemIndex, items, prefMarkMsgRead, folderId, itemsType, dispatch]);
 
-	const onGoBack = useCallback(() => {
+	const onPreviousAction = useCallback(() => {
 		if (isTheFirstListItem) return;
 		const previousIndex = itemIndex - 1;
 		const previousItem = items[previousIndex];
-		if (!previousItem.read && zimbraPrefMarkMsgRead) {
+		if (!previousItem.read && prefMarkMsgRead) {
 			setMsgRead({ ids: [previousItem.id], value: false, dispatch }).onClick();
 		}
-		replaceHistory(`/folder/${folderId}/${types}/${previousItem.id}`);
-	}, [isTheFirstListItem, itemIndex, items, zimbraPrefMarkMsgRead, folderId, types, dispatch]);
+		replaceHistory(`/folder/${folderId}/${itemsType}/${previousItem.id}`);
+	}, [isTheFirstListItem, itemIndex, items, prefMarkMsgRead, folderId, itemsType, dispatch]);
 
 	useEffect(() => {
 		if (isLoadMoreNeeded) {
@@ -124,33 +126,38 @@ export const usePreviewHeaderNavigation = ({
 					folderId,
 					limit: LIST_LIMIT.LOAD_MORE_LIMIT,
 					sortBy: sortOrder,
-					types,
+					types: itemsType,
 					offset: items.length
 				})
 			);
 		}
-	}, [dispatch, folderId, isLoadMoreNeeded, items.length, sortOrder, types]);
+	}, [dispatch, folderId, isLoadMoreNeeded, items.length, sortOrder, itemsType]);
 
 	const nextActionItem = useMemo(
 		() => ({
-			tooltipLabel: onGoForwardTooltip,
-			disabled: onGoForwardDisabled,
-			action: onGoForward,
+			tooltipLabel: nextActionTooltipLabel,
+			disabled: isNextActionDisabled,
+			action: onNextAction,
 			icon: 'ArrowIosForward'
 		}),
-		[onGoForward, onGoForwardDisabled, onGoForwardTooltip]
+		[onNextAction, isNextActionDisabled, nextActionTooltipLabel]
 	);
+
 	const previousActionItem = useMemo(
 		() => ({
-			tooltipLabel: onGoBackTooltip,
-			disabled: onGoBackDisabled,
-			action: onGoBack,
+			tooltipLabel: previousActionTooltipLabel,
+			disabled: isPreviousActionDisabled,
+			action: onPreviousAction,
 			icon: 'ArrowIosBack'
 		}),
-		[onGoBack, onGoBackDisabled, onGoBackTooltip]
+		[onPreviousAction, isPreviousActionDisabled, previousActionTooltipLabel]
 	);
-	return {
-		nextActionItem,
-		previousActionItem
-	};
+
+	return useMemo(
+		() => ({
+			nextActionItem,
+			previousActionItem
+		}),
+		[nextActionItem, previousActionItem]
+	);
 };

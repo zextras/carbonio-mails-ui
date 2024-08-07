@@ -33,7 +33,7 @@ export const MessagePreviewPanelHeader = ({
 		folderId,
 		currentItemId: messageId,
 		searchedInFolderStatus,
-		types: 'message'
+		itemsType: 'message'
 	});
 
 	return (

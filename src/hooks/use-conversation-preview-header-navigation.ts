@@ -24,6 +24,6 @@ export const useConversationPreviewHeaderNavigation = (
 		folderId,
 		currentItemId: conversationId,
 		searchedInFolderStatus,
-		types: 'conversation'
+		itemsType: 'conversation'
 	});
 };
