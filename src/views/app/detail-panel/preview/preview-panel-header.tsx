@@ -26,6 +26,8 @@ import { LayoutComponent } from '../../folder-panel/parts/layout-component';
 const PreviewPanelHeader: FC<{
 	onGoBackTooltip?: string;
 	onGoForwardTooltip?: string;
+	onGoForwardDisabled: boolean;
+	onGoBackDisabled: boolean;
 	onGoBack?: () => void;
 	onGoForward?: () => void;
 	subject?: MailMessage['subject'];
@@ -37,6 +39,8 @@ const PreviewPanelHeader: FC<{
 	folderId,
 	onGoBack,
 	onGoForward,
+	onGoForwardDisabled,
+	onGoBackDisabled,
 	onGoBackTooltip,
 	onGoForwardTooltip
 }) => {
@@ -84,7 +88,7 @@ const PreviewPanelHeader: FC<{
 									iconSize: 'medium',
 									paddingSize: 'small'
 								}}
-								disabled={!onGoBack}
+								disabled={onGoBackDisabled}
 								icon="ArrowIosBack"
 							/>
 						</Tooltip>
@@ -95,7 +99,7 @@ const PreviewPanelHeader: FC<{
 									iconSize: 'medium',
 									paddingSize: 'small'
 								}}
-								disabled={!onGoForward}
+								disabled={onGoForwardDisabled}
 								icon="ArrowIosForward"
 							/>
 						</Tooltip>
