@@ -11,12 +11,11 @@ import { filter, isEmpty } from 'lodash';
 import { useParams } from 'react-router-dom';
 
 import { ConversationPreviewPanel } from './conversation-preview-panel';
-import PreviewPanelHeader from './preview/preview-panel-header';
+import { ConversationPreviewPanelHeader } from './preview/conversation-preview-panel-header';
 import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
 import { API_REQUEST_STATUS } from '../../../constants';
 import { getFolderIdParts } from '../../../helpers/folders';
 import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
-import { useConversationPreviewHeaderNavigation } from '../../../hooks/use-conversation-preview-header-navigation';
 import { getConv, searchConv } from '../../../store/actions';
 import {
 	selectConversation,
@@ -46,11 +45,6 @@ export const ConversationPreviewPanelContainer: FC<ConversationPreviewPanelProps
 		selectConversationExpandedStatus(state, conversationId)
 	);
 	const conversation = useAppSelector(selectConversation(conversationId));
-
-	const { previousActionItem, nextActionItem } = useConversationPreviewHeaderNavigation(
-		folderId,
-		conversationId
-	);
 
 	useEffect(() => {
 		if (isEmpty(conversation)) {
@@ -82,9 +76,8 @@ export const ConversationPreviewPanelContainer: FC<ConversationPreviewPanelProps
 			{showPreviewPanel && (
 				<>
 					{!isInsideExtraWindow && (
-						<PreviewPanelHeader
-							previousActionItem={previousActionItem}
-							nextActionItem={nextActionItem}
+						<ConversationPreviewPanelHeader
+							conversationId={conversationId}
 							subject={conversation.subject}
 							isRead={conversation.read}
 							folderId={folderId}
