@@ -7,9 +7,11 @@ import { useMemo } from 'react';
 
 import { useLocalStorage } from '@zextras/carbonio-shell-ui';
 
+import type { SizeAndPosition } from './use-resize';
 import {
 	LOCAL_STORAGE_LAYOUT,
 	LOCAL_STORAGE_SPLIT_LAYOUT_ORIENTATION,
+	LOCAL_STORAGE_VIEW_SIZES,
 	MAILS_VIEW_LAYOUTS,
 	MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS
 } from '../constants';
@@ -20,6 +22,8 @@ export type UseViewLayoutResult = {
 	readonly setCurrentLayout: (layout: MailsListLayout) => void;
 	readonly splitLayoutOrientation: MailsSplitLayoutOrientation;
 	readonly setSplitLayoutOrientation: (orientation: MailsSplitLayoutOrientation) => void;
+	readonly splitSeparatorDimensions: Partial<SizeAndPosition>;
+	readonly setSplitSeparatorDimensions: (dimensions: Partial<SizeAndPosition>) => void;
 	readonly isCurrentLayoutVerticalSplit: boolean;
 	readonly isCurrentLayoutHorizontalSplit: boolean;
 	readonly isCurrentLayoutNoSplit: boolean;
@@ -36,6 +40,10 @@ export const useViewLayout = (): UseViewLayoutResult => {
 			LOCAL_STORAGE_SPLIT_LAYOUT_ORIENTATION,
 			MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS.VERTICAL
 		);
+
+	const [splitSeparatorDimensions, setSplitSeparatorDimensions] = useLocalStorage<
+		Partial<SizeAndPosition>
+	>(LOCAL_STORAGE_VIEW_SIZES, {}, { keepSyncedWithStorage: true });
 
 	const isCurrentLayoutVerticalSplit = useMemo(
 		() =>
@@ -58,6 +66,8 @@ export const useViewLayout = (): UseViewLayoutResult => {
 		setCurrentLayout: storeLayout,
 		splitLayoutOrientation,
 		setSplitLayoutOrientation: storeSplitLayoutOrientation,
+		setSplitSeparatorDimensions,
+		splitSeparatorDimensions,
 		isCurrentLayoutVerticalSplit,
 		isCurrentLayoutHorizontalSplit,
 		isCurrentLayoutNoSplit

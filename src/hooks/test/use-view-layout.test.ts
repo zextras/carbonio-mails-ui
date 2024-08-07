@@ -3,6 +3,8 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import { faker } from '@faker-js/faker';
+
 import { setupHook } from '../../carbonio-ui-commons/test/test-setup';
 import { MAILS_VIEW_LAYOUTS, MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS } from '../../constants';
 import { mockLayoutStorage } from '../../tests/layouts-utils';
@@ -19,6 +21,8 @@ describe('useViewLayout', () => {
 			setCurrentLayout: expect.anything(),
 			splitLayoutOrientation: expect.anything(),
 			setSplitLayoutOrientation: expect.anything(),
+			splitSeparatorDimensions: expect.anything(),
+			setSplitSeparatorDimensions: expect.anything(),
 			isCurrentLayoutVerticalSplit: expect.anything(),
 			isCurrentLayoutHorizontalSplit: expect.anything(),
 			isCurrentLayoutNoSplit: expect.anything()
@@ -176,6 +180,44 @@ describe('useViewLayout', () => {
 			} = setupHook(useViewLayout);
 
 			expect(current.isCurrentLayoutNoSplit).toEqual(true);
+		});
+	});
+
+	describe('splitSeparatorDimensions', () => {
+		it('should return the value stored in the local storage', () => {
+			const dimensions = {
+				top: faker.number.int({ max: 5000 }),
+				left: faker.number.int({ max: 5000 }),
+				width: faker.number.int({ max: 5000 }),
+				height: faker.number.int({ max: 5000 })
+			};
+			mockLayoutStorage({ ...dimensions });
+
+			const {
+				result: { current }
+			} = setupHook(useViewLayout);
+
+			expect(current.splitSeparatorDimensions).toEqual(dimensions);
+		});
+	});
+
+	describe('setSplitSeparatorDimensions', () => {
+		it('should store the value in the local storage', () => {
+			const dimensions = {
+				top: faker.number.int({ max: 5000 }),
+				left: faker.number.int({ max: 5000 }),
+				width: faker.number.int({ max: 5000 }),
+				height: faker.number.int({ max: 5000 })
+			};
+			const setter = jest.fn();
+			mockLayoutStorage({ callback: setter });
+
+			const {
+				result: { current }
+			} = setupHook(useViewLayout);
+			current.setSplitSeparatorDimensions(dimensions);
+
+			expect(setter).toHaveBeenCalledWith(dimensions);
 		});
 	});
 });
