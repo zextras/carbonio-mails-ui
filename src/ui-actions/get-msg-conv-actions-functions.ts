@@ -26,7 +26,6 @@ import {
 	editAsNewMsg,
 	forwardMsg,
 	useMoveMsgToTrash,
-	previewMessageOnSeparatedWindow,
 	printMsg,
 	replyAllMsg,
 	replyMsg,
@@ -40,6 +39,7 @@ import {
 	useRedirectMsg,
 	useEditDraft
 } from './message-actions';
+import { previewMessageOnSeparatedWindow } from './preview-message-on-separated-window';
 import { applyTag } from './tag-actions';
 import { updateEditorWithSmartLinks } from './utils';
 import { FOLDERS } from '../carbonio-ui-commons/constants/folders';

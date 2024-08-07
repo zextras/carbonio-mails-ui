@@ -32,10 +32,8 @@ import { EditViewActions } from '../../../../constants';
 import { useAppDispatch } from '../../../../hooks/redux';
 import { useMessageActions } from '../../../../hooks/use-message-actions';
 import type { MessageListItemProps, TextReadValuesType } from '../../../../types';
-import {
-	previewMessageOnSeparatedWindow,
-	setMsgRead
-} from '../../../../ui-actions/message-actions';
+import { setMsgRead } from '../../../../ui-actions/message-actions';
+import { previewMessageOnSeparatedWindow } from '../../../../ui-actions/preview-message-on-separated-window';
 import { useTagExist } from '../../../../ui-actions/tag-actions';
 import { getFolderTranslatedName } from '../../../sidebar/utils';
 import { createEditBoard } from '../../detail-panel/edit/edit-view-board';

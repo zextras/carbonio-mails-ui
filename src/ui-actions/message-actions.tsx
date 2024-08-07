@@ -27,15 +27,12 @@ import { AppDispatch, StoreProvider } from '../store/redux';
 import type {
 	MailMessage,
 	MailsEditorV2,
-	MessageAction,
 	MessageActionReturnType,
 	MsgActionParameters,
 	MsgActionResult
 } from '../types';
-import { ConvActionReturnType, ExtraWindowCreationParams, ExtraWindowsContextType } from '../types';
 import { CalendarType, SenderType } from '../types/calendar';
 import { createEditBoard } from '../views/app/detail-panel/edit/edit-view-board';
-import { MessagePreviewPanel } from '../views/app/detail-panel/message-preview-panel';
 import { getLocationOrigin } from '../views/app/detail-panel/preview/utils';
 
 type MessageActionIdsType = Array<string>;
@@ -197,51 +194,6 @@ export const useSetMsgAsSpam = (): ((arg: MessageActionPropType) => MessageActio
 		[createSnackbar, setAsSpam]
 	);
 };
-
-export const previewOnSeparatedWindow = (
-	messageId: string,
-	folderId: string,
-	subject: string,
-	createWindow: ExtraWindowsContextType['createWindow'],
-	messageActions: Array<MessageAction>
-): void => {
-	if (!createWindow) {
-		return;
-	}
-
-	const createWindowParams: ExtraWindowCreationParams = {
-		name: `message-${messageId}`,
-		returnComponent: false,
-		children: (
-			<MessagePreviewPanel
-				messageId={messageId}
-				folderId={folderId}
-				messageActions={messageActions}
-			/>
-		),
-		title: subject,
-		closeOnUnmount: false
-	};
-	createWindow(createWindowParams);
-};
-
-export function previewMessageOnSeparatedWindow(
-	messageId: string,
-	folderId: string,
-	subject: string,
-	createWindow: ExtraWindowsContextType['createWindow'],
-	messageActions: Array<MessageAction>
-): ConvActionReturnType {
-	const actDescriptor = MessageActionsDescriptors.PREVIEW_ON_SEPARATED_WINDOW;
-	return {
-		id: actDescriptor.id,
-		icon: 'ExternalLink',
-		label: t('action.preview_on_separated_tab', 'Open in a new tab'),
-		onClick: (): void => {
-			previewOnSeparatedWindow(messageId, folderId, subject, createWindow, messageActions);
-		}
-	};
-}
 
 export function printMsg({ message }: { message: MailMessage }): MessageActionReturnType {
 	const conversations = map([message], (msg) => ({
