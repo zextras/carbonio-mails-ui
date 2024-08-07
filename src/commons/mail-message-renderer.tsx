@@ -25,7 +25,7 @@ import {
 	Text
 } from '@zextras/carbonio-design-system';
 import { editSettings, t, useUserSettings } from '@zextras/carbonio-shell-ui';
-import { filter, forEach, isArray, isNull, reduce, some } from 'lodash';
+import { filter, forEach, isArray, reduce, some } from 'lodash';
 import { Trans } from 'react-i18next';
 import styled from 'styled-components';
 
@@ -37,8 +37,7 @@ import type { MailMessagePart, Participant } from '../types';
 
 export const _CI_REGEX = /^<(.*)>$/;
 export const _CI_SRC_REGEX = /^cid:(.*)$/;
-const LINK_REGEX =
-	/(?:https?:\/\/|www\.)+(?![^\s]*?")([\w.,@?!^=%&amp;:()/~+#-]*[\w@?!^=%&amp;()/~+#-])?/gi;
+
 const LINE_BREAK_REGEX = /(?:\r\n|\r|\n)/g;
 
 export const plainTextToHTML = (str: string): string => {
@@ -73,26 +72,29 @@ const StyledMultiBtn = styled(MultiButton)`
 	}
 `;
 
-const replaceLinkToAnchor = (content: string): string => {
-	if (content === '' || content === undefined) {
+export const replaceLinkToAnchor = (content: string): string => {
+	if (content === '') {
 		return '';
 	}
-	return content.replace(LINK_REGEX, (url) => {
+	const linkRegexp = /(https?:\/\/[^\s]+|www\.[^\s]+)/g;
+	return content.replace(linkRegexp, (url) => {
 		const wrap = document.createElement('div');
 		const anchor = document.createElement('a');
-		let href = url.replace(/&amp;/g, '&');
+
+		const newInnerHtml = url.replace(/&#64;/g, '@').replace(/&#61;/g, '=');
+		let href = url;
 		if (!url.startsWith('http') && !url.startsWith('https')) {
 			href = `http://${url}`;
 		}
-		anchor.href = href.replace(/&#64;/g, '@').replace(/&#61;/g, '=');
+		anchor.href = href;
 		anchor.target = '_blank';
-		anchor.innerHTML = url;
+		anchor.innerHTML = newInnerHtml;
 		wrap.appendChild(anchor);
 		return wrap.innerHTML;
 	});
 };
 
-const _TextMessageRenderer: FC<{ body: { content: string; contentType: string } }> = ({ body }) => {
+const TextMessageRenderer: FC<{ body: { content: string; contentType: string } }> = ({ body }) => {
 	const [showQuotedText, setShowQuotedText] = useState(false);
 	const orignalText = getOriginalContent(body.content, false);
 	const quoted = getQuotedTextOnly(body.content, false);
@@ -130,17 +132,21 @@ const _TextMessageRenderer: FC<{ body: { content: string; contentType: string } 
 	);
 };
 
-type _HtmlMessageRendererType = {
+type HtmlMessageRendererType = {
 	msgId: string;
 	body: { content: string; contentType: string };
 	parts: MailMessagePart[];
 	participants: Participant[] | undefined;
+	isInsideExtraWindow?: boolean;
+	showingEml?: boolean;
 };
-const _HtmlMessageRenderer: FC<_HtmlMessageRendererType> = ({
+const HtmlMessageRenderer: FC<HtmlMessageRendererType> = ({
 	msgId,
 	body,
 	parts,
-	participants
+	participants,
+	isInsideExtraWindow = false,
+	showingEml = false
 }) => {
 	const divRef = useRef<HTMLDivElement>(null);
 	const iframeRef = useRef<HTMLIFrameElement>(null);
@@ -153,17 +159,13 @@ const _HtmlMessageRenderer: FC<_HtmlMessageRendererType> = ({
 
 	const [showExternalImage, setShowExternalImage] = useState(false);
 	const [displayBanner, setDisplayBanner] = useState(true);
-	// const darkMode = useMemo(
-	// 	() => find(settings.props, ['name', 'zappDarkreaderMode'])?._content,
-	// 	[settings]
-	// );
 
-	const orignalText = getOriginalContent(body.content, true);
+	const originalContent = getOriginalContent(body.content, true);
 	const quoted = getQuotedTextOnly(body.content, true);
 
 	const contentToDisplay = useMemo(
-		() => (showQuotedText ? body.content : orignalText),
-		[showQuotedText, body.content, orignalText]
+		() => (showQuotedText ? body.content : originalContent),
+		[showQuotedText, body.content, originalContent]
 	);
 
 	const hasExternalImages = useMemo(() => {
@@ -185,15 +187,6 @@ const _HtmlMessageRenderer: FC<_HtmlMessageRendererType> = ({
 		if (isAvailableInTrusteeList(settingsPref.zimbraPrefMailTrustedSenderList ?? '', from))
 			setShowExternalImage(true);
 	}, [from, settingsPref.zimbraPrefMailTrustedSenderList]);
-
-	const calculateHeight = (): void => {
-		if (!isNull(iframeRef.current)) {
-			iframeRef.current.style.height = '0';
-			iframeRef.current.style.height = `${
-				(iframeRef?.current?.contentDocument?.body?.scrollHeight || 0) / 16 + 24 / 16
-			}rem`;
-		}
-	};
 
 	const saveTrustee = useCallback(
 		(trustee) => {
@@ -250,58 +243,27 @@ const _HtmlMessageRenderer: FC<_HtmlMessageRendererType> = ({
 		[displayBanner, showExternalImage]
 	);
 
-	useLayoutEffect(() => {
-		if (!isNull(iframeRef.current) && !isNull(iframeRef.current.contentDocument)) {
-			iframeRef.current.contentDocument.open();
-			iframeRef.current.contentDocument.write(contentToDisplay);
-			iframeRef.current.contentDocument.close();
+	const handleIframeLoad = useCallback(() => {
+		const iframe = iframeRef.current;
+		if (iframe && iframe.contentDocument) {
+			const iframeDocument = iframe.contentDocument;
+			const documentScrollHeight = iframeDocument.documentElement.scrollHeight;
+			const iframeHeightAdjustmentPx = 24;
+			if (isInsideExtraWindow && showingEml) {
+				iframe.style.height = '100%';
+			} else {
+				iframe.style.height = `${documentScrollHeight + iframeHeightAdjustmentPx}px`;
+			}
 		}
-		const styleTag = document.createElement('style');
-		const styles = `
-			max-width: 100% !important;
-			body {
-				max-width: 100% !important;
-				margin: 0;
-				overflow-y: hidden;
-				font-family: Roboto, sans-serif;
-				font-size: 0.875rem;
-				${/* visibility: ${darkMode && darkMode !== 'disabled' ? 'hidden' : 'visible'}; */ ''}
-				background-color: #ffffff;
-			}
-			body pre, body pre * {
-				white-space: pre-wrap;
-				word-wrap: anywhere !important;
-				text-wrap: suppress !important;
-			}
-			img {
-				max-width: 100%
-			}
-			tbody{position:relative !important}
-			td{
-				max-width: 100% !important;
-				overflow-wrap: anywhere !important;
-			}
-			#bodyTable {
-				height: fit-content
-			}
-		`;
-		styleTag.textContent = styles;
-		if (!isNull(iframeRef.current) && !isNull(iframeRef.current.contentDocument))
-			iframeRef.current.contentDocument.head.append(styleTag);
+	}, [isInsideExtraWindow, showingEml]);
 
-		// TODO: fix Dark Reader inside iframes
-		// if (darkMode && darkMode !== 'disabled') {
-		// 	const modeSetting = darkMode === 'enabled' ? 'enable' : 'auto';
-		// 	const darkReaderScript = document.createElement('script');
-		// 	darkReaderScript.src = 'https://cdn.jsdelivr.net/npm/darkreader@4.9.32/darkreader.min.js';
-		// 	darkReaderScript.type = 'application/javascript';
-		// 	iframeRef.current.contentDocument.body.append(darkReaderScript);
-		// 	const darkScriptEnable = document.createElement('script');
-		// 	darkScriptEnable.textContent = `if (document.readyState === 'complete') {document.body.style.visibility = 'visible';} else {window.onload = function(){ DarkReader.${modeSetting}();document.body.style.visibility = 'visible';}}`;
-		// 	iframeRef.current.contentDocument.body.append(darkScriptEnable);
-		// }
-
-		calculateHeight();
+	useLayoutEffect(() => {
+		const contentDocument = iframeRef?.current?.contentDocument;
+		if (contentDocument) {
+			contentDocument.open();
+			contentDocument.write(contentToDisplay);
+			contentDocument.close();
+		}
 
 		const imgMap = reduce(
 			parts,
@@ -330,16 +292,11 @@ const _HtmlMessageRenderer: FC<_HtmlMessageRendererType> = ({
 					p.setAttribute('src', `/service/home/~/?auth=co&id=${msgId}&part=${part.name}`);
 				}
 			});
-
-		const resizeObserver = new ResizeObserver(calculateHeight);
-		divRef.current && resizeObserver.observe(divRef.current);
-
-		return () => resizeObserver.disconnect();
 	}, [contentToDisplay, msgId, parts, showImage]);
 
 	const multiBtnLabel = useMemo(() => t('label.view_images', 'VIEW IMAGES'), []);
 	return (
-		<div ref={divRef} className="force-white-bg">
+		<div ref={divRef} className="force-white-bg" style={{ height: '100%' }}>
 			{showBanner && !showExternalImage && (
 				<BannerContainer
 					orientation="horizontal"
@@ -414,13 +371,14 @@ const _HtmlMessageRenderer: FC<_HtmlMessageRendererType> = ({
 				data-testid="message-renderer-iframe"
 				title={msgId}
 				ref={iframeRef}
-				onLoad={calculateHeight}
 				style={{
 					border: 'none',
 					width: '100%',
+					height: '100%',
 					display: 'block',
 					maxWidth: '100%'
 				}}
+				onLoad={handleIframeLoad}
 			/>
 			{!showQuotedText && quoted.length > 0 && (
 				<Row mainAlignment="center" crossAlignment="center">
@@ -449,21 +407,38 @@ type MailMessageRendererProps = {
 	id: string;
 	fragment?: string;
 	participants?: Participant[];
+	isInsideExtraWindow?: boolean;
+	showingEml?: boolean;
 };
 
 const MailMessageRenderer: FC<MailMessageRendererProps> = memo(
-	({ parts, body, id, fragment, participants }) => {
+	({
+		parts,
+		body,
+		id,
+		fragment,
+		participants,
+		isInsideExtraWindow = false,
+		showingEml = false
+	}) => {
 		if (!body?.content?.length && !fragment) {
 			return <EmptyBody />;
 		}
 
 		if (body?.contentType === 'text/html') {
 			return (
-				<_HtmlMessageRenderer msgId={id} body={body} parts={parts} participants={participants} />
+				<HtmlMessageRenderer
+					msgId={id}
+					body={body}
+					parts={parts}
+					participants={participants}
+					isInsideExtraWindow={isInsideExtraWindow}
+					showingEml={showingEml}
+				/>
 			);
 		}
 		if (body?.contentType === 'text/plain') {
-			return <_TextMessageRenderer body={body} />;
+			return <TextMessageRenderer body={body} />;
 		}
 		return <EmptyBody />;
 	}

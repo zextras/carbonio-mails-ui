@@ -49,12 +49,14 @@ const MailContent: FC<{
 	isExternalMessage?: boolean;
 	isInsideExtraWindow?: boolean;
 	openEmlPreview?: OpenEmlPreviewType;
+	showingEml?: boolean;
 }> = ({
 	message,
 	isMailPreviewOpen,
 	isExternalMessage = false,
 	openEmlPreview,
-	isInsideExtraWindow = false
+	isInsideExtraWindow = false,
+	showingEml = false
 }) => {
 	const [showModal, setShowModal] = useState(true);
 	const dispatch = useAppDispatch();
@@ -158,12 +160,13 @@ const MailContent: FC<{
 			orientation="vertical"
 			disableTransition
 			data-testid="MailMessageRendererCollapse"
+			style={{ height: '100%' }}
 		>
 			{message.isComplete && (
 				<Container
 					data-testid="MessageBody"
 					width="100%"
-					height="fit"
+					height="100%"
 					crossAlignment="stretch"
 					padding={
 						isInsideExtraWindow ? { vertical: 'small' } : { horizontal: 'large', vertical: 'small' }
@@ -177,7 +180,7 @@ const MailContent: FC<{
 							openEmlPreview={openEmlPreview}
 						/>
 					</Row>
-					<Padding style={{ width: '100%' }} vertical="medium">
+					<Padding height="100%" width="100%" vertical="medium">
 						{showAppointmentInvite ? (
 							<Container width="100%">
 								<InviteResponse
@@ -208,6 +211,8 @@ const MailContent: FC<{
 								id={message.id}
 								fragment={message.fragment}
 								participants={participants}
+								isInsideExtraWindow={isInsideExtraWindow}
+								showingEml={showingEml}
 							/>
 						)}
 					</Padding>
@@ -286,7 +291,7 @@ const MailPreviewBlock: FC<MailPreviewBlockType> = ({
 
 			{/* External message disclaimer */}
 			{isExternalMessage && (
-				<Container background="white" padding={{ top: 'large', bottom: 'large' }}>
+				<Container height="fit" background="white" padding={{ top: 'large', bottom: 'large' }}>
 					<Row
 						background="gray2"
 						width="fill"
@@ -318,6 +323,7 @@ export type MailPreviewProps = {
 	isMessageView: boolean;
 	isExternalMessage?: boolean;
 	isInsideExtraWindow?: boolean;
+	showingEml?: boolean;
 };
 
 const MailPreview: FC<MailPreviewProps> = ({
@@ -327,7 +333,8 @@ const MailPreview: FC<MailPreviewProps> = ({
 	isAlone,
 	isMessageView,
 	isExternalMessage = false,
-	isInsideExtraWindow = false
+	isInsideExtraWindow = false,
+	showingEml = false
 }) => {
 	const mailContainerRef = useRef<HTMLDivElement>(null);
 	const [open, setOpen] = useState(expanded || isAlone);
@@ -360,6 +367,7 @@ const MailPreview: FC<MailPreviewProps> = ({
 						isMessageView
 						isExternalMessage
 						isInsideExtraWindow
+						showingEml
 					/>
 				),
 				title: emlMessage.subject,
@@ -372,10 +380,16 @@ const MailPreview: FC<MailPreviewProps> = ({
 		[createWindow, messageActions]
 	);
 
+	const [containerHeight, setContainerHeight] = useState(open ? '100%' : 'fit-content');
+
+	useEffect(() => {
+		setContainerHeight(open ? '100%' : 'fit-content');
+	}, [open]);
+
 	return (
 		<Container
 			ref={mailContainerRef}
-			height="fit"
+			height={containerHeight}
 			data-testid={`MailPreview-${message.id}`}
 			padding={isInsideExtraWindow ? { all: 'large' } : undefined}
 			background="white"
@@ -393,7 +407,7 @@ const MailPreview: FC<MailPreviewProps> = ({
 				width="fill"
 				height="fit"
 				style={{
-					overflowY: 'auto'
+					flex: '1'
 				}}
 			>
 				{(open || isAlone) && (
@@ -403,11 +417,14 @@ const MailPreview: FC<MailPreviewProps> = ({
 						openEmlPreview={openEmlPreview}
 						isExternalMessage={isExternalMessage}
 						isInsideExtraWindow={isInsideExtraWindow}
+						showingEml={showingEml}
 					/>
 				)}
 			</Container>
 		</Container>
 	);
 };
+
+MailPreview.displayName = 'MailPreview';
 
 export default MailPreview;

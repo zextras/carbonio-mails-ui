@@ -28,8 +28,14 @@ export const ConversationMessagePreview: FC<ConversationMessagePreviewProps> = (
 }) => {
 	const message = useAppSelector((state: MailsStateType) => selectMessage(state, convMessage.id));
 	const messageActions = useMessageActions(message, isAlone);
+
 	return (
-		<Padding bottom="medium" width="100%" data-testid={`ConversationMessagePreview-${message.id}`}>
+		<Padding
+			height="fit"
+			bottom="medium"
+			width="100%"
+			data-testid={`ConversationMessagePreview-${message.id}`}
+		>
 			<MailPreview
 				message={message}
 				expanded={isExpanded}
