@@ -15,6 +15,18 @@ import { parseMessageSortingOptions } from '../helpers/sorting';
 import { search } from '../store/actions';
 import { setMsgRead } from '../ui-actions/message-actions';
 
+export type HeaderNavigationActionItem = {
+	tooltipLabel: string | undefined;
+	disabled: boolean;
+	action: () => void;
+	icon: string;
+};
+
+export type PreviewHeaderNavigationActions = {
+	nextActionItem: HeaderNavigationActionItem;
+	previousActionItem: HeaderNavigationActionItem;
+};
+
 export const usePreviewHeaderNavigation = ({
 	items,
 	folderId,
@@ -27,14 +39,7 @@ export const usePreviewHeaderNavigation = ({
 	currentItemId: string;
 	types: string;
 	searchedInFolderStatus: string | undefined;
-}): {
-	onGoBackTooltip: string | undefined;
-	onGoForwardTooltip: string | undefined;
-	onGoForwardDisabled: boolean;
-	onGoBackDisabled: boolean;
-	onGoForward: () => void;
-	onGoBack: () => void;
-} => {
+}): PreviewHeaderNavigationActions => {
 	const dispatch = useAppDispatch();
 	const [t] = useTranslation();
 	const settings = useUserSettings();
@@ -71,7 +76,7 @@ export const usePreviewHeaderNavigation = ({
 		if (isTheFirstListItem) {
 			return t('tooltip.list_navigation.noPreviousEmails', 'There are no previous emails');
 		}
-		return undefined;
+		return t('tooltip.list_navigation.onGoBack', 'Go to previous email');
 	}, [isTheFirstListItem, searchedInFolderStatus, t]);
 
 	const onGoForwardTooltip = useMemo(() => {
@@ -81,7 +86,7 @@ export const usePreviewHeaderNavigation = ({
 		if (isTheLastListItem) {
 			return t('tooltip.list_navigation.noMoreEmails', 'There are no more emails');
 		}
-		return undefined;
+		return t('tooltip.list_navigation.onGoForward', 'Go to next email');
 	}, [isTheLastListItem, searchedInFolderStatus, t]);
 
 	const onGoForwardDisabled = useMemo(
@@ -123,12 +128,26 @@ export const usePreviewHeaderNavigation = ({
 		}
 	}, [dispatch, folderId, isLoadMoreNeeded, items.length, sortOrder, types]);
 
+	const nextActionItem = useMemo(
+		() => ({
+			tooltipLabel: onGoForwardTooltip,
+			disabled: onGoForwardDisabled,
+			action: onGoForward,
+			icon: 'ArrowIosForward'
+		}),
+		[onGoForward, onGoForwardDisabled, onGoForwardTooltip]
+	);
+	const previousActionItem = useMemo(
+		() => ({
+			tooltipLabel: onGoBackTooltip,
+			disabled: onGoBackDisabled,
+			action: onGoBack,
+			icon: 'ArrowIosBack'
+		}),
+		[onGoBack, onGoBackDisabled, onGoBackTooltip]
+	);
 	return {
-		onGoBackTooltip,
-		onGoBack,
-		onGoForwardTooltip,
-		onGoForwardDisabled,
-		onGoBackDisabled,
-		onGoForward
+		nextActionItem,
+		previousActionItem
 	};
 };

@@ -15,35 +15,38 @@ import {
 	Tooltip
 } from '@zextras/carbonio-design-system';
 import { replaceHistory, useLocalStorage } from '@zextras/carbonio-shell-ui';
-import { noop } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
 import { LOCAL_STORAGE_LAYOUT, MAILS_VIEW_LAYOUTS } from '../../../../constants';
+import { HeaderNavigationActionItem } from '../../../../hooks/use-preview-header-navigation';
 import type { MailMessage } from '../../../../types';
 import type { MailsListLayout } from '../../../folder-view';
 import { LayoutComponent } from '../../folder-panel/parts/layout-component';
 
+const NavigationIconButton = ({
+	item
+}: {
+	item: HeaderNavigationActionItem;
+}): React.JSX.Element => (
+	<Tooltip label={item.tooltipLabel}>
+		<IconButton
+			onClick={item.action}
+			customSize={{
+				iconSize: 'medium',
+				paddingSize: 'small'
+			}}
+			disabled={item.disabled}
+			icon={item.icon}
+		/>
+	</Tooltip>
+);
 const PreviewPanelHeader: FC<{
-	onGoBackTooltip?: string;
-	onGoForwardTooltip?: string;
-	onGoForwardDisabled: boolean;
-	onGoBackDisabled: boolean;
-	onGoBack?: () => void;
-	onGoForward?: () => void;
+	previousActionItem: HeaderNavigationActionItem;
+	nextActionItem: HeaderNavigationActionItem;
 	subject?: MailMessage['subject'];
 	isRead?: MailMessage['read'];
 	folderId: string;
-}> = ({
-	subject,
-	isRead,
-	folderId,
-	onGoBack,
-	onGoForward,
-	onGoForwardDisabled,
-	onGoBackDisabled,
-	onGoBackTooltip,
-	onGoForwardTooltip
-}) => {
+}> = ({ subject, isRead, folderId, previousActionItem, nextActionItem }) => {
 	const [t] = useTranslation();
 
 	const replaceHistoryCallback = useCallback(
@@ -61,12 +64,6 @@ const PreviewPanelHeader: FC<{
 		MAILS_VIEW_LAYOUTS.SPLIT
 	);
 
-	const onBackTooltipLabel =
-		onGoBackTooltip ?? t('tooltip.list_navigation.onGoBack', 'Go to previous email');
-
-	const onForwardTooltipLabel =
-		onGoForwardTooltip ?? t('tooltip.list_navigation.onGoForward', 'Go to next email');
-
 	return (
 		<>
 			<Container
@@ -81,28 +78,8 @@ const PreviewPanelHeader: FC<{
 			>
 				{listLayout === MAILS_VIEW_LAYOUTS.NO_SPLIT && (
 					<Row padding={{ right: 'large' }}>
-						<Tooltip label={onBackTooltipLabel}>
-							<IconButton
-								onClick={onGoBack ?? noop}
-								customSize={{
-									iconSize: 'medium',
-									paddingSize: 'small'
-								}}
-								disabled={onGoBackDisabled}
-								icon="ArrowIosBack"
-							/>
-						</Tooltip>
-						<Tooltip label={onForwardTooltipLabel}>
-							<IconButton
-								onClick={onGoForward ?? noop}
-								customSize={{
-									iconSize: 'medium',
-									paddingSize: 'small'
-								}}
-								disabled={onGoForwardDisabled}
-								icon="ArrowIosForward"
-							/>
-						</Tooltip>
+						<NavigationIconButton item={previousActionItem} />
+						<NavigationIconButton item={nextActionItem} />
 					</Row>
 				)}
 				<Icon

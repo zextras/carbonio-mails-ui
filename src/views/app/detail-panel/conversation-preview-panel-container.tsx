@@ -47,14 +47,10 @@ export const ConversationPreviewPanelContainer: FC<ConversationPreviewPanelProps
 	);
 	const conversation = useAppSelector(selectConversation(conversationId));
 
-	const {
-		onGoForwardTooltip,
-		onGoBackTooltip,
-		onGoForward,
-		onGoBack,
-		onGoForwardDisabled,
-		onGoBackDisabled
-	} = useConversationPreviewHeaderNavigation(folderId, conversationId);
+	const { previousActionItem, nextActionItem } = useConversationPreviewHeaderNavigation(
+		folderId,
+		conversationId
+	);
 
 	useEffect(() => {
 		if (isEmpty(conversation)) {
@@ -87,12 +83,8 @@ export const ConversationPreviewPanelContainer: FC<ConversationPreviewPanelProps
 				<>
 					{!isInsideExtraWindow && (
 						<PreviewPanelHeader
-							onGoForwardTooltip={onGoForwardTooltip}
-							onGoBackTooltip={onGoBackTooltip}
-							onGoForward={onGoForward}
-							onGoBack={onGoBack}
-							onGoForwardDisabled={onGoForwardDisabled}
-							onGoBackDisabled={onGoBackDisabled}
+							previousActionItem={previousActionItem}
+							nextActionItem={nextActionItem}
 							subject={conversation.subject}
 							isRead={conversation.read}
 							folderId={folderId}

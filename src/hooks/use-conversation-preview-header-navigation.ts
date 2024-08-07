@@ -6,20 +6,16 @@
 
 import { useAppSelector } from './redux';
 import { useFolderSortedConversations } from './use-folder-sorted-conversations';
-import { usePreviewHeaderNavigation } from './use-preview-header-navigation';
+import {
+	PreviewHeaderNavigationActions,
+	usePreviewHeaderNavigation
+} from './use-preview-header-navigation';
 import { selectFolderSearchStatus } from '../store/conversations-slice';
 
 export const useConversationPreviewHeaderNavigation = (
 	folderId: string,
 	conversationId: string
-): {
-	onGoBackTooltip: string | undefined;
-	onGoForwardTooltip: string | undefined;
-	onGoForwardDisabled: boolean;
-	onGoBackDisabled: boolean;
-	onGoForward: () => void;
-	onGoBack: () => void;
-} => {
+): PreviewHeaderNavigationActions => {
 	const conversations = useFolderSortedConversations(folderId);
 	const searchedInFolderStatus = useAppSelector(selectFolderSearchStatus(folderId));
 

@@ -5,20 +5,16 @@
  */
 import { useAppSelector } from './redux';
 import { useFolderSortedMessages } from './use-folder-sorted-messages';
-import { usePreviewHeaderNavigation } from './use-preview-header-navigation';
+import {
+	PreviewHeaderNavigationActions,
+	usePreviewHeaderNavigation
+} from './use-preview-header-navigation';
 import { selectFolderMsgSearchStatus } from '../store/messages-slice';
 
 export const useMessagePreviewHeaderNavigation = (
 	folderId: string,
 	messageId: string
-): {
-	onGoBackTooltip: string | undefined;
-	onGoForwardTooltip: string | undefined;
-	onGoForwardDisabled: boolean;
-	onGoBackDisabled: boolean;
-	onGoForward: () => void;
-	onGoBack: () => void;
-} => {
+): PreviewHeaderNavigationActions => {
 	const messages = useFolderSortedMessages(folderId);
 	const searchedInFolderStatus = useAppSelector(selectFolderMsgSearchStatus(folderId));
 

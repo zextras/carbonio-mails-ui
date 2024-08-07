@@ -46,14 +46,10 @@ export const MessagePreviewPanel: FC<MessagePreviewPanelProps> = ({
 		}
 	}, [dispatch, folderId, message, messageId]);
 
-	const {
-		onGoBackTooltip,
-		onGoBack,
-		onGoForwardTooltip,
-		onGoForwardDisabled,
-		onGoBackDisabled,
-		onGoForward
-	} = useMessagePreviewHeaderNavigation(folderId, messageId);
+	const { previousActionItem, nextActionItem } = useMessagePreviewHeaderNavigation(
+		folderId,
+		messageId
+	);
 
 	return (
 		<Container orientation="vertical" mainAlignment="flex-start" crossAlignment="flex-start">
@@ -61,12 +57,8 @@ export const MessagePreviewPanel: FC<MessagePreviewPanelProps> = ({
 				<>
 					{!isInsideExtraWindow && (
 						<PreviewPanelHeader
-							onGoForwardTooltip={onGoForwardTooltip}
-							onGoForwardDisabled={onGoForwardDisabled}
-							onGoBackDisabled={onGoBackDisabled}
-							onGoBackTooltip={onGoBackTooltip}
-							onGoForward={onGoForward}
-							onGoBack={onGoBack}
+							previousActionItem={previousActionItem}
+							nextActionItem={nextActionItem}
 							subject={message.subject}
 							isRead={message.read}
 							folderId={folderId}
