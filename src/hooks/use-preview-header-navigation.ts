@@ -12,7 +12,7 @@ import { useTranslation } from 'react-i18next';
 import { useAppDispatch } from './redux';
 import { LIST_LIMIT, SEARCHED_FOLDER_STATE_STATUS } from '../constants';
 import { parseMessageSortingOptions } from '../helpers/sorting';
-import { search } from '../store/actions';
+import { convAction, search } from '../store/actions';
 import { setMsgRead } from '../ui-actions/message-actions';
 
 export type HeaderNavigationActionItem = {
@@ -99,25 +99,41 @@ export const usePreviewHeaderNavigation = ({
 
 	const isPreviousActionDisabled = useMemo(() => isTheFirstListItem, [isTheFirstListItem]);
 
+	const setItemAsRead = useCallback(
+		(itemId: string) => {
+			if (itemsType === 'conversation') {
+				dispatch(
+					convAction({
+						operation: 'read',
+						ids: [itemId]
+					})
+				);
+			} else if (itemsType === 'message') {
+				setMsgRead({ ids: [itemId], value: false, dispatch }).onClick();
+			}
+		},
+		[dispatch, itemsType]
+	);
+
 	const onNextAction = useCallback(() => {
 		if (isTheLastListItem) return;
 		const nextIndex = itemIndex + 1;
 		const nextItem = items[nextIndex];
 		if (!nextItem.read && prefMarkMsgRead) {
-			setMsgRead({ ids: [nextItem.id], value: false, dispatch }).onClick();
+			setItemAsRead(nextItem.id);
 		}
 		replaceHistory(`/folder/${folderId}/${itemsType}/${nextItem.id}`);
-	}, [isTheLastListItem, itemIndex, items, prefMarkMsgRead, folderId, itemsType, dispatch]);
+	}, [isTheLastListItem, itemIndex, items, prefMarkMsgRead, folderId, itemsType, setItemAsRead]);
 
 	const onPreviousAction = useCallback(() => {
 		if (isTheFirstListItem) return;
 		const previousIndex = itemIndex - 1;
 		const previousItem = items[previousIndex];
 		if (!previousItem.read && prefMarkMsgRead) {
-			setMsgRead({ ids: [previousItem.id], value: false, dispatch }).onClick();
+			setItemAsRead(previousItem.id);
 		}
 		replaceHistory(`/folder/${folderId}/${itemsType}/${previousItem.id}`);
-	}, [isTheFirstListItem, itemIndex, items, prefMarkMsgRead, folderId, itemsType, dispatch]);
+	}, [isTheFirstListItem, itemIndex, items, prefMarkMsgRead, folderId, itemsType, setItemAsRead]);
 
 	useEffect(() => {
 		if (isLoadMoreNeeded) {
