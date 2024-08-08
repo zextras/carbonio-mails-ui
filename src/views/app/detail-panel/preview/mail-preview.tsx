@@ -21,7 +21,7 @@ import {
 	useUserAccounts,
 	useUserSettings
 } from '@zextras/carbonio-shell-ui';
-import { filter } from 'lodash';
+import { debounce, filter } from 'lodash';
 /* eslint-disable no-nested-ternary */
 import { useParams } from 'react-router-dom';
 
@@ -30,7 +30,7 @@ import PreviewHeader from './parts/preview-header';
 import ReadReceiptModal from './read-receipt-modal';
 import { FOLDERS } from '../../../../carbonio-ui-commons/constants/folders';
 import MailMessageRenderer from '../../../../commons/mail-message-renderer';
-import { MessageActionsDescriptors } from '../../../../constants';
+import { DEFAULT_API_DEBOUNCE_TIME, MessageActionsDescriptors } from '../../../../constants';
 import { getAttachmentParts } from '../../../../helpers/attachments';
 import { getFolderIdParts } from '../../../../helpers/folders';
 import { useAppDispatch } from '../../../../hooks/redux';
@@ -69,13 +69,24 @@ const MailContent: FC<{
 		);
 	}, [message, dispatch]);
 
-	// this is necessary because if somebody click a message in the same conversation
-	// already open that message will not be expanded
+	const requestDebouncedMessage = useMemo(
+		() =>
+			debounce(
+				() => {
+					if (!message?.isComplete) {
+						dispatch(getMsg({ msgId: message.id }));
+					}
+				},
+				DEFAULT_API_DEBOUNCE_TIME,
+				{ leading: false, trailing: true }
+			),
+		[dispatch, message?.isComplete, message.id]
+	);
+
 	useEffect(() => {
-		if (!message.isComplete) {
-			dispatch(getMsg({ msgId: message.id }));
-		}
-	}, [dispatch, message.id, message.isComplete]);
+		requestDebouncedMessage();
+		return () => requestDebouncedMessage.cancel();
+	}, [requestDebouncedMessage]);
 
 	const showAppointmentInvite = useMemo(
 		() =>

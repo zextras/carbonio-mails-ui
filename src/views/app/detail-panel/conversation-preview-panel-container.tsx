@@ -6,13 +6,13 @@
 import React, { FC, useEffect, useMemo } from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
-import { filter, isEmpty } from 'lodash';
+import { debounce, filter, isEmpty } from 'lodash';
 import { useParams } from 'react-router-dom';
 
 import { ConversationPreviewPanel } from './conversation-preview-panel';
 import { ConversationPreviewPanelHeader } from './preview/conversation-preview-panel-header';
 import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
-import { API_REQUEST_STATUS } from '../../../constants';
+import { API_REQUEST_STATUS, DEFAULT_API_DEBOUNCE_TIME } from '../../../constants';
 import { getFolderIdParts } from '../../../helpers/folders';
 import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
 import { getConv, searchConv } from '../../../store/actions';
@@ -50,15 +50,28 @@ export const ConversationPreviewPanelContainer: FC<ConversationPreviewPanelProps
 		}
 	}, [conversation, dispatch, conversationId]);
 
+	const requestDebouncedConversation = useMemo(
+		() =>
+			debounce(
+				() => {
+					if (
+						(conversationsStatus !== API_REQUEST_STATUS.fulfilled &&
+							conversationsStatus !== API_REQUEST_STATUS.pending) ||
+						!conversationsStatus
+					) {
+						dispatch(searchConv({ conversationId, fetch: 'all', folderId }));
+					}
+				},
+				DEFAULT_API_DEBOUNCE_TIME,
+				{ leading: false, trailing: true }
+			),
+		[conversationId, conversationsStatus, dispatch, folderId]
+	);
+
 	useEffect(() => {
-		if (
-			(conversationsStatus !== API_REQUEST_STATUS.fulfilled &&
-				conversationsStatus !== API_REQUEST_STATUS.pending) ||
-			!conversationsStatus
-		) {
-			dispatch(searchConv({ conversationId, fetch: 'all', folderId }));
-		}
-	}, [conversationId, conversationsStatus, dispatch, folderId]);
+		requestDebouncedConversation();
+		return () => requestDebouncedConversation.cancel();
+	}, [requestDebouncedConversation]);
 
 	const showPreviewPanel = useMemo(
 		(): boolean | undefined =>
