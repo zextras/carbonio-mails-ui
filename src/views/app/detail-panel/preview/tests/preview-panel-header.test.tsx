@@ -15,12 +15,33 @@ import { TESTID_SELECTORS } from '../../../../../tests/constants';
 import { mockLayoutStorage } from '../../../../../tests/layouts-utils';
 import PreviewPanelHeader from '../preview-panel-header';
 
+const previousActionItem = {
+	tooltipLabel: 'tooltipLabel',
+	disabled: false,
+	action: jest.fn(),
+	icon: 'ArrowIosBack'
+};
+const nextActionItem = {
+	tooltipLabel: 'tooltipLabel',
+	disabled: false,
+	action: jest.fn(),
+	icon: 'ArrowIosForward'
+};
+
 describe('PreviewPanelHeader', () => {
 	it('renders correctly', () => {
 		populateFoldersStore();
 		const subject = faker.word.words();
 
-		setupTest(<PreviewPanelHeader subject={subject} folderId={FOLDERS.INBOX} />);
+		setupTest(
+			<PreviewPanelHeader
+				previousActionItem={previousActionItem}
+				nextActionItem={nextActionItem}
+				subject={subject}
+				isRead={false}
+				folderId={FOLDERS.INBOX}
+			/>
+		);
 
 		expect(screen.getByText(subject)).toBeVisible();
 	});
@@ -28,7 +49,14 @@ describe('PreviewPanelHeader', () => {
 	it('should render the subject placeholder', () => {
 		populateFoldersStore();
 
-		setupTest(<PreviewPanelHeader folderId={FOLDERS.INBOX} />);
+		setupTest(
+			<PreviewPanelHeader
+				previousActionItem={previousActionItem}
+				nextActionItem={nextActionItem}
+				isRead={false}
+				folderId={FOLDERS.INBOX}
+			/>
+		);
 
 		expect(screen.getByText('<No Subject>')).toBeVisible();
 	});
@@ -37,7 +65,14 @@ describe('PreviewPanelHeader', () => {
 		mockLayoutStorage({ layout: MAILS_VIEW_LAYOUTS.SPLIT });
 		populateFoldersStore();
 
-		setupTest(<PreviewPanelHeader folderId={FOLDERS.INBOX} />);
+		setupTest(
+			<PreviewPanelHeader
+				previousActionItem={previousActionItem}
+				nextActionItem={nextActionItem}
+				isRead={false}
+				folderId={FOLDERS.INBOX}
+			/>
+		);
 
 		expect(
 			screen.queryByRoleWithIcon('button', { icon: TESTID_SELECTORS.icons.navigatePrevious })
@@ -51,8 +86,14 @@ describe('PreviewPanelHeader', () => {
 		mockLayoutStorage({ layout: MAILS_VIEW_LAYOUTS.NO_SPLIT });
 		populateFoldersStore();
 
-		setupTest(<PreviewPanelHeader folderId={FOLDERS.INBOX} />);
-
+		setupTest(
+			<PreviewPanelHeader
+				previousActionItem={previousActionItem}
+				nextActionItem={nextActionItem}
+				isRead={false}
+				folderId={FOLDERS.INBOX}
+			/>
+		);
 		expect(
 			screen.getByRoleWithIcon('button', { icon: TESTID_SELECTORS.icons.navigatePrevious })
 		).toBeVisible();
