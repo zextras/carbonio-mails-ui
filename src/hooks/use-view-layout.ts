@@ -46,32 +46,41 @@ export const useViewLayout = (): UseViewLayoutResult => {
 		Partial<SizeAndPosition>
 	>(LOCAL_STORAGE_VIEW_SIZES, {}, { keepSyncedWithStorage: true });
 
-	const isCurrentLayoutVerticalSplit = useMemo(
-		() =>
-			layout === MAILS_VIEW_LAYOUTS.SPLIT &&
-			splitLayoutOrientation === MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS.VERTICAL,
-		[layout, splitLayoutOrientation]
+	const isCurrentLayoutSplit = layout === MAILS_VIEW_LAYOUTS.SPLIT;
+
+	const isCurrentLayoutVerticalSplit =
+		layout === MAILS_VIEW_LAYOUTS.SPLIT &&
+		splitLayoutOrientation === MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS.VERTICAL;
+
+	const isCurrentLayoutHorizontalSplit =
+		layout === MAILS_VIEW_LAYOUTS.SPLIT &&
+		splitLayoutOrientation === MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS.HORIZONTAL;
+
+	const isCurrentLayoutNoSplit = layout === MAILS_VIEW_LAYOUTS.NO_SPLIT;
+
+	return useMemo(
+		() => ({
+			currentLayout: layout,
+			setCurrentLayout: storeLayout,
+			splitLayoutOrientation,
+			setSplitLayoutOrientation: storeSplitLayoutOrientation,
+			setSplitSeparatorDimensions,
+			splitSeparatorDimensions,
+			isCurrentLayoutSplit: layout === MAILS_VIEW_LAYOUTS.SPLIT,
+			isCurrentLayoutVerticalSplit,
+			isCurrentLayoutHorizontalSplit,
+			isCurrentLayoutNoSplit
+		}),
+		[
+			isCurrentLayoutHorizontalSplit,
+			isCurrentLayoutNoSplit,
+			isCurrentLayoutVerticalSplit,
+			layout,
+			setSplitSeparatorDimensions,
+			splitLayoutOrientation,
+			splitSeparatorDimensions,
+			storeLayout,
+			storeSplitLayoutOrientation
+		]
 	);
-
-	const isCurrentLayoutHorizontalSplit = useMemo(
-		() =>
-			layout === MAILS_VIEW_LAYOUTS.SPLIT &&
-			splitLayoutOrientation === MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS.HORIZONTAL,
-		[layout, splitLayoutOrientation]
-	);
-
-	const isCurrentLayoutNoSplit = useMemo(() => layout === MAILS_VIEW_LAYOUTS.NO_SPLIT, [layout]);
-
-	return {
-		currentLayout: layout,
-		setCurrentLayout: storeLayout,
-		splitLayoutOrientation,
-		setSplitLayoutOrientation: storeSplitLayoutOrientation,
-		setSplitSeparatorDimensions,
-		splitSeparatorDimensions,
-		isCurrentLayoutSplit: isCurrentLayoutVerticalSplit || isCurrentLayoutHorizontalSplit,
-		isCurrentLayoutVerticalSplit,
-		isCurrentLayoutHorizontalSplit,
-		isCurrentLayoutNoSplit
-	};
 };
