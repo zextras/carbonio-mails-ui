@@ -3,14 +3,16 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, useCallback, useMemo } from 'react';
+import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
 
 import { Dropdown, IconButton } from '@zextras/carbonio-design-system';
-import { t } from '@zextras/carbonio-shell-ui';
+import { t, useIsCarbonioCE } from '@zextras/carbonio-shell-ui';
 import { noop } from 'lodash';
 
+import { getCertificateInfo } from '../../../../../store/actions/get-certificate-info';
 import {
 	useEditorIsRichText,
+	useEditorIsSmimeSign,
 	useEditorIsUrgent,
 	useEditorRequestReadReceipt
 } from '../../../../../store/zustand/editor';
@@ -24,6 +26,24 @@ export const OptionsDropdown: FC<OptionsDropdownProps> = ({ editorId }) => {
 	const { isRichText, setIsRichText } = useEditorIsRichText(editorId);
 	const { isUrgent, setIsUrgent } = useEditorIsUrgent(editorId);
 	const { requestReadReceipt, setRequestReadReceipt } = useEditorRequestReadReceipt(editorId);
+	const { isSmimeSign, setIsSmimeSign } = useEditorIsSmimeSign(editorId);
+	const isCarbonioCE = useIsCarbonioCE();
+
+	const [showSmime, SetShowSmime] = useState<boolean>(false);
+
+	const onCertInfoLoad = useCallback((res) => {
+		if ('data' in res) {
+			SetShowSmime(true);
+		}
+	}, []);
+
+	useEffect(() => {
+		if (!isCarbonioCE) {
+			getCertificateInfo().then((res) => {
+				onCertInfoLoad(res);
+			});
+		}
+	}, [isCarbonioCE, onCertInfoLoad]);
 
 	const toggleRichTextEditor = useCallback(() => {
 		setIsRichText(!isRichText);
@@ -36,6 +56,10 @@ export const OptionsDropdown: FC<OptionsDropdownProps> = ({ editorId }) => {
 	const toggleReceiptRequest = useCallback(() => {
 		setRequestReadReceipt(!requestReadReceipt);
 	}, [requestReadReceipt, setRequestReadReceipt]);
+
+	const toggleUseSmimeCertificateRequest = useCallback(() => {
+		setIsSmimeSign(!isSmimeSign);
+	}, [isSmimeSign, setIsSmimeSign]);
 
 	const options = useMemo(
 		() => [
@@ -53,6 +77,17 @@ export const OptionsDropdown: FC<OptionsDropdownProps> = ({ editorId }) => {
 					: t('label.mark_as_important', 'Mark as important'),
 				onClick: toggleImportant
 			},
+			...(showSmime
+				? [
+						{
+							id: 'is_smimesign',
+							label: isSmimeSign
+								? t('label.remove_use_certificate_to_sign', 'Remove certificate to sign (S/MIME)')
+								: t('label.use_certificate_to_sign', 'Use certificate to sign (S/MIME)'),
+							onClick: toggleUseSmimeCertificateRequest
+						}
+					]
+				: []),
 			{
 				id: 'read_receipt',
 				label: requestReadReceipt
@@ -66,6 +101,9 @@ export const OptionsDropdown: FC<OptionsDropdownProps> = ({ editorId }) => {
 			toggleRichTextEditor,
 			isUrgent,
 			toggleImportant,
+			showSmime,
+			isSmimeSign,
+			toggleUseSmimeCertificateRequest,
 			requestReadReceipt,
 			toggleReceiptRequest
 		]

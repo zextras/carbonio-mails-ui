@@ -49,14 +49,21 @@ export const blockedSendersSubSection = (): SettingsSubSection => ({
 	id: 'blocked_addresses'
 });
 
+export const sMimeCertificateSubSection = (): SettingsSubSection => ({
+	label: t('label.smime_certificate', 'S/MIME Certificate'),
+	id: 'smime_certificate'
+});
+
 export const getSettingsSubSections = (
-	backupSelfUndeleteAllowed: AdvancedAccountStore['backupSelfUndeleteAllowed']
+	backupSelfUndeleteAllowed: AdvancedAccountStore['backupSelfUndeleteAllowed'],
+	isCarbonioCE: boolean | undefined
 ): Array<SettingsSubSection> =>
 	[displayingMessagesSubSection(), receivingMessagesSubSection()]
 		.concat(backupSelfUndeleteAllowed ? recoverMessagesSubSection() : [])
 		.concat([
 			signaturesSubSection(),
 			setDefaultSignaturesSubSection(),
+			...(isCarbonioCE === false ? [sMimeCertificateSubSection()] : []),
 			filtersSubSection(),
 			trustedAddressesSubSection(),
 			allowedSendersSubSection(),

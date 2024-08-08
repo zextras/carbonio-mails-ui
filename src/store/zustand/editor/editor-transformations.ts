@@ -374,6 +374,16 @@ const createSoapMessageRequestFromEditor = (
 		origid: editor.originalId,
 		e: soapParticipants,
 		mp: getMP(editor),
+		...(editor.isSmimeSign
+			? {
+					header: [
+						{
+							name: 'x-smime',
+							_content: 'requires-signature'
+						}
+					]
+				}
+			: {}),
 		...(editor.isUrgent ? { f: '!' } : {})
 	};
 

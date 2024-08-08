@@ -371,5 +371,14 @@ export const useEditorsStore = create<EditorsStateTypeV2>()((set) => ({
 				}
 			})
 		);
+	},
+	setIsSmimeSign: (id: MailsEditorV2['id'], value: MailsEditorV2['isSmimeSign']): void => {
+		set(
+			produce((state: EditorsStateTypeV2) => {
+				if (state?.editors?.[id]) {
+					state.editors[id].isSmimeSign = value;
+				}
+			})
+		);
 	}
 }));

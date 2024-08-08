@@ -40,6 +40,11 @@ export type SoapEmailInfoObj = {
 	p?: string;
 };
 
+type HeaderInfo = {
+	name: string;
+	_content: string;
+};
+
 export type SoapDraftMessageObj = {
 	autoSendTime?: number;
 	id?: string;
@@ -51,6 +56,7 @@ export type SoapDraftMessageObj = {
 	did?: string;
 	rt?: string;
 	origid?: string;
+	header?: Array<HeaderInfo>;
 };
 
 export type SaveDraftRequest = {

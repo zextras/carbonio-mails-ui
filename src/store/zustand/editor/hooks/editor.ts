@@ -376,3 +376,29 @@ export const useEditorSignatureId = (
 		[editorId, debouncedSaveDraft, setter, value]
 	);
 };
+
+/**
+ * Returns reactive reference to the isUrgent value and to its setter
+ * @param id
+ */
+export const useEditorIsSmimeSign = (
+	id: MailsEditorV2['id']
+): {
+	isSmimeSign: MailsEditorV2['isSmimeSign'];
+	setIsSmimeSign: (isSmimeSign: MailsEditorV2['isSmimeSign']) => void;
+} => {
+	const { debouncedSaveDraft } = useSaveDraftFromEditor();
+	const value = useEditorsStore((state) => state.editors[id].isSmimeSign);
+	const setter = useEditorsStore((state) => state.setIsSmimeSign);
+
+	return useMemo(
+		() => ({
+			isSmimeSign: value,
+			setIsSmimeSign: (val: MailsEditorV2['isSmimeSign']): void => {
+				setter(id, val);
+				debouncedSaveDraft(id);
+			}
+		}),
+		[id, debouncedSaveDraft, setter, value]
+	);
+};
