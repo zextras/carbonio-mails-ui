@@ -24,6 +24,7 @@ export type UseViewLayoutResult = {
 	readonly setSplitLayoutOrientation: (orientation: MailsSplitLayoutOrientation) => void;
 	readonly splitSeparatorDimensions: Partial<SizeAndPosition>;
 	readonly setSplitSeparatorDimensions: (dimensions: Partial<SizeAndPosition>) => void;
+	readonly isCurrentLayoutSplit: boolean;
 	readonly isCurrentLayoutVerticalSplit: boolean;
 	readonly isCurrentLayoutHorizontalSplit: boolean;
 	readonly isCurrentLayoutNoSplit: boolean;
@@ -68,6 +69,7 @@ export const useViewLayout = (): UseViewLayoutResult => {
 		setSplitLayoutOrientation: storeSplitLayoutOrientation,
 		setSplitSeparatorDimensions,
 		splitSeparatorDimensions,
+		isCurrentLayoutSplit: isCurrentLayoutVerticalSplit || isCurrentLayoutHorizontalSplit,
 		isCurrentLayoutVerticalSplit,
 		isCurrentLayoutHorizontalSplit,
 		isCurrentLayoutNoSplit

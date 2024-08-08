@@ -23,6 +23,7 @@ describe('useViewLayout', () => {
 			setSplitLayoutOrientation: expect.anything(),
 			splitSeparatorDimensions: expect.anything(),
 			setSplitSeparatorDimensions: expect.anything(),
+			isCurrentLayoutSplit: expect.anything(),
 			isCurrentLayoutVerticalSplit: expect.anything(),
 			isCurrentLayoutHorizontalSplit: expect.anything(),
 			isCurrentLayoutNoSplit: expect.anything()
@@ -82,6 +83,43 @@ describe('useViewLayout', () => {
 			current.setSplitLayoutOrientation(orientation);
 
 			expect(setter).toHaveBeenCalledWith(orientation);
+		});
+	});
+
+	describe('isCurrentLayoutSplit', () => {
+		it('should contain false if the current layout is "no-split"', () => {
+			const layout = MAILS_VIEW_LAYOUTS.NO_SPLIT;
+			mockLayoutStorage({ layout });
+
+			const {
+				result: { current }
+			} = setupHook(useViewLayout);
+
+			expect(current.isCurrentLayoutSplit).toEqual(false);
+		});
+
+		it('should contain true if the current layout is "split" and the orientation is horizontal', () => {
+			const layout = MAILS_VIEW_LAYOUTS.SPLIT;
+			const orientation = MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS.HORIZONTAL;
+			mockLayoutStorage({ layout, splitOrientation: orientation });
+
+			const {
+				result: { current }
+			} = setupHook(useViewLayout);
+
+			expect(current.isCurrentLayoutSplit).toEqual(true);
+		});
+
+		it('should contain true if the current layout is "split" and the orientation is vertical', () => {
+			const layout = MAILS_VIEW_LAYOUTS.SPLIT;
+			const orientation = MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS.VERTICAL;
+			mockLayoutStorage({ layout, splitOrientation: orientation });
+
+			const {
+				result: { current }
+			} = setupHook(useViewLayout);
+
+			expect(current.isCurrentLayoutSplit).toEqual(true);
 		});
 	});
 
