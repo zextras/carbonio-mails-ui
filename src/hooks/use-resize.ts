@@ -6,9 +6,9 @@
 import type React from 'react';
 import { CSSProperties, useEffect, useCallback, useRef } from 'react';
 
-import { useLocalStorage } from '@zextras/carbonio-shell-ui';
 import { find } from 'lodash';
 
+import { useViewLayout } from './use-view-layout';
 import { BORDERS } from '../constants';
 
 /**
@@ -98,24 +98,21 @@ export const useResize = (
 	options?: ResizeOptions
 ): UseResizableReturnType => {
 	const initialSizeAndPositionRef = useRef<Parameters<typeof calcNewSizeAndPosition>[1]>();
-	const [lastSavedSizeAndPosition, setLastSavedSizeAndPosition] = useLocalStorage<
-		Partial<SizeAndPosition>
-	>(
-		options?.localStorageKey ?? 'use-resize-data',
-		{},
-		{ keepSyncedWithStorage: options?.keepSyncedWithStorage }
-	);
-	const lastSizeAndPositionRef = useRef<Partial<SizeAndPosition>>(lastSavedSizeAndPosition);
+	const {
+		splitSeparatorDimensions: separatorDimensions,
+		setSplitSeparatorDimensions: setSeparatorDimensions
+	} = useViewLayout();
+	const separatorDimensionsRef = useRef<Partial<SizeAndPosition>>(separatorDimensions);
 
 	useEffect(() => {
-		lastSizeAndPositionRef.current = { ...lastSavedSizeAndPosition };
-	}, [lastSavedSizeAndPosition]);
+		separatorDimensionsRef.current = { ...separatorDimensions };
+	}, [separatorDimensions]);
 
 	const resizeElement = useCallback(
 		({ width, height, top, left }: SizeAndPosition) => {
 			if (elementToResizeRef.current) {
 				const elementToResize = elementToResizeRef.current;
-				const sizeAndPositionToApply: Partial<SizeAndPosition> = lastSizeAndPositionRef.current;
+				const sizeAndPositionToApply: Partial<SizeAndPosition> = separatorDimensionsRef.current;
 				if (top >= 0 && border === BORDERS.SOUTH) {
 					sizeAndPositionToApply.height = height;
 					sizeAndPositionToApply.top = top;
@@ -132,7 +129,7 @@ export const useResize = (
 				elementToResize.style.bottom = '';
 				// reset right in favor of left
 				elementToResize.style.right = '';
-				lastSizeAndPositionRef.current = sizeAndPositionToApply;
+				separatorDimensionsRef.current = sizeAndPositionToApply;
 			}
 		},
 		[border, elementToResizeRef]
@@ -156,10 +153,8 @@ export const useResize = (
 		setGlobalCursor(undefined);
 		document.body.removeEventListener('mousemove', onMouseMove);
 		document.body.removeEventListener('mouseup', onMouseUp);
-		if (options?.localStorageKey) {
-			setLastSavedSizeAndPosition(lastSizeAndPositionRef.current);
-		}
-	}, [onMouseMove, options?.localStorageKey, setLastSavedSizeAndPosition]);
+		setSeparatorDimensions(separatorDimensionsRef.current);
+	}, [onMouseMove, setSeparatorDimensions]);
 
 	return useCallback(
 		(mouseDownEvent: React.MouseEvent | MouseEvent) => {
