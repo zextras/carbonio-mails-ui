@@ -20,18 +20,14 @@ const MainContainer = styled(Container)`
 
 interface ResizableContainerProps extends ContainerProps {
 	elementToResize: React.RefObject<HTMLElement>;
-	localStorageKey?: string;
 	border: Border;
-	keepSyncedWithStorage?: boolean;
 	disabled?: boolean;
 	minSize?: { width: number; height: number };
 }
 
 interface ResizableBorderProps {
 	elementToResize: React.RefObject<HTMLElement>;
-	localStorageKey?: string;
 	border: Border;
-	keepSyncedWithStorage?: boolean;
 }
 
 interface BorderWithResizeProps {
@@ -82,12 +78,7 @@ const BorderWithResize = styled.div<
 		`}
 `;
 
-const ResizableBorder = ({
-	elementToResize,
-	border,
-	localStorageKey,
-	keepSyncedWithStorage
-}: ResizableBorderProps): React.JSX.Element => {
+const ResizableBorder = ({ elementToResize, border }: ResizableBorderProps): React.JSX.Element => {
 	const borderRef = useRef<HTMLDivElement>(null);
 	const { listContainerGeometry, setListContainerGeometry } = useViewLayout();
 	const resizeHandler = useResize(elementToResize, border, {
@@ -134,9 +125,7 @@ export const ResizableContainer = ({
 	elementToResize,
 	children,
 	border,
-	localStorageKey,
 	disabled = false,
-	keepSyncedWithStorage,
 	...rest
 }: ResizableContainerProps): React.JSX.Element => (
 	<MainContainer {...rest}>
@@ -145,8 +134,6 @@ export const ResizableContainer = ({
 				key={`resizable-border-${border}`}
 				border={border}
 				elementToResize={elementToResize}
-				localStorageKey={localStorageKey}
-				keepSyncedWithStorage={keepSyncedWithStorage}
 			/>
 		)}
 		{children}
