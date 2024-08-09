@@ -14,14 +14,13 @@ import {
 	Text,
 	Tooltip
 } from '@zextras/carbonio-design-system';
-import { replaceHistory, useLocalStorage } from '@zextras/carbonio-shell-ui';
+import { replaceHistory } from '@zextras/carbonio-shell-ui';
 import { useTranslation } from 'react-i18next';
 
 import { ConversationPreviewHeaderNavigation } from './conversation-preview-header-navigation';
 import { MessagePreviewHeaderNavigation } from './message-preview-header-navigation';
-import { LOCAL_STORAGE_LAYOUT, MAILS_VIEW_LAYOUTS } from '../../../../constants';
+import { useViewLayout } from '../../../../hooks/use-view-layout';
 import type { MailMessage } from '../../../../types';
-import type { MailsListLayout } from '../../../folder-view';
 import { LayoutComponent } from '../../folder-panel/parts/layout-component';
 
 const PreviewHeaderNavigation = ({
@@ -53,10 +52,7 @@ const PreviewPanelHeader: FC<{
 		[subject, t]
 	);
 
-	const [listLayout] = useLocalStorage<MailsListLayout>(
-		LOCAL_STORAGE_LAYOUT,
-		MAILS_VIEW_LAYOUTS.SPLIT
-	);
+	const { isCurrentLayoutNoSplit } = useViewLayout();
 
 	return (
 		<>
@@ -70,7 +66,7 @@ const PreviewPanelHeader: FC<{
 				padding={{ left: 'large', right: 'extrasmall' }}
 				style={{ minHeight: '3rem' }}
 			>
-				{listLayout === MAILS_VIEW_LAYOUTS.NO_SPLIT && (
+				{isCurrentLayoutNoSplit && (
 					<Row padding={{ right: 'large' }}>
 						<PreviewHeaderNavigation itemType={itemType} />
 					</Row>
@@ -87,7 +83,7 @@ const PreviewPanelHeader: FC<{
 						</Text>
 					</Tooltip>
 				</Row>
-				{listLayout === MAILS_VIEW_LAYOUTS.NO_SPLIT && <LayoutComponent />}
+				{isCurrentLayoutNoSplit && <LayoutComponent />}
 				<IconButton
 					data-testid="PreviewPanelCloseIcon"
 					icon="CloseOutline"

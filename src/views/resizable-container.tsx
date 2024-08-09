@@ -10,6 +10,7 @@ import styled, { css, SimpleInterpolation } from 'styled-components';
 
 import { BORDERS } from '../constants';
 import { Border, useResize } from '../hooks/use-resize';
+import { useViewLayout } from '../hooks/use-view-layout';
 
 const MainContainer = styled(Container)`
 	position: relative;
@@ -19,18 +20,14 @@ const MainContainer = styled(Container)`
 
 interface ResizableContainerProps extends ContainerProps {
 	elementToResize: React.RefObject<HTMLElement>;
-	localStorageKey?: string;
 	border: Border;
-	keepSyncedWithStorage?: boolean;
 	disabled?: boolean;
 	minSize?: { width: number; height: number };
 }
 
 interface ResizableBorderProps {
 	elementToResize: React.RefObject<HTMLElement>;
-	localStorageKey?: string;
 	border: Border;
-	keepSyncedWithStorage?: boolean;
 }
 
 interface BorderWithResizeProps {
@@ -81,16 +78,12 @@ const BorderWithResize = styled.div<
 		`}
 `;
 
-const ResizableBorder = ({
-	elementToResize,
-	border,
-	localStorageKey,
-	keepSyncedWithStorage
-}: ResizableBorderProps): React.JSX.Element => {
+const ResizableBorder = ({ elementToResize, border }: ResizableBorderProps): React.JSX.Element => {
 	const borderRef = useRef<HTMLDivElement>(null);
+	const { listContainerGeometry, setListContainerGeometry } = useViewLayout();
 	const resizeHandler = useResize(elementToResize, border, {
-		localStorageKey,
-		keepSyncedWithStorage
+		initialGeometry: listContainerGeometry,
+		onGeometryChange: setListContainerGeometry
 	});
 
 	const positions = useMemo<
@@ -132,9 +125,7 @@ export const ResizableContainer = ({
 	elementToResize,
 	children,
 	border,
-	localStorageKey,
 	disabled = false,
-	keepSyncedWithStorage,
 	...rest
 }: ResizableContainerProps): React.JSX.Element => (
 	<MainContainer {...rest}>
@@ -143,8 +134,6 @@ export const ResizableContainer = ({
 				key={`resizable-border-${border}`}
 				border={border}
 				elementToResize={elementToResize}
-				localStorageKey={localStorageKey}
-				keepSyncedWithStorage={keepSyncedWithStorage}
 			/>
 		)}
 		{children}
