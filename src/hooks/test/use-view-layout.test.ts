@@ -21,8 +21,8 @@ describe('useViewLayout', () => {
 			setCurrentLayout: expect.anything(),
 			splitLayoutOrientation: expect.anything(),
 			setSplitLayoutOrientation: expect.anything(),
-			splitSeparatorDimensions: expect.anything(),
-			setSplitSeparatorDimensions: expect.anything(),
+			listContainerGeometry: expect.anything(),
+			setListContainerGeometry: expect.anything(),
 			isCurrentLayoutSplit: expect.anything(),
 			isCurrentLayoutVerticalSplit: expect.anything(),
 			isCurrentLayoutHorizontalSplit: expect.anything(),
@@ -221,7 +221,7 @@ describe('useViewLayout', () => {
 		});
 	});
 
-	describe('splitSeparatorDimensions', () => {
+	describe('listContainerGeometry', () => {
 		it('should return the value stored in the local storage', () => {
 			const dimensions = {
 				top: faker.number.int({ max: 5000 }),
@@ -235,11 +235,11 @@ describe('useViewLayout', () => {
 				result: { current }
 			} = setupHook(useViewLayout);
 
-			expect(current.splitSeparatorDimensions).toEqual(dimensions);
+			expect(current.listContainerGeometry).toEqual(dimensions);
 		});
 	});
 
-	describe('setSplitSeparatorDimensions', () => {
+	describe('setListContainerGeometry', () => {
 		it('should store the value in the local storage', () => {
 			const dimensions = {
 				top: faker.number.int({ max: 5000 }),
@@ -253,7 +253,7 @@ describe('useViewLayout', () => {
 			const {
 				result: { current }
 			} = setupHook(useViewLayout);
-			current.setSplitSeparatorDimensions(dimensions);
+			current.setListContainerGeometry(dimensions);
 
 			expect(setter).toHaveBeenCalledWith(dimensions);
 		});
