@@ -180,7 +180,7 @@ const MailContent: FC<{
 							openEmlPreview={openEmlPreview}
 						/>
 					</Row>
-					<Padding height="100%" width="100%" vertical="medium">
+					<Padding height="100%" width="100%" vertical="medium" style={{ overflow: 'auto' }}>
 						{showAppointmentInvite ? (
 							<Container width="100%">
 								<InviteResponse
@@ -407,7 +407,8 @@ const MailPreview: FC<MailPreviewProps> = ({
 				width="fill"
 				height="fit"
 				style={{
-					flex: '1'
+					flex: '1',
+					overflow: 'auto'
 				}}
 			>
 				{(open || isAlone) && (
