@@ -8,7 +8,6 @@ import { CSSProperties, useEffect, useCallback, useRef } from 'react';
 
 import { find } from 'lodash';
 
-import { useViewLayout } from './use-view-layout';
 import { BORDERS } from '../constants';
 
 /**
@@ -31,8 +30,8 @@ export type SizeAndPosition = ElementPosition & ElementSize;
 type UseResizableReturnType = React.MouseEventHandler;
 
 type ResizeOptions = {
-	localStorageKey?: string;
-	keepSyncedWithStorage?: boolean;
+	initialGeometry?: Partial<SizeAndPosition>;
+	onGeometryChange?: (geometry: Partial<SizeAndPosition>) => void;
 };
 
 export function getCursorFromBorder(border: Border): NonNullable<CSSProperties['cursor']> {
@@ -98,21 +97,17 @@ export const useResize = (
 	options?: ResizeOptions
 ): UseResizableReturnType => {
 	const initialSizeAndPositionRef = useRef<Parameters<typeof calcNewSizeAndPosition>[1]>();
-	const {
-		splitSeparatorDimensions: separatorDimensions,
-		setSplitSeparatorDimensions: setSeparatorDimensions
-	} = useViewLayout();
-	const separatorDimensionsRef = useRef<Partial<SizeAndPosition>>(separatorDimensions);
+	const lastSizeAndPositionRef = useRef<Partial<SizeAndPosition>>(options?.initialGeometry ?? {});
 
 	useEffect(() => {
-		separatorDimensionsRef.current = { ...separatorDimensions };
-	}, [separatorDimensions]);
+		lastSizeAndPositionRef.current = { ...options?.initialGeometry };
+	}, [options?.initialGeometry]);
 
 	const resizeElement = useCallback(
 		({ width, height, top, left }: SizeAndPosition) => {
 			if (elementToResizeRef.current) {
 				const elementToResize = elementToResizeRef.current;
-				const sizeAndPositionToApply: Partial<SizeAndPosition> = separatorDimensionsRef.current;
+				const sizeAndPositionToApply: Partial<SizeAndPosition> = lastSizeAndPositionRef.current;
 				if (top >= 0 && border === BORDERS.SOUTH) {
 					sizeAndPositionToApply.height = height;
 					sizeAndPositionToApply.top = top;
@@ -129,7 +124,7 @@ export const useResize = (
 				elementToResize.style.bottom = '';
 				// reset right in favor of left
 				elementToResize.style.right = '';
-				separatorDimensionsRef.current = sizeAndPositionToApply;
+				lastSizeAndPositionRef.current = sizeAndPositionToApply;
 			}
 		},
 		[border, elementToResizeRef]
@@ -153,8 +148,8 @@ export const useResize = (
 		setGlobalCursor(undefined);
 		document.body.removeEventListener('mousemove', onMouseMove);
 		document.body.removeEventListener('mouseup', onMouseUp);
-		setSeparatorDimensions(separatorDimensionsRef.current);
-	}, [onMouseMove, setSeparatorDimensions]);
+		options?.onGeometryChange?.(lastSizeAndPositionRef.current);
+	}, [onMouseMove, options]);
 
 	return useCallback(
 		(mouseDownEvent: React.MouseEvent | MouseEvent) => {
