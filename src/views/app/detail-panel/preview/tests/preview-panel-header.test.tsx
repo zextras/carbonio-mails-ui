@@ -12,21 +12,9 @@ import { populateFoldersStore } from '../../../../../carbonio-ui-commons/test/mo
 import { setupTest, screen } from '../../../../../carbonio-ui-commons/test/test-setup';
 import { MAILS_VIEW_LAYOUTS } from '../../../../../constants';
 import { TESTID_SELECTORS } from '../../../../../tests/constants';
+import { generateStore } from '../../../../../tests/generators/store';
 import { mockLayoutStorage } from '../../../../../tests/layouts-utils';
 import PreviewPanelHeader from '../preview-panel-header';
-
-const previousActionItem = {
-	tooltipLabel: 'tooltipLabel',
-	disabled: false,
-	action: jest.fn(),
-	icon: 'ArrowIosBack'
-};
-const nextActionItem = {
-	tooltipLabel: 'tooltipLabel',
-	disabled: false,
-	action: jest.fn(),
-	icon: 'ArrowIosForward'
-};
 
 describe('PreviewPanelHeader', () => {
 	it('renders correctly', () => {
@@ -35,8 +23,7 @@ describe('PreviewPanelHeader', () => {
 
 		setupTest(
 			<PreviewPanelHeader
-				previousActionItem={previousActionItem}
-				nextActionItem={nextActionItem}
+				itemType={'conversation'}
 				subject={subject}
 				isRead={false}
 				folderId={FOLDERS.INBOX}
@@ -50,12 +37,7 @@ describe('PreviewPanelHeader', () => {
 		populateFoldersStore();
 
 		setupTest(
-			<PreviewPanelHeader
-				previousActionItem={previousActionItem}
-				nextActionItem={nextActionItem}
-				isRead={false}
-				folderId={FOLDERS.INBOX}
-			/>
+			<PreviewPanelHeader itemType={'conversation'} isRead={false} folderId={FOLDERS.INBOX} />
 		);
 
 		expect(screen.getByText('<No Subject>')).toBeVisible();
@@ -66,12 +48,7 @@ describe('PreviewPanelHeader', () => {
 		populateFoldersStore();
 
 		setupTest(
-			<PreviewPanelHeader
-				previousActionItem={previousActionItem}
-				nextActionItem={nextActionItem}
-				isRead={false}
-				folderId={FOLDERS.INBOX}
-			/>
+			<PreviewPanelHeader itemType={'conversation'} isRead={false} folderId={FOLDERS.INBOX} />
 		);
 
 		expect(
@@ -86,13 +63,15 @@ describe('PreviewPanelHeader', () => {
 		mockLayoutStorage({ layout: MAILS_VIEW_LAYOUTS.NO_SPLIT });
 		populateFoldersStore();
 
+		const store = generateStore();
+
 		setupTest(
-			<PreviewPanelHeader
-				previousActionItem={previousActionItem}
-				nextActionItem={nextActionItem}
-				isRead={false}
-				folderId={FOLDERS.INBOX}
-			/>
+			<PreviewPanelHeader itemType={'conversation'} isRead={false} folderId={FOLDERS.INBOX} />,
+			{
+				initialEntries: [`/mails/folder/2/conversation/1`],
+				path: '/mails/folder/:folderId/conversation/:conversationId',
+				store
+			}
 		);
 		expect(
 			screen.getByRoleWithIcon('button', { icon: TESTID_SELECTORS.icons.navigatePrevious })

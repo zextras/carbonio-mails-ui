@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { replaceHistory, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { findIndex } from 'lodash';
@@ -44,6 +44,7 @@ export const usePreviewHeaderNavigation = ({
 	const [t] = useTranslation();
 	const settings = useUserSettings();
 	const prefMarkMsgRead = settings?.prefs?.zimbraPrefMarkMsgRead !== '-1';
+	const [isLoadMoreFailed, setIsLoadMoreFailed] = useState(false);
 
 	const itemIndex = findIndex(items, (item) => item.id === currentItemId);
 
@@ -83,14 +84,20 @@ export const usePreviewHeaderNavigation = ({
 		if (!searchedInFolderStatus) {
 			return t('tooltip.list_navigation.closeToNavigate', 'Close this email to navigate');
 		}
-		if (isLoadMoreNeeded) {
+		if (isLoadMoreNeeded && !isLoadMoreFailed) {
 			return t('tooltip.list_navigation.loadingEmail', 'Loading next email');
+		}
+		if (isLoadMoreNeeded && isLoadMoreFailed) {
+			return t(
+				'tooltip.list_navigation.UnableToLoadNextEmail',
+				'Unable to load next email. Try again later'
+			);
 		}
 		if (isTheLastListItem) {
 			return t('tooltip.list_navigation.noMoreEmails', 'There are no more emails');
 		}
 		return t('tooltip.list_navigation.goToNext', 'Go to next email');
-	}, [isLoadMoreNeeded, isTheLastListItem, searchedInFolderStatus, t]);
+	}, [isLoadMoreFailed, isLoadMoreNeeded, isTheLastListItem, searchedInFolderStatus, t]);
 
 	const isNextActionDisabled = useMemo(
 		() => isTheLastListItem || itemIndex >= items.length - 1,
@@ -145,7 +152,12 @@ export const usePreviewHeaderNavigation = ({
 					types: itemsType,
 					offset: items.length
 				})
-			);
+			).then((res) => {
+				// @ts-expect-error apparently the return type is wrong
+				if (res.error) {
+					setIsLoadMoreFailed(true);
+				}
+			});
 		}
 	}, [dispatch, folderId, isLoadMoreNeeded, items.length, sortOrder, itemsType]);
 
