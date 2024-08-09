@@ -5,26 +5,16 @@
  */
 import React from 'react';
 
-import PreviewPanelHeader from './preview-panel-header';
+import { useParams } from 'react-router-dom';
+
+import { NavigationIconButton } from './parts/navigation-icon-button';
 import { useAppSelector } from '../../../../hooks/redux';
 import { useFolderSortedMessages } from '../../../../hooks/use-folder-sorted-messages';
 import { usePreviewHeaderNavigation } from '../../../../hooks/use-preview-header-navigation';
 import { selectFolderMsgSearchStatus } from '../../../../store/messages-slice';
-import type { MailMessage } from '../../../../types';
 
-export type MessagePreviewPanelHeaderProps = {
-	messageId: string;
-	subject?: MailMessage['subject'];
-	isRead?: MailMessage['read'];
-	folderId: string;
-};
-
-export const MessagePreviewPanelHeader = ({
-	messageId,
-	subject,
-	isRead,
-	folderId
-}: MessagePreviewPanelHeaderProps): React.JSX.Element => {
+export const MessagePreviewHeaderNavigation = (): React.JSX.Element => {
+	const { folderId, messageId } = useParams<{ folderId: string; messageId: string }>();
 	const messages = useFolderSortedMessages(folderId);
 	const searchedInFolderStatus = useAppSelector(selectFolderMsgSearchStatus(folderId));
 
@@ -37,12 +27,9 @@ export const MessagePreviewPanelHeader = ({
 	});
 
 	return (
-		<PreviewPanelHeader
-			previousActionItem={previousActionItem}
-			nextActionItem={nextActionItem}
-			subject={subject}
-			isRead={isRead}
-			folderId={folderId}
-		/>
+		<>
+			<NavigationIconButton item={previousActionItem} />
+			<NavigationIconButton item={nextActionItem} />
+		</>
 	);
 };

@@ -17,36 +17,30 @@ import {
 import { replaceHistory, useLocalStorage } from '@zextras/carbonio-shell-ui';
 import { useTranslation } from 'react-i18next';
 
+import { ConversationPreviewHeaderNavigation } from './conversation-preview-header-navigation';
+import { MessagePreviewHeaderNavigation } from './message-preview-header-navigation';
 import { LOCAL_STORAGE_LAYOUT, MAILS_VIEW_LAYOUTS } from '../../../../constants';
-import { HeaderNavigationActionItem } from '../../../../hooks/use-preview-header-navigation';
 import type { MailMessage } from '../../../../types';
 import type { MailsListLayout } from '../../../folder-view';
 import { LayoutComponent } from '../../folder-panel/parts/layout-component';
 
-const NavigationIconButton = ({
-	item
+const PreviewHeaderNavigation = ({
+	itemType
 }: {
-	item: HeaderNavigationActionItem;
-}): React.JSX.Element => (
-	<Tooltip label={item.tooltipLabel}>
-		<IconButton
-			onClick={item.action}
-			customSize={{
-				iconSize: 'medium',
-				paddingSize: 'small'
-			}}
-			disabled={item.disabled}
-			icon={item.icon}
-		/>
-	</Tooltip>
-);
+	itemType: 'message' | 'conversation';
+}): React.JSX.Element => {
+	if (itemType === 'message') {
+		return <MessagePreviewHeaderNavigation />;
+	}
+	return <ConversationPreviewHeaderNavigation />;
+};
+
 const PreviewPanelHeader: FC<{
-	previousActionItem: HeaderNavigationActionItem;
-	nextActionItem: HeaderNavigationActionItem;
+	itemType: 'message' | 'conversation';
 	subject?: MailMessage['subject'];
 	isRead?: MailMessage['read'];
 	folderId: string;
-}> = ({ subject, isRead, folderId, previousActionItem, nextActionItem }) => {
+}> = ({ subject, isRead, folderId, itemType }) => {
 	const [t] = useTranslation();
 
 	const replaceHistoryCallback = useCallback(
@@ -78,8 +72,7 @@ const PreviewPanelHeader: FC<{
 			>
 				{listLayout === MAILS_VIEW_LAYOUTS.NO_SPLIT && (
 					<Row padding={{ right: 'large' }}>
-						<NavigationIconButton item={previousActionItem} />
-						<NavigationIconButton item={nextActionItem} />
+						<PreviewHeaderNavigation itemType={itemType} />
 					</Row>
 				)}
 				<Icon

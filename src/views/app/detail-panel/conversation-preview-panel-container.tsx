@@ -10,7 +10,7 @@ import { debounce, filter, isEmpty } from 'lodash';
 import { useParams } from 'react-router-dom';
 
 import { ConversationPreviewPanel } from './conversation-preview-panel';
-import { ConversationPreviewPanelHeader } from './preview/conversation-preview-panel-header';
+import PreviewPanelHeader from './preview/preview-panel-header';
 import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
 import { API_REQUEST_STATUS, DEFAULT_API_DEBOUNCE_TIME } from '../../../constants';
 import { getFolderIdParts } from '../../../helpers/folders';
@@ -25,7 +25,7 @@ import { useExtraWindow } from '../extra-windows/use-extra-window';
 
 type ConversationPreviewPanelProps = { conversationId?: string; folderId?: string };
 
-const useConversationPreviewPanelParameters = (
+export const useConversationPreviewPanelParameters = (
 	props: ConversationPreviewPanelProps
 ): { conversationId: string; folderId: string } => {
 	const params = useParams<{ conversationId: string; folderId: string }>();
@@ -87,8 +87,8 @@ export const ConversationPreviewPanelContainer: FC<ConversationPreviewPanelProps
 			{showPreviewPanel && (
 				<>
 					{!isInsideExtraWindow && (
-						<ConversationPreviewPanelHeader
-							conversationId={conversationId}
+						<PreviewPanelHeader
+							itemType={'conversation'}
 							subject={conversation.subject}
 							isRead={conversation.read}
 							folderId={folderId}

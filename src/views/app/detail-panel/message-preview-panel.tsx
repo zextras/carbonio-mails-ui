@@ -9,7 +9,7 @@ import { Container, Padding } from '@zextras/carbonio-design-system';
 import { uniqBy } from 'lodash';
 
 import MailPreview from './preview/mail-preview';
-import { MessagePreviewPanelHeader } from './preview/message-preview-panel-header';
+import PreviewPanelHeader from './preview/preview-panel-header';
 import { EXTRA_WINDOW_ACTION_ID } from '../../../constants';
 import { useAppSelector } from '../../../hooks/redux';
 import { selectMessage } from '../../../store/messages-slice';
@@ -42,11 +42,11 @@ export const MessagePreviewPanel: FC<MessagePreviewPanelProps> = ({
 			{message && (
 				<>
 					{!isInsideExtraWindow && (
-						<MessagePreviewPanelHeader
-							messageId={messageId}
-							subject={message.subject}
-							isRead={message.read}
+						<PreviewPanelHeader
 							folderId={folderId}
+							itemType={'message'}
+							isRead={message.read}
+							subject={message.subject}
 						/>
 					)}
 					<Container
