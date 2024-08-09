@@ -10,6 +10,7 @@ import styled, { css, SimpleInterpolation } from 'styled-components';
 
 import { BORDERS } from '../constants';
 import { Border, useResize } from '../hooks/use-resize';
+import { useViewLayout } from '../hooks/use-view-layout';
 
 const MainContainer = styled(Container)`
 	position: relative;
@@ -88,9 +89,10 @@ const ResizableBorder = ({
 	keepSyncedWithStorage
 }: ResizableBorderProps): React.JSX.Element => {
 	const borderRef = useRef<HTMLDivElement>(null);
+	const { listContainerGeometry, setListContainerGeometry } = useViewLayout();
 	const resizeHandler = useResize(elementToResize, border, {
-		localStorageKey,
-		keepSyncedWithStorage
+		initialGeometry: listContainerGeometry,
+		onGeometryChange: setListContainerGeometry
 	});
 
 	const positions = useMemo<
