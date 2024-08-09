@@ -6,71 +6,59 @@
 import React, { useCallback, useMemo } from 'react';
 
 import { DropdownItem, MultiButton, Tooltip } from '@zextras/carbonio-design-system';
-import { useLocalStorage } from '@zextras/carbonio-shell-ui';
 import { useTranslation } from 'react-i18next';
 
-import {
-	LOCAL_STORAGE_LAYOUT,
-	LOCAL_STORAGE_SPLIT_LAYOUT_ORIENTATION,
-	MAILS_VIEW_LAYOUTS,
-	MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS
-} from '../../../../constants';
-import type { MailsListLayout, MailsSplitLayoutOrientation } from '../../../folder-view';
+import { MAILS_VIEW_LAYOUTS, MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS } from '../../../../constants';
+import { useViewLayout } from '../../../../hooks/use-view-layout';
 
 export const LayoutComponent = (): React.JSX.Element => {
 	const [t] = useTranslation();
-	const [listLayout, setListLayout] = useLocalStorage<MailsListLayout>(
-		LOCAL_STORAGE_LAYOUT,
-		MAILS_VIEW_LAYOUTS.SPLIT
-	);
-
-	const [splitLayoutOrientation, setSplitLayoutOrientation] =
-		useLocalStorage<MailsSplitLayoutOrientation>(
-			LOCAL_STORAGE_SPLIT_LAYOUT_ORIENTATION,
-			MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS.VERTICAL
-		);
+	const {
+		isCurrentLayoutSplit,
+		isCurrentLayoutNoSplit,
+		isCurrentLayoutVerticalSplit,
+		isCurrentLayoutHorizontalSplit,
+		setSplitLayoutOrientation,
+		setCurrentLayout
+	} = useViewLayout();
 
 	const tooltipLabel = useMemo(() => {
-		if (listLayout === MAILS_VIEW_LAYOUTS.SPLIT) {
+		if (isCurrentLayoutSplit) {
 			return t('layoutView.tooltip.switchToNoSplit', 'Switch to no split');
 		}
-		if (splitLayoutOrientation === MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS.HORIZONTAL) {
+		if (isCurrentLayoutHorizontalSplit) {
 			return t('layoutView.tooltip.switchToHorizontal', 'Switch to horizontal split');
 		}
 		return t('layoutView.tooltip.switchToVertical', 'Switch to vertical split');
-	}, [listLayout, splitLayoutOrientation, t]);
+	}, [isCurrentLayoutHorizontalSplit, isCurrentLayoutSplit, t]);
 
 	const icon = useMemo(() => {
-		if (listLayout === MAILS_VIEW_LAYOUTS.SPLIT) {
+		if (isCurrentLayoutSplit) {
 			return 'ViewOffOutline';
 		}
-		if (splitLayoutOrientation === MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS.HORIZONTAL) {
+		if (isCurrentLayoutHorizontalSplit) {
 			return 'BottomViewOutline';
 		}
 		return 'LayoutOutline';
-	}, [listLayout, splitLayoutOrientation]);
+	}, [isCurrentLayoutHorizontalSplit, isCurrentLayoutSplit]);
 
 	const onToggle = useCallback(() => {
-		setListLayout((prevValue) =>
-			prevValue === MAILS_VIEW_LAYOUTS.NO_SPLIT
-				? MAILS_VIEW_LAYOUTS.SPLIT
-				: MAILS_VIEW_LAYOUTS.NO_SPLIT
-		);
-	}, [setListLayout]);
+		setCurrentLayout(isCurrentLayoutSplit ? MAILS_VIEW_LAYOUTS.NO_SPLIT : MAILS_VIEW_LAYOUTS.SPLIT);
+	}, [isCurrentLayoutSplit, setCurrentLayout]);
 
 	const onClickVerticalSplit = useCallback(() => {
-		setListLayout(MAILS_VIEW_LAYOUTS.SPLIT);
+		setCurrentLayout(MAILS_VIEW_LAYOUTS.SPLIT);
 		setSplitLayoutOrientation(MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS.VERTICAL);
-	}, [setListLayout, setSplitLayoutOrientation]);
+	}, [setCurrentLayout, setSplitLayoutOrientation]);
 
 	const onClickHorizontalSplit = useCallback(() => {
-		setListLayout(MAILS_VIEW_LAYOUTS.SPLIT);
+		setCurrentLayout(MAILS_VIEW_LAYOUTS.SPLIT);
 		setSplitLayoutOrientation(MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS.HORIZONTAL);
-	}, [setListLayout, setSplitLayoutOrientation]);
+	}, [setCurrentLayout, setSplitLayoutOrientation]);
 
 	const onClickHidePreview = useCallback(() => {
-		setListLayout(MAILS_VIEW_LAYOUTS.NO_SPLIT);
-	}, [setListLayout]);
+		setCurrentLayout(MAILS_VIEW_LAYOUTS.NO_SPLIT);
+	}, [setCurrentLayout]);
 
 	const layoutOptions: Array<DropdownItem> = [
 		{
@@ -78,25 +66,21 @@ export const LayoutComponent = (): React.JSX.Element => {
 			label: t('layoutView.tooltip.verticalSplit', 'Vertical split'),
 			icon: 'LayoutOutline',
 			onClick: onClickVerticalSplit,
-			selected:
-				listLayout === MAILS_VIEW_LAYOUTS.SPLIT &&
-				splitLayoutOrientation === MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS.VERTICAL
+			selected: isCurrentLayoutVerticalSplit
 		},
 		{
 			id: 'horizontal',
 			label: t('layoutView.tooltip.horizontalSplit', 'Horizontal split'),
 			icon: 'BottomViewOutline',
 			onClick: onClickHorizontalSplit,
-			selected:
-				listLayout === MAILS_VIEW_LAYOUTS.SPLIT &&
-				splitLayoutOrientation === MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS.HORIZONTAL
+			selected: isCurrentLayoutHorizontalSplit
 		},
 		{
 			id: 'noSplit',
 			label: t('layoutView.tooltip.noSplit', 'No split'),
 			icon: 'ViewOffOutline',
 			onClick: onClickHidePreview,
-			selected: listLayout === MAILS_VIEW_LAYOUTS.NO_SPLIT
+			selected: isCurrentLayoutNoSplit
 		}
 	];
 
