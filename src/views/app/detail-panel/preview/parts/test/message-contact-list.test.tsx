@@ -10,11 +10,11 @@ import { screen, within } from '@testing-library/react';
 import { addBoard } from '@zextras/carbonio-shell-ui';
 import { filter } from 'lodash';
 
-import MessageContactList from './message-contact-list';
-import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
-import { getMsg } from '../../../../../store/actions';
-import { selectMessage } from '../../../../../store/messages-slice';
-import { generateStore } from '../../../../../tests/generators/store';
+import { setupTest } from '../../../../../../carbonio-ui-commons/test/test-setup';
+import { getMsg } from '../../../../../../store/actions';
+import { selectMessage } from '../../../../../../store/messages-slice';
+import { generateStore } from '../../../../../../tests/generators/store';
+import MessageContactList from '../message-contact-list';
 
 describe('Message contacts list', () => {
 	test(`send e-mail from the CC participant`, async () => {
