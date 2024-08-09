@@ -18,6 +18,7 @@ export const LayoutComponent = (): React.JSX.Element => {
 		isCurrentLayoutNoSplit,
 		isCurrentLayoutVerticalSplit,
 		isCurrentLayoutHorizontalSplit,
+		splitLayoutOrientation,
 		setSplitLayoutOrientation,
 		setCurrentLayout
 	} = useViewLayout();
@@ -26,21 +27,21 @@ export const LayoutComponent = (): React.JSX.Element => {
 		if (isCurrentLayoutSplit) {
 			return t('layoutView.tooltip.switchToNoSplit', 'Switch to no split');
 		}
-		if (isCurrentLayoutHorizontalSplit) {
+		if (splitLayoutOrientation === MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS.HORIZONTAL) {
 			return t('layoutView.tooltip.switchToHorizontal', 'Switch to horizontal split');
 		}
 		return t('layoutView.tooltip.switchToVertical', 'Switch to vertical split');
-	}, [isCurrentLayoutHorizontalSplit, isCurrentLayoutSplit, t]);
+	}, [isCurrentLayoutSplit, splitLayoutOrientation, t]);
 
 	const icon = useMemo(() => {
 		if (isCurrentLayoutSplit) {
 			return 'ViewOffOutline';
 		}
-		if (isCurrentLayoutHorizontalSplit) {
+		if (splitLayoutOrientation === MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS.HORIZONTAL) {
 			return 'BottomViewOutline';
 		}
 		return 'LayoutOutline';
-	}, [isCurrentLayoutHorizontalSplit, isCurrentLayoutSplit]);
+	}, [isCurrentLayoutSplit, splitLayoutOrientation]);
 
 	const onToggle = useCallback(() => {
 		setCurrentLayout(isCurrentLayoutSplit ? MAILS_VIEW_LAYOUTS.NO_SPLIT : MAILS_VIEW_LAYOUTS.SPLIT);
