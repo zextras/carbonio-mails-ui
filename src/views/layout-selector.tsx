@@ -8,14 +8,11 @@ import React, { useEffect, useMemo } from 'react';
 import { Container } from '@zextras/carbonio-design-system';
 import { matchPath, useLocation } from 'react-router-dom';
 
-import type { MailsListLayout, MailsSplitLayoutOrientation } from './folder-view';
-import { MAILS_ROUTE, MAILS_VIEW_LAYOUTS } from '../constants';
+import { MAILS_ROUTE } from '../constants';
 import { useViewLayout } from '../hooks/use-view-layout';
 
 type LayoutSelectorProps = {
 	containerRef: React.RefObject<HTMLDivElement>;
-	listLayout: MailsListLayout;
-	splitLayoutOrientation: MailsSplitLayoutOrientation;
 	folderView: React.ReactNode;
 	detailPanel: React.ReactNode;
 };
@@ -23,12 +20,15 @@ type LayoutSelectorProps = {
 export const LayoutSelector = ({
 	folderView,
 	detailPanel,
-	containerRef,
-	listLayout,
-	splitLayoutOrientation
+	containerRef
 }: LayoutSelectorProps): React.JSX.Element => {
-	const { isCurrentLayoutVerticalSplit, isCurrentLayoutHorizontalSplit, listContainerGeometry } =
-		useViewLayout();
+	const {
+		isCurrentLayoutSplit,
+		isCurrentLayoutNoSplit,
+		isCurrentLayoutVerticalSplit,
+		isCurrentLayoutHorizontalSplit,
+		listContainerGeometry
+	} = useViewLayout();
 
 	const containerOrientation = useMemo(() => {
 		if (isCurrentLayoutVerticalSplit) {
@@ -61,13 +61,7 @@ export const LayoutSelector = ({
 				containerRef.current.style.width = `100%`;
 			}
 		}
-	}, [
-		containerRef,
-		listLayout,
-		listContainerGeometry?.width,
-		splitLayoutOrientation,
-		isCurrentLayoutVerticalSplit
-	]);
+	}, [containerRef, listContainerGeometry?.width, isCurrentLayoutVerticalSplit]);
 
 	useEffect(() => {
 		if (containerRef.current) {
@@ -84,13 +78,7 @@ export const LayoutSelector = ({
 				containerRef.current.style.height = `100%`;
 			}
 		}
-	}, [
-		listLayout,
-		listContainerGeometry?.height,
-		containerRef,
-		splitLayoutOrientation,
-		isCurrentLayoutHorizontalSplit
-	]);
+	}, [listContainerGeometry?.height, containerRef, isCurrentLayoutHorizontalSplit]);
 
 	const { pathname } = useLocation();
 	const match = matchPath<{ itemId?: string }>(
@@ -103,8 +91,7 @@ export const LayoutSelector = ({
 			orientation={containerOrientation}
 			mainAlignment="flex-start"
 		>
-			{(listLayout === MAILS_VIEW_LAYOUTS.SPLIT ||
-				(!match?.params?.itemId && listLayout === MAILS_VIEW_LAYOUTS.NO_SPLIT)) && (
+			{(isCurrentLayoutSplit || (!match?.params?.itemId && isCurrentLayoutNoSplit)) && (
 				<Container
 					data-testid={'LayoutSelectorInnerContainer'}
 					ref={containerRef}
@@ -117,9 +104,7 @@ export const LayoutSelector = ({
 					{folderView}
 				</Container>
 			)}
-			{(listLayout === MAILS_VIEW_LAYOUTS.SPLIT ||
-				(match?.params?.itemId && listLayout === MAILS_VIEW_LAYOUTS.NO_SPLIT)) &&
-				detailPanel}
+			{(isCurrentLayoutSplit || (match?.params?.itemId && isCurrentLayoutNoSplit)) && detailPanel}
 		</Container>
 	);
 };
