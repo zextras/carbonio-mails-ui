@@ -6,17 +6,11 @@
 import React, { useEffect, useMemo } from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
-import { useLocalStorage } from '@zextras/carbonio-shell-ui';
 import { matchPath, useLocation } from 'react-router-dom';
 
 import type { MailsListLayout, MailsSplitLayoutOrientation } from './folder-view';
-import {
-	LOCAL_STORAGE_VIEW_SIZES,
-	MAILS_ROUTE,
-	MAILS_VIEW_LAYOUTS,
-	MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS
-} from '../constants';
-import { Geometry } from '../hooks/use-resize';
+import { MAILS_ROUTE, MAILS_VIEW_LAYOUTS } from '../constants';
+import { useViewLayout } from '../hooks/use-view-layout';
 
 type LayoutSelectorProps = {
 	containerRef: React.RefObject<HTMLDivElement>;
@@ -33,44 +27,31 @@ export const LayoutSelector = ({
 	listLayout,
 	splitLayoutOrientation
 }: LayoutSelectorProps): React.JSX.Element => {
-	const [lastSavedViewSizes] = useLocalStorage<Partial<Geometry>>(LOCAL_STORAGE_VIEW_SIZES, {});
-
-	const isVerticalSplit = useMemo(
-		() =>
-			listLayout === MAILS_VIEW_LAYOUTS.SPLIT &&
-			splitLayoutOrientation === MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS.VERTICAL,
-		[listLayout, splitLayoutOrientation]
-	);
-
-	const isHorizontalSplit = useMemo(
-		() =>
-			listLayout === MAILS_VIEW_LAYOUTS.SPLIT &&
-			splitLayoutOrientation === MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS.HORIZONTAL,
-		[listLayout, splitLayoutOrientation]
-	);
+	const { isCurrentLayoutVerticalSplit, isCurrentLayoutHorizontalSplit, listContainerGeometry } =
+		useViewLayout();
 
 	const containerOrientation = useMemo(() => {
-		if (isVerticalSplit) {
+		if (isCurrentLayoutVerticalSplit) {
 			return 'horizontal';
 		}
 
-		if (isHorizontalSplit) {
+		if (isCurrentLayoutHorizontalSplit) {
 			return 'vertical';
 		}
 
 		return 'vertical';
-	}, [isHorizontalSplit, isVerticalSplit]);
+	}, [isCurrentLayoutHorizontalSplit, isCurrentLayoutVerticalSplit]);
 
-	const maxWidth = isVerticalSplit ? 'calc(100% - 22.5rem)' : '100%';
+	const maxWidth = isCurrentLayoutVerticalSplit ? 'calc(100% - 22.5rem)' : '100%';
 
-	const maxHeight = isHorizontalSplit ? 'calc(100% - 11.25rem)' : '100%';
+	const maxHeight = isCurrentLayoutHorizontalSplit ? 'calc(100% - 11.25rem)' : '100%';
 
 	useEffect(() => {
 		if (containerRef.current) {
-			if (isVerticalSplit) {
-				if (lastSavedViewSizes?.width) {
+			if (isCurrentLayoutVerticalSplit) {
+				if (listContainerGeometry?.width) {
 					// eslint-disable-next-line no-param-reassign
-					containerRef.current.style.width = `${lastSavedViewSizes?.width}px`;
+					containerRef.current.style.width = `${listContainerGeometry?.width}px`;
 				} else {
 					// eslint-disable-next-line no-param-reassign
 					containerRef.current.style.width = `60%`;
@@ -83,17 +64,17 @@ export const LayoutSelector = ({
 	}, [
 		containerRef,
 		listLayout,
-		lastSavedViewSizes?.width,
+		listContainerGeometry?.width,
 		splitLayoutOrientation,
-		isVerticalSplit
+		isCurrentLayoutVerticalSplit
 	]);
 
 	useEffect(() => {
 		if (containerRef.current) {
-			if (isHorizontalSplit) {
-				if (lastSavedViewSizes?.height) {
+			if (isCurrentLayoutHorizontalSplit) {
+				if (listContainerGeometry?.height) {
 					// eslint-disable-next-line no-param-reassign
-					containerRef.current.style.height = `${lastSavedViewSizes?.height}px`;
+					containerRef.current.style.height = `${listContainerGeometry?.height}px`;
 				} else {
 					// eslint-disable-next-line no-param-reassign
 					containerRef.current.style.height = `50%`;
@@ -105,10 +86,10 @@ export const LayoutSelector = ({
 		}
 	}, [
 		listLayout,
-		lastSavedViewSizes?.height,
+		listContainerGeometry?.height,
 		containerRef,
 		splitLayoutOrientation,
-		isHorizontalSplit
+		isCurrentLayoutHorizontalSplit
 	]);
 
 	const { pathname } = useLocation();
