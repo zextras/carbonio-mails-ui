@@ -17,10 +17,10 @@ import { MailsListLayout, MailsSplitLayoutOrientation } from '../views/folder-vi
 export const mockLayoutStorage = ({
 	layout = MAILS_VIEW_LAYOUTS.SPLIT,
 	splitOrientation = MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS.VERTICAL,
-	top = 0,
-	left = 500,
-	width = 500,
-	height = 700,
+	top,
+	left,
+	width,
+	height,
 	callback = jest.fn()
 }: {
 	layout?: MailsListLayout;
@@ -34,7 +34,10 @@ export const mockLayoutStorage = ({
 	useLocalStorage.mockImplementation(
 		(
 			key
-		): [MailsListLayout | MailsSplitLayoutOrientation | Geometry | undefined, typeof jest.fn] => {
+		): [
+			MailsListLayout | MailsSplitLayoutOrientation | Partial<Geometry> | undefined,
+			typeof jest.fn
+		] => {
 			if (key === LOCAL_STORAGE_LAYOUT) {
 				return [layout, callback];
 			}
