@@ -26,12 +26,12 @@ export type ElementSize = {
 	height: number;
 };
 
-export type SizeAndPosition = ElementPosition & ElementSize;
+export type Geometry = ElementPosition & ElementSize;
 type UseResizableReturnType = React.MouseEventHandler;
 
 type ResizeOptions = {
-	initialGeometry?: Partial<SizeAndPosition>;
-	onGeometryChange?: (geometry: Partial<SizeAndPosition>) => void;
+	initialGeometry?: Partial<Geometry>;
+	onGeometryChange?: (geometry: Partial<Geometry>) => void;
 };
 
 export function getCursorFromBorder(border: Border): NonNullable<CSSProperties['cursor']> {
@@ -49,9 +49,9 @@ export function getCursorFromBorder(border: Border): NonNullable<CSSProperties['
 
 function calcNewSizeAndPosition(
 	border: Border,
-	from: { clientTop: number; clientLeft: number } & SizeAndPosition,
+	from: { clientTop: number; clientLeft: number } & Geometry,
 	mouseEvent: MouseEvent
-): SizeAndPosition {
+): Geometry {
 	const newSizeAndPosition = {
 		top: from.top,
 		left: from.left,
@@ -97,17 +97,17 @@ export const useResize = (
 	options?: ResizeOptions
 ): UseResizableReturnType => {
 	const initialSizeAndPositionRef = useRef<Parameters<typeof calcNewSizeAndPosition>[1]>();
-	const lastSizeAndPositionRef = useRef<Partial<SizeAndPosition>>(options?.initialGeometry ?? {});
+	const lastSizeAndPositionRef = useRef<Partial<Geometry>>(options?.initialGeometry ?? {});
 
 	useEffect(() => {
 		lastSizeAndPositionRef.current = { ...options?.initialGeometry };
 	}, [options?.initialGeometry]);
 
 	const resizeElement = useCallback(
-		({ width, height, top, left }: SizeAndPosition) => {
+		({ width, height, top, left }: Geometry) => {
 			if (elementToResizeRef.current) {
 				const elementToResize = elementToResizeRef.current;
-				const sizeAndPositionToApply: Partial<SizeAndPosition> = lastSizeAndPositionRef.current;
+				const sizeAndPositionToApply: Partial<Geometry> = lastSizeAndPositionRef.current;
 				if (top >= 0 && border === BORDERS.SOUTH) {
 					sizeAndPositionToApply.height = height;
 					sizeAndPositionToApply.top = top;

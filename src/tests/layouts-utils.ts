@@ -11,7 +11,7 @@ import {
 	MAILS_VIEW_LAYOUTS,
 	MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS
 } from '../constants';
-import { SizeAndPosition } from '../hooks/use-resize';
+import { Geometry } from '../hooks/use-resize';
 import { MailsListLayout, MailsSplitLayoutOrientation } from '../views/folder-view';
 
 export const mockLayoutStorage = ({
@@ -34,10 +34,7 @@ export const mockLayoutStorage = ({
 	useLocalStorage.mockImplementation(
 		(
 			key
-		): [
-			MailsListLayout | MailsSplitLayoutOrientation | SizeAndPosition | undefined,
-			typeof jest.fn
-		] => {
+		): [MailsListLayout | MailsSplitLayoutOrientation | Geometry | undefined, typeof jest.fn] => {
 			if (key === LOCAL_STORAGE_LAYOUT) {
 				return [layout, callback];
 			}

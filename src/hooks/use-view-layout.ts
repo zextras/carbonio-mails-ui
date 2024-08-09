@@ -7,7 +7,7 @@ import { useMemo } from 'react';
 
 import { useLocalStorage } from '@zextras/carbonio-shell-ui';
 
-import type { SizeAndPosition } from './use-resize';
+import type { Geometry } from './use-resize';
 import {
 	LOCAL_STORAGE_LAYOUT,
 	LOCAL_STORAGE_SPLIT_LAYOUT_ORIENTATION,
@@ -22,8 +22,8 @@ export type UseViewLayoutResult = {
 	readonly setCurrentLayout: (layout: MailsListLayout) => void;
 	readonly splitLayoutOrientation: MailsSplitLayoutOrientation;
 	readonly setSplitLayoutOrientation: (orientation: MailsSplitLayoutOrientation) => void;
-	readonly listContainerGeometry: Partial<SizeAndPosition>;
-	readonly setListContainerGeometry: (geometry: Partial<SizeAndPosition>) => void;
+	readonly listContainerGeometry: Partial<Geometry>;
+	readonly setListContainerGeometry: (geometry: Partial<Geometry>) => void;
 	readonly isCurrentLayoutSplit: boolean;
 	readonly isCurrentLayoutVerticalSplit: boolean;
 	readonly isCurrentLayoutHorizontalSplit: boolean;
@@ -42,9 +42,11 @@ export const useViewLayout = (): UseViewLayoutResult => {
 			MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS.VERTICAL
 		);
 
-	const [listContainerGeometry, setListContainerGeometry] = useLocalStorage<
-		Partial<SizeAndPosition>
-	>(LOCAL_STORAGE_VIEW_SIZES, {}, { keepSyncedWithStorage: true });
+	const [listContainerGeometry, setListContainerGeometry] = useLocalStorage<Partial<Geometry>>(
+		LOCAL_STORAGE_VIEW_SIZES,
+		{},
+		{ keepSyncedWithStorage: true }
+	);
 
 	const isCurrentLayoutVerticalSplit =
 		layout === MAILS_VIEW_LAYOUTS.SPLIT &&

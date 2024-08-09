@@ -16,7 +16,7 @@ import {
 	MAILS_VIEW_LAYOUTS,
 	MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS
 } from '../constants';
-import { SizeAndPosition } from '../hooks/use-resize';
+import { Geometry } from '../hooks/use-resize';
 
 type LayoutSelectorProps = {
 	containerRef: React.RefObject<HTMLDivElement>;
@@ -33,10 +33,7 @@ export const LayoutSelector = ({
 	listLayout,
 	splitLayoutOrientation
 }: LayoutSelectorProps): React.JSX.Element => {
-	const [lastSavedViewSizes] = useLocalStorage<Partial<SizeAndPosition>>(
-		LOCAL_STORAGE_VIEW_SIZES,
-		{}
-	);
+	const [lastSavedViewSizes] = useLocalStorage<Partial<Geometry>>(LOCAL_STORAGE_VIEW_SIZES, {});
 
 	const isVerticalSplit = useMemo(
 		() =>
