@@ -22,8 +22,8 @@ export type UseViewLayoutResult = {
 	readonly setCurrentLayout: (layout: MailsListLayout) => void;
 	readonly splitLayoutOrientation: MailsSplitLayoutOrientation;
 	readonly setSplitLayoutOrientation: (orientation: MailsSplitLayoutOrientation) => void;
-	readonly splitSeparatorDimensions: Partial<SizeAndPosition>;
-	readonly setSplitSeparatorDimensions: (dimensions: Partial<SizeAndPosition>) => void;
+	readonly listContainerGeometry: Partial<SizeAndPosition>;
+	readonly setListContainerGeometry: (geometry: Partial<SizeAndPosition>) => void;
 	readonly isCurrentLayoutSplit: boolean;
 	readonly isCurrentLayoutVerticalSplit: boolean;
 	readonly isCurrentLayoutHorizontalSplit: boolean;
@@ -42,11 +42,9 @@ export const useViewLayout = (): UseViewLayoutResult => {
 			MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS.VERTICAL
 		);
 
-	const [splitSeparatorDimensions, setSplitSeparatorDimensions] = useLocalStorage<
+	const [listContainerGeometry, setListContainerGeometry] = useLocalStorage<
 		Partial<SizeAndPosition>
 	>(LOCAL_STORAGE_VIEW_SIZES, {}, { keepSyncedWithStorage: true });
-
-	const isCurrentLayoutSplit = layout === MAILS_VIEW_LAYOUTS.SPLIT;
 
 	const isCurrentLayoutVerticalSplit =
 		layout === MAILS_VIEW_LAYOUTS.SPLIT &&
@@ -64,8 +62,8 @@ export const useViewLayout = (): UseViewLayoutResult => {
 			setCurrentLayout: storeLayout,
 			splitLayoutOrientation,
 			setSplitLayoutOrientation: storeSplitLayoutOrientation,
-			setSplitSeparatorDimensions,
-			splitSeparatorDimensions,
+			setListContainerGeometry,
+			listContainerGeometry,
 			isCurrentLayoutSplit: layout === MAILS_VIEW_LAYOUTS.SPLIT,
 			isCurrentLayoutVerticalSplit,
 			isCurrentLayoutHorizontalSplit,
@@ -76,9 +74,9 @@ export const useViewLayout = (): UseViewLayoutResult => {
 			isCurrentLayoutNoSplit,
 			isCurrentLayoutVerticalSplit,
 			layout,
-			setSplitSeparatorDimensions,
+			setListContainerGeometry,
 			splitLayoutOrientation,
-			splitSeparatorDimensions,
+			listContainerGeometry,
 			storeLayout,
 			storeSplitLayoutOrientation
 		]
