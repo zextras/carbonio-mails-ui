@@ -220,7 +220,7 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 		deleteEditor({ id: editorId });
 	}, [createSnackbar, editorId]);
 
-	const createModal = useModal();
+	const { createModal, closeModal } = useModal();
 
 	const showIdentitySelector = useMemo<boolean>(() => getIdentitiesDescriptors().length > 1, []);
 
@@ -312,13 +312,15 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 			editorId,
 			hasAttachments: savedStandardAttachments.length > 0,
 			onConfirmCallback,
-			createModal
+			createModal,
+			closeModal
 		});
 	}, [
 		editorId,
 		savedStandardAttachments,
 		close,
 		createModal,
+		closeModal,
 		draftSmartLinks.length,
 		sendMessage,
 		onSendCountdownTick,
@@ -346,12 +348,14 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 				editorId,
 				onConfirmCallback,
 				createModal,
+				closeModal,
 				hasAttachments: savedStandardAttachments.length > 0
 			});
 		},
 		[
 			editorId,
 			createModal,
+			closeModal,
 			savedStandardAttachments,
 			draftSmartLinks.length,
 			setAutoSendTime,

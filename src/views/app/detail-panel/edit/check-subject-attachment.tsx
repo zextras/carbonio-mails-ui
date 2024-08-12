@@ -6,7 +6,7 @@
 
 import React from 'react';
 
-import { CreateModalFn, Text } from '@zextras/carbonio-design-system';
+import { CloseModalFn, CreateModalFn, Text } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 
 import { LineType } from '../../../../commons/utils';
@@ -54,12 +54,14 @@ export function checkSubjectAndAttachment({
 	editorId,
 	hasAttachments,
 	onConfirmCallback,
-	createModal
+	createModal,
+	closeModal
 }: {
 	editorId: MailsEditorV2['id'];
 	hasAttachments: boolean;
 	onConfirmCallback: () => void | Promise<void>;
 	createModal: CreateModalFn;
+	closeModal: CloseModalFn;
 }): void {
 	const editor = getEditor({ id: editorId });
 	if (!editor) {
@@ -74,20 +76,22 @@ export function checkSubjectAndAttachment({
 		return msgContent.toLowerCase().includes(el);
 	});
 	if ((attachmentIsExpected && !hasAttachments) || !subject) {
-		const closeModal = createModal({
+		const id = Date.now().toString();
+		createModal({
+			id,
 			title: t('header.attention', 'Attention'),
 			confirmLabel: t('action.ok', 'Ok'),
 			dismissLabel: t('label.cancel', 'Cancel'),
 			showCloseIcon: true,
 			onConfirm: () => {
 				onConfirmCallback();
-				closeModal();
+				closeModal(id);
 			},
 			onClose: () => {
-				closeModal();
+				closeModal(id);
 			},
 			onSecondaryAction: () => {
-				closeModal();
+				closeModal(id);
 			},
 			children: (
 				<StoreProvider>
