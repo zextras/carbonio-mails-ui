@@ -175,7 +175,7 @@ describe('LayoutSelector', () => {
 		expect(component).toHaveStyle({ flexShrink: 0 });
 	});
 
-	describe('If the orientation is left to right', () => {
+	describe('If the layout is vertical', () => {
 		test('the outer container orientation value is row', async () => {
 			const ref = { current: null };
 
@@ -277,7 +277,7 @@ describe('LayoutSelector', () => {
 		});
 	});
 
-	describe('If the orientation is top to bottom', () => {
+	describe('If the layout is horizontal', () => {
 		test('the outer container orientation value is column', async () => {
 			const ref = { current: null };
 			mockLayoutStorage({
@@ -373,6 +373,54 @@ describe('LayoutSelector', () => {
 			const component = screen.getByTestId(SELECTORS.INNER);
 
 			expect(component).not.toHaveStyle({ width: '500px' });
+		});
+	});
+
+	describe('if the layout is no split it will render only one panel', () => {
+		test('it will render only the folderView', () => {
+			const ref = { current: null };
+			const folderViewId = 'folderViewId';
+			const detailPanelId = 'detailPanelId';
+			mockLayoutStorage({
+				layout: MAILS_VIEW_LAYOUTS.NO_SPLIT,
+				splitOrientation: MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS.VERTICAL
+			});
+
+			setupTest(
+				<LayoutSelector
+					folderView={<MockedView id={folderViewId} />}
+					detailPanel={<MockedView id={detailPanelId} />}
+					containerRef={ref}
+				/>
+			);
+			const folderView = screen.getByTestId(`MockedView${folderViewId}`);
+			const detailPanel = screen.queryByTestId(`MockedView${detailPanelId}`);
+			expect(folderView).toBeVisible();
+			expect(detailPanel).not.toBeInTheDocument();
+		});
+		test('it will render only the detailPanel', () => {
+			const ref = { current: null };
+			const folderViewId = 'folderViewId';
+			const detailPanelId = 'detailPanelId';
+			mockLayoutStorage({
+				layout: MAILS_VIEW_LAYOUTS.NO_SPLIT,
+				splitOrientation: MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS.VERTICAL
+			});
+
+			setupTest(
+				<LayoutSelector
+					folderView={<MockedView id={folderViewId} />}
+					detailPanel={<MockedView id={detailPanelId} />}
+					containerRef={ref}
+				/>,
+				{
+					initialEntries: [`/mails/folder/2/conversation/1`]
+				}
+			);
+			const folderView = screen.queryByTestId(`MockedView${folderViewId}`);
+			const detailPanel = screen.getByTestId(`MockedView${detailPanelId}`);
+			expect(folderView).not.toBeInTheDocument();
+			expect(detailPanel).toBeVisible();
 		});
 	});
 });
