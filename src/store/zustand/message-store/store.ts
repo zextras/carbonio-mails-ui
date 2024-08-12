@@ -68,13 +68,15 @@ export function useConversationStatus(id: string): SearchRequestStatus {
 // TODO: rename me, probably setConversations
 export function updateConversations(
 	conversations: Array<NormalizedConversation>,
-	offset: number
+	offset: number,
+	more: boolean
 ): void {
 	useMessageStore.setState(
 		produce((state: MessageStoreState) => {
 			state.search.status = API_REQUEST_STATUS.fulfilled;
 			state.search.conversationIds = new Set(conversations.map((c) => c.id));
 			state.search.offset = offset;
+			state.search.more = more;
 			state.populatedItems.conversations = conversations.reduce(
 				(acc, conv) => {
 					// eslint-disable-next-line no-param-reassign

@@ -60,7 +60,7 @@ function handleFulFilledConversationResults({
 			messages.push(normalizeMailMessageFromSoap(soapMessage, false))
 		)
 	);
-	updateConversations(conversations, offset);
+	updateConversations(conversations, offset, searchResponse.more);
 	updateMessages(messages, offset);
 }
 
