@@ -21,7 +21,7 @@ import {
 	useUserAccounts,
 	useUserSettings
 } from '@zextras/carbonio-shell-ui';
-import { debounce, filter } from 'lodash';
+import { filter } from 'lodash';
 /* eslint-disable no-nested-ternary */
 import { useParams } from 'react-router-dom';
 
@@ -30,12 +30,13 @@ import PreviewHeader from './parts/preview-header';
 import ReadReceiptModal from './read-receipt-modal';
 import { FOLDERS } from '../../../../carbonio-ui-commons/constants/folders';
 import MailMessageRenderer from '../../../../commons/mail-message-renderer';
-import { DEFAULT_API_DEBOUNCE_TIME, MessageActionsDescriptors } from '../../../../constants';
+import { MessageActionsDescriptors } from '../../../../constants';
 import { getAttachmentParts } from '../../../../helpers/attachments';
 import { getFolderIdParts } from '../../../../helpers/folders';
 import { useAppDispatch } from '../../../../hooks/redux';
+import { useRequestDebouncedMessage } from '../../../../hooks/use-request-debounced-message';
 import SharedInviteReply from '../../../../integrations/shared-invite-reply';
-import { getMsg, msgAction } from '../../../../store/actions';
+import { msgAction } from '../../../../store/actions';
 import type { MailMessage, OpenEmlPreviewType } from '../../../../types';
 import { ExtraWindowCreationParams, MessageAction } from '../../../../types';
 import { findMessageActionById } from '../../../../ui-actions/utils';
@@ -71,24 +72,7 @@ const MailContent: FC<{
 		);
 	}, [message, dispatch]);
 
-	const requestDebouncedMessage = useMemo(
-		() =>
-			debounce(
-				() => {
-					if (!message?.isComplete) {
-						dispatch(getMsg({ msgId: message.id }));
-					}
-				},
-				DEFAULT_API_DEBOUNCE_TIME,
-				{ leading: false, trailing: true }
-			),
-		[dispatch, message?.isComplete, message.id]
-	);
-
-	useEffect(() => {
-		requestDebouncedMessage();
-		return () => requestDebouncedMessage.cancel();
-	}, [requestDebouncedMessage]);
+	useRequestDebouncedMessage(message.id, message?.isComplete);
 
 	const showAppointmentInvite = useMemo(
 		() =>
