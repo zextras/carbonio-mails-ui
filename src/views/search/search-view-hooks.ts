@@ -29,7 +29,7 @@ import {
 	appendMessages,
 	resetSearch,
 	setConversations,
-	updateMessages,
+	setMessages,
 	updateSearchResultsLoadingStatus,
 	useSearchResults
 } from '../../store/zustand/message-store/store';
@@ -64,7 +64,7 @@ function handleFulFilledConversationResults({
 		)
 	);
 	setConversations(conversations, offset, searchResponse.more);
-	updateMessages(messages, offset);
+	setMessages(messages, offset);
 }
 
 function handleLoadMoreConversationResults({
@@ -100,7 +100,7 @@ function handleFulFilledMessagesResults({
 		normalizeMailMessageFromSoap(msg, false)
 	);
 
-	updateMessages(normalizedMessages, offset);
+	setMessages(normalizedMessages, offset);
 }
 
 function handleSearchResults({

@@ -30,7 +30,7 @@ import * as visibleActionsCount from '../../../../hooks/use-visible-actions-coun
 import {
 	setConversations,
 	updateConversationStatus,
-	updateMessages
+	setMessages
 } from '../../../../store/zustand/message-store/store';
 import { generateConversation } from '../../../../tests/generators/generateConversation';
 import { generateMessage } from '../../../../tests/generators/generateMessage';
@@ -128,7 +128,7 @@ describe('Conversation Preview', () => {
 		});
 		setConversations([conversation], 0);
 		updateConversationStatus(conversation.id, API_REQUEST_STATUS.fulfilled);
-		updateMessages([message1, message2], 0);
+		setMessages([message1, message2], 0);
 
 		const { user } = setupTest(<SearchConversationPanel />, { store });
 		const mail2ClosedPanel = await screen.findByTestId(/open-message-2/);
@@ -162,7 +162,7 @@ describe('Conversation Preview', () => {
 			});
 			setConversations([conversation], 0);
 			updateConversationStatus(conversation.id, API_REQUEST_STATUS.fulfilled);
-			updateMessages([message1, message2], 0);
+			setMessages([message1, message2], 0);
 			setupMocks('123');
 
 			setupTest(<SearchConversationPanel />, { store });

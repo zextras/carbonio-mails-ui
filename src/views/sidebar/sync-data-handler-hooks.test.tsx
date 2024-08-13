@@ -15,7 +15,7 @@ import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
 import { useNotify } from '../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
 import {
 	setConversations,
-	updateMessages,
+	setMessages,
 	useConversationById,
 	useMessageById
 } from '../../store/zustand/message-store/store';
@@ -169,7 +169,7 @@ describe('sync data handler', () => {
 
 	describe('messages', () => {
 		it('should mark messages as read', async () => {
-			updateMessages([generateMessage({ id: '1', isRead: false })], 0);
+			setMessages([generateMessage({ id: '1', isRead: false })], 0);
 			mockSoapModifyMessageAction(mailboxNumber, '1', [READ]);
 
 			renderHook(() => useSyncDataHandler(), {
@@ -182,7 +182,7 @@ describe('sync data handler', () => {
 			});
 		});
 		it('should mark messages as unread', async () => {
-			updateMessages([generateMessage({ id: '1', isRead: true })], 0);
+			setMessages([generateMessage({ id: '1', isRead: true })], 0);
 			mockSoapModifyMessageAction(mailboxNumber, '1', [UNREAD]);
 
 			renderHook(() => useSyncDataHandler(), {
@@ -196,7 +196,7 @@ describe('sync data handler', () => {
 		});
 
 		it('should mark messages as flagged', async () => {
-			updateMessages([generateMessage({ id: '1', isFlagged: false })], 0);
+			setMessages([generateMessage({ id: '1', isFlagged: false })], 0);
 			mockSoapModifyMessageAction(mailboxNumber, '1', [FLAGGED]);
 
 			renderHook(() => useSyncDataHandler(), {
@@ -209,7 +209,7 @@ describe('sync data handler', () => {
 			});
 		});
 		it('should mark messages as not flagged', async () => {
-			updateMessages([generateMessage({ id: '1', isFlagged: true })], 0);
+			setMessages([generateMessage({ id: '1', isFlagged: true })], 0);
 			mockSoapModifyMessageAction(mailboxNumber, '1', [NOTFLAGGED]);
 
 			renderHook(() => useSyncDataHandler(), {
@@ -223,7 +223,7 @@ describe('sync data handler', () => {
 		});
 
 		it('should mark message as spam', async () => {
-			updateMessages([generateMessage({ id: '1', folderId: FOLDERS.INBOX })], 0);
+			setMessages([generateMessage({ id: '1', folderId: FOLDERS.INBOX })], 0);
 			mockSoapModifyMessageFolder(mailboxNumber, '1', FOLDERS.SPAM);
 
 			renderHook(() => useSyncDataHandler(), {
@@ -236,7 +236,7 @@ describe('sync data handler', () => {
 			});
 		});
 		it('should mark message as not spam', async () => {
-			updateMessages([generateMessage({ id: '1', folderId: FOLDERS.SPAM })], 0);
+			setMessages([generateMessage({ id: '1', folderId: FOLDERS.SPAM })], 0);
 			mockSoapModifyMessageFolder(mailboxNumber, '1', FOLDERS.INBOX);
 
 			renderHook(() => useSyncDataHandler(), {
@@ -250,7 +250,7 @@ describe('sync data handler', () => {
 		});
 
 		it('should move message to trash', async () => {
-			updateMessages([generateMessage({ id: '1', folderId: FOLDERS.INBOX })], 0);
+			setMessages([generateMessage({ id: '1', folderId: FOLDERS.INBOX })], 0);
 			mockSoapModifyMessageFolder(mailboxNumber, '1', FOLDERS.TRASH);
 
 			renderHook(() => useSyncDataHandler(), {
@@ -264,7 +264,7 @@ describe('sync data handler', () => {
 		});
 
 		it('should restore message', async () => {
-			updateMessages([generateMessage({ id: '1', folderId: FOLDERS.TRASH })], 0);
+			setMessages([generateMessage({ id: '1', folderId: FOLDERS.TRASH })], 0);
 			mockSoapModifyMessageFolder(mailboxNumber, '1', FOLDERS.INBOX);
 
 			renderHook(() => useSyncDataHandler(), {
@@ -278,7 +278,7 @@ describe('sync data handler', () => {
 		});
 
 		it('should move message to a folder', async () => {
-			updateMessages([generateMessage({ id: '1', folderId: 'aaa' })], 0);
+			setMessages([generateMessage({ id: '1', folderId: 'aaa' })], 0);
 			mockSoapModifyMessageFolder(mailboxNumber, '1', 'bbb');
 
 			renderHook(() => useSyncDataHandler(), {

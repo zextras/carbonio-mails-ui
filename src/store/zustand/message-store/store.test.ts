@@ -5,6 +5,7 @@
  */
 import { act } from '@testing-library/react';
 import { renderHook } from '@testing-library/react-hooks';
+import { enableMapSet } from 'immer';
 
 import {
 	removeMessages,
@@ -12,12 +13,16 @@ import {
 	updateConversationMessages,
 	setConversations,
 	updateConversationStatus,
-	updateMessages,
+	setMessages,
 	updateMessagesOnly,
 	useConversationById,
 	useConversationMessages,
 	useConversationStatus,
-	useMessageById
+	useMessageById,
+	appendConversations,
+	appendMessages,
+	getSearchResultsLoadingStatus,
+	updateSearchResultsLoadingStatus
 } from './store';
 import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
 import { API_REQUEST_STATUS } from '../../../constants';
@@ -28,7 +33,7 @@ describe('message store', () => {
 	describe('conversation', () => {
 		it('should set and return a conversation', () => {
 			const conversation = generateConversation({ id: '1' });
-			setConversations([conversation], 0);
+			setConversations([conversation], 0, false);
 
 			const { result } = renderHook(() => useConversationById('1'));
 
@@ -51,7 +56,7 @@ describe('message store', () => {
 
 		it('should update conversation messages', () => {
 			const conversation = generateConversation({ id: '1' });
-			setConversations([conversation], 0);
+			setConversations([conversation], 0, false);
 
 			const message = generateMessage({ id: '1' });
 			updateConversationMessages(conversation.id, [message]);
@@ -71,8 +76,8 @@ describe('message store', () => {
 			const conversation1 = generateConversation({ id: '1', messages: conversation1Messages });
 			const conversation2Messages = [generateMessage({ id: '4' }), generateMessage({ id: '5' })];
 			const conversation2 = generateConversation({ id: '2', messages: conversation2Messages });
-			setConversations([conversation1, conversation2], 0);
-			updateMessages([...conversation1Messages, ...conversation2Messages], 0);
+			setConversations([conversation1, conversation2], 0, false);
+			setMessages([...conversation1Messages, ...conversation2Messages], 0);
 
 			updateConversationMessages('1', [generateMessage({ id: '100' })]);
 
@@ -84,9 +89,9 @@ describe('message store', () => {
 		});
 
 		it('should reset the searches and populated items', () => {
-			setConversations([generateConversation({ id: '1', messages: [] })], 0);
+			setConversations([generateConversation({ id: '1', messages: [] })], 0, false);
 			updateConversationStatus('1', API_REQUEST_STATUS.fulfilled);
-			updateMessages([generateMessage({ id: '100' })], 0);
+			setMessages([generateMessage({ id: '100' })], 0);
 
 			resetSearch();
 
@@ -94,12 +99,42 @@ describe('message store', () => {
 			expect(renderHook(() => useConversationStatus('1')).result.current).toBeUndefined();
 			expect(renderHook(() => useMessageById('100')).result.current).toBeUndefined();
 		});
+
+		it('should append conversations to the store when appendConversations is called', () => {
+			enableMapSet();
+			setConversations([generateConversation({ id: '1', messages: [] })], 0, false);
+
+			appendConversations(
+				[generateConversation({ id: '2' }), generateConversation({ id: '3' })],
+				0,
+				false
+			);
+
+			expect(renderHook(() => useConversationById('1')).result.current).toBeDefined();
+			expect(renderHook(() => useConversationById('2')).result.current).toBeDefined();
+			expect(renderHook(() => useConversationById('3')).result.current).toBeDefined();
+		});
+
+		it('should update the search loading status when updateSearchResultsLoadingStatus is called', () => {
+			enableMapSet();
+
+			setConversations([generateConversation({ id: '1', messages: [] })], 0, false);
+			const { result } = renderHook(() => getSearchResultsLoadingStatus());
+
+			expect(result.current).toBe(API_REQUEST_STATUS.fulfilled); // TODO: this should be undefined
+
+			renderHook(() => updateSearchResultsLoadingStatus(API_REQUEST_STATUS.pending));
+
+			const { result: searchStatusAfterUpdate } = renderHook(() => getSearchResultsLoadingStatus());
+
+			expect(searchStatusAfterUpdate.current).toBe(API_REQUEST_STATUS.pending);
+		});
 	});
 
 	describe('messages', () => {
 		it('should set and return a message', () => {
 			const message = generateMessage({ id: '1' });
-			updateMessages([message], 0);
+			setMessages([message], 0);
 
 			const { result } = renderHook(() => useMessageById('1'));
 
@@ -107,7 +142,7 @@ describe('message store', () => {
 		});
 
 		it('should not unset fields on message', () => {
-			updateMessages([generateMessage({ id: '1', folderId: FOLDERS.INBOX })], 0);
+			setMessages([generateMessage({ id: '1', folderId: FOLDERS.INBOX })], 0);
 
 			updateMessagesOnly([generateMessage({ id: '1', folderId: undefined })]);
 
@@ -118,7 +153,7 @@ describe('message store', () => {
 
 		it('should delete all messages', () => {
 			act(() => {
-				updateMessages([generateMessage({ id: '1' }), generateMessage({ id: '2' })], 0);
+				setMessages([generateMessage({ id: '1' }), generateMessage({ id: '2' })], 0);
 			});
 
 			const { result: _message1 } = renderHook(() => useMessageById('1'));
@@ -134,6 +169,17 @@ describe('message store', () => {
 			expect(message1.current).toBeUndefined();
 			const { result: message2 } = renderHook(() => useMessageById('2'));
 			expect(message2.current).toBeUndefined();
+		});
+
+		it('should append messages to the store when appendMessages is called', () => {
+			enableMapSet();
+			setMessages([generateMessage({ id: '1' })], 0);
+
+			appendMessages([generateMessage({ id: '2' }), generateMessage({ id: '3' })], 0);
+
+			expect(renderHook(() => useMessageById('1')).result.current).toBeDefined();
+			expect(renderHook(() => useMessageById('2')).result.current).toBeDefined();
+			expect(renderHook(() => useMessageById('3')).result.current).toBeDefined();
 		});
 	});
 });

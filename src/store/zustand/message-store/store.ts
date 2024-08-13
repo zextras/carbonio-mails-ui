@@ -76,7 +76,7 @@ export function setConversations(
 			state.search.status = API_REQUEST_STATUS.fulfilled;
 			state.search.conversationIds = new Set(conversations.map((c) => c.id));
 			state.search.offset = offset;
-			state.search.more = !!more;
+			state.search.more = more;
 			state.populatedItems.conversations = conversations.reduce(
 				(acc, conv) => {
 					// eslint-disable-next-line no-param-reassign
@@ -98,7 +98,6 @@ export function appendConversations(
 
 	useMessageStore.setState(
 		produce((state: MessageStoreState) => {
-			// state.search.status = API_REQUEST_STATUS.fulfilled;
 			state.search.conversationIds = new Set([
 				...state.search.conversationIds,
 				...newConvesationsIds
@@ -141,8 +140,7 @@ export function updateMessagesOnly(messages: Array<IncompleteMessage>): void {
 	);
 }
 
-// TODO: rename me, probably setMessages
-export function updateMessages(
+export function setMessages(
 	messages: Array<MailMessage | IncompleteMessage>,
 	offset: number
 ): void {
@@ -218,6 +216,10 @@ export function updateSearchResultsLoadingStatus(status: SearchRequestStatus): v
 			search.status = status;
 		})
 	);
+}
+
+export function getSearchResultsLoadingStatus(): SearchRequestStatus {
+	return useMessageStore.getState().search.status;
 }
 
 export function removeMessages(messageIds: Array<string>): void {
