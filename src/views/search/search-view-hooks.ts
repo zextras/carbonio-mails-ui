@@ -15,19 +15,20 @@ import {
 	Tags,
 	useUserSettings
 } from '@zextras/carbonio-shell-ui';
-import { includes, map, noop, reduce } from 'lodash';
+import { includes, map, reduce } from 'lodash';
 
 import { findIconFromChip } from './parts/use-find-icon';
 import { searchSoapApi } from '../../api/search';
 import { useFoldersMap } from '../../carbonio-ui-commons/store/zustand/folder';
 import type { Folder } from '../../carbonio-ui-commons/types';
-import { LIST_LIMIT, MAILS_ROUTE } from '../../constants';
+import { API_REQUEST_STATUS, LIST_LIMIT, MAILS_ROUTE } from '../../constants';
 import { mapToNormalizedConversation } from '../../normalizations/normalize-conversation';
 import { normalizeMailMessageFromSoap } from '../../normalizations/normalize-message';
 import {
 	resetSearch,
 	updateConversations,
 	updateMessages,
+	updateSearchResultsLoadingStatus,
 	useSearchResults
 } from '../../store/zustand/message-store/store';
 import { IncompleteMessage, MailMessage, SearchResponse, SearchSliceState } from '../../types';
@@ -273,14 +274,17 @@ export function useRunSearch({
 export function useLoadMoreConversations({
 	query,
 	offset,
-	hasMore
+	hasMore,
+	loading
 }: {
 	query: string;
 	offset: number;
 	hasMore?: boolean;
+	loading: boolean;
 }): () => void {
 	return useCallback(async () => {
-		if (hasMore) {
+		if (hasMore && !loading) {
+			updateSearchResultsLoadingStatus(API_REQUEST_STATUS.pending);
 			const searchResponse = await searchSoapApi({
 				query,
 				limit: LIST_LIMIT.LOAD_MORE_LIMIT,
@@ -290,11 +294,12 @@ export function useLoadMoreConversations({
 				recip: '0'
 			});
 			if ('Fault' in searchResponse) {
-				noop(); // TODO: we need to put something here
+				updateSearchResultsLoadingStatus(API_REQUEST_STATUS.error);
 			} else if (searchResponse.c) {
+				updateSearchResultsLoadingStatus(API_REQUEST_STATUS.fulfilled);
 				const tags = getTags();
 				handleFulFilledConversationResults({ searchResponse, offset, tags });
 			}
 		}
-	}, [hasMore, offset, query]);
+	}, [hasMore, loading, offset, query]);
 }

@@ -169,6 +169,14 @@ export function updateConversationStatus(
 	);
 }
 
+export function updateSearchResultsLoadingStatus(status: SearchRequestStatus): void {
+	useMessageStore.setState(
+		produce(({ searches }) => {
+			searches.status = status;
+		})
+	);
+}
+
 export function removeMessages(messageIds: Array<string>): void {
 	useMessageStore.setState(
 		produce((state: MessageStoreState) => {

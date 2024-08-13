@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, useLayoutEffect, useMemo, useRef } from 'react';
+import React, { FC, useEffect, useLayoutEffect, useMemo, useRef } from 'react';
 
 import { Container, Padding, Text } from '@zextras/carbonio-design-system';
 import { t, useAppContext } from '@zextras/carbonio-shell-ui';
@@ -74,7 +74,12 @@ export const SearchConversationList: FC<SearchListProps> = ({
 		listRef?.current && (listRef.current.children[0].scrollTop = 0);
 	}, [conversationIds]);
 
-	const onScrollBottom = useLoadMoreConversations({ query, offset: totalConversations, hasMore });
+	const onScrollBottom = useLoadMoreConversations({
+		query,
+		offset: totalConversations,
+		hasMore,
+		loading
+	});
 
 	const listItems = useMemo(
 		() =>
