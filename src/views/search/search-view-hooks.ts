@@ -15,7 +15,7 @@ import {
 	Tags,
 	useUserSettings
 } from '@zextras/carbonio-shell-ui';
-import { includes, map, reduce } from 'lodash';
+import { includes, map, noop, reduce } from 'lodash';
 
 import { findIconFromChip } from './parts/use-find-icon';
 import { searchSoapApi } from '../../api/search';
@@ -114,7 +114,6 @@ export function useRunSearch({
 }: RunSearchCallback): {
 	searchDisabled: boolean;
 	queryToString: string;
-	loading: boolean;
 	searchResults: SearchSliceState['search'];
 	isInvalidQuery: boolean;
 	filterCount: number;
@@ -154,7 +153,6 @@ export function useRunSearch({
 		[searchInFolders]
 	);
 
-	const [loading, setLoading] = useState(false);
 	const [filterCount, setFilterCount] = useState(0);
 
 	const [isInvalidQuery, setIsInvalidQuery] = useState<boolean>(false);
@@ -247,16 +245,9 @@ export function useRunSearch({
 	}, [findIcon, isInvalidQuery, query, queryArray, updateQuery]);
 
 	useEffect(() => {
-		if (searchResults.status === 'pending') {
-			setLoading(true);
-		}
-		setLoading(false);
-	}, [searchResults.status]);
-
-	useEffect(() => {
 		if (query?.length > 0 && !isInvalidQuery) {
 			setFilterCount(query.length);
-			searchQuery(queryToString, false);
+			searchResults.offset === 0 && searchQuery(queryToString, false);
 		}
 		if (query?.length === 0) {
 			setFilterCount(0);
@@ -268,14 +259,42 @@ export function useRunSearch({
 				route: SEARCH_APP_ID
 			});
 		}
-	}, [isInvalidQuery, query.length, queryToString, searchQuery]);
+	}, [isInvalidQuery, query.length, queryToString, searchQuery, searchResults.offset]);
 
 	return {
 		searchDisabled,
 		filterCount,
 		searchResults,
-		loading,
 		isInvalidQuery,
 		queryToString
 	};
+}
+
+export function useLoadMoreConversations({
+	query,
+	offset,
+	hasMore
+}: {
+	query: string;
+	offset: number;
+	hasMore?: boolean;
+}): () => void {
+	return useCallback(async () => {
+		if (hasMore) {
+			const searchResponse = await searchSoapApi({
+				query,
+				limit: LIST_LIMIT.LOAD_MORE_LIMIT,
+				sortBy: 'dateDesc',
+				types: 'conversation',
+				offset,
+				recip: '0'
+			});
+			if ('Fault' in searchResponse) {
+				noop();
+			} else if (searchResponse.c) {
+				const tags = getTags();
+				handleFulFilledConversationResults({ searchResponse, offset, tags });
+			}
+		}
+	}, [hasMore, offset, query]);
 }

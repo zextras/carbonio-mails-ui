@@ -76,7 +76,7 @@ export function updateConversations(
 			state.search.status = API_REQUEST_STATUS.fulfilled;
 			state.search.conversationIds = new Set(conversations.map((c) => c.id));
 			state.search.offset = offset;
-			state.search.more = more;
+			state.search.more = !!more;
 			state.populatedItems.conversations = conversations.reduce(
 				(acc, conv) => {
 					// eslint-disable-next-line no-param-reassign

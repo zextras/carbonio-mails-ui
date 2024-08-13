@@ -31,7 +31,7 @@ const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHe
 		() => t('label.invalid_query', 'Unable to parse the search query, clear it and retry'),
 		[]
 	);
-	const { queryToString, isInvalidQuery, loading, searchDisabled, searchResults, filterCount } =
+	const { queryToString, isInvalidQuery, searchDisabled, searchResults, filterCount } =
 		useRunSearch({
 			query,
 			updateQuery,
@@ -54,6 +54,8 @@ const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHe
 		}
 		return '';
 	}, [isInvalidQuery, searchResults.status, invalidQueryTooltip]);
+
+	const loading = searchResults.status === 'pending';
 
 	return (
 		<>

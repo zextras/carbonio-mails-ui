@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import React, { FC, useLayoutEffect, useMemo, useRef } from 'react';
 
 import { Container, Padding, Text } from '@zextras/carbonio-design-system';
 import { t, useAppContext } from '@zextras/carbonio-shell-ui';
@@ -13,13 +13,11 @@ import { useParams } from 'react-router-dom';
 import { SearchConversationListItem } from './search-conversation-list-item';
 import { CustomList } from '../../../../carbonio-ui-commons/components/list/list';
 import { CustomListItem } from '../../../../carbonio-ui-commons/components/list/list-item';
-import { LIST_LIMIT } from '../../../../constants';
-import { useAppDispatch } from '../../../../hooks/redux';
 import { useSelection } from '../../../../hooks/use-selection';
-import { search } from '../../../../store/actions';
 import type { AppContext, SearchListProps } from '../../../../types';
 import { Divider } from '../../../app/detail-panel/edit/parts/edit-view-styled-components';
 import { AdvancedFilterButton } from '../../parts/advanced-filter-button';
+import { useLoadMoreConversations } from '../../search-view-hooks';
 import ShimmerList from '../../shimmer-list';
 import { SearchListHeader } from '../parts/search-list-header';
 
@@ -37,8 +35,6 @@ export const SearchConversationList: FC<SearchListProps> = ({
 	const { itemId, folderId } = useParams<{ itemId: string; folderId: string }>();
 	const { setCount, count } = useAppContext<AppContext>();
 	const items = [...conversationIds].map((conversationId) => ({ id: conversationId }));
-	const dispatch = useAppDispatch();
-	const [isLoading, setIsLoading] = useState(false);
 	const randomListIndex = useMemo(() => Math.floor(Math.random() * 2), []);
 	const listRef = useRef<HTMLDivElement>(null);
 	const totalConversations = useMemo(() => conversationIds.size, [conversationIds]);
@@ -78,23 +74,8 @@ export const SearchConversationList: FC<SearchListProps> = ({
 		listRef?.current && (listRef.current.children[0].scrollTop = 0);
 	}, [conversationIds]);
 
-	const onScrollBottom = useCallback(() => {
-		if (hasMore && !isLoading) {
-			setIsLoading(true);
-			dispatch(
-				search({
-					query,
-					limit: LIST_LIMIT.LOAD_MORE_LIMIT,
-					sortBy: 'dateDesc',
-					types: 'conversation',
-					offset: totalConversations,
-					recip: '0'
-				})
-			).then(() => {
-				setIsLoading(false);
-			});
-		}
-	}, [dispatch, isLoading, query, hasMore, totalConversations]);
+	const onScrollBottom = useLoadMoreConversations({ query, offset: totalConversations, hasMore });
+
 	const listItems = useMemo(
 		() =>
 			map([...conversationIds], (conversationId) => {
