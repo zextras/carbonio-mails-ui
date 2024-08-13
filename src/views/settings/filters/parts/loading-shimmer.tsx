@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { FC, ReactElement } from 'react';
+
 import { Container, Shimmer } from '@zextras/carbonio-design-system';
 
 const LoadingShimmer: FC = (): ReactElement => (
@@ -13,9 +14,8 @@ const LoadingShimmer: FC = (): ReactElement => (
 		width="fill"
 		crossAlignment="flex-start"
 	>
-		<Shimmer.FormSection>
-			<Shimmer.FormSubSection />
-		</Shimmer.FormSection>
+		<Shimmer.FormSection variant={'dark'} />
+		<Shimmer.FormSubSection variant={'dark'} />
 	</Container>
 );
 
