@@ -111,6 +111,7 @@ export const RecipientsRow: FC<RecipientsRowProps> = ({
 					bottomBorderColor="transparent"
 					hasError={some(recipients || [], { error: true })}
 					dragAndDropEnabled
+					onInputTypeDebounce={600}
 					orderedAccountIds={orderedAccountIds}
 				/>
 			) : (
@@ -121,9 +122,10 @@ export const RecipientsRow: FC<RecipientsRowProps> = ({
 					onAdd={onChipInputAdd}
 					onChange={onChipInputChange}
 					defaultValue={recipientsAsContacts}
-					background="gray5"
+					background={'gray5'}
 					hasError={some(recipients || [], { error: true })}
 					createChipOnPaste
+					onInputTypeDebounce={600}
 					pasteSeparators={[',', ';', '\n']}
 					separators={[
 						{ code: 'Enter', ctrlKey: false },
