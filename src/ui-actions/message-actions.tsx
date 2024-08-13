@@ -403,7 +403,7 @@ export const useMoveMsgToTrash = (): ((arg: MessageActionPropType) => MessageAct
 export const useDeleteMsg = (): ((
 	arg: Pick<MessageActionPropType, 'ids' | 'dispatch'>
 ) => MessageActionReturnType) => {
-	const { createSnackbar, createModal } = useUiUtilities();
+	const { createSnackbar, createModal, closeModal } = useUiUtilities();
 
 	return useCallback(
 		({ ids, dispatch }) => {
@@ -417,7 +417,9 @@ export const useDeleteMsg = (): ((
 					if (ev) {
 						ev.preventDefault();
 					}
-					const closeModal = createModal({
+					const id = Date.now().toString();
+					createModal({
+						id,
 						title: t('header.delete_email', 'Delete e-mail'),
 						confirmLabel: t('action.ok', 'Ok'),
 						onConfirm: () => {
@@ -427,7 +429,7 @@ export const useDeleteMsg = (): ((
 									ids
 								})
 							).then((res) => {
-								closeModal();
+								closeModal(id);
 								if (res.type.includes('fulfilled')) {
 									createSnackbar({
 										key: `trash-${ids}`,
@@ -448,10 +450,10 @@ export const useDeleteMsg = (): ((
 							});
 						},
 						onClose: () => {
-							closeModal();
+							closeModal(id);
 						},
 						onSecondaryAction: () => {
-							closeModal();
+							closeModal(id);
 						},
 						dismissLabel: t('label.cancel', 'Cancel'),
 						children: (
@@ -474,7 +476,7 @@ export const useDeleteMsg = (): ((
 				}
 			};
 		},
-		[createModal, createSnackbar]
+		[closeModal, createModal, createSnackbar]
 	);
 };
 
@@ -545,7 +547,7 @@ export function editAsNewMsg({ id }: Pick<MessageActionPropType, 'id'>): Message
 export const useEditDraft = (): ((
 	arg: Pick<MessageActionPropType, 'id' | 'folderId' | 'message'>
 ) => MessageActionReturnType) => {
-	const { createModal } = useUiUtilities();
+	const { createModal, closeModal } = useUiUtilities();
 	return useCallback(
 		({ id, message }): MessageActionReturnType => {
 			const actDescriptor = MessageActionsDescriptors.EDIT_DRAFT;
@@ -556,18 +558,20 @@ export const useEditDraft = (): ((
 				onClick: (ev): void => {
 					if (ev) ev.preventDefault();
 					if (message?.isScheduled) {
-						const closeModal = createModal({
+						const id = Date.now().toString();
+						createModal({
+							id,
 							title: t('label.warning', 'Warning'),
 							confirmLabel: t('action.edit_anyway', 'Edit anyway'),
 							onConfirm: () => {
-								closeModal();
+								closeModal(id);
 								createEditBoard({
 									action: EditViewActions.EDIT_AS_DRAFT,
 									actionTargetId: `${id}`
 								});
 							},
 							onClose: () => {
-								closeModal();
+								closeModal(id);
 							},
 							showCloseIcon: true,
 							children: (
@@ -590,7 +594,7 @@ export const useEditDraft = (): ((
 				}
 			};
 		},
-		[createModal]
+		[closeModal, createModal]
 	);
 };
 
@@ -643,7 +647,7 @@ export function sendDraftFromPreview({
 }
 
 export const useRedirectMsg = (): ((arg: { id: string }) => MessageActionReturnType) => {
-	const { createModal } = useUiUtilities();
+	const { createModal, closeModal } = useUiUtilities();
 	return useCallback(
 		({ id }) => {
 			const actDescriptor = MessageActionsDescriptors.REDIRECT;
@@ -653,12 +657,14 @@ export const useRedirectMsg = (): ((arg: { id: string }) => MessageActionReturnT
 				label: t('action.redirect', 'Redirect'),
 				onClick: (ev): void => {
 					if (ev) ev.preventDefault();
-					const closeModal = createModal(
+					const modalId = Date.now().toString();
+					createModal(
 						{
+							id: modalId,
 							maxHeight: '90vh',
 							children: (
 								<StoreProvider>
-									<RedirectAction onClose={(): void => closeModal()} id={id} />
+									<RedirectAction onClose={(): void => closeModal(modalId)} id={id} />
 								</StoreProvider>
 							)
 						},
@@ -667,14 +673,14 @@ export const useRedirectMsg = (): ((arg: { id: string }) => MessageActionReturnT
 				}
 			};
 		},
-		[createModal]
+		[closeModal, createModal]
 	);
 };
 
 export const useMoveMessageToFolder = (): ((
 	arg: Pick<MessageActionPropType, 'id' | 'dispatch' | 'isRestore' | 'deselectAll' | 'folderId'>
 ) => MessageActionReturnType) => {
-	const { createModal } = useUiUtilities();
+	const { createModal, closeModal } = useUiUtilities();
 	return useCallback(
 		({ id, dispatch, isRestore, deselectAll, folderId }) => {
 			const actDescriptor = isRestore
@@ -685,8 +691,10 @@ export const useMoveMessageToFolder = (): ((
 				icon: isRestore ? 'RestoreOutline' : 'MoveOutline',
 				label: isRestore ? t('label.restore', 'Restore') : t('label.move', 'Move'),
 				onClick: (): void => {
-					const closeModal = createModal(
+					const modalId = Date.now().toString();
+					createModal(
 						{
+							id: modalId,
 							maxHeight: '90vh',
 							size: 'medium',
 							children: (
@@ -694,7 +702,7 @@ export const useMoveMessageToFolder = (): ((
 									<MoveConvMessage
 										folderId={folderId ?? ''}
 										selectedIDs={[id as string]}
-										onClose={(): void => closeModal()}
+										onClose={(): void => closeModal(modalId)}
 										isMessageView
 										isRestore={isRestore ?? false}
 										deselectAll={deselectAll ?? noop}
@@ -708,14 +716,14 @@ export const useMoveMessageToFolder = (): ((
 				}
 			};
 		},
-		[createModal]
+		[closeModal, createModal]
 	);
 };
 
 export const useDeleteMessagePermanently = (): ((
 	arg: MessageActionPropType
 ) => MessageActionReturnType) => {
-	const { createModal } = useUiUtilities();
+	const { createModal, closeModal } = useUiUtilities();
 	return useCallback(
 		({ ids, deselectAll }) => {
 			const actDescriptor = MessageActionsDescriptors.DELETE_PERMANENTLY;
@@ -724,14 +732,16 @@ export const useDeleteMessagePermanently = (): ((
 				icon: 'DeletePermanentlyOutline',
 				label: t('label.delete_permanently', 'Delete Permanently'),
 				onClick: (): void => {
-					const closeModal = createModal(
+					const modalId = Date.now().toString();
+					createModal(
 						{
+							id: modalId,
 							children: (
 								<StoreProvider>
 									<DeleteConvConfirm
 										selectedIDs={ids}
 										isMessageView
-										onClose={(): void => closeModal()}
+										onClose={(): void => closeModal(modalId)}
 										deselectAll={deselectAll || ((): null => null)}
 									/>
 								</StoreProvider>
@@ -742,7 +752,7 @@ export const useDeleteMessagePermanently = (): ((
 				}
 			};
 		},
-		[createModal]
+		[closeModal, createModal]
 	);
 };
 

@@ -5,7 +5,7 @@
  */
 import React from 'react';
 
-import { CreateModalFn, ModalManager } from '@zextras/carbonio-design-system';
+import { CloseModalFn, CreateModalFn, ModalManager } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 
 import { SelectFolderModal } from './modals/select-folder-modal';
@@ -30,6 +30,7 @@ export type SelectFoldersUIActionExecutionConfig = {
 export interface SelectFoldersUIActionExecutionParams extends UIActionExecutionParams<Folder> {
 	config: Partial<SelectFoldersUIActionExecutionConfig>;
 	uiUtilities: {
+		closeModal: CloseModalFn;
 		createModal: CreateModalFn;
 	};
 	callbacks: {
@@ -66,16 +67,18 @@ export const getSelectFoldersUIAction = (): UIAction<SelectFoldersUIActionExecut
 		label: t('action.select_folders', 'Select folders'),
 		openModal: (params): void => {
 			const { uiUtilities, callbacks } = params;
+			const id = Date.now().toString();
 			const config = mergeDefaultExecutionConfig(params.config);
-			const closeModal = uiUtilities.createModal(
+			uiUtilities.createModal(
 				{
+					id,
 					size: 'medium',
 					children: (
 						<ModalManager>
 							<SelectFolderModal
 								folder={config.selectedFolder}
 								onClose={(): void => {
-									closeModal();
+									uiUtilities.closeModal(id);
 									callbacks.onCancel && callbacks.onCancel();
 								}}
 								headerTitle={config.title}
@@ -85,7 +88,7 @@ export const getSelectFoldersUIAction = (): UIAction<SelectFoldersUIActionExecut
 									if (!folder) {
 										return;
 									}
-									closeModal();
+									uiUtilities.closeModal(id);
 									callbacks.onComplete && callbacks.onComplete(folder);
 								}}
 								actionTooltip={config.confirmActionTooltip}

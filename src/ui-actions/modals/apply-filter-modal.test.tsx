@@ -15,13 +15,7 @@ describe('Apply Filter Modal', () => {
 	test('should render the modal', async () => {
 		const store = generateStore();
 
-		setupTest(
-			<ApplyFilterModal
-				criteria={{ filterName: 'criteria' }}
-				closeModal={jest.fn()}
-			></ApplyFilterModal>,
-			{ store }
-		);
+		setupTest(<ApplyFilterModal criteria={{ filterName: 'criteria' }} modalId={'1'} />, { store });
 
 		expect(await screen.findByText(/modals\.apply_filters\.title/i)).toBeInTheDocument();
 	});
@@ -30,10 +24,7 @@ describe('Apply Filter Modal', () => {
 		const store = generateStore();
 
 		const { user } = setupTest(
-			<ApplyFilterModal
-				criteria={{ filterName: 'criteria' }}
-				closeModal={jest.fn()}
-			></ApplyFilterModal>,
+			<ApplyFilterModal criteria={{ filterName: 'criteria' }} modalId={'1'} />,
 			{ store }
 		);
 

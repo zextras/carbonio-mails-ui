@@ -377,15 +377,17 @@ export const useMoveConversationToFolder = (): ((
 		'ids' | 'dispatch' | 'isRestore' | 'deselectAll' | 'folderId'
 	>
 ) => ConvActionReturnType) => {
-	const { createModal } = useUiUtilities();
+	const { createModal, closeModal } = useUiUtilities();
 	return useCallback(
 		({ ids, folderId, dispatch, isRestore, deselectAll }) => ({
 			id: 'move-conversations',
 			icon: isRestore ? 'RestoreOutline' : 'MoveOutline',
 			label: isRestore ? t('label.restore', 'Restore') : t('label.move', 'Move'),
 			onClick: (): void => {
-				const closeModal = createModal(
+				const id = Date.now().toString();
+				createModal(
 					{
+						id,
 						maxHeight: '90vh',
 						size: 'medium',
 						children: (
@@ -393,7 +395,7 @@ export const useMoveConversationToFolder = (): ((
 								<MoveConvMessage
 									folderId={folderId}
 									selectedIDs={ids}
-									onClose={(): void => closeModal()}
+									onClose={(): void => closeModal(id)}
 									isMessageView={false}
 									isRestore={isRestore}
 									deselectAll={deselectAll}
@@ -406,14 +408,14 @@ export const useMoveConversationToFolder = (): ((
 				);
 			}
 		}),
-		[createModal]
+		[closeModal, createModal]
 	);
 };
 
 export const useDeleteConversationPermanently = (): ((
 	conversation: Pick<ConvActionPropType, 'ids' | 'deselectAll'>
 ) => ConvActionReturnType) => {
-	const { createModal } = useUiUtilities();
+	const { createModal, closeModal } = useUiUtilities();
 
 	return useCallback(
 		({ ids, deselectAll }) => ({
@@ -421,16 +423,16 @@ export const useDeleteConversationPermanently = (): ((
 			icon: 'DeletePermanentlyOutline',
 			label: t('label.delete_permanently', 'Delete permanently'),
 			onClick: (): void => {
-				const closeModal = createModal(
+				const id = Date.now().toString();
+				createModal(
 					{
+						id,
 						children: (
 							<StoreProvider>
 								<DeleteConvConfirm
 									selectedIDs={ids}
 									isMessageView={false}
-									// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-									// @ts-ignore
-									onClose={(): void => closeModal()}
+									onClose={(): void => closeModal(id)}
 									deselectAll={deselectAll}
 								/>
 							</StoreProvider>
@@ -440,6 +442,6 @@ export const useDeleteConversationPermanently = (): ((
 				);
 			}
 		}),
-		[createModal]
+		[closeModal, createModal]
 	);
 };

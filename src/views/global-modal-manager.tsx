@@ -5,19 +5,28 @@
  */
 import React, { useEffect } from 'react';
 
-import { CreateModalFn, ModalManager, useModal } from '@zextras/carbonio-design-system';
+import {
+	CloseModalFn,
+	CreateModalFn,
+	ModalManager,
+	useModal
+} from '@zextras/carbonio-design-system';
 
-const globalCreateModalObj: { createModal: CreateModalFn } = {
+const globalModalObj: { createModal: CreateModalFn; closeModal: CloseModalFn } = {
 	createModal: () => {
+		throw new Error('global modal manager not initialized');
+	},
+	closeModal: () => {
 		throw new Error('global modal manager not initialized');
 	}
 };
 
 const GlobalModalManagerProvider = (): null => {
-	const createModal = useModal();
+	const { createModal, closeModal } = useModal();
 	useEffect(() => {
-		globalCreateModalObj.createModal = createModal;
-	}, [createModal]);
+		globalModalObj.createModal = createModal;
+		globalModalObj.closeModal = closeModal;
+	}, [createModal, closeModal]);
 	return null;
 };
 
@@ -30,4 +39,5 @@ export const GlobalModalManager = ({
 	</ModalManager>
 );
 
-export const useGlobalModal = (): CreateModalFn => globalCreateModalObj.createModal;
+export const useGlobalModal = (): { createModal: CreateModalFn; closeModal: CloseModalFn } =>
+	globalModalObj;

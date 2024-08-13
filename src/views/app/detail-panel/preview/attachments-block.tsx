@@ -134,7 +134,7 @@ const Attachment: FC<AttachmentType> = ({
 	const { createPreview } = useContext(PreviewsManagerContext);
 	const { isInsideExtraWindow } = useExtraWindow();
 	const extension = getFileExtension(att).value;
-	const { createSnackbar, createModal } = useUiUtilities();
+	const { createSnackbar, createModal, closeModal } = useUiUtilities();
 
 	const inputRef = useRef<HTMLAnchorElement>(null);
 	const inputRef2 = useRef<HTMLAnchorElement>(null);
@@ -174,13 +174,15 @@ const Attachment: FC<AttachmentType> = ({
 	}, [downloadAttachment, onDeleteAttachment]);
 
 	const removeAttachment = useCallback(() => {
-		const closeModal = createModal(
+		const id = Date.now().toString();
+		createModal(
 			{
+				id,
 				maxHeight: '90vh',
 				children: (
 					<StoreProvider>
 						<DeleteAttachmentModal
-							onClose={(): void => closeModal()}
+							onClose={(): void => closeModal(id)}
 							onDownloadAndDelete={onDownloadAndDelete}
 							onDeleteAttachment={onDeleteAttachment}
 						/>
@@ -189,7 +191,7 @@ const Attachment: FC<AttachmentType> = ({
 			},
 			true
 		);
-	}, [createModal, onDeleteAttachment, onDownloadAndDelete]);
+	}, [closeModal, createModal, onDeleteAttachment, onDownloadAndDelete]);
 
 	const confirmAction = useCallback(
 		(nodes) => {

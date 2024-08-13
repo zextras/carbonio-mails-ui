@@ -85,7 +85,7 @@ type KeepDraftModalProps = {
 };
 
 export const useKeepOrDiscardDraft = (): ((arg: KeepDraftModalProps) => void) => {
-	const createModal = useGlobalModal();
+	const { createModal, closeModal } = useGlobalModal();
 	return useCallback(
 		({ editorId, draftId, onConfirm }) => {
 			const onDelete = (): void => {
@@ -93,15 +93,17 @@ export const useKeepOrDiscardDraft = (): ((arg: KeepDraftModalProps) => void) =>
 			};
 
 			if (draftId && editorId) {
-				const closeModal = createModal(
+				const id = Date.now().toString();
+				createModal(
 					{
+						id,
 						children: (
 							<StoreProvider>
 								<DeleteDraftModal
 									ids={[draftId]}
 									onDelete={onDelete}
 									onConfirm={(): void => onConfirm?.()}
-									onClose={(): void => closeModal()}
+									onClose={(): void => closeModal(id)}
 								/>
 							</StoreProvider>
 						)
@@ -110,6 +112,6 @@ export const useKeepOrDiscardDraft = (): ((arg: KeepDraftModalProps) => void) =>
 				);
 			}
 		},
-		[createModal]
+		[closeModal, createModal]
 	);
 };
