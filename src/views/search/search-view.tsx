@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, Suspense, useMemo, useState } from 'react';
+import React, { FC, Suspense, useCallback, useMemo, useState } from 'react';
 
 import { Container, Spinner } from '@zextras/carbonio-design-system';
 import { SearchViewProps, t, useUserSettings } from '@zextras/carbonio-shell-ui';
@@ -56,6 +56,10 @@ const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHe
 	}, [isInvalidQuery, searchResults.status, invalidQueryTooltip]);
 
 	const loading = searchResults.status === 'pending';
+
+	const onCloseCallback = useCallback(() => {
+		setShowAdvanceFilters(false);
+	}, [setShowAdvanceFilters]);
 
 	return (
 		<>
@@ -121,7 +125,7 @@ const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHe
 				isSharedFolderIncluded={isSharedFolderIncluded}
 				setIsSharedFolderIncluded={setIsSharedFolderIncluded}
 				open={showAdvanceFilters}
-				onClose={(): void => setShowAdvanceFilters(false)}
+				onClose={onCloseCallback}
 			/>
 		</>
 	);

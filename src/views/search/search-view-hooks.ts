@@ -166,7 +166,7 @@ export function useRunSearch({
 		[foldersToSearchInQuery, isSharedFolderIncluded, query, searchInFolders?.length]
 	);
 
-	const searchQuery = useCallback(
+	const searchQueryCallback = useCallback(
 		async (queryString: string, reset: boolean) => {
 			const offset = reset ? 0 : searchResults.offset;
 			const searchResponse = await searchSoapApi({
@@ -245,9 +245,9 @@ export function useRunSearch({
 	}, [findIcon, isInvalidQuery, query, queryArray, updateQuery]);
 
 	useEffect(() => {
-		if (query?.length > 0 && !isInvalidQuery) {
+		if (query?.length > 0 && !isInvalidQuery && searchResults.offset === 0) {
 			setFilterCount(query.length);
-			searchResults.offset === 0 && searchQuery(queryToString, false);
+			searchQueryCallback(queryToString, false);
 		}
 		if (query?.length === 0) {
 			setFilterCount(0);
@@ -259,7 +259,7 @@ export function useRunSearch({
 				route: SEARCH_APP_ID
 			});
 		}
-	}, [isInvalidQuery, query.length, queryToString, searchQuery, searchResults.offset]);
+	}, [isInvalidQuery, query.length, queryToString, searchQueryCallback, searchResults.offset]);
 
 	return {
 		searchDisabled,
@@ -290,7 +290,7 @@ export function useLoadMoreConversations({
 				recip: '0'
 			});
 			if ('Fault' in searchResponse) {
-				noop();
+				noop(); // TODO: we need to put something here
 			} else if (searchResponse.c) {
 				const tags = getTags();
 				handleFulFilledConversationResults({ searchResponse, offset, tags });
