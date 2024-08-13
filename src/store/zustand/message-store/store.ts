@@ -65,8 +65,7 @@ export function useConversationStatus(id: string): SearchRequestStatus {
 	return useMessageStore((state) => state.populatedItems.conversationsStatus?.[id]);
 }
 
-// TODO: rename me, probably setConversations
-export function updateConversations(
+export function setConversations(
 	conversations: Array<NormalizedConversation>,
 	offset: number,
 	more: boolean

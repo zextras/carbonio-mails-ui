@@ -10,7 +10,7 @@ import {
 	removeMessages,
 	resetSearch,
 	updateConversationMessages,
-	updateConversations,
+	setConversations,
 	updateConversationStatus,
 	updateMessages,
 	updateMessagesOnly,
@@ -28,7 +28,7 @@ describe('message store', () => {
 	describe('conversation', () => {
 		it('should set and return a conversation', () => {
 			const conversation = generateConversation({ id: '1' });
-			updateConversations([conversation], 0);
+			setConversations([conversation], 0);
 
 			const { result } = renderHook(() => useConversationById('1'));
 
@@ -51,7 +51,7 @@ describe('message store', () => {
 
 		it('should update conversation messages', () => {
 			const conversation = generateConversation({ id: '1' });
-			updateConversations([conversation], 0);
+			setConversations([conversation], 0);
 
 			const message = generateMessage({ id: '1' });
 			updateConversationMessages(conversation.id, [message]);
@@ -71,7 +71,7 @@ describe('message store', () => {
 			const conversation1 = generateConversation({ id: '1', messages: conversation1Messages });
 			const conversation2Messages = [generateMessage({ id: '4' }), generateMessage({ id: '5' })];
 			const conversation2 = generateConversation({ id: '2', messages: conversation2Messages });
-			updateConversations([conversation1, conversation2], 0);
+			setConversations([conversation1, conversation2], 0);
 			updateMessages([...conversation1Messages, ...conversation2Messages], 0);
 
 			updateConversationMessages('1', [generateMessage({ id: '100' })]);
@@ -84,7 +84,7 @@ describe('message store', () => {
 		});
 
 		it('should reset the searches and populated items', () => {
-			updateConversations([generateConversation({ id: '1', messages: [] })], 0);
+			setConversations([generateConversation({ id: '1', messages: [] })], 0);
 			updateConversationStatus('1', API_REQUEST_STATUS.fulfilled);
 			updateMessages([generateMessage({ id: '100' })], 0);
 

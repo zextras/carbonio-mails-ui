@@ -26,7 +26,7 @@ import { mapToNormalizedConversation } from '../../normalizations/normalize-conv
 import { normalizeMailMessageFromSoap } from '../../normalizations/normalize-message';
 import {
 	resetSearch,
-	updateConversations,
+	setConversations,
 	updateMessages,
 	updateSearchResultsLoadingStatus,
 	useSearchResults
@@ -61,7 +61,7 @@ function handleFulFilledConversationResults({
 			messages.push(normalizeMailMessageFromSoap(soapMessage, false))
 		)
 	);
-	updateConversations(conversations, offset, searchResponse.more);
+	setConversations(conversations, offset, searchResponse.more);
 	updateMessages(messages, offset);
 }
 

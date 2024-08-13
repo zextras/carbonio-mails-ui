@@ -14,7 +14,7 @@ import { useSyncDataHandler } from './commons/sync-data-handler-hooks';
 import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
 import { useNotify } from '../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
 import {
-	updateConversations,
+	setConversations,
 	updateMessages,
 	useConversationById,
 	useMessageById
@@ -113,7 +113,7 @@ describe('sync data handler', () => {
 	const mailboxNumber = 1000;
 	describe('conversations', () => {
 		it('should mark conversation as read', async () => {
-			updateConversations([generateConversation({ id: '123', messages: [], isRead: false })], 0);
+			setConversations([generateConversation({ id: '123', messages: [], isRead: false })], 0);
 			mockSoapModifyConversationAction(mailboxNumber, [READ]);
 
 			renderHook(() => useSyncDataHandler(), {
@@ -126,7 +126,7 @@ describe('sync data handler', () => {
 			});
 		});
 		it('should mark conversation as unread', async () => {
-			updateConversations([generateConversation({ id: '123', messages: [], isRead: true })], 0);
+			setConversations([generateConversation({ id: '123', messages: [], isRead: true })], 0);
 			mockSoapModifyConversationAction(mailboxNumber, [UNREAD]);
 
 			renderHook(() => useSyncDataHandler(), {
@@ -140,7 +140,7 @@ describe('sync data handler', () => {
 		});
 
 		it('should mark conversation as flagged', async () => {
-			updateConversations([generateConversation({ id: '123', messages: [], isFlagged: false })], 0);
+			setConversations([generateConversation({ id: '123', messages: [], isFlagged: false })], 0);
 			mockSoapModifyConversationAction(mailboxNumber, [FLAGGED]);
 
 			renderHook(() => useSyncDataHandler(), {
@@ -153,7 +153,7 @@ describe('sync data handler', () => {
 			});
 		});
 		it('should mark conversation as not flagged', async () => {
-			updateConversations([generateConversation({ id: '123', messages: [], isFlagged: true })], 0);
+			setConversations([generateConversation({ id: '123', messages: [], isFlagged: true })], 0);
 			mockSoapModifyConversationAction(mailboxNumber, [NOTFLAGGED]);
 
 			renderHook(() => useSyncDataHandler(), {

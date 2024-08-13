@@ -28,7 +28,7 @@ import {
 } from '../../../../helpers/api';
 import * as visibleActionsCount from '../../../../hooks/use-visible-actions-count';
 import {
-	updateConversations,
+	setConversations,
 	updateConversationStatus,
 	updateMessages
 } from '../../../../store/zustand/message-store/store';
@@ -52,7 +52,7 @@ describe('Conversation Preview', () => {
 
 	it('should render a conversation with its messages when SearchConv API returns a valid response', async () => {
 		(useParams as jest.Mock).mockReturnValue({ conversationId: '123', folderId: FOLDERS.INBOX });
-		updateConversations([generateConversation({ id: '123', folderId: FOLDERS.INBOX })], 0);
+		setConversations([generateConversation({ id: '123', folderId: FOLDERS.INBOX })], 0);
 		const interceptor = createSoapAPIInterceptor<SearchConvRequest, SearchConvResponse>(
 			'SearchConv',
 			searchConversationFromApi([
@@ -71,7 +71,7 @@ describe('Conversation Preview', () => {
 
 	it('should render an empty fragment when SearchConv API call returns Fault', async () => {
 		(useParams as jest.Mock).mockReturnValue({ conversationId: '123', folderId: FOLDERS.INBOX });
-		updateConversations([generateConversation({ id: '123', folderId: FOLDERS.INBOX })], 0);
+		setConversations([generateConversation({ id: '123', folderId: FOLDERS.INBOX })], 0);
 		const interceptor = createSoapAPIInterceptor<SearchConvRequest, ErrorSoapBodyResponse>(
 			'SearchConv',
 			buildSoapErrorResponseBody()
@@ -86,7 +86,7 @@ describe('Conversation Preview', () => {
 
 	it('should render an empty fragment when SearchConv API call throws an error', async () => {
 		(useParams as jest.Mock).mockReturnValue({ conversationId: '123', folderId: FOLDERS.INBOX });
-		updateConversations([generateConversation({ id: '123', folderId: FOLDERS.INBOX })], 0);
+		setConversations([generateConversation({ id: '123', folderId: FOLDERS.INBOX })], 0);
 		const interceptor = createSoapAPIInterceptorWithError('SearchConv');
 
 		setupTest(<SearchConversationPanel />, { store });
@@ -99,7 +99,7 @@ describe('Conversation Preview', () => {
 	it('should render a shimmer component when SearchConv API call is pending', async () => {
 		(useParams as jest.Mock).mockReturnValue({ conversationId: '123', folderId: FOLDERS.INBOX });
 		const conversation = generateConversation({ id: '123', folderId: FOLDERS.INBOX });
-		updateConversations([conversation], 0);
+		setConversations([conversation], 0);
 		updateConversationStatus(conversation.id, API_REQUEST_STATUS.pending);
 
 		setupTest(<SearchConversationPanel />, { store });
@@ -126,7 +126,7 @@ describe('Conversation Preview', () => {
 			folderId: FOLDERS.INBOX,
 			messages: [message1, message2]
 		});
-		updateConversations([conversation], 0);
+		setConversations([conversation], 0);
 		updateConversationStatus(conversation.id, API_REQUEST_STATUS.fulfilled);
 		updateMessages([message1, message2], 0);
 
@@ -160,7 +160,7 @@ describe('Conversation Preview', () => {
 				folderId: FOLDERS.INBOX,
 				messages: [message1, message2]
 			});
-			updateConversations([conversation], 0);
+			setConversations([conversation], 0);
 			updateConversationStatus(conversation.id, API_REQUEST_STATUS.fulfilled);
 			updateMessages([message1, message2], 0);
 			setupMocks('123');
