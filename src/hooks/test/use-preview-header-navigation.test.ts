@@ -51,7 +51,7 @@ describe('usePreviewHeaderNavigation', () => {
 			});
 			expect(result.current.previousActionItem.icon).toBe('ArrowIosBack');
 		});
-		test('is disabled when it is the is the first item', () => {
+		test('is disabled when it is the first item', () => {
 			const store = generateStore();
 			const { result } = setupHook(usePreviewHeaderNavigation, {
 				store,
