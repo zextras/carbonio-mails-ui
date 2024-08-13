@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, useLayoutEffect, useMemo, useRef } from 'react';
+import React, { FC, useEffect, useLayoutEffect, useMemo, useRef } from 'react';
 
 import { Container, Padding, Text } from '@zextras/carbonio-design-system';
 import { t, useAppContext } from '@zextras/carbonio-shell-ui';
@@ -114,6 +114,9 @@ export const SearchConversationList: FC<SearchListProps> = ({
 			}),
 		[conversationIds, deselectAll, isSelectModeOn, itemId, selected, toggle]
 	);
+	useEffect(() => {
+		console.log('@@@loading', loading);
+	}, [loading]);
 	return (
 		<Container background="gray6" width="25%" height="fill" mainAlignment="flex-start">
 			<AdvancedFilterButton
@@ -122,7 +125,7 @@ export const SearchConversationList: FC<SearchListProps> = ({
 				searchDisabled={searchDisabled}
 				invalidQueryTooltip={invalidQueryTooltip}
 			/>
-			{!isInvalidQuery && (
+			{!isInvalidQuery && !loading && (
 				<>
 					<SearchListHeader
 						items={items}

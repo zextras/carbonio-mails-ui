@@ -25,6 +25,8 @@ import { API_REQUEST_STATUS, LIST_LIMIT, MAILS_ROUTE } from '../../constants';
 import { mapToNormalizedConversation } from '../../normalizations/normalize-conversation';
 import { normalizeMailMessageFromSoap } from '../../normalizations/normalize-message';
 import {
+	appendConversations,
+	appendMessages,
 	resetSearch,
 	setConversations,
 	updateMessages,
@@ -63,6 +65,28 @@ function handleFulFilledConversationResults({
 	);
 	setConversations(conversations, offset, searchResponse.more);
 	updateMessages(messages, offset);
+}
+
+function handleLoadMoreConversationResults({
+	searchResponse,
+	offset,
+	tags
+}: {
+	searchResponse: SearchResponse;
+	offset: number;
+	tags: Tags;
+}): void {
+	const conversations = map(searchResponse.c, (conv) =>
+		mapToNormalizedConversation({ c: conv, tags })
+	);
+	const messages: (IncompleteMessage | MailMessage)[] = [];
+	searchResponse.c?.forEach((soapConversation) =>
+		soapConversation.m.forEach((soapMessage) =>
+			messages.push(normalizeMailMessageFromSoap(soapMessage, false))
+		)
+	);
+	appendConversations(conversations, offset, searchResponse.more);
+	appendMessages(messages, offset);
 }
 
 function handleFulFilledMessagesResults({
@@ -185,6 +209,7 @@ export function useRunSearch({
 				// @ts-ignore
 				searchResponse?.Fault?.Detail?.Error?.Code === 'mail.QUERY_PARSE_ERROR'
 			) {
+				updateSearchResultsLoadingStatus(API_REQUEST_STATUS.error);
 				setIsInvalidQuery(true);
 				setSearchDisabled(true, invalidQueryTooltip);
 			} else {
@@ -298,7 +323,7 @@ export function useLoadMoreConversations({
 			} else if (searchResponse.c) {
 				updateSearchResultsLoadingStatus(API_REQUEST_STATUS.fulfilled);
 				const tags = getTags();
-				handleFulFilledConversationResults({ searchResponse, offset, tags });
+				handleLoadMoreConversationResults({ searchResponse, offset, tags });
 			}
 		}
 	}, [hasMore, loading, offset, query]);

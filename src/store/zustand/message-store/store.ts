@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 /*
  * SPDX-FileCopyrightText: 2024 Zextras <https://www.zextras.com>
  *
@@ -48,7 +49,7 @@ export function useMessageById(id: string): IncompleteMessage | MailMessage {
 }
 
 export function useSearchResults(): SearchSliceState['search'] {
-	return useMessageStore((state) => state.search);
+	return useMessageStore(({ search }) => search);
 }
 
 export function useConversationMessages(
@@ -84,6 +85,30 @@ export function setConversations(
 				},
 				{} as Record<string, NormalizedConversation>
 			);
+		})
+	);
+}
+
+export function appendConversations(
+	conversations: Array<NormalizedConversation>,
+	offset: number,
+	more: boolean
+): void {
+	const newConvesationsIds = new Set(conversations.map((c) => c.id));
+
+	useMessageStore.setState(
+		produce((state: MessageStoreState) => {
+			// state.search.status = API_REQUEST_STATUS.fulfilled;
+			state.search.conversationIds = new Set([
+				...state.search.conversationIds,
+				...newConvesationsIds
+			]);
+			state.search.offset = offset;
+			state.search.more = more;
+			state.populatedItems.conversations = conversations.reduce((acc, conv) => {
+				acc[conv.id] = conv;
+				return acc;
+			}, state.populatedItems.conversations);
 		})
 	);
 }
@@ -132,7 +157,6 @@ export function updateMessages(
 			offset,
 			messages: messages.reduce(
 				(acc, msg) => {
-					// eslint-disable-next-line no-param-reassign
 					acc[msg.id] = msg;
 					return acc;
 				},
@@ -142,12 +166,32 @@ export function updateMessages(
 	}));
 }
 
+export function appendMessages(
+	messages: Array<MailMessage | IncompleteMessage>,
+	offset: number
+): void {
+	const newMessageIds = new Set(messages.map((c) => c.id));
+	useMessageStore.setState((state: MessageStoreState) => ({
+		search: {
+			...state.search,
+			messageIds: new Set([...state.search.messageIds, ...newMessageIds])
+		},
+		populatedItems: {
+			...state.populatedItems,
+			offset,
+			messages: messages.reduce((acc, msg) => {
+				acc[msg.id] = msg;
+				return acc;
+			}, state.populatedItems.messages)
+		}
+	}));
+}
 export function updateConversationMessages(
 	conversationId: string,
 	messages: IncompleteMessage[]
 ): void {
 	useMessageStore.setState(
-		produce(({ populatedItems }) => {
+		produce(({ populatedItems }: PopulatedItemsSliceState) => {
 			populatedItems.conversations[conversationId].messages = messages;
 			populatedItems.conversationsStatus[conversationId] = API_REQUEST_STATUS.fulfilled;
 			messages.forEach((message) => {
@@ -162,7 +206,7 @@ export function updateConversationStatus(
 	status: SearchRequestStatus
 ): void {
 	useMessageStore.setState(
-		produce(({ populatedItems }) => {
+		produce(({ populatedItems }: PopulatedItemsSliceState) => {
 			populatedItems.conversationsStatus[conversationId] = status;
 		})
 	);
@@ -170,8 +214,8 @@ export function updateConversationStatus(
 
 export function updateSearchResultsLoadingStatus(status: SearchRequestStatus): void {
 	useMessageStore.setState(
-		produce(({ searches }) => {
-			searches.status = status;
+		produce(({ search }: SearchSliceState) => {
+			search.status = status;
 		})
 	);
 }
