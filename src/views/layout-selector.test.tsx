@@ -193,7 +193,7 @@ describe('LayoutSelector', () => {
 			);
 			const component = screen.getByTestId(SELECTORS.OUTER);
 
-			expect(component).toHaveAttribute('orientation', 'row');
+			expect(component).toHaveStyle({ flexDirection: 'row' });
 		});
 
 		test('and there is not a stored value, the mails width is 60%', () => {
@@ -294,7 +294,7 @@ describe('LayoutSelector', () => {
 			);
 			const component = screen.getByTestId(SELECTORS.OUTER);
 
-			expect(component).toHaveAttribute('orientation', 'column');
+			expect(component).toHaveStyle({ flexDirection: 'column' });
 		});
 
 		test('and there is not a stored value, the width is 100%', () => {

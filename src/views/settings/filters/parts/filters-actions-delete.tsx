@@ -72,20 +72,22 @@ const FilterActions: FC<ComponentProps> = ({ compProps }): ReactElement => {
 	const disableRun = useMemo(() => true, []);
 	const disableDelete = useMemo(() => true, []);
 	const disablCreate = useMemo(() => false, []);
-	const { createModal } = useUiUtilities();
+	const { createModal, closeModal } = useUiUtilities();
 	const openCreateModal = useCallback(() => {
-		const closeModal = createModal(
+		const modalId = Date.now().toString();
+		createModal(
 			{
+				id: modalId,
 				size: 'large',
 				children: (
 					<StoreProvider>
-						<CreateFilterModal t={t} onClose={(): void => closeModal()} />
+						<CreateFilterModal t={t} onClose={(): void => closeModal(modalId)} />
 					</StoreProvider>
 				)
 			},
 			true
 		);
-	}, [createModal, t]);
+	}, [closeModal, createModal, t]);
 
 	const setFilters =
 		selectedFilterType === 'incoming-messages' ? setIncomingFilters : setOutgoingFilters;
@@ -122,8 +124,10 @@ const FilterActions: FC<ComponentProps> = ({ compProps }): ReactElement => {
 	);
 
 	const openFilterModifyModal = useCallback(() => {
-		const closeModal = createModal(
+		const modalId = Date.now().toString();
+		createModal(
 			{
+				id: modalId,
 				size: 'large',
 				maxHeight: '70vh',
 				children: (
@@ -131,7 +135,7 @@ const FilterActions: FC<ComponentProps> = ({ compProps }): ReactElement => {
 						<ModifyOutgoingFilterModal
 							t={t}
 							selectedFilter={selectedFilter}
-							onClose={(): void => closeModal()}
+							onClose={(): void => closeModal(modalId)}
 							outgoingFilters={outgoingFilters}
 							setFetchOutgoingFilters={setFetchOutgoingFilters ?? emptyFilter}
 							setOutgoingFilters={setOutgoingFilters ?? emptyFilter}
@@ -147,7 +151,8 @@ const FilterActions: FC<ComponentProps> = ({ compProps }): ReactElement => {
 		selectedFilter,
 		outgoingFilters,
 		setFetchOutgoingFilters,
-		setOutgoingFilters
+		setOutgoingFilters,
+		closeModal
 	]);
 	return (
 		<>

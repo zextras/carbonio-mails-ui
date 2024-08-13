@@ -40,7 +40,8 @@ import { TagsDropdownItem } from '../tag-actions';
 jest.mock<typeof import('../../hooks/use-ui-utilities')>('../../hooks/use-ui-utilities', () => ({
 	useUiUtilities: (): ReturnType<typeof useUiUtilities> => ({
 		createSnackbar: jest.fn(),
-		createModal: jest.fn()
+		createModal: jest.fn(),
+		closeModal: jest.fn()
 	})
 }));
 

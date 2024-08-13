@@ -4,20 +4,22 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { Button, Container, ModalManagerContext } from '@zextras/carbonio-design-system';
+import React, { FC, SyntheticEvent, useCallback, useMemo } from 'react';
+
+import { Button, Container } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import { filter, isEqual, uniqWith } from 'lodash';
-import React, { FC, SyntheticEvent, useCallback, useContext, useMemo } from 'react';
+
+import { SharesModal } from './shares-modal';
 import { ResFolder } from '../../carbonio-ui-commons/utils';
 import { useAppDispatch } from '../../hooks/redux';
+import { useUiUtilities } from '../../hooks/use-ui-utilities';
 import { getShareInfo } from '../../store/actions/get-share-info';
 import { StoreProvider } from '../../store/redux';
-import { SharesModal } from './shares-modal';
 
 export const ButtonFindShares: FC = () => {
 	const dispatch = useAppDispatch();
-	// eslint-disable-next-line @typescript-eslint/ban-types
-	const createModal = useContext(ModalManagerContext) as Function;
+	const { createModal, closeModal } = useUiUtilities();
 
 	const label = useMemo(() => t('label.find_shares', 'Find shares'), []);
 	const openFindShares = useCallback(
@@ -32,11 +34,13 @@ export const ButtonFindShares: FC = () => {
 							filter(res.payload.share, ['view', 'message']),
 							isEqual
 						);
-						const closeModal = createModal(
+						const id = Date.now().toString();
+						createModal(
 							{
+								id,
 								children: (
 									<StoreProvider>
-										<SharesModal folders={resFolders} onClose={(): void => closeModal()} />
+										<SharesModal folders={resFolders} onClose={(): void => closeModal(id)} />
 									</StoreProvider>
 								)
 							},
@@ -45,7 +49,7 @@ export const ButtonFindShares: FC = () => {
 					}
 				});
 		},
-		[createModal, dispatch]
+		[closeModal, createModal, dispatch]
 	);
 
 	return (

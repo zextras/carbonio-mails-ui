@@ -47,7 +47,7 @@ export const ConversationPreviewPanel = ({
 			padding={{ horizontal: 'large', bottom: 'small', top: 'large' }}
 			mainAlignment="flex-start"
 		>
-			<Container height="fit" mainAlignment="flex-start" background="gray5">
+			<Container height="100%" mainAlignment="flex-start" background="gray5">
 				{conversation && conversationStatus === API_REQUEST_STATUS.fulfilled ? (
 					<>
 						{map(messages, (message, index) =>

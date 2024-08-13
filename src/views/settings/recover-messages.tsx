@@ -11,7 +11,6 @@ import {
 	FormSubSection,
 	Padding,
 	useModal,
-	CloseModalFn,
 	useSnackbar,
 	Row,
 	Input,
@@ -47,14 +46,14 @@ function calculateInterval(recoverDate: Date | null): { startDate?: Date; endDat
 }
 
 export const RecoverMessages = (): React.JSX.Element => {
-	const createModal = useModal();
+	const { createModal, closeModal } = useModal();
 	const createSnackbar = useSnackbar();
 	const { zimbraPrefLocale } = useUserSettings().prefs;
 	const [searchString, setSearchString] = useState('');
 	const [recoverDay, setRecoverDay] = useState<Date | null>(null);
 
 	const restoreMessages = useCallback(
-		async (closeModal: CloseModalFn) => {
+		async (id: string) => {
 			if (!recoverDay && !searchString) return;
 			const backupSearchStoreState = useBackupSearchStore.getState();
 
@@ -65,7 +64,7 @@ export const RecoverMessages = (): React.JSX.Element => {
 				...(searchString === '' ? {} : { searchString })
 			};
 			const response = await searchBackupDeletedMessagesAPI(searchParams);
-			closeModal();
+			closeModal(id);
 
 			if ('error' in response) {
 				createSnackbar({
@@ -97,7 +96,7 @@ export const RecoverMessages = (): React.JSX.Element => {
 			}
 			replaceHistory({ route: BACKUP_SEARCH_ROUTE, path: '/' });
 		},
-		[createSnackbar, recoverDay, searchString]
+		[closeModal, createSnackbar, recoverDay, searchString]
 	);
 
 	const informativeText = t(
@@ -112,20 +111,22 @@ export const RecoverMessages = (): React.JSX.Element => {
 	const { backupSelfUndeleteAllowed } = useAdvancedAccountStore();
 
 	const handleModalConfirmOnClick = useCallback(() => {
-		const closeModal = createModal(
+		const modalId = Date.now().toString();
+		createModal(
 			{
+				id: modalId,
 				children: (
 					<StoreProvider>
 						<RecoverMessagesModal
-							onClose={(): void => closeModal()}
-							onConfirm={(): Promise<void> => restoreMessages(closeModal)}
+							onClose={(): void => closeModal(modalId)}
+							onConfirm={(): Promise<void> => restoreMessages(modalId)}
 						/>
 					</StoreProvider>
 				)
 			},
 			true
 		);
-	}, [createModal, restoreMessages]);
+	}, [closeModal, createModal, restoreMessages]);
 
 	const onDateTimePickerChange = useCallback((value) => {
 		setRecoverDay(value);
