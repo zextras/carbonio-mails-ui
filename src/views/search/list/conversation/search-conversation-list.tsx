@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, useEffect, useLayoutEffect, useMemo, useRef } from 'react';
+import React, { FC, useLayoutEffect, useMemo, useRef } from 'react';
 
 import { Container, Padding, Text } from '@zextras/carbonio-design-system';
 import { t, useAppContext } from '@zextras/carbonio-shell-ui';
@@ -35,7 +35,6 @@ export const SearchConversationList: FC<SearchListProps> = ({
 	const { itemId, folderId } = useParams<{ itemId: string; folderId: string }>();
 	const { setCount, count } = useAppContext<AppContext>();
 	const items = [...conversationIds].map((conversationId) => ({ id: conversationId }));
-	const randomListIndex = useMemo(() => Math.floor(Math.random() * 2), []);
 	const listRef = useRef<HTMLDivElement>(null);
 	const totalConversations = useMemo(() => conversationIds.size, [conversationIds]);
 
@@ -59,16 +58,13 @@ export const SearchConversationList: FC<SearchListProps> = ({
 			return null;
 		}
 		if (isEmpty(conversationIds)) {
-			if (randomListIndex === 0) {
-				return t(
-					'displayer.search_list_title1',
-					'It looks like there are no results. Keep searching!'
-				);
-			}
-			return t('displayer.search_list_title2', 'None of your items matches your search.');
+			return t(
+				'displayer.search_list_title1',
+				'It looks like there are no results. Keep searching!'
+			);
 		}
 		return null;
-	}, [isInvalidQuery, conversationIds, randomListIndex]);
+	}, [isInvalidQuery, conversationIds]);
 
 	useLayoutEffect(() => {
 		listRef?.current && (listRef.current.children[0].scrollTop = 0);
