@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 /*
  * SPDX-FileCopyrightText: 2024 Zextras <https://www.zextras.com>
  *
@@ -299,14 +300,17 @@ export function useRunSearch({
 export function useLoadMoreConversations({
 	query,
 	offset,
-	hasMore
+	hasMore,
+	loadingMore
 }: {
 	query: string;
 	offset: number;
 	hasMore?: boolean;
+	loadingMore: React.MutableRefObject<boolean>;
 }): () => void {
 	return useCallback(async () => {
-		if (hasMore) {
+		if (hasMore && !loadingMore.current) {
+			loadingMore.current = true;
 			const searchResponse = await searchSoapApi({
 				query,
 				limit: LIST_LIMIT.LOAD_MORE_LIMIT,
@@ -314,6 +318,8 @@ export function useLoadMoreConversations({
 				types: 'conversation',
 				offset,
 				recip: '0'
+			}).finally(() => {
+				loadingMore.current = false;
 			});
 			if ('Fault' in searchResponse) {
 				// TODO: handle error
@@ -323,5 +329,5 @@ export function useLoadMoreConversations({
 				handleLoadMoreConversationResults({ searchResponse, offset, tags });
 			}
 		}
-	}, [hasMore, offset, query]);
+	}, [hasMore, loadingMore, offset, query]);
 }

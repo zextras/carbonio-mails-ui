@@ -33,6 +33,7 @@ export const SearchConversationList: FC<SearchListProps> = ({
 	hasMore
 }) => {
 	const { itemId, folderId } = useParams<{ itemId: string; folderId: string }>();
+	const loadingMore = useRef<boolean>(false);
 	const { setCount, count } = useAppContext<AppContext>();
 	const items = [...conversationIds].map((conversationId) => ({ id: conversationId }));
 	const listRef = useRef<HTMLDivElement>(null);
@@ -73,7 +74,8 @@ export const SearchConversationList: FC<SearchListProps> = ({
 	const onScrollBottom = useLoadMoreConversations({
 		query,
 		offset: totalConversations,
-		hasMore
+		hasMore,
+		loadingMore
 	});
 
 	const listItems = useMemo(
