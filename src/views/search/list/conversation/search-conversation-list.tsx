@@ -73,8 +73,7 @@ export const SearchConversationList: FC<SearchListProps> = ({
 	const onScrollBottom = useLoadMoreConversations({
 		query,
 		offset: totalConversations,
-		hasMore,
-		loading
+		hasMore
 	});
 
 	const listItems = useMemo(

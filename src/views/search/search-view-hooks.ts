@@ -15,7 +15,7 @@ import {
 	Tags,
 	useUserSettings
 } from '@zextras/carbonio-shell-ui';
-import { includes, map, reduce } from 'lodash';
+import { includes, map, noop, reduce } from 'lodash';
 
 import { findIconFromChip } from './parts/use-find-icon';
 import { searchSoapApi } from '../../api/search';
@@ -299,17 +299,14 @@ export function useRunSearch({
 export function useLoadMoreConversations({
 	query,
 	offset,
-	hasMore,
-	loading
+	hasMore
 }: {
 	query: string;
 	offset: number;
 	hasMore?: boolean;
-	loading: boolean;
 }): () => void {
 	return useCallback(async () => {
-		if (hasMore && !loading) {
-			updateSearchResultsLoadingStatus(API_REQUEST_STATUS.pending);
+		if (hasMore) {
 			const searchResponse = await searchSoapApi({
 				query,
 				limit: LIST_LIMIT.LOAD_MORE_LIMIT,
@@ -319,12 +316,12 @@ export function useLoadMoreConversations({
 				recip: '0'
 			});
 			if ('Fault' in searchResponse) {
-				updateSearchResultsLoadingStatus(API_REQUEST_STATUS.error);
+				// TODO: handle error
+				noop();
 			} else if (searchResponse.c) {
-				updateSearchResultsLoadingStatus(API_REQUEST_STATUS.fulfilled);
 				const tags = getTags();
 				handleLoadMoreConversationResults({ searchResponse, offset, tags });
 			}
 		}
-	}, [hasMore, loading, offset, query]);
+	}, [hasMore, offset, query]);
 }
