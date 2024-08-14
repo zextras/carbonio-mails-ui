@@ -4,10 +4,13 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { reduce } from 'lodash';
+import { QueryChip } from '@zextras/carbonio-shell-ui';
+import { includes, map, reduce } from 'lodash';
 import { v4 as uuid } from 'uuid';
 
+import { findIconFromChip } from './parts/use-find-icon';
 import {
+	ChipType,
 	ContactInputItem,
 	Folder,
 	Folders,
@@ -78,4 +81,60 @@ export function getFoldersNameArray(folders: Folders): Array<string> {
 		},
 		[]
 	);
+}
+
+export function updateQueryChips(
+	query: Array<QueryChip>,
+	isInvalidQuery: boolean,
+	// TOFIX: fic type definition in shell-ui
+	// eslint-disable-next-line @typescript-eslint/ban-types
+	updateQuery: Function
+): void {
+	const queryArray = ['has:attachment', 'is:flagged', 'is:unread'];
+
+	let _count = 0;
+	if (query?.length > 0 && !isInvalidQuery) {
+		const modifiedQuery = map(query, (q) => {
+			if (
+				// TODO: fix type definition
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// @ts-ignore
+				(includes(queryArray, q.label) ||
+					// TODO: fix type definition
+					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+					// @ts-ignore
+					/^subject:/.test(q.label) ||
+					// TODO: fix type definition
+					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+					// @ts-ignore
+					/^in:/.test(q.label) ||
+					// TODO: fix type definition
+					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+					// @ts-ignore
+					/^before:/.test(q.label) ||
+					// TODO: fix type definition
+					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+					// @ts-ignore
+					/^after:/.test(q.label) ||
+					// TODO: fix type definition
+					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+					// @ts-ignore
+					/^tag:/.test(q.label) ||
+					// TODO: fix type definition
+					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+					// @ts-ignore
+					/^date:/.test(q.label)) &&
+				!includes(Object.keys(q), 'isGeneric') &&
+				!includes(Object.keys(q), 'isQueryFilter')
+			) {
+				_count += 1;
+				return findIconFromChip(q as ChipType);
+			}
+			return { ...q };
+		});
+
+		if (_count > 0) {
+			updateQuery(modifiedQuery);
+		}
+	}
 }

@@ -7,18 +7,18 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import {
-	ErrorSoapBodyResponse,
+	type QueryChip,
+	type ErrorSoapBodyResponse,
 	getTags,
-	QueryChip,
 	replaceHistory,
 	SEARCH_APP_ID,
 	setAppContext,
-	Tags,
+	type Tags,
 	useUserSettings
 } from '@zextras/carbonio-shell-ui';
-import { includes, map, noop, reduce } from 'lodash';
+import { map, noop, reduce } from 'lodash';
 
-import { findIconFromChip } from './parts/use-find-icon';
+import { updateQueryChips } from './utils';
 import { searchSoapApi } from '../../api/search';
 import { useFoldersMap } from '../../carbonio-ui-commons/store/zustand/folder';
 import type { Folder } from '../../carbonio-ui-commons/types';
@@ -149,6 +149,8 @@ export function useRunSearch({
 	const isMessageView = useIsMessageView();
 	const folders = useFoldersMap();
 	const [count, setCount] = useState(0);
+	const [filterCount, setFilterCount] = useState(0);
+	const [isInvalidQuery, setIsInvalidQuery] = useState<boolean>(false);
 
 	const prefLocale = useMemo(
 		() => settings.prefs.zimbraPrefLocale,
@@ -179,9 +181,8 @@ export function useRunSearch({
 		[searchInFolders]
 	);
 
-	const [filterCount, setFilterCount] = useState(0);
+	updateQueryChips(query, isInvalidQuery, updateQuery);
 
-	const [isInvalidQuery, setIsInvalidQuery] = useState<boolean>(false);
 	const searchResults = useSearchResults();
 
 	const queryToString = useMemo(
@@ -218,58 +219,6 @@ export function useRunSearch({
 		},
 		[invalidQueryTooltip, isMessageView, prefLocale, searchResults.offset, setSearchDisabled]
 	);
-
-	const queryArray = useMemo(() => ['has:attachment', 'is:flagged', 'is:unread'], []);
-	const findIcon = useCallback((chip) => findIconFromChip(chip), []);
-
-	useEffect(() => {
-		let _count = 0;
-		if (query && query.length > 0 && !isInvalidQuery) {
-			const modifiedQuery = map(query, (q) => {
-				if (
-					// TODO: fix type definition
-					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-					// @ts-ignore
-					(includes(queryArray, q.label) ||
-						// TODO: fix type definition
-						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-						// @ts-ignore
-						/^subject:/.test(q.label) ||
-						// TODO: fix type definition
-						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-						// @ts-ignore
-						/^in:/.test(q.label) ||
-						// TODO: fix type definition
-						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-						// @ts-ignore
-						/^before:/.test(q.label) ||
-						// TODO: fix type definition
-						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-						// @ts-ignore
-						/^after:/.test(q.label) ||
-						// TODO: fix type definition
-						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-						// @ts-ignore
-						/^tag:/.test(q.label) ||
-						// TODO: fix type definition
-						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-						// @ts-ignore
-						/^date:/.test(q.label)) &&
-					!includes(Object.keys(q), 'isGeneric') &&
-					!includes(Object.keys(q), 'isQueryFilter')
-				) {
-					_count += 1;
-					return findIcon(q);
-				}
-				return { ...q };
-			});
-
-			if (_count > 0) {
-				updateQuery(modifiedQuery);
-			}
-		}
-	}, [findIcon, isInvalidQuery, query, queryArray, updateQuery]);
-
 	useEffect(() => {
 		if (query?.length > 0 && !isInvalidQuery) {
 			setFilterCount(query.length);
@@ -285,7 +234,7 @@ export function useRunSearch({
 				route: SEARCH_APP_ID
 			});
 		}
-	}, [isInvalidQuery, query.length, queryToString, searchQueryCallback, searchResults.offset]);
+	}, [isInvalidQuery, query.length, queryToString, searchQueryCallback]);
 
 	return {
 		searchDisabled,
