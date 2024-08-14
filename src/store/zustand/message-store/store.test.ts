@@ -121,10 +121,9 @@ describe('message store', () => {
 			setConversations([generateConversation({ id: '1', messages: [] })], 0, false);
 			const { result } = renderHook(() => getSearchResultsLoadingStatus());
 
-			expect(result.current).toBe(API_REQUEST_STATUS.fulfilled); // TODO: this should be undefined
+			expect(result.current).toBeNull();
 
 			renderHook(() => updateSearchResultsLoadingStatus(API_REQUEST_STATUS.pending));
-
 			const { result: searchStatusAfterUpdate } = renderHook(() => getSearchResultsLoadingStatus());
 
 			expect(searchStatusAfterUpdate.current).toBe(API_REQUEST_STATUS.pending);
