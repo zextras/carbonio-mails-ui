@@ -17,7 +17,7 @@ import { convAction, msgAction } from '../store/actions';
 type DeleteConvConfirmPropType = {
 	selectedIDs: Array<string>;
 	isMessageView: boolean;
-	deselectAll: () => void | undefined;
+	deselectAll?: () => void | undefined;
 	onClose: () => void;
 };
 const DeleteConvConfirm: FC<DeleteConvConfirmPropType> = ({

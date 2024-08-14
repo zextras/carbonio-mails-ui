@@ -12,6 +12,7 @@ import { useParams } from 'react-router-dom';
 
 import { useAppDispatch } from './redux';
 import { useSelection } from './use-selection';
+import { FOLDERS } from '../carbonio-ui-commons/constants/folders';
 import { EXTRA_WINDOW_ACTION_ID } from '../constants';
 import { getFolderIdParts } from '../helpers/folders';
 import type { AppContext, MailMessage, MessageAction } from '../types';
@@ -20,7 +21,6 @@ import {
 	downloadEml,
 	editAsNewMsg,
 	forwardMsg,
-	previewMessageOnSeparatedWindow,
 	printMsg,
 	replyAllMsg,
 	replyMsg,
@@ -36,10 +36,10 @@ import {
 	useRedirectMsg,
 	useSetMsgAsSpam
 } from '../ui-actions/message-actions';
+import { previewMessageOnSeparatedWindow } from '../ui-actions/preview-message-on-separated-window';
 import { applyTag } from '../ui-actions/tag-actions';
 import { useGlobalExtraWindowManager } from '../views/app/extra-windows/global-extra-window-manager';
 import { useExtraWindow } from '../views/app/extra-windows/use-extra-window';
-import { FOLDERS } from '../carbonio-ui-commons/constants/folders';
 
 type ActionGeneratorProps = {
 	isInsideExtraWindow: boolean;

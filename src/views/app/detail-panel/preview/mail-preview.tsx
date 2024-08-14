@@ -34,8 +34,9 @@ import { MessageActionsDescriptors } from '../../../../constants';
 import { getAttachmentParts } from '../../../../helpers/attachments';
 import { getFolderIdParts } from '../../../../helpers/folders';
 import { useAppDispatch } from '../../../../hooks/redux';
+import { useRequestDebouncedMessage } from '../../../../hooks/use-request-debounced-message';
 import SharedInviteReply from '../../../../integrations/shared-invite-reply';
-import { getMsg, msgAction } from '../../../../store/actions';
+import { msgAction } from '../../../../store/actions';
 import type { MailMessage, OpenEmlPreviewType } from '../../../../types';
 import { ExtraWindowCreationParams, MessageAction } from '../../../../types';
 import { findMessageActionById } from '../../../../ui-actions/utils';
@@ -71,13 +72,7 @@ const MailContent: FC<{
 		);
 	}, [message, dispatch]);
 
-	// this is necessary because if somebody click a message in the same conversation
-	// already open that message will not be expanded
-	useEffect(() => {
-		if (!message.isComplete) {
-			dispatch(getMsg({ msgId: message.id }));
-		}
-	}, [dispatch, message.id, message.isComplete]);
+	useRequestDebouncedMessage(message.id, message?.isComplete);
 
 	const showAppointmentInvite = useMemo(
 		() =>

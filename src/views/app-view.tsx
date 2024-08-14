@@ -5,20 +5,14 @@
  */
 import React, { FC, Suspense, lazy, useEffect, useMemo, useState, useRef } from 'react';
 
-import {
-	Spinner,
-	setAppContext,
-	useUserSettings,
-	useLocalStorage
-} from '@zextras/carbonio-shell-ui';
+import { Spinner, setAppContext, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { includes } from 'lodash';
 import moment from 'moment';
 
-import { FolderView, MailsListLayout } from './folder-view';
+import { FolderView } from './folder-view';
 import { LayoutSelector } from './layout-selector';
 import { FOLDERS } from '../carbonio-ui-commons/constants/folders';
 import { useUpdateView } from '../carbonio-ui-commons/hooks/use-update-view';
-import { LOCAL_STORAGE_LAYOUT, MAILS_VIEW_LAYOUTS } from '../constants';
 import { getFolderIdParts } from '../helpers/folders';
 import { useAppSelector } from '../hooks/redux';
 import { selectCurrentFolder } from '../store/conversations-slice';
@@ -40,11 +34,6 @@ const AppView: FC = () => {
 	const containerRef = useRef<HTMLDivElement>(null);
 	useUpdateView();
 
-	const [listLayout] = useLocalStorage<MailsListLayout>(
-		LOCAL_STORAGE_LAYOUT,
-		MAILS_VIEW_LAYOUTS.LEFT_TO_RIGHT
-	);
-
 	const isMessageView = useMemo(
 		() =>
 			(zimbraPrefGroupMailBy && zimbraPrefGroupMailBy === 'message') ||
@@ -62,8 +51,7 @@ const AppView: FC = () => {
 
 	return (
 		<LayoutSelector
-			listLayout={listLayout}
-			folderView={<FolderView listLayout={listLayout} containerRef={containerRef} />}
+			folderView={<FolderView containerRef={containerRef} />}
 			detailPanel={<DetailPanel />}
 			containerRef={containerRef}
 		/>

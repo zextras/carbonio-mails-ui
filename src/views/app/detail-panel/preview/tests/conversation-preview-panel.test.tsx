@@ -6,6 +6,7 @@
 
 import React from 'react';
 
+import * as shell from '../../../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
 import { setupTest, screen } from '../../../../../carbonio-ui-commons/test/test-setup';
 import { getConv } from '../../../../../store/actions';
 import { generateStore } from '../../../../../tests/generators/store';
@@ -22,14 +23,9 @@ describe('Conversation Preview Panel', () => {
 		const state = store.getState();
 		const conversation = state.conversations.conversations[conversationId];
 
-		const convSortOrder = 'dateDesc';
 		// Render the component
 		setupTest(
-			<ConversationPreviewPanel
-				conversation={conversation}
-				isInsideExtraWindow={false}
-				convSortOrder={convSortOrder}
-			/>,
+			<ConversationPreviewPanel conversation={conversation} isInsideExtraWindow={false} />,
 			{ store }
 		);
 		conversation.messages.forEach((message) => {
@@ -43,14 +39,9 @@ describe('Conversation Preview Panel', () => {
 		await store.dispatch<any>(getConv({ conversationId }));
 		const state = store.getState();
 		const conversation = state.conversations.conversations[conversationId];
-		const convSortOrder = 'dateDesc';
 		// Render the component
 		setupTest(
-			<ConversationPreviewPanel
-				conversation={conversation}
-				isInsideExtraWindow={false}
-				convSortOrder={convSortOrder}
-			/>,
+			<ConversationPreviewPanel conversation={conversation} isInsideExtraWindow={false} />,
 			{ store }
 		);
 		const renderedMessages = screen.getAllByTestId(`ConversationMessagePreview`, {
@@ -77,14 +68,13 @@ describe('Conversation Preview Panel', () => {
 		await store.dispatch<any>(getConv({ conversationId }));
 		const state = store.getState();
 		const conversation = state.conversations.conversations[conversationId];
-		const convSortOrder = 'dateAsc';
+		shell.useUserSettings.mockReturnValue({
+			...shell.useUserSettings(),
+			prefs: { ...shell.useUserSettings().prefs, zimbraPrefConversationOrder: 'dateAsc' }
+		});
 		// Render the component
 		setupTest(
-			<ConversationPreviewPanel
-				conversation={conversation}
-				isInsideExtraWindow={false}
-				convSortOrder={convSortOrder}
-			/>,
+			<ConversationPreviewPanel conversation={conversation} isInsideExtraWindow={false} />,
 			{ store }
 		);
 		const renderedMessages = screen.getAllByTestId(`ConversationMessagePreview`, {

@@ -5,43 +5,96 @@
  */
 import React, { useCallback, useMemo } from 'react';
 
-import { IconButton, Tooltip } from '@zextras/carbonio-design-system';
-import { useLocalStorage } from '@zextras/carbonio-shell-ui';
+import { DropdownItem, MultiButton, Tooltip } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
 
-import { LOCAL_STORAGE_LAYOUT, MAILS_VIEW_LAYOUTS } from '../../../../constants';
-import type { MailsListLayout } from '../../../folder-view';
+import { MAILS_VIEW_LAYOUTS, MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS } from '../../../../constants';
+import { useViewLayout } from '../../../../hooks/use-view-layout';
 
 export const LayoutComponent = (): React.JSX.Element => {
 	const [t] = useTranslation();
-	const [listLayout, setListLayout] = useLocalStorage<MailsListLayout>(
-		LOCAL_STORAGE_LAYOUT,
-		MAILS_VIEW_LAYOUTS.LEFT_TO_RIGHT
-	);
-	const tooltipLabel = useMemo(
-		() =>
-			listLayout === MAILS_VIEW_LAYOUTS.LEFT_TO_RIGHT
-				? t('layoutView.tooltip.horizontal', 'Horizontal view')
-				: t('layoutView.tooltip.vertical', 'Vertical view'),
-		[t, listLayout]
-	);
+	const {
+		isCurrentLayoutSplit,
+		isCurrentLayoutNoSplit,
+		isCurrentLayoutVerticalSplit,
+		isCurrentLayoutHorizontalSplit,
+		splitLayoutOrientation,
+		setSplitLayoutOrientation,
+		setCurrentLayout
+	} = useViewLayout();
 
-	const onClick = useCallback(() => {
-		setListLayout((prevValue) =>
-			prevValue === MAILS_VIEW_LAYOUTS.LEFT_TO_RIGHT
-				? MAILS_VIEW_LAYOUTS.TOP_TO_BOTTOM
-				: MAILS_VIEW_LAYOUTS.LEFT_TO_RIGHT
-		);
-	}, [setListLayout]);
+	const tooltipLabel = useMemo(() => {
+		if (isCurrentLayoutSplit) {
+			return t('layoutView.tooltip.switchToNoSplit', 'Switch to no split');
+		}
+		if (splitLayoutOrientation === MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS.HORIZONTAL) {
+			return t('layoutView.tooltip.switchToHorizontal', 'Switch to horizontal split');
+		}
+		return t('layoutView.tooltip.switchToVertical', 'Switch to vertical split');
+	}, [isCurrentLayoutSplit, splitLayoutOrientation, t]);
 
-	const icon = useMemo(
-		() => (listLayout === MAILS_VIEW_LAYOUTS.LEFT_TO_RIGHT ? 'BottomViewOutline' : 'LayoutOutline'),
-		[listLayout]
-	);
+	const icon = useMemo(() => {
+		if (isCurrentLayoutSplit) {
+			return 'ViewOffOutline';
+		}
+		if (splitLayoutOrientation === MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS.HORIZONTAL) {
+			return 'BottomViewOutline';
+		}
+		return 'LayoutOutline';
+	}, [isCurrentLayoutSplit, splitLayoutOrientation]);
+
+	const onToggle = useCallback(() => {
+		setCurrentLayout(isCurrentLayoutSplit ? MAILS_VIEW_LAYOUTS.NO_SPLIT : MAILS_VIEW_LAYOUTS.SPLIT);
+	}, [isCurrentLayoutSplit, setCurrentLayout]);
+
+	const onClickVerticalSplit = useCallback(() => {
+		setCurrentLayout(MAILS_VIEW_LAYOUTS.SPLIT);
+		setSplitLayoutOrientation(MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS.VERTICAL);
+	}, [setCurrentLayout, setSplitLayoutOrientation]);
+
+	const onClickHorizontalSplit = useCallback(() => {
+		setCurrentLayout(MAILS_VIEW_LAYOUTS.SPLIT);
+		setSplitLayoutOrientation(MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS.HORIZONTAL);
+	}, [setCurrentLayout, setSplitLayoutOrientation]);
+
+	const onClickHidePreview = useCallback(() => {
+		setCurrentLayout(MAILS_VIEW_LAYOUTS.NO_SPLIT);
+	}, [setCurrentLayout]);
+
+	const layoutOptions: Array<DropdownItem> = [
+		{
+			id: 'vertical',
+			label: t('layoutView.tooltip.verticalSplit', 'Vertical split'),
+			icon: 'LayoutOutline',
+			onClick: onClickVerticalSplit,
+			selected: isCurrentLayoutVerticalSplit
+		},
+		{
+			id: 'horizontal',
+			label: t('layoutView.tooltip.horizontalSplit', 'Horizontal split'),
+			icon: 'BottomViewOutline',
+			onClick: onClickHorizontalSplit,
+			selected: isCurrentLayoutHorizontalSplit
+		},
+		{
+			id: 'noSplit',
+			label: t('layoutView.tooltip.noSplit', 'No split'),
+			icon: 'ViewOffOutline',
+			onClick: onClickHidePreview,
+			selected: isCurrentLayoutNoSplit
+		}
+	];
 
 	return (
-		<Tooltip label={tooltipLabel} placement="top">
-			<IconButton icon={icon} size="large" onClick={onClick} />
+		<Tooltip key={tooltipLabel} label={tooltipLabel} placement="top">
+			<MultiButton
+				size={'large'}
+				primaryIcon={icon}
+				type={'ghost'}
+				onClick={onToggle}
+				color={'gray0'}
+				items={layoutOptions}
+			/>
 		</Tooltip>
 	);
 };

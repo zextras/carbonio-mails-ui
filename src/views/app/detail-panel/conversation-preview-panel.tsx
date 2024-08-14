@@ -6,6 +6,7 @@
 import React, { ReactElement, useCallback, useMemo } from 'react';
 
 import { Container, Shimmer } from '@zextras/carbonio-design-system';
+import { useUserSettings } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
 
 import { ConversationMessagePreview } from './conversation-message-preview';
@@ -16,15 +17,14 @@ import type { Conversation } from '../../../types';
 
 export const ConversationPreviewPanel = ({
 	conversation,
-	isInsideExtraWindow,
-	convSortOrder
+	isInsideExtraWindow
 }: {
 	conversation: Conversation;
 	isInsideExtraWindow: boolean;
-	convSortOrder: string;
 }): ReactElement => {
 	const conversationStatus = useAppSelector(selectCurrentFolderExpandedStatus)[conversation.id];
-
+	const settings = useUserSettings();
+	const convSortOrder = settings.prefs.zimbraPrefConversationOrder as string;
 	const isExpanded = useCallback(
 		(index: number): boolean => {
 			if (convSortOrder === 'dateAsc') {
