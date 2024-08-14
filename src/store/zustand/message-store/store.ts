@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import produce from 'immer';
+import produce, { enableMapSet } from 'immer';
 import { merge } from 'lodash';
 import { create } from 'zustand';
 
@@ -94,6 +94,7 @@ export function appendConversations(
 	offset: number,
 	more: boolean
 ): void {
+	enableMapSet();
 	const newConvesationsIds = new Set(conversations.map((c) => c.id));
 
 	useMessageStore.setState(
@@ -168,6 +169,7 @@ export function appendMessages(
 	messages: Array<MailMessage | IncompleteMessage>,
 	offset: number
 ): void {
+	enableMapSet();
 	const newMessageIds = new Set(messages.map((c) => c.id));
 	useMessageStore.setState((state: MessageStoreState) => ({
 		search: {
