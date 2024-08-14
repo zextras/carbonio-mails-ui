@@ -206,15 +206,14 @@ export function useRunSearch({
 			});
 			if (
 				'Fault' in searchResponse &&
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-				// @ts-ignore
 				searchResponse?.Fault?.Detail?.Error?.Code === 'mail.QUERY_PARSE_ERROR'
 			) {
-				updateSearchResultsLoadingStatus(API_REQUEST_STATUS.error);
 				setIsInvalidQuery(true);
 				setSearchDisabled(true, invalidQueryTooltip);
+				updateSearchResultsLoadingStatus(API_REQUEST_STATUS.error);
 			} else {
 				handleSearchResults({ searchResponse, offset });
+				updateSearchResultsLoadingStatus(API_REQUEST_STATUS.fulfilled);
 			}
 		},
 		[invalidQueryTooltip, isMessageView, prefLocale, searchResults.offset, setSearchDisabled]
@@ -272,7 +271,7 @@ export function useRunSearch({
 	}, [findIcon, isInvalidQuery, query, queryArray, updateQuery]);
 
 	useEffect(() => {
-		if (query?.length > 0 && !isInvalidQuery && searchResults.offset === 0) {
+		if (query?.length > 0 && !isInvalidQuery) {
 			setFilterCount(query.length);
 			searchQueryCallback(queryToString, false);
 		}

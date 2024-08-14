@@ -14,7 +14,6 @@ import {
 	POPULATED_ITEMS_INITIAL_STATE
 } from './message-slice';
 import { createSearchSlice, SEARCH_INITIAL_STATE } from './search-slice';
-import { API_REQUEST_STATUS } from '../../../constants';
 import {
 	IncompleteMessage,
 	MailMessage,
@@ -73,7 +72,6 @@ export function setConversations(
 ): void {
 	useMessageStore.setState(
 		produce((state: MessageStoreState) => {
-			state.search.status = API_REQUEST_STATUS.fulfilled;
 			state.search.conversationIds = new Set(conversations.map((c) => c.id));
 			state.search.offset = offset;
 			state.search.more = more;
@@ -145,7 +143,6 @@ export function setMessages(
 	useMessageStore.setState((state: MessageStoreState) => ({
 		search: {
 			...state.search,
-			status: API_REQUEST_STATUS.fulfilled,
 			messageIds: new Set(messages.map((c) => c.id))
 		},
 		populatedItems: {
@@ -186,7 +183,6 @@ export function updateConversationMessages(
 	useMessageStore.setState(
 		produce(({ populatedItems }: PopulatedItemsSliceState) => {
 			populatedItems.conversations[conversationId].messages = messages;
-			populatedItems.conversationsStatus[conversationId] = API_REQUEST_STATUS.fulfilled;
 			messages.forEach((message) => {
 				populatedItems.messages[message.id] = message;
 			});
