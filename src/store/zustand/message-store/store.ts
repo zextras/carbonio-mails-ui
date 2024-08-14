@@ -95,11 +95,11 @@ export function appendConversations(
 	more: boolean
 ): void {
 	enableMapSet();
-	const newConvesationsIds = new Set(conversations.map((c) => c.id));
+	const newConversationsIds = new Set(conversations.map((c) => c.id));
 
 	useMessageStore.setState(
 		produce((state: MessageStoreState) => {
-			newConvesationsIds.forEach((id) => state.search.conversationIds.add(id));
+			newConversationsIds.forEach((id) => state.search.conversationIds.add(id));
 			state.search.offset = offset;
 			state.search.more = more;
 			state.populatedItems.conversations = conversations.reduce((acc, conv) => {
@@ -167,21 +167,17 @@ export function appendMessages(
 	offset: number
 ): void {
 	enableMapSet();
-	const newMessageIds = new Set(messages.map((c) => c.id));
-	useMessageStore.setState((state: MessageStoreState) => ({
-		search: {
-			...state.search,
-			messageIds: new Set([...state.search.messageIds, ...newMessageIds])
-		},
-		populatedItems: {
-			...state.populatedItems,
-			offset,
-			messages: messages.reduce((acc, msg) => {
+	const newMessageIds = new Set(messages.map((message) => message.id));
+	useMessageStore.setState(
+		produce((state: MessageStoreState) => {
+			newMessageIds.forEach((messageId) => state.search.messageIds.add(messageId));
+			state.search.offset = offset;
+			state.populatedItems.messages = messages.reduce((acc, msg) => {
 				acc[msg.id] = msg;
 				return acc;
-			}, state.populatedItems.messages)
-		}
-	}));
+			}, state.populatedItems.messages);
+		})
+	);
 }
 export function updateConversationMessages(
 	conversationId: string,
