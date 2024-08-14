@@ -99,10 +99,7 @@ export function appendConversations(
 
 	useMessageStore.setState(
 		produce((state: MessageStoreState) => {
-			state.search.conversationIds = new Set([
-				...state.search.conversationIds,
-				...newConvesationsIds
-			]);
+			newConvesationsIds.forEach((id) => state.search.conversationIds.add(id));
 			state.search.offset = offset;
 			state.search.more = more;
 			state.populatedItems.conversations = conversations.reduce((acc, conv) => {
