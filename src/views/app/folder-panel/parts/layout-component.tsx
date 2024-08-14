@@ -86,7 +86,7 @@ export const LayoutComponent = (): React.JSX.Element => {
 	];
 
 	return (
-		<Tooltip label={tooltipLabel} placement="top">
+		<Tooltip key={tooltipLabel} label={tooltipLabel} placement="top">
 			<MultiButton
 				size={'large'}
 				primaryIcon={icon}
