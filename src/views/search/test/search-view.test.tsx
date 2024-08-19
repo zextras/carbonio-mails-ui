@@ -22,7 +22,7 @@ import { makeListItemsVisible, setupTest } from '../../../carbonio-ui-commons/te
 import { API_REQUEST_STATUS } from '../../../constants';
 import * as search from '../../../store/actions/search';
 import {
-	setConversations,
+	setSearchResultsByConversation,
 	updateConversationStatus,
 	setMessages
 } from '../../../store/zustand/message-store/store';
@@ -267,7 +267,10 @@ describe('SearchView', () => {
 		it('should display conversation as selected when in selecting it', async () => {
 			const store = generateStore();
 			const message = generateMessage({ id: '1' });
-			setConversations([generateConversation({ id: '123', messages: [message] })], false);
+			setSearchResultsByConversation(
+				[generateConversation({ id: '123', messages: [message] })],
+				false
+			);
 			setMessages([message]);
 			updateConversationStatus('123', API_REQUEST_STATUS.fulfilled);
 			const customSettings: Partial<AccountSettings> = {

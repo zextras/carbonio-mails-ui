@@ -13,7 +13,7 @@ import { generateConversation } from '../../../../tests/generators/generateConve
 import { generateMessage } from '../../../../tests/generators/generateMessage';
 import { SearchConvRequest, SearchConvResponse } from '../../../../types';
 import {
-	setConversations,
+	setSearchResultsByConversation,
 	updateConversationStatus,
 	useConversationStatus
 } from '../../message-store/store';
@@ -33,7 +33,7 @@ describe('Searches store hooks', () => {
 			messages: [generateMessage({ id: '1', subject: 'Test Message 1' })],
 			subject: 'Test Conversation'
 		});
-		setConversations([conversation], false);
+		setSearchResultsByConversation([conversation], false);
 
 		const response: SearchConvResponse = {
 			m: [generateConvMessageFromAPI({ id: '10' }), generateConvMessageFromAPI({ id: '2' })],
@@ -56,7 +56,7 @@ describe('Searches store hooks', () => {
 			messages: [generateMessage({ id: '1', subject: 'Test Message 1' })],
 			subject: 'Test Conversation'
 		});
-		setConversations([conversation], false);
+		setSearchResultsByConversation([conversation], false);
 		updateConversationStatus(conversation.id, API_REQUEST_STATUS.pending);
 		const response: SearchConvResponse = {
 			m: [generateConvMessageFromAPI({ id: '10' }), generateConvMessageFromAPI({ id: '2' })],

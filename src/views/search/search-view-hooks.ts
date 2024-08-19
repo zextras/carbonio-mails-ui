@@ -27,8 +27,7 @@ import { normalizeMailMessageFromSoap } from '../../normalizations/normalize-mes
 import {
 	appendConversations,
 	appendMessages,
-	resetSearch,
-	setConversations,
+	setSearchResultsByConversation,
 	setMessages,
 	updateSearchResultsLoadingStatus,
 	useSearchResults
@@ -55,14 +54,8 @@ function handleFulFilledConversationResults({
 	const conversations = map(searchResponse.c, (conv) =>
 		mapToNormalizedConversation({ c: conv, tags })
 	);
-	const messages: (IncompleteMessage | MailMessage)[] = [];
-	searchResponse.c?.forEach((soapConversation) =>
-		soapConversation.m.forEach((soapMessage) =>
-			messages.push(normalizeMailMessageFromSoap(soapMessage, false))
-		)
-	);
-	setConversations(conversations, searchResponse.more);
-	setMessages(messages);
+
+	setSearchResultsByConversation(conversations, searchResponse.more);
 }
 
 function handleLoadMoreConversationResults({
@@ -108,7 +101,7 @@ export function handleSearchResults({
 		return;
 	}
 	const tags = getTags();
-	resetSearch();
+	// resetSearch();
 
 	if (searchResponse.c) {
 		handleFulFilledConversationResults({ searchResponse, tags });

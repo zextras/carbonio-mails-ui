@@ -13,7 +13,7 @@ import { generateSettings } from '../../../carbonio-ui-commons/test/mocks/settin
 import { buildSoapErrorResponseBody } from '../../../carbonio-ui-commons/test/mocks/utils/soap';
 import { generateConvMessageFromAPI } from '../../../helpers/api';
 import {
-	setConversations,
+	setSearchResultsByConversation,
 	useConversationById,
 	useMessageById
 } from '../../../store/zustand/message-store/store';
@@ -23,7 +23,7 @@ import { useRunSearch } from '../search-view-hooks';
 
 describe('search view hooks', () => {
 	it('should reset conversations list when api result empty', async () => {
-		setConversations([generateConversation({ id: '1' })], false);
+		setSearchResultsByConversation([generateConversation({ id: '1' })], false);
 		const queryChip: QueryChip = {
 			hasAvatar: false,
 			id: '0',
@@ -59,7 +59,7 @@ describe('search view hooks', () => {
 	});
 
 	it('should reset conversations list when no conversation field in API response', async () => {
-		setConversations([generateConversation({ id: '1' })], false);
+		setSearchResultsByConversation([generateConversation({ id: '1' })], false);
 		const queryChip: QueryChip = {
 			hasAvatar: false,
 			id: '0',
@@ -94,7 +94,7 @@ describe('search view hooks', () => {
 	});
 
 	it('should set invalid query if API query error', async () => {
-		setConversations([generateConversation({ id: '1' })], false);
+		setSearchResultsByConversation([generateConversation({ id: '1' })], false);
 		const settings = generateSettings({
 			prefs: {
 				zimbraPrefGroupMailBy: 'conversation'

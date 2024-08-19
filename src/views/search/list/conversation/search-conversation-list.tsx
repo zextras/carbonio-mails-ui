@@ -67,10 +67,6 @@ export const SearchConversationList: FC<SearchListProps> = ({
 		return null;
 	}, [isInvalidQuery, conversationIds]);
 
-	// useLayoutEffect(() => {
-	// 	listRef?.current && (listRef.current.children[0].scrollTop = 0);
-	// }, [conversationIds]);
-
 	const onScrollBottom = useLoadMoreConversations({
 		query,
 		offset: totalConversations,

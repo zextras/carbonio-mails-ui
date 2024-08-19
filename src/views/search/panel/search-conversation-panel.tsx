@@ -21,7 +21,7 @@ type SearchConversationPanelProps = {
 	folderId?: string;
 };
 
-export const SearchConversationPanel: FC<SearchConversationPanelProps> = (props) => {
+export const SearchConversationPanel: FC<SearchConversationPanelProps> = () => {
 	const { conversationId } = useParams<{ conversationId: string }>();
 
 	const { isInsideExtraWindow } = useExtraWindow();

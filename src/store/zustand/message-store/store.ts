@@ -14,6 +14,7 @@ import {
 	POPULATED_ITEMS_INITIAL_STATE
 } from './message-slice';
 import { createSearchSlice, SEARCH_INITIAL_STATE } from './search-slice';
+import { API_REQUEST_STATUS } from '../../../constants';
 import {
 	IncompleteMessage,
 	MailMessage,
@@ -54,21 +55,43 @@ export function useSearchResults(): SearchSliceState['search'] {
 export function useConversationMessages(
 	conversationId: string
 ): Array<MailMessage | IncompleteMessage> {
-	return useMessageStore((state: MessageStoreState) =>
-		state.populatedItems.conversations[conversationId].messages.map(
-			(message) => state.populatedItems.messages[message.id]
-		)
+	const messages: Array<MailMessage | IncompleteMessage> = [];
+	useMessageStore((state: MessageStoreState) =>
+		state.populatedItems.conversations[conversationId].messages.forEach((message) => {
+			if (state.populatedItems.messages[message.id])
+				messages.push(state.populatedItems.messages[message.id]);
+		})
 	);
+	return messages;
 }
 
 export function useConversationStatus(id: string): SearchRequestStatus {
 	return useMessageStore((state) => state.populatedItems.conversationsStatus?.[id]);
 }
 
-export function setConversations(
+export function setSearchResultsByConversation(
 	conversations: Array<NormalizedConversation>,
 	more: boolean
 ): void {
+	useMessageStore.setState(
+		produce(({ search, populatedItems }) => {
+			search.conversationIds = new Set(conversations.map((c) => c.id));
+			search.status = API_REQUEST_STATUS.fulfilled;
+			search.messageIds = new Set();
+			search.offset = 0;
+			search.more = more;
+			populatedItems.conversations = conversations.reduce(
+				(acc, conv) => {
+					acc[conv.id] = conv;
+					return acc;
+				},
+				{} as Record<string, NormalizedConversation>
+			);
+		})
+	);
+}
+
+export function setMore(conversations: Array<NormalizedConversation>, more: boolean): void {
 	useMessageStore.setState(
 		produce((state: MessageStoreState) => {
 			state.search.conversationIds = new Set(conversations.map((c) => c.id));
@@ -76,7 +99,6 @@ export function setConversations(
 			state.search.more = more;
 			state.populatedItems.conversations = conversations.reduce(
 				(acc, conv) => {
-					// eslint-disable-next-line no-param-reassign
 					acc[conv.id] = conv;
 					return acc;
 				},
@@ -178,7 +200,6 @@ export function updateConversationMessages(
 ): void {
 	useMessageStore.setState(
 		produce(({ populatedItems }: PopulatedItemsSliceState) => {
-			populatedItems.conversations[conversationId].messages = messages;
 			messages.forEach((message) => {
 				populatedItems.messages[message.id] = message;
 			});

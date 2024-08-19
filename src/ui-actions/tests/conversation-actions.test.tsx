@@ -25,7 +25,7 @@ import {
 import { TIMEOUTS, API_REQUEST_STATUS } from '../../constants';
 import { useUiUtilities } from '../../hooks/use-ui-utilities';
 import * as getMsgsForPrint from '../../store/actions/get-msg-for-print';
-import { setConversations } from '../../store/zustand/message-store/store';
+import { setSearchResultsByConversation } from '../../store/zustand/message-store/store';
 import { generateConversation } from '../../tests/generators/generateConversation';
 import { generateStore } from '../../tests/generators/store';
 import {
@@ -699,7 +699,7 @@ describe('Conversation actions calls', () => {
 
 		test('do not replace history if in /search', async () => {
 			populateFoldersStore({ view: FOLDER_VIEW.message });
-			setConversations([generateConversation({ id: '1' })], false);
+			setSearchResultsByConversation([generateConversation({ id: '1' })], false);
 			const store = generateStore();
 			const spyReplaceHistory = jest.spyOn(hooks, 'replaceHistory');
 			(useLocation as jest.Mock).mockReturnValue({ pathname: '/search/test' });
@@ -733,7 +733,7 @@ describe('Conversation actions calls', () => {
 
 		test('replace history if location does not start with /search', async () => {
 			populateFoldersStore({ view: FOLDER_VIEW.message });
-			setConversations([generateConversation({ id: '1' })], false);
+			setSearchResultsByConversation([generateConversation({ id: '1' })], false);
 			const store = generateStore();
 			(useLocation as jest.Mock).mockReturnValue({ pathname: '/mails/test' });
 			const spyReplaceHistory = jest.spyOn(hooks, 'replaceHistory');

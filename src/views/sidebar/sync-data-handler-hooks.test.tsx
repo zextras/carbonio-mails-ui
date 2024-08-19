@@ -14,7 +14,7 @@ import { useSyncDataHandler } from './commons/sync-data-handler-hooks';
 import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
 import { useNotify } from '../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
 import {
-	setConversations,
+	setSearchResultsByConversation,
 	setMessages,
 	useConversationById,
 	useMessageById
@@ -113,7 +113,10 @@ describe('sync data handler', () => {
 	const mailboxNumber = 1000;
 	describe('conversations', () => {
 		it('should mark conversation as read', async () => {
-			setConversations([generateConversation({ id: '123', messages: [], isRead: false })], false);
+			setSearchResultsByConversation(
+				[generateConversation({ id: '123', messages: [], isRead: false })],
+				false
+			);
 			mockSoapModifyConversationAction(mailboxNumber, [READ]);
 
 			renderHook(() => useSyncDataHandler(), {
@@ -126,7 +129,10 @@ describe('sync data handler', () => {
 			});
 		});
 		it('should mark conversation as unread', async () => {
-			setConversations([generateConversation({ id: '123', messages: [], isRead: true })], false);
+			setSearchResultsByConversation(
+				[generateConversation({ id: '123', messages: [], isRead: true })],
+				false
+			);
 			mockSoapModifyConversationAction(mailboxNumber, [UNREAD]);
 
 			renderHook(() => useSyncDataHandler(), {
@@ -140,7 +146,7 @@ describe('sync data handler', () => {
 		});
 
 		it('should mark conversation as flagged', async () => {
-			setConversations(
+			setSearchResultsByConversation(
 				[generateConversation({ id: '123', messages: [], isFlagged: false })],
 				false
 			);
@@ -156,7 +162,10 @@ describe('sync data handler', () => {
 			});
 		});
 		it('should mark conversation as not flagged', async () => {
-			setConversations([generateConversation({ id: '123', messages: [], isFlagged: true })], false);
+			setSearchResultsByConversation(
+				[generateConversation({ id: '123', messages: [], isFlagged: true })],
+				false
+			);
 			mockSoapModifyConversationAction(mailboxNumber, [NOTFLAGGED]);
 
 			renderHook(() => useSyncDataHandler(), {

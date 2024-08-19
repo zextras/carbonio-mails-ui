@@ -13,12 +13,7 @@ export const SEARCH_INITIAL_STATE: SearchSliceState['search'] = {
 	messageIds: new Set<string>(),
 	more: false,
 	offset: 0,
-	sortBy: 'dateDesc',
-	query: '',
-	status: null,
-	parent: '',
-	tagName: '',
-	error: undefined
+	status: null
 };
 export const createSearchSlice: StateCreator<
 	SearchSliceState & PopulatedItemsSliceState,

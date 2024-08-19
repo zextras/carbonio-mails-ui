@@ -29,7 +29,7 @@ const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHe
 	const { path } = useRouteMatch();
 	const [query, updateQuery] = useQuery();
 	const isMessageView = useIsMessageView();
-	const nonReactiveQuery = useRef(false);
+	const previousQuery = useRef('');
 	const [showAdvanceFilters, setShowAdvanceFilters] = useState(false);
 	const settings = useUserSettings();
 	const includeSharedItemsInSearch = settings.prefs.zimbraPrefIncludeSharedItemsInSearch === 'TRUE';
@@ -76,8 +76,8 @@ const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHe
 				setSearchDisabled(true, invalidQueryTooltip);
 				updateSearchResultsLoadingStatus(API_REQUEST_STATUS.error);
 			} else {
+				setIsInvalidQuery(false);
 				handleSearchResults({ searchResponse });
-				updateSearchResultsLoadingStatus(API_REQUEST_STATUS.fulfilled);
 			}
 		},
 		[invalidQueryTooltip, isMessageView, prefLocale, setSearchDisabled]
@@ -88,27 +88,19 @@ const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHe
 		[query, isSharedFolderIncluded, folders]
 	);
 
-	// useEffect(() => {
-	// 	if (isInvalidQuery) return;
-	// 	setFilterCount(query.length);
-
-	if (nonReactiveQuery.current !== query) {
+	if (previousQuery.current !== queryToString && queryToString.length > 0) {
 		firstSearchQueryCallback(queryToString);
-		nonReactiveQuery.current = query;
+		setFilterCount(query.length);
+		previousQuery.current = queryToString;
 	}
-	// 	if (query?.length === 0) {
-	// 		setFilterCount(0);
-	// 		setIsInvalidQuery(false);
-	// 		// TODO: CO-1144 reset searches
-	// 		// dispatch(resetSearchResults());
-	// 		replaceHistory({
-	// 			path: MAILS_ROUTE,
-	// 			route: SEARCH_APP_ID
-	// 		});
-	// 	}
-	// }, [isInvalidQuery, query.length, queryToString, searchQueryCallback]);
-	//
-	console.log('@@@', { searchResults });
+
+	// if (query?.length === 0) {
+	// 	replaceHistory({
+	// 		path: MAILS_ROUTE,
+	// 		route: SEARCH_APP_ID
+	// 	});
+	// }
+
 	const resultLabelType = isInvalidQuery ? 'warning' : undefined;
 	const resultLabel = useMemo(() => {
 		if (isInvalidQuery) {

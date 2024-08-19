@@ -11,7 +11,7 @@ import {
 	removeMessages,
 	resetSearch,
 	updateConversationMessages,
-	setConversations,
+	setSearchResultsByConversation,
 	updateConversationStatus,
 	setMessages,
 	updateMessagesOnly,
@@ -33,7 +33,7 @@ describe('message store', () => {
 	describe('conversation', () => {
 		it('should set and return a conversation', () => {
 			const conversation = generateConversation({ id: '1' });
-			setConversations([conversation], false);
+			setSearchResultsByConversation([conversation], false);
 
 			const { result } = renderHook(() => useConversationById('1'));
 
@@ -56,7 +56,7 @@ describe('message store', () => {
 
 		it('should update conversation messages', () => {
 			const conversation = generateConversation({ id: '1' });
-			setConversations([conversation], false);
+			setSearchResultsByConversation([conversation], false);
 
 			const message = generateMessage({ id: '1' });
 			updateConversationMessages(conversation.id, [message]);
@@ -76,7 +76,7 @@ describe('message store', () => {
 			const conversation1 = generateConversation({ id: '1', messages: conversation1Messages });
 			const conversation2Messages = [generateMessage({ id: '4' }), generateMessage({ id: '5' })];
 			const conversation2 = generateConversation({ id: '2', messages: conversation2Messages });
-			setConversations([conversation1, conversation2], false);
+			setSearchResultsByConversation([conversation1, conversation2], false);
 			setMessages([...conversation1Messages, ...conversation2Messages]);
 
 			updateConversationMessages('1', [generateMessage({ id: '100' })]);
@@ -89,7 +89,7 @@ describe('message store', () => {
 		});
 
 		it('should reset the searches and populated items', () => {
-			setConversations([generateConversation({ id: '1', messages: [] })], false);
+			setSearchResultsByConversation([generateConversation({ id: '1', messages: [] })], false);
 			updateConversationStatus('1', API_REQUEST_STATUS.fulfilled);
 			setMessages([generateMessage({ id: '100' })]);
 
@@ -102,7 +102,7 @@ describe('message store', () => {
 
 		it('should append conversations to the store when appendConversations is called', () => {
 			enableMapSet();
-			setConversations([generateConversation({ id: '1', messages: [] })], false);
+			setSearchResultsByConversation([generateConversation({ id: '1', messages: [] })], false);
 
 			appendConversations(
 				[generateConversation({ id: '2' }), generateConversation({ id: '3' })],
@@ -118,7 +118,7 @@ describe('message store', () => {
 		it('should update the search loading status when updateSearchResultsLoadingStatus is called', () => {
 			enableMapSet();
 
-			setConversations([generateConversation({ id: '1', messages: [] })], false);
+			setSearchResultsByConversation([generateConversation({ id: '1', messages: [] })], false);
 			const { result } = renderHook(() => getSearchResultsLoadingStatus());
 
 			expect(result.current).toBeNull();
