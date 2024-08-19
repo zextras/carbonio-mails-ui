@@ -10,18 +10,17 @@ import {
 	type QueryChip,
 	type ErrorSoapBodyResponse,
 	getTags,
-	replaceHistory,
-	SEARCH_APP_ID,
 	setAppContext,
 	type Tags,
-	useUserSettings
+	useUserSettings,
+	replaceHistory,
+	SEARCH_APP_ID
 } from '@zextras/carbonio-shell-ui';
-import { map, noop, reduce } from 'lodash';
+import { map, noop } from 'lodash';
 
-import { updateQueryChips } from './utils';
+import { generateQueryString, updateQueryChips } from './utils';
 import { searchSoapApi } from '../../api/search';
 import { useFoldersMap } from '../../carbonio-ui-commons/store/zustand/folder';
-import type { Folder } from '../../carbonio-ui-commons/types';
 import { API_REQUEST_STATUS, LIST_LIMIT, MAILS_ROUTE } from '../../constants';
 import { mapToNormalizedConversation } from '../../normalizations/normalize-conversation';
 import { normalizeMailMessageFromSoap } from '../../normalizations/normalize-message';
@@ -36,7 +35,7 @@ import {
 } from '../../store/zustand/message-store/store';
 import { IncompleteMessage, MailMessage, SearchResponse, SearchSliceState } from '../../types';
 
-type RunSearchCallback = {
+type UseRunSearchProps = {
 	query: QueryChip[];
 	// eslint-disable-next-line @typescript-eslint/ban-types
 	updateQuery: Function;
@@ -91,25 +90,21 @@ function handleLoadMoreConversationResults({
 }
 
 function handleFulFilledMessagesResults({
-	searchResponse,
-	offset
+	searchResponse
 }: {
 	searchResponse: SearchResponse;
-	offset: number;
 }): void {
 	const normalizedMessages = map(searchResponse.m, (msg) =>
 		normalizeMailMessageFromSoap(msg, false)
 	);
 
-	setMessages(normalizedMessages, offset);
+	setMessages(normalizedMessages);
 }
 
 function handleSearchResults({
-	searchResponse,
-	offset
+	searchResponse
 }: {
 	searchResponse: SearchResponse | ErrorSoapBodyResponse;
-	offset: number;
 }): void {
 	if ('Fault' in searchResponse) {
 		return;
@@ -118,11 +113,11 @@ function handleSearchResults({
 	resetSearch();
 
 	if (searchResponse.c) {
-		handleFulFilledConversationResults({ searchResponse, offset, tags });
+		handleFulFilledConversationResults({ searchResponse, tags });
 	}
 
 	if (searchResponse.m) {
-		handleFulFilledMessagesResults({ searchResponse, offset });
+		handleFulFilledMessagesResults({ searchResponse });
 	}
 }
 
@@ -137,7 +132,7 @@ export function useRunSearch({
 	useDisableSearch,
 	invalidQueryTooltip,
 	isSharedFolderIncluded
-}: RunSearchCallback): {
+}: UseRunSearchProps): {
 	searchDisabled: boolean;
 	queryToString: string;
 	searchResults: SearchSliceState['search'];
@@ -149,6 +144,7 @@ export function useRunSearch({
 	const isMessageView = useIsMessageView();
 	const folders = useFoldersMap();
 	const [count, setCount] = useState(0);
+	setAppContext({ isMessageView, count, setCount });
 	const [filterCount, setFilterCount] = useState(0);
 	const [isInvalidQuery, setIsInvalidQuery] = useState<boolean>(false);
 
@@ -156,42 +152,9 @@ export function useRunSearch({
 		() => settings.prefs.zimbraPrefLocale,
 		[settings.prefs.zimbraPrefLocale]
 	);
-
-	useEffect(() => {
-		setAppContext({ isMessageView, count, setCount });
-	}, [count, isMessageView]);
-
-	const searchInFolders = useMemo(
-		() =>
-			reduce(
-				folders,
-				(acc: Array<string>, v: Folder, k: string) => {
-					if (v.perm) {
-						acc.push(k);
-					}
-					return acc;
-				},
-				[]
-			),
-		[folders]
-	);
-
-	const foldersToSearchInQuery = useMemo(
-		() => `( ${map(searchInFolders, (folder) => `inid:"${folder}"`).join(' OR ')} OR is:local) `,
-		[searchInFolders]
-	);
-
 	updateQueryChips(query, isInvalidQuery, updateQuery);
 
 	const searchResults = useSearchResults();
-
-	const queryToString = useMemo(
-		() =>
-			isSharedFolderIncluded && searchInFolders?.length > 0
-				? `(${query.map((c) => (c.value ? c.value : c.label)).join(' ')}) ${foldersToSearchInQuery}`
-				: `${query.map((c) => (c.value ? c.value : c.label)).join(' ')}`,
-		[foldersToSearchInQuery, isSharedFolderIncluded, query, searchInFolders?.length]
-	);
 
 	const searchQueryCallback = useCallback(
 		async (queryString: string, reset: boolean) => {
@@ -219,11 +182,16 @@ export function useRunSearch({
 		},
 		[invalidQueryTooltip, isMessageView, prefLocale, searchResults.offset, setSearchDisabled]
 	);
+
+	const queryToString = useMemo(
+		() => generateQueryString(query, isSharedFolderIncluded, folders),
+		[query, isSharedFolderIncluded, folders]
+	);
+
 	useEffect(() => {
-		if (query?.length > 0 && !isInvalidQuery) {
-			setFilterCount(query.length);
-			searchQueryCallback(queryToString, false);
-		}
+		if (isInvalidQuery) return;
+		setFilterCount(query.length);
+		searchQueryCallback(queryToString, false);
 		if (query?.length === 0) {
 			setFilterCount(0);
 			setIsInvalidQuery(false);

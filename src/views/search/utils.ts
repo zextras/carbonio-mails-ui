@@ -138,3 +138,32 @@ export function updateQueryChips(
 		}
 	}
 }
+
+function generateFoldersSearchQuery(foldersArray: string[]): string {
+	const foldersSearchString = foldersArray.map((folder) => `inid:"${folder}"`).join(' OR ');
+	return `( ${foldersSearchString} OR is:local) `;
+}
+function generateFoldersArray(folders: { [key: string]: Folder }): string[] {
+	return reduce(
+		folders,
+		(acc: Array<string>, v: Folder, k: string) => {
+			if (v.perm) {
+				acc.push(k);
+			}
+			return acc;
+		},
+		[]
+	);
+}
+
+export function generateQueryString(
+	query: QueryChip[],
+	isSharedFolderIncluded: boolean,
+	folders: Folders
+): string {
+	const foldersArray = generateFoldersArray(folders);
+	const foldersToSearchInQuery = generateFoldersSearchQuery(foldersArray);
+	return isSharedFolderIncluded && foldersArray?.length > 0
+		? `(${query.map((c) => (c.value ? c.value : c.label)).join(' ')}) ${foldersToSearchInQuery}`
+		: `${query.map((c) => (c.value ? c.value : c.label)).join(' ')}`;
+}

@@ -3,24 +3,33 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, Suspense, useCallback, useMemo, useState } from 'react';
+import React, { FC, Suspense, useCallback, useMemo, useRef, useState } from 'react';
 
 import { Container, Spinner } from '@zextras/carbonio-design-system';
-import { SearchViewProps, t, useUserSettings } from '@zextras/carbonio-shell-ui';
+import { SearchViewProps, setAppContext, t, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { Route, Switch, useRouteMatch } from 'react-router-dom';
 
 import { AdvancedFilterModal } from './advanced-filter-modal';
 import { SearchConversationList } from './list/conversation/search-conversation-list';
 import { SearchMessageList } from './list/message/search-message-list';
 import SearchPanel from './panel/search-panel';
-import { useIsMessageView, useRunSearch } from './search-view-hooks';
+import { handleSearchResults, useIsMessageView } from './search-view-hooks';
+import { generateQueryString, updateQueryChips } from './utils';
+import { searchSoapApi } from '../../api/search';
 import { useUpdateView } from '../../carbonio-ui-commons/hooks/use-update-view';
+import { useFoldersMap } from '../../carbonio-ui-commons/store/zustand/folder';
+import { API_REQUEST_STATUS, LIST_LIMIT } from '../../constants';
+import {
+	updateSearchResultsLoadingStatus,
+	useSearchResults
+} from '../../store/zustand/message-store/store';
 
 const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHeader }) => {
 	useUpdateView();
 	const { path } = useRouteMatch();
 	const [query, updateQuery] = useQuery();
 	const isMessageView = useIsMessageView();
+	const nonReactiveQuery = useRef(false);
 	const [showAdvanceFilters, setShowAdvanceFilters] = useState(false);
 	const settings = useUserSettings();
 	const includeSharedItemsInSearch = settings.prefs.zimbraPrefIncludeSharedItemsInSearch === 'TRUE';
@@ -31,15 +40,75 @@ const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHe
 		() => t('label.invalid_query', 'Unable to parse the search query, clear it and retry'),
 		[]
 	);
-	const { queryToString, isInvalidQuery, searchDisabled, searchResults, filterCount } =
-		useRunSearch({
-			query,
-			updateQuery,
-			useDisableSearch,
-			invalidQueryTooltip,
-			isSharedFolderIncluded
-		});
 
+	const [searchDisabled, setSearchDisabled] = useDisableSearch();
+	const folders = useFoldersMap();
+	const [count, setCount] = useState(0);
+	setAppContext({ isMessageView, count, setCount });
+	const [filterCount, setFilterCount] = useState(0);
+	const [isInvalidQuery, setIsInvalidQuery] = useState<boolean>(false);
+
+	const prefLocale = useMemo(
+		() => settings.prefs.zimbraPrefLocale,
+		[settings.prefs.zimbraPrefLocale]
+	);
+	updateQueryChips(query, isInvalidQuery, updateQuery);
+
+	const searchResults = useSearchResults();
+
+	const firstSearchQueryCallback = useCallback(
+		async (queryString: string) => {
+			updateSearchResultsLoadingStatus(API_REQUEST_STATUS.pending);
+			const searchResponse = await searchSoapApi({
+				query: queryString,
+				limit: LIST_LIMIT.INITIAL_LIMIT,
+				sortBy: 'dateDesc',
+				types: isMessageView ? 'message' : 'conversation',
+				offset: 0,
+				recip: '0',
+				locale: prefLocale
+			});
+			if (
+				'Fault' in searchResponse &&
+				searchResponse?.Fault?.Detail?.Error?.Code === 'mail.QUERY_PARSE_ERROR'
+			) {
+				setIsInvalidQuery(true);
+				setSearchDisabled(true, invalidQueryTooltip);
+				updateSearchResultsLoadingStatus(API_REQUEST_STATUS.error);
+			} else {
+				handleSearchResults({ searchResponse });
+				updateSearchResultsLoadingStatus(API_REQUEST_STATUS.fulfilled);
+			}
+		},
+		[invalidQueryTooltip, isMessageView, prefLocale, setSearchDisabled]
+	);
+
+	const queryToString = useMemo(
+		() => generateQueryString(query, isSharedFolderIncluded, folders),
+		[query, isSharedFolderIncluded, folders]
+	);
+
+	// useEffect(() => {
+	// 	if (isInvalidQuery) return;
+	// 	setFilterCount(query.length);
+
+	if (nonReactiveQuery.current !== query) {
+		firstSearchQueryCallback(queryToString, false);
+		nonReactiveQuery.current = query;
+	}
+	// 	if (query?.length === 0) {
+	// 		setFilterCount(0);
+	// 		setIsInvalidQuery(false);
+	// 		// TODO: CO-1144 reset searches
+	// 		// dispatch(resetSearchResults());
+	// 		replaceHistory({
+	// 			path: MAILS_ROUTE,
+	// 			route: SEARCH_APP_ID
+	// 		});
+	// 	}
+	// }, [isInvalidQuery, query.length, queryToString, searchQueryCallback]);
+	//
+	console.log('@@@', { searchResults });
 	const resultLabelType = isInvalidQuery ? 'warning' : undefined;
 	const resultLabel = useMemo(() => {
 		if (isInvalidQuery) {
