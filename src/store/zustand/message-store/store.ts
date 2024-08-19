@@ -67,13 +67,12 @@ export function useConversationStatus(id: string): SearchRequestStatus {
 
 export function setConversations(
 	conversations: Array<NormalizedConversation>,
-	offset: number,
 	more: boolean
 ): void {
 	useMessageStore.setState(
 		produce((state: MessageStoreState) => {
 			state.search.conversationIds = new Set(conversations.map((c) => c.id));
-			state.search.offset = offset;
+			state.search.offset = 0;
 			state.search.more = more;
 			state.populatedItems.conversations = conversations.reduce(
 				(acc, conv) => {
@@ -136,10 +135,7 @@ export function updateMessagesOnly(messages: Array<IncompleteMessage>): void {
 	);
 }
 
-export function setMessages(
-	messages: Array<MailMessage | IncompleteMessage>,
-	offset: number
-): void {
+export function setMessages(messages: Array<MailMessage | IncompleteMessage>): void {
 	useMessageStore.setState((state: MessageStoreState) => ({
 		search: {
 			...state.search,
@@ -147,7 +143,7 @@ export function setMessages(
 		},
 		populatedItems: {
 			...state.populatedItems,
-			offset,
+			offset: 0,
 			messages: messages.reduce(
 				(acc, msg) => {
 					acc[msg.id] = msg;

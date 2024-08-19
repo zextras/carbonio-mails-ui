@@ -93,7 +93,7 @@ const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHe
 	// 	setFilterCount(query.length);
 
 	if (nonReactiveQuery.current !== query) {
-		firstSearchQueryCallback(queryToString, false);
+		firstSearchQueryCallback(queryToString);
 		nonReactiveQuery.current = query;
 	}
 	// 	if (query?.length === 0) {

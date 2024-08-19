@@ -33,7 +33,7 @@ describe('Searches store hooks', () => {
 			messages: [generateMessage({ id: '1', subject: 'Test Message 1' })],
 			subject: 'Test Conversation'
 		});
-		setConversations([conversation], 0);
+		setConversations([conversation], false);
 
 		const response: SearchConvResponse = {
 			m: [generateConvMessageFromAPI({ id: '10' }), generateConvMessageFromAPI({ id: '2' })],
@@ -56,7 +56,7 @@ describe('Searches store hooks', () => {
 			messages: [generateMessage({ id: '1', subject: 'Test Message 1' })],
 			subject: 'Test Conversation'
 		});
-		setConversations([conversation], 0);
+		setConversations([conversation], false);
 		updateConversationStatus(conversation.id, API_REQUEST_STATUS.pending);
 		const response: SearchConvResponse = {
 			m: [generateConvMessageFromAPI({ id: '10' }), generateConvMessageFromAPI({ id: '2' })],

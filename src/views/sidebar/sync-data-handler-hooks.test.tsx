@@ -113,7 +113,7 @@ describe('sync data handler', () => {
 	const mailboxNumber = 1000;
 	describe('conversations', () => {
 		it('should mark conversation as read', async () => {
-			setConversations([generateConversation({ id: '123', messages: [], isRead: false })], 0);
+			setConversations([generateConversation({ id: '123', messages: [], isRead: false })], false);
 			mockSoapModifyConversationAction(mailboxNumber, [READ]);
 
 			renderHook(() => useSyncDataHandler(), {
@@ -126,7 +126,7 @@ describe('sync data handler', () => {
 			});
 		});
 		it('should mark conversation as unread', async () => {
-			setConversations([generateConversation({ id: '123', messages: [], isRead: true })], 0);
+			setConversations([generateConversation({ id: '123', messages: [], isRead: true })], false);
 			mockSoapModifyConversationAction(mailboxNumber, [UNREAD]);
 
 			renderHook(() => useSyncDataHandler(), {
@@ -140,7 +140,10 @@ describe('sync data handler', () => {
 		});
 
 		it('should mark conversation as flagged', async () => {
-			setConversations([generateConversation({ id: '123', messages: [], isFlagged: false })], 0);
+			setConversations(
+				[generateConversation({ id: '123', messages: [], isFlagged: false })],
+				false
+			);
 			mockSoapModifyConversationAction(mailboxNumber, [FLAGGED]);
 
 			renderHook(() => useSyncDataHandler(), {
@@ -153,7 +156,7 @@ describe('sync data handler', () => {
 			});
 		});
 		it('should mark conversation as not flagged', async () => {
-			setConversations([generateConversation({ id: '123', messages: [], isFlagged: true })], 0);
+			setConversations([generateConversation({ id: '123', messages: [], isFlagged: true })], false);
 			mockSoapModifyConversationAction(mailboxNumber, [NOTFLAGGED]);
 
 			renderHook(() => useSyncDataHandler(), {
@@ -169,7 +172,7 @@ describe('sync data handler', () => {
 
 	describe('messages', () => {
 		it('should mark messages as read', async () => {
-			setMessages([generateMessage({ id: '1', isRead: false })], 0);
+			setMessages([generateMessage({ id: '1', isRead: false })]);
 			mockSoapModifyMessageAction(mailboxNumber, '1', [READ]);
 
 			renderHook(() => useSyncDataHandler(), {
@@ -182,7 +185,7 @@ describe('sync data handler', () => {
 			});
 		});
 		it('should mark messages as unread', async () => {
-			setMessages([generateMessage({ id: '1', isRead: true })], 0);
+			setMessages([generateMessage({ id: '1', isRead: true })]);
 			mockSoapModifyMessageAction(mailboxNumber, '1', [UNREAD]);
 
 			renderHook(() => useSyncDataHandler(), {
@@ -196,7 +199,7 @@ describe('sync data handler', () => {
 		});
 
 		it('should mark messages as flagged', async () => {
-			setMessages([generateMessage({ id: '1', isFlagged: false })], 0);
+			setMessages([generateMessage({ id: '1', isFlagged: false })]);
 			mockSoapModifyMessageAction(mailboxNumber, '1', [FLAGGED]);
 
 			renderHook(() => useSyncDataHandler(), {
@@ -209,7 +212,7 @@ describe('sync data handler', () => {
 			});
 		});
 		it('should mark messages as not flagged', async () => {
-			setMessages([generateMessage({ id: '1', isFlagged: true })], 0);
+			setMessages([generateMessage({ id: '1', isFlagged: true })]);
 			mockSoapModifyMessageAction(mailboxNumber, '1', [NOTFLAGGED]);
 
 			renderHook(() => useSyncDataHandler(), {
@@ -223,7 +226,7 @@ describe('sync data handler', () => {
 		});
 
 		it('should mark message as spam', async () => {
-			setMessages([generateMessage({ id: '1', folderId: FOLDERS.INBOX })], 0);
+			setMessages([generateMessage({ id: '1', folderId: FOLDERS.INBOX })]);
 			mockSoapModifyMessageFolder(mailboxNumber, '1', FOLDERS.SPAM);
 
 			renderHook(() => useSyncDataHandler(), {
@@ -236,7 +239,7 @@ describe('sync data handler', () => {
 			});
 		});
 		it('should mark message as not spam', async () => {
-			setMessages([generateMessage({ id: '1', folderId: FOLDERS.SPAM })], 0);
+			setMessages([generateMessage({ id: '1', folderId: FOLDERS.SPAM })]);
 			mockSoapModifyMessageFolder(mailboxNumber, '1', FOLDERS.INBOX);
 
 			renderHook(() => useSyncDataHandler(), {
@@ -250,7 +253,7 @@ describe('sync data handler', () => {
 		});
 
 		it('should move message to trash', async () => {
-			setMessages([generateMessage({ id: '1', folderId: FOLDERS.INBOX })], 0);
+			setMessages([generateMessage({ id: '1', folderId: FOLDERS.INBOX })]);
 			mockSoapModifyMessageFolder(mailboxNumber, '1', FOLDERS.TRASH);
 
 			renderHook(() => useSyncDataHandler(), {
@@ -264,7 +267,7 @@ describe('sync data handler', () => {
 		});
 
 		it('should restore message', async () => {
-			setMessages([generateMessage({ id: '1', folderId: FOLDERS.TRASH })], 0);
+			setMessages([generateMessage({ id: '1', folderId: FOLDERS.TRASH })]);
 			mockSoapModifyMessageFolder(mailboxNumber, '1', FOLDERS.INBOX);
 
 			renderHook(() => useSyncDataHandler(), {
@@ -278,7 +281,7 @@ describe('sync data handler', () => {
 		});
 
 		it('should move message to a folder', async () => {
-			setMessages([generateMessage({ id: '1', folderId: 'aaa' })], 0);
+			setMessages([generateMessage({ id: '1', folderId: 'aaa' })]);
 			mockSoapModifyMessageFolder(mailboxNumber, '1', 'bbb');
 
 			renderHook(() => useSyncDataHandler(), {

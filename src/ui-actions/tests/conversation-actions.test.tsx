@@ -699,7 +699,7 @@ describe('Conversation actions calls', () => {
 
 		test('do not replace history if in /search', async () => {
 			populateFoldersStore({ view: FOLDER_VIEW.message });
-			setConversations([generateConversation({ id: '1' })], 0);
+			setConversations([generateConversation({ id: '1' })], false);
 			const store = generateStore();
 			const spyReplaceHistory = jest.spyOn(hooks, 'replaceHistory');
 			(useLocation as jest.Mock).mockReturnValue({ pathname: '/search/test' });
@@ -733,7 +733,7 @@ describe('Conversation actions calls', () => {
 
 		test('replace history if location does not start with /search', async () => {
 			populateFoldersStore({ view: FOLDER_VIEW.message });
-			setConversations([generateConversation({ id: '1' })], 0);
+			setConversations([generateConversation({ id: '1' })], false);
 			const store = generateStore();
 			(useLocation as jest.Mock).mockReturnValue({ pathname: '/mails/test' });
 			const spyReplaceHistory = jest.spyOn(hooks, 'replaceHistory');

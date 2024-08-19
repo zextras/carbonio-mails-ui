@@ -267,8 +267,8 @@ describe('SearchView', () => {
 		it('should display conversation as selected when in selecting it', async () => {
 			const store = generateStore();
 			const message = generateMessage({ id: '1' });
-			setConversations([generateConversation({ id: '123', messages: [message] })], 0);
-			setMessages([message], 0);
+			setConversations([generateConversation({ id: '123', messages: [message] })], false);
+			setMessages([message]);
 			updateConversationStatus('123', API_REQUEST_STATUS.fulfilled);
 			const customSettings: Partial<AccountSettings> = {
 				prefs: {

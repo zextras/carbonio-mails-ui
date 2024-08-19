@@ -47,11 +47,9 @@ type UseRunSearchProps = {
 
 function handleFulFilledConversationResults({
 	searchResponse,
-	offset,
 	tags
 }: {
 	searchResponse: SearchResponse;
-	offset: number;
 	tags: Tags;
 }): void {
 	const conversations = map(searchResponse.c, (conv) =>
@@ -63,8 +61,8 @@ function handleFulFilledConversationResults({
 			messages.push(normalizeMailMessageFromSoap(soapMessage, false))
 		)
 	);
-	setConversations(conversations, offset, searchResponse.more);
-	setMessages(messages, offset);
+	setConversations(conversations, searchResponse.more);
+	setMessages(messages);
 }
 
 function handleLoadMoreConversationResults({
@@ -101,7 +99,7 @@ function handleFulFilledMessagesResults({
 	setMessages(normalizedMessages);
 }
 
-function handleSearchResults({
+export function handleSearchResults({
 	searchResponse
 }: {
 	searchResponse: SearchResponse | ErrorSoapBodyResponse;
@@ -176,7 +174,7 @@ export function useRunSearch({
 				setSearchDisabled(true, invalidQueryTooltip);
 				updateSearchResultsLoadingStatus(API_REQUEST_STATUS.error);
 			} else {
-				handleSearchResults({ searchResponse, offset });
+				handleSearchResults({ searchResponse });
 				updateSearchResultsLoadingStatus(API_REQUEST_STATUS.fulfilled);
 			}
 		},
