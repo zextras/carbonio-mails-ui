@@ -23,6 +23,7 @@ import {
 	updateSearchResultsLoadingStatus,
 	useSearchResults
 } from '../../store/zustand/message-store/store';
+import { SEARCH_INITIAL_STATE } from '../../store/zustand/message-store/search-slice';
 
 const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHeader }) => {
 	useUpdateView();
@@ -120,7 +121,7 @@ const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHe
 		if (isInvalidQuery) {
 			return invalidQueryTooltip;
 		}
-
+		if (!query.length) return '';
 		if (searchResults.status === 'fulfilled') {
 			return t('label.results_for', 'Results for: ');
 		}
@@ -128,7 +129,7 @@ const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHe
 			return t('label.loading_results', 'Loading Results...');
 		}
 		return '';
-	}, [isInvalidQuery, searchResults.status, invalidQueryTooltip]);
+	}, [isInvalidQuery, searchResults.status, query, invalidQueryTooltip]);
 
 	const loading = searchResults.status === 'pending';
 
