@@ -44,7 +44,11 @@ const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHe
 	const [searchDisabled, setSearchDisabled] = useDisableSearch();
 	const folders = useFoldersMap();
 	const [count, setCount] = useState(0);
-	setAppContext({ isMessageView, count, setCount });
+
+	useEffect(() => {
+		setAppContext({ isMessageView, count, setCount });
+	}, [count, isMessageView]);
+
 	const [filterCount, setFilterCount] = useState(0);
 	const [isInvalidQuery, setIsInvalidQuery] = useState<boolean>(false);
 

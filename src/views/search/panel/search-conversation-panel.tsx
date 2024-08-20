@@ -32,12 +32,12 @@ export const SearchConversationPanel: FC<SearchConversationPanelProps> = () => {
 
 	const isExpanded = useCallback(
 		(index: number): boolean => {
-			if (convSortOrder === 'dateAsc') {
+			if (convSortOrder === 'dateAsc' && conversation?.messages) {
 				return index === conversation.messages.length - 1;
 			}
 			return index === 0;
 		},
-		[convSortOrder, conversation.messages.length]
+		[convSortOrder, conversation?.messages]
 	);
 
 	const { messages } = conversation;
