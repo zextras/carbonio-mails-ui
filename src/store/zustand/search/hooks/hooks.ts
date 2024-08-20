@@ -38,6 +38,7 @@ export function retrieveConversation(conversationId: string, folderId?: string):
 				return;
 			}
 			handleSearchConvResponse(conversationId, response);
+			updateConversationStatus(conversationId, API_REQUEST_STATUS.fulfilled);
 		})
 		.catch(() => {
 			updateConversationStatus(conversationId, API_REQUEST_STATUS.error);
