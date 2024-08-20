@@ -30,7 +30,8 @@ import {
 	setSearchResultsByConversation,
 	setMessages,
 	updateSearchResultsLoadingStatus,
-	useSearchResults
+	useSearchResults,
+	resetSearch
 } from '../../store/zustand/message-store/store';
 import { IncompleteMessage, MailMessage, SearchResponse, SearchSliceState } from '../../types';
 
@@ -101,14 +102,16 @@ export function handleSearchResults({
 		return;
 	}
 	const tags = getTags();
-	// resetSearch();
-
 	if (searchResponse.c) {
 		handleFulFilledConversationResults({ searchResponse, tags });
 	}
 
 	if (searchResponse.m) {
 		handleFulFilledMessagesResults({ searchResponse });
+	}
+	if (searchResponse && !searchResponse.c && !searchResponse.m) {
+		resetSearch();
+		updateSearchResultsLoadingStatus(API_REQUEST_STATUS.fulfilled);
 	}
 }
 
