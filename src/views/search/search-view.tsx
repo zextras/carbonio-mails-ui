@@ -23,7 +23,6 @@ import {
 	updateSearchResultsLoadingStatus,
 	useSearchResults
 } from '../../store/zustand/message-store/store';
-import { SEARCH_INITIAL_STATE } from '../../store/zustand/message-store/search-slice';
 
 const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHeader }) => {
 	useUpdateView();
