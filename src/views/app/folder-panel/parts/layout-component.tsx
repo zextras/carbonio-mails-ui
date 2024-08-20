@@ -64,21 +64,21 @@ export const LayoutComponent = (): React.JSX.Element => {
 	const layoutOptions: Array<DropdownItem> = [
 		{
 			id: 'vertical',
-			label: t('layoutView.tooltip.verticalSplit', 'Vertical split'),
+			label: t('label.layoutView.verticalSplit', 'Vertical split'),
 			icon: 'LayoutOutline',
 			onClick: onClickVerticalSplit,
 			selected: isCurrentLayoutVerticalSplit
 		},
 		{
 			id: 'horizontal',
-			label: t('layoutView.tooltip.horizontalSplit', 'Horizontal split'),
+			label: t('label.layoutView.horizontalSplit', 'Horizontal split'),
 			icon: 'BottomViewOutline',
 			onClick: onClickHorizontalSplit,
 			selected: isCurrentLayoutHorizontalSplit
 		},
 		{
 			id: 'noSplit',
-			label: t('layoutView.tooltip.noSplit', 'No split'),
+			label: t('label.layoutView.noSplit', 'No split'),
 			icon: 'ViewOffOutline',
 			onClick: onClickHidePreview,
 			selected: isCurrentLayoutNoSplit

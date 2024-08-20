@@ -77,7 +77,7 @@ export const usePreviewHeaderNavigation = ({
 		if (isTheFirstListItem) {
 			return t('tooltip.list_navigation.noPreviousEmails', 'There are no previous emails');
 		}
-		return t('tooltip.list_navigation.goToPreviews', 'Go to previous email');
+		return t('tooltip.list_navigation.goToPrevious', 'Go to previous email');
 	}, [isTheFirstListItem, searchedInFolderStatus, t]);
 
 	const nextActionTooltipLabel = useMemo(() => {
@@ -85,11 +85,11 @@ export const usePreviewHeaderNavigation = ({
 			return t('tooltip.list_navigation.closeToNavigate', 'Close this email to navigate');
 		}
 		if (isLoadMoreNeeded && !isLoadMoreFailed) {
-			return t('tooltip.list_navigation.loadingEmail', 'Loading next email');
+			return t('tooltip.list_navigation.loadingNextEmail', 'Loading next email');
 		}
 		if (isLoadMoreNeeded && isLoadMoreFailed) {
 			return t(
-				'tooltip.list_navigation.UnableToLoadNextEmail',
+				'tooltip.list_navigation.unableToLoadNextEmail',
 				'Unable to load next email. Try again later'
 			);
 		}
