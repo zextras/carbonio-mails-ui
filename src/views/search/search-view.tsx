@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, Suspense, useCallback, useMemo, useRef, useState } from 'react';
+import React, { FC, Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { Container, Spinner } from '@zextras/carbonio-design-system';
 import { SearchViewProps, setAppContext, t, useUserSettings } from '@zextras/carbonio-shell-ui';
@@ -57,7 +57,7 @@ const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHe
 	const searchResults = useSearchResults();
 
 	const firstSearchQueryCallback = useCallback(
-		async (queryString: string) => {
+		async (queryString: string, abortSignal) => {
 			updateSearchResultsLoadingStatus(API_REQUEST_STATUS.pending);
 			const searchResponse = await searchSoapApi({
 				query: queryString,
@@ -66,7 +66,8 @@ const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHe
 				types: isMessageView ? 'message' : 'conversation',
 				offset: 0,
 				recip: '0',
-				locale: prefLocale
+				locale: prefLocale,
+				abortSignal
 			});
 			if (
 				'Fault' in searchResponse &&
@@ -88,18 +89,20 @@ const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHe
 		[query, isSharedFolderIncluded, folders]
 	);
 
-	if (previousQuery.current !== queryToString && queryToString.length > 0) {
-		firstSearchQueryCallback(queryToString);
-		setFilterCount(query.length);
-		previousQuery.current = queryToString;
-	}
+	useEffect(() => {
+		const controller = new AbortController();
+		const { signal } = controller;
 
-	// if (query?.length === 0) {
-	// 	replaceHistory({
-	// 		path: MAILS_ROUTE,
-	// 		route: SEARCH_APP_ID
-	// 	});
-	// }
+		if (previousQuery.current !== queryToString && queryToString.length > 0) {
+			firstSearchQueryCallback(queryToString, signal);
+			setFilterCount(query.length);
+			previousQuery.current = queryToString;
+		}
+		return () => {
+			controller.abort();
+			previousQuery.current = '';
+		};
+	}, [queryToString, firstSearchQueryCallback, query.length]);
 
 	const resultLabelType = isInvalidQuery ? 'warning' : undefined;
 	const resultLabel = useMemo(() => {

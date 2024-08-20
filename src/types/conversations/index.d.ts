@@ -69,6 +69,7 @@ export type FetchConversationsParameters = {
 	recip?: '0' | '1' | '2';
 	wantContent?: 'full' | 'original' | 'both';
 	locale?: string;
+	abortSignal?: AbortSignal;
 };
 
 export type FetchConversationsReturn = {

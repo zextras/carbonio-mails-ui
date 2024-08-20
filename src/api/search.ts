@@ -19,7 +19,8 @@ export async function searchSoapApi({
 	offset,
 	recip = '2',
 	wantContent = 'full',
-	locale
+	locale,
+	abortSignal
 }: FetchConversationsParameters): Promise<SearchResponse | ErrorSoapBodyResponse> {
 	const queryPart = [`inId:"${folderId}"`];
 	let finalsortBy = sortBy;
@@ -58,23 +59,28 @@ export async function searchSoapApi({
 		finalQuery = query;
 	}
 
-	return soapFetch<SearchRequest, SearchResponse | ErrorSoapBodyResponse>('Search', {
-		_jsns: 'urn:zimbraMail',
-		limit,
-		needExp: 1,
-		recip,
-		fullConversation: 1,
-		wantContent,
-		sortBy: finalsortBy,
-		query: finalQuery,
-		offset,
-		types,
-		...(locale
-			? {
-					locale: {
-						_content: locale
+	return soapFetch<SearchRequest, SearchResponse | ErrorSoapBodyResponse>(
+		'Search',
+		{
+			_jsns: 'urn:zimbraMail',
+			limit,
+			needExp: 1,
+			recip,
+			fullConversation: 1,
+			wantContent,
+			sortBy: finalsortBy,
+			query: finalQuery,
+			offset,
+			types,
+			...(locale
+				? {
+						locale: {
+							_content: locale
+						}
 					}
-				}
-			: undefined)
-	});
+				: undefined)
+		},
+		undefined,
+		abortSignal
+	);
 }
