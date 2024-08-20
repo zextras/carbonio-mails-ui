@@ -249,7 +249,7 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item }) => {
 			label:
 				item.id === FOLDERS.USER_ROOT
 					? accountName
-					: getFolderTranslatedName({ folderId: item.id, folderName: item.name }) ?? '',
+					: (getFolderTranslatedName({ folderId: item.id, folderName: item.name }) ?? ''),
 			icon: getFolderIconName(item) ?? undefined,
 			iconColor: getFolderIconColor(item) ?? '',
 			badgeCounter: badgeCount(item.id === FOLDERS.DRAFTS ? item.n : item?.u),
