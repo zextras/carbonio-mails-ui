@@ -106,14 +106,7 @@ const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHe
 			controller.abort();
 			previousQuery.current = initialQueryToString;
 		};
-	}, [
-		firstSearchQueryCallback,
-		folders,
-		initialQueryToString,
-		isSharedFolderIncluded,
-		query,
-		queryToString
-	]);
+	}, [firstSearchQueryCallback, initialQueryToString, query.length, queryToString]);
 
 	const resultLabelType = isInvalidQuery ? 'warning' : undefined;
 	const resultLabel = useMemo(() => {
