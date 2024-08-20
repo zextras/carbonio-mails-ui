@@ -29,7 +29,9 @@ const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHe
 	const { path } = useRouteMatch();
 	const [query, updateQuery] = useQuery();
 	const isMessageView = useIsMessageView();
-	const previousQuery = useRef('');
+	const folders = useFoldersMap();
+	const initialQueryToString = generateQueryString([], true, folders);
+	const previousQuery = useRef(initialQueryToString);
 	const [showAdvanceFilters, setShowAdvanceFilters] = useState(false);
 	const settings = useUserSettings();
 	const includeSharedItemsInSearch = settings.prefs.zimbraPrefIncludeSharedItemsInSearch === 'TRUE';
@@ -42,7 +44,6 @@ const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHe
 	);
 
 	const [searchDisabled, setSearchDisabled] = useDisableSearch();
-	const folders = useFoldersMap();
 	const [count, setCount] = useState(0);
 
 	useEffect(() => {
@@ -96,17 +97,23 @@ const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHe
 	useEffect(() => {
 		const controller = new AbortController();
 		const { signal } = controller;
-
-		if (previousQuery.current !== queryToString && queryToString.length > 0) {
+		if (previousQuery.current !== queryToString && query.length > 0) {
 			firstSearchQueryCallback(queryToString, signal);
 			setFilterCount(query.length);
 			previousQuery.current = queryToString;
 		}
 		return () => {
 			controller.abort();
-			previousQuery.current = '';
+			previousQuery.current = initialQueryToString;
 		};
-	}, [queryToString, firstSearchQueryCallback, query.length]);
+	}, [
+		firstSearchQueryCallback,
+		folders,
+		initialQueryToString,
+		isSharedFolderIncluded,
+		query,
+		queryToString
+	]);
 
 	const resultLabelType = isInvalidQuery ? 'warning' : undefined;
 	const resultLabel = useMemo(() => {
