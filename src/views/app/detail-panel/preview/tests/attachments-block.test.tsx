@@ -16,28 +16,34 @@ import { generateStore } from '../../../../../tests/generators/store';
 import AttachmentsBlock from '../attachments-block';
 
 describe('attachments-block', () => {
-	useAppContext.mockReturnValue({ catalog: ['carbonio-preview'] });
-	const store = generateStore();
-	const messageAttachments = [
-		{
-			cd: 'attachment',
-			name: 'test',
-			filename: 'large-document.pdf',
-			size: 123,
-			contentType: 'application/pdf',
-			requiresSmartLinkConversion: false
-		} as const
-	];
-	const { user } = setupTest(
-		<AttachmentsBlock
-			messageId={'1'}
-			messageSubject={'test'}
-			messageAttachments={messageAttachments}
-		/>,
-		{ store }
-	);
-	expect(screen.getByText('click to preview')).toBeVisible();
+	test('carbonio-preview available, tooltip says click to preview', async () => {
+		useAppContext.mockReturnValue({ catalog: ['carbonio-preview'] });
+		const store = generateStore();
+		const messageAttachments = [
+			{
+				cd: 'attachment',
+				name: 'test',
+				filename: 'large-document.pdf',
+				size: 123,
+				contentType: 'application/pdf',
+				requiresSmartLinkConversion: false
+			} as const
+		];
+		const { user } = setupTest(
+			<AttachmentsBlock
+				messageId={'1'}
+				messageSubject={'test'}
+				messageAttachments={messageAttachments}
+			/>,
+			{ store }
+		);
+
+		await user.hover(screen.getByText('large-document.pdf'));
+
+		expect(await screen.findByText('Click to preview')).toBeVisible();
+	});
 });
+
 describe('Attachments visualization', () => {
 	test.each`
 		msgId  | attachmentType

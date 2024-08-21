@@ -21,12 +21,12 @@ import {
 	ErrorSoapBodyResponse,
 	getIntegratedFunction,
 	soapFetch,
-	t,
 	useAppContext,
 	useIntegratedFunction
 } from '@zextras/carbonio-shell-ui';
 import { PreviewsManagerContext } from '@zextras/carbonio-ui-preview';
 import { filter, includes, map } from 'lodash';
+import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 
 import DeleteAttachmentModal from './delete-attachment-modal';
@@ -133,6 +133,7 @@ const Attachment: FC<AttachmentType> = ({
 	att,
 	openEmlPreview
 }) => {
+	const [t] = useTranslation();
 	const { createPreview } = useContext(PreviewsManagerContext);
 	const { isInsideExtraWindow } = useExtraWindow();
 	const extension = getFileExtension(att).value;
@@ -238,7 +239,7 @@ const Attachment: FC<AttachmentType> = ({
 					});
 				});
 		},
-		[att.name, createSnackbar, messageId]
+		[att.name, createSnackbar, messageId, t]
 	);
 	const onCreateContact = useCallback(() => {
 		createContact({ messageId, part });
@@ -257,7 +258,7 @@ const Attachment: FC<AttachmentType> = ({
 			canSelectOpenedFolder: true,
 			maxSelection: 1
 		}),
-		[confirmAction, isAValidDestination]
+		[confirmAction, isAValidDestination, t]
 	);
 
 	const [uploadIntegration, isUploadIntegrationAvailable] = getIntegratedFunction('select-nodes');
@@ -280,7 +281,7 @@ const Attachment: FC<AttachmentType> = ({
 					autoHideTimeout: 3000
 				});
 			});
-	}, [att?.name, createSnackbar, messageId, openEmlPreview]);
+	}, [att?.name, createSnackbar, messageId, openEmlPreview, t]);
 
 	const isCarbonioPreviewAvailable = useMemo(
 		() => includes(catalog, 'carbonio-preview'),
@@ -312,7 +313,13 @@ const Attachment: FC<AttachmentType> = ({
 			return t('action.click_preview', 'Click to preview');
 		}
 		return t('action.click_download', 'Click to download');
-	}, [isEML, isPreviewedByBrowser, isPreviewedByCarbonioDocsEditor, isPreviewedByCarbonioPreview]);
+	}, [
+		isEML,
+		isPreviewedByBrowser,
+		isPreviewedByCarbonioDocsEditor,
+		isPreviewedByCarbonioPreview,
+		t
+	]);
 
 	const preview = useCallback(
 		(ev) => {
@@ -367,7 +374,8 @@ const Attachment: FC<AttachmentType> = ({
 			isPreviewedByCarbonioPreview,
 			link,
 			pType,
-			showEMLPreview
+			showEMLPreview,
+			t
 		]
 	);
 
@@ -540,6 +548,7 @@ const AttachmentsBlock: FC<{
 	messageSubject,
 	messageAttachments
 }): ReactElement => {
+	const [t] = useTranslation();
 	const { createSnackbar } = useUiUtilities();
 	const [expanded, setExpanded] = useState(false);
 	const attachments = useMemo(
@@ -560,30 +569,27 @@ const AttachmentsBlock: FC<{
 		[messageId, messageSubject, attachmentsParts]
 	);
 
-	const getLabel = ({
-		allSuccess,
-		allFails
-	}: {
-		allSuccess: boolean;
-		allFails: boolean;
-	}): string => {
-		if (allSuccess) {
+	const getLabel = useCallback(
+		({ allSuccess, allFails }: { allSuccess: boolean; allFails: boolean }): string => {
+			if (allSuccess) {
+				return t(
+					'message.snackbar.all_att_saved',
+					'Attachments successfully saved in the selected folder'
+				);
+			}
+			if (allFails) {
+				return t(
+					'message.snackbar.att_err',
+					'There seems to be a problem when saving, please try again'
+				);
+			}
 			return t(
-				'message.snackbar.all_att_saved',
-				'Attachments successfully saved in the selected folder'
+				'message.snackbar.some_att_fails',
+				'There seems to be a problem when saving some files, please try again'
 			);
-		}
-		if (allFails) {
-			return t(
-				'message.snackbar.att_err',
-				'There seems to be a problem when saving, please try again'
-			);
-		}
-		return t(
-			'message.snackbar.some_att_fails',
-			'There seems to be a problem when saving some files, please try again'
-		);
-	};
+		},
+		[t]
+	);
 
 	const confirmAction = useCallback(
 		(nodes) => {
@@ -606,7 +612,7 @@ const AttachmentsBlock: FC<{
 				});
 			});
 		},
-		[attachments, createSnackbar, messageId]
+		[attachments, createSnackbar, getLabel, messageId]
 	);
 
 	const isAValidDestination = useCallback((node) => node?.permissions?.can_write_file, []);
@@ -623,7 +629,7 @@ const AttachmentsBlock: FC<{
 			canSelectOpenedFolder: true,
 			maxSelection: 1
 		}),
-		[confirmAction, isAValidDestination]
+		[confirmAction, isAValidDestination, t]
 	);
 
 	const [uploadIntegration, isUploadIntegrationAvailable] = getIntegratedFunction('select-nodes');
@@ -646,7 +652,7 @@ const AttachmentsBlock: FC<{
 				{t('label.save_to_files', 'Save to Files')}
 			</Link>
 		);
-	}, [actionTarget, isInsideExtraWindow, isUploadIntegrationAvailable, uploadIntegration]);
+	}, [actionTarget, isInsideExtraWindow, isUploadIntegrationAvailable, t, uploadIntegration]);
 
 	const attachmentsLabel = t('label.attachment', {
 		count: attachmentsCount,
