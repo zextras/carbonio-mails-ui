@@ -305,7 +305,7 @@ describe('SearchView', () => {
 	describe('view by messages', () => {
 		it('should display messages when soap API fulfilled and settings is "display by message"', async () => {
 			const store = generateStore();
-			createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
+			const interceptor = createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
 				m: [
 					getSoapMessage('10', { su: 'message 1 Subject' }),
 					getSoapMessage('11', { su: 'message 2 Subject' })
@@ -334,6 +334,10 @@ describe('SearchView', () => {
 
 			setupTest(<SearchView {...searchViewProps} />, {
 				store
+			});
+
+			await act(async () => {
+				await interceptor;
 			});
 
 			expect(await screen.findByText('label.results_for')).toBeInTheDocument();
