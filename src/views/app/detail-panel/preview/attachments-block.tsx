@@ -293,58 +293,59 @@ const Attachment: FC<AttachmentType> = ({
 	);
 
 	const isContentTypeDocument = isDocument(att.contentType);
-
+	const isPDFDocument = pType === 'pdf' && !isContentTypeDocument;
 	const isPreviewedByCarbonioPreview =
-		(pType === 'pdf' || pType === 'image') && !isContentTypeDocument && isCarbonioPreviewAvailable;
+		(isPDFDocument || pType === 'image') && isCarbonioPreviewAvailable;
 
 	const isPreviewedByCarbonioDocsEditor =
 		pType === 'pdf' && isContentTypeDocument && isCarbonioDocsEditorAvailable;
+
+	const isPreviewByTheBrowser =
+		isPDFDocument &&
+		(att.name.match(UNSUPPORTED_PDF_ATTACHMENT_PARTNAME_PATTERN) || !isCarbonioPreviewAvailable);
 
 	const actionTooltipText = useMemo(() => {
 		if (isEML) {
 			return t('action.click_open', 'Click to open');
 		}
-		if (isPreviewedByCarbonioPreview || isPreviewedByCarbonioDocsEditor) {
+		if (isPreviewedByCarbonioPreview || isPreviewedByCarbonioDocsEditor || isPreviewByTheBrowser) {
 			return t('action.click_preview', 'Click to preview');
 		}
 		return t('action.click_download', 'Click to download');
-	}, [isEML, isPreviewedByCarbonioDocsEditor, isPreviewedByCarbonioPreview]);
+	}, [isEML, isPreviewByTheBrowser, isPreviewedByCarbonioDocsEditor, isPreviewedByCarbonioPreview]);
 
 	const preview = useCallback(
 		(ev) => {
 			ev.preventDefault();
-
-			if (isPreviewedByCarbonioPreview || isPreviewedByCarbonioDocsEditor) {
-				// TODO remove the condition and the conditional block when IRIS-3918 will be implemented
-				if (pType === 'pdf' && att.name.match(UNSUPPORTED_PDF_ATTACHMENT_PARTNAME_PATTERN)) {
-					browserPdfPreview();
-				} else {
-					createPreview({
-						src: link,
-						previewType: pType,
-						/** Left Action for the preview */
-						closeAction: {
-							id: 'close',
-							icon: 'ArrowBack',
-							tooltipLabel: t('preview.close', 'Close Preview')
-						},
-						/** Actions for the preview */
-						actions: [
-							{
-								icon: 'DownloadOutline',
-								tooltipLabel: t('label.download', 'Download'),
-								id: 'DownloadOutline',
-								onClick: downloadAttachment
-							}
-						],
-						/** Extension of the file, shown as info */
-						extension: att.filename.substring(att.filename.lastIndexOf('.') + 1),
-						/** Name of the file, shown as info */
-						filename: att.filename,
-						/** Size of the file, shown as info */
-						size: humanFileSize(att.size)
-					});
-				}
+			// TODO remove the condition and the conditional block when IRIS-3918 will be implemented
+			if (isPreviewByTheBrowser) {
+				browserPdfPreview();
+			} else if (isPreviewedByCarbonioPreview || isPreviewedByCarbonioDocsEditor) {
+				createPreview({
+					src: link,
+					previewType: pType,
+					/** Left Action for the preview */
+					closeAction: {
+						id: 'close',
+						icon: 'ArrowBack',
+						tooltipLabel: t('preview.close', 'Close Preview')
+					},
+					/** Actions for the preview */
+					actions: [
+						{
+							icon: 'DownloadOutline',
+							tooltipLabel: t('label.download', 'Download'),
+							id: 'DownloadOutline',
+							onClick: downloadAttachment
+						}
+					],
+					/** Extension of the file, shown as info */
+					extension: att.filename.substring(att.filename.lastIndexOf('.') + 1),
+					/** Name of the file, shown as info */
+					filename: att.filename,
+					/** Size of the file, shown as info */
+					size: humanFileSize(att.size)
+				});
 			} else if (isEML) {
 				showEMLPreview();
 			} else if (inputRef2.current) {
@@ -355,17 +356,17 @@ const Attachment: FC<AttachmentType> = ({
 			}
 		},
 		[
-			isPreviewedByCarbonioPreview,
-			isPreviewedByCarbonioDocsEditor,
-			isEML,
-			pType,
-			att.name,
 			att.filename,
 			att.size,
 			browserPdfPreview,
 			createPreview,
-			link,
 			downloadAttachment,
+			isEML,
+			isPreviewByTheBrowser,
+			isPreviewedByCarbonioDocsEditor,
+			isPreviewedByCarbonioPreview,
+			link,
+			pType,
 			showEMLPreview
 		]
 	);
