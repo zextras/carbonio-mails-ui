@@ -3,10 +3,10 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, useCallback } from 'react';
+import React, { useCallback } from 'react';
 
 import { Container, Shimmer } from '@zextras/carbonio-design-system';
-import { useUserSettings } from '@zextras/carbonio-shell-ui';
+import { replaceHistory, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
 import { useParams } from 'react-router-dom';
 
@@ -16,12 +16,7 @@ import { useCompleteConversation } from '../../../store/zustand/search/hooks/hoo
 import { useExtraWindow } from '../../app/extra-windows/use-extra-window';
 import { SearchPreviewPanelHeader } from '../preview/search-preview-panel-header';
 
-type SearchConversationPanelProps = {
-	conversationId?: string;
-	folderId?: string;
-};
-
-export const SearchConversationPanel: FC<SearchConversationPanelProps> = () => {
+export const SearchConversationPanel = (): React.JSX.Element => {
 	const { conversationId } = useParams<{ conversationId: string }>();
 
 	const { isInsideExtraWindow } = useExtraWindow();
@@ -39,6 +34,14 @@ export const SearchConversationPanel: FC<SearchConversationPanelProps> = () => {
 		},
 		[convSortOrder, conversation?.messages]
 	);
+
+	if (!conversation) {
+		replaceHistory({
+			path: '/',
+			route: 'search'
+		});
+		return <></>;
+	}
 
 	const { messages } = conversation;
 
