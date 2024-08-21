@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { FC, Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 
 import { Container, Spinner } from '@zextras/carbonio-design-system';
 import { SearchViewProps, setAppContext, t, useUserSettings } from '@zextras/carbonio-shell-ui';
@@ -13,25 +13,15 @@ import { AdvancedFilterModal } from './advanced-filter-modal';
 import { SearchConversationList } from './list/conversation/search-conversation-list';
 import { SearchMessageList } from './list/message/search-message-list';
 import SearchPanel from './panel/search-panel';
-import { handleSearchResults, useIsMessageView } from './search-view-hooks';
-import { generateQueryString, updateQueryChips } from './utils';
-import { searchSoapApi } from '../../api/search';
+import { useIsMessageView, useRunSearch } from './search-view-hooks';
 import { useUpdateView } from '../../carbonio-ui-commons/hooks/use-update-view';
-import { useFoldersMap } from '../../carbonio-ui-commons/store/zustand/folder';
-import { API_REQUEST_STATUS, LIST_LIMIT } from '../../constants';
-import {
-	updateSearchResultsLoadingStatus,
-	useSearchResults
-} from '../../store/zustand/message-store/store';
 
 const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHeader }) => {
 	useUpdateView();
+
 	const { path } = useRouteMatch();
 	const [query, updateQuery] = useQuery();
 	const isMessageView = useIsMessageView();
-	const folders = useFoldersMap();
-	const initialQueryToString = generateQueryString([], true, folders);
-	const previousQuery = useRef(initialQueryToString);
 	const [showAdvanceFilters, setShowAdvanceFilters] = useState(false);
 	const settings = useUserSettings();
 	const includeSharedItemsInSearch = settings.prefs.zimbraPrefIncludeSharedItemsInSearch === 'TRUE';
@@ -43,72 +33,23 @@ const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHe
 		[]
 	);
 
-	const [searchDisabled, setSearchDisabled] = useDisableSearch();
 	const [count, setCount] = useState(0);
 
 	useEffect(() => {
 		setAppContext({ isMessageView, count, setCount });
 	}, [count, isMessageView]);
 
-	const [filterCount, setFilterCount] = useState(0);
-	const [isInvalidQuery, setIsInvalidQuery] = useState<boolean>(false);
-
-	const prefLocale = useMemo(
-		() => settings.prefs.zimbraPrefLocale,
-		[settings.prefs.zimbraPrefLocale]
-	);
-	updateQueryChips(query, isInvalidQuery, updateQuery);
-
-	const searchResults = useSearchResults();
-
-	const firstSearchQueryCallback = useCallback(
-		async (queryString: string, abortSignal) => {
-			updateSearchResultsLoadingStatus(API_REQUEST_STATUS.pending);
-			const searchResponse = await searchSoapApi({
-				query: queryString,
-				limit: LIST_LIMIT.INITIAL_LIMIT,
-				sortBy: 'dateDesc',
-				types: isMessageView ? 'message' : 'conversation',
-				offset: 0,
-				recip: '0',
-				locale: prefLocale,
-				abortSignal
-			});
-			if (
-				'Fault' in searchResponse &&
-				searchResponse?.Fault?.Detail?.Error?.Code === 'mail.QUERY_PARSE_ERROR'
-			) {
-				setIsInvalidQuery(true);
-				setSearchDisabled(true, invalidQueryTooltip);
-				updateSearchResultsLoadingStatus(API_REQUEST_STATUS.error);
-			} else {
-				setIsInvalidQuery(false);
-				handleSearchResults({ searchResponse });
-			}
-		},
-		[invalidQueryTooltip, isMessageView, prefLocale, setSearchDisabled]
-	);
-
-	const queryToString = useMemo(
-		() => generateQueryString(query, isSharedFolderIncluded, folders),
-		[query, isSharedFolderIncluded, folders]
-	);
-
-	useEffect(() => {
-		const controller = new AbortController();
-		const { signal } = controller;
-		if (previousQuery.current !== queryToString && query.length > 0) {
-			firstSearchQueryCallback(queryToString, signal);
-			setFilterCount(query.length);
-			previousQuery.current = queryToString;
-		}
-		return () => {
-			controller.abort();
-			previousQuery.current = initialQueryToString;
-		};
-	}, [firstSearchQueryCallback, initialQueryToString, query.length, queryToString]);
+	const { searchDisabled, filterCount, searchResults, isInvalidQuery, queryToString } =
+		useRunSearch({
+			query,
+			updateQuery,
+			useDisableSearch,
+			invalidQueryTooltip,
+			isSharedFolderIncluded
+		});
 
 	const resultLabelType = isInvalidQuery ? 'warning' : undefined;
+
 	const resultLabel = useMemo(() => {
 		if (isInvalidQuery) {
 			return invalidQueryTooltip;

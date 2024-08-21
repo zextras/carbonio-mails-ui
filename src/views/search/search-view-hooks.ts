@@ -4,24 +4,21 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import {
 	type QueryChip,
 	type ErrorSoapBodyResponse,
 	getTags,
-	setAppContext,
 	type Tags,
-	useUserSettings,
-	replaceHistory,
-	SEARCH_APP_ID
+	useUserSettings
 } from '@zextras/carbonio-shell-ui';
 import { map, noop } from 'lodash';
 
 import { generateQueryString, updateQueryChips } from './utils';
 import { searchSoapApi } from '../../api/search';
 import { useFoldersMap } from '../../carbonio-ui-commons/store/zustand/folder';
-import { API_REQUEST_STATUS, LIST_LIMIT, MAILS_ROUTE } from '../../constants';
+import { API_REQUEST_STATUS, LIST_LIMIT } from '../../constants';
 import { mapToNormalizedConversation } from '../../normalizations/normalize-conversation';
 import { normalizeMailMessageFromSoap } from '../../normalizations/normalize-message';
 import {
@@ -137,30 +134,37 @@ export function useRunSearch({
 	const settings = useUserSettings();
 	const isMessageView = useIsMessageView();
 	const folders = useFoldersMap();
-	const [count, setCount] = useState(0);
-	setAppContext({ isMessageView, count, setCount });
 	const [filterCount, setFilterCount] = useState(0);
 	const [isInvalidQuery, setIsInvalidQuery] = useState<boolean>(false);
+	const initialQueryToString = generateQueryString([], true, folders);
+	const previousQuery = useRef(initialQueryToString);
 
+	updateQueryChips(query, isInvalidQuery, updateQuery);
+
+	const searchResults = useSearchResults();
+
+	const queryToString = useMemo(
+		() => generateQueryString(query, isSharedFolderIncluded, folders),
+		[query, isSharedFolderIncluded, folders]
+	);
 	const prefLocale = useMemo(
 		() => settings.prefs.zimbraPrefLocale,
 		[settings.prefs.zimbraPrefLocale]
 	);
 	updateQueryChips(query, isInvalidQuery, updateQuery);
 
-	const searchResults = useSearchResults();
-
-	const searchQueryCallback = useCallback(
-		async (queryString: string, reset: boolean) => {
-			const offset = reset ? 0 : searchResults.offset;
+	const firstSearchQueryCallback = useCallback(
+		async (queryString: string, abortSignal) => {
+			updateSearchResultsLoadingStatus(API_REQUEST_STATUS.pending);
 			const searchResponse = await searchSoapApi({
 				query: queryString,
 				limit: LIST_LIMIT.INITIAL_LIMIT,
 				sortBy: 'dateDesc',
 				types: isMessageView ? 'message' : 'conversation',
-				offset,
+				offset: 0,
 				recip: '0',
-				locale: prefLocale
+				locale: prefLocale,
+				abortSignal
 			});
 			if (
 				'Fault' in searchResponse &&
@@ -170,33 +174,26 @@ export function useRunSearch({
 				setSearchDisabled(true, invalidQueryTooltip);
 				updateSearchResultsLoadingStatus(API_REQUEST_STATUS.error);
 			} else {
+				setIsInvalidQuery(false);
 				handleSearchResults({ searchResponse });
-				updateSearchResultsLoadingStatus(API_REQUEST_STATUS.fulfilled);
 			}
 		},
-		[invalidQueryTooltip, isMessageView, prefLocale, searchResults.offset, setSearchDisabled]
-	);
-
-	const queryToString = useMemo(
-		() => generateQueryString(query, isSharedFolderIncluded, folders),
-		[query, isSharedFolderIncluded, folders]
+		[invalidQueryTooltip, isMessageView, prefLocale, setSearchDisabled]
 	);
 
 	useEffect(() => {
-		if (isInvalidQuery) return;
-		setFilterCount(query.length);
-		searchQueryCallback(queryToString, false);
-		if (query?.length === 0) {
-			setFilterCount(0);
-			setIsInvalidQuery(false);
-			// TODO: CO-1144 reset searches
-			// dispatch(resetSearchResults());
-			replaceHistory({
-				path: MAILS_ROUTE,
-				route: SEARCH_APP_ID
-			});
+		const controller = new AbortController();
+		const { signal } = controller;
+		if (previousQuery.current !== queryToString && query.length > 0) {
+			firstSearchQueryCallback(queryToString, signal);
+			setFilterCount(query.length);
+			previousQuery.current = queryToString;
 		}
-	}, [isInvalidQuery, query.length, queryToString, searchQueryCallback]);
+		return () => {
+			controller.abort();
+			previousQuery.current = initialQueryToString;
+		};
+	}, [firstSearchQueryCallback, initialQueryToString, query.length, queryToString]);
 
 	return {
 		searchDisabled,
