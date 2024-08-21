@@ -194,10 +194,7 @@ export function appendMessages(
 		})
 	);
 }
-export function updateConversationMessages(
-	conversationId: string,
-	messages: IncompleteMessage[]
-): void {
+export function updateMessages(messages: IncompleteMessage[]): void {
 	useMessageStore.setState(
 		produce(({ populatedItems }: PopulatedItemsSliceState) => {
 			messages.forEach((message) => {

@@ -13,7 +13,7 @@ import { API_REQUEST_STATUS } from '../../../../constants';
 import { normalizeMailMessageFromSoap } from '../../../../normalizations/normalize-message';
 import { NormalizedConversation, SearchConvResponse, SearchRequestStatus } from '../../../../types';
 import {
-	updateConversationMessages,
+	updateMessages,
 	updateConversationStatus,
 	useConversationById,
 	useConversationStatus
@@ -21,7 +21,7 @@ import {
 
 function handleSearchConvResponse(conversationId: string, response: SearchConvResponse): void {
 	const messages = map(response?.m ?? [], (msg) => normalizeMailMessageFromSoap(msg, true));
-	updateConversationMessages(conversationId, messages);
+	updateMessages(messages);
 }
 
 type ConversationWithStatus = {

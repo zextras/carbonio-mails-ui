@@ -10,7 +10,7 @@ import { enableMapSet } from 'immer';
 import {
 	removeMessages,
 	resetSearch,
-	updateConversationMessages,
+	updateMessages,
 	setSearchResultsByConversation,
 	updateConversationStatus,
 	setMessages,
@@ -54,17 +54,13 @@ describe('message store', () => {
 			expect(result.current).toBe(API_REQUEST_STATUS.fulfilled);
 		});
 
-		it('should update conversation messages', () => {
-			const conversation = generateConversation({ id: '1' });
-			setSearchResultsByConversation([conversation], false);
-
+		it('should update populated store messages', () => {
 			const message = generateMessage({ id: '1' });
-			updateConversationMessages(conversation.id, [message]);
+			updateMessages([message]);
 
-			const { result } = renderHook(() => useConversationById('1'));
+			const { result } = renderHook(() => useMessageById('1'));
 
-			expect(result.current.messages).toHaveLength(1);
-			expect(result.current.messages[0]).toBe(message);
+			expect(result.current).toBe(message);
 		});
 
 		it('should not override other conversation messages', async () => {
@@ -79,7 +75,7 @@ describe('message store', () => {
 			setSearchResultsByConversation([conversation1, conversation2], false);
 			setMessages([...conversation1Messages, ...conversation2Messages]);
 
-			updateConversationMessages('1', [generateMessage({ id: '100' })]);
+			updateMessages([generateMessage({ id: '100' })]);
 
 			const { result: conversation2StoreMessages } = renderHook(() => useConversationMessages('2'));
 			const messages2 = conversation2StoreMessages.current;
