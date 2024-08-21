@@ -87,7 +87,7 @@ const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHe
 					mainAlignment="flex-start"
 				>
 					<Switch>
-						<Route path={`${path}/:folder?/:folderId?/:type?/:itemId?`}>
+						<Route path={`${path}/:type?/:itemId?`}>
 							{isMessageView ? (
 								<SearchMessageList
 									searchDisabled={searchDisabled}

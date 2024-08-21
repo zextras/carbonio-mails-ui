@@ -59,7 +59,7 @@ export const SearchConversationPanel: FC<SearchConversationPanelProps> = () => {
 								{map(messages, (message, index) => (
 									<SearchConversationMessagePanel
 										key={message.id}
-										convMessage={message}
+										convMessageId={message.id}
 										isExpanded={isExpanded(index)}
 										isAlone={conversation.messages?.length === 1}
 										isInsideExtraWindow={isInsideExtraWindow}

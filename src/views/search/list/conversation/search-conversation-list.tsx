@@ -32,7 +32,7 @@ export const SearchConversationList: FC<SearchListProps> = ({
 	invalidQueryTooltip,
 	hasMore
 }) => {
-	const { itemId, folderId } = useParams<{ itemId: string; folderId: string }>();
+	const { itemId } = useParams<{ itemId: string }>();
 	const loadingMore = useRef<boolean>(false);
 	const { setCount, count } = useAppContext<AppContext>();
 	const items = [...conversationIds].map((conversationId) => ({ id: conversationId }));
@@ -78,6 +78,7 @@ export const SearchConversationList: FC<SearchListProps> = ({
 		() =>
 			map([...conversationIds], (conversationId) => {
 				const active = itemId === conversationId;
+
 				const isSelected = selected[conversationId];
 				return (
 					// WARNING: CustomList needs a CustomListItem as top-level children, else visibility breaks
@@ -123,7 +124,7 @@ export const SearchConversationList: FC<SearchListProps> = ({
 				<>
 					<SearchListHeader
 						items={items}
-						folderId={folderId}
+						folderId={''}
 						selected={selected}
 						deselectAll={deselectAll}
 						isSelectModeOn={isSelectModeOn}
@@ -138,7 +139,7 @@ export const SearchConversationList: FC<SearchListProps> = ({
 							onListBottom={(): void => {
 								onScrollBottom();
 							}}
-							data-testid={`conversation-list-${folderId}`}
+							data-testid={`conversation-list-${itemId}`}
 							ref={listRef}
 						>
 							{listItems}
