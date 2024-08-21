@@ -3,16 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, {
-	FC,
-	memo,
-	useCallback,
-	useEffect,
-	useLayoutEffect,
-	useMemo,
-	useRef,
-	useState
-} from 'react';
+import React, { FC, memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import {
 	Button,
@@ -137,19 +128,9 @@ type HtmlMessageRendererType = {
 	body: { content: string; contentType: string };
 	parts: MailMessagePart[];
 	participants: Participant[] | undefined;
-	isInsideExtraWindow?: boolean;
-	showingEml?: boolean;
 };
-const HtmlMessageRenderer: FC<HtmlMessageRendererType> = ({
-	msgId,
-	body,
-	parts,
-	participants,
-	isInsideExtraWindow = false,
-	showingEml = false
-}) => {
+const HtmlMessageRenderer: FC<HtmlMessageRendererType> = ({ msgId, body, parts, participants }) => {
 	const divRef = useRef<HTMLDivElement>(null);
-	const iframeRef = useRef<HTMLIFrameElement>(null);
 	const [showQuotedText, setShowQuotedText] = useState(false);
 
 	const settingsPref = useUserSettings()?.prefs;
@@ -243,27 +224,10 @@ const HtmlMessageRenderer: FC<HtmlMessageRendererType> = ({
 		[displayBanner, showExternalImage]
 	);
 
-	const handleIframeLoad = useCallback(() => {
-		const iframe = iframeRef.current;
-		if (iframe && iframe.contentDocument) {
-			const iframeDocument = iframe.contentDocument;
-			const documentScrollHeight = iframeDocument.documentElement.scrollHeight;
-			const iframeHeightAdjustmentPx = 24;
-			if (isInsideExtraWindow && showingEml) {
-				iframe.style.height = '100%';
-			} else {
-				iframe.style.height = `${documentScrollHeight + iframeHeightAdjustmentPx}px`;
-			}
-		}
-	}, [isInsideExtraWindow, showingEml]);
-
-	useLayoutEffect(() => {
-		const contentDocument = iframeRef?.current?.contentDocument;
-		if (contentDocument) {
-			contentDocument.open();
-			contentDocument.write(contentToDisplay);
-			contentDocument.close();
-		}
+	const contentWithImages = useMemo(() => {
+		const parser = new DOMParser();
+		const htmlDoc = parser.parseFromString(contentToDisplay, 'text/html');
+		const images = htmlDoc.body.getElementsByTagName('img');
 
 		const imgMap = reduce(
 			parts,
@@ -275,23 +239,19 @@ const HtmlMessageRenderer: FC<HtmlMessageRendererType> = ({
 			{} as any
 		);
 
-		const images =
-			iframeRef.current &&
-			iframeRef.current.contentDocument &&
-			iframeRef.current.contentDocument.body.getElementsByTagName('img');
-		if (images)
-			forEach(images, (p: HTMLImageElement) => {
-				if (p.hasAttribute('dfsrc') && showImage) {
-					p.setAttribute('src', p.getAttribute('dfsrc') ?? '');
-				}
-				if (!_CI_SRC_REGEX.test(p.src)) return;
-				const ci = _CI_SRC_REGEX.exec(p.getAttribute('src') ?? '')?.[1] ?? '';
-				if (imgMap[ci]) {
-					const part = imgMap[ci];
-					p.setAttribute('pnsrc', p.getAttribute('src') ?? '');
-					p.setAttribute('src', `/service/home/~/?auth=co&id=${msgId}&part=${part.name}`);
-				}
-			});
+		forEach(images, (p) => {
+			if (p.hasAttribute('dfsrc') && showImage) {
+				p.setAttribute('src', p.getAttribute('dfsrc') ?? '');
+			}
+			if (!_CI_SRC_REGEX.test(p.src)) return;
+			const ci = _CI_SRC_REGEX.exec(p.getAttribute('src') ?? '')?.[1] ?? '';
+			if (imgMap[ci]) {
+				const part = imgMap[ci];
+				p.setAttribute('pnsrc', p.getAttribute('src') ?? '');
+				p.setAttribute('src', `/service/home/~/?auth=co&id=${msgId}&part=${part.name}`);
+			}
+		});
+		return htmlDoc.body.innerHTML;
 	}, [contentToDisplay, msgId, parts, showImage]);
 
 	const multiBtnLabel = useMemo(() => t('label.view_images', 'VIEW IMAGES'), []);
@@ -367,18 +327,10 @@ const HtmlMessageRenderer: FC<HtmlMessageRendererType> = ({
 					</Row>
 				</BannerContainer>
 			)}
-			<iframe
-				data-testid="message-renderer-iframe"
-				title={msgId}
-				ref={iframeRef}
-				style={{
-					border: 'none',
-					width: '100%',
-					height: '100%',
-					display: 'block',
-					maxWidth: '100%'
+			<Container
+				dangerouslySetInnerHTML={{
+					__html: contentWithImages
 				}}
-				onLoad={handleIframeLoad}
 			/>
 			{!showQuotedText && quoted.length > 0 && (
 				<Row mainAlignment="center" crossAlignment="center">
@@ -407,34 +359,17 @@ type MailMessageRendererProps = {
 	id: string;
 	fragment?: string;
 	participants?: Participant[];
-	isInsideExtraWindow?: boolean;
-	showingEml?: boolean;
 };
 
 const MailMessageRenderer: FC<MailMessageRendererProps> = memo(
-	({
-		parts,
-		body,
-		id,
-		fragment,
-		participants,
-		isInsideExtraWindow = false,
-		showingEml = false
-	}) => {
+	({ parts, body, id, fragment, participants }) => {
 		if (!body?.content?.length && !fragment) {
 			return <EmptyBody />;
 		}
 
 		if (body?.contentType === 'text/html') {
 			return (
-				<HtmlMessageRenderer
-					msgId={id}
-					body={body}
-					parts={parts}
-					participants={participants}
-					isInsideExtraWindow={isInsideExtraWindow}
-					showingEml={showingEml}
-				/>
+				<HtmlMessageRenderer msgId={id} body={body} parts={parts} participants={participants} />
 			);
 		}
 		if (body?.contentType === 'text/plain') {

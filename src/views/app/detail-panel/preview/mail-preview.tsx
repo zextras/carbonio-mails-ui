@@ -206,8 +206,6 @@ const MailContent: FC<{
 								id={message.id}
 								fragment={message.fragment}
 								participants={participants}
-								isInsideExtraWindow={isInsideExtraWindow}
-								showingEml={showingEml}
 							/>
 						)}
 					</Padding>
