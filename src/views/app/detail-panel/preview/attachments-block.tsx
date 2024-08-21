@@ -300,7 +300,7 @@ const Attachment: FC<AttachmentType> = ({
 	const isPreviewedByCarbonioDocsEditor =
 		pType === 'pdf' && isContentTypeDocument && isCarbonioDocsEditorAvailable;
 
-	const isPreviewByTheBrowser =
+	const isPreviewedByBrowser =
 		isPDFDocument &&
 		(att.name.match(UNSUPPORTED_PDF_ATTACHMENT_PARTNAME_PATTERN) || !isCarbonioPreviewAvailable);
 
@@ -308,17 +308,17 @@ const Attachment: FC<AttachmentType> = ({
 		if (isEML) {
 			return t('action.click_open', 'Click to open');
 		}
-		if (isPreviewedByCarbonioPreview || isPreviewedByCarbonioDocsEditor || isPreviewByTheBrowser) {
+		if (isPreviewedByCarbonioPreview || isPreviewedByCarbonioDocsEditor || isPreviewedByBrowser) {
 			return t('action.click_preview', 'Click to preview');
 		}
 		return t('action.click_download', 'Click to download');
-	}, [isEML, isPreviewByTheBrowser, isPreviewedByCarbonioDocsEditor, isPreviewedByCarbonioPreview]);
+	}, [isEML, isPreviewedByBrowser, isPreviewedByCarbonioDocsEditor, isPreviewedByCarbonioPreview]);
 
 	const preview = useCallback(
 		(ev) => {
 			ev.preventDefault();
 			// TODO remove the condition and the conditional block when IRIS-3918 will be implemented
-			if (isPreviewByTheBrowser) {
+			if (isPreviewedByBrowser) {
 				browserPdfPreview();
 			} else if (isPreviewedByCarbonioPreview || isPreviewedByCarbonioDocsEditor) {
 				createPreview({
@@ -362,7 +362,7 @@ const Attachment: FC<AttachmentType> = ({
 			createPreview,
 			downloadAttachment,
 			isEML,
-			isPreviewByTheBrowser,
+			isPreviewedByBrowser,
 			isPreviewedByCarbonioDocsEditor,
 			isPreviewedByCarbonioPreview,
 			link,
