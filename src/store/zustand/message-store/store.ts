@@ -90,6 +90,27 @@ export function setSearchResultsByConversation(
 		})
 	);
 }
+export function setSearchResultsByMessage(
+	messages: Array<MailMessage | IncompleteMessage>,
+	more: boolean
+): void {
+	useMessageStore.setState(
+		produce(({ search, populatedItems }) => {
+			search.messageIds = new Set(messages.map((message) => message.id));
+			search.status = API_REQUEST_STATUS.fulfilled;
+			search.conversationIds = new Set();
+			search.offset = 0;
+			search.more = more;
+			populatedItems.messages = messages.reduce(
+				(acc, message) => {
+					acc[message.id] = message;
+					return acc;
+				},
+				{} as Record<string, MailMessage | IncompleteMessage>
+			);
+		})
+	);
+}
 
 export function setMore(conversations: Array<NormalizedConversation>, more: boolean): void {
 	useMessageStore.setState(

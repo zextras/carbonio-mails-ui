@@ -13,7 +13,7 @@ import {
 	type Tags,
 	useUserSettings
 } from '@zextras/carbonio-shell-ui';
-import { map, noop } from 'lodash';
+import { map } from 'lodash';
 
 import { generateQueryString, updateQueryChips } from './utils';
 import { searchSoapApi } from '../../api/search';
@@ -25,10 +25,10 @@ import {
 	appendConversations,
 	appendMessages,
 	setSearchResultsByConversation,
-	setMessages,
 	updateSearchResultsLoadingStatus,
 	useSearchResults,
-	resetSearch
+	resetSearch,
+	setSearchResultsByMessage
 } from '../../store/zustand/message-store/store';
 import { IncompleteMessage, MailMessage, SearchResponse, SearchSliceState } from '../../types';
 
@@ -56,7 +56,21 @@ function handleFulFilledConversationResults({
 	setSearchResultsByConversation(conversations, searchResponse.more);
 }
 
-function handleLoadMoreConversationResults({
+function handleFulFilledMessagesResults({
+	searchResponse,
+	tags
+}: {
+	searchResponse: SearchResponse;
+	tags: Tags;
+}): void {
+	const normalizedMessages = map(searchResponse.m, (msg) =>
+		normalizeMailMessageFromSoap(msg, false)
+	);
+
+	setSearchResultsByMessage(normalizedMessages, searchResponse.more);
+}
+
+function handleLoadMoreResults({
 	searchResponse,
 	offset,
 	tags
@@ -65,29 +79,26 @@ function handleLoadMoreConversationResults({
 	offset: number;
 	tags: Tags;
 }): void {
-	const conversations = map(searchResponse.c, (conv) =>
-		mapToNormalizedConversation({ c: conv, tags })
-	);
-	const messages: (IncompleteMessage | MailMessage)[] = [];
-	searchResponse.c?.forEach((soapConversation) =>
-		soapConversation.m.forEach((soapMessage) =>
+	if (searchResponse.c) {
+		const conversations = map(searchResponse.c, (conv) =>
+			mapToNormalizedConversation({ c: conv, tags })
+		);
+		const messages: (IncompleteMessage | MailMessage)[] = [];
+		searchResponse.c?.forEach((soapConversation) =>
+			soapConversation.m.forEach((soapMessage) =>
+				messages.push(normalizeMailMessageFromSoap(soapMessage, false))
+			)
+		);
+		appendConversations(conversations, offset, searchResponse.more);
+		appendMessages(messages, offset);
+	}
+	if (searchResponse.m) {
+		const messages: (IncompleteMessage | MailMessage)[] = [];
+		searchResponse.m?.forEach((soapMessage) =>
 			messages.push(normalizeMailMessageFromSoap(soapMessage, false))
-		)
-	);
-	appendConversations(conversations, offset, searchResponse.more);
-	appendMessages(messages, offset);
-}
-
-function handleFulFilledMessagesResults({
-	searchResponse
-}: {
-	searchResponse: SearchResponse;
-}): void {
-	const normalizedMessages = map(searchResponse.m, (msg) =>
-		normalizeMailMessageFromSoap(msg, false)
-	);
-
-	setMessages(normalizedMessages);
+		);
+		appendMessages(messages, offset);
+	}
 }
 
 export function handleSearchResults({
@@ -104,7 +115,7 @@ export function handleSearchResults({
 	}
 
 	if (searchResponse.m) {
-		handleFulFilledMessagesResults({ searchResponse });
+		handleFulFilledMessagesResults({ searchResponse, tags });
 	}
 	if (searchResponse && !searchResponse.c && !searchResponse.m) {
 		resetSearch();
@@ -204,16 +215,18 @@ export function useRunSearch({
 	};
 }
 
-export function useLoadMoreConversations({
+export function useLoadMore({
 	query,
 	offset,
 	hasMore,
-	loadingMore
+	loadingMore,
+	types
 }: {
 	query: string;
 	offset: number;
 	hasMore?: boolean;
 	loadingMore: React.MutableRefObject<boolean>;
+	types: 'conversation' | 'message';
 }): () => void {
 	return useCallback(async () => {
 		if (hasMore && !loadingMore.current) {
@@ -222,19 +235,18 @@ export function useLoadMoreConversations({
 				query,
 				limit: LIST_LIMIT.LOAD_MORE_LIMIT,
 				sortBy: 'dateDesc',
-				types: 'conversation',
+				types,
 				offset,
 				recip: '0'
 			}).finally(() => {
 				loadingMore.current = false;
 			});
 			if ('Fault' in searchResponse) {
-				// TODO: handle error
-				noop();
-			} else if (searchResponse.c) {
-				const tags = getTags();
-				handleLoadMoreConversationResults({ searchResponse, offset, tags });
+				updateSearchResultsLoadingStatus(API_REQUEST_STATUS.error);
+				return;
 			}
+			const tags = getTags();
+			handleLoadMoreResults({ searchResponse, offset, tags });
 		}
-	}, [hasMore, loadingMore, offset, query]);
+	}, [hasMore, loadingMore, offset, query, types]);
 }

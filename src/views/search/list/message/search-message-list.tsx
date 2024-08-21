@@ -4,36 +4,26 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React, {
-	FC,
-	ReactElement,
-	useCallback,
-	useLayoutEffect,
-	useMemo,
-	useRef,
-	useState
-} from 'react';
+import React, { FC, useMemo, useRef } from 'react';
 
 import { Container, Padding, Text } from '@zextras/carbonio-design-system';
 import { t, useAppContext } from '@zextras/carbonio-shell-ui';
-import { isEmpty, map } from 'lodash';
+import { map } from 'lodash';
 import { useParams } from 'react-router-dom';
 
 import { SearchMessageListItem } from './search-message-list-item';
 import { CustomList } from '../../../../carbonio-ui-commons/components/list/list';
 import { CustomListItem } from '../../../../carbonio-ui-commons/components/list/list-item';
-import { LIST_LIMIT } from '../../../../constants';
-import { useAppDispatch } from '../../../../hooks/redux';
 import { useSelection } from '../../../../hooks/use-selection';
-import { search } from '../../../../store/actions';
 import type { AppContext, SearchListProps } from '../../../../types';
 import { AdvancedFilterButton } from '../../parts/advanced-filter-button';
+import { useLoadMore } from '../../search-view-hooks';
 import ShimmerList from '../../shimmer-list';
 import { SearchListHeader } from '../parts/search-list-header';
 
 export const SearchMessageList: FC<SearchListProps> = ({
 	searchDisabled,
-	searchResults,
+	searchResults: messageIds,
 	query,
 	loading,
 	filterCount,
@@ -42,8 +32,12 @@ export const SearchMessageList: FC<SearchListProps> = ({
 	invalidQueryTooltip,
 	hasMore
 }) => {
-	const { itemId, folderId } = useParams<{ itemId: string; folderId: string }>();
+	const { itemId } = useParams<{ itemId: string }>();
+	const loadingMore = useRef<boolean>(false);
 	const { setCount, count } = useAppContext<AppContext>();
+	const items = [...messageIds].map((messageId) => ({ id: messageId }));
+	const listRef = useRef<HTMLDivElement>(null);
+	const totalMessages = useMemo(() => messageIds.size, [messageIds]);
 
 	const {
 		selected,
@@ -57,28 +51,32 @@ export const SearchMessageList: FC<SearchListProps> = ({
 	} = useSelection({
 		setCount,
 		count,
-		items: [...searchResults].map((message) => ({ id: message }))
+		items
 	});
 
-	const [isLoading, setIsLoading] = useState(false);
-	const listRef = useRef<HTMLDivElement>(null);
-	const dispatch = useAppDispatch();
-
 	const displayerTitle = useMemo(() => {
-		if (!isInvalidQuery && isEmpty(searchResults)) {
+		if (!isInvalidQuery) return null;
+
+		if (totalMessages === 0) {
 			return t(
 				'displayer.search_list_title1',
 				'It looks like there are no results. Keep searching!'
 			);
 		}
 		return null;
-	}, [isInvalidQuery, searchResults]);
+	}, [isInvalidQuery, totalMessages]);
 
-	const messageIds = useMemo(() => [...searchResults], [searchResults]);
+	const onScrollBottom = useLoadMore({
+		query,
+		offset: totalMessages,
+		hasMore,
+		loadingMore,
+		types: 'message'
+	});
 
 	const listItems = useMemo(
 		() =>
-			map(messageIds, (messageId) => {
+			map([...messageIds], (messageId) => {
 				const active = itemId === messageId;
 				const isSelected = selected[messageId];
 				return (
@@ -86,11 +84,9 @@ export const SearchMessageList: FC<SearchListProps> = ({
 						key={messageId}
 						selected={isSelected}
 						active={active}
-						// TODO: need message to find out if it is read or not
-						// background={completeMessage.read ? 'gray6' : 'gray5'}
 						background={'transparent'}
 					>
-						{(visible: boolean): ReactElement =>
+						{(visible: boolean): React.JSX.Element =>
 							visible ? (
 								<SearchMessageListItem
 									itemId={messageId}
@@ -100,7 +96,6 @@ export const SearchMessageList: FC<SearchListProps> = ({
 									isConvChildren={false}
 									toggle={toggle}
 									active={active}
-									isSearchModule
 									deselectAll={deselectAll}
 								/>
 							) : (
@@ -113,35 +108,6 @@ export const SearchMessageList: FC<SearchListProps> = ({
 		[deselectAll, isSelectModeOn, itemId, messageIds, selected, toggle]
 	);
 
-	const totalMessages = useMemo(() => searchResults.size, [searchResults]);
-
-	useLayoutEffect(() => {
-		listRef?.current && (listRef.current.children[0].scrollTop = 0);
-	}, [searchResults]);
-
-	const onScrollBottom = useCallback(() => {
-		if (hasMore && !isLoading) {
-			setIsLoading(true);
-			dispatch(
-				search({
-					query,
-					limit: LIST_LIMIT.LOAD_MORE_LIMIT,
-					sortBy: 'dateDesc',
-					types: 'message',
-					offset: totalMessages,
-					recip: '0'
-				})
-			).then(() => {
-				setIsLoading(false);
-			});
-		}
-	}, [dispatch, isLoading, query, hasMore, totalMessages]);
-
-	const messagesLoadingCompleted = true;
-	const messages = useMemo(() => [...searchResults].map((id) => ({ id })), [searchResults]);
-	const onListBottom = useCallback((): void => {
-		onScrollBottom();
-	}, [onScrollBottom]);
 	return (
 		<Container
 			background={'gray6'}
@@ -157,24 +123,26 @@ export const SearchMessageList: FC<SearchListProps> = ({
 				invalidQueryTooltip={invalidQueryTooltip}
 			/>
 
-			<SearchListHeader
-				items={messages}
-				folderId={folderId}
-				selected={selected}
-				deselectAll={deselectAll}
-				isSelectModeOn={isSelectModeOn}
-				setIsSelectModeOn={setIsSelectModeOn}
-				selectAll={selectAll}
-				isAllSelected={isAllSelected}
-				selectAllModeOff={selectAllModeOff}
-			/>
-
-			{messagesLoadingCompleted && (
+			{!isInvalidQuery && !loading && (
 				<>
+					<SearchListHeader
+						items={items}
+						folderId={''}
+						selected={selected}
+						deselectAll={deselectAll}
+						isSelectModeOn={isSelectModeOn}
+						setIsSelectModeOn={setIsSelectModeOn}
+						selectAll={selectAll}
+						isAllSelected={isAllSelected}
+						selectAllModeOff={selectAllModeOff}
+					/>
+
 					{totalMessages > 0 || hasMore ? (
 						<CustomList
-							onListBottom={onListBottom}
-							data-testid={`message-list-${folderId}`}
+							onListBottom={(): void => {
+								onScrollBottom();
+							}}
+							data-testid={`message-list-${itemId}`}
 							ref={listRef}
 						>
 							{listItems}
@@ -195,7 +163,6 @@ export const SearchMessageList: FC<SearchListProps> = ({
 					)}
 				</>
 			)}
-
 			{loading && <ShimmerList count={33} delay={0} />}
 		</Container>
 	);
