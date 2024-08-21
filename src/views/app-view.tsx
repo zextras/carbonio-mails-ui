@@ -49,7 +49,7 @@ const AppView: FC = () => {
 	}
 
 	useEffect(() => {
-		requestServiceCatalog().then((res: ServicesCatalog) => {
+		requestServiceCatalog().then((res) => {
 			if (!isNil(res)) {
 				setCatalog(res);
 			}
