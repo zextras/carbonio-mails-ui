@@ -15,6 +15,7 @@ import { SearchMessageList } from './list/message/search-message-list';
 import SearchPanel from './panel/search-panel';
 import { useIsMessageView, useRunSearch } from './search-view-hooks';
 import { useUpdateView } from '../../carbonio-ui-commons/hooks/use-update-view';
+import { API_REQUEST_STATUS } from '../../constants';
 
 const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHeader }) => {
 	useUpdateView();
@@ -34,7 +35,6 @@ const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHe
 	);
 
 	const [count, setCount] = useState(0);
-
 	useEffect(() => {
 		setAppContext({ isMessageView, count, setCount });
 	}, [count, isMessageView]);
@@ -55,16 +55,16 @@ const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHe
 			return invalidQueryTooltip;
 		}
 		if (!query.length) return '';
-		if (searchResults.status === 'fulfilled') {
+		if (searchResults.status === API_REQUEST_STATUS.fulfilled) {
 			return t('label.results_for', 'Results for: ');
 		}
-		if (searchResults.status === 'pending') {
+		if (searchResults.status === API_REQUEST_STATUS.pending) {
 			return t('label.loading_results', 'Loading Results...');
 		}
 		return '';
 	}, [isInvalidQuery, searchResults.status, query, invalidQueryTooltip]);
 
-	const loading = searchResults.status === 'pending';
+	const loading = searchResults.status === API_REQUEST_STATUS.pending;
 
 	const onCloseCallback = useCallback(() => {
 		setShowAdvanceFilters(false);
