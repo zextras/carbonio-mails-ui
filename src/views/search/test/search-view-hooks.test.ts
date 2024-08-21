@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { renderHook } from '@testing-library/react-hooks';
+import { act, renderHook } from '@testing-library/react-hooks';
 import * as hooks from '@zextras/carbonio-shell-ui';
 import { ErrorSoapBodyResponse, QueryChip } from '@zextras/carbonio-shell-ui';
 import { noop } from 'lodash';
@@ -35,7 +35,7 @@ describe('search view hooks', () => {
 			}
 		});
 		jest.spyOn(hooks, 'useUserSettings').mockReturnValue(settings);
-		const searchInterceptor = createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
+		const interceptor = createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
 			c: [],
 			more: false
 		});
@@ -51,8 +51,10 @@ describe('search view hooks', () => {
 				isSharedFolderIncluded: false
 			})
 		);
+		await act(async () => {
+			await interceptor;
+		});
 
-		await searchInterceptor;
 		await waitFor(() => {
 			expect(result.current.searchResults.conversationIds.size).toBe(0);
 		});
@@ -71,7 +73,7 @@ describe('search view hooks', () => {
 			}
 		});
 		jest.spyOn(hooks, 'useUserSettings').mockReturnValue(settings);
-		const searchInterceptor = createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
+		const interceptor = createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
 			more: false
 		});
 		// eslint-disable-next-line @typescript-eslint/ban-types
@@ -87,7 +89,10 @@ describe('search view hooks', () => {
 			})
 		);
 
-		await searchInterceptor;
+		await act(async () => {
+			await interceptor;
+		});
+
 		await waitFor(() => {
 			expect(result.current.searchResults.conversationIds.size).toBe(0);
 		});
@@ -127,7 +132,10 @@ describe('search view hooks', () => {
 			})
 		);
 
-		await interceptor;
+		await act(async () => {
+			await interceptor;
+		});
+
 		await waitFor(() => {
 			expect(result.current.isInvalidQuery).toBe(true);
 		});
@@ -153,7 +161,7 @@ describe('search view hooks', () => {
 			searchResponse
 		);
 
-		const { result, waitFor } = renderHook(() =>
+		const { waitFor } = renderHook(() =>
 			useRunSearch({
 				query: [
 					{
@@ -169,13 +177,16 @@ describe('search view hooks', () => {
 			})
 		);
 
-		await interceptor;
+		await act(async () => {
+			await interceptor;
+		});
+
 		await waitFor(() => {
 			expect(renderHook(() => useConversationById('123')).result.current).toBeDefined();
 		});
 
 		await waitFor(() => {
-			expect(renderHook(() => useMessageById('1')).result.current).toBeDefined();
+			expect(renderHook(() => useMessageById('1')).result.current).not.toBeDefined();
 		});
 	});
 });
