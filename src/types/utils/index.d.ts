@@ -27,6 +27,7 @@ export type AppContext = {
 	isMessageView: boolean;
 	count: number;
 	setCount: (arg: number | ((prevState: number) => number)) => void;
+	catalog: Array<string>;
 };
 
 export type ThemeObj = {

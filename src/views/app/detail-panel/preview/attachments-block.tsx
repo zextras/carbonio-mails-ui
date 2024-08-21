@@ -22,14 +22,15 @@ import {
 	getIntegratedFunction,
 	soapFetch,
 	t,
+	useAppContext,
 	useIntegratedFunction
 } from '@zextras/carbonio-shell-ui';
 import { PreviewsManagerContext } from '@zextras/carbonio-ui-preview';
-import { filter, map } from 'lodash';
+import { filter, find, map } from 'lodash';
 import styled from 'styled-components';
 
 import DeleteAttachmentModal from './delete-attachment-modal';
-import { humanFileSize, previewType } from './file-preview';
+import { humanFileSize, isDocument, previewType } from './file-preview';
 import {
 	getAttachmentIconColors,
 	getAttachmentsDownloadLink,
@@ -44,6 +45,7 @@ import { getMsgsForPrint } from '../../../../store/actions';
 import { deleteAttachments } from '../../../../store/actions/delete-all-attachments';
 import { StoreProvider } from '../../../../store/redux';
 import type {
+	AppContext,
 	AttachmentPart,
 	AttachmentType,
 	CopyToFileRequest,
@@ -135,6 +137,7 @@ const Attachment: FC<AttachmentType> = ({
 	const { isInsideExtraWindow } = useExtraWindow();
 	const extension = getFileExtension(att).value;
 	const { createSnackbar, createModal, closeModal } = useUiUtilities();
+	const { catalog } = useAppContext<AppContext>();
 
 	const inputRef = useRef<HTMLAnchorElement>(null);
 	const inputRef2 = useRef<HTMLAnchorElement>(null);
@@ -283,12 +286,24 @@ const Attachment: FC<AttachmentType> = ({
 			});
 	}, [att?.name, createSnackbar, message.id, openEmlPreview]);
 
+	const isPreviewAvailable = useMemo(
+		() => find(catalog, (service) => service === 'carbonio-preview'),
+		[catalog]
+	);
+	const isDocEditorAvailable = useMemo(
+		() => find(catalog, (service) => service === 'carbonio-docs-editor'),
+		[catalog]
+	);
+
 	const preview = useCallback(
 		(ev) => {
 			ev.preventDefault();
-			const pType = previewType(att.contentType);
+			const isDoc = isDocument(att.contentType);
 
-			if (pType === 'pdf' || pType === 'image') {
+			if (
+				((pType === 'pdf' || pType === 'image') && isPreviewAvailable) ||
+				(pType === 'pdf' && isDoc && isDocEditorAvailable)
+			) {
 				// TODO remove the condition and the conditional block when IRIS-3918 will be implemented
 				if (pType === 'pdf' && att.name.match(UNSUPPORTED_PDF_ATTACHMENT_PARTNAME_PATTERN)) {
 					browserPdfPreview();
@@ -336,8 +351,11 @@ const Attachment: FC<AttachmentType> = ({
 			browserPdfPreview,
 			createPreview,
 			downloadAttachment,
+			isDocEditorAvailable,
 			isEML,
+			isPreviewAvailable,
 			link,
+			pType,
 			showEMLPreview
 		]
 	);
