@@ -23,11 +23,12 @@ export type TextReadValuesProps = {
 	badge: 'unread' | 'read';
 };
 
+export type ServicesCatalog = Array<string>;
 export type AppContext = {
 	isMessageView: boolean;
 	count: number;
 	setCount: (arg: number | ((prevState: number) => number)) => void;
-	catalog: Array<string>;
+	catalog: ServicesCatalog;
 };
 
 export type ThemeObj = {

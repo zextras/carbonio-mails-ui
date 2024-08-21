@@ -26,7 +26,7 @@ import {
 	useIntegratedFunction
 } from '@zextras/carbonio-shell-ui';
 import { PreviewsManagerContext } from '@zextras/carbonio-ui-preview';
-import { filter, find, map } from 'lodash';
+import { filter, includes, map } from 'lodash';
 import styled from 'styled-components';
 
 import DeleteAttachmentModal from './delete-attachment-modal';
@@ -163,10 +163,6 @@ const Attachment: FC<AttachmentType> = ({
 
 	const isEML = extension === 'EML';
 
-	const actionTooltipText = isEML
-		? t('action.click_open', 'Click to open')
-		: t('action.click_preview', 'Click to preview');
-
 	const onDeleteAttachment = useCallback(() => {
 		dispatch(deleteAttachments({ id: message.id, attachments: [part] }));
 	}, [dispatch, message.id, part]);
@@ -286,24 +282,39 @@ const Attachment: FC<AttachmentType> = ({
 			});
 	}, [att?.name, createSnackbar, message.id, openEmlPreview]);
 
-	const isPreviewAvailable = useMemo(
-		() => find(catalog, (service) => service === 'carbonio-preview'),
+	const isCarbonioPreviewAvailable = useMemo(
+		() => includes(catalog, 'carbonio-preview'),
 		[catalog]
 	);
-	const isDocEditorAvailable = useMemo(
-		() => find(catalog, (service) => service === 'carbonio-docs-editor'),
+
+	const isCarbonioDocsEditorAvailable = useMemo(
+		() => includes(catalog, 'carbonio-docs-editor'),
 		[catalog]
 	);
+
+	const isContentTypeDocument = isDocument(att.contentType);
+
+	const isPreviewedByCarbonioPreview =
+		(pType === 'pdf' || pType === 'image') && !isContentTypeDocument && isCarbonioPreviewAvailable;
+
+	const isPreviewedByCarbonioDocsEditor =
+		pType === 'pdf' && isContentTypeDocument && isCarbonioDocsEditorAvailable;
+
+	const actionTooltipText = useMemo(() => {
+		if (isEML) {
+			return t('action.click_open', 'Click to open');
+		}
+		if (isPreviewedByCarbonioPreview || isPreviewedByCarbonioDocsEditor) {
+			return t('action.click_preview', 'Click to preview');
+		}
+		return t('action.click_download', 'Click to download');
+	}, [isEML, isPreviewedByCarbonioDocsEditor, isPreviewedByCarbonioPreview]);
 
 	const preview = useCallback(
 		(ev) => {
 			ev.preventDefault();
-			const isDoc = isDocument(att.contentType);
 
-			if (
-				((pType === 'pdf' || pType === 'image') && isPreviewAvailable) ||
-				(pType === 'pdf' && isDoc && isDocEditorAvailable)
-			) {
+			if (isPreviewedByCarbonioPreview || isPreviewedByCarbonioDocsEditor) {
 				// TODO remove the condition and the conditional block when IRIS-3918 will be implemented
 				if (pType === 'pdf' && att.name.match(UNSUPPORTED_PDF_ATTACHMENT_PARTNAME_PATTERN)) {
 					browserPdfPreview();
@@ -344,18 +355,17 @@ const Attachment: FC<AttachmentType> = ({
 			}
 		},
 		[
-			att.contentType,
-			att.filename,
+			isPreviewedByCarbonioPreview,
+			isPreviewedByCarbonioDocsEditor,
+			isEML,
+			pType,
 			att.name,
+			att.filename,
 			att.size,
 			browserPdfPreview,
 			createPreview,
-			downloadAttachment,
-			isDocEditorAvailable,
-			isEML,
-			isPreviewAvailable,
 			link,
-			pType,
+			downloadAttachment,
 			showEMLPreview
 		]
 	);

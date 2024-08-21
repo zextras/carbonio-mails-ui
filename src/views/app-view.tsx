@@ -6,16 +6,18 @@
 import React, { FC, Suspense, lazy, useEffect, useMemo, useState, useRef } from 'react';
 
 import { Spinner, setAppContext, useUserSettings } from '@zextras/carbonio-shell-ui';
-import { includes } from 'lodash';
+import { includes, isNil } from 'lodash';
 import moment from 'moment';
 
 import { FolderView } from './folder-view';
 import { LayoutSelector } from './layout-selector';
+import { requestServiceCatalog } from '../api/request-service-catalog';
 import { FOLDERS } from '../carbonio-ui-commons/constants/folders';
 import { useUpdateView } from '../carbonio-ui-commons/hooks/use-update-view';
 import { getFolderIdParts } from '../helpers/folders';
 import { useAppSelector } from '../hooks/redux';
 import { selectCurrentFolder } from '../store/conversations-slice';
+import { ServicesCatalog } from '../types';
 
 const LazyDetailPanel = lazy(
 	() => import(/* webpackChunkName: "folder-panel-view" */ './app/detail-panel')
@@ -29,7 +31,7 @@ const DetailPanel = (): React.JSX.Element => (
 
 const AppView: FC = () => {
 	const [count, setCount] = useState(0);
-	const [catalog, setCatalog] = useState();
+	const [catalog, setCatalog] = useState<ServicesCatalog>();
 	const { zimbraPrefGroupMailBy, zimbraPrefLocale } = useUserSettings().prefs;
 	const currentFolderId = useAppSelector(selectCurrentFolder);
 	const containerRef = useRef<HTMLDivElement>(null);
@@ -47,13 +49,11 @@ const AppView: FC = () => {
 	}
 
 	useEffect(() => {
-		fetch('/services/catalog/services')
-			.then((res) => res.json())
-			.then((res) => {
-				if (res.items) {
-					setCatalog(res.items);
-				}
-			});
+		requestServiceCatalog().then((res: ServicesCatalog) => {
+			if (!isNil(res)) {
+				setCatalog(res);
+			}
+		});
 	}, []);
 
 	useEffect(() => {
