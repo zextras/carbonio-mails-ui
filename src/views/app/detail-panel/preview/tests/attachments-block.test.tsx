@@ -8,12 +8,36 @@ import React from 'react';
 
 import { screen } from '@testing-library/react';
 
+import { useAppContext } from '../../../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
 import { getMsg } from '../../../../../store/actions';
 import { selectMessage } from '../../../../../store/messages-slice';
 import { generateStore } from '../../../../../tests/generators/store';
 import AttachmentsBlock from '../attachments-block';
 
+describe('attachments-block', () => {
+	useAppContext.mockReturnValue({ catalog: ['carbonio-preview'] });
+	const store = generateStore();
+	const messageAttachments = [
+		{
+			cd: 'attachment',
+			name: 'test',
+			filename: 'large-document.pdf',
+			size: 123,
+			contentType: 'application/pdf',
+			requiresSmartLinkConversion: false
+		} as const
+	];
+	const { user } = setupTest(
+		<AttachmentsBlock
+			messageId={'1'}
+			messageSubject={'test'}
+			messageAttachments={messageAttachments}
+		/>,
+		{ store }
+	);
+	expect(screen.getByText('click to preview')).toBeVisible();
+});
 describe('Attachments visualization', () => {
 	test.each`
 		msgId  | attachmentType
@@ -38,7 +62,9 @@ describe('Attachments visualization', () => {
 
 		// Create the props for the component
 		const props = {
-			message
+			messageSubject: message.subject,
+			messageId: message.id,
+			messageAttachments: message.attachments
 		};
 
 		// Render the component
@@ -87,7 +113,9 @@ describe('Attachment actions visualization', () => {
 			}
 			// Create the props for the component
 			const props = {
-				message
+				messageSubject: message.subject,
+				messageId: message.id,
+				messageAttachments: message.attachments
 			};
 
 			// Render the component

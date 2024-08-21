@@ -127,7 +127,7 @@ const Attachment: FC<AttachmentType> = ({
 	size,
 	link,
 	downloadlink,
-	message,
+	messageId,
 	isExternalMessage = false,
 	part,
 	att,
@@ -164,8 +164,8 @@ const Attachment: FC<AttachmentType> = ({
 	const isEML = extension === 'EML';
 
 	const onDeleteAttachment = useCallback(() => {
-		dispatch(deleteAttachments({ id: message.id, attachments: [part] }));
-	}, [dispatch, message.id, part]);
+		dispatch(deleteAttachments({ id: messageId, attachments: [part] }));
+	}, [dispatch, messageId, part]);
 
 	const onDownloadAndDelete = useCallback(() => {
 		downloadAttachment();
@@ -196,7 +196,7 @@ const Attachment: FC<AttachmentType> = ({
 		(nodes) => {
 			soapFetch<CopyToFileRequest, CopyToFileResponse | ErrorSoapBodyResponse>('CopyToFiles', {
 				_jsns: 'urn:zimbraMail',
-				mid: message.id,
+				mid: messageId,
 				part: att.name,
 				destinationFolderId: nodes[0].id
 			})
@@ -238,11 +238,11 @@ const Attachment: FC<AttachmentType> = ({
 					});
 				});
 		},
-		[att.name, createSnackbar, message.id]
+		[att.name, createSnackbar, messageId]
 	);
 	const onCreateContact = useCallback(() => {
-		createContact({ messageId: message.id, part });
-	}, [createContact, message.id, part]);
+		createContact({ messageId, part });
+	}, [createContact, messageId, part]);
 	const isAValidDestination = useCallback((node) => node?.permissions?.can_write_file, []);
 
 	const actionTarget = useMemo(
@@ -263,9 +263,9 @@ const Attachment: FC<AttachmentType> = ({
 	const [uploadIntegration, isUploadIntegrationAvailable] = getIntegratedFunction('select-nodes');
 
 	const showEMLPreview = useCallback(() => {
-		getMsgsForPrint({ ids: [message.id], part: att?.name })
+		getMsgsForPrint({ ids: [messageId], part: att?.name })
 			.then((res) => {
-				openEmlPreview && openEmlPreview(message.id, att?.name, res[0]);
+				openEmlPreview && openEmlPreview(messageId, att?.name, res[0]);
 			})
 			.catch(() => {
 				createSnackbar({
@@ -280,7 +280,7 @@ const Attachment: FC<AttachmentType> = ({
 					autoHideTimeout: 3000
 				});
 			});
-	}, [att?.name, createSnackbar, message.id, openEmlPreview]);
+	}, [att?.name, createSnackbar, messageId, openEmlPreview]);
 
 	const isCarbonioPreviewAvailable = useMemo(
 		() => includes(catalog, 'carbonio-preview'),
@@ -407,7 +407,7 @@ const Attachment: FC<AttachmentType> = ({
 			data-testid={`attachment-container-${filename}`}
 			requiresSmartLinkConversion={requiresSmartLinkConversion}
 		>
-			<Tooltip key={`${message.id}-Preview`} label={actionTooltipText}>
+			<Tooltip key={`${messageId}-Preview`} label={actionTooltipText}>
 				<Row
 					padding={{ all: 'small' }}
 					mainAlignment="flex-start"
@@ -442,7 +442,7 @@ const Attachment: FC<AttachmentType> = ({
 				<AttachmentHoverBarContainer orientation="horizontal">
 					{isUploadIntegrationAvailable && !isInsideExtraWindow && (
 						<Tooltip
-							key={`${message.id}-DriveOutline`}
+							key={`${messageId}-DriveOutline`}
 							label={
 								isInsideExtraWindow
 									? t(
@@ -463,7 +463,7 @@ const Attachment: FC<AttachmentType> = ({
 					)}
 
 					<Padding right="small">
-						<Tooltip key={`${message.id}-DownloadOutline`} label={t('label.download', 'Download')}>
+						<Tooltip key={`${messageId}-DownloadOutline`} label={t('label.download', 'Download')}>
 							<IconButton
 								data-testid={`download-attachment-${filename}`}
 								size="medium"
@@ -475,7 +475,7 @@ const Attachment: FC<AttachmentType> = ({
 					{!isExternalMessage && (
 						<Padding right="small">
 							<Tooltip
-								key={`${message.id}-DeletePermanentlyOutline`}
+								key={`${messageId}-DeletePermanentlyOutline`}
 								label={t('label.delete', 'Delete')}
 							>
 								<IconButton
@@ -490,7 +490,7 @@ const Attachment: FC<AttachmentType> = ({
 					{isAvailable && pType === 'vcard' && (
 						<Padding right="small">
 							<Tooltip
-								key={`${message.id}-UploadOutline`}
+								key={`${messageId}-UploadOutline`}
 								label={t('label.import_to_contacts', 'Import to Contacts')}
 							>
 								<IconButton
@@ -508,7 +508,7 @@ const Attachment: FC<AttachmentType> = ({
 				rel="noopener"
 				ref={inputRef2}
 				target="_blank"
-				href={`${getLocationOrigin()}/service/home/~/?auth=co&id=${message.id}&part=${part}`}
+				href={`${getLocationOrigin()}/service/home/~/?auth=co&id=${messageId}&part=${part}`}
 			/>
 			<AttachmentLink ref={inputRef} rel="noopener" target="_blank" href={downloadlink} />
 		</AttachmentContainer>
@@ -517,26 +517,34 @@ const Attachment: FC<AttachmentType> = ({
 
 const copyToFiles = (
 	att: AttachmentPart,
-	message: MailMessage,
+	messageId: string,
 	nodes: any
 ): Promise<CopyToFileResponse> =>
 	soapFetch('CopyToFiles', {
 		_jsns: 'urn:zimbraMail',
-		mid: message.id,
+		mid: messageId,
 		part: att.name,
 		destinationFolderId: nodes?.[0]?.id
 	});
 
 const AttachmentsBlock: FC<{
-	message: MailMessage;
+	messageId: MailMessage['id'];
+	messageSubject: MailMessage['subject'];
+	messageAttachments: MailMessage['attachments'];
 	isExternalMessage?: boolean;
 	openEmlPreview?: OpenEmlPreviewType;
-}> = ({ message, isExternalMessage = false, openEmlPreview }): ReactElement => {
+}> = ({
+	isExternalMessage = false,
+	openEmlPreview,
+	messageId,
+	messageSubject,
+	messageAttachments
+}): ReactElement => {
 	const { createSnackbar } = useUiUtilities();
 	const [expanded, setExpanded] = useState(false);
 	const attachments = useMemo(
-		() => filter(message?.attachments, { cd: 'attachment' }),
-		[message?.attachments]
+		() => filter(messageAttachments, { cd: 'attachment' }),
+		[messageAttachments]
 	);
 
 	const attachmentsCount = useMemo(() => attachments?.length || 0, [attachments]);
@@ -545,11 +553,11 @@ const AttachmentsBlock: FC<{
 	const actionsDownloadLink = useMemo(
 		() =>
 			getAttachmentsDownloadLink({
-				messageId: message.id,
-				messageSubject: message.subject,
+				messageId,
+				messageSubject,
 				attachments: attachmentsParts
 			}),
-		[message, attachmentsParts]
+		[messageId, messageSubject, attachmentsParts]
 	);
 
 	const getLabel = ({
@@ -579,7 +587,7 @@ const AttachmentsBlock: FC<{
 
 	const confirmAction = useCallback(
 		(nodes) => {
-			const promises = map(attachments, (att) => copyToFiles(att, message, nodes));
+			const promises = map(attachments, (att) => copyToFiles(att, messageId, nodes));
 			Promise.allSettled(promises).then((res: CopyToFileResponse[]) => {
 				const isFault = res.length === filter(res, (r) => r?.value?.Fault)?.length;
 				const allSuccess = isFault
@@ -598,7 +606,7 @@ const AttachmentsBlock: FC<{
 				});
 			});
 		},
-		[attachments, createSnackbar, message]
+		[attachments, createSnackbar, messageId]
 	);
 
 	const isAValidDestination = useCallback((node) => node?.permissions?.can_write_file, []);
@@ -655,17 +663,17 @@ const AttachmentsBlock: FC<{
 						filename={att?.filename}
 						size={att?.size ?? 0}
 						link={getAttachmentsLink({
-							messageId: message.id,
-							messageSubject: message.subject,
+							messageId,
+							messageSubject,
 							attachments: [att.name],
 							attachmentType: att.contentType
 						})}
 						downloadlink={getAttachmentsDownloadLink({
-							messageId: message.id,
-							messageSubject: message.subject,
+							messageId,
+							messageSubject,
 							attachments: [att.name]
 						})}
-						message={message}
+						messageId={messageId}
 						isExternalMessage={isExternalMessage}
 						part={att?.name ?? ''}
 						iconColors={getAttachmentIconColors({ attachments, theme })}
