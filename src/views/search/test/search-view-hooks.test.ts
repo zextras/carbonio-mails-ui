@@ -19,7 +19,7 @@ import {
 } from '../../../store/zustand/message-store/store';
 import { generateConversation } from '../../../tests/generators/generateConversation';
 import { SearchRequest, SearchResponse, SoapConversation } from '../../../types';
-import { useRunSearch } from '../search-view-hooks';
+import { useRunSearch, useLoadMore } from '../search-view-hooks';
 
 describe('search view hooks', () => {
 	it('should reset conversations list when api result empty', async () => {
@@ -206,3 +206,43 @@ function conversationFromAPI(params: Partial<SoapConversation> = {}): SoapConver
 		...params
 	};
 }
+
+describe('useLoadMore', () => {
+	let loadingMore: any;
+	beforeEach(() => {
+		loadingMore = { current: false };
+	});
+	it('should correcly handle response with both conversations and messages', async () => {
+		const message = generateConvMessageFromAPI({ id: '1' });
+		const searchResponse = {
+			// eslint-disable-next-line @typescript-eslint/no-use-before-define
+			c: [conversationFromAPI({ id: '123', su: 'Subject', m: [message] })],
+			m: [message],
+			more: false
+		};
+		const interceptor = createSoapAPIInterceptor<SearchRequest, SearchResponse>(
+			'Search',
+			searchResponse
+		);
+
+		const { result } = renderHook(() =>
+			useLoadMore({
+				query: 'test query',
+				offset: 0,
+				hasMore: true,
+				loadingMore,
+				types: 'conversation'
+			})
+		);
+
+		await act(async () => {
+			await interceptor;
+		});
+
+		await act(async () => {
+			await result.current();
+		});
+
+		expect(loadingMore.current).toBe(false);
+	});
+});
