@@ -22,7 +22,9 @@ import {
 	appendConversations,
 	appendMessages,
 	getSearchResultsLoadingStatus,
-	updateSearchResultsLoadingStatus
+	updateSearchResultsLoadingStatus,
+	deleteConversations,
+	useSearchResults
 } from './store';
 import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
 import { API_REQUEST_STATUS } from '../../../constants';
@@ -123,6 +125,30 @@ describe('message store', () => {
 			const { result: searchStatusAfterUpdate } = renderHook(() => getSearchResultsLoadingStatus());
 
 			expect(searchStatusAfterUpdate.current).toBe(API_REQUEST_STATUS.pending);
+		});
+
+		it('should delete conversations from the state', () => {
+			const conversation1Messages = [
+				generateMessage({ id: '1' }),
+				generateMessage({ id: '2' }),
+				generateMessage({ id: '3' })
+			];
+			const conversation1 = generateConversation({ id: '1', messages: conversation1Messages });
+			const conversation2Messages = [generateMessage({ id: '4' }), generateMessage({ id: '5' })];
+			const conversation2 = generateConversation({ id: '2', messages: conversation2Messages });
+			setSearchResultsByConversation([conversation1, conversation2], false);
+			setMessages([...conversation1Messages, ...conversation2Messages]);
+
+			deleteConversations(['1']);
+
+			const { result } = renderHook(() => useSearchResults());
+			const { result: conversation1Store } = renderHook(() => useConversationById('1'));
+			const { result: conversation2Store } = renderHook(() => useConversationById('2'));
+			expect(result.current.conversationIds.size).toBe(1);
+			expect(result.current.conversationIds.has('1')).toBe(false);
+			expect(result.current.conversationIds.has('2')).toBe(true);
+			expect(conversation1Store.current).toBeUndefined();
+			expect(conversation2Store.current).toBeDefined();
 		});
 	});
 

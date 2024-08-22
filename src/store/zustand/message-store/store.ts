@@ -112,23 +112,6 @@ export function setSearchResultsByMessage(
 	);
 }
 
-export function setMore(conversations: Array<NormalizedConversation>, more: boolean): void {
-	useMessageStore.setState(
-		produce((state: MessageStoreState) => {
-			state.search.conversationIds = new Set(conversations.map((c) => c.id));
-			state.search.offset = 0;
-			state.search.more = more;
-			state.populatedItems.conversations = conversations.reduce(
-				(acc, conv) => {
-					acc[conv.id] = conv;
-					return acc;
-				},
-				{} as Record<string, NormalizedConversation>
-			);
-		})
-	);
-}
-
 export function appendConversations(
 	conversations: Array<NormalizedConversation>,
 	offset: number,
