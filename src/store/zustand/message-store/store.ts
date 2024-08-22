@@ -164,6 +164,18 @@ export function updateConversationsOnly(conversations: Array<NormalizedConversat
 	);
 }
 
+export function deleteConversations(ids: Array<string>): void {
+	enableMapSet();
+	useMessageStore.setState(
+		produce((state: MessageStoreState) => {
+			ids.forEach((id) => {
+				state.search.conversationIds.delete(id);
+				delete state.populatedItems.conversations[id];
+			});
+		})
+	);
+}
+
 // TODO: rename me (find a better name)
 export function updateMessagesOnly(messages: Array<IncompleteMessage>): void {
 	useMessageStore.setState(

@@ -32,6 +32,7 @@ import {
 	selectMessages
 } from '../../../store/messages-slice';
 import {
+	deleteConversations,
 	updateConversationsOnly,
 	updateMessagesOnly
 } from '../../../store/zustand/message-store/store';
@@ -146,6 +147,7 @@ export const useSyncDataHandler = (): void => {
 							}
 						}
 						if (notify.deleted) {
+							deleteConversations(notify.deleted);
 							dispatch(handleNotifyDeletedConversations(notify.deleted));
 							dispatch(handleDeletedMessages(notify.deleted));
 							dispatch(handleDeletedMessagesInConversation(notify.deleted));
