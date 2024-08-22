@@ -33,10 +33,8 @@ import { useAppDispatch } from '../../../../hooks/redux';
 import { useMessageActions } from '../../../../hooks/use-message-actions';
 import { useMessageById } from '../../../../store/zustand/message-store/store';
 import { TextReadValuesType } from '../../../../types';
-import {
-	previewMessageOnSeparatedWindow,
-	setMsgRead
-} from '../../../../ui-actions/message-actions';
+import { setMsgRead } from '../../../../ui-actions/message-actions';
+import { previewMessageOnSeparatedWindow } from '../../../../ui-actions/preview-message-on-separated-window';
 import { useTagExist } from '../../../../ui-actions/tag-actions';
 import { createEditBoard } from '../../../app/detail-panel/edit/edit-view-board';
 import { useGlobalExtraWindowManager } from '../../../app/extra-windows/global-extra-window-manager';
