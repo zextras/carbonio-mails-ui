@@ -227,7 +227,7 @@ export function useLoadMore({
 	hasMore?: boolean;
 	loadingMore: React.MutableRefObject<boolean>;
 	types: 'conversation' | 'message';
-}): () => void {
+}): () => Promise<void> {
 	return useCallback(async () => {
 		if (hasMore && !loadingMore.current) {
 			loadingMore.current = true;
