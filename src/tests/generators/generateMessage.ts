@@ -80,7 +80,7 @@ const generateMessage = ({
 	isScheduled = false,
 	isSentByMe = false,
 	tags = []
-}: MessageGenerationParams): MailMessage => ({
+}: MessageGenerationParams = {}): MailMessage => ({
 	attachments: undefined,
 	autoSendTime: 0,
 	body: { content: body, contentType: 'text/plain' },

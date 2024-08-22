@@ -6,7 +6,6 @@
 import type React from 'react';
 import { CSSProperties, useEffect, useCallback, useRef } from 'react';
 
-import { useLocalStorage } from '@zextras/carbonio-shell-ui';
 import { find } from 'lodash';
 
 import { BORDERS } from '../constants';
@@ -27,12 +26,12 @@ export type ElementSize = {
 	height: number;
 };
 
-export type SizeAndPosition = ElementPosition & ElementSize;
+export type Geometry = ElementPosition & ElementSize;
 type UseResizableReturnType = React.MouseEventHandler;
 
 type ResizeOptions = {
-	localStorageKey?: string;
-	keepSyncedWithStorage?: boolean;
+	initialGeometry?: Partial<Geometry>;
+	onGeometryChange?: (geometry: Partial<Geometry>) => void;
 };
 
 export function getCursorFromBorder(border: Border): NonNullable<CSSProperties['cursor']> {
@@ -50,9 +49,9 @@ export function getCursorFromBorder(border: Border): NonNullable<CSSProperties['
 
 function calcNewSizeAndPosition(
 	border: Border,
-	from: { clientTop: number; clientLeft: number } & SizeAndPosition,
+	from: { clientTop: number; clientLeft: number } & Geometry,
 	mouseEvent: MouseEvent
-): SizeAndPosition {
+): Geometry {
 	const newSizeAndPosition = {
 		top: from.top,
 		left: from.left,
@@ -98,24 +97,17 @@ export const useResize = (
 	options?: ResizeOptions
 ): UseResizableReturnType => {
 	const initialSizeAndPositionRef = useRef<Parameters<typeof calcNewSizeAndPosition>[1]>();
-	const [lastSavedSizeAndPosition, setLastSavedSizeAndPosition] = useLocalStorage<
-		Partial<SizeAndPosition>
-	>(
-		options?.localStorageKey ?? 'use-resize-data',
-		{},
-		{ keepSyncedWithStorage: options?.keepSyncedWithStorage }
-	);
-	const lastSizeAndPositionRef = useRef<Partial<SizeAndPosition>>(lastSavedSizeAndPosition);
+	const lastSizeAndPositionRef = useRef<Partial<Geometry>>(options?.initialGeometry ?? {});
 
 	useEffect(() => {
-		lastSizeAndPositionRef.current = { ...lastSavedSizeAndPosition };
-	}, [lastSavedSizeAndPosition]);
+		lastSizeAndPositionRef.current = { ...options?.initialGeometry };
+	}, [options?.initialGeometry]);
 
 	const resizeElement = useCallback(
-		({ width, height, top, left }: SizeAndPosition) => {
+		({ width, height, top, left }: Geometry) => {
 			if (elementToResizeRef.current) {
 				const elementToResize = elementToResizeRef.current;
-				const sizeAndPositionToApply: Partial<SizeAndPosition> = lastSizeAndPositionRef.current;
+				const sizeAndPositionToApply: Partial<Geometry> = lastSizeAndPositionRef.current;
 				if (top >= 0 && border === BORDERS.SOUTH) {
 					sizeAndPositionToApply.height = height;
 					sizeAndPositionToApply.top = top;
@@ -156,10 +148,8 @@ export const useResize = (
 		setGlobalCursor(undefined);
 		document.body.removeEventListener('mousemove', onMouseMove);
 		document.body.removeEventListener('mouseup', onMouseUp);
-		if (options?.localStorageKey) {
-			setLastSavedSizeAndPosition(lastSizeAndPositionRef.current);
-		}
-	}, [onMouseMove, options?.localStorageKey, setLastSavedSizeAndPosition]);
+		options?.onGeometryChange?.(lastSizeAndPositionRef.current);
+	}, [onMouseMove, options]);
 
 	return useCallback(
 		(mouseDownEvent: React.MouseEvent | MouseEvent) => {

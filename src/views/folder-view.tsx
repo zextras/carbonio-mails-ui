@@ -9,33 +9,34 @@ import { Spinner } from '@zextras/carbonio-shell-ui';
 import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom';
 
 import { ResizableContainer } from './resizable-container';
-import { BORDERS, LOCAL_STORAGE_VIEW_SIZES, MAILS_VIEW_LAYOUTS } from '../constants';
+import { BORDERS, MAILS_VIEW_LAYOUTS, MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS } from '../constants';
+import { useViewLayout } from '../hooks/use-view-layout';
 
 export type MailsListLayout = (typeof MAILS_VIEW_LAYOUTS)[keyof typeof MAILS_VIEW_LAYOUTS];
 
+export type MailsSplitLayoutOrientation =
+	(typeof MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS)[keyof typeof MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS];
+
 type FolderViewProps = {
 	containerRef: React.RefObject<HTMLDivElement>;
-	listLayout: MailsListLayout;
 };
 
 const LazyFolderView = lazy(
 	() => import(/* webpackChunkName: "folder-panel-view" */ './app/folder-panel')
 );
 
-export const FolderView = ({ listLayout, containerRef }: FolderViewProps): React.JSX.Element => {
+export const FolderView = ({ containerRef }: FolderViewProps): React.JSX.Element => {
 	const { path } = useRouteMatch();
+	const { isCurrentLayoutHorizontalSplit, isCurrentLayoutSplit } = useViewLayout();
 	const border = useMemo(
-		() => (listLayout === MAILS_VIEW_LAYOUTS.LEFT_TO_RIGHT ? BORDERS.EAST : BORDERS.SOUTH),
-		[listLayout]
+		() => (isCurrentLayoutHorizontalSplit ? BORDERS.SOUTH : BORDERS.EAST),
+		[isCurrentLayoutHorizontalSplit]
 	);
 
+	const resizeDisabled = useMemo(() => !isCurrentLayoutSplit, [isCurrentLayoutSplit]);
+
 	return (
-		<ResizableContainer
-			border={border}
-			elementToResize={containerRef}
-			localStorageKey={LOCAL_STORAGE_VIEW_SIZES}
-			keepSyncedWithStorage
-		>
+		<ResizableContainer border={border} elementToResize={containerRef} disabled={resizeDisabled}>
 			<Switch>
 				<Route path={`${path}/folder/:folderId/:type?/:itemId?`}>
 					<Suspense fallback={<Spinner />}>

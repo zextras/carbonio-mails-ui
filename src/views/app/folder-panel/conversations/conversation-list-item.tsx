@@ -25,7 +25,17 @@ import {
 	useUserAccounts,
 	useUserSettings
 } from '@zextras/carbonio-shell-ui';
-import { filter, find, forEach, includes, isEmpty, reduce, trimStart, uniqBy } from 'lodash';
+import {
+	debounce,
+	filter,
+	find,
+	forEach,
+	includes,
+	isEmpty,
+	reduce,
+	trimStart,
+	uniqBy
+} from 'lodash';
 import styled from 'styled-components';
 
 import { ConversationMessagesList } from './conversation-messages-list';
@@ -150,6 +160,15 @@ export const ConversationListItem: FC<ConversationListItemProps> = memo(
 			[conversationStatus, dispatch, folderParent, item.id]
 		);
 
+		const debouncedPushHistory = useMemo(
+			() =>
+				debounce(() => pushHistory(`/folder/${folderParent}/conversation/${item.id}`), 200, {
+					leading: false,
+					trailing: true
+				}),
+			[folderParent, item.id]
+		);
+
 		const _onClick = useCallback(
 			(e) => {
 				if (!e.isDefaultPrevented()) {
@@ -161,14 +180,20 @@ export const ConversationListItem: FC<ConversationListItemProps> = memo(
 							folderId: folderParent,
 							deselectAll,
 							shouldReplaceHistory: false
-							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-							// @ts-ignore
 						}).onClick();
 					}
-					pushHistory(`/folder/${folderParent}/conversation/${item.id}`);
+					debouncedPushHistory();
 				}
 			},
-			[item?.read, item.id, zimbraPrefMarkMsgRead, folderParent, dispatch, deselectAll]
+			[
+				item?.read,
+				item.id,
+				zimbraPrefMarkMsgRead,
+				debouncedPushHistory,
+				dispatch,
+				folderParent,
+				deselectAll
+			]
 		);
 
 		const _onDoubleClick = useCallback(
@@ -176,7 +201,7 @@ export const ConversationListItem: FC<ConversationListItemProps> = memo(
 				if (e.isDefaultPrevented()) {
 					return;
 				}
-
+				debouncedPushHistory.cancel();
 				const { id, isDraft } = item.messages[0];
 				if (isDraft) {
 					pushHistory(`/folder/${folderParent}/edit/${id}?action=editAsDraft`);
@@ -190,7 +215,7 @@ export const ConversationListItem: FC<ConversationListItemProps> = memo(
 				}
 			},
 
-			[createWindow, folderParent, item.id, item.messages, item.subject]
+			[createWindow, debouncedPushHistory, folderParent, item.id, item.messages, item.subject]
 		);
 
 		const toggleExpandButtonLabel = useMemo(

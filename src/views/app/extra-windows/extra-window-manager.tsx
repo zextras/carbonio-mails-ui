@@ -3,16 +3,18 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import React, { FC, useCallback, useState } from 'react';
+
 import { Text, useModal } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
-import React, { FC, useCallback, useState } from 'react';
 import { v4 as uuid } from 'uuid';
+
+import { ExtraWindow } from './extra-window';
 import type {
 	ExtraWindowCreationParams,
 	ExtraWindowsContextType,
 	ExtraWindowsCreationResult
 } from '../../../types';
-import { ExtraWindow } from './extra-window';
 
 // Enable debug console output
 const DEBUG = false;
@@ -39,7 +41,7 @@ const ExtraWindowsContext = React.createContext<ExtraWindowsContextType>({});
  */
 const ExtraWindowsManager: FC = ({ children }) => {
 	const [windowsData, setWindowsData] = useState<Array<ExtraWindowsCreationResult>>([]);
-	const createModal = useModal();
+	const { createModal, closeModal } = useModal();
 
 	debug('ExtraWindowsManager renders and the windows data is', windowsData);
 
@@ -198,6 +200,7 @@ const ExtraWindowsManager: FC = ({ children }) => {
 				// Get the focused extra window
 				const focusedExtraWindow = getFocusedWindow();
 
+				const modalId = Date.now().toString();
 				/*
 				 * Create the modal message to notify the user.
 				 * If a focused extra window is present, the container
@@ -205,19 +208,20 @@ const ExtraWindowsManager: FC = ({ children }) => {
 				 *
 				 * FIXME texts
 				 */
-				const closeModal = createModal({
+				createModal({
+					id: modalId,
 					title: t('label.extra_windows.opening_blocked.title', 'Cannot open new window'),
 					containerWindow: focusedExtraWindow?.window,
 					confirmLabel: t('action.ok', 'Ok'),
 					showCloseIcon: false,
 					onConfirm: () => {
-						closeModal();
+						closeModal(modalId);
 					},
 					onClose: () => {
-						closeModal();
+						closeModal(modalId);
 					},
 					onSecondaryAction: () => {
-						closeModal();
+						closeModal(modalId);
 					},
 					children: (
 						<Text overflow="break-word">
@@ -262,7 +266,7 @@ const ExtraWindowsManager: FC = ({ children }) => {
 			addWindow(windowData);
 			return windowData;
 		},
-		[addWindow, createModal, getFocusedWindow, getWindow, removeWindow, updateWindow]
+		[addWindow, closeModal, createModal, getFocusedWindow, getWindow, removeWindow, updateWindow]
 	);
 
 	/**

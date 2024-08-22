@@ -79,23 +79,27 @@ export const BackupSearchList = (): React.JSX.Element => {
 		[createSnackbar, selectedIds]
 	);
 
-	const createModal = useModal();
+	const { createModal, closeModal } = useModal();
 	const handleRecoverCallback = useCallback(() => {
-		const closeModal = createModal(
+		const modalId = Date.now().toString();
+		createModal(
 			{
+				id: modalId,
 				maxHeight: '90vh',
 				children: (
 					<StoreProvider>
 						<BackupSearchRecoveryModal
-							onConfirm={(): Promise<void> => recoverEmailsCallback((): void => closeModal?.())}
-							onClose={(): void => closeModal?.()}
+							onConfirm={(): Promise<void> =>
+								recoverEmailsCallback((): void => closeModal?.(modalId))
+							}
+							onClose={(): void => closeModal?.(modalId)}
 						/>
 					</StoreProvider>
 				)
 			},
 			true
 		);
-	}, [createModal, recoverEmailsCallback]);
+	}, [closeModal, createModal, recoverEmailsCallback]);
 
 	const listItems = useMemo(
 		() =>

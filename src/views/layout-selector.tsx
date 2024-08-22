@@ -6,19 +6,13 @@
 import React, { useEffect, useMemo } from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
-import { useLocalStorage } from '@zextras/carbonio-shell-ui';
+import { matchPath, useLocation } from 'react-router-dom';
 
-import type { MailsListLayout } from './folder-view';
-import {
-	LOCAL_STORAGE_VIEW_SIZES,
-	MAILS_VIEW_LAYOUTS,
-	MAILS_VIEW_ORIENTATIONS
-} from '../constants';
-import { SizeAndPosition } from '../hooks/use-resize';
+import { MAILS_ROUTE } from '../constants';
+import { useViewLayout } from '../hooks/use-view-layout';
 
 type LayoutSelectorProps = {
 	containerRef: React.RefObject<HTMLDivElement>;
-	listLayout: MailsListLayout;
 	folderView: React.ReactNode;
 	detailPanel: React.ReactNode;
 };
@@ -26,30 +20,38 @@ type LayoutSelectorProps = {
 export const LayoutSelector = ({
 	folderView,
 	detailPanel,
-	containerRef,
-	listLayout
+	containerRef
 }: LayoutSelectorProps): React.JSX.Element => {
-	const [lastSavedViewSizes] = useLocalStorage<Partial<SizeAndPosition>>(
-		LOCAL_STORAGE_VIEW_SIZES,
-		{}
-	);
+	const {
+		isCurrentLayoutSplit,
+		isCurrentLayoutNoSplit,
+		isCurrentLayoutVerticalSplit,
+		isCurrentLayoutHorizontalSplit,
+		listContainerGeometry
+	} = useViewLayout();
 
-	const orientation = useMemo(() => {
-		if (listLayout === MAILS_VIEW_LAYOUTS.LEFT_TO_RIGHT) {
-			return MAILS_VIEW_ORIENTATIONS.HORIZONTAL;
+	const containerOrientation = useMemo(() => {
+		if (isCurrentLayoutVerticalSplit) {
+			return 'horizontal';
 		}
-		if (listLayout === MAILS_VIEW_LAYOUTS.TOP_TO_BOTTOM) {
-			return MAILS_VIEW_ORIENTATIONS.VERTICAL;
+
+		if (isCurrentLayoutHorizontalSplit) {
+			return 'vertical';
 		}
-		return MAILS_VIEW_ORIENTATIONS.VERTICAL;
-	}, [listLayout]);
+
+		return 'vertical';
+	}, [isCurrentLayoutHorizontalSplit, isCurrentLayoutVerticalSplit]);
+
+	const maxWidth = isCurrentLayoutVerticalSplit ? 'calc(100% - 22.5rem)' : '100%';
+
+	const maxHeight = isCurrentLayoutHorizontalSplit ? 'calc(100% - 11.25rem)' : '100%';
 
 	useEffect(() => {
 		if (containerRef.current) {
-			if (listLayout === MAILS_VIEW_LAYOUTS.LEFT_TO_RIGHT) {
-				if (lastSavedViewSizes?.width) {
+			if (isCurrentLayoutVerticalSplit) {
+				if (listContainerGeometry?.width) {
 					// eslint-disable-next-line no-param-reassign
-					containerRef.current.style.width = `${lastSavedViewSizes?.width}px`;
+					containerRef.current.style.width = `${listContainerGeometry?.width}px`;
 				} else {
 					// eslint-disable-next-line no-param-reassign
 					containerRef.current.style.width = `60%`;
@@ -59,14 +61,14 @@ export const LayoutSelector = ({
 				containerRef.current.style.width = `100%`;
 			}
 		}
-	}, [containerRef, listLayout, lastSavedViewSizes?.width]);
+	}, [containerRef, listContainerGeometry?.width, isCurrentLayoutVerticalSplit]);
 
 	useEffect(() => {
 		if (containerRef.current) {
-			if (listLayout === MAILS_VIEW_LAYOUTS.TOP_TO_BOTTOM) {
-				if (lastSavedViewSizes?.height) {
+			if (isCurrentLayoutHorizontalSplit) {
+				if (listContainerGeometry?.height) {
 					// eslint-disable-next-line no-param-reassign
-					containerRef.current.style.height = `${lastSavedViewSizes?.height}px`;
+					containerRef.current.style.height = `${listContainerGeometry?.height}px`;
 				} else {
 					// eslint-disable-next-line no-param-reassign
 					containerRef.current.style.height = `50%`;
@@ -76,28 +78,33 @@ export const LayoutSelector = ({
 				containerRef.current.style.height = `100%`;
 			}
 		}
-	}, [listLayout, lastSavedViewSizes?.height, containerRef]);
+	}, [listContainerGeometry?.height, containerRef, isCurrentLayoutHorizontalSplit]);
 
+	const { pathname } = useLocation();
+	const match = matchPath<{ itemId?: string }>(
+		pathname,
+		`/${MAILS_ROUTE}/folder/:folderId/:type?/:itemId?`
+	);
 	return (
 		<Container
 			data-testid={'LayoutSelectorOuterContainer'}
-			orientation={orientation}
+			orientation={containerOrientation}
 			mainAlignment="flex-start"
 		>
-			<Container
-				data-testid={'LayoutSelectorInnerContainer'}
-				ref={containerRef}
-				minHeight={'11.25rem'}
-				minWidth={'22.5rem'}
-				maxHeight={
-					listLayout === MAILS_VIEW_LAYOUTS.LEFT_TO_RIGHT ? '100%' : 'calc(100% - 11.25rem)'
-				}
-				maxWidth={listLayout === MAILS_VIEW_LAYOUTS.LEFT_TO_RIGHT ? 'calc(100% - 22.5rem)' : '100%'}
-				style={{ flexShrink: 0 }}
-			>
-				{folderView}
-			</Container>
-			{detailPanel}
+			{(isCurrentLayoutSplit || (!match?.params?.itemId && isCurrentLayoutNoSplit)) && (
+				<Container
+					data-testid={'LayoutSelectorInnerContainer'}
+					ref={containerRef}
+					minHeight={'11.25rem'}
+					minWidth={'22.5rem'}
+					maxHeight={maxHeight}
+					maxWidth={maxWidth}
+					style={{ flexShrink: 0 }}
+				>
+					{folderView}
+				</Container>
+			)}
+			{(isCurrentLayoutSplit || (match?.params?.itemId && isCurrentLayoutNoSplit)) && detailPanel}
 		</Container>
 	);
 };

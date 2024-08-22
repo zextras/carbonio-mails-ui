@@ -5,7 +5,7 @@
  */
 import React, { FC, ReactElement, useCallback, useContext, useMemo } from 'react';
 
-import { Button, Padding, ModalManagerContext } from '@zextras/carbonio-design-system';
+import { Button, Padding, useModal } from '@zextras/carbonio-design-system';
 import type { TFunction } from 'i18next';
 import { find } from 'lodash';
 
@@ -73,19 +73,19 @@ const OutgoingFilterActions: FC<ComponentProps> = ({ compProps }): ReactElement 
 		[activeList.selected, availableList.selected]
 	);
 	const disablCreate = useMemo(() => false, []);
-	const createModal = useContext(ModalManagerContext);
+	const { createModal, closeModal } = useModal();
 	const openCreateModal = useCallback(() => {
-		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-		// @ts-ignore
-		const closeModal = createModal(
+		const id = Date.now().toString();
+		createModal(
 			{
+				id,
 				size: 'large',
 				maxHeight: '80vh',
 				children: (
 					<StoreProvider>
 						<CreateOutgoingFilterModal
 							t={t}
-							onClose={(): void => closeModal()}
+							onClose={(): void => closeModal(id)}
 							outgoingFilters={outgoingFilters}
 							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 							// @ts-ignore
@@ -99,7 +99,7 @@ const OutgoingFilterActions: FC<ComponentProps> = ({ compProps }): ReactElement 
 			},
 			true
 		);
-	}, [createModal, t, outgoingFilters, setOutgoingFilters, setFetchOutgoingFilters]);
+	}, [createModal, t, outgoingFilters, setFetchOutgoingFilters, setOutgoingFilters, closeModal]);
 
 	const removeFilter = useRemoveFilter();
 	const onRemove = useCallback(
@@ -138,15 +138,15 @@ const OutgoingFilterActions: FC<ComponentProps> = ({ compProps }): ReactElement 
 	);
 
 	const openDeleteModal = useCallback(() => {
-		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-		// @ts-ignore
-		const closeModal = createModal(
+		const id = Date.now().toString();
+		createModal(
 			{
+				id,
 				size: 'small',
 				children: (
 					<StoreProvider>
 						<DeleteOutgoingFilterModal
-							onClose={(): void => closeModal()}
+							onClose={(): void => closeModal(id)}
 							t={t}
 							availableList={availableList}
 							activeList={activeList}
@@ -171,6 +171,7 @@ const OutgoingFilterActions: FC<ComponentProps> = ({ compProps }): ReactElement 
 	}, [
 		activeList,
 		availableList,
+		closeModal,
 		createModal,
 		outgoingFilters,
 		selectedFilter,
@@ -180,10 +181,10 @@ const OutgoingFilterActions: FC<ComponentProps> = ({ compProps }): ReactElement 
 		t
 	]);
 	const openFilterModifyModal = useCallback(() => {
-		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-		// @ts-ignore
-		const closeModal = createModal(
+		const id = Date.now().toString();
+		createModal(
 			{
+				id,
 				size: 'large',
 				maxHeight: '80vh',
 				children: (
@@ -191,7 +192,7 @@ const OutgoingFilterActions: FC<ComponentProps> = ({ compProps }): ReactElement 
 						<ModifyOutgoingFilterModal
 							t={t}
 							selectedFilter={selectedFilter}
-							onClose={(): void => closeModal()}
+							onClose={(): void => closeModal(id)}
 							outgoingFilters={outgoingFilters}
 							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 							// @ts-ignore
@@ -211,7 +212,8 @@ const OutgoingFilterActions: FC<ComponentProps> = ({ compProps }): ReactElement 
 		selectedFilter,
 		outgoingFilters,
 		setFetchOutgoingFilters,
-		setOutgoingFilters
+		setOutgoingFilters,
+		closeModal
 	]);
 	return (
 		<>

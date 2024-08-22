@@ -22,7 +22,7 @@ import {
 	useUserAccounts,
 	useUserSettings
 } from '@zextras/carbonio-shell-ui';
-import { find, includes, isEmpty, noop, reduce } from 'lodash';
+import { debounce, find, includes, isEmpty, noop, reduce } from 'lodash';
 import moment from 'moment';
 
 import { ZIMBRA_STANDARD_COLORS } from '../../../../carbonio-ui-commons/constants/utils';
@@ -32,10 +32,8 @@ import { EditViewActions } from '../../../../constants';
 import { useAppDispatch } from '../../../../hooks/redux';
 import { useMessageActions } from '../../../../hooks/use-message-actions';
 import type { MessageListItemProps, TextReadValuesType } from '../../../../types';
-import {
-	previewMessageOnSeparatedWindow,
-	setMsgRead
-} from '../../../../ui-actions/message-actions';
+import { setMsgRead } from '../../../../ui-actions/message-actions';
+import { previewMessageOnSeparatedWindow } from '../../../../ui-actions/preview-message-on-separated-window';
 import { useTagExist } from '../../../../ui-actions/tag-actions';
 import { getFolderTranslatedName } from '../../../sidebar/utils';
 import { createEditBoard } from '../../detail-panel/edit/edit-view-board';
@@ -63,24 +61,30 @@ export const MessageListItem: FC<MessageListItemProps> = memo(function MessageLi
 	const { createWindow } = useGlobalExtraWindowManager();
 	const messageActions = useMessageActions(item, true);
 
+	const debouncedPushHistory = useMemo(
+		() =>
+			debounce(() => replaceHistory(`/folder/${firstChildFolderId}/message/${item.id}`), 200, {
+				leading: false,
+				trailing: true
+			}),
+		[firstChildFolderId, item.id]
+	);
+
 	const onClick = useCallback(
 		(e) => {
 			if (!e.isDefaultPrevented()) {
 				if (item.read === false && zimbraPrefMarkMsgRead) {
 					setMsgRead({ ids: [item.id], value: false, dispatch }).onClick(e);
 				}
-				if (replaceHistoryAction) {
-					replaceHistoryAction();
-				} else {
-					replaceHistory(`/folder/${firstChildFolderId}/message/${item.id}`);
-				}
+				debouncedPushHistory();
 			}
 		},
-		[item.read, item.id, zimbraPrefMarkMsgRead, replaceHistoryAction, dispatch, firstChildFolderId]
+		[item.read, item.id, zimbraPrefMarkMsgRead, debouncedPushHistory, dispatch]
 	);
 	const onDoubleClick = useCallback(
 		(e) => {
 			if (!e.isDefaultPrevented()) {
+				debouncedPushHistory.cancel();
 				const { id, isDraft } = item;
 				if (isDraft) {
 					createEditBoard({
@@ -98,7 +102,7 @@ export const MessageListItem: FC<MessageListItemProps> = memo(function MessageLi
 				}
 			}
 		},
-		[createWindow, firstChildFolderId, item, messageActions]
+		[createWindow, debouncedPushHistory, firstChildFolderId, item, messageActions]
 	);
 
 	const accounts = useUserAccounts();

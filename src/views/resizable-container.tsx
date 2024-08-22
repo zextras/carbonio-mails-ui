@@ -10,6 +10,9 @@ import styled, { css, SimpleInterpolation } from 'styled-components';
 
 import { BORDERS } from '../constants';
 import { Border, useResize } from '../hooks/use-resize';
+import { useViewLayout } from '../hooks/use-view-layout';
+
+const RESIZABLE_BORDER_SIZE = '1rem';
 
 const MainContainer = styled(Container)`
 	position: relative;
@@ -19,18 +22,14 @@ const MainContainer = styled(Container)`
 
 interface ResizableContainerProps extends ContainerProps {
 	elementToResize: React.RefObject<HTMLElement>;
-	localStorageKey?: string;
 	border: Border;
-	keepSyncedWithStorage?: boolean;
 	disabled?: boolean;
 	minSize?: { width: number; height: number };
 }
 
 interface ResizableBorderProps {
 	elementToResize: React.RefObject<HTMLElement>;
-	localStorageKey?: string;
 	border: Border;
-	keepSyncedWithStorage?: boolean;
 }
 
 interface BorderWithResizeProps {
@@ -38,10 +37,10 @@ interface BorderWithResizeProps {
 	$width: string;
 	$height: string;
 	$position: {
-		top?: number;
-		bottom?: number;
-		left?: number;
-		right?: number;
+		top?: string;
+		bottom?: string;
+		left?: string;
+		right?: string;
 	};
 	$translateTransform?: { x?: string; y?: string };
 }
@@ -69,7 +68,7 @@ const BorderWithResize = styled.div<
 	}
 >`
 	position: absolute;
-	z-index: 2;
+	z-index: 0;
 	cursor: ${({ $cursor }): CSSProperties['cursor'] => $cursor};
 	width: ${({ $width }): string => $width};
 	height: ${({ $height }): string => $height};
@@ -81,45 +80,44 @@ const BorderWithResize = styled.div<
 		`}
 `;
 
-const ResizableBorder = ({
-	elementToResize,
-	border,
-	localStorageKey,
-	keepSyncedWithStorage
-}: ResizableBorderProps): React.JSX.Element => {
+const ResizableBorder = ({ elementToResize, border }: ResizableBorderProps): React.JSX.Element => {
 	const borderRef = useRef<HTMLDivElement>(null);
+	const { listContainerGeometry, setListContainerGeometry } = useViewLayout();
 	const resizeHandler = useResize(elementToResize, border, {
-		localStorageKey,
-		keepSyncedWithStorage
+		initialGeometry: listContainerGeometry,
+		onGeometryChange: setListContainerGeometry
 	});
 
-	const positions = useMemo<
-		Pick<BorderWithResizeProps, '$position' | '$translateTransform'>
-	>(() => {
+	const positions = useMemo<Pick<BorderWithResizeProps, '$position'>>(() => {
 		const $position: BorderWithResizeProps['$position'] = {};
-		const $translateTransform: BorderWithResizeProps['$translateTransform'] = {};
 		if (border.includes(BORDERS.SOUTH)) {
-			$position.bottom = 0;
-			$translateTransform.y = '50%';
+			$position.bottom = `-${RESIZABLE_BORDER_SIZE}`;
 		}
 		if (border.includes(BORDERS.EAST)) {
-			$position.right = 0;
-			$translateTransform.x = '50%';
+			$position.right = `-${RESIZABLE_BORDER_SIZE}`;
 		}
-		return { $position, $translateTransform };
+		return { $position };
 	}, [border]);
 
 	return (
 		<BorderWithResize
 			ref={borderRef}
-			$width={border === BORDERS.EAST ? '1rem' : '100%'}
-			$height={border === BORDERS.EAST ? '100%' : '1rem'}
+			$width={border === BORDERS.EAST ? RESIZABLE_BORDER_SIZE : '100%'}
+			$height={border === BORDERS.EAST ? '100%' : RESIZABLE_BORDER_SIZE}
 			{...positions}
 			$cursor={border === BORDERS.EAST ? 'ew-resize' : 'ns-resize'}
 			onMouseDown={resizeHandler}
 		>
-			<HoverableContainer width={'100%'} height={'100%'} border={border}>
+			<HoverableContainer
+				width={'100%'}
+				height={'100%'}
+				border={border}
+				mainAlignment="flex-start"
+				crossAlignment="flex-start"
+			>
 				<Container
+					mainAlignment="flex-start"
+					crossAlignment="flex-start"
 					width={border === BORDERS.EAST ? '1px' : '100%'}
 					height={border === BORDERS.EAST ? '100%' : '1px'}
 				/>
@@ -132,9 +130,7 @@ export const ResizableContainer = ({
 	elementToResize,
 	children,
 	border,
-	localStorageKey,
 	disabled = false,
-	keepSyncedWithStorage,
 	...rest
 }: ResizableContainerProps): React.JSX.Element => (
 	<MainContainer {...rest}>
@@ -143,8 +139,6 @@ export const ResizableContainer = ({
 				key={`resizable-border-${border}`}
 				border={border}
 				elementToResize={elementToResize}
-				localStorageKey={localStorageKey}
-				keepSyncedWithStorage={keepSyncedWithStorage}
 			/>
 		)}
 		{children}

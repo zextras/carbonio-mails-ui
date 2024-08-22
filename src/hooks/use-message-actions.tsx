@@ -21,7 +21,6 @@ import {
 	downloadEml,
 	editAsNewMsg,
 	forwardMsg,
-	previewMessageOnSeparatedWindow,
 	printMsg,
 	replyAllMsg,
 	replyMsg,
@@ -37,6 +36,7 @@ import {
 	useRedirectMsg,
 	useSetMsgAsSpam
 } from '../ui-actions/message-actions';
+import { previewMessageOnSeparatedWindow } from '../ui-actions/preview-message-on-separated-window';
 import { applyTag } from '../ui-actions/tag-actions';
 import { useGlobalExtraWindowManager } from '../views/app/extra-windows/global-extra-window-manager';
 import { useExtraWindow } from '../views/app/extra-windows/use-extra-window';

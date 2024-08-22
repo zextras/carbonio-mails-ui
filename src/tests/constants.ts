@@ -44,7 +44,13 @@ export const ASSERTIONS = {
 
 export const TESTID_SELECTORS = {
 	icons: {
-		attachmentDropdown: 'icon: AttachOutline'
+		attachmentDropdown: 'icon: AttachOutline',
+		chevronDown: 'icon: ChevronDownOutline',
+		layoutVerticalSplit: 'icon: LayoutOutline',
+		layoutHorizontalSplit: 'icon: BottomViewOutline',
+		layoutNoSplit: 'icon: ViewOffOutline',
+		navigateNext: 'icon: ArrowIosForward',
+		navigatePrevious: 'icon: ArrowIosBack'
 	},
 
 	signatureEditor: 'signature-editor',

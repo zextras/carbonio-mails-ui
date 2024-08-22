@@ -260,7 +260,10 @@ describe('edit-permissions-modal', () => {
 			await user.click(roleSelector);
 			const roleItem = within(roleSelector).getByText('share.options.share_calendar_role.viewer');
 			await user.click(roleItem);
-			await user.type(userInput, viewer);
+
+			await act(async () => {
+				await user.type(userInput, viewer);
+			});
 			await user.tab();
 
 			const shareFolderMock = jest.spyOn(shareFolderModule, 'shareFolder');

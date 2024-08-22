@@ -5,7 +5,7 @@
  */
 import React from 'react';
 
-import { CreateModalFn, ModalManager } from '@zextras/carbonio-design-system';
+import { CloseModalFn, CreateModalFn, ModalManager } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 
 import { ApplyFilterModal } from './modals/apply-filter-modal';
@@ -17,6 +17,7 @@ export type ApplyFilterUIActionExecutionParams = {
 		filterName: string;
 	};
 	uiUtilities: {
+		closeModal: CloseModalFn;
 		createModal: CreateModalFn;
 	};
 };
@@ -26,15 +27,14 @@ export const getApplyFilterUIAction = (): UIAction<ApplyFilterUIActionExecutionP
 	icon: 'QuestionMarkOutline',
 	label: t('action.apply_filter_on_folder', 'Apply filter on folder'),
 	openModal: ({ criteria, uiUtilities }: ApplyFilterUIActionExecutionParams): void => {
-		const closeModal = uiUtilities.createModal(
+		const id = Date.now().toString();
+		uiUtilities.createModal(
 			{
+				id,
 				size: 'medium',
 				children: (
 					<ModalManager>
-						<ApplyFilterModal
-							criteria={criteria}
-							closeModal={(): void => closeModal()}
-						></ApplyFilterModal>
+						<ApplyFilterModal criteria={criteria} modalId={id}></ApplyFilterModal>
 					</ModalManager>
 				)
 			},

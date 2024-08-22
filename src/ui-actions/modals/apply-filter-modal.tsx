@@ -8,7 +8,6 @@ import React, { FC, useCallback, useMemo, useState } from 'react';
 import {
 	ChipInput,
 	ChipItem,
-	CloseModalFn,
 	Divider,
 	ModalFooter,
 	ModalHeader,
@@ -30,11 +29,11 @@ import { getSelectFoldersUIAction } from '../select-folders';
 
 export type ApplyFilterModalProps = {
 	criteria: ApplyFilterUIActionExecutionParams['criteria'];
-	closeModal: CloseModalFn;
+	modalId: string;
 };
 
-export const ApplyFilterModal: FC<ApplyFilterModalProps> = ({ criteria, closeModal }) => {
-	const createModal = useModal();
+export const ApplyFilterModal: FC<ApplyFilterModalProps> = ({ criteria, modalId }) => {
+	const { createModal, closeModal } = useModal();
 	const createSnackbar = useSnackbar();
 	const [folder, setFolder] = useState<Folder>();
 
@@ -102,10 +101,10 @@ export const ApplyFilterModal: FC<ApplyFilterModalProps> = ({ criteria, closeMod
 			autoHideTimeout: TIMEOUTS.SNACKBAR_DEFAULT_TIMEOUT,
 			hideButton: true
 		});
-		closeModal();
-	}, [closeModal, createSnackbar, criteria.filterName, folder]);
+		closeModal(modalId);
+	}, [closeModal, createSnackbar, criteria.filterName, folder, modalId]);
 
-	const onCancelAction = useCallback(() => closeModal(), [closeModal]);
+	const onCancelAction = useCallback(() => closeModal(modalId), [closeModal, modalId]);
 
 	const onAddFolder = (): void => {
 		const action = getSelectFoldersUIAction();
@@ -118,6 +117,7 @@ export const ApplyFilterModal: FC<ApplyFilterModalProps> = ({ criteria, closeMod
 				showSpamFolder: true
 			},
 			uiUtilities: {
+				closeModal,
 				createModal
 			},
 			callbacks: {

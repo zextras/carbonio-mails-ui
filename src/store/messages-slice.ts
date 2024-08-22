@@ -63,7 +63,7 @@ function fetchMessagesFulfilled(
 	if (payload?.messages && payload?.types === 'message') {
 		state.searchRequestStatus = meta.requestStatus;
 		const newMessagesState =
-			payload.offset !== undefined && payload.offset >= 0
+			payload.offset !== undefined && payload.offset > 0
 				? { ...state.messages, ...payload.messages }
 				: { ...payload.messages };
 		state.messages = newMessagesState;

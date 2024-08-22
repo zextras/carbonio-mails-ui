@@ -14,51 +14,76 @@ import {
 	Text,
 	Tooltip
 } from '@zextras/carbonio-design-system';
-import { replaceHistory, t } from '@zextras/carbonio-shell-ui';
+import { replaceHistory } from '@zextras/carbonio-shell-ui';
+import { useTranslation } from 'react-i18next';
 
-import type { Conversation, MailMessage } from '../../../../types';
+import { ConversationPreviewHeaderNavigation } from './conversation-preview-header-navigation';
+import { MessagePreviewHeaderNavigation } from './message-preview-header-navigation';
+import { useViewLayout } from '../../../../hooks/use-view-layout';
+import type { MailMessage } from '../../../../types';
+import { LayoutComponent } from '../../folder-panel/parts/layout-component';
+
+const PreviewHeaderNavigation = ({
+	itemType
+}: {
+	itemType: 'message' | 'conversation';
+}): React.JSX.Element => {
+	if (itemType === 'message') {
+		return <MessagePreviewHeaderNavigation />;
+	}
+	return <ConversationPreviewHeaderNavigation />;
+};
 
 const PreviewPanelHeader: FC<{
-	item: Conversation | (Partial<MailMessage> & Pick<MailMessage, 'id'>);
+	itemType: 'message' | 'conversation';
+	subject?: MailMessage['subject'];
+	isRead?: MailMessage['read'];
 	folderId: string;
-}> = ({ item, folderId }) => {
+}> = ({ subject, isRead, folderId, itemType }) => {
+	const [t] = useTranslation();
+
 	const replaceHistoryCallback = useCallback(
 		() => replaceHistory(`/folder/${folderId}`),
 		[folderId]
 	);
 
-	const subject = useMemo(
-		() => item?.subject || t('label.no_subject_with_tags', '<No Subject>'),
-		[item?.subject]
+	const subjectLabel = useMemo(
+		() => subject || t('label.no_subject_with_tags', '<No Subject>'),
+		[subject, t]
 	);
+
+	const { isCurrentLayoutNoSplit } = useViewLayout();
+
 	return (
 		<>
 			<Container
 				data-testid="PreviewPanelHeader"
 				orientation="horizontal"
 				height="3rem"
-				background="gray5"
+				background={'gray5'}
 				mainAlignment="space-between"
 				crossAlignment="center"
 				padding={{ left: 'large', right: 'extrasmall' }}
 				style={{ minHeight: '3rem' }}
 			>
-				{item?.read ? (
-					<Icon style={{ width: '1.125rem' }} icon="EmailReadOutline" data-testid="EmailReadIcon" />
-				) : (
-					<Icon
-						style={{ width: '1.125rem' }}
-						icon="EmailReadOutline"
-						data-testid="EmailUnreadIcon"
-					/>
+				{isCurrentLayoutNoSplit && (
+					<Row padding={{ right: 'large' }}>
+						<PreviewHeaderNavigation itemType={itemType} />
+					</Row>
 				)}
+				<Icon
+					icon={isRead ? 'EmailReadOutline' : 'EmailOutline'}
+					data-testid={isRead ? 'EmailReadIcon' : 'EmailUnreadIcon'}
+					size={'medium'}
+				/>
 				<Row mainAlignment="flex-start" padding={{ left: 'large' }} takeAvailableSpace>
-					<Tooltip label={subject}>
-						<Text size="medium" data-testid="Subject" color={item?.subject ? 'text' : 'secondary'}>
-							{subject}
+					<Tooltip label={subjectLabel}>
+						<Text size="medium" data-testid="Subject" color={subject ? 'text' : 'secondary'}>
+							{subjectLabel}
 						</Text>
 					</Tooltip>
 				</Row>
+				{isCurrentLayoutNoSplit && <LayoutComponent />}
 				<IconButton
 					data-testid="PreviewPanelCloseIcon"
 					icon="CloseOutline"
