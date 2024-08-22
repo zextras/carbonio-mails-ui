@@ -1,17 +1,16 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
-import React from 'react';
-
-import { act, within } from '@testing-library/react';
 /*
  * SPDX-FileCopyrightText: 2024 Zextras <https://www.zextras.com>
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import React from 'react';
+
+import { act, within } from '@testing-library/react';
 import * as hooks from '@zextras/carbonio-shell-ui';
 import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 import produce from 'immer';
 import { noop } from 'lodash';
-/* eslint-disable no-param-reassign */
 import { useParams } from 'react-router-dom';
 
 import { FOLDERS } from '../../../../carbonio-ui-commons/constants/folders';
@@ -52,21 +51,28 @@ describe('Conversation Preview', () => {
 
 	it('should render a conversation with its messages when SearchConv API returns a valid response', async () => {
 		(useParams as jest.Mock).mockReturnValue({ conversationId: '123', folderId: FOLDERS.INBOX });
-		setSearchResultsByConversation(
-			[generateConversation({ id: '123', folderId: FOLDERS.INBOX })],
-			false
-		);
+		const conversation = generateConversation({
+			id: '123',
+			folderId: FOLDERS.INBOX,
+			messages: [
+				{ id: '1', parent: '', date: 1 },
+				{ id: '10', parent: '', date: 1 }
+			]
+		});
+		setSearchResultsByConversation([conversation], false);
+		const message1 = generateTextConversationMessageFromAPI('1', '123', 'Test Message body');
+		const message2 = generateTextConversationMessageFromAPI('10', '123', 'Another message');
+		const response = generateSearchConversationFromApi([message1, message2]);
 		const interceptor = createSoapAPIInterceptor<SearchConvRequest, SearchConvResponse>(
 			'SearchConv',
-			searchConversationFromApi([
-				textConversationMessageFromAPI('1', 'Test Message body'),
-				textConversationMessageFromAPI('10', 'Another message')
-			])
+			response
 		);
 
 		setupTest(<SearchConversationPanel />, { store });
 
-		await interceptor;
+		await act(async () => {
+			await interceptor;
+		});
 		expect(await screen.findAllByTestId(/MailPreview-/)).toHaveLength(2);
 		expect(await screen.findByTestId('MailPreview-10')).toBeVisible();
 		expect(await screen.findByText('Test Message body')).toBeInTheDocument();
@@ -85,7 +91,9 @@ describe('Conversation Preview', () => {
 
 		setupTest(<SearchConversationPanel />, { store });
 
-		await interceptor;
+		await act(async () => {
+			await interceptor;
+		});
 		expect(screen.queryByTestId(/MailPreview-1/)).not.toBeInTheDocument();
 		expect(await screen.findByTestId('empty-fragment')).toBeInTheDocument();
 	});
@@ -100,7 +108,9 @@ describe('Conversation Preview', () => {
 
 		setupTest(<SearchConversationPanel />, { store });
 
-		await interceptor;
+		await act(async () => {
+			await interceptor;
+		});
 		expect(screen.queryByTestId(/MailPreview-1/)).not.toBeInTheDocument();
 		expect(await screen.findByTestId('empty-fragment')).toBeInTheDocument();
 	});
@@ -184,7 +194,7 @@ describe('Conversation Preview', () => {
 	});
 });
 
-function searchConversationFromApi(messages: Array<SoapMailMessage>): SearchConvResponse {
+function generateSearchConversationFromApi(messages: Array<SoapMailMessage>): SearchConvResponse {
 	return {
 		m: messages,
 		more: false,
@@ -193,9 +203,14 @@ function searchConversationFromApi(messages: Array<SoapMailMessage>): SearchConv
 	};
 }
 
-function textConversationMessageFromAPI(id: string, content: string): SoapMailMessage {
+function generateTextConversationMessageFromAPI(
+	id: string,
+	cid: string,
+	content: string
+): SoapMailMessage {
 	return generateConvMessageFromAPI({
 		id,
+		cid,
 		mp: [
 			generateMessagePartFromAPI({
 				part: '1',
