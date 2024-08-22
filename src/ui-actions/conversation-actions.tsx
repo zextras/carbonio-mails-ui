@@ -157,7 +157,7 @@ type SetConversationReadParameters = {
 	ids: ConvActionIdsType;
 	dispatch: AppDispatch;
 	value: ConvActionValueType;
-	deselectAll: DeselectAllType;
+	deselectAll?: DeselectAllType;
 	onFulFilled?: () => void;
 };
 
@@ -348,7 +348,7 @@ export const useMoveConversationToTrash = (): ((
 							})
 						).then((res) => {
 							if (res.type.includes('fulfilled')) {
-								deselectAll();
+								deselectAll?.();
 								if (!isSearchModule(currentPath)) {
 									replaceHistory(`/folder/${folderId}/conversation/${ids[0]}`);
 								}
@@ -382,7 +382,7 @@ export const useMoveConversationToTrash = (): ((
 						})
 					).then((res) => {
 						if (res.type.includes('fulfilled')) {
-							deselectAll();
+							deselectAll?.();
 							// TODO: putting the logic here is a bad choice, when possible create a specific action for the search
 							if (!isSearchModule(currentPath)) {
 								replaceHistory(`/folder/${folderId}/`);
