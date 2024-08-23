@@ -5,8 +5,14 @@
  */
 
 import { faker } from '@faker-js/faker';
+import { keyBy } from 'lodash';
 
-import { getChipItems, getChipString } from '../utils';
+import { createFakeIdentity } from '../../../carbonio-ui-commons/test/mocks/accounts/fakeAccounts';
+import {
+	generateFolder,
+	generateFolderLink
+} from '../../../carbonio-ui-commons/test/mocks/folders/folders-generator';
+import { generateQueryString, getChipItems, getChipString } from '../utils';
 
 const name1 = faker.person.firstName();
 const name2 = faker.person.firstName();
@@ -160,5 +166,39 @@ describe('getChipItems function', () => {
 		expect(result).toHaveLength(2);
 		expect(result[0]).toMatchObject(expectedResult1);
 		expect(result[1]).toMatchObject(expectedResult2);
+	});
+});
+
+describe('generateQueryString', () => {
+	const query = [
+		{ value: 'value1', label: 'label1' },
+		{ value: '', label: 'label2' }
+	];
+	const folder = generateFolder({ id: '1' });
+	const identity = createFakeIdentity();
+	const folderLink = generateFolderLink('100', '101', identity);
+	const folders = keyBy([folder, folderLink], 'id');
+
+	it('should generate query string with folders when isSharedFolderIncluded is true and foldersArray has elements', () => {
+		const isSharedFolderIncluded = true;
+		const result = generateQueryString(query, isSharedFolderIncluded, folders);
+
+		expect(result).toBe('(value1 label2) ( inid:"101" OR is:local) ');
+	});
+
+	it('should generate query string without folders when isSharedFolderIncluded is false', () => {
+		const isSharedFolderIncluded = false;
+
+		const result = generateQueryString(query, isSharedFolderIncluded, folders);
+
+		expect(result).toBe('value1 label2');
+	});
+
+	it('should generate query string without folders when isSharedFolderIncluded is true but foldersArray is empty', () => {
+		const isSharedFolderIncluded = true;
+
+		const result = generateQueryString(query, isSharedFolderIncluded, {});
+
+		expect(result).toBe('value1 label2');
 	});
 });
