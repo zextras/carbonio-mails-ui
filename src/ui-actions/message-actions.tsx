@@ -9,6 +9,7 @@ import { AsyncThunkAction, Dispatch } from '@reduxjs/toolkit';
 import { Text, useSnackbar } from '@zextras/carbonio-design-system';
 import { t, replaceHistory, useIntegratedFunction } from '@zextras/carbonio-shell-ui';
 import { isNull, map, noop } from 'lodash';
+import { useLocation } from 'react-router-dom';
 
 import DeleteConvConfirm from './delete-conv-modal';
 import { errorPage } from './error-page';
@@ -52,6 +53,87 @@ type MessageActionPropType = {
 	isRestore?: boolean;
 	message?: MailMessage;
 };
+
+// TODO: consider exporting this as it is used also in conversation-actions
+function isSearchModule(currentPath: string): boolean {
+	return currentPath.startsWith('/search');
+}
+
+type SetMessagesReadParameters = {
+	ids: MessageActionIdsType;
+	dispatch: AppDispatch;
+	value?: MessageActionValueType;
+	deselectAll?: DeselectAllType;
+	onFulFilled?: () => void;
+};
+export const setMessagesRead = ({
+	ids,
+	value,
+	dispatch,
+	deselectAll,
+	onFulFilled
+}: SetMessagesReadParameters): MessageActionReturnType => {
+	const actDescriptor = value
+		? MessageActionsDescriptors.MARK_AS_UNREAD
+		: MessageActionsDescriptors.MARK_AS_READ;
+
+	return {
+		id: actDescriptor.id,
+		icon: value ? 'EmailOutline' : 'EmailReadOutline',
+		label: value
+			? t('action.mark_as_unread', 'Mark as unread')
+			: t('action.mark_as_read', 'Mark as read'),
+		onClick: (ev): void => {
+			if (ev) ev.preventDefault();
+			dispatch(
+				msgAction({
+					operation: `${value ? '!' : ''}read`,
+					ids
+				})
+			).then((res) => {
+				deselectAll && deselectAll();
+				if (res.type.includes('fulfilled')) {
+					onFulFilled?.();
+				}
+			});
+		}
+	};
+};
+
+// TODO: consider passing onFulfilled at this point, folderId is used only when we need to replace history.
+//  No need to pass two parameters (folderId and shouldReplaceHistory)
+export function useMessagesRead(): ({
+	ids,
+	value,
+	dispatch,
+	folderId,
+	shouldReplaceHistory,
+	deselectAll
+}: MessageActionPropType) => MessageActionReturnType {
+	const currentPath = useLocation().pathname;
+	return ({
+		ids,
+		value,
+		dispatch,
+		folderId,
+		shouldReplaceHistory,
+		deselectAll
+	}: MessageActionPropType): MessageActionReturnType => {
+		// TODO: same logic is applied in conversation-actions, extract me!
+		const conditionalReplaceHistory = (): void => {
+			if (shouldReplaceHistory) {
+				isSearchModule(currentPath) ? replaceHistory(`/`) : replaceHistory(`/folder/${folderId}`);
+			}
+		};
+		return setMessagesRead({
+			ids,
+			value,
+			dispatch,
+			deselectAll,
+			onFulFilled: () => conditionalReplaceHistory()
+		});
+	};
+}
 
 export const setMsgRead = ({
 	ids,
