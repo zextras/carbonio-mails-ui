@@ -7,7 +7,7 @@
 import React, { FC, memo, useMemo } from 'react';
 
 import { Button, Container, ListV2 } from '@zextras/carbonio-design-system';
-import { replaceHistory, useAppContext } from '@zextras/carbonio-shell-ui';
+import { useAppContext } from '@zextras/carbonio-shell-ui';
 import { map, noop } from 'lodash';
 
 import { CustomListItem } from '../../../../carbonio-ui-commons/components/list/list-item';
@@ -38,9 +38,6 @@ export const SearchConversationMessagesList: FC<SearchConversationMessagesListPr
 				map(messages, (message) => {
 					const isActive = active === message.id || active === message.conversation;
 					const isSelected = selected[message.id];
-					const replaceHistoryAction = (): void => {
-						replaceHistory(`/message/${message.id}`);
-					};
 
 					return (
 						<CustomListItem
@@ -61,7 +58,6 @@ export const SearchConversationMessagesList: FC<SearchConversationMessagesListPr
 										isConvChildren
 										deselectAll={deselectAll}
 										currentFolderId={message.parent}
-										replaceHistoryAction={replaceHistoryAction}
 										isSearchModule
 									/>
 								) : (

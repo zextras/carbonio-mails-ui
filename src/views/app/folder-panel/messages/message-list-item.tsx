@@ -51,8 +51,7 @@ export const MessageListItem: FC<MessageListItemProps> = memo(function MessageLi
 	active,
 	isSearchModule,
 	deselectAll,
-	currentFolderId,
-	replaceHistoryAction
+	currentFolderId
 }) {
 	const firstChildFolderId = currentFolderId ?? item.parent;
 
