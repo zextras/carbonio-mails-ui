@@ -69,7 +69,7 @@ export function getChipItems(chips: Query | Array<ContactInputItem>, prefix: str
 export function updateQueryChips(
 	query: Array<QueryChip>,
 	isInvalidQuery: boolean,
-	// TOFIX: fic type definition in shell-ui
+	// TOFIX: fix type definition in shell-ui
 	// eslint-disable-next-line @typescript-eslint/ban-types
 	updateQuery: Function
 ): void {
@@ -79,34 +79,13 @@ export function updateQueryChips(
 	if (query?.length > 0 && !isInvalidQuery) {
 		const modifiedQuery = map(query, (q) => {
 			if (
-				// TODO: fix type definition
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-				// @ts-ignore
 				(includes(queryArray, q.label) ||
-					// TODO: fix type definition
-					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-					// @ts-ignore
-					/^subject:/.test(q.label) ||
-					// TODO: fix type definition
-					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-					// @ts-ignore
-					/^in:/.test(q.label) ||
-					// TODO: fix type definition
-					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-					// @ts-ignore
-					/^before:/.test(q.label) ||
-					// TODO: fix type definition
-					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-					// @ts-ignore
-					/^after:/.test(q.label) ||
-					// TODO: fix type definition
-					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-					// @ts-ignore
-					/^tag:/.test(q.label) ||
-					// TODO: fix type definition
-					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-					// @ts-ignore
-					/^date:/.test(q.label)) &&
+					q.label?.startsWith('subject') ||
+					q.label?.startsWith('in') ||
+					q.label?.startsWith('before') ||
+					q.label?.startsWith('after') ||
+					q.label?.startsWith('tag') ||
+					q.label?.startsWith('date')) &&
 				!includes(Object.keys(q), 'isGeneric') &&
 				!includes(Object.keys(q), 'isQueryFilter')
 			) {
