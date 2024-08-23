@@ -58,7 +58,7 @@ import type {
 } from '../../../../types';
 import {
 	previewConversationOnSeparatedWindowAction,
-	setConversationsRead
+	useConversationsRead
 } from '../../../../ui-actions/conversation-actions';
 import { useGlobalExtraWindowManager } from '../../extra-windows/global-extra-window-manager';
 import { ItemAvatar } from '../parts/item-avatar';
@@ -90,8 +90,8 @@ export const ConversationListItem: FC<ConversationListItemProps> = memo(
 		const messages = useAppSelector(selectMessages);
 		const isConversation = 'messages' in (item || {});
 		const { createWindow } = useGlobalExtraWindowManager();
-
 		const folderParent = getFolderParentId({ folderId: folderId ?? '', isConversation, item });
+		const setConversationRead = useConversationsRead();
 
 		const conversationStatus = useAppSelector((state: MailsStateType) =>
 			selectConversationExpandedStatus(state, item.id)
@@ -173,7 +173,7 @@ export const ConversationListItem: FC<ConversationListItemProps> = memo(
 			(e) => {
 				if (!e.isDefaultPrevented()) {
 					if (item?.read === false && zimbraPrefMarkMsgRead) {
-						setConversationsRead({
+						setConversationRead({
 							ids: [item.id],
 							value: false,
 							dispatch,
@@ -190,6 +190,7 @@ export const ConversationListItem: FC<ConversationListItemProps> = memo(
 				item.id,
 				zimbraPrefMarkMsgRead,
 				debouncedPushHistory,
+				setConversationRead,
 				dispatch,
 				folderParent,
 				deselectAll

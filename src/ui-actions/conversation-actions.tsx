@@ -44,7 +44,9 @@ export type ConvActionPropType = {
 	message: MailMessage;
 	disabled: boolean;
 };
-
+function isSearchModule(currentPath: string): boolean {
+	return currentPath.startsWith('/search');
+}
 export function setConversationsFlag({
 	ids,
 	value,
@@ -161,7 +163,7 @@ type SetConversationReadParameters = {
 	onFulFilled?: () => void;
 };
 
-export function setConversationsReadWithCallback({
+export function setConversationsRead({
 	ids,
 	value,
 	dispatch,
@@ -193,7 +195,7 @@ export function setConversationsReadWithCallback({
 	};
 }
 
-export function setConversationsRead({
+export function useConversationsRead(): ({
 	ids,
 	value,
 	dispatch,
@@ -203,21 +205,33 @@ export function setConversationsRead({
 }: Pick<
 	ConvActionPropType,
 	'ids' | 'dispatch' | 'value' | 'folderId' | 'shouldReplaceHistory' | 'deselectAll'
->): ConvActionReturnType {
-	const conditionalReplaceHistory = (): void => {
-		if (shouldReplaceHistory) {
-			replaceHistory(`/folder/${folderId}`);
-		}
-	};
-	return setConversationsReadWithCallback({
+>) => ConvActionReturnType {
+	const currentPath = useLocation().pathname;
+	return ({
 		ids,
 		value,
 		dispatch,
-		deselectAll,
-		onFulFilled: () => conditionalReplaceHistory()
-	});
+		folderId,
+		shouldReplaceHistory,
+		deselectAll
+	}: Pick<
+		ConvActionPropType,
+		'ids' | 'dispatch' | 'value' | 'folderId' | 'shouldReplaceHistory' | 'deselectAll'
+	>): ConvActionReturnType => {
+		const conditionalReplaceHistory = (): void => {
+			if (shouldReplaceHistory) {
+				isSearchModule(currentPath) ? replaceHistory(`/`) : replaceHistory(`/folder/${folderId}`);
+			}
+		};
+		return setConversationsRead({
+			ids,
+			value,
+			dispatch,
+			deselectAll,
+			onFulFilled: () => conditionalReplaceHistory()
+		});
+	};
 }
-
 export function printConversation({
 	conversation
 }: {
@@ -320,10 +334,6 @@ export const useSetConversationAsSpam = (): ((
 		[createSnackbar]
 	);
 };
-
-function isSearchModule(currentPath: string): boolean {
-	return currentPath.startsWith('/search');
-}
 
 export const useMoveConversationToTrash = (): ((
 	conversation: Pick<ConvActionPropType, 'ids' | 'dispatch' | 'deselectAll' | 'folderId'>

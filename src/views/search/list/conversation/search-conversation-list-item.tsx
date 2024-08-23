@@ -40,7 +40,7 @@ import {
 	useConversationStatus
 } from '../../../../store/zustand/search/store';
 import type { Conversation, Participant, TextReadValuesProps } from '../../../../types';
-import { setConversationsReadWithCallback } from '../../../../ui-actions/conversation-actions';
+import { setConversationsRead } from '../../../../ui-actions/conversation-actions';
 import { useGlobalExtraWindowManager } from '../../../app/extra-windows/global-extra-window-manager';
 import { ItemAvatar } from '../../../app/folder-panel/parts/item-avatar';
 import { ListItemActionWrapper } from '../../../app/folder-panel/parts/list-item-actions-wrapper';
@@ -144,7 +144,7 @@ export const SearchConversationListItem: FC<SearchConversationListItemProps> = (
 		(e) => {
 			if (!e.isDefaultPrevented()) {
 				if (conversation?.read === false && zimbraPrefMarkMsgRead) {
-					setConversationsReadWithCallback({
+					setConversationsRead({
 						ids: [conversationId],
 						value: false,
 						dispatch,

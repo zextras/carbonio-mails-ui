@@ -21,8 +21,8 @@ import {
 	useMoveConversationToFolder,
 	useMoveConversationToTrash,
 	setConversationsFlag,
-	setConversationsRead,
-	useSetConversationAsSpam
+	useSetConversationAsSpam,
+	setConversationsRead
 } from './conversation-actions';
 import {
 	useDeleteMessagePermanently,
@@ -124,9 +124,7 @@ export const MultipleSelectionActionsPanel: FC<MultipleSelectionActionsPanelProp
 					ids,
 					value: false,
 					dispatch,
-					folderId,
-					deselectAll,
-					shouldReplaceHistory: false
+					deselectAll
 				})
 			: setMsgRead({ ids, value: false, dispatch, folderId: folderParentId });
 		return findIndex(selectedItems, ['read', false]) !== -1 && action;
@@ -144,9 +142,7 @@ export const MultipleSelectionActionsPanel: FC<MultipleSelectionActionsPanelProp
 					ids,
 					value: true,
 					dispatch,
-					folderId,
-					deselectAll,
-					shouldReplaceHistory: false
+					deselectAll
 				})
 			: setMsgRead({ ids, value: true, dispatch, folderId: folderParentId });
 		return selectedItems.length > 0 && every(selectedItems, ['read', true]) && action;

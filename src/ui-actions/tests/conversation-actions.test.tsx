@@ -7,6 +7,7 @@ import React from 'react';
 
 import { faker } from '@faker-js/faker';
 import { act, screen, waitFor } from '@testing-library/react';
+import { renderHook } from '@testing-library/react-hooks';
 import * as hooks from '@zextras/carbonio-shell-ui';
 import { noop, times } from 'lodash';
 import { useLocation } from 'react-router-dom';
@@ -37,7 +38,7 @@ import {
 import {
 	printConversation,
 	setConversationsFlag,
-	setConversationsRead,
+	useConversationsRead,
 	useMoveConversationToTrash,
 	useSetConversationAsSpam
 } from '../conversation-actions';
@@ -242,8 +243,9 @@ describe('Conversation actions calls', () => {
 					searchRequestStatus: API_REQUEST_STATUS.fulfilled
 				}
 			});
-
-			const action = setConversationsRead({
+			(useLocation as jest.Mock).mockReturnValue({ pathname: '/path' });
+			const { result } = renderHook(() => useConversationsRead());
+			const action = result.current({
 				ids: [conv.id],
 				dispatch: store.dispatch,
 				value: false,
@@ -291,8 +293,9 @@ describe('Conversation actions calls', () => {
 			});
 
 			const convIds = conversations.map<string>((conv) => conv.id);
-
-			const action = setConversationsRead({
+			(useLocation as jest.Mock).mockReturnValue({ pathname: '/path' });
+			const { result } = renderHook(() => useConversationsRead());
+			const action = result.current({
 				ids: convIds,
 				dispatch: store.dispatch,
 				value: false,
@@ -313,6 +316,95 @@ describe('Conversation actions calls', () => {
 			expect(requestParameter.action.l).toBeUndefined();
 			expect(requestParameter.action.tn).toBeUndefined();
 		});
+
+		test('when path is search it should reroute to /', async () => {
+			populateFoldersStore({ view: FOLDER_VIEW.message });
+			const conv = generateConversation({});
+			const store = generateStore({
+				conversations: {
+					currentFolder: FOLDERS.INBOX,
+					expandedStatus: {
+						[conv.id]: API_REQUEST_STATUS.fulfilled
+					},
+					searchedInFolder: {},
+					conversations: {
+						[conv.id]: conv
+					},
+					searchRequestStatus: API_REQUEST_STATUS.fulfilled
+				}
+			});
+			const spyReplaceHistory = jest.spyOn(hooks, 'replaceHistory');
+			(useLocation as jest.Mock).mockReturnValue({ pathname: '/search/test' });
+			const { result } = renderHook(() => useConversationsRead());
+			const action = result.current({
+				ids: [conv.id],
+				dispatch: store.dispatch,
+				value: false,
+				// folderId is used only for routing
+				folderId: '1',
+				shouldReplaceHistory: true,
+				deselectAll: noop
+			});
+
+			createSoapAPIInterceptor<ConvActionRequest, ConvActionResponse>('ConvAction', {
+				action: {
+					id: 'test',
+					op: 'trash'
+				}
+			});
+
+			act(() => {
+				action.onClick();
+			});
+
+			await waitFor(() => {
+				expect(spyReplaceHistory).toBeCalledWith('/');
+			});
+		});
+		test('when path is not search it should reroute to /folder/conversation', async () => {
+			populateFoldersStore({ view: FOLDER_VIEW.message });
+			const conv = generateConversation({});
+			const store = generateStore({
+				conversations: {
+					currentFolder: FOLDERS.INBOX,
+					expandedStatus: {
+						[conv.id]: API_REQUEST_STATUS.fulfilled
+					},
+					searchedInFolder: {},
+					conversations: {
+						[conv.id]: conv
+					},
+					searchRequestStatus: API_REQUEST_STATUS.fulfilled
+				}
+			});
+			const spyReplaceHistory = jest.spyOn(hooks, 'replaceHistory');
+			(useLocation as jest.Mock).mockReturnValue({ pathname: '/folder/2' });
+			const { result } = renderHook(() => useConversationsRead());
+			const action = result.current({
+				ids: [conv.id],
+				dispatch: store.dispatch,
+				value: false,
+				// folderId is used only for routing
+				folderId: '1',
+				shouldReplaceHistory: true,
+				deselectAll: noop
+			});
+
+			createSoapAPIInterceptor<ConvActionRequest, ConvActionResponse>('ConvAction', {
+				action: {
+					id: 'test',
+					op: 'trash'
+				}
+			});
+
+			act(() => {
+				action.onClick();
+			});
+
+			await waitFor(() => {
+				expect(spyReplaceHistory).toBeCalledWith('/folder/1');
+			});
+		});
 	});
 
 	describe('Mark as unread action', () => {
@@ -332,8 +424,9 @@ describe('Conversation actions calls', () => {
 					searchRequestStatus: API_REQUEST_STATUS.fulfilled
 				}
 			});
-
-			const action = setConversationsRead({
+			(useLocation as jest.Mock).mockReturnValue({ pathname: '/path' });
+			const { result } = renderHook(() => useConversationsRead());
+			const action = result.current({
 				ids: [conv.id],
 				dispatch: store.dispatch,
 				value: true,
@@ -380,7 +473,8 @@ describe('Conversation actions calls', () => {
 			});
 
 			const convIds = conversations.map<string>((conv) => conv.id);
-			const action = setConversationsRead({
+			const { result } = renderHook(() => useConversationsRead());
+			const action = result.current({
 				ids: convIds,
 				dispatch: store.dispatch,
 				value: true,
