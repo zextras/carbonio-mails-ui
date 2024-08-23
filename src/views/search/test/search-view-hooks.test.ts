@@ -12,11 +12,13 @@ import * as searchSoapApi from '../../../api/search';
 import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { generateSettings } from '../../../carbonio-ui-commons/test/mocks/settings/settings-generator';
 import { buildSoapErrorResponseBody } from '../../../carbonio-ui-commons/test/mocks/utils/soap';
+import { API_REQUEST_STATUS } from '../../../constants';
 import { generateConvMessageFromAPI } from '../../../helpers/api';
 import {
 	setSearchResultsByConversation,
 	useConversationById,
-	useMessageById
+	useMessageById,
+	useSearchResults
 } from '../../../store/zustand/message-store/store';
 import { generateConversation } from '../../../tests/generators/generateConversation';
 import { SearchRequest, SearchResponse, SoapConversation } from '../../../types';
@@ -312,15 +314,40 @@ describe('useLoadMore', () => {
 		expect(renderHook(() => useMessageById('1')).result.current).toBeDefined();
 	});
 
+	it('should correcly update updateSearchResultsLoadingStatus when the API call fails', async () => {
+		const interceptor = createSoapAPIInterceptor<SearchRequest, ErrorSoapBodyResponse>(
+			'Search',
+			buildSoapErrorResponseBody({
+				detailCode: 'mail.QUERY_PARSE_ERROR',
+				reason: 'Failed to execute search'
+			})
+		);
+
+		const { result } = renderHook(() =>
+			useLoadMore({
+				query: 'test query',
+				offset: 0,
+				hasMore: true,
+				loadingMore,
+				types: 'conversation'
+			})
+		);
+
+		renderHook(() => result.current());
+
+		await act(async () => {
+			await interceptor;
+		});
+
+		expect(loadingMore.current).toBe(false);
+
+		expect(renderHook(() => useSearchResults()).result.current.status).toBe(
+			API_REQUEST_STATUS.error
+		);
+	});
+
 	it('should not call the API if hasMore is false', async () => {
-		const message = generateConvMessageFromAPI({ id: '1' });
-		const searchResponse = {
-			c: [conversationFromAPI({ id: '123', su: 'Subject', m: [message] })],
-			m: [message],
-			more: false
-		};
 		const mockedSearch = jest.spyOn(searchSoapApi, 'searchSoapApi');
-		createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', searchResponse);
 
 		const { result } = renderHook(() =>
 			useLoadMore({
@@ -338,14 +365,7 @@ describe('useLoadMore', () => {
 
 	it('should not call the API if loadingMore is true', async () => {
 		loadingMore.current = true;
-		const message = generateConvMessageFromAPI({ id: '1' });
-		const searchResponse = {
-			c: [conversationFromAPI({ id: '123', su: 'Subject', m: [message] })],
-			m: [message],
-			more: true
-		};
 		const mockedSearch = jest.spyOn(searchSoapApi, 'searchSoapApi');
-		createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', searchResponse);
 
 		const { result } = renderHook(() =>
 			useLoadMore({
