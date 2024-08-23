@@ -15,13 +15,12 @@ import { API_REQUEST_STATUS } from '../../../constants';
 import {
 	IncompleteMessage,
 	MailMessage,
+	MessageStoreState,
 	NormalizedConversation,
 	PopulatedItemsSliceState,
 	SearchRequestStatus,
 	SearchSliceState
 } from '../../../types';
-
-export type MessageStoreState = PopulatedItemsSliceState & SearchSliceState;
 
 const useMessageStore = create<MessageStoreState>()((...a) => ({
 	...createSearchSlice(...a),
