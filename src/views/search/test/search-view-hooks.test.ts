@@ -208,14 +208,13 @@ function conversationFromAPI(params: Partial<SoapConversation> = {}): SoapConver
 }
 
 describe('useLoadMore', () => {
-	let loadingMore: any;
+	let loadingMore: { current: boolean };
 	beforeEach(() => {
 		loadingMore = { current: false };
 	});
 	it('should correcly handle response with both conversations and messages', async () => {
 		const message = generateConvMessageFromAPI({ id: '1' });
 		const searchResponse = {
-			// eslint-disable-next-line @typescript-eslint/no-use-before-define
 			c: [conversationFromAPI({ id: '123', su: 'Subject', m: [message] })],
 			m: [message],
 			more: false
@@ -235,14 +234,15 @@ describe('useLoadMore', () => {
 			})
 		);
 
+		renderHook(() => result.current());
+
 		await act(async () => {
 			await interceptor;
 		});
 
-		await act(async () => {
-			await result.current();
-		});
-
 		expect(loadingMore.current).toBe(false);
+
+		expect(renderHook(() => useConversationById('123'))).toBeDefined();
+		expect(renderHook(() => useMessageById('1')).result.current).toBeDefined();
 	});
 });
