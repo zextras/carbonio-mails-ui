@@ -39,6 +39,22 @@ export function generateConvMessageFromAPI(params: Partial<SoapMailMessage> = {}
 	};
 }
 
+export function generateCompleteMessageFromAPI(
+	params: Partial<SoapMailMessage> = {}
+): SoapMailMessage {
+	return {
+		...generateMessageFromAPI({ id: '987', d: 987 }),
+		su: 'Subject',
+		fr: 'Fragment',
+		e: [
+			generateFromParticipantFromAPI({ a: 'from@loc.al' }),
+			generateToParticipantFromAPI({ a: 'to@loc.al' })
+		],
+		mp: [generateMessagePartFromAPI()],
+		...params
+	};
+}
+
 export function generateFromParticipantFromAPI(
 	params: Partial<SoapMailParticipant> = {}
 ): SoapMailParticipant {
