@@ -5,6 +5,7 @@
  */
 
 import { faker } from '@faker-js/faker';
+import { QueryChip } from '@zextras/carbonio-shell-ui';
 import { keyBy } from 'lodash';
 
 import { createFakeIdentity } from '../../../carbonio-ui-commons/test/mocks/accounts/fakeAccounts';
@@ -12,7 +13,7 @@ import {
 	generateFolder,
 	generateFolderLink
 } from '../../../carbonio-ui-commons/test/mocks/folders/folders-generator';
-import { generateQueryString, getChipItems, getChipString } from '../utils';
+import { generateQueryString, getChipItems, getChipString, updateQueryChips } from '../utils';
 
 const name1 = faker.person.firstName();
 const name2 = faker.person.firstName();
@@ -200,5 +201,46 @@ describe('generateQueryString', () => {
 		const result = generateQueryString(query, isSharedFolderIncluded, {});
 
 		expect(result).toBe('value1 label2');
+	});
+});
+
+describe('updateQueryChips', () => {
+	it('should update query chips when query is not empty and isInvalidQuery is false', () => {
+		const query = [{ label: 'has:attachment' }];
+		const isInvalidQuery = false;
+		const updateQuery = jest.fn();
+
+		updateQueryChips(query, isInvalidQuery, updateQuery);
+
+		expect(updateQuery).toBeCalledWith([
+			{
+				avatarBackground: 'gray1',
+				avatarIcon: 'AttachOutline',
+				hasAvatar: true,
+				isQueryFilter: true,
+				label: 'has:attachment',
+				value: 'has:attachment'
+			}
+		]);
+	});
+
+	it('should not update query chips when query is empty', () => {
+		const query = [] as Array<QueryChip>;
+		const isInvalidQuery = false;
+		const updateQuery = jest.fn();
+
+		updateQueryChips(query, isInvalidQuery, updateQuery);
+
+		expect(updateQuery).not.toHaveBeenCalled();
+	});
+	//
+	it('should not update query chips when query is not empty but isInvalidQuery is true', () => {
+		const query = [{ label: 'has:attachment' }];
+		const isInvalidQuery = true;
+		const updateQuery = jest.fn();
+
+		updateQueryChips(query, isInvalidQuery, updateQuery);
+
+		expect(updateQuery).not.toHaveBeenCalled();
 	});
 });
