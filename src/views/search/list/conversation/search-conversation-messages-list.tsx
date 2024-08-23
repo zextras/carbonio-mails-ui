@@ -38,7 +38,7 @@ export const SearchConversationMessagesList: FC<SearchConversationMessagesListPr
 				map(messages, (message) => {
 					const isActive = active === message.id || active === message.conversation;
 					const isSelected = selected[message.id];
-					const replaceHistoryAction = (): void => {
+					const handleSearchReplaceHistory = (): void => {
 						replaceHistory(`/message/${message.id}`);
 					};
 
@@ -61,7 +61,7 @@ export const SearchConversationMessagesList: FC<SearchConversationMessagesListPr
 										isConvChildren
 										deselectAll={deselectAll}
 										currentFolderId={message.parent}
-										replaceHistoryAction={replaceHistoryAction}
+										handleReplaceHistory={handleSearchReplaceHistory}
 										isSearchModule
 									/>
 								) : (
