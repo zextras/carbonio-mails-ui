@@ -33,12 +33,12 @@ import { SearchConversationMessagesList } from './search-conversation-messages-l
 import { participantToString } from '../../../../commons/utils';
 import { API_REQUEST_STATUS } from '../../../../constants';
 import { useAppDispatch } from '../../../../hooks/redux';
+import { retrieveConversation } from '../../../../store/zustand/search/hooks/hooks';
 import {
 	useConversationById,
 	useConversationMessages,
 	useConversationStatus
-} from '../../../../store/zustand/message-store/store';
-import { retrieveConversation } from '../../../../store/zustand/search/hooks/hooks';
+} from '../../../../store/zustand/search/store';
 import type { Conversation, Participant, TextReadValuesProps } from '../../../../types';
 import { setConversationsReadWithCallback } from '../../../../ui-actions/conversation-actions';
 import { useGlobalExtraWindowManager } from '../../../app/extra-windows/global-extra-window-manager';

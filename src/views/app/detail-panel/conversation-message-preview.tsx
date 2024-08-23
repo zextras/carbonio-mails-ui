@@ -11,7 +11,7 @@ import MailPreview from './preview/mail-preview';
 import { useAppSelector } from '../../../hooks/redux';
 import { useMessageActions } from '../../../hooks/use-message-actions';
 import { selectMessage } from '../../../store/messages-slice';
-import { useMessageById } from '../../../store/zustand/message-store/store';
+import { useMessageById } from '../../../store/zustand/search/store';
 import { ConvMessage, MailsStateType } from '../../../types';
 
 export type ConversationMessagePreviewProps = {

@@ -31,7 +31,7 @@ import { getTimeLabel, participantToString } from '../../../../commons/utils';
 import { EditViewActions } from '../../../../constants';
 import { useAppDispatch } from '../../../../hooks/redux';
 import { useMessageActions } from '../../../../hooks/use-message-actions';
-import { useMessageById } from '../../../../store/zustand/message-store/store';
+import { useMessageById } from '../../../../store/zustand/search/store';
 import { TextReadValuesType } from '../../../../types';
 import { setMsgRead } from '../../../../ui-actions/message-actions';
 import { previewMessageOnSeparatedWindow } from '../../../../ui-actions/preview-message-on-separated-window';

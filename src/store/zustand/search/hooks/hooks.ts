@@ -17,7 +17,7 @@ import {
 	updateConversationStatus,
 	useConversationById,
 	useConversationStatus
-} from '../../message-store/store';
+} from '../store';
 
 function handleSearchConvResponse(conversationId: string, response: SearchConvResponse): void {
 	const messages = map(response?.m ?? [], (msg) => normalizeMailMessageFromSoap(msg, true));

@@ -20,7 +20,6 @@ import {
 	selectConversation,
 	selectConversationExpandedStatus
 } from '../../../store/conversations-slice';
-import { useConversationById } from '../../../store/zustand/message-store/store';
 import type { MailsStateType } from '../../../types';
 import { useExtraWindow } from '../extra-windows/use-extra-window';
 

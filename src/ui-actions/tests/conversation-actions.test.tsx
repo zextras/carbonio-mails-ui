@@ -25,7 +25,7 @@ import {
 import { TIMEOUTS, API_REQUEST_STATUS } from '../../constants';
 import { useUiUtilities } from '../../hooks/use-ui-utilities';
 import * as getMsgsForPrint from '../../store/actions/get-msg-for-print';
-import { setSearchResultsByConversation } from '../../store/zustand/message-store/store';
+import { setSearchResultsByConversation } from '../../store/zustand/search/store';
 import { generateConversation } from '../../tests/generators/generateConversation';
 import { generateStore } from '../../tests/generators/store';
 import {

@@ -14,7 +14,7 @@ export const POPULATED_ITEMS_INITIAL_STATE = {
 	conversations: {},
 	conversationsStatus: {}
 };
-export const createMessageSlice: StateCreator<
+export const createPopulatedItemsSlice: StateCreator<
 	PopulatedItemsSliceState & SearchSliceState,
 	[],
 	[],

@@ -25,8 +25,12 @@ import {
 	setSearchResultsByConversation,
 	updateConversationStatus,
 	setMessages
-} from '../../../../store/zustand/message-store/store';
-import { createSoapAPIInterceptorWithError } from '../../../../tests/generators/api';
+} from '../../../../store/zustand/search/store';
+import {
+	createSoapAPIInterceptorWithError,
+	generateConvMessageFromAPI,
+	generateMessagePartFromAPI
+} from '../../../../tests/generators/api';
 import { generateConversation } from '../../../../tests/generators/generateConversation';
 import { generateMessage } from '../../../../tests/generators/generateMessage';
 import { generateStore } from '../../../../tests/generators/store';

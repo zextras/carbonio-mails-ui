@@ -12,12 +12,12 @@ import { generateConvMessageFromAPI } from '../../../../tests/generators/api';
 import { generateConversation } from '../../../../tests/generators/generateConversation';
 import { generateMessage } from '../../../../tests/generators/generateMessage';
 import { SearchConvRequest, SearchConvResponse } from '../../../../types';
+import { useCompleteConversation } from '../hooks/hooks';
 import {
 	setSearchResultsByConversation,
 	updateConversationStatus,
 	useConversationStatus
-} from '../../message-store/store';
-import { useCompleteConversation } from '../hooks/hooks';
+} from '../store';
 
 describe('Searches store hooks', () => {
 	it('useCompleteConversation should return undefined conversation and status if no data available', async () => {

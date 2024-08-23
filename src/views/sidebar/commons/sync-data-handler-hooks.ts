@@ -35,7 +35,7 @@ import {
 	deleteConversations,
 	updateConversationsOnly,
 	updateMessagesOnly
-} from '../../../store/zustand/message-store/store';
+} from '../../../store/zustand/search/store';
 import type { Conversation } from '../../../types';
 
 export const useSyncDataHandler = (): void => {

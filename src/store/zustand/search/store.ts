@@ -9,10 +9,7 @@ import produce, { enableMapSet } from 'immer';
 import { merge } from 'lodash';
 import { create } from 'zustand';
 
-import {
-	createMessageSlice as createPopulatedItemsSlice,
-	POPULATED_ITEMS_INITIAL_STATE
-} from './message-slice';
+import { createPopulatedItemsSlice, POPULATED_ITEMS_INITIAL_STATE } from './populated-items-slice';
 import { createSearchSlice, SEARCH_INITIAL_STATE } from './search-slice';
 import { API_REQUEST_STATUS } from '../../../constants';
 import {

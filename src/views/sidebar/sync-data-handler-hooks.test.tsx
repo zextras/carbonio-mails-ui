@@ -18,7 +18,7 @@ import {
 	setMessages,
 	useConversationById,
 	useMessageById
-} from '../../store/zustand/message-store/store';
+} from '../../store/zustand/search/store';
 import { generateConversation } from '../../tests/generators/generateConversation';
 import { generateMessage } from '../../tests/generators/generateMessage';
 import { generateStore } from '../../tests/generators/store';
