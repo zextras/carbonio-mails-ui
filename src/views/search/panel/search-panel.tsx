@@ -10,8 +10,8 @@ import { t } from '@zextras/carbonio-shell-ui';
 import { useRouteMatch, Switch, Route } from 'react-router-dom';
 
 import { SearchConversationPanel } from './search-conversation-panel';
+import { SearchMessagePanel } from './search-message-panel';
 import { SearchPanelProps } from '../../../types';
-import { MessagePreviewPanelContainer } from '../../app/detail-panel/message-preview-panel-container';
 
 const SearchPanel: FC<SearchPanelProps> = ({ searchResults }) => {
 	const { path } = useRouteMatch();
@@ -45,7 +45,7 @@ const SearchPanel: FC<SearchPanelProps> = ({ searchResults }) => {
 				<SearchConversationPanel />
 			</Route>
 			<Route path={`${path}/message/:messageId`}>
-				<MessagePreviewPanelContainer />
+				<SearchMessagePanel />
 			</Route>
 			<Route path={path}>
 				<Container background="gray5">

@@ -206,7 +206,8 @@ export function appendMessages(
 		})
 	);
 }
-export function updateMessages(messages: IncompleteMessage[]): void {
+
+export function updateMessages(messages: MailMessage[]): void {
 	useMessageStore.setState(
 		produce(({ populatedItems }: PopulatedItemsSliceState) => {
 			messages.forEach((message) => {
@@ -225,6 +226,17 @@ export function updateConversationStatus(
 			populatedItems.conversationsStatus[conversationId] = status;
 		})
 	);
+}
+
+export function updateMessageStatus(messageId: string, status: SearchRequestStatus): void {
+	useMessageStore.setState(
+		produce(({ populatedItems }: PopulatedItemsSliceState) => {
+			populatedItems.messagesStatus[messageId] = status;
+		})
+	);
+}
+export function useMessageStatus(id: string): SearchRequestStatus {
+	return useMessageStore((state) => state.populatedItems.messagesStatus?.[id]);
 }
 
 export function updateSearchResultsLoadingStatus(status: SearchRequestStatus): void {

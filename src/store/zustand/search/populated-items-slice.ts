@@ -12,7 +12,8 @@ import { PopulatedItemsSliceState, SearchSliceState } from '../../../types';
 export const POPULATED_ITEMS_INITIAL_STATE = {
 	messages: {},
 	conversations: {},
-	conversationsStatus: {}
+	conversationsStatus: {},
+	messagesStatus: {}
 };
 export const createPopulatedItemsSlice: StateCreator<
 	PopulatedItemsSliceState & SearchSliceState,
