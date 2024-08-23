@@ -7,14 +7,13 @@
 
 import { DefaultBodyType, http, HttpResponse } from 'msw';
 
-import { getSetupServer } from '../carbonio-ui-commons/test/jest-setup';
+import { getSetupServer } from '../../carbonio-ui-commons/test/jest-setup';
 import {
-	SoapConversation,
 	SoapIncompleteMessage,
 	SoapMailMessage,
 	SoapMailMessagePart,
 	SoapMailParticipant
-} from '../types';
+} from '../../types';
 
 export function generateMessagePartFromAPI(
 	params: Partial<SoapMailMessagePart> = {}
@@ -26,25 +25,6 @@ export function generateMessagePartFromAPI(
 		...params
 	};
 }
-
-export function generateConversationFromAPI(
-	params: Partial<SoapConversation> = {}
-): SoapConversation {
-	return {
-		id: '123',
-		n: 1,
-		u: 1,
-		f: 'flag',
-		tn: 'tag names',
-		d: 123,
-		m: [generateConvMessageFromAPI()],
-		e: [],
-		su: 'Subject',
-		fr: 'fragment',
-		...params
-	};
-}
-
 export function generateConvMessageFromAPI(params: Partial<SoapMailMessage> = {}): SoapMailMessage {
 	return {
 		...generateMessageFromAPI({ id: '987', d: 987 }),

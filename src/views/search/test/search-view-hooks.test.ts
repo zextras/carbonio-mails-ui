@@ -13,13 +13,13 @@ import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mock
 import { generateSettings } from '../../../carbonio-ui-commons/test/mocks/settings/settings-generator';
 import { buildSoapErrorResponseBody } from '../../../carbonio-ui-commons/test/mocks/utils/soap';
 import { API_REQUEST_STATUS } from '../../../constants';
-import { generateConvMessageFromAPI } from '../../../helpers/api';
 import {
 	setSearchResultsByConversation,
 	useConversationById,
 	useMessageById,
 	useSearchResults
 } from '../../../store/zustand/message-store/store';
+import { generateConvMessageFromAPI } from '../../../tests/generators/api';
 import { generateConversation } from '../../../tests/generators/generateConversation';
 import { SearchRequest, SearchResponse, SoapConversation } from '../../../types';
 import { useRunSearch, useLoadMore } from '../search-view-hooks';

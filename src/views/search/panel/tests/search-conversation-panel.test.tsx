@@ -20,17 +20,13 @@ import { createSoapAPIInterceptor } from '../../../../carbonio-ui-commons/test/m
 import { buildSoapErrorResponseBody } from '../../../../carbonio-ui-commons/test/mocks/utils/soap';
 import { screen, setupTest } from '../../../../carbonio-ui-commons/test/test-setup';
 import { API_REQUEST_STATUS } from '../../../../constants';
-import {
-	createSoapAPIInterceptorWithError,
-	generateConvMessageFromAPI,
-	generateMessagePartFromAPI
-} from '../../../../helpers/api';
 import * as visibleActionsCount from '../../../../hooks/use-visible-actions-count';
 import {
 	setSearchResultsByConversation,
 	updateConversationStatus,
 	setMessages
 } from '../../../../store/zustand/message-store/store';
+import { createSoapAPIInterceptorWithError } from '../../../../tests/generators/api';
 import { generateConversation } from '../../../../tests/generators/generateConversation';
 import { generateMessage } from '../../../../tests/generators/generateMessage';
 import { generateStore } from '../../../../tests/generators/store';

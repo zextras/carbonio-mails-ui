@@ -8,7 +8,7 @@ import { renderHook } from '@testing-library/react-hooks';
 
 import { createSoapAPIInterceptor } from '../../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { API_REQUEST_STATUS } from '../../../../constants';
-import { generateConvMessageFromAPI } from '../../../../helpers/api';
+import { generateConvMessageFromAPI } from '../../../../tests/generators/api';
 import { generateConversation } from '../../../../tests/generators/generateConversation';
 import { generateMessage } from '../../../../tests/generators/generateMessage';
 import { SearchConvRequest, SearchConvResponse } from '../../../../types';
