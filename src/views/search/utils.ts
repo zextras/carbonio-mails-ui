@@ -66,23 +66,6 @@ export function getChipItems(chips: Query | Array<ContactInputItem>, prefix: str
 	}));
 }
 
-/**
- * Takes a Folders object and returns an array of folder names (keys)
- * that have the `perm` property set to a truthy value.
- */
-export function getFoldersNameArray(folders: Folders): Array<string> {
-	return reduce(
-		folders,
-		(acc: Array<string>, value: Folder, key: string) => {
-			if (value.perm) {
-				acc.push(key);
-			}
-			return acc;
-		},
-		[]
-	);
-}
-
 export function updateQueryChips(
 	query: Array<QueryChip>,
 	isInvalidQuery: boolean,
