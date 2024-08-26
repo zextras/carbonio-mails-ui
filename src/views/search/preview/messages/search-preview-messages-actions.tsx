@@ -10,13 +10,13 @@ import { t } from '@zextras/carbonio-shell-ui';
 import { SearchMessagePreviewPanel } from './search-message-preview-panel';
 import { MessageActionsDescriptors } from '../../../../constants';
 import {
-	ConvActionReturnType,
 	ExtraWindowCreationParams,
 	ExtraWindowsContextType,
-	MessageAction
+	MessageAction,
+	MessageActionReturnType
 } from '../../../../types';
 
-const previewOnSeparatedWindow = (
+export const previewMessageOnSeparatedWindow = (
 	messageId: string,
 	subject: string,
 	createWindow: ExtraWindowsContextType['createWindow'],
@@ -41,14 +41,14 @@ export function previewMessageOnSeparatedWindowAction(
 	subject: string,
 	createWindow: ExtraWindowsContextType['createWindow'],
 	messageActions: Array<MessageAction>
-): ConvActionReturnType {
+): MessageActionReturnType {
 	const actDescriptor = MessageActionsDescriptors.PREVIEW_ON_SEPARATED_WINDOW;
 	return {
 		id: actDescriptor.id,
 		icon: 'ExternalLink',
 		label: t('action.preview_on_separated_tab', 'Open in a new tab'),
 		onClick: (): void => {
-			previewOnSeparatedWindow(messageId, subject, createWindow, messageActions);
+			previewMessageOnSeparatedWindow(messageId, subject, createWindow, messageActions);
 		}
 	};
 }

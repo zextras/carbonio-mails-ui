@@ -14,7 +14,7 @@ import { API_REQUEST_STATUS, EXTRA_WINDOW_ACTION_ID } from '../../../constants';
 import { useMessageActions } from '../../../hooks/use-message-actions';
 import { useSelection } from '../../../hooks/use-selection';
 import { useCompleteMessage } from '../../../store/zustand/search/hooks/hooks';
-import { AppContext, type MessageAction } from '../../../types';
+import { AppContext, MessageAction } from '../../../types';
 import { useMsgConvActions } from '../../../ui-actions/use-msg-conv-actions';
 import MailPreview from '../../app/detail-panel/preview/mail-preview';
 import { useExtraWindow } from '../../app/extra-windows/use-extra-window';

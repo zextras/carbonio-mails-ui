@@ -12,7 +12,7 @@ import {
 	ConvActionReturnType,
 	ExtraWindowCreationParams,
 	ExtraWindowsContextType,
-	type MessageAction
+	MessageAction
 } from '../types';
 import { MessagePreviewPanel } from '../views/app/detail-panel/message-preview-panel';
 
