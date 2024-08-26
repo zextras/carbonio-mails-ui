@@ -76,7 +76,7 @@ describe('Searches store hooks', () => {
 				offset: '',
 				orderBy: ''
 			};
-			// TODO: find a way to check API not called
+
 			createSoapAPIInterceptor<SearchConvRequest, SearchConvResponse>('SearchConv', response);
 
 			const { result, waitFor } = renderHook(() => useConversationStatus('123'));
@@ -123,7 +123,7 @@ describe('Searches store hooks', () => {
 			const response: GetMsgResponse = {
 				m: [generateCompleteMessageFromAPI({ id: '1' })]
 			};
-			// TODO: find a way to check API not called
+
 			createSoapAPIInterceptor<GetMsgRequest, GetMsgResponse>('GetMsg', response);
 
 			const { result, waitFor } = renderHook(() => useMessageStatus('1'));
