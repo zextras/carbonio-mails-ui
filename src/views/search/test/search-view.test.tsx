@@ -24,12 +24,14 @@ import * as search from '../../../store/actions/search';
 import {
 	setSearchResultsByConversation,
 	updateConversationStatus,
-	setMessages
+	setMessages,
+	useMessageById
 } from '../../../store/zustand/search/store';
 import { generateConversation } from '../../../tests/generators/generateConversation';
 import { generateMessage } from '../../../tests/generators/generateMessage';
 import { generateStore } from '../../../tests/generators/store';
 import {
+	MsgActionRequest,
 	SearchRequest,
 	SearchResponse,
 	SoapConversation,
@@ -37,6 +39,7 @@ import {
 	SoapMailMessage
 } from '../../../types';
 import SearchView from '../search-view';
+import { renderHook } from '@testing-library/react-hooks';
 
 function getSoapConversationMessage(messageId: string, conversationId: string): SoapMailMessage {
 	return {
@@ -345,6 +348,55 @@ describe('SearchView', () => {
 			await waitAndMakeMessageVisible('10');
 			expect(await screen.findByTestId('MessageListItem-10')).toBeInTheDocument();
 			expect(await screen.findByTestId('MessageListItem-11')).toBeInTheDocument();
+		});
+
+		it('should call MsgActionRequest with the correct parameters when user click on a message', async () => {
+			const store = generateStore();
+			const searchInterceptor = createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
+				m: [getSoapMessage('10', { su: 'message 1 Subject', f: 'u' })],
+				more: false
+			});
+			const msgActionInterceptor = createSoapAPIInterceptor<MsgActionRequest>('MsgAction');
+			const queryChip: QueryChip = {
+				hasAvatar: false,
+				id: '0',
+				label: 'ciao'
+			};
+			const customSettings: Partial<AccountSettings> = {
+				prefs: {
+					zimbraPrefGroupMailBy: 'message'
+				}
+			};
+			const settings = generateSettings(customSettings);
+			jest.spyOn(hooks, 'useUserSettings').mockReturnValue(settings);
+
+			const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
+			const searchViewProps: SearchViewProps = {
+				useQuery: () => [[queryChip], noop],
+				useDisableSearch: () => [false, noop],
+				ResultsHeader: resultsHeader
+			};
+			const { user } = setupTest(<SearchView {...searchViewProps} />, {
+				store
+			});
+			await act(async () => {
+				await searchInterceptor;
+			});
+
+			expect(await screen.findByText('label.results_for')).toBeInTheDocument();
+
+			await waitAndMakeMessageVisible('10');
+			const messageContainer = await screen.findByTestId(`MessageListItem-10`);
+			await act(async () => {
+				await user.hover(messageContainer);
+			});
+			const hoverContainer = await screen.findByTestId('hover-container-10');
+			act(() => {
+				user.click(hoverContainer);
+			});
+			const requestParameter = await msgActionInterceptor;
+
+			expect(requestParameter.action).toEqual({ id: '10', op: 'read' });
 		});
 	});
 
