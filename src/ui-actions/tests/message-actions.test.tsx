@@ -662,6 +662,40 @@ describe('Messages actions calls', () => {
 				expect(spyReplaceHistory).not.toBeCalled();
 			});
 		});
+
+		test('replace history if closeEditor and location does not start with /search', async () => {
+			setSearchResultsByMessage([generateMessage({ id: '1' })], false);
+			const store = generateStore();
+			(useLocation as jest.Mock).mockReturnValue({ pathname: '/mails/test' });
+			const spyReplaceHistory = jest.spyOn(hooks, 'replaceHistory');
+			const {
+				result: { current: moveMessageToTrash }
+			} = setupHook(useMoveMsgToTrash);
+			const action = moveMessageToTrash({
+				ids: ['1'],
+				dispatch: store.dispatch,
+				folderId: FOLDERS.TRASH,
+				closeEditor: true,
+				deselectAll: noop
+			});
+			const apiInterceptor = createSoapAPIInterceptor<MsgActionRequest, MsgActionResponse>(
+				'MsgAction',
+				{
+					action: {
+						id: 'test',
+						op: 'trash'
+					}
+				}
+			);
+			act(() => {
+				action.onClick();
+			});
+
+			await apiInterceptor;
+			await waitFor(() => {
+				expect(spyReplaceHistory).toBeCalledWith(`/folder/${FOLDERS.TRASH}`);
+			});
+		});
 	});
 
 	describe('Delete permanently action', () => {
