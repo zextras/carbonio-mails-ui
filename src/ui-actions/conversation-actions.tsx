@@ -7,11 +7,11 @@ import React, { useCallback } from 'react';
 
 import { replaceHistory, t } from '@zextras/carbonio-shell-ui';
 import { forEach, isArray, map } from 'lodash';
-import { useLocation } from 'react-router-dom';
 
 import DeleteConvConfirm from './delete-conv-modal';
 import { errorPage } from './error-page';
 import MoveConvMessage from './move-conv-msg';
+import { useInSearchModule } from './utils';
 import { getContentForPrint } from '../commons/print-conversation/print-conversation';
 import { ConversationActionsDescriptors } from '../constants';
 import { useUiUtilities } from '../hooks/use-ui-utilities';
@@ -44,9 +44,7 @@ export type ConvActionPropType = {
 	message: MailMessage;
 	disabled: boolean;
 };
-function isSearchModule(currentPath: string): boolean {
-	return currentPath.startsWith('/search');
-}
+
 export function setConversationsFlag({
 	ids,
 	value,
@@ -202,7 +200,7 @@ export function useConversationsRead(): ({
 	ConvActionPropType,
 	'ids' | 'dispatch' | 'value' | 'folderId' | 'shouldReplaceHistory' | 'deselectAll'
 >) => ConvActionReturnType {
-	const currentPath = useLocation().pathname;
+	const inSearchModule = useInSearchModule();
 	return ({
 		ids,
 		value,
@@ -216,7 +214,7 @@ export function useConversationsRead(): ({
 	>): ConvActionReturnType => {
 		const conditionalReplaceHistory = (): void => {
 			if (shouldReplaceHistory) {
-				isSearchModule(currentPath) ? replaceHistory(`/`) : replaceHistory(`/folder/${folderId}`);
+				inSearchModule ? replaceHistory(`/`) : replaceHistory(`/folder/${folderId}`);
 			}
 		};
 		return setConversationsRead({
@@ -335,7 +333,7 @@ export const useMoveConversationToTrash = (): ((
 	conversation: Pick<ConvActionPropType, 'ids' | 'dispatch' | 'deselectAll' | 'folderId'>
 ) => ConvActionReturnType) => {
 	const { createSnackbar } = useUiUtilities();
-	const currentPath = useLocation().pathname;
+	const inSearchModule = useInSearchModule();
 
 	return useCallback(
 		({ ids, dispatch, deselectAll, folderId }) => {
@@ -355,7 +353,7 @@ export const useMoveConversationToTrash = (): ((
 						).then((res) => {
 							if (res.type.includes('fulfilled')) {
 								deselectAll?.();
-								if (!isSearchModule(currentPath)) {
+								if (!inSearchModule) {
 									replaceHistory(`/folder/${folderId}/conversation/${ids[0]}`);
 								}
 								createSnackbar({
@@ -390,7 +388,7 @@ export const useMoveConversationToTrash = (): ((
 						if (res.type.includes('fulfilled')) {
 							deselectAll?.();
 							// TOFIX: putting the logic here is a bad choice, when possible create a specific action for the search
-							if (!isSearchModule(currentPath)) {
+							if (!inSearchModule) {
 								replaceHistory(`/folder/${folderId}/`);
 							}
 							createSnackbar({
@@ -416,7 +414,7 @@ export const useMoveConversationToTrash = (): ((
 				}
 			};
 		},
-		[createSnackbar, currentPath]
+		[createSnackbar, inSearchModule]
 	);
 };
 

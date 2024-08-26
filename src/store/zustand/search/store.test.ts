@@ -24,7 +24,9 @@ import {
 	getSearchResultsLoadingStatus,
 	updateSearchResultsLoadingStatus,
 	deleteConversations,
-	useSearchResults
+	useSearchResults,
+	updateMessageStatus,
+	useMessageStatus
 } from './store';
 import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
 import { API_REQUEST_STATUS } from '../../../constants';
@@ -160,6 +162,14 @@ describe('message store', () => {
 			const { result } = renderHook(() => useMessageById('1'));
 
 			expect(result.current).toEqual(message);
+		});
+
+		it('should set and get message status if value present', () => {
+			updateMessageStatus('1', API_REQUEST_STATUS.fulfilled);
+
+			const { result } = renderHook(() => useMessageStatus('1'));
+
+			expect(result.current).toBe(API_REQUEST_STATUS.fulfilled);
 		});
 
 		it('should not unset fields on message', () => {

@@ -12,13 +12,15 @@ import {
 } from '../carbonio-ui-commons/constants/participants';
 import { getFolder } from '../carbonio-ui-commons/store/zustand/folder/hooks';
 import { useFolderStore } from '../carbonio-ui-commons/store/zustand/folder/store';
-import type {
+import {
 	AttachmentPart,
 	IncompleteMessage,
+	MailMessage,
 	MailMessagePart,
 	Participant,
 	SoapEmailParticipantRole,
 	SoapIncompleteMessage,
+	SoapMailMessage,
 	SoapMailMessagePart,
 	SoapMailParticipant
 } from '../types';
@@ -361,3 +363,6 @@ export const normalizeMailMessageFromSoap = (
 		isNil
 	);
 };
+
+export const normalizeCompleteMailMessageFromSoap = (m: SoapMailMessage): MailMessage =>
+	normalizeMailMessageFromSoap(m, true);

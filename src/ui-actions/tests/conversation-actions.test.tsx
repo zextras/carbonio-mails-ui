@@ -793,7 +793,6 @@ describe('Conversation actions calls', () => {
 		});
 
 		test('do not replace history if in /search', async () => {
-			populateFoldersStore({ view: FOLDER_VIEW.message });
 			setSearchResultsByConversation([generateConversation({ id: '1' })], false);
 			const store = generateStore();
 			const spyReplaceHistory = jest.spyOn(hooks, 'replaceHistory');

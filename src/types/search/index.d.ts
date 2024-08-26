@@ -250,6 +250,7 @@ export type SearchSliceState = {
 export type PopulatedItemsSliceState = {
 	populatedItems: {
 		messages: Record<string, MailMessage | IncompleteMessage>;
+		messagesStatus: Record<string, SearchRequestStatus>;
 		conversations: Record<string, NormalizedConversation>;
 		conversationsStatus: Record<string, SearchRequestStatus>;
 	};

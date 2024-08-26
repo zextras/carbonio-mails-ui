@@ -7,18 +7,17 @@ import React from 'react';
 
 import { t } from '@zextras/carbonio-shell-ui';
 
-import { MessageActionsDescriptors } from '../constants';
+import { SearchMessagePreviewPanel } from './search-message-preview-panel';
+import { MessageActionsDescriptors } from '../../../../constants';
 import {
-	ConvActionReturnType,
 	ExtraWindowCreationParams,
 	ExtraWindowsContextType,
-	MessageAction
-} from '../types';
-import { MessagePreviewPanel } from '../views/app/detail-panel/message-preview-panel';
+	MessageAction,
+	MessageActionReturnType
+} from '../../../../types';
 
-export const previewOnSeparatedWindow = (
+export const previewMessageOnSeparatedWindow = (
 	messageId: string,
-	folderId: string,
 	subject: string,
 	createWindow: ExtraWindowsContextType['createWindow'],
 	messageActions: Array<MessageAction>
@@ -30,33 +29,26 @@ export const previewOnSeparatedWindow = (
 	const createWindowParams: ExtraWindowCreationParams = {
 		name: `message-${messageId}`,
 		returnComponent: false,
-		children: (
-			<MessagePreviewPanel
-				messageId={messageId}
-				folderId={folderId}
-				messageActions={messageActions}
-			/>
-		),
+		children: <SearchMessagePreviewPanel messageId={messageId} messageActions={messageActions} />,
 		title: subject,
 		closeOnUnmount: false
 	};
 	createWindow(createWindowParams);
 };
 
-export function previewMessageOnSeparatedWindow(
+export function previewMessageOnSeparatedWindowAction(
 	messageId: string,
-	folderId: string,
 	subject: string,
 	createWindow: ExtraWindowsContextType['createWindow'],
 	messageActions: Array<MessageAction>
-): ConvActionReturnType {
+): MessageActionReturnType {
 	const actDescriptor = MessageActionsDescriptors.PREVIEW_ON_SEPARATED_WINDOW;
 	return {
 		id: actDescriptor.id,
 		icon: 'ExternalLink',
 		label: t('action.preview_on_separated_tab', 'Open in a new tab'),
 		onClick: (): void => {
-			previewOnSeparatedWindow(messageId, folderId, subject, createWindow, messageActions);
+			previewMessageOnSeparatedWindow(messageId, subject, createWindow, messageActions);
 		}
 	};
 }
