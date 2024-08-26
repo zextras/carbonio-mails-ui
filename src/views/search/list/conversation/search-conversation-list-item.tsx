@@ -254,7 +254,8 @@ export const SearchConversationListItem: FC<SearchConversationListItemProps> = (
 									<Badge
 										data-testid={`conversation-messages-count-${conversationId}`}
 										value={badgeTotalConversationMessages()}
-										type={textReadValues.badge}
+										backgroundColor={textReadValues.badge === 'read' ? 'gray2' : 'primary'}
+										color={textReadValues.badge === 'read' ? 'gray0' : 'gray6'}
 									/>
 								</Padding>
 							</Row>
