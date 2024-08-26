@@ -151,10 +151,6 @@ export function unSetMultipleConversationsFlag({
 	};
 }
 
-// TODO: find a way to reuse the method without changing history.
-//  The search module noes not require it, but we are forced to pass a folderId just because the replace history needs it.
-//  Consider using a callback/supplier
-
 type SetConversationReadParameters = {
 	ids: ConvActionIdsType;
 	dispatch: AppDispatch;
@@ -393,7 +389,7 @@ export const useMoveConversationToTrash = (): ((
 					).then((res) => {
 						if (res.type.includes('fulfilled')) {
 							deselectAll?.();
-							// TODO: putting the logic here is a bad choice, when possible create a specific action for the search
+							// TOFIX: putting the logic here is a bad choice, when possible create a specific action for the search
 							if (!isSearchModule(currentPath)) {
 								replaceHistory(`/folder/${folderId}/`);
 							}

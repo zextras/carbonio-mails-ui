@@ -16,7 +16,6 @@ import {
 } from '@zextras/carbonio-design-system';
 import {
 	Tag,
-	ZIMBRA_STANDARD_COLORS,
 	replaceHistory,
 	t,
 	useTags,
@@ -26,6 +25,7 @@ import {
 import { find, includes, isEmpty, noop, reduce } from 'lodash';
 import moment from 'moment';
 
+import { ZIMBRA_STANDARD_COLORS } from '../../../../carbonio-ui-commons/constants';
 import { useFolder } from '../../../../carbonio-ui-commons/store/zustand/folder';
 import { getTimeLabel, participantToString } from '../../../../commons/utils';
 import { EditViewActions } from '../../../../constants';
@@ -74,33 +74,30 @@ export const SearchMessageListItem: FC<SearchMessageListItemProps> = memo(functi
 
 	const onClick = useCallback(
 		(e) => {
-			if (!e.isDefaultPrevented()) {
-				if (completeMessage.read === false && zimbraPrefMarkMsgRead) {
-					setMsgRead({ ids: [completeMessage.id], value: false, dispatch }).onClick(e);
-				}
-				replaceHistory(`/message/${completeMessage.id}`);
+			if (e.isDefaultPrevented()) {
+				return;
 			}
+			if (completeMessage.read === false && zimbraPrefMarkMsgRead) {
+				setMsgRead({ ids: [completeMessage.id], value: false, dispatch }).onClick(e);
+			}
+			replaceHistory(`/message/${completeMessage.id}`);
 		},
 		[completeMessage.read, completeMessage.id, zimbraPrefMarkMsgRead, dispatch]
 	);
 	const onDoubleClick = useCallback(
 		(e) => {
-			if (!e.isDefaultPrevented()) {
-				const { id, isDraft } = completeMessage;
-				if (isDraft) {
-					createEditBoard({
-						action: EditViewActions.EDIT_AS_DRAFT,
-						actionTargetId: id
-					});
-				} else {
-					previewMessageOnSeparatedWindow(
-						id,
-						completeMessage.subject,
-						createWindow,
-						messageActions
-					);
-				}
+			if (e.isDefaultPrevented()) {
+				return;
 			}
+			const { id, isDraft } = completeMessage;
+			if (isDraft) {
+				createEditBoard({
+					action: EditViewActions.EDIT_AS_DRAFT,
+					actionTargetId: id
+				});
+				return;
+			}
+			previewMessageOnSeparatedWindow(id, completeMessage.subject, createWindow, messageActions);
 		},
 		[createWindow, completeMessage, messageActions]
 	);
@@ -348,18 +345,17 @@ export const SearchMessageListItem: FC<SearchMessageListItemProps> = memo(functi
 									</Text>
 								</Tooltip>
 							)}
-							{((messageFolder && messageFolder.id !== folderId) || isSearchModule) && (
-								<Padding left="small">
-									<Badge
-										data-testid="FolderBadge"
-										value={getFolderTranslatedName({
-											folderId,
-											folderName: messageFolder?.name ?? ''
-										})}
-										type={textReadValues.badge}
-									/>
-								</Padding>
-							)}
+							<Padding left="small">
+								<Badge
+									data-testid="FolderBadge"
+									value={getFolderTranslatedName({
+										folderId,
+										folderName: messageFolder?.name ?? ''
+									})}
+									backgroundColor={textReadValues.badge === 'read' ? 'gray2' : 'primary'}
+									color={textReadValues.badge === 'read' ? 'gray0' : 'gray6'}
+								/>
+							</Padding>
 						</Row>
 					</Container>
 				</Row>

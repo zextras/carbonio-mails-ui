@@ -6,10 +6,10 @@
 import React, { FC, useCallback, useMemo } from 'react';
 
 import {
+	Button,
 	Container,
 	Divider,
 	Icon,
-	IconButton,
 	Row,
 	Text,
 	Tooltip
@@ -24,7 +24,7 @@ export const SearchPreviewPanelHeader: FC<{
 	const replaceHistoryCallback = useCallback(() => replaceHistory(`/`), []);
 
 	const subject = useMemo(
-		() => item?.subject || t('label.no_subject_with_tags', '<No Subject>'),
+		() => item?.subject ?? t('label.no_subject_with_tags', '<No Subject>'),
 		[item?.subject]
 	);
 	return (
@@ -55,14 +55,15 @@ export const SearchPreviewPanelHeader: FC<{
 						</Text>
 					</Tooltip>
 				</Row>
-				<IconButton
+				<Button
 					data-testid="PreviewPanelCloseIcon"
 					icon="CloseOutline"
 					onClick={replaceHistoryCallback}
-					customSize={{
-						iconSize: 'large',
-						paddingSize: 'small'
-					}}
+					size="extralarge"
+					shape="regular"
+					type="default"
+					labelColor="text"
+					backgroundColor="transparent"
 				/>
 			</Container>
 			<Divider />

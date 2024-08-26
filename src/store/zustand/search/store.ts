@@ -129,13 +129,12 @@ export function appendConversations(
 	);
 }
 
-// TODO: rename me
 export function updateConversationsOnly(conversations: Array<NormalizedConversation>): void {
 	useMessageStore.setState(
-		produce((state: MessageStoreState) => {
+		produce(({ populatedItems }: PopulatedItemsSliceState) => {
 			conversations.forEach((conversation) => {
-				state.populatedItems.conversations[conversation.id] = merge(
-					state.populatedItems.conversations[conversation.id],
+				populatedItems.conversations[conversation.id] = merge(
+					populatedItems.conversations[conversation.id],
 					conversation
 				);
 			});
@@ -155,15 +154,11 @@ export function deleteConversations(ids: Array<string>): void {
 	);
 }
 
-// TODO: rename me (find a better name)
 export function updateMessagesOnly(messages: Array<IncompleteMessage>): void {
 	useMessageStore.setState(
-		produce((state: MessageStoreState) => {
+		produce(({ populatedItems }: PopulatedItemsSliceState) => {
 			messages.forEach((message) => {
-				state.populatedItems.messages[message.id] = merge(
-					state.populatedItems.messages[message.id],
-					message
-				);
+				populatedItems.messages[message.id] = merge(populatedItems.messages[message.id], message);
 			});
 		})
 	);
