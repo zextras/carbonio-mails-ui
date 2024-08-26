@@ -52,6 +52,8 @@ const AppView: FC = () => {
 		requestServiceCatalog().then((res) => {
 			if (!isNil(res)) {
 				setCatalog(res);
+			} else {
+				setCatalog([]);
 			}
 		});
 	}, []);

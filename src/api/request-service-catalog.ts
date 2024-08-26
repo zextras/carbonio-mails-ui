@@ -7,7 +7,9 @@
 import { ServicesCatalog } from '../types';
 
 export const requestServiceCatalog = (): Promise<ServicesCatalog> =>
-	fetch('/services/catalog/services').then(async (data) => {
-		const { items } = await data.json();
-		return items;
-	});
+	fetch('/services/catalog/services')
+		.then(async (data) => {
+			const { items } = await data.json();
+			return items;
+		})
+		.catch(() => []);
