@@ -3,10 +3,14 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import { MessageActionsDescriptors } from '../../../../../constants';
 import { setSearchResultsByMessage } from '../../../../../store/zustand/search/store';
 import { generateMessage } from '../../../../../tests/generators/generateMessage';
 import { ExtraWindowCreationParams, ExtraWindowsCreationResult } from '../../../../../types';
-import { previewMessageOnSeparatedWindow } from '../search-preview-messages-actions';
+import {
+	previewMessageOnSeparatedWindow,
+	previewMessageOnSeparatedWindowAction
+} from '../search-preview-messages-actions';
 
 describe('Preview message on new window', () => {
 	it('should call create window with correct parameters', () => {
@@ -24,5 +28,11 @@ describe('Preview message on new window', () => {
 		expect(spyParams.closeOnUnmount).toBe(false);
 		expect(spyParams.returnComponent).toBe(false);
 		// NOTE: we can also test the UI by using spyParams.children
+	});
+
+	it('should return an action with id "preview on separate window"', () => {
+		const result = previewMessageOnSeparatedWindowAction('1', '', jest.fn(), []);
+
+		expect(result.id).toBe(MessageActionsDescriptors.PREVIEW_ON_SEPARATED_WINDOW.id);
 	});
 });
