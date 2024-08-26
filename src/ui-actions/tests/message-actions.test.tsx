@@ -560,6 +560,7 @@ describe('Messages actions calls', () => {
 	describe('Move to trash action', () => {
 		test('Single id', async () => {
 			populateFoldersStore({ view: FOLDER_VIEW.message });
+			(useLocation as jest.Mock).mockReturnValue({ pathname: '/test' });
 			const msg = generateMessage({});
 			const store = generateStore({
 				messages: {
@@ -594,6 +595,7 @@ describe('Messages actions calls', () => {
 
 		test('Multiple ids', async () => {
 			populateFoldersStore({ view: FOLDER_VIEW.message });
+			(useLocation as jest.Mock).mockReturnValue({ pathname: '/test' });
 			const msgs: Array<MailMessage> = times(10, () => generateMessage({}));
 			const store = generateStore({
 				messages: {
