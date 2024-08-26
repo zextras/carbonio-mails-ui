@@ -385,6 +385,7 @@ const useRestoreMessage = (): ((
 export const useMoveMsgToTrash = (): ((arg: MessageActionPropType) => MessageActionReturnType) => {
 	const { createSnackbar } = useUiUtilities();
 	const restoreMessage = useRestoreMessage();
+	const currentPath = useLocation().pathname;
 	return useCallback(
 		({ ids, dispatch, deselectAll, folderId = FOLDERS.INBOX, conversationId, closeEditor }) => {
 			const actDescriptor = MessageActionsDescriptors.MOVE_TO_TRASH;
@@ -404,7 +405,9 @@ export const useMoveMsgToTrash = (): ((arg: MessageActionPropType) => MessageAct
 					).then((res) => {
 						if (res.type.includes('fulfilled')) {
 							deselectAll && deselectAll();
-							closeEditor && replaceHistory(`/folder/${folderId}`);
+							if (!isSearchModule(currentPath)) {
+								closeEditor && replaceHistory(`/folder/${folderId}`);
+							}
 							createSnackbar({
 								key: `trash-${ids}`,
 								replace: true,

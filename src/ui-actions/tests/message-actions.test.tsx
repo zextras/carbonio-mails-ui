@@ -6,9 +6,11 @@
 import React from 'react';
 
 import { faker } from '@faker-js/faker';
-import { act, screen, within } from '@testing-library/react';
+import { act, screen, waitFor, within } from '@testing-library/react';
+import * as hooks from '@zextras/carbonio-shell-ui';
 import { addBoard } from '@zextras/carbonio-shell-ui';
-import { times } from 'lodash';
+import { noop, times } from 'lodash';
+import { useLocation } from 'react-router-dom';
 
 import { FOLDER_VIEW } from '../../carbonio-ui-commons/constants';
 import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
@@ -26,6 +28,7 @@ import {
 import { API_REQUEST_STATUS, TIMEOUTS } from '../../constants';
 import { useUiUtilities } from '../../hooks/use-ui-utilities';
 import * as getMsgsForPrint from '../../store/actions/get-msg-for-print';
+import { setSearchResultsByMessage } from '../../store/zustand/search/store';
 import { generateMessage } from '../../tests/generators/generateMessage';
 import { generateStore } from '../../tests/generators/store';
 import {
@@ -60,6 +63,11 @@ jest.mock<typeof import('../../hooks/use-ui-utilities')>('../../hooks/use-ui-uti
 		createModal: jest.fn(),
 		closeModal: jest.fn()
 	})
+}));
+
+jest.mock('react-router-dom', () => ({
+	...jest.requireActual('react-router-dom'),
+	useLocation: jest.fn()
 }));
 
 describe('Messages actions calls', () => {
@@ -620,6 +628,39 @@ describe('Messages actions calls', () => {
 			expect(requestParameter.action.l).toBeUndefined();
 			expect(requestParameter.action.f).toBeUndefined();
 			expect(requestParameter.action.tn).toBeUndefined();
+		});
+
+		test('do not replace history if in /search', async () => {
+			setSearchResultsByMessage([generateMessage({ id: '1' })], false);
+			const store = generateStore();
+			const spyReplaceHistory = jest.spyOn(hooks, 'replaceHistory');
+			(useLocation as jest.Mock).mockReturnValue({ pathname: '/search/test' });
+			const {
+				result: { current: moveMessageToTrash }
+			} = setupHook(useMoveMsgToTrash);
+			const action = moveMessageToTrash({
+				ids: ['1'],
+				dispatch: store.dispatch,
+				folderId: FOLDERS.INBOX,
+				deselectAll: noop
+			});
+			const apiInterceptor = createSoapAPIInterceptor<MsgActionRequest, MsgActionResponse>(
+				'MsgAction',
+				{
+					action: {
+						id: 'test',
+						op: 'trash'
+					}
+				}
+			);
+			act(() => {
+				action.onClick();
+			});
+
+			await apiInterceptor;
+			await waitFor(() => {
+				expect(spyReplaceHistory).not.toBeCalled();
+			});
 		});
 	});
 
