@@ -9,12 +9,12 @@ import { AsyncThunkAction, Dispatch } from '@reduxjs/toolkit';
 import { Text, useSnackbar } from '@zextras/carbonio-design-system';
 import { t, replaceHistory, useIntegratedFunction } from '@zextras/carbonio-shell-ui';
 import { isNull, map, noop } from 'lodash';
-import { useLocation } from 'react-router-dom';
 
 import DeleteConvConfirm from './delete-conv-modal';
 import { errorPage } from './error-page';
 import MoveConvMessage from './move-conv-msg';
 import RedirectAction from './redirect-message-action';
+import { useInSearchModule } from './utils';
 import { FOLDERS } from '../carbonio-ui-commons/constants/folders';
 import { getRoot } from '../carbonio-ui-commons/store/zustand/folder';
 import { getContentForPrint } from '../commons/print-conversation/print-conversation';
@@ -53,11 +53,6 @@ type MessageActionPropType = {
 	isRestore?: boolean;
 	message?: MailMessage;
 };
-
-// TODO: consider exporting this as it is used also in conversation-actions
-function isSearchModule(currentPath: string): boolean {
-	return currentPath.startsWith('/search');
-}
 
 type SetMessagesReadParameters = {
 	ids: MessageActionIdsType;
@@ -110,7 +105,7 @@ export function useMessagesRead(): ({
 	shouldReplaceHistory,
 	deselectAll
 }: MessageActionPropType) => MessageActionReturnType {
-	const currentPath = useLocation().pathname;
+	const inSearchModule = useInSearchModule();
 	return ({
 		ids,
 		value,
@@ -122,7 +117,7 @@ export function useMessagesRead(): ({
 		// TODO: same logic is applied in conversation-actions, extract me!
 		const conditionalReplaceHistory = (): void => {
 			if (shouldReplaceHistory) {
-				isSearchModule(currentPath) ? replaceHistory(`/`) : replaceHistory(`/folder/${folderId}`);
+				inSearchModule ? replaceHistory(`/`) : replaceHistory(`/folder/${folderId}`);
 			}
 		};
 		return setMessagesRead({
@@ -385,7 +380,7 @@ const useRestoreMessage = (): ((
 export const useMoveMsgToTrash = (): ((arg: MessageActionPropType) => MessageActionReturnType) => {
 	const { createSnackbar } = useUiUtilities();
 	const restoreMessage = useRestoreMessage();
-	const currentPath = useLocation().pathname;
+	const inSearchModule = useInSearchModule();
 	return useCallback(
 		({ ids, dispatch, deselectAll, folderId = FOLDERS.INBOX, conversationId, closeEditor }) => {
 			const actDescriptor = MessageActionsDescriptors.MOVE_TO_TRASH;
@@ -405,7 +400,7 @@ export const useMoveMsgToTrash = (): ((arg: MessageActionPropType) => MessageAct
 					).then((res) => {
 						if (res.type.includes('fulfilled')) {
 							deselectAll && deselectAll();
-							if (!isSearchModule(currentPath)) {
+							if (!inSearchModule) {
 								closeEditor && replaceHistory(`/folder/${folderId}`);
 							}
 							createSnackbar({
@@ -433,7 +428,7 @@ export const useMoveMsgToTrash = (): ((arg: MessageActionPropType) => MessageAct
 				}
 			};
 		},
-		[createSnackbar, restoreMessage]
+		[createSnackbar, inSearchModule, restoreMessage]
 	);
 };
 

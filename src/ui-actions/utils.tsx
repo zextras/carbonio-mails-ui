@@ -5,8 +5,10 @@
  */
 
 import { CreateSnackbarFn } from '@zextras/carbonio-design-system';
+import { Pathname } from 'history';
 import { TFunction } from 'i18next';
 import { find, truncate } from 'lodash';
+import { useLocation } from 'react-router-dom';
 
 import { createSmartLinksSoapAPI } from '../store/actions/create-smart-links';
 import { useEditorsStore } from '../store/zustand/editor/store';
@@ -161,4 +163,13 @@ export async function updateEditorWithSmartLinks({
 		});
 		throw err;
 	}
+}
+
+export function useCurrentPath(): Pathname {
+	return useLocation().pathname;
+}
+
+// returns if in search module or not based on path
+export function useInSearchModule(): boolean {
+	return useCurrentPath().startsWith('/search');
 }
