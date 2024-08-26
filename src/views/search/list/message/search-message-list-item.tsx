@@ -16,7 +16,6 @@ import {
 } from '@zextras/carbonio-design-system';
 import {
 	Tag,
-	ZIMBRA_STANDARD_COLORS,
 	replaceHistory,
 	t,
 	useTags,
@@ -26,6 +25,7 @@ import {
 import { find, includes, isEmpty, noop, reduce } from 'lodash';
 import moment from 'moment';
 
+import { ZIMBRA_STANDARD_COLORS } from '../../../../carbonio-ui-commons/constants';
 import { useFolder } from '../../../../carbonio-ui-commons/store/zustand/folder';
 import { getTimeLabel, participantToString } from '../../../../commons/utils';
 import { EditViewActions } from '../../../../constants';

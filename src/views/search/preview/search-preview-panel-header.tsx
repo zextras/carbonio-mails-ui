@@ -24,7 +24,7 @@ export const SearchPreviewPanelHeader: FC<{
 	const replaceHistoryCallback = useCallback(() => replaceHistory(`/`), []);
 
 	const subject = useMemo(
-		() => item?.subject || t('label.no_subject_with_tags', '<No Subject>'),
+		() => item?.subject ?? t('label.no_subject_with_tags', '<No Subject>'),
 		[item?.subject]
 	);
 	return (

@@ -19,7 +19,6 @@ import {
 } from '@zextras/carbonio-design-system';
 import {
 	Tag,
-	ZIMBRA_STANDARD_COLORS,
 	pushHistory,
 	t,
 	useTags,
@@ -30,6 +29,7 @@ import { filter, forEach, includes, isEmpty, reduce, trimStart, uniqBy } from 'l
 import styled from 'styled-components';
 
 import { SearchConversationMessagesList } from './search-conversation-messages-list';
+import { ZIMBRA_STANDARD_COLORS } from '../../../../carbonio-ui-commons/constants';
 import { participantToString } from '../../../../commons/utils';
 import { API_REQUEST_STATUS } from '../../../../constants';
 import { useAppDispatch } from '../../../../hooks/redux';
@@ -87,9 +87,9 @@ export const SearchConversationListItem: FC<SearchConversationListItemProps> = (
 						if (includes(conversation.tags, v.id)) {
 							acc.push({
 								...v,
-								// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+								// eslint-disable-next-line
 								// @ts-ignore
-								color: ZIMBRA_STANDARD_COLORS[v.color || 0].hex
+								color: ZIMBRA_STANDARD_COLORS[v.color ?? 0].hex
 							});
 						} else if (conversation.tags?.length > 0 && !includes(conversation.tags, v.id)) {
 							forEach(
