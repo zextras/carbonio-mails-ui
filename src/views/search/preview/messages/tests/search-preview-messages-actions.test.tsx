@@ -37,11 +37,11 @@ describe('Preview message on new window', () => {
 	});
 
 	it('should call create window when calling onClick', () => {
-		const onClickAction = jest.fn();
-		const result = previewMessageOnSeparatedWindowAction('1', '', onClickAction, []);
+		const createWindow = jest.fn();
+		const result = previewMessageOnSeparatedWindowAction('1', '', createWindow, []);
 
 		result.onClick();
 
-		expect(onClickAction).toBeCalledTimes(1);
+		expect(createWindow).toBeCalledTimes(1);
 	});
 });
