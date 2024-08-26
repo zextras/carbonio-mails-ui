@@ -8,10 +8,10 @@ import React, { FC, useCallback, useMemo, useState } from 'react';
 
 import {
 	Badge,
+	Button,
 	Container,
 	ContainerProps,
 	Icon,
-	IconButton,
 	Padding,
 	Row,
 	Text,
@@ -282,9 +282,13 @@ export const SearchConversationListItem: FC<SearchConversationListItemProps> = (
 							)}
 							{conversation.messagesInConversation > 1 && (
 								<Tooltip label={toggleExpandButtonLabel}>
-									<IconButton
+									<Button
 										data-testid="ToggleExpand"
 										size="small"
+										shape="regular"
+										type="default"
+										labelColor="text"
+										backgroundColor="transparent"
 										icon={open ? 'ArrowIosUpward' : 'ArrowIosDownward'}
 										onClick={expandConversation}
 									/>
