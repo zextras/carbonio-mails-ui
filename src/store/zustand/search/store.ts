@@ -154,6 +154,18 @@ export function deleteConversations(ids: Array<string>): void {
 	);
 }
 
+export function deleteMessages(ids: Array<string>): void {
+	enableMapSet();
+	useMessageStore.setState(
+		produce((state: MessageStoreState) => {
+			ids.forEach((id) => {
+				state.search.messageIds.delete(id);
+				delete state.populatedItems.messages[id];
+			});
+		})
+	);
+}
+
 export function updateMessagesOnly(messages: Array<IncompleteMessage>): void {
 	useMessageStore.setState(
 		produce(({ populatedItems }: PopulatedItemsSliceState) => {
