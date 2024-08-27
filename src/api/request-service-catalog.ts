@@ -8,9 +8,13 @@ import { ServicesCatalog } from '../types';
 
 export const requestServiceCatalog = (): Promise<ServicesCatalog> =>
 	fetch('/services/catalog/services')
-		.then(async (data) => {
-			const { items } = await data.json();
-			return items;
+		.then(async (response) => {
+			if (response.ok) {
+				const { items } = await response.json();
+				return items;
+			}
+			console.error('Error fetching services catalog', response);
+			return [];
 		})
 		.catch((e) => {
 			console.error('Error fetching services catalog', e);
