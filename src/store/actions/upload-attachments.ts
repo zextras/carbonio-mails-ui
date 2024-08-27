@@ -53,7 +53,7 @@ export const uploadAttachment = (
 	const abortController = new AbortController();
 
 	axios
-		.post('/service/upload?fmt=extended,raw', file, {
+		.post('/service/upload?fmt=extended,raw&lbfums', file, {
 			headers: {
 				'Cache-Control': 'no-cache',
 				'X-Requested-With': 'XMLHttpRequest',

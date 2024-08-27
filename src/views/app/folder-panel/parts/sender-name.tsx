@@ -6,9 +6,10 @@
 import React, { FC, useMemo } from 'react';
 
 import { Padding, Row, Text, Tooltip } from '@zextras/carbonio-design-system';
-import { FOLDERS, t, useUserAccount } from '@zextras/carbonio-shell-ui';
+import { t, useUserAccount } from '@zextras/carbonio-shell-ui';
 import { filter, findIndex, reduce, trimStart, uniqBy } from 'lodash';
 
+import { FOLDERS } from '../../../../carbonio-ui-commons/constants/folders';
 import { ParticipantRole } from '../../../../carbonio-ui-commons/constants/participants';
 import { participantToString } from '../../../../commons/utils';
 import { getFolderIdParts } from '../../../../helpers/folders';

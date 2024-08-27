@@ -3,24 +3,19 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { Account, t } from '@zextras/carbonio-shell-ui';
+import { Account, getUserSettings, t } from '@zextras/carbonio-shell-ui';
 import { find, isArray } from 'lodash';
 import moment from 'moment';
 
 import type { Participant } from '../types';
 
 export const getTimeLabel = (date: number): string => {
-	const momentDate = moment(date);
+	const { zimbraPrefLocale = 'en' } = getUserSettings().prefs;
+	const momentDate = moment(date).locale(zimbraPrefLocale);
 	if (momentDate.isSame(new Date(), 'day')) {
 		return momentDate.format('LT');
 	}
-	if (momentDate.isSame(new Date(), 'week')) {
-		return momentDate.format('dddd, LT');
-	}
-	if (momentDate.isSame(new Date(), 'month')) {
-		return momentDate.format('DD MMMM');
-	}
-	return momentDate.format('DD/MM/YYYY');
+	return momentDate.format('L LT');
 };
 
 export const participantToString = (

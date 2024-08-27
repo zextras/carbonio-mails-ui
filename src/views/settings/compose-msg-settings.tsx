@@ -8,19 +8,14 @@ import React, { FC, useCallback, useMemo, useState } from 'react';
 
 import { Container, FormSubSection, RadioGroup, Radio } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
+import { map } from 'lodash';
 
 import Heading from './components/settings-heading';
 import { getFontSizesOptions, findLabel, getFonts } from './components/utils';
 import CustomSelect from './filters/parts/custom-select';
 import { composingMsgSubSection } from './subsections';
 import { ColorPicker } from '../../commons/color-picker';
-
-type UpdateSettingsProps = {
-	target: {
-		name: string;
-		value: string;
-	};
-};
+import { UpdateSettingsProps } from '../../types';
 
 type ComposeMessagesProps = {
 	settingsObj: Record<string, string>;
@@ -36,6 +31,11 @@ const ComposeMessage: FC<ComposeMessagesProps> = ({ settingsObj, updateSettings 
 	const fontSizesOptions = useMemo(() => getFontSizesOptions(), []);
 	const fontsOptions = useMemo(() => getFonts(), []);
 
+	const fontSizesOptionsArray = map(fontSizesOptions, (value) => ({
+		label: value,
+		value
+	}));
+
 	const onColorChange = useCallback(
 		(value) => {
 			setColor(value);
@@ -46,10 +46,10 @@ const ComposeMessage: FC<ComposeMessagesProps> = ({ settingsObj, updateSettings 
 
 	const defaultSelectionFontSize = useMemo(
 		() => ({
-			label: findLabel(fontSizesOptions, settingsObj.zimbraPrefHtmlEditorDefaultFontSize),
+			label: settingsObj.zimbraPrefHtmlEditorDefaultFontSize,
 			value: settingsObj.zimbraPrefHtmlEditorDefaultFontSize
 		}),
-		[fontSizesOptions, settingsObj.zimbraPrefHtmlEditorDefaultFontSize]
+		[settingsObj.zimbraPrefHtmlEditorDefaultFontSize]
 	);
 
 	const defaultSelectionFont = useMemo(
@@ -114,7 +114,7 @@ const ComposeMessage: FC<ComposeMessagesProps> = ({ settingsObj, updateSettings 
 
 						<Container padding={{ right: 'small' }} minWidth="6.25rem">
 							<CustomSelect
-								items={fontSizesOptions}
+								items={fontSizesOptionsArray}
 								background="gray5"
 								label={t('label.size', 'Size')}
 								defaultSelection={defaultSelectionFontSize}

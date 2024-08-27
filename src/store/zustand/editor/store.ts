@@ -362,5 +362,14 @@ export const useEditorsStore = create<EditorsStateTypeV2>()((set) => ({
 				}
 			})
 		);
+	},
+	setSignatureId: (id: MailsEditorV2['id'], signId: MailsEditorV2['signatureId']): void => {
+		set(
+			produce((state: EditorsStateTypeV2) => {
+				if (state?.editors?.[id]) {
+					state.editors[id].signatureId = signId;
+				}
+			})
+		);
 	}
 }));

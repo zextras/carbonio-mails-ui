@@ -7,8 +7,8 @@ import React from 'react';
 
 import { faker } from '@faker-js/faker';
 import { act, screen, within } from '@testing-library/react';
-import { FOLDERS } from '@zextras/carbonio-shell-ui';
 
+import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
 import { getFolder } from '../../../carbonio-ui-commons/store/zustand/folder';
 import { populateFoldersStore } from '../../../carbonio-ui-commons/test/mocks/store/folders';
 import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
@@ -260,7 +260,10 @@ describe('edit-permissions-modal', () => {
 			await user.click(roleSelector);
 			const roleItem = within(roleSelector).getByText('share.options.share_calendar_role.viewer');
 			await user.click(roleItem);
-			await user.type(userInput, viewer);
+
+			await act(async () => {
+				await user.type(userInput, viewer);
+			});
 			await user.tab();
 
 			const shareFolderMock = jest.spyOn(shareFolderModule, 'shareFolder');

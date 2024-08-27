@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React, { memo, useCallback, useImperativeHandle, useMemo, useState } from 'react';
+import React, { memo, useCallback, useEffect, useImperativeHandle, useMemo, useState } from 'react';
 
 import {
 	Button,
@@ -14,14 +14,16 @@ import {
 	useSnackbar,
 	useModal
 } from '@zextras/carbonio-design-system';
-import { addBoard, t } from '@zextras/carbonio-shell-ui';
+import { t } from '@zextras/carbonio-shell-ui';
 import { filter, map } from 'lodash';
 import type { TinyMCE } from 'tinymce/tinymce';
 
 import { checkSubjectAndAttachment } from './check-subject-attachment';
 import DropZoneAttachment from './dropzone-attachment';
 import { EditAttachmentsBlock } from './edit-attachments-block';
+import { createEditBoard } from './edit-view-board';
 import { AddAttachmentsDropdown } from './parts/add-attachments-dropdown';
+import { ChangeSignaturesDropdown } from './parts/change-signatures-dropdown';
 import { useKeepOrDiscardDraft } from './parts/delete-draft';
 import { EditViewDraftSaveInfo } from './parts/edit-view-draft-save-info';
 import { EditViewIdentitySelector } from './parts/edit-view-identity-selector';
@@ -33,12 +35,7 @@ import { SubjectRow } from './parts/subject-row';
 import { TextEditorContainer } from './parts/text-editor-container';
 import { WarningBanner } from './parts/warning-banner';
 import { GapContainer, GapRow } from '../../../../commons/gap-container';
-import {
-	EDIT_VIEW_CLOSING_REASONS,
-	EditViewActions,
-	MAILS_ROUTE,
-	TIMEOUTS
-} from '../../../../constants';
+import { EDIT_VIEW_CLOSING_REASONS, EditViewActions, TIMEOUTS } from '../../../../constants';
 import { buildArrayFromFileList } from '../../../../helpers/files';
 import { getAvailableAddresses, getIdentitiesDescriptors } from '../../../../helpers/identities';
 import {
@@ -51,7 +48,7 @@ import {
 	useEditorDid,
 	useEditorsStore
 } from '../../../../store/zustand/editor';
-import { BoardContext, EditViewClosingReasons } from '../../../../types';
+import { EditViewClosingReasons } from '../../../../types';
 import { updateEditorWithSmartLinks } from '../../../../ui-actions/utils';
 
 export type EditViewProp = {
@@ -71,6 +68,7 @@ const MemoizedTextEditorContainer = memo(TextEditorContainer);
 const MemoizedRecipientsRows = memo(RecipientsRows);
 const MemoizedSubjectRow = memo(SubjectRow);
 const MemoizedOptionsDropdown = memo(OptionsDropdown);
+const MemoizedChangeSignaturesDropdown = memo(ChangeSignaturesDropdown);
 const MemoizedAddAttachmentsDropdown = memo(AddAttachmentsDropdown);
 const MemoizedEditViewIdentitySelector = memo(EditViewIdentitySelector);
 
@@ -121,6 +119,11 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 	const [isMailSizeWarning, setIsMailSizeWarning] = useState<boolean>(false);
 	const { status: saveDraftAllowedStatus, saveDraft } = useEditorDraftSave(editorId);
 	const { did: draftId } = useEditorDid(editorId);
+
+	useEffect(() => {
+		if (!draftId) saveDraft();
+	}, [draftId, saveDraft]);
+
 	const { status: sendAllowedStatus, send: sendMessage } = useEditorSend(editorId);
 	const draftSaveProcessStatus = useEditorDraftSaveProcessStatus(editorId);
 	const createSnackbar = useSnackbar();
@@ -180,10 +183,9 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 				actionLabel: t('label.undo', 'Undo'),
 				onActionClick: () => {
 					cancel();
-					// TODO move outside the component (editor-utils or a new help module?)
-					addBoard<BoardContext>({
-						url: `${MAILS_ROUTE}/edit?action=${EditViewActions.RESUME}&id=${editorId}`,
-						title: ''
+					createEditBoard({
+						action: EditViewActions.RESUME,
+						actionTargetId: editorId
 					});
 				}
 			});
@@ -200,10 +202,9 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 			autoHideTimeout: TIMEOUTS.SNACKBAR_DEFAULT_TIMEOUT,
 			hideButton: true
 		});
-		// TODO move outside the component (editor-utils or a new help module?)
-		addBoard<BoardContext>({
-			url: `${MAILS_ROUTE}/edit?action=${EditViewActions.RESUME}&id=${editorId}`,
-			title: ''
+		createEditBoard({
+			action: EditViewActions.RESUME,
+			actionTargetId: editorId
 		});
 	}, [createSnackbar, editorId]);
 
@@ -219,7 +220,7 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 		deleteEditor({ id: editorId });
 	}, [createSnackbar, editorId]);
 
-	const createModal = useModal();
+	const { createModal, closeModal } = useModal();
 
 	const showIdentitySelector = useMemo<boolean>(() => getIdentitiesDescriptors().length > 1, []);
 
@@ -311,13 +312,15 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 			editorId,
 			hasAttachments: savedStandardAttachments.length > 0,
 			onConfirmCallback,
-			createModal
+			createModal,
+			closeModal
 		});
 	}, [
 		editorId,
 		savedStandardAttachments,
 		close,
 		createModal,
+		closeModal,
 		draftSmartLinks.length,
 		sendMessage,
 		onSendCountdownTick,
@@ -345,12 +348,14 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 				editorId,
 				onConfirmCallback,
 				createModal,
+				closeModal,
 				hasAttachments: savedStandardAttachments.length > 0
 			});
 		},
 		[
 			editorId,
 			createModal,
+			closeModal,
 			savedStandardAttachments,
 			draftSmartLinks.length,
 			setAutoSendTime,
@@ -389,6 +394,7 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 
 					<GapRow mainAlignment={'flex-end'} gap={'medium'}>
 						<MemoizedAddAttachmentsDropdown editorId={editorId} />
+						<MemoizedChangeSignaturesDropdown editorId={editorId} />
 						<MemoizedOptionsDropdown editorId={editorId} />
 						<Tooltip
 							label={saveDraftAllowedStatus?.reason}
@@ -405,7 +411,12 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 						<EditViewSendButtons
 							onSendLater={onSendLaterClick}
 							onSendNow={onSendClick}
-							disabled={isMailSizeWarning || !sendAllowedStatus?.allowed || isConvertingToSmartLink}
+							disabled={
+								isMailSizeWarning ||
+								!sendAllowedStatus?.allowed ||
+								isConvertingToSmartLink ||
+								!draftId
+							}
 							tooltip={sendAllowedStatus?.reason ?? ''}
 							isLoading={isConvertingToSmartLink}
 						/>

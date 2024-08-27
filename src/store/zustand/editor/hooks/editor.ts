@@ -349,3 +349,30 @@ export const useEditorRequestReadReceipt = (
 		[id, debouncedSaveDraft, setter, value]
 	);
 };
+
+/**
+ * Returns reactive reference to the signature id and to its setter
+ * @param editorId
+ */
+export const useEditorSignatureId = (
+	editorId: MailsEditorV2['id']
+): {
+	signatureId: MailsEditorV2['signatureId'];
+	setSignatureId: (from: MailsEditorV2['signatureId']) => void;
+} => {
+	const { debouncedSaveDraft } = useSaveDraftFromEditor();
+	const value = useEditorsStore((state) => state.editors[editorId].signatureId);
+	const setter = useEditorsStore((state) => state.setSignatureId);
+
+	return useMemo(
+		() => ({
+			signatureId: value,
+			setSignatureId: (val: MailsEditorV2['signatureId']): void => {
+				setter(editorId, val);
+				computeAndUpdateEditorStatus(editorId);
+				debouncedSaveDraft(editorId);
+			}
+		}),
+		[editorId, debouncedSaveDraft, setter, value]
+	);
+};

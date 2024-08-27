@@ -7,22 +7,17 @@ import React, { useCallback } from 'react';
 
 import { AsyncThunkAction, Dispatch } from '@reduxjs/toolkit';
 import { Text, useSnackbar } from '@zextras/carbonio-design-system';
-import {
-	t,
-	addBoard,
-	FOLDERS,
-	replaceHistory,
-	useIntegratedFunction
-} from '@zextras/carbonio-shell-ui';
+import { t, replaceHistory, useIntegratedFunction } from '@zextras/carbonio-shell-ui';
 import { isNull, map, noop } from 'lodash';
 
 import DeleteConvConfirm from './delete-conv-modal';
 import { errorPage } from './error-page';
 import MoveConvMessage from './move-conv-msg';
 import RedirectAction from './redirect-message-action';
+import { FOLDERS } from '../carbonio-ui-commons/constants/folders';
 import { getRoot } from '../carbonio-ui-commons/store/zustand/folder';
 import { getContentForPrint } from '../commons/print-conversation/print-conversation';
-import { EditViewActions, MAILS_ROUTE, MessageActionsDescriptors, TIMEOUTS } from '../constants';
+import { EditViewActions, MessageActionsDescriptors, TIMEOUTS } from '../constants';
 import { getAttendees, getOptionalsAttendees, getSenderByOwner } from '../helpers/appointmemt';
 import { useUiUtilities } from '../hooks/use-ui-utilities';
 import { getMsgCall, getMsgsForPrint, msgAction } from '../store/actions';
@@ -30,17 +25,14 @@ import { sendMsg, sendMsgFromEditor } from '../store/actions/send-msg';
 import { extractBody } from '../store/editor-slice-utils';
 import { AppDispatch, StoreProvider } from '../store/redux';
 import type {
-	BoardContext,
 	MailMessage,
 	MailsEditorV2,
-	MessageAction,
 	MessageActionReturnType,
 	MsgActionParameters,
 	MsgActionResult
 } from '../types';
-import { ConvActionReturnType, ExtraWindowCreationParams, ExtraWindowsContextType } from '../types';
 import { CalendarType, SenderType } from '../types/calendar';
-import { MessagePreviewPanel } from '../views/app/detail-panel/message-preview-panel';
+import { createEditBoard } from '../views/app/detail-panel/edit/edit-view-board';
 import { getLocationOrigin } from '../views/app/detail-panel/preview/utils';
 
 type MessageActionIdsType = Array<string>;
@@ -203,51 +195,6 @@ export const useSetMsgAsSpam = (): ((arg: MessageActionPropType) => MessageActio
 	);
 };
 
-export const previewOnSeparatedWindow = (
-	messageId: string,
-	folderId: string,
-	subject: string,
-	createWindow: ExtraWindowsContextType['createWindow'],
-	messageActions: Array<MessageAction>
-): void => {
-	if (!createWindow) {
-		return;
-	}
-
-	const createWindowParams: ExtraWindowCreationParams = {
-		name: `message-${messageId}`,
-		returnComponent: false,
-		children: (
-			<MessagePreviewPanel
-				messageId={messageId}
-				folderId={folderId}
-				messageActions={messageActions}
-			/>
-		),
-		title: subject,
-		closeOnUnmount: false
-	};
-	createWindow(createWindowParams);
-};
-
-export function previewMessageOnSeparatedWindow(
-	messageId: string,
-	folderId: string,
-	subject: string,
-	createWindow: ExtraWindowsContextType['createWindow'],
-	messageActions: Array<MessageAction>
-): ConvActionReturnType {
-	const actDescriptor = MessageActionsDescriptors.PREVIEW_ON_SEPARATED_WINDOW;
-	return {
-		id: actDescriptor.id,
-		icon: 'ExternalLink',
-		label: t('action.preview_on_separated_tab', 'Open in a new tab'),
-		onClick: (): void => {
-			previewOnSeparatedWindow(messageId, folderId, subject, createWindow, messageActions);
-		}
-	};
-}
-
 export function printMsg({ message }: { message: MailMessage }): MessageActionReturnType {
 	const conversations = map([message], (msg) => ({
 		conversation: msg.conversation,
@@ -408,7 +355,7 @@ export const useMoveMsgToTrash = (): ((arg: MessageActionPropType) => MessageAct
 export const useDeleteMsg = (): ((
 	arg: Pick<MessageActionPropType, 'ids' | 'dispatch'>
 ) => MessageActionReturnType) => {
-	const { createSnackbar, createModal } = useUiUtilities();
+	const { createSnackbar, createModal, closeModal } = useUiUtilities();
 
 	return useCallback(
 		({ ids, dispatch }) => {
@@ -422,7 +369,9 @@ export const useDeleteMsg = (): ((
 					if (ev) {
 						ev.preventDefault();
 					}
-					const closeModal = createModal({
+					const id = Date.now().toString();
+					createModal({
+						id,
 						title: t('header.delete_email', 'Delete e-mail'),
 						confirmLabel: t('action.ok', 'Ok'),
 						onConfirm: () => {
@@ -432,7 +381,7 @@ export const useDeleteMsg = (): ((
 									ids
 								})
 							).then((res) => {
-								closeModal();
+								closeModal(id);
 								if (res.type.includes('fulfilled')) {
 									createSnackbar({
 										key: `trash-${ids}`,
@@ -453,10 +402,10 @@ export const useDeleteMsg = (): ((
 							});
 						},
 						onClose: () => {
-							closeModal();
+							closeModal(id);
 						},
 						onSecondaryAction: () => {
-							closeModal();
+							closeModal(id);
 						},
 						dismissLabel: t('label.cancel', 'Cancel'),
 						children: (
@@ -479,7 +428,7 @@ export const useDeleteMsg = (): ((
 				}
 			};
 		},
-		[createModal, createSnackbar]
+		[closeModal, createModal, createSnackbar]
 	);
 };
 
@@ -491,10 +440,9 @@ export function replyMsg({ id }: Pick<MessageActionPropType, 'id'>): MessageActi
 		label: t('action.reply', 'Reply'),
 		onClick: (ev): void => {
 			if (ev) ev.preventDefault();
-			addBoard<BoardContext>({
-				url: `${MAILS_ROUTE}/edit?action=${EditViewActions.REPLY}&id=${id}`,
-				// context: { mailId: id, folderId },
-				title: ''
+			createEditBoard({
+				action: EditViewActions.REPLY,
+				actionTargetId: `${id}`
 			});
 		}
 	};
@@ -508,10 +456,9 @@ export function replyAllMsg({ id }: Pick<MessageActionPropType, 'id'>): MessageA
 		label: t('action.reply_all', 'Reply all'),
 		onClick: (ev): void => {
 			if (ev) ev.preventDefault();
-			addBoard<BoardContext>({
-				url: `${MAILS_ROUTE}/edit?action=${EditViewActions.REPLY_ALL}&id=${id}`,
-				// context: { mailId: id, folderId },
-				title: ''
+			createEditBoard({
+				action: EditViewActions.REPLY_ALL,
+				actionTargetId: `${id}`
 			});
 		}
 	};
@@ -525,10 +472,9 @@ export function forwardMsg({ id }: Pick<MessageActionPropType, 'id'>): MessageAc
 		label: t('action.forward', 'Forward'),
 		onClick: (ev): void => {
 			if (ev) ev.preventDefault();
-			addBoard<BoardContext>({
-				url: `${MAILS_ROUTE}/edit?action=${EditViewActions.FORWARD}&id=${id}`,
-				// context: { mailId: id, folderId },
-				title: ''
+			createEditBoard({
+				action: EditViewActions.FORWARD,
+				actionTargetId: `${id}`
 			});
 		}
 	};
@@ -542,10 +488,9 @@ export function editAsNewMsg({ id }: Pick<MessageActionPropType, 'id'>): Message
 		label: t('action.edit_as_new', 'Edit as new'),
 		onClick: (ev): void => {
 			if (ev) ev.preventDefault();
-			addBoard<BoardContext>({
-				url: `${MAILS_ROUTE}/edit?action=${EditViewActions.EDIT_AS_NEW}&id=${id}`,
-				// context: { mailId: id, folderId },
-				title: ''
+			createEditBoard({
+				action: EditViewActions.EDIT_AS_NEW,
+				actionTargetId: `${id}`
 			});
 		}
 	};
@@ -554,9 +499,9 @@ export function editAsNewMsg({ id }: Pick<MessageActionPropType, 'id'>): Message
 export const useEditDraft = (): ((
 	arg: Pick<MessageActionPropType, 'id' | 'folderId' | 'message'>
 ) => MessageActionReturnType) => {
-	const { createModal } = useUiUtilities();
+	const { createModal, closeModal } = useUiUtilities();
 	return useCallback(
-		({ id, folderId, message }): MessageActionReturnType => {
+		({ id, message }): MessageActionReturnType => {
 			const actDescriptor = MessageActionsDescriptors.EDIT_DRAFT;
 			return {
 				id: actDescriptor.id,
@@ -565,19 +510,20 @@ export const useEditDraft = (): ((
 				onClick: (ev): void => {
 					if (ev) ev.preventDefault();
 					if (message?.isScheduled) {
-						const closeModal = createModal({
+						const id = Date.now().toString();
+						createModal({
+							id,
 							title: t('label.warning', 'Warning'),
 							confirmLabel: t('action.edit_anyway', 'Edit anyway'),
 							onConfirm: () => {
-								closeModal();
-								addBoard<BoardContext>({
-									url: `${MAILS_ROUTE}/edit?action=${EditViewActions.EDIT_AS_DRAFT}&id=${id}`,
-									// context: { mailId: id, folderId },
-									title: ''
+								closeModal(id);
+								createEditBoard({
+									action: EditViewActions.EDIT_AS_DRAFT,
+									actionTargetId: `${id}`
 								});
 							},
 							onClose: () => {
-								closeModal();
+								closeModal(id);
 							},
 							showCloseIcon: true,
 							children: (
@@ -592,16 +538,15 @@ export const useEditDraft = (): ((
 							)
 						});
 					} else {
-						addBoard<BoardContext>({
-							url: `${MAILS_ROUTE}/edit?action=${EditViewActions.EDIT_AS_DRAFT}&id=${id}`,
-							// context: { mailId: id, folderId },
-							title: ''
+						createEditBoard({
+							action: EditViewActions.EDIT_AS_DRAFT,
+							actionTargetId: `${id}`
 						});
 					}
 				}
 			};
 		},
-		[createModal]
+		[closeModal, createModal]
 	);
 };
 
@@ -654,7 +599,7 @@ export function sendDraftFromPreview({
 }
 
 export const useRedirectMsg = (): ((arg: { id: string }) => MessageActionReturnType) => {
-	const { createModal } = useUiUtilities();
+	const { createModal, closeModal } = useUiUtilities();
 	return useCallback(
 		({ id }) => {
 			const actDescriptor = MessageActionsDescriptors.REDIRECT;
@@ -664,12 +609,14 @@ export const useRedirectMsg = (): ((arg: { id: string }) => MessageActionReturnT
 				label: t('action.redirect', 'Redirect'),
 				onClick: (ev): void => {
 					if (ev) ev.preventDefault();
-					const closeModal = createModal(
+					const modalId = Date.now().toString();
+					createModal(
 						{
+							id: modalId,
 							maxHeight: '90vh',
 							children: (
 								<StoreProvider>
-									<RedirectAction onClose={(): void => closeModal()} id={id} />
+									<RedirectAction onClose={(): void => closeModal(modalId)} id={id} />
 								</StoreProvider>
 							)
 						},
@@ -678,14 +625,14 @@ export const useRedirectMsg = (): ((arg: { id: string }) => MessageActionReturnT
 				}
 			};
 		},
-		[createModal]
+		[closeModal, createModal]
 	);
 };
 
 export const useMoveMessageToFolder = (): ((
 	arg: Pick<MessageActionPropType, 'id' | 'dispatch' | 'isRestore' | 'deselectAll' | 'folderId'>
 ) => MessageActionReturnType) => {
-	const { createModal } = useUiUtilities();
+	const { createModal, closeModal } = useUiUtilities();
 	return useCallback(
 		({ id, dispatch, isRestore, deselectAll, folderId }) => {
 			const actDescriptor = isRestore
@@ -696,8 +643,10 @@ export const useMoveMessageToFolder = (): ((
 				icon: isRestore ? 'RestoreOutline' : 'MoveOutline',
 				label: isRestore ? t('label.restore', 'Restore') : t('label.move', 'Move'),
 				onClick: (): void => {
-					const closeModal = createModal(
+					const modalId = Date.now().toString();
+					createModal(
 						{
+							id: modalId,
 							maxHeight: '90vh',
 							size: 'medium',
 							children: (
@@ -705,7 +654,7 @@ export const useMoveMessageToFolder = (): ((
 									<MoveConvMessage
 										folderId={folderId ?? ''}
 										selectedIDs={[id as string]}
-										onClose={(): void => closeModal()}
+										onClose={(): void => closeModal(modalId)}
 										isMessageView
 										isRestore={isRestore ?? false}
 										deselectAll={deselectAll ?? noop}
@@ -719,14 +668,14 @@ export const useMoveMessageToFolder = (): ((
 				}
 			};
 		},
-		[createModal]
+		[closeModal, createModal]
 	);
 };
 
 export const useDeleteMessagePermanently = (): ((
 	arg: MessageActionPropType
 ) => MessageActionReturnType) => {
-	const { createModal } = useUiUtilities();
+	const { createModal, closeModal } = useUiUtilities();
 	return useCallback(
 		({ ids, deselectAll }) => {
 			const actDescriptor = MessageActionsDescriptors.DELETE_PERMANENTLY;
@@ -735,14 +684,16 @@ export const useDeleteMessagePermanently = (): ((
 				icon: 'DeletePermanentlyOutline',
 				label: t('label.delete_permanently', 'Delete Permanently'),
 				onClick: (): void => {
-					const closeModal = createModal(
+					const modalId = Date.now().toString();
+					createModal(
 						{
+							id: modalId,
 							children: (
 								<StoreProvider>
 									<DeleteConvConfirm
 										selectedIDs={ids}
 										isMessageView
-										onClose={(): void => closeModal()}
+										onClose={(): void => closeModal(modalId)}
 										deselectAll={deselectAll || ((): null => null)}
 									/>
 								</StoreProvider>
@@ -753,7 +704,7 @@ export const useDeleteMessagePermanently = (): ((
 				}
 			};
 		},
-		[createModal]
+		[closeModal, createModal]
 	);
 };
 

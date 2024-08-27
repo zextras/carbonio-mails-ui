@@ -44,14 +44,14 @@ type ComponentProps = {
 		t: TFunction;
 		availableList: ListType;
 		activeList: ListType;
-		incomingFilters: ListType;
+		incomingFilters: FilterListType[];
 	};
 };
 
 const IncomingFilterActions: FC<ComponentProps> = ({ compProps }): ReactElement => {
 	const { t, availableList, activeList, incomingFilters } = compProps;
 	const { setFetchIncomingFilters, setIncomingFilters } = useContext(FilterContext);
-	const createModal = useModal();
+	const { createModal, closeModal } = useModal();
 
 	const isAvailableFilterSelected = useMemo(
 		() => Object.keys(availableList.selected).length > 0,
@@ -95,6 +95,7 @@ const IncomingFilterActions: FC<ComponentProps> = ({ compProps }): ReactElement 
 		const action = getApplyFilterUIAction();
 		const executionParams: ApplyFilterUIActionExecutionParams = {
 			uiUtilities: {
+				closeModal,
 				createModal
 			},
 			criteria: {
@@ -102,18 +103,20 @@ const IncomingFilterActions: FC<ComponentProps> = ({ compProps }): ReactElement 
 			}
 		};
 		action?.openModal?.(executionParams);
-	}, [createModal, selectedActiveFilterName]);
+	}, [closeModal, createModal, selectedActiveFilterName]);
 
 	const openCreateModal = useCallback(() => {
-		const closeModal = createModal(
+		const modalId = Date.now().toString();
+		createModal(
 			{
+				id: modalId,
 				size: 'large',
 				maxHeight: '80vh',
 				children: (
 					<StoreProvider>
 						<CreateFilterModal
 							t={t}
-							onClose={(): void => closeModal()}
+							onClose={(): void => closeModal(modalId)}
 							incomingFilters={incomingFilters}
 							setFetchIncomingFilters={setFetchIncomingFilters}
 							setIncomingFilters={setIncomingFilters}
@@ -123,16 +126,18 @@ const IncomingFilterActions: FC<ComponentProps> = ({ compProps }): ReactElement 
 			},
 			true
 		);
-	}, [createModal, t, incomingFilters, setIncomingFilters, setFetchIncomingFilters]);
+	}, [createModal, t, incomingFilters, setFetchIncomingFilters, setIncomingFilters, closeModal]);
 
 	const openDeleteModal = useCallback(() => {
-		const closeModal = createModal(
+		const modalId = Date.now().toString();
+		createModal(
 			{
+				id: modalId,
 				size: 'small',
 				children: (
 					<StoreProvider>
 						<DeleteFilterModal
-							onClose={(): void => closeModal()}
+							onClose={(): void => closeModal(modalId)}
 							t={t}
 							availableList={availableList}
 							activeList={activeList}
@@ -155,6 +160,7 @@ const IncomingFilterActions: FC<ComponentProps> = ({ compProps }): ReactElement 
 	}, [
 		activeList,
 		availableList,
+		closeModal,
 		createModal,
 		incomingFilters,
 		selectedFilter,
@@ -201,8 +207,10 @@ const IncomingFilterActions: FC<ComponentProps> = ({ compProps }): ReactElement 
 	);
 
 	const openFilterModifyModal = useCallback(() => {
-		const closeModal = createModal(
+		const modalId = Date.now().toString();
+		createModal(
 			{
+				id: modalId,
 				size: 'large',
 				maxHeight: '80vh',
 				children: (
@@ -210,7 +218,7 @@ const IncomingFilterActions: FC<ComponentProps> = ({ compProps }): ReactElement 
 						<ModifyFilterModal
 							t={t}
 							selectedFilter={selectedFilter}
-							onClose={(): void => closeModal()}
+							onClose={(): void => closeModal(modalId)}
 							incomingFilters={incomingFilters}
 							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 							// @ts-ignore
@@ -226,6 +234,7 @@ const IncomingFilterActions: FC<ComponentProps> = ({ compProps }): ReactElement 
 		);
 	}, [
 		createModal,
+		closeModal,
 		t,
 		incomingFilters,
 		setIncomingFilters,

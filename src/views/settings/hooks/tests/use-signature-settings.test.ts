@@ -94,7 +94,6 @@ describe('useSignatureSettings', () => {
 			} = setupHook(useTranslation);
 			const signature = buildSignature();
 			signature.content = undefined;
-			// @ts-expect-error Testing this corner case
 			signature.description = undefined;
 			const result = getContentLengthErrorMessageKey(signature, 0, t);
 			expect(result).toEqual('Signature information is required.');

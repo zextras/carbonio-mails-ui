@@ -21,8 +21,6 @@ import {
 } from '@zextras/carbonio-design-system';
 import {
 	AppLink,
-	FOLDERS,
-	ROOT_NAME,
 	pushHistory,
 	replaceHistory,
 	t,
@@ -34,6 +32,8 @@ import styled from 'styled-components';
 
 import { useFolderActions } from './use-folder-actions';
 import { getFolderIconColor, getFolderIconName, getFolderTranslatedName } from './utils';
+import { ROOT_NAME } from '../../carbonio-ui-commons/constants';
+import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
 import { isSystemFolder } from '../../carbonio-ui-commons/helpers/folders';
 import type { Folder } from '../../carbonio-ui-commons/types/folder';
 import type { DragEnterAction, OnDropActionProps } from '../../carbonio-ui-commons/types/sidebar';

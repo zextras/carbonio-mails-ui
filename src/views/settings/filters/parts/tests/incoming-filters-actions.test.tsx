@@ -124,9 +124,7 @@ function propsWithIncomingFilter({ name, isSelected }: { name: string; isSelecte
 		t,
 		availableList: createList([]),
 		activeList: createList([activeIncomingFilter(name)], isSelected ? name : undefined),
-		incomingFilters: createList([activeIncomingFilter(name)])
-		// TODO: wrong type. It should be an array not a ListType like this:
-		// incomingFilters: [activeIncomingFilter('test')]
+		incomingFilters: [activeIncomingFilter('test')]
 	};
 }
 

@@ -6,13 +6,13 @@
 import React, { FC, useEffect, useMemo } from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
-import { FOLDERS, useTags, useUserSettings } from '@zextras/carbonio-shell-ui';
-import { filter } from 'lodash';
+import { debounce, filter, isEmpty } from 'lodash';
 import { useParams } from 'react-router-dom';
 
 import { ConversationPreviewPanel } from './conversation-preview-panel';
 import PreviewPanelHeader from './preview/preview-panel-header';
-import { API_REQUEST_STATUS } from '../../../constants';
+import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
+import { API_REQUEST_STATUS, DEFAULT_API_DEBOUNCE_TIME } from '../../../constants';
 import { getFolderIdParts } from '../../../helpers/folders';
 import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
 import { getConv, searchConv } from '../../../store/actions';
@@ -25,7 +25,7 @@ import { useExtraWindow } from '../extra-windows/use-extra-window';
 
 type ConversationPreviewPanelProps = { conversationId?: string; folderId?: string };
 
-const useConversationPreviewPanelParameters = (
+export const useConversationPreviewPanelParameters = (
 	props: ConversationPreviewPanelProps
 ): { conversationId: string; folderId: string } => {
 	const params = useParams<{ conversationId: string; folderId: string }>();
@@ -37,31 +37,41 @@ const useConversationPreviewPanelParameters = (
 
 export const ConversationPreviewPanelContainer: FC<ConversationPreviewPanelProps> = (props) => {
 	const { conversationId, folderId } = useConversationPreviewPanelParameters(props);
-	const tagsFromStore = useTags();
 	const { isInsideExtraWindow } = useExtraWindow();
 	const dispatch = useAppDispatch();
 	const conversationsStatus = useAppSelector((state: MailsStateType) =>
 		selectConversationExpandedStatus(state, conversationId)
 	);
-
 	const conversation = useAppSelector(selectConversation(conversationId));
-	const settings = useUserSettings();
-	const convSortOrder = settings.prefs.zimbraPrefConversationOrder as string;
+
 	useEffect(() => {
-		if (!conversation) {
+		if (isEmpty(conversation)) {
 			dispatch(getConv({ conversationId }));
 		}
 	}, [conversation, dispatch, conversationId]);
 
+	const requestDebouncedConversation = useMemo(
+		() =>
+			debounce(
+				() => {
+					if (
+						(conversationsStatus !== API_REQUEST_STATUS.fulfilled &&
+							conversationsStatus !== API_REQUEST_STATUS.pending) ||
+						!conversationsStatus
+					) {
+						dispatch(searchConv({ conversationId, fetch: 'all', folderId }));
+					}
+				},
+				DEFAULT_API_DEBOUNCE_TIME,
+				{ leading: false, trailing: true }
+			),
+		[conversationId, conversationsStatus, dispatch, folderId]
+	);
+
 	useEffect(() => {
-		if (
-			(conversationsStatus !== API_REQUEST_STATUS.fulfilled &&
-				conversationsStatus !== API_REQUEST_STATUS.pending) ||
-			!conversationsStatus
-		) {
-			dispatch(searchConv({ conversationId, fetch: 'all', folderId, tags: tagsFromStore }));
-		}
-	}, [conversationId, conversationsStatus, dispatch, folderId, tagsFromStore]);
+		requestDebouncedConversation();
+		return () => requestDebouncedConversation.cancel();
+	}, [requestDebouncedConversation]);
 
 	const showPreviewPanel = useMemo(
 		(): boolean | undefined =>
@@ -76,11 +86,17 @@ export const ConversationPreviewPanelContainer: FC<ConversationPreviewPanelProps
 		<Container orientation="vertical" mainAlignment="flex-start" crossAlignment="flex-start">
 			{showPreviewPanel && (
 				<>
-					{!isInsideExtraWindow && <PreviewPanelHeader item={conversation} folderId={folderId} />}
+					{!isInsideExtraWindow && (
+						<PreviewPanelHeader
+							itemType={'conversation'}
+							subject={conversation.subject}
+							isRead={conversation.read}
+							folderId={folderId}
+						/>
+					)}
 					<ConversationPreviewPanel
 						conversation={conversation}
 						isInsideExtraWindow={isInsideExtraWindow}
-						convSortOrder={convSortOrder}
 					/>
 				</>
 			)}

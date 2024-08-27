@@ -10,9 +10,9 @@ import { act, screen } from '@testing-library/react';
 import { noop, times } from 'lodash';
 
 import { FOLDER_VIEW } from '../../carbonio-ui-commons/constants';
+import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
 import { getFolder } from '../../carbonio-ui-commons/store/zustand/folder';
 import { getTag, getTags } from '../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
-import { FOLDERS } from '../../carbonio-ui-commons/test/mocks/carbonio-shell-ui-constants';
 import { createSoapAPIInterceptor } from '../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { populateFoldersStore } from '../../carbonio-ui-commons/test/mocks/store/folders';
 import {
@@ -40,7 +40,8 @@ import { TagsDropdownItem } from '../tag-actions';
 jest.mock<typeof import('../../hooks/use-ui-utilities')>('../../hooks/use-ui-utilities', () => ({
 	useUiUtilities: (): ReturnType<typeof useUiUtilities> => ({
 		createSnackbar: jest.fn(),
-		createModal: jest.fn()
+		createModal: jest.fn(),
+		closeModal: jest.fn()
 	})
 }));
 

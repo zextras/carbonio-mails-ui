@@ -4,9 +4,14 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { ItemType as AccordionItemType } from '@zextras/carbonio-design-system';
-import { Tag } from '@zextras/carbonio-shell-ui';
 import React, { ComponentType } from 'react';
+
+import {
+	CloseModalFn,
+	CreateModalFn,
+	ItemType as AccordionItemType
+} from '@zextras/carbonio-design-system';
+import { Tag } from '@zextras/carbonio-shell-ui';
 
 export type TagActionItemType = {
 	id: string;
@@ -31,7 +36,8 @@ export type TagActionsReturnType = {
 export type TagsFromStoreType = Record<string, Tag>;
 
 export type ArgumentType = {
-	createModal?: (...args: any) => () => void;
+	closeModal?: CloseModalFn;
+	createModal?: CreateModalFn;
 	items?: TagActionsReturnType;
 	tag?: ItemType;
 };

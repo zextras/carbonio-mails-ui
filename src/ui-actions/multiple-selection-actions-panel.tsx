@@ -13,7 +13,7 @@ import {
 	Row,
 	Tooltip
 } from '@zextras/carbonio-design-system';
-import { FOLDERS, t, useTags } from '@zextras/carbonio-shell-ui';
+import { t, useTags } from '@zextras/carbonio-shell-ui';
 import { every, filter, findIndex, includes, some } from 'lodash';
 
 import {
@@ -34,6 +34,7 @@ import {
 } from './message-actions';
 import { applyMultiTag } from './tag-actions';
 import { getFolderParentId } from './utils';
+import { FOLDERS } from '../carbonio-ui-commons/constants/folders';
 import { getFolderIdParts } from '../helpers/folders';
 import { useAppDispatch } from '../hooks/redux';
 import { useUiUtilities } from '../hooks/use-ui-utilities';

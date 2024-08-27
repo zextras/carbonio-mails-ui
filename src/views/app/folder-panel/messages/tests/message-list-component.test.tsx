@@ -6,9 +6,9 @@
 import React from 'react';
 
 import { screen } from '@testing-library/react';
-import { FOLDERS } from '@zextras/carbonio-shell-ui';
 import { noop, times } from 'lodash';
 
+import { FOLDERS } from '../../../../../carbonio-ui-commons/constants/folders';
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
 import { generateMessage } from '../../../../../tests/generators/generateMessage';
 import { generateStore } from '../../../../../tests/generators/store';

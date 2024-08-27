@@ -7,7 +7,7 @@
 import { useCallback } from 'react';
 
 import { CreateSnackbarFn } from '@zextras/carbonio-design-system';
-import { FOLDERS, Tags, useIntegratedFunction } from '@zextras/carbonio-shell-ui';
+import { Tags, useIntegratedFunction } from '@zextras/carbonio-shell-ui';
 import { TFunction } from 'i18next';
 
 import {
@@ -26,7 +26,6 @@ import {
 	editAsNewMsg,
 	forwardMsg,
 	useMoveMsgToTrash,
-	previewMessageOnSeparatedWindow,
 	printMsg,
 	replyAllMsg,
 	replyMsg,
@@ -40,8 +39,10 @@ import {
 	useRedirectMsg,
 	useEditDraft
 } from './message-actions';
+import { previewMessageOnSeparatedWindow } from './preview-message-on-separated-window';
 import { applyTag } from './tag-actions';
 import { updateEditorWithSmartLinks } from './utils';
+import { FOLDERS } from '../carbonio-ui-commons/constants/folders';
 import { EditViewActions } from '../constants';
 import { getFolderIdParts } from '../helpers/folders';
 import { AppDispatch } from '../store/redux';
@@ -168,7 +169,7 @@ export const useMoveToTrashAction = (): ((arg: {
 		({ isConversation, id, dispatch, folderId, deselectAll, foldersExcludedTrash }) => {
 			const action = isConversation
 				? moveConversationToTrash({ ids: [id], dispatch, folderId, deselectAll })
-				: moveMsgToTrash({ ids: [id], dispatch, deselectAll });
+				: moveMsgToTrash({ ids: [id], dispatch, deselectAll, folderId, closeEditor: true });
 			return !foldersExcludedTrash.includes(getFolderIdParts(folderId).id ?? '0') && action;
 		},
 		[moveConversationToTrash, moveMsgToTrash]

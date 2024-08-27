@@ -8,7 +8,6 @@
  */
 
 import { createSelector, createSlice } from '@reduxjs/toolkit';
-import { FOLDERS } from '@zextras/carbonio-shell-ui';
 import produce from 'immer';
 import { forEach, map, merge } from 'lodash';
 
@@ -20,6 +19,7 @@ import {
 	handleModifiedMessagesReducer,
 	handleDeletedMessagesReducer
 } from './sync/message';
+import { FOLDERS } from '../carbonio-ui-commons/constants/folders';
 import { CONVACTIONS } from '../commons/utilities';
 import { SEARCHED_FOLDER_STATE_STATUS } from '../constants';
 import { normalizeMailMessageFromSoap } from '../normalizations/normalize-message';
@@ -63,7 +63,7 @@ function fetchMessagesFulfilled(
 	if (payload?.messages && payload?.types === 'message') {
 		state.searchRequestStatus = meta.requestStatus;
 		const newMessagesState =
-			payload.offset !== undefined && payload.offset >= 0
+			payload.offset !== undefined && payload.offset > 0
 				? { ...state.messages, ...payload.messages }
 				: { ...payload.messages };
 		state.messages = newMessagesState;

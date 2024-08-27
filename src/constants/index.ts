@@ -4,10 +4,14 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { FOLDERS } from '@zextras/carbonio-shell-ui';
 import { TFunction } from 'i18next';
 
+import { FOLDERS } from '../carbonio-ui-commons/constants/folders';
+
 export const MAILS_ROUTE = 'mails';
+
+export const MAILS_BOARD_VIEW_ID = 'mails_editor_board_view';
+
 export const BACKUP_SEARCH_ROUTE = 'backup-search';
 
 export const MAIL_APP_ID = 'carbonio-mails-ui';
@@ -15,6 +19,29 @@ export const MAIL_APP_ID = 'carbonio-mails-ui';
 export const NO_ACCOUNT_NAME = 'No account';
 
 export const RECOVER_MESSAGES_INTERVAL = 3;
+
+export const LOCAL_STORAGE_VIEW_SIZES = 'carbonio-mails-ui-list-view-sizes';
+
+export const LOCAL_STORAGE_LAYOUT = 'carbonio-mails-ui-layout';
+
+export const LOCAL_STORAGE_SPLIT_LAYOUT_ORIENTATION = 'carbonio-mails-ui-split-layout_orientation';
+
+export const MAILS_VIEW_LAYOUTS = {
+	NO_SPLIT: 'no-split',
+	SPLIT: 'split'
+} as const;
+
+export const MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS = {
+	VERTICAL: 'vertical',
+	HORIZONTAL: 'horizontal'
+} as const;
+
+export const BORDERS = {
+	EAST: 'e',
+	SOUTH: 's',
+	NORTH: 'n',
+	WEST: 'w'
+} as const;
 
 type AttachmentTypeItemsConstantProps = {
 	id: string;
@@ -394,6 +421,7 @@ export const FOLDERS_DESCRIPTORS = {
 };
 
 const SNACKBAR_DEFAULT_TIMEOUT = 3000;
+export const DEFAULT_API_DEBOUNCE_TIME = 200;
 
 export const TIMEOUTS = {
 	SNACKBAR_DEFAULT_TIMEOUT,

@@ -3,31 +3,36 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, Suspense, lazy, useEffect, useMemo, useState } from 'react';
+import React, { FC, Suspense, lazy, useEffect, useMemo, useState, useRef } from 'react';
 
-import { Container } from '@zextras/carbonio-design-system';
-import { FOLDERS, Spinner, setAppContext, useUserSettings } from '@zextras/carbonio-shell-ui';
+import { Spinner, setAppContext, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { includes } from 'lodash';
 import moment from 'moment';
-import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom';
 
+import { FolderView } from './folder-view';
+import { LayoutSelector } from './layout-selector';
+import { FOLDERS } from '../carbonio-ui-commons/constants/folders';
+import { useUpdateView } from '../carbonio-ui-commons/hooks/use-update-view';
 import { getFolderIdParts } from '../helpers/folders';
 import { useAppSelector } from '../hooks/redux';
 import { selectCurrentFolder } from '../store/conversations-slice';
-
-const LazyFolderView = lazy(
-	() => import(/* webpackChunkName: "folder-panel-view" */ './app/folder-panel')
-);
 
 const LazyDetailPanel = lazy(
 	() => import(/* webpackChunkName: "folder-panel-view" */ './app/detail-panel')
 );
 
+const DetailPanel = (): React.JSX.Element => (
+	<Suspense fallback={<Spinner />}>
+		<LazyDetailPanel />
+	</Suspense>
+);
+
 const AppView: FC = () => {
-	const { path } = useRouteMatch();
 	const [count, setCount] = useState(0);
 	const { zimbraPrefGroupMailBy, zimbraPrefLocale } = useUserSettings().prefs;
 	const currentFolderId = useAppSelector(selectCurrentFolder);
+	const containerRef = useRef<HTMLDivElement>(null);
+	useUpdateView();
 
 	const isMessageView = useMemo(
 		() =>
@@ -45,21 +50,11 @@ const AppView: FC = () => {
 	}, [count, isMessageView]);
 
 	return (
-		<Container orientation="horizontal" mainAlignment="flex-start">
-			<Container width="40%">
-				<Switch>
-					<Route path={`${path}/folder/:folderId/:type?/:itemId?`}>
-						<Suspense fallback={<Spinner />}>
-							<LazyFolderView />
-						</Suspense>
-					</Route>
-					<Redirect strict from={path} to={`${path}/folder/2`} />
-				</Switch>
-			</Container>
-			<Suspense fallback={<Spinner />}>
-				<LazyDetailPanel />
-			</Suspense>
-		</Container>
+		<LayoutSelector
+			folderView={<FolderView containerRef={containerRef} />}
+			detailPanel={<DetailPanel />}
+			containerRef={containerRef}
+		/>
 	);
 };
 

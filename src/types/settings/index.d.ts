@@ -189,8 +189,19 @@ export type InputProps = {
 export type SignItemType = {
 	name: string;
 	id: string;
-	description: string;
+	description: string | undefined;
 	label: string;
+	content?: [
+		{
+			type: 'text/plain' | 'text/html';
+			_content: string;
+		}
+	];
+};
+
+export type Signature = {
+	name: string;
+	id: string;
 	content?: [
 		{
 			type: 'text/plain' | 'text/html';
@@ -229,7 +240,6 @@ type SignatureSettingsPropsType = {
 	setDisabled: (arg: boolean) => void;
 	signatures: SignItemType[];
 	setSignatures: (signatures: SignItemType[]) => void;
-	setOriginalSignatures: (signatures: SignItemType[]) => void;
 };
 
 export type ReceivingMessagesSettingsType = {

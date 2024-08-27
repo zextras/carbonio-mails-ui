@@ -16,27 +16,27 @@ import {
 	Text
 } from '@zextras/carbonio-design-system';
 import {
-	FOLDERS,
 	getIntegratedComponent,
 	t,
 	useUserAccounts,
 	useUserSettings
 } from '@zextras/carbonio-shell-ui';
-import { filter, find } from 'lodash';
+import { filter } from 'lodash';
 /* eslint-disable no-nested-ternary */
 import { useParams } from 'react-router-dom';
 
 import AttachmentsBlock from './attachments-block';
 import PreviewHeader from './parts/preview-header';
 import ReadReceiptModal from './read-receipt-modal';
-import { ParticipantRole } from '../../../../carbonio-ui-commons/constants/participants';
+import { FOLDERS } from '../../../../carbonio-ui-commons/constants/folders';
 import MailMessageRenderer from '../../../../commons/mail-message-renderer';
 import { MessageActionsDescriptors } from '../../../../constants';
 import { getAttachmentParts } from '../../../../helpers/attachments';
 import { getFolderIdParts } from '../../../../helpers/folders';
 import { useAppDispatch } from '../../../../hooks/redux';
+import { useRequestDebouncedMessage } from '../../../../hooks/use-request-debounced-message';
 import SharedInviteReply from '../../../../integrations/shared-invite-reply';
-import { getMsg, msgAction } from '../../../../store/actions';
+import { msgAction } from '../../../../store/actions';
 import type { MailMessage, OpenEmlPreviewType } from '../../../../types';
 import { ExtraWindowCreationParams, MessageAction } from '../../../../types';
 import { findMessageActionById } from '../../../../ui-actions/utils';
@@ -50,12 +50,14 @@ const MailContent: FC<{
 	isExternalMessage?: boolean;
 	isInsideExtraWindow?: boolean;
 	openEmlPreview?: OpenEmlPreviewType;
+	showingEml?: boolean;
 }> = ({
 	message,
 	isMailPreviewOpen,
 	isExternalMessage = false,
 	openEmlPreview,
-	isInsideExtraWindow = false
+	isInsideExtraWindow = false,
+	showingEml = false
 }) => {
 	const [showModal, setShowModal] = useState(true);
 	const dispatch = useAppDispatch();
@@ -70,13 +72,7 @@ const MailContent: FC<{
 		);
 	}, [message, dispatch]);
 
-	// this is necessary because if somebody click a message in the same conversation
-	// already open that message will not be expanded
-	useEffect(() => {
-		if (!message.isComplete) {
-			dispatch(getMsg({ msgId: message.id }));
-		}
-	}, [dispatch, message.id, message.isComplete]);
+	useRequestDebouncedMessage(message.id, message?.isComplete);
 
 	const showAppointmentInvite = useMemo(
 		() =>
@@ -89,21 +85,16 @@ const MailContent: FC<{
 			InviteResponse,
 		[message]
 	);
-	const readReceiptRequester = useMemo(
-		() => find(message?.participants, { type: ParticipantRole.READ_RECEIPT_NOTIFICATION }),
-		[message?.participants]
-	);
 
 	const readReceiptSetting = useMemo(() => prefs?.zimbraPrefMailSendReadReceipts, [prefs]);
 	const showReadReceiptModal = useMemo(
 		() =>
-			(!!readReceiptRequester &&
-				showModal &&
+			(showModal &&
 				message.isReadReceiptRequested &&
 				!message?.isSentByMe &&
 				readReceiptSetting === 'prompt') ??
 			false,
-		[readReceiptRequester, showModal, message, readReceiptSetting]
+		[showModal, message, readReceiptSetting]
 	);
 
 	const showShareInvite = useMemo(
@@ -164,12 +155,13 @@ const MailContent: FC<{
 			orientation="vertical"
 			disableTransition
 			data-testid="MailMessageRendererCollapse"
+			style={{ height: '100%' }}
 		>
 			{message.isComplete && (
 				<Container
 					data-testid="MessageBody"
 					width="100%"
-					height="fit"
+					height="100%"
 					crossAlignment="stretch"
 					padding={
 						isInsideExtraWindow ? { vertical: 'small' } : { horizontal: 'large', vertical: 'small' }
@@ -183,7 +175,7 @@ const MailContent: FC<{
 							openEmlPreview={openEmlPreview}
 						/>
 					</Row>
-					<Padding style={{ width: '100%' }} vertical="medium">
+					<Padding height="100%" width="100%" vertical="medium" style={{ overflow: 'auto' }}>
 						{showAppointmentInvite ? (
 							<Container width="100%">
 								<InviteResponse
@@ -214,6 +206,8 @@ const MailContent: FC<{
 								id={message.id}
 								fragment={message.fragment}
 								participants={participants}
+								isInsideExtraWindow={isInsideExtraWindow}
+								showingEml={showingEml}
 							/>
 						)}
 					</Padding>
@@ -292,7 +286,7 @@ const MailPreviewBlock: FC<MailPreviewBlockType> = ({
 
 			{/* External message disclaimer */}
 			{isExternalMessage && (
-				<Container background="white" padding={{ top: 'large', bottom: 'large' }}>
+				<Container height="fit" background="white" padding={{ top: 'large', bottom: 'large' }}>
 					<Row
 						background="gray2"
 						width="fill"
@@ -324,6 +318,7 @@ export type MailPreviewProps = {
 	isMessageView: boolean;
 	isExternalMessage?: boolean;
 	isInsideExtraWindow?: boolean;
+	showingEml?: boolean;
 };
 
 const MailPreview: FC<MailPreviewProps> = ({
@@ -333,7 +328,8 @@ const MailPreview: FC<MailPreviewProps> = ({
 	isAlone,
 	isMessageView,
 	isExternalMessage = false,
-	isInsideExtraWindow = false
+	isInsideExtraWindow = false,
+	showingEml = false
 }) => {
 	const mailContainerRef = useRef<HTMLDivElement>(null);
 	const [open, setOpen] = useState(expanded || isAlone);
@@ -366,6 +362,7 @@ const MailPreview: FC<MailPreviewProps> = ({
 						isMessageView
 						isExternalMessage
 						isInsideExtraWindow
+						showingEml
 					/>
 				),
 				title: emlMessage.subject,
@@ -378,10 +375,16 @@ const MailPreview: FC<MailPreviewProps> = ({
 		[createWindow, messageActions]
 	);
 
+	const [containerHeight, setContainerHeight] = useState(open ? '100%' : 'fit-content');
+
+	useEffect(() => {
+		setContainerHeight(open ? '100%' : 'fit-content');
+	}, [open]);
+
 	return (
 		<Container
 			ref={mailContainerRef}
-			height="fit"
+			height={containerHeight}
 			data-testid={`MailPreview-${message.id}`}
 			padding={isInsideExtraWindow ? { all: 'large' } : undefined}
 			background="white"
@@ -399,7 +402,8 @@ const MailPreview: FC<MailPreviewProps> = ({
 				width="fill"
 				height="fit"
 				style={{
-					overflowY: 'auto'
+					flex: '1',
+					overflow: 'auto'
 				}}
 			>
 				{(open || isAlone) && (
@@ -409,11 +413,14 @@ const MailPreview: FC<MailPreviewProps> = ({
 						openEmlPreview={openEmlPreview}
 						isExternalMessage={isExternalMessage}
 						isInsideExtraWindow={isInsideExtraWindow}
+						showingEml={showingEml}
 					/>
 				)}
 			</Container>
 		</Container>
 	);
 };
+
+MailPreview.displayName = 'MailPreview';
 
 export default MailPreview;

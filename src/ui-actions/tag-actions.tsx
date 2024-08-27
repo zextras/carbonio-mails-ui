@@ -3,27 +3,14 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { ReactElement, useCallback, useContext, useMemo, useState } from 'react';
+import React, { ReactElement, useCallback, useMemo, useState } from 'react';
 
-import {
-	Checkbox,
-	Icon,
-	ModalManagerContext,
-	Padding,
-	Row,
-	Text
-} from '@zextras/carbonio-design-system';
-import {
-	Tag,
-	ZIMBRA_STANDARD_COLORS,
-	replaceHistory,
-	t,
-	useTags
-} from '@zextras/carbonio-shell-ui';
+import { Checkbox, Icon, Padding, Row, Text, useModal } from '@zextras/carbonio-design-system';
+import { Tag, replaceHistory, t, useTags } from '@zextras/carbonio-shell-ui';
 import { every, find, includes, map, reduce, some } from 'lodash';
 
 import DeleteTagModal from '../carbonio-ui-commons/components/tags/delete-tag-modal';
-import { TagsActionsType } from '../carbonio-ui-commons/constants';
+import { TagsActionsType, ZIMBRA_STANDARD_COLORS } from '../carbonio-ui-commons/constants';
 import { useAppDispatch } from '../hooks/redux';
 import { useUiUtilities } from '../hooks/use-ui-utilities';
 import { convAction, msgAction } from '../store/actions';
@@ -38,7 +25,7 @@ import type {
 } from '../types';
 import CreateUpdateTagModal from '../views/sidebar/parts/tags/create-update-tag-modal';
 
-export const createTag = ({ createModal }: ArgumentType): TagActionsReturnType => ({
+export const createTag = ({ createModal, closeModal }: ArgumentType): TagActionsReturnType => ({
 	id: TagsActionsType.NEW,
 	icon: 'TagOutline',
 	label: t('label.create_tag', 'Create Tag'),
@@ -46,13 +33,14 @@ export const createTag = ({ createModal }: ArgumentType): TagActionsReturnType =
 		if (e) {
 			e.stopPropagation();
 		}
-		const closeModal =
-			createModal &&
+		const id = Date.now().toString();
+		createModal &&
 			createModal(
 				{
+					id,
 					children: (
 						<StoreProvider>
-							<CreateUpdateTagModal onClose={(): void => closeModal && closeModal()} />
+							<CreateUpdateTagModal onClose={(): void => closeModal && closeModal(id)} />
 						</StoreProvider>
 					)
 				},
@@ -61,7 +49,7 @@ export const createTag = ({ createModal }: ArgumentType): TagActionsReturnType =
 	}
 });
 
-export const editTag = ({ createModal, tag }: ArgumentType): TagActionsReturnType => ({
+export const editTag = ({ createModal, closeModal, tag }: ArgumentType): TagActionsReturnType => ({
 	id: TagsActionsType.EDIT,
 	icon: 'Edit2Outline',
 	label: t('label.edit_tag', 'Edit Tag'),
@@ -69,14 +57,15 @@ export const editTag = ({ createModal, tag }: ArgumentType): TagActionsReturnTyp
 		if (e) {
 			e.stopPropagation();
 		}
-		const closeModal =
-			createModal &&
+		const id = Date.now().toString();
+		createModal &&
 			createModal(
 				{
+					id,
 					children: (
 						<StoreProvider>
 							<CreateUpdateTagModal
-								onClose={(): void => closeModal && closeModal()}
+								onClose={(): void => closeModal && closeModal(id)}
 								tag={tag}
 								editMode
 							/>
@@ -88,7 +77,11 @@ export const editTag = ({ createModal, tag }: ArgumentType): TagActionsReturnTyp
 	}
 });
 
-export const deleteTag = ({ createModal, tag }: ArgumentType): TagActionsReturnType => ({
+export const deleteTag = ({
+	createModal,
+	closeModal,
+	tag
+}: ArgumentType): TagActionsReturnType => ({
 	id: TagsActionsType.DELETE,
 	icon: 'Untag',
 	label: t('label.delete_tag', 'Delete Tag'),
@@ -96,13 +89,14 @@ export const deleteTag = ({ createModal, tag }: ArgumentType): TagActionsReturnT
 		if (e) {
 			e.stopPropagation();
 		}
-		const closeModal =
-			createModal &&
+		const id = Date.now().toString();
+		createModal &&
 			createModal(
 				{
+					id,
 					children: (
 						<StoreProvider>
-							<DeleteTagModal onClose={(): void => closeModal && closeModal()} tag={tag} />
+							<DeleteTagModal onClose={(): void => closeModal && closeModal(id)} tag={tag} />
 						</StoreProvider>
 					)
 				},
@@ -417,14 +411,14 @@ export const applyTag = ({
 };
 
 export const useGetTagsActions = ({ tag }: ArgumentType): Array<TagActionsReturnType> => {
-	const createModal = useContext(ModalManagerContext) as () => () => void;
+	const { createModal, closeModal } = useModal();
 	return useMemo(
 		() => [
-			createTag({ createModal }),
-			editTag({ createModal, tag }),
-			deleteTag({ tag, createModal })
+			createTag({ createModal, closeModal }),
+			editTag({ createModal, closeModal, tag }),
+			deleteTag({ tag, createModal, closeModal })
 		],
-		[createModal, tag]
+		[closeModal, createModal, tag]
 	);
 };
 

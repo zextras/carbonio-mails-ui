@@ -6,13 +6,13 @@
 import { getUserAccount } from '@zextras/carbonio-shell-ui';
 
 import { FOLDER_VIEW } from '../../carbonio-ui-commons/constants';
+import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
 import {
 	getFolder,
 	getFoldersMap,
 	getLinksArray,
 	getRootsMap
 } from '../../carbonio-ui-commons/store/zustand/folder/hooks';
-import { FOLDERS } from '../../carbonio-ui-commons/test/mocks/carbonio-shell-ui-constants';
 import { populateFoldersStore } from '../../carbonio-ui-commons/test/mocks/store/folders';
 import { getMocksContext } from '../../carbonio-ui-commons/test/mocks/utils/mocks-context';
 import { NO_ACCOUNT_NAME } from '../../constants';

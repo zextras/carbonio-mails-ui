@@ -8,7 +8,7 @@ import React from 'react';
 
 import { within } from '@testing-library/react';
 import * as hooks from '@zextras/carbonio-shell-ui';
-import { AccountSettings, FOLDERS } from '@zextras/carbonio-shell-ui';
+import { AccountSettings } from '@zextras/carbonio-shell-ui';
 import { forEach, indexOf, noop, without } from 'lodash';
 
 import { createSoapAPIInterceptor } from '../../../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
@@ -18,6 +18,7 @@ import { SORTING_OPTIONS, SORTING_DIRECTION } from '../../../../../constants';
 import { generateStore } from '../../../../../tests/generators/store';
 import { SearchRequest } from '../../../../../types';
 import { Breadcrumbs } from '../breadcrumbs';
+import { FOLDERS } from '../../../../../carbonio-ui-commons/constants/folders';
 
 function findStringsContainingRadiobutton(strings: Array<string>): Array<string> {
 	const resultArray = [] as Array<string>;

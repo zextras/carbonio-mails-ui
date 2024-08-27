@@ -11,11 +11,11 @@ import { addBoard } from '@zextras/carbonio-shell-ui';
 import { times } from 'lodash';
 
 import { FOLDER_VIEW } from '../../carbonio-ui-commons/constants';
+import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
 import { ParticipantRole } from '../../carbonio-ui-commons/constants/participants';
 import { getFolder } from '../../carbonio-ui-commons/store/zustand/folder';
 import { createFakeIdentity } from '../../carbonio-ui-commons/test/mocks/accounts/fakeAccounts';
 import { getTags } from '../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
-import { FOLDERS } from '../../carbonio-ui-commons/test/mocks/carbonio-shell-ui-constants';
 import { createSoapAPIInterceptor } from '../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { populateFoldersStore } from '../../carbonio-ui-commons/test/mocks/store/folders';
 import {
@@ -23,7 +23,7 @@ import {
 	setupTest,
 	setupHook
 } from '../../carbonio-ui-commons/test/test-setup';
-import { API_REQUEST_STATUS, EditViewActions, MAILS_ROUTE, TIMEOUTS } from '../../constants';
+import { API_REQUEST_STATUS, TIMEOUTS } from '../../constants';
 import { useUiUtilities } from '../../hooks/use-ui-utilities';
 import * as getMsgsForPrint from '../../store/actions/get-msg-for-print';
 import { generateMessage } from '../../tests/generators/generateMessage';
@@ -57,7 +57,8 @@ import { TagsDropdownItem } from '../tag-actions';
 jest.mock<typeof import('../../hooks/use-ui-utilities')>('../../hooks/use-ui-utilities', () => ({
 	useUiUtilities: (): ReturnType<typeof useUiUtilities> => ({
 		createSnackbar: jest.fn(),
-		createModal: jest.fn()
+		createModal: jest.fn(),
+		closeModal: jest.fn()
 	})
 }));
 
@@ -852,7 +853,11 @@ describe('Messages actions calls', () => {
 
 		expect(addBoard).toBeCalledWith(
 			expect.objectContaining({
-				url: `${MAILS_ROUTE}/edit?action=${EditViewActions.REPLY}&id=${msg.id}`,
+				boardViewId: 'mails_editor_board_view',
+				context: {
+					originAction: 'reply',
+					originActionTargetId: msg.id
+				},
 				title: ''
 			})
 		);
@@ -881,7 +886,11 @@ describe('Messages actions calls', () => {
 
 		expect(addBoard).toBeCalledWith(
 			expect.objectContaining({
-				url: `${MAILS_ROUTE}/edit?action=${EditViewActions.REPLY_ALL}&id=${msg.id}`,
+				boardViewId: 'mails_editor_board_view',
+				context: {
+					originAction: 'replyAll',
+					originActionTargetId: msg.id
+				},
 				title: ''
 			})
 		);
@@ -908,7 +917,11 @@ describe('Messages actions calls', () => {
 
 		expect(addBoard).toBeCalledWith(
 			expect.objectContaining({
-				url: `${MAILS_ROUTE}/edit?action=${EditViewActions.FORWARD}&id=${msg.id}`,
+				boardViewId: 'mails_editor_board_view',
+				context: {
+					originAction: 'forward',
+					originActionTargetId: msg.id
+				},
 				title: ''
 			})
 		);
@@ -938,7 +951,11 @@ describe('Messages actions calls', () => {
 
 		expect(addBoard).toBeCalledWith(
 			expect.objectContaining({
-				url: `${MAILS_ROUTE}/edit?action=${EditViewActions.EDIT_AS_DRAFT}&id=${msg.id}`,
+				boardViewId: 'mails_editor_board_view',
+				context: {
+					originAction: 'editAsDraft',
+					originActionTargetId: msg.id
+				},
 				title: ''
 			})
 		);
@@ -965,7 +982,11 @@ describe('Messages actions calls', () => {
 
 		expect(addBoard).toBeCalledWith(
 			expect.objectContaining({
-				url: `${MAILS_ROUTE}/edit?action=${EditViewActions.EDIT_AS_NEW}&id=${msg.id}`,
+				boardViewId: 'mails_editor_board_view',
+				context: {
+					originAction: 'editAsNew',
+					originActionTargetId: msg.id
+				},
 				title: ''
 			})
 		);
