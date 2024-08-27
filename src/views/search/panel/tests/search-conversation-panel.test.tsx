@@ -35,7 +35,7 @@ import { generateConversation } from '../../../../tests/generators/generateConve
 import { generateMessage } from '../../../../tests/generators/generateMessage';
 import { generateStore } from '../../../../tests/generators/store';
 import { SearchConvRequest, SearchConvResponse, SoapMailMessage } from '../../../../types';
-import { SearchConversationPanel } from '../search-conversation-panel';
+import { SearchConversationPanel } from '../conversation/search-conversation-panel';
 
 jest.mock('react-router-dom', () => ({
 	...jest.requireActual('react-router-dom'),

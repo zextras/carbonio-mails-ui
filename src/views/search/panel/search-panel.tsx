@@ -9,8 +9,8 @@ import { Container, Padding, Text } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import { useRouteMatch, Switch, Route } from 'react-router-dom';
 
-import { SearchConversationPanel } from './search-conversation-panel';
-import { SearchMessagePanel } from './search-message-panel';
+import { SearchConversationPanel } from './conversation/search-conversation-panel';
+import { SearchMessagePanel } from './message/search-message-panel';
 import { SearchPanelProps } from '../../../types';
 
 const SearchPanel: FC<SearchPanelProps> = ({ searchResults }) => {

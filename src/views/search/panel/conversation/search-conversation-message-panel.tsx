@@ -7,9 +7,9 @@ import React from 'react';
 
 import { Padding } from '@zextras/carbonio-design-system';
 
-import { useMessageActions } from '../../../hooks/use-message-actions';
-import { useMessageById } from '../../../store/zustand/search/store';
-import MailPreview from '../../app/detail-panel/preview/mail-preview';
+import { useMessageActions } from '../../../../hooks/use-message-actions';
+import { useMessageById } from '../../../../store/zustand/search/store';
+import MailPreview from '../../../app/detail-panel/preview/mail-preview';
 
 export type SearchConversationMessagePreviewProps = {
 	convMessageId: string;

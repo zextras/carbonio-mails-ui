@@ -11,10 +11,10 @@ import { map } from 'lodash';
 import { useParams } from 'react-router-dom';
 
 import { SearchConversationMessagePanel } from './search-conversation-message-panel';
-import { API_REQUEST_STATUS } from '../../../constants';
-import { useCompleteConversation } from '../../../store/zustand/search/hooks/hooks';
-import { useExtraWindow } from '../../app/extra-windows/use-extra-window';
-import { SearchPreviewPanelHeader } from '../preview/search-preview-panel-header';
+import { API_REQUEST_STATUS } from '../../../../constants';
+import { useCompleteConversation } from '../../../../store/zustand/search/hooks/hooks';
+import { useExtraWindow } from '../../../app/extra-windows/use-extra-window';
+import { SearchPreviewPanelHeader } from '../../preview/search-preview-panel-header';
 
 export const SearchConversationPanel = (): React.JSX.Element => {
 	const { conversationId } = useParams<{ conversationId: string }>();

@@ -7,14 +7,14 @@ import React from 'react';
 
 import { useParams } from 'react-router-dom';
 
-import { screen, setupTest } from '../../../../carbonio-ui-commons/test/test-setup';
-import { API_REQUEST_STATUS } from '../../../../constants';
+import { screen, setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
+import { API_REQUEST_STATUS } from '../../../../../constants';
 import {
 	setSearchResultsByMessage,
 	updateMessageStatus
-} from '../../../../store/zustand/search/store';
-import { generateMessage } from '../../../../tests/generators/generateMessage';
-import { generateStore } from '../../../../tests/generators/store';
+} from '../../../../../store/zustand/search/store';
+import { generateMessage } from '../../../../../tests/generators/generateMessage';
+import { generateStore } from '../../../../../tests/generators/store';
 import { SearchMessagePanel } from '../search-message-panel';
 
 jest.mock('react-router-dom', () => ({

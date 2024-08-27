@@ -10,15 +10,15 @@ import { replaceHistory, useAppContext } from '@zextras/carbonio-shell-ui';
 import { uniqBy } from 'lodash';
 import { useParams } from 'react-router-dom';
 
-import { API_REQUEST_STATUS, EXTRA_WINDOW_ACTION_ID } from '../../../constants';
-import { useMessageActions } from '../../../hooks/use-message-actions';
-import { useSelection } from '../../../hooks/use-selection';
-import { useCompleteMessage } from '../../../store/zustand/search/hooks/hooks';
-import { AppContext, MessageAction } from '../../../types';
-import { useMsgConvActions } from '../../../ui-actions/use-msg-conv-actions';
-import MailPreview from '../../app/detail-panel/preview/mail-preview';
-import { useExtraWindow } from '../../app/extra-windows/use-extra-window';
-import { SearchPreviewPanelHeader } from '../preview/search-preview-panel-header';
+import { API_REQUEST_STATUS, EXTRA_WINDOW_ACTION_ID } from '../../../../constants';
+import { useMessageActions } from '../../../../hooks/use-message-actions';
+import { useSelection } from '../../../../hooks/use-selection';
+import { useCompleteMessage } from '../../../../store/zustand/search/hooks/hooks';
+import { AppContext, MessageAction } from '../../../../types';
+import { useMsgConvActions } from '../../../../ui-actions/use-msg-conv-actions';
+import MailPreview from '../../../app/detail-panel/preview/mail-preview';
+import { useExtraWindow } from '../../../app/extra-windows/use-extra-window';
+import { SearchPreviewPanelHeader } from '../../preview/search-preview-panel-header';
 
 export const SearchMessagePanel: FC = () => {
 	const { messageId } = useParams<{ messageId: string }>();
