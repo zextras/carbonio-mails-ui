@@ -16,7 +16,7 @@ import {
 import { generateConversation } from '../../../../../tests/generators/generateConversation';
 import { generateStore } from '../../../../../tests/generators/store';
 import { ExtraWindowCreationParams, ExtraWindowsCreationResult } from '../../../../../types';
-import { previewConversationOnSeparatedWindowAction } from '../search-preview-actions';
+import { previewConversationOnSeparatedWindowAction } from '../search-conversation-preview-actions';
 
 const TestComponent: FC = ({ children }) => <div>{children}</div>;
 describe('Preview conversation on new window', () => {

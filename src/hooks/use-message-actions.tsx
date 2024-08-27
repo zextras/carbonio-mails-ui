@@ -41,7 +41,7 @@ import { applyTag } from '../ui-actions/tag-actions';
 import { useInSearchModule } from '../ui-actions/utils';
 import { useGlobalExtraWindowManager } from '../views/app/extra-windows/global-extra-window-manager';
 import { useExtraWindow } from '../views/app/extra-windows/use-extra-window';
-import { previewMessageOnSeparatedWindowAction } from '../views/search/preview/messages/search-preview-messages-actions';
+import { previewMessageOnSeparatedWindowAction } from '../views/search/preview/messages/search-messages-preview-actions';
 
 type ActionGeneratorProps = {
 	isInsideExtraWindow: boolean;

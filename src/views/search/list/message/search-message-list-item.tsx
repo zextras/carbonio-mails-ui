@@ -41,7 +41,7 @@ import { ItemAvatar } from '../../../app/folder-panel/parts/item-avatar';
 import { ListItemActionWrapper } from '../../../app/folder-panel/parts/list-item-actions-wrapper';
 import { SenderName } from '../../../app/folder-panel/parts/sender-name';
 import { getFolderTranslatedName } from '../../../sidebar/utils';
-import { previewMessageOnSeparatedWindow } from '../../preview/messages/search-preview-messages-actions';
+import { previewMessageOnSeparatedWindow } from '../../preview/messages/search-messages-preview-actions';
 
 type SearchMessageListItemProps = {
 	itemId: string;

@@ -19,7 +19,7 @@ import { ExtraWindowCreationParams, ExtraWindowsCreationResult } from '../../../
 import {
 	previewMessageOnSeparatedWindow,
 	previewMessageOnSeparatedWindowAction
-} from '../search-preview-messages-actions';
+} from '../search-messages-preview-actions';
 
 const TestComponent: FC = ({ children }) => <div>{children}</div>;
 describe('Preview message on new window', () => {
