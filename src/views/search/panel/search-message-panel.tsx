@@ -40,14 +40,13 @@ export const SearchMessagePanel: FC = () => {
 		? messageActions.filter((action: MessageAction) => action.id !== EXTRA_WINDOW_ACTION_ID)
 		: uniqBy([...messageActions[0], ...messageActions[1]], 'id');
 
-	if (!message)
+	if (!message) {
 		replaceHistory({
 			path: '/',
 			route: 'search'
 		});
 		return <></>;
 	}
-
 
 	return (
 		<Container orientation="vertical" mainAlignment="flex-start" crossAlignment="flex-start">
