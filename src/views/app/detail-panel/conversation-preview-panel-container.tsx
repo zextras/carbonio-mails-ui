@@ -3,9 +3,10 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, useEffect, useMemo } from 'react';
+import React, { FC, useCallback, useEffect, useMemo } from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
+import { replaceHistory } from '@zextras/carbonio-shell-ui';
 import { debounce, filter, isEmpty } from 'lodash';
 import { useParams } from 'react-router-dom';
 
@@ -44,11 +45,18 @@ export const ConversationPreviewPanelContainer: FC<ConversationPreviewPanelProps
 	);
 	const conversation = useAppSelector(selectConversation(conversationId));
 
+	const onConversationIdChange = useCallback(
+		(newConversationId: string): void => {
+			replaceHistory(`/folder/${folderId}/conversation/${newConversationId}`);
+		},
+		[folderId]
+	);
+
 	useEffect(() => {
 		if (isEmpty(conversation)) {
-			dispatch(getConv({ conversationId }));
+			dispatch(getConv({ conversationId, onConversationIdChange }));
 		}
-	}, [conversation, dispatch, conversationId]);
+	}, [conversation, dispatch, conversationId, onConversationIdChange]);
 
 	const requestDebouncedConversation = useMemo(
 		() =>
