@@ -30,6 +30,7 @@ import { generateConversation } from '../../../tests/generators/generateConversa
 import { generateMessage } from '../../../tests/generators/generateMessage';
 import { generateStore } from '../../../tests/generators/store';
 import {
+	ExtraWindowsContextType,
 	MsgActionRequest,
 	SearchRequest,
 	SearchResponse,
@@ -37,8 +38,13 @@ import {
 	SoapIncompleteMessage,
 	SoapMailMessage
 } from '../../../types';
+import * as externalWindowManager from '../../app/extra-windows/global-extra-window-manager';
 import SearchView from '../search-view';
 
+jest.mock('', () => ({
+	...jest.requireActual('react-router-dom'),
+	useLocation: jest.fn()
+}));
 function getSoapConversationMessage(messageId: string, conversationId: string): SoapMailMessage {
 	return {
 		id: messageId,
@@ -556,5 +562,68 @@ describe('SearchView', () => {
 		});
 		expect(spyReplaceHistory).toBeCalledWith('/message/10');
 		// TODO: find a way to trigger load of component on history change
+	});
+
+	it('should open message preview when double-clicking message in list', async () => {
+		const store = generateStore();
+		const interceptor = createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
+			m: [
+				getSoapMessage('10', { su: 'message 1 Subject' }),
+				getSoapMessage('11', { su: 'message 2 Subject' })
+			],
+			more: false
+		});
+		const queryChip: QueryChip = {
+			hasAvatar: false,
+			id: '0',
+			label: 'ciao'
+		};
+		const customSettings: Partial<AccountSettings> = {
+			prefs: {
+				zimbraPrefGroupMailBy: 'message'
+			}
+		};
+		const settings = generateSettings(customSettings);
+		jest.spyOn(hooks, 'useUserSettings').mockReturnValue(settings);
+
+		const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
+		const searchViewProps: SearchViewProps = {
+			useQuery: () => [[queryChip], noop],
+			useDisableSearch: () => [false, noop],
+			ResultsHeader: resultsHeader
+		};
+		jest.spyOn(hooks, 'useUserSettings').mockReturnValue(settings);
+
+		const spyUseGlobalExternalWindowManager = jest.spyOn(
+			externalWindowManager,
+			'useGlobalExtraWindowManager'
+		);
+		const mockCreateWindow = jest.fn();
+		const context: ExtraWindowsContextType = {
+			createWindow: mockCreateWindow
+		};
+		spyUseGlobalExternalWindowManager.mockReturnValue(context);
+		const { user } = setupTest(<SearchView {...searchViewProps} />, {
+			store
+		});
+
+		await act(async () => {
+			await interceptor;
+		});
+
+		expect(await screen.findByText('label.results_for')).toBeInTheDocument();
+
+		await waitAndMakeMessageVisible('10');
+		const messageContainer = await screen.findByTestId(`MessageListItem-10`);
+
+		await act(async () => {
+			await user.hover(messageContainer);
+		});
+
+		const clickableMessage = await screen.findByTestId(`hover-container-10`);
+		await act(async () => {
+			await user.dblClick(clickableMessage);
+		});
+		expect(mockCreateWindow).toBeCalledTimes(1);
 	});
 });
