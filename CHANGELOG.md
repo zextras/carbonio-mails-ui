@@ -2,6 +2,56 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.17.0](https://github.com/zextras/carbonio-mails-ui/compare/v1.16.7...v1.17.0) (2024-08-27)
+
+
+### Features
+
+* [CO-1258] Use lbfums param to enforce upload size limit using FileUploadMaxSizePerFile attribute  ([#645](https://github.com/zextras/carbonio-mails-ui/issues/645)) ([aeb4e59](https://github.com/zextras/carbonio-mails-ui/commit/aeb4e593a30b0297e9d72866847c51ca38b8dff4))
+* added parseEmail to chipInput if contacts is not available ([eb462b0](https://github.com/zextras/carbonio-mails-ui/commit/eb462b071754b3eb6da22717cafa185ae2238881))
+* added parseEmail to chipInput if contacts is not available ([10cef79](https://github.com/zextras/carbonio-mails-ui/commit/10cef79e52525097159d6445066ba76aa27de677))
+* change signature while composing the email ([6dfadee](https://github.com/zextras/carbonio-mails-ui/commit/6dfadee02ca14083c837abbb45a9d46efda27b99))
+* extract email-parser ([cf891c4](https://github.com/zextras/carbonio-mails-ui/commit/cf891c4afffe1bd87e648988e1ba7bb21c1b6d91))
+* let user being able to resize mails list view and change layout configuration ([55d294d](https://github.com/zextras/carbonio-mails-ui/commit/55d294d7abfde7d94d28daf51cb7c8a60e5e012b))
+* let user manage allowing and blocking addresses ([b777212](https://github.com/zextras/carbonio-mails-ui/commit/b777212d330b7ab73fafd0d41e2577ec4c50de5f))
+* make the fallback chip input behave like the ContactInput when unavailable ([848f2c2](https://github.com/zextras/carbonio-mails-ui/commit/848f2c248b647164d8a59741b9ce3e7ad2f9e855))
+* remove pre commit hook ([958cc0a](https://github.com/zextras/carbonio-mails-ui/commit/958cc0a1bf9187d616a0b653cb547158e07d3e60))
+* user can select different mails layout ([#648](https://github.com/zextras/carbonio-mails-ui/issues/648)) ([61fe41a](https://github.com/zextras/carbonio-mails-ui/commit/61fe41a21cd044b3e6c36bdfb2c6e6c8f2867f28))
+
+
+### Bug Fixes
+
+* [CO-1418] Handle scrolling when rendering text/plain EML ([#644](https://github.com/zextras/carbonio-mails-ui/issues/644)) ([622176e](https://github.com/zextras/carbonio-mails-ui/commit/622176e56816373565a893b0cb98135055978845))
+* account not getting updated issue and fixed tests ([c15958e](https://github.com/zextras/carbonio-mails-ui/commit/c15958e5846a6a3d2189ab2841eee8118e819f13))
+* add searchByQuery.ts thunk to handle searches in search-view ([ad7d61d](https://github.com/zextras/carbonio-mails-ui/commit/ad7d61d06b33025bf505757621d5474e84966a5f))
+* co-1138 notify user if signatures list request fails ([4ab0e62](https://github.com/zextras/carbonio-mails-ui/commit/4ab0e626365d5932d3b0191fddfb73b5f6a8ccd1))
+* co-1152 do not notify for read receipt when read only permission ([afe969a](https://github.com/zextras/carbonio-mails-ui/commit/afe969a5e72578c2d139c3f318609305dd197d3a))
+* co-1152 do not notify for read receipt when read only permission ([3d263ce](https://github.com/zextras/carbonio-mails-ui/commit/3d263cecebd3096d110ac9b31d1f50d09992e1b7))
+* co-1181 on deleting the draft clear preview panel ([41cbe98](https://github.com/zextras/carbonio-mails-ui/commit/41cbe98a707e5bf9b103425e9837cc05ee7512f8))
+* composer initialization with defaults from settings ([2f99464](https://github.com/zextras/carbonio-mails-ui/commit/2f9946443b6b4446656447fdc3ec01e884e118f8))
+* convert recipient to contacts for recipient rows ([191df21](https://github.com/zextras/carbonio-mails-ui/commit/191df217eb112da7bd0106095658ebf8fe274088))
+* correct incomingFIlters type ([50ff2a4](https://github.com/zextras/carbonio-mails-ui/commit/50ff2a4af5b2cb030587b0163ec28f3fa47d2758))
+* do not override the id field, it is set by the contact-input ([c8e7054](https://github.com/zextras/carbonio-mails-ui/commit/c8e705486d01a1e74e9d0c94b93d6f9ae9145c2d))
+* downloading attachment shows mail header ([5c06a59](https://github.com/zextras/carbonio-mails-ui/commit/5c06a5942560b081cd76fb239776d15d77cf93b2))
+* filter is not applied and produces a generic error. ([9c6f83d](https://github.com/zextras/carbonio-mails-ui/commit/9c6f83da60034d507572fb927a4c538e0b071bc8))
+* fix edit chips on recipients row ([61b316e](https://github.com/zextras/carbonio-mails-ui/commit/61b316ee06bf68afd33e6c6b3d215f5e3a810fcd))
+* fixed message slice sorting ([#649](https://github.com/zextras/carbonio-mails-ui/issues/649)) ([6210687](https://github.com/zextras/carbonio-mails-ui/commit/6210687818677c00f047e70fb798caa711bd8f1a))
+* font options alignment ([7eab2fa](https://github.com/zextras/carbonio-mails-ui/commit/7eab2faf893569006f7ef013c151849910256731))
+* message date localization ([#634](https://github.com/zextras/carbonio-mails-ui/issues/634)) ([4802f7a](https://github.com/zextras/carbonio-mails-ui/commit/4802f7a21f22050abc720740e420e643f916bb80))
+* new signatures are effectively available only after reload ([af278b3](https://github.com/zextras/carbonio-mails-ui/commit/af278b37265e4e7c9288ec48c91a5d74f1480c04))
+* removed styled component from ChipInput and disabled right click ([6802ea4](https://github.com/zextras/carbonio-mails-ui/commit/6802ea46b03cafb5698234268eba249b2c50785c))
+* resize border does not overlap scrollbar list ([c962c8b](https://github.com/zextras/carbonio-mails-ui/commit/c962c8b4fa21e92a6fa7e2bc925fa1181aa94f0d))
+* search view useEffect dependency ([d63c8da](https://github.com/zextras/carbonio-mails-ui/commit/d63c8dae2a3c9d9e6a603f15258a08958d4cf12f))
+* searchByQuery test type ([3f92fc2](https://github.com/zextras/carbonio-mails-ui/commit/3f92fc2edd764475cce11e0471dcb5d951415809))
+* setting prefs are correcly updated ([cd29937](https://github.com/zextras/carbonio-mails-ui/commit/cd29937bfb669345477829f27adca520d80bd98e))
+* sonarqube issue fixed ([638f0af](https://github.com/zextras/carbonio-mails-ui/commit/638f0af9ceecf484fc014f3b487cc45ee637d5b5))
+* type check ([67100e0](https://github.com/zextras/carbonio-mails-ui/commit/67100e04966e68c20d80ed76d6e2bc242bf50a7d))
+* type import and test fix of compose-msg-settings ([85cea8f](https://github.com/zextras/carbonio-mails-ui/commit/85cea8f41f580842ebfc78cea2ca7bbfc8af7a4f))
+* update font list aligning to the default of the composer ([db9eb32](https://github.com/zextras/carbonio-mails-ui/commit/db9eb3278a8be8a33a9adb8ab915c2936149a035))
+* update input on type debounce ([#647](https://github.com/zextras/carbonio-mails-ui/issues/647)) ([4ab06c1](https://github.com/zextras/carbonio-mails-ui/commit/4ab06c1cb9ac627bc5c6f3465dc68b82d4e97363))
+* usage of update view hook in mails module entrypoints ([#631](https://github.com/zextras/carbonio-mails-ui/issues/631)) ([7be9e05](https://github.com/zextras/carbonio-mails-ui/commit/7be9e05903e2bad637b19fa73716f818c81a031d))
+* wrong font ([3632cee](https://github.com/zextras/carbonio-mails-ui/commit/3632ceec961e0ba0e7840d0bf44537bfdabaab83))
+
 ### [1.16.7](https://github.com/zextras/carbonio-mails-ui/compare/v1.16.6...v1.16.7) (2024-07-15)
 
 

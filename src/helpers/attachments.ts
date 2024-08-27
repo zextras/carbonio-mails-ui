@@ -389,7 +389,7 @@ export const getAttachmentExtension = (
 			return {
 				value: isNil(FileExtensionRegex.exec(file?.filename ?? ''))
 					? '?'
-					: FileExtensionRegex.exec(file?.filename ?? '')?.[1] ?? ''
+					: (FileExtensionRegex.exec(file?.filename ?? '')?.[1] ?? '')
 			};
 	}
 };
