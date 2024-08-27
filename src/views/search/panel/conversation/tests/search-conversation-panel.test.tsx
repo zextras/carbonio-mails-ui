@@ -13,29 +13,29 @@ import produce from 'immer';
 import { noop } from 'lodash';
 import { useParams } from 'react-router-dom';
 
-import { FOLDERS } from '../../../../carbonio-ui-commons/constants/folders';
-import { useFolderStore } from '../../../../carbonio-ui-commons/store/zustand/folder';
-import { generateFolders } from '../../../../carbonio-ui-commons/test/mocks/folders/folders-generator';
-import { createSoapAPIInterceptor } from '../../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
-import { buildSoapErrorResponseBody } from '../../../../carbonio-ui-commons/test/mocks/utils/soap';
-import { screen, setupTest } from '../../../../carbonio-ui-commons/test/test-setup';
-import { API_REQUEST_STATUS } from '../../../../constants';
-import * as visibleActionsCount from '../../../../hooks/use-visible-actions-count';
+import { FOLDERS } from '../../../../../carbonio-ui-commons/constants/folders';
+import { useFolderStore } from '../../../../../carbonio-ui-commons/store/zustand/folder';
+import { generateFolders } from '../../../../../carbonio-ui-commons/test/mocks/folders/folders-generator';
+import { createSoapAPIInterceptor } from '../../../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
+import { buildSoapErrorResponseBody } from '../../../../../carbonio-ui-commons/test/mocks/utils/soap';
+import { screen, setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
+import { API_REQUEST_STATUS } from '../../../../../constants';
+import * as visibleActionsCount from '../../../../../hooks/use-visible-actions-count';
 import {
 	setSearchResultsByConversation,
 	updateConversationStatus,
 	setMessages
-} from '../../../../store/zustand/search/store';
+} from '../../../../../store/zustand/search/store';
 import {
 	createSoapAPIInterceptorWithError,
 	generateConvMessageFromAPI,
 	generateMessagePartFromAPI
-} from '../../../../tests/generators/api';
-import { generateConversation } from '../../../../tests/generators/generateConversation';
-import { generateMessage } from '../../../../tests/generators/generateMessage';
-import { generateStore } from '../../../../tests/generators/store';
-import { SearchConvRequest, SearchConvResponse, SoapMailMessage } from '../../../../types';
-import { SearchConversationPanel } from '../conversation/search-conversation-panel';
+} from '../../../../../tests/generators/api';
+import { generateConversation } from '../../../../../tests/generators/generateConversation';
+import { generateMessage } from '../../../../../tests/generators/generateMessage';
+import { generateStore } from '../../../../../tests/generators/store';
+import { SearchConvRequest, SearchConvResponse, SoapMailMessage } from '../../../../../types';
+import { SearchConversationPanel } from '../search-conversation-panel';
 
 jest.mock('react-router-dom', () => ({
 	...jest.requireActual('react-router-dom'),
