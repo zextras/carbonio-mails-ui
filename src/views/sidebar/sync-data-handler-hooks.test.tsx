@@ -17,7 +17,8 @@ import {
 	setSearchResultsByConversation,
 	setMessages,
 	useConversationById,
-	useMessageById
+	useMessageById,
+	setSearchResultsByMessage
 } from '../../store/zustand/search/store';
 import { generateConversation } from '../../tests/generators/generateConversation';
 import { generateMessage } from '../../tests/generators/generateMessage';
@@ -105,6 +106,14 @@ function mockSoapModifyMessageFolder(
 				}
 			]
 		}
+	});
+	(useNotify as jest.Mock).mockReturnValue([soapNotify]);
+}
+
+function mockSoapDelete(mailboxNumber: number, deletedIds: Array<string>): void {
+	mockSoapRefresh(mailboxNumber);
+	const soapNotify = generateSoapAction({
+		deleted: deletedIds
 	});
 	(useNotify as jest.Mock).mockReturnValue([soapNotify]);
 }
@@ -300,6 +309,33 @@ describe('sync data handler', () => {
 			const { result } = renderHook(() => useMessageById('1'));
 			await waitFor(() => {
 				expect(result.current.parent).toBe('bbb');
+			});
+		});
+
+		it('should remove messages from store when permanently deleted', async () => {
+			const completeMessage1 = generateMessage({ id: '1', folderId: 'aaa', isComplete: true });
+			const completeMessage2 = generateMessage({ id: '2', folderId: 'bbb', isComplete: true });
+			const completeMessage3 = generateMessage({ id: '3', folderId: 'bbb', isComplete: true });
+			setSearchResultsByMessage([completeMessage1, completeMessage2, completeMessage3], false);
+			mockSoapDelete(mailboxNumber, ['1', '2']);
+
+			renderHook(() => useSyncDataHandler(), {
+				wrapper: getWrapper()
+			});
+
+			const { result: message1Result } = renderHook(() => useMessageById('1'));
+			await waitFor(() => {
+				expect(message1Result.current).toBeUndefined();
+			});
+
+			const { result: message2Result } = renderHook(() => useMessageById('2'));
+			await waitFor(() => {
+				expect(message2Result.current).toBeUndefined();
+			});
+
+			const { result: message3Result } = renderHook(() => useMessageById('3'));
+			await waitFor(() => {
+				expect(message3Result.current).toBeDefined();
 			});
 		});
 	});
