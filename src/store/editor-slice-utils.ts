@@ -6,8 +6,8 @@
 import { AccountSettingsPrefs } from '@zextras/carbonio-shell-ui';
 import { concat, filter, find, forEach, isEmpty, map, reduce, some } from 'lodash';
 import moment from 'moment';
-import { FOLDERS } from '../carbonio-ui-commons/constants/folders';
 
+import { FOLDERS } from '../carbonio-ui-commons/constants/folders';
 import {
 	ParticipantRole,
 	ParticipantRoleType
