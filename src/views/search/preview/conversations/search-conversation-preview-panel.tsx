@@ -38,7 +38,12 @@ export const SearchConversationPreviewPanelContainer: FC<SearchConversationPrevi
 	);
 
 	return (
-		<Container orientation="vertical" mainAlignment="flex-start" crossAlignment="flex-start">
+		<Container
+			orientation="vertical"
+			mainAlignment="flex-start"
+			crossAlignment="flex-start"
+			data-testid={`ConversationPreview-${conversation.id}`}
+		>
 			<>
 				{!isInsideExtraWindow && <SearchPreviewPanelHeader item={conversation} />}
 
