@@ -6,7 +6,7 @@
 import React, { FC } from 'react';
 
 import { Container, Padding, Shimmer } from '@zextras/carbonio-design-system';
-import { useAppContext } from '@zextras/carbonio-shell-ui';
+import { replaceHistory, useAppContext } from '@zextras/carbonio-shell-ui';
 import { uniqBy } from 'lodash';
 import { useParams } from 'react-router-dom';
 
@@ -39,6 +39,15 @@ export const SearchMessagePanel: FC = () => {
 	const actions = isExtraWindowActions
 		? messageActions.filter((action: MessageAction) => action.id !== EXTRA_WINDOW_ACTION_ID)
 		: uniqBy([...messageActions[0], ...messageActions[1]], 'id');
+
+	if (!message)
+		replaceHistory({
+			path: '/',
+			route: 'search'
+		});
+		return <></>;
+	}
+
 
 	return (
 		<Container orientation="vertical" mainAlignment="flex-start" crossAlignment="flex-start">
