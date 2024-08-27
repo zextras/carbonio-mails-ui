@@ -11,6 +11,7 @@ import moment from 'moment';
 
 import { FolderView } from './folder-view';
 import { LayoutSelector } from './layout-selector';
+import { SearchContext } from './search-context';
 import { FOLDERS } from '../carbonio-ui-commons/constants/folders';
 import { useUpdateView } from '../carbonio-ui-commons/hooks/use-update-view';
 import { getFolderIdParts } from '../helpers/folders';
@@ -50,11 +51,13 @@ const AppView: FC = () => {
 	}, [count, isMessageView]);
 
 	return (
-		<LayoutSelector
-			folderView={<FolderView containerRef={containerRef} />}
-			detailPanel={<DetailPanel />}
-			containerRef={containerRef}
-		/>
+		<SearchContext.Provider value={false}>
+			<LayoutSelector
+				folderView={<FolderView containerRef={containerRef} />}
+				detailPanel={<DetailPanel />}
+				containerRef={containerRef}
+			/>
+		</SearchContext.Provider>
 	);
 };
 

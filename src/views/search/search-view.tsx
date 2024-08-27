@@ -30,6 +30,7 @@ import { LIST_LIMIT, MAILS_ROUTE } from '../../constants';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import { search } from '../../store/actions/search';
 import { resetSearchResults, selectSearches } from '../../store/searches-slice';
+import { SearchContext } from '../search-context';
 
 const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHeader }) => {
 	useUpdateView();
@@ -218,7 +219,7 @@ const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHe
 	const resultLabelType = isInvalidQuery ? 'warning' : undefined;
 
 	return (
-		<>
+		<SearchContext.Provider value>
 			<Container>
 				{/* TOFIX-SHELL: labetype is missing in shell type declaration as optional and string */}
 				<ResultsHeader
@@ -281,7 +282,7 @@ const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHe
 				open={showAdvanceFilters}
 				onClose={(): void => setShowAdvanceFilters(false)}
 			/>
-		</>
+		</SearchContext.Provider>
 	);
 };
 
