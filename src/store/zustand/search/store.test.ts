@@ -26,7 +26,9 @@ import {
 	deleteConversations,
 	useSearchResults,
 	updateMessageStatus,
-	useMessageStatus
+	useMessageStatus,
+	setSearchResultsByMessage,
+	deleteMessages
 } from './store';
 import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
 import { API_REQUEST_STATUS } from '../../../constants';
@@ -211,6 +213,28 @@ describe('message store', () => {
 			expect(renderHook(() => useMessageById('1')).result.current).toBeDefined();
 			expect(renderHook(() => useMessageById('2')).result.current).toBeDefined();
 			expect(renderHook(() => useMessageById('3')).result.current).toBeDefined();
+		});
+
+		it('should delete messages from populatedItems and messageIds', () => {
+			const messages = [
+				generateMessage({ id: '1' }),
+				generateMessage({ id: '2' }),
+				generateMessage({ id: '3' })
+			];
+			setSearchResultsByMessage(messages, false);
+			setMessages(messages);
+
+			deleteMessages(['1', '2']);
+
+			const { result } = renderHook(() => useSearchResults());
+			const { result: message1 } = renderHook(() => useMessageById('1'));
+			const { result: message2 } = renderHook(() => useMessageById('2'));
+			const { result: message3 } = renderHook(() => useMessageById('3'));
+			expect(result.current.messageIds.size).toBe(1);
+			expect(result.current.messageIds.has('3')).toBeTruthy();
+			expect(message1.current).toBeUndefined();
+			expect(message2.current).toBeUndefined();
+			expect(message3.current).toBeDefined();
 		});
 	});
 });
