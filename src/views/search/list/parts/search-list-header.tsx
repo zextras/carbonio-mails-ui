@@ -31,29 +31,33 @@ export const SearchListHeader = ({
 	isAllSelected,
 	selectAllModeOff
 }: SearchConversationListHeaderProps): React.JSX.Element => {
-	const totalConversations = items.length;
+	const totalItems = items.length;
 
 	const selectedIds = useMemo(() => Object.keys(selected), [selected]);
 
-	return isSelectModeOn ? (
-		<MultipleSelectionActionsPanel
-			items={items}
-			folderId={folderId}
-			selectedIds={selectedIds}
-			deselectAll={deselectAll}
-			selectAll={selectAll}
-			isAllSelected={isAllSelected}
-			selectAllModeOff={selectAllModeOff}
-			setIsSelectModeOn={setIsSelectModeOn}
-		/>
-	) : (
-		<Breadcrumbs
-			folderPath={''}
-			itemsCount={totalConversations}
-			isSelectModeOn={isSelectModeOn}
-			setIsSelectModeOn={setIsSelectModeOn}
-			folderId={folderId}
-			isSearchModule
-		/>
-	);
+	if (isSelectModeOn && totalItems > 0)
+		return (
+			<MultipleSelectionActionsPanel
+				items={items}
+				folderId={folderId}
+				selectedIds={selectedIds}
+				deselectAll={deselectAll}
+				selectAll={selectAll}
+				isAllSelected={isAllSelected}
+				selectAllModeOff={selectAllModeOff}
+				setIsSelectModeOn={setIsSelectModeOn}
+			/>
+		);
+	if (totalItems > 0)
+		return (
+			<Breadcrumbs
+				folderPath={''}
+				itemsCount={totalItems}
+				isSelectModeOn={isSelectModeOn}
+				setIsSelectModeOn={setIsSelectModeOn}
+				folderId={folderId}
+				isSearchModule
+			/>
+		);
+	return <></>;
 };
