@@ -12,4 +12,7 @@ export const requestServiceCatalog = (): Promise<ServicesCatalog> =>
 			const { items } = await data.json();
 			return items;
 		})
-		.catch(() => []);
+		.catch((e) => {
+			console.error('Error fetching services catalog', e);
+			return [];
+		});
