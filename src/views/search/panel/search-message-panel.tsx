@@ -49,7 +49,12 @@ export const SearchMessagePanel: FC = () => {
 	}
 
 	return (
-		<Container orientation="vertical" mainAlignment="flex-start" crossAlignment="flex-start">
+		<Container
+			orientation="vertical"
+			mainAlignment="flex-start"
+			crossAlignment="flex-start"
+			data-testid={`MessagePanel-${message.id}`}
+		>
 			{!isInsideExtraWindow && <SearchPreviewPanelHeader item={message} />}
 			{message?.isComplete && (
 				<Container
