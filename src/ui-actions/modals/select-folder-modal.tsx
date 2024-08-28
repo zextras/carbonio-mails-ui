@@ -61,8 +61,8 @@ export const SelectFolderModal: FC<SelectFolderModalProps> = ({
 	);
 
 	const confirmActionTooltip = isConfirmDisabled
-		? disabledActionTooltip ??
-			t('label.folder_not_valid_destination', 'The selected folder is not a valid destination')
+		? (disabledActionTooltip ??
+			t('label.folder_not_valid_destination', 'The selected folder is not a valid destination'))
 		: actionTooltip;
 
 	return (

@@ -124,7 +124,7 @@ const normalizeParticipant = (
 		address:
 			isParticipant && abstractParticipant.address
 				? abstractParticipant.address
-				: abstractParticipant.email ?? '',
+				: (abstractParticipant.email ?? ''),
 		name: abstractParticipant.name,
 		fullName: isParticipant ? abstractParticipant.fullName : abstractParticipant.name,
 		email: abstractParticipant.email

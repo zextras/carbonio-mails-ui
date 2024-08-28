@@ -6,8 +6,8 @@
 import { AccountSettingsPrefs } from '@zextras/carbonio-shell-ui';
 import { concat, filter, find, forEach, isEmpty, map, reduce, some } from 'lodash';
 import moment from 'moment';
-import { FOLDERS } from '../carbonio-ui-commons/constants/folders';
 
+import { FOLDERS } from '../carbonio-ui-commons/constants/folders';
 import {
 	ParticipantRole,
 	ParticipantRoleType
@@ -260,7 +260,7 @@ export const generateMailRequest = (msg: MailMessage): SoapDraftMessageObj => {
 	const body = isHtml(msg.parts);
 	return {
 		id: msg.id === 'new' ? undefined : msg.id,
-		did: msg.isDraft ? msg.did ?? msg.id : undefined,
+		did: msg.isDraft ? (msg.did ?? msg.id) : undefined,
 		attach: { mp: retrieveAttachmentsType(msg, 'attachment') },
 		su: { _content: msg.subject ?? '' },
 		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
