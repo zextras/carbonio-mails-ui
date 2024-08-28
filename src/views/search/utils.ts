@@ -4,11 +4,13 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { TFunction } from 'i18next';
-import { reduce } from 'lodash';
+import { QueryChip } from '@zextras/carbonio-shell-ui';
+import { includes, map, reduce } from 'lodash';
 import { v4 as uuid } from 'uuid';
 
+import { findIconFromChip } from './parts/use-find-icon';
 import {
+	ChipType,
 	ContactInputItem,
 	Folder,
 	Folders,
@@ -16,39 +18,6 @@ import {
 	Query,
 	SearchQueryItem
 } from '../../types';
-
-type EmptyListMessages = { title: string; description: string }[];
-
-export const EmptyListMessages = (t: TFunction): EmptyListMessages => [
-	{
-		title: t('displayer.search_title1', 'Start another search'),
-		description: t(
-			'displayer.search_description1',
-			'Or select “Advanced Filters” to refine your search.'
-		)
-	},
-	{
-		title: t('displayer.search_title2', 'We’re sorry but there are no results for your search'),
-		description: t('displayer.search_description2', 'Try to start another search.')
-	},
-	{
-		title: t('displayer.search_title3', 'There are no results for your search.'),
-		description: t(
-			'displayer.search_description3',
-			'Check the spelling and the filters options or try with another keyword.'
-		)
-	}
-];
-
-export const EmptyFieldMessages = (t: TFunction): EmptyListMessages => [
-	{
-		title: t(
-			'displayer.search_title4',
-			'Select one or more results to perform actions or display details.'
-		),
-		description: ''
-	}
-];
 
 function getRegex(prefix?: string): RegExp {
 	return new RegExp(`^${prefix}:.*`, 'i');
@@ -97,19 +66,66 @@ export function getChipItems(chips: Query | Array<ContactInputItem>, prefix: str
 	}));
 }
 
-/**
- * Takes a Folders object and returns an array of folder names (keys)
- * that have the `perm` property set to a truthy value.
- */
-export function getFoldersNameArray(folders: Folders): Array<string> {
+export function updateQueryChips(
+	query: Array<QueryChip>,
+	isInvalidQuery: boolean,
+	// TOFIX: fix type definition in shell-ui
+	// eslint-disable-next-line @typescript-eslint/ban-types
+	updateQuery: Function
+): void {
+	const queryArray = ['has:attachment', 'is:flagged', 'is:unread'];
+
+	let _count = 0;
+	if (query?.length > 0 && !isInvalidQuery) {
+		const modifiedQuery = map(query, (q) => {
+			if (
+				(includes(queryArray, q.label) ||
+					q.label?.startsWith('subject') ||
+					q.label?.startsWith('in') ||
+					q.label?.startsWith('before') ||
+					q.label?.startsWith('after') ||
+					q.label?.startsWith('tag') ||
+					q.label?.startsWith('date')) &&
+				!includes(Object.keys(q), 'isGeneric') &&
+				!includes(Object.keys(q), 'isQueryFilter')
+			) {
+				_count += 1;
+				return findIconFromChip(q as ChipType);
+			}
+			return { ...q };
+		});
+
+		if (_count > 0) {
+			updateQuery(modifiedQuery);
+		}
+	}
+}
+
+function generateFoldersSearchQuery(foldersArray: string[]): string {
+	const foldersSearchString = foldersArray.map((folder) => `inid:"${folder}"`).join(' OR ');
+	return `( ${foldersSearchString} OR is:local) `;
+}
+function generateFoldersArray(folders: { [key: string]: Folder }): string[] {
 	return reduce(
 		folders,
-		(acc: Array<string>, value: Folder, key: string) => {
-			if (value.perm) {
-				acc.push(key);
+		(acc: Array<string>, v: Folder, k: string) => {
+			if (v.perm) {
+				acc.push(k);
 			}
 			return acc;
 		},
 		[]
 	);
+}
+
+export function generateQueryString(
+	query: QueryChip[],
+	isSharedFolderIncluded: boolean,
+	folders: Folders
+): string {
+	const foldersArray = generateFoldersArray(folders);
+	const foldersToSearchInQuery = generateFoldersSearchQuery(foldersArray);
+	return isSharedFolderIncluded && foldersArray?.length > 0
+		? `(${query.map((c) => (c.value ? c.value : c.label)).join(' ')}) ${foldersToSearchInQuery}`
+		: `${query.map((c) => (c.value ? c.value : c.label)).join(' ')}`;
 }

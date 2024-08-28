@@ -56,7 +56,6 @@ export const MessageList: FC = () => {
 		isAllSelected,
 		selectAllModeOff
 	} = useSelection({
-		currentFolderId: folderId,
 		setCount,
 		count,
 		items: messages

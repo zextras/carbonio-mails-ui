@@ -10,7 +10,7 @@ import { noop } from 'lodash';
 import { AppDispatch } from '../store/redux';
 import {
 	setConversationsFlag,
-	setConversationsRead,
+	useConversationsRead,
 	useMoveConversationToTrash,
 	useSetConversationAsSpam
 } from '../ui-actions/conversation-actions';
@@ -31,7 +31,7 @@ let keySequence = '';
 export const useKeyboardShortcuts = (): ((args: HandleKeyboardShortcutsProps) => void) => {
 	const setConversationAsSpam = useSetConversationAsSpam();
 	const moveConversationToTrash = useMoveConversationToTrash();
-
+	const setConversationRead = useConversationsRead();
 	return useCallback(
 		({ event, itemId, conversations, dispatch, deselectAll, folderId }) => {
 			const conversationFlag = conversations.filter(
@@ -55,7 +55,7 @@ export const useKeyboardShortcuts = (): ((args: HandleKeyboardShortcutsProps) =>
 					case 'z': // Mark read
 						if (isGlobalContext) {
 							eventActions();
-							setConversationsRead({
+							setConversationRead({
 								ids: [itemId],
 								value: false,
 								dispatch,
@@ -68,7 +68,7 @@ export const useKeyboardShortcuts = (): ((args: HandleKeyboardShortcutsProps) =>
 					case 'mu': // Mark unread
 						if (isGlobalContext) {
 							eventActions();
-							setConversationsRead({
+							setConversationRead({
 								ids: [itemId],
 								value: true,
 								dispatch,
@@ -81,7 +81,7 @@ export const useKeyboardShortcuts = (): ((args: HandleKeyboardShortcutsProps) =>
 					case 'x': // Mark unread
 						if (isGlobalContext && itemId) {
 							eventActions();
-							setConversationsRead({
+							setConversationRead({
 								ids: [itemId],
 								value: true,
 								dispatch,
@@ -157,6 +157,6 @@ export const useKeyboardShortcuts = (): ((args: HandleKeyboardShortcutsProps) =>
 				default:
 			}
 		},
-		[moveConversationToTrash, setConversationAsSpam]
+		[moveConversationToTrash, setConversationAsSpam, setConversationRead]
 	);
 };
