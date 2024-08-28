@@ -56,7 +56,6 @@ export const MessageList: FC = () => {
 		isAllSelected,
 		selectAllModeOff
 	} = useSelection({
-		currentFolderId: folderId,
 		setCount,
 		count,
 		items: messages
@@ -140,7 +139,7 @@ export const MessageList: FC = () => {
 	);
 
 	const totalMessages = useMemo(
-		() => (sortOrder === 'readAsc' ? messages.length : folder?.n ?? messages.length ?? 0),
+		() => (sortOrder === 'readAsc' ? messages.length : (folder?.n ?? messages.length ?? 0)),
 		[folder?.n, messages.length, sortOrder]
 	);
 

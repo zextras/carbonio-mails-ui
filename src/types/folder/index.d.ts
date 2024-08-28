@@ -34,6 +34,7 @@ export type MessageListItemProps = {
 	isConversation?: boolean;
 	deselectAll: () => void;
 	currentFolderId?: string;
+	handleReplaceHistory?: () => void;
 };
 
 export type TextReadValuesType = {

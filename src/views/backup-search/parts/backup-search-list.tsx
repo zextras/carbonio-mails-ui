@@ -40,7 +40,6 @@ export const BackupSearchList = (): React.JSX.Element => {
 		selectAll,
 		isAllSelected
 	} = useSelection({
-		currentFolderId: 'backup-search',
 		setCount,
 		count,
 		items: [...Object.values(messages ?? {})]

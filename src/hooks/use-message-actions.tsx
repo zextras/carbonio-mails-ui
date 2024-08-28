@@ -38,8 +38,10 @@ import {
 } from '../ui-actions/message-actions';
 import { previewMessageOnSeparatedWindow } from '../ui-actions/preview-message-on-separated-window';
 import { applyTag } from '../ui-actions/tag-actions';
+import { useInSearchModule } from '../ui-actions/utils';
 import { useGlobalExtraWindowManager } from '../views/app/extra-windows/global-extra-window-manager';
 import { useExtraWindow } from '../views/app/extra-windows/use-extra-window';
+import { previewMessageOnSeparatedWindowAction } from '../views/search/preview/messages/search-messages-preview-actions';
 
 type ActionGeneratorProps = {
 	isInsideExtraWindow: boolean;
@@ -281,10 +283,11 @@ export const useMessageActions = (
 	message: MailMessage | undefined,
 	isAlone = false
 ): Array<MessageAction> => {
+	const inSearchModule = useInSearchModule();
 	const { folderId }: { folderId: string } = useParams();
 	const dispatch = useAppDispatch();
 	const { setCount } = useAppContext<AppContext>();
-	const { deselectAll } = useSelection({ currentFolderId: folderId, setCount, count: 0 });
+	const { deselectAll } = useSelection({ setCount, count: 0 });
 	const { isInsideExtraWindow } = useExtraWindow();
 	const { createWindow } = useGlobalExtraWindowManager();
 	const [openAppointmentComposer, isAvailable] = useIntegratedFunction('create_appointment');
@@ -355,10 +358,23 @@ export const useMessageActions = (
 		actions.push(...getSpamActions({ isInsideExtraWindow, message, dispatch, tags, folderId }));
 	}
 
-	!isInsideExtraWindow &&
-		actions.push(
-			previewMessageOnSeparatedWindow(message.id, folderId, message.subject, createWindow, actions)
-		);
+	if (inSearchModule) {
+		!isInsideExtraWindow &&
+			actions.push(
+				previewMessageOnSeparatedWindowAction(message.id, message.subject, createWindow, actions)
+			);
+	} else {
+		!isInsideExtraWindow &&
+			actions.push(
+				previewMessageOnSeparatedWindow(
+					message.id,
+					folderId,
+					message.subject,
+					createWindow,
+					actions
+				)
+			);
+	}
 
 	return actions;
 };

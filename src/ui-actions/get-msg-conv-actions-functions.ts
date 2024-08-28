@@ -15,10 +15,10 @@ import {
 	previewConversationOnSeparatedWindowAction,
 	printConversation,
 	setConversationsFlag,
-	setConversationsRead,
 	useDeleteConversationPermanently,
 	useSetConversationAsSpam,
-	useMoveConversationToFolder
+	useMoveConversationToFolder,
+	setConversationsRead
 } from './conversation-actions';
 import {
 	useCreateAppointment,
@@ -91,9 +91,7 @@ export function getReadUnreadAction({
 				ids: [id],
 				value: item.read,
 				dispatch,
-				folderId,
-				deselectAll,
-				shouldReplaceHistory: false
+				deselectAll
 			})
 		: setMsgRead({ ids: [id], value: item.read, dispatch, folderId });
 	return !foldersExcludedMarkReadUnread.includes(getFolderIdParts(folderId).id ?? '0') && action;

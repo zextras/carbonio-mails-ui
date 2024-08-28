@@ -7,6 +7,7 @@
 import { CreateSnackbarFn } from '@zextras/carbonio-design-system';
 import { TFunction } from 'i18next';
 import { find, truncate } from 'lodash';
+import { useLocation } from 'react-router-dom';
 
 import { createSmartLinksSoapAPI } from '../store/actions/create-smart-links';
 import { useEditorsStore } from '../store/zustand/editor/store';
@@ -161,4 +162,9 @@ export async function updateEditorWithSmartLinks({
 		});
 		throw err;
 	}
+}
+
+// returns if in search module or not based on path
+export function useInSearchModule(): boolean {
+	return useLocation().pathname.startsWith('/search');
 }
