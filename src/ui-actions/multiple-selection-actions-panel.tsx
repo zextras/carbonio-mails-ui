@@ -361,6 +361,7 @@ export const MultipleSelectionActionsPanel: FC<MultipleSelectionActionsPanelProp
 			padding={{ all: 'extrasmall' }}
 			mainAlignment="flex-start"
 			width="100%"
+			data-testid={'MultipleSelectionActionPanel'}
 		>
 			<Row
 				height="100%"
