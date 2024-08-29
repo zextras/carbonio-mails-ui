@@ -8,6 +8,8 @@ import { useEffect, useState } from 'react';
 import { getTags, useNotify, useRefresh } from '@zextras/carbonio-shell-ui';
 import { filter, find, forEach, isEmpty, keyBy, map, reduce, sortBy } from 'lodash';
 
+import { useFolderStore } from '../../../carbonio-ui-commons/store/zustand/folder';
+import { folderWorker } from '../../../carbonio-ui-commons/worker';
 import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
 import {
 	normalizeConversation,
@@ -68,6 +70,22 @@ export const useSyncDataHandler = (): void => {
 			if (notifyList.length > 0) {
 				forEach(sortBy(notifyList, 'seq'), (notify: any) => {
 					if (!isEmpty(notify) && (notify.seq > seq || (seq > 1 && notify.seq === 1))) {
+						const isNotifyRelatedToFolders =
+							!isEmpty(notifyList) &&
+							(notify?.created?.folder ||
+								notify?.modified?.folder ||
+								notify.deleted ||
+								notify?.created?.link ||
+								notify?.modified?.link);
+
+						if (isNotifyRelatedToFolders) {
+							folderWorker.postMessage({
+								op: 'notify',
+								notify,
+								state: useFolderStore.getState().folders
+							});
+						}
+
 						const tags = getTags();
 						if (notify.created) {
 							if (notify.created.c && notify.created.m) {
