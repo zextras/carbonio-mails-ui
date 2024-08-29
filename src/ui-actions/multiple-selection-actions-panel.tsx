@@ -13,7 +13,7 @@ import {
 	Row,
 	Tooltip
 } from '@zextras/carbonio-design-system';
-import { t, useTags } from '@zextras/carbonio-shell-ui';
+import { t, useTags, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { every, filter, findIndex, includes, some } from 'lodash';
 
 import {
@@ -70,7 +70,8 @@ export const MultipleSelectionActionsPanel: FC<MultipleSelectionActionsPanelProp
 	folderId
 }) => {
 	const { createSnackbar } = useUiUtilities();
-	const isConversation = 'messages' in (items?.[0] || {});
+	const { zimbraPrefGroupMailBy } = useUserSettings().prefs;
+	const isConversation = zimbraPrefGroupMailBy === 'conversation';
 
 	const folderParentId = getFolderParentId({ folderId, isConversation, items });
 

@@ -31,6 +31,8 @@ import { generateConversation } from '../../../tests/generators/generateConversa
 import { generateMessage } from '../../../tests/generators/generateMessage';
 import { generateStore } from '../../../tests/generators/store';
 import {
+	ConvActionRequest,
+	ConvActionResponse,
 	ExtraWindowsContextType,
 	MsgActionRequest,
 	MsgActionResponse,
@@ -311,15 +313,14 @@ describe('SearchView', () => {
 			await within(itemAvatar).findByTestId('icon: Checkmark');
 			await screen.findByTestId('MultipleSelectionActionPanel');
 			const multipleSelectionTrashButton = await screen.findByTestId(
-				'primary-multi-action-button-message-trash'
+				'primary-multi-action-button-conversation-trash'
 			);
-			// TODO: change me to ConvAction, that should be the correct call
-			const apiInterceptor = createSoapAPIInterceptor<MsgActionRequest, MsgActionResponse>(
-				'MsgAction',
+			const apiInterceptor = createSoapAPIInterceptor<ConvActionRequest, ConvActionResponse>(
+				'ConvAction',
 				{
 					action: {
 						id: '123',
-						op: 'move'
+						op: 'trash'
 					}
 				}
 			);
