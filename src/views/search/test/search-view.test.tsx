@@ -453,6 +453,50 @@ describe('SearchView', () => {
 			});
 			expect(mockCreateWindow).toBeCalledTimes(1);
 		});
+
+		it('should call MsgActionRequest with operation "trash" when moving message to trash in selection mode', async () => {
+			createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
+				m: [getSoapMessage('10', { su: 'message 1 Subject' })],
+				more: false
+			});
+			const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
+			const searchViewProps: SearchViewProps = {
+				useQuery: () => [[queryChip], noop],
+				useDisableSearch: () => [false, noop],
+				ResultsHeader: resultsHeader
+			};
+			jest.spyOn(hooks, 'useAppContext').mockReturnValue(fakeCounter());
+			const { user } = setupTest(<SearchView {...searchViewProps} />, {
+				store
+			});
+			await waitAndMakeMessageVisible('10');
+			const itemAvatar = await screen.findByTestId('message-list-item-avatar-10');
+			const avatar = within(itemAvatar).getByTestId('avatar');
+			await act(async () => {
+				await user.click(avatar);
+			});
+			await within(itemAvatar).findByTestId('icon: Checkmark');
+			await screen.findByTestId('MultipleSelectionActionPanel');
+			const multipleSelectionTrashButton = await screen.findByTestId(
+				'primary-multi-action-button-message-trash'
+			);
+			const apiInterceptor = createSoapAPIInterceptor<MsgActionRequest, MsgActionResponse>(
+				'MsgAction',
+				{
+					action: {
+						id: '10',
+						op: 'trash'
+					}
+				}
+			);
+			await act(async () => {
+				await user.click(multipleSelectionTrashButton);
+			});
+
+			const receivedRequest = await apiInterceptor;
+			expect(receivedRequest.action.id).toBe('10');
+			expect(receivedRequest.action.op).toBe('trash');
+		});
 	});
 
 	it('should display a disabled Advanced Filters button when SearchDisabled is true', async () => {
