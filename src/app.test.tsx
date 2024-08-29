@@ -12,12 +12,11 @@ import App from './app';
 import * as addComponentsToShell from './app-utils/add-shell-components';
 import * as registerShellActions from './app-utils/register-shell-actions';
 import * as registerShellIntegrations from './app-utils/register-shell-integrations';
-import * as toggleBackupSearch from './app-utils/toggle-backup-search-component';
-import * as useFoldersController from './carbonio-ui-commons/hooks/use-folders-controller';
+import * as useInitializeFolders from './carbonio-ui-commons/hooks/use-initialize-folders';
 import { setupTest } from './carbonio-ui-commons/test/test-setup';
+import { BACKUP_SEARCH_ROUTE } from './constants';
 import { useBackupSearchStore } from './store/zustand/backup-search/store';
 import { DeletedMessageFromAPI } from './types';
-import { BACKUP_SEARCH_ROUTE } from './constants';
 
 function aDeletedMessage(): DeletedMessageFromAPI {
 	return {
@@ -48,7 +47,7 @@ describe('App', () => {
 	});
 
 	it('should register a "mails" route accessible from the primary bar with specific position, name and icon', () => {
-		const useFoldersControllerSpy = jest.spyOn(useFoldersController, 'useFoldersController');
+		const useInitializeFoldersSpy = jest.spyOn(useInitializeFolders, 'useInitializeFolders');
 		const addComponentsToShellSpy = jest.spyOn(addComponentsToShell, 'addComponentsToShell');
 		const registerShellActionSpy = jest.spyOn(registerShellActions, 'registerShellActions');
 		const registerShellIntegrationsSpy = jest.spyOn(
@@ -59,7 +58,7 @@ describe('App', () => {
 		expect(addComponentsToShellSpy).toHaveBeenCalled();
 		expect(registerShellActionSpy).toHaveBeenCalled();
 		expect(registerShellIntegrationsSpy).toHaveBeenCalled();
-		expect(useFoldersControllerSpy).toHaveBeenCalledWith('message');
+		expect(useInitializeFoldersSpy).toHaveBeenCalledWith('message');
 	});
 
 	it('should add the backup search route when the backup search messages are present', () => {
