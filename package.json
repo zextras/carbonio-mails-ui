@@ -1,6 +1,6 @@
 {
 	"name": "carbonio-mails-ui",
-	"version": "1.17.0",
+	"version": "1.17.2",
 	"description": "Mails module",
 	"main": "src/app.tsx",
 	"engines": {
@@ -64,8 +64,8 @@
 		"eslint-plugin-testing-library": "^5.10.1",
 		"eslint-plugin-unused-imports": "^2.0.0",
 		"eslint-stats": "^1.0.1",
-		"jest": "^29.4.2",
-		"jest-environment-jsdom": "^29.4.2",
+		"jest": "^29.5.0",
+		"jest-environment-jsdom": "^29.5.0",
 		"jest-fail-on-console": "^3.0.2",
 		"jest-fetch-mock": "^3.0.3",
 		"msw": "^2.2.3",

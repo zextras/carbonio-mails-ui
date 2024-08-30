@@ -13,7 +13,7 @@ import {
 	Row,
 	Tooltip
 } from '@zextras/carbonio-design-system';
-import { t, useTags } from '@zextras/carbonio-shell-ui';
+import { t, useTags, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { every, filter, findIndex, includes, some } from 'lodash';
 
 import {
@@ -21,8 +21,8 @@ import {
 	useMoveConversationToFolder,
 	useMoveConversationToTrash,
 	setConversationsFlag,
-	setConversationsRead,
-	useSetConversationAsSpam
+	useSetConversationAsSpam,
+	setConversationsRead
 } from './conversation-actions';
 import {
 	useDeleteMessagePermanently,
@@ -70,7 +70,8 @@ export const MultipleSelectionActionsPanel: FC<MultipleSelectionActionsPanelProp
 	folderId
 }) => {
 	const { createSnackbar } = useUiUtilities();
-	const isConversation = 'messages' in (items?.[0] || {});
+	const { zimbraPrefGroupMailBy } = useUserSettings().prefs;
+	const isConversation = zimbraPrefGroupMailBy === 'conversation';
 
 	const folderParentId = getFolderParentId({ folderId, isConversation, items });
 
@@ -124,9 +125,7 @@ export const MultipleSelectionActionsPanel: FC<MultipleSelectionActionsPanelProp
 					ids,
 					value: false,
 					dispatch,
-					folderId,
-					deselectAll,
-					shouldReplaceHistory: false
+					deselectAll
 				})
 			: setMsgRead({ ids, value: false, dispatch, folderId: folderParentId });
 		return findIndex(selectedItems, ['read', false]) !== -1 && action;
@@ -144,9 +143,7 @@ export const MultipleSelectionActionsPanel: FC<MultipleSelectionActionsPanelProp
 					ids,
 					value: true,
 					dispatch,
-					folderId,
-					deselectAll,
-					shouldReplaceHistory: false
+					deselectAll
 				})
 			: setMsgRead({ ids, value: true, dispatch, folderId: folderParentId });
 		return selectedItems.length > 0 && every(selectedItems, ['read', true]) && action;
@@ -365,6 +362,7 @@ export const MultipleSelectionActionsPanel: FC<MultipleSelectionActionsPanelProp
 			padding={{ all: 'extrasmall' }}
 			mainAlignment="flex-start"
 			width="100%"
+			data-testid={'MultipleSelectionActionPanel'}
 		>
 			<Row
 				height="100%"

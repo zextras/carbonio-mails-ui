@@ -271,6 +271,7 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps, actions }): ReactEle
 			crossAlignment="flex-start"
 			background="gray6"
 			isExpanded={open}
+			data-testid={`open-message-${message.id}`}
 			onClick={_onClick}
 		>
 			<Container height="fit" width="100%">

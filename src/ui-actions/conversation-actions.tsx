@@ -11,6 +11,7 @@ import { forEach, isArray, map } from 'lodash';
 import DeleteConvConfirm from './delete-conv-modal';
 import { errorPage } from './error-page';
 import MoveConvMessage from './move-conv-msg';
+import { useInSearchModule } from './utils';
 import { getContentForPrint } from '../commons/print-conversation/print-conversation';
 import { ConversationActionsDescriptors } from '../constants';
 import { useUiUtilities } from '../hooks/use-ui-utilities';
@@ -148,17 +149,21 @@ export function unSetMultipleConversationsFlag({
 	};
 }
 
+type SetConversationReadParameters = {
+	ids: ConvActionIdsType;
+	dispatch: AppDispatch;
+	value: ConvActionValueType;
+	deselectAll?: DeselectAllType;
+	onFulFilled?: () => void;
+};
+
 export function setConversationsRead({
 	ids,
 	value,
 	dispatch,
-	folderId,
-	shouldReplaceHistory,
-	deselectAll
-}: Pick<
-	ConvActionPropType,
-	'ids' | 'dispatch' | 'value' | 'folderId' | 'shouldReplaceHistory' | 'deselectAll'
->): ConvActionReturnType {
+	deselectAll,
+	onFulFilled
+}: SetConversationReadParameters): ConvActionReturnType {
 	const actDescriptor = value
 		? ConversationActionsDescriptors.MARK_AS_UNREAD.id
 		: ConversationActionsDescriptors.MARK_AS_READ.id;
@@ -176,14 +181,51 @@ export function setConversationsRead({
 				})
 			).then((res) => {
 				deselectAll && deselectAll();
-				if (res.type.includes('fulfilled') && shouldReplaceHistory) {
-					replaceHistory(`/folder/${folderId}`);
+				if (res.type.includes('fulfilled')) {
+					onFulFilled?.();
 				}
 			});
 		}
 	};
 }
 
+export function useConversationsRead(): ({
+	ids,
+	value,
+	dispatch,
+	folderId,
+	shouldReplaceHistory,
+	deselectAll
+}: Pick<
+	ConvActionPropType,
+	'ids' | 'dispatch' | 'value' | 'folderId' | 'shouldReplaceHistory' | 'deselectAll'
+>) => ConvActionReturnType {
+	const inSearchModule = useInSearchModule();
+	return ({
+		ids,
+		value,
+		dispatch,
+		folderId,
+		shouldReplaceHistory,
+		deselectAll
+	}: Pick<
+		ConvActionPropType,
+		'ids' | 'dispatch' | 'value' | 'folderId' | 'shouldReplaceHistory' | 'deselectAll'
+	>): ConvActionReturnType => {
+		const conditionalReplaceHistory = (): void => {
+			if (shouldReplaceHistory) {
+				inSearchModule ? replaceHistory(`/`) : replaceHistory(`/folder/${folderId}`);
+			}
+		};
+		return setConversationsRead({
+			ids,
+			value,
+			dispatch,
+			deselectAll,
+			onFulFilled: () => conditionalReplaceHistory()
+		});
+	};
+}
 export function printConversation({
 	conversation
 }: {
@@ -291,11 +333,11 @@ export const useMoveConversationToTrash = (): ((
 	conversation: Pick<ConvActionPropType, 'ids' | 'dispatch' | 'deselectAll' | 'folderId'>
 ) => ConvActionReturnType) => {
 	const { createSnackbar } = useUiUtilities();
+	const inSearchModule = useInSearchModule();
 
 	return useCallback(
 		({ ids, dispatch, deselectAll, folderId }) => {
 			const actDescriptor = ConversationActionsDescriptors.MOVE_TO_TRASH.id;
-
 			return {
 				id: actDescriptor,
 				icon: 'Trash2Outline',
@@ -311,7 +353,9 @@ export const useMoveConversationToTrash = (): ((
 						).then((res) => {
 							if (res.type.includes('fulfilled')) {
 								deselectAll?.();
-								replaceHistory(`/folder/${folderId}/conversation/${ids[0]}`);
+								if (!inSearchModule) {
+									replaceHistory(`/folder/${folderId}/conversation/${ids[0]}`);
+								}
 								createSnackbar({
 									key: `edit`,
 									replace: true,
@@ -343,7 +387,10 @@ export const useMoveConversationToTrash = (): ((
 					).then((res) => {
 						if (res.type.includes('fulfilled')) {
 							deselectAll?.();
-							replaceHistory(`/folder/${folderId}/`);
+							// TOFIX: putting the logic here is a bad choice, when possible create a specific action for the search
+							if (!inSearchModule) {
+								replaceHistory(`/folder/${folderId}/`);
+							}
 							createSnackbar({
 								key: `trash-${ids}`,
 								replace: true,
@@ -367,7 +414,7 @@ export const useMoveConversationToTrash = (): ((
 				}
 			};
 		},
-		[createSnackbar]
+		[createSnackbar, inSearchModule]
 	);
 };
 

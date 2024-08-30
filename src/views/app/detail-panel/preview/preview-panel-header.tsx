@@ -6,10 +6,10 @@
 import React, { useCallback, FC, useMemo } from 'react';
 
 import {
+	Button,
 	Container,
 	Divider,
 	Icon,
-	IconButton,
 	Row,
 	Text,
 	Tooltip
@@ -86,14 +86,15 @@ const PreviewPanelHeader: FC<{
 					</Tooltip>
 				</Row>
 				{isCurrentLayoutNoSplit && !isInsideSearch && <LayoutComponent />}
-				<IconButton
+				<Button
 					data-testid="PreviewPanelCloseIcon"
 					icon="CloseOutline"
 					onClick={replaceHistoryCallback}
-					customSize={{
-						iconSize: 'large',
-						paddingSize: 'small'
-					}}
+					size="extralarge"
+					shape="regular"
+					type="default"
+					labelColor="text"
+					backgroundColor="transparent"
 				/>
 			</Container>
 			<Divider />
