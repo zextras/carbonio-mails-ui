@@ -5,8 +5,9 @@
  */
 import { useEffect, useState } from 'react';
 
-import { getTags, useNotify, useRefresh } from '@zextras/carbonio-shell-ui';
+import { getTags, SoapNotify, useNotify, useRefresh } from '@zextras/carbonio-shell-ui';
 import { filter, find, forEach, isEmpty, keyBy, map, reduce, sortBy } from 'lodash';
+import { StoreApi, UseBoundStore } from 'zustand';
 
 import { useFolderStore } from '../../../carbonio-ui-commons/store/zustand/folder';
 import { folderWorker } from '../../../carbonio-ui-commons/worker';
@@ -39,7 +40,30 @@ import {
 	updateConversationsOnly,
 	updateMessagesOnly
 } from '../../../store/zustand/search/store';
-import type { Conversation } from '../../../types';
+import type { Conversation, FolderState } from '../../../types';
+
+function handleFoldersNotify(
+	notifyList: Array<SoapNotify>,
+	notify: SoapNotify,
+	worker: Worker,
+	store: UseBoundStore<StoreApi<FolderState>>
+): void {
+	const isNotifyRelatedToFolders =
+		!isEmpty(notifyList) &&
+		(notify?.created?.folder ||
+			notify?.modified?.folder ||
+			notify.deleted ||
+			notify?.created?.link ||
+			notify?.modified?.link);
+
+	if (isNotifyRelatedToFolders) {
+		worker.postMessage({
+			op: 'notify',
+			notify,
+			state: store.getState().folders
+		});
+	}
+}
 
 export const useSyncDataHandler = (): void => {
 	const notifyList = useNotify();
@@ -64,27 +88,12 @@ export const useSyncDataHandler = (): void => {
 			}
 		});
 	}, [currentFolder, dispatch, notifyList]);
-
 	useEffect(() => {
 		if (initialized) {
 			if (notifyList.length > 0) {
 				forEach(sortBy(notifyList, 'seq'), (notify: any) => {
 					if (!isEmpty(notify) && (notify.seq > seq || (seq > 1 && notify.seq === 1))) {
-						const isNotifyRelatedToFolders =
-							!isEmpty(notifyList) &&
-							(notify?.created?.folder ||
-								notify?.modified?.folder ||
-								notify.deleted ||
-								notify?.created?.link ||
-								notify?.modified?.link);
-
-						if (isNotifyRelatedToFolders) {
-							folderWorker.postMessage({
-								op: 'notify',
-								notify,
-								state: useFolderStore.getState().folders
-							});
-						}
+						handleFoldersNotify(notifyList, notify, folderWorker, useFolderStore);
 
 						const tags = getTags();
 						if (notify.created) {
