@@ -24,6 +24,7 @@ import type { Folder } from '../../carbonio-ui-commons/types/folder';
 import { LOCAL_STORAGES } from '../../constants';
 import { useFolders } from '../../hooks/use-folders';
 import useGetTagsAccordion from '../../hooks/use-get-tags-accordions';
+import { StoreProvider } from '../../store/redux';
 import type { SidebarComponentProps } from '../../types/sidebar';
 
 const SidebarComponent: FC<SidebarComponentProps> = memo(function SidebarComponent({ accordions }) {
@@ -59,7 +60,7 @@ const SidebarComponent: FC<SidebarComponentProps> = memo(function SidebarCompone
 });
 
 const Sidebar: FC<SecondaryBarComponentProps> = ({ expanded }) => {
-	useInitializeFolders(FOLDER_VIEW.message);
+	useInitializeFolders({ view: FOLDER_VIEW.message, StoreProvider });
 	const { path } = useRouteMatch();
 	const accordions = useFolders();
 
