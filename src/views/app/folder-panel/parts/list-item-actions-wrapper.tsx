@@ -53,7 +53,10 @@ export const ListItemActionWrapper: FC<ListItemActionWrapperProps> = ({
 	active,
 	deselectAll
 }) => {
-	const messageActions = useMessageActions(isConversation(item) ? undefined : item, true);
+	const messageActions = useMessageActions({
+		message: isConversation(item) ? undefined : item,
+		isAlone: true
+	});
 
 	const [hoverActions, dropdownActions] = useMsgConvActions({
 		item,

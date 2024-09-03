@@ -32,7 +32,7 @@ export const ConversationMessagePreview: FC<ConversationMessagePreviewProps> = (
 	);
 	const messageFromSearchStore = useMessageById(convMessage.id);
 	const message = messageFromReduxStore || messageFromSearchStore;
-	const messageActions = useMessageActions(message, isAlone);
+	const messageActions = useMessageActions({ message, isAlone });
 
 	return (
 		<Padding

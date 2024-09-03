@@ -34,6 +34,7 @@ import { MessageActionsDescriptors } from '../../../../constants';
 import { getAttachmentParts } from '../../../../helpers/attachments';
 import { getFolderIdParts } from '../../../../helpers/folders';
 import { useAppDispatch } from '../../../../hooks/redux';
+import { useMessageActions } from '../../../../hooks/use-message-actions';
 import { useRequestDebouncedMessage } from '../../../../hooks/use-request-debounced-message';
 import SharedInviteReply from '../../../../integrations/shared-invite-reply';
 import { msgAction } from '../../../../store/actions';
@@ -249,6 +250,11 @@ const MailPreviewBlock: FC<MailPreviewBlockType> = ({
 		MessageActionsDescriptors.MARK_AS_NOT_SPAM.id
 	);
 
+	const isInside = useMessageActions({
+		message,
+		isAlone: true,
+		isForExtraWindow: true
+	});
 	return (
 		<>
 			{getFolderIdParts(folderId).id === FOLDERS.SPAM && (

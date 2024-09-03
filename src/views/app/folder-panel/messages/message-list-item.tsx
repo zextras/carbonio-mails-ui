@@ -59,7 +59,7 @@ export const MessageListItem: FC<MessageListItemProps> = memo(function MessageLi
 	const dispatch = useAppDispatch();
 	const zimbraPrefMarkMsgRead = useUserSettings()?.prefs?.zimbraPrefMarkMsgRead !== '-1';
 	const { createWindow } = useGlobalExtraWindowManager();
-	const messageActions = useMessageActions(item, true);
+	const messageActions = useMessageActions({ message: item, isAlone: true });
 
 	const debouncedPushHistory = useMemo(
 		() =>

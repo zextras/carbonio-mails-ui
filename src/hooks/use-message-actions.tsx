@@ -279,16 +279,22 @@ const useDefaultActions = (): (({
  * TOFIX the folder id comparisons are weak: they're not working for shared folders nor for subfolders.
  *  Consider using/creating common utility functions
  */
-export const useMessageActions = (
-	message: MailMessage | undefined,
-	isAlone = false
-): Array<MessageAction> => {
+export const useMessageActions = ({
+	message,
+	isAlone = false,
+	isForExtraWindow
+}: {
+	message: MailMessage | undefined;
+	isAlone?: boolean;
+	isForExtraWindow?: boolean;
+}): Array<MessageAction> => {
 	const inSearchModule = useInSearchModule();
 	const { folderId }: { folderId: string } = useParams();
 	const dispatch = useAppDispatch();
 	const { setCount } = useAppContext<AppContext>();
 	const { deselectAll } = useSelection({ setCount, count: 0 });
-	const { isInsideExtraWindow } = useExtraWindow();
+	const { isInsideExtraWindow: isExtraWindow } = useExtraWindow();
+	const isInsideExtraWindow = isForExtraWindow ?? isExtraWindow;
 	const { createWindow } = useGlobalExtraWindowManager();
 	const [openAppointmentComposer, isAvailable] = useIntegratedFunction('create_appointment');
 	const getDraftsActions = useDraftActions();
