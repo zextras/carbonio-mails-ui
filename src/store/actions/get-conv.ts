@@ -23,7 +23,7 @@ export const getConv = createAsyncThunk<
 	GetConvParameters
 >(
 	'conversations/getConv',
-	async ({ conversationId, fetch = 'all' }) => {
+	async ({ conversationId, fetch = 'all', onConversationIdChange }) => {
 		const result = (await soapFetch<GetConvRequest, GetConvResponse>('GetConv', {
 			_jsns: 'urn:zimbraMail',
 			c: {
@@ -33,6 +33,21 @@ export const getConv = createAsyncThunk<
 				fetch
 			}
 		})) as GetConvResponse;
+
+		/*
+		 * A conversation has a negative id if contains only one message.
+		 * When a new message is added, the old conversation is deleted
+		 * and a new one is created with a positive id.
+		 * The backend will return the new conversation both with
+		 * the new and the old id.
+		 *
+		 * When the requested id differs from the returned id the onConversationIdChange
+		 * callback is triggered
+		 */
+		if (result.c[0].id !== conversationId) {
+			onConversationIdChange?.(result.c[0].id);
+		}
+
 		const tags = getTags();
 		const conversation = normalizeConversation({ c: result.c[0], tags });
 		const messages = map(result.c[0].m, (item) =>
