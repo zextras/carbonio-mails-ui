@@ -21,15 +21,16 @@ import {
 	ErrorSoapBodyResponse,
 	getIntegratedFunction,
 	soapFetch,
-	t,
+	useAppContext,
 	useIntegratedFunction
 } from '@zextras/carbonio-shell-ui';
 import { PreviewsManagerContext } from '@zextras/carbonio-ui-preview';
-import { filter, map } from 'lodash';
+import { filter, includes, map } from 'lodash';
+import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 
 import DeleteAttachmentModal from './delete-attachment-modal';
-import { humanFileSize, previewType } from './file-preview';
+import { humanFileSize, isDocument, previewType } from './file-preview';
 import {
 	getAttachmentIconColors,
 	getAttachmentsDownloadLink,
@@ -44,6 +45,7 @@ import { getMsgsForPrint } from '../../../../store/actions';
 import { deleteAttachments } from '../../../../store/actions/delete-all-attachments';
 import { StoreProvider } from '../../../../store/redux';
 import type {
+	AppContext,
 	AttachmentPart,
 	AttachmentType,
 	CopyToFileRequest,
@@ -125,16 +127,18 @@ const Attachment: FC<AttachmentType> = ({
 	size,
 	link,
 	downloadlink,
-	message,
+	messageId,
 	isExternalMessage = false,
 	part,
 	att,
 	openEmlPreview
 }) => {
+	const [t] = useTranslation();
 	const { createPreview } = useContext(PreviewsManagerContext);
 	const { isInsideExtraWindow } = useExtraWindow();
 	const extension = getFileExtension(att).value;
 	const { createSnackbar, createModal, closeModal } = useUiUtilities();
+	const { servicesCatalog } = useAppContext<AppContext>();
 
 	const inputRef = useRef<HTMLAnchorElement>(null);
 	const inputRef2 = useRef<HTMLAnchorElement>(null);
@@ -160,13 +164,9 @@ const Attachment: FC<AttachmentType> = ({
 
 	const isEML = extension === 'EML';
 
-	const actionTooltipText = isEML
-		? t('action.click_open', 'Click to open')
-		: t('action.click_preview', 'Click to preview');
-
 	const onDeleteAttachment = useCallback(() => {
-		dispatch(deleteAttachments({ id: message.id, attachments: [part] }));
-	}, [dispatch, message.id, part]);
+		dispatch(deleteAttachments({ id: messageId, attachments: [part] }));
+	}, [dispatch, messageId, part]);
 
 	const onDownloadAndDelete = useCallback(() => {
 		downloadAttachment();
@@ -197,7 +197,7 @@ const Attachment: FC<AttachmentType> = ({
 		(nodes) => {
 			soapFetch<CopyToFileRequest, CopyToFileResponse | ErrorSoapBodyResponse>('CopyToFiles', {
 				_jsns: 'urn:zimbraMail',
-				mid: message.id,
+				mid: messageId,
 				part: att.name,
 				destinationFolderId: nodes[0].id
 			})
@@ -239,11 +239,11 @@ const Attachment: FC<AttachmentType> = ({
 					});
 				});
 		},
-		[att.name, createSnackbar, message.id]
+		[att.name, createSnackbar, messageId, t]
 	);
 	const onCreateContact = useCallback(() => {
-		createContact({ messageId: message.id, part });
-	}, [createContact, message.id, part]);
+		createContact({ messageId, part });
+	}, [createContact, messageId, part]);
 	const isAValidDestination = useCallback((node) => node?.permissions?.can_write_file, []);
 
 	const actionTarget = useMemo(
@@ -258,15 +258,15 @@ const Attachment: FC<AttachmentType> = ({
 			canSelectOpenedFolder: true,
 			maxSelection: 1
 		}),
-		[confirmAction, isAValidDestination]
+		[confirmAction, isAValidDestination, t]
 	);
 
 	const [uploadIntegration, isUploadIntegrationAvailable] = getIntegratedFunction('select-nodes');
 
 	const showEMLPreview = useCallback(() => {
-		getMsgsForPrint({ ids: [message.id], part: att?.name })
+		getMsgsForPrint({ ids: [messageId], part: att?.name })
 			.then((res) => {
-				openEmlPreview && openEmlPreview(message.id, att?.name, res[0]);
+				openEmlPreview && openEmlPreview(messageId, att?.name, res[0]);
 			})
 			.catch(() => {
 				createSnackbar({
@@ -281,44 +281,78 @@ const Attachment: FC<AttachmentType> = ({
 					autoHideTimeout: 3000
 				});
 			});
-	}, [att?.name, createSnackbar, message.id, openEmlPreview]);
+	}, [att?.name, createSnackbar, messageId, openEmlPreview, t]);
+
+	const isCarbonioPreviewAvailable = useMemo(
+		() => includes(servicesCatalog, 'carbonio-preview'),
+		[servicesCatalog]
+	);
+
+	const isCarbonioDocsEditorAvailable = useMemo(
+		() => includes(servicesCatalog, 'carbonio-docs-editor'),
+		[servicesCatalog]
+	);
+
+	const isContentTypeDocument = isDocument(att.contentType);
+	const isPDFDocument = pType === 'pdf' && !isContentTypeDocument;
+	const isPreviewedByCarbonioPreview =
+		(isPDFDocument || pType === 'image') && isCarbonioPreviewAvailable;
+
+	const isPreviewedByCarbonioDocsEditor =
+		pType === 'pdf' && isContentTypeDocument && isCarbonioDocsEditorAvailable;
+
+	const isPreviewedByBrowser =
+		isPDFDocument &&
+		(att.name.match(UNSUPPORTED_PDF_ATTACHMENT_PARTNAME_PATTERN) || !isCarbonioPreviewAvailable);
+
+	const actionTooltipText = useMemo(() => {
+		if (isEML) {
+			return t('action.click_open', 'Click to open');
+		}
+		if (isPreviewedByCarbonioPreview || isPreviewedByCarbonioDocsEditor || isPreviewedByBrowser) {
+			return t('action.click_preview', 'Click to preview');
+		}
+		return t('action.click_download', 'Click to download');
+	}, [
+		isEML,
+		isPreviewedByBrowser,
+		isPreviewedByCarbonioDocsEditor,
+		isPreviewedByCarbonioPreview,
+		t
+	]);
 
 	const preview = useCallback(
 		(ev) => {
 			ev.preventDefault();
-			const pType = previewType(att.contentType);
-
-			if (pType === 'pdf' || pType === 'image') {
-				// TODO remove the condition and the conditional block when IRIS-3918 will be implemented
-				if (pType === 'pdf' && att.name.match(UNSUPPORTED_PDF_ATTACHMENT_PARTNAME_PATTERN)) {
-					browserPdfPreview();
-				} else {
-					createPreview({
-						src: link,
-						previewType: pType,
-						/** Left Action for the preview */
-						closeAction: {
-							id: 'close',
-							icon: 'ArrowBack',
-							tooltipLabel: t('preview.close', 'Close Preview')
-						},
-						/** Actions for the preview */
-						actions: [
-							{
-								icon: 'DownloadOutline',
-								tooltipLabel: t('label.download', 'Download'),
-								id: 'DownloadOutline',
-								onClick: downloadAttachment
-							}
-						],
-						/** Extension of the file, shown as info */
-						extension: att.filename.substring(att.filename.lastIndexOf('.') + 1),
-						/** Name of the file, shown as info */
-						filename: att.filename,
-						/** Size of the file, shown as info */
-						size: humanFileSize(att.size)
-					});
-				}
+			// TODO remove the condition and the conditional block when IRIS-3918 will be implemented
+			if (isPreviewedByBrowser) {
+				browserPdfPreview();
+			} else if (isPreviewedByCarbonioPreview || isPreviewedByCarbonioDocsEditor) {
+				createPreview({
+					src: link,
+					previewType: pType,
+					/** Left Action for the preview */
+					closeAction: {
+						id: 'close',
+						icon: 'ArrowBack',
+						tooltipLabel: t('preview.close', 'Close Preview')
+					},
+					/** Actions for the preview */
+					actions: [
+						{
+							icon: 'DownloadOutline',
+							tooltipLabel: t('label.download', 'Download'),
+							id: 'DownloadOutline',
+							onClick: downloadAttachment
+						}
+					],
+					/** Extension of the file, shown as info */
+					extension: att.filename.substring(att.filename.lastIndexOf('.') + 1),
+					/** Name of the file, shown as info */
+					filename: att.filename,
+					/** Size of the file, shown as info */
+					size: humanFileSize(att.size)
+				});
 			} else if (isEML) {
 				showEMLPreview();
 			} else if (inputRef2.current) {
@@ -329,16 +363,19 @@ const Attachment: FC<AttachmentType> = ({
 			}
 		},
 		[
-			att.contentType,
 			att.filename,
-			att.name,
 			att.size,
 			browserPdfPreview,
 			createPreview,
 			downloadAttachment,
 			isEML,
+			isPreviewedByBrowser,
+			isPreviewedByCarbonioDocsEditor,
+			isPreviewedByCarbonioPreview,
 			link,
-			showEMLPreview
+			pType,
+			showEMLPreview,
+			t
 		]
 	);
 
@@ -378,7 +415,7 @@ const Attachment: FC<AttachmentType> = ({
 			data-testid={`attachment-container-${filename}`}
 			requiresSmartLinkConversion={requiresSmartLinkConversion}
 		>
-			<Tooltip key={`${message.id}-Preview`} label={actionTooltipText}>
+			<Tooltip key={`${messageId}-Preview`} label={actionTooltipText}>
 				<Row
 					padding={{ all: 'small' }}
 					mainAlignment="flex-start"
@@ -413,7 +450,7 @@ const Attachment: FC<AttachmentType> = ({
 				<AttachmentHoverBarContainer orientation="horizontal">
 					{isUploadIntegrationAvailable && !isInsideExtraWindow && (
 						<Tooltip
-							key={`${message.id}-DriveOutline`}
+							key={`${messageId}-DriveOutline`}
 							label={
 								isInsideExtraWindow
 									? t(
@@ -434,7 +471,7 @@ const Attachment: FC<AttachmentType> = ({
 					)}
 
 					<Padding right="small">
-						<Tooltip key={`${message.id}-DownloadOutline`} label={t('label.download', 'Download')}>
+						<Tooltip key={`${messageId}-DownloadOutline`} label={t('label.download', 'Download')}>
 							<IconButton
 								data-testid={`download-attachment-${filename}`}
 								size="medium"
@@ -446,7 +483,7 @@ const Attachment: FC<AttachmentType> = ({
 					{!isExternalMessage && (
 						<Padding right="small">
 							<Tooltip
-								key={`${message.id}-DeletePermanentlyOutline`}
+								key={`${messageId}-DeletePermanentlyOutline`}
 								label={t('label.delete', 'Delete')}
 							>
 								<IconButton
@@ -461,7 +498,7 @@ const Attachment: FC<AttachmentType> = ({
 					{isAvailable && pType === 'vcard' && (
 						<Padding right="small">
 							<Tooltip
-								key={`${message.id}-UploadOutline`}
+								key={`${messageId}-UploadOutline`}
 								label={t('label.import_to_contacts', 'Import to Contacts')}
 							>
 								<IconButton
@@ -479,7 +516,7 @@ const Attachment: FC<AttachmentType> = ({
 				rel="noopener"
 				ref={inputRef2}
 				target="_blank"
-				href={`${getLocationOrigin()}/service/home/~/?auth=co&id=${message.id}&part=${part}`}
+				href={`${getLocationOrigin()}/service/home/~/?auth=co&id=${messageId}&part=${part}`}
 			/>
 			<AttachmentLink ref={inputRef} rel="noopener" target="_blank" href={downloadlink} />
 		</AttachmentContainer>
@@ -488,26 +525,35 @@ const Attachment: FC<AttachmentType> = ({
 
 const copyToFiles = (
 	att: AttachmentPart,
-	message: MailMessage,
+	messageId: string,
 	nodes: any
 ): Promise<CopyToFileResponse> =>
 	soapFetch('CopyToFiles', {
 		_jsns: 'urn:zimbraMail',
-		mid: message.id,
+		mid: messageId,
 		part: att.name,
 		destinationFolderId: nodes?.[0]?.id
 	});
 
 const AttachmentsBlock: FC<{
-	message: MailMessage;
+	messageId: MailMessage['id'];
+	messageSubject: MailMessage['subject'];
+	messageAttachments: MailMessage['attachments'];
 	isExternalMessage?: boolean;
 	openEmlPreview?: OpenEmlPreviewType;
-}> = ({ message, isExternalMessage = false, openEmlPreview }): ReactElement => {
+}> = ({
+	isExternalMessage = false,
+	openEmlPreview,
+	messageId,
+	messageSubject,
+	messageAttachments
+}): ReactElement => {
+	const [t] = useTranslation();
 	const { createSnackbar } = useUiUtilities();
 	const [expanded, setExpanded] = useState(false);
 	const attachments = useMemo(
-		() => filter(message?.attachments, { cd: 'attachment' }),
-		[message?.attachments]
+		() => filter(messageAttachments, { cd: 'attachment' }),
+		[messageAttachments]
 	);
 
 	const attachmentsCount = useMemo(() => attachments?.length || 0, [attachments]);
@@ -516,41 +562,38 @@ const AttachmentsBlock: FC<{
 	const actionsDownloadLink = useMemo(
 		() =>
 			getAttachmentsDownloadLink({
-				messageId: message.id,
-				messageSubject: message.subject,
+				messageId,
+				messageSubject,
 				attachments: attachmentsParts
 			}),
-		[message, attachmentsParts]
+		[messageId, messageSubject, attachmentsParts]
 	);
 
-	const getLabel = ({
-		allSuccess,
-		allFails
-	}: {
-		allSuccess: boolean;
-		allFails: boolean;
-	}): string => {
-		if (allSuccess) {
+	const getLabel = useCallback(
+		({ allSuccess, allFails }: { allSuccess: boolean; allFails: boolean }): string => {
+			if (allSuccess) {
+				return t(
+					'message.snackbar.all_att_saved',
+					'Attachments successfully saved in the selected folder'
+				);
+			}
+			if (allFails) {
+				return t(
+					'message.snackbar.att_err',
+					'There seems to be a problem when saving, please try again'
+				);
+			}
 			return t(
-				'message.snackbar.all_att_saved',
-				'Attachments successfully saved in the selected folder'
+				'message.snackbar.some_att_fails',
+				'There seems to be a problem when saving some files, please try again'
 			);
-		}
-		if (allFails) {
-			return t(
-				'message.snackbar.att_err',
-				'There seems to be a problem when saving, please try again'
-			);
-		}
-		return t(
-			'message.snackbar.some_att_fails',
-			'There seems to be a problem when saving some files, please try again'
-		);
-	};
+		},
+		[t]
+	);
 
 	const confirmAction = useCallback(
 		(nodes) => {
-			const promises = map(attachments, (att) => copyToFiles(att, message, nodes));
+			const promises = map(attachments, (att) => copyToFiles(att, messageId, nodes));
 			Promise.allSettled(promises).then((res: CopyToFileResponse[]) => {
 				const isFault = res.length === filter(res, (r) => r?.value?.Fault)?.length;
 				const allSuccess = isFault
@@ -569,7 +612,7 @@ const AttachmentsBlock: FC<{
 				});
 			});
 		},
-		[attachments, createSnackbar, message]
+		[attachments, createSnackbar, getLabel, messageId]
 	);
 
 	const isAValidDestination = useCallback((node) => node?.permissions?.can_write_file, []);
@@ -586,7 +629,7 @@ const AttachmentsBlock: FC<{
 			canSelectOpenedFolder: true,
 			maxSelection: 1
 		}),
-		[confirmAction, isAValidDestination]
+		[confirmAction, isAValidDestination, t]
 	);
 
 	const [uploadIntegration, isUploadIntegrationAvailable] = getIntegratedFunction('select-nodes');
@@ -609,7 +652,7 @@ const AttachmentsBlock: FC<{
 				{t('label.save_to_files', 'Save to Files')}
 			</Link>
 		);
-	}, [actionTarget, isInsideExtraWindow, isUploadIntegrationAvailable, uploadIntegration]);
+	}, [actionTarget, isInsideExtraWindow, isUploadIntegrationAvailable, t, uploadIntegration]);
 
 	const attachmentsLabel = t('label.attachment', {
 		count: attachmentsCount,
@@ -626,17 +669,17 @@ const AttachmentsBlock: FC<{
 						filename={att?.filename}
 						size={att?.size ?? 0}
 						link={getAttachmentsLink({
-							messageId: message.id,
-							messageSubject: message.subject,
+							messageId,
+							messageSubject,
 							attachments: [att.name],
 							attachmentType: att.contentType
 						})}
 						downloadlink={getAttachmentsDownloadLink({
-							messageId: message.id,
-							messageSubject: message.subject,
+							messageId,
+							messageSubject,
 							attachments: [att.name]
 						})}
-						message={message}
+						messageId={messageId}
 						isExternalMessage={isExternalMessage}
 						part={att?.name ?? ''}
 						iconColors={getAttachmentIconColors({ attachments, theme })}

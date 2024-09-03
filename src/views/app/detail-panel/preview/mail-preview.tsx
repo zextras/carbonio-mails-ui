@@ -170,7 +170,9 @@ const MailContent: FC<{
 				>
 					<Row>
 						<AttachmentsBlock
-							message={message}
+							messageId={message.id}
+							messageSubject={message.subject}
+							messageAttachments={message.attachments}
 							isExternalMessage={isExternalMessage}
 							openEmlPreview={openEmlPreview}
 						/>
