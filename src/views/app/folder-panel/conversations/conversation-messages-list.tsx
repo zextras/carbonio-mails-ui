@@ -31,7 +31,6 @@ export const ConversationMessagesList: FC<ConversationMessagesListProps> = memo(
 		const { setCount, count } = useAppContext<AppContext>();
 
 		const { selected, toggle, deselectAll, isSelectModeOn } = useSelection({
-			currentFolderId: folderId,
 			setCount,
 			count,
 			items: messages

@@ -53,7 +53,7 @@ export const ConversationList: FC = () => {
 		selectAll,
 		isAllSelected,
 		selectAllModeOff
-	} = useSelection({ currentFolderId: folderId, setCount, count, items: conversations });
+	} = useSelection({ setCount, count, items: conversations });
 
 	const folder = useFolder(folderId);
 	const hasMore = useMemo(

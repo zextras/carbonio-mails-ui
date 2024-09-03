@@ -95,6 +95,7 @@ export const ConversationPreviewPanelContainer: FC<ConversationPreviewPanelProps
 						/>
 					)}
 					<ConversationPreviewPanel
+						data-testid={`conversation-preview-panel-${conversationId}`}
 						conversation={conversation}
 						isInsideExtraWindow={isInsideExtraWindow}
 					/>

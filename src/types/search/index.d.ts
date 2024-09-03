@@ -4,34 +4,17 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { FC } from 'react';
-
 import { ChipProps, ChipItem } from '@zextras/carbonio-design-system';
 import { QueryChip } from '@zextras/carbonio-shell-ui';
 
-import { SortBy } from '../../carbonio-ui-commons/types/folder';
-import { Conversation } from '../conversations';
+import { SortBy } from '../../carbonio-ui-commons/types';
+import { NormalizedConversation } from '../conversations';
 import { KeywordState } from '../filters';
-import { MailMessage } from '../messages';
-import { SearchesStateType } from '../state';
-
-export type SearchResults = {
-	messages?: Record<string, MailMessage>;
-	conversations?: Record<string, Conversation>;
-	more: boolean;
-	offset: number;
-	sortBy: SortBy;
-	query: Array<{
-		label: string;
-		value?: string;
-		isGeneric?: boolean;
-		isQueryFilter?: boolean;
-		hasAvatar?: boolean;
-	}>;
-};
+import { IncompleteMessage, MailMessage } from '../messages';
+import { ErrorType, SearchRequestStatus } from '../state';
 
 export type SearchListProps = {
-	searchResults: SearchesStateType;
+	searchResults: Set<string>;
 	query: string;
 	loading: boolean;
 	filterCount: number;
@@ -39,6 +22,7 @@ export type SearchListProps = {
 	isInvalidQuery: boolean;
 	searchDisabled: boolean;
 	invalidQueryTooltip?: string;
+	hasMore?: boolean;
 };
 
 export type SearchChipItem = ChipItem & {
@@ -47,24 +31,9 @@ export type SearchChipItem = ChipItem & {
 	hasError?: boolean;
 };
 
-type SearchProps = {
-	useDisableSearch: () => [boolean, (arg: any, invalidQueryTooltip: string) => void];
-	useQuery: () => [Array<QueryChip>, (arg: any) => void];
-	ResultsHeader: FC<{ label: string; labelType?: string }>;
-};
-
 export type SearchPanelProps = {
-	searchResults: SearchesStateType;
+	searchResults: SearchSliceState['search'];
 	query: Array<QueryChip>;
-};
-
-export type SearchConversationListItemProps = {
-	itemId?: string;
-	item: Conversation;
-	selected: boolean;
-	selecting: boolean;
-	toggle?: (arg: string) => void;
-	active: boolean;
 };
 
 export type SearchQueryItem = {
@@ -262,3 +231,29 @@ export type ChipType = {
 	avatarBackground?: ChipProps['background'];
 	hasError?: boolean;
 };
+
+export type SearchSliceState = {
+	search: {
+		conversationIds: Set<string>;
+		messageIds: Set<string>;
+		more: boolean;
+		offset: number;
+		sortBy?: SortBy;
+		query?: string;
+		status: SearchRequestStatus;
+		parent?: string;
+		tagName?: string;
+		error?: ErrorType;
+	};
+};
+
+export type PopulatedItemsSliceState = {
+	populatedItems: {
+		messages: Record<string, MailMessage | IncompleteMessage>;
+		messagesStatus: Record<string, SearchRequestStatus>;
+		conversations: Record<string, NormalizedConversation>;
+		conversationsStatus: Record<string, SearchRequestStatus>;
+	};
+};
+
+export type MessageStoreState = PopulatedItemsSliceState & SearchSliceState;

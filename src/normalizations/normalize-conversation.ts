@@ -8,7 +8,12 @@ import { filter, find, isNil, map } from 'lodash';
 
 import { normalizeParticipantsFromSoap } from './normalize-message';
 import { omitBy } from '../commons/utils';
-import type { Conversation, SoapConversation, SoapIncompleteMessage } from '../types';
+import type {
+	Conversation,
+	NormalizedConversation,
+	SoapConversation,
+	SoapIncompleteMessage
+} from '../types';
 
 const getTagIdsFromName = (names: string | undefined, tags?: Tags): Array<string | undefined> =>
 	map(names?.split(','), (name) =>
@@ -34,6 +39,7 @@ export type NormalizeConversationProps = {
 	m?: Array<SoapIncompleteMessage>;
 };
 
+// @deprecated
 export const normalizeConversation = ({
 	c,
 	m,
@@ -67,3 +73,50 @@ export const normalizeConversation = ({
 		isNil
 	);
 };
+
+function removeUndefinedValues<T>(items: (T | undefined)[]): T[] {
+	const definedItems: T[] = [];
+	items.forEach((item) => {
+		if (item) {
+			definedItems.push(item);
+		}
+	});
+	return definedItems;
+}
+
+export const mapToNormalizedConversation = ({
+	c,
+	m,
+	tags
+}: NormalizeConversationProps): NormalizedConversation => {
+	const filteredMsgs = c?.m ?? filter(m ?? [], ['cid', c?.id]);
+	const messages = filteredMsgs?.length
+		? map(filteredMsgs, (msg) => ({
+				id: msg.id,
+				parent: msg.l,
+				date: Number(msg?.d)
+			}))
+		: undefined;
+
+	return {
+		tags: removeUndefinedValues(getTagIds(c.t, c.tn, tags)),
+		id: c.id,
+		date: c.d,
+		messages: messages || [],
+		participants: c.e ? map(c.e, normalizeParticipantsFromSoap) : [],
+		subject: c.su,
+		fragment: c.fr,
+		read: !isNil(c.f) ? !/u/.test(c.f) : c.u <= 0,
+		hasAttachment: !isNil(c.f) ? /a/.test(c.f) : false,
+		flagged: !isNil(c.f) ? /f/.test(c.f) : false,
+		urgent: !isNil(c.f) ? /!/.test(c.f) : false,
+		// Number of (nondeleted) messages. messages in trash or spam are in the count
+		messagesInConversation: c.n
+	};
+};
+
+export const normalizeConversations = (
+	soapConversations: Array<SoapConversation>,
+	tags: Tags
+): Array<NormalizedConversation> =>
+	map(soapConversations, (conv) => mapToNormalizedConversation({ c: conv, tags }));

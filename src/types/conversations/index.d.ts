@@ -30,6 +30,22 @@ export type Conversation = {
 	sortIndex: number;
 };
 
+// A Conversation has no parent/folder. Only the messages in it have it.
+export type NormalizedConversation = {
+	readonly id: string;
+	date: number;
+	messages: Array<ConvMessage>;
+	participants: Participant[];
+	subject: string;
+	fragment: string;
+	read: boolean;
+	hasAttachment: boolean;
+	flagged: boolean;
+	urgent: boolean;
+	tags: string[];
+	messagesInConversation: number;
+};
+
 export type ConvActionParameters = {
 	ids: Array<string>;
 	operation: ConvActionOperation;
@@ -53,6 +69,7 @@ export type FetchConversationsParameters = {
 	recip?: '0' | '1' | '2';
 	wantContent?: 'full' | 'original' | 'both';
 	locale?: string;
+	abortSignal?: AbortSignal;
 };
 
 export type FetchConversationsReturn = {
