@@ -8,16 +8,25 @@ import React from 'react';
 import { act, screen } from '@testing-library/react';
 
 import { FolderActionsType, FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
-import { useFolderStore } from '../../../carbonio-ui-commons/store/zustand/folder';
 import * as shellMock from '../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
 import { useLocalStorage } from '../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
 import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
+import { populateFoldersStore } from '../../../carbonio-ui-commons/test/mocks/store/folders';
 import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
 import { MAIL_APP_ID, MAILS_ROUTE } from '../../../constants';
 import { generateStore } from '../../../tests/generators/store';
 import { SoapFolderAction } from '../../../types';
 import Sidebar from '../sidebar';
 
+// Mocking the worker. In commons jest-setup the worker is already mocked, but is improperly defined with wrong types and
+// is causing a call to "onMessage", which tries to alter the folders store and overrides the folders, breaking the test.
+// It also causes warning/errors due the fact it tries to set an "undefined" in the folders.
+// I think we should consider removing that mock or redefine it or make it configurable
+jest.mock('../../../carbonio-ui-commons/worker', () => ({
+	folderWorker: {
+		postMessage: (msg: string): void => {}
+	}
+}));
 describe('Mark all as read', () => {
 	shellMock.getCurrentRoute.mockReturnValue({
 		route: MAILS_ROUTE,
@@ -29,7 +38,7 @@ describe('Mark all as read', () => {
 		const folderId = FOLDERS.INBOX;
 		useLocalStorage.mockReturnValue([[FOLDERS.USER_ROOT], jest.fn()]);
 
-		useFolderStore.setState({ folders: {} });
+		populateFoldersStore();
 		const options = {
 			store: generateStore(),
 			initialEntries: [`/mails/folder/${folderId}`],
