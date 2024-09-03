@@ -16,7 +16,6 @@ import SearchPanel from './panel/search-panel';
 import { useIsMessageView, useRunSearch } from './search-view-hooks';
 import { useUpdateView } from '../../carbonio-ui-commons/hooks/use-update-view';
 import { API_REQUEST_STATUS } from '../../constants';
-import { SearchContext } from '../search-context';
 
 const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHeader }) => {
 	useUpdateView();
@@ -72,7 +71,7 @@ const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHe
 	}, [setShowAdvanceFilters]);
 
 	return (
-		<SearchContext.Provider value>
+		<>
 			<Container>
 				{/* TOFIX-SHELL: labetype is missing in shell type declaration as optional and string */}
 				<ResultsHeader
@@ -137,7 +136,7 @@ const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHe
 				open={showAdvanceFilters}
 				onClose={onCloseCallback}
 			/>
-		</SearchContext.Provider>
+		</>
 	);
 };
 

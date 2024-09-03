@@ -21,7 +21,6 @@ import { ConversationPreviewHeaderNavigation } from './conversation-preview-head
 import { MessagePreviewHeaderNavigation } from './message-preview-header-navigation';
 import { useViewLayout } from '../../../../hooks/use-view-layout';
 import type { MailMessage } from '../../../../types';
-import { useSearchContext } from '../../../search-context';
 import { LayoutComponent } from '../../folder-panel/parts/layout-component';
 
 const PreviewHeaderNavigation = ({
@@ -54,7 +53,6 @@ const PreviewPanelHeader: FC<{
 	);
 
 	const { isCurrentLayoutNoSplit } = useViewLayout();
-	const isInsideSearch = useSearchContext();
 
 	return (
 		<>
@@ -68,7 +66,7 @@ const PreviewPanelHeader: FC<{
 				padding={{ left: 'large', right: 'extrasmall' }}
 				style={{ minHeight: '3rem' }}
 			>
-				{isCurrentLayoutNoSplit && !isInsideSearch && (
+				{isCurrentLayoutNoSplit && (
 					<Row padding={{ right: 'large' }}>
 						<PreviewHeaderNavigation itemType={itemType} />
 					</Row>
@@ -85,7 +83,7 @@ const PreviewPanelHeader: FC<{
 						</Text>
 					</Tooltip>
 				</Row>
-				{isCurrentLayoutNoSplit && !isInsideSearch && <LayoutComponent />}
+				{isCurrentLayoutNoSplit && <LayoutComponent />}
 				<Button
 					data-testid="PreviewPanelCloseIcon"
 					icon="CloseOutline"
