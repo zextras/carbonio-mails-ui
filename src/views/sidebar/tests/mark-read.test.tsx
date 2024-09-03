@@ -5,13 +5,13 @@
  */
 import React from 'react';
 
-import { fireEvent, screen } from '@testing-library/react';
+import { act, screen } from '@testing-library/react';
 
 import { FolderActionsType, FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
+import { useFolderStore } from '../../../carbonio-ui-commons/store/zustand/folder';
 import * as shellMock from '../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
 import { useLocalStorage } from '../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
 import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
-import { populateFoldersStore } from '../../../carbonio-ui-commons/test/mocks/store/folders';
 import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
 import { MAIL_APP_ID, MAILS_ROUTE } from '../../../constants';
 import { generateStore } from '../../../tests/generators/store';
@@ -29,17 +29,54 @@ describe('Mark all as read', () => {
 		const folderId = FOLDERS.INBOX;
 		useLocalStorage.mockReturnValue([[FOLDERS.USER_ROOT], jest.fn()]);
 
-		populateFoldersStore();
+		useFolderStore.setState({ folders: {} });
 		const options = {
 			store: generateStore(),
 			initialEntries: [`/mails/folder/${folderId}`],
 			path: '/mails'
 		};
 
+		const getFolderInterceptor = createSoapAPIInterceptor('GetFolder', {
+			folder: [
+				{
+					id: '1',
+					name: 'USER_ROOT',
+					folder: [
+						{
+							id: '2',
+							isLink: false,
+							uuid: 'eb4d8118-ea4f-488c-a4ad-293bb11f7495',
+							deletable: false,
+							name: 'INBOX',
+							absFolderPath: '/INBOX',
+							l: '1',
+							luuid: '86c8fdd1-f993-43d5-ae5c-06631f9150c5',
+							view: 'message',
+							rev: 1,
+							ms: 1,
+							webOfflineSyncDays: 0,
+							activesyncdisabled: false,
+							n: 0,
+							s: 0,
+							i4ms: 1,
+							i4next: 15
+						}
+					]
+				}
+			]
+		});
+
+		const getShareInfoInterceptor = createSoapAPIInterceptor('GetShareInfo', undefined);
+
 		const { user } = setupTest(<Sidebar expanded />, options);
+		await getFolderInterceptor;
+		await getShareInfoInterceptor;
 
 		const inboxItem = screen.getByTestId(`accordion-folder-item-${folderId}`);
-		fireEvent.contextMenu(inboxItem);
+
+		act(() => {
+			user.rightClick(inboxItem);
+		});
 		await screen.findByTestId(`folder-context-menu-${folderId}`);
 		const actionMenuItem = await screen.findByTestId(
 			`folder-action-${FolderActionsType.MARK_ALL_READ}`
@@ -48,7 +85,9 @@ describe('Mark all as read', () => {
 			'FolderAction'
 		);
 
-		await user.click(actionMenuItem);
+		await act(async () => {
+			await user.click(actionMenuItem);
+		});
 
 		const { action } = await folderActionInterceptor;
 		expect(action.l).toBe(folderId);
