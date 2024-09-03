@@ -53,15 +53,16 @@ export const ListItemActionWrapper: FC<ListItemActionWrapperProps> = ({
 	active,
 	deselectAll
 }) => {
-	const messageActions = useMessageActions({
+	const messageActionsForExtraWindow = useMessageActions({
 		message: isConversation(item) ? undefined : item,
-		isAlone: true
+		isAlone: true,
+		isForExtraWindow: true
 	});
 
 	const [hoverActions, dropdownActions] = useMsgConvActions({
 		item,
 		deselectAll,
-		messageActionsForExtraWindow: messageActions
+		messageActionsForExtraWindow
 	});
 	const finalDropdownActions = dropdownActions.filter(
 		(action: MessageAction) => action.id !== MessageActionsDescriptors.CREATE_APPOINTMENT.id
