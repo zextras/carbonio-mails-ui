@@ -138,7 +138,7 @@ const Attachment: FC<AttachmentType> = ({
 	const { isInsideExtraWindow } = useExtraWindow();
 	const extension = getFileExtension(att).value;
 	const { createSnackbar, createModal, closeModal } = useUiUtilities();
-	const { catalog } = useAppContext<AppContext>();
+	const { servicesCatalog } = useAppContext<AppContext>();
 
 	const inputRef = useRef<HTMLAnchorElement>(null);
 	const inputRef2 = useRef<HTMLAnchorElement>(null);
@@ -284,13 +284,13 @@ const Attachment: FC<AttachmentType> = ({
 	}, [att?.name, createSnackbar, messageId, openEmlPreview, t]);
 
 	const isCarbonioPreviewAvailable = useMemo(
-		() => includes(catalog, 'carbonio-preview'),
-		[catalog]
+		() => includes(servicesCatalog, 'carbonio-preview'),
+		[servicesCatalog]
 	);
 
 	const isCarbonioDocsEditorAvailable = useMemo(
-		() => includes(catalog, 'carbonio-docs-editor'),
-		[catalog]
+		() => includes(servicesCatalog, 'carbonio-docs-editor'),
+		[servicesCatalog]
 	);
 
 	const isContentTypeDocument = isDocument(att.contentType);

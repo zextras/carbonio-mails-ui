@@ -31,7 +31,7 @@ const DetailPanel = (): React.JSX.Element => (
 
 const AppView: FC = () => {
 	const [count, setCount] = useState(0);
-	const [catalog, setCatalog] = useState<ServicesCatalog>();
+	const [servicesCatalog, setServicesCatalog] = useState<ServicesCatalog>();
 	const { zimbraPrefGroupMailBy, zimbraPrefLocale } = useUserSettings().prefs;
 	const currentFolderId = useAppSelector(selectCurrentFolder);
 	const containerRef = useRef<HTMLDivElement>(null);
@@ -51,16 +51,16 @@ const AppView: FC = () => {
 	useEffect(() => {
 		requestServiceCatalog().then((res) => {
 			if (!isNil(res)) {
-				setCatalog(res);
+				setServicesCatalog(res);
 			} else {
-				setCatalog([]);
+				setServicesCatalog([]);
 			}
 		});
 	}, []);
 
 	useEffect(() => {
-		setAppContext({ isMessageView, count, setCount, catalog });
-	}, [catalog, count, isMessageView]);
+		setAppContext({ isMessageView, count, setCount, servicesCatalog });
+	}, [servicesCatalog, count, isMessageView]);
 
 	return (
 		<LayoutSelector

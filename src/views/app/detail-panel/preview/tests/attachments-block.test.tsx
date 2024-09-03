@@ -18,7 +18,7 @@ import AttachmentsBlock from '../attachments-block';
 
 describe('attachments-block', () => {
 	test('carbonio-preview available, file is a pdf, tooltip says click to preview', async () => {
-		useAppContext.mockReturnValue({ catalog: ['carbonio-preview'] });
+		useAppContext.mockReturnValue({ servicesCatalog: ['carbonio-preview'] });
 		const store = generateStore();
 		const messageAttachments = [
 			{
@@ -44,7 +44,7 @@ describe('attachments-block', () => {
 		expect(await screen.findByText('Click to preview')).toBeVisible();
 	});
 	test('carbonio-preview available, file is a document, tooltip says click to download', async () => {
-		useAppContext.mockReturnValue({ catalog: ['carbonio-preview'] });
+		useAppContext.mockReturnValue({ servicesCatalog: ['carbonio-preview'] });
 		const store = generateStore();
 		const messageAttachments = [
 			{
@@ -70,7 +70,7 @@ describe('attachments-block', () => {
 		expect(await screen.findByText('Click to download')).toBeVisible();
 	});
 	test('carbonio-preview not available, file is a pdf, tooltip says click to preview', async () => {
-		useAppContext.mockReturnValue({ catalog: [] });
+		useAppContext.mockReturnValue({ servicesCatalog: [] });
 		const store = generateStore();
 		const messageAttachments = [
 			{
@@ -96,7 +96,7 @@ describe('attachments-block', () => {
 		expect(await screen.findByText('Click to preview')).toBeVisible();
 	});
 	test('carbonio-preview available, file is a pdf, onclick call createPreview', async () => {
-		useAppContext.mockReturnValue({ catalog: ['carbonio-preview'] });
+		useAppContext.mockReturnValue({ servicesCatalog: ['carbonio-preview'] });
 		const store = generateStore();
 		const messageAttachments = [
 			{
@@ -122,7 +122,7 @@ describe('attachments-block', () => {
 		expect(previewContextMock.createPreview).toHaveBeenCalled();
 	});
 	test('carbonio-docs-editor available, file is a document, onclick call createPreview', async () => {
-		useAppContext.mockReturnValue({ catalog: ['carbonio-docs-editor'] });
+		useAppContext.mockReturnValue({ servicesCatalog: ['carbonio-docs-editor'] });
 		const store = generateStore();
 		const messageAttachments = [
 			{
@@ -148,7 +148,7 @@ describe('attachments-block', () => {
 		expect(previewContextMock.createPreview).toHaveBeenCalled();
 	});
 	test('carbonio-docs-editor available, file is a document, tooltip says click to preview', async () => {
-		useAppContext.mockReturnValue({ catalog: ['carbonio-docs-editor'] });
+		useAppContext.mockReturnValue({ servicesCatalog: ['carbonio-docs-editor'] });
 		const store = generateStore();
 		const messageAttachments = [
 			{
@@ -174,7 +174,7 @@ describe('attachments-block', () => {
 		expect(await screen.findByText('Click to preview')).toBeVisible();
 	});
 	test('carbonio-docs-editor available, file is a pdf, tooltip says click to preview', async () => {
-		useAppContext.mockReturnValue({ catalog: ['carbonio-docs-editor'] });
+		useAppContext.mockReturnValue({ servicesCatalog: ['carbonio-docs-editor'] });
 		const store = generateStore();
 		const messageAttachments = [
 			{
@@ -200,7 +200,7 @@ describe('attachments-block', () => {
 		expect(await screen.findByText('Click to preview')).toBeVisible();
 	});
 	test('carbonio-docs-editor not available, file is a document, onclick wont call createPreview', async () => {
-		useAppContext.mockReturnValue({ catalog: [] });
+		useAppContext.mockReturnValue({ servicesCatalog: [] });
 		const store = generateStore();
 		const messageAttachments = [
 			{
