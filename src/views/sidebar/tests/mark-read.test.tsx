@@ -24,7 +24,7 @@ import Sidebar from '../sidebar';
 // I think we should consider removing that mock or redefine it or make it configurable
 jest.mock('../../../carbonio-ui-commons/worker', () => ({
 	folderWorker: {
-		postMessage: (msg: string): void => {}
+		postMessage: jest.fn()
 	}
 }));
 describe('Mark all as read', () => {
@@ -76,15 +76,13 @@ describe('Mark all as read', () => {
 		});
 
 		const getShareInfoInterceptor = createSoapAPIInterceptor('GetShareInfo', undefined);
-
 		const { user } = setupTest(<Sidebar expanded />, options);
 		await getFolderInterceptor;
 		await getShareInfoInterceptor;
 
 		const inboxItem = screen.getByTestId(`accordion-folder-item-${folderId}`);
-
-		act(() => {
-			user.rightClick(inboxItem);
+		await act(async () => {
+			await user.rightClick(inboxItem);
 		});
 		await screen.findByTestId(`folder-context-menu-${folderId}`);
 		const actionMenuItem = await screen.findByTestId(
@@ -97,7 +95,6 @@ describe('Mark all as read', () => {
 		await act(async () => {
 			await user.click(actionMenuItem);
 		});
-
 		const { action } = await folderActionInterceptor;
 		expect(action.l).toBe(folderId);
 		expect(action.op).toBe('read');
