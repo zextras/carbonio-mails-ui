@@ -28,7 +28,7 @@ import moment from 'moment';
 import { ZIMBRA_STANDARD_COLORS } from '../../../../carbonio-ui-commons/constants';
 import { useFolder } from '../../../../carbonio-ui-commons/store/zustand/folder';
 import { getTimeLabel, participantToString } from '../../../../commons/utils';
-import { EditViewActions } from '../../../../constants';
+import { EditViewActions, MessageActionsDescriptors } from '../../../../constants';
 import { useAppDispatch } from '../../../../hooks/redux';
 import { useMessageActions } from '../../../../hooks/use-message-actions';
 import { useMessageById } from '../../../../store/zustand/search/store';
@@ -97,7 +97,22 @@ export const SearchMessageListItem: FC<SearchMessageListItemProps> = memo(functi
 				});
 				return;
 			}
-			previewMessageOnSeparatedWindow(id, completeMessage.subject, createWindow, messageActions);
+			const actionsToRemove = [
+				MessageActionsDescriptors.REPLY.id,
+				MessageActionsDescriptors.REPLY_ALL.id,
+				MessageActionsDescriptors.FORWARD.id,
+				MessageActionsDescriptors.MOVE_TO_TRASH.id,
+				MessageActionsDescriptors.MOVE.id,
+				MessageActionsDescriptors.CREATE_APPOINTMENT.id,
+				MessageActionsDescriptors.REDIRECT.id,
+				MessageActionsDescriptors.EDIT_AS_NEW.id,
+				MessageActionsDescriptors.MARK_AS_SPAM.id,
+				MessageActionsDescriptors.MARK_AS_NOT_SPAM.id
+			];
+			const newMessageActions = messageActions.filter(
+				(action) => !actionsToRemove.includes(action.id)
+			);
+			previewMessageOnSeparatedWindow(id, completeMessage.subject, createWindow, newMessageActions);
 		},
 		[createWindow, completeMessage, messageActions]
 	);
