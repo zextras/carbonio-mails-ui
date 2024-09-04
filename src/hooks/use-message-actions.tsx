@@ -272,6 +272,22 @@ const useDefaultActions = (): (({
 	);
 };
 
+export function actionsForSeparatedWindow(allActions: Array<MessageAction>): Array<MessageAction> {
+	const actionsToRemove = [
+		MessageActionsDescriptors.REPLY.id,
+		MessageActionsDescriptors.REPLY_ALL.id,
+		MessageActionsDescriptors.FORWARD.id,
+		MessageActionsDescriptors.MOVE_TO_TRASH.id,
+		MessageActionsDescriptors.MOVE.id,
+		MessageActionsDescriptors.CREATE_APPOINTMENT.id,
+		MessageActionsDescriptors.REDIRECT.id,
+		MessageActionsDescriptors.EDIT_AS_NEW.id,
+		MessageActionsDescriptors.MARK_AS_SPAM.id,
+		MessageActionsDescriptors.MARK_AS_NOT_SPAM.id
+	];
+	return allActions.filter((action) => !actionsToRemove.includes(action.id));
+}
+
 /*
  * TOFIX this hook is used only by the displayer. It should be aligned/merged with
  * 	the others functions that are providing primary and secondary actions for a message
@@ -365,19 +381,7 @@ export const useMessageActions = ({
 	}
 
 	if (!isInsideExtraWindow) {
-		const actionsToRemove = [
-			MessageActionsDescriptors.REPLY.id,
-			MessageActionsDescriptors.REPLY_ALL.id,
-			MessageActionsDescriptors.FORWARD.id,
-			MessageActionsDescriptors.MOVE_TO_TRASH.id,
-			MessageActionsDescriptors.MOVE.id,
-			MessageActionsDescriptors.CREATE_APPOINTMENT.id,
-			MessageActionsDescriptors.REDIRECT.id,
-			MessageActionsDescriptors.EDIT_AS_NEW.id,
-			MessageActionsDescriptors.MARK_AS_SPAM.id,
-			MessageActionsDescriptors.MARK_AS_NOT_SPAM.id
-		];
-		const newWindowActions = actions.filter((action) => !actionsToRemove.includes(action.id));
+		const newWindowActions = actionsForSeparatedWindow(actions);
 		if (inSearchModule) {
 			actions.push(
 				previewMessageOnSeparatedWindowAction(
