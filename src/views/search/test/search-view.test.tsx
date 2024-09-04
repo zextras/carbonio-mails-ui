@@ -31,8 +31,11 @@ import { generateConversation } from '../../../tests/generators/generateConversa
 import { generateMessage } from '../../../tests/generators/generateMessage';
 import { generateStore } from '../../../tests/generators/store';
 import {
+	ConvActionRequest,
+	ConvActionResponse,
 	ExtraWindowsContextType,
 	MsgActionRequest,
+	MsgActionResponse,
 	SearchRequest,
 	SearchResponse,
 	SoapConversation,
@@ -285,6 +288,50 @@ describe('SearchView', () => {
 
 			expect(await within(itemAvatar).findByTestId('icon: Checkmark')).toBeVisible();
 		});
+
+		it('should call ConvActionRequest with operation "trash" when moving conversation two trash in selection mode', async () => {
+			createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
+				c: [getSoapConversation('123')],
+				more: false
+			});
+			const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
+			const searchViewProps: SearchViewProps = {
+				useQuery: () => [[queryChip], noop],
+				useDisableSearch: () => [false, noop],
+				ResultsHeader: resultsHeader
+			};
+			jest.spyOn(hooks, 'useAppContext').mockReturnValue(fakeCounter());
+			const { user } = setupTest(<SearchView {...searchViewProps} />, {
+				store
+			});
+			await waitAndMakeConversationVisible('123');
+			const itemAvatar = await screen.findByTestId('conversation-list-item-avatar-123');
+			const avatar = within(itemAvatar).getByTestId('avatar');
+			await act(async () => {
+				await user.click(avatar);
+			});
+			await within(itemAvatar).findByTestId('icon: Checkmark');
+			await screen.findByTestId('MultipleSelectionActionPanel');
+			const multipleSelectionTrashButton = await screen.findByTestId(
+				'primary-multi-action-button-conversation-trash'
+			);
+			const apiInterceptor = createSoapAPIInterceptor<ConvActionRequest, ConvActionResponse>(
+				'ConvAction',
+				{
+					action: {
+						id: '123',
+						op: 'trash'
+					}
+				}
+			);
+			await act(async () => {
+				await user.click(multipleSelectionTrashButton);
+			});
+
+			const receivedRequest = await apiInterceptor;
+			expect(receivedRequest.action.id).toBe('123');
+			expect(receivedRequest.action.op).toBe('trash');
+		});
 	});
 
 	describe('view by messages', () => {
@@ -406,6 +453,50 @@ describe('SearchView', () => {
 				await user.dblClick(clickableMessage);
 			});
 			expect(mockCreateWindow).toBeCalledTimes(1);
+		});
+
+		it('should call MsgActionRequest with operation "trash" when moving message to trash in selection mode', async () => {
+			createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
+				m: [getSoapMessage('10', { su: 'message 1 Subject' })],
+				more: false
+			});
+			const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
+			const searchViewProps: SearchViewProps = {
+				useQuery: () => [[queryChip], noop],
+				useDisableSearch: () => [false, noop],
+				ResultsHeader: resultsHeader
+			};
+			jest.spyOn(hooks, 'useAppContext').mockReturnValue(fakeCounter());
+			const { user } = setupTest(<SearchView {...searchViewProps} />, {
+				store
+			});
+			await waitAndMakeMessageVisible('10');
+			const itemAvatar = await screen.findByTestId('message-list-item-avatar-10');
+			const avatar = within(itemAvatar).getByTestId('avatar');
+			await act(async () => {
+				await user.click(avatar);
+			});
+			await within(itemAvatar).findByTestId('icon: Checkmark');
+			await screen.findByTestId('MultipleSelectionActionPanel');
+			const multipleSelectionTrashButton = await screen.findByTestId(
+				'primary-multi-action-button-message-trash'
+			);
+			const apiInterceptor = createSoapAPIInterceptor<MsgActionRequest, MsgActionResponse>(
+				'MsgAction',
+				{
+					action: {
+						id: '10',
+						op: 'trash'
+					}
+				}
+			);
+			await act(async () => {
+				await user.click(multipleSelectionTrashButton);
+			});
+
+			const receivedRequest = await apiInterceptor;
+			expect(receivedRequest.action.id).toBe('10');
+			expect(receivedRequest.action.op).toBe('trash');
 		});
 	});
 
