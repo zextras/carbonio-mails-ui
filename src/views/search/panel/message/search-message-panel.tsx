@@ -26,7 +26,11 @@ export const SearchMessagePanel: FC = () => {
 	const { setCount } = useAppContext<AppContext>();
 	const { deselectAll } = useSelection({ setCount, count: 0 });
 
-	const messageActionsForExtraWindow = useMessageActions({ message, isAlone: true });
+	const messageActionsForExtraWindow = useMessageActions({
+		message,
+		isAlone: true,
+		isForExtraWindow: true
+	});
 	const messageActions = useMsgConvActions({
 		item: message,
 		deselectAll,
