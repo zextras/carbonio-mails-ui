@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.18.0](https://github.com/zextras/carbonio-mails-ui/compare/v1.17.2...v1.18.0) (2024-09-03)
+
+
+### Features
+
+* add callback function to listen to conversation id changes ([6e5350d](https://github.com/zextras/carbonio-mails-ui/commit/6e5350d117282803bb08cca149dcd9959e1655c7))
+
+
+### Bug Fixes
+
+* avoid display navigation and layout switch buttons in search result preview ([d45bf05](https://github.com/zextras/carbonio-mails-ui/commit/d45bf0516ea2ea119ca575e4d65541270e304e67))
+* getConvRequest loop when replying to a single message conversation ([1eb72dd](https://github.com/zextras/carbonio-mails-ui/commit/1eb72dd962b0c238dc714869ccac93fcf8b6d329))
+* update route when conversation id is updated ([ba9dee6](https://github.com/zextras/carbonio-mails-ui/commit/ba9dee6b46a6424efa732baa6aefd493bb64076b))
+
 ### [1.17.2](https://github.com/zextras/carbonio-mails-ui/compare/v1.17.1...v1.17.2) (2024-08-29)
 
 

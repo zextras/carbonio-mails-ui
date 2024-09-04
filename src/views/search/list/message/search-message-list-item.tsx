@@ -70,7 +70,7 @@ export const SearchMessageListItem: FC<SearchMessageListItemProps> = memo(functi
 	const dispatch = useAppDispatch();
 	const zimbraPrefMarkMsgRead = useUserSettings()?.prefs?.zimbraPrefMarkMsgRead !== '-1';
 	const { createWindow } = useGlobalExtraWindowManager();
-	const messageActions = useMessageActions(completeMessage, true);
+	const messageActions = useMessageActions({ message: completeMessage, isAlone: true });
 
 	const onClick = useCallback(
 		(e) => {
