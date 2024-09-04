@@ -17,28 +17,27 @@ export const humanFileSize = (inputSize: number): string => {
 	return `${(inputSize / 1024 ** i).toFixed(2).toString()} ${['B', 'KB', 'MB', 'GB', 'TB'][i]}`;
 };
 
+export const isDocument = (contentType: string): boolean =>
+	includes(
+		[
+			'text/csv',
+			'text/plain',
+			'application/msword',
+			'application/vnd.ms-excel',
+			'application/vnd.ms-powerpoint',
+			'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+			'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+			'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+			'application/vnd.oasis.opendocument.spreadsheet',
+			'application/vnd.oasis.opendocument.presentation',
+			'application/vnd.oasis.opendocument.text'
+		],
+		contentType
+	);
+
 export const previewType = (contentType: string): 'image' | 'pdf' | 'vcard' | undefined => {
 	if (contentType?.startsWith('image') && !contentType?.includes('photoshop')) return 'image';
 	if (includes(['text/vcard'], contentType)) return 'vcard';
-	if (
-		contentType?.endsWith('pdf') ||
-		includes(
-			[
-				'text/csv',
-				'text/plain',
-				'application/msword',
-				'application/vnd.ms-excel',
-				'application/vnd.ms-powerpoint',
-				'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-				'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-				'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-				'application/vnd.oasis.opendocument.spreadsheet',
-				'application/vnd.oasis.opendocument.presentation',
-				'application/vnd.oasis.opendocument.text'
-			],
-			contentType
-		)
-	)
-		return 'pdf';
+	if (contentType?.endsWith('pdf') || isDocument(contentType)) return 'pdf';
 	return undefined;
 };
