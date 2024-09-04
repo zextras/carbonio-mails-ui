@@ -13,7 +13,7 @@ import { useParams } from 'react-router-dom';
 import { useAppDispatch } from './redux';
 import { useSelection } from './use-selection';
 import { FOLDERS } from '../carbonio-ui-commons/constants/folders';
-import { EXTRA_WINDOW_ACTION_ID } from '../constants';
+import { EXTRA_WINDOW_ACTION_ID, MessageActionsDescriptors } from '../constants';
 import { getFolderIdParts } from '../helpers/folders';
 import type { AppContext, MailMessage, MessageAction } from '../types';
 import {
@@ -364,22 +364,40 @@ export const useMessageActions = ({
 		actions.push(...getSpamActions({ isInsideExtraWindow, message, dispatch, tags, folderId }));
 	}
 
-	if (inSearchModule) {
-		!isInsideExtraWindow &&
+	if (!isInsideExtraWindow) {
+		const actionsToRemove = [
+			MessageActionsDescriptors.REPLY.id,
+			MessageActionsDescriptors.REPLY_ALL.id,
+			MessageActionsDescriptors.FORWARD.id,
+			MessageActionsDescriptors.MOVE_TO_TRASH.id,
+			MessageActionsDescriptors.MOVE.id,
+			MessageActionsDescriptors.CREATE_APPOINTMENT.id,
+			MessageActionsDescriptors.REDIRECT.id,
+			MessageActionsDescriptors.EDIT_AS_NEW.id,
+			MessageActionsDescriptors.MARK_AS_SPAM.id,
+			MessageActionsDescriptors.MARK_AS_NOT_SPAM.id
+		];
+		const newWindowActions = actions.filter((action) => !actionsToRemove.includes(action.id));
+		if (inSearchModule) {
 			actions.push(
-				previewMessageOnSeparatedWindowAction(message.id, message.subject, createWindow, actions)
+				previewMessageOnSeparatedWindowAction(
+					message.id,
+					message.subject,
+					createWindow,
+					newWindowActions
+				)
 			);
-	} else {
-		!isInsideExtraWindow &&
+		} else {
 			actions.push(
 				previewMessageOnSeparatedWindow(
 					message.id,
 					folderId,
 					message.subject,
 					createWindow,
-					actions
+					newWindowActions
 				)
 			);
+		}
 	}
 
 	return actions;
