@@ -13,7 +13,7 @@ import { useParams } from 'react-router-dom';
 import { useAppDispatch } from './redux';
 import { useSelection } from './use-selection';
 import { FOLDERS } from '../carbonio-ui-commons/constants/folders';
-import { EXTRA_WINDOW_ACTION_ID } from '../constants';
+import { EXTRA_WINDOW_ACTION_ID, MessageActionsDescriptors } from '../constants';
 import { getFolderIdParts } from '../helpers/folders';
 import type { AppContext, MailMessage, MessageAction } from '../types';
 import {
@@ -272,6 +272,22 @@ const useDefaultActions = (): (({
 	);
 };
 
+export function actionsForSeparatedWindow(allActions: Array<MessageAction>): Array<MessageAction> {
+	const actionsToRemove = [
+		MessageActionsDescriptors.REPLY.id,
+		MessageActionsDescriptors.REPLY_ALL.id,
+		MessageActionsDescriptors.FORWARD.id,
+		MessageActionsDescriptors.MOVE_TO_TRASH.id,
+		MessageActionsDescriptors.MOVE.id,
+		MessageActionsDescriptors.CREATE_APPOINTMENT.id,
+		MessageActionsDescriptors.REDIRECT.id,
+		MessageActionsDescriptors.EDIT_AS_NEW.id,
+		MessageActionsDescriptors.MARK_AS_SPAM.id,
+		MessageActionsDescriptors.MARK_AS_NOT_SPAM.id
+	];
+	return allActions.filter((action) => !actionsToRemove.includes(action.id));
+}
+
 /*
  * TOFIX this hook is used only by the displayer. It should be aligned/merged with
  * 	the others functions that are providing primary and secondary actions for a message
@@ -279,16 +295,22 @@ const useDefaultActions = (): (({
  * TOFIX the folder id comparisons are weak: they're not working for shared folders nor for subfolders.
  *  Consider using/creating common utility functions
  */
-export const useMessageActions = (
-	message: MailMessage | undefined,
-	isAlone = false
-): Array<MessageAction> => {
+export const useMessageActions = ({
+	message,
+	isAlone = false,
+	isForExtraWindow
+}: {
+	message: MailMessage | undefined;
+	isAlone?: boolean;
+	isForExtraWindow?: boolean;
+}): Array<MessageAction> => {
 	const inSearchModule = useInSearchModule();
 	const { folderId }: { folderId: string } = useParams();
 	const dispatch = useAppDispatch();
 	const { setCount } = useAppContext<AppContext>();
 	const { deselectAll } = useSelection({ setCount, count: 0 });
-	const { isInsideExtraWindow } = useExtraWindow();
+	const { isInsideExtraWindow: isExtraWindow } = useExtraWindow();
+	const isInsideExtraWindow = isForExtraWindow ?? isExtraWindow;
 	const { createWindow } = useGlobalExtraWindowManager();
 	const [openAppointmentComposer, isAvailable] = useIntegratedFunction('create_appointment');
 	const getDraftsActions = useDraftActions();
@@ -358,22 +380,28 @@ export const useMessageActions = (
 		actions.push(...getSpamActions({ isInsideExtraWindow, message, dispatch, tags, folderId }));
 	}
 
-	if (inSearchModule) {
-		!isInsideExtraWindow &&
+	if (!isInsideExtraWindow) {
+		const newWindowActions = actionsForSeparatedWindow(actions);
+		if (inSearchModule) {
 			actions.push(
-				previewMessageOnSeparatedWindowAction(message.id, message.subject, createWindow, actions)
+				previewMessageOnSeparatedWindowAction(
+					message.id,
+					message.subject,
+					createWindow,
+					newWindowActions
+				)
 			);
-	} else {
-		!isInsideExtraWindow &&
+		} else {
 			actions.push(
 				previewMessageOnSeparatedWindow(
 					message.id,
 					folderId,
 					message.subject,
 					createWindow,
-					actions
+					newWindowActions
 				)
 			);
+		}
 	}
 
 	return actions;

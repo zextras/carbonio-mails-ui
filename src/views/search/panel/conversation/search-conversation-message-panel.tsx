@@ -25,7 +25,7 @@ export const SearchConversationMessagePanel = ({
 	isInsideExtraWindow
 }: SearchConversationMessagePreviewProps): React.JSX.Element => {
 	const message = useMessageById(convMessageId);
-	const messageActions = useMessageActions(message, isAlone);
+	const messageActions = useMessageActions({ message, isAlone });
 	return (
 		<Padding bottom="medium" width="100%" data-testid={`ConversationMessagePreview-${message.id}`}>
 			<MailPreview

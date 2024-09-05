@@ -59,7 +59,11 @@ export const MessageListItem: FC<MessageListItemProps> = memo(function MessageLi
 	const dispatch = useAppDispatch();
 	const zimbraPrefMarkMsgRead = useUserSettings()?.prefs?.zimbraPrefMarkMsgRead !== '-1';
 	const { createWindow } = useGlobalExtraWindowManager();
-	const messageActions = useMessageActions(item, true);
+	const messageActionsForExtraWindow = useMessageActions({
+		message: item,
+		isAlone: true,
+		isForExtraWindow: true
+	});
 
 	const debouncedPushHistory = useMemo(
 		() =>
@@ -108,12 +112,12 @@ export const MessageListItem: FC<MessageListItemProps> = memo(function MessageLi
 						firstChildFolderId,
 						item.subject,
 						createWindow,
-						messageActions
+						messageActionsForExtraWindow
 					).onClick();
 				}
 			}
 		},
-		[createWindow, debouncedPushHistory, firstChildFolderId, item, messageActions]
+		[createWindow, debouncedPushHistory, firstChildFolderId, item, messageActionsForExtraWindow]
 	);
 
 	const accounts = useUserAccounts();
