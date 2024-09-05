@@ -3,22 +3,23 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+
 import { useCallback, useMemo } from 'react';
 
 import { useTranslation } from 'react-i18next';
 
-import { UIActionDescriptor, ActionFn } from './use-redirect-msg-descriptor';
+import { ActionFn, UIActionDescriptor } from './use-redirect-msg-descriptor';
 import { EditViewActions, MessageActionsDescriptors } from '../../constants';
 import { createEditBoard } from '../../views/app/detail-panel/edit/edit-view-board';
 
-export const useReplyMsgFn = (id: string): ActionFn<never, never> => {
+export const useReplyAllMsgFn = (id: string): ActionFn<never, never> => {
 	const canExecute = useCallback((): boolean => true, []);
 
 	const execute = useCallback(
 		(ev): void => {
 			if (ev) ev.preventDefault();
 			createEditBoard({
-				action: EditViewActions.REPLY,
+				action: EditViewActions.REPLY_ALL,
 				actionTargetId: id
 			});
 		},
@@ -28,13 +29,13 @@ export const useReplyMsgFn = (id: string): ActionFn<never, never> => {
 	return useMemo(() => ({ canExecute, execute }), [canExecute, execute]);
 };
 
-export const useReplyMsgDescriptor = (id: string): UIActionDescriptor<never, never> => {
-	const { canExecute, execute } = useReplyMsgFn(id);
+export const useReplyAllMsgDescriptor = (id: string): UIActionDescriptor<never, never> => {
+	const { canExecute, execute } = useReplyAllMsgFn(id);
 	const [t] = useTranslation();
 	return {
-		id: MessageActionsDescriptors.REPLY.id,
-		icon: 'UndoOutline',
-		label: t('action.reply', 'Reply'),
+		id: MessageActionsDescriptors.REPLY_ALL.id,
+		icon: 'ReplyAll',
+		label: t('action.reply_all', 'Reply all'),
 		execute,
 		canExecute
 	};
