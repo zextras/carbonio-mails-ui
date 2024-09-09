@@ -11,25 +11,21 @@ import { UIActionDescriptor, ActionFn } from './use-redirect-msg-descriptor';
 import { EditViewActions, MessageActionsDescriptors } from '../../constants';
 import { createEditBoard } from '../../views/app/detail-panel/edit/edit-view-board';
 
-export const useReplyMsgFn = (id: string): ActionFn<never, never> => {
+export const useReplyMsgFn = (): ActionFn<string, undefined> => {
 	const canExecute = useCallback((): boolean => true, []);
 
-	const execute = useCallback(
-		(ev): void => {
-			if (ev) ev.preventDefault();
-			createEditBoard({
-				action: EditViewActions.REPLY,
-				actionTargetId: id
-			});
-		},
-		[id]
-	);
+	const execute = useCallback((id: string): void => {
+		createEditBoard({
+			action: EditViewActions.REPLY,
+			actionTargetId: id
+		});
+	}, []);
 
 	return useMemo(() => ({ canExecute, execute }), [canExecute, execute]);
 };
 
-export const useReplyMsgDescriptor = (id: string): UIActionDescriptor<never, never> => {
-	const { canExecute, execute } = useReplyMsgFn(id);
+export const useReplyMsgDescriptor = (): UIActionDescriptor<string, undefined> => {
+	const { canExecute, execute } = useReplyMsgFn();
 	const [t] = useTranslation();
 	return {
 		id: MessageActionsDescriptors.REPLY.id,

@@ -78,19 +78,15 @@ const useRestoreMessage = (): ((
 	);
 };
 
-export const useMoveToTrashFn = ({
-	ids,
-	deselectAll,
-	folderId = FOLDERS.INBOX,
-	conversationId,
-	closeEditor
-}: {
+type MoveToTrashExecute = {
 	ids: Array<string>;
 	folderId?: string;
 	deselectAll?: () => void;
 	conversationId?: string;
 	closeEditor?: boolean;
-}): ActionFn<never, never> => {
+};
+
+export const useMoveToTrashFn = (): ActionFn<MoveToTrashExecute, undefined> => {
 	const canExecute = useCallback((): boolean => true, []);
 	const dispatch = useAppDispatch();
 	const createSnackbar = useSnackbar();
@@ -98,9 +94,13 @@ export const useMoveToTrashFn = ({
 	const inSearchModule = useInSearchModule();
 
 	const execute = useCallback(
-		(ev): void => {
-			if (ev) ev.preventDefault();
-
+		({
+			ids,
+			deselectAll,
+			folderId = FOLDERS.INBOX,
+			conversationId,
+			closeEditor
+		}: MoveToTrashExecute): void => {
 			dispatch(
 				msgAction({
 					operation: 'trash',
@@ -135,42 +135,14 @@ export const useMoveToTrashFn = ({
 				}
 			});
 		},
-		[
-			closeEditor,
-			conversationId,
-			createSnackbar,
-			deselectAll,
-			dispatch,
-			folderId,
-			ids,
-			inSearchModule,
-			restoreMessage
-		]
+		[createSnackbar, dispatch, inSearchModule, restoreMessage]
 	);
 
 	return useMemo(() => ({ canExecute, execute }), [canExecute, execute]);
 };
 
-export const useMoveToTrashDescriptor = ({
-	ids,
-	deselectAll,
-	folderId,
-	conversationId,
-	closeEditor
-}: {
-	ids: Array<string>;
-	folderId?: string;
-	deselectAll?: () => void;
-	conversationId?: string;
-	closeEditor?: boolean;
-}): UIActionDescriptor<never, never> => {
-	const { canExecute, execute } = useMoveToTrashFn({
-		ids,
-		deselectAll,
-		folderId,
-		conversationId,
-		closeEditor
-	});
+export const useMoveToTrashDescriptor = (): UIActionDescriptor<MoveToTrashExecute, undefined> => {
+	const { canExecute, execute } = useMoveToTrashFn();
 	const [t] = useTranslation();
 	return {
 		id: MessageActionsDescriptors.MOVE_TO_TRASH.id,

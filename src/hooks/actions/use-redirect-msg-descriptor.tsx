@@ -14,8 +14,8 @@ import RedirectAction from '../../ui-actions/redirect-message-action';
 import { useUiUtilities } from '../use-ui-utilities';
 
 export type ActionFn<ExecArg, CanExecArg> = {
-	execute: (arg?: ExecArg) => void;
-	canExecute: (arg?: CanExecArg) => boolean;
+	execute: (arg: ExecArg) => void;
+	canExecute: (arg: CanExecArg) => boolean;
 };
 
 export type UIActionDescriptor<ExecArg, CanExecArg> = ActionFn<ExecArg, CanExecArg> & {
@@ -24,14 +24,13 @@ export type UIActionDescriptor<ExecArg, CanExecArg> = ActionFn<ExecArg, CanExecA
 	icon: keyof DefaultTheme['icons'];
 };
 
-export const useRedirectMsgFn = (id: string): ActionFn<never, never> => {
+export const useRedirectMsgFn = (): ActionFn<never, never> => {
 	const { createModal, closeModal } = useUiUtilities();
 
 	const canExecute = useCallback((): boolean => true, []);
 
 	const execute = useCallback(
-		(ev: KeyboardEvent | React.SyntheticEvent<HTMLElement, Event> | undefined): void => {
-			if (ev) ev.preventDefault();
+		(id): void => {
 			const modalId = Date.now().toString();
 			createModal(
 				{
@@ -46,14 +45,14 @@ export const useRedirectMsgFn = (id: string): ActionFn<never, never> => {
 				true
 			);
 		},
-		[closeModal, createModal, id]
+		[closeModal, createModal]
 	);
 
 	return useMemo(() => ({ canExecute, execute }), [canExecute, execute]);
 };
 
-export const useRedirectMsgDescriptor = (id: string): UIActionDescriptor<never, never> => {
-	const { canExecute, execute } = useRedirectMsgFn(id);
+export const useRedirectMsgDescriptor = (): UIActionDescriptor<never, never> => {
+	const { canExecute, execute } = useRedirectMsgFn();
 	const [t] = useTranslation();
 	return {
 		id: MessageActionsDescriptors.REDIRECT.id,

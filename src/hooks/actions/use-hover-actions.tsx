@@ -12,9 +12,9 @@ import { useReplyAllMsgDescriptor } from './use-reply-all-msg-descriptor';
 import { useReplyMsgDescriptor } from './use-reply-msg-descriptor';
 
 export const useHoverMessageActions = (id: string): Array<UIActionDescriptor<never, never>> => {
-	const replyDescriptor = useReplyMsgDescriptor(id);
-	const replyAllDescriptor = useReplyAllMsgDescriptor(id);
-	const forwardDescriptor = useForwardMsgDescriptor(id);
+	const replyDescriptor = useReplyMsgDescriptor();
+	const replyAllDescriptor = useReplyAllMsgDescriptor();
+	const forwardDescriptor = useForwardMsgDescriptor();
 	const moveToTrashDescriptor = useMoveToTrashDescriptor();
 	return useMemo(
 		() => [
