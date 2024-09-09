@@ -273,6 +273,7 @@ export type GetConvParameters = {
 	conversationId: string;
 	fetch?: string;
 	folderId?: string;
+	onConversationIdChange?: (newConversationId: string) => void;
 };
 
 export type RedirectActionParameters = {

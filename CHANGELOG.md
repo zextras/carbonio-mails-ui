@@ -2,6 +2,32 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.18.1](https://github.com/zextras/carbonio-mails-ui/compare/v1.18.0...v1.18.1) (2024-09-05)
+
+
+### Bug Fixes
+
+* fix actions for open new tab from search item ([81069a4](https://github.com/zextras/carbonio-mails-ui/commit/81069a4218b71014cce253c11f97f5c18d6fb239))
+* hide reply and forward actions for messages opened on separated tabs ([f8ad1e2](https://github.com/zextras/carbonio-mails-ui/commit/f8ad1e2b9101332dc99048242f910d9ca1510fd2))
+* hide reply and forward actions from message preview opened in a new tab ([d3cb680](https://github.com/zextras/carbonio-mails-ui/commit/d3cb6800750abb2fcc3d5e82651846f1b85041a6))
+* removed actions for the search on doubleclick scenario ([aaaf16b](https://github.com/zextras/carbonio-mails-ui/commit/aaaf16bd9d6426a44eea27fa6e0504f99b2e2650))
+* useMessageActions signature receive object as parameter ([6deb4f8](https://github.com/zextras/carbonio-mails-ui/commit/6deb4f86e540d049454685ab4a29a14e4ffb07f4))
+* view by conversation, fix open in new tab actions ([9ea105e](https://github.com/zextras/carbonio-mails-ui/commit/9ea105e4f173ae78e15c5e4bf0c9f35cf053da9b))
+
+## [1.18.0](https://github.com/zextras/carbonio-mails-ui/compare/v1.17.2...v1.18.0) (2024-09-03)
+
+
+### Features
+
+* add callback function to listen to conversation id changes ([6e5350d](https://github.com/zextras/carbonio-mails-ui/commit/6e5350d117282803bb08cca149dcd9959e1655c7))
+
+
+### Bug Fixes
+
+* avoid display navigation and layout switch buttons in search result preview ([d45bf05](https://github.com/zextras/carbonio-mails-ui/commit/d45bf0516ea2ea119ca575e4d65541270e304e67))
+* getConvRequest loop when replying to a single message conversation ([1eb72dd](https://github.com/zextras/carbonio-mails-ui/commit/1eb72dd962b0c238dc714869ccac93fcf8b6d329))
+* update route when conversation id is updated ([ba9dee6](https://github.com/zextras/carbonio-mails-ui/commit/ba9dee6b46a6424efa732baa6aefd493bb64076b))
+
 ### [1.17.2](https://github.com/zextras/carbonio-mails-ui/compare/v1.17.1...v1.17.2) (2024-08-29)
 
 

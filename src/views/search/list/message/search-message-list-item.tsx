@@ -30,7 +30,10 @@ import { useFolder } from '../../../../carbonio-ui-commons/store/zustand/folder'
 import { getTimeLabel, participantToString } from '../../../../commons/utils';
 import { EditViewActions } from '../../../../constants';
 import { useAppDispatch } from '../../../../hooks/redux';
-import { useMessageActions } from '../../../../hooks/use-message-actions';
+import {
+	actionsForSeparatedWindow,
+	useMessageActions
+} from '../../../../hooks/use-message-actions';
 import { useMessageById } from '../../../../store/zustand/search/store';
 import { TextReadValuesType } from '../../../../types';
 import { setMsgRead } from '../../../../ui-actions/message-actions';
@@ -70,7 +73,7 @@ export const SearchMessageListItem: FC<SearchMessageListItemProps> = memo(functi
 	const dispatch = useAppDispatch();
 	const zimbraPrefMarkMsgRead = useUserSettings()?.prefs?.zimbraPrefMarkMsgRead !== '-1';
 	const { createWindow } = useGlobalExtraWindowManager();
-	const messageActions = useMessageActions(completeMessage, true);
+	const messageActions = useMessageActions({ message: completeMessage, isAlone: true });
 
 	const onClick = useCallback(
 		(e) => {
@@ -97,7 +100,8 @@ export const SearchMessageListItem: FC<SearchMessageListItemProps> = memo(functi
 				});
 				return;
 			}
-			previewMessageOnSeparatedWindow(id, completeMessage.subject, createWindow, messageActions);
+			const newMessageActions = actionsForSeparatedWindow(messageActions);
+			previewMessageOnSeparatedWindow(id, completeMessage.subject, createWindow, newMessageActions);
 		},
 		[createWindow, completeMessage, messageActions]
 	);
