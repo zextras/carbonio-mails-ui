@@ -7,16 +7,16 @@ import { useCallback, useMemo } from 'react';
 
 import { useTranslation } from 'react-i18next';
 
-import { ActionFn, UIActionDescriptor } from './use-redirect-msg-descriptor';
+import { UIActionDescriptor, ActionFn } from './use-redirect-msg';
 import { EditViewActions, MessageActionsDescriptors } from '../../constants';
 import { createEditBoard } from '../../views/app/detail-panel/edit/edit-view-board';
 
-export const useForwardMsgFn = (): ActionFn<never, never> => {
+export const useReplyMsgFn = (): ActionFn<string, undefined> => {
 	const canExecute = useCallback((): boolean => true, []);
 
-	const execute = useCallback((id) => {
+	const execute = useCallback((id: string): void => {
 		createEditBoard({
-			action: EditViewActions.FORWARD,
+			action: EditViewActions.REPLY,
 			actionTargetId: id
 		});
 	}, []);
@@ -24,13 +24,13 @@ export const useForwardMsgFn = (): ActionFn<never, never> => {
 	return useMemo(() => ({ canExecute, execute }), [canExecute, execute]);
 };
 
-export const useForwardMsgDescriptor = (): UIActionDescriptor<never, never> => {
-	const { canExecute, execute } = useForwardMsgFn();
+export const useReplyMsgDescriptor = (): UIActionDescriptor<string, undefined> => {
+	const { canExecute, execute } = useReplyMsgFn();
 	const [t] = useTranslation();
 	return {
-		id: MessageActionsDescriptors.FORWARD.id,
-		icon: 'Forward',
-		label: t('action.forward', 'Forward'),
+		id: MessageActionsDescriptors.REPLY.id,
+		icon: 'UndoOutline',
+		label: t('action.reply', 'Reply'),
 		execute,
 		canExecute
 	};

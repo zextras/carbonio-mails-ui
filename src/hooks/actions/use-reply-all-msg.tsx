@@ -8,7 +8,7 @@ import { useCallback, useMemo } from 'react';
 
 import { useTranslation } from 'react-i18next';
 
-import { ActionFn, UIActionDescriptor } from './use-redirect-msg-descriptor';
+import { ActionFn, UIActionDescriptor } from './use-redirect-msg';
 import { EditViewActions, MessageActionsDescriptors } from '../../constants';
 import { createEditBoard } from '../../views/app/detail-panel/edit/edit-view-board';
 
@@ -25,7 +25,7 @@ export const useReplyAllMsgFn = (): ActionFn<never, never> => {
 	return useMemo(() => ({ canExecute, execute }), [canExecute, execute]);
 };
 
-export const useReplyAllMsgDescriptor = (): UIActionDescriptor<never, never> => {
+export const useReplyAllMsg = (): UIActionDescriptor<never, never> => {
 	const { canExecute, execute } = useReplyAllMsgFn();
 	const [t] = useTranslation();
 	return {

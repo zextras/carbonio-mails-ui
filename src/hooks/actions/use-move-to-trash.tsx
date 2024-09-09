@@ -10,7 +10,7 @@ import { useSnackbar } from '@zextras/carbonio-design-system';
 import { replaceHistory, t } from '@zextras/carbonio-shell-ui';
 import { useTranslation } from 'react-i18next';
 
-import { ActionFn, UIActionDescriptor } from './use-redirect-msg-descriptor';
+import { ActionFn, UIActionDescriptor } from './use-redirect-msg';
 import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
 import { MessageActionsDescriptors } from '../../constants';
 import { msgAction } from '../../store/actions';
