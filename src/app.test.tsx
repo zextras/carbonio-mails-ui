@@ -6,12 +6,14 @@
 import React from 'react';
 
 import * as shellUi from '@zextras/carbonio-shell-ui';
+import { HttpResponse } from 'msw';
 import { act } from 'react-dom/test-utils';
 
 import App from './app';
 import * as addComponentsToShell from './app-utils/add-shell-components';
 import * as registerShellActions from './app-utils/register-shell-actions';
 import * as registerShellIntegrations from './app-utils/register-shell-integrations';
+import { createAPIInterceptor } from './carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { setupTest } from './carbonio-ui-commons/test/test-setup';
 import { BACKUP_SEARCH_ROUTE } from './constants';
 import { useBackupSearchStore } from './store/zustand/backup-search/store';
@@ -42,6 +44,7 @@ describe('App', () => {
 	const addRouteSpy = jest.spyOn(shellUi, 'addRoute');
 
 	beforeEach(() => {
+		createAPIInterceptor('get', 'zx/login/v3/account', HttpResponse.json({}));
 		jest.clearAllMocks();
 	});
 
