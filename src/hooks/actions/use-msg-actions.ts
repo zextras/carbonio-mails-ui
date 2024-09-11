@@ -34,6 +34,19 @@ export const useMsgActions = ({
 	const messageUnreadDescriptor = useSetMsgUnreadDescriptor();
 	const flagDescriptor = useMsgFlagDescriptor();
 	const unflagDescriptor = useMsgUnflagDescriptor();
+	const sendDraftDescriptor = usesendDraftDescriptor();
+	const markAsSpamDescriptor = useMarkAsSpamDescriptor();
+	const markAsNotSpamDescriptor = useMarkAsNotSpamDescriptor();
+	const applyTagDescriptor = useApplyTagDescriptor();
+	const moveToFolderDescriptor = useMoveToFolderDescriptor;
+	const createAppointmentDescriptor = useCreateAppointmentDescriptor();
+	const printDescriptor = usePrintDescriptor();
+	const previewOnSeparatedWindowDescriptor = usePreviewOnSeparatedWindowDescriptor();
+	const redirectDescriptor = userEdirectDescriptor();
+	const editDraftDescriptor = useEditDraftDescriptor();
+	const editAsNewDescriptor = useEditAsNewDescriptor();
+	const showOriginalDescriptor = useShowOriginalDescriptor();
+	const downloadEmlDescriptor = useDownloadEmlDescriptor();
 
 	return useMemo(
 		() => ({
@@ -45,7 +58,20 @@ export const useMsgActions = ({
 			messageReadDescriptor,
 			messageUnreadDescriptor,
 			flagDescriptor,
-			unflagDescriptor
+			unflagDescriptor,
+			sendDraftDescriptor,
+			markAsSpamDescriptor,
+			markAsNotSpamDescriptor,
+			applyTagDescriptor,
+			moveToFolderDescriptor,
+			createAppointmentDescriptor,
+			printDescriptor,
+			previewOnSeparatedWindowDescriptor,
+			redirectDescriptor,
+			editDraftDescriptor,
+			editAsNewDescriptor,
+			showOriginalDescriptor,
+			downloadEmlDescriptor
 		}),
 		[
 			deletePermanentlyDescriptor,
@@ -56,7 +82,20 @@ export const useMsgActions = ({
 			moveToTrashDescriptor,
 			replyAllDescriptor,
 			replyDescriptor,
-			unflagDescriptor
+			unflagDescriptor,
+			sendDraftDescriptor,
+			markAsSpamDescriptor,
+			markAsNotSpamDescriptor,
+			applyTagDescriptor,
+			moveToFolderDescriptor,
+			createAppointmentDescriptor,
+			printDescriptor,
+			previewOnSeparatedWindowDescriptor,
+			redirectDescriptor,
+			editDraftDescriptor,
+			editAsNewDescriptor,
+			showOriginalDescriptor,
+			downloadEmlDescriptor
 		]
 	);
 };
