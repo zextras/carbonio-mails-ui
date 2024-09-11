@@ -8,9 +8,9 @@ import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { ActionFn, UIActionDescriptor } from './use-redirect-msg';
-import { useReplyMsgFn } from './use-reply-msg';
-import { ConversationActionsDescriptors } from '../../constants';
+import { ConversationActionsDescriptors, EditViewActions } from '../../constants';
 import { isDraft, isSpam } from '../../helpers/folders';
+import { createEditBoard } from '../../views/app/detail-panel/edit/edit-view-board';
 
 type ReplyConvAction = {
 	firstMessageId: string;
@@ -23,11 +23,19 @@ export const useReplyConvFn = ({
 	messagesLength,
 	folderId
 }: ReplyConvAction): ActionFn => {
-	const { execute } = useReplyMsgFn(firstMessageId);
 	const canExecute = useCallback(
 		(): boolean => messagesLength === 1 || isDraft(folderId) || isSpam(folderId),
 		[folderId, messagesLength]
 	);
+
+	const execute = useCallback((): void => {
+		if (canExecute()) {
+			createEditBoard({
+				action: EditViewActions.REPLY,
+				actionTargetId: firstMessageId
+			});
+		}
+	}, [canExecute, firstMessageId]);
 
 	return useMemo(() => ({ canExecute, execute }), [canExecute, execute]);
 };

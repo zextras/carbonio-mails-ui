@@ -7,30 +7,33 @@ import { useCallback, useMemo } from 'react';
 
 import { useTranslation } from 'react-i18next';
 
-import { HoverMessageActionsType } from './use-hover-message-actions';
 import { UIActionDescriptor, ActionFn } from './use-redirect-msg';
 import { EditViewActions, MessageActionsDescriptors } from '../../constants';
+import { isDraft, isSpam } from '../../helpers/folders';
 import { createEditBoard } from '../../views/app/detail-panel/edit/edit-view-board';
 
-export const useReplyMsgFn = (
-	messageId: HoverMessageActionsType['messageId']
-): ActionFn<string, undefined> => {
-	const canExecute = useCallback((): boolean => true, []);
+type ReplyMsgAction = {
+	messageId: string;
+	folderId: string;
+};
+
+export const useReplyMsgFn = ({ messageId, folderId }: ReplyMsgAction): ActionFn => {
+	const canExecute = useCallback((): boolean => isDraft(folderId) || isSpam(folderId), [folderId]);
 
 	const execute = useCallback((): void => {
-		createEditBoard({
-			action: EditViewActions.REPLY,
-			actionTargetId: messageId
-		});
-	}, [messageId]);
+		if (canExecute()) {
+			createEditBoard({
+				action: EditViewActions.REPLY,
+				actionTargetId: messageId
+			});
+		}
+	}, [canExecute, messageId]);
 
 	return useMemo(() => ({ canExecute, execute }), [canExecute, execute]);
 };
 
-export const useReplyMsgDescriptor = (
-	messageId: HoverMessageActionsType['messageId']
-): UIActionDescriptor<string, undefined> => {
-	const { canExecute, execute } = useReplyMsgFn(messageId);
+export const useReplyMsgDescriptor = (messageId: string, folderId: string): UIActionDescriptor => {
+	const { canExecute, execute } = useReplyMsgFn({ messageId, folderId });
 	const [t] = useTranslation();
 	return {
 		id: MessageActionsDescriptors.REPLY.id,

@@ -55,7 +55,7 @@ export const MessageListItemActionWrapper = ({
 	deselectAll,
 	children
 }: Omit<ListItemActionWrapperProps, 'hoverActions'>): React.JSX.Element => {
-	const messageHoverActions = useHoverMessageActions({ messageId: item.id });
+	const messageHoverActions = useHoverMessageActions({ messageId: item.id, folderId: item.parent });
 
 	return (
 		<ListItemActionWrapper

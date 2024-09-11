@@ -24,35 +24,32 @@ export type UIActionDescriptor = ActionFn & {
 	icon: keyof DefaultTheme['icons'];
 };
 
-export const useRedirectMsgFn = (): ActionFn => {
+export const useRedirectMsgFn = (messageId: string): ActionFn => {
 	const { createModal, closeModal } = useUiUtilities();
 
 	const canExecute = useCallback((): boolean => true, []);
 
-	const execute = useCallback(
-		(id): void => {
-			const modalId = Date.now().toString();
-			createModal(
-				{
-					id: modalId,
-					maxHeight: '90vh',
-					children: (
-						<StoreProvider>
-							<RedirectAction onClose={(): void => closeModal(modalId)} id={id} />
-						</StoreProvider>
-					)
-				},
-				true
-			);
-		},
-		[closeModal, createModal]
-	);
+	const execute = useCallback((): void => {
+		const modalId = Date.now().toString();
+		createModal(
+			{
+				id: modalId,
+				maxHeight: '90vh',
+				children: (
+					<StoreProvider>
+						<RedirectAction onClose={(): void => closeModal(modalId)} id={messageId} />
+					</StoreProvider>
+				)
+			},
+			true
+		);
+	}, [closeModal, createModal, messageId]);
 
 	return useMemo(() => ({ canExecute, execute }), [canExecute, execute]);
 };
 
-export const useRedirectMsgDescriptor = (): UIActionDescriptor => {
-	const { canExecute, execute } = useRedirectMsgFn();
+export const useRedirectMsgDescriptor = (messageId: string): UIActionDescriptor => {
+	const { canExecute, execute } = useRedirectMsgFn(messageId);
 	const [t] = useTranslation();
 	return {
 		id: MessageActionsDescriptors.REDIRECT.id,

@@ -13,41 +13,45 @@ import { StoreProvider } from '../../store/redux';
 import DeleteConvConfirm from '../../ui-actions/delete-conv-modal';
 import { useUiUtilities } from '../use-ui-utilities';
 
-export const useDeleteMsgPermanentlyFn = (): ActionFn<
-	{ ids: Array<string>; deselectAll: () => void },
-	never
-> => {
+type DeleteMsgPermanently = {
+	messageId: string;
+	deselectAll: () => void;
+};
+export const useDeleteMsgPermanentlyFn = ({
+	messageId,
+	deselectAll
+}: DeleteMsgPermanently): ActionFn => {
 	const { createModal, closeModal } = useUiUtilities();
 
 	const canExecute = useCallback((): boolean => true, []);
-	const execute = useCallback(
-		({ ids, deselectAll }): void => {
-			const modalId = Date.now().toString();
-			createModal(
-				{
-					id: modalId,
-					children: (
-						<StoreProvider>
-							<DeleteConvConfirm
-								selectedIDs={ids}
-								isMessageView
-								onClose={(): void => closeModal(modalId)}
-								deselectAll={deselectAll || ((): null => null)}
-							/>
-						</StoreProvider>
-					)
-				},
-				true
-			);
-		},
-		[closeModal, createModal]
-	);
+	const execute = useCallback((): void => {
+		const modalId = Date.now().toString();
+		createModal(
+			{
+				id: modalId,
+				children: (
+					<StoreProvider>
+						<DeleteConvConfirm
+							selectedIDs={[messageId]}
+							isMessageView
+							onClose={(): void => closeModal(modalId)}
+							deselectAll={deselectAll || ((): null => null)}
+						/>
+					</StoreProvider>
+				)
+			},
+			true
+		);
+	}, [closeModal, createModal, deselectAll, messageId]);
 
 	return useMemo(() => ({ canExecute, execute }), [canExecute, execute]);
 };
 
-export const useDeleteMsgPermanentlyDescriptor = (): UIActionDescriptor<never, never> => {
-	const { canExecute, execute } = useDeleteMsgPermanentlyFn();
+export const useDeleteMsgPermanentlyDescriptor = ({
+	messageId,
+	deselectAll
+}: DeleteMsgPermanently): UIActionDescriptor => {
+	const { canExecute, execute } = useDeleteMsgPermanentlyFn({ messageId, deselectAll });
 	const [t] = useTranslation();
 	return {
 		id: MessageActionsDescriptors.DELETE_PERMANENTLY.id,

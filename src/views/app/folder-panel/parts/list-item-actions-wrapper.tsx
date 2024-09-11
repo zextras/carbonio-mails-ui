@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, ReactElement, useCallback } from 'react';
+import React, { FC, ReactElement, useCallback, useMemo } from 'react';
 
 import { Dropdown, IconButton, Tooltip } from '@zextras/carbonio-design-system';
 
@@ -11,32 +11,24 @@ import { HoverBarContainer } from './hover-bar-container';
 import { HoverContainer } from './hover-container';
 import { MessageActionsDescriptors } from '../../../../constants';
 import { isConversation } from '../../../../helpers/messages';
+import { UIActionDescriptor } from '../../../../hooks/actions/use-redirect-msg';
 import { useMessageActions } from '../../../../hooks/use-message-actions';
-import type {
-	ConvActionReturnType,
-	Conversation,
-	ListItemActionWrapperProps,
-	MailMessage,
-	MessageAction,
-	MessageActionReturnType,
-	TagActionItemType
-} from '../../../../types';
+import type { ListItemActionWrapperProps, MessageAction } from '../../../../types';
 import { useMsgConvActions } from '../../../../ui-actions/use-msg-conv-actions';
 
-const HoverActionComponent = ({
-	action
-}: {
-	action: MessageActionReturnType | ConvActionReturnType | TagActionItemType;
-	item: Conversation | MailMessage;
-}): ReactElement => {
-	const label = 'label' in action ? action.label : '';
-	const icon = 'icon' in action ? action.icon : '';
-	const onClick = useCallback((): void => {
-		action.canExecute() && action.execute();
-	}, [action]);
+const HoverActionComponent = ({ action }: { action: UIActionDescriptor }): ReactElement => {
+	const onClick = useCallback(
+		(ev): void => {
+			if (ev) {
+				ev.preventDefault();
+			}
+			action.execute();
+		},
+		[action]
+	);
 	return (
-		<Tooltip label={label}>
-			<IconButton key={action.id} icon={icon} onClick={onClick} size="small" />
+		<Tooltip label={action.label}>
+			<IconButton key={action.id} icon={action.icon} onClick={onClick} size="small" />
 		</Tooltip>
 	);
 };
@@ -73,6 +65,14 @@ export const ListItemActionWrapper: FC<ListItemActionWrapperProps> = ({
 		label: 'label' in action ? action.label : ''
 	}));
 
+	const hoverActionsComponent = useMemo(
+		() =>
+			hoverActions
+				.filter((action) => action.canExecute())
+				.map((action, index) => <HoverActionComponent key={action.id ?? index} action={action} />),
+		[hoverActions]
+	);
+
 	return (
 		<Dropdown
 			contextMenu
@@ -98,9 +98,7 @@ export const ListItemActionWrapper: FC<ListItemActionWrapperProps> = ({
 					background={active ? 'highlight' : 'gray6'}
 					data-testid={`primary-actions-bar-${item.id}`}
 				>
-					{hoverActions.map((action, index) => (
-						<HoverActionComponent key={action.id ?? index} action={action} item={item} />
-					))}
+					{hoverActionsComponent}
 				</HoverBarContainer>
 			</HoverContainer>
 		</Dropdown>

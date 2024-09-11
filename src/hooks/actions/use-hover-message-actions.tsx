@@ -16,20 +16,19 @@ import { useReplyMsgDescriptor } from './use-reply-msg';
 import { useSetMsgReadDescriptor } from './use-set-msg-read';
 import { useSetMsgUnreadDescriptor } from './use-set-msg-unread';
 
-export type HoverConversationActionsType = {
-	conversationId: string;
-};
 export type HoverMessageActionsType = {
 	messageId: string;
+	folderId: string;
 };
 export const useHoverMessageActions = ({
-	messageId
-}: HoverMessageActionsType): Array<UIActionDescriptor<never, never>> => {
-	const replyDescriptor = useReplyMsgDescriptor(messageId);
+	messageId,
+	folderId
+}: HoverMessageActionsType): Array<UIActionDescriptor> => {
+	const replyDescriptor = useReplyMsgDescriptor(messageId, folderId);
 	const replyAllDescriptor = useReplyAllMsg();
 	const forwardDescriptor = useForwardMsgDescriptor();
 	const moveToTrashDescriptor = useMoveToTrashDescriptor();
-	const deletePermanentlyDescriptor = useDeleteMsgPermanentlyDescriptor();
+	const deletePermanentlyDescriptor = useDeleteMsgPermanentlyDescriptor({ messageId, deselectAll });
 	const messageReadDescriptor = useSetMsgReadDescriptor();
 	const messageUnreadDescriptor = useSetMsgUnreadDescriptor();
 	const flagDescriptor = useMsgFlagDescriptor();

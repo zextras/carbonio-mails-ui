@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React, { FC, memo, useCallback, useMemo, useState } from 'react';
+import React, { FC, memo, ReactNode, useCallback, useMemo, useState } from 'react';
 
 import {
 	Badge,
@@ -46,17 +46,18 @@ import { participantToString } from '../../../../commons/utils';
 import { API_REQUEST_STATUS } from '../../../../constants';
 import { getFolderIdParts } from '../../../../helpers/folders';
 import { useHoverConversationActions } from '../../../../hooks/actions/use-hover-conversation-actions';
+import { UIActionDescriptor } from '../../../../hooks/actions/use-redirect-msg';
 import { useAppDispatch, useAppSelector } from '../../../../hooks/redux';
 import { searchConv } from '../../../../store/actions';
 import { selectConversationExpandedStatus } from '../../../../store/conversations-slice';
 import { selectMessages } from '../../../../store/messages-slice';
-import type {
+import {
 	ConvMessage,
 	ConversationListItemProps,
 	IncompleteMessage,
 	MailsStateType,
 	TextReadValuesProps,
-	ListItemActionWrapperProps
+	Conversation
 } from '../../../../types';
 import {
 	previewConversationOnSeparatedWindowAction,
@@ -79,9 +80,19 @@ export const ConversationListItemActionWrapper = ({
 	onDoubleClick,
 	deselectAll,
 	children
-}: Omit<ListItemActionWrapperProps, 'hoverActions'>): React.JSX.Element => {
+}: {
+	children?: ReactNode;
+	onClick?: ContainerProps['onClick'];
+	onDoubleClick?: ContainerProps['onDoubleClick'];
+	active?: boolean;
+	item: Conversation;
+	deselectAll: () => void;
+	hoverActions: UIActionDescriptor[];
+}): React.JSX.Element => {
 	const conversationHoverActions = useHoverConversationActions({
-		conversationId: item.messages[0].id
+		firstMessageId: item.messages[0].id,
+		firstMessageParent: item.messages[0].parent,
+		messagesLength: item.messages.length
 	});
 
 	return (
@@ -317,7 +328,6 @@ export const ConversationListItem: FC<ConversationListItemProps> = memo(
 					active={active}
 					onClick={_onClick}
 					onDoubleClick={_onDoubleClick}
-					hoverTooltipLabel={participantsString}
 					deselectAll={deselectAll}
 				>
 					<div

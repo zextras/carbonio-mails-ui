@@ -65,7 +65,9 @@ export function useMsgConvActions({
 	const getCreateAppointmentAction = useCreateAppointmentAction();
 
 	const isConv = isConversation(item);
-	const folderId = getParentFolderId(item);
+	const folderId = getParentFolderId(
+		isConv ? (item?.messages[0].parent ?? '') : (item?.parent ?? '')
+	);
 	const dispatch = useAppDispatch();
 	const tags = useTags();
 	const createSnackbar = useSnackbar();
