@@ -9,7 +9,9 @@ import { useMemo } from 'react';
 import { MessageActionsType, useMsgActions } from './use-msg-actions';
 import { UIActionDescriptor } from './use-redirect-msg';
 
-export const useHoverMessageActions = (params: MessageActionsType): Array<UIActionDescriptor> => {
+export const useMessageContextualActions = (
+	params: MessageActionsType
+): Array<UIActionDescriptor> => {
 	const {
 		replyDescriptor,
 		replyAllDescriptor,

@@ -30,7 +30,7 @@ import { ZIMBRA_STANDARD_COLORS } from '../../../../carbonio-ui-commons/constant
 import { useFolder } from '../../../../carbonio-ui-commons/store/zustand/folder/hooks';
 import { getTimeLabel, participantToString } from '../../../../commons/utils';
 import { EditViewActions } from '../../../../constants';
-import { useHoverMessageActions } from '../../../../hooks/actions/use-hover-message-actions';
+import { useMessageHoverActions } from '../../../../hooks/actions/use-message-hover-actions';
 import { useAppDispatch } from '../../../../hooks/redux';
 import { useMessageActions } from '../../../../hooks/use-message-actions';
 import { MailMessage, MessageListItemProps, TextReadValuesType } from '../../../../types';
@@ -59,7 +59,7 @@ export const MessageListItemActionWrapper = ({
 	item: MailMessage;
 	deselectAll: () => void;
 }): React.JSX.Element => {
-	const messageHoverActions = useHoverMessageActions({ messageId: item.id, folderId: item.parent });
+	const messageHoverActions = useMessageHoverActions({ messageId: item.id, folderId: item.parent });
 
 	return (
 		<ListItemActionWrapper
