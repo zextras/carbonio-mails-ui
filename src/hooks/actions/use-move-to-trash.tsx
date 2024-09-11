@@ -37,23 +37,17 @@ const useRestoreMessage = (): ((
 	dispatch: AppDispatch,
 	ids: Array<string>,
 	folderId: string,
-	closeEditor: boolean | undefined,
-	conversationId: string | undefined
+	closeEditor: boolean | undefined
 ) => void) => {
 	const { createSnackbar } = useUiUtilities();
 	return useCallback(
-		(dispatch, ids, folderId, closeEditor, conversationId): void => {
+		(dispatch, ids, folderId, closeEditor): void => {
 			dispatchMsgMove(dispatch, ids, folderId)
 				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 				// @ts-ignore
 				.then((res) => {
 					if (res.type.includes('fulfilled')) {
-						closeEditor &&
-							replaceHistory(
-								conversationId
-									? `/folder/${folderId}/conversation/${conversationId}`
-									: `/folder/${folderId}/conversation/-${ids[0]}`
-							);
+						closeEditor && replaceHistory(`/folder/${folderId}/message/${ids[0]}`);
 						createSnackbar({
 							key: `move-${ids}`,
 							replace: true,
@@ -82,67 +76,80 @@ type MoveToTrashExecute = {
 	ids: Array<string>;
 	folderId?: string;
 	deselectAll?: () => void;
-	conversationId?: string;
 	closeEditor?: boolean;
 };
 
-export const useMoveToTrashFn = (): ActionFn<MoveToTrashExecute, undefined> => {
+export const useMoveToTrashFn = ({
+	ids,
+	deselectAll,
+	folderId = FOLDERS.INBOX,
+	closeEditor
+}: MoveToTrashExecute): ActionFn => {
 	const canExecute = useCallback((): boolean => true, []);
 	const dispatch = useAppDispatch();
 	const createSnackbar = useSnackbar();
 	const restoreMessage = useRestoreMessage();
 	const inSearchModule = useInSearchModule();
 
-	const execute = useCallback(
-		({
-			ids,
-			deselectAll,
-			folderId = FOLDERS.INBOX,
-			conversationId,
-			closeEditor
-		}: MoveToTrashExecute): void => {
-			dispatch(
-				msgAction({
-					operation: 'trash',
-					ids
-				})
-			).then((res) => {
-				if (res.type.includes('fulfilled')) {
-					deselectAll && deselectAll();
-					if (!inSearchModule) {
-						closeEditor && replaceHistory(`/folder/${folderId}`);
-					}
-					createSnackbar({
-						key: `trash-${ids}`,
-						replace: true,
-						type: 'info',
-						label: t('messages.snackbar.email_moved_to_trash', 'E-mail moved to Trash'),
-						autoHideTimeout: 5000,
-						hideButton: false,
-						actionLabel: t('label.undo', 'Undo'),
-						onActionClick: () =>
-							restoreMessage(dispatch, ids, folderId, closeEditor, conversationId)
-					});
-				} else {
-					createSnackbar({
-						key: `trash-${ids}`,
-						replace: true,
-						type: 'error',
-						label: t('label.error_try_again', 'Something went wrong, please try again'),
-						autoHideTimeout: 3000,
-						hideButton: true
-					});
+	const execute = useCallback((): void => {
+		dispatch(
+			msgAction({
+				operation: 'trash',
+				ids
+			})
+		).then((res) => {
+			if (res.type.includes('fulfilled')) {
+				deselectAll && deselectAll();
+				if (!inSearchModule) {
+					closeEditor && replaceHistory(`/folder/${folderId}`);
 				}
-			});
-		},
-		[createSnackbar, dispatch, inSearchModule, restoreMessage]
-	);
+				createSnackbar({
+					key: `trash-${ids}`,
+					replace: true,
+					type: 'info',
+					label: t('messages.snackbar.email_moved_to_trash', 'E-mail moved to Trash'),
+					autoHideTimeout: 5000,
+					hideButton: false,
+					actionLabel: t('label.undo', 'Undo'),
+					onActionClick: () => restoreMessage(dispatch, ids, folderId, closeEditor)
+				});
+			} else {
+				createSnackbar({
+					key: `trash-${ids}`,
+					replace: true,
+					type: 'error',
+					label: t('label.error_try_again', 'Something went wrong, please try again'),
+					autoHideTimeout: 3000,
+					hideButton: true
+				});
+			}
+		});
+	}, [
+		closeEditor,
+		createSnackbar,
+		deselectAll,
+		dispatch,
+		folderId,
+		ids,
+		inSearchModule,
+		restoreMessage
+	]);
 
 	return useMemo(() => ({ canExecute, execute }), [canExecute, execute]);
 };
 
-export const useMoveToTrashDescriptor = (): UIActionDescriptor<MoveToTrashExecute, undefined> => {
-	const { canExecute, execute } = useMoveToTrashFn();
+export const useMoveToTrashDescriptor = ({
+	ids,
+	deselectAll,
+	folderId,
+	closeEditor
+}: MoveToTrashExecute): UIActionDescriptor => {
+	const { canExecute, execute } = useMoveToTrashFn({
+		ids,
+		deselectAll,
+		folderId,
+		closeEditor
+	});
 	const [t] = useTranslation();
 	return {
 		id: MessageActionsDescriptors.MOVE_TO_TRASH.id,

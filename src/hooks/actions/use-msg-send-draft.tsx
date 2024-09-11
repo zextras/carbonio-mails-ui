@@ -3,37 +3,39 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+
 import { useCallback, useMemo } from 'react';
 
 import { useTranslation } from 'react-i18next';
 
 import { ActionFn, UIActionDescriptor } from './use-redirect-msg';
 import { MessageActionsDescriptors } from '../../constants';
-import { msgAction } from '../../store/actions';
+import { sendMsg } from '../../store/actions/send-msg';
+import { MailMessage } from '../../types';
 import { useAppDispatch } from '../redux';
 
-export const useMsgUnflagFn = (ids: Array<string>): ActionFn => {
+export const useMsgSendDraftFn = (message: MailMessage): ActionFn => {
 	const canExecute = useCallback((): boolean => true, []);
 	const dispatch = useAppDispatch();
 
 	const execute = useCallback((): void => {
 		dispatch(
-			msgAction({
-				operation: '!flag',
-				ids
+			sendMsg({
+				msg: message
 			})
 		);
-	}, [dispatch, ids]);
+	}, [dispatch, message]);
 
 	return useMemo(() => ({ canExecute, execute }), [canExecute, execute]);
 };
-export const useMsgUnflagDescriptor = (ids: Array<string>): UIActionDescriptor => {
-	const { canExecute, execute } = useMsgUnflagFn(ids);
+
+export const useMsgSendDraftDescriptor = (message: MailMessage): UIActionDescriptor => {
+	const { canExecute, execute } = useMsgSendDraftFn(message);
 	const [t] = useTranslation();
 	return {
-		id: MessageActionsDescriptors.UNFLAG.id,
-		icon: 'Flag',
-		label: t('action.unflag', 'Remove flag'),
+		id: MessageActionsDescriptors.SEND.id,
+		icon: 'PaperPlaneOutline',
+		label: t('label.send', 'Send'),
 		execute,
 		canExecute
 	};

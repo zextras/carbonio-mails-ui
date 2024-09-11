@@ -11,21 +11,21 @@ import { ActionFn, UIActionDescriptor } from './use-redirect-msg';
 import { EditViewActions, MessageActionsDescriptors } from '../../constants';
 import { createEditBoard } from '../../views/app/detail-panel/edit/edit-view-board';
 
-export const useForwardMsgFn = (): ActionFn<never, never> => {
+export const useForwardMsgFn = (messageId: string): ActionFn => {
 	const canExecute = useCallback((): boolean => true, []);
 
-	const execute = useCallback((id) => {
+	const execute = useCallback(() => {
 		createEditBoard({
 			action: EditViewActions.FORWARD,
-			actionTargetId: id
+			actionTargetId: messageId
 		});
-	}, []);
+	}, [messageId]);
 
 	return useMemo(() => ({ canExecute, execute }), [canExecute, execute]);
 };
 
-export const useForwardMsgDescriptor = (): UIActionDescriptor<never, never> => {
-	const { canExecute, execute } = useForwardMsgFn();
+export const useForwardMsgDescriptor = (messageId: string): UIActionDescriptor => {
+	const { canExecute, execute } = useForwardMsgFn(messageId);
 	const [t] = useTranslation();
 	return {
 		id: MessageActionsDescriptors.FORWARD.id,

@@ -9,6 +9,9 @@ import { useDeleteMsgPermanentlyDescriptor } from './use-delete-msg-permanently'
 import { useForwardMsgDescriptor } from './use-forward-msg';
 import { useMoveToTrashDescriptor } from './use-move-to-trash';
 import { useMsgFlagDescriptor } from './use-msg-flag';
+import { useMsgMarkAsNotSpamDescriptor } from './use-msg-mark-as-not-spam';
+import { useMsgMarkAsSpamDescriptor } from './use-msg-mark-as-spam';
+import { useMsgSendDraftDescriptor } from './use-msg-send-draft';
 import { useMsgUnflagDescriptor } from './use-msg-unflag';
 import { UIActionDescriptor } from './use-redirect-msg';
 import { useReplyAllMsg } from './use-reply-all-msg';
@@ -23,20 +26,44 @@ export type MessageActionsType = {
 
 export const useMsgActions = ({
 	messageId,
-	folderId
+	folderId,
+	ids,
+	deselectAll,
+	closeEditor,
+	shouldReplaceHistory,
+	message
 }: MessageActionsType): Record<string, UIActionDescriptor> => {
 	const replyDescriptor = useReplyMsgDescriptor(messageId, folderId);
-	const replyAllDescriptor = useReplyAllMsg();
-	const forwardDescriptor = useForwardMsgDescriptor();
-	const moveToTrashDescriptor = useMoveToTrashDescriptor();
+	const replyAllDescriptor = useReplyAllMsg(messageId);
+	const forwardDescriptor = useForwardMsgDescriptor(messageId);
+	const moveToTrashDescriptor = useMoveToTrashDescriptor({
+		ids,
+		deselectAll,
+		folderId,
+		closeEditor
+	});
 	const deletePermanentlyDescriptor = useDeleteMsgPermanentlyDescriptor({ messageId, deselectAll });
-	const messageReadDescriptor = useSetMsgReadDescriptor();
-	const messageUnreadDescriptor = useSetMsgUnreadDescriptor();
-	const flagDescriptor = useMsgFlagDescriptor();
-	const unflagDescriptor = useMsgUnflagDescriptor();
-	const sendDraftDescriptor = usesendDraftDescriptor();
-	const markAsSpamDescriptor = useMarkAsSpamDescriptor();
-	const markAsNotSpamDescriptor = useMarkAsNotSpamDescriptor();
+	const messageReadDescriptor = useSetMsgReadDescriptor({
+		ids,
+		deselectAll,
+		shouldReplaceHistory,
+		folderId
+	});
+	const messageUnreadDescriptor = useSetMsgUnreadDescriptor({
+		ids,
+		deselectAll,
+		shouldReplaceHistory,
+		folderId
+	});
+	const flagDescriptor = useMsgFlagDescriptor(ids);
+	const unflagDescriptor = useMsgUnflagDescriptor(ids);
+	const sendDraftDescriptor = useMsgSendDraftDescriptor(message);
+	const markAsSpamDescriptor = useMsgMarkAsSpamDescriptor({ ids, shouldReplaceHistory, folderId });
+	const markAsNotSpamDescriptor = useMsgMarkAsNotSpamDescriptor({
+		ids,
+		shouldReplaceHistory,
+		folderId
+	});
 	const applyTagDescriptor = useApplyTagDescriptor();
 	const moveToFolderDescriptor = useMoveToFolderDescriptor;
 	const createAppointmentDescriptor = useCreateAppointmentDescriptor();

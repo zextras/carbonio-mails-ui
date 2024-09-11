@@ -20,32 +20,44 @@ type SetMsgReadExecuteType = {
 	deselectAll?: () => void;
 };
 
-export const useSetMsgUnreadFn = (): ActionFn<SetMsgReadExecuteType, never> => {
+export const useSetMsgUnreadFn = ({
+	ids,
+	deselectAll,
+	shouldReplaceHistory,
+	folderId
+}: SetMsgReadExecuteType): ActionFn => {
 	const canExecute = useCallback((): boolean => true, []);
 	const dispatch = useAppDispatch();
 
-	const execute = useCallback(
-		({ ids, deselectAll, shouldReplaceHistory, folderId }: SetMsgReadExecuteType): void => {
-			dispatch(
-				msgAction({
-					operation: '!read',
-					ids
-				})
-			).then((res) => {
-				deselectAll && deselectAll();
-				if (res.type.includes('fulfilled') && shouldReplaceHistory) {
-					replaceHistory(`/folder/${folderId}`);
-				}
-			});
-		},
-		[dispatch]
-	);
+	const execute = useCallback((): void => {
+		dispatch(
+			msgAction({
+				operation: '!read',
+				ids
+			})
+		).then((res) => {
+			deselectAll && deselectAll();
+			if (res.type.includes('fulfilled') && shouldReplaceHistory) {
+				replaceHistory(`/folder/${folderId}`);
+			}
+		});
+	}, [deselectAll, dispatch, folderId, ids, shouldReplaceHistory]);
 
 	return useMemo(() => ({ canExecute, execute }), [canExecute, execute]);
 };
 
-export const useSetMsgUnreadDescriptor = (): UIActionDescriptor<SetMsgReadExecuteType, never> => {
-	const { canExecute, execute } = useSetMsgUnreadFn();
+export const useSetMsgUnreadDescriptor = ({
+	ids,
+	deselectAll,
+	shouldReplaceHistory,
+	folderId
+}: SetMsgReadExecuteType): UIActionDescriptor => {
+	const { canExecute, execute } = useSetMsgUnreadFn({
+		ids,
+		deselectAll,
+		shouldReplaceHistory,
+		folderId
+	});
 	const [t] = useTranslation();
 	return {
 		id: MessageActionsDescriptors.MARK_AS_UNREAD.id,
