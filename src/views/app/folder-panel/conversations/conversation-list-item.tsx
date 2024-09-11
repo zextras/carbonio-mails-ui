@@ -46,7 +46,6 @@ import { participantToString } from '../../../../commons/utils';
 import { API_REQUEST_STATUS } from '../../../../constants';
 import { getFolderIdParts } from '../../../../helpers/folders';
 import { useHoverConversationActions } from '../../../../hooks/actions/use-hover-conversation-actions';
-import { UIActionDescriptor } from '../../../../hooks/actions/use-redirect-msg';
 import { useAppDispatch, useAppSelector } from '../../../../hooks/redux';
 import { searchConv } from '../../../../store/actions';
 import { selectConversationExpandedStatus } from '../../../../store/conversations-slice';
@@ -87,7 +86,6 @@ export const ConversationListItemActionWrapper = ({
 	active?: boolean;
 	item: Conversation;
 	deselectAll: () => void;
-	hoverActions: UIActionDescriptor[];
 }): React.JSX.Element => {
 	const conversationHoverActions = useHoverConversationActions({
 		firstMessageId: item.messages[0].id,
@@ -103,8 +101,9 @@ export const ConversationListItemActionWrapper = ({
 			onDoubleClick={onDoubleClick}
 			deselectAll={deselectAll}
 			hoverActions={conversationHoverActions}
-			children={children}
-		/>
+		>
+			{children}
+		</ListItemActionWrapper>
 	);
 };
 
