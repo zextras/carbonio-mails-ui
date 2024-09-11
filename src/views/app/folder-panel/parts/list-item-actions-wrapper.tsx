@@ -5,7 +5,7 @@
  */
 import React, { FC, ReactElement, useCallback, useMemo } from 'react';
 
-import { Dropdown, IconButton, Tooltip } from '@zextras/carbonio-design-system';
+import { Button, Dropdown, Tooltip } from '@zextras/carbonio-design-system';
 
 import { HoverBarContainer } from './hover-bar-container';
 import { HoverContainer } from './hover-container';
@@ -28,7 +28,7 @@ const HoverActionComponent = ({ action }: { action: UIActionDescriptor }): React
 	);
 	return (
 		<Tooltip label={action.label}>
-			<IconButton key={action.id} icon={action.icon} onClick={onClick} size="small" />
+			<Button key={action.id} icon={action.icon} onClick={onClick} size="small" />
 		</Tooltip>
 	);
 };
