@@ -9,6 +9,28 @@ import { useMemo } from 'react';
 import { MessageActionsType, useMsgActions } from './use-msg-actions';
 import { UIActionDescriptor } from './use-redirect-msg';
 
+/*
+		replyAction,
+		replyAllAction,
+		forwardAction,
+		sendDraftAction,
+		moveToTrashAction,
+		deletePermanentlyAction,
+		msgReadUnreadAction,
+		addRemoveFlagAction,
+		markRemoveSpam,
+		applyTagAction,
+		moveToFolderAction,
+		createAppointmentAction,
+		printAction,
+		previewOnSeparatedWindow,
+		redirectAction,
+		editDraftAction,
+		editAsNewAction,
+		showOriginalAction,
+		downloadEmlAction
+* */
+
 export const useMessageContextualActions = (
 	params: MessageActionsType
 ): Array<UIActionDescriptor> => {
