@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, ReactElement, SyntheticEvent, useCallback } from 'react';
+import React, { FC, ReactElement, useCallback } from 'react';
 
 import { Dropdown, IconButton, Tooltip } from '@zextras/carbonio-design-system';
 
@@ -31,13 +31,9 @@ const HoverActionComponent = ({
 }): ReactElement => {
 	const label = 'label' in action ? action.label : '';
 	const icon = 'icon' in action ? action.icon : '';
-	const onClick = useCallback(
-		(ev?: KeyboardEvent | SyntheticEvent<HTMLElement, Event>): void => {
-			ev?.stopPropagation();
-			action.onClick && action.onClick(ev);
-		},
-		[action]
-	);
+	const onClick = useCallback((): void => {
+		action.canExecute() && action.execute();
+	}, [action]);
 	return (
 		<Tooltip label={label}>
 			<IconButton key={action.id} icon={icon} onClick={onClick} size="small" />
@@ -51,7 +47,8 @@ export const ListItemActionWrapper: FC<ListItemActionWrapperProps> = ({
 	onDoubleClick,
 	item,
 	active,
-	deselectAll
+	deselectAll,
+	hoverActions
 }) => {
 	const messageActionsForExtraWindow = useMessageActions({
 		message: isConversation(item) ? undefined : item,
@@ -59,7 +56,7 @@ export const ListItemActionWrapper: FC<ListItemActionWrapperProps> = ({
 		isForExtraWindow: true
 	});
 
-	const [hoverActions, dropdownActions] = useMsgConvActions({
+	const [_hoverActions, dropdownActions] = useMsgConvActions({
 		item,
 		deselectAll,
 		messageActionsForExtraWindow

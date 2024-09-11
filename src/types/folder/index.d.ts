@@ -8,6 +8,7 @@ import React, { ReactNode } from 'react';
 
 import { ContainerProps } from '@zextras/carbonio-design-system';
 
+import { UIActionDescriptor } from '../../hooks/actions/use-redirect-msg';
 import { Conversation } from '../conversations';
 import { IncompleteMessage, MailMessage } from '../messages';
 import { SearchRequestStatus } from '../state';
@@ -60,6 +61,7 @@ export type ListItemActionWrapperProps = {
 	active?: boolean;
 	item: Conversation | MailMessage;
 	deselectAll: () => void;
+	hoverActions: UIActionDescriptor<never, never>[];
 };
 
 export type ItemAvatarType = {

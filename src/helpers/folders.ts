@@ -6,12 +6,11 @@
 import { getUserAccount } from '@zextras/carbonio-shell-ui';
 import { find } from 'lodash';
 
-import { isConversation } from './messages';
 import { FOLDERS } from '../carbonio-ui-commons/constants/folders';
 import { useFolderStore } from '../carbonio-ui-commons/store/zustand/folder/store';
 import type { Folder, Folders } from '../carbonio-ui-commons/types/folder';
 import { NO_ACCOUNT_NAME } from '../constants';
-import type { MailMessage, Conversation } from '../types';
+import type { MailMessage } from '../types';
 
 /*
  * Describe the folder id syntax
@@ -229,14 +228,9 @@ export const isInboxSubfolder = ({
  * case the "parent" refers to the original owner folder zid and id, so there is the need
  * to "translate" those ids
  *
- * @param item - Message or conversation
+ * @param parentId - string
  */
-export const getParentFolderId = (item: MailMessage | Conversation): string | null => {
-	if (!item) {
-		return null;
-	}
-
-	const parentId = isConversation(item) ? item.messages[0].parent : item.parent;
+export const getParentFolderId = (parentId: string): string => {
 	const parentParts = getFolderIdParts(parentId);
 
 	/*

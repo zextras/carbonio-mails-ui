@@ -16,8 +16,16 @@ import { useReplyMsgDescriptor } from './use-reply-msg';
 import { useSetMsgReadDescriptor } from './use-set-msg-read';
 import { useSetMsgUnreadDescriptor } from './use-set-msg-unread';
 
-export const useHoverMessageActions = (): Array<UIActionDescriptor<never, never>> => {
-	const replyDescriptor = useReplyMsgDescriptor();
+export type HoverConversationActionsType = {
+	conversationId: string;
+};
+export type HoverMessageActionsType = {
+	messageId: string;
+};
+export const useHoverMessageActions = ({
+	messageId
+}: HoverMessageActionsType): Array<UIActionDescriptor<never, never>> => {
+	const replyDescriptor = useReplyMsgDescriptor(messageId);
 	const replyAllDescriptor = useReplyAllMsg();
 	const forwardDescriptor = useForwardMsgDescriptor();
 	const moveToTrashDescriptor = useMoveToTrashDescriptor();

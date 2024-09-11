@@ -45,6 +45,7 @@ import { ZIMBRA_STANDARD_COLORS } from '../../../../carbonio-ui-commons/constant
 import { participantToString } from '../../../../commons/utils';
 import { API_REQUEST_STATUS } from '../../../../constants';
 import { getFolderIdParts } from '../../../../helpers/folders';
+import { useHoverConversationActions } from '../../../../hooks/actions/use-hover-conversation-actions';
 import { useAppDispatch, useAppSelector } from '../../../../hooks/redux';
 import { searchConv } from '../../../../store/actions';
 import { selectConversationExpandedStatus } from '../../../../store/conversations-slice';
@@ -54,7 +55,8 @@ import type {
 	ConversationListItemProps,
 	IncompleteMessage,
 	MailsStateType,
-	TextReadValuesProps
+	TextReadValuesProps,
+	ListItemActionWrapperProps
 } from '../../../../types';
 import {
 	previewConversationOnSeparatedWindowAction,
@@ -69,6 +71,31 @@ import { SenderName } from '../parts/sender-name';
 const CollapseElement = styled(Container)<ContainerProps & { open: boolean }>`
 	display: ${({ open }): string => (open ? 'block' : 'none')};
 `;
+
+export const ConversationListItemActionWrapper = ({
+	item,
+	active,
+	onClick,
+	onDoubleClick,
+	deselectAll,
+	children
+}: Omit<ListItemActionWrapperProps, 'hoverActions'>): React.JSX.Element => {
+	const conversationHoverActions = useHoverConversationActions({
+		conversationId: item.messages[0].id
+	});
+
+	return (
+		<ListItemActionWrapper
+			item={item}
+			active={active}
+			onClick={onClick}
+			onDoubleClick={onDoubleClick}
+			deselectAll={deselectAll}
+			hoverActions={conversationHoverActions}
+			children={children}
+		/>
+	);
+};
 
 export const ConversationListItem: FC<ConversationListItemProps> = memo(
 	function ConversationListItem({
@@ -285,7 +312,7 @@ export const ConversationListItem: FC<ConversationListItemProps> = memo(
 
 		return (
 			<Container mainAlignment="flex-start" data-testid={`ConversationListItem-${item.id}`}>
-				<ListItemActionWrapper
+				<ConversationListItemActionWrapper
 					item={item}
 					active={active}
 					onClick={_onClick}
@@ -360,7 +387,7 @@ export const ConversationListItem: FC<ConversationListItemProps> = memo(
 							</Row>
 						</Container>
 					</Row>
-				</ListItemActionWrapper>
+				</ConversationListItemActionWrapper>
 				{open && (
 					<CollapseElement
 						open={open}

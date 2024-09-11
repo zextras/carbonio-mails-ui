@@ -13,18 +13,18 @@ import { StoreProvider } from '../../store/redux';
 import RedirectAction from '../../ui-actions/redirect-message-action';
 import { useUiUtilities } from '../use-ui-utilities';
 
-export type ActionFn<ExecArg, CanExecArg> = {
-	execute: (arg: ExecArg) => void;
-	canExecute: (arg: CanExecArg) => boolean;
+export type ActionFn = {
+	execute: () => void;
+	canExecute: () => boolean;
 };
 
-export type UIActionDescriptor<ExecArg, CanExecArg> = ActionFn<ExecArg, CanExecArg> & {
+export type UIActionDescriptor = ActionFn & {
 	id: string;
 	label: string;
 	icon: keyof DefaultTheme['icons'];
 };
 
-export const useRedirectMsgFn = (): ActionFn<never, never> => {
+export const useRedirectMsgFn = (): ActionFn => {
 	const { createModal, closeModal } = useUiUtilities();
 
 	const canExecute = useCallback((): boolean => true, []);
@@ -51,7 +51,7 @@ export const useRedirectMsgFn = (): ActionFn<never, never> => {
 	return useMemo(() => ({ canExecute, execute }), [canExecute, execute]);
 };
 
-export const useRedirectMsgDescriptor = (): UIActionDescriptor<never, never> => {
+export const useRedirectMsgDescriptor = (): UIActionDescriptor => {
 	const { canExecute, execute } = useRedirectMsgFn();
 	const [t] = useTranslation();
 	return {

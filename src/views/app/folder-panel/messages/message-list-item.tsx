@@ -29,9 +29,14 @@ import { ZIMBRA_STANDARD_COLORS } from '../../../../carbonio-ui-commons/constant
 import { useFolder } from '../../../../carbonio-ui-commons/store/zustand/folder/hooks';
 import { getTimeLabel, participantToString } from '../../../../commons/utils';
 import { EditViewActions } from '../../../../constants';
+import { useHoverMessageActions } from '../../../../hooks/actions/use-hover-message-actions';
 import { useAppDispatch } from '../../../../hooks/redux';
 import { useMessageActions } from '../../../../hooks/use-message-actions';
-import type { MessageListItemProps, TextReadValuesType } from '../../../../types';
+import type {
+	ListItemActionWrapperProps,
+	MessageListItemProps,
+	TextReadValuesType
+} from '../../../../types';
 import { setMsgRead } from '../../../../ui-actions/message-actions';
 import { previewMessageOnSeparatedWindow } from '../../../../ui-actions/preview-message-on-separated-window';
 import { useTagExist } from '../../../../ui-actions/tag-actions';
@@ -41,6 +46,29 @@ import { useGlobalExtraWindowManager } from '../../extra-windows/global-extra-wi
 import { ItemAvatar } from '../parts/item-avatar';
 import { ListItemActionWrapper } from '../parts/list-item-actions-wrapper';
 import { SenderName } from '../parts/sender-name';
+
+export const MessageListItemActionWrapper = ({
+	item,
+	active,
+	onClick,
+	onDoubleClick,
+	deselectAll,
+	children
+}: Omit<ListItemActionWrapperProps, 'hoverActions'>): React.JSX.Element => {
+	const messageHoverActions = useHoverMessageActions({ messageId: item.id });
+
+	return (
+		<ListItemActionWrapper
+			item={item}
+			active={active}
+			onClick={onClick}
+			onDoubleClick={onDoubleClick}
+			deselectAll={deselectAll}
+			hoverActions={messageHoverActions}
+			children={children}
+		/>
+	);
+};
 
 export const MessageListItem: FC<MessageListItemProps> = memo(function MessageListItem({
 	item,
@@ -224,7 +252,7 @@ export const MessageListItem: FC<MessageListItemProps> = memo(function MessageLi
 
 	return (
 		<Container mainAlignment="flex-start" data-testid={`MessageListItem-${item.id}`}>
-			<ListItemActionWrapper
+			<MessageListItemActionWrapper
 				item={item}
 				active={active}
 				onClick={onClick}
@@ -362,7 +390,7 @@ export const MessageListItem: FC<MessageListItemProps> = memo(function MessageLi
 						</Row>
 					</Container>
 				</Row>
-			</ListItemActionWrapper>
+			</MessageListItemActionWrapper>
 		</Container>
 	);
 });
