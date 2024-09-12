@@ -8,9 +8,13 @@ import { useMemo } from 'react';
 import { useDeleteMsgPermanentlyDescriptor } from './use-delete-msg-permanently';
 import { useForwardMsgDescriptor } from './use-forward-msg';
 import { useMoveToTrashDescriptor } from './use-move-to-trash';
+import { useMsgCreateAppointmentDescriptor } from './use-msg-create-appointment';
 import { useMsgFlagDescriptor } from './use-msg-flag';
 import { useMsgMarkAsNotSpamDescriptor } from './use-msg-mark-as-not-spam';
 import { useMsgMarkAsSpamDescriptor } from './use-msg-mark-as-spam';
+import { useMsgMoveToFolderDescriptor } from './use-msg-move-to-folder';
+import { useMsgPrintDescriptor } from './use-msg-print';
+import { useMsgRestoreDescriptor } from './use-msg-restore';
 import { useMsgSendDraftDescriptor } from './use-msg-send-draft';
 import { useMsgUnflagDescriptor } from './use-msg-unflag';
 import { UIActionDescriptor } from './use-redirect-msg';
@@ -18,6 +22,7 @@ import { useReplyAllMsg } from './use-reply-all-msg';
 import { useReplyMsgDescriptor } from './use-reply-msg';
 import { useSetMsgReadDescriptor } from './use-set-msg-read';
 import { useSetMsgUnreadDescriptor } from './use-set-msg-unread';
+import { applyTag } from '../../ui-actions/tag-actions';
 
 export type MessageActionsType = {
 	messageId: string;
@@ -31,7 +36,8 @@ export const useMsgActions = ({
 	deselectAll,
 	closeEditor,
 	shouldReplaceHistory,
-	message
+	message,
+	tags
 }: MessageActionsType): Record<string, UIActionDescriptor> => {
 	const replyDescriptor = useReplyMsgDescriptor(messageId, folderId);
 	const replyAllDescriptor = useReplyAllMsg(messageId);
@@ -64,10 +70,19 @@ export const useMsgActions = ({
 		shouldReplaceHistory,
 		folderId
 	});
-	const applyTagDescriptor = useApplyTagDescriptor();
-	const moveToFolderDescriptor = useMoveToFolderDescriptor;
-	const createAppointmentDescriptor = useCreateAppointmentDescriptor();
-	const printDescriptor = usePrintDescriptor();
+	const applyTagDescriptor = applyTag({ tags, conversation: message, isMessage: true });
+	const moveToFolderDescriptor = useMsgMoveToFolderDescriptor({
+		folderId,
+		messageId,
+		deselectAll
+	});
+	const restoreFolderDescriptor = useMsgRestoreDescriptor({
+		folderId,
+		messageId,
+		deselectAll
+	});
+	const createAppointmentDescriptor = useMsgCreateAppointmentDescriptor(message);
+	const printDescriptor = useMsgPrintDescriptor(message);
 	const previewOnSeparatedWindowDescriptor = usePreviewOnSeparatedWindowDescriptor();
 	const redirectDescriptor = userEdirectDescriptor();
 	const editDraftDescriptor = useEditDraftDescriptor();
@@ -91,6 +106,7 @@ export const useMsgActions = ({
 			markAsNotSpamDescriptor,
 			applyTagDescriptor,
 			moveToFolderDescriptor,
+			restoreFolderDescriptor,
 			createAppointmentDescriptor,
 			printDescriptor,
 			previewOnSeparatedWindowDescriptor,
@@ -115,6 +131,7 @@ export const useMsgActions = ({
 			markAsNotSpamDescriptor,
 			applyTagDescriptor,
 			moveToFolderDescriptor,
+			restoreFolderDescriptor,
 			createAppointmentDescriptor,
 			printDescriptor,
 			previewOnSeparatedWindowDescriptor,

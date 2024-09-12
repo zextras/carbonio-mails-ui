@@ -14,14 +14,15 @@ import RedirectAction from '../../ui-actions/redirect-message-action';
 import { useUiUtilities } from '../use-ui-utilities';
 
 export type ActionFn = {
-	execute: () => void;
-	canExecute: () => boolean;
+	execute?: () => void;
+	canExecute?: () => boolean;
 };
 
 export type UIActionDescriptor = ActionFn & {
 	id: string;
 	label: string;
 	icon: keyof DefaultTheme['icons'];
+	items?: Array<UIActionDescriptor>;
 };
 
 export const useRedirectMsgFn = (messageId: string): ActionFn => {
