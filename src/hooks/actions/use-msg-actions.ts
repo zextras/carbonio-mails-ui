@@ -13,6 +13,7 @@ import { useMsgFlagDescriptor } from './use-msg-flag';
 import { useMsgMarkAsNotSpamDescriptor } from './use-msg-mark-as-not-spam';
 import { useMsgMarkAsSpamDescriptor } from './use-msg-mark-as-spam';
 import { useMsgMoveToFolderDescriptor } from './use-msg-move-to-folder';
+import { useMsgPreviewOnSeparatedWindowDescriptor } from './use-msg-preview-on-separated-window';
 import { useMsgPrintDescriptor } from './use-msg-print';
 import { useMsgRestoreDescriptor } from './use-msg-restore';
 import { useMsgSendDraftDescriptor } from './use-msg-send-draft';
@@ -37,7 +38,10 @@ export const useMsgActions = ({
 	closeEditor,
 	shouldReplaceHistory,
 	message,
-	tags
+	tags,
+	messageActions,
+	subject,
+	createWindow
 }: MessageActionsType): Record<string, UIActionDescriptor> => {
 	const replyDescriptor = useReplyMsgDescriptor(messageId, folderId);
 	const replyAllDescriptor = useReplyAllMsg(messageId);
@@ -83,7 +87,13 @@ export const useMsgActions = ({
 	});
 	const createAppointmentDescriptor = useMsgCreateAppointmentDescriptor(message);
 	const printDescriptor = useMsgPrintDescriptor(message);
-	const previewOnSeparatedWindowDescriptor = usePreviewOnSeparatedWindowDescriptor();
+	const previewOnSeparatedWindowDescriptor = useMsgPreviewOnSeparatedWindowDescriptor({
+		messageId,
+		folderId,
+		messageActions,
+		subject,
+		createWindow
+	});
 	const redirectDescriptor = userEdirectDescriptor();
 	const editDraftDescriptor = useEditDraftDescriptor();
 	const editAsNewDescriptor = useEditAsNewDescriptor();
