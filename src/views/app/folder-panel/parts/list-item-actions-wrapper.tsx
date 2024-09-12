@@ -28,7 +28,14 @@ const HoverActionComponent = ({ action }: { action: UIActionDescriptor }): React
 	);
 	return (
 		<Tooltip label={action.label}>
-			<Button key={action.id} icon={action.icon} onClick={onClick} size="small" />
+			<Button
+				key={action.id}
+				icon={action.icon}
+				onClick={onClick}
+				size="small"
+				type="ghost"
+				color="text"
+			/>
 		</Tooltip>
 	);
 };
