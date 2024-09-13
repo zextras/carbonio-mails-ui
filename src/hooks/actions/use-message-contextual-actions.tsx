@@ -5,9 +5,8 @@
  */
 
 import { useMemo } from 'react';
-
+import { UIActionDescriptor } from '../../types';
 import { MessageActionsType, useMsgActions } from './use-msg-actions';
-import { UIActionDescriptor } from './use-redirect-msg';
 
 /*
 		replyAction,
@@ -38,6 +37,7 @@ export const useMessageContextualActions = (
 		replyDescriptor,
 		replyAllDescriptor,
 		forwardDescriptor,
+		sendDraftDescriptor,
 		moveToTrashDescriptor,
 		deletePermanentlyDescriptor,
 		messageReadDescriptor,
@@ -51,6 +51,7 @@ export const useMessageContextualActions = (
 			replyDescriptor,
 			replyAllDescriptor,
 			forwardDescriptor,
+			sendDraftDescriptor,
 			moveToTrashDescriptor,
 			deletePermanentlyDescriptor,
 			messageReadDescriptor,
@@ -62,6 +63,7 @@ export const useMessageContextualActions = (
 			deletePermanentlyDescriptor,
 			flagDescriptor,
 			forwardDescriptor,
+			sendDraftDescriptor,
 			messageReadDescriptor,
 			messageUnreadDescriptor,
 			moveToTrashDescriptor,

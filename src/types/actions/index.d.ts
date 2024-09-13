@@ -7,10 +7,23 @@
 import React, { SyntheticEvent } from 'react';
 
 import { CreateModalFn } from '@zextras/carbonio-design-system';
+import { DefaultTheme } from 'styled-components';
 
 import type { Folder } from '../../carbonio-ui-commons/types/folder';
 import { ItemType } from '../../carbonio-ui-commons/types/tags';
 import type { TagActionItemType } from '../tags';
+
+export type ActionFn = {
+	execute?: () => void;
+	canExecute?: () => boolean;
+};
+
+export type UIActionDescriptor = ActionFn & {
+	id: string;
+	label: string;
+	icon: keyof DefaultTheme['icons'];
+	items?: Array<UIActionDescriptor>;
+};
 
 export type ActionProps = {
 	folder: Folder;

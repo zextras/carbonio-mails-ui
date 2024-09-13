@@ -14,7 +14,7 @@ import { getMsgsForPrint } from '../../store/actions';
 import type { MailMessage } from '../../types';
 import { errorPage } from '../../ui-actions/error-page';
 
-export const useMsgCreateAppointmentFn = (message: MailMessage): ActionFn => {
+export const useMsgPrintFn = (message: MailMessage): ActionFn => {
 	const canExecute = useCallback((): boolean => true, []);
 
 	const execute = useCallback((): void => {
@@ -43,7 +43,7 @@ export const useMsgCreateAppointmentFn = (message: MailMessage): ActionFn => {
 };
 
 export const useMsgPrintDescriptor = (message: MailMessage): UIActionDescriptor => {
-	const { canExecute, execute } = useMsgCreateAppointmentFn(message);
+	const { canExecute, execute } = useMsgPrintFn(message);
 	const [t] = useTranslation();
 	return {
 		id: MessageActionsDescriptors.PRINT.id,

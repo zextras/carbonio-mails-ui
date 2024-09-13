@@ -3,22 +3,29 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import { useTags } from '@zextras/carbonio-shell-ui';
 import { useMemo } from 'react';
+import { MailMessage, UIActionDescriptor } from '../../types';
+import { useGlobalExtraWindowManager } from '../../views/app/extra-windows/global-extra-window-manager';
 
-import { useDeleteMsgPermanentlyDescriptor } from './use-delete-msg-permanently';
-import { useForwardMsgDescriptor } from './use-forward-msg';
-import { useMoveToTrashDescriptor } from './use-move-to-trash';
+import { useDeleteMsgPermanentlyDescriptor } from './use-msg-delete-permanently';
+import { useForwardMsgDescriptor } from './use-msg-forward';
 import { useMsgCreateAppointmentDescriptor } from './use-msg-create-appointment';
+import { useMsgDownloadEmlDescriptor } from './use-msg-download-eml';
+import { useMsgEditAsNewDescriptor } from './use-msg-edit-as-new';
+import { useMsgEdiDraftDescriptor } from './use-msg-edit-draft';
 import { useMsgFlagDescriptor } from './use-msg-flag';
 import { useMsgMarkAsNotSpamDescriptor } from './use-msg-mark-as-not-spam';
 import { useMsgMarkAsSpamDescriptor } from './use-msg-mark-as-spam';
 import { useMsgMoveToFolderDescriptor } from './use-msg-move-to-folder';
+import { useMsgMoveToTrashDescriptor } from './use-msg-move-to-trash';
 import { useMsgPreviewOnSeparatedWindowDescriptor } from './use-msg-preview-on-separated-window';
 import { useMsgPrintDescriptor } from './use-msg-print';
+import { useMsgRedirectDescriptor } from './use-msg-redirect';
 import { useMsgRestoreDescriptor } from './use-msg-restore';
 import { useMsgSendDraftDescriptor } from './use-msg-send-draft';
+import { useMsgShowOriginalDescriptor } from './use-msg-show-original';
 import { useMsgUnflagDescriptor } from './use-msg-unflag';
-import { UIActionDescriptor } from './use-redirect-msg';
 import { useReplyAllMsg } from './use-reply-all-msg';
 import { useReplyMsgDescriptor } from './use-reply-msg';
 import { useSetMsgReadDescriptor } from './use-set-msg-read';
@@ -26,51 +33,54 @@ import { useSetMsgUnreadDescriptor } from './use-set-msg-unread';
 import { applyTag } from '../../ui-actions/tag-actions';
 
 export type MessageActionsType = {
-	messageId: string;
+	message: MailMessage;
 	folderId: string;
 };
 
 export const useMsgActions = ({
-	messageId,
 	folderId,
-	ids,
-	deselectAll,
-	closeEditor,
-	shouldReplaceHistory,
-	message,
-	tags,
-	messageActions,
-	subject,
-	createWindow
+	message
 }: MessageActionsType): Record<string, UIActionDescriptor> => {
+	const messageId = message.id;
+	const tags = useTags();
+	const messageActions: UIActionDescriptor[] = [];
+	const deselectAll = () => null;
+	const closeEditor = false;
+	const shouldReplaceHistory = false;
+	const { createWindow } = useGlobalExtraWindowManager();
+
 	const replyDescriptor = useReplyMsgDescriptor(messageId, folderId);
 	const replyAllDescriptor = useReplyAllMsg(messageId);
 	const forwardDescriptor = useForwardMsgDescriptor(messageId);
-	const moveToTrashDescriptor = useMoveToTrashDescriptor({
-		ids,
+	const moveToTrashDescriptor = useMsgMoveToTrashDescriptor({
+		ids: [messageId],
 		deselectAll,
 		folderId,
 		closeEditor
 	});
 	const deletePermanentlyDescriptor = useDeleteMsgPermanentlyDescriptor({ messageId, deselectAll });
 	const messageReadDescriptor = useSetMsgReadDescriptor({
-		ids,
+		ids: [messageId],
 		deselectAll,
 		shouldReplaceHistory,
 		folderId
 	});
 	const messageUnreadDescriptor = useSetMsgUnreadDescriptor({
-		ids,
+		ids: [messageId],
 		deselectAll,
 		shouldReplaceHistory,
 		folderId
 	});
-	const flagDescriptor = useMsgFlagDescriptor(ids);
-	const unflagDescriptor = useMsgUnflagDescriptor(ids);
+	const flagDescriptor = useMsgFlagDescriptor([messageId]);
+	const unflagDescriptor = useMsgUnflagDescriptor([messageId]);
 	const sendDraftDescriptor = useMsgSendDraftDescriptor(message);
-	const markAsSpamDescriptor = useMsgMarkAsSpamDescriptor({ ids, shouldReplaceHistory, folderId });
+	const markAsSpamDescriptor = useMsgMarkAsSpamDescriptor({
+		ids: [messageId],
+		shouldReplaceHistory,
+		folderId
+	});
 	const markAsNotSpamDescriptor = useMsgMarkAsNotSpamDescriptor({
-		ids,
+		ids: [messageId],
 		shouldReplaceHistory,
 		folderId
 	});
@@ -87,18 +97,19 @@ export const useMsgActions = ({
 	});
 	const createAppointmentDescriptor = useMsgCreateAppointmentDescriptor(message);
 	const printDescriptor = useMsgPrintDescriptor(message);
+
+	const redirectDescriptor = useMsgRedirectDescriptor(messageId);
+	const editDraftDescriptor = useMsgEdiDraftDescriptor(messageId, message.isScheduled);
+	const editAsNewDescriptor = useMsgEditAsNewDescriptor(messageId);
+	const showOriginalDescriptor = useMsgShowOriginalDescriptor(messageId);
+	const downloadEmlDescriptor = useMsgDownloadEmlDescriptor(messageId);
 	const previewOnSeparatedWindowDescriptor = useMsgPreviewOnSeparatedWindowDescriptor({
 		messageId,
 		folderId,
 		messageActions,
-		subject,
+		subject: message.subject,
 		createWindow
 	});
-	const redirectDescriptor = userEdirectDescriptor();
-	const editDraftDescriptor = useEditDraftDescriptor();
-	const editAsNewDescriptor = useEditAsNewDescriptor();
-	const showOriginalDescriptor = useShowOriginalDescriptor();
-	const downloadEmlDescriptor = useDownloadEmlDescriptor();
 
 	return useMemo(
 		() => ({

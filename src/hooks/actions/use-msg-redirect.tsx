@@ -6,26 +6,14 @@
 import React, { useCallback, useMemo } from 'react';
 
 import { useTranslation } from 'react-i18next';
-import { DefaultTheme } from 'styled-components';
 
+import { ActionFn, UIActionDescriptor } from './use-redirect-msg';
 import { MessageActionsDescriptors } from '../../constants';
 import { StoreProvider } from '../../store/redux';
 import RedirectAction from '../../ui-actions/redirect-message-action';
 import { useUiUtilities } from '../use-ui-utilities';
 
-export type ActionFn = {
-	execute?: () => void;
-	canExecute?: () => boolean;
-};
-
-export type UIActionDescriptor = ActionFn & {
-	id: string;
-	label: string;
-	icon: keyof DefaultTheme['icons'];
-	items?: Array<UIActionDescriptor>;
-};
-
-export const useRedirectMsgFn = (messageId: string): ActionFn => {
+export const useMsgRedirectFn = (messageId: string): ActionFn => {
 	const { createModal, closeModal } = useUiUtilities();
 
 	const canExecute = useCallback((): boolean => true, []);
@@ -49,8 +37,8 @@ export const useRedirectMsgFn = (messageId: string): ActionFn => {
 	return useMemo(() => ({ canExecute, execute }), [canExecute, execute]);
 };
 
-export const useRedirectMsgDescriptor = (messageId: string): UIActionDescriptor => {
-	const { canExecute, execute } = useRedirectMsgFn(messageId);
+export const useMsgRedirectDescriptor = (messageId: string): UIActionDescriptor => {
+	const { canExecute, execute } = useMsgRedirectFn(messageId);
 	const [t] = useTranslation();
 	return {
 		id: MessageActionsDescriptors.REDIRECT.id,

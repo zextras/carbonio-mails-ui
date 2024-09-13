@@ -10,12 +10,16 @@ import { useSnackbar } from '@zextras/carbonio-design-system';
 import { replaceHistory, t } from '@zextras/carbonio-shell-ui';
 import { useTranslation } from 'react-i18next';
 
-import { ActionFn, UIActionDescriptor } from './use-redirect-msg';
 import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
 import { MessageActionsDescriptors } from '../../constants';
 import { msgAction } from '../../store/actions';
 import { AppDispatch } from '../../store/redux';
-import type { MsgActionParameters, MsgActionResult } from '../../types';
+import type {
+	ActionFn,
+	MsgActionParameters,
+	MsgActionResult,
+	UIActionDescriptor
+} from '../../types';
 import { useInSearchModule } from '../../ui-actions/utils';
 import { useAppDispatch } from '../redux';
 import { useUiUtilities } from '../use-ui-utilities';
@@ -79,7 +83,7 @@ type MoveToTrashExecute = {
 	closeEditor?: boolean;
 };
 
-export const useMoveToTrashFn = ({
+export const useMsgMoveToTrashFn = ({
 	ids,
 	deselectAll,
 	folderId = FOLDERS.INBOX,
@@ -138,13 +142,13 @@ export const useMoveToTrashFn = ({
 	return useMemo(() => ({ canExecute, execute }), [canExecute, execute]);
 };
 
-export const useMoveToTrashDescriptor = ({
+export const useMsgMoveToTrashDescriptor = ({
 	ids,
 	deselectAll,
 	folderId,
 	closeEditor
 }: MoveToTrashExecute): UIActionDescriptor => {
-	const { canExecute, execute } = useMoveToTrashFn({
+	const { canExecute, execute } = useMsgMoveToTrashFn({
 		ids,
 		deselectAll,
 		folderId,
