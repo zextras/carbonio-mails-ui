@@ -337,6 +337,10 @@ export const MessageActionsDescriptors = {
 	CREATE_APPOINTMENT: {
 		id: 'create-appointment',
 		desc: 'Create Appointment'
+	},
+	APPLY_TAG: {
+		id: 'apply-tag',
+		desc: 'Apply tag'
 	}
 } as const;
 

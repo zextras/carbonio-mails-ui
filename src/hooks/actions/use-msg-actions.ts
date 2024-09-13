@@ -5,8 +5,7 @@
  */
 import { useMemo } from 'react';
 
-import { useTags } from '@zextras/carbonio-shell-ui';
-
+import { useMsgApplyTagDescriptor } from './use-msg-apply-tag';
 import { useMsgCreateAppointmentDescriptor } from './use-msg-create-appointment';
 import { useDeleteMsgPermanentlyDescriptor } from './use-msg-delete-permanently';
 import { useMsgDownloadEmlDescriptor } from './use-msg-download-eml';
@@ -31,7 +30,6 @@ import { useSetMsgReadDescriptor } from './use-set-msg-read';
 import { useSetMsgUnreadDescriptor } from './use-set-msg-unread';
 import { getParentFolderId } from '../../helpers/folders';
 import { MailMessage, UIActionDescriptor } from '../../types';
-import { applyTag } from '../../ui-actions/tag-actions';
 import { useGlobalExtraWindowManager } from '../../views/app/extra-windows/global-extra-window-manager';
 
 export type MessageActionsType = {
@@ -85,7 +83,7 @@ export const useMsgActions = ({
 		shouldReplaceHistory,
 		folderId
 	});
-	const applyTagDescriptor = applyTag({ tags, conversation: message, isMessage: true });
+	const applyTagDescriptor = useMsgApplyTagDescriptor(messageId);
 	const moveToFolderDescriptor = useMsgMoveToFolderDescriptor({
 		folderId,
 		messageId,

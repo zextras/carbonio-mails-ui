@@ -43,7 +43,8 @@ export const useMessageContextualActions = (
 		messageReadDescriptor,
 		messageUnreadDescriptor,
 		flagDescriptor,
-		unflagDescriptor
+		unflagDescriptor,
+		applyTagDescriptor
 	} = useMsgActions(params);
 
 	return useMemo(
@@ -57,7 +58,8 @@ export const useMessageContextualActions = (
 			messageReadDescriptor,
 			messageUnreadDescriptor,
 			flagDescriptor,
-			unflagDescriptor
+			unflagDescriptor,
+			applyTagDescriptor
 		],
 		[
 			deletePermanentlyDescriptor,
@@ -69,7 +71,8 @@ export const useMessageContextualActions = (
 			moveToTrashDescriptor,
 			replyAllDescriptor,
 			replyDescriptor,
-			unflagDescriptor
+			unflagDescriptor,
+			applyTagDescriptor
 		]
 	);
 };
