@@ -3,18 +3,17 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { useTags } from '@zextras/carbonio-shell-ui';
 import { useMemo } from 'react';
-import { MailMessage, UIActionDescriptor } from '../../types';
-import { useGlobalExtraWindowManager } from '../../views/app/extra-windows/global-extra-window-manager';
 
-import { useDeleteMsgPermanentlyDescriptor } from './use-msg-delete-permanently';
-import { useForwardMsgDescriptor } from './use-msg-forward';
+import { useTags } from '@zextras/carbonio-shell-ui';
+
 import { useMsgCreateAppointmentDescriptor } from './use-msg-create-appointment';
+import { useDeleteMsgPermanentlyDescriptor } from './use-msg-delete-permanently';
 import { useMsgDownloadEmlDescriptor } from './use-msg-download-eml';
 import { useMsgEditAsNewDescriptor } from './use-msg-edit-as-new';
 import { useMsgEdiDraftDescriptor } from './use-msg-edit-draft';
 import { useMsgFlagDescriptor } from './use-msg-flag';
+import { useForwardMsgDescriptor } from './use-msg-forward';
 import { useMsgMarkAsNotSpamDescriptor } from './use-msg-mark-as-not-spam';
 import { useMsgMarkAsSpamDescriptor } from './use-msg-mark-as-spam';
 import { useMsgMoveToFolderDescriptor } from './use-msg-move-to-folder';
@@ -30,7 +29,9 @@ import { useReplyAllMsg } from './use-reply-all-msg';
 import { useReplyMsgDescriptor } from './use-reply-msg';
 import { useSetMsgReadDescriptor } from './use-set-msg-read';
 import { useSetMsgUnreadDescriptor } from './use-set-msg-unread';
+import { MailMessage, UIActionDescriptor } from '../../types';
 import { applyTag } from '../../ui-actions/tag-actions';
+import { useGlobalExtraWindowManager } from '../../views/app/extra-windows/global-extra-window-manager';
 
 export type MessageActionsType = {
 	message: MailMessage;

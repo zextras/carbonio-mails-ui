@@ -59,7 +59,7 @@ export const MessageListItemActionWrapper = ({
 	item: MailMessage;
 	deselectAll: () => void;
 }): React.JSX.Element => {
-	const messageHoverActions = useMessageHoverActions({ messageId: item.id, folderId: item.parent });
+	const messageHoverActions = useMessageHoverActions({ message: item, folderId: item.parent });
 
 	return (
 		<ListItemActionWrapper
