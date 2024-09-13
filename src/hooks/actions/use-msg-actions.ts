@@ -29,17 +29,16 @@ import { useReplyAllMsg } from './use-reply-all-msg';
 import { useReplyMsgDescriptor } from './use-reply-msg';
 import { useSetMsgReadDescriptor } from './use-set-msg-read';
 import { useSetMsgUnreadDescriptor } from './use-set-msg-unread';
+import { getParentFolderId } from '../../helpers/folders';
 import { MailMessage, UIActionDescriptor } from '../../types';
 import { applyTag } from '../../ui-actions/tag-actions';
 import { useGlobalExtraWindowManager } from '../../views/app/extra-windows/global-extra-window-manager';
 
 export type MessageActionsType = {
 	message: MailMessage;
-	folderId: string;
 };
 
 export const useMsgActions = ({
-	folderId,
 	message
 }: MessageActionsType): Record<string, UIActionDescriptor> => {
 	const messageId = message.id;
@@ -49,6 +48,7 @@ export const useMsgActions = ({
 	const closeEditor = false;
 	const shouldReplaceHistory = false;
 	const { createWindow } = useGlobalExtraWindowManager();
+	const folderId = getParentFolderId(message.parent);
 
 	const replyDescriptor = useReplyMsgDescriptor(messageId, folderId);
 	const replyAllDescriptor = useReplyAllMsg(messageId);
