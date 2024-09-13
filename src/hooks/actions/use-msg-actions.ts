@@ -136,29 +136,29 @@ export const useMsgActions = ({
 			downloadEmlDescriptor
 		}),
 		[
+			applyTagDescriptor,
+			createAppointmentDescriptor,
 			deletePermanentlyDescriptor,
+			downloadEmlDescriptor,
+			editAsNewDescriptor,
+			editDraftDescriptor,
 			flagDescriptor,
 			forwardDescriptor,
+			markAsNotSpamDescriptor,
+			markAsSpamDescriptor,
 			messageReadDescriptor,
 			messageUnreadDescriptor,
+			moveToFolderDescriptor,
 			moveToTrashDescriptor,
+			previewOnSeparatedWindowDescriptor,
+			printDescriptor,
+			redirectDescriptor,
 			replyAllDescriptor,
 			replyDescriptor,
-			unflagDescriptor,
-			sendDraftDescriptor,
-			markAsSpamDescriptor,
-			markAsNotSpamDescriptor,
-			applyTagDescriptor,
-			moveToFolderDescriptor,
 			restoreFolderDescriptor,
-			createAppointmentDescriptor,
-			printDescriptor,
-			previewOnSeparatedWindowDescriptor,
-			redirectDescriptor,
-			editDraftDescriptor,
-			editAsNewDescriptor,
+			sendDraftDescriptor,
 			showOriginalDescriptor,
-			downloadEmlDescriptor
+			unflagDescriptor
 		]
 	);
 };

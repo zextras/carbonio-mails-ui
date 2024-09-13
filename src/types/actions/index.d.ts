@@ -14,15 +14,14 @@ import { ItemType } from '../../carbonio-ui-commons/types/tags';
 import type { TagActionItemType } from '../tags';
 
 export type ActionFn = {
-	execute?: () => void;
-	canExecute?: () => boolean;
+	execute: () => void;
+	canExecute: () => boolean;
 };
 
 export type UIActionDescriptor = ActionFn & {
 	id: string;
 	label: string;
 	icon: keyof DefaultTheme['icons'];
-	items?: Array<UIActionDescriptor>;
 };
 
 export type ActionProps = {

@@ -3,12 +3,14 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, memo, ReactNode, useCallback, useMemo } from 'react';
+import React, { FC, memo, ReactElement, ReactNode, useCallback, useMemo } from 'react';
 
 import {
 	Badge,
+	Button,
 	Container,
 	ContainerProps,
+	Dropdown,
 	Icon,
 	Padding,
 	Row,
@@ -30,21 +32,131 @@ import { ZIMBRA_STANDARD_COLORS } from '../../../../carbonio-ui-commons/constant
 import { useFolder } from '../../../../carbonio-ui-commons/store/zustand/folder/hooks';
 import { getTimeLabel, participantToString } from '../../../../commons/utils';
 import { EditViewActions } from '../../../../constants';
-import { useMessageContextualActions } from '../../../../hooks/actions/use-message-contextual-actions';
-import { useMessageHoverActions } from '../../../../hooks/actions/use-message-hover-actions';
+import { useMsgActions } from '../../../../hooks/actions/use-msg-actions';
 import { useAppDispatch } from '../../../../hooks/redux';
 import { useMessageActions } from '../../../../hooks/use-message-actions';
-import { MailMessage, MessageListItemProps, TextReadValuesType } from '../../../../types';
+import {
+	MailMessage,
+	MessageListItemProps,
+	TextReadValuesType,
+	UIActionDescriptor
+} from '../../../../types';
 import { setMsgRead } from '../../../../ui-actions/message-actions';
 import { previewMessageOnSeparatedWindow } from '../../../../ui-actions/preview-message-on-separated-window';
 import { useTagExist } from '../../../../ui-actions/tag-actions';
 import { getFolderTranslatedName } from '../../../sidebar/utils';
 import { createEditBoard } from '../../detail-panel/edit/edit-view-board';
 import { useGlobalExtraWindowManager } from '../../extra-windows/global-extra-window-manager';
+import { HoverBarContainer } from '../parts/hover-bar-container';
+import { HoverContainer } from '../parts/hover-container';
 import { ItemAvatar } from '../parts/item-avatar';
-import { ListItemActionWrapper } from '../parts/list-item-actions-wrapper';
 import { SenderName } from '../parts/sender-name';
 
+const HoverActionComponent = ({ action }: { action: UIActionDescriptor }): ReactElement => {
+	const onClick = useCallback(
+		(ev): void => {
+			if (ev) {
+				ev.preventDefault();
+			}
+			action.execute();
+		},
+		[action]
+	);
+	return (
+		<Tooltip label={action.label}>
+			<Button
+				key={action.id}
+				icon={action.icon}
+				onClick={onClick}
+				size="small"
+				type="ghost"
+				color="text"
+			/>
+		</Tooltip>
+	);
+};
+
+const HoverActionsComponentTry = ({ message }: { message: MailMessage }): React.JSX.Element => {
+	const {
+		replyDescriptor,
+		replyAllDescriptor,
+		forwardDescriptor,
+		moveToTrashDescriptor,
+		deletePermanentlyDescriptor,
+		messageReadDescriptor,
+		messageUnreadDescriptor,
+		flagDescriptor,
+		unflagDescriptor
+	} = useMsgActions({ message });
+
+	const actions = [
+		replyDescriptor,
+		replyAllDescriptor,
+		forwardDescriptor,
+		moveToTrashDescriptor,
+		deletePermanentlyDescriptor,
+		messageReadDescriptor,
+		messageUnreadDescriptor,
+		flagDescriptor,
+		unflagDescriptor
+	];
+
+	return (
+		<>
+			{actions
+				.filter((action) => action.canExecute())
+				.map((action, index) => (
+					<HoverActionComponent key={action.id ?? index} action={action} />
+				))}
+		</>
+	);
+};
+
+const DropdownActionsComponentTry = ({
+	message,
+	children
+}: {
+	message: MailMessage;
+	children: React.JSX.Element;
+}): React.JSX.Element => {
+	const {
+		replyDescriptor,
+		replyAllDescriptor,
+		forwardDescriptor,
+		sendDraftDescriptor,
+		moveToTrashDescriptor,
+		deletePermanentlyDescriptor,
+		messageReadDescriptor,
+		messageUnreadDescriptor,
+		flagDescriptor,
+		unflagDescriptor,
+		markAsSpamDescriptor,
+		markAsNotSpamDescriptor,
+		applyTagDescriptor,
+		moveToFolderDescriptor,
+		restoreFolderDescriptor,
+		createAppointmentDescriptor,
+		printDescriptor,
+		previewOnSeparatedWindowDescriptor,
+		redirectDescriptor,
+		editDraftDescriptor,
+		editAsNewDescriptor,
+		showOriginalDescriptor,
+		downloadEmlDescriptor
+	} = useMsgActions({ message });
+
+	return (
+		<Dropdown
+			contextMenu
+			items={[]}
+			display="block"
+			style={{ width: '100%', height: '4rem' }}
+			data-testid={`secondary-actions-menu-${message.id}`}
+		>
+			{children}
+		</Dropdown>
+	);
+};
 export const MessageListItemActionWrapper = ({
 	item,
 	active,
@@ -59,24 +171,30 @@ export const MessageListItemActionWrapper = ({
 	active?: boolean;
 	item: MailMessage;
 	deselectAll: () => void;
-}): React.JSX.Element => {
-	const messageHoverActions = useMessageHoverActions({ message: item });
-	const messageDropdownActions = useMessageContextualActions({ message: item });
-
-	return (
-		<ListItemActionWrapper
-			item={item}
-			active={active}
+}): React.JSX.Element => (
+	<DropdownActionsComponentTry message={item}>
+		<HoverContainer
+			data-testid={`hover-container-${item.id}`}
+			orientation="horizontal"
+			mainAlignment="flex-start"
+			crossAlignment="unset"
 			onClick={onClick}
 			onDoubleClick={onDoubleClick}
-			deselectAll={deselectAll}
-			hoverActions={messageHoverActions}
-			dropdownActions={messageDropdownActions}
+			$hoverBackground={active ? 'highlight' : 'gray6'}
 		>
 			{children}
-		</ListItemActionWrapper>
-	);
-};
+			<HoverBarContainer
+				orientation="horizontal"
+				mainAlignment="flex-end"
+				crossAlignment="center"
+				background={active ? 'highlight' : 'gray6'}
+				data-testid={`primary-actions-bar-${item.id}`}
+			>
+				<HoverActionsComponentTry message={item} />
+			</HoverBarContainer>
+		</HoverContainer>
+	</DropdownActionsComponentTry>
+);
 
 export const MessageListItem: FC<MessageListItemProps> = memo(function MessageListItem({
 	item,
