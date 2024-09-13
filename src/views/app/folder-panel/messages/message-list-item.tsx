@@ -30,6 +30,7 @@ import { ZIMBRA_STANDARD_COLORS } from '../../../../carbonio-ui-commons/constant
 import { useFolder } from '../../../../carbonio-ui-commons/store/zustand/folder/hooks';
 import { getTimeLabel, participantToString } from '../../../../commons/utils';
 import { EditViewActions } from '../../../../constants';
+import { useMessageContextualActions } from '../../../../hooks/actions/use-message-contextual-actions';
 import { useMessageHoverActions } from '../../../../hooks/actions/use-message-hover-actions';
 import { useAppDispatch } from '../../../../hooks/redux';
 import { useMessageActions } from '../../../../hooks/use-message-actions';
@@ -59,7 +60,8 @@ export const MessageListItemActionWrapper = ({
 	item: MailMessage;
 	deselectAll: () => void;
 }): React.JSX.Element => {
-	const messageHoverActions = useMessageHoverActions({ message: item, folderId: item.parent });
+	const messageHoverActions = useMessageHoverActions({ message: item });
+	const messageDropdownActions = useMessageContextualActions({ message: item });
 
 	return (
 		<ListItemActionWrapper
@@ -69,6 +71,7 @@ export const MessageListItemActionWrapper = ({
 			onDoubleClick={onDoubleClick}
 			deselectAll={deselectAll}
 			hoverActions={messageHoverActions}
+			dropdownActions={messageDropdownActions}
 		>
 			{children}
 		</ListItemActionWrapper>

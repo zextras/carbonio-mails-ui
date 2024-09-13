@@ -8,9 +8,9 @@ import React, { useCallback, useMemo } from 'react';
 import { noop } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
-import { ActionFn, UIActionDescriptor } from './use-redirect-msg';
 import { MessageActionsDescriptors } from '../../constants';
 import { StoreProvider } from '../../store/redux';
+import { ActionFn, UIActionDescriptor } from '../../types';
 import MoveConvMessage from '../../ui-actions/move-conv-msg';
 import { useAppDispatch } from '../redux';
 import { useUiUtilities } from '../use-ui-utilities';

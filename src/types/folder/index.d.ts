@@ -62,6 +62,7 @@ export type ListItemActionWrapperProps = {
 	item: Conversation | MailMessage;
 	deselectAll: () => void;
 	hoverActions: UIActionDescriptor[];
+	dropdownActions: UIActionDescriptor[];
 };
 
 export type ItemAvatarType = {

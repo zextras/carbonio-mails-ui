@@ -11,9 +11,12 @@ import { HoverBarContainer } from './hover-bar-container';
 import { HoverContainer } from './hover-container';
 import { MessageActionsDescriptors } from '../../../../constants';
 import { isConversation } from '../../../../helpers/messages';
-import { UIActionDescriptor } from '../../../../hooks/actions/use-redirect-msg';
 import { useMessageActions } from '../../../../hooks/use-message-actions';
-import type { ListItemActionWrapperProps, MessageAction } from '../../../../types';
+import type {
+	ListItemActionWrapperProps,
+	MessageAction,
+	UIActionDescriptor
+} from '../../../../types';
 import { useMsgConvActions } from '../../../../ui-actions/use-msg-conv-actions';
 
 const HoverActionComponent = ({ action }: { action: UIActionDescriptor }): ReactElement => {
@@ -47,7 +50,8 @@ export const ListItemActionWrapper: FC<ListItemActionWrapperProps> = ({
 	item,
 	active,
 	deselectAll,
-	hoverActions
+	hoverActions,
+	dropdownActions
 }) => {
 	const messageActionsForExtraWindow = useMessageActions({
 		message: isConversation(item) ? undefined : item,
@@ -55,7 +59,7 @@ export const ListItemActionWrapper: FC<ListItemActionWrapperProps> = ({
 		isForExtraWindow: true
 	});
 
-	const [_hoverActions, dropdownActions] = useMsgConvActions({
+	const [_hoverActions, _dropdownActions] = useMsgConvActions({
 		item,
 		deselectAll,
 		messageActionsForExtraWindow

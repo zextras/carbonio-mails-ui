@@ -5,8 +5,9 @@
  */
 
 import { useMemo } from 'react';
-import { UIActionDescriptor } from '../../types';
+
 import { MessageActionsType, useMsgActions } from './use-msg-actions';
+import { UIActionDescriptor } from '../../types';
 
 /*
 		replyAction,

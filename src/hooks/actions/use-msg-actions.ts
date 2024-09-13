@@ -40,9 +40,8 @@ export const useMsgActions = ({
 	message
 }: MessageActionsType): Record<string, UIActionDescriptor> => {
 	const messageId = message.id;
-	const tags = useTags();
 	const messageActions: UIActionDescriptor[] = [];
-	const deselectAll = () => null;
+	const deselectAll = (): null => null;
 	const closeEditor = false;
 	const shouldReplaceHistory = false;
 	const { createWindow } = useGlobalExtraWindowManager();
