@@ -21,8 +21,7 @@ import { handleGetConvRequest } from './src/tests/mocks/network/msw/handle-get-c
 import { handleGetMsgRequest } from './src/tests/mocks/network/msw/handle-get-msg';
 
 failOnConsole({
-	...getFailOnConsoleDefaultConfig(),
-	shouldFailOnWarn: false
+	...getFailOnConsoleDefaultConfig()
 });
 
 beforeAll(() => {
