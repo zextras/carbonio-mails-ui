@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React, { FC, useCallback, useMemo, useState } from 'react';
+import React, { FC, useCallback, useState } from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
 import { useIntegratedComponent, useUserSettings } from '@zextras/carbonio-shell-ui';
@@ -63,7 +63,19 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 		ui_mode: 'split',
 		font_size_formats: fontSizesOptionsToString,
 		font_family_formats: fontsOptionsToString,
-		content_style: `p  {margin: 0;  color: ${defaultColor}; font-size: ${defaultFontSize}; font-family: ${defaultFontFamily}; }`
+		content_style: `p  {margin: 0;  color: ${defaultColor}; font-size: ${defaultFontSize}; font-family: ${defaultFontFamily}; }`,
+		toolbar: [
+			'fontfamily fontsize styles visualblocks',
+			'bold italic underline strikethrough',
+			'removeformat code',
+			'alignleft aligncenter alignright alignjustify',
+			'forecolor backcolor',
+			'bullist numlist outdent indent',
+			'ltr rtl',
+			'link table',
+			'insertfile image',
+			'imageSelector'
+		].join(' | ')
 	};
 
 	return (
