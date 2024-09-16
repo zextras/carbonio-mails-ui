@@ -145,6 +145,8 @@ const DropdownActionsComponentTry = ({
 		downloadEmlDescriptor
 	} = useMsgActions({ message });
 
+	const tags = useTags();
+
 	return (
 		<Dropdown
 			contextMenu

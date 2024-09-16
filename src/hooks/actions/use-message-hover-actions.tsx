@@ -6,10 +6,12 @@
 
 import { useMemo } from 'react';
 
-import { MessageActionsType, useMsgActions } from './use-msg-actions';
+import { MessageActionsArgumentType, useMsgActions } from './use-msg-actions';
 import { UIActionDescriptor } from '../../types';
 
-export const useMessageHoverActions = (params: MessageActionsType): Array<UIActionDescriptor> => {
+export const useMessageHoverActions = (
+	params: MessageActionsArgumentType
+): Array<UIActionDescriptor> => {
 	const {
 		replyDescriptor,
 		replyAllDescriptor,

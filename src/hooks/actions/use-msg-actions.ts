@@ -32,13 +32,39 @@ import { getParentFolderId } from '../../helpers/folders';
 import { MailMessage, UIActionDescriptor } from '../../types';
 import { useGlobalExtraWindowManager } from '../../views/app/extra-windows/global-extra-window-manager';
 
-export type MessageActionsType = {
+export type MessageActionsArgumentType = {
 	message: MailMessage;
+};
+
+type MessageActionsReturnType = {
+	replyDescriptor: UIActionDescriptor;
+	replyAllDescriptor: UIActionDescriptor;
+	forwardDescriptor: UIActionDescriptor;
+	moveToTrashDescriptor: UIActionDescriptor;
+	deletePermanentlyDescriptor: UIActionDescriptor;
+	messageReadDescriptor: UIActionDescriptor;
+	messageUnreadDescriptor: UIActionDescriptor;
+	flagDescriptor: UIActionDescriptor;
+	unflagDescriptor: UIActionDescriptor;
+	sendDraftDescriptor: UIActionDescriptor;
+	markAsSpamDescriptor: UIActionDescriptor;
+	markAsNotSpamDescriptor: UIActionDescriptor;
+	applyTagDescriptor: UIActionDescriptor;
+	moveToFolderDescriptor: UIActionDescriptor;
+	restoreFolderDescriptor: UIActionDescriptor;
+	createAppointmentDescriptor: UIActionDescriptor;
+	printDescriptor: UIActionDescriptor;
+	previewOnSeparatedWindowDescriptor: UIActionDescriptor;
+	redirectDescriptor: UIActionDescriptor;
+	editDraftDescriptor: UIActionDescriptor;
+	editAsNewDescriptor: UIActionDescriptor;
+	showOriginalDescriptor: UIActionDescriptor;
+	downloadEmlDescriptor: UIActionDescriptor;
 };
 
 export const useMsgActions = ({
 	message
-}: MessageActionsType): Record<string, UIActionDescriptor> => {
+}: MessageActionsArgumentType): MessageActionsReturnType => {
 	const messageId = message.id;
 	const messageActions: UIActionDescriptor[] = [];
 	const deselectAll = (): null => null;
