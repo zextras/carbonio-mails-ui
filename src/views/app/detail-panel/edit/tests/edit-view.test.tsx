@@ -10,6 +10,7 @@ import { faker } from '@faker-js/faker';
 import { act, screen, waitFor, within } from '@testing-library/react';
 import { UserEvent } from '@testing-library/user-event';
 import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
+import * as hooks from '@zextras/carbonio-shell-ui';
 import { find, noop } from 'lodash';
 import { HttpResponse } from 'msw';
 
@@ -24,6 +25,7 @@ import {
 	createSoapAPIInterceptor
 } from '../../../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { getEmptyMSWShareInfoResponse } from '../../../../../carbonio-ui-commons/test/mocks/network/msw/handle-get-share-info';
+import { generateSettings } from '../../../../../carbonio-ui-commons/test/mocks/settings/settings-generator';
 import { populateFoldersStore } from '../../../../../carbonio-ui-commons/test/mocks/store/folders';
 import { getMocksContext } from '../../../../../carbonio-ui-commons/test/mocks/utils/mocks-context';
 import { buildSoapErrorResponseBody } from '../../../../../carbonio-ui-commons/test/mocks/utils/soap';
@@ -140,6 +142,11 @@ const clearAndInsertText =
 		await user.type(target, text);
 	};
 
+jest.mock('../../../../../store/zustand/editor', () => ({
+	...jest.requireActual('../../../../../store/zustand/editor'),
+	deleteEditor: jest.fn()
+}));
+
 describe('Edit view', () => {
 	describe('Mail creation', () => {
 		beforeEach(() => {
@@ -166,12 +173,25 @@ describe('Edit view', () => {
 				editorId: editor.id,
 				closeController: noop
 			};
+			const settings = generateSettings({
+				prefs: {
+					zimbraFeatureMailSendLaterEnabled: 'FALSE'
+				},
+				props: [
+					{
+						zimlet: 'carbonio-mails-ui',
+						name: 'mails_snackbar_delay',
+						_content: '0'
+					}
+				]
+			});
+
+			jest.spyOn(hooks, 'getUserSettings').mockReturnValue(settings);
 
 			const { user } = setupTest(<EditView {...props} />, { store: reduxStore });
 
 			// Get the components
-			const btnSend =
-				screen.queryByTestId('BtnSendMail') || screen.queryByTestId('BtnSendMailMulti');
+			const btnSend = await screen.findByTestId(/BtnSendMail/i);
 			const btnCc = screen.getByTestId('BtnCc');
 			const toComponent = screen.getByTestId('RecipientTo');
 			const toInputElement = within(toComponent).getByRole('textbox');
@@ -184,12 +204,10 @@ describe('Edit view', () => {
 			await act(clearAndInsertText(user, toInputElement, address));
 			await act(async () => {
 				await user.tab();
+				await user.click(btnCc);
 			});
 
 			// Click on the "CC" button to show CC Recipient field
-			await act(async () => {
-				await user.click(btnCc);
-			});
 			const ccComponent = screen.getByTestId('RecipientCc');
 			const ccInputElement = within(ccComponent).getByRole('textbox');
 
@@ -208,7 +226,14 @@ describe('Edit view', () => {
 			);
 			expect(markAsImportantOption).toBeVisible();
 
+			await act(async () => {
+				awaitDebouncedSaveDraft();
+			});
+
 			await act(clearAndInsertText(user, editorTextareaElement, body));
+
+			// Check for the status of the "send" button to be enabled
+			await waitFor(() => expect(btnSend).toBeEnabled());
 
 			const response = {
 				m: [
@@ -224,30 +249,25 @@ describe('Edit view', () => {
 			>('SendMsg', response);
 
 			await act(async () => {
-				await user.click(btnSend as HTMLElement);
+				await user.click(btnSend);
 			});
 
-			jest.advanceTimersByTime(9_000);
+			const { m: msg } = await sendMsgPromise;
 
-			await act(async () => {
-				await sendMsgPromise;
+			expect(msg.su._content).toBe(subject);
+
+			msg.e.forEach((participant) => {
+				if (participant.t === 't') {
+					expect(participant.a).toBe(address);
+				} else if (participant.t === 'f') {
+					expect(participant.a).toBe(from);
+					expect(participant.p).toBe(fullName);
+				}
 			});
 
-			// expect(msg.su._content).toBe(subject);
-			//
-			// msg.e.forEach((participant) => {
-			// 	if (participant.t === 't') {
-			// 		expect(participant.a).toBe(address);
-			// 	} else if (participant.t === 'f') {
-			// 		expect(participant.a).toBe(from);
-			// 		expect(participant.p).toBe(fullName);
-			// 	}
-			// });
-			//
-			// expect(getSoapMailBodyContent(msg, CT_PLAIN)).toBe(body);
+			expect(getSoapMailBodyContent(msg, CT_PLAIN)).toBe(body);
 		});
 
-		// ok
 		it('create a new email and text format should be as per setting', async () => {
 			setupEditorStore({ editors: [] });
 			const reduxStore = generateStore();
@@ -263,7 +283,6 @@ describe('Edit view', () => {
 			defaultBeforeAllTests({ onUnhandledRequest: 'error' });
 		});
 
-		// ok
 		it('should show error-try-again snackbar message on CreateSmartLink soap failure ', async () => {
 			createAPIInterceptor(
 				'post',
@@ -315,7 +334,6 @@ describe('Edit view', () => {
 			);
 		});
 
-		// ok
 		it('is not autosaved on initialization if draft id is present', async () => {
 			const mockedSaveDraft = jest.spyOn(saveDraftAction, 'saveDraftV3');
 
@@ -334,7 +352,6 @@ describe('Edit view', () => {
 			expect(mockedSaveDraft).not.toBeCalled();
 		});
 
-		// ok
 		it('is autosaved on initialization if draft id is not present', async () => {
 			const interceptor = aSuccessfullSaveDraft();
 			setupEditorStore({ editors: [] });
@@ -356,7 +373,7 @@ describe('Edit view', () => {
 					return undefined;
 				});
 			});
-			// ok
+
 			it('clicks on the save button', async () => {
 				setupEditorStore({ editors: [] });
 				const reduxStore = generateStore();
@@ -429,7 +446,6 @@ describe('Edit view', () => {
 				expect(msg.mp[0]?.content?._content).toBe(body);
 			});
 
-			// ok
 			it('changes the subject', async () => {
 				setupEditorStore({ editors: [] });
 				const reduxStore = generateStore();
@@ -456,7 +472,6 @@ describe('Edit view', () => {
 				expect(msg.su._content).toBe(subjectText);
 			});
 
-			// ok
 			it('changes the recipient (to)', async () => {
 				setupEditorStore({ editors: [] });
 				const reduxStore = generateStore();
@@ -486,7 +501,6 @@ describe('Edit view', () => {
 				expect(sentRecipient.a).toBe(recipient);
 			});
 
-			// ok
 			it('changes the body', async () => {
 				setupEditorStore({ editors: [] });
 				const reduxStore = generateStore();
@@ -515,7 +529,6 @@ describe('Edit view', () => {
 				expect(msg.mp[0]?.content?._content).toBe(body);
 			});
 
-			// ok
 			it('attaches a file', async () => {
 				setupEditorStore({ editors: [] });
 				createAPIInterceptor('post', '/service/upload', new HttpResponse(null, { status: 200 }));
@@ -575,13 +588,11 @@ describe('Edit view', () => {
 					expect(btnSend).toBeDisabled();
 				};
 
-				// ok
 				it('and action is "new editor"', async () => {
 					const editor = generateNewMessageEditor(reduxStore.dispatch);
 					await checkSaveBtnIsDisabled(editor);
 				});
 
-				// ok
 				it('and action is "reply"', async () => {
 					const message = generateMessage({
 						isComplete: true
@@ -612,7 +623,7 @@ describe('Edit view', () => {
 					expect(btnSend).toBeVisible();
 					expect(btnSend).toBeEnabled();
 				};
-				// ok
+
 				it('and action is "reply"', async () => {
 					const message = generateMessage({
 						isComplete: true
@@ -622,7 +633,7 @@ describe('Edit view', () => {
 
 					await checkSendBtnEnabled(editor);
 				});
-				// ok
+
 				it('and action is "replyAll"', async () => {
 					const message = generateMessage({
 						isComplete: true
