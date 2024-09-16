@@ -8,11 +8,17 @@ import { http, HttpResponse } from 'msw';
 
 import { getSetupServer } from '../../carbonio-ui-commons/test/jest-setup';
 import * as shell from '../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
+import { createSoapAPIInterceptor } from '../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { setupHook } from '../../carbonio-ui-commons/test/test-setup';
 import * as convRequest from '../../store/actions/conv-action';
 import * as searchAPI from '../../store/actions/search';
 import { generateStore } from '../../tests/generators/store';
 import { usePreviewHeaderNavigation } from '../use-preview-header-navigation';
+
+beforeEach(() => {
+	createSoapAPIInterceptor('ConvAction');
+	createSoapAPIInterceptor('Search');
+});
 
 describe('usePreviewHeaderNavigation', () => {
 	test('should return two items', () => {

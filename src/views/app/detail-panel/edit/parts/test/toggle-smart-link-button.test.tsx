@@ -4,10 +4,12 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { act } from '@testing-library/react';
 import React from 'react';
 
+import { act } from '@testing-library/react';
+
 import { getIntegratedFunction } from '../../../../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
+import { createSoapAPIInterceptor } from '../../../../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { setupTest, screen } from '../../../../../../carbonio-ui-commons/test/test-setup';
 import { addEditor, useEditorsStore } from '../../../../../../store/zustand/editor';
 import { setupEditorStore } from '../../../../../../tests/generators/editor-store';
@@ -19,6 +21,10 @@ import {
 } from '../../../../../../tests/generators/editors';
 import { generateStore } from '../../../../../../tests/generators/store';
 import { ToggleSmartLinkButton } from '../toggle-smart-link-button';
+
+beforeEach(() => {
+	createSoapAPIInterceptor('SaveDraft');
+});
 
 describe('ToggleSmartLinkButton', () => {
 	it('should render a button with Link2Outline icon if a savedAttachment not marked for conversion is present', async () => {
