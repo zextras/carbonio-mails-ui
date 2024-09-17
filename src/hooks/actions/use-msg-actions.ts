@@ -34,6 +34,8 @@ import { useGlobalExtraWindowManager } from '../../views/app/extra-windows/globa
 
 export type MessageActionsArgumentType = {
 	message: MailMessage;
+	deselectAll: () => void;
+	shouldReplaceHistory?: boolean;
 };
 
 type MessageActionsReturnType = {
@@ -63,12 +65,10 @@ type MessageActionsReturnType = {
 };
 
 export const useMsgActions = ({
-	message
+	deselectAll,
+	message,
+	shouldReplaceHistory = false
 }: MessageActionsArgumentType): MessageActionsReturnType => {
-	const messageActions: UIActionDescriptor[] = [];
-	const deselectAll = (): null => null;
-	const closeEditor = false;
-	const shouldReplaceHistory = false;
 	const { createWindow } = useGlobalExtraWindowManager();
 	const folderId = getParentFolderId(message.parent);
 
@@ -79,7 +79,7 @@ export const useMsgActions = ({
 		ids: [message.id],
 		deselectAll,
 		folderId,
-		closeEditor
+		shouldReplaceHistory
 	});
 	const deletePermanentlyDescriptor = useDeleteMsgPermanentlyDescriptor({
 		messageId: message.id,
@@ -129,6 +129,9 @@ export const useMsgActions = ({
 	const editAsNewDescriptor = useMsgEditAsNewDescriptor(message.id);
 	const showOriginalDescriptor = useMsgShowOriginalDescriptor(message.id);
 	const downloadEmlDescriptor = useMsgDownloadEmlDescriptor(message.id);
+
+	const messageActions: UIActionDescriptor[] = [];
+
 	const previewOnSeparatedWindowDescriptor = useMsgPreviewOnSeparatedWindowDescriptor({
 		messageId: message.id,
 		folderId,

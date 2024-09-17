@@ -80,14 +80,14 @@ type MoveToTrashExecute = {
 	ids: Array<string>;
 	folderId?: string;
 	deselectAll?: () => void;
-	closeEditor?: boolean;
+	shouldReplaceHistory?: boolean;
 };
 
 export const useMsgMoveToTrashFn = ({
 	ids,
 	deselectAll,
 	folderId = FOLDERS.INBOX,
-	closeEditor
+	shouldReplaceHistory
 }: MoveToTrashExecute): ActionFn => {
 	const canExecute = useCallback((): boolean => true, []);
 	const dispatch = useAppDispatch();
@@ -105,7 +105,7 @@ export const useMsgMoveToTrashFn = ({
 			if (res.type.includes('fulfilled')) {
 				deselectAll && deselectAll();
 				if (!inSearchModule) {
-					closeEditor && replaceHistory(`/folder/${folderId}`);
+					shouldReplaceHistory && replaceHistory(`/folder/${folderId}`);
 				}
 				createSnackbar({
 					key: `trash-${ids}`,
@@ -115,7 +115,7 @@ export const useMsgMoveToTrashFn = ({
 					autoHideTimeout: 5000,
 					hideButton: false,
 					actionLabel: t('label.undo', 'Undo'),
-					onActionClick: () => restoreMessage(dispatch, ids, folderId, closeEditor)
+					onActionClick: () => restoreMessage(dispatch, ids, folderId, shouldReplaceHistory)
 				});
 			} else {
 				createSnackbar({
@@ -129,7 +129,7 @@ export const useMsgMoveToTrashFn = ({
 			}
 		});
 	}, [
-		closeEditor,
+		shouldReplaceHistory,
 		createSnackbar,
 		deselectAll,
 		dispatch,
@@ -146,13 +146,13 @@ export const useMsgMoveToTrashDescriptor = ({
 	ids,
 	deselectAll,
 	folderId,
-	closeEditor
+	shouldReplaceHistory
 }: MoveToTrashExecute): UIActionDescriptor => {
 	const { canExecute, execute } = useMsgMoveToTrashFn({
 		ids,
 		deselectAll,
 		folderId,
-		closeEditor
+		shouldReplaceHistory
 	});
 	const [t] = useTranslation();
 	return {

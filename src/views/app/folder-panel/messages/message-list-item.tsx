@@ -27,9 +27,10 @@ import {
 } from '@zextras/carbonio-shell-ui';
 import { debounce, find, includes, isEmpty, noop, reduce } from 'lodash';
 import moment from 'moment';
+import { useParams } from 'react-router-dom';
 
-import { ZIMBRA_STANDARD_COLORS } from '../../../../carbonio-ui-commons/constants/utils';
-import { useFolder } from '../../../../carbonio-ui-commons/store/zustand/folder/hooks';
+import { ZIMBRA_STANDARD_COLORS } from '../../../../carbonio-ui-commons/constants';
+import { useFolder } from '../../../../carbonio-ui-commons/store/zustand/folder';
 import { getTimeLabel, participantToString } from '../../../../commons/utils';
 import { EditViewActions } from '../../../../constants';
 import { useMsgActions } from '../../../../hooks/actions/use-msg-actions';
@@ -77,7 +78,15 @@ const HoverActionComponent = ({ action }: { action: UIActionDescriptor }): React
 	);
 };
 
-const HoverActionsComponent = ({ message }: { message: MailMessage }): React.JSX.Element => {
+const HoverActionsComponent = ({
+	message,
+	deselectAll,
+	shouldReplaceHistory
+}: {
+	message: MailMessage;
+	deselectAll: () => void;
+	shouldReplaceHistory?: boolean;
+}): React.JSX.Element => {
 	const {
 		replyDescriptor,
 		replyAllDescriptor,
@@ -88,7 +97,7 @@ const HoverActionsComponent = ({ message }: { message: MailMessage }): React.JSX
 		messageUnreadDescriptor,
 		flagDescriptor,
 		unflagDescriptor
-	} = useMsgActions({ message });
+	} = useMsgActions({ message, deselectAll, shouldReplaceHistory });
 
 	const actions = [
 		replyDescriptor,
@@ -124,10 +133,14 @@ const normalizeDropdownActionItem = (
 
 const DropdownActionsComponent = ({
 	message,
+	deselectAll,
+	shouldReplaceHistory,
 	children
 }: {
 	message: MailMessage;
 	children: React.JSX.Element;
+	deselectAll: () => void;
+	shouldReplaceHistory?: boolean;
 }): React.JSX.Element => {
 	const {
 		replyDescriptor,
@@ -153,7 +166,7 @@ const DropdownActionsComponent = ({
 		editAsNewDescriptor,
 		showOriginalDescriptor,
 		downloadEmlDescriptor
-	} = useMsgActions({ message });
+	} = useMsgActions({ message, deselectAll, shouldReplaceHistory });
 
 	const tagItem = useMemo(
 		() => ({
@@ -265,16 +278,22 @@ export const MessageListItemActionWrapper = ({
 	onClick,
 	onDoubleClick,
 	deselectAll,
+	shouldReplaceHistory,
 	children
 }: {
 	children?: ReactNode;
 	onClick?: ContainerProps['onClick'];
 	onDoubleClick?: ContainerProps['onDoubleClick'];
+	shouldReplaceHistory?: boolean;
 	active?: boolean;
 	item: MailMessage;
 	deselectAll: () => void;
 }): React.JSX.Element => (
-	<DropdownActionsComponent message={item}>
+	<DropdownActionsComponent
+		message={item}
+		deselectAll={deselectAll}
+		shouldReplaceHistory={shouldReplaceHistory}
+	>
 		<HoverContainer
 			data-testid={`hover-container-${item.id}`}
 			orientation="horizontal"
@@ -292,12 +311,18 @@ export const MessageListItemActionWrapper = ({
 				background={active ? 'highlight' : 'gray6'}
 				data-testid={`primary-actions-bar-${item.id}`}
 			>
-				<HoverActionsComponent message={item} />
+				<HoverActionsComponent
+					message={item}
+					deselectAll={deselectAll}
+					shouldReplaceHistory={shouldReplaceHistory}
+				/>
 			</HoverBarContainer>
 		</HoverContainer>
 	</DropdownActionsComponent>
 );
-
+type RouteParams = {
+	itemId: string;
+};
 export const MessageListItem: FC<MessageListItemProps> = memo(function MessageListItem({
 	item,
 	selected,
@@ -311,7 +336,8 @@ export const MessageListItem: FC<MessageListItemProps> = memo(function MessageLi
 	handleReplaceHistory
 }) {
 	const firstChildFolderId = currentFolderId ?? item.parent;
-
+	const { itemId } = useParams<RouteParams>();
+	const shouldReplaceHistory = useMemo(() => itemId === item.id, [item.id, itemId]);
 	const dispatch = useAppDispatch();
 	const zimbraPrefMarkMsgRead = useUserSettings()?.prefs?.zimbraPrefMarkMsgRead !== '-1';
 	const { createWindow } = useGlobalExtraWindowManager();
@@ -485,6 +511,7 @@ export const MessageListItem: FC<MessageListItemProps> = memo(function MessageLi
 				active={active}
 				onClick={onClick}
 				onDoubleClick={onDoubleClick}
+				shouldReplaceHistory={shouldReplaceHistory}
 				deselectAll={deselectAll}
 			>
 				<div style={{ alignSelf: 'center' }} data-testid={`message-list-item-avatar-${item.id}`}>
