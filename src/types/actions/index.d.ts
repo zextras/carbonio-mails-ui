@@ -18,10 +18,17 @@ export type ActionFn = {
 	canExecute: () => boolean;
 };
 
-export type UIActionDescriptor = ActionFn & {
+export type ActionDescriptor = {
 	id: string;
 	label: string;
 	icon: keyof DefaultTheme['icons'];
+	color?: number;
+};
+
+export type UIActionDescriptor = ActionFn & ActionDescriptor;
+
+export type UIActionAggregator = ActionDescriptor & {
+	items: UIActionDescriptor[];
 };
 
 export type ActionProps = {
