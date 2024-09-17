@@ -36,6 +36,7 @@ import { useMsgActions } from '../../../../hooks/actions/use-msg-actions';
 import { useAppDispatch } from '../../../../hooks/redux';
 import { useMessageActions } from '../../../../hooks/use-message-actions';
 import {
+	type ItemType,
 	MailMessage,
 	MessageListItemProps,
 	TextReadValuesType,
@@ -43,7 +44,7 @@ import {
 } from '../../../../types';
 import { setMsgRead } from '../../../../ui-actions/message-actions';
 import { previewMessageOnSeparatedWindow } from '../../../../ui-actions/preview-message-on-separated-window';
-import { useTagExist } from '../../../../ui-actions/tag-actions';
+import { TagsDropdownItem, useTagExist } from '../../../../ui-actions/tag-actions';
 import { getFolderTranslatedName } from '../../../sidebar/utils';
 import { createEditBoard } from '../../detail-panel/edit/edit-view-board';
 import { useGlobalExtraWindowManager } from '../../extra-windows/global-extra-window-manager';
@@ -76,7 +77,7 @@ const HoverActionComponent = ({ action }: { action: UIActionDescriptor }): React
 	);
 };
 
-const HoverActionsComponentTry = ({ message }: { message: MailMessage }): React.JSX.Element => {
+const HoverActionsComponent = ({ message }: { message: MailMessage }): React.JSX.Element => {
 	const {
 		replyDescriptor,
 		replyAllDescriptor,
@@ -112,7 +113,16 @@ const HoverActionsComponentTry = ({ message }: { message: MailMessage }): React.
 	);
 };
 
-const DropdownActionsComponentTry = ({
+const normalizeDropdownActionItem = (
+	item: UIActionDescriptor
+): { id: string; icon: string; label: string; onClick: () => void } => ({
+	id: item.id,
+	icon: item.icon,
+	label: item.label,
+	onClick: item.execute
+});
+
+const DropdownActionsComponent = ({
 	message,
 	children
 }: {
@@ -145,12 +155,102 @@ const DropdownActionsComponentTry = ({
 		downloadEmlDescriptor
 	} = useMsgActions({ message });
 
-	const tags = useTags();
+	const tagItem = useMemo(
+		() => ({
+			id: applyTagDescriptor.id,
+			icon: applyTagDescriptor.icon,
+			label: applyTagDescriptor.label,
+			items: reduce(
+				applyTagDescriptor.items,
+				(acc: Array<ItemType>, descriptor) => {
+					if (descriptor.canExecute()) {
+						const item = {
+							id: descriptor.id,
+							label: descriptor.label,
+							icon: descriptor.icon,
+							keepOpen: true,
+							customComponent: (
+								<TagsDropdownItem
+									checked={includes(message.tags, descriptor.id)}
+									actionDescriptor={descriptor}
+								/>
+							)
+						};
+						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+						// @ts-ignore
+						acc.push(item);
+					}
+					return acc;
+				},
+				[]
+			)
+		}),
+		[
+			applyTagDescriptor.icon,
+			applyTagDescriptor.id,
+			applyTagDescriptor.items,
+			applyTagDescriptor.label,
+			message
+		]
+	);
+
+	const dropdownMenuItems = useMemo(
+		() => [
+			normalizeDropdownActionItem(replyDescriptor),
+			normalizeDropdownActionItem(replyAllDescriptor),
+			normalizeDropdownActionItem(forwardDescriptor),
+			normalizeDropdownActionItem(sendDraftDescriptor),
+			normalizeDropdownActionItem(moveToTrashDescriptor),
+			normalizeDropdownActionItem(deletePermanentlyDescriptor),
+			normalizeDropdownActionItem(messageReadDescriptor),
+			normalizeDropdownActionItem(messageUnreadDescriptor),
+			normalizeDropdownActionItem(flagDescriptor),
+			normalizeDropdownActionItem(unflagDescriptor),
+			normalizeDropdownActionItem(markAsSpamDescriptor),
+			normalizeDropdownActionItem(markAsNotSpamDescriptor),
+			tagItem,
+			normalizeDropdownActionItem(moveToFolderDescriptor),
+			normalizeDropdownActionItem(restoreFolderDescriptor),
+			normalizeDropdownActionItem(createAppointmentDescriptor),
+			normalizeDropdownActionItem(printDescriptor),
+			normalizeDropdownActionItem(previewOnSeparatedWindowDescriptor),
+			normalizeDropdownActionItem(redirectDescriptor),
+			normalizeDropdownActionItem(editDraftDescriptor),
+			normalizeDropdownActionItem(editAsNewDescriptor),
+			normalizeDropdownActionItem(showOriginalDescriptor),
+			normalizeDropdownActionItem(downloadEmlDescriptor)
+		],
+		[
+			createAppointmentDescriptor,
+			deletePermanentlyDescriptor,
+			downloadEmlDescriptor,
+			editAsNewDescriptor,
+			editDraftDescriptor,
+			flagDescriptor,
+			forwardDescriptor,
+			markAsNotSpamDescriptor,
+			markAsSpamDescriptor,
+			messageReadDescriptor,
+			messageUnreadDescriptor,
+			moveToFolderDescriptor,
+			moveToTrashDescriptor,
+			previewOnSeparatedWindowDescriptor,
+			printDescriptor,
+			redirectDescriptor,
+			replyAllDescriptor,
+			replyDescriptor,
+			restoreFolderDescriptor,
+			sendDraftDescriptor,
+			showOriginalDescriptor,
+			tagItem,
+			unflagDescriptor
+		]
+	);
 
 	return (
 		<Dropdown
 			contextMenu
-			items={[]}
+			items={dropdownMenuItems}
 			display="block"
 			style={{ width: '100%', height: '4rem' }}
 			data-testid={`secondary-actions-menu-${message.id}`}
@@ -174,7 +274,7 @@ export const MessageListItemActionWrapper = ({
 	item: MailMessage;
 	deselectAll: () => void;
 }): React.JSX.Element => (
-	<DropdownActionsComponentTry message={item}>
+	<DropdownActionsComponent message={item}>
 		<HoverContainer
 			data-testid={`hover-container-${item.id}`}
 			orientation="horizontal"
@@ -192,10 +292,10 @@ export const MessageListItemActionWrapper = ({
 				background={active ? 'highlight' : 'gray6'}
 				data-testid={`primary-actions-bar-${item.id}`}
 			>
-				<HoverActionsComponentTry message={item} />
+				<HoverActionsComponent message={item} />
 			</HoverBarContainer>
 		</HoverContainer>
-	</DropdownActionsComponentTry>
+	</DropdownActionsComponent>
 );
 
 export const MessageListItem: FC<MessageListItemProps> = memo(function MessageListItem({
