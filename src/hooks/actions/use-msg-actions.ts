@@ -29,7 +29,7 @@ import { useReplyMsgDescriptor } from './use-reply-msg';
 import { useSetMsgReadDescriptor } from './use-set-msg-read';
 import { useSetMsgUnreadDescriptor } from './use-set-msg-unread';
 import { getParentFolderId } from '../../helpers/folders';
-import { MailMessage, UIActionDescriptor } from '../../types';
+import { MailMessage, UIActionAggregator, UIActionDescriptor } from '../../types';
 import { useGlobalExtraWindowManager } from '../../views/app/extra-windows/global-extra-window-manager';
 
 export type MessageActionsArgumentType = {
@@ -49,7 +49,7 @@ type MessageActionsReturnType = {
 	sendDraftDescriptor: UIActionDescriptor;
 	markAsSpamDescriptor: UIActionDescriptor;
 	markAsNotSpamDescriptor: UIActionDescriptor;
-	applyTagDescriptor: UIActionDescriptor;
+	applyTagDescriptor: UIActionAggregator;
 	moveToFolderDescriptor: UIActionDescriptor;
 	restoreFolderDescriptor: UIActionDescriptor;
 	createAppointmentDescriptor: UIActionDescriptor;
@@ -65,7 +65,6 @@ type MessageActionsReturnType = {
 export const useMsgActions = ({
 	message
 }: MessageActionsArgumentType): MessageActionsReturnType => {
-	const messageId = message.id;
 	const messageActions: UIActionDescriptor[] = [];
 	const deselectAll = (): null => null;
 	const closeEditor = false;
@@ -73,62 +72,65 @@ export const useMsgActions = ({
 	const { createWindow } = useGlobalExtraWindowManager();
 	const folderId = getParentFolderId(message.parent);
 
-	const replyDescriptor = useReplyMsgDescriptor(messageId, folderId);
-	const replyAllDescriptor = useReplyAllMsg(messageId);
-	const forwardDescriptor = useForwardMsgDescriptor(messageId);
+	const replyDescriptor = useReplyMsgDescriptor(message.id, folderId);
+	const replyAllDescriptor = useReplyAllMsg(message.id);
+	const forwardDescriptor = useForwardMsgDescriptor(message.id);
 	const moveToTrashDescriptor = useMsgMoveToTrashDescriptor({
-		ids: [messageId],
+		ids: [message.id],
 		deselectAll,
 		folderId,
 		closeEditor
 	});
-	const deletePermanentlyDescriptor = useDeleteMsgPermanentlyDescriptor({ messageId, deselectAll });
+	const deletePermanentlyDescriptor = useDeleteMsgPermanentlyDescriptor({
+		messageId: message.id,
+		deselectAll
+	});
 	const messageReadDescriptor = useSetMsgReadDescriptor({
-		ids: [messageId],
+		ids: [message.id],
 		deselectAll,
 		shouldReplaceHistory,
 		folderId
 	});
 	const messageUnreadDescriptor = useSetMsgUnreadDescriptor({
-		ids: [messageId],
+		ids: [message.id],
 		deselectAll,
 		shouldReplaceHistory,
 		folderId
 	});
-	const flagDescriptor = useMsgFlagDescriptor([messageId]);
-	const unflagDescriptor = useMsgUnflagDescriptor([messageId]);
+	const flagDescriptor = useMsgFlagDescriptor([message.id]);
+	const unflagDescriptor = useMsgUnflagDescriptor([message.id]);
 	const sendDraftDescriptor = useMsgSendDraftDescriptor(message);
 	const markAsSpamDescriptor = useMsgMarkAsSpamDescriptor({
-		ids: [messageId],
+		ids: [message.id],
 		shouldReplaceHistory,
 		folderId
 	});
 	const markAsNotSpamDescriptor = useMsgMarkAsNotSpamDescriptor({
-		ids: [messageId],
+		ids: [message.id],
 		shouldReplaceHistory,
 		folderId
 	});
-	const applyTagDescriptor = useMsgApplyTagDescriptor(messageId);
+	const applyTagDescriptor = useMsgApplyTagDescriptor(message.id, message.tags);
 	const moveToFolderDescriptor = useMsgMoveToFolderDescriptor({
 		folderId,
-		messageId,
+		messageId: message.id,
 		deselectAll
 	});
 	const restoreFolderDescriptor = useMsgRestoreDescriptor({
 		folderId,
-		messageId,
+		messageId: message.id,
 		deselectAll
 	});
 	const createAppointmentDescriptor = useMsgCreateAppointmentDescriptor(message);
 	const printDescriptor = useMsgPrintDescriptor(message);
 
-	const redirectDescriptor = useMsgRedirectDescriptor(messageId);
-	const editDraftDescriptor = useMsgEdiDraftDescriptor(messageId, message.isScheduled);
-	const editAsNewDescriptor = useMsgEditAsNewDescriptor(messageId);
-	const showOriginalDescriptor = useMsgShowOriginalDescriptor(messageId);
-	const downloadEmlDescriptor = useMsgDownloadEmlDescriptor(messageId);
+	const redirectDescriptor = useMsgRedirectDescriptor(message.id);
+	const editDraftDescriptor = useMsgEdiDraftDescriptor(message.id, message.isScheduled);
+	const editAsNewDescriptor = useMsgEditAsNewDescriptor(message.id);
+	const showOriginalDescriptor = useMsgShowOriginalDescriptor(message.id);
+	const downloadEmlDescriptor = useMsgDownloadEmlDescriptor(message.id);
 	const previewOnSeparatedWindowDescriptor = useMsgPreviewOnSeparatedWindowDescriptor({
-		messageId,
+		messageId: message.id,
 		folderId,
 		messageActions,
 		subject: message.subject,

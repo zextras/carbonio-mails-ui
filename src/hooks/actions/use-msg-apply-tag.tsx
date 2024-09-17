@@ -3,70 +3,99 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { useCallback, useMemo } from 'react';
+import { useMemo } from 'react';
 
+import { useTags } from '@zextras/carbonio-shell-ui';
+import { includes, map } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
 import { MessageActionsDescriptors, TIMEOUTS } from '../../constants';
 import { msgAction } from '../../store/actions';
-import type { ActionFn, MailMessage, UIActionDescriptor } from '../../types';
+import { MailMessage, UIActionAggregator, UIActionDescriptor } from '../../types';
 import { useAppDispatch } from '../redux';
 import { useUiUtilities } from '../use-ui-utilities';
 
-export const useMsgApplyTagFn = (messageId: MailMessage['id']): ActionFn => {
+export const useMsgApplyTagFn = (
+	messageId: MailMessage['id'],
+	messageTags: Array<string>
+): UIActionDescriptor[] => {
 	const { createSnackbar } = useUiUtilities();
 	const dispatch = useAppDispatch();
 	const [t] = useTranslation();
+	const tags = useTags();
 
-	const canExecute = useCallback((): boolean => true, []);
-
-	const execute = useCallback(
-		(tagName: string): void => {
-			dispatch(
-				msgAction({
-					operation: 'tag',
-					ids: [messageId],
-					tagName
-				})
-			).then((res: any) => {
-				if (res.type.includes('fulfilled')) {
-					createSnackbar({
-						key: `tag`,
-						replace: true,
-						hideButton: true,
-						type: 'info',
-						label: t('snackbar.tag_applied', {
-							tag: tagName,
+	const tagActions = useMemo(
+		() =>
+			map(tags, (tag) => {
+				const isTagIncluded = includes(messageTags, tag.id);
+				const operation = isTagIncluded ? '!tag' : 'tag';
+				const icon = isTagIncluded ? 'TagOutline' : 'Tag';
+				const snackbarSuccessLabel = isTagIncluded
+					? t('snackbar.tag_removed', {
+							tag: tag.name,
+							defaultValue: '"{{tag}}" tag removed'
+						})
+					: t('snackbar.tag_applied', {
+							tag: tag.name,
 							defaultValue: '"{{tag}}" tag applied'
-						}),
-						autoHideTimeout: TIMEOUTS.SNACKBAR_DEFAULT_TIMEOUT
+						});
+
+				const canExecute = (): boolean => true;
+
+				const execute = (): void => {
+					dispatch(
+						msgAction({
+							operation,
+							ids: [messageId],
+							tagName: tag.name
+						})
+					).then((res: any) => {
+						if (res.type.includes('fulfilled')) {
+							createSnackbar({
+								key: `tag`,
+								replace: true,
+								hideButton: true,
+								type: 'info',
+								label: snackbarSuccessLabel,
+								autoHideTimeout: TIMEOUTS.SNACKBAR_DEFAULT_TIMEOUT
+							});
+						} else {
+							createSnackbar({
+								key: `tag`,
+								replace: true,
+								type: 'error',
+								label: t('label.error_try_again', 'Something went wrong, please try again'),
+								autoHideTimeout: TIMEOUTS.SNACKBAR_DEFAULT_TIMEOUT,
+								hideButton: true
+							});
+						}
 					});
-				} else {
-					createSnackbar({
-						key: `tag`,
-						replace: true,
-						type: 'error',
-						label: t('label.error_try_again', 'Something went wrong, please try again'),
-						autoHideTimeout: TIMEOUTS.SNACKBAR_DEFAULT_TIMEOUT,
-						hideButton: true
-					});
-				}
-			});
-		},
-		[createSnackbar, dispatch, messageId, t]
+				};
+				return {
+					id: tag.id,
+					icon,
+					label: tag.name,
+					color: tag.color,
+					execute,
+					canExecute
+				};
+			}),
+		[createSnackbar, dispatch, messageId, messageTags, t, tags]
 	);
 
-	return useMemo(() => ({ canExecute, execute }), [canExecute, execute]);
+	return useMemo(() => tagActions, [tagActions]);
 };
 
-export const useMsgApplyTagDescriptor = (messageId: string): UIActionDescriptor => {
-	const { canExecute, execute } = useMsgApplyTagFn(messageId);
+export const useMsgApplyTagDescriptor = (
+	messageId: string,
+	messageTags: Array<string>
+): UIActionAggregator => {
 	const [t] = useTranslation();
+	const items = useMsgApplyTagFn(messageId, messageTags);
 	return {
 		id: MessageActionsDescriptors.APPLY_TAG.id,
 		label: t('label.tag', 'Tag'),
 		icon: 'TagsMoreOutline',
-		execute,
-		canExecute
+		items
 	};
 };
