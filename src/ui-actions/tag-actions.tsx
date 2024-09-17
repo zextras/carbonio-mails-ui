@@ -21,7 +21,8 @@ import type {
 	ItemType,
 	MailMessage,
 	TagActionsReturnType,
-	TagsFromStoreType
+	TagsFromStoreType,
+	UIActionDescriptor
 } from '../types';
 import CreateUpdateTagModal from '../views/sidebar/parts/tags/create-update-tag-modal';
 
@@ -106,72 +107,29 @@ export const deleteTag = ({
 });
 
 export const TagsDropdownItem = ({
-	tag,
-	conversation,
-	isMessage
+	checked,
+	actionDescriptor
 }: {
-	tag: Tag;
-	conversation: any;
-	isMessage?: boolean;
+	checked: boolean;
+	actionDescriptor: UIActionDescriptor;
 }): ReactElement => {
-	const { createSnackbar } = useUiUtilities();
-	const dispatch = useAppDispatch();
-	const [checked, setChecked] = useState(includes(conversation.tags, tag.id));
 	const [isHovering, setIsHovering] = useState(false);
-	const toggleCheck = useCallback(
-		(value) => {
-			setChecked((c) => !c);
-			dispatch(
-				isMessage
-					? msgAction({
-							operation: value ? '!tag' : 'tag',
-							ids: [conversation.id],
-							tagName: tag.name
-						})
-					: convAction({
-							operation: value ? '!tag' : 'tag',
-							ids: [conversation.id],
-							tagName: tag.name
-						})
-			).then((res: any) => {
-				if (res.type.includes('fulfilled')) {
-					createSnackbar({
-						key: `tag`,
-						replace: true,
-						hideButton: true,
-						type: 'info',
-						label: value
-							? t('snackbar.tag_removed', { tag: tag.name, defaultValue: '"{{tag}}" tag removed' })
-							: t('snackbar.tag_applied', {
-									tag: tag.name,
-									defaultValue: '"{{tag}}" tag applied'
-								}),
-						autoHideTimeout: 3000
-					});
-				} else {
-					createSnackbar({
-						key: `tag`,
-						replace: true,
-						type: 'error',
-						label: t('label.error_try_again', 'Something went wrong, please try again'),
-						autoHideTimeout: 3000,
-						hideButton: true
-					});
-				}
-			});
-		},
-		[conversation.id, createSnackbar, dispatch, isMessage, tag.name]
+	const toggleCheck = useCallback(() => {
+		actionDescriptor.execute();
+	}, [actionDescriptor]);
+	const tagColor = useMemo(
+		() => ZIMBRA_STANDARD_COLORS[actionDescriptor.color || 0].hex,
+		[actionDescriptor.color]
 	);
-	const tagColor = useMemo(() => ZIMBRA_STANDARD_COLORS[tag.color || 0].hex, [tag.color]);
 	const tagIcon = useMemo(() => (checked ? 'Tag' : 'TagOutline'), [checked]);
 	const tagIconOnHovered = useMemo(() => (checked ? 'Untag' : 'Tag'), [checked]);
 
 	return (
 		<Row
-			data-testid={`tag-item-${tag.id}`}
+			data-testid={`tag-item-${actionDescriptor.id}`}
 			takeAvailableSpace
 			mainAlignment="flex-start"
-			onClick={(): void => toggleCheck(checked)}
+			onClick={toggleCheck}
 			onMouseEnter={(): void => setIsHovering(true)}
 			onMouseLeave={(): void => setIsHovering(false)}
 		>
@@ -180,7 +138,7 @@ export const TagsDropdownItem = ({
 			</Padding>
 			<Row takeAvailableSpace mainAlignment="space-between">
 				<Row takeAvailableSpace mainAlignment="flex-start">
-					<Text>{tag.name}</Text>
+					<Text>{actionDescriptor.label}</Text>
 				</Row>
 				<Row mainAlignment="flex-end">
 					<Icon icon={isHovering ? tagIconOnHovered : tagIcon} color={tagColor} />
@@ -379,7 +337,11 @@ export const applyTag = ({
 				icon: 'TagOutline',
 				keepOpen: true,
 				customComponent: (
-					<TagsDropdownItem tag={v} conversation={conversation} isMessage={isMessage ?? false} />
+					<TagsDropdownItem
+						tag={v}
+						checked={includes(conversation.tags, v.id)}
+						execute={conversation.id}
+					/>
 				)
 			};
 			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
