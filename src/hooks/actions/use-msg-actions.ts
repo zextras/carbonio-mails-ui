@@ -30,7 +30,6 @@ import { useSetMsgReadDescriptor } from './use-set-msg-read';
 import { useSetMsgUnreadDescriptor } from './use-set-msg-unread';
 import { getParentFolderId } from '../../helpers/folders';
 import { MailMessage, UIActionAggregator, UIActionDescriptor } from '../../types';
-import { useGlobalExtraWindowManager } from '../../views/app/extra-windows/global-extra-window-manager';
 
 export type MessageActionsArgumentType = {
 	message: MailMessage;
@@ -69,7 +68,6 @@ export const useMsgActions = ({
 	message,
 	shouldReplaceHistory = false
 }: MessageActionsArgumentType): MessageActionsReturnType => {
-	const { createWindow } = useGlobalExtraWindowManager();
 	const folderId = getParentFolderId(message.parent);
 
 	const replyDescriptor = useReplyMsgDescriptor(message.id, folderId);
@@ -130,7 +128,7 @@ export const useMsgActions = ({
 	const showOriginalDescriptor = useMsgShowOriginalDescriptor(message.id);
 	const downloadEmlDescriptor = useMsgDownloadEmlDescriptor(message.id);
 
-	const messageActions: UIActionDescriptor[] = [
+	/*	const messageActions: UIActionDescriptor[] = [
 		messageReadDescriptor,
 		messageUnreadDescriptor,
 		applyTagDescriptor,
@@ -139,14 +137,11 @@ export const useMsgActions = ({
 		unflagDescriptor,
 		showOriginalDescriptor,
 		downloadEmlDescriptor
-	];
+	]; */
 
 	const previewOnSeparatedWindowDescriptor = useMsgPreviewOnSeparatedWindowDescriptor({
 		messageId: message.id,
-		folderId,
-		messageActions,
-		subject: message.subject,
-		createWindow
+		subject: message.subject
 	});
 
 	return useMemo(
