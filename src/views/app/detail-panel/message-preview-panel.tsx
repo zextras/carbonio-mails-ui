@@ -6,35 +6,19 @@
 import React, { FC } from 'react';
 
 import { Container, Padding } from '@zextras/carbonio-design-system';
-import { uniqBy } from 'lodash';
+import { useParams } from 'react-router-dom';
 
 import MailPreview from './preview/mail-preview';
 import PreviewPanelHeader from './preview/preview-panel-header';
-import { EXTRA_WINDOW_ACTION_ID } from '../../../constants';
 import { useAppSelector } from '../../../hooks/redux';
 import { useRequestDebouncedMessage } from '../../../hooks/use-request-debounced-message';
 import { selectMessage } from '../../../store/messages-slice';
-import type { MailsStateType, MessageAction } from '../../../types';
+import type { MailsStateType } from '../../../types';
 import { useExtraWindow } from '../extra-windows/use-extra-window';
 
-export type MessagePreviewPanelProps = {
-	folderId: string;
-	messageId: string;
-	messageActions: Array<MessageAction>;
-};
-
-export const MessagePreviewPanel: FC<MessagePreviewPanelProps> = ({
-	folderId,
-	messageId,
-	messageActions
-}) => {
+export const MessagePreviewPanel: FC = () => {
+	const { folderId, messageId } = useParams<{ folderId: string; messageId: string }>();
 	const { isInsideExtraWindow } = useExtraWindow();
-	const isExtraWindowActions = messageActions.some(
-		(action: MessageAction) => action.id === EXTRA_WINDOW_ACTION_ID
-	);
-	const actions = isExtraWindowActions
-		? messageActions.filter((action: MessageAction) => action.id !== EXTRA_WINDOW_ACTION_ID)
-		: uniqBy([...messageActions[0], ...messageActions[1]], 'id');
 
 	const message = useAppSelector((state: MailsStateType) => selectMessage(state, messageId));
 
@@ -64,7 +48,6 @@ export const MessagePreviewPanel: FC<MessagePreviewPanelProps> = ({
 								message={message}
 								expanded
 								isAlone
-								messageActions={actions}
 								isMessageView
 								isInsideExtraWindow={isInsideExtraWindow}
 							/>
