@@ -35,6 +35,7 @@ export type MessageActionsArgumentType = {
 	message: MailMessage;
 	deselectAll: () => void;
 	shouldReplaceHistory?: boolean;
+	messagePreviewFactory: () => React.JSX.Element;
 };
 
 type MessageActionsReturnType = {
@@ -66,7 +67,8 @@ type MessageActionsReturnType = {
 export const useMsgActions = ({
 	deselectAll,
 	message,
-	shouldReplaceHistory = false
+	shouldReplaceHistory = false,
+	messagePreviewFactory
 }: MessageActionsArgumentType): MessageActionsReturnType => {
 	const folderId = getParentFolderId(message.parent);
 
@@ -131,7 +133,8 @@ export const useMsgActions = ({
 	const previewOnSeparatedWindowDescriptor = useMsgPreviewOnSeparatedWindowDescriptor({
 		messageId: message.id,
 		folderId,
-		subject: message.subject
+		subject: message.subject,
+		messagePreviewFactory
 	});
 
 	return useMemo(

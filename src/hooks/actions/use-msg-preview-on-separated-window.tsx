@@ -10,17 +10,18 @@ import { useTranslation } from 'react-i18next';
 
 import { MessageActionsDescriptors } from '../../constants';
 import { ActionFn, ExtraWindowCreationParams, UIActionDescriptor } from '../../types';
-import { MessagePreviewPanel } from '../../views/app/detail-panel/message-preview-panel';
 import { useGlobalExtraWindowManager } from '../../views/app/extra-windows/global-extra-window-manager';
 
 export const useMsgPreviewOnSeparatedWindowFn = ({
 	messageId,
 	folderId,
-	subject
+	subject,
+	messagePreviewFactory
 }: {
 	messageId: string;
 	folderId: string;
 	subject: string;
+	messagePreviewFactory: () => React.JSX.Element;
 }): ActionFn => {
 	const { createWindow } = useGlobalExtraWindowManager();
 
@@ -34,12 +35,12 @@ export const useMsgPreviewOnSeparatedWindowFn = ({
 		const createWindowParams: ExtraWindowCreationParams = {
 			name: `message-${messageId}`,
 			returnComponent: false,
-			children: <MessagePreviewPanel messageId={messageId} folderId={folderId} />,
+			children: messagePreviewFactory(),
 			title: subject,
 			closeOnUnmount: false
 		};
 		createWindow(createWindowParams);
-	}, [createWindow, folderId, messageId, subject]);
+	}, [messagePreviewFactory, createWindow, messageId, subject]);
 
 	return useMemo(() => ({ canExecute, execute }), [canExecute, execute]);
 };
@@ -47,16 +48,19 @@ export const useMsgPreviewOnSeparatedWindowFn = ({
 export const useMsgPreviewOnSeparatedWindowDescriptor = ({
 	messageId,
 	folderId,
-	subject
+	subject,
+	messagePreviewFactory
 }: {
 	messageId: string;
 	folderId: string;
 	subject: string;
+	messagePreviewFactory: () => React.JSX.Element;
 }): UIActionDescriptor => {
 	const { canExecute, execute } = useMsgPreviewOnSeparatedWindowFn({
 		messageId,
 		folderId,
-		subject
+		subject,
+		messagePreviewFactory
 	});
 	const [t] = useTranslation();
 	return {
