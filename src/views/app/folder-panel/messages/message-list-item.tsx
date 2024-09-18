@@ -11,6 +11,7 @@ import {
 	Container,
 	ContainerProps,
 	Dropdown,
+	DropdownItem,
 	Icon,
 	Padding,
 	Row,
@@ -37,10 +38,10 @@ import { useMsgActions } from '../../../../hooks/actions/use-msg-actions';
 import { useAppDispatch } from '../../../../hooks/redux';
 import { useMessageActions } from '../../../../hooks/use-message-actions';
 import {
-	type ItemType,
 	MailMessage,
 	MessageListItemProps,
 	TextReadValuesType,
+	UIActionAggregator,
 	UIActionDescriptor
 } from '../../../../types';
 import { setMsgRead } from '../../../../ui-actions/message-actions';
@@ -122,7 +123,7 @@ const HoverActionsComponent = ({
 	);
 };
 
-const normalizeDropdownActionItem = (
+export const normalizeDropdownActionItem = (
 	item: UIActionDescriptor
 ): { id: string; icon: string; label: string; onClick: () => void } => ({
 	id: item.id,
@@ -130,6 +131,47 @@ const normalizeDropdownActionItem = (
 	label: item.label,
 	onClick: item.execute
 });
+
+export const useTagDropdownItem = (
+	applyTagDescriptor: UIActionAggregator,
+	tags: Array<string>
+): DropdownItem =>
+	useMemo(
+		() => ({
+			id: applyTagDescriptor.id,
+			icon: applyTagDescriptor.icon,
+			label: applyTagDescriptor.label,
+			items: reduce(
+				applyTagDescriptor.items,
+				(acc, descriptor) => {
+					if (descriptor.canExecute()) {
+						const item = {
+							id: descriptor.id,
+							label: descriptor.label,
+							icon: descriptor.icon,
+							keepOpen: true,
+							customComponent: (
+								<TagsDropdownItem
+									checked={includes(tags, descriptor.id)}
+									actionDescriptor={descriptor}
+								/>
+							)
+						};
+						acc.push(item);
+					}
+					return acc;
+				},
+				[] as DropdownItem[]
+			)
+		}),
+		[
+			applyTagDescriptor.icon,
+			applyTagDescriptor.id,
+			applyTagDescriptor.items,
+			applyTagDescriptor.label,
+			tags
+		]
+	);
 
 const DropdownActionsComponent = ({
 	message,
@@ -168,44 +210,7 @@ const DropdownActionsComponent = ({
 		downloadEmlDescriptor
 	} = useMsgActions({ message, deselectAll, shouldReplaceHistory });
 
-	const tagItem = useMemo(
-		() => ({
-			id: applyTagDescriptor.id,
-			icon: applyTagDescriptor.icon,
-			label: applyTagDescriptor.label,
-			items: reduce(
-				applyTagDescriptor.items,
-				(acc: Array<ItemType>, descriptor) => {
-					if (descriptor.canExecute()) {
-						const item = {
-							id: descriptor.id,
-							label: descriptor.label,
-							icon: descriptor.icon,
-							keepOpen: true,
-							customComponent: (
-								<TagsDropdownItem
-									checked={includes(message.tags, descriptor.id)}
-									actionDescriptor={descriptor}
-								/>
-							)
-						};
-						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-						// @ts-ignore
-						acc.push(item);
-					}
-					return acc;
-				},
-				[]
-			)
-		}),
-		[
-			applyTagDescriptor.icon,
-			applyTagDescriptor.id,
-			applyTagDescriptor.items,
-			applyTagDescriptor.label,
-			message
-		]
-	);
+	const tagItem = useTagDropdownItem(applyTagDescriptor, message.tags);
 
 	const dropdownMenuItems = useMemo(
 		() => [
