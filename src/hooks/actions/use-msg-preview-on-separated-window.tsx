@@ -9,27 +9,19 @@ import React, { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { MessageActionsDescriptors } from '../../constants';
-import {
-	ActionFn,
-	ExtraWindowCreationParams,
-	ExtraWindowsContextType,
-	UIActionDescriptor
-} from '../../types';
+import { ActionFn, ExtraWindowCreationParams, UIActionDescriptor } from '../../types';
 import { MessagePreviewPanel } from '../../views/app/detail-panel/message-preview-panel';
+import { useGlobalExtraWindowManager } from '../../views/app/extra-windows/global-extra-window-manager';
 
-export const useMsgCreateAppointmentFn = ({
+export const useMsgPreviewOnSeparatedWindowFn = ({
 	messageId,
-	folderId,
-	messageActions,
-	subject,
-	createWindow
+	subject
 }: {
 	messageId: string;
-	folderId: string;
 	subject: string;
-	messageActions: UIActionDescriptor[];
-	createWindow: ExtraWindowsContextType['createWindow'];
 }): ActionFn => {
+	const { createWindow } = useGlobalExtraWindowManager();
+
 	const canExecute = useCallback((): boolean => true, []);
 
 	const execute = useCallback(() => {
@@ -40,41 +32,26 @@ export const useMsgCreateAppointmentFn = ({
 		const createWindowParams: ExtraWindowCreationParams = {
 			name: `message-${messageId}`,
 			returnComponent: false,
-			children: (
-				<MessagePreviewPanel
-					messageId={messageId}
-					folderId={folderId}
-					messageActions={messageActions}
-				/>
-			),
+			children: <MessagePreviewPanel />,
 			title: subject,
 			closeOnUnmount: false
 		};
 		createWindow(createWindowParams);
-	}, [createWindow, folderId, messageActions, messageId, subject]);
+	}, [createWindow, messageId, subject]);
 
 	return useMemo(() => ({ canExecute, execute }), [canExecute, execute]);
 };
 
 export const useMsgPreviewOnSeparatedWindowDescriptor = ({
 	messageId,
-	folderId,
-	messageActions,
-	subject,
-	createWindow
+	subject
 }: {
 	messageId: string;
-	folderId: string;
 	subject: string;
-	messageActions: UIActionDescriptor[];
-	createWindow: ExtraWindowsContextType['createWindow'];
 }): UIActionDescriptor => {
-	const { canExecute, execute } = useMsgCreateAppointmentFn({
+	const { canExecute, execute } = useMsgPreviewOnSeparatedWindowFn({
 		messageId,
-		folderId,
-		messageActions,
-		subject,
-		createWindow
+		subject
 	});
 	const [t] = useTranslation();
 	return {

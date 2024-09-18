@@ -9,14 +9,14 @@ import { useSnackbar } from '@zextras/carbonio-design-system';
 import { replaceHistory, t } from '@zextras/carbonio-shell-ui';
 import { useTranslation } from 'react-i18next';
 
-import { ActionFn, UIActionDescriptor } from './use-redirect-msg';
 import { MessageActionsDescriptors, TIMEOUTS } from '../../constants';
 import { msgAction } from '../../store/actions';
+import { ActionFn, UIActionDescriptor } from '../../types';
 import { useAppDispatch } from '../redux';
 
 type MsgMarkAsNotSpam = {
 	ids: Array<string>;
-	shouldReplaceHistory: boolean;
+	shouldReplaceHistory?: boolean;
 	folderId: string;
 };
 export const useMsgMarkAsNotSpamFn = ({
