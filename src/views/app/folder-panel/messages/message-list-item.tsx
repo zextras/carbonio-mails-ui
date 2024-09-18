@@ -3,15 +3,11 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, memo, ReactElement, ReactNode, useCallback, useMemo } from 'react';
+import React, { FC, memo, useCallback, useMemo } from 'react';
 
 import {
 	Badge,
-	Button,
 	Container,
-	ContainerProps,
-	Dropdown,
-	DropdownItem,
 	Icon,
 	Padding,
 	Row,
@@ -30,301 +26,21 @@ import { debounce, find, includes, isEmpty, noop, reduce } from 'lodash';
 import moment from 'moment';
 import { useParams } from 'react-router-dom';
 
+import { MessageListItemActionWrapper } from './message-list-item-action-wrapper';
 import { ZIMBRA_STANDARD_COLORS } from '../../../../carbonio-ui-commons/constants';
 import { useFolder } from '../../../../carbonio-ui-commons/store/zustand/folder';
 import { getTimeLabel, participantToString } from '../../../../commons/utils';
 import { EditViewActions } from '../../../../constants';
-import { useMsgActions } from '../../../../hooks/actions/use-msg-actions';
+import { useMsgPreviewOnSeparatedWindowFn } from '../../../../hooks/actions/use-msg-preview-on-separated-window';
 import { useAppDispatch } from '../../../../hooks/redux';
-import { useMessageActions } from '../../../../hooks/use-message-actions';
-import {
-	MailMessage,
-	MessageListItemProps,
-	TextReadValuesType,
-	UIActionAggregator,
-	UIActionDescriptor
-} from '../../../../types';
+import { MessageListItemProps, TextReadValuesType } from '../../../../types';
 import { setMsgRead } from '../../../../ui-actions/message-actions';
-import { previewMessageOnSeparatedWindow } from '../../../../ui-actions/preview-message-on-separated-window';
-import { TagsDropdownItem, useTagExist } from '../../../../ui-actions/tag-actions';
+import { useTagExist } from '../../../../ui-actions/tag-actions';
 import { getFolderTranslatedName } from '../../../sidebar/utils';
 import { createEditBoard } from '../../detail-panel/edit/edit-view-board';
-import { useGlobalExtraWindowManager } from '../../extra-windows/global-extra-window-manager';
-import { HoverBarContainer } from '../parts/hover-bar-container';
-import { HoverContainer } from '../parts/hover-container';
 import { ItemAvatar } from '../parts/item-avatar';
 import { SenderName } from '../parts/sender-name';
 
-const HoverActionComponent = ({ action }: { action: UIActionDescriptor }): ReactElement => {
-	const onClick = useCallback(
-		(ev): void => {
-			if (ev) {
-				ev.preventDefault();
-			}
-			action.execute();
-		},
-		[action]
-	);
-	return (
-		<Tooltip label={action.label}>
-			<Button
-				key={action.id}
-				icon={action.icon}
-				onClick={onClick}
-				size="small"
-				type="ghost"
-				color="text"
-			/>
-		</Tooltip>
-	);
-};
-
-const HoverActionsComponent = ({
-	message,
-	deselectAll,
-	shouldReplaceHistory
-}: {
-	message: MailMessage;
-	deselectAll: () => void;
-	shouldReplaceHistory?: boolean;
-}): React.JSX.Element => {
-	const {
-		replyDescriptor,
-		replyAllDescriptor,
-		forwardDescriptor,
-		moveToTrashDescriptor,
-		deletePermanentlyDescriptor,
-		messageReadDescriptor,
-		messageUnreadDescriptor,
-		flagDescriptor,
-		unflagDescriptor
-	} = useMsgActions({ message, deselectAll, shouldReplaceHistory });
-
-	const actions = [
-		replyDescriptor,
-		replyAllDescriptor,
-		forwardDescriptor,
-		moveToTrashDescriptor,
-		deletePermanentlyDescriptor,
-		messageReadDescriptor,
-		messageUnreadDescriptor,
-		flagDescriptor,
-		unflagDescriptor
-	];
-
-	return (
-		<>
-			{actions
-				.filter((action) => action.canExecute())
-				.map((action, index) => (
-					<HoverActionComponent key={action.id ?? index} action={action} />
-				))}
-		</>
-	);
-};
-
-export const normalizeDropdownActionItem = (
-	item: UIActionDescriptor
-): { id: string; icon: string; label: string; onClick: () => void } => ({
-	id: item.id,
-	icon: item.icon,
-	label: item.label,
-	onClick: item.execute
-});
-
-export const useTagDropdownItem = (
-	applyTagDescriptor: UIActionAggregator,
-	tags: Array<string>
-): DropdownItem =>
-	useMemo(
-		() => ({
-			id: applyTagDescriptor.id,
-			icon: applyTagDescriptor.icon,
-			label: applyTagDescriptor.label,
-			items: reduce(
-				applyTagDescriptor.items,
-				(acc, descriptor) => {
-					if (descriptor.canExecute()) {
-						const item = {
-							id: descriptor.id,
-							label: descriptor.label,
-							icon: descriptor.icon,
-							keepOpen: true,
-							customComponent: (
-								<TagsDropdownItem
-									checked={includes(tags, descriptor.id)}
-									actionDescriptor={descriptor}
-								/>
-							)
-						};
-						acc.push(item);
-					}
-					return acc;
-				},
-				[] as DropdownItem[]
-			)
-		}),
-		[
-			applyTagDescriptor.icon,
-			applyTagDescriptor.id,
-			applyTagDescriptor.items,
-			applyTagDescriptor.label,
-			tags
-		]
-	);
-
-const DropdownActionsComponent = ({
-	message,
-	deselectAll,
-	shouldReplaceHistory,
-	children
-}: {
-	message: MailMessage;
-	children: React.JSX.Element;
-	deselectAll: () => void;
-	shouldReplaceHistory?: boolean;
-}): React.JSX.Element => {
-	const {
-		replyDescriptor,
-		replyAllDescriptor,
-		forwardDescriptor,
-		sendDraftDescriptor,
-		moveToTrashDescriptor,
-		deletePermanentlyDescriptor,
-		messageReadDescriptor,
-		messageUnreadDescriptor,
-		flagDescriptor,
-		unflagDescriptor,
-		markAsSpamDescriptor,
-		markAsNotSpamDescriptor,
-		applyTagDescriptor,
-		moveToFolderDescriptor,
-		restoreFolderDescriptor,
-		createAppointmentDescriptor,
-		printDescriptor,
-		previewOnSeparatedWindowDescriptor,
-		redirectDescriptor,
-		editDraftDescriptor,
-		editAsNewDescriptor,
-		showOriginalDescriptor,
-		downloadEmlDescriptor
-	} = useMsgActions({ message, deselectAll, shouldReplaceHistory });
-
-	const tagItem = useTagDropdownItem(applyTagDescriptor, message.tags);
-
-	const dropdownMenuItems = useMemo(
-		() => [
-			normalizeDropdownActionItem(replyDescriptor),
-			normalizeDropdownActionItem(replyAllDescriptor),
-			normalizeDropdownActionItem(forwardDescriptor),
-			normalizeDropdownActionItem(sendDraftDescriptor),
-			normalizeDropdownActionItem(moveToTrashDescriptor),
-			normalizeDropdownActionItem(deletePermanentlyDescriptor),
-			normalizeDropdownActionItem(messageReadDescriptor),
-			normalizeDropdownActionItem(messageUnreadDescriptor),
-			normalizeDropdownActionItem(flagDescriptor),
-			normalizeDropdownActionItem(unflagDescriptor),
-			normalizeDropdownActionItem(markAsSpamDescriptor),
-			normalizeDropdownActionItem(markAsNotSpamDescriptor),
-			tagItem,
-			normalizeDropdownActionItem(moveToFolderDescriptor),
-			normalizeDropdownActionItem(restoreFolderDescriptor),
-			normalizeDropdownActionItem(createAppointmentDescriptor),
-			normalizeDropdownActionItem(printDescriptor),
-			normalizeDropdownActionItem(previewOnSeparatedWindowDescriptor),
-			normalizeDropdownActionItem(redirectDescriptor),
-			normalizeDropdownActionItem(editDraftDescriptor),
-			normalizeDropdownActionItem(editAsNewDescriptor),
-			normalizeDropdownActionItem(showOriginalDescriptor),
-			normalizeDropdownActionItem(downloadEmlDescriptor)
-		],
-		[
-			createAppointmentDescriptor,
-			deletePermanentlyDescriptor,
-			downloadEmlDescriptor,
-			editAsNewDescriptor,
-			editDraftDescriptor,
-			flagDescriptor,
-			forwardDescriptor,
-			markAsNotSpamDescriptor,
-			markAsSpamDescriptor,
-			messageReadDescriptor,
-			messageUnreadDescriptor,
-			moveToFolderDescriptor,
-			moveToTrashDescriptor,
-			previewOnSeparatedWindowDescriptor,
-			printDescriptor,
-			redirectDescriptor,
-			replyAllDescriptor,
-			replyDescriptor,
-			restoreFolderDescriptor,
-			sendDraftDescriptor,
-			showOriginalDescriptor,
-			tagItem,
-			unflagDescriptor
-		]
-	);
-
-	return (
-		<Dropdown
-			contextMenu
-			items={dropdownMenuItems}
-			display="block"
-			style={{ width: '100%', height: '4rem' }}
-			data-testid={`secondary-actions-menu-${message.id}`}
-		>
-			{children}
-		</Dropdown>
-	);
-};
-export const MessageListItemActionWrapper = ({
-	item,
-	active,
-	onClick,
-	onDoubleClick,
-	deselectAll,
-	shouldReplaceHistory,
-	children
-}: {
-	children?: ReactNode;
-	onClick?: ContainerProps['onClick'];
-	onDoubleClick?: ContainerProps['onDoubleClick'];
-	shouldReplaceHistory?: boolean;
-	active?: boolean;
-	item: MailMessage;
-	deselectAll: () => void;
-}): React.JSX.Element => (
-	<DropdownActionsComponent
-		message={item}
-		deselectAll={deselectAll}
-		shouldReplaceHistory={shouldReplaceHistory}
-	>
-		<HoverContainer
-			data-testid={`hover-container-${item.id}`}
-			orientation="horizontal"
-			mainAlignment="flex-start"
-			crossAlignment="unset"
-			onClick={onClick}
-			onDoubleClick={onDoubleClick}
-			$hoverBackground={active ? 'highlight' : 'gray6'}
-		>
-			{children}
-			<HoverBarContainer
-				orientation="horizontal"
-				mainAlignment="flex-end"
-				crossAlignment="center"
-				background={active ? 'highlight' : 'gray6'}
-				data-testid={`primary-actions-bar-${item.id}`}
-			>
-				<HoverActionsComponent
-					message={item}
-					deselectAll={deselectAll}
-					shouldReplaceHistory={shouldReplaceHistory}
-				/>
-			</HoverBarContainer>
-		</HoverContainer>
-	</DropdownActionsComponent>
-);
 type RouteParams = {
 	itemId: string;
 };
@@ -345,11 +61,10 @@ export const MessageListItem: FC<MessageListItemProps> = memo(function MessageLi
 	const shouldReplaceHistory = useMemo(() => itemId === item.id, [item.id, itemId]);
 	const dispatch = useAppDispatch();
 	const zimbraPrefMarkMsgRead = useUserSettings()?.prefs?.zimbraPrefMarkMsgRead !== '-1';
-	const { createWindow } = useGlobalExtraWindowManager();
-	const messageActionsForExtraWindow = useMessageActions({
-		message: item,
-		isAlone: true,
-		isForExtraWindow: true
+
+	const { execute } = useMsgPreviewOnSeparatedWindowFn({
+		messageId: item.id,
+		subject: item.subject
 	});
 
 	const debouncedPushHistory = useMemo(
@@ -394,17 +109,11 @@ export const MessageListItem: FC<MessageListItemProps> = memo(function MessageLi
 						actionTargetId: id
 					});
 				} else {
-					previewMessageOnSeparatedWindow(
-						id,
-						firstChildFolderId,
-						item.subject,
-						createWindow,
-						messageActionsForExtraWindow
-					).onClick();
+					execute();
 				}
 			}
 		},
-		[createWindow, debouncedPushHistory, firstChildFolderId, item, messageActionsForExtraWindow]
+		[debouncedPushHistory, execute, item]
 	);
 
 	const accounts = useUserAccounts();
