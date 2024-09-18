@@ -13,11 +13,24 @@ import App from './app';
 import * as addComponentsToShell from './app-utils/add-shell-components';
 import * as registerShellActions from './app-utils/register-shell-actions';
 import * as registerShellIntegrations from './app-utils/register-shell-integrations';
-import { createAPIInterceptor } from './carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
+import {
+	createAPIInterceptor,
+	createSoapAPIInterceptor
+} from './carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { setupTest } from './carbonio-ui-commons/test/test-setup';
 import { BACKUP_SEARCH_ROUTE } from './constants';
 import { useBackupSearchStore } from './store/zustand/backup-search/store';
 import { DeletedMessageFromAPI } from './types';
+
+// Mocking the worker. In commons jest-setup the worker is already mocked, but is improperly defined with wrong types and
+// is causing a call to "onMessage", which tries to alter the folders store and overrides the folders, breaking the test.
+// It also causes warning/errors due the fact it tries to set an "undefined" in the folders.
+// I think we should consider removing that mock or redefine it or make it configurable
+jest.mock('./carbonio-ui-commons/worker', () => ({
+	folderWorker: {
+		postMessage: jest.fn()
+	}
+}));
 
 function aDeletedMessage(): DeletedMessageFromAPI {
 	return {
@@ -45,6 +58,7 @@ describe('App', () => {
 
 	beforeEach(() => {
 		createAPIInterceptor('get', 'zx/login/v3/account', HttpResponse.json({}));
+		createSoapAPIInterceptor('GetFolder', HttpResponse.json({}));
 		jest.clearAllMocks();
 	});
 
