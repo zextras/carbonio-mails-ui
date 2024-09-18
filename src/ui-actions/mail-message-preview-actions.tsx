@@ -3,144 +3,118 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, {
-	FC,
-	ReactElement,
-	useCallback,
-	useContext,
-	useLayoutEffect,
-	useMemo,
-	useRef,
-	useState
-} from 'react';
+import React, { FC, ReactElement, useMemo } from 'react';
 
 import {
 	Dropdown,
+	DropdownItem,
 	IconButton,
 	Padding,
 	Row,
-	RowProps,
-	ThemeContext,
 	Tooltip
 } from '@zextras/carbonio-design-system';
-import { difference, map, noop, slice } from 'lodash';
+import { useAppContext } from '@zextras/carbonio-shell-ui';
+import { isNil, map, noop } from 'lodash';
 import { useParams } from 'react-router-dom';
 
-import { FOLDERS } from '../carbonio-ui-commons/constants/folders';
-import { getFolderIdParts } from '../helpers/folders';
-import { useVisibleActionsCount } from '../hooks/use-visible-actions-count';
+import { normalizeDropdownActionItem } from '../helpers/actions';
+import { useMsgActions } from '../hooks/actions/use-msg-actions';
+import { useSelection } from '../hooks/use-selection';
+import { useTagDropdownItem } from '../hooks/use-tag-dropdown-item';
+import { AppContext, MailMessage } from '../types';
 
 type MailMsgPreviewActionsType = {
-	actions: Array<any>;
-	maxActions?: number;
-	maxWidth?: string;
-	mainAlignment?: RowProps['mainAlignment'];
+	message: MailMessage;
 };
 
-export const MailMsgPreviewActions: FC<MailMsgPreviewActionsType> = ({
-	actions,
-	maxWidth = '7.5rem',
-	mainAlignment = 'flex-end'
-}): ReactElement => {
-	const { folderId }: { folderId: string } = useParams();
-	const actionContainerRef = useRef<HTMLInputElement>(null);
-	const [open, setOpen] = useState(false);
-	const theme = useContext(ThemeContext);
+export const MailMsgPreviewActions: FC<MailMsgPreviewActionsType> = ({ message }): ReactElement => {
+	const { setCount } = useAppContext<AppContext>();
+	const { deselectAll } = useSelection({ setCount, count: 0 });
+	const { itemId } = useParams<{ itemId: string }>();
+	const shouldReplaceHistory = useMemo(() => itemId === message.id, [message.id, itemId]);
+	const {
+		replyDescriptor,
+		replyAllDescriptor,
+		forwardDescriptor,
+		moveToTrashDescriptor,
+		deletePermanentlyDescriptor,
+		messageReadDescriptor,
+		messageUnreadDescriptor,
+		flagDescriptor,
+		unflagDescriptor,
+		markAsSpamDescriptor,
+		markAsNotSpamDescriptor,
+		applyTagDescriptor,
+		moveToFolderDescriptor,
+		createAppointmentDescriptor,
+		printDescriptor,
+		previewOnSeparatedWindowDescriptor,
+		redirectDescriptor,
+		editAsNewDescriptor,
+		showOriginalDescriptor,
+		downloadEmlDescriptor
+	} = useMsgActions({
+		deselectAll,
+		message,
+		shouldReplaceHistory
+	});
 
-	const maxActions = useMemo(() => {
-		if (getFolderIdParts(folderId).id === FOLDERS.TRASH) return 2;
-		if (getFolderIdParts(folderId).id === FOLDERS.DRAFTS) return 4;
-		return 6;
-	}, [folderId]);
+	const tagItem = useTagDropdownItem(applyTagDescriptor, message.tags);
+	const moreItem: DropdownItem = {
+		id: 'More',
+		icon: 'MoreVertical',
+		label: 'More actions',
+		items: [
+			normalizeDropdownActionItem(flagDescriptor),
+			normalizeDropdownActionItem(unflagDescriptor),
+			normalizeDropdownActionItem(markAsSpamDescriptor),
+			normalizeDropdownActionItem(markAsNotSpamDescriptor),
+			tagItem,
+			normalizeDropdownActionItem(moveToFolderDescriptor),
+			normalizeDropdownActionItem(createAppointmentDescriptor),
+			normalizeDropdownActionItem(printDescriptor),
+			normalizeDropdownActionItem(previewOnSeparatedWindowDescriptor),
+			normalizeDropdownActionItem(redirectDescriptor),
+			normalizeDropdownActionItem(editAsNewDescriptor),
+			normalizeDropdownActionItem(showOriginalDescriptor),
+			normalizeDropdownActionItem(downloadEmlDescriptor)
+		]
+	};
 
-	const [visibleActionsCount, calculateVisibleActionsCount] = useVisibleActionsCount(
-		actionContainerRef,
-		{ numberLimit: maxActions }
-	);
-
-	const firstActions = useMemo(
-		() =>
-			slice(
-				actions,
-				0,
-				visibleActionsCount > 0 && actions?.length > 2
-					? visibleActionsCount - 1
-					: visibleActionsCount
-			),
-		[actions, visibleActionsCount]
-	);
-
-	const secondActions = useMemo(() => difference(actions, firstActions), [actions, firstActions]);
-	const iconSize = useMemo(() => theme.sizes.icon.large, [theme.sizes.icon.large]);
-
-	const onIconClick = useCallback((ev: { stopPropagation: () => void }): void => {
-		ev.stopPropagation();
-		setOpen((o) => !o);
-	}, []);
-
-	const onDropdownClose = useCallback((): void => {
-		setOpen(false);
-	}, []);
-
-	const _maxWidth = useMemo(
-		() => (iconSize && maxActions ? `calc(${iconSize} * ${maxActions})` : maxWidth),
-		[iconSize, maxActions, maxWidth]
-	);
-
-	const _minWidth = useMemo(
-		() =>
-			getFolderIdParts(folderId).id === FOLDERS.TRASH
-				? `calc(${iconSize} * ${maxActions})`
-				: theme.sizes.icon.large,
-		[folderId, iconSize, maxActions, theme?.sizes?.icon?.large]
-	);
-
-	useLayoutEffect(() => {
-		calculateVisibleActionsCount();
-	}, [calculateVisibleActionsCount]);
-
+	const actions = [
+		replyDescriptor,
+		replyAllDescriptor,
+		forwardDescriptor,
+		moveToTrashDescriptor,
+		deletePermanentlyDescriptor,
+		messageReadDescriptor,
+		messageUnreadDescriptor,
+		moreItem
+	];
 	return (
-		<Row
-			ref={actionContainerRef}
-			mainAlignment={mainAlignment}
-			maxWidth={_maxWidth}
-			wrap="nowrap"
-			style={{
-				flexGrow: 1,
-				flexBasis: 'fit-content',
-				whiteSpace: 'nowrap',
-				overflow: 'hidden',
-				minWidth: _minWidth
-			}}
-		>
-			{firstActions?.length > 0 &&
-				map(firstActions, (action) =>
-					action.items ? (
-						<Padding key={action.label} right="small">
-							<Tooltip label={action.label}>
-								<Dropdown items={action.items}>
-									<IconButton icon={action.icon} size="small" onClick={noop} />
-								</Dropdown>
+		<Row mainAlignment="flex-end" wrap="nowrap">
+			{actions?.length > 0 &&
+				map(actions, (action) => {
+					if ('items' in action && !isNil(action.items) && action.icon) {
+						return (
+							<Padding key={action.label} right="small">
+								<Tooltip label={action.label}>
+									<Dropdown items={action.items}>
+										<IconButton icon={action.icon} size="small" onClick={noop} />
+									</Dropdown>
+								</Tooltip>
+							</Padding>
+						);
+					}
+					if ('execute' in action) {
+						return (
+							<Tooltip key={`${action.icon}`} label={action.label}>
+								<IconButton size="small" icon={action.icon} onClick={action.execute} />
 							</Tooltip>
-						</Padding>
-					) : (
-						<Tooltip key={`${action.icon}`} label={action.label}>
-							<IconButton
-								size="small"
-								icon={action.icon}
-								onClick={(ev): void => {
-									if (ev) ev.preventDefault();
-									action.onClick();
-								}}
-							/>
-						</Tooltip>
-					)
-				)}
-			{secondActions?.length > 0 && (
-				<Dropdown items={secondActions} forceOpen={open} onClose={onDropdownClose}>
-					<IconButton size="small" icon="MoreVertical" onClick={onIconClick} />
-				</Dropdown>
-			)}
+						);
+					}
+					return null;
+				})}
 		</Row>
 	);
 };
