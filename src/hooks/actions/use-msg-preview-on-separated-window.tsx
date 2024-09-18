@@ -32,7 +32,7 @@ export const useMsgPreviewOnSeparatedWindowFn = ({
 		const createWindowParams: ExtraWindowCreationParams = {
 			name: `message-${messageId}`,
 			returnComponent: false,
-			children: <MessagePreviewPanel />,
+			children: <MessagePreviewPanel messageId={messageId} />,
 			title: subject,
 			closeOnUnmount: false
 		};
