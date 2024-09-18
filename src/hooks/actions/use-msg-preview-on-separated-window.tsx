@@ -8,9 +8,13 @@ import React, { useCallback, useMemo } from 'react';
 
 import { useTranslation } from 'react-i18next';
 
-import { ActionFn, UIActionDescriptor } from './use-redirect-msg';
 import { MessageActionsDescriptors } from '../../constants';
-import { ExtraWindowCreationParams, ExtraWindowsContextType } from '../../types';
+import {
+	ActionFn,
+	ExtraWindowCreationParams,
+	ExtraWindowsContextType,
+	UIActionDescriptor
+} from '../../types';
 import { MessagePreviewPanel } from '../../views/app/detail-panel/message-preview-panel';
 
 export const useMsgCreateAppointmentFn = ({
@@ -23,7 +27,7 @@ export const useMsgCreateAppointmentFn = ({
 	messageId: string;
 	folderId: string;
 	subject: string;
-	messageActions: UIActionDescriptor;
+	messageActions: UIActionDescriptor[];
 	createWindow: ExtraWindowsContextType['createWindow'];
 }): ActionFn => {
 	const canExecute = useCallback((): boolean => true, []);
@@ -62,7 +66,7 @@ export const useMsgPreviewOnSeparatedWindowDescriptor = ({
 	messageId: string;
 	folderId: string;
 	subject: string;
-	messageActions: UIActionDescriptor;
+	messageActions: UIActionDescriptor[];
 	createWindow: ExtraWindowsContextType['createWindow'];
 }): UIActionDescriptor => {
 	const { canExecute, execute } = useMsgCreateAppointmentFn({

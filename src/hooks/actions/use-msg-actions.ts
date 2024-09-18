@@ -130,7 +130,16 @@ export const useMsgActions = ({
 	const showOriginalDescriptor = useMsgShowOriginalDescriptor(message.id);
 	const downloadEmlDescriptor = useMsgDownloadEmlDescriptor(message.id);
 
-	const messageActions: UIActionDescriptor[] = [];
+	const messageActions: UIActionDescriptor[] = [
+		messageReadDescriptor,
+		messageUnreadDescriptor,
+		applyTagDescriptor,
+		printDescriptor,
+		flagDescriptor,
+		unflagDescriptor,
+		showOriginalDescriptor,
+		downloadEmlDescriptor
+	];
 
 	const previewOnSeparatedWindowDescriptor = useMsgPreviewOnSeparatedWindowDescriptor({
 		messageId: message.id,
