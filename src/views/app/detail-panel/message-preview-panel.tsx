@@ -6,7 +6,6 @@
 import React, { FC } from 'react';
 
 import { Container, Padding } from '@zextras/carbonio-design-system';
-import { useParams } from 'react-router-dom';
 
 import MailPreview from './preview/mail-preview';
 import PreviewPanelHeader from './preview/preview-panel-header';
@@ -16,8 +15,10 @@ import { selectMessage } from '../../../store/messages-slice';
 import type { MailsStateType } from '../../../types';
 import { useExtraWindow } from '../extra-windows/use-extra-window';
 
-export const MessagePreviewPanel: FC = () => {
-	const { folderId, messageId } = useParams<{ folderId: string; messageId: string }>();
+export const MessagePreviewPanel: FC<{ folderId: string; messageId: string }> = ({
+	folderId,
+	messageId
+}) => {
 	const { isInsideExtraWindow } = useExtraWindow();
 
 	const message = useAppSelector((state: MailsStateType) => selectMessage(state, messageId));

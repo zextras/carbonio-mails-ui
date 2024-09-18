@@ -15,9 +15,11 @@ import { useGlobalExtraWindowManager } from '../../views/app/extra-windows/globa
 
 export const useMsgPreviewOnSeparatedWindowFn = ({
 	messageId,
+	folderId,
 	subject
 }: {
 	messageId: string;
+	folderId: string;
 	subject: string;
 }): ActionFn => {
 	const { createWindow } = useGlobalExtraWindowManager();
@@ -32,25 +34,28 @@ export const useMsgPreviewOnSeparatedWindowFn = ({
 		const createWindowParams: ExtraWindowCreationParams = {
 			name: `message-${messageId}`,
 			returnComponent: false,
-			children: <MessagePreviewPanel messageId={messageId} />,
+			children: <MessagePreviewPanel messageId={messageId} folderId={folderId} />,
 			title: subject,
 			closeOnUnmount: false
 		};
 		createWindow(createWindowParams);
-	}, [createWindow, messageId, subject]);
+	}, [createWindow, folderId, messageId, subject]);
 
 	return useMemo(() => ({ canExecute, execute }), [canExecute, execute]);
 };
 
 export const useMsgPreviewOnSeparatedWindowDescriptor = ({
 	messageId,
+	folderId,
 	subject
 }: {
 	messageId: string;
+	folderId: string;
 	subject: string;
 }): UIActionDescriptor => {
 	const { canExecute, execute } = useMsgPreviewOnSeparatedWindowFn({
 		messageId,
+		folderId,
 		subject
 	});
 	const [t] = useTranslation();

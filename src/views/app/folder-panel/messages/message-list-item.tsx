@@ -64,6 +64,7 @@ export const MessageListItem: FC<MessageListItemProps> = memo(function MessageLi
 
 	const { execute } = useMsgPreviewOnSeparatedWindowFn({
 		messageId: item.id,
+		folderId: firstChildFolderId,
 		subject: item.subject
 	});
 
