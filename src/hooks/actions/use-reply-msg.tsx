@@ -18,7 +18,10 @@ type ReplyMsgAction = {
 };
 
 export const useReplyMsgFn = ({ messageId, folderId }: ReplyMsgAction): ActionFn => {
-	const canExecute = useCallback((): boolean => isDraft(folderId) || isSpam(folderId), [folderId]);
+	const canExecute = useCallback(
+		(): boolean => !isDraft(folderId) && !isSpam(folderId),
+		[folderId]
+	);
 
 	const execute = useCallback((): void => {
 		if (canExecute()) {
