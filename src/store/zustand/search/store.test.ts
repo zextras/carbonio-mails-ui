@@ -28,7 +28,8 @@ import {
 	updateMessageStatus,
 	useMessageStatus,
 	setSearchResultsByMessage,
-	deleteMessages
+	deleteMessages,
+	updateConversationsOnly
 } from './store';
 import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
 import { API_REQUEST_STATUS } from '../../../constants';
@@ -153,6 +154,23 @@ describe('message store', () => {
 			expect(result.current.conversationIds.has('2')).toBe(true);
 			expect(conversation1Store.current).toBeUndefined();
 			expect(conversation2Store.current).toBeDefined();
+		});
+		it('should apply changes correctly when updateConversationsOnly is called', () => {
+			const conversation = generateConversation({
+				id: '1',
+				tags: ['tag1']
+			});
+
+			setSearchResultsByConversation([conversation], false);
+
+			const newConversation = {
+				...conversation,
+				tags: []
+			};
+
+			renderHook(() => updateConversationsOnly([newConversation]));
+			const { result } = renderHook(() => useConversationById('1'));
+			expect(result.current.tags).toEqual([]);
 		});
 	});
 
