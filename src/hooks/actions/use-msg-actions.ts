@@ -73,8 +73,8 @@ export const useMsgActions = ({
 	const folderId = getParentFolderId(message.parent);
 
 	const replyDescriptor = useReplyMsgDescriptor(message.id, folderId);
-	const replyAllDescriptor = useReplyAllMsg(message.id);
-	const forwardDescriptor = useForwardMsgDescriptor(message.id);
+	const replyAllDescriptor = useReplyAllMsg(message.id, folderId);
+	const forwardDescriptor = useForwardMsgDescriptor(message.id, folderId);
 	const moveToTrashDescriptor = useMsgMoveToTrashDescriptor({
 		ids: [message.id],
 		deselectAll,
@@ -83,23 +83,26 @@ export const useMsgActions = ({
 	});
 	const deletePermanentlyDescriptor = useDeleteMsgPermanentlyDescriptor({
 		messageId: message.id,
-		deselectAll
+		deselectAll,
+		folderId
 	});
 	const messageReadDescriptor = useSetMsgReadDescriptor({
 		ids: [message.id],
 		deselectAll,
 		shouldReplaceHistory,
-		folderId
+		folderId,
+		isMessageRead: message.read
 	});
 	const messageUnreadDescriptor = useSetMsgUnreadDescriptor({
 		ids: [message.id],
 		deselectAll,
 		shouldReplaceHistory,
-		folderId
+		folderId,
+		isMessageRead: message.read
 	});
-	const flagDescriptor = useMsgFlagDescriptor([message.id]);
-	const unflagDescriptor = useMsgUnflagDescriptor([message.id]);
-	const sendDraftDescriptor = useMsgSendDraftDescriptor(message);
+	const flagDescriptor = useMsgFlagDescriptor([message.id], message.flagged);
+	const unflagDescriptor = useMsgUnflagDescriptor([message.id], message.flagged);
+	const sendDraftDescriptor = useMsgSendDraftDescriptor(message, folderId);
 	const markAsSpamDescriptor = useMsgMarkAsSpamDescriptor({
 		ids: [message.id],
 		shouldReplaceHistory,
@@ -110,7 +113,7 @@ export const useMsgActions = ({
 		shouldReplaceHistory,
 		folderId
 	});
-	const applyTagDescriptor = useMsgApplyTagDescriptor(message.id, message.tags);
+	const applyTagDescriptor = useMsgApplyTagDescriptor(message.id, message.tags, folderId);
 	const moveToFolderDescriptor = useMsgMoveToFolderDescriptor({
 		folderId,
 		messageId: message.id,
@@ -121,18 +124,17 @@ export const useMsgActions = ({
 		messageId: message.id,
 		deselectAll
 	});
-	const createAppointmentDescriptor = useMsgCreateAppointmentDescriptor(message);
-	const printDescriptor = useMsgPrintDescriptor(message);
+	const createAppointmentDescriptor = useMsgCreateAppointmentDescriptor(message, folderId);
+	const printDescriptor = useMsgPrintDescriptor(message, folderId);
 
-	const redirectDescriptor = useMsgRedirectDescriptor(message.id);
-	const editDraftDescriptor = useMsgEdiDraftDescriptor(message.id, message.isScheduled);
-	const editAsNewDescriptor = useMsgEditAsNewDescriptor(message.id);
-	const showOriginalDescriptor = useMsgShowOriginalDescriptor(message.id);
-	const downloadEmlDescriptor = useMsgDownloadEmlDescriptor(message.id);
+	const redirectDescriptor = useMsgRedirectDescriptor(message.id, folderId);
+	const editDraftDescriptor = useMsgEdiDraftDescriptor(message.id, message.isScheduled, folderId);
+	const editAsNewDescriptor = useMsgEditAsNewDescriptor(message.id, folderId);
+	const showOriginalDescriptor = useMsgShowOriginalDescriptor(message.id, folderId);
+	const downloadEmlDescriptor = useMsgDownloadEmlDescriptor(message.id, folderId);
 
 	const previewOnSeparatedWindowDescriptor = useMsgPreviewOnSeparatedWindowDescriptor({
 		messageId: message.id,
-		folderId,
 		subject: message.subject,
 		messagePreviewFactory
 	});

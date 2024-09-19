@@ -10,6 +10,7 @@ import { includes, map } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
 import { MessageActionsDescriptors, TIMEOUTS } from '../../constants';
+import { isSpam } from '../../helpers/folders';
 import { msgAction } from '../../store/actions';
 import { MailMessage, UIActionAggregator, UIActionDescriptor } from '../../types';
 import { useAppDispatch } from '../redux';
@@ -17,7 +18,8 @@ import { useUiUtilities } from '../use-ui-utilities';
 
 export const useMsgApplyTagFn = (
 	messageId: MailMessage['id'],
-	messageTags: Array<string>
+	messageTags: Array<string>,
+	folderId: string
 ): UIActionDescriptor[] => {
 	const { createSnackbar } = useUiUtilities();
 	const dispatch = useAppDispatch();
@@ -40,36 +42,38 @@ export const useMsgApplyTagFn = (
 							defaultValue: '"{{tag}}" tag applied'
 						});
 
-				const canExecute = (): boolean => true;
+				const canExecute = (): boolean => !isSpam(folderId);
 
 				const execute = (): void => {
-					dispatch(
-						msgAction({
-							operation,
-							ids: [messageId],
-							tagName: tag.name
-						})
-					).then((res: any) => {
-						if (res.type.includes('fulfilled')) {
-							createSnackbar({
-								key: `tag`,
-								replace: true,
-								hideButton: true,
-								type: 'info',
-								label: snackbarSuccessLabel,
-								autoHideTimeout: TIMEOUTS.SNACKBAR_DEFAULT_TIMEOUT
-							});
-						} else {
-							createSnackbar({
-								key: `tag`,
-								replace: true,
-								type: 'error',
-								label: t('label.error_try_again', 'Something went wrong, please try again'),
-								autoHideTimeout: TIMEOUTS.SNACKBAR_DEFAULT_TIMEOUT,
-								hideButton: true
-							});
-						}
-					});
+					if (canExecute()) {
+						dispatch(
+							msgAction({
+								operation,
+								ids: [messageId],
+								tagName: tag.name
+							})
+						).then((res: any) => {
+							if (res.type.includes('fulfilled')) {
+								createSnackbar({
+									key: `tag`,
+									replace: true,
+									hideButton: true,
+									type: 'info',
+									label: snackbarSuccessLabel,
+									autoHideTimeout: TIMEOUTS.SNACKBAR_DEFAULT_TIMEOUT
+								});
+							} else {
+								createSnackbar({
+									key: `tag`,
+									replace: true,
+									type: 'error',
+									label: t('label.error_try_again', 'Something went wrong, please try again'),
+									autoHideTimeout: TIMEOUTS.SNACKBAR_DEFAULT_TIMEOUT,
+									hideButton: true
+								});
+							}
+						});
+					}
 				};
 				return {
 					id: tag.id,
@@ -80,7 +84,7 @@ export const useMsgApplyTagFn = (
 					canExecute
 				};
 			}),
-		[createSnackbar, dispatch, messageId, messageTags, t, tags]
+		[createSnackbar, dispatch, folderId, messageId, messageTags, t, tags]
 	);
 
 	return useMemo(() => tagActions, [tagActions]);
@@ -88,10 +92,11 @@ export const useMsgApplyTagFn = (
 
 export const useMsgApplyTagDescriptor = (
 	messageId: string,
-	messageTags: Array<string>
+	messageTags: Array<string>,
+	folderId: string
 ): UIActionAggregator => {
 	const [t] = useTranslation();
-	const items = useMsgApplyTagFn(messageId, messageTags);
+	const items = useMsgApplyTagFn(messageId, messageTags, folderId);
 	return {
 		id: MessageActionsDescriptors.APPLY_TAG.id,
 		label: t('label.tag', 'Tag'),

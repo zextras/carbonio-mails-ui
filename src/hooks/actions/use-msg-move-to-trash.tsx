@@ -11,6 +11,7 @@ import { replaceHistory, t } from '@zextras/carbonio-shell-ui';
 import { useTranslation } from 'react-i18next';
 
 import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
+import { isTrash } from '../../carbonio-ui-commons/helpers/folders';
 import { MessageActionsDescriptors } from '../../constants';
 import { msgAction } from '../../store/actions';
 import { AppDispatch } from '../../store/redux';
@@ -89,45 +90,47 @@ export const useMsgMoveToTrashFn = ({
 	folderId = FOLDERS.INBOX,
 	shouldReplaceHistory
 }: MoveToTrashExecute): ActionFn => {
-	const canExecute = useCallback((): boolean => true, []);
+	const canExecute = useCallback((): boolean => isTrash(folderId), [folderId]);
 	const dispatch = useAppDispatch();
 	const createSnackbar = useSnackbar();
 	const restoreMessage = useRestoreMessage();
 	const inSearchModule = useInSearchModule();
 
 	const execute = useCallback((): void => {
-		dispatch(
-			msgAction({
-				operation: 'trash',
-				ids
-			})
-		).then((res) => {
-			if (res.type.includes('fulfilled')) {
-				deselectAll && deselectAll();
-				if (!inSearchModule) {
-					shouldReplaceHistory && replaceHistory(`/folder/${folderId}`);
+		if (canExecute()) {
+			dispatch(
+				msgAction({
+					operation: 'trash',
+					ids
+				})
+			).then((res) => {
+				if (res.type.includes('fulfilled')) {
+					deselectAll && deselectAll();
+					if (!inSearchModule) {
+						shouldReplaceHistory && replaceHistory(`/folder/${folderId}`);
+					}
+					createSnackbar({
+						key: `trash-${ids}`,
+						replace: true,
+						type: 'info',
+						label: t('messages.snackbar.email_moved_to_trash', 'E-mail moved to Trash'),
+						autoHideTimeout: 5000,
+						hideButton: false,
+						actionLabel: t('label.undo', 'Undo'),
+						onActionClick: () => restoreMessage(dispatch, ids, folderId, shouldReplaceHistory)
+					});
+				} else {
+					createSnackbar({
+						key: `trash-${ids}`,
+						replace: true,
+						type: 'error',
+						label: t('label.error_try_again', 'Something went wrong, please try again'),
+						autoHideTimeout: 3000,
+						hideButton: true
+					});
 				}
-				createSnackbar({
-					key: `trash-${ids}`,
-					replace: true,
-					type: 'info',
-					label: t('messages.snackbar.email_moved_to_trash', 'E-mail moved to Trash'),
-					autoHideTimeout: 5000,
-					hideButton: false,
-					actionLabel: t('label.undo', 'Undo'),
-					onActionClick: () => restoreMessage(dispatch, ids, folderId, shouldReplaceHistory)
-				});
-			} else {
-				createSnackbar({
-					key: `trash-${ids}`,
-					replace: true,
-					type: 'error',
-					label: t('label.error_try_again', 'Something went wrong, please try again'),
-					autoHideTimeout: 3000,
-					hideButton: true
-				});
-			}
-		});
+			});
+		}
 	}, [
 		shouldReplaceHistory,
 		createSnackbar,

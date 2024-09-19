@@ -9,13 +9,15 @@ import { replaceHistory } from '@zextras/carbonio-shell-ui';
 import { useTranslation } from 'react-i18next';
 
 import { MessageActionsDescriptors } from '../../constants';
+import { isDraft } from '../../helpers/folders';
 import { msgAction } from '../../store/actions';
 import { ActionFn, UIActionDescriptor } from '../../types';
 import { useAppDispatch } from '../redux';
 
 type SetMsgReadExecuteType = {
 	ids: Array<string>;
-	folderId?: string;
+	folderId: string;
+	isMessageRead: boolean;
 	shouldReplaceHistory?: boolean;
 	deselectAll?: () => void;
 };
@@ -24,24 +26,30 @@ export const useSetMsgReadFn = ({
 	ids,
 	deselectAll,
 	shouldReplaceHistory,
-	folderId
+	folderId,
+	isMessageRead
 }: SetMsgReadExecuteType): ActionFn => {
-	const canExecute = useCallback((): boolean => true, []);
 	const dispatch = useAppDispatch();
+	const canExecute = useCallback(
+		(): boolean => !isDraft(folderId) && !isMessageRead,
+		[folderId, isMessageRead]
+	);
 
 	const execute = useCallback((): void => {
-		dispatch(
-			msgAction({
-				operation: 'read',
-				ids
-			})
-		).then((res) => {
-			deselectAll && deselectAll();
-			if (res.type.includes('fulfilled') && shouldReplaceHistory) {
-				replaceHistory(`/folder/${folderId}`);
-			}
-		});
-	}, [deselectAll, dispatch, folderId, ids, shouldReplaceHistory]);
+		if (canExecute()) {
+			dispatch(
+				msgAction({
+					operation: 'read',
+					ids
+				})
+			).then((res) => {
+				deselectAll && deselectAll();
+				if (res.type.includes('fulfilled') && shouldReplaceHistory) {
+					replaceHistory(`/folder/${folderId}`);
+				}
+			});
+		}
+	}, [canExecute, deselectAll, dispatch, folderId, ids, shouldReplaceHistory]);
 
 	return useMemo(() => ({ canExecute, execute }), [canExecute, execute]);
 };
@@ -50,13 +58,15 @@ export const useSetMsgReadDescriptor = ({
 	ids,
 	deselectAll,
 	shouldReplaceHistory,
-	folderId
+	folderId,
+	isMessageRead
 }: SetMsgReadExecuteType): UIActionDescriptor => {
 	const { canExecute, execute } = useSetMsgReadFn({
 		ids,
 		deselectAll,
 		shouldReplaceHistory,
-		folderId
+		folderId,
+		isMessageRead
 	});
 	const [t] = useTranslation();
 	return {

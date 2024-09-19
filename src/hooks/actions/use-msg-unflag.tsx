@@ -12,23 +12,28 @@ import { msgAction } from '../../store/actions';
 import { ActionFn, UIActionDescriptor } from '../../types';
 import { useAppDispatch } from '../redux';
 
-export const useMsgUnflagFn = (ids: Array<string>): ActionFn => {
-	const canExecute = useCallback((): boolean => true, []);
+export const useMsgUnflagFn = (ids: Array<string>, isFlagged: boolean): ActionFn => {
+	const canExecute = useCallback((): boolean => isFlagged, [isFlagged]);
 	const dispatch = useAppDispatch();
 
 	const execute = useCallback((): void => {
-		dispatch(
-			msgAction({
-				operation: '!flag',
-				ids
-			})
-		);
-	}, [dispatch, ids]);
+		if (canExecute()) {
+			dispatch(
+				msgAction({
+					operation: '!flag',
+					ids
+				})
+			);
+		}
+	}, [canExecute, dispatch, ids]);
 
 	return useMemo(() => ({ canExecute, execute }), [canExecute, execute]);
 };
-export const useMsgUnflagDescriptor = (ids: Array<string>): UIActionDescriptor => {
-	const { canExecute, execute } = useMsgUnflagFn(ids);
+export const useMsgUnflagDescriptor = (
+	ids: Array<string>,
+	isFlagged: boolean
+): UIActionDescriptor => {
+	const { canExecute, execute } = useMsgUnflagFn(ids, isFlagged);
 	const [t] = useTranslation();
 	return {
 		id: MessageActionsDescriptors.UNFLAG.id,

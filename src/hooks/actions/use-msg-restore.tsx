@@ -9,6 +9,7 @@ import { noop } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
 import { MessageActionsDescriptors } from '../../constants';
+import { isTrash } from '../../helpers/folders';
 import { StoreProvider } from '../../store/redux';
 import { ActionFn, UIActionDescriptor } from '../../types';
 import MoveConvMessage from '../../ui-actions/move-conv-msg';
@@ -26,32 +27,34 @@ export const useMsgRestoreFn = ({
 }): ActionFn => {
 	const { createModal, closeModal } = useUiUtilities();
 	const dispatch = useAppDispatch();
-	const canExecute = useCallback((): boolean => true, []);
+	const canExecute = useCallback((): boolean => isTrash(folderId), [folderId]);
 
 	const execute = useCallback((): void => {
-		const modalId = Date.now().toString();
-		createModal(
-			{
-				id: modalId,
-				maxHeight: '90vh',
-				size: 'medium',
-				children: (
-					<StoreProvider>
-						<MoveConvMessage
-							folderId={folderId}
-							selectedIDs={[messageId]}
-							onClose={(): void => closeModal(modalId)}
-							isMessageView
-							isRestore
-							deselectAll={deselectAll ?? noop}
-							dispatch={dispatch}
-						/>
-					</StoreProvider>
-				)
-			},
-			true
-		);
-	}, [closeModal, createModal, deselectAll, dispatch, messageId, folderId]);
+		if (canExecute()) {
+			const modalId = Date.now().toString();
+			createModal(
+				{
+					id: modalId,
+					maxHeight: '90vh',
+					size: 'medium',
+					children: (
+						<StoreProvider>
+							<MoveConvMessage
+								folderId={folderId}
+								selectedIDs={[messageId]}
+								onClose={(): void => closeModal(modalId)}
+								isMessageView
+								isRestore
+								deselectAll={deselectAll ?? noop}
+								dispatch={dispatch}
+							/>
+						</StoreProvider>
+					)
+				},
+				true
+			);
+		}
+	}, [canExecute, createModal, folderId, messageId, deselectAll, dispatch, closeModal]);
 
 	return useMemo(() => ({ canExecute, execute }), [canExecute, execute]);
 };

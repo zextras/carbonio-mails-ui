@@ -8,37 +8,43 @@ import React, { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { MessageActionsDescriptors } from '../../constants';
+import { isDraft, isTrash } from '../../helpers/folders';
 import { StoreProvider } from '../../store/redux';
 import { ActionFn, UIActionDescriptor } from '../../types';
 import RedirectAction from '../../ui-actions/redirect-message-action';
 import { useUiUtilities } from '../use-ui-utilities';
 
-export const useMsgRedirectFn = (messageId: string): ActionFn => {
+export const useMsgRedirectFn = (messageId: string, folderId: string): ActionFn => {
 	const { createModal, closeModal } = useUiUtilities();
 
-	const canExecute = useCallback((): boolean => true, []);
+	const canExecute = useCallback((): boolean => !isDraft(folderId) && !isTrash(folderId), []);
 
 	const execute = useCallback((): void => {
-		const modalId = Date.now().toString();
-		createModal(
-			{
-				id: modalId,
-				maxHeight: '90vh',
-				children: (
-					<StoreProvider>
-						<RedirectAction onClose={(): void => closeModal(modalId)} id={messageId} />
-					</StoreProvider>
-				)
-			},
-			true
-		);
-	}, [closeModal, createModal, messageId]);
+		if (canExecute()) {
+			const modalId = Date.now().toString();
+			createModal(
+				{
+					id: modalId,
+					maxHeight: '90vh',
+					children: (
+						<StoreProvider>
+							<RedirectAction onClose={(): void => closeModal(modalId)} id={messageId} />
+						</StoreProvider>
+					)
+				},
+				true
+			);
+		}
+	}, [canExecute, closeModal, createModal, messageId]);
 
 	return useMemo(() => ({ canExecute, execute }), [canExecute, execute]);
 };
 
-export const useMsgRedirectDescriptor = (messageId: string): UIActionDescriptor => {
-	const { canExecute, execute } = useMsgRedirectFn(messageId);
+export const useMsgRedirectDescriptor = (
+	messageId: string,
+	folderId: string
+): UIActionDescriptor => {
+	const { canExecute, execute } = useMsgRedirectFn(messageId, folderId);
 	const [t] = useTranslation();
 	return {
 		id: MessageActionsDescriptors.REDIRECT.id,

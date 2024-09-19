@@ -9,24 +9,30 @@ import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { EditViewActions, MessageActionsDescriptors } from '../../constants';
+import { isDraft, isSpam } from '../../helpers/folders';
 import { ActionFn, UIActionDescriptor } from '../../types';
 import { createEditBoard } from '../../views/app/detail-panel/edit/edit-view-board';
 
-export const useReplyAllMsgFn = (messageId: string): ActionFn => {
-	const canExecute = useCallback((): boolean => true, []);
+export const useReplyAllMsgFn = (messageId: string, folderId: string): ActionFn => {
+	const canExecute = useCallback(
+		(): boolean => !isDraft(folderId) && !isSpam(folderId),
+		[folderId]
+	);
 
 	const execute = useCallback((): void => {
-		createEditBoard({
-			action: EditViewActions.REPLY_ALL,
-			actionTargetId: messageId
-		});
-	}, [messageId]);
+		if (canExecute()) {
+			createEditBoard({
+				action: EditViewActions.REPLY_ALL,
+				actionTargetId: messageId
+			});
+		}
+	}, [canExecute, messageId]);
 
 	return useMemo(() => ({ canExecute, execute }), [canExecute, execute]);
 };
 
-export const useReplyAllMsg = (messageId: string): UIActionDescriptor => {
-	const { canExecute, execute } = useReplyAllMsgFn(messageId);
+export const useReplyAllMsg = (messageId: string, folderId: string): UIActionDescriptor => {
+	const { canExecute, execute } = useReplyAllMsgFn(messageId, folderId);
 	const [t] = useTranslation();
 	return {
 		id: MessageActionsDescriptors.REPLY_ALL.id,
