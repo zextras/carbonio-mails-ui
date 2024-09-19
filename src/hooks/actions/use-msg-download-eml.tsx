@@ -8,8 +8,8 @@ import { useCallback, useMemo } from 'react';
 
 import { useTranslation } from 'react-i18next';
 
-import { ActionFn, UIActionDescriptor } from './use-redirect-msg';
 import { MessageActionsDescriptors } from '../../constants';
+import { ActionFn, UIActionDescriptor } from '../../types';
 import { getLocationOrigin } from '../../views/app/detail-panel/preview/utils';
 
 export const useMsgDownloadEmlFn = (messageId: string): ActionFn => {

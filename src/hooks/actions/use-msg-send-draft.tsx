@@ -8,10 +8,9 @@ import { useCallback, useMemo } from 'react';
 
 import { useTranslation } from 'react-i18next';
 
-import { ActionFn, UIActionDescriptor } from './use-redirect-msg';
 import { MessageActionsDescriptors } from '../../constants';
 import { sendMsg } from '../../store/actions/send-msg';
-import { MailMessage } from '../../types';
+import { ActionFn, MailMessage, UIActionDescriptor } from '../../types';
 import { useAppDispatch } from '../redux';
 
 export const useMsgSendDraftFn = (message: MailMessage): ActionFn => {

@@ -9,14 +9,13 @@ import { t, useIntegratedFunction } from '@zextras/carbonio-shell-ui';
 import { isNull } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
-import { ActionFn, UIActionDescriptor } from './use-redirect-msg';
 import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
 import { getRoot } from '../../carbonio-ui-commons/store/zustand/folder';
 import { MessageActionsDescriptors } from '../../constants';
 import { getAttendees, getOptionalsAttendees, getSenderByOwner } from '../../helpers/appointmemt';
 import { getMsgCall } from '../../store/actions';
 import { extractBody } from '../../store/editor-slice-utils';
-import type { MailMessage } from '../../types';
+import type { ActionFn, MailMessage, UIActionDescriptor } from '../../types';
 import { CalendarType, SenderType } from '../../types/calendar';
 import { useUiUtilities } from '../use-ui-utilities';
 

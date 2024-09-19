@@ -7,11 +7,10 @@ import { useCallback, useMemo } from 'react';
 
 import { useTranslation } from 'react-i18next';
 
-import { ActionFn, UIActionDescriptor } from './use-redirect-msg';
 import { getContentForPrint } from '../../commons/print-conversation/print-conversation';
 import { MessageActionsDescriptors } from '../../constants';
 import { getMsgsForPrint } from '../../store/actions';
-import type { MailMessage } from '../../types';
+import type { ActionFn, MailMessage, UIActionDescriptor } from '../../types';
 import { errorPage } from '../../ui-actions/error-page';
 
 export const useMsgPrintFn = (message: MailMessage): ActionFn => {

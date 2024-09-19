@@ -8,7 +8,7 @@ import React, { ReactNode } from 'react';
 
 import { ContainerProps } from '@zextras/carbonio-design-system';
 
-import { UIActionDescriptor } from '../../hooks/actions/use-redirect-msg';
+import { UIActionDescriptor } from '../actions';
 import { Conversation } from '../conversations';
 import { IncompleteMessage, MailMessage } from '../messages';
 import { SearchRequestStatus } from '../state';

@@ -12,7 +12,6 @@ import { TFunction } from 'i18next';
 
 import {
 	useMoveConversationToTrash,
-	previewConversationOnSeparatedWindowAction,
 	printConversation,
 	setConversationsFlag,
 	useDeleteConversationPermanently,
@@ -39,7 +38,6 @@ import {
 	useRedirectMsg,
 	useEditDraft
 } from './message-actions';
-import { previewMessageOnSeparatedWindow } from './preview-message-on-separated-window';
 import { applyTag } from './tag-actions';
 import { updateEditorWithSmartLinks } from './utils';
 import { FOLDERS } from '../carbonio-ui-commons/constants/folders';
@@ -52,10 +50,8 @@ import type {
 	ActionReturnType,
 	AddEditorParams,
 	Conversation,
-	ExtraWindowsContextType,
 	MailMessage,
-	MailsEditorV2,
-	MessageAction
+	MailsEditorV2
 } from '../types';
 
 /**
@@ -296,26 +292,6 @@ export const useMarkRemoveSpam = (): ((arg: {
 		[setConversationAsSpam, setMsgAsSpam]
 	);
 };
-
-export function getPreviewOnSeparatedWindowAction({
-	isConversation,
-	id,
-	folderId,
-	subject,
-	createWindow,
-	messageActions
-}: {
-	isConversation: boolean;
-	id: string;
-	folderId: string;
-	subject: string;
-	createWindow: ExtraWindowsContextType['createWindow'];
-	messageActions: Array<MessageAction>;
-}): ActionReturnType {
-	return isConversation
-		? previewConversationOnSeparatedWindowAction(id, folderId, subject, createWindow)
-		: previewMessageOnSeparatedWindow(id, folderId, subject, createWindow, messageActions);
-}
 
 export function getApplyTagAction({
 	tags,

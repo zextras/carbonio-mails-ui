@@ -36,7 +36,6 @@ import {
 	useRedirectMsg,
 	useSetMsgAsSpam
 } from '../ui-actions/message-actions';
-import { previewMessageOnSeparatedWindow } from '../ui-actions/preview-message-on-separated-window';
 import { applyTag } from '../ui-actions/tag-actions';
 import { useInSearchModule } from '../ui-actions/utils';
 import { useGlobalExtraWindowManager } from '../views/app/extra-windows/global-extra-window-manager';
@@ -388,15 +387,15 @@ export const useMessageActions = ({
 				)
 			);
 		} else {
-			actions.push(
-				previewMessageOnSeparatedWindow(
-					message.id,
-					folderId,
-					message.subject,
-					createWindow,
-					newWindowActions
-				)
-			);
+			// actions.push(
+			// 	previewMessageOnSeparatedWindow(
+			// 		message.id,
+			// 		folderId,
+			// 		message.subject,
+			// 		createWindow,
+			// 		newWindowActions
+			// 	)
+			// );
 		}
 	}
 

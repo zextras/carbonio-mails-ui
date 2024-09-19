@@ -7,9 +7,9 @@ import React, { useCallback, useMemo } from 'react';
 
 import { useTranslation } from 'react-i18next';
 
-import { ActionFn, UIActionDescriptor } from './use-redirect-msg';
 import { MessageActionsDescriptors } from '../../constants';
 import { StoreProvider } from '../../store/redux';
+import { ActionFn, UIActionDescriptor } from '../../types';
 import DeleteConvConfirm from '../../ui-actions/delete-conv-modal';
 import { useUiUtilities } from '../use-ui-utilities';
 

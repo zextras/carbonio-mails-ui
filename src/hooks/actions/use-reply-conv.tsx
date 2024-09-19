@@ -7,9 +7,9 @@ import { useCallback, useMemo } from 'react';
 
 import { useTranslation } from 'react-i18next';
 
-import { ActionFn, UIActionDescriptor } from './use-redirect-msg';
 import { ConversationActionsDescriptors, EditViewActions } from '../../constants';
 import { isDraft, isSpam } from '../../helpers/folders';
+import { ActionFn, UIActionDescriptor } from '../../types';
 import { createEditBoard } from '../../views/app/detail-panel/edit/edit-view-board';
 
 type ReplyConvAction = {

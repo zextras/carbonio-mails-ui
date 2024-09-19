@@ -21,7 +21,6 @@ import {
 	useMarkRemoveSpam,
 	useMoveToFolderAction,
 	useMoveToTrashAction,
-	getPreviewOnSeparatedWindowAction,
 	getPrintAction,
 	getReadUnreadAction,
 	useRedirectAction,
@@ -242,14 +241,14 @@ export function useMsgConvActions({
 		folderId
 	});
 
-	const previewOnSeparatedWindow = getPreviewOnSeparatedWindowAction({
-		isConversation: isConv,
-		id,
-		folderId,
-		subject: item.subject,
-		createWindow,
-		messageActions: messageActionsForExtraWindow
-	});
+	// const previewOnSeparatedWindow = getPreviewOnSeparatedWindowAction({
+	// 	isConversation: isConv,
+	// 	id,
+	// 	folderId,
+	// 	subject: item.subject,
+	// 	createWindow,
+	// 	messageActions: messageActionsForExtraWindow
+	// });
 
 	const downloadEmlAction = getDownloadEmlAction({
 		isConversation: isConv,
@@ -304,7 +303,7 @@ export function useMsgConvActions({
 		moveToFolderAction,
 		createAppointmentAction,
 		printAction,
-		previewOnSeparatedWindow,
+		// previewOnSeparatedWindow,
 		redirectAction,
 		editDraftAction,
 		editAsNewAction,

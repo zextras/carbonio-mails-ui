@@ -9,9 +9,9 @@ import { Text } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import { useTranslation } from 'react-i18next';
 
-import { ActionFn, UIActionDescriptor } from './use-redirect-msg';
 import { EditViewActions, MessageActionsDescriptors } from '../../constants';
 import { StoreProvider } from '../../store/redux';
+import { ActionFn, UIActionDescriptor } from '../../types';
 import { createEditBoard } from '../../views/app/detail-panel/edit/edit-view-board';
 import { useUiUtilities } from '../use-ui-utilities';
 
