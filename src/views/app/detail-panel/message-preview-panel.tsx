@@ -26,8 +26,8 @@ export const MessagePreviewPanel: FC<{ folderId: string; messageId: string }> = 
 	useRequestDebouncedMessage(messageId, message?.isComplete);
 
 	const messagePreviewFactory = useCallback(
-		() => <MessagePreviewPanel folderId={folderId} messageId={message.id} />,
-		[folderId, message.id]
+		() => <MessagePreviewPanel folderId={folderId} messageId={messageId} />,
+		[folderId, messageId]
 	);
 
 	return (
