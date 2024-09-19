@@ -125,7 +125,7 @@ export const MailMsgPreviewActions: FC<MailMsgPreviewActionsType> = ({
 							</Padding>
 						);
 					}
-					if ('execute' in action) {
+					if ('execute' in action && action.canExecute()) {
 						return (
 							<Tooltip key={`${action.icon}`} label={action.label}>
 								<IconButton size="small" icon={action.icon} onClick={action.execute} />

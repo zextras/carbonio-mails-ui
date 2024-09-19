@@ -90,7 +90,7 @@ export const useMsgMoveToTrashFn = ({
 	folderId = FOLDERS.INBOX,
 	shouldReplaceHistory
 }: MoveToTrashExecute): ActionFn => {
-	const canExecute = useCallback((): boolean => isTrash(folderId), [folderId]);
+	const canExecute = useCallback((): boolean => !isTrash(folderId), [folderId]);
 	const dispatch = useAppDispatch();
 	const createSnackbar = useSnackbar();
 	const restoreMessage = useRestoreMessage();
@@ -132,13 +132,14 @@ export const useMsgMoveToTrashFn = ({
 			});
 		}
 	}, [
-		shouldReplaceHistory,
-		createSnackbar,
-		deselectAll,
+		canExecute,
 		dispatch,
-		folderId,
 		ids,
+		deselectAll,
 		inSearchModule,
+		createSnackbar,
+		shouldReplaceHistory,
+		folderId,
 		restoreMessage
 	]);
 

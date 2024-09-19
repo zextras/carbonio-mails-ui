@@ -26,7 +26,7 @@ export const useDeleteMsgPermanentlyFn = ({
 }: DeleteMsgPermanently): ActionFn => {
 	const { createModal, closeModal } = useUiUtilities();
 
-	const canExecute = useCallback((): boolean => isTrash(folderId) && isSpam(folderId), [folderId]);
+	const canExecute = useCallback((): boolean => isTrash(folderId) || isSpam(folderId), [folderId]);
 	const execute = useCallback((): void => {
 		if (canExecute()) {
 			const modalId = Date.now().toString();
