@@ -32,6 +32,11 @@ jest.mock('./carbonio-ui-commons/worker', () => ({
 	}
 }));
 
+jest.mock('@zextras/carbonio-design-system', () => ({
+	...jest.requireActual('@zextras/carbonio-design-system'),
+	useModal: (): { createModal: () => void } => ({ createModal: jest.fn() })
+}));
+
 function aDeletedMessage(): DeletedMessageFromAPI {
 	return {
 		messageId: '1',
@@ -59,10 +64,11 @@ describe('App', () => {
 	beforeEach(() => {
 		createAPIInterceptor('get', 'zx/login/v3/account', HttpResponse.json({}));
 		createSoapAPIInterceptor('GetFolder', HttpResponse.json({}));
+		createSoapAPIInterceptor('GetShareInfo', HttpResponse.json({}));
 		jest.clearAllMocks();
 	});
 
-	it('should register a "mails" route accessible from the primary bar with specific position, name and icon', () => {
+	it('should register a "mails" route accessible from the primary bar with specific position, name and icon', async () => {
 		const addComponentsToShellSpy = jest.spyOn(addComponentsToShell, 'addComponentsToShell');
 		const registerShellActionSpy = jest.spyOn(registerShellActions, 'registerShellActions');
 		const registerShellIntegrationsSpy = jest.spyOn(
