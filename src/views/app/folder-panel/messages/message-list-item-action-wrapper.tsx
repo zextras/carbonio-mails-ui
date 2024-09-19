@@ -3,14 +3,16 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { ReactNode, useMemo } from 'react';
+import React, { ReactNode, useCallback, useMemo } from 'react';
 
 import { ContainerProps } from '@zextras/carbonio-design-system';
 
 import { normalizeDropdownActionItem } from '../../../../helpers/actions';
+import { getParentFolderId } from '../../../../helpers/folders';
 import { useMsgActions } from '../../../../hooks/actions/use-msg-actions';
 import { useTagDropdownItem } from '../../../../hooks/use-tag-dropdown-item';
 import { MailMessage } from '../../../../types';
+import { MessagePreviewPanel } from '../../detail-panel/message-preview-panel';
 import { HoverBarContainer } from '../parts/hover-bar-container';
 import { HoverContainer } from '../parts/hover-container';
 import { ListItemDropdownAction } from '../parts/list-item-dropdown-action';
@@ -33,6 +35,11 @@ export const MessageListItemActionWrapper = ({
 	item: MailMessage;
 	deselectAll: () => void;
 }): React.JSX.Element => {
+	const messagePreviewFactory = useCallback(() => {
+		const folderId = getParentFolderId(item.parent);
+		return <MessagePreviewPanel folderId={folderId} messageId={item.id} />;
+	}, [item.id, item.parent]);
+
 	const {
 		replyDescriptor,
 		replyAllDescriptor,
@@ -57,7 +64,7 @@ export const MessageListItemActionWrapper = ({
 		editAsNewDescriptor,
 		showOriginalDescriptor,
 		downloadEmlDescriptor
-	} = useMsgActions({ message: item, deselectAll, shouldReplaceHistory });
+	} = useMsgActions({ message: item, deselectAll, shouldReplaceHistory, messagePreviewFactory });
 
 	const tagItem = useTagDropdownItem(applyTagDescriptor, item.tags);
 

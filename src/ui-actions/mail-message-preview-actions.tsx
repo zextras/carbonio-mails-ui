@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, ReactElement, useCallback, useMemo } from 'react';
+import React, { FC, ReactElement, useMemo } from 'react';
 
 import { Dropdown, IconButton, Padding, Row, Tooltip } from '@zextras/carbonio-design-system';
 import { useAppContext } from '@zextras/carbonio-shell-ui';
@@ -11,29 +11,26 @@ import { isNil, map, noop } from 'lodash';
 import { useParams } from 'react-router-dom';
 
 import { normalizeDropdownActionItem } from '../helpers/actions';
-import { getParentFolderId } from '../helpers/folders';
 import { useMsgActions } from '../hooks/actions/use-msg-actions';
 import { useSelection } from '../hooks/use-selection';
 import { useTagDropdownItem } from '../hooks/use-tag-dropdown-item';
 import { AppContext, MailMessage } from '../types';
-import { MessagePreviewPanel } from '../views/app/detail-panel/message-preview-panel';
 import { useExtraWindow } from '../views/app/extra-windows/use-extra-window';
 
 type MailMsgPreviewActionsType = {
 	message: MailMessage;
+	messagePreviewFactory: () => React.JSX.Element;
 };
 
-export const MailMsgPreviewActions: FC<MailMsgPreviewActionsType> = ({ message }): ReactElement => {
+export const MailMsgPreviewActions: FC<MailMsgPreviewActionsType> = ({
+	message,
+	messagePreviewFactory
+}): ReactElement => {
 	const { setCount } = useAppContext<AppContext>();
 	const { deselectAll } = useSelection({ setCount, count: 0 });
 	const { itemId } = useParams<{ itemId: string }>();
 	const shouldReplaceHistory = useMemo(() => itemId === message.id, [message.id, itemId]);
 	const { isInsideExtraWindow } = useExtraWindow();
-
-	const messagePreviewFactory = useCallback(() => {
-		const folderId = getParentFolderId(message.parent);
-		return <MessagePreviewPanel folderId={folderId} messageId={message.id} />;
-	}, [message.id, message.parent]);
 
 	const {
 		replyDescriptor,

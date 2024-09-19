@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC } from 'react';
+import React, { FC, useCallback } from 'react';
 
 import { Container, Padding } from '@zextras/carbonio-design-system';
 
@@ -24,6 +24,11 @@ export const MessagePreviewPanel: FC<{ folderId: string; messageId: string }> = 
 	const message = useAppSelector((state: MailsStateType) => selectMessage(state, messageId));
 
 	useRequestDebouncedMessage(messageId, message?.isComplete);
+
+	const messagePreviewFactory = useCallback(
+		() => <MessagePreviewPanel folderId={folderId} messageId={message.id} />,
+		[folderId, message.id]
+	);
 
 	return (
 		<Container orientation="vertical" mainAlignment="flex-start" crossAlignment="flex-start">
@@ -51,6 +56,7 @@ export const MessagePreviewPanel: FC<{ folderId: string; messageId: string }> = 
 								isAlone
 								isMessageView
 								isInsideExtraWindow={isInsideExtraWindow}
+								messagePreviewFactory={messagePreviewFactory}
 							/>
 						</Padding>
 					</Container>

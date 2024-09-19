@@ -38,6 +38,7 @@ import { setMsgRead } from '../../../../ui-actions/message-actions';
 import { useTagExist } from '../../../../ui-actions/tag-actions';
 import { getFolderTranslatedName } from '../../../sidebar/utils';
 import { createEditBoard } from '../../detail-panel/edit/edit-view-board';
+import { MessagePreviewPanel } from '../../detail-panel/message-preview-panel';
 import { ItemAvatar } from '../parts/item-avatar';
 import { SenderName } from '../parts/sender-name';
 
@@ -62,10 +63,16 @@ export const MessageListItem: FC<MessageListItemProps> = memo(function MessageLi
 	const dispatch = useAppDispatch();
 	const zimbraPrefMarkMsgRead = useUserSettings()?.prefs?.zimbraPrefMarkMsgRead !== '-1';
 
+	const messagePreviewFactory = useCallback(
+		() => <MessagePreviewPanel folderId={firstChildFolderId} messageId={item.id} />,
+		[firstChildFolderId, item.id]
+	);
+
 	const { execute } = useMsgPreviewOnSeparatedWindowFn({
 		messageId: item.id,
 		folderId: firstChildFolderId,
-		subject: item.subject
+		subject: item.subject,
+		messagePreviewFactory
 	});
 
 	const debouncedPushHistory = useMemo(

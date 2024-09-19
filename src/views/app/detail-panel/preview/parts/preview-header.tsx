@@ -77,7 +77,7 @@ type PreviewHeaderProps = {
 		onClick: (e: SyntheticEvent) => void;
 		open: boolean;
 		isExternalMessage?: boolean;
-		isInsideExtraWindow?: boolean;
+		messagePreviewFactory: () => React.JSX.Element;
 	};
 };
 
@@ -89,7 +89,7 @@ const fallbackContact = {
 };
 
 const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
-	const { message, onClick, open, isExternalMessage } = compProps;
+	const { message, onClick, open, isExternalMessage, messagePreviewFactory } = compProps;
 
 	const textRef = useRef<HTMLInputElement>(null);
 	const accounts = useUserAccounts();
@@ -363,7 +363,12 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 										)}
 									</Row>
 
-									{open && message && <MailMsgPreviewActions message={message} />}
+									{open && message && (
+										<MailMsgPreviewActions
+											message={message}
+											messagePreviewFactory={messagePreviewFactory}
+										/>
+									)}
 								</Row>
 							)}
 						</Container>

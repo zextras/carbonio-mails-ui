@@ -3,12 +3,13 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React from 'react';
+import React, { useCallback } from 'react';
 
 import { Padding } from '@zextras/carbonio-design-system';
 
-import { useMessageActions } from '../../../../hooks/use-message-actions';
+import { getParentFolderId } from '../../../../helpers/folders';
 import { useMessageById } from '../../../../store/zustand/search/store';
+import { MessagePreviewPanel } from '../../../app/detail-panel/message-preview-panel';
 import MailPreview from '../../../app/detail-panel/preview/mail-preview';
 
 export type SearchConversationMessagePreviewProps = {
@@ -25,16 +26,21 @@ export const SearchConversationMessagePanel = ({
 	isInsideExtraWindow
 }: SearchConversationMessagePreviewProps): React.JSX.Element => {
 	const message = useMessageById(convMessageId);
-	const messageActions = useMessageActions({ message, isAlone });
+
+	const messagePreviewFactory = useCallback(() => {
+		const folderId = getParentFolderId(message.parent);
+		return <MessagePreviewPanel folderId={folderId} messageId={message.id} />;
+	}, [message.id, message.parent]);
+
 	return (
 		<Padding bottom="medium" width="100%" data-testid={`ConversationMessagePreview-${message.id}`}>
 			<MailPreview
 				message={message}
 				expanded={isExpanded}
 				isAlone={isAlone}
-				messageActions={messageActions}
 				isMessageView={false}
 				isInsideExtraWindow={isInsideExtraWindow}
+				messagePreviewFactory={messagePreviewFactory}
 			/>
 		</Padding>
 	);

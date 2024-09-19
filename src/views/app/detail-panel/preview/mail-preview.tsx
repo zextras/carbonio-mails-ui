@@ -229,19 +229,19 @@ type MailPreviewBlockType = {
 	open: boolean;
 	onClick: () => void;
 	isExternalMessage?: boolean;
-	isInsideExtraWindow?: boolean;
+	messagePreviewFactory: () => React.JSX.Element;
 };
 const MailPreviewBlock: FC<MailPreviewBlockType> = ({
 	message,
 	open,
 	onClick,
 	isExternalMessage = false,
-	isInsideExtraWindow = false
+	messagePreviewFactory
 }) => {
 	const { folderId, itemId } = useParams<{ folderId: string; itemId: string }>();
 	const compProps = useMemo(
-		() => ({ message, onClick, open, isExternalMessage, isInsideExtraWindow }),
-		[message, onClick, open, isExternalMessage, isInsideExtraWindow]
+		() => ({ message, onClick, open, isExternalMessage, messagePreviewFactory }),
+		[message, onClick, open, isExternalMessage, messagePreviewFactory]
 	);
 	const shouldReplaceHistory = useMemo(() => itemId === message.id, [message.id, itemId]);
 
@@ -315,6 +315,7 @@ export type MailPreviewProps = {
 	isExternalMessage?: boolean;
 	isInsideExtraWindow?: boolean;
 	showingEml?: boolean;
+	messagePreviewFactory: () => React.JSX.Element;
 };
 
 const MailPreview: FC<MailPreviewProps> = ({
@@ -324,7 +325,8 @@ const MailPreview: FC<MailPreviewProps> = ({
 	isMessageView,
 	isExternalMessage = false,
 	isInsideExtraWindow = false,
-	showingEml = false
+	showingEml = false,
+	messagePreviewFactory
 }) => {
 	const mailContainerRef = useRef<HTMLDivElement>(null);
 	const [open, setOpen] = useState(expanded || isAlone);
@@ -357,6 +359,7 @@ const MailPreview: FC<MailPreviewProps> = ({
 						isExternalMessage
 						isInsideExtraWindow
 						showingEml
+						messagePreviewFactory={messagePreviewFactory}
 					/>
 				),
 				title: emlMessage.subject,
@@ -366,7 +369,7 @@ const MailPreview: FC<MailPreviewProps> = ({
 				createWindow(createWindowParams);
 			}
 		},
-		[createWindow]
+		[createWindow, messagePreviewFactory]
 	);
 
 	const [containerHeight, setContainerHeight] = useState(open ? '100%' : 'fit-content');
@@ -388,7 +391,7 @@ const MailPreview: FC<MailPreviewProps> = ({
 				message={message}
 				open={isMailPreviewOpen}
 				isExternalMessage={isExternalMessage}
-				isInsideExtraWindow={isInsideExtraWindow}
+				messagePreviewFactory={messagePreviewFactory}
 			/>
 
 			<Container

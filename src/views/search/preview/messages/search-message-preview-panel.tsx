@@ -3,36 +3,30 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC } from 'react';
+import React, { FC, useCallback } from 'react';
 
 import { Container, Padding } from '@zextras/carbonio-design-system';
-import { uniqBy } from 'lodash';
 
-import { EXTRA_WINDOW_ACTION_ID } from '../../../../constants';
+import { getParentFolderId } from '../../../../helpers/folders';
 import { useCompleteMessage } from '../../../../store/zustand/search/hooks/hooks';
-import { MessageAction } from '../../../../types';
+import { MessagePreviewPanel } from '../../../app/detail-panel/message-preview-panel';
 import MailPreview from '../../../app/detail-panel/preview/mail-preview';
 import { useExtraWindow } from '../../../app/extra-windows/use-extra-window';
 import { SearchPreviewPanelHeader } from '../search-preview-panel-header';
 
 export type SearchMessagePreviewPanelProps = {
 	messageId: string;
-	messageActions: Array<MessageAction>;
 };
 
-export const SearchMessagePreviewPanel: FC<SearchMessagePreviewPanelProps> = ({
-	messageId,
-	messageActions
-}) => {
+export const SearchMessagePreviewPanel: FC<SearchMessagePreviewPanelProps> = ({ messageId }) => {
 	const { isInsideExtraWindow } = useExtraWindow();
-	const isExtraWindowActions = messageActions.some(
-		(action: MessageAction) => action.id === EXTRA_WINDOW_ACTION_ID
-	);
-	const actions = isExtraWindowActions
-		? messageActions.filter((action: MessageAction) => action.id !== EXTRA_WINDOW_ACTION_ID)
-		: uniqBy([...messageActions[0], ...messageActions[1]], 'id');
 
 	const { message } = useCompleteMessage(messageId);
+
+	const messagePreviewFactory = useCallback(() => {
+		const folderId = getParentFolderId(message.parent);
+		return <MessagePreviewPanel folderId={folderId} messageId={message.id} />;
+	}, [message.id, message.parent]);
 
 	return (
 		<Container orientation="vertical" mainAlignment="flex-start" crossAlignment="flex-start">
@@ -51,9 +45,9 @@ export const SearchMessagePreviewPanel: FC<SearchMessagePreviewPanelProps> = ({
 								message={message}
 								expanded
 								isAlone
-								messageActions={actions}
 								isMessageView
 								isInsideExtraWindow={isInsideExtraWindow}
+								messagePreviewFactory={messagePreviewFactory}
 							/>
 						</Padding>
 					</Container>
