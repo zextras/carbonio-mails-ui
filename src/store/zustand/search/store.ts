@@ -6,7 +6,6 @@
  */
 
 import produce, { enableMapSet } from 'immer';
-import { merge } from 'lodash';
 import { create } from 'zustand';
 
 import { createPopulatedItemsSlice, POPULATED_ITEMS_INITIAL_STATE } from './populated-items-slice';
@@ -134,8 +133,8 @@ export function updateConversationsOnly(conversations: Array<NormalizedConversat
 		produce(({ populatedItems }: PopulatedItemsSliceState) => {
 			conversations.forEach((conversation) => {
 				populatedItems.conversations[conversation.id] = {
-					...merge(populatedItems.conversations[conversation.id], conversation),
-					tags: conversation.tags
+					...populatedItems.conversations[conversation.id],
+					...conversation
 				};
 			});
 		})
@@ -171,8 +170,8 @@ export function updateMessagesOnly(messages: Array<IncompleteMessage>): void {
 		produce(({ populatedItems }: PopulatedItemsSliceState) => {
 			messages.forEach((message) => {
 				populatedItems.messages[message.id] = {
-					...merge(populatedItems.messages[message.id], message),
-					tags: message.tags
+					...populatedItems.messages[message.id],
+					...message
 				};
 			});
 		})

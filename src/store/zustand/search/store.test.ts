@@ -236,5 +236,19 @@ describe('message store', () => {
 			expect(message2.current).toBeUndefined();
 			expect(message3.current).toBeDefined();
 		});
+		it('should apply changes correctly when updateMessagesOnly is called', () => {
+			const message1 = generateMessage({ id: '1', tags: ['tag1'] });
+			const message2 = generateMessage({ id: '2', tags: ['tag2'] });
+			setSearchResultsByMessage([message1, message2], false);
+
+			const newMessage1 = { ...message1, tags: [] };
+			const newMessage2 = { ...message2, tags: [] };
+
+			renderHook(() => updateMessagesOnly([newMessage1, newMessage2]));
+			const { result: resultMessage1 } = renderHook(() => useMessageById('1'));
+			const { result: resultMessage2 } = renderHook(() => useMessageById('2'));
+			expect(resultMessage1.current).toEqual(newMessage1);
+			expect(resultMessage2.current).toEqual(newMessage2);
+		});
 	});
 });
