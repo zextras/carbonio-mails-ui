@@ -10,6 +10,7 @@ import {
 	Badge,
 	Container,
 	ContainerProps,
+	Dropdown,
 	Icon,
 	IconButton,
 	Padding,
@@ -45,7 +46,6 @@ import { ZIMBRA_STANDARD_COLORS } from '../../../../carbonio-ui-commons/constant
 import { participantToString } from '../../../../commons/utils';
 import { API_REQUEST_STATUS } from '../../../../constants';
 import { getFolderIdParts } from '../../../../helpers/folders';
-import { useHoverConversationActions } from '../../../../hooks/actions/use-hover-conversation-actions';
 import { useAppDispatch, useAppSelector } from '../../../../hooks/redux';
 import { searchConv } from '../../../../store/actions';
 import { selectConversationExpandedStatus } from '../../../../store/conversations-slice';
@@ -63,8 +63,10 @@ import {
 	useConversationsRead
 } from '../../../../ui-actions/conversation-actions';
 import { useGlobalExtraWindowManager } from '../../extra-windows/global-extra-window-manager';
+import { HoverBarContainer } from '../parts/hover-bar-container';
+import { HoverContainer } from '../parts/hover-container';
 import { ItemAvatar } from '../parts/item-avatar';
-import { ListItemActionWrapper } from '../parts/list-item-actions-wrapper';
+import { ListItemHoverActions } from '../parts/list-item-hover-actions';
 import { RowInfo } from '../parts/row-info';
 import { SenderName } from '../parts/sender-name';
 
@@ -86,26 +88,36 @@ export const ConversationListItemActionWrapper = ({
 	active?: boolean;
 	item: Conversation;
 	deselectAll: () => void;
-}): React.JSX.Element => {
-	const conversationHoverActions = useHoverConversationActions({
-		firstMessageId: item.messages[0].id,
-		firstMessageParent: item.messages[0].parent,
-		messagesLength: item.messages.length
-	});
-
-	return (
-		<ListItemActionWrapper
-			item={item}
-			active={active}
+}): React.JSX.Element => (
+	<Dropdown
+		contextMenu
+		items={[]}
+		display="block"
+		style={{ width: '100%', height: '4rem' }}
+		data-testid={`secondary-actions-menu-${item.id}`}
+	>
+		<HoverContainer
+			data-testid={`hover-container-${item.id}`}
+			orientation="horizontal"
+			mainAlignment="flex-start"
+			crossAlignment="unset"
 			onClick={onClick}
 			onDoubleClick={onDoubleClick}
-			deselectAll={deselectAll}
-			hoverActions={conversationHoverActions}
+			$hoverBackground={active ? 'highlight' : 'gray6'}
 		>
 			{children}
-		</ListItemActionWrapper>
-	);
-};
+			<HoverBarContainer
+				orientation="horizontal"
+				mainAlignment="flex-end"
+				crossAlignment="center"
+				background={active ? 'highlight' : 'gray6'}
+				data-testid={`primary-actions-bar-${item.id}`}
+			>
+				<ListItemHoverActions actions={[]} />
+			</HoverBarContainer>
+		</HoverContainer>
+	</Dropdown>
+);
 
 export const ConversationListItem: FC<ConversationListItemProps> = memo(
 	function ConversationListItem({
