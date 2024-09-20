@@ -6,6 +6,7 @@
 
 import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
 import { setupHook } from '../../../carbonio-ui-commons/test/test-setup';
+import { FOLDERS_DESCRIPTORS } from '../../../constants';
 import { generateMessage } from '../../../tests/generators/generateMessage';
 import { useMsgDownloadEmlDescriptor, useMsgDownloadEmlFn } from '../use-msg-download-eml';
 
@@ -42,20 +43,20 @@ describe('useMsgDownloadEmlFn', () => {
 	});
 
 	describe('canExecute', () => {
-		it('should return false if the folder is draft', () => {
+		it.each`
+			folder                              | assertion
+			${FOLDERS_DESCRIPTORS.INBOX}        | ${true}
+			${FOLDERS_DESCRIPTORS.SENT}         | ${true}
+			${FOLDERS_DESCRIPTORS.DRAFTS}       | ${false}
+			${FOLDERS_DESCRIPTORS.TRASH}        | ${true}
+			${FOLDERS_DESCRIPTORS.SPAM}         | ${true}
+			${FOLDERS_DESCRIPTORS.USER_DEFINED} | ${true}
+		`(`should return $assertion if the folder is $folder.desc`, ({ folder, assertion }) => {
 			const {
 				result: { current: functions }
-			} = setupHook(useMsgDownloadEmlFn, { initialProps: [msg.id, FOLDERS.DRAFTS] });
+			} = setupHook(useMsgDownloadEmlFn, { initialProps: [msg.id, folder.id] });
 
-			expect(functions.canExecute()).toEqual(false);
-		});
-
-		it('should return true if the folder is not draft', () => {
-			const {
-				result: { current: functions }
-			} = setupHook(useMsgDownloadEmlFn, { initialProps: [msg.id, FOLDERS.INBOX] });
-
-			expect(functions.canExecute()).toEqual(true);
+			expect(functions.canExecute()).toEqual(assertion);
 		});
 	});
 
