@@ -11,5 +11,6 @@ export const normalizeDropdownActionItem = (item: UIActionDescriptor): DropdownI
 	id: item.id,
 	icon: item.icon,
 	label: item.label,
-	onClick: item.execute
+	onClick: item.execute,
+	disabled: !item.canExecute()
 });

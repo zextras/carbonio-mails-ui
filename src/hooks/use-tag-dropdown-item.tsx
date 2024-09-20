@@ -41,7 +41,8 @@ export const useTagDropdownItem = (
 					return acc;
 				},
 				[] as DropdownItem[]
-			)
+			),
+			disabled: false
 		}),
 		[
 			applyTagDescriptor.icon,
