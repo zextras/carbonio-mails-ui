@@ -3,22 +3,26 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { faker } from '@faker-js/faker';
-import { times } from 'lodash';
 import { act } from 'react-dom/test-utils';
 
-import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
-import { setupHook } from '../../../carbonio-ui-commons/test/test-setup';
+import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
+import { setupHook, screen } from '../../../carbonio-ui-commons/test/test-setup';
 import { API_REQUEST_STATUS } from '../../../constants';
+import { TIMERS } from '../../../tests/constants';
+import { generateMessage } from '../../../tests/generators/generateMessage';
 import { generateStore } from '../../../tests/generators/store';
-import { MsgActionRequest } from '../../../types';
-import { useMsgFlagDescriptor, useMsgFlagFn } from '../use-msg-flag';
+import {
+	useDeleteMsgPermanentlyDescriptor,
+	useDeleteMsgPermanentlyFn
+} from '../use-msg-delete-permanently';
 
-describe('useMsgFlagDescriptor', () => {
+describe('useMsgDeletePermanentlyDescriptor', () => {
+	const msg = generateMessage();
+
 	const store = generateStore({
 		messages: {
 			searchedInFolder: {},
-			messages: {},
+			messages: { [msg.id]: msg },
 			searchRequestStatus: API_REQUEST_STATUS.fulfilled
 		}
 	});
@@ -26,97 +30,120 @@ describe('useMsgFlagDescriptor', () => {
 	it('Should return an object with specific id, icon, label and 2 functions', () => {
 		const {
 			result: { current: descriptor }
-		} = setupHook(useMsgFlagDescriptor, { store, initialProps: [[], false] });
+		} = setupHook(useDeleteMsgPermanentlyDescriptor, {
+			store,
+			initialProps: [{ messageId: msg.id, deselectAll: jest.fn(), folderId: FOLDERS.INBOX }]
+		});
 
 		expect(descriptor).toEqual({
-			id: 'message-flag',
-			icon: 'FlagOutline',
-			label: 'Add flag',
+			id: 'message-delete-permanently',
+			icon: 'DeletePermanentlyOutline',
+			label: 'Delete Permanently',
 			execute: expect.any(Function),
 			canExecute: expect.any(Function)
 		});
 	});
 });
 
-describe('useMsgFlagFn', () => {
+describe('useMsgDeletePermanentlyFn', () => {
+	const msg = generateMessage();
+
 	const store = generateStore({
 		messages: {
 			searchedInFolder: {},
-			messages: {},
+			messages: { [msg.id]: msg },
 			searchRequestStatus: API_REQUEST_STATUS.fulfilled
 		}
 	});
 
 	it('Should return an object with execute and canExecute functions', () => {
 		const {
-			result: { current: descriptor }
-		} = setupHook(useMsgFlagFn, { store, initialProps: [[], false] });
+			result: { current: functions }
+		} = setupHook(useDeleteMsgPermanentlyFn, {
+			store,
+			initialProps: [{ messageId: msg.id, deselectAll: jest.fn(), folderId: FOLDERS.INBOX }]
+		});
 
-		expect(descriptor).toEqual({
+		expect(functions).toEqual({
 			execute: expect.any(Function),
 			canExecute: expect.any(Function)
 		});
 	});
 
 	describe('canExecute', () => {
-		it('should return false if the message is already flagged', () => {
+		it('should return true if the folder is trash', () => {
 			const {
 				result: { current: functions }
-			} = setupHook(useMsgFlagFn, {
+			} = setupHook(useDeleteMsgPermanentlyFn, {
 				store,
-				initialProps: [['1'], true]
-			});
-
-			expect(functions.canExecute()).toEqual(false);
-		});
-
-		it('should return true if the message is not flagged', () => {
-			const {
-				result: { current: functions }
-			} = setupHook(useMsgFlagFn, {
-				store,
-				initialProps: [['1'], false]
+				initialProps: [{ messageId: msg.id, deselectAll: jest.fn(), folderId: FOLDERS.TRASH }]
 			});
 
 			expect(functions.canExecute()).toEqual(true);
 		});
+
+		it('should return true if the folder is spam', () => {
+			const {
+				result: { current: functions }
+			} = setupHook(useDeleteMsgPermanentlyFn, {
+				store,
+				initialProps: [{ messageId: msg.id, deselectAll: jest.fn(), folderId: FOLDERS.SPAM }]
+			});
+
+			expect(functions.canExecute()).toEqual(true);
+		});
+
+		it('should return false if the folder is not trash nor spam', () => {
+			const {
+				result: { current: functions }
+			} = setupHook(useDeleteMsgPermanentlyFn, {
+				store,
+				initialProps: [{ messageId: msg.id, deselectAll: jest.fn(), folderId: FOLDERS.INBOX }]
+			});
+
+			expect(functions.canExecute()).toEqual(false);
+		});
 	});
 
 	describe('execute', () => {
-		it('should not call the API if the action cannot be executed', async () => {
-			const callFlag = jest.fn();
-			createSoapAPIInterceptor('MsgAction').then(callFlag);
-
+		it('should call open the deletion modal', async () => {
 			const {
 				result: { current: functions }
-			} = setupHook(useMsgFlagFn, { store, initialProps: [['1'], true] });
+			} = setupHook(useDeleteMsgPermanentlyFn, {
+				store,
+				initialProps: [{ messageId: msg.id, deselectAll: jest.fn(), folderId: FOLDERS.TRASH }]
+			});
 
-			await act(async () => {
+			act(() => {
 				functions.execute();
 			});
 
-			expect(callFlag).not.toHaveBeenCalled();
-		});
-
-		it('should call the API with the proper params if the action can be executed', async () => {
-			const apiInterceptor = createSoapAPIInterceptor<MsgActionRequest>('MsgAction');
-			const ids = times(faker.number.int({ max: 20 }), () => faker.number.int().toString());
-
-			const {
-				result: { current: functions }
-			} = setupHook(useMsgFlagFn, {
-				store,
-				initialProps: [ids, false]
+			act(() => {
+				jest.advanceTimersByTime(TIMERS.modal_open_delay);
 			});
 
-			functions.execute();
+			expect(screen.queryByText(`Are you sure to permanently delete this element?`)).toBeVisible();
+		});
 
-			const requestParameter = await apiInterceptor;
-			expect(requestParameter.action.id).toBe(ids.join(','));
-			expect(requestParameter.action.op).toBe('flag');
-			expect(requestParameter.action.l).toBeUndefined();
-			expect(requestParameter.action.f).toBeUndefined();
-			expect(requestParameter.action.tn).toBeUndefined();
+		it('should call open the deletion modal with if the action cannot be executed', async () => {
+			const {
+				result: { current: functions }
+			} = setupHook(useDeleteMsgPermanentlyFn, {
+				store,
+				initialProps: [{ messageId: msg.id, deselectAll: jest.fn(), folderId: FOLDERS.INBOX }]
+			});
+
+			act(() => {
+				functions.execute();
+			});
+
+			act(() => {
+				jest.advanceTimersByTime(TIMERS.modal_open_delay);
+			});
+
+			expect(
+				screen.queryByText(`Are you sure to permanently delete this element?`)
+			).not.toBeInTheDocument();
 		});
 	});
 });
