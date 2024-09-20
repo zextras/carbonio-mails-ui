@@ -32,8 +32,8 @@ describe('useMsgFlagDescriptor', () => {
 			id: 'message-flag',
 			icon: 'FlagOutline',
 			label: 'Add flag',
-			execute: expect.anything(),
-			canExecute: expect.anything()
+			execute: expect.any(Function),
+			canExecute: expect.any(Function)
 		});
 	});
 });
@@ -53,8 +53,8 @@ describe('useMsgFlagFn', () => {
 		} = setupHook(useMsgFlagFn, { store, initialProps: [[], false] });
 
 		expect(descriptor).toEqual({
-			execute: expect.anything(),
-			canExecute: expect.anything()
+			execute: expect.any(Function),
+			canExecute: expect.any(Function)
 		});
 	});
 
@@ -85,7 +85,7 @@ describe('useMsgFlagFn', () => {
 	describe('execute', () => {
 		it('should not call the API if the action cannot be executed', async () => {
 			const callFlag = jest.fn();
-			createSoapAPIInterceptor('MsgAction').then(() => callFlag());
+			createSoapAPIInterceptor('MsgAction').then(callFlag);
 
 			const {
 				result: { current: functions }
