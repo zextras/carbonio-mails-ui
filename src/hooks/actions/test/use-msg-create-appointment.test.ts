@@ -9,6 +9,7 @@ import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
 import { useIntegratedFunction } from '../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
 import { populateFoldersStore } from '../../../carbonio-ui-commons/test/mocks/store/folders';
 import { setupHook } from '../../../carbonio-ui-commons/test/test-setup';
+import { FOLDERS_DESCRIPTORS } from '../../../constants';
 import { generateMessage } from '../../../tests/generators/generateMessage';
 import {
 	useMsgCreateAppointmentDescriptor,
@@ -48,34 +49,22 @@ describe('useMsgCreateAppointmentFn', () => {
 	});
 
 	describe('canExecute', () => {
-		it('should return false if the folder is draft', () => {
+		it.each`
+			folder                              | assertion
+			${FOLDERS_DESCRIPTORS.INBOX}        | ${true}
+			${FOLDERS_DESCRIPTORS.SENT}         | ${true}
+			${FOLDERS_DESCRIPTORS.DRAFTS}       | ${false}
+			${FOLDERS_DESCRIPTORS.TRASH}        | ${true}
+			${FOLDERS_DESCRIPTORS.SPAM}         | ${false}
+			${FOLDERS_DESCRIPTORS.USER_DEFINED} | ${true}
+		`(`should return $assertion if the folder is $folder.desc`, ({ folder, assertion }) => {
 			const {
 				result: { current: functions }
 			} = setupHook(useMsgCreateAppointmentFn, {
-				initialProps: [msg, FOLDERS.DRAFTS]
+				initialProps: [msg, folder.id]
 			});
 
-			expect(functions.canExecute()).toEqual(false);
-		});
-
-		it('should return false if the folder is trash', () => {
-			const {
-				result: { current: functions }
-			} = setupHook(useMsgCreateAppointmentFn, {
-				initialProps: [msg, FOLDERS.TRASH]
-			});
-
-			expect(functions.canExecute()).toEqual(false);
-		});
-
-		it('should return false if the folder is not trash nor draft', () => {
-			const {
-				result: { current: functions }
-			} = setupHook(useMsgCreateAppointmentFn, {
-				initialProps: [msg, FOLDERS.INBOX]
-			});
-
-			expect(functions.canExecute()).toEqual(true);
+			expect(functions.canExecute()).toEqual(assertion);
 		});
 	});
 

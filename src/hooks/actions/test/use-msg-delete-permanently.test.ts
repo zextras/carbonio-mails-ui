@@ -7,7 +7,7 @@ import { act } from 'react-dom/test-utils';
 
 import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
 import { setupHook, screen } from '../../../carbonio-ui-commons/test/test-setup';
-import { API_REQUEST_STATUS } from '../../../constants';
+import { API_REQUEST_STATUS, FOLDERS_DESCRIPTORS } from '../../../constants';
 import { TIMERS } from '../../../tests/constants';
 import { generateMessage } from '../../../tests/generators/generateMessage';
 import { generateStore } from '../../../tests/generators/store';
@@ -71,37 +71,23 @@ describe('useMsgDeletePermanentlyFn', () => {
 	});
 
 	describe('canExecute', () => {
-		it('should return true if the folder is trash', () => {
+		it.each`
+			folder                              | assertion
+			${FOLDERS_DESCRIPTORS.INBOX}        | ${false}
+			${FOLDERS_DESCRIPTORS.SENT}         | ${false}
+			${FOLDERS_DESCRIPTORS.DRAFTS}       | ${false}
+			${FOLDERS_DESCRIPTORS.TRASH}        | ${true}
+			${FOLDERS_DESCRIPTORS.SPAM}         | ${true}
+			${FOLDERS_DESCRIPTORS.USER_DEFINED} | ${false}
+		`(`should return $assertion if the folder is $folder.desc`, ({ folder, assertion }) => {
 			const {
 				result: { current: functions }
 			} = setupHook(useDeleteMsgPermanentlyFn, {
 				store,
-				initialProps: [{ messageId: msg.id, deselectAll: jest.fn(), folderId: FOLDERS.TRASH }]
+				initialProps: [{ messageId: msg.id, deselectAll: jest.fn(), folderId: folder.id }]
 			});
 
-			expect(functions.canExecute()).toEqual(true);
-		});
-
-		it('should return true if the folder is spam', () => {
-			const {
-				result: { current: functions }
-			} = setupHook(useDeleteMsgPermanentlyFn, {
-				store,
-				initialProps: [{ messageId: msg.id, deselectAll: jest.fn(), folderId: FOLDERS.SPAM }]
-			});
-
-			expect(functions.canExecute()).toEqual(true);
-		});
-
-		it('should return false if the folder is not trash nor spam', () => {
-			const {
-				result: { current: functions }
-			} = setupHook(useDeleteMsgPermanentlyFn, {
-				store,
-				initialProps: [{ messageId: msg.id, deselectAll: jest.fn(), folderId: FOLDERS.INBOX }]
-			});
-
-			expect(functions.canExecute()).toEqual(false);
+			expect(functions.canExecute()).toEqual(assertion);
 		});
 	});
 
@@ -125,7 +111,7 @@ describe('useMsgDeletePermanentlyFn', () => {
 			expect(screen.queryByText(`Are you sure to permanently delete this element?`)).toBeVisible();
 		});
 
-		it('should call open the deletion modal with if the action cannot be executed', async () => {
+		it('should not open the deletion modal with if the action cannot be executed', async () => {
 			const {
 				result: { current: functions }
 			} = setupHook(useDeleteMsgPermanentlyFn, {
