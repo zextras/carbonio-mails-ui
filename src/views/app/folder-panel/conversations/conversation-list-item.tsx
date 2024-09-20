@@ -91,21 +91,48 @@ export const ConversationListItemActionWrapper = ({
 	item: Conversation;
 	deselectAll: () => void;
 }): React.JSX.Element => {
-	const { replyDescriptor, replyAllDescriptor, forwardDescriptor } = useConvActions({
-		conversation: item
+	const {
+		replyDescriptor,
+		replyAllDescriptor,
+		forwardDescriptor,
+		moveToTrashDescriptor,
+		deletePermanentlyDescriptor
+	} = useConvActions({
+		conversation: item,
+		deselectAll
 	});
 	const hoverActions = useMemo(
-		() => [replyDescriptor, replyAllDescriptor, forwardDescriptor],
-		[replyAllDescriptor, replyDescriptor, forwardDescriptor]
+		() => [
+			replyDescriptor,
+			replyAllDescriptor,
+			forwardDescriptor,
+			moveToTrashDescriptor,
+			deletePermanentlyDescriptor
+		],
+		[
+			replyAllDescriptor,
+			replyDescriptor,
+			forwardDescriptor,
+			moveToTrashDescriptor,
+			deletePermanentlyDescriptor
+		]
 	);
 	const dropdownItems = useMemo(
 		() =>
 			[
 				normalizeDropdownActionItem(replyDescriptor),
 				normalizeDropdownActionItem(replyAllDescriptor),
-				normalizeDropdownActionItem(forwardDescriptor)
+				normalizeDropdownActionItem(forwardDescriptor),
+				normalizeDropdownActionItem(moveToTrashDescriptor),
+				normalizeDropdownActionItem(deletePermanentlyDescriptor)
 			].filter((action) => !action.disabled),
-		[forwardDescriptor, replyAllDescriptor, replyDescriptor]
+		[
+			forwardDescriptor,
+			replyAllDescriptor,
+			replyDescriptor,
+			moveToTrashDescriptor,
+			deletePermanentlyDescriptor
+		]
 	);
 	return (
 		<Dropdown

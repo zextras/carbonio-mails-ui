@@ -380,6 +380,10 @@ export const ConversationActionsDescriptors = {
 	FORWARD: {
 		id: 'conversation-forward',
 		desc: 'Forward'
+	},
+	DELETE_PERMANENTLY: {
+		id: 'delete-permanently',
+		desc: 'Delete permanently'
 	}
 } as const;
 

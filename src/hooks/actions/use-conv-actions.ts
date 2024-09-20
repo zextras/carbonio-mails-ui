@@ -7,17 +7,19 @@ import { useMemo } from 'react';
 
 import { find } from 'lodash';
 
+import { useConvDeletePermanentlyDescriptor } from './use-conv-delete-permanently';
 import { useConvForwardDescriptor } from './use-conv-forward';
+import { useConvMoveToTrashDescriptor } from './use-conv-move-to-trash';
 import { useReplyAllConvDescriptor } from './use-reply-all-conv';
 import { useReplyConvDescriptor } from './use-reply-conv';
 import { isTrash } from '../../carbonio-ui-commons/helpers/folders';
-import { getFolderIdParts, getParentFolderId, isDraft } from '../../helpers/folders';
+import { getFolderIdParts, isDraft } from '../../helpers/folders';
 import { Conversation, UIActionDescriptor } from '../../types';
 
 export type ConversationActionsArgumentType = {
 	conversation: Conversation;
-	/*	deselectAll: () => void;
-	shouldReplaceHistory?: boolean;
+	deselectAll: () => void;
+	/*	shouldReplaceHistory?: boolean;
 	messagePreviewFactory: () => React.JSX.Element; */
 };
 
@@ -25,9 +27,9 @@ type ConversationActionsReturnType = {
 	replyDescriptor: UIActionDescriptor;
 	replyAllDescriptor: UIActionDescriptor;
 	forwardDescriptor: UIActionDescriptor;
-	/* moveToTrashDescriptor: UIActionDescriptor;
+	moveToTrashDescriptor: UIActionDescriptor;
 	deletePermanentlyDescriptor: UIActionDescriptor;
-	messageReadDescriptor: UIActionDescriptor;
+	/* messageReadDescriptor: UIActionDescriptor;
 	messageUnreadDescriptor: UIActionDescriptor;
 	flagDescriptor: UIActionDescriptor;
 	unflagDescriptor: UIActionDescriptor;
@@ -48,9 +50,11 @@ type ConversationActionsReturnType = {
 };
 
 export const useConvActions = ({
-	conversation
+	conversation,
+	deselectAll
 }: ConversationActionsArgumentType): ConversationActionsReturnType => {
-	const folderId = getParentFolderId(conversation.parent);
+	// TODO: This condition is not the proper one as the first message is not a good indication of the folder id we are currently navigating.
+	const folderId = conversation?.messages[0].parent ?? '';
 
 	const firstConversationMessage =
 		find(conversation?.messages, (msg) => {
@@ -73,18 +77,17 @@ export const useConvActions = ({
 		folderId,
 		messagesLength: conversation.messages.length
 	});
-	/* const moveToTrashDescriptor = useMsgMoveToTrashDescriptor({
+	const moveToTrashDescriptor = useConvMoveToTrashDescriptor({
 		ids: [conversation.id],
-		deselectAll,
-		folderId,
-		shouldReplaceHistory
-	});
-	const deletePermanentlyDescriptor = useDeleteMsgPermanentlyDescriptor({
-		messageId: conversation.id,
 		deselectAll,
 		folderId
 	});
-	const messageReadDescriptor = useSetMsgReadDescriptor({
+	const deletePermanentlyDescriptor = useConvDeletePermanentlyDescriptor({
+		ids: [conversation.id],
+		deselectAll,
+		folderId
+	});
+	/* const messageReadDescriptor = useSetMsgReadDescriptor({
 		ids: [conversation.id],
 		deselectAll,
 		shouldReplaceHistory,
@@ -145,8 +148,16 @@ export const useConvActions = ({
 		() => ({
 			replyDescriptor,
 			replyAllDescriptor,
-			forwardDescriptor
+			forwardDescriptor,
+			moveToTrashDescriptor,
+			deletePermanentlyDescriptor
 		}),
-		[replyAllDescriptor, replyDescriptor, forwardDescriptor]
+		[
+			replyDescriptor,
+			replyAllDescriptor,
+			forwardDescriptor,
+			moveToTrashDescriptor,
+			deletePermanentlyDescriptor
+		]
 	);
 };
