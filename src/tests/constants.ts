@@ -56,3 +56,7 @@ export const TESTID_SELECTORS = {
 	signatureEditor: 'signature-editor',
 	signaturesList: 'signatures-list'
 };
+
+export const TIMERS = {
+	modal_open_delay: 10
+};
