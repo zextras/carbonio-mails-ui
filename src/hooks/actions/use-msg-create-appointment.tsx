@@ -6,7 +6,6 @@
 import { useCallback, useMemo } from 'react';
 
 import { t, useIntegratedFunction } from '@zextras/carbonio-shell-ui';
-import { isDraft } from 'immer';
 import { isNull } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
@@ -14,7 +13,7 @@ import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
 import { getRoot } from '../../carbonio-ui-commons/store/zustand/folder';
 import { MessageActionsDescriptors } from '../../constants';
 import { getAttendees, getOptionalsAttendees, getSenderByOwner } from '../../helpers/appointmemt';
-import { isSpam } from '../../helpers/folders';
+import { isSpam, isDraft } from '../../helpers/folders';
 import { getMsgCall } from '../../store/actions';
 import { extractBody } from '../../store/editor-slice-utils';
 import type { ActionFn, MailMessage, UIActionDescriptor } from '../../types';
