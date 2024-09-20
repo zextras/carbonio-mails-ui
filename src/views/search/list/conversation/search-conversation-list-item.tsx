@@ -42,8 +42,8 @@ import {
 import type { Conversation, Participant, TextReadValuesProps } from '../../../../types';
 import { setConversationsRead } from '../../../../ui-actions/conversation-actions';
 import { useGlobalExtraWindowManager } from '../../../app/extra-windows/global-extra-window-manager';
+import { ConversationListItemActionWrapper } from '../../../app/folder-panel/conversations/conversation-list-item';
 import { ItemAvatar } from '../../../app/folder-panel/parts/item-avatar';
-import { ListItemActionWrapper } from '../../../app/folder-panel/parts/list-item-actions-wrapper';
 import { RowInfo } from '../../../app/folder-panel/parts/row-info';
 import { SenderName } from '../../../app/folder-panel/parts/sender-name';
 import { previewConversationOnSeparatedWindowAction } from '../../preview/conversations/search-conversation-preview-actions';
@@ -216,12 +216,11 @@ export const SearchConversationListItem: FC<SearchConversationListItemProps> = (
 	const avatarFolderId = conversation.messages.length === 1 ? conversation.messages[0].parent : '';
 	return (
 		<Container mainAlignment="flex-start" data-testid={`ConversationListItem-${conversationId}`}>
-			<ListItemActionWrapper
+			<ConversationListItemActionWrapper
 				item={conversation as Conversation}
 				active={active}
 				onClick={_onClick}
 				onDoubleClick={_onDoubleClick}
-				hoverTooltipLabel={participantsString}
 				deselectAll={deselectAll}
 			>
 				<div
@@ -298,7 +297,7 @@ export const SearchConversationListItem: FC<SearchConversationListItemProps> = (
 						</Row>
 					</Container>
 				</Row>
-			</ListItemActionWrapper>
+			</ConversationListItemActionWrapper>
 			{open && (
 				<CollapseElement
 					open={open}
