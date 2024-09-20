@@ -45,7 +45,9 @@ import { FOLDERS } from '../../../../carbonio-ui-commons/constants/folders';
 import { ZIMBRA_STANDARD_COLORS } from '../../../../carbonio-ui-commons/constants/utils';
 import { participantToString } from '../../../../commons/utils';
 import { API_REQUEST_STATUS } from '../../../../constants';
+import { normalizeDropdownActionItem } from '../../../../helpers/actions';
 import { getFolderIdParts } from '../../../../helpers/folders';
+import { useConvActions } from '../../../../hooks/actions/use-conv-actions';
 import { useAppDispatch, useAppSelector } from '../../../../hooks/redux';
 import { searchConv } from '../../../../store/actions';
 import { selectConversationExpandedStatus } from '../../../../store/conversations-slice';
@@ -88,36 +90,54 @@ export const ConversationListItemActionWrapper = ({
 	active?: boolean;
 	item: Conversation;
 	deselectAll: () => void;
-}): React.JSX.Element => (
-	<Dropdown
-		contextMenu
-		items={[]}
-		display="block"
-		style={{ width: '100%', height: '4rem' }}
-		data-testid={`secondary-actions-menu-${item.id}`}
-	>
-		<HoverContainer
-			data-testid={`hover-container-${item.id}`}
-			orientation="horizontal"
-			mainAlignment="flex-start"
-			crossAlignment="unset"
-			onClick={onClick}
-			onDoubleClick={onDoubleClick}
-			$hoverBackground={active ? 'highlight' : 'gray6'}
+}): React.JSX.Element => {
+	const { replyDescriptor, replyAllDescriptor, forwardDescriptor } = useConvActions({
+		conversation: item
+	});
+	const hoverActions = useMemo(
+		() => [replyDescriptor, replyAllDescriptor, forwardDescriptor],
+		[replyAllDescriptor, replyDescriptor, forwardDescriptor]
+	);
+	const dropdownItems = useMemo(
+		() =>
+			[
+				normalizeDropdownActionItem(replyDescriptor),
+				normalizeDropdownActionItem(replyAllDescriptor),
+				normalizeDropdownActionItem(forwardDescriptor)
+			].filter((action) => !action.disabled),
+		[forwardDescriptor, replyAllDescriptor, replyDescriptor]
+	);
+	return (
+		<Dropdown
+			contextMenu
+			items={dropdownItems}
+			display="block"
+			style={{ width: '100%', height: '4rem' }}
+			data-testid={`secondary-actions-menu-${item.id}`}
 		>
-			{children}
-			<HoverBarContainer
+			<HoverContainer
+				data-testid={`hover-container-${item.id}`}
 				orientation="horizontal"
-				mainAlignment="flex-end"
-				crossAlignment="center"
-				background={active ? 'highlight' : 'gray6'}
-				data-testid={`primary-actions-bar-${item.id}`}
+				mainAlignment="flex-start"
+				crossAlignment="unset"
+				onClick={onClick}
+				onDoubleClick={onDoubleClick}
+				$hoverBackground={active ? 'highlight' : 'gray6'}
 			>
-				<ListItemHoverActions actions={[]} />
-			</HoverBarContainer>
-		</HoverContainer>
-	</Dropdown>
-);
+				{children}
+				<HoverBarContainer
+					orientation="horizontal"
+					mainAlignment="flex-end"
+					crossAlignment="center"
+					background={active ? 'highlight' : 'gray6'}
+					data-testid={`primary-actions-bar-${item.id}`}
+				>
+					<ListItemHoverActions actions={hoverActions} />
+				</HoverBarContainer>
+			</HoverContainer>
+		</Dropdown>
+	);
+};
 
 export const ConversationListItem: FC<ConversationListItemProps> = memo(
 	function ConversationListItem({
