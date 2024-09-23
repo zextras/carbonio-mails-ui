@@ -7,7 +7,7 @@
 import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
 import { addBoard } from '../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
 import { setupHook } from '../../../carbonio-ui-commons/test/test-setup';
-import { FOLDERS_DESCRIPTORS, MAILS_BOARD_VIEW_ID } from '../../../constants';
+import { FOLDERS_DESCRIPTORS } from '../../../constants';
 import { generateMessage } from '../../../tests/generators/generateMessage';
 import { useMsgEditDraftDescriptor, useMsgEditDraftFn } from '../use-msg-edit-draft';
 
@@ -79,7 +79,7 @@ describe('useMsgEditDraftFn', () => {
 
 			expect(addBoard).toHaveBeenCalledWith(
 				expect.objectContaining({
-					boardViewId: MAILS_BOARD_VIEW_ID,
+					boardViewId: 'mails_editor_board_view',
 					context: expect.objectContaining({
 						originAction: 'editAsDraft',
 						originActionTargetId: msg.id
