@@ -17,7 +17,10 @@ import { useUiUtilities } from '../use-ui-utilities';
 export const useMsgRedirectFn = (messageId: string, folderId: string): ActionFn => {
 	const { createModal, closeModal } = useUiUtilities();
 
-	const canExecute = useCallback((): boolean => !isDraft(folderId) && !isTrash(folderId), []);
+	const canExecute = useCallback(
+		(): boolean => !isDraft(folderId) && !isTrash(folderId),
+		[folderId]
+	);
 
 	const execute = useCallback((): void => {
 		if (canExecute()) {
