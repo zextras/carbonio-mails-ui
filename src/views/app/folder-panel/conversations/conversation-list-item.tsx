@@ -96,7 +96,9 @@ export const ConversationListItemActionWrapper = ({
 		replyAllDescriptor,
 		forwardDescriptor,
 		moveToTrashDescriptor,
-		deletePermanentlyDescriptor
+		deletePermanentlyDescriptor,
+		setAsReadDescriptor,
+		setAsUnreadDescriptor
 	} = useConvActions({
 		conversation: item,
 		deselectAll
@@ -107,14 +109,18 @@ export const ConversationListItemActionWrapper = ({
 			replyAllDescriptor,
 			forwardDescriptor,
 			moveToTrashDescriptor,
-			deletePermanentlyDescriptor
+			deletePermanentlyDescriptor,
+			setAsReadDescriptor,
+			setAsUnreadDescriptor
 		],
 		[
 			replyAllDescriptor,
 			replyDescriptor,
 			forwardDescriptor,
 			moveToTrashDescriptor,
-			deletePermanentlyDescriptor
+			deletePermanentlyDescriptor,
+			setAsReadDescriptor,
+			setAsUnreadDescriptor
 		]
 	);
 	const dropdownItems = useMemo(
@@ -124,14 +130,18 @@ export const ConversationListItemActionWrapper = ({
 				normalizeDropdownActionItem(replyAllDescriptor),
 				normalizeDropdownActionItem(forwardDescriptor),
 				normalizeDropdownActionItem(moveToTrashDescriptor),
-				normalizeDropdownActionItem(deletePermanentlyDescriptor)
+				normalizeDropdownActionItem(deletePermanentlyDescriptor),
+				normalizeDropdownActionItem(setAsReadDescriptor),
+				normalizeDropdownActionItem(setAsUnreadDescriptor)
 			].filter((action) => !action.disabled),
 		[
-			forwardDescriptor,
-			replyAllDescriptor,
 			replyDescriptor,
+			replyAllDescriptor,
+			forwardDescriptor,
 			moveToTrashDescriptor,
-			deletePermanentlyDescriptor
+			deletePermanentlyDescriptor,
+			setAsReadDescriptor,
+			setAsUnreadDescriptor
 		]
 	);
 	return (

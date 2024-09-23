@@ -10,6 +10,10 @@ import { find } from 'lodash';
 import { useConvDeletePermanentlyDescriptor } from './use-conv-delete-permanently';
 import { useConvForwardDescriptor } from './use-conv-forward';
 import { useConvMoveToTrashDescriptor } from './use-conv-move-to-trash';
+import { useConvSetAsRead } from './use-conv-set-as-read';
+import { useConvSetAsUnread } from './use-conv-set-as-unread';
+import { useConvSetFlagDescriptor } from './use-conv-set-flag';
+import { useConvUnsetFlagDescriptor } from './use-conv-unset-flag';
 import { useReplyAllConvDescriptor } from './use-reply-all-conv';
 import { useReplyConvDescriptor } from './use-reply-conv';
 import { isTrash } from '../../carbonio-ui-commons/helpers/folders';
@@ -29,11 +33,11 @@ type ConversationActionsReturnType = {
 	forwardDescriptor: UIActionDescriptor;
 	moveToTrashDescriptor: UIActionDescriptor;
 	deletePermanentlyDescriptor: UIActionDescriptor;
-	/* messageReadDescriptor: UIActionDescriptor;
-	messageUnreadDescriptor: UIActionDescriptor;
-	flagDescriptor: UIActionDescriptor;
+	setAsReadDescriptor: UIActionDescriptor;
+	setAsUnreadDescriptor: UIActionDescriptor;
+	setFlagDescriptor: UIActionDescriptor;
 	unflagDescriptor: UIActionDescriptor;
-	sendDraftDescriptor: UIActionDescriptor;
+	/* sendDraftDescriptor: UIActionDescriptor;
 	markAsSpamDescriptor: UIActionDescriptor;
 	markAsNotSpamDescriptor: UIActionDescriptor;
 	applyTagDescriptor: UIActionAggregator;
@@ -53,14 +57,14 @@ export const useConvActions = ({
 	conversation,
 	deselectAll
 }: ConversationActionsArgumentType): ConversationActionsReturnType => {
-	// TODO: This condition is not the proper one as the first message is not a good indication of the folder id we are currently navigating.
-	const folderId = conversation?.messages[0].parent ?? '';
-
 	const firstConversationMessage =
 		find(conversation?.messages, (msg) => {
 			const folderIdParts = getFolderIdParts(msg.parent).id ?? '';
 			return !isTrash(folderIdParts) && !isDraft(folderIdParts);
 		}) ?? conversation?.messages?.[0];
+
+	// TODO: This condition is not the proper one as the first message is not a good indication of the folder id we are currently navigating.
+	const folderId = firstConversationMessage.parent ?? '';
 
 	const replyDescriptor = useReplyConvDescriptor({
 		firstMessageId: firstConversationMessage.id,
@@ -87,23 +91,21 @@ export const useConvActions = ({
 		deselectAll,
 		folderId
 	});
-	/* const messageReadDescriptor = useSetMsgReadDescriptor({
+	const setAsReadDescriptor = useConvSetAsRead({
 		ids: [conversation.id],
 		deselectAll,
-		shouldReplaceHistory,
 		folderId,
-		isMessageRead: conversation.read
+		isConversationRead: conversation.read
 	});
-	const messageUnreadDescriptor = useSetMsgUnreadDescriptor({
+	const setAsUnreadDescriptor = useConvSetAsUnread({
 		ids: [conversation.id],
 		deselectAll,
-		shouldReplaceHistory,
 		folderId,
-		isMessageRead: conversation.read
+		isConversationRead: conversation.read
 	});
-	const flagDescriptor = useMsgFlagDescriptor([conversation.id], conversation.flagged);
-	const unflagDescriptor = useMsgUnflagDescriptor([conversation.id], conversation.flagged);
-	const sendDraftDescriptor = useMsgSendDraftDescriptor(conversation, folderId);
+	const setFlagDescriptor = useConvSetFlagDescriptor([conversation.id], conversation.flagged);
+	const unflagDescriptor = useConvUnsetFlagDescriptor([conversation.id], conversation.flagged);
+	/* const sendDraftDescriptor = useMsgSendDraftDescriptor(conversation, folderId);
 	const markAsSpamDescriptor = useMsgMarkAsSpamDescriptor({
 		ids: [conversation.id],
 		shouldReplaceHistory,
@@ -150,14 +152,22 @@ export const useConvActions = ({
 			replyAllDescriptor,
 			forwardDescriptor,
 			moveToTrashDescriptor,
-			deletePermanentlyDescriptor
+			deletePermanentlyDescriptor,
+			setAsReadDescriptor,
+			setAsUnreadDescriptor,
+			setFlagDescriptor,
+			unflagDescriptor
 		}),
 		[
 			replyDescriptor,
 			replyAllDescriptor,
 			forwardDescriptor,
 			moveToTrashDescriptor,
-			deletePermanentlyDescriptor
+			deletePermanentlyDescriptor,
+			setAsReadDescriptor,
+			setAsUnreadDescriptor,
+			setFlagDescriptor,
+			unflagDescriptor
 		]
 	);
 };
