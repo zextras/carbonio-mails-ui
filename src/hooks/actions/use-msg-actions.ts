@@ -24,7 +24,7 @@ import { useMsgRestoreDescriptor } from './use-msg-restore';
 import { useMsgSendDraftDescriptor } from './use-msg-send-draft';
 import { useMsgShowOriginalDescriptor } from './use-msg-show-original';
 import { useMsgUnflagDescriptor } from './use-msg-unflag';
-import { useReplyAllMsg } from './use-reply-all-msg';
+import { useReplyAllMsgDescriptor } from './use-reply-all-msg';
 import { useReplyMsgDescriptor } from './use-reply-msg';
 import { useMsgSetAsReadDescriptor } from './use-set-msg-read';
 import { useSetMsgUnreadDescriptor } from './use-set-msg-unread';
@@ -73,7 +73,7 @@ export const useMsgActions = ({
 	const folderId = getParentFolderId(message.parent);
 
 	const replyDescriptor = useReplyMsgDescriptor(message.id, folderId);
-	const replyAllDescriptor = useReplyAllMsg(message.id, folderId);
+	const replyAllDescriptor = useReplyAllMsgDescriptor(message.id, folderId);
 	const forwardDescriptor = useForwardMsgDescriptor(message.id, folderId);
 	const moveToTrashDescriptor = useMsgMoveToTrashDescriptor({
 		ids: [message.id],

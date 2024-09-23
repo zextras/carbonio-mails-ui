@@ -12,12 +12,7 @@ import { isDraft, isSpam } from '../../helpers/folders';
 import { ActionFn, UIActionDescriptor } from '../../types';
 import { createEditBoard } from '../../views/app/detail-panel/edit/edit-view-board';
 
-type ReplyMsgAction = {
-	messageId: string;
-	folderId: string;
-};
-
-export const useReplyMsgFn = ({ messageId, folderId }: ReplyMsgAction): ActionFn => {
+export const useReplyMsgFn = (messageId: string, folderId: string): ActionFn => {
 	const canExecute = useCallback(
 		(): boolean => !isDraft(folderId) && !isSpam(folderId),
 		[folderId]
@@ -36,7 +31,7 @@ export const useReplyMsgFn = ({ messageId, folderId }: ReplyMsgAction): ActionFn
 };
 
 export const useReplyMsgDescriptor = (messageId: string, folderId: string): UIActionDescriptor => {
-	const { canExecute, execute } = useReplyMsgFn({ messageId, folderId });
+	const { canExecute, execute } = useReplyMsgFn(messageId, folderId);
 	const [t] = useTranslation();
 	return {
 		id: MessageActionsDescriptors.REPLY.id,
