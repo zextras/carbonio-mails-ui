@@ -135,7 +135,7 @@ export const useConvActions = ({
 		conversationId: conversation.id,
 		deselectAll
 	});
-	const printDescriptor = useConvPrintDescriptor(conversation, folderId);
+	const printDescriptor = useConvPrintDescriptor([conversation], folderId);
 
 	const showOriginalDescriptor = useConvShowOriginalDescriptor(conversation.id, folderId);
 

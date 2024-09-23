@@ -8,7 +8,7 @@ import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { ConversationActionsDescriptors } from '../../constants';
-import { msgAction } from '../../store/actions';
+import { convAction } from '../../store/actions';
 import { ActionFn, UIActionDescriptor } from '../../types';
 import { useAppDispatch } from '../redux';
 
@@ -19,7 +19,7 @@ export const useConvUnsetFlagFn = (ids: Array<string>, isFlagged: boolean): Acti
 	const execute = useCallback((): void => {
 		if (canExecute()) {
 			dispatch(
-				msgAction({
+				convAction({
 					operation: '!flag',
 					ids
 				})
@@ -37,7 +37,7 @@ export const useConvUnsetFlagDescriptor = (
 	const [t] = useTranslation();
 	return {
 		id: ConversationActionsDescriptors.UNFLAG.id,
-		icon: 'FlagOutline',
+		icon: 'Flag',
 		label: t('action.flag', 'Remove flag'),
 		execute,
 		canExecute

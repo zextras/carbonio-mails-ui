@@ -6,7 +6,7 @@
 import { useCallback, useMemo } from 'react';
 
 import { isDraft } from 'immer';
-import { forEach, isArray, map } from 'lodash';
+import { forEach } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
 import { getContentForPrint } from '../../commons/print-conversation/print-conversation';
@@ -16,24 +16,20 @@ import { getMsgsForPrint } from '../../store/actions';
 import { ActionFn, Conversation, UIActionDescriptor } from '../../types';
 import { errorPage } from '../../ui-actions/error-page';
 
-export const useConvPrintFn = (conversation: Conversation, folderId: string): ActionFn => {
+export const useConvPrintFn = (conversation: Array<Conversation>, folderId: string): ActionFn => {
 	const canExecute = useCallback(
 		(): boolean => !isDraft(folderId) && !isTrash(folderId),
 		[folderId]
 	);
 
 	const execute = useCallback((): void => {
-		let messageIds: Array<string> = [];
+		const messageIds: Array<string> = [];
 
-		if (isArray(conversation) && conversation.length > 0) {
-			forEach(conversation, (conv) => {
-				forEach(conv.messages, (m) => {
-					messageIds.push(m.id);
-				});
+		forEach(conversation, (conv) => {
+			forEach(conv.messages, (m) => {
+				messageIds.push(m.id);
 			});
-		} else {
-			messageIds = map((conversation as Conversation)?.messages, (m) => m.id);
-		}
+		});
 
 		const printWindow = window.open('', '_blank');
 		getMsgsForPrint({ ids: messageIds })
@@ -59,7 +55,7 @@ export const useConvPrintFn = (conversation: Conversation, folderId: string): Ac
 };
 
 export const useConvPrintDescriptor = (
-	conversation: Conversation,
+	conversation: Array<Conversation>,
 	folderId: string
 ): UIActionDescriptor => {
 	const { canExecute, execute } = useConvPrintFn(conversation, folderId);

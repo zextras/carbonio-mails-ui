@@ -11,7 +11,7 @@ import { useTranslation } from 'react-i18next';
 
 import { ConversationActionsDescriptors, TIMEOUTS } from '../../constants';
 import { isSpam } from '../../helpers/folders';
-import { msgAction } from '../../store/actions';
+import { convAction } from '../../store/actions';
 import { Conversation, UIActionAggregator, UIActionDescriptor } from '../../types';
 import { useAppDispatch } from '../redux';
 import { useUiUtilities } from '../use-ui-utilities';
@@ -47,7 +47,7 @@ export const useConvApplyTagFn = (
 				const execute = (): void => {
 					if (canExecute()) {
 						dispatch(
-							msgAction({
+							convAction({
 								operation,
 								ids: [conversationId],
 								tagName: tag.name

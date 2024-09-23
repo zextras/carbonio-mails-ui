@@ -118,13 +118,7 @@ export const ConversationListItemActionWrapper = ({
 			setAsUnreadDescriptor,
 			setFlagDescriptor,
 			unflagDescriptor,
-			markAsSpamDescriptor,
-			markAsNotSpamDescriptor,
-			moveToFolderDescriptor,
-			restoreFolderDescriptor,
-			printDescriptor,
-			previewOnSeparatedWindowDescriptor,
-			showOriginalDescriptor
+			restoreFolderDescriptor
 		],
 		[
 			replyDescriptor,
@@ -136,13 +130,7 @@ export const ConversationListItemActionWrapper = ({
 			setAsUnreadDescriptor,
 			setFlagDescriptor,
 			unflagDescriptor,
-			markAsSpamDescriptor,
-			markAsNotSpamDescriptor,
-			moveToFolderDescriptor,
-			restoreFolderDescriptor,
-			printDescriptor,
-			previewOnSeparatedWindowDescriptor,
-			showOriginalDescriptor
+			restoreFolderDescriptor
 		]
 	);
 	const tagItem = useTagDropdownItem(applyTagDescriptor, item.tags);
