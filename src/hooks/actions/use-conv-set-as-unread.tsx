@@ -28,7 +28,7 @@ export const useConvSetAsUnreadFn = ({
 }: SetMsgReadExecuteType): ActionFn => {
 	const dispatch = useAppDispatch();
 	const canExecute = useCallback(
-		(): boolean => !isDraft(folderId) || isConversationRead,
+		(): boolean => !isDraft(folderId) && isConversationRead,
 		[folderId, isConversationRead]
 	);
 

@@ -384,6 +384,30 @@ export const ConversationActionsDescriptors = {
 	DELETE_PERMANENTLY: {
 		id: 'delete-permanently',
 		desc: 'Delete permanently'
+	},
+	MARK_AS_SPAM: {
+		id: 'conversation-mark_as_spam',
+		desc: 'Mark as spam'
+	},
+	MARK_AS_NOT_SPAM: {
+		id: 'conversation-mark_as_not_spam',
+		desc: 'Not spam'
+	},
+	APPLY_TAG: {
+		id: 'conversation-apply-tag',
+		desc: 'Apply tag'
+	},
+	MOVE: {
+		id: 'conversation-move',
+		desc: 'Move'
+	},
+	RESTORE: {
+		id: 'conversation-restore',
+		desc: 'Restore'
+	},
+	PRINT: {
+		id: 'conversation-print',
+		desc: 'Print'
 	}
 } as const;
 

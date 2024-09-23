@@ -37,6 +37,7 @@ import {
 	trimStart,
 	uniqBy
 } from 'lodash';
+import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { ConversationMessagesList } from './conversation-messages-list';
@@ -49,6 +50,7 @@ import { normalizeDropdownActionItem } from '../../../../helpers/actions';
 import { getFolderIdParts } from '../../../../helpers/folders';
 import { useConvActions } from '../../../../hooks/actions/use-conv-actions';
 import { useAppDispatch, useAppSelector } from '../../../../hooks/redux';
+import { useTagDropdownItem } from '../../../../hooks/use-tag-dropdown-item';
 import { searchConv } from '../../../../store/actions';
 import { selectConversationExpandedStatus } from '../../../../store/conversations-slice';
 import { selectMessages } from '../../../../store/messages-slice';
@@ -64,6 +66,7 @@ import {
 	previewConversationOnSeparatedWindowAction,
 	useConversationsRead
 } from '../../../../ui-actions/conversation-actions';
+import { ConversationPreviewPanel } from '../../detail-panel/conversation-preview-panel';
 import { useGlobalExtraWindowManager } from '../../extra-windows/global-extra-window-manager';
 import { HoverBarContainer } from '../parts/hover-bar-container';
 import { HoverContainer } from '../parts/hover-container';
@@ -82,15 +85,21 @@ export const ConversationListItemActionWrapper = ({
 	onClick,
 	onDoubleClick,
 	deselectAll,
+	shouldReplaceHistory,
 	children
 }: {
 	children?: ReactNode;
 	onClick?: ContainerProps['onClick'];
 	onDoubleClick?: ContainerProps['onDoubleClick'];
+	shouldReplaceHistory?: boolean;
 	active?: boolean;
 	item: Conversation;
 	deselectAll: () => void;
 }): React.JSX.Element => {
+	const conversationPreviewFactory = useCallback(
+		() => <ConversationPreviewPanel conversation={item} isInsideExtraWindow />,
+		[item]
+	);
 	const {
 		replyDescriptor,
 		replyAllDescriptor,
@@ -98,10 +107,21 @@ export const ConversationListItemActionWrapper = ({
 		moveToTrashDescriptor,
 		deletePermanentlyDescriptor,
 		setAsReadDescriptor,
-		setAsUnreadDescriptor
+		setAsUnreadDescriptor,
+		setFlagDescriptor,
+		unflagDescriptor,
+		markAsSpamDescriptor,
+		markAsNotSpamDescriptor,
+		applyTagDescriptor,
+		moveToFolderDescriptor,
+		restoreFolderDescriptor,
+		printDescriptor,
+		previewOnSeparatedWindowDescriptor
 	} = useConvActions({
 		conversation: item,
-		deselectAll
+		deselectAll,
+		conversationPreviewFactory,
+		shouldReplaceHistory
 	});
 	const hoverActions = useMemo(
 		() => [
@@ -111,18 +131,35 @@ export const ConversationListItemActionWrapper = ({
 			moveToTrashDescriptor,
 			deletePermanentlyDescriptor,
 			setAsReadDescriptor,
-			setAsUnreadDescriptor
+			setAsUnreadDescriptor,
+			setFlagDescriptor,
+			unflagDescriptor,
+			markAsSpamDescriptor,
+			markAsNotSpamDescriptor,
+			moveToFolderDescriptor,
+			restoreFolderDescriptor,
+			printDescriptor,
+			previewOnSeparatedWindowDescriptor
 		],
 		[
-			replyAllDescriptor,
 			replyDescriptor,
+			replyAllDescriptor,
 			forwardDescriptor,
 			moveToTrashDescriptor,
 			deletePermanentlyDescriptor,
 			setAsReadDescriptor,
-			setAsUnreadDescriptor
+			setAsUnreadDescriptor,
+			setFlagDescriptor,
+			unflagDescriptor,
+			markAsSpamDescriptor,
+			markAsNotSpamDescriptor,
+			moveToFolderDescriptor,
+			restoreFolderDescriptor,
+			printDescriptor,
+			previewOnSeparatedWindowDescriptor
 		]
 	);
+	const tagItem = useTagDropdownItem(applyTagDescriptor, item.tags);
 	const dropdownItems = useMemo(
 		() =>
 			[
@@ -132,7 +169,16 @@ export const ConversationListItemActionWrapper = ({
 				normalizeDropdownActionItem(moveToTrashDescriptor),
 				normalizeDropdownActionItem(deletePermanentlyDescriptor),
 				normalizeDropdownActionItem(setAsReadDescriptor),
-				normalizeDropdownActionItem(setAsUnreadDescriptor)
+				normalizeDropdownActionItem(setAsUnreadDescriptor),
+				normalizeDropdownActionItem(setFlagDescriptor),
+				normalizeDropdownActionItem(unflagDescriptor),
+				normalizeDropdownActionItem(markAsSpamDescriptor),
+				normalizeDropdownActionItem(markAsNotSpamDescriptor),
+				tagItem,
+				normalizeDropdownActionItem(moveToFolderDescriptor),
+				normalizeDropdownActionItem(restoreFolderDescriptor),
+				normalizeDropdownActionItem(printDescriptor),
+				normalizeDropdownActionItem(previewOnSeparatedWindowDescriptor)
 			].filter((action) => !action.disabled),
 		[
 			replyDescriptor,
@@ -141,7 +187,16 @@ export const ConversationListItemActionWrapper = ({
 			moveToTrashDescriptor,
 			deletePermanentlyDescriptor,
 			setAsReadDescriptor,
-			setAsUnreadDescriptor
+			setAsUnreadDescriptor,
+			setFlagDescriptor,
+			unflagDescriptor,
+			markAsSpamDescriptor,
+			markAsNotSpamDescriptor,
+			tagItem,
+			moveToFolderDescriptor,
+			restoreFolderDescriptor,
+			printDescriptor,
+			previewOnSeparatedWindowDescriptor
 		]
 	);
 	return (
@@ -190,6 +245,7 @@ export const ConversationListItem: FC<ConversationListItemProps> = memo(
 		folderId,
 		setDraggedIds
 	}) {
+		const { itemId } = useParams<{ itemId: string }>();
 		const dispatch = useAppDispatch();
 		const [open, setOpen] = useState(false);
 		const accounts = useUserAccounts();
@@ -389,6 +445,8 @@ export const ConversationListItem: FC<ConversationListItemProps> = memo(
 			return item?.messages?.length > 0;
 		}, [item?.messages?.length, item.messagesInConversation, textReadValues.badge]);
 
+		const shouldReplaceHistory = useMemo(() => itemId === item.id, [item.id, itemId]);
+
 		return (
 			<Container mainAlignment="flex-start" data-testid={`ConversationListItem-${item.id}`}>
 				<ConversationListItemActionWrapper
@@ -396,6 +454,7 @@ export const ConversationListItem: FC<ConversationListItemProps> = memo(
 					active={active}
 					onClick={_onClick}
 					onDoubleClick={_onDoubleClick}
+					shouldReplaceHistory={shouldReplaceHistory}
 					deselectAll={deselectAll}
 				>
 					<div
