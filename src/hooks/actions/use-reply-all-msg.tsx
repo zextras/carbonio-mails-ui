@@ -31,7 +31,10 @@ export const useReplyAllMsgFn = (messageId: string, folderId: string): ActionFn 
 	return useMemo(() => ({ canExecute, execute }), [canExecute, execute]);
 };
 
-export const useReplyAllMsg = (messageId: string, folderId: string): UIActionDescriptor => {
+export const useReplyAllMsgDescriptor = (
+	messageId: string,
+	folderId: string
+): UIActionDescriptor => {
 	const { canExecute, execute } = useReplyAllMsgFn(messageId, folderId);
 	const [t] = useTranslation();
 	return {
