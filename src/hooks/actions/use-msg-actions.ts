@@ -10,7 +10,7 @@ import { useMsgCreateAppointmentDescriptor } from './use-msg-create-appointment'
 import { useDeleteMsgPermanentlyDescriptor } from './use-msg-delete-permanently';
 import { useMsgDownloadEmlDescriptor } from './use-msg-download-eml';
 import { useMsgEditAsNewDescriptor } from './use-msg-edit-as-new';
-import { useMsgEdiDraftDescriptor } from './use-msg-edit-draft';
+import { useMsgEditDraftDescriptor } from './use-msg-edit-draft';
 import { useMsgFlagDescriptor } from './use-msg-flag';
 import { useForwardMsgDescriptor } from './use-msg-forward';
 import { useMsgMarkAsNotSpamDescriptor } from './use-msg-mark-as-not-spam';
@@ -128,7 +128,7 @@ export const useMsgActions = ({
 	const printDescriptor = useMsgPrintDescriptor(message, folderId);
 
 	const redirectDescriptor = useMsgRedirectDescriptor(message.id, folderId);
-	const editDraftDescriptor = useMsgEdiDraftDescriptor(message.id, message.isScheduled, folderId);
+	const editDraftDescriptor = useMsgEditDraftDescriptor(message.id, message.isScheduled, folderId);
 	const editAsNewDescriptor = useMsgEditAsNewDescriptor(message.id, folderId);
 	const showOriginalDescriptor = useMsgShowOriginalDescriptor(message.id, folderId);
 	const downloadEmlDescriptor = useMsgDownloadEmlDescriptor(message.id, folderId);

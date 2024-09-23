@@ -9,7 +9,7 @@ import { addBoard } from '../../../carbonio-ui-commons/test/mocks/carbonio-shell
 import { setupHook } from '../../../carbonio-ui-commons/test/test-setup';
 import { FOLDERS_DESCRIPTORS, MAILS_BOARD_VIEW_ID } from '../../../constants';
 import { generateMessage } from '../../../tests/generators/generateMessage';
-import { useMsgEdiDraftDescriptor, useMsgEditDraftFn } from '../use-msg-edit-draft';
+import { useMsgEditDraftDescriptor, useMsgEditDraftFn } from '../use-msg-edit-draft';
 
 describe('useMsgEditDraftDescriptor', () => {
 	const msg = generateMessage();
@@ -17,7 +17,7 @@ describe('useMsgEditDraftDescriptor', () => {
 	it('Should return an object with specific id, icon, label and 2 functions', () => {
 		const {
 			result: { current: descriptor }
-		} = setupHook(useMsgEdiDraftDescriptor, {
+		} = setupHook(useMsgEditDraftDescriptor, {
 			initialProps: [msg.id, false, FOLDERS.DRAFTS]
 		});
 

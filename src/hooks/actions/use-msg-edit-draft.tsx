@@ -67,7 +67,7 @@ export const useMsgEditDraftFn = (
 	return useMemo(() => ({ canExecute, execute }), [canExecute, execute]);
 };
 
-export const useMsgEdiDraftDescriptor = (
+export const useMsgEditDraftDescriptor = (
 	messageId: string,
 	isMessageScheduled: boolean,
 	folderId: string
