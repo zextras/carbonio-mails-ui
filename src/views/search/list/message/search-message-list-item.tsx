@@ -80,7 +80,6 @@ export const SearchMessageListItem: FC<SearchMessageListItemProps> = memo(functi
 
 	const { execute, canExecute } = useMsgPreviewOnSeparatedWindowFn({
 		messageId: itemId,
-		folderId,
 		subject: completeMessage.subject,
 		messagePreviewFactory
 	});

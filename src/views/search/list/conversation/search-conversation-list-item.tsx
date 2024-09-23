@@ -32,6 +32,7 @@ import { SearchConversationMessagesList } from './search-conversation-messages-l
 import { ZIMBRA_STANDARD_COLORS } from '../../../../carbonio-ui-commons/constants';
 import { participantToString } from '../../../../commons/utils';
 import { API_REQUEST_STATUS } from '../../../../constants';
+import { useConvPreviewOnSeparatedWindowFn } from '../../../../hooks/actions/use-conv-preview-on-separated-window';
 import { useAppDispatch } from '../../../../hooks/redux';
 import { retrieveConversation } from '../../../../store/zustand/search/hooks/hooks';
 import {
@@ -46,7 +47,7 @@ import { ConversationListItemActionWrapper } from '../../../app/folder-panel/con
 import { ItemAvatar } from '../../../app/folder-panel/parts/item-avatar';
 import { RowInfo } from '../../../app/folder-panel/parts/row-info';
 import { SenderName } from '../../../app/folder-panel/parts/sender-name';
-import { previewConversationOnSeparatedWindowAction } from '../../preview/conversations/search-conversation-preview-actions';
+import { SearchConversationPreviewPanelContainer } from '../../preview/conversations/search-conversation-preview-panel';
 
 const CollapseElement = styled(Container)<ContainerProps & { open: boolean }>`
 	display: ${({ open }): string => (open ? 'block' : 'none')};
@@ -140,6 +141,17 @@ export const SearchConversationListItem: FC<SearchConversationListItemProps> = (
 		[conversationId, conversationStatus]
 	);
 
+	const conversationPreviewFactory = useCallback(
+		() => <SearchConversationPreviewPanelContainer conversationId={conversationId} />,
+		[conversationId]
+	);
+
+	const { execute, canExecute } = useConvPreviewOnSeparatedWindowFn({
+		conversationId,
+		subject: conversation.subject,
+		conversationPreviewFactory
+	});
+
 	const _onClick = useCallback(
 		(e) => {
 			if (!e.isDefaultPrevented()) {
@@ -167,15 +179,11 @@ export const SearchConversationListItem: FC<SearchConversationListItemProps> = (
 			if (isDraft) {
 				pushHistory(`/folder/${parent}/edit/${id}?action=editAsDraft`);
 			} else {
-				previewConversationOnSeparatedWindowAction(
-					conversationId,
-					conversation.subject,
-					createWindow
-				).onClick();
+				canExecute() && execute();
 			}
 		},
 
-		[createWindow, conversationId, conversation.messages, conversation.subject]
+		[conversation.messages, canExecute, execute]
 	);
 
 	const toggleExpandButtonLabel = useMemo(
