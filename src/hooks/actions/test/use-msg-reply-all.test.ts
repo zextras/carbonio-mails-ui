@@ -9,22 +9,22 @@ import { addBoard } from '../../../carbonio-ui-commons/test/mocks/carbonio-shell
 import { setupHook } from '../../../carbonio-ui-commons/test/test-setup';
 import { FOLDERS_DESCRIPTORS } from '../../../constants';
 import { generateMessage } from '../../../tests/generators/generateMessage';
-import { useReplyMsgDescriptor, useReplyMsgFn } from '../use-reply-msg';
+import { useReplyAllMsgDescriptor, useReplyAllMsgFn } from '../use-reply-all-msg';
 
-describe('useMsgReplyDescriptor', () => {
+describe('useMsgReplyAllDescriptor', () => {
 	const msg = generateMessage();
 
 	it('Should return an object with specific id, icon, label and 2 functions', () => {
 		const {
 			result: { current: descriptor }
-		} = setupHook(useReplyMsgDescriptor, {
+		} = setupHook(useReplyAllMsgDescriptor, {
 			initialProps: [msg.id, FOLDERS.INBOX]
 		});
 
 		expect(descriptor).toEqual({
-			id: 'message-reply',
-			icon: 'UndoOutline',
-			label: 'Reply',
+			id: 'message-reply_all',
+			icon: 'ReplyAll',
+			label: 'Reply all',
 			execute: expect.any(Function),
 			canExecute: expect.any(Function)
 		});
@@ -37,7 +37,7 @@ describe('useMsgReplyFn', () => {
 	it('Should return an object with execute and canExecute functions', () => {
 		const {
 			result: { current: functions }
-		} = setupHook(useReplyMsgFn, {
+		} = setupHook(useReplyAllMsgFn, {
 			initialProps: [msg.id, FOLDERS.INBOX]
 		});
 
@@ -59,7 +59,7 @@ describe('useMsgReplyFn', () => {
 		`(`should return $assertion if the folder is $folder.desc`, ({ folder, assertion }) => {
 			const {
 				result: { current: functions }
-			} = setupHook(useReplyMsgFn, {
+			} = setupHook(useReplyAllMsgFn, {
 				initialProps: [msg.id, folder.id]
 			});
 
@@ -71,7 +71,7 @@ describe('useMsgReplyFn', () => {
 		it('should create a board with specific parameters', async () => {
 			const {
 				result: { current: functions }
-			} = setupHook(useReplyMsgFn, {
+			} = setupHook(useReplyAllMsgFn, {
 				initialProps: [msg.id, FOLDERS.INBOX]
 			});
 
@@ -81,7 +81,7 @@ describe('useMsgReplyFn', () => {
 				expect.objectContaining({
 					boardViewId: 'mails_editor_board_view',
 					context: expect.objectContaining({
-						originAction: 'reply',
+						originAction: 'replyAll',
 						originActionTargetId: msg.id
 					})
 				})
@@ -91,7 +91,7 @@ describe('useMsgReplyFn', () => {
 		it('should not create a board if the action cannot be executed', async () => {
 			const {
 				result: { current: functions }
-			} = setupHook(useReplyMsgFn, {
+			} = setupHook(useReplyAllMsgFn, {
 				initialProps: [msg.id, FOLDERS.DRAFTS]
 			});
 
