@@ -12,6 +12,8 @@ import { addComponentsToShell } from './app-utils/add-shell-components';
 import { registerShellActions } from './app-utils/register-shell-actions';
 import { registerShellIntegrations } from './app-utils/register-shell-integrations';
 import { toggleBackupSearchComponent } from './app-utils/toggle-backup-search-component';
+import { FOLDER_VIEW } from './carbonio-ui-commons/constants';
+import { useInitializeFolders } from './carbonio-ui-commons/hooks/use-initialize-folders';
 import { StoreProvider } from './store/redux';
 import { useBackupSearchStore } from './store/zustand/backup-search/store';
 import { GlobalExtraWindowManager } from './views/app/extra-windows/global-extra-window-manager';
@@ -21,6 +23,7 @@ import { SyncDataHandler } from './views/sidebar/sync-data-handler';
 const App = (): React.JSX.Element => {
 	const hasBackupSearchMessages = !isEmpty(useBackupSearchStore().messages);
 
+	useInitializeFolders(FOLDER_VIEW.message);
 	useEffect(() => {
 		addComponentsToShell();
 		registerShellIntegrations();

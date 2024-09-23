@@ -60,6 +60,9 @@ jest.mock('react-router-dom', () => ({
 }));
 
 describe('Conversation actions calls', () => {
+	beforeEach(() => {
+		createSoapAPIInterceptor('Batch');
+	});
 	describe('Add flag action', () => {
 		test('Single id', async () => {
 			populateFoldersStore({ view: FOLDER_VIEW.message });
@@ -890,8 +893,9 @@ describe('Conversation actions calls', () => {
 			const interceptor = createSoapAPIInterceptor<ConvActionRequest>('ConvAction');
 			const { user } = setupTest(component, { store });
 			const button = await screen.findByText(/label\.delete_permanently/i);
-			await user.click(button);
-
+			await act(async () => {
+				await user.click(button);
+			});
 			const requestParameter = await interceptor;
 			expect(requestParameter.action.id).toBe(conv.id);
 			expect(requestParameter.action.op).toBe('delete');
@@ -936,7 +940,9 @@ describe('Conversation actions calls', () => {
 			const interceptor = createSoapAPIInterceptor<ConvActionRequest>('ConvAction');
 			const { user } = setupTest(component, { store });
 			const button = await screen.findByText(/label\.delete_permanently/i);
-			await user.click(button);
+			await act(async () => {
+				await user.click(button);
+			});
 
 			const requestParameter = await interceptor;
 			expect(requestParameter.action.id).toBe(convIds.join(','));
@@ -992,7 +998,9 @@ describe('Conversation actions calls', () => {
 				jest.advanceTimersByTime(1000);
 			});
 
-			await user.click(inboxFolderListItem);
+			await act(async () => {
+				await user.click(inboxFolderListItem);
+			});
 
 			const button = screen.getByRole('button', {
 				name: /label\.move/i
@@ -1063,13 +1071,17 @@ describe('Conversation actions calls', () => {
 				jest.advanceTimersByTime(10000);
 			});
 
-			await user.click(inboxFolderListItem);
+			await act(async () => {
+				await user.click(inboxFolderListItem);
+			});
 
 			const button = screen.getByRole('button', {
 				name: /label\.move/i
 			});
 			expect(button).toBeEnabled();
-			await user.click(button);
+			await act(async () => {
+				await user.click(button);
+			});
 
 			const requestParameter = await interceptor;
 			expect(requestParameter.action.id).toBe(convIds.join(','));
@@ -1106,7 +1118,9 @@ describe('Conversation actions calls', () => {
 			const { user } = setupTest(component, { store });
 
 			const tagElement = screen.getByTestId(`tag-item-${tag.id}`);
-			await user.click(tagElement);
+			await act(async () => {
+				await user.click(tagElement);
+			});
 
 			const requestParameter = await interceptor;
 			expect(requestParameter.action.id).toBe(conv.id);
@@ -1140,7 +1154,9 @@ describe('Conversation actions calls', () => {
 			const { user } = setupTest(component, { store });
 
 			const tagElement = screen.getByTestId(`tag-item-${tag.id}`);
-			await user.click(tagElement);
+			await act(async () => {
+				await user.click(tagElement);
+			});
 
 			const requestParameter = await interceptor;
 			expect(requestParameter.action.id).toBe(conv.id);
