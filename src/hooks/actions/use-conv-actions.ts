@@ -20,6 +20,7 @@ import { useConvRestoreDescriptor } from './use-conv-restore';
 import { useConvSetAsRead } from './use-conv-set-as-read';
 import { useConvSetAsUnread } from './use-conv-set-as-unread';
 import { useConvSetFlagDescriptor } from './use-conv-set-flag';
+import { useConvShowOriginalDescriptor } from './use-conv-show-original';
 import { useConvUnsetFlagDescriptor } from './use-conv-unset-flag';
 import { useReplyAllConvDescriptor } from './use-reply-all-conv';
 import { useReplyConvDescriptor } from './use-reply-conv';
@@ -51,10 +52,7 @@ type ConversationActionsReturnType = {
 	restoreFolderDescriptor: UIActionDescriptor;
 	printDescriptor: UIActionDescriptor;
 	previewOnSeparatedWindowDescriptor: UIActionDescriptor;
-	/* editDraftDescriptor: UIActionDescriptor;
-	editAsNewDescriptor: UIActionDescriptor;
 	showOriginalDescriptor: UIActionDescriptor;
-	downloadEmlDescriptor: UIActionDescriptor; */
 };
 
 export const useConvActions = ({
@@ -70,7 +68,7 @@ export const useConvActions = ({
 		}) ?? conversation?.messages?.[0];
 
 	// TODO: This condition is not the proper one as the first message is not a good indication of the folder id we are currently navigating.
-	const folderId = firstConversationMessage.parent ?? '';
+	const folderId = firstConversationMessage.parent;
 
 	const replyDescriptor = useReplyConvDescriptor({
 		firstMessageId: firstConversationMessage.id,
@@ -139,14 +137,7 @@ export const useConvActions = ({
 	});
 	const printDescriptor = useConvPrintDescriptor(conversation, folderId);
 
-	/* const editDraftDescriptor = useMsgEdiDraftDescriptor(
-		conversation.id,
-		conversation.isScheduled,
-		folderId
-	);
-	const editAsNewDescriptor = useMsgEditAsNewDescriptor(conversation.id, folderId);
-	const showOriginalDescriptor = useMsgShowOriginalDescriptor(conversation.id, folderId);
-	const downloadEmlDescriptor = useMsgDownloadEmlDescriptor(conversation.id, folderId); */
+	const showOriginalDescriptor = useConvShowOriginalDescriptor(conversation.id, folderId);
 
 	const previewOnSeparatedWindowDescriptor = useConvPreviewOnSeparatedWindowDescriptor({
 		conversationId: conversation.id,
@@ -171,7 +162,8 @@ export const useConvActions = ({
 			moveToFolderDescriptor,
 			restoreFolderDescriptor,
 			printDescriptor,
-			previewOnSeparatedWindowDescriptor
+			previewOnSeparatedWindowDescriptor,
+			showOriginalDescriptor
 		}),
 		[
 			replyDescriptor,
@@ -189,7 +181,8 @@ export const useConvActions = ({
 			moveToFolderDescriptor,
 			restoreFolderDescriptor,
 			printDescriptor,
-			previewOnSeparatedWindowDescriptor
+			previewOnSeparatedWindowDescriptor,
+			showOriginalDescriptor
 		]
 	);
 };

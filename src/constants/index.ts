@@ -408,6 +408,10 @@ export const ConversationActionsDescriptors = {
 	PRINT: {
 		id: 'conversation-print',
 		desc: 'Print'
+	},
+	SHOW_SOURCE: {
+		id: 'conversation-show_original',
+		desc: 'Show original'
 	}
 } as const;
 

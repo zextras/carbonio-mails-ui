@@ -18,33 +18,16 @@ import {
 	Text,
 	Tooltip
 } from '@zextras/carbonio-design-system';
-import {
-	Tag,
-	pushHistory,
-	t,
-	useTags,
-	useUserAccounts,
-	useUserSettings
-} from '@zextras/carbonio-shell-ui';
-import {
-	debounce,
-	filter,
-	find,
-	forEach,
-	includes,
-	isEmpty,
-	reduce,
-	trimStart,
-	uniqBy
-} from 'lodash';
+import { Tag, pushHistory, useTags, useUserSettings } from '@zextras/carbonio-shell-ui';
+import { debounce, filter, find, forEach, includes, isEmpty, reduce, uniqBy } from 'lodash';
+import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { ConversationMessagesList } from './conversation-messages-list';
 import { getFolderParentId } from './utils';
+import { ZIMBRA_STANDARD_COLORS } from '../../../../carbonio-ui-commons/constants';
 import { FOLDERS } from '../../../../carbonio-ui-commons/constants/folders';
-import { ZIMBRA_STANDARD_COLORS } from '../../../../carbonio-ui-commons/constants/utils';
-import { participantToString } from '../../../../commons/utils';
 import { API_REQUEST_STATUS } from '../../../../constants';
 import { normalizeDropdownActionItem } from '../../../../helpers/actions';
 import { getFolderIdParts } from '../../../../helpers/folders';
@@ -116,7 +99,8 @@ export const ConversationListItemActionWrapper = ({
 		moveToFolderDescriptor,
 		restoreFolderDescriptor,
 		printDescriptor,
-		previewOnSeparatedWindowDescriptor
+		previewOnSeparatedWindowDescriptor,
+		showOriginalDescriptor
 	} = useConvActions({
 		conversation: item,
 		deselectAll,
@@ -139,7 +123,8 @@ export const ConversationListItemActionWrapper = ({
 			moveToFolderDescriptor,
 			restoreFolderDescriptor,
 			printDescriptor,
-			previewOnSeparatedWindowDescriptor
+			previewOnSeparatedWindowDescriptor,
+			showOriginalDescriptor
 		],
 		[
 			replyDescriptor,
@@ -156,7 +141,8 @@ export const ConversationListItemActionWrapper = ({
 			moveToFolderDescriptor,
 			restoreFolderDescriptor,
 			printDescriptor,
-			previewOnSeparatedWindowDescriptor
+			previewOnSeparatedWindowDescriptor,
+			showOriginalDescriptor
 		]
 	);
 	const tagItem = useTagDropdownItem(applyTagDescriptor, item.tags);
@@ -178,7 +164,8 @@ export const ConversationListItemActionWrapper = ({
 				normalizeDropdownActionItem(moveToFolderDescriptor),
 				normalizeDropdownActionItem(restoreFolderDescriptor),
 				normalizeDropdownActionItem(printDescriptor),
-				normalizeDropdownActionItem(previewOnSeparatedWindowDescriptor)
+				normalizeDropdownActionItem(previewOnSeparatedWindowDescriptor),
+				normalizeDropdownActionItem(showOriginalDescriptor)
 			].filter((action) => !action.disabled),
 		[
 			replyDescriptor,
@@ -196,7 +183,8 @@ export const ConversationListItemActionWrapper = ({
 			moveToFolderDescriptor,
 			restoreFolderDescriptor,
 			printDescriptor,
-			previewOnSeparatedWindowDescriptor
+			previewOnSeparatedWindowDescriptor,
+			showOriginalDescriptor
 		]
 	);
 	return (
@@ -248,12 +236,12 @@ export const ConversationListItem: FC<ConversationListItemProps> = memo(
 		const { itemId } = useParams<{ itemId: string }>();
 		const dispatch = useAppDispatch();
 		const [open, setOpen] = useState(false);
-		const accounts = useUserAccounts();
 		const messages = useAppSelector(selectMessages);
 		const isConversation = 'messages' in (item || {});
 		const { createWindow } = useGlobalExtraWindowManager();
 		const folderParent = getFolderParentId({ folderId: folderId ?? '', isConversation, item });
 		const setConversationRead = useConversationsRead();
+		const [t] = useTranslation();
 
 		const conversationStatus = useAppSelector((state: MailsStateType) =>
 			selectConversationExpandedStatus(state, item.id)
@@ -295,15 +283,6 @@ export const ConversationListItem: FC<ConversationListItemProps> = memo(
 
 		const sortBy = useUserSettings()?.prefs?.zimbraPrefConversationOrder || 'dateDesc';
 		const zimbraPrefMarkMsgRead = useUserSettings()?.prefs?.zimbraPrefMarkMsgRead !== '-1';
-		const participantsString = useMemo(
-			() =>
-				reduce(
-					uniqBy(item.participants, (em) => em.address),
-					(acc, part) => trimStart(`${acc}, ${participantToString(part, accounts)}`, ', '),
-					''
-				),
-			[item.participants, accounts]
-		);
 
 		const toggleOpen = useCallback(
 			(e) => {
@@ -383,11 +362,11 @@ export const ConversationListItem: FC<ConversationListItemProps> = memo(
 
 		const toggleExpandButtonLabel = useMemo(
 			() => (open ? t('label.hide', 'Hide') : t('label.expand', 'Expand')),
-			[open]
+			[open, t]
 		);
 		const subject = useMemo(
 			() => item.subject || t('label.no_subject_with_tags', '<No Subject>'),
-			[item.subject]
+			[item.subject, t]
 		);
 		const subFragmentTooltipLabel = useMemo(
 			() => (!isEmpty(item.fragment) ? item.fragment : subject),
