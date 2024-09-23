@@ -37,7 +37,7 @@ export const useConvSetFlagDescriptor = (
 	const [t] = useTranslation();
 	return {
 		id: ConversationActionsDescriptors.FLAG.id,
-		icon: 'Flag',
+		icon: 'FlagOutline',
 		label: t('action.flag', 'Add flag'),
 		execute,
 		canExecute

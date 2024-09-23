@@ -3,28 +3,36 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { useMemo } from 'react';
+import React, { useMemo } from 'react';
 
 import { find } from 'lodash';
 
+import { useConvApplyTagDescriptor } from './use-conv-apply-tag';
 import { useConvDeletePermanentlyDescriptor } from './use-conv-delete-permanently';
 import { useConvForwardDescriptor } from './use-conv-forward';
+import { useConvMarkAsNotSpamDescriptor } from './use-conv-mark-as-not-spam';
+import { useConvMarkAsSpamDescriptor } from './use-conv-mark-as-spam';
+import { useConvMoveToFolderDescriptor } from './use-conv-move-to-folder';
 import { useConvMoveToTrashDescriptor } from './use-conv-move-to-trash';
+import { useConvPreviewOnSeparatedWindowDescriptor } from './use-conv-preview-on-separated-window';
+import { useConvPrintDescriptor } from './use-conv-print';
+import { useConvRestoreDescriptor } from './use-conv-restore';
 import { useConvSetAsRead } from './use-conv-set-as-read';
 import { useConvSetAsUnread } from './use-conv-set-as-unread';
 import { useConvSetFlagDescriptor } from './use-conv-set-flag';
+import { useConvShowOriginalDescriptor } from './use-conv-show-original';
 import { useConvUnsetFlagDescriptor } from './use-conv-unset-flag';
 import { useReplyAllConvDescriptor } from './use-reply-all-conv';
 import { useReplyConvDescriptor } from './use-reply-conv';
 import { isTrash } from '../../carbonio-ui-commons/helpers/folders';
 import { getFolderIdParts, isDraft } from '../../helpers/folders';
-import { Conversation, UIActionDescriptor } from '../../types';
+import { Conversation, UIActionAggregator, UIActionDescriptor } from '../../types';
 
 export type ConversationActionsArgumentType = {
 	conversation: Conversation;
 	deselectAll: () => void;
-	/*	shouldReplaceHistory?: boolean;
-	messagePreviewFactory: () => React.JSX.Element; */
+	shouldReplaceHistory?: boolean;
+	conversationPreviewFactory: () => React.JSX.Element;
 };
 
 type ConversationActionsReturnType = {
@@ -37,25 +45,21 @@ type ConversationActionsReturnType = {
 	setAsUnreadDescriptor: UIActionDescriptor;
 	setFlagDescriptor: UIActionDescriptor;
 	unflagDescriptor: UIActionDescriptor;
-	/* sendDraftDescriptor: UIActionDescriptor;
 	markAsSpamDescriptor: UIActionDescriptor;
 	markAsNotSpamDescriptor: UIActionDescriptor;
 	applyTagDescriptor: UIActionAggregator;
 	moveToFolderDescriptor: UIActionDescriptor;
 	restoreFolderDescriptor: UIActionDescriptor;
-	createAppointmentDescriptor: UIActionDescriptor;
 	printDescriptor: UIActionDescriptor;
 	previewOnSeparatedWindowDescriptor: UIActionDescriptor;
-	redirectDescriptor: UIActionDescriptor;
-	editDraftDescriptor: UIActionDescriptor;
-	editAsNewDescriptor: UIActionDescriptor;
 	showOriginalDescriptor: UIActionDescriptor;
-	downloadEmlDescriptor: UIActionDescriptor; */
 };
 
 export const useConvActions = ({
 	conversation,
-	deselectAll
+	deselectAll,
+	shouldReplaceHistory = false,
+	conversationPreviewFactory
 }: ConversationActionsArgumentType): ConversationActionsReturnType => {
 	const firstConversationMessage =
 		find(conversation?.messages, (msg) => {
@@ -64,7 +68,7 @@ export const useConvActions = ({
 		}) ?? conversation?.messages?.[0];
 
 	// TODO: This condition is not the proper one as the first message is not a good indication of the folder id we are currently navigating.
-	const folderId = firstConversationMessage.parent ?? '';
+	const folderId = firstConversationMessage.parent;
 
 	const replyDescriptor = useReplyConvDescriptor({
 		firstMessageId: firstConversationMessage.id,
@@ -105,46 +109,44 @@ export const useConvActions = ({
 	});
 	const setFlagDescriptor = useConvSetFlagDescriptor([conversation.id], conversation.flagged);
 	const unflagDescriptor = useConvUnsetFlagDescriptor([conversation.id], conversation.flagged);
-	/* const sendDraftDescriptor = useMsgSendDraftDescriptor(conversation, folderId);
-	const markAsSpamDescriptor = useMsgMarkAsSpamDescriptor({
+	const markAsSpamDescriptor = useConvMarkAsSpamDescriptor({
 		ids: [conversation.id],
 		shouldReplaceHistory,
 		folderId
 	});
-	const markAsNotSpamDescriptor = useMsgMarkAsNotSpamDescriptor({
+	const markAsNotSpamDescriptor = useConvMarkAsNotSpamDescriptor({
 		ids: [conversation.id],
 		shouldReplaceHistory,
 		folderId
 	});
-	const applyTagDescriptor = useMsgApplyTagDescriptor(conversation.id, conversation.tags, folderId);
-	const moveToFolderDescriptor = useMsgMoveToFolderDescriptor({
-		folderId,
-		messageId: conversation.id,
-		deselectAll
-	});
-	const restoreFolderDescriptor = useMsgRestoreDescriptor({
-		folderId,
-		messageId: conversation.id,
-		deselectAll
-	});
-	const createAppointmentDescriptor = useMsgCreateAppointmentDescriptor(conversation, folderId);
-	const printDescriptor = useMsgPrintDescriptor(conversation, folderId);
 
-	const redirectDescriptor = useMsgRedirectDescriptor(conversation.id, folderId);
-	const editDraftDescriptor = useMsgEdiDraftDescriptor(
+	const applyTagDescriptor = useConvApplyTagDescriptor(
 		conversation.id,
-		conversation.isScheduled,
+		conversation.tags,
 		folderId
 	);
-	const editAsNewDescriptor = useMsgEditAsNewDescriptor(conversation.id, folderId);
-	const showOriginalDescriptor = useMsgShowOriginalDescriptor(conversation.id, folderId);
-	const downloadEmlDescriptor = useMsgDownloadEmlDescriptor(conversation.id, folderId);
+	const moveToFolderDescriptor = useConvMoveToFolderDescriptor({
+		folderId,
+		conversationId: conversation.id,
+		deselectAll
+	});
+	const restoreFolderDescriptor = useConvRestoreDescriptor({
+		folderId,
+		conversationId: conversation.id,
+		deselectAll
+	});
+	const printDescriptor = useConvPrintDescriptor([conversation], folderId);
 
-	const previewOnSeparatedWindowDescriptor = useMsgPreviewOnSeparatedWindowDescriptor({
-		messageId: conversation.id,
+	const showOriginalDescriptor = useConvShowOriginalDescriptor(
+		firstConversationMessage.id,
+		folderId
+	);
+
+	const previewOnSeparatedWindowDescriptor = useConvPreviewOnSeparatedWindowDescriptor({
+		conversationId: conversation.id,
 		subject: conversation.subject,
-		messagePreviewFactory
-	}); */
+		conversationPreviewFactory
+	});
 
 	return useMemo(
 		() => ({
@@ -156,7 +158,15 @@ export const useConvActions = ({
 			setAsReadDescriptor,
 			setAsUnreadDescriptor,
 			setFlagDescriptor,
-			unflagDescriptor
+			unflagDescriptor,
+			markAsSpamDescriptor,
+			markAsNotSpamDescriptor,
+			applyTagDescriptor,
+			moveToFolderDescriptor,
+			restoreFolderDescriptor,
+			printDescriptor,
+			previewOnSeparatedWindowDescriptor,
+			showOriginalDescriptor
 		}),
 		[
 			replyDescriptor,
@@ -167,7 +177,15 @@ export const useConvActions = ({
 			setAsReadDescriptor,
 			setAsUnreadDescriptor,
 			setFlagDescriptor,
-			unflagDescriptor
+			unflagDescriptor,
+			markAsSpamDescriptor,
+			markAsNotSpamDescriptor,
+			applyTagDescriptor,
+			moveToFolderDescriptor,
+			restoreFolderDescriptor,
+			printDescriptor,
+			previewOnSeparatedWindowDescriptor,
+			showOriginalDescriptor
 		]
 	);
 };

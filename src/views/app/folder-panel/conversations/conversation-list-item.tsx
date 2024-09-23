@@ -18,37 +18,22 @@ import {
 	Text,
 	Tooltip
 } from '@zextras/carbonio-design-system';
-import {
-	Tag,
-	pushHistory,
-	t,
-	useTags,
-	useUserAccounts,
-	useUserSettings
-} from '@zextras/carbonio-shell-ui';
-import {
-	debounce,
-	filter,
-	find,
-	forEach,
-	includes,
-	isEmpty,
-	reduce,
-	trimStart,
-	uniqBy
-} from 'lodash';
+import { Tag, pushHistory, useTags, useUserSettings } from '@zextras/carbonio-shell-ui';
+import { debounce, filter, find, forEach, includes, isEmpty, reduce, uniqBy } from 'lodash';
+import { useTranslation } from 'react-i18next';
+import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { ConversationMessagesList } from './conversation-messages-list';
 import { getFolderParentId } from './utils';
+import { ZIMBRA_STANDARD_COLORS } from '../../../../carbonio-ui-commons/constants';
 import { FOLDERS } from '../../../../carbonio-ui-commons/constants/folders';
-import { ZIMBRA_STANDARD_COLORS } from '../../../../carbonio-ui-commons/constants/utils';
-import { participantToString } from '../../../../commons/utils';
 import { API_REQUEST_STATUS } from '../../../../constants';
 import { normalizeDropdownActionItem } from '../../../../helpers/actions';
 import { getFolderIdParts } from '../../../../helpers/folders';
 import { useConvActions } from '../../../../hooks/actions/use-conv-actions';
 import { useAppDispatch, useAppSelector } from '../../../../hooks/redux';
+import { useTagDropdownItem } from '../../../../hooks/use-tag-dropdown-item';
 import { searchConv } from '../../../../store/actions';
 import { selectConversationExpandedStatus } from '../../../../store/conversations-slice';
 import { selectMessages } from '../../../../store/messages-slice';
@@ -64,6 +49,7 @@ import {
 	previewConversationOnSeparatedWindowAction,
 	useConversationsRead
 } from '../../../../ui-actions/conversation-actions';
+import { ConversationPreviewPanel } from '../../detail-panel/conversation-preview-panel';
 import { useGlobalExtraWindowManager } from '../../extra-windows/global-extra-window-manager';
 import { HoverBarContainer } from '../parts/hover-bar-container';
 import { HoverContainer } from '../parts/hover-container';
@@ -82,15 +68,21 @@ export const ConversationListItemActionWrapper = ({
 	onClick,
 	onDoubleClick,
 	deselectAll,
+	shouldReplaceHistory,
 	children
 }: {
 	children?: ReactNode;
 	onClick?: ContainerProps['onClick'];
 	onDoubleClick?: ContainerProps['onDoubleClick'];
+	shouldReplaceHistory?: boolean;
 	active?: boolean;
 	item: Conversation;
 	deselectAll: () => void;
 }): React.JSX.Element => {
+	const conversationPreviewFactory = useCallback(
+		() => <ConversationPreviewPanel conversation={item} isInsideExtraWindow />,
+		[item]
+	);
 	const {
 		replyDescriptor,
 		replyAllDescriptor,
@@ -98,10 +90,22 @@ export const ConversationListItemActionWrapper = ({
 		moveToTrashDescriptor,
 		deletePermanentlyDescriptor,
 		setAsReadDescriptor,
-		setAsUnreadDescriptor
+		setAsUnreadDescriptor,
+		setFlagDescriptor,
+		unflagDescriptor,
+		markAsSpamDescriptor,
+		markAsNotSpamDescriptor,
+		applyTagDescriptor,
+		moveToFolderDescriptor,
+		restoreFolderDescriptor,
+		printDescriptor,
+		previewOnSeparatedWindowDescriptor,
+		showOriginalDescriptor
 	} = useConvActions({
 		conversation: item,
-		deselectAll
+		deselectAll,
+		conversationPreviewFactory,
+		shouldReplaceHistory
 	});
 	const hoverActions = useMemo(
 		() => [
@@ -111,18 +115,25 @@ export const ConversationListItemActionWrapper = ({
 			moveToTrashDescriptor,
 			deletePermanentlyDescriptor,
 			setAsReadDescriptor,
-			setAsUnreadDescriptor
+			setAsUnreadDescriptor,
+			setFlagDescriptor,
+			unflagDescriptor,
+			restoreFolderDescriptor
 		],
 		[
-			replyAllDescriptor,
 			replyDescriptor,
+			replyAllDescriptor,
 			forwardDescriptor,
 			moveToTrashDescriptor,
 			deletePermanentlyDescriptor,
 			setAsReadDescriptor,
-			setAsUnreadDescriptor
+			setAsUnreadDescriptor,
+			setFlagDescriptor,
+			unflagDescriptor,
+			restoreFolderDescriptor
 		]
 	);
+	const tagItem = useTagDropdownItem(applyTagDescriptor, item.tags);
 	const dropdownItems = useMemo(
 		() =>
 			[
@@ -132,7 +143,17 @@ export const ConversationListItemActionWrapper = ({
 				normalizeDropdownActionItem(moveToTrashDescriptor),
 				normalizeDropdownActionItem(deletePermanentlyDescriptor),
 				normalizeDropdownActionItem(setAsReadDescriptor),
-				normalizeDropdownActionItem(setAsUnreadDescriptor)
+				normalizeDropdownActionItem(setAsUnreadDescriptor),
+				normalizeDropdownActionItem(setFlagDescriptor),
+				normalizeDropdownActionItem(unflagDescriptor),
+				normalizeDropdownActionItem(markAsSpamDescriptor),
+				normalizeDropdownActionItem(markAsNotSpamDescriptor),
+				tagItem,
+				normalizeDropdownActionItem(moveToFolderDescriptor),
+				normalizeDropdownActionItem(restoreFolderDescriptor),
+				normalizeDropdownActionItem(printDescriptor),
+				normalizeDropdownActionItem(previewOnSeparatedWindowDescriptor),
+				normalizeDropdownActionItem(showOriginalDescriptor)
 			].filter((action) => !action.disabled),
 		[
 			replyDescriptor,
@@ -141,7 +162,17 @@ export const ConversationListItemActionWrapper = ({
 			moveToTrashDescriptor,
 			deletePermanentlyDescriptor,
 			setAsReadDescriptor,
-			setAsUnreadDescriptor
+			setAsUnreadDescriptor,
+			setFlagDescriptor,
+			unflagDescriptor,
+			markAsSpamDescriptor,
+			markAsNotSpamDescriptor,
+			tagItem,
+			moveToFolderDescriptor,
+			restoreFolderDescriptor,
+			printDescriptor,
+			previewOnSeparatedWindowDescriptor,
+			showOriginalDescriptor
 		]
 	);
 	return (
@@ -190,14 +221,15 @@ export const ConversationListItem: FC<ConversationListItemProps> = memo(
 		folderId,
 		setDraggedIds
 	}) {
+		const { itemId } = useParams<{ itemId: string }>();
 		const dispatch = useAppDispatch();
 		const [open, setOpen] = useState(false);
-		const accounts = useUserAccounts();
 		const messages = useAppSelector(selectMessages);
 		const isConversation = 'messages' in (item || {});
 		const { createWindow } = useGlobalExtraWindowManager();
 		const folderParent = getFolderParentId({ folderId: folderId ?? '', isConversation, item });
 		const setConversationRead = useConversationsRead();
+		const [t] = useTranslation();
 
 		const conversationStatus = useAppSelector((state: MailsStateType) =>
 			selectConversationExpandedStatus(state, item.id)
@@ -239,15 +271,6 @@ export const ConversationListItem: FC<ConversationListItemProps> = memo(
 
 		const sortBy = useUserSettings()?.prefs?.zimbraPrefConversationOrder || 'dateDesc';
 		const zimbraPrefMarkMsgRead = useUserSettings()?.prefs?.zimbraPrefMarkMsgRead !== '-1';
-		const participantsString = useMemo(
-			() =>
-				reduce(
-					uniqBy(item.participants, (em) => em.address),
-					(acc, part) => trimStart(`${acc}, ${participantToString(part, accounts)}`, ', '),
-					''
-				),
-			[item.participants, accounts]
-		);
 
 		const toggleOpen = useCallback(
 			(e) => {
@@ -327,11 +350,11 @@ export const ConversationListItem: FC<ConversationListItemProps> = memo(
 
 		const toggleExpandButtonLabel = useMemo(
 			() => (open ? t('label.hide', 'Hide') : t('label.expand', 'Expand')),
-			[open]
+			[open, t]
 		);
 		const subject = useMemo(
 			() => item.subject || t('label.no_subject_with_tags', '<No Subject>'),
-			[item.subject]
+			[item.subject, t]
 		);
 		const subFragmentTooltipLabel = useMemo(
 			() => (!isEmpty(item.fragment) ? item.fragment : subject),
@@ -389,6 +412,8 @@ export const ConversationListItem: FC<ConversationListItemProps> = memo(
 			return item?.messages?.length > 0;
 		}, [item?.messages?.length, item.messagesInConversation, textReadValues.badge]);
 
+		const shouldReplaceHistory = useMemo(() => itemId === item.id, [item.id, itemId]);
+
 		return (
 			<Container mainAlignment="flex-start" data-testid={`ConversationListItem-${item.id}`}>
 				<ConversationListItemActionWrapper
@@ -396,6 +421,7 @@ export const ConversationListItem: FC<ConversationListItemProps> = memo(
 					active={active}
 					onClick={_onClick}
 					onDoubleClick={_onDoubleClick}
+					shouldReplaceHistory={shouldReplaceHistory}
 					deselectAll={deselectAll}
 				>
 					<div
