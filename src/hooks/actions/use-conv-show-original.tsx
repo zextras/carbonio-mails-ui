@@ -11,7 +11,7 @@ import { ConversationActionsDescriptors } from '../../constants';
 import { isDraft, isTrash } from '../../helpers/folders';
 import { ActionFn, UIActionDescriptor } from '../../types';
 
-export const useConvShowOriginalFn = (conversationId: string, folderId: string): ActionFn => {
+export const useConvShowOriginalFn = (firstMessageId: string, folderId: string): ActionFn => {
 	const canExecute = useCallback(
 		(): boolean => !isDraft(folderId) && !isTrash(folderId),
 		[folderId]
@@ -19,18 +19,18 @@ export const useConvShowOriginalFn = (conversationId: string, folderId: string):
 
 	const execute = useCallback((): void => {
 		if (canExecute()) {
-			window.open(`/service/home/~/?auth=co&view=text&id=${conversationId}`, '_blank');
+			window.open(`/service/home/~/?auth=co&view=text&id=${firstMessageId}`, '_blank');
 		}
-	}, [canExecute, conversationId]);
+	}, [canExecute, firstMessageId]);
 
 	return useMemo(() => ({ canExecute, execute }), [canExecute, execute]);
 };
 
 export const useConvShowOriginalDescriptor = (
-	conversationId: string,
+	firstMessageId: string,
 	folderId: string
 ): UIActionDescriptor => {
-	const { canExecute, execute } = useConvShowOriginalFn(conversationId, folderId);
+	const { canExecute, execute } = useConvShowOriginalFn(firstMessageId, folderId);
 	const [t] = useTranslation();
 	return {
 		id: ConversationActionsDescriptors.SHOW_SOURCE.id,

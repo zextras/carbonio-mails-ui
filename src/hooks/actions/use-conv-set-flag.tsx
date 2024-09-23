@@ -13,7 +13,7 @@ import { ActionFn, UIActionDescriptor } from '../../types';
 import { useAppDispatch } from '../redux';
 
 export const useConvSetFlagFn = (ids: Array<string>, isFlagged: boolean): ActionFn => {
-	const canExecute = useCallback((): boolean => isFlagged, [isFlagged]);
+	const canExecute = useCallback((): boolean => !isFlagged, [isFlagged]);
 	const dispatch = useAppDispatch();
 
 	const execute = useCallback((): void => {

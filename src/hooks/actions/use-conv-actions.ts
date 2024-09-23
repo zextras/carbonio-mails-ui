@@ -137,7 +137,10 @@ export const useConvActions = ({
 	});
 	const printDescriptor = useConvPrintDescriptor([conversation], folderId);
 
-	const showOriginalDescriptor = useConvShowOriginalDescriptor(conversation.id, folderId);
+	const showOriginalDescriptor = useConvShowOriginalDescriptor(
+		firstConversationMessage.id,
+		folderId
+	);
 
 	const previewOnSeparatedWindowDescriptor = useConvPreviewOnSeparatedWindowDescriptor({
 		conversationId: conversation.id,

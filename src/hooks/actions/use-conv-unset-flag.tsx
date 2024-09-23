@@ -38,7 +38,7 @@ export const useConvUnsetFlagDescriptor = (
 	return {
 		id: ConversationActionsDescriptors.UNFLAG.id,
 		icon: 'Flag',
-		label: t('action.flag', 'Remove flag'),
+		label: t('action.unflag', 'Remove flag'),
 		execute,
 		canExecute
 	};
