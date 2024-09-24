@@ -32,9 +32,8 @@ import { useFolder } from '../../../../carbonio-ui-commons/store/zustand/folder'
 import { getTimeLabel, participantToString } from '../../../../commons/utils';
 import { EditViewActions } from '../../../../constants';
 import { useMsgPreviewOnSeparatedWindowFn } from '../../../../hooks/actions/use-msg-preview-on-separated-window';
-import { useAppDispatch } from '../../../../hooks/redux';
+import { useMsgSetAsReadFn } from '../../../../hooks/actions/use-set-msg-read';
 import { MessageListItemProps, TextReadValuesType } from '../../../../types';
-import { setMsgRead } from '../../../../ui-actions/message-actions';
 import { useTagExist } from '../../../../ui-actions/tag-actions';
 import { getFolderTranslatedName } from '../../../sidebar/utils';
 import { createEditBoard } from '../../detail-panel/edit/edit-view-board';
@@ -45,6 +44,7 @@ import { SenderName } from '../parts/sender-name';
 type RouteParams = {
 	itemId: string;
 };
+
 export const MessageListItem: FC<MessageListItemProps> = memo(function MessageListItem({
 	item,
 	selected,
@@ -60,7 +60,6 @@ export const MessageListItem: FC<MessageListItemProps> = memo(function MessageLi
 	const firstChildFolderId = currentFolderId ?? item.parent;
 	const { itemId } = useParams<RouteParams>();
 	const shouldReplaceHistory = useMemo(() => itemId === item.id, [item.id, itemId]);
-	const dispatch = useAppDispatch();
 	const zimbraPrefMarkMsgRead = useUserSettings()?.prefs?.zimbraPrefMarkMsgRead !== '-1';
 
 	const messagePreviewFactory = useCallback(
@@ -68,10 +67,18 @@ export const MessageListItem: FC<MessageListItemProps> = memo(function MessageLi
 		[firstChildFolderId, item.id]
 	);
 
-	const { execute } = useMsgPreviewOnSeparatedWindowFn({
+	const previewOnSeparatedWindow = useMsgPreviewOnSeparatedWindowFn({
 		messageId: item.id,
 		subject: item.subject,
 		messagePreviewFactory
+	});
+
+	const setAsRead = useMsgSetAsReadFn({
+		ids: [item.id],
+		shouldReplaceHistory,
+		isMessageRead: item.read,
+		deselectAll,
+		folderId: firstChildFolderId
 	});
 
 	const debouncedPushHistory = useMemo(
@@ -87,7 +94,7 @@ export const MessageListItem: FC<MessageListItemProps> = memo(function MessageLi
 		(e) => {
 			if (!e.isDefaultPrevented()) {
 				if (item.read === false && zimbraPrefMarkMsgRead) {
-					setMsgRead({ ids: [item.id], value: false, dispatch }).onClick(e);
+					setAsRead.canExecute() && setAsRead.execute();
 				}
 				if (handleReplaceHistory) {
 					handleReplaceHistory();
@@ -96,14 +103,7 @@ export const MessageListItem: FC<MessageListItemProps> = memo(function MessageLi
 				}
 			}
 		},
-		[
-			item.read,
-			item.id,
-			zimbraPrefMarkMsgRead,
-			handleReplaceHistory,
-			dispatch,
-			debouncedPushHistory
-		]
+		[item.read, zimbraPrefMarkMsgRead, handleReplaceHistory, setAsRead, debouncedPushHistory]
 	);
 	const onDoubleClick = useCallback(
 		(e) => {
@@ -116,11 +116,11 @@ export const MessageListItem: FC<MessageListItemProps> = memo(function MessageLi
 						actionTargetId: id
 					});
 				} else {
-					execute();
+					previewOnSeparatedWindow.canExecute() && previewOnSeparatedWindow.execute();
 				}
 			}
 		},
-		[debouncedPushHistory, execute, item]
+		[debouncedPushHistory, previewOnSeparatedWindow, item]
 	);
 
 	const accounts = useUserAccounts();

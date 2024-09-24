@@ -6,7 +6,7 @@
 import React from 'react';
 
 import { faker } from '@faker-js/faker';
-import { screen, within } from '@testing-library/react';
+import { act, screen, within } from '@testing-library/react';
 import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 
 import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
@@ -61,7 +61,9 @@ describe('edit-modal', () => {
 
 		const selectColor = screen.getByText(/label\.select_color/i);
 		expect(selectColor).toBeInTheDocument();
-		await user.click(selectColor);
+		await act(async () => {
+			await user.click(selectColor);
+		});
 		ZIMBRA_STANDARD_COLORS.forEach((el) => {
 			within(screen.getByTestId('dropdown-popper-list')).getByText(`color.${el.zLabel}`);
 		});
@@ -113,7 +115,9 @@ describe('edit-modal', () => {
 
 		const selectColor = screen.getByText(/label\.select_color/i);
 		expect(selectColor).toBeInTheDocument();
-		await user.click(selectColor);
+		await act(async () => {
+			await user.click(selectColor);
+		});
 		ZIMBRA_STANDARD_COLORS.forEach((el) => {
 			within(screen.getByTestId('dropdown-popper-list')).getByText(`color.${el.zLabel}`);
 		});
@@ -239,7 +243,9 @@ describe('edit-modal', () => {
 		});
 		const wipeInterceptor = createSoapAPIInterceptor<{ action: SoapFolderAction }>('FolderAction');
 
-		await user.click(editButton);
+		await act(async () => {
+			await user.click(editButton);
+		});
 		const { action } = await wipeInterceptor;
 
 		expect(action.id).toBe(FOLDERS.TRASH);
@@ -284,7 +290,9 @@ describe('edit-modal', () => {
 		const folderInputElement = within(newFolder).getByRole('textbox');
 
 		expect(folderInputElement).toBeInTheDocument();
-		await user.clear(folderInputElement);
+		await act(async () => {
+			await user.clear(folderInputElement);
+		});
 
 		const editButton = screen.getByRole('button', {
 			name: /label\.edit/i
@@ -293,13 +301,17 @@ describe('edit-modal', () => {
 
 		const folderName = faker.lorem.word();
 		// update the existing folder name into the text input
-		await user.type(folderInputElement, folderName);
+		await act(async () => {
+			await user.type(folderInputElement, folderName);
+		});
 		const wipeInterceptor = createSoapAPIInterceptor<
 			{ action: SoapFolderAction },
 			ErrorSoapBodyResponse
 		>('FolderAction', buildSoapErrorResponseBody());
 
-		await user.click(editButton);
+		await act(async () => {
+			await user.click(editButton);
+		});
 		const { action } = await wipeInterceptor;
 
 		expect(action.id).toBe(folder.id);

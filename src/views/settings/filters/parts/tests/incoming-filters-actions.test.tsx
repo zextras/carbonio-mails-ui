@@ -14,6 +14,7 @@ import { t } from '@zextras/carbonio-shell-ui';
 
 import * as folderHooks from '../../../../../carbonio-ui-commons/store/zustand/folder/hooks';
 import { generateFolder } from '../../../../../carbonio-ui-commons/test/mocks/folders/folders-generator';
+import { createSoapAPIInterceptor } from '../../../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import {
 	makeListItemsVisible,
 	setupTest
@@ -41,6 +42,7 @@ describe('incoming filters actions', () => {
 		beforeEach(() => {
 			store = generateStore();
 			(useSnackbar as jest.Mock).mockReturnValue(createSnackbarSpy);
+			createSoapAPIInterceptor('ApplyFilterRules');
 		});
 
 		test('should disable apply filter if no filter is selected', async () => {

@@ -6,35 +6,28 @@
 import React, { useCallback } from 'react';
 
 import { AsyncThunkAction, Dispatch } from '@reduxjs/toolkit';
-import { Text, useSnackbar } from '@zextras/carbonio-design-system';
-import { t, replaceHistory, useIntegratedFunction } from '@zextras/carbonio-shell-ui';
-import { isNull, map, noop } from 'lodash';
+import { Text } from '@zextras/carbonio-design-system';
+import { t, replaceHistory } from '@zextras/carbonio-shell-ui';
+import { map, noop } from 'lodash';
 
 import DeleteConvConfirm from './delete-conv-modal';
 import { errorPage } from './error-page';
 import MoveConvMessage from './move-conv-msg';
-import RedirectAction from './redirect-message-action';
 import { useInSearchModule } from './utils';
 import { FOLDERS } from '../carbonio-ui-commons/constants/folders';
-import { getRoot } from '../carbonio-ui-commons/store/zustand/folder';
 import { getContentForPrint } from '../commons/print-conversation/print-conversation';
 import { EditViewActions, MessageActionsDescriptors, TIMEOUTS } from '../constants';
-import { getAttendees, getOptionalsAttendees, getSenderByOwner } from '../helpers/appointmemt';
 import { useUiUtilities } from '../hooks/use-ui-utilities';
-import { getMsgCall, getMsgsForPrint, msgAction } from '../store/actions';
-import { sendMsg, sendMsgFromEditor } from '../store/actions/send-msg';
-import { extractBody } from '../store/editor-slice-utils';
+import { getMsgsForPrint, msgAction } from '../store/actions';
+import { sendMsg } from '../store/actions/send-msg';
 import { AppDispatch, StoreProvider } from '../store/redux';
 import type {
 	MailMessage,
-	MailsEditorV2,
 	MessageActionReturnType,
 	MsgActionParameters,
 	MsgActionResult
 } from '../types';
-import { CalendarType, SenderType } from '../types/calendar';
 import { createEditBoard } from '../views/app/detail-panel/edit/edit-view-board';
-import { getLocationOrigin } from '../views/app/detail-panel/preview/utils';
 
 type MessageActionIdsType = Array<string>;
 type MessageActionValueType = string | boolean;
@@ -579,60 +572,6 @@ export function sendDraft({
 	};
 }
 
-export function sendDraftFromPreview({
-	generateEditorFunction,
-	dispatch
-}: {
-	generateEditorFunction: () => Promise<MailsEditorV2>;
-	dispatch: AppDispatch;
-}): MessageActionReturnType {
-	const actDescriptor = MessageActionsDescriptors.SEND;
-	return {
-		id: actDescriptor.id,
-		icon: 'PaperPlaneOutline',
-		label: t('label.send', 'Send'),
-		onClick: async (ev): Promise<void> => {
-			if (ev) ev.preventDefault();
-
-			generateEditorFunction()
-				.then((editor) => dispatch(sendMsgFromEditor({ editor })))
-				.then() // TOFIX IRIS-4400
-				.catch(noop); // TOFIX IRIS-4400
-		}
-	};
-}
-
-export const useRedirectMsg = (): ((arg: { id: string }) => MessageActionReturnType) => {
-	const { createModal, closeModal } = useUiUtilities();
-	return useCallback(
-		({ id }) => {
-			const actDescriptor = MessageActionsDescriptors.REDIRECT;
-			return {
-				id: actDescriptor.id,
-				icon: 'CornerUpRight',
-				label: t('action.redirect', 'Redirect'),
-				onClick: (ev): void => {
-					if (ev) ev.preventDefault();
-					const modalId = Date.now().toString();
-					createModal(
-						{
-							id: modalId,
-							maxHeight: '90vh',
-							children: (
-								<StoreProvider>
-									<RedirectAction onClose={(): void => closeModal(modalId)} id={id} />
-								</StoreProvider>
-							)
-						},
-						true
-					);
-				}
-			};
-		},
-		[closeModal, createModal]
-	);
-};
-
 export const useMoveMessageToFolder = (): ((
 	arg: Pick<MessageActionPropType, 'id' | 'dispatch' | 'isRestore' | 'deselectAll' | 'folderId'>
 ) => MessageActionReturnType) => {
@@ -709,106 +648,5 @@ export const useDeleteMessagePermanently = (): ((
 			};
 		},
 		[closeModal, createModal]
-	);
-};
-
-export function downloadEml({ id }: { id: string }): MessageActionReturnType {
-	const actDescriptor = MessageActionsDescriptors.DOWNLOAD_EML;
-
-	return {
-		id: actDescriptor.id,
-		icon: 'DownloadOutline',
-		label: t('action.download_eml', 'Download EML'),
-		onClick: (ev): void => {
-			ev?.preventDefault();
-			const link = document.createElement('a');
-			link.download = `${id}.eml`;
-			link.href = `${getLocationOrigin()}/service/home/~/?auth=co&id=${id}`;
-			link.click();
-			link.remove();
-		}
-	};
-}
-
-export const useCreateAppointment = (): (({
-	item,
-	openAppointmentComposer
-}: {
-	item: MailMessage;
-	openAppointmentComposer: ReturnType<typeof useIntegratedFunction>[0];
-}) => MessageActionReturnType) => {
-	const createSnackbar = useSnackbar();
-
-	return useCallback(
-		({
-			item,
-			openAppointmentComposer
-		}: {
-			item: MailMessage;
-			openAppointmentComposer: ReturnType<typeof useIntegratedFunction>[0];
-		}): MessageActionReturnType => {
-			const actDescriptor = MessageActionsDescriptors.CREATE_APPOINTMENT;
-			return {
-				id: actDescriptor.id,
-				icon: 'CalendarModOutline',
-				label: t('action.create_appointment', 'Create Appointment'),
-				onClick: (ev): void => {
-					ev?.preventDefault();
-					const attendees = getAttendees(item);
-					const optionalAttendees = getOptionalsAttendees(item);
-					const rooFolder = getRoot(item.parent);
-					let calendar: CalendarType | null = null;
-					let sender: SenderType | null = null;
-					const htmlBody = extractBody(item)[1];
-					if (rooFolder && rooFolder?.isLink) {
-						const calendarId = `${rooFolder.id.split(':')[0]}:${FOLDERS.CALENDAR}`;
-						calendar = {
-							id: calendarId,
-							owner: rooFolder?.isLink && rooFolder.owner
-						};
-						sender = getSenderByOwner(rooFolder?.owner);
-					}
-					if (!item?.isComplete) {
-						getMsgCall({ msgId: item.id })
-							.then((message: MailMessage) => {
-								const mailHtmlBody = extractBody(message)[1];
-								openAppointmentComposer({
-									title: message.subject,
-									isRichText: true,
-									richText: mailHtmlBody,
-									...(!isNull(calendar) ? { calendar } : {}),
-									...(!isNull(sender) ? { sender } : {}),
-									attendees,
-									optionalAttendees
-								});
-							})
-							.catch(() => {
-								createSnackbar({
-									key: `get-msg-on-new-appointment`,
-									replace: true,
-									type: 'warning',
-									hideButton: true,
-									label: t(
-										'message.snackbar.att_err',
-										'There seems to be a problem when saving, please try again'
-									),
-									autoHideTimeout: 3000
-								});
-							});
-					} else {
-						openAppointmentComposer({
-							title: item.subject,
-							isRichText: true,
-							richText: htmlBody,
-							...(!isNull(calendar) ? { calendar } : {}),
-							...(!isNull(sender) ? { sender } : {}),
-							attendees,
-							optionalAttendees
-						});
-					}
-				}
-			};
-		},
-		[createSnackbar]
 	);
 };

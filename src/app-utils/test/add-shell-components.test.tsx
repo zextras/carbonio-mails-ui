@@ -5,9 +5,15 @@
  */
 
 import { addRoute, addSearchView, addSettingsView } from '@zextras/carbonio-shell-ui';
+import { HttpResponse } from 'msw';
 
+import { createAPIInterceptor } from '../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { mockAdvancedAccountAPI } from '../../tests/utils';
 import { addComponentsToShell } from '../add-shell-components';
+
+beforeEach(() => {
+	createAPIInterceptor('get', 'zx/login/v3/account', HttpResponse.json({}));
+});
 
 describe('addShellComponents', () => {
 	const label = 'label.app_name';

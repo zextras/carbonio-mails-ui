@@ -6,7 +6,7 @@
 import React from 'react';
 
 import { faker } from '@faker-js/faker';
-import { screen } from '@testing-library/react';
+import { act, screen } from '@testing-library/react';
 
 import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
 import { getFolder } from '../../../carbonio-ui-commons/store/zustand/folder/hooks';
@@ -51,7 +51,7 @@ describe('empty-modal', () => {
 			depth: 1
 		};
 
-		const { user } = setupTest(<EmptyModal onClose={(): void => closeModal()} folder={folder} />, {
+		setupTest(<EmptyModal onClose={(): void => closeModal()} folder={folder} />, {
 			store
 		});
 
@@ -92,7 +92,7 @@ describe('empty-modal', () => {
 			depth: 1
 		};
 
-		const { user } = setupTest(<EmptyModal onClose={(): void => closeModal()} folder={folder} />, {
+		setupTest(<EmptyModal onClose={(): void => closeModal()} folder={folder} />, {
 			store
 		});
 
@@ -163,7 +163,7 @@ describe('empty-modal', () => {
 		});
 		const wipeInterceptor = createSoapAPIInterceptor<{ action: SoapFolderAction }>('FolderAction');
 
-		await user.click(wipeButton);
+		await act(() => user.click(wipeButton));
 
 		const { action } = await wipeInterceptor;
 
