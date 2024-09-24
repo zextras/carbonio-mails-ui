@@ -31,10 +31,9 @@ import { useFolder } from '../../../../carbonio-ui-commons/store/zustand/folder'
 import { getTimeLabel, participantToString } from '../../../../commons/utils';
 import { EditViewActions } from '../../../../constants';
 import { useMsgPreviewOnSeparatedWindowFn } from '../../../../hooks/actions/use-msg-preview-on-separated-window';
-import { useAppDispatch } from '../../../../hooks/redux';
+import { useMsgSetAsReadFn } from '../../../../hooks/actions/use-set-msg-read';
 import { useMessageById } from '../../../../store/zustand/search/store';
 import { TextReadValuesType } from '../../../../types';
-import { setMsgRead } from '../../../../ui-actions/message-actions';
 import { useTagExist } from '../../../../ui-actions/tag-actions';
 import { createEditBoard } from '../../../app/detail-panel/edit/edit-view-board';
 import { MessagePreviewPanel } from '../../../app/detail-panel/message-preview-panel';
@@ -75,13 +74,20 @@ export const SearchMessageListItem: FC<SearchMessageListItemProps> = memo(functi
 		[folderId, itemId]
 	);
 
-	const dispatch = useAppDispatch();
 	const zimbraPrefMarkMsgRead = useUserSettings()?.prefs?.zimbraPrefMarkMsgRead !== '-1';
 
-	const { execute, canExecute } = useMsgPreviewOnSeparatedWindowFn({
+	const previewOnSeparatedWindow = useMsgPreviewOnSeparatedWindowFn({
 		messageId: itemId,
 		subject: completeMessage.subject,
 		messagePreviewFactory
+	});
+
+	const setAsRead = useMsgSetAsReadFn({
+		ids: [itemId],
+		shouldReplaceHistory,
+		isMessageRead: completeMessage.read,
+		deselectAll,
+		folderId
 	});
 
 	const onClick = useCallback(
@@ -90,11 +96,11 @@ export const SearchMessageListItem: FC<SearchMessageListItemProps> = memo(functi
 				return;
 			}
 			if (completeMessage.read === false && zimbraPrefMarkMsgRead) {
-				setMsgRead({ ids: [completeMessage.id], value: false, dispatch }).onClick(e);
+				setAsRead.canExecute() && setAsRead.execute();
 			}
 			replaceHistory(`/message/${completeMessage.id}`);
 		},
-		[completeMessage.read, completeMessage.id, zimbraPrefMarkMsgRead, dispatch]
+		[completeMessage.read, completeMessage.id, zimbraPrefMarkMsgRead, setAsRead]
 	);
 	const onDoubleClick = useCallback(
 		(e) => {
@@ -109,9 +115,9 @@ export const SearchMessageListItem: FC<SearchMessageListItemProps> = memo(functi
 				});
 				return;
 			}
-			canExecute() && execute();
+			previewOnSeparatedWindow.canExecute() && previewOnSeparatedWindow.execute();
 		},
-		[canExecute, completeMessage, execute]
+		[previewOnSeparatedWindow, completeMessage]
 	);
 
 	const accounts = useUserAccounts();
