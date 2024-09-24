@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.18.2](https://github.com/zextras/carbonio-mails-ui/compare/v1.18.1...v1.18.2) (2024-09-24)
+
+
+### Bug Fixes
+
+* messages and conversations tag are not updated ([8abc15c](https://github.com/zextras/carbonio-mails-ui/commit/8abc15c79293239975c06a0351fa3b08f6b5f076))
+* update UI when remove tags from search results ([c0edd69](https://github.com/zextras/carbonio-mails-ui/commit/c0edd6918fd34d35a6486263c1907459aac366ca))
+
 ### [1.18.1](https://github.com/zextras/carbonio-mails-ui/compare/v1.18.0...v1.18.1) (2024-09-05)
 
 
