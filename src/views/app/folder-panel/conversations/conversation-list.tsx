@@ -21,8 +21,8 @@ import {
 } from '../../../../constants';
 import { getFolderIdParts } from '../../../../helpers/folders';
 import { parseMessageSortingOptions } from '../../../../helpers/sorting';
-import { useKeyboardShortcuts } from '../../../../hooks/keyboard-shortcuts';
 import { useAppDispatch, useAppSelector } from '../../../../hooks/redux';
+import { useConversationKeyboardShortcuts } from '../../../../hooks/use-conversation-keyboard-shortcuts';
 import { useConversationListItems } from '../../../../hooks/use-conversation-list';
 import { useSelection } from '../../../../hooks/use-selection';
 import { search } from '../../../../store/actions';
@@ -70,7 +70,7 @@ export const ConversationList: FC = () => {
 		dispatch(search({ folderId, offset, sortBy: sortOrder, limit: LIST_LIMIT.LOAD_MORE_LIMIT }));
 	}, [hasMore, conversations.length, dispatch, folderId, sortOrder]);
 
-	const handleKeyboardShortcuts = useKeyboardShortcuts();
+	const handleKeyboardShortcuts = useConversationKeyboardShortcuts();
 	useEffect(() => {
 		const handler = (event: KeyboardEvent): void =>
 			handleKeyboardShortcuts({

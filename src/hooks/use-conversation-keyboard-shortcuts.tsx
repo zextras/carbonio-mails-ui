@@ -28,7 +28,9 @@ const modifierKeysFirstTier: string[] = ['v', 'm', '.', 'n'];
 const modifierKeysSecondTier: string[] = [];
 
 let keySequence = '';
-export const useKeyboardShortcuts = (): ((args: HandleKeyboardShortcutsProps) => void) => {
+export const useConversationKeyboardShortcuts = (): ((
+	args: HandleKeyboardShortcutsProps
+) => void) => {
 	const setConversationAsSpam = useSetConversationAsSpam();
 	const moveConversationToTrash = useMoveConversationToTrash();
 	const setConversationRead = useConversationsRead();
