@@ -12,7 +12,7 @@ import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mock
 import { setupHook } from '../../../carbonio-ui-commons/test/test-setup';
 import { API_REQUEST_STATUS, FOLDERS_DESCRIPTORS, TIMEOUTS } from '../../../constants';
 import { generateStore } from '../../../tests/generators/store';
-import { MsgActionRequest } from '../../../types';
+import { MsgActionRequest, MsgActionResponse } from '../../../types';
 import { useMsgMarkAsNotSpamFn, useMsgMarkAsNotSpamDescriptor } from '../use-msg-mark-as-not-spam';
 
 describe('useMsgMarkAsNotSpamDescriptor', () => {
@@ -106,8 +106,16 @@ describe('useMsgMarkAsNotSpamFn', () => {
 		});
 
 		it('should call the API with the proper params if the action can be executed', async () => {
-			const apiInterceptor = createSoapAPIInterceptor<MsgActionRequest>('MsgAction');
 			const ids = times(faker.number.int({ max: 20 }), () => faker.number.int().toString());
+			const apiInterceptor = createSoapAPIInterceptor<MsgActionRequest, MsgActionResponse>(
+				'MsgAction',
+				{
+					action: {
+						id: ids.join(','),
+						op: '!spam'
+					}
+				}
+			);
 
 			const {
 				result: { current: functions }
@@ -116,9 +124,8 @@ describe('useMsgMarkAsNotSpamFn', () => {
 				initialProps: [{ ids, shouldReplaceHistory: false, folderId: FOLDERS.SPAM }]
 			});
 
-			functions.execute();
-
 			act(() => {
+				functions.execute();
 				jest.advanceTimersByTime(TIMEOUTS.SET_AS_SPAM);
 			});
 
