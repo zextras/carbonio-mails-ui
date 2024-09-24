@@ -5,41 +5,71 @@
  */
 import { useCallback } from 'react';
 
-import { noop } from 'lodash';
+import { useConvMarkAsNotSpamFn } from './actions/use-conv-mark-as-not-spam';
+import { useConvMarkAsSpamFn } from './actions/use-conv-mark-as-spam';
+import { useConvMoveToTrashFn } from './actions/use-conv-move-to-trash';
+import { useConvSetAsReadFn } from './actions/use-conv-set-as-read';
+import { useConvSetAsUnreadFn } from './actions/use-conv-set-as-unread';
+import { useConvSetFlagFn } from './actions/use-conv-set-flag';
+import { useConvUnsetFlagFn } from './actions/use-conv-unset-flag';
+import { useAppSelector } from './redux';
+import { selectConversation } from '../store/conversations-slice';
+import { Conversation } from '../types';
 
-import { AppDispatch } from '../store/redux';
-import {
-	setConversationsFlag,
-	useConversationsRead,
-	useMoveConversationToTrash,
-	useSetConversationAsSpam
-} from '../ui-actions/conversation-actions';
-
-type HandleKeyboardShortcutsProps = {
-	event: KeyboardEvent;
-	itemId: string;
-	folderId: string;
-	dispatch: AppDispatch;
+type HandleKeyboardShortcutsArguments = {
 	deselectAll: () => void;
-	conversations: Array<{ id: string; flagged: boolean }>;
+	conversationId: Conversation['id'];
+	folderId: string;
 };
 
 const modifierKeysFirstTier: string[] = ['v', 'm', '.', 'n'];
 const modifierKeysSecondTier: string[] = [];
 
 let keySequence = '';
-export const useConversationKeyboardShortcuts = (): ((
-	args: HandleKeyboardShortcutsProps
-) => void) => {
-	const setConversationAsSpam = useSetConversationAsSpam();
-	const moveConversationToTrash = useMoveConversationToTrash();
-	const setConversationRead = useConversationsRead();
-	return useCallback(
-		({ event, itemId, conversations, dispatch, deselectAll, folderId }) => {
-			const conversationFlag = conversations.filter(
-				(conversation) => conversation.id === itemId
-			)?.[0]?.flagged;
 
+export const useConversationKeyboardShortcuts = ({
+	conversationId,
+	deselectAll,
+	folderId
+}: HandleKeyboardShortcutsArguments): ((event: KeyboardEvent) => void) => {
+	const conversation = useAppSelector(selectConversation(conversationId));
+
+	const markAsSpam = useConvMarkAsSpamFn({
+		ids: [conversationId],
+		folderId,
+		shouldReplaceHistory: true
+	});
+
+	const markAsNotSpam = useConvMarkAsNotSpamFn({
+		ids: [conversationId],
+		folderId,
+		shouldReplaceHistory: true
+	});
+
+	const moveToTrash = useConvMoveToTrashFn({
+		ids: [conversationId],
+		folderId,
+		deselectAll
+	});
+
+	const setAsRead = useConvSetAsReadFn({
+		ids: [conversationId],
+		folderId,
+		deselectAll,
+		isConversationRead: conversation?.read
+	});
+	const setAsUnread = useConvSetAsUnreadFn({
+		ids: [conversationId],
+		folderId,
+		deselectAll,
+		isConversationRead: conversation?.read
+	});
+
+	const flag = useConvSetFlagFn([conversationId], conversation?.flagged);
+	const unflag = useConvUnsetFlagFn([conversationId], conversation?.flagged);
+
+	return useCallback(
+		(event) => {
 			const eventActions = (): void => {
 				event.preventDefault();
 				event.stopImmediatePropagation();
@@ -57,70 +87,34 @@ export const useConversationKeyboardShortcuts = (): ((
 					case 'z': // Mark read
 						if (isGlobalContext) {
 							eventActions();
-							setConversationRead({
-								ids: [itemId],
-								value: false,
-								dispatch,
-								deselectAll: noop,
-								shouldReplaceHistory: false,
-								folderId
-							}).onClick(event);
+							setAsRead.canExecute() && setAsRead.execute();
 						}
 						break;
 					case 'mu': // Mark unread
+					case 'x': // Mark unread
 						if (isGlobalContext) {
 							eventActions();
-							setConversationRead({
-								ids: [itemId],
-								value: true,
-								dispatch,
-								deselectAll: noop,
-								shouldReplaceHistory: false,
-								folderId
-							}).onClick(event);
-						}
-						break;
-					case 'x': // Mark unread
-						if (isGlobalContext && itemId) {
-							eventActions();
-							setConversationRead({
-								ids: [itemId],
-								value: true,
-								dispatch,
-								deselectAll: noop,
-								shouldReplaceHistory: false,
-								folderId
-							}).onClick(event);
+							setAsUnread.canExecute() && setAsUnread.execute();
 						}
 						break;
 					case 'mf': // Flag/Unflag messages
-						if (isGlobalContext && itemId) {
+						if (isGlobalContext && conversationId) {
 							eventActions();
-							setConversationsFlag({ ids: [itemId], value: conversationFlag, dispatch }).onClick(
-								event
-							);
+							flag.canExecute() && flag.execute();
+							unflag.canExecute() && unflag.execute();
 						}
 						break;
 					case 'ms': // Report (mark as) spam
-						if (isGlobalContext && itemId) {
+						if (isGlobalContext && conversationId) {
 							eventActions();
-							setConversationAsSpam({
-								ids: [itemId],
-								value: false,
-								dispatch,
-								deselectAll
-							}).onClick(event);
+							markAsSpam.canExecute() && markAsSpam.execute();
+							markAsNotSpam.canExecute() && markAsNotSpam.execute();
 						}
 						break;
 					case '.t': // Move to Trash
-						if (isGlobalContext && itemId) {
+						if (isGlobalContext && conversationId) {
 							eventActions();
-							moveConversationToTrash({
-								ids: [itemId],
-								dispatch,
-								deselectAll,
-								folderId
-							}).onClick(event);
+							moveToTrash.canExecute() && moveToTrash.execute();
 						}
 						break;
 					case '.i': // Move to Inbox
@@ -159,6 +153,6 @@ export const useConversationKeyboardShortcuts = (): ((
 				default:
 			}
 		},
-		[moveConversationToTrash, setConversationAsSpam, setConversationRead]
+		[flag, conversationId, markAsNotSpam, markAsSpam, moveToTrash, setAsRead, setAsUnread, unflag]
 	);
 };

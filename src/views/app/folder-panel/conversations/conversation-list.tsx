@@ -5,13 +5,13 @@
  */
 import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
+import { ListItem } from '@zextras/carbonio-design-system';
 import { t, useAppContext, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
 import { useParams } from 'react-router-dom';
 
 import { ConversationListComponent } from './conversation-list-component';
 import { ConversationListItemComponent } from './conversation-list-item-component';
-import { CustomListItem } from '../../../../carbonio-ui-commons/components/list/list-item';
 import { FOLDERS } from '../../../../carbonio-ui-commons/constants/folders';
 import { useFolder } from '../../../../carbonio-ui-commons/store/zustand/folder/hooks';
 import {
@@ -70,22 +70,18 @@ export const ConversationList: FC = () => {
 		dispatch(search({ folderId, offset, sortBy: sortOrder, limit: LIST_LIMIT.LOAD_MORE_LIMIT }));
 	}, [hasMore, conversations.length, dispatch, folderId, sortOrder]);
 
-	const handleKeyboardShortcuts = useConversationKeyboardShortcuts();
+	const keyboardActions = useConversationKeyboardShortcuts({
+		conversationId: itemId,
+		deselectAll,
+		folderId
+	});
 	useEffect(() => {
-		const handler = (event: KeyboardEvent): void =>
-			handleKeyboardShortcuts({
-				event,
-				folderId,
-				itemId,
-				conversations,
-				dispatch,
-				deselectAll
-			});
+		const handler = (event: KeyboardEvent): void => keyboardActions(event);
 		document.addEventListener('keydown', handler);
 		return () => {
 			document.removeEventListener('keydown', handler);
 		};
-	}, [folderId, itemId, conversations, dispatch, deselectAll, handleKeyboardShortcuts]);
+	}, [folderId, itemId, conversations, dispatch, deselectAll, keyboardActions]);
 
 	const displayerTitle = useMemo(() => {
 		if (conversations?.length === 0) {
@@ -112,7 +108,7 @@ export const ConversationList: FC = () => {
 				const active = itemId === conversation.id;
 				const isSelected = selected[conversation.id];
 				return (
-					<CustomListItem
+					<ListItem
 						active={active}
 						selected={isSelected}
 						background={conversation.read ? 'gray6' : 'gray5'}
@@ -139,7 +135,7 @@ export const ConversationList: FC = () => {
 								<div style={{ height: '4rem' }} />
 							)
 						}
-					</CustomListItem>
+					</ListItem>
 				);
 			}),
 		[conversations, deselectAll, folderId, isSelectModeOn, itemId, selected, toggle]
