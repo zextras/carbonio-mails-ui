@@ -76,7 +76,7 @@ export const useMsgActions = ({
 	const replyAllDescriptor = useReplyAllMsgDescriptor(message.id, folderId);
 	const forwardDescriptor = useForwardMsgDescriptor(message.id, folderId);
 	const moveToTrashDescriptor = useMsgMoveToTrashDescriptor({
-		ids: [message.id],
+		messagesId: [message.id],
 		deselectAll,
 		folderId,
 		shouldReplaceHistory

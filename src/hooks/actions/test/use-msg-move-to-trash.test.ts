@@ -28,7 +28,7 @@ describe('useMsgMoveToTrashDescriptor', () => {
 			result: { current: descriptor }
 		} = setupHook(useMsgMoveToTrashDescriptor, {
 			store,
-			initialProps: [{ ids: messagesId, deselectAll: jest.fn(), folderId: FOLDERS.INBOX }]
+			initialProps: [{ messagesId, deselectAll: jest.fn(), folderId: FOLDERS.INBOX }]
 		});
 
 		expect(descriptor).toEqual({
@@ -53,7 +53,7 @@ describe('useMsgMoveToTrashFn', () => {
 			result: { current: functions }
 		} = setupHook(useMsgMoveToTrashFn, {
 			store,
-			initialProps: [{ ids: messagesId, deselectAll: jest.fn(), folderId: FOLDERS.INBOX }]
+			initialProps: [{ messagesId, deselectAll: jest.fn(), folderId: FOLDERS.INBOX }]
 		});
 
 		expect(functions).toEqual({
@@ -76,7 +76,7 @@ describe('useMsgMoveToTrashFn', () => {
 				result: { current: functions }
 			} = setupHook(useMsgMoveToTrashFn, {
 				store,
-				initialProps: [{ ids: messagesId, deselectAll: jest.fn(), folderId: folder.id }]
+				initialProps: [{ messagesId, deselectAll: jest.fn(), folderId: folder.id }]
 			});
 
 			expect(functions.canExecute()).toEqual(assertion);
@@ -100,7 +100,7 @@ describe('useMsgMoveToTrashFn', () => {
 				result: { current: functions }
 			} = setupHook(useMsgMoveToTrashFn, {
 				store,
-				initialProps: [{ ids: messagesId, deselectAll: jest.fn(), folderId: FOLDERS.INBOX }]
+				initialProps: [{ messagesId, deselectAll: jest.fn(), folderId: FOLDERS.INBOX }]
 			});
 
 			await act(async () => {
@@ -123,7 +123,7 @@ describe('useMsgMoveToTrashFn', () => {
 				result: { current: functions }
 			} = setupHook(useMsgMoveToTrashFn, {
 				store,
-				initialProps: [{ ids: messagesId, deselectAll: jest.fn(), folderId: FOLDERS.TRASH }]
+				initialProps: [{ messagesId, deselectAll: jest.fn(), folderId: FOLDERS.TRASH }]
 			});
 
 			await act(async () => {

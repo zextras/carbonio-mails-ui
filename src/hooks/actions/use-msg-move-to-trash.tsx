@@ -78,14 +78,14 @@ const useRestoreMessage = (): ((
 };
 
 type MoveToTrashExecute = {
-	ids: Array<string>;
+	messagesId: Array<string>;
 	folderId?: string;
 	deselectAll?: () => void;
 	shouldReplaceHistory?: boolean;
 };
 
 export const useMsgMoveToTrashFn = ({
-	ids,
+	messagesId,
 	deselectAll,
 	folderId = FOLDERS.INBOX,
 	shouldReplaceHistory
@@ -101,7 +101,7 @@ export const useMsgMoveToTrashFn = ({
 			dispatch(
 				msgAction({
 					operation: 'trash',
-					ids
+					ids: messagesId
 				})
 			).then((res) => {
 				if (res.type.includes('fulfilled')) {
@@ -110,18 +110,19 @@ export const useMsgMoveToTrashFn = ({
 						shouldReplaceHistory && replaceHistory(`/folder/${folderId}`);
 					}
 					createSnackbar({
-						key: `trash-${ids}`,
+						key: `trash-${messagesId}`,
 						replace: true,
 						type: 'info',
 						label: t('messages.snackbar.email_moved_to_trash', 'E-mail moved to Trash'),
 						autoHideTimeout: 5000,
 						hideButton: false,
 						actionLabel: t('label.undo', 'Undo'),
-						onActionClick: () => restoreMessage(dispatch, ids, folderId, shouldReplaceHistory)
+						onActionClick: () =>
+							restoreMessage(dispatch, messagesId, folderId, shouldReplaceHistory)
 					});
 				} else {
 					createSnackbar({
-						key: `trash-${ids}`,
+						key: `trash-${messagesId}`,
 						replace: true,
 						type: 'error',
 						label: t('label.error_try_again', 'Something went wrong, please try again'),
@@ -134,7 +135,7 @@ export const useMsgMoveToTrashFn = ({
 	}, [
 		canExecute,
 		dispatch,
-		ids,
+		messagesId,
 		deselectAll,
 		inSearchModule,
 		createSnackbar,
@@ -147,13 +148,13 @@ export const useMsgMoveToTrashFn = ({
 };
 
 export const useMsgMoveToTrashDescriptor = ({
-	ids,
+	messagesId,
 	deselectAll,
 	folderId,
 	shouldReplaceHistory
 }: MoveToTrashExecute): UIActionDescriptor => {
 	const { canExecute, execute } = useMsgMoveToTrashFn({
-		ids,
+		messagesId,
 		deselectAll,
 		folderId,
 		shouldReplaceHistory
