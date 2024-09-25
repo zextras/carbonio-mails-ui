@@ -80,8 +80,6 @@ export const MessagesMultipleSelectionActions = ({
 			icon: 'MoreVertical',
 			label: 'More actions',
 			items: [
-				normalizeDropdownActionItem(setAsRead),
-				normalizeDropdownActionItem(setAsUnread),
 				normalizeDropdownActionItem(flagDescriptor),
 				normalizeDropdownActionItem(unflagDescriptor),
 				normalizeDropdownActionItem(moveToFolderDescriptor),
