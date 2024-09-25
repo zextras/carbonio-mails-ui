@@ -15,12 +15,12 @@ import DeleteConvConfirm from '../../ui-actions/delete-conv-modal';
 import { useUiUtilities } from '../use-ui-utilities';
 
 type DeleteMsgPermanently = {
-	messageId: string;
+	ids: Array<string>;
 	folderId: string;
 	deselectAll: () => void;
 };
 export const useDeleteMsgPermanentlyFn = ({
-	messageId,
+	ids,
 	deselectAll,
 	folderId
 }: DeleteMsgPermanently): ActionFn => {
@@ -36,7 +36,7 @@ export const useDeleteMsgPermanentlyFn = ({
 					children: (
 						<StoreProvider>
 							<DeleteConvConfirm
-								selectedIDs={[messageId]}
+								selectedIDs={ids}
 								isMessageView
 								onClose={(): void => closeModal(modalId)}
 								deselectAll={deselectAll || ((): null => null)}
@@ -47,17 +47,17 @@ export const useDeleteMsgPermanentlyFn = ({
 				true
 			);
 		}
-	}, [canExecute, closeModal, createModal, deselectAll, messageId]);
+	}, [canExecute, closeModal, createModal, deselectAll, ids]);
 
 	return useMemo(() => ({ canExecute, execute }), [canExecute, execute]);
 };
 
 export const useDeleteMsgPermanentlyDescriptor = ({
-	messageId,
+	ids,
 	deselectAll,
 	folderId
 }: DeleteMsgPermanently): UIActionDescriptor => {
-	const { canExecute, execute } = useDeleteMsgPermanentlyFn({ messageId, deselectAll, folderId });
+	const { canExecute, execute } = useDeleteMsgPermanentlyFn({ ids, deselectAll, folderId });
 	const [t] = useTranslation();
 	return {
 		id: MessageActionsDescriptors.DELETE_PERMANENTLY.id,

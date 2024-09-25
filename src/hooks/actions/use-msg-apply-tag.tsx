@@ -12,15 +12,19 @@ import { useTranslation } from 'react-i18next';
 import { MessageActionsDescriptors, TIMEOUTS } from '../../constants';
 import { isSpam } from '../../helpers/folders';
 import { msgAction } from '../../store/actions';
-import { MailMessage, UIActionAggregator, UIActionDescriptor } from '../../types';
+import { UIActionAggregator, UIActionDescriptor } from '../../types';
 import { useAppDispatch } from '../redux';
 import { useUiUtilities } from '../use-ui-utilities';
 
-export const useMsgApplyTagFn = (
-	messageId: MailMessage['id'],
-	messageTags: Array<string>,
-	folderId: string
-): UIActionDescriptor[] => {
+export const useMsgApplyTagFn = ({
+	ids,
+	messageTags,
+	folderId
+}: {
+	ids: Array<string>;
+	messageTags: Array<string>;
+	folderId: string;
+}): UIActionDescriptor[] => {
 	const { createSnackbar } = useUiUtilities();
 	const dispatch = useAppDispatch();
 	const [t] = useTranslation();
@@ -49,7 +53,7 @@ export const useMsgApplyTagFn = (
 						dispatch(
 							msgAction({
 								operation,
-								ids: [messageId],
+								ids,
 								tagName: tag.name
 							})
 						).then((res: any) => {
@@ -84,19 +88,27 @@ export const useMsgApplyTagFn = (
 					canExecute
 				};
 			}),
-		[createSnackbar, dispatch, folderId, messageId, messageTags, t, tags]
+		[createSnackbar, dispatch, folderId, ids, messageTags, t, tags]
 	);
 
 	return useMemo(() => tagActions, [tagActions]);
 };
 
-export const useMsgApplyTagDescriptor = (
-	messageId: string,
-	messageTags: Array<string>,
-	folderId: string
-): UIActionAggregator => {
+export const useMsgApplyTagDescriptor = ({
+	ids,
+	messageTags,
+	folderId
+}: {
+	ids: Array<string>;
+	messageTags: Array<string>;
+	folderId: string;
+}): UIActionAggregator => {
 	const [t] = useTranslation();
-	const items = useMsgApplyTagFn(messageId, messageTags, folderId);
+	const items = useMsgApplyTagFn({
+		ids,
+		messageTags,
+		folderId
+	});
 	return {
 		id: MessageActionsDescriptors.APPLY_TAG.id,
 		label: t('label.tag', 'Tag'),
