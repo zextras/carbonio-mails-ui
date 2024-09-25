@@ -15,40 +15,40 @@ export const useTagDropdownItem = (
 	applyTagDescriptor: UIActionAggregator,
 	tags: Array<string>
 ): DropdownItem =>
-	useMemo(
-		() => ({
+	useMemo(() => {
+		const items = reduce(
+			applyTagDescriptor.items,
+			(acc, descriptor) => {
+				if (descriptor.canExecute()) {
+					const item = {
+						id: descriptor.id,
+						label: descriptor.label,
+						icon: descriptor.icon,
+						keepOpen: true,
+						customComponent: (
+							<TagsDropdownItem
+								checked={includes(tags, descriptor.id)}
+								actionDescriptor={descriptor}
+							/>
+						)
+					};
+					acc.push(item);
+				}
+				return acc;
+			},
+			[] as DropdownItem[]
+		);
+		return {
 			id: applyTagDescriptor.id,
 			icon: applyTagDescriptor.icon,
 			label: applyTagDescriptor.label,
-			items: reduce(
-				applyTagDescriptor.items,
-				(acc, descriptor) => {
-					if (descriptor.canExecute()) {
-						const item = {
-							id: descriptor.id,
-							label: descriptor.label,
-							icon: descriptor.icon,
-							keepOpen: true,
-							customComponent: (
-								<TagsDropdownItem
-									checked={includes(tags, descriptor.id)}
-									actionDescriptor={descriptor}
-								/>
-							)
-						};
-						acc.push(item);
-					}
-					return acc;
-				},
-				[] as DropdownItem[]
-			),
-			disabled: false
-		}),
-		[
-			applyTagDescriptor.icon,
-			applyTagDescriptor.id,
-			applyTagDescriptor.items,
-			applyTagDescriptor.label,
-			tags
-		]
-	);
+			items: items.length > 0 ? items : undefined,
+			disabled: !items.length
+		};
+	}, [
+		applyTagDescriptor.icon,
+		applyTagDescriptor.id,
+		applyTagDescriptor.items,
+		applyTagDescriptor.label,
+		tags
+	]);
