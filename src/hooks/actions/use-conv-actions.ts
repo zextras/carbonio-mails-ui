@@ -120,14 +120,14 @@ export const useConvActions = ({
 		folderId
 	});
 
-	const applyTagDescriptor = useConvApplyTagDescriptor(
-		conversation.id,
-		conversation.tags,
+	const applyTagDescriptor = useConvApplyTagDescriptor({
+		ids: [conversation.id],
+		conversationTags: conversation.tags,
 		folderId
-	);
+	});
 	const moveToFolderDescriptor = useConvMoveToFolderDescriptor({
 		folderId,
-		conversationId: conversation.id,
+		ids: [conversation.id],
 		deselectAll
 	});
 	const restoreFolderDescriptor = useConvRestoreDescriptor({
