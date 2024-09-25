@@ -92,7 +92,7 @@ const MoveConvMessage = ({
 				})
 				.catch(() => noop);
 		},
-		[dispatch, selectedIDs, onCloseModal, deselectAll, createSnackbar, isRestore]
+		[dispatch, selectedIDs, onCloseModal, deselectAll, createSnackbar, isRestore, t]
 	);
 
 	const onConfirmMessageMove = useCallback(
@@ -132,7 +132,7 @@ const MoveConvMessage = ({
 				})
 				.catch(() => noop);
 		},
-		[dispatch, selectedIDs, onCloseModal, deselectAll, createSnackbar, isRestore]
+		[dispatch, selectedIDs, onCloseModal, deselectAll, createSnackbar, isRestore, t]
 	);
 
 	const hasSameName = useMemo(
@@ -154,7 +154,7 @@ const MoveConvMessage = ({
 			hasSameName
 				? t('folder_panel.modal.new.input.name_exist')
 				: t('folder_panel.modal.new.input.name', 'Folder Name'),
-		[hasSameName]
+		[hasSameName, t]
 	);
 
 	const onConfirm = useCallback(() => {
@@ -187,7 +187,8 @@ const MoveConvMessage = ({
 		inputValue,
 		isMessageView,
 		onConfirmConvMove,
-		onConfirmMessageMove
+		onConfirmMessageMove,
+		t
 	]);
 
 	const headerTitle = useMemo(() => {
@@ -200,7 +201,7 @@ const MoveConvMessage = ({
 				: t('folder_panel.modal.move.title_modal_conversation', 'Move Conversation');
 		}
 		return t('folder_panel.modal.new.title', 'Create a new folder');
-	}, [isMessageView, isRestore, moveConvModal]);
+	}, [isMessageView, isRestore, moveConvModal, t]);
 
 	const footerConfirm = useMemo(() => {
 		if (moveConvModal) {
@@ -236,7 +237,7 @@ const MoveConvMessage = ({
 		return isRestore
 			? t('folder_panel.modal.new.restore_create_footer', 'Create and Restore')
 			: t('folder_panel.modal.new.create_footer', 'Create and Move');
-	}, [isRestore, moveConvModal]);
+	}, [isRestore, moveConvModal, t]);
 
 	const modalFooterTooltip = isDisabled
 		? ''
