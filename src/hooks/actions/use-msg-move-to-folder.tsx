@@ -18,11 +18,11 @@ import { useUiUtilities } from '../use-ui-utilities';
 
 export const useMsgMoveToFolderFn = ({
 	folderId,
-	messageId,
+	messagesId,
 	deselectAll
 }: {
 	folderId: string;
-	messageId: string;
+	messagesId: Array<string>;
 	deselectAll: () => void;
 }): ActionFn => {
 	const { createModal, closeModal } = useUiUtilities();
@@ -41,7 +41,7 @@ export const useMsgMoveToFolderFn = ({
 						<StoreProvider>
 							<MoveConvMessage
 								folderId={folderId}
-								selectedIDs={[messageId]}
+								selectedIDs={messagesId}
 								onClose={(): void => closeModal(modalId)}
 								isMessageView
 								isRestore={false}
@@ -54,23 +54,23 @@ export const useMsgMoveToFolderFn = ({
 				true
 			);
 		}
-	}, [canExecute, createModal, folderId, messageId, deselectAll, dispatch, closeModal]);
+	}, [canExecute, createModal, folderId, messagesId, deselectAll, dispatch, closeModal]);
 
 	return useMemo(() => ({ canExecute, execute }), [canExecute, execute]);
 };
 
 export const useMsgMoveToFolderDescriptor = ({
 	folderId,
-	messageId,
+	messagesId,
 	deselectAll
 }: {
 	folderId: string;
-	messageId: string;
+	messagesId: Array<string>;
 	deselectAll: () => void;
 }): UIActionDescriptor => {
 	const { canExecute, execute } = useMsgMoveToFolderFn({
 		folderId,
-		messageId,
+		messagesId,
 		deselectAll
 	});
 	const [t] = useTranslation();

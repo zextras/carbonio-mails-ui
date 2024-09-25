@@ -13,9 +13,9 @@ import { setupHook } from '../../../carbonio-ui-commons/test/test-setup';
 import { API_REQUEST_STATUS, FOLDERS_DESCRIPTORS, TIMEOUTS } from '../../../constants';
 import { generateStore } from '../../../tests/generators/store';
 import { MsgActionRequest, MsgActionResponse } from '../../../types';
-import { useMsgMarkAsNotSpamFn, useMsgMarkAsNotSpamDescriptor } from '../use-msg-mark-as-not-spam';
+import { useMsgMarkAsSpamDescriptor, useMsgMarkAsSpamFn } from '../use-msg-mark-as-spam';
 
-describe('useMsgMarkAsNotSpamDescriptor', () => {
+describe('useMsgMarkAsSpamDescriptor', () => {
 	const ids = times(faker.number.int({ max: 42 }), () =>
 		faker.number.int({ max: 42000 }).toString()
 	);
@@ -30,22 +30,22 @@ describe('useMsgMarkAsNotSpamDescriptor', () => {
 	it('Should return an object with specific id, icon, label and 2 functions', () => {
 		const {
 			result: { current: descriptor }
-		} = setupHook(useMsgMarkAsNotSpamDescriptor, {
+		} = setupHook(useMsgMarkAsSpamDescriptor, {
 			store,
 			initialProps: [{ ids, shouldReplaceHistory: false, folderId: FOLDERS.SPAM }]
 		});
 
 		expect(descriptor).toEqual({
-			id: 'message-mark_as_not_spam',
-			icon: 'AlertCircleOutline',
-			label: 'Not spam',
+			id: 'message-mark_as_spam',
+			icon: 'AlertCircle',
+			label: 'Mark as spam',
 			execute: expect.any(Function),
 			canExecute: expect.any(Function)
 		});
 	});
 });
 
-describe('useMsgMarkAsNotSpamFn', () => {
+describe('useMsgMarkAsSpamFn', () => {
 	const ids = times(faker.number.int({ max: 42 }), () =>
 		faker.number.int({ max: 42000 }).toString()
 	);
@@ -54,7 +54,7 @@ describe('useMsgMarkAsNotSpamFn', () => {
 	it('Should return an object with execute and canExecute functions', () => {
 		const {
 			result: { current: functions }
-		} = setupHook(useMsgMarkAsNotSpamFn, {
+		} = setupHook(useMsgMarkAsSpamFn, {
 			store,
 			initialProps: [{ ids, shouldReplaceHistory: false, folderId: FOLDERS.SPAM }]
 		});
@@ -68,16 +68,16 @@ describe('useMsgMarkAsNotSpamFn', () => {
 	describe('canExecute', () => {
 		it.each`
 			folder                              | assertion
-			${FOLDERS_DESCRIPTORS.INBOX}        | ${false}
-			${FOLDERS_DESCRIPTORS.SENT}         | ${false}
+			${FOLDERS_DESCRIPTORS.INBOX}        | ${true}
+			${FOLDERS_DESCRIPTORS.SENT}         | ${true}
 			${FOLDERS_DESCRIPTORS.DRAFTS}       | ${false}
-			${FOLDERS_DESCRIPTORS.TRASH}        | ${false}
-			${FOLDERS_DESCRIPTORS.SPAM}         | ${true}
-			${FOLDERS_DESCRIPTORS.USER_DEFINED} | ${false}
+			${FOLDERS_DESCRIPTORS.TRASH}        | ${true}
+			${FOLDERS_DESCRIPTORS.SPAM}         | ${false}
+			${FOLDERS_DESCRIPTORS.USER_DEFINED} | ${true}
 		`(`should return $assertion if the folder is $folder.desc`, ({ folder, assertion }) => {
 			const {
 				result: { current: functions }
-			} = setupHook(useMsgMarkAsNotSpamFn, {
+			} = setupHook(useMsgMarkAsSpamFn, {
 				store,
 				initialProps: [{ ids, shouldReplaceHistory: false, folderId: folder.id }]
 			});
@@ -93,9 +93,9 @@ describe('useMsgMarkAsNotSpamFn', () => {
 
 			const {
 				result: { current: functions }
-			} = setupHook(useMsgMarkAsNotSpamFn, {
+			} = setupHook(useMsgMarkAsSpamFn, {
 				store,
-				initialProps: [{ ids, shouldReplaceHistory: false, folderId: FOLDERS.INBOX }]
+				initialProps: [{ ids, shouldReplaceHistory: false, folderId: FOLDERS.SPAM }]
 			});
 
 			await act(async () => {
@@ -112,16 +112,16 @@ describe('useMsgMarkAsNotSpamFn', () => {
 				{
 					action: {
 						id: ids.join(','),
-						op: '!spam'
+						op: 'spam'
 					}
 				}
 			);
 
 			const {
 				result: { current: functions }
-			} = setupHook(useMsgMarkAsNotSpamFn, {
+			} = setupHook(useMsgMarkAsSpamFn, {
 				store,
-				initialProps: [{ ids, shouldReplaceHistory: false, folderId: FOLDERS.SPAM }]
+				initialProps: [{ ids, shouldReplaceHistory: false, folderId: FOLDERS.INBOX }]
 			});
 
 			act(() => {
@@ -131,7 +131,7 @@ describe('useMsgMarkAsNotSpamFn', () => {
 
 			const requestParameter = await apiInterceptor;
 			expect(requestParameter.action.id).toBe(ids.join(','));
-			expect(requestParameter.action.op).toBe('!spam');
+			expect(requestParameter.action.op).toBe('spam');
 			expect(requestParameter.action.l).toBeUndefined();
 			expect(requestParameter.action.f).toBeUndefined();
 			expect(requestParameter.action.tn).toBeUndefined();

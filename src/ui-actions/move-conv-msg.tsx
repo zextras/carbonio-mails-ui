@@ -6,8 +6,9 @@
 import React, { ReactElement, useCallback, useMemo, useState } from 'react';
 
 import { Container, Input, Padding, Text } from '@zextras/carbonio-design-system';
-import { replaceHistory, t } from '@zextras/carbonio-shell-ui';
+import { replaceHistory } from '@zextras/carbonio-shell-ui';
 import { noop, some } from 'lodash';
+import { useTranslation } from 'react-i18next';
 
 import ModalFooter from '../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../carbonio-ui-commons/components/modals/modal-header';
@@ -38,6 +39,7 @@ const MoveConvMessage = ({
 	folderId,
 	dispatch
 }: MoveConvMessageProps): ReactElement => {
+	const [t] = useTranslation();
 	const { createSnackbar } = useUiUtilities();
 	const [inputValue, setInputValue] = useState('');
 	const [folderDestination, setFolderDestination] = useState<Folder | undefined>();
