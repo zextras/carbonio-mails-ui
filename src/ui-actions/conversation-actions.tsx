@@ -8,15 +8,13 @@ import React, { useCallback } from 'react';
 import { replaceHistory, t } from '@zextras/carbonio-shell-ui';
 import { forEach, isArray, map } from 'lodash';
 
-import DeleteConvConfirm from './delete-conv-modal';
 import { errorPage } from './error-page';
-import MoveConvMessage from './move-conv-msg';
 import { useInSearchModule } from './utils';
 import { getContentForPrint } from '../commons/print-conversation/print-conversation';
 import { ConversationActionsDescriptors } from '../constants';
 import { useUiUtilities } from '../hooks/use-ui-utilities';
 import { convAction, getMsgsForPrint } from '../store/actions';
-import { AppDispatch, StoreProvider } from '../store/redux';
+import { AppDispatch } from '../store/redux';
 import type {
 	ConvActionReturnType,
 	Conversation,
@@ -106,48 +104,6 @@ export const previewConversationOnSeparatedWindowAction = (
 		}
 	};
 };
-
-export function setMultipleConversationsFlag({
-	ids,
-	disabled,
-	dispatch
-}: Pick<ConvActionPropType, 'ids' | 'disabled' | 'dispatch'>): ConvActionReturnType {
-	return {
-		id: 'flag--multiple-conversations',
-		icon: 'Flag',
-		label: t('action.flag', 'Add flag'),
-		disabled,
-		onClick: (): void => {
-			dispatch(
-				convAction({
-					operation: `flag`,
-					ids
-				})
-			);
-		}
-	};
-}
-
-export function unSetMultipleConversationsFlag({
-	ids,
-	disabled,
-	dispatch
-}: Pick<ConvActionPropType, 'ids' | 'disabled' | 'dispatch'>): ConvActionReturnType {
-	return {
-		id: 'unflag-multiple-conversations',
-		icon: 'FlagOutline',
-		label: t('action.unflag', 'Remove flag'),
-		disabled,
-		onClick: (): void => {
-			dispatch(
-				convAction({
-					operation: `!flag`,
-					ids
-				})
-			);
-		}
-	};
-}
 
 type SetConversationReadParameters = {
 	ids: ConvActionIdsType;
@@ -415,80 +371,5 @@ export const useMoveConversationToTrash = (): ((
 			};
 		},
 		[createSnackbar, inSearchModule]
-	);
-};
-
-export const useMoveConversationToFolder = (): ((
-	conversation: Pick<
-		ConvActionPropType,
-		'ids' | 'dispatch' | 'isRestore' | 'deselectAll' | 'folderId'
-	>
-) => ConvActionReturnType) => {
-	const { createModal, closeModal } = useUiUtilities();
-	return useCallback(
-		({ ids, folderId, dispatch, isRestore, deselectAll }) => ({
-			id: 'move-conversations',
-			icon: isRestore ? 'RestoreOutline' : 'MoveOutline',
-			label: isRestore ? t('label.restore', 'Restore') : t('label.move', 'Move'),
-			onClick: (): void => {
-				const id = Date.now().toString();
-				createModal(
-					{
-						id,
-						maxHeight: '90vh',
-						size: 'medium',
-						children: (
-							<StoreProvider>
-								<MoveConvMessage
-									folderId={folderId}
-									selectedIDs={ids}
-									onClose={(): void => closeModal(id)}
-									isMessageView={false}
-									isRestore={isRestore}
-									deselectAll={deselectAll}
-									dispatch={dispatch}
-								/>
-							</StoreProvider>
-						)
-					},
-					true
-				);
-			}
-		}),
-		[closeModal, createModal]
-	);
-};
-
-export const useDeleteConversationPermanently = (): ((
-	conversation: Pick<ConvActionPropType, 'ids' | 'deselectAll'>
-) => ConvActionReturnType) => {
-	const { createModal, closeModal } = useUiUtilities();
-
-	return useCallback(
-		({ ids, deselectAll }) => ({
-			id: 'delete-conversations',
-			icon: 'DeletePermanentlyOutline',
-			label: t('label.delete_permanently', 'Delete permanently'),
-			onClick: (): void => {
-				const id = Date.now().toString();
-				createModal(
-					{
-						id,
-						children: (
-							<StoreProvider>
-								<DeleteConvConfirm
-									selectedIDs={ids}
-									isMessageView={false}
-									onClose={(): void => closeModal(id)}
-									deselectAll={deselectAll}
-								/>
-							</StoreProvider>
-						)
-					},
-					true
-				);
-			}
-		}),
-		[closeModal, createModal]
 	);
 };
