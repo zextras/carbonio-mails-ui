@@ -22,7 +22,7 @@ type MsgSetReadFunctionsParameter = {
 	deselectAll?: () => void;
 };
 
-export const useMsgSetAsReadFn = ({
+export const useMsgSetReadFn = ({
 	ids,
 	deselectAll,
 	shouldReplaceHistory,
@@ -54,14 +54,14 @@ export const useMsgSetAsReadFn = ({
 	return useMemo(() => ({ canExecute, execute }), [canExecute, execute]);
 };
 
-export const useMsgSetAsReadDescriptor = ({
+export const useMsgSetReadDescriptor = ({
 	ids,
 	deselectAll,
 	shouldReplaceHistory,
 	folderId,
 	isMessageRead
 }: MsgSetReadFunctionsParameter): UIActionDescriptor => {
-	const { canExecute, execute } = useMsgSetAsReadFn({
+	const { canExecute, execute } = useMsgSetReadFn({
 		ids,
 		deselectAll,
 		shouldReplaceHistory,

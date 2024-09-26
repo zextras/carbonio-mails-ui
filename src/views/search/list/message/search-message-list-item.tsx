@@ -31,7 +31,7 @@ import { useFolder } from '../../../../carbonio-ui-commons/store/zustand/folder'
 import { getTimeLabel, participantToString } from '../../../../commons/utils';
 import { EditViewActions } from '../../../../constants';
 import { useMsgPreviewOnSeparatedWindowFn } from '../../../../hooks/actions/use-msg-preview-on-separated-window';
-import { useMsgSetAsReadFn } from '../../../../hooks/actions/use-set-msg-read';
+import { useMsgSetReadFn } from '../../../../hooks/actions/use-set-msg-read';
 import { useMessageById } from '../../../../store/zustand/search/store';
 import { TextReadValuesType } from '../../../../types';
 import { useTagExist } from '../../../../ui-actions/tag-actions';
@@ -82,7 +82,7 @@ export const SearchMessageListItem: FC<SearchMessageListItemProps> = memo(functi
 		messagePreviewFactory
 	});
 
-	const setAsRead = useMsgSetAsReadFn({
+	const setAsRead = useMsgSetReadFn({
 		ids: [itemId],
 		shouldReplaceHistory,
 		isMessageRead: completeMessage.read,

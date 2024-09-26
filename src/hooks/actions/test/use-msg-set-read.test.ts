@@ -13,7 +13,7 @@ import { setupHook } from '../../../carbonio-ui-commons/test/test-setup';
 import { FOLDERS_DESCRIPTORS } from '../../../constants';
 import { generateStore } from '../../../tests/generators/store';
 import { MsgActionRequest } from '../../../types';
-import { useMsgSetAsReadDescriptor, useMsgSetAsReadFn } from '../use-set-msg-read';
+import { useMsgSetReadDescriptor, useMsgSetReadFn } from '../use-set-msg-read';
 
 describe('useMsgSetAsReadDescriptor', () => {
 	const store = generateStore();
@@ -24,7 +24,7 @@ describe('useMsgSetAsReadDescriptor', () => {
 	it('Should return an object with specific id, icon, label and 2 functions', () => {
 		const {
 			result: { current: descriptor }
-		} = setupHook(useMsgSetAsReadDescriptor, {
+		} = setupHook(useMsgSetReadDescriptor, {
 			store,
 			initialProps: [
 				{
@@ -54,7 +54,7 @@ describe('useMsgSetAsReadFn', () => {
 	it('Should return an object with execute and canExecute functions', () => {
 		const {
 			result: { current: descriptor }
-		} = setupHook(useMsgSetAsReadFn, {
+		} = setupHook(useMsgSetReadFn, {
 			store,
 			initialProps: [
 				{
@@ -83,7 +83,7 @@ describe('useMsgSetAsReadFn', () => {
 		`(`should return $assertion if the folder is $folder.desc`, ({ folder, assertion }) => {
 			const {
 				result: { current: functions }
-			} = setupHook(useMsgSetAsReadFn, {
+			} = setupHook(useMsgSetReadFn, {
 				store,
 				initialProps: [
 					{
@@ -100,7 +100,7 @@ describe('useMsgSetAsReadFn', () => {
 		it('should return false if the message is already read', () => {
 			const {
 				result: { current: functions }
-			} = setupHook(useMsgSetAsReadFn, {
+			} = setupHook(useMsgSetReadFn, {
 				store,
 				initialProps: [
 					{
@@ -117,7 +117,7 @@ describe('useMsgSetAsReadFn', () => {
 		it('should return true if the message is not read yet', () => {
 			const {
 				result: { current: functions }
-			} = setupHook(useMsgSetAsReadFn, {
+			} = setupHook(useMsgSetReadFn, {
 				store,
 				initialProps: [
 					{
@@ -139,7 +139,7 @@ describe('useMsgSetAsReadFn', () => {
 
 			const {
 				result: { current: functions }
-			} = setupHook(useMsgSetAsReadFn, {
+			} = setupHook(useMsgSetReadFn, {
 				store,
 				initialProps: [
 					{
@@ -163,7 +163,7 @@ describe('useMsgSetAsReadFn', () => {
 
 			const {
 				result: { current: functions }
-			} = setupHook(useMsgSetAsReadFn, {
+			} = setupHook(useMsgSetReadFn, {
 				store,
 				initialProps: [
 					{
