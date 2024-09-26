@@ -3,15 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, {
-	FC,
-	useCallback,
-	useEffect,
-	useLayoutEffect,
-	useMemo,
-	useRef,
-	useState
-} from 'react';
+import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import {
 	Button,
@@ -72,12 +64,9 @@ export const HtmlMessageRenderer: FC<HtmlMessageRendererType> = ({
 	msgId,
 	body,
 	parts,
-	participants,
-	isInsideExtraWindow = false,
-	showingEml = false
+	participants
 }) => {
 	const divRef = useRef<HTMLDivElement>(null);
-	const iframeRef = useRef<HTMLIFrameElement>(null);
 	const [showQuotedText, setShowQuotedText] = useState(false);
 
 	const settingsPref = useUserSettings()?.prefs;
@@ -96,13 +85,11 @@ export const HtmlMessageRenderer: FC<HtmlMessageRendererType> = ({
 		[showQuotedText, body.content, originalContent]
 	);
 
-	const hasExternalImages = useMemo(() => {
-		const parser = new DOMParser();
-		const htmlDoc = parser.parseFromString(contentToDisplay, 'text/html');
-		const images = htmlDoc.body.getElementsByTagName('img');
+	const parser = new DOMParser();
+	const htmlDoc = parser.parseFromString(contentToDisplay, 'text/html');
+	const images = htmlDoc.body.getElementsByTagName('img');
 
-		return some(images, (i) => i.hasAttribute('dfsrc'));
-	}, [contentToDisplay]);
+	const hasExternalImages = useMemo(() => some(images, (i) => i.hasAttribute('dfsrc')), [images]);
 
 	const showBanner = useMemo(
 		() =>
@@ -171,28 +158,7 @@ export const HtmlMessageRenderer: FC<HtmlMessageRendererType> = ({
 		[displayBanner, showExternalImage]
 	);
 
-	const handleIframeLoad = useCallback(() => {
-		const iframe = iframeRef.current;
-		if (iframe && iframe.contentDocument) {
-			const iframeDocument = iframe.contentDocument;
-			const documentScrollHeight = iframeDocument.documentElement.scrollHeight;
-			const iframeHeightAdjustmentPx = 24;
-			if (isInsideExtraWindow && showingEml) {
-				iframe.style.height = '100%';
-			} else {
-				iframe.style.height = `${documentScrollHeight + iframeHeightAdjustmentPx}px`;
-			}
-		}
-	}, [isInsideExtraWindow, showingEml]);
-
-	useLayoutEffect(() => {
-		const contentDocument = iframeRef?.current?.contentDocument;
-		if (contentDocument) {
-			contentDocument.open();
-			contentDocument.write(contentToDisplay);
-			contentDocument.close();
-		}
-
+	const contentWithImages = useMemo(() => {
 		const imgMap = reduce(
 			parts,
 			(r, v) => {
@@ -202,25 +168,20 @@ export const HtmlMessageRenderer: FC<HtmlMessageRendererType> = ({
 			},
 			{} as any
 		);
-
-		const images =
-			iframeRef.current &&
-			iframeRef.current.contentDocument &&
-			iframeRef.current.contentDocument.body.getElementsByTagName('img');
-		if (images)
-			forEach(images, (p: HTMLImageElement) => {
-				if (p.hasAttribute('dfsrc') && showImage) {
-					p.setAttribute('src', p.getAttribute('dfsrc') ?? '');
-				}
-				if (!_CI_SRC_REGEX.test(p.src)) return;
-				const ci = _CI_SRC_REGEX.exec(p.getAttribute('src') ?? '')?.[1] ?? '';
-				if (imgMap[ci]) {
-					const part = imgMap[ci];
-					p.setAttribute('pnsrc', p.getAttribute('src') ?? '');
-					p.setAttribute('src', `/service/home/~/?auth=co&id=${msgId}&part=${part.name}`);
-				}
-			});
-	}, [contentToDisplay, msgId, parts, showImage]);
+		forEach(images, (p: HTMLImageElement) => {
+			if (p.hasAttribute('dfsrc') && showImage) {
+				p.setAttribute('src', p.getAttribute('dfsrc') ?? '');
+			}
+			if (!_CI_SRC_REGEX.test(p.src)) return;
+			const ci = _CI_SRC_REGEX.exec(p.getAttribute('src') ?? '')?.[1] ?? '';
+			if (imgMap[ci]) {
+				const part = imgMap[ci];
+				p.setAttribute('pnsrc', p.getAttribute('src') ?? '');
+				p.setAttribute('src', `/service/home/~/?auth=co&id=${msgId}&part=${part.name}`);
+			}
+		});
+		return htmlDoc.body.innerHTML;
+	}, [htmlDoc.body.innerHTML, images, msgId, parts, showImage]);
 
 	const multiBtnLabel = useMemo(() => t('label.view_images', 'VIEW IMAGES'), []);
 	return (
@@ -295,18 +256,13 @@ export const HtmlMessageRenderer: FC<HtmlMessageRendererType> = ({
 					</Row>
 				</BannerContainer>
 			)}
-			<iframe
-				data-testid="message-renderer-iframe"
-				title={msgId}
-				ref={iframeRef}
-				style={{
-					border: 'none',
-					width: '100%',
-					height: '100%',
-					display: 'block',
-					maxWidth: '100%'
+			<Container
+				width={'fit'}
+				height={'100%'}
+				style={{ overflowY: 'auto', overflowX: 'hidden' }}
+				dangerouslySetInnerHTML={{
+					__html: contentWithImages
 				}}
-				onLoad={handleIframeLoad}
 			/>
 			{!showQuotedText && quoted.length > 0 && (
 				<Row mainAlignment="center" crossAlignment="center">
