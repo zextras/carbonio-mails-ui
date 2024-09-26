@@ -83,7 +83,7 @@ describe('useMsgMoveToFolderFn', () => {
 	});
 
 	describe('execute', () => {
-		it('should call open the move modal', async () => {
+		it('should open the move modal', async () => {
 			const {
 				result: { current: functions }
 			} = setupHook(useMsgMoveToFolderFn, {
@@ -102,7 +102,7 @@ describe('useMsgMoveToFolderFn', () => {
 			expect(screen.getByText(`Move Message`)).toBeVisible();
 		});
 
-		it('should not open the deletion modal with if the action cannot be executed', async () => {
+		it('should not open the move modal with if the action cannot be executed', async () => {
 			const {
 				result: { current: functions }
 			} = setupHook(useMsgMoveToFolderFn, {

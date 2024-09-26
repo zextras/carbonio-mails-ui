@@ -92,7 +92,7 @@ describe('useMsgDeletePermanentlyFn', () => {
 	});
 
 	describe('execute', () => {
-		it('should call open the deletion modal', async () => {
+		it('should open the deletion modal', async () => {
 			const {
 				result: { current: functions }
 			} = setupHook(useDeleteMsgPermanentlyFn, {
