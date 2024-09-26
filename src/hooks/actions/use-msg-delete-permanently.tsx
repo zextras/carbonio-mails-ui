@@ -14,16 +14,17 @@ import { ActionFn, UIActionDescriptor } from '../../types';
 import DeleteConvConfirm from '../../ui-actions/delete-conv-modal';
 import { useUiUtilities } from '../use-ui-utilities';
 
-type DeleteMsgPermanently = {
+type MsgDeletePermanentlyFunctionsParameter = {
 	ids: Array<string>;
 	folderId: string;
 	deselectAll: () => void;
 };
-export const useDeleteMsgPermanentlyFn = ({
+
+export const useMsgDeletePermanentlyFn = ({
 	ids,
 	deselectAll,
 	folderId
-}: DeleteMsgPermanently): ActionFn => {
+}: MsgDeletePermanentlyFunctionsParameter): ActionFn => {
 	const { createModal, closeModal } = useUiUtilities();
 
 	const canExecute = useCallback((): boolean => isTrash(folderId) || isSpam(folderId), [folderId]);
@@ -52,12 +53,12 @@ export const useDeleteMsgPermanentlyFn = ({
 	return useMemo(() => ({ canExecute, execute }), [canExecute, execute]);
 };
 
-export const useDeleteMsgPermanentlyDescriptor = ({
+export const useMsgDeletePermanentlyDescriptor = ({
 	ids,
 	deselectAll,
 	folderId
-}: DeleteMsgPermanently): UIActionDescriptor => {
-	const { canExecute, execute } = useDeleteMsgPermanentlyFn({ ids, deselectAll, folderId });
+}: MsgDeletePermanentlyFunctionsParameter): UIActionDescriptor => {
+	const { canExecute, execute } = useMsgDeletePermanentlyFn({ ids, deselectAll, folderId });
 	const [t] = useTranslation();
 	return {
 		id: MessageActionsDescriptors.DELETE_PERMANENTLY.id,

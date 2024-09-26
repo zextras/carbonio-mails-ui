@@ -16,9 +16,9 @@ import { useConvMarkAsNotSpamDescriptor } from '../hooks/actions/use-conv-mark-a
 import { useConvMarkAsSpamDescriptor } from '../hooks/actions/use-conv-mark-as-spam';
 import { useConvMoveToFolderDescriptor } from '../hooks/actions/use-conv-move-to-folder';
 import { useConvMoveToTrashDescriptor } from '../hooks/actions/use-conv-move-to-trash';
-import { useConvSetAsRead } from '../hooks/actions/use-conv-set-as-read';
-import { useConvSetAsUnread } from '../hooks/actions/use-conv-set-as-unread';
 import { useConvSetFlagDescriptor } from '../hooks/actions/use-conv-set-flag';
+import { useConvSetReadDescriptor } from '../hooks/actions/use-conv-set-read';
+import { useConvSetUnreadDescriptor } from '../hooks/actions/use-conv-set-unread';
 import { useConvUnsetFlagDescriptor } from '../hooks/actions/use-conv-unset-flag';
 import { useTagDropdownItem } from '../hooks/use-tag-dropdown-item';
 import type { Conversation } from '../types';
@@ -39,13 +39,13 @@ export const ConversationsMultipleSelectionActions = ({
 	const atLeastOneConvIsUnread = some(selectedItems, (item) => !item.read);
 	const atLeastOneConvIsUnflagged = some(selectedItems, (item) => !item.flagged);
 	const tagsInCommon = intersection(...conversationstags);
-	const setAsRead = useConvSetAsRead({
+	const setAsRead = useConvSetReadDescriptor({
 		ids,
 		deselectAll,
 		folderId,
 		isConversationRead: !atLeastOneConvIsUnread
 	});
-	const setAsUnread = useConvSetAsUnread({
+	const setAsUnread = useConvSetUnreadDescriptor({
 		ids,
 		deselectAll,
 		folderId,

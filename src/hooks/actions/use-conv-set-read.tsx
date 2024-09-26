@@ -13,19 +13,19 @@ import { convAction } from '../../store/actions';
 import { ActionFn, UIActionDescriptor } from '../../types';
 import { useAppDispatch } from '../redux';
 
-type SetMsgReadExecuteType = {
+type ConvSetMsgReadFunctionsParameter = {
 	ids: Array<string>;
 	folderId: string;
 	isConversationRead: boolean;
 	deselectAll?: () => void;
 };
 
-export const useConvSetAsReadFn = ({
+export const useConvSetReadFn = ({
 	ids,
 	deselectAll,
 	folderId,
 	isConversationRead
-}: SetMsgReadExecuteType): ActionFn => {
+}: ConvSetMsgReadFunctionsParameter): ActionFn => {
 	const dispatch = useAppDispatch();
 	const canExecute = useCallback(
 		(): boolean => !isDraft(folderId) && !isConversationRead,
@@ -48,13 +48,13 @@ export const useConvSetAsReadFn = ({
 	return useMemo(() => ({ canExecute, execute }), [canExecute, execute]);
 };
 
-export const useConvSetAsRead = ({
+export const useConvSetReadDescriptor = ({
 	ids,
 	deselectAll,
 	folderId,
 	isConversationRead
-}: SetMsgReadExecuteType): UIActionDescriptor => {
-	const { canExecute, execute } = useConvSetAsReadFn({
+}: ConvSetMsgReadFunctionsParameter): UIActionDescriptor => {
+	const { canExecute, execute } = useConvSetReadFn({
 		ids,
 		deselectAll,
 		folderId,

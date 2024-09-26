@@ -7,7 +7,7 @@ import { useCallback, useMemo } from 'react';
 
 import { useTranslation } from 'react-i18next';
 
-import { useForwardMsgFn } from './use-msg-forward';
+import { useMsgForwardFn } from './use-msg-forward';
 import { ConversationActionsDescriptors, EditViewActions } from '../../constants';
 import { ActionFn, UIActionDescriptor } from '../../types';
 import { createEditBoard } from '../../views/app/detail-panel/edit/edit-view-board';
@@ -17,12 +17,13 @@ type ConvForwardAction = {
 	folderId: string;
 	messagesLength: number;
 };
+
 export const useConvForwardFn = ({
 	firstMessageId,
 	folderId,
 	messagesLength
 }: ConvForwardAction): ActionFn => {
-	const messageAction = useForwardMsgFn(firstMessageId, folderId);
+	const messageAction = useMsgForwardFn(firstMessageId, folderId);
 	const canExecute = useCallback(
 		(): boolean => messagesLength === 1 && messageAction.canExecute(),
 		[messageAction, messagesLength]

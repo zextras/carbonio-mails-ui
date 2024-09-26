@@ -12,8 +12,8 @@ import { TIMERS } from '../../../tests/constants';
 import { generateMessage } from '../../../tests/generators/generateMessage';
 import { generateStore } from '../../../tests/generators/store';
 import {
-	useDeleteMsgPermanentlyDescriptor,
-	useDeleteMsgPermanentlyFn
+	useMsgDeletePermanentlyDescriptor,
+	useMsgDeletePermanentlyFn
 } from '../use-msg-delete-permanently';
 
 describe('useMsgDeletePermanentlyDescriptor', () => {
@@ -30,7 +30,7 @@ describe('useMsgDeletePermanentlyDescriptor', () => {
 	it('Should return an object with specific id, icon, label and 2 functions', () => {
 		const {
 			result: { current: descriptor }
-		} = setupHook(useDeleteMsgPermanentlyDescriptor, {
+		} = setupHook(useMsgDeletePermanentlyDescriptor, {
 			store,
 			initialProps: [{ messageId: msg.id, deselectAll: jest.fn(), folderId: FOLDERS.INBOX }]
 		});
@@ -59,7 +59,7 @@ describe('useMsgDeletePermanentlyFn', () => {
 	it('Should return an object with execute and canExecute functions', () => {
 		const {
 			result: { current: functions }
-		} = setupHook(useDeleteMsgPermanentlyFn, {
+		} = setupHook(useMsgDeletePermanentlyFn, {
 			store,
 			initialProps: [{ messageId: msg.id, deselectAll: jest.fn(), folderId: FOLDERS.INBOX }]
 		});
@@ -82,7 +82,7 @@ describe('useMsgDeletePermanentlyFn', () => {
 		`(`should return $assertion if the folder is $folder.desc`, ({ folder, assertion }) => {
 			const {
 				result: { current: functions }
-			} = setupHook(useDeleteMsgPermanentlyFn, {
+			} = setupHook(useMsgDeletePermanentlyFn, {
 				store,
 				initialProps: [{ messageId: msg.id, deselectAll: jest.fn(), folderId: folder.id }]
 			});
@@ -95,7 +95,7 @@ describe('useMsgDeletePermanentlyFn', () => {
 		it('should open the deletion modal', async () => {
 			const {
 				result: { current: functions }
-			} = setupHook(useDeleteMsgPermanentlyFn, {
+			} = setupHook(useMsgDeletePermanentlyFn, {
 				store,
 				initialProps: [{ messageId: msg.id, deselectAll: jest.fn(), folderId: FOLDERS.TRASH }]
 			});
@@ -114,7 +114,7 @@ describe('useMsgDeletePermanentlyFn', () => {
 		it('should not open the deletion modal with if the action cannot be executed', async () => {
 			const {
 				result: { current: functions }
-			} = setupHook(useDeleteMsgPermanentlyFn, {
+			} = setupHook(useMsgDeletePermanentlyFn, {
 				store,
 				initialProps: [{ messageId: msg.id, deselectAll: jest.fn(), folderId: FOLDERS.INBOX }]
 			});

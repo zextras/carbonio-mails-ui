@@ -7,12 +7,12 @@ import { useMemo } from 'react';
 
 import { useMsgApplyTagDescriptor } from './use-msg-apply-tag';
 import { useMsgCreateAppointmentDescriptor } from './use-msg-create-appointment';
-import { useDeleteMsgPermanentlyDescriptor } from './use-msg-delete-permanently';
+import { useMsgDeletePermanentlyDescriptor } from './use-msg-delete-permanently';
 import { useMsgDownloadEmlDescriptor } from './use-msg-download-eml';
 import { useMsgEditAsNewDescriptor } from './use-msg-edit-as-new';
 import { useMsgEditDraftDescriptor } from './use-msg-edit-draft';
 import { useMsgFlagDescriptor } from './use-msg-flag';
-import { useForwardMsgDescriptor } from './use-msg-forward';
+import { useMsgForwardDescriptor } from './use-msg-forward';
 import { useMsgMarkAsNotSpamDescriptor } from './use-msg-mark-as-not-spam';
 import { useMsgMarkAsSpamDescriptor } from './use-msg-mark-as-spam';
 import { useMsgMoveToFolderDescriptor } from './use-msg-move-to-folder';
@@ -74,14 +74,14 @@ export const useMsgActions = ({
 
 	const replyDescriptor = useMsgReplyDescriptor(message.id, folderId);
 	const replyAllDescriptor = useMsgReplyAllDescriptor(message.id, folderId);
-	const forwardDescriptor = useForwardMsgDescriptor(message.id, folderId);
+	const forwardDescriptor = useMsgForwardDescriptor(message.id, folderId);
 	const moveToTrashDescriptor = useMsgMoveToTrashDescriptor({
 		messagesId: [message.id],
 		deselectAll,
 		folderId,
 		shouldReplaceHistory
 	});
-	const deletePermanentlyDescriptor = useDeleteMsgPermanentlyDescriptor({
+	const deletePermanentlyDescriptor = useMsgDeletePermanentlyDescriptor({
 		ids: [message.id],
 		deselectAll,
 		folderId

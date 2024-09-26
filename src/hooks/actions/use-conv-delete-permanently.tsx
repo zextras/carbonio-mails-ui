@@ -14,16 +14,17 @@ import { StoreProvider } from '../../store/redux';
 import { ActionFn, UIActionDescriptor } from '../../types';
 import DeleteConvConfirm from '../../ui-actions/delete-conv-modal';
 
-type ConvForwardAction = {
+type ConvDeletePermanentlyFunctionsParameter = {
 	ids: Array<string>;
 	deselectAll?: () => void;
 	folderId: string;
 };
+
 export const useConvDeletePermanentlyFn = ({
 	ids,
 	deselectAll,
 	folderId
-}: ConvForwardAction): ActionFn => {
+}: ConvDeletePermanentlyFunctionsParameter): ActionFn => {
 	const { createModal, closeModal } = useModal();
 
 	const canExecute = useCallback((): boolean => isTrash(folderId) || isSpam(folderId), [folderId]);
@@ -57,7 +58,7 @@ export const useConvDeletePermanentlyDescriptor = ({
 	ids,
 	folderId,
 	deselectAll
-}: ConvForwardAction): UIActionDescriptor => {
+}: ConvDeletePermanentlyFunctionsParameter): UIActionDescriptor => {
 	const { canExecute, execute } = useConvDeletePermanentlyFn({
 		ids,
 		folderId,

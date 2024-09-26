@@ -19,9 +19,9 @@ import { useConvPrintDescriptor } from './use-conv-print';
 import { useConvReplyDescriptor } from './use-conv-reply';
 import { useConvReplyAllDescriptor } from './use-conv-reply-all';
 import { useConvRestoreDescriptor } from './use-conv-restore';
-import { useConvSetAsRead } from './use-conv-set-as-read';
-import { useConvSetAsUnread } from './use-conv-set-as-unread';
 import { useConvSetFlagDescriptor } from './use-conv-set-flag';
+import { useConvSetReadDescriptor } from './use-conv-set-read';
+import { useConvSetUnreadDescriptor } from './use-conv-set-unread';
 import { useConvShowOriginalDescriptor } from './use-conv-show-original';
 import { useConvUnsetFlagDescriptor } from './use-conv-unset-flag';
 import { isTrash } from '../../carbonio-ui-commons/helpers/folders';
@@ -95,13 +95,13 @@ export const useConvActions = ({
 		deselectAll,
 		folderId
 	});
-	const setAsReadDescriptor = useConvSetAsRead({
+	const setAsReadDescriptor = useConvSetReadDescriptor({
 		ids: [conversation.id],
 		deselectAll,
 		folderId,
 		isConversationRead: conversation.read
 	});
-	const setAsUnreadDescriptor = useConvSetAsUnread({
+	const setAsUnreadDescriptor = useConvSetUnreadDescriptor({
 		ids: [conversation.id],
 		deselectAll,
 		folderId,

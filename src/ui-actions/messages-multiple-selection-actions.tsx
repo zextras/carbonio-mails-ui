@@ -12,7 +12,7 @@ import { filter, intersection, map, some } from 'lodash';
 import { MultipleSelectionActionsComponent } from './multiple-selection-actions-component';
 import { normalizeDropdownActionItem } from '../helpers/actions';
 import { useMsgApplyTagDescriptor } from '../hooks/actions/use-msg-apply-tag';
-import { useDeleteMsgPermanentlyDescriptor } from '../hooks/actions/use-msg-delete-permanently';
+import { useMsgDeletePermanentlyDescriptor } from '../hooks/actions/use-msg-delete-permanently';
 import { useMsgFlagDescriptor } from '../hooks/actions/use-msg-flag';
 import { useMsgMarkAsNotSpamDescriptor } from '../hooks/actions/use-msg-mark-as-not-spam';
 import { useMsgMarkAsSpamDescriptor } from '../hooks/actions/use-msg-mark-as-spam';
@@ -53,7 +53,7 @@ export const MessagesMultipleSelectionActions = ({
 		isMessageRead: !atLeastOneMsgIsUnread
 	});
 	const moveToTrash = useMsgMoveToTrashDescriptor({ ids, deselectAll, folderId });
-	const deletePermanently = useDeleteMsgPermanentlyDescriptor({ ids, deselectAll, folderId });
+	const deletePermanently = useMsgDeletePermanentlyDescriptor({ ids, deselectAll, folderId });
 	const applyTagDescriptor = useMsgApplyTagDescriptor({
 		ids,
 		messageTags: tagsInCommon,

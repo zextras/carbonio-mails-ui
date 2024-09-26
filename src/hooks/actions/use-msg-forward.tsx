@@ -12,7 +12,7 @@ import { isDraft, isSpam } from '../../helpers/folders';
 import { ActionFn, UIActionDescriptor } from '../../types';
 import { createEditBoard } from '../../views/app/detail-panel/edit/edit-view-board';
 
-export const useForwardMsgFn = (messageId: string, folderId: string): ActionFn => {
+export const useMsgForwardFn = (messageId: string, folderId: string): ActionFn => {
 	const canExecute = useCallback(
 		(): boolean => !isDraft(folderId) && !isSpam(folderId),
 		[folderId]
@@ -30,11 +30,11 @@ export const useForwardMsgFn = (messageId: string, folderId: string): ActionFn =
 	return useMemo(() => ({ canExecute, execute }), [canExecute, execute]);
 };
 
-export const useForwardMsgDescriptor = (
+export const useMsgForwardDescriptor = (
 	messageId: string,
 	folderId: string
 ): UIActionDescriptor => {
-	const { canExecute, execute } = useForwardMsgFn(messageId, folderId);
+	const { canExecute, execute } = useMsgForwardFn(messageId, folderId);
 	const [t] = useTranslation();
 	return {
 		id: MessageActionsDescriptors.FORWARD.id,

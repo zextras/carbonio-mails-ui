@@ -8,9 +8,9 @@ import { useCallback } from 'react';
 import { useConvMarkAsNotSpamFn } from './actions/use-conv-mark-as-not-spam';
 import { useConvMarkAsSpamFn } from './actions/use-conv-mark-as-spam';
 import { useConvMoveToTrashFn } from './actions/use-conv-move-to-trash';
-import { useConvSetAsReadFn } from './actions/use-conv-set-as-read';
-import { useConvSetAsUnreadFn } from './actions/use-conv-set-as-unread';
 import { useConvSetFlagFn } from './actions/use-conv-set-flag';
+import { useConvSetReadFn } from './actions/use-conv-set-read';
+import { useConvSetUnreadFn } from './actions/use-conv-set-unread';
 import { useConvUnsetFlagFn } from './actions/use-conv-unset-flag';
 import { useAppSelector } from './redux';
 import { selectConversation } from '../store/conversations-slice';
@@ -52,13 +52,13 @@ export const useConversationKeyboardShortcuts = ({
 		deselectAll
 	});
 
-	const setAsRead = useConvSetAsReadFn({
+	const setAsRead = useConvSetReadFn({
 		ids: [conversationId],
 		folderId,
 		deselectAll,
 		isConversationRead: conversation?.read
 	});
-	const setAsUnread = useConvSetAsUnreadFn({
+	const setAsUnread = useConvSetUnreadFn({
 		ids: [conversationId],
 		folderId,
 		deselectAll,

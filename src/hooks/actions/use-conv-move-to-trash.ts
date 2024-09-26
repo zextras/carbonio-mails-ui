@@ -17,7 +17,7 @@ import type { ActionFn, UIActionDescriptor } from '../../types';
 import { useInSearchModule } from '../../ui-actions/utils';
 import { useAppDispatch } from '../redux';
 
-type MoveToTrashArguments = {
+type ConvRestoreFunctionsParameter = {
 	ids: Array<string>;
 	folderId: string;
 	deselectAll?: () => void;
@@ -67,11 +67,12 @@ const useRestoreConversation = (
 		});
 	}, [createSnackbar, deselectAll, dispatch, folderId, ids, inSearchModule, t]);
 };
+
 export const useConvMoveToTrashFn = ({
 	ids,
 	deselectAll,
 	folderId = FOLDERS.INBOX
-}: MoveToTrashArguments): ActionFn => {
+}: ConvRestoreFunctionsParameter): ActionFn => {
 	const canExecute = useCallback((): boolean => !isTrash(folderId), [folderId]);
 	const dispatch = useAppDispatch();
 	const createSnackbar = useSnackbar();
@@ -129,7 +130,7 @@ export const useConvMoveToTrashDescriptor = ({
 	ids,
 	deselectAll,
 	folderId
-}: MoveToTrashArguments): UIActionDescriptor => {
+}: ConvRestoreFunctionsParameter): UIActionDescriptor => {
 	const { canExecute, execute } = useConvMoveToTrashFn({
 		ids,
 		deselectAll,

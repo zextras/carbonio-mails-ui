@@ -9,7 +9,7 @@ import { addBoard } from '../../../carbonio-ui-commons/test/mocks/carbonio-shell
 import { setupHook } from '../../../carbonio-ui-commons/test/test-setup';
 import { FOLDERS_DESCRIPTORS } from '../../../constants';
 import { generateMessage } from '../../../tests/generators/generateMessage';
-import { useForwardMsgDescriptor, useForwardMsgFn } from '../use-msg-forward';
+import { useMsgForwardDescriptor, useMsgForwardFn } from '../use-msg-forward';
 
 describe('useMsgForwardDescriptor', () => {
 	const msg = generateMessage();
@@ -17,7 +17,7 @@ describe('useMsgForwardDescriptor', () => {
 	it('Should return an object with specific id, icon, label and 2 functions', () => {
 		const {
 			result: { current: descriptor }
-		} = setupHook(useForwardMsgDescriptor, {
+		} = setupHook(useMsgForwardDescriptor, {
 			initialProps: [msg.id, FOLDERS.INBOX]
 		});
 
@@ -37,7 +37,7 @@ describe('useMsgForwardFn', () => {
 	it('Should return an object with execute and canExecute functions', () => {
 		const {
 			result: { current: functions }
-		} = setupHook(useForwardMsgFn, {
+		} = setupHook(useMsgForwardFn, {
 			initialProps: [msg.id, FOLDERS.INBOX]
 		});
 
@@ -59,7 +59,7 @@ describe('useMsgForwardFn', () => {
 		`(`should return $assertion if the folder is $folder.desc`, ({ folder, assertion }) => {
 			const {
 				result: { current: functions }
-			} = setupHook(useForwardMsgFn, {
+			} = setupHook(useMsgForwardFn, {
 				initialProps: [msg.id, folder.id]
 			});
 
@@ -71,7 +71,7 @@ describe('useMsgForwardFn', () => {
 		it('should create a board with specific parameters', async () => {
 			const {
 				result: { current: functions }
-			} = setupHook(useForwardMsgFn, {
+			} = setupHook(useMsgForwardFn, {
 				initialProps: [msg.id, FOLDERS.INBOX]
 			});
 
@@ -91,7 +91,7 @@ describe('useMsgForwardFn', () => {
 		it('should not create a board if the action cannot be executed', async () => {
 			const {
 				result: { current: functions }
-			} = setupHook(useForwardMsgFn, {
+			} = setupHook(useMsgForwardFn, {
 				initialProps: [msg.id, FOLDERS.DRAFTS]
 			});
 
