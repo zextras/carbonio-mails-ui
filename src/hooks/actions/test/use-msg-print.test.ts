@@ -65,25 +65,25 @@ describe('useMsgPrintFn', () => {
 	});
 
 	describe('execute', () => {
-		it('should call the window.open method', async () => {
-			// Mock result for window.open
-			const documentWriteSpy = jest.fn();
-			const documentMock: Document = { ...window.document, write: documentWriteSpy };
-			const windowOpenResultMock = {
-				...window,
-				document: documentMock,
-				top: {
-					...window.top,
-					document: documentMock
-				}
-			};
-			jest.spyOn(window, 'open').mockReturnValue(
-				// The mock is not perfect, but it's good enough for this test
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-				// @ts-ignore
-				windowOpenResultMock
-			);
+		// Mock result for window.open
+		const documentWriteSpy = jest.fn();
+		const documentMock: Document = { ...window.document, write: documentWriteSpy };
+		const windowOpenResultMock = {
+			...window,
+			document: documentMock,
+			top: {
+				...window.top,
+				document: documentMock
+			}
+		};
+		const windowOpenSpy = jest.spyOn(window, 'open').mockReturnValue(
+			// The mock is not perfect, but it's good enough for this test
+			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+			// @ts-ignore
+			windowOpenResultMock
+		);
 
+		it('should open a new window and write a specific content into it', async () => {
 			const batchResponse: Array<MailMessage> = [msg];
 			createSoapAPIInterceptor('Batch', batchResponse);
 			const {
@@ -99,6 +99,18 @@ describe('useMsgPrintFn', () => {
 			);
 		});
 
-		it.todo('should not change the browser URL if the action cannot be executed');
+		it('should not open a new window', async () => {
+			const batchResponse: Array<MailMessage> = [msg];
+			createSoapAPIInterceptor('Batch', batchResponse);
+			const {
+				result: { current: functions }
+			} = setupHook(useMsgPrintFn, { initialProps: [msg, FOLDERS.DRAFTS] });
+
+			await act(async () => {
+				functions.execute();
+			});
+
+			expect(windowOpenSpy).not.toHaveBeenCalled();
+		});
 	});
 });
