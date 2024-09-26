@@ -11,10 +11,10 @@ import { useIntegratedComponent, useUserSettings } from '@zextras/carbonio-shell
 import type { TinyMCE } from 'tinymce/tinymce';
 
 import * as StyledComp from './edit-view-styled-components';
-import { plainTextToHTML } from '../../../../../commons/mail-message-renderer';
 import { useEditorIsRichText, useEditorText } from '../../../../../store/zustand/editor';
 import { MailsEditorV2 } from '../../../../../types';
 import { getFontSizesOptions, getFonts } from '../../../../settings/components/utils';
+import { plainTextToHTML } from '../../../../../commons/utils';
 
 export type TextEditorContent = { plainText: string; richText: string };
 

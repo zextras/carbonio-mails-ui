@@ -5,7 +5,6 @@
  */
 import React, {
 	FC,
-	memo,
 	useCallback,
 	useEffect,
 	useLayoutEffect,
@@ -29,23 +28,11 @@ import { filter, forEach, isArray, reduce, some } from 'lodash';
 import { Trans } from 'react-i18next';
 import styled from 'styled-components';
 
-import { getOriginalContent, getQuotedTextOnly } from './get-quoted-text-util';
-import { isAvailableInTrusteeList } from './utils';
-import { ParticipantRole } from '../carbonio-ui-commons/constants/participants';
-import { getNoIdentityPlaceholder } from '../helpers/identities';
-import type { MailMessagePart, Participant } from '../types';
-
-export const _CI_REGEX = /^<(.*)>$/;
-export const _CI_SRC_REGEX = /^cid:(.*)$/;
-
-const LINE_BREAK_REGEX = /(?:\r\n|\r|\n)/g;
-
-export const plainTextToHTML = (str: string): string => {
-	if (str !== undefined && str !== null) {
-		return str.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(LINE_BREAK_REGEX, '<br />');
-	}
-	return '';
-};
+import { ParticipantRole } from '../../carbonio-ui-commons/constants/participants';
+import { getNoIdentityPlaceholder } from '../../helpers/identities';
+import type { MailMessagePart, Participant } from '../../types';
+import { getOriginalContent, getQuotedTextOnly } from '../get-quoted-text-util';
+import { _CI_REGEX, _CI_SRC_REGEX, isAvailableInTrusteeList } from '../utils';
 
 const BannerContainer = styled(Container)`
 	border-bottom: 0.0625rem solid ${(props): string => props.theme.palette.warning.regular};
@@ -72,66 +59,6 @@ const StyledMultiBtn = styled(MultiButton)`
 	}
 `;
 
-export const replaceLinkToAnchor = (content: string): string => {
-	if (content === '') {
-		return '';
-	}
-	const linkRegexp = /(https?:\/\/[^\s]+|www\.[^\s]+)/g;
-	return content.replace(linkRegexp, (url) => {
-		const wrap = document.createElement('div');
-		const anchor = document.createElement('a');
-
-		const newInnerHtml = url.replace(/&#64;/g, '@').replace(/&#61;/g, '=');
-		let href = url;
-		if (!url.startsWith('http') && !url.startsWith('https')) {
-			href = `http://${url}`;
-		}
-		anchor.href = href;
-		anchor.target = '_blank';
-		anchor.innerHTML = newInnerHtml;
-		wrap.appendChild(anchor);
-		return wrap.innerHTML;
-	});
-};
-
-const TextMessageRenderer: FC<{ body: { content: string; contentType: string } }> = ({ body }) => {
-	const [showQuotedText, setShowQuotedText] = useState(false);
-	const orignalText = getOriginalContent(body.content, false);
-	const quoted = getQuotedTextOnly(body.content, false);
-
-	const contentToDisplay = useMemo(
-		() => (showQuotedText ? body.content : orignalText),
-		[showQuotedText, body.content, orignalText]
-	);
-
-	const convertedHTML = useMemo(
-		() => replaceLinkToAnchor(plainTextToHTML(contentToDisplay)),
-		[contentToDisplay]
-	);
-	return (
-		<>
-			<Text
-				overflow="break-word"
-				color="text"
-				style={{ fontFamily: 'monospace' }}
-				dangerouslySetInnerHTML={{
-					__html: convertedHTML
-				}}
-			/>
-			{!showQuotedText && quoted.length > 0 && (
-				<Row mainAlignment="center" crossAlignment="center" padding={{ top: 'medium' }}>
-					<Button
-						label={t('label.show_quoted_text', 'Show quoted text')}
-						icon="EyeOutline"
-						type="outlined"
-						onClick={(): void => setShowQuotedText(true)}
-					/>
-				</Row>
-			)}
-		</>
-	);
-};
-
 type HtmlMessageRendererType = {
 	msgId: string;
 	body: { content: string; contentType: string };
@@ -140,7 +67,8 @@ type HtmlMessageRendererType = {
 	isInsideExtraWindow?: boolean;
 	showingEml?: boolean;
 };
-const HtmlMessageRenderer: FC<HtmlMessageRendererType> = ({
+
+export const HtmlMessageRenderer: FC<HtmlMessageRendererType> = ({
 	msgId,
 	body,
 	parts,
@@ -394,56 +322,3 @@ const HtmlMessageRenderer: FC<HtmlMessageRendererType> = ({
 		</div>
 	);
 };
-
-const EmptyBody: FC = () => (
-	<Container padding={{ bottom: 'medium' }}>
-		<Text>{`(${t('messages.no_content', 'This message has no text content')}.)`}</Text>
-	</Container>
-);
-
-type MailMessageRendererProps = {
-	parts: MailMessagePart[];
-	body?: { content: string; contentType: string };
-	id: string;
-	fragment?: string;
-	participants?: Participant[];
-	isInsideExtraWindow?: boolean;
-	showingEml?: boolean;
-};
-
-const MailMessageRenderer: FC<MailMessageRendererProps> = memo(
-	({
-		parts,
-		body,
-		id,
-		fragment,
-		participants,
-		isInsideExtraWindow = false,
-		showingEml = false
-	}) => {
-		if (!body?.content?.length && !fragment) {
-			return <EmptyBody />;
-		}
-
-		if (body?.contentType === 'text/html') {
-			return (
-				<HtmlMessageRenderer
-					msgId={id}
-					body={body}
-					parts={parts}
-					participants={participants}
-					isInsideExtraWindow={isInsideExtraWindow}
-					showingEml={showingEml}
-				/>
-			);
-		}
-		if (body?.contentType === 'text/plain') {
-			return <TextMessageRenderer body={body} />;
-		}
-		return <EmptyBody />;
-	}
-);
-
-MailMessageRenderer.displayName = 'MailMessageRenderer';
-
-export default MailMessageRenderer;

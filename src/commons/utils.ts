@@ -77,3 +77,37 @@ export const omitBy = (obj: any, check: (arg: unknown) => boolean): any => {
 	Object.entries(obj).forEach(([key, value]) => check(value) && delete obj[key]);
 	return obj;
 };
+
+export const _CI_REGEX = /^<(.*)>$/;
+export const _CI_SRC_REGEX = /^cid:(.*)$/;
+
+const LINE_BREAK_REGEX = /(?:\r\n|\r|\n)/g;
+
+export const plainTextToHTML = (str: string): string => {
+	if (str !== undefined && str !== null) {
+		return str.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(LINE_BREAK_REGEX, '<br />');
+	}
+	return '';
+};
+
+export const replaceLinkToAnchor = (content: string): string => {
+	if (content === '') {
+		return '';
+	}
+	const linkRegexp = /(https?:\/\/[^\s]+|www\.[^\s]+)/g;
+	return content.replace(linkRegexp, (url) => {
+		const wrap = document.createElement('div');
+		const anchor = document.createElement('a');
+
+		const newInnerHtml = url.replace(/&#64;/g, '@').replace(/&#61;/g, '=');
+		let href = url;
+		if (!url.startsWith('http') && !url.startsWith('https')) {
+			href = `http://${url}`;
+		}
+		anchor.href = href;
+		anchor.target = '_blank';
+		anchor.innerHTML = newInnerHtml;
+		wrap.appendChild(anchor);
+		return wrap.innerHTML;
+	});
+};
