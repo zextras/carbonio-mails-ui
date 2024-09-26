@@ -27,7 +27,7 @@ import { useMsgUnflagDescriptor } from './use-msg-unflag';
 import { useReplyAllMsgDescriptor } from './use-reply-all-msg';
 import { useReplyMsgDescriptor } from './use-reply-msg';
 import { useMsgSetAsReadDescriptor } from './use-set-msg-read';
-import { useSetMsgUnreadDescriptor } from './use-set-msg-unread';
+import { useMsgSetUnreadDescriptor } from './use-set-msg-unread';
 import { getParentFolderId } from '../../helpers/folders';
 import { MailMessage, UIActionAggregator, UIActionDescriptor } from '../../types';
 
@@ -93,7 +93,7 @@ export const useMsgActions = ({
 		folderId,
 		isMessageRead: message.read
 	});
-	const messageUnreadDescriptor = useSetMsgUnreadDescriptor({
+	const messageUnreadDescriptor = useMsgSetUnreadDescriptor({
 		ids: [message.id],
 		deselectAll,
 		shouldReplaceHistory,

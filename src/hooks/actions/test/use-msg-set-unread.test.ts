@@ -13,7 +13,7 @@ import { setupHook } from '../../../carbonio-ui-commons/test/test-setup';
 import { FOLDERS_DESCRIPTORS } from '../../../constants';
 import { generateStore } from '../../../tests/generators/store';
 import { MsgActionRequest } from '../../../types';
-import { useSetMsgUnreadDescriptor, useSetMsgUnreadFn } from '../use-set-msg-unread';
+import { useMsgSetUnreadDescriptor, useMsgSetUnreadFn } from '../use-set-msg-unread';
 
 describe('useSetMsgUnreadDescriptor', () => {
 	const store = generateStore();
@@ -24,7 +24,7 @@ describe('useSetMsgUnreadDescriptor', () => {
 	it('Should return an object with specific id, icon, label and 2 functions', () => {
 		const {
 			result: { current: descriptor }
-		} = setupHook(useSetMsgUnreadDescriptor, {
+		} = setupHook(useMsgSetUnreadDescriptor, {
 			store,
 			initialProps: [
 				{
@@ -54,7 +54,7 @@ describe('useSetMsgUnreadFn', () => {
 	it('Should return an object with execute and canExecute functions', () => {
 		const {
 			result: { current: descriptor }
-		} = setupHook(useSetMsgUnreadFn, {
+		} = setupHook(useMsgSetUnreadFn, {
 			store,
 			initialProps: [
 				{
@@ -83,7 +83,7 @@ describe('useSetMsgUnreadFn', () => {
 		`(`should return $assertion if the folder is $folder.desc`, ({ folder, assertion }) => {
 			const {
 				result: { current: functions }
-			} = setupHook(useSetMsgUnreadFn, {
+			} = setupHook(useMsgSetUnreadFn, {
 				store,
 				initialProps: [
 					{
@@ -100,7 +100,7 @@ describe('useSetMsgUnreadFn', () => {
 		it('should return false if the message is not read yet', () => {
 			const {
 				result: { current: functions }
-			} = setupHook(useSetMsgUnreadFn, {
+			} = setupHook(useMsgSetUnreadFn, {
 				store,
 				initialProps: [
 					{
@@ -117,7 +117,7 @@ describe('useSetMsgUnreadFn', () => {
 		it('should return true if the message is read', () => {
 			const {
 				result: { current: functions }
-			} = setupHook(useSetMsgUnreadFn, {
+			} = setupHook(useMsgSetUnreadFn, {
 				store,
 				initialProps: [
 					{
@@ -139,7 +139,7 @@ describe('useSetMsgUnreadFn', () => {
 
 			const {
 				result: { current: functions }
-			} = setupHook(useSetMsgUnreadFn, {
+			} = setupHook(useMsgSetUnreadFn, {
 				store,
 				initialProps: [
 					{
@@ -163,7 +163,7 @@ describe('useSetMsgUnreadFn', () => {
 
 			const {
 				result: { current: functions }
-			} = setupHook(useSetMsgUnreadFn, {
+			} = setupHook(useMsgSetUnreadFn, {
 				store,
 				initialProps: [
 					{

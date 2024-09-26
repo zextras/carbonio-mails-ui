@@ -20,7 +20,7 @@ import { useMsgMoveToFolderDescriptor } from '../hooks/actions/use-msg-move-to-f
 import { useMsgMoveToTrashDescriptor } from '../hooks/actions/use-msg-move-to-trash';
 import { useMsgUnflagDescriptor } from '../hooks/actions/use-msg-unflag';
 import { useMsgSetAsReadDescriptor } from '../hooks/actions/use-set-msg-read';
-import { useSetMsgUnreadDescriptor } from '../hooks/actions/use-set-msg-unread';
+import { useMsgSetUnreadDescriptor } from '../hooks/actions/use-set-msg-unread';
 import { useTagDropdownItem } from '../hooks/use-tag-dropdown-item';
 import { MailMessage } from '../types';
 
@@ -46,7 +46,7 @@ export const MessagesMultipleSelectionActions = ({
 		folderId,
 		isMessageRead: !atLeastOneMsgIsUnread
 	});
-	const setAsUnread = useSetMsgUnreadDescriptor({
+	const setAsUnread = useMsgSetUnreadDescriptor({
 		ids,
 		deselectAll,
 		folderId,
