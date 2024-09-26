@@ -7,7 +7,7 @@ import { useCallback, useMemo } from 'react';
 
 import { useTranslation } from 'react-i18next';
 
-import { useMsgReplyFn } from './use-reply-msg';
+import { useMsgReplyFn } from './use-msg-reply';
 import { ConversationActionsDescriptors } from '../../constants';
 import { ActionFn, UIActionDescriptor } from '../../types';
 

@@ -20,6 +20,7 @@ import { useMsgMoveToTrashDescriptor } from './use-msg-move-to-trash';
 import { useMsgPreviewOnSeparatedWindowDescriptor } from './use-msg-preview-on-separated-window';
 import { useMsgPrintDescriptor } from './use-msg-print';
 import { useMsgRedirectDescriptor } from './use-msg-redirect';
+import { useMsgReplyDescriptor } from './use-msg-reply';
 import { useMsgRestoreDescriptor } from './use-msg-restore';
 import { useMsgSendDraftDescriptor } from './use-msg-send-draft';
 import { useMsgSetReadDescriptor } from './use-msg-set-read';
@@ -27,7 +28,6 @@ import { useMsgSetUnreadDescriptor } from './use-msg-set-unread';
 import { useMsgShowOriginalDescriptor } from './use-msg-show-original';
 import { useMsgUnflagDescriptor } from './use-msg-unflag';
 import { useReplyAllMsgDescriptor } from './use-reply-all-msg';
-import { useMsgReplyDescriptor } from './use-reply-msg';
 import { getParentFolderId } from '../../helpers/folders';
 import { MailMessage, UIActionAggregator, UIActionDescriptor } from '../../types';
 
