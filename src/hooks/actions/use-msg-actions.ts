@@ -21,13 +21,13 @@ import { useMsgPreviewOnSeparatedWindowDescriptor } from './use-msg-preview-on-s
 import { useMsgPrintDescriptor } from './use-msg-print';
 import { useMsgRedirectDescriptor } from './use-msg-redirect';
 import { useMsgReplyDescriptor } from './use-msg-reply';
+import { useMsgReplyAllDescriptor } from './use-msg-reply-all';
 import { useMsgRestoreDescriptor } from './use-msg-restore';
 import { useMsgSendDraftDescriptor } from './use-msg-send-draft';
 import { useMsgSetReadDescriptor } from './use-msg-set-read';
 import { useMsgSetUnreadDescriptor } from './use-msg-set-unread';
 import { useMsgShowOriginalDescriptor } from './use-msg-show-original';
 import { useMsgUnflagDescriptor } from './use-msg-unflag';
-import { useMsgReplyAllDescriptor } from './use-reply-all-msg';
 import { getParentFolderId } from '../../helpers/folders';
 import { MailMessage, UIActionAggregator, UIActionDescriptor } from '../../types';
 

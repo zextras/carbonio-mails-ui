@@ -9,7 +9,7 @@ import { addBoard } from '../../../carbonio-ui-commons/test/mocks/carbonio-shell
 import { setupHook } from '../../../carbonio-ui-commons/test/test-setup';
 import { FOLDERS_DESCRIPTORS } from '../../../constants';
 import { generateMessage } from '../../../tests/generators/generateMessage';
-import { useMsgReplyAllDescriptor, useMsgReplyAllFn } from '../use-reply-all-msg';
+import { useMsgReplyAllDescriptor, useMsgReplyAllFn } from '../use-msg-reply-all';
 
 describe('useMsgReplyAllDescriptor', () => {
 	const msg = generateMessage();
