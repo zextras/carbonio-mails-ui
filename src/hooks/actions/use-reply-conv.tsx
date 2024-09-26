@@ -22,7 +22,7 @@ export const useReplyConvFn = ({
 	messagesLength,
 	folderId
 }: ReplyConvAction): ActionFn => {
-	const messageReplyAction = useMsgReplyFn({ messageId: firstMessageId, folderId });
+	const messageReplyAction = useMsgReplyFn(firstMessageId, folderId);
 
 	const canExecute = useCallback(
 		(): boolean => messagesLength === 1 && messageReplyAction.canExecute(),
