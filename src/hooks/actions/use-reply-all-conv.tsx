@@ -8,7 +8,7 @@ import { useCallback, useMemo } from 'react';
 
 import { useTranslation } from 'react-i18next';
 
-import { useReplyAllMsgFn } from './use-reply-all-msg';
+import { useMsgReplyAllFn } from './use-reply-all-msg';
 import { ConversationActionsDescriptors, EditViewActions } from '../../constants';
 import { ActionFn, UIActionDescriptor } from '../../types';
 import { createEditBoard } from '../../views/app/detail-panel/edit/edit-view-board';
@@ -24,7 +24,7 @@ export const useReplyAllConvFn = ({
 	folderId,
 	messagesLength
 }: ReplyAllConvAction): ActionFn => {
-	const replyAllMessageAction = useReplyAllMsgFn(firstMessageId, folderId);
+	const replyAllMessageAction = useMsgReplyAllFn(firstMessageId, folderId);
 	const canExecute = useCallback(
 		(): boolean => messagesLength === 1 && replyAllMessageAction.canExecute(),
 		[messagesLength, replyAllMessageAction]
