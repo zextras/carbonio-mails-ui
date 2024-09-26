@@ -7,8 +7,9 @@
 import React, { ReactElement, useCallback, useMemo, useState } from 'react';
 
 import { ChipInput, ChipItem, Container, Divider, Text } from '@zextras/carbonio-design-system';
-import { t, useIntegratedComponent } from '@zextras/carbonio-shell-ui';
+import { useIntegratedComponent } from '@zextras/carbonio-shell-ui';
 import { map, some } from 'lodash';
+import { useTranslation } from 'react-i18next';
 
 import ModalFooter from '../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../carbonio-ui-commons/components/modals/modal-header';
@@ -29,6 +30,7 @@ type ContactType = {
 };
 
 const RedirectMessageAction = ({ onClose, id }: RedirectActionProps): ReactElement => {
+	const [t] = useTranslation();
 	const { createSnackbar } = useUiUtilities();
 	const [ContactInput, integrationAvailable] = useIntegratedComponent('contact-input');
 	const [contacts, setContacts] = useState<ContactType[]>([]);
