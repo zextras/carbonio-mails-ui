@@ -18,9 +18,9 @@ import { useMsgMarkAsNotSpamDescriptor } from '../hooks/actions/use-msg-mark-as-
 import { useMsgMarkAsSpamDescriptor } from '../hooks/actions/use-msg-mark-as-spam';
 import { useMsgMoveToFolderDescriptor } from '../hooks/actions/use-msg-move-to-folder';
 import { useMsgMoveToTrashDescriptor } from '../hooks/actions/use-msg-move-to-trash';
+import { useMsgSetReadDescriptor } from '../hooks/actions/use-msg-set-read';
 import { useMsgSetUnreadDescriptor } from '../hooks/actions/use-msg-set-unread';
 import { useMsgUnflagDescriptor } from '../hooks/actions/use-msg-unflag';
-import { useMsgSetReadDescriptor } from '../hooks/actions/use-set-msg-read';
 import { useTagDropdownItem } from '../hooks/use-tag-dropdown-item';
 import { MailMessage } from '../types';
 

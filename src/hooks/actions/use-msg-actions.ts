@@ -22,12 +22,12 @@ import { useMsgPrintDescriptor } from './use-msg-print';
 import { useMsgRedirectDescriptor } from './use-msg-redirect';
 import { useMsgRestoreDescriptor } from './use-msg-restore';
 import { useMsgSendDraftDescriptor } from './use-msg-send-draft';
+import { useMsgSetReadDescriptor } from './use-msg-set-read';
 import { useMsgSetUnreadDescriptor } from './use-msg-set-unread';
 import { useMsgShowOriginalDescriptor } from './use-msg-show-original';
 import { useMsgUnflagDescriptor } from './use-msg-unflag';
 import { useReplyAllMsgDescriptor } from './use-reply-all-msg';
 import { useMsgReplyDescriptor } from './use-reply-msg';
-import { useMsgSetReadDescriptor } from './use-set-msg-read';
 import { getParentFolderId } from '../../helpers/folders';
 import { MailMessage, UIActionAggregator, UIActionDescriptor } from '../../types';
 

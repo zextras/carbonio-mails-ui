@@ -31,7 +31,7 @@ import { useFolder } from '../../../../carbonio-ui-commons/store/zustand/folder'
 import { getTimeLabel, participantToString } from '../../../../commons/utils';
 import { EditViewActions } from '../../../../constants';
 import { useMsgPreviewOnSeparatedWindowFn } from '../../../../hooks/actions/use-msg-preview-on-separated-window';
-import { useMsgSetReadFn } from '../../../../hooks/actions/use-set-msg-read';
+import { useMsgSetReadFn } from '../../../../hooks/actions/use-msg-set-read';
 import { useMessageById } from '../../../../store/zustand/search/store';
 import { TextReadValuesType } from '../../../../types';
 import { useTagExist } from '../../../../ui-actions/tag-actions';
