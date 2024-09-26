@@ -14,7 +14,7 @@ import { msgAction } from '../../store/actions';
 import { ActionFn, UIActionDescriptor } from '../../types';
 import { useAppDispatch } from '../redux';
 
-type SetMsgReadExecuteType = {
+type MsgSetReadFunctionsParameter = {
 	ids: Array<string>;
 	folderId: string;
 	isMessageRead: boolean;
@@ -28,7 +28,7 @@ export const useMsgSetAsReadFn = ({
 	shouldReplaceHistory,
 	folderId,
 	isMessageRead
-}: SetMsgReadExecuteType): ActionFn => {
+}: MsgSetReadFunctionsParameter): ActionFn => {
 	const dispatch = useAppDispatch();
 	const canExecute = useCallback(
 		(): boolean => !isDraft(folderId) && !isMessageRead,
@@ -60,7 +60,7 @@ export const useMsgSetAsReadDescriptor = ({
 	shouldReplaceHistory,
 	folderId,
 	isMessageRead
-}: SetMsgReadExecuteType): UIActionDescriptor => {
+}: MsgSetReadFunctionsParameter): UIActionDescriptor => {
 	const { canExecute, execute } = useMsgSetAsReadFn({
 		ids,
 		deselectAll,

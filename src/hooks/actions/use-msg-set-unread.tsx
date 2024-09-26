@@ -14,7 +14,7 @@ import { msgAction } from '../../store/actions';
 import { ActionFn, UIActionDescriptor } from '../../types';
 import { useAppDispatch } from '../redux';
 
-type MsgSetReadFnParameters = {
+type MsgSetUnreadFunctionsParameter = {
 	ids: Array<string>;
 	folderId: string;
 	isMessageRead: boolean;
@@ -28,7 +28,7 @@ export const useMsgSetUnreadFn = ({
 	shouldReplaceHistory,
 	folderId,
 	isMessageRead
-}: MsgSetReadFnParameters): ActionFn => {
+}: MsgSetUnreadFunctionsParameter): ActionFn => {
 	const canExecute = useCallback(
 		(): boolean => !isDraft(folderId) && isMessageRead,
 		[folderId, isMessageRead]
@@ -60,7 +60,7 @@ export const useMsgSetUnreadDescriptor = ({
 	shouldReplaceHistory,
 	folderId,
 	isMessageRead
-}: MsgSetReadFnParameters): UIActionDescriptor => {
+}: MsgSetUnreadFunctionsParameter): UIActionDescriptor => {
 	const { canExecute, execute } = useMsgSetUnreadFn({
 		ids,
 		deselectAll,
