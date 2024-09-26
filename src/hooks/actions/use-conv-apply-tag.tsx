@@ -12,15 +12,19 @@ import { useTranslation } from 'react-i18next';
 import { ConversationActionsDescriptors, TIMEOUTS } from '../../constants';
 import { isSpam } from '../../helpers/folders';
 import { convAction } from '../../store/actions';
-import { Conversation, UIActionAggregator, UIActionDescriptor } from '../../types';
+import { UIActionAggregator, UIActionDescriptor } from '../../types';
 import { useAppDispatch } from '../redux';
 import { useUiUtilities } from '../use-ui-utilities';
 
-export const useConvApplyTagFn = (
-	conversationId: Conversation['id'],
-	conversationTags: Array<string>,
-	folderId: string
-): UIActionDescriptor[] => {
+export const useConvApplyTagFn = ({
+	ids,
+	conversationTags,
+	folderId
+}: {
+	ids: Array<string>;
+	conversationTags: Array<string>;
+	folderId: string;
+}): UIActionDescriptor[] => {
 	const { createSnackbar } = useUiUtilities();
 	const dispatch = useAppDispatch();
 	const [t] = useTranslation();
@@ -49,7 +53,7 @@ export const useConvApplyTagFn = (
 						dispatch(
 							convAction({
 								operation,
-								ids: [conversationId],
+								ids,
 								tagName: tag.name
 							})
 						).then((res: any) => {
@@ -84,19 +88,23 @@ export const useConvApplyTagFn = (
 					canExecute
 				};
 			}),
-		[createSnackbar, dispatch, folderId, conversationId, conversationTags, t, tags]
+		[createSnackbar, dispatch, folderId, ids, conversationTags, t, tags]
 	);
 
 	return useMemo(() => tagActions, [tagActions]);
 };
 
-export const useConvApplyTagDescriptor = (
-	conversationId: string,
-	conversationTags: Array<string>,
-	folderId: string
-): UIActionAggregator => {
+export const useConvApplyTagDescriptor = ({
+	ids,
+	conversationTags,
+	folderId
+}: {
+	ids: Array<string>;
+	conversationTags: Array<string>;
+	folderId: string;
+}): UIActionAggregator => {
 	const [t] = useTranslation();
-	const items = useConvApplyTagFn(conversationId, conversationTags, folderId);
+	const items = useConvApplyTagFn({ ids, conversationTags, folderId });
 	return {
 		id: ConversationActionsDescriptors.APPLY_TAG.id,
 		label: t('label.tag', 'Tag'),

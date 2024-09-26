@@ -82,7 +82,7 @@ export const useMsgActions = ({
 		shouldReplaceHistory
 	});
 	const deletePermanentlyDescriptor = useDeleteMsgPermanentlyDescriptor({
-		messageId: message.id,
+		ids: [message.id],
 		deselectAll,
 		folderId
 	});
@@ -113,10 +113,14 @@ export const useMsgActions = ({
 		shouldReplaceHistory,
 		folderId
 	});
-	const applyTagDescriptor = useMsgApplyTagDescriptor(message.id, message.tags, folderId);
+	const applyTagDescriptor = useMsgApplyTagDescriptor({
+		ids: [message.id],
+		messageTags: message.tags,
+		folderId
+	});
 	const moveToFolderDescriptor = useMsgMoveToFolderDescriptor({
 		folderId,
-		messageId: message.id,
+		ids: [message.id],
 		deselectAll
 	});
 	const restoreFolderDescriptor = useMsgRestoreDescriptor({
