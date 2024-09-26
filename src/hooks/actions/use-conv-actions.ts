@@ -23,7 +23,7 @@ import { useConvSetAsUnread } from './use-conv-set-as-unread';
 import { useConvSetFlagDescriptor } from './use-conv-set-flag';
 import { useConvShowOriginalDescriptor } from './use-conv-show-original';
 import { useConvUnsetFlagDescriptor } from './use-conv-unset-flag';
-import { useReplyAllConvDescriptor } from './use-reply-all-conv';
+import { useConvReplyAllDescriptor } from './use-reply-all-conv';
 import { isTrash } from '../../carbonio-ui-commons/helpers/folders';
 import { getFolderIdParts, isDraft } from '../../helpers/folders';
 import { Conversation, UIActionAggregator, UIActionDescriptor } from '../../types';
@@ -75,7 +75,7 @@ export const useConvActions = ({
 		folderId,
 		messagesLength: conversation.messages.length
 	});
-	const replyAllDescriptor = useReplyAllConvDescriptor({
+	const replyAllDescriptor = useConvReplyAllDescriptor({
 		firstMessageId: firstConversationMessage.id,
 		folderId,
 		messagesLength: conversation.messages.length

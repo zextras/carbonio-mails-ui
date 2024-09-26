@@ -13,17 +13,17 @@ import { ConversationActionsDescriptors, EditViewActions } from '../../constants
 import { ActionFn, UIActionDescriptor } from '../../types';
 import { createEditBoard } from '../../views/app/detail-panel/edit/edit-view-board';
 
-type ReplyAllConvAction = {
+type ConvReplyAllFunctionsParameter = {
 	firstMessageId: string;
 	messagesLength: number;
 	folderId: string;
 };
 
-export const useReplyAllConvFn = ({
+export const useConvReplyAllFn = ({
 	firstMessageId,
 	folderId,
 	messagesLength
-}: ReplyAllConvAction): ActionFn => {
+}: ConvReplyAllFunctionsParameter): ActionFn => {
 	const replyAllMessageAction = useMsgReplyAllFn(firstMessageId, folderId);
 	const canExecute = useCallback(
 		(): boolean => messagesLength === 1 && replyAllMessageAction.canExecute(),
@@ -42,12 +42,12 @@ export const useReplyAllConvFn = ({
 	return useMemo(() => ({ canExecute, execute }), [canExecute, execute]);
 };
 
-export const useReplyAllConvDescriptor = ({
+export const useConvReplyAllDescriptor = ({
 	firstMessageId,
 	folderId,
 	messagesLength
-}: ReplyAllConvAction): UIActionDescriptor => {
-	const { canExecute, execute } = useReplyAllConvFn({ firstMessageId, folderId, messagesLength });
+}: ConvReplyAllFunctionsParameter): UIActionDescriptor => {
+	const { canExecute, execute } = useConvReplyAllFn({ firstMessageId, folderId, messagesLength });
 	const [t] = useTranslation();
 	return {
 		id: ConversationActionsDescriptors.REPLY_ALL.id,
