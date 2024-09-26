@@ -7,7 +7,7 @@ import { useCallback, useMemo } from 'react';
 
 import { useTranslation } from 'react-i18next';
 
-import { useReplyMsgFn } from './use-reply-msg';
+import { useMsgReplyFn } from './use-reply-msg';
 import { ConversationActionsDescriptors } from '../../constants';
 import { ActionFn, UIActionDescriptor } from '../../types';
 
@@ -22,7 +22,7 @@ export const useReplyConvFn = ({
 	messagesLength,
 	folderId
 }: ReplyConvAction): ActionFn => {
-	const messageReplyAction = useReplyMsgFn({ messageId: firstMessageId, folderId });
+	const messageReplyAction = useMsgReplyFn({ messageId: firstMessageId, folderId });
 
 	const canExecute = useCallback(
 		(): boolean => messagesLength === 1 && messageReplyAction.canExecute(),

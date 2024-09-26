@@ -9,7 +9,7 @@ import { addBoard } from '../../../carbonio-ui-commons/test/mocks/carbonio-shell
 import { setupHook } from '../../../carbonio-ui-commons/test/test-setup';
 import { FOLDERS_DESCRIPTORS } from '../../../constants';
 import { generateMessage } from '../../../tests/generators/generateMessage';
-import { useReplyMsgDescriptor, useReplyMsgFn } from '../use-reply-msg';
+import { useMsgReplyDescriptor, useMsgReplyFn } from '../use-reply-msg';
 
 describe('useMsgReplyDescriptor', () => {
 	const msg = generateMessage();
@@ -17,7 +17,7 @@ describe('useMsgReplyDescriptor', () => {
 	it('Should return an object with specific id, icon, label and 2 functions', () => {
 		const {
 			result: { current: descriptor }
-		} = setupHook(useReplyMsgDescriptor, {
+		} = setupHook(useMsgReplyDescriptor, {
 			initialProps: [msg.id, FOLDERS.INBOX]
 		});
 
@@ -37,7 +37,7 @@ describe('useMsgReplyFn', () => {
 	it('Should return an object with execute and canExecute functions', () => {
 		const {
 			result: { current: functions }
-		} = setupHook(useReplyMsgFn, {
+		} = setupHook(useMsgReplyFn, {
 			initialProps: [msg.id, FOLDERS.INBOX]
 		});
 
@@ -59,7 +59,7 @@ describe('useMsgReplyFn', () => {
 		`(`should return $assertion if the folder is $folder.desc`, ({ folder, assertion }) => {
 			const {
 				result: { current: functions }
-			} = setupHook(useReplyMsgFn, {
+			} = setupHook(useMsgReplyFn, {
 				initialProps: [msg.id, folder.id]
 			});
 
@@ -71,7 +71,7 @@ describe('useMsgReplyFn', () => {
 		it('should create a board with specific parameters', async () => {
 			const {
 				result: { current: functions }
-			} = setupHook(useReplyMsgFn, {
+			} = setupHook(useMsgReplyFn, {
 				initialProps: [msg.id, FOLDERS.INBOX]
 			});
 
@@ -91,7 +91,7 @@ describe('useMsgReplyFn', () => {
 		it('should not create a board if the action cannot be executed', async () => {
 			const {
 				result: { current: functions }
-			} = setupHook(useReplyMsgFn, {
+			} = setupHook(useMsgReplyFn, {
 				initialProps: [msg.id, FOLDERS.DRAFTS]
 			});
 

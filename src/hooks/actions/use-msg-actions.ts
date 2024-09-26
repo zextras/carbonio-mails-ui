@@ -26,7 +26,7 @@ import { useMsgSetUnreadDescriptor } from './use-msg-set-unread';
 import { useMsgShowOriginalDescriptor } from './use-msg-show-original';
 import { useMsgUnflagDescriptor } from './use-msg-unflag';
 import { useReplyAllMsgDescriptor } from './use-reply-all-msg';
-import { useReplyMsgDescriptor } from './use-reply-msg';
+import { useMsgReplyDescriptor } from './use-reply-msg';
 import { useMsgSetReadDescriptor } from './use-set-msg-read';
 import { getParentFolderId } from '../../helpers/folders';
 import { MailMessage, UIActionAggregator, UIActionDescriptor } from '../../types';
@@ -72,7 +72,7 @@ export const useMsgActions = ({
 }: MessageActionsArgumentType): MessageActionsReturnType => {
 	const folderId = getParentFolderId(message.parent);
 
-	const replyDescriptor = useReplyMsgDescriptor(message.id, folderId);
+	const replyDescriptor = useMsgReplyDescriptor(message.id, folderId);
 	const replyAllDescriptor = useReplyAllMsgDescriptor(message.id, folderId);
 	const forwardDescriptor = useForwardMsgDescriptor(message.id, folderId);
 	const moveToTrashDescriptor = useMsgMoveToTrashDescriptor({
