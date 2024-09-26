@@ -13,7 +13,7 @@ import { setupHook } from '../../../carbonio-ui-commons/test/test-setup';
 import { FOLDERS_DESCRIPTORS } from '../../../constants';
 import { generateStore } from '../../../tests/generators/store';
 import { MsgActionRequest } from '../../../types';
-import { useMsgSetUnreadDescriptor, useMsgSetUnreadFn } from '../use-set-msg-unread';
+import { useMsgSetUnreadDescriptor, useMsgSetUnreadFn } from '../use-msg-set-unread';
 
 describe('useSetMsgUnreadDescriptor', () => {
 	const store = generateStore();
