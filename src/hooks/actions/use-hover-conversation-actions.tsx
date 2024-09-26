@@ -5,7 +5,7 @@
  */
 import { useMemo } from 'react';
 
-import { useConvReplyDescriptor } from './use-reply-conv';
+import { useConvReplyDescriptor } from './use-conv-reply';
 import { getParentFolderId } from '../../helpers/folders';
 import { UIActionDescriptor } from '../../types';
 
