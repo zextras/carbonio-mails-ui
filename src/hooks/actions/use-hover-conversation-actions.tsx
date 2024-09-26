@@ -5,7 +5,7 @@
  */
 import { useMemo } from 'react';
 
-import { useReplyConvDescriptor } from './use-reply-conv';
+import { useConvReplyDescriptor } from './use-reply-conv';
 import { getParentFolderId } from '../../helpers/folders';
 import { UIActionDescriptor } from '../../types';
 
@@ -21,7 +21,7 @@ export const useHoverConversationActions = ({
 	messagesLength
 }: HoverMessageActionsType): Array<UIActionDescriptor> => {
 	const folderId = getParentFolderId(firstMessageParent);
-	const replyDescriptor = useReplyConvDescriptor({ firstMessageId, folderId, messagesLength });
+	const replyDescriptor = useConvReplyDescriptor({ firstMessageId, folderId, messagesLength });
 
 	return useMemo(() => [replyDescriptor], [replyDescriptor]);
 };

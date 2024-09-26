@@ -11,17 +11,17 @@ import { useMsgReplyFn } from './use-msg-reply';
 import { ConversationActionsDescriptors } from '../../constants';
 import { ActionFn, UIActionDescriptor } from '../../types';
 
-type ReplyConvAction = {
+type ConvReplyFunctionsParameter = {
 	firstMessageId: string;
 	messagesLength: number;
 	folderId: string;
 };
 
-export const useReplyConvFn = ({
+export const useConvReplyFn = ({
 	firstMessageId,
 	messagesLength,
 	folderId
-}: ReplyConvAction): ActionFn => {
+}: ConvReplyFunctionsParameter): ActionFn => {
 	const messageReplyAction = useMsgReplyFn(firstMessageId, folderId);
 
 	const canExecute = useCallback(
@@ -38,12 +38,12 @@ export const useReplyConvFn = ({
 	return useMemo(() => ({ canExecute, execute }), [canExecute, execute]);
 };
 
-export const useReplyConvDescriptor = ({
+export const useConvReplyDescriptor = ({
 	firstMessageId,
 	messagesLength,
 	folderId
-}: ReplyConvAction): UIActionDescriptor => {
-	const { canExecute, execute } = useReplyConvFn({ firstMessageId, folderId, messagesLength });
+}: ConvReplyFunctionsParameter): UIActionDescriptor => {
+	const { canExecute, execute } = useConvReplyFn({ firstMessageId, folderId, messagesLength });
 	const [t] = useTranslation();
 	return {
 		id: ConversationActionsDescriptors.REPLY.id,

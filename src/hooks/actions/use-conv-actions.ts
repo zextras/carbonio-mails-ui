@@ -23,7 +23,7 @@ import { useConvSetFlagDescriptor } from './use-conv-set-flag';
 import { useConvShowOriginalDescriptor } from './use-conv-show-original';
 import { useConvUnsetFlagDescriptor } from './use-conv-unset-flag';
 import { useReplyAllConvDescriptor } from './use-reply-all-conv';
-import { useReplyConvDescriptor } from './use-reply-conv';
+import { useConvReplyDescriptor } from './use-reply-conv';
 import { isTrash } from '../../carbonio-ui-commons/helpers/folders';
 import { getFolderIdParts, isDraft } from '../../helpers/folders';
 import { Conversation, UIActionAggregator, UIActionDescriptor } from '../../types';
@@ -70,7 +70,7 @@ export const useConvActions = ({
 	// TODO: This condition is not the proper one as the first message is not a good indication of the folder id we are currently navigating.
 	const folderId = firstConversationMessage.parent;
 
-	const replyDescriptor = useReplyConvDescriptor({
+	const replyDescriptor = useConvReplyDescriptor({
 		firstMessageId: firstConversationMessage.id,
 		folderId,
 		messagesLength: conversation.messages.length
