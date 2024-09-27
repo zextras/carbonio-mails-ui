@@ -7,7 +7,7 @@ import { useCallback, useMemo } from 'react';
 
 import { AsyncThunkAction, Dispatch } from '@reduxjs/toolkit';
 import { useSnackbar } from '@zextras/carbonio-design-system';
-import { replaceHistory, t } from '@zextras/carbonio-shell-ui';
+import { replaceHistory } from '@zextras/carbonio-shell-ui';
 import { useTranslation } from 'react-i18next';
 
 import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
@@ -45,6 +45,7 @@ const useRestoreMessage = (): ((
 	closeEditor: boolean | undefined
 ) => void) => {
 	const { createSnackbar } = useUiUtilities();
+	const [t] = useTranslation();
 	return useCallback(
 		(dispatch, ids, folderId, closeEditor): void => {
 			dispatchMsgMove(dispatch, ids, folderId)
@@ -73,19 +74,19 @@ const useRestoreMessage = (): ((
 					}
 				});
 		},
-		[createSnackbar]
+		[createSnackbar, t]
 	);
 };
 
 type MoveToTrashExecute = {
-	messagesId: Array<string>;
+	ids: Array<string>;
 	folderId?: string;
 	deselectAll?: () => void;
 	shouldReplaceHistory?: boolean;
 };
 
 export const useMsgMoveToTrashFn = ({
-	messagesId,
+	ids,
 	deselectAll,
 	folderId = FOLDERS.INBOX,
 	shouldReplaceHistory
@@ -95,13 +96,14 @@ export const useMsgMoveToTrashFn = ({
 	const createSnackbar = useSnackbar();
 	const restoreMessage = useRestoreMessage();
 	const inSearchModule = useInSearchModule();
+	const [t] = useTranslation();
 
 	const execute = useCallback((): void => {
 		if (canExecute()) {
 			dispatch(
 				msgAction({
 					operation: 'trash',
-					ids: messagesId
+					ids
 				})
 			).then((res) => {
 				if (res.type.includes('fulfilled')) {
@@ -110,19 +112,18 @@ export const useMsgMoveToTrashFn = ({
 						shouldReplaceHistory && replaceHistory(`/folder/${folderId}`);
 					}
 					createSnackbar({
-						key: `trash-${messagesId}`,
+						key: `trash-${ids}`,
 						replace: true,
 						type: 'info',
 						label: t('messages.snackbar.email_moved_to_trash', 'E-mail moved to Trash'),
 						autoHideTimeout: 5000,
 						hideButton: false,
 						actionLabel: t('label.undo', 'Undo'),
-						onActionClick: () =>
-							restoreMessage(dispatch, messagesId, folderId, shouldReplaceHistory)
+						onActionClick: () => restoreMessage(dispatch, ids, folderId, shouldReplaceHistory)
 					});
 				} else {
 					createSnackbar({
-						key: `trash-${messagesId}`,
+						key: `trash-${ids}`,
 						replace: true,
 						type: 'error',
 						label: t('label.error_try_again', 'Something went wrong, please try again'),
@@ -135,10 +136,11 @@ export const useMsgMoveToTrashFn = ({
 	}, [
 		canExecute,
 		dispatch,
-		messagesId,
+		ids,
 		deselectAll,
 		inSearchModule,
 		createSnackbar,
+		t,
 		shouldReplaceHistory,
 		folderId,
 		restoreMessage
@@ -148,13 +150,13 @@ export const useMsgMoveToTrashFn = ({
 };
 
 export const useMsgMoveToTrashDescriptor = ({
-	messagesId,
+	ids,
 	deselectAll,
 	folderId,
 	shouldReplaceHistory
 }: MoveToTrashExecute): UIActionDescriptor => {
 	const { canExecute, execute } = useMsgMoveToTrashFn({
-		messagesId,
+		ids,
 		deselectAll,
 		folderId,
 		shouldReplaceHistory
