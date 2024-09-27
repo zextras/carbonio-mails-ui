@@ -5,11 +5,11 @@
  */
 import { useCallback } from 'react';
 
-import { useConvMarkAsNotSpamFn } from './actions/use-conv-mark-as-not-spam';
-import { useConvMarkAsSpamFn } from './actions/use-conv-mark-as-spam';
 import { useConvMoveToTrashFn } from './actions/use-conv-move-to-trash';
 import { useConvSetFlagFn } from './actions/use-conv-set-flag';
+import { useConvSetNotSpamFn } from './actions/use-conv-set-not-spam';
 import { useConvSetReadFn } from './actions/use-conv-set-read';
+import { useConvSetSpamFn } from './actions/use-conv-set-spam';
 import { useConvSetUnreadFn } from './actions/use-conv-set-unread';
 import { useConvUnsetFlagFn } from './actions/use-conv-unset-flag';
 import { useAppSelector } from './redux';
@@ -34,13 +34,13 @@ export const useConversationKeyboardShortcuts = ({
 }: HandleKeyboardShortcutsArguments): ((event: KeyboardEvent) => void) => {
 	const conversation = useAppSelector(selectConversation(conversationId));
 
-	const markAsSpam = useConvMarkAsSpamFn({
+	const markAsSpam = useConvSetSpamFn({
 		ids: [conversationId],
 		folderId,
 		shouldReplaceHistory: true
 	});
 
-	const markAsNotSpam = useConvMarkAsNotSpamFn({
+	const markAsNotSpam = useConvSetNotSpamFn({
 		ids: [conversationId],
 		folderId,
 		shouldReplaceHistory: true

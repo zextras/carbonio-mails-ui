@@ -15,17 +15,17 @@ import { convAction } from '../../store/actions';
 import { ActionFn, UIActionDescriptor } from '../../types';
 import { useAppDispatch } from '../redux';
 
-type ConvMarkAsSpamFunctionsParameter = {
+type ConvSetSpamFunctionsParameter = {
 	ids: Array<string>;
 	shouldReplaceHistory: boolean;
 	folderId: string;
 };
 
-export const useConvMarkAsSpamFn = ({
+export const useConvSetSpamFn = ({
 	ids,
 	shouldReplaceHistory,
 	folderId
-}: ConvMarkAsSpamFunctionsParameter): ActionFn => {
+}: ConvSetSpamFunctionsParameter): ActionFn => {
 	const dispatch = useAppDispatch();
 	const createSnackbar = useSnackbar();
 	const [t] = useTranslation();
@@ -81,12 +81,12 @@ export const useConvMarkAsSpamFn = ({
 	return useMemo(() => ({ canExecute, execute }), [canExecute, execute]);
 };
 
-export const useConvMarkAsSpamDescriptor = ({
+export const useConvSetSpamDescriptor = ({
 	ids,
 	shouldReplaceHistory,
 	folderId
-}: ConvMarkAsSpamFunctionsParameter): UIActionDescriptor => {
-	const { canExecute, execute } = useConvMarkAsSpamFn({
+}: ConvSetSpamFunctionsParameter): UIActionDescriptor => {
+	const { canExecute, execute } = useConvSetSpamFn({
 		ids,
 		shouldReplaceHistory,
 		folderId

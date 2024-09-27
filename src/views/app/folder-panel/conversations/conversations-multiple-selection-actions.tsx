@@ -11,12 +11,12 @@ import { filter, intersection, map, some } from 'lodash';
 import { normalizeDropdownActionItem } from '../../../../helpers/actions';
 import { useConvApplyTagDescriptor } from '../../../../hooks/actions/use-conv-apply-tag';
 import { useConvDeletePermanentlyDescriptor } from '../../../../hooks/actions/use-conv-delete-permanently';
-import { useConvMarkAsNotSpamDescriptor } from '../../../../hooks/actions/use-conv-mark-as-not-spam';
-import { useConvMarkAsSpamDescriptor } from '../../../../hooks/actions/use-conv-mark-as-spam';
 import { useConvMoveToFolderDescriptor } from '../../../../hooks/actions/use-conv-move-to-folder';
 import { useConvMoveToTrashDescriptor } from '../../../../hooks/actions/use-conv-move-to-trash';
 import { useConvSetFlagDescriptor } from '../../../../hooks/actions/use-conv-set-flag';
+import { useConvSetNotSpamDescriptor } from '../../../../hooks/actions/use-conv-set-not-spam';
 import { useConvSetReadDescriptor } from '../../../../hooks/actions/use-conv-set-read';
+import { useConvSetSpamDescriptor } from '../../../../hooks/actions/use-conv-set-spam';
 import { useConvSetUnreadDescriptor } from '../../../../hooks/actions/use-conv-set-unread';
 import { useConvUnsetFlagDescriptor } from '../../../../hooks/actions/use-conv-unset-flag';
 import { useTagDropdownItem } from '../../../../hooks/use-tag-dropdown-item';
@@ -63,8 +63,8 @@ export const ConversationsMultipleSelectionActions = ({
 	const flagDescriptor = useConvSetFlagDescriptor(ids, !atLeastOneConvIsUnflagged);
 	const unflagDescriptor = useConvUnsetFlagDescriptor(ids, !atLeastOneConvIsUnflagged);
 	const moveToFolderDescriptor = useConvMoveToFolderDescriptor({ folderId, deselectAll, ids });
-	const setAsSpam = useConvMarkAsSpamDescriptor({ ids, shouldReplaceHistory: false, folderId });
-	const setAsNotSpam = useConvMarkAsNotSpamDescriptor({
+	const setAsSpam = useConvSetSpamDescriptor({ ids, shouldReplaceHistory: false, folderId });
+	const setAsNotSpam = useConvSetNotSpamDescriptor({
 		ids,
 		shouldReplaceHistory: false,
 		folderId

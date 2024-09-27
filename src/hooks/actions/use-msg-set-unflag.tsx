@@ -12,15 +12,15 @@ import { msgAction } from '../../store/actions';
 import { ActionFn, UIActionDescriptor } from '../../types';
 import { useAppDispatch } from '../redux';
 
-export const useMsgFlagFn = (ids: Array<string>, isFlagged: boolean): ActionFn => {
-	const canExecute = useCallback((): boolean => !isFlagged, [isFlagged]);
+export const useMsgSetUnflagFn = (ids: Array<string>, isFlagged: boolean): ActionFn => {
+	const canExecute = useCallback((): boolean => isFlagged, [isFlagged]);
 	const dispatch = useAppDispatch();
 
 	const execute = useCallback((): void => {
 		if (canExecute()) {
 			dispatch(
 				msgAction({
-					operation: 'flag',
+					operation: '!flag',
 					ids
 				})
 			);
@@ -29,16 +29,16 @@ export const useMsgFlagFn = (ids: Array<string>, isFlagged: boolean): ActionFn =
 
 	return useMemo(() => ({ canExecute, execute }), [canExecute, execute]);
 };
-export const useMsgFlagDescriptor = (
+export const useMsgSetUnflagDescriptor = (
 	ids: Array<string>,
 	isFlagged: boolean
 ): UIActionDescriptor => {
-	const { canExecute, execute } = useMsgFlagFn(ids, isFlagged);
+	const { canExecute, execute } = useMsgSetUnflagFn(ids, isFlagged);
 	const [t] = useTranslation();
 	return {
-		id: MessageActionsDescriptors.FLAG.id,
-		icon: 'FlagOutline',
-		label: t('action.flag', 'Add flag'),
+		id: MessageActionsDescriptors.UNFLAG.id,
+		icon: 'Flag',
+		label: t('action.unflag', 'Remove flag'),
 		execute,
 		canExecute
 	};

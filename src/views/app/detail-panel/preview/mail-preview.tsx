@@ -32,7 +32,7 @@ import { FOLDERS } from '../../../../carbonio-ui-commons/constants/folders';
 import MailMessageRenderer from '../../../../commons/mail-message-renderer';
 import { getAttachmentParts } from '../../../../helpers/attachments';
 import { getFolderIdParts } from '../../../../helpers/folders';
-import { useMsgMarkAsNotSpamFn } from '../../../../hooks/actions/use-msg-mark-as-not-spam';
+import { useMsgSetNotSpamFn } from '../../../../hooks/actions/use-msg-set-not-spam';
 import { useAppDispatch } from '../../../../hooks/redux';
 import { useRequestDebouncedMessage } from '../../../../hooks/use-request-debounced-message';
 import SharedInviteReply from '../../../../integrations/shared-invite-reply';
@@ -241,7 +241,7 @@ const MailPreviewBlock: FC<MailPreviewBlockType> = ({
 	);
 	const shouldReplaceHistory = useMemo(() => itemId === message.id, [message.id, itemId]);
 
-	const { execute } = useMsgMarkAsNotSpamFn({ ids: [message.id], folderId, shouldReplaceHistory });
+	const { execute } = useMsgSetNotSpamFn({ ids: [message.id], folderId, shouldReplaceHistory });
 	return (
 		<>
 			{getFolderIdParts(folderId).id === FOLDERS.SPAM && (
