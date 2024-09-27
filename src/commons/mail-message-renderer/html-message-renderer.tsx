@@ -23,11 +23,7 @@ import styled from 'styled-components';
 import { ParticipantRole } from '../../carbonio-ui-commons/constants/participants';
 import { getNoIdentityPlaceholder } from '../../helpers/identities';
 import type { MailMessagePart, Participant } from '../../types';
-import {
-	getOriginalHtmlContent,
-	getQuotedTextFromOriginalContent,
-	trimTextToHumaneSize
-} from '../get-quoted-text-util';
+import { getOriginalHtmlContent, getQuotedTextFromOriginalContent } from '../get-quoted-text-util';
 import { _CI_REGEX, _CI_SRC_REGEX, isAvailableInTrusteeList } from '../utils';
 
 const BannerContainer = styled(Container)`
@@ -77,15 +73,14 @@ export const HtmlMessageRenderer: FC<HtmlMessageRendererType> = ({
 	const from =
 		filter(participants, { type: ParticipantRole.FROM })[0]?.address ?? getNoIdentityPlaceholder();
 	const domain = from?.substring(from.lastIndexOf('@') + 1);
-	const trimmedBodyContent = trimTextToHumaneSize(body.content, 150_000);
 	const [showExternalImage, setShowExternalImage] = useState(false);
 	const [displayBanner, setDisplayBanner] = useState(true);
-	const originalContent = getOriginalHtmlContent(trimmedBodyContent);
-	const quoted = getQuotedTextFromOriginalContent(trimmedBodyContent, originalContent);
+	const originalContent = getOriginalHtmlContent(body.content);
+	const quoted = getQuotedTextFromOriginalContent(body.content, originalContent);
 
 	const contentToDisplay = useMemo(
-		() => (showQuotedText ? trimmedBodyContent : originalContent),
-		[showQuotedText, trimmedBodyContent, originalContent]
+		() => (showQuotedText ? body.content : originalContent),
+		[showQuotedText, body.content, originalContent]
 	);
 
 	const parser = new DOMParser();

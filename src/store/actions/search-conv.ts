@@ -24,6 +24,7 @@ export const searchConv = createAsyncThunk<SearchConvReturn, SearchConvParameter
 			cid: conversationId,
 			query: `inId: "${folderId}"`,
 			recip: '2',
+			max: 250_000,
 			sortBy: 'dateDesc',
 			offset: 0,
 			fetch,

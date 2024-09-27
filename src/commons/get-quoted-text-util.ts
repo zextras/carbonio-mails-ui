@@ -513,10 +513,6 @@ export function getOriginalTextContent(text: string): string {
 	return text;
 }
 
-export function trimTextToHumaneSize(text: string, size: number): string {
-	return text.substring(0, size);
-}
-
 export function getQuotedTextFromOriginalContent(body: string, originalContent: string): string {
 	if (originalContent.length >= body.length - 5) {
 		return '';
@@ -686,7 +682,7 @@ export function getQuotedTextFromOriginalContent(body: string, originalContent: 
 	return '';
 }
 
-export function htmlEncode(str: string | object, includeSpaces: boolean): string {
+export function htmlEncode(str: string | object, includeSpaces?: boolean): string {
 	if (!str) {
 		return '';
 	}
