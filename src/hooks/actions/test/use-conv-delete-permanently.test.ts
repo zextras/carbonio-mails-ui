@@ -17,92 +17,37 @@ import {
 	useConvDeletePermanentlyFn
 } from '../use-conv-delete-permanently';
 
-describe('useConvDeletePermanentlyDescriptor', () => {
-	const ids = times(faker.number.int({ max: 42 }), () =>
-		faker.number.int({ max: 42000 }).toString()
-	);
-	const store = generateStore();
+describe('useConvDeletePermanently', () => {
+	describe('Descriptor', () => {
+		const ids = times(faker.number.int({ max: 42 }), () =>
+			faker.number.int({ max: 42000 }).toString()
+		);
+		const store = generateStore();
 
-	it('Should return an object with specific id, icon, label and 2 functions', () => {
-		const {
-			result: { current: descriptor }
-		} = setupHook(useConvDeletePermanentlyDescriptor, {
-			store,
-			initialProps: [{ ids, deselectAll: jest.fn(), folderId: FOLDERS.INBOX }]
-		});
-
-		expect(descriptor).toEqual({
-			id: 'delete-permanently',
-			icon: 'DeletePermanentlyOutline',
-			label: 'Delete Permanently',
-			execute: expect.any(Function),
-			canExecute: expect.any(Function)
-		});
-	});
-});
-
-describe('useConvDeletePermanentlyFn', () => {
-	const ids = times(faker.number.int({ max: 42 }), () =>
-		faker.number.int({ max: 42000 }).toString()
-	);
-	const store = generateStore();
-
-	it('Should return an object with execute and canExecute functions', () => {
-		const {
-			result: { current: functions }
-		} = setupHook(useConvDeletePermanentlyFn, {
-			store,
-			initialProps: [{ ids, deselectAll: jest.fn(), folderId: FOLDERS.INBOX }]
-		});
-
-		expect(functions).toEqual({
-			execute: expect.any(Function),
-			canExecute: expect.any(Function)
-		});
-	});
-
-	describe('canExecute', () => {
-		it.each`
-			folder                              | assertion
-			${FOLDERS_DESCRIPTORS.INBOX}        | ${false}
-			${FOLDERS_DESCRIPTORS.SENT}         | ${false}
-			${FOLDERS_DESCRIPTORS.DRAFTS}       | ${false}
-			${FOLDERS_DESCRIPTORS.TRASH}        | ${true}
-			${FOLDERS_DESCRIPTORS.SPAM}         | ${true}
-			${FOLDERS_DESCRIPTORS.USER_DEFINED} | ${false}
-		`(`should return $assertion if the folder is $folder.desc`, ({ folder, assertion }) => {
+		it('Should return an object with specific id, icon, label and 2 functions', () => {
 			const {
-				result: { current: functions }
-			} = setupHook(useConvDeletePermanentlyFn, {
+				result: { current: descriptor }
+			} = setupHook(useConvDeletePermanentlyDescriptor, {
 				store,
-				initialProps: [{ ids, deselectAll: jest.fn(), folderId: folder.id }]
+				initialProps: [{ ids, deselectAll: jest.fn(), folderId: FOLDERS.INBOX }]
 			});
 
-			expect(functions.canExecute()).toEqual(assertion);
+			expect(descriptor).toEqual({
+				id: 'delete-permanently',
+				icon: 'DeletePermanentlyOutline',
+				label: 'Delete Permanently',
+				execute: expect.any(Function),
+				canExecute: expect.any(Function)
+			});
 		});
 	});
+	describe('Functions', () => {
+		const ids = times(faker.number.int({ max: 42 }), () =>
+			faker.number.int({ max: 42000 }).toString()
+		);
+		const store = generateStore();
 
-	describe('execute', () => {
-		it('should open the deletion modal', async () => {
-			const {
-				result: { current: functions }
-			} = setupHook(useConvDeletePermanentlyFn, {
-				store,
-				initialProps: [{ ids, deselectAll: jest.fn(), folderId: FOLDERS.TRASH }]
-			});
-
-			act(() => {
-				functions.execute();
-			});
-
-			act(() => {
-				jest.advanceTimersByTime(TIMERS.modal_open_delay);
-			});
-
-			expect(screen.queryByText(`Are you sure to permanently delete this element?`)).toBeVisible();
-		});
-
-		it('should not open the deletion modal with if the action cannot be executed', async () => {
+		it('Should return an object with execute and canExecute functions', () => {
 			const {
 				result: { current: functions }
 			} = setupHook(useConvDeletePermanentlyFn, {
@@ -110,17 +55,75 @@ describe('useConvDeletePermanentlyFn', () => {
 				initialProps: [{ ids, deselectAll: jest.fn(), folderId: FOLDERS.INBOX }]
 			});
 
-			act(() => {
-				functions.execute();
+			expect(functions).toEqual({
+				execute: expect.any(Function),
+				canExecute: expect.any(Function)
+			});
+		});
+
+		describe('canExecute', () => {
+			it.each`
+				folder                              | assertion
+				${FOLDERS_DESCRIPTORS.INBOX}        | ${false}
+				${FOLDERS_DESCRIPTORS.SENT}         | ${false}
+				${FOLDERS_DESCRIPTORS.DRAFTS}       | ${false}
+				${FOLDERS_DESCRIPTORS.TRASH}        | ${true}
+				${FOLDERS_DESCRIPTORS.SPAM}         | ${true}
+				${FOLDERS_DESCRIPTORS.USER_DEFINED} | ${false}
+			`(`should return $assertion if the folder is $folder.desc`, ({ folder, assertion }) => {
+				const {
+					result: { current: functions }
+				} = setupHook(useConvDeletePermanentlyFn, {
+					store,
+					initialProps: [{ ids, deselectAll: jest.fn(), folderId: folder.id }]
+				});
+
+				expect(functions.canExecute()).toEqual(assertion);
+			});
+		});
+
+		describe('execute', () => {
+			it('should open the deletion modal', async () => {
+				const {
+					result: { current: functions }
+				} = setupHook(useConvDeletePermanentlyFn, {
+					store,
+					initialProps: [{ ids, deselectAll: jest.fn(), folderId: FOLDERS.TRASH }]
+				});
+
+				act(() => {
+					functions.execute();
+				});
+
+				act(() => {
+					jest.advanceTimersByTime(TIMERS.modal_open_delay);
+				});
+
+				expect(
+					screen.queryByText(`Are you sure to permanently delete this element?`)
+				).toBeVisible();
 			});
 
-			act(() => {
-				jest.advanceTimersByTime(TIMERS.modal_open_delay);
-			});
+			it('should not open the deletion modal with if the action cannot be executed', async () => {
+				const {
+					result: { current: functions }
+				} = setupHook(useConvDeletePermanentlyFn, {
+					store,
+					initialProps: [{ ids, deselectAll: jest.fn(), folderId: FOLDERS.INBOX }]
+				});
 
-			expect(
-				screen.queryByText(`Are you sure to permanently delete this element?`)
-			).not.toBeInTheDocument();
+				act(() => {
+					functions.execute();
+				});
+
+				act(() => {
+					jest.advanceTimersByTime(TIMERS.modal_open_delay);
+				});
+
+				expect(
+					screen.queryByText(`Are you sure to permanently delete this element?`)
+				).not.toBeInTheDocument();
+			});
 		});
 	});
 });
