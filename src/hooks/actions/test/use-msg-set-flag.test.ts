@@ -12,9 +12,9 @@ import { setupHook } from '../../../carbonio-ui-commons/test/test-setup';
 import { API_REQUEST_STATUS } from '../../../constants';
 import { generateStore } from '../../../tests/generators/store';
 import { MsgActionRequest } from '../../../types';
-import { useMsgFlagDescriptor, useMsgFlagFn } from '../use-msg-flag';
+import { useMsgSetFlagDescriptor, useMsgSetFlagFn } from '../use-msg-set-flag';
 
-describe('useMsgFlagDescriptor', () => {
+describe('useMsgSetFlagDescriptor', () => {
 	const store = generateStore({
 		messages: {
 			searchedInFolder: {},
@@ -26,7 +26,7 @@ describe('useMsgFlagDescriptor', () => {
 	it('Should return an object with specific id, icon, label and 2 functions', () => {
 		const {
 			result: { current: descriptor }
-		} = setupHook(useMsgFlagDescriptor, { store, initialProps: [[], false] });
+		} = setupHook(useMsgSetFlagDescriptor, { store, initialProps: [[], false] });
 
 		expect(descriptor).toEqual({
 			id: 'message-flag',
@@ -50,7 +50,7 @@ describe('useMsgFlagFn', () => {
 	it('Should return an object with execute and canExecute functions', () => {
 		const {
 			result: { current: descriptor }
-		} = setupHook(useMsgFlagFn, { store, initialProps: [[], false] });
+		} = setupHook(useMsgSetFlagFn, { store, initialProps: [[], false] });
 
 		expect(descriptor).toEqual({
 			execute: expect.any(Function),
@@ -62,7 +62,7 @@ describe('useMsgFlagFn', () => {
 		it('should return false if the message is already flagged', () => {
 			const {
 				result: { current: functions }
-			} = setupHook(useMsgFlagFn, {
+			} = setupHook(useMsgSetFlagFn, {
 				store,
 				initialProps: [['1'], true]
 			});
@@ -73,7 +73,7 @@ describe('useMsgFlagFn', () => {
 		it('should return true if the message is not flagged', () => {
 			const {
 				result: { current: functions }
-			} = setupHook(useMsgFlagFn, {
+			} = setupHook(useMsgSetFlagFn, {
 				store,
 				initialProps: [['1'], false]
 			});
@@ -89,7 +89,7 @@ describe('useMsgFlagFn', () => {
 
 			const {
 				result: { current: functions }
-			} = setupHook(useMsgFlagFn, { store, initialProps: [['1'], true] });
+			} = setupHook(useMsgSetFlagFn, { store, initialProps: [['1'], true] });
 
 			await act(async () => {
 				functions.execute();
@@ -104,7 +104,7 @@ describe('useMsgFlagFn', () => {
 
 			const {
 				result: { current: functions }
-			} = setupHook(useMsgFlagFn, {
+			} = setupHook(useMsgSetFlagFn, {
 				store,
 				initialProps: [ids, false]
 			});

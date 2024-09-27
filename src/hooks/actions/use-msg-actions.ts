@@ -11,7 +11,6 @@ import { useMsgDeletePermanentlyDescriptor } from './use-msg-delete-permanently'
 import { useMsgDownloadEmlDescriptor } from './use-msg-download-eml';
 import { useMsgEditAsNewDescriptor } from './use-msg-edit-as-new';
 import { useMsgEditDraftDescriptor } from './use-msg-edit-draft';
-import { useMsgFlagDescriptor } from './use-msg-flag';
 import { useMsgForwardDescriptor } from './use-msg-forward';
 import { useMsgMarkAsNotSpamDescriptor } from './use-msg-mark-as-not-spam';
 import { useMsgMarkAsSpamDescriptor } from './use-msg-mark-as-spam';
@@ -24,10 +23,11 @@ import { useMsgReplyDescriptor } from './use-msg-reply';
 import { useMsgReplyAllDescriptor } from './use-msg-reply-all';
 import { useMsgRestoreDescriptor } from './use-msg-restore';
 import { useMsgSendDraftDescriptor } from './use-msg-send-draft';
+import { useMsgSetFlagDescriptor } from './use-msg-set-flag';
 import { useMsgSetReadDescriptor } from './use-msg-set-read';
+import { useMsgSetUnflagDescriptor } from './use-msg-set-unflag';
 import { useMsgSetUnreadDescriptor } from './use-msg-set-unread';
 import { useMsgShowOriginalDescriptor } from './use-msg-show-original';
-import { useMsgUnflagDescriptor } from './use-msg-unflag';
 import { getParentFolderId } from '../../helpers/folders';
 import { MailMessage, UIActionAggregator, UIActionDescriptor } from '../../types';
 
@@ -100,8 +100,8 @@ export const useMsgActions = ({
 		folderId,
 		isMessageRead: message.read
 	});
-	const flagDescriptor = useMsgFlagDescriptor([message.id], message.flagged);
-	const unflagDescriptor = useMsgUnflagDescriptor([message.id], message.flagged);
+	const flagDescriptor = useMsgSetFlagDescriptor([message.id], message.flagged);
+	const unflagDescriptor = useMsgSetUnflagDescriptor([message.id], message.flagged);
 	const sendDraftDescriptor = useMsgSendDraftDescriptor(message, folderId);
 	const markAsSpamDescriptor = useMsgMarkAsSpamDescriptor({
 		ids: [message.id],

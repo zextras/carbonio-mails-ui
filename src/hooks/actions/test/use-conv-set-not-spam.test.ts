@@ -15,7 +15,7 @@ import { generateStore } from '../../../tests/generators/store';
 import { ConvActionRequest, ConvActionResponse } from '../../../types';
 import { useConvSetNotSpamDescriptor, useConvSetNotSpamFn } from '../use-conv-set-not-spam';
 
-describe('useConvMarkAsNotSpam', () => {
+describe('useConvSetNotSpam', () => {
 	describe('Descriptor', () => {
 		const ids = times(faker.number.int({ max: 42 }), () =>
 			faker.number.int({ max: 42000 }).toString()

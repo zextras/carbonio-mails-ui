@@ -10,8 +10,6 @@ import { find } from 'lodash';
 import { useConvApplyTagDescriptor } from './use-conv-apply-tag';
 import { useConvDeletePermanentlyDescriptor } from './use-conv-delete-permanently';
 import { useConvForwardDescriptor } from './use-conv-forward';
-import { useConvMarkAsNotSpamDescriptor } from './use-conv-mark-as-not-spam';
-import { useConvMarkAsSpamDescriptor } from './use-conv-mark-as-spam';
 import { useConvMoveToFolderDescriptor } from './use-conv-move-to-folder';
 import { useConvMoveToTrashDescriptor } from './use-conv-move-to-trash';
 import { useConvPreviewOnSeparatedWindowDescriptor } from './use-conv-preview-on-separated-window';
@@ -20,7 +18,9 @@ import { useConvReplyDescriptor } from './use-conv-reply';
 import { useConvReplyAllDescriptor } from './use-conv-reply-all';
 import { useConvRestoreDescriptor } from './use-conv-restore';
 import { useConvSetFlagDescriptor } from './use-conv-set-flag';
+import { useConvSetNotSpamDescriptor } from './use-conv-set-not-spam';
 import { useConvSetReadDescriptor } from './use-conv-set-read';
+import { useConvSetSpamDescriptor } from './use-conv-set-spam';
 import { useConvSetUnreadDescriptor } from './use-conv-set-unread';
 import { useConvShowOriginalDescriptor } from './use-conv-show-original';
 import { useConvUnsetFlagDescriptor } from './use-conv-unset-flag';
@@ -109,12 +109,12 @@ export const useConvActions = ({
 	});
 	const setFlagDescriptor = useConvSetFlagDescriptor([conversation.id], conversation.flagged);
 	const unflagDescriptor = useConvUnsetFlagDescriptor([conversation.id], conversation.flagged);
-	const markAsSpamDescriptor = useConvMarkAsSpamDescriptor({
+	const markAsSpamDescriptor = useConvSetSpamDescriptor({
 		ids: [conversation.id],
 		shouldReplaceHistory,
 		folderId
 	});
-	const markAsNotSpamDescriptor = useConvMarkAsNotSpamDescriptor({
+	const markAsNotSpamDescriptor = useConvSetNotSpamDescriptor({
 		ids: [conversation.id],
 		shouldReplaceHistory,
 		folderId
