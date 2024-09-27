@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, ReactElement, useEffect, useMemo, useState } from 'react';
+import React, { FC, ReactElement, useMemo, useState } from 'react';
 
 import {
 	Button,
@@ -34,19 +34,12 @@ const InviteContainer = styled(Container)`
 type SharedCalendarResponseReturnType = {
 	sharedContent: string;
 	mailMsg: MailMessage;
-	onLoadChange?: () => void;
 };
 
 const SharedCalendarResponse: FC<SharedCalendarResponseReturnType> = ({
 	sharedContent,
-	mailMsg,
-	onLoadChange
+	mailMsg
 }): ReactElement => {
-	useEffect(() => {
-		if (mailMsg.read === 'false') {
-			onLoadChange && onLoadChange();
-		}
-	}, [mailMsg.read, onLoadChange]);
 	const dispatch = useAppDispatch();
 
 	const rights = useMemo(

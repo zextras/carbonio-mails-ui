@@ -195,11 +195,7 @@ const MailContent: FC<{
 								/>
 							</Container>
 						) : showShareInvite ? (
-							<SharedInviteReply
-								// title={message?.fragment?.split('Shared item:')[0]}
-								sharedContent={message.shr[0].content}
-								mailMsg={message}
-							/>
+							<SharedInviteReply sharedContent={message.shr[0].content} mailMsg={message} />
 						) : (
 							<MailMessageRenderer
 								parts={parts}
