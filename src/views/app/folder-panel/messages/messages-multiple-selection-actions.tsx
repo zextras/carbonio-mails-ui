@@ -9,20 +9,20 @@ import React from 'react';
 import { DropdownItem } from '@zextras/carbonio-design-system';
 import { filter, intersection, map, some } from 'lodash';
 
-import { MultipleSelectionActionsComponent } from './multiple-selection-actions-component';
-import { normalizeDropdownActionItem } from '../helpers/actions';
-import { useMsgApplyTagDescriptor } from '../hooks/actions/use-msg-apply-tag';
-import { useMsgDeletePermanentlyDescriptor } from '../hooks/actions/use-msg-delete-permanently';
-import { useMsgFlagDescriptor } from '../hooks/actions/use-msg-flag';
-import { useMsgMarkAsNotSpamDescriptor } from '../hooks/actions/use-msg-mark-as-not-spam';
-import { useMsgMarkAsSpamDescriptor } from '../hooks/actions/use-msg-mark-as-spam';
-import { useMsgMoveToFolderDescriptor } from '../hooks/actions/use-msg-move-to-folder';
-import { useMsgMoveToTrashDescriptor } from '../hooks/actions/use-msg-move-to-trash';
-import { useMsgSetReadDescriptor } from '../hooks/actions/use-msg-set-read';
-import { useMsgSetUnreadDescriptor } from '../hooks/actions/use-msg-set-unread';
-import { useMsgUnflagDescriptor } from '../hooks/actions/use-msg-unflag';
-import { useTagDropdownItem } from '../hooks/use-tag-dropdown-item';
-import { MailMessage } from '../types';
+import { normalizeDropdownActionItem } from '../../../../helpers/actions';
+import { useMsgApplyTagDescriptor } from '../../../../hooks/actions/use-msg-apply-tag';
+import { useMsgDeletePermanentlyDescriptor } from '../../../../hooks/actions/use-msg-delete-permanently';
+import { useMsgFlagDescriptor } from '../../../../hooks/actions/use-msg-flag';
+import { useMsgMarkAsNotSpamDescriptor } from '../../../../hooks/actions/use-msg-mark-as-not-spam';
+import { useMsgMarkAsSpamDescriptor } from '../../../../hooks/actions/use-msg-mark-as-spam';
+import { useMsgMoveToFolderDescriptor } from '../../../../hooks/actions/use-msg-move-to-folder';
+import { useMsgMoveToTrashDescriptor } from '../../../../hooks/actions/use-msg-move-to-trash';
+import { useMsgSetReadDescriptor } from '../../../../hooks/actions/use-msg-set-read';
+import { useMsgSetUnreadDescriptor } from '../../../../hooks/actions/use-msg-set-unread';
+import { useMsgUnflagDescriptor } from '../../../../hooks/actions/use-msg-unflag';
+import { useTagDropdownItem } from '../../../../hooks/use-tag-dropdown-item';
+import { MailMessage } from '../../../../types';
+import { MultipleSelectionActionsComponent } from '../parts/multiple-selection-actions-component';
 
 export const MessagesMultipleSelectionActions = ({
 	ids,

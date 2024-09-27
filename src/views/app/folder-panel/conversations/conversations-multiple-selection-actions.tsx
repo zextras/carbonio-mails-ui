@@ -8,20 +8,20 @@ import React from 'react';
 import { DropdownItem } from '@zextras/carbonio-design-system';
 import { filter, intersection, map, some } from 'lodash';
 
-import { MultipleSelectionActionsComponent } from './multiple-selection-actions-component';
-import { normalizeDropdownActionItem } from '../helpers/actions';
-import { useConvApplyTagDescriptor } from '../hooks/actions/use-conv-apply-tag';
-import { useConvDeletePermanentlyDescriptor } from '../hooks/actions/use-conv-delete-permanently';
-import { useConvMarkAsNotSpamDescriptor } from '../hooks/actions/use-conv-mark-as-not-spam';
-import { useConvMarkAsSpamDescriptor } from '../hooks/actions/use-conv-mark-as-spam';
-import { useConvMoveToFolderDescriptor } from '../hooks/actions/use-conv-move-to-folder';
-import { useConvMoveToTrashDescriptor } from '../hooks/actions/use-conv-move-to-trash';
-import { useConvSetFlagDescriptor } from '../hooks/actions/use-conv-set-flag';
-import { useConvSetReadDescriptor } from '../hooks/actions/use-conv-set-read';
-import { useConvSetUnreadDescriptor } from '../hooks/actions/use-conv-set-unread';
-import { useConvUnsetFlagDescriptor } from '../hooks/actions/use-conv-unset-flag';
-import { useTagDropdownItem } from '../hooks/use-tag-dropdown-item';
-import type { Conversation } from '../types';
+import { normalizeDropdownActionItem } from '../../../../helpers/actions';
+import { useConvApplyTagDescriptor } from '../../../../hooks/actions/use-conv-apply-tag';
+import { useConvDeletePermanentlyDescriptor } from '../../../../hooks/actions/use-conv-delete-permanently';
+import { useConvMarkAsNotSpamDescriptor } from '../../../../hooks/actions/use-conv-mark-as-not-spam';
+import { useConvMarkAsSpamDescriptor } from '../../../../hooks/actions/use-conv-mark-as-spam';
+import { useConvMoveToFolderDescriptor } from '../../../../hooks/actions/use-conv-move-to-folder';
+import { useConvMoveToTrashDescriptor } from '../../../../hooks/actions/use-conv-move-to-trash';
+import { useConvSetFlagDescriptor } from '../../../../hooks/actions/use-conv-set-flag';
+import { useConvSetReadDescriptor } from '../../../../hooks/actions/use-conv-set-read';
+import { useConvSetUnreadDescriptor } from '../../../../hooks/actions/use-conv-set-unread';
+import { useConvUnsetFlagDescriptor } from '../../../../hooks/actions/use-conv-unset-flag';
+import { useTagDropdownItem } from '../../../../hooks/use-tag-dropdown-item';
+import type { Conversation } from '../../../../types';
+import { MultipleSelectionActionsComponent } from '../parts/multiple-selection-actions-component';
 
 export const ConversationsMultipleSelectionActions = ({
 	ids,

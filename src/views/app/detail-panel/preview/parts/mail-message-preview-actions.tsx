@@ -10,12 +10,12 @@ import { useAppContext } from '@zextras/carbonio-shell-ui';
 import { isNil, map, noop } from 'lodash';
 import { useParams } from 'react-router-dom';
 
-import { normalizeDropdownActionItem } from '../helpers/actions';
-import { useMsgActions } from '../hooks/actions/use-msg-actions';
-import { useSelection } from '../hooks/use-selection';
-import { useTagDropdownItem } from '../hooks/use-tag-dropdown-item';
-import { AppContext, MailMessage } from '../types';
-import { useExtraWindow } from '../views/app/extra-windows/use-extra-window';
+import { normalizeDropdownActionItem } from '../../../../../helpers/actions';
+import { useMsgActions } from '../../../../../hooks/actions/use-msg-actions';
+import { useSelection } from '../../../../../hooks/use-selection';
+import { useTagDropdownItem } from '../../../../../hooks/use-tag-dropdown-item';
+import { AppContext, MailMessage } from '../../../../../types';
+import { useExtraWindow } from '../../../extra-windows/use-extra-window';
 
 type MailMsgPreviewActionsType = {
 	message: MailMessage;

@@ -8,11 +8,11 @@ import React, { FC, useCallback, useEffect, useState } from 'react';
 import { Button, Container, IconButton, Row, Tooltip } from '@zextras/carbonio-design-system';
 import { t, useUserSettings } from '@zextras/carbonio-shell-ui';
 
-import { ConversationsMultipleSelectionActions } from './conversations-multiple-selection-actions';
-import { MessagesMultipleSelectionActions } from './messages-multiple-selection-actions';
-import { getFolderParentId } from './utils';
-import { useUiUtilities } from '../hooks/use-ui-utilities';
-import type { Conversation, MailMessage } from '../types';
+import { useUiUtilities } from '../../../../hooks/use-ui-utilities';
+import type { Conversation, MailMessage } from '../../../../types';
+import { getFolderParentId } from '../../../../ui-actions/utils';
+import { ConversationsMultipleSelectionActions } from '../conversations/conversations-multiple-selection-actions';
+import { MessagesMultipleSelectionActions } from '../messages/messages-multiple-selection-actions';
 
 type MultipleSelectionActionsPanelProps = {
 	items: Array<Partial<MailMessage> & Pick<MailMessage, 'id'>> | Array<Conversation>;

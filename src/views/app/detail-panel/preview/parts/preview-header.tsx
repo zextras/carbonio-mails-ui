@@ -45,6 +45,7 @@ import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { ContactNameChip } from './contact-names-chips';
+import { MailMsgPreviewActions } from './mail-message-preview-actions';
 import MessageContactsList from './message-contact-list';
 import OnBehalfOfDisplayer from './on-behalf-of-displayer';
 import { ParticipantRole } from '../../../../../carbonio-ui-commons/constants/participants';
@@ -53,7 +54,6 @@ import { getTimeLabel, participantToString } from '../../../../../commons/utils'
 import { getNoIdentityPlaceholder } from '../../../../../helpers/identities';
 import { retrieveAttachmentsType } from '../../../../../store/editor-slice-utils';
 import type { MailMessage } from '../../../../../types';
-import { MailMsgPreviewActions } from '../../../../../ui-actions/mail-message-preview-actions';
 import { useTagExist } from '../../../../../ui-actions/tag-actions';
 
 const HoverContainer = styled(Container)<ContainerProps & { isExpanded: boolean }>`
