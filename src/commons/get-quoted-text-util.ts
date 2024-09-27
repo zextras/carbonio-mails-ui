@@ -333,6 +333,21 @@ function checkInlineWrote(
 	return null;
 }
 
+function replaceDuplicateDiv(text: string): string {
+	text = text.replace('</div></div>', '</div>');
+	if (text.indexOf('</div></div>') !== -1) {
+		text = replaceDuplicateDiv(text);
+	}
+	return text;
+}
+
+function plainTextToHTML(str: string): string {
+	if (str !== undefined && str !== null) {
+		return str.replace(/(?:\r\n|\r|\n)/g, '<br />');
+	}
+	return '';
+}
+
 export function getOriginalContent(text: string, isHtml: boolean): string {
 	if (!text) {
 		return '';
@@ -491,21 +506,6 @@ export function getOriginalContent(text: string, isHtml: boolean): string {
 	}
 
 	return text;
-}
-
-function replaceDuplicateDiv(text: string): string {
-	text = text.replace('</div></div>', '</div>');
-	if (text.indexOf('</div></div>') !== -1) {
-		text = replaceDuplicateDiv(text);
-	}
-	return text;
-}
-
-function plainTextToHTML(str: string): string {
-	if (str !== undefined && str !== null) {
-		return str.replace(/(?:\r\n|\r|\n)/g, '<br />');
-	}
-	return '';
 }
 
 export function getQuotedTextOnly(message: string, isHtmlContent: boolean): string {
