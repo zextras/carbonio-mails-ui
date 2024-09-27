@@ -12,7 +12,7 @@ import { setupHook } from '../../../carbonio-ui-commons/test/test-setup';
 import { API_REQUEST_STATUS } from '../../../constants';
 import { generateStore } from '../../../tests/generators/store';
 import { MsgActionRequest } from '../../../types';
-import { useMsgUnflagDescriptor, useMsgUnflagFn } from '../use-msg-unflag';
+import { useMsgSetUnflagDescriptor, useMsgSetUnflagFn } from '../use-msg-set-unflag';
 
 describe('useMsgUnflagDescriptor', () => {
 	const store = generateStore({
@@ -26,7 +26,7 @@ describe('useMsgUnflagDescriptor', () => {
 	it('Should return an object with specific id, icon, label and 2 functions', () => {
 		const {
 			result: { current: descriptor }
-		} = setupHook(useMsgUnflagDescriptor, { store, initialProps: [[], true] });
+		} = setupHook(useMsgSetUnflagDescriptor, { store, initialProps: [[], true] });
 
 		expect(descriptor).toEqual({
 			id: 'message-unflag',
@@ -50,7 +50,7 @@ describe('useMsgUnflagFn', () => {
 	it('Should return an object with execute and canExecute functions', () => {
 		const {
 			result: { current: descriptor }
-		} = setupHook(useMsgUnflagFn, { store, initialProps: [[], true] });
+		} = setupHook(useMsgSetUnflagFn, { store, initialProps: [[], true] });
 
 		expect(descriptor).toEqual({
 			execute: expect.any(Function),
@@ -62,7 +62,7 @@ describe('useMsgUnflagFn', () => {
 		it('should return false if the message is not flagged', () => {
 			const {
 				result: { current: functions }
-			} = setupHook(useMsgUnflagFn, {
+			} = setupHook(useMsgSetUnflagFn, {
 				store,
 				initialProps: [['1'], false]
 			});
@@ -73,7 +73,7 @@ describe('useMsgUnflagFn', () => {
 		it('should return true if the message is flagged', () => {
 			const {
 				result: { current: functions }
-			} = setupHook(useMsgUnflagFn, {
+			} = setupHook(useMsgSetUnflagFn, {
 				store,
 				initialProps: [['1'], true]
 			});
@@ -89,7 +89,7 @@ describe('useMsgUnflagFn', () => {
 
 			const {
 				result: { current: functions }
-			} = setupHook(useMsgUnflagFn, { store, initialProps: [['1'], false] });
+			} = setupHook(useMsgSetUnflagFn, { store, initialProps: [['1'], false] });
 
 			await act(async () => {
 				functions.execute();
@@ -104,7 +104,7 @@ describe('useMsgUnflagFn', () => {
 
 			const {
 				result: { current: functions }
-			} = setupHook(useMsgUnflagFn, {
+			} = setupHook(useMsgSetUnflagFn, {
 				store,
 				initialProps: [ids, true]
 			});

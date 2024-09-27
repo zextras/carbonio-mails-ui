@@ -13,13 +13,10 @@ import { setupHook } from '../../../carbonio-ui-commons/test/test-setup';
 import { API_REQUEST_STATUS, FOLDERS_DESCRIPTORS, TIMEOUTS } from '../../../constants';
 import { generateStore } from '../../../tests/generators/store';
 import { ConvActionRequest, ConvActionResponse } from '../../../types';
-import {
-	useConvMarkAsNotSpamDescriptor,
-	useConvMarkAsNotSpamFn
-} from '../use-conv-mark-as-not-spam';
+import { useConvSetSpamDescriptor, useConvSetSpamFn } from '../use-conv-set-spam';
 
-describe('useConvMarkAsNotSpam', () => {
-	describe('Descriptor', () => {
+describe('useConvMarkAsSpam', () => {
+	describe('descriptor', () => {
 		const ids = times(faker.number.int({ max: 42 }), () =>
 			faker.number.int({ max: 42000 }).toString()
 		);
@@ -38,22 +35,21 @@ describe('useConvMarkAsNotSpam', () => {
 		it('Should return an object with specific id, icon, label and 2 functions', () => {
 			const {
 				result: { current: descriptor }
-			} = setupHook(useConvMarkAsNotSpamDescriptor, {
+			} = setupHook(useConvSetSpamDescriptor, {
 				store,
 				initialProps: [{ ids, shouldReplaceHistory: false, folderId: FOLDERS.SPAM }]
 			});
 
 			expect(descriptor).toEqual({
-				id: 'conversation-mark_as_not_spam',
-				icon: 'AlertCircleOutline',
-				label: 'Not spam',
+				id: 'conversation-mark_as_spam',
+				icon: 'AlertCircle',
+				label: 'Mark as spam',
 				execute: expect.any(Function),
 				canExecute: expect.any(Function)
 			});
 		});
 	});
-
-	describe('Functions', () => {
+	describe('useConvMarkAsSpamFn', () => {
 		const ids = times(faker.number.int({ max: 42 }), () =>
 			faker.number.int({ max: 42000 }).toString()
 		);
@@ -62,7 +58,7 @@ describe('useConvMarkAsNotSpam', () => {
 		it('Should return an object with execute and canExecute functions', () => {
 			const {
 				result: { current: functions }
-			} = setupHook(useConvMarkAsNotSpamFn, {
+			} = setupHook(useConvSetSpamFn, {
 				store,
 				initialProps: [{ ids, shouldReplaceHistory: false, folderId: FOLDERS.SPAM }]
 			});
@@ -76,16 +72,16 @@ describe('useConvMarkAsNotSpam', () => {
 		describe('canExecute', () => {
 			it.each`
 				folder                              | assertion
-				${FOLDERS_DESCRIPTORS.INBOX}        | ${false}
-				${FOLDERS_DESCRIPTORS.SENT}         | ${false}
+				${FOLDERS_DESCRIPTORS.INBOX}        | ${true}
+				${FOLDERS_DESCRIPTORS.SENT}         | ${true}
 				${FOLDERS_DESCRIPTORS.DRAFTS}       | ${false}
-				${FOLDERS_DESCRIPTORS.TRASH}        | ${false}
-				${FOLDERS_DESCRIPTORS.SPAM}         | ${true}
-				${FOLDERS_DESCRIPTORS.USER_DEFINED} | ${false}
+				${FOLDERS_DESCRIPTORS.TRASH}        | ${true}
+				${FOLDERS_DESCRIPTORS.SPAM}         | ${false}
+				${FOLDERS_DESCRIPTORS.USER_DEFINED} | ${true}
 			`(`should return $assertion if the folder is $folder.desc`, ({ folder, assertion }) => {
 				const {
 					result: { current: functions }
-				} = setupHook(useConvMarkAsNotSpamFn, {
+				} = setupHook(useConvSetSpamFn, {
 					store,
 					initialProps: [{ ids, shouldReplaceHistory: false, folderId: folder.id }]
 				});
@@ -97,13 +93,13 @@ describe('useConvMarkAsNotSpam', () => {
 		describe('execute', () => {
 			it('should not call the API if the action cannot be executed', async () => {
 				const callFlag = jest.fn();
-				createSoapAPIInterceptor('ConvAction').then(callFlag);
+				createSoapAPIInterceptor('MsgAction').then(callFlag);
 
 				const {
 					result: { current: functions }
-				} = setupHook(useConvMarkAsNotSpamFn, {
+				} = setupHook(useConvSetSpamFn, {
 					store,
-					initialProps: [{ ids, shouldReplaceHistory: false, folderId: FOLDERS.INBOX }]
+					initialProps: [{ ids, shouldReplaceHistory: false, folderId: FOLDERS.SPAM }]
 				});
 
 				await act(async () => {
@@ -119,16 +115,16 @@ describe('useConvMarkAsNotSpam', () => {
 					{
 						action: {
 							id: ids.join(','),
-							op: '!spam'
+							op: 'spam'
 						}
 					}
 				);
 
 				const {
 					result: { current: functions }
-				} = setupHook(useConvMarkAsNotSpamFn, {
+				} = setupHook(useConvSetSpamFn, {
 					store,
-					initialProps: [{ ids, shouldReplaceHistory: false, folderId: FOLDERS.SPAM }]
+					initialProps: [{ ids, shouldReplaceHistory: false, folderId: FOLDERS.INBOX }]
 				});
 
 				act(() => {
@@ -138,7 +134,7 @@ describe('useConvMarkAsNotSpam', () => {
 
 				const requestParameter = await apiInterceptor;
 				expect(requestParameter.action.id).toBe(ids.join(','));
-				expect(requestParameter.action.op).toBe('!spam');
+				expect(requestParameter.action.op).toBe('spam');
 				expect(requestParameter.action.l).toBeUndefined();
 				expect(requestParameter.action.tn).toBeUndefined();
 			});
