@@ -508,11 +508,7 @@ export function getOriginalContent(text: string, isHtml: boolean): string {
 	return text;
 }
 
-export function getQuotedTextOnly(message: string, isHtmlContent: boolean): string {
-	const body = message;
-
-	const originalContent = getOriginalContent(body, isHtmlContent);
-
+export function getQuotedTextFromOriginalContent(body: string, originalContent: string): string {
 	if (originalContent.length >= body.length - 5) {
 		return '';
 	}
@@ -679,6 +675,13 @@ export function getQuotedTextOnly(message: string, isHtmlContent: boolean): stri
 		return quotedText;
 	}
 	return '';
+}
+
+export function getQuotedTextOnly(message: string, isHtmlContent: boolean): string {
+	const body = message;
+
+	const originalContent = getOriginalContent(body, isHtmlContent);
+	return getQuotedTextFromOriginalContent(body, originalContent);
 }
 
 export function htmlEncode(str: string | object, includeSpaces: boolean): string {
