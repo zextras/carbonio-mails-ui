@@ -12,7 +12,7 @@ import { FOLDERS_DESCRIPTORS } from '../../../constants';
 import { generateConversation } from '../../../tests/generators/generateConversation';
 import { useConvShowOriginalDescriptor, useConvShowOriginalFn } from '../use-conv-show-original';
 
-describe('useMsgShowOriginal', () => {
+describe('useConvShowOriginal', () => {
 	const conv = generateConversation({ messageGenerationCount: 3 });
 
 	describe('descriptor', () => {
