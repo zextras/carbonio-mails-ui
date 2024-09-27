@@ -12,7 +12,7 @@ import { convAction } from '../../store/actions';
 import { ActionFn, UIActionDescriptor } from '../../types';
 import { useAppDispatch } from '../redux';
 
-export const useConvUnsetFlagFn = (ids: Array<string>, isFlagged: boolean): ActionFn => {
+export const useConvSetUnflagFn = (ids: Array<string>, isFlagged: boolean): ActionFn => {
 	const canExecute = useCallback((): boolean => isFlagged, [isFlagged]);
 	const dispatch = useAppDispatch();
 
@@ -29,11 +29,11 @@ export const useConvUnsetFlagFn = (ids: Array<string>, isFlagged: boolean): Acti
 
 	return useMemo(() => ({ canExecute, execute }), [canExecute, execute]);
 };
-export const useConvUnsetFlagDescriptor = (
+export const useConvSetUnflagDescriptor = (
 	ids: Array<string>,
 	isFlagged: boolean
 ): UIActionDescriptor => {
-	const { canExecute, execute } = useConvUnsetFlagFn(ids, isFlagged);
+	const { canExecute, execute } = useConvSetUnflagFn(ids, isFlagged);
 	const [t] = useTranslation();
 	return {
 		id: ConversationActionsDescriptors.UNFLAG.id,

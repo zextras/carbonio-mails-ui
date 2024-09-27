@@ -10,8 +10,8 @@ import { useConvSetFlagFn } from './actions/use-conv-set-flag';
 import { useConvSetNotSpamFn } from './actions/use-conv-set-not-spam';
 import { useConvSetReadFn } from './actions/use-conv-set-read';
 import { useConvSetSpamFn } from './actions/use-conv-set-spam';
+import { useConvSetUnflagFn } from './actions/use-conv-set-unflag';
 import { useConvSetUnreadFn } from './actions/use-conv-set-unread';
-import { useConvUnsetFlagFn } from './actions/use-conv-unset-flag';
 import { useAppSelector } from './redux';
 import { selectConversation } from '../store/conversations-slice';
 import { Conversation } from '../types';
@@ -66,7 +66,7 @@ export const useConversationKeyboardShortcuts = ({
 	});
 
 	const flag = useConvSetFlagFn([conversationId], conversation?.flagged);
-	const unflag = useConvUnsetFlagFn([conversationId], conversation?.flagged);
+	const unflag = useConvSetUnflagFn([conversationId], conversation?.flagged);
 
 	return useCallback(
 		(event) => {

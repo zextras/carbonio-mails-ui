@@ -21,9 +21,9 @@ import { useConvSetFlagDescriptor } from './use-conv-set-flag';
 import { useConvSetNotSpamDescriptor } from './use-conv-set-not-spam';
 import { useConvSetReadDescriptor } from './use-conv-set-read';
 import { useConvSetSpamDescriptor } from './use-conv-set-spam';
+import { useConvSetUnflagDescriptor } from './use-conv-set-unflag';
 import { useConvSetUnreadDescriptor } from './use-conv-set-unread';
 import { useConvShowOriginalDescriptor } from './use-conv-show-original';
-import { useConvUnsetFlagDescriptor } from './use-conv-unset-flag';
 import { isTrash } from '../../carbonio-ui-commons/helpers/folders';
 import { getFolderIdParts, isDraft } from '../../helpers/folders';
 import { Conversation, UIActionAggregator, UIActionDescriptor } from '../../types';
@@ -108,7 +108,7 @@ export const useConvActions = ({
 		isConversationRead: conversation.read
 	});
 	const setFlagDescriptor = useConvSetFlagDescriptor([conversation.id], conversation.flagged);
-	const unflagDescriptor = useConvUnsetFlagDescriptor([conversation.id], conversation.flagged);
+	const unflagDescriptor = useConvSetUnflagDescriptor([conversation.id], conversation.flagged);
 	const markAsSpamDescriptor = useConvSetSpamDescriptor({
 		ids: [conversation.id],
 		shouldReplaceHistory,

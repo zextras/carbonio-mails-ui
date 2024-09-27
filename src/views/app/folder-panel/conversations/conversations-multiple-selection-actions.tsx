@@ -17,8 +17,8 @@ import { useConvSetFlagDescriptor } from '../../../../hooks/actions/use-conv-set
 import { useConvSetNotSpamDescriptor } from '../../../../hooks/actions/use-conv-set-not-spam';
 import { useConvSetReadDescriptor } from '../../../../hooks/actions/use-conv-set-read';
 import { useConvSetSpamDescriptor } from '../../../../hooks/actions/use-conv-set-spam';
+import { useConvSetUnflagDescriptor } from '../../../../hooks/actions/use-conv-set-unflag';
 import { useConvSetUnreadDescriptor } from '../../../../hooks/actions/use-conv-set-unread';
-import { useConvUnsetFlagDescriptor } from '../../../../hooks/actions/use-conv-unset-flag';
 import { useTagDropdownItem } from '../../../../hooks/use-tag-dropdown-item';
 import type { Conversation } from '../../../../types';
 import { MultipleSelectionActionsComponent } from '../parts/multiple-selection-actions-component';
@@ -61,7 +61,7 @@ export const ConversationsMultipleSelectionActions = ({
 	const tagItem = useTagDropdownItem(applyTagDescriptor, tagsInCommon);
 
 	const flagDescriptor = useConvSetFlagDescriptor(ids, !atLeastOneConvIsUnflagged);
-	const unflagDescriptor = useConvUnsetFlagDescriptor(ids, !atLeastOneConvIsUnflagged);
+	const unflagDescriptor = useConvSetUnflagDescriptor(ids, !atLeastOneConvIsUnflagged);
 	const moveToFolderDescriptor = useConvMoveToFolderDescriptor({ folderId, deselectAll, ids });
 	const setAsSpam = useConvSetSpamDescriptor({ ids, shouldReplaceHistory: false, folderId });
 	const setAsNotSpam = useConvSetNotSpamDescriptor({
