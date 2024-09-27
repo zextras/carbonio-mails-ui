@@ -10,25 +10,24 @@ import { replaceHistory, t } from '@zextras/carbonio-shell-ui';
 import { useTranslation } from 'react-i18next';
 
 import { MessageActionsDescriptors, TIMEOUTS } from '../../constants';
-import { isSpam } from '../../helpers/folders';
+import { isDraft, isSpam } from '../../helpers/folders';
 import { msgAction } from '../../store/actions';
 import { ActionFn, UIActionDescriptor } from '../../types';
 import { useAppDispatch } from '../redux';
 
-type MsgMarkAsNotSpam = {
+type MsgSetSpam = {
 	ids: Array<string>;
-	shouldReplaceHistory?: boolean;
+	shouldReplaceHistory: boolean;
 	folderId: string;
 };
-export const useMsgMarkAsNotSpamFn = ({
-	ids,
-	shouldReplaceHistory,
-	folderId
-}: MsgMarkAsNotSpam): ActionFn => {
+export const useMsgSetSpamFn = ({ ids, shouldReplaceHistory, folderId }: MsgSetSpam): ActionFn => {
 	const dispatch = useAppDispatch();
 	const createSnackbar = useSnackbar();
 
-	const canExecute = useCallback((): boolean => isSpam(folderId), [folderId]);
+	const canExecute = useCallback(
+		(): boolean => !isDraft(folderId) && !isSpam(folderId),
+		[folderId]
+	);
 
 	const execute = useCallback((): void => {
 		if (canExecute()) {
@@ -38,7 +37,7 @@ export const useMsgMarkAsNotSpamFn = ({
 				key: `trash-${ids}`,
 				replace: true,
 				type: 'info',
-				label: t('messages.snackbar.marked_as_non_spam', 'You’ve marked this e-mail as Not Spam'),
+				label: t('messages.snackbar.marked_as_spam', 'You’ve marked this e-mail as Spam'),
 				autoHideTimeout: TIMEOUTS.SET_AS_SPAM,
 				hideButton: false,
 				actionLabel: t('label.undo', 'Undo'),
@@ -51,7 +50,7 @@ export const useMsgMarkAsNotSpamFn = ({
 				if (!notCanceled) return;
 				dispatch(
 					msgAction({
-						operation: '!spam',
+						operation: 'spam',
 						ids
 					})
 				).then((res) => {
@@ -75,21 +74,21 @@ export const useMsgMarkAsNotSpamFn = ({
 	return useMemo(() => ({ canExecute, execute }), [canExecute, execute]);
 };
 
-export const useMsgMarkAsNotSpamDescriptor = ({
+export const useMsgSetSpamDescriptor = ({
 	ids,
 	shouldReplaceHistory,
 	folderId
-}: MsgMarkAsNotSpam): UIActionDescriptor => {
-	const { canExecute, execute } = useMsgMarkAsNotSpamFn({
+}: MsgSetSpam): UIActionDescriptor => {
+	const { canExecute, execute } = useMsgSetSpamFn({
 		ids,
 		shouldReplaceHistory,
 		folderId
 	});
 	const [t] = useTranslation();
 	return {
-		id: MessageActionsDescriptors.MARK_AS_NOT_SPAM.id,
-		icon: 'AlertCircleOutline',
-		label: t('action.mark_as_non_spam', 'Not spam'),
+		id: MessageActionsDescriptors.MARK_AS_SPAM.id,
+		icon: 'AlertCircle',
+		label: t('action.mark_as_spam', 'Mark as spam'),
 		execute,
 		canExecute
 	};

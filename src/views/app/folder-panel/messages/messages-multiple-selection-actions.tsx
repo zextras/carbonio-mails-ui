@@ -12,12 +12,12 @@ import { filter, intersection, map, some } from 'lodash';
 import { normalizeDropdownActionItem } from '../../../../helpers/actions';
 import { useMsgApplyTagDescriptor } from '../../../../hooks/actions/use-msg-apply-tag';
 import { useMsgDeletePermanentlyDescriptor } from '../../../../hooks/actions/use-msg-delete-permanently';
-import { useMsgMarkAsNotSpamDescriptor } from '../../../../hooks/actions/use-msg-mark-as-not-spam';
-import { useMsgMarkAsSpamDescriptor } from '../../../../hooks/actions/use-msg-mark-as-spam';
 import { useMsgMoveToFolderDescriptor } from '../../../../hooks/actions/use-msg-move-to-folder';
 import { useMsgMoveToTrashDescriptor } from '../../../../hooks/actions/use-msg-move-to-trash';
 import { useMsgSetFlagDescriptor } from '../../../../hooks/actions/use-msg-set-flag';
+import { useMsgSetNotSpamDescriptor } from '../../../../hooks/actions/use-msg-set-not-spam';
 import { useMsgSetReadDescriptor } from '../../../../hooks/actions/use-msg-set-read';
+import { useMsgSetSpamDescriptor } from '../../../../hooks/actions/use-msg-set-spam';
 import { useMsgSetUnflagDescriptor } from '../../../../hooks/actions/use-msg-set-unflag';
 import { useMsgSetUnreadDescriptor } from '../../../../hooks/actions/use-msg-set-unread';
 import { useTagDropdownItem } from '../../../../hooks/use-tag-dropdown-item';
@@ -64,8 +64,8 @@ export const MessagesMultipleSelectionActions = ({
 	const flagDescriptor = useMsgSetFlagDescriptor(ids, !atLeastOneMsgIsUnflagged);
 	const unflagDescriptor = useMsgSetUnflagDescriptor(ids, !atLeastOneMsgIsUnflagged);
 	const moveToFolderDescriptor = useMsgMoveToFolderDescriptor({ folderId, deselectAll, ids });
-	const setAsSpam = useMsgMarkAsSpamDescriptor({ ids, shouldReplaceHistory: false, folderId });
-	const setAsNotSpam = useMsgMarkAsNotSpamDescriptor({
+	const setAsSpam = useMsgSetSpamDescriptor({ ids, shouldReplaceHistory: false, folderId });
+	const setAsNotSpam = useMsgSetNotSpamDescriptor({
 		ids,
 		shouldReplaceHistory: false,
 		folderId
