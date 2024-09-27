@@ -81,6 +81,9 @@ export const useConvMoveToTrashFn = ({
 	const [t] = useTranslation();
 
 	const execute = useCallback((): void => {
+		if (!canExecute()) {
+			return;
+		}
 		dispatch(
 			convAction({
 				operation: `trash`,
