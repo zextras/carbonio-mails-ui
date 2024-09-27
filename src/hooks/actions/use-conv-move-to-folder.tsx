@@ -29,6 +29,10 @@ export const useConvMoveToFolderFn = ({
 	const canExecute = useCallback((): boolean => !isTrash(folderId), [folderId]);
 
 	const execute = useCallback((): void => {
+		if (!canExecute()) {
+			return;
+		}
+
 		const id = Date.now().toString();
 		createModal(
 			{
