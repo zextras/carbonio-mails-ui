@@ -9,21 +9,14 @@ import { act } from 'react-dom/test-utils';
 
 import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { setupHook } from '../../../carbonio-ui-commons/test/test-setup';
-import { API_REQUEST_STATUS } from '../../../constants';
 import { generateStore } from '../../../tests/generators/store';
 import { MsgActionRequest } from '../../../types';
 import { useMsgSetUnflagDescriptor, useMsgSetUnflagFn } from '../use-msg-set-unflag';
 
 describe('useMsgSetUnflag', () => {
-	describe('Descriptor', () => {
-		const store = generateStore({
-			messages: {
-				searchedInFolder: {},
-				messages: {},
-				searchRequestStatus: API_REQUEST_STATUS.fulfilled
-			}
-		});
+	const store = generateStore();
 
+	describe('Descriptor', () => {
 		it('Should return an object with specific id, icon, label and 2 functions', () => {
 			const {
 				result: { current: descriptor }
@@ -38,15 +31,8 @@ describe('useMsgSetUnflag', () => {
 			});
 		});
 	});
-	describe('Functions', () => {
-		const store = generateStore({
-			messages: {
-				searchedInFolder: {},
-				messages: {},
-				searchRequestStatus: API_REQUEST_STATUS.fulfilled
-			}
-		});
 
+	describe('Functions', () => {
 		it('Should return an object with execute and canExecute functions', () => {
 			const {
 				result: { current: descriptor }

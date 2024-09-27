@@ -14,96 +14,95 @@ import { generateStore } from '../../../tests/generators/store';
 import { type SaveDraftRequest } from '../../../types';
 import { useMsgSendDraftDescriptor, useMsgSendDraftFn } from '../use-msg-send-draft';
 
-describe('useMsgSendDraftDescriptor', () => {
+describe('useMsgSendDraft', () => {
 	const msg = generateMessage({ folderId: FOLDERS.DRAFTS });
 	const store = generateStore();
 
-	it('Should return an object with specific id, icon, label and 2 functions', () => {
-		const {
-			result: { current: descriptor }
-		} = setupHook(useMsgSendDraftDescriptor, { store, initialProps: [msg, msg.parent] });
+	describe('Descriptor', () => {
+		it('Should return an object with specific id, icon, label and 2 functions', () => {
+			const {
+				result: { current: descriptor }
+			} = setupHook(useMsgSendDraftDescriptor, { store, initialProps: [msg, msg.parent] });
 
-		expect(descriptor).toEqual({
-			id: 'message-send',
-			icon: 'PaperPlaneOutline',
-			label: 'Send',
-			execute: expect.any(Function),
-			canExecute: expect.any(Function)
-		});
-	});
-});
-
-describe('useMsgSendDraftFn', () => {
-	const msg = generateMessage({ folderId: FOLDERS.DRAFTS });
-	const store = generateStore();
-
-	it('Should return an object with execute and canExecute functions', () => {
-		const {
-			result: { current: descriptor }
-		} = setupHook(useMsgSendDraftFn, { store, initialProps: [msg, msg.parent] });
-
-		expect(descriptor).toEqual({
-			execute: expect.any(Function),
-			canExecute: expect.any(Function)
+			expect(descriptor).toEqual({
+				id: 'message-send',
+				icon: 'PaperPlaneOutline',
+				label: 'Send',
+				execute: expect.any(Function),
+				canExecute: expect.any(Function)
+			});
 		});
 	});
 
-	describe('canExecute', () => {
-		it.each`
-			folder                              | assertion
-			${FOLDERS_DESCRIPTORS.INBOX}        | ${false}
-			${FOLDERS_DESCRIPTORS.SENT}         | ${false}
-			${FOLDERS_DESCRIPTORS.DRAFTS}       | ${true}
-			${FOLDERS_DESCRIPTORS.TRASH}        | ${false}
-			${FOLDERS_DESCRIPTORS.SPAM}         | ${false}
-			${FOLDERS_DESCRIPTORS.USER_DEFINED} | ${false}
-		`(`should return $assertion if the folder is $folder.desc`, ({ folder, assertion }) => {
+	describe('Functions', () => {
+		it('Should return an object with execute and canExecute functions', () => {
 			const {
-				result: { current: functions }
-			} = setupHook(useMsgSendDraftFn, {
-				store,
-				initialProps: [msg, folder.id]
+				result: { current: descriptor }
+			} = setupHook(useMsgSendDraftFn, { store, initialProps: [msg, msg.parent] });
+
+			expect(descriptor).toEqual({
+				execute: expect.any(Function),
+				canExecute: expect.any(Function)
 			});
-
-			expect(functions.canExecute()).toEqual(assertion);
-		});
-	});
-
-	describe('execute', () => {
-		it('should not call the API if the action cannot be executed', async () => {
-			const callFlag = jest.fn();
-			createSoapAPIInterceptor('SendMsg').then(callFlag);
-
-			const {
-				result: { current: functions }
-			} = setupHook(useMsgSendDraftFn, { store, initialProps: [msg, FOLDERS.INBOX] });
-
-			await act(async () => {
-				functions.execute();
-			});
-
-			expect(callFlag).not.toHaveBeenCalled();
 		});
 
-		it('should call the API with the proper params if the action can be executed', async () => {
-			const apiInterceptor = createSoapAPIInterceptor<SaveDraftRequest>('SendMsg');
+		describe('canExecute', () => {
+			it.each`
+				folder                              | assertion
+				${FOLDERS_DESCRIPTORS.INBOX}        | ${false}
+				${FOLDERS_DESCRIPTORS.SENT}         | ${false}
+				${FOLDERS_DESCRIPTORS.DRAFTS}       | ${true}
+				${FOLDERS_DESCRIPTORS.TRASH}        | ${false}
+				${FOLDERS_DESCRIPTORS.SPAM}         | ${false}
+				${FOLDERS_DESCRIPTORS.USER_DEFINED} | ${false}
+			`(`should return $assertion if the folder is $folder.desc`, ({ folder, assertion }) => {
+				const {
+					result: { current: functions }
+				} = setupHook(useMsgSendDraftFn, {
+					store,
+					initialProps: [msg, folder.id]
+				});
 
-			const {
-				result: { current: functions }
-			} = setupHook(useMsgSendDraftFn, {
-				store,
-				initialProps: [msg, FOLDERS.DRAFTS]
+				expect(functions.canExecute()).toEqual(assertion);
+			});
+		});
+
+		describe('execute', () => {
+			it('should not call the API if the action cannot be executed', async () => {
+				const callFlag = jest.fn();
+				createSoapAPIInterceptor('SendMsg').then(callFlag);
+
+				const {
+					result: { current: functions }
+				} = setupHook(useMsgSendDraftFn, { store, initialProps: [msg, FOLDERS.INBOX] });
+
+				await act(async () => {
+					functions.execute();
+				});
+
+				expect(callFlag).not.toHaveBeenCalled();
 			});
 
-			await act(async () => {
-				functions.execute();
-			});
+			it('should call the API with the proper params if the action can be executed', async () => {
+				const apiInterceptor = createSoapAPIInterceptor<SaveDraftRequest>('SendMsg');
 
-			const requestParameter = await apiInterceptor;
-			expect(requestParameter.m.id).toBe(msg.id);
-			expect(requestParameter.m.su).not.toBeUndefined();
-			expect(requestParameter.m.e).not.toBeUndefined();
-			expect(requestParameter.m.mp).not.toBeUndefined();
+				const {
+					result: { current: functions }
+				} = setupHook(useMsgSendDraftFn, {
+					store,
+					initialProps: [msg, FOLDERS.DRAFTS]
+				});
+
+				await act(async () => {
+					functions.execute();
+				});
+
+				const requestParameter = await apiInterceptor;
+				expect(requestParameter.m.id).toBe(msg.id);
+				expect(requestParameter.m.su).not.toBeUndefined();
+				expect(requestParameter.m.e).not.toBeUndefined();
+				expect(requestParameter.m.mp).not.toBeUndefined();
+			});
 		});
 	});
 });

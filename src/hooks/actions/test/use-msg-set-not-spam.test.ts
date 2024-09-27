@@ -10,24 +10,18 @@ import { times } from 'lodash';
 import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
 import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { setupHook } from '../../../carbonio-ui-commons/test/test-setup';
-import { API_REQUEST_STATUS, FOLDERS_DESCRIPTORS, TIMEOUTS } from '../../../constants';
+import { FOLDERS_DESCRIPTORS, TIMEOUTS } from '../../../constants';
 import { generateStore } from '../../../tests/generators/store';
 import { MsgActionRequest, MsgActionResponse } from '../../../types';
 import { useMsgSetNotSpamFn, useMsgSetNotSpamDescriptor } from '../use-msg-set-not-spam';
 
 describe('useMsgSetNotSpam', () => {
-	describe('Descriptor', () => {
-		const ids = times(faker.number.int({ max: 42 }), () =>
-			faker.number.int({ max: 42000 }).toString()
-		);
-		const store = generateStore({
-			messages: {
-				searchedInFolder: {},
-				messages: {},
-				searchRequestStatus: API_REQUEST_STATUS.fulfilled
-			}
-		});
+	const ids = times(faker.number.int({ max: 42 }), () =>
+		faker.number.int({ max: 42000 }).toString()
+	);
+	const store = generateStore();
 
+	describe('Descriptor', () => {
 		it('Should return an object with specific id, icon, label and 2 functions', () => {
 			const {
 				result: { current: descriptor }
@@ -45,12 +39,8 @@ describe('useMsgSetNotSpam', () => {
 			});
 		});
 	});
-	describe('Functions', () => {
-		const ids = times(faker.number.int({ max: 42 }), () =>
-			faker.number.int({ max: 42000 }).toString()
-		);
-		const store = generateStore();
 
+	describe('Functions', () => {
 		it('Should return an object with execute and canExecute functions', () => {
 			const {
 				result: { current: functions }

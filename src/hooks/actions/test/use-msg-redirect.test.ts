@@ -13,7 +13,7 @@ import { generateMessage } from '../../../tests/generators/generateMessage';
 import { generateStore } from '../../../tests/generators/store';
 import { useMsgRedirectDescriptor, useMsgRedirectFn } from '../use-msg-redirect';
 
-describe('useMsgRedirectDescriptor', () => {
+describe('useMsgRedirect', () => {
 	const msg = generateMessage();
 
 	const store = generateStore({
@@ -24,72 +24,27 @@ describe('useMsgRedirectDescriptor', () => {
 		}
 	});
 
-	it('Should return an object with specific id, icon, label and 2 functions', () => {
-		const {
-			result: { current: descriptor }
-		} = setupHook(useMsgRedirectDescriptor, {
-			store,
-			initialProps: [msg.id, FOLDERS.INBOX]
-		});
-
-		expect(descriptor).toEqual({
-			id: 'message-redirect',
-			icon: 'CornerUpRight',
-			label: 'Redirect',
-			execute: expect.any(Function),
-			canExecute: expect.any(Function)
-		});
-	});
-});
-
-describe('useMsgRedirectFn', () => {
-	const msg = generateMessage();
-
-	const store = generateStore({
-		messages: {
-			searchedInFolder: {},
-			messages: { [msg.id]: msg },
-			searchRequestStatus: API_REQUEST_STATUS.fulfilled
-		}
-	});
-
-	it('Should return an object with execute and canExecute functions', () => {
-		const {
-			result: { current: functions }
-		} = setupHook(useMsgRedirectFn, {
-			store,
-			initialProps: [msg.id, FOLDERS.INBOX]
-		});
-
-		expect(functions).toEqual({
-			execute: expect.any(Function),
-			canExecute: expect.any(Function)
-		});
-	});
-
-	describe('canExecute', () => {
-		it.each`
-			folder                              | assertion
-			${FOLDERS_DESCRIPTORS.INBOX}        | ${true}
-			${FOLDERS_DESCRIPTORS.SENT}         | ${true}
-			${FOLDERS_DESCRIPTORS.DRAFTS}       | ${false}
-			${FOLDERS_DESCRIPTORS.TRASH}        | ${false}
-			${FOLDERS_DESCRIPTORS.SPAM}         | ${true}
-			${FOLDERS_DESCRIPTORS.USER_DEFINED} | ${true}
-		`(`should return $assertion if the folder is $folder.desc`, ({ folder, assertion }) => {
+	describe('Descriptor', () => {
+		it('Should return an object with specific id, icon, label and 2 functions', () => {
 			const {
-				result: { current: functions }
-			} = setupHook(useMsgRedirectFn, {
+				result: { current: descriptor }
+			} = setupHook(useMsgRedirectDescriptor, {
 				store,
-				initialProps: [msg.id, folder.id]
+				initialProps: [msg.id, FOLDERS.INBOX]
 			});
 
-			expect(functions.canExecute()).toEqual(assertion);
+			expect(descriptor).toEqual({
+				id: 'message-redirect',
+				icon: 'CornerUpRight',
+				label: 'Redirect',
+				execute: expect.any(Function),
+				canExecute: expect.any(Function)
+			});
 		});
 	});
 
-	describe('execute', () => {
-		it('should open the redirect modal', async () => {
+	describe('Functions', () => {
+		it('Should return an object with execute and canExecute functions', () => {
 			const {
 				result: { current: functions }
 			} = setupHook(useMsgRedirectFn, {
@@ -97,34 +52,71 @@ describe('useMsgRedirectFn', () => {
 				initialProps: [msg.id, FOLDERS.INBOX]
 			});
 
-			act(() => {
-				functions.execute();
+			expect(functions).toEqual({
+				execute: expect.any(Function),
+				canExecute: expect.any(Function)
 			});
-
-			act(() => {
-				jest.advanceTimersByTime(TIMERS.modal_open_delay);
-			});
-
-			expect(screen.queryByText(`Redirect e-mail`)).toBeVisible();
 		});
 
-		it('should not open the redirect modal with if the action cannot be executed', async () => {
-			const {
-				result: { current: functions }
-			} = setupHook(useMsgRedirectFn, {
-				store,
-				initialProps: [msg.id, FOLDERS.TRASH]
+		describe('canExecute', () => {
+			it.each`
+				folder                              | assertion
+				${FOLDERS_DESCRIPTORS.INBOX}        | ${true}
+				${FOLDERS_DESCRIPTORS.SENT}         | ${true}
+				${FOLDERS_DESCRIPTORS.DRAFTS}       | ${false}
+				${FOLDERS_DESCRIPTORS.TRASH}        | ${false}
+				${FOLDERS_DESCRIPTORS.SPAM}         | ${true}
+				${FOLDERS_DESCRIPTORS.USER_DEFINED} | ${true}
+			`(`should return $assertion if the folder is $folder.desc`, ({ folder, assertion }) => {
+				const {
+					result: { current: functions }
+				} = setupHook(useMsgRedirectFn, {
+					store,
+					initialProps: [msg.id, folder.id]
+				});
+
+				expect(functions.canExecute()).toEqual(assertion);
+			});
+		});
+
+		describe('execute', () => {
+			it('should open the redirect modal', async () => {
+				const {
+					result: { current: functions }
+				} = setupHook(useMsgRedirectFn, {
+					store,
+					initialProps: [msg.id, FOLDERS.INBOX]
+				});
+
+				act(() => {
+					functions.execute();
+				});
+
+				act(() => {
+					jest.advanceTimersByTime(TIMERS.modal_open_delay);
+				});
+
+				expect(screen.queryByText(`Redirect e-mail`)).toBeVisible();
 			});
 
-			act(() => {
-				functions.execute();
-			});
+			it('should not open the redirect modal with if the action cannot be executed', async () => {
+				const {
+					result: { current: functions }
+				} = setupHook(useMsgRedirectFn, {
+					store,
+					initialProps: [msg.id, FOLDERS.TRASH]
+				});
 
-			act(() => {
-				jest.advanceTimersByTime(TIMERS.modal_open_delay);
-			});
+				act(() => {
+					functions.execute();
+				});
 
-			expect(screen.queryByText(`Redirect e-mail`)).not.toBeInTheDocument();
+				act(() => {
+					jest.advanceTimersByTime(TIMERS.modal_open_delay);
+				});
+
+				expect(screen.queryByText(`Redirect e-mail`)).not.toBeInTheDocument();
+			});
 		});
 	});
 });

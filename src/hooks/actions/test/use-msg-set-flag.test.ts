@@ -14,7 +14,7 @@ import { generateStore } from '../../../tests/generators/store';
 import { MsgActionRequest } from '../../../types';
 import { useMsgSetFlagDescriptor, useMsgSetFlagFn } from '../use-msg-set-flag';
 
-describe('useMsgSetFlagDescriptor', () => {
+describe('useMsgSetFlag', () => {
 	const store = generateStore({
 		messages: {
 			searchedInFolder: {},
@@ -23,100 +23,94 @@ describe('useMsgSetFlagDescriptor', () => {
 		}
 	});
 
-	it('Should return an object with specific id, icon, label and 2 functions', () => {
-		const {
-			result: { current: descriptor }
-		} = setupHook(useMsgSetFlagDescriptor, { store, initialProps: [[], false] });
-
-		expect(descriptor).toEqual({
-			id: 'message-flag',
-			icon: 'FlagOutline',
-			label: 'Add flag',
-			execute: expect.any(Function),
-			canExecute: expect.any(Function)
-		});
-	});
-});
-
-describe('useMsgFlagFn', () => {
-	const store = generateStore({
-		messages: {
-			searchedInFolder: {},
-			messages: {},
-			searchRequestStatus: API_REQUEST_STATUS.fulfilled
-		}
-	});
-
-	it('Should return an object with execute and canExecute functions', () => {
-		const {
-			result: { current: descriptor }
-		} = setupHook(useMsgSetFlagFn, { store, initialProps: [[], false] });
-
-		expect(descriptor).toEqual({
-			execute: expect.any(Function),
-			canExecute: expect.any(Function)
-		});
-	});
-
-	describe('canExecute', () => {
-		it('should return false if the message is already flagged', () => {
+	describe('Descriptor', () => {
+		it('Should return an object with specific id, icon, label and 2 functions', () => {
 			const {
-				result: { current: functions }
-			} = setupHook(useMsgSetFlagFn, {
-				store,
-				initialProps: [['1'], true]
+				result: { current: descriptor }
+			} = setupHook(useMsgSetFlagDescriptor, { store, initialProps: [[], false] });
+
+			expect(descriptor).toEqual({
+				id: 'message-flag',
+				icon: 'FlagOutline',
+				label: 'Add flag',
+				execute: expect.any(Function),
+				canExecute: expect.any(Function)
+			});
+		});
+	});
+
+	describe('Functions', () => {
+		it('Should return an object with execute and canExecute functions', () => {
+			const {
+				result: { current: descriptor }
+			} = setupHook(useMsgSetFlagFn, { store, initialProps: [[], false] });
+
+			expect(descriptor).toEqual({
+				execute: expect.any(Function),
+				canExecute: expect.any(Function)
+			});
+		});
+
+		describe('canExecute', () => {
+			it('should return false if the message is already flagged', () => {
+				const {
+					result: { current: functions }
+				} = setupHook(useMsgSetFlagFn, {
+					store,
+					initialProps: [['1'], true]
+				});
+
+				expect(functions.canExecute()).toEqual(false);
 			});
 
-			expect(functions.canExecute()).toEqual(false);
+			it('should return true if the message is not flagged', () => {
+				const {
+					result: { current: functions }
+				} = setupHook(useMsgSetFlagFn, {
+					store,
+					initialProps: [['1'], false]
+				});
+
+				expect(functions.canExecute()).toEqual(true);
+			});
 		});
 
-		it('should return true if the message is not flagged', () => {
-			const {
-				result: { current: functions }
-			} = setupHook(useMsgSetFlagFn, {
-				store,
-				initialProps: [['1'], false]
+		describe('execute', () => {
+			it('should not call the API if the action cannot be executed', async () => {
+				const callFlag = jest.fn();
+				createSoapAPIInterceptor('MsgAction').then(callFlag);
+
+				const {
+					result: { current: functions }
+				} = setupHook(useMsgSetFlagFn, { store, initialProps: [['1'], true] });
+
+				await act(async () => {
+					functions.execute();
+				});
+
+				expect(callFlag).not.toHaveBeenCalled();
 			});
 
-			expect(functions.canExecute()).toEqual(true);
-		});
-	});
+			it('should call the API with the proper params if the action can be executed', async () => {
+				const apiInterceptor = createSoapAPIInterceptor<MsgActionRequest>('MsgAction');
+				const ids = times(faker.number.int({ max: 20 }), () => faker.number.int().toString());
 
-	describe('execute', () => {
-		it('should not call the API if the action cannot be executed', async () => {
-			const callFlag = jest.fn();
-			createSoapAPIInterceptor('MsgAction').then(callFlag);
+				const {
+					result: { current: functions }
+				} = setupHook(useMsgSetFlagFn, {
+					store,
+					initialProps: [ids, false]
+				});
 
-			const {
-				result: { current: functions }
-			} = setupHook(useMsgSetFlagFn, { store, initialProps: [['1'], true] });
-
-			await act(async () => {
 				functions.execute();
+
+				const requestParameter = await apiInterceptor;
+				expect(requestParameter.action.id).toBe(ids.join(','));
+				expect(requestParameter.action.op).toBe('flag');
+				expect(requestParameter.action.l).toBeUndefined();
+				expect(requestParameter.action.f).toBeUndefined();
+				expect(requestParameter.action.tn).toBeUndefined();
 			});
-
-			expect(callFlag).not.toHaveBeenCalled();
-		});
-
-		it('should call the API with the proper params if the action can be executed', async () => {
-			const apiInterceptor = createSoapAPIInterceptor<MsgActionRequest>('MsgAction');
-			const ids = times(faker.number.int({ max: 20 }), () => faker.number.int().toString());
-
-			const {
-				result: { current: functions }
-			} = setupHook(useMsgSetFlagFn, {
-				store,
-				initialProps: [ids, false]
-			});
-
-			functions.execute();
-
-			const requestParameter = await apiInterceptor;
-			expect(requestParameter.action.id).toBe(ids.join(','));
-			expect(requestParameter.action.op).toBe('flag');
-			expect(requestParameter.action.l).toBeUndefined();
-			expect(requestParameter.action.f).toBeUndefined();
-			expect(requestParameter.action.tn).toBeUndefined();
 		});
 	});
 });

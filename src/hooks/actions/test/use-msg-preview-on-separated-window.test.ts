@@ -15,47 +15,31 @@ import {
 	useMsgPreviewOnSeparatedWindowFn
 } from '../use-msg-preview-on-separated-window';
 
-describe('useMsgPreviewOnSeparatedWindowDescriptor', () => {
-	it('Should return an object with specific id, icon, label and 2 functions', () => {
-		const msg = generateMessage();
-		const {
-			result: { current: descriptor }
-		} = setupHook(useMsgPreviewOnSeparatedWindowDescriptor, {
-			initialProps: [{ messageId: msg.id, subject: msg.subject, messagePreviewFactory: jest.fn() }]
-		});
-
-		expect(descriptor).toEqual({
-			id: 'preview-on-separated-window',
-			icon: 'ExternalLink',
-			label: 'Open in a new tab',
-			execute: expect.any(Function),
-			canExecute: expect.any(Function)
-		});
-	});
-});
-
-describe('useMsgPreviewOnSeparatedWindowFn', () => {
+describe('useMsgPreviewOnSeparatedWindow', () => {
 	const msg = generateMessage({ isComplete: true });
 
-	it('Should return an object with execute and canExecute functions', () => {
-		const {
-			result: { current: descriptor }
-		} = setupHook(useMsgPreviewOnSeparatedWindowFn, {
-			initialProps: [{ messageId: msg.id, subject: msg.subject, messagePreviewFactory: jest.fn() }]
-		});
+	describe('Descriptor', () => {
+		it('Should return an object with specific id, icon, label and 2 functions', () => {
+			const {
+				result: { current: descriptor }
+			} = setupHook(useMsgPreviewOnSeparatedWindowDescriptor, {
+				initialProps: [
+					{ messageId: msg.id, subject: msg.subject, messagePreviewFactory: jest.fn() }
+				]
+			});
 
-		expect(descriptor).toEqual({
-			execute: expect.any(Function),
-			canExecute: expect.any(Function)
+			expect(descriptor).toEqual({
+				id: 'preview-on-separated-window',
+				icon: 'ExternalLink',
+				label: 'Open in a new tab',
+				execute: expect.any(Function),
+				canExecute: expect.any(Function)
+			});
 		});
 	});
 
-	describe('canExecute', () => {
-		const useExtraWindowSpy = jest.spyOn(extraWindow, 'useExtraWindow');
-
-		it('should return false if the message is already being previewed in a separated window', () => {
-			useExtraWindowSpy.mockReturnValue({ isInsideExtraWindow: true });
-
+	describe('Functions', () => {
+		it('Should return an object with execute and canExecute functions', () => {
 			const {
 				result: { current: functions }
 			} = setupHook(useMsgPreviewOnSeparatedWindowFn, {
@@ -64,67 +48,88 @@ describe('useMsgPreviewOnSeparatedWindowFn', () => {
 				]
 			});
 
-			expect(functions.canExecute()).toEqual(false);
+			expect(functions).toEqual({
+				execute: expect.any(Function),
+				canExecute: expect.any(Function)
+			});
 		});
 
-		it('should return true if the message is not being previewed in a separated window', () => {
-			useExtraWindowSpy.mockReturnValue({ isInsideExtraWindow: false });
+		describe('canExecute', () => {
+			const useExtraWindowSpy = jest.spyOn(extraWindow, 'useExtraWindow');
 
-			const {
-				result: { current: functions }
-			} = setupHook(useMsgPreviewOnSeparatedWindowFn, {
-				initialProps: [
-					{ messageId: msg.id, subject: msg.subject, messagePreviewFactory: jest.fn() }
-				]
+			it('should return false if the message is already being previewed in a separated window', () => {
+				useExtraWindowSpy.mockReturnValue({ isInsideExtraWindow: true });
+
+				const {
+					result: { current: functions }
+				} = setupHook(useMsgPreviewOnSeparatedWindowFn, {
+					initialProps: [
+						{ messageId: msg.id, subject: msg.subject, messagePreviewFactory: jest.fn() }
+					]
+				});
+
+				expect(functions.canExecute()).toEqual(false);
 			});
 
-			expect(functions.canExecute()).toEqual(true);
-		});
-	});
+			it('should return true if the message is not being previewed in a separated window', () => {
+				useExtraWindowSpy.mockReturnValue({ isInsideExtraWindow: false });
 
-	describe('execute', () => {
-		const useExtraWindowSpy = jest.spyOn(extraWindow, 'useExtraWindow');
-		const createWindowSpy = jest.fn();
-		jest
-			.spyOn(globalExtraWindowManager, 'useGlobalExtraWindowManager')
-			.mockImplementation(() => ({ createWindow: createWindowSpy }));
+				const {
+					result: { current: functions }
+				} = setupHook(useMsgPreviewOnSeparatedWindowFn, {
+					initialProps: [
+						{ messageId: msg.id, subject: msg.subject, messagePreviewFactory: jest.fn() }
+					]
+				});
 
-		it('should not call the integrated function if the action cannot be executed', async () => {
-			useExtraWindowSpy.mockReturnValue({ isInsideExtraWindow: true });
-			populateFoldersStore();
-
-			const {
-				result: { current: functions }
-			} = setupHook(useMsgPreviewOnSeparatedWindowFn, {
-				initialProps: [
-					{ messageId: msg.id, subject: msg.subject, messagePreviewFactory: jest.fn() }
-				]
+				expect(functions.canExecute()).toEqual(true);
 			});
-
-			await act(async () => {
-				functions.execute();
-			});
-
-			expect(createWindowSpy).not.toHaveBeenCalled();
 		});
 
-		it('should call the API with the proper params if the action can be executed', async () => {
-			useExtraWindowSpy.mockReturnValue({ isInsideExtraWindow: false });
-			populateFoldersStore();
+		describe('execute', () => {
+			const useExtraWindowSpy = jest.spyOn(extraWindow, 'useExtraWindow');
+			const createWindowSpy = jest.fn();
+			jest
+				.spyOn(globalExtraWindowManager, 'useGlobalExtraWindowManager')
+				.mockImplementation(() => ({ createWindow: createWindowSpy }));
 
-			const {
-				result: { current: functions }
-			} = setupHook(useMsgPreviewOnSeparatedWindowFn, {
-				initialProps: [
-					{ messageId: msg.id, subject: msg.subject, messagePreviewFactory: jest.fn() }
-				]
+			it('should not call the integrated function if the action cannot be executed', async () => {
+				useExtraWindowSpy.mockReturnValue({ isInsideExtraWindow: true });
+				populateFoldersStore();
+
+				const {
+					result: { current: functions }
+				} = setupHook(useMsgPreviewOnSeparatedWindowFn, {
+					initialProps: [
+						{ messageId: msg.id, subject: msg.subject, messagePreviewFactory: jest.fn() }
+					]
+				});
+
+				await act(async () => {
+					functions.execute();
+				});
+
+				expect(createWindowSpy).not.toHaveBeenCalled();
 			});
 
-			await act(async () => {
-				functions.execute();
-			});
+			it('should call the API with the proper params if the action can be executed', async () => {
+				useExtraWindowSpy.mockReturnValue({ isInsideExtraWindow: false });
+				populateFoldersStore();
 
-			expect(createWindowSpy).toHaveBeenCalled();
+				const {
+					result: { current: functions }
+				} = setupHook(useMsgPreviewOnSeparatedWindowFn, {
+					initialProps: [
+						{ messageId: msg.id, subject: msg.subject, messagePreviewFactory: jest.fn() }
+					]
+				});
+
+				await act(async () => {
+					functions.execute();
+				});
+
+				expect(createWindowSpy).toHaveBeenCalled();
+			});
 		});
 	});
 });

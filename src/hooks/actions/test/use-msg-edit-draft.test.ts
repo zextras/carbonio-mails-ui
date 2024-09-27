@@ -11,93 +11,93 @@ import { FOLDERS_DESCRIPTORS } from '../../../constants';
 import { generateMessage } from '../../../tests/generators/generateMessage';
 import { useMsgEditDraftDescriptor, useMsgEditDraftFn } from '../use-msg-edit-draft';
 
-describe('useMsgEditDraftDescriptor', () => {
+describe('useMsgEditDraft', () => {
 	const msg = generateMessage();
 
-	it('Should return an object with specific id, icon, label and 2 functions', () => {
-		const {
-			result: { current: descriptor }
-		} = setupHook(useMsgEditDraftDescriptor, {
-			initialProps: [msg.id, false, FOLDERS.DRAFTS]
-		});
-
-		expect(descriptor).toEqual({
-			id: 'message-edit_as_draft',
-			icon: 'Edit2Outline',
-			label: 'Edit',
-			execute: expect.any(Function),
-			canExecute: expect.any(Function)
-		});
-	});
-});
-
-describe('useMsgEditDraftFn', () => {
-	const msg = generateMessage();
-
-	it('Should return an object with execute and canExecute functions', () => {
-		const {
-			result: { current: functions }
-		} = setupHook(useMsgEditDraftFn, {
-			initialProps: [msg.id, false, FOLDERS.DRAFTS]
-		});
-
-		expect(functions).toEqual({
-			execute: expect.any(Function),
-			canExecute: expect.any(Function)
-		});
-	});
-
-	describe('canExecute', () => {
-		it.each`
-			folder                              | assertion
-			${FOLDERS_DESCRIPTORS.INBOX}        | ${false}
-			${FOLDERS_DESCRIPTORS.SENT}         | ${false}
-			${FOLDERS_DESCRIPTORS.DRAFTS}       | ${true}
-			${FOLDERS_DESCRIPTORS.TRASH}        | ${false}
-			${FOLDERS_DESCRIPTORS.SPAM}         | ${false}
-			${FOLDERS_DESCRIPTORS.USER_DEFINED} | ${false}
-		`(`should return $assertion if the folder is $folder.desc`, ({ folder, assertion }) => {
+	describe('Descriptor', () => {
+		it('Should return an object with specific id, icon, label and 2 functions', () => {
 			const {
-				result: { current: functions }
-			} = setupHook(useMsgEditDraftFn, {
-				initialProps: [msg.id, false, folder.id]
+				result: { current: descriptor }
+			} = setupHook(useMsgEditDraftDescriptor, {
+				initialProps: [msg.id, false, FOLDERS.DRAFTS]
 			});
 
-			expect(functions.canExecute()).toEqual(assertion);
+			expect(descriptor).toEqual({
+				id: 'message-edit_as_draft',
+				icon: 'Edit2Outline',
+				label: 'Edit',
+				execute: expect.any(Function),
+				canExecute: expect.any(Function)
+			});
 		});
 	});
 
-	describe('execute', () => {
-		it('should create a board with specific parameters', async () => {
+	describe('Functions', () => {
+		it('Should return an object with execute and canExecute functions', () => {
 			const {
 				result: { current: functions }
 			} = setupHook(useMsgEditDraftFn, {
 				initialProps: [msg.id, false, FOLDERS.DRAFTS]
 			});
 
-			functions.execute();
-
-			expect(addBoard).toHaveBeenCalledWith(
-				expect.objectContaining({
-					boardViewId: 'mails_editor_board_view',
-					context: expect.objectContaining({
-						originAction: 'editAsDraft',
-						originActionTargetId: msg.id
-					})
-				})
-			);
+			expect(functions).toEqual({
+				execute: expect.any(Function),
+				canExecute: expect.any(Function)
+			});
 		});
 
-		it('should not create a board if the action cannot be executed', async () => {
-			const {
-				result: { current: functions }
-			} = setupHook(useMsgEditDraftFn, {
-				initialProps: [msg.id, false, FOLDERS.INBOX]
+		describe('canExecute', () => {
+			it.each`
+				folder                              | assertion
+				${FOLDERS_DESCRIPTORS.INBOX}        | ${false}
+				${FOLDERS_DESCRIPTORS.SENT}         | ${false}
+				${FOLDERS_DESCRIPTORS.DRAFTS}       | ${true}
+				${FOLDERS_DESCRIPTORS.TRASH}        | ${false}
+				${FOLDERS_DESCRIPTORS.SPAM}         | ${false}
+				${FOLDERS_DESCRIPTORS.USER_DEFINED} | ${false}
+			`(`should return $assertion if the folder is $folder.desc`, ({ folder, assertion }) => {
+				const {
+					result: { current: functions }
+				} = setupHook(useMsgEditDraftFn, {
+					initialProps: [msg.id, false, folder.id]
+				});
+
+				expect(functions.canExecute()).toEqual(assertion);
+			});
+		});
+
+		describe('execute', () => {
+			it('should create a board with specific parameters', async () => {
+				const {
+					result: { current: functions }
+				} = setupHook(useMsgEditDraftFn, {
+					initialProps: [msg.id, false, FOLDERS.DRAFTS]
+				});
+
+				functions.execute();
+
+				expect(addBoard).toHaveBeenCalledWith(
+					expect.objectContaining({
+						boardViewId: 'mails_editor_board_view',
+						context: expect.objectContaining({
+							originAction: 'editAsDraft',
+							originActionTargetId: msg.id
+						})
+					})
+				);
 			});
 
-			functions.execute();
+			it('should not create a board if the action cannot be executed', async () => {
+				const {
+					result: { current: functions }
+				} = setupHook(useMsgEditDraftFn, {
+					initialProps: [msg.id, false, FOLDERS.INBOX]
+				});
 
-			expect(addBoard).not.toHaveBeenCalled();
+				functions.execute();
+
+				expect(addBoard).not.toHaveBeenCalled();
+			});
 		});
 	});
 });
