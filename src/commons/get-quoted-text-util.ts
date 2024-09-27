@@ -214,6 +214,69 @@ function prune(node: Node, clipNode: boolean): void {
 		prune(p, false);
 	}
 }
+function processNodeList(nodeList: Array<ChildNode>): { done: boolean; sepNode: ChildNode | null } {
+	const results = [];
+	const count: { [key: string]: number } = {};
+	let sepNode = null;
+	let done = false;
+	let prevEl = null;
+	let prevType = null;
+
+	for (let i = 0, ln = nodeList.length; i < ln; i += 1) {
+		const el = nodeList[i];
+		if (el.nodeType === 1) {
+			el.normalize();
+		}
+		const nodeName = el.nodeName.toLowerCase();
+		let type = checkNode(el);
+
+		if (type === LineType.ORIG_UNKNOWN && el.nodeName === '#text') {
+			const nodeValue = el.nodeValue as string;
+			if (
+				ORIG_DATE_REGEX.test(nodeValue) ||
+				ORIG_INTRO_REGEX.test(nodeValue) ||
+				ORIG_INTRO_DE_REGEX.test(nodeValue)
+			) {
+				let str = nodeValue;
+				for (let j = 1; j < 10; j += 1) {
+					const el1 = nodeList[i + j];
+					if (el1 && el1.nodeName === '#text') {
+						str += el1.nodeValue;
+						if (/:$/.test(str)) {
+							type = getLineType(trim(str));
+							if (type === LineType.ORIG_WROTE_STRONG) {
+								i += j;
+								break;
+							}
+						}
+					}
+				}
+			}
+		}
+
+		if (type !== null) {
+			results.push({ type, node: el, nodeName });
+			count[type as string] = (count[type as string] || 0) + 1;
+
+			if (
+				type === LineType.ORIG_SEP_STRONG ||
+				type === LineType.ORIG_WROTE_STRONG ||
+				(type === LineType.ORIG_HEADER && prevType === LineType.ORIG_LINE)
+			) {
+				sepNode = type === LineType.ORIG_HEADER ? prevEl : el;
+				done = true;
+				break;
+			}
+
+			prevEl = el;
+			prevType = type;
+		}
+	}
+	if (sepNode) {
+		prune(sepNode, true);
+	}
+	return { done, sepNode };
+}
 
 export function getOriginalHtmlContent(text: string): string {
 	if (!text) {
@@ -224,68 +287,10 @@ export function getOriginalHtmlContent(text: string): string {
 	while (SCRIPT_REGEX.test(text)) {
 		text = text.replace(SCRIPT_REGEX, '');
 	}
-	let done = false;
 	const nodeList: Array<ChildNode> = [];
 	flatten(htmlNode, nodeList);
-	const ln = nodeList.length;
-	let i;
-	const results = [];
-	const count: Record<string, number> = {};
-	let el;
-	let prevEl;
-	let nodeName;
-	let type;
-	let prevType;
-	let sepNode;
-	for (i = 0; i < ln; i += 1) {
-		el = nodeList[i];
-		if (el.nodeType === 1) {
-			el.normalize();
-		}
-		nodeName = el.nodeName.toLowerCase();
-		type = checkNode(nodeList[i]);
-		if (
-			type === LineType.ORIG_UNKNOWN &&
-			el.nodeName === '#text' &&
-			(ORIG_DATE_REGEX.test(el.nodeValue as string) ||
-				ORIG_INTRO_REGEX.test(el.nodeValue as string) ||
-				ORIG_INTRO_DE_REGEX.test(el.nodeValue as string))
-		) {
-			let str = el.nodeValue as string;
-			for (let j = 1; j < 10; j += 1) {
-				const el1 = nodeList[i + j];
-				if (el1 && el1.nodeName === '#text') {
-					str += el1.nodeValue;
-					if (/:$/.test(str)) {
-						type = getLineType(trim(str));
-						if (type === LineType.ORIG_WROTE_STRONG) {
-							i += j;
-							break;
-						}
-					}
-				}
-			}
-		}
-		if (type !== null) {
-			results.push({ type, node: el, nodeName });
-			count[type as string] = count[type] ? count[type] + 1 : 1;
-			if (type === LineType.ORIG_SEP_STRONG || type === LineType.ORIG_WROTE_STRONG) {
-				sepNode = el;
-				done = true;
-				break;
-			}
-			if (type === LineType.ORIG_HEADER && prevType === LineType.ORIG_LINE) {
-				sepNode = prevEl;
-				done = true;
-				break;
-			}
-			prevEl = el;
-			prevType = type;
-		}
-	}
-	if (sepNode) {
-		prune(sepNode, true);
-	}
+	const { done } = processNodeList(nodeList);
+
 	return done && htmlNode.textContent ? htmlNode.innerHTML : text;
 }
 
@@ -506,6 +511,10 @@ export function getOriginalTextContent(text: string): string {
 	}
 
 	return text;
+}
+
+export function trimTextToHumaneSize(text: string, size: number): string {
+	return text.substring(0, size);
 }
 
 export function getQuotedTextFromOriginalContent(body: string, originalContent: string): string {
