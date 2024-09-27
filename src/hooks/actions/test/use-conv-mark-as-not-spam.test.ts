@@ -53,7 +53,7 @@ describe('useConvMarkAsNotSpam', () => {
 		});
 	});
 
-	describe('Fn', () => {
+	describe('Functions', () => {
 		const ids = times(faker.number.int({ max: 42 }), () =>
 			faker.number.int({ max: 42000 }).toString()
 		);
