@@ -59,7 +59,7 @@ const RedirectMessageAction = ({ onClose, id }: RedirectActionProps): ReactEleme
 			label: t('label.error_try_again', 'Something went wrong, please try again'),
 			autoHideTimeout: TIMEOUTS.REDIRECT
 		});
-	}, [createSnackbar, id]);
+	}, [createSnackbar, id, t]);
 
 	const onConfirm = useCallback(
 		() =>
@@ -87,7 +87,7 @@ const RedirectMessageAction = ({ onClose, id }: RedirectActionProps): ReactEleme
 				.catch(() => {
 					onRedirectError();
 				}),
-		[contacts, createSnackbar, id, onClose, onRedirectError]
+		[contacts, createSnackbar, id, onClose, onRedirectError, t]
 	);
 
 	return (
