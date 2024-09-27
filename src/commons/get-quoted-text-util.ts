@@ -429,7 +429,7 @@ export function getOriginalContent(text: string, isHtml: boolean): string {
 
 	// Handle remaining content
 	if (curBlock.length) {
-		results.push({ type: curType, block: curBlock });
+		results.push({ type: curType as LineTypeValue, block: curBlock });
 		unknownBlock = curType === LineType.ORIG_UNKNOWN ? curBlock : unknownBlock;
 		count[curType as string] = count[curType as string] ? count[curType as string] + 1 : 1;
 	}
