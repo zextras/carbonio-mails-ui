@@ -27,6 +27,14 @@ const ORIG_INTRO_DE_REGEX = new RegExp('^(-{2,}|' + 'auf' + '\\s+)', 'i');
 // eslint-disable-next-line no-useless-concat
 const ORIG_INTRO_REGEX = new RegExp('^(-{2,}|' + 'on' + '\\s+)', 'i');
 
+type LineTypeValue = (typeof LineType)[keyof typeof LineType];
+
+// We don't know the meaning of this, it's a type introduced when refactoring from .js
+type ResultTypeAndBlock = {
+	type: LineTypeValue;
+	block: string[];
+};
+
 const MSG_REGEXES = [
 	{
 		type: LineType.ORIG_QUOTED,
@@ -67,9 +75,15 @@ const MSG_REGEXES = [
 
 const SCRIPT_REGEX = /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi;
 
-const IGNORE_NODE = { '#comment': true, br: true, script: true, select: true, style: true };
+const IGNORE_NODE: Record<string, boolean> = {
+	'#comment': true,
+	br: true,
+	script: true,
+	select: true,
+	style: true
+};
 
-const flatten = (node, list) => {
+const flatten = (node: ChildNode, list: Array<ChildNode>): void => {
 	const nodeName = node && node.nodeName.toLowerCase();
 	if (IGNORE_NODE[nodeName]) {
 		return;
@@ -77,11 +91,10 @@ const flatten = (node, list) => {
 	list.push(node);
 	const children = node.childNodes || [];
 	for (let i = 0; i < children.length; i += 1) {
-		flatten(children[i], list);
+		const child = children[i];
+		flatten(child, list);
 	}
 };
-
-type LineTypeValue = (typeof LineType)[keyof typeof LineType];
 
 function getLineType(testLine: string): LineTypeValue {
 	let type: LineTypeValue = LineType.ORIG_UNKNOWN;
@@ -124,7 +137,7 @@ function getLineType(testLine: string): LineTypeValue {
 	return type;
 }
 
-function checkNodeContent(node) {
+function checkNodeContent(node: ChildNode): LineTypeValue | null {
 	const content = node.textContent || '';
 	if (!NON_WHITESPACE_REGEX.test(content) || content.length > 200) {
 		return null;
@@ -135,7 +148,7 @@ function checkNodeContent(node) {
 }
 
 // TODO: can it be replaced with trim by lodash?
-export function trim(str: string) {
+export function trim(str: string | null): string {
 	if (!str) {
 		return '';
 	}
@@ -143,7 +156,15 @@ export function trim(str: string) {
 	return str.replace(TRIM_REGEX, '');
 }
 
-function checkNode(el) {
+function isHRElement(nodeName: string, el: unknown): el is HTMLHRElement {
+	return nodeName === 'hr' && (el as HTMLHRElement).width !== undefined;
+}
+
+function isDivElement(nodeName: string, el: unknown): el is HTMLDivElement {
+	return nodeName === 'div' && (el as HTMLDivElement).className !== undefined;
+}
+
+function checkNode(el: HTMLHRElement | HTMLDivElement | ChildNode): LineTypeValue | null {
 	if (!el) {
 		return null;
 	}
@@ -154,7 +175,7 @@ function checkNode(el) {
 		if (NON_WHITESPACE_REGEX.test(content)) {
 			type = getLineType(content);
 		}
-	} else if (nodeName === 'hr') {
+	} else if (isHRElement(nodeName, el)) {
 		if (
 			el.id === LineType.HTML_SEP_ID ||
 			(el.size === '2' && el.width === '100%' && el.align === 'center')
@@ -165,7 +186,7 @@ function checkNode(el) {
 		}
 	} else if (nodeName === 'pre') {
 		type = checkNodeContent(el);
-	} else if (nodeName === 'div') {
+	} else if (isDivElement(nodeName, el)) {
 		if (el.className === 'OutlookMessageHeader' || el.className === 'gmail_quote') {
 			type = LineType.ORIG_SEP_STRONG;
 		}
@@ -180,7 +201,7 @@ function checkNode(el) {
 	return type;
 }
 
-function prune(node, clipNode) {
+function prune(node: Node, clipNode: boolean): void {
 	const p = node && node.parentNode;
 	while (p && p.lastChild && p.lastChild !== node) {
 		p.removeChild(p.lastChild);
@@ -195,14 +216,13 @@ function prune(node, clipNode) {
 }
 
 function getOriginalHtmlContent(text: string): string {
-	console.time('getOriginalHtmlContent');
 	const htmlNode = document.createElement('div');
 	htmlNode.innerHTML = text;
 	while (SCRIPT_REGEX.test(text)) {
 		text = text.replace(SCRIPT_REGEX, '');
 	}
 	let done = false;
-	const nodeList: Array<Node> = [];
+	const nodeList: Array<ChildNode> = [];
 	flatten(htmlNode, nodeList);
 	const ln = nodeList.length;
 	let i;
@@ -263,11 +283,10 @@ function getOriginalHtmlContent(text: string): string {
 	if (sepNode) {
 		prune(sepNode, true);
 	}
-	console.timeEnd('getOriginalHtmlContent');
 	return done && htmlNode.textContent ? htmlNode.innerHTML : text;
 }
 
-function getTextFromBlock(block) {
+function getTextFromBlock(block: Array<string> | undefined): string | null {
 	if (!(block && block.length)) {
 		return null;
 	}
@@ -276,11 +295,14 @@ function getTextFromBlock(block) {
 	return NON_WHITESPACE_REGEX.test(originalText) ? originalText : null;
 }
 
-function checkInlineWrote(count, results) {
+function checkInlineWrote(
+	count: Record<LineTypeValue, number>,
+	results: Array<ResultTypeAndBlock>
+): string | null {
 	if (count[LineType.ORIG_WROTE_STRONG] > 0) {
 		let unknownBlock;
 		let foundSep = false;
-		const afterSep = {};
+		const afterSep = {} as Record<LineTypeValue, boolean>;
 		for (let i = 0; i < results.length; i += 1) {
 			const result = results[i];
 			const { type } = result;
@@ -319,7 +341,7 @@ export function getOriginalContent(text: string, isHtml: boolean): string {
 		return getOriginalHtmlContent(text);
 	}
 
-	const results = [];
+	const results: Array<ResultTypeAndBlock> = [];
 	const lines = text.split(SPLIT_REGEX);
 
 	let curType;
@@ -453,7 +475,7 @@ export function getOriginalContent(text: string, isHtml: boolean): string {
 
 	// If we have a STRONG separator (eg "--- Original Message ---"), consider it authoritative and return the text that precedes it
 	if (count[LineType.ORIG_SEP_STRONG] > 0) {
-		let block = [];
+		let block: Array<string> = [];
 		for (let i = 0; i < results.length; i += 1) {
 			const result = results[i];
 			if (result.type === LineType.ORIG_SEP_STRONG) {
@@ -468,11 +490,10 @@ export function getOriginalContent(text: string, isHtml: boolean): string {
 		}
 	}
 
-	console.timeEnd('getOriginalContent');
 	return text;
 }
 
-function replaceDuplicateDiv(text) {
+function replaceDuplicateDiv(text: string): string {
 	text = text.replace('</div></div>', '</div>');
 	if (text.indexOf('</div></div>') !== -1) {
 		text = replaceDuplicateDiv(text);
@@ -480,13 +501,14 @@ function replaceDuplicateDiv(text) {
 	return text;
 }
 
-function plainTextToHTML(str) {
+function plainTextToHTML(str: string): string {
 	if (str !== undefined && str !== null) {
 		return str.replace(/(?:\r\n|\r|\n)/g, '<br />');
 	}
 	return '';
 }
-export function getQuotedTextOnly(message, isHtmlContent) {
+
+export function getQuotedTextOnly(message: string, isHtmlContent: boolean): string {
 	const body = message;
 
 	const originalContent = getOriginalContent(body, isHtmlContent);
