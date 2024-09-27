@@ -8,15 +8,15 @@ import React, { FC, useMemo, useState } from 'react';
 import { Button, Row, Text } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 
-import { getOriginalContent, getQuotedTextOnly } from '../get-quoted-text-util';
+import { getOriginalTextContent, getQuotedTextFromOriginalContent } from '../get-quoted-text-util';
 import { plainTextToHTML, replaceLinkToAnchor } from '../utils';
 
 export const TextMessageRenderer: FC<{ body: { content: string; contentType: string } }> = ({
 	body
 }) => {
 	const [showQuotedText, setShowQuotedText] = useState(false);
-	const orignalText = getOriginalContent(body.content, false);
-	const quoted = getQuotedTextOnly(body.content, false);
+	const orignalText = getOriginalTextContent(body.content);
+	const quoted = getQuotedTextFromOriginalContent(body.content, orignalText);
 
 	const contentToDisplay = useMemo(
 		() => (showQuotedText ? body.content : orignalText),

@@ -23,7 +23,7 @@ import styled from 'styled-components';
 import { ParticipantRole } from '../../carbonio-ui-commons/constants/participants';
 import { getNoIdentityPlaceholder } from '../../helpers/identities';
 import type { MailMessagePart, Participant } from '../../types';
-import { getOriginalContent, getQuotedTextFromOriginalContent } from '../get-quoted-text-util';
+import { getOriginalHtmlContent, getQuotedTextFromOriginalContent } from '../get-quoted-text-util';
 import { _CI_REGEX, _CI_SRC_REGEX, isAvailableInTrusteeList } from '../utils';
 
 const BannerContainer = styled(Container)`
@@ -76,8 +76,7 @@ export const HtmlMessageRenderer: FC<HtmlMessageRendererType> = ({
 
 	const [showExternalImage, setShowExternalImage] = useState(false);
 	const [displayBanner, setDisplayBanner] = useState(true);
-
-	const originalContent = getOriginalContent(body.content, true);
+	const originalContent = getOriginalHtmlContent(body.content);
 	const quoted = getQuotedTextFromOriginalContent(body.content, originalContent);
 
 	const contentToDisplay = useMemo(

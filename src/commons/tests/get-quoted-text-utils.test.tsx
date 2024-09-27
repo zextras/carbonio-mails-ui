@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { htmlEncode, trim } from '../get-quoted-text-util';
+import { getOriginalHtmlContent, htmlEncode, trim } from '../get-quoted-text-util';
 
 describe('Get Quoted Test Utils', () => {
 	describe('trim', () => {
@@ -42,6 +42,18 @@ describe('Get Quoted Test Utils', () => {
 			expect(htmlEncode(originalHTML, false)).toBe(
 				'&lt;div&gt;Should not care about  extra  spaces&lt;/div&gt;'
 			);
+		});
+	});
+
+	describe('Get original HTML content', () => {
+		it('should not be slow on big file ~150k lines', () => {
+			const numberOfLines = 1500000;
+			const text = 'PROTOCOLLO Comune di Desenzano del Garda - ENTE D284 In data 21/11/2023'.repeat(
+				150000
+			);
+			console.time('Start');
+			const originalContent = getOriginalHtmlContent(text);
+			console.timeEnd('Start');
 		});
 	});
 });

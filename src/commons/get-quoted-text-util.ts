@@ -215,7 +215,10 @@ function prune(node: Node, clipNode: boolean): void {
 	}
 }
 
-function getOriginalHtmlContent(text: string): string {
+export function getOriginalHtmlContent(text: string): string {
+	if (!text) {
+		return '';
+	}
 	const htmlNode = document.createElement('div');
 	htmlNode.innerHTML = text;
 	while (SCRIPT_REGEX.test(text)) {
@@ -348,12 +351,9 @@ function plainTextToHTML(str: string): string {
 	return '';
 }
 
-export function getOriginalContent(text: string, isHtml: boolean): string {
+export function getOriginalTextContent(text: string): string {
 	if (!text) {
 		return '';
-	}
-	if (isHtml) {
-		return getOriginalHtmlContent(text);
 	}
 
 	const results: Array<ResultTypeAndBlock> = [];
@@ -675,13 +675,6 @@ export function getQuotedTextFromOriginalContent(body: string, originalContent: 
 		return quotedText;
 	}
 	return '';
-}
-
-export function getQuotedTextOnly(message: string, isHtmlContent: boolean): string {
-	const body = message;
-
-	const originalContent = getOriginalContent(body, isHtmlContent);
-	return getQuotedTextFromOriginalContent(body, originalContent);
 }
 
 export function htmlEncode(str: string | object, includeSpaces: boolean): string {
