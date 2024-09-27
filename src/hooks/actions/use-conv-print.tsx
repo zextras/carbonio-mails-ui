@@ -5,13 +5,12 @@
  */
 import { useCallback, useMemo } from 'react';
 
-import { isDraft } from 'immer';
 import { forEach } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
 import { getContentForPrint } from '../../commons/print-conversation/print-conversation';
 import { ConversationActionsDescriptors } from '../../constants';
-import { isTrash } from '../../helpers/folders';
+import { isDraft, isTrash } from '../../helpers/folders';
 import { getMsgsForPrint } from '../../store/actions';
 import { ActionFn, Conversation, UIActionDescriptor } from '../../types';
 import { errorPage } from '../../ui-actions/error-page';
@@ -23,33 +22,35 @@ export const useConvPrintFn = (conversation: Array<Conversation>, folderId: stri
 	);
 
 	const execute = useCallback((): void => {
-		const messageIds: Array<string> = [];
+		if (canExecute()) {
+			const messageIds: Array<string> = [];
 
-		forEach(conversation, (conv) => {
-			forEach(conv.messages, (m) => {
-				messageIds.push(m.id);
-			});
-		});
-
-		const printWindow = window.open('', '_blank');
-		getMsgsForPrint({ ids: messageIds })
-			.then((res) => {
-				const content = getContentForPrint({
-					messages: res,
-					conversations: conversation,
-					isMsg: false
+			forEach(conversation, (conv) => {
+				forEach(conv.messages, (m) => {
+					messageIds.push(m.id);
 				});
-				if (printWindow?.top) {
-					printWindow.top.document.title = 'Carbonio';
-					printWindow.document.write(content);
-				}
-			})
-			.catch(() => {
-				if (printWindow) {
-					printWindow.document.write(errorPage);
-				}
 			});
-	}, [conversation]);
+
+			const printWindow = window.open('', '_blank');
+			getMsgsForPrint({ ids: messageIds })
+				.then((res) => {
+					const content = getContentForPrint({
+						messages: res,
+						conversations: conversation,
+						isMsg: false
+					});
+					if (printWindow?.top) {
+						printWindow.top.document.title = 'Carbonio';
+						printWindow.document.write(content);
+					}
+				})
+				.catch(() => {
+					if (printWindow) {
+						printWindow.document.write(errorPage);
+					}
+				});
+		}
+	}, [canExecute, conversation]);
 
 	return useMemo(() => ({ canExecute, execute }), [canExecute, execute]);
 };
