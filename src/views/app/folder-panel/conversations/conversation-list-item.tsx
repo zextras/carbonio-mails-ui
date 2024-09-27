@@ -32,6 +32,8 @@ import { API_REQUEST_STATUS } from '../../../../constants';
 import { normalizeDropdownActionItem } from '../../../../helpers/actions';
 import { getFolderIdParts } from '../../../../helpers/folders';
 import { useConvActions } from '../../../../hooks/actions/use-conv-actions';
+import { useConvPreviewOnSeparatedWindowFn } from '../../../../hooks/actions/use-conv-preview-on-separated-window';
+import { useConvSetReadFn } from '../../../../hooks/actions/use-conv-set-read';
 import { useAppDispatch, useAppSelector } from '../../../../hooks/redux';
 import { useTagDropdownItem } from '../../../../hooks/use-tag-dropdown-item';
 import { searchConv } from '../../../../store/actions';
@@ -45,12 +47,7 @@ import {
 	TextReadValuesProps,
 	Conversation
 } from '../../../../types';
-import {
-	previewConversationOnSeparatedWindowAction,
-	useConversationsRead
-} from '../../../../ui-actions/conversation-actions';
 import { ConversationPreviewPanel } from '../../detail-panel/conversation-preview-panel';
-import { useGlobalExtraWindowManager } from '../../extra-windows/global-extra-window-manager';
 import { HoverBarContainer } from '../parts/hover-bar-container';
 import { HoverContainer } from '../parts/hover-container';
 import { ItemAvatar } from '../parts/item-avatar';
@@ -226,10 +223,26 @@ export const ConversationListItem: FC<ConversationListItemProps> = memo(
 		const [open, setOpen] = useState(false);
 		const messages = useAppSelector(selectMessages);
 		const isConversation = 'messages' in (item || {});
-		const { createWindow } = useGlobalExtraWindowManager();
 		const folderParent = getFolderParentId({ folderId: folderId ?? '', isConversation, item });
-		const setConversationRead = useConversationsRead();
 		const [t] = useTranslation();
+
+		const markAsRead = useConvSetReadFn({
+			ids: [item.id],
+			isConversationRead: item.read,
+			deselectAll,
+			folderId: folderId ?? ''
+		});
+
+		const conversationPreviewFactory = useCallback(
+			() => <ConversationPreviewPanel conversation={item} isInsideExtraWindow />,
+			[item]
+		);
+
+		const previewOnSeparatedWindow = useConvPreviewOnSeparatedWindowFn({
+			conversationId: item.id,
+			subject: item.subject,
+			conversationPreviewFactory
+		});
 
 		const conversationStatus = useAppSelector((state: MailsStateType) =>
 			selectConversationExpandedStatus(state, item.id)
@@ -302,28 +315,12 @@ export const ConversationListItem: FC<ConversationListItemProps> = memo(
 			(e) => {
 				if (!e.isDefaultPrevented()) {
 					if (item?.read === false && zimbraPrefMarkMsgRead) {
-						setConversationRead({
-							ids: [item.id],
-							value: false,
-							dispatch,
-							folderId: folderParent,
-							deselectAll,
-							shouldReplaceHistory: false
-						}).onClick();
+						markAsRead.canExecute() && markAsRead.execute();
 					}
 					debouncedPushHistory();
 				}
 			},
-			[
-				item?.read,
-				item.id,
-				zimbraPrefMarkMsgRead,
-				debouncedPushHistory,
-				setConversationRead,
-				dispatch,
-				folderParent,
-				deselectAll
-			]
+			[item?.read, zimbraPrefMarkMsgRead, debouncedPushHistory, markAsRead]
 		);
 
 		const _onDoubleClick = useCallback(
@@ -336,16 +333,11 @@ export const ConversationListItem: FC<ConversationListItemProps> = memo(
 				if (isDraft) {
 					pushHistory(`/folder/${folderParent}/edit/${id}?action=editAsDraft`);
 				} else {
-					previewConversationOnSeparatedWindowAction(
-						item.id,
-						folderParent,
-						item.subject,
-						createWindow
-					).onClick();
+					previewOnSeparatedWindow.canExecute() && previewOnSeparatedWindow.execute();
 				}
 			},
 
-			[createWindow, debouncedPushHistory, folderParent, item.id, item.messages, item.subject]
+			[debouncedPushHistory, folderParent, item.messages, previewOnSeparatedWindow]
 		);
 
 		const toggleExpandButtonLabel = useMemo(

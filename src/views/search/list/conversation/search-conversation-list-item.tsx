@@ -33,7 +33,7 @@ import { ZIMBRA_STANDARD_COLORS } from '../../../../carbonio-ui-commons/constant
 import { participantToString } from '../../../../commons/utils';
 import { API_REQUEST_STATUS } from '../../../../constants';
 import { useConvPreviewOnSeparatedWindowFn } from '../../../../hooks/actions/use-conv-preview-on-separated-window';
-import { useAppDispatch } from '../../../../hooks/redux';
+import { useConvSetReadFn } from '../../../../hooks/actions/use-conv-set-read';
 import { retrieveConversation } from '../../../../store/zustand/search/hooks/hooks';
 import {
 	useConversationById,
@@ -41,8 +41,6 @@ import {
 	useConversationStatus
 } from '../../../../store/zustand/search/store';
 import type { Conversation, Participant, TextReadValuesProps } from '../../../../types';
-import { setConversationsRead } from '../../../../ui-actions/conversation-actions';
-import { useGlobalExtraWindowManager } from '../../../app/extra-windows/global-extra-window-manager';
 import { ConversationListItemActionWrapper } from '../../../app/folder-panel/conversations/conversation-list-item';
 import { ItemAvatar } from '../../../app/folder-panel/parts/item-avatar';
 import { RowInfo } from '../../../app/folder-panel/parts/row-info';
@@ -72,13 +70,13 @@ export const SearchConversationListItem: FC<SearchConversationListItemProps> = (
 	deselectAll
 }) => {
 	const conversation = useConversationById(conversationId);
-	const dispatch = useAppDispatch();
 	const [open, setOpen] = useState(false);
 	const accounts = useUserAccounts();
 	const messages = useConversationMessages(conversationId);
-	const { createWindow } = useGlobalExtraWindowManager();
 	const conversationStatus = useConversationStatus(conversationId);
 	const tagsFromStore = useTags();
+	const { id, isDraft, parent } = conversation.messages[0];
+
 	const tags = useMemo(
 		() =>
 			uniqBy(
@@ -146,27 +144,29 @@ export const SearchConversationListItem: FC<SearchConversationListItemProps> = (
 		[conversationId]
 	);
 
-	const { execute, canExecute } = useConvPreviewOnSeparatedWindowFn({
+	const previewOnSeparatedWindow = useConvPreviewOnSeparatedWindowFn({
 		conversationId,
 		subject: conversation.subject,
 		conversationPreviewFactory
+	});
+
+	const markAsRead = useConvSetReadFn({
+		ids: [conversation.id],
+		isConversationRead: conversation.read,
+		deselectAll,
+		folderId: parent ?? ''
 	});
 
 	const _onClick = useCallback(
 		(e) => {
 			if (!e.isDefaultPrevented()) {
 				if (conversation?.read === false && zimbraPrefMarkMsgRead) {
-					setConversationsRead({
-						ids: [conversationId],
-						value: false,
-						dispatch,
-						deselectAll
-					}).onClick();
+					markAsRead.canExecute() && markAsRead.execute();
 				}
 				pushHistory(`conversation/${conversationId}`);
 			}
 		},
-		[conversation?.read, conversationId, zimbraPrefMarkMsgRead, dispatch, deselectAll]
+		[conversation?.read, zimbraPrefMarkMsgRead, conversationId, markAsRead]
 	);
 
 	const _onDoubleClick = useCallback(
@@ -175,15 +175,14 @@ export const SearchConversationListItem: FC<SearchConversationListItemProps> = (
 				return;
 			}
 
-			const { id, isDraft, parent } = conversation.messages[0];
 			if (isDraft) {
 				pushHistory(`/folder/${parent}/edit/${id}?action=editAsDraft`);
 			} else {
-				canExecute() && execute();
+				previewOnSeparatedWindow.canExecute() && previewOnSeparatedWindow.execute();
 			}
 		},
 
-		[conversation.messages, canExecute, execute]
+		[id, isDraft, parent, previewOnSeparatedWindow]
 	);
 
 	const toggleExpandButtonLabel = useMemo(
