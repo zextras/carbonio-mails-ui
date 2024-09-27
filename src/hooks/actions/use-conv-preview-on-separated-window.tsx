@@ -30,6 +30,10 @@ export const useConvPreviewOnSeparatedWindowFn = ({
 			return;
 		}
 
+		if (!canExecute()) {
+			return;
+		}
+
 		const createWindowParams: ExtraWindowCreationParams = {
 			name: `conversation-${conversationId}`,
 			returnComponent: false,
@@ -38,7 +42,7 @@ export const useConvPreviewOnSeparatedWindowFn = ({
 			closeOnUnmount: false
 		};
 		createWindow(createWindowParams);
-	}, [createWindow, conversationId, conversationPreviewFactory, subject]);
+	}, [createWindow, canExecute, conversationId, conversationPreviewFactory, subject]);
 
 	return useMemo(() => ({ canExecute, execute }), [canExecute, execute]);
 };
