@@ -83,7 +83,7 @@ const generateMessage = ({
 }: MessageGenerationParams = {}): MailMessage => ({
 	attachments: undefined,
 	autoSendTime: 0,
-	body: { content: body, contentType: 'text/plain' },
+	body: { content: body, contentType: 'text/plain', truncated: false },
 	conversation: '',
 	date: receiveDate,
 	did: '',
