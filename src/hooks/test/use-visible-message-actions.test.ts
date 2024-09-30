@@ -3,7 +3,8 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { renderHook, act } from '@testing-library/react-hooks';
+
+import { act, renderHook } from '@testing-library/react';
 
 import { useVisibleActionsCount } from '../use-visible-actions-count';
 

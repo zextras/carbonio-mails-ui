@@ -5,8 +5,7 @@
  */
 import React, { ReactElement, ReactNode } from 'react';
 
-import { waitFor } from '@testing-library/react';
-import { renderHook } from '@testing-library/react-hooks';
+import { waitFor, renderHook } from '@testing-library/react';
 import { SoapNotify, useRefresh } from '@zextras/carbonio-shell-ui';
 import { http } from 'msw';
 import { Provider } from 'react-redux';

@@ -6,8 +6,7 @@
 import React from 'react';
 
 import { faker } from '@faker-js/faker';
-import { act, screen, waitFor } from '@testing-library/react';
-import { renderHook } from '@testing-library/react-hooks';
+import { act, renderHook, screen, waitFor } from '@testing-library/react';
 import * as hooks from '@zextras/carbonio-shell-ui';
 import { noop, times } from 'lodash';
 import { useLocation } from 'react-router-dom';

@@ -6,7 +6,7 @@
 
 import React, { ReactElement, ReactNode } from 'react';
 
-import { renderHook } from '@testing-library/react-hooks';
+import { renderHook } from '@testing-library/react';
 import { I18nextProvider } from 'react-i18next';
 import { Provider } from 'react-redux';
 import { useLocation } from 'react-router-dom';

@@ -1,0 +1,26 @@
+
+> carbonio-mails-ui@1.18.1 start
+> sdk watch
+
+sdk watch
+
+Run the project in watch mode, proxying against a Carbonio instance
+
+Options:
+      --help        Show help                                          [boolean]
+      --version     Show version number                                [boolean]
+  -v, --verbose     Verbose logging                   [boolean] [default: false]
+  -a, --admin       Build/Watch in admin mode, defaults to true only for the
+                    admin packages                    [boolean] [default: false]
+  -n, --name        Alternative name to use for the package, overrides the
+                    carbonio.name field           [default: "carbonio-mails-ui"]
+      --svgr        use svgr-loader instead of file-loader for svg files
+                                                      [boolean] [default: false]
+  -h, --host        Destination hostname                              [required]
+  -p, --port        localhost port to use                      [default: "9000"]
+  -s, --standalone  Only load the current module      [boolean] [default: false]
+  -u, --useLocalDS  Use the local DS module instead of the one provided by the
+                    remote shell                      [boolean] [default: false]
+  -w, --ws          Enable websocket proxy            [boolean] [default: false]
+
+Missing required argument: host

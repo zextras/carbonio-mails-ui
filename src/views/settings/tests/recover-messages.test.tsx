@@ -6,7 +6,7 @@
 
 import React from 'react';
 
-import { act, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import { HttpResponse } from 'msw';
 
 import { defaultBeforeAllTests } from '../../../carbonio-ui-commons/test/jest-setup';
@@ -64,21 +64,18 @@ describe('Recover messages', () => {
 		);
 
 		const dateTimePicker = screen.getByRole('textbox', { name: /label.select_recovery_date/ });
-
-		await act(async () => {
-			await user.type(dateTimePicker, '2023-01-05T00:00:00.000Z');
-			await user.tab();
-			await user.click(
-				screen.getByRole('button', {
-					name: /label\.search_emails/i
-				})
-			);
-			await user.click(
-				screen.getByRole('button', {
-					name: /label\.start_search/i
-				})
-			);
-		});
+		await user.type(dateTimePicker, '2023-01-05T00:00:00.000Z');
+		await user.tab();
+		await user.click(
+			screen.getByRole('button', {
+				name: /label\.search_emails/i
+			})
+		);
+		await user.click(
+			screen.getByRole('button', {
+				name: /label\.start_search/i
+			})
+		);
 
 		expect(
 			screen.queryByRole('button', {
@@ -98,20 +95,18 @@ describe('Recover messages', () => {
 
 		const dateTimePicker = screen.getByRole('textbox', { name: /label.select_recovery_date/ });
 
-		await act(async () => {
-			await user.type(dateTimePicker, '2023-01-05T00:00:00.000Z');
-			await user.tab();
-			await user.click(
-				screen.getByRole('button', {
-					name: /label\.search_emails/i
-				})
-			);
-			await user.click(
-				screen.getByRole('button', {
-					name: /label\.start_search/i
-				})
-			);
-		});
+		await user.type(dateTimePicker, '2023-01-05T00:00:00.000Z');
+		await user.tab();
+		await user.click(
+			screen.getByRole('button', {
+				name: /label\.search_emails/i
+			})
+		);
+		await user.click(
+			screen.getByRole('button', {
+				name: /label\.start_search/i
+			})
+		);
 
 		expect(
 			screen.queryByRole('button', {
@@ -133,20 +128,18 @@ describe('Recover messages', () => {
 		const dateTimePicker = screen.getByRole('textbox', { name: /label.select_recovery_date/ });
 
 		const selectedDate = '2024-08-14T00:00:00.000Z';
-		await act(async () => {
-			await user.type(dateTimePicker, selectedDate);
-			await user.tab();
-			await user.click(
-				screen.getByRole('button', {
-					name: /label\.search_emails/i
-				})
-			);
-			await user.click(
-				screen.getByRole('button', {
-					name: /label\.start_search/i
-				})
-			);
-		});
+		await user.type(dateTimePicker, selectedDate);
+		await user.tab();
+		await user.click(
+			screen.getByRole('button', {
+				name: /label\.search_emails/i
+			})
+		);
+		await user.click(
+			screen.getByRole('button', {
+				name: /label\.start_search/i
+			})
+		);
 
 		const { after, before } = getParams(apiInterceptor.getLastRequest().url);
 
@@ -167,20 +160,18 @@ describe('Recover messages', () => {
 		const textInput = screen.getByRole('textbox', { name: /settings.keyword/ });
 
 		const expectedSearchString = 'test keyword';
-		await act(async () => {
-			await user.type(textInput, expectedSearchString);
-			await user.tab();
-			await user.click(
-				screen.getByRole('button', {
-					name: /label\.search_emails/i
-				})
-			);
-			await user.click(
-				screen.getByRole('button', {
-					name: /label\.start_search/i
-				})
-			);
-		});
+		await user.type(textInput, expectedSearchString);
+		await user.tab();
+		await user.click(
+			screen.getByRole('button', {
+				name: /label\.search_emails/i
+			})
+		);
+		await user.click(
+			screen.getByRole('button', {
+				name: /label\.start_search/i
+			})
+		);
 
 		const { searchString } = getParams(apiInterceptor.getLastRequest().url);
 
