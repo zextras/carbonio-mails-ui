@@ -3,14 +3,17 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import { act } from '@testing-library/react';
 import { find, forEach } from 'lodash';
 
 import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
 import { useTags } from '../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
+import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { setupHook } from '../../../carbonio-ui-commons/test/test-setup';
 import { FOLDERS_DESCRIPTORS } from '../../../constants';
 import { generateConversation } from '../../../tests/generators/generateConversation';
 import { generateStore } from '../../../tests/generators/store';
+import { ConvActionRequest } from '../../../types';
 import { useConvApplyTagDescriptor, useConvApplyTagSubDescriptors } from '../use-conv-apply-tag';
 
 describe('useConvApplyTag', () => {
@@ -43,6 +46,40 @@ describe('useConvApplyTag', () => {
 		});
 	});
 	describe('SubDescriptors', () => {
+		it('Should return an object with specific icon if conversation does not contains the tag', () => {
+			const {
+				result: { current: descriptor }
+			} = setupHook(useConvApplyTagSubDescriptors, {
+				initialProps: [{ ids: [conv.id], folderId: FOLDERS.INBOX, conversationTags: [] }],
+				store
+			});
+			expect(descriptor[0]).toEqual(
+				expect.objectContaining({
+					canExecute: expect.any(Function),
+					execute: expect.any(Function),
+					color: expect.any(Number),
+					icon: 'Tag',
+					id: expect.any(String),
+					label: expect.any(String)
+				})
+			);
+		});
+		it('Should return an object with specific icon if conversation contains the tag', () => {
+			const {
+				result: { current: descriptor }
+			} = setupHook(useConvApplyTagSubDescriptors, {
+				initialProps: [{ ids: [conv.id], folderId: FOLDERS.INBOX, conversationTags: ['2291'] }],
+				store
+			});
+			expect(descriptor[0]).toEqual({
+				canExecute: expect.any(Function),
+				execute: expect.any(Function),
+				color: expect.any(Number),
+				icon: 'TagOutline',
+				id: expect.any(String),
+				label: expect.any(String)
+			});
+		});
 		it('Should return a descriptor for every existing tag', () => {
 			const tags = {
 				'1': {
@@ -106,6 +143,56 @@ describe('useConvApplyTag', () => {
 				});
 
 				expect(descriptor[0].canExecute()).toEqual(assertion);
+			});
+		});
+		describe('canExecute', () => {
+			it('should call the API to remove the tag from the conversation', async () => {
+				const tags = {
+					'1': {
+						id: '1',
+						name: 'tag 1'
+					}
+				};
+				useTags.mockReturnValue(tags);
+				const interceptor = createSoapAPIInterceptor<ConvActionRequest>('ConvAction');
+				const {
+					result: { current: descriptor }
+				} = setupHook(useConvApplyTagSubDescriptors, {
+					initialProps: [{ ids: [conv.id], folderId: FOLDERS.INBOX, conversationTags: ['1'] }],
+					store
+				});
+
+				await act(async () => {
+					descriptor[0].execute();
+				});
+				const requestParameter = await interceptor;
+				expect(requestParameter.action.id).toBe(conv.id);
+				expect(requestParameter.action.op).toBe('!tag');
+				expect(requestParameter.action.l).toBeUndefined();
+			});
+			it('should call the API to add the tag from the conversation', async () => {
+				const tags = {
+					'1': {
+						id: '1',
+						name: 'tag 1'
+					}
+				};
+				useTags.mockReturnValue(tags);
+				const interceptor = createSoapAPIInterceptor<ConvActionRequest>('ConvAction');
+				const {
+					result: { current: descriptor }
+				} = setupHook(useConvApplyTagSubDescriptors, {
+					initialProps: [{ ids: [conv.id], folderId: FOLDERS.INBOX, conversationTags: [] }],
+					store
+				});
+
+				await act(async () => {
+					descriptor[0].execute();
+				});
+				const requestParameter = await interceptor;
+				expect(requestParameter.action.id).toBe(conv.id);
+				expect(requestParameter.action.op).toBe('tag');
+				expect(requestParameter.action.l).toBeUndefined();
 			});
 		});
 	});
