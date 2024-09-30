@@ -16,7 +16,7 @@ import { UIActionAggregator, UIActionDescriptor } from '../../types';
 import { useAppDispatch } from '../redux';
 import { useUiUtilities } from '../use-ui-utilities';
 
-export const useConvApplyTagDescriptors = ({
+export const useConvApplyTagSubDescriptors = ({
 	ids,
 	conversationTags,
 	folderId
@@ -104,7 +104,7 @@ export const useConvApplyTagDescriptor = ({
 	folderId: string;
 }): UIActionAggregator => {
 	const [t] = useTranslation();
-	const items = useConvApplyTagDescriptors({ ids, conversationTags, folderId });
+	const items = useConvApplyTagSubDescriptors({ ids, conversationTags, folderId });
 	return {
 		id: ConversationActionsDescriptors.APPLY_TAG.id,
 		label: t('label.tag', 'Tag'),
