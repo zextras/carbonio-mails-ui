@@ -16,7 +16,7 @@ import { UIActionAggregator, UIActionDescriptor } from '../../types';
 import { useAppDispatch } from '../redux';
 import { useUiUtilities } from '../use-ui-utilities';
 
-export const useMsgApplyTagFn = ({
+export const useMsgApplyTagSubDescriptors = ({
 	ids,
 	messageTags,
 	folderId
@@ -104,7 +104,7 @@ export const useMsgApplyTagDescriptor = ({
 	folderId: string;
 }): UIActionAggregator => {
 	const [t] = useTranslation();
-	const items = useMsgApplyTagFn({
+	const items = useMsgApplyTagSubDescriptors({
 		ids,
 		messageTags,
 		folderId
