@@ -7,14 +7,13 @@
 import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
 import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { generateStore } from '../../../tests/generators/store';
-import { SearchRequest } from '../../../types';
+import { type SearchConvRequest } from '../../../types';
 import { searchConv } from '../search-conv';
 
 describe('searchConv', () => {
-	test('the max property is not set', async () => {
-		// Generate the state store
+	test('the max property is set to 250_000', async () => {
 		const store = generateStore();
-		const interceptor = createSoapAPIInterceptor<SearchRequest>('SearchConv');
+		const interceptor = createSoapAPIInterceptor<SearchConvRequest>('SearchConv');
 
 		store.dispatch(
 			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -23,6 +22,6 @@ describe('searchConv', () => {
 		);
 
 		const req = await interceptor;
-		expect('max' in req).toBeFalsy();
+		expect(req.max).toBe(250000);
 	});
 });
