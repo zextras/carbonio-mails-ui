@@ -4,34 +4,21 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { soapFetch } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
 
+import { searchConvSoapAPI } from '../../api/search-conv';
 import { API_REQUEST_STATUS } from '../../constants';
 import { normalizeMailMessageFromSoap } from '../../normalizations/normalize-message';
-import type {
-	SearchConvParameters,
-	SearchConvRequest,
-	SearchConvResponse,
-	SearchConvReturn
-} from '../../types';
+import type { SearchConvParameters, SearchConvReturn } from '../../types';
 
 export const searchConv = createAsyncThunk<SearchConvReturn, SearchConvParameters>(
 	'conversations/searchConv',
 	async ({ conversationId, folderId, fetch = 'all' }) => {
-		const result = (await soapFetch<SearchConvRequest, SearchConvResponse>('SearchConv', {
-			_jsns: 'urn:zimbraMail',
-			cid: conversationId,
-			query: `inId: "${folderId}"`,
-			recip: '2',
-			max: 250_000,
-			sortBy: 'dateDesc',
-			offset: 0,
+		const result = await searchConvSoapAPI({
+			conversationId,
 			fetch,
-			needExp: 1,
-			limit: 250,
-			html: 1
-		})) as SearchConvResponse;
+			folderId
+		});
 		const messages = map(result?.m ?? [], (msg) => normalizeMailMessageFromSoap(msg, true));
 
 		return {
