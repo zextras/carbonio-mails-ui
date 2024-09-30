@@ -14,8 +14,7 @@ describe('getReferredContentIds', () => {
 				content: `<html><body><div style="font-family:&#39;arial&#39; , &#39;helvetica&#39; , sans-serif;font-size:12pt;color:#000000"><div style="font-family:&#39;arial&#39; , &#39;helvetica&#39; , sans-serif;font-size:12pt;color:#000000">\r\n<div style="font-family:&#39;arial&#39; , &#39;helvetica&#39; , sans-serif;font-size:12pt;color:#000000">\r\n<div style="font-family:&#39;arial&#39; , &#39;helvetica&#39; , sans-serif;font-size:12pt;color:#000000"> <img src="cid:2dbe26b8-2c96-40a0-94c5-ad891bac1f9a&#64;zimbra" /> <img src="cid:b8c321cd-0b7b-4a18-8b86-da38b937b6eb&#64;zimbra" alt="pic1" data-testId="picture1"/> <img src="cid:65766eee-4439-438c-a375-1ac111ed1a07&#64;zimbra" /><br /><br />\r\n<div><br />Kind Regards <br /><br />something</div>\r\n</div>\r\n</div>\r\n</div></div></body></html>`,
 				size: 999,
 				name: 'filename.jpg',
-				requiresSmartLinkConversion: true,
-				truncated: false
+				requiresSmartLinkConversion: true
 			}
 		];
 		expect(getReferredContentIds(parts)).toStrictEqual([
@@ -32,8 +31,7 @@ describe('getReferredContentIds', () => {
 				content: `<html><body><div style="font-family:&#39;arial&#39; , &#39;helvetica&#39; , sans-serif;font-size:12pt;color:#000000"><div style="font-family:&#39;arial&#39; , &#39;helvetica&#39; , sans-serif;font-size:12pt;color:#000000">\r\n<div style="font-family:&#39;arial&#39; , &#39;helvetica&#39; , sans-serif;font-size:12pt;color:#000000">\r\n<div style="font-family:&#39;arial&#39; , &#39;helvetica&#39; , sans-serif;font-size:12pt;color:#000000"> <img src="cid:2dbe26b8-2c96-40a0-94c5-ad891bac1f9a&#64;zimbra" /> <img src="cid:b8c321cd-0b7b-4a18-8b86-da38b937b6eb&#64;zimbra" alt="pic1" data-testId="picture1"/> <img src="cid:65766eee-4439-438c-a375-1ac111ed1a07&#64;zimbra" /><br /><br />\r\n<div><br />Kind Regards <br /><br />something</div>\r\n</div>\r\n</div>\r\n</div></div></body></html>`,
 				size: 999,
 				name: 'filename.jpg',
-				requiresSmartLinkConversion: true,
-				truncated: false
+				requiresSmartLinkConversion: true
 			}
 		];
 		expect(getReferredContentIds(parts).length).toBe(0);

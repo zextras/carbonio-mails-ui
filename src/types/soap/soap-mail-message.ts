@@ -48,5 +48,4 @@ export type SoapMailMessagePart = {
 	// FIXME see IRIS-4029 Based on the compose settings the content could be a string or an object of type { _content: string }
 	content?: string;
 	requiresSmartLinkConversion: boolean;
-	truncated?: boolean;
 };
