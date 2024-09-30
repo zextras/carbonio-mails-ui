@@ -41,21 +41,21 @@ describe('Mail preview', () => {
 
 		// Render the component
 		setupTest(<MailPreview {...props} />, { store });
-		const iframe: HTMLIFrameElement = await screen.findByTestId('message-renderer-iframe');
-		const iframeContent = iframe?.contentWindow?.document.body.innerHTML.toString();
+		const messageRenderer: HTMLDivElement = await screen.findByTestId('message-renderer-container');
+		const content = messageRenderer.innerHTML.toString();
 
 		// test if msg10 has 3 inline attachments
 		if (msgId === '10') {
-			expect(iframeContent).toContain('img src="/service/home/');
-			expect(iframeContent).toContain('pnsrc="cid:b8c321cd-0b7b-4a18-8b86-da38b937b6eb');
-			expect(iframeContent).toContain('pnsrc="cid:65766eee-4439-438c-a375-1ac111ed1a07');
-			expect(iframeContent).toContain('pnsrc="cid:2dbe26b8-2c96-40a0-94c5-ad891bac1f9a');
+			expect(content).toContain('img src="/service/home/');
+			expect(content).toContain('pnsrc="cid:b8c321cd-0b7b-4a18-8b86-da38b937b6eb');
+			expect(content).toContain('pnsrc="cid:65766eee-4439-438c-a375-1ac111ed1a07');
+			expect(content).toContain('pnsrc="cid:2dbe26b8-2c96-40a0-94c5-ad891bac1f9a');
 		}
 
 		// test if msg11 has a visible table
 		if (msgId === '11' || msgId === '12') {
-			expect(iframe).toBeVisible();
-			expect(iframeContent).toContain('table');
+			expect(messageRenderer).toBeVisible();
+			expect(content).toContain('table');
 		}
 	});
 });

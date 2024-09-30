@@ -257,6 +257,7 @@ export const HtmlMessageRenderer: FC<HtmlMessageRendererType> = ({
 			<Container
 				width={'fit'}
 				height={'100%'}
+				data-testid="message-renderer-container"
 				style={{ overflowY: 'auto', overflowX: 'hidden' }}
 				dangerouslySetInnerHTML={{
 					__html: contentWithImages
