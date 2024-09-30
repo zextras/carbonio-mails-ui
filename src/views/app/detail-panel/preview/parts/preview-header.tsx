@@ -28,7 +28,9 @@ import {
 	Dropdown,
 	ContainerProps,
 	IconButton,
-	getColor
+	Button,
+	getColor,
+	Modal
 } from '@zextras/carbonio-design-system';
 import { useTags, useUserAccounts, runSearch, t } from '@zextras/carbonio-shell-ui';
 import {
@@ -81,6 +83,7 @@ type PreviewHeaderProps = {
 		open: boolean;
 		isExternalMessage?: boolean;
 		isInsideExtraWindow?: boolean;
+		signed: boolean;
 	};
 	actions: MessageAction[];
 };
@@ -93,7 +96,7 @@ const fallbackContact = {
 };
 
 const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps, actions }): ReactElement => {
-	const { message, onClick, open, isExternalMessage } = compProps;
+	const { message, onClick, open, isExternalMessage, signed } = compProps;
 
 	const textRef = useRef<HTMLInputElement>(null);
 	const accounts = useUserAccounts();
@@ -104,6 +107,7 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps, actions }): ReactEle
 	const _onClick = useCallback((e) => !e.isDefaultPrevented() && onClick(e), [onClick]);
 	const attachments = retrieveAttachmentsType(message, 'attachment');
 	const senderContact = find(message.participants, ['type', 's']);
+	const [showSmimeDetails, setShowSmimeDetails] = useState(false);
 	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 	// @ts-ignore
 	const { folderId } = useParams();
@@ -214,9 +218,17 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps, actions }): ReactEle
 		setShowDropdown((o) => !o);
 	}, []);
 
+	const onSmimeClick = useCallback((ev: { stopPropagation: () => void }): void => {
+		ev.stopPropagation();
+		setShowDropdown((o) => !o);
+		setShowSmimeDetails(true)
+	}, []);
+
 	const onDropdownClose = useCallback((): void => {
 		setShowDropdown(false);
 	}, []);
+
+	
 
 	const isTagInStore = useTagExist(tags);
 
@@ -388,6 +400,7 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps, actions }): ReactEle
 											</Text>
 										)}
 									</Row>
+									
 
 									{open && <MailMsgPreviewActions actions={actions} />}
 								</Row>
@@ -439,7 +452,32 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps, actions }): ReactEle
 						contactListExpandCB={contactListExpandCB}
 					/>
 				)}
+				
 			</Container>
+			{!signed && (
+			<Container
+				orientation="horizontal"
+				padding={{ horizontal: 'small' }}
+				mainAlignment="flex-start"
+			>
+				<Padding left="small">
+					<Button data-testid="TagIcon" icon="Award" onClick={onSmimeClick} 
+					color="error"
+					label='S/Mime Signed' size='small' type="outlined" iconPlacement="left"/>
+				</Padding>
+				<Modal open={showSmimeDetails} title={'Sender\'s Digital Signature'} 
+					onClose={(): void => setShowSmimeDetails(false)} 
+					onConfirm={(): void => { setShowSmimeDetails(false); }} confirmLabel={'OK'} 
+					showCloseIcon > 
+					<Container
+						mainAlignment="flex-start" orientation="vertical" crossAlignment="flex-start">
+						<Row><Text>Signed By: dasdas</Text></Row>
+						<Row><Text>Issuer: dasdsad</Text></Row>
+						<Row><Text>Validity: dasdsadas</Text> </Row>
+					</Container>
+					
+				</Modal>
+			</Container>)}
 		</HoverContainer>
 	);
 };
