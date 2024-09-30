@@ -116,6 +116,7 @@ export const useConvMoveToTrashFn = ({
 			}
 		});
 	}, [
+		canExecute,
 		dispatch,
 		ids,
 		deselectAll,

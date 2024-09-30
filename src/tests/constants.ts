@@ -50,7 +50,8 @@ export const TESTID_SELECTORS = {
 		layoutHorizontalSplit: 'icon: BottomViewOutline',
 		layoutNoSplit: 'icon: ViewOffOutline',
 		navigateNext: 'icon: ArrowIosForward',
-		navigatePrevious: 'icon: ArrowIosBack'
+		navigatePrevious: 'icon: ArrowIosBack',
+		trash: 'icon: Trash2Outline'
 	},
 
 	signatureEditor: 'signature-editor',

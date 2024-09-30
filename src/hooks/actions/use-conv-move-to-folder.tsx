@@ -55,7 +55,7 @@ export const useConvMoveToFolderFn = ({
 			},
 			true
 		);
-	}, [createModal, folderId, ids, deselectAll, dispatch, closeModal]);
+	}, [canExecute, createModal, folderId, ids, deselectAll, dispatch, closeModal]);
 
 	return useMemo(() => ({ canExecute, execute }), [canExecute, execute]);
 };
