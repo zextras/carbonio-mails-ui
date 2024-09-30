@@ -8,11 +8,11 @@ import React, { FC, memo } from 'react';
 import { EmptyBody } from './empty-body';
 import { HtmlMessageRenderer } from './html-message-renderer';
 import { TextMessageRenderer } from './text-message-renderer';
-import type { MailMessagePart, Participant } from '../../types';
+import type { BodyPart, MailMessagePart, Participant } from '../../types';
 
 type MailMessageRendererProps = {
 	parts: MailMessagePart[];
-	body?: { content: string; contentType: string };
+	body?: BodyPart;
 	id: string;
 	fragment?: string;
 	participants?: Participant[];

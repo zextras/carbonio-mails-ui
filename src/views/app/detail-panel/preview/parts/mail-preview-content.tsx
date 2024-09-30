@@ -14,6 +14,7 @@ import {
 } from '@zextras/carbonio-shell-ui';
 import { filter } from 'lodash';
 
+import { MailMessageRenderer } from '../../../../../commons/mail-message-renderer/mail-message-renderer';
 import { getAttachmentParts } from '../../../../../helpers/attachments';
 import { useAppDispatch } from '../../../../../hooks/redux';
 import { useRequestDebouncedMessage } from '../../../../../hooks/use-request-debounced-message';
@@ -22,7 +23,6 @@ import { msgAction } from '../../../../../store/actions';
 import type { MailMessage, OpenEmlPreviewType } from '../../../../../types';
 import AttachmentsBlock from '../attachments-block';
 import ReadReceiptModal from '../read-receipt-modal';
-import { MailMessageRenderer } from '../../../../../commons/mail-message-renderer/mail-message-renderer';
 
 const [InviteResponse, integrationAvailable] = getIntegratedComponent('invites-reply');
 type MailContentProps = {

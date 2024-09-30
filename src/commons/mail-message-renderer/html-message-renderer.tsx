@@ -5,36 +5,18 @@
  */
 import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-import {
-	Button,
-	Container,
-	Icon,
-	IconButton,
-	MultiButton,
-	Padding,
-	Row,
-	Text
-} from '@zextras/carbonio-design-system';
+import { Button, Container, IconButton, MultiButton, Row } from '@zextras/carbonio-design-system';
 import { editSettings, t, useUserSettings } from '@zextras/carbonio-shell-ui';
-import { filter, forEach, isArray, reduce, some } from 'lodash';
+import { filter, forEach, isArray, noop, reduce, some } from 'lodash';
 import { Trans } from 'react-i18next';
 import styled from 'styled-components';
 
+import { WarningBanner } from './warning-banner';
 import { ParticipantRole } from '../../carbonio-ui-commons/constants/participants';
 import { getNoIdentityPlaceholder } from '../../helpers/identities';
-import type { MailMessagePart, Participant } from '../../types';
+import type { BodyPart, MailMessagePart, Participant } from '../../types';
 import { getOriginalHtmlContent, getQuotedTextFromOriginalContent } from '../get-quoted-text-util';
 import { _CI_REGEX, _CI_SRC_REGEX, isAvailableInTrusteeList } from '../utils';
-
-const BannerContainer = styled(Container)`
-	border-bottom: 0.0625rem solid ${(props): string => props.theme.palette.warning.regular};
-	padding: 0.5rem 1rem;
-	display: flex;
-	flex-direction: row;
-	align-items: center;
-	height: 3.625rem;
-	border-radius: 0.125rem 0.125rem 0 0;
-`;
 
 const StyledMultiBtn = styled(MultiButton)`
 	border: 0.0625rem solid ${(props): string => props.theme.palette.warning.regular};
@@ -53,7 +35,7 @@ const StyledMultiBtn = styled(MultiButton)`
 
 type HtmlMessageRendererType = {
 	msgId: string;
-	body: { content: string; contentType: string };
+	body: BodyPart;
 	parts: MailMessagePart[];
 	participants: Participant[] | undefined;
 	isInsideExtraWindow?: boolean;
@@ -181,40 +163,28 @@ export const HtmlMessageRenderer: FC<HtmlMessageRendererType> = ({
 		return htmlDoc.body.innerHTML;
 	}, [htmlDoc.body.innerHTML, images, msgId, parts, showImage]);
 
-	const multiBtnLabel = useMemo(() => t('label.view_images', 'VIEW IMAGES'), []);
+	const externalImagesMultiButtonLabel = useMemo(() => t('label.view_images', 'VIEW IMAGES'), []);
+	const externalImageWarningLabel = useMemo(
+		() =>
+			t(
+				'message.external_images_blocked',
+				'External images have been blocked to protect you against potential spam'
+			),
+		[]
+	);
+	const truncatedWarningButtonLabel = useMemo(
+		() => t('warningBanner.truncatedMessage.button', 'LOAD MESSAGE'),
+		[]
+	);
+	const truncatedWarningLabel = useMemo(
+		() =>
+			t('warningBanner.truncatedMessage.label', 'The message is too large and has been cropped'),
+		[]
+	);
 	return (
 		<div ref={divRef} className="force-white-bg" style={{ height: '100%' }}>
 			{showBanner && !showExternalImage && (
-				<BannerContainer
-					orientation="horizontal"
-					mainAlignment="space-between"
-					crossAlignment="center"
-					padding={{ all: 'large' }}
-					height="3.625rem"
-					background="#FFF7DE"
-					width="100%"
-				>
-					<Row
-						height="fit"
-						orientation="vertical"
-						display="flex"
-						wrap="nowrap"
-						mainAlignment="flex-start"
-						style={{
-							flexGrow: 1,
-							flexDirection: 'row'
-						}}
-					>
-						<Padding right="large">
-							<Icon icon="AlertTriangleOutline" color="warning" size="large" />
-						</Padding>
-						<Text overflow="break-word" size="small">
-							{t(
-								'message.external_images_blocked',
-								'External images have been blocked to protect you against potential spam'
-							)}
-						</Text>
-					</Row>
+				<WarningBanner warningLabel={externalImageWarningLabel}>
 					<Row
 						height="fit"
 						orientation="vertical"
@@ -230,7 +200,7 @@ export const HtmlMessageRenderer: FC<HtmlMessageRendererType> = ({
 						<StyledMultiBtn
 							background="transparent"
 							type="outlined"
-							label={multiBtnLabel}
+							label={externalImagesMultiButtonLabel}
 							color="warning"
 							onClick={(): void => {
 								setShowExternalImage(true);
@@ -252,7 +222,18 @@ export const HtmlMessageRenderer: FC<HtmlMessageRendererType> = ({
 							size="small"
 						/>
 					</Row>
-				</BannerContainer>
+				</WarningBanner>
+			)}
+			{body.truncated && (
+				<WarningBanner warningLabel={truncatedWarningLabel}>
+					<Button
+						backgroundColor="transparent"
+						type="outlined"
+						label={truncatedWarningButtonLabel}
+						color="warning"
+						onClick={noop}
+					/>
+				</WarningBanner>
 			)}
 			<Container
 				width={'fit'}
