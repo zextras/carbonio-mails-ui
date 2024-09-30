@@ -181,22 +181,23 @@ export const getAttachmentsFromParts = (
 	return results;
 };
 
-const normalizeMailPartMapFn = (v: SoapMailMessagePart): MailMessagePart => {
-	const ret: MailMessagePart = {
-		contentType: v.ct,
-		size: v.s || 0,
-		name: v.part,
-		disposition: v.cd,
-		requiresSmartLinkConversion: v?.requiresSmartLinkConversion ?? false
+const normalizeMailPartMapFn = (soapMailMessagePart: SoapMailMessagePart): MailMessagePart => {
+	const mailMessagePart: MailMessagePart = {
+		contentType: soapMailMessagePart.ct,
+		size: soapMailMessagePart.s || 0,
+		name: soapMailMessagePart.part,
+		disposition: soapMailMessagePart.cd,
+		requiresSmartLinkConversion: soapMailMessagePart?.requiresSmartLinkConversion ?? false,
+		truncated: soapMailMessagePart.truncated ?? false
 	};
-	if (v.mp) {
-		ret.parts = map(v.mp || [], normalizeMailPartMapFn);
+	if (soapMailMessagePart.mp) {
+		mailMessagePart.parts = map(soapMailMessagePart.mp || [], normalizeMailPartMapFn);
 	}
-	if (v.filename) ret.filename = v.filename;
-	if (v.content) ret.content = v.content;
-	if (v.ci) ret.ci = v.ci;
-	if (v.cd) ret.disposition = v.cd;
-	return ret;
+	if (soapMailMessagePart.filename) mailMessagePart.filename = soapMailMessagePart.filename;
+	if (soapMailMessagePart.content) mailMessagePart.content = soapMailMessagePart.content;
+	if (soapMailMessagePart.ci) mailMessagePart.ci = soapMailMessagePart.ci;
+	if (soapMailMessagePart.cd) mailMessagePart.disposition = soapMailMessagePart.cd;
+	return mailMessagePart;
 };
 
 const findBodyPart = (

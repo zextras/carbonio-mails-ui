@@ -109,25 +109,29 @@ const generateMessage = ({
 			contentType: 'multipart/mixed',
 			size: 0,
 			requiresSmartLinkConversion: false,
+			truncated: false,
 			parts: [
 				{
 					name: '1',
 					size: 0,
 					contentType: 'multipart/alternative',
 					requiresSmartLinkConversion: false,
+					truncated: false,
 					parts: [
 						{
 							name: '1.1',
 							contentType: 'text/plain',
 							size: body?.length,
-							requiresSmartLinkConversion: false
+							requiresSmartLinkConversion: false,
+							truncated: false
 						},
 						{
 							name: '1.2',
 							contentType: 'text/html',
 							size: body?.length,
 							content: body,
-							requiresSmartLinkConversion: false
+							requiresSmartLinkConversion: false,
+							truncated: false
 						}
 					]
 				}

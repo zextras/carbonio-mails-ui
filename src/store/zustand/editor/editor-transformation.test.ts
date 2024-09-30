@@ -48,7 +48,8 @@ describe('buildSavedAttachments', () => {
 				size: 999,
 				name: 'filename.jpg',
 				ci: '<65766eee-4439-438c-a375-1ac111ed1a07@zimbra>',
-				requiresSmartLinkConversion: true
+				requiresSmartLinkConversion: true,
+				truncated: false
 			}
 		];
 		const result = buildSavedAttachments(message);
