@@ -5,43 +5,45 @@
  */
 import { normalizeMailMessageFromSoap } from './normalize-message';
 import { generateMessageFromAPI } from '../tests/generators/api';
+import { SoapMailMessagePart } from '../types';
 
 describe('Normalize message', () => {
-	describe('Truncated mail part', () => {
-		const defaultMailPart = {
+	describe('Truncated mail body part', () => {
+		const defaultBodyPart = {
 			ct: 'text/html',
 			part: '0',
+			body: true,
 			requiresSmartLinkConversion: false
-		};
+		} as SoapMailMessagePart;
 
 		it('should return a message with truncated false if not defined in soap response', () => {
 			const soapIncompleteMessage = generateMessageFromAPI({
-				mp: [defaultMailPart]
+				mp: [defaultBodyPart]
 			});
 
 			const normalizedMessage = normalizeMailMessageFromSoap(soapIncompleteMessage);
 
-			expect(normalizedMessage.parts[0].truncated).toBeFalsy();
+			expect(normalizedMessage.body.truncated).toBeFalsy();
 		});
 
 		it('should return a message with truncated true', () => {
 			const soapIncompleteMessage = generateMessageFromAPI({
-				mp: [{ ...defaultMailPart, truncated: true }]
+				mp: [{ ...defaultBodyPart, truncated: true }]
 			});
 
 			const normalizedMessage = normalizeMailMessageFromSoap(soapIncompleteMessage);
 
-			expect(normalizedMessage.parts[0].truncated).toBeTruthy();
+			expect(normalizedMessage.body.truncated).toBeTruthy();
 		});
 
 		it('should return a message with truncated false', () => {
 			const soapIncompleteMessage = generateMessageFromAPI({
-				mp: [{ ...defaultMailPart, truncated: false }]
+				mp: [{ ...defaultBodyPart, truncated: false }]
 			});
 
 			const normalizedMessage = normalizeMailMessageFromSoap(soapIncompleteMessage);
 
-			expect(normalizedMessage.parts[0].truncated).toBeFalsy();
+			expect(normalizedMessage.body.truncated).toBeFalsy();
 		});
 	});
 });
