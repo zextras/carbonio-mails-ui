@@ -83,7 +83,7 @@ function handleGetMsgResponse(response: GetMsgResponse): void {
 	updateMessages(messages);
 }
 
-function retrieveMessage(messageId: string): void {
+export function retrieveMessage(messageId: string): void {
 	updateMessageStatus(messageId, API_REQUEST_STATUS.pending);
 	getMsgSoapAPI({ msgId: messageId })
 		.then((response) => {

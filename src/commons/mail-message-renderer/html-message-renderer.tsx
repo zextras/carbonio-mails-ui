@@ -7,13 +7,14 @@ import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 're
 
 import { Button, Container, IconButton, MultiButton, Row } from '@zextras/carbonio-design-system';
 import { editSettings, t, useUserSettings } from '@zextras/carbonio-shell-ui';
-import { filter, forEach, isArray, noop, reduce, some } from 'lodash';
+import { filter, forEach, isArray, reduce, some } from 'lodash';
 import { Trans } from 'react-i18next';
 import styled from 'styled-components';
 
 import { WarningBanner } from './warning-banner';
 import { ParticipantRole } from '../../carbonio-ui-commons/constants/participants';
 import { getNoIdentityPlaceholder } from '../../helpers/identities';
+import { retrieveMessage } from '../../store/zustand/search/hooks/hooks';
 import type { BodyPart, MailMessagePart, Participant } from '../../types';
 import { getOriginalHtmlContent, getQuotedTextFromOriginalContent } from '../get-quoted-text-util';
 import { _CI_REGEX, _CI_SRC_REGEX, isAvailableInTrusteeList } from '../utils';
@@ -181,6 +182,9 @@ export const HtmlMessageRenderer: FC<HtmlMessageRendererType> = ({
 			t('warningBanner.truncatedMessage.label', 'The message is too large and has been cropped'),
 		[]
 	);
+	const loadMessage = async (): Promise<void> => {
+		retrieveMessage(msgId);
+	};
 	return (
 		<div ref={divRef} className="force-white-bg" style={{ height: '100%' }}>
 			{showBanner && !showExternalImage && (
@@ -231,7 +235,7 @@ export const HtmlMessageRenderer: FC<HtmlMessageRendererType> = ({
 						type="outlined"
 						label={truncatedWarningButtonLabel}
 						color="warning"
-						onClick={noop}
+						onClick={loadMessage}
 					/>
 				</WarningBanner>
 			)}
