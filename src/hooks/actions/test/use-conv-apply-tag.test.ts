@@ -3,6 +3,8 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import { find, forEach } from 'lodash';
+
 import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
 import { useTags } from '../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
 import { setupHook } from '../../../carbonio-ui-commons/test/test-setup';
@@ -41,7 +43,7 @@ describe('useConvApplyTag', () => {
 	});
 	describe('SubDescriptors', () => {
 		it('Should return a descriptor for every existing tag', () => {
-			useTags.mockReturnValue({
+			const tags = {
 				'1': {
 					id: '1',
 					name: 'tag 1'
@@ -62,15 +64,20 @@ describe('useConvApplyTag', () => {
 					id: '5',
 					name: 'tag 5'
 				}
-			});
+			};
+			useTags.mockReturnValue(tags);
 			const {
-				result: { current: descriptors }
+				result: { current: descriptor }
 			} = setupHook(useConvApplyTagDescriptor, {
 				initialProps: [{ ids: [conv.id], folderId: FOLDERS.INBOX, conversationTags: conv.tags }],
 				store
 			});
 
-			expect(descriptors.items).toHaveLength(5);
+			expect(descriptor.items).toHaveLength(5);
+			forEach(tags, (tag) => {
+				const item = find(descriptor.items, (subDescriptor) => subDescriptor.id === tag.id);
+				expect(item).toBeDefined();
+			});
 		});
 	});
 });
