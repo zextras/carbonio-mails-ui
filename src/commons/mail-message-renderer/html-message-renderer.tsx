@@ -18,7 +18,7 @@ import { getNoIdentityPlaceholder } from '../../helpers/identities';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import { getMsg } from '../../store/actions';
 import { selectMessage } from '../../store/messages-slice';
-import { retrieveMessage } from '../../store/zustand/search/hooks/hooks';
+import { retrieveFullMessage } from '../../store/zustand/search/hooks/hooks';
 import { useMessageById } from '../../store/zustand/search/store';
 import { MailsStateType } from '../../types';
 import { useInSearchModule } from '../../ui-actions/utils';
@@ -194,7 +194,7 @@ export const HtmlMessageRenderer: FC<HtmlMessageRendererType> = ({ msgId }) => {
 	);
 	const loadMessage = async (): Promise<void> => {
 		if (isInSearchModule) {
-			retrieveMessage(msgId);
+			retrieveFullMessage(msgId);
 			return;
 		}
 		dispatch(getMsg({ msgId }));

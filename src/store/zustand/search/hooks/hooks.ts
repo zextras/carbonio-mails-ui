@@ -83,9 +83,12 @@ function handleGetMsgResponse(response: GetMsgResponse): void {
 	updateMessages(messages);
 }
 
-export function retrieveMessage(messageId: string): void {
+function handleRetrieveMessage(
+	messageId: string,
+	apiCall: (id: string) => Promise<GetMsgResponse>
+): void {
 	updateMessageStatus(messageId, API_REQUEST_STATUS.pending);
-	getMsgSoapAPI({ msgId: messageId })
+	apiCall(messageId)
 		.then((response) => {
 			if ('Fault' in response) {
 				updateMessageStatus(messageId, API_REQUEST_STATUS.error);
@@ -97,6 +100,14 @@ export function retrieveMessage(messageId: string): void {
 		.catch(() => {
 			updateMessageStatus(messageId, API_REQUEST_STATUS.error);
 		});
+}
+
+function retrieveMessage(messageId: string): void {
+	handleRetrieveMessage(messageId, (id) => getMsgSoapAPI({ msgId: id, max: 250_000 }));
+}
+
+export function retrieveFullMessage(messageId: string): void {
+	handleRetrieveMessage(messageId, (id) => getMsgSoapAPI({ msgId: id }));
 }
 
 export function useCompleteMessage(messageId: string): MessageWithStatus {
