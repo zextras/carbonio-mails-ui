@@ -126,9 +126,76 @@ describe('HTML message renderer', () => {
 	});
 
 	describe('Mails Module', () => {
+		it('should display banner if body truncated', async () => {
+			const message = generateMessage({ id: '1', body: 'Initial body', truncated: true });
+			const store = generateStore({
+				messages: {
+					messages: { '1': message },
+					searchedInFolder: {},
+					searchRequestStatus: 'fulfilled'
+				}
+			});
+
+			setupTest(<HtmlMessageRenderer msgId={'1'} />, {
+				initialEntries: ['/mails'],
+				store
+			});
+
+			expect(await screen.findByText('warningBanner.truncatedMessage.label')).toBeVisible();
+		});
+
+		it('should not display banner if body not truncated', async () => {
+			const message = generateMessage({ id: '1', body: 'Initial body', truncated: false });
+			const store = generateStore({
+				messages: {
+					messages: { '1': message },
+					searchedInFolder: {},
+					searchRequestStatus: 'fulfilled'
+				}
+			});
+
+			setupTest(<HtmlMessageRenderer msgId={'1'} />, {
+				initialEntries: ['/mails'],
+				store
+			});
+
+			expect(screen.queryByText('warningBanner.truncatedMessage.label')).not.toBeInTheDocument();
+		});
+
+		it('should call GetMsg API when clicking load message', async () => {
+			const message = generateMessage({ id: '1', body: 'Initial body', truncated: true });
+			const store = generateStore({
+				messages: {
+					messages: { '1': message },
+					searchedInFolder: {},
+					searchRequestStatus: 'fulfilled'
+				}
+			});
+			const response: GetMsgResponse = {
+				m: [generateCompleteMessageFromAPI({ id: '1' })]
+			};
+			const interceptor = createSoapAPIInterceptor<GetMsgRequest, GetMsgResponse>(
+				'GetMsg',
+				response
+			);
+
+			const { user } = setupTest(<HtmlMessageRenderer msgId={'1'} />, {
+				initialEntries: ['/mails'],
+				store
+			});
+
+			const loadMessageButton = await screen.findByText('warningBanner.truncatedMessage.button');
+			await act(async () => {
+				await user.click(loadMessageButton);
+			});
+
+			const request = await interceptor;
+			expect(request.m.id).toBe('1');
+			expect(request.m.max).not.toBeDefined();
+		});
+
 		it('should remove message too large banner after clicking load message', async () => {
 			const message = generateMessage({ id: '1', body: 'Initial body', truncated: true });
-
 			const store = generateStore({
 				messages: {
 					messages: { '1': message },
