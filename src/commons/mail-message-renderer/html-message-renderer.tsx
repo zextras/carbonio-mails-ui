@@ -14,8 +14,11 @@ import styled from 'styled-components';
 import { WarningBanner } from './warning-banner';
 import { ParticipantRole } from '../../carbonio-ui-commons/constants/participants';
 import { getNoIdentityPlaceholder } from '../../helpers/identities';
+import { useAppDispatch } from '../../hooks/redux';
+import { getMsg } from '../../store/actions';
 import { retrieveMessage } from '../../store/zustand/search/hooks/hooks';
 import type { BodyPart, MailMessagePart, Participant } from '../../types';
+import { useInSearchModule } from '../../ui-actions/utils';
 import { getOriginalHtmlContent, getQuotedTextFromOriginalContent } from '../get-quoted-text-util';
 import { _CI_REGEX, _CI_SRC_REGEX, isAvailableInTrusteeList } from '../utils';
 
@@ -51,6 +54,8 @@ export const HtmlMessageRenderer: FC<HtmlMessageRendererType> = ({
 }) => {
 	const divRef = useRef<HTMLDivElement>(null);
 	const [showQuotedText, setShowQuotedText] = useState(false);
+	const isInSearchModule = useInSearchModule();
+	const dispatch = useAppDispatch();
 
 	const settingsPref = useUserSettings()?.prefs;
 	const from =
@@ -183,7 +188,11 @@ export const HtmlMessageRenderer: FC<HtmlMessageRendererType> = ({
 		[]
 	);
 	const loadMessage = async (): Promise<void> => {
-		retrieveMessage(msgId);
+		if (isInSearchModule) {
+			retrieveMessage(msgId);
+			return;
+		}
+		dispatch(getMsg({ msgId }));
 	};
 	return (
 		<div ref={divRef} className="force-white-bg" style={{ height: '100%' }}>
