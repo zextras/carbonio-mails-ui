@@ -83,11 +83,17 @@ type PreviewHeaderProps = {
 		open: boolean;
 		isExternalMessage?: boolean;
 		isInsideExtraWindow?: boolean;
-		signed: boolean;
 	};
 	actions: MessageAction[];
 };
 
+
+type SignatureInfo = {
+	signedBy: String;
+	issuer: String;
+	validity: String;
+
+}
 const fallbackContact = {
 	type: ParticipantRole.FROM,
 	address: '',
@@ -96,7 +102,8 @@ const fallbackContact = {
 };
 
 const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps, actions }): ReactElement => {
-	const { message, onClick, open, isExternalMessage, signed } = compProps;
+	const { message, onClick, open, isExternalMessage } = compProps;
+	console.log(message)
 
 	const textRef = useRef<HTMLInputElement>(null);
 	const accounts = useUserAccounts();
@@ -454,7 +461,7 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps, actions }): ReactEle
 				)}
 				
 			</Container>
-			{!signed && (
+			{(
 			<Container
 				orientation="horizontal"
 				padding={{ horizontal: 'small' }}
