@@ -8,42 +8,25 @@ import React, { FC, memo } from 'react';
 import { EmptyBody } from './empty-body';
 import { HtmlMessageRenderer } from './html-message-renderer';
 import { TextMessageRenderer } from './text-message-renderer';
-import type { BodyPart, MailMessagePart, Participant } from '../../types';
+import type { BodyPart } from '../../types';
 
 type MailMessageRendererProps = {
-	parts: MailMessagePart[];
 	body?: BodyPart;
 	id: string;
 	fragment?: string;
-	participants?: Participant[];
-	isInsideExtraWindow?: boolean;
-	showingEml?: boolean;
 };
 
 export const MailMessageRenderer: FC<MailMessageRendererProps> = memo(function MailMessageRenderer({
-	parts,
 	body,
 	id,
-	fragment,
-	participants,
-	isInsideExtraWindow = false,
-	showingEml = false
+	fragment
 }) {
 	if (!body?.content?.length && !fragment) {
 		return <EmptyBody />;
 	}
 
 	if (body?.contentType === 'text/html') {
-		return (
-			<HtmlMessageRenderer
-				msgId={id}
-				body={body}
-				parts={parts}
-				participants={participants}
-				isInsideExtraWindow={isInsideExtraWindow}
-				showingEml={showingEml}
-			/>
-		);
+		return <HtmlMessageRenderer msgId={id} />;
 	}
 	if (body?.contentType === 'text/plain') {
 		return <TextMessageRenderer body={body} />;

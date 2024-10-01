@@ -13,11 +13,14 @@ import styled from 'styled-components';
 
 import { WarningBanner } from './warning-banner';
 import { ParticipantRole } from '../../carbonio-ui-commons/constants/participants';
+import { getAttachmentParts } from '../../helpers/attachments';
 import { getNoIdentityPlaceholder } from '../../helpers/identities';
-import { useAppDispatch } from '../../hooks/redux';
+import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import { getMsg } from '../../store/actions';
+import { selectMessage } from '../../store/messages-slice';
 import { retrieveMessage } from '../../store/zustand/search/hooks/hooks';
-import type { BodyPart, MailMessagePart, Participant } from '../../types';
+import { useMessageById } from '../../store/zustand/search/store';
+import { MailsStateType } from '../../types';
 import { useInSearchModule } from '../../ui-actions/utils';
 import { getOriginalHtmlContent, getQuotedTextFromOriginalContent } from '../get-quoted-text-util';
 import { _CI_REGEX, _CI_SRC_REGEX, isAvailableInTrusteeList } from '../utils';
@@ -39,19 +42,21 @@ const StyledMultiBtn = styled(MultiButton)`
 
 type HtmlMessageRendererType = {
 	msgId: string;
-	body: BodyPart;
-	parts: MailMessagePart[];
-	participants: Participant[] | undefined;
-	isInsideExtraWindow?: boolean;
-	showingEml?: boolean;
 };
 
-export const HtmlMessageRenderer: FC<HtmlMessageRendererType> = ({
-	msgId,
-	body,
-	parts,
-	participants
-}) => {
+export const HtmlMessageRenderer: FC<HtmlMessageRendererType> = ({ msgId }) => {
+	const messageFromReduxStore = useAppSelector((state: MailsStateType) =>
+		selectMessage(state, msgId)
+	);
+	const messageFromSearchStore = useMessageById(msgId);
+	const message = messageFromReduxStore || messageFromSearchStore;
+	const { body, parts: originalParts, participants } = message;
+
+	const parts = useMemo(
+		() => (originalParts ? getAttachmentParts(originalParts) : []),
+		[originalParts]
+	);
+
 	const divRef = useRef<HTMLDivElement>(null);
 	const [showQuotedText, setShowQuotedText] = useState(false);
 	const isInSearchModule = useInSearchModule();

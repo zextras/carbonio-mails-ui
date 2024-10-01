@@ -15,7 +15,6 @@ import {
 import { filter } from 'lodash';
 
 import { MailMessageRenderer } from '../../../../../commons/mail-message-renderer/mail-message-renderer';
-import { getAttachmentParts } from '../../../../../helpers/attachments';
 import { useAppDispatch } from '../../../../../hooks/redux';
 import { useRequestDebouncedMessage } from '../../../../../hooks/use-request-debounced-message';
 import SharedInviteReply from '../../../../../integrations/shared-invite-reply';
@@ -31,15 +30,13 @@ type MailContentProps = {
 	isExternalMessage?: boolean;
 	isInsideExtraWindow?: boolean;
 	openEmlPreview?: OpenEmlPreviewType;
-	showingEml?: boolean;
 };
 export const MailContent = ({
 	message,
 	isMailPreviewOpen,
 	isExternalMessage = false,
 	openEmlPreview,
-	isInsideExtraWindow = false,
-	showingEml = false
+	isInsideExtraWindow = false
 }: MailContentProps): React.JSX.Element => {
 	const [showModal, setShowModal] = useState(true);
 	const dispatch = useAppDispatch();
@@ -123,13 +120,6 @@ export const MailContent = ({
 				? message.invite[0].replies[0].reply[0].ptst
 				: ''
 	};
-
-	const parts = useMemo(
-		() => (message.parts ? getAttachmentParts(message.parts) : []),
-		[message?.parts]
-	);
-
-	const participants = useMemo(() => message?.participants, [message?.participants]);
 	return (
 		<Collapse
 			open={isMailPreviewOpen}
@@ -185,13 +175,9 @@ export const MailContent = ({
 							/>
 						) : (
 							<MailMessageRenderer
-								parts={parts}
 								body={message.body}
 								id={message.id}
 								fragment={message.fragment}
-								participants={participants}
-								isInsideExtraWindow={isInsideExtraWindow}
-								showingEml={showingEml}
 							/>
 						)}
 					</Padding>

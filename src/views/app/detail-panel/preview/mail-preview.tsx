@@ -22,7 +22,6 @@ export type MailPreviewProps = {
 	isMessageView: boolean;
 	isExternalMessage?: boolean;
 	isInsideExtraWindow?: boolean;
-	showingEml?: boolean;
 };
 
 const MailPreview: FC<MailPreviewProps> = ({
@@ -32,8 +31,7 @@ const MailPreview: FC<MailPreviewProps> = ({
 	isAlone,
 	isMessageView,
 	isExternalMessage = false,
-	isInsideExtraWindow = false,
-	showingEml = false
+	isInsideExtraWindow = false
 }) => {
 	const mailContainerRef = useRef<HTMLDivElement>(null);
 	const [open, setOpen] = useState(expanded || isAlone);
@@ -66,7 +64,6 @@ const MailPreview: FC<MailPreviewProps> = ({
 						isMessageView
 						isExternalMessage
 						isInsideExtraWindow
-						showingEml
 					/>
 				),
 				title: emlMessage.subject,
@@ -117,7 +114,6 @@ const MailPreview: FC<MailPreviewProps> = ({
 						openEmlPreview={openEmlPreview}
 						isExternalMessage={isExternalMessage}
 						isInsideExtraWindow={isInsideExtraWindow}
-						showingEml={showingEml}
 					/>
 				)}
 			</Container>
