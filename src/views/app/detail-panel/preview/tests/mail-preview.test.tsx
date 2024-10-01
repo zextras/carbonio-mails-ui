@@ -9,7 +9,7 @@ import React from 'react';
 import { screen } from '@testing-library/react';
 
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
-import { getMsg } from '../../../../../store/actions';
+import { getMsgAsyncThunk } from '../../../../../store/actions';
 import { selectMessage } from '../../../../../store/messages-slice';
 import { generateStore } from '../../../../../tests/generators/store';
 import MailPreview, { MailPreviewProps } from '../mail-preview';
@@ -24,7 +24,7 @@ describe('Mail preview', () => {
 		const msgId = '10';
 
 		// Invoke the fetch of the message and the store update
-		await store.dispatch<any>(getMsg({ msgId }));
+		await store.dispatch<any>(getMsgAsyncThunk({ msgId }));
 		const state = store.getState();
 		const message = selectMessage(state, msgId);
 		const props: MailPreviewProps = {
@@ -53,7 +53,7 @@ describe('Mail preview', () => {
 		const msgId = '11';
 
 		// Invoke the fetch of the message and the store update
-		await store.dispatch<any>(getMsg({ msgId }));
+		await store.dispatch<any>(getMsgAsyncThunk({ msgId }));
 		const state = store.getState();
 		const message = selectMessage(state, msgId);
 		const props: MailPreviewProps = {
@@ -78,7 +78,7 @@ describe('Mail preview', () => {
 		const msgId = '12';
 
 		// Invoke the fetch of the message and the store update
-		await store.dispatch<any>(getMsg({ msgId }));
+		await store.dispatch<any>(getMsgAsyncThunk({ msgId }));
 		const state = store.getState();
 		const message = selectMessage(state, msgId);
 		const props: MailPreviewProps = {

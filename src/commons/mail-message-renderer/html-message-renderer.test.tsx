@@ -83,6 +83,7 @@ describe('HTML message renderer', () => {
 				expect(request.m.id).toBe('1');
 				expect(request.m.max).not.toBeDefined();
 			});
+
 			it('should remove message too large banner after clicking load message', async () => {
 				const store = generateStore();
 				const message = generateMessage({ id: '1', body: 'Initial body', truncated: true });

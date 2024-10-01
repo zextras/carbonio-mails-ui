@@ -9,7 +9,7 @@ import { debounce } from 'lodash';
 
 import { useAppDispatch } from './redux';
 import { DEFAULT_API_DEBOUNCE_TIME } from '../constants';
-import { getMsg } from '../store/actions';
+import { getMsgAsyncThunk } from '../store/actions';
 
 export const useRequestDebouncedMessage = (
 	messageId: string,
@@ -21,7 +21,7 @@ export const useRequestDebouncedMessage = (
 			debounce(
 				() => {
 					if (!isComplete) {
-						dispatch(getMsg({ msgId: messageId }));
+						dispatch(getMsgAsyncThunk({ msgId: messageId }));
 					}
 				},
 				DEFAULT_API_DEBOUNCE_TIME,

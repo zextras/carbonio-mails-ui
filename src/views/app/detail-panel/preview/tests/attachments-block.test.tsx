@@ -11,7 +11,7 @@ import { screen } from '@testing-library/react';
 import { useAppContext } from '../../../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
 import { previewContextMock } from '../../../../../carbonio-ui-commons/test/mocks/carbonio-ui-preview';
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
-import { getMsg } from '../../../../../store/actions';
+import { getMsgAsyncThunk } from '../../../../../store/actions';
 import { selectMessage } from '../../../../../store/messages-slice';
 import { generateStore } from '../../../../../tests/generators/store';
 import AttachmentsBlock from '../attachments-block';
@@ -239,7 +239,7 @@ describe('Attachments visualization', () => {
 		const store = generateStore();
 
 		// Invoke the fetch of the message and the store update
-		await store.dispatch<any>(getMsg({ msgId }));
+		await store.dispatch<any>(getMsgAsyncThunk({ msgId }));
 		const state = store.getState();
 		const message = selectMessage(state, msgId);
 
@@ -290,7 +290,7 @@ describe('Attachment actions visualization', () => {
 			const store = generateStore();
 
 			// Invoke the fetch of the message and the store update
-			store.dispatch<any>(getMsg({ msgId }));
+			store.dispatch<any>(getMsgAsyncThunk({ msgId }));
 			// await store.dispatch(getMsg({ msgId }));
 			const state = store.getState();
 			const message = selectMessage(state, msgId);

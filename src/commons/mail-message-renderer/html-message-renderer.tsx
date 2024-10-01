@@ -16,7 +16,7 @@ import { ParticipantRole } from '../../carbonio-ui-commons/constants/participant
 import { getAttachmentParts } from '../../helpers/attachments';
 import { getNoIdentityPlaceholder } from '../../helpers/identities';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux';
-import { getMsg } from '../../store/actions';
+import { getFullMsgAsyncThunk } from '../../store/actions';
 import { selectMessage } from '../../store/messages-slice';
 import { retrieveFullMessage } from '../../store/zustand/search/hooks/hooks';
 import { useMessageById } from '../../store/zustand/search/store';
@@ -197,7 +197,7 @@ export const HtmlMessageRenderer: FC<HtmlMessageRendererType> = ({ msgId }) => {
 			retrieveFullMessage(msgId);
 			return;
 		}
-		dispatch(getMsg({ msgId }));
+		dispatch(getFullMsgAsyncThunk({ msgId }));
 	};
 	return (
 		<div ref={divRef} className="force-white-bg" style={{ height: '100%' }}>

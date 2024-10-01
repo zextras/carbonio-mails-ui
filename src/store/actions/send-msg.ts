@@ -7,7 +7,7 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import { soapFetch } from '@zextras/carbonio-shell-ui';
 
 import { getConv } from './get-conv';
-import { getMsg } from './get-msg';
+import { getMsgAsyncThunk } from './get-msg-async-thunk';
 import { ParticipantRole } from '../../carbonio-ui-commons/constants/participants';
 import { getAddressOwnerAccount, getIdentityDescriptor } from '../../helpers/identities';
 import { getParticipantsFromMessage } from '../../helpers/messages';
@@ -46,7 +46,7 @@ export const sendMsg = createAsyncThunk<any, { msg: MailMessage }>(
 		}
 
 		if (response?.m && response?.m[0]?.id) {
-			dispatch(getMsg({ msgId: response.m[0].id }));
+			dispatch(getMsgAsyncThunk({ msgId: response.m[0].id }));
 		}
 		if (response?.m && response?.m[0]?.cid) {
 			dispatch(getConv({ conversationId: response.m[0].cid }));
@@ -90,7 +90,7 @@ export const sendMsgFromEditor = createAsyncThunk<SendMsgResult, SendMsgParamete
 			return rejectWithValue(response);
 		}
 		if (response?.m && response?.m[0]?.id) {
-			dispatch(getMsg({ msgId: response.m[0].id }));
+			dispatch(getMsgAsyncThunk({ msgId: response.m[0].id }));
 		}
 		if (response?.m && response?.m[0]?.cid) {
 			dispatch(getConv({ conversationId: response.m[0].cid }));
