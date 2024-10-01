@@ -43,7 +43,7 @@ describe('HTML message renderer', () => {
 
 		it('should call GetMsg API when clicking load message', async () => {
 			const response: GetMsgResponse = {
-				m: [generateCompleteMessageFromAPI({ id: '10' })]
+				m: [generateCompleteMessageFromAPI({ id: '1' })]
 			};
 			const interceptor = createSoapAPIInterceptor<GetMsgRequest, GetMsgResponse>(
 				'GetMsg',
@@ -75,7 +75,7 @@ describe('HTML message renderer', () => {
 		const interceptor = createSoapAPIInterceptor<GetMsgRequest, GetMsgResponse>('GetMsg', {
 			m: [
 				generateCompleteMessageFromAPI({
-					id: '10',
+					id: '1',
 					mp: [
 						{
 							ct: 'text/html',
@@ -108,7 +108,5 @@ describe('HTML message renderer', () => {
 		await waitFor(() => {
 			expect(result.current.body.content).toBe('Updated content');
 		});
-
-		// expect(result.current.body.truncated).toBeFalsy();
 	});
 });
