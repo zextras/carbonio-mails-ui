@@ -59,11 +59,10 @@ describe('App', () => {
 
 	beforeEach(() => {
 		createAPIInterceptor('get', 'zx/login/v3/account', HttpResponse.json({}));
-		createSoapAPIInterceptor('GetFolder', HttpResponse.json(generateFolder({ name: 'Inbox' })));
-		createSoapAPIInterceptor(
-			'GetShareInfo',
-			HttpResponse.json({ result: { share: [{ folderId: 1 }] } })
-		);
+		createSoapAPIInterceptor('GetFolder', {
+			folder: [generateFolder({ name: 'Inbox' })]
+		});
+		createSoapAPIInterceptor('GetShareInfo', { result: { share: [] } });
 		jest.clearAllMocks();
 	});
 
