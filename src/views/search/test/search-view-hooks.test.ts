@@ -360,7 +360,7 @@ describe('useLoadMore', () => {
 		);
 		renderHook(() => result.current());
 		expect(loadingMore.current).toBe(false);
-		expect(mockedSearch).not.toBeCalled();
+		expect(mockedSearch).not.toHaveBeenCalled();
 	});
 
 	it('should not call the API if loadingMore is true', async () => {
@@ -378,6 +378,6 @@ describe('useLoadMore', () => {
 		);
 		renderHook(() => result.current());
 		expect(loadingMore.current).toBe(true);
-		expect(mockedSearch).not.toBeCalled();
+		expect(mockedSearch).not.toHaveBeenCalled();
 	});
 });

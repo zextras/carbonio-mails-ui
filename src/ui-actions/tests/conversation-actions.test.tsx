@@ -360,7 +360,7 @@ describe('Conversation actions calls', () => {
 			});
 
 			await waitFor(() => {
-				expect(spyReplaceHistory).toBeCalledWith('/');
+				expect(spyReplaceHistory).toHaveBeenCalledWith('/');
 			});
 		});
 		test('when path is not search it should reroute to /folder/conversation', async () => {
@@ -404,7 +404,7 @@ describe('Conversation actions calls', () => {
 			});
 
 			await waitFor(() => {
-				expect(spyReplaceHistory).toBeCalledWith('/folder/1');
+				expect(spyReplaceHistory).toHaveBeenCalledWith('/folder/1');
 			});
 		});
 	});
@@ -700,7 +700,7 @@ describe('Conversation actions calls', () => {
 		const msgIds = conv.messages.map<string>((msg) => msg.id);
 		// Check that the getMsgsForPrint and the window.oepn functions are called
 		expect(printGeneratorMock).toHaveBeenCalledWith(expect.objectContaining({ ids: msgIds }));
-		expect(window.open).toBeCalled();
+		expect(window.open).toHaveBeenCalled();
 	});
 
 	describe('Move to trash action', () => {
@@ -823,7 +823,7 @@ describe('Conversation actions calls', () => {
 
 			await apiInterceptor;
 			await waitFor(() => {
-				expect(spyReplaceHistory).not.toBeCalled();
+				expect(spyReplaceHistory).not.toHaveBeenCalled();
 			});
 		});
 
@@ -857,7 +857,7 @@ describe('Conversation actions calls', () => {
 
 			await apiInterceptor;
 			await waitFor(() => {
-				expect(spyReplaceHistory).toBeCalledWith(`/folder/${FOLDERS.TRASH}/`);
+				expect(spyReplaceHistory).toHaveBeenCalledWith(`/folder/${FOLDERS.TRASH}/`);
 			});
 		});
 	});

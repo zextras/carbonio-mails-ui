@@ -5,10 +5,11 @@
  */
 import React, { useCallback, useMemo, useState } from 'react';
 
+import { within } from '@testing-library/react';
 import * as shell from '@zextras/carbonio-shell-ui';
 import { times } from 'lodash';
 
-import { screen, setupTest, within } from '../../../carbonio-ui-commons/test/test-setup';
+import { screen, setupTest } from '../../../carbonio-ui-commons/test/test-setup';
 import { TESTID_SELECTORS } from '../../../tests/constants';
 import { buildSignature } from '../../../tests/generators/signatures';
 import { handleGetSignaturesRequest } from '../../../tests/mocks/network/msw/handle-get-signatures';

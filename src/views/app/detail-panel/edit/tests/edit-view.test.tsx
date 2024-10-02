@@ -349,7 +349,7 @@ describe('Edit view', () => {
 			await act(async () => {
 				jest.advanceTimersByTime(5_000);
 			});
-			expect(mockedSaveDraft).not.toBeCalled();
+			expect(mockedSaveDraft).not.toHaveBeenCalled();
 		});
 
 		it('is autosaved on initialization if draft id is not present', async () => {

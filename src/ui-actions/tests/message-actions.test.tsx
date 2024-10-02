@@ -554,7 +554,10 @@ describe('Messages actions calls', () => {
 		});
 
 		// Check that the getMsgsForPrint and the window.oepn functions are called
-		expect(window.open).toBeCalledWith(`/service/home/~/?auth=co&view=text&id=${msg.id}`, '_blank');
+		expect(window.open).toHaveBeenCalledWith(
+			`/service/home/~/?auth=co&view=text&id=${msg.id}`,
+			'_blank'
+		);
 	});
 
 	describe('Move to trash action', () => {
@@ -695,7 +698,7 @@ describe('Messages actions calls', () => {
 
 			await apiInterceptor;
 			await waitFor(() => {
-				expect(spyReplaceHistory).toBeCalledWith(`/folder/${FOLDERS.TRASH}`);
+				expect(spyReplaceHistory).toHaveBeenCalledWith(`/folder/${FOLDERS.TRASH}`);
 			});
 		});
 	});
@@ -928,7 +931,7 @@ describe('Messages actions calls', () => {
 			action.onClick();
 		});
 
-		expect(addBoard).toBeCalledWith(
+		expect(addBoard).toHaveBeenCalledWith(
 			expect.objectContaining({
 				boardViewId: 'mails_editor_board_view',
 				context: {
@@ -961,7 +964,7 @@ describe('Messages actions calls', () => {
 			action.onClick();
 		});
 
-		expect(addBoard).toBeCalledWith(
+		expect(addBoard).toHaveBeenCalledWith(
 			expect.objectContaining({
 				boardViewId: 'mails_editor_board_view',
 				context: {
@@ -992,7 +995,7 @@ describe('Messages actions calls', () => {
 			action.onClick();
 		});
 
-		expect(addBoard).toBeCalledWith(
+		expect(addBoard).toHaveBeenCalledWith(
 			expect.objectContaining({
 				boardViewId: 'mails_editor_board_view',
 				context: {
@@ -1026,7 +1029,7 @@ describe('Messages actions calls', () => {
 			action.onClick();
 		});
 
-		expect(addBoard).toBeCalledWith(
+		expect(addBoard).toHaveBeenCalledWith(
 			expect.objectContaining({
 				boardViewId: 'mails_editor_board_view',
 				context: {
@@ -1057,7 +1060,7 @@ describe('Messages actions calls', () => {
 			action.onClick();
 		});
 
-		expect(addBoard).toBeCalledWith(
+		expect(addBoard).toHaveBeenCalledWith(
 			expect.objectContaining({
 				boardViewId: 'mails_editor_board_view',
 				context: {

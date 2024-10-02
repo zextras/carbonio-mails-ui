@@ -212,7 +212,7 @@ describe('updateQueryChips', () => {
 
 		updateQueryChips(query, isInvalidQuery, updateQuery);
 
-		expect(updateQuery).toBeCalledWith([
+		expect(updateQuery).toHaveBeenCalledWith([
 			{
 				avatarBackground: 'gray1',
 				avatarIcon: 'AttachOutline',

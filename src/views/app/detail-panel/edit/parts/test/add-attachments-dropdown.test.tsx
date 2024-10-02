@@ -69,7 +69,7 @@ describe('AddAttachmentsDropdown', () => {
 		const editor = generateNewMessageEditor(generateStore().dispatch);
 		setupEditorStore({ editors: [editor] });
 		setupTest(<AddAttachmentsDropdown editorId={editor.id} />);
-		expect(screen.getByTestId(TESTID_SELECTORS.icons.attachmentDropdown)).toBeVisible(();
+		expect(screen.getByTestId(TESTID_SELECTORS.icons.attachmentDropdown)).toBeVisible();
 	});
 
 	it('should render a dropdown if the user clicks on the icon', async () => {

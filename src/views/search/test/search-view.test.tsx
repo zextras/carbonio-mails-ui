@@ -257,7 +257,7 @@ describe('SearchView', () => {
 			await act(async () => {
 				await user.click(clickableConversation);
 			});
-			expect(spyPushHistory).toBeCalledWith('conversation/123');
+			expect(spyPushHistory).toHaveBeenCalledWith('conversation/123');
 		});
 
 		it('should display conversation as selected when user clicks on avatar', async () => {
@@ -539,7 +539,7 @@ describe('SearchView', () => {
 		});
 		expect(advancedFiltersButton).toBeVisible();
 		expect(advancedFiltersButton).toBeEnabled();
-		expect(spySearch).not.toBeCalled();
+		expect(spySearch).not.toHaveBeenCalled();
 	});
 
 	it('should call setSearchDisabled button if Search API fails with mail.QUERY_PARSE_ERROR', async () => {
@@ -568,7 +568,7 @@ describe('SearchView', () => {
 			store
 		});
 		await interceptor;
-		await waitFor(() => expect(setSearchDisabled).toBeCalled());
+		await waitFor(() => expect(setSearchDisabled).toHaveBeenCalled());
 	});
 
 	it('should not call setSearchDisabled button if Search API fails with another error', async () => {
@@ -602,7 +602,7 @@ describe('SearchView', () => {
 			jest.advanceTimersByTime(10_000);
 		});
 
-		expect(setSearchDisabled).not.toBeCalled();
+		expect(setSearchDisabled).not.toHaveBeenCalled();
 	});
 
 	it('should route to message panel when clicking message in list', async () => {
@@ -656,6 +656,6 @@ describe('SearchView', () => {
 		await act(async () => {
 			await user.click(clickableMessage);
 		});
-		expect(spyReplaceHistory).toBeCalledWith('/message/10');
+		expect(spyReplaceHistory).toHaveBeenCalledWith('/message/10');
 	});
 });
