@@ -5,6 +5,7 @@
  */
 import React from 'react';
 
+import { JSNS } from '@zextras/carbonio-shell-ui';
 import * as shellUi from '@zextras/carbonio-shell-ui';
 import { HttpResponse } from 'msw';
 import { act } from 'react-dom/test-utils';
@@ -13,6 +14,11 @@ import App from './app';
 import * as addComponentsToShell from './app-utils/add-shell-components';
 import * as registerShellActions from './app-utils/register-shell-actions';
 import * as registerShellIntegrations from './app-utils/register-shell-integrations';
+import {
+	GetShareInfoRequest,
+	GetShareInfoResponse
+} from './carbonio-ui-commons/soap/get-share-info';
+import { generateFolder } from './carbonio-ui-commons/test/mocks/folders/folders-generator';
 import {
 	createAPIInterceptor,
 	createSoapAPIInterceptor
@@ -58,7 +64,13 @@ describe('App', () => {
 
 	beforeEach(() => {
 		createAPIInterceptor('get', 'zx/login/v3/account', HttpResponse.json({}));
-		createSoapAPIInterceptor('GetFolder', HttpResponse.json({}));
+		createSoapAPIInterceptor('GetFolder', {
+			folder: [{}]
+		});
+		createSoapAPIInterceptor<GetShareInfoRequest, GetShareInfoResponse>('GetShareInfo', {
+			_jsns: JSNS.account,
+			share: [generateFolder()]
+		});
 		jest.clearAllMocks();
 	});
 
