@@ -124,6 +124,27 @@ describe('HTML message renderer', () => {
 				});
 			});
 		});
+		it('should display empty fragment when message is set only mails store', () => {
+			const messageBody = 'Initial body';
+			const message = generateMessage({
+				id: '1',
+				body: messageBody,
+				truncated: true
+			});
+			const store = generateStore({
+				messages: {
+					messages: { '1': message },
+					searchedInFolder: {},
+					searchRequestStatus: 'fulfilled'
+				}
+			});
+
+			setupTest(<HtmlMessageRenderer msgId={'1'} />, {
+				initialEntries: ['/search'],
+				store
+			});
+			expect(screen.queryByText(messageBody)).not.toBeInTheDocument();
+		});
 	});
 
 	describe('Mails Module', () => {

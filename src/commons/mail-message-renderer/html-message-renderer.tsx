@@ -20,7 +20,7 @@ import { getFullMsgAsyncThunk } from '../../store/actions';
 import { selectMessage } from '../../store/messages-slice';
 import { retrieveFullMessage } from '../../store/zustand/search/hooks/hooks';
 import { useMessageById } from '../../store/zustand/search/store';
-import { MailsStateType } from '../../types';
+import { BodyPart, MailsStateType } from '../../types';
 import { useInSearchModule } from '../../ui-actions/utils';
 import { getOriginalHtmlContent, getQuotedTextFromOriginalContent } from '../get-quoted-text-util';
 import { _CI_REGEX, _CI_SRC_REGEX, isAvailableInTrusteeList } from '../utils';
@@ -45,21 +45,27 @@ type HtmlMessageRendererType = {
 };
 
 export const HtmlMessageRenderer: FC<HtmlMessageRendererType> = ({ msgId }) => {
+	const isInSearchModule = useInSearchModule();
 	const messageFromReduxStore = useAppSelector((state: MailsStateType) =>
 		selectMessage(state, msgId)
 	);
 	const messageFromSearchStore = useMessageById(msgId);
-	const message = messageFromReduxStore || messageFromSearchStore;
-	const { body, parts: originalParts, participants } = message;
+	const message = isInSearchModule ? messageFromSearchStore : messageFromReduxStore;
+	const body: BodyPart = message?.body ?? {
+		content: '',
+		truncated: false
+	};
+	const bodyContent = body.content;
+	const participants = message?.participants ?? [];
 
-	const parts = useMemo(
-		() => (originalParts ? getAttachmentParts(originalParts) : []),
-		[originalParts]
-	);
+	const parts = useMemo(() => {
+		const originalParts = message?.parts ?? [];
+		return originalParts ? getAttachmentParts(originalParts) : [];
+	}, [message]);
 
 	const divRef = useRef<HTMLDivElement>(null);
 	const [showQuotedText, setShowQuotedText] = useState(false);
-	const isInSearchModule = useInSearchModule();
+
 	const dispatch = useAppDispatch();
 
 	const settingsPref = useUserSettings()?.prefs;
@@ -68,12 +74,12 @@ export const HtmlMessageRenderer: FC<HtmlMessageRendererType> = ({ msgId }) => {
 	const domain = from?.substring(from.lastIndexOf('@') + 1);
 	const [showExternalImage, setShowExternalImage] = useState(false);
 	const [displayBanner, setDisplayBanner] = useState(true);
-	const originalContent = getOriginalHtmlContent(body.content);
-	const quoted = getQuotedTextFromOriginalContent(body.content, originalContent);
+	const originalContent = getOriginalHtmlContent(bodyContent);
+	const quoted = getQuotedTextFromOriginalContent(bodyContent, originalContent);
 
 	const contentToDisplay = useMemo(
-		() => (showQuotedText ? body.content : originalContent),
-		[showQuotedText, body.content, originalContent]
+		() => (showQuotedText ? bodyContent : originalContent),
+		[showQuotedText, bodyContent, originalContent]
 	);
 
 	const parser = new DOMParser();
