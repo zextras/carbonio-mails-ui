@@ -65,13 +65,13 @@ export const SearchMessageListItem: FC<SearchMessageListItemProps> = memo(functi
 }) {
 	const completeMessage = useMessageById(itemId);
 	const folderId = completeMessage.parent;
-	const { itemId: messageId } = useParams<{ itemId: string }>();
+	const { itemId: messageId } = useParams<{ itemId: string | undefined }>();
 
 	const shouldReplaceHistory = useMemo(() => itemId === messageId, [messageId, itemId]);
 
 	const messagePreviewFactory = useCallback(
-		() => <SearchMessagePanel messageId={messageId} />,
-		[messageId]
+		() => <SearchMessagePanel messageId={itemId} />,
+		[itemId]
 	);
 
 	const zimbraPrefMarkMsgRead = useUserSettings()?.prefs?.zimbraPrefMarkMsgRead !== '-1';

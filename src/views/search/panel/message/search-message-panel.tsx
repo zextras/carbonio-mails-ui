@@ -20,8 +20,8 @@ export const SearchMessagePanel = ({ messageId }: { messageId: string }): React.
 	const { isInsideExtraWindow } = useExtraWindow();
 
 	const messagePreviewFactory = useCallback(
-		() => <SearchMessagePanel messageId={message.id} />,
-		[message.id]
+		() => <SearchMessagePanel messageId={messageId} />,
+		[messageId]
 	);
 
 	if (!message) {
