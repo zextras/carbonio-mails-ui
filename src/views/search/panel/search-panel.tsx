@@ -44,9 +44,10 @@ const SearchPanel: FC<SearchPanelProps> = ({ searchResults }) => {
 			<Route path={`${path}/conversation/:conversationId`}>
 				<SearchConversationPanel />
 			</Route>
-			<Route path={`${path}/message/:messageId`}>
-				<SearchMessagePanel />
-			</Route>
+			<Route
+				path={`${path}/message/:messageId`}
+				render={(props) => <SearchMessagePanel messageId={props.match.params.messageId} />}
+			></Route>
 			<Route path={path}>
 				<Container background="gray5">
 					<Padding all="medium">
