@@ -1,3 +1,6 @@
+/* eslint-disable sonarjs/no-duplicate-string */
+// noinspection DuplicatedCode
+
 /*
  * SPDX-FileCopyrightText: 2022 Zextras <https://www.zextras.com>
  *
@@ -331,4 +334,40 @@ describe('Attachment actions visualization', () => {
 			});
 		}
 	);
+});
+
+describe('Attachment link validation', () => {
+	test('preview is available, should call image preview endpoint when content type is image/tiff', async () => {
+		useAppContext.mockReturnValue({ servicesCatalog: ['carbonio-preview'] });
+		const store = generateStore();
+		const messageAttachments = [
+			{
+				cd: 'attachment',
+				name: 'test',
+				filename: 'image.tiff',
+				size: 12345,
+				contentType: 'image/tiff',
+				requiresSmartLinkConversion: false
+			} as const
+		];
+		const { user } = setupTest(
+			<AttachmentsBlock
+				messageId={'1'}
+				messageSubject={'test'}
+				messageAttachments={messageAttachments}
+			/>,
+			{ store }
+		);
+
+		await user.hover(screen.getByText('image.tiff'));
+		expect(await screen.findByText('Click to preview')).toBeVisible();
+
+		await user.click(screen.getByText('image.tiff'));
+		expect(previewContextMock.createPreview).toHaveBeenCalledTimes(1);
+
+		const createPreviewParam = previewContextMock.createPreview.mock.calls[0][0];
+		expect(createPreviewParam.src).toBe(
+			'http://localhost/service/preview/image/1/test/0x0/?quality=high'
+		);
+	});
 });

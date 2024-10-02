@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useMemo } from 'react';
+import React, { FC, useMemo } from 'react';
 
 import {
 	Container,
@@ -20,36 +20,31 @@ import { useParams } from 'react-router-dom';
 import PreviewHeader from './preview-header';
 import { FOLDERS } from '../../../../../carbonio-ui-commons/constants/folders';
 import { getFolderIdParts } from '../../../../../carbonio-ui-commons/helpers/folders';
-import { MessageActionsDescriptors } from '../../../../../constants';
-import { MailMessage, MessageAction } from '../../../../../types';
-import { findMessageActionById } from '../../../../../ui-actions/utils';
+import { useMsgSetNotSpamFn } from '../../../../../hooks/actions/use-msg-set-not-spam';
+import { MailMessage } from '../../../../../types';
 
 type MailPreviewBlockType = {
 	message: MailMessage;
 	open: boolean;
 	onClick: () => void;
-	messageActions: Array<MessageAction>;
 	isExternalMessage?: boolean;
-	isInsideExtraWindow?: boolean;
+	messagePreviewFactory: () => React.JSX.Element;
 };
-export const MailPreviewBlock = ({
+export const MailPreviewBlock: FC<MailPreviewBlockType> = ({
 	message,
 	open,
 	onClick,
-	messageActions,
 	isExternalMessage = false,
-	isInsideExtraWindow = false
-}: MailPreviewBlockType): React.JSX.Element => {
-	const { folderId } = useParams<{ folderId: string }>();
+	messagePreviewFactory
+}) => {
+	const { folderId, itemId } = useParams<{ folderId: string; itemId: string }>();
 	const compProps = useMemo(
-		() => ({ message, onClick, open, isExternalMessage, isInsideExtraWindow }),
-		[message, onClick, open, isExternalMessage, isInsideExtraWindow]
+		() => ({ message, onClick, open, isExternalMessage, messagePreviewFactory }),
+		[message, onClick, open, isExternalMessage, messagePreviewFactory]
 	);
-	const markAsNotSpam = findMessageActionById(
-		messageActions,
-		MessageActionsDescriptors.MARK_AS_NOT_SPAM.id
-	);
+	const shouldReplaceHistory = useMemo(() => itemId === message.id, [message.id, itemId]);
 
+	const { execute } = useMsgSetNotSpamFn({ ids: [message.id], folderId, shouldReplaceHistory });
 	return (
 		<>
 			{getFolderIdParts(folderId).id === FOLDERS.SPAM && (
@@ -73,7 +68,7 @@ export const MailPreviewBlock = ({
 								type="ghost"
 								label={t('action.mark_as_non_spam', 'Not Spam')}
 								color="primary"
-								onClick={markAsNotSpam}
+								onClick={execute}
 							/>
 						</Row>
 					</Container>
@@ -81,7 +76,7 @@ export const MailPreviewBlock = ({
 			)}
 			{message && (
 				<Row width="fill">
-					<PreviewHeader compProps={compProps} actions={messageActions} />
+					<PreviewHeader compProps={compProps} />
 				</Row>
 			)}
 

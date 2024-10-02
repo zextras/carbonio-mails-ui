@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, ReactElement, useEffect, useMemo, useState } from 'react';
+import React, { FC, ReactElement, useMemo, useState } from 'react';
 
 import {
 	Button,
@@ -16,7 +16,7 @@ import {
 	Text
 } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
-import styled from 'styled-components';
+import styled, { DefaultTheme } from 'styled-components';
 
 import LabelRow from './parts/label-row';
 import ResponseActions from './parts/response-actions';
@@ -26,27 +26,21 @@ import { useAppDispatch } from '../../hooks/redux';
 import type { MailMessage } from '../../types';
 
 const InviteContainer = styled(Container)`
-	border: 0.0625rem solid ${({ theme }: any): string => theme.palette.gray2.regular};
+	border: 0.0625rem solid
+		${({ theme }: { theme: DefaultTheme }): string => theme.palette.gray2.regular};
 	border-radius: 0.875rem;
-	margin: ${({ theme }: any): string => theme.sizes.padding.extrasmall};
+	margin: ${({ theme }: { theme: DefaultTheme }): string => theme.sizes.padding.extrasmall};
 `;
 
 type SharedCalendarResponseReturnType = {
 	sharedContent: string;
 	mailMsg: MailMessage;
-	onLoadChange?: () => void;
 };
 
 const SharedCalendarResponse: FC<SharedCalendarResponseReturnType> = ({
 	sharedContent,
-	mailMsg,
-	onLoadChange
+	mailMsg
 }): ReactElement => {
-	useEffect(() => {
-		if (mailMsg.read === 'false') {
-			onLoadChange && onLoadChange();
-		}
-	}, [mailMsg.read, onLoadChange]);
 	const dispatch = useAppDispatch();
 
 	const rights = useMemo(

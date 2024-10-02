@@ -32,7 +32,7 @@ describe('Mail preview', () => {
 			expanded: true,
 			isAlone: true,
 			isMessageView: true,
-			messageActions: []
+			messagePreviewFactory: () => <></>
 		};
 
 		// Render the component
@@ -61,7 +61,7 @@ describe('Mail preview', () => {
 			expanded: true,
 			isAlone: true,
 			isMessageView: true,
-			messageActions: []
+			messagePreviewFactory: () => <></>
 		};
 
 		// Render the component
@@ -86,7 +86,7 @@ describe('Mail preview', () => {
 			expanded: true,
 			isAlone: true,
 			isMessageView: true,
-			messageActions: []
+			messagePreviewFactory: () => <></>
 		};
 
 		// Render the component

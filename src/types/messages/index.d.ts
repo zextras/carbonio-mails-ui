@@ -13,7 +13,7 @@ export type IncompleteMessage = {
 	did?: string;
 	parent: string;
 	conversation: string;
-	read: boolean | string;
+	read: boolean;
 	size: number;
 	hasAttachment: boolean;
 	flagged: boolean;

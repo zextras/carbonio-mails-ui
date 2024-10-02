@@ -34,7 +34,9 @@ export const getAttachmentsLink = ({
 			','
 		)}&disp=a&fmt=zip`;
 	}
-	if (includes(['image/gif', 'image/png', 'image/jpeg', 'image/jpg'], attachmentType)) {
+	if (
+		includes(['image/gif', 'image/png', 'image/jpeg', 'image/jpg', 'image/tiff'], attachmentType)
+	) {
 		return `${getLocationOrigin()}/service/preview/image/${messageId}/${
 			attachments[0]
 		}/0x0/?quality=high`;
