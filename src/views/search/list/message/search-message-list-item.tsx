@@ -240,6 +240,7 @@ export const SearchMessageListItem: FC<SearchMessageListItemProps> = memo(functi
 				onDoubleClick={onDoubleClick}
 				deselectAll={deselectAll}
 				shouldReplaceHistory={shouldReplaceHistory}
+				messagePreviewFactory={messagePreviewFactory}
 			>
 				<div
 					style={{ alignSelf: 'center' }}

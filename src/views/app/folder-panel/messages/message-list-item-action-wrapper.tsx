@@ -3,30 +3,20 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { ReactNode, useCallback, useMemo } from 'react';
+import React, { ReactNode, useMemo } from 'react';
 
 import { ContainerProps } from '@zextras/carbonio-design-system';
 
 import { normalizeDropdownActionItem } from '../../../../helpers/actions';
-import { getParentFolderId } from '../../../../helpers/folders';
 import { useMsgActions } from '../../../../hooks/actions/use-msg-actions';
 import { useTagDropdownItem } from '../../../../hooks/use-tag-dropdown-item';
 import { MailMessage } from '../../../../types';
-import { MessagePreviewPanel } from '../../detail-panel/message-preview-panel';
 import { HoverBarContainer } from '../parts/hover-bar-container';
 import { HoverContainer } from '../parts/hover-container';
 import { ListItemDropdownAction } from '../parts/list-item-dropdown-action';
 import { ListItemHoverActions } from '../parts/list-item-hover-actions';
 
-export const MessageListItemActionWrapper = ({
-	item,
-	active,
-	onClick,
-	onDoubleClick,
-	deselectAll,
-	shouldReplaceHistory,
-	children
-}: {
+type MessageListItemActionWrapperProps = {
 	children?: ReactNode;
 	onClick?: ContainerProps['onClick'];
 	onDoubleClick?: ContainerProps['onDoubleClick'];
@@ -34,12 +24,18 @@ export const MessageListItemActionWrapper = ({
 	active?: boolean;
 	item: MailMessage;
 	deselectAll: () => void;
-}): React.JSX.Element => {
-	const messagePreviewFactory = useCallback(() => {
-		const folderId = getParentFolderId(item.parent);
-		return <MessagePreviewPanel folderId={folderId} messageId={item.id} />;
-	}, [item.id, item.parent]);
-
+	messagePreviewFactory: () => React.JSX.Element;
+};
+export const MessageListItemActionWrapper = ({
+	item,
+	active,
+	onClick,
+	onDoubleClick,
+	deselectAll,
+	shouldReplaceHistory,
+	children,
+	messagePreviewFactory
+}: MessageListItemActionWrapperProps): React.JSX.Element => {
 	const {
 		replyDescriptor,
 		replyAllDescriptor,
