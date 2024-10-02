@@ -3,13 +3,14 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC } from 'react';
+import React, { FC, useCallback } from 'react';
 
 import { Padding } from '@zextras/carbonio-design-system';
 
+import { MessagePreviewPanel } from './message-preview-panel';
 import MailPreview from './preview/mail-preview';
+import { getParentFolderId } from '../../../helpers/folders';
 import { useAppSelector } from '../../../hooks/redux';
-import { useMessageActions } from '../../../hooks/use-message-actions';
 import { selectMessage } from '../../../store/messages-slice';
 import { useMessageById } from '../../../store/zustand/search/store';
 import { ConvMessage, MailsStateType } from '../../../types';
@@ -32,7 +33,11 @@ export const ConversationMessagePreview: FC<ConversationMessagePreviewProps> = (
 	);
 	const messageFromSearchStore = useMessageById(convMessage.id);
 	const message = messageFromReduxStore || messageFromSearchStore;
-	const messageActions = useMessageActions({ message, isAlone });
+
+	const messagePreviewFactory = useCallback(() => {
+		const folderId = getParentFolderId(message.parent);
+		return <MessagePreviewPanel folderId={folderId} messageId={message.id} />;
+	}, [message.id, message.parent]);
 
 	return (
 		<Padding
@@ -45,9 +50,9 @@ export const ConversationMessagePreview: FC<ConversationMessagePreviewProps> = (
 				message={message}
 				expanded={isExpanded}
 				isAlone={isAlone}
-				messageActions={messageActions}
 				isMessageView={false}
 				isInsideExtraWindow={isInsideExtraWindow}
+				messagePreviewFactory={messagePreviewFactory}
 			/>
 		</Padding>
 	);

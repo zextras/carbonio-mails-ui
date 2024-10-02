@@ -3,19 +3,16 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC } from 'react';
+import React, { FC, useCallback } from 'react';
 
 import { Container, Padding, Shimmer } from '@zextras/carbonio-design-system';
-import { replaceHistory, useAppContext } from '@zextras/carbonio-shell-ui';
-import { uniqBy } from 'lodash';
+import { replaceHistory } from '@zextras/carbonio-shell-ui';
 import { useParams } from 'react-router-dom';
 
-import { API_REQUEST_STATUS, EXTRA_WINDOW_ACTION_ID } from '../../../../constants';
-import { useMessageActions } from '../../../../hooks/use-message-actions';
-import { useSelection } from '../../../../hooks/use-selection';
+import { API_REQUEST_STATUS } from '../../../../constants';
+import { getParentFolderId } from '../../../../helpers/folders';
 import { useCompleteMessage } from '../../../../store/zustand/search/hooks/hooks';
-import { AppContext, MessageAction } from '../../../../types';
-import { useMsgConvActions } from '../../../../ui-actions/use-msg-conv-actions';
+import { MessagePreviewPanel } from '../../../app/detail-panel/message-preview-panel';
 import MailPreview from '../../../app/detail-panel/preview/mail-preview';
 import { useExtraWindow } from '../../../app/extra-windows/use-extra-window';
 import { SearchPreviewPanelHeader } from '../../preview/search-preview-panel-header';
@@ -23,26 +20,13 @@ import { SearchPreviewPanelHeader } from '../../preview/search-preview-panel-hea
 export const SearchMessagePanel: FC = () => {
 	const { messageId } = useParams<{ messageId: string }>();
 	const { message, messageStatus } = useCompleteMessage(messageId);
-	const { setCount } = useAppContext<AppContext>();
-	const { deselectAll } = useSelection({ setCount, count: 0 });
 
-	const messageActionsForExtraWindow = useMessageActions({
-		message,
-		isAlone: true,
-		isForExtraWindow: true
-	});
-	const messageActions = useMsgConvActions({
-		item: message,
-		deselectAll,
-		messageActionsForExtraWindow
-	});
 	const { isInsideExtraWindow } = useExtraWindow();
-	const isExtraWindowActions = messageActions.some(
-		(action: MessageAction) => action.id === EXTRA_WINDOW_ACTION_ID
-	);
-	const actions = isExtraWindowActions
-		? messageActions.filter((action: MessageAction) => action.id !== EXTRA_WINDOW_ACTION_ID)
-		: uniqBy([...messageActions[0], ...messageActions[1]], 'id');
+
+	const messagePreviewFactory = useCallback(() => {
+		const folderId = getParentFolderId(message.parent);
+		return <MessagePreviewPanel folderId={folderId} messageId={message.id} />;
+	}, [message.id, message.parent]);
 
 	if (!message) {
 		replaceHistory({
@@ -75,9 +59,9 @@ export const SearchMessagePanel: FC = () => {
 									message={message}
 									expanded
 									isAlone
-									messageActions={actions}
 									isMessageView
 									isInsideExtraWindow={isInsideExtraWindow}
+									messagePreviewFactory={messagePreviewFactory}
 								/>
 							</Padding>
 						)}

@@ -6,7 +6,7 @@
 
 import React, { ReactElement } from 'react';
 
-import { act, screen, waitFor, within } from '@testing-library/react';
+import { act, waitFor } from '@testing-library/react';
 import * as hooks from '@zextras/carbonio-shell-ui';
 import {
 	AccountSettings,
@@ -19,7 +19,12 @@ import { noop } from 'lodash';
 import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { generateSettings } from '../../../carbonio-ui-commons/test/mocks/settings/settings-generator';
 import { buildSoapErrorResponseBody } from '../../../carbonio-ui-commons/test/mocks/utils/soap';
-import { makeListItemsVisible, setupTest } from '../../../carbonio-ui-commons/test/test-setup';
+import {
+	screen,
+	makeListItemsVisible,
+	setupTest,
+	within
+} from '../../../carbonio-ui-commons/test/test-setup';
 import { API_REQUEST_STATUS } from '../../../constants';
 import * as search from '../../../store/actions/search';
 import {
@@ -27,6 +32,7 @@ import {
 	updateConversationStatus,
 	setMessages
 } from '../../../store/zustand/search/store';
+import { TESTID_SELECTORS } from '../../../tests/constants';
 import { generateConversation } from '../../../tests/generators/generateConversation';
 import { generateMessage } from '../../../tests/generators/generateMessage';
 import { generateStore } from '../../../tests/generators/store';
@@ -289,7 +295,7 @@ describe('SearchView', () => {
 			expect(await within(itemAvatar).findByTestId('icon: Checkmark')).toBeVisible();
 		});
 
-		it('should call ConvActionRequest with operation "trash" when moving conversation two trash in selection mode', async () => {
+		it('should call ConvActionRequest with operation "trash" when moving conversation to trash in selection mode', async () => {
 			createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
 				c: [getSoapConversation('123')],
 				more: false
@@ -311,9 +317,12 @@ describe('SearchView', () => {
 				await user.click(avatar);
 			});
 			await within(itemAvatar).findByTestId('icon: Checkmark');
-			await screen.findByTestId('MultipleSelectionActionPanel');
-			const multipleSelectionTrashButton = await screen.findByTestId(
-				'primary-multi-action-button-conversation-trash'
+			const multipleSelectionPanel = await screen.findByTestId('MultipleSelectionActionPanel');
+			const multipleSelectionTrashButton = await within(multipleSelectionPanel).findByRoleWithIcon(
+				'button',
+				{
+					icon: TESTID_SELECTORS.icons.trash
+				}
 			);
 			const apiInterceptor = createSoapAPIInterceptor<ConvActionRequest, ConvActionResponse>(
 				'ConvAction',
@@ -477,10 +486,14 @@ describe('SearchView', () => {
 				await user.click(avatar);
 			});
 			await within(itemAvatar).findByTestId('icon: Checkmark');
-			await screen.findByTestId('MultipleSelectionActionPanel');
-			const multipleSelectionTrashButton = await screen.findByTestId(
-				'primary-multi-action-button-message-trash'
+			const multipleSelectionPanel = await screen.findByTestId('MultipleSelectionActionPanel');
+			const multipleSelectionTrashButton = await within(multipleSelectionPanel).findByRoleWithIcon(
+				'button',
+				{
+					icon: TESTID_SELECTORS.icons.trash
+				}
 			);
+
 			const apiInterceptor = createSoapAPIInterceptor<MsgActionRequest, MsgActionResponse>(
 				'MsgAction',
 				{

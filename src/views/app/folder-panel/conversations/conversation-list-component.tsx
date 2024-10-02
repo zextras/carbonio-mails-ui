@@ -14,9 +14,9 @@ import { ConversationListItemComponent } from './conversation-list-item-componen
 import { CustomList } from '../../../../carbonio-ui-commons/components/list/list';
 import { useFolder, useRoot } from '../../../../carbonio-ui-commons/store/zustand/folder/hooks';
 import type { Conversation } from '../../../../types';
-import { MultipleSelectionActionsPanel } from '../../../../ui-actions/multiple-selection-actions-panel';
 import ShimmerList from '../../../search/shimmer-list';
 import { Breadcrumbs } from '../parts/breadcrumbs';
+import { MultipleSelectionActionsPanel } from '../parts/multiple-selection-actions-panel';
 import { getFolderPath } from '../parts/utils/utils';
 
 const DragImageContainer = styled.div`

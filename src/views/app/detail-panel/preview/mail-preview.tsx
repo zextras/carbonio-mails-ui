@@ -30,16 +30,15 @@ import PreviewHeader from './parts/preview-header';
 import ReadReceiptModal from './read-receipt-modal';
 import { FOLDERS } from '../../../../carbonio-ui-commons/constants/folders';
 import MailMessageRenderer from '../../../../commons/mail-message-renderer';
-import { MessageActionsDescriptors } from '../../../../constants';
 import { getAttachmentParts } from '../../../../helpers/attachments';
 import { getFolderIdParts } from '../../../../helpers/folders';
+import { useMsgSetNotSpamFn } from '../../../../hooks/actions/use-msg-set-not-spam';
 import { useAppDispatch } from '../../../../hooks/redux';
 import { useRequestDebouncedMessage } from '../../../../hooks/use-request-debounced-message';
 import SharedInviteReply from '../../../../integrations/shared-invite-reply';
 import { msgAction } from '../../../../store/actions';
 import type { MailMessage, OpenEmlPreviewType } from '../../../../types';
-import { ExtraWindowCreationParams, MessageAction } from '../../../../types';
-import { findMessageActionById } from '../../../../ui-actions/utils';
+import { ExtraWindowCreationParams } from '../../../../types';
 import { useGlobalExtraWindowManager } from '../../extra-windows/global-extra-window-manager';
 
 const [InviteResponse, integrationAvailable] = getIntegratedComponent('invites-reply');
@@ -196,11 +195,7 @@ const MailContent: FC<{
 								/>
 							</Container>
 						) : showShareInvite ? (
-							<SharedInviteReply
-								// title={message?.fragment?.split('Shared item:')[0]}
-								sharedContent={message.shr[0].content}
-								mailMsg={message}
-							/>
+							<SharedInviteReply sharedContent={message.shr[0].content} mailMsg={message} />
 						) : (
 							<MailMessageRenderer
 								parts={parts}
@@ -229,28 +224,24 @@ type MailPreviewBlockType = {
 	message: MailMessage;
 	open: boolean;
 	onClick: () => void;
-	messageActions: Array<MessageAction>;
 	isExternalMessage?: boolean;
-	isInsideExtraWindow?: boolean;
+	messagePreviewFactory: () => React.JSX.Element;
 };
 const MailPreviewBlock: FC<MailPreviewBlockType> = ({
 	message,
 	open,
 	onClick,
-	messageActions,
 	isExternalMessage = false,
-	isInsideExtraWindow = false
+	messagePreviewFactory
 }) => {
-	const { folderId } = useParams<{ folderId: string }>();
+	const { folderId, itemId } = useParams<{ folderId: string; itemId: string }>();
 	const compProps = useMemo(
-		() => ({ message, onClick, open, isExternalMessage, isInsideExtraWindow }),
-		[message, onClick, open, isExternalMessage, isInsideExtraWindow]
+		() => ({ message, onClick, open, isExternalMessage, messagePreviewFactory }),
+		[message, onClick, open, isExternalMessage, messagePreviewFactory]
 	);
-	const markAsNotSpam = findMessageActionById(
-		messageActions,
-		MessageActionsDescriptors.MARK_AS_NOT_SPAM.id
-	);
+	const shouldReplaceHistory = useMemo(() => itemId === message.id, [message.id, itemId]);
 
+	const { execute } = useMsgSetNotSpamFn({ ids: [message.id], folderId, shouldReplaceHistory });
 	return (
 		<>
 			{getFolderIdParts(folderId).id === FOLDERS.SPAM && (
@@ -274,7 +265,7 @@ const MailPreviewBlock: FC<MailPreviewBlockType> = ({
 								type="ghost"
 								label={t('action.mark_as_non_spam', 'Not Spam')}
 								color="primary"
-								onClick={markAsNotSpam}
+								onClick={execute}
 							/>
 						</Row>
 					</Container>
@@ -282,7 +273,7 @@ const MailPreviewBlock: FC<MailPreviewBlockType> = ({
 			)}
 			{message && (
 				<Row width="fill">
-					<PreviewHeader compProps={compProps} actions={messageActions} />
+					<PreviewHeader compProps={compProps} />
 				</Row>
 			)}
 
@@ -315,23 +306,23 @@ const MailPreviewBlock: FC<MailPreviewBlockType> = ({
 export type MailPreviewProps = {
 	message: MailMessage;
 	expanded: boolean;
-	messageActions: Array<MessageAction>;
 	isAlone: boolean;
 	isMessageView: boolean;
 	isExternalMessage?: boolean;
 	isInsideExtraWindow?: boolean;
 	showingEml?: boolean;
+	messagePreviewFactory: () => React.JSX.Element;
 };
 
 const MailPreview: FC<MailPreviewProps> = ({
 	message,
 	expanded,
-	messageActions,
 	isAlone,
 	isMessageView,
 	isExternalMessage = false,
 	isInsideExtraWindow = false,
-	showingEml = false
+	showingEml = false,
+	messagePreviewFactory
 }) => {
 	const mailContainerRef = useRef<HTMLDivElement>(null);
 	const [open, setOpen] = useState(expanded || isAlone);
@@ -360,11 +351,11 @@ const MailPreview: FC<MailPreviewProps> = ({
 						message={emlMessage}
 						expanded={false}
 						isAlone
-						messageActions={messageActions}
 						isMessageView
 						isExternalMessage
 						isInsideExtraWindow
 						showingEml
+						messagePreviewFactory={messagePreviewFactory}
 					/>
 				),
 				title: emlMessage.subject,
@@ -374,7 +365,7 @@ const MailPreview: FC<MailPreviewProps> = ({
 				createWindow(createWindowParams);
 			}
 		},
-		[createWindow, messageActions]
+		[createWindow, messagePreviewFactory]
 	);
 
 	const [containerHeight, setContainerHeight] = useState(open ? '100%' : 'fit-content');
@@ -395,9 +386,8 @@ const MailPreview: FC<MailPreviewProps> = ({
 				onClick={onClick}
 				message={message}
 				open={isMailPreviewOpen}
-				messageActions={messageActions}
 				isExternalMessage={isExternalMessage}
-				isInsideExtraWindow={isInsideExtraWindow}
+				messagePreviewFactory={messagePreviewFactory}
 			/>
 
 			<Container

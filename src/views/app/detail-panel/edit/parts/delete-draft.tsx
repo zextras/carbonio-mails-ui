@@ -12,11 +12,10 @@ import { t } from '@zextras/carbonio-shell-ui';
 import ModalFooter from '../../../../../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../../../../../carbonio-ui-commons/components/modals/modal-header';
 import { FOLDERS } from '../../../../../carbonio-ui-commons/constants/folders';
-import { useAppDispatch } from '../../../../../hooks/redux';
+import { useMsgMoveToTrashFn } from '../../../../../hooks/actions/use-msg-move-to-trash';
 import { StoreProvider } from '../../../../../store/redux';
 import { deleteEditor } from '../../../../../store/zustand/editor';
 import { MailsEditorV2 } from '../../../../../types';
-import { useMoveMsgToTrash } from '../../../../../ui-actions/message-actions';
 import { useGlobalModal } from '../../../../global-modal-manager';
 
 type DeleteDraftModalProps = {
@@ -32,8 +31,6 @@ export const DeleteDraftModal = ({
 	onConfirm,
 	onDelete
 }: DeleteDraftModalProps): React.ReactElement => {
-	const dispatch = useAppDispatch();
-
 	const onCloseModal = useCallback(() => {
 		onClose?.();
 	}, [onClose]);
@@ -43,19 +40,16 @@ export const DeleteDraftModal = ({
 		onClose?.();
 	}, [onClose, onConfirm]);
 
-	const moveMsgToTrash = useMoveMsgToTrash();
-	const onDeleteAction = useCallback(
-		(ev) => {
-			moveMsgToTrash({
-				ids,
-				dispatch,
-				folderId: FOLDERS.DRAFTS
-			})?.onClick(ev);
-			onDelete?.();
-			onClose?.();
-		},
-		[dispatch, ids, moveMsgToTrash, onClose, onDelete]
-	);
+	const moveMsgToTrash = useMsgMoveToTrashFn({
+		ids,
+		folderId: FOLDERS.DRAFTS,
+		shouldReplaceHistory: false
+	});
+	const onDeleteAction = useCallback(() => {
+		moveMsgToTrash.canExecute() && moveMsgToTrash.execute();
+		onDelete?.();
+		onClose?.();
+	}, [moveMsgToTrash, onClose, onDelete]);
 
 	return (
 		<>
