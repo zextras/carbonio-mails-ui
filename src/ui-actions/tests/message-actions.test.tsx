@@ -529,7 +529,7 @@ describe('Messages actions calls', () => {
 
 		// Check that the getMsgsForPrint and the window.oepn functions are called
 		expect(printGeneratorMock).toHaveBeenCalledWith(expect.objectContaining({ ids: [msg.id] }));
-		expect(window.open).toBeCalled();
+		expect(window.open).toHaveBeenCalled();
 	});
 
 	test('Show source', () => {
