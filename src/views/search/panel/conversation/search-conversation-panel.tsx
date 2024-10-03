@@ -46,7 +46,12 @@ export const SearchConversationPanel = (): React.JSX.Element => {
 	const { messages } = conversation;
 
 	return (
-		<Container orientation="vertical" mainAlignment="flex-start" crossAlignment="flex-start">
+		<Container
+			orientation="vertical"
+			mainAlignment="flex-start"
+			crossAlignment="flex-start"
+			data-testid={`SearchConversationPanel-${conversationId}`}
+		>
 			<>
 				{!isInsideExtraWindow && <SearchPreviewPanelHeader item={conversation} />}
 				<Container

@@ -15,7 +15,6 @@ import {
 	SearchViewProps
 } from '@zextras/carbonio-shell-ui';
 import { noop } from 'lodash';
-import { useParams } from 'react-router-dom';
 
 import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { generateSettings } from '../../../carbonio-ui-commons/test/mocks/settings/settings-generator';
@@ -53,12 +52,6 @@ import {
 } from '../../../types';
 import * as externalWindowManager from '../../app/extra-windows/global-extra-window-manager';
 import SearchView from '../search-view';
-
-jest.mock('', () => ({
-	...jest.requireActual('react-router-dom'),
-	useParams: jest.fn()
-	// useLocation: jest.fn(),
-}));
 
 type SetupTest = {
 	query: string;
@@ -345,19 +338,20 @@ describe('SearchView', () => {
 			expect(receivedRequest.action.id).toBe('123');
 			expect(receivedRequest.action.op).toBe('trash');
 		});
+
 		it('should display the conversation view panel', async () => {
 			const defaultConversation = getSoapConversation('123');
 			const message1 = getSoapConversationMessage('100', '123');
 			const message2 = getSoapConversationMessage('200', '123');
-			const interceptor = createSoapAPIInterceptor<SearchConvRequest, SearchConvResponse>(
-				'SearchConv',
-				{ m: [message1, message2], more: false, offset: '0', orderBy: 'dateDesc' }
-			);
 			const conversation = { ...defaultConversation, n: 2, m: [message1, message2] };
-			createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
+			const searchApi = createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
 				c: [conversation],
 				more: false
 			});
+			const searchConvApi = createSoapAPIInterceptor<SearchConvRequest, SearchConvResponse>(
+				'SearchConv',
+				{ m: [message1, message2], more: false, offset: '0', orderBy: 'dateDesc' }
+			);
 
 			const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
 			const searchViewProps: SearchViewProps = {
@@ -366,27 +360,17 @@ describe('SearchView', () => {
 				ResultsHeader: resultsHeader
 			};
 
-			(useParams as jest.Mock).mockReturnValue({ conversationId: '123' });
-			const { user } = setupTest(<SearchView {...searchViewProps} />, {
+			setupTest(<SearchView {...searchViewProps} />, {
 				store,
-				initialEntries: ['/search/conversation/123']
+				initialEntries: ['/conversation/123']
 			});
-
-			await waitAndMakeConversationVisible('123');
-			const conversationContainer = await screen.findByTestId(
-				`ConversationListItem-${conversation.id}`
-			);
 
 			await act(async () => {
-				await user.hover(conversationContainer);
+				await searchApi;
+				await searchConvApi;
 			});
 
-			const clickableConversation = await screen.findByTestId(`hover-container-${conversation.id}`);
-			await act(async () => {
-				await user.click(clickableConversation);
-			});
-
-			expect(await screen.findByTestId('ConversationMessagePreview-123')).toBeInTheDocument();
+			expect(await screen.findByTestId('SearchConversationPanel-123')).toBeInTheDocument();
 		});
 	});
 
