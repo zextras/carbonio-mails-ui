@@ -36,11 +36,11 @@ import { useMessageById } from '../../../../store/zustand/search/store';
 import { TextReadValuesType } from '../../../../types';
 import { useTagExist } from '../../../../ui-actions/tag-actions';
 import { createEditBoard } from '../../../app/detail-panel/edit/edit-view-board';
-import { MessagePreviewPanel } from '../../../app/detail-panel/message-preview-panel';
 import { MessageListItemActionWrapper } from '../../../app/folder-panel/messages/message-list-item-action-wrapper';
 import { ItemAvatar } from '../../../app/folder-panel/parts/item-avatar';
 import { SenderName } from '../../../app/folder-panel/parts/sender-name';
 import { getFolderTranslatedName } from '../../../sidebar/utils';
+import { SearchMessagePanel } from '../../panel/message/search-message-panel';
 
 type SearchMessageListItemProps = {
 	itemId: string;
@@ -65,13 +65,13 @@ export const SearchMessageListItem: FC<SearchMessageListItemProps> = memo(functi
 }) {
 	const completeMessage = useMessageById(itemId);
 	const folderId = completeMessage.parent;
-	const { itemId: messageId } = useParams<{ itemId: string }>();
+	const { itemId: messageId } = useParams<{ itemId: string | undefined }>();
 
 	const shouldReplaceHistory = useMemo(() => itemId === messageId, [messageId, itemId]);
 
 	const messagePreviewFactory = useCallback(
-		() => <MessagePreviewPanel folderId={folderId} messageId={itemId} />,
-		[folderId, itemId]
+		() => <SearchMessagePanel messageId={itemId} />,
+		[itemId]
 	);
 
 	const zimbraPrefMarkMsgRead = useUserSettings()?.prefs?.zimbraPrefMarkMsgRead !== '-1';
@@ -240,6 +240,7 @@ export const SearchMessageListItem: FC<SearchMessageListItemProps> = memo(functi
 				onDoubleClick={onDoubleClick}
 				deselectAll={deselectAll}
 				shouldReplaceHistory={shouldReplaceHistory}
+				messagePreviewFactory={messagePreviewFactory}
 			>
 				<div
 					style={{ alignSelf: 'center' }}

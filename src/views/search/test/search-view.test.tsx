@@ -40,8 +40,12 @@ import {
 	ConvActionRequest,
 	ConvActionResponse,
 	ExtraWindowsContextType,
+	GetMsgRequest,
+	GetMsgResponse,
 	MsgActionRequest,
 	MsgActionResponse,
+	SearchConvRequest,
+	SearchConvResponse,
 	SearchRequest,
 	SearchResponse,
 	SoapConversation,
@@ -50,11 +54,6 @@ import {
 } from '../../../types';
 import * as externalWindowManager from '../../app/extra-windows/global-extra-window-manager';
 import SearchView from '../search-view';
-
-jest.mock('', () => ({
-	...jest.requireActual('react-router-dom'),
-	useLocation: jest.fn()
-}));
 
 type SetupTest = {
 	query: string;
@@ -341,6 +340,40 @@ describe('SearchView', () => {
 			expect(receivedRequest.action.id).toBe('123');
 			expect(receivedRequest.action.op).toBe('trash');
 		});
+
+		it('should display the conversation view panel', async () => {
+			const defaultConversation = getSoapConversation('123');
+			const message1 = getSoapConversationMessage('100', '123');
+			const message2 = getSoapConversationMessage('200', '123');
+			const conversation = { ...defaultConversation, n: 2, m: [message1, message2] };
+			const searchApi = createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
+				c: [conversation],
+				more: false
+			});
+			const searchConvApi = createSoapAPIInterceptor<SearchConvRequest, SearchConvResponse>(
+				'SearchConv',
+				{ m: [message1, message2], more: false, offset: '0', orderBy: 'dateDesc' }
+			);
+
+			const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
+			const searchViewProps: SearchViewProps = {
+				useQuery: () => [[queryChip], noop],
+				useDisableSearch: () => [false, noop],
+				ResultsHeader: resultsHeader
+			};
+
+			setupTest(<SearchView {...searchViewProps} />, {
+				store,
+				initialEntries: ['/conversation/123']
+			});
+
+			await act(async () => {
+				await searchApi;
+				await searchConvApi;
+			});
+
+			expect(await screen.findByTestId('SearchConversationPanel-123')).toBeInTheDocument();
+		});
 	});
 
 	describe('view by messages', () => {
@@ -510,6 +543,38 @@ describe('SearchView', () => {
 			const receivedRequest = await apiInterceptor;
 			expect(receivedRequest.action.id).toBe('10');
 			expect(receivedRequest.action.op).toBe('trash');
+		});
+
+		it('should display the message view panel', async () => {
+			const messageId = '10';
+			const soapMessage = getSoapMessage(messageId, { su: 'message 1 Subject', f: 'u' });
+			const searchInterceptor = createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
+				m: [soapMessage],
+				more: false
+			});
+
+			const getMsgInterceptor = createSoapAPIInterceptor<GetMsgRequest, GetMsgResponse>('GetMsg', {
+				m: [soapMessage]
+			});
+
+			const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
+			const searchViewProps: SearchViewProps = {
+				useQuery: () => [[queryChip], noop],
+				useDisableSearch: () => [false, noop],
+				ResultsHeader: resultsHeader
+			};
+
+			setupTest(<SearchView {...searchViewProps} />, {
+				store,
+				initialEntries: [`/message/${messageId}`]
+			});
+
+			await act(async () => {
+				await searchInterceptor;
+				await getMsgInterceptor;
+			});
+
+			expect(await screen.findByTestId(`SearchMessagePanel-${messageId}`)).toBeInTheDocument();
 		});
 	});
 
