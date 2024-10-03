@@ -32,6 +32,9 @@ export function getChipString(item: SearchQueryItem | ContactInputItem, prefix: 
 	if ((item as ContactInputItem).fullName) {
 		resultString = (item as ContactInputItem).fullName ?? '';
 	}
+	if ((item as ContactInputItem).email) {
+		resultString = (item as ContactInputItem).email ?? '';
+	}
 	return regex.test(resultString) ? resultString : `${prefix}:${resultString}`;
 }
 
@@ -41,11 +44,11 @@ export function getChipValue(item: SearchQueryItem | ContactInputItem, prefix: s
 	if ((item as SearchQueryItem).value) {
 		resultString = (item as SearchQueryItem).value ?? '';
 	}
-	if ((item as ContactInputItem).email) {
-		resultString = (item as ContactInputItem).email ?? '';
-	}
 	if ((item as ContactInputItem).fullName) {
 		resultString = (item as ContactInputItem).fullName ?? '';
+	}
+	if ((item as ContactInputItem).email) {
+		resultString = (item as ContactInputItem).email ?? '';
 	}
 	return regex.test(resultString) ? resultString : `${prefix}:${resultString}`;
 }
@@ -56,7 +59,7 @@ export function getChipItems(chips: Query | Array<ContactInputItem>, prefix: str
 		error: false,
 		id: chip.id ?? `${uuid()} ${chip.label}`,
 		avatarBackground: (chip as ContactInputItem).avatarBackground ?? 'secondary',
-		hasAvatar: true,
+		hasAvatar: false,
 		avatarIcon: 'EmailOutline',
 		isGeneric: false,
 		isQueryFilter: true,

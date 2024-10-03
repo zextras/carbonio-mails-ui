@@ -24,9 +24,10 @@ const SendReceivedDateRow: FC<SendReceivedDateRowPropType> = ({ compProps }): Re
 
 	const onSentBeforeChange = useCallback(
 		(date) => {
-			const tmp = `before:${moment(date).format(QUERY_DATE_FORMAT)}`;
-			date
-				? setSentBefore([
+			if (date){
+				const tmp = `before:${moment(date).format(QUERY_DATE_FORMAT)}`;
+				if (sentBefore[0]?.value != tmp) {
+				setSentBefore([
 						{
 							hasAvatar: true,
 							avatarBackground: 'gray1',
@@ -35,17 +36,25 @@ const SendReceivedDateRow: FC<SendReceivedDateRowPropType> = ({ compProps }): Re
 							isQueryFilter: true,
 							avatarIcon: 'CalendarOutline'
 						}
-					])
-				: setSentBefore([]);
+					]);
+				} else {
+					if (date == ""){
+						setSentBefore([]);
+					}
+				}
+			} else {
+				if (sentBefore[0]?.value){	setSentBefore([]); } else { undefined ;}
+			}
 		},
-		[setSentBefore]
+		[setSentBefore,sentBefore]
 	);
 
 	const onSentAfterChange = useCallback(
 		(date) => {
-			const tmp = `after:${moment(date).format(QUERY_DATE_FORMAT)}`;
-			date
-				? setSentAfter([
+			if (date){
+				const tmp = `after:${moment(date).format(QUERY_DATE_FORMAT)}`;
+				if (sentAfter[0]?.value != tmp) {
+				setSentAfter([
 						{
 							hasAvatar: true,
 							avatarBackground: 'gray1',
@@ -54,16 +63,24 @@ const SendReceivedDateRow: FC<SendReceivedDateRowPropType> = ({ compProps }): Re
 							isQueryFilter: true,
 							avatarIcon: 'CalendarOutline'
 						}
-					])
-				: setSentAfter([]);
+					]);
+				} else {
+					if (date == ""){
+						setSentAfter([]);
+					}
+				}
+			} else {
+				if (sentAfter[0]?.value){	setSentAfter([]); } else { undefined ;}
+			}
 		},
-		[setSentAfter]
+		[setSentAfter,sentAfter]
 	);
 	const onSentOnChange = useCallback(
 		(date) => {
-			const tmp = `date:${moment(date).format(QUERY_DATE_FORMAT)}`;
-			date
-				? setSentOn([
+			if (date){
+				const tmp = `date:${moment(date).format(QUERY_DATE_FORMAT)}`;
+				if (sentOn[0]?.value != tmp) {
+				setSentOn([
 						{
 							hasAvatar: true,
 							avatarBackground: 'gray1',
@@ -72,10 +89,17 @@ const SendReceivedDateRow: FC<SendReceivedDateRowPropType> = ({ compProps }): Re
 							isQueryFilter: true,
 							avatarIcon: 'CalendarOutline'
 						}
-					])
-				: setSentOn([]);
+					]);
+				} else {
+					if (date == ""){
+						setSentOn([]);
+					}
+				}
+			} else {
+				if (sentOn[0]?.value){	setSentOn([]); } else { undefined ;}
+			}
 		},
-		[setSentOn]
+		[setSentOn,sentOn]
 	);
 
 	const sentBeforeDefault = useMemo(
