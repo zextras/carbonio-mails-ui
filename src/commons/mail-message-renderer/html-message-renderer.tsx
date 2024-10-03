@@ -5,14 +5,13 @@
  */
 import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-import { Button, Container, IconButton, MultiButton, Row } from '@zextras/carbonio-design-system';
+import { Button, Container, Row } from '@zextras/carbonio-design-system';
 import { editSettings, t, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { filter, forEach, isArray, reduce, some } from 'lodash';
 import { Trans } from 'react-i18next';
-import styled from 'styled-components';
 
 import { BannerMessageTruncated } from './banner-message-truncated';
-import { WarningBanner } from './warning-banner';
+import { BannerViewExternalImages } from './banner-view-external-images';
 import { ParticipantRole } from '../../carbonio-ui-commons/constants/participants';
 import { getAttachmentParts } from '../../helpers/attachments';
 import { getNoIdentityPlaceholder } from '../../helpers/identities';
@@ -25,21 +24,6 @@ import { BodyPart, MailsStateType } from '../../types';
 import { useInSearchModule } from '../../ui-actions/utils';
 import { getOriginalHtmlContent, getQuotedTextFromOriginalContent } from '../get-quoted-text-util';
 import { _CI_REGEX, _CI_SRC_REGEX, isAvailableInTrusteeList } from '../utils';
-
-const StyledMultiBtn = styled(MultiButton)`
-	border: 0.0625rem solid ${(props): string => props.theme.palette.warning.regular};
-	height: 2rem;
-	& > * {
-		background-color: ${(props): string => props.theme.palette.transparent.regular} !important;
-		cursor: pointer;
-	}
-	&:hover {
-		background-color: ${({ theme }): string => theme.palette.gray6.focus};
-	}
-	svg {
-		padding: 0 !important;
-	}
-`;
 
 type HtmlMessageRendererType = {
 	msgId: string;
@@ -182,15 +166,6 @@ export const HtmlMessageRenderer: FC<HtmlMessageRendererType> = ({ msgId }) => {
 		return htmlDoc.body.innerHTML;
 	}, [htmlDoc.body.innerHTML, images, msgId, parts, showImage]);
 
-	const externalImagesMultiButtonLabel = useMemo(() => t('label.view_images', 'VIEW IMAGES'), []);
-	const externalImageWarningLabel = useMemo(
-		() =>
-			t(
-				'message.external_images_blocked',
-				'External images have been blocked to protect you against potential spam'
-			),
-		[]
-	);
 	const loadMessage = async (): Promise<void> => {
 		setIsLoadingMessage(true);
 		if (isInSearchModule) {
@@ -203,45 +178,11 @@ export const HtmlMessageRenderer: FC<HtmlMessageRendererType> = ({ msgId }) => {
 	return (
 		<div ref={divRef} className="force-white-bg" style={{ height: '100%' }}>
 			{showBanner && !showExternalImage && (
-				<WarningBanner warningLabel={externalImageWarningLabel}>
-					<Row
-						height="fit"
-						orientation="vertical"
-						display="flex"
-						wrap="nowrap"
-						mainAlignment="flex-end"
-						padding={{ left: 'small' }}
-						style={{
-							flexGrow: 1,
-							flexDirection: 'row'
-						}}
-					>
-						<StyledMultiBtn
-							background="transparent"
-							type="outlined"
-							label={externalImagesMultiButtonLabel}
-							color="warning"
-							onClick={(): void => {
-								setShowExternalImage(true);
-							}}
-							dropdownProps={{
-								maxWidth: '31.25rem',
-								width: 'fit',
-								items
-							}}
-							items={items}
-						/>
-						<IconButton
-							icon="CloseOutline"
-							onClick={(): void => setDisplayBanner(false)}
-							customSize={{
-								iconSize: 'large',
-								paddingSize: 'small'
-							}}
-							size="small"
-						/>
-					</Row>
-				</WarningBanner>
+				<BannerViewExternalImages
+					setShowExternalImages={setShowExternalImage}
+					setDisplayBanner={setDisplayBanner}
+					items={items}
+				/>
 			)}
 			{body.truncated && (
 				<BannerMessageTruncated loadMessage={loadMessage} isLoadingMessage={isLoadingMessage} />
