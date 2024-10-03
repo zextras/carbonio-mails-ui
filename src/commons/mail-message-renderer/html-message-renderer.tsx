@@ -7,11 +7,12 @@ import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 're
 
 import { Button, Container, IconButton, MultiButton, Row } from '@zextras/carbonio-design-system';
 import { editSettings, t, useUserSettings } from '@zextras/carbonio-shell-ui';
-import { filter, forEach, isArray, reduce, some } from 'lodash';
+import { filter, forEach, isArray, noop, reduce, some } from 'lodash';
 import { Trans } from 'react-i18next';
 import styled from 'styled-components';
 
 import { WarningBanner } from './warning-banner';
+import { AnimatedLoaderWarning } from '../../assets/animated-loader';
 import { ParticipantRole } from '../../carbonio-ui-commons/constants/participants';
 import { getAttachmentParts } from '../../helpers/attachments';
 import { getNoIdentityPlaceholder } from '../../helpers/identities';
@@ -45,6 +46,7 @@ type HtmlMessageRendererType = {
 };
 
 export const HtmlMessageRenderer: FC<HtmlMessageRendererType> = ({ msgId }) => {
+	const [isLoadingMessage, setIsLoadingMessage] = useState(false);
 	const isInSearchModule = useInSearchModule();
 	const messageFromReduxStore = useAppSelector((state: MailsStateType) =>
 		selectMessage(state, msgId)
@@ -199,11 +201,12 @@ export const HtmlMessageRenderer: FC<HtmlMessageRendererType> = ({ msgId }) => {
 		[]
 	);
 	const loadMessage = async (): Promise<void> => {
+		setIsLoadingMessage(true);
 		if (isInSearchModule) {
-			retrieveFullMessage(msgId);
+			retrieveFullMessage(msgId).finally(() => setIsLoadingMessage(false));
 			return;
 		}
-		dispatch(getFullMsgAsyncThunk({ msgId }));
+		dispatch(getFullMsgAsyncThunk({ msgId })).finally(() => setIsLoadingMessage(false));
 	};
 	return (
 		<div ref={divRef} className="force-white-bg" style={{ height: '100%' }}>
@@ -250,13 +253,25 @@ export const HtmlMessageRenderer: FC<HtmlMessageRendererType> = ({ msgId }) => {
 			)}
 			{body.truncated && (
 				<WarningBanner warningLabel={truncatedWarningLabel}>
-					<Button
-						backgroundColor="transparent"
-						type="outlined"
-						label={truncatedWarningButtonLabel}
-						color="warning"
-						onClick={loadMessage}
-					/>
+					{isLoadingMessage ? (
+						<Button
+							backgroundColor="transparent"
+							type="outlined"
+							label={'LOADING...'}
+							icon={AnimatedLoaderWarning}
+							iconPlacement="left"
+							color="warning"
+							onClick={noop}
+						/>
+					) : (
+						<Button
+							backgroundColor="transparent"
+							type="outlined"
+							label={truncatedWarningButtonLabel}
+							color="warning"
+							onClick={loadMessage}
+						/>
+					)}
 				</WarningBanner>
 			)}
 			<Container
