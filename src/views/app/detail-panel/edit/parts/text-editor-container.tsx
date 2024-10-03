@@ -4,11 +4,12 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React, { FC, useCallback, useState } from 'react';
+import React, { FC, useCallback, useRef, useState } from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
 import { useIntegratedComponent, useUserSettings } from '@zextras/carbonio-shell-ui';
-import type { TinyMCE } from 'tinymce/tinymce';
+import { debounce } from 'lodash';
+import type { Editor, TinyMCE } from 'tinymce/tinymce';
 
 import * as StyledComp from './edit-view-styled-components';
 import { plainTextToHTML } from '../../../../../commons/mail-message-renderer';
@@ -37,6 +38,8 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 	const [isFirstChangeEventFired, setIsFirstChangeEventFired] = useState(false);
 	const { text, setText } = useEditorText(editorId);
 	const { isRichText } = useEditorIsRichText(editorId);
+	const [initialContent, setInitialContent] = useState(text.richText);
+	const editorRef = useRef<Editor | null>(null);
 
 	const onTextChanged = useCallback(
 		(text: TextEditorContent): void => {
@@ -78,6 +81,24 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 		].join(' | ')
 	};
 
+	const handleEditorFocusOut = (): void => {
+		onTextChanged({
+			plainText: editorRef?.current?.getContent({ format: 'text' }) ?? '',
+			richText: editorRef?.current?.getContent() ?? ''
+		});
+		setInitialContent(editorRef?.current?.getContent() ?? '');
+	};
+
+	const handleEditorKeyUp = debounce((): void => {
+		if (editorRef.current && isRichText) {
+			const richText = editorRef?.current?.getContent({ format: 'html' });
+			const plainText = editorRef?.current?.getContent({ format: 'text' });
+			if (richText !== text.richText) {
+				setText({ plainText, richText });
+			}
+		}
+	}, 300);
+
 	return (
 		<>
 			{text && (
@@ -97,13 +118,14 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 								<Composer
 									// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 									// @ts-ignore
-									value={text.richText}
+									onInit={(_evt, editor): void => {
+										editorRef.current = editor;
+									}}
+									initialValue={initialContent}
 									disabled={disabled}
 									onFileSelect={onFilesSelected}
-									onEditorChange={(ev: [string, string]): void => {
-										if (isFirstChangeEventFired)
-											onTextChanged({ plainText: ev[0], richText: ev[1] });
-									}}
+									onFocusOut={handleEditorFocusOut}
+									onKeyUp={handleEditorKeyUp}
 									onDragOver={onDragOver}
 									customInitOptions={composerCustomOptions}
 									onFocus={(): void => {
@@ -116,7 +138,7 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 						<Container background="gray6" height="fit">
 							<StyledComp.TextArea
 								data-testid="MailPlainTextEditor"
-								value={text.plainText}
+								defaultValue={text.plainText}
 								style={{ fontFamily: defaultFontFamily }}
 								onFocus={(ev): void => {
 									ev.currentTarget.setSelectionRange(0, null);
@@ -126,6 +148,7 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 										plainText: ev.target.value,
 										richText: plainTextToHTML(ev.target.value)
 									});
+									setInitialContent(plainTextToHTML(ev.target.value));
 								}}
 							/>
 						</Container>
