@@ -5,7 +5,7 @@
  */
 import React, { useCallback } from 'react';
 
-import { Container, Padding, Shimmer } from '@zextras/carbonio-design-system';
+import { Container, Padding } from '@zextras/carbonio-design-system';
 import { replaceHistory } from '@zextras/carbonio-shell-ui';
 
 import { API_REQUEST_STATUS } from '../../../../constants';
@@ -61,9 +61,6 @@ export const SearchMessagePanel = ({ messageId }: { messageId: string }): React.
 									messagePreviewFactory={messagePreviewFactory}
 								/>
 							</Padding>
-						)}
-						{messageStatus === API_REQUEST_STATUS.pending && (
-							<Shimmer.Logo size="large" data-testid={`shimmer-message-${messageId}`} />
 						)}
 						{(messageStatus === API_REQUEST_STATUS.error || messageStatus === null) && (
 							<div data-testid="empty-fragment" />

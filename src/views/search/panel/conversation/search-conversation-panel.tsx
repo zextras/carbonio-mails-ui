@@ -5,7 +5,7 @@
  */
 import React, { useCallback } from 'react';
 
-import { Container, Shimmer } from '@zextras/carbonio-design-system';
+import { Container } from '@zextras/carbonio-design-system';
 import { replaceHistory, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
 import { useParams } from 'react-router-dom';
@@ -74,9 +74,6 @@ export const SearchConversationPanel = (): React.JSX.Element => {
 									/>
 								))}
 							</>
-						)}
-						{conversationStatus === API_REQUEST_STATUS.pending && (
-							<Shimmer.Logo size="large" data-testid={`shimmer-conversation-${conversationId}`} />
 						)}
 						{(conversationStatus === API_REQUEST_STATUS.error || conversationStatus === null) && (
 							<div data-testid="empty-fragment" />
