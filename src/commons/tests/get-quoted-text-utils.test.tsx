@@ -3,7 +3,12 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { htmlEncode, trim } from '../get-quoted-text-util';
+import {
+	getOriginalHtmlContent,
+	getQuotedTextFromOriginalContent,
+	htmlEncode,
+	trim
+} from '../get-quoted-text-util';
 
 describe('Get Quoted Test Utils', () => {
 	describe('trim', () => {
@@ -42,6 +47,19 @@ describe('Get Quoted Test Utils', () => {
 			expect(htmlEncode(originalHTML, false)).toBe(
 				'&lt;div&gt;Should not care about  extra  spaces&lt;/div&gt;'
 			);
+		});
+	});
+
+	describe('Get original html content', () => {
+		it('should handle html with div', () => {
+			const originalHTML = '<div>Test</div>';
+			expect(getOriginalHtmlContent(originalHTML)).toBe('<div>Test</div>');
+		});
+	});
+	describe('Get quoted text from original content', () => {
+		it('should return empty if body equal to original content', () => {
+			const originalHTML = '<div>Test</div>';
+			expect(getQuotedTextFromOriginalContent(originalHTML, originalHTML)).toBe('');
 		});
 	});
 });
