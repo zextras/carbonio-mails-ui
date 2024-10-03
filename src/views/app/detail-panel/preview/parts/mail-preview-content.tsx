@@ -4,7 +4,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { FC, useCallback, useMemo, useState } from 'react';
 
 import { Collapse, Container, Padding, Row } from '@zextras/carbonio-design-system';
 import {
@@ -24,20 +24,21 @@ import AttachmentsBlock from '../attachments-block';
 import ReadReceiptModal from '../read-receipt-modal';
 
 const [InviteResponse, integrationAvailable] = getIntegratedComponent('invites-reply');
-type MailContentProps = {
+
+type MailPreviewContentProps = {
 	message: MailMessage;
 	isMailPreviewOpen: boolean;
 	isExternalMessage?: boolean;
 	isInsideExtraWindow?: boolean;
 	openEmlPreview?: OpenEmlPreviewType;
 };
-export const MailContent = ({
+export const MailPreviewContent: FC<MailPreviewContentProps> = ({
 	message,
 	isMailPreviewOpen,
 	isExternalMessage = false,
 	openEmlPreview,
 	isInsideExtraWindow = false
-}: MailContentProps): React.JSX.Element => {
+}) => {
 	const [showModal, setShowModal] = useState(true);
 	const dispatch = useAppDispatch();
 	const accounts = useUserAccounts();
@@ -168,11 +169,7 @@ export const MailContent = ({
 								/>
 							</Container>
 						) : showShareInvite ? (
-							<SharedInviteReply
-								// title={message?.fragment?.split('Shared item:')[0]}
-								sharedContent={message.shr[0].content}
-								mailMsg={message}
-							/>
+							<SharedInviteReply sharedContent={message.shr[0].content} mailMsg={message} />
 						) : (
 							<MailMessageRenderer
 								body={message.body}
