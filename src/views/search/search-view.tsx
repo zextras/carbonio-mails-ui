@@ -7,6 +7,7 @@ import React, { FC, Suspense, useCallback, useEffect, useMemo, useState } from '
 
 import { Container, Spinner } from '@zextras/carbonio-design-system';
 import { SearchViewProps, setAppContext, t, useUserSettings } from '@zextras/carbonio-shell-ui';
+import { trimEnd } from 'lodash';
 import { Route, Switch, useRouteMatch } from 'react-router-dom';
 
 import { AdvancedFilterModal } from './advanced-filter-modal';
@@ -70,6 +71,7 @@ const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHe
 		setShowAdvanceFilters(false);
 	}, [setShowAdvanceFilters]);
 
+	const trimmedPath = useMemo(() => trimEnd(path, '/'), [path]);
 	return (
 		<>
 			<Container>
@@ -87,7 +89,7 @@ const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHe
 					mainAlignment="flex-start"
 				>
 					<Switch>
-						<Route path={`${path}/:type?/:itemId?`}>
+						<Route path={`${trimmedPath}/:type?/:itemId?`}>
 							{isMessageView ? (
 								<SearchMessageList
 									searchDisabled={searchDisabled}
