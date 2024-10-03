@@ -7,12 +7,12 @@ import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 're
 
 import { Button, Container, IconButton, MultiButton, Row } from '@zextras/carbonio-design-system';
 import { editSettings, t, useUserSettings } from '@zextras/carbonio-shell-ui';
-import { filter, forEach, isArray, noop, reduce, some } from 'lodash';
+import { filter, forEach, isArray, reduce, some } from 'lodash';
 import { Trans } from 'react-i18next';
 import styled from 'styled-components';
 
+import { BannerMessageTruncated } from './banner-message-truncated';
 import { WarningBanner } from './warning-banner';
-import { AnimatedLoaderWarning } from '../../assets/animated-loader';
 import { ParticipantRole } from '../../carbonio-ui-commons/constants/participants';
 import { getAttachmentParts } from '../../helpers/attachments';
 import { getNoIdentityPlaceholder } from '../../helpers/identities';
@@ -191,19 +191,6 @@ export const HtmlMessageRenderer: FC<HtmlMessageRendererType> = ({ msgId }) => {
 			),
 		[]
 	);
-	const truncatedWarningButtonLabel = useMemo(
-		() => t('warningBanner.truncatedMessage.button', 'LOAD MESSAGE'),
-		[]
-	);
-	const loadingMessageLabel = useMemo(
-		() => t('warningBanner.truncatedMessage.loadingButton', 'LOADING...'),
-		[]
-	);
-	const truncatedWarningLabel = useMemo(
-		() =>
-			t('warningBanner.truncatedMessage.label', 'The message is too large and has been cropped'),
-		[]
-	);
 	const loadMessage = async (): Promise<void> => {
 		setIsLoadingMessage(true);
 		if (isInSearchModule) {
@@ -257,27 +244,7 @@ export const HtmlMessageRenderer: FC<HtmlMessageRendererType> = ({ msgId }) => {
 				</WarningBanner>
 			)}
 			{body.truncated && (
-				<WarningBanner warningLabel={truncatedWarningLabel}>
-					{isLoadingMessage ? (
-						<Button
-							backgroundColor="transparent"
-							type="outlined"
-							label={loadingMessageLabel}
-							icon={AnimatedLoaderWarning}
-							iconPlacement="left"
-							color="warning"
-							onClick={noop}
-						/>
-					) : (
-						<Button
-							backgroundColor="transparent"
-							type="outlined"
-							label={truncatedWarningButtonLabel}
-							color="warning"
-							onClick={loadMessage}
-						/>
-					)}
-				</WarningBanner>
+				<BannerMessageTruncated loadMessage={loadMessage} isLoadingMessage={isLoadingMessage} />
 			)}
 			<Container
 				width={'fit'}
