@@ -3,13 +3,8 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-<<<<<<< HEAD
 import { Account, getUserSettings, t } from '@zextras/carbonio-shell-ui';
 import { find, isArray } from 'lodash';
-=======
-import { Account, t } from '@zextras/carbonio-shell-ui';
-import { find, isArray, capitalize } from 'lodash';
->>>>>>> 7e6d99bb (fix: change contact label into email preview, changed time format)
 import moment from 'moment';
 
 import type { Participant } from '../types';
@@ -32,17 +27,7 @@ export const getTimeLabel = (date: number): string => {
 	if (momentDate.isSame(new Date(), 'day')) {
 		return momentDate.format('LT');
 	}
-<<<<<<< HEAD
 	return momentDate.format('L LT');
-=======
-	if (momentDate.isSame(new Date(), 'week')) {
-		return momentDate.format('dddd, LT');
-	}
-	if (momentDate.isSame(new Date(), 'month')) {
-		return momentDate.format('DD MMMM HH:mm');
-	}
-	return momentDate.format('DD/MM/YYYY HH:mm');
->>>>>>> 7e6d99bb (fix: change contact label into email preview, changed time format)
 };
 
 export const participantToString = (
