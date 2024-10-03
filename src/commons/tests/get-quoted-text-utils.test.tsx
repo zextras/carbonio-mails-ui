@@ -69,5 +69,20 @@ describe('Get Quoted Test Utils', () => {
 				'<div class="quoted_text">hing else</div>'
 			);
 		});
+
+		it('should return empty string if body length is no more than original content + 5 characters', () => {
+			const originalContent = '<div>Original content</div>';
+			const body = originalContent + 'a'.repeat(5);
+			expect(getQuotedTextFromOriginalContent(body, originalContent)).toBe('');
+		});
+
+		it('should return extra content in body if longer than 5 characters', () => {
+			const originalContent = '<div>Original content</div>';
+			const extraContent = 'a'.repeat(6);
+			const body = originalContent + extraContent;
+			expect(getQuotedTextFromOriginalContent(body, originalContent)).toBe(
+				`<div class="quoted_text">${extraContent}</div>`
+			);
+		});
 	});
 });
