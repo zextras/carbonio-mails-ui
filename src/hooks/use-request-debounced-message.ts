@@ -11,10 +11,7 @@ import { useAppDispatch } from './redux';
 import { DEFAULT_API_DEBOUNCE_TIME } from '../constants';
 import { getMsgAsyncThunk } from '../store/actions';
 
-export const useRequestDebouncedMessage = (
-	messageId: string,
-	isComplete: boolean = false
-): void => {
+export const useRequestDebouncedMessage = (messageId: string, isComplete = false): void => {
 	const dispatch = useAppDispatch();
 	const requestDebouncedMessage = useMemo(
 		() =>
