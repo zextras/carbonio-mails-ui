@@ -61,5 +61,13 @@ describe('Get Quoted Test Utils', () => {
 			const originalHTML = '<div>Test</div>';
 			expect(getQuotedTextFromOriginalContent(originalHTML, originalHTML)).toBe('');
 		});
+
+		it('weird test. it is not clear what this function does but behaves like that', () => {
+			const originalContent = '<div>Original content</div>';
+			const body = '<div>Original content Something else</blockquote></div>';
+			expect(getQuotedTextFromOriginalContent(body, originalContent)).toBe(
+				'<div class="quoted_text">hing else</div>'
+			);
+		});
 	});
 });
