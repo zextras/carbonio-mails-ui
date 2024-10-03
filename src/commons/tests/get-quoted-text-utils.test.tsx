@@ -12,9 +12,13 @@ import {
 
 describe('Get Quoted Test Utils', () => {
 	describe('trim', () => {
-		it('should remove only edge spaces', () => {
-			const text = ' My word ';
-			expect(trim(text)).toBe('My word');
+		it.each([
+			[' My word ', 'My word'],
+			['', ''],
+			['     ', ''],
+			[null, '']
+		])('should remove only edge spaces', (input, expected) => {
+			expect(trim(input)).toBe(expected);
 		});
 	});
 
