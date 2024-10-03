@@ -60,10 +60,17 @@ describe('Get Quoted Test Utils', () => {
 			expect(getOriginalTextContent(originalText)).toBe(originalText);
 		});
 	});
+
 	describe('Get original html content', () => {
 		it('should handle html with div', () => {
 			const originalHTML = '<div>Test</div>';
 			expect(getOriginalHtmlContent(originalHTML)).toBe('<div>Test</div>');
+		});
+
+		it('should remove Original Message start/stop quote blocks', () => {
+			const originalHTML =
+				'<div>Test div</div> --- Original Message --- <p>Test</p> --- Original Message ---';
+			expect(getOriginalHtmlContent(originalHTML)).toBe('<div>Test div</div>');
 		});
 
 		it('should handle html with hr element', () => {
