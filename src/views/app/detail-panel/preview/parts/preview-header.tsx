@@ -12,8 +12,13 @@ import React, {
 	useLayoutEffect,
 	useMemo,
 	useRef,
-	useState
+	useState,
+	useEffect
 } from 'react';
+
+import * as pvutils from "pvutils";
+import * as pkijs from 'pkijs';
+import parse from "emailjs-mime-parser";
 
 import {
 	Container,
@@ -103,7 +108,7 @@ const fallbackContact = {
 
 const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps, actions }): ReactElement => {
 	const { message, onClick, open, isExternalMessage } = compProps;
-	console.log(message)
+	
 
 	const textRef = useRef<HTMLInputElement>(null);
 	const accounts = useUserAccounts();
@@ -114,6 +119,76 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps, actions }): ReactEle
 	const _onClick = useCallback((e) => !e.isDefaultPrevented() && onClick(e), [onClick]);
 	const attachments = retrieveAttachmentsType(message, 'attachment');
 	const senderContact = find(message.participants, ['type', 's']);
+	const [signed, setSigned] = useState(false);
+	const trustedCAs = ["MIIF9zCCA9+gAwIBAgIBATANBgkqhkiG9w0BAQsFADBfMQswCQYDVQQGEwJJVDEQ\nMA4GA1UECAwHVmljZW56YTEQMA4GA1UEBwwHVmljZW56YTEQMA4GA1UECgwHemV4\ndHJhczEaMBgGA1UEAwwRKi5kZW1vLnpleHRyYXMuaW8wHhcNMjQwODA4MTQ1NjU5\nWhcNMzQwODA2MTQ1NjU5WjCBhzELMAkGA1UEBhMCSVQxEDAOBgNVBAgMB1ZpY2Vu\nemExEDAOBgNVBAcMB1ZpY2VuemExEDAOBgNVBAoMB3pleHRyYXMxGjAYBgNVBAMM\nESouZGVtby56ZXh0cmFzLmlvMSYwJAYJKoZIhvcNAQkBFhd6ZXh0cmFzQGRlbW8u\nemV4dHJhcy5pbzCCAiIwDQYJKoZIhvcNAQEBBQADggIPADCCAgoCggIBAKr0Inq1\nRMUp8eX0kFSLipzqkXWfYZ4Ehc9KPu8+K4QC/7QsEJVZzitG5hSP5y86uIW8fcz1\ngN4Y1//5J381C6mSHfhs8BN66AN/Kszt55keSAmdYxYg7ejQYX8aeaaD40XIU+4Y\n4BVKyfPtHAhRgSC4BOGOvn8C+z4x9YmRsbKNOZPT3agFmXP868juUoqITcL73TAT\nJ9WIpkYkmmQW6rlxvGM2qQP4e4Ak+nprx8siNRTISAX8XtOsay8gHW2C7jK/Po+V\n0wFyoHBfybPEblJwUEiwxprA8wdUb4UrcWnO7Z/QlKsxrjeUGUwJjfDlwHTHz04+\nmkFNoU/xMXhMiTi7UyuJV5uFcDqHpOnJeWuP2VOysfaelGm8Y+WMg97YZMRAPsgN\nfFAysw+qKz3rbJa1Mf+4+E69fTbOj44dXfuyZ7SRCcWhALftyKh3VRwjgK8ex0hj\nOknkmHvZk2POz06Gig1OEN350xU2tyIrKt9BYj896GVov7cjbIRj/gWf0fmotceY\nBeOYmKK3X5potzlPLTJEWvUcA7ITj4IFYopSXwZRFqgIeLrOA7A9yoeq28z3dTjm\nt3qei6OOsQrcYm8UCDAdbGGj6KUMcdVabDZsvcVT8yBS42yVzjMcVQJv4/ozij+1\nSD99wBWmoeorpEziTZyCxA4QhhE6LbwdI4o7AgMBAAGjgZQwgZEwCQYDVR0TBAIw\nADALBgNVHQ8EBAMCBeAwEwYDVR0lBAwwCgYIKwYBBQUHAwQwHQYDVR0OBBYEFDyX\nbG2juPxZYtiPESQjPb9H3sCZMB8GA1UdIwQYMBaAFExuaK66ywao0yYZfrd3Kwnu\nBzioMCIGA1UdEQQbMBmBF3pleHRyYXNAZGVtby56ZXh0cmFzLmlvMA0GCSqGSIb3\nDQEBCwUAA4ICAQAi51zTNlrXRtpr5juLDs8NQ1xxBOyqG8/qIcZsrqiyZTusu6cr\n+AUObxl98JdRz7JDsXcE0dP5KU0vbJvPXFThT3BfBU24CH7apJW1FbOrefNsq2HV\nRRNlQK8KEsgBr9fejojqP3l3NvPzVKtoYmSUPJNBgU8N84blxFtlqN71pTNd5EJ5\nozix3BzqK4qS7irOX2QX4cRU2OBu67fW51ePklYF8kJx71asuLsCfde6pcd8UAvr\n0rvTPacwtX0KXWAQzU4GKclTlQXAc3IJyQLEc8NcRnaqMfUKu6SO76lYepLGEWNm\nmF10AOADMBNrkjXGACUK3Z8WdbPdV9iVZYlaqSd+eCUsCgE54GXdJZSAF62FnptQ\nIGO2EwyjNZDSu5igtqVAXNN3Hq9pHMsxMPpPnTcWUkr/nlOIUudBjfmJET/K8Lwj\nS4evaZcE2vixXyzPP5Cr5VQWwY4k6B3KiPJh2oCuyfpZrR24yh1JM6khc3apdNE1\nTjvaNZyqy2M0WFOSvizm1oEXuT3SSJyhQpZPaLCFNZfTthbKdpIN9t++PwKPemC6\nVmtiTs0Raes9ZwYeJkLwoMhySIOY9+5g25c60FqK0gUIQYTxoFsJA19guk1dd0qF\nHKiMc+MQwjlnEr+W/xwdp5rprTk7vZWE47qRL+Goai8tg8v/mK2m2aIiAQ==\n"];
+	debugger;
+	useEffect(() => {
+		// Ensure message and message.attachments exist before accessing
+		if (message && message.attachments && message.attachments.length > 0) {
+		  const lastAttachment = message.attachments[message.attachments.length - 1];
+		  const emailSigned = lastAttachment?.contentType === 'application/pkcs7-signature'
+		  setSigned(emailSigned);
+		  if (emailSigned) {
+			const url = 'https://localhost:9000/service/home/~/?auth=co&view=text&id=664';
+			fetch(url)
+				.then(response => {
+				if (!response.ok) {
+					throw new Error(`Network response was not ok: ${response.statusText}`);
+				}
+				return response.text(); // Parse the response as text
+				})
+				.then(data => {
+					const parser = parse(data);
+					if (("childNodes" in parser) || (parser.childNodes.length !== 2)) {
+						const lastNode = parser.childNodes[1];
+						if ((lastNode.contentType.value === "application/x-pkcs7-signature") || (lastNode.contentType.value === "application/pkcs7-signature")) {
+						  // Parse into pkijs types
+						  let cmsContentSimpl;
+						  let cmsSignedSimpl;
+					
+						  try {
+							debugger;
+							cmsContentSimpl = pkijs.ContentInfo.fromBER(lastNode.content.buffer);
+							cmsSignedSimpl = new pkijs.SignedData({ schema: cmsContentSimpl.content });
+							debugger;
+						  }
+						  catch (ex) {
+							alert("Incorrect message format!");
+							return;
+						  }
+					
+						  // Get signed data buffer
+						  const signedDataBuffer = pvutils.stringToArrayBuffer(parser.childNodes[0].raw);
+					
+						  // Verify the signed data
+							
+							cmsSignedSimpl.verify({ signer: 0, data: signedDataBuffer })
+							.then(result => {
+								debugger;
+								console.log(`S/MIME message ${(!result) ? "verification failed" : "successfully verified"}!`);
+							}).catch(e => {
+								debugger;
+								console.error(e);
+								console.log("Error during verification. Please see developer console for more details");
+							});
+							
+						 
+					
+						}
+					  }
+					  else
+						alert("No child nodes!");
+
+				// You can further process the text or store it in state
+				})
+				.catch(error => {
+					console.error('Error fetching text data:', error);
+				});
+			}
+		}
+	  }, [message]);
+
+
 	const [showSmimeDetails, setShowSmimeDetails] = useState(false);
 	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 	// @ts-ignore
@@ -461,7 +536,7 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps, actions }): ReactEle
 				)}
 				
 			</Container>
-			{(
+			{signed && (
 			<Container
 				orientation="horizontal"
 				padding={{ horizontal: 'small' }}
