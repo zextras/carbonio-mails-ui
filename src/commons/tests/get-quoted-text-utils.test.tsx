@@ -5,6 +5,7 @@
  */
 import {
 	getOriginalHtmlContent,
+	getOriginalTextContent,
 	getQuotedTextFromOriginalContent,
 	htmlEncode,
 	trim
@@ -53,7 +54,12 @@ describe('Get Quoted Test Utils', () => {
 			);
 		});
 	});
-
+	describe('Get original text content', () => {
+		it('should handle text', () => {
+			const originalText = 'This is a test';
+			expect(getOriginalTextContent(originalText)).toBe(originalText);
+		});
+	});
 	describe('Get original html content', () => {
 		it('should handle html with div', () => {
 			const originalHTML = '<div>Test</div>';
