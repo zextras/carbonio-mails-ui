@@ -67,10 +67,24 @@ describe('Get Quoted Test Utils', () => {
 			expect(getOriginalHtmlContent(originalHTML)).toBe('<div>Test</div>');
 		});
 
-		it('should remove Original Message start/stop quote blocks', () => {
-			const originalHTML =
-				'<div>Test div</div> --- Original Message --- <p>Test</p> --- Original Message ---';
+		it.each([
+			'Forwarded Message',
+			'Weitergeleitete Nachricht',
+			'Original Message',
+			'Originalnachricht'
+		])('should remove start/stop quote blocks', (blockName) => {
+			const originalHTML = `<div>Test div</div> --- ${blockName} --- <p>Test</p> ---  ${blockName}  ---`;
 			expect(getOriginalHtmlContent(originalHTML)).toBe('<div>Test div</div>');
+		});
+
+		it.each([
+			'Forwarded Message',
+			'Weitergeleitete Nachricht',
+			'Original Message',
+			'Originalnachricht'
+		])('should not remove Original Message if first in text', (blockName) => {
+			const originalHTML = `--- ${blockName} --- <p>Test</p> ---  ${blockName}  ---`;
+			expect(getOriginalHtmlContent(originalHTML)).toBe(originalHTML);
 		});
 
 		it('should handle html with hr element', () => {
