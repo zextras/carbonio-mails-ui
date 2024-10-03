@@ -195,6 +195,10 @@ export const HtmlMessageRenderer: FC<HtmlMessageRendererType> = ({ msgId }) => {
 		() => t('warningBanner.truncatedMessage.button', 'LOAD MESSAGE'),
 		[]
 	);
+	const loadingMessageLabel = useMemo(
+		() => t('warningBanner.truncatedMessage.loadingButton', 'LOADING...'),
+		[]
+	);
 	const truncatedWarningLabel = useMemo(
 		() =>
 			t('warningBanner.truncatedMessage.label', 'The message is too large and has been cropped'),
@@ -208,6 +212,7 @@ export const HtmlMessageRenderer: FC<HtmlMessageRendererType> = ({ msgId }) => {
 		}
 		dispatch(getFullMsgAsyncThunk({ msgId })).finally(() => setIsLoadingMessage(false));
 	};
+
 	return (
 		<div ref={divRef} className="force-white-bg" style={{ height: '100%' }}>
 			{showBanner && !showExternalImage && (
@@ -257,7 +262,7 @@ export const HtmlMessageRenderer: FC<HtmlMessageRendererType> = ({ msgId }) => {
 						<Button
 							backgroundColor="transparent"
 							type="outlined"
-							label={'LOADING...'}
+							label={loadingMessageLabel}
 							icon={AnimatedLoaderWarning}
 							iconPlacement="left"
 							color="warning"
