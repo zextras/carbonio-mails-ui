@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, useCallback, useState } from 'react';
+import React, { ReactNode, useCallback, useState } from 'react';
 
 import { Text, useModal } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
@@ -39,7 +39,7 @@ const ExtraWindowsContext = React.createContext<ExtraWindowsContextType>({});
  *
  * @param children
  */
-const ExtraWindowsManager: FC = ({ children }) => {
+const ExtraWindowsManager = ({ children }: { children: ReactNode }): React.JSX.Element => {
 	const [windowsData, setWindowsData] = useState<Array<ExtraWindowsCreationResult>>([]);
 	const { createModal, closeModal } = useModal();
 

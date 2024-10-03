@@ -189,7 +189,7 @@ const HtmlMessageRenderer: FC<HtmlMessageRendererType> = ({
 	}, [from, settingsPref.zimbraPrefMailTrustedSenderList]);
 
 	const saveTrustee = useCallback(
-		(trustee) => {
+		(trustee: string) => {
 			let trusteeAddress: string[] = [];
 			if (settingsPref.zimbraPrefMailTrustedSenderList) {
 				trusteeAddress = isArray(settingsPref.zimbraPrefMailTrustedSenderList)
