@@ -12,7 +12,7 @@ import { API_REQUEST_STATUS } from '../../../../constants';
 import { useCompleteMessage } from '../../../../store/zustand/search/hooks/hooks';
 import MailPreview from '../../../app/detail-panel/preview/mail-preview';
 import { useExtraWindow } from '../../../app/extra-windows/use-extra-window';
-import { SearchPreviewPanelHeader } from '../../preview/search-preview-panel-header';
+import { SearchExtraWindowPanelHeader } from '../../extra-window/search-extra-window-panel-header';
 
 export const SearchMessagePanel = ({ messageId }: { messageId: string }): React.JSX.Element => {
 	const { message, messageStatus } = useCompleteMessage(messageId);
@@ -39,7 +39,7 @@ export const SearchMessagePanel = ({ messageId }: { messageId: string }): React.
 			crossAlignment="flex-start"
 			data-testid={`MessagePanel-${message.id}`}
 		>
-			{!isInsideExtraWindow && <SearchPreviewPanelHeader item={message} />}
+			{!isInsideExtraWindow && <SearchExtraWindowPanelHeader item={message} />}
 			{message?.isComplete && (
 				<Container
 					style={{ overflowY: 'auto' }}

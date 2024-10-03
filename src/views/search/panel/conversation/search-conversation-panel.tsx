@@ -14,7 +14,7 @@ import { SearchConversationMessagePanel } from './search-conversation-message-pa
 import { API_REQUEST_STATUS } from '../../../../constants';
 import { useCompleteConversation } from '../../../../store/zustand/search/hooks/hooks';
 import { useExtraWindow } from '../../../app/extra-windows/use-extra-window';
-import { SearchPreviewPanelHeader } from '../../preview/search-preview-panel-header';
+import { SearchExtraWindowPanelHeader } from '../../extra-window/search-extra-window-panel-header';
 
 export const SearchConversationPanel = (): React.JSX.Element => {
 	const { conversationId } = useParams<{ conversationId: string }>();
@@ -53,7 +53,7 @@ export const SearchConversationPanel = (): React.JSX.Element => {
 			data-testid={`SearchConversationPanel-${conversationId}`}
 		>
 			<>
-				{!isInsideExtraWindow && <SearchPreviewPanelHeader item={conversation} />}
+				{!isInsideExtraWindow && <SearchExtraWindowPanelHeader item={conversation} />}
 				<Container
 					style={{ overflowY: 'auto' }}
 					height="fill"

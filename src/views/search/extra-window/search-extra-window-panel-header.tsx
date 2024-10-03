@@ -18,7 +18,7 @@ import { replaceHistory, t } from '@zextras/carbonio-shell-ui';
 
 import type { Conversation, MailMessage } from '../../../types';
 
-export const SearchPreviewPanelHeader: FC<{
+export const SearchExtraWindowPanelHeader: FC<{
 	item: Conversation | (Partial<MailMessage> & Pick<MailMessage, 'id'>);
 }> = ({ item }) => {
 	const replaceHistoryCallback = useCallback(() => replaceHistory(`/`), []);
