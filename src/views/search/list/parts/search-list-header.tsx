@@ -6,8 +6,8 @@
 
 import React, { useMemo } from 'react';
 
-import { MultipleSelectionActionsPanel } from '../../../../ui-actions/multiple-selection-actions-panel';
 import { Breadcrumbs } from '../../../app/folder-panel/parts/breadcrumbs';
+import { MultipleSelectionActionsPanel } from '../../../app/folder-panel/parts/multiple-selection-actions-panel';
 
 type SearchConversationListHeaderProps = {
 	items: Array<{ id: string }>;
