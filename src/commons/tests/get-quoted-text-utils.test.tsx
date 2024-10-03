@@ -93,6 +93,18 @@ describe('Get Quoted Test Utils', () => {
 			}
 		);
 
+		it.each(['OutlookMessageHeader', 'gmail_quote'])(
+			'should return empty quoted div if it contains a div has',
+			(className: string) => {
+				const originalContent = '<div>Original content</div>';
+				const extraContent = `<div class="${className}"></div>`;
+				const body = originalContent + extraContent;
+				expect(getQuotedTextFromOriginalContent(body, originalContent)).toBe(
+					`<div class="quoted_text"></div>`
+				);
+			}
+		);
+
 		it('should return empty quoted div if it contains a div with class OutlookMessageHeader', () => {
 			const originalContent = '<div>Original content</div>';
 			const extraContent = '<div class="OutlookMessageHeader"></div>';
