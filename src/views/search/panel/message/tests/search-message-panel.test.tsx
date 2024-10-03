@@ -44,7 +44,7 @@ describe('Message Panel', () => {
 		);
 		updateMessageStatus('1', API_REQUEST_STATUS.fulfilled);
 
-		setupTest(<SearchMessagePanel />, { store });
+		setupTest(<SearchMessagePanel messageId="1" />, { store });
 
 		expect(await screen.findByTestId('MessagePanel-1')).toBeVisible();
 		expect(await screen.findByText('Test subject')).toBeInTheDocument();

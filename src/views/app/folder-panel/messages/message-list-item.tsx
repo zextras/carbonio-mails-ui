@@ -234,6 +234,7 @@ export const MessageListItem: FC<MessageListItemProps> = memo(function MessageLi
 				onDoubleClick={onDoubleClick}
 				shouldReplaceHistory={shouldReplaceHistory}
 				deselectAll={deselectAll}
+				messagePreviewFactory={messagePreviewFactory}
 			>
 				<div style={{ alignSelf: 'center' }} data-testid={`message-list-item-avatar-${item.id}`}>
 					<ItemAvatar
