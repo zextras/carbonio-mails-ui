@@ -76,12 +76,23 @@ describe('Get Quoted Test Utils', () => {
 			expect(getQuotedTextFromOriginalContent(body, originalContent)).toBe('');
 		});
 
-		it('should return extra content in body if longer than 5 characters', () => {
+		it.each(['a'.repeat(6), '<div class="aaa"></div>'])(
+			'should return extra content in body if longer than 5 characters',
+			(extraContent) => {
+				const originalContent = '<div>Original content</div>';
+				const body = originalContent + extraContent;
+				expect(getQuotedTextFromOriginalContent(body, originalContent)).toBe(
+					`<div class="quoted_text">${extraContent}</div>`
+				);
+			}
+		);
+
+		it('should return empty quoted div if it contains a div with class OutlookMessageHeader', () => {
 			const originalContent = '<div>Original content</div>';
-			const extraContent = 'a'.repeat(6);
+			const extraContent = '<div class="OutlookMessageHeader"></div>';
 			const body = originalContent + extraContent;
 			expect(getQuotedTextFromOriginalContent(body, originalContent)).toBe(
-				`<div class="quoted_text">${extraContent}</div>`
+				`<div class="quoted_text"></div>`
 			);
 		});
 	});
