@@ -40,6 +40,8 @@ import {
 	ConvActionRequest,
 	ConvActionResponse,
 	ExtraWindowsContextType,
+	GetMsgRequest,
+	GetMsgResponse,
 	MsgActionRequest,
 	MsgActionResponse,
 	SearchConvRequest,
@@ -541,6 +543,38 @@ describe('SearchView', () => {
 			const receivedRequest = await apiInterceptor;
 			expect(receivedRequest.action.id).toBe('10');
 			expect(receivedRequest.action.op).toBe('trash');
+		});
+
+		it('should display the message view panel', async () => {
+			const messageId = '10';
+			const soapMessage = getSoapMessage(messageId, { su: 'message 1 Subject', f: 'u' });
+			const searchInterceptor = createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
+				m: [soapMessage],
+				more: false
+			});
+
+			const getMsgInterceptor = createSoapAPIInterceptor<GetMsgRequest, GetMsgResponse>('GetMsg', {
+				m: [soapMessage]
+			});
+
+			const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
+			const searchViewProps: SearchViewProps = {
+				useQuery: () => [[queryChip], noop],
+				useDisableSearch: () => [false, noop],
+				ResultsHeader: resultsHeader
+			};
+
+			setupTest(<SearchView {...searchViewProps} />, {
+				store,
+				initialEntries: [`/message/${messageId}`]
+			});
+
+			await act(async () => {
+				await searchInterceptor;
+				await getMsgInterceptor;
+			});
+
+			expect(await screen.findByTestId(`SearchMessagePanel-${messageId}`)).toBeInTheDocument();
 		});
 	});
 

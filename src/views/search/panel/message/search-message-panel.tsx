@@ -47,6 +47,7 @@ export const SearchMessagePanel = ({ messageId }: { messageId: string }): React.
 					background="gray5"
 					padding={{ horizontal: 'large', bottom: 'small', top: 'large' }}
 					mainAlignment="flex-start"
+					data-testid={`SearchMessagePanel-${messageId}`}
 				>
 					<Container height="fit" mainAlignment="flex-start" background="gray5">
 						{message && messageStatus === API_REQUEST_STATUS.fulfilled && (
