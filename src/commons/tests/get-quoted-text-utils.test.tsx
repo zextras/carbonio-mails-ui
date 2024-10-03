@@ -55,7 +55,13 @@ describe('Get Quoted Test Utils', () => {
 			const originalHTML = '<div>Test</div>';
 			expect(getOriginalHtmlContent(originalHTML)).toBe('<div>Test</div>');
 		});
+
+		it('should handle html with hr element', () => {
+			const originalHTML = '<div><hr/>Test</div>';
+			expect(getOriginalHtmlContent(originalHTML)).toBe('<div><hr/>Test</div>');
+		});
 	});
+
 	describe('Get quoted text from original content', () => {
 		it('should return empty if body equal to original content', () => {
 			const originalHTML = '<div>Test</div>';
