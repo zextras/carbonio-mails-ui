@@ -206,7 +206,7 @@ const Attachment: FC<AttachmentType> = ({
 						createSnackbar({
 							key: `mail-moved-root`,
 							replace: true,
-							type: 'info',
+							severity: 'info',
 							hideButton: true,
 							label: t('message.snackbar.att_saved', 'Attachment saved in the selected folder'),
 							autoHideTimeout: 3000
@@ -272,7 +272,7 @@ const Attachment: FC<AttachmentType> = ({
 				createSnackbar({
 					key: `eml-attachment-failed-download`,
 					replace: true,
-					type: 'error',
+					severity: 'error',
 					hideButton: true,
 					label: t(
 						'message.snackbar.eml_download_failed',

@@ -247,7 +247,7 @@ const SettingsView: FC = () => {
 				// At the moment we show only the last error
 				createSnackbar({
 					key: `signature-validation-error`,
-					type: 'error',
+					severity: 'error',
 					label: validationResult[validationResult.length - 1],
 					autoHideTimeout: TIMEOUTS.SNACKBAR_DEFAULT_TIMEOUT,
 					hideButton: true,
@@ -318,7 +318,7 @@ const SettingsView: FC = () => {
 					createSnackbar({
 						key: `new`,
 						replace: true,
-						type: 'info',
+						severity: 'info',
 						label: t('message.snackbar.settings_saved', 'Settings saved correctly'),
 						autoHideTimeout: 3000,
 						hideButton: true
@@ -337,7 +337,7 @@ const SettingsView: FC = () => {
 					createSnackbar({
 						key: `new`,
 						replace: true,
-						type: 'error',
+						severity: 'error',
 						label: t('label.error_try_again', 'Something went wrong, please try again'),
 						autoHideTimeout: 3000,
 						hideButton: true
@@ -365,7 +365,7 @@ const SettingsView: FC = () => {
 					createSnackbar({
 						key: `new`,
 						replace: true,
-						type: 'info',
+						severity: 'info',
 						label: t('message.snackbar.settings_saved', 'Settings saved correctly'),
 						autoHideTimeout: 3000,
 						hideButton: true
@@ -383,7 +383,7 @@ const SettingsView: FC = () => {
 					createSnackbar({
 						key: `new`,
 						replace: true,
-						type: 'error',
+						severity: 'error',
 						label: t('label.error_try_again', 'Something went wrong, please try again'),
 						autoHideTimeout: 3000,
 						hideButton: true

@@ -73,7 +73,7 @@ export const useRemoveFilter = (): ((arg: CompProps) => void) => {
 						key: `share`,
 						replace: true,
 						hideButton: true,
-						type: 'error',
+						severity: 'error',
 						label:
 							error?.message ||
 							t('label.error_try_again', 'Something went wrong, please try again'),
@@ -114,7 +114,7 @@ export const useAddFilter = (): ((arg: CompProps) => void) => {
 				.catch((error: { message: string }) => {
 					createSnackbar({
 						key: 'filter-delete-error',
-						type: 'error',
+						severity: 'error',
 						label:
 							error.message || t('label.error_try_again', 'Something went wrong, please try again'),
 						hideButton: true
@@ -141,7 +141,7 @@ export const useDeleteOutgoingFilter = (): ((args: DeleteOutgoingFilterCompProps
 				.then(() => {
 					createSnackbar({
 						key: 'filter-delete-success',
-						type: 'info',
+						severity: 'info',
 						label: t('settings.filter_deleted', 'Filter successfully deleted'),
 						hideButton: true
 					});
@@ -150,7 +150,7 @@ export const useDeleteOutgoingFilter = (): ((args: DeleteOutgoingFilterCompProps
 				.catch((error: { message: any }) => {
 					createSnackbar({
 						key: 'filter-delete-error',
-						type: 'error',
+						severity: 'error',
 						label:
 							error.message || t('label.error_try_again', 'Something went wrong, please try again'),
 						hideButton: true
@@ -178,7 +178,7 @@ export const useDeleteFilter = (): ((args: DeleteFilterCompProps) => void) => {
 				.then(() => {
 					createSnackbar({
 						key: 'filter-delete-success',
-						type: 'info',
+						severity: 'info',
 						label: t('settings.filter_deleted', 'Filter successfully deleted'),
 						hideButton: true
 					});
@@ -187,7 +187,7 @@ export const useDeleteFilter = (): ((args: DeleteFilterCompProps) => void) => {
 				.catch((error: { message: string }) => {
 					createSnackbar({
 						key: 'filter-delete-error',
-						type: 'error',
+						severity: 'error',
 						label:
 							error.message || t('label.error_try_again', 'Something went wrong, please try again'),
 						hideButton: true

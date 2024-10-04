@@ -53,7 +53,7 @@ const RedirectMessageAction = ({ onClose, id }: RedirectActionProps): ReactEleme
 		createSnackbar({
 			key: `redirect-${id}`,
 			replace: true,
-			type: 'error',
+			severity: 'error',
 			label: t('label.error_try_again', 'Something went wrong, please try again'),
 			autoHideTimeout: TIMEOUTS.REDIRECT
 		});
@@ -73,7 +73,7 @@ const RedirectMessageAction = ({ onClose, id }: RedirectActionProps): ReactEleme
 						createSnackbar({
 							key: `redirect-${id}`,
 							replace: true,
-							type: 'success',
+							severity: 'success',
 							label: t('messages.snackbar.message_redirected', 'The message has been redirected'),
 							autoHideTimeout: TIMEOUTS.REDIRECT
 						});

@@ -70,7 +70,7 @@ export const RecoverMessages = (): React.JSX.Element => {
 				createSnackbar({
 					key: `recover-messages-error`,
 					replace: true,
-					type: 'error',
+					severity: 'error',
 					label: t('label.error_try_again', 'Something went wrong, please try again'),
 					autoHideTimeout: 3000,
 					hideButton: true
@@ -87,7 +87,7 @@ export const RecoverMessages = (): React.JSX.Element => {
 				createSnackbar({
 					key: `recover-no-messages-error`,
 					replace: true,
-					type: 'info',
+					severity: 'info',
 					label: t('label.error_no_backup_messages', 'Your search did not find any message'),
 					autoHideTimeout: 3000,
 					hideButton: true

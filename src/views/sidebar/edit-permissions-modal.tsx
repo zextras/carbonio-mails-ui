@@ -82,7 +82,7 @@ const EditPermissionsModal: FC<EditPermissionsModalProps> = ({
 					key: `share-${folder.id}`,
 					replace: true,
 					hideButton: true,
-					type: 'info',
+					severity: 'info',
 					label: editMode
 						? t('snackbar.share_updated', '"Access rights updated"')
 						: t('snackbar.folder_shared', 'Folder shared'),
@@ -103,7 +103,7 @@ const EditPermissionsModal: FC<EditPermissionsModalProps> = ({
 							createSnackbar({
 								key: `share-${folder.id}`,
 								replace: true,
-								type: 'error',
+								severity: 'error',
 								hideButton: true,
 								label: t('label.error_try_again', 'Something went wrong, please try again'),
 								autoHideTimeout: 3000

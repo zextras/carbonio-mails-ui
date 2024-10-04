@@ -292,7 +292,7 @@ const ModifyFilterModal: FC<ComponentProps> = ({
 					key: `share`,
 					replace: true,
 					hideButton: true,
-					type: 'info',
+					severity: 'info',
 					label: t('label.filter_modified', 'Filter modified succesfully'),
 					autoHideTimeout: 5000
 				});
@@ -302,7 +302,7 @@ const ModifyFilterModal: FC<ComponentProps> = ({
 					key: `share`,
 					replace: true,
 					hideButton: true,
-					type: 'error',
+					severity: 'error',
 					label:
 						error?.message || t('label.error_try_again', 'Something went wrong, please try again'),
 					autoHideTimeout: 5000

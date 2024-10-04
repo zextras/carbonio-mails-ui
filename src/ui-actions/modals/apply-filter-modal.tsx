@@ -58,7 +58,7 @@ export const ApplyFilterModal: FC<ApplyFilterModalProps> = ({ criteria, modalId 
 			.then((serviceResult) => {
 				createSnackbar({
 					key: `applyFilter-${criteria.filterName}-completed`,
-					type: 'success',
+					severity: 'success',
 					label: t('messages.snackbar.apply_filter_rules_completed', {
 						filterName: criteria.filterName,
 						involvedMessagesCount: serviceResult.messagesId.length,
@@ -74,7 +74,7 @@ export const ApplyFilterModal: FC<ApplyFilterModalProps> = ({ criteria, modalId 
 			.catch((err) => {
 				createSnackbar({
 					key: `applyFilter-${criteria.filterName}-error`,
-					type: 'info',
+					severity: 'info',
 					label:
 						err && err !== ''
 							? err
@@ -90,7 +90,7 @@ export const ApplyFilterModal: FC<ApplyFilterModalProps> = ({ criteria, modalId 
 
 		createSnackbar({
 			key: `applyFilter-${criteria.filterName}-started`,
-			type: 'info',
+			severity: 'info',
 			label: t('messages.snackbar.apply_filter_rules_started', {
 				filterName: criteria.filterName,
 				folderPath: folder.absFolderPath,

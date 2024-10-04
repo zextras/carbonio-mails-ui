@@ -52,7 +52,7 @@ const CreateUpdateTagModal: FC<CreateUpdateTagModalPropType> = ({
 					createSnackbar({
 						key: `new-tag`,
 						replace: true,
-						type: 'info',
+						severity: 'info',
 						label: t('messages.snackbar.tag_created', {
 							name,
 							defaultValue: 'Tag {{name}} successfully created'
@@ -72,7 +72,7 @@ const CreateUpdateTagModal: FC<CreateUpdateTagModalPropType> = ({
 				createSnackbar({
 					key: `update-tag`,
 					replace: true,
-					type: 'info',
+					severity: 'info',
 					label: t('messages.snackbar.tag_updated', 'Tag successfully updated'),
 					autoHideTimeout: 3000,
 					hideButton: true
@@ -83,7 +83,7 @@ const CreateUpdateTagModal: FC<CreateUpdateTagModalPropType> = ({
 				createSnackbar({
 					key: `update-tag-error`,
 					replace: true,
-					type: 'error',
+					severity: 'error',
 					label: t(
 						'messages.snackbar.tag_not_updated',
 						'Something went wrong, tag not updated. Please try again.'
