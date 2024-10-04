@@ -28,7 +28,8 @@ import {
 	Dropdown,
 	ContainerProps,
 	IconButton,
-	getColor
+	getColor,
+	ChipItem
 } from '@zextras/carbonio-design-system';
 import { useTags, useUserAccounts, runSearch, t } from '@zextras/carbonio-shell-ui';
 import {
@@ -101,14 +102,17 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps, actions }): ReactEle
 	const [_minWidth, _setMinWidth] = useState('');
 	const [isContactListExpand, setIsContactListExpand] = useState(false);
 	const mainContact = find(message.participants, ['type', 'f']) || fallbackContact;
-	const _onClick = useCallback((e) => !e.isDefaultPrevented() && onClick(e), [onClick]);
+	const _onClick = useCallback(
+		(e: React.MouseEvent) => !e.isDefaultPrevented() && onClick(e),
+		[onClick]
+	);
 	const attachments = retrieveAttachmentsType(message, 'attachment');
 	const senderContact = find(message.participants, ['type', 's']);
 	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 	// @ts-ignore
 	const { folderId } = useParams();
 
-	const contactListExpandCB = useCallback((contactListExpand) => {
+	const contactListExpandCB = useCallback((contactListExpand: boolean) => {
 		setIsContactListExpand(contactListExpand);
 	}, []);
 
@@ -137,7 +141,7 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps, actions }): ReactEle
 		() =>
 			reduce(
 				tagsFromStore,
-				(acc: any, v) => {
+				(acc, v) => {
 					if (includes(message.tags, v.id)) {
 						acc.push({
 							...v,
@@ -172,6 +176,9 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps, actions }): ReactEle
 										name: tagNotInList.split(':')[1],
 										defaultValue: '{{name}} - Not in your tag list'
 									}),
+									// TODO: align the use of the property with the type exposed by the shell
+									// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+									// @ts-ignore
 									color: ZIMBRA_STANDARD_COLORS[0].hex,
 									customComponent: (
 										<Row takeAvailableSpace mainAlignment="flex-start">
