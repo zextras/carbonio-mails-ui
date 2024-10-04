@@ -8,6 +8,7 @@ import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
 import { Container, FormSection } from '@zextras/carbonio-design-system';
 import {
 	AccountSettings,
+	Identity,
 	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 	// @ts-ignore
 	SettingsHeader,
@@ -38,7 +39,14 @@ import { NO_SIGNATURE_ID } from '../../helpers/signatures';
 import { useAppDispatch } from '../../hooks/redux';
 import { useUiUtilities } from '../../hooks/use-ui-utilities';
 import { GetAllSignatures, SignatureRequest } from '../../store/actions/signatures';
-import type { AccountIdentity, PrefsType, PropsType, SignItemType, Signature } from '../../types';
+import type {
+	AccountIdentity,
+	PrefsType,
+	PropsType,
+	SignItemType,
+	Signature,
+	UpdateSettingsProps
+} from '../../types';
 
 /* to keep track of changes done to props we use 3 different values:
  * - originalProps is the status of the props when you open the settings for the first time
@@ -114,7 +122,7 @@ const SettingsView: FC = () => {
 	}, [currentProps, identities, prefs, attrs]);
 
 	const updatePrefs = useCallback(
-		(e) => {
+		(e: UpdateSettingsProps) => {
 			setCurrentPrefs({ ...currentPrefs, [e.target.name]: e.target.value });
 			setUpdatedPrefs({ ...updatedPrefs, [e.target.name]: e.target.value });
 		},
@@ -122,7 +130,7 @@ const SettingsView: FC = () => {
 	);
 
 	const updateAttrs = useCallback(
-		(e) => {
+		(e: UpdateSettingsProps) => {
 			setCurrentAttrs({ ...currentAttrs, [e.target.name]: e.target.value });
 			setUpdatedAttrs({ ...updatedAttrs, [e.target.name]: e.target.value });
 		},
@@ -130,14 +138,14 @@ const SettingsView: FC = () => {
 	);
 
 	const updateProps = useCallback(
-		(e) => {
+		(e: UpdateSettingsProps) => {
 			setUpdatedProps({ ...updatedProps, [e.target.name]: e.target.value });
 		},
 		[updatedProps]
 	);
 
 	const updateIdentities = useCallback(
-		(e) => {
+		(e:) => {
 			const data = map(updatedIdentities, (item: AccountIdentity) => {
 				if (item.id === e.id) {
 					return e;

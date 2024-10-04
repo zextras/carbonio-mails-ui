@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, memo, useCallback, useMemo } from 'react';
+import React, { FC, memo, SyntheticEvent, useCallback, useMemo } from 'react';
 
 import {
 	Badge,
@@ -75,7 +75,7 @@ export const MessageListItem: FC<MessageListItemProps> = memo(function MessageLi
 	);
 
 	const onClick = useCallback(
-		(e) => {
+		(e: React.MouseEvent) => {
 			if (!e.isDefaultPrevented()) {
 				if (item.read === false && zimbraPrefMarkMsgRead) {
 					setMsgRead({ ids: [item.id], value: false, dispatch }).onClick(e);
@@ -97,7 +97,7 @@ export const MessageListItem: FC<MessageListItemProps> = memo(function MessageLi
 		]
 	);
 	const onDoubleClick = useCallback(
-		(e) => {
+		(e: React.MouseEvent) => {
 			if (!e.isDefaultPrevented()) {
 				debouncedPushHistory.cancel();
 				const { id, isDraft } = item;

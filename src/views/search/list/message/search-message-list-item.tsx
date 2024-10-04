@@ -88,7 +88,7 @@ export const SearchMessageListItem: FC<SearchMessageListItemProps> = memo(functi
 		[completeMessage.read, completeMessage.id, zimbraPrefMarkMsgRead, dispatch]
 	);
 	const onDoubleClick = useCallback(
-		(e) => {
+		(e: React.MouseEvent) => {
 			if (e.isDefaultPrevented()) {
 				return;
 			}
