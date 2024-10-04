@@ -13,13 +13,13 @@ import { API_REQUEST_STATUS } from '../../../../constants';
 import { useCompleteConversation } from '../../../../store/zustand/search/hooks/hooks';
 import { ConversationMessagePreview } from '../../../app/detail-panel/conversation-message-preview';
 import { useExtraWindow } from '../../../app/extra-windows/use-extra-window';
-import { SearchPreviewPanelHeader } from '../search-preview-panel-header';
+import { SearchExtraWindowPanelHeader } from '../search-extra-window-panel-header';
 
-type SearchConversationPreviewPanelProps = { conversationId: string };
+type SearchConversationExtraWindowContainerPanelProps = { conversationId: string };
 
-export const SearchConversationPreviewPanelContainer: FC<SearchConversationPreviewPanelProps> = ({
-	conversationId
-}) => {
+export const SearchConversationExtraWindowPanelContainer: FC<
+	SearchConversationExtraWindowContainerPanelProps
+> = ({ conversationId }) => {
 	const { isInsideExtraWindow } = useExtraWindow();
 
 	const settings = useUserSettings();
@@ -45,7 +45,7 @@ export const SearchConversationPreviewPanelContainer: FC<SearchConversationPrevi
 			data-testid={`ConversationPreview-${conversation.id}`}
 		>
 			<>
-				{!isInsideExtraWindow && <SearchPreviewPanelHeader item={conversation} />}
+				{!isInsideExtraWindow && <SearchExtraWindowPanelHeader item={conversation} />}
 
 				<Container
 					style={{ overflowY: 'auto' }}

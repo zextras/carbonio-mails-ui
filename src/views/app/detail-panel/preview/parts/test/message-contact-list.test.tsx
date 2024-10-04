@@ -11,7 +11,7 @@ import { addBoard } from '@zextras/carbonio-shell-ui';
 import { filter } from 'lodash';
 
 import { setupTest } from '../../../../../../carbonio-ui-commons/test/test-setup';
-import { getMsg } from '../../../../../../store/actions';
+import { getMsgAsyncThunk } from '../../../../../../store/actions';
 import { selectMessage } from '../../../../../../store/messages-slice';
 import { generateStore } from '../../../../../../tests/generators/store';
 import MessageContactList from '../message-contact-list';
@@ -21,7 +21,7 @@ describe('Message contacts list', () => {
 		const store = generateStore();
 
 		// Invoke the fetch of the message and the store update
-		await store.dispatch<any>(getMsg({ msgId: '10' }));
+		await store.dispatch<any>(getMsgAsyncThunk({ msgId: '10' }));
 		const state = store.getState();
 		const message = selectMessage(state, '10');
 		const ccContacts = filter(message.participants, ['type', 'c'])[0];
@@ -61,7 +61,7 @@ describe('Message contacts list', () => {
 		const store = generateStore();
 
 		// Invoke the fetch of the message and the store update
-		await store.dispatch<any>(getMsg({ msgId: '10' }));
+		await store.dispatch<any>(getMsgAsyncThunk({ msgId: '10' }));
 		const state = store.getState();
 		const message = selectMessage(state, '10');
 		const bccContacts = filter(message.participants, ['type', 'b'])[0];

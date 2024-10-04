@@ -14,6 +14,7 @@ import { useAppSelector } from '../../../hooks/redux';
 import { selectMessage } from '../../../store/messages-slice';
 import { useMessageById } from '../../../store/zustand/search/store';
 import { ConvMessage, MailsStateType } from '../../../types';
+import { useInSearchModule } from '../../../ui-actions/utils';
 
 export type ConversationMessagePreviewProps = {
 	convMessage: ConvMessage;
@@ -32,7 +33,9 @@ export const ConversationMessagePreview: FC<ConversationMessagePreviewProps> = (
 		selectMessage(state, convMessage.id)
 	);
 	const messageFromSearchStore = useMessageById(convMessage.id);
-	const message = messageFromReduxStore || messageFromSearchStore;
+	const isInSearchModule = useInSearchModule();
+
+	const message = isInSearchModule ? messageFromSearchStore : messageFromReduxStore;
 
 	const messagePreviewFactory = useCallback(() => {
 		const folderId = getParentFolderId(message.parent);

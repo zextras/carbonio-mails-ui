@@ -32,10 +32,7 @@ export type IncompleteMessage = {
 	fragment?: string;
 	tags: string[];
 	parts: Array<MailMessagePart>;
-	body: {
-		contentType: string;
-		content: string;
-	};
+	body: BodyPart;
 	invite?: any;
 	shr?: any;
 	isComplete: boolean;
@@ -76,14 +73,12 @@ export type AttachmentPart = {
 
 export type MailMessage = IncompleteMessage & {
 	parts: Array<MailMessagePart>;
-	body: {
-		contentType: string;
-		content: string;
-	};
+	body: BodyPart;
 	parent: string;
 	isReadReceiptRequested?: boolean;
 };
 
+export type BodyPart = { contentType: string; content: string; truncated: boolean };
 /**
  * Parameters' type for the SendMsgRequest API command
  */
