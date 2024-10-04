@@ -194,7 +194,7 @@ const Attachment: FC<AttachmentType> = ({
 	}, [closeModal, createModal, onDeleteAttachment, onDownloadAndDelete]);
 
 	const confirmAction = useCallback(
-		(nodes) => {
+		(nodes: { id: string }[]) => {
 			soapFetch<CopyToFileRequest, CopyToFileResponse | ErrorSoapBodyResponse>('CopyToFiles', {
 				_jsns: 'urn:zimbraMail',
 				mid: messageId,
@@ -215,7 +215,7 @@ const Attachment: FC<AttachmentType> = ({
 						createSnackbar({
 							key: `mail-moved-root`,
 							replace: true,
-							type: 'warning',
+							severity: 'warning',
 							hideButton: true,
 							label: t(
 								'message.snackbar.att_err',
@@ -229,7 +229,7 @@ const Attachment: FC<AttachmentType> = ({
 					createSnackbar({
 						key: `calendar-moved-root`,
 						replace: true,
-						type: 'warning',
+						severity: 'warning',
 						hideButton: true,
 						label: t(
 							'message.snackbar.att_err',
@@ -244,7 +244,10 @@ const Attachment: FC<AttachmentType> = ({
 	const onCreateContact = useCallback(() => {
 		createContact({ messageId, part });
 	}, [createContact, messageId, part]);
-	const isAValidDestination = useCallback((node) => node?.permissions?.can_write_file, []);
+	const isAValidDestination = useCallback(
+		(node: { permissions?: { can_write_file?: boolean } }) => node?.permissions?.can_write_file,
+		[]
+	);
 
 	const actionTarget = useMemo(
 		() => ({
@@ -322,7 +325,7 @@ const Attachment: FC<AttachmentType> = ({
 	]);
 
 	const preview = useCallback(
-		(ev) => {
+		(ev: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
 			ev.preventDefault();
 			// TODO remove the condition and the conditional block when IRIS-3918 will be implemented
 			if (isPreviewedByBrowser) {
@@ -592,7 +595,7 @@ const AttachmentsBlock: FC<{
 	);
 
 	const confirmAction = useCallback(
-		(nodes) => {
+		(nodes: any) => {
 			const promises = map(attachments, (att) => copyToFiles(att, messageId, nodes));
 			Promise.allSettled(promises).then((res: CopyToFileResponse[]) => {
 				const isFault = res.length === filter(res, (r) => r?.value?.Fault)?.length;
@@ -600,12 +603,12 @@ const AttachmentsBlock: FC<{
 					? false
 					: res.length === filter(res, ['status', 'fulfilled'])?.length;
 				const allFails = res.length === filter(res, ['status', 'rejected'])?.length;
-				const type = allSuccess ? 'info' : 'warning';
+				const severity = allSuccess ? 'info' : 'warning';
 				const label = getLabel({ allSuccess, allFails });
 				createSnackbar({
 					key: `calendar-moved-root`,
 					replace: true,
-					type,
+					severity,
 					hideButton: true,
 					label,
 					autoHideTimeout: 4000
@@ -615,7 +618,10 @@ const AttachmentsBlock: FC<{
 		[attachments, createSnackbar, getLabel, messageId]
 	);
 
-	const isAValidDestination = useCallback((node) => node?.permissions?.can_write_file, []);
+	const isAValidDestination = useCallback(
+		(node: { permissions?: { can_write_file?: boolean } }) => node?.permissions?.can_write_file,
+		[]
+	);
 
 	const actionTarget = useMemo(
 		() => ({

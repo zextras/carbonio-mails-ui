@@ -73,9 +73,8 @@ export const MessageListItem: FC<MessageListItemProps> = memo(function MessageLi
 			}),
 		[firstChildFolderId, item.id]
 	);
-
 	const onClick = useCallback(
-		(e: React.MouseEvent) => {
+		(e: React.MouseEvent<HTMLButtonElement> | React.KeyboardEvent<HTMLElement>) => {
 			if (!e.isDefaultPrevented()) {
 				if (item.read === false && zimbraPrefMarkMsgRead) {
 					setMsgRead({ ids: [item.id], value: false, dispatch }).onClick(e);

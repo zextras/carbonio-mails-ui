@@ -45,7 +45,7 @@ export const DeleteDraftModal = ({
 
 	const moveMsgToTrash = useMoveMsgToTrash();
 	const onDeleteAction = useCallback(
-		(ev) => {
+		(ev: React.ChangeEvent<HTMLInputElement>) => {
 			moveMsgToTrash({
 				ids,
 				dispatch,

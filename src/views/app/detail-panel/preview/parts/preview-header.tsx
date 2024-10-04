@@ -28,10 +28,9 @@ import {
 	Dropdown,
 	ContainerProps,
 	IconButton,
-	getColor,
-	ChipItem
+	getColor
 } from '@zextras/carbonio-design-system';
-import { useTags, useUserAccounts, runSearch, t } from '@zextras/carbonio-shell-ui';
+import { useTags, useUserAccounts, runSearch, t, Tag } from '@zextras/carbonio-shell-ui';
 import {
 	capitalize,
 	every,
@@ -141,7 +140,7 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps, actions }): ReactEle
 		() =>
 			reduce(
 				tagsFromStore,
-				(acc, v) => {
+				(acc: ChipProps[], v) => {
 					if (includes(message.tags, v.id)) {
 						acc.push({
 							...v,
@@ -238,7 +237,7 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps, actions }): ReactEle
 		[isTagInStore, message.tags, showMultiTagIcon]
 	);
 	const triggerSearch = useCallback(
-		(tagToSearch) =>
+		(tagToSearch: Tag) =>
 			runSearch(
 				[
 					{

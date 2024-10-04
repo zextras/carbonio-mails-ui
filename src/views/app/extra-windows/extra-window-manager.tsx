@@ -50,7 +50,7 @@ const ExtraWindowsManager = ({ children }: { children: ReactNode }): React.JSX.E
 	 * @param criteria
 	 */
 	const getWindow: ExtraWindowsContextType['getWindow'] = useCallback(
-		({ windowId, windowName }) => {
+		({ windowId, windowName }: { windowId?: string; windowName?: string }) => {
 			if (windowId) {
 				return windowsData.find((windowData) => windowData.id === windowId);
 			}

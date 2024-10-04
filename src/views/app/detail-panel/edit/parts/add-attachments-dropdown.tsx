@@ -24,7 +24,7 @@ import { buildArrayFromFileList } from '../../../../../helpers/files';
 import { isFulfilled } from '../../../../../helpers/promises';
 import { useEditorAttachments, useEditorText } from '../../../../../store/zustand/editor';
 import { MailsEditorV2 } from '../../../../../types';
-import { useGetPublicUrl } from '../edit-utils-hooks/use-get-public-url';
+import { useGetPublicUrl, UseGetPublicUrlRespType } from '../edit-utils-hooks/use-get-public-url';
 import {
 	useUploadFromFiles,
 	UseUploadFromFilesResult
@@ -73,7 +73,7 @@ export const AddAttachmentsDropdown: FC<AddAttachmentsDropdownProps> = ({ editor
 	);
 
 	const addPublicLinkFromFiles = useCallback(
-		(filesResponse) => {
+		(filesResponse: UseGetPublicUrlRespType[]) => {
 			const textWithLink = {
 				plainText: map(filesResponse, (i: { value: { url: string } }) => i.value.url)
 					.join('\n')

@@ -53,7 +53,7 @@ export type MsgListDraggableItemType = {
 };
 export type ListItemActionWrapperProps = {
 	children?: ReactNode;
-	onClick?: ContainerProps['onClick'];
+	onClick?: MouseEventHandler<HTMLDivElement>;
 	onDoubleClick?: ContainerProps['onDoubleClick'];
 	messagesToRender?: Array<IncompleteMessage>;
 	hoverTooltipLabel?: string;

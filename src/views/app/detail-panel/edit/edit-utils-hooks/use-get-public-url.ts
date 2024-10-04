@@ -37,8 +37,15 @@ export const useGetPublicUrl = ({
 	const { createSnackbar } = useUiUtilities();
 	const [getLink, getLinkAvailable] = useIntegratedFunction('get-link');
 
+	// {
+	//     node: { id: string | number };
+	//     description?: string;
+	//     expiresAt?: number;
+	//     type: 'createLink' | 'getLinksInfo';
+	// }
+
 	const getPublicUrl = useCallback(
-		(nodes) => {
+		(nodes: { id: string }[]) => {
 			const promises = map(nodes, (node) =>
 				getLink({ node, type: 'createLink', description: node.id })
 			);

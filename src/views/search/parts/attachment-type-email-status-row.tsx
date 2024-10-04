@@ -106,14 +106,22 @@ const AttachmentTypeEmailStatusRow: FC<AttachTypeEmailStatusRowPropType> = ({
 	);
 
 	const attachmentTypeOnInputType = useCallback(
-		(ev) => {
-			updateAttachmentTypeOptions(ev.target, attachmentTypeItems);
+		(
+			ev: React.KeyboardEvent<HTMLInputElement> & {
+				textContent: string | null;
+			}
+		) => {
+			updateAttachmentTypeOptions(ev.target as HTMLInputElement, attachmentTypeItems);
 		},
 		[updateAttachmentTypeOptions, attachmentTypeItems]
 	);
 	const emailStatusOnInputType = useCallback(
-		(ev) => {
-			updateEmailStatusOptions(ev.target, emailStatusItems);
+		(
+			ev: React.KeyboardEvent<HTMLInputElement> & {
+				textContent: string | null;
+			}
+		) => {
+			updateEmailStatusOptions(ev.target as HTMLInputElement, emailStatusItems);
 		},
 		[updateEmailStatusOptions, emailStatusItems]
 	);

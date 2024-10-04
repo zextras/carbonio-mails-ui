@@ -58,7 +58,7 @@ export const useUploadFromFiles = ({
 					const success = filter(res, ['status', 'fulfilled']);
 					const allSuccess = res.length === success?.length;
 					const allFails = res.length === filter(res, ['status', 'rejected'])?.length;
-					const type = allSuccess ? 'info' : 'warning';
+					const severity = allSuccess ? 'info' : 'warning';
 					// eslint-disable-next-line no-nested-ternary
 					const label = allSuccess
 						? t('message.snackbar.all_att_added', 'Attachments added successfully')
@@ -74,7 +74,7 @@ export const useUploadFromFiles = ({
 					createSnackbar({
 						key: `calendar-moved-root`,
 						replace: true,
-						type,
+						severity,
 						hideButton: true,
 						label,
 						autoHideTimeout: 4000

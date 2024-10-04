@@ -76,7 +76,7 @@ export const SearchMessageListItem: FC<SearchMessageListItemProps> = memo(functi
 	const messageActions = useMessageActions({ message: completeMessage, isAlone: true });
 
 	const onClick = useCallback(
-		(e) => {
+		(e: React.ChangeEvent<HTMLInputElement>) => {
 			if (e.isDefaultPrevented()) {
 				return;
 			}
