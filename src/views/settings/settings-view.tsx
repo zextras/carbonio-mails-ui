@@ -8,7 +8,7 @@ import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
 import { Container, FormSection } from '@zextras/carbonio-design-system';
 import {
 	AccountSettings,
-	Identity,
+	IdentityAttrs,
 	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 	// @ts-ignore
 	SettingsHeader,
@@ -145,8 +145,17 @@ const SettingsView: FC = () => {
 	);
 
 	const updateIdentities = useCallback(
-		(e) => {
-			const data = map(updatedIdentities, (item: AccountIdentity) => {
+		(e: {
+			id?: string | undefined;
+			target?:
+				| {
+						name: string;
+						value: string;
+				  }
+				| undefined;
+			_attrs?: IdentityAttrs | undefined;
+		}) => {
+			const data = map(updatedIdentities, (item) => {
 				if (item.id === e.id) {
 					return e;
 				}
@@ -187,7 +196,7 @@ const SettingsView: FC = () => {
 	);
 
 	const setNewOrForwardSignatureId = useCallback(
-		(itemsAdd, resp, oldSignatureId, isFowardSignature): void => {
+		(itemsAdd, resp, oldSignatureId: string, isFowardSignature: boolean): void => {
 			const newOrForwardSignatureToSet = itemsAdd?.find(
 				(item: SignItemType) => item.id === oldSignatureId
 			);

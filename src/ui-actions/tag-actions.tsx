@@ -5,7 +5,15 @@
  */
 import React, { ReactElement, useCallback, useMemo, useState } from 'react';
 
-import { Checkbox, Icon, Padding, Row, Text, useModal } from '@zextras/carbonio-design-system';
+import {
+	Checkbox,
+	DropdownItem,
+	Icon,
+	Padding,
+	Row,
+	Text,
+	useModal
+} from '@zextras/carbonio-design-system';
 import { Tag, replaceHistory, t, useTags } from '@zextras/carbonio-shell-ui';
 import { every, find, includes, map, reduce, some } from 'lodash';
 
@@ -20,12 +28,13 @@ import type {
 	Conversation,
 	ItemType,
 	MailMessage,
+	TagActionItemType,
 	TagActionsReturnType,
 	TagsFromStoreType
 } from '../types';
 import CreateUpdateTagModal from '../views/sidebar/parts/tags/create-update-tag-modal';
 
-export const createTag = ({ createModal, closeModal }: ArgumentType): TagActionsReturnType => ({
+export const createTag = ({ createModal, closeModal }: ArgumentType): DropdownItem => ({
 	id: TagsActionsType.NEW,
 	icon: 'TagOutline',
 	label: t('label.create_tag', 'Create Tag'),
@@ -49,7 +58,7 @@ export const createTag = ({ createModal, closeModal }: ArgumentType): TagActions
 	}
 });
 
-export const editTag = ({ createModal, closeModal, tag }: ArgumentType): TagActionsReturnType => ({
+export const editTag = ({ createModal, closeModal, tag }: ArgumentType): DropdownItem => ({
 	id: TagsActionsType.EDIT,
 	icon: 'Edit2Outline',
 	label: t('label.edit_tag', 'Edit Tag'),
@@ -77,11 +86,7 @@ export const editTag = ({ createModal, closeModal, tag }: ArgumentType): TagActi
 	}
 });
 
-export const deleteTag = ({
-	createModal,
-	closeModal,
-	tag
-}: ArgumentType): TagActionsReturnType => ({
+export const deleteTag = ({ createModal, closeModal, tag }: ArgumentType): DropdownItem => ({
 	id: TagsActionsType.DELETE,
 	icon: 'Untag',
 	label: t('label.delete_tag', 'Delete Tag'),
@@ -119,7 +124,7 @@ export const TagsDropdownItem = ({
 	const [checked, setChecked] = useState(includes(conversation.tags, tag.id));
 	const [isHovering, setIsHovering] = useState(false);
 	const toggleCheck = useCallback(
-		(value) => {
+		(value: boolean) => {
 			setChecked((c) => !c);
 			dispatch(
 				isMessage
@@ -223,7 +228,7 @@ export const MultiSelectTagsDropdownItem = ({
 
 	const [checked, setChecked] = useState(includes(tagsToShow, tag.id));
 	const toggleCheck = useCallback(
-		(value) => {
+		(value: boolean) => {
 			setChecked((c) => !c);
 			dispatch(
 				isMessage
@@ -410,7 +415,7 @@ export const applyTag = ({
 	};
 };
 
-export const useGetTagsActions = ({ tag }: ArgumentType): Array<TagActionsReturnType> => {
+export const useGetTagsActions = ({ tag }: ArgumentType): Array<DropdownItem> => {
 	const { createModal, closeModal } = useModal();
 	return useMemo(
 		() => [

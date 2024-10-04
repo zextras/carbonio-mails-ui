@@ -18,6 +18,8 @@ import { generateStore } from '../../../../../tests/generators/store';
 import { ExtraWindowCreationParams, ExtraWindowsCreationResult } from '../../../../../types';
 import { previewConversationOnSeparatedWindowAction } from '../search-conversation-preview-actions';
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 const TestComponent: FC = ({ children }) => <div>{children}</div>;
 describe('Preview conversation on new window', () => {
 	it('should call create window with correct parameters', () => {
@@ -49,6 +51,8 @@ describe('Preview conversation on new window', () => {
 
 		previewConversationOnSeparatedWindowAction('1', 'Test subject', spyCreateWindow).onClick();
 
+		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+		// @ts-ignore: Suppress TypeScript error for children prop issue
 		// eslint-disable-next-line testing-library/no-node-access
 		setupTest(<TestComponent>{spyParams.children}</TestComponent>, { store });
 		expect(await screen.findByTestId('ConversationPreview-1')).toBeVisible();

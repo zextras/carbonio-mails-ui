@@ -48,7 +48,7 @@ const EditPermissionsModal: FC<EditPermissionsModalProps> = ({
 	const [sendNotification, setSendNotification] = useState(true);
 	const [standardMessage, setStandardMessage] = useState('');
 	const [contacts, setContacts] = useState<any>([]);
-	const [shareWithUserRole, setshareWithUserRole] = useState(editMode ? grant.perm : 'r');
+	const [shareWithUserRole, setshareWithUserRole] = useState<string>(editMode ? grant.perm : 'r');
 
 	const { createSnackbar } = useUiUtilities();
 

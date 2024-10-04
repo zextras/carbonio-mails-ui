@@ -21,6 +21,8 @@ import {
 	previewMessageOnSeparatedWindowAction
 } from '../search-messages-preview-actions';
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 const TestComponent: FC = ({ children }) => <div>{children}</div>;
 describe('Preview message on new window', () => {
 	it('should call create window with correct parameters', () => {
@@ -58,6 +60,8 @@ describe('Preview message on new window', () => {
 			secondaryActions
 		]);
 
+		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+		// @ts-ignore: Suppress TypeScript error for children prop issue
 		// eslint-disable-next-line testing-library/no-node-access
 		setupTest(<TestComponent>{spyParams.children}</TestComponent>, { store });
 		expect(await screen.findByTestId('MailPreview-1')).toBeVisible();

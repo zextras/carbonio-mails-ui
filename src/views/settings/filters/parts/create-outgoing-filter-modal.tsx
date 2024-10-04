@@ -75,7 +75,10 @@ const CreateOutgoingFilterModal: FC<ComponentProps> = ({
 	]);
 
 	const toggleActiveFilter = useCallback(() => setActiveFilter(!activeFilter), [activeFilter]);
-	const onFilterNameChange = useCallback((ev) => setFilterName(ev.target.value), []);
+	const onFilterNameChange = useCallback(
+		(ev: React.ChangeEvent<HTMLInputElement>) => setFilterName(ev.target.value),
+		[]
+	);
 	const modalTitle = useMemo(() => t('settings.create_new_filter', 'Create new Filter'), [t]);
 	const inputLabel = useMemo(() => `${t('settings.filter_name', 'Filter Name')}*`, [t]);
 	const activeFilterLabel = useMemo(() => t('settings.active_filter', 'Active filter'), [t]);

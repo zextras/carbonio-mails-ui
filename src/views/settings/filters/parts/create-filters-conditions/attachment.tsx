@@ -58,7 +58,7 @@ const AttachmentCondition: FC<ComponentProps> = ({
 		}
 	}, [activeIndex, newFilters, setNewFilters, loadData, query]);
 
-	const handleQueryChange = useCallback((arg) => {
+	const handleQueryChange = useCallback((arg: object) => {
 		setQuery(arg);
 		setLoadData(true);
 	}, []);

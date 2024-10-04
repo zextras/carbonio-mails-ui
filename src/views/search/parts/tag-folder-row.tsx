@@ -24,13 +24,13 @@ const TagFolderRow: FC<TagFolderRowProps> = ({ compProps }): ReactElement => {
 
 	const chipOnAdd = useCallback(
 		(
-			label,
-			preText,
-			hasAvatar,
-			isGeneric,
-			isQueryFilter,
-			avatarIcon,
-			avatarBackground
+			label: string,
+			preText: string,
+			hasAvatar: boolean,
+			isGeneric: boolean,
+			isQueryFilter: boolean,
+			avatarIcon: string,
+			avatarBackground: string
 		): ChipOnAdd => ({
 			label: `${preText}:${label}`,
 			hasAvatar,
@@ -45,11 +45,11 @@ const TagFolderRow: FC<TagFolderRowProps> = ({ compProps }): ReactElement => {
 	);
 
 	const folderChipOnAdd = useCallback(
-		(label): any => chipOnAdd(label, 'in', true, false, true, 'FolderOutline', ''),
+		(label: string): any => chipOnAdd(label, 'in', true, false, true, 'FolderOutline', ''),
 		[chipOnAdd]
 	);
 	const tagChipOnAdd = useCallback(
-		(label): ChipOnAdd => {
+		(label: string): ChipOnAdd => {
 			const chipBg = filter(tagOptions, { label })[0];
 			return chipOnAdd(
 				label,
