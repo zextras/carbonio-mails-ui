@@ -145,7 +145,7 @@ const SettingsView: FC = () => {
 	);
 
 	const updateIdentities = useCallback(
-		(e:) => {
+		(e) => {
 			const data = map(updatedIdentities, (item: AccountIdentity) => {
 				if (item.id === e.id) {
 					return e;

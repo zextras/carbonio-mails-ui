@@ -128,11 +128,11 @@ export const RecoverMessages = (): React.JSX.Element => {
 		);
 	}, [closeModal, createModal, restoreMessages]);
 
-	const onDateTimePickerChange = useCallback((value) => {
+	const onDateTimePickerChange = useCallback((value: Date | null) => {
 		setRecoverDay(value);
 	}, []);
 
-	const handleTextFilterValueChange = useCallback((ev) => {
+	const handleTextFilterValueChange = useCallback((ev: React.ChangeEvent<HTMLInputElement>) => {
 		setSearchString(ev.target.value);
 	}, []);
 
