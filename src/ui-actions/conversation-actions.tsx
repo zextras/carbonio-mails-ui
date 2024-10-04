@@ -288,7 +288,7 @@ export const useSetConversationAsSpam = (): ((
 					createSnackbar({
 						key: `trash-${ids}`,
 						replace: true,
-						type: 'info',
+						severity: 'info',
 						label: value
 							? t('messages.snackbar.marked_as_non_spam', 'You’ve marked this e-mail as Not Spam')
 							: t('messages.snackbar.marked_as_spam', 'You’ve marked this e-mail as Spam'),
@@ -315,7 +315,7 @@ export const useSetConversationAsSpam = (): ((
 								createSnackbar({
 									key: `trash-${ids}`,
 									replace: true,
-									type: 'error',
+									severity: 'error',
 									label: t('label.error_try_again', 'Something went wrong, please try again'),
 									autoHideTimeout: 3000
 								});
@@ -359,7 +359,7 @@ export const useMoveConversationToTrash = (): ((
 								createSnackbar({
 									key: `edit`,
 									replace: true,
-									type: 'success',
+									severity: 'success',
 									hideButton: true,
 									label: t(
 										'messages.snackbar.email_restored',
@@ -372,7 +372,7 @@ export const useMoveConversationToTrash = (): ((
 									key: `edit`,
 									replace: true,
 									hideButton: true,
-									type: 'error',
+									severity: 'error',
 									label: t('label.error_try_again', 'Something went wrong, please try again.'),
 									autoHideTimeout: 3000
 								});
@@ -394,7 +394,7 @@ export const useMoveConversationToTrash = (): ((
 							createSnackbar({
 								key: `trash-${ids}`,
 								replace: true,
-								type: 'info',
+								severity: 'info',
 								actionLabel: t('label.undo', 'Undo'),
 								label: t('snackbar.email_moved_to_trash', 'E-mail moved to Trash'),
 								autoHideTimeout: 5000,
@@ -404,7 +404,7 @@ export const useMoveConversationToTrash = (): ((
 							createSnackbar({
 								key: `trash-${ids}`,
 								replace: true,
-								type: 'error',
+								severity: 'error',
 								label: t('label.error_try_again', 'Something went wrong, please try again'),
 								autoHideTimeout: 3000,
 								hideButton: true

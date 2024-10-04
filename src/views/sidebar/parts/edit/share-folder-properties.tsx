@@ -90,7 +90,7 @@ const Actions: FC<ActionProps> = ({
 				createSnackbar({
 					key: `resend-${folder.id}`,
 					replace: true,
-					type: 'info',
+					severity: 'info',
 					label: t('snackbar.share_resend', 'Share invite resent'),
 					autoHideTimeout: 2000,
 					hideButton: true

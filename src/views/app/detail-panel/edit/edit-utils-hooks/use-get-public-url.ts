@@ -63,7 +63,7 @@ export const useGetPublicUrl = ({
 				createSnackbar({
 					key: `public-link`,
 					replace: true,
-					type,
+					severity: type,
 					hideButton: true,
 					label,
 					autoHideTimeout: 4000

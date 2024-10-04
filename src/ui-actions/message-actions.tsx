@@ -142,7 +142,7 @@ export const useSetMsgAsSpam = (): ((arg: MessageActionPropType) => MessageActio
 					createSnackbar({
 						key: `trash-${ids}`,
 						replace: true,
-						type: 'error',
+						severity: 'error',
 						label: t('label.error_try_again', 'Something went wrong, please try again'),
 						autoHideTimeout: 3000
 					});
@@ -172,7 +172,7 @@ export const useSetMsgAsSpam = (): ((arg: MessageActionPropType) => MessageActio
 						createSnackbar({
 							key: `trash-${ids}`,
 							replace: true,
-							type: 'info',
+							severity: 'info',
 							label: value
 								? t('messages.snackbar.marked_as_non_spam', 'You’ve marked this e-mail as Not Spam')
 								: t('messages.snackbar.marked_as_spam', 'You’ve marked this e-mail as Spam'),
@@ -280,7 +280,7 @@ const useRestoreMessage = (): ((
 						createSnackbar({
 							key: `move-${ids}`,
 							replace: true,
-							type: 'success',
+							severity: 'success',
 							label: t('messages.snackbar.email_restored', 'E-mail restored in destination folder'),
 							autoHideTimeout: 3000,
 							hideButton: true
@@ -289,7 +289,7 @@ const useRestoreMessage = (): ((
 						createSnackbar({
 							key: `move-${ids}`,
 							replace: true,
-							type: 'error',
+							severity: 'error',
 							label: t('label.error_try_again', 'Something went wrong, please try again'),
 							autoHideTimeout: 3000,
 							hideButton: true
@@ -330,7 +330,7 @@ export const useMoveMsgToTrash = (): ((arg: MessageActionPropType) => MessageAct
 							createSnackbar({
 								key: `trash-${ids}`,
 								replace: true,
-								type: 'info',
+								severity: 'info',
 								label: t('messages.snackbar.email_moved_to_trash', 'E-mail moved to Trash'),
 								autoHideTimeout: 5000,
 								hideButton: false,
@@ -342,7 +342,7 @@ export const useMoveMsgToTrash = (): ((arg: MessageActionPropType) => MessageAct
 							createSnackbar({
 								key: `trash-${ids}`,
 								replace: true,
-								type: 'error',
+								severity: 'error',
 								label: t('label.error_try_again', 'Something went wrong, please try again'),
 								autoHideTimeout: 3000,
 								hideButton: true
@@ -390,7 +390,7 @@ export const useDeleteMsg = (): ((
 									createSnackbar({
 										key: `trash-${ids}`,
 										replace: true,
-										type: 'info',
+										severity: 'info',
 										label: t('messages.snackbar.message_deleted', 'Message deleted'),
 										autoHideTimeout: 3000
 									});
@@ -398,7 +398,7 @@ export const useDeleteMsg = (): ((
 									createSnackbar({
 										key: `trash-${ids}`,
 										replace: true,
-										type: 'error',
+										severity: 'error',
 										label: t('label.error_try_again', 'Something went wrong, please try again.'),
 										autoHideTimeout: 3000
 									});
@@ -786,7 +786,7 @@ export const useCreateAppointment = (): (({
 								createSnackbar({
 									key: `get-msg-on-new-appointment`,
 									replace: true,
-									type: 'warning',
+									severity: 'warning',
 									hideButton: true,
 									label: t(
 										'message.snackbar.att_err',

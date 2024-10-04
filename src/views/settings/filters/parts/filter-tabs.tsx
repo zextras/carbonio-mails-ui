@@ -64,7 +64,7 @@ const FilterTabs: FC = (): ReactElement => {
 						key: `share`,
 						replace: true,
 						hideButton: true,
-						type: 'error',
+						severity: 'error',
 						label:
 							error?.message ||
 							t('label.error_try_again', 'Something went wrong, please try again'),

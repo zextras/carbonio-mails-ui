@@ -46,7 +46,7 @@ const DeleteConvConfirm: FC<DeleteConvConfirmPropType> = ({
 				createSnackbar({
 					key: `trash-${selectedIDs}`,
 					replace: true,
-					type: 'info',
+					severity: 'info',
 					label: t('label.email_perm_deleted', 'E-mail permanently deleted'),
 					autoHideTimeout: 3000,
 					hideButton: true
@@ -55,7 +55,7 @@ const DeleteConvConfirm: FC<DeleteConvConfirmPropType> = ({
 				createSnackbar({
 					key: `edit`,
 					replace: true,
-					type: 'error',
+					severity: 'error',
 					label: t('label.error_try_again', 'Something went wrong, please try again'),
 					autoHideTimeout: 3000
 				});

@@ -139,7 +139,7 @@ export const TagsDropdownItem = ({
 						key: `tag`,
 						replace: true,
 						hideButton: true,
-						type: 'info',
+						severity: 'info',
 						label: value
 							? t('snackbar.tag_removed', { tag: tag.name, defaultValue: '"{{tag}}" tag removed' })
 							: t('snackbar.tag_applied', {
@@ -152,7 +152,7 @@ export const TagsDropdownItem = ({
 					createSnackbar({
 						key: `tag`,
 						replace: true,
-						type: 'error',
+						severity: 'error',
 						label: t('label.error_try_again', 'Something went wrong, please try again'),
 						autoHideTimeout: 3000,
 						hideButton: true
@@ -245,7 +245,7 @@ export const MultiSelectTagsDropdownItem = ({
 						key: `tag`,
 						replace: true,
 						hideButton: true,
-						type: 'info',
+						severity: 'info',
 						label: value
 							? t('snackbar.tag_removed', { tag: tag.name, defaultValue: '"{{tag}}" tag removed' })
 							: t('snackbar.tag_applied', {
@@ -258,7 +258,7 @@ export const MultiSelectTagsDropdownItem = ({
 					createSnackbar({
 						key: `tag`,
 						replace: true,
-						type: 'error',
+						severity: 'error',
 						label: t('label.error_try_again', 'Something went wrong, please try again'),
 						autoHideTimeout: 3000,
 						hideButton: true
