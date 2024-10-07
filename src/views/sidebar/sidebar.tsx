@@ -46,7 +46,7 @@ const SidebarComponent: FC<SidebarComponentProps> = memo(function SidebarCompone
 				folderId={folderId}
 				localStorageName={LOCAL_STORAGES.EXPANDED_FOLDERS}
 				AccordionCustomComponent={AccordionCustomComponent}
-				buttonFindShares={<ButtonFindShares key="button-find-shares" />}
+				//buttonFindShares={<ButtonFindShares key="button-find-shares" />}
 				initialExpanded={[FOLDERS.USER_ROOT]}
 			/>
 
