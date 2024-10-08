@@ -79,7 +79,10 @@ export const Breadcrumbs: FC<{
 						data-testid="BreadcrumbPath"
 						color="gray1"
 					>
-						{folderPathFirstPart.concat(folderPathLastPart)}
+						{folderPathFirstPart}
+					</Text>
+					<Text size="medium" style={{ marginLeft: '0.5rem' }} data-testid="BreadcrumbPathEnd">
+						{folderPathLastPart}
 					</Text>
 				</Row>
 				<Row>
