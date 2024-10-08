@@ -8,8 +8,6 @@ import React, {
 	ReactElement,
 	SyntheticEvent,
 	useCallback,
-	useContext,
-	useLayoutEffect,
 	useMemo,
 	useRef,
 	useState
@@ -22,7 +20,6 @@ import {
 	Icon,
 	Padding,
 	Row,
-	ThemeContext,
 	Tooltip,
 	Chip,
 	Dropdown,
@@ -49,6 +46,7 @@ import { useParams } from 'react-router-dom';
 import styled, { DefaultTheme } from 'styled-components';
 
 import { ContactNameChip } from './contact-names-chips';
+import { MailMsgPreviewActions } from './mail-message-preview-actions';
 import MessageContactsList from './message-contact-list';
 import OnBehalfOfDisplayer from './on-behalf-of-displayer';
 import { ParticipantRole } from '../../../../../carbonio-ui-commons/constants/participants';
@@ -56,8 +54,7 @@ import { ZIMBRA_STANDARD_COLORS } from '../../../../../carbonio-ui-commons/const
 import { getTimeLabel, participantToString } from '../../../../../commons/utils';
 import { getNoIdentityPlaceholder } from '../../../../../helpers/identities';
 import { retrieveAttachmentsType } from '../../../../../store/editor-slice-utils';
-import type { MailMessage, MessageAction } from '../../../../../types';
-import { MailMsgPreviewActions } from '../../../../../ui-actions/mail-message-preview-actions';
+import type { MailMessage } from '../../../../../types';
 import { useTagExist } from '../../../../../ui-actions/tag-actions';
 
 const HoverContainer = styled(Container)<ContainerProps & { isExpanded: boolean }>`
@@ -81,9 +78,8 @@ type PreviewHeaderProps = {
 		onClick: (e: SyntheticEvent) => void;
 		open: boolean;
 		isExternalMessage?: boolean;
-		isInsideExtraWindow?: boolean;
+		messagePreviewFactory: () => React.JSX.Element;
 	};
-	actions: MessageAction[];
 };
 
 const fallbackContact = {
@@ -93,13 +89,12 @@ const fallbackContact = {
 	fullName: ''
 };
 
-const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps, actions }): ReactElement => {
-	const { message, onClick, open, isExternalMessage } = compProps;
+const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
+	const { message, onClick, open, isExternalMessage, messagePreviewFactory } = compProps;
 
 	const textRef = useRef<HTMLInputElement>(null);
 	const accounts = useUserAccounts();
 
-	const [_minWidth, _setMinWidth] = useState('');
 	const [isContactListExpand, setIsContactListExpand] = useState(false);
 	const mainContact = find(message.participants, ['type', 'f']) || fallbackContact;
 	const _onClick = useCallback(
@@ -115,26 +110,6 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps, actions }): ReactEle
 	const contactListExpandCB = useCallback((contactListExpand: boolean) => {
 		setIsContactListExpand(contactListExpand);
 	}, []);
-
-	const theme = useContext(ThemeContext);
-	const iconSize = useMemo(
-		() => parseInt(theme?.sizes.icon.large, 10),
-		[theme?.sizes?.icon?.large]
-	);
-	useLayoutEffect(() => {
-		let width = actions.length > 2 ? iconSize : 2 * iconSize;
-		if (message.hasAttachment && attachments.length > 0) width += iconSize;
-		if (message.flagged) width += iconSize;
-		if (textRef?.current?.clientWidth) width += textRef.current.clientWidth;
-		_setMinWidth(`${width}px`);
-	}, [
-		actions.length,
-		attachments.length,
-		iconSize,
-		message.hasAttachment,
-		message.flagged,
-		textRef?.current?.clientWidth
-	]);
 
 	const tagsFromStore = useTags();
 	const tags = useMemo(
@@ -358,7 +333,6 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps, actions }): ReactEle
 										whiteSpace: 'nowrap',
 										overflow: 'hidden'
 									}}
-									minWidth={_minWidth}
 								>
 									{showTagIcon && (
 										<Padding left="small">
@@ -396,7 +370,12 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps, actions }): ReactEle
 										)}
 									</Row>
 
-									{open && <MailMsgPreviewActions actions={actions} />}
+									{open && message && (
+										<MailMsgPreviewActions
+											message={message}
+											messagePreviewFactory={messagePreviewFactory}
+										/>
+									)}
 								</Row>
 							)}
 						</Container>

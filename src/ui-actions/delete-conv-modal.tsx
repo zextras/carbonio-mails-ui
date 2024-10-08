@@ -6,7 +6,7 @@
 import React, { FC, useCallback } from 'react';
 
 import { Container, Text } from '@zextras/carbonio-design-system';
-import { t } from '@zextras/carbonio-shell-ui';
+import { useTranslation } from 'react-i18next';
 
 import ModalFooter from '../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../carbonio-ui-commons/components/modals/modal-header';
@@ -26,6 +26,7 @@ const DeleteConvConfirm: FC<DeleteConvConfirmPropType> = ({
 	deselectAll,
 	onClose
 }) => {
+	const [t] = useTranslation();
 	const dispatch = useAppDispatch();
 	const { createSnackbar } = useUiUtilities();
 
@@ -62,7 +63,7 @@ const DeleteConvConfirm: FC<DeleteConvConfirmPropType> = ({
 			}
 			onClose();
 		});
-	}, [dispatch, isMessageView, selectedIDs, onClose, deselectAll, createSnackbar]);
+	}, [dispatch, isMessageView, selectedIDs, onClose, deselectAll, createSnackbar, t]);
 
 	return (
 		<>

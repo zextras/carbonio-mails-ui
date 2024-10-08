@@ -29,10 +29,10 @@ import { getSelectFoldersUIAction } from '../select-folders';
 
 export type ApplyFilterModalProps = {
 	criteria: ApplyFilterUIActionExecutionParams['criteria'];
-	modalId: string;
+	onClose: () => void;
 };
 
-export const ApplyFilterModal: FC<ApplyFilterModalProps> = ({ criteria, modalId }) => {
+export const ApplyFilterModal: FC<ApplyFilterModalProps> = ({ criteria, onClose }) => {
 	const { createModal, closeModal } = useModal();
 	const createSnackbar = useSnackbar();
 	const [folder, setFolder] = useState<Folder>();
@@ -101,10 +101,10 @@ export const ApplyFilterModal: FC<ApplyFilterModalProps> = ({ criteria, modalId 
 			autoHideTimeout: TIMEOUTS.SNACKBAR_DEFAULT_TIMEOUT,
 			hideButton: true
 		});
-		closeModal(modalId);
-	}, [closeModal, createSnackbar, criteria.filterName, folder, modalId]);
+		onClose();
+	}, [createSnackbar, criteria.filterName, folder, onClose]);
 
-	const onCancelAction = useCallback(() => closeModal(modalId), [closeModal, modalId]);
+	const onCancelAction = useCallback(() => onClose(), [onClose]);
 
 	const onAddFolder = (): void => {
 		const action = getSelectFoldersUIAction();

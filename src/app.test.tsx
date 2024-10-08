@@ -13,6 +13,7 @@ import App from './app';
 import * as addComponentsToShell from './app-utils/add-shell-components';
 import * as registerShellActions from './app-utils/register-shell-actions';
 import * as registerShellIntegrations from './app-utils/register-shell-integrations';
+import { generateFolder } from './carbonio-ui-commons/test/mocks/folders/folders-generator';
 import {
 	createAPIInterceptor,
 	createSoapAPIInterceptor
@@ -58,7 +59,10 @@ describe('App', () => {
 
 	beforeEach(() => {
 		createAPIInterceptor('get', 'zx/login/v3/account', HttpResponse.json({}));
-		createSoapAPIInterceptor('GetFolder', HttpResponse.json({}));
+		createSoapAPIInterceptor('GetFolder', {
+			folder: [generateFolder({ name: 'Inbox' })]
+		});
+		createSoapAPIInterceptor('GetShareInfo', { result: { share: [] } });
 		jest.clearAllMocks();
 	});
 

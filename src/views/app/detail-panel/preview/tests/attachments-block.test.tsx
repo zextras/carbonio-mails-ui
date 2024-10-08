@@ -1,3 +1,6 @@
+/* eslint-disable sonarjs/no-duplicate-string */
+// noinspection DuplicatedCode
+
 /*
  * SPDX-FileCopyrightText: 2022 Zextras <https://www.zextras.com>
  *
@@ -11,7 +14,7 @@ import { screen } from '@testing-library/react';
 import { useAppContext } from '../../../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
 import { previewContextMock } from '../../../../../carbonio-ui-commons/test/mocks/carbonio-ui-preview';
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
-import { getMsg } from '../../../../../store/actions';
+import { getMsgAsyncThunk } from '../../../../../store/actions';
 import { selectMessage } from '../../../../../store/messages-slice';
 import { generateStore } from '../../../../../tests/generators/store';
 import AttachmentsBlock from '../attachments-block';
@@ -239,7 +242,7 @@ describe('Attachments visualization', () => {
 		const store = generateStore();
 
 		// Invoke the fetch of the message and the store update
-		await store.dispatch<any>(getMsg({ msgId }));
+		await store.dispatch<any>(getMsgAsyncThunk({ msgId }));
 		const state = store.getState();
 		const message = selectMessage(state, msgId);
 
@@ -290,7 +293,7 @@ describe('Attachment actions visualization', () => {
 			const store = generateStore();
 
 			// Invoke the fetch of the message and the store update
-			store.dispatch<any>(getMsg({ msgId }));
+			store.dispatch<any>(getMsgAsyncThunk({ msgId }));
 			// await store.dispatch(getMsg({ msgId }));
 			const state = store.getState();
 			const message = selectMessage(state, msgId);
@@ -331,4 +334,40 @@ describe('Attachment actions visualization', () => {
 			});
 		}
 	);
+});
+
+describe('Attachment link validation', () => {
+	test('preview is available, should call image preview endpoint when content type is image/tiff', async () => {
+		useAppContext.mockReturnValue({ servicesCatalog: ['carbonio-preview'] });
+		const store = generateStore();
+		const messageAttachments = [
+			{
+				cd: 'attachment',
+				name: 'test',
+				filename: 'image.tiff',
+				size: 12345,
+				contentType: 'image/tiff',
+				requiresSmartLinkConversion: false
+			} as const
+		];
+		const { user } = setupTest(
+			<AttachmentsBlock
+				messageId={'1'}
+				messageSubject={'test'}
+				messageAttachments={messageAttachments}
+			/>,
+			{ store }
+		);
+
+		await user.hover(screen.getByText('image.tiff'));
+		expect(await screen.findByText('Click to preview')).toBeVisible();
+
+		await user.click(screen.getByText('image.tiff'));
+		expect(previewContextMock.createPreview).toHaveBeenCalledTimes(1);
+
+		const createPreviewParam = previewContextMock.createPreview.mock.calls[0][0];
+		expect(createPreviewParam.src).toBe(
+			'http://localhost/service/preview/image/1/test/0x0/?quality=high'
+		);
+	});
 });

@@ -3,46 +3,26 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC } from 'react';
+import React, { useCallback } from 'react';
 
-import { Container, Padding, Shimmer } from '@zextras/carbonio-design-system';
-import { replaceHistory, useAppContext } from '@zextras/carbonio-shell-ui';
-import { uniqBy } from 'lodash';
-import { useParams } from 'react-router-dom';
+import { Container, Padding } from '@zextras/carbonio-design-system';
+import { replaceHistory } from '@zextras/carbonio-shell-ui';
 
-import { API_REQUEST_STATUS, EXTRA_WINDOW_ACTION_ID } from '../../../../constants';
-import { useMessageActions } from '../../../../hooks/use-message-actions';
-import { useSelection } from '../../../../hooks/use-selection';
+import { API_REQUEST_STATUS } from '../../../../constants';
 import { useCompleteMessage } from '../../../../store/zustand/search/hooks/hooks';
-import { AppContext, MessageAction } from '../../../../types';
-import { useMsgConvActions } from '../../../../ui-actions/use-msg-conv-actions';
 import MailPreview from '../../../app/detail-panel/preview/mail-preview';
 import { useExtraWindow } from '../../../app/extra-windows/use-extra-window';
-import { SearchPreviewPanelHeader } from '../../preview/search-preview-panel-header';
+import { SearchExtraWindowPanelHeader } from '../../extra-window/search-extra-window-panel-header';
 
-export const SearchMessagePanel: FC = () => {
-	const { messageId } = useParams<{ messageId: string }>();
+export const SearchMessagePanel = ({ messageId }: { messageId: string }): React.JSX.Element => {
 	const { message, messageStatus } = useCompleteMessage(messageId);
-	const { setCount } = useAppContext<AppContext>();
-	const { deselectAll } = useSelection({ setCount, count: 0 });
 
-	const messageActionsForExtraWindow = useMessageActions({
-		message,
-		isAlone: true,
-		isForExtraWindow: true
-	});
-	const messageActions = useMsgConvActions({
-		item: message,
-		deselectAll,
-		messageActionsForExtraWindow
-	});
 	const { isInsideExtraWindow } = useExtraWindow();
-	const isExtraWindowActions = messageActions.some(
-		(action: MessageAction) => action.id === EXTRA_WINDOW_ACTION_ID
+
+	const messagePreviewFactory = useCallback(
+		() => <SearchMessagePanel messageId={messageId} />,
+		[messageId]
 	);
-	const actions = isExtraWindowActions
-		? messageActions.filter((action: MessageAction) => action.id !== EXTRA_WINDOW_ACTION_ID)
-		: uniqBy([...messageActions[0], ...messageActions[1]], 'id');
 
 	if (!message) {
 		replaceHistory({
@@ -59,7 +39,7 @@ export const SearchMessagePanel: FC = () => {
 			crossAlignment="flex-start"
 			data-testid={`MessagePanel-${message.id}`}
 		>
-			{!isInsideExtraWindow && <SearchPreviewPanelHeader item={message} />}
+			{!isInsideExtraWindow && <SearchExtraWindowPanelHeader item={message} />}
 			{message?.isComplete && (
 				<Container
 					style={{ overflowY: 'auto' }}
@@ -67,6 +47,7 @@ export const SearchMessagePanel: FC = () => {
 					background="gray5"
 					padding={{ horizontal: 'large', bottom: 'small', top: 'large' }}
 					mainAlignment="flex-start"
+					data-testid={`SearchMessagePanel-${messageId}`}
 				>
 					<Container height="fit" mainAlignment="flex-start" background="gray5">
 						{message && messageStatus === API_REQUEST_STATUS.fulfilled && (
@@ -75,14 +56,11 @@ export const SearchMessagePanel: FC = () => {
 									message={message}
 									expanded
 									isAlone
-									messageActions={actions}
 									isMessageView
 									isInsideExtraWindow={isInsideExtraWindow}
+									messagePreviewFactory={messagePreviewFactory}
 								/>
 							</Padding>
-						)}
-						{messageStatus === API_REQUEST_STATUS.pending && (
-							<Shimmer.Logo size="large" data-testid={`shimmer-message-${messageId}`} />
 						)}
 						{(messageStatus === API_REQUEST_STATUS.error || messageStatus === null) && (
 							<div data-testid="empty-fragment" />

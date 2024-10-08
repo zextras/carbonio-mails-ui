@@ -35,6 +35,7 @@ type MessageGenerationParams = {
 	isScheduled?: boolean;
 	isSentByMe?: boolean;
 	tags?: Array<string>;
+	truncated?: boolean;
 };
 
 /**
@@ -79,11 +80,12 @@ const generateMessage = ({
 	isReplied = false,
 	isScheduled = false,
 	isSentByMe = false,
-	tags = []
+	tags = [],
+	truncated = false
 }: MessageGenerationParams = {}): MailMessage => ({
 	attachments: undefined,
 	autoSendTime: 0,
-	body: { content: body, contentType: 'text/plain' },
+	body: { content: body, contentType: 'text/plain', truncated },
 	conversation: '',
 	date: receiveDate,
 	did: '',

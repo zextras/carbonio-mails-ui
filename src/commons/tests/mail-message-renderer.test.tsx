@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { replaceLinkToAnchor } from '../mail-message-renderer';
+import { replaceLinkToAnchor } from '../utils';
 
 describe('replaceLinkToAnchor', () => {
 	it('should return an empty string when content is empty', () => {

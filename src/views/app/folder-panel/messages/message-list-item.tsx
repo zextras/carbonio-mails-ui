@@ -24,23 +24,26 @@ import {
 } from '@zextras/carbonio-shell-ui';
 import { debounce, find, includes, isEmpty, noop, reduce } from 'lodash';
 import moment from 'moment';
+import { useParams } from 'react-router-dom';
 
-import { ZIMBRA_STANDARD_COLORS } from '../../../../carbonio-ui-commons/constants/utils';
-import { useFolder } from '../../../../carbonio-ui-commons/store/zustand/folder/hooks';
+import { MessageListItemActionWrapper } from './message-list-item-action-wrapper';
+import { ZIMBRA_STANDARD_COLORS } from '../../../../carbonio-ui-commons/constants';
+import { useFolder } from '../../../../carbonio-ui-commons/store/zustand/folder';
 import { getTimeLabel, participantToString } from '../../../../commons/utils';
 import { EditViewActions } from '../../../../constants';
-import { useAppDispatch } from '../../../../hooks/redux';
-import { useMessageActions } from '../../../../hooks/use-message-actions';
-import type { MessageListItemProps, TextReadValuesType } from '../../../../types';
-import { setMsgRead } from '../../../../ui-actions/message-actions';
-import { previewMessageOnSeparatedWindow } from '../../../../ui-actions/preview-message-on-separated-window';
+import { useMsgPreviewOnSeparatedWindowFn } from '../../../../hooks/actions/use-msg-preview-on-separated-window';
+import { useMsgSetReadFn } from '../../../../hooks/actions/use-msg-set-read';
+import { MessageListItemProps, TextReadValuesType } from '../../../../types';
 import { useTagExist } from '../../../../ui-actions/tag-actions';
 import { getFolderTranslatedName } from '../../../sidebar/utils';
 import { createEditBoard } from '../../detail-panel/edit/edit-view-board';
-import { useGlobalExtraWindowManager } from '../../extra-windows/global-extra-window-manager';
+import { MessagePreviewPanel } from '../../detail-panel/message-preview-panel';
 import { ItemAvatar } from '../parts/item-avatar';
-import { ListItemActionWrapper } from '../parts/list-item-actions-wrapper';
 import { SenderName } from '../parts/sender-name';
+
+type RouteParams = {
+	itemId: string;
+};
 
 export const MessageListItem: FC<MessageListItemProps> = memo(function MessageListItem({
 	item,
@@ -55,14 +58,27 @@ export const MessageListItem: FC<MessageListItemProps> = memo(function MessageLi
 	handleReplaceHistory
 }) {
 	const firstChildFolderId = currentFolderId ?? item.parent;
-
-	const dispatch = useAppDispatch();
+	const { itemId } = useParams<RouteParams>();
+	const shouldReplaceHistory = useMemo(() => itemId === item.id, [item.id, itemId]);
 	const zimbraPrefMarkMsgRead = useUserSettings()?.prefs?.zimbraPrefMarkMsgRead !== '-1';
-	const { createWindow } = useGlobalExtraWindowManager();
-	const messageActionsForExtraWindow = useMessageActions({
-		message: item,
-		isAlone: true,
-		isForExtraWindow: true
+
+	const messagePreviewFactory = useCallback(
+		() => <MessagePreviewPanel folderId={firstChildFolderId} messageId={item.id} />,
+		[firstChildFolderId, item.id]
+	);
+
+	const previewOnSeparatedWindow = useMsgPreviewOnSeparatedWindowFn({
+		messageId: item.id,
+		subject: item.subject,
+		messagePreviewFactory
+	});
+
+	const setAsRead = useMsgSetReadFn({
+		ids: [item.id],
+		shouldReplaceHistory,
+		isMessageRead: item.read,
+		deselectAll,
+		folderId: firstChildFolderId
 	});
 
 	const debouncedPushHistory = useMemo(
@@ -77,7 +93,7 @@ export const MessageListItem: FC<MessageListItemProps> = memo(function MessageLi
 		(e: React.MouseEvent<HTMLButtonElement> | React.KeyboardEvent<HTMLElement>) => {
 			if (!e.isDefaultPrevented()) {
 				if (item.read === false && zimbraPrefMarkMsgRead) {
-					setMsgRead({ ids: [item.id], value: false, dispatch }).onClick(e);
+					setAsRead.canExecute() && setAsRead.execute();
 				}
 				if (handleReplaceHistory) {
 					handleReplaceHistory();
@@ -86,14 +102,7 @@ export const MessageListItem: FC<MessageListItemProps> = memo(function MessageLi
 				}
 			}
 		},
-		[
-			item.read,
-			item.id,
-			zimbraPrefMarkMsgRead,
-			handleReplaceHistory,
-			dispatch,
-			debouncedPushHistory
-		]
+		[item.read, zimbraPrefMarkMsgRead, handleReplaceHistory, setAsRead, debouncedPushHistory]
 	);
 	const onDoubleClick = useCallback(
 		(e: React.MouseEvent) => {
@@ -106,17 +115,11 @@ export const MessageListItem: FC<MessageListItemProps> = memo(function MessageLi
 						actionTargetId: id
 					});
 				} else {
-					previewMessageOnSeparatedWindow(
-						id,
-						firstChildFolderId,
-						item.subject,
-						createWindow,
-						messageActionsForExtraWindow
-					).onClick();
+					previewOnSeparatedWindow.canExecute() && previewOnSeparatedWindow.execute();
 				}
 			}
 		},
-		[createWindow, debouncedPushHistory, firstChildFolderId, item, messageActionsForExtraWindow]
+		[debouncedPushHistory, previewOnSeparatedWindow, item]
 	);
 
 	const accounts = useUserAccounts();
@@ -223,12 +226,14 @@ export const MessageListItem: FC<MessageListItemProps> = memo(function MessageLi
 
 	return (
 		<Container mainAlignment="flex-start" data-testid={`MessageListItem-${item.id}`}>
-			<ListItemActionWrapper
+			<MessageListItemActionWrapper
 				item={item}
 				active={active}
 				onClick={onClick}
 				onDoubleClick={onDoubleClick}
+				shouldReplaceHistory={shouldReplaceHistory}
 				deselectAll={deselectAll}
+				messagePreviewFactory={messagePreviewFactory}
 			>
 				<div style={{ alignSelf: 'center' }} data-testid={`message-list-item-avatar-${item.id}`}>
 					<ItemAvatar
@@ -361,7 +366,7 @@ export const MessageListItem: FC<MessageListItemProps> = memo(function MessageLi
 						</Row>
 					</Container>
 				</Row>
-			</ListItemActionWrapper>
+			</MessageListItemActionWrapper>
 		</Container>
 	);
 });

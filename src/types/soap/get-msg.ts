@@ -12,6 +12,7 @@ export type GetMsgRequest = ZimbraRequest & {
 		part?: string;
 		html: 0 | 1;
 		needExp: 0 | 1;
+		max?: number;
 	};
 };
 
@@ -21,6 +22,7 @@ export type GetMsgResponse = {
 
 export type GetMsgParameters = {
 	msgId: string;
+	max?: number;
 };
 
 export type GetMsgForPrintParameter = {

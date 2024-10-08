@@ -24,27 +24,23 @@ import {
 } from '@zextras/carbonio-shell-ui';
 import { find, includes, isEmpty, noop, reduce } from 'lodash';
 import moment from 'moment';
+import { useParams } from 'react-router-dom';
 
 import { ZIMBRA_STANDARD_COLORS } from '../../../../carbonio-ui-commons/constants';
 import { useFolder } from '../../../../carbonio-ui-commons/store/zustand/folder';
 import { getTimeLabel, participantToString } from '../../../../commons/utils';
 import { EditViewActions } from '../../../../constants';
-import { useAppDispatch } from '../../../../hooks/redux';
-import {
-	actionsForSeparatedWindow,
-	useMessageActions
-} from '../../../../hooks/use-message-actions';
+import { useMsgPreviewOnSeparatedWindowFn } from '../../../../hooks/actions/use-msg-preview-on-separated-window';
+import { useMsgSetReadFn } from '../../../../hooks/actions/use-msg-set-read';
 import { useMessageById } from '../../../../store/zustand/search/store';
 import { TextReadValuesType } from '../../../../types';
-import { setMsgRead } from '../../../../ui-actions/message-actions';
 import { useTagExist } from '../../../../ui-actions/tag-actions';
 import { createEditBoard } from '../../../app/detail-panel/edit/edit-view-board';
-import { useGlobalExtraWindowManager } from '../../../app/extra-windows/global-extra-window-manager';
+import { MessageListItemActionWrapper } from '../../../app/folder-panel/messages/message-list-item-action-wrapper';
 import { ItemAvatar } from '../../../app/folder-panel/parts/item-avatar';
-import { ListItemActionWrapper } from '../../../app/folder-panel/parts/list-item-actions-wrapper';
 import { SenderName } from '../../../app/folder-panel/parts/sender-name';
 import { getFolderTranslatedName } from '../../../sidebar/utils';
-import { previewMessageOnSeparatedWindow } from '../../preview/messages/search-messages-preview-actions';
+import { SearchMessagePanel } from '../../panel/message/search-message-panel';
 
 type SearchMessageListItemProps = {
 	itemId: string;
@@ -69,11 +65,30 @@ export const SearchMessageListItem: FC<SearchMessageListItemProps> = memo(functi
 }) {
 	const completeMessage = useMessageById(itemId);
 	const folderId = completeMessage.parent;
+	const { itemId: messageId } = useParams<{ itemId: string | undefined }>();
 
-	const dispatch = useAppDispatch();
+	const shouldReplaceHistory = useMemo(() => itemId === messageId, [messageId, itemId]);
+
+	const messagePreviewFactory = useCallback(
+		() => <SearchMessagePanel messageId={itemId} />,
+		[itemId]
+	);
+
 	const zimbraPrefMarkMsgRead = useUserSettings()?.prefs?.zimbraPrefMarkMsgRead !== '-1';
-	const { createWindow } = useGlobalExtraWindowManager();
-	const messageActions = useMessageActions({ message: completeMessage, isAlone: true });
+
+	const previewOnSeparatedWindow = useMsgPreviewOnSeparatedWindowFn({
+		messageId: itemId,
+		subject: completeMessage.subject,
+		messagePreviewFactory
+	});
+
+	const setAsRead = useMsgSetReadFn({
+		ids: [itemId],
+		shouldReplaceHistory,
+		isMessageRead: completeMessage.read,
+		deselectAll,
+		folderId
+	});
 
 	const onClick = useCallback(
 		(e: React.ChangeEvent<HTMLInputElement>) => {
@@ -81,11 +96,11 @@ export const SearchMessageListItem: FC<SearchMessageListItemProps> = memo(functi
 				return;
 			}
 			if (completeMessage.read === false && zimbraPrefMarkMsgRead) {
-				setMsgRead({ ids: [completeMessage.id], value: false, dispatch }).onClick(e);
+				setAsRead.canExecute() && setAsRead.execute();
 			}
 			replaceHistory(`/message/${completeMessage.id}`);
 		},
-		[completeMessage.read, completeMessage.id, zimbraPrefMarkMsgRead, dispatch]
+		[completeMessage.read, completeMessage.id, zimbraPrefMarkMsgRead, setAsRead]
 	);
 	const onDoubleClick = useCallback(
 		(e: React.MouseEvent) => {
@@ -100,10 +115,9 @@ export const SearchMessageListItem: FC<SearchMessageListItemProps> = memo(functi
 				});
 				return;
 			}
-			const newMessageActions = actionsForSeparatedWindow(messageActions);
-			previewMessageOnSeparatedWindow(id, completeMessage.subject, createWindow, newMessageActions);
+			previewOnSeparatedWindow.canExecute() && previewOnSeparatedWindow.execute();
 		},
-		[createWindow, completeMessage, messageActions]
+		[previewOnSeparatedWindow, completeMessage]
 	);
 
 	const accounts = useUserAccounts();
@@ -219,12 +233,14 @@ export const SearchMessageListItem: FC<SearchMessageListItemProps> = memo(functi
 
 	return (
 		<Container mainAlignment="flex-start" data-testid={`MessageListItem-${completeMessage.id}`}>
-			<ListItemActionWrapper
+			<MessageListItemActionWrapper
 				item={completeMessage}
 				active={active}
 				onClick={onClick}
 				onDoubleClick={onDoubleClick}
 				deselectAll={deselectAll}
+				shouldReplaceHistory={shouldReplaceHistory}
+				messagePreviewFactory={messagePreviewFactory}
 			>
 				<div
 					style={{ alignSelf: 'center' }}
@@ -363,7 +379,7 @@ export const SearchMessageListItem: FC<SearchMessageListItemProps> = memo(functi
 						</Row>
 					</Container>
 				</Row>
-			</ListItemActionWrapper>
+			</MessageListItemActionWrapper>
 		</Container>
 	);
 });

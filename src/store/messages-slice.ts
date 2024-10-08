@@ -11,7 +11,14 @@ import { createSelector, createSlice } from '@reduxjs/toolkit';
 import produce from 'immer';
 import { forEach, map, merge } from 'lodash';
 
-import { search, getMsg, msgAction, getConv, searchConv } from './actions';
+import {
+	search,
+	getMsgAsyncThunk,
+	msgAction,
+	getConv,
+	searchConv,
+	getFullMsgAsyncThunk
+} from './actions';
 import { deleteAttachments } from './actions/delete-all-attachments';
 import { saveDraftAsyncThunk } from './actions/save-draft';
 import {
@@ -165,7 +172,8 @@ export const messagesSlice = createSlice({
 		handleDeletedMessages: produce(handleDeletedMessagesReducer)
 	},
 	extraReducers: (builder) => {
-		builder.addCase(getMsg.fulfilled, produce(getMsgFulfilled));
+		builder.addCase(getMsgAsyncThunk.fulfilled, produce(getMsgFulfilled));
+		builder.addCase(getFullMsgAsyncThunk.fulfilled, produce(getMsgFulfilled));
 		builder.addCase(searchConv.fulfilled, produce(searchConvFulfilled));
 		builder.addCase(msgAction.pending, produce(msgActionPending));
 		builder.addCase(msgAction.rejected, produce(msgActionRejected));
