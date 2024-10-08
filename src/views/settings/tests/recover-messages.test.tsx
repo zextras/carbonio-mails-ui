@@ -60,7 +60,7 @@ describe('Recover messages', () => {
 		createAPIInterceptor(
 			'get',
 			'/zx/backup/v1/searchDeleted',
-			HttpResponse.json({}, { status: 500, severity: 'error' })
+			HttpResponse.json({}, { status: 500, type: 'error' })
 		);
 
 		const dateTimePicker = screen.getByRole('textbox', { name: /label.select_recovery_date/ });

@@ -43,7 +43,7 @@ import {
 } from 'lodash';
 import moment from 'moment';
 import { useParams } from 'react-router-dom';
-import styled, { DefaultTheme } from 'styled-components';
+import styled from 'styled-components';
 
 import { ContactNameChip } from './contact-names-chips';
 import { MailMsgPreviewActions } from './mail-message-preview-actions';
@@ -405,7 +405,7 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 											background="gray2"
 											hasAvatar
 											avatarIcon="Tag"
-											onClick={(): void => triggerSearch(tag)}
+											onClick={(): void => triggerSearch(tag as Tag)}
 										/>
 									)
 								)}

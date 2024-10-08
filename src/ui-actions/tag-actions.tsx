@@ -5,7 +5,15 @@
  */
 import React, { ReactElement, useCallback, useMemo, useState } from 'react';
 
-import { Checkbox, Icon, Padding, Row, Text, useModal } from '@zextras/carbonio-design-system';
+import {
+	Checkbox,
+	DropdownItem,
+	Icon,
+	Padding,
+	Row,
+	Text,
+	useModal
+} from '@zextras/carbonio-design-system';
 import { Tag, t, useTags } from '@zextras/carbonio-shell-ui';
 import { find, reduce, some } from 'lodash';
 
@@ -136,11 +144,12 @@ export const TagsDropdownItem = ({
 export const useGetTagsActions = ({ tag }: ArgumentType): Array<TagActionsReturnType> => {
 	const { createModal, closeModal } = useModal();
 	return useMemo(
-		() => [
-			createTag({ createModal, closeModal }),
-			editTag({ createModal, closeModal, tag }),
-			deleteTag({ tag, createModal, closeModal })
-		],
+		() =>
+			[
+				createTag({ createModal, closeModal }),
+				editTag({ createModal, closeModal, tag }),
+				deleteTag({ tag, createModal, closeModal })
+			] as Array<TagActionsReturnType>,
 		[closeModal, createModal, tag]
 	);
 };

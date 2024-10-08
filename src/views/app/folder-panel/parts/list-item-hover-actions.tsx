@@ -11,7 +11,7 @@ import { UIActionDescriptor } from '../../../../types';
 
 const ListItemHoverAction = ({ action }: { action: UIActionDescriptor }): ReactElement => {
 	const onClick = useCallback(
-		(ev): void => {
+		(ev: any): void => {
 			if (ev) {
 				ev.preventDefault();
 			}

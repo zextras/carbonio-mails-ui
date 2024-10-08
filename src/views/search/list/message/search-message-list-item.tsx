@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, memo, useCallback, useMemo } from 'react';
+import React, { FC, memo, MouseEventHandler, useCallback, useMemo } from 'react';
 
 import {
 	Badge,
@@ -90,8 +90,8 @@ export const SearchMessageListItem: FC<SearchMessageListItemProps> = memo(functi
 		folderId
 	});
 
-	const onClick = useCallback(
-		(e: React.ChangeEvent<HTMLInputElement>) => {
+	const onClick = useCallback<MouseEventHandler<HTMLDivElement>>(
+		(e) => {
 			if (e.isDefaultPrevented()) {
 				return;
 			}

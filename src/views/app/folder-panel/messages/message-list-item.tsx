@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, memo, SyntheticEvent, useCallback, useMemo } from 'react';
+import React, { FC, memo, MouseEventHandler, useCallback, useMemo } from 'react';
 
 import {
 	Badge,
@@ -89,8 +89,8 @@ export const MessageListItem: FC<MessageListItemProps> = memo(function MessageLi
 			}),
 		[firstChildFolderId, item.id]
 	);
-	const onClick = useCallback(
-		(e: React.MouseEvent<HTMLButtonElement> | React.KeyboardEvent<HTMLElement>) => {
+	const onClick = useCallback<MouseEventHandler<HTMLDivElement>>(
+		(e) => {
 			if (!e.isDefaultPrevented()) {
 				if (item.read === false && zimbraPrefMarkMsgRead) {
 					setAsRead.canExecute() && setAsRead.execute();

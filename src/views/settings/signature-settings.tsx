@@ -10,7 +10,6 @@ import {
 	FormSubSection,
 	TextWithTooltip,
 	Input,
-	List,
 	Row,
 	Button,
 	Padding,
@@ -23,6 +22,7 @@ import styled from 'styled-components';
 import { v4 as uuidv4 } from 'uuid';
 
 import SelectIdentitySignature from './components/select-identity-signature';
+import { ListOld } from './list-old';
 import { signaturesSubSection, setDefaultSignaturesSubSection } from './subsections';
 import { NO_SIGNATURE_ID, NO_SIGNATURE_LABEL } from '../../helpers/signatures';
 import type { SignatureSettingsPropsType, SignItemType } from '../../types';
@@ -293,7 +293,7 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 
 							<Container height="31.25rem">
 								{signatures.length > 0 && (
-									<List
+									<ListOld
 										data-testid={'signatures-list'}
 										items={signatures ?? []}
 										ItemComponent={ListItem}
