@@ -64,7 +64,7 @@ export const MultipleSelectionActionsPanel: FC<MultipleSelectionActionsPanelProp
 		createSnackbar({
 			key: `selected-${ids}`,
 			replace: true,
-			type: 'info',
+			severity: 'info',
 			label: t('label.all_items_selected', 'All visible items have been selected'),
 			autoHideTimeout: 5000,
 			hideButton: true
