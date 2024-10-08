@@ -132,7 +132,7 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 
 	const ListItem = ({ item }: { item: SignItemType }): ReactElement => {
 		const onSignatureClick = useCallback(
-			(ev: React.MouseEvent & { target: { innerText?: string } }): void => {
+			(ev: React.MouseEvent): void => {
 				setCurrentSignature({
 					id: item.id,
 					name: item.label ?? '',

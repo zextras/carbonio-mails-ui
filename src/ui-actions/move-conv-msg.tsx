@@ -51,7 +51,7 @@ const MoveConvMessage = ({
 	}, [onClose]);
 
 	const onConfirmConvMove = useCallback(
-		(id) => {
+		(id: string | undefined) => {
 			dispatch(
 				convAction({
 					operation: `move`,
@@ -94,7 +94,7 @@ const MoveConvMessage = ({
 	);
 
 	const onConfirmMessageMove = useCallback(
-		(newFolderId = 0) => {
+		(newFolderId = '0') => {
 			dispatch(
 				msgAction({
 					operation: `move`,

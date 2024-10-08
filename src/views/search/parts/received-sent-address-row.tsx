@@ -9,7 +9,12 @@ import { Container, ChipInput, ChipItem } from '@zextras/carbonio-design-system'
 import { t, useIntegratedComponent } from '@zextras/carbonio-shell-ui';
 
 import { isValidEmail } from './utils';
-import type { ContactInputItem, RcvdSentAddressRowPropType, SearchChipItem } from '../../../types';
+import type {
+	ContactInputItem,
+	Query,
+	RcvdSentAddressRowPropType,
+	SearchChipItem
+} from '../../../types';
 import { getChipItems } from '../utils';
 import { DefaultTheme } from 'styled-components';
 
@@ -21,7 +26,7 @@ export const ReceivedSentAddressRow: FC<RcvdSentAddressRowPropType> = ({
 
 	const [ContactInput, integrationAvailable] = useIntegratedComponent('contact-input');
 
-	const onChange = useCallback((state, stateHandler: (arg: any) => void) => {
+	const onChange = useCallback((state: ChipItem[], stateHandler: (state: ChipItem[]) => void) => {
 		stateHandler(state);
 	}, []);
 
@@ -37,7 +42,7 @@ export const ReceivedSentAddressRow: FC<RcvdSentAddressRowPropType> = ({
 
 	const chipOnAdded = useCallback(
 		(
-			label: string,
+			label: string | unknown,
 			preText: string,
 			hasAvatar: boolean,
 			isGeneric: boolean,
@@ -95,7 +100,7 @@ export const ReceivedSentAddressRow: FC<RcvdSentAddressRowPropType> = ({
 	);
 
 	const handleSentToChange = useCallback(
-		(contacts) => {
+		(contacts: Query | Array<ContactInputItem>) => {
 			const chips = getChipItems(contacts, 'to');
 			setSentToAddress(chips);
 		},

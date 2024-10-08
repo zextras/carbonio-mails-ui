@@ -25,7 +25,7 @@ const AttachmentTypeEmailStatusRow: FC<AttachTypeEmailStatusRowPropType> = ({
 
 	const [attachmentTypeOptions, setAttachmentTypeOptions] = useState<any[]>(attachmentTypeItems);
 	const [emailStatusOptions, setEmailStatusOptions] = useState<any[]>(emailStatusItems);
-	const onChange = useCallback((state, stateHandler) => {
+	const onChange = useCallback((state: ChipItem[], stateHandler: (state: ChipItem[]) => void) => {
 		stateHandler(state);
 	}, []);
 

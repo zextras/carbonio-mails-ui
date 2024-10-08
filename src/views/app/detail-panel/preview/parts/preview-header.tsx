@@ -28,7 +28,8 @@ import {
 	Dropdown,
 	ContainerProps,
 	IconButton,
-	getColor
+	getColor,
+	AvatarPropTypes
 } from '@zextras/carbonio-design-system';
 import { useTags, useUserAccounts, runSearch, t, Tag } from '@zextras/carbonio-shell-ui';
 import {
@@ -45,7 +46,7 @@ import {
 } from 'lodash';
 import moment from 'moment';
 import { useParams } from 'react-router-dom';
-import styled from 'styled-components';
+import styled, { DefaultTheme } from 'styled-components';
 
 import { ContactNameChip } from './contact-names-chips';
 import MessageContactsList from './message-contact-list';
@@ -140,7 +141,7 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps, actions }): ReactEle
 		() =>
 			reduce(
 				tagsFromStore,
-				(acc: ChipProps[], v) => {
+				(acc: Tag[], v) => {
 					if (includes(message.tags, v.id)) {
 						acc.push({
 							...v,
@@ -243,7 +244,7 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps, actions }): ReactEle
 					{
 						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 						// @ts-ignore
-						avatarBackground: tagToSearch?.color || 0,
+						avatarBackground: tagToSearch?.color,
 						avatarIcon: 'Tag',
 						background: 'gray2',
 						hasAvatar: true,
@@ -411,16 +412,24 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps, actions }): ReactEle
 						<Padding left="extrasmall">
 							<Text color="secondary" size="small" overflow="break-word">
 								{tagLabel}:
-								{map(tags, (tag) => (
-									<TagChip
-										label={tag?.label}
-										avatarBackground={tag.color}
-										background="gray2"
-										hasAvatar
-										avatarIcon="Tag"
-										onClick={(): void => triggerSearch(tag)}
-									/>
-								))}
+								{map(
+									tags,
+									(tag: {
+										label: string;
+										color: AvatarPropTypes['background'];
+										id: string;
+										name: string;
+									}) => (
+										<TagChip
+											label={tag?.label}
+											avatarBackground={tag.color}
+											background="gray2"
+											hasAvatar
+											avatarIcon="Tag"
+											onClick={(): void => triggerSearch(tag)}
+										/>
+									)
+								)}
 							</Text>
 						</Padding>
 					</Container>

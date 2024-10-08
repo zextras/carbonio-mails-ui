@@ -62,7 +62,7 @@ const EditPermissionsModal: FC<EditPermissionsModalProps> = ({
 		[editMode, folder.name]
 	);
 
-	const onShareRoleChange = useCallback((shareRole) => {
+	const onShareRoleChange = useCallback((shareRole: any) => {
 		setshareWithUserRole(shareRole);
 	}, []);
 

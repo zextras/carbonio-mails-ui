@@ -5,13 +5,13 @@
  */
 import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
 
-import { ChipInput, Container, CustomModal } from '@zextras/carbonio-design-system';
+import { ChipInput, ChipItem, Container, CustomModal } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import { filter } from 'lodash';
 
 import { ZIMBRA_STANDARD_COLORS } from '../../../carbonio-ui-commons/constants/utils';
 import { isSharedAccountFolder } from '../../../helpers/folders';
-import type { ChipOnAdd, TagFolderRowProps } from '../../../types';
+import type { ChipOnAdd, Folder, TagFolderRowProps } from '../../../types';
 import { SelectFolderModal } from '../../../ui-actions/modals/select-folder-modal';
 import { getFolderIconColor } from '../../sidebar/utils';
 
@@ -43,16 +43,17 @@ const TagFolderRow: FC<TagFolderRowProps> = ({ compProps }): ReactElement => {
 		}),
 		[]
 	);
-
 	const folderChipOnAdd = useCallback(
-		(label: string): any => chipOnAdd(label, 'in', true, false, true, 'FolderOutline', ''),
+		(label: unknown): ChipOnAdd =>
+			chipOnAdd(label as string, 'in', true, false, true, 'FolderOutline', ''),
 		[chipOnAdd]
 	);
+
 	const tagChipOnAdd = useCallback(
-		(label: string): ChipOnAdd => {
+		(label: unknown): ChipOnAdd => {
 			const chipBg = filter(tagOptions, { label })[0];
 			return chipOnAdd(
-				label,
+				label as string,
 				'tag',
 				true,
 				false,
@@ -63,11 +64,14 @@ const TagFolderRow: FC<TagFolderRowProps> = ({ compProps }): ReactElement => {
 		},
 		[chipOnAdd, tagOptions]
 	);
-	const folderOnChange = useCallback((folderChips) => setFolder(folderChips), [setFolder]);
+	const folderOnChange = useCallback(
+		(folderChips: ChipItem[]) => setFolder(folderChips),
+		[setFolder]
+	);
 
 	const tagPlaceholder = useMemo(() => t('label.tag', 'Tag'), []);
 	const onTagChange = useCallback(
-		(chip) => {
+		(chip: ChipItem[]) => {
 			setTag(chip);
 		},
 		[setTag]
@@ -81,22 +85,27 @@ const TagFolderRow: FC<TagFolderRowProps> = ({ compProps }): ReactElement => {
 	);
 
 	const confirmAction = useCallback(
-		(folderDestination, _setFolderDestination, _onClose) => {
-			setFolder([
-				{
-					label: `in:${folderDestination?.absFolderPath}`,
-					hasAvatar: true,
-					maxWidth: '12.5rem',
-					isGeneric: false,
-					background: 'gray2',
-					avatarBackground: getFolderIconColor(folderDestination),
-					avatarIcon: 'FolderOutline',
-					isQueryFilter: true,
-					value: isSharedAccountFolder(folderDestination.id)
-						? `inid:"${folderDestination.id}"`
-						: `in:"${folderDestination?.absFolderPath}"`
-				}
-			]);
+		(
+			folderDestination: Folder | undefined,
+			_setFolderDestination: (_folder: Folder | undefined) => void,
+			_onClose: () => void
+		) => {
+			folderDestination &&
+				setFolder([
+					{
+						label: `in:${folderDestination?.absFolderPath}`,
+						hasAvatar: true,
+						maxWidth: '12.5rem',
+						isGeneric: false,
+						background: 'gray2',
+						avatarBackground: getFolderIconColor(folderDestination),
+						avatarIcon: 'FolderOutline',
+						isQueryFilter: true,
+						value: isSharedAccountFolder(folderDestination?.id)
+							? `inid:"${folderDestination?.id}"`
+							: `in:"${folderDestination?.absFolderPath}"`
+					}
+				]);
 			_onClose();
 		},
 		[setFolder]

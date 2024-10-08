@@ -81,7 +81,10 @@ const ModifyOutgoingFilterModal: FC<ComponentProps> = ({
 	]);
 
 	const toggleActiveFilter = useCallback(() => setActiveFilter(!activeFilter), [activeFilter]);
-	const onFilterNameChange = useCallback((ev) => setFilterName(ev.target.value), []);
+	const onFilterNameChange = useCallback(
+		(ev: React.ChangeEvent<HTMLInputElement>) => setFilterName(ev.target.value),
+		[]
+	);
 	const modalTitle = useMemo(
 		() => `${t('label.edit', 'Edit')} ${selectedFilter?.name}`,
 		[t, selectedFilter?.name]

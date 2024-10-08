@@ -95,10 +95,14 @@ const FilterActionRows: FC<FilterActionRowProps> = ({
 	);
 	const [contacts, setContacts] = useState<ContactType[]>([]);
 	const [ContactInput, integrationAvailable] = useIntegratedComponent('contact-input');
+
 	const onChange = useCallback(
-		(users) => {
+		(users: ChipItem<{ email: string }>[]): void => {
 			const previous = tempActions.slice();
-			const email = users.length > 0 && users[0].email !== '' ? users[0].email : '';
+			const email =
+				users?.length > 0 && (users[0]?.value as { email: string }).email !== ''
+					? (users[0]?.value as { email: string }).email
+					: '';
 			previous[index] = {
 				actionRedirect: [{ a: email }],
 				id: uuidv4()
@@ -108,7 +112,6 @@ const FilterActionRows: FC<FilterActionRowProps> = ({
 		},
 		[index, setTempActions, tempActions]
 	);
-
 	const onModalClose = useCallback(() => {
 		setDestination({});
 		setOpen(false);
