@@ -6,6 +6,7 @@
 import React from 'react';
 
 import { act, screen, within } from '@testing-library/react';
+import { CreateSnackbarFn, useSnackbar } from '@zextras/carbonio-design-system';
 import { times } from 'lodash';
 
 import { FOLDER_VIEW } from '../../carbonio-ui-commons/constants';
@@ -20,7 +21,20 @@ import { generateStore } from '../../tests/generators/store';
 import { RedirectMessageActionRequest } from '../../types';
 import RedirectMessageAction from '../redirect-message-action';
 
+const createSnackbar = (arg: any): CreateSnackbarFn => arg;
+const createSnackbarSpy = jest.fn(createSnackbar);
+
+jest.mock('@zextras/carbonio-design-system', () => ({
+	...jest.requireActual('@zextras/carbonio-design-system'),
+	useSnackbar: jest.fn()
+}));
+
 describe('RedirectMessageAction', () => {
+	beforeEach(() => {
+		jest.clearAllMocks();
+		(useSnackbar as jest.Mock).mockReturnValue(createSnackbarSpy);
+	});
+
 	it('should enable the "redirect" button when at least one recipient address is set', async () => {
 		populateFoldersStore({ view: FOLDER_VIEW.message });
 		const msg = generateMessage({});
@@ -67,18 +81,17 @@ describe('RedirectMessageAction', () => {
 
 		const component = <RedirectMessageAction id={msg.id} onClose={jest.fn()} />;
 		const { user } = setupTest(component, { store });
+
 		const recipient = createFakeIdentity().email;
 		const recipientsInputElement = within(
 			screen.getByTestId('redirect-recipients-address')
 		).getByRole('textbox');
 
-		await act(async () => {
-			await user.type(recipientsInputElement, recipient);
-		});
+		await user.type(recipientsInputElement, recipient);
 		const button = screen.getByRole('button', {
 			name: /redirect/i
 		});
-		await user.click(button);
+		user.click(button);
 
 		const requestParameter = await interceptor;
 
