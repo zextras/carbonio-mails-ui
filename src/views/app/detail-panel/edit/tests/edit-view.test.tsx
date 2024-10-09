@@ -232,7 +232,7 @@ describe('Edit view', () => {
 
 			await waitFor(clearAndInsertText(user, editorTextareaElement, body));
 
-			// Check for the status of the "send" button to be enabled
+			// // Check for the status of the "send" button to be enabled
 			await waitFor(() => expect(btnSend).toBeEnabled());
 
 			const response = {
@@ -248,7 +248,7 @@ describe('Edit view', () => {
 				SoapSendMsgResponse
 			>('SendMsg', response);
 
-			await waitFor(async () => {
+			await act(async () => {
 				await user.click(btnSend);
 			});
 
@@ -264,8 +264,9 @@ describe('Edit view', () => {
 					expect(participant.p).toBe(fullName);
 				}
 			});
-
-			expect(getSoapMailBodyContent(msg, CT_PLAIN)).toBe(body);
+			act(() => {
+				expect(getSoapMailBodyContent(msg, CT_PLAIN)).toBe(body);
+			});
 		});
 
 		it('create a new email and text format should be as per setting', async () => {
@@ -415,7 +416,7 @@ describe('Edit view', () => {
 
 				await waitFor(clearAndInsertText(user, toInputElement, recipient));
 
-				await waitFor(async () => {
+				await act(async () => {
 					await user.click(btnCc);
 				});
 
@@ -428,7 +429,7 @@ describe('Edit view', () => {
 
 				await waitFor(clearAndInsertText(user, editorTextareaElement, body));
 
-				await waitFor(async () => {
+				await act(async () => {
 					await user.click(btnSave);
 				});
 
