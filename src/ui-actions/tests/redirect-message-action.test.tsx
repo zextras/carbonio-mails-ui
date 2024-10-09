@@ -72,13 +72,13 @@ describe('RedirectMessageAction', () => {
 			screen.getByTestId('redirect-recipients-address')
 		).getByRole('textbox');
 
-		await user.type(recipientsInputElement, recipient);
+		await act(async () => {
+			await user.type(recipientsInputElement, recipient);
+		});
 		const button = screen.getByRole('button', {
 			name: /redirect/i
 		});
-		await act(async () => {
-			await user.click(button);
-		});
+		await user.click(button);
 
 		const requestParameter = await interceptor;
 
