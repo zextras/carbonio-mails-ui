@@ -5,7 +5,7 @@
  */
 import { faker } from '@faker-js/faker';
 import { times } from 'lodash';
-import { act } from 'react-dom/test-utils';
+import { act } from 'react';
 
 import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
 import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
