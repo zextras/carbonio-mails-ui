@@ -218,7 +218,8 @@ describe('Edit view', () => {
 
 			const optionIcon = screen.getByTestId('options-dropdown-icon');
 			expect(optionIcon).toBeInTheDocument();
-			await waitFor(async () => {
+
+			await act(async () => {
 				await user.click(optionIcon);
 			});
 			const markAsImportantOption = within(screen.getByTestId('dropdown-popper-list')).getByText(
