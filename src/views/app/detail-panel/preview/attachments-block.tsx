@@ -552,7 +552,11 @@ const AttachmentsBlock: FC<{
 	const { createSnackbar } = useUiUtilities();
 	const [expanded, setExpanded] = useState(false);
 	const attachments = useMemo(
-		() => filter(messageAttachments, { cd: 'attachment' }),
+		() =>
+			filter(
+				messageAttachments,
+				(item) => item.cd === 'attachment' && item.contentType !== 'application/pkcs7-signature'
+			),
 		[messageAttachments]
 	);
 

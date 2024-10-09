@@ -137,11 +137,7 @@ export const getAttachmentsFromParts = (
 							if (item.ct === 'text/html' && !item.filename) {
 								item.filename = 'Unknown <text/html>';
 							}
-							if (item.ct && item.ct !== 'application/pkcs7-signature') {
-								// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-								// @ts-ignore
-								results.push(item);
-							}
+							results.push(item);
 						}
 					}
 				});

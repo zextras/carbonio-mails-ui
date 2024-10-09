@@ -48,6 +48,7 @@ import { ContactNameChip } from './contact-names-chips';
 import { MailMsgPreviewActions } from './mail-message-preview-actions';
 import MessageContactsList from './message-contact-list';
 import OnBehalfOfDisplayer from './on-behalf-of-displayer';
+import SignedInfo from './signed-info-block';
 import { ParticipantRole } from '../../../../../carbonio-ui-commons/constants/participants';
 import { ZIMBRA_STANDARD_COLORS } from '../../../../../carbonio-ui-commons/constants/utils';
 import { getTimeLabel, participantToString } from '../../../../../commons/utils';
@@ -106,6 +107,14 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 	const contactListExpandCB = useCallback((contactListExpand) => {
 		setIsContactListExpand(contactListExpand);
 	}, []);
+
+	const isSigned = useMemo(
+		() =>
+			message?.attachments?.some(
+				(attachment) => attachment.contentType === 'application/pkcs7-signature'
+			),
+		[message?.attachments]
+	);
 
 	const tagsFromStore = useTags();
 	const tags = useMemo(
@@ -419,6 +428,7 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 					/>
 				)}
 			</Container>
+			{isSigned && <SignedInfo msgId={message.id} />}
 		</HoverContainer>
 	);
 };
