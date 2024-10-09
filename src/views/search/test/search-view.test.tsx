@@ -26,6 +26,7 @@ import {
 	within
 } from '../../../carbonio-ui-commons/test/test-setup';
 import { API_REQUEST_STATUS } from '../../../constants';
+import * as useSelection from '../../../hooks/use-selection';
 import * as search from '../../../store/actions/search';
 import {
 	setSearchResultsByConversation,
@@ -80,6 +81,16 @@ const setupSearchViewTest = ({ query, viewBy }: Partial<SetupTest>) => {
 		settings,
 		queryChip
 	};
+};
+const mockedUseSelection: ReturnType<typeof useSelection.useSelection> = {
+	selectAll: jest.fn(),
+	selected: { '10': true },
+	toggle: jest.fn(),
+	isSelectModeOn: false,
+	setIsSelectModeOn: jest.fn(),
+	deselectAll: jest.fn(),
+	isAllSelected: false,
+	selectAllModeOff: jest.fn()
 };
 
 function getSoapConversationMessage(messageId: string, conversationId: string): SoapMailMessage {
@@ -369,6 +380,9 @@ describe('SearchView', () => {
 
 			await act(async () => {
 				await searchApi;
+			});
+
+			await act(async () => {
 				await searchConvApi;
 			});
 
@@ -413,13 +427,61 @@ describe('SearchView', () => {
 			expect(await screen.findByTestId('MessageListItem-10')).toBeInTheDocument();
 			expect(await screen.findByTestId('MessageListItem-11')).toBeInTheDocument();
 		});
-
-		it('should call MsgActionRequest with the correct parameters when user click on a message', async () => {
+		it('should call MsgActionRequest with operation "trash" when moving message to trash in selection mode', async () => {
 			const searchInterceptor = createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
 				m: [getSoapMessage('10', { su: 'message 1 Subject', f: 'u' })],
 				more: false
 			});
-			const msgActionInterceptor = createSoapAPIInterceptor<MsgActionRequest>('MsgAction');
+			const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
+			const searchViewProps: SearchViewProps = {
+				useQuery: () => [[queryChip], noop],
+				useDisableSearch: () => [false, noop],
+				ResultsHeader: resultsHeader
+			};
+			jest.spyOn(hooks, 'useAppContext').mockReturnValue(fakeCounter());
+			const { user } = setupTest(<SearchView {...searchViewProps} />, {
+				store
+			});
+			await waitFor(() => searchInterceptor);
+			await waitAndMakeMessageVisible('10');
+			const itemAvatar = await screen.findByTestId('message-list-item-avatar-10');
+			const avatar = await within(itemAvatar).findByTestId('avatar');
+			user.click(avatar);
+			await within(itemAvatar).findByTestId('icon: Checkmark');
+			const multipleSelectionPanel = await screen.findByTestId('MultipleSelectionActionPanel');
+			const multipleSelectionTrashButton = await within(multipleSelectionPanel).findByRoleWithIcon(
+				'button',
+				{
+					icon: TESTID_SELECTORS.icons.trash
+				}
+			);
+
+			const apiInterceptor = createSoapAPIInterceptor<MsgActionRequest, MsgActionResponse>(
+				'MsgAction',
+				{
+					action: {
+						id: '10',
+						op: 'trash'
+					}
+				}
+			);
+			await user.click(multipleSelectionTrashButton);
+
+			const receivedRequest = await apiInterceptor;
+			expect(receivedRequest.action.id).toBe('10');
+			expect(receivedRequest.action.op).toBe('trash');
+		});
+		it('should display the message view panel', async () => {
+			const messageId = '10';
+			const soapMessage = getSoapMessage(messageId, { su: 'message 1 Subject', f: 'u' });
+			const searchInterceptor = createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
+				m: [soapMessage],
+				more: false
+			});
+
+			const getMsgInterceptor = createSoapAPIInterceptor<GetMsgRequest, GetMsgResponse>('GetMsg', {
+				m: [soapMessage]
+			});
 
 			const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
 			const searchViewProps: SearchViewProps = {
@@ -427,27 +489,21 @@ describe('SearchView', () => {
 				useDisableSearch: () => [false, noop],
 				ResultsHeader: resultsHeader
 			};
-			const { user } = setupTest(<SearchView {...searchViewProps} />, {
-				store
+
+			setupTest(<SearchView {...searchViewProps} />, {
+				store,
+				initialEntries: [`/message/${messageId}`]
 			});
+
 			await act(async () => {
 				await searchInterceptor;
 			});
 
-			expect(await screen.findByText('label.results_for')).toBeInTheDocument();
-
-			await waitAndMakeMessageVisible('10');
-			const messageContainer = await screen.findByTestId(`MessageListItem-10`);
 			await act(async () => {
-				await user.hover(messageContainer);
+				await getMsgInterceptor;
 			});
-			const hoverContainer = await screen.findByTestId('hover-container-10');
-			act(() => {
-				user.click(hoverContainer);
-			});
-			const requestParameter = await msgActionInterceptor;
 
-			expect(requestParameter.action).toEqual({ id: '10', op: 'read' });
+			expect(await screen.findByTestId(`SearchMessagePanel-${messageId}`)).toBeInTheDocument();
 		});
 
 		it('should open message preview when double-clicking message in list', async () => {
@@ -458,6 +514,8 @@ describe('SearchView', () => {
 				],
 				more: false
 			});
+			jest.spyOn(useSelection, 'useSelection').mockReturnValue(mockedUseSelection);
+
 			const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
 			const searchViewProps: SearchViewProps = {
 				useQuery: () => [[queryChip], noop],
@@ -491,90 +549,43 @@ describe('SearchView', () => {
 			});
 
 			const clickableMessage = await screen.findByTestId(`hover-container-10`);
+			createSoapAPIInterceptor<MsgActionRequest>('MsgAction');
 			await act(async () => {
 				await user.dblClick(clickableMessage);
 			});
-			expect(mockCreateWindow).toBeCalledTimes(1);
-		});
 
-		it('should call MsgActionRequest with operation "trash" when moving message to trash in selection mode', async () => {
-			createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
-				m: [getSoapMessage('10', { su: 'message 1 Subject' })],
+			expect(mockCreateWindow).toHaveBeenCalledTimes(1);
+		});
+		it('should call MsgActionRequest with the correct parameters when user click on a message', async () => {
+			const searchInterceptor = createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
+				m: [getSoapMessage('10', { su: 'message 1 Subject', f: 'u' })],
 				more: false
 			});
+			const msgActionInterceptor = createSoapAPIInterceptor<MsgActionRequest>('MsgAction');
+
 			const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
 			const searchViewProps: SearchViewProps = {
 				useQuery: () => [[queryChip], noop],
 				useDisableSearch: () => [false, noop],
 				ResultsHeader: resultsHeader
 			};
-			jest.spyOn(hooks, 'useAppContext').mockReturnValue(fakeCounter());
+
+			jest.spyOn(useSelection, 'useSelection').mockReturnValue(mockedUseSelection);
 			const { user } = setupTest(<SearchView {...searchViewProps} />, {
 				store
 			});
+			await waitFor(async () => searchInterceptor);
+
+			expect(await screen.findByText('label.results_for')).toBeInTheDocument();
+
 			await waitAndMakeMessageVisible('10');
-			const itemAvatar = await screen.findByTestId('message-list-item-avatar-10');
-			const avatar = within(itemAvatar).getByTestId('avatar');
-			await act(async () => {
-				await user.click(avatar);
-			});
-			await within(itemAvatar).findByTestId('icon: Checkmark');
-			const multipleSelectionPanel = await screen.findByTestId('MultipleSelectionActionPanel');
-			const multipleSelectionTrashButton = await within(multipleSelectionPanel).findByRoleWithIcon(
-				'button',
-				{
-					icon: TESTID_SELECTORS.icons.trash
-				}
-			);
+			const messageContainer = await screen.findByTestId(`MessageListItem-10`);
+			await user.hover(messageContainer);
+			const hoverContainer = await screen.findByTestId('hover-container-10');
+			user.click(hoverContainer);
+			const requestParameter = await waitFor(async () => msgActionInterceptor);
 
-			const apiInterceptor = createSoapAPIInterceptor<MsgActionRequest, MsgActionResponse>(
-				'MsgAction',
-				{
-					action: {
-						id: '10',
-						op: 'trash'
-					}
-				}
-			);
-			await act(async () => {
-				await user.click(multipleSelectionTrashButton);
-			});
-
-			const receivedRequest = await apiInterceptor;
-			expect(receivedRequest.action.id).toBe('10');
-			expect(receivedRequest.action.op).toBe('trash');
-		});
-
-		it('should display the message view panel', async () => {
-			const messageId = '10';
-			const soapMessage = getSoapMessage(messageId, { su: 'message 1 Subject', f: 'u' });
-			const searchInterceptor = createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
-				m: [soapMessage],
-				more: false
-			});
-
-			const getMsgInterceptor = createSoapAPIInterceptor<GetMsgRequest, GetMsgResponse>('GetMsg', {
-				m: [soapMessage]
-			});
-
-			const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
-			const searchViewProps: SearchViewProps = {
-				useQuery: () => [[queryChip], noop],
-				useDisableSearch: () => [false, noop],
-				ResultsHeader: resultsHeader
-			};
-
-			setupTest(<SearchView {...searchViewProps} />, {
-				store,
-				initialEntries: [`/message/${messageId}`]
-			});
-
-			await act(async () => {
-				await searchInterceptor;
-				await getMsgInterceptor;
-			});
-
-			expect(await screen.findByTestId(`SearchMessagePanel-${messageId}`)).toBeInTheDocument();
+			await waitFor(() => expect(requestParameter.action).toEqual({ id: '10', op: 'read' }));
 		});
 	});
 
@@ -711,6 +722,8 @@ describe('SearchView', () => {
 			useDisableSearch: () => [false, noop],
 			ResultsHeader: resultsHeader
 		};
+
+		jest.spyOn(useSelection, 'useSelection').mockReturnValue(mockedUseSelection);
 		jest.spyOn(hooks, 'useUserSettings').mockReturnValue(settings);
 		const spyReplaceHistory = jest.spyOn(hooks, 'replaceHistory');
 		const { user } = setupTest(<SearchView {...searchViewProps} />, {
@@ -731,6 +744,7 @@ describe('SearchView', () => {
 		});
 
 		const clickableMessage = await screen.findByTestId(`hover-container-10`);
+		createSoapAPIInterceptor<MsgActionRequest>('MsgAction');
 		await act(async () => {
 			await user.click(clickableMessage);
 		});
