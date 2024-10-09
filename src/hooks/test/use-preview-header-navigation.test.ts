@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { act, waitFor } from '@testing-library/react';
+import { CreateSnackbarFn, useSnackbar } from '@zextras/carbonio-design-system';
 import { http, HttpResponse } from 'msw';
 
 import { getSetupServer } from '../../carbonio-ui-commons/test/jest-setup';
@@ -15,9 +16,18 @@ import * as searchAPI from '../../store/actions/search';
 import { generateStore } from '../../tests/generators/store';
 import { usePreviewHeaderNavigation } from '../use-preview-header-navigation';
 
+const createSnackbar = (arg: any): CreateSnackbarFn => arg;
+const createSnackbarSpy = jest.fn(createSnackbar);
+
+jest.mock('@zextras/carbonio-design-system', () => ({
+	...jest.requireActual('@zextras/carbonio-design-system'),
+	useSnackbar: jest.fn()
+}));
+
 beforeEach(() => {
 	createSoapAPIInterceptor('ConvAction');
 	createSoapAPIInterceptor('Search');
+	(useSnackbar as jest.Mock).mockReturnValue(createSnackbarSpy);
 });
 
 describe('usePreviewHeaderNavigation', () => {
