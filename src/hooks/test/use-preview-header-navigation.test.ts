@@ -310,23 +310,23 @@ describe('usePreviewHeaderNavigation', () => {
 			getSetupServer().use(
 				http.post('/service/soap/SearchRequest', async () => HttpResponse.json({ error: true }))
 			);
-			const { result } = await waitFor(() =>
-				setupHook(usePreviewHeaderNavigation, {
-					store,
-					initialProps: [
-						{
-							items: [{ id: '1', read: true }],
-							folderId: '2',
-							currentItemId: '1',
-							itemsType: 'conversation',
-							searchedInFolderStatus: 'hasMore'
-						}
-					]
-				})
-			);
+			const { result } = setupHook(usePreviewHeaderNavigation, {
+				store,
+				initialProps: [
+					{
+						items: [{ id: '1', read: true }],
+						folderId: '2',
+						currentItemId: '1',
+						itemsType: 'conversation',
+						searchedInFolderStatus: 'hasMore'
+					}
+				]
+			});
 
-			expect(result.current.nextActionItem.tooltipLabel).toBe(
-				'Unable to load next email. Try again later'
+			await waitFor(() =>
+				expect(result.current.nextActionItem.tooltipLabel).toBe(
+					'Unable to load next email. Try again later'
+				)
 			);
 		});
 		test('when it is the last item and hasMore it should call a search request', async () => {
