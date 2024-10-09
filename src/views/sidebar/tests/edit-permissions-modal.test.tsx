@@ -7,6 +7,7 @@ import React from 'react';
 
 import { faker } from '@faker-js/faker';
 import { act, screen, within } from '@testing-library/react';
+import { CreateSnackbarFn, useSnackbar } from '@zextras/carbonio-design-system';
 
 import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
 import { getFolder } from '../../../carbonio-ui-commons/store/zustand/folder';
@@ -17,9 +18,18 @@ import * as shareFolderModule from '../../../store/actions/share-folder';
 import { generateStore } from '../../../tests/generators/store';
 import EditPermissionsModal from '../edit-permissions-modal';
 
+const createSnackbar = (arg: any): CreateSnackbarFn => arg;
+const createSnackbarSpy = jest.fn(createSnackbar);
+
+jest.mock('@zextras/carbonio-design-system', () => ({
+	...jest.requireActual('@zextras/carbonio-design-system'),
+	useSnackbar: jest.fn()
+}));
+
 beforeEach(() => {
 	createSoapAPIInterceptor('Batch');
 	createSoapAPIInterceptor('SendShareNotification');
+	(useSnackbar as jest.Mock).mockReturnValue(createSnackbarSpy);
 });
 
 describe('edit-permissions-modal', () => {
