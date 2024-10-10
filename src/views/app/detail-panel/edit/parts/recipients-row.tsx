@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, useCallback } from 'react';
+import React, { FC, useCallback, useMemo } from 'react';
 
 import { ChipInput, ChipItem } from '@zextras/carbonio-design-system';
 import { useIntegratedComponent } from '@zextras/carbonio-shell-ui';
@@ -68,34 +68,41 @@ export const RecipientsRow: FC<RecipientsRowProps> = ({
 		[onRecipientsChange, type]
 	);
 
-	const recipientsAsContacts = map<Participant, ContactType>(recipients, (recipient) => ({
-		...recipient,
-		label: recipient.address,
-		email: recipient.address,
-		error: recipient.error
-	}));
+	const recipientsAsContacts = useMemo(
+		() =>
+			map<Participant, ContactType>(recipients, (recipient) => ({
+				...recipient,
+				label: recipient.address,
+				email: recipient.address,
+				error: recipient.error
+			})),
+		[recipients]
+	);
 
-	const onChipInputAdd = (value: string | unknown): ChipItem => {
+	const onChipInputAdd = useCallback((value: string | unknown): ChipItem => {
 		if (typeof value === 'string') {
 			const parsed = parseEmail(value) ?? value;
 			return { label: parsed, error: !isValidEmail(parsed) };
 		}
 		return { label: 'unknown data', error: true };
-	};
+	}, []);
 
-	const onChipInputChange = (contacts: Array<ChipItem>): void => {
-		const data = map(
-			reject(contacts, ['error', true]),
-			(contact) =>
-				({
-					name: contact.label,
-					address: contact.label,
-					fullName: contact.label,
-					type
-				}) as Participant
-		);
-		onRecipientsChange(data);
-	};
+	const onChipInputChange = useCallback(
+		(contacts: Array<ChipItem>): void => {
+			const data = map(
+				reject(contacts, ['error', true]),
+				(contact) =>
+					({
+						name: contact.label,
+						address: contact.label,
+						fullName: contact.label,
+						type
+					}) as Participant
+			);
+			onRecipientsChange(data);
+		},
+		[onRecipientsChange, type]
+	);
 
 	return (
 		<>
