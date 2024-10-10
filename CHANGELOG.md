@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.18.4](https://github.com/zextras/carbonio-mails-ui/compare/v1.18.3...v1.18.4) (2024-10-10)
+
+
+### Bug Fixes
+
+* mails participants don't duplicate while drag and drop ([1b64eb9](https://github.com/zextras/carbonio-mails-ui/commit/1b64eb9f5690114655de9b6297108456db86ca96))
+* mails participants don't duplicate while drag and drop [#685](https://github.com/zextras/carbonio-mails-ui/issues/685) ([0ab7771](https://github.com/zextras/carbonio-mails-ui/commit/0ab7771fceb777c0a71a65b3614163ee65504c76))
+
 ### [1.18.3](https://github.com/zextras/carbonio-mails-ui/compare/v1.18.2...v1.18.3) (2024-10-08)
 
 ### [1.18.2](https://github.com/zextras/carbonio-mails-ui/compare/v1.18.1...v1.18.2) (2024-09-24)
