@@ -56,17 +56,17 @@ const AddressInCondition: FC<ComponentProps> = ({ t, activeIndex, defaultValue }
 		}
 	}, [activeIndex, newFilters, setNewFilters, loadData, query, header, sender]);
 
-	const handleFromChange = useCallback((arg) => {
+	const handleFromChange = useCallback((arg: string) => {
 		setHeader(arg);
 		setLoadData(true);
 	}, []);
 
-	const handleSenderChange = useCallback((arg) => {
+	const handleSenderChange = useCallback((arg: { key: string; value: object }) => {
 		setSender(arg);
 		setLoadData(true);
 	}, []);
 
-	const handleTypeChange = useCallback((arg) => {
+	const handleTypeChange = useCallback((arg: string) => {
 		setType(arg);
 		setLoadData(true);
 	}, []);

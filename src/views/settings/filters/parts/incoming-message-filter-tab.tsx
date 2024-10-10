@@ -5,7 +5,7 @@
  */
 import React, { FC, ReactElement, useContext, useMemo } from 'react';
 
-import { List, Container } from '@zextras/carbonio-design-system';
+import { Container } from '@zextras/carbonio-design-system';
 import type { TFunction } from 'i18next';
 import { filter, map } from 'lodash';
 
@@ -16,6 +16,7 @@ import LoadingShimmer from './loading-shimmer';
 import { useFilterSelection } from './use-filter-selection';
 import { modifyFilterRules } from '../../../../store/actions/modify-filter-rules';
 import Heading from '../../components/settings-heading';
+import { ListOld } from '../../list-old';
 
 type ComponentProps = {
 	t: TFunction;
@@ -68,7 +69,7 @@ const IncomingMsgFilterTab: FC<ComponentProps> = ({ t, selectedFilterType }): Re
 					{incomingLoading ? (
 						<LoadingShimmer />
 					) : (
-						<List
+						<ListOld
 							items={activeList.list}
 							selected={activeList.selected}
 							ItemComponent={FilterItem}
@@ -90,7 +91,7 @@ const IncomingMsgFilterTab: FC<ComponentProps> = ({ t, selectedFilterType }): Re
 					{incomingLoading ? (
 						<LoadingShimmer />
 					) : (
-						<List
+						<ListOld
 							items={availableList.list}
 							selected={availableList.selected}
 							ItemComponent={FilterItem}

@@ -52,12 +52,12 @@ const BodyCondition: FC<ComponentProps> = ({ t, activeIndex, defaultValue }): Re
 			setValue(defaultValue.bodyTest[0].value);
 		}
 	}, [defaultValue]);
-	const handleQueryChange = useCallback((arg) => {
+	const handleQueryChange = useCallback((arg: { value: string }) => {
 		setQuery(arg);
 		setLoadData(true);
 	}, []);
 
-	const handleValueChange = useCallback((ev) => {
+	const handleValueChange = useCallback((ev: React.ChangeEvent<HTMLInputElement>) => {
 		setValue(ev.target.value);
 		setLoadData(true);
 	}, []);
@@ -82,7 +82,7 @@ const BodyCondition: FC<ComponentProps> = ({ t, activeIndex, defaultValue }): Re
 			<Container minWidth="30%" padding={{ right: 'small' }}>
 				<Input
 					onChange={handleValueChange}
-					placeholder={t('settings.keyword', 'Keyword') as string}
+					label={t('settings.keyword', 'Keyword') as string}
 					backgroundColor="gray5"
 					value={value}
 				/>

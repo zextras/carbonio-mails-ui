@@ -49,7 +49,7 @@ const ReadReceiptModal: FC<CompProps> = ({
 				key: `read-receipt-sent`,
 				replace: true,
 				hideButton: true,
-				type: 'info',
+				severity: 'info',
 				label: t('label.read_receipt_sent', 'A read receipt has been sent for this message'),
 				autoHideTimeout: 3000
 			});

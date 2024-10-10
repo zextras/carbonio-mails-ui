@@ -76,7 +76,7 @@ export const NewModal: FC<ModalProps> = ({ folder, onClose }) => {
 					createSnackbar({
 						key: `edit`,
 						replace: true,
-						type: 'success',
+						severity: 'success',
 						label: t('messages.snackbar.folder_created', 'New folder created'),
 						autoHideTimeout: 3000,
 						hideButton: true
@@ -85,7 +85,7 @@ export const NewModal: FC<ModalProps> = ({ folder, onClose }) => {
 					createSnackbar({
 						key: `edit`,
 						replace: true,
-						type: 'error',
+						severity: 'error',
 						label: t('label.error_try_again', 'Something went wrong, please try again'),
 						autoHideTimeout: 3000,
 						hideButton: true

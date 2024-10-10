@@ -50,17 +50,17 @@ const HeaderCondition: FC<ComponentProps> = ({ t, activeIndex }): ReactElement =
 		}
 	}, [activeIndex, newFilters, setNewFilters, value, loadData, header, query]);
 
-	const handleQueryChange = useCallback((arg) => {
+	const handleQueryChange = useCallback((arg: { stringComparison: string }) => {
 		setQuery(arg);
 		setLoadData(true);
 	}, []);
 
-	const handleValueChange = useCallback((ev) => {
+	const handleValueChange = useCallback((ev: React.ChangeEvent<HTMLInputElement>) => {
 		setValue(ev.target.value);
 		setLoadData(true);
 	}, []);
 
-	const handleHeaderChange = useCallback((ev) => {
+	const handleHeaderChange = useCallback((ev: React.ChangeEvent<HTMLInputElement>) => {
 		setHeader(ev.target.value);
 		setLoadData(true);
 	}, []);

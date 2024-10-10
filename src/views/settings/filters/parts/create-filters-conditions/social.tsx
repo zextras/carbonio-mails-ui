@@ -42,7 +42,7 @@ const SocialCondition: FC<ComponentProps> = ({ t, activeIndex, defaultValue }): 
 		}
 	}, [activeIndex, newFilters, setNewFilters, loadData, query]);
 
-	const handleQueryChange = useCallback((arg) => {
+	const handleQueryChange = useCallback((arg: { linkedinTest: [] }) => {
 		setQuery(arg);
 		setLoadData(true);
 	}, []);

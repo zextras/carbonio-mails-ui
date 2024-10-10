@@ -55,10 +55,13 @@ const ReadReceiptCondition: FC<ComponentProps> = ({
 		}
 	}, [activeIndex, newFilters, setNewFilters, loadData, query]);
 
-	const handleQueryChange = useCallback((arg) => {
-		setQuery(arg);
-		setLoadData(true);
-	}, []);
+	const handleQueryChange = useCallback(
+		(arg: { header: string; stringComparison: string; value: string }) => {
+			setQuery(arg);
+			setLoadData(true);
+		},
+		[]
+	);
 
 	const defaultSelection = useMemo(() => {
 		if (defaultValue) {

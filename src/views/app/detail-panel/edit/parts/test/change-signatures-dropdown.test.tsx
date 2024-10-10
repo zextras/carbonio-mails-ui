@@ -38,7 +38,9 @@ describe('Change signature while composing mail', () => {
 			closeController: noop
 		};
 		setupTest(<EditView {...props} />, { store: reduxStore });
-		await interceptor;
+		await act(async () => {
+			await interceptor;
+		});
 		expect(await screen.findByTestId('edit-view-editor')).toBeInTheDocument();
 
 		const btnSend = screen.queryByTestId('BtnSendMail') || screen.queryByTestId('BtnSendMailMulti');
@@ -51,6 +53,7 @@ describe('Change signature while composing mail', () => {
 
 	test('Signatures should be display in dropdown list', async () => {
 		createSoapAPIInterceptor('GetShareInfo');
+		createSoapAPIInterceptor('SaveDraft');
 		setupEditorStore({ editors: [] });
 		const reduxStore = generateStore();
 		const editor = generateNewMessageEditor(reduxStore.dispatch);
@@ -90,7 +93,9 @@ describe('Change signature while composing mail', () => {
 			closeController: noop
 		};
 		setupTest(<EditView {...props} />, { store: reduxStore });
-		await interceptor;
+		await act(async () => {
+			await interceptor;
+		});
 		expect(await screen.findByTestId('edit-view-editor')).toBeInTheDocument();
 
 		expect(screen.queryByTestId('change-sign-dropdown-icon')).not.toBeInTheDocument();

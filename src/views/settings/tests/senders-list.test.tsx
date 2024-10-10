@@ -110,7 +110,7 @@ describe.each`
 			);
 			await addAddress(user, newSenderAddress);
 
-			expect(updateSettings).toBeCalledWith({
+			expect(updateSettings).toHaveBeenCalledWith({
 				target: { name: settingsField, value: [newSenderAddress] }
 			});
 		});
@@ -145,7 +145,7 @@ describe.each`
 			);
 			await addAddress(user, newSenderAddress);
 
-			expect(updateSettings).toBeCalledWith({
+			expect(updateSettings).toHaveBeenCalledWith({
 				target: { name: settingsField, value: [...senderAddressArray, newSenderAddress] }
 			});
 		});

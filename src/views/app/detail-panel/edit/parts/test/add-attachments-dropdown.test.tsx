@@ -6,7 +6,6 @@
 import React from 'react';
 
 import { faker } from '@faker-js/faker';
-import { act } from '@testing-library/react';
 import { forEach, reduce, times } from 'lodash';
 
 import {
@@ -78,7 +77,7 @@ describe('AddAttachmentsDropdown', () => {
 		setupEditorStore({ editors: [editor] });
 		const { user } = setupTest(<AddAttachmentsDropdown editorId={editor.id} />);
 		const dropdownIcon = screen.getByTestId(TESTID_SELECTORS.icons.attachmentDropdown);
-		await act(() => user.click(dropdownIcon));
+		await user.click(dropdownIcon);
 		expect(screen.getByTestId(TESTID_SELECTORS.icons.attachmentDropdown)).toBeVisible();
 	});
 
@@ -87,7 +86,7 @@ describe('AddAttachmentsDropdown', () => {
 		setupEditorStore({ editors: [editor] });
 		const { user } = setupTest(<AddAttachmentsDropdown editorId={editor.id} />);
 		const dropdownIcon = screen.getByTestId(TESTID_SELECTORS.icons.attachmentDropdown);
-		await act(() => user.click(dropdownIcon));
+		await user.click(dropdownIcon);
 		expect(screen.getByText('composer.attachment.local')).toBeVisible();
 	});
 
@@ -98,7 +97,7 @@ describe('AddAttachmentsDropdown', () => {
 		setupEditorStore({ editors: [editor] });
 		const { user } = setupTest(<AddAttachmentsDropdown editorId={editor.id} />);
 		const dropdownIcon = screen.getByTestId(TESTID_SELECTORS.icons.attachmentDropdown);
-		await act(() => user.click(dropdownIcon));
+		await user.click(dropdownIcon);
 		expect(screen.queryByText('composer.attachment.files')).not.toBeInTheDocument();
 	});
 
@@ -115,7 +114,7 @@ describe('AddAttachmentsDropdown', () => {
 		setupEditorStore({ editors: [editor] });
 		const { user } = setupTest(<AddAttachmentsDropdown editorId={editor.id} />);
 		const dropdownIcon = screen.getByTestId(TESTID_SELECTORS.icons.attachmentDropdown);
-		await act(() => user.click(dropdownIcon));
+		await user.click(dropdownIcon);
 		expect(screen.queryByText('composer.attachment.files')).not.toBeInTheDocument();
 	});
 
@@ -129,7 +128,7 @@ describe('AddAttachmentsDropdown', () => {
 		setupEditorStore({ editors: [editor] });
 		const { user } = setupTest(<AddAttachmentsDropdown editorId={editor.id} />);
 		const dropdownIcon = screen.getByTestId(TESTID_SELECTORS.icons.attachmentDropdown);
-		await act(() => user.click(dropdownIcon));
+		await user.click(dropdownIcon);
 		expect(screen.getByText('composer.attachment.files')).toBeVisible();
 	});
 
@@ -140,7 +139,7 @@ describe('AddAttachmentsDropdown', () => {
 		setupEditorStore({ editors: [editor] });
 		const { user } = setupTest(<AddAttachmentsDropdown editorId={editor.id} />);
 		const dropdownIcon = screen.getByTestId(TESTID_SELECTORS.icons.attachmentDropdown);
-		await act(() => user.click(dropdownIcon));
+		await user.click(dropdownIcon);
 		expect(screen.queryByText('composer.attachment.url')).not.toBeInTheDocument();
 	});
 
@@ -151,7 +150,7 @@ describe('AddAttachmentsDropdown', () => {
 		setupEditorStore({ editors: [editor] });
 		const { user } = setupTest(<AddAttachmentsDropdown editorId={editor.id} />);
 		const dropdownIcon = screen.getByTestId(TESTID_SELECTORS.icons.attachmentDropdown);
-		await act(() => user.click(dropdownIcon));
+		await user.click(dropdownIcon);
 		expect(screen.queryByText('composer.attachment.url')).not.toBeInTheDocument();
 	});
 
@@ -162,7 +161,7 @@ describe('AddAttachmentsDropdown', () => {
 		setupEditorStore({ editors: [editor] });
 		const { user } = setupTest(<AddAttachmentsDropdown editorId={editor.id} />);
 		const dropdownIcon = screen.getByTestId(TESTID_SELECTORS.icons.attachmentDropdown);
-		await act(() => user.click(dropdownIcon));
+		await user.click(dropdownIcon);
 		expect(screen.getByText('composer.attachment.url')).toBeVisible();
 	});
 
@@ -176,8 +175,8 @@ describe('AddAttachmentsDropdown', () => {
 				setupEditorStore({ editors: [editor] });
 				const { user } = setupTest(<AddAttachmentsDropdown editorId={editor.id} />);
 				const dropdownIcon = screen.getByTestId(TESTID_SELECTORS.icons.attachmentDropdown);
-				await act(() => user.click(dropdownIcon));
-				await act(() => user.click(screen.getByText('composer.attachment.files')));
+				await user.click(dropdownIcon);
+				await user.click(screen.getByText('composer.attachment.files'));
 
 				const updatedEditor = getEditor({ id: editor.id });
 				expect(updatedEditor?.unsavedAttachments).toHaveLength(FILES_COUNT);

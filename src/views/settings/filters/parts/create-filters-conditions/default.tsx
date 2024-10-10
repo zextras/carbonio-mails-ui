@@ -53,12 +53,12 @@ const DefaultCondition: FC<ComponentProps> = ({ t, activeIndex, defaultValue }):
 			setValue(defaultValue?.headerTest?.[0]?.value);
 		}
 	}, [defaultValue]);
-	const handleStatementChange = useCallback((arg) => {
+	const handleStatementChange = useCallback((arg: { stringComparison: string }) => {
 		setSelectValue(arg);
 		setLoadData(true);
 	}, []);
 
-	const handleValueChange = useCallback((ev) => {
+	const handleValueChange = useCallback((ev: React.ChangeEvent<HTMLInputElement>) => {
 		setValue(ev.target.value);
 		setLoadData(true);
 	}, []);
@@ -92,10 +92,9 @@ const DefaultCondition: FC<ComponentProps> = ({ t, activeIndex, defaultValue }):
 			</Container>
 			<Container minWidth="20%" maxWidth="20%" padding={{ right: 'small' }}>
 				<Input
-					label=""
 					backgroundColor="gray5"
 					value={value}
-					placeholder={t('settings.keyword', 'Keyword')}
+					label={t('settings.keyword', 'Keyword')}
 					onChange={handleValueChange}
 				/>
 			</Container>

@@ -47,10 +47,17 @@ const CalendarCondition: FC<ComponentProps> = ({ t, activeIndex, defaultValue })
 		}
 	}, [activeIndex, newFilters, setNewFilters, loadData, query]);
 
-	const handleQueryChange = useCallback((arg) => {
-		setQuery(arg);
-		setLoadData(true);
-	}, []);
+	const handleQueryChange = useCallback(
+		(arg: {
+			method: {
+				_content: string;
+			}[];
+		}) => {
+			setQuery(arg);
+			setLoadData(true);
+		},
+		[]
+	);
 
 	const defaultOption = useMemo(() => {
 		if (defaultValue) {

@@ -5,7 +5,7 @@
  */
 import { faker } from '@faker-js/faker';
 import { times } from 'lodash';
-import { act } from 'react-dom/test-utils';
+import { act } from 'react';
 
 import { FOLDER_VIEW } from '../../../carbonio-ui-commons/constants';
 import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
