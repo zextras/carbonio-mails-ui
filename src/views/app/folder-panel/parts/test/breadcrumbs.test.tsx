@@ -12,7 +12,6 @@ import { getFolderPathForBreadcrumb } from '../../../../../helpers/folders';
 import { generateStore } from '../../../../../tests/generators/store';
 import { Breadcrumbs } from '../breadcrumbs';
 
-// Mock the getFolderPathForBreadcrumb function
 jest.mock('../../../../../helpers/folders', () => ({
 	getFolderPathForBreadcrumb: jest.fn()
 }));
@@ -29,7 +28,7 @@ describe('Breadcrumbs Component', () => {
 	};
 
 	beforeEach(() => {
-		getFolderPathForBreadcrumb.mockReturnValue({
+		(getFolderPathForBreadcrumb as jest.Mock).mockReturnValue({
 			folderPathFirstPart: 'root/folder/',
 			folderPathLastPart: 'subfolder'
 		});
