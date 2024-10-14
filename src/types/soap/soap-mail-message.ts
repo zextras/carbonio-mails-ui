@@ -27,8 +27,22 @@ export type SoapIncompleteMessage = {
 	/** Scheduled time */ autoSendTime?: number;
 	/** Invite */ inv?: Array<any>;
 	/** Shared */ shr?: Array<any>;
+	/** Shared */ signature?: Array<MessageSignature>;
 };
 
+export type MessageSignature = {
+	certificate: {
+		issuer: {
+			trusted: boolean;
+			name: string;
+		};
+		email: string;
+		notBefore: number;
+		notAfter: number;
+	};
+	message: string;
+	valid: boolean;
+};
 export type SoapMailMessage = SoapIncompleteMessage & {
 	/** Contacts */ e: Array<SoapMailParticipant>;
 	/** Subject */ su: string;

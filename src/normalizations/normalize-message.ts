@@ -355,7 +355,8 @@ export const normalizeMailMessageFromSoap = (
 			isScheduled: !!m.autoSendTime,
 			autoSendTime: m.autoSendTime,
 			...flags,
-			isReadReceiptRequested: haveReadReceipt(m.e, m.f, m.l) && !isNil(isComplete) && isComplete
+			isReadReceiptRequested: haveReadReceipt(m.e, m.f, m.l) && !isNil(isComplete) && isComplete,
+			signature: m?.signature
 		},
 		isNil
 	);

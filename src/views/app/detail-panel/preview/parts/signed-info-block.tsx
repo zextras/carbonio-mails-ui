@@ -5,43 +5,53 @@
  */
 import React, { FC, ReactElement, useCallback } from 'react';
 
-import { Container, Icon, Link, useModal } from '@zextras/carbonio-design-system';
+import { Container, Icon, Link, Tooltip, useModal } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
 
 import { SmimeDetailsModal } from './smime-details-modal';
 import { StoreProvider } from '../../../../../store/redux';
+import { IncompleteMessage } from '../../../../../types';
 
 type SignedInfoProps = {
-	msgId: string;
+	msg: IncompleteMessage;
 };
-const SignedInfo: FC<SignedInfoProps> = ({ msgId }): ReactElement => {
+const SignedInfo: FC<SignedInfoProps> = ({ msg }): ReactElement => {
 	const [t] = useTranslation();
 	const { createModal, closeModal } = useModal();
-
+	const signature = msg?.signature?.[0];
 	const onSmimeClick = useCallback(() => {
 		const modalId = Date.now().toString();
-		createModal(
-			{
-				id: modalId,
-				maxHeight: '90vh',
-				children: (
-					<StoreProvider>
-						<SmimeDetailsModal onClose={(): void => closeModal(modalId)} />
-					</StoreProvider>
-				)
-			},
-			true
-		);
-	}, [closeModal, createModal]);
+		signature &&
+			createModal(
+				{
+					id: modalId,
+					maxHeight: '90vh',
+					children: (
+						<StoreProvider>
+							<SmimeDetailsModal onClose={(): void => closeModal(modalId)} signature={signature} />
+						</StoreProvider>
+					)
+				},
+				true
+			);
+	}, [closeModal, createModal, signature]);
 
 	return (
 		<Container orientation="horizontal" padding={{ all: 'small' }} mainAlignment="flex-start">
-			<Icon
-				size="medium"
-				icon={'SignatureOutline'}
-				color={'primary'}
-				style={{ alignSelf: 'center', paddingRight: '0.25rem' }}
-			/>
+			<Tooltip
+				label={
+					signature?.valid
+						? t('label.valid_signature', 'Valid Signature')
+						: t('label.invalid_signature', 'Invalid Signature')
+				}
+			>
+				<Icon
+					size="medium"
+					icon={'SignatureOutline'}
+					color={signature?.valid ? 'success' : 'error'}
+					style={{ alignSelf: 'center', paddingRight: '0.25rem' }}
+				/>
+			</Tooltip>
 			<Link size="small" onClick={onSmimeClick}>
 				{t('label.show_details', 'Show Details')}
 			</Link>

@@ -38,6 +38,21 @@ export type IncompleteMessage = {
 	isComplete: boolean;
 	isReplied: boolean;
 	isReadReceiptRequested?: boolean;
+	signature?: Array<MessageSignature>;
+};
+
+export type MessageSignature = {
+	certificate: {
+		issuer: {
+			trusted: boolean;
+			name: string;
+		};
+		email: string;
+		notBefore: number;
+		notAfter: number;
+	};
+	message: string;
+	valid: boolean;
 };
 
 export type MailMessagePart = {
