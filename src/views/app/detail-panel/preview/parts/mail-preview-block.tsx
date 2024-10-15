@@ -14,7 +14,7 @@ import {
 	Button,
 	Divider
 } from '@zextras/carbonio-design-system';
-import { t } from 'i18next';
+import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 
 import PreviewHeader from './preview-header';
@@ -43,6 +43,7 @@ export const MailPreviewBlock: FC<MailPreviewBlockType> = ({
 		[message, onClick, open, isExternalMessage, messagePreviewFactory]
 	);
 	const shouldReplaceHistory = useMemo(() => itemId === message.id, [message.id, itemId]);
+	const [t] = useTranslation();
 
 	const { execute } = useMsgSetNotSpamFn({ ids: [message.id], folderId, shouldReplaceHistory });
 	return (
