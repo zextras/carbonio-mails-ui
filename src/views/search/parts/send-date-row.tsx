@@ -23,7 +23,7 @@ const SendReceivedDateRow: FC<SendReceivedDateRowPropType> = ({ compProps }): Re
 	}
 
 	const onSentBeforeChange = useCallback(
-		(date) => {
+		(date: Date | null) => {
 			const tmp = `before:${moment(date).format(QUERY_DATE_FORMAT)}`;
 			date
 				? setSentBefore([
@@ -42,7 +42,7 @@ const SendReceivedDateRow: FC<SendReceivedDateRowPropType> = ({ compProps }): Re
 	);
 
 	const onSentAfterChange = useCallback(
-		(date) => {
+		(date: Date | null) => {
 			const tmp = `after:${moment(date).format(QUERY_DATE_FORMAT)}`;
 			date
 				? setSentAfter([
@@ -60,7 +60,7 @@ const SendReceivedDateRow: FC<SendReceivedDateRowPropType> = ({ compProps }): Re
 		[setSentAfter]
 	);
 	const onSentOnChange = useCallback(
-		(date) => {
+		(date: Date | null) => {
 			const tmp = `date:${moment(date).format(QUERY_DATE_FORMAT)}`;
 			date
 				? setSentOn([

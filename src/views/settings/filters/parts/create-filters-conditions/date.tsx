@@ -48,12 +48,12 @@ const DateCondition: FC<ComponentProps> = ({ t, activeIndex, defaultValue }): Re
 		}
 	}, [activeIndex, newFilters, setNewFilters, loadData, query, date]);
 
-	const handleQueryChange = useCallback((arg) => {
+	const handleQueryChange = useCallback((arg: { dateComparison: string }) => {
 		setQuery(arg);
 		setLoadData(true);
 	}, []);
 
-	const handleDateChange = useCallback((arg) => {
+	const handleDateChange = useCallback((arg: Date | null) => {
 		setDate(`${moment(arg).format('X')}`);
 		setLoadData(true);
 	}, []);

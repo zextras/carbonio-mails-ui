@@ -114,7 +114,7 @@ describe('incoming filters actions', () => {
 				key: 'applyFilter-filter-started',
 				label: 'messages.snackbar.apply_filter_rules_started',
 				replace: true,
-				type: 'info'
+				severity: 'info'
 			});
 		});
 	});

@@ -19,12 +19,20 @@ const SizeLargerSizeSmallerRow: FC<SizeLargerSizeSmallerRowProps> = ({
 	const [isInvalidLargeSize, setIsInvalidLargeSize] = useState(false);
 	const errorLabel = useMemo(() => t('search.size_error', 'Only numbers are allowed'), []);
 
-	const onChange = useCallback((state, stateHandler) => {
+	const onChange = useCallback((state: ChipItem[], stateHandler: (state: ChipItem[]) => void) => {
 		stateHandler(state);
 	}, []);
 
 	const chipOnAdd = useCallback(
-		(label, preText, hasAvatar, isGeneric, isQueryFilter, avatarIcon, error) => ({
+		(
+			label: string,
+			preText: string,
+			hasAvatar: boolean,
+			isGeneric: boolean,
+			isQueryFilter: boolean,
+			avatarIcon: string,
+			error: boolean
+		) => ({
 			label: `${preText}:${label}MB`,
 			hasAvatar,
 			isGeneric,
@@ -47,9 +55,9 @@ const SizeLargerSizeSmallerRow: FC<SizeLargerSizeSmallerRowProps> = ({
 			input.match(/^[0-9]+$/) ? setIsInvalidLargeSize(false) : setIsInvalidLargeSize(true),
 		[]
 	);
-
 	const sizeSmallerChipOnAdd = useCallback(
-		(label): any => {
+		(value: unknown): ChipItem<unknown> => {
+			const label = value as string;
 			checkErrorSizeSmaller(label);
 			return chipOnAdd(
 				label,
@@ -65,7 +73,8 @@ const SizeLargerSizeSmallerRow: FC<SizeLargerSizeSmallerRowProps> = ({
 	);
 
 	const sizeLargerChipOnAdd = useCallback(
-		(label): any => {
+		(value: unknown): ChipItem<unknown> => {
+			const label = value as string;
 			checkErrorSizeLarger(label);
 			return chipOnAdd(
 				label,

@@ -14,6 +14,7 @@ import { getFolder } from '../carbonio-ui-commons/store/zustand/folder/hooks';
 import { useFolderStore } from '../carbonio-ui-commons/store/zustand/folder/store';
 import {
 	AttachmentPart,
+	BodyPart,
 	IncompleteMessage,
 	MailMessage,
 	MailMessagePart,
@@ -199,18 +200,14 @@ const normalizeMailPartMapFn = (v: SoapMailMessagePart): MailMessagePart => {
 	return ret;
 };
 
-const findBodyPart = (
-	mp: Array<SoapMailMessagePart>,
-	acc: { contentType: string; content: string },
-	id: string
-): { contentType: string; content: string } =>
+const findBodyPart = (mp: Array<SoapMailMessagePart>, acc: BodyPart, id: string): BodyPart =>
 	reduce(
 		mp,
 		(found, part) => {
 			if (part.mp) return findBodyPart(part.mp, found, id);
 			if (part && part.body) {
 				if (!found.contentType.length) {
-					return { contentType: part.ct, content: part.content ?? '' };
+					return { contentType: part.ct, content: part.content ?? '', truncated: !!part.truncated };
 				}
 				if (
 					part.part &&
@@ -227,7 +224,11 @@ const findBodyPart = (
 						)
 					};
 				}
-				return { ...found, content: found.content.concat(part.content ?? '') };
+				return {
+					...found,
+					content: found.content.concat(part.content ?? ''),
+					truncated: !!part.truncated
+				};
 			}
 			return found;
 		},
@@ -240,7 +241,7 @@ const generateBody = (
 ): {
 	contentType: string;
 	content: string;
-} => findBodyPart(mp, { contentType: '', content: '' }, id);
+} => findBodyPart(mp, { contentType: '', content: '', truncated: false }, id);
 
 const participantTypeFromSoap = (t: SoapEmailParticipantRole): ParticipantRoleType => {
 	switch (t) {

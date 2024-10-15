@@ -38,6 +38,7 @@ type DraggableItemProps = {
 	folderId: string;
 	isMessageView: boolean;
 	selectedIds: string[];
+	children: React.ReactNode;
 };
 const DraggableItem: FC<DraggableItemProps> = ({
 	item,

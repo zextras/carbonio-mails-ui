@@ -29,10 +29,10 @@ import { getSelectFoldersUIAction } from '../select-folders';
 
 export type ApplyFilterModalProps = {
 	criteria: ApplyFilterUIActionExecutionParams['criteria'];
-	modalId: string;
+	onClose: () => void;
 };
 
-export const ApplyFilterModal: FC<ApplyFilterModalProps> = ({ criteria, modalId }) => {
+export const ApplyFilterModal: FC<ApplyFilterModalProps> = ({ criteria, onClose }) => {
 	const { createModal, closeModal } = useModal();
 	const createSnackbar = useSnackbar();
 	const [folder, setFolder] = useState<Folder>();
@@ -58,7 +58,7 @@ export const ApplyFilterModal: FC<ApplyFilterModalProps> = ({ criteria, modalId 
 			.then((serviceResult) => {
 				createSnackbar({
 					key: `applyFilter-${criteria.filterName}-completed`,
-					type: 'success',
+					severity: 'success',
 					label: t('messages.snackbar.apply_filter_rules_completed', {
 						filterName: criteria.filterName,
 						involvedMessagesCount: serviceResult.messagesId.length,
@@ -74,7 +74,7 @@ export const ApplyFilterModal: FC<ApplyFilterModalProps> = ({ criteria, modalId 
 			.catch((err) => {
 				createSnackbar({
 					key: `applyFilter-${criteria.filterName}-error`,
-					type: 'info',
+					severity: 'info',
 					label:
 						err && err !== ''
 							? err
@@ -90,7 +90,7 @@ export const ApplyFilterModal: FC<ApplyFilterModalProps> = ({ criteria, modalId 
 
 		createSnackbar({
 			key: `applyFilter-${criteria.filterName}-started`,
-			type: 'info',
+			severity: 'info',
 			label: t('messages.snackbar.apply_filter_rules_started', {
 				filterName: criteria.filterName,
 				folderPath: folder.absFolderPath,
@@ -101,10 +101,10 @@ export const ApplyFilterModal: FC<ApplyFilterModalProps> = ({ criteria, modalId 
 			autoHideTimeout: TIMEOUTS.SNACKBAR_DEFAULT_TIMEOUT,
 			hideButton: true
 		});
-		closeModal(modalId);
-	}, [closeModal, createSnackbar, criteria.filterName, folder, modalId]);
+		onClose();
+	}, [createSnackbar, criteria.filterName, folder, onClose]);
 
-	const onCancelAction = useCallback(() => closeModal(modalId), [closeModal, modalId]);
+	const onCancelAction = useCallback(() => onClose(), [onClose]);
 
 	const onAddFolder = (): void => {
 		const action = getSelectFoldersUIAction();
@@ -181,8 +181,8 @@ export const ApplyFilterModal: FC<ApplyFilterModalProps> = ({ criteria, modalId 
 								i18nKey="modals.apply_filters.label_involved_messages"
 								involvedMessagesCount={involvedMessagesCount}
 							>
-								<TextStyler bold>{{ involvedMessagesCount }} messages</TextStyler> will be processed
-								inside the selected folder.
+								<TextStyler bold>{`animation: ${involvedMessagesCount} messages`}</TextStyler> will
+								be processed inside the selected folder.
 							</Trans>
 						</Text>
 						<Text>

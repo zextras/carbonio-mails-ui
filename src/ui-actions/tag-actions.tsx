@@ -5,7 +5,15 @@
  */
 import React, { ReactElement, useCallback, useMemo, useState } from 'react';
 
-import { Checkbox, Icon, Padding, Row, Text, useModal } from '@zextras/carbonio-design-system';
+import {
+	Checkbox,
+	DropdownItem,
+	Icon,
+	Padding,
+	Row,
+	Text,
+	useModal
+} from '@zextras/carbonio-design-system';
 import { Tag, t, useTags } from '@zextras/carbonio-shell-ui';
 import { find, reduce, some } from 'lodash';
 
@@ -15,7 +23,7 @@ import { StoreProvider } from '../store/redux';
 import type { ArgumentType, ItemType, TagActionsReturnType, UIActionDescriptor } from '../types';
 import CreateUpdateTagModal from '../views/sidebar/parts/tags/create-update-tag-modal';
 
-export const createTag = ({ createModal, closeModal }: ArgumentType): TagActionsReturnType => ({
+export const createTag = ({ createModal, closeModal }: ArgumentType): DropdownItem => ({
 	id: TagsActionsType.NEW,
 	icon: 'TagOutline',
 	label: t('label.create_tag', 'Create Tag'),
@@ -39,7 +47,7 @@ export const createTag = ({ createModal, closeModal }: ArgumentType): TagActions
 	}
 });
 
-export const editTag = ({ createModal, closeModal, tag }: ArgumentType): TagActionsReturnType => ({
+export const editTag = ({ createModal, closeModal, tag }: ArgumentType): DropdownItem => ({
 	id: TagsActionsType.EDIT,
 	icon: 'Edit2Outline',
 	label: t('label.edit_tag', 'Edit Tag'),
@@ -67,11 +75,7 @@ export const editTag = ({ createModal, closeModal, tag }: ArgumentType): TagActi
 	}
 });
 
-export const deleteTag = ({
-	createModal,
-	closeModal,
-	tag
-}: ArgumentType): TagActionsReturnType => ({
+export const deleteTag = ({ createModal, closeModal, tag }: ArgumentType): DropdownItem => ({
 	id: TagsActionsType.DELETE,
 	icon: 'Untag',
 	label: t('label.delete_tag', 'Delete Tag'),
@@ -140,11 +144,12 @@ export const TagsDropdownItem = ({
 export const useGetTagsActions = ({ tag }: ArgumentType): Array<TagActionsReturnType> => {
 	const { createModal, closeModal } = useModal();
 	return useMemo(
-		() => [
-			createTag({ createModal, closeModal }),
-			editTag({ createModal, closeModal, tag }),
-			deleteTag({ tag, createModal, closeModal })
-		],
+		() =>
+			[
+				createTag({ createModal, closeModal }),
+				editTag({ createModal, closeModal, tag }),
+				deleteTag({ tag, createModal, closeModal })
+			] as Array<TagActionsReturnType>,
 		[closeModal, createModal, tag]
 	);
 };

@@ -172,7 +172,7 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 			createSnackbar({
 				key: 'send',
 				replace: true,
-				type: 'info',
+				severity: 'info',
 				label: t('messages.snackbar.sending_mail_in_count', {
 					count: countdown,
 					defaultValue_one: 'Sending your message in {{count}} second',
@@ -197,7 +197,7 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 		createSnackbar({
 			key: `mail-${editorId}`,
 			replace: true,
-			type: 'error',
+			severity: 'error',
 			label: t('label.error_try_again', 'Something went wrong, please try again'),
 			autoHideTimeout: TIMEOUTS.SNACKBAR_DEFAULT_TIMEOUT,
 			hideButton: true
@@ -212,7 +212,7 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 		createSnackbar({
 			key: `mail-${editorId}`,
 			replace: true,
-			type: 'success',
+			severity: 'success',
 			label: t('messages.snackbar.mail_sent', 'Message sent'),
 			autoHideTimeout: TIMEOUTS.SNACKBAR_DEFAULT_TIMEOUT,
 			hideButton: true

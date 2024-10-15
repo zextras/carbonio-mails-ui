@@ -45,7 +45,7 @@ import { ConversationListItemActionWrapper } from '../../../app/folder-panel/con
 import { ItemAvatar } from '../../../app/folder-panel/parts/item-avatar';
 import { RowInfo } from '../../../app/folder-panel/parts/row-info';
 import { SenderName } from '../../../app/folder-panel/parts/sender-name';
-import { SearchConversationPreviewPanelContainer } from '../../preview/conversations/search-conversation-preview-panel';
+import { SearchConversationExtraWindowPanelContainer } from '../../extra-window/conversations/search-conversation-extra-window-panel';
 
 const CollapseElement = styled(Container)<ContainerProps & { open: boolean }>`
 	display: ${({ open }): string => (open ? 'block' : 'none')};
@@ -123,7 +123,7 @@ export const SearchConversationListItem: FC<SearchConversationListItemProps> = (
 	);
 
 	const expandConversation = useCallback(
-		(e) => {
+		(e: React.MouseEvent<HTMLButtonElement> | React.KeyboardEvent | MouseEvent | KeyboardEvent) => {
 			e.preventDefault();
 			setOpen((currentlyOpen) => {
 				if (
@@ -140,7 +140,7 @@ export const SearchConversationListItem: FC<SearchConversationListItemProps> = (
 	);
 
 	const conversationPreviewFactory = useCallback(
-		() => <SearchConversationPreviewPanelContainer conversationId={conversationId} />,
+		() => <SearchConversationExtraWindowPanelContainer conversationId={conversationId} />,
 		[conversationId]
 	);
 
@@ -158,7 +158,7 @@ export const SearchConversationListItem: FC<SearchConversationListItemProps> = (
 	});
 
 	const _onClick = useCallback(
-		(e) => {
+		(e: React.MouseEvent) => {
 			if (!e.isDefaultPrevented()) {
 				if (conversation?.read === false && zimbraPrefMarkMsgRead) {
 					markAsRead.canExecute() && markAsRead.execute();
@@ -170,7 +170,7 @@ export const SearchConversationListItem: FC<SearchConversationListItemProps> = (
 	);
 
 	const _onDoubleClick = useCallback(
-		(e) => {
+		(e: React.MouseEvent) => {
 			if (e.isDefaultPrevented()) {
 				return;
 			}

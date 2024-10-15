@@ -42,7 +42,7 @@ export const useConvSetSpamFn = ({
 			createSnackbar({
 				key: `trash-${ids}`,
 				replace: true,
-				type: 'info',
+				severity: 'info',
 				label: t('messages.snackbar.marked_as_spam', 'You’ve marked this e-mail as Spam'),
 				autoHideTimeout: 3000,
 				hideButton,
@@ -68,7 +68,7 @@ export const useConvSetSpamFn = ({
 						createSnackbar({
 							key: `trash-${ids}`,
 							replace: true,
-							type: 'error',
+							severity: 'error',
 							label: t('label.error_try_again', 'Something went wrong, please try again'),
 							autoHideTimeout: 3000
 						});

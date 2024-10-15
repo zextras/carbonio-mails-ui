@@ -25,6 +25,7 @@ export async function searchConvSoapAPI({
 		sortBy: 'dateDesc',
 		offset: 0,
 		fetch,
+		max: 250_000,
 		needExp: 1,
 		limit: 250,
 		html: 1

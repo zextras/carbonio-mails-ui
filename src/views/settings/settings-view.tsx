@@ -8,6 +8,8 @@ import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
 import { Container, FormSection } from '@zextras/carbonio-design-system';
 import {
 	AccountSettings,
+	BatchResponse,
+	IdentityAttrs,
 	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 	// @ts-ignore
 	SettingsHeader,
@@ -38,7 +40,14 @@ import { NO_SIGNATURE_ID } from '../../helpers/signatures';
 import { useAppDispatch } from '../../hooks/redux';
 import { useUiUtilities } from '../../hooks/use-ui-utilities';
 import { GetAllSignatures, SignatureRequest } from '../../store/actions/signatures';
-import type { AccountIdentity, PrefsType, PropsType, SignItemType, Signature } from '../../types';
+import type {
+	AccountIdentity,
+	PrefsType,
+	PropsType,
+	SignItemType,
+	Signature,
+	UpdateSettingsProps
+} from '../../types';
 
 /* to keep track of changes done to props we use 3 different values:
  * - originalProps is the status of the props when you open the settings for the first time
@@ -114,7 +123,7 @@ const SettingsView: FC = () => {
 	}, [currentProps, identities, prefs, attrs]);
 
 	const updatePrefs = useCallback(
-		(e) => {
+		(e: UpdateSettingsProps) => {
 			setCurrentPrefs({ ...currentPrefs, [e.target.name]: e.target.value });
 			setUpdatedPrefs({ ...updatedPrefs, [e.target.name]: e.target.value });
 		},
@@ -122,7 +131,7 @@ const SettingsView: FC = () => {
 	);
 
 	const updateAttrs = useCallback(
-		(e) => {
+		(e: UpdateSettingsProps) => {
 			setCurrentAttrs({ ...currentAttrs, [e.target.name]: e.target.value });
 			setUpdatedAttrs({ ...updatedAttrs, [e.target.name]: e.target.value });
 		},
@@ -130,20 +139,31 @@ const SettingsView: FC = () => {
 	);
 
 	const updateProps = useCallback(
-		(e) => {
+		(e: UpdateSettingsProps) => {
 			setUpdatedProps({ ...updatedProps, [e.target.name]: e.target.value });
 		},
 		[updatedProps]
 	);
 
 	const updateIdentities = useCallback(
-		(e) => {
-			const data = map(updatedIdentities, (item: AccountIdentity) => {
+		(e: {
+			id?: string | undefined;
+			target?:
+				| {
+						name: string;
+						value: string;
+				  }
+				| undefined;
+			_attrs?: IdentityAttrs | undefined;
+		}) => {
+			const data = map(updatedIdentities, (item) => {
 				if (item.id === e.id) {
 					return e;
 				}
 				return item;
 			});
+			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+			// @ts-ignore
 			setUpdatedIdentities(data);
 		},
 		[updatedIdentities]
@@ -179,10 +199,13 @@ const SettingsView: FC = () => {
 	);
 
 	const setNewOrForwardSignatureId = useCallback(
-		(itemsAdd, resp, oldSignatureId, isFowardSignature): void => {
-			const newOrForwardSignatureToSet = itemsAdd?.find(
-				(item: SignItemType) => item.id === oldSignatureId
-			);
+		(
+			itemsAdd: SignItemType[],
+			resp: any,
+			oldSignatureId: string,
+			isFowardSignature: boolean
+		): void => {
+			const newOrForwardSignatureToSet = itemsAdd?.find((item) => item.id === oldSignatureId);
 			if (
 				!!newOrForwardSignatureToSet &&
 				resp?.payload?.response?.Body?.BatchResponse?.CreateSignatureResponse
@@ -247,7 +270,7 @@ const SettingsView: FC = () => {
 				// At the moment we show only the last error
 				createSnackbar({
 					key: `signature-validation-error`,
-					type: 'error',
+					severity: 'error',
 					label: validationResult[validationResult.length - 1],
 					autoHideTimeout: TIMEOUTS.SNACKBAR_DEFAULT_TIMEOUT,
 					hideButton: true,
@@ -318,7 +341,7 @@ const SettingsView: FC = () => {
 					createSnackbar({
 						key: `new`,
 						replace: true,
-						type: 'info',
+						severity: 'info',
 						label: t('message.snackbar.settings_saved', 'Settings saved correctly'),
 						autoHideTimeout: 3000,
 						hideButton: true
@@ -337,7 +360,7 @@ const SettingsView: FC = () => {
 					createSnackbar({
 						key: `new`,
 						replace: true,
-						type: 'error',
+						severity: 'error',
 						label: t('label.error_try_again', 'Something went wrong, please try again'),
 						autoHideTimeout: 3000,
 						hideButton: true
@@ -365,7 +388,7 @@ const SettingsView: FC = () => {
 					createSnackbar({
 						key: `new`,
 						replace: true,
-						type: 'info',
+						severity: 'info',
 						label: t('message.snackbar.settings_saved', 'Settings saved correctly'),
 						autoHideTimeout: 3000,
 						hideButton: true
@@ -383,7 +406,7 @@ const SettingsView: FC = () => {
 					createSnackbar({
 						key: `new`,
 						replace: true,
-						type: 'error',
+						severity: 'error',
 						label: t('label.error_try_again', 'Something went wrong, please try again'),
 						autoHideTimeout: 3000,
 						hideButton: true
