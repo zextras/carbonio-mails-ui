@@ -137,7 +137,11 @@ export const getAttachmentsFromParts = (
 							if (item.ct === 'text/html' && !item.filename) {
 								item.filename = 'Unknown <text/html>';
 							}
-							results.push(item);
+							if (item.ct && item.ct !== 'application/pkcs7-signature') {
+								// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+								// @ts-ignore
+								results.push(item);
+							}
 						}
 					}
 				});
@@ -216,7 +220,7 @@ const findBodyPart = (mp: Array<SoapMailMessagePart>, acc: BodyPart, id: string)
 					return {
 						...found,
 						content: found.content.concat(
-							`<img src='/service/home/~/?auth=co&loc=en&id=${id}&part=${part?.part}'>` ?? ''
+							`<img src='/service/home/~/?auth=co&loc=en&id=${id}&part=${part?.part}'>`
 						)
 					};
 				}

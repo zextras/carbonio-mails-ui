@@ -5,7 +5,7 @@
  */
 import React, { FC, ReactElement, useCallback } from 'react';
 
-import { Container, Icon, Link, Tooltip, useModal } from '@zextras/carbonio-design-system';
+import { Container, Icon, Link, Row, Tooltip, useModal } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
 
 import { SmimeDetailsModal } from './smime-details-modal';
@@ -45,12 +45,14 @@ const SignedInfo: FC<SignedInfoProps> = ({ msg }): ReactElement => {
 						: t('label.invalid_signature', 'Invalid Signature')
 				}
 			>
-				<Icon
-					size="medium"
-					icon={'SignatureOutline'}
-					color={signature?.valid ? 'success' : 'error'}
-					style={{ alignSelf: 'center', paddingRight: '0.25rem' }}
-				/>
+				<Row>
+					<Icon
+						size="medium"
+						icon={'SignatureOutline'}
+						color={signature?.valid ? 'success' : 'error'}
+						style={{ alignSelf: 'center', paddingRight: '0.25rem' }}
+					/>
+				</Row>
 			</Tooltip>
 			<Link size="small" onClick={onSmimeClick}>
 				{t('label.show_details', 'Show Details')}

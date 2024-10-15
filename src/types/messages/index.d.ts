@@ -51,6 +51,7 @@ export type MessageSignature = {
 		notBefore: number;
 		notAfter: number;
 	};
+	messageCode: string;
 	message: string;
 	valid: boolean;
 };

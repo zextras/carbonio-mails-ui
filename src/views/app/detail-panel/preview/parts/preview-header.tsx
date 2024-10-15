@@ -108,14 +108,6 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 		setIsContactListExpand(contactListExpand);
 	}, []);
 
-	// const isSigned = useMemo(
-	// 	() =>
-	// 		message?.attachments?.some(
-	// 			(attachment) => attachment.contentType === 'application/pkcs7-signature'
-	// 		),
-	// 	[message?.attachments]
-	// );
-
 	const tagsFromStore = useTags();
 	const tags = useMemo(
 		() =>
