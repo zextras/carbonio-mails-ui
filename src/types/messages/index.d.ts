@@ -38,6 +38,7 @@ export type IncompleteMessage = {
 	isComplete: boolean;
 	isReplied: boolean;
 	isReadReceiptRequested?: boolean;
+	isFromExternalDomain: boolean;
 };
 
 export type MailMessagePart = {

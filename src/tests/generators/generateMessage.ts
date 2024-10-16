@@ -141,7 +141,8 @@ const generateMessage = ({
 	size: 0,
 	subject,
 	tags,
-	urgent: false
+	urgent: false,
+	isFromExternalDomain: false
 });
 
 export { MessageGenerationParams, generateMessage };
