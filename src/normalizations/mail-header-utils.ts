@@ -21,32 +21,33 @@ export function getIsFromExternalDomain(
 	return !includes(fromAddress, ownerDomain);
 }
 
-const trimAndCheck = (value: string | undefined): string | undefined => {
+function trimAndCheck(value: string | undefined): string | undefined {
 	const trimmed = trim(value);
 	return trimmed === '' ? undefined : trimmed;
-};
+}
+function findHeader(
+	authenticationHeadersArray: Array<string> | undefined,
+	regex: RegExp
+): string | undefined {
+	return authenticationHeadersArray?.find((header) => regex.exec(header));
+}
 
 export function getAuthenticationHeaders(
 	headers: SoapIncompleteMessage['_attrs']
 ): AuthenticatonHeaders {
 	const authenticationHeadersArray = headers?.['Authentication-Results']?.split(';');
+	const dkimValue = trimAndCheck(findHeader(authenticationHeadersArray, /dkim=/));
+	const dkimPass = !!dkimValue && /dkim=pass/i.exec(dkimValue);
 
-	const dkimValue = trimAndCheck(
-		authenticationHeadersArray?.find((header) => header.match(/dkim=/))
-	);
-	const dkimPass = !!dkimValue?.match(/dkim=pass/i);
+	const spfValue = trimAndCheck(findHeader(authenticationHeadersArray, /spf=/));
+	const spfPass = !!spfValue && /spf=pass/i.exec(spfValue);
 
-	const spfValue = trimAndCheck(authenticationHeadersArray?.find((header) => header.match(/spf=/)));
-	const spfPass = !!spfValue?.match(/spf=pass/i);
-
-	const dmarcValue = trimAndCheck(
-		authenticationHeadersArray?.find((header) => header.match(/dmarc=/))
-	);
-	const dmarcPass = !!dmarcValue?.match(/dmarc=pass/i);
+	const dmarcValue = trimAndCheck(findHeader(authenticationHeadersArray, /dmarc=/));
+	const dmarcPass = !!dmarcValue && /dmarc=pass/i.exec(dmarcValue);
 
 	return {
-		dkim: { value: dkimValue, pass: dkimPass },
-		spf: { value: spfValue, pass: spfPass },
-		dmarc: { value: dmarcValue, pass: dmarcPass }
+		dkim: { value: dkimValue, pass: !!dkimPass },
+		spf: { value: spfValue, pass: !!spfPass },
+		dmarc: { value: dmarcValue, pass: !!dmarcPass }
 	};
 }
