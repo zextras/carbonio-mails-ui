@@ -7,7 +7,7 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import { getTags, soapFetch } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
 
-import { API_REQUEST_STATUS } from '../../constants';
+import { API_REQUEST_STATUS, MAIL_VERIFICATION_HEADERS } from '../../constants';
 import { normalizeConversation } from '../../normalizations/normalize-conversation';
 import { normalizeMailMessageFromSoap } from '../../normalizations/normalize-message';
 import type {
@@ -30,6 +30,7 @@ export const getConv = createAsyncThunk<
 				id: conversationId,
 				html: 1,
 				needExp: 1,
+				header: map(MAIL_VERIFICATION_HEADERS, (header) => ({ n: header })),
 				fetch
 			}
 		})) as GetConvResponse;

@@ -547,3 +547,8 @@ export const BACKUP_SEARCH_STATUS = {
 	loading: 'loading',
 	completed: 'completed'
 } as const;
+
+export const MAIL_VERIFICATION_HEADERS = {
+	authenticatorResults: 'Authentication-Results',
+	spamScore: 'X-Spam-Score'
+} as const;

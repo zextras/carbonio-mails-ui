@@ -8,7 +8,11 @@ import { AccountSettingsPrefs, ErrorSoapBodyResponse } from '@zextras/carbonio-s
 import { EmailAddresses } from './redirect-message-action';
 import { MailAttachment, SaveDraftResponse } from './save-draft';
 import { Folder } from '../../carbonio-ui-commons/types/folder';
+import { MAIL_VERIFICATION_HEADERS } from '../../constants';
 import { MailsEditor, MailsEditorV2 } from '../editor';
+
+export type MailVerificationHeader =
+	(typeof MAIL_VERIFICATION_HEADERS)[keyof typeof MAIL_VERIFICATION_HEADERS];
 
 export type IFolderView =
 	| 'search folder'
