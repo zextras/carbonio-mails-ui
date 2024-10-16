@@ -142,7 +142,12 @@ const generateMessage = ({
 	subject,
 	tags,
 	urgent: false,
-	isFromExternalDomain: false
+	isFromExternalDomain: false,
+	authenticatonHeaders: {
+		dkim: { value: undefined, pass: false },
+		spf: { value: undefined, pass: false },
+		dmarc: { value: undefined, pass: false }
+	}
 });
 
 export { MessageGenerationParams, generateMessage };

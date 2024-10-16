@@ -26,7 +26,7 @@ import {
 	SoapMailMessagePart,
 	SoapMailParticipant
 } from '../types';
-import { getIsFromExternalDomain } from './mail-header-utils';
+import { getAuthenticationHeaders, getIsFromExternalDomain } from './mail-header-utils';
 
 type Flags = {
 	read: boolean;
@@ -366,7 +366,8 @@ export const normalizeMailMessageFromSoap = (
 			autoSendTime: m.autoSendTime,
 			...flags,
 			isReadReceiptRequested: haveReadReceipt(m.e, m.f, m.l) && !isNil(isComplete) && isComplete,
-			isFromExternalDomain: getIsFromExternalDomain(m._attrs, ownerAccount)
+			isFromExternalDomain: getIsFromExternalDomain(m._attrs, ownerAccount),
+			authenticationHeaders: getAuthenticationHeaders(m._attrs)
 		},
 		isNil
 	);

@@ -550,7 +550,7 @@ export const BACKUP_SEARCH_STATUS = {
 
 export const MAIL_VERIFICATION_HEADERS = {
 	from: 'From',
-	authenticatorResults: 'Authentication-Results',
+	authenticatorHeaders: 'Authentication-Results',
 	sensitivity: 'Sensitivity',
 	listId: 'List-ID',
 	listUnsubscribe: 'List-Unsubscribe'

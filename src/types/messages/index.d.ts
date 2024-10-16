@@ -8,6 +8,14 @@ import type { MailsEditorV2 } from '../editor';
 import { Participant } from '../participant';
 import { SaveDraftResponse } from '../soap';
 
+type AuthenticatonHeader = { value?: string; pass?: boolean };
+
+type AuthenticatonHeaders = {
+	dkim?: AuthenticatonHeader;
+	spf?: AuthenticatonHeader;
+	dmarc?: AuthenticatonHeader;
+};
+
 export type IncompleteMessage = {
 	id: string;
 	did?: string;
@@ -39,6 +47,7 @@ export type IncompleteMessage = {
 	isReplied: boolean;
 	isReadReceiptRequested?: boolean;
 	isFromExternalDomain: boolean;
+	authenticatonHeaders: AuthenticatonHeaders;
 };
 
 export type MailMessagePart = {
