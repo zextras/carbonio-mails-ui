@@ -24,7 +24,7 @@ export const getConv = createAsyncThunk<
 >(
 	'conversations/getConv',
 	async ({ conversationId, fetch = 'all', onConversationIdChange }) => {
-		const result = (await soapFetch<GetConvRequest, GetConvResponse>('GetConv', {
+		const result = await soapFetch<GetConvRequest, GetConvResponse>('GetConv', {
 			_jsns: 'urn:zimbraMail',
 			c: {
 				id: conversationId,
@@ -33,7 +33,7 @@ export const getConv = createAsyncThunk<
 				header: map(MAIL_VERIFICATION_HEADERS, (header) => ({ n: header })),
 				fetch
 			}
-		})) as GetConvResponse;
+		});
 
 		/*
 		 * A conversation has a negative id if contains only one message.
