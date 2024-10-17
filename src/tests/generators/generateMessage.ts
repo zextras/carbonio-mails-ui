@@ -9,7 +9,7 @@ import { faker } from '@faker-js/faker';
 import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
 import { ParticipantRole } from '../../carbonio-ui-commons/constants/participants';
 import { convertHtmlToPlainText } from '../../carbonio-ui-commons/utils/text/html';
-import type { MailMessage, Participant } from '../../types';
+import { MailMessage, MailSensitivityHeader, Participant } from '../../types';
 
 /**
  *
@@ -36,6 +36,7 @@ type MessageGenerationParams = {
 	isSentByMe?: boolean;
 	tags?: Array<string>;
 	truncated?: boolean;
+	sensitivity?: MailSensitivityHeader;
 };
 
 /**
@@ -81,7 +82,8 @@ const generateMessage = ({
 	isScheduled = false,
 	isSentByMe = false,
 	tags = [],
-	truncated = false
+	truncated = false,
+	sensitivity = 'Personal'
 }: MessageGenerationParams = {}): MailMessage => ({
 	attachments: undefined,
 	autoSendTime: 0,
@@ -147,7 +149,8 @@ const generateMessage = ({
 		dkim: { value: undefined, pass: false },
 		spf: { value: undefined, pass: false },
 		dmarc: { value: undefined, pass: false }
-	}
+	},
+	sensitivity
 });
 
 export { MessageGenerationParams, generateMessage };
