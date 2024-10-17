@@ -4,7 +4,11 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { getAuthenticationHeaders, getIsFromExternalDomain } from '../mail-header-utils';
+import {
+	getAuthenticationHeaders,
+	getIsFromExternalDomain,
+	getSensitivityHeader
+} from '../mail-header-utils';
 
 describe('getIsFromExternalDomain', () => {
 	it('should return false when the From address is from the same domain as the ownerAccount', () => {
@@ -83,5 +87,31 @@ describe('getAuthenticationHeaders', () => {
 			spf: { value: undefined, pass: false },
 			dmarc: { value: undefined, pass: false }
 		});
+	});
+});
+
+describe('getSensitivityHeader', () => {
+	it('should return undefined if headers is undefined', () => {
+		expect(getSensitivityHeader(undefined)).toBeUndefined();
+	});
+
+	it('should return "personal" if headers.Sensitivity is "Personal"', () => {
+		const headers = { Sensitivity: 'Personal' };
+		expect(getSensitivityHeader(headers)).toBe('personal');
+	});
+
+	it('should return "private" if headers.Sensitivity is "Private"', () => {
+		const headers = { Sensitivity: 'Private' };
+		expect(getSensitivityHeader(headers)).toBe('private');
+	});
+
+	it('should return "company-confidential" if headers.Sensitivity is "Company-Confidential"', () => {
+		const headers = { Sensitivity: 'Company-Confidential' };
+		expect(getSensitivityHeader(headers)).toBe('company-confidential');
+	});
+
+	it('should return undefined if headers.Sensitivity is an unrecognized value', () => {
+		const headers = { Sensitivity: 'Unknown' };
+		expect(getSensitivityHeader(headers)).toBeUndefined();
 	});
 });

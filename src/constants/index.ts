@@ -555,3 +555,9 @@ export const MAIL_VERIFICATION_HEADERS = {
 	listId: 'List-ID',
 	listUnsubscribe: 'List-Unsubscribe'
 } as const;
+
+export const MAIL_SENSITIVITY_HEADER = {
+	personal: 'Personal',
+	pritve: 'Private',
+	companyConfidential: 'Company-Confidential'
+} as const;

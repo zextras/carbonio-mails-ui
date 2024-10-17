@@ -6,7 +6,7 @@
 
 import type { MailsEditorV2 } from '../editor';
 import { Participant } from '../participant';
-import { SaveDraftResponse } from '../soap';
+import { SaveDraftResponse, MailSensitivityHeader } from '../soap';
 
 type AuthenticatonHeader = { value?: string; pass?: boolean };
 
@@ -48,6 +48,7 @@ export type IncompleteMessage = {
 	isReadReceiptRequested?: boolean;
 	isFromExternalDomain: boolean;
 	authenticatonHeaders: AuthenticatonHeaders;
+	sensitivity: MailSensitivityHeader;
 };
 
 export type MailMessagePart = {

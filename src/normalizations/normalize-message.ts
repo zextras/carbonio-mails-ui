@@ -26,7 +26,11 @@ import {
 	SoapMailMessagePart,
 	SoapMailParticipant
 } from '../types';
-import { getAuthenticationHeaders, getIsFromExternalDomain } from './mail-header-utils';
+import {
+	getAuthenticationHeaders,
+	getIsFromExternalDomain,
+	getSensitivityHeader
+} from './mail-header-utils';
 
 type Flags = {
 	read: boolean;
@@ -367,7 +371,8 @@ export const normalizeMailMessageFromSoap = (
 			...flags,
 			isReadReceiptRequested: haveReadReceipt(m.e, m.f, m.l) && !isNil(isComplete) && isComplete,
 			isFromExternalDomain: getIsFromExternalDomain(m._attrs, ownerAccount),
-			authenticationHeaders: getAuthenticationHeaders(m._attrs)
+			authenticationHeaders: getAuthenticationHeaders(m._attrs),
+			sensitivity: getSensitivityHeader(m._attrs)
 		},
 		isNil
 	);

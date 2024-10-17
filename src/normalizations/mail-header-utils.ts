@@ -6,7 +6,7 @@
 
 import { includes, trim } from 'lodash';
 
-import { AuthenticatonHeaders, SoapIncompleteMessage } from '../types';
+import { AuthenticatonHeaders, MailSensitivityHeader, SoapIncompleteMessage } from '../types';
 
 function getDomainFromEmail(email: string): string {
 	return email.split('@')[1];
@@ -50,4 +50,21 @@ export function getAuthenticationHeaders(
 		spf: { value: spfValue, pass: !!spfPass },
 		dmarc: { value: dmarcValue, pass: !!dmarcPass }
 	};
+}
+
+export function getSensitivityHeader(
+	headers: SoapIncompleteMessage['_attrs']
+): Lowercase<MailSensitivityHeader> | undefined {
+	if (!headers) return undefined;
+	const sensitivity = headers.Sensitivity;
+	switch (sensitivity) {
+		case 'Personal':
+			return 'personal';
+		case 'Private':
+			return 'private';
+		case 'Company-Confidential':
+			return 'company-confidential';
+		default:
+			return undefined;
+	}
 }
