@@ -95,7 +95,12 @@ export const SmimeDetailsModal: FC<SmimeDetailsModalProps> = ({ onClose, signatu
 		}
 	}, [signature.messageCode, t]);
 	return (
-		<Container mainAlignment="center" crossAlignment="flex-start" height="fit">
+		<Container
+			mainAlignment="center"
+			crossAlignment="flex-start"
+			height="fit"
+			data-testid="smime-details-modal"
+		>
 			<ModalHeader
 				title={t('messages.modal.smime.title', 'Certificate details')}
 				onClose={onClose}
