@@ -38,7 +38,12 @@ const SignedInfo: FC<SignedInfoProps> = ({ msg }): ReactElement => {
 	}, [closeModal, createModal, signature]);
 
 	return (
-		<Container orientation="horizontal" padding={{ all: 'small' }} mainAlignment="flex-start">
+		<Container
+			orientation="horizontal"
+			padding={{ all: 'small' }}
+			mainAlignment="flex-start"
+			data-testid="show-details-container"
+		>
 			<Tooltip
 				label={
 					signature?.valid
@@ -55,7 +60,7 @@ const SignedInfo: FC<SignedInfoProps> = ({ msg }): ReactElement => {
 					/>
 				</Row>
 			</Tooltip>
-			<Link size="medium" onClick={onSmimeClick}>
+			<Link size="medium" onClick={onSmimeClick} data-testid="show-details-link">
 				{t('label.show_details', 'Show Details')}
 			</Link>
 		</Container>
