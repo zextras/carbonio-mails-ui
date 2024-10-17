@@ -49,7 +49,7 @@ const useRestoreConversation = (
 				createSnackbar({
 					key: `edit`,
 					replace: true,
-					type: 'success',
+					severity: 'success',
 					hideButton: true,
 					label: t('messages.snackbar.email_restored', 'E-mail restored in destination folder'),
 					autoHideTimeout: 3000
@@ -59,7 +59,7 @@ const useRestoreConversation = (
 					key: `edit`,
 					replace: true,
 					hideButton: true,
-					type: 'error',
+					severity: 'error',
 					label: t('label.error_try_again', 'Something went wrong, please try again.'),
 					autoHideTimeout: 3000
 				});
@@ -98,7 +98,7 @@ export const useConvMoveToTrashFn = ({
 				createSnackbar({
 					key: `trash-${ids}`,
 					replace: true,
-					type: 'info',
+					severity: 'info',
 					actionLabel: t('label.undo', 'Undo'),
 					label: t('snackbar.email_moved_to_trash', 'E-mail moved to Trash'),
 					autoHideTimeout: 5000,
@@ -108,7 +108,7 @@ export const useConvMoveToTrashFn = ({
 				createSnackbar({
 					key: `trash-${ids}`,
 					replace: true,
-					type: 'error',
+					severity: 'error',
 					label: t('label.error_try_again', 'Something went wrong, please try again'),
 					autoHideTimeout: 3000,
 					hideButton: true

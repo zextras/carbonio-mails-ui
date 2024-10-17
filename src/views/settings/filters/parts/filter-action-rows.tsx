@@ -8,7 +8,6 @@ import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
 import {
 	Button,
 	ChipInput,
-	ChipItem,
 	Container,
 	CustomModal,
 	IconButton,
@@ -17,7 +16,8 @@ import {
 	Row,
 	Text,
 	Tooltip,
-	getColor
+	getColor,
+	ChipItem
 } from '@zextras/carbonio-design-system';
 import { useIntegratedComponent } from '@zextras/carbonio-shell-ui';
 import { filter, omit } from 'lodash';
@@ -28,6 +28,7 @@ import CustomSelect from './custom-select';
 import { getActionOptions, getMarkAsOptions } from './utils';
 import { ZIMBRA_STANDARD_COLORS } from '../../../../carbonio-ui-commons/constants/utils';
 import { SelectFolderModal } from '../../../../ui-actions/modals/select-folder-modal';
+import { Folder } from '../../../../carbonio-ui-commons/types/folder';
 
 export const StyledIconButton = styled(IconButton)`
 	border: 0.0625rem solid
@@ -94,10 +95,14 @@ const FilterActionRows: FC<FilterActionRowProps> = ({
 	);
 	const [contacts, setContacts] = useState<ContactType[]>([]);
 	const [ContactInput, integrationAvailable] = useIntegratedComponent('contact-input');
+
 	const onChange = useCallback(
-		(users) => {
+		(users: ChipItem<{ email: string }>[]): void => {
 			const previous = tempActions.slice();
-			const email = users.length > 0 && users[0].email !== '' ? users[0].email : '';
+			const email =
+				users?.length > 0 && (users[0]?.value as { email: string }).email !== ''
+					? (users[0]?.value as { email: string }).email
+					: '';
 			previous[index] = {
 				actionRedirect: [{ a: email }],
 				id: uuidv4()
@@ -107,7 +112,6 @@ const FilterActionRows: FC<FilterActionRowProps> = ({
 		},
 		[index, setTempActions, tempActions]
 	);
-
 	const onModalClose = useCallback(() => {
 		setDestination({});
 		setOpen(false);
@@ -189,7 +193,7 @@ const FilterActionRows: FC<FilterActionRowProps> = ({
 	);
 
 	const removeFilterCondition = useCallback(
-		(indexToRemove) => (): void => {
+		(indexToRemove: number) => (): void => {
 			const previousTempActions = tempActions.slice();
 			previousTempActions.splice(indexToRemove, 1);
 			setTempActions(previousTempActions);
@@ -203,7 +207,7 @@ const FilterActionRows: FC<FilterActionRowProps> = ({
 		[disableRemove, removeFilterCondition, index]
 	);
 	const onActionOptionChange = useCallback(
-		(str) => {
+		(str: string) => {
 			switch (str) {
 				case 'discard': {
 					const previous = tempActions.slice();
@@ -304,7 +308,7 @@ const FilterActionRows: FC<FilterActionRowProps> = ({
 	}, [setOpen, setActiveIndex, index]);
 
 	const onTagChange = useCallback(
-		(chip) => {
+		(chip: ChipItem[]) => {
 			const previous = tempActions.slice();
 			if (chip.length > 0) {
 				const requiredTag = chip.length > 1 ? chip[1] : chip[0];
@@ -321,7 +325,7 @@ const FilterActionRows: FC<FilterActionRowProps> = ({
 	);
 
 	const handleMarkAsOptionChange = useCallback(
-		(option) => {
+		(option: { label: string; value: any }) => {
 			const previous = tempActions.slice();
 			previous[index] = option;
 			setTempActions(previous);
@@ -330,14 +334,18 @@ const FilterActionRows: FC<FilterActionRowProps> = ({
 	);
 
 	const confirmAction = useCallback(
-		(folderDestination, setFolderDestination, _onModalClose) => {
+		(
+			folderDestination: Folder | undefined,
+			setFolderDestination: (_folder: Folder | undefined) => void,
+			_onModalClose: () => void
+		) => {
 			const previous = tempActions.slice();
 			previous[activeIndex] = {
 				id: previous[activeIndex]?.id,
-				actionFileInto: [{ folderPath: `${folderDestination.absFolderPath}` }]
+				actionFileInto: [{ folderPath: `${folderDestination?.absFolderPath}` }]
 			};
 			setTempActions(previous);
-			setDestination({ name: folderDestination.name });
+			setDestination({ name: folderDestination?.name });
 			setOpen(false);
 		},
 		[tempActions, activeIndex, setTempActions, setDestination, setOpen]

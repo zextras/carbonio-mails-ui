@@ -20,7 +20,7 @@ describe('addShellComponents', () => {
 	it('should call addRoute with the correct parameters', async () => {
 		await addComponentsToShell();
 
-		expect(addRoute).toBeCalledWith(
+		expect(addRoute).toHaveBeenCalledWith(
 			expect.objectContaining({
 				route: 'mails',
 				position: 100,
@@ -35,7 +35,7 @@ describe('addShellComponents', () => {
 	it('should call addSearchView with the correct parameters', async () => {
 		await addComponentsToShell();
 
-		expect(addSearchView).toBeCalledWith(
+		expect(addSearchView).toHaveBeenCalledWith(
 			expect.objectContaining({
 				route: 'mails',
 				component: expect.anything(),
@@ -46,7 +46,7 @@ describe('addShellComponents', () => {
 	it('should call addBoardView with the correct parameters', async () => {
 		await addComponentsToShell();
 
-		expect(addSearchView).toBeCalledWith(
+		expect(addSearchView).toHaveBeenCalledWith(
 			expect.objectContaining({
 				route: 'mails',
 				component: expect.anything()
@@ -58,7 +58,7 @@ describe('addShellComponents', () => {
 
 		await addComponentsToShell();
 
-		expect(addSettingsView).toBeCalledWith(
+		expect(addSettingsView).toHaveBeenCalledWith(
 			expect.objectContaining({
 				subSections: [
 					{ id: 'displaying_messages', label: 'settings.label.display_messages' },
@@ -79,7 +79,7 @@ describe('addShellComponents', () => {
 
 		await addComponentsToShell();
 
-		expect(addSettingsView).toBeCalledWith(
+		expect(addSettingsView).toHaveBeenCalledWith(
 			expect.objectContaining({
 				route: 'mails',
 				label,

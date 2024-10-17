@@ -87,7 +87,7 @@ export const SortingComponent: FC<{ folderId?: string }> = ({ folderId }) => {
 	}, [folderId, performSearch, prefSortOrder, sortDirectionState, sortingTypeState]);
 
 	const selectSortingType = useCallback(
-		(sortingTypeValue) => {
+		(sortingTypeValue: string) => {
 			setSortingTypeState(sortingTypeValue);
 			performSearch(`${sortingTypeValue}${sortDirectionState}`);
 			updateSortingSettings({

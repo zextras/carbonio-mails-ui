@@ -36,7 +36,7 @@ export const useMsgSetSpamFn = ({ ids, shouldReplaceHistory, folderId }: MsgSetS
 			createSnackbar({
 				key: `trash-${ids}`,
 				replace: true,
-				type: 'info',
+				severity: 'info',
 				label: t('messages.snackbar.marked_as_spam', 'You’ve marked this e-mail as Spam'),
 				autoHideTimeout: TIMEOUTS.SET_AS_SPAM,
 				hideButton: false,
@@ -61,7 +61,7 @@ export const useMsgSetSpamFn = ({ ids, shouldReplaceHistory, folderId }: MsgSetS
 						createSnackbar({
 							key: `trash-${ids}`,
 							replace: true,
-							type: 'error',
+							severity: 'error',
 							label: t('label.error_try_again', 'Something went wrong, please try again'),
 							autoHideTimeout: 3000
 						});

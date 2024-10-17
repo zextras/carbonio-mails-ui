@@ -94,6 +94,7 @@ export const LayoutComponent = (): React.JSX.Element => {
 				onClick={onToggle}
 				color={'gray0'}
 				items={layoutOptions}
+				data-testid="layout-component"
 			/>
 		</Tooltip>
 	);

@@ -48,7 +48,7 @@ const EditPermissionsModal: FC<EditPermissionsModalProps> = ({
 	const [sendNotification, setSendNotification] = useState(true);
 	const [standardMessage, setStandardMessage] = useState('');
 	const [contacts, setContacts] = useState<any>([]);
-	const [shareWithUserRole, setshareWithUserRole] = useState(editMode ? grant.perm : 'r');
+	const [shareWithUserRole, setshareWithUserRole] = useState<string>(editMode ? grant.perm : 'r');
 
 	const { createSnackbar } = useUiUtilities();
 
@@ -62,7 +62,7 @@ const EditPermissionsModal: FC<EditPermissionsModalProps> = ({
 		[editMode, folder.name]
 	);
 
-	const onShareRoleChange = useCallback((shareRole) => {
+	const onShareRoleChange = useCallback((shareRole: any) => {
 		setshareWithUserRole(shareRole);
 	}, []);
 
@@ -82,7 +82,7 @@ const EditPermissionsModal: FC<EditPermissionsModalProps> = ({
 					key: `share-${folder.id}`,
 					replace: true,
 					hideButton: true,
-					type: 'info',
+					severity: 'info',
 					label: editMode
 						? t('snackbar.share_updated', '"Access rights updated"')
 						: t('snackbar.folder_shared', 'Folder shared'),
@@ -103,7 +103,7 @@ const EditPermissionsModal: FC<EditPermissionsModalProps> = ({
 							createSnackbar({
 								key: `share-${folder.id}`,
 								replace: true,
-								type: 'error',
+								severity: 'error',
 								hideButton: true,
 								label: t('label.error_try_again', 'Something went wrong, please try again'),
 								autoHideTimeout: 3000

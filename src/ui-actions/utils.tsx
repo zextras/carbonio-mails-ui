@@ -156,7 +156,7 @@ export async function updateEditorWithSmartLinks({
 		createSnackbar({
 			key: `save-draft`,
 			replace: true,
-			type: 'error',
+			severity: 'error',
 			label: t('label.error_try_again', 'Something went wrong, please try again'),
 			autoHideTimeout: 3000
 		});

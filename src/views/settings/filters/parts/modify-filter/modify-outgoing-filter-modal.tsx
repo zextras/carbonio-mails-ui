@@ -81,7 +81,10 @@ const ModifyOutgoingFilterModal: FC<ComponentProps> = ({
 	]);
 
 	const toggleActiveFilter = useCallback(() => setActiveFilter(!activeFilter), [activeFilter]);
-	const onFilterNameChange = useCallback((ev) => setFilterName(ev.target.value), []);
+	const onFilterNameChange = useCallback(
+		(ev: React.ChangeEvent<HTMLInputElement>) => setFilterName(ev.target.value),
+		[]
+	);
 	const modalTitle = useMemo(
 		() => `${t('label.edit', 'Edit')} ${selectedFilter?.name}`,
 		[t, selectedFilter?.name]
@@ -290,7 +293,7 @@ const ModifyOutgoingFilterModal: FC<ComponentProps> = ({
 					key: `share`,
 					replace: true,
 					hideButton: true,
-					type: 'info',
+					severity: 'info',
 					label: t('label.filter_modified', 'Filter modified succesfully'),
 					autoHideTimeout: 5000
 				});
@@ -300,7 +303,7 @@ const ModifyOutgoingFilterModal: FC<ComponentProps> = ({
 					key: `share`,
 					replace: true,
 					hideButton: true,
-					type: 'error',
+					severity: 'error',
 					label:
 						error?.message || t('label.error_try_again', 'Something went wrong, please try again'),
 					autoHideTimeout: 5000

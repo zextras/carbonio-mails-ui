@@ -165,7 +165,7 @@ export function useRunSearch({
 	updateQueryChips(query, isInvalidQuery, updateQuery);
 
 	const firstSearchQueryCallback = useCallback(
-		async (queryString: string, abortSignal) => {
+		async (queryString: string, abortSignal: AbortSignal | undefined) => {
 			updateSearchResultsLoadingStatus(API_REQUEST_STATUS.pending);
 			const searchResponse = await searchSoapApi({
 				query: queryString,

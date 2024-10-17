@@ -5,8 +5,7 @@
  */
 import React, { ReactElement, ReactNode } from 'react';
 
-import { waitFor } from '@testing-library/react';
-import { renderHook } from '@testing-library/react-hooks';
+import { waitFor, renderHook } from '@testing-library/react';
 import { SoapNotify, useRefresh } from '@zextras/carbonio-shell-ui';
 import { http } from 'msw';
 import { Provider } from 'react-redux';
@@ -20,6 +19,7 @@ import { generateFolder } from '../../carbonio-ui-commons/test/mocks/folders/fol
 import { handleGetFolderRequest } from '../../carbonio-ui-commons/test/mocks/network/msw/handle-get-folder';
 import { handleGetShareInfoRequest } from '../../carbonio-ui-commons/test/mocks/network/msw/handle-get-share-info';
 import { folderWorker } from '../../carbonio-ui-commons/worker';
+import * as reduxHooks from '../../hooks/redux';
 import {
 	setSearchResultsByConversation,
 	setMessages,
@@ -36,11 +36,12 @@ const READ = '';
 const FLAGGED = 'f';
 const NOTFLAGGED = '';
 
-function getWrapper() {
-	// eslint-disable-next-line react/display-name
-	return ({ children }: { children: ReactNode }): ReactElement => (
-		<Provider store={generateStore()}>{children}</Provider>
-	);
+function getWrapper(): (props: { children: ReactNode }) => ReactElement {
+	const store = generateStore();
+	function wrap({ children }: { children: ReactNode }): ReactElement {
+		return <Provider store={store}>{children}</Provider>;
+	}
+	return wrap;
 }
 
 function mockSoapRefresh(mailbox: number): void {
@@ -319,6 +320,8 @@ describe('sync data handler', () => {
 		});
 
 		it('should remove messages from store when permanently deleted', async () => {
+			jest.spyOn(reduxHooks, 'useAppDispatch').mockReturnValue(jest.fn());
+			jest.spyOn(reduxHooks, 'useAppSelector').mockReturnValue(jest.fn());
 			const completeMessage1 = generateMessage({ id: '1', folderId: 'aaa', isComplete: true });
 			const completeMessage2 = generateMessage({ id: '2', folderId: 'bbb', isComplete: true });
 			const completeMessage3 = generateMessage({ id: '3', folderId: 'bbb', isComplete: true });
@@ -348,6 +351,8 @@ describe('sync data handler', () => {
 
 	describe('folders', () => {
 		test('it will invoke the folders worker when a folders related notify is received', async () => {
+			jest.spyOn(reduxHooks, 'useAppDispatch').mockReturnValue(jest.fn());
+			jest.spyOn(reduxHooks, 'useAppSelector').mockReturnValue(jest.fn());
 			const folder = generateFolder({ id: '1' });
 			useFolderStore.setState({ folders: { [folder.id]: folder } });
 			const notify = { deleted: ['1'], seq: 0 };
