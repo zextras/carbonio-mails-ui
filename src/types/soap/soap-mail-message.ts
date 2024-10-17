@@ -3,7 +3,8 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { SoapMailParticipant } from './soap-mail-participant';
+import { type MailVerificationHeader } from './soap';
+import { type SoapMailParticipant } from './soap-mail-participant';
 
 export type SoapIncompleteMessage = {
 	readonly id: string;
@@ -27,6 +28,22 @@ export type SoapIncompleteMessage = {
 	/** Scheduled time */ autoSendTime?: number;
 	/** Invite */ inv?: Array<any>;
 	/** Shared */ shr?: Array<any>;
+	/** Signature */ signature?: Array<MessageSignature>;
+	/** MailHeader attrs */ _attrs?: Partial<Record<MailVerificationHeader, string>>;
+};
+
+export type MessageSignature = {
+	certificate: {
+		issuer: {
+			trusted: boolean;
+			name: string;
+		};
+		email: string;
+		notBefore: number;
+		notAfter: number;
+	};
+	message: string;
+	valid: boolean;
 };
 
 export type SoapMailMessage = SoapIncompleteMessage & {

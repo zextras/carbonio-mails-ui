@@ -547,3 +547,17 @@ export const BACKUP_SEARCH_STATUS = {
 	loading: 'loading',
 	completed: 'completed'
 } as const;
+
+export const MAIL_VERIFICATION_HEADERS = {
+	from: 'From',
+	authenticatorHeaders: 'Authentication-Results',
+	sensitivity: 'Sensitivity',
+	listId: 'List-ID',
+	listUnsubscribe: 'List-Unsubscribe'
+} as const;
+
+export const MAIL_SENSITIVITY_HEADER = {
+	personal: 'Personal',
+	private: 'Private',
+	companyConfidential: 'Company-Confidential'
+} as const;
