@@ -7,11 +7,12 @@ import { includes, uniqBy } from 'lodash';
 import { DefaultTheme } from 'styled-components';
 
 import { calcColor, getFileExtension } from '../../../../../commons/utilities';
-import type {
+import {
 	AttachmentPart,
 	EditorAttachmentFiles,
 	GetAttachmentsDownloadLinkProps,
-	IconColors
+	IconColors,
+	MailSensitivityHeader
 } from '../../../../../types';
 
 export const getLocationOrigin = (): string => window.location.origin;
@@ -129,5 +130,32 @@ export const getSignedIconColor = (messageCode: string): string => {
 			return 'error';
 		default:
 			return 'error';
+	}
+};
+
+// TODO: modify according to mocks
+export const getMailSensitivityIconColor = (sensitivity: MailSensitivityHeader): string => {
+	switch (sensitivity) {
+		case 'Personal':
+			return 'success';
+		case 'Private':
+			return 'success';
+		case 'Company-Confidential':
+			return 'success';
+		default:
+			return 'success';
+	}
+};
+
+export const getMailSensitivityLabelFallbackText = (sensitivity: MailSensitivityHeader): string => {
+	switch (sensitivity) {
+		case 'Personal':
+			return 'Sensitivity: Personal';
+		case 'Private':
+			return 'Sensitivity: Private';
+		case 'Company-Confidential':
+			return 'Sensitivity: Company-Confidential';
+		default:
+			return 'Sensitivity: Un-known';
 	}
 };
