@@ -44,13 +44,14 @@ export type IncompleteMessage = {
 export type MessageSignature = {
 	certificate: {
 		issuer: {
-			trusted: boolean;
+			trusted?: boolean;
 			name: string;
 		};
 		email: string;
 		notBefore: number;
 		notAfter: number;
 	};
+	type?: string;
 	messageCode: string;
 	message: string;
 	valid: boolean;

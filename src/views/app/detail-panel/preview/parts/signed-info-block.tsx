@@ -11,6 +11,7 @@ import { useTranslation } from 'react-i18next';
 import { SmimeDetailsModal } from './smime-details-modal';
 import { StoreProvider } from '../../../../../store/redux';
 import { IncompleteMessage } from '../../../../../types';
+import { getSignedIconColor } from '../utils';
 
 type SignedInfoProps = {
 	msg: IncompleteMessage;
@@ -49,12 +50,12 @@ const SignedInfo: FC<SignedInfoProps> = ({ msg }): ReactElement => {
 					<Icon
 						size="medium"
 						icon={'SignatureOutline'}
-						color={signature?.valid ? 'success' : 'error'}
-						style={{ alignSelf: 'center', paddingRight: '0.25rem' }}
+						color={getSignedIconColor(signature?.messageCode ?? '')}
+						style={{ alignSelf: 'center', paddingRight: '0.5rem' }}
 					/>
 				</Row>
 			</Tooltip>
-			<Link size="small" onClick={onSmimeClick}>
+			<Link size="medium" onClick={onSmimeClick}>
 				{t('label.show_details', 'Show Details')}
 			</Link>
 		</Container>

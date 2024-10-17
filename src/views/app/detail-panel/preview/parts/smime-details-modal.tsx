@@ -12,19 +12,11 @@ import { useTranslation } from 'react-i18next';
 import ModalFooter from '../../../../../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../../../../../carbonio-ui-commons/components/modals/modal-header';
 import { MessageSignature } from '../../../../../types';
+import { ErrorMessageCode } from '../utils';
 
 type SmimeDetailsModalProps = {
 	onClose: () => void;
 	signature: MessageSignature;
-};
-const ErrorMessageCode = {
-	VALID: 'VALID',
-	INVALID: 'INVALID',
-	UNTRUSTED: 'UNTRUSTED',
-	CERT_EXPIRED: 'SIGNER_CERT_EXPIRED',
-	CERT_NOT_FOUND: 'SIGNER_CERT_NOT_FOUND',
-	ISSUER_NOT_FOUND: 'ISSUER_CERT_NOT_FOUND',
-	ERROR: 'ERROR'
 };
 
 export const SmimeDetailsModal: FC<SmimeDetailsModalProps> = ({ onClose, signature }) => {
@@ -37,7 +29,8 @@ export const SmimeDetailsModal: FC<SmimeDetailsModalProps> = ({ onClose, signatu
 					message: t(
 						'messages.modal.smime.valid_msg',
 						'This message includes a valid digital signature. The message has not been altered since it was sent.'
-					)
+					),
+					iconColor: 'success'
 				};
 			case ErrorMessageCode.INVALID:
 				return {
@@ -45,7 +38,8 @@ export const SmimeDetailsModal: FC<SmimeDetailsModalProps> = ({ onClose, signatu
 					message: t(
 						'messages.modal.smime.invalid_msg',
 						'This message includes a digital signature, but the signature is invalid.'
-					)
+					),
+					iconColor: 'error'
 				};
 			case ErrorMessageCode.UNTRUSTED:
 				return {
@@ -53,7 +47,8 @@ export const SmimeDetailsModal: FC<SmimeDetailsModalProps> = ({ onClose, signatu
 					message: t(
 						'messages.modal.smime.untrusted_msg',
 						'This message includes a digital signature, but the signer is not trusted. The certificate might not be issued by a recognized certificate authority.'
-					)
+					),
+					iconColor: 'warning'
 				};
 			case ErrorMessageCode.CERT_EXPIRED:
 				return {
@@ -64,7 +59,8 @@ export const SmimeDetailsModal: FC<SmimeDetailsModalProps> = ({ onClose, signatu
 					message: t(
 						'messages.modal.smime.cert_expired_msg',
 						`This message includes a digital signature, but the signer's certificate has expired. It is no longer considered valid.`
-					)
+					),
+					iconColor: 'error'
 				};
 			case ErrorMessageCode.CERT_NOT_FOUND:
 				return {
@@ -72,7 +68,8 @@ export const SmimeDetailsModal: FC<SmimeDetailsModalProps> = ({ onClose, signatu
 					message: t(
 						'messages.modal.smime.cert_not_found_msg',
 						`This message includes a digital signature, but the signer's certificate could not be found. The signature cannot be validated.`
-					)
+					),
+					iconColor: 'warning'
 				};
 			case ErrorMessageCode.ISSUER_NOT_FOUND:
 				return {
@@ -80,7 +77,8 @@ export const SmimeDetailsModal: FC<SmimeDetailsModalProps> = ({ onClose, signatu
 					message: t(
 						'messages.modal.smime.issuer_not_found_msg',
 						'This message includes a digital signature, but the certificate of the issuing authority could not be found.'
-					)
+					),
+					iconColor: 'warning'
 				};
 			default:
 				return {
@@ -91,7 +89,8 @@ export const SmimeDetailsModal: FC<SmimeDetailsModalProps> = ({ onClose, signatu
 					message: t(
 						'messages.modal.smime.error_msg',
 						'There was an error processing the digital signature. The signature could not be verified.'
-					)
+					),
+					iconColor: 'error'
 				};
 		}
 	}, [signature.messageCode, t]);
@@ -102,38 +101,42 @@ export const SmimeDetailsModal: FC<SmimeDetailsModalProps> = ({ onClose, signatu
 				onClose={onClose}
 			/>
 			<Container mainAlignment="flex-start" orientation="vertical" crossAlignment="flex-start">
-				<Row mainAlignment="flex-start" padding={{ bottom: 'small' }}>
+				<Row mainAlignment="flex-start" padding={{ top: 'small', bottom: 'small' }}>
 					<Icon
 						size="medium"
 						icon={'SignatureOutline'}
-						color={signature?.valid ? 'success' : 'error'}
+						color={signedMsgDetails.iconColor}
 						style={{ alignSelf: 'center', paddingRight: '0.5rem' }}
 					/>
-					<Text weight="bold">{signedMsgDetails.title}</Text>
+					<Text weight="bold" size="small">
+						{signedMsgDetails.title}
+					</Text>
 				</Row>
-				<Row mainAlignment="flex-start" padding={{ bottom: 'extralarge' }}>
+				<Row mainAlignment="flex-start" padding={{ bottom: 'large' }}>
 					<Text size="small" overflow="break-word">
 						{signedMsgDetails.message}
 					</Text>
 				</Row>
 				<Row padding={{ bottom: 'small' }}>
-					<Text weight="bold" style={{ paddingRight: '0.5rem' }}>
-						{t('messages.modal.smime.signed_by', 'Signed By')} :
+					<Text weight="bold" size="small" style={{ paddingRight: '0.25rem' }}>
+						{t('messages.modal.smime.signed_by', 'Signed By')}:
 					</Text>
-					{signature.certificate.email}
+					<Text size="small">{signature.certificate.email}</Text>
 				</Row>
 				<Row padding={{ bottom: 'small' }}>
-					<Text weight="bold" style={{ paddingRight: '0.5rem' }}>
-						{t('messages.modal.smime.issuer', 'Issuer')} :
+					<Text weight="bold" size="small" style={{ paddingRight: '0.25rem' }}>
+						{t('messages.modal.smime.issuer', 'Issuer')}:
 					</Text>
-					{signature.certificate.issuer.name}
+					<Text size="small">{signature.certificate.issuer.name}</Text>
 				</Row>
-				<Row padding={{ bottom: 'small' }}>
-					<Text weight="bold" style={{ paddingRight: '0.5rem' }}>
-						{t('messages.modal.smime.validity', 'Validity')} :
+				<Row>
+					<Text weight="bold" size="small" style={{ paddingRight: '0.25rem' }}>
+						{t('messages.modal.smime.validity', 'Validity')}:
 					</Text>
-					{moment(signature.certificate.notBefore).format('DD/MM/YYYY HH:MM')} -{' '}
-					{moment(signature.certificate.notAfter).format('DD/MM/YYYY HH:MM')}
+					<Text size="small">
+						{moment(signature.certificate.notBefore).format('DD/MM/YYYY HH:MM')} -{' '}
+						{moment(signature.certificate.notAfter).format('DD/MM/YYYY HH:MM')}
+					</Text>
 				</Row>
 			</Container>
 			<ModalFooter
