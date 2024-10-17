@@ -46,9 +46,26 @@ export type IncompleteMessage = {
 	isComplete: boolean;
 	isReplied: boolean;
 	isReadReceiptRequested?: boolean;
+	signature?: Array<MessageSignature>;
 	isFromExternalDomain: boolean;
 	authenticatonHeaders: AuthenticatonHeaders;
 	sensitivity: MailSensitivityHeader;
+};
+
+export type MessageSignature = {
+	certificate: {
+		issuer: {
+			trusted?: boolean;
+			name: string;
+		};
+		email: string;
+		notBefore: number;
+		notAfter: number;
+	};
+	type?: string;
+	messageCode: string;
+	message: string;
+	valid: boolean;
 };
 
 export type MailMessagePart = {
