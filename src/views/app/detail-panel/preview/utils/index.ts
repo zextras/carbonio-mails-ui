@@ -105,3 +105,29 @@ export const getAttachmentIconColors = ({
 		}),
 		'extension'
 	);
+
+export const ErrorMessageCode = {
+	VALID: 'VALID',
+	INVALID: 'INVALID',
+	UNTRUSTED: 'UNTRUSTED',
+	CERT_EXPIRED: 'SIGNER_CERT_EXPIRED',
+	CERT_NOT_FOUND: 'SIGNER_CERT_NOT_FOUND',
+	ISSUER_NOT_FOUND: 'ISSUER_CERT_NOT_FOUND',
+	ERROR: 'ERROR'
+};
+
+export const getSignedIconColor = (messageCode: string): string => {
+	switch (messageCode) {
+		case ErrorMessageCode.VALID:
+			return 'success';
+		case ErrorMessageCode.UNTRUSTED:
+		case ErrorMessageCode.CERT_NOT_FOUND:
+		case ErrorMessageCode.ISSUER_NOT_FOUND:
+			return 'warning';
+		case ErrorMessageCode.CERT_EXPIRED:
+		case ErrorMessageCode.INVALID:
+			return 'error';
+		default:
+			return 'error';
+	}
+};
