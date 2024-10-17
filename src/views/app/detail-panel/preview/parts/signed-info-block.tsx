@@ -16,7 +16,7 @@ import { getSignedIconColor } from '../utils';
 type SignedInfoProps = {
 	msg: IncompleteMessage;
 };
-const SignedInfo: FC<SignedInfoProps> = ({ msg }): ReactElement => {
+export const SignedInfo: FC<SignedInfoProps> = ({ msg }): ReactElement => {
 	const [t] = useTranslation();
 	const { createModal, closeModal } = useModal();
 	const signature = msg?.signature?.[0];
@@ -66,4 +66,3 @@ const SignedInfo: FC<SignedInfoProps> = ({ msg }): ReactElement => {
 		</Container>
 	);
 };
-export default SignedInfo;

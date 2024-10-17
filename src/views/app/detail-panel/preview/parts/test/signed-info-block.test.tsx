@@ -12,7 +12,7 @@ import { setupTest } from '../../../../../../carbonio-ui-commons/test/test-setup
 import { getMsgAsyncThunk } from '../../../../../../store/actions';
 import { selectMessage } from '../../../../../../store/messages-slice';
 import { generateStore } from '../../../../../../tests/generators/store';
-import SignedInfo from '../signed-info-block';
+import { SignedInfo } from '../signed-info-block';
 
 describe('Signed info block', () => {
 	test(`Should show the show details link`, async () => {
