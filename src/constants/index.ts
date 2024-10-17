@@ -558,6 +558,6 @@ export const MAIL_VERIFICATION_HEADERS = {
 
 export const MAIL_SENSITIVITY_HEADER = {
 	personal: 'Personal',
-	pritve: 'Private',
+	private: 'Private',
 	companyConfidential: 'Company-Confidential'
 } as const;
