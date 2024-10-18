@@ -17,15 +17,11 @@ describe('SmimeDetailsModal', () => {
 		const closeFn = jest.fn();
 		const signature: MessageSignature = {
 			type: 'S/MIME',
-			certificate: {
-				issuer: {
-					trusted: true,
-					name: 'Test Certificate data'
-				},
-				email: 'demp@demo.zextras.io',
-				notBefore: 1726312850000,
-				notAfter: 1760440850000
-			},
+			trusted: true,
+			issuer: 'Test Certificate data',
+			email: 'user1@demo.zextras.io',
+			notBefore: 1726312850000,
+			notAfter: 1760440850000,
 			message: 'valid issuer certificate',
 			messageCode: 'VALID',
 			valid: false
@@ -51,15 +47,11 @@ describe('SmimeDetailsModal', () => {
 		const closeFn = jest.fn();
 		const signature: MessageSignature = {
 			type: 'S/MIME',
-			certificate: {
-				issuer: {
-					trusted: true,
-					name: 'Final Certificate'
-				},
-				email: 'user1@demo.zextras.io',
-				notBefore: 1726312850000,
-				notAfter: 1760440850000
-			},
+			trusted: true,
+			issuer: 'Final Certificate',
+			email: 'user1@demo.zextras.io',
+			notBefore: 1726312850000,
+			notAfter: 1760440850000,
 			message: 'Cannot find issuer certificate',
 			messageCode: 'INVALID',
 			valid: false
@@ -81,15 +73,11 @@ describe('SmimeDetailsModal', () => {
 		const closeFn = jest.fn();
 		const signature: MessageSignature = {
 			type: 'S/MIME',
-			certificate: {
-				issuer: {
-					trusted: true,
-					name: 'New Certificate'
-				},
-				email: 'user2@demo.zextras.io',
-				notBefore: 1726312850000,
-				notAfter: 1760440850000
-			},
+			trusted: true,
+			issuer: 'New Certificate',
+			email: 'user2@demo.zextras.io',
+			notBefore: 1726312850000,
+			notAfter: 1760440850000,
 			message: 'untrusted issuer certificate found',
 			messageCode: 'UNTRUSTED',
 			valid: false
@@ -113,15 +101,11 @@ describe('SmimeDetailsModal', () => {
 		const closeFn = jest.fn();
 		const signature: MessageSignature = {
 			type: 'S/MIME',
-			certificate: {
-				issuer: {
-					trusted: true,
-					name: 'Demo Certificate'
-				},
-				email: 'user3@demo.zextras.io',
-				notBefore: 1726312850000,
-				notAfter: 1760440850000
-			},
+			trusted: true,
+			issuer: 'Demo Certificate',
+			email: 'user3@demo.zextras.io',
+			notBefore: 1726312850000,
+			notAfter: 1760440850000,
 			message: 'Certificate is expired',
 			messageCode: 'SIGNER_CERT_EXPIRED',
 			valid: false
@@ -145,15 +129,11 @@ describe('SmimeDetailsModal', () => {
 		const closeFn = jest.fn();
 		const signature: MessageSignature = {
 			type: 'S/MIME',
-			certificate: {
-				issuer: {
-					trusted: true,
-					name: 'Demo Certificate'
-				},
-				email: 'user4@demo.zextras.io',
-				notBefore: 1726312850000,
-				notAfter: 1760440850000
-			},
+			trusted: true,
+			issuer: 'Demo Certificate',
+			email: 'user4@demo.zextras.io',
+			notBefore: 1726312850000,
+			notAfter: 1760440850000,
 			message: 'Signer certificate not found',
 			messageCode: 'SIGNER_CERT_NOT_FOUND',
 			valid: false
@@ -177,15 +157,11 @@ describe('SmimeDetailsModal', () => {
 		const closeFn = jest.fn();
 		const signature: MessageSignature = {
 			type: 'S/MIME',
-			certificate: {
-				issuer: {
-					trusted: true,
-					name: 'Test demo Certificate'
-				},
-				email: 'user5@demo.zextras.io',
-				notBefore: 1726312850000,
-				notAfter: 1760440850000
-			},
+			trusted: true,
+			issuer: 'Test demo Certificate',
+			email: 'user5@demo.zextras.io',
+			notBefore: 1726312850000,
+			notAfter: 1760440850000,
 			message: 'Issuer certificate not found',
 			messageCode: 'ISSUER_CERT_NOT_FOUND',
 			valid: false
@@ -209,15 +185,11 @@ describe('SmimeDetailsModal', () => {
 		const closeFn = jest.fn();
 		const signature: MessageSignature = {
 			type: 'S/MIME',
-			certificate: {
-				issuer: {
-					trusted: true,
-					name: 'Test Certificate'
-				},
-				email: 'user@demo.zextras.io',
-				notBefore: 1726312850000,
-				notAfter: 1760440850000
-			},
+			trusted: true,
+			issuer: 'Test Certificate',
+			email: 'user@demo.zextras.io',
+			notBefore: 1726312850000,
+			notAfter: 1760440850000,
 			message: 'Error found when verified certificate',
 			messageCode: 'ERROR',
 			valid: false
@@ -241,23 +213,19 @@ describe('SmimeDetailsModal', () => {
 		const closeFn = jest.fn();
 		const signature: MessageSignature = {
 			type: 'S/MIME',
-			certificate: {
-				issuer: {
-					trusted: true,
-					name: 'Test Certificate'
-				},
-				email: 'user@demo.zextras.io',
-				notBefore: 1726312850000,
-				notAfter: 1760440850000
-			},
+			trusted: true,
+			issuer: 'Test Certificate',
+			email: 'user@demo.zextras.io',
+			notBefore: 1726312850000,
+			notAfter: 1760440850000,
 			message: 'Error found when verified certificate',
 			messageCode: 'ERROR',
 			valid: false
 		};
 		setupTest(<SmimeDetailsModal onClose={closeFn} signature={signature} />, {});
 
-		expect(screen.getByText(signature.certificate.email)).toBeVisible();
-		expect(screen.getByText(signature.certificate.issuer.name)).toBeVisible();
+		expect(screen.getByText(signature?.email ?? '')).toBeVisible();
+		expect(screen.getByText(signature?.issuer ?? '')).toBeVisible();
 		const closeButton = screen.getByRole('button', {
 			name: 'Close'
 		});

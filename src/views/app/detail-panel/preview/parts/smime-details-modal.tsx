@@ -126,21 +126,21 @@ export const SmimeDetailsModal: FC<SmimeDetailsModalProps> = ({ onClose, signatu
 					<Text weight="bold" size="small" style={{ paddingRight: '0.25rem' }}>
 						{t('messages.modal.smime.signed_by', 'Signed By')}:
 					</Text>
-					<Text size="small">{signature.certificate.email}</Text>
+					<Text size="small">{signature.email}</Text>
 				</Row>
 				<Row padding={{ bottom: 'small' }}>
 					<Text weight="bold" size="small" style={{ paddingRight: '0.25rem' }}>
 						{t('messages.modal.smime.issuer', 'Issuer')}:
 					</Text>
-					<Text size="small">{signature.certificate.issuer.name}</Text>
+					<Text size="small">{signature.issuer}</Text>
 				</Row>
 				<Row>
 					<Text weight="bold" size="small" style={{ paddingRight: '0.25rem' }}>
 						{t('messages.modal.smime.validity', 'Validity')}:
 					</Text>
 					<Text size="small">
-						{moment(signature.certificate.notBefore).format('DD/MM/YYYY HH:MM')} -{' '}
-						{moment(signature.certificate.notAfter).format('DD/MM/YYYY HH:MM')}
+						{moment(signature.notBefore).format('DD/MM/YYYY HH:MM')} -{' '}
+						{moment(signature.notAfter).format('DD/MM/YYYY HH:MM')}
 					</Text>
 				</Row>
 			</Container>
