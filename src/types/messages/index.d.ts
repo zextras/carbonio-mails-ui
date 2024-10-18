@@ -6,7 +6,7 @@
 
 import type { MailsEditorV2 } from '../editor';
 import { Participant } from '../participant';
-import { SaveDraftResponse } from '../soap';
+import { MessageSignature, SaveDraftResponse } from '../soap';
 
 export type IncompleteMessage = {
 	id: string;
@@ -38,6 +38,7 @@ export type IncompleteMessage = {
 	isComplete: boolean;
 	isReplied: boolean;
 	isReadReceiptRequested?: boolean;
+	signature?: Array<MessageSignature>;
 };
 
 export type MailMessagePart = {

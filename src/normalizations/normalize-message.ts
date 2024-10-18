@@ -220,7 +220,7 @@ const findBodyPart = (mp: Array<SoapMailMessagePart>, acc: BodyPart, id: string)
 					return {
 						...found,
 						content: found.content.concat(
-							`<img src='/service/home/~/?auth=co&loc=en&id=${id}&part=${part?.part}'>` ?? ''
+							`<img src='/service/home/~/?auth=co&loc=en&id=${id}&part=${part?.part}'>`
 						)
 					};
 				}
@@ -359,7 +359,8 @@ export const normalizeMailMessageFromSoap = (
 			isScheduled: !!m.autoSendTime,
 			autoSendTime: m.autoSendTime,
 			...flags,
-			isReadReceiptRequested: haveReadReceipt(m.e, m.f, m.l) && !isNil(isComplete) && isComplete
+			isReadReceiptRequested: haveReadReceipt(m.e, m.f, m.l) && !isNil(isComplete) && isComplete,
+			signature: m?.signature
 		},
 		isNil
 	);

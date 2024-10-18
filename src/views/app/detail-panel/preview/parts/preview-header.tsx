@@ -49,6 +49,7 @@ import { ContactNameChip } from './contact-names-chips';
 import { MailMsgPreviewActions } from './mail-message-preview-actions';
 import MessageContactsList from './message-contact-list';
 import OnBehalfOfDisplayer from './on-behalf-of-displayer';
+import SignedInfo from './signed-info-block';
 import { ParticipantRole } from '../../../../../carbonio-ui-commons/constants/participants';
 import { ZIMBRA_STANDARD_COLORS } from '../../../../../carbonio-ui-commons/constants/utils';
 import { getTimeLabel, participantToString } from '../../../../../commons/utils';
@@ -434,6 +435,7 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 					/>
 				)}
 			</Container>
+			{message?.signature && <SignedInfo msg={message} />}
 		</HoverContainer>
 	);
 };
