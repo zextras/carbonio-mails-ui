@@ -46,6 +46,7 @@ import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { ContactNameChip } from './contact-names-chips';
+import { MailHeaderInfoBlock } from './mail-headers-info-block';
 import { MailMsgPreviewActions } from './mail-message-preview-actions';
 import MessageContactsList from './message-contact-list';
 import OnBehalfOfDisplayer from './on-behalf-of-displayer';
@@ -434,6 +435,7 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 					/>
 				)}
 			</Container>
+			<MailHeaderInfoBlock msg={message} />
 		</HoverContainer>
 	);
 };

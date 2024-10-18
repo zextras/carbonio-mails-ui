@@ -6,7 +6,15 @@
 
 import type { MailsEditorV2 } from '../editor';
 import { Participant } from '../participant';
-import { SaveDraftResponse } from '../soap';
+import { SaveDraftResponse, MailSensitivityHeader } from '../soap';
+
+type AuthenticatonHeader = { value?: string; pass?: boolean };
+
+type AuthenticatonHeaders = {
+	dkim?: AuthenticatonHeader;
+	spf?: AuthenticatonHeader;
+	dmarc?: AuthenticatonHeader;
+};
 
 export type IncompleteMessage = {
 	id: string;
@@ -38,6 +46,26 @@ export type IncompleteMessage = {
 	isComplete: boolean;
 	isReplied: boolean;
 	isReadReceiptRequested?: boolean;
+	signature?: Array<MessageSignature>;
+	isFromExternalDomain: boolean;
+	authenticatonHeaders: AuthenticatonHeaders;
+	sensitivity: MailSensitivityHeader;
+};
+
+export type MessageSignature = {
+	certificate: {
+		issuer: {
+			trusted?: boolean;
+			name: string;
+		};
+		email: string;
+		notBefore: number;
+		notAfter: number;
+	};
+	type?: string;
+	messageCode: string;
+	message: string;
+	valid: boolean;
 };
 
 export type MailMessagePart = {

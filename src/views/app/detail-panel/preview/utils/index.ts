@@ -7,11 +7,12 @@ import { includes, uniqBy } from 'lodash';
 import { DefaultTheme } from 'styled-components';
 
 import { calcColor, getFileExtension } from '../../../../../commons/utilities';
-import type {
+import {
 	AttachmentPart,
 	EditorAttachmentFiles,
 	GetAttachmentsDownloadLinkProps,
-	IconColors
+	IconColors,
+	MailSensitivityHeader
 } from '../../../../../types';
 
 export const getLocationOrigin = (): string => window.location.origin;
@@ -105,3 +106,56 @@ export const getAttachmentIconColors = ({
 		}),
 		'extension'
 	);
+
+export const ErrorMessageCode = {
+	VALID: 'VALID',
+	INVALID: 'INVALID',
+	UNTRUSTED: 'UNTRUSTED',
+	CERT_EXPIRED: 'SIGNER_CERT_EXPIRED',
+	CERT_NOT_FOUND: 'SIGNER_CERT_NOT_FOUND',
+	ISSUER_NOT_FOUND: 'ISSUER_CERT_NOT_FOUND',
+	ERROR: 'ERROR'
+};
+
+export const getSignedIconColor = (messageCode: string): string => {
+	switch (messageCode) {
+		case ErrorMessageCode.VALID:
+			return 'success';
+		case ErrorMessageCode.UNTRUSTED:
+		case ErrorMessageCode.CERT_NOT_FOUND:
+		case ErrorMessageCode.ISSUER_NOT_FOUND:
+			return 'warning';
+		case ErrorMessageCode.CERT_EXPIRED:
+		case ErrorMessageCode.INVALID:
+			return 'error';
+		default:
+			return 'error';
+	}
+};
+
+// TODO: modify according to mocks
+export const getMailSensitivityIconColor = (sensitivity: MailSensitivityHeader): string => {
+	switch (sensitivity) {
+		case 'Personal':
+			return 'success';
+		case 'Private':
+			return 'success';
+		case 'Company-Confidential':
+			return 'success';
+		default:
+			return 'success';
+	}
+};
+
+export const getMailSensitivityLabelFallbackText = (sensitivity: MailSensitivityHeader): string => {
+	switch (sensitivity) {
+		case 'Personal':
+			return 'Sensitivity: Personal';
+		case 'Private':
+			return 'Sensitivity: Private';
+		case 'Company-Confidential':
+			return 'Sensitivity: Company-Confidential';
+		default:
+			return 'Sensitivity: Un-known';
+	}
+};
