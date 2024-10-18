@@ -6,7 +6,12 @@
 
 import { includes, trim } from 'lodash';
 
-import { AuthenticatonHeaders, MailSensitivityHeader, SoapIncompleteMessage } from '../types';
+import {
+	AuthenticatonHeader,
+	AuthenticatonHeaders,
+	MailSensitivityHeader,
+	SoapIncompleteMessage
+} from '../types';
 
 function getDomainFromEmail(email: string): string {
 	return email.split('@')[1];
@@ -67,4 +72,12 @@ export function getSensitivityHeader(
 		default:
 			return undefined;
 	}
+}
+
+export function getHasAuthenticationHeaders(
+	authenticationHeaders: Record<string, AuthenticatonHeader>
+): boolean {
+	const headers = Object.keys(authenticationHeaders);
+	const validHeaders = ['dkim', 'spf', 'dmarc'];
+	return headers.some((header) => validHeaders.includes(header));
 }

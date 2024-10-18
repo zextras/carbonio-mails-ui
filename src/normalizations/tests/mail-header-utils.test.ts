@@ -6,6 +6,7 @@
 
 import {
 	getAuthenticationHeaders,
+	getHasAuthenticationHeaders,
 	getIsFromExternalDomain,
 	getSensitivityHeader
 } from '../mail-header-utils';
@@ -113,5 +114,37 @@ describe('getSensitivityHeader', () => {
 	it('should return undefined if headers.Sensitivity is an unrecognized value', () => {
 		const headers = { Sensitivity: 'Unknown' };
 		expect(getSensitivityHeader(headers)).toBeUndefined();
+	});
+});
+
+describe('getHasAuthenticationHeaders', () => {
+	test('should return false for an empty object', () => {
+		const authenticationHeaders = {};
+		expect(getHasAuthenticationHeaders(authenticationHeaders)).toBe(false);
+	});
+
+	test('should return true if authenticationHeaders contains at least one valid value', () => {
+		const authenticationHeaders = {
+			dkim: { value: 'pass', pass: true },
+			spf: { value: undefined, pass: undefined },
+			dmarc: { value: undefined, pass: undefined }
+		};
+		expect(getHasAuthenticationHeaders(authenticationHeaders)).toBe(true);
+	});
+
+	test('should return true if authenticationHeaders contains more than one valid value', () => {
+		const authenticationHeaders = {
+			dkim: { value: 'dkim=pass', pass: true },
+			spf: { value: 'spf=pass', pass: true },
+			dmarc: { value: 'dmarc=pass', pass: true }
+		};
+		expect(getHasAuthenticationHeaders(authenticationHeaders)).toBe(true);
+	});
+
+	test('should return false if object contains headers not in the list', () => {
+		const authenticationHeaders = {
+			'X-Custom-Header': { value: 'custom value', pass: true }
+		};
+		expect(getHasAuthenticationHeaders(authenticationHeaders)).toBe(false);
 	});
 });
