@@ -9,7 +9,10 @@ import { Container, Icon, Link, Row, Tooltip, useModal } from '@zextras/carbonio
 import { useTranslation } from 'react-i18next';
 
 import { SmimeDetailsModal } from './smime-details-modal';
-import { getHasAuthenticationHeaders } from '../../../../../normalizations/mail-header-utils';
+import {
+	getAuthenticationHeadersIcon,
+	getHasAuthenticationHeaders
+} from '../../../../../normalizations/mail-header-utils';
 import { StoreProvider } from '../../../../../store/redux';
 import { IncompleteMessage } from '../../../../../types';
 import {
@@ -30,6 +33,7 @@ export const MailHeaderInfoBlock: FC<MailHeaderInfoProps> = ({ msg }): ReactElem
 	const fromExternalDomain = msg?.isFromExternalDomain;
 	const sensitivity = msg?.sensitivity;
 	const hasAuthenticationHeaders = getHasAuthenticationHeaders(msg?.authenticatonHeaders);
+	const authenticationHeadersIconColor = getAuthenticationHeadersIcon(msg?.authenticatonHeaders);
 
 	const onSmimeClick = useCallback(() => {
 		const modalId = Date.now().toString();
@@ -102,7 +106,7 @@ export const MailHeaderInfoBlock: FC<MailHeaderInfoProps> = ({ msg }): ReactElem
 					</Row>
 				</Tooltip>
 			)}
-			{/* Mail AuthenticatonHeaders Information */}
+			{/* Mail AuthenticationHeaders Information */}
 			{hasAuthenticationHeaders && (
 				<Tooltip
 					label={t(
