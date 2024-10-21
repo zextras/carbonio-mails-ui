@@ -226,7 +226,7 @@ const findBodyPart = (mp: Array<SoapMailMessagePart>, acc: BodyPart, id: string)
 					return {
 						...found,
 						content: found.content.concat(
-							`<img src='/service/home/~/?auth=co&loc=en&id=${id}&part=${part?.part}'>` ?? ''
+							`<img src='/service/home/~/?auth=co&loc=en&id=${id}&part=${part?.part}'>`
 						)
 					};
 				}
