@@ -6,7 +6,7 @@
 
 import { SyntheticEvent } from 'react';
 
-import { ACTION_TYPES, registerActions, t } from '@zextras/carbonio-shell-ui';
+import { Action, ACTION_TYPES, NewAction, registerActions, t } from '@zextras/carbonio-shell-ui';
 import { isArray, some } from 'lodash';
 
 import { ParticipantRole } from '../carbonio-ui-commons/constants/participants';
@@ -14,13 +14,12 @@ import { EditViewActions, MAIL_APP_ID } from '../constants';
 import { mailToSharedFunction } from '../integrations/shared-functions';
 import { createEditBoard } from '../views/app/detail-panel/edit/edit-view-board';
 
-type MailToActionType = {
+interface MailToActionType extends Action {
 	id: string;
-	label: string;
 	icon: string;
-	onClick: (e: SyntheticEvent<HTMLElement, Event> | KeyboardEvent) => void;
+	execute: (e: SyntheticEvent<HTMLElement, Event> | KeyboardEvent) => void;
 	disabled: boolean;
-};
+}
 
 export const mailToActionOnClick = (
 	e: SyntheticEvent<HTMLElement, Event> | KeyboardEvent,
@@ -47,19 +46,9 @@ export const mailToAction = (contacts: unknown): MailToActionType => ({
 	id: 'mail-to',
 	label: t('label.send_mail', 'Send Mail'),
 	icon: 'MailModOutline',
-	onClick: (e) => mailToActionOnClick(e, contacts),
+	execute: (e) => mailToActionOnClick(e, contacts),
 	disabled: isArray(contacts) && some(contacts, (contact) => !contact.address)
 });
-
-type NewEmailActionType = {
-	id: string;
-	label: string;
-	icon: string;
-	onClick: (e: SyntheticEvent<HTMLElement, Event> | KeyboardEvent) => void;
-	disabled: boolean;
-	group: string;
-	primary: boolean;
-};
 
 export const newEmailActionOnClick = (
 	e: SyntheticEvent<HTMLElement, Event> | KeyboardEvent
@@ -71,27 +60,25 @@ export const newEmailActionOnClick = (
 	});
 };
 
-export const newEmailAction = (): NewEmailActionType => ({
+export const newEmailAction = (): NewAction => ({
 	id: 'new-email',
 	label: t('label.new_email', 'New E-mail'),
 	icon: 'MailModOutline',
-	onClick: newEmailActionOnClick,
+	execute: newEmailActionOnClick,
 	disabled: false,
 	group: MAIL_APP_ID,
 	primary: true
 });
 
 export const registerShellActions = (): void => {
-	registerActions(
-		{
-			action: mailToAction,
-			id: 'mail-to',
-			type: 'contact-list'
-		},
-		{
-			action: newEmailAction,
-			id: 'new-email',
-			type: ACTION_TYPES.NEW
-		}
-	);
+	registerActions<NewAction>({
+		action: newEmailAction,
+		id: 'new-email',
+		type: ACTION_TYPES.NEW
+	});
+	registerActions<MailToActionType>({
+		action: mailToAction,
+		id: 'mail-to',
+		type: 'contact-list'
+	});
 };
