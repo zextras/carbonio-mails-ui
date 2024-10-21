@@ -81,8 +81,20 @@ describe('getAuthenticationHeaders', () => {
 		});
 	});
 
-	it('should return correct headers when headers are undefined', () => {
+	it('should return correct headers when headers are empty object', () => {
 		const headers = {};
+
+		const result = getAuthenticationHeaders(headers);
+
+		expect(result).toEqual({
+			dkim: { value: undefined, pass: false },
+			spf: { value: undefined, pass: false },
+			dmarc: { value: undefined, pass: false }
+		});
+	});
+
+	it('should return correct headers when headers are undefined', () => {
+		const headers = undefined;
 
 		const result = getAuthenticationHeaders(headers);
 
@@ -125,6 +137,10 @@ describe('getHasAuthenticationHeaders', () => {
 		const authenticationHeaders = {};
 		expect(getHasAuthenticationHeaders(authenticationHeaders)).toBe(false);
 	});
+	test('should return false for undefined', () => {
+		const authenticationHeaders = undefined;
+		expect(getHasAuthenticationHeaders(authenticationHeaders)).toBe(false);
+	});
 
 	test('should return true if authenticationHeaders contains at least one valid value', () => {
 		const authenticationHeaders = {
@@ -155,6 +171,11 @@ describe('getHasAuthenticationHeaders', () => {
 describe('getAuthenticationHeadersIcon', () => {
 	it('should return "warning" when there are no headers', () => {
 		const headers: Record<string, AuthenticatonHeader> = {};
+		expect(getAuthenticationHeadersIcon(headers)).toBe('warning');
+	});
+
+	it('should return "warning" when headers is an empty object', () => {
+		const headers = undefined;
 		expect(getAuthenticationHeadersIcon(headers)).toBe('warning');
 	});
 

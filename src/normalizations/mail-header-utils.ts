@@ -76,15 +76,17 @@ export function getSensitivityHeader(
 }
 
 export function getHasAuthenticationHeaders(
-	authenticationHeaders: Record<string, AuthenticatonHeader>
+	authenticationHeaders: Record<string, AuthenticatonHeader> | undefined
 ): boolean {
+	if (!authenticationHeaders) return false;
 	const headers = Object.keys(authenticationHeaders);
 	return headers.some((header) => VALID_MAIL_AUTHENTICATION_HEADERS.includes(header));
 }
 
 export function getAuthenticationHeadersIcon(
-	authenticationHeaders: Record<string, AuthenticatonHeader>
+	authenticationHeaders: Record<string, AuthenticatonHeader> | undefined
 ): string {
+	if (!authenticationHeaders) return 'warning';
 	const numberOfPassedHeaders = Object.values(authenticationHeaders).filter(
 		(header) => header.pass === true
 	).length;
