@@ -561,3 +561,5 @@ export const MAIL_SENSITIVITY_HEADER = {
 	private: 'Private',
 	companyConfidential: 'Company-Confidential'
 } as const;
+
+export const VALID_MAIL_AUTHENTICATION_HEADERS = ['dkim', 'spf', 'dmarc'];

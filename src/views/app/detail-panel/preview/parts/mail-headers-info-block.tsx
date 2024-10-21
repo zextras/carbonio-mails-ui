@@ -9,6 +9,7 @@ import { Container, Icon, Link, Row, Tooltip, useModal } from '@zextras/carbonio
 import { useTranslation } from 'react-i18next';
 
 import { SmimeDetailsModal } from './smime-details-modal';
+import { getHasAuthenticationHeaders } from '../../../../../normalizations/mail-header-utils';
 import { StoreProvider } from '../../../../../store/redux';
 import { IncompleteMessage } from '../../../../../types';
 import {
@@ -28,6 +29,7 @@ export const MailHeaderInfoBlock: FC<MailHeaderInfoProps> = ({ msg }): ReactElem
 	const signature = msg?.signature?.[0];
 	const fromExternalDomain = msg?.isFromExternalDomain;
 	const sensitivity = msg?.sensitivity;
+	const hasAuthenticationHeaders = getHasAuthenticationHeaders(msg?.authenticatonHeaders);
 
 	const onSmimeClick = useCallback(() => {
 		const modalId = Date.now().toString();
@@ -74,7 +76,7 @@ export const MailHeaderInfoBlock: FC<MailHeaderInfoProps> = ({ msg }): ReactElem
 					<Row>
 						<Icon
 							size="medium"
-							icon={'AlertTriangleOutline'}
+							icon={'MailStatusOutline'}
 							color="warning"
 							style={{ paddingRight: '0.5rem' }}
 						/>
@@ -93,14 +95,31 @@ export const MailHeaderInfoBlock: FC<MailHeaderInfoProps> = ({ msg }): ReactElem
 					<Row>
 						<Icon
 							size="medium"
-							icon={'AlertTriangleOutline'}
+							icon={'EyeOff2Outline'}
 							color={getMailSensitivityIconColor(sensitivity ?? 'Personal')}
 							style={{ paddingRight: '0.5rem' }}
 						/>
 					</Row>
 				</Tooltip>
 			)}
-
+			{/* Mail AuthenticatonHeaders Information */}
+			{hasAuthenticationHeaders && (
+				<Tooltip
+					label={t(
+						'label.mail_sensitivity',
+						getMailSensitivityLabelFallbackText(sensitivity ?? 'Personal')
+					)}
+				>
+					<Row>
+						<Icon
+							size="medium"
+							icon={'ShieldOutline'}
+							color={authenticationHeadersIconColor}
+							style={{ paddingRight: '0.5rem' }}
+						/>
+					</Row>
+				</Tooltip>
+			)}
 			{/* TODO: make this modal general and not S-MIME SPECIFIC */}
 			<Link size="medium" onClick={onSmimeClick}>
 				{t('label.show_details', 'Show Details')}

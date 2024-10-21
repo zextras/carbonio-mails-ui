@@ -78,6 +78,15 @@ export function getHasAuthenticationHeaders(
 	authenticationHeaders: Record<string, AuthenticatonHeader>
 ): boolean {
 	const headers = Object.keys(authenticationHeaders);
-	const validHeaders = ['dkim', 'spf', 'dmarc'];
 	return headers.some((header) => validHeaders.includes(header));
+}
+
+export function getAuthenticationHeadersIcon(
+	authenticationHeaders: Record<string, AuthenticatonHeader>
+): string {
+	const numberOfPassedHeaders = Object.values(authenticationHeaders).filter(
+		(header) => header.pass === true
+	).length;
+	if (numberOfPassedHeaders === 3) return 'success';
+	return 'warning';
 }

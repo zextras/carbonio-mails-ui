@@ -141,10 +141,53 @@ describe('getHasAuthenticationHeaders', () => {
 		expect(getHasAuthenticationHeaders(authenticationHeaders)).toBe(true);
 	});
 
-	test('should return false if object contains headers not in the list', () => {
+	test('should return false if object contains headers not in the valid list', () => {
 		const authenticationHeaders = {
 			'X-Custom-Header': { value: 'custom value', pass: true }
 		};
 		expect(getHasAuthenticationHeaders(authenticationHeaders)).toBe(false);
+	});
+});
+
+describe('getAuthenticationHeadersIcon', () => {
+	it('should return "warning" when there are no headers', () => {
+		const headers: Record<string, AuthenticatonHeader> = {};
+		expect(getAuthenticationHeadersIcon(headers)).toBe('warning');
+	});
+
+	it('should return "warning" when no headers have pass: true', () => {
+		const headers: Record<string, AuthenticatonHeader> = {
+			header1: { pass: false },
+			header2: { pass: false }
+		};
+		expect(getAuthenticationHeadersIcon(headers)).toBe('warning');
+	});
+
+	it('should return "warning" when some headers have pass: true but less than 3', () => {
+		const headers: Record<string, AuthenticatonHeader> = {
+			header1: { pass: true },
+			header2: { pass: false },
+			header3: { pass: true }
+		};
+		expect(getAuthenticationHeadersIcon(headers)).toBe('warning');
+	});
+
+	it('should return "success" when exactly 3 headers have pass: true', () => {
+		const headers: Record<string, AuthenticatonHeader> = {
+			header1: { pass: true },
+			header2: { pass: true },
+			header3: { pass: true }
+		};
+		expect(getAuthenticationHeadersIcon(headers)).toBe('success');
+	});
+
+	it('should return "warning" when more than 3 headers have pass: true', () => {
+		const headers: Record<string, AuthenticatonHeader> = {
+			header1: { pass: true },
+			header2: { pass: true },
+			header3: { pass: true },
+			header4: { pass: true }
+		};
+		expect(getAuthenticationHeadersIcon(headers)).toBe('warning');
 	});
 });
