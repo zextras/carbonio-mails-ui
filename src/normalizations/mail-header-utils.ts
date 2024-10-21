@@ -6,6 +6,7 @@
 
 import { includes, trim } from 'lodash';
 
+import { VALID_MAIL_AUTHENTICATION_HEADERS } from '../constants';
 import {
 	AuthenticatonHeader,
 	AuthenticatonHeaders,
@@ -78,7 +79,7 @@ export function getHasAuthenticationHeaders(
 	authenticationHeaders: Record<string, AuthenticatonHeader>
 ): boolean {
 	const headers = Object.keys(authenticationHeaders);
-	return headers.some((header) => validHeaders.includes(header));
+	return headers.some((header) => VALID_MAIL_AUTHENTICATION_HEADERS.includes(header));
 }
 
 export function getAuthenticationHeadersIcon(
