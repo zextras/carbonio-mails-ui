@@ -4,9 +4,10 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import { TFunction } from 'i18next';
 import { includes, trim } from 'lodash';
 
-import { VALID_MAIL_AUTHENTICATION_HEADERS } from '../constants';
+import { PRIVATE_SENSITIVITY_HEADERS, VALID_MAIL_AUTHENTICATION_HEADERS } from '../constants';
 import {
 	AuthenticatonHeader,
 	AuthenticatonHeaders,
@@ -92,4 +93,40 @@ export function getAuthenticationHeadersIcon(
 	).length;
 	if (numberOfPassedHeaders === 3) return 'success';
 	return 'warning';
+}
+
+export function getIsSensitive(sensitivity: MailSensitivityHeader | undefined): boolean {
+	if (!sensitivity) return false;
+	return PRIVATE_SENSITIVITY_HEADERS.includes(sensitivity);
+}
+
+export const getMailSensitivityIconColor = (
+	sensitivity: MailSensitivityHeader | undefined
+): string => {
+	switch (sensitivity) {
+		case 'Personal':
+			return 'warning';
+		case 'Private':
+			return 'error';
+		case 'Company-Confidential':
+			return 'info';
+		default:
+			return 'warning';
+	}
+};
+
+export function getMailSensitivityLabel(
+	t: TFunction,
+	sensitivity: MailSensitivityHeader | undefined
+): string {
+	switch (sensitivity) {
+		case 'Personal':
+			return t('label.mail_sensitivity_personal', 'Sensitivity Personal');
+		case 'Private':
+			return t('label.mail_sensitivity_private', 'Sensitivity Private');
+		case 'Company-Confidential':
+			return t('label.mail_sensitivity_company_confidential', 'Sensitivity Company-Confidential');
+		default:
+			return t('label.mail_sensitivity_unknown', 'Sensitivity Unknown');
+	}
 }

@@ -11,15 +11,14 @@ import { useTranslation } from 'react-i18next';
 import { SmimeDetailsModal } from './smime-details-modal';
 import {
 	getAuthenticationHeadersIcon,
-	getHasAuthenticationHeaders
+	getHasAuthenticationHeaders,
+	getIsSensitive,
+	getMailSensitivityIconColor,
+	getMailSensitivityLabel
 } from '../../../../../normalizations/mail-header-utils';
 import { StoreProvider } from '../../../../../store/redux';
 import { IncompleteMessage } from '../../../../../types';
-import {
-	getMailSensitivityIconColor,
-	getMailSensitivityLabelFallbackText,
-	getSignedIconColor
-} from '../utils';
+import { getSignedIconColor } from '../utils';
 
 type MailHeaderInfoProps = {
 	msg: IncompleteMessage;
@@ -31,6 +30,7 @@ export const MailHeaderInfoBlock: FC<MailHeaderInfoProps> = ({ msg }): ReactElem
 
 	const signature = msg?.signature?.[0];
 	const fromExternalDomain = msg?.isFromExternalDomain;
+	const sensitive = getIsSensitive(msg?.sensitivity);
 	const sensitivity = msg?.sensitivity;
 	const hasAuthenticationHeaders = getHasAuthenticationHeaders(msg?.authenticatonHeaders);
 	const authenticationHeadersIconColor = getAuthenticationHeadersIcon(msg?.authenticatonHeaders);
@@ -89,13 +89,8 @@ export const MailHeaderInfoBlock: FC<MailHeaderInfoProps> = ({ msg }): ReactElem
 			)}
 
 			{/* Mail Sensitivity Information */}
-			{sensitivity && (
-				<Tooltip
-					label={t(
-						'label.mail_sensitivity',
-						getMailSensitivityLabelFallbackText(sensitivity ?? 'Personal')
-					)}
-				>
+			{sensitive && (
+				<Tooltip label={getMailSensitivityLabel(t, sensitivity)}>
 					<Row>
 						<Icon
 							size="medium"
@@ -107,22 +102,16 @@ export const MailHeaderInfoBlock: FC<MailHeaderInfoProps> = ({ msg }): ReactElem
 				</Tooltip>
 			)}
 			{/* Mail AuthenticationHeaders Information */}
+			{/* TODO: tooltip for auth header */}
 			{hasAuthenticationHeaders && (
-				<Tooltip
-					label={t(
-						'label.mail_sensitivity',
-						getMailSensitivityLabelFallbackText(sensitivity ?? 'Personal')
-					)}
-				>
-					<Row>
-						<Icon
-							size="medium"
-							icon={'ShieldOutline'}
-							color={authenticationHeadersIconColor}
-							style={{ paddingRight: '0.5rem' }}
-						/>
-					</Row>
-				</Tooltip>
+				<Row>
+					<Icon
+						size="medium"
+						icon={'ShieldOutline'}
+						color={authenticationHeadersIconColor}
+						style={{ paddingRight: '0.5rem' }}
+					/>
+				</Row>
 			)}
 			{/* TODO: make this modal general and not S-MIME SPECIFIC */}
 			<Link size="medium" onClick={onSmimeClick}>

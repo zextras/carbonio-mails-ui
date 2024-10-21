@@ -5,12 +5,18 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import { t } from '@zextras/carbonio-shell-ui';
+
+import { MAIL_SENSITIVITY_HEADER } from '../../constants';
 import { type AuthenticatonHeader } from '../../types';
 import {
 	getAuthenticationHeaders,
 	getAuthenticationHeadersIcon,
 	getHasAuthenticationHeaders,
 	getIsFromExternalDomain,
+	getIsSensitive,
+	getMailSensitivityIconColor,
+	getMailSensitivityLabel,
 	getSensitivityHeader
 } from '../mail-header-utils';
 
@@ -213,5 +219,76 @@ describe('getAuthenticationHeadersIcon', () => {
 			header4: { pass: true }
 		};
 		expect(getAuthenticationHeadersIcon(headers)).toBe('warning');
+	});
+});
+
+describe('getIsSensitive', () => {
+	it('returns false for Personal', () => {
+		expect(getIsSensitive(MAIL_SENSITIVITY_HEADER.personal)).toBe(false);
+	});
+
+	it('returns true for Private', () => {
+		expect(getIsSensitive(MAIL_SENSITIVITY_HEADER.private)).toBe(true);
+	});
+
+	it('returns true for Company-Confidential', () => {
+		expect(getIsSensitive(MAIL_SENSITIVITY_HEADER.companyConfidential)).toBe(true);
+	});
+
+	it('returns false for undefined sensitivity', () => {
+		expect(getIsSensitive(undefined)).toBe(false);
+	});
+
+	it('returns false for unexpected sensitivity', () => {
+		expect(getIsSensitive('Unexpected' as never)).toBe(false);
+	});
+});
+
+describe('getMailSensitivityIconColor', () => {
+	it('returns "warning" for Personal', () => {
+		expect(getMailSensitivityIconColor(MAIL_SENSITIVITY_HEADER.personal)).toBe('warning');
+	});
+
+	it('returns "error" for Private', () => {
+		expect(getMailSensitivityIconColor(MAIL_SENSITIVITY_HEADER.private)).toBe('error');
+	});
+
+	it('returns "info" for Company-Confidential', () => {
+		expect(getMailSensitivityIconColor(MAIL_SENSITIVITY_HEADER.companyConfidential)).toBe('info');
+	});
+
+	it('returns "warning" for undefined sensitivity', () => {
+		expect(getMailSensitivityIconColor(undefined)).toBe('warning');
+	});
+
+	it('returns "warning" for unexpected sensitivity', () => {
+		expect(getMailSensitivityIconColor('Unexpected' as never)).toBe('warning');
+	});
+});
+
+describe('getMailSensitivityLabel', () => {
+	it('returns the correct label for Personal', () => {
+		const result = getMailSensitivityLabel(t, MAIL_SENSITIVITY_HEADER.personal);
+		expect(result).toBe('label.mail_sensitivity_personal');
+	});
+
+	it('returns the correct label for Private', () => {
+		const result = getMailSensitivityLabel(t, MAIL_SENSITIVITY_HEADER.private);
+		expect(result).toBe('label.mail_sensitivity_private');
+	});
+
+	it('returns the correct label for Company-Confidential', () => {
+		const result = getMailSensitivityLabel(t, MAIL_SENSITIVITY_HEADER.companyConfidential);
+		expect(result).toBe('label.mail_sensitivity_company_confidential');
+	});
+
+	it('returns the label for undefined sensitivity', () => {
+		const result = getMailSensitivityLabel(t, undefined);
+		expect(result).toBe('label.mail_sensitivity_unknown');
+	});
+
+	it('returns the label for unexpected sensitivity', () => {
+		const result = getMailSensitivityLabel(t, 'Unexpected' as never);
+		expect(result).toBe('label.mail_sensitivity_unknown');
 	});
 });

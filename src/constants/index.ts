@@ -7,6 +7,7 @@
 import { TFunction } from 'i18next';
 
 import { FOLDERS } from '../carbonio-ui-commons/constants/folders';
+import { MailSensitivityHeader } from '../types';
 
 export const MAILS_ROUTE = 'mails';
 
@@ -563,3 +564,7 @@ export const MAIL_SENSITIVITY_HEADER = {
 } as const;
 
 export const VALID_MAIL_AUTHENTICATION_HEADERS = ['dkim', 'spf', 'dmarc'];
+export const PRIVATE_SENSITIVITY_HEADERS: MailSensitivityHeader[] = [
+	'Private',
+	'Company-Confidential'
+];
