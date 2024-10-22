@@ -50,6 +50,8 @@ export type IncompleteMessage = {
 	isFromExternalDomain: boolean;
 	authenticatonHeaders: AuthenticatonHeaders;
 	sensitivity: MailSensitivityHeader;
+	messageIdFromMailHeaders: string;
+	creationDateFromMailHeaders: string;
 };
 
 export type MessageSignature = {

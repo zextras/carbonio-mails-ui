@@ -12,7 +12,7 @@ import { setupTest } from '../../../../../../../carbonio-ui-commons/test/test-se
 import { getMsgAsyncThunk } from '../../../../../../../store/actions';
 import { selectMessage } from '../../../../../../../store/messages-slice';
 import { generateStore } from '../../../../../../../tests/generators/store';
-import { InfoDetailsModal } from '../info-details-modal';
+import { MailInfoDetailModal } from '../mail-info-detail-modal';
 
 describe('Signed info block', () => {
 	test(`Should show the correct title`, async () => {
@@ -22,7 +22,7 @@ describe('Signed info block', () => {
 		await store.dispatch<any>(getMsgAsyncThunk({ msgId: '15' }));
 		const state = store.getState();
 		const msg = selectMessage(state, '15');
-		setupTest(<InfoDetailsModal onClose={onClose} signature={msg.signature?.[0]} />, { store });
+		setupTest(<MailInfoDetailModal onClose={onClose} signature={msg.signature?.[0]} />, { store });
 		const title = await screen.findByText('Message details');
 		expect(title).toBeVisible();
 	});

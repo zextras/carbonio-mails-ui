@@ -8,7 +8,7 @@ import React, { FC, ReactElement, useCallback } from 'react';
 import { Container, Icon, Link, Row, Tooltip, useModal } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
 
-import { InfoDetailsModal } from './info-details-modal/info-details-modal';
+import { MailInfoDetailModal } from './info-details-modal/mail-info-detail-modal';
 import {
 	getAuthenticationHeadersIcon,
 	getHasAuthenticationHeaders,
@@ -35,6 +35,8 @@ export const MailInfoBlock: FC<MailInfoProps> = ({ msg }): ReactElement => {
 	const sensitivity = msg?.sensitivity;
 	const hasAuthenticationHeaders = getHasAuthenticationHeaders(msg?.authenticatonHeaders);
 	const authenticationHeadersIconColor = getAuthenticationHeadersIcon(msg?.authenticatonHeaders);
+	const creationDateFromHeaders = msg?.creationDateFromMailHeaders;
+	const messageIdFromHeaders = msg?.messageIdFromMailHeaders;
 
 	const onClick = useCallback(() => {
 		const modalId = 'mail-details-modal';
@@ -44,13 +46,18 @@ export const MailInfoBlock: FC<MailInfoProps> = ({ msg }): ReactElement => {
 				maxHeight: '90vh',
 				children: (
 					<StoreProvider>
-						<InfoDetailsModal onClose={(): void => closeModal(modalId)} signature={signature} />
+						<MailInfoDetailModal
+							onClose={(): void => closeModal(modalId)}
+							signature={signature}
+							creationDateFromMailHeaders={creationDateFromHeaders}
+							messageIdFromMailHeaders={messageIdFromHeaders}
+						/>
 					</StoreProvider>
 				)
 			},
 			true
 		);
-	}, [closeModal, createModal, signature]);
+	}, [closeModal, createModal, creationDateFromHeaders, messageIdFromHeaders, signature]);
 
 	return (
 		<Container orientation="horizontal" padding={{ all: 'small' }} mainAlignment="flex-start">
@@ -115,7 +122,6 @@ export const MailInfoBlock: FC<MailInfoProps> = ({ msg }): ReactElement => {
 					</Row>
 				</Tooltip>
 			)}
-			{/* TODO: make this modal general and not S-MIME SPECIFIC */}
 			<Link size="medium" onClick={onClick}>
 				{t('label.show_details', 'Show Details')}
 			</Link>

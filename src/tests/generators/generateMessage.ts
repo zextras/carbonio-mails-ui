@@ -37,6 +37,8 @@ type MessageGenerationParams = {
 	tags?: Array<string>;
 	truncated?: boolean;
 	sensitivity?: MailSensitivityHeader;
+	messageIdFromMailHeaders?: string;
+	creationDateFromMailHeaders?: string;
 };
 
 /**
@@ -83,7 +85,9 @@ const generateMessage = ({
 	isSentByMe = false,
 	tags = [],
 	truncated = false,
-	sensitivity = 'Personal'
+	sensitivity = 'Personal',
+	messageIdFromMailHeaders = '',
+	creationDateFromMailHeaders = ''
 }: MessageGenerationParams = {}): MailMessage => ({
 	attachments: undefined,
 	autoSendTime: 0,
@@ -150,7 +154,9 @@ const generateMessage = ({
 		spf: { value: undefined, pass: false },
 		dmarc: { value: undefined, pass: false }
 	},
-	sensitivity
+	sensitivity,
+	messageIdFromMailHeaders,
+	creationDateFromMailHeaders
 });
 
 export { MessageGenerationParams, generateMessage };

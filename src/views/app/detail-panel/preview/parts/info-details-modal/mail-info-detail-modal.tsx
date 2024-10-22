@@ -8,17 +8,25 @@ import React, { FC } from 'react';
 import { Container } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
 
+import { MailInfoSubsection } from './mail-info-subsection';
 import { SmimeSubsection } from './smime-subsection';
 import ModalFooter from '../../../../../../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../../../../../../carbonio-ui-commons/components/modals/modal-header';
 import { MessageSignature } from '../../../../../../types';
 
-type SmimeDetailsModalProps = {
+type MailInfoDetailModalProps = {
 	onClose: () => void;
-	signature: MessageSignature | undefined;
+	signature?: MessageSignature;
+	messageIdFromMailHeaders?: string;
+	creationDateFromMailHeaders?: string;
 };
 
-export const InfoDetailsModal: FC<SmimeDetailsModalProps> = ({ onClose, signature }) => {
+export const MailInfoDetailModal: FC<MailInfoDetailModalProps> = ({
+	onClose,
+	signature,
+	messageIdFromMailHeaders,
+	creationDateFromMailHeaders
+}) => {
 	const [t] = useTranslation();
 	return (
 		<Container
@@ -31,8 +39,11 @@ export const InfoDetailsModal: FC<SmimeDetailsModalProps> = ({ onClose, signatur
 				title={t('messages.modal.info_details.title', 'Message details')}
 				onClose={onClose}
 			/>
-			{/* <MailInfoSubsection signature={signature} /> */}
-			{/* <MailHeadersSubsection signature={signature} /> */}
+			<MailInfoSubsection
+				messageIdFromMailHeaders={messageIdFromMailHeaders}
+				creationDateFromMailHeaders={creationDateFromMailHeaders}
+			/>
+			{/* TODO: <MailHeadersSubsection signature={signature} /> */}
 			<SmimeSubsection signature={signature} />
 			<ModalFooter
 				onConfirm={(): void => {
