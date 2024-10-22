@@ -104,14 +104,16 @@ export const MailHeaderInfoBlock: FC<MailHeaderInfoProps> = ({ msg }): ReactElem
 			{/* Mail AuthenticationHeaders Information */}
 			{/* TODO: tooltip for auth header */}
 			{hasAuthenticationHeaders && (
-				<Row>
-					<Icon
-						size="medium"
-						icon={'ShieldOutline'}
-						color={authenticationHeadersIconColor}
-						style={{ paddingRight: '0.5rem' }}
-					/>
-				</Row>
+				<Tooltip label={getMailAuthenticationHeaderLabel(t, sensitivity)}>
+					<Row>
+						<Icon
+							size="medium"
+							icon={'ShieldOutline'}
+							color={authenticationHeadersIconColor}
+							style={{ paddingRight: '0.5rem' }}
+						/>
+					</Row>
+				</Tooltip>
 			)}
 			{/* TODO: make this modal general and not S-MIME SPECIFIC */}
 			<Link size="medium" onClick={onSmimeClick}>

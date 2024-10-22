@@ -15,6 +15,7 @@ import {
 	getHasAuthenticationHeaders,
 	getIsFromExternalDomain,
 	getIsSensitive,
+	getMailAuthenticationHeaderLabel,
 	getMailSensitivityIconColor,
 	getMailSensitivityLabel,
 	getSensitivityHeader
@@ -290,5 +291,39 @@ describe('getMailSensitivityLabel', () => {
 	it('returns the label for unexpected sensitivity', () => {
 		const result = getMailSensitivityLabel(t, 'Unexpected' as never);
 		expect(result).toBe('label.mail_sensitivity_unknown');
+	});
+});
+
+describe('getMailAuthenticationHeaderLabel', () => {
+	it('should return undefined if authenticationHeaders is undefined', () => {
+		const result = getMailAuthenticationHeaderLabel(t, undefined);
+		expect(result).toBeUndefined();
+	});
+
+	it('should return a string with passed headers', () => {
+		const authenticationHeaders = {
+			dkim: { pass: true, value: 'header1Value' },
+			spf: { pass: true, value: 'header2Value' }
+		};
+		const result = getMailAuthenticationHeaderLabel(t, authenticationHeaders);
+		expect(result).toBe('dkim=label.pass, spf=label.pass');
+	});
+
+	it('should return a string with failed headers', () => {
+		const authenticationHeaders = {
+			dkim: { pass: false, value: 'header1Value' },
+			spf: { pass: false, value: 'header2Value' }
+		};
+		const result = getMailAuthenticationHeaderLabel(t, authenticationHeaders);
+		expect(result).toBe('dkim=label.fail, spf=label.fail');
+	});
+
+	it('should return a string with mixed headers', () => {
+		const authenticationHeaders = {
+			dkim: { pass: true, value: 'header1Value' },
+			spf: { pass: false, value: 'header2Value' }
+		};
+		const result = getMailAuthenticationHeaderLabel(t, authenticationHeaders);
+		expect(result).toBe('dkim=label.pass, spf=label.fail');
 	});
 });

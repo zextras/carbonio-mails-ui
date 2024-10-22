@@ -84,6 +84,24 @@ export function getHasAuthenticationHeaders(
 	return headers.some((header) => VALID_MAIL_AUTHENTICATION_HEADERS.includes(header));
 }
 
+export function getMailAuthenticationHeaderLabel(
+	t: TFunction,
+	authenticationHeaders: Record<string, AuthenticatonHeader> | undefined
+): string | undefined {
+	if (!authenticationHeaders) return undefined;
+	const validHeaders = Object.keys(authenticationHeaders).filter((header) =>
+		VALID_MAIL_AUTHENTICATION_HEADERS.includes(header)
+	);
+
+	const values = validHeaders.map((validHeader) =>
+		authenticationHeaders[validHeader]?.pass
+			? `${validHeader}=${t('label.pass', 'pass')}`
+			: `${validHeader}=${t('label.fail', 'fail')}`
+	);
+
+	return values.join(', ');
+}
+
 export function getAuthenticationHeadersIcon(
 	authenticationHeaders: Record<string, AuthenticatonHeader> | undefined
 ): string {
@@ -100,9 +118,9 @@ export function getIsSensitive(sensitivity: MailSensitivityHeader | undefined): 
 	return PRIVATE_SENSITIVITY_HEADERS.includes(sensitivity);
 }
 
-export const getMailSensitivityIconColor = (
+export function getMailSensitivityIconColor(
 	sensitivity: MailSensitivityHeader | undefined
-): string => {
+): string {
 	switch (sensitivity) {
 		case 'Personal':
 			return 'warning';
@@ -113,7 +131,7 @@ export const getMailSensitivityIconColor = (
 		default:
 			return 'warning';
 	}
-};
+}
 
 export function getMailSensitivityLabel(
 	t: TFunction,
