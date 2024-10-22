@@ -9,14 +9,14 @@ import React from 'react';
 import { screen } from '@testing-library/react';
 
 import { setupTest } from '../../../../../../../carbonio-ui-commons/test/test-setup';
-import { MailInfoSubsection } from '../mail-info-subsection';
+import { MailGeneralInfoSubsection } from '../mail-general-info-subsection';
 
 describe('MailInfoSubsection', () => {
 	test('correctly renders the component when both attributes are present', () => {
 		const messageIdFromMailHeaders = '12345';
 		const creationDateFromMailHeaders = '2021-01-01';
 		setupTest(
-			<MailInfoSubsection
+			<MailGeneralInfoSubsection
 				messageIdFromMailHeaders={messageIdFromMailHeaders}
 				creationDateFromMailHeaders={creationDateFromMailHeaders}
 			/>
@@ -33,7 +33,7 @@ describe('MailInfoSubsection', () => {
 		const messageIdFromMailHeaders = undefined;
 		const creationDateFromMailHeaders = undefined;
 		setupTest(
-			<MailInfoSubsection
+			<MailGeneralInfoSubsection
 				messageIdFromMailHeaders={messageIdFromMailHeaders}
 				creationDateFromMailHeaders={creationDateFromMailHeaders}
 			/>
@@ -47,7 +47,7 @@ describe('MailInfoSubsection', () => {
 		const messageIdFromMailHeaders = '12345';
 		const creationDateFromMailHeaders = undefined;
 		setupTest(
-			<MailInfoSubsection
+			<MailGeneralInfoSubsection
 				messageIdFromMailHeaders={messageIdFromMailHeaders}
 				creationDateFromMailHeaders={creationDateFromMailHeaders}
 			/>
@@ -60,7 +60,7 @@ describe('MailInfoSubsection', () => {
 		const messageIdFromMailHeaders = undefined;
 		const creationDateFromMailHeaders = '2021-01-01';
 		setupTest(
-			<MailInfoSubsection
+			<MailGeneralInfoSubsection
 				messageIdFromMailHeaders={messageIdFromMailHeaders}
 				creationDateFromMailHeaders={creationDateFromMailHeaders}
 			/>

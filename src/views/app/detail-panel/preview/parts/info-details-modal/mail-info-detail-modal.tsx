@@ -8,7 +8,7 @@ import React, { FC } from 'react';
 import { Container } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
 
-import { MailInfoSubsection } from './mail-info-subsection';
+import { MailGeneralInfoSubsection } from './mail-general-info-subsection';
 import { SmimeSubsection } from './smime-subsection';
 import ModalFooter from '../../../../../../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../../../../../../carbonio-ui-commons/components/modals/modal-header';
@@ -39,7 +39,7 @@ export const MailInfoDetailModal: FC<MailInfoDetailModalProps> = ({
 				title={t('messages.modal.info_details.title', 'Message details')}
 				onClose={onClose}
 			/>
-			<MailInfoSubsection
+			<MailGeneralInfoSubsection
 				messageIdFromMailHeaders={messageIdFromMailHeaders}
 				creationDateFromMailHeaders={creationDateFromMailHeaders}
 			/>

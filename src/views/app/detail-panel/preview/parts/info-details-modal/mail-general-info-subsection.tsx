@@ -8,15 +8,15 @@ import React from 'react';
 import { FormSubSection, Padding, Row, Text } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
 
-type MailInfoSubsectionProps = {
+type MailGeneralInfoSubsectionProps = {
 	messageIdFromMailHeaders: string | undefined;
 	creationDateFromMailHeaders: string | undefined;
 };
 
-export const MailInfoSubsection = ({
+export const MailGeneralInfoSubsection = ({
 	messageIdFromMailHeaders,
 	creationDateFromMailHeaders
-}: MailInfoSubsectionProps): React.JSX.Element => {
+}: MailGeneralInfoSubsectionProps): React.JSX.Element => {
 	const [t] = useTranslation();
 
 	if (!messageIdFromMailHeaders && !creationDateFromMailHeaders) return <></>;
