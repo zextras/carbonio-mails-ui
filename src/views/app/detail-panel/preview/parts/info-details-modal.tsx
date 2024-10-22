@@ -28,7 +28,7 @@ export const InfoDetailsModal: FC<SmimeDetailsModalProps> = ({ onClose, signatur
 			data-testid="info-details-modal"
 		>
 			<ModalHeader
-				title={t('messages.modal.smime.title', 'Certificate details')}
+				title={t('messages.modal.info_details.title', 'Message details')}
 				onClose={onClose}
 			/>
 			{/* <MailInfoSubsection signature={signature} /> */}
