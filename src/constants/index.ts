@@ -7,7 +7,7 @@
 import { TFunction } from 'i18next';
 
 import { FOLDERS } from '../carbonio-ui-commons/constants/folders';
-import { MailSensitivityHeader } from '../types';
+import { type MailSensitivityHeader } from '../types';
 
 export const MAILS_ROUTE = 'mails';
 

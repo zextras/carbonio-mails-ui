@@ -13,6 +13,7 @@ import {
 	getAuthenticationHeadersIcon,
 	getHasAuthenticationHeaders,
 	getIsSensitive,
+	getMailAuthenticationHeaderLabel,
 	getMailSensitivityIconColor,
 	getMailSensitivityLabel
 } from '../../../../../normalizations/mail-header-utils';
@@ -101,10 +102,10 @@ export const MailHeaderInfoBlock: FC<MailHeaderInfoProps> = ({ msg }): ReactElem
 					</Row>
 				</Tooltip>
 			)}
+
 			{/* Mail AuthenticationHeaders Information */}
-			{/* TODO: tooltip for auth header */}
 			{hasAuthenticationHeaders && (
-				<Tooltip label={getMailAuthenticationHeaderLabel(t, sensitivity)}>
+				<Tooltip label={getMailAuthenticationHeaderLabel(t, msg.authenticatonHeaders)}>
 					<Row>
 						<Icon
 							size="medium"
