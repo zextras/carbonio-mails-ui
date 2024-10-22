@@ -10,37 +10,6 @@ import { screen } from '@testing-library/react';
 import { setupTest } from '../../../../../../carbonio-ui-commons/test/test-setup';
 import { SmimeIcon } from '../smime-icon';
 
-// describe('MailSensitivityIcon', () => {
-// 	test('renders icon when hasSensitivity private', async () => {
-// 		const { user } = setupTest(
-// 			<MailSensitivityIcon sensitivity={MAIL_SENSITIVITY_HEADER.private} />
-// 		);
-//
-// 		const icon = screen.getByTestId('mail-sensitivity-icon');
-// 		expect(icon).toBeInTheDocument();
-//
-// 		await user.hover(icon);
-// 		expect(await screen.findByText('Sensitivity Private')).toBeInTheDocument();
-// 	});
-//
-// 	test('renders icon when hasSensitivity companyConfidential', async () => {
-// 		const { user } = setupTest(
-// 			<MailSensitivityIcon sensitivity={MAIL_SENSITIVITY_HEADER.companyConfidential} />
-// 		);
-//
-// 		const icon = screen.getByTestId('mail-sensitivity-icon');
-// 		expect(icon).toBeInTheDocument();
-//
-// 		await user.hover(icon);
-// 		expect(await screen.findByText('Sensitivity Company-Confidential')).toBeInTheDocument();
-// 	});
-//
-// 	test('returns empty fragment when hasSensitivity is false', () => {
-// 		setupTest(<MailSensitivityIcon sensitivity={MAIL_SENSITIVITY_HEADER.personal} />);
-// 		expect(screen.queryByRole('img')).not.toBeInTheDocument();
-// 	});
-// });
-
 describe('SmimeIcon', () => {
 	const validSignature = {
 		certificate: {

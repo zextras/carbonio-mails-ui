@@ -5,18 +5,14 @@
  */
 import React, { FC, ReactElement, useCallback } from 'react';
 
-import { Container, Icon, Link, Row, Tooltip, useModal } from '@zextras/carbonio-design-system';
+import { Container, Link, useModal } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
 
 import { ExternalDomainIcon } from './external-domain-icon';
 import { MailInfoDetailModal } from './info-details-modal/mail-info-detail-modal';
+import { MailAuthenticationHeaderIcon } from './mail-authentication-header-icon';
 import { MailSensitivityIcon } from './mail-sensitivity-icon';
 import { SmimeIcon } from './smime-icon';
-import {
-	getAuthenticationHeadersIcon,
-	getHasAuthenticationHeaders,
-	getMailAuthenticationHeaderLabel
-} from '../../../../../normalizations/mail-header-utils';
 import { StoreProvider } from '../../../../../store/redux';
 import { IncompleteMessage } from '../../../../../types';
 
@@ -29,10 +25,6 @@ export const MailInfoBlock: FC<MailInfoProps> = ({ msg }): ReactElement => {
 	const { createModal, closeModal } = useModal();
 
 	const signature = msg?.signature?.[0];
-	const fromExternalDomain = msg?.isFromExternalDomain;
-	const sensitivity = msg?.sensitivity;
-	const hasAuthenticationHeaders = getHasAuthenticationHeaders(msg?.authenticationHeaders);
-	const authenticationHeadersIconColor = getAuthenticationHeadersIcon(msg?.authenticationHeaders);
 	const creationDateFromHeaders = msg?.creationDateFromMailHeaders;
 	const messageIdFromHeaders = msg?.messageIdFromMailHeaders;
 
@@ -60,22 +52,9 @@ export const MailInfoBlock: FC<MailInfoProps> = ({ msg }): ReactElement => {
 	return (
 		<Container orientation="horizontal" padding={{ all: 'small' }} mainAlignment="flex-start">
 			<SmimeIcon signature={signature} />
-			<ExternalDomainIcon fromExternalDomain={fromExternalDomain} />
-			<MailSensitivityIcon sensitivity={sensitivity} />
-
-			{/* Mail AuthenticationHeaders Information */}
-			{hasAuthenticationHeaders && (
-				<Tooltip label={getMailAuthenticationHeaderLabel(t, msg.authenticationHeaders)}>
-					<Row>
-						<Icon
-							size="medium"
-							icon={'ShieldOutline'}
-							color={authenticationHeadersIconColor}
-							style={{ paddingRight: '0.5rem' }}
-						/>
-					</Row>
-				</Tooltip>
-			)}
+			<ExternalDomainIcon fromExternalDomain={msg.isFromExternalDomain} />
+			<MailSensitivityIcon sensitivity={msg?.sensitivity} />
+			<MailAuthenticationHeaderIcon mailAuthenticationHeaders={msg?.authenticationHeaders} />
 			<Link size="medium" onClick={onClick}>
 				{t('label.show_details', 'Show Details')}
 			</Link>
