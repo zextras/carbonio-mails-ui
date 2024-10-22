@@ -553,13 +553,20 @@ export const MAIL_VERIFICATION_HEADERS = {
 	authenticatorHeaders: 'Authentication-Results',
 	sensitivity: 'Sensitivity',
 	listId: 'List-ID',
-	listUnsubscribe: 'List-Unsubscribe'
+	listUnsubscribe: 'List-Unsubscribe',
+	messageId: 'Message-Id',
+	creationDate: 'Date'
 } as const;
 
 export const MAIL_SENSITIVITY_HEADER = {
 	personal: 'Personal',
 	private: 'Private',
 	companyConfidential: 'Company-Confidential'
+} as const;
+
+export const MAIL_INFO_HEADERS = {
+	messageId: 'Message-Id',
+	creationDate: 'Date'
 } as const;
 
 export const VALID_MAIL_AUTHENTICATION_HEADERS = ['dkim', 'spf', 'dmarc'];

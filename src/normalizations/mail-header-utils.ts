@@ -11,6 +11,7 @@ import { PRIVATE_SENSITIVITY_HEADERS, VALID_MAIL_AUTHENTICATION_HEADERS } from '
 import {
 	AuthenticatonHeader,
 	AuthenticatonHeaders,
+	MailInfoHeaders,
 	MailSensitivityHeader,
 	SoapIncompleteMessage
 } from '../types';
@@ -74,6 +75,20 @@ export function getSensitivityHeader(
 		default:
 			return undefined;
 	}
+}
+
+export function getMessageIdFromMailHeader(
+	headers: SoapIncompleteMessage['_attrs'] | undefined
+): Lowercase<MailInfoHeaders> | undefined {
+	if (!headers) return undefined;
+	return headers['Message-Id'] as Lowercase<MailInfoHeaders>;
+}
+
+export function getMessageCreationDateFromMailHeader(
+	headers: SoapIncompleteMessage['_attrs'] | undefined
+): Lowercase<MailInfoHeaders> | undefined {
+	if (!headers) return undefined;
+	return headers.Date as Lowercase<MailInfoHeaders>;
 }
 
 export function getHasAuthenticationHeaders(

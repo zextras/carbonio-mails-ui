@@ -8,7 +8,11 @@ import { AccountSettingsPrefs, ErrorSoapBodyResponse } from '@zextras/carbonio-s
 import { EmailAddresses } from './redirect-message-action';
 import { MailAttachment, SaveDraftResponse } from './save-draft';
 import { Folder } from '../../carbonio-ui-commons/types/folder';
-import { MAIL_VERIFICATION_HEADERS, MAIL_SENSITIVITY_HEADER } from '../../constants';
+import {
+	MAIL_VERIFICATION_HEADERS,
+	MAIL_SENSITIVITY_HEADER,
+	MAIL_INFO_HEADERS
+} from '../../constants';
 import { MailsEditor, MailsEditorV2 } from '../editor';
 
 export type MailVerificationHeader =
@@ -16,6 +20,8 @@ export type MailVerificationHeader =
 
 export type MailSensitivityHeader =
 	(typeof MAIL_SENSITIVITY_HEADER)[keyof typeof MAIL_SENSITIVITY_HEADER];
+
+export type MailInfoHeaders = (typeof MAIL_INFO_HEADERS)[keyof typeof MAIL_INFO_HEADERS];
 
 export type IFolderView =
 	| 'search folder'
