@@ -8,7 +8,10 @@ import React, { FC, ReactElement, useCallback } from 'react';
 import { Container, Icon, Link, Row, Tooltip, useModal } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
 
+import { ExternalDomainIcon } from './external-domain-icon';
 import { MailInfoDetailModal } from './info-details-modal/mail-info-detail-modal';
+import { MailSensitivityIcon } from './mail-sensitivity-icon';
+import { SmimeIcon } from './smime-icon';
 import {
 	getAuthenticationHeadersIcon,
 	getHasAuthenticationHeaders,
@@ -16,9 +19,6 @@ import {
 } from '../../../../../normalizations/mail-header-utils';
 import { StoreProvider } from '../../../../../store/redux';
 import { IncompleteMessage } from '../../../../../types';
-import { getSignedIconColor } from '../utils';
-import { ExternalDomainIcon } from './external-domain-icon';
-import { MailSensitivityIcon } from './mail-sensitivity-icon';
 
 type MailInfoProps = {
 	msg: IncompleteMessage;
@@ -59,26 +59,7 @@ export const MailInfoBlock: FC<MailInfoProps> = ({ msg }): ReactElement => {
 
 	return (
 		<Container orientation="horizontal" padding={{ all: 'small' }} mainAlignment="flex-start">
-			{/* S-MIME Signature Information */}
-			{signature && (
-				<Tooltip
-					label={
-						signature?.valid
-							? t('label.valid_signature', 'Valid Signature')
-							: t('label.invalid_signature', 'Invalid Signature')
-					}
-				>
-					<Row>
-						<Icon
-							size="medium"
-							icon={'SignatureOutline'}
-							color={getSignedIconColor(signature?.messageCode ?? '')}
-							style={{ alignSelf: 'center', paddingRight: '0.5rem' }}
-						/>
-					</Row>
-				</Tooltip>
-			)}
-
+			<SmimeIcon signature={signature} />
 			<ExternalDomainIcon fromExternalDomain={fromExternalDomain} />
 			<MailSensitivityIcon sensitivity={sensitivity} />
 
