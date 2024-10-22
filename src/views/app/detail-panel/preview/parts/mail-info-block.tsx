@@ -12,15 +12,13 @@ import { MailInfoDetailModal } from './info-details-modal/mail-info-detail-modal
 import {
 	getAuthenticationHeadersIcon,
 	getHasAuthenticationHeaders,
-	getIsSensitive,
-	getMailAuthenticationHeaderLabel,
-	getMailSensitivityIconColor,
-	getMailSensitivityLabel
+	getMailAuthenticationHeaderLabel
 } from '../../../../../normalizations/mail-header-utils';
 import { StoreProvider } from '../../../../../store/redux';
 import { IncompleteMessage } from '../../../../../types';
 import { getSignedIconColor } from '../utils';
 import { ExternalDomainIcon } from './external-domain-icon';
+import { MailSensitivityIcon } from './mail-sensitivity-icon';
 
 type MailInfoProps = {
 	msg: IncompleteMessage;
@@ -32,7 +30,6 @@ export const MailInfoBlock: FC<MailInfoProps> = ({ msg }): ReactElement => {
 
 	const signature = msg?.signature?.[0];
 	const fromExternalDomain = msg?.isFromExternalDomain;
-	const sensitive = getIsSensitive(msg?.sensitivity);
 	const sensitivity = msg?.sensitivity;
 	const hasAuthenticationHeaders = getHasAuthenticationHeaders(msg?.authenticationHeaders);
 	const authenticationHeadersIconColor = getAuthenticationHeadersIcon(msg?.authenticationHeaders);
@@ -83,20 +80,7 @@ export const MailInfoBlock: FC<MailInfoProps> = ({ msg }): ReactElement => {
 			)}
 
 			<ExternalDomainIcon fromExternalDomain={fromExternalDomain} />
-
-			{/* Mail Sensitivity Information */}
-			{sensitive && (
-				<Tooltip label={getMailSensitivityLabel(t, sensitivity)}>
-					<Row>
-						<Icon
-							size="medium"
-							icon={'EyeOff2Outline'}
-							color={getMailSensitivityIconColor(sensitivity ?? 'Personal')}
-							style={{ paddingRight: '0.5rem' }}
-						/>
-					</Row>
-				</Tooltip>
-			)}
+			<MailSensitivityIcon sensitivity={sensitivity} />
 
 			{/* Mail AuthenticationHeaders Information */}
 			{hasAuthenticationHeaders && (
