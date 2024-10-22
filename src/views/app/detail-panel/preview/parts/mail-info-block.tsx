@@ -20,6 +20,7 @@ import {
 import { StoreProvider } from '../../../../../store/redux';
 import { IncompleteMessage } from '../../../../../types';
 import { getSignedIconColor } from '../utils';
+import { ExternalDomainIcon } from './external-domain-icon';
 
 type MailInfoProps = {
 	msg: IncompleteMessage;
@@ -81,19 +82,7 @@ export const MailInfoBlock: FC<MailInfoProps> = ({ msg }): ReactElement => {
 				</Tooltip>
 			)}
 
-			{/* External Domain Information */}
-			{fromExternalDomain && (
-				<Tooltip label={t('label.from_external_domain', 'Mail from external domain')}>
-					<Row>
-						<Icon
-							size="medium"
-							icon={'MailStatusOutline'}
-							color="warning"
-							style={{ paddingRight: '0.5rem' }}
-						/>
-					</Row>
-				</Tooltip>
-			)}
+			<ExternalDomainIcon fromExternalDomain={fromExternalDomain} />
 
 			{/* Mail Sensitivity Information */}
 			{sensitive && (
