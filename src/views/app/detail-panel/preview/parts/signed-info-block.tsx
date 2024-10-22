@@ -11,7 +11,7 @@ import { useTranslation } from 'react-i18next';
 import { StoreProvider } from '../../../../../store/redux';
 import { IncompleteMessage } from '../../../../../types';
 import { getSignedIconColor } from '../utils';
-import { InfoDetailsModal } from './info-details-modal';
+import { InfoDetailsModal } from './info-details-modal/info-details-modal';
 
 type SignedInfoProps = {
 	msg: IncompleteMessage;

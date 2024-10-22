@@ -9,9 +9,9 @@ import { Container } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
 
 import { SmimeSubsection } from './smime-subsection';
-import ModalFooter from '../../../../../carbonio-ui-commons/components/modals/modal-footer';
-import ModalHeader from '../../../../../carbonio-ui-commons/components/modals/modal-header';
-import { MessageSignature } from '../../../../../types';
+import ModalFooter from '../../../../../../carbonio-ui-commons/components/modals/modal-footer';
+import ModalHeader from '../../../../../../carbonio-ui-commons/components/modals/modal-header';
+import { MessageSignature } from '../../../../../../types';
 
 type SmimeDetailsModalProps = {
 	onClose: () => void;

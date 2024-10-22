@@ -9,8 +9,8 @@ import { FormSubSection, Icon, Row, Text } from '@zextras/carbonio-design-system
 import moment from 'moment';
 import { useTranslation } from 'react-i18next';
 
-import { MessageSignature } from '../../../../../types';
-import { ErrorMessageCode } from '../utils';
+import { MessageSignature } from '../../../../../../types';
+import { ErrorMessageCode } from '../../utils';
 
 type SmimeDetailsModalProps = {
 	signature: MessageSignature | undefined;

@@ -8,7 +8,7 @@ import React, { FC, ReactElement, useCallback } from 'react';
 import { Container, Icon, Link, Row, Tooltip, useModal } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
 
-import { InfoDetailsModal } from './info-details-modal';
+import { InfoDetailsModal } from './info-details-modal/info-details-modal';
 import {
 	getAuthenticationHeadersIcon,
 	getHasAuthenticationHeaders,

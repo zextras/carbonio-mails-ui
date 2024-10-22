@@ -8,10 +8,10 @@ import React from 'react';
 
 import { screen } from '@testing-library/react';
 
-import { setupTest } from '../../../../../../carbonio-ui-commons/test/test-setup';
-import { getMsgAsyncThunk } from '../../../../../../store/actions';
-import { selectMessage } from '../../../../../../store/messages-slice';
-import { generateStore } from '../../../../../../tests/generators/store';
+import { setupTest } from '../../../../../../../carbonio-ui-commons/test/test-setup';
+import { getMsgAsyncThunk } from '../../../../../../../store/actions';
+import { selectMessage } from '../../../../../../../store/messages-slice';
+import { generateStore } from '../../../../../../../tests/generators/store';
 import { InfoDetailsModal } from '../info-details-modal';
 
 describe('Signed info block', () => {
