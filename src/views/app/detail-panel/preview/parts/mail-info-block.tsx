@@ -33,8 +33,8 @@ export const MailInfoBlock: FC<MailInfoProps> = ({ msg }): ReactElement => {
 	const fromExternalDomain = msg?.isFromExternalDomain;
 	const sensitive = getIsSensitive(msg?.sensitivity);
 	const sensitivity = msg?.sensitivity;
-	const hasAuthenticationHeaders = getHasAuthenticationHeaders(msg?.authenticatonHeaders);
-	const authenticationHeadersIconColor = getAuthenticationHeadersIcon(msg?.authenticatonHeaders);
+	const hasAuthenticationHeaders = getHasAuthenticationHeaders(msg?.authenticationHeaders);
+	const authenticationHeadersIconColor = getAuthenticationHeadersIcon(msg?.authenticationHeaders);
 	const creationDateFromHeaders = msg?.creationDateFromMailHeaders;
 	const messageIdFromHeaders = msg?.messageIdFromMailHeaders;
 
@@ -111,7 +111,7 @@ export const MailInfoBlock: FC<MailInfoProps> = ({ msg }): ReactElement => {
 
 			{/* Mail AuthenticationHeaders Information */}
 			{hasAuthenticationHeaders && (
-				<Tooltip label={getMailAuthenticationHeaderLabel(t, msg.authenticatonHeaders)}>
+				<Tooltip label={getMailAuthenticationHeaderLabel(t, msg.authenticationHeaders)}>
 					<Row>
 						<Icon
 							size="medium"

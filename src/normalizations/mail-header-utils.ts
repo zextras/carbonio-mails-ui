@@ -9,8 +9,8 @@ import { includes, trim } from 'lodash';
 
 import { PRIVATE_SENSITIVITY_HEADERS, VALID_MAIL_AUTHENTICATION_HEADERS } from '../constants';
 import {
-	AuthenticatonHeader,
-	AuthenticatonHeaders,
+	MailAuthenticationHeader,
+	MailAuthenticationHeaders,
 	MailSensitivityHeader,
 	SoapIncompleteMessage
 } from '../types';
@@ -41,7 +41,7 @@ function findHeader(
 
 export function getAuthenticationHeaders(
 	headers: SoapIncompleteMessage['_attrs']
-): AuthenticatonHeaders {
+): MailAuthenticationHeaders {
 	const authenticationHeadersArray = headers?.['Authentication-Results']?.split(';');
 	const dkimValue = trimAndCheck(findHeader(authenticationHeadersArray, /dkim=/));
 	const dkimPass = !!dkimValue && /dkim=pass/i.exec(dkimValue);
@@ -77,7 +77,7 @@ export function getSensitivityHeader(
 }
 
 export function getHasAuthenticationHeaders(
-	authenticationHeaders: Record<string, AuthenticatonHeader> | undefined
+	authenticationHeaders: Record<string, MailAuthenticationHeader> | undefined
 ): boolean {
 	if (!authenticationHeaders) return false;
 	const headers = Object.keys(authenticationHeaders);
@@ -86,7 +86,7 @@ export function getHasAuthenticationHeaders(
 
 export function getMailAuthenticationHeaderLabel(
 	t: TFunction,
-	authenticationHeaders: Record<string, AuthenticatonHeader> | undefined
+	authenticationHeaders: Record<string, MailAuthenticationHeader> | undefined
 ): string | undefined {
 	if (!authenticationHeaders) return undefined;
 	const validHeaders = Object.keys(authenticationHeaders).filter((header) =>
@@ -103,7 +103,7 @@ export function getMailAuthenticationHeaderLabel(
 }
 
 export function getAuthenticationHeadersIcon(
-	authenticationHeaders: Record<string, AuthenticatonHeader> | undefined
+	authenticationHeaders: Record<string, MailAuthenticationHeader> | undefined
 ): string {
 	if (!authenticationHeaders) return 'warning';
 	const numberOfPassedHeaders = Object.values(authenticationHeaders).filter(

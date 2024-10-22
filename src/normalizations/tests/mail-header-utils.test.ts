@@ -8,7 +8,7 @@
 import { t } from '@zextras/carbonio-shell-ui';
 
 import { MAIL_SENSITIVITY_HEADER } from '../../constants';
-import { type AuthenticatonHeader } from '../../types';
+import { MailAuthenticationHeader } from '../../types';
 import {
 	getAuthenticationHeaders,
 	getAuthenticationHeadersIcon,
@@ -177,7 +177,7 @@ describe('getHasAuthenticationHeaders', () => {
 
 describe('getAuthenticationHeadersIcon', () => {
 	it('should return "warning" when there are no headers', () => {
-		const headers: Record<string, AuthenticatonHeader> = {};
+		const headers: Record<string, MailAuthenticationHeader> = {};
 		expect(getAuthenticationHeadersIcon(headers)).toBe('warning');
 	});
 
@@ -187,7 +187,7 @@ describe('getAuthenticationHeadersIcon', () => {
 	});
 
 	it('should return "warning" when no headers have pass: true', () => {
-		const headers: Record<string, AuthenticatonHeader> = {
+		const headers: Record<string, MailAuthenticationHeader> = {
 			header1: { pass: false },
 			header2: { pass: false }
 		};
@@ -195,7 +195,7 @@ describe('getAuthenticationHeadersIcon', () => {
 	});
 
 	it('should return "warning" when some headers have pass: true but less than 3', () => {
-		const headers: Record<string, AuthenticatonHeader> = {
+		const headers: Record<string, MailAuthenticationHeader> = {
 			header1: { pass: true },
 			header2: { pass: false },
 			header3: { pass: true }
@@ -204,7 +204,7 @@ describe('getAuthenticationHeadersIcon', () => {
 	});
 
 	it('should return "success" when exactly 3 headers have pass: true', () => {
-		const headers: Record<string, AuthenticatonHeader> = {
+		const headers: Record<string, MailAuthenticationHeader> = {
 			header1: { pass: true },
 			header2: { pass: true },
 			header3: { pass: true }
@@ -213,7 +213,7 @@ describe('getAuthenticationHeadersIcon', () => {
 	});
 
 	it('should return "warning" when more than 3 headers have pass: true', () => {
-		const headers: Record<string, AuthenticatonHeader> = {
+		const headers: Record<string, MailAuthenticationHeader> = {
 			header1: { pass: true },
 			header2: { pass: true },
 			header3: { pass: true },

@@ -43,7 +43,7 @@ export const MailInfoDetailModal: FC<MailInfoDetailModalProps> = ({
 				messageIdFromMailHeaders={messageIdFromMailHeaders}
 				creationDateFromMailHeaders={creationDateFromMailHeaders}
 			/>
-			{/* TODO: <MailHeadersSubsection signature={signature} /> */}
+			{/* TODO: <MailAuthenticationHeadersSubsection signature={signature} /> */}
 			<SmimeSubsection signature={signature} />
 			<ModalFooter
 				onConfirm={(): void => {

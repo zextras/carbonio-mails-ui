@@ -8,12 +8,12 @@ import type { MailsEditorV2 } from '../editor';
 import { Participant } from '../participant';
 import { SaveDraftResponse, MailSensitivityHeader } from '../soap';
 
-type AuthenticatonHeader = { value?: string; pass?: boolean };
+type MailAuthenticationHeader = { value?: string; pass?: boolean };
 
-type AuthenticatonHeaders = {
-	dkim?: AuthenticatonHeader;
-	spf?: AuthenticatonHeader;
-	dmarc?: AuthenticatonHeader;
+type MailAuthenticationHeaders = {
+	dkim?: MailAuthenticationHeader;
+	spf?: MailAuthenticationHeader;
+	dmarc?: MailAuthenticationHeader;
 };
 
 export type IncompleteMessage = {
@@ -48,7 +48,7 @@ export type IncompleteMessage = {
 	isReadReceiptRequested?: boolean;
 	signature?: Array<MessageSignature>;
 	isFromExternalDomain: boolean;
-	authenticatonHeaders: AuthenticatonHeaders;
+	authenticationHeaders: MailAuthenticationHeaders;
 	sensitivity: MailSensitivityHeader;
 	messageIdFromMailHeaders: string;
 	creationDateFromMailHeaders: string;
