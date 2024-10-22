@@ -8,7 +8,7 @@ import React, { FC, ReactElement, useCallback } from 'react';
 import { Container, Icon, Link, Row, Tooltip, useModal } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
 
-import { SmimeDetailsModal } from './smime-details-modal';
+import { InfoDetailsModal } from './info-details-modal';
 import {
 	getAuthenticationHeadersIcon,
 	getHasAuthenticationHeaders,
@@ -21,11 +21,11 @@ import { StoreProvider } from '../../../../../store/redux';
 import { IncompleteMessage } from '../../../../../types';
 import { getSignedIconColor } from '../utils';
 
-type MailHeaderInfoProps = {
+type MailInfoProps = {
 	msg: IncompleteMessage;
 };
 
-export const MailHeaderInfoBlock: FC<MailHeaderInfoProps> = ({ msg }): ReactElement => {
+export const MailInfoBlock: FC<MailInfoProps> = ({ msg }): ReactElement => {
 	const [t] = useTranslation();
 	const { createModal, closeModal } = useModal();
 
@@ -36,21 +36,20 @@ export const MailHeaderInfoBlock: FC<MailHeaderInfoProps> = ({ msg }): ReactElem
 	const hasAuthenticationHeaders = getHasAuthenticationHeaders(msg?.authenticatonHeaders);
 	const authenticationHeadersIconColor = getAuthenticationHeadersIcon(msg?.authenticatonHeaders);
 
-	const onSmimeClick = useCallback(() => {
-		const modalId = Date.now().toString();
-		signature &&
-			createModal(
-				{
-					id: modalId,
-					maxHeight: '90vh',
-					children: (
-						<StoreProvider>
-							<SmimeDetailsModal onClose={(): void => closeModal(modalId)} signature={signature} />
-						</StoreProvider>
-					)
-				},
-				true
-			);
+	const onClick = useCallback(() => {
+		const modalId = 'mail-details-modal';
+		createModal(
+			{
+				id: modalId,
+				maxHeight: '90vh',
+				children: (
+					<StoreProvider>
+						<InfoDetailsModal onClose={(): void => closeModal(modalId)} signature={signature} />
+					</StoreProvider>
+				)
+			},
+			true
+		);
 	}, [closeModal, createModal, signature]);
 
 	return (
@@ -117,7 +116,7 @@ export const MailHeaderInfoBlock: FC<MailHeaderInfoProps> = ({ msg }): ReactElem
 				</Tooltip>
 			)}
 			{/* TODO: make this modal general and not S-MIME SPECIFIC */}
-			<Link size="medium" onClick={onSmimeClick}>
+			<Link size="medium" onClick={onClick}>
 				{t('label.show_details', 'Show Details')}
 			</Link>
 		</Container>

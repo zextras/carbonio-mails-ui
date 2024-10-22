@@ -12,7 +12,7 @@ import { setupTest } from '../../../../../../carbonio-ui-commons/test/test-setup
 import { getMsgAsyncThunk } from '../../../../../../store/actions';
 import { selectMessage } from '../../../../../../store/messages-slice';
 import { generateStore } from '../../../../../../tests/generators/store';
-import { SignedInfo } from '../signed-info-block';
+import { MailDetails } from '../signed-info-block';
 
 describe('Signed info block', () => {
 	test(`Should show the show details link`, async () => {
@@ -24,7 +24,7 @@ describe('Signed info block', () => {
 		const props = {
 			msg
 		};
-		setupTest(<SignedInfo {...props} />, { store });
+		setupTest(<MailDetails {...props} />, { store });
 		expect(await screen.findByTestId('show-details-container')).toBeInTheDocument();
 		expect(screen.getByText('Show Details')).toBeVisible();
 	});
@@ -38,7 +38,7 @@ describe('Signed info block', () => {
 		const props = {
 			msg
 		};
-		const { user } = setupTest(<SignedInfo {...props} />, { store });
+		const { user } = setupTest(<MailDetails {...props} />, { store });
 		expect(await screen.findByTestId('show-details-container')).toBeInTheDocument();
 
 		const showDetails = screen.getByText('Show Details');
@@ -47,6 +47,6 @@ describe('Signed info block', () => {
 		await act(async () => {
 			await user.click(showDetails);
 		});
-		expect(await screen.findByTestId('smime-details-modal')).toBeInTheDocument();
+		expect(await screen.findByTestId('smime-subsection')).toBeInTheDocument();
 	});
 });

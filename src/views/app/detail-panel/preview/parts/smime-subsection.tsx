@@ -3,26 +3,23 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, useMemo } from 'react';
+import React, { useMemo } from 'react';
 
-import { Container, Icon, Row, Text } from '@zextras/carbonio-design-system';
+import { FormSubSection, Icon, Row, Text } from '@zextras/carbonio-design-system';
 import moment from 'moment';
 import { useTranslation } from 'react-i18next';
 
-import ModalFooter from '../../../../../carbonio-ui-commons/components/modals/modal-footer';
-import ModalHeader from '../../../../../carbonio-ui-commons/components/modals/modal-header';
 import { MessageSignature } from '../../../../../types';
 import { ErrorMessageCode } from '../utils';
 
 type SmimeDetailsModalProps = {
-	onClose: () => void;
-	signature: MessageSignature;
+	signature: MessageSignature | undefined;
 };
 
-export const SmimeDetailsModal: FC<SmimeDetailsModalProps> = ({ onClose, signature }) => {
+export const SmimeSubsection = ({ signature }: SmimeDetailsModalProps): React.JSX.Element => {
 	const [t] = useTranslation();
 	const signedMsgDetails = useMemo(() => {
-		switch (signature.messageCode) {
+		switch (signature?.messageCode) {
 			case ErrorMessageCode.VALID:
 				return {
 					title: t('messages.modal.smime.valid_title', 'Message is Signed'),
@@ -93,63 +90,55 @@ export const SmimeDetailsModal: FC<SmimeDetailsModalProps> = ({ onClose, signatu
 					iconColor: 'error'
 				};
 		}
-	}, [signature.messageCode, t]);
+	}, [signature?.messageCode, t]);
+
+	if (!signature) return <></>;
+
 	return (
-		<Container
-			mainAlignment="center"
+		<FormSubSection
+			label={t('messages.modal.smime.title', 'Certificate details')}
+			mainAlignment="flex-start"
+			orientation="vertical"
 			crossAlignment="flex-start"
-			height="fit"
-			data-testid="smime-details-modal"
+			data-testid="smime-subsection"
 		>
-			<ModalHeader
-				title={t('messages.modal.smime.title', 'Certificate details')}
-				onClose={onClose}
-			/>
-			<Container mainAlignment="flex-start" orientation="vertical" crossAlignment="flex-start">
-				<Row mainAlignment="flex-start" padding={{ top: 'small', bottom: 'small' }}>
-					<Icon
-						size="medium"
-						icon={'SignatureOutline'}
-						color={signedMsgDetails.iconColor}
-						style={{ alignSelf: 'center', paddingRight: '0.5rem' }}
-					/>
-					<Text weight="bold" size="small">
-						{signedMsgDetails.title}
-					</Text>
-				</Row>
-				<Row mainAlignment="flex-start" padding={{ bottom: 'large' }}>
-					<Text size="small" overflow="break-word">
-						{signedMsgDetails.message}
-					</Text>
-				</Row>
-				<Row padding={{ bottom: 'small' }}>
-					<Text weight="bold" size="small" style={{ paddingRight: '0.25rem' }}>
-						{t('messages.modal.smime.signed_by', 'Signed By')}:
-					</Text>
-					<Text size="small">{signature.certificate.email}</Text>
-				</Row>
-				<Row padding={{ bottom: 'small' }}>
-					<Text weight="bold" size="small" style={{ paddingRight: '0.25rem' }}>
-						{t('messages.modal.smime.issuer', 'Issuer')}:
-					</Text>
-					<Text size="small">{signature.certificate.issuer.name}</Text>
-				</Row>
-				<Row>
-					<Text weight="bold" size="small" style={{ paddingRight: '0.25rem' }}>
-						{t('messages.modal.smime.validity', 'Validity')}:
-					</Text>
-					<Text size="small">
-						{moment(signature.certificate.notBefore).format('DD/MM/YYYY HH:MM')} -{' '}
-						{moment(signature.certificate.notAfter).format('DD/MM/YYYY HH:MM')}
-					</Text>
-				</Row>
-			</Container>
-			<ModalFooter
-				onConfirm={(): void => {
-					onClose();
-				}}
-				label={t('label.close', 'Close')}
-			/>
-		</Container>
+			<Row mainAlignment="flex-start" padding={{ top: 'small', bottom: 'small' }}>
+				<Icon
+					size="medium"
+					icon={'SignatureOutline'}
+					color={signedMsgDetails.iconColor}
+					style={{ alignSelf: 'center', paddingRight: '0.5rem' }}
+				/>
+				<Text weight="bold" size="small">
+					{signedMsgDetails.title}
+				</Text>
+			</Row>
+			<Row mainAlignment="flex-start" padding={{ bottom: 'large' }}>
+				<Text size="small" overflow="break-word">
+					{signedMsgDetails.message}
+				</Text>
+			</Row>
+			<Row padding={{ bottom: 'small' }}>
+				<Text weight="bold" size="small" style={{ paddingRight: '0.25rem' }}>
+					{t('messages.modal.smime.signed_by', 'Signed By')}:
+				</Text>
+				<Text size="small">{signature.certificate.email}</Text>
+			</Row>
+			<Row padding={{ bottom: 'small' }}>
+				<Text weight="bold" size="small" style={{ paddingRight: '0.25rem' }}>
+					{t('messages.modal.smime.issuer', 'Issuer')}:
+				</Text>
+				<Text size="small">{signature.certificate.issuer.name}</Text>
+			</Row>
+			<Row>
+				<Text weight="bold" size="small" style={{ paddingRight: '0.25rem' }}>
+					{t('messages.modal.smime.validity', 'Validity')}:
+				</Text>
+				<Text size="small">
+					{moment(signature.certificate.notBefore).format('DD/MM/YYYY HH:MM')} -{' '}
+					{moment(signature.certificate.notAfter).format('DD/MM/YYYY HH:MM')}
+				</Text>
+			</Row>
+		</FormSubSection>
 	);
 };

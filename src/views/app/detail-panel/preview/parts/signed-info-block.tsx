@@ -8,15 +8,15 @@ import React, { FC, ReactElement, useCallback } from 'react';
 import { Container, Icon, Link, Row, Tooltip, useModal } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
 
-import { SmimeDetailsModal } from './smime-details-modal';
 import { StoreProvider } from '../../../../../store/redux';
 import { IncompleteMessage } from '../../../../../types';
 import { getSignedIconColor } from '../utils';
+import { InfoDetailsModal } from './info-details-modal';
 
 type SignedInfoProps = {
 	msg: IncompleteMessage;
 };
-export const SignedInfo: FC<SignedInfoProps> = ({ msg }): ReactElement => {
+export const MailDetails: FC<SignedInfoProps> = ({ msg }): ReactElement => {
 	const [t] = useTranslation();
 	const { createModal, closeModal } = useModal();
 	const signature = msg?.signature?.[0];
@@ -29,7 +29,7 @@ export const SignedInfo: FC<SignedInfoProps> = ({ msg }): ReactElement => {
 					maxHeight: '90vh',
 					children: (
 						<StoreProvider>
-							<SmimeDetailsModal onClose={(): void => closeModal(modalId)} signature={signature} />
+							<InfoDetailsModal onClose={(): void => closeModal(modalId)} signature={signature} />
 						</StoreProvider>
 					)
 				},
