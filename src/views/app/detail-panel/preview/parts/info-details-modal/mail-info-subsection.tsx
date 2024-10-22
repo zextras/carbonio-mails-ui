@@ -29,24 +29,28 @@ export const MailInfoSubsection = ({
 			crossAlignment="flex-start"
 			data-testid="mail-info-subsection"
 		>
-			<Row mainAlignment="flex-start" padding={{ top: 'small', bottom: 'small' }}>
-				<Text weight="bold" size="small">
-					{t('messages.modal.mail_info.message_id', 'Message ID:')}
-				</Text>
-				<Padding right={'medium'} />
-				<Text overflow={'break-word'} size="small">
-					{messageIdFromMailHeaders}
-				</Text>
-			</Row>
-			<Row mainAlignment="flex-start" padding={{ top: 'small', bottom: 'small' }}>
-				<Text weight="bold" size="small">
-					{t('messages.modal.mail_info.message_created_at', 'Created at:')}
-				</Text>
-				<Padding right={'medium'} />
-				<Text overflow={'break-word'} size="small">
-					{creationDateFromMailHeaders}
-				</Text>
-			</Row>
+			{messageIdFromMailHeaders && (
+				<Row mainAlignment="flex-start" padding={{ top: 'small', bottom: 'small' }}>
+					<Text weight="bold" size="small">
+						{t('messages.modal.mail_info.message_id', 'Message ID:')}
+					</Text>
+					<Padding right={'medium'} />
+					<Text overflow={'break-word'} size="small">
+						{messageIdFromMailHeaders}
+					</Text>
+				</Row>
+			)}
+			{creationDateFromMailHeaders && (
+				<Row mainAlignment="flex-start" padding={{ top: 'small', bottom: 'small' }}>
+					<Text weight="bold" size="small">
+						{t('messages.modal.mail_info.message_created_at', 'Created at:')}
+					</Text>
+					<Padding right={'medium'} />
+					<Text overflow={'break-word'} size="small">
+						{creationDateFromMailHeaders}
+					</Text>
+				</Row>
+			)}
 		</FormSubSection>
 	);
 };
