@@ -148,3 +148,10 @@ export function getMailSensitivityLabel(
 			return t('label.mail_sensitivity_unknown', 'Sensitivity Unknown');
 	}
 }
+
+export function getIsDistributionList(headers: SoapIncompleteMessage['_attrs']): boolean {
+	const zimbraDL = headers?.['X-Zimbra-DL'];
+	const listId = headers?.['List-ID'];
+	const listUnsubscribe = headers?.['List-Unsubscribe'];
+	return !!(zimbraDL || listId || listUnsubscribe);
+}

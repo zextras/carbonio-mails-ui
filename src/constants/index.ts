@@ -554,6 +554,7 @@ export const MAIL_VERIFICATION_HEADERS = {
 	sensitivity: 'Sensitivity',
 	listId: 'List-ID',
 	listUnsubscribe: 'List-Unsubscribe',
+	zimbraDL: 'X-Zimbra-DL',
 	messageId: 'Message-Id',
 	creationDate: 'Date'
 } as const;

@@ -13,6 +13,7 @@ import {
 	getAuthenticationHeaders,
 	getAuthenticationHeadersIcon,
 	getHasAuthenticationHeaders,
+	getIsDistributionList,
 	getIsFromExternalDomain,
 	getIsSensitive,
 	getMailAuthenticationHeaderLabel,
@@ -325,5 +326,37 @@ describe('getMailAuthenticationHeaderLabel', () => {
 		};
 		const result = getMailAuthenticationHeaderLabel(t, authenticationHeaders);
 		expect(result).toBe('dkim=label.pass, spf=label.fail');
+	});
+});
+
+describe('getIsDistributionList', () => {
+	test('returns false when input is undefined', () => {
+		expect(getIsDistributionList(undefined)).toBe(false);
+	});
+
+	test('returns false when headers object is empty', () => {
+		expect(getIsDistributionList({})).toBe(false);
+	});
+
+	test('returns true when X-Zimbra-DL header is present', () => {
+		expect(getIsDistributionList({ 'X-Zimbra-DL': 'some-value' })).toBe(true);
+	});
+
+	test('returns true when List-ID header is present', () => {
+		expect(getIsDistributionList({ 'List-ID': 'some-value' })).toBe(true);
+	});
+
+	test('returns true when List-Unsubscribe header is present', () => {
+		expect(getIsDistributionList({ 'List-Unsubscribe': 'some-value' })).toBe(true);
+	});
+
+	test('returns true when multiple relevant headers are present', () => {
+		expect(
+			getIsDistributionList({
+				'X-Zimbra-DL': 'some-value',
+				'List-ID': 'some-value',
+				'List-Unsubscribe': 'some-value'
+			})
+		).toBe(true);
 	});
 });
