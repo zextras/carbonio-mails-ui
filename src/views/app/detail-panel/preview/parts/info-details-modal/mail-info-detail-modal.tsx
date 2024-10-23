@@ -43,20 +43,25 @@ export const MailInfoDetailModal: FC<MailInfoDetailModalProps> = ({
 			crossAlignment="flex-start"
 			height="fit"
 			data-testid="info-details-modal"
+			style={{ overflow: 'auto' }}
 		>
 			<ModalHeader
 				title={t('messages.modal.info_details.title', 'Message details')}
 				onClose={onClose}
 			/>
-			<MailGeneralInfoSubsection
-				messageIdFromMailHeaders={messageIdFromMailHeaders}
-				creationDateFromMailHeaders={creationDateFromMailHeaders}
-				isFromDistributionList={isFromDistributionList}
-				isFromExternalDomain={isFromExternalDomain}
-				sensitivityValue={sensitivityValue}
-			/>
-			<MailAuthenticationHeadersSubsection mailAuthenticationHeaders={mailAuthenticationHeaders} />
-			<SmimeSubsection signature={signature} />
+			<Container style={{ display: 'block', overflowY: 'scroll' }}>
+				<MailGeneralInfoSubsection
+					messageIdFromMailHeaders={messageIdFromMailHeaders}
+					creationDateFromMailHeaders={creationDateFromMailHeaders}
+					isFromDistributionList={isFromDistributionList}
+					isFromExternalDomain={isFromExternalDomain}
+					sensitivityValue={sensitivityValue}
+				/>
+				<MailAuthenticationHeadersSubsection
+					mailAuthenticationHeaders={mailAuthenticationHeaders}
+				/>
+				<SmimeSubsection signature={signature} />
+			</Container>
 			<ModalFooter
 				onConfirm={(): void => {
 					onClose();
