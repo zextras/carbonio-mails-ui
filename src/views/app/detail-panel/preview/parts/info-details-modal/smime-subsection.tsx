@@ -92,7 +92,6 @@ export const SmimeSubsection = ({ signature }: SmimeDetailsModalProps): React.JS
 		}
 	}, [signature?.messageCode, t]);
 
-	const headerLabel = t('messages.modal.smime.title', 'Certificate details');
 	if (!signature) return <></>;
 
 	return (
@@ -105,9 +104,6 @@ export const SmimeSubsection = ({ signature }: SmimeDetailsModalProps): React.JS
 			<Padding top={'large'} />
 			<Divider />
 			<Padding top={'large'} />
-			<Text weight="bold">{headerLabel}</Text>
-			<Padding top={'large'} />
-
 			<Row mainAlignment="flex-start" padding={{ top: 'small', bottom: 'small' }}>
 				<Icon
 					size="medium"
@@ -115,10 +111,9 @@ export const SmimeSubsection = ({ signature }: SmimeDetailsModalProps): React.JS
 					color={signedMsgDetails.iconColor}
 					style={{ alignSelf: 'center', paddingRight: '0.5rem' }}
 				/>
-				<Text weight="bold" size="small">
-					{signedMsgDetails.title}
-				</Text>
-			</Row>
+				<Text weight="bold">{signedMsgDetails.title}</Text>
+			</Row>{' '}
+			<Padding top={'large'} />
 			<Row mainAlignment="flex-start" padding={{ bottom: 'large' }}>
 				<Text size="small" overflow="break-word">
 					{signedMsgDetails.message}
