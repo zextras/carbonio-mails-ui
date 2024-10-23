@@ -14,6 +14,10 @@ import { MailInfoDetailModal } from './info-details-modal/mail-info-detail-modal
 import { MailAuthenticationHeaderIcon } from './mail-authentication-header-icon';
 import { MailSensitivityIcon } from './mail-sensitivity-icon';
 import { SmimeIcon } from './smime-icon';
+import {
+	getHasAuthenticationHeaders,
+	getIsSensitive
+} from '../../../../../normalizations/mail-header-utils';
 import { StoreProvider } from '../../../../../store/redux';
 import { IncompleteMessage } from '../../../../../types';
 
@@ -49,6 +53,19 @@ export const MailInfoBlock: FC<MailInfoProps> = ({ msg }): ReactElement => {
 			true
 		);
 	}, [closeModal, createModal, creationDateFromHeaders, messageIdFromHeaders, signature]);
+
+	const sensitive = getIsSensitive(msg?.sensitivity);
+
+	const hasAuthenticationHeaders = getHasAuthenticationHeaders(msg?.authenticationHeaders);
+
+	const showComponent =
+		signature ??
+		msg.isFromExternalDomain ??
+		sensitive ??
+		hasAuthenticationHeaders ??
+		msg.isFromDistributionList;
+
+	if (!showComponent) return <></>;
 
 	return (
 		<Container orientation="horizontal" padding={{ all: 'small' }} mainAlignment="flex-start">
