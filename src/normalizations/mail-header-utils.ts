@@ -129,12 +129,17 @@ export function getIsSensitive(sensitivity: MailSensitivityHeader | undefined): 
 export function getMailSensitivityIconColor(
 	sensitivity: MailSensitivityHeader | undefined
 ): string {
-	switch (sensitivity) {
-		case 'Personal':
+	if (!sensitivity) {
+		return 'warning';
+	}
+	const normalizedSensitivity = sensitivity.trim().toLowerCase();
+
+	switch (normalizedSensitivity) {
+		case 'personal':
 			return 'warning';
-		case 'Private':
+		case 'private':
 			return 'error';
-		case 'Company-Confidential':
+		case 'company-confidential':
 			return 'info';
 		default:
 			return 'warning';
@@ -145,12 +150,18 @@ export function getMailSensitivityLabel(
 	t: TFunction,
 	sensitivity: MailSensitivityHeader | undefined
 ): string {
-	switch (sensitivity) {
-		case 'Personal':
+	if (!sensitivity) {
+		return t('label.mail_sensitivity_unknown', 'Sensitivity Unknown');
+	}
+
+	const normalizedSensitivity = sensitivity.trim().toLowerCase();
+
+	switch (normalizedSensitivity) {
+		case 'personal':
 			return t('label.mail_sensitivity_personal', 'Sensitivity Personal');
-		case 'Private':
+		case 'private':
 			return t('label.mail_sensitivity_private', 'Sensitivity Private');
-		case 'Company-Confidential':
+		case 'company-confidential':
 			return t('label.mail_sensitivity_company_confidential', 'Sensitivity Company-Confidential');
 		default:
 			return t('label.mail_sensitivity_unknown', 'Sensitivity Unknown');
