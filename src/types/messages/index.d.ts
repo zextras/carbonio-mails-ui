@@ -6,7 +6,7 @@
 
 import type { MailsEditorV2 } from '../editor';
 import { Participant } from '../participant';
-import { SaveDraftResponse, MailSensitivityHeader } from '../soap';
+import { SaveDraftResponse, MailSensitivityHeader, MessageSignature } from '../soap';
 
 type MailAuthenticationHeader = { value?: string; pass?: boolean };
 
@@ -53,22 +53,6 @@ export type IncompleteMessage = {
 	messageIdFromMailHeaders: string;
 	creationDateFromMailHeaders: string;
 	isFromDistributionList: boolean;
-};
-
-export type MessageSignature = {
-	certificate: {
-		issuer: {
-			trusted?: boolean;
-			name: string;
-		};
-		email: string;
-		notBefore: number;
-		notAfter: number;
-	};
-	type?: string;
-	messageCode: string;
-	message: string;
-	valid: boolean;
 };
 
 export type MailMessagePart = {

@@ -25,18 +25,14 @@ const mockCloseModal = jest.fn();
 	closeModal: mockCloseModal
 });
 const validSignature = {
-	certificate: {
-		issuer: {
-			trusted: true,
-			name: 'Trusted CA'
-		},
-		email: 'user@example.com',
-		notBefore: 1697884800000,
-		notAfter: 1729420800000
-	},
-	type: 'smime',
+	type: 'S/MIME',
+	trusted: true,
+	issuer: 'Test Certificate data',
+	email: 'user1@demo.zextras.io',
+	notBefore: 1726312850000,
+	notAfter: 1760440850000,
+	message: 'valid issuer certificate',
 	messageCode: 'VALID',
-	message: 'Signature is valid.',
 	valid: true
 };
 const authenticationHeaders = {

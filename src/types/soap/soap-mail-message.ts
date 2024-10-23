@@ -33,16 +33,14 @@ export type SoapIncompleteMessage = {
 };
 
 export type MessageSignature = {
-	certificate: {
-		issuer: {
-			trusted: boolean;
-			name: string;
-		};
-		email: string;
-		notBefore: number;
-		notAfter: number;
-	};
+	email?: string;
+	issuer?: string;
 	message: string;
+	messageCode: string;
+	notBefore?: number;
+	notAfter?: number;
+	type?: string;
+	trusted?: boolean;
 	valid: boolean;
 };
 
