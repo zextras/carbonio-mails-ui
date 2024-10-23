@@ -160,7 +160,8 @@ export function getMailSensitivityLabel(
 export function getMessageIdFromMailHeaders(
 	headers: SoapIncompleteMessage['_attrs']
 ): string | undefined {
-	return headers?.['Message-Id'];
+	const messageId = headers?.['Message-Id'];
+	return messageId ? messageId.trim().replace(/^<|>$/g, '') : undefined;
 }
 
 export function getCreationDateFromMailHeaders(

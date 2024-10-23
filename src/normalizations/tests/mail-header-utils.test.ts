@@ -19,6 +19,7 @@ import {
 	getMailAuthenticationHeaderLabel,
 	getMailSensitivityIconColor,
 	getMailSensitivityLabel,
+	getMessageIdFromMailHeaders,
 	getSensitivityHeader
 } from '../mail-header-utils';
 
@@ -344,5 +345,36 @@ describe('getIsDistributionList', () => {
 				'List-Unsubscribe': 'some-value'
 			})
 		).toBe(true);
+	});
+});
+
+describe('getMessageIdFromMailHeaders', () => {
+	it('should return the message ID without angle brackets', () => {
+		const headers = { 'Message-Id': '<12345@example.com>' };
+		const result = getMessageIdFromMailHeaders(headers);
+		expect(result).toBe('12345@example.com');
+	});
+
+	it('should return the message ID as-is if there are no angle brackets', () => {
+		const headers = { 'Message-Id': '12345@example.com' };
+		const result = getMessageIdFromMailHeaders(headers);
+		expect(result).toBe('12345@example.com');
+	});
+
+	it('should return undefined if the headers do not contain Message-Id', () => {
+		const headers = { 'Other-Header': 'value' } as never;
+		const result = getMessageIdFromMailHeaders(headers);
+		expect(result).toBeUndefined();
+	});
+
+	it('should return undefined if the headers are undefined', () => {
+		const result = getMessageIdFromMailHeaders(undefined as never);
+		expect(result).toBeUndefined();
+	});
+
+	it('should handle extra spaces around angle brackets', () => {
+		const headers = { 'Message-Id': ' <12345@example.com> ' };
+		const result = getMessageIdFromMailHeaders(headers);
+		expect(result).toBe('12345@example.com');
 	});
 });
