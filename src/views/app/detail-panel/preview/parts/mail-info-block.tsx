@@ -8,6 +8,7 @@ import React, { FC, ReactElement, useCallback } from 'react';
 import { Container, Link, useModal } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
 
+import { DistributionListIcon } from './distribution-list-icon';
 import { ExternalDomainIcon } from './external-domain-icon';
 import { MailInfoDetailModal } from './info-details-modal/mail-info-detail-modal';
 import { MailAuthenticationHeaderIcon } from './mail-authentication-header-icon';
@@ -55,6 +56,7 @@ export const MailInfoBlock: FC<MailInfoProps> = ({ msg }): ReactElement => {
 			<ExternalDomainIcon fromExternalDomain={msg.isFromExternalDomain} />
 			<MailSensitivityIcon sensitivity={msg?.sensitivity} />
 			<MailAuthenticationHeaderIcon mailAuthenticationHeaders={msg?.authenticationHeaders} />
+			<DistributionListIcon isDistributionList={msg?.isDistributionList} />
 			<Link size="medium" onClick={onClick}>
 				{t('label.show_details', 'Show Details')}
 			</Link>
