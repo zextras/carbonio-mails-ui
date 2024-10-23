@@ -14,10 +14,6 @@ import { MailInfoDetailModal } from './info-details-modal/mail-info-detail-modal
 import { MailAuthenticationHeaderIcon } from './mail-authentication-header-icon';
 import { MailSensitivityIcon } from './mail-sensitivity-icon';
 import { SmimeIcon } from './smime-icon';
-import {
-	getHasAuthenticationHeaders,
-	getIsSensitive
-} from '../../../../../normalizations/mail-header-utils';
 import { StoreProvider } from '../../../../../store/redux';
 import { IncompleteMessage } from '../../../../../types';
 
@@ -32,59 +28,67 @@ export const MailInfoBlock: FC<MailInfoProps> = ({ msg }): ReactElement => {
 	const signature = msg?.signature?.[0];
 	const creationDateFromHeaders = msg?.creationDateFromMailHeaders;
 	const messageIdFromHeaders = msg?.messageIdFromMailHeaders;
+	const fromDistributionList = msg?.isFromDistributionList;
+	const fromExternalDomain = msg?.isFromExternalDomain;
+	const sensitivity = msg?.sensitivity;
+	const authenticationHeaders = msg?.authenticationHeaders;
 
-	const onClick = useCallback(() => {
-		const modalId = 'mail-details-modal';
-		createModal(
-			{
-				id: modalId,
-				maxHeight: '90vh',
-				children: (
-					<StoreProvider>
-						<MailInfoDetailModal
-							onClose={(): void => closeModal(modalId)}
-							signature={signature}
-							creationDateFromMailHeaders={creationDateFromHeaders}
-							messageIdFromMailHeaders={messageIdFromHeaders}
-							isFromDistributionList={msg?.isFromDistributionList}
-							isFromExternalDomain={msg?.isFromExternalDomain}
-						/>
-					</StoreProvider>
-				)
-			},
-			true
-		);
-	}, [
-		closeModal,
-		createModal,
-		creationDateFromHeaders,
-		messageIdFromHeaders,
-		msg?.isFromDistributionList,
-		msg?.isFromExternalDomain,
-		signature
-	]);
+	const showMailDetailsModal = useCallback(
+		(event: React.MouseEvent): void => {
+			event.stopPropagation();
 
-	const sensitive = getIsSensitive(msg?.sensitivity);
+			const modalId = 'mail-details-modal';
+			createModal(
+				{
+					id: modalId,
+					maxHeight: '90vh',
+					children: (
+						<StoreProvider>
+							<MailInfoDetailModal
+								onClose={() => closeModal(modalId)}
+								signature={signature}
+								creationDateFromMailHeaders={creationDateFromHeaders}
+								messageIdFromMailHeaders={messageIdFromHeaders}
+								isFromDistributionList={fromDistributionList}
+								isFromExternalDomain={fromExternalDomain}
+							/>
+						</StoreProvider>
+					)
+				},
+				true
+			);
+		},
+		[
+			closeModal,
+			createModal,
+			creationDateFromHeaders,
+			messageIdFromHeaders,
+			fromDistributionList,
+			fromExternalDomain,
+			signature
+		]
+	);
 
-	const hasAuthenticationHeaders = getHasAuthenticationHeaders(msg?.authenticationHeaders);
-
-	const showComponent =
-		signature ??
-		msg.isFromExternalDomain ??
-		sensitive ??
-		hasAuthenticationHeaders ??
-		msg.isFromDistributionList;
-
-	if (!showComponent) return <></>;
+	if (
+		!messageIdFromHeaders &&
+		!creationDateFromHeaders &&
+		!signature &&
+		!fromExternalDomain &&
+		!sensitivity &&
+		!authenticationHeaders &&
+		!fromDistributionList
+	) {
+		return <></>;
+	}
 
 	return (
 		<Container orientation="horizontal" padding={{ all: 'small' }} mainAlignment="flex-start">
 			<SmimeIcon signature={signature} />
-			<ExternalDomainIcon fromExternalDomain={msg.isFromExternalDomain} />
-			<MailSensitivityIcon sensitivity={msg?.sensitivity} />
-			<MailAuthenticationHeaderIcon mailAuthenticationHeaders={msg?.authenticationHeaders} />
-			<DistributionListIcon isDistributionList={msg?.isFromDistributionList} />
-			<Link size="medium" onClick={onClick}>
+			<ExternalDomainIcon fromExternalDomain={fromExternalDomain} />
+			<MailSensitivityIcon sensitivity={sensitivity} />
+			<MailAuthenticationHeaderIcon mailAuthenticationHeaders={authenticationHeaders} />
+			<DistributionListIcon isDistributionList={fromDistributionList} />
+			<Link size="medium" onClick={showMailDetailsModal}>
 				{t('label.show_details', 'Show Details')}
 			</Link>
 		</Container>
