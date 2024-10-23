@@ -22,7 +22,7 @@ export const DistributionListIcon = ({
 			<Row>
 				<Icon
 					size="medium"
-					icon={'MailStatusOutline'}
+					icon={'DistributionListOutline'}
 					color="warning"
 					style={{ paddingRight: '0.5rem' }}
 					data-testid="distribution-list-icon"
