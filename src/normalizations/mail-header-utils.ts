@@ -5,7 +5,7 @@
  */
 
 import { TFunction } from 'i18next';
-import { includes, trim } from 'lodash';
+import { includes, isEmpty, trim } from 'lodash';
 
 import { PRIVATE_SENSITIVITY_HEADERS, VALID_MAIL_AUTHENTICATION_HEADERS } from '../constants';
 import {
@@ -43,6 +43,7 @@ export function getAuthenticationHeaders(
 	headers: SoapIncompleteMessage['_attrs']
 ): MailAuthenticationHeaders {
 	const authenticationHeadersArray = headers?.['Authentication-Results']?.split(';');
+	if (!authenticationHeadersArray || isEmpty(authenticationHeadersArray)) return {};
 	const dkimValue = trimAndCheck(findHeader(authenticationHeadersArray, /dkim=/));
 	const dkimPass = !!dkimValue && /dkim=pass/i.exec(dkimValue);
 

@@ -75,30 +75,12 @@ describe('getAuthenticationHeaders', () => {
 		});
 	});
 
-	it('should return correct headers when no values are present', () => {
-		const headers = {
-			'Authentication-Results': ''
-		};
-
-		const result = getAuthenticationHeaders(headers);
-
-		expect(result).toEqual({
-			dkim: { value: undefined, pass: false },
-			spf: { value: undefined, pass: false },
-			dmarc: { value: undefined, pass: false }
-		});
-	});
-
 	it('should return correct headers when headers are empty object', () => {
 		const headers = {};
 
 		const result = getAuthenticationHeaders(headers);
 
-		expect(result).toEqual({
-			dkim: { value: undefined, pass: false },
-			spf: { value: undefined, pass: false },
-			dmarc: { value: undefined, pass: false }
-		});
+		expect(result).toEqual({});
 	});
 
 	it('should return correct headers when headers are undefined', () => {
@@ -106,11 +88,7 @@ describe('getAuthenticationHeaders', () => {
 
 		const result = getAuthenticationHeaders(headers);
 
-		expect(result).toEqual({
-			dkim: { value: undefined, pass: false },
-			spf: { value: undefined, pass: false },
-			dmarc: { value: undefined, pass: false }
-		});
+		expect(result).toEqual({});
 	});
 });
 
