@@ -56,7 +56,7 @@ export const MailInfoBlock: FC<MailInfoProps> = ({ msg }): ReactElement => {
 			<ExternalDomainIcon fromExternalDomain={msg.isFromExternalDomain} />
 			<MailSensitivityIcon sensitivity={msg?.sensitivity} />
 			<MailAuthenticationHeaderIcon mailAuthenticationHeaders={msg?.authenticationHeaders} />
-			<DistributionListIcon isDistributionList={msg?.isDistributionList} />
+			<DistributionListIcon isDistributionList={msg?.isFromDistributionList} />
 			<Link size="medium" onClick={onClick}>
 				{t('label.show_details', 'Show Details')}
 			</Link>

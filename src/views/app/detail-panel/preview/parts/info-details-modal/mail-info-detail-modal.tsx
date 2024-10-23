@@ -21,6 +21,7 @@ type MailInfoDetailModalProps = {
 	messageIdFromMailHeaders?: string;
 	creationDateFromMailHeaders?: string;
 	mailAuthenticationHeaders?: IncompleteMessage['authenticationHeaders'];
+	isFromDistributionList?: IncompleteMessage['isFromDistributionList'];
 };
 
 export const MailInfoDetailModal: FC<MailInfoDetailModalProps> = ({
@@ -28,7 +29,8 @@ export const MailInfoDetailModal: FC<MailInfoDetailModalProps> = ({
 	signature,
 	messageIdFromMailHeaders,
 	creationDateFromMailHeaders,
-	mailAuthenticationHeaders
+	mailAuthenticationHeaders,
+	isFromDistributionList
 }) => {
 	const [t] = useTranslation();
 	return (
@@ -45,6 +47,7 @@ export const MailInfoDetailModal: FC<MailInfoDetailModalProps> = ({
 			<MailGeneralInfoSubsection
 				messageIdFromMailHeaders={messageIdFromMailHeaders}
 				creationDateFromMailHeaders={creationDateFromMailHeaders}
+				isFromDistributionList={isFromDistributionList}
 			/>
 			<MailAuthenticationHeadersSubsection mailAuthenticationHeaders={mailAuthenticationHeaders} />
 			<SmimeSubsection signature={signature} />

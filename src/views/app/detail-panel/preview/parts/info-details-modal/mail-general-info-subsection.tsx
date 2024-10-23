@@ -11,11 +11,13 @@ import { useTranslation } from 'react-i18next';
 type MailGeneralInfoSubsectionProps = {
 	messageIdFromMailHeaders: string | undefined;
 	creationDateFromMailHeaders: string | undefined;
+	isFromDistributionList: boolean | undefined;
 };
 
 export const MailGeneralInfoSubsection = ({
 	messageIdFromMailHeaders,
-	creationDateFromMailHeaders
+	creationDateFromMailHeaders,
+	isFromDistributionList
 }: MailGeneralInfoSubsectionProps): React.JSX.Element => {
 	const [t] = useTranslation();
 
@@ -48,6 +50,13 @@ export const MailGeneralInfoSubsection = ({
 					<Padding right={'medium'} />
 					<Text overflow={'break-word'} size="small">
 						{creationDateFromMailHeaders}
+					</Text>
+				</Row>
+			)}
+			{isFromDistributionList && (
+				<Row mainAlignment="flex-start" padding={{ top: 'small', bottom: 'small' }}>
+					<Text weight="bold" size="small">
+						{t('messages.modal.distribution_list', 'From Distribution List')}
 					</Text>
 				</Row>
 			)}

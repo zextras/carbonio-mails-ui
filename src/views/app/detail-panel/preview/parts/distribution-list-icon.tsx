@@ -13,7 +13,7 @@ import { IncompleteMessage } from '../../../../../types';
 export const DistributionListIcon = ({
 	isDistributionList
 }: {
-	isDistributionList: IncompleteMessage['isDistributionList'] | undefined;
+	isDistributionList: IncompleteMessage['isFromDistributionList'] | undefined;
 }): React.JSX.Element => {
 	const [t] = useTranslation();
 	if (!isDistributionList) return <></>;

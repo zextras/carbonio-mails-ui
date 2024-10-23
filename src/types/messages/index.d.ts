@@ -52,7 +52,7 @@ export type IncompleteMessage = {
 	sensitivity: MailSensitivityHeader;
 	messageIdFromMailHeaders: string;
 	creationDateFromMailHeaders: string;
-	isDistributionList: boolean;
+	isFromDistributionList: boolean;
 };
 
 export type MessageSignature = {

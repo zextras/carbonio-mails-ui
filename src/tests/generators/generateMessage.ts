@@ -157,7 +157,7 @@ const generateMessage = ({
 	sensitivity,
 	messageIdFromMailHeaders,
 	creationDateFromMailHeaders,
-	isDistributionList: false
+	isFromDistributionList: false
 });
 
 export { MessageGenerationParams, generateMessage };
