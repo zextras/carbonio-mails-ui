@@ -13,13 +13,15 @@ type MailGeneralInfoSubsectionProps = {
 	creationDateFromMailHeaders: string | undefined;
 	isFromDistributionList: boolean | undefined;
 	isFromExternalDomain: boolean | undefined;
+	sensitivityValue: string | undefined;
 };
 
 export const MailGeneralInfoSubsection = ({
 	messageIdFromMailHeaders,
 	creationDateFromMailHeaders,
 	isFromDistributionList,
-	isFromExternalDomain
+	isFromExternalDomain,
+	sensitivityValue
 }: MailGeneralInfoSubsectionProps): React.JSX.Element => {
 	const [t] = useTranslation();
 	const headerLabel = t('messages.modal.mail_general_info.title', 'General Information');
@@ -28,7 +30,8 @@ export const MailGeneralInfoSubsection = ({
 		!messageIdFromMailHeaders &&
 		!creationDateFromMailHeaders &&
 		!isFromDistributionList &&
-		!isFromExternalDomain
+		!isFromExternalDomain &&
+		!sensitivityValue
 	) {
 		return <></>;
 	}
@@ -62,6 +65,17 @@ export const MailGeneralInfoSubsection = ({
 					<Padding right={'medium'} />
 					<Text overflow={'break-word'} size="small">
 						{creationDateFromMailHeaders}
+					</Text>
+				</Row>
+			)}
+			{sensitivityValue && (
+				<Row mainAlignment="flex-start" padding={{ top: 'small', bottom: 'small' }}>
+					<Text weight="bold" size="small">
+						{t('messages.modal.mail_info.message_sensitivity', 'Sensitivity:')}
+					</Text>
+					<Padding right={'medium'} />
+					<Text overflow={'break-word'} size="small">
+						{sensitivityValue}
 					</Text>
 				</Row>
 			)}

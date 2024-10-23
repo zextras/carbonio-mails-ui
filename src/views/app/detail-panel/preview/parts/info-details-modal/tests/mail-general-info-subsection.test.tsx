@@ -21,6 +21,7 @@ describe('MailInfoSubsection', () => {
 				creationDateFromMailHeaders={creationDateFromMailHeaders}
 				isFromDistributionList
 				isFromExternalDomain
+				sensitivityValue={'Private'}
 			/>
 		);
 		expect(screen.getByTestId('mail-info-subsection')).toBeInTheDocument();
@@ -39,6 +40,7 @@ describe('MailInfoSubsection', () => {
 				creationDateFromMailHeaders={undefined}
 				isFromDistributionList={undefined}
 				isFromExternalDomain={undefined}
+				sensitivityValue={undefined}
 			/>
 		);
 		expect(screen.queryByTestId('mail-info-subsection')).not.toBeInTheDocument();
@@ -53,6 +55,7 @@ describe('MailInfoSubsection', () => {
 				creationDateFromMailHeaders={undefined}
 				isFromDistributionList={false}
 				isFromExternalDomain={false}
+				sensitivityValue={'Private'}
 			/>
 		);
 		expect(screen.getByText('Message ID:')).toBeInTheDocument();
@@ -66,6 +69,7 @@ describe('MailInfoSubsection', () => {
 				creationDateFromMailHeaders={'2021-01-01'}
 				isFromDistributionList={false}
 				isFromExternalDomain={false}
+				sensitivityValue={'Private'}
 			/>
 		);
 		expect(screen.queryByText('Message ID:')).not.toBeInTheDocument();
@@ -79,6 +83,7 @@ describe('MailInfoSubsection', () => {
 				creationDateFromMailHeaders={'2021-01-01'}
 				isFromDistributionList={false}
 				isFromExternalDomain={false}
+				sensitivityValue={'Private'}
 			/>
 		);
 		expect(screen.getByTestId('mail-info-subsection')).toBeInTheDocument();
