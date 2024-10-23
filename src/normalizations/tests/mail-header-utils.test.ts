@@ -37,11 +37,11 @@ describe('getIsFromExternalDomain', () => {
 		expect(result).toBe(true);
 	});
 
-	it('should return true when the From address is missing from the headers', () => {
+	it('should return false when the From address is missing from the headers', () => {
 		const headers = {};
 		const ownerAccount = 'owner@domain.com';
 		const result = getIsFromExternalDomain(headers, ownerAccount);
-		expect(result).toBe(true);
+		expect(result).toBe(false);
 	});
 });
 
@@ -205,6 +205,14 @@ describe('getAuthenticationHeadersIcon', () => {
 describe('getIsSensitive', () => {
 	it('returns false for Personal', () => {
 		expect(getIsSensitive(MAIL_SENSITIVITY_HEADER.personal)).toBe(false);
+	});
+
+	it('returns false for Personal in lowercase', () => {
+		expect(getIsSensitive('personal' as never)).toBe(false);
+	});
+
+	it('returns true for Private in mixed case', () => {
+		expect(getIsSensitive('pRiVate' as never)).toBe(true);
 	});
 
 	it('returns true for Private', () => {

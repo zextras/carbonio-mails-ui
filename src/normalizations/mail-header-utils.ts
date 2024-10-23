@@ -24,6 +24,9 @@ export function getIsFromExternalDomain(
 	ownerAccount: string
 ): boolean {
 	const fromAddress = headers?.From;
+	if (isEmpty(fromAddress)) {
+		return false;
+	}
 	const ownerDomain = getDomainFromEmail(ownerAccount);
 	return !includes(fromAddress, ownerDomain);
 }
@@ -116,7 +119,11 @@ export function getAuthenticationHeadersIcon(
 
 export function getIsSensitive(sensitivity: MailSensitivityHeader | undefined): boolean {
 	if (!sensitivity) return false;
-	return PRIVATE_SENSITIVITY_HEADERS.includes(sensitivity);
+
+	const lowerCaseSensitivity = sensitivity.toLowerCase();
+	return PRIVATE_SENSITIVITY_HEADERS.some(
+		(header) => header.toLowerCase() === lowerCaseSensitivity
+	);
 }
 
 export function getMailSensitivityIconColor(
@@ -148,6 +155,18 @@ export function getMailSensitivityLabel(
 		default:
 			return t('label.mail_sensitivity_unknown', 'Sensitivity Unknown');
 	}
+}
+
+export function getMessageIdFromMailHeaders(
+	headers: SoapIncompleteMessage['_attrs']
+): string | undefined {
+	return headers?.['Message-Id'];
+}
+
+export function getCreationDateFromMailHeaders(
+	headers: SoapIncompleteMessage['_attrs']
+): string | undefined {
+	return headers?.Date;
 }
 
 export function getIsDistributionList(headers: SoapIncompleteMessage['_attrs']): boolean {
