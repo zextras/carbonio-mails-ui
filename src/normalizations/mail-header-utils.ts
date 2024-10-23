@@ -153,5 +153,5 @@ export function getIsDistributionList(headers: SoapIncompleteMessage['_attrs']):
 	const zimbraDL = headers?.['X-Zimbra-DL'];
 	const listId = headers?.['List-ID'];
 	const listUnsubscribe = headers?.['List-Unsubscribe'];
-	return !!(zimbraDL || listId || listUnsubscribe);
+	return !!(zimbraDL ?? listId ?? listUnsubscribe);
 }
