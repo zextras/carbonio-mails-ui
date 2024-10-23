@@ -24,6 +24,15 @@ export const MailGeneralInfoSubsection = ({
 	const [t] = useTranslation();
 	const headerLabel = t('messages.modal.mail_general_info.title', 'General Information');
 
+	if (
+		!messageIdFromMailHeaders &&
+		!creationDateFromMailHeaders &&
+		!isFromDistributionList &&
+		!isFromExternalDomain
+	) {
+		return <></>;
+	}
+
 	return (
 		<Container
 			mainAlignment="flex-start"

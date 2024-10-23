@@ -20,6 +20,7 @@ describe('MailInfoSubsection', () => {
 				messageIdFromMailHeaders={messageIdFromMailHeaders}
 				creationDateFromMailHeaders={creationDateFromMailHeaders}
 				isFromDistributionList
+				isFromExternalDomain
 			/>
 		);
 		expect(screen.getByTestId('mail-info-subsection')).toBeInTheDocument();
@@ -32,13 +33,12 @@ describe('MailInfoSubsection', () => {
 	});
 
 	it('returns empty fragment when both messageIdFromMailHeaders and creationDateFromMailHeaders are undefined', () => {
-		const messageIdFromMailHeaders = undefined;
-		const creationDateFromMailHeaders = undefined;
 		setupTest(
 			<MailGeneralInfoSubsection
-				messageIdFromMailHeaders={messageIdFromMailHeaders}
-				creationDateFromMailHeaders={creationDateFromMailHeaders}
-				isFromDistributionList
+				messageIdFromMailHeaders={undefined}
+				creationDateFromMailHeaders={undefined}
+				isFromDistributionList={undefined}
+				isFromExternalDomain={undefined}
 			/>
 		);
 		expect(screen.queryByTestId('mail-info-subsection')).not.toBeInTheDocument();
@@ -47,13 +47,12 @@ describe('MailInfoSubsection', () => {
 	});
 
 	it('does not display the line title when the creation date value is not provided', () => {
-		const messageIdFromMailHeaders = '12345';
-		const creationDateFromMailHeaders = undefined;
 		setupTest(
 			<MailGeneralInfoSubsection
-				messageIdFromMailHeaders={messageIdFromMailHeaders}
-				creationDateFromMailHeaders={creationDateFromMailHeaders}
+				messageIdFromMailHeaders={'12345'}
+				creationDateFromMailHeaders={undefined}
 				isFromDistributionList={false}
+				isFromExternalDomain={false}
 			/>
 		);
 		expect(screen.getByText('Message ID:')).toBeInTheDocument();
@@ -61,13 +60,12 @@ describe('MailInfoSubsection', () => {
 	});
 
 	it('does not display the line title when the message id value is not provided', () => {
-		const messageIdFromMailHeaders = undefined;
-		const creationDateFromMailHeaders = '2021-01-01';
 		setupTest(
 			<MailGeneralInfoSubsection
-				messageIdFromMailHeaders={messageIdFromMailHeaders}
-				creationDateFromMailHeaders={creationDateFromMailHeaders}
+				messageIdFromMailHeaders={undefined}
+				creationDateFromMailHeaders={'2021-01-01'}
 				isFromDistributionList={false}
+				isFromExternalDomain={false}
 			/>
 		);
 		expect(screen.queryByText('Message ID:')).not.toBeInTheDocument();
@@ -75,13 +73,12 @@ describe('MailInfoSubsection', () => {
 	});
 
 	it('does not display the distribuiton list information when the value is not false', () => {
-		const messageIdFromMailHeaders = undefined;
-		const creationDateFromMailHeaders = '2021-01-01';
 		setupTest(
 			<MailGeneralInfoSubsection
-				messageIdFromMailHeaders={messageIdFromMailHeaders}
-				creationDateFromMailHeaders={creationDateFromMailHeaders}
+				messageIdFromMailHeaders={undefined}
+				creationDateFromMailHeaders={'2021-01-01'}
 				isFromDistributionList={false}
+				isFromExternalDomain={false}
 			/>
 		);
 		expect(screen.getByTestId('mail-info-subsection')).toBeInTheDocument();
