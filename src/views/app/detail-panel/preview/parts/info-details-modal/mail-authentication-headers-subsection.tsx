@@ -5,7 +5,7 @@
  */
 import React from 'react';
 
-import { FormSubSection, Padding, Row, Text } from '@zextras/carbonio-design-system';
+import { Container, Divider, Padding, Row, Text } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
 
 import { getHasAuthenticationHeaders } from '../../../../../../normalizations/mail-header-utils';
@@ -23,14 +23,23 @@ export const MailAuthenticationHeadersSubsection = ({
 
 	if (!hasAuthenticationHeaders) return <></>;
 
+	const headerLabel = t(
+		'messages.modal.mail_authentication_headers.title',
+		'Authentication Headers'
+	);
+
 	return (
-		<FormSubSection
-			label={t('messages.modal.mail_authentication_headers.title', 'Authentication Headers')}
+		<Container
 			mainAlignment="flex-start"
 			orientation="vertical"
 			crossAlignment="flex-start"
 			data-testid="mail-info-subsection"
 		>
+			<Padding top={'large'} />
+			<Divider />
+			<Padding top={'large'} />
+			<Text weight="bold">{headerLabel}</Text>
+			<Padding top={'large'} />
 			{mailAuthenticationHeaders?.dkim && (
 				<Row mainAlignment="flex-start" padding={{ top: 'small', bottom: 'small' }}>
 					<Text weight="bold" size="small">
@@ -64,6 +73,6 @@ export const MailAuthenticationHeadersSubsection = ({
 					</Text>
 				</Row>
 			)}
-		</FormSubSection>
+		</Container>
 	);
 };

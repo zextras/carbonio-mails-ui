@@ -5,7 +5,7 @@
  */
 import React from 'react';
 
-import { FormSubSection, Padding, Row, Text } from '@zextras/carbonio-design-system';
+import { Container, Padding, Row, Text } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
 
 type MailGeneralInfoSubsectionProps = {
@@ -20,17 +20,19 @@ export const MailGeneralInfoSubsection = ({
 	isFromDistributionList
 }: MailGeneralInfoSubsectionProps): React.JSX.Element => {
 	const [t] = useTranslation();
-
+	const headerLabel = t('messages.modal.mail_general_info.title', 'General Information');
 	if (!messageIdFromMailHeaders && !creationDateFromMailHeaders) return <></>;
 
 	return (
-		<FormSubSection
-			label={t('messages.modal.mail_general_info.title', 'General Information')}
+		<Container
 			mainAlignment="flex-start"
 			orientation="vertical"
 			crossAlignment="flex-start"
 			data-testid="mail-info-subsection"
 		>
+			<Padding top={'large'} />
+			<Text weight="bold">{headerLabel}</Text>
+			<Padding top={'large'} />
 			{messageIdFromMailHeaders && (
 				<Row mainAlignment="flex-start" padding={{ top: 'small', bottom: 'small' }}>
 					<Text weight="bold" size="small">
@@ -60,6 +62,6 @@ export const MailGeneralInfoSubsection = ({
 					</Text>
 				</Row>
 			)}
-		</FormSubSection>
+		</Container>
 	);
 };

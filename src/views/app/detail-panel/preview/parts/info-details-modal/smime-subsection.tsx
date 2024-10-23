@@ -5,7 +5,7 @@
  */
 import React, { useMemo } from 'react';
 
-import { FormSubSection, Icon, Row, Text } from '@zextras/carbonio-design-system';
+import { Container, Divider, Icon, Padding, Row, Text } from '@zextras/carbonio-design-system';
 import moment from 'moment';
 import { useTranslation } from 'react-i18next';
 
@@ -92,16 +92,22 @@ export const SmimeSubsection = ({ signature }: SmimeDetailsModalProps): React.JS
 		}
 	}, [signature?.messageCode, t]);
 
+	const headerLabel = t('messages.modal.smime.title', 'Certificate details');
 	if (!signature) return <></>;
 
 	return (
-		<FormSubSection
-			label={t('messages.modal.smime.title', 'Certificate details')}
+		<Container
 			mainAlignment="flex-start"
 			orientation="vertical"
 			crossAlignment="flex-start"
-			data-testid="smime-subsection"
+			data-testid="mail-info-subsection"
 		>
+			<Padding top={'large'} />
+			<Divider />
+			<Padding top={'large'} />
+			<Text weight="bold">{headerLabel}</Text>
+			<Padding top={'large'} />
+
 			<Row mainAlignment="flex-start" padding={{ top: 'small', bottom: 'small' }}>
 				<Icon
 					size="medium"
@@ -139,6 +145,6 @@ export const SmimeSubsection = ({ signature }: SmimeDetailsModalProps): React.JS
 					{moment(signature.certificate.notAfter).format('DD/MM/YYYY HH:MM')}
 				</Text>
 			</Row>
-		</FormSubSection>
+		</Container>
 	);
 };
