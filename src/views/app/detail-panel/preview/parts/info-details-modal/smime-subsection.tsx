@@ -101,9 +101,9 @@ export const SmimeSubsection = ({ signature }: SmimeDetailsModalProps): React.JS
 			crossAlignment="flex-start"
 			data-testid="mail-info-subsection"
 		>
-			<Padding top={'large'} />
+			<Padding top={'medium'} />
 			<Divider />
-			<Padding top={'large'} />
+			<Padding top={'medium'} />
 			<Row mainAlignment="flex-start" padding={{ top: 'small', bottom: 'small' }}>
 				<Icon
 					size="medium"
@@ -113,7 +113,7 @@ export const SmimeSubsection = ({ signature }: SmimeDetailsModalProps): React.JS
 				/>
 				<Text weight="bold">{signedMsgDetails.title}</Text>
 			</Row>{' '}
-			<Padding top={'large'} />
+			<Padding top={'medium'} />
 			<Row mainAlignment="flex-start" padding={{ bottom: 'large' }}>
 				<Text size="small" overflow="break-word">
 					{signedMsgDetails.message}

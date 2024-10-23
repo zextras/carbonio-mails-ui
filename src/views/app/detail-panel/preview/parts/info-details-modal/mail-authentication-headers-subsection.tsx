@@ -39,9 +39,9 @@ export const MailAuthenticationHeadersSubsection = ({
 			crossAlignment="flex-start"
 			data-testid="mail-info-subsection"
 		>
-			<Padding top={'large'} />
+			<Padding top={'medium'} />
 			<Divider />
-			<Padding top={'large'} />
+			<Padding top={'medium'} />
 			<Row mainAlignment="flex-start" padding={{ top: 'small', bottom: 'small' }}>
 				<Icon
 					size="medium"
@@ -50,7 +50,7 @@ export const MailAuthenticationHeadersSubsection = ({
 				/>
 				<Text weight="bold">{headerLabel}</Text>
 			</Row>
-			<Padding top={'large'} />
+			<Padding top={'medium'} />
 			{mailAuthenticationHeaders?.dkim && (
 				<Row mainAlignment="flex-start" padding={{ top: 'small', bottom: 'small' }}>
 					<Text weight="bold" size="small">

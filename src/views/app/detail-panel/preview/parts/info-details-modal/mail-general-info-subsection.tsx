@@ -43,7 +43,7 @@ export const MailGeneralInfoSubsection = ({
 			crossAlignment="flex-start"
 			data-testid="mail-info-subsection"
 		>
-			<Padding top={'large'} />
+			<Padding top={'medium'} />
 			<Row mainAlignment="flex-start" padding={{ top: 'small', bottom: 'small' }}>
 				<Icon
 					size="medium"
@@ -52,7 +52,7 @@ export const MailGeneralInfoSubsection = ({
 				/>
 				<Text weight="bold">{headerLabel}</Text>
 			</Row>
-			<Padding top={'large'} />
+			<Padding top={'medium'} />
 			{messageIdFromMailHeaders && (
 				<Row mainAlignment="flex-start" padding={{ top: 'small', bottom: 'small' }}>
 					<Text weight="bold" size="small">
