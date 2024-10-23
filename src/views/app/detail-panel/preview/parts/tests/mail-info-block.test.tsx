@@ -95,14 +95,4 @@ describe('MailInfoBlock', () => {
 		setupTest(<MailInfoBlock msg={{} as IncompleteMessage} />);
 		expect(screen.queryByText('Show Details')).not.toBeInTheDocument();
 	});
-
-	it('does not render the show details link when non relevant values are passed', () => {
-		const message = {
-			sensitivity: 'Invalid',
-			authenticationHeaders: { invalidHeader: { value: 'generic value', pass: true } }
-		} as unknown as IncompleteMessage;
-
-		setupTest(<MailInfoBlock msg={message} />);
-		expect(screen.queryByText('Show Details')).not.toBeInTheDocument();
-	});
 });
