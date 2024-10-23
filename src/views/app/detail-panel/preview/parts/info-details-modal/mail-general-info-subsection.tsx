@@ -12,16 +12,17 @@ type MailGeneralInfoSubsectionProps = {
 	messageIdFromMailHeaders: string | undefined;
 	creationDateFromMailHeaders: string | undefined;
 	isFromDistributionList: boolean | undefined;
+	isFromExternalDomain: boolean | undefined;
 };
 
 export const MailGeneralInfoSubsection = ({
 	messageIdFromMailHeaders,
 	creationDateFromMailHeaders,
-	isFromDistributionList
+	isFromDistributionList,
+	isFromExternalDomain
 }: MailGeneralInfoSubsectionProps): React.JSX.Element => {
 	const [t] = useTranslation();
 	const headerLabel = t('messages.modal.mail_general_info.title', 'General Information');
-	if (!messageIdFromMailHeaders && !creationDateFromMailHeaders) return <></>;
 
 	return (
 		<Container
@@ -59,6 +60,13 @@ export const MailGeneralInfoSubsection = ({
 				<Row mainAlignment="flex-start" padding={{ top: 'small', bottom: 'small' }}>
 					<Text weight="bold" size="small">
 						{t('messages.modal.distribution_list', 'From Distribution List')}
+					</Text>
+				</Row>
+			)}
+			{isFromExternalDomain && (
+				<Row mainAlignment="flex-start" padding={{ top: 'small', bottom: 'small' }}>
+					<Text weight="bold" size="small">
+						{t('messages.modal.external_domain', 'The sender is from an external domain')}
 					</Text>
 				</Row>
 			)}

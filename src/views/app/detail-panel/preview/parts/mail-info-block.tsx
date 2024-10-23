@@ -46,13 +46,23 @@ export const MailInfoBlock: FC<MailInfoProps> = ({ msg }): ReactElement => {
 							signature={signature}
 							creationDateFromMailHeaders={creationDateFromHeaders}
 							messageIdFromMailHeaders={messageIdFromHeaders}
+							isFromDistributionList={msg?.isFromDistributionList}
+							isFromExternalDomain={msg?.isFromExternalDomain}
 						/>
 					</StoreProvider>
 				)
 			},
 			true
 		);
-	}, [closeModal, createModal, creationDateFromHeaders, messageIdFromHeaders, signature]);
+	}, [
+		closeModal,
+		createModal,
+		creationDateFromHeaders,
+		messageIdFromHeaders,
+		msg?.isFromDistributionList,
+		msg?.isFromExternalDomain,
+		signature
+	]);
 
 	const sensitive = getIsSensitive(msg?.sensitivity);
 
