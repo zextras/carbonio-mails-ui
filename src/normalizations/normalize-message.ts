@@ -28,8 +28,10 @@ import {
 } from '../types';
 import {
 	getAuthenticationHeaders,
+	getCreationDateFromMailHeaders,
 	getIsDistributionList,
 	getIsFromExternalDomain,
+	getMessageIdFromMailHeaders,
 	getSensitivityHeader
 } from './mail-header-utils';
 
@@ -375,9 +377,9 @@ export const normalizeMailMessageFromSoap = (
 			isFromExternalDomain: getIsFromExternalDomain(m._attrs, ownerAccount),
 			authenticationHeaders: getAuthenticationHeaders(m._attrs),
 			sensitivity: getSensitivityHeader(m._attrs),
-			messageIdFromMailHeaders: m?._attrs?.['Message-Id'],
-			creationDateFromMailHeaders: m?._attrs?.Date,
-			isDistribuitionList: getIsDistributionList(m._attrs)
+			messageIdFromMailHeaders: getMessageIdFromMailHeaders(m._attrs),
+			creationDateFromMailHeaders: getCreationDateFromMailHeaders(m._attrs),
+			isDistributionList: getIsDistributionList(m._attrs)
 		},
 		isNil
 	);
