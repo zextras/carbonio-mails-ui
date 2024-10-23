@@ -5,10 +5,13 @@
  */
 import React from 'react';
 
-import { Container, Divider, Padding, Row, Text } from '@zextras/carbonio-design-system';
+import { Container, Divider, Icon, Padding, Row, Text } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
 
-import { getHasAuthenticationHeaders } from '../../../../../../normalizations/mail-header-utils';
+import {
+	getAuthenticationHeadersIcon,
+	getHasAuthenticationHeaders
+} from '../../../../../../normalizations/mail-header-utils';
 import { IncompleteMessage } from '../../../../../../types';
 
 type MailGeneralInfoSubsectionProps = {
@@ -20,6 +23,7 @@ export const MailAuthenticationHeadersSubsection = ({
 }: MailGeneralInfoSubsectionProps): React.JSX.Element => {
 	const [t] = useTranslation();
 	const hasAuthenticationHeaders = getHasAuthenticationHeaders(mailAuthenticationHeaders);
+	const authenticationHeadersIcon = getAuthenticationHeadersIcon(mailAuthenticationHeaders);
 
 	if (!hasAuthenticationHeaders) return <></>;
 
@@ -38,7 +42,14 @@ export const MailAuthenticationHeadersSubsection = ({
 			<Padding top={'large'} />
 			<Divider />
 			<Padding top={'large'} />
-			<Text weight="bold">{headerLabel}</Text>
+			<Row mainAlignment="flex-start" padding={{ top: 'small', bottom: 'small' }}>
+				<Icon
+					size="medium"
+					icon={authenticationHeadersIcon}
+					style={{ alignSelf: 'center', paddingRight: '0.5rem' }}
+				/>
+				<Text weight="bold">{headerLabel}</Text>
+			</Row>
 			<Padding top={'large'} />
 			{mailAuthenticationHeaders?.dkim && (
 				<Row mainAlignment="flex-start" padding={{ top: 'small', bottom: 'small' }}>
