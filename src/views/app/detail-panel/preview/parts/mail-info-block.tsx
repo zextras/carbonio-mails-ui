@@ -71,15 +71,15 @@ export const MailInfoBlock: FC<MailInfoProps> = ({ msg }): ReactElement => {
 		]
 	);
 
-	if (
-		!messageIdFromHeaders &&
-		!creationDateFromHeaders &&
-		!signature &&
-		!fromExternalDomain &&
-		!sensitivity &&
-		!authenticationHeaders &&
-		!fromDistributionList
-	) {
+	const showComponent =
+		(!messageIdFromHeaders && !creationDateFromHeaders) ||
+		(!signature &&
+			!fromExternalDomain &&
+			!sensitivity &&
+			!authenticationHeaders &&
+			!fromDistributionList);
+
+	if (showComponent) {
 		return <></>;
 	}
 
