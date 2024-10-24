@@ -26,15 +26,14 @@ export const MailGeneralInfoSubsection = ({
 	const [t] = useTranslation();
 	const headerLabel = t('messages.modal.mail_general_info.title', 'General Information');
 
-	if (
-		!messageIdFromMailHeaders &&
-		!creationDateFromMailHeaders &&
-		!isFromDistributionList &&
-		!isFromExternalDomain &&
-		!sensitivityValue
-	) {
-		return <></>;
-	}
+	const showComponent =
+		messageIdFromMailHeaders ||
+		creationDateFromMailHeaders ||
+		isFromDistributionList ||
+		isFromExternalDomain ||
+		sensitivityValue;
+
+	if (!showComponent) return <></>;
 
 	return (
 		<Container
