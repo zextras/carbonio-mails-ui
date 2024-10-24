@@ -9,7 +9,7 @@ import { faker } from '@faker-js/faker';
 import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
 import { ParticipantRole } from '../../carbonio-ui-commons/constants/participants';
 import { convertHtmlToPlainText } from '../../carbonio-ui-commons/utils/text/html';
-import type { MailMessage, Participant } from '../../types';
+import { MailMessage, MailSensitivityHeader, Participant } from '../../types';
 
 /**
  *
@@ -36,6 +36,9 @@ type MessageGenerationParams = {
 	isSentByMe?: boolean;
 	tags?: Array<string>;
 	truncated?: boolean;
+	sensitivity?: MailSensitivityHeader;
+	messageIdFromMailHeaders?: string;
+	creationDateFromMailHeaders?: string;
 };
 
 /**
@@ -81,7 +84,10 @@ const generateMessage = ({
 	isScheduled = false,
 	isSentByMe = false,
 	tags = [],
-	truncated = false
+	truncated = false,
+	sensitivity = 'Personal',
+	messageIdFromMailHeaders = '',
+	creationDateFromMailHeaders = ''
 }: MessageGenerationParams = {}): MailMessage => ({
 	attachments: undefined,
 	autoSendTime: 0,
@@ -141,7 +147,17 @@ const generateMessage = ({
 	size: 0,
 	subject,
 	tags,
-	urgent: false
+	urgent: false,
+	messageIsFromExternalDomain: false,
+	authenticationHeaders: {
+		dkim: { value: undefined, pass: false },
+		spf: { value: undefined, pass: false },
+		dmarc: { value: undefined, pass: false }
+	},
+	sensitivity,
+	messageIdFromMailHeaders,
+	creationDateFromMailHeaders,
+	messageIsFromDistributionList: false
 });
 
 export { MessageGenerationParams, generateMessage };

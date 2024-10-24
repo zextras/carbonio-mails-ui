@@ -10,6 +10,7 @@ import {
 	ParticipantRole,
 	ParticipantRoleType
 } from '../carbonio-ui-commons/constants/participants';
+import { getIdentitiesDescriptors } from '../carbonio-ui-commons/helpers/identities';
 import { getFolder } from '../carbonio-ui-commons/store/zustand/folder/hooks';
 import { useFolderStore } from '../carbonio-ui-commons/store/zustand/folder/store';
 import {
@@ -25,6 +26,14 @@ import {
 	SoapMailMessagePart,
 	SoapMailParticipant
 } from '../types';
+import {
+	getAuthenticationHeaders,
+	getCreationDateFromMailHeaders,
+	getMessageIsFromDistributionList,
+	getMessageIsFromExternalDomain,
+	getMessageIdFromMailHeaders,
+	getSensitivityHeader
+} from './mail-header-utils';
 
 type Flags = {
 	read: boolean;
@@ -339,6 +348,10 @@ export const normalizeMailMessageFromSoap = (
 ): IncompleteMessage => {
 	const flags = getFlags(m.f);
 
+	const { ownerAccount } = getIdentitiesDescriptors().filter(
+		(identity) => identity.type === 'primary'
+	)[0];
+
 	return <IncompleteMessage>omitBy(
 		{
 			conversation: m.cid,
@@ -360,7 +373,13 @@ export const normalizeMailMessageFromSoap = (
 			autoSendTime: m.autoSendTime,
 			...flags,
 			isReadReceiptRequested: haveReadReceipt(m.e, m.f, m.l) && !isNil(isComplete) && isComplete,
-			signature: m?.signature
+			signature: m?.signature,
+			messageIsFromExternalDomain: getMessageIsFromExternalDomain(m._attrs, ownerAccount),
+			authenticationHeaders: getAuthenticationHeaders(m._attrs),
+			sensitivity: getSensitivityHeader(m._attrs),
+			messageIdFromMailHeaders: getMessageIdFromMailHeaders(m._attrs),
+			creationDateFromMailHeaders: getCreationDateFromMailHeaders(m._attrs),
+			messageIsFromDistributionList: getMessageIsFromDistributionList(m._attrs)
 		},
 		isNil
 	);

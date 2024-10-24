@@ -7,6 +7,7 @@
 import { SoapMailMessage } from './soap-mail-message';
 import { ZimbraRequest } from './zimbra-request';
 import type { MailMessage } from '../messages';
+import { MailVerificationHeader } from './soap';
 
 // https://files.zimbra.com/docs/ soap_api/9.0.0/api-reference/zimbraMail/SearchConv.html
 
@@ -21,6 +22,7 @@ export type SearchConvRequest = ZimbraRequest & {
 	needExp: 1 | 0;
 	max?: number;
 	recip: '0' | '1' | '2' | 'false' | 'true';
+	header: Array<{ n: MailVerificationHeader }>;
 };
 
 export type SearchConvResponse = {

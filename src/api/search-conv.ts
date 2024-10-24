@@ -4,7 +4,9 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { soapFetch } from '@zextras/carbonio-shell-ui';
+import { map } from 'lodash';
 
+import { MAIL_VERIFICATION_HEADERS } from '../constants';
 import type { SearchConvRequest, SearchConvResponse } from '../types';
 
 type SearchConvParameters = {
@@ -26,6 +28,7 @@ export async function searchConvSoapAPI({
 		offset: 0,
 		fetch,
 		max: 250_000,
+		header: map(MAIL_VERIFICATION_HEADERS, (header) => ({ n: header })),
 		needExp: 1,
 		limit: 250,
 		html: 1
