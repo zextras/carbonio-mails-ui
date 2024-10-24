@@ -47,8 +47,8 @@ const mockMsg: IncompleteMessage = {
 	creationDateFromMailHeaders: '2022-01-01',
 	messageIdFromMailHeaders: 'test-message-id',
 	authenticationHeaders,
-	isFromDistributionList: true,
-	isFromExternalDomain: true
+	messageIsFromDistributionList: true,
+	messageIsFromExternalDomain: true
 } as IncompleteMessage;
 
 describe('MailInfoBlock', () => {
@@ -62,7 +62,7 @@ describe('MailInfoBlock', () => {
 		expect(screen.getByTestId('smime-icon')).toBeInTheDocument();
 	});
 
-	it('renders ExternalDomainIcon when isFromExternalDomain is true', () => {
+	it('renders ExternalDomainIcon when message is from an external domain', () => {
 		setupTest(<MailInfoBlock msg={mockMsg} />);
 		expect(screen.getByTestId('external-domain-icon')).toBeInTheDocument();
 	});
@@ -77,7 +77,7 @@ describe('MailInfoBlock', () => {
 		expect(screen.getByTestId('mail-authentication-header-icon')).toBeInTheDocument();
 	});
 
-	it('renders DistributionListIcon when isFromDistributionList is true', () => {
+	it('renders DistributionListIcon when message is from a distribution list', () => {
 		setupTest(<MailInfoBlock msg={mockMsg} />);
 		expect(screen.getByTestId('distribution-list-icon')).toBeInTheDocument();
 	});

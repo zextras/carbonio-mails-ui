@@ -11,12 +11,12 @@ import { useTranslation } from 'react-i18next';
 import { IncompleteMessage } from '../../../../../types';
 
 export const DistributionListIcon = ({
-	isDistributionList
+	messageIsFromDistributionList
 }: {
-	isDistributionList: IncompleteMessage['isFromDistributionList'] | undefined;
+	messageIsFromDistributionList: IncompleteMessage['messageIsFromDistributionList'] | undefined;
 }): React.JSX.Element => {
 	const [t] = useTranslation();
-	if (!isDistributionList) return <></>;
+	if (!messageIsFromDistributionList) return <></>;
 	return (
 		<Tooltip label={t('label.distribution_list', 'Distribution List')}>
 			<Row>

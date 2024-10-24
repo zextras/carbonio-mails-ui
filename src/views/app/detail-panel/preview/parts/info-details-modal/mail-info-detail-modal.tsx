@@ -21,8 +21,8 @@ type MailInfoDetailModalProps = {
 	messageIdFromMailHeaders?: string;
 	creationDateFromMailHeaders?: string;
 	mailAuthenticationHeaders?: IncompleteMessage['authenticationHeaders'];
-	isFromDistributionList?: IncompleteMessage['isFromDistributionList'];
-	isFromExternalDomain?: IncompleteMessage['isFromExternalDomain'];
+	messageIsFromDistributionList?: IncompleteMessage['messageIsFromDistributionList'];
+	messageIsFromExternalDomain?: IncompleteMessage['messageIsFromExternalDomain'];
 	sensitivityValue?: IncompleteMessage['sensitivity'];
 };
 
@@ -32,8 +32,8 @@ export const MailInfoDetailModal: FC<MailInfoDetailModalProps> = ({
 	messageIdFromMailHeaders,
 	creationDateFromMailHeaders,
 	mailAuthenticationHeaders,
-	isFromDistributionList,
-	isFromExternalDomain,
+	messageIsFromDistributionList,
+	messageIsFromExternalDomain,
 	sensitivityValue
 }) => {
 	const [t] = useTranslation();
@@ -53,8 +53,8 @@ export const MailInfoDetailModal: FC<MailInfoDetailModalProps> = ({
 				<MailGeneralInfoSubsection
 					messageIdFromMailHeaders={messageIdFromMailHeaders}
 					creationDateFromMailHeaders={creationDateFromMailHeaders}
-					isFromDistributionList={isFromDistributionList}
-					isFromExternalDomain={isFromExternalDomain}
+					messageIsFromDistributionList={messageIsFromDistributionList}
+					messageIsFromExternalDomain={messageIsFromExternalDomain}
 					sensitivityValue={sensitivityValue}
 				/>
 				<MailAuthenticationHeadersSubsection

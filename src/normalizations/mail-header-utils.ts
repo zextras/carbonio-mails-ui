@@ -19,7 +19,7 @@ function getDomainFromEmail(email: string): string {
 	return email.split('@')[1];
 }
 
-export function getIsFromExternalDomain(
+export function getMessageIsFromExternalDomain(
 	headers: SoapIncompleteMessage['_attrs'],
 	ownerAccount: string
 ): boolean {
@@ -181,7 +181,9 @@ export function getCreationDateFromMailHeaders(
 	return headers?.Date;
 }
 
-export function getIsDistributionList(headers: SoapIncompleteMessage['_attrs']): boolean {
+export function getMessageIsFromDistributionList(
+	headers: SoapIncompleteMessage['_attrs']
+): boolean {
 	const zimbraDL = headers?.['X-Zimbra-DL'];
 	const listId = headers?.['List-ID'];
 	const listUnsubscribe = headers?.['List-Unsubscribe'];

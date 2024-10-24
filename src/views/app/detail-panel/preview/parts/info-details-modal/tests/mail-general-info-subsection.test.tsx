@@ -19,8 +19,8 @@ describe('MailInfoSubsection', () => {
 			<MailGeneralInfoSubsection
 				messageIdFromMailHeaders={messageIdFromMailHeaders}
 				creationDateFromMailHeaders={creationDateFromMailHeaders}
-				isFromDistributionList
-				isFromExternalDomain
+				messageIsFromDistributionList
+				messageIsFromExternalDomain
 				sensitivityValue={'Private'}
 			/>
 		);
@@ -38,8 +38,8 @@ describe('MailInfoSubsection', () => {
 			<MailGeneralInfoSubsection
 				messageIdFromMailHeaders={undefined}
 				creationDateFromMailHeaders={undefined}
-				isFromDistributionList={undefined}
-				isFromExternalDomain={undefined}
+				messageIsFromDistributionList={undefined}
+				messageIsFromExternalDomain={undefined}
 				sensitivityValue={undefined}
 			/>
 		);
@@ -53,8 +53,8 @@ describe('MailInfoSubsection', () => {
 			<MailGeneralInfoSubsection
 				messageIdFromMailHeaders={'12345'}
 				creationDateFromMailHeaders={undefined}
-				isFromDistributionList={false}
-				isFromExternalDomain={false}
+				messageIsFromDistributionList={false}
+				messageIsFromExternalDomain={false}
 				sensitivityValue={'Private'}
 			/>
 		);
@@ -67,8 +67,8 @@ describe('MailInfoSubsection', () => {
 			<MailGeneralInfoSubsection
 				messageIdFromMailHeaders={undefined}
 				creationDateFromMailHeaders={'2021-01-01'}
-				isFromDistributionList={false}
-				isFromExternalDomain={false}
+				messageIsFromDistributionList={false}
+				messageIsFromExternalDomain={false}
 				sensitivityValue={'Private'}
 			/>
 		);
@@ -81,8 +81,8 @@ describe('MailInfoSubsection', () => {
 			<MailGeneralInfoSubsection
 				messageIdFromMailHeaders={undefined}
 				creationDateFromMailHeaders={'2021-01-01'}
-				isFromDistributionList={false}
-				isFromExternalDomain={false}
+				messageIsFromDistributionList={false}
+				messageIsFromExternalDomain={false}
 				sensitivityValue={'Private'}
 			/>
 		);

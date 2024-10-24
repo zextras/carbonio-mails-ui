@@ -28,8 +28,8 @@ export const MailInfoBlock: FC<MailInfoProps> = ({ msg }): ReactElement => {
 	const signature = msg?.signature?.[0];
 	const creationDateFromHeaders = msg?.creationDateFromMailHeaders;
 	const messageIdFromHeaders = msg?.messageIdFromMailHeaders;
-	const fromDistributionList = msg?.isFromDistributionList;
-	const fromExternalDomain = msg?.isFromExternalDomain;
+	const fromDistributionList = msg?.messageIsFromDistributionList;
+	const fromExternalDomain = msg?.messageIsFromExternalDomain;
 	const sensitivity = msg?.sensitivity;
 	const authenticationHeaders = msg?.authenticationHeaders;
 
@@ -49,8 +49,8 @@ export const MailInfoBlock: FC<MailInfoProps> = ({ msg }): ReactElement => {
 								signature={signature}
 								creationDateFromMailHeaders={creationDateFromHeaders}
 								messageIdFromMailHeaders={messageIdFromHeaders}
-								isFromDistributionList={fromDistributionList}
-								isFromExternalDomain={fromExternalDomain}
+								messageIsFromDistributionList={fromDistributionList}
+								messageIsFromExternalDomain={fromExternalDomain}
 								sensitivityValue={sensitivity}
 							/>
 						</StoreProvider>
@@ -89,7 +89,7 @@ export const MailInfoBlock: FC<MailInfoProps> = ({ msg }): ReactElement => {
 			<ExternalDomainIcon fromExternalDomain={fromExternalDomain} />
 			<MailSensitivityIcon sensitivity={sensitivity} />
 			<MailAuthenticationHeaderIcon mailAuthenticationHeaders={authenticationHeaders} />
-			<DistributionListIcon isDistributionList={fromDistributionList} />
+			<DistributionListIcon messageIsFromDistributionList={fromDistributionList} />
 			<Link size="medium" onClick={showMailDetailsModal}>
 				{t('label.show_details', 'Show Details')}
 			</Link>

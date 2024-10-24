@@ -13,8 +13,8 @@ import {
 	getAuthenticationHeaders,
 	getAuthenticationHeadersIcon,
 	getHasAuthenticationHeaders,
-	getIsDistributionList,
-	getIsFromExternalDomain,
+	getMessageIsFromDistributionList,
+	getMessageIsFromExternalDomain,
 	getIsSensitive,
 	getMailAuthenticationHeaderLabel,
 	getMailSensitivityIconColor,
@@ -23,25 +23,25 @@ import {
 	getSensitivityHeader
 } from '../mail-header-utils';
 
-describe('getIsFromExternalDomain', () => {
+describe('getMessageIsFromExternalDomain', () => {
 	it('should return false when the From address is from the same domain as the ownerAccount', () => {
 		const headers = { From: 'user@domain.com' };
 		const ownerAccount = 'owner@domain.com';
-		const result = getIsFromExternalDomain(headers, ownerAccount);
+		const result = getMessageIsFromExternalDomain(headers, ownerAccount);
 		expect(result).toBe(false);
 	});
 
 	it('should return true when the From address is from a different domain than the ownerAccount', () => {
 		const headers = { From: 'user@external.com' };
 		const ownerAccount = 'owner@domain.com';
-		const result = getIsFromExternalDomain(headers, ownerAccount);
+		const result = getMessageIsFromExternalDomain(headers, ownerAccount);
 		expect(result).toBe(true);
 	});
 
 	it('should return false when the From address is missing from the headers', () => {
 		const headers = {};
 		const ownerAccount = 'owner@domain.com';
-		const result = getIsFromExternalDomain(headers, ownerAccount);
+		const result = getMessageIsFromExternalDomain(headers, ownerAccount);
 		expect(result).toBe(false);
 	});
 });
@@ -316,30 +316,30 @@ describe('getMailAuthenticationHeaderLabel', () => {
 	});
 });
 
-describe('getIsDistributionList', () => {
+describe('getMessageIsFromDistributionList', () => {
 	test('returns false when input is undefined', () => {
-		expect(getIsDistributionList(undefined)).toBe(false);
+		expect(getMessageIsFromDistributionList(undefined)).toBe(false);
 	});
 
 	test('returns false when headers object is empty', () => {
-		expect(getIsDistributionList({})).toBe(false);
+		expect(getMessageIsFromDistributionList({})).toBe(false);
 	});
 
 	test('returns true when X-Zimbra-DL header is present', () => {
-		expect(getIsDistributionList({ 'X-Zimbra-DL': 'some-value' })).toBe(true);
+		expect(getMessageIsFromDistributionList({ 'X-Zimbra-DL': 'some-value' })).toBe(true);
 	});
 
 	test('returns true when List-ID header is present', () => {
-		expect(getIsDistributionList({ 'List-ID': 'some-value' })).toBe(true);
+		expect(getMessageIsFromDistributionList({ 'List-ID': 'some-value' })).toBe(true);
 	});
 
 	test('returns true when List-Unsubscribe header is present', () => {
-		expect(getIsDistributionList({ 'List-Unsubscribe': 'some-value' })).toBe(true);
+		expect(getMessageIsFromDistributionList({ 'List-Unsubscribe': 'some-value' })).toBe(true);
 	});
 
 	test('returns true when multiple relevant headers are present', () => {
 		expect(
-			getIsDistributionList({
+			getMessageIsFromDistributionList({
 				'X-Zimbra-DL': 'some-value',
 				'List-ID': 'some-value',
 				'List-Unsubscribe': 'some-value'

@@ -148,7 +148,7 @@ const generateMessage = ({
 	subject,
 	tags,
 	urgent: false,
-	isFromExternalDomain: false,
+	messageIsFromExternalDomain: false,
 	authenticationHeaders: {
 		dkim: { value: undefined, pass: false },
 		spf: { value: undefined, pass: false },
@@ -157,7 +157,7 @@ const generateMessage = ({
 	sensitivity,
 	messageIdFromMailHeaders,
 	creationDateFromMailHeaders,
-	isFromDistributionList: false
+	messageIsFromDistributionList: false
 });
 
 export { MessageGenerationParams, generateMessage };

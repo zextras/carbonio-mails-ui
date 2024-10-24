@@ -11,16 +11,16 @@ import { useTranslation } from 'react-i18next';
 type MailGeneralInfoSubsectionProps = {
 	messageIdFromMailHeaders: string | undefined;
 	creationDateFromMailHeaders: string | undefined;
-	isFromDistributionList: boolean | undefined;
-	isFromExternalDomain: boolean | undefined;
+	messageIsFromDistributionList: boolean | undefined;
+	messageIsFromExternalDomain: boolean | undefined;
 	sensitivityValue: string | undefined;
 };
 
 export const MailGeneralInfoSubsection = ({
 	messageIdFromMailHeaders,
 	creationDateFromMailHeaders,
-	isFromDistributionList,
-	isFromExternalDomain,
+	messageIsFromDistributionList,
+	messageIsFromExternalDomain,
 	sensitivityValue
 }: MailGeneralInfoSubsectionProps): React.JSX.Element => {
 	const [t] = useTranslation();
@@ -29,7 +29,7 @@ export const MailGeneralInfoSubsection = ({
 	const showComponent =
 		messageIdFromMailHeaders ??
 		creationDateFromMailHeaders ??
-		(isFromDistributionList || isFromExternalDomain || sensitivityValue);
+		(messageIsFromDistributionList || messageIsFromExternalDomain || sensitivityValue);
 
 	if (!showComponent) return <></>;
 
@@ -82,14 +82,14 @@ export const MailGeneralInfoSubsection = ({
 					</Text>
 				</Row>
 			)}
-			{isFromDistributionList && (
+			{messageIsFromDistributionList && (
 				<Row mainAlignment="flex-start" padding={{ top: 'small', bottom: 'small' }}>
 					<Text weight="bold" size="small">
 						{t('messages.modal.distribution_list', 'From Distribution List')}
 					</Text>
 				</Row>
 			)}
-			{isFromExternalDomain && (
+			{messageIsFromExternalDomain && (
 				<Row mainAlignment="flex-start" padding={{ top: 'small', bottom: 'small' }}>
 					<Text weight="bold" size="small">
 						{t('messages.modal.external_domain', 'The sender is from an external domain')}

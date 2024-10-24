@@ -12,7 +12,7 @@ import { DistributionListIcon } from '../distribution-list-icon';
 
 describe('DistributionListIcon', () => {
 	it('correctly renders the component', async () => {
-		const { user } = setupTest(<DistributionListIcon isDistributionList />);
+		const { user } = setupTest(<DistributionListIcon messageIsFromDistributionList />);
 		const icon = screen.getByTestId('distribution-list-icon');
 		expect(icon).toBeInTheDocument();
 		user.hover(icon);
@@ -20,7 +20,7 @@ describe('DistributionListIcon', () => {
 	});
 
 	it('returns empty fragment when fromExternalDomain is false', () => {
-		setupTest(<DistributionListIcon isDistributionList={false} />);
+		setupTest(<DistributionListIcon messageIsFromDistributionList={false} />);
 		expect(screen.queryByTestId('distribution-list-icon')).not.toBeInTheDocument();
 	});
 });

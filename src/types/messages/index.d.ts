@@ -47,12 +47,12 @@ export type IncompleteMessage = {
 	isReplied: boolean;
 	isReadReceiptRequested?: boolean;
 	signature?: Array<MessageSignature>;
-	isFromExternalDomain: boolean;
+	messageIsFromExternalDomain: boolean;
 	authenticationHeaders: MailAuthenticationHeaders;
 	sensitivity: MailSensitivityHeader;
 	messageIdFromMailHeaders: string;
 	creationDateFromMailHeaders: string;
-	isFromDistributionList: boolean;
+	messageIsFromDistributionList: boolean;
 };
 
 export type MailMessagePart = {
