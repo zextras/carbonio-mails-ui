@@ -5,7 +5,7 @@
  */
 import React from 'react';
 
-import { Container, Icon, Padding, Row, Text } from '@zextras/carbonio-design-system';
+import { Container, Icon, Padding, Row, Text, Tooltip } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
 
 type MailGeneralInfoSubsectionProps = {
@@ -55,13 +55,12 @@ export const MailGeneralInfoSubsection = ({
 			<Padding top={'medium'} />
 			{messageIdFromMailHeaders && (
 				<Row mainAlignment="flex-start" padding={{ top: 'small', bottom: 'small' }}>
-					<Text weight="bold" size="small">
-						{t('messages.modal.mail_info.message_id', 'Message ID:')}
-					</Text>
-					<Padding right={'medium'} />
-					<Text overflow={'break-word'} size="small">
-						{messageIdFromMailHeaders}
-					</Text>
+					<Tooltip placement="top" maxWidth="fit" label={messageIdFromMailHeaders}>
+						<Text size="small">
+							<strong>{t('messages.modal.mail_info.message_id', 'Message ID:')}</strong>{' '}
+							{messageIdFromMailHeaders}
+						</Text>
+					</Tooltip>
 				</Row>
 			)}
 			{creationDateFromMailHeaders && (
