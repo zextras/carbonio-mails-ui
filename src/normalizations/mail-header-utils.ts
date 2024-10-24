@@ -172,7 +172,7 @@ export function getMessageIdFromMailHeaders(
 	headers: SoapIncompleteMessage['_attrs']
 ): string | undefined {
 	const messageId = headers?.['Message-Id'];
-	return messageId ? messageId.trim().replace(/^<|>$/g, '') : undefined;
+	return messageId ? messageId.trim().replace(/(^<)|(>$)/g, '') : undefined;
 }
 
 export function getCreationDateFromMailHeaders(
