@@ -53,34 +53,22 @@ export const MailAuthenticationHeadersSubsection = ({
 			<Padding top={'medium'} />
 			{mailAuthenticationHeaders?.dkim && (
 				<Row mainAlignment="flex-start" padding={{ top: 'small', bottom: 'small' }}>
-					<Text weight="bold" size="small">
-						{'DKIM:'}
-					</Text>
-					<Padding right={'medium'} />
-					<Text overflow={'break-word'} size="small">
-						{mailAuthenticationHeaders.dkim.value}
+					<Text size="small">
+						<strong>{'DKIM:'}</strong> {mailAuthenticationHeaders.dkim.value}
 					</Text>
 				</Row>
 			)}
 			{mailAuthenticationHeaders?.dmarc && (
 				<Row mainAlignment="flex-start" padding={{ top: 'small', bottom: 'small' }}>
-					<Text weight="bold" size="small">
-						{'DMARC:'}
-					</Text>
-					<Padding right={'medium'} />
-					<Text overflow={'break-word'} size="small">
-						{mailAuthenticationHeaders.dmarc.value}
+					<Text size="small">
+						<strong>{'DMARC:'}</strong> {mailAuthenticationHeaders.dmarc.value}
 					</Text>
 				</Row>
 			)}
 			{mailAuthenticationHeaders?.spf && (
 				<Row mainAlignment="flex-start" padding={{ top: 'small', bottom: 'small' }}>
-					<Text weight="bold" size="small">
-						{'SPF:'}
-					</Text>
-					<Padding right={'medium'} />
-					<Text overflow={'break-word'} size="small">
-						{mailAuthenticationHeaders.spf.value}
+					<Text size="small">
+						<strong>{'SPF:'}</strong> {mailAuthenticationHeaders.spf.value}
 					</Text>
 				</Row>
 			)}

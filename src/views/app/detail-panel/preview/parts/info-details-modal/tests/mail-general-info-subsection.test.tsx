@@ -30,7 +30,7 @@ describe('MailInfoSubsection', () => {
 		expect(screen.getByText(messageIdFromMailHeaders)).toBeInTheDocument();
 		expect(screen.getByText('Created at:')).toBeInTheDocument();
 		expect(screen.getByText(creationDateFromMailHeaders)).toBeInTheDocument();
-		expect(screen.getByText('From Distribution List')).toBeInTheDocument();
+		expect(screen.getByText('This email is from a Distribution List')).toBeInTheDocument();
 	});
 
 	it('returns empty fragment when both messageIdFromMailHeaders and creationDateFromMailHeaders are undefined', () => {

@@ -62,22 +62,16 @@ export const MailGeneralInfoSubsection = ({
 			)}
 			{creationDateFromMailHeaders && (
 				<Row mainAlignment="flex-start" padding={{ top: 'small', bottom: 'small' }}>
-					<Text weight="bold" size="small">
-						{t('messages.modal.mail_info.message_created_at', 'Created at:')}
-					</Text>
-					<Padding right={'medium'} />
-					<Text overflow={'break-word'} size="small">
+					<Text size="small">
+						<strong>{t('messages.modal.mail_info.message_created_at', 'Created at:')}</strong>{' '}
 						{creationDateFromMailHeaders}
 					</Text>
 				</Row>
 			)}
 			{sensitivityValue && (
 				<Row mainAlignment="flex-start" padding={{ top: 'small', bottom: 'small' }}>
-					<Text weight="bold" size="small">
-						{t('messages.modal.mail_info.message_sensitivity', 'Sensitivity:')}
-					</Text>
-					<Padding right={'medium'} />
-					<Text overflow={'break-word'} size="small">
+					<Text size="small">
+						<strong>{t('messages.modal.mail_info.message_sensitivity', 'Sensitivity:')}</strong>{' '}
 						{sensitivityValue}
 					</Text>
 				</Row>
@@ -85,14 +79,14 @@ export const MailGeneralInfoSubsection = ({
 			{messageIsFromDistributionList && (
 				<Row mainAlignment="flex-start" padding={{ top: 'small', bottom: 'small' }}>
 					<Text weight="bold" size="small">
-						{t('messages.modal.distribution_list', 'From Distribution List')}
+						{t('messages.modal.distribution_list', 'This email is from a Distribution List')}
 					</Text>
 				</Row>
 			)}
 			{messageIsFromExternalDomain && (
 				<Row mainAlignment="flex-start" padding={{ top: 'small', bottom: 'small' }}>
 					<Text weight="bold" size="small">
-						{t('messages.modal.external_domain', 'The sender is from an external domain')}
+						{t('messages.modal.external_domain', 'This email is from an External Domain')}
 					</Text>
 				</Row>
 			)}
