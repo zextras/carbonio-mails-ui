@@ -10,7 +10,6 @@ import { useTranslation } from 'react-i18next';
 
 import {
 	getAuthenticationHeadersIcon,
-	getHasAuthenticationHeaders,
 	getMailAuthenticationHeaderLabel
 } from '../../../../../normalizations/mail-header-utils';
 import { IncompleteMessage } from '../../../../../types';
@@ -18,14 +17,12 @@ import { IncompleteMessage } from '../../../../../types';
 export const MailAuthenticationHeaderIcon = ({
 	mailAuthenticationHeaders
 }: {
-	mailAuthenticationHeaders: IncompleteMessage['authenticationHeaders'] | undefined;
+	mailAuthenticationHeaders: IncompleteMessage['authenticationHeaders'];
 }): React.JSX.Element => {
 	const [t] = useTranslation();
-	const hasAuthenticationHeaders = getHasAuthenticationHeaders(mailAuthenticationHeaders);
 	const tooltipLabel = getMailAuthenticationHeaderLabel(t, mailAuthenticationHeaders);
 	const authenticationHeadersIconColor = getAuthenticationHeadersIcon(mailAuthenticationHeaders);
 
-	if (!hasAuthenticationHeaders) return <></>;
 	return (
 		<Tooltip label={tooltipLabel}>
 			<Row>

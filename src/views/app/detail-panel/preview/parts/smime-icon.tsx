@@ -11,13 +11,8 @@ import { useTranslation } from 'react-i18next';
 import { MessageSignature } from '../../../../../types';
 import { getSignedIconColor } from '../utils';
 
-export const SmimeIcon = ({
-	signature
-}: {
-	signature: MessageSignature | undefined;
-}): React.JSX.Element => {
+export const SmimeIcon = ({ signature }: { signature: MessageSignature }): React.JSX.Element => {
 	const [t] = useTranslation();
-	if (!signature) return <></>;
 	return (
 		<Tooltip
 			label={

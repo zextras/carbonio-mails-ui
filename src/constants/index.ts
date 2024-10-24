@@ -570,5 +570,5 @@ export const MAIL_INFO_HEADERS = {
 	creationDate: 'Date'
 } as const;
 
-export const VALID_MAIL_AUTHENTICATION_HEADERS = ['dkim', 'spf', 'dmarc'];
-export const PRIVATE_SENSITIVITY_HEADERS = ['Private', 'Company-Confidential'];
+export const VALID_MAIL_AUTHENTICATION_HEADERS = ['dkim', 'spf', 'dmarc'] as const;
+export const PRIVATE_SENSITIVITY_HEADERS = ['Private', 'Company-Confidential'] as const;

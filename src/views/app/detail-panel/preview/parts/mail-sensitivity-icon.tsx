@@ -9,7 +9,6 @@ import { Icon, Row, Tooltip } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
 
 import {
-	getIsSensitive,
 	getMailSensitivityIconColor,
 	getMailSensitivityLabel
 } from '../../../../../normalizations/mail-header-utils';
@@ -20,10 +19,7 @@ export const MailSensitivityIcon = ({
 }: {
 	sensitivity: MailSensitivityHeader;
 }): React.JSX.Element => {
-	const sensitive = getIsSensitive(sensitivity);
-
 	const [t] = useTranslation();
-	if (!sensitive) return <></>;
 	return (
 		<Tooltip label={getMailSensitivityLabel(t, sensitivity)}>
 			<Row>

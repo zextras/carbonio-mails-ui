@@ -8,15 +8,8 @@ import React from 'react';
 import { Icon, Row, Tooltip } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
 
-import { IncompleteMessage } from '../../../../../types';
-
-export const DistributionListIcon = ({
-	messageIsFromDistributionList
-}: {
-	messageIsFromDistributionList: IncompleteMessage['messageIsFromDistributionList'] | undefined;
-}): React.JSX.Element => {
+export const DistributionListIcon = (): React.JSX.Element => {
 	const [t] = useTranslation();
-	if (!messageIsFromDistributionList) return <></>;
 	return (
 		<Tooltip label={t('label.distribution_list', 'This email is from a Distribution List')}>
 			<Row>

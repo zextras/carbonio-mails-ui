@@ -9,11 +9,11 @@ import { Container, Icon, Padding, Row, Text, Tooltip } from '@zextras/carbonio-
 import { useTranslation } from 'react-i18next';
 
 type MailGeneralInfoSubsectionProps = {
-	messageIdFromMailHeaders: string | undefined;
-	creationDateFromMailHeaders: string | undefined;
-	messageIsFromDistributionList: boolean | undefined;
-	messageIsFromExternalDomain: boolean | undefined;
-	sensitivityValue: string | undefined;
+	messageIdFromMailHeaders?: string;
+	creationDateFromMailHeaders?: string;
+	messageIsFromDistributionList?: boolean;
+	messageIsFromExternalDomain?: boolean;
+	sensitivityValue?: string;
 };
 
 export const MailGeneralInfoSubsection = ({

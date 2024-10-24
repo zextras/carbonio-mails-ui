@@ -8,13 +8,8 @@ import React from 'react';
 import { Icon, Row, Tooltip } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
 
-export const ExternalDomainIcon = ({
-	fromExternalDomain
-}: {
-	fromExternalDomain: boolean;
-}): React.JSX.Element => {
+export const ExternalDomainIcon = (): React.JSX.Element => {
 	const [t] = useTranslation();
-	if (!fromExternalDomain) return <></>;
 	return (
 		<Tooltip label={t('label.from_external_domain', 'This email is from an external Domain')}>
 			<Row>

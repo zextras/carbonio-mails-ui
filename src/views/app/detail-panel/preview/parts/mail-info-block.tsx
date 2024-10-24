@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, ReactElement, useCallback } from 'react';
+import React, { useCallback } from 'react';
 
 import { Container, Link, useModal } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
@@ -14,6 +14,10 @@ import { MailInfoDetailModal } from './info-details-modal/mail-info-detail-modal
 import { MailAuthenticationHeaderIcon } from './mail-authentication-header-icon';
 import { MailSensitivityIcon } from './mail-sensitivity-icon';
 import { SmimeIcon } from './smime-icon';
+import {
+	getHasAuthenticationHeaders,
+	getIsSensitive
+} from '../../../../../normalizations/mail-header-utils';
 import { StoreProvider } from '../../../../../store/redux';
 import { IncompleteMessage } from '../../../../../types';
 
@@ -21,7 +25,7 @@ type MailInfoProps = {
 	msg: IncompleteMessage;
 };
 
-export const MailInfoBlock: FC<MailInfoProps> = ({ msg }): ReactElement => {
+export const MailInfoBlock = ({ msg }: MailInfoProps): React.JSX.Element | null => {
 	const [t] = useTranslation();
 	const { createModal, closeModal } = useModal();
 
@@ -73,28 +77,32 @@ export const MailInfoBlock: FC<MailInfoProps> = ({ msg }): ReactElement => {
 		]
 	);
 
-	const showComponent =
-		(!messageIdFromHeaders && !creationDateFromHeaders) ||
-		(!signature &&
-			!fromExternalDomain &&
-			!sensitivity &&
-			!authenticationHeaders &&
-			!fromDistributionList);
+	const isSensitive = getIsSensitive(sensitivity);
+	const hasAuthenticationHeaders = getHasAuthenticationHeaders(authenticationHeaders);
 
-	if (showComponent) {
-		return <></>;
-	}
+	const showLink =
+		messageIdFromHeaders ||
+		creationDateFromHeaders ||
+		signature ||
+		fromExternalDomain ||
+		isSensitive ||
+		hasAuthenticationHeaders ||
+		fromDistributionList;
 
 	return (
 		<Container orientation="horizontal" padding={{ all: 'small' }} mainAlignment="flex-start">
-			<SmimeIcon signature={signature} />
-			<ExternalDomainIcon fromExternalDomain={fromExternalDomain} />
-			<MailSensitivityIcon sensitivity={sensitivity} />
-			<MailAuthenticationHeaderIcon mailAuthenticationHeaders={authenticationHeaders} />
-			<DistributionListIcon messageIsFromDistributionList={fromDistributionList} />
-			<Link size="medium" onClick={showMailDetailsModal}>
-				{t('label.show_details', 'Show Details')}
-			</Link>
+			{signature && <SmimeIcon signature={signature} />}
+			{fromExternalDomain && <ExternalDomainIcon />}
+			{isSensitive && <MailSensitivityIcon sensitivity={sensitivity} />}
+			{hasAuthenticationHeaders && (
+				<MailAuthenticationHeaderIcon mailAuthenticationHeaders={authenticationHeaders} />
+			)}
+			{fromDistributionList && <DistributionListIcon />}
+			{showLink && (
+				<Link size="medium" onClick={showMailDetailsModal}>
+					{t('label.show_details', 'Show Details')}
+				</Link>
+			)}
 		</Container>
 	);
 };
