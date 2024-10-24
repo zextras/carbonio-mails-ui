@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC } from 'react';
+import React from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
@@ -26,7 +26,7 @@ type MailInfoDetailModalProps = {
 	sensitivityValue?: IncompleteMessage['sensitivity'];
 };
 
-export const MailInfoDetailModal: FC<MailInfoDetailModalProps> = ({
+export const MailInfoDetailModal = ({
 	onClose,
 	signature,
 	messageIdFromMailHeaders,
@@ -35,7 +35,7 @@ export const MailInfoDetailModal: FC<MailInfoDetailModalProps> = ({
 	messageIsFromDistributionList,
 	messageIsFromExternalDomain,
 	sensitivityValue
-}) => {
+}: MailInfoDetailModalProps): React.JSX.Element => {
 	const [t] = useTranslation();
 	return (
 		<Container
