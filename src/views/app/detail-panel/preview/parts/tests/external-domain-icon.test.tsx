@@ -15,12 +15,11 @@ describe('ExternalDomainIcon', () => {
 		const { user } = setupTest(<ExternalDomainIcon fromExternalDomain />);
 		const icon = screen.getByTestId('external-domain-icon');
 		expect(icon).toBeInTheDocument();
-		user.hover(icon);
-		expect(await screen.findByText('Mail from external domain')).toBeInTheDocument();
+		await user.hover(icon);
+		expect(await screen.findByText('This email is from an external Domain')).toBeInTheDocument();
 	});
-
-	test('returns empty fragment when fromExternalDomain is false', () => {
-		setupTest(<ExternalDomainIcon fromExternalDomain={false} />);
-		expect(screen.queryByTestId('external-domain-icon')).not.toBeInTheDocument();
-	});
+});
+test('returns empty fragment when message is not from an external domain', () => {
+	setupTest(<ExternalDomainIcon fromExternalDomain={false} />);
+	expect(screen.queryByTestId('external-domain-icon')).not.toBeInTheDocument();
 });

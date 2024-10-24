@@ -16,7 +16,7 @@ export const ExternalDomainIcon = ({
 	const [t] = useTranslation();
 	if (!fromExternalDomain) return <></>;
 	return (
-		<Tooltip label={t('label.from_external_domain', 'Mail from external domain')}>
+		<Tooltip label={t('label.from_external_domain', 'This email is from an external Domain')}>
 			<Row>
 				<Icon
 					size="medium"

@@ -18,7 +18,7 @@ export const DistributionListIcon = ({
 	const [t] = useTranslation();
 	if (!messageIsFromDistributionList) return <></>;
 	return (
-		<Tooltip label={t('label.distribution_list', 'Distribution List')}>
+		<Tooltip label={t('label.distribution_list', 'This email is from a Distribution List')}>
 			<Row>
 				<Icon
 					size="medium"

@@ -15,11 +15,11 @@ describe('DistributionListIcon', () => {
 		const { user } = setupTest(<DistributionListIcon messageIsFromDistributionList />);
 		const icon = screen.getByTestId('distribution-list-icon');
 		expect(icon).toBeInTheDocument();
-		user.hover(icon);
-		expect(await screen.findByText('Distribution List')).toBeInTheDocument();
+		await user.hover(icon);
+		expect(await screen.findByText('This email is from a Distribution List')).toBeInTheDocument();
 	});
 
-	it('returns empty fragment when fromExternalDomain is false', () => {
+	it('returns empty fragment when message is not from a distribution list', () => {
 		setupTest(<DistributionListIcon messageIsFromDistributionList={false} />);
 		expect(screen.queryByTestId('distribution-list-icon')).not.toBeInTheDocument();
 	});
