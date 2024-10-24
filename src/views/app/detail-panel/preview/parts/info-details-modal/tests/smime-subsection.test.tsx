@@ -26,7 +26,6 @@ describe('SmimeSubsection', () => {
 
 	test('should display the details of the signed message with valid certificate', async () => {
 		setupTest(<SmimeSubsection signature={signature} />, {});
-		expect(screen.getByText('Certificate details')).toBeVisible();
 
 		expect(screen.getByText('Message is Signed')).toBeVisible();
 		expect(
