@@ -45,12 +45,13 @@ export const MailInfoBlock: FC<MailInfoProps> = ({ msg }): ReactElement => {
 					children: (
 						<StoreProvider>
 							<MailInfoDetailModal
-								onClose={() => closeModal(modalId)}
+								onClose={(): void => closeModal(modalId)}
 								signature={signature}
 								creationDateFromMailHeaders={creationDateFromHeaders}
 								messageIdFromMailHeaders={messageIdFromHeaders}
 								messageIsFromDistributionList={fromDistributionList}
 								messageIsFromExternalDomain={fromExternalDomain}
+								mailAuthenticationHeaders={authenticationHeaders}
 								sensitivityValue={sensitivity}
 							/>
 						</StoreProvider>
@@ -66,6 +67,7 @@ export const MailInfoBlock: FC<MailInfoProps> = ({ msg }): ReactElement => {
 			messageIdFromHeaders,
 			fromDistributionList,
 			fromExternalDomain,
+			authenticationHeaders,
 			sensitivity,
 			closeModal
 		]
