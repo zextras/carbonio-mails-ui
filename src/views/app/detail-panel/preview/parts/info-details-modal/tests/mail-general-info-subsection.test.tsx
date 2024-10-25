@@ -33,19 +33,10 @@ describe('MailInfoSubsection', () => {
 		expect(screen.getByText('This email is from a Distribution List')).toBeInTheDocument();
 	});
 
-	it('returns empty fragment when both messageIdFromMailHeaders and creationDateFromMailHeaders are undefined', () => {
-		setupTest(
-			<MailGeneralInfoSubsection
-				messageIdFromMailHeaders={undefined}
-				creationDateFromMailHeaders={undefined}
-				messageIsFromDistributionList={undefined}
-				messageIsFromExternalDomain={undefined}
-				sensitivityValue={undefined}
-			/>
-		);
-		expect(screen.queryByTestId('mail-info-subsection')).not.toBeInTheDocument();
-		expect(screen.queryByText('Message ID:')).not.toBeInTheDocument();
-		expect(screen.queryByText('Created at:')).not.toBeInTheDocument();
+	it('returns only general info if no values are provided', () => {
+		setupTest(<MailGeneralInfoSubsection />);
+
+		expect(screen.getByText('General Information')).toBeInTheDocument();
 	});
 
 	it('does not display the line title when the creation date value is not provided', () => {
