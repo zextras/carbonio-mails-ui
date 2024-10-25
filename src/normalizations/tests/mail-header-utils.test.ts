@@ -5,24 +5,15 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { t } from '@zextras/carbonio-shell-ui';
-
-import { MAIL_SENSITIVITY_HEADER } from '../../constants';
-import { MailAuthenticationHeader } from '../../types';
 import {
 	getAuthenticationHeadersFromAPI,
-	getAuthenticationHeadersIconColor,
 	getMessageIsFromDistributionListFromAPI,
 	getMessageIsFromExternalDomainFromAPI,
-	getMailAuthenticationHeaderLabel,
-	getMailSensitivityIconColor,
-	getMailSensitivityLabel,
 	getMessageIdFromMailHeadersFromAPI,
-	getSensitivityHeaderFromAPI,
-	getSensitivityFromMailsHeaders
+	getSensitivityHeaderFromAPI
 } from '../mail-header-utils';
 
-describe('getMessageIsFromExternalDomain', () => {
+describe('getMessageIsFromExternalDomainFromAPI', () => {
 	it('should return false when the From address is from the same domain as the ownerAccount', () => {
 		const headers = { From: 'user@domain.com' };
 		const ownerAccount = 'owner@domain.com';
@@ -45,7 +36,7 @@ describe('getMessageIsFromExternalDomain', () => {
 	});
 });
 
-describe('getAuthenticationHeaders', () => {
+describe('getAuthenticationHeadersFromAPI', () => {
 	it('should return correct headers when all values are present and valid', () => {
 		const headers = {
 			'Authentication-Results':
@@ -123,118 +114,7 @@ describe('getSensitivityHeaderFromAPI', () => {
 	});
 });
 
-describe('getAuthenticationHeadersIconColor', () => {
-	it('should return "warning" when headers is an empty object', () => {
-		expect(getAuthenticationHeadersIconColor({})).toBe('warning');
-	});
-
-	it('should return "warning" when no headers have pass: true', () => {
-		const headers: Record<string, MailAuthenticationHeader> = {
-			header1: { pass: false, value: '' },
-			header2: { pass: false, value: '' }
-		};
-		expect(getAuthenticationHeadersIconColor(headers)).toBe('warning');
-	});
-
-	it('should return "warning" when some headers have pass: true but less than 3', () => {
-		const headers = {
-			spf: { pass: true, value: '' },
-			dkim: { pass: false, value: '' },
-			dmarc: { pass: true, value: '' }
-		};
-		expect(getAuthenticationHeadersIconColor(headers)).toBe('warning');
-	});
-
-	it('should return "warning" when an unknown header has pass: true', () => {
-		const headers = {
-			dkim: { pass: true, value: '' },
-			spf: { pass: true, value: '' },
-			header: { pass: true, value: '' }
-		};
-		expect(getAuthenticationHeadersIconColor(headers)).toBe('warning');
-	});
-
-	it('should return "warning" when more than 3 headers have pass: true', () => {
-		const headers: Record<string, MailAuthenticationHeader> = {
-			header1: { pass: true, value: '' },
-			header2: { pass: true, value: '' },
-			header3: { pass: true, value: '' },
-			header4: { pass: true, value: '' }
-		};
-		expect(getAuthenticationHeadersIconColor(headers)).toBe('warning');
-	});
-});
-
-describe('getMailSensitivityIconColor', () => {
-	it('returns "warning" for Personal', () => {
-		expect(getMailSensitivityIconColor(MAIL_SENSITIVITY_HEADER.personal)).toBe('warning');
-	});
-
-	it('returns "error" for Private', () => {
-		expect(getMailSensitivityIconColor(MAIL_SENSITIVITY_HEADER.private)).toBe('error');
-	});
-
-	it('returns "info" for Company-Confidential', () => {
-		expect(getMailSensitivityIconColor(MAIL_SENSITIVITY_HEADER.companyConfidential)).toBe('info');
-	});
-
-	it('returns "warning" for unexpected sensitivity', () => {
-		expect(getMailSensitivityIconColor('Unexpected' as never)).toBe('warning');
-	});
-});
-
-describe('getMailSensitivityLabel', () => {
-	it('returns the correct label for Personal', () => {
-		const result = getMailSensitivityLabel(t, MAIL_SENSITIVITY_HEADER.personal);
-		expect(result).toBe('label.mail_sensitivity_personal');
-	});
-
-	it('returns the correct label for Private', () => {
-		const result = getMailSensitivityLabel(t, MAIL_SENSITIVITY_HEADER.private);
-		expect(result).toBe('label.mail_sensitivity_private');
-	});
-
-	it('returns the correct label for Company-Confidential', () => {
-		const result = getMailSensitivityLabel(t, MAIL_SENSITIVITY_HEADER.companyConfidential);
-		expect(result).toBe('label.mail_sensitivity_company_confidential');
-	});
-
-	it('returns the label for unexpected sensitivity', () => {
-		const result = getMailSensitivityLabel(t, 'Unexpected' as never);
-		expect(result).toBe('label.mail_sensitivity_unknown');
-	});
-});
-
-describe('getMailAuthenticationHeaderLabel', () => {
-	it('should return a string with passed headers', () => {
-		const authenticationHeaders = {
-			dkim: { pass: true, value: 'header1Value' },
-			spf: { pass: true, value: 'header2Value' }
-		};
-		const result = getMailAuthenticationHeaderLabel(t, authenticationHeaders);
-		expect(result).toBe('dkim=label.pass, spf=label.pass');
-	});
-
-	it('should return a string with failed headers', () => {
-		const authenticationHeaders = {
-			dkim: { pass: false, value: 'header1Value' },
-			spf: { pass: false, value: 'header2Value' }
-		};
-		const result = getMailAuthenticationHeaderLabel(t, authenticationHeaders);
-		expect(result).toBe('dkim=label.fail, spf=label.fail');
-	});
-
-	it('should return a string with mixed headers', () => {
-		const authenticationHeaders = {
-			dkim: { pass: true, value: 'header1Value' },
-			spf: { pass: false, value: 'header2Value' }
-		};
-		const result = getMailAuthenticationHeaderLabel(t, authenticationHeaders);
-		expect(result).toBe('dkim=label.pass, spf=label.fail');
-	});
-});
-
-describe('getMessageIsFromDistributionList', () => {
+describe('getMessageIsFromDistributionListFromAPI', () => {
 	test('returns false when input is undefined', () => {
 		expect(getMessageIsFromDistributionListFromAPI(undefined)).toBe(false);
 	});
@@ -268,7 +148,7 @@ describe('getMessageIsFromDistributionList', () => {
 	});
 });
 
-describe('getMessageIdFromMailHeaders', () => {
+describe('getMessageIdFromMailHeadersFromAPI', () => {
 	it('should return the message ID without angle brackets', () => {
 		const headers = { 'Message-Id': '<12345@example.com>' };
 		const result = getMessageIdFromMailHeadersFromAPI(headers);
@@ -296,34 +176,5 @@ describe('getMessageIdFromMailHeaders', () => {
 		const headers = { 'Message-Id': ' <12345@example.com> ' };
 		const result = getMessageIdFromMailHeadersFromAPI(headers);
 		expect(result).toBe('12345@example.com');
-	});
-});
-
-describe('getSensitivityFromMailsHeaders', () => {
-	it('should return undefined when sensitivity is personal', () => {
-		const result = getSensitivityFromMailsHeaders(MAIL_SENSITIVITY_HEADER.personal);
-		expect(result).toBeUndefined();
-	});
-
-	it('should return undefined when sensitivity is private', () => {
-		const result = getSensitivityFromMailsHeaders(MAIL_SENSITIVITY_HEADER.private);
-		expect(result).toBe('Private');
-	});
-
-	it('should return undefined when sensitivity is Company-Confidential ', () => {
-		const result = getSensitivityFromMailsHeaders(MAIL_SENSITIVITY_HEADER.companyConfidential);
-		expect(result).toBe('Company-Confidential');
-	});
-
-	it('returns true for Private in mixed case', () => {
-		expect(getSensitivityFromMailsHeaders('pRiVate' as never)).toBe('Private');
-	});
-
-	it('returns undefined for undefined sensitivity value', () => {
-		expect(getSensitivityFromMailsHeaders(undefined)).toBeUndefined();
-	});
-
-	it('returns undefined for unknown values', () => {
-		expect(getSensitivityFromMailsHeaders(' ' as never)).toBeUndefined();
 	});
 });

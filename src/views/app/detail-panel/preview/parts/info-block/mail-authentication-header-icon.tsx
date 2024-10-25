@@ -8,11 +8,8 @@ import React from 'react';
 import { Icon, Row, Tooltip } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
 
-import {
-	getAuthenticationHeadersIconColor,
-	getMailAuthenticationHeaderLabel
-} from '../../../../../../normalizations/mail-header-utils';
 import { MailAuthenticationHeaders } from '../../../../../../types';
+import { getAuthenticationHeadersIconColor, getMailAuthenticationHeaderLabel } from '../utils';
 
 export const MailAuthenticationHeaderIcon = ({
 	authenticationInfo
