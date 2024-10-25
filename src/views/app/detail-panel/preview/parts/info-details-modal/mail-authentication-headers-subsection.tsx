@@ -8,24 +8,18 @@ import React from 'react';
 import { Container, Divider, Icon, Padding, Row, Text } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
 
-import {
-	getAuthenticationHeadersIcon,
-	getHasAuthenticationHeaders
-} from '../../../../../../normalizations/mail-header-utils';
-import { IncompleteMessage } from '../../../../../../types';
+import { getAuthenticationHeadersIcon } from '../../../../../../normalizations/mail-header-utils';
+import { MailAuthenticationHeaders } from '../../../../../../types';
 
 type MailGeneralInfoSubsectionProps = {
-	mailAuthenticationHeaders: IncompleteMessage['authenticationHeaders'] | undefined;
+	authenticationInfo: MailAuthenticationHeaders;
 };
 
 export const MailAuthenticationHeadersSubsection = ({
-	mailAuthenticationHeaders
+	authenticationInfo
 }: MailGeneralInfoSubsectionProps): React.JSX.Element => {
 	const [t] = useTranslation();
-	const hasAuthenticationHeaders = getHasAuthenticationHeaders(mailAuthenticationHeaders);
-	const authenticationHeadersIcon = getAuthenticationHeadersIcon(mailAuthenticationHeaders);
-
-	if (!hasAuthenticationHeaders) return <></>;
+	const authenticationHeadersIcon = getAuthenticationHeadersIcon(authenticationInfo);
 
 	const headerLabel = t(
 		'messages.modal.mail_authentication_headers.title',
@@ -51,24 +45,24 @@ export const MailAuthenticationHeadersSubsection = ({
 				<Text weight="bold">{headerLabel}</Text>
 			</Row>
 			<Padding top={'medium'} />
-			{mailAuthenticationHeaders?.dkim && (
+			{authenticationInfo?.dkim && (
 				<Row mainAlignment="flex-start" padding={{ top: 'small', bottom: 'small' }}>
 					<Text size="small">
-						<strong>{'DKIM:'}</strong> {mailAuthenticationHeaders.dkim.value}
+						<strong>{'DKIM:'}</strong> {authenticationInfo.dkim.value}
 					</Text>
 				</Row>
 			)}
-			{mailAuthenticationHeaders?.dmarc && (
+			{authenticationInfo?.dmarc && (
 				<Row mainAlignment="flex-start" padding={{ top: 'small', bottom: 'small' }}>
 					<Text size="small">
-						<strong>{'DMARC:'}</strong> {mailAuthenticationHeaders.dmarc.value}
+						<strong>{'DMARC:'}</strong> {authenticationInfo.dmarc.value}
 					</Text>
 				</Row>
 			)}
-			{mailAuthenticationHeaders?.spf && (
+			{authenticationInfo?.spf && (
 				<Row mainAlignment="flex-start" padding={{ top: 'small', bottom: 'small' }}>
 					<Text size="small">
-						<strong>{'SPF:'}</strong> {mailAuthenticationHeaders.spf.value}
+						<strong>{'SPF:'}</strong> {authenticationInfo.spf.value}
 					</Text>
 				</Row>
 			)}

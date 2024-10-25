@@ -13,6 +13,7 @@ import { MailGeneralInfoSubsection } from './mail-general-info-subsection';
 import { SmimeSubsection } from './smime-subsection';
 import ModalFooter from '../../../../../../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../../../../../../carbonio-ui-commons/components/modals/modal-header';
+import { getAuthenticationInfoFromMailsHeaders } from '../../../../../../normalizations/mail-header-utils';
 import { IncompleteMessage, MessageSignature } from '../../../../../../types';
 
 type MailInfoDetailModalProps = {
@@ -37,6 +38,7 @@ export const MailInfoDetailModal = ({
 	sensitivityValue
 }: MailInfoDetailModalProps): React.JSX.Element => {
 	const [t] = useTranslation();
+	const authenticationInfo = getAuthenticationInfoFromMailsHeaders(mailAuthenticationHeaders);
 	return (
 		<Container
 			mainAlignment="center"
@@ -57,9 +59,9 @@ export const MailInfoDetailModal = ({
 					messageIsFromExternalDomain={messageIsFromExternalDomain}
 					sensitivityValue={sensitivityValue}
 				/>
-				<MailAuthenticationHeadersSubsection
-					mailAuthenticationHeaders={mailAuthenticationHeaders}
-				/>
+				{authenticationInfo && (
+					<MailAuthenticationHeadersSubsection authenticationInfo={authenticationInfo} />
+				)}
 				<SmimeSubsection signature={signature} />
 			</Container>
 			<ModalFooter

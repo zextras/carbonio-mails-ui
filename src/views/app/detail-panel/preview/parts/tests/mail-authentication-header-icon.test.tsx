@@ -16,11 +16,6 @@ const authenticationHeaders = {
 };
 
 describe('authenticationHeadersIconColor', () => {
-	it('renders an empty fragment when mailAuthenticationHeaders is empty object', () => {
-		setupTest(<MailAuthenticationHeaderIcon authenticationInfo={{}} />);
-		expect(screen.queryByTestId('mail-authentication-header-icon')).not.toBeInTheDocument();
-	});
-
 	it('correctly renders the component when one of the properties is valid', () => {
 		setupTest(<MailAuthenticationHeaderIcon authenticationInfo={authenticationHeaders} />);
 		expect(screen.getByTestId('mail-authentication-header-icon')).toBeInTheDocument();

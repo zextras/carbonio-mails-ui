@@ -17,9 +17,7 @@ describe('MailAuthenticationHeadersSubsection', () => {
 			dmarc: { value: 'dmarc-value', pass: true }
 		};
 
-		setupTest(
-			<MailAuthenticationHeadersSubsection mailAuthenticationHeaders={authenticationHeaders} />
-		);
+		setupTest(<MailAuthenticationHeadersSubsection authenticationInfo={authenticationHeaders} />);
 		expect(screen.getByText('Authentication Headers')).toBeInTheDocument();
 		expect(screen.getByText('DKIM:')).toBeInTheDocument();
 		expect(screen.getByText('dkim-value')).toBeInTheDocument();
@@ -29,44 +27,12 @@ describe('MailAuthenticationHeadersSubsection', () => {
 		expect(screen.getByText('spf-value')).toBeInTheDocument();
 	});
 
-	test('returns empty fragment when mailAuthenticationHeaders is undefined', () => {
-		const authenticationHeaders = undefined;
-
-		setupTest(
-			<MailAuthenticationHeadersSubsection mailAuthenticationHeaders={authenticationHeaders} />
-		);
-		expect(screen.queryByText('Authentication Headers')).not.toBeInTheDocument();
-		expect(screen.queryByText('DKIM:')).not.toBeInTheDocument();
-		expect(screen.queryByText('dkim-value')).not.toBeInTheDocument();
-		expect(screen.queryByText('DMARC:')).not.toBeInTheDocument();
-		expect(screen.queryByText('dmarc-value')).not.toBeInTheDocument();
-		expect(screen.queryByText('SPF:')).not.toBeInTheDocument();
-		expect(screen.queryByText('spf-value')).not.toBeInTheDocument();
-	});
-
-	test('returns empty fragment when mailAuthenticationHeaders is empty object', () => {
-		const authenticationHeaders = {};
-
-		setupTest(
-			<MailAuthenticationHeadersSubsection mailAuthenticationHeaders={authenticationHeaders} />
-		);
-		expect(screen.queryByText('Authentication Headers')).not.toBeInTheDocument();
-		expect(screen.queryByText('DKIM:')).not.toBeInTheDocument();
-		expect(screen.queryByText('dkim-value')).not.toBeInTheDocument();
-		expect(screen.queryByText('DMARC:')).not.toBeInTheDocument();
-		expect(screen.queryByText('dmarc-value')).not.toBeInTheDocument();
-		expect(screen.queryByText('SPF:')).not.toBeInTheDocument();
-		expect(screen.queryByText('spf-value')).not.toBeInTheDocument();
-	});
-
 	test('displays DKIM header when provided', () => {
 		const authenticationHeaders = {
 			dkim: { value: 'dkim-value', pass: true }
 		};
 
-		setupTest(
-			<MailAuthenticationHeadersSubsection mailAuthenticationHeaders={authenticationHeaders} />
-		);
+		setupTest(<MailAuthenticationHeadersSubsection authenticationInfo={authenticationHeaders} />);
 		expect(screen.getByText('Authentication Headers')).toBeInTheDocument();
 		expect(screen.getByText('DKIM:')).toBeInTheDocument();
 		expect(screen.getByText('dkim-value')).toBeInTheDocument();
@@ -81,9 +47,7 @@ describe('MailAuthenticationHeadersSubsection', () => {
 			dmarc: { value: 'dmarc-value', pass: true }
 		};
 
-		setupTest(
-			<MailAuthenticationHeadersSubsection mailAuthenticationHeaders={authenticationHeaders} />
-		);
+		setupTest(<MailAuthenticationHeadersSubsection authenticationInfo={authenticationHeaders} />);
 		expect(screen.getByText('Authentication Headers')).toBeInTheDocument();
 		expect(screen.queryByText('DKIM:')).not.toBeInTheDocument();
 		expect(screen.queryByText('dkim-value')).not.toBeInTheDocument();
@@ -98,9 +62,7 @@ describe('MailAuthenticationHeadersSubsection', () => {
 			spf: { value: 'spf-value', pass: true }
 		};
 
-		setupTest(
-			<MailAuthenticationHeadersSubsection mailAuthenticationHeaders={authenticationHeaders} />
-		);
+		setupTest(<MailAuthenticationHeadersSubsection authenticationInfo={authenticationHeaders} />);
 		expect(screen.getByText('Authentication Headers')).toBeInTheDocument();
 		expect(screen.queryByText('DKIM:')).not.toBeInTheDocument();
 		expect(screen.queryByText('dkim-value')).not.toBeInTheDocument();
@@ -108,25 +70,5 @@ describe('MailAuthenticationHeadersSubsection', () => {
 		expect(screen.queryByText('dmarc-value')).not.toBeInTheDocument();
 		expect(screen.getByText('SPF:')).toBeInTheDocument();
 		expect(screen.getByText('spf-value')).toBeInTheDocument();
-	});
-
-	test('displays an empty fragment when non valid headers are provided', () => {
-		const authenticationHeaders = {
-			invalidHeader: { value: 'invalid-value', pass: true }
-		};
-
-		setupTest(
-			// disable eslint to test the component with an invalid header
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-ignore
-			<MailAuthenticationHeadersSubsection mailAuthenticationHeaders={authenticationHeaders} />
-		);
-		expect(screen.queryByText('Authentication Headers')).not.toBeInTheDocument();
-		expect(screen.queryByText('DKIM:')).not.toBeInTheDocument();
-		expect(screen.queryByText('dkim-value')).not.toBeInTheDocument();
-		expect(screen.queryByText('DMARC:')).not.toBeInTheDocument();
-		expect(screen.queryByText('dmarc-value')).not.toBeInTheDocument();
-		expect(screen.queryByText('SPF:')).not.toBeInTheDocument();
-		expect(screen.queryByText('spf-value')).not.toBeInTheDocument();
 	});
 });

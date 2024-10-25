@@ -80,15 +80,6 @@ export function getSensitivityHeader(
 			return undefined;
 	}
 }
-
-export function getHasAuthenticationHeaders(
-	authenticationHeaders: Record<string, MailAuthenticationHeader> | undefined
-): boolean {
-	if (!authenticationHeaders) return false;
-	const headers = Object.keys(authenticationHeaders);
-	return headers.some((header) => includes(VALID_MAIL_AUTHENTICATION_HEADERS, header));
-}
-
 type AuthenticationInfo = MailAuthenticationHeaders | undefined;
 export function getAuthenticationInfoFromMailsHeaders(
 	authenticationHeaders: Record<string, MailAuthenticationHeader> | undefined
@@ -110,19 +101,21 @@ export function getAuthenticationInfoFromMailsHeaders(
 export function getMailAuthenticationHeaderLabel(
 	t: TFunction,
 	authenticationHeaders: MailAuthenticationHeaders
-): string | undefined {
-	if (!authenticationHeaders) return undefined;
-	const validHeaders = Object.keys(authenticationHeaders).filter((header) =>
-		includes(VALID_MAIL_AUTHENTICATION_HEADERS, header)
-	);
+): string {
+	const headerLabels: string[] = [];
 
-	const values = validHeaders.map((validHeader) =>
-		authenticationHeaders[validHeader]?.pass
-			? `${validHeader}=${t('label.pass', 'pass')}`
-			: `${validHeader}=${t('label.fail', 'fail')}`
-	);
+	VALID_MAIL_AUTHENTICATION_HEADERS.forEach((header) => {
+		const result = authenticationHeaders[header];
 
-	return values.join(', ');
+		if (!result) return;
+
+		const status = result.pass ? 'pass' : 'fail';
+		const translatedStatus = t(`label.${status}`, status);
+
+		headerLabels.push(`${header}=${translatedStatus}`);
+	});
+
+	return headerLabels.join(', ');
 }
 
 export function getAuthenticationHeadersIcon(
