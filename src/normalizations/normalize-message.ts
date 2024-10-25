@@ -28,11 +28,11 @@ import {
 	SoapMailParticipant
 } from '../types';
 import {
-	getAuthenticationHeaders,
-	getCreationDateFromMailHeaders,
-	getMessageIsFromDistributionList,
-	getMessageIsFromExternalDomain,
-	getMessageIdFromMailHeaders,
+	getAuthenticationHeadersFromAPI,
+	getCreationDateFromMailHeadersFromAPI,
+	getMessageIsFromDistributionListFromAPI,
+	getMessageIsFromExternalDomainFromAPI,
+	getMessageIdFromMailHeadersFromAPI,
 	getSensitivityHeaderFromAPI
 } from './mail-header-utils';
 
@@ -355,12 +355,12 @@ export const normalizeMailMessageFromSoap = (
 
 	const normalizedMailHeaders: MailHeaders = {
 		signature: m?.signature,
-		messageIsFromExternalDomain: getMessageIsFromExternalDomain(m._attrs, ownerAccount),
-		authenticationHeaders: getAuthenticationHeaders(m._attrs),
+		messageIsFromExternalDomain: getMessageIsFromExternalDomainFromAPI(m._attrs, ownerAccount),
+		authenticationHeaders: getAuthenticationHeadersFromAPI(m._attrs),
 		sensitivity: getSensitivityHeaderFromAPI(m._attrs),
-		messageIdFromMailHeaders: getMessageIdFromMailHeaders(m._attrs),
-		creationDateFromMailHeaders: getCreationDateFromMailHeaders(m._attrs),
-		messageIsFromDistributionList: getMessageIsFromDistributionList(m._attrs)
+		messageIdFromMailHeaders: getMessageIdFromMailHeadersFromAPI(m._attrs),
+		creationDateFromMailHeaders: getCreationDateFromMailHeadersFromAPI(m._attrs),
+		messageIsFromDistributionList: getMessageIsFromDistributionListFromAPI(m._attrs)
 	};
 	// FIXME: omitBy breaks typing, consider not using it. many types are actually required but are omitted at runtime
 	return <IncompleteMessage>omitBy(

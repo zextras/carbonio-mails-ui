@@ -14,10 +14,7 @@ import { MailInfoDetailModal } from './info-details-modal/mail-info-detail-modal
 import { MailAuthenticationHeaderIcon } from './mail-authentication-header-icon';
 import { MailSensitivityIcon } from './mail-sensitivity-icon';
 import { SmimeIcon } from './smime-icon';
-import {
-	getAuthenticationInfoFromMailsHeaders,
-	getSensitivityFromMailsHeaders
-} from '../../../../../normalizations/mail-header-utils';
+import { getSensitivityFromMailsHeaders } from '../../../../../normalizations/mail-header-utils';
 import { StoreProvider } from '../../../../../store/redux';
 import { IncompleteMessage } from '../../../../../types';
 
@@ -78,7 +75,6 @@ export const MailInfoBlock = ({ msg }: MailInfoProps): React.JSX.Element | null 
 	);
 
 	const sensitivity = getSensitivityFromMailsHeaders(sensitivityHeader);
-	const authenticationInfo = getAuthenticationInfoFromMailsHeaders(authenticationMailsHeaders);
 
 	const showInfoDetails =
 		messageIdFromHeaders ||
@@ -86,7 +82,7 @@ export const MailInfoBlock = ({ msg }: MailInfoProps): React.JSX.Element | null 
 		signature ||
 		fromExternalDomain ||
 		sensitivity ||
-		authenticationInfo ||
+		authenticationMailsHeaders ||
 		fromDistributionList;
 
 	return (
@@ -94,8 +90,8 @@ export const MailInfoBlock = ({ msg }: MailInfoProps): React.JSX.Element | null 
 			{signature && <SmimeIcon signature={signature} />}
 			{fromExternalDomain && <ExternalDomainIcon />}
 			{sensitivity && <MailSensitivityIcon sensitivity={sensitivity} />}
-			{authenticationInfo && (
-				<MailAuthenticationHeaderIcon authenticationInfo={authenticationInfo} />
+			{authenticationMailsHeaders && (
+				<MailAuthenticationHeaderIcon authenticationInfo={authenticationMailsHeaders} />
 			)}
 			{fromDistributionList && <DistributionListIcon />}
 			{showInfoDetails && (

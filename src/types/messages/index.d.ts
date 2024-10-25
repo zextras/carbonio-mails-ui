@@ -20,7 +20,7 @@ type MailAuthenticationHeaders = {
 export type MailHeaders = {
 	signature?: Array<MessageSignature>;
 	messageIsFromExternalDomain?: boolean;
-	authenticationHeaders?: MailAuthenticationHeaders;
+	authenticationHeaders: MailAuthenticationHeaders;
 	sensitivity?: MailSensitivityHeader;
 	messageIdFromMailHeaders?: string;
 	creationDateFromMailHeaders?: string;

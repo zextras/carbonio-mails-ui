@@ -9,7 +9,6 @@ import { includes, isEmpty, trim } from 'lodash';
 
 import { SENSITIVITY_VALUES, VALID_MAIL_AUTHENTICATION_HEADERS } from '../constants';
 import {
-	MailAuthenticationHeader,
 	MailAuthenticationHeaders,
 	MailSensitivityHeader,
 	Sensitivity,
@@ -20,7 +19,7 @@ function getDomainFromEmail(email: string): string {
 	return email.split('@')[1];
 }
 
-export function getMessageIsFromExternalDomain(
+export function getMessageIsFromExternalDomainFromAPI(
 	headers: SoapIncompleteMessage['_attrs'],
 	ownerAccount: string
 ): boolean {
@@ -43,7 +42,7 @@ function findHeader(
 	return authenticationHeadersArray?.find((header) => regex.exec(header));
 }
 
-export function getAuthenticationHeaders(
+export function getAuthenticationHeadersFromAPI(
 	headers: SoapIncompleteMessage['_attrs']
 ): MailAuthenticationHeaders {
 	const authenticationHeadersArray = headers?.['Authentication-Results']?.split(';');
@@ -82,23 +81,6 @@ export function getSensitivityHeaderFromAPI(
 		default:
 			return undefined;
 	}
-}
-type AuthenticationInfo = MailAuthenticationHeaders | undefined;
-export function getAuthenticationInfoFromMailsHeaders(
-	authenticationHeaders: Record<string, MailAuthenticationHeader> | undefined
-): AuthenticationInfo {
-	if (!authenticationHeaders) return undefined;
-	return VALID_MAIL_AUTHENTICATION_HEADERS.reduce(
-		(previousResult: AuthenticationInfo, header): AuthenticationInfo => {
-			let newResult = previousResult;
-			if (header in authenticationHeaders) {
-				if (!newResult) newResult = {};
-				newResult[header] = authenticationHeaders[header];
-			}
-			return newResult;
-		},
-		undefined
-	);
 }
 
 export function getMailAuthenticationHeaderLabel(
@@ -172,20 +154,20 @@ export function getMailSensitivityLabel(t: TFunction, sensitivity: MailSensitivi
 	}
 }
 
-export function getMessageIdFromMailHeaders(
+export function getMessageIdFromMailHeadersFromAPI(
 	headers: SoapIncompleteMessage['_attrs']
 ): string | undefined {
 	const messageId = headers?.['Message-Id'];
 	return messageId ? messageId.trim().replace(/(^<)|(>$)/g, '') : undefined;
 }
 
-export function getCreationDateFromMailHeaders(
+export function getCreationDateFromMailHeadersFromAPI(
 	headers: SoapIncompleteMessage['_attrs']
 ): string | undefined {
 	return headers?.Date;
 }
 
-export function getMessageIsFromDistributionList(
+export function getMessageIsFromDistributionListFromAPI(
 	headers: SoapIncompleteMessage['_attrs']
 ): boolean {
 	const zimbraDL = headers?.['X-Zimbra-DL'];

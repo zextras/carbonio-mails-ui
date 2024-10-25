@@ -8,40 +8,39 @@
 import { t } from '@zextras/carbonio-shell-ui';
 
 import { MAIL_SENSITIVITY_HEADER } from '../../constants';
-import { MailAuthenticationHeader, MailAuthenticationHeaders } from '../../types';
+import { MailAuthenticationHeader } from '../../types';
 import {
-	getAuthenticationHeaders,
+	getAuthenticationHeadersFromAPI,
 	getAuthenticationHeadersIconColor,
-	getMessageIsFromDistributionList,
-	getMessageIsFromExternalDomain,
+	getMessageIsFromDistributionListFromAPI,
+	getMessageIsFromExternalDomainFromAPI,
 	getMailAuthenticationHeaderLabel,
 	getMailSensitivityIconColor,
 	getMailSensitivityLabel,
-	getMessageIdFromMailHeaders,
+	getMessageIdFromMailHeadersFromAPI,
 	getSensitivityHeaderFromAPI,
-	getSensitivityFromMailsHeaders,
-	getAuthenticationInfoFromMailsHeaders
+	getSensitivityFromMailsHeaders
 } from '../mail-header-utils';
 
 describe('getMessageIsFromExternalDomain', () => {
 	it('should return false when the From address is from the same domain as the ownerAccount', () => {
 		const headers = { From: 'user@domain.com' };
 		const ownerAccount = 'owner@domain.com';
-		const result = getMessageIsFromExternalDomain(headers, ownerAccount);
+		const result = getMessageIsFromExternalDomainFromAPI(headers, ownerAccount);
 		expect(result).toBe(false);
 	});
 
 	it('should return true when the From address is from a different domain than the ownerAccount', () => {
 		const headers = { From: 'user@external.com' };
 		const ownerAccount = 'owner@domain.com';
-		const result = getMessageIsFromExternalDomain(headers, ownerAccount);
+		const result = getMessageIsFromExternalDomainFromAPI(headers, ownerAccount);
 		expect(result).toBe(true);
 	});
 
 	it('should return false when the From address is missing from the headers', () => {
 		const headers = {};
 		const ownerAccount = 'owner@domain.com';
-		const result = getMessageIsFromExternalDomain(headers, ownerAccount);
+		const result = getMessageIsFromExternalDomainFromAPI(headers, ownerAccount);
 		expect(result).toBe(false);
 	});
 });
@@ -53,7 +52,7 @@ describe('getAuthenticationHeaders', () => {
 				'Authentication-Results: mx.google.com;dkim=pass header.i=@valimail.com header.s=google2048 header.b=Z8L6tjHb;spf=pass (google.com: domain of [redacted]@valimail.com designates 209.85.220.41 as permitted sender) smtp.mailfrom=[redacted]@valimail.com;dmarc=pass (p=REJECT sp=REJECT dis=NONE) header.from=valimail.com'
 		};
 
-		const result = getAuthenticationHeaders(headers);
+		const result = getAuthenticationHeadersFromAPI(headers);
 
 		expect(result).toEqual({
 			dkim: { value: expect.stringContaining('dkim=pass'), pass: true },
@@ -67,7 +66,7 @@ describe('getAuthenticationHeaders', () => {
 			'Authentication-Results': 'dkim=pass; spf=fail; dmarc=pass'
 		};
 
-		const result = getAuthenticationHeaders(headers);
+		const result = getAuthenticationHeadersFromAPI(headers);
 
 		expect(result).toEqual({
 			dkim: { value: 'dkim=pass', pass: true },
@@ -79,7 +78,7 @@ describe('getAuthenticationHeaders', () => {
 	it('should return correct headers when headers are empty object', () => {
 		const headers = {};
 
-		const result = getAuthenticationHeaders(headers);
+		const result = getAuthenticationHeadersFromAPI(headers);
 
 		expect(result).toEqual({});
 	});
@@ -87,7 +86,7 @@ describe('getAuthenticationHeaders', () => {
 	it('should return correct headers when headers are undefined', () => {
 		const headers = undefined;
 
-		const result = getAuthenticationHeaders(headers);
+		const result = getAuthenticationHeadersFromAPI(headers);
 
 		expect(result).toEqual({});
 	});
@@ -121,48 +120,6 @@ describe('getSensitivityHeaderFromAPI', () => {
 	it('should return undefined if headers.Sensitivity is an unrecognized value', () => {
 		const headers = { Sensitivity: 'Unknown' };
 		expect(getSensitivityHeaderFromAPI(headers)).toBeUndefined();
-	});
-});
-
-describe('getAuthenticationInfoFromMailsHeaders', () => {
-	test('should return undefined for an empty object', () => {
-		const authenticationHeaders = {};
-		expect(getAuthenticationInfoFromMailsHeaders(authenticationHeaders)).toBeUndefined();
-	});
-
-	test('should return undefined for an undefined value', () => {
-		expect(getAuthenticationInfoFromMailsHeaders(undefined)).toBeUndefined();
-	});
-
-	test('should return dkim, spf and dmarc when they are present', () => {
-		const authenticationHeaders = {
-			dkim: { value: 'aaa', pass: true },
-			spf: { value: 'bbb', pass: true },
-			dmarc: { value: 'ccc', pass: false }
-		};
-		const expected: MailAuthenticationHeaders = {
-			dkim: { value: 'aaa', pass: true },
-			spf: { value: 'bbb', pass: true },
-			dmarc: { value: 'ccc', pass: false }
-		};
-		expect(getAuthenticationInfoFromMailsHeaders(authenticationHeaders)).toEqual(expected);
-	});
-
-	test('should return undefined when no spf or dmarc or dkim', () => {
-		const authenticationHeaders = {
-			whatever: { value: 'whatever', pass: true }
-		};
-		expect(getAuthenticationInfoFromMailsHeaders(authenticationHeaders)).toBeUndefined();
-	});
-
-	test('should return only valid authentication headers', () => {
-		const authenticationHeaders = {
-			whatever: { value: 'whatever', pass: true },
-			dkim: { value: 'aaa', pass: true }
-		};
-		expect(getAuthenticationInfoFromMailsHeaders(authenticationHeaders)).toEqual({
-			dkim: { value: 'aaa', pass: true }
-		});
 	});
 });
 
@@ -279,28 +236,30 @@ describe('getMailAuthenticationHeaderLabel', () => {
 
 describe('getMessageIsFromDistributionList', () => {
 	test('returns false when input is undefined', () => {
-		expect(getMessageIsFromDistributionList(undefined)).toBe(false);
+		expect(getMessageIsFromDistributionListFromAPI(undefined)).toBe(false);
 	});
 
 	test('returns false when headers object is empty', () => {
-		expect(getMessageIsFromDistributionList({})).toBe(false);
+		expect(getMessageIsFromDistributionListFromAPI({})).toBe(false);
 	});
 
 	test('returns true when X-Zimbra-DL header is present', () => {
-		expect(getMessageIsFromDistributionList({ 'X-Zimbra-DL': 'some-value' })).toBe(true);
+		expect(getMessageIsFromDistributionListFromAPI({ 'X-Zimbra-DL': 'some-value' })).toBe(true);
 	});
 
 	test('returns true when List-ID header is present', () => {
-		expect(getMessageIsFromDistributionList({ 'List-ID': 'some-value' })).toBe(true);
+		expect(getMessageIsFromDistributionListFromAPI({ 'List-ID': 'some-value' })).toBe(true);
 	});
 
 	test('returns true when List-Unsubscribe header is present', () => {
-		expect(getMessageIsFromDistributionList({ 'List-Unsubscribe': 'some-value' })).toBe(true);
+		expect(getMessageIsFromDistributionListFromAPI({ 'List-Unsubscribe': 'some-value' })).toBe(
+			true
+		);
 	});
 
 	test('returns true when multiple relevant headers are present', () => {
 		expect(
-			getMessageIsFromDistributionList({
+			getMessageIsFromDistributionListFromAPI({
 				'X-Zimbra-DL': 'some-value',
 				'List-ID': 'some-value',
 				'List-Unsubscribe': 'some-value'
@@ -312,30 +271,30 @@ describe('getMessageIsFromDistributionList', () => {
 describe('getMessageIdFromMailHeaders', () => {
 	it('should return the message ID without angle brackets', () => {
 		const headers = { 'Message-Id': '<12345@example.com>' };
-		const result = getMessageIdFromMailHeaders(headers);
+		const result = getMessageIdFromMailHeadersFromAPI(headers);
 		expect(result).toBe('12345@example.com');
 	});
 
 	it('should return the message ID as-is if there are no angle brackets', () => {
 		const headers = { 'Message-Id': '12345@example.com' };
-		const result = getMessageIdFromMailHeaders(headers);
+		const result = getMessageIdFromMailHeadersFromAPI(headers);
 		expect(result).toBe('12345@example.com');
 	});
 
 	it('should return undefined if the headers do not contain Message-Id', () => {
 		const headers = { 'Other-Header': 'value' } as never;
-		const result = getMessageIdFromMailHeaders(headers);
+		const result = getMessageIdFromMailHeadersFromAPI(headers);
 		expect(result).toBeUndefined();
 	});
 
 	it('should return undefined if the headers are undefined', () => {
-		const result = getMessageIdFromMailHeaders(undefined as never);
+		const result = getMessageIdFromMailHeadersFromAPI(undefined as never);
 		expect(result).toBeUndefined();
 	});
 
 	it('should handle extra spaces around angle brackets', () => {
 		const headers = { 'Message-Id': ' <12345@example.com> ' };
-		const result = getMessageIdFromMailHeaders(headers);
+		const result = getMessageIdFromMailHeadersFromAPI(headers);
 		expect(result).toBe('12345@example.com');
 	});
 });
