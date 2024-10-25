@@ -57,6 +57,21 @@ describe('MailInfoBlock', () => {
 		expect(screen.getByText('Show Details')).toBeInTheDocument();
 	});
 
+	it('should not sow the authentication icon if the passed header is an empty object', () => {
+		const mockMsg_: IncompleteMessage = {
+			signature: [validSignature],
+			sensitivity: 'Private',
+			creationDateFromMailHeaders: '2022-01-01',
+			messageIdFromMailHeaders: 'test-message-id',
+			authenticationHeaders: {},
+			messageIsFromDistributionList: true,
+			messageIsFromExternalDomain: true
+		} as IncompleteMessage;
+
+		setupTest(<MailInfoBlock msg={mockMsg_} />);
+		expect(screen.queryByTestId('mail-authentication-header-icon')).not.toBeInTheDocument();
+	});
+
 	it('renders SmimeIcon when signature is present', () => {
 		setupTest(<MailInfoBlock msg={mockMsg} />);
 		expect(screen.getByTestId('smime-icon')).toBeInTheDocument();
