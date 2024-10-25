@@ -65,19 +65,20 @@ export function getAuthenticationHeaders(
 	return mailAuthenticationHeaders;
 }
 
-export function getSensitivityHeader(
+export function getSensitivityHeaderFromAPI(
 	headers: SoapIncompleteMessage['_attrs']
 ): MailSensitivityHeader | undefined {
 	if (!headers) return undefined;
 	const sensitivity = headers.Sensitivity;
+	if (!sensitivity) return undefined;
 
-	switch (sensitivity) {
-		case 'Personal':
-			return 'personal';
-		case 'Private':
-			return 'private';
-		case 'Company-Confidential':
-			return 'company-confidential';
+	switch (sensitivity.toLowerCase()) {
+		case 'personal':
+			return 'Personal';
+		case 'private':
+			return 'Private';
+		case 'company-confidential':
+			return 'Company-Confidential';
 		default:
 			return undefined;
 	}

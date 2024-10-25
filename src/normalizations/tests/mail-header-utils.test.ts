@@ -18,7 +18,7 @@ import {
 	getMailSensitivityIconColor,
 	getMailSensitivityLabel,
 	getMessageIdFromMailHeaders,
-	getSensitivityHeader,
+	getSensitivityHeaderFromAPI,
 	getSensitivityFromMailsHeaders,
 	getAuthenticationInfoFromMailsHeaders
 } from '../mail-header-utils';
@@ -93,29 +93,34 @@ describe('getAuthenticationHeaders', () => {
 	});
 });
 
-describe('getSensitivityHeader', () => {
+describe('getSensitivityHeaderFromAPI', () => {
 	it('should return undefined if headers is undefined', () => {
-		expect(getSensitivityHeader(undefined)).toBeUndefined();
+		expect(getSensitivityHeaderFromAPI(undefined)).toBeUndefined();
 	});
 
 	it('should return "personal" if headers.Sensitivity is "Personal"', () => {
 		const headers = { Sensitivity: 'Personal' };
-		expect(getSensitivityHeader(headers)).toBe('personal');
+		expect(getSensitivityHeaderFromAPI(headers)).toBe('Personal');
+	});
+
+	it('should return "Personal" if headers.Sensitivity is "personal"', () => {
+		const headers = { Sensitivity: 'personal' };
+		expect(getSensitivityHeaderFromAPI(headers)).toBe('Personal');
 	});
 
 	it('should return "private" if headers.Sensitivity is "Private"', () => {
 		const headers = { Sensitivity: 'Private' };
-		expect(getSensitivityHeader(headers)).toBe('private');
+		expect(getSensitivityHeaderFromAPI(headers)).toBe('Private');
 	});
 
 	it('should return "company-confidential" if headers.Sensitivity is "Company-Confidential"', () => {
 		const headers = { Sensitivity: 'Company-Confidential' };
-		expect(getSensitivityHeader(headers)).toBe('company-confidential');
+		expect(getSensitivityHeaderFromAPI(headers)).toBe('Company-Confidential');
 	});
 
 	it('should return undefined if headers.Sensitivity is an unrecognized value', () => {
 		const headers = { Sensitivity: 'Unknown' };
-		expect(getSensitivityHeader(headers)).toBeUndefined();
+		expect(getSensitivityHeaderFromAPI(headers)).toBeUndefined();
 	});
 });
 

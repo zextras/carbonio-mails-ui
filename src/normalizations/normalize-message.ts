@@ -33,7 +33,7 @@ import {
 	getMessageIsFromDistributionList,
 	getMessageIsFromExternalDomain,
 	getMessageIdFromMailHeaders,
-	getSensitivityHeader
+	getSensitivityHeaderFromAPI
 } from './mail-header-utils';
 
 type Flags = {
@@ -357,7 +357,7 @@ export const normalizeMailMessageFromSoap = (
 		signature: m?.signature,
 		messageIsFromExternalDomain: getMessageIsFromExternalDomain(m._attrs, ownerAccount),
 		authenticationHeaders: getAuthenticationHeaders(m._attrs),
-		sensitivity: getSensitivityHeader(m._attrs),
+		sensitivity: getSensitivityHeaderFromAPI(m._attrs),
 		messageIdFromMailHeaders: getMessageIdFromMailHeaders(m._attrs),
 		creationDateFromMailHeaders: getCreationDateFromMailHeaders(m._attrs),
 		messageIsFromDistributionList: getMessageIsFromDistributionList(m._attrs)
