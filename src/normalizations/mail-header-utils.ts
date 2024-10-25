@@ -7,11 +7,12 @@
 import { TFunction } from 'i18next';
 import { includes, isEmpty, trim } from 'lodash';
 
-import { Sensitivity, SENSITIVITY_VALUES, VALID_MAIL_AUTHENTICATION_HEADERS } from '../constants';
+import { SENSITIVITY_VALUES, VALID_MAIL_AUTHENTICATION_HEADERS } from '../constants';
 import {
 	MailAuthenticationHeader,
 	MailAuthenticationHeaders,
 	MailSensitivityHeader,
+	Sensitivity,
 	SoapIncompleteMessage
 } from '../types';
 
@@ -136,9 +137,6 @@ export function getSensitivityFromMailsHeaders(
 }
 
 export function getMailSensitivityIconColor(sensitivity: MailSensitivityHeader): string {
-	if (!sensitivity) {
-		return 'warning';
-	}
 	const normalizedSensitivity = sensitivity.trim().toLowerCase();
 
 	switch (normalizedSensitivity) {

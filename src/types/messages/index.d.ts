@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import { SENSITIVITY_VALUES } from '../../constants';
 import type { MailsEditorV2 } from '../editor';
 import { Participant } from '../participant';
 import { SaveDraftResponse, MailSensitivityHeader, MessageSignature } from '../soap';
@@ -111,3 +112,5 @@ export type SendMsgResult = {
 				error: true;
 		  });
 };
+
+export type Sensitivity = (typeof SENSITIVITY_VALUES)[number];

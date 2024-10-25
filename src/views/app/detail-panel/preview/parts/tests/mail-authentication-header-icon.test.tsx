@@ -26,8 +26,8 @@ describe('authenticationHeadersIconColor', () => {
 			<MailAuthenticationHeaderIcon authenticationInfo={authenticationHeaders} />
 		);
 		const icon = screen.getByTestId('mail-authentication-header-icon');
-		user.hover(icon);
+		await user.hover(icon);
 
-		expect(await screen.findByText('spf=pass, dkim=pass, dmarc=pass')).toBeInTheDocument();
+		expect(await screen.findByText('dkim=pass, spf=pass, dmarc=pass')).toBeInTheDocument();
 	});
 });
