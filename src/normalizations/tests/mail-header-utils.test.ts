@@ -137,6 +137,11 @@ describe('getSensitivityHeaderFromAPI', () => {
 		expect(getSensitivityHeaderFromAPI(undefined)).toBeUndefined();
 	});
 
+	it('should return undefined if headers.Sensitivity is undefined', () => {
+		const headers = { Sensitivity: undefined };
+		expect(getSensitivityHeaderFromAPI(headers)).toBeUndefined();
+	});
+
 	it('should return "personal" if headers.Sensitivity is "Personal"', () => {
 		const headers = { Sensitivity: 'Personal' };
 		expect(getSensitivityHeaderFromAPI(headers)).toBe('Personal');

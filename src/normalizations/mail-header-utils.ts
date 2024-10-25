@@ -60,8 +60,7 @@ export function getAuthenticationHeadersFromAPI(
 export function getSensitivityHeaderFromAPI(
 	headers: SoapIncompleteMessage['_attrs']
 ): MailSensitivityHeader | undefined {
-	if (!headers) return undefined;
-	const sensitivity = headers.Sensitivity;
+	const sensitivity = headers?.Sensitivity;
 	if (!sensitivity) return undefined;
 
 	switch (sensitivity.toLowerCase()) {
