@@ -85,7 +85,7 @@ export function getHasAuthenticationHeaders(
 ): boolean {
 	if (!authenticationHeaders) return false;
 	const headers = Object.keys(authenticationHeaders);
-	return headers.some((header) => VALID_MAIL_AUTHENTICATION_HEADERS.includes(header));
+	return headers.some((header) => includes(VALID_MAIL_AUTHENTICATION_HEADERS, header));
 }
 
 export function getMailAuthenticationHeaderLabel(
@@ -94,7 +94,7 @@ export function getMailAuthenticationHeaderLabel(
 ): string | undefined {
 	if (!authenticationHeaders) return undefined;
 	const validHeaders = Object.keys(authenticationHeaders).filter((header) =>
-		VALID_MAIL_AUTHENTICATION_HEADERS.includes(header)
+		includes(VALID_MAIL_AUTHENTICATION_HEADERS, header)
 	);
 
 	const values = validHeaders.map((validHeader) =>
