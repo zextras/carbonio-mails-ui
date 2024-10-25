@@ -6,7 +6,7 @@
 
 import React from 'react';
 
-import { setupTest, screen } from '../../../../../../carbonio-ui-commons/test/test-setup';
+import { setupTest, screen } from '../../../../../../../carbonio-ui-commons/test/test-setup';
 import { MailAuthenticationHeaderIcon } from '../mail-authentication-header-icon';
 
 const authenticationHeaders = {

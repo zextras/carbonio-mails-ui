@@ -11,8 +11,8 @@ import { useTranslation } from 'react-i18next';
 import {
 	getAuthenticationHeadersIconColor,
 	getMailAuthenticationHeaderLabel
-} from '../../../../../normalizations/mail-header-utils';
-import { MailAuthenticationHeaders } from '../../../../../types';
+} from '../../../../../../normalizations/mail-header-utils';
+import { MailAuthenticationHeaders } from '../../../../../../types';
 
 export const MailAuthenticationHeaderIcon = ({
 	authenticationInfo

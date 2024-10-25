@@ -7,7 +7,7 @@ import React from 'react';
 
 import { screen } from '@testing-library/react';
 
-import { setupTest } from '../../../../../../carbonio-ui-commons/test/test-setup';
+import { setupTest } from '../../../../../../../carbonio-ui-commons/test/test-setup';
 import { DistributionListIcon } from '../distribution-list-icon';
 
 describe('DistributionListIcon', () => {

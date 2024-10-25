@@ -46,7 +46,7 @@ import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { ContactNameChip } from './contact-names-chips';
-import { MailInfoBlock } from './mail-info-block';
+import { MailInfoBlock } from './info-block/mail-info-block';
 import { MailMsgPreviewActions } from './mail-message-preview-actions';
 import MessageContactsList from './message-contact-list';
 import OnBehalfOfDisplayer from './on-behalf-of-displayer';

@@ -10,13 +10,13 @@ import { useTranslation } from 'react-i18next';
 
 import { DistributionListIcon } from './distribution-list-icon';
 import { ExternalDomainIcon } from './external-domain-icon';
-import { MailInfoDetailModal } from './info-details-modal/mail-info-detail-modal';
 import { MailAuthenticationHeaderIcon } from './mail-authentication-header-icon';
 import { MailSensitivityIcon } from './mail-sensitivity-icon';
 import { SmimeIcon } from './smime-icon';
-import { getSensitivityFromMailsHeaders } from '../../../../../normalizations/mail-header-utils';
-import { StoreProvider } from '../../../../../store/redux';
-import { IncompleteMessage } from '../../../../../types';
+import { getSensitivityFromMailsHeaders } from '../../../../../../normalizations/mail-header-utils';
+import { StoreProvider } from '../../../../../../store/redux';
+import { IncompleteMessage } from '../../../../../../types';
+import { MailInfoDetailModal } from '../info-details-modal/mail-info-detail-modal';
 
 type MailInfoProps = {
 	msg: IncompleteMessage;

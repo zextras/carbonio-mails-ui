@@ -11,8 +11,8 @@ import { useTranslation } from 'react-i18next';
 import {
 	getMailSensitivityIconColor,
 	getMailSensitivityLabel
-} from '../../../../../normalizations/mail-header-utils';
-import { Sensitivity } from '../../../../../types';
+} from '../../../../../../normalizations/mail-header-utils';
+import { Sensitivity } from '../../../../../../types';
 
 export const MailSensitivityIcon = ({
 	sensitivity

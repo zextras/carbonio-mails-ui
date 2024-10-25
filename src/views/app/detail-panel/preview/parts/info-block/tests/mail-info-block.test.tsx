@@ -7,8 +7,8 @@ import React, { act } from 'react';
 
 import { useModal } from '@zextras/carbonio-design-system';
 
-import { setupTest, screen } from '../../../../../../carbonio-ui-commons/test/test-setup';
-import { IncompleteMessage } from '../../../../../../types';
+import { setupTest, screen } from '../../../../../../../carbonio-ui-commons/test/test-setup';
+import { IncompleteMessage } from '../../../../../../../types';
 import { MailInfoBlock } from '../mail-info-block';
 
 // Mock useModal hook
