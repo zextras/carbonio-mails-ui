@@ -565,7 +565,8 @@ export const MAIL_SENSITIVITY_HEADER = {
 	companyConfidential: 'Company-Confidential'
 } as const;
 
-export const PRIVATE_SENSITIVITY_HEADERS = ['Private', 'Company-Confidential'] as const;
+export const SENSITIVITY_VALUES = ['Private', 'Company-Confidential'] as const;
+export type Sensitivity = (typeof SENSITIVITY_VALUES)[number];
 
 export const MAIL_INFO_HEADERS = {
 	messageId: 'Message-Id',
