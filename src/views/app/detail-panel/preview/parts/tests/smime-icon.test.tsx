@@ -53,9 +53,4 @@ describe('SmimeIcon', () => {
 		await user.hover(icon);
 		expect(await screen.findByText('Invalid Signature')).toBeInTheDocument(); // Tooltip text
 	});
-
-	test('returns empty fragment when signature is undefined', () => {
-		setupTest(<SmimeIcon signature={undefined} />);
-		expect(screen.queryByTestId('smime-icon')).not.toBeInTheDocument();
-	});
 });

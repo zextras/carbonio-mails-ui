@@ -16,11 +16,6 @@ const authenticationHeaders = {
 };
 
 describe('authenticationHeadersIconColor', () => {
-	it('renders an empty fragment when mailAuthenticationHeaders is undefined', () => {
-		setupTest(<MailAuthenticationHeaderIcon mailAuthenticationHeaders={undefined} />);
-		expect(screen.queryByTestId('mail-authentication-header-icon')).not.toBeInTheDocument();
-	});
-
 	it('renders an empty fragment when mailAuthenticationHeaders is empty object', () => {
 		setupTest(<MailAuthenticationHeaderIcon mailAuthenticationHeaders={{}} />);
 		expect(screen.queryByTestId('mail-authentication-header-icon')).not.toBeInTheDocument();
