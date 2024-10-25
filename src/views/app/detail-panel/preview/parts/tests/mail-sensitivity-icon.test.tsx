@@ -35,9 +35,4 @@ describe('MailSensitivityIcon', () => {
 		await user.hover(icon);
 		expect(await screen.findByText('Sensitivity Company-Confidential')).toBeInTheDocument();
 	});
-
-	test('returns empty fragment when hasSensitivity is false', () => {
-		setupTest(<MailSensitivityIcon sensitivity={MAIL_SENSITIVITY_HEADER.personal} />);
-		expect(screen.queryByRole('img')).not.toBeInTheDocument();
-	});
 });

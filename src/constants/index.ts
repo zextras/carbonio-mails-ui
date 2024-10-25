@@ -565,10 +565,10 @@ export const MAIL_SENSITIVITY_HEADER = {
 	companyConfidential: 'Company-Confidential'
 } as const;
 
+export const PRIVATE_SENSITIVITY_HEADERS = ['Private', 'Company-Confidential'] as const;
+
 export const MAIL_INFO_HEADERS = {
 	messageId: 'Message-Id',
 	creationDate: 'Date'
 } as const;
-
 export const VALID_MAIL_AUTHENTICATION_HEADERS = ['dkim', 'spf', 'dmarc'] as const;
-export const PRIVATE_SENSITIVITY_HEADERS = ['Private', 'Company-Confidential'] as const;

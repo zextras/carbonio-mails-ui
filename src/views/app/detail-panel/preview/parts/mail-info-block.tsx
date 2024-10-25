@@ -16,7 +16,7 @@ import { MailSensitivityIcon } from './mail-sensitivity-icon';
 import { SmimeIcon } from './smime-icon';
 import {
 	getHasAuthenticationHeaders,
-	getIsSensitive
+	getSensitivityFromMailsHeaders
 } from '../../../../../normalizations/mail-header-utils';
 import { StoreProvider } from '../../../../../store/redux';
 import { IncompleteMessage } from '../../../../../types';
@@ -34,7 +34,7 @@ export const MailInfoBlock = ({ msg }: MailInfoProps): React.JSX.Element | null 
 	const messageIdFromHeaders = msg?.messageIdFromMailHeaders;
 	const fromDistributionList = msg?.messageIsFromDistributionList;
 	const fromExternalDomain = msg?.messageIsFromExternalDomain;
-	const sensitivity = msg?.sensitivity;
+	const sensitivityHeader = msg?.sensitivity;
 	const authenticationHeaders = msg?.authenticationHeaders;
 
 	const showMailDetailsModal = useCallback(
@@ -56,7 +56,7 @@ export const MailInfoBlock = ({ msg }: MailInfoProps): React.JSX.Element | null 
 								messageIsFromDistributionList={fromDistributionList}
 								messageIsFromExternalDomain={fromExternalDomain}
 								mailAuthenticationHeaders={authenticationHeaders}
-								sensitivityValue={sensitivity}
+								sensitivityValue={sensitivityHeader}
 							/>
 						</StoreProvider>
 					)
@@ -72,12 +72,12 @@ export const MailInfoBlock = ({ msg }: MailInfoProps): React.JSX.Element | null 
 			fromDistributionList,
 			fromExternalDomain,
 			authenticationHeaders,
-			sensitivity,
+			sensitivityHeader,
 			closeModal
 		]
 	);
 
-	const isSensitive = getIsSensitive(sensitivity);
+	const sensitivity = getSensitivityFromMailsHeaders(sensitivityHeader);
 	const hasAuthenticationHeaders = getHasAuthenticationHeaders(authenticationHeaders);
 
 	const showLink =
@@ -85,7 +85,7 @@ export const MailInfoBlock = ({ msg }: MailInfoProps): React.JSX.Element | null 
 		creationDateFromHeaders ||
 		signature ||
 		fromExternalDomain ||
-		isSensitive ||
+		sensitivity ||
 		hasAuthenticationHeaders ||
 		fromDistributionList;
 
@@ -93,7 +93,7 @@ export const MailInfoBlock = ({ msg }: MailInfoProps): React.JSX.Element | null 
 		<Container orientation="horizontal" padding={{ all: 'small' }} mainAlignment="flex-start">
 			{signature && <SmimeIcon signature={signature} />}
 			{fromExternalDomain && <ExternalDomainIcon />}
-			{isSensitive && <MailSensitivityIcon sensitivity={sensitivity} />}
+			{sensitivity && <MailSensitivityIcon sensitivity={sensitivity} />}
 			{hasAuthenticationHeaders && (
 				<MailAuthenticationHeaderIcon mailAuthenticationHeaders={authenticationHeaders} />
 			)}

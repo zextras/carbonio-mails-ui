@@ -12,6 +12,7 @@ import {
 	MailAuthenticationHeader,
 	MailAuthenticationHeaders,
 	MailSensitivityHeader,
+	Sensitivity,
 	SoapIncompleteMessage
 } from '../types';
 
@@ -116,19 +117,17 @@ export function getAuthenticationHeadersIcon(
 	if (numberOfPassedHeaders === 3) return 'success';
 	return 'warning';
 }
+export function getSensitivityFromMailsHeaders(
+	sensitivity?: MailSensitivityHeader
+): Sensitivity | undefined {
+	if (!sensitivity) return undefined;
 
-export function getIsSensitive(sensitivity: MailSensitivityHeader | undefined): boolean {
-	if (!sensitivity) return false;
-
-	const lowerCaseSensitivity = sensitivity.toLowerCase();
-	return PRIVATE_SENSITIVITY_HEADERS.some(
-		(header) => header.toLowerCase() === lowerCaseSensitivity
+	return PRIVATE_SENSITIVITY_HEADERS.find(
+		(header) => header.toLowerCase() === sensitivity.toLowerCase()
 	);
 }
 
-export function getMailSensitivityIconColor(
-	sensitivity: MailSensitivityHeader | undefined
-): string {
+export function getMailSensitivityIconColor(sensitivity: MailSensitivityHeader): string {
 	if (!sensitivity) {
 		return 'warning';
 	}
@@ -146,10 +145,7 @@ export function getMailSensitivityIconColor(
 	}
 }
 
-export function getMailSensitivityLabel(
-	t: TFunction,
-	sensitivity: MailSensitivityHeader | undefined
-): string {
+export function getMailSensitivityLabel(t: TFunction, sensitivity: MailSensitivityHeader): string {
 	if (!sensitivity) {
 		return t('label.mail_sensitivity_unknown', 'Sensitivity Unknown');
 	}
