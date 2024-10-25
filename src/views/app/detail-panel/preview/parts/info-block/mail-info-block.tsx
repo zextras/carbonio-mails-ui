@@ -8,7 +8,6 @@ import React, { useCallback } from 'react';
 import { Container, Link, useModal } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
 
-import { getSensitivityFromMailsHeaders } from '../utils';
 import { DistributionListIcon } from './distribution-list-icon';
 import { ExternalDomainIcon } from './external-domain-icon';
 import { MailAuthenticationHeaderIcon } from './mail-authentication-header-icon';
@@ -74,14 +73,12 @@ export const MailInfoBlock = ({ msg }: MailInfoProps): React.JSX.Element | null 
 		]
 	);
 
-	const sensitivity = getSensitivityFromMailsHeaders(sensitivityHeader);
-
 	const showInfoDetails =
 		messageIdFromHeaders ||
 		creationDateFromHeaders ||
 		signature ||
 		fromExternalDomain ||
-		sensitivity ||
+		sensitivityHeader ||
 		authenticationMailsHeaders ||
 		fromDistributionList;
 
@@ -89,7 +86,7 @@ export const MailInfoBlock = ({ msg }: MailInfoProps): React.JSX.Element | null 
 		<Container orientation="horizontal" padding={{ all: 'small' }} mainAlignment="flex-start">
 			{signature && <SmimeIcon signature={signature} />}
 			{fromExternalDomain && <ExternalDomainIcon />}
-			{sensitivity && <MailSensitivityIcon sensitivity={sensitivity} />}
+			{sensitivityHeader && <MailSensitivityIcon sensitivity={sensitivityHeader} />}
 			{authenticationMailsHeaders && (
 				<MailAuthenticationHeaderIcon authenticationInfo={authenticationMailsHeaders} />
 			)}

@@ -12,8 +12,7 @@ import {
 	getAuthenticationHeadersIconColor,
 	getMailAuthenticationHeaderLabel,
 	getMailSensitivityIconColor,
-	getMailSensitivityLabel,
-	getSensitivityFromMailsHeaders
+	getMailSensitivityLabel
 } from '../utils';
 
 describe('getAuthenticationHeadersIconColor', () => {
@@ -88,10 +87,6 @@ describe('getMailAuthenticationHeaderLabel', () => {
 });
 
 describe('getMailSensitivityIconColor', () => {
-	it('returns "warning" for Personal', () => {
-		expect(getMailSensitivityIconColor(MAIL_SENSITIVITY_HEADER.personal)).toBe('warning');
-	});
-
 	it('returns "error" for Private', () => {
 		expect(getMailSensitivityIconColor(MAIL_SENSITIVITY_HEADER.private)).toBe('error');
 	});
@@ -106,11 +101,6 @@ describe('getMailSensitivityIconColor', () => {
 });
 
 describe('getMailSensitivityLabel', () => {
-	it('returns the correct label for Personal', () => {
-		const result = getMailSensitivityLabel(t, MAIL_SENSITIVITY_HEADER.personal);
-		expect(result).toBe('label.mail_sensitivity_personal');
-	});
-
 	it('returns the correct label for Private', () => {
 		const result = getMailSensitivityLabel(t, MAIL_SENSITIVITY_HEADER.private);
 		expect(result).toBe('label.mail_sensitivity_private');
@@ -124,34 +114,5 @@ describe('getMailSensitivityLabel', () => {
 	it('returns the label for unexpected sensitivity', () => {
 		const result = getMailSensitivityLabel(t, 'Unexpected' as never);
 		expect(result).toBe('label.mail_sensitivity_unknown');
-	});
-});
-
-describe('getSensitivityFromMailsHeaders', () => {
-	it('should return undefined when sensitivity is personal', () => {
-		const result = getSensitivityFromMailsHeaders(MAIL_SENSITIVITY_HEADER.personal);
-		expect(result).toBeUndefined();
-	});
-
-	it('should return undefined when sensitivity is private', () => {
-		const result = getSensitivityFromMailsHeaders(MAIL_SENSITIVITY_HEADER.private);
-		expect(result).toBe('Private');
-	});
-
-	it('should return undefined when sensitivity is Company-Confidential ', () => {
-		const result = getSensitivityFromMailsHeaders(MAIL_SENSITIVITY_HEADER.companyConfidential);
-		expect(result).toBe('Company-Confidential');
-	});
-
-	it('returns true for Private in mixed case', () => {
-		expect(getSensitivityFromMailsHeaders('pRiVate' as never)).toBe('Private');
-	});
-
-	it('returns undefined for undefined sensitivity value', () => {
-		expect(getSensitivityFromMailsHeaders(undefined)).toBeUndefined();
-	});
-
-	it('returns undefined for unknown values', () => {
-		expect(getSensitivityFromMailsHeaders(' ' as never)).toBeUndefined();
 	});
 });

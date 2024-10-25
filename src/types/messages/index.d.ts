@@ -7,7 +7,7 @@
 import { SENSITIVITY_VALUES } from '../../constants';
 import type { MailsEditorV2 } from '../editor';
 import { Participant } from '../participant';
-import { SaveDraftResponse, MailSensitivityHeader, MessageSignature } from '../soap';
+import { SaveDraftResponse, MessageSignature } from '../soap';
 
 type MailAuthenticationHeader = { value: string; pass: boolean };
 
@@ -21,7 +21,7 @@ export type MailHeaders = {
 	signature?: Array<MessageSignature>;
 	messageIsFromExternalDomain?: boolean;
 	authenticationHeaders: MailAuthenticationHeaders;
-	sensitivity?: MailSensitivityHeader;
+	sensitivity?: Sensitivity;
 	messageIdFromMailHeaders?: string;
 	creationDateFromMailHeaders?: string;
 	messageIsFromDistributionList?: boolean;

@@ -5,12 +5,8 @@
  */
 import { TFunction } from 'i18next';
 
-import { SENSITIVITY_VALUES, VALID_MAIL_AUTHENTICATION_HEADERS } from '../../../../../constants';
-import {
-	MailAuthenticationHeaders,
-	MailSensitivityHeader,
-	Sensitivity
-} from '../../../../../types';
+import { VALID_MAIL_AUTHENTICATION_HEADERS } from '../../../../../constants';
+import { MailAuthenticationHeaders, Sensitivity } from '../../../../../types';
 
 export function getMailAuthenticationHeaderLabel(
 	t: TFunction,
@@ -41,21 +37,10 @@ export function getAuthenticationHeadersIconColor(
 	if (allHeaderPassing) return 'success';
 	return 'warning';
 }
-
-export function getSensitivityFromMailsHeaders(
-	sensitivity?: MailSensitivityHeader
-): Sensitivity | undefined {
-	if (!sensitivity) return undefined;
-
-	return SENSITIVITY_VALUES.find((header) => header.toLowerCase() === sensitivity.toLowerCase());
-}
-
-export function getMailSensitivityIconColor(sensitivity: MailSensitivityHeader): string {
+export function getMailSensitivityIconColor(sensitivity: Sensitivity): string {
 	const normalizedSensitivity = sensitivity.trim().toLowerCase();
 
 	switch (normalizedSensitivity) {
-		case 'personal':
-			return 'warning';
 		case 'private':
 			return 'error';
 		case 'company-confidential':
@@ -65,16 +50,10 @@ export function getMailSensitivityIconColor(sensitivity: MailSensitivityHeader):
 	}
 }
 
-export function getMailSensitivityLabel(t: TFunction, sensitivity: MailSensitivityHeader): string {
-	if (!sensitivity) {
-		return t('label.mail_sensitivity_unknown', 'Sensitivity Unknown');
-	}
-
+export function getMailSensitivityLabel(t: TFunction, sensitivity: Sensitivity): string {
 	const normalizedSensitivity = sensitivity.trim().toLowerCase();
 
 	switch (normalizedSensitivity) {
-		case 'personal':
-			return t('label.mail_sensitivity_personal', 'Sensitivity Personal');
 		case 'private':
 			return t('label.mail_sensitivity_private', 'Sensitivity Private');
 		case 'company-confidential':
