@@ -52,6 +52,55 @@ describe('getAuthenticationHeadersFromAPI', () => {
 		});
 	});
 
+	it('should return only dkim if present', () => {
+		const headers = {
+			'Authentication-Results':
+				'Authentication-Results: mx.google.com;dkim=pass header.i=@valimail.com header.s=google2048 header.b=Z8L6tjHb;'
+		};
+
+		const result = getAuthenticationHeadersFromAPI(headers);
+
+		expect(result).toEqual({
+			dkim: {
+				value: 'dkim=pass header.i=@valimail.com header.s=google2048 header.b=Z8L6tjHb',
+				pass: true
+			}
+		});
+	});
+
+	it('should return only spf if present', () => {
+		const headers = {
+			'Authentication-Results':
+				'Authentication-Results: mx.google.com;spf=pass (google.com: domain of [redacted]@valimail.com designates 209.85.220.41 as permitted sender) smtp.mailfrom=[redacted]@valimail.com;'
+		};
+
+		const result = getAuthenticationHeadersFromAPI(headers);
+
+		expect(result).toEqual({
+			spf: {
+				value:
+					'spf=pass (google.com: domain of [redacted]@valimail.com designates 209.85.220.41 as permitted sender) smtp.mailfrom=[redacted]@valimail.com',
+				pass: true
+			}
+		});
+	});
+
+	it('should return only dmarc if present', () => {
+		const headers = {
+			'Authentication-Results':
+				'Authentication-Results: mx.google.com;dmarc=pass (p=REJECT sp=REJECT dis=NONE) header.from=valimail.com'
+		};
+
+		const result = getAuthenticationHeadersFromAPI(headers);
+
+		expect(result).toEqual({
+			dmarc: {
+				value: 'dmarc=pass (p=REJECT sp=REJECT dis=NONE) header.from=valimail.com',
+				pass: true
+			}
+		});
+	});
+
 	it('should return correct headers when some values are present and valid', () => {
 		const headers = {
 			'Authentication-Results': 'dkim=pass; spf=fail; dmarc=pass'
