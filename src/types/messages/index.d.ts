@@ -17,7 +17,17 @@ type MailAuthenticationHeaders = {
 	dmarc?: MailAuthenticationHeader;
 };
 
-export type IncompleteMessage = {
+export type MailHeaders = {
+	signature?: Array<MessageSignature>;
+	messageIsFromExternalDomain?: boolean;
+	authenticationHeaders?: MailAuthenticationHeaders;
+	sensitivity?: MailSensitivityHeader;
+	messageIdFromMailHeaders?: string;
+	creationDateFromMailHeaders?: string;
+	messageIsFromDistributionList?: boolean;
+};
+
+export type IncompleteMessage = MailHeaders & {
 	id: string;
 	did?: string;
 	parent: string;
@@ -47,13 +57,6 @@ export type IncompleteMessage = {
 	isComplete: boolean;
 	isReplied: boolean;
 	isReadReceiptRequested?: boolean;
-	signature?: Array<MessageSignature>;
-	messageIsFromExternalDomain: boolean;
-	authenticationHeaders: MailAuthenticationHeaders;
-	sensitivity: MailSensitivityHeader;
-	messageIdFromMailHeaders: string;
-	creationDateFromMailHeaders: string;
-	messageIsFromDistributionList: boolean;
 };
 
 export type MailMessagePart = {

@@ -29,13 +29,13 @@ export const MailInfoBlock = ({ msg }: MailInfoProps): React.JSX.Element | null 
 	const [t] = useTranslation();
 	const { createModal, closeModal } = useModal();
 
-	const signature = msg?.signature?.[0];
-	const creationDateFromHeaders = msg?.creationDateFromMailHeaders;
-	const messageIdFromHeaders = msg?.messageIdFromMailHeaders;
-	const fromDistributionList = msg?.messageIsFromDistributionList;
-	const fromExternalDomain = msg?.messageIsFromExternalDomain;
-	const sensitivityHeader = msg?.sensitivity;
-	const authenticationHeaders = msg?.authenticationHeaders;
+	const signature = msg.signature?.[0];
+	const creationDateFromHeaders = msg.creationDateFromMailHeaders;
+	const messageIdFromHeaders = msg.messageIdFromMailHeaders;
+	const fromDistributionList = msg.messageIsFromDistributionList;
+	const fromExternalDomain = msg.messageIsFromExternalDomain;
+	const sensitivityHeader = msg.sensitivity;
+	const authenticationMailsHeaders = msg.authenticationHeaders;
 
 	const showMailDetailsModal = useCallback(
 		(event: React.MouseEvent): void => {
@@ -55,7 +55,7 @@ export const MailInfoBlock = ({ msg }: MailInfoProps): React.JSX.Element | null 
 								messageIdFromMailHeaders={messageIdFromHeaders}
 								messageIsFromDistributionList={fromDistributionList}
 								messageIsFromExternalDomain={fromExternalDomain}
-								mailAuthenticationHeaders={authenticationHeaders}
+								mailAuthenticationHeaders={authenticationMailsHeaders}
 								sensitivityValue={sensitivityHeader}
 							/>
 						</StoreProvider>
@@ -71,16 +71,16 @@ export const MailInfoBlock = ({ msg }: MailInfoProps): React.JSX.Element | null 
 			messageIdFromHeaders,
 			fromDistributionList,
 			fromExternalDomain,
-			authenticationHeaders,
+			authenticationMailsHeaders,
 			sensitivityHeader,
 			closeModal
 		]
 	);
 
 	const sensitivity = getSensitivityFromMailsHeaders(sensitivityHeader);
-	const authenticationInfo = getAuthenticationInfoFromMailsHeaders(authenticationHeaders);
+	const authenticationInfo = getAuthenticationInfoFromMailsHeaders(authenticationMailsHeaders);
 
-	const showLink =
+	const showInfoDetails =
 		messageIdFromHeaders ||
 		creationDateFromHeaders ||
 		signature ||
@@ -98,7 +98,7 @@ export const MailInfoBlock = ({ msg }: MailInfoProps): React.JSX.Element | null 
 				<MailAuthenticationHeaderIcon authenticationInfo={authenticationInfo} />
 			)}
 			{fromDistributionList && <DistributionListIcon />}
-			{showLink && (
+			{showInfoDetails && (
 				<Link size="medium" onClick={showMailDetailsModal}>
 					{t('label.show_details', 'Show Details')}
 				</Link>

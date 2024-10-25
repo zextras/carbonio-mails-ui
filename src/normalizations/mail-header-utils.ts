@@ -67,9 +67,10 @@ export function getAuthenticationHeaders(
 
 export function getSensitivityHeader(
 	headers: SoapIncompleteMessage['_attrs']
-): Lowercase<MailSensitivityHeader> | undefined {
+): MailSensitivityHeader | undefined {
 	if (!headers) return undefined;
 	const sensitivity = headers.Sensitivity;
+
 	switch (sensitivity) {
 		case 'Personal':
 			return 'personal';

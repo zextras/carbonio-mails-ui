@@ -68,7 +68,7 @@ export const MailInfoDetailModal = ({
 				{authenticationInfo && (
 					<MailAuthenticationHeadersSubsection authenticationInfo={authenticationInfo} />
 				)}
-				<SmimeSubsection signature={signature} />
+				{signature && <SmimeSubsection signature={signature} />}
 			</Container>
 			<ModalFooter
 				onConfirm={(): void => {
