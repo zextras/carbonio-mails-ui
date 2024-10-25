@@ -9,7 +9,7 @@ import { Icon, Row, Tooltip } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
 
 import {
-	getAuthenticationHeadersIcon,
+	getAuthenticationHeadersIconColor,
 	getMailAuthenticationHeaderLabel
 } from '../../../../../normalizations/mail-header-utils';
 import { MailAuthenticationHeaders } from '../../../../../types';
@@ -21,7 +21,7 @@ export const MailAuthenticationHeaderIcon = ({
 }): React.JSX.Element => {
 	const [t] = useTranslation();
 	const tooltipLabel = getMailAuthenticationHeaderLabel(t, authenticationInfo);
-	const authenticationHeadersIconColor = getAuthenticationHeadersIcon(authenticationInfo);
+	const authenticationHeadersIconColor = getAuthenticationHeadersIconColor(authenticationInfo);
 
 	return (
 		<Tooltip label={tooltipLabel}>

@@ -119,7 +119,7 @@ export function getMailAuthenticationHeaderLabel(
 	return headerLabels.join(', ');
 }
 
-export function getAuthenticationHeadersIcon(
+export function getAuthenticationHeadersIconColor(
 	authenticationHeaders: MailAuthenticationHeaders
 ): string {
 	const allHeaderPassing = VALID_MAIL_AUTHENTICATION_HEADERS.every(

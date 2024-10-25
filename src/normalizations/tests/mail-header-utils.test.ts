@@ -11,7 +11,7 @@ import { MAIL_SENSITIVITY_HEADER } from '../../constants';
 import { MailAuthenticationHeader, MailAuthenticationHeaders } from '../../types';
 import {
 	getAuthenticationHeaders,
-	getAuthenticationHeadersIcon,
+	getAuthenticationHeadersIconColor,
 	getMessageIsFromDistributionList,
 	getMessageIsFromExternalDomain,
 	getMailAuthenticationHeaderLabel,
@@ -161,9 +161,9 @@ describe('getAuthenticationInfoFromMailsHeaders', () => {
 	});
 });
 
-describe('getAuthenticationHeadersIcon', () => {
+describe('getAuthenticationHeadersIconColor', () => {
 	it('should return "warning" when headers is an empty object', () => {
-		expect(getAuthenticationHeadersIcon({})).toBe('warning');
+		expect(getAuthenticationHeadersIconColor({})).toBe('warning');
 	});
 
 	it('should return "warning" when no headers have pass: true', () => {
@@ -171,7 +171,7 @@ describe('getAuthenticationHeadersIcon', () => {
 			header1: { pass: false, value: '' },
 			header2: { pass: false, value: '' }
 		};
-		expect(getAuthenticationHeadersIcon(headers)).toBe('warning');
+		expect(getAuthenticationHeadersIconColor(headers)).toBe('warning');
 	});
 
 	it('should return "warning" when some headers have pass: true but less than 3', () => {
@@ -180,7 +180,7 @@ describe('getAuthenticationHeadersIcon', () => {
 			dkim: { pass: false, value: '' },
 			dmarc: { pass: true, value: '' }
 		};
-		expect(getAuthenticationHeadersIcon(headers)).toBe('warning');
+		expect(getAuthenticationHeadersIconColor(headers)).toBe('warning');
 	});
 
 	it('should return "warning" when an unknown header has pass: true', () => {
@@ -189,7 +189,7 @@ describe('getAuthenticationHeadersIcon', () => {
 			spf: { pass: true, value: '' },
 			header: { pass: true, value: '' }
 		};
-		expect(getAuthenticationHeadersIcon(headers)).toBe('warning');
+		expect(getAuthenticationHeadersIconColor(headers)).toBe('warning');
 	});
 
 	it('should return "warning" when more than 3 headers have pass: true', () => {
@@ -199,7 +199,7 @@ describe('getAuthenticationHeadersIcon', () => {
 			header3: { pass: true, value: '' },
 			header4: { pass: true, value: '' }
 		};
-		expect(getAuthenticationHeadersIcon(headers)).toBe('warning');
+		expect(getAuthenticationHeadersIconColor(headers)).toBe('warning');
 	});
 });
 

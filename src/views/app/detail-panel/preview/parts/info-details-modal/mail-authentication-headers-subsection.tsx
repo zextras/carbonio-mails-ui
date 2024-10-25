@@ -8,7 +8,7 @@ import React from 'react';
 import { Container, Divider, Icon, Padding, Row, Text } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
 
-import { getAuthenticationHeadersIcon } from '../../../../../../normalizations/mail-header-utils';
+import { getAuthenticationHeadersIconColor } from '../../../../../../normalizations/mail-header-utils';
 import { MailAuthenticationHeaders } from '../../../../../../types';
 
 type MailGeneralInfoSubsectionProps = {
@@ -19,7 +19,7 @@ export const MailAuthenticationHeadersSubsection = ({
 	authenticationInfo
 }: MailGeneralInfoSubsectionProps): React.JSX.Element => {
 	const [t] = useTranslation();
-	const authenticationHeadersIcon = getAuthenticationHeadersIcon(authenticationInfo);
+	const authenticationHeadersIcon = getAuthenticationHeadersIconColor(authenticationInfo);
 
 	const headerLabel = t(
 		'messages.modal.mail_authentication_headers.title',
@@ -39,7 +39,8 @@ export const MailAuthenticationHeadersSubsection = ({
 			<Row mainAlignment="flex-start" padding={{ top: 'small', bottom: 'small' }}>
 				<Icon
 					size="medium"
-					icon={authenticationHeadersIcon}
+					icon={'ShieldOutline'}
+					color={authenticationHeadersIcon}
 					style={{ alignSelf: 'center', paddingRight: '0.5rem' }}
 				/>
 				<Text weight="bold">{headerLabel}</Text>
