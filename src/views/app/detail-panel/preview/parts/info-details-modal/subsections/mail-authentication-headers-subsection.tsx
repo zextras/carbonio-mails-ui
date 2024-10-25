@@ -12,14 +12,14 @@ import { MailAuthenticationHeaders } from '../../../../../../../types';
 import { getAuthenticationHeadersIconColor } from '../../utils';
 
 type MailGeneralInfoSubsectionProps = {
-	authenticationInfo: MailAuthenticationHeaders;
+	authenticationMailsHeaders: MailAuthenticationHeaders;
 };
 
 export const MailAuthenticationHeadersSubsection = ({
-	authenticationInfo
+	authenticationMailsHeaders
 }: MailGeneralInfoSubsectionProps): React.JSX.Element => {
 	const [t] = useTranslation();
-	const authenticationHeadersIcon = getAuthenticationHeadersIconColor(authenticationInfo);
+	const authenticationHeadersIcon = getAuthenticationHeadersIconColor(authenticationMailsHeaders);
 
 	const headerLabel = t(
 		'messages.modal.mail_authentication_headers.title',
@@ -46,24 +46,24 @@ export const MailAuthenticationHeadersSubsection = ({
 				<Text weight="bold">{headerLabel}</Text>
 			</Row>
 			<Padding top={'medium'} />
-			{authenticationInfo?.dkim && (
+			{authenticationMailsHeaders?.dkim && (
 				<Row mainAlignment="flex-start" padding={{ top: 'small', bottom: 'small' }}>
 					<Text size="small">
-						<strong>{'DKIM:'}</strong> {authenticationInfo.dkim.value}
+						<strong>{'DKIM:'}</strong> {authenticationMailsHeaders.dkim.value}
 					</Text>
 				</Row>
 			)}
-			{authenticationInfo?.dmarc && (
+			{authenticationMailsHeaders?.dmarc && (
 				<Row mainAlignment="flex-start" padding={{ top: 'small', bottom: 'small' }}>
 					<Text size="small">
-						<strong>{'DMARC:'}</strong> {authenticationInfo.dmarc.value}
+						<strong>{'DMARC:'}</strong> {authenticationMailsHeaders.dmarc.value}
 					</Text>
 				</Row>
 			)}
-			{authenticationInfo?.spf && (
+			{authenticationMailsHeaders?.spf && (
 				<Row mainAlignment="flex-start" padding={{ top: 'small', bottom: 'small' }}>
 					<Text size="small">
-						<strong>{'SPF:'}</strong> {authenticationInfo.spf.value}
+						<strong>{'SPF:'}</strong> {authenticationMailsHeaders.spf.value}
 					</Text>
 				</Row>
 			)}

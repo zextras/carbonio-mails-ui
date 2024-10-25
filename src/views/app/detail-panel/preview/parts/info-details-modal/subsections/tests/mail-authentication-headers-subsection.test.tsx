@@ -17,7 +17,9 @@ describe('MailAuthenticationHeadersSubsection', () => {
 			dmarc: { value: 'dmarc-value', pass: true }
 		};
 
-		setupTest(<MailAuthenticationHeadersSubsection authenticationInfo={authenticationHeaders} />);
+		setupTest(
+			<MailAuthenticationHeadersSubsection authenticationMailsHeaders={authenticationHeaders} />
+		);
 		expect(screen.getByText('Authentication Headers')).toBeInTheDocument();
 		expect(screen.getByText('DKIM:')).toBeInTheDocument();
 		expect(screen.getByText('dkim-value')).toBeInTheDocument();
@@ -32,7 +34,9 @@ describe('MailAuthenticationHeadersSubsection', () => {
 			dkim: { value: 'dkim-value', pass: true }
 		};
 
-		setupTest(<MailAuthenticationHeadersSubsection authenticationInfo={authenticationHeaders} />);
+		setupTest(
+			<MailAuthenticationHeadersSubsection authenticationMailsHeaders={authenticationHeaders} />
+		);
 		expect(screen.getByText('Authentication Headers')).toBeInTheDocument();
 		expect(screen.getByText('DKIM:')).toBeInTheDocument();
 		expect(screen.getByText('dkim-value')).toBeInTheDocument();
@@ -47,7 +51,9 @@ describe('MailAuthenticationHeadersSubsection', () => {
 			dmarc: { value: 'dmarc-value', pass: true }
 		};
 
-		setupTest(<MailAuthenticationHeadersSubsection authenticationInfo={authenticationHeaders} />);
+		setupTest(
+			<MailAuthenticationHeadersSubsection authenticationMailsHeaders={authenticationHeaders} />
+		);
 		expect(screen.getByText('Authentication Headers')).toBeInTheDocument();
 		expect(screen.queryByText('DKIM:')).not.toBeInTheDocument();
 		expect(screen.queryByText('dkim-value')).not.toBeInTheDocument();
@@ -62,7 +68,9 @@ describe('MailAuthenticationHeadersSubsection', () => {
 			spf: { value: 'spf-value', pass: true }
 		};
 
-		setupTest(<MailAuthenticationHeadersSubsection authenticationInfo={authenticationHeaders} />);
+		setupTest(
+			<MailAuthenticationHeadersSubsection authenticationMailsHeaders={authenticationHeaders} />
+		);
 		expect(screen.getByText('Authentication Headers')).toBeInTheDocument();
 		expect(screen.queryByText('DKIM:')).not.toBeInTheDocument();
 		expect(screen.queryByText('dkim-value')).not.toBeInTheDocument();

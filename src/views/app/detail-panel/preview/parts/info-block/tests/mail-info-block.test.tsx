@@ -57,7 +57,7 @@ describe('MailInfoBlock', () => {
 		expect(screen.getByText('Show Details')).toBeInTheDocument();
 	});
 
-	it('should not sow the authentication icon if the passed header is an empty object', () => {
+	it('should not show the authentication icon if the passed header is an empty object', () => {
 		const mockMsg_: IncompleteMessage = {
 			signature: [validSignature],
 			sensitivity: 'Private',

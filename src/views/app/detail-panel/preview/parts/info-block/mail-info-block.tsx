@@ -53,7 +53,7 @@ export const MailInfoBlock = ({ msg }: MailInfoProps): React.JSX.Element | null 
 								messageIdFromMailHeaders={messageIdFromHeaders}
 								messageIsFromDistributionList={fromDistributionList}
 								messageIsFromExternalDomain={fromExternalDomain}
-								mailAuthenticationHeaders={authenticationMailsHeaders}
+								authenticationMailsHeaders={authenticationMailsHeaders}
 								sensitivityValue={sensitivityHeader}
 							/>
 						</StoreProvider>

@@ -14,7 +14,7 @@ import { selectMessage } from '../../../../../../../store/messages-slice';
 import { generateStore } from '../../../../../../../tests/generators/store';
 import { MailInfoDetailModal } from '../mail-info-detail-modal';
 
-describe('Mail Info Detail Modal', () => {
+describe('MailInfoDetailModal', () => {
 	test(`Should correctly render all parts`, async () => {
 		const onClose = jest.fn();
 		const store = generateStore();
@@ -28,7 +28,7 @@ describe('Mail Info Detail Modal', () => {
 				signature={msg.signature?.[0]}
 				messageIdFromMailHeaders={'messageId'}
 				creationDateFromMailHeaders={'creationDate'}
-				mailAuthenticationHeaders={{
+				authenticationMailsHeaders={{
 					dkim: { value: 'dkimvalue', pass: true },
 					spf: { value: 'spfvalue', pass: true },
 					dmarc: { value: 'dmarcvalue', pass: true }
@@ -85,7 +85,7 @@ describe('Mail Info Detail Modal', () => {
 				signature={msg.signature?.[0]}
 				messageIdFromMailHeaders={undefined}
 				creationDateFromMailHeaders={undefined}
-				mailAuthenticationHeaders={{
+				authenticationMailsHeaders={{
 					dkim: { value: 'dkimvalue', pass: true },
 					spf: { value: 'spfvalue', pass: true },
 					dmarc: { value: 'dmarcvalue', pass: true }
@@ -137,7 +137,7 @@ describe('Mail Info Detail Modal', () => {
 				signature={undefined}
 				messageIdFromMailHeaders={undefined}
 				creationDateFromMailHeaders={undefined}
-				mailAuthenticationHeaders={undefined}
+				authenticationMailsHeaders={undefined}
 				messageIsFromDistributionList={undefined}
 				messageIsFromExternalDomain={undefined}
 				sensitivityValue={undefined}
@@ -151,6 +151,17 @@ describe('Mail Info Detail Modal', () => {
 		expect(screen.queryByText('Authentication Headers')).not.toBeInTheDocument();
 
 		expect(screen.queryByText(`Issuer's Certificate Not Found`)).not.toBeInTheDocument();
+
+		expect(screen.getByText('Close')).toBeVisible();
+	});
+
+	test(`Should not show authentication header subsection if authentication header is an empty object`, async () => {
+		const onClose = jest.fn();
+		setupTest(<MailInfoDetailModal onClose={onClose} authenticationMailsHeaders={{}} />);
+
+		expect(screen.getByText('Message details')).toBeVisible();
+
+		expect(screen.queryByText('Authentication Headers')).not.toBeInTheDocument();
 
 		expect(screen.getByText('Close')).toBeVisible();
 	});

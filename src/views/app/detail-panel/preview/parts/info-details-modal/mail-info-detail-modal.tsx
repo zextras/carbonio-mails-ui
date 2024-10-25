@@ -6,6 +6,7 @@
 import React from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
+import { isEmpty } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
 import { MailAuthenticationHeadersSubsection } from './subsections/mail-authentication-headers-subsection';
@@ -20,7 +21,7 @@ type MailInfoDetailModalProps = {
 	signature?: MessageSignature;
 	messageIdFromMailHeaders?: string;
 	creationDateFromMailHeaders?: string;
-	mailAuthenticationHeaders?: IncompleteMessage['authenticationHeaders'];
+	authenticationMailsHeaders?: IncompleteMessage['authenticationHeaders'];
 	messageIsFromDistributionList?: IncompleteMessage['messageIsFromDistributionList'];
 	messageIsFromExternalDomain?: IncompleteMessage['messageIsFromExternalDomain'];
 	sensitivityValue?: IncompleteMessage['sensitivity'];
@@ -31,12 +32,13 @@ export const MailInfoDetailModal = ({
 	signature,
 	messageIdFromMailHeaders,
 	creationDateFromMailHeaders,
-	mailAuthenticationHeaders,
+	authenticationMailsHeaders,
 	messageIsFromDistributionList,
 	messageIsFromExternalDomain,
 	sensitivityValue
 }: MailInfoDetailModalProps): React.JSX.Element => {
 	const [t] = useTranslation();
+	const hasAuthenticationMailsHeaders = !isEmpty(authenticationMailsHeaders);
 	const showGeneralInfo =
 		messageIdFromMailHeaders ??
 		creationDateFromMailHeaders ??
@@ -63,8 +65,10 @@ export const MailInfoDetailModal = ({
 						sensitivityValue={sensitivityValue}
 					/>
 				)}
-				{mailAuthenticationHeaders && (
-					<MailAuthenticationHeadersSubsection authenticationInfo={mailAuthenticationHeaders} />
+				{hasAuthenticationMailsHeaders && (
+					<MailAuthenticationHeadersSubsection
+						authenticationMailsHeaders={authenticationMailsHeaders}
+					/>
 				)}
 				{signature && <SmimeSubsection signature={signature} />}
 			</Container>
