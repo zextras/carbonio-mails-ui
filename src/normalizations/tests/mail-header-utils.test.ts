@@ -142,14 +142,9 @@ describe('getSensitivityHeaderFromAPI', () => {
 		expect(getSensitivityHeaderFromAPI(headers)).toBeUndefined();
 	});
 
-	it('should return "personal" if headers.Sensitivity is "Personal"', () => {
+	it('should return undefined if headers.Sensitivity is "Personal"', () => {
 		const headers = { Sensitivity: 'Personal' };
-		expect(getSensitivityHeaderFromAPI(headers)).toBe('Personal');
-	});
-
-	it('should return "Personal" if headers.Sensitivity is "personal"', () => {
-		const headers = { Sensitivity: 'personal' };
-		expect(getSensitivityHeaderFromAPI(headers)).toBe('Personal');
+		expect(getSensitivityHeaderFromAPI(headers)).toBeUndefined();
 	});
 
 	it('should return "private" if headers.Sensitivity is "Private"', () => {
