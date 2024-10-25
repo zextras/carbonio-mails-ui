@@ -39,6 +39,10 @@ export const MailInfoDetailModal = ({
 }: MailInfoDetailModalProps): React.JSX.Element => {
 	const [t] = useTranslation();
 	const authenticationInfo = getAuthenticationInfoFromMailsHeaders(mailAuthenticationHeaders);
+	const showGeneralInfo =
+		messageIdFromMailHeaders ??
+		creationDateFromMailHeaders ??
+		(messageIsFromDistributionList || messageIsFromExternalDomain || sensitivityValue);
 	return (
 		<Container
 			mainAlignment="center"
@@ -52,13 +56,15 @@ export const MailInfoDetailModal = ({
 				onClose={onClose}
 			/>
 			<Container style={{ display: 'block', overflowY: 'scroll' }}>
-				<MailGeneralInfoSubsection
-					messageIdFromMailHeaders={messageIdFromMailHeaders}
-					creationDateFromMailHeaders={creationDateFromMailHeaders}
-					messageIsFromDistributionList={messageIsFromDistributionList}
-					messageIsFromExternalDomain={messageIsFromExternalDomain}
-					sensitivityValue={sensitivityValue}
-				/>
+				{showGeneralInfo && (
+					<MailGeneralInfoSubsection
+						messageIdFromMailHeaders={messageIdFromMailHeaders}
+						creationDateFromMailHeaders={creationDateFromMailHeaders}
+						messageIsFromDistributionList={messageIsFromDistributionList}
+						messageIsFromExternalDomain={messageIsFromExternalDomain}
+						sensitivityValue={sensitivityValue}
+					/>
+				)}
 				{authenticationInfo && (
 					<MailAuthenticationHeadersSubsection authenticationInfo={authenticationInfo} />
 				)}
