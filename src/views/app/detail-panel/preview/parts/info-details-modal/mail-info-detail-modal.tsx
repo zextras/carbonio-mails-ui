@@ -8,9 +8,9 @@ import React from 'react';
 import { Container } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
 
-import { MailAuthenticationHeadersSubsection } from './mail-authentication-headers-subsection';
-import { MailGeneralInfoSubsection } from './mail-general-info-subsection';
-import { SmimeSubsection } from './smime-subsection';
+import { MailAuthenticationHeadersSubsection } from './subsections/mail-authentication-headers-subsection';
+import { MailGeneralInfoSubsection } from './subsections/mail-general-info-subsection';
+import { SmimeSubsection } from './subsections/smime-subsection';
 import ModalFooter from '../../../../../../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../../../../../../carbonio-ui-commons/components/modals/modal-header';
 import { IncompleteMessage, MessageSignature } from '../../../../../../types';

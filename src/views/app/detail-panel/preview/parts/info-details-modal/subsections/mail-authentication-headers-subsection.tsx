@@ -8,8 +8,8 @@ import React from 'react';
 import { Container, Divider, Icon, Padding, Row, Text } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
 
-import { getAuthenticationHeadersIconColor } from '../../../../../../normalizations/mail-header-utils';
-import { MailAuthenticationHeaders } from '../../../../../../types';
+import { getAuthenticationHeadersIconColor } from '../../../../../../../normalizations/mail-header-utils';
+import { MailAuthenticationHeaders } from '../../../../../../../types';
 
 type MailGeneralInfoSubsectionProps = {
 	authenticationInfo: MailAuthenticationHeaders;
