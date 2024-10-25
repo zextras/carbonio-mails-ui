@@ -12,15 +12,10 @@ import { DistributionListIcon } from '../distribution-list-icon';
 
 describe('DistributionListIcon', () => {
 	it('correctly renders the component', async () => {
-		const { user } = setupTest(<DistributionListIcon messageIsFromDistributionList />);
+		const { user } = setupTest(<DistributionListIcon />);
 		const icon = screen.getByTestId('distribution-list-icon');
 		expect(icon).toBeInTheDocument();
 		await user.hover(icon);
 		expect(await screen.findByText('This email is from a Distribution List')).toBeInTheDocument();
-	});
-
-	it('returns empty fragment when message is not from a distribution list', () => {
-		setupTest(<DistributionListIcon messageIsFromDistributionList={false} />);
-		expect(screen.queryByTestId('distribution-list-icon')).not.toBeInTheDocument();
 	});
 });
