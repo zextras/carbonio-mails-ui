@@ -12,16 +12,16 @@ import {
 	getAuthenticationHeadersIcon,
 	getMailAuthenticationHeaderLabel
 } from '../../../../../normalizations/mail-header-utils';
-import { IncompleteMessage } from '../../../../../types';
+import { MailAuthenticationHeaders } from '../../../../../types';
 
 export const MailAuthenticationHeaderIcon = ({
-	mailAuthenticationHeaders
+	authenticationInfo
 }: {
-	mailAuthenticationHeaders: IncompleteMessage['authenticationHeaders'];
+	authenticationInfo: MailAuthenticationHeaders;
 }): React.JSX.Element => {
 	const [t] = useTranslation();
-	const tooltipLabel = getMailAuthenticationHeaderLabel(t, mailAuthenticationHeaders);
-	const authenticationHeadersIconColor = getAuthenticationHeadersIcon(mailAuthenticationHeaders);
+	const tooltipLabel = getMailAuthenticationHeaderLabel(t, authenticationInfo);
+	const authenticationHeadersIconColor = getAuthenticationHeadersIcon(authenticationInfo);
 
 	return (
 		<Tooltip label={tooltipLabel}>

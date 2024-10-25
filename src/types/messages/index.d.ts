@@ -8,7 +8,7 @@ import type { MailsEditorV2 } from '../editor';
 import { Participant } from '../participant';
 import { SaveDraftResponse, MailSensitivityHeader, MessageSignature } from '../soap';
 
-type MailAuthenticationHeader = { value?: string; pass?: boolean };
+type MailAuthenticationHeader = { value: string; pass: boolean };
 
 type MailAuthenticationHeaders = {
 	dkim?: MailAuthenticationHeader;

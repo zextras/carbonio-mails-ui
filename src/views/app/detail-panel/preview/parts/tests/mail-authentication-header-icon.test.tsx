@@ -17,18 +17,18 @@ const authenticationHeaders = {
 
 describe('authenticationHeadersIconColor', () => {
 	it('renders an empty fragment when mailAuthenticationHeaders is empty object', () => {
-		setupTest(<MailAuthenticationHeaderIcon mailAuthenticationHeaders={{}} />);
+		setupTest(<MailAuthenticationHeaderIcon authenticationInfo={{}} />);
 		expect(screen.queryByTestId('mail-authentication-header-icon')).not.toBeInTheDocument();
 	});
 
 	it('correctly renders the component when one of the properties is valid', () => {
-		setupTest(<MailAuthenticationHeaderIcon mailAuthenticationHeaders={authenticationHeaders} />);
+		setupTest(<MailAuthenticationHeaderIcon authenticationInfo={authenticationHeaders} />);
 		expect(screen.getByTestId('mail-authentication-header-icon')).toBeInTheDocument();
 	});
 
 	it('shows a tooltip when hovering', async () => {
 		const { user } = setupTest(
-			<MailAuthenticationHeaderIcon mailAuthenticationHeaders={authenticationHeaders} />
+			<MailAuthenticationHeaderIcon authenticationInfo={authenticationHeaders} />
 		);
 		const icon = screen.getByTestId('mail-authentication-header-icon');
 		user.hover(icon);

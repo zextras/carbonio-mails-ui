@@ -15,7 +15,7 @@ import { MailAuthenticationHeaderIcon } from './mail-authentication-header-icon'
 import { MailSensitivityIcon } from './mail-sensitivity-icon';
 import { SmimeIcon } from './smime-icon';
 import {
-	getHasAuthenticationHeaders,
+	getAuthenticationInfoFromMailsHeaders,
 	getSensitivityFromMailsHeaders
 } from '../../../../../normalizations/mail-header-utils';
 import { StoreProvider } from '../../../../../store/redux';
@@ -78,7 +78,7 @@ export const MailInfoBlock = ({ msg }: MailInfoProps): React.JSX.Element | null 
 	);
 
 	const sensitivity = getSensitivityFromMailsHeaders(sensitivityHeader);
-	const hasAuthenticationHeaders = getHasAuthenticationHeaders(authenticationHeaders);
+	const authenticationInfo = getAuthenticationInfoFromMailsHeaders(authenticationHeaders);
 
 	const showLink =
 		messageIdFromHeaders ||
@@ -86,7 +86,7 @@ export const MailInfoBlock = ({ msg }: MailInfoProps): React.JSX.Element | null 
 		signature ||
 		fromExternalDomain ||
 		sensitivity ||
-		hasAuthenticationHeaders ||
+		authenticationInfo ||
 		fromDistributionList;
 
 	return (
@@ -94,8 +94,8 @@ export const MailInfoBlock = ({ msg }: MailInfoProps): React.JSX.Element | null 
 			{signature && <SmimeIcon signature={signature} />}
 			{fromExternalDomain && <ExternalDomainIcon />}
 			{sensitivity && <MailSensitivityIcon sensitivity={sensitivity} />}
-			{hasAuthenticationHeaders && (
-				<MailAuthenticationHeaderIcon mailAuthenticationHeaders={authenticationHeaders} />
+			{authenticationInfo && (
+				<MailAuthenticationHeaderIcon authenticationInfo={authenticationInfo} />
 			)}
 			{fromDistributionList && <DistributionListIcon />}
 			{showLink && (

@@ -8,7 +8,7 @@
 import { t } from '@zextras/carbonio-shell-ui';
 
 import { MAIL_SENSITIVITY_HEADER } from '../../constants';
-import { MailAuthenticationHeader } from '../../types';
+import { MailAuthenticationHeader, MailAuthenticationHeaders } from '../../types';
 import {
 	getAuthenticationHeaders,
 	getAuthenticationHeadersIcon,
@@ -20,7 +20,8 @@ import {
 	getMailSensitivityLabel,
 	getMessageIdFromMailHeaders,
 	getSensitivityHeader,
-	getSensitivityFromMailsHeaders
+	getSensitivityFromMailsHeaders,
+	getAuthenticationInfoFromMailsHeaders
 } from '../mail-header-utils';
 
 describe('getMessageIsFromExternalDomain', () => {
@@ -155,49 +156,85 @@ describe('getHasAuthenticationHeaders', () => {
 	});
 });
 
-describe('getAuthenticationHeadersIcon', () => {
-	it('should return "warning" when there are no headers', () => {
-		const headers: Record<string, MailAuthenticationHeader> = {};
-		expect(getAuthenticationHeadersIcon(headers)).toBe('warning');
+describe('getAuthenticationInfoFromMailsHeaders', () => {
+	test('should return undefined for an empty object', () => {
+		const authenticationHeaders = {};
+		expect(getAuthenticationInfoFromMailsHeaders(authenticationHeaders)).toBeUndefined();
 	});
 
+	test('should return undefined for an undefined value', () => {
+		expect(getAuthenticationInfoFromMailsHeaders(undefined)).toBeUndefined();
+	});
+
+	test('should return dkim, spf and dmarc when they are present', () => {
+		const authenticationHeaders = {
+			dkim: { value: 'aaa', pass: true },
+			spf: { value: 'bbb', pass: true },
+			dmarc: { value: 'ccc', pass: false }
+		};
+		const expected: MailAuthenticationHeaders = {
+			dkim: { value: 'aaa', pass: true },
+			spf: { value: 'bbb', pass: true },
+			dmarc: { value: 'ccc', pass: false }
+		};
+		expect(getAuthenticationInfoFromMailsHeaders(authenticationHeaders)).toEqual(expected);
+	});
+
+	test('should return undefined when no spf or dmarc or dkim', () => {
+		const authenticationHeaders = {
+			whatever: { value: 'whatever', pass: true }
+		};
+		expect(getAuthenticationInfoFromMailsHeaders(authenticationHeaders)).toBeUndefined();
+	});
+
+	test('should return only valid authentication headers', () => {
+		const authenticationHeaders = {
+			whatever: { value: 'whatever', pass: true },
+			dkim: { value: 'aaa', pass: true }
+		};
+		expect(getAuthenticationInfoFromMailsHeaders(authenticationHeaders)).toEqual({
+			dkim: { value: 'aaa', pass: true }
+		});
+	});
+});
+
+describe('getAuthenticationHeadersIcon', () => {
 	it('should return "warning" when headers is an empty object', () => {
-		const headers = undefined;
-		expect(getAuthenticationHeadersIcon(headers)).toBe('warning');
+		expect(getAuthenticationHeadersIcon({})).toBe('warning');
 	});
 
 	it('should return "warning" when no headers have pass: true', () => {
 		const headers: Record<string, MailAuthenticationHeader> = {
-			header1: { pass: false },
-			header2: { pass: false }
+			header1: { pass: false, value: '' },
+			header2: { pass: false, value: '' }
 		};
 		expect(getAuthenticationHeadersIcon(headers)).toBe('warning');
 	});
 
 	it('should return "warning" when some headers have pass: true but less than 3', () => {
-		const headers: Record<string, MailAuthenticationHeader> = {
-			header1: { pass: true },
-			header2: { pass: false },
-			header3: { pass: true }
+		const headers = {
+			spf: { pass: true, value: '' },
+			dkim: { pass: false, value: '' },
+			dmarc: { pass: true, value: '' }
 		};
 		expect(getAuthenticationHeadersIcon(headers)).toBe('warning');
 	});
 
-	it('should return "success" when exactly 3 headers have pass: true', () => {
-		const headers: Record<string, MailAuthenticationHeader> = {
-			header1: { pass: true },
-			header2: { pass: true },
-			header3: { pass: true }
+	it('should return "warning" when an unknown header has pass: true', () => {
+		const headers = {
+			dkim: { pass: true, value: '' },
+			spf: { pass: true, value: '' },
+			header: { pass: true, value: '' }
 		};
-		expect(getAuthenticationHeadersIcon(headers)).toBe('success');
+		expect(getAuthenticationHeadersIcon(headers)).toBe('warning');
 	});
 
 	it('should return "warning" when more than 3 headers have pass: true', () => {
 		const headers: Record<string, MailAuthenticationHeader> = {
-			header1: { pass: true },
-			header2: { pass: true },
-			header3: { pass: true },
-			header4: { pass: true }
+			header1: { pass: true, value: '' },
+			header2: { pass: true, value: '' },
+			header3: { pass: true, value: '' },
+			header4: { pass: true, value: '' }
 		};
 		expect(getAuthenticationHeadersIcon(headers)).toBe('warning');
 	});
@@ -244,11 +281,6 @@ describe('getMailSensitivityLabel', () => {
 });
 
 describe('getMailAuthenticationHeaderLabel', () => {
-	it('should return undefined if authenticationHeaders is undefined', () => {
-		const result = getMailAuthenticationHeaderLabel(t, undefined);
-		expect(result).toBeUndefined();
-	});
-
 	it('should return a string with passed headers', () => {
 		const authenticationHeaders = {
 			dkim: { pass: true, value: 'header1Value' },

@@ -56,11 +56,12 @@ export function getAuthenticationHeaders(
 	const dmarcValue = trimAndCheck(findHeader(authenticationHeadersArray, /dmarc=/));
 	const dmarcPass = !!dmarcValue && /dmarc=pass/i.exec(dmarcValue);
 
-	return {
-		dkim: { value: dkimValue, pass: !!dkimPass },
-		spf: { value: spfValue, pass: !!spfPass },
-		dmarc: { value: dmarcValue, pass: !!dmarcPass }
-	};
+	const mailAuthenticationHeaders: MailAuthenticationHeaders = {};
+	if (dkimValue) mailAuthenticationHeaders.dkim = { value: dkimValue, pass: !!dkimPass };
+	if (spfValue) mailAuthenticationHeaders.spf = { value: spfValue, pass: !!spfPass };
+	if (dmarcValue) mailAuthenticationHeaders.dmarc = { value: dmarcValue, pass: !!dmarcPass };
+
+	return mailAuthenticationHeaders;
 }
 
 export function getSensitivityHeader(
@@ -88,9 +89,27 @@ export function getHasAuthenticationHeaders(
 	return headers.some((header) => includes(VALID_MAIL_AUTHENTICATION_HEADERS, header));
 }
 
+type AuthenticationInfo = MailAuthenticationHeaders | undefined;
+export function getAuthenticationInfoFromMailsHeaders(
+	authenticationHeaders: Record<string, MailAuthenticationHeader> | undefined
+): AuthenticationInfo {
+	if (!authenticationHeaders) return undefined;
+	return VALID_MAIL_AUTHENTICATION_HEADERS.reduce(
+		(previousResult: AuthenticationInfo, header): AuthenticationInfo => {
+			let newResult = previousResult;
+			if (header in authenticationHeaders) {
+				if (!newResult) newResult = {};
+				newResult[header] = authenticationHeaders[header];
+			}
+			return newResult;
+		},
+		undefined
+	);
+}
+
 export function getMailAuthenticationHeaderLabel(
 	t: TFunction,
-	authenticationHeaders: Record<string, MailAuthenticationHeader> | undefined
+	authenticationHeaders: MailAuthenticationHeaders
 ): string | undefined {
 	if (!authenticationHeaders) return undefined;
 	const validHeaders = Object.keys(authenticationHeaders).filter((header) =>
@@ -107,13 +126,12 @@ export function getMailAuthenticationHeaderLabel(
 }
 
 export function getAuthenticationHeadersIcon(
-	authenticationHeaders: Record<string, MailAuthenticationHeader> | undefined
+	authenticationHeaders: MailAuthenticationHeaders
 ): string {
-	if (!authenticationHeaders) return 'warning';
-	const numberOfPassedHeaders = Object.values(authenticationHeaders).filter(
-		(header) => header.pass === true
-	).length;
-	if (numberOfPassedHeaders === 3) return 'success';
+	const allHeaderPassing = VALID_MAIL_AUTHENTICATION_HEADERS.every(
+		(header) => authenticationHeaders[header]?.pass === true
+	);
+	if (allHeaderPassing) return 'success';
 	return 'warning';
 }
 export function getSensitivityFromMailsHeaders(
