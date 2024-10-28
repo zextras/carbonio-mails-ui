@@ -57,19 +57,18 @@ describe('MailInfoBlock', () => {
 		expect(screen.getByText('Show Details')).toBeInTheDocument();
 	});
 
-	it('should not show the authentication icon if the passed header is an empty object', () => {
+	it('should show the authentication icon with missing headers tooltip if the passed header is an empty object', async () => {
 		const mockMsg_: IncompleteMessage = {
-			signature: [validSignature],
-			sensitivity: 'Private',
-			creationDateFromMailHeaders: '2022-01-01',
-			messageIdFromMailHeaders: 'test-message-id',
-			authenticationHeaders: {},
-			messageIsFromDistributionList: true,
-			messageIsFromExternalDomain: true
+			authenticationHeaders: {}
 		} as IncompleteMessage;
 
-		setupTest(<MailInfoBlock msg={mockMsg_} />);
-		expect(screen.queryByTestId('mail-authentication-header-icon')).not.toBeInTheDocument();
+		const { user } = setupTest(<MailInfoBlock msg={mockMsg_} />);
+
+		const icon = screen.getByTestId('mail-authentication-header-icon');
+		expect(icon).toBeInTheDocument();
+
+		await user.hover(icon);
+		expect(await screen.findByText('dkim=missing, spf=missing, dmarc=missing')).toBeInTheDocument();
 	});
 
 	it('renders SmimeIcon when signature is present', () => {

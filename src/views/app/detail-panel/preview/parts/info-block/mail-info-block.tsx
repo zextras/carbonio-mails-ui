@@ -6,7 +6,6 @@
 import React, { useCallback } from 'react';
 
 import { Container, Link, useModal } from '@zextras/carbonio-design-system';
-import { isEmpty } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
 import { DistributionListIcon } from './distribution-list-icon';
@@ -33,7 +32,6 @@ export const MailInfoBlock = ({ msg }: MailInfoProps): React.JSX.Element | null 
 	const fromExternalDomain = msg.messageIsFromExternalDomain;
 	const sensitivityHeader = msg.sensitivity;
 	const authenticationMailsHeaders = msg.authenticationHeaders;
-	const hasAuthenticationMailsHeaders = !isEmpty(authenticationMailsHeaders);
 
 	const showMailDetailsModal = useCallback(
 		(event: React.MouseEvent): void => {
@@ -81,7 +79,7 @@ export const MailInfoBlock = ({ msg }: MailInfoProps): React.JSX.Element | null 
 		signature ||
 		fromExternalDomain ||
 		sensitivityHeader ||
-		hasAuthenticationMailsHeaders ||
+		authenticationMailsHeaders ||
 		fromDistributionList;
 
 	return (
@@ -89,7 +87,7 @@ export const MailInfoBlock = ({ msg }: MailInfoProps): React.JSX.Element | null 
 			{signature && <SmimeIcon signature={signature} />}
 			{fromExternalDomain && <ExternalDomainIcon />}
 			{sensitivityHeader && <MailSensitivityIcon sensitivity={sensitivityHeader} />}
-			{hasAuthenticationMailsHeaders && (
+			{authenticationMailsHeaders && (
 				<MailAuthenticationHeaderIcon authenticationInfo={authenticationMailsHeaders} />
 			)}
 			{fromDistributionList && <DistributionListIcon />}

@@ -58,13 +58,13 @@ describe('getAuthenticationHeadersIconColor', () => {
 });
 
 describe('getMailAuthenticationHeaderLabel', () => {
-	it('should return a string with passed headers', () => {
+	it('should return a string with passed and missing headers', () => {
 		const authenticationHeaders = {
 			dkim: { pass: true, value: 'header1Value' },
 			spf: { pass: true, value: 'header2Value' }
 		};
 		const result = getMailAuthenticationHeaderLabel(t, authenticationHeaders);
-		expect(result).toBe('dkim=label.pass, spf=label.pass');
+		expect(result).toBe('dkim=label.pass, spf=label.pass, dmarc=label.missing');
 	});
 
 	it('should return a string with failed headers', () => {
@@ -73,7 +73,7 @@ describe('getMailAuthenticationHeaderLabel', () => {
 			spf: { pass: false, value: 'header2Value' }
 		};
 		const result = getMailAuthenticationHeaderLabel(t, authenticationHeaders);
-		expect(result).toBe('dkim=label.fail, spf=label.fail');
+		expect(result).toBe('dkim=label.fail, spf=label.fail, dmarc=label.missing');
 	});
 
 	it('should return a string with mixed headers', () => {
@@ -82,7 +82,7 @@ describe('getMailAuthenticationHeaderLabel', () => {
 			spf: { pass: false, value: 'header2Value' }
 		};
 		const result = getMailAuthenticationHeaderLabel(t, authenticationHeaders);
-		expect(result).toBe('dkim=label.pass, spf=label.fail');
+		expect(result).toBe('dkim=label.pass, spf=label.fail, dmarc=label.missing');
 	});
 });
 

@@ -13,15 +13,19 @@ export function getMailAuthenticationHeaderLabel(
 	authenticationHeaders: MailAuthenticationHeaders
 ): string {
 	const headerLabels: string[] = [];
-
 	VALID_MAIL_AUTHENTICATION_HEADERS.forEach((header) => {
 		const result = authenticationHeaders[header];
+		let status: string;
 
-		if (!result) return;
+		if (!result) {
+			status = 'missing';
+		} else if (result.pass) {
+			status = 'pass';
+		} else {
+			status = 'fail';
+		}
 
-		const status = result.pass ? 'pass' : 'fail';
 		const translatedStatus = t(`label.${status}`, status);
-
 		headerLabels.push(`${header}=${translatedStatus}`);
 	});
 
