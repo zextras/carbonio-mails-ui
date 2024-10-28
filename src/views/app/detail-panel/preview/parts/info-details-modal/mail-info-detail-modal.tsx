@@ -6,7 +6,6 @@
 import React from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
-import { isEmpty } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
 import { MailAuthenticationHeadersSubsection } from './subsections/mail-authentication-headers-subsection';
@@ -38,7 +37,6 @@ export const MailInfoDetailModal = ({
 	sensitivityValue
 }: MailInfoDetailModalProps): React.JSX.Element => {
 	const [t] = useTranslation();
-	const hasAuthenticationMailsHeaders = !isEmpty(authenticationMailsHeaders);
 	const showGeneralInfo =
 		messageIdFromMailHeaders ??
 		creationDateFromMailHeaders ??
@@ -65,7 +63,7 @@ export const MailInfoDetailModal = ({
 						sensitivityValue={sensitivityValue}
 					/>
 				)}
-				{hasAuthenticationMailsHeaders && (
+				{authenticationMailsHeaders && (
 					<MailAuthenticationHeadersSubsection
 						authenticationMailsHeaders={authenticationMailsHeaders}
 					/>

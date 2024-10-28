@@ -145,24 +145,19 @@ describe('MailInfoDetailModal', () => {
 		);
 
 		expect(screen.getByText('Message details')).toBeVisible();
-
 		expect(screen.queryByText('General Information')).not.toBeInTheDocument();
-
 		expect(screen.queryByText('Authentication Headers')).not.toBeInTheDocument();
-
 		expect(screen.queryByText(`Issuer's Certificate Not Found`)).not.toBeInTheDocument();
-
 		expect(screen.getByText('Close')).toBeVisible();
 	});
 
-	test(`Should not show authentication header subsection if authentication header is an empty object`, async () => {
+	test(`Should show authentication header subsection if authentication header is an empty object`, async () => {
 		const onClose = jest.fn();
 		setupTest(<MailInfoDetailModal onClose={onClose} authenticationMailsHeaders={{}} />);
 
 		expect(screen.getByText('Message details')).toBeVisible();
-
-		expect(screen.queryByText('Authentication Headers')).not.toBeInTheDocument();
-
+		expect(screen.getByText('Authentication Headers')).toBeInTheDocument();
+		expect(screen.getAllByText('Missing')).toHaveLength(3);
 		expect(screen.getByText('Close')).toBeVisible();
 	});
 });
