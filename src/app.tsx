@@ -16,8 +16,8 @@ import { StoreProvider } from './store/redux';
 import { useBackupSearchStore } from './store/zustand/backup-search/store';
 import { GlobalExtraWindowManager } from './views/app/extra-windows/global-extra-window-manager';
 import { GlobalModalManager } from './views/global-modal-manager';
-import { SyncDataHandler } from './views/sidebar/sync-data-handler';
 import { InitializeFolders } from './views/sidebar/initialize-folders';
+import { SyncDataHandler } from './views/sidebar/sync-data-handler';
 
 const App = (): React.JSX.Element => {
 	const hasBackupSearchMessages = !isEmpty(useBackupSearchStore().messages);

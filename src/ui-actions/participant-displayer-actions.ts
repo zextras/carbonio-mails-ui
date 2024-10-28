@@ -14,7 +14,7 @@ export const copyEmailToClipboard = (email: string, createSnackbar: CreateSnackb
 		createSnackbar({
 			key: `clipboard-copy-success`,
 			replace: true,
-			type: 'success',
+			severity: 'success',
 			hideButton: true,
 			label: t('snackbar.email_copied_to_clipboard', 'Email copied to clipboard.'),
 			autoHideTimeout: 3000

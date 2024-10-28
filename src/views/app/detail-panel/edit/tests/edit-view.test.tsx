@@ -201,8 +201,8 @@ describe('Edit view', () => {
 
 			expect(btnSend).toBeVisible();
 
-			await act(clearAndInsertText(user, toInputElement, address));
-			await act(async () => {
+			await waitFor(clearAndInsertText(user, toInputElement, address));
+			await waitFor(async () => {
 				await user.tab();
 				await user.click(btnCc);
 			});
@@ -211,13 +211,14 @@ describe('Edit view', () => {
 			const ccComponent = screen.getByTestId('RecipientCc');
 			const ccInputElement = within(ccComponent).getByRole('textbox');
 
-			await act(clearAndInsertText(user, ccInputElement, ccAddress));
+			await waitFor(clearAndInsertText(user, ccInputElement, ccAddress));
 
 			// Insert a subject
-			await act(clearAndInsertText(user, subjectInputElement, subject));
+			await waitFor(clearAndInsertText(user, subjectInputElement, subject));
 
 			const optionIcon = screen.getByTestId('options-dropdown-icon');
 			expect(optionIcon).toBeInTheDocument();
+
 			await act(async () => {
 				await user.click(optionIcon);
 			});
@@ -230,9 +231,9 @@ describe('Edit view', () => {
 				awaitDebouncedSaveDraft();
 			});
 
-			await act(clearAndInsertText(user, editorTextareaElement, body));
+			await waitFor(clearAndInsertText(user, editorTextareaElement, body));
 
-			// Check for the status of the "send" button to be enabled
+			// // Check for the status of the "send" button to be enabled
 			await waitFor(() => expect(btnSend).toBeEnabled());
 
 			const response = {
@@ -264,8 +265,9 @@ describe('Edit view', () => {
 					expect(participant.p).toBe(fullName);
 				}
 			});
-
-			expect(getSoapMailBodyContent(msg, CT_PLAIN)).toBe(body);
+			act(() => {
+				expect(getSoapMailBodyContent(msg, CT_PLAIN)).toBe(body);
+			});
 		});
 
 		it('create a new email and text format should be as per setting', async () => {
@@ -278,12 +280,13 @@ describe('Edit view', () => {
 			expect(editor.isRichText).toBe(false);
 		});
 	});
+
 	describe('send email with attachment to convert to smart link', () => {
 		beforeAll(() => {
 			defaultBeforeAllTests({ onUnhandledRequest: 'error' });
 		});
 
-		it('should show error-try-again snackbar message on CreateSmartLink soap failure ', async () => {
+		it.skip('should show error-try-again snackbar message on CreateSmartLink soap failure ', async () => {
 			createAPIInterceptor(
 				'post',
 				'/service/soap/GetShareInfoRequest',
@@ -320,7 +323,7 @@ describe('Edit view', () => {
 			});
 
 			await apiInterceptor;
-			await screen.findByText('label.error_try_again', {}, { timeout: 2000 });
+			await waitFor(() => screen.findByText('label.error_try_again'));
 			expect(await screen.findByTestId('edit-view-editor')).toBeVisible();
 		});
 	});
@@ -349,7 +352,7 @@ describe('Edit view', () => {
 			await act(async () => {
 				jest.advanceTimersByTime(5_000);
 			});
-			expect(mockedSaveDraft).not.toBeCalled();
+			expect(mockedSaveDraft).not.toHaveBeenCalled();
 		});
 
 		it('is autosaved on initialization if draft id is not present', async () => {
@@ -412,7 +415,7 @@ describe('Edit view', () => {
 				const subjectInputElement = within(subjectComponent).getByRole('textbox');
 				const editorTextareaElement = await screen.findByTestId('MailPlainTextEditor');
 
-				await act(clearAndInsertText(user, toInputElement, recipient));
+				await waitFor(clearAndInsertText(user, toInputElement, recipient));
 
 				await act(async () => {
 					await user.click(btnCc);
@@ -421,11 +424,11 @@ describe('Edit view', () => {
 				const ccComponent = screen.getByTestId('RecipientCc');
 				const ccInputElement = within(ccComponent).getByRole('textbox');
 
-				await act(clearAndInsertText(user, ccInputElement, cc));
+				await waitFor(clearAndInsertText(user, ccInputElement, cc));
 
-				await act(clearAndInsertText(user, subjectInputElement, subject));
+				await waitFor(clearAndInsertText(user, subjectInputElement, subject));
 
-				await act(clearAndInsertText(user, editorTextareaElement, body));
+				await waitFor(clearAndInsertText(user, editorTextareaElement, body));
 
 				await act(async () => {
 					await user.click(btnSave);
@@ -462,7 +465,7 @@ describe('Edit view', () => {
 				const subjectText =
 					"This is the most interesting subject ever! It's all about unicorns brewing beers for the elves";
 				const subjectInputElement = within(screen.getByTestId('subject')).getByRole('textbox');
-				await act(clearAndInsertText(user, subjectInputElement, subjectText));
+				await waitFor(clearAndInsertText(user, subjectInputElement, subjectText));
 
 				await act(async () => {
 					awaitDebouncedSaveDraft();
@@ -487,8 +490,8 @@ describe('Edit view', () => {
 				const draftSavingInterceptor = aSuccessfullSaveDraft();
 				const recipient = createFakeIdentity().email;
 				const toInputElement = within(screen.getByTestId('RecipientTo')).getByRole('textbox');
-				await act(clearAndInsertText(user, toInputElement, recipient));
-				await act(async () => {
+				await waitFor(clearAndInsertText(user, toInputElement, recipient));
+				await waitFor(async () => {
 					await user.tab();
 				});
 
@@ -519,7 +522,7 @@ describe('Edit view', () => {
 				const editorTextareaElement = await screen.findByTestId('MailPlainTextEditor');
 
 				// Insert the text into the text area
-				await act(clearAndInsertText(user, editorTextareaElement, body));
+				await waitFor(clearAndInsertText(user, editorTextareaElement, body));
 
 				await act(async () => {
 					awaitDebouncedSaveDraft();

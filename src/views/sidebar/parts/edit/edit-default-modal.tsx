@@ -232,7 +232,7 @@ const MainEditModal: FC<MainEditModalPropType> = ({ folder, onClose, setActiveMo
 					createSnackbar({
 						key: `edit`,
 						replace: true,
-						type: 'info',
+						severity: 'info',
 						hideButton: true,
 						label: t('messages.snackbar.folder_edited', 'Changes correctly saved'),
 						autoHideTimeout: 3000
@@ -241,7 +241,7 @@ const MainEditModal: FC<MainEditModalPropType> = ({ folder, onClose, setActiveMo
 					createSnackbar({
 						key: `edit`,
 						replace: true,
-						type: 'error',
+						severity: 'error',
 						hideButton: true,
 						label: t('label.error_try_again', 'Something went wrong, please try again'),
 						autoHideTimeout: 3000

@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, memo, useCallback, useMemo } from 'react';
+import React, { FC, memo, MouseEventHandler, useCallback, useMemo } from 'react';
 
 import {
 	Badge,
@@ -90,7 +90,7 @@ export const SearchMessageListItem: FC<SearchMessageListItemProps> = memo(functi
 		folderId
 	});
 
-	const onClick = useCallback(
+	const onClick = useCallback<MouseEventHandler<HTMLDivElement>>(
 		(e) => {
 			if (e.isDefaultPrevented()) {
 				return;
@@ -103,7 +103,7 @@ export const SearchMessageListItem: FC<SearchMessageListItemProps> = memo(functi
 		[completeMessage.read, completeMessage.id, zimbraPrefMarkMsgRead, setAsRead]
 	);
 	const onDoubleClick = useCallback(
-		(e) => {
+		(e: React.MouseEvent) => {
 			if (e.isDefaultPrevented()) {
 				return;
 			}

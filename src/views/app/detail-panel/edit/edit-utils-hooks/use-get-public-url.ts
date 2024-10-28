@@ -37,8 +37,15 @@ export const useGetPublicUrl = ({
 	const { createSnackbar } = useUiUtilities();
 	const [getLink, getLinkAvailable] = useIntegratedFunction('get-link');
 
+	// {
+	//     node: { id: string | number };
+	//     description?: string;
+	//     expiresAt?: number;
+	//     type: 'createLink' | 'getLinksInfo';
+	// }
+
 	const getPublicUrl = useCallback(
-		(nodes) => {
+		(nodes: { id: string }[]) => {
 			const promises = map(nodes, (node) =>
 				getLink({ node, type: 'createLink', description: node.id })
 			);
@@ -47,7 +54,6 @@ export const useGetPublicUrl = ({
 				const success = filter(res, ['status', 'fulfilled']);
 				const allSuccess = res.length === success?.length;
 				const allFails = res.length === filter(res, ['status', 'rejected'])?.length;
-				const type = allSuccess ? 'info' : 'warning';
 				// eslint-disable-next-line no-nested-ternary
 				const label = allSuccess
 					? t('message.snackbar.all_link_copied', 'Public link copied successfully')
@@ -63,7 +69,7 @@ export const useGetPublicUrl = ({
 				createSnackbar({
 					key: `public-link`,
 					replace: true,
-					type,
+					severity: allSuccess ? 'info' : 'warning',
 					hideButton: true,
 					label,
 					autoHideTimeout: 4000

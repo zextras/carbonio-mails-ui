@@ -15,6 +15,7 @@ import { useAppDispatch } from '../../../../hooks/redux';
 import { useUiUtilities } from '../../../../hooks/use-ui-utilities';
 import { getIncomingFilters } from '../../../../store/actions/get-incoming-filters';
 import { getOutgoingFilters } from '../../../../store/actions/get-outgoing-filters';
+import { FilterListType } from '../../../../types';
 
 type Item = {
 	active: boolean;
@@ -64,7 +65,7 @@ const FilterTabs: FC = (): ReactElement => {
 						key: `share`,
 						replace: true,
 						hideButton: true,
-						type: 'error',
+						severity: 'error',
 						label:
 							error?.message ||
 							t('label.error_try_again', 'Something went wrong, please try again'),
@@ -86,16 +87,19 @@ const FilterTabs: FC = (): ReactElement => {
 		}
 	}, [dispatch, fetchOutgoingFilters]);
 
-	const moveUp = useCallback((index, list, listSetter) => {
-		const tmp = list.slice();
+	const moveUp = useCallback(
+		(index: number, list: Array<FilterListType>, listSetter: (tmp: FilterListType[]) => void) => {
+			const tmp = list.slice();
 
-		if (index === tmp.length - 1) return;
-		const index2 = index + 1;
-		const itemBelow = tmp[index2];
-		tmp[index + 1] = tmp[index];
-		tmp[index] = itemBelow;
-		listSetter(tmp);
-	}, []);
+			if (index === tmp.length - 1) return;
+			const index2 = index + 1;
+			const itemBelow = tmp[index2];
+			tmp[index + 1] = tmp[index];
+			tmp[index] = itemBelow;
+			listSetter(tmp);
+		},
+		[]
+	);
 
 	return (
 		<Container crossAlignment="baseline" padding={{ top: 'medium' }}>

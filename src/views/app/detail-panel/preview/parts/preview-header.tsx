@@ -25,9 +25,10 @@ import {
 	Dropdown,
 	ContainerProps,
 	IconButton,
-	getColor
+	getColor,
+	AvatarPropTypes
 } from '@zextras/carbonio-design-system';
-import { useTags, useUserAccounts, runSearch, t } from '@zextras/carbonio-shell-ui';
+import { useTags, useUserAccounts, runSearch, t, Tag } from '@zextras/carbonio-shell-ui';
 import {
 	capitalize,
 	every,
@@ -45,6 +46,7 @@ import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { ContactNameChip } from './contact-names-chips';
+import { MailInfoBlock } from './info-block/mail-info-block';
 import { MailMsgPreviewActions } from './mail-message-preview-actions';
 import MessageContactsList from './message-contact-list';
 import OnBehalfOfDisplayer from './on-behalf-of-displayer';
@@ -96,14 +98,17 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 
 	const [isContactListExpand, setIsContactListExpand] = useState(false);
 	const mainContact = find(message.participants, ['type', 'f']) || fallbackContact;
-	const _onClick = useCallback((e) => !e.isDefaultPrevented() && onClick(e), [onClick]);
+	const _onClick = useCallback(
+		(e: React.MouseEvent) => !e.isDefaultPrevented() && onClick(e),
+		[onClick]
+	);
 	const attachments = retrieveAttachmentsType(message, 'attachment');
 	const senderContact = find(message.participants, ['type', 's']);
 	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 	// @ts-ignore
 	const { folderId } = useParams();
 
-	const contactListExpandCB = useCallback((contactListExpand) => {
+	const contactListExpandCB = useCallback((contactListExpand: boolean) => {
 		setIsContactListExpand(contactListExpand);
 	}, []);
 
@@ -112,7 +117,7 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 		() =>
 			reduce(
 				tagsFromStore,
-				(acc: any, v) => {
+				(acc: Tag[], v) => {
 					if (includes(message.tags, v.id)) {
 						acc.push({
 							...v,
@@ -147,6 +152,9 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 										name: tagNotInList.split(':')[1],
 										defaultValue: '{{name}} - Not in your tag list'
 									}),
+									// TODO: align the use of the property with the type exposed by the shell
+									// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+									// @ts-ignore
 									color: ZIMBRA_STANDARD_COLORS[0].hex,
 									customComponent: (
 										<Row takeAvailableSpace mainAlignment="flex-start">
@@ -206,13 +214,13 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 		[isTagInStore, message.tags, showMultiTagIcon]
 	);
 	const triggerSearch = useCallback(
-		(tagToSearch) =>
+		(tagToSearch: Tag) =>
 			runSearch(
 				[
 					{
 						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 						// @ts-ignore
-						avatarBackground: tagToSearch?.color || 0,
+						avatarBackground: tagToSearch?.color,
 						avatarIcon: 'Tag',
 						background: 'gray2',
 						hasAvatar: true,
@@ -384,16 +392,24 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 						<Padding left="extrasmall">
 							<Text color="secondary" size="small" overflow="break-word">
 								{tagLabel}:
-								{map(tags, (tag) => (
-									<TagChip
-										label={tag?.label}
-										avatarBackground={tag.color}
-										background="gray2"
-										hasAvatar
-										avatarIcon="Tag"
-										onClick={(): void => triggerSearch(tag)}
-									/>
-								))}
+								{map(
+									tags,
+									(tag: {
+										label: string;
+										color: AvatarPropTypes['background'];
+										id: string;
+										name: string;
+									}) => (
+										<TagChip
+											label={tag?.label}
+											avatarBackground={tag.color}
+											background="gray2"
+											hasAvatar
+											avatarIcon="Tag"
+											onClick={(): void => triggerSearch(tag as Tag)}
+										/>
+									)
+								)}
 							</Text>
 						</Padding>
 					</Container>
@@ -419,6 +435,7 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 					/>
 				)}
 			</Container>
+			<MailInfoBlock msg={message} />
 		</HoverContainer>
 	);
 };

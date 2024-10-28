@@ -92,8 +92,8 @@ describe('Backup search header', () => {
 		const clearButton = screen.getByText('label.clear_search_query');
 		await user.click(clearButton);
 
-		expect(removeRoute).toBeCalled();
-		expect(removeRoute).toBeCalledTimes(1);
+		expect(removeRoute).toHaveBeenCalled();
+		expect(removeRoute).toHaveBeenCalledTimes(1);
 
 		expect(useBackupSearchStore.getState().searchParams).toEqual({});
 		expect(useBackupSearchStore.getState().messages).toEqual({});

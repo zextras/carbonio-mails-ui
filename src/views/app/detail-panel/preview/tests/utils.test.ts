@@ -7,7 +7,7 @@
 
 import { includes } from 'lodash';
 
-import { getAttachmentsLink } from '../utils';
+import { ErrorMessageCode, getAttachmentsLink, getSignedIconColor } from '../utils';
 
 jest.mock('lodash', () => ({
 	includes: jest.fn()
@@ -112,5 +112,22 @@ describe('getAttachmentsLink', () => {
 			attachmentType: 'unknown/type'
 		});
 		expect(result).toBe('http://localhost/service/home/~/?auth=co&id=12345&part=file1&disp=a');
+	});
+});
+
+describe('getSignedIconColor', () => {
+	test(`should reply 'success' if error message code is VALID`, () => {
+		expect(getSignedIconColor(ErrorMessageCode.VALID)).toEqual('success');
+	});
+
+	test(`should reply 'warning' if error message code is one of from UNTRUSTED, SIGNER_CERT_NOT_FOUND and ISSUER_CERT_NOT_FOUND`, () => {
+		expect(getSignedIconColor(ErrorMessageCode.UNTRUSTED)).toEqual('warning');
+		expect(getSignedIconColor(ErrorMessageCode.CERT_NOT_FOUND)).toEqual('warning');
+		expect(getSignedIconColor(ErrorMessageCode.ISSUER_NOT_FOUND)).toEqual('warning');
+	});
+
+	test(`should reply 'error' if error message code is SIGNER_CERT_EXPIRED or UNTRUSTED`, () => {
+		expect(getSignedIconColor(ErrorMessageCode.CERT_EXPIRED)).toEqual('error');
+		expect(getSignedIconColor(ErrorMessageCode.INVALID)).toEqual('error');
 	});
 });

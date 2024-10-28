@@ -4,11 +4,30 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import { SENSITIVITY_VALUES } from '../../constants';
 import type { MailsEditorV2 } from '../editor';
 import { Participant } from '../participant';
-import { SaveDraftResponse } from '../soap';
+import { SaveDraftResponse, MessageSignature } from '../soap';
 
-export type IncompleteMessage = {
+type MailAuthenticationHeader = { value: string; pass: boolean };
+
+type MailAuthenticationHeaders = {
+	dkim?: MailAuthenticationHeader;
+	spf?: MailAuthenticationHeader;
+	dmarc?: MailAuthenticationHeader;
+};
+
+export type MailHeaders = {
+	signature?: Array<MessageSignature>;
+	messageIsFromExternalDomain?: boolean;
+	authenticationHeaders: MailAuthenticationHeaders;
+	sensitivity?: Sensitivity;
+	messageIdFromMailHeaders?: string;
+	creationDateFromMailHeaders?: string;
+	messageIsFromDistributionList?: boolean;
+};
+
+export type IncompleteMessage = MailHeaders & {
 	id: string;
 	did?: string;
 	parent: string;
@@ -96,3 +115,5 @@ export type SendMsgResult = {
 				error: true;
 		  });
 };
+
+export type Sensitivity = (typeof SENSITIVITY_VALUES)[number];

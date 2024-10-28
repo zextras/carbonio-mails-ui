@@ -149,7 +149,7 @@ const useMoveInviteToTrashFunc = (): ((arg: MoveInviteToTrashType) => any) => {
 						key: `share`,
 						replace: true,
 						hideButton: true,
-						type: 'error',
+						severity: 'error',
 						label: t('label.error_try_again', 'Something went wrong, please try again'),
 						autoHideTimeout: 3000
 					});
@@ -208,7 +208,7 @@ export const useAccept = (): ((arg: Accept) => void) => {
 					createSnackbar({
 						key: `share_accepted`,
 						replace: true,
-						type: 'info',
+						severity: 'info',
 						label: t('message.snackbar.share.accepted', 'You have accepted the share request'),
 						autoHideTimeout: 3000,
 						hideButton: true
@@ -217,7 +217,7 @@ export const useAccept = (): ((arg: Accept) => void) => {
 					createSnackbar({
 						key: `share`,
 						replace: true,
-						type: 'error',
+						severity: 'error',
 						label: t('label.error_try_again', 'Something went wrong, please try again'),
 						autoHideTimeout: 3000,
 						hideButton: true
@@ -267,7 +267,7 @@ export const useDecline = (): ((arg: DeclineType) => Promise<void>) => {
 					createSnackbar({
 						key: `share_declined`,
 						replace: true,
-						type: 'info',
+						severity: 'info',
 						label: t('message.snackbar.share.declined', 'You have declined the share request'),
 						autoHideTimeout: 3000,
 						hideButton: true
@@ -276,7 +276,7 @@ export const useDecline = (): ((arg: DeclineType) => Promise<void>) => {
 					createSnackbar({
 						key: `share`,
 						replace: true,
-						type: 'error',
+						severity: 'error',
 						label: t('label.error_try_again', 'Something went wrong, please try again'),
 						autoHideTimeout: 3000,
 						hideButton: true

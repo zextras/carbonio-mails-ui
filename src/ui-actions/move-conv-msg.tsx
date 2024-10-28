@@ -53,7 +53,7 @@ const MoveConvMessage = ({
 	}, [onClose]);
 
 	const onConfirmConvMove = useCallback(
-		(id) => {
+		(id: string | undefined) => {
 			dispatch(
 				convAction({
 					operation: `move`,
@@ -67,7 +67,7 @@ const MoveConvMessage = ({
 						createSnackbar({
 							key: `edit`,
 							replace: true,
-							type: 'info',
+							severity: 'info',
 							label: isRestore
 								? t('messages.snackbar.email_restored', 'E-mail restored in destination folder')
 								: t('messages.snackbar.conversation_move', 'Conversation successfully moved'),
@@ -81,7 +81,7 @@ const MoveConvMessage = ({
 						createSnackbar({
 							key: `edit`,
 							replace: true,
-							type: 'error',
+							severity: 'error',
 							label: t('label.error_try_again', 'Something went wrong, please try again'),
 							autoHideTimeout: 3000,
 							hideButton: true
@@ -96,7 +96,7 @@ const MoveConvMessage = ({
 	);
 
 	const onConfirmMessageMove = useCallback(
-		(newFolderId = 0) => {
+		(newFolderId = '0') => {
 			dispatch(
 				msgAction({
 					operation: `move`,
@@ -110,7 +110,7 @@ const MoveConvMessage = ({
 						createSnackbar({
 							key: `edit`,
 							replace: true,
-							type: 'info',
+							severity: 'info',
 							label: isRestore
 								? t('messages.snackbar.email_restored', 'E-mail restored in destination folder')
 								: t('messages.snackbar.message_move', 'Message successfully moved'),
@@ -121,7 +121,7 @@ const MoveConvMessage = ({
 						createSnackbar({
 							key: `edit`,
 							replace: true,
-							type: 'error',
+							severity: 'error',
 							label: t('label.error_try_again', 'Something went wrong, please try again'),
 							autoHideTimeout: 3000,
 							hideButton: true
@@ -171,7 +171,7 @@ const MoveConvMessage = ({
 					createSnackbar({
 						key: `edit`,
 						replace: true,
-						type: 'error',
+						severity: 'error',
 						label: t('label.error_try_again', 'Something went wrong, please try again'),
 						autoHideTimeout: 3000,
 						hideButton: true

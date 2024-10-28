@@ -64,7 +64,7 @@ export const useMsgCreateAppointmentFn = (item: MailMessage, folderId: string): 
 						createSnackbar({
 							key: `get-msg-on-new-appointment`,
 							replace: true,
-							type: 'warning',
+							severity: 'warning',
 							hideButton: true,
 							label: t(
 								'message.snackbar.att_err',

@@ -34,7 +34,7 @@ export const DeleteModal: FC<ModalProps> = ({ folder, onClose }) => {
 						createSnackbar({
 							key: `trash-folder`,
 							replace: true,
-							type: 'success',
+							severity: 'success',
 							label: t('messages.snackbar.folder_restored', 'Folder restored'),
 							autoHideTimeout: 3000,
 							hideButton: true
@@ -43,7 +43,7 @@ export const DeleteModal: FC<ModalProps> = ({ folder, onClose }) => {
 						createSnackbar({
 							key: `trash`,
 							replace: true,
-							type: 'error',
+							severity: 'error',
 							label: t('label.error_try_again', 'Something went wrong, please try again'),
 							autoHideTimeout: 3000,
 							hideButton: true
@@ -67,7 +67,7 @@ export const DeleteModal: FC<ModalProps> = ({ folder, onClose }) => {
 					createSnackbar({
 						key: `trash-folder`,
 						replace: true,
-						type: 'info',
+						severity: 'info',
 						label:
 							inTrash || isSharedAccountFolder(folder.id)
 								? t('messages.snackbar.folder_deleted', 'Folder permanently deleted.')
@@ -81,7 +81,7 @@ export const DeleteModal: FC<ModalProps> = ({ folder, onClose }) => {
 					createSnackbar({
 						key: `trash`,
 						replace: true,
-						type: 'error',
+						severity: 'error',
 						label: t('label.error_try_again', 'Something went wrong, please try again'),
 						autoHideTimeout: 3000,
 						hideButton: true

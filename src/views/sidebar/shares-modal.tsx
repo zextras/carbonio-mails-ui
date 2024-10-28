@@ -140,7 +140,7 @@ export const SharesModal: FC<ShareModalProps> = ({ folders, onClose }) => {
 	}, [data, filteredFolders, t]);
 
 	const filterResults = useCallback(
-		(ev) =>
+		(ev: React.ChangeEvent<HTMLInputElement>) =>
 			setData(
 				pickBy(filteredFolders, (_value, key) =>
 					startsWith(toLower(key), toLower(ev?.target?.value))

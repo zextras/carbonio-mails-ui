@@ -55,7 +55,7 @@ export const BackupSearchList = (): React.JSX.Element => {
 			if ('error' in response) {
 				createSnackbar({
 					replace: true,
-					type: 'error',
+					severity: 'error',
 					label: t('label.error_recovering_emails', 'Error recovering emails'),
 					autoHideTimeout: 5000,
 					hideButton: true
@@ -67,7 +67,7 @@ export const BackupSearchList = (): React.JSX.Element => {
 			replaceHistory({ route: MAILS_ROUTE, path: '/' });
 			createSnackbar({
 				replace: true,
-				type: 'info',
+				severity: 'info',
 				label: t(
 					'label.recover_emails',
 					'The recovery process has started, you will be informed once it is complete'
@@ -135,7 +135,7 @@ export const BackupSearchList = (): React.JSX.Element => {
 		createSnackbar({
 			key: 'selected-all-backupMessages',
 			replace: true,
-			type: 'info',
+			severity: 'info',
 			label: t('label.all_items_selected', 'All visible backupMessages have been selected'),
 			autoHideTimeout: 5000,
 			hideButton: true

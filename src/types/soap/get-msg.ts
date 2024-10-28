@@ -3,6 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import { MailVerificationHeader } from './soap';
 import { SoapMailMessage } from './soap-mail-message';
 import { ZimbraRequest } from './zimbra-request';
 
@@ -13,6 +14,7 @@ export type GetMsgRequest = ZimbraRequest & {
 		html: 0 | 1;
 		needExp: 0 | 1;
 		max?: number;
+		header: Array<{ n: MailVerificationHeader }>;
 	};
 };
 

@@ -62,7 +62,7 @@ export const useMsgApplyTagSubDescriptors = ({
 									key: `tag`,
 									replace: true,
 									hideButton: true,
-									type: 'info',
+									severity: 'info',
 									label: snackbarSuccessLabel,
 									autoHideTimeout: TIMEOUTS.SNACKBAR_DEFAULT_TIMEOUT
 								});
@@ -70,7 +70,7 @@ export const useMsgApplyTagSubDescriptors = ({
 								createSnackbar({
 									key: `tag`,
 									replace: true,
-									type: 'error',
+									severity: 'error',
 									label: t('label.error_try_again', 'Something went wrong, please try again'),
 									autoHideTimeout: TIMEOUTS.SNACKBAR_DEFAULT_TIMEOUT,
 									hideButton: true

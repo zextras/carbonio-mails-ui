@@ -4,13 +4,14 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { FC, ReactElement, useMemo, useCallback } from 'react';
-import { Container, Padding, IconButton, Tooltip, getColor } from '@zextras/carbonio-design-system';
 
+import { Container, Padding, IconButton, Tooltip, getColor } from '@zextras/carbonio-design-system';
 import styled from 'styled-components';
-import { getStatusOptions, findDefaultValue } from './utils';
+
 import DefaultCondition from './create-filters-conditions/default';
 import CustomSelect from './custom-select';
 import { getRowFunc } from './get-row';
+import { getStatusOptions, findDefaultValue } from './utils';
 
 export const StyledIconButton = styled(IconButton)`
 	border: 0.0625rem solid
@@ -56,7 +57,7 @@ const FilterTestRows: FC<FilterTestRowProps> = ({ tmpFilter, index, compProps })
 	}, [newFilters, t, activeFilter, filterName, setNewFilters]);
 
 	const removeFilterCondition = useCallback(
-		(indexToRemove) => (): void => {
+		(indexToRemove: string) => (): void => {
 			const previousNewFilters = newFilters.slice();
 			previousNewFilters.splice(indexToRemove, 1);
 			setNewFilters(previousNewFilters);
@@ -67,7 +68,8 @@ const FilterTestRows: FC<FilterTestRowProps> = ({ tmpFilter, index, compProps })
 	const disableRemove = useMemo(() => newFilters.length === 1, [newFilters]);
 
 	const getRow = useCallback(
-		(indexToGet) => getRowFunc({ index: indexToGet, setNewFilters, newFilters, t, condition }),
+		(indexToGet: number) =>
+			getRowFunc({ index: indexToGet, setNewFilters, newFilters, t, condition }),
 		[setNewFilters, newFilters, t, condition]
 	);
 
@@ -87,12 +89,12 @@ const FilterTestRows: FC<FilterTestRowProps> = ({ tmpFilter, index, compProps })
 				<CustomSelect
 					items={statusOptions}
 					label=""
-					onChange={getRow(index)}
+					onChange={getRow(Number(index))}
 					defaultSelection={defaultSelection}
 				/>
 			</Container>
 
-			{tmpFilter.comp && tmpFilter.comp}
+			{tmpFilter.comp}
 
 			<Container orientation="horizontal" mainAlignment="flex-end">
 				<Tooltip label={t('settings.add_condition', 'Add new condition')} placement="top">

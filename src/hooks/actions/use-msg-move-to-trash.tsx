@@ -57,7 +57,7 @@ const useRestoreMessage = (): ((
 						createSnackbar({
 							key: `move-${ids}`,
 							replace: true,
-							type: 'success',
+							severity: 'success',
 							label: t('messages.snackbar.email_restored', 'E-mail restored in destination folder'),
 							autoHideTimeout: 3000,
 							hideButton: true
@@ -66,7 +66,7 @@ const useRestoreMessage = (): ((
 						createSnackbar({
 							key: `move-${ids}`,
 							replace: true,
-							type: 'error',
+							severity: 'error',
 							label: t('label.error_try_again', 'Something went wrong, please try again'),
 							autoHideTimeout: 3000,
 							hideButton: true
@@ -114,7 +114,7 @@ export const useMsgMoveToTrashFn = ({
 					createSnackbar({
 						key: `trash-${ids}`,
 						replace: true,
-						type: 'info',
+						severity: 'info',
 						label: t('messages.snackbar.email_moved_to_trash', 'E-mail moved to Trash'),
 						autoHideTimeout: 5000,
 						hideButton: false,
@@ -125,7 +125,7 @@ export const useMsgMoveToTrashFn = ({
 					createSnackbar({
 						key: `trash-${ids}`,
 						replace: true,
-						type: 'error',
+						severity: 'error',
 						label: t('label.error_try_again', 'Something went wrong, please try again'),
 						autoHideTimeout: 3000,
 						hideButton: true

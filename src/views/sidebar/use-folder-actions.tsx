@@ -137,7 +137,7 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 										createSnackbar({
 											key: `move-folder`,
 											replace: true,
-											type: 'success',
+											severity: 'success',
 											label: t('messages.snackbar.folder_restored', 'Folder restored'),
 											autoHideTimeout: 3000,
 											hideButton: true
@@ -146,7 +146,7 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 										createSnackbar({
 											key: `move`,
 											replace: true,
-											type: 'error',
+											severity: 'error',
 											label: t('label.error_try_again', 'Something went wrong, please try again'),
 											autoHideTimeout: 3000,
 											hideButton: true
@@ -163,7 +163,7 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 										createSnackbar({
 											key: `move`,
 											replace: true,
-											type: 'success',
+											severity: 'success',
 											label: t('messages.snackbar.folder_moved', 'Folder successfully moved'),
 											autoHideTimeout: 5000,
 											hideButton: false,
@@ -174,7 +174,7 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 										createSnackbar({
 											key: `move`,
 											replace: true,
-											type: 'error',
+											severity: 'error',
 											label: t('label.error_try_again', 'Something went wrong, please try again.'),
 											autoHideTimeout: 3000
 										});

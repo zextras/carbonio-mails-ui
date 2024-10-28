@@ -43,7 +43,7 @@ const ShareRevokeModal: FC<ShareRevokeModalType> = ({ folder, onClose, grant, go
 						createSnackbar({
 							key: `remove-share-${folder.id}`,
 							replace: true,
-							type: 'info',
+							severity: 'info',
 							label: t('snackbar.share_revoke', 'Share access revoked'),
 							autoHideTimeout: 2000,
 							hideButton: true
@@ -58,7 +58,7 @@ const ShareRevokeModal: FC<ShareRevokeModalType> = ({ folder, onClose, grant, go
 					createSnackbar({
 						key: `remove-share-${folder.id}`,
 						replace: true,
-						type: 'info',
+						severity: 'info',
 						label: t('snackbar.share_revoke', 'Share access revoked'),
 						autoHideTimeout: 2000,
 						hideButton: true

@@ -127,7 +127,7 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item }) => {
 						createSnackbar({
 							key: `move`,
 							replace: true,
-							type: 'success',
+							severity: 'success',
 							label: t('messages.snackbar.folder_moved', 'Folder successfully moved'),
 							autoHideTimeout: 3000
 						});
@@ -135,7 +135,7 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item }) => {
 						createSnackbar({
 							key: `move`,
 							replace: true,
-							type: 'error',
+							severity: 'error',
 							label: t('label.error_try_again', 'Something went wrong, please try again.'),
 							autoHideTimeout: 3000
 						});
@@ -156,7 +156,7 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item }) => {
 					createSnackbar({
 						key: `edit`,
 						replace: true,
-						type: 'info',
+						severity: 'info',
 						label: t('messages.snackbar.conversation_move', 'Conversation successfully moved'),
 						autoHideTimeout: 3000,
 						actionLabel: t('action.goto_folder', 'GO TO FOLDER'),
@@ -168,7 +168,7 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item }) => {
 					createSnackbar({
 						key: `edit`,
 						replace: true,
-						type: 'error',
+						severity: 'error',
 						label: t('label.error_try_again', 'Something went wrong, please try again'),
 						autoHideTimeout: 3000,
 						hideButton: true
@@ -188,7 +188,7 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item }) => {
 					createSnackbar({
 						key: `edit`,
 						replace: true,
-						type: 'info',
+						severity: 'info',
 						label: t('messages.snackbar.message_move', 'Message successfully moved'),
 						autoHideTimeout: 3000,
 						actionLabel: t('action.goto_folder', 'GO TO FOLDER'),
@@ -200,7 +200,7 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item }) => {
 					createSnackbar({
 						key: `edit`,
 						replace: true,
-						type: 'error',
+						severity: 'error',
 						label: t('label.error_try_again', 'Something went wrong, please try again'),
 						autoHideTimeout: 3000,
 						hideButton: true

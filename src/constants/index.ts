@@ -547,3 +547,25 @@ export const BACKUP_SEARCH_STATUS = {
 	loading: 'loading',
 	completed: 'completed'
 } as const;
+
+export const MAIL_VERIFICATION_HEADERS = {
+	from: 'From',
+	authenticatorHeaders: 'Authentication-Results',
+	sensitivity: 'Sensitivity',
+	listId: 'List-ID',
+	listUnsubscribe: 'List-Unsubscribe',
+	zimbraDL: 'X-Zimbra-DL',
+	messageId: 'Message-Id',
+	creationDate: 'Date'
+} as const;
+
+export const MAIL_SENSITIVITY_HEADER = {
+	personal: 'Personal',
+	private: 'Private',
+	companyConfidential: 'Company-Confidential'
+} as const;
+
+export const MAIL_SENSITIVITY_HEADER_VALUES = ['Personal', 'Private', 'Company-Confidential'];
+
+export const SENSITIVITY_VALUES = ['Private', 'Company-Confidential'] as const;
+export const VALID_MAIL_AUTHENTICATION_HEADERS = ['dkim', 'spf', 'dmarc'] as const;

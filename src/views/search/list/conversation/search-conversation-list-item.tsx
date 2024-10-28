@@ -123,7 +123,7 @@ export const SearchConversationListItem: FC<SearchConversationListItemProps> = (
 	);
 
 	const expandConversation = useCallback(
-		(e) => {
+		(e: React.MouseEvent<HTMLButtonElement> | React.KeyboardEvent | MouseEvent | KeyboardEvent) => {
 			e.preventDefault();
 			setOpen((currentlyOpen) => {
 				if (
@@ -158,7 +158,7 @@ export const SearchConversationListItem: FC<SearchConversationListItemProps> = (
 	});
 
 	const _onClick = useCallback(
-		(e) => {
+		(e: React.MouseEvent) => {
 			if (!e.isDefaultPrevented()) {
 				if (conversation?.read === false && zimbraPrefMarkMsgRead) {
 					markAsRead.canExecute() && markAsRead.execute();
@@ -170,7 +170,7 @@ export const SearchConversationListItem: FC<SearchConversationListItemProps> = (
 	);
 
 	const _onDoubleClick = useCallback(
-		(e) => {
+		(e: React.MouseEvent) => {
 			if (e.isDefaultPrevented()) {
 				return;
 			}

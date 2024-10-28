@@ -51,17 +51,17 @@ const SizeCondition: FC<ComponentProps> = ({ t, activeIndex, defaultValue }): Re
 		}
 	}, [activeIndex, newFilters, setNewFilters, loadData, query, size, sizeUnit]);
 
-	const handleQueryChange = useCallback((arg) => {
+	const handleQueryChange = useCallback((arg: { numberComparison: string }) => {
 		setQuery(arg);
 		setLoadData(true);
 	}, []);
 
-	const handleSizeUnitChange = useCallback((arg) => {
+	const handleSizeUnitChange = useCallback((arg: string) => {
 		setSizeUnit(arg);
 		setLoadData(true);
 	}, []);
 
-	const handleSizeChange = useCallback((ev) => {
+	const handleSizeChange = useCallback((ev: React.ChangeEvent<HTMLInputElement>) => {
 		setSize(ev.target.value);
 		setLoadData(true);
 	}, []);
@@ -111,13 +111,7 @@ const SizeCondition: FC<ComponentProps> = ({ t, activeIndex, defaultValue }): Re
 				/>
 			</Container>
 			<Container minWidth="20%" maxWidth="20%" padding={{ right: 'small' }}>
-				<Input
-					type="number"
-					onChange={handleSizeChange}
-					value={size}
-					backgroundColor="gray5"
-					placeholder="0"
-				/>
+				<Input type="number" onChange={handleSizeChange} value={size} backgroundColor="gray5" />
 			</Container>
 			<Container minWidth="20%" maxWidth="20%" padding={{ right: 'small' }}>
 				<CustomSelect

@@ -7,7 +7,8 @@
 	"include": [
 		"src/**/*.ts",
 		"src/**/*.tsx",
-		"jest.config.js",
+		"jest.config.ts",
+		"jest-setup.ts",
 		"src/carbonio-ui-commons/worker/mock/workerMock.js"
 	],
 	"exclude": ["./node_modules/*", "./dist/*"]

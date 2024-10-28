@@ -19,18 +19,16 @@ describe('registerShellActions', () => {
 	it('should register the correct objects', async () => {
 		registerShellActions();
 
-		expect(registerActions).toHaveBeenCalledWith(
-			{
-				action: expect.any(Function),
-				id: 'mail-to',
-				type: 'contact-list'
-			},
-			{
-				action: expect.any(Function),
-				id: 'new-email',
-				type: 'new'
-			}
-		);
+		expect(registerActions).toHaveBeenCalledWith({
+			action: expect.any(Function),
+			id: 'mail-to',
+			type: 'contact-list'
+		});
+		expect(registerActions).toHaveBeenCalledWith({
+			action: expect.any(Function),
+			id: 'new-email',
+			type: 'new'
+		});
 	});
 });
 
@@ -40,7 +38,7 @@ describe('mailToAction', () => {
 			id: 'mail-to',
 			label: 'label.send_mail',
 			icon: 'MailModOutline',
-			onClick: expect.any(Function),
+			execute: expect.any(Function),
 			disabled: false
 		};
 		expect(mailToAction({})).toMatchObject(expectedMailToActionResult);
@@ -51,7 +49,7 @@ describe('mailToAction', () => {
 			id: 'mail-to',
 			label: 'label.send_mail',
 			icon: 'MailModOutline',
-			onClick: expect.any(Function),
+			execute: expect.any(Function),
 			disabled: true
 		};
 		const contacts = [
@@ -86,7 +84,7 @@ describe('newEmailAction', () => {
 			id: 'new-email',
 			label: 'label.new_email',
 			icon: 'MailModOutline',
-			onClick: expect.any(Function),
+			execute: expect.any(Function),
 			disabled: false,
 			group: 'carbonio-mails-ui',
 			primary: true

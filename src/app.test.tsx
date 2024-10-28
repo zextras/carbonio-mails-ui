@@ -5,9 +5,9 @@
  */
 import React from 'react';
 
+import { act } from '@testing-library/react';
 import * as shellUi from '@zextras/carbonio-shell-ui';
 import { HttpResponse } from 'msw';
-import { act } from 'react-dom/test-utils';
 
 import App from './app';
 import * as addComponentsToShell from './app-utils/add-shell-components';

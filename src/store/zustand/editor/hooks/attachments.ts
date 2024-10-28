@@ -34,7 +34,7 @@ const useNotifyUploadError = (): ((file: File) => void) => {
 			createSnackbar({
 				key: `upload-error`,
 				replace: true,
-				type: 'error',
+				severity: 'error',
 				label: t('label.errors.upload_failed_generic', {
 					filename: file.name,
 					defaultValue: 'Upload failed for the file "{{filename}}"'

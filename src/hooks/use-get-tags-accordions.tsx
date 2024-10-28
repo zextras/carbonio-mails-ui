@@ -8,6 +8,7 @@ import React, { FC, SyntheticEvent, useCallback, useMemo } from 'react';
 import {
 	AccordionItem,
 	Dropdown,
+	DropdownItem,
 	Icon,
 	Padding,
 	Row,
@@ -51,7 +52,13 @@ const CustomComp: FC<ItemProps> = (props) => {
 	);
 
 	return (
-		<Dropdown contextMenu items={actions} display="block" width="fit" onClick={triggerSearch}>
+		<Dropdown
+			contextMenu
+			items={actions as Array<DropdownItem>}
+			display="block"
+			width="fit"
+			onClick={triggerSearch}
+		>
 			<Row mainAlignment="flex-start" height="fit" padding={{ left: 'large' }} takeAvailableSpace>
 				<Icon size="large" icon="Tag" color={ZIMBRA_STANDARD_COLORS[props?.item?.color ?? 0].hex} />
 

@@ -13,19 +13,25 @@ import type { SubjectKeywordRowProps } from '../../../types';
 
 const SubjectKeywordRow: FC<SubjectKeywordRowProps> = ({ compProps }): ReactElement => {
 	const { otherKeywords, setOtherKeywords, subject, setSubject } = compProps;
-	const onChange = useCallback((state, stateHandler) => {
+	const onChange = useCallback((state: ChipItem[], stateHandler: (state: ChipItem[]) => void) => {
 		stateHandler(state);
 	}, []);
 	const keywordChipOnAdd = useCallback(
-		(label) => ({
-			label,
+		(label: unknown) => ({
+			label: label as string,
 			hasAvatar: false,
 			isGeneric: true
 		}),
 		[]
 	);
 	const chipOnAdd = useCallback(
-		(label, preText, hasAvatar, isGeneric, isQueryFilter) => ({
+		(
+			label: string,
+			preText: string,
+			hasAvatar: boolean,
+			isGeneric: boolean,
+			isQueryFilter: boolean
+		) => ({
 			label: `${preText}:${label}`,
 			hasAvatar,
 			isGeneric,
@@ -46,12 +52,20 @@ const SubjectKeywordRow: FC<SubjectKeywordRowProps> = ({ compProps }): ReactElem
 	);
 
 	const subjectChipOnAdd = useCallback(
-		(label: unknown): any => chipOnAdd(label, 'Subject', false, false, true),
+		(label: unknown): any => chipOnAdd(label as string, 'Subject', false, false, true),
 		[chipOnAdd]
 	);
 
 	const chipOnAdded = useCallback(
-		(label, preText, hasAvatar, isGeneric, isQueryFilter, hasError, icon) => {
+		(
+			label: string,
+			preText: string,
+			hasAvatar: boolean,
+			isGeneric: boolean,
+			isQueryFilter: boolean,
+			hasError: boolean,
+			icon: string
+		) => {
 			const chip = {
 				label: `${preText}:${label}`,
 				hasAvatar,

@@ -35,7 +35,7 @@ export const ItemAvatar: FC<ItemAvatarType> = ({ item, selected, selecting, togg
 	}, [item.participants, targetParticipants]);
 
 	const conversationSelect = useCallback(
-		(id) => (ev: SyntheticEvent) => {
+		(id: string) => (ev: SyntheticEvent) => {
 			ev.preventDefault();
 			toggle && toggle(id);
 		},

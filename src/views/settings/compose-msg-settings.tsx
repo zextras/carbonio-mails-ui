@@ -37,7 +37,7 @@ const ComposeMessage: FC<ComposeMessagesProps> = ({ settingsObj, updateSettings 
 	}));
 
 	const onColorChange = useCallback(
-		(value) => {
+		(value: string) => {
 			setColor(value);
 			updateSettings({ target: { name: 'zimbraPrefHtmlEditorDefaultFontColor', value } });
 		},

@@ -47,6 +47,7 @@ export const Breadcrumbs: FC<{
 			mainAlignment="flex-start"
 			crossAlignment="flex-start"
 			height="3rem"
+			data-testid="breadcrumbs-component"
 		>
 			<Row
 				height="100%"
@@ -63,6 +64,7 @@ export const Breadcrumbs: FC<{
 				>
 					<Tooltip label={iconCheckboxLabel} maxWidth="100%">
 						<SelectIconCheckbox
+							data-testid="select-icon-checkbox"
 							borderRadius="regular"
 							icon="CheckmarkSquare"
 							defaultChecked={isSelectModeOn}
@@ -76,19 +78,23 @@ export const Breadcrumbs: FC<{
 					<Text
 						size="medium"
 						style={{ marginLeft: '0.5rem' }}
-						data-testid="BreadcrumbPath"
+						data-testid="breadcrumb-path"
 						color="gray1"
 					>
 						{folderPathFirstPart.concat(folderPathLastPart)}
 					</Text>
 				</Row>
 				<Row>
-					<Text size="extrasmall" data-testid="BreadcrumbCount">
-						{itemsCount > 100 ? '100+' : itemsCount}
+					<Text size="extrasmall" data-testid="breadcrumb-count">
+						{itemsCount}
 					</Text>
 					<Padding right="large" />
-					{!isSearchModule && <LayoutComponent />}
-					{!isSearchModule && <SortingComponent folderId={folderId} />}
+					{!isSearchModule && (
+						<>
+							<LayoutComponent />
+							<SortingComponent folderId={folderId} />
+						</>
+					)}
 				</Row>
 			</Row>
 		</Container>

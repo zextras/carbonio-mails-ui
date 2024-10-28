@@ -286,7 +286,9 @@ export const ConversationListItem: FC<ConversationListItemProps> = memo(
 		const zimbraPrefMarkMsgRead = useUserSettings()?.prefs?.zimbraPrefMarkMsgRead !== '-1';
 
 		const toggleOpen = useCallback(
-			(e) => {
+			(
+				e: React.MouseEvent<HTMLButtonElement> | React.KeyboardEvent | MouseEvent | KeyboardEvent
+			) => {
 				e.preventDefault();
 				setOpen((currentlyOpen) => {
 					if (
@@ -312,7 +314,7 @@ export const ConversationListItem: FC<ConversationListItemProps> = memo(
 		);
 
 		const _onClick = useCallback(
-			(e) => {
+			(e: React.MouseEvent<HTMLDivElement>) => {
 				if (!e.isDefaultPrevented()) {
 					if (item?.read === false && zimbraPrefMarkMsgRead) {
 						markAsRead.canExecute() && markAsRead.execute();
@@ -324,7 +326,7 @@ export const ConversationListItem: FC<ConversationListItemProps> = memo(
 		);
 
 		const _onDoubleClick = useCallback(
-			(e) => {
+			(e: React.MouseEvent<HTMLDivElement>) => {
 				if (e.isDefaultPrevented()) {
 					return;
 				}

@@ -56,17 +56,17 @@ const FromToCondition: FC<ComponentProps> = ({ t, activeIndex, defaultValue }): 
 		}
 	}, [selectValue, activeIndex, newFilters, setNewFilters, value, loadData, part]);
 
-	const handleStatementChange = useCallback((arg) => {
+	const handleStatementChange = useCallback((arg: { stringComparison: string }) => {
 		setSelectValue(arg);
 		setLoadData(true);
 	}, []);
 
-	const handleValueChange = useCallback((ev) => {
+	const handleValueChange = useCallback((ev: React.ChangeEvent<HTMLInputElement>) => {
 		setValue(ev.target.value);
 		setLoadData(true);
 	}, []);
 
-	const handelPartChange = useCallback((arg) => {
+	const handelPartChange = useCallback((arg: string) => {
 		setPart(arg);
 		setLoadData(true);
 	}, []);
@@ -118,7 +118,7 @@ const FromToCondition: FC<ComponentProps> = ({ t, activeIndex, defaultValue }): 
 					backgroundColor="gray5"
 					value={value}
 					onChange={handleValueChange}
-					placeholder={t('settings.keyword', 'Keyword')}
+					label={t('settings.keyword', 'Keyword')}
 				/>
 			</Container>
 		</>

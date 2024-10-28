@@ -34,7 +34,7 @@ export const useSelection = ({
 	const isAllSelected = useMemo(() => count === items.length, [count, items.length]);
 
 	const selectItem = useCallback(
-		(id) => {
+		(id: string) => {
 			if (selected.current[id]) {
 				selected.current = omit(selected.current, [id]);
 				setCount((prev: number) => prev - 1);
