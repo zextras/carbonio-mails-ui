@@ -6,7 +6,7 @@
 
 import React from 'react';
 
-import { setupTest, screen } from '../../../../../../carbonio-ui-commons/test/test-setup';
+import { setupTest, screen } from '../../../../../../../carbonio-ui-commons/test/test-setup';
 import { MailAuthenticationHeaderIcon } from '../mail-authentication-header-icon';
 
 const authenticationHeaders = {
@@ -17,17 +17,17 @@ const authenticationHeaders = {
 
 describe('authenticationHeadersIconColor', () => {
 	it('correctly renders the component when one of the properties is valid', () => {
-		setupTest(<MailAuthenticationHeaderIcon mailAuthenticationHeaders={authenticationHeaders} />);
+		setupTest(<MailAuthenticationHeaderIcon authenticationInfo={authenticationHeaders} />);
 		expect(screen.getByTestId('mail-authentication-header-icon')).toBeInTheDocument();
 	});
 
 	it('shows a tooltip when hovering', async () => {
 		const { user } = setupTest(
-			<MailAuthenticationHeaderIcon mailAuthenticationHeaders={authenticationHeaders} />
+			<MailAuthenticationHeaderIcon authenticationInfo={authenticationHeaders} />
 		);
 		const icon = screen.getByTestId('mail-authentication-header-icon');
-		user.hover(icon);
+		await user.hover(icon);
 
-		expect(await screen.findByText('spf=pass, dkim=pass, dmarc=pass')).toBeInTheDocument();
+		expect(await screen.findByText('dkim=pass, spf=pass, dmarc=pass')).toBeInTheDocument();
 	});
 });

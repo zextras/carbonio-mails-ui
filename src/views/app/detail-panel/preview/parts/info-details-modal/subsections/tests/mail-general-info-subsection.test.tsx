@@ -8,7 +8,7 @@ import React from 'react';
 
 import { screen } from '@testing-library/react';
 
-import { setupTest } from '../../../../../../../carbonio-ui-commons/test/test-setup';
+import { setupTest } from '../../../../../../../../carbonio-ui-commons/test/test-setup';
 import { MailGeneralInfoSubsection } from '../mail-general-info-subsection';
 
 describe('MailInfoSubsection', () => {
@@ -33,19 +33,20 @@ describe('MailInfoSubsection', () => {
 		expect(screen.getByText('This email is from a Distribution List')).toBeInTheDocument();
 	});
 
-	it('returns empty fragment when both messageIdFromMailHeaders and creationDateFromMailHeaders are undefined', () => {
-		setupTest(
-			<MailGeneralInfoSubsection
-				messageIdFromMailHeaders={undefined}
-				creationDateFromMailHeaders={undefined}
-				messageIsFromDistributionList={undefined}
-				messageIsFromExternalDomain={undefined}
-				sensitivityValue={undefined}
-			/>
+	test('MessageId element shows tooltip', async () => {
+		const messageIdFromMailHeaders = '12345';
+		const { user } = setupTest(
+			<MailGeneralInfoSubsection messageIdFromMailHeaders={messageIdFromMailHeaders} />
 		);
-		expect(screen.queryByTestId('mail-info-subsection')).not.toBeInTheDocument();
-		expect(screen.queryByText('Message ID:')).not.toBeInTheDocument();
-		expect(screen.queryByText('Created at:')).not.toBeInTheDocument();
+
+		await user.hover(screen.getByText('12345'));
+		expect(await screen.findByTestId('tooltip')).toHaveTextContent('12345');
+	});
+
+	it('returns only general info if no values are provided', () => {
+		setupTest(<MailGeneralInfoSubsection />);
+
+		expect(screen.getByText('General Information')).toBeInTheDocument();
 	});
 
 	it('does not display the line title when the creation date value is not provided', () => {

@@ -17,6 +17,7 @@ import {
 	AttachmentPart,
 	BodyPart,
 	IncompleteMessage,
+	MailHeaders,
 	MailMessage,
 	MailMessagePart,
 	Participant,
@@ -27,12 +28,12 @@ import {
 	SoapMailParticipant
 } from '../types';
 import {
-	getAuthenticationHeaders,
-	getCreationDateFromMailHeaders,
-	getMessageIsFromDistributionList,
-	getMessageIsFromExternalDomain,
-	getMessageIdFromMailHeaders,
-	getSensitivityHeader
+	getAuthenticationHeadersFromAPI,
+	getCreationDateFromMailHeadersFromAPI,
+	getMessageIsFromDistributionListFromAPI,
+	getMessageIsFromExternalDomainFromAPI,
+	getMessageIdFromMailHeadersFromAPI,
+	getSensitivityHeaderFromAPI
 } from './mail-header-utils';
 
 type Flags = {
@@ -352,6 +353,16 @@ export const normalizeMailMessageFromSoap = (
 		(identity) => identity.type === 'primary'
 	)[0];
 
+	const normalizedMailHeaders: MailHeaders = {
+		signature: m?.signature,
+		messageIsFromExternalDomain: getMessageIsFromExternalDomainFromAPI(m._attrs, ownerAccount),
+		authenticationHeaders: getAuthenticationHeadersFromAPI(m._attrs),
+		sensitivity: getSensitivityHeaderFromAPI(m._attrs),
+		messageIdFromMailHeaders: getMessageIdFromMailHeadersFromAPI(m._attrs),
+		creationDateFromMailHeaders: getCreationDateFromMailHeadersFromAPI(m._attrs),
+		messageIsFromDistributionList: getMessageIsFromDistributionListFromAPI(m._attrs)
+	};
+	// FIXME: omitBy breaks typing, consider not using it. many types are actually required but are omitted at runtime
 	return <IncompleteMessage>omitBy(
 		{
 			conversation: m.cid,
@@ -373,13 +384,7 @@ export const normalizeMailMessageFromSoap = (
 			autoSendTime: m.autoSendTime,
 			...flags,
 			isReadReceiptRequested: haveReadReceipt(m.e, m.f, m.l) && !isNil(isComplete) && isComplete,
-			signature: m?.signature,
-			messageIsFromExternalDomain: getMessageIsFromExternalDomain(m._attrs, ownerAccount),
-			authenticationHeaders: getAuthenticationHeaders(m._attrs),
-			sensitivity: getSensitivityHeader(m._attrs),
-			messageIdFromMailHeaders: getMessageIdFromMailHeaders(m._attrs),
-			creationDateFromMailHeaders: getCreationDateFromMailHeaders(m._attrs),
-			messageIsFromDistributionList: getMessageIsFromDistributionList(m._attrs)
+			...normalizedMailHeaders
 		},
 		isNil
 	);

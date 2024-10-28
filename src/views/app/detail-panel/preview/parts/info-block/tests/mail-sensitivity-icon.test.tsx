@@ -7,8 +7,8 @@ import React from 'react';
 
 import { screen } from '@testing-library/react';
 
-import { setupTest } from '../../../../../../carbonio-ui-commons/test/test-setup';
-import { MAIL_SENSITIVITY_HEADER } from '../../../../../../constants';
+import { setupTest } from '../../../../../../../carbonio-ui-commons/test/test-setup';
+import { MAIL_SENSITIVITY_HEADER } from '../../../../../../../constants';
 import { MailSensitivityIcon } from '../mail-sensitivity-icon';
 
 describe('MailSensitivityIcon', () => {
@@ -34,10 +34,5 @@ describe('MailSensitivityIcon', () => {
 
 		await user.hover(icon);
 		expect(await screen.findByText('Sensitivity Company-Confidential')).toBeInTheDocument();
-	});
-
-	test('returns empty fragment when hasSensitivity is false', () => {
-		setupTest(<MailSensitivityIcon sensitivity={MAIL_SENSITIVITY_HEADER.personal} />);
-		expect(screen.queryByRole('img')).not.toBeInTheDocument();
 	});
 });

@@ -4,11 +4,12 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import { SENSITIVITY_VALUES } from '../../constants';
 import type { MailsEditorV2 } from '../editor';
 import { Participant } from '../participant';
-import { SaveDraftResponse, MailSensitivityHeader, MessageSignature } from '../soap';
+import { SaveDraftResponse, MessageSignature } from '../soap';
 
-type MailAuthenticationHeader = { value?: string; pass?: boolean };
+type MailAuthenticationHeader = { value: string; pass: boolean };
 
 type MailAuthenticationHeaders = {
 	dkim?: MailAuthenticationHeader;
@@ -16,7 +17,17 @@ type MailAuthenticationHeaders = {
 	dmarc?: MailAuthenticationHeader;
 };
 
-export type IncompleteMessage = {
+export type MailHeaders = {
+	signature?: Array<MessageSignature>;
+	messageIsFromExternalDomain?: boolean;
+	authenticationHeaders: MailAuthenticationHeaders;
+	sensitivity?: Sensitivity;
+	messageIdFromMailHeaders?: string;
+	creationDateFromMailHeaders?: string;
+	messageIsFromDistributionList?: boolean;
+};
+
+export type IncompleteMessage = MailHeaders & {
 	id: string;
 	did?: string;
 	parent: string;
@@ -46,13 +57,6 @@ export type IncompleteMessage = {
 	isComplete: boolean;
 	isReplied: boolean;
 	isReadReceiptRequested?: boolean;
-	signature?: Array<MessageSignature>;
-	messageIsFromExternalDomain: boolean;
-	authenticationHeaders: MailAuthenticationHeaders;
-	sensitivity: MailSensitivityHeader;
-	messageIdFromMailHeaders: string;
-	creationDateFromMailHeaders: string;
-	messageIsFromDistributionList: boolean;
 };
 
 export type MailMessagePart = {
@@ -111,3 +115,5 @@ export type SendMsgResult = {
 				error: true;
 		  });
 };
+
+export type Sensitivity = (typeof SENSITIVITY_VALUES)[number];

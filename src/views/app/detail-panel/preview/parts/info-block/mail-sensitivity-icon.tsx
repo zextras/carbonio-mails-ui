@@ -8,16 +8,13 @@ import React from 'react';
 import { Icon, Row, Tooltip } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
 
-import {
-	getMailSensitivityIconColor,
-	getMailSensitivityLabel
-} from '../../../../../normalizations/mail-header-utils';
-import { MailSensitivityHeader } from '../../../../../types';
+import { Sensitivity } from '../../../../../../types';
+import { getMailSensitivityIconColor, getMailSensitivityLabel } from '../utils';
 
 export const MailSensitivityIcon = ({
 	sensitivity
 }: {
-	sensitivity: MailSensitivityHeader;
+	sensitivity: Sensitivity;
 }): React.JSX.Element => {
 	const [t] = useTranslation();
 	return (
@@ -26,7 +23,7 @@ export const MailSensitivityIcon = ({
 				<Icon
 					size="medium"
 					icon={'EyeOff2Outline'}
-					color={getMailSensitivityIconColor(sensitivity ?? 'Personal')}
+					color={getMailSensitivityIconColor(sensitivity)}
 					style={{ paddingRight: '0.5rem' }}
 					data-testid="mail-sensitivity-icon"
 				/>

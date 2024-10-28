@@ -10,16 +10,12 @@ import { useTranslation } from 'react-i18next';
 
 import { DistributionListIcon } from './distribution-list-icon';
 import { ExternalDomainIcon } from './external-domain-icon';
-import { MailInfoDetailModal } from './info-details-modal/mail-info-detail-modal';
 import { MailAuthenticationHeaderIcon } from './mail-authentication-header-icon';
 import { MailSensitivityIcon } from './mail-sensitivity-icon';
 import { SmimeIcon } from './smime-icon';
-import {
-	getHasAuthenticationHeaders,
-	getIsSensitive
-} from '../../../../../normalizations/mail-header-utils';
-import { StoreProvider } from '../../../../../store/redux';
-import { IncompleteMessage } from '../../../../../types';
+import { StoreProvider } from '../../../../../../store/redux';
+import { IncompleteMessage } from '../../../../../../types';
+import { MailInfoDetailModal } from '../info-details-modal/mail-info-detail-modal';
 
 type MailInfoProps = {
 	msg: IncompleteMessage;
@@ -29,13 +25,13 @@ export const MailInfoBlock = ({ msg }: MailInfoProps): React.JSX.Element | null 
 	const [t] = useTranslation();
 	const { createModal, closeModal } = useModal();
 
-	const signature = msg?.signature?.[0];
-	const creationDateFromHeaders = msg?.creationDateFromMailHeaders;
-	const messageIdFromHeaders = msg?.messageIdFromMailHeaders;
-	const fromDistributionList = msg?.messageIsFromDistributionList;
-	const fromExternalDomain = msg?.messageIsFromExternalDomain;
-	const sensitivity = msg?.sensitivity;
-	const authenticationHeaders = msg?.authenticationHeaders;
+	const signature = msg.signature?.[0];
+	const creationDateFromHeaders = msg.creationDateFromMailHeaders;
+	const messageIdFromHeaders = msg.messageIdFromMailHeaders;
+	const fromDistributionList = msg.messageIsFromDistributionList;
+	const fromExternalDomain = msg.messageIsFromExternalDomain;
+	const sensitivityHeader = msg.sensitivity;
+	const authenticationMailsHeaders = msg.authenticationHeaders;
 
 	const showMailDetailsModal = useCallback(
 		(event: React.MouseEvent): void => {
@@ -55,8 +51,8 @@ export const MailInfoBlock = ({ msg }: MailInfoProps): React.JSX.Element | null 
 								messageIdFromMailHeaders={messageIdFromHeaders}
 								messageIsFromDistributionList={fromDistributionList}
 								messageIsFromExternalDomain={fromExternalDomain}
-								mailAuthenticationHeaders={authenticationHeaders}
-								sensitivityValue={sensitivity}
+								authenticationMailsHeaders={authenticationMailsHeaders}
+								sensitivityValue={sensitivityHeader}
 							/>
 						</StoreProvider>
 					)
@@ -71,34 +67,31 @@ export const MailInfoBlock = ({ msg }: MailInfoProps): React.JSX.Element | null 
 			messageIdFromHeaders,
 			fromDistributionList,
 			fromExternalDomain,
-			authenticationHeaders,
-			sensitivity,
+			authenticationMailsHeaders,
+			sensitivityHeader,
 			closeModal
 		]
 	);
 
-	const isSensitive = getIsSensitive(sensitivity);
-	const hasAuthenticationHeaders = getHasAuthenticationHeaders(authenticationHeaders);
-
-	const showLink =
+	const showInfoDetails =
 		messageIdFromHeaders ||
 		creationDateFromHeaders ||
 		signature ||
 		fromExternalDomain ||
-		isSensitive ||
-		hasAuthenticationHeaders ||
+		sensitivityHeader ||
+		authenticationMailsHeaders ||
 		fromDistributionList;
 
 	return (
 		<Container orientation="horizontal" padding={{ all: 'small' }} mainAlignment="flex-start">
 			{signature && <SmimeIcon signature={signature} />}
 			{fromExternalDomain && <ExternalDomainIcon />}
-			{isSensitive && <MailSensitivityIcon sensitivity={sensitivity} />}
-			{hasAuthenticationHeaders && (
-				<MailAuthenticationHeaderIcon mailAuthenticationHeaders={authenticationHeaders} />
+			{sensitivityHeader && <MailSensitivityIcon sensitivity={sensitivityHeader} />}
+			{authenticationMailsHeaders && (
+				<MailAuthenticationHeaderIcon authenticationInfo={authenticationMailsHeaders} />
 			)}
 			{fromDistributionList && <DistributionListIcon />}
-			{showLink && (
+			{showInfoDetails && (
 				<Link size="medium" onClick={showMailDetailsModal}>
 					{t('label.show_details', 'Show Details')}
 				</Link>

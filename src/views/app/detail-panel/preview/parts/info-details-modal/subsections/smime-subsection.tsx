@@ -9,17 +9,17 @@ import { Container, Divider, Icon, Padding, Row, Text } from '@zextras/carbonio-
 import moment from 'moment';
 import { useTranslation } from 'react-i18next';
 
-import { MessageSignature } from '../../../../../../types';
-import { ErrorMessageCode } from '../../utils';
+import { MessageSignature } from '../../../../../../../types';
+import { ErrorMessageCode } from '../../../utils';
 
 type SmimeDetailsModalProps = {
-	signature: MessageSignature | undefined;
+	signature: MessageSignature;
 };
 
 export const SmimeSubsection = ({ signature }: SmimeDetailsModalProps): React.JSX.Element => {
 	const [t] = useTranslation();
 	const signedMsgDetails = useMemo(() => {
-		switch (signature?.messageCode) {
+		switch (signature.messageCode) {
 			case ErrorMessageCode.VALID:
 				return {
 					title: t('messages.modal.smime.valid_title', 'Message is Signed'),
@@ -90,9 +90,7 @@ export const SmimeSubsection = ({ signature }: SmimeDetailsModalProps): React.JS
 					iconColor: 'error'
 				};
 		}
-	}, [signature?.messageCode, t]);
-
-	if (!signature) return <></>;
+	}, [signature.messageCode, t]);
 
 	return (
 		<Container

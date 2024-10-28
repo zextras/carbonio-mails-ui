@@ -7,8 +7,8 @@ import React, { act } from 'react';
 
 import { useModal } from '@zextras/carbonio-design-system';
 
-import { setupTest, screen } from '../../../../../../carbonio-ui-commons/test/test-setup';
-import { IncompleteMessage } from '../../../../../../types';
+import { setupTest, screen } from '../../../../../../../carbonio-ui-commons/test/test-setup';
+import { IncompleteMessage } from '../../../../../../../types';
 import { MailInfoBlock } from '../mail-info-block';
 
 // Mock useModal hook
@@ -55,6 +55,20 @@ describe('MailInfoBlock', () => {
 	it('correctly renders the show details link', () => {
 		setupTest(<MailInfoBlock msg={mockMsg} />);
 		expect(screen.getByText('Show Details')).toBeInTheDocument();
+	});
+
+	it('should show the authentication icon with missing headers tooltip if the passed header is an empty object', async () => {
+		const mockMsg_: IncompleteMessage = {
+			authenticationHeaders: {}
+		} as IncompleteMessage;
+
+		const { user } = setupTest(<MailInfoBlock msg={mockMsg_} />);
+
+		const icon = screen.getByTestId('mail-authentication-header-icon');
+		expect(icon).toBeInTheDocument();
+
+		await user.hover(icon);
+		expect(await screen.findByText('dkim=missing, spf=missing, dmarc=missing')).toBeInTheDocument();
 	});
 
 	it('renders SmimeIcon when signature is present', () => {
