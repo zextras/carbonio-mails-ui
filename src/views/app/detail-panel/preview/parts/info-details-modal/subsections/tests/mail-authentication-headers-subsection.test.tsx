@@ -79,4 +79,25 @@ describe('MailAuthenticationHeadersSubsection', () => {
 		expect(screen.getByText('SPF:')).toBeInTheDocument();
 		expect(screen.getByText('spf-value')).toBeInTheDocument();
 	});
+
+	test('shows tooltip', async () => {
+		const authenticationHeaders = {
+			spf: { value: 'spf-value', pass: true },
+			dkim: { value: 'dkim-value', pass: true },
+			dmarc: { value: 'dmarc-value', pass: true }
+		};
+
+		const { user } = setupTest(
+			<MailAuthenticationHeadersSubsection authenticationMailsHeaders={authenticationHeaders} />
+		);
+
+		await user.hover(screen.getByText('spf-value'));
+		expect(await screen.findByTestId('tooltip')).toHaveTextContent('spf-value');
+
+		await user.hover(screen.getByText('dkim-value'));
+		expect(await screen.findByTestId('tooltip')).toHaveTextContent('dkim-value');
+
+		await user.hover(screen.getByText('dmarc-value'));
+		expect(await screen.findByTestId('tooltip')).toHaveTextContent('dmarc-value');
+	});
 });

@@ -5,7 +5,15 @@
  */
 import React from 'react';
 
-import { Container, Divider, Icon, Padding, Row, Text } from '@zextras/carbonio-design-system';
+import {
+	Container,
+	Divider,
+	Icon,
+	Padding,
+	Row,
+	Text,
+	Tooltip
+} from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
 
 import { MailAuthenticationHeaders } from '../../../../../../../types';
@@ -48,23 +56,29 @@ export const MailAuthenticationHeadersSubsection = ({
 			<Padding top={'medium'} />
 			{authenticationMailsHeaders?.dkim && (
 				<Row mainAlignment="flex-start" padding={{ top: 'small', bottom: 'small' }}>
-					<Text size="small">
-						<strong>{'DKIM:'}</strong> {authenticationMailsHeaders.dkim.value}
-					</Text>
+					<Tooltip placement="top" maxWidth="fit" label={authenticationMailsHeaders.dkim.value}>
+						<Text size="small">
+							<strong>{'DKIM:'}</strong> {authenticationMailsHeaders.dkim.value}
+						</Text>
+					</Tooltip>
 				</Row>
 			)}
 			{authenticationMailsHeaders?.dmarc && (
 				<Row mainAlignment="flex-start" padding={{ top: 'small', bottom: 'small' }}>
-					<Text size="small">
-						<strong>{'DMARC:'}</strong> {authenticationMailsHeaders.dmarc.value}
-					</Text>
+					<Tooltip placement="top" maxWidth="fit" label={authenticationMailsHeaders.dmarc.value}>
+						<Text size="small">
+							<strong>{'DMARC:'}</strong> {authenticationMailsHeaders.dmarc.value}
+						</Text>
+					</Tooltip>
 				</Row>
 			)}
 			{authenticationMailsHeaders?.spf && (
 				<Row mainAlignment="flex-start" padding={{ top: 'small', bottom: 'small' }}>
-					<Text size="small">
-						<strong>{'SPF:'}</strong> {authenticationMailsHeaders.spf.value}
-					</Text>
+					<Tooltip placement="top" maxWidth="fit" label={authenticationMailsHeaders.spf.value}>
+						<Text size="small">
+							<strong>{'SPF:'}</strong> {authenticationMailsHeaders.spf.value}
+						</Text>
+					</Tooltip>
 				</Row>
 			)}
 		</Container>

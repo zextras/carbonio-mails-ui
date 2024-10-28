@@ -33,6 +33,16 @@ describe('MailInfoSubsection', () => {
 		expect(screen.getByText('This email is from a Distribution List')).toBeInTheDocument();
 	});
 
+	test('MessageId element shows tooltip', async () => {
+		const messageIdFromMailHeaders = '12345';
+		const { user } = setupTest(
+			<MailGeneralInfoSubsection messageIdFromMailHeaders={messageIdFromMailHeaders} />
+		);
+
+		await user.hover(screen.getByText('12345'));
+		expect(await screen.findByTestId('tooltip')).toHaveTextContent('12345');
+	});
+
 	it('returns only general info if no values are provided', () => {
 		setupTest(<MailGeneralInfoSubsection />);
 
