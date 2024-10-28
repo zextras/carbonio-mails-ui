@@ -40,10 +40,9 @@ describe('MailAuthenticationHeadersSubsection', () => {
 		expect(screen.getByText('Authentication Headers')).toBeInTheDocument();
 		expect(screen.getByText('DKIM:')).toBeInTheDocument();
 		expect(screen.getByText('dkim-value')).toBeInTheDocument();
-		expect(screen.queryByText('DMARC:')).not.toBeInTheDocument();
-		expect(screen.queryByText('dmarc-value')).not.toBeInTheDocument();
-		expect(screen.queryByText('SPF:')).not.toBeInTheDocument();
-		expect(screen.queryByText('spf-value')).not.toBeInTheDocument();
+		expect(screen.getByText('DMARC:')).toBeInTheDocument();
+		expect(screen.getByText('SPF:')).toBeInTheDocument();
+		expect(screen.getAllByText('Missing')).toHaveLength(2);
 	});
 
 	test('displays DMARC header when provided', () => {
@@ -55,12 +54,11 @@ describe('MailAuthenticationHeadersSubsection', () => {
 			<MailAuthenticationHeadersSubsection authenticationMailsHeaders={authenticationHeaders} />
 		);
 		expect(screen.getByText('Authentication Headers')).toBeInTheDocument();
-		expect(screen.queryByText('DKIM:')).not.toBeInTheDocument();
-		expect(screen.queryByText('dkim-value')).not.toBeInTheDocument();
+		expect(screen.getByText('DKIM:')).toBeInTheDocument();
 		expect(screen.getByText('DMARC:')).toBeInTheDocument();
 		expect(screen.getByText('dmarc-value')).toBeInTheDocument();
-		expect(screen.queryByText('SPF:')).not.toBeInTheDocument();
-		expect(screen.queryByText('spf-value')).not.toBeInTheDocument();
+		expect(screen.getByText('SPF:')).toBeInTheDocument();
+		expect(screen.getAllByText('Missing')).toHaveLength(2);
 	});
 
 	test('displays SPF header when provided', () => {
@@ -72,12 +70,23 @@ describe('MailAuthenticationHeadersSubsection', () => {
 			<MailAuthenticationHeadersSubsection authenticationMailsHeaders={authenticationHeaders} />
 		);
 		expect(screen.getByText('Authentication Headers')).toBeInTheDocument();
-		expect(screen.queryByText('DKIM:')).not.toBeInTheDocument();
-		expect(screen.queryByText('dkim-value')).not.toBeInTheDocument();
-		expect(screen.queryByText('DMARC:')).not.toBeInTheDocument();
-		expect(screen.queryByText('dmarc-value')).not.toBeInTheDocument();
+		expect(screen.getByText('DKIM:')).toBeInTheDocument();
+		expect(screen.getByText('DMARC:')).toBeInTheDocument();
 		expect(screen.getByText('SPF:')).toBeInTheDocument();
 		expect(screen.getByText('spf-value')).toBeInTheDocument();
+		expect(screen.getAllByText('Missing')).toHaveLength(2);
+	});
+	test('displays header icon when no headers are provided', () => {
+		const authenticationHeaders = {};
+
+		setupTest(
+			<MailAuthenticationHeadersSubsection authenticationMailsHeaders={authenticationHeaders} />
+		);
+		expect(screen.getByText('Authentication Headers')).toBeInTheDocument();
+		expect(screen.getByText('DKIM:')).toBeInTheDocument();
+		expect(screen.getByText('DMARC:')).toBeInTheDocument();
+		expect(screen.getByText('SPF:')).toBeInTheDocument();
+		expect(screen.getAllByText('Missing')).toHaveLength(3);
 	});
 
 	test('shows tooltip', async () => {
