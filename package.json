@@ -19,7 +19,8 @@
 		"lint-stats": "eslint --ext .js,.jsx,.ts,.tsx --format node_modules/eslint-stats/byErrorAndWarningStacked --resolve-plugins-relative-to node_modules/@zextras/carbonio-ui-configs src",
 		"lint-check": "npm run lint-errors; npm run type-check",
 		"test": "TZ=Europe/Rome jest --testTimeout=20000 --maxWorkers=50%",
-		"build:dev": "sdk build --dev --pkgRel $(date +%s)"
+		"build:dev": "sdk build --dev --pkgRel $(date +%s)",
+		"dev-deploy": "sdk build && sdk deploy"
 	},
 	"files": [
 		"src/types/"
