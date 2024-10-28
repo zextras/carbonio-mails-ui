@@ -74,8 +74,8 @@ export const MailInfoBlock = ({ msg }: MailInfoProps): React.JSX.Element | null 
 	);
 
 	const showInfoDetails =
-		messageIdFromHeaders ||
-		creationDateFromHeaders ||
+		!!messageIdFromHeaders ||
+		!!creationDateFromHeaders ||
 		signature ||
 		fromExternalDomain ||
 		sensitivityHeader ||
