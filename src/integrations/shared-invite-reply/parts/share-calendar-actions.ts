@@ -159,8 +159,8 @@ const useMoveInviteToTrashFunc = (): ((arg: MoveInviteToTrashType) => any) => {
 	);
 };
 
-function isDuplicatedName(error: any): boolean {
-	return error?.message?.includes('mail.ALREADY_EXISTS');
+function isDuplicatedName(error: { message?: string }): boolean {
+	return error?.message?.includes('mail.ALREADY_EXISTS') ?? false;
 }
 
 export const useAccept = (): ((arg: Accept) => void) => {
