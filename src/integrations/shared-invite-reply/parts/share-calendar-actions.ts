@@ -159,6 +159,10 @@ const useMoveInviteToTrashFunc = (): ((arg: MoveInviteToTrashType) => any) => {
 	);
 };
 
+function isDuplicatedName(error: { message?: string }): boolean {
+	return error?.message?.includes('mail.ALREADY_EXISTS') ?? false;
+}
+
 export const useAccept = (): ((arg: Accept) => void) => {
 	const { createSnackbar } = useUiUtilities();
 	const moveInviteToTrashFunc = useMoveInviteToTrashFunc();
@@ -218,7 +222,12 @@ export const useAccept = (): ((arg: Accept) => void) => {
 						key: `share`,
 						replace: true,
 						severity: 'error',
-						label: t('label.error_try_again', 'Something went wrong, please try again'),
+						label: isDuplicatedName(res.error)
+							? t(
+									'label.error_folder_exists',
+									'A folder with the same name already exists, please choose a different one'
+								)
+							: t('label.error_try_again', 'Something went wrong, please try again'),
 						autoHideTimeout: 3000,
 						hideButton: true
 					});

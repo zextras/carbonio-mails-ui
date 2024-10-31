@@ -34,7 +34,7 @@ export const mountSharedCalendar = createAsyncThunk(
 		});
 		const response = await res.json();
 		if (response.Body.Fault) {
-			throw new Error(response.Body.Fault.Reason.Text);
+			throw new Error(response.Body.Fault.Detail.Error.Code);
 		}
 
 		return { response };
