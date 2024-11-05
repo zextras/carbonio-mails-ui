@@ -14,7 +14,7 @@ import { acceptSharedCalendarReply } from '../../../store/actions/acceptSharedCa
 import {
 	CreateMountpointDataType,
 	mountSharedFolder
-} from '../../../store/actions/mount-share-calendar';
+} from '../../../store/actions/mount-shared-folder';
 import { AppDispatch } from '../../../store/redux';
 import type { MailsEditor, Participant } from '../../../types';
 
@@ -22,13 +22,13 @@ type Accept = {
 	zid: string;
 	view: string;
 	rid: string;
-	calendarName: string;
+	folderName: string;
 	color: number;
 	accounts: any;
 	t: (...args: any[]) => string;
 	dispatch: AppDispatch;
 	msgId: Array<string> | any;
-	sharedCalendarName: string;
+	sharedFolderName: string;
 	owner: string;
 	participants: Participant[];
 	grantee: string;
@@ -46,7 +46,7 @@ type MoveInviteToTrashType = {
 
 type AcceptSharedCalendarType = {
 	dispatch: AppDispatch;
-	sharedCalendarName: string;
+	sharedFolderName: string;
 	owner: string;
 	participants: Participant[];
 	grantee: string;
@@ -60,7 +60,7 @@ type DeclineType = {
 	dispatch: AppDispatch;
 	t: (...args: any[]) => string;
 	msgId: string;
-	sharedCalendarName: string;
+	sharedFolderName: string;
 	owner: string;
 	participants: Participant[];
 	grantee: string;
@@ -76,7 +76,7 @@ const mountSharedFolderFunc = ({
 	zid,
 	view,
 	rid,
-	folderName: calendarName,
+	folderName,
 	color,
 	accounts,
 	dispatch
@@ -86,7 +86,7 @@ const mountSharedFolderFunc = ({
 			zid,
 			view,
 			rid,
-			folderName: calendarName,
+			folderName,
 			color,
 			accounts
 		})
@@ -94,7 +94,7 @@ const mountSharedFolderFunc = ({
 
 const sharedCalendarReplyFunc = ({
 	dispatch,
-	sharedCalendarName,
+	sharedFolderName,
 	owner,
 	participants,
 	grantee,
@@ -113,8 +113,8 @@ const sharedCalendarReplyFunc = ({
 				// @ts-ignore
 				attach: [{ mp: [] }],
 				subject: isAccepted
-					? `Share Accepted: ${sharedCalendarName} shared by ${owner}`
-					: `Share Declined: ${sharedCalendarName} shared by ${owner}`,
+					? `Share Accepted: ${sharedFolderName} shared by ${owner}`
+					: `Share Declined: ${sharedFolderName} shared by ${owner}`,
 				participants: map(participants, (p) => {
 					if (p.type === ParticipantRole.FROM) {
 						return { ...p, type: ParticipantRole.TO };
@@ -123,8 +123,8 @@ const sharedCalendarReplyFunc = ({
 				}),
 				text: [
 					isAccepted
-						? `Accepted: ${grantee} has accepted the sharing of "${sharedCalendarName}"\n\n----------------------------------------------\n\nShared item: ${sharedCalendarName}\nOwner: ${owner}\nGrantee: ${grantee}\nRole: ${role}\nAllowed actions: ${allowedActions}\n*~*~*~*~*~*~*~*~*~*\n${displayMessage}`
-						: `Declined: ${grantee} has declined the sharing of "${sharedCalendarName}"\n\n----------------------------------------------\n\nShared item: ${sharedCalendarName}\nOwner: ${owner}\nGrantee: ${grantee}\nRole: ${role}\nAllowed actions: ${allowedActions}\n*~*~*~*~*~*~*~*~*~*\n${displayMessage}`
+						? `Accepted: ${grantee} has accepted the sharing of "${sharedFolderName}"\n\n----------------------------------------------\n\nShared item: ${sharedFolderName}\nOwner: ${owner}\nGrantee: ${grantee}\nRole: ${role}\nAllowed actions: ${allowedActions}\n*~*~*~*~*~*~*~*~*~*\n${displayMessage}`
+						: `Declined: ${grantee} has declined the sharing of "${sharedFolderName}"\n\n----------------------------------------------\n\nShared item: ${sharedFolderName}\nOwner: ${owner}\nGrantee: ${grantee}\nRole: ${role}\nAllowed actions: ${allowedActions}\n*~*~*~*~*~*~*~*~*~*\n${displayMessage}`
 				]
 			} as MailsEditor
 		})
@@ -168,13 +168,13 @@ export const useAccept = (): ((arg: Accept) => void) => {
 			zid,
 			view,
 			rid,
-			calendarName,
+			folderName,
 			color,
 			accounts,
 			t,
 			dispatch,
 			msgId,
-			sharedCalendarName,
+			sharedFolderName,
 			owner,
 			participants,
 			grantee,
@@ -187,7 +187,7 @@ export const useAccept = (): ((arg: Accept) => void) => {
 				zid,
 				view,
 				rid,
-				folderName: calendarName,
+				folderName,
 				color,
 				accounts,
 				dispatch
@@ -196,7 +196,7 @@ export const useAccept = (): ((arg: Accept) => void) => {
 					notifyOrganizer &&
 						sharedCalendarReplyFunc({
 							dispatch,
-							sharedCalendarName,
+							sharedFolderName,
 							owner,
 							participants,
 							grantee,
@@ -242,7 +242,7 @@ export const useDecline = (): ((arg: DeclineType) => Promise<void>) => {
 			dispatch,
 			t,
 			msgId,
-			sharedCalendarName,
+			sharedFolderName,
 			owner,
 			participants,
 			grantee,
@@ -261,7 +261,7 @@ export const useDecline = (): ((arg: DeclineType) => Promise<void>) => {
 					notifyOrganizer &&
 						sharedCalendarReplyFunc({
 							dispatch,
-							sharedCalendarName,
+							sharedFolderName,
 							owner,
 							participants,
 							grantee,

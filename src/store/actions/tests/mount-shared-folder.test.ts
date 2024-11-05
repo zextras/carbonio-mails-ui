@@ -8,7 +8,7 @@ import { http } from 'msw';
 import { getSetupServer } from '../../../carbonio-ui-commons/test/jest-setup';
 import { generateStore } from '../../../tests/generators/store';
 import { handleCreateMountpointRequest } from '../../../tests/mocks/network/msw/handle-create-mountpoint';
-import { mountSharedFolder } from '../mount-share-calendar';
+import { mountSharedFolder } from '../mount-shared-folder';
 
 describe('mountShareCalendar', () => {
 	it('returns error if the folder already exists', async () => {

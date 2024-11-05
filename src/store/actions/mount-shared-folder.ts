@@ -21,7 +21,7 @@ export const mountSharedFolder = createAsyncThunk(
 	'mails/mountSharedFolder',
 	async (data: CreateMountpointDataType) => {
 		const request = {
-			_jsns: 'urn:zimbraMail',
+			_jsns: 'urn:zimbraMail' as const,
 			link: {
 				l: 1,
 				name: data.folderName,
@@ -31,7 +31,7 @@ export const mountSharedFolder = createAsyncThunk(
 				color: data.color,
 				f: '#'
 			} as MountpointSpecType
-		} as CreateMountPointRequest;
+		};
 		const response = await soapFetch<
 			CreateMountPointRequest,
 			CreateMountpointResponse & ErrorSoapBodyResponse

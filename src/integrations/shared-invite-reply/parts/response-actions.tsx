@@ -18,7 +18,7 @@ import { useFoldersByView, useUserAccounts } from '@zextras/carbonio-shell-ui';
 import { find } from 'lodash';
 
 import ColorSelect from './color-select';
-import { useAccept, useDecline } from './share-calendar-actions';
+import { useAccept, useDecline } from './share-folder-actions';
 import { FOLDER_VIEW } from '../../../carbonio-ui-commons/constants';
 import { ResponseActionsProps } from '../../../types';
 
@@ -29,7 +29,7 @@ const ResponseActions: FC<ResponseActionsProps> = ({
 	view,
 	rid,
 	msgId,
-	sharedCalendarName,
+	sharedFolderName,
 	grantee,
 	owner,
 	role,
@@ -38,7 +38,7 @@ const ResponseActions: FC<ResponseActionsProps> = ({
 }): ReactElement => {
 	const [customMessage, setCustomMessage] = useState('');
 	const [notifyOrganizer, setNotifyOrganizer] = useState(false);
-	const [calendarName, setCalendarName] = useState(sharedCalendarName);
+	const [folderName, setFolderName] = useState(sharedFolderName);
 	const [selectedColor, setSelectedColor] = useState<string | null>('0');
 	const accounts = useUserAccounts();
 	const calFolders = useFoldersByView(FOLDER_VIEW.appointment);
@@ -46,14 +46,11 @@ const ResponseActions: FC<ResponseActionsProps> = ({
 		() =>
 			find(
 				calFolders[0]?.children,
-				(item) => item?.name.toLowerCase() === calendarName.toLowerCase()
+				(item) => item?.name.toLowerCase() === folderName.toLowerCase()
 			),
-		[calFolders, calendarName]
+		[calFolders, folderName]
 	);
-	const disabled = useMemo(
-		() => !!(calendarName.length === 0 || showError),
-		[calendarName, showError]
-	);
+	const disabled = useMemo(() => !!(folderName.length === 0 || showError), [folderName, showError]);
 
 	const accept = useAccept();
 	const acceptShare = useCallback(
@@ -62,13 +59,13 @@ const ResponseActions: FC<ResponseActionsProps> = ({
 				zid,
 				view,
 				rid,
-				calendarName,
+				folderName,
 				color: parseInt(selectedColor ?? '0', 10),
 				accounts,
 				t,
 				dispatch,
 				msgId,
-				sharedCalendarName,
+				sharedFolderName,
 				owner,
 				participants,
 				grantee,
@@ -82,13 +79,13 @@ const ResponseActions: FC<ResponseActionsProps> = ({
 			zid,
 			view,
 			rid,
-			calendarName,
+			folderName,
 			selectedColor,
 			accounts,
 			t,
 			dispatch,
 			msgId,
-			sharedCalendarName,
+			sharedFolderName,
 			owner,
 			participants,
 			grantee,
@@ -105,7 +102,7 @@ const ResponseActions: FC<ResponseActionsProps> = ({
 			dispatch,
 			t,
 			msgId,
-			sharedCalendarName,
+			sharedFolderName,
 			owner,
 			participants,
 			grantee,
@@ -119,7 +116,7 @@ const ResponseActions: FC<ResponseActionsProps> = ({
 		dispatch,
 		t,
 		msgId,
-		sharedCalendarName,
+		sharedFolderName,
 		owner,
 		participants,
 		grantee,
@@ -157,9 +154,9 @@ const ResponseActions: FC<ResponseActionsProps> = ({
 					<Input
 						label={t('label.type_name_here', 'Item name')}
 						backgroundColor="gray5"
-						value={calendarName}
+						value={folderName}
 						hasError={disabled}
-						onChange={(e: ChangeEvent<HTMLInputElement>): void => setCalendarName(e.target.value)}
+						onChange={(e: ChangeEvent<HTMLInputElement>): void => setFolderName(e.target.value)}
 					/>
 				</Row>
 				<Row
@@ -179,7 +176,7 @@ const ResponseActions: FC<ResponseActionsProps> = ({
 					mainAlignment="flex-start"
 					style={{ marginBottom: '0.5rem' }}
 				>
-					{(calendarName.length === 0 && (
+					{(folderName.length === 0 && (
 						<Text size="small" color="error">
 							{t('messages.enter_calendar_name', 'Enter a name to accept the calendar')}
 						</Text>
