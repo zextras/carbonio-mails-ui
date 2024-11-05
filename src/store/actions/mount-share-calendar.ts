@@ -4,37 +4,41 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { createAsyncThunk } from '@reduxjs/toolkit';
+import { ErrorSoapBodyResponse, soapFetch } from '@zextras/carbonio-shell-ui';
 
-export const mountSharedCalendar = createAsyncThunk(
-	'calendar/mountSharedCalendar',
-	async (data: any, { getState }) => {
-		const requests: any = {};
-		requests.mountSharedCalendarRequest = `<CreateMountpointRequest xmlns="urn:zimbraMail">
-        <link l="1" name="${data.calendarName}" zid="${data.zid}" rid="${data.rid}" view="${data.view}" color="${data.color}" f="#"/>
-        </CreateMountpointRequest>`;
+import { CreateMountPointRequest, CreateMountpointResponse, MountpointSpecType } from '../../types';
 
-		const res = await fetch('/service/soap/CreateMountpointRequest', {
-			method: 'POST',
-			headers: {
-				'content-type': 'application/soap+xml'
-			},
-			body: `<?xml version="1.0" encoding="utf-8"?>
-			<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope">
-				<soap:Header>
-					<context xmlns="urn:zimbra">
-						<account by="name">${data.accounts[0].name}</account>
-						<format type="js"/>
-					</context>
-				</soap:Header>
-				<soap:Body>
-					${requests.mountSharedCalendarRequest ?? ''}				
-				</soap:Body>
-			</soap:Envelope>
-		`
-		});
-		const response = await res.json();
-		if (response.Body.Fault) {
-			throw new Error(response.Body.Fault.Detail.Error.Code);
+export type CreateMountpointDataType = {
+	zid: string;
+	view: string;
+	rid: string;
+	folderName: string;
+	color: number;
+	accounts: Array<{ name: string }>;
+};
+
+export const mountSharedFolder = createAsyncThunk(
+	'mails/mountSharedFolder',
+	async (data: CreateMountpointDataType) => {
+		const request = {
+			_jsns: 'urn:zimbraMail',
+			link: {
+				l: 1,
+				name: data.folderName,
+				zid: data.zid,
+				rid: data.rid,
+				view: data.view,
+				color: data.color,
+				f: '#'
+			} as MountpointSpecType
+		} as CreateMountPointRequest;
+		const response = await soapFetch<
+			CreateMountPointRequest,
+			CreateMountpointResponse & ErrorSoapBodyResponse
+		>('CreateMountpoint', request, data.accounts[0].name);
+
+		if (response.Fault) {
+			throw new Error(response.Fault.Detail.Error.Code);
 		}
 
 		return { response };

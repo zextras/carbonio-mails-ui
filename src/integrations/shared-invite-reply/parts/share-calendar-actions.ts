@@ -11,7 +11,10 @@ import { ParticipantRole } from '../../../carbonio-ui-commons/constants/particip
 import { useUiUtilities } from '../../../hooks/use-ui-utilities';
 import { msgAction } from '../../../store/actions';
 import { acceptSharedCalendarReply } from '../../../store/actions/acceptSharedCalendarReply';
-import { mountSharedCalendar } from '../../../store/actions/mount-share-calendar';
+import {
+	CreateMountpointDataType,
+	mountSharedFolder
+} from '../../../store/actions/mount-share-calendar';
 import { AppDispatch } from '../../../store/redux';
 import type { MailsEditor, Participant } from '../../../types';
 
@@ -41,15 +44,6 @@ type MoveInviteToTrashType = {
 	msgId: string;
 };
 
-type MountSharedCalendarType = {
-	zid: string;
-	view: string;
-	rid: string;
-	calendarName: string;
-	color: number;
-	accounts: any;
-	dispatch: AppDispatch;
-};
 type AcceptSharedCalendarType = {
 	dispatch: AppDispatch;
 	sharedCalendarName: string;
@@ -75,21 +69,24 @@ type DeclineType = {
 	allowedActions: string;
 	notifyOrganizer: boolean;
 };
-const mountSharedCalendarFunc = ({
+
+type MountSharedFolderFuncType = CreateMountpointDataType & { dispatch: AppDispatch };
+
+const mountSharedFolderFunc = ({
 	zid,
 	view,
 	rid,
-	calendarName,
+	folderName: calendarName,
 	color,
 	accounts,
 	dispatch
-}: MountSharedCalendarType): any =>
+}: MountSharedFolderFuncType): Promise<any> =>
 	dispatch(
-		mountSharedCalendar({
+		mountSharedFolder({
 			zid,
 			view,
 			rid,
-			calendarName,
+			folderName: calendarName,
 			color,
 			accounts
 		})
@@ -186,15 +183,15 @@ export const useAccept = (): ((arg: Accept) => void) => {
 			allowedActions,
 			notifyOrganizer
 		}) => {
-			mountSharedCalendarFunc({
+			mountSharedFolderFunc({
 				zid,
 				view,
 				rid,
-				calendarName,
+				folderName: calendarName,
 				color,
 				accounts,
 				dispatch
-			}).then((res: any): void => {
+			}).then((res): void => {
 				if (res.type.includes('fulfilled')) {
 					notifyOrganizer &&
 						sharedCalendarReplyFunc({
