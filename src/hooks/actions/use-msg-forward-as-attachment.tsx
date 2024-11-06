@@ -38,7 +38,7 @@ function uploadEmlAsAttachment(eml: string, filename: string): Promise<UnsavedAt
 			},
 			onUploadError: (_: File, __: string, error: string) => {
 				console.error(`Error uploading EML as attachment: ${error}`);
-				reject(error);
+				reject(new Error(error));
 			}
 		});
 	});
