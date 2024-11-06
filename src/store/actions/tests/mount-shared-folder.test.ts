@@ -8,7 +8,7 @@ import { http } from 'msw';
 import { getSetupServer } from '../../../carbonio-ui-commons/test/jest-setup';
 import { generateStore } from '../../../tests/generators/store';
 import { handleCreateMountpointRequest } from '../../../tests/mocks/network/msw/handle-create-mountpoint';
-import { mountSharedCalendar } from '../mount-share-calendar';
+import { mountSharedFolder } from '../mount-shared-folder';
 
 describe('mountShareCalendar', () => {
 	it('returns error if the folder already exists', async () => {
@@ -21,27 +21,14 @@ describe('mountShareCalendar', () => {
 			store.dispatch(
 				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 				// @ts-ignore
-				mountSharedCalendar({
-					calendarName: 'existing',
+				mountSharedFolder({
+					folderName: 'existing',
 					accounts: [{ name: 'account' }]
 				})
 			)
 		).resolves.toMatchObject({
-			payload: {
-				response: {
-					Body: {
-						CreateMountpointResponse: {
-							_jsns: 'urn:zimbraMail',
-							Fault: {
-								Detail: {
-									Error: {
-										Code: 'mail.ALREADY_EXISTS'
-									}
-								}
-							}
-						}
-					}
-				}
+			error: {
+				message: 'mail.ALREADY_EXISTS'
 			}
 		});
 	});
@@ -55,25 +42,21 @@ describe('mountShareCalendar', () => {
 			store.dispatch(
 				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 				// @ts-ignore
-				mountSharedCalendar({
-					calendarName: 'new',
+				mountSharedFolder({
+					folderName: 'new',
 					accounts: [{ name: 'account' }]
 				})
 			)
 		).resolves.toMatchObject({
 			payload: {
 				response: {
-					Body: {
-						CreateMountpointResponse: {
-							_jsns: 'urn:zimbraMail',
-							link: [
-								{
-									name: 'new',
-									absFolderPath: '/new'
-								}
-							]
+					_jsns: 'urn:zimbraMail',
+					link: [
+						{
+							name: 'new',
+							absFolderPath: '/new'
 						}
-					}
+					]
 				}
 			}
 		});

@@ -8,7 +8,7 @@ import { renderHook } from '@testing-library/react';
 import { CreateSnackbarFn, useSnackbar } from '@zextras/carbonio-design-system';
 
 import { setupHook } from '../../../../carbonio-ui-commons/test/test-setup';
-import { useAccept } from '../share-calendar-actions';
+import { useAccept } from '../share-folder-actions';
 
 const createSnackbar = (arg: any): CreateSnackbarFn => arg;
 const createSnackbarSpy = jest.fn(createSnackbar);
@@ -26,8 +26,8 @@ afterEach(() => {
 	jest.clearAllMocks();
 });
 
-describe('share calendar actions', () => {
-	it('should mount shared calendar on accept', async () => {
+describe('share folder actions', () => {
+	it('should mount shared folder on accept', async () => {
 		const dispatch = jest.fn(() =>
 			Promise.resolve({
 				type: 'fulfilled'
@@ -37,7 +37,7 @@ describe('share calendar actions', () => {
 		const zid = 'zid';
 		const view = 'view';
 		const rid = 'rid';
-		const calendarName = 'calendarName';
+		const folderName = 'folderName';
 		const color = 1;
 		const accounts = {};
 
@@ -47,12 +47,12 @@ describe('share calendar actions', () => {
 				zid,
 				view,
 				rid,
-				calendarName,
+				folderName,
 				color,
 				accounts,
 				dispatch,
 				msgId: 'msgId',
-				sharedCalendarName: calendarName,
+				sharedFolderName: folderName,
 				owner: 'owner',
 				participants: [],
 				grantee: 'grantee',
@@ -88,7 +88,7 @@ describe('share calendar actions', () => {
 		const zid = 'zid';
 		const view = 'view';
 		const rid = 'rid';
-		const calendarName = 'calendarName';
+		const folderName = 'folderName';
 		const color = 1;
 		const accounts = {};
 		const { current: accept } = result;
@@ -98,12 +98,12 @@ describe('share calendar actions', () => {
 				zid,
 				view,
 				rid,
-				calendarName,
+				folderName,
 				color,
 				accounts,
 				dispatch,
 				msgId: 'msgId',
-				sharedCalendarName: calendarName,
+				sharedFolderName: folderName,
 				owner: 'owner',
 				participants: [],
 				grantee: 'grantee',

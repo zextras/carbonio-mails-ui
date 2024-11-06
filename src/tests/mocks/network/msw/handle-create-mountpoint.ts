@@ -6,6 +6,8 @@
 import { faker } from '@faker-js/faker';
 import { HttpResponse, HttpResponseResolver } from 'msw';
 
+import { CarbonioMailboxRestGenericRequest } from '../../../../carbonio-ui-commons/test/mocks/network/msw/handlers';
+
 type Response = { Header: any; Body: any };
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -85,16 +87,15 @@ const getCreateMountpointResponse = (
 	Body: getDefaultCreateMountpointResponse({ name })
 });
 
-export const handleCreateMountpointRequest: HttpResponseResolver<never, string> = async ({
-	request
-}) => {
-	const requestContent = await request.text();
-	const parser = new DOMParser();
-	const xmlRequest = parser.parseFromString(requestContent, 'text/xml');
-	const link = xmlRequest.getElementsByTagName('link').item(0);
+export const handleCreateMountpointRequest: HttpResponseResolver<
+	never,
+	CarbonioMailboxRestGenericRequest
+> = async ({ request }) => {
+	const requestContent = await request.json();
+	const { link } = requestContent.Body.CreateMountpointRequest;
 
 	const response = getCreateMountpointResponse({
-		name: link?.getAttribute('name') || ''
+		name: link?.name || ''
 	});
 
 	return HttpResponse.json(response);
