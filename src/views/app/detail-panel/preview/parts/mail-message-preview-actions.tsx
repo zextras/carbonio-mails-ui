@@ -36,6 +36,7 @@ export const MailMsgPreviewActions: FC<MailMsgPreviewActionsType> = ({
 		replyDescriptor,
 		replyAllDescriptor,
 		forwardDescriptor,
+		forwardAsAttachmentDescriptor,
 		moveToTrashDescriptor,
 		deletePermanentlyDescriptor,
 		messageReadDescriptor,
@@ -76,6 +77,7 @@ export const MailMsgPreviewActions: FC<MailMsgPreviewActionsType> = ({
 					icon: 'MoreVertical',
 					label: 'More actions',
 					items: [
+						normalizeDropdownActionItem(forwardAsAttachmentDescriptor),
 						normalizeDropdownActionItem(flagDescriptor),
 						normalizeDropdownActionItem(unflagDescriptor),
 						normalizeDropdownActionItem(markAsSpamDescriptor),
