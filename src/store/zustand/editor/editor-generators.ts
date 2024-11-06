@@ -353,10 +353,10 @@ export const generateForwardMsgEditor = (
 
 export const generateForwardAsAttachmentMsgEditor = (
 	messagesStoreDispatch: AppDispatch,
-	originalMessage: MailMessage
+	originalMessage: MailMessage,
+	attachments: Array<UnsavedAttachment>
 ): MailsEditorV2 => {
 	const editorId = uuid();
-	const savedAttachments = buildSavedAttachments(originalMessage);
 
 	const text = {
 		plainText: `\n\n${LineType.SIGNATURE_PRE_SEP}\n`,
@@ -378,8 +378,8 @@ export const generateForwardAsAttachmentMsgEditor = (
 		action: EditViewActions.REPLY,
 		identityId: from.identityId ?? defaultIdentity.id,
 		id: editorId,
-		unsavedAttachments: [],
-		savedAttachments,
+		unsavedAttachments: attachments,
+		savedAttachments: [],
 		isRichText,
 		isUrgent: originalMessage.urgent,
 		recipients: {
@@ -560,7 +560,11 @@ export const generateEditor = ({
 				throw new Error('Cannot generate a forward editor without a message id');
 			}
 			if (message) {
-				return generateForwardAsAttachmentMsgEditor(messagesStoreDispatch, message);
+				return generateForwardAsAttachmentMsgEditor(
+					messagesStoreDispatch,
+					message,
+					compositionData?.attachments ?? []
+				);
 			}
 			break;
 		case EditViewActions.EDIT_AS_DRAFT:
