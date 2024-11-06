@@ -484,6 +484,7 @@ export const EditViewActions = {
 	REPLY: 'reply',
 	REPLY_ALL: 'replyAll',
 	FORWARD: 'forward',
+	FORWARD_AS_ATTACHMENT: 'forwardAsAttachment',
 	MAIL_TO: 'mailTo',
 	COMPOSE: 'compose',
 	PREFILL_COMPOSE: 'prefillCompose',
