@@ -298,6 +298,10 @@ export const MessageActionsDescriptors = {
 		id: 'message-forward',
 		desc: 'Forward'
 	},
+	FORWARD_AS_ATTACHMENT: {
+		id: 'message-forward_as_attachment',
+		desc: 'Forward as attachment'
+	},
 	EDIT_AS_NEW: {
 		id: 'message-edit_as_new',
 		desc: 'Edit as new'

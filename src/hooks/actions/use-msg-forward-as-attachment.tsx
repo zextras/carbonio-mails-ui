@@ -37,7 +37,7 @@ export const useMsgForwardAsAttachmentDescriptor = (
 	const { canExecute, execute } = useMsgForwardAsAttachmentFn(messageId, folderId);
 	const [t] = useTranslation();
 	return {
-		id: MessageActionsDescriptors.REDIRECT.id,
+		id: MessageActionsDescriptors.FORWARD_AS_ATTACHMENT.id,
 		icon: 'Attach',
 		label: t('action.forward_as_attachment', 'Forward as attachment'),
 		execute,

@@ -351,6 +351,62 @@ export const generateForwardMsgEditor = (
 	return editor;
 };
 
+export const generateForwardAsAttachmentMsgEditor = (
+	messagesStoreDispatch: AppDispatch,
+	originalMessage: MailMessage
+): MailsEditorV2 => {
+	const editorId = uuid();
+	const savedAttachments = buildSavedAttachments(originalMessage);
+
+	const text = {
+		plainText: `\n\n${LineType.SIGNATURE_PRE_SEP}\n`,
+		richText: `<p></p><div class="${LineType.SIGNATURE_CLASS}"></div>`
+	};
+	const defaultIdentity = getDefaultIdentity();
+	const folderRoots = getRootsMap();
+	const from = getRecipientReplyIdentity(folderRoots, originalMessage);
+	const signatureId = from.identityId
+		? from.forwardReplySignatureId
+		: defaultIdentity.forwardReplySignatureId;
+	const textWithSignature = getMailBodyWithSignature(text, signatureId);
+	const textWithSignatureRepliesForwards = {
+		plainText: `${textWithSignature.plainText}`,
+		richText: `${textWithSignature.richText}`
+	};
+	const isRichText = getUserSettings().prefs?.zimbraPrefComposeFormat === 'html';
+	const editor = {
+		action: EditViewActions.REPLY,
+		identityId: from.identityId ?? defaultIdentity.id,
+		id: editorId,
+		unsavedAttachments: [],
+		savedAttachments,
+		isRichText,
+		isUrgent: originalMessage.urgent,
+		recipients: {
+			to: [],
+			cc: [],
+			bcc: []
+		},
+		subject: `FWD: ${
+			originalMessage.subject ? originalMessage.subject.replace(FORWARD_REGEX, '') : ''
+		}`,
+		text: textWithSignatureRepliesForwards,
+		requestReadReceipt: false,
+		replyType: 'w',
+		originalId: originalMessage.id,
+		originalMessage,
+		messagesStoreDispatch,
+		size: originalMessage.size,
+		totalSmartLinksSize: 0,
+		signatureId
+	} as MailsEditorV2;
+
+	editor.draftSaveAllowedStatus = computeDraftSaveAllowedStatus(editor);
+	editor.sendAllowedStatus = computeSendAllowedStatus(editor);
+
+	return editor;
+};
+
 export const generateEditAsDraftEditor = (
 	messagesStoreDispatch: AppDispatch,
 	originalMessage: MailMessage
@@ -497,6 +553,14 @@ export const generateEditor = ({
 			}
 			if (message) {
 				return generateForwardMsgEditor(messagesStoreDispatch, message);
+			}
+			break;
+		case EditViewActions.FORWARD_AS_ATTACHMENT:
+			if (!id) {
+				throw new Error('Cannot generate a forward editor without a message id');
+			}
+			if (message) {
+				return generateForwardAsAttachmentMsgEditor(messagesStoreDispatch, message);
 			}
 			break;
 		case EditViewActions.EDIT_AS_DRAFT:
