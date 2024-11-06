@@ -45,7 +45,7 @@ function uploadEmlAsAttachment(eml: string, filename: string): Promise<UnsavedAt
 }
 
 function getFileName(eml: string, messageId: string): string {
-	const subject = eml.match(/Subject: (.*)/)?.[1] || messageId;
+	const subject = /Subject: (.*)/.exec(eml)?.[1] ?? messageId;
 	return `${subject}.eml`;
 }
 
