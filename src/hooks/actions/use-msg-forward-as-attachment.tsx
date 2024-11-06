@@ -8,6 +8,7 @@ import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { EditViewActions, MessageActionsDescriptors } from '../../constants';
+import { MIMETYPE_EML } from '../../helpers/attachments';
 import { isDraft, isSpam } from '../../helpers/folders';
 import { uploadAttachment } from '../../store/actions/upload-attachments';
 import { ActionFn, UIActionDescriptor, UnsavedAttachment } from '../../types';
@@ -23,24 +24,29 @@ function downloadEml(messageId: string): Promise<string> {
 function uploadEmlAsAttachment(eml: string, filename: string): Promise<UnsavedAttachment> {
 	return new Promise((resolve, reject) => {
 		const blob = new Blob([eml], { type: 'text/plain' });
-		const file = new File([blob], filename, { type: 'message/rfc822' });
+		const file = new File([blob], filename, { type: MIMETYPE_EML });
 		uploadAttachment(file, {
-			onUploadComplete: (file: File, uploadId: string, attachmentId: string) => {
+			onUploadComplete: (_: File, __: string, attachmentId: string) => {
 				const attachment = {
 					aid: attachmentId,
 					filename,
-					contentType: 'message/rfc822',
+					contentType: MIMETYPE_EML,
 					size: file.size,
 					isInline: false
 				};
 				resolve(attachment);
 			},
-			onUploadError: (file: File, uploadId: string, error: string) => {
+			onUploadError: (_: File, __: string, error: string) => {
 				console.error(`Error uploading EML as attachment: ${error}`);
 				reject(error);
 			}
 		});
 	});
+}
+
+function getFileName(eml: string, messageId: string): string {
+	const subject = eml.match(/Subject: (.*)/)?.[1] || messageId;
+	return `${subject}.eml`;
 }
 
 export const useMsgForwardAsAttachmentFn = (messageId: string, folderId: string): ActionFn => {
@@ -52,7 +58,7 @@ export const useMsgForwardAsAttachmentFn = (messageId: string, folderId: string)
 	const execute = useCallback(() => {
 		if (canExecute()) {
 			downloadEml(messageId).then((eml) => {
-				uploadEmlAsAttachment(eml, 'message.eml')
+				uploadEmlAsAttachment(eml, `${getFileName(eml, messageId)}`)
 					.then((attachment) => {
 						createEditBoard({
 							action: EditViewActions.FORWARD_AS_ATTACHMENT,
