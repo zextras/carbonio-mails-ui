@@ -40,6 +40,7 @@ export const MessageListItemActionWrapper = ({
 		replyDescriptor,
 		replyAllDescriptor,
 		forwardDescriptor,
+		forwardAsAttachmentDescriptor,
 		moveToTrashDescriptor,
 		deletePermanentlyDescriptor,
 		messageReadDescriptor,
@@ -69,7 +70,15 @@ export const MessageListItemActionWrapper = ({
 			[
 				normalizeDropdownActionItem(replyDescriptor),
 				normalizeDropdownActionItem(replyAllDescriptor),
-				normalizeDropdownActionItem(forwardDescriptor),
+				{
+					id: 'ForwardMenu',
+					icon: 'Forward',
+					label: 'Forward',
+					items: [
+						normalizeDropdownActionItem(forwardDescriptor),
+						normalizeDropdownActionItem(forwardAsAttachmentDescriptor)
+					]
+				},
 				normalizeDropdownActionItem(sendDraftDescriptor),
 				normalizeDropdownActionItem(moveToTrashDescriptor),
 				normalizeDropdownActionItem(deletePermanentlyDescriptor),
@@ -99,6 +108,7 @@ export const MessageListItemActionWrapper = ({
 			editDraftDescriptor,
 			flagDescriptor,
 			forwardDescriptor,
+			forwardAsAttachmentDescriptor,
 			markAsNotSpamDescriptor,
 			markAsSpamDescriptor,
 			messageReadDescriptor,
