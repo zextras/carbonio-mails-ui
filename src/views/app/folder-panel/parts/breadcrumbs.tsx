@@ -83,6 +83,9 @@ export const Breadcrumbs: FC<{
 					>
 						{folderPathFirstPart.concat(folderPathLastPart)}
 					</Text>
+					<Text size="medium" style={{ marginLeft: '0.5rem' }} data-testid="BreadcrumbPathEnd">
+						{folderPathLastPart}
+					</Text>
 				</Row>
 				<Row>
 					<Text size="extrasmall" data-testid="breadcrumb-count">

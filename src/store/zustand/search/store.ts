@@ -133,10 +133,10 @@ export function updateConversationsOnly(conversations: Array<NormalizedConversat
 	useMessageStore.setState(
 		produce(({ populatedItems }: PopulatedItemsSliceState) => {
 			conversations.forEach((conversation) => {
-				populatedItems.conversations[conversation.id] = merge(
-					populatedItems.conversations[conversation.id],
-					conversation
-				);
+				populatedItems.conversations[conversation.id] = {
+					...merge(populatedItems.conversations[conversation.id], conversation),
+					tags: conversation.tags
+				};
 			});
 		})
 	);
@@ -170,7 +170,10 @@ export function updateMessagesOnly(messages: Array<IncompleteMessage>): void {
 	useMessageStore.setState(
 		produce(({ populatedItems }: PopulatedItemsSliceState) => {
 			messages.forEach((message) => {
-				populatedItems.messages[message.id] = merge(populatedItems.messages[message.id], message);
+				populatedItems.messages[message.id] = {
+					...merge(populatedItems.messages[message.id], message),
+					tags: message.tags
+				};
 			});
 		})
 	);
