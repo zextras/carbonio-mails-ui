@@ -9,6 +9,7 @@ import { Container, Icon, Input, Padding, Tooltip } from '@zextras/carbonio-desi
 import { t } from '@zextras/carbonio-shell-ui';
 
 import {
+	useEditorIsSmimeSign,
 	useEditorIsUrgent,
 	useEditorRequestReadReceipt,
 	useEditorSubject
@@ -23,6 +24,7 @@ export const SubjectRow: FC<SubjectRowProps> = ({ editorId }: SubjectRowProps) =
 	const { subject, setSubject } = useEditorSubject(editorId);
 	const { isUrgent } = useEditorIsUrgent(editorId);
 	const { requestReadReceipt } = useEditorRequestReadReceipt(editorId);
+	const { isSmimeSign } = useEditorIsSmimeSign(editorId);
 
 	const onSubjectChange = useCallback(
 		(event: ChangeEvent<HTMLInputElement>): void => {
@@ -46,7 +48,7 @@ export const SubjectRow: FC<SubjectRowProps> = ({ editorId }: SubjectRowProps) =
 					onChange={onSubjectChange}
 				/>
 			</Container>
-			{(requestReadReceipt || isUrgent) && (
+			{(requestReadReceipt || isUrgent || isSmimeSign) && (
 				<Container
 					width="fit"
 					background={'gray5'}
@@ -63,6 +65,11 @@ export const SubjectRow: FC<SubjectRowProps> = ({ editorId }: SubjectRowProps) =
 					{isUrgent && (
 						<Tooltip label={t('tooltip.marked_as_important', 'Marked as important')}>
 							<Icon icon="ArrowUpward" color="secondary" size="large" />
+						</Tooltip>
+					)}
+					{isSmimeSign && (
+						<Tooltip label={t('label.use_certificate_to_sign', 'Use certificate to sign (S/MIME)')}>
+							<Icon icon="FileTextOutline" color="secondary" size="large" />
 						</Tooltip>
 					)}
 				</Container>
