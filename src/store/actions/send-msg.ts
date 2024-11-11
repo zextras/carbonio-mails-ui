@@ -76,7 +76,8 @@ export const sendMsgFromEditor = createAsyncThunk<SendMsgResult, SendMsgParamete
 				request,
 				{
 					_jsns: 'urn:zimbraMail',
-					m: msg
+					m: msg,
+					...(editor.isSmimeSign ? { sign: true } : {})
 				},
 				identity?.ownerAccount ?? undefined
 			);
