@@ -314,15 +314,12 @@ export const composeAttachMpField = (
 	return result;
 };
 
-export const composeAttachMsgField = (attachments: Array<UnsavedAttachment>): Array<MsgAttach> => {
-	const result: Array<MsgAttach> = [];
-	attachments.forEach((attachment) => {
-		result.push({
+export const composeAttachMsgField = (attachments: Array<UnsavedAttachment>): Array<MsgAttach> =>
+	attachments
+		.filter((attachment) => attachment.mid)
+		.map((attachment) => ({
 			id: attachment.mid ?? ''
-		});
-	});
-	return result;
-};
+		}));
 
 /*
  * Compose the "attach" field by listing the uploaded
