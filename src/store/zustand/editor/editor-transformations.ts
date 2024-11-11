@@ -369,6 +369,7 @@ const createSoapMessageRequestFromEditor = (
 		autoSendTime: editor.autoSendTime,
 		...(command === 'savedraft' ? { id: editor.did } : {}),
 		...(command === 'sendmsg' ? { did: editor.did } : {}),
+		...(editor.isSmimeSign ? { sign: true } : {}),
 		su: { _content: editor.subject ?? '' },
 		rt: editor.replyType,
 		origid: editor.originalId,

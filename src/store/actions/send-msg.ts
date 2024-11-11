@@ -69,11 +69,11 @@ export const sendMsgFromEditor = createAsyncThunk<SendMsgResult, SendMsgParamete
 		const msg = createSoapSendMsgRequestFromEditor(editor);
 
 		const identity = getIdentityDescriptor(editor.identityId);
-
 		let resp: SendMsgWithSmartLinksResponse;
+		const request = editor?.isSmimeSign ? 'SendSecureMsg' : 'SendMsg';
 		try {
 			resp = await soapFetch<SaveDraftRequest, SaveDraftResponse>(
-				'SendMsg',
+				request,
 				{
 					_jsns: 'urn:zimbraMail',
 					m: msg
