@@ -18,7 +18,7 @@ import type {
 export const convAction = createAsyncThunk<ConvActionResult, ConvActionParameters>(
 	'convAction',
 	async ({ ids, operation, parent, tagName, constrains }) => {
-		const { action } = (await soapFetch<ConvActionRequest, ConvActionResponse>('ConvAction', {
+		const { action } = await soapFetch<ConvActionRequest, ConvActionResponse>('ConvAction', {
 			_jsns: 'urn:zimbraMail',
 
 			action: omitBy(
@@ -31,7 +31,7 @@ export const convAction = createAsyncThunk<ConvActionResult, ConvActionParameter
 				},
 				isNil
 			)
-		})) as ConvActionResponse;
+		});
 		return {
 			ids: action.id.split(','),
 			operation: action.op
