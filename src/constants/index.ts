@@ -565,7 +565,6 @@ export const MAIL_SENSITIVITY_HEADER = {
 	companyConfidential: 'Company-Confidential'
 } as const;
 
-export const MAIL_SENSITIVITY_HEADER_VALUES = ['Personal', 'Private', 'Company-Confidential'];
-
 export const SENSITIVITY_VALUES = ['Private', 'Company-Confidential'] as const;
 export const VALID_MAIL_AUTHENTICATION_HEADERS = ['dkim', 'spf', 'dmarc'] as const;
+export const CONV_ACTION_CONSTRAINS = '-stdj';

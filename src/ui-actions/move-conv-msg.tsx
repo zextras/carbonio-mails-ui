@@ -13,6 +13,7 @@ import { useTranslation } from 'react-i18next';
 import ModalFooter from '../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../carbonio-ui-commons/components/modals/modal-header';
 import { Folder } from '../carbonio-ui-commons/types/folder';
+import { CONV_ACTION_CONSTRAINS } from '../constants';
 import { isRoot } from '../helpers/folders';
 import { useUiUtilities } from '../hooks/use-ui-utilities';
 import { convAction, msgAction } from '../store/actions';
@@ -58,7 +59,8 @@ const MoveConvMessage = ({
 				convAction({
 					operation: `move`,
 					ids: selectedIDs,
-					parent: id
+					parent: id,
+					constrains: CONV_ACTION_CONSTRAINS
 				})
 			)
 				.then((res) => {

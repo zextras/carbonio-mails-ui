@@ -6,6 +6,7 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { soapFetch } from '@zextras/carbonio-shell-ui';
 import { isNil } from 'lodash';
+
 import { omitBy } from '../../commons/utils';
 import type {
 	ConvActionParameters,
@@ -16,7 +17,7 @@ import type {
 
 export const convAction = createAsyncThunk<ConvActionResult, ConvActionParameters>(
 	'convAction',
-	async ({ ids, operation, parent, tagName }) => {
+	async ({ ids, operation, parent, tagName, constrains }) => {
 		const { action } = (await soapFetch<ConvActionRequest, ConvActionResponse>('ConvAction', {
 			_jsns: 'urn:zimbraMail',
 
@@ -25,7 +26,8 @@ export const convAction = createAsyncThunk<ConvActionResult, ConvActionParameter
 					id: ids.join(','),
 					op: operation,
 					l: parent,
-					tn: tagName
+					tn: tagName,
+					tcon: constrains
 				},
 				isNil
 			)

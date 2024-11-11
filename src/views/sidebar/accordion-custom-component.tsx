@@ -37,7 +37,7 @@ import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
 import { isSystemFolder } from '../../carbonio-ui-commons/helpers/folders';
 import type { Folder } from '../../carbonio-ui-commons/types/folder';
 import type { DragEnterAction, OnDropActionProps } from '../../carbonio-ui-commons/types/sidebar';
-import { LIST_LIMIT } from '../../constants';
+import { CONV_ACTION_CONSTRAINS, LIST_LIMIT } from '../../constants';
 import { isDraft, isSpam } from '../../helpers/folders';
 import { parseMessageSortingOptions } from '../../helpers/sorting';
 import { useAppDispatch } from '../../hooks/redux';
@@ -147,7 +147,8 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item }) => {
 				convAction({
 					operation: `move`,
 					ids: convMsgsIds,
-					parent: item.id
+					parent: item.id,
+					constrains: CONV_ACTION_CONSTRAINS
 				})
 			).then((res) => {
 				if (res.type.includes('fulfilled')) {

@@ -51,6 +51,7 @@ export type ConvActionParameters = {
 	operation: ConvActionOperation;
 	parent?: string;
 	tagName?: string;
+	constrains?: string;
 };
 
 export type ConvActionResult = {
