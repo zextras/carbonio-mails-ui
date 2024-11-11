@@ -9,11 +9,12 @@ import {
 	CustomModal,
 	Icon,
 	Row,
-	TextWithTooltip,
 	Padding,
 	ModalHeader,
 	Divider,
-	ModalFooter
+	ModalFooter,
+	Tooltip,
+	Text
 } from '@zextras/carbonio-design-system';
 import { getTags, QueryChip, t } from '@zextras/carbonio-shell-ui';
 import { concat, filter, includes, map } from 'lodash';
@@ -74,7 +75,9 @@ export const AdvancedFilterModal = ({
 								</Padding>
 							</Row>
 							<Row takeAvailableSpace mainAlignment="flex-start">
-								<TextWithTooltip>{item.name}</TextWithTooltip>
+								<Tooltip label={item.name} overflowTooltip>
+									<Text>{item.name}</Text>
+								</Tooltip>
 							</Row>
 						</Row>
 					</Row>
