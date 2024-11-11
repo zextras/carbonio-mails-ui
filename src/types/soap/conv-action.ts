@@ -25,6 +25,7 @@ export type ConvActionRequest = ZimbraRequest & {
 		op?: ConvActionOperation;
 		tn?: string;
 		l?: string;
+		tcon?: string;
 	};
 };
 

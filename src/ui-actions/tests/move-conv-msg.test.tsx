@@ -14,10 +14,17 @@ import { getFolder } from '../../carbonio-ui-commons/store/zustand/folder';
 import { createSoapAPIInterceptor } from '../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { populateFoldersStore } from '../../carbonio-ui-commons/test/mocks/store/folders';
 import { makeListItemsVisible, setupTest } from '../../carbonio-ui-commons/test/test-setup';
-import { API_REQUEST_STATUS } from '../../constants';
+import { API_REQUEST_STATUS, CONV_ACTION_CONSTRAINS } from '../../constants';
+import { generateConversation } from '../../tests/generators/generateConversation';
 import { generateMessage } from '../../tests/generators/generateMessage';
 import { generateStore } from '../../tests/generators/store';
-import { MailMessage, MsgActionRequest, MsgActionResponse } from '../../types';
+import {
+	ConvActionRequest,
+	ConvActionResponse,
+	MailMessage,
+	MsgActionRequest,
+	MsgActionResponse
+} from '../../types';
 import MoveConvMessage from '../move-conv-msg';
 
 describe('MoveConvMsg', () => {
@@ -222,6 +229,88 @@ describe('MoveConvMsg', () => {
 			expect(requestParameter.action.op).toBe('move');
 			expect(requestParameter.action.l).toBe(destinationFolder);
 			expect(requestParameter.action.f).toBeUndefined();
+			expect(requestParameter.action.tn).toBeUndefined();
+		});
+
+		it('should call conv action api with default constrains when user clicks confirm', async () => {
+			populateFoldersStore({ view: FOLDER_VIEW.conversation });
+
+			const { children: inboxChildren } = getFolder(FOLDERS.INBOX) ?? {};
+			const sourceFolderId = inboxChildren?.[0].id ?? '';
+			const destinationFolder = FOLDERS.SENT;
+
+			const conversation = generateConversation({
+				folderId: sourceFolderId,
+				isSingleMessageConversation: false
+			});
+			const msgIdsInConversation = conversation.messages.map<string>((msg) => msg.id);
+
+			const store = generateStore({
+				conversations: {
+					currentFolder: sourceFolderId,
+					expandedStatus: {
+						[conversation.id]: API_REQUEST_STATUS.fulfilled
+					},
+					searchedInFolder: {},
+					conversations: {
+						[conversation.id]: conversation
+					},
+					searchRequestStatus: API_REQUEST_STATUS.fulfilled
+				}
+			});
+
+			const interceptor = createSoapAPIInterceptor<ConvActionRequest, ConvActionResponse>(
+				'ConvAction',
+				{
+					action: {
+						id: conversation.id,
+						op: 'move'
+					}
+				}
+			);
+
+			const component = (
+				<MoveConvMessage
+					folderId={sourceFolderId}
+					selectedIDs={msgIdsInConversation}
+					onClose={jest.fn()}
+					isMessageView={false}
+					isRestore={false}
+					deselectAll={jest.fn()}
+					dispatch={store.dispatch}
+				/>
+			);
+
+			const { user } = setupTest(component, { store });
+			makeListItemsVisible();
+
+			const inboxFolderListItem = await screen.findByTestId(
+				`folder-accordion-item-${destinationFolder}`,
+				{},
+				{ timeout: 10000 }
+			);
+
+			act(() => {
+				jest.advanceTimersByTime(1000);
+			});
+
+			await act(async () => {
+				await user.click(inboxFolderListItem);
+			});
+
+			const button = screen.getByRole('button', {
+				name: /Move/
+			});
+
+			await act(async () => {
+				await user.click(button);
+			});
+
+			const requestParameter = await interceptor;
+			expect(requestParameter.action.id).toBe(msgIdsInConversation.join(','));
+			expect(requestParameter.action.op).toBe('move');
+			expect(requestParameter.action.l).toBe(destinationFolder);
+			expect(requestParameter.action.tcon).toBe(CONV_ACTION_CONSTRAINS);
 			expect(requestParameter.action.tn).toBeUndefined();
 		});
 	});
