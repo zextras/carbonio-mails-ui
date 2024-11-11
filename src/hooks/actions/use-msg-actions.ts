@@ -77,7 +77,7 @@ export const useMsgActions = ({
 	const replyDescriptor = useMsgReplyDescriptor(message.id, folderId);
 	const replyAllDescriptor = useMsgReplyAllDescriptor(message.id, folderId);
 	const forwardDescriptor = useMsgForwardDescriptor(message.id, folderId);
-	const forwardAsAttachmentDescriptor = useMsgForwardAsAttachmentDescriptor(message.id, folderId);
+	const forwardAsAttachmentDescriptor = useMsgForwardAsAttachmentDescriptor([message.id], folderId);
 	const moveToTrashDescriptor = useMsgMoveToTrashDescriptor({
 		ids: [message.id],
 		deselectAll,

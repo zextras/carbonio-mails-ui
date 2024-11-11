@@ -13,7 +13,10 @@ import { isDraft, isSpam } from '../../helpers/folders';
 import { ActionFn, UIActionDescriptor, UnsavedAttachment } from '../../types';
 import { createEditBoard } from '../../views/app/detail-panel/edit/edit-view-board';
 
-export const useMsgForwardAsAttachmentFn = (messageId: string, folderId: string): ActionFn => {
+export const useMsgForwardAsAttachmentFn = (
+	messageIds: Array<string>,
+	folderId: string
+): ActionFn => {
 	const canExecute = useCallback(
 		(): boolean => !isDraft(folderId) && !isSpam(folderId),
 		[folderId]
@@ -21,31 +24,31 @@ export const useMsgForwardAsAttachmentFn = (messageId: string, folderId: string)
 
 	const execute = useCallback(() => {
 		if (canExecute()) {
-			const attachment: UnsavedAttachment = {
+			const attachments: Array<UnsavedAttachment> = messageIds.map((messageId) => ({
 				mid: messageId,
 				filename: `${messageId}.eml`,
 				contentType: MIMETYPE_EML,
 				size: 0,
 				isInline: false
-			};
+			}));
 			createEditBoard({
 				action: EditViewActions.FORWARD_AS_ATTACHMENT,
-				actionTargetId: messageId,
+				actionTargetId: messageIds[0],
 				compositionData: {
-					attachments: [attachment]
+					attachments
 				}
 			});
 		}
-	}, [canExecute, messageId]);
+	}, [canExecute, messageIds]);
 
 	return useMemo(() => ({ canExecute, execute }), [canExecute, execute]);
 };
 
 export const useMsgForwardAsAttachmentDescriptor = (
-	messageId: string,
+	messageIds: Array<string>,
 	folderId: string
 ): UIActionDescriptor => {
-	const { canExecute, execute } = useMsgForwardAsAttachmentFn(messageId, folderId);
+	const { canExecute, execute } = useMsgForwardAsAttachmentFn(messageIds, folderId);
 	const [t] = useTranslation();
 	return {
 		id: MessageActionsDescriptors.FORWARD_AS_ATTACHMENT.id,
