@@ -1,13 +1,11 @@
 /*
- * SPDX-FileCopyrightText: 2023 Zextras <https://www.zextras.com>
+ * SPDX-FileCopyrightText: 2024 Zextras <https://www.zextras.com>
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
-
-/* eslint-disable no-nested-ternary */
 
 import { MailPreviewBlock } from './parts/mail-preview-block';
 import { MailPreviewContent } from './parts/mail-preview-content';
@@ -35,24 +33,23 @@ const MailPreview: FC<MailPreviewProps> = ({
 	messagePreviewFactory
 }) => {
 	const mailContainerRef = useRef<HTMLDivElement>(null);
-	const [open, setOpen] = useState(expanded || isAlone);
+	const [isOpen, setIsOpen] = useState(expanded || isAlone);
+	const [containerHeight, setContainerHeight] = useState(isOpen ? '100%' : 'fit-content');
 	const { createWindow } = useGlobalExtraWindowManager();
 
-	const onClick = useCallback(() => {
-		setOpen((o) => !o);
-	}, []);
+	const onClick = useCallback(() => setIsOpen((prevOpen) => !prevOpen), []);
 
 	const isMailPreviewOpen = useMemo(
-		() => (isMessageView ? true : isAlone ? true : open),
-		[isAlone, isMessageView, open]
+		() => isMessageView || isAlone || isOpen,
+		[isMessageView, isAlone, isOpen]
 	);
 
-	/**
-	 * To avoid component dependency cycles we define here, outside the
-	 * AttachmentsBlock component, the function that open the EML preview
-	 */
-	const openEmlPreview: OpenEmlPreviewType = useCallback<OpenEmlPreviewType>(
-		(parentMessageId: string, attachmentName: string, emlMessage: MailMessage): void => {
+	useEffect(() => {
+		setContainerHeight(isOpen ? '100%' : 'fit-content');
+	}, [isOpen]);
+
+	const openEmlPreview: OpenEmlPreviewType = useCallback(
+		(parentMessageId, attachmentName, emlMessage) => {
 			const createWindowParams: ExtraWindowCreationParams = {
 				name: `${parentMessageId}-${attachmentName}`,
 				returnComponent: false,
@@ -70,18 +67,10 @@ const MailPreview: FC<MailPreviewProps> = ({
 				title: emlMessage.subject,
 				closeOnUnmount: false
 			};
-			if (createWindow) {
-				createWindow(createWindowParams);
-			}
+			createWindow?.(createWindowParams);
 		},
 		[createWindow, messagePreviewFactory]
 	);
-
-	const [containerHeight, setContainerHeight] = useState(open ? '100%' : 'fit-content');
-
-	useEffect(() => {
-		setContainerHeight(open ? '100%' : 'fit-content');
-	}, [open]);
 
 	return (
 		<Container
@@ -107,7 +96,7 @@ const MailPreview: FC<MailPreviewProps> = ({
 					overflow: 'auto'
 				}}
 			>
-				{(open || isAlone) && (
+				{isMailPreviewOpen && (
 					<MailPreviewContent
 						message={message}
 						isMailPreviewOpen={isMailPreviewOpen}
