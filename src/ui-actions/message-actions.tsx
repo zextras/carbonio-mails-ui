@@ -484,24 +484,6 @@ export function forwardMsg({ id }: Pick<MessageActionPropType, 'id'>): MessageAc
 	};
 }
 
-export function forwardMsgAsAttachment({
-	id
-}: Pick<MessageActionPropType, 'id'>): MessageActionReturnType {
-	const actDescriptor = MessageActionsDescriptors.FORWARD_AS_ATTACHMENT;
-	return {
-		id: actDescriptor.id,
-		icon: 'Attach',
-		label: t('action.forward_as_attachment', 'Forward as attachment'),
-		onClick: (ev): void => {
-			if (ev) ev.preventDefault();
-			createEditBoard({
-				action: EditViewActions.FORWARD_AS_ATTACHMENT,
-				actionTargetId: `${id}`
-			});
-		}
-	};
-}
-
 export function editAsNewMsg({ id }: Pick<MessageActionPropType, 'id'>): MessageActionReturnType {
 	const actDescriptor = MessageActionsDescriptors.EDIT_AS_NEW;
 	return {
