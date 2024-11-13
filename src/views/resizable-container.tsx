@@ -45,19 +45,19 @@ interface BorderWithResizeProps {
 	$translateTransform?: { x?: string; y?: string };
 }
 
-const HoverableContainer = styled(Container)<ContainerProps & { border: Border }>`
+const HoverableContainer = styled(Container)<{ $border: Border }>`
 	& > * {
-		border-right: ${({ theme, border }): string =>
-			border === BORDERS.EAST ? `1px solid ${theme.palette.gray2.regular}` : '0'};
-		border-bottom: ${({ theme, border }): string =>
-			border === BORDERS.SOUTH ? `1px solid ${theme.palette.gray2.regular}` : '0'};
+		border-right: ${({ theme, $border }): string =>
+			$border === BORDERS.EAST ? `1px solid ${theme.palette.gray2.regular}` : '0'};
+		border-bottom: ${({ theme, $border }): string =>
+			$border === BORDERS.SOUTH ? `1px solid ${theme.palette.gray2.regular}` : '0'};
 		transition: 0.2s ease-out;
 	}
 	&:hover > * {
-		border-right: ${({ theme, border }): string =>
-			border === BORDERS.EAST ? `1px solid ${theme.palette.primary.regular}` : '0'};
-		border-bottom: ${({ theme, border }): string =>
-			border === BORDERS.SOUTH ? `1px solid ${theme.palette.primary.regular}` : '0'};
+		border-right: ${({ theme, $border }): string =>
+			$border === BORDERS.EAST ? `1px solid ${theme.palette.primary.regular}` : '0'};
+		border-bottom: ${({ theme, $border }): string =>
+			$border === BORDERS.SOUTH ? `1px solid ${theme.palette.primary.regular}` : '0'};
 	}
 `;
 
@@ -111,7 +111,7 @@ const ResizableBorder = ({ elementToResize, border }: ResizableBorderProps): Rea
 			<HoverableContainer
 				width={'100%'}
 				height={'100%'}
-				border={border}
+				$border={border}
 				mainAlignment="flex-start"
 				crossAlignment="flex-start"
 			>

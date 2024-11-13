@@ -10,7 +10,6 @@ import {
 	Avatar,
 	Collapse,
 	Container,
-	ContainerProps,
 	Icon,
 	IconButton,
 	ListItem,
@@ -40,16 +39,14 @@ const RootAccordion = styled(Row)`
 	cursor: pointer;
 `;
 
-const CustomContainer = styled(Container)<ContainerProps & { active?: boolean }>`
+const CustomContainer = styled(Container)<{ $active?: boolean }>`
 	&:hover {
-		background-color: ${({ theme, active }): string =>
-			active ? theme.palette.highlight.active : theme.palette.gray6.hover};
+		background-color: ${({ theme, $active }): string =>
+			$active ? theme.palette.highlight.active : theme.palette.gray6.hover};
 	}
 `;
 
-const CustomListItemHelper = styled(ListItem)``;
-
-export const CustomListItem = styled(CustomListItemHelper).attrs({
+export const CustomListItem = styled(ListItem).attrs({
 	background: 'gray6',
 	activeBackground: 'highlight',
 	selectedBackground: 'gray5'
@@ -196,7 +193,7 @@ const FlatFoldersAccordionRoot: FC<FlatFoldersAccordionRootProps> = ({
 				padding={'small'}
 				onClick={onClick}
 				background={selectedFolderId === folder.id ? 'highlight.active' : 'gray6'}
-				active={selectedFolderId === folder.id}
+				$active={selectedFolderId === folder.id}
 			>
 				<Container orientation="horizontal" width="fill" mainAlignment="flex-start">
 					<Padding horizontal="small">

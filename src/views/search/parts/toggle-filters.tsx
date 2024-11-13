@@ -137,7 +137,7 @@ const ToggleFilters: FC<ToggleFiltersProps> = ({ compProps }): ReactElement => {
 		<>
 			<Container orientation="horizontal" mainAlignment="center" crossAlignment="center">
 				<Container padding={{ all: 'extrasmall' }}>
-					<Container orientation="horizontal" mainAlignment="baseline" crossAlignment="center">
+					<Container orientation="horizontal" mainAlignment="flex-start" crossAlignment="center">
 						<Padding right="small">
 							<Switch onClick={toggleAttachment} value={hasAttachment} />
 						</Padding>
@@ -155,7 +155,7 @@ const ToggleFilters: FC<ToggleFiltersProps> = ({ compProps }): ReactElement => {
 					mainAlignment="flex-start"
 					crossAlignment="flex-start"
 				>
-					<Container orientation="horizontal" mainAlignment="baseline" crossAlignment="center">
+					<Container orientation="horizontal" mainAlignment="flex-start" crossAlignment="center">
 						<Padding right="small">
 							<Switch onClick={toggleFlagged} value={isFlagged} />
 						</Padding>
@@ -177,7 +177,7 @@ const ToggleFilters: FC<ToggleFiltersProps> = ({ compProps }): ReactElement => {
 					mainAlignment="flex-start"
 					crossAlignment="flex-start"
 				>
-					<Container orientation="horizontal" mainAlignment="baseline" crossAlignment="center">
+					<Container orientation="horizontal" mainAlignment="flex-start" crossAlignment="center">
 						<Padding right="small">
 							<Switch onClick={toggleUnread} value={isUnread} />
 						</Padding>
@@ -196,7 +196,7 @@ const ToggleFilters: FC<ToggleFiltersProps> = ({ compProps }): ReactElement => {
 					mainAlignment="flex-start"
 					crossAlignment="flex-start"
 				>
-					<Container orientation="horizontal" mainAlignment="baseline" crossAlignment="center">
+					<Container orientation="horizontal" mainAlignment="flex-start" crossAlignment="center">
 						<Padding right="small">
 							<Switch onClick={toggleSharedFolder} value={isSharedFolderIncludedTobe} />
 						</Padding>

@@ -106,7 +106,7 @@ const AttachmentLink = styled.a`
 `;
 
 const AttachmentExtension = styled(Text)<{
-	background: string;
+	$background: string;
 }>`
 	display: flex;
 	justify-content: center;
@@ -114,7 +114,7 @@ const AttachmentExtension = styled(Text)<{
 	width: 2rem;
 	height: 2rem;
 	border-radius: ${({ theme }): string => theme.borderRadius};
-	background-color: ${({ background }): string => background};
+	background-color: ${({ $background }): string => $background};
 	color: ${({ theme }): string => theme.palette.gray6.regular};
 	font-size: calc(${({ theme }): string => theme.sizes.font.small} - 0.125rem);
 	text-transform: uppercase;
@@ -424,7 +424,7 @@ const Attachment: FC<AttachmentType> = ({
 					onClick={preview}
 					takeAvailableSpace
 				>
-					<AttachmentExtension background={attachmentExtensionColor}>
+					<AttachmentExtension $background={attachmentExtensionColor}>
 						{attachmentExtensionContent}
 					</AttachmentExtension>
 					<Row orientation="vertical" crossAlignment="flex-start" takeAvailableSpace>

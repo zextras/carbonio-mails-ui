@@ -10,7 +10,6 @@ import {
 	Badge,
 	Button,
 	Container,
-	ContainerProps,
 	Icon,
 	Padding,
 	Row,
@@ -47,8 +46,8 @@ import { RowInfo } from '../../../app/folder-panel/parts/row-info';
 import { SenderName } from '../../../app/folder-panel/parts/sender-name';
 import { SearchConversationExtraWindowPanelContainer } from '../../extra-window/conversations/search-conversation-extra-window-panel';
 
-const CollapseElement = styled(Container)<ContainerProps & { open: boolean }>`
-	display: ${({ open }): string => (open ? 'block' : 'none')};
+const CollapseElement = styled(Container)<{ $open: boolean }>`
+	display: ${({ $open }): string => ($open ? 'block' : 'none')};
 `;
 type SearchConversationListItemProps = {
 	conversationId: string;
@@ -307,7 +306,7 @@ export const SearchConversationListItem: FC<SearchConversationListItemProps> = (
 			</ConversationListItemActionWrapper>
 			{open && (
 				<CollapseElement
-					open={open}
+					$open={open}
 					data-testid="ConversationExpander"
 					padding={{ left: 'extralarge' }}
 					height="auto"

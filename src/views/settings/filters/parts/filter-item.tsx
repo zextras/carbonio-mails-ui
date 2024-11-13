@@ -4,12 +4,12 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
-import { Container, Text, Row, Icon, Padding } from '@zextras/carbonio-design-system';
-import styled from 'styled-components';
-import { indexOf } from 'lodash';
-import type { ListPropsType } from '../../../../types';
 
-const ContainerEl = styled(Container)``;
+import { Container, Text, Row, Icon, Padding } from '@zextras/carbonio-design-system';
+import { indexOf } from 'lodash';
+import styled from 'styled-components';
+
+import type { ListPropsType } from '../../../../types';
 
 const Filter = styled(Row)`
 	border-bottom: 0.0625rem solid ${({ theme }): string => theme.palette.gray2.regular};
@@ -69,9 +69,9 @@ const FilterItem: FC<any> = ({ item, selected, unSelect, listProps }): ReactElem
 			onMouseLeave={onMouseLeave}
 		>
 			<Row height="2.5rem" padding={{ all: 'small' }}>
-				<ContainerEl width="80%" crossAlignment="flex-start">
+				<Container width="80%" crossAlignment="flex-start">
 					<Text size="small">{item?.name}</Text>
-				</ContainerEl>
+				</Container>
 
 				<Container width="20%" orientation="horizontal" mainAlignment="flex-end">
 					{hovered && (

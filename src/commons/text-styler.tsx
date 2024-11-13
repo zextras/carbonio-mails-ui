@@ -18,11 +18,11 @@ const StyledSpan = styled.span<{ $bold?: boolean }>`
 `;
 
 export const TextStyler = React.forwardRef<HTMLSpanElement, TextStylerProps>(function TextStylerFn(
-	{ children, ...rest },
+	{ children, bold, ...rest },
 	ref
 ) {
 	return (
-		<StyledSpan ref={ref} {...rest}>
+		<StyledSpan ref={ref} $bold={bold} {...rest}>
 			{children}
 		</StyledSpan>
 	);
