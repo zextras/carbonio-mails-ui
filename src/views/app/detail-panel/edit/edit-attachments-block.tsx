@@ -41,7 +41,7 @@ export const EditAttachmentsBlock: FC<{
 
 	return allAttachments.length > 0 ? (
 		<StyledComp.RowContainer background="gray6">
-			<StyledComp.ColContainer occupyFull>
+			<StyledComp.ColContainer $occupyFull>
 				<Container crossAlignment="flex-start">
 					<Container orientation="horizontal" mainAlignment="space-between" wrap="wrap">
 						{map(expanded ? allAttachments : allAttachments.slice(0, 2), (attachment, index) =>

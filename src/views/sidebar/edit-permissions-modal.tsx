@@ -1,5 +1,4 @@
 /*
-/*
  * SPDX-FileCopyrightText: 2021 Zextras <https://www.zextras.com>
  *
  * SPDX-License-Identifier: AGPL-3.0-only
@@ -154,8 +153,6 @@ const EditPermissionsModal: FC<EditPermissionsModalProps> = ({
 					<Container height="fit" padding={{ vertical: 'small' }}>
 						{integrationAvailable ? (
 							<ContactInput
-								// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-								// @ts-ignore
 								background="gray4"
 								placeholder={t('share.recipients_address', 'Recipients’ e-mail addresses')}
 								onChange={(ev: ChangeEvent<HTMLInputElement>): void => {

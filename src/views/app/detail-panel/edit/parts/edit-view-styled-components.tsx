@@ -81,9 +81,9 @@ export const EditorWrapper = styled.div`
 	}
 `;
 
-export const BannerContainer = styled(Container).attrs(() => ({
-	bottomBorderColor: undefined
-}))<{ $bottomBorderColor: keyof DefaultTheme['palette'] }>`
+export const BannerContainer = styled(Container)<{
+	$bottomBorderColor: keyof DefaultTheme['palette'];
+}>`
 	border-bottom: 0.0625rem solid
 		${({ theme, $bottomBorderColor }): string => theme.palette[$bottomBorderColor].regular};
 	border-top-right-radius: 0.25rem;
@@ -98,9 +98,8 @@ export const RowContainer = styled(Container)`
 	height: fit-content;
 `;
 
-export const ColContainer = styled.div`
-	grid-column: ${({ occupyFull }: { occupyFull: boolean }): string =>
-		`span  ${occupyFull ? 12 : 6}`};
+export const ColContainer = styled.div<{ $occupyFull: boolean }>`
+	grid-column: ${({ $occupyFull }): string => `span  ${$occupyFull ? 12 : 6}`};
 `;
 
 export const StickyTime = styled(Row)`

@@ -6,7 +6,7 @@
 import React, { CSSProperties, useMemo, useRef } from 'react';
 
 import { Container, ContainerProps } from '@zextras/carbonio-design-system';
-import styled, { css, SimpleInterpolation } from 'styled-components';
+import styled, { css } from 'styled-components';
 
 import { BORDERS } from '../constants';
 import { Border, useResize } from '../hooks/use-resize';
@@ -72,8 +72,8 @@ const BorderWithResize = styled.div<
 	cursor: ${({ $cursor }): CSSProperties['cursor'] => $cursor};
 	width: ${({ $width }): string => $width};
 	height: ${({ $height }): string => $height};
-	${({ $position }): SimpleInterpolation => $position};
-	${({ $translateTransform }): SimpleInterpolation =>
+	${({ $position }): BorderWithResizeProps['$position'] => $position};
+	${({ $translateTransform }): undefined | string | ReturnType<typeof css> =>
 		($translateTransform?.x || $translateTransform?.y) &&
 		css`
 			transform: translate(${$translateTransform?.x ?? 0}, ${$translateTransform?.y ?? 0});

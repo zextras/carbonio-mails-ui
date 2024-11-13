@@ -11,7 +11,6 @@ import {
 	Collapse,
 	Container,
 	ContainerProps,
-	getColor,
 	Icon,
 	IconButton,
 	ListItem,
@@ -50,22 +49,11 @@ const CustomContainer = styled(Container)<ContainerProps & { active?: boolean }>
 
 const CustomListItemHelper = styled(ListItem)``;
 
-export const CustomListItem = styled(CustomListItemHelper).attrs(
-	({
-		background = 'gray6',
-		active,
-		activeBackground = 'highlight',
-		selected,
-		selectedBackground = 'gray5',
-		theme
-	}) => ({
-		$baseBackgroundColor: getColor(
-			(active && activeBackground) || (selected && selectedBackground) || background,
-			theme
-		),
-		$focusBackgroundColor: getColor(`${(active && activeBackground) || 'gray6'}.focus`, theme)
-	})
-)``;
+export const CustomListItem = styled(CustomListItemHelper).attrs({
+	background: 'gray6',
+	activeBackground: 'highlight',
+	selectedBackground: 'gray5'
+})``;
 
 type FlatFoldersAccordionFolderProps = {
 	folder: Folder;

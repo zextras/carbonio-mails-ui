@@ -162,7 +162,7 @@ export const RecoverMessages = (): React.JSX.Element => {
 						width="fill"
 						onChange={onDateTimePickerChange}
 						timeCaption={t('label.time', 'Time')}
-						includeTime={false}
+						showTimeSelect={false}
 						locale={zimbraPrefLocale}
 						dateFormat="P"
 					/>

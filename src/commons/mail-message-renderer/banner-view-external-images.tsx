@@ -75,8 +75,7 @@ export const BannerViewExternalImages = ({
 					}}
 					dropdownProps={{
 						maxWidth: '31.25rem',
-						width: 'fit',
-						items
+						width: 'fit'
 					}}
 					items={items}
 				/>

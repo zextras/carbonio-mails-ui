@@ -53,6 +53,11 @@ import type {
 	MailMessage,
 	OpenEmlPreviewType
 } from '../../../../types';
+import {
+	ArrayOneOrMore,
+	NodeWithMetadata,
+	SelectNodesFunctionArgs
+} from '../../../../types/integrations/carbonio-files-ui';
 import { useExtraWindow } from '../../extra-windows/use-extra-window';
 
 /**
@@ -72,15 +77,9 @@ const AttachmentHoverBarContainer = styled(Container)`
 	height: 0;
 `;
 
-const AttachmentContainer = styled(Container).attrs(
-	(props: { requiresSmartLinkConversion: boolean }) => ({
-		requiresSmartLinkConversion: props.requiresSmartLinkConversion
-	})
-)`
-	border-bottom: ${(props): string =>
-		props.requiresSmartLinkConversion
-			? `1px solid ${props.theme.palette.primary.regular}`
-			: 'none'};
+const AttachmentContainer = styled(Container)<{ $requiresSmartLinkConversion: boolean }>`
+	border-bottom: ${({ $requiresSmartLinkConversion, theme }): string =>
+		$requiresSmartLinkConversion ? `1px solid ${theme.palette.primary.regular}` : 'none'};
 
 	border-radius: 0.125rem;
 	width: calc(50% - 0.25rem);
@@ -416,7 +415,7 @@ const Attachment: FC<AttachmentType> = ({
 			height="fit"
 			background={backgroundColor}
 			data-testid={`attachment-container-${filename}`}
-			requiresSmartLinkConversion={requiresSmartLinkConversion}
+			$requiresSmartLinkConversion={requiresSmartLinkConversion}
 		>
 			<Tooltip key={`${messageId}-Preview`} label={actionTooltipText}>
 				<Row
@@ -529,7 +528,7 @@ const Attachment: FC<AttachmentType> = ({
 const copyToFiles = (
 	att: AttachmentPart,
 	messageId: string,
-	nodes: any
+	nodes: ArrayOneOrMore<NodeWithMetadata>
 ): Promise<CopyToFileResponse> =>
 	soapFetch('CopyToFiles', {
 		_jsns: 'urn:zimbraMail',
@@ -594,8 +593,8 @@ const AttachmentsBlock: FC<{
 		[t]
 	);
 
-	const confirmAction = useCallback(
-		(nodes: any) => {
+	const confirmAction = useCallback<SelectNodesFunctionArgs['confirmAction']>(
+		(nodes) => {
 			const promises = map(attachments, (att) => copyToFiles(att, messageId, nodes));
 			Promise.allSettled(promises).then((res: CopyToFileResponse[]) => {
 				const isFault = res.length === filter(res, (r) => r?.value?.Fault)?.length;

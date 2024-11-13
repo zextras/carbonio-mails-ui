@@ -5,16 +5,16 @@
  */
 import React, { HTMLAttributes } from 'react';
 
-import styled, { SimpleInterpolation } from 'styled-components';
+import styled from 'styled-components';
 
 // TODO add supports for 	italic, strikethrough and underlined
 export type TextStylerProps = HTMLAttributes<HTMLSpanElement> & {
 	bold?: boolean;
 };
 
-const StyledSpan = styled.span<TextStylerProps>`
+const StyledSpan = styled.span<{ $bold?: boolean }>`
 	display: inline-block;
-	font-weight: ${(props): SimpleInterpolation => props.bold && 'bold'};
+	font-weight: ${({ $bold }): false | undefined | string => $bold && 'bold'};
 `;
 
 export const TextStyler = React.forwardRef<HTMLSpanElement, TextStylerProps>(function TextStylerFn(

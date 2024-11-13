@@ -54,7 +54,7 @@ const SharedCalendarResponse: FC<SharedCalendarResponseReturnType> = ({
 	);
 
 	const role = useMemo(
-		() => findLabel(shareCalendarRoleOptions, rights || ''),
+		() => findLabel(shareCalendarRoleOptions, rights || '') ?? '',
 		[shareCalendarRoleOptions, rights]
 	);
 

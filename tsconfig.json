@@ -2,14 +2,13 @@
 	"extends": "@zextras/carbonio-ui-configs/rules/typescript.json",
 	"compilerOptions": {
 		"skipLibCheck": true,
-		"jsx": "react"
+		"jsx": "react",
+		"allowJs": true
 	},
 	"include": [
-		"src/**/*.ts",
-		"src/**/*.tsx",
+		"src/**/*",
 		"jest.config.ts",
 		"jest-setup.ts",
-		"src/carbonio-ui-commons/worker/mock/workerMock.js"
 	],
 	"exclude": ["./node_modules/*", "./dist/*"]
 }
