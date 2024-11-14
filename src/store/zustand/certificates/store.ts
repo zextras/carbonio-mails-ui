@@ -5,7 +5,7 @@
  */
 import { create } from 'zustand';
 
-type Certificate = {
+export type Certificate = {
 	privateKey: string;
 	endEntityCert: string;
 	caCertificate: string;
