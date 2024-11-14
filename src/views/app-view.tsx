@@ -3,9 +3,10 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import { Spinner } from '@zextras/carbonio-design-system';
 import React, { FC, Suspense, lazy, useEffect, useMemo, useState, useRef } from 'react';
 
-import { Spinner, setAppContext, useUserSettings } from '@zextras/carbonio-shell-ui';
+import { setAppContext, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { includes, isNil } from 'lodash';
 import moment from 'moment';
 
@@ -24,7 +25,7 @@ const LazyDetailPanel = lazy(
 );
 
 const DetailPanel = (): React.JSX.Element => (
-	<Suspense fallback={<Spinner />}>
+	<Suspense fallback={<Spinner color={'primary'} />}>
 		<LazyDetailPanel />
 	</Suspense>
 );
