@@ -1,0 +1,105 @@
+/*
+ * SPDX-FileCopyrightText: 2024 Zextras <https://www.zextras.com>
+ *
+ * SPDX-License-Identifier: AGPL-3.0-only
+ */
+/*
+ * SPDX-License-IdentifierText: 2024 Zextras <https://www.zextras.com>
+ *
+ * SPDX-License-Identifier: AGPL-3.0-only
+ */
+
+import * as asn1js from 'asn1js';
+import forge from 'node-forge';
+import * as pkijs from 'pkijs';
+
+interface CertificateFileUploadResult {
+	privateKey: string;
+	endEntityCert: string;
+	caCertificate: string;
+	emailAddress: string;
+}
+
+const getCertificate = async (certArg: string): Promise<pkijs.Certificate> => {
+	try {
+		const sanitizedCert = certArg
+			.replace(/-----BEGIN CERTIFICATE-----/, '')
+			.replace(/-----END CERTIFICATE-----/, '')
+			.replace(/\s+/g, '');
+
+		const binaryDer = Uint8Array.from(atob(sanitizedCert), (char) => char.charCodeAt(0));
+		const asn1 = asn1js.fromBER(binaryDer.buffer);
+
+		if (asn1.offset === -1) throw new Error('Failed to parse certificate');
+
+		return new pkijs.Certificate({ schema: asn1.result });
+	} catch {
+		throw new Error('Failed to parse certificate');
+	}
+};
+
+export const handleCertificateFileUpload = (
+	files: FileList,
+	password: string
+): Promise<CertificateFileUploadResult> =>
+	new Promise((resolve, reject) => {
+		if (files.length === 0) {
+			reject(new Error('No file provided'));
+		}
+
+		const reader = new FileReader();
+
+		reader.onload = async (e: ProgressEvent<FileReader>): Promise<void> => {
+			try {
+				const arrayBuffer = e.target?.result;
+				if (!arrayBuffer) {
+					return reject(new Error('Failed to read file'));
+				}
+
+				const p12Der = forge.util.createBuffer(arrayBuffer as ArrayBuffer);
+				const p12Asn1 = forge.asn1.fromDer(p12Der);
+				const p12 = forge.pkcs12.pkcs12FromAsn1(p12Asn1, false, password);
+
+				const keyBags = p12.getBags({ bagType: forge.pki.oids.pkcs8ShroudedKeyBag });
+				const privateKeyObj = keyBags[forge.pki.oids.pkcs8ShroudedKeyBag]?.[0]?.key;
+
+				const certBags = p12.getBags({ bagType: forge.pki.oids.certBag });
+				const certificates = certBags[forge.pki.oids.certBag];
+
+				if (!privateKeyObj || !certificates || certificates.length === 0) {
+					return reject(new Error('Failed to extract private key or certificate'));
+				}
+
+				const endEntityCertFile = certificates[0].cert;
+				const caCerts = certificates.slice(1);
+
+				const privateKey = privateKeyObj ? forge.pki.privateKeyToPem(privateKeyObj) : '';
+				if (!endEntityCertFile) {
+					return reject(new Error('Failed to extract end-entity certificate'));
+				}
+
+				const endEntityCert = forge.pki.certificateToPem(endEntityCertFile);
+				const caCertificate = caCerts
+					.map((cert) => (cert?.cert ? forge.pki.certificateToPem(cert.cert) : ''))
+					.join('\n');
+
+				const certificate = await getCertificate(endEntityCert);
+				const emailAddress = certificate.subject.typesAndValues
+					.map((typeAndValue) => typeAndValue.value.valueBlock.value)
+					.join(', ');
+
+				// Resolve the promise with the result object
+				return resolve({
+					privateKey,
+					endEntityCert,
+					caCertificate,
+					emailAddress
+				});
+			} catch (err) {
+				// Reject the promise with an error message
+				return reject(new Error(`Certificate processing error: ${(err as Error).message}`));
+			}
+		};
+
+		reader.readAsArrayBuffer(files[0]);
+	});

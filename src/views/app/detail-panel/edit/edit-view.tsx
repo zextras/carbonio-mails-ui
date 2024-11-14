@@ -4,7 +4,15 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React, { memo, useCallback, useEffect, useImperativeHandle, useMemo, useState } from 'react';
+import React, {
+	memo,
+	useCallback,
+	useEffect,
+	useImperativeHandle,
+	useMemo,
+	useRef,
+	useState
+} from 'react';
 
 import {
 	Button,
@@ -23,11 +31,13 @@ import DropZoneAttachment from './dropzone-attachment';
 import { EditAttachmentsBlock } from './edit-attachments-block';
 import { createEditBoard } from './edit-view-board';
 import { AddAttachmentsDropdown } from './parts/add-attachments-dropdown';
+import { handleCertificateFileUpload } from './parts/certificate-utils';
 import { ChangeSignaturesDropdown } from './parts/change-signatures-dropdown';
 import { useKeepOrDiscardDraft } from './parts/delete-draft';
 import { EditViewDraftSaveInfo } from './parts/edit-view-draft-save-info';
 import { EditViewIdentitySelector } from './parts/edit-view-identity-selector';
 import { EditViewSendButtons } from './parts/edit-view-send-buttons';
+import * as StyledComp from './parts/edit-view-styled-components';
 import { OptionsDropdown } from './parts/options-dropdown';
 import { RecipientsRows } from './parts/recipients-rows';
 import { SizeExceededWarningBanner } from './parts/size-exceeded-waring-banner';
@@ -38,6 +48,7 @@ import { GapContainer, GapRow } from '../../../../commons/gap-container';
 import { EDIT_VIEW_CLOSING_REASONS, EditViewActions, TIMEOUTS } from '../../../../constants';
 import { buildArrayFromFileList } from '../../../../helpers/files';
 import { getAvailableAddresses, getIdentitiesDescriptors } from '../../../../helpers/identities';
+import { useCertificatesStore } from '../../../../store/zustand/certificates/store';
 import {
 	useEditorAutoSendTime,
 	useEditorDraftSave,
@@ -46,7 +57,8 @@ import {
 	useEditorAttachments,
 	deleteEditor,
 	useEditorDid,
-	useEditorsStore
+	useEditorsStore,
+	useEditorIsSmimeSign
 } from '../../../../store/zustand/editor';
 import { EditViewClosingReasons } from '../../../../types';
 import { updateEditorWithSmartLinks } from '../../../../ui-actions/utils';
@@ -119,6 +131,8 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 	const [isMailSizeWarning, setIsMailSizeWarning] = useState<boolean>(false);
 	const { status: saveDraftAllowedStatus, saveDraft } = useEditorDraftSave(editorId);
 	const { did: draftId } = useEditorDid(editorId);
+	const { isSmimeSign, setIsSmimeSign } = useEditorIsSmimeSign(editorId);
+	const inputRef = useRef<HTMLInputElement>(null);
 
 	useEffect(() => {
 		if (!draftId) saveDraft();
@@ -329,6 +343,48 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 		createSmartLinksAction
 	]);
 
+	const addCertificate = useCertificatesStore((state) => state.addCertificate);
+
+	const getCertificate = useCertificatesStore((state) => state.getCertificate);
+
+	const accountId = 'account123';
+	const certificate = getCertificate(accountId);
+	if (certificate) {
+		console.log('Certificate found:', certificate);
+	}
+
+	const onCertificateFileClick = useCallback(() => {
+		if (inputRef.current) {
+			inputRef.current.value = '';
+			inputRef.current.click();
+		}
+	}, []);
+
+	const onCertificateFileSelect = useCallback(
+		async (fileList: FileList) => {
+			const password = prompt('Enter the password for the P12 file:');
+			const result = await handleCertificateFileUpload(fileList, password ?? '');
+			const accountId = 'account123';
+			const newCertificate = {
+				privateKey: result.privateKey,
+				endEntityCert: result.endEntityCert,
+				caCertificate: result.caCertificate
+			};
+			addCertificate(accountId, newCertificate);
+			setIsSmimeSign(true);
+		},
+		[addCertificate, setIsSmimeSign]
+	);
+
+	const onSmimeOptionChange = useCallback(
+		(isSmimeSet: boolean): void => {
+			if (isSmimeSet) {
+				onCertificateFileClick();
+			}
+		},
+		[onCertificateFileClick]
+	);
+
 	const onSendLaterClick = useCallback(
 		(scheduledTime: number): void => {
 			const onConfirmCallback = async (): Promise<void> => {
@@ -395,7 +451,10 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 					<GapRow mainAlignment={'flex-end'} gap={'medium'}>
 						<MemoizedAddAttachmentsDropdown editorId={editorId} />
 						<MemoizedChangeSignaturesDropdown editorId={editorId} />
-						<MemoizedOptionsDropdown editorId={editorId} />
+						<MemoizedOptionsDropdown
+							editorId={editorId}
+							onSmimeOptionChange={onSmimeOptionChange}
+						/>
 						<Tooltip
 							label={saveDraftAllowedStatus?.reason}
 							disabled={saveDraftAllowedStatus?.allowed}
@@ -457,6 +516,16 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 					<EditViewDraftSaveInfo processStatus={draftSaveProcessStatus} />
 				</GapContainer>
 			</GapContainer>
+			<StyledComp.FileInput
+				type="file"
+				ref={inputRef}
+				data-testid="certificate-file-input"
+				onChange={(): void => {
+					onCertificateFileSelect &&
+						inputRef?.current?.files &&
+						onCertificateFileSelect(inputRef.current.files);
+				}}
+			/>
 		</Container>
 	);
 });

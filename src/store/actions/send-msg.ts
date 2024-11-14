@@ -14,6 +14,7 @@ import { getParticipantsFromMessage } from '../../helpers/messages';
 import { MailMessage, SendMsgResult, SendMsgWithSmartLinksResponse } from '../../types';
 import type { SaveDraftRequest, SaveDraftResponse, SendMsgParameters } from '../../types';
 import { generateMailRequest } from '../editor-slice-utils';
+import { useCertificatesStore } from '../zustand/certificates/store';
 import { createSoapSendMsgRequestFromEditor } from '../zustand/editor/editor-transformations';
 
 export const sendMsg = createAsyncThunk<any, { msg: MailMessage }>(
@@ -69,6 +70,15 @@ export const sendMsgFromEditor = createAsyncThunk<SendMsgResult, SendMsgParamete
 		const msg = createSoapSendMsgRequestFromEditor(editor);
 
 		const identity = getIdentityDescriptor(editor.identityId);
+
+		const getCertificate = useCertificatesStore((state) => state.getCertificate);
+
+		const accountId = 'account123';
+		const certificate = getCertificate(accountId);
+		if (certificate) {
+			console.log('Certificate found:', certificate);
+		}
+
 		let resp: SendMsgWithSmartLinksResponse;
 		try {
 			resp = await soapFetch<SaveDraftRequest, SaveDraftResponse>(
@@ -76,7 +86,7 @@ export const sendMsgFromEditor = createAsyncThunk<SendMsgResult, SendMsgParamete
 				{
 					_jsns: 'urn:zimbraMail',
 					m: msg,
-					...(editor.isSmimeSign ? { sign: true } : {})
+					...(editor.isSmimeSign ? { sign: true, ...certificate } : {})
 				},
 				identity?.ownerAccount ?? undefined
 			);

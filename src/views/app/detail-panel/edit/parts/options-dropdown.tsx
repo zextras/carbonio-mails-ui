@@ -19,9 +19,10 @@ import { MailsEditorV2 } from '../../../../../types';
 
 export type OptionsDropdownProps = {
 	editorId: MailsEditorV2['id'];
+	onSmimeOptionChange: (isSmimeSet: boolean) => void;
 };
 
-export const OptionsDropdown: FC<OptionsDropdownProps> = ({ editorId }) => {
+export const OptionsDropdown: FC<OptionsDropdownProps> = ({ editorId, onSmimeOptionChange }) => {
 	const { isRichText, setIsRichText } = useEditorIsRichText(editorId);
 	const { isUrgent, setIsUrgent } = useEditorIsUrgent(editorId);
 	const { requestReadReceipt, setRequestReadReceipt } = useEditorRequestReadReceipt(editorId);
@@ -39,8 +40,9 @@ export const OptionsDropdown: FC<OptionsDropdownProps> = ({ editorId }) => {
 	}, [requestReadReceipt, setRequestReadReceipt]);
 
 	const toggleUseSmimeCertificateRequest = useCallback(() => {
-		setIsSmimeSign(!isSmimeSign);
-	}, [isSmimeSign, setIsSmimeSign]);
+		onSmimeOptionChange(!isSmimeSign);
+		// setIsSmimeSign(!isSmimeSign);
+	}, [isSmimeSign, onSmimeOptionChange]);
 
 	const options = useMemo(
 		() => [
