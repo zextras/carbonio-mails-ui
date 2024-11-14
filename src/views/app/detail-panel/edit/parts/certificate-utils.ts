@@ -3,12 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-/*
- * SPDX-License-IdentifierText: 2024 Zextras <https://www.zextras.com>
- *
- * SPDX-License-Identifier: AGPL-3.0-only
- */
-
+import { t } from '@zextras/carbonio-shell-ui';
 import * as asn1js from 'asn1js';
 import forge from 'node-forge';
 import * as pkijs from 'pkijs';
@@ -20,6 +15,10 @@ interface CertificateFileUploadResult {
 	emailAddress: string;
 }
 
+const ERROR_MESSAGE = t(
+	'messages.snackbar.fail_to_parse_certificate',
+	'Failed to parse certificate'
+);
 const getCertificate = async (certArg: string): Promise<pkijs.Certificate> => {
 	try {
 		const sanitizedCert = certArg
@@ -30,11 +29,11 @@ const getCertificate = async (certArg: string): Promise<pkijs.Certificate> => {
 		const binaryDer = Uint8Array.from(atob(sanitizedCert), (char) => char.charCodeAt(0));
 		const asn1 = asn1js.fromBER(binaryDer.buffer);
 
-		if (asn1.offset === -1) throw new Error('Failed to parse certificate');
+		if (asn1.offset === -1) throw new Error(ERROR_MESSAGE);
 
 		return new pkijs.Certificate({ schema: asn1.result });
 	} catch {
-		throw new Error('Failed to parse certificate');
+		throw new Error(ERROR_MESSAGE);
 	}
 };
 
@@ -43,17 +42,13 @@ export const handleCertificateFileUpload = (
 	password: string
 ): Promise<CertificateFileUploadResult> =>
 	new Promise((resolve, reject) => {
-		if (files.length === 0) {
-			reject(new Error('No file provided'));
-		}
-
 		const reader = new FileReader();
 
 		reader.onload = async (e: ProgressEvent<FileReader>): Promise<void> => {
 			try {
 				const arrayBuffer = e.target?.result;
 				if (!arrayBuffer) {
-					return reject(new Error('Failed to read file'));
+					return reject(new Error(ERROR_MESSAGE));
 				}
 
 				const p12Der = forge.util.createBuffer(arrayBuffer as ArrayBuffer);
@@ -67,7 +62,7 @@ export const handleCertificateFileUpload = (
 				const certificates = certBags[forge.pki.oids.certBag];
 
 				if (!privateKeyObj || !certificates || certificates.length === 0) {
-					return reject(new Error('Failed to extract private key or certificate'));
+					return reject(new Error(ERROR_MESSAGE));
 				}
 
 				const endEntityCertFile = certificates[0].cert;
@@ -78,7 +73,7 @@ export const handleCertificateFileUpload = (
 				const wrapPrivateKey = forge.pki.wrapRsaPrivateKey(pkcs8PrivateKey);
 				const privateKey = forge.pki.privateKeyInfoToPem(wrapPrivateKey);
 				if (!endEntityCertFile) {
-					return reject(new Error('Failed to extract end-entity certificate'));
+					return reject(new Error(ERROR_MESSAGE));
 				}
 
 				const endEntityCert = forge.pki.certificateToPem(endEntityCertFile);
@@ -91,7 +86,6 @@ export const handleCertificateFileUpload = (
 					.map((typeAndValue) => typeAndValue.value.valueBlock.value)
 					.join(', ');
 
-				// Resolve the promise with the result object
 				return resolve({
 					privateKey: privateKey.replace(/\r\n/g, '\n'),
 					certificate: endEntityCert.replace(/\r\n/g, '\n'),
@@ -99,8 +93,7 @@ export const handleCertificateFileUpload = (
 					emailAddress
 				});
 			} catch (err) {
-				// Reject the promise with an error message
-				return reject(new Error(`Certificate processing error: ${(err as Error).message}`));
+				return reject(new Error(ERROR_MESSAGE));
 			}
 		};
 
