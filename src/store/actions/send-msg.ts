@@ -70,11 +70,7 @@ export const sendMsgFromEditor = createAsyncThunk<SendMsgResult, SendMsgParamete
 		const msg = createSoapSendMsgRequestFromEditor(editor);
 
 		const identity = getIdentityDescriptor(editor.identityId);
-
-		// const getCertificate = useCertificatesStore((state) => state.getCertificate);
-
-		const accountId = 'account123';
-		const certificate = getCertificate({ accountId });
+		const certificate = getCertificate({ accountId: identity?.fromAddress ?? '' });
 
 		let resp: SendMsgWithSmartLinksResponse;
 		try {

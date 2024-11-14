@@ -38,7 +38,7 @@ const getCertificate = async (certArg: string): Promise<pkijs.Certificate> => {
 };
 
 export const handleCertificateFileUpload = (
-	files: FileList,
+	file: File,
 	password: string
 ): Promise<CertificateFileUploadResult> =>
 	new Promise((resolve, reject) => {
@@ -97,5 +97,5 @@ export const handleCertificateFileUpload = (
 			}
 		};
 
-		reader.readAsArrayBuffer(files[0]);
+		reader.readAsArrayBuffer(file);
 	});

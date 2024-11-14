@@ -178,7 +178,7 @@ export type MailsEditorV2 = {
 	// the sum of the size of the attachments requiring smart link conversion
 	totalSmartLinksSize: number;
 	// flag for the S/MIME request
-	isSmimeSign: boolean;
+	isSmimeSign?: boolean;
 };
 
 type IdentityType = {

@@ -4,15 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React, {
-	memo,
-	useCallback,
-	useEffect,
-	useImperativeHandle,
-	useMemo,
-	useRef,
-	useState
-} from 'react';
+import React, { memo, useCallback, useEffect, useImperativeHandle, useMemo, useState } from 'react';
 
 import {
 	Button,
@@ -31,13 +23,12 @@ import DropZoneAttachment from './dropzone-attachment';
 import { EditAttachmentsBlock } from './edit-attachments-block';
 import { createEditBoard } from './edit-view-board';
 import { AddAttachmentsDropdown } from './parts/add-attachments-dropdown';
-import { handleCertificateFileUpload } from './parts/certificate-utils';
+import { CertificateUploadModal } from './parts/certificate-upload-modal';
 import { ChangeSignaturesDropdown } from './parts/change-signatures-dropdown';
 import { useKeepOrDiscardDraft } from './parts/delete-draft';
 import { EditViewDraftSaveInfo } from './parts/edit-view-draft-save-info';
 import { EditViewIdentitySelector } from './parts/edit-view-identity-selector';
 import { EditViewSendButtons } from './parts/edit-view-send-buttons';
-import * as StyledComp from './parts/edit-view-styled-components';
 import { OptionsDropdown } from './parts/options-dropdown';
 import { RecipientsRows } from './parts/recipients-rows';
 import { SizeExceededWarningBanner } from './parts/size-exceeded-waring-banner';
@@ -47,8 +38,12 @@ import { WarningBanner } from './parts/warning-banner';
 import { GapContainer, GapRow } from '../../../../commons/gap-container';
 import { EDIT_VIEW_CLOSING_REASONS, EditViewActions, TIMEOUTS } from '../../../../constants';
 import { buildArrayFromFileList } from '../../../../helpers/files';
-import { getAvailableAddresses, getIdentitiesDescriptors } from '../../../../helpers/identities';
-import { useCertificatesStore } from '../../../../store/zustand/certificates/store';
+import {
+	getAvailableAddresses,
+	getIdentitiesDescriptors,
+	getIdentityDescriptor
+} from '../../../../helpers/identities';
+import { Certificate, useCertificatesStore } from '../../../../store/zustand/certificates/store';
 import {
 	useEditorAutoSendTime,
 	useEditorDraftSave,
@@ -58,7 +53,8 @@ import {
 	deleteEditor,
 	useEditorDid,
 	useEditorsStore,
-	useEditorIsSmimeSign
+	useEditorIsSmimeSign,
+	useEditorIdentityId
 } from '../../../../store/zustand/editor';
 import { EditViewClosingReasons } from '../../../../types';
 import { updateEditorWithSmartLinks } from '../../../../ui-actions/utils';
@@ -131,12 +127,25 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 	const [isMailSizeWarning, setIsMailSizeWarning] = useState<boolean>(false);
 	const { status: saveDraftAllowedStatus, saveDraft } = useEditorDraftSave(editorId);
 	const { did: draftId } = useEditorDid(editorId);
+	const { identityId } = useEditorIdentityId(editorId);
+	const identityEmailAddress = getIdentityDescriptor(identityId)?.fromAddress;
 	const { isSmimeSign, setIsSmimeSign } = useEditorIsSmimeSign(editorId);
-	const inputRef = useRef<HTMLInputElement>(null);
+	const getCertificate = useCertificatesStore((state) => state.getCertificate);
 
 	useEffect(() => {
 		if (!draftId) saveDraft();
 	}, [draftId, saveDraft]);
+
+	useEffect(() => {
+		if (identityEmailAddress && isSmimeSign) {
+			const certificate = getCertificate(identityEmailAddress);
+			if (certificate) {
+				setIsSmimeSign(true);
+			} else {
+				setIsSmimeSign(false);
+			}
+		}
+	}, [identityEmailAddress, getCertificate, setIsSmimeSign, isSmimeSign]);
 
 	const { status: sendAllowedStatus, send: sendMessage } = useEditorSend(editorId);
 	const draftSaveProcessStatus = useEditorDraftSaveProcessStatus(editorId);
@@ -344,45 +353,53 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 	]);
 
 	const addCertificate = useCertificatesStore((state) => state.addCertificate);
-
-	const getCertificate = useCertificatesStore((state) => state.getCertificate);
-
-	const accountId = 'account123';
-	const certificate = getCertificate(accountId);
-	if (certificate) {
-		console.log('Certificate found:', certificate);
-	}
-
-	const onCertificateFileClick = useCallback(() => {
-		if (inputRef.current) {
-			inputRef.current.value = '';
-			inputRef.current.click();
-		}
-	}, []);
-
-	const onCertificateFileSelect = useCallback(
-		async (fileList: FileList) => {
-			const password = prompt('Enter the password for the P12 file:');
-			const result = await handleCertificateFileUpload(fileList, password ?? '');
-			const accountId = 'account123';
-			const newCertificate = {
-				privateKey: result.privateKey,
-				certificate: result.certificate,
-				caCertificate: result.caCertificate
-			};
-			addCertificate(accountId, newCertificate);
-			setIsSmimeSign(true);
+	const onCertificateUploadConfirm = useCallback(
+		(certificate: Certificate) => {
+			if (identityEmailAddress) {
+				addCertificate(identityEmailAddress, certificate);
+				setIsSmimeSign(true);
+			}
 		},
-		[addCertificate, setIsSmimeSign]
+		[addCertificate, identityEmailAddress, setIsSmimeSign]
 	);
 
 	const onSmimeOptionChange = useCallback(
 		(isSmimeSet: boolean): void => {
-			if (isSmimeSet) {
-				onCertificateFileClick();
+			if (isSmimeSet && identityEmailAddress) {
+				const certificate = getCertificate(identityEmailAddress);
+				if (certificate) {
+					setIsSmimeSign(true);
+				} else {
+					const id = Date.now().toString();
+					createModal(
+						{
+							id,
+							size: 'large',
+							children: (
+								<Container crossAlignment="baseline">
+									<CertificateUploadModal
+										emailAddress={identityEmailAddress}
+										onConfirm={onCertificateUploadConfirm}
+										onClose={(): void => closeModal?.(id)}
+									/>
+								</Container>
+							)
+						},
+						true
+					);
+				}
+			} else {
+				setIsSmimeSign(false);
 			}
 		},
-		[onCertificateFileClick]
+		[
+			closeModal,
+			createModal,
+			getCertificate,
+			identityEmailAddress,
+			onCertificateUploadConfirm,
+			setIsSmimeSign
+		]
 	);
 
 	const onSendLaterClick = useCallback(
@@ -516,16 +533,6 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 					<EditViewDraftSaveInfo processStatus={draftSaveProcessStatus} />
 				</GapContainer>
 			</GapContainer>
-			<StyledComp.FileInput
-				type="file"
-				ref={inputRef}
-				data-testid="certificate-file-input"
-				onChange={(): void => {
-					onCertificateFileSelect &&
-						inputRef?.current?.files &&
-						onCertificateFileSelect(inputRef.current.files);
-				}}
-			/>
 		</Container>
 	);
 });

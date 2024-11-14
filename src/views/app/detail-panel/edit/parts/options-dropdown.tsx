@@ -26,7 +26,7 @@ export const OptionsDropdown: FC<OptionsDropdownProps> = ({ editorId, onSmimeOpt
 	const { isRichText, setIsRichText } = useEditorIsRichText(editorId);
 	const { isUrgent, setIsUrgent } = useEditorIsUrgent(editorId);
 	const { requestReadReceipt, setRequestReadReceipt } = useEditorRequestReadReceipt(editorId);
-	const { isSmimeSign, setIsSmimeSign } = useEditorIsSmimeSign(editorId);
+	const { isSmimeSign } = useEditorIsSmimeSign(editorId);
 	const toggleRichTextEditor = useCallback(() => {
 		setIsRichText(!isRichText);
 	}, [isRichText, setIsRichText]);
@@ -41,7 +41,6 @@ export const OptionsDropdown: FC<OptionsDropdownProps> = ({ editorId, onSmimeOpt
 
 	const toggleUseSmimeCertificateRequest = useCallback(() => {
 		onSmimeOptionChange(!isSmimeSign);
-		// setIsSmimeSign(!isSmimeSign);
 	}, [isSmimeSign, onSmimeOptionChange]);
 
 	const options = useMemo(
