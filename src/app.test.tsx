@@ -59,6 +59,7 @@ describe('App', () => {
 
 	beforeEach(() => {
 		createAPIInterceptor('get', 'zx/login/v3/account', HttpResponse.json({}));
+		createAPIInterceptor('get', 'services/catalog/services', HttpResponse.json({}));
 		createSoapAPIInterceptor('GetFolder', {
 			folder: [generateFolder({ name: 'Inbox' })]
 		});
