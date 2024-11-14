@@ -15,7 +15,7 @@ import * as pkijs from 'pkijs';
 
 interface CertificateFileUploadResult {
 	privateKey: string;
-	endEntityCert: string;
+	certificate: string;
 	caCertificate: string;
 	emailAddress: string;
 }
@@ -73,7 +73,10 @@ export const handleCertificateFileUpload = (
 				const endEntityCertFile = certificates[0].cert;
 				const caCerts = certificates.slice(1);
 
-				const privateKey = privateKeyObj ? forge.pki.privateKeyToPem(privateKeyObj) : '';
+				const pkcs8PrivateKey = forge.pki.privateKeyToAsn1(privateKeyObj);
+
+				const wrapPrivateKey = forge.pki.wrapRsaPrivateKey(pkcs8PrivateKey);
+				const privateKey = forge.pki.privateKeyInfoToPem(wrapPrivateKey);
 				if (!endEntityCertFile) {
 					return reject(new Error('Failed to extract end-entity certificate'));
 				}
@@ -90,9 +93,9 @@ export const handleCertificateFileUpload = (
 
 				// Resolve the promise with the result object
 				return resolve({
-					privateKey,
-					endEntityCert,
-					caCertificate,
+					privateKey: privateKey.replace(/\r\n/g, '\n'),
+					certificate: endEntityCert.replace(/\r\n/g, '\n'),
+					caCertificate: caCertificate.replace(/\r\n/g, '\n'),
 					emailAddress
 				});
 			} catch (err) {

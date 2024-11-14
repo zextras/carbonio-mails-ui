@@ -7,7 +7,7 @@ import { create } from 'zustand';
 
 export type Certificate = {
 	privateKey: string;
-	endEntityCert: string;
+	certificate: string;
 	caCertificate: string;
 };
 

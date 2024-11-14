@@ -75,9 +75,6 @@ export const sendMsgFromEditor = createAsyncThunk<SendMsgResult, SendMsgParamete
 
 		const accountId = 'account123';
 		const certificate = getCertificate({ accountId });
-		if (certificate) {
-			console.log('====== in Certificate found:', certificate);
-		}
 
 		let resp: SendMsgWithSmartLinksResponse;
 		try {

@@ -367,7 +367,7 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 			const accountId = 'account123';
 			const newCertificate = {
 				privateKey: result.privateKey,
-				endEntityCert: result.endEntityCert,
+				certificate: result.certificate,
 				caCertificate: result.caCertificate
 			};
 			addCertificate(accountId, newCertificate);
