@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { Spinner } from '@zextras/carbonio-design-system';
+import { Container, Spinner } from '@zextras/carbonio-design-system';
 import React, { lazy, Suspense, useMemo } from 'react';
 
 import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom';
@@ -39,7 +39,13 @@ export const FolderView = ({ containerRef }: FolderViewProps): React.JSX.Element
 		<ResizableContainer border={border} elementToResize={containerRef} disabled={resizeDisabled}>
 			<Switch>
 				<Route path={`${path}/folder/:folderId/:type?/:itemId?`}>
-					<Suspense fallback={<Spinner color={'primary'} />}>
+					<Suspense
+						fallback={
+							<Container>
+								<Spinner color={'primary'} />
+							</Container>
+						}
+					>
 						<LazyFolderView />
 					</Suspense>
 				</Route>
