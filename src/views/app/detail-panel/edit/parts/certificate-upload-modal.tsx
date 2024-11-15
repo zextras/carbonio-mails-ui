@@ -108,6 +108,7 @@ export const CertificateUploadModal = ({
 							label={t('label.certificate_password', 'S/MIME Certificate (i.e. certificate.p12)')}
 							defaultValue={selectedFile ? selectedFile.name : ''}
 							hideBorder
+							data-testid="certificate-file-name"
 						/>
 					</Row>
 					<Padding left="medium">
@@ -128,6 +129,7 @@ export const CertificateUploadModal = ({
 								setPassword && setPassword(ev.target.value);
 							}}
 							label={t('label.certificate_password', 'Certificate Password')}
+							data-testid="certificate-password"
 						/>
 					</Row>
 				</Container>

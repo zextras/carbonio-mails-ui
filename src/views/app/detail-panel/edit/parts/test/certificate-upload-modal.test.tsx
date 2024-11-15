@@ -24,4 +24,56 @@ describe('CertificateUploadModal', () => {
 		const modalTitle = screen.getByText(/label\.upload_certificate/i);
 		expect(modalTitle).toBeVisible();
 	});
+
+	it('should render certificate browse button', async () => {
+		setupTest(
+			<CertificateUploadModal
+				emailAddress={identityEmailAddress}
+				onClose={(): void => onClose()}
+				onConfirm={(): void => onConfirm()}
+			/>
+		);
+		const button = screen.getByRole('button', {
+			name: /settings\.browse/i
+		});
+		expect(button).toBeInTheDocument();
+	});
+
+	it('should render certificate upload button', async () => {
+		setupTest(
+			<CertificateUploadModal
+				emailAddress={identityEmailAddress}
+				onClose={(): void => onClose()}
+				onConfirm={(): void => onConfirm()}
+			/>
+		);
+		const button = screen.getByRole('button', {
+			name: /label\.upload/i
+		});
+		expect(button).toBeInTheDocument();
+	});
+
+	it('should render the file input field', () => {
+		setupTest(
+			<CertificateUploadModal
+				emailAddress={identityEmailAddress}
+				onClose={(): void => onClose()}
+				onConfirm={(): void => onConfirm()}
+			/>
+		);
+		const text = screen.getByTestId('certificate-file-name');
+		expect(text).toBeInTheDocument();
+	});
+
+	it('should render the password input field', () => {
+		setupTest(
+			<CertificateUploadModal
+				emailAddress={identityEmailAddress}
+				onClose={(): void => onClose()}
+				onConfirm={(): void => onConfirm()}
+			/>
+		);
+		const text = screen.getByTestId('certificate-password');
+		expect(text).toBeInTheDocument();
+	});
 });
