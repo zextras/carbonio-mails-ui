@@ -106,9 +106,10 @@ export const CertificateUploadModal = ({
 					<Row mainAlignment="flex-start" width="22rem">
 						<Input
 							label={t('label.certificate_password', 'S/MIME Certificate (i.e. certificate.p12)')}
-							defaultValue={selectedFile ? selectedFile.name : ''}
+							value={selectedFile ? selectedFile.name : ''}
 							hideBorder
 							data-testid="certificate-file-name"
+							onChange={(): null => null}
 						/>
 					</Row>
 					<Padding left="medium">
