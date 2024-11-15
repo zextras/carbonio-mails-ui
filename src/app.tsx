@@ -17,6 +17,7 @@ import { useBackupSearchStore } from './store/zustand/backup-search/store';
 import { GlobalExtraWindowManager } from './views/app/extra-windows/global-extra-window-manager';
 import { GlobalModalManager } from './views/global-modal-manager';
 import { InitializeFolders } from './views/sidebar/initialize-folders';
+import { InitializeServicesCatalog } from './views/sidebar/initialize-services-catalog';
 import { SyncDataHandler } from './views/sidebar/sync-data-handler';
 
 const App = (): React.JSX.Element => {
@@ -38,6 +39,7 @@ const App = (): React.JSX.Element => {
 				<GlobalExtraWindowManager>
 					<InitializeFolders />
 					<SyncDataHandler />
+					<InitializeServicesCatalog />
 				</GlobalExtraWindowManager>
 			</GlobalModalManager>
 		</StoreProvider>
