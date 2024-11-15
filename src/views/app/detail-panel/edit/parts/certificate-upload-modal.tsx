@@ -42,7 +42,7 @@ export const CertificateUploadModal = ({
 	const inputRef = useRef<HTMLInputElement>(null);
 	const createSnackbar = useSnackbar();
 
-	const modalHeaderTitle = t('label.upload certificate', 'Upload Certificate');
+	const modalHeaderTitle = t('label.upload_certificate', 'Upload Certificate');
 	const onCertificateFileBrowse = useCallback(() => {
 		if (inputRef.current) {
 			inputRef.current.value = '';
@@ -71,7 +71,10 @@ export const CertificateUploadModal = ({
 					onClose();
 				} else {
 					throw new Error(
-						t('composer.uploadCertificate.email_not_match', 'Email address does not match')
+						t(
+							'composer.uploadCertificate.email_not_match',
+							'Certificate email does not match with sender email'
+						)
 					);
 				}
 			} catch (error) {
@@ -79,7 +82,10 @@ export const CertificateUploadModal = ({
 					key: `error-on-certificate-upload`,
 					replace: true,
 					severity: 'error',
-					label: t('composer.uploadCertificate.failed', 'Failed to upload certificate'),
+					label:
+						error instanceof Error
+							? error.message
+							: t('composer.uploadCertificate.failed', 'Failed to upload certificate'),
 					autoHideTimeout: 3000,
 					hideButton: true
 				});
@@ -97,9 +103,9 @@ export const CertificateUploadModal = ({
 				height="fit"
 			>
 				<Container orientation="horizontal" mainAlignment="flex-start">
-					<Row mainAlignment="flex-start" width="15vw">
+					<Row mainAlignment="flex-start" width="22rem">
 						<Input
-							label={t('label.certificate_password', 'S/MIME Certificate (i.e. certificate.pfx)')}
+							label={t('label.certificate_password', 'S/MIME Certificate (i.e. certificate.p12)')}
 							value={selectedFile ? selectedFile.name : ''}
 							hideBorder
 						/>
@@ -107,6 +113,7 @@ export const CertificateUploadModal = ({
 					<Padding left="medium">
 						<Tooltip label={t('settings.browse', 'Browse')} maxWidth="100%">
 							<Button
+								minWidth="6rem"
 								data-testid="BtnUploadCert"
 								type="outlined"
 								onClick={onCertificateFileBrowse}
@@ -114,11 +121,11 @@ export const CertificateUploadModal = ({
 							/>
 						</Tooltip>
 					</Padding>
-					<Row mainAlignment="flex-start" width="20vw" padding={{ left: 'small' }}>
+					<Row mainAlignment="flex-start" width="22rem" padding={{ left: 'small' }}>
 						<PasswordInput
 							value={password}
 							onChange={(ev): void => {
-								setPassword(ev.target.value);
+								setPassword && setPassword(ev.target.value);
 							}}
 							label={t('label.certificate_password', 'Certificate Password')}
 						/>

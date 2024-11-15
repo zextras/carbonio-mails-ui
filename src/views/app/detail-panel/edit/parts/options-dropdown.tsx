@@ -6,7 +6,7 @@
 import React, { FC, useCallback, useMemo } from 'react';
 
 import { Dropdown, IconButton } from '@zextras/carbonio-design-system';
-import { t } from '@zextras/carbonio-shell-ui';
+import { t, useIsCarbonioCE } from '@zextras/carbonio-shell-ui';
 import { noop } from 'lodash';
 
 import {
@@ -43,6 +43,8 @@ export const OptionsDropdown: FC<OptionsDropdownProps> = ({ editorId, onSmimeOpt
 		onSmimeOptionChange(!isSmimeSign);
 	}, [isSmimeSign, onSmimeOptionChange]);
 
+	const isCarbonioCE = useIsCarbonioCE();
+
 	const options = useMemo(
 		() => [
 			{
@@ -59,13 +61,17 @@ export const OptionsDropdown: FC<OptionsDropdownProps> = ({ editorId, onSmimeOpt
 					: t('label.mark_as_important', 'Mark as important'),
 				onClick: toggleImportant
 			},
-			{
-				id: 'is_smimesign',
-				label: isSmimeSign
-					? t('label.remove_use_certificate_to_sign', 'Remove certificate to sign (S/MIME)')
-					: t('label.use_certificate_to_sign', 'Use certificate to sign (S/MIME)'),
-				onClick: toggleUseSmimeCertificateRequest
-			},
+			...(!isCarbonioCE
+				? [
+						{
+							id: 'is_smimesign',
+							label: isSmimeSign
+								? t('label.remove_use_certificate_to_sign', 'Remove certificate to sign (S/MIME)')
+								: t('label.use_certificate_to_sign', 'Use certificate to sign (S/MIME)'),
+							onClick: toggleUseSmimeCertificateRequest
+						}
+					]
+				: []),
 			{
 				id: 'read_receipt',
 				label: requestReadReceipt
@@ -79,6 +85,7 @@ export const OptionsDropdown: FC<OptionsDropdownProps> = ({ editorId, onSmimeOpt
 			toggleRichTextEditor,
 			isUrgent,
 			toggleImportant,
+			isCarbonioCE,
 			isSmimeSign,
 			toggleUseSmimeCertificateRequest,
 			requestReadReceipt,

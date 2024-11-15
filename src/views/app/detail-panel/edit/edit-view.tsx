@@ -374,7 +374,7 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 					createModal(
 						{
 							id,
-							size: 'large',
+							size: 'medium',
 							children: (
 								<Container crossAlignment="baseline">
 									<CertificateUploadModal

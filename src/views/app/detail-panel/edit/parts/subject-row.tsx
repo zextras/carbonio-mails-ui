@@ -69,7 +69,7 @@ export const SubjectRow: FC<SubjectRowProps> = ({ editorId }: SubjectRowProps) =
 					)}
 					{isSmimeSign && (
 						<Tooltip label={t('label.use_certificate_to_sign', 'Use certificate to sign (S/MIME)')}>
-							<Icon icon="FileTextOutline" color="secondary" size="large" />
+							<Icon icon="SignatureOutline" color="secondary" size="large" />
 						</Tooltip>
 					)}
 				</Container>
