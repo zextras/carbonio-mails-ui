@@ -12,7 +12,7 @@ interface CertificateFileUploadResult {
 	privateKey: string;
 	certificate: string;
 	caCertificate: string;
-	emailAddress: string;
+	emailAddress: string[];
 }
 
 const ERROR_MESSAGE = t(
@@ -82,9 +82,9 @@ export const handleCertificateFileUpload = (
 					.join('\n');
 
 				const certificate = await getCertificate(endEntityCert);
-				const emailAddress = certificate.subject.typesAndValues
-					.map((typeAndValue) => typeAndValue.value.valueBlock.value)
-					.join(', ');
+				const emailAddress = certificate.subject.typesAndValues.map(
+					(typeAndValue) => typeAndValue.value.valueBlock.value
+				);
 
 				return resolve({
 					privateKey: privateKey.replace(/\r\n/g, '\n'),

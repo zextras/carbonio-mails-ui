@@ -61,7 +61,7 @@ export const CertificateUploadModal = ({
 		if (selectedFile) {
 			try {
 				const result = await handleCertificateFileUpload(selectedFile, password ?? '');
-				if (result.emailAddress === emailAddress) {
+				if (emailAddress && result.emailAddress.includes(emailAddress)) {
 					const certificate = {
 						privateKey: result.privateKey,
 						certificate: result.certificate,
