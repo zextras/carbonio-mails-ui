@@ -9,7 +9,6 @@ import { Spinner, setAppContext, useUserSettings } from '@zextras/carbonio-shell
 import { includes } from 'lodash';
 import moment from 'moment';
 
-import { AppContext } from '../types';
 import { FolderView } from './folder-view';
 import { LayoutSelector } from './layout-selector';
 import { FOLDERS } from '../carbonio-ui-commons/constants/folders';
@@ -47,12 +46,11 @@ const AppView: FC = () => {
 	}
 
 	useEffect(() => {
-		setAppContext((context: AppContext) => ({
-			...(context ?? {}),
+		setAppContext({
 			isMessageView,
 			count,
 			setCount
-		}));
+		});
 	}, [count, isMessageView]);
 
 	return (
