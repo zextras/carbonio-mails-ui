@@ -16,7 +16,7 @@ interface CertificateFileUploadResult {
 }
 
 const ERROR_MESSAGE = t(
-	'messages.snackbar.fail_to_parse_certificate',
+	'snackbar.uploadCertificate.failToParseCertificate',
 	'Failed to parse certificate'
 );
 const getCertificate = async (certArg: string): Promise<pkijs.Certificate> => {

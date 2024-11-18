@@ -66,8 +66,14 @@ export const OptionsDropdown: FC<OptionsDropdownProps> = ({ editorId, onSmimeOpt
 						{
 							id: 'is_smimesign',
 							label: isSmimeSign
-								? t('label.remove_use_certificate_to_sign', 'Remove certificate to sign (S/MIME)')
-								: t('label.use_certificate_to_sign', 'Use certificate to sign (S/MIME)'),
+								? t(
+										'composer.uploadCertificate.removeCertificateToSign',
+										'Remove certificate to sign (S/MIME)'
+									)
+								: t(
+										'composer.uploadCertificate.useCertificateToSign',
+										'Use certificate to sign (S/MIME)'
+									),
 							onClick: toggleUseSmimeCertificateRequest
 						}
 					]

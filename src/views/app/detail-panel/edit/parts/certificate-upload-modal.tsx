@@ -42,7 +42,7 @@ export const CertificateUploadModal = ({
 	const inputRef = useRef<HTMLInputElement>(null);
 	const createSnackbar = useSnackbar();
 
-	const modalHeaderTitle = t('label.upload_certificate', 'Upload Certificate');
+	const modalHeaderTitle = t('modal.uploadCertificate.uploadCertificate', 'Upload Certificate');
 	const onCertificateFileBrowse = useCallback(() => {
 		if (inputRef.current) {
 			inputRef.current.value = '';
@@ -72,7 +72,7 @@ export const CertificateUploadModal = ({
 				} else {
 					throw new Error(
 						t(
-							'composer.uploadCertificate.email_not_match',
+							'composer.uploadCertificate.emailNotMatch',
 							'Certificate email does not match with sender email'
 						)
 					);
@@ -105,7 +105,10 @@ export const CertificateUploadModal = ({
 				<Container orientation="horizontal" mainAlignment="flex-start">
 					<Row mainAlignment="flex-start" width="22rem">
 						<Input
-							label={t('label.certificate_password', 'S/MIME Certificate (i.e. certificate.p12)')}
+							label={t(
+								'modal.uploadCertificate.smimeCertificate',
+								'S/MIME Certificate (i.e. certificate.p12)'
+							)}
 							value={selectedFile ? selectedFile.name : ''}
 							hideBorder
 							data-testid="certificate-file-name"
@@ -129,7 +132,7 @@ export const CertificateUploadModal = ({
 							onChange={(ev): void => {
 								setPassword && setPassword(ev.target.value);
 							}}
-							label={t('label.certificate_password', 'Certificate Password')}
+							label={t('modal.uploadCertificate.certificatePassword', 'Certificate Password')}
 							data-testid="certificate-password"
 						/>
 					</Row>
@@ -140,7 +143,10 @@ export const CertificateUploadModal = ({
 					data-testid="certificate-file-input"
 					onChange={onChange}
 				/>
-				<ModalFooter onConfirm={onCertificateFileUpload} label={t('label.upload', 'Upload')} />
+				<ModalFooter
+					onConfirm={onCertificateFileUpload}
+					label={t('modal.uploadCertificate.upload', 'Upload')}
+				/>
 			</Container>
 		</Container>
 	);

@@ -69,22 +69,26 @@ export const SubjectRow: FC<SubjectRowProps> = ({ editorId }) => {
 					)}
 					{isUrgent && (
 						<Tooltip label={t('tooltip.marked_as_important', 'Marked as important')}>
-							<Icon
-								icon="ArrowUpward"
-								color="secondary"
-								size="large"
-								data-testid="mark-important-icon"
-							/>
+							<Padding right="small">
+								<Icon
+									icon="ArrowUpward"
+									color="secondary"
+									size="large"
+									data-testid="mark-important-icon"
+								/>
+							</Padding>
 						</Tooltip>
 					)}
 					{isSmimeSign && (
-						<Tooltip label={t('label.use_certificate_to_sign', 'Use certificate to sign (S/MIME)')}>
-							<Icon
-								icon="SignatureOutline"
-								color="secondary"
-								size="large"
-								data-testid="use-certificate-icon"
-							/>
+						<Tooltip label={t('tooltip.markedAsSingedSmime', 'Marked as signed (S/MIME)')}>
+							<Padding right="small">
+								<Icon
+									icon="SignatureOutline"
+									color="secondary"
+									size="large"
+									data-testid="use-certificate-icon"
+								/>
+							</Padding>
 						</Tooltip>
 					)}
 				</Container>
