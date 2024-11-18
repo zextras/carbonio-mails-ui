@@ -6,11 +6,12 @@
 import React, { FC, useCallback, useMemo } from 'react';
 
 import { Dropdown, IconButton } from '@zextras/carbonio-design-system';
-import { t } from '@zextras/carbonio-shell-ui';
+import { t, useIsCarbonioCE } from '@zextras/carbonio-shell-ui';
 import { noop } from 'lodash';
 
 import {
 	useEditorIsRichText,
+	useEditorIsSmimeSign,
 	useEditorIsUrgent,
 	useEditorRequestReadReceipt
 } from '../../../../../store/zustand/editor';
@@ -18,13 +19,14 @@ import { MailsEditorV2 } from '../../../../../types';
 
 export type OptionsDropdownProps = {
 	editorId: MailsEditorV2['id'];
+	onSmimeOptionChange: (isSmimeSet: boolean) => void;
 };
 
-export const OptionsDropdown: FC<OptionsDropdownProps> = ({ editorId }) => {
+export const OptionsDropdown: FC<OptionsDropdownProps> = ({ editorId, onSmimeOptionChange }) => {
 	const { isRichText, setIsRichText } = useEditorIsRichText(editorId);
 	const { isUrgent, setIsUrgent } = useEditorIsUrgent(editorId);
 	const { requestReadReceipt, setRequestReadReceipt } = useEditorRequestReadReceipt(editorId);
-
+	const { isSmimeSign } = useEditorIsSmimeSign(editorId);
 	const toggleRichTextEditor = useCallback(() => {
 		setIsRichText(!isRichText);
 	}, [isRichText, setIsRichText]);
@@ -36,6 +38,12 @@ export const OptionsDropdown: FC<OptionsDropdownProps> = ({ editorId }) => {
 	const toggleReceiptRequest = useCallback(() => {
 		setRequestReadReceipt(!requestReadReceipt);
 	}, [requestReadReceipt, setRequestReadReceipt]);
+
+	const toggleUseSmimeCertificateRequest = useCallback(() => {
+		onSmimeOptionChange(!isSmimeSign);
+	}, [isSmimeSign, onSmimeOptionChange]);
+
+	const isCarbonioCE = useIsCarbonioCE();
 
 	const options = useMemo(
 		() => [
@@ -53,6 +61,23 @@ export const OptionsDropdown: FC<OptionsDropdownProps> = ({ editorId }) => {
 					: t('label.mark_as_important', 'Mark as important'),
 				onClick: toggleImportant
 			},
+			...(!isCarbonioCE
+				? [
+						{
+							id: 'is_smimesign',
+							label: isSmimeSign
+								? t(
+										'composer.uploadCertificate.removeCertificateToSign',
+										'Remove certificate to sign (S/MIME)'
+									)
+								: t(
+										'composer.uploadCertificate.useCertificateToSign',
+										'Use certificate to sign (S/MIME)'
+									),
+							onClick: toggleUseSmimeCertificateRequest
+						}
+					]
+				: []),
 			{
 				id: 'read_receipt',
 				label: requestReadReceipt
@@ -66,6 +91,9 @@ export const OptionsDropdown: FC<OptionsDropdownProps> = ({ editorId }) => {
 			toggleRichTextEditor,
 			isUrgent,
 			toggleImportant,
+			isCarbonioCE,
+			isSmimeSign,
+			toggleUseSmimeCertificateRequest,
 			requestReadReceipt,
 			toggleReceiptRequest
 		]
