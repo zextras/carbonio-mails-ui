@@ -18,9 +18,9 @@ export const InitializeServicesCatalog = (): null => {
 		if (!servicesCatalog) {
 			requestServiceCatalog().then((res) => {
 				if (!isNil(res)) {
-					setAppContext((context: AppContext) => ({ ...(context ?? {}), servicesCatalog: res }));
+					setAppContext({ servicesCatalog: res });
 				} else {
-					setAppContext((context: AppContext) => ({ ...(context ?? {}), servicesCatalog: [] }));
+					setAppContext({ servicesCatalog: [] });
 				}
 			});
 		}
