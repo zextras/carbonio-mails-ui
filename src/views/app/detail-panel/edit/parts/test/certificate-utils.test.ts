@@ -6,7 +6,7 @@
 
 import { handleCertificateFileUpload } from '../certificate-utils';
 
-const errorMessage = 'messages.snackbar.fail_to_parse_certificate';
+const errorMessage = 'snackbar.uploadCertificate.failToVerifyCertificate';
 
 it('should throw an error if the file is not a PKCS#12 file', async () => {
 	const file = new File(['test-cert'], 'test-cert.txt', { type: 'text/plain' });

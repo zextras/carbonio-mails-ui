@@ -70,7 +70,6 @@ export const sendMsgFromEditor = createAsyncThunk<SendMsgResult, SendMsgParamete
 		const msg = createSoapSendMsgRequestFromEditor(editor);
 
 		const identity = getIdentityDescriptor(editor.identityId);
-		const certificate = getCertificate({ accountId: identity?.fromAddress ?? '' });
 
 		let resp: SendMsgWithSmartLinksResponse;
 		try {
@@ -79,7 +78,12 @@ export const sendMsgFromEditor = createAsyncThunk<SendMsgResult, SendMsgParamete
 				{
 					_jsns: 'urn:zimbraMail',
 					m: msg,
-					...(editor.isSmimeSign ? { sign: true, ...certificate } : {})
+					...(editor.isSmimeSign
+						? {
+								sign: true,
+								...getCertificate({ accountId: identity?.fromAddress ?? '' })
+							}
+						: {})
 				},
 				identity?.ownerAccount ?? undefined
 			);

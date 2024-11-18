@@ -21,7 +21,7 @@ describe('CertificateUploadModal', () => {
 				onConfirm={(): void => onConfirm()}
 			/>
 		);
-		const modalTitle = screen.getByText(/label\.upload_certificate/i);
+		const modalTitle = screen.getByText(/modal\.uploadCertificate\.uploadCertificate/i);
 		expect(modalTitle).toBeVisible();
 	});
 
@@ -48,7 +48,7 @@ describe('CertificateUploadModal', () => {
 			/>
 		);
 		const button = screen.getByRole('button', {
-			name: /label\.upload/i
+			name: /modal\.uploadCertificate\.upload/i
 		});
 		expect(button).toBeInTheDocument();
 	});
