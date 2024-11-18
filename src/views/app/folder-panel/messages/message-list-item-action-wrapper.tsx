@@ -8,6 +8,7 @@ import React, { ReactNode, useMemo } from 'react';
 import { ContainerProps } from '@zextras/carbonio-design-system';
 
 import { normalizeDropdownActionItem } from '../../../../helpers/actions';
+import { isDraft } from '../../../../helpers/folders';
 import { useMsgActions } from '../../../../hooks/actions/use-msg-actions';
 import { useTagDropdownItem } from '../../../../hooks/use-tag-dropdown-item';
 import { MailMessage } from '../../../../types';
@@ -64,6 +65,7 @@ export const MessageListItemActionWrapper = ({
 	} = useMsgActions({ message: item, deselectAll, shouldReplaceHistory, messagePreviewFactory });
 
 	const tagItem = useTagDropdownItem(applyTagDescriptor, item.tags);
+	const draftItem = isDraft(item.parent);
 
 	const dropdownItems = useMemo(
 		() =>
@@ -99,7 +101,7 @@ export const MessageListItemActionWrapper = ({
 				normalizeDropdownActionItem(editAsNewDescriptor),
 				normalizeDropdownActionItem(showOriginalDescriptor),
 				normalizeDropdownActionItem(downloadEmlDescriptor)
-			].filter((action) => !action.disabled),
+			].filter((action) => !action.disabled && !(draftItem && action.id === 'ForwardMenu')),
 		[
 			createAppointmentDescriptor,
 			deletePermanentlyDescriptor,
@@ -124,7 +126,8 @@ export const MessageListItemActionWrapper = ({
 			sendDraftDescriptor,
 			showOriginalDescriptor,
 			tagItem,
-			unflagDescriptor
+			unflagDescriptor,
+			draftItem
 		]
 	);
 
