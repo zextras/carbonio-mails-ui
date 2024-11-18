@@ -44,6 +44,7 @@ const isActionRequiringMessage = (action: EditViewActionsType): boolean =>
 			EditViewActions.REPLY,
 			EditViewActions.REPLY_ALL,
 			EditViewActions.FORWARD,
+			EditViewActions.FORWARD_AS_ATTACHMENT,
 			EditViewActions.EDIT_AS_NEW,
 			EditViewActions.EDIT_AS_DRAFT
 		],

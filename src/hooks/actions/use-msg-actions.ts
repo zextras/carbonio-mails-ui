@@ -12,6 +12,7 @@ import { useMsgDownloadEmlDescriptor } from './use-msg-download-eml';
 import { useMsgEditAsNewDescriptor } from './use-msg-edit-as-new';
 import { useMsgEditDraftDescriptor } from './use-msg-edit-draft';
 import { useMsgForwardDescriptor } from './use-msg-forward';
+import { useMsgForwardAsAttachmentDescriptor } from './use-msg-forward-as-attachment';
 import { useMsgMoveToFolderDescriptor } from './use-msg-move-to-folder';
 import { useMsgMoveToTrashDescriptor } from './use-msg-move-to-trash';
 import { useMsgPreviewOnSeparatedWindowDescriptor } from './use-msg-preview-on-separated-window';
@@ -42,6 +43,7 @@ type MessageActionsReturnType = {
 	replyDescriptor: UIActionDescriptor;
 	replyAllDescriptor: UIActionDescriptor;
 	forwardDescriptor: UIActionDescriptor;
+	forwardAsAttachmentDescriptor: UIActionDescriptor;
 	moveToTrashDescriptor: UIActionDescriptor;
 	deletePermanentlyDescriptor: UIActionDescriptor;
 	messageReadDescriptor: UIActionDescriptor;
@@ -75,6 +77,7 @@ export const useMsgActions = ({
 	const replyDescriptor = useMsgReplyDescriptor(message.id, folderId);
 	const replyAllDescriptor = useMsgReplyAllDescriptor(message.id, folderId);
 	const forwardDescriptor = useMsgForwardDescriptor(message.id, folderId);
+	const forwardAsAttachmentDescriptor = useMsgForwardAsAttachmentDescriptor([message.id], folderId);
 	const moveToTrashDescriptor = useMsgMoveToTrashDescriptor({
 		ids: [message.id],
 		deselectAll,
@@ -148,6 +151,7 @@ export const useMsgActions = ({
 			replyDescriptor,
 			replyAllDescriptor,
 			forwardDescriptor,
+			forwardAsAttachmentDescriptor,
 			moveToTrashDescriptor,
 			deletePermanentlyDescriptor,
 			messageReadDescriptor,
@@ -178,6 +182,7 @@ export const useMsgActions = ({
 			editDraftDescriptor,
 			flagDescriptor,
 			forwardDescriptor,
+			forwardAsAttachmentDescriptor,
 			markAsNotSpamDescriptor,
 			markAsSpamDescriptor,
 			messageReadDescriptor,

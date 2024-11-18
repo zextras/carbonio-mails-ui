@@ -32,6 +32,7 @@ import {
 	MailAttachmentParts,
 	MailMessage,
 	MailsEditorV2,
+	MsgAttach,
 	Participant,
 	SavedAttachment,
 	SoapDraftMessageObj,
@@ -313,6 +314,13 @@ export const composeAttachMpField = (
 	return result;
 };
 
+export const composeAttachMsgField = (attachments: Array<UnsavedAttachment>): Array<MsgAttach> =>
+	attachments
+		.filter((attachment) => attachment.mid)
+		.map((attachment) => ({
+			id: attachment.mid ?? ''
+		}));
+
 /*
  * Compose the "attach" field by listing the uploaded
  * files id in the "aid" field (comma separated) and
@@ -324,15 +332,18 @@ const composeAttachField = (editor: MailsEditorV2): MailAttachment | null => {
 		filterUnsavedStandardAttachment(editor.unsavedAttachments)
 	);
 	const attachMp = composeAttachMpField(filterSavedStandardAttachment(editor.savedAttachments));
+	const attachMsgs = composeAttachMsgField(
+		filterUnsavedStandardAttachment(editor.unsavedAttachments)
+	);
 
-	if (!attachAid && (!attachMp || !attachMp.length)) {
-		return null;
+	if (attachAid || attachMp?.length || attachMsgs?.length) {
+		return {
+			...(attachAid && { aid: attachAid }),
+			mp: attachMp,
+			m: attachMsgs
+		};
 	}
-
-	return {
-		...(attachAid && { aid: attachAid }),
-		mp: attachMp
-	};
+	return null;
 };
 
 /**
