@@ -3,9 +3,9 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { getMsg } from '../actions';
-import { selectMessage, selectMessages } from '../messages-slice';
 import { generateStore } from '../../tests/generators/store';
+import { getMsgAsyncThunk } from '../actions';
+import { selectMessage, selectMessages } from '../messages-slice';
 
 describe('Messages Slice', () => {
 	describe('GetMsg', () => {
@@ -14,7 +14,7 @@ describe('Messages Slice', () => {
 			const messages = selectMessages(store.getState());
 			expect(messages).toEqual({});
 			const msgId = '1';
-			await store.dispatch(getMsg({ msgId }));
+			await store.dispatch(getMsgAsyncThunk({ msgId }));
 			const state = store.getState();
 			const readMessage = selectMessage(state, msgId);
 			expect(readMessage).toBeDefined();

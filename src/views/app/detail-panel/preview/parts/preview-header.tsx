@@ -8,8 +8,6 @@ import React, {
 	ReactElement,
 	SyntheticEvent,
 	useCallback,
-	useContext,
-	useLayoutEffect,
 	useMemo,
 	useRef,
 	useState
@@ -22,15 +20,15 @@ import {
 	Icon,
 	Padding,
 	Row,
-	ThemeContext,
 	Tooltip,
 	Chip,
 	Dropdown,
 	ContainerProps,
 	IconButton,
-	getColor
+	getColor,
+	AvatarPropTypes
 } from '@zextras/carbonio-design-system';
-import { useTags, useUserAccounts, runSearch, t } from '@zextras/carbonio-shell-ui';
+import { useTags, useUserAccounts, runSearch, t, Tag } from '@zextras/carbonio-shell-ui';
 import {
 	capitalize,
 	every,
@@ -48,6 +46,8 @@ import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { ContactNameChip } from './contact-names-chips';
+import { MailInfoBlock } from './info-block/mail-info-block';
+import { MailMsgPreviewActions } from './mail-message-preview-actions';
 import MessageContactsList from './message-contact-list';
 import OnBehalfOfDisplayer from './on-behalf-of-displayer';
 import { ParticipantRole } from '../../../../../carbonio-ui-commons/constants/participants';
@@ -55,8 +55,7 @@ import { ZIMBRA_STANDARD_COLORS } from '../../../../../carbonio-ui-commons/const
 import { getTimeLabel, participantToString } from '../../../../../commons/utils';
 import { getNoIdentityPlaceholder } from '../../../../../helpers/identities';
 import { retrieveAttachmentsType } from '../../../../../store/editor-slice-utils';
-import type { MailMessage, MessageAction } from '../../../../../types';
-import { MailMsgPreviewActions } from '../../../../../ui-actions/mail-message-preview-actions';
+import type { MailMessage } from '../../../../../types';
 import { useTagExist } from '../../../../../ui-actions/tag-actions';
 
 const HoverContainer = styled(Container)<ContainerProps & { isExpanded: boolean }>`
@@ -80,9 +79,8 @@ type PreviewHeaderProps = {
 		onClick: (e: SyntheticEvent) => void;
 		open: boolean;
 		isExternalMessage?: boolean;
-		isInsideExtraWindow?: boolean;
+		messagePreviewFactory: () => React.JSX.Element;
 	};
-	actions: MessageAction[];
 };
 
 const fallbackContact = {
@@ -92,52 +90,34 @@ const fallbackContact = {
 	fullName: ''
 };
 
-const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps, actions }): ReactElement => {
-	const { message, onClick, open, isExternalMessage } = compProps;
+const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
+	const { message, onClick, open, isExternalMessage, messagePreviewFactory } = compProps;
 
 	const textRef = useRef<HTMLInputElement>(null);
 	const accounts = useUserAccounts();
 
-	const [_minWidth, _setMinWidth] = useState('');
 	const [isContactListExpand, setIsContactListExpand] = useState(false);
 	const mainContact = find(message.participants, ['type', 'f']) || fallbackContact;
-	const _onClick = useCallback((e) => !e.isDefaultPrevented() && onClick(e), [onClick]);
+	const _onClick = useCallback(
+		(e: React.MouseEvent) => !e.isDefaultPrevented() && onClick(e),
+		[onClick]
+	);
 	const attachments = retrieveAttachmentsType(message, 'attachment');
 	const senderContact = find(message.participants, ['type', 's']);
 	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 	// @ts-ignore
 	const { folderId } = useParams();
 
-	const contactListExpandCB = useCallback((contactListExpand) => {
+	const contactListExpandCB = useCallback((contactListExpand: boolean) => {
 		setIsContactListExpand(contactListExpand);
 	}, []);
-
-	const theme = useContext(ThemeContext);
-	const iconSize = useMemo(
-		() => parseInt(theme?.sizes.icon.large, 10),
-		[theme?.sizes?.icon?.large]
-	);
-	useLayoutEffect(() => {
-		let width = actions.length > 2 ? iconSize : 2 * iconSize;
-		if (message.hasAttachment && attachments.length > 0) width += iconSize;
-		if (message.flagged) width += iconSize;
-		if (textRef?.current?.clientWidth) width += textRef.current.clientWidth;
-		_setMinWidth(`${width}px`);
-	}, [
-		actions.length,
-		attachments.length,
-		iconSize,
-		message.hasAttachment,
-		message.flagged,
-		textRef?.current?.clientWidth
-	]);
 
 	const tagsFromStore = useTags();
 	const tags = useMemo(
 		() =>
 			reduce(
 				tagsFromStore,
-				(acc: any, v) => {
+				(acc: Tag[], v) => {
 					if (includes(message.tags, v.id)) {
 						acc.push({
 							...v,
@@ -172,6 +152,9 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps, actions }): ReactEle
 										name: tagNotInList.split(':')[1],
 										defaultValue: '{{name}} - Not in your tag list'
 									}),
+									// TODO: align the use of the property with the type exposed by the shell
+									// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+									// @ts-ignore
 									color: ZIMBRA_STANDARD_COLORS[0].hex,
 									customComponent: (
 										<Row takeAvailableSpace mainAlignment="flex-start">
@@ -231,13 +214,13 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps, actions }): ReactEle
 		[isTagInStore, message.tags, showMultiTagIcon]
 	);
 	const triggerSearch = useCallback(
-		(tagToSearch) =>
+		(tagToSearch: Tag) =>
 			runSearch(
 				[
 					{
 						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 						// @ts-ignore
-						avatarBackground: tagToSearch?.color || 0,
+						avatarBackground: tagToSearch?.color,
 						avatarIcon: 'Tag',
 						background: 'gray2',
 						hasAvatar: true,
@@ -351,7 +334,6 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps, actions }): ReactEle
 										whiteSpace: 'nowrap',
 										overflow: 'hidden'
 									}}
-									minWidth={_minWidth}
 								>
 									{showTagIcon && (
 										<Padding left="small">
@@ -389,7 +371,12 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps, actions }): ReactEle
 										)}
 									</Row>
 
-									{open && <MailMsgPreviewActions actions={actions} />}
+									{open && message && (
+										<MailMsgPreviewActions
+											message={message}
+											messagePreviewFactory={messagePreviewFactory}
+										/>
+									)}
 								</Row>
 							)}
 						</Container>
@@ -405,16 +392,24 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps, actions }): ReactEle
 						<Padding left="extrasmall">
 							<Text color="secondary" size="small" overflow="break-word">
 								{tagLabel}:
-								{map(tags, (tag) => (
-									<TagChip
-										label={tag?.label}
-										avatarBackground={tag.color}
-										background="gray2"
-										hasAvatar
-										avatarIcon="Tag"
-										onClick={(): void => triggerSearch(tag)}
-									/>
-								))}
+								{map(
+									tags,
+									(tag: {
+										label: string;
+										color: AvatarPropTypes['background'];
+										id: string;
+										name: string;
+									}) => (
+										<TagChip
+											label={tag?.label}
+											avatarBackground={tag.color}
+											background="gray2"
+											hasAvatar
+											avatarIcon="Tag"
+											onClick={(): void => triggerSearch(tag as Tag)}
+										/>
+									)
+								)}
 							</Text>
 						</Padding>
 					</Container>
@@ -440,6 +435,7 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps, actions }): ReactEle
 					/>
 				)}
 			</Container>
+			<MailInfoBlock msg={message} />
 		</HoverContainer>
 	);
 };

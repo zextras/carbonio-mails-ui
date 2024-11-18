@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { act, renderHook } from '@testing-library/react-hooks';
+import { act, renderHook, waitFor } from '@testing-library/react';
 import * as hooks from '@zextras/carbonio-shell-ui';
 import { ErrorSoapBodyResponse, QueryChip } from '@zextras/carbonio-shell-ui';
 import { noop } from 'lodash';
@@ -45,7 +45,7 @@ describe('search view hooks', () => {
 		// eslint-disable-next-line @typescript-eslint/ban-types
 		const useDisableSearch = (): [boolean, Function] => [false, noop];
 
-		const { result, waitFor } = renderHook(() =>
+		const { result } = renderHook(() =>
 			useRunSearch({
 				query: [queryChip],
 				updateQuery: noop,
@@ -82,7 +82,7 @@ describe('search view hooks', () => {
 		// eslint-disable-next-line @typescript-eslint/ban-types
 		const useDisableSearch = (): [boolean, Function] => [false, noop];
 
-		const { result, waitFor } = renderHook(() =>
+		const { result } = renderHook(() =>
 			useRunSearch({
 				query: [queryChip],
 				updateQuery: noop,
@@ -119,7 +119,7 @@ describe('search view hooks', () => {
 			})
 		);
 
-		const { result, waitFor } = renderHook(() =>
+		const { result } = renderHook(() =>
 			useRunSearch({
 				query: [
 					{
@@ -164,7 +164,7 @@ describe('search view hooks', () => {
 			searchResponse
 		);
 
-		const { waitFor } = renderHook(() =>
+		renderHook(() =>
 			useRunSearch({
 				query: [
 					{
@@ -360,7 +360,7 @@ describe('useLoadMore', () => {
 		);
 		renderHook(() => result.current());
 		expect(loadingMore.current).toBe(false);
-		expect(mockedSearch).not.toBeCalled();
+		expect(mockedSearch).not.toHaveBeenCalled();
 	});
 
 	it('should not call the API if loadingMore is true', async () => {
@@ -378,6 +378,6 @@ describe('useLoadMore', () => {
 		);
 		renderHook(() => result.current());
 		expect(loadingMore.current).toBe(true);
-		expect(mockedSearch).not.toBeCalled();
+		expect(mockedSearch).not.toHaveBeenCalled();
 	});
 });

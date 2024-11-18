@@ -4,13 +4,12 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { API_REQUEST_STATUS } from '../../constants';
+import { type API_REQUEST_STATUS } from '../../constants';
 import type { AppDispatch } from '../../store/redux';
 import type { SavedAttachment, UnsavedAttachment } from '../attachments';
 import type { Conversation } from '../conversations';
-import { AttachmentUploadProcessStatus, MailsEditorV2 } from '../editor';
-import { MailMessage } from '../messages';
-import { SoapIncompleteMessage } from '../soap';
+import { type AttachmentUploadProcessStatus, type MailsEditorV2 } from '../editor';
+import { type MailMessage } from '../messages';
 
 export type MailsStateType = {
 	conversations: ConversationsStateType;
@@ -82,6 +81,7 @@ export type EditorsStateTypeV2 = {
 	setMessagesStoreDispatch: (id: MailsEditorV2['id'], dispatch: AppDispatch) => void;
 	toggleSmartLink: (id: MailsEditorV2['id'], partName: string) => void;
 	setSignatureId: (id: MailsEditorV2['id'], signId: MailsEditorV2['signatureId']) => void;
+	setIsSmimeSign: (id: MailsEditorV2['id'], isSmimeSign: MailsEditorV2['isSmimeSign']) => void;
 };
 
 export type MsgStateType = {

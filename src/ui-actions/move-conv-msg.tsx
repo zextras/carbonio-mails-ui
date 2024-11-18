@@ -6,8 +6,9 @@
 import React, { ReactElement, useCallback, useMemo, useState } from 'react';
 
 import { Container, Input, Padding, Text } from '@zextras/carbonio-design-system';
-import { replaceHistory, t } from '@zextras/carbonio-shell-ui';
+import { replaceHistory } from '@zextras/carbonio-shell-ui';
 import { noop, some } from 'lodash';
+import { useTranslation } from 'react-i18next';
 
 import ModalFooter from '../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../carbonio-ui-commons/components/modals/modal-header';
@@ -38,6 +39,7 @@ const MoveConvMessage = ({
 	folderId,
 	dispatch
 }: MoveConvMessageProps): ReactElement => {
+	const [t] = useTranslation();
 	const { createSnackbar } = useUiUtilities();
 	const [inputValue, setInputValue] = useState('');
 	const [folderDestination, setFolderDestination] = useState<Folder | undefined>();
@@ -51,7 +53,7 @@ const MoveConvMessage = ({
 	}, [onClose]);
 
 	const onConfirmConvMove = useCallback(
-		(id) => {
+		(id: string | undefined) => {
 			dispatch(
 				convAction({
 					operation: `move`,
@@ -65,7 +67,7 @@ const MoveConvMessage = ({
 						createSnackbar({
 							key: `edit`,
 							replace: true,
-							type: 'info',
+							severity: 'info',
 							label: isRestore
 								? t('messages.snackbar.email_restored', 'E-mail restored in destination folder')
 								: t('messages.snackbar.conversation_move', 'Conversation successfully moved'),
@@ -79,7 +81,7 @@ const MoveConvMessage = ({
 						createSnackbar({
 							key: `edit`,
 							replace: true,
-							type: 'error',
+							severity: 'error',
 							label: t('label.error_try_again', 'Something went wrong, please try again'),
 							autoHideTimeout: 3000,
 							hideButton: true
@@ -90,11 +92,11 @@ const MoveConvMessage = ({
 				})
 				.catch(() => noop);
 		},
-		[dispatch, selectedIDs, onCloseModal, deselectAll, createSnackbar, isRestore]
+		[dispatch, selectedIDs, onCloseModal, deselectAll, createSnackbar, isRestore, t]
 	);
 
 	const onConfirmMessageMove = useCallback(
-		(newFolderId = 0) => {
+		(newFolderId = '0') => {
 			dispatch(
 				msgAction({
 					operation: `move`,
@@ -108,7 +110,7 @@ const MoveConvMessage = ({
 						createSnackbar({
 							key: `edit`,
 							replace: true,
-							type: 'info',
+							severity: 'info',
 							label: isRestore
 								? t('messages.snackbar.email_restored', 'E-mail restored in destination folder')
 								: t('messages.snackbar.message_move', 'Message successfully moved'),
@@ -119,7 +121,7 @@ const MoveConvMessage = ({
 						createSnackbar({
 							key: `edit`,
 							replace: true,
-							type: 'error',
+							severity: 'error',
 							label: t('label.error_try_again', 'Something went wrong, please try again'),
 							autoHideTimeout: 3000,
 							hideButton: true
@@ -130,7 +132,7 @@ const MoveConvMessage = ({
 				})
 				.catch(() => noop);
 		},
-		[dispatch, selectedIDs, onCloseModal, deselectAll, createSnackbar, isRestore]
+		[dispatch, selectedIDs, onCloseModal, deselectAll, createSnackbar, isRestore, t]
 	);
 
 	const hasSameName = useMemo(
@@ -152,7 +154,7 @@ const MoveConvMessage = ({
 			hasSameName
 				? t('folder_panel.modal.new.input.name_exist')
 				: t('folder_panel.modal.new.input.name', 'Folder Name'),
-		[hasSameName]
+		[hasSameName, t]
 	);
 
 	const onConfirm = useCallback(() => {
@@ -169,7 +171,7 @@ const MoveConvMessage = ({
 					createSnackbar({
 						key: `edit`,
 						replace: true,
-						type: 'error',
+						severity: 'error',
 						label: t('label.error_try_again', 'Something went wrong, please try again'),
 						autoHideTimeout: 3000,
 						hideButton: true
@@ -185,7 +187,8 @@ const MoveConvMessage = ({
 		inputValue,
 		isMessageView,
 		onConfirmConvMove,
-		onConfirmMessageMove
+		onConfirmMessageMove,
+		t
 	]);
 
 	const headerTitle = useMemo(() => {
@@ -198,7 +201,7 @@ const MoveConvMessage = ({
 				: t('folder_panel.modal.move.title_modal_conversation', 'Move Conversation');
 		}
 		return t('folder_panel.modal.new.title', 'Create a new folder');
-	}, [isMessageView, isRestore, moveConvModal]);
+	}, [isMessageView, isRestore, moveConvModal, t]);
 
 	const footerConfirm = useMemo(() => {
 		if (moveConvModal) {
@@ -234,7 +237,7 @@ const MoveConvMessage = ({
 		return isRestore
 			? t('folder_panel.modal.new.restore_create_footer', 'Create and Restore')
 			: t('folder_panel.modal.new.create_footer', 'Create and Move');
-	}, [isRestore, moveConvModal]);
+	}, [isRestore, moveConvModal, t]);
 
 	const modalFooterTooltip = isDisabled
 		? ''

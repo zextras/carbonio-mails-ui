@@ -34,7 +34,10 @@ export const getApplyFilterUIAction = (): UIAction<ApplyFilterUIActionExecutionP
 				size: 'medium',
 				children: (
 					<ModalManager>
-						<ApplyFilterModal criteria={criteria} modalId={id}></ApplyFilterModal>
+						<ApplyFilterModal
+							criteria={criteria}
+							onClose={() => uiUtilities.closeModal(id)}
+						></ApplyFilterModal>
 					</ModalManager>
 				)
 			},

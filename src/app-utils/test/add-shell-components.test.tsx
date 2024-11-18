@@ -5,16 +5,22 @@
  */
 
 import { addRoute, addSearchView, addSettingsView } from '@zextras/carbonio-shell-ui';
+import { HttpResponse } from 'msw';
 
+import { createAPIInterceptor } from '../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { mockAdvancedAccountAPI } from '../../tests/utils';
 import { addComponentsToShell } from '../add-shell-components';
+
+beforeEach(() => {
+	createAPIInterceptor('get', 'zx/login/v3/account', HttpResponse.json({}));
+});
 
 describe('addShellComponents', () => {
 	const label = 'label.app_name';
 	it('should call addRoute with the correct parameters', async () => {
 		await addComponentsToShell();
 
-		expect(addRoute).toBeCalledWith(
+		expect(addRoute).toHaveBeenCalledWith(
 			expect.objectContaining({
 				route: 'mails',
 				position: 100,
@@ -29,7 +35,7 @@ describe('addShellComponents', () => {
 	it('should call addSearchView with the correct parameters', async () => {
 		await addComponentsToShell();
 
-		expect(addSearchView).toBeCalledWith(
+		expect(addSearchView).toHaveBeenCalledWith(
 			expect.objectContaining({
 				route: 'mails',
 				component: expect.anything(),
@@ -40,7 +46,7 @@ describe('addShellComponents', () => {
 	it('should call addBoardView with the correct parameters', async () => {
 		await addComponentsToShell();
 
-		expect(addSearchView).toBeCalledWith(
+		expect(addSearchView).toHaveBeenCalledWith(
 			expect.objectContaining({
 				route: 'mails',
 				component: expect.anything()
@@ -52,7 +58,7 @@ describe('addShellComponents', () => {
 
 		await addComponentsToShell();
 
-		expect(addSettingsView).toBeCalledWith(
+		expect(addSettingsView).toHaveBeenCalledWith(
 			expect.objectContaining({
 				subSections: [
 					{ id: 'displaying_messages', label: 'settings.label.display_messages' },
@@ -73,7 +79,7 @@ describe('addShellComponents', () => {
 
 		await addComponentsToShell();
 
-		expect(addSettingsView).toBeCalledWith(
+		expect(addSettingsView).toHaveBeenCalledWith(
 			expect.objectContaining({
 				route: 'mails',
 				label,

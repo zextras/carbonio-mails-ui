@@ -19,7 +19,7 @@ import { EditView, EditViewHandle } from './edit-view';
 import { EditViewBoardContext } from './edit-view-board';
 import { EditViewActions } from '../../../../constants';
 import { useAppDispatch, useAppSelector } from '../../../../hooks/redux';
-import { getMsg } from '../../../../store/actions';
+import { getMsgAsyncThunk } from '../../../../store/actions';
 import { selectMessage } from '../../../../store/messages-slice';
 import { addEditor, useEditorSubject } from '../../../../store/zustand/editor';
 import { generateEditor } from '../../../../store/zustand/editor/editor-generators';
@@ -44,6 +44,7 @@ const isActionRequiringMessage = (action: EditViewActionsType): boolean =>
 			EditViewActions.REPLY,
 			EditViewActions.REPLY_ALL,
 			EditViewActions.FORWARD,
+			EditViewActions.FORWARD_AS_ATTACHMENT,
 			EditViewActions.EDIT_AS_NEW,
 			EditViewActions.EDIT_AS_DRAFT
 		],
@@ -182,7 +183,7 @@ const EditViewController: FC = () => {
 	 */
 	useEffect(() => {
 		if (isMessageLoadingRequired && !!id) {
-			messagesStoreDispatch(getMsg({ msgId: id }));
+			messagesStoreDispatch(getMsgAsyncThunk({ msgId: id }));
 		}
 	}, [id, isMessageLoadingRequired, messagesStoreDispatch]);
 

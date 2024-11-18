@@ -5,11 +5,11 @@
  */
 import React, { useCallback, useMemo, useState } from 'react';
 
-import { act } from '@testing-library/react';
+import { within } from '@testing-library/react';
 import * as shell from '@zextras/carbonio-shell-ui';
 import { times } from 'lodash';
 
-import { screen, setupTest, within } from '../../../carbonio-ui-commons/test/test-setup';
+import { screen, setupTest } from '../../../carbonio-ui-commons/test/test-setup';
 import { TESTID_SELECTORS } from '../../../tests/constants';
 import { buildSignature } from '../../../tests/generators/signatures';
 import { handleGetSignaturesRequest } from '../../../tests/mocks/network/msw/handle-get-signatures';
@@ -118,9 +118,7 @@ describe('Signature settings', () => {
 
 			const list = screen.getByTestId(TESTID_SELECTORS.signaturesList);
 			const listItem = await within(list).findByText(signature.label);
-			await act(async () => {
-				await user.hover(listItem);
-			});
+			await user.hover(listItem);
 			const button = await screen.findByRole('button', { name: 'label.delete' });
 			expect(button).toBeVisible();
 		});
@@ -162,9 +160,7 @@ describe('Signature settings', () => {
 
 			const list = screen.getByTestId(TESTID_SELECTORS.signaturesList);
 			const listItem = await within(list).findByText(signatures[1].name);
-			await act(async () => {
-				await user.click(listItem);
-			});
+			await user.click(listItem);
 
 			const nameInput = screen.getByRole('textbox', { name: 'signatures.name' });
 			expect(nameInput).toHaveValue(signatures[1].name);
@@ -187,13 +183,9 @@ describe('Signature settings', () => {
 
 			const list = screen.getByTestId(TESTID_SELECTORS.signaturesList);
 			const listItem = await within(list).findByText(signature.name);
-			await act(async () => {
-				await user.hover(listItem);
-			});
+			await user.hover(listItem);
 
-			await act(async () => {
-				await user.click(screen.getByRole('button', { name: 'label.delete' }));
-			});
+			await user.click(screen.getByRole('button', { name: 'label.delete' }));
 
 			expect(within(list).queryByText(signature.label)).not.toBeInTheDocument();
 		});
@@ -209,13 +201,9 @@ describe('Signature settings', () => {
 
 			const list = screen.getByTestId(TESTID_SELECTORS.signaturesList);
 			const listItem = await within(list).findByText(signature.name);
-			await act(async () => {
-				await user.hover(listItem);
-			});
+			await user.hover(listItem);
 
-			await act(async () => {
-				await user.click(screen.getByRole('button', { name: 'label.delete' }));
-			});
+			await user.click(screen.getByRole('button', { name: 'label.delete' }));
 
 			expect(screen.getByRole('textbox', { name: 'signatures.name' })).not.toHaveValue(
 				signature.name
@@ -251,9 +239,7 @@ describe('Signature settings', () => {
 
 			await screen.findByText(oldSignature.name, undefined, { timeout: FIND_TIMEOUT });
 
-			await act(async () => {
-				await user.click(screen.getByRole('button', { name: 'signatures.add_signature' }));
-			});
+			await user.click(screen.getByRole('button', { name: 'signatures.add_signature' }));
 
 			expect(screen.getByText('label.enter_name')).toBeVisible();
 		});
@@ -263,15 +249,11 @@ describe('Signature settings', () => {
 			handleGetSignaturesRequest([oldSignature]);
 			const { user } = setupTest(<SettingsViewMock preloadedSignatures={[oldSignature]} />);
 
-			act(() => {
-				jest.advanceTimersByTime(30000);
-			});
+			await jest.advanceTimersByTime(30000);
 
 			await screen.findByText(oldSignature.name, undefined, { timeout: FIND_TIMEOUT });
 
-			await act(async () => {
-				await user.click(screen.getByRole('button', { name: 'signatures.add_signature' }));
-			});
+			await user.click(screen.getByRole('button', { name: 'signatures.add_signature' }));
 
 			expect(screen.getByText('label.enter_name')).toBeVisible();
 		});

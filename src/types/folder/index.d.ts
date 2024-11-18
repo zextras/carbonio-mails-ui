@@ -8,6 +8,7 @@ import React, { ReactNode } from 'react';
 
 import { ContainerProps } from '@zextras/carbonio-design-system';
 
+import { UIActionDescriptor } from '../actions';
 import { Conversation } from '../conversations';
 import { IncompleteMessage, MailMessage } from '../messages';
 import { SearchRequestStatus } from '../state';
@@ -53,13 +54,15 @@ export type MsgListDraggableItemType = {
 };
 export type ListItemActionWrapperProps = {
 	children?: ReactNode;
-	onClick?: ContainerProps['onClick'];
+	onClick?: MouseEventHandler<HTMLDivElement>;
 	onDoubleClick?: ContainerProps['onDoubleClick'];
 	messagesToRender?: Array<IncompleteMessage>;
 	hoverTooltipLabel?: string;
 	active?: boolean;
 	item: Conversation | MailMessage;
 	deselectAll: () => void;
+	hoverActions: UIActionDescriptor[];
+	dropdownActions: UIActionDescriptor[];
 };
 
 export type ItemAvatarType = {

@@ -71,15 +71,23 @@ const MessageCondition: FC<ComponentProps> = ({ t, activeIndex, defaultValue }):
 		}
 	}, [selectValue, activeIndex, newFilters, setNewFilters, loadData, is]);
 
-	const handleIsChange = useCallback((arg) => {
+	const handleIsChange = useCallback((arg: string) => {
 		setIs(arg);
 		setLoadData(true);
 	}, []);
 
-	const handleOptionChange = useCallback((arg) => {
-		setSelectValue(arg);
-		setLoadData(true);
-	}, []);
+	const handleOptionChange = useCallback(
+		(arg: {
+			value: {
+				where: string;
+			};
+			key: string;
+		}) => {
+			setSelectValue(arg);
+			setLoadData(true);
+		},
+		[]
+	);
 
 	const defaultIsOption = useMemo(() => {
 		if (defaultValue) {

@@ -298,6 +298,10 @@ export const MessageActionsDescriptors = {
 		id: 'message-forward',
 		desc: 'Forward'
 	},
+	FORWARD_AS_ATTACHMENT: {
+		id: 'message-forward_as_attachment',
+		desc: 'Forward as attachment'
+	},
 	EDIT_AS_NEW: {
 		id: 'message-edit_as_new',
 		desc: 'Edit as new'
@@ -337,6 +341,10 @@ export const MessageActionsDescriptors = {
 	CREATE_APPOINTMENT: {
 		id: 'create-appointment',
 		desc: 'Create Appointment'
+	},
+	APPLY_TAG: {
+		id: 'apply-tag',
+		desc: 'Apply tag'
 	}
 } as const;
 
@@ -376,6 +384,38 @@ export const ConversationActionsDescriptors = {
 	FORWARD: {
 		id: 'conversation-forward',
 		desc: 'Forward'
+	},
+	DELETE_PERMANENTLY: {
+		id: 'delete-permanently',
+		desc: 'Delete permanently'
+	},
+	MARK_AS_SPAM: {
+		id: 'conversation-mark_as_spam',
+		desc: 'Mark as spam'
+	},
+	MARK_AS_NOT_SPAM: {
+		id: 'conversation-mark_as_not_spam',
+		desc: 'Not spam'
+	},
+	APPLY_TAG: {
+		id: 'conversation-apply-tag',
+		desc: 'Apply tag'
+	},
+	MOVE: {
+		id: 'conversation-move',
+		desc: 'Move'
+	},
+	RESTORE: {
+		id: 'conversation-restore',
+		desc: 'Restore'
+	},
+	PRINT: {
+		id: 'conversation-print',
+		desc: 'Print'
+	},
+	SHOW_SOURCE: {
+		id: 'conversation-show_original',
+		desc: 'Show original'
 	}
 } as const;
 
@@ -448,6 +488,7 @@ export const EditViewActions = {
 	REPLY: 'reply',
 	REPLY_ALL: 'replyAll',
 	FORWARD: 'forward',
+	FORWARD_AS_ATTACHMENT: 'forwardAsAttachment',
 	MAIL_TO: 'mailTo',
 	COMPOSE: 'compose',
 	PREFILL_COMPOSE: 'prefillCompose',
@@ -511,3 +552,25 @@ export const BACKUP_SEARCH_STATUS = {
 	loading: 'loading',
 	completed: 'completed'
 } as const;
+
+export const MAIL_VERIFICATION_HEADERS = {
+	from: 'From',
+	authenticatorHeaders: 'Authentication-Results',
+	sensitivity: 'Sensitivity',
+	listId: 'List-ID',
+	listUnsubscribe: 'List-Unsubscribe',
+	zimbraDL: 'X-Zimbra-DL',
+	messageId: 'Message-Id',
+	creationDate: 'Date'
+} as const;
+
+export const MAIL_SENSITIVITY_HEADER = {
+	personal: 'Personal',
+	private: 'Private',
+	companyConfidential: 'Company-Confidential'
+} as const;
+
+export const MAIL_SENSITIVITY_HEADER_VALUES = ['Personal', 'Private', 'Company-Confidential'];
+
+export const SENSITIVITY_VALUES = ['Private', 'Company-Confidential'] as const;
+export const VALID_MAIL_AUTHENTICATION_HEADERS = ['dkim', 'spf', 'dmarc'] as const;

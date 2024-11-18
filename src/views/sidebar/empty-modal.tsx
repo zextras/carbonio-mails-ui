@@ -25,7 +25,7 @@ export const EmptyModal: FC<ModalProps> = ({ folder, onClose }) => {
 				createSnackbar({
 					key: `trash`,
 					replace: true,
-					type: 'info',
+					severity: 'info',
 					label:
 						getFolderIdParts(folder.id).id === FOLDERS.TRASH
 							? t('messages.snackbar.folder_empty', 'Trash successfully emptied')
@@ -37,7 +37,7 @@ export const EmptyModal: FC<ModalProps> = ({ folder, onClose }) => {
 				createSnackbar({
 					key: `trash`,
 					replace: true,
-					type: 'error',
+					severity: 'error',
 					label: t('label.error_try_again', 'Something went wrong, please try again.'),
 					autoHideTimeout: 3000,
 					hideButton: true

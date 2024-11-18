@@ -72,7 +72,7 @@ const generateConversation = ({
 	messages,
 	messageGenerationCount = 1,
 	tags = []
-}: ConversationGenerationParams): Conversation => {
+}: ConversationGenerationParams = {}): Conversation => {
 	const finalFrom =
 		from ?? generateRandomParticipants(messageGenerationCount, ParticipantRole.FROM);
 	const finalTo = to ?? generateRandomParticipants(messageGenerationCount, ParticipantRole.TO);

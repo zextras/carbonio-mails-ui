@@ -23,6 +23,7 @@ import DropZoneAttachment from './dropzone-attachment';
 import { EditAttachmentsBlock } from './edit-attachments-block';
 import { createEditBoard } from './edit-view-board';
 import { AddAttachmentsDropdown } from './parts/add-attachments-dropdown';
+import { CertificateUploadModal } from './parts/certificate-upload-modal';
 import { ChangeSignaturesDropdown } from './parts/change-signatures-dropdown';
 import { useKeepOrDiscardDraft } from './parts/delete-draft';
 import { EditViewDraftSaveInfo } from './parts/edit-view-draft-save-info';
@@ -37,7 +38,12 @@ import { WarningBanner } from './parts/warning-banner';
 import { GapContainer, GapRow } from '../../../../commons/gap-container';
 import { EDIT_VIEW_CLOSING_REASONS, EditViewActions, TIMEOUTS } from '../../../../constants';
 import { buildArrayFromFileList } from '../../../../helpers/files';
-import { getAvailableAddresses, getIdentitiesDescriptors } from '../../../../helpers/identities';
+import {
+	getAvailableAddresses,
+	getIdentitiesDescriptors,
+	getIdentityDescriptor
+} from '../../../../helpers/identities';
+import { Certificate, useCertificatesStore } from '../../../../store/zustand/certificates/store';
 import {
 	useEditorAutoSendTime,
 	useEditorDraftSave,
@@ -46,7 +52,9 @@ import {
 	useEditorAttachments,
 	deleteEditor,
 	useEditorDid,
-	useEditorsStore
+	useEditorsStore,
+	useEditorIsSmimeSign,
+	useEditorIdentityId
 } from '../../../../store/zustand/editor';
 import { EditViewClosingReasons } from '../../../../types';
 import { updateEditorWithSmartLinks } from '../../../../ui-actions/utils';
@@ -119,10 +127,25 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 	const [isMailSizeWarning, setIsMailSizeWarning] = useState<boolean>(false);
 	const { status: saveDraftAllowedStatus, saveDraft } = useEditorDraftSave(editorId);
 	const { did: draftId } = useEditorDid(editorId);
+	const { identityId } = useEditorIdentityId(editorId);
+	const identityEmailAddress = getIdentityDescriptor(identityId)?.fromAddress;
+	const { isSmimeSign, setIsSmimeSign } = useEditorIsSmimeSign(editorId);
+	const getCertificate = useCertificatesStore((state) => state.getCertificate);
 
 	useEffect(() => {
 		if (!draftId) saveDraft();
 	}, [draftId, saveDraft]);
+
+	useEffect(() => {
+		if (identityEmailAddress && isSmimeSign) {
+			const certificate = getCertificate(identityEmailAddress);
+			if (certificate) {
+				setIsSmimeSign(true);
+			} else {
+				setIsSmimeSign(false);
+			}
+		}
+	}, [identityEmailAddress, getCertificate, setIsSmimeSign, isSmimeSign]);
 
 	const { status: sendAllowedStatus, send: sendMessage } = useEditorSend(editorId);
 	const draftSaveProcessStatus = useEditorDraftSaveProcessStatus(editorId);
@@ -172,7 +195,7 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 			createSnackbar({
 				key: 'send',
 				replace: true,
-				type: 'info',
+				severity: 'info',
 				label: t('messages.snackbar.sending_mail_in_count', {
 					count: countdown,
 					defaultValue_one: 'Sending your message in {{count}} second',
@@ -197,7 +220,7 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 		createSnackbar({
 			key: `mail-${editorId}`,
 			replace: true,
-			type: 'error',
+			severity: 'error',
 			label: t('label.error_try_again', 'Something went wrong, please try again'),
 			autoHideTimeout: TIMEOUTS.SNACKBAR_DEFAULT_TIMEOUT,
 			hideButton: true
@@ -212,7 +235,7 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 		createSnackbar({
 			key: `mail-${editorId}`,
 			replace: true,
-			type: 'success',
+			severity: 'success',
 			label: t('messages.snackbar.mail_sent', 'Message sent'),
 			autoHideTimeout: TIMEOUTS.SNACKBAR_DEFAULT_TIMEOUT,
 			hideButton: true
@@ -329,6 +352,56 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 		createSmartLinksAction
 	]);
 
+	const addCertificate = useCertificatesStore((state) => state.addCertificate);
+	const onCertificateUploadConfirm = useCallback(
+		(certificate: Certificate) => {
+			if (identityEmailAddress) {
+				addCertificate(identityEmailAddress, certificate);
+				setIsSmimeSign(true);
+			}
+		},
+		[addCertificate, identityEmailAddress, setIsSmimeSign]
+	);
+
+	const onSmimeOptionChange = useCallback(
+		(isSmimeSet: boolean): void => {
+			if (isSmimeSet && identityEmailAddress) {
+				const certificate = getCertificate(identityEmailAddress);
+				if (certificate) {
+					setIsSmimeSign(true);
+				} else {
+					const id = Date.now().toString();
+					createModal(
+						{
+							id,
+							size: 'medium',
+							children: (
+								<Container crossAlignment="baseline">
+									<CertificateUploadModal
+										emailAddress={identityEmailAddress}
+										onConfirm={onCertificateUploadConfirm}
+										onClose={(): void => closeModal?.(id)}
+									/>
+								</Container>
+							)
+						},
+						true
+					);
+				}
+			} else {
+				setIsSmimeSign(false);
+			}
+		},
+		[
+			closeModal,
+			createModal,
+			getCertificate,
+			identityEmailAddress,
+			onCertificateUploadConfirm,
+			setIsSmimeSign
+		]
+	);
+
 	const onSendLaterClick = useCallback(
 		(scheduledTime: number): void => {
 			const onConfirmCallback = async (): Promise<void> => {
@@ -395,7 +468,10 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 					<GapRow mainAlignment={'flex-end'} gap={'medium'}>
 						<MemoizedAddAttachmentsDropdown editorId={editorId} />
 						<MemoizedChangeSignaturesDropdown editorId={editorId} />
-						<MemoizedOptionsDropdown editorId={editorId} />
+						<MemoizedOptionsDropdown
+							editorId={editorId}
+							onSmimeOptionChange={onSmimeOptionChange}
+						/>
 						<Tooltip
 							label={saveDraftAllowedStatus?.reason}
 							disabled={saveDraftAllowedStatus?.allowed}

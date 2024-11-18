@@ -29,7 +29,7 @@ export type AttachmentType = {
 	size: number;
 	link: string;
 	downloadlink: string;
-	message: MailMessage;
+	messageId: string;
 	isExternalMessage?: boolean;
 	part: string;
 	iconColors: IconColors;

@@ -22,7 +22,14 @@ export const EditAttachmentsBlock: FC<{
 		useEditorAttachments(editorId);
 
 	const allAttachments = useMemo<Array<UnsavedAttachment | SavedAttachment>>(
-		() => [...unsavedStandardAttachments, ...savedStandardAttachments],
+		() => [
+			...unsavedStandardAttachments.filter(
+				(item) => item.contentType !== 'application/pkcs7-signature'
+			),
+			...savedStandardAttachments.filter(
+				(item) => item.contentType !== 'application/pkcs7-signature'
+			)
+		],
 		[savedStandardAttachments, unsavedStandardAttachments]
 	);
 

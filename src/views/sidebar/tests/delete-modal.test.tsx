@@ -6,7 +6,7 @@
 import React from 'react';
 
 import { faker } from '@faker-js/faker';
-import { screen } from '@testing-library/react';
+import { act, screen } from '@testing-library/react';
 
 import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
 import { getFolder } from '../../../carbonio-ui-commons/store/zustand/folder';
@@ -114,7 +114,10 @@ describe('delete-modal', () => {
 			name: /label\.cancel/i
 		});
 		expect(cancelButton).toBeEnabled();
-		await user.click(cancelButton);
+
+		await act(async () => {
+			await user.click(cancelButton);
+		});
 	});
 
 	test('API is called with the proper parameters to delete normal folder excepting trash', async () => {
@@ -135,7 +138,10 @@ describe('delete-modal', () => {
 		expect(okButton).toBeEnabled();
 		const wipeInterceptor = createSoapAPIInterceptor<{ action: SoapFolderAction }>('FolderAction');
 
-		await user.click(okButton);
+		await act(async () => {
+			await user.click(okButton);
+		});
+
 		const { action } = await wipeInterceptor;
 
 		expect(action.id).toBe(FOLDERS.INBOX);
@@ -159,8 +165,9 @@ describe('delete-modal', () => {
 		});
 		expect(okButton).toBeEnabled();
 		const wipeInterceptor = createSoapAPIInterceptor<{ action: SoapFolderAction }>('FolderAction');
-
-		await user.click(okButton);
+		await act(async () => {
+			await user.click(okButton);
+		});
 		const { action } = await wipeInterceptor;
 
 		expect(action.id).toBe(FOLDERS.TRASH);
@@ -190,7 +197,9 @@ describe('delete-modal', () => {
 		expect(okButton).toBeEnabled();
 		const wipeInterceptor = createSoapAPIInterceptor<{ action: SoapFolderAction }>('FolderAction');
 
-		await user.click(okButton);
+		await act(async () => {
+			await user.click(okButton);
+		});
 		const { action } = await wipeInterceptor;
 
 		expect(action.id).toBe(sharedAccountSecondFolder.id);

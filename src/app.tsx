@@ -12,12 +12,12 @@ import { addComponentsToShell } from './app-utils/add-shell-components';
 import { registerShellActions } from './app-utils/register-shell-actions';
 import { registerShellIntegrations } from './app-utils/register-shell-integrations';
 import { toggleBackupSearchComponent } from './app-utils/toggle-backup-search-component';
-import { FOLDER_VIEW } from './carbonio-ui-commons/constants';
-import { useFoldersController } from './carbonio-ui-commons/hooks/use-folders-controller';
 import { StoreProvider } from './store/redux';
 import { useBackupSearchStore } from './store/zustand/backup-search/store';
 import { GlobalExtraWindowManager } from './views/app/extra-windows/global-extra-window-manager';
 import { GlobalModalManager } from './views/global-modal-manager';
+import { InitializeFolders } from './views/sidebar/initialize-folders';
+import { InitializeServicesCatalog } from './views/sidebar/initialize-services-catalog';
 import { SyncDataHandler } from './views/sidebar/sync-data-handler';
 
 const App = (): React.JSX.Element => {
@@ -33,13 +33,13 @@ const App = (): React.JSX.Element => {
 		toggleBackupSearchComponent(hasBackupSearchMessages);
 	}, [hasBackupSearchMessages]);
 
-	useFoldersController(FOLDER_VIEW.message);
-
 	return (
 		<StoreProvider>
 			<GlobalModalManager>
 				<GlobalExtraWindowManager>
+					<InitializeFolders />
 					<SyncDataHandler />
+					<InitializeServicesCatalog />
 				</GlobalExtraWindowManager>
 			</GlobalModalManager>
 		</StoreProvider>

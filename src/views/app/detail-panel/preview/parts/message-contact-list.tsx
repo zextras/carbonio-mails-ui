@@ -40,7 +40,7 @@ const MessageContactList: FC<{
 	const [open, setOpen] = useState(false);
 
 	const toggleOpen = useCallback(
-		(e) => {
+		(e: React.MouseEvent | MouseEvent | KeyboardEvent) => {
 			e.preventDefault();
 			setOpen((o) => {
 				contactListExpandCB(!o);

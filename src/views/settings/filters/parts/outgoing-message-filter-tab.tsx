@@ -4,16 +4,19 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { FC, ReactElement, useMemo, useContext } from 'react';
-import { List, Container } from '@zextras/carbonio-design-system';
+
+import { Container } from '@zextras/carbonio-design-system';
 import type { TFunction } from 'i18next';
 import { filter, map } from 'lodash';
-import FilterItem from './filter-item';
-import { useFilterSelection } from './use-filter-selection';
-import Heading from '../../components/settings-heading';
-import LoadingShimmer from './loading-shimmer';
+
 import { FilterContext } from './filter-context';
-import { modifyOutgoingFilterRules } from '../../../../store/actions/modify-filter-rules';
+import FilterItem from './filter-item';
+import LoadingShimmer from './loading-shimmer';
 import OutgoingFilterActions from './outgoing-filters-actions';
+import { useFilterSelection } from './use-filter-selection';
+import { modifyOutgoingFilterRules } from '../../../../store/actions/modify-filter-rules';
+import Heading from '../../components/settings-heading';
+import { ListOld } from '../../list-old';
 
 type ComponentProps = {
 	t: TFunction;
@@ -66,7 +69,7 @@ const OutgoingMsgFilterTab: FC<ComponentProps> = ({ t, selectedFilterType }): Re
 					{outgoingLoading ? (
 						<LoadingShimmer />
 					) : (
-						<List
+						<ListOld
 							items={activeList.list}
 							selected={activeList.selected}
 							ItemComponent={FilterItem}
@@ -87,7 +90,7 @@ const OutgoingMsgFilterTab: FC<ComponentProps> = ({ t, selectedFilterType }): Re
 					{outgoingLoading ? (
 						<LoadingShimmer />
 					) : (
-						<List
+						<ListOld
 							items={availableList.list}
 							selected={availableList.selected}
 							ItemComponent={FilterItem}

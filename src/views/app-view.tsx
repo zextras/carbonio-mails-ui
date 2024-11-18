@@ -46,7 +46,11 @@ const AppView: FC = () => {
 	}
 
 	useEffect(() => {
-		setAppContext({ isMessageView, count, setCount });
+		setAppContext({
+			isMessageView,
+			count,
+			setCount
+		});
 	}, [count, isMessageView]);
 
 	return (

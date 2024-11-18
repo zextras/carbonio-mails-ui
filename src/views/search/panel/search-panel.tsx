@@ -7,6 +7,7 @@ import React, { FC, useMemo } from 'react';
 
 import { Container, Padding, Text } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
+import { trimEnd } from 'lodash';
 import { useRouteMatch, Switch, Route } from 'react-router-dom';
 
 import { SearchConversationPanel } from './conversation/search-conversation-panel';
@@ -16,6 +17,7 @@ import { SearchPanelProps } from '../../../types';
 const SearchPanel: FC<SearchPanelProps> = ({ searchResults }) => {
 	const { path } = useRouteMatch();
 
+	const trimmedPath = useMemo(() => trimEnd(path, '/'), [path]);
 	const displayerMessage = useMemo(() => {
 		if (searchResults.conversationIds.size > 0 || searchResults.messageIds.size > 0)
 			return {
@@ -41,13 +43,16 @@ const SearchPanel: FC<SearchPanelProps> = ({ searchResults }) => {
 	);
 	return (
 		<Switch>
-			<Route path={`${path}/conversation/:conversationId`}>
+			<Route path={`${trimmedPath}/conversation/:conversationId`}>
 				<SearchConversationPanel />
 			</Route>
-			<Route path={`${path}/message/:messageId`}>
-				<SearchMessagePanel />
-			</Route>
-			<Route path={path}>
+			<Route
+				path={`${trimmedPath}/message/:messageId`}
+				render={(props): React.JSX.Element => (
+					<SearchMessagePanel messageId={props.match.params.messageId} />
+				)}
+			></Route>
+			<Route path={trimmedPath}>
 				<Container background="gray5">
 					<Padding all="medium">
 						<Text

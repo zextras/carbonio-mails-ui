@@ -61,13 +61,10 @@ const sendFromEditor = (
 		});
 		computeAndUpdateEditorStatus(editorId);
 	};
-
-	const delay =
-		(find(getUserSettings().props, ['name', 'mails_snackbar_delay'])
-			?._content as unknown as number) ?? 3;
+	const delay = find(getUserSettings().props, ['name', 'mails_snackbar_delay'])?._content ?? '3';
 
 	const cancelableTimer = createCancelableTimer({
-		secondsDelay: delay,
+		secondsDelay: parseInt(delay, 10),
 		onTick: onTimerTick,
 		onCancel: onTimerCanceled
 	});

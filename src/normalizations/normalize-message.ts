@@ -10,11 +10,14 @@ import {
 	ParticipantRole,
 	ParticipantRoleType
 } from '../carbonio-ui-commons/constants/participants';
+import { getIdentitiesDescriptors } from '../carbonio-ui-commons/helpers/identities';
 import { getFolder } from '../carbonio-ui-commons/store/zustand/folder/hooks';
 import { useFolderStore } from '../carbonio-ui-commons/store/zustand/folder/store';
 import {
 	AttachmentPart,
+	BodyPart,
 	IncompleteMessage,
+	MailHeaders,
 	MailMessage,
 	MailMessagePart,
 	Participant,
@@ -24,6 +27,14 @@ import {
 	SoapMailMessagePart,
 	SoapMailParticipant
 } from '../types';
+import {
+	getAuthenticationHeadersFromAPI,
+	getCreationDateFromMailHeadersFromAPI,
+	getMessageIsFromDistributionListFromAPI,
+	getMessageIsFromExternalDomainFromAPI,
+	getMessageIdFromMailHeadersFromAPI,
+	getSensitivityHeaderFromAPI
+} from './mail-header-utils';
 
 type Flags = {
 	read: boolean;
@@ -199,18 +210,14 @@ const normalizeMailPartMapFn = (v: SoapMailMessagePart): MailMessagePart => {
 	return ret;
 };
 
-const findBodyPart = (
-	mp: Array<SoapMailMessagePart>,
-	acc: { contentType: string; content: string },
-	id: string
-): { contentType: string; content: string } =>
+const findBodyPart = (mp: Array<SoapMailMessagePart>, acc: BodyPart, id: string): BodyPart =>
 	reduce(
 		mp,
 		(found, part) => {
 			if (part.mp) return findBodyPart(part.mp, found, id);
 			if (part && part.body) {
 				if (!found.contentType.length) {
-					return { contentType: part.ct, content: part.content ?? '' };
+					return { contentType: part.ct, content: part.content ?? '', truncated: !!part.truncated };
 				}
 				if (
 					part.part &&
@@ -223,11 +230,15 @@ const findBodyPart = (
 					return {
 						...found,
 						content: found.content.concat(
-							`<img src='/service/home/~/?auth=co&loc=en&id=${id}&part=${part?.part}'>` ?? ''
+							`<img src='/service/home/~/?auth=co&loc=en&id=${id}&part=${part?.part}'>`
 						)
 					};
 				}
-				return { ...found, content: found.content.concat(part.content ?? '') };
+				return {
+					...found,
+					content: found.content.concat(part.content ?? ''),
+					truncated: !!part.truncated
+				};
 			}
 			return found;
 		},
@@ -240,7 +251,7 @@ const generateBody = (
 ): {
 	contentType: string;
 	content: string;
-} => findBodyPart(mp, { contentType: '', content: '' }, id);
+} => findBodyPart(mp, { contentType: '', content: '', truncated: false }, id);
 
 const participantTypeFromSoap = (t: SoapEmailParticipantRole): ParticipantRoleType => {
 	switch (t) {
@@ -338,6 +349,20 @@ export const normalizeMailMessageFromSoap = (
 ): IncompleteMessage => {
 	const flags = getFlags(m.f);
 
+	const { ownerAccount } = getIdentitiesDescriptors().filter(
+		(identity) => identity.type === 'primary'
+	)[0];
+
+	const normalizedMailHeaders: MailHeaders = {
+		signature: m?.signature,
+		messageIsFromExternalDomain: getMessageIsFromExternalDomainFromAPI(m._attrs, ownerAccount),
+		authenticationHeaders: getAuthenticationHeadersFromAPI(m._attrs),
+		sensitivity: getSensitivityHeaderFromAPI(m._attrs),
+		messageIdFromMailHeaders: getMessageIdFromMailHeadersFromAPI(m._attrs),
+		creationDateFromMailHeaders: getCreationDateFromMailHeadersFromAPI(m._attrs),
+		messageIsFromDistributionList: getMessageIsFromDistributionListFromAPI(m._attrs)
+	};
+	// FIXME: omitBy breaks typing, consider not using it. many types are actually required but are omitted at runtime
 	return <IncompleteMessage>omitBy(
 		{
 			conversation: m.cid,
@@ -358,7 +383,8 @@ export const normalizeMailMessageFromSoap = (
 			isScheduled: !!m.autoSendTime,
 			autoSendTime: m.autoSendTime,
 			...flags,
-			isReadReceiptRequested: haveReadReceipt(m.e, m.f, m.l) && !isNil(isComplete) && isComplete
+			isReadReceiptRequested: haveReadReceipt(m.e, m.f, m.l) && !isNil(isComplete) && isComplete,
+			...normalizedMailHeaders
 		},
 		isNil
 	);

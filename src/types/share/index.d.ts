@@ -28,7 +28,7 @@ export type ResponseActionsProps = {
 	view: string;
 	rid: string;
 	msgId: string;
-	sharedCalendarName: string;
+	sharedFolderName: string;
 	grantee: string;
 	owner: string;
 	role: string;

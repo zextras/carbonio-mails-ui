@@ -3,16 +3,10 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React from 'react';
-import { act, screen, waitFor, waitForElementToBeRemoved, within } from '@testing-library/react';
-import { configureStore } from '@reduxjs/toolkit';
-import { storeReducers } from '../reducers';
-import { getMsg } from '../actions';
-import { selectMessage, selectMessages } from '../messages-slice';
-import { generateState, generateStore } from '../../tests/generators/store';
-import MessagePreviewPanel from '../../views/app/detail-panel';
-import { setupTest } from '../../carbonio-ui-commons/test/test-setup';
-import { MAIL_APP_ID } from '../../constants';
+
+import { generateStore } from '../../tests/generators/store';
+import { getMsgAsyncThunk } from '../actions';
+import { selectMessages } from '../messages-slice';
 
 describe('Messages Slice', () => {
 	describe('GetMsg', () => {
@@ -33,7 +27,7 @@ describe('Messages Slice', () => {
 			const messages = selectMessages(store.getState());
 			expect(messages).toEqual({});
 			const msgId = '3';
-			await store.dispatch(getMsg({ msgId }));
+			await store.dispatch(getMsgAsyncThunk({ msgId }));
 			const state = store.getState();
 
 			// Create and wait for the component to be rendered

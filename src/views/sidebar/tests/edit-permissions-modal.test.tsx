@@ -7,14 +7,30 @@ import React from 'react';
 
 import { faker } from '@faker-js/faker';
 import { act, screen, within } from '@testing-library/react';
+import { CreateSnackbarFn, useSnackbar } from '@zextras/carbonio-design-system';
 
 import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
 import { getFolder } from '../../../carbonio-ui-commons/store/zustand/folder';
+import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { populateFoldersStore } from '../../../carbonio-ui-commons/test/mocks/store/folders';
 import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
 import * as shareFolderModule from '../../../store/actions/share-folder';
 import { generateStore } from '../../../tests/generators/store';
 import EditPermissionsModal from '../edit-permissions-modal';
+
+const createSnackbar = (arg: any): CreateSnackbarFn => arg;
+const createSnackbarSpy = jest.fn(createSnackbar);
+
+jest.mock('@zextras/carbonio-design-system', () => ({
+	...jest.requireActual('@zextras/carbonio-design-system'),
+	useSnackbar: jest.fn()
+}));
+
+beforeEach(() => {
+	createSoapAPIInterceptor('Batch');
+	createSoapAPIInterceptor('SendShareNotification');
+	(useSnackbar as jest.Mock).mockReturnValue(createSnackbarSpy);
+});
 
 describe('edit-permissions-modal', () => {
 	test('role field has 4 options, viewer role is set by default ', async () => {
@@ -73,7 +89,7 @@ describe('edit-permissions-modal', () => {
 
 		await user.click(roleLabel);
 
-		const viewerRoleOption = within(screen.getByTestId('dropdown-popper-list')).getByText(
+		const viewerRoleOption = within(await screen.findByTestId('dropdown-popper-list')).getByText(
 			/share\.options\.share_calendar_role\.viewer/i
 		);
 
@@ -94,6 +110,7 @@ describe('edit-permissions-modal', () => {
 		expect(adminRoleOption).toBeInTheDocument();
 		expect(managerRoleOption).toBeInTheDocument();
 	});
+
 	test('message field empty and enable/disable as per send notification is unchecked and checked', async () => {
 		const closeFn = jest.fn();
 		const goBack = jest.fn();
@@ -155,7 +172,7 @@ describe('edit-permissions-modal', () => {
 		});
 		expect(standardMessage).toBeEnabled();
 
-		await act(() => user.click(sendNotificationUnCheckbox));
+		await user.click(sendNotificationUnCheckbox);
 		const sendNotificationCheckbox = within(
 			screen.getByTestId('sendNotificationCheckboxContainer')
 		).getByTestId('icon: Square');
@@ -257,20 +274,21 @@ describe('edit-permissions-modal', () => {
 
 			// Select viewer role
 			const roleSelector = screen.getByTestId('share-role');
+
 			await user.click(roleSelector);
+
 			const roleItem = within(roleSelector).getByText('share.options.share_calendar_role.viewer');
+
+			await user.type(userInput, viewer);
+			await user.tab();
 			await user.click(roleItem);
 
-			await act(async () => {
-				await user.type(userInput, viewer);
-			});
-			await user.tab();
-
 			const shareFolderMock = jest.spyOn(shareFolderModule, 'shareFolder');
+
 			await user.click(confirmButton);
 
 			// Check that the shareFolder and the data passed
-			expect(shareFolderMock).toBeCalled();
+			expect(shareFolderMock).toHaveBeenCalled();
 			expect(shareFolderMock).toHaveBeenCalledWith(
 				expect.objectContaining({ shareWithUserRole: 'r' })
 			);
@@ -320,7 +338,7 @@ describe('edit-permissions-modal', () => {
 			await user.click(confirmButton);
 
 			// Check that the shareFolder and the data passed
-			expect(shareFolderMock).toBeCalled();
+			expect(shareFolderMock).toHaveBeenCalled();
 			expect(shareFolderMock).toHaveBeenCalledWith(
 				expect.objectContaining({ shareWithUserRole: 'rwidxa' })
 			);
@@ -366,10 +384,11 @@ describe('edit-permissions-modal', () => {
 			await user.tab();
 
 			const shareFolderMock = jest.spyOn(shareFolderModule, 'shareFolder');
+
 			await user.click(confirmButton);
 
 			// Check that the shareFolder and the data passed
-			expect(shareFolderMock).toBeCalled();
+			expect(shareFolderMock).toHaveBeenCalled();
 			expect(shareFolderMock).toHaveBeenCalledWith(
 				expect.objectContaining({ shareWithUserRole: 'rwidx' })
 			);
@@ -407,11 +426,13 @@ describe('edit-permissions-modal', () => {
 			// Select manager role from role select
 			const roleLabel = screen.getByText(/share\.options\.share_calendar_role\.viewer/i);
 			expect(roleLabel).toBeInTheDocument();
+
 			await user.click(roleLabel);
 
 			const managerRoleOption = within(screen.getByTestId('dropdown-popper-list')).getByText(
 				/share\.options\.share_calendar_role\.manager/i
 			);
+
 			await user.click(managerRoleOption);
 			await user.type(userInput, viewer);
 			await user.tab();
@@ -431,9 +452,8 @@ describe('edit-permissions-modal', () => {
 
 			const shareFolderMock = jest.spyOn(shareFolderModule, 'shareFolder');
 			await user.click(confirmButton);
-
 			// Check that the shareFolder and the data passed
-			expect(shareFolderMock).toBeCalled();
+			expect(shareFolderMock).toHaveBeenCalled();
 			expect(shareFolderMock).toHaveBeenCalledWith(
 				expect.objectContaining({ shareWithUserRole: 'rwidx' })
 			);
@@ -476,9 +496,11 @@ describe('edit-permissions-modal', () => {
 			const managerRoleOption = within(screen.getByTestId('dropdown-popper-list')).getByText(
 				/share\.options\.share_calendar_role\.manager/i
 			);
-			await user.click(managerRoleOption);
-			await user.type(userInput, viewer);
-			await user.tab();
+			await act(async () => {
+				await user.click(managerRoleOption);
+				await user.type(userInput, viewer);
+				await user.tab();
+			});
 			const sendNotificationUnCheckbox = within(
 				screen.getByTestId('sendNotificationCheckboxContainer')
 			).getByTestId('icon: CheckmarkSquare');
@@ -490,7 +512,9 @@ describe('edit-permissions-modal', () => {
 			});
 			expect(standardMessage).toBeEnabled();
 
-			await act(() => user.click(sendNotificationUnCheckbox));
+			await act(async () => {
+				await user.click(sendNotificationUnCheckbox);
+			});
 			const sendNotificationCheckbox = within(
 				screen.getByTestId('sendNotificationCheckboxContainer')
 			).getByTestId('icon: Square');
@@ -499,10 +523,12 @@ describe('edit-permissions-modal', () => {
 			expect(standardMessage).toBeDisabled();
 
 			const shareFolderMock = jest.spyOn(shareFolderModule, 'shareFolder');
-			await user.click(confirmButton);
+			await act(async () => {
+				await user.click(confirmButton);
+			});
 
 			// Check that the shareFolder and the data passed
-			expect(shareFolderMock).toBeCalled();
+			expect(shareFolderMock).toHaveBeenCalled();
 			expect(shareFolderMock).toHaveBeenCalledWith(
 				expect.objectContaining({ shareWithUserRole: 'rwidx' })
 			);

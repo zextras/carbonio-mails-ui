@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { renderHook } from '@testing-library/react-hooks';
+import { renderHook, waitFor } from '@testing-library/react';
 
 import { createSoapAPIInterceptor } from '../../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { API_REQUEST_STATUS } from '../../../../constants';
@@ -55,7 +55,7 @@ describe('Searches store hooks', () => {
 			};
 			createSoapAPIInterceptor<SearchConvRequest, SearchConvResponse>('SearchConv', response);
 
-			const { result, waitFor } = renderHook(() => useConversationStatus('123'));
+			const { result } = renderHook(() => useConversationStatus('123'));
 			renderHook(() => useCompleteConversation('123', '2'));
 			await waitFor(() => {
 				expect(result.current).toBe(API_REQUEST_STATUS.fulfilled);
@@ -79,7 +79,7 @@ describe('Searches store hooks', () => {
 
 			createSoapAPIInterceptor<SearchConvRequest, SearchConvResponse>('SearchConv', response);
 
-			const { result, waitFor } = renderHook(() => useConversationStatus('123'));
+			const { result } = renderHook(() => useConversationStatus('123'));
 			renderHook(() => useCompleteConversation('123', '2'));
 			await waitFor(() => {
 				expect(result.current).toBe(API_REQUEST_STATUS.pending);
@@ -106,7 +106,7 @@ describe('Searches store hooks', () => {
 			};
 			createSoapAPIInterceptor<GetMsgRequest, GetMsgResponse>('GetMsg', response);
 
-			const { result, waitFor } = renderHook(() => useMessageStatus('1'));
+			const { result } = renderHook(() => useMessageStatus('1'));
 			renderHook(() => useCompleteMessage('1'));
 			await waitFor(() => {
 				expect(result.current).toBe(API_REQUEST_STATUS.fulfilled);
@@ -126,7 +126,7 @@ describe('Searches store hooks', () => {
 
 			createSoapAPIInterceptor<GetMsgRequest, GetMsgResponse>('GetMsg', response);
 
-			const { result, waitFor } = renderHook(() => useMessageStatus('1'));
+			const { result } = renderHook(() => useMessageStatus('1'));
 			renderHook(() => useCompleteMessage('1'));
 			await waitFor(() => {
 				expect(result.current).toBe(API_REQUEST_STATUS.pending);

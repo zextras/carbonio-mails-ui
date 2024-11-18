@@ -15,7 +15,7 @@ import { ASSERTIONS, MSG_CONV_STATUS_DESCRIPTORS } from '../../tests/constants';
 import { generateMessage } from '../../tests/generators/generateMessage';
 import { generateStore } from '../../tests/generators/store';
 import type { MailMessage } from '../../types';
-import { MultipleSelectionActionsPanel } from '../multiple-selection-actions-panel';
+import { MultipleSelectionActionsPanel } from '../../views/app/folder-panel/parts/multiple-selection-actions-panel';
 
 const generalFolders = {
 	desc: 'general folders',

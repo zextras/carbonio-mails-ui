@@ -3,7 +3,8 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { SoapMailParticipant } from './soap-mail-participant';
+import { type MailVerificationHeader } from './soap';
+import { type SoapMailParticipant } from './soap-mail-participant';
 
 export type SoapIncompleteMessage = {
 	readonly id: string;
@@ -27,6 +28,20 @@ export type SoapIncompleteMessage = {
 	/** Scheduled time */ autoSendTime?: number;
 	/** Invite */ inv?: Array<any>;
 	/** Shared */ shr?: Array<any>;
+	/** Signature */ signature?: Array<MessageSignature>;
+	/** MailHeader attrs */ _attrs?: Partial<Record<MailVerificationHeader, string>>;
+};
+
+export type MessageSignature = {
+	email?: string;
+	issuer?: string;
+	message: string;
+	messageCode: string;
+	notBefore?: number;
+	notAfter?: number;
+	type?: string;
+	trusted?: boolean;
+	valid: boolean;
 };
 
 export type SoapMailMessage = SoapIncompleteMessage & {
@@ -48,4 +63,5 @@ export type SoapMailMessagePart = {
 	// FIXME see IRIS-4029 Based on the compose settings the content could be a string or an object of type { _content: string }
 	content?: string;
 	requiresSmartLinkConversion: boolean;
+	truncated?: boolean;
 };

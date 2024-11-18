@@ -4,16 +4,35 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import { SENSITIVITY_VALUES } from '../../constants';
 import type { MailsEditorV2 } from '../editor';
 import { Participant } from '../participant';
-import { SaveDraftResponse } from '../soap';
+import { SaveDraftResponse, MessageSignature } from '../soap';
 
-export type IncompleteMessage = {
+type MailAuthenticationHeader = { value: string; pass: boolean };
+
+type MailAuthenticationHeaders = {
+	dkim?: MailAuthenticationHeader;
+	spf?: MailAuthenticationHeader;
+	dmarc?: MailAuthenticationHeader;
+};
+
+export type MailHeaders = {
+	signature?: Array<MessageSignature>;
+	messageIsFromExternalDomain?: boolean;
+	authenticationHeaders: MailAuthenticationHeaders;
+	sensitivity?: Sensitivity;
+	messageIdFromMailHeaders?: string;
+	creationDateFromMailHeaders?: string;
+	messageIsFromDistributionList?: boolean;
+};
+
+export type IncompleteMessage = MailHeaders & {
 	id: string;
 	did?: string;
 	parent: string;
 	conversation: string;
-	read: boolean | string;
+	read: boolean;
 	size: number;
 	hasAttachment: boolean;
 	flagged: boolean;
@@ -32,10 +51,7 @@ export type IncompleteMessage = {
 	fragment?: string;
 	tags: string[];
 	parts: Array<MailMessagePart>;
-	body: {
-		contentType: string;
-		content: string;
-	};
+	body: BodyPart;
 	invite?: any;
 	shr?: any;
 	isComplete: boolean;
@@ -76,14 +92,12 @@ export type AttachmentPart = {
 
 export type MailMessage = IncompleteMessage & {
 	parts: Array<MailMessagePart>;
-	body: {
-		contentType: string;
-		content: string;
-	};
+	body: BodyPart;
 	parent: string;
 	isReadReceiptRequested?: boolean;
 };
 
+export type BodyPart = { contentType: string; content: string; truncated: boolean };
 /**
  * Parameters' type for the SendMsgRequest API command
  */
@@ -101,3 +115,5 @@ export type SendMsgResult = {
 				error: true;
 		  });
 };
+
+export type Sensitivity = (typeof SENSITIVITY_VALUES)[number];

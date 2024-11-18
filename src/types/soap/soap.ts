@@ -8,7 +8,14 @@ import { AccountSettingsPrefs, ErrorSoapBodyResponse } from '@zextras/carbonio-s
 import { EmailAddresses } from './redirect-message-action';
 import { MailAttachment, SaveDraftResponse } from './save-draft';
 import { Folder } from '../../carbonio-ui-commons/types/folder';
+import { MAIL_VERIFICATION_HEADERS, MAIL_SENSITIVITY_HEADER } from '../../constants';
 import { MailsEditor, MailsEditorV2 } from '../editor';
+
+export type MailVerificationHeader =
+	(typeof MAIL_VERIFICATION_HEADERS)[keyof typeof MAIL_VERIFICATION_HEADERS];
+
+export type MailSensitivityHeader =
+	(typeof MAIL_SENSITIVITY_HEADER)[keyof typeof MAIL_SENSITIVITY_HEADER];
 
 export type IFolderView =
 	| 'search folder'
@@ -299,4 +306,31 @@ export type SaveDraftParameters = {
 
 export type SaveDraftResult = {
 	resp: SaveDraftResponse;
+};
+
+export type MountpointSpecType = {
+	l?: number;
+	name: string;
+	zid?: string;
+	rid?: string;
+	view?: string;
+	color?: number;
+	rgb?: string;
+	url?: string;
+	fie?: boolean;
+	reminder?: boolean;
+	owner?: string;
+	path?: string;
+	f?: string;
+};
+
+export type MountpointType = ISoapFolderObj;
+
+export type CreateMountPointRequest = {
+	_jsns: 'urn:zimbraMail';
+	link: MountpointSpecType;
+};
+
+export type CreateMountpointResponse = {
+	link: MountpointType;
 };

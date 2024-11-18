@@ -12,8 +12,7 @@ import { useTranslation } from 'react-i18next';
 import { useAppDispatch } from './redux';
 import { LIST_LIMIT, SEARCHED_FOLDER_STATE_STATUS } from '../constants';
 import { parseMessageSortingOptions } from '../helpers/sorting';
-import { convAction, search } from '../store/actions';
-import { setMsgRead } from '../ui-actions/message-actions';
+import { convAction, msgAction, search } from '../store/actions';
 
 export type HeaderNavigationActionItem = {
 	tooltipLabel: string | undefined;
@@ -116,7 +115,12 @@ export const usePreviewHeaderNavigation = ({
 					})
 				);
 			} else if (itemsType === 'message') {
-				setMsgRead({ ids: [itemId], value: false, dispatch }).onClick();
+				dispatch(
+					msgAction({
+						operation: 'read',
+						ids: [itemId]
+					})
+				);
 			}
 		},
 		[dispatch, itemsType]

@@ -3,7 +3,9 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+
 import '@testing-library/jest-dom';
+
 import failOnConsole from 'jest-fail-on-console';
 import fetchMock from 'jest-fetch-mock';
 import { http } from 'msw';
@@ -21,8 +23,7 @@ import { handleGetConvRequest } from './src/tests/mocks/network/msw/handle-get-c
 import { handleGetMsgRequest } from './src/tests/mocks/network/msw/handle-get-msg';
 
 failOnConsole({
-	...getFailOnConsoleDefaultConfig(),
-	shouldFailOnWarn: false
+	...getFailOnConsoleDefaultConfig()
 });
 
 beforeAll(() => {

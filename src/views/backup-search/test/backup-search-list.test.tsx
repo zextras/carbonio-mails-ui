@@ -97,7 +97,7 @@ describe('Backup search list', () => {
 		await waitFor(() => {
 			expect(createSnackbarSpy).toHaveBeenCalledWith({
 				replace: true,
-				type: 'info',
+				severity: 'info',
 				label: 'label.recover_emails',
 				autoHideTimeout: 5000,
 				hideButton: true
@@ -119,7 +119,7 @@ describe('Backup search list', () => {
 		await waitFor(() => {
 			expect(createSnackbarSpy).toHaveBeenCalledWith({
 				replace: true,
-				type: 'info',
+				severity: 'info',
 				label: 'label.all_items_selected',
 				key: 'selected-all-backupMessages',
 				autoHideTimeout: 5000,
@@ -139,7 +139,7 @@ describe('Backup search list', () => {
 		await waitFor(() => {
 			expect(createSnackbarSpy).toHaveBeenCalledWith({
 				replace: true,
-				type: 'error',
+				severity: 'error',
 				label: 'label.error_recovering_emails',
 				autoHideTimeout: 5000,
 				hideButton: true

@@ -1,3 +1,6 @@
+/* eslint-disable sonarjs/no-duplicate-string */
+// noinspection DuplicatedCode
+
 /*
  * SPDX-FileCopyrightText: 2022 Zextras <https://www.zextras.com>
  *
@@ -8,11 +11,224 @@ import React from 'react';
 
 import { screen } from '@testing-library/react';
 
+import { useAppContext } from '../../../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
+import { previewContextMock } from '../../../../../carbonio-ui-commons/test/mocks/carbonio-ui-preview';
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
-import { getMsg } from '../../../../../store/actions';
+import { getMsgAsyncThunk } from '../../../../../store/actions';
 import { selectMessage } from '../../../../../store/messages-slice';
 import { generateStore } from '../../../../../tests/generators/store';
 import AttachmentsBlock from '../attachments-block';
+
+describe('attachments-block', () => {
+	test('carbonio-preview available, file is a pdf, tooltip says click to preview', async () => {
+		useAppContext.mockReturnValue({ servicesCatalog: ['carbonio-preview'] });
+		const store = generateStore();
+		const messageAttachments = [
+			{
+				cd: 'attachment',
+				name: 'test',
+				filename: 'large-document.pdf',
+				size: 123,
+				contentType: 'application/pdf',
+				requiresSmartLinkConversion: false
+			} as const
+		];
+		const { user } = setupTest(
+			<AttachmentsBlock
+				messageId={'1'}
+				messageSubject={'test'}
+				messageAttachments={messageAttachments}
+			/>,
+			{ store }
+		);
+
+		await user.hover(screen.getByText('large-document.pdf'));
+
+		expect(await screen.findByText('Click to preview')).toBeVisible();
+	});
+	test('carbonio-preview available, file is a document, tooltip says click to download', async () => {
+		useAppContext.mockReturnValue({ servicesCatalog: ['carbonio-preview'] });
+		const store = generateStore();
+		const messageAttachments = [
+			{
+				cd: 'attachment',
+				name: 'test',
+				filename: 'random.txt',
+				size: 123,
+				contentType: 'text/plain',
+				requiresSmartLinkConversion: false
+			} as const
+		];
+		const { user } = setupTest(
+			<AttachmentsBlock
+				messageId={'1'}
+				messageSubject={'test'}
+				messageAttachments={messageAttachments}
+			/>,
+			{ store }
+		);
+
+		await user.hover(screen.getByText('random.txt'));
+
+		expect(await screen.findByText('Click to download')).toBeVisible();
+	});
+	test('carbonio-preview not available, file is a pdf, tooltip says click to preview', async () => {
+		useAppContext.mockReturnValue({ servicesCatalog: [] });
+		const store = generateStore();
+		const messageAttachments = [
+			{
+				cd: 'attachment',
+				name: 'test',
+				filename: 'any-document.pdf',
+				size: 123,
+				contentType: 'application/pdf',
+				requiresSmartLinkConversion: false
+			} as const
+		];
+		const { user } = setupTest(
+			<AttachmentsBlock
+				messageId={'1'}
+				messageSubject={'test'}
+				messageAttachments={messageAttachments}
+			/>,
+			{ store }
+		);
+
+		await user.hover(screen.getByText('any-document.pdf'));
+
+		expect(await screen.findByText('Click to preview')).toBeVisible();
+	});
+	test('carbonio-preview available, file is a pdf, onclick call createPreview', async () => {
+		useAppContext.mockReturnValue({ servicesCatalog: ['carbonio-preview'] });
+		const store = generateStore();
+		const messageAttachments = [
+			{
+				cd: 'attachment',
+				name: 'test',
+				filename: 'any-document.pdf',
+				size: 123,
+				contentType: 'application/pdf',
+				requiresSmartLinkConversion: false
+			} as const
+		];
+		const { user } = setupTest(
+			<AttachmentsBlock
+				messageId={'1'}
+				messageSubject={'test'}
+				messageAttachments={messageAttachments}
+			/>,
+			{ store }
+		);
+
+		await user.click(screen.getByText('any-document.pdf'));
+
+		expect(previewContextMock.createPreview).toHaveBeenCalled();
+	});
+	test('carbonio-docs-editor available, file is a document, onclick call createPreview', async () => {
+		useAppContext.mockReturnValue({ servicesCatalog: ['carbonio-docs-editor'] });
+		const store = generateStore();
+		const messageAttachments = [
+			{
+				cd: 'attachment',
+				name: 'test',
+				filename: 'any-document.csv',
+				size: 123,
+				contentType: 'text/csv',
+				requiresSmartLinkConversion: false
+			} as const
+		];
+		const { user } = setupTest(
+			<AttachmentsBlock
+				messageId={'1'}
+				messageSubject={'test'}
+				messageAttachments={messageAttachments}
+			/>,
+			{ store }
+		);
+
+		await user.click(screen.getByText('any-document.csv'));
+
+		expect(previewContextMock.createPreview).toHaveBeenCalled();
+	});
+	test('carbonio-docs-editor available, file is a document, tooltip says click to preview', async () => {
+		useAppContext.mockReturnValue({ servicesCatalog: ['carbonio-docs-editor'] });
+		const store = generateStore();
+		const messageAttachments = [
+			{
+				cd: 'attachment',
+				name: 'test',
+				filename: 'document.csv',
+				size: 123,
+				contentType: 'text/csv',
+				requiresSmartLinkConversion: false
+			} as const
+		];
+		const { user } = setupTest(
+			<AttachmentsBlock
+				messageId={'1'}
+				messageSubject={'test'}
+				messageAttachments={messageAttachments}
+			/>,
+			{ store }
+		);
+
+		await user.hover(screen.getByText('document.csv'));
+
+		expect(await screen.findByText('Click to preview')).toBeVisible();
+	});
+	test('carbonio-docs-editor available, file is a pdf, tooltip says click to preview', async () => {
+		useAppContext.mockReturnValue({ servicesCatalog: ['carbonio-docs-editor'] });
+		const store = generateStore();
+		const messageAttachments = [
+			{
+				cd: 'attachment',
+				name: 'test',
+				filename: 'document.pdf',
+				size: 123,
+				contentType: 'application/pdf',
+				requiresSmartLinkConversion: false
+			} as const
+		];
+		const { user } = setupTest(
+			<AttachmentsBlock
+				messageId={'1'}
+				messageSubject={'test'}
+				messageAttachments={messageAttachments}
+			/>,
+			{ store }
+		);
+
+		await user.hover(screen.getByText('document.pdf'));
+
+		expect(await screen.findByText('Click to preview')).toBeVisible();
+	});
+	test('carbonio-docs-editor not available, file is a document, onclick wont call createPreview', async () => {
+		useAppContext.mockReturnValue({ servicesCatalog: [] });
+		const store = generateStore();
+		const messageAttachments = [
+			{
+				cd: 'attachment',
+				name: 'test',
+				filename: 'large-document.csv',
+				size: 123,
+				contentType: 'text/csv',
+				requiresSmartLinkConversion: false
+			} as const
+		];
+		const { user } = setupTest(
+			<AttachmentsBlock
+				messageId={'1'}
+				messageSubject={'test'}
+				messageAttachments={messageAttachments}
+			/>,
+			{ store }
+		);
+
+		await user.click(screen.getByText('large-document.csv'));
+
+		expect(previewContextMock.createPreview).not.toHaveBeenCalled();
+	});
+});
 
 describe('Attachments visualization', () => {
 	test.each`
@@ -26,7 +242,7 @@ describe('Attachments visualization', () => {
 		const store = generateStore();
 
 		// Invoke the fetch of the message and the store update
-		await store.dispatch<any>(getMsg({ msgId }));
+		await store.dispatch<any>(getMsgAsyncThunk({ msgId }));
 		const state = store.getState();
 		const message = selectMessage(state, msgId);
 
@@ -38,7 +254,9 @@ describe('Attachments visualization', () => {
 
 		// Create the props for the component
 		const props = {
-			message
+			messageSubject: message.subject,
+			messageId: message.id,
+			messageAttachments: message.attachments
 		};
 
 		// Render the component
@@ -75,7 +293,7 @@ describe('Attachment actions visualization', () => {
 			const store = generateStore();
 
 			// Invoke the fetch of the message and the store update
-			store.dispatch<any>(getMsg({ msgId }));
+			store.dispatch<any>(getMsgAsyncThunk({ msgId }));
 			// await store.dispatch(getMsg({ msgId }));
 			const state = store.getState();
 			const message = selectMessage(state, msgId);
@@ -87,7 +305,9 @@ describe('Attachment actions visualization', () => {
 			}
 			// Create the props for the component
 			const props = {
-				message
+				messageSubject: message.subject,
+				messageId: message.id,
+				messageAttachments: message.attachments
 			};
 
 			// Render the component
@@ -114,4 +334,40 @@ describe('Attachment actions visualization', () => {
 			});
 		}
 	);
+});
+
+describe('Attachment link validation', () => {
+	test('preview is available, should call image preview endpoint when content type is image/tiff', async () => {
+		useAppContext.mockReturnValue({ servicesCatalog: ['carbonio-preview'] });
+		const store = generateStore();
+		const messageAttachments = [
+			{
+				cd: 'attachment',
+				name: 'test',
+				filename: 'image.tiff',
+				size: 12345,
+				contentType: 'image/tiff',
+				requiresSmartLinkConversion: false
+			} as const
+		];
+		const { user } = setupTest(
+			<AttachmentsBlock
+				messageId={'1'}
+				messageSubject={'test'}
+				messageAttachments={messageAttachments}
+			/>,
+			{ store }
+		);
+
+		await user.hover(screen.getByText('image.tiff'));
+		expect(await screen.findByText('Click to preview')).toBeVisible();
+
+		await user.click(screen.getByText('image.tiff'));
+		expect(previewContextMock.createPreview).toHaveBeenCalledTimes(1);
+
+		const createPreviewParam = previewContextMock.createPreview.mock.calls[0][0];
+		expect(createPreviewParam.src).toBe(
+			'http://localhost/service/preview/image/1/test/0x0/?quality=high'
+		);
+	});
 });

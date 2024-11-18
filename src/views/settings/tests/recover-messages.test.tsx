@@ -64,15 +64,14 @@ describe('Recover messages', () => {
 		);
 
 		const dateTimePicker = screen.getByRole('textbox', { name: /label.select_recovery_date/ });
-
+		await user.type(dateTimePicker, '2023-01-05T00:00:00.000Z');
+		await user.tab();
+		await user.click(
+			screen.getByRole('button', {
+				name: /label\.search_emails/i
+			})
+		);
 		await act(async () => {
-			await user.type(dateTimePicker, '2023-01-05T00:00:00.000Z');
-			await user.tab();
-			await user.click(
-				screen.getByRole('button', {
-					name: /label\.search_emails/i
-				})
-			);
 			await user.click(
 				screen.getByRole('button', {
 					name: /label\.start_search/i
@@ -98,14 +97,16 @@ describe('Recover messages', () => {
 
 		const dateTimePicker = screen.getByRole('textbox', { name: /label.select_recovery_date/ });
 
+		await user.type(dateTimePicker, '2023-01-05T00:00:00.000Z');
+		await user.tab();
 		await act(async () => {
-			await user.type(dateTimePicker, '2023-01-05T00:00:00.000Z');
-			await user.tab();
 			await user.click(
 				screen.getByRole('button', {
 					name: /label\.search_emails/i
 				})
 			);
+		});
+		await act(async () => {
 			await user.click(
 				screen.getByRole('button', {
 					name: /label\.start_search/i
@@ -133,14 +134,16 @@ describe('Recover messages', () => {
 		const dateTimePicker = screen.getByRole('textbox', { name: /label.select_recovery_date/ });
 
 		const selectedDate = '2024-08-14T00:00:00.000Z';
+		await user.type(dateTimePicker, selectedDate);
+		await user.tab();
 		await act(async () => {
-			await user.type(dateTimePicker, selectedDate);
-			await user.tab();
 			await user.click(
 				screen.getByRole('button', {
 					name: /label\.search_emails/i
 				})
 			);
+		});
+		await act(async () => {
 			await user.click(
 				screen.getByRole('button', {
 					name: /label\.start_search/i
@@ -167,14 +170,16 @@ describe('Recover messages', () => {
 		const textInput = screen.getByRole('textbox', { name: /settings.keyword/ });
 
 		const expectedSearchString = 'test keyword';
+		await user.type(textInput, expectedSearchString);
+		await user.tab();
 		await act(async () => {
-			await user.type(textInput, expectedSearchString);
-			await user.tab();
 			await user.click(
 				screen.getByRole('button', {
 					name: /label\.search_emails/i
 				})
 			);
+		});
+		await act(async () => {
 			await user.click(
 				screen.getByRole('button', {
 					name: /label\.start_search/i

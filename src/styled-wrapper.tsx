@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React from 'react';
+import React, { ReactNode } from 'react';
 
 import { ThemeProvider } from '@zextras/carbonio-design-system';
 import type { Theme as DSTheme } from '@zextras/carbonio-design-system';
@@ -28,7 +28,9 @@ const GlobalStyle = createGlobalStyle`
   }
 `;
 
-const StyledWrapper: React.FC = ({ children }) => (
+const StyledWrapper: React.FC<{
+	children: React.ReactNode;
+}> = ({ children }) => (
 	<ThemeProvider loadDefaultFont={false} extension={themeOverride}>
 		<GlobalStyle />
 		{children}

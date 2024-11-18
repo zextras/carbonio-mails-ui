@@ -7,13 +7,14 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import { soapFetch } from '@zextras/carbonio-shell-ui';
 
 import { getConv } from './get-conv';
-import { getMsg } from './get-msg';
+import { getMsgAsyncThunk } from './get-msg-async-thunk';
 import { ParticipantRole } from '../../carbonio-ui-commons/constants/participants';
 import { getAddressOwnerAccount, getIdentityDescriptor } from '../../helpers/identities';
 import { getParticipantsFromMessage } from '../../helpers/messages';
 import { MailMessage, SendMsgResult, SendMsgWithSmartLinksResponse } from '../../types';
 import type { SaveDraftRequest, SaveDraftResponse, SendMsgParameters } from '../../types';
 import { generateMailRequest } from '../editor-slice-utils';
+import { getCertificate } from '../zustand/certificates/certificate';
 import { createSoapSendMsgRequestFromEditor } from '../zustand/editor/editor-transformations';
 
 export const sendMsg = createAsyncThunk<any, { msg: MailMessage }>(
@@ -46,7 +47,7 @@ export const sendMsg = createAsyncThunk<any, { msg: MailMessage }>(
 		}
 
 		if (response?.m && response?.m[0]?.id) {
-			dispatch(getMsg({ msgId: response.m[0].id }));
+			dispatch(getMsgAsyncThunk({ msgId: response.m[0].id }));
 		}
 		if (response?.m && response?.m[0]?.cid) {
 			dispatch(getConv({ conversationId: response.m[0].cid }));
@@ -76,7 +77,13 @@ export const sendMsgFromEditor = createAsyncThunk<SendMsgResult, SendMsgParamete
 				'SendMsg',
 				{
 					_jsns: 'urn:zimbraMail',
-					m: msg
+					m: msg,
+					...(editor.isSmimeSign
+						? {
+								sign: true,
+								...getCertificate({ accountId: identity?.fromAddress ?? '' })
+							}
+						: {})
 				},
 				identity?.ownerAccount ?? undefined
 			);
@@ -90,7 +97,7 @@ export const sendMsgFromEditor = createAsyncThunk<SendMsgResult, SendMsgParamete
 			return rejectWithValue(response);
 		}
 		if (response?.m && response?.m[0]?.id) {
-			dispatch(getMsg({ msgId: response.m[0].id }));
+			dispatch(getMsgAsyncThunk({ msgId: response.m[0].id }));
 		}
 		if (response?.m && response?.m[0]?.cid) {
 			dispatch(getConv({ conversationId: response.m[0].cid }));

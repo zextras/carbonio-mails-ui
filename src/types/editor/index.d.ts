@@ -121,6 +121,7 @@ export type EditorPrefillData = {
 	 * @deprecated - added for backward compatibility
 	 */
 	to?: Array<Partial<Participant>>;
+	attachments?: Array<UnsavedAttachment>;
 };
 
 export type EditViewActionsType = (typeof EditViewActions)[keyof typeof EditViewActions];
@@ -177,6 +178,8 @@ export type MailsEditorV2 = {
 	size: number;
 	// the sum of the size of the attachments requiring smart link conversion
 	totalSmartLinksSize: number;
+	// flag for the S/MIME request
+	isSmimeSign?: boolean;
 };
 
 type IdentityType = {

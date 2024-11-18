@@ -11,7 +11,7 @@ import { getCompleteHTML } from './get-complete-html';
 import { getHeader } from './get-header';
 import { findAttachments } from '../../helpers/attachments';
 import { type MailMessage } from '../../types';
-import { _CI_REGEX, _CI_SRC_REGEX, plainTextToHTML } from '../mail-message-renderer';
+import { _CI_REGEX, _CI_SRC_REGEX, plainTextToHTML } from '../utils';
 
 function getSs(conversationMessage: Array<MailMessage>): Array<string> {
 	return map(conversationMessage, (msg) => {

@@ -5,19 +5,33 @@
  */
 import React from 'react';
 
+import { act } from '@testing-library/react';
 import * as shellUi from '@zextras/carbonio-shell-ui';
-import { act } from 'react-dom/test-utils';
+import { HttpResponse } from 'msw';
 
 import App from './app';
 import * as addComponentsToShell from './app-utils/add-shell-components';
 import * as registerShellActions from './app-utils/register-shell-actions';
 import * as registerShellIntegrations from './app-utils/register-shell-integrations';
-import * as toggleBackupSearch from './app-utils/toggle-backup-search-component';
-import * as useFoldersController from './carbonio-ui-commons/hooks/use-folders-controller';
+import { generateFolder } from './carbonio-ui-commons/test/mocks/folders/folders-generator';
+import {
+	createAPIInterceptor,
+	createSoapAPIInterceptor
+} from './carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { setupTest } from './carbonio-ui-commons/test/test-setup';
+import { BACKUP_SEARCH_ROUTE } from './constants';
 import { useBackupSearchStore } from './store/zustand/backup-search/store';
 import { DeletedMessageFromAPI } from './types';
-import { BACKUP_SEARCH_ROUTE } from './constants';
+
+// Mocking the worker. In commons jest-setup the worker is already mocked, but is improperly defined with wrong types and
+// is causing a call to "onMessage", which tries to alter the folders store and overrides the folders, breaking the test.
+// It also causes warning/errors due the fact it tries to set an "undefined" in the folders.
+// I think we should consider removing that mock or redefine it or make it configurable
+jest.mock('./carbonio-ui-commons/worker', () => ({
+	folderWorker: {
+		postMessage: jest.fn()
+	}
+}));
 
 function aDeletedMessage(): DeletedMessageFromAPI {
 	return {
@@ -44,11 +58,16 @@ describe('App', () => {
 	const addRouteSpy = jest.spyOn(shellUi, 'addRoute');
 
 	beforeEach(() => {
+		createAPIInterceptor('get', 'zx/login/v3/account', HttpResponse.json({}));
+		createAPIInterceptor('get', 'services/catalog/services', HttpResponse.json({}));
+		createSoapAPIInterceptor('GetFolder', {
+			folder: [generateFolder({ name: 'Inbox' })]
+		});
+		createSoapAPIInterceptor('GetShareInfo', { result: { share: [] } });
 		jest.clearAllMocks();
 	});
 
 	it('should register a "mails" route accessible from the primary bar with specific position, name and icon', () => {
-		const useFoldersControllerSpy = jest.spyOn(useFoldersController, 'useFoldersController');
 		const addComponentsToShellSpy = jest.spyOn(addComponentsToShell, 'addComponentsToShell');
 		const registerShellActionSpy = jest.spyOn(registerShellActions, 'registerShellActions');
 		const registerShellIntegrationsSpy = jest.spyOn(
@@ -59,7 +78,6 @@ describe('App', () => {
 		expect(addComponentsToShellSpy).toHaveBeenCalled();
 		expect(registerShellActionSpy).toHaveBeenCalled();
 		expect(registerShellIntegrationsSpy).toHaveBeenCalled();
-		expect(useFoldersControllerSpy).toHaveBeenCalledWith('message');
 	});
 
 	it('should add the backup search route when the backup search messages are present', () => {
