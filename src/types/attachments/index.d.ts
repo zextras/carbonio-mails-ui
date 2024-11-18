@@ -18,6 +18,7 @@ export type AbstractAttachment = {
 };
 export type UnsavedAttachment = AbstractAttachment & {
 	aid?: string;
+	mid?: string;
 	uploadId?: string;
 	uploadStatus?: AttachmentUploadProcessStatus;
 	uploadAbortController?: AbortController;

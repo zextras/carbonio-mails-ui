@@ -12,6 +12,7 @@ import { filter, intersection, map, some } from 'lodash';
 import { normalizeDropdownActionItem } from '../../../../helpers/actions';
 import { useMsgApplyTagDescriptor } from '../../../../hooks/actions/use-msg-apply-tag';
 import { useMsgDeletePermanentlyDescriptor } from '../../../../hooks/actions/use-msg-delete-permanently';
+import { useMsgForwardAsAttachmentDescriptor } from '../../../../hooks/actions/use-msg-forward-as-attachment';
 import { useMsgMoveToFolderDescriptor } from '../../../../hooks/actions/use-msg-move-to-folder';
 import { useMsgMoveToTrashDescriptor } from '../../../../hooks/actions/use-msg-move-to-trash';
 import { useMsgSetFlagDescriptor } from '../../../../hooks/actions/use-msg-set-flag';
@@ -65,6 +66,7 @@ export const MessagesMultipleSelectionActions = ({
 	const unflagDescriptor = useMsgSetUnflagDescriptor(ids, !atLeastOneMsgIsUnflagged);
 	const moveToFolderDescriptor = useMsgMoveToFolderDescriptor({ folderId, deselectAll, ids });
 	const setAsSpam = useMsgSetSpamDescriptor({ ids, shouldReplaceHistory: false, folderId });
+	const forwardAsAttachment = useMsgForwardAsAttachmentDescriptor(ids, folderId);
 	const setAsNotSpam = useMsgSetNotSpamDescriptor({
 		ids,
 		shouldReplaceHistory: false,
@@ -85,7 +87,8 @@ export const MessagesMultipleSelectionActions = ({
 				normalizeDropdownActionItem(moveToFolderDescriptor),
 				tagItem,
 				normalizeDropdownActionItem(setAsSpam),
-				normalizeDropdownActionItem(setAsNotSpam)
+				normalizeDropdownActionItem(setAsNotSpam),
+				normalizeDropdownActionItem(forwardAsAttachment)
 			]
 		} as DropdownItem
 	];

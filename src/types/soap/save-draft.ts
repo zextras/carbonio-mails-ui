@@ -13,8 +13,13 @@ export type MailAttachmentParts = {
 	requiresSmartLinkConversion: boolean;
 };
 
+export type MsgAttach = {
+	id: string;
+};
+
 export type MailAttachment = {
 	mp: Array<MailAttachmentParts>;
+	m?: Array<MsgAttach>;
 	aid?: string;
 };
 
