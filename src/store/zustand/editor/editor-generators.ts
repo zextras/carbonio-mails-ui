@@ -51,6 +51,12 @@ const REPLY_REGEX = /(^(re:\s)+)/i;
 // Regex forward msg title
 const FORWARD_REGEX = /(^(fwd:\s)+)/i;
 
+function htmlToPlainText(html: string): string {
+	const tempDiv = document.createElement('div');
+	tempDiv.innerHTML = html;
+	return tempDiv.textContent || tempDiv.innerText || '';
+}
+
 const labels = {
 	to: `${t('label.to', 'To')}:`,
 	from: `${t('label.from', 'From')}:`,
@@ -73,6 +79,7 @@ export const generateNewMessageEditor = (messagesStoreDispatch: AppDispatch): Ma
 	const isRichText = getUserSettings().prefs?.zimbraPrefComposeFormat === 'html';
 
 	const editor = {
+		fragment: '',
 		action: EditViewActions.NEW,
 		identityId: getDefaultIdentity().id,
 		id: editorId,
@@ -175,6 +182,7 @@ export const generateIntegratedNewEditor = (
 			);
 
 	const editor = {
+		fragment: '',
 		action: EditViewActions.NEW,
 		identityId: getDefaultIdentity().id,
 		id: editorId,
@@ -225,13 +233,14 @@ const generateReplyAndReplyAllMsgEditor = (
 		? from.forwardReplySignatureId
 		: defaultIdentity.forwardReplySignatureId;
 	const textWithSignature = getMailBodyWithSignature(text, signatureId);
+	const richText = replaceCidUrlWithServiceUrl(
+		`${textWithSignature.richText} ${generateReplyText(originalMessage, labels)[1]}`,
+		savedInlineAttachments
+	);
 
 	const textWithSignatureRepliesForwards = {
-		plainText: `${textWithSignature.plainText} ${generateReplyText(originalMessage, labels)[0]}`,
-		richText: replaceCidUrlWithServiceUrl(
-			`${textWithSignature.richText} ${generateReplyText(originalMessage, labels)[1]}`,
-			savedInlineAttachments
-		)
+		plainText: `${textWithSignature.plainText} ${htmlToPlainText(generateReplyText(originalMessage, labels)[1])}`,
+		richText
 	};
 	const accountName = getAddressOwnerAccount(from.address) ?? NO_ACCOUNT_NAME;
 	const isRichText = getUserSettings().prefs?.zimbraPrefComposeFormat === 'html';
@@ -241,6 +250,7 @@ const generateReplyAndReplyAllMsgEditor = (
 			: retrieveALL(originalMessage, accountName);
 
 	const editor = {
+		fragment: originalMessage.fragment,
 		action: EditViewActions.REPLY,
 		identityId: from.identityId ?? defaultIdentity.id,
 		sender: undefined,
@@ -311,7 +321,7 @@ export const generateForwardMsgEditor = (
 		: defaultIdentity.forwardReplySignatureId;
 	const textWithSignature = getMailBodyWithSignature(text, signatureId);
 	const textWithSignatureRepliesForwards = {
-		plainText: `${textWithSignature.plainText} ${generateReplyText(originalMessage, labels)[0]}`,
+		plainText: `${textWithSignature.plainText} ${htmlToPlainText(generateReplyText(originalMessage, labels)[1])}`,
 		richText: replaceCidUrlWithServiceUrl(
 			`${textWithSignature.richText} ${generateReplyText(originalMessage, labels)[1]}`,
 			savedAttachments
@@ -319,6 +329,7 @@ export const generateForwardMsgEditor = (
 	};
 	const isRichText = getUserSettings().prefs?.zimbraPrefComposeFormat === 'html';
 	const editor = {
+		fragment: originalMessage.fragment,
 		action: EditViewActions.REPLY,
 		identityId: from.identityId ?? defaultIdentity.id,
 		id: editorId,
@@ -390,6 +401,7 @@ export const generateForwardAsAttachmentMsgEditor = (
 		subject: `FWD: ${
 			originalMessage.subject ? originalMessage.subject.replace(FORWARD_REGEX, '') : ''
 		}`,
+		fragment: originalMessage.fragment,
 		text: textWithSignatureRepliesForwards,
 		requestReadReceipt: false,
 		replyType: 'w',
@@ -413,15 +425,20 @@ export const generateEditAsDraftEditor = (
 ): MailsEditorV2 => {
 	const editorId = uuid();
 	const savedAttachments = buildSavedAttachments(originalMessage);
+	const richText = replaceCidUrlWithServiceUrl(
+		`${extractBody(originalMessage)[1]}`,
+		savedAttachments
+	);
 	const text = {
-		plainText: `${extractBody(originalMessage)[0]}`,
-		richText: replaceCidUrlWithServiceUrl(`${extractBody(originalMessage)[1]}`, savedAttachments)
+		plainText: htmlToPlainText(richText),
+		richText
 	};
 
 	const isRichText = getUserSettings().prefs?.zimbraPrefComposeFormat === 'html';
 	const fromParticipant = getFromParticipantFromMessage(originalMessage);
 	const fromIdentity = fromParticipant && getIdentityFromParticipant(fromParticipant);
 	const editor = {
+		fragment: originalMessage.fragment,
 		action: EditViewActions.EDIT_AS_DRAFT,
 		identityId: (fromIdentity ?? getDefaultIdentity()).id,
 		id: editorId,
@@ -456,14 +473,19 @@ export const generateEditAsNewEditor = (
 	const editorId = uuid();
 	const savedAttachments = buildSavedAttachments(originalMessage);
 
+	const richText = replaceCidUrlWithServiceUrl(
+		`${extractBody(originalMessage)[1]}`,
+		savedAttachments
+	);
 	const text = {
-		plainText: `${extractBody(originalMessage)[0]}`,
-		richText: replaceCidUrlWithServiceUrl(`${extractBody(originalMessage)[1]}`, savedAttachments)
+		plainText: htmlToPlainText(richText),
+		richText
 	};
 	const isRichText = getUserSettings().prefs?.zimbraPrefComposeFormat === 'html';
 	const fromParticipant = getFromParticipantFromMessage(originalMessage);
 	const fromIdentity = fromParticipant && getIdentityFromParticipant(fromParticipant);
 	const editor = {
+		fragment: originalMessage.fragment,
 		action: EditViewActions.EDIT_AS_NEW,
 		identityId: (fromIdentity ?? getDefaultIdentity()).id,
 		id: editorId,

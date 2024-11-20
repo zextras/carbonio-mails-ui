@@ -383,7 +383,7 @@ const createSoapMessageRequestFromEditor = (
 		su: { _content: editor.subject ?? '' },
 		rt: editor.replyType,
 		origid: editor.originalId,
-		fr: '',
+		fr: editor.fragment,
 		e: soapParticipants,
 		mp: getMP(editor),
 		...(editor.isUrgent ? { f: '!' } : {})
