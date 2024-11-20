@@ -246,7 +246,6 @@ const generateReplyAndReplyAllMsgEditor = (
 			: retrieveALL(originalMessage, accountName);
 
 	const editor = {
-		fragment: originalMessage.fragment,
 		action: EditViewActions.REPLY,
 		identityId: from.identityId ?? defaultIdentity.id,
 		sender: undefined,

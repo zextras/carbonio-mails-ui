@@ -19,7 +19,6 @@ export const buildEditorCase = (messagesStoreDispatch: AppDispatch): MailsEditor
 	return {
 		id: faker.string.uuid(),
 		did: FAKE_MESSAGE_ID,
-		fragment: 'fragment',
 		action: EditViewActions.EDIT_AS_NEW,
 		identityId: mocksContext.identities.primary.identity.id,
 		isRichText: true,

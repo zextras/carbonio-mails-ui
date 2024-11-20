@@ -259,7 +259,6 @@ export const generateMailRequest = (msg: MailMessage): SoapDraftMessageObj => {
 	const richText = extractBody(msg);
 	const body = isHtml(msg.parts);
 	return {
-		fr: '',
 		id: msg.id === 'new' ? undefined : msg.id,
 		did: msg.isDraft ? (msg.did ?? msg.id) : undefined,
 		attach: { mp: retrieveAttachmentsType(msg, 'attachment') },
@@ -434,7 +433,6 @@ export const generateRequest = (
 	}
 
 	return {
-		fr: '',
 		autoSendTime: data.autoSendTime,
 		did: data.did,
 		id: data.id ?? undefined,
