@@ -293,7 +293,7 @@ export const convertHtmlToPlainText = (html: string): string => {
 		// Add a newline before every p tag
 		.replace(DIV_TAG, '\n<div>');
 	const doc = new DOMParser().parseFromString(result, 'text/html');
-	result = doc.body.textContent || '';
+	result = doc.body.textContent ?? '';
 
 	return result;
 };
