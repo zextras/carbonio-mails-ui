@@ -75,7 +75,6 @@ export const generateNewMessageEditor = (messagesStoreDispatch: AppDispatch): Ma
 	const isRichText = getUserSettings().prefs?.zimbraPrefComposeFormat === 'html';
 
 	const editor = {
-		fragment: '',
 		action: EditViewActions.NEW,
 		identityId: getDefaultIdentity().id,
 		id: editorId,
@@ -178,7 +177,6 @@ export const generateIntegratedNewEditor = (
 			);
 
 	const editor = {
-		fragment: '',
 		action: EditViewActions.NEW,
 		identityId: getDefaultIdentity().id,
 		id: editorId,
@@ -324,7 +322,6 @@ export const generateForwardMsgEditor = (
 	};
 	const isRichText = getUserSettings().prefs?.zimbraPrefComposeFormat === 'html';
 	const editor = {
-		fragment: originalMessage.fragment,
 		action: EditViewActions.REPLY,
 		identityId: from.identityId ?? defaultIdentity.id,
 		id: editorId,
@@ -396,7 +393,6 @@ export const generateForwardAsAttachmentMsgEditor = (
 		subject: `FWD: ${
 			originalMessage.subject ? originalMessage.subject.replace(FORWARD_REGEX, '') : ''
 		}`,
-		fragment: originalMessage.fragment,
 		text: textWithSignatureRepliesForwards,
 		requestReadReceipt: false,
 		replyType: 'w',
@@ -433,7 +429,6 @@ export const generateEditAsDraftEditor = (
 	const fromParticipant = getFromParticipantFromMessage(originalMessage);
 	const fromIdentity = fromParticipant && getIdentityFromParticipant(fromParticipant);
 	const editor = {
-		fragment: originalMessage.fragment,
 		action: EditViewActions.EDIT_AS_DRAFT,
 		identityId: (fromIdentity ?? getDefaultIdentity()).id,
 		id: editorId,
@@ -480,7 +475,6 @@ export const generateEditAsNewEditor = (
 	const fromParticipant = getFromParticipantFromMessage(originalMessage);
 	const fromIdentity = fromParticipant && getIdentityFromParticipant(fromParticipant);
 	const editor = {
-		fragment: originalMessage.fragment,
 		action: EditViewActions.EDIT_AS_NEW,
 		identityId: (fromIdentity ?? getDefaultIdentity()).id,
 		id: editorId,
