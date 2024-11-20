@@ -15,6 +15,7 @@ import {
 import { getEditor } from './hooks';
 import { ParticipantRole } from '../../../carbonio-ui-commons/constants/participants';
 import { getRootsMap } from '../../../carbonio-ui-commons/store/zustand/folder';
+import { convertHtmlToPlainText } from '../../../commons/utilities';
 import { LineType } from '../../../commons/utils';
 import { EditViewActions, NO_ACCOUNT_NAME } from '../../../constants';
 import {
@@ -31,7 +32,8 @@ import {
 	MailMessage,
 	MailsEditorV2,
 	UnsavedAttachment,
-	Participant
+	Participant,
+	EditorText
 } from '../../../types';
 import {
 	extractBody,
@@ -50,12 +52,6 @@ const REPLY_REGEX = /(^(re:\s)+)/i;
 
 // Regex forward msg title
 const FORWARD_REGEX = /(^(fwd:\s)+)/i;
-
-function htmlToPlainText(html: string): string {
-	const tempDiv = document.createElement('div');
-	tempDiv.innerHTML = html;
-	return tempDiv.textContent || tempDiv.innerText || '';
-}
 
 const labels = {
 	to: `${t('label.to', 'To')}:`,
@@ -239,7 +235,7 @@ const generateReplyAndReplyAllMsgEditor = (
 	);
 
 	const textWithSignatureRepliesForwards = {
-		plainText: `${textWithSignature.plainText} ${htmlToPlainText(generateReplyText(originalMessage, labels)[1])}`,
+		plainText: `${textWithSignature.plainText} ${convertHtmlToPlainText(generateReplyText(originalMessage, labels)[1])}`,
 		richText
 	};
 	const accountName = getAddressOwnerAccount(from.address) ?? NO_ACCOUNT_NAME;
@@ -321,7 +317,7 @@ export const generateForwardMsgEditor = (
 		: defaultIdentity.forwardReplySignatureId;
 	const textWithSignature = getMailBodyWithSignature(text, signatureId);
 	const textWithSignatureRepliesForwards = {
-		plainText: `${textWithSignature.plainText} ${htmlToPlainText(generateReplyText(originalMessage, labels)[1])}`,
+		plainText: `${textWithSignature.plainText} ${convertHtmlToPlainText(generateReplyText(originalMessage, labels)[1])}`,
 		richText: replaceCidUrlWithServiceUrl(
 			`${textWithSignature.richText} ${generateReplyText(originalMessage, labels)[1]}`,
 			savedAttachments
@@ -429,8 +425,8 @@ export const generateEditAsDraftEditor = (
 		`${extractBody(originalMessage)[1]}`,
 		savedAttachments
 	);
-	const text = {
-		plainText: htmlToPlainText(richText),
+	const text: EditorText = {
+		plainText: convertHtmlToPlainText(richText),
 		richText
 	};
 
@@ -478,7 +474,7 @@ export const generateEditAsNewEditor = (
 		savedAttachments
 	);
 	const text = {
-		plainText: htmlToPlainText(richText),
+		plainText: convertHtmlToPlainText(richText),
 		richText
 	};
 	const isRichText = getUserSettings().prefs?.zimbraPrefComposeFormat === 'html';
