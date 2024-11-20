@@ -53,6 +53,7 @@ export type SoapDraftMessageObj = {
 	mp: Array<SoapEmailMessagePartObj>;
 	e: Array<SoapEmailInfoObj>;
 	f?: string;
+	fr: string;
 	did?: string;
 	rt?: string;
 	origid?: string;
