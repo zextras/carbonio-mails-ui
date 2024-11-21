@@ -7,8 +7,9 @@
 import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
 
 import { Input, Padding, Text } from '@zextras/carbonio-design-system';
-import { changeTagColor, createTag, renameTag, t } from '@zextras/carbonio-shell-ui';
+import { t } from '@zextras/carbonio-shell-ui';
 
+import { changeTagColor, createTag, renameTag } from '../../../../api/tags';
 import ModalFooter from '../../../../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../../../../carbonio-ui-commons/components/modals/modal-header';
 import type { CreateUpdateTagModalPropType } from '../../../../carbonio-ui-commons/types/sidebar';

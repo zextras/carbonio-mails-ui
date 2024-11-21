@@ -3,7 +3,6 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { getTags } from '@zextras/carbonio-shell-ui';
 import { filter, find, forEach, isArray, isNil, map, omitBy, reduce } from 'lodash';
 
 import {
@@ -13,6 +12,7 @@ import {
 import { getIdentitiesDescriptors } from '../carbonio-ui-commons/helpers/identities';
 import { getFolder } from '../carbonio-ui-commons/store/zustand/folder/hooks';
 import { useFolderStore } from '../carbonio-ui-commons/store/zustand/folder/store';
+import { getTags } from '../carbonio-ui-commons/store/zustand/tags';
 import {
 	AttachmentPart,
 	BodyPart,
