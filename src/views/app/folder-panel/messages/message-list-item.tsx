@@ -18,7 +18,6 @@ import {
 	Tag,
 	replaceHistory,
 	t,
-	useTags,
 	useUserAccounts,
 	useUserSettings
 } from '@zextras/carbonio-shell-ui';
@@ -29,6 +28,7 @@ import { useParams } from 'react-router-dom';
 import { MessageListItemActionWrapper } from './message-list-item-action-wrapper';
 import { ZIMBRA_STANDARD_COLORS } from '../../../../carbonio-ui-commons/constants';
 import { useFolder } from '../../../../carbonio-ui-commons/store/zustand/folder';
+import { useTags } from '../../../../carbonio-ui-commons/store/zustand/tags';
 import { getTimeLabel, participantToString } from '../../../../commons/utils';
 import { EditViewActions } from '../../../../constants';
 import { useMsgPreviewOnSeparatedWindowFn } from '../../../../hooks/actions/use-msg-preview-on-separated-window';
