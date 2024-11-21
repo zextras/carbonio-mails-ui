@@ -9,9 +9,9 @@ import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
 import { Input, Padding, Text } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 
-import { changeTagColor, createTag, renameTag } from '../../../../api/tags';
 import ModalFooter from '../../../../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../../../../carbonio-ui-commons/components/modals/modal-header';
+import { changeTagColor, createTag, renameTag } from '../../../../carbonio-ui-commons/soap/tags';
 import type { CreateUpdateTagModalPropType } from '../../../../carbonio-ui-commons/types/sidebar';
 import { useUiUtilities } from '../../../../hooks/use-ui-utilities';
 import ColorPicker from '../../../../integrations/shared-invite-reply/parts/color-select';
