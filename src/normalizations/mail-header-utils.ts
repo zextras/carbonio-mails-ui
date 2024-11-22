@@ -34,11 +34,20 @@ function findHeader(
 ): string | undefined {
 	return authenticationHeadersArray?.find((header) => regex.exec(header));
 }
+function normalizeToArray(input: string | string[] | undefined): Array<string> {
+	if (input === undefined) {
+		return [];
+	}
+	if (Array.isArray(input)) {
+		return input.join(' ').split(';');
+	}
+	return input.split(';');
+}
 
 export function getAuthenticationHeadersFromAPI(
 	headers: SoapIncompleteMessage['_attrs']
 ): MailAuthenticationHeaders {
-	const authenticationHeadersArray = headers?.['Authentication-Results']?.split(';');
+	const authenticationHeadersArray = normalizeToArray(headers?.['Authentication-Results']);
 	if (!authenticationHeadersArray || isEmpty(authenticationHeadersArray)) return {};
 	const dkimValue = trimAndCheck(findHeader(authenticationHeadersArray, /dkim=/));
 	const dkimPass = !!dkimValue && /dkim=pass/i.exec(dkimValue);

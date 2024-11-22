@@ -130,6 +130,21 @@ describe('getAuthenticationHeadersFromAPI', () => {
 
 		expect(result).toEqual({});
 	});
+
+	// adding this test in skip mode to document a real case result header
+	// to be handled in the future when the implementation is finalized
+	it.skip('should return correct headers when headers are undefined', () => {
+		const headers = {
+			'Authentication-Results': [
+				'mtaprx2.zextras.com (amavis); dkim=pass (2048-bit key)\r\n header.d=foundever.com header.b="LG6GLm4E"; dkim=pass (1024-bit key)\r\n header.d=sitel.onmicrosoft.com header.b="wbHUtrcT"',
+				'esa17.sitel.iphmx.com; dkim=pass (signature verified) header.i=@sitel.onmicrosoft.com'
+			]
+		};
+
+		const result = getAuthenticationHeadersFromAPI(headers);
+
+		expect(result).toEqual({});
+	});
 });
 
 describe('getSensitivityHeaderFromAPI', () => {
