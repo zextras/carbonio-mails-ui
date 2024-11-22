@@ -225,7 +225,9 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item }) => {
 				limit: LIST_LIMIT.INITIAL_LIMIT,
 				sortBy: sortOrder,
 				types:
-					item.id === FOLDERS.DRAFTS || typeof zimbraPrefGroupMailBy !== 'string'
+					item.id === FOLDERS.DRAFTS ||
+					item.id === FOLDERS.TRASH ||
+					typeof zimbraPrefGroupMailBy !== 'string'
 						? 'message'
 						: zimbraPrefGroupMailBy
 			})
