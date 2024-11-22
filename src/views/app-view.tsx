@@ -3,13 +3,13 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { Container, Spinner } from '@zextras/carbonio-design-system';
 import React, { FC, Suspense, lazy, useEffect, useMemo, useState, useRef } from 'react';
 
 import { setAppContext, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { includes } from 'lodash';
 import moment from 'moment';
 
+import { Spinner } from '../assets/spinner';
 import { AppContext } from '../types';
 import { FolderView } from './folder-view';
 import { LayoutSelector } from './layout-selector';
@@ -24,13 +24,7 @@ const LazyDetailPanel = lazy(
 );
 
 const DetailPanel = (): React.JSX.Element => (
-	<Suspense
-		fallback={
-			<Container>
-				<Spinner color={'primary'} />
-			</Container>
-		}
-	>
+	<Suspense fallback={<Spinner />}>
 		<LazyDetailPanel />
 	</Suspense>
 );
