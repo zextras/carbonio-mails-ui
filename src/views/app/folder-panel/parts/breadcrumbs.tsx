@@ -75,20 +75,22 @@ export const Breadcrumbs: FC<{
 							}}
 						/>
 					</Tooltip>
-					<Text
-						size="medium"
-						style={{ marginLeft: '0.5rem' }}
-						data-testid="breadcrumb-path"
-						color="gray1"
-					>
-						{folderPathFirstPart.concat(folderPathLastPart)}
-					</Text>
+					{folderPathFirstPart?.trim()?.length > 0 && (
+						<Text
+							size="medium"
+							style={{ marginLeft: '0.5rem' }}
+							data-testid="BreadcrumbPathStart"
+							color="gray1"
+						>
+							{folderPathFirstPart}
+						</Text>
+					)}
 					<Text size="medium" style={{ marginLeft: '0.5rem' }} data-testid="BreadcrumbPathEnd">
 						{folderPathLastPart}
 					</Text>
 				</Row>
 				<Row>
-					<Text size="extrasmall" data-testid="breadcrumb-count">
+					<Text size="extrasmall" data-testid="BreadcrumbCount">
 						{itemsCount}
 					</Text>
 					<Padding right="large" />
