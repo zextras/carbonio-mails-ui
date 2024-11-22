@@ -28,7 +28,6 @@ import {
 	SoapMailParticipant
 } from '../types';
 import {
-	getAuthenticationHeadersFromAPI,
 	getCreationDateFromMailHeadersFromAPI,
 	getMessageIsFromDistributionListFromAPI,
 	getMessageIsFromExternalDomainFromAPI,
@@ -356,7 +355,7 @@ export const normalizeMailMessageFromSoap = (
 	const normalizedMailHeaders: MailHeaders = {
 		signature: m?.signature,
 		messageIsFromExternalDomain: getMessageIsFromExternalDomainFromAPI(m._attrs, ownerAccount),
-		authenticationHeaders: getAuthenticationHeadersFromAPI(m._attrs),
+		// authenticationHeaders: getAuthenticationHeadersFromAPI(m._attrs),
 		sensitivity: getSensitivityHeaderFromAPI(m._attrs),
 		messageIdFromMailHeaders: getMessageIdFromMailHeadersFromAPI(m._attrs),
 		creationDateFromMailHeaders: getCreationDateFromMailHeadersFromAPI(m._attrs),
