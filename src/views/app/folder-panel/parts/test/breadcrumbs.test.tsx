@@ -6,8 +6,9 @@
 import React from 'react';
 
 import { act, screen } from '@testing-library/react';
+import { useTheme } from '@zextras/carbonio-design-system';
 
-import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
+import { setupHook, setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
 import { getFolderPathForBreadcrumb } from '../../../../../helpers/folders';
 import { generateStore } from '../../../../../tests/generators/store';
 import { Breadcrumbs } from '../breadcrumbs';
@@ -37,26 +38,50 @@ describe('Breadcrumbs Component', () => {
 	it('renders the Breadcrumbs component', () => {
 		const store = generateStore();
 		setupTest(<Breadcrumbs {...defaultProps} />, { store });
-		expect(screen.getByTestId('breadcrumb-path')).toBeInTheDocument();
-		expect(screen.getByTestId('breadcrumb-count')).toBeInTheDocument();
+		expect(screen.getByTestId('BreadcrumbPathStart')).toBeInTheDocument();
+		expect(screen.getByTestId('BreadcrumbCount')).toBeInTheDocument();
 	});
 
-	it('displays the correct folder path', () => {
+	it('displays the correct folder starting path', () => {
 		const store = generateStore();
 		setupTest(<Breadcrumbs {...defaultProps} />, { store });
-		expect(screen.getByTestId('breadcrumb-path')).toHaveTextContent('root/folder/subfolder');
+		expect(screen.getByTestId('BreadcrumbPathStart')).toHaveTextContent('root/folder/');
+	});
+
+	it('the starting path has a gray1 color', () => {
+		const store = generateStore();
+		setupTest(<Breadcrumbs {...defaultProps} />, { store });
+		const { result } = setupHook(useTheme);
+		expect(screen.getByTestId('BreadcrumbPathStart')).toHaveStyle(
+			`color: ${result.current.palette.gray1.regular}`
+		);
+	});
+
+	it('displays the correct folder ending path', () => {
+		const store = generateStore();
+		setupTest(<Breadcrumbs {...defaultProps} />, { store });
+		expect(screen.getByTestId('BreadcrumbPathEnd')).toHaveTextContent('subfolder');
+	});
+
+	it('the ending path has a text color', () => {
+		const store = generateStore();
+		setupTest(<Breadcrumbs {...defaultProps} />, { store });
+		const { result } = setupHook(useTheme);
+		expect(screen.getByTestId('BreadcrumbPathEnd')).toHaveStyle(
+			`color: ${result.current.palette.text.regular}`
+		);
 	});
 
 	it('displays the correct items count', () => {
 		const store = generateStore();
 		setupTest(<Breadcrumbs {...defaultProps} />, { store });
-		expect(screen.getByTestId('breadcrumb-count')).toHaveTextContent('5');
+		expect(screen.getByTestId('BreadcrumbCount')).toHaveTextContent('5');
 	});
 
 	it('displays the correct items count when count exceeds 100', () => {
 		const store = generateStore();
 		setupTest(<Breadcrumbs {...defaultProps} itemsCount={1_000} />, { store });
-		expect(screen.getByTestId('breadcrumb-count')).toHaveTextContent('1000');
+		expect(screen.getByTestId('BreadcrumbCount')).toHaveTextContent('1000');
 	});
 
 	it('toggles selection mode when SelectIconCheckbox is clicked', async () => {
