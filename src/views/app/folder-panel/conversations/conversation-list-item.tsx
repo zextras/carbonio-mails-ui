@@ -80,10 +80,12 @@ export const ConversationListItemActionWrapper = ({
 		() => <ConversationPreviewPanel conversation={item} isInsideExtraWindow />,
 		[item]
 	);
+	const [t] = useTranslation();
 	const {
 		replyDescriptor,
 		replyAllDescriptor,
 		forwardDescriptor,
+		forwardAsAttachmentDescriptor,
 		moveToTrashDescriptor,
 		deletePermanentlyDescriptor,
 		setAsReadDescriptor,
@@ -109,6 +111,7 @@ export const ConversationListItemActionWrapper = ({
 			replyDescriptor,
 			replyAllDescriptor,
 			forwardDescriptor,
+			forwardAsAttachmentDescriptor,
 			moveToTrashDescriptor,
 			deletePermanentlyDescriptor,
 			setAsReadDescriptor,
@@ -121,6 +124,7 @@ export const ConversationListItemActionWrapper = ({
 			replyDescriptor,
 			replyAllDescriptor,
 			forwardDescriptor,
+			forwardAsAttachmentDescriptor,
 			moveToTrashDescriptor,
 			deletePermanentlyDescriptor,
 			setAsReadDescriptor,
@@ -136,7 +140,16 @@ export const ConversationListItemActionWrapper = ({
 			[
 				normalizeDropdownActionItem(replyDescriptor),
 				normalizeDropdownActionItem(replyAllDescriptor),
-				normalizeDropdownActionItem(forwardDescriptor),
+				{
+					id: 'ForwardMenu',
+					icon: 'Forward',
+					label: t('action.forward', 'Forward'),
+					disabled: !forwardDescriptor.canExecute() && !forwardAsAttachmentDescriptor.canExecute(),
+					items: [
+						normalizeDropdownActionItem(forwardDescriptor),
+						normalizeDropdownActionItem(forwardAsAttachmentDescriptor)
+					]
+				},
 				normalizeDropdownActionItem(moveToTrashDescriptor),
 				normalizeDropdownActionItem(deletePermanentlyDescriptor),
 				normalizeDropdownActionItem(setAsReadDescriptor),
@@ -156,6 +169,7 @@ export const ConversationListItemActionWrapper = ({
 			replyDescriptor,
 			replyAllDescriptor,
 			forwardDescriptor,
+			forwardAsAttachmentDescriptor,
 			moveToTrashDescriptor,
 			deletePermanentlyDescriptor,
 			setAsReadDescriptor,
@@ -169,7 +183,8 @@ export const ConversationListItemActionWrapper = ({
 			restoreFolderDescriptor,
 			printDescriptor,
 			previewOnSeparatedWindowDescriptor,
-			showOriginalDescriptor
+			showOriginalDescriptor,
+			t
 		]
 	);
 	return (
