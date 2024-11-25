@@ -11,7 +11,9 @@ import { noop } from 'lodash';
 
 import { FOLDERS } from '../../../../../carbonio-ui-commons/constants/folders';
 import { ParticipantRole } from '../../../../../carbonio-ui-commons/constants/participants';
+import { useTags } from '../../../../../carbonio-ui-commons/store/zustand/tags/hooks';
 import { generateFolders } from '../../../../../carbonio-ui-commons/test/mocks/folders/folders-generator';
+import { tags as mockTags } from '../../../../../carbonio-ui-commons/test/mocks/tags/tags';
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
 import type { Folder } from '../../../../../carbonio-ui-commons/types/folder';
 import { FOLDERS_DESCRIPTORS } from '../../../../../constants';
@@ -20,6 +22,10 @@ import { generateMessage } from '../../../../../tests/generators/generateMessage
 import { generateStore } from '../../../../../tests/generators/store';
 import type { MessageListItemProps } from '../../../../../types';
 import { MessageListItem } from '../message-list-item';
+
+jest.mock('../../../../../carbonio-ui-commons/store/zustand/tags/hooks', () => ({
+	useTags: jest.fn()
+}));
 
 describe.each`
 	type                     | isSearchModule
@@ -39,6 +45,7 @@ describe.each`
 		depth: 1,
 		children: []
 	};
+
 	const folders = {
 		...generateFolders(),
 		[FOLDERS_DESCRIPTORS.USER_DEFINED.id]: userFolder
@@ -59,6 +66,7 @@ describe.each`
 		`(
 			`(case #$case) the avatar $assertion.desc for a message in $folder.desc folder`,
 			async ({ folder, assertion }) => {
+				(useTags as jest.Mock).mockReturnValue(mockTags);
 				const msg = generateMessage({ folderId: folder.id });
 
 				const props: MessageListItemProps = {
@@ -100,6 +108,7 @@ describe.each`
 		`(
 			`(case #$case) the date $assertion.desc for a message in $folder.desc folder`,
 			async ({ folder, assertion }) => {
+				(useTags as jest.Mock).mockReturnValue(mockTags);
 				const receiveDate = Date.parse('2023-04-07T12:59:06');
 				const msg = generateMessage({ receiveDate, folderId: folder.id });
 
@@ -146,6 +155,7 @@ describe.each`
 		`(
 			`(case #$case) if set, the subject $assertion.desc for a message in $folder.desc folder`,
 			async ({ folder, assertion }) => {
+				(useTags as jest.Mock).mockReturnValue(mockTags);
 				const subject = 'This is an interesting subject';
 				const msg = generateMessage({ subject, folderId: folder.id });
 
@@ -193,6 +203,7 @@ describe.each`
 		`(
 			`(case #$case) if set, the subject $assertion.desc for a message in $folder.desc folder`,
 			async ({ folder, assertion }) => {
+				(useTags as jest.Mock).mockReturnValue(mockTags);
 				const subject = '';
 				const msg = generateMessage({ subject, folderId: folder.id });
 
@@ -240,6 +251,7 @@ describe.each`
 		`(
 			`(case #$case) the sender label $assertion.desc for a message in $folder.desc folder`,
 			async ({ folder, assertion }) => {
+				(useTags as jest.Mock).mockReturnValue(mockTags);
 				const msg = generateMessage({ folderId: folder.id });
 
 				const props: MessageListItemProps = {
@@ -284,6 +296,7 @@ describe.each`
 		`(
 			`(case #$case) the sender name must contain the sender name for a message in $folder.desc folder`,
 			async ({ folder, senderAddress, labelContent }) => {
+				(useTags as jest.Mock).mockReturnValue(mockTags);
 				const from = { type: ParticipantRole.FROM, address: senderAddress };
 				const msg = generateMessage({ from, folderId: folder.id });
 
@@ -556,6 +569,7 @@ describe('in the trash folder', () => {
 			}
 		});
 
+		(useTags as jest.Mock).mockReturnValue(mockTags);
 		setupTest(<MessageListItem {...props} />, { store });
 		const participantsLabel = screen.getByTestId('participants-name-label');
 		expect(participantsLabel).toHaveTextContent('mario');
