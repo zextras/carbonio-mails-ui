@@ -142,7 +142,9 @@ describe('create-filter-modal', () => {
 		});
 
 		makeListItemsVisible();
-
-		expect(screen.getByText(/junk/i)).toBeInTheDocument();
+		act(() => {
+			jest.advanceTimersByTime(500);
+		});
+		expect(screen.getByText(/junk/i)).toBeVisible();
 	});
 });
