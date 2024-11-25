@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.19.4](https://github.com/zextras/carbonio-mails-ui/compare/v1.19.3...v1.19.4) (2024-11-25)
+
+
+### Bug Fixes
+
+* CO-1694 added Forward as attachment menu for single-message conversations ([e72e7bb](https://github.com/zextras/carbonio-mails-ui/commit/e72e7bb3d025f3879e218893b4617dd4355e2c66))
+
 ### [1.19.3](https://github.com/zextras/carbonio-mails-ui/compare/v1.19.2...v1.19.3) (2024-11-22)
 
 
