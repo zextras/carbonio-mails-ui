@@ -30,6 +30,9 @@ import { DeletedMessageFromAPI } from './types';
 jest.mock('./carbonio-ui-commons/worker', () => ({
 	folderWorker: {
 		postMessage: jest.fn()
+	},
+	tagsWorker: {
+		postMessage: jest.fn()
 	}
 }));
 
