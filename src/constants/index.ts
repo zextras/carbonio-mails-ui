@@ -385,6 +385,10 @@ export const ConversationActionsDescriptors = {
 		id: 'conversation-forward',
 		desc: 'Forward'
 	},
+	FORWARD_AS_ATTACHMENT: {
+		id: 'conversation-forward_as_attachment',
+		desc: 'Forward as attachment'
+	},
 	DELETE_PERMANENTLY: {
 		id: 'delete-permanently',
 		desc: 'Delete permanently'
