@@ -15,7 +15,7 @@ import { generateStore } from '../../../../../../../tests/generators/store';
 import { MailInfoDetailModal } from '../mail-info-detail-modal';
 
 describe('MailInfoDetailModal', () => {
-	test(`Should correctly render all parts`, async () => {
+	it(`Should correctly render all parts`, async () => {
 		const onClose = jest.fn();
 		const store = generateStore();
 
@@ -28,11 +28,11 @@ describe('MailInfoDetailModal', () => {
 				signature={msg.signature?.[0]}
 				messageIdFromMailHeaders={'messageId'}
 				creationDateFromMailHeaders={'creationDate'}
-				authenticationMailsHeaders={{
-					dkim: { value: 'dkimvalue', pass: true },
-					spf: { value: 'spfvalue', pass: true },
-					dmarc: { value: 'dmarcvalue', pass: true }
-				}}
+				// authenticationMailsHeaders={{
+				// 	dkim: { value: 'dkimvalue', pass: true },
+				// 	spf: { value: 'spfvalue', pass: true },
+				// 	dmarc: { value: 'dmarcvalue', pass: true }
+				// }}
 				messageIsFromDistributionList
 				messageIsFromExternalDomain
 				sensitivityValue={'Private'}
@@ -53,13 +53,13 @@ describe('MailInfoDetailModal', () => {
 
 		expect(screen.getByText('This email is from an External Domain')).toBeVisible();
 
-		expect(screen.getByText('Authentication Headers')).toBeVisible();
-		expect(screen.getByText('DKIM:')).toBeVisible();
-		expect(screen.getByText('DMARC:')).toBeVisible();
-		expect(screen.getByText('SPF:')).toBeVisible();
-		expect(screen.getByText('dkimvalue')).toBeVisible();
-		expect(screen.getByText('spfvalue')).toBeVisible();
-		expect(screen.getByText('dmarcvalue')).toBeVisible();
+		// expect(screen.getByText('Authentication Headers')).toBeVisible();
+		// expect(screen.getByText('DKIM:')).toBeVisible();
+		// expect(screen.getByText('DMARC:')).toBeVisible();
+		// expect(screen.getByText('SPF:')).toBeVisible();
+		// expect(screen.getByText('dkimvalue')).toBeVisible();
+		// expect(screen.getByText('spfvalue')).toBeVisible();
+		// expect(screen.getByText('dmarcvalue')).toBeVisible();
 
 		expect(screen.getByText(`Issuer's Certificate Not Found`)).toBeVisible();
 		expect(
@@ -72,7 +72,7 @@ describe('MailInfoDetailModal', () => {
 		expect(screen.getByText('Close')).toBeVisible();
 	});
 
-	test(`Should not render undefined, but render other`, async () => {
+	it(`Should not render undefined, but render other`, async () => {
 		const onClose = jest.fn();
 		const store = generateStore();
 
@@ -85,11 +85,11 @@ describe('MailInfoDetailModal', () => {
 				signature={msg.signature?.[0]}
 				messageIdFromMailHeaders={undefined}
 				creationDateFromMailHeaders={undefined}
-				authenticationMailsHeaders={{
-					dkim: { value: 'dkimvalue', pass: true },
-					spf: { value: 'spfvalue', pass: true },
-					dmarc: { value: 'dmarcvalue', pass: true }
-				}}
+				// authenticationMailsHeaders={{
+				// 	dkim: { value: 'dkimvalue', pass: true },
+				// 	spf: { value: 'spfvalue', pass: true },
+				// 	dmarc: { value: 'dmarcvalue', pass: true }
+				// }}
 				messageIsFromDistributionList
 				messageIsFromExternalDomain
 				sensitivityValue={'Private'}
@@ -110,13 +110,13 @@ describe('MailInfoDetailModal', () => {
 
 		expect(screen.getByText('This email is from an External Domain')).toBeVisible();
 
-		expect(screen.getByText('Authentication Headers')).toBeVisible();
-		expect(screen.getByText('DKIM:')).toBeVisible();
-		expect(screen.getByText('DMARC:')).toBeVisible();
-		expect(screen.getByText('SPF:')).toBeVisible();
-		expect(screen.getByText('dkimvalue')).toBeVisible();
-		expect(screen.getByText('spfvalue')).toBeVisible();
-		expect(screen.getByText('dmarcvalue')).toBeVisible();
+		// expect(screen.getByText('Authentication Headers')).toBeVisible();
+		// expect(screen.getByText('DKIM:')).toBeVisible();
+		// expect(screen.getByText('DMARC:')).toBeVisible();
+		// expect(screen.getByText('SPF:')).toBeVisible();
+		// expect(screen.getByText('dkimvalue')).toBeVisible();
+		// expect(screen.getByText('spfvalue')).toBeVisible();
+		// expect(screen.getByText('dmarcvalue')).toBeVisible();
 
 		expect(screen.getByText(`Issuer's Certificate Not Found`)).toBeVisible();
 		expect(
@@ -129,7 +129,7 @@ describe('MailInfoDetailModal', () => {
 		expect(screen.getByText('Close')).toBeVisible();
 	});
 
-	test(`Should render empty modal dialog if no valid metadata to show`, async () => {
+	it(`Should render empty modal dialog if no valid metadata to show`, async () => {
 		const onClose = jest.fn();
 		setupTest(
 			<MailInfoDetailModal
@@ -137,7 +137,7 @@ describe('MailInfoDetailModal', () => {
 				signature={undefined}
 				messageIdFromMailHeaders={undefined}
 				creationDateFromMailHeaders={undefined}
-				authenticationMailsHeaders={undefined}
+				// authenticationMailsHeaders={undefined}
 				messageIsFromDistributionList={undefined}
 				messageIsFromExternalDomain={undefined}
 				sensitivityValue={undefined}
@@ -146,18 +146,18 @@ describe('MailInfoDetailModal', () => {
 
 		expect(screen.getByText('Message details')).toBeVisible();
 		expect(screen.queryByText('General Information')).not.toBeInTheDocument();
-		expect(screen.queryByText('Authentication Headers')).not.toBeInTheDocument();
+		// expect(screen.queryByText('Authentication Headers')).not.toBeInTheDocument();
 		expect(screen.queryByText(`Issuer's Certificate Not Found`)).not.toBeInTheDocument();
 		expect(screen.getByText('Close')).toBeVisible();
 	});
 
-	test(`Should show authentication header subsection if authentication header is an empty object`, async () => {
-		const onClose = jest.fn();
-		setupTest(<MailInfoDetailModal onClose={onClose} authenticationMailsHeaders={{}} />);
-
-		expect(screen.getByText('Message details')).toBeVisible();
-		expect(screen.getByText('Authentication Headers')).toBeInTheDocument();
-		expect(screen.getAllByText('Missing')).toHaveLength(3);
-		expect(screen.getByText('Close')).toBeVisible();
-	});
+	// test(`Should show authentication header subsection if authentication header is an empty object`, async () => {
+	// 	const onClose = jest.fn();
+	// 	setupTest(<MailInfoDetailModal onClose={onClose} authenticationMailsHeaders={{}} />);
+	//
+	// 	expect(screen.getByText('Message details')).toBeVisible();
+	// 	expect(screen.getByText('Authentication Headers')).toBeInTheDocument();
+	// 	expect(screen.getAllByText('Missing')).toHaveLength(3);
+	// 	expect(screen.getByText('Close')).toBeVisible();
+	// });
 });

@@ -6,6 +6,7 @@
 import React, { ReactNode, useMemo } from 'react';
 
 import { ContainerProps } from '@zextras/carbonio-design-system';
+import { useTranslation } from 'react-i18next';
 
 import { normalizeDropdownActionItem } from '../../../../helpers/actions';
 import { isDraft } from '../../../../helpers/folders';
@@ -66,6 +67,7 @@ export const MessageListItemActionWrapper = ({
 
 	const tagItem = useTagDropdownItem(applyTagDescriptor, item.tags);
 	const draftItem = isDraft(item.parent);
+	const [t] = useTranslation();
 
 	const dropdownItems = useMemo(
 		() =>
@@ -75,7 +77,7 @@ export const MessageListItemActionWrapper = ({
 				{
 					id: 'ForwardMenu',
 					icon: 'Forward',
-					label: 'Forward',
+					label: t('action.forward', 'Forward'),
 					items: [
 						normalizeDropdownActionItem(forwardDescriptor),
 						normalizeDropdownActionItem(forwardAsAttachmentDescriptor)
@@ -127,7 +129,8 @@ export const MessageListItemActionWrapper = ({
 			showOriginalDescriptor,
 			tagItem,
 			unflagDescriptor,
-			draftItem
+			draftItem,
+			t
 		]
 	);
 
