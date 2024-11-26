@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.19.5](https://github.com/zextras/carbonio-mails-ui/compare/v1.19.4...v1.19.5) (2024-11-26)
+
+
+### Bug Fixes
+
+* remove dark mode override class in htm message renderer ([63364d2](https://github.com/zextras/carbonio-mails-ui/commit/63364d215056ed1ef806b6cd97fce09afde64f6e))
+
 ### [1.19.4](https://github.com/zextras/carbonio-mails-ui/compare/v1.19.3...v1.19.4) (2024-11-25)
 
 
@@ -18,6 +25,7 @@ All notable changes to this project will be documented in this file. See [standa
 * breadcrumbs will show the correct path with the right colors ([2013c0a](https://github.com/zextras/carbonio-mails-ui/commit/2013c0a9a715f53e616adedd55ed88990860b224))
 
 ### [1.19.2](https://github.com/zextras/carbonio-mails-ui/compare/v1.19.1...v1.19.2) (2024-11-22)
+
 ### [1.19.1](https://github.com/zextras/carbonio-mails-ui/compare/v1.19.0...v1.19.1) (2024-11-20)
 
 
