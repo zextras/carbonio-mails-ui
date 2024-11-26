@@ -298,6 +298,10 @@ export const MessageActionsDescriptors = {
 		id: 'message-forward',
 		desc: 'Forward'
 	},
+	FORWARD_AS_ATTACHMENT: {
+		id: 'message-forward_as_attachment',
+		desc: 'Forward as attachment'
+	},
 	EDIT_AS_NEW: {
 		id: 'message-edit_as_new',
 		desc: 'Edit as new'
@@ -380,6 +384,10 @@ export const ConversationActionsDescriptors = {
 	FORWARD: {
 		id: 'conversation-forward',
 		desc: 'Forward'
+	},
+	FORWARD_AS_ATTACHMENT: {
+		id: 'conversation-forward_as_attachment',
+		desc: 'Forward as attachment'
 	},
 	DELETE_PERMANENTLY: {
 		id: 'delete-permanently',
@@ -484,6 +492,7 @@ export const EditViewActions = {
 	REPLY: 'reply',
 	REPLY_ALL: 'replyAll',
 	FORWARD: 'forward',
+	FORWARD_AS_ATTACHMENT: 'forwardAsAttachment',
 	MAIL_TO: 'mailTo',
 	COMPOSE: 'compose',
 	PREFILL_COMPOSE: 'prefillCompose',

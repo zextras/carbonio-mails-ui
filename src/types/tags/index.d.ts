@@ -11,7 +11,8 @@ import {
 	CreateModalFn,
 	ItemType as AccordionItemType
 } from '@zextras/carbonio-design-system';
-import { Tag } from '@zextras/carbonio-shell-ui';
+
+import { Tag } from '../../carbonio-ui-commons/types/tags';
 
 export type TagActionItemType = {
 	id: string;

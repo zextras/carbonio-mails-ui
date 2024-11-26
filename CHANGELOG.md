@@ -2,6 +2,52 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.19.4](https://github.com/zextras/carbonio-mails-ui/compare/v1.19.3...v1.19.4) (2024-11-25)
+
+
+### Bug Fixes
+
+* CO-1694 added Forward as attachment menu for single-message conversations ([e72e7bb](https://github.com/zextras/carbonio-mails-ui/commit/e72e7bb3d025f3879e218893b4617dd4355e2c66))
+
+### [1.19.3](https://github.com/zextras/carbonio-mails-ui/compare/v1.19.2...v1.19.3) (2024-11-22)
+
+
+### Bug Fixes
+
+* breadcrumbs will show the correct path with the right colors ([1c2117f](https://github.com/zextras/carbonio-mails-ui/commit/1c2117fff7eec2f27643111a5cdb973b552c2c65))
+* breadcrumbs will show the correct path with the right colors ([2013c0a](https://github.com/zextras/carbonio-mails-ui/commit/2013c0a9a715f53e616adedd55ed88990860b224))
+
+### [1.19.2](https://github.com/zextras/carbonio-mails-ui/compare/v1.19.1...v1.19.2) (2024-11-22)
+### [1.19.1](https://github.com/zextras/carbonio-mails-ui/compare/v1.19.0...v1.19.1) (2024-11-20)
+
+
+### Bug Fixes
+
+* applying sync changes once ([8f6adfb](https://github.com/zextras/carbonio-mails-ui/commit/8f6adfbb7cb6697e32d2a6ea52c1b209b6e999ba))
+
+## [1.19.0](https://github.com/zextras/carbonio-mails-ui/compare/v1.18.4...v1.19.0) (2024-11-18)
+
+
+### Features
+
+* [CO-1352] Show message metadata from mail headers  ([#687](https://github.com/zextras/carbonio-mails-ui/issues/687)) ([fd0d1e4](https://github.com/zextras/carbonio-mails-ui/commit/fd0d1e4ba4511dc59102aa37e843d11cb667b9b1))
+* [CO-1501] Show exact number of results loaded by the search list ([#686](https://github.com/zextras/carbonio-mails-ui/issues/686)) ([26241be](https://github.com/zextras/carbonio-mails-ui/commit/26241be98a75247c12254ec03dd5b4514be93478))
+* add mail editor toolbar button to allow tables creation  ([#651](https://github.com/zextras/carbonio-mails-ui/issues/651)) ([f37c365](https://github.com/zextras/carbonio-mails-ui/commit/f37c365041b33b09036894dc4593389efa834b13))
+* Allow previewing image/tiff file types using preview service ([#673](https://github.com/zextras/carbonio-mails-ui/issues/673)) ([e934d18](https://github.com/zextras/carbonio-mails-ui/commit/e934d186f8229947f93e51c93c896071e932cff9))
+
+
+### Bug Fixes
+
+* [CO-1315] avoid API call loop in case folder request fails ([#664](https://github.com/zextras/carbonio-mails-ui/issues/664)) ([e0b4f2a](https://github.com/zextras/carbonio-mails-ui/commit/e0b4f2aa34ccf3cb76cf858468bc545c18365913))
+* close the modal for the execution of an incoming message filter ([#674](https://github.com/zextras/carbonio-mails-ui/issues/674)) ([a28e58e](https://github.com/zextras/carbonio-mails-ui/commit/a28e58e210398152a54a0026ffe82bdbc4379e8b))
+* CO-1270 rendering of mails with large size ([#677](https://github.com/zextras/carbonio-mails-ui/issues/677)) ([bbb79b6](https://github.com/zextras/carbonio-mails-ui/commit/bbb79b6c75a25485065aebc2d5b3283a41c067f5))
+* entire msg show on message preview ([#695](https://github.com/zextras/carbonio-mails-ui/issues/695)) ([670bf90](https://github.com/zextras/carbonio-mails-ui/commit/670bf903bf368a74e4261258edca8500e099aaaf))
+* import translation function from shell ([#682](https://github.com/zextras/carbonio-mails-ui/issues/682)) ([e9b5e53](https://github.com/zextras/carbonio-mails-ui/commit/e9b5e53ac0cf7bf314eae4557ee642d0d4e957ab))
+* move useInitializeFolders to app.tsx ([#670](https://github.com/zextras/carbonio-mails-ui/issues/670)) ([ffd3f04](https://github.com/zextras/carbonio-mails-ui/commit/ffd3f04b66755b2391d5aedbbbd6dcae178e8f8d))
+* request catalog service on app loading ([cb7ccaa](https://github.com/zextras/carbonio-mails-ui/commit/cb7ccaae3ede94c0e24694744f8b0c84836f157b))
+* setting app context properly ([0f29fa8](https://github.com/zextras/carbonio-mails-ui/commit/0f29fa8c98ad86773a8b2784e2399e34264ef125))
+* slow response in email composer for long email ([c80a463](https://github.com/zextras/carbonio-mails-ui/commit/c80a46358d5d795239d2b62f877b3b530351004b))
+
 ### [1.18.4](https://github.com/zextras/carbonio-mails-ui/compare/v1.18.3...v1.18.4) (2024-10-10)
 
 

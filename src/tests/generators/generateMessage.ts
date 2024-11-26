@@ -8,7 +8,7 @@ import { faker } from '@faker-js/faker';
 
 import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
 import { ParticipantRole } from '../../carbonio-ui-commons/constants/participants';
-import { convertHtmlToPlainText } from '../../carbonio-ui-commons/utils/text/html';
+import { convertHtmlToPlainText } from '../../commons/utilities';
 import { MailMessage, Participant, Sensitivity } from '../../types';
 
 /**
@@ -149,7 +149,7 @@ const generateMessage = ({
 	tags,
 	urgent: false,
 	messageIsFromExternalDomain: false,
-	authenticationHeaders: {},
+	// authenticationHeaders: {},
 	sensitivity,
 	messageIdFromMailHeaders,
 	creationDateFromMailHeaders,

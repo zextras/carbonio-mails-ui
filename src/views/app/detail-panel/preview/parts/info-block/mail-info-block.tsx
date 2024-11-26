@@ -10,7 +10,6 @@ import { useTranslation } from 'react-i18next';
 
 import { DistributionListIcon } from './distribution-list-icon';
 import { ExternalDomainIcon } from './external-domain-icon';
-import { MailAuthenticationHeaderIcon } from './mail-authentication-header-icon';
 import { MailSensitivityIcon } from './mail-sensitivity-icon';
 import { SmimeIcon } from './smime-icon';
 import { StoreProvider } from '../../../../../../store/redux';
@@ -31,7 +30,7 @@ export const MailInfoBlock = ({ msg }: MailInfoProps): React.JSX.Element | null 
 	const fromDistributionList = msg.messageIsFromDistributionList;
 	const fromExternalDomain = msg.messageIsFromExternalDomain;
 	const sensitivityHeader = msg.sensitivity;
-	const authenticationMailsHeaders = msg.authenticationHeaders;
+	// const authenticationMailsHeaders = msg.authenticationHeaders;
 
 	const showMailDetailsModal = useCallback(
 		(event: React.MouseEvent): void => {
@@ -51,7 +50,7 @@ export const MailInfoBlock = ({ msg }: MailInfoProps): React.JSX.Element | null 
 								messageIdFromMailHeaders={messageIdFromHeaders}
 								messageIsFromDistributionList={fromDistributionList}
 								messageIsFromExternalDomain={fromExternalDomain}
-								authenticationMailsHeaders={authenticationMailsHeaders}
+								// authenticationMailsHeaders={authenticationMailsHeaders}
 								sensitivityValue={sensitivityHeader}
 							/>
 						</StoreProvider>
@@ -67,7 +66,6 @@ export const MailInfoBlock = ({ msg }: MailInfoProps): React.JSX.Element | null 
 			messageIdFromHeaders,
 			fromDistributionList,
 			fromExternalDomain,
-			authenticationMailsHeaders,
 			sensitivityHeader,
 			closeModal
 		]
@@ -79,7 +77,7 @@ export const MailInfoBlock = ({ msg }: MailInfoProps): React.JSX.Element | null 
 		signature ||
 		fromExternalDomain ||
 		sensitivityHeader ||
-		authenticationMailsHeaders ||
+		// authenticationMailsHeaders ||
 		fromDistributionList;
 
 	return (
@@ -87,9 +85,9 @@ export const MailInfoBlock = ({ msg }: MailInfoProps): React.JSX.Element | null 
 			{signature && <SmimeIcon signature={signature} />}
 			{fromExternalDomain && <ExternalDomainIcon />}
 			{sensitivityHeader && <MailSensitivityIcon sensitivity={sensitivityHeader} />}
-			{authenticationMailsHeaders && (
-				<MailAuthenticationHeaderIcon authenticationInfo={authenticationMailsHeaders} />
-			)}
+			{/* {authenticationMailsHeaders && ( */}
+			{/* 	<MailAuthenticationHeaderIcon authenticationInfo={authenticationMailsHeaders} /> */}
+			{/* )} */}
 			{fromDistributionList && <DistributionListIcon />}
 			{showInfoDetails && (
 				<Link size="medium" onClick={showMailDetailsModal}>

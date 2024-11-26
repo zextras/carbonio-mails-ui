@@ -17,19 +17,13 @@ import {
 	Text,
 	Tooltip
 } from '@zextras/carbonio-design-system';
-import {
-	Tag,
-	pushHistory,
-	t,
-	useTags,
-	useUserAccounts,
-	useUserSettings
-} from '@zextras/carbonio-shell-ui';
+import { Tag, pushHistory, t, useUserAccounts, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { filter, forEach, includes, isEmpty, reduce, trimStart, uniqBy } from 'lodash';
 import styled from 'styled-components';
 
 import { SearchConversationMessagesList } from './search-conversation-messages-list';
 import { ZIMBRA_STANDARD_COLORS } from '../../../../carbonio-ui-commons/constants';
+import { useTags } from '../../../../carbonio-ui-commons/store/zustand/tags';
 import { participantToString } from '../../../../commons/utils';
 import { API_REQUEST_STATUS } from '../../../../constants';
 import { useConvPreviewOnSeparatedWindowFn } from '../../../../hooks/actions/use-conv-preview-on-separated-window';

@@ -14,6 +14,7 @@ import { getParticipantsFromMessage } from '../../helpers/messages';
 import { MailMessage, SendMsgResult, SendMsgWithSmartLinksResponse } from '../../types';
 import type { SaveDraftRequest, SaveDraftResponse, SendMsgParameters } from '../../types';
 import { generateMailRequest } from '../editor-slice-utils';
+import { getCertificate } from '../zustand/certificates/certificate';
 import { createSoapSendMsgRequestFromEditor } from '../zustand/editor/editor-transformations';
 
 export const sendMsg = createAsyncThunk<any, { msg: MailMessage }>(
@@ -76,7 +77,13 @@ export const sendMsgFromEditor = createAsyncThunk<SendMsgResult, SendMsgParamete
 				'SendMsg',
 				{
 					_jsns: 'urn:zimbraMail',
-					m: msg
+					m: msg,
+					...(editor.isSmimeSign
+						? {
+								sign: true,
+								...getCertificate({ accountId: identity?.fromAddress ?? '' })
+							}
+						: {})
 				},
 				identity?.ownerAccount ?? undefined
 			);

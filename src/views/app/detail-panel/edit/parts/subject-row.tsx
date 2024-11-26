@@ -9,6 +9,7 @@ import { Container, Icon, Input, Padding, Tooltip } from '@zextras/carbonio-desi
 import { t } from '@zextras/carbonio-shell-ui';
 
 import {
+	useEditorIsSmimeSign,
 	useEditorIsUrgent,
 	useEditorRequestReadReceipt,
 	useEditorSubject
@@ -19,10 +20,11 @@ export type SubjectRowProps = {
 	editorId: MailsEditorV2['id'];
 };
 
-export const SubjectRow: FC<SubjectRowProps> = ({ editorId }: SubjectRowProps) => {
+export const SubjectRow: FC<SubjectRowProps> = ({ editorId }) => {
 	const { subject, setSubject } = useEditorSubject(editorId);
 	const { isUrgent } = useEditorIsUrgent(editorId);
 	const { requestReadReceipt } = useEditorRequestReadReceipt(editorId);
+	const { isSmimeSign } = useEditorIsSmimeSign(editorId);
 
 	const onSubjectChange = useCallback(
 		(event: ChangeEvent<HTMLInputElement>): void => {
@@ -46,7 +48,7 @@ export const SubjectRow: FC<SubjectRowProps> = ({ editorId }: SubjectRowProps) =
 					onChange={onSubjectChange}
 				/>
 			</Container>
-			{(requestReadReceipt || isUrgent) && (
+			{(requestReadReceipt || isUrgent || isSmimeSign) && (
 				<Container
 					width="fit"
 					background={'gray5'}
@@ -56,13 +58,37 @@ export const SubjectRow: FC<SubjectRowProps> = ({ editorId }: SubjectRowProps) =
 					{requestReadReceipt && (
 						<Tooltip label={t('label.request_receipt', 'Request read receipt')}>
 							<Padding right="small">
-								<Icon icon="CheckmarkSquare" color="secondary" size="large" />
+								<Icon
+									icon="CheckmarkSquare"
+									color="secondary"
+									size="large"
+									data-testid="request-receipt-icon"
+								/>
 							</Padding>
 						</Tooltip>
 					)}
 					{isUrgent && (
 						<Tooltip label={t('tooltip.marked_as_important', 'Marked as important')}>
-							<Icon icon="ArrowUpward" color="secondary" size="large" />
+							<Padding right="small">
+								<Icon
+									icon="ArrowUpward"
+									color="secondary"
+									size="large"
+									data-testid="mark-important-icon"
+								/>
+							</Padding>
+						</Tooltip>
+					)}
+					{isSmimeSign && (
+						<Tooltip label={t('tooltip.markedAsSingedSmime', 'Marked as signed (S/MIME)')}>
+							<Padding right="small">
+								<Icon
+									icon="SignatureOutline"
+									color="secondary"
+									size="large"
+									data-testid="use-certificate-icon"
+								/>
+							</Padding>
 						</Tooltip>
 					)}
 				</Container>

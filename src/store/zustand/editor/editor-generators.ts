@@ -15,6 +15,7 @@ import {
 import { getEditor } from './hooks';
 import { ParticipantRole } from '../../../carbonio-ui-commons/constants/participants';
 import { getRootsMap } from '../../../carbonio-ui-commons/store/zustand/folder';
+import { convertHtmlToPlainText } from '../../../commons/utilities';
 import { LineType } from '../../../commons/utils';
 import { EditViewActions, NO_ACCOUNT_NAME } from '../../../constants';
 import {
@@ -31,7 +32,8 @@ import {
 	MailMessage,
 	MailsEditorV2,
 	UnsavedAttachment,
-	Participant
+	Participant,
+	EditorText
 } from '../../../types';
 import {
 	extractBody,
@@ -225,13 +227,14 @@ const generateReplyAndReplyAllMsgEditor = (
 		? from.forwardReplySignatureId
 		: defaultIdentity.forwardReplySignatureId;
 	const textWithSignature = getMailBodyWithSignature(text, signatureId);
+	const richText = replaceCidUrlWithServiceUrl(
+		`${textWithSignature.richText} ${generateReplyText(originalMessage, labels)[1]}`,
+		savedInlineAttachments
+	);
 
 	const textWithSignatureRepliesForwards = {
-		plainText: `${textWithSignature.plainText} ${generateReplyText(originalMessage, labels)[0]}`,
-		richText: replaceCidUrlWithServiceUrl(
-			`${textWithSignature.richText} ${generateReplyText(originalMessage, labels)[1]}`,
-			savedInlineAttachments
-		)
+		plainText: `${textWithSignature.plainText} ${convertHtmlToPlainText(generateReplyText(originalMessage, labels)[1])}`,
+		richText
 	};
 	const accountName = getAddressOwnerAccount(from.address) ?? NO_ACCOUNT_NAME;
 	const isRichText = getUserSettings().prefs?.zimbraPrefComposeFormat === 'html';
@@ -311,7 +314,7 @@ export const generateForwardMsgEditor = (
 		: defaultIdentity.forwardReplySignatureId;
 	const textWithSignature = getMailBodyWithSignature(text, signatureId);
 	const textWithSignatureRepliesForwards = {
-		plainText: `${textWithSignature.plainText} ${generateReplyText(originalMessage, labels)[0]}`,
+		plainText: `${textWithSignature.plainText} ${convertHtmlToPlainText(generateReplyText(originalMessage, labels)[1])}`,
 		richText: replaceCidUrlWithServiceUrl(
 			`${textWithSignature.richText} ${generateReplyText(originalMessage, labels)[1]}`,
 			savedAttachments
@@ -351,15 +354,75 @@ export const generateForwardMsgEditor = (
 	return editor;
 };
 
+export const generateForwardAsAttachmentMsgEditor = (
+	messagesStoreDispatch: AppDispatch,
+	originalMessage: MailMessage,
+	attachments: Array<UnsavedAttachment>
+): MailsEditorV2 => {
+	const editorId = uuid();
+
+	const text = {
+		plainText: `\n\n${LineType.SIGNATURE_PRE_SEP}\n`,
+		richText: `<p></p><div class="${LineType.SIGNATURE_CLASS}"></div>`
+	};
+	const defaultIdentity = getDefaultIdentity();
+	const folderRoots = getRootsMap();
+	const from = getRecipientReplyIdentity(folderRoots, originalMessage);
+	const signatureId = from.identityId
+		? from.forwardReplySignatureId
+		: defaultIdentity.forwardReplySignatureId;
+	const textWithSignature = getMailBodyWithSignature(text, signatureId);
+	const textWithSignatureRepliesForwards = {
+		plainText: `${textWithSignature.plainText}`,
+		richText: `${textWithSignature.richText}`
+	};
+	const isRichText = getUserSettings().prefs?.zimbraPrefComposeFormat === 'html';
+	const editor = {
+		action: EditViewActions.REPLY,
+		identityId: from.identityId ?? defaultIdentity.id,
+		id: editorId,
+		unsavedAttachments: attachments,
+		savedAttachments: [],
+		isRichText,
+		isUrgent: originalMessage.urgent,
+		recipients: {
+			to: [],
+			cc: [],
+			bcc: []
+		},
+		subject: `FWD: ${
+			originalMessage.subject ? originalMessage.subject.replace(FORWARD_REGEX, '') : ''
+		}`,
+		text: textWithSignatureRepliesForwards,
+		requestReadReceipt: false,
+		replyType: 'w',
+		originalId: originalMessage.id,
+		originalMessage,
+		messagesStoreDispatch,
+		size: originalMessage.size,
+		totalSmartLinksSize: 0,
+		signatureId
+	} as MailsEditorV2;
+
+	editor.draftSaveAllowedStatus = computeDraftSaveAllowedStatus(editor);
+	editor.sendAllowedStatus = computeSendAllowedStatus(editor);
+
+	return editor;
+};
+
 export const generateEditAsDraftEditor = (
 	messagesStoreDispatch: AppDispatch,
 	originalMessage: MailMessage
 ): MailsEditorV2 => {
 	const editorId = uuid();
 	const savedAttachments = buildSavedAttachments(originalMessage);
-	const text = {
-		plainText: `${extractBody(originalMessage)[0]}`,
-		richText: replaceCidUrlWithServiceUrl(`${extractBody(originalMessage)[1]}`, savedAttachments)
+	const richText = replaceCidUrlWithServiceUrl(
+		`${extractBody(originalMessage)[1]}`,
+		savedAttachments
+	);
+	const text: EditorText = {
+		plainText: convertHtmlToPlainText(richText),
+		richText
 	};
 
 	const isRichText = getUserSettings().prefs?.zimbraPrefComposeFormat === 'html';
@@ -400,9 +463,13 @@ export const generateEditAsNewEditor = (
 	const editorId = uuid();
 	const savedAttachments = buildSavedAttachments(originalMessage);
 
+	const richText = replaceCidUrlWithServiceUrl(
+		`${extractBody(originalMessage)[1]}`,
+		savedAttachments
+	);
 	const text = {
-		plainText: `${extractBody(originalMessage)[0]}`,
-		richText: replaceCidUrlWithServiceUrl(`${extractBody(originalMessage)[1]}`, savedAttachments)
+		plainText: convertHtmlToPlainText(richText),
+		richText
 	};
 	const isRichText = getUserSettings().prefs?.zimbraPrefComposeFormat === 'html';
 	const fromParticipant = getFromParticipantFromMessage(originalMessage);
@@ -497,6 +564,18 @@ export const generateEditor = ({
 			}
 			if (message) {
 				return generateForwardMsgEditor(messagesStoreDispatch, message);
+			}
+			break;
+		case EditViewActions.FORWARD_AS_ATTACHMENT:
+			if (!id) {
+				throw new Error('Cannot generate a forward editor without a message id');
+			}
+			if (message) {
+				return generateForwardAsAttachmentMsgEditor(
+					messagesStoreDispatch,
+					message,
+					compositionData?.attachments ?? []
+				);
 			}
 			break;
 		case EditViewActions.EDIT_AS_DRAFT:
