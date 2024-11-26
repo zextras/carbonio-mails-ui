@@ -46,7 +46,7 @@ const mockMsg: IncompleteMessage = {
 	sensitivity: 'Private',
 	creationDateFromMailHeaders: '2022-01-01',
 	messageIdFromMailHeaders: 'test-message-id',
-	authenticationHeaders,
+	// authenticationHeaders,
 	messageIsFromDistributionList: true,
 	messageIsFromExternalDomain: true
 } as IncompleteMessage;
@@ -57,19 +57,19 @@ describe('MailInfoBlock', () => {
 		expect(screen.getByText('Show Details')).toBeInTheDocument();
 	});
 
-	it('should show the authentication icon with missing headers tooltip if the passed header is an empty object', async () => {
-		const mockMsg_: IncompleteMessage = {
-			authenticationHeaders: {}
-		} as IncompleteMessage;
-
-		const { user } = setupTest(<MailInfoBlock msg={mockMsg_} />);
-
-		const icon = screen.getByTestId('mail-authentication-header-icon');
-		expect(icon).toBeInTheDocument();
-
-		await user.hover(icon);
-		expect(await screen.findByText('dkim=missing, spf=missing, dmarc=missing')).toBeInTheDocument();
-	});
+	// it('should show the authentication icon with missing headers tooltip if the passed header is an empty object', async () => {
+	// 	const mockMsg_: IncompleteMessage = {
+	// 		authenticationHeaders: {}
+	// 	} as IncompleteMessage;
+	//
+	// 	const { user } = setupTest(<MailInfoBlock msg={mockMsg_} />);
+	//
+	// 	const icon = screen.getByTestId('mail-authentication-header-icon');
+	// 	expect(icon).toBeInTheDocument();
+	//
+	// 	await user.hover(icon);
+	// 	expect(await screen.findByText('dkim=missing, spf=missing, dmarc=missing')).toBeInTheDocument();
+	// });
 
 	it('renders SmimeIcon when signature is present', () => {
 		setupTest(<MailInfoBlock msg={mockMsg} />);
@@ -86,10 +86,10 @@ describe('MailInfoBlock', () => {
 		expect(screen.getByTestId('mail-sensitivity-icon')).toBeInTheDocument();
 	});
 
-	it('renders MailAuthenticationHeaderIcon when authenticationHeaders are present', () => {
-		setupTest(<MailInfoBlock msg={mockMsg} />);
-		expect(screen.getByTestId('mail-authentication-header-icon')).toBeInTheDocument();
-	});
+	// it('renders MailAuthenticationHeaderIcon when authenticationHeaders are present', () => {
+	// 	setupTest(<MailInfoBlock msg={mockMsg} />);
+	// 	expect(screen.getByTestId('mail-authentication-header-icon')).toBeInTheDocument();
+	// });
 
 	it('renders DistributionListIcon when message is from a distribution list', () => {
 		setupTest(<MailInfoBlock msg={mockMsg} />);

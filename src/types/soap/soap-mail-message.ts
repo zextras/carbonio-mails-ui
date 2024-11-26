@@ -6,6 +6,9 @@
 import { type MailVerificationHeader } from './soap';
 import { type SoapMailParticipant } from './soap-mail-participant';
 
+type MailHeaderAttrs = {
+	[K in MailVerificationHeader]: K extends 'Authentication-Results' ? string | string[] : string;
+};
 export type SoapIncompleteMessage = {
 	readonly id: string;
 	/** Conversation id */ cid: string;
@@ -29,7 +32,7 @@ export type SoapIncompleteMessage = {
 	/** Invite */ inv?: Array<any>;
 	/** Shared */ shr?: Array<any>;
 	/** Signature */ signature?: Array<MessageSignature>;
-	/** MailHeader attrs */ _attrs?: Partial<Record<MailVerificationHeader, string>>;
+	/** MailHeader attrs */ _attrs?: Partial<MailHeaderAttrs>;
 };
 
 export type MessageSignature = {

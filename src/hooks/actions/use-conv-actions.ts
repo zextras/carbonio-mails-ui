@@ -10,6 +10,7 @@ import { find } from 'lodash';
 import { useConvApplyTagDescriptor } from './use-conv-apply-tag';
 import { useConvDeletePermanentlyDescriptor } from './use-conv-delete-permanently';
 import { useConvForwardDescriptor } from './use-conv-forward';
+import { useConvForwardAsAttachmentDescriptor } from './use-conv-forward-as-attachment';
 import { useConvMoveToFolderDescriptor } from './use-conv-move-to-folder';
 import { useConvMoveToTrashDescriptor } from './use-conv-move-to-trash';
 import { useConvPreviewOnSeparatedWindowDescriptor } from './use-conv-preview-on-separated-window';
@@ -39,6 +40,7 @@ type ConversationActionsReturnType = {
 	replyDescriptor: UIActionDescriptor;
 	replyAllDescriptor: UIActionDescriptor;
 	forwardDescriptor: UIActionDescriptor;
+	forwardAsAttachmentDescriptor: UIActionDescriptor;
 	moveToTrashDescriptor: UIActionDescriptor;
 	deletePermanentlyDescriptor: UIActionDescriptor;
 	setAsReadDescriptor: UIActionDescriptor;
@@ -81,6 +83,11 @@ export const useConvActions = ({
 		messagesLength: conversation.messages.length
 	});
 	const forwardDescriptor = useConvForwardDescriptor({
+		firstMessageId: firstConversationMessage.id,
+		folderId,
+		messagesLength: conversation.messages.length
+	});
+	const forwardAsAttachmentDescriptor = useConvForwardAsAttachmentDescriptor({
 		firstMessageId: firstConversationMessage.id,
 		folderId,
 		messagesLength: conversation.messages.length
@@ -153,6 +160,7 @@ export const useConvActions = ({
 			replyDescriptor,
 			replyAllDescriptor,
 			forwardDescriptor,
+			forwardAsAttachmentDescriptor,
 			moveToTrashDescriptor,
 			deletePermanentlyDescriptor,
 			setAsReadDescriptor,
@@ -172,6 +180,7 @@ export const useConvActions = ({
 			replyDescriptor,
 			replyAllDescriptor,
 			forwardDescriptor,
+			forwardAsAttachmentDescriptor,
 			moveToTrashDescriptor,
 			deletePermanentlyDescriptor,
 			setAsReadDescriptor,

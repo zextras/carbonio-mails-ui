@@ -149,7 +149,7 @@ const generateMessage = ({
 	tags,
 	urgent: false,
 	messageIsFromExternalDomain: false,
-	authenticationHeaders: {},
+	// authenticationHeaders: {},
 	sensitivity,
 	messageIdFromMailHeaders,
 	creationDateFromMailHeaders,

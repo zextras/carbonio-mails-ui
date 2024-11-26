@@ -8,7 +8,6 @@ import React from 'react';
 import { Container } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
 
-import { MailAuthenticationHeadersSubsection } from './subsections/mail-authentication-headers-subsection';
 import { MailGeneralInfoSubsection } from './subsections/mail-general-info-subsection';
 import { SmimeSubsection } from './subsections/smime-subsection';
 import ModalFooter from '../../../../../../carbonio-ui-commons/components/modals/modal-footer';
@@ -20,7 +19,7 @@ type MailInfoDetailModalProps = {
 	signature?: MessageSignature;
 	messageIdFromMailHeaders?: string;
 	creationDateFromMailHeaders?: string;
-	authenticationMailsHeaders?: IncompleteMessage['authenticationHeaders'];
+	// authenticationMailsHeaders?: IncompleteMessage['authenticationHeaders'];
 	messageIsFromDistributionList?: IncompleteMessage['messageIsFromDistributionList'];
 	messageIsFromExternalDomain?: IncompleteMessage['messageIsFromExternalDomain'];
 	sensitivityValue?: IncompleteMessage['sensitivity'];
@@ -31,7 +30,7 @@ export const MailInfoDetailModal = ({
 	signature,
 	messageIdFromMailHeaders,
 	creationDateFromMailHeaders,
-	authenticationMailsHeaders,
+	// authenticationMailsHeaders,
 	messageIsFromDistributionList,
 	messageIsFromExternalDomain,
 	sensitivityValue
@@ -63,11 +62,11 @@ export const MailInfoDetailModal = ({
 						sensitivityValue={sensitivityValue}
 					/>
 				)}
-				{authenticationMailsHeaders && (
-					<MailAuthenticationHeadersSubsection
-						authenticationMailsHeaders={authenticationMailsHeaders}
-					/>
-				)}
+				{/* {authenticationMailsHeaders && ( */}
+				{/* 	<MailAuthenticationHeadersSubsection */}
+				{/* 		authenticationMailsHeaders={authenticationMailsHeaders} */}
+				{/* 	/> */}
+				{/* )} */}
 				{signature && <SmimeSubsection signature={signature} />}
 			</Container>
 			<ModalFooter

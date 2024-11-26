@@ -98,11 +98,6 @@ export const useSyncDataHandler = (): void => {
 						if (!isEmpty(notify) && (notify.seq > seq || (seq > 1 && notify.seq === 1))) {
 							handleFoldersNotify(notifyList, notify, folderWorker, useFolderStore);
 
-							tagsWorker.postMessage({
-								op: 'notify',
-								notify,
-								state: useTagStore.getState().tags
-							});
 							const tags = getTags();
 							if (notify.created) {
 								if (notify.created.c && notify.created.m) {
