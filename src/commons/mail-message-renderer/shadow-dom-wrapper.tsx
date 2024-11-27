@@ -18,7 +18,7 @@ export const ShadowDomWrapper = ({ children }: ShadowDomWrapperProps): React.JSX
 
 	useEffect(() => {
 		if (containerRef.current && !shadowRootRef.current) {
-			shadowRootRef.current = containerRef.current.attachShadow({ mode: 'open' });
+			shadowRootRef.current = containerRef.current.attachShadow({ mode: 'closed' });
 			setShadowRootInitialized(true);
 		}
 		return () => {

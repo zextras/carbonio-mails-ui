@@ -177,7 +177,7 @@ export const HtmlMessageRenderer: FC<HtmlMessageRendererType> = ({ msgId }) => {
 	};
 
 	return (
-		<div ref={divRef} style={{ height: '100%' }}>
+		<div ref={divRef} style={{ height: '100%' }} className="force-white-bg">
 			{showBanner && !showExternalImage && (
 				<BannerViewExternalImages
 					setShowExternalImages={setShowExternalImage}
