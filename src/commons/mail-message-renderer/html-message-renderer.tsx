@@ -24,6 +24,7 @@ import { BodyPart, MailsStateType } from '../../types';
 import { useInSearchModule } from '../../ui-actions/utils';
 import { getOriginalHtmlContent, getQuotedTextFromOriginalContent } from '../get-quoted-text-util';
 import { _CI_REGEX, _CI_SRC_REGEX, isAvailableInTrusteeList } from '../utils';
+import { ShadowDomWrapper } from './shadow-dom-wrapper';
 
 type HtmlMessageRendererType = {
 	msgId: string;
@@ -187,15 +188,17 @@ export const HtmlMessageRenderer: FC<HtmlMessageRendererType> = ({ msgId }) => {
 			{body.truncated && (
 				<BannerMessageTruncated loadMessage={loadMessage} isLoadingMessage={isLoadingMessage} />
 			)}
-			<Container
-				width={'fit'}
-				height={'100%'}
-				data-testid="message-renderer-container"
-				style={{ overflowY: 'auto', overflowX: 'hidden' }}
-				dangerouslySetInnerHTML={{
-					__html: contentWithImages
-				}}
-			/>
+			<ShadowDomWrapper>
+				<Container
+					width={'fit'}
+					height={'100%'}
+					data-testid="message-renderer-container"
+					style={{ overflowY: 'auto', overflowX: 'hidden', padding: '0.75rem 0px' }}
+					dangerouslySetInnerHTML={{
+						__html: contentWithImages
+					}}
+				/>
+			</ShadowDomWrapper>
 			{!showQuotedText && quoted.length > 0 && (
 				<Row mainAlignment="center" crossAlignment="center">
 					<Button
