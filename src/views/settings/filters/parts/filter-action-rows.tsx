@@ -27,8 +27,8 @@ import { v4 as uuidv4 } from 'uuid';
 import CustomSelect from './custom-select';
 import { getActionOptions, getMarkAsOptions } from './utils';
 import { ZIMBRA_STANDARD_COLORS } from '../../../../carbonio-ui-commons/constants/utils';
-import { SelectFolderModal } from '../../../../ui-actions/modals/select-folder-modal';
 import { Folder } from '../../../../carbonio-ui-commons/types/folder';
+import { SelectFolderModal } from '../../../../ui-actions/modals/select-folder-modal';
 
 export const StyledIconButton = styled(IconButton)`
 	border: 0.0625rem solid
@@ -478,7 +478,7 @@ const FilterActionRows: FC<FilterActionRowProps> = ({
 					inputLabel={inputLabel}
 					confirmAction={confirmAction}
 					showSharedAccounts={false}
-					showSpamFolder={false}
+					showSpamFolder
 					showTrashFolder
 					allowFolderCreation={false}
 					allowRootSelection={false}
