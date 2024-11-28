@@ -9,16 +9,20 @@ import { createPortal } from 'react-dom';
 
 type ShadowDomWrapperProps = {
 	children: ReactNode;
+	shadowDomMode?: 'open' | 'closed';
 };
 
-export const ShadowDomWrapper = ({ children }: ShadowDomWrapperProps): React.JSX.Element => {
+export const ShadowDomWrapper = ({
+	children,
+	shadowDomMode = 'closed'
+}: ShadowDomWrapperProps): React.JSX.Element => {
 	const shadowRootRef = useRef<ShadowRoot | null>(null);
 	const containerRef = useRef<HTMLDivElement>(null);
 	const [shadowRootInitialized, setShadowRootInitialized] = useState(false);
 
 	useEffect(() => {
 		if (containerRef.current && !shadowRootRef.current) {
-			shadowRootRef.current = containerRef.current.attachShadow({ mode: 'closed' });
+			shadowRootRef.current = containerRef.current.attachShadow({ mode: shadowDomMode });
 			setShadowRootInitialized(true);
 		}
 		return () => {
@@ -28,7 +32,7 @@ export const ShadowDomWrapper = ({ children }: ShadowDomWrapperProps): React.JSX
 			}
 			setShadowRootInitialized(false);
 		};
-	}, []);
+	}, [shadowDomMode]);
 
 	return (
 		<div ref={containerRef}>
