@@ -4,10 +4,11 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { addRoute, addSearchView, addSettingsView } from '@zextras/carbonio-shell-ui';
+import { addRoute, addSearchView, addSettingsView, upsertApp } from '@zextras/carbonio-shell-ui';
 import { HttpResponse } from 'msw';
 
 import { createAPIInterceptor } from '../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
+import { MAIL_APP_ID } from '../../constants';
 import { mockAdvancedAccountAPI } from '../../tests/utils';
 import { addComponentsToShell } from '../add-shell-components';
 
@@ -74,6 +75,18 @@ describe('addShellComponents', () => {
 			})
 		);
 	});
+
+	it('should call upsertApp function', async () => {
+		await addComponentsToShell();
+
+		expect(upsertApp).toHaveBeenCalledWith(
+			expect.objectContaining({
+				name: MAIL_APP_ID,
+				display: 'Mails'
+			})
+		);
+	});
+
 	it('should not render Recover Messages menu item when backupSelfUndeleteAllowed is false', async () => {
 		mockAdvancedAccountAPI({ backupSelfUndeleteAllowed: false });
 
