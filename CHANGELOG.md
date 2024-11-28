@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.20.0](https://github.com/zextras/carbonio-mails-ui/compare/v1.19.6...v1.20.0) (2024-11-28)
+
+
+### Features
+
+* add class to div and update shadow DOM mode ([b06b551](https://github.com/zextras/carbonio-mails-ui/commit/b06b5512ea384fcefafed6addc935859a2a561b6))
+* **mail-preview:** add class to force white background ([dc98153](https://github.com/zextras/carbonio-mails-ui/commit/dc98153ae889f0c95dc0cb019a64bd9f43efda50))
+* **renderer:** extract HTML container component ([985c1dc](https://github.com/zextras/carbonio-mails-ui/commit/985c1dc6a6511fda45dc2cf13233ade1afc24ccc))
+
 ### [1.19.6](https://github.com/zextras/carbonio-mails-ui/compare/v1.19.5...v1.19.6) (2024-11-27)
 
 
