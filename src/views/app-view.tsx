@@ -5,10 +5,12 @@
  */
 import React, { FC, Suspense, lazy, useEffect, useMemo, useState, useRef } from 'react';
 
-import { Spinner, setAppContext, useUserSettings } from '@zextras/carbonio-shell-ui';
+import { setAppContext, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { includes } from 'lodash';
 import moment from 'moment';
 
+import { Spinner } from '../assets/spinner';
+import { AppContext } from '../types';
 import { FolderView } from './folder-view';
 import { LayoutSelector } from './layout-selector';
 import { FOLDERS } from '../carbonio-ui-commons/constants/folders';
