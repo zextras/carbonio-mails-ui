@@ -82,7 +82,7 @@ describe('addShellComponents', () => {
 		expect(upsertApp).toHaveBeenCalledWith(
 			expect.objectContaining({
 				name: MAIL_APP_ID,
-				display: 'Mails'
+				display: label
 			})
 		);
 	});
