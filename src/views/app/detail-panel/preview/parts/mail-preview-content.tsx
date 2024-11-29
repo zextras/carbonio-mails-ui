@@ -172,11 +172,7 @@ export const MailPreviewContent: FC<MailPreviewContentProps> = ({
 						) : showShareInvite ? (
 							<SharedInviteReply sharedContent={message.shr[0].content} mailMsg={message} />
 						) : (
-							<MailMessageRenderer
-								body={message.body}
-								id={message.id}
-								fragment={message.fragment}
-							/>
+							<MailMessageRenderer message={message} />
 						)}
 					</Padding>
 					<ReadReceiptModal
