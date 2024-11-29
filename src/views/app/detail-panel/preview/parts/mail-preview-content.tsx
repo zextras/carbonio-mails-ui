@@ -152,26 +152,26 @@ export const MailPreviewContent: FC<MailPreviewContentProps> = ({
 						/>
 					</Row>
 					<Padding height="100%" width="100%" vertical="medium" style={{ overflow: 'auto' }}>
-						{showAppointmentInvite ? (
+						{showAppointmentInvite && (
 							<Container width="100%">
 								<InviteResponse
-									// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-									// @ts-ignore
 									onLoadChange={(): null => null}
 									mailMsg={message}
 									inviteId={inviteId}
 									participationStatus={participationStatus}
 									to={filter(message.participants, { type: 'f' })}
 									invite={message.invite}
-									method={message.invite[0]?.comp[0].method}
+									method={message.invite[0]?.comp[0]?.method}
 									moveToTrash={moveToTrash}
 									isAttendee={isAttendee}
 									parent={message.parent}
 								/>
 							</Container>
-						) : showShareInvite ? (
+						)}
+						{!showAppointmentInvite && showShareInvite && (
 							<SharedInviteReply sharedContent={message.shr[0].content} mailMsg={message} />
-						) : (
+						)}
+						{!showAppointmentInvite && !showShareInvite && (
 							<MailMessageRenderer message={message} />
 						)}
 					</Padding>
