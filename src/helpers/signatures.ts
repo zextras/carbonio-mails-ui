@@ -6,7 +6,7 @@
 import { Account, getUserAccount } from '@zextras/carbonio-shell-ui';
 import { find, map } from 'lodash';
 
-import { convertHtmlToPlainText } from '../carbonio-ui-commons/utils/text/html';
+import { convertHtmlToPlainText } from '../commons/utilities';
 import { LineType } from '../commons/utils';
 import type { EditorText } from '../types/editor';
 import type { SignatureDescriptor } from '../types/signatures';

@@ -7,7 +7,6 @@ import React, { Suspense, lazy } from 'react';
 
 import { ModalManager } from '@zextras/carbonio-design-system';
 import {
-	Spinner,
 	addRoute,
 	addSearchView,
 	addBoardView,
@@ -18,6 +17,7 @@ import {
 } from '@zextras/carbonio-shell-ui';
 
 import { advancedAccountAPI } from '../api/advanced-account';
+import { Spinner } from '../assets/spinner';
 import { MAILS_BOARD_VIEW_ID, MAILS_ROUTE } from '../constants';
 import { StoreProvider } from '../store/redux';
 import { ExtraWindowsManager } from '../views/app/extra-windows/extra-window-manager';
