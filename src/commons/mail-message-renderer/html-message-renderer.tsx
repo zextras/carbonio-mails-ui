@@ -165,7 +165,9 @@ export const HtmlMessageRenderer: FC<HtmlMessageRendererType> = ({ message }) =>
 	const loadMessage = async (): Promise<void> => {
 		setIsLoadingMessage(true);
 		if (isInSearchModule) {
-			retrieveFullMessage(msgId).finally(() => setIsLoadingMessage(false));
+			retrieveFullMessage(msgId).finally(() => {
+				setIsLoadingMessage(false);
+			});
 			return;
 		}
 		dispatch(getFullMsgAsyncThunk({ msgId })).finally(() => setIsLoadingMessage(false));
