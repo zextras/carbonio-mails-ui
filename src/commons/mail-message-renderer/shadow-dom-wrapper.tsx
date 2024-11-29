@@ -24,9 +24,7 @@ export const ShadowDomWrapper = ({ children }: ShadowDomWrapperProps): React.JSX
 		return () => {
 			if (shadowRootRef.current) {
 				shadowRootRef.current.innerHTML = '';
-				shadowRootRef.current = null;
 			}
-			setShadowRootInitialized(false);
 		};
 	}, []);
 
