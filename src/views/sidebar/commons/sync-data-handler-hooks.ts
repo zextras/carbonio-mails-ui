@@ -31,6 +31,7 @@ import {
 import {
 	handleCreatedMessages,
 	handleDeletedMessages,
+	handleModifiedMessages,
 	selectMessages
 } from '../../../store/messages-slice';
 import {
@@ -130,7 +131,7 @@ export const useSyncDataHandler = (): void => {
 									);
 									// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 									// @ts-ignore
-									// dispatch(handleModifiedMessages(messages));
+									dispatch(handleModifiedMessages(messages));
 									updateMessagesOnly(messages);
 
 									// the condition filters messages with parent property (the only ones we need to update)
