@@ -203,7 +203,7 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 											allowRootSelection
 											showSharedAccounts={false}
 											showTrashFolder={false}
-											showSpamFolder={false}
+											showSpamFolder
 										/>
 									</StoreProvider>
 								)

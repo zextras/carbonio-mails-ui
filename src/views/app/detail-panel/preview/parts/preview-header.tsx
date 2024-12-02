@@ -27,7 +27,7 @@ import {
 	getColor,
 	AvatarPropTypes
 } from '@zextras/carbonio-design-system';
-import { useTags, useUserAccounts, runSearch, t, Tag } from '@zextras/carbonio-shell-ui';
+import { useUserAccounts, runSearch, t } from '@zextras/carbonio-shell-ui';
 import {
 	capitalize,
 	every,
@@ -51,6 +51,8 @@ import MessageContactsList from './message-contact-list';
 import OnBehalfOfDisplayer from './on-behalf-of-displayer';
 import { ParticipantRole } from '../../../../../carbonio-ui-commons/constants/participants';
 import { ZIMBRA_STANDARD_COLORS } from '../../../../../carbonio-ui-commons/constants/utils';
+import { useTags } from '../../../../../carbonio-ui-commons/store/zustand/tags';
+import { Tag } from '../../../../../carbonio-ui-commons/types/tags';
 import { getTimeLabel, participantToString } from '../../../../../commons/utils';
 import { getNoIdentityPlaceholder } from '../../../../../helpers/identities';
 import { retrieveAttachmentsType } from '../../../../../store/editor-slice-utils';

@@ -28,7 +28,7 @@ describe('HTML message renderer', () => {
 				});
 				updateMessages([message]);
 
-				setupTest(<HtmlMessageRenderer msgId={'1'} />, {
+				setupTest(<HtmlMessageRenderer message={message} />, {
 					initialEntries: ['/search'],
 					store
 				});
@@ -45,7 +45,7 @@ describe('HTML message renderer', () => {
 				});
 				updateMessages([message]);
 
-				setupTest(<HtmlMessageRenderer msgId={'1'} />, {
+				setupTest(<HtmlMessageRenderer message={message} />, {
 					initialEntries: ['/search'],
 					store
 				});
@@ -69,7 +69,7 @@ describe('HTML message renderer', () => {
 				});
 				updateMessages([message]);
 
-				const { user } = setupTest(<HtmlMessageRenderer msgId={'1'} />, {
+				const { user } = setupTest(<HtmlMessageRenderer message={message} />, {
 					initialEntries: ['/search'],
 					store
 				});
@@ -106,22 +106,20 @@ describe('HTML message renderer', () => {
 					]
 				});
 
-				const { user } = setupTest(<HtmlMessageRenderer msgId={'1'} />, {
+				const { user } = setupTest(<HtmlMessageRenderer message={message} />, {
 					initialEntries: ['/search'],
 					store
 				});
 
 				const loadMessageButton = await screen.findByText('warningBanner.truncatedMessage.button');
-				await act(async () => {
-					await user.click(loadMessageButton);
+
+				act(() => {
+					user.click(loadMessageButton);
 				});
 
 				await interceptor;
-				await waitFor(() => {
-					expect(
-						screen.queryByText('warningBanner.truncatedMessage.button')
-					).not.toBeInTheDocument();
-				});
+
+				expect(screen.queryByText('warningBanner.truncatedMessage.button')).not.toBeInTheDocument();
 			});
 		});
 		it('should display empty fragment when message is set only mails store', () => {
@@ -139,7 +137,7 @@ describe('HTML message renderer', () => {
 				}
 			});
 
-			setupTest(<HtmlMessageRenderer msgId={'1'} />, {
+			setupTest(<HtmlMessageRenderer message={message} />, {
 				initialEntries: ['/search'],
 				store
 			});
@@ -158,7 +156,7 @@ describe('HTML message renderer', () => {
 				}
 			});
 
-			setupTest(<HtmlMessageRenderer msgId={'1'} />, {
+			setupTest(<HtmlMessageRenderer message={message} />, {
 				initialEntries: ['/mails'],
 				store
 			});
@@ -176,7 +174,7 @@ describe('HTML message renderer', () => {
 				}
 			});
 
-			setupTest(<HtmlMessageRenderer msgId={'1'} />, {
+			setupTest(<HtmlMessageRenderer message={message} />, {
 				initialEntries: ['/mails'],
 				store
 			});
@@ -201,7 +199,7 @@ describe('HTML message renderer', () => {
 				response
 			);
 
-			const { user } = setupTest(<HtmlMessageRenderer msgId={'1'} />, {
+			const { user } = setupTest(<HtmlMessageRenderer message={message} />, {
 				initialEntries: ['/mails'],
 				store
 			});
@@ -244,7 +242,7 @@ describe('HTML message renderer', () => {
 			});
 
 			const { user } = setupTest(
-				<HtmlMessageRenderer msgId={'1'} />,
+				<HtmlMessageRenderer message={message} />,
 
 				{
 					initialEntries: ['/mails'],
@@ -253,9 +251,7 @@ describe('HTML message renderer', () => {
 			);
 
 			const loadMessageButton = await screen.findByText('warningBanner.truncatedMessage.button');
-			await act(async () => {
-				await user.click(loadMessageButton);
-			});
+			user.click(loadMessageButton);
 
 			await interceptor;
 			await waitFor(() => {

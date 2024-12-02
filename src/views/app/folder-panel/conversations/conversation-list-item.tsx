@@ -18,7 +18,7 @@ import {
 	Text,
 	Tooltip
 } from '@zextras/carbonio-design-system';
-import { Tag, pushHistory, useTags, useUserSettings } from '@zextras/carbonio-shell-ui';
+import { pushHistory, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { debounce, filter, find, forEach, includes, isEmpty, reduce, uniqBy } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
@@ -28,6 +28,8 @@ import { ConversationMessagesList } from './conversation-messages-list';
 import { getFolderParentId } from './utils';
 import { ZIMBRA_STANDARD_COLORS } from '../../../../carbonio-ui-commons/constants';
 import { FOLDERS } from '../../../../carbonio-ui-commons/constants/folders';
+import { useTags } from '../../../../carbonio-ui-commons/store/zustand/tags';
+import { Tag } from '../../../../carbonio-ui-commons/types/tags';
 import { API_REQUEST_STATUS } from '../../../../constants';
 import { normalizeDropdownActionItem } from '../../../../helpers/actions';
 import { getFolderIdParts } from '../../../../helpers/folders';
@@ -80,10 +82,12 @@ export const ConversationListItemActionWrapper = ({
 		() => <ConversationPreviewPanel conversation={item} isInsideExtraWindow />,
 		[item]
 	);
+	const [t] = useTranslation();
 	const {
 		replyDescriptor,
 		replyAllDescriptor,
 		forwardDescriptor,
+		forwardAsAttachmentDescriptor,
 		moveToTrashDescriptor,
 		deletePermanentlyDescriptor,
 		setAsReadDescriptor,
@@ -109,6 +113,7 @@ export const ConversationListItemActionWrapper = ({
 			replyDescriptor,
 			replyAllDescriptor,
 			forwardDescriptor,
+			forwardAsAttachmentDescriptor,
 			moveToTrashDescriptor,
 			deletePermanentlyDescriptor,
 			setAsReadDescriptor,
@@ -121,6 +126,7 @@ export const ConversationListItemActionWrapper = ({
 			replyDescriptor,
 			replyAllDescriptor,
 			forwardDescriptor,
+			forwardAsAttachmentDescriptor,
 			moveToTrashDescriptor,
 			deletePermanentlyDescriptor,
 			setAsReadDescriptor,
@@ -136,7 +142,16 @@ export const ConversationListItemActionWrapper = ({
 			[
 				normalizeDropdownActionItem(replyDescriptor),
 				normalizeDropdownActionItem(replyAllDescriptor),
-				normalizeDropdownActionItem(forwardDescriptor),
+				{
+					id: 'ForwardMenu',
+					icon: 'Forward',
+					label: t('action.forward', 'Forward'),
+					disabled: !forwardDescriptor.canExecute() && !forwardAsAttachmentDescriptor.canExecute(),
+					items: [
+						normalizeDropdownActionItem(forwardDescriptor),
+						normalizeDropdownActionItem(forwardAsAttachmentDescriptor)
+					]
+				},
 				normalizeDropdownActionItem(moveToTrashDescriptor),
 				normalizeDropdownActionItem(deletePermanentlyDescriptor),
 				normalizeDropdownActionItem(setAsReadDescriptor),
@@ -156,6 +171,7 @@ export const ConversationListItemActionWrapper = ({
 			replyDescriptor,
 			replyAllDescriptor,
 			forwardDescriptor,
+			forwardAsAttachmentDescriptor,
 			moveToTrashDescriptor,
 			deletePermanentlyDescriptor,
 			setAsReadDescriptor,
@@ -169,7 +185,8 @@ export const ConversationListItemActionWrapper = ({
 			restoreFolderDescriptor,
 			printDescriptor,
 			previewOnSeparatedWindowDescriptor,
-			showOriginalDescriptor
+			showOriginalDescriptor,
+			t
 		]
 	);
 	return (
