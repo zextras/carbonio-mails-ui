@@ -16,60 +16,22 @@ import { HtmlMessageRendererContainer } from './html-message-renderer-container'
 import { ParticipantRole } from '../../carbonio-ui-commons/constants/participants';
 import { getAttachmentParts } from '../../helpers/attachments';
 import { getNoIdentityPlaceholder } from '../../helpers/identities';
-import { useAppDispatch, useAppSelector } from '../../hooks/redux';
+import { useAppDispatch } from '../../hooks/redux';
 import { getFullMsgAsyncThunk } from '../../store/actions';
-import { selectMessage } from '../../store/messages-slice';
 import { retrieveFullMessage } from '../../store/zustand/search/hooks/hooks';
-import { useMessageById } from '../../store/zustand/search/store';
-import { BodyPart, MailMessagePart, MailsStateType } from '../../types';
+import { BodyPart, MailMessage } from '../../types';
 import { useInSearchModule } from '../../ui-actions/utils';
 import { getOriginalHtmlContent, getQuotedTextFromOriginalContent } from '../get-quoted-text-util';
 import { _CI_REGEX, _CI_SRC_REGEX, isAvailableInTrusteeList } from '../utils';
 import { ShadowDomWrapper } from './shadow-dom-wrapper';
 
 type HtmlMessageRendererType = {
-	msgId: string;
+	message: MailMessage;
 };
 
-function getContentWithImages(
-	parts: MailMessagePart[],
-	images: HTMLCollectionOf<HTMLImageElement>,
-	showImage: boolean,
-	msgId: string,
-	htmlDoc: Document
-): string {
-	const imgMap = reduce(
-		parts,
-		(r, v) => {
-			if (!_CI_REGEX.test(v.ci ?? '')) return r;
-			r[_CI_REGEX.exec(v.ci ?? '')?.[1] ?? ''] = v;
-			return r;
-		},
-		{} as Record<string, MailMessagePart>
-	);
-	forEach(images, (p: HTMLImageElement) => {
-		if (p.hasAttribute('dfsrc') && showImage) {
-			p.setAttribute('src', p.getAttribute('dfsrc') ?? '');
-		}
-		if (!_CI_SRC_REGEX.test(p.src)) return;
-		const ci = _CI_SRC_REGEX.exec(p.getAttribute('src') ?? '')?.[1] ?? '';
-		if (imgMap[ci]) {
-			const part = imgMap[ci];
-			p.setAttribute('pnsrc', p.getAttribute('src') ?? '');
-			p.setAttribute('src', `/service/home/~/?auth=co&id=${msgId}&part=${part.name}`);
-		}
-	});
-	return htmlDoc.body.innerHTML;
-}
-
-export const HtmlMessageRenderer: FC<HtmlMessageRendererType> = ({ msgId }) => {
+export const HtmlMessageRenderer: FC<HtmlMessageRendererType> = ({ message }) => {
 	const [isLoadingMessage, setIsLoadingMessage] = useState(false);
 	const isInSearchModule = useInSearchModule();
-	const messageFromReduxStore = useAppSelector((state: MailsStateType) =>
-		selectMessage(state, msgId)
-	);
-	const messageFromSearchStore = useMessageById(msgId);
-	const message = isInSearchModule ? messageFromSearchStore : messageFromReduxStore;
 	const body: BodyPart = message?.body ?? {
 		content: '',
 		truncated: false
@@ -174,15 +136,38 @@ export const HtmlMessageRenderer: FC<HtmlMessageRendererType> = ({ msgId }) => {
 		[displayBanner, showExternalImage]
 	);
 
-	const contentWithImages = useMemo(
-		() => getContentWithImages(parts, images, showImage, msgId, htmlDoc),
-		[htmlDoc, images, msgId, parts, showImage]
-	);
+	const msgId = message.id;
+	const contentWithImages = useMemo(() => {
+		const imgMap = reduce(
+			parts,
+			(r, v) => {
+				if (!_CI_REGEX.test(v.ci ?? '')) return r;
+				r[_CI_REGEX.exec(v.ci ?? '')?.[1] ?? ''] = v;
+				return r;
+			},
+			{} as any
+		);
+		forEach(images, (p: HTMLImageElement) => {
+			if (p.hasAttribute('dfsrc') && showImage) {
+				p.setAttribute('src', p.getAttribute('dfsrc') ?? '');
+			}
+			if (!_CI_SRC_REGEX.test(p.src)) return;
+			const ci = _CI_SRC_REGEX.exec(p.getAttribute('src') ?? '')?.[1] ?? '';
+			if (imgMap[ci]) {
+				const part = imgMap[ci];
+				p.setAttribute('pnsrc', p.getAttribute('src') ?? '');
+				p.setAttribute('src', `/service/home/~/?auth=co&id=${msgId}&part=${part.name}`);
+			}
+		});
+		return htmlDoc.body.innerHTML;
+	}, [htmlDoc.body.innerHTML, images, msgId, parts, showImage]);
 
 	const loadMessage = async (): Promise<void> => {
 		setIsLoadingMessage(true);
 		if (isInSearchModule) {
-			retrieveFullMessage(msgId).finally(() => setIsLoadingMessage(false));
+			retrieveFullMessage(msgId).finally(() => {
+				setIsLoadingMessage(false);
+			});
 			return;
 		}
 		dispatch(getFullMsgAsyncThunk({ msgId })).finally(() => setIsLoadingMessage(false));

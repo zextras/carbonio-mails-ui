@@ -28,9 +28,7 @@ export const ShadowDomWrapper = ({
 		return () => {
 			if (shadowRootRef.current) {
 				shadowRootRef.current.innerHTML = '';
-				shadowRootRef.current = null;
 			}
-			setShadowRootInitialized(false);
 		};
 	}, [shadowDomMode]);
 

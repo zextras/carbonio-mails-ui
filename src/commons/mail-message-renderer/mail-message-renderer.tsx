@@ -3,30 +3,27 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, memo } from 'react';
+import React, { memo } from 'react';
 
 import { EmptyBody } from './empty-body';
 import { HtmlMessageRenderer } from './html-message-renderer';
 import { TextMessageRenderer } from './text-message-renderer';
-import type { BodyPart } from '../../types';
+import type { MailMessage } from '../../types';
 
 type MailMessageRendererProps = {
-	body?: BodyPart;
-	id: string;
-	fragment?: string;
+	message: MailMessage;
 };
 
-export const MailMessageRenderer: FC<MailMessageRendererProps> = memo(function MailMessageRenderer({
-	body,
-	id,
-	fragment
-}) {
+export const MailMessageRenderer = memo(function MailMessageRenderer({
+	message
+}: MailMessageRendererProps): JSX.Element {
+	const { body, fragment } = message;
 	if (!body?.content?.length && !fragment) {
 		return <EmptyBody />;
 	}
 
 	if (body?.contentType === 'text/html') {
-		return <HtmlMessageRenderer msgId={id} />;
+		return <HtmlMessageRenderer message={message} />;
 	}
 	if (body?.contentType === 'text/plain') {
 		return <TextMessageRenderer body={body} />;
