@@ -11,16 +11,14 @@ import { WarningBanner } from './warning-banner';
 
 export const LargeFileUploadInfoBanner = (): JSX.Element => {
 	const { t } = useTranslation();
-	const mailSizeWarningBannerText = t(
-		'editor.warning.mail_size_exceeds_limit',
-		'The message size exceeds the limit. Please convert some attachments to smart links.'
+	const warningText = t(
+		'editor.warning.uploading_large_attachments',
+		'You are uploading a large attachment. It may take a while, please be patient.'
 	);
-	const mailSizeWarningBannerIcon = 'CloseCircleOutline';
-	const mailSizeWarningBannerIconColor = 'error';
 	return (
 		<WarningBanner
-			text={'large-file-upload-info-banner'}
-			icon={mailSizeWarningBannerIcon}
+			text={warningText}
+			icon={'CloseCircleOutline'}
 			iconColor={'info'}
 			bottomBorderColor="error"
 		/>
