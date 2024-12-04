@@ -132,9 +132,7 @@ export const MailPreviewContent: FC<MailPreviewContentProps> = ({
 		>
 			{message.isComplete && (
 				<Container
-					style={{
-						color: 'var(--darkreader-neutral-text) !important'
-					}}
+					className="force-white-bg"
 					data-testid="MessageBody"
 					width="100%"
 					height="100%"

@@ -10,7 +10,8 @@ import { createPortal } from 'react-dom';
 type ShadowDomWrapperProps = {
 	children: ReactNode;
 };
-
+const sheet = new CSSStyleSheet();
+sheet.replaceSync(`* { background-color: white }`);
 export const ShadowDomWrapper = ({ children }: ShadowDomWrapperProps): React.JSX.Element => {
 	const shadowRootRef = useRef<ShadowRoot | null>(null);
 	const containerRef = useRef<HTMLDivElement>(null);
@@ -19,6 +20,7 @@ export const ShadowDomWrapper = ({ children }: ShadowDomWrapperProps): React.JSX
 	useEffect(() => {
 		if (containerRef.current && !shadowRootRef.current) {
 			shadowRootRef.current = containerRef.current.attachShadow({ mode: 'closed' });
+			shadowRootRef.current.adoptedStyleSheets.push(sheet);
 			setShadowRootInitialized(true);
 		}
 		return () => {
