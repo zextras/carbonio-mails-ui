@@ -8,6 +8,7 @@ import React, { FunctionComponent, ReactElement, useCallback, useState } from 'r
 
 import { act, screen } from '@testing-library/react';
 
+import { ParticipantRole } from '../../../../../../carbonio-ui-commons/constants/participants';
 import { USER_TYPES_CONST } from '../../../../../../carbonio-ui-commons/integrations/constants';
 import { DefaultContactInput } from '../../../../../../carbonio-ui-commons/integrations/default-contact-input';
 import * as contactInput from '../../../../../../carbonio-ui-commons/integrations/hooks';
@@ -68,7 +69,7 @@ describe('recipients-row', () => {
 
 			expect(mockOnChange).toHaveBeenCalledWith([expect.objectContaining({ isGroup: false })]);
 		});
-		it('should call onChange with a value with when adding a distribution list', async () => {
+		it('should call onChange with a value with isGroup true when adding a distribution list', async () => {
 			const valueToAdd = { ...generateContact() };
 			valueToAdd.value.type = USER_TYPES_CONST.DISTRIBUTION_LIST;
 			mockContactInput({ valueToAdd });
@@ -115,6 +116,33 @@ describe('recipients-row', () => {
 			expect(screen.getByTestId('mockedContactValue')).toHaveTextContent(
 				'[{"id":"fakeId","label":"Whatever","value":{"id":"1","email":"test@test.com","type":"CONTACT"}}]'
 			);
+		});
+		it('should display a distribution list when initial recipient has isGroup true', async () => {
+			const address = 'someone@test.com';
+			mockContactInput();
+			const mockOnChange = jest.fn();
+			const initialRecipients = [
+				{
+					address,
+					type: ParticipantRole.TO,
+					error: true,
+					isGroup: true
+				}
+			];
+			setupTest(
+				<RecipientsRow
+					type="f"
+					label="label"
+					recipients={initialRecipients}
+					onRecipientsChange={mockOnChange}
+				></RecipientsRow>
+			);
+
+			expect(
+				await screen.findByText(
+					'[{"id":"someone@test.com","label":"someone@test.com","value":{"id":"someone@test.com","email":"someone@test.com","type":"DISTRIBUTION_LIST"},"error":true}]'
+				)
+			).toBeInTheDocument();
 		});
 	});
 
@@ -171,7 +199,7 @@ function TestableRecipientsRow(): React.ReactElement {
 	);
 }
 
-function mockContactInput({ valueToAdd }: { valueToAdd: ContactInputItem }): void {
+function mockContactInput({ valueToAdd }: { valueToAdd?: ContactInputItem } = {}): void {
 	jest
 		.spyOn(contactInput, 'useContactInput')
 		.mockReturnValue(generateMockedContactInput(valueToAdd));
@@ -181,12 +209,12 @@ function mockContactInput({ valueToAdd }: { valueToAdd: ContactInputItem }): voi
  * We need to define a minimal version that updated the ids of the contacts like the original component
  * we avoided to replicate all the logic to avoid inconsistencies
  */ function generateMockedContactInput(
-	valueToAdd: ContactInputItem
+	valueToAdd?: ContactInputItem
 ): FunctionComponent<Record<string, unknown>> {
 	function MockedContactInput({ onChange, defaultValue }: ContactInputProps): ReactElement {
 		const onInputChange: React.ChangeEventHandler<HTMLInputElement> = useCallback(
 			(e) => {
-				onChange?.([...defaultValue, valueToAdd]);
+				valueToAdd && onChange?.([...defaultValue, { ...valueToAdd }]);
 			},
 			[defaultValue, onChange]
 		);
