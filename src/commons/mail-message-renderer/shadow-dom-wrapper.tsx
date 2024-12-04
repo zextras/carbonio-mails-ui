@@ -5,7 +5,9 @@
  */
 import React, { useRef, useState, ReactNode, useEffect } from 'react';
 
+import { useUserSettings } from '@zextras/carbonio-shell-ui';
 import { enable as enableDarkReader, exportGeneratedCSS } from 'darkreader';
+import { find } from 'lodash';
 import { createPortal } from 'react-dom';
 
 type ShadowDomWrapperProps = {
@@ -17,22 +19,24 @@ export const ShadowDomWrapper = ({ children }: ShadowDomWrapperProps): React.JSX
 	const containerRef = useRef<HTMLDivElement>(null);
 	const [shadowRootInitialized, setShadowRootInitialized] = useState(false);
 
+	const { props } = useUserSettings();
 	useEffect(() => {
 		if (containerRef.current && !shadowRootRef.current) {
 			shadowRootRef.current = containerRef.current.attachShadow({ mode: 'open' });
-
-			enableDarkReader({
-				brightness: 100,
-				contrast: 90
-			});
-			exportGeneratedCSS((css: string) => {
-				const styleSheet = new CSSStyleSheet();
-				styleSheet.replaceSync(css);
-				if (shadowRootRef.current) {
-					shadowRootRef.current.adoptedStyleSheets = [styleSheet];
-				}
-			});
-
+			const darkReadermode = find(props, { name: 'zappDarkreaderMode' })?._content;
+			if (darkReadermode === 'enabled') {
+				enableDarkReader({
+					brightness: 100,
+					contrast: 90
+				});
+				exportGeneratedCSS((css: string) => {
+					const styleSheet = new CSSStyleSheet();
+					styleSheet.replaceSync(css);
+					if (shadowRootRef.current) {
+						shadowRootRef.current.adoptedStyleSheets = [styleSheet];
+					}
+				});
+			}
 			setShadowRootInitialized(true);
 		}
 		return () => {
@@ -40,7 +44,7 @@ export const ShadowDomWrapper = ({ children }: ShadowDomWrapperProps): React.JSX
 				shadowRootRef.current.innerHTML = '';
 			}
 		};
-	}, []);
+	}, [props]);
 
 	return (
 		<div ref={containerRef}>
