@@ -54,7 +54,7 @@ export const RecipientsRow: FC<RecipientsRowProps> = ({
 				const alreadyExists = recipients.find(
 					(recipient) => recipient.address === contact.value.email
 				);
-				const isGroup = contact.value.type === USER_TYPES_CONST.CONTACT;
+				const isGroup = contact.value.type === USER_TYPES_CONST.DISTRIBUTION_LIST;
 				return (
 					alreadyExists || {
 						id: contact.id,
