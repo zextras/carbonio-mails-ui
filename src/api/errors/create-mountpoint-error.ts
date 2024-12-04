@@ -8,7 +8,7 @@ import { TFunction } from 'i18next';
 import { GenericSoapApiError } from '../../carbonio-ui-commons/soap/errors/generic-soap-api-error';
 
 export class CreateMountpointError extends GenericSoapApiError {
-	private static FOLDER_ALREADY_EXISTS = 'mail.ALREADY_EXISTS';
+	public static readonly FOLDER_ALREADY_EXISTS = 'mail.ALREADY_EXISTS';
 
 	getLocalizedMessage(t: TFunction): string {
 		if (this.fault.Detail.Error.Code === CreateMountpointError.FOLDER_ALREADY_EXISTS) {
