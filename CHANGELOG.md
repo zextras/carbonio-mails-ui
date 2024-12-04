@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.20.3](https://github.com/zextras/carbonio-mails-ui/compare/v1.20.2...v1.20.3) (2024-12-04)
+
+
+### Bug Fixes
+
+* remove empty tags (removed) when normalizing conversation items ([269de8d](https://github.com/zextras/carbonio-mails-ui/commit/269de8d79efa690b296de0f4056b1b1e513a0bbd))
+* restored action to update redux store on message updates, to fix tags not updating in messages mode ([a38f05e](https://github.com/zextras/carbonio-mails-ui/commit/a38f05e5cde29436a55b4ad7b359add300cc15b9))
+
 ### [1.20.2](https://github.com/zextras/carbonio-mails-ui/compare/v1.20.1...v1.20.2) (2024-12-03)
 
 
