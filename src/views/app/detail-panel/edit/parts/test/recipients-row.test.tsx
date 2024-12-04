@@ -120,9 +120,7 @@ function mockContactInput({
 			<>
 				<input data-testid="mockedContactInput" onChange={onInputChange} />
 				<br />
-				<label data-testid="mockedContactValue">
-					{defaultValue.map((value) => JSON.stringify(value.value.email))}
-				</label>
+				<label data-testid="mockedContactValue">{JSON.stringify(defaultValue)}</label>
 			</>
 		);
 	}
