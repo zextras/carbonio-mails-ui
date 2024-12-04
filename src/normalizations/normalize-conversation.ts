@@ -16,8 +16,9 @@ import type {
 } from '../types';
 
 const getTagIdsFromName = (names: string | undefined, tags?: Tags): Array<string | undefined> =>
-	map(names?.split(','), (name) =>
-		find(tags, { name }) ? find(tags, { name })?.id : `nil:${name}`
+	map(
+		(names?.split(',') ?? []).filter((n) => n),
+		(name) => (find(tags, { name }) ? find(tags, { name })?.id : `nil:${name}`)
 	);
 const getTagIds = (
 	t: string | undefined,
