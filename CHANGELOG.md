@@ -2,6 +2,38 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.20.2](https://github.com/zextras/carbonio-mails-ui/compare/v1.20.1...v1.20.2) (2024-12-03)
+
+
+### Bug Fixes
+
+* removed forward as attachment action from hover for conversation items ([aee33cc](https://github.com/zextras/carbonio-mails-ui/commit/aee33cc598b2dfb4e21a8f4ac357db4cef439aa7))
+
+### [1.20.1](https://github.com/zextras/carbonio-mails-ui/compare/v1.20.0...v1.20.1) (2024-11-29)
+
+## [1.20.0](https://github.com/zextras/carbonio-mails-ui/compare/v1.19.6...v1.20.0) (2024-11-28)
+
+
+### Features
+
+* add class to div and update shadow DOM mode ([b06b551](https://github.com/zextras/carbonio-mails-ui/commit/b06b5512ea384fcefafed6addc935859a2a561b6))
+* **mail-preview:** add class to force white background ([dc98153](https://github.com/zextras/carbonio-mails-ui/commit/dc98153ae889f0c95dc0cb019a64bd9f43efda50))
+* **renderer:** extract HTML container component ([985c1dc](https://github.com/zextras/carbonio-mails-ui/commit/985c1dc6a6511fda45dc2cf13233ade1afc24ccc))
+
+### [1.19.6](https://github.com/zextras/carbonio-mails-ui/compare/v1.19.5...v1.19.6) (2024-11-27)
+
+
+### Bug Fixes
+
+* clicking on a folder will load the messages list ([a663e43](https://github.com/zextras/carbonio-mails-ui/commit/a663e43d7f4d8dd8b9219d3d632fca5e5edf8d7a))
+
+### [1.19.5](https://github.com/zextras/carbonio-mails-ui/compare/v1.19.4...v1.19.5) (2024-11-26)
+
+
+### Bug Fixes
+
+* remove dark mode override class in htm message renderer ([63364d2](https://github.com/zextras/carbonio-mails-ui/commit/63364d215056ed1ef806b6cd97fce09afde64f6e))
+
 ### [1.19.4](https://github.com/zextras/carbonio-mails-ui/compare/v1.19.3...v1.19.4) (2024-11-25)
 
 
@@ -18,6 +50,7 @@ All notable changes to this project will be documented in this file. See [standa
 * breadcrumbs will show the correct path with the right colors ([2013c0a](https://github.com/zextras/carbonio-mails-ui/commit/2013c0a9a715f53e616adedd55ed88990860b224))
 
 ### [1.19.2](https://github.com/zextras/carbonio-mails-ui/compare/v1.19.1...v1.19.2) (2024-11-22)
+
 ### [1.19.1](https://github.com/zextras/carbonio-mails-ui/compare/v1.19.0...v1.19.1) (2024-11-20)
 
 

@@ -5,38 +5,33 @@
  */
 import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-import { Button, Container, Row } from '@zextras/carbonio-design-system';
+import { Button, Row } from '@zextras/carbonio-design-system';
 import { editSettings, t, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { filter, forEach, isArray, reduce, some } from 'lodash';
 import { Trans } from 'react-i18next';
 
 import { BannerMessageTruncated } from './banner-message-truncated';
 import { BannerViewExternalImages } from './banner-view-external-images';
+import { HtmlMessageRendererContainer } from './html-message-renderer-container';
 import { ParticipantRole } from '../../carbonio-ui-commons/constants/participants';
 import { getAttachmentParts } from '../../helpers/attachments';
 import { getNoIdentityPlaceholder } from '../../helpers/identities';
-import { useAppDispatch, useAppSelector } from '../../hooks/redux';
+import { useAppDispatch } from '../../hooks/redux';
 import { getFullMsgAsyncThunk } from '../../store/actions';
-import { selectMessage } from '../../store/messages-slice';
 import { retrieveFullMessage } from '../../store/zustand/search/hooks/hooks';
-import { useMessageById } from '../../store/zustand/search/store';
-import { BodyPart, MailsStateType } from '../../types';
+import { BodyPart, MailMessage } from '../../types';
 import { useInSearchModule } from '../../ui-actions/utils';
 import { getOriginalHtmlContent, getQuotedTextFromOriginalContent } from '../get-quoted-text-util';
 import { _CI_REGEX, _CI_SRC_REGEX, isAvailableInTrusteeList } from '../utils';
+import { ShadowDomWrapper } from './shadow-dom-wrapper';
 
 type HtmlMessageRendererType = {
-	msgId: string;
+	message: MailMessage;
 };
 
-export const HtmlMessageRenderer: FC<HtmlMessageRendererType> = ({ msgId }) => {
+export const HtmlMessageRenderer: FC<HtmlMessageRendererType> = ({ message }) => {
 	const [isLoadingMessage, setIsLoadingMessage] = useState(false);
 	const isInSearchModule = useInSearchModule();
-	const messageFromReduxStore = useAppSelector((state: MailsStateType) =>
-		selectMessage(state, msgId)
-	);
-	const messageFromSearchStore = useMessageById(msgId);
-	const message = isInSearchModule ? messageFromSearchStore : messageFromReduxStore;
 	const body: BodyPart = message?.body ?? {
 		content: '',
 		truncated: false
@@ -141,6 +136,7 @@ export const HtmlMessageRenderer: FC<HtmlMessageRendererType> = ({ msgId }) => {
 		[displayBanner, showExternalImage]
 	);
 
+	const msgId = message.id;
 	const contentWithImages = useMemo(() => {
 		const imgMap = reduce(
 			parts,
@@ -169,14 +165,16 @@ export const HtmlMessageRenderer: FC<HtmlMessageRendererType> = ({ msgId }) => {
 	const loadMessage = async (): Promise<void> => {
 		setIsLoadingMessage(true);
 		if (isInSearchModule) {
-			retrieveFullMessage(msgId).finally(() => setIsLoadingMessage(false));
+			retrieveFullMessage(msgId).finally(() => {
+				setIsLoadingMessage(false);
+			});
 			return;
 		}
 		dispatch(getFullMsgAsyncThunk({ msgId })).finally(() => setIsLoadingMessage(false));
 	};
 
 	return (
-		<div ref={divRef} style={{ height: '100%' }}>
+		<div ref={divRef} style={{ height: '100%' }} className="force-white-bg">
 			{showBanner && !showExternalImage && (
 				<BannerViewExternalImages
 					setShowExternalImages={setShowExternalImage}
@@ -187,15 +185,9 @@ export const HtmlMessageRenderer: FC<HtmlMessageRendererType> = ({ msgId }) => {
 			{body.truncated && (
 				<BannerMessageTruncated loadMessage={loadMessage} isLoadingMessage={isLoadingMessage} />
 			)}
-			<Container
-				width={'fit'}
-				height={'100%'}
-				data-testid="message-renderer-container"
-				style={{ overflowY: 'auto', overflowX: 'hidden' }}
-				dangerouslySetInnerHTML={{
-					__html: contentWithImages
-				}}
-			/>
+			<ShadowDomWrapper>
+				<HtmlMessageRendererContainer html={contentWithImages} />
+			</ShadowDomWrapper>
 			{!showQuotedText && quoted.length > 0 && (
 				<Row mainAlignment="center" crossAlignment="center">
 					<Button

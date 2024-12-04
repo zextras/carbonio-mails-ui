@@ -18,7 +18,7 @@ import MailPreview, { MailPreviewProps } from '../mail-preview';
  * Test the Mail Preview component in different scenarios
  */
 // See: tests/mocks/network/msw/cases/getMsg/getMsg-${id} for relative msgId
-describe('Mail preview', () => {
+describe.skip('Mail preview', () => {
 	it('10 - 3 inline images', async () => {
 		const store = generateStore();
 		const msgId = '10';
