@@ -12,7 +12,7 @@ import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
 import FilterActionRows from '../filter-action-rows';
 
 describe('FilterActionsRows', () => {
-	const comProps = {
+	const compProps = {
 		t: jest.fn(),
 		isIncoming: true,
 		setTempActions: jest.fn(),
@@ -26,7 +26,7 @@ describe('FilterActionsRows', () => {
 					anything: [{ flagName: 'flagged' }]
 				}}
 				index={0}
-				compProps={comProps}
+				compProps={compProps}
 			/>,
 			{}
 		);
@@ -38,7 +38,7 @@ describe('FilterActionsRows', () => {
 					actionStop: [{ flagName: 'flagged' }]
 				}}
 				index={0}
-				compProps={comProps}
+				compProps={compProps}
 			/>,
 			{}
 		);
@@ -51,10 +51,36 @@ describe('FilterActionsRows', () => {
 					actionRedirect: [{ flagName: 'flagged' }]
 				}}
 				index={0}
-				compProps={comProps}
+				compProps={compProps}
 			/>,
 			{}
 		);
 		await screen.findByTestId('filter-action-row-contact-input');
+	});
+	it('should display Contact Input when selecting option "Redirect To Address"', async () => {
+		const mockSetActions = jest.fn();
+		const mockCompProps = {
+			t: jest.fn(),
+			isIncoming: true,
+			setTempActions: mockSetActions,
+			tempActions: [],
+			zimbraFeatureMailForwardingInFiltersEnabled: 'TRUE' as const
+		};
+		const { user } = setupTest(
+			<FilterActionRows
+				tmpFilter={{
+					actionRedirect: [{ flagName: 'flagged' }]
+				}}
+				index={0}
+				compProps={mockCompProps}
+			/>,
+			{}
+		);
+		const redirectToAddressInput = await screen.findByTestId('filter-action-row-contact-input');
+		await user.type(redirectToAddressInput, 'valid@email.it');
+		await user.type(redirectToAddressInput, '[Enter]');
+		expect(mockSetActions).toHaveBeenCalledWith([
+			expect.objectContaining({ actionRedirect: [{ a: 'valid@email.it' }] })
+		]);
 	});
 });
