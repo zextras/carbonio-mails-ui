@@ -5,20 +5,68 @@
  */
 import React from 'react';
 
-import { render } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
+
+import { useUserSettings } from '@zextras/carbonio-shell-ui';
+import * as darkReader from 'darkreader';
 
 import { ShadowDomWrapper } from '../shadow-dom-wrapper';
 
-test('ShadowDomWrapper renders correctly in open mode', () => {
-	const { container } = render(
-		<ShadowDomWrapper>
-			<span>Test Content</span>
-		</ShadowDomWrapper>
-	);
+jest.mock('darkreader', () => ({
+	...jest.requireActual('darkreader'),
+	enable: jest.fn(),
+	exportGeneratedCSS: jest.fn().mockResolvedValue('anyvalue')
+}));
 
-	// eslint-disable-next-line testing-library/no-node-access,testing-library/no-container
-	const shadowRoot = container.querySelector('div')?.shadowRoot;
-	expect(shadowRoot).not.toBeNull();
-	expect(shadowRoot?.innerHTML).toContain('Test Content');
+jest.mock('@zextras/carbonio-shell-ui', () => ({
+	useUserSettings: jest.fn()
+}));
+
+describe('ShadowDomWrapper', () => {
+	it('renders children inside shadow DOM when dark mode is disabled', () => {
+		const children = <div data-testid="child">Hello, Shadow DOM!</div>;
+		(useUserSettings as jest.Mock).mockReturnValue({ props: [] });
+		render(<ShadowDomWrapper>{children}</ShadowDomWrapper>);
+
+		const shadowDomWrapper = screen.getByTestId('shadow-dom-wrapper');
+		const { shadowRoot } = shadowDomWrapper;
+		// eslint-disable-next-line testing-library/no-node-access
+		const child = shadowRoot?.querySelector('[data-testid="child"]');
+
+		expect(child).toBeInTheDocument();
+		expect(child).toHaveTextContent('Hello, Shadow DOM!');
+	});
+
+	it('enables darkreader when dark mode is enabled', async () => {
+		const children = <div data-testid="child">Hello, Shadow DOM!</div>;
+
+		(useUserSettings as jest.Mock).mockReturnValue({
+			props: [{ name: 'zappDarkreaderMode', _content: 'enabled', zimlet: 'carbonio-shell-ui' }]
+		});
+
+		render(<ShadowDomWrapper>{children}</ShadowDomWrapper>);
+
+		await waitFor(() => {
+			expect(darkReader.enable).toHaveBeenCalled();
+		});
+	});
+
+	it('renders children inside shadow DOM when dark mode is enabled', () => {
+		(useUserSettings as jest.Mock).mockReturnValue({
+			props: [{ name: 'zappDarkreaderMode', _content: 'enabled', zimlet: 'carbonio-shell-ui' }]
+		});
+
+		const children = <div data-testid="child">Hello, Shadow DOM!</div>;
+		(useUserSettings as jest.Mock).mockReturnValue({ props: [] });
+		render(<ShadowDomWrapper>{children}</ShadowDomWrapper>);
+
+		const shadowDomWrapper = screen.getByTestId('shadow-dom-wrapper');
+		const { shadowRoot } = shadowDomWrapper;
+		// eslint-disable-next-line testing-library/no-node-access
+		const child = shadowRoot?.querySelector('[data-testid="child"]');
+
+		expect(child).toBeInTheDocument();
+		expect(child).toHaveTextContent('Hello, Shadow DOM!');
+	});
 });
