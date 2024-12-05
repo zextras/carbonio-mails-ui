@@ -5,12 +5,13 @@
  */
 import { useEffect, useRef, useState } from 'react';
 
-import { getTags, SoapNotify, useNotify, useRefresh } from '@zextras/carbonio-shell-ui';
+import { SoapNotify, useNotify, useRefresh } from '@zextras/carbonio-shell-ui';
 import { filter, find, forEach, isEmpty, keyBy, map, reduce, sortBy } from 'lodash';
 import { StoreApi, UseBoundStore } from 'zustand';
 
 import { useFolderStore } from '../../../carbonio-ui-commons/store/zustand/folder';
-import { folderWorker } from '../../../carbonio-ui-commons/worker';
+import { getTags, useTagStore } from '../../../carbonio-ui-commons/store/zustand/tags';
+import { folderWorker, tagsWorker } from '../../../carbonio-ui-commons/worker';
 import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
 import {
 	normalizeConversation,
