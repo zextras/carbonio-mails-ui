@@ -91,7 +91,7 @@ export const plainTextToHTML = (str: string): string => {
 };
 
 function isValidUrl(url: string): boolean {
-	const urlToCheck = url.match(/^(https?:\/\/)/) ? url : `http://${url}`;
+	const urlToCheck = /^(https?:\/\/)/.exec(url) ? url : `http://${url}`;
 	try {
 		const newUrl = new URL(urlToCheck);
 		return ['http:', 'https:'].includes(newUrl.protocol);
