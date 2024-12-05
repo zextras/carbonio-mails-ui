@@ -4,7 +4,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FunctionComponent, ReactElement, useCallback, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 
 import { act, screen } from '@testing-library/react';
 
@@ -12,10 +12,8 @@ import { ParticipantRole } from '../../../../../../carbonio-ui-commons/constants
 import { USER_TYPES_CONST } from '../../../../../../carbonio-ui-commons/integrations/constants';
 import { DefaultContactInput } from '../../../../../../carbonio-ui-commons/integrations/default-contact-input';
 import * as contactInput from '../../../../../../carbonio-ui-commons/integrations/hooks';
-import {
-	ContactInputItem,
-	ContactInputProps
-} from '../../../../../../carbonio-ui-commons/integrations/types';
+import { ContactInputItem } from '../../../../../../carbonio-ui-commons/integrations/types';
+import { mockContactInput } from '../../../../../../carbonio-ui-commons/test/mocks/integrations/mock-contact-input';
 import { UserEvent, setupTest } from '../../../../../../carbonio-ui-commons/test/test-setup';
 import { Participant } from '../../../../../../types';
 import { RecipientsRow } from '../recipients-row';
@@ -41,6 +39,7 @@ describe('recipients-row', () => {
 
 			const { user } = setupTest(
 				<RecipientsRow
+					dataTestid={'mockedContactInput'}
 					type={type}
 					label="label"
 					recipients={[]}
@@ -61,6 +60,7 @@ describe('recipients-row', () => {
 				<RecipientsRow
 					type="f"
 					label="label"
+					dataTestid={'mockedContactInput'}
 					recipients={[]}
 					onRecipientsChange={mockOnChange}
 				></RecipientsRow>
@@ -77,6 +77,7 @@ describe('recipients-row', () => {
 
 			const { user } = setupTest(
 				<RecipientsRow
+					dataTestid={'mockedContactInput'}
 					type="f"
 					label="label"
 					recipients={[]}
@@ -97,6 +98,7 @@ describe('recipients-row', () => {
 				<RecipientsRow
 					type="f"
 					label="label"
+					dataTestid={'mockedContactInput'}
 					recipients={[]}
 					onRecipientsChange={mockOnChange}
 				></RecipientsRow>
@@ -191,42 +193,11 @@ function TestableRecipientsRow(): React.ReactElement {
 
 	return (
 		<RecipientsRow
+			dataTestid={'mockedContactInput'}
 			type="f"
 			label="label"
 			recipients={recipients}
 			onRecipientsChange={onChange}
 		></RecipientsRow>
 	);
-}
-
-function mockContactInput({ valueToAdd }: { valueToAdd?: ContactInputItem } = {}): void {
-	jest
-		.spyOn(contactInput, 'useContactInput')
-		.mockReturnValue(generateMockedContactInput(valueToAdd));
-}
-
-/*
- * We need to define a minimal version that updated the ids of the contacts like the original component
- * we avoided to replicate all the logic to avoid inconsistencies
- */ function generateMockedContactInput(
-	valueToAdd?: ContactInputItem
-): FunctionComponent<Record<string, unknown>> {
-	function MockedContactInput({ onChange, defaultValue }: ContactInputProps): ReactElement {
-		const onInputChange: React.ChangeEventHandler<HTMLInputElement> = useCallback(
-			(e) => {
-				valueToAdd && onChange?.([...defaultValue, { ...valueToAdd }]);
-			},
-			[defaultValue, onChange]
-		);
-
-		return (
-			<>
-				<input data-testid="mockedContactInput" onChange={onInputChange} />
-				<br />
-				<label data-testid="mockedContactValue">{JSON.stringify(defaultValue)}</label>
-			</>
-		);
-	}
-
-	return MockedContactInput as FunctionComponent<Record<string, unknown>>;
 }
