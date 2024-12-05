@@ -68,7 +68,7 @@ type CompProps = {
 };
 
 type FilterActionRowProps = {
-	tmpFilter: Record<string, Array<TempAction>>;
+	tmpFilter: Record<string, [TempAction]>;
 	index: number;
 	compProps: CompProps;
 	tagOptions?: Array<any>;
