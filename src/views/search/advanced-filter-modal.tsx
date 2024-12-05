@@ -16,7 +16,7 @@ import {
 	ModalFooter
 } from '@zextras/carbonio-design-system';
 import { QueryChip, t } from '@zextras/carbonio-shell-ui';
-import { concat, filter, includes, map } from 'lodash';
+import { concat, filter, includes, map, reject } from 'lodash';
 
 import AttachmentTypeEmailStatusRow from './parts/attachment-type-email-status-row';
 import { ReceivedSentAddressRow } from './parts/received-sent-address-row';
@@ -297,7 +297,8 @@ export const AdvancedFilterModal = ({
 		const newValues = values.map((val) => ({
 			id: val.id || val.value.email,
 			label: `from:${val.label}`,
-			value: `from:${val.value.email}`
+			value: `from:${val.value.email}`,
+			actions: reject(val?.actions, ['icon', 'EditOutline'])
 		}));
 		setReceivedFromAddresses(newValues);
 	};
@@ -307,7 +308,8 @@ export const AdvancedFilterModal = ({
 		const newValues = values.map((val) => ({
 			id: val.id || val.value.email,
 			label: `to:${val.label}`,
-			value: `to:${val.value.email}`
+			value: `to:${val.value.email}`,
+			actions: reject(val?.actions, ['icon', 'EditOutline'])
 		}));
 		setSentToAddresses(newValues);
 	};
@@ -316,11 +318,11 @@ export const AdvancedFilterModal = ({
 	const receivedSentAddressRowProps = useMemo(
 		() => ({
 			receivedFromAddresses: receivedFromAddresses.map((val) => ({
-				email: val.value || ''
+				email: val.value?.replace('from:', '') || ''
 			})),
 			handleReceivedFromInput,
 			sentToAddresses: sentToAddresses.map((val) => ({
-				email: val.value || ''
+				email: val.value?.replace('to:', '') || ''
 			})),
 			handleSentToInput
 		}),

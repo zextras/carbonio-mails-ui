@@ -8,6 +8,11 @@ import React from 'react';
 import { faker } from '@faker-js/faker';
 import { screen, waitFor, within } from '@testing-library/react';
 
+import {
+	EDIT_ACTION,
+	generateMockContactInputItem,
+	mockContactInput
+} from '../../../carbonio-ui-commons/test/mocks/integrations/mock-contact-input';
 import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
 import { generateStore } from '../../../tests/generators/store';
 import { AdvancedFilterModalProps, SearchQueryItem } from '../../../types';
@@ -89,11 +94,10 @@ describe('Advanced filter modal', () => {
 		await user.click(confirmButton);
 		await waitFor(() => {
 			expect(mockUpdateQuery).toHaveBeenCalledWith([
-				{
-					id: 'validEmail@test.com',
+				expect.objectContaining({
 					label: 'from:validEmail@test.com',
 					value: 'from:validEmail@test.com'
-				}
+				})
 			]);
 		});
 	});
@@ -120,11 +124,10 @@ describe('Advanced filter modal', () => {
 		await user.click(confirmButton);
 		await waitFor(() => {
 			expect(mockUpdateQuery).toHaveBeenCalledWith([
-				{
-					id: 'validEmail@test.com',
+				expect.objectContaining({
 					label: 'to:validEmail@test.com',
 					value: 'to:validEmail@test.com'
-				}
+				})
 			]);
 		});
 	});
@@ -160,11 +163,49 @@ describe('Advanced filter modal', () => {
 					label: 'from:someone@test.com',
 					value: 'from:someone@test.com'
 				}),
-				{
+				expect.objectContaining({
 					id: 'validEmail@test.com',
 					label: 'to:validEmail@test.com',
 					value: 'to:validEmail@test.com'
-				}
+				})
+			]);
+		});
+	});
+
+	it('should display "to" and "from" query chip without edit action', async () => {
+		const valueToAdd = generateMockContactInputItem();
+		valueToAdd.actions = [EDIT_ACTION];
+		mockContactInput({ valueToAdd });
+		const store = generateStore();
+		const mockUpdateQuery = jest.fn();
+		const { user } = setupTest(
+			<AdvancedFilterModal
+				open
+				isSharedFolderIncluded={false}
+				onClose={jest.fn()}
+				query={[]}
+				updateQuery={mockUpdateQuery}
+				setIsSharedFolderIncluded={jest.fn()}
+			/>,
+			{ store }
+		);
+		const sentTo = screen.getByTestId('sent-to-input');
+		await user.type(sentTo, 'validEmail@test.com');
+		await user.type(sentTo, '[Enter]');
+		const receivedFrom = screen.getByTestId('received-from-input');
+		await user.type(receivedFrom, 'validEmail2@test.com');
+		await user.type(receivedFrom, '[Enter]');
+		expect(sentTo).toBeInTheDocument();
+		const confirmButton = screen.getByText('action.search');
+		await user.click(confirmButton);
+		await waitFor(() => {
+			expect(mockUpdateQuery).toHaveBeenCalledWith([
+				expect.objectContaining({
+					actions: []
+				}),
+				expect.objectContaining({
+					actions: []
+				})
 			]);
 		});
 	});
