@@ -6,7 +6,7 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { map } from 'lodash';
 
-type SendShareCalendarNotification = {
+type SendShareNotification = {
 	contacts: {
 		email: string;
 	}[];
@@ -17,7 +17,7 @@ type SendShareCalendarNotification = {
 
 export const sendShareNotification = createAsyncThunk(
 	'mail/sendShareNotification',
-	async (data: SendShareCalendarNotification) =>
+	async (data: SendShareNotification) =>
 		Promise.all(
 			map(data.contacts, (contact) =>
 				fetch('/service/soap/SendShareNotificationRequest', {
