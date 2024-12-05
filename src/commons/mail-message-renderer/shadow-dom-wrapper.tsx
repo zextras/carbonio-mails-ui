@@ -32,7 +32,7 @@ export const ShadowDomWrapper = ({ children }: ShadowDomWrapperProps): React.JSX
 					darkReaderAppliedRef.current = true;
 				}
 			} catch (error) {
-				console.error('Failed to apply Dark Reader styles:', error);
+				/* empty */
 			}
 		}
 	}, []);
