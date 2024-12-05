@@ -19,6 +19,7 @@ import {
 	getColor,
 	ChipItem
 } from '@zextras/carbonio-design-system';
+import { TFunction } from 'i18next';
 import { filter, omit } from 'lodash';
 import styled from 'styled-components';
 import { v4 as uuidv4 } from 'uuid';
@@ -26,11 +27,11 @@ import { v4 as uuidv4 } from 'uuid';
 import CustomSelect from './custom-select';
 import { getActionOptions, getMarkAsOptions } from './utils';
 import { ZIMBRA_STANDARD_COLORS } from '../../../../carbonio-ui-commons/constants/utils';
+import { USER_TYPES_CONST } from '../../../../carbonio-ui-commons/integrations/constants';
 import { useContactInput } from '../../../../carbonio-ui-commons/integrations/hooks';
 import { ContactInputItem } from '../../../../carbonio-ui-commons/integrations/types';
 import { Folder } from '../../../../carbonio-ui-commons/types/folder';
 import { SelectFolderModal } from '../../../../ui-actions/modals/select-folder-modal';
-import { USER_TYPES_CONST } from '../../../../carbonio-ui-commons/integrations/constants';
 
 export const StyledIconButton = styled(IconButton)`
 	border: 0.0625rem solid
@@ -41,10 +42,35 @@ export const StyledIconButton = styled(IconButton)`
 	}
 `;
 
+// FIXME: this type was introduced just to start understanding what this code is doing but it is clear it is trying to represent a code that does too many things
+type TempAction = {
+	id?: string;
+	a?: string;
+	label?: string;
+	value?: string;
+	actionKeep?: Array<unknown>;
+	actionStop?: Array<unknown>;
+	actionRedirect?: Array<unknown>;
+	actionTag?: Array<unknown>;
+	actionFileInto?: Array<unknown>;
+	actionDiscard?: Array<unknown>;
+	tagName?: string;
+	flagName?: string;
+	folderPath?: string;
+};
+// FIXME: what is "comp" supposed to be?
+type CompProps = {
+	t: TFunction;
+	isIncoming: boolean;
+	tempActions: Array<TempAction>;
+	setTempActions: (tempActions: Array<TempAction>) => void;
+	zimbraFeatureMailForwardingInFiltersEnabled: 'TRUE' | 'FALSE';
+};
+
 type FilterActionRowProps = {
-	tmpFilter: any;
+	tmpFilter: Record<string, Array<TempAction>>;
 	index: number;
-	compProps: any;
+	compProps: CompProps;
 	tagOptions?: Array<any>;
 };
 
