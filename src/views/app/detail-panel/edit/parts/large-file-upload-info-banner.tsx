@@ -20,7 +20,7 @@ export const LargeFileUploadInfoBanner = (): JSX.Element => {
 			text={warningText}
 			icon={'InfoOutline'}
 			iconColor={'info'}
-			bottomBorderColor="error"
+			bottomBorderColor="info"
 		/>
 	);
 };
