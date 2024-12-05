@@ -200,10 +200,10 @@ export type UseSecondaryDisabledType = {
 	emailStatus: KeywordState;
 	flaggedFilter: KeywordState;
 	folder: KeywordState;
-	receivedFromAddress: Array<SearchQueryItem>;
+	receivedFromAddress: Array<QueryChip>;
 	sentAfter: KeywordState;
 	sentBefore: KeywordState;
-	sentFromAddress: Array<SearchQueryItem>;
+	sentFromAddress: Array<QueryChip>;
 	sentOn: KeywordState;
 	sizeLarger: KeywordState;
 	sizeSmaller: KeywordState;

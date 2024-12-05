@@ -26,11 +26,12 @@ import SubjectKeywordRow from './parts/subject-keyword-row';
 import TagFolderRow from './parts/tag-folder-row';
 import ToggleFilters from './parts/toggle-filters';
 import { useDisabled, useSecondaryDisabled } from './parts/use-disable-hooks';
+import { getChipItems } from './utils';
 import { ZIMBRA_STANDARD_COLORS } from '../../carbonio-ui-commons/constants/utils';
 import { ContactInputItem } from '../../carbonio-ui-commons/integrations/types';
 import { getTags } from '../../carbonio-ui-commons/store/zustand/tags';
 import { ScrollableContainer } from '../../commons/scrollable-container';
-import { AdvancedFilterModalProps, KeywordState, SearchQueryItem } from '../../types';
+import { AdvancedFilterModalProps, KeywordState } from '../../types';
 
 export const AdvancedFilterModal = ({
 	open,
@@ -45,8 +46,8 @@ export const AdvancedFilterModal = ({
 	const [unreadFilter, setUnreadFilter] = useState<KeywordState>([]);
 	const [flaggedFilter, setFlaggedFilter] = useState<KeywordState>([]);
 
-	const [receivedFromAddresses, setReceivedFromAddresses] = useState<Array<SearchQueryItem>>([]);
-	const [sentToAddresses, setSentToAddresses] = useState<Array<SearchQueryItem>>([]);
+	const [receivedFromAddresses, setReceivedFromAddresses] = useState<KeywordState>([]);
+	const [sentToAddresses, setSentToAddresses] = useState<KeywordState>([]);
 	const [folder, setFolder] = useState<KeywordState>([]);
 	const [sentBefore, setSentBefore] = useState<KeywordState>([]);
 	const [sentOn, setSentOn] = useState<KeywordState>([]);
@@ -162,10 +163,16 @@ export const AdvancedFilterModal = ({
 		);
 		setSentOn(sentOnInQuery);
 
-		const sentToInQuery = query.filter((queryItem) => /^to:*/.test(queryItem.label));
+		const sentToInQuery = getChipItems(
+			query.filter((queryItem) => /^to:*/.test(queryItem.label)),
+			'to'
+		);
 		setSentToAddresses(sentToInQuery);
 
-		const receivedFromInQuery = query.filter((queryItem) => /^from:*/.test(queryItem.label));
+		const receivedFromInQuery = getChipItems(
+			query.filter((queryItem) => /^from:*/.test(queryItem.label)),
+			'from'
+		);
 		setReceivedFromAddresses(receivedFromInQuery);
 
 		const folderInQuery = map(
@@ -245,7 +252,7 @@ export const AdvancedFilterModal = ({
 				emailStatus,
 				sizeLarger,
 				sizeSmaller,
-				receivedFromAddresses,
+				receivedFromAddresses.map((x) => x),
 				sentToAddresses
 			),
 		[
@@ -290,16 +297,17 @@ export const AdvancedFilterModal = ({
 		const newValues = values.map((val) => ({
 			id: val.id || val.value.email,
 			label: `from:${val.label}`,
-			value: val.value.email
+			value: `from:${val.value.email}`
 		}));
 		setReceivedFromAddresses(newValues);
 	};
 
+	// TODO: search chip have actions but they don't work except remove
 	const handleSentToInput = (values: Array<ContactInputItem>): void => {
 		const newValues = values.map((val) => ({
 			id: val.id || val.value.email,
 			label: `to:${val.label}`,
-			value: val.value.email
+			value: `to:${val.value.email}`
 		}));
 		setSentToAddresses(newValues);
 	};

@@ -67,7 +67,7 @@ describe('Advanced filter modal', () => {
 
 		expect(actionButton).toBeEnabled();
 	});
-	it('should add "received from" to query after adding a value in the input', async () => {
+	it('should add "received from" to query with value and label including "from:" after adding a value in the input', async () => {
 		const store = generateStore();
 		const mockUpdateQuery = jest.fn();
 		const { user } = setupTest(
@@ -92,13 +92,13 @@ describe('Advanced filter modal', () => {
 				{
 					id: 'validEmail@test.com',
 					label: 'from:validEmail@test.com',
-					value: 'validEmail@test.com'
+					value: 'from:validEmail@test.com'
 				}
 			]);
 		});
 	});
 
-	it('should add "sent to" to query after adding a value in the input', async () => {
+	it('should add "sent to" to query with value and label including "to:" after adding a value in the input', async () => {
 		const store = generateStore();
 		const mockUpdateQuery = jest.fn();
 		const { user } = setupTest(
@@ -123,7 +123,7 @@ describe('Advanced filter modal', () => {
 				{
 					id: 'validEmail@test.com',
 					label: 'to:validEmail@test.com',
-					value: 'validEmail@test.com'
+					value: 'to:validEmail@test.com'
 				}
 			]);
 		});
@@ -134,7 +134,7 @@ describe('Advanced filter modal', () => {
 		const query: SearchQueryItem = {
 			id: 'query1',
 			label: 'from:someone@test.com',
-			value: 'someone@test.com'
+			value: 'from:someone@test.com'
 		};
 		const { user } = setupTest(
 			<AdvancedFilterModal
@@ -155,15 +155,15 @@ describe('Advanced filter modal', () => {
 		await user.click(confirmButton);
 		await waitFor(() => {
 			expect(mockUpdateQuery).toHaveBeenCalledWith([
-				{
+				expect.objectContaining({
 					id: 'query1',
 					label: 'from:someone@test.com',
-					value: 'someone@test.com'
-				},
+					value: 'from:someone@test.com'
+				}),
 				{
 					id: 'validEmail@test.com',
 					label: 'to:validEmail@test.com',
-					value: 'validEmail@test.com'
+					value: 'to:validEmail@test.com'
 				}
 			]);
 		});
