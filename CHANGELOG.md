@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.21.0](https://github.com/zextras/carbonio-mails-ui/compare/v1.20.3...v1.21.0) (2024-12-05)
+
+
+### Features
+
+* integrate darkreader for shadow DOM styling ([9539e34](https://github.com/zextras/carbonio-mails-ui/commit/9539e340354fc3c37f97f10b48c78a5c41d5ac7d))
+* introduce large file upload info banner ([d0ffa06](https://github.com/zextras/carbonio-mails-ui/commit/d0ffa0643dae928a7beb4f5fe6d30496be14e057))
+* remove percentage from attachment upload ([68648cb](https://github.com/zextras/carbonio-mails-ui/commit/68648cb1299a9ccf9eee8907b11ada6c48f18722))
+* show spinner while saveDraft is being resolved ([7e52ad6](https://github.com/zextras/carbonio-mails-ui/commit/7e52ad667b71d4b3922bb174e8f5b2d12ea035c2))
+* update warning text for large file uploads ([dac545b](https://github.com/zextras/carbonio-mails-ui/commit/dac545bf732392ca286a61d48dee83cdcf9ae410))
+
+
+### Bug Fixes
+
+* apply force-white-bg style to Shadow DOM ([8875188](https://github.com/zextras/carbonio-mails-ui/commit/8875188538cf06fa52a28781dae18b7de41016f9))
+* set darkreader color to neutral text ([d3a3502](https://github.com/zextras/carbonio-mails-ui/commit/d3a35022e84935fbb0a0ee91954f98b7104b343d))
+
 ### [1.20.3](https://github.com/zextras/carbonio-mails-ui/compare/v1.20.2...v1.20.3) (2024-12-04)
 
 
