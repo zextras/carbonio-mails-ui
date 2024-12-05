@@ -7,6 +7,7 @@ import React, { FC, ReactElement, useCallback, useMemo } from 'react';
 
 import { Container, ChipInput, ChipItem } from '@zextras/carbonio-design-system';
 import { t, useIntegratedComponent } from '@zextras/carbonio-shell-ui';
+import { DefaultTheme } from 'styled-components';
 
 import { isValidEmail } from './utils';
 import type {
@@ -16,7 +17,6 @@ import type {
 	SearchChipItem
 } from '../../../types';
 import { getChipItems } from '../utils';
-import { DefaultTheme } from 'styled-components';
 
 export const ReceivedSentAddressRow: FC<RcvdSentAddressRowPropType> = ({
 	compProps
@@ -122,6 +122,7 @@ export const ReceivedSentAddressRow: FC<RcvdSentAddressRowPropType> = ({
 			<Container padding={{ right: 'extrasmall' }} maxWidth="50%">
 				{integrationAvailable ? (
 					<ContactInput
+						data-testid={'sent-to-input'}
 						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 						// @ts-ignore
 						placeholder={t('label.from', 'From')}
@@ -130,6 +131,7 @@ export const ReceivedSentAddressRow: FC<RcvdSentAddressRowPropType> = ({
 					/>
 				) : (
 					<ChipInput
+						data-testid={'sent-to-input'}
 						placeholder={t('label.from', 'From')}
 						background={chipBackground}
 						value={receivedFromAddress}
