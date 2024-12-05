@@ -46,7 +46,7 @@ export const ShadowDomWrapper = ({ children }: ShadowDomWrapperProps): React.JSX
 			const darkReaderMode = find(props, { name: 'zappDarkreaderMode' })?._content;
 			if (darkReaderMode === 'enabled') {
 				enableDarkReader({});
-				applyDarkReaderStyles().then(() => {});
+				applyDarkReaderStyles();
 			}
 
 			setShadowRootInitialized(true);
@@ -61,7 +61,7 @@ export const ShadowDomWrapper = ({ children }: ShadowDomWrapperProps): React.JSX
 	}, [props, applyDarkReaderStyles]);
 
 	return (
-		<div ref={containerRef}>
+		<div ref={containerRef} data-testid="shadow-dom-wrapper">
 			{shadowRootInitialized &&
 				shadowRootRef.current &&
 				createPortal(children, shadowRootRef.current)}
