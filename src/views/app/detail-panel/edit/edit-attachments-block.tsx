@@ -16,7 +16,8 @@ import type { MailsEditorV2, SavedAttachment, UnsavedAttachment } from '../../..
 
 export const EditAttachmentsBlock: FC<{
 	editorId: MailsEditorV2['id'];
-}> = ({ editorId }): ReactElement => {
+	setLargeFileUploadInfoBannerVisible: (visible: boolean) => void;
+}> = ({ editorId, setLargeFileUploadInfoBannerVisible }): ReactElement => {
 	const [expanded, setExpanded] = useState(false);
 	const { savedStandardAttachments, unsavedStandardAttachments, removeStandardAttachments } =
 		useEditorAttachments(editorId);
@@ -52,6 +53,7 @@ export const EditAttachmentsBlock: FC<{
 									key={`att-${attachment.filename}-${index}`}
 									editorId={editorId}
 									attachment={attachment}
+									setLargeFileUploadInfoBannerVisible={setLargeFileUploadInfoBannerVisible}
 								/>
 							) : (
 								<></>
