@@ -129,14 +129,6 @@ export type ChipOnAdd = ChipItem & {
 	value: string;
 	avatarIcon: string;
 };
-export type RcvdSentAddressRowPropType = {
-	compProps: {
-		receivedFromAddress: KeywordState;
-		setReceivedFromAddress: (arg: any) => void;
-		sentToAddress: Array<any>;
-		setSentToAddress: (arg: any) => void;
-	};
-};
 
 export type SendReceivedDateRowPropType = {
 	compProps: {
@@ -208,10 +200,10 @@ export type UseSecondaryDisabledType = {
 	emailStatus: KeywordState;
 	flaggedFilter: KeywordState;
 	folder: KeywordState;
-	receivedFromAddress: KeywordState;
+	receivedFromAddress: Array<SearchQueryItem>;
 	sentAfter: KeywordState;
 	sentBefore: KeywordState;
-	sentFromAddress: KeywordState;
+	sentFromAddress: Array<SearchQueryItem>;
 	sentOn: KeywordState;
 	sizeLarger: KeywordState;
 	sizeSmaller: KeywordState;

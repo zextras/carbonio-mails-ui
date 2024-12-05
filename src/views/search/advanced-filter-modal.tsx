@@ -26,11 +26,11 @@ import SubjectKeywordRow from './parts/subject-keyword-row';
 import TagFolderRow from './parts/tag-folder-row';
 import ToggleFilters from './parts/toggle-filters';
 import { useDisabled, useSecondaryDisabled } from './parts/use-disable-hooks';
-import { getChipItems } from './utils';
 import { ZIMBRA_STANDARD_COLORS } from '../../carbonio-ui-commons/constants/utils';
+import { ContactInputItem } from '../../carbonio-ui-commons/integrations/types';
 import { getTags } from '../../carbonio-ui-commons/store/zustand/tags';
 import { ScrollableContainer } from '../../commons/scrollable-container';
-import type { AdvancedFilterModalProps, KeywordState } from '../../types';
+import { AdvancedFilterModalProps, KeywordState, SearchQueryItem } from '../../types';
 
 export const AdvancedFilterModal = ({
 	open,
@@ -45,8 +45,8 @@ export const AdvancedFilterModal = ({
 	const [unreadFilter, setUnreadFilter] = useState<KeywordState>([]);
 	const [flaggedFilter, setFlaggedFilter] = useState<KeywordState>([]);
 
-	const [receivedFromAddress, setReceivedFromAddress] = useState<KeywordState>([]);
-	const [sentToAddress, setSentToAddress] = useState<KeywordState>([]);
+	const [receivedFromAddresses, setReceivedFromAddresses] = useState<Array<SearchQueryItem>>([]);
+	const [sentToAddresses, setSentToAddresses] = useState<Array<SearchQueryItem>>([]);
 	const [folder, setFolder] = useState<KeywordState>([]);
 	const [sentBefore, setSentBefore] = useState<KeywordState>([]);
 	const [sentOn, setSentOn] = useState<KeywordState>([]);
@@ -162,13 +162,11 @@ export const AdvancedFilterModal = ({
 		);
 		setSentOn(sentOnInQuery);
 
-		const filteredToChips = query.filter((chip) => /^to:*/.test(chip.label));
-		const sentToInQuery = getChipItems(filteredToChips, 'to');
-		setSentToAddress(sentToInQuery);
+		const sentToInQuery = query.filter((queryItem) => /^to:*/.test(queryItem.label));
+		setSentToAddresses(sentToInQuery);
 
-		const filteredFromChips = query.filter((chip) => /^from:*/.test(chip.label));
-		const receivedFromInQuery = getChipItems(filteredFromChips, 'from');
-		setReceivedFromAddress(receivedFromInQuery);
+		const receivedFromInQuery = query.filter((queryItem) => /^from:*/.test(queryItem.label));
+		setReceivedFromAddresses(receivedFromInQuery);
 
 		const folderInQuery = map(
 			filter(query, (v) => /^in:/.test(v.label)),
@@ -195,10 +193,10 @@ export const AdvancedFilterModal = ({
 		emailStatus,
 		flaggedFilter,
 		folder,
-		receivedFromAddress,
+		receivedFromAddress: receivedFromAddresses,
 		sentAfter,
 		sentBefore,
-		sentFromAddress: sentToAddress,
+		sentFromAddress: sentToAddresses,
 		sentOn,
 		sizeLarger,
 		sizeSmaller,
@@ -219,8 +217,8 @@ export const AdvancedFilterModal = ({
 		setSizeSmallerErrorLabel('');
 		setSizeLargerErrorLabel('');
 		updateQuery([]);
-		setReceivedFromAddress([]);
-		setSentToAddress([]);
+		setReceivedFromAddresses([]);
+		setSentToAddresses([]);
 		setFolder([]);
 		setTag([]);
 	}, [updateQuery]);
@@ -247,8 +245,8 @@ export const AdvancedFilterModal = ({
 				emailStatus,
 				sizeLarger,
 				sizeSmaller,
-				receivedFromAddress,
-				sentToAddress
+				receivedFromAddresses,
+				sentToAddresses
 			),
 		[
 			attachmentFilter,
@@ -257,10 +255,10 @@ export const AdvancedFilterModal = ({
 			flaggedFilter,
 			folder,
 			otherKeywords,
-			receivedFromAddress,
+			receivedFromAddresses,
 			sentAfter,
 			sentBefore,
-			sentToAddress,
+			sentToAddresses,
 			sentOn,
 			sizeLarger,
 			sizeSmaller,
@@ -288,14 +286,37 @@ export const AdvancedFilterModal = ({
 		[otherKeywords, subject]
 	);
 
+	const handleReceivedFromInput = (values: Array<ContactInputItem>): void => {
+		const newValues = values.map((val) => ({
+			id: val.id || val.value.email,
+			label: `from:${val.label}`,
+			value: val.value.email
+		}));
+		setReceivedFromAddresses(newValues);
+	};
+
+	const handleSentToInput = (values: Array<ContactInputItem>): void => {
+		const newValues = values.map((val) => ({
+			id: val.id || val.value.email,
+			label: `to:${val.label}`,
+			value: val.value.email
+		}));
+		setSentToAddresses(newValues);
+	};
+
+	// FIXME: how can a value of a query be undefined?
 	const receivedSentAddressRowProps = useMemo(
 		() => ({
-			receivedFromAddress,
-			setReceivedFromAddress,
-			sentToAddress,
-			setSentToAddress
+			receivedFromAddresses: receivedFromAddresses.map((val) => ({
+				email: val.value || ''
+			})),
+			handleReceivedFromInput,
+			sentToAddresses: sentToAddresses.map((val) => ({
+				email: val.value || ''
+			})),
+			handleSentToInput
 		}),
-		[receivedFromAddress, sentToAddress]
+		[receivedFromAddresses, sentToAddresses]
 	);
 
 	const attachmentTypeEmailStatusRowProps = useMemo(

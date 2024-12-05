@@ -90,13 +90,9 @@ describe('Advanced filter modal', () => {
 		await waitFor(() => {
 			expect(mockUpdateQuery).toHaveBeenCalledWith([
 				{
-					avatarIcon: 'EmailOutline',
-					hasAvatar: true,
-					hasError: false,
-					isGeneric: false,
-					isQueryFilter: true,
+					id: 'validEmail@test.com',
 					label: 'from:validEmail@test.com',
-					value: 'from:validEmail@test.com'
+					value: 'validEmail@test.com'
 				}
 			]);
 		});
@@ -125,13 +121,9 @@ describe('Advanced filter modal', () => {
 		await waitFor(() => {
 			expect(mockUpdateQuery).toHaveBeenCalledWith([
 				{
-					avatarIcon: 'EmailOutline',
-					hasAvatar: true,
-					hasError: false,
-					isGeneric: false,
-					isQueryFilter: true,
+					id: 'validEmail@test.com',
 					label: 'to:validEmail@test.com',
-					value: 'to:validEmail@test.com'
+					value: 'validEmail@test.com'
 				}
 			]);
 		});
@@ -142,7 +134,7 @@ describe('Advanced filter modal', () => {
 		const query: SearchQueryItem = {
 			id: 'query1',
 			label: 'from:someone@test.com',
-			value: 'from:someone@test.com'
+			value: 'someone@test.com'
 		};
 		const { user } = setupTest(
 			<AdvancedFilterModal
@@ -164,28 +156,14 @@ describe('Advanced filter modal', () => {
 		await waitFor(() => {
 			expect(mockUpdateQuery).toHaveBeenCalledWith([
 				{
-					avatarBackground: 'secondary',
-					avatarIcon: 'EmailOutline',
-					error: false,
-					fullName: 'from:someone@test.com',
-					hasAvatar: true,
 					id: 'query1',
-					isGeneric: false,
-					isQueryFilter: true,
 					label: 'from:someone@test.com',
-					value: 'from:someone@test.com'
+					value: 'someone@test.com'
 				},
 				{
-					avatarBackground: 'secondary',
-					avatarIcon: 'EmailOutline',
-					error: false,
-					fullName: 'to:validEmail@test.com',
-					hasAvatar: true,
 					id: 'validEmail@test.com',
-					isGeneric: false,
-					isQueryFilter: true,
 					label: 'to:validEmail@test.com',
-					value: 'to:validEmail@test.com'
+					value: 'validEmail@test.com'
 				}
 			]);
 		});

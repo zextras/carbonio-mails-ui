@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, ReactElement, useCallback, useMemo } from 'react';
+import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
@@ -12,60 +12,81 @@ import { map } from 'lodash';
 import { USER_TYPES_CONST } from '../../../carbonio-ui-commons/integrations/constants';
 import { useContactInput } from '../../../carbonio-ui-commons/integrations/hooks';
 import { ContactInputItem } from '../../../carbonio-ui-commons/integrations/types';
-import type {
-	RcvdSentAddressRowPropType,
-	ContactInputItem as ContactInputItemInternal
-} from '../../../types';
-import { getChipItems } from '../utils';
+import { SearchEmailValue } from '../../../types';
 
-export const ReceivedSentAddressRow: FC<RcvdSentAddressRowPropType> = ({
+type ReceivedSentAddressRowProps = {
+	compProps: {
+		receivedFromAddresses: Array<SearchEmailValue>;
+		handleReceivedFromInput: (arg: Array<ContactInputItem>) => void;
+		sentToAddresses: Array<SearchEmailValue>;
+		handleSentToInput: (arg: Array<ContactInputItem>) => void;
+	};
+};
+
+function newChipFromAddress(searchValue: SearchEmailValue): ContactInputItem {
+	const { email } = searchValue;
+	return {
+		id: email,
+		label: email,
+		value: {
+			id: email,
+			email,
+			type: USER_TYPES_CONST.CONTACT
+		}
+	};
+}
+export const ReceivedSentAddressRow: FC<ReceivedSentAddressRowProps> = ({
 	compProps
 }): ReactElement => {
-	const { receivedFromAddress, setReceivedFromAddress, sentToAddress, setSentToAddress } =
+	const { receivedFromAddresses, handleReceivedFromInput, sentToAddresses, handleSentToInput } =
 		compProps;
 
-	const internalReceivedFromAddress: ContactInputItem[] = useMemo(
-		() =>
-			map(receivedFromAddress, (address) => ({
-				id: address.id,
-				label: address.label,
-				value: {
-					id: address.id,
-					email: address.value ?? address.label,
-					type: USER_TYPES_CONST.CONTACT
-				}
-			})),
-		[receivedFromAddress]
-	);
+	const [sentToChips, setSentToChips] = useState<Record<string, ContactInputItem | undefined>>({});
+	const [receivedFromChips, setReceivedFromChips] = useState<
+		Record<string, ContactInputItem | undefined>
+	>({});
 
 	const ContactInput = useContactInput();
 
 	const handleReceivedFromChange = useCallback(
 		(contacts: Array<ContactInputItem>) => {
-			const contactItems: ContactInputItemInternal[] = map(contacts, (contact) => ({
-				value: contact.value.email,
-				label: contact.label,
-				id: contact.value.email,
-				error: contact.error
-			}));
-			const chips = getChipItems(contactItems, 'from');
-			setReceivedFromAddress(chips);
+			const newValues = {} as Record<string, ContactInputItem>;
+			contacts.forEach((contact: ContactInputItem) => {
+				newValues[contact.value.email] = contact;
+			});
+			setReceivedFromChips(newValues);
+			handleReceivedFromInput(contacts);
 		},
-		[setReceivedFromAddress]
+		[handleReceivedFromInput]
 	);
 
 	const handleSentToChange = useCallback(
 		(contacts: Array<ContactInputItem>) => {
-			const contactItems: ContactInputItemInternal[] = map(contacts, (contact) => ({
-				value: contact.value.email,
-				label: contact.label,
-				id: contact.value.email,
-				error: contact.error
-			}));
-			const chips = getChipItems(contactItems, 'to');
-			setSentToAddress(chips);
+			const newValues = {} as Record<string, ContactInputItem>;
+			contacts.forEach((contact: ContactInputItem) => {
+				newValues[contact.value.email] = contact;
+			});
+			setSentToChips(newValues);
+			handleSentToInput(contacts);
 		},
-		[setSentToAddress]
+		[handleSentToInput]
+	);
+
+	const internalReceivedFromAddress: ContactInputItem[] = useMemo(
+		() =>
+			map(receivedFromAddresses, (address) => {
+				const existingChip = receivedFromChips[address.email];
+				return existingChip || newChipFromAddress(address);
+			}),
+		[receivedFromAddresses, receivedFromChips]
+	);
+	const internalSentToAddress: ContactInputItem[] = useMemo(
+		() =>
+			map(sentToAddresses, (address) => {
+				const existingChip = sentToChips[address.email];
+				return existingChip || newChipFromAddress(address);
+			}),
+		[sentToAddresses, sentToChips]
 	);
 
 	return (
@@ -83,7 +104,7 @@ export const ReceivedSentAddressRow: FC<RcvdSentAddressRowPropType> = ({
 					data-testid={'sent-to-input'}
 					placeholder={t('label.to', 'To')}
 					onChange={handleSentToChange}
-					defaultValue={sentToAddress ?? []}
+					defaultValue={internalSentToAddress}
 				/>
 			</Container>
 		</Container>
