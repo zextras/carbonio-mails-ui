@@ -10,7 +10,7 @@ import { screen, waitFor, within } from '@testing-library/react';
 
 import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
 import { generateStore } from '../../../tests/generators/store';
-import { AdvancedFilterModalProps } from '../../../types';
+import { AdvancedFilterModalProps, SearchQueryItem } from '../../../types';
 import { AdvancedFilterModal } from '../advanced-filter-modal';
 
 describe('Advanced filter modal', () => {
@@ -124,6 +124,57 @@ describe('Advanced filter modal', () => {
 		await user.click(confirmButton);
 		await waitFor(() => {
 			expect(mockUpdateQuery).toHaveBeenCalledWith([
+				{
+					avatarIcon: 'EmailOutline',
+					hasAvatar: true,
+					hasError: false,
+					isGeneric: false,
+					isQueryFilter: true,
+					label: 'to:validEmail@test.com',
+					value: 'to:validEmail@test.com'
+				}
+			]);
+		});
+	});
+	it('should keep previous query first value after adding a new value in "sent to" input', async () => {
+		const store = generateStore();
+		const mockUpdateQuery = jest.fn();
+		const query: SearchQueryItem = {
+			id: 'query1',
+			label: 'from:someone@test.com',
+			value: 'from:someone@test.com'
+		};
+		const { user } = setupTest(
+			<AdvancedFilterModal
+				open
+				isSharedFolderIncluded={false}
+				onClose={jest.fn()}
+				query={[query]}
+				updateQuery={mockUpdateQuery}
+				setIsSharedFolderIncluded={jest.fn()}
+			/>,
+			{ store }
+		);
+		const sentTo = screen.getByTestId('sent-to-input');
+		await user.type(sentTo, 'validEmail@test.com');
+		await user.type(sentTo, '[Enter]');
+		expect(sentTo).toBeInTheDocument();
+		const confirmButton = screen.getByText('action.search');
+		await user.click(confirmButton);
+		await waitFor(() => {
+			expect(mockUpdateQuery).toHaveBeenCalledWith([
+				{
+					avatarBackground: 'secondary',
+					avatarIcon: 'EmailOutline',
+					error: false,
+					fullName: 'from:someone@test.com',
+					hasAvatar: true,
+					id: 'query1',
+					isGeneric: false,
+					isQueryFilter: true,
+					label: 'from:someone@test.com',
+					value: 'from:someone@test.com'
+				},
 				{
 					avatarIcon: 'EmailOutline',
 					hasAvatar: true,
