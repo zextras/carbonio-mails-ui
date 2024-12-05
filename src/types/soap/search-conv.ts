@@ -34,7 +34,7 @@ export type SearchConvResponse = {
 
 export type SearchConvParameters = {
 	conversationId: string;
-	folderId: string;
+	folderId?: string;
 	fetch: string;
 };
 
