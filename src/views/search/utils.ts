@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { QueryChip } from '@zextras/carbonio-shell-ui';
+import type { QueryChip } from '@zextras/carbonio-search-ui';
 import { includes, map, reduce } from 'lodash';
 import { v4 as uuid } from 'uuid';
 

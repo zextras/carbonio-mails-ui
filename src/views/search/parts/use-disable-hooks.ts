@@ -5,10 +5,10 @@
  */
 import { useMemo } from 'react';
 
-import { QueryChip } from '@zextras/carbonio-shell-ui';
+import type { QueryChip } from '@zextras/carbonio-search-ui';
 import { isEqual, sortBy } from 'lodash';
 
-import type { UseDisabledPropType, UseSecondaryDisabledType } from '../../../types';
+import { UseDisabledPropType, UseSecondaryDisabledType } from '../../../types';
 
 const isQueryArraysAreEqual = (newQuery: QueryChip[], currentQuery: QueryChip[]): boolean => {
 	if (newQuery.length === 0 && currentQuery.length === 0) return true;

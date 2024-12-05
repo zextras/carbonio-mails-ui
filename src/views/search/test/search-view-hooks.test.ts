@@ -4,8 +4,9 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { act, renderHook, waitFor } from '@testing-library/react';
+import type { QueryChip } from '@zextras/carbonio-search-ui';
 import * as hooks from '@zextras/carbonio-shell-ui';
-import { ErrorSoapBodyResponse, QueryChip } from '@zextras/carbonio-shell-ui';
+import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 import { noop } from 'lodash';
 
 import * as searchSoapApi from '../../../api/search';

@@ -6,11 +6,8 @@
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-import {
-	type QueryChip,
-	type ErrorSoapBodyResponse,
-	useUserSettings
-} from '@zextras/carbonio-shell-ui';
+import type { QueryChip } from '@zextras/carbonio-search-ui';
+import { type ErrorSoapBodyResponse, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
 
 import { generateQueryString, updateQueryChips } from './utils';

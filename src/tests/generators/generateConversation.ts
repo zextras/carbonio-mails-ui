@@ -99,4 +99,4 @@ const generateConversation = ({
 	};
 };
 
-export { ConversationGenerationParams, generateConversation };
+export { type ConversationGenerationParams, generateConversation };

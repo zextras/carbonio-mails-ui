@@ -15,7 +15,8 @@ import {
 	Divider,
 	ModalFooter
 } from '@zextras/carbonio-design-system';
-import { QueryChip, t } from '@zextras/carbonio-shell-ui';
+import type { QueryChip } from '@zextras/carbonio-search-ui';
+import { t } from '@zextras/carbonio-shell-ui';
 import { concat, filter, includes, map } from 'lodash';
 
 import AttachmentTypeEmailStatusRow from './parts/attachment-type-email-status-row';
