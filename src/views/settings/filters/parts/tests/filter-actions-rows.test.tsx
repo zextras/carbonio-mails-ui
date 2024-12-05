@@ -21,7 +21,7 @@ describe('FilterActionsRows', () => {
 		setupTest(
 			<FilterActionRows
 				tmpFilter={{
-					actionKeep: [{ flagName: 'flagged' }]
+					anything: [{ flagName: 'flagged' }]
 				}}
 				index={0}
 				compProps={comProps}
