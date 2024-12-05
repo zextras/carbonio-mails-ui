@@ -61,4 +61,11 @@ describe('replaceLinkToAnchor', () => {
 			'Check <a href="http://example.com" target="_blank">http://example.com</a> for more info and visit <a href="https://example.org" target="_blank">https://example.org</a> later.';
 		expect(replaceLinkToAnchor(content)).toBe(result);
 	});
+
+	it('should not include line breaks in the URL', () => {
+		const content = 'Visit http://example.com<br />';
+		const result =
+			'Visit <a href="http://example.com" target="_blank">http://example.com</a><br />';
+		expect(replaceLinkToAnchor(content)).toBe(result);
+	});
 });

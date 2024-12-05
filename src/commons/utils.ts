@@ -91,8 +91,9 @@ export const plainTextToHTML = (str: string): string => {
 };
 
 function isValidUrl(url: string): boolean {
+	const urlToCheck = url.match(/^(https?:\/\/)/) ? url : `http://${url}`;
 	try {
-		const newUrl = new URL(url);
+		const newUrl = new URL(urlToCheck);
 		return ['http:', 'https:'].includes(newUrl.protocol);
 	} catch (err) {
 		return false;
@@ -104,7 +105,7 @@ export const replaceLinkToAnchor = (content: string): string => {
 		return '';
 	}
 	const linkRegexp = new RegExp(
-		'(https?:\\/\\/)' +
+		'(https?:\\/\\/)?' +
 			'(((?=[a-z\\d-]{1,100}\\.)(xn--)?[a-z\\d]+(-[a-z\\d]+)*\\.)+[a-z]{2,100}|' +
 			'((\\d{1,3}\\.){3}\\d{1,3}))' +
 			'(:\\d+)?(/[-a-z\\d%_.~+#\\/]+)*(\\?[;&:@a-z\\d%_.~\\+=#\\-]*)' +
