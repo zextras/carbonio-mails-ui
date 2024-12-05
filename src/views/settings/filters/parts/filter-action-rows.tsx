@@ -439,6 +439,7 @@ const FilterActionRows: FC<FilterActionRowProps> = ({
 				{showRedirectToAddrsInput && (
 					<Row padding={{ right: 'small' }} minWidth="22rem">
 						<ContactInput
+							data-testid={'filter-action-row-contact-input'}
 							placeholder={t('settings.address', 'Address')}
 							onChange={onChange}
 							defaultValue={contacts}
