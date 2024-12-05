@@ -18,7 +18,7 @@ export const LargeFileUploadInfoBanner = (): JSX.Element => {
 	return (
 		<WarningBanner
 			text={warningText}
-			icon={'CloseCircleOutline'}
+			icon={'InfoOutline'}
 			iconColor={'info'}
 			bottomBorderColor="error"
 		/>
