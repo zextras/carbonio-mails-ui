@@ -13,7 +13,7 @@ export const LargeFileUploadInfoBanner = (): JSX.Element => {
 	const { t } = useTranslation();
 	const warningText = t(
 		'editor.info.bannerLargeAttachments',
-		'You are uploading a large attachment. It may take a while, please be patient.'
+		'You are uploading a large attachment. It may take a while, please be patient...'
 	);
 	return (
 		<WarningBanner
