@@ -67,6 +67,41 @@ describe('Advanced filter modal', () => {
 
 		expect(actionButton).toBeEnabled();
 	});
+	it('should add "received from" to query after adding a value in the input', async () => {
+		const store = generateStore();
+		const mockUpdateQuery = jest.fn();
+		const { user } = setupTest(
+			<AdvancedFilterModal
+				open
+				isSharedFolderIncluded={false}
+				onClose={jest.fn()}
+				query={[]}
+				updateQuery={mockUpdateQuery}
+				setIsSharedFolderIncluded={jest.fn()}
+			/>,
+			{ store }
+		);
+		const sentTo = screen.getByTestId('received-from-input');
+		await user.type(sentTo, 'validEmail@test.com');
+		await user.type(sentTo, '[Enter]');
+		expect(sentTo).toBeInTheDocument();
+		const confirmButton = screen.getByText('action.search');
+		await user.click(confirmButton);
+		await waitFor(() => {
+			expect(mockUpdateQuery).toHaveBeenCalledWith([
+				{
+					avatarIcon: 'EmailOutline',
+					hasAvatar: true,
+					hasError: false,
+					isGeneric: false,
+					isQueryFilter: true,
+					label: 'from:validEmail@test.com',
+					value: 'from:validEmail@test.com'
+				}
+			]);
+		});
+	});
+
 	it('should add "sent to" to query after adding a value in the input', async () => {
 		const store = generateStore();
 		const mockUpdateQuery = jest.fn();
@@ -95,8 +130,8 @@ describe('Advanced filter modal', () => {
 					hasError: false,
 					isGeneric: false,
 					isQueryFilter: true,
-					label: 'from:validEmail@test.com',
-					value: 'from:validEmail@test.com'
+					label: 'to:validEmail@test.com',
+					value: 'to:validEmail@test.com'
 				}
 			]);
 		});

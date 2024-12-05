@@ -122,7 +122,7 @@ export const ReceivedSentAddressRow: FC<RcvdSentAddressRowPropType> = ({
 			<Container padding={{ right: 'extrasmall' }} maxWidth="50%">
 				{integrationAvailable ? (
 					<ContactInput
-						data-testid={'sent-to-input'}
+						data-testid={'received-from-input'}
 						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 						// @ts-ignore
 						placeholder={t('label.from', 'From')}
@@ -131,7 +131,7 @@ export const ReceivedSentAddressRow: FC<RcvdSentAddressRowPropType> = ({
 					/>
 				) : (
 					<ChipInput
-						data-testid={'sent-to-input'}
+						data-testid={'received-from-input'}
 						placeholder={t('label.from', 'From')}
 						background={chipBackground}
 						value={receivedFromAddress}
@@ -150,6 +150,7 @@ export const ReceivedSentAddressRow: FC<RcvdSentAddressRowPropType> = ({
 			<Container padding={{ left: 'extrasmall' }} maxWidth="50%">
 				{integrationAvailable ? (
 					<ContactInput
+						data-testid={'sent-to-input'}
 						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 						// @ts-ignore
 						placeholder={t('label.to', 'To')}
@@ -158,6 +159,7 @@ export const ReceivedSentAddressRow: FC<RcvdSentAddressRowPropType> = ({
 					/>
 				) : (
 					<ChipInput
+						data-testid={'sent-to-input'}
 						placeholder={t('label.to', 'To')}
 						background={chipBackground}
 						value={sentToAddress}
