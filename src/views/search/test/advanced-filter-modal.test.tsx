@@ -176,9 +176,12 @@ describe('Advanced filter modal', () => {
 					value: 'from:someone@test.com'
 				},
 				{
+					avatarBackground: 'secondary',
 					avatarIcon: 'EmailOutline',
+					error: false,
+					fullName: 'to:validEmail@test.com',
 					hasAvatar: true,
-					hasError: false,
+					id: 'validEmail@test.com',
 					isGeneric: false,
 					isQueryFilter: true,
 					label: 'to:validEmail@test.com',

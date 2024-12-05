@@ -131,7 +131,7 @@ export type ChipOnAdd = ChipItem & {
 };
 export type RcvdSentAddressRowPropType = {
 	compProps: {
-		receivedFromAddress: Array<any>;
+		receivedFromAddress: KeywordState;
 		setReceivedFromAddress: (arg: any) => void;
 		sentToAddress: Array<any>;
 		setSentToAddress: (arg: any) => void;

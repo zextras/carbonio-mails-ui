@@ -5,16 +5,16 @@
  */
 import React, { FC, ReactElement, useCallback, useMemo } from 'react';
 
-import { Container, ChipInput, ChipItem } from '@zextras/carbonio-design-system';
-import { t, useIntegratedComponent } from '@zextras/carbonio-shell-ui';
-import { DefaultTheme } from 'styled-components';
+import { Container } from '@zextras/carbonio-design-system';
+import { t } from '@zextras/carbonio-shell-ui';
+import { map } from 'lodash';
 
-import { isValidEmail } from './utils';
+import { USER_TYPES_CONST } from '../../../carbonio-ui-commons/integrations/constants';
+import { useContactInput } from '../../../carbonio-ui-commons/integrations/hooks';
+import { ContactInputItem } from '../../../carbonio-ui-commons/integrations/types';
 import type {
-	ContactInputItem,
-	Query,
 	RcvdSentAddressRowPropType,
-	SearchChipItem
+	ContactInputItem as ContactInputItemInternal
 } from '../../../types';
 import { getChipItems } from '../utils';
 
@@ -24,154 +24,67 @@ export const ReceivedSentAddressRow: FC<RcvdSentAddressRowPropType> = ({
 	const { receivedFromAddress, setReceivedFromAddress, sentToAddress, setSentToAddress } =
 		compProps;
 
-	const [ContactInput, integrationAvailable] = useIntegratedComponent('contact-input');
-
-	const onChange = useCallback((state: ChipItem[], stateHandler: (state: ChipItem[]) => void) => {
-		stateHandler(state);
-	}, []);
-
-	const recipOnChange = useCallback(
-		(label: ChipItem[]): void => onChange(label, setReceivedFromAddress),
-		[onChange, setReceivedFromAddress]
+	const internalReceivedFromAddress: ContactInputItem[] = useMemo(
+		() =>
+			map(receivedFromAddress, (address) => ({
+				id: address.id,
+				label: address.label,
+				value: {
+					id: address.id,
+					email: address.value ?? address.label,
+					type: USER_TYPES_CONST.CONTACT
+				}
+			})),
+		[receivedFromAddress]
 	);
 
-	const sentToOnChange = useCallback(
-		(label: ChipItem[]): void => onChange(label, setSentToAddress),
-		[onChange, setSentToAddress]
-	);
-
-	const chipOnAdded = useCallback(
-		(
-			label: string | unknown,
-			preText: string,
-			hasAvatar: boolean,
-			isGeneric: boolean,
-			isQueryFilter: boolean,
-			hasError: boolean,
-			avatarIcon: keyof DefaultTheme['icons']
-		): SearchChipItem => ({
-			label: `${preText}:${label}`,
-			hasAvatar,
-			isGeneric,
-			isQueryFilter,
-			value: `${preText}:${label}`,
-			hasError,
-			avatarIcon
-		}),
-		[]
-	);
-
-	const recipChipOnAdd = useCallback(
-		(label: string | unknown): SearchChipItem =>
-			chipOnAdded(
-				label,
-				'from',
-				true,
-				false,
-				true,
-				!isValidEmail(typeof label === 'string' ? label : ''),
-				'EmailOutline'
-			),
-		[chipOnAdded]
-	);
-
-	const sentToChipOnAdd = useCallback(
-		(label: string | unknown): SearchChipItem =>
-			chipOnAdded(
-				label,
-				'to',
-				true,
-				false,
-				true,
-				!isValidEmail(typeof label === 'string' ? label : ''),
-				'EmailOutline'
-			),
-		[chipOnAdded]
-	);
-
-	const chipBackground = 'gray5';
+	const ContactInput = useContactInput();
 
 	const handleReceivedFromChange = useCallback(
 		(contacts: Array<ContactInputItem>) => {
-			const chips = getChipItems(contacts, 'from');
+			const contactItems: ContactInputItemInternal[] = map(contacts, (contact) => ({
+				value: contact.value.email,
+				label: contact.label,
+				id: contact.value.email,
+				error: contact.error
+			}));
+			const chips = getChipItems(contactItems, 'from');
 			setReceivedFromAddress(chips);
 		},
 		[setReceivedFromAddress]
 	);
 
 	const handleSentToChange = useCallback(
-		(contacts: Query | Array<ContactInputItem>) => {
-			const chips = getChipItems(contacts, 'to');
+		(contacts: Array<ContactInputItem>) => {
+			const contactItems: ContactInputItemInternal[] = map(contacts, (contact) => ({
+				value: contact.value.email,
+				label: contact.label,
+				id: contact.value.email,
+				error: contact.error
+			}));
+			const chips = getChipItems(contactItems, 'to');
 			setSentToAddress(chips);
 		},
 		[setSentToAddress]
 	);
 
-	const receivedFromHasError = useMemo(
-		() => !!(receivedFromAddress && receivedFromAddress[0]?.hasError),
-		[receivedFromAddress]
-	);
-
-	const sentFromHasError = useMemo(
-		() => !!(sentToAddress && sentToAddress[0]?.hasError),
-		[sentToAddress]
-	);
-
 	return (
 		<Container padding={{ bottom: 'small', top: 'medium' }} orientation="horizontal">
 			<Container padding={{ right: 'extrasmall' }} maxWidth="50%">
-				{integrationAvailable ? (
-					<ContactInput
-						data-testid={'received-from-input'}
-						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-						// @ts-ignore
-						placeholder={t('label.from', 'From')}
-						onChange={handleReceivedFromChange}
-						defaultValue={receivedFromAddress ?? []}
-					/>
-				) : (
-					<ChipInput
-						data-testid={'received-from-input'}
-						placeholder={t('label.from', 'From')}
-						background={chipBackground}
-						value={receivedFromAddress}
-						onChange={recipOnChange}
-						onAdd={recipChipOnAdd}
-						maxChips={1}
-						description={
-							receivedFromHasError
-								? t('label.error_address', 'A valid e-mail is required')
-								: undefined
-						}
-						hasError={receivedFromHasError}
-					/>
-				)}
+				<ContactInput
+					data-testid={'received-from-input'}
+					placeholder={t('label.from', 'From')}
+					onChange={handleReceivedFromChange}
+					defaultValue={internalReceivedFromAddress}
+				/>
 			</Container>
 			<Container padding={{ left: 'extrasmall' }} maxWidth="50%">
-				{integrationAvailable ? (
-					<ContactInput
-						data-testid={'sent-to-input'}
-						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-						// @ts-ignore
-						placeholder={t('label.to', 'To')}
-						onChange={handleSentToChange}
-						defaultValue={sentToAddress ?? []}
-					/>
-				) : (
-					<ChipInput
-						data-testid={'sent-to-input'}
-						placeholder={t('label.to', 'To')}
-						background={chipBackground}
-						value={sentToAddress}
-						onChange={sentToOnChange}
-						onAdd={sentToChipOnAdd}
-						maxChips={1}
-						description={
-							sentFromHasError ? t('label.error_address', 'A valid e-mail is required') : undefined
-						}
-						hasError={sentFromHasError}
-					/>
-				)}
+				<ContactInput
+					data-testid={'sent-to-input'}
+					placeholder={t('label.to', 'To')}
+					onChange={handleSentToChange}
+					defaultValue={sentToAddress ?? []}
+				/>
 			</Container>
 		</Container>
 	);
