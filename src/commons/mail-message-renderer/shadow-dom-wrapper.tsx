@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useRef, useState, ReactNode, useEffect } from 'react';
+import React, { useRef, useState, ReactNode, useEffect, useCallback } from 'react';
 
 import { useUserSettings } from '@zextras/carbonio-shell-ui';
 import { enable as enableDarkReader, exportGeneratedCSS } from 'darkreader';
@@ -19,23 +19,28 @@ export const ShadowDomWrapper = ({ children }: ShadowDomWrapperProps): React.JSX
 	const containerRef = useRef<HTMLDivElement>(null);
 	const [shadowRootInitialized, setShadowRootInitialized] = useState(false);
 
+	const getDarkReaderGeneratedCss = useCallback(() => {
+		exportGeneratedCSS()
+			.then((css) => {
+				const styleSheet = new CSSStyleSheet();
+				styleSheet.replaceSync(css);
+				if (shadowRootRef.current) {
+					shadowRootRef.current.adoptedStyleSheets = [styleSheet];
+				}
+			})
+			.catch((error) => {
+				console.error('Failed to apply Dark Reader styles:', error);
+			});
+	}, []);
+
 	const { props } = useUserSettings();
 	useEffect(() => {
 		if (containerRef.current && !shadowRootRef.current) {
 			shadowRootRef.current = containerRef.current.attachShadow({ mode: 'open' });
-			const darkReadermode = find(props, { name: 'zappDarkreaderMode' })?._content;
-			if (darkReadermode === 'enabled') {
-				enableDarkReader({
-					brightness: 100,
-					contrast: 90
-				});
-				exportGeneratedCSS((css: string) => {
-					const styleSheet = new CSSStyleSheet();
-					styleSheet.replaceSync(css);
-					if (shadowRootRef.current) {
-						shadowRootRef.current.adoptedStyleSheets = [styleSheet];
-					}
-				});
+			const darkReaderMode = find(props, { name: 'zappDarkreaderMode' })?._content;
+			if (darkReaderMode === 'enabled') {
+				enableDarkReader({});
+				getDarkReaderGeneratedCss();
 			}
 			setShadowRootInitialized(true);
 		}
@@ -44,7 +49,7 @@ export const ShadowDomWrapper = ({ children }: ShadowDomWrapperProps): React.JSX
 				shadowRootRef.current.innerHTML = '';
 			}
 		};
-	}, [props]);
+	}, [props, getDarkReaderGeneratedCss]);
 
 	return (
 		<div ref={containerRef}>
