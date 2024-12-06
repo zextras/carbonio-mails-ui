@@ -93,7 +93,7 @@ export const RecipientsRow: FC<RecipientsRowProps> = ({
 			placeholder={label}
 			onChange={onContactInputChange}
 			defaultValue={recipientsAsContacts}
-			hasError={some(recipients || [], { error: true })}
+			hasError={some(recipients ?? [], { error: true })}
 			dragAndDropEnabled
 			orderedAccountIds={orderedAccountIds}
 		/>
