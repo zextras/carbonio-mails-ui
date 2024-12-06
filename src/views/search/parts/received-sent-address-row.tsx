@@ -9,7 +9,7 @@ import { Container } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
 
-import { USER_TYPES_CONST } from '../../../carbonio-ui-commons/integrations/constants';
+import { CONTACT_TYPES } from '../../../carbonio-ui-commons/integrations/constants';
 import { useContactInput } from '../../../carbonio-ui-commons/integrations/hooks';
 import { ContactInputItem } from '../../../carbonio-ui-commons/integrations/types';
 import { SearchEmailValue } from '../../../types';
@@ -31,7 +31,7 @@ function newChipFromAddress(searchValue: SearchEmailValue): ContactInputItem {
 		value: {
 			id: email,
 			email,
-			type: USER_TYPES_CONST.CONTACT
+			type: CONTACT_TYPES.CONTACT
 		}
 	};
 }

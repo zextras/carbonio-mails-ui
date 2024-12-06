@@ -26,11 +26,11 @@ import { v4 as uuidv4 } from 'uuid';
 
 import CustomSelect from './custom-select';
 import { getActionOptions, getMarkAsOptions } from './utils';
-import { ZIMBRA_STANDARD_COLORS } from '../../../../carbonio-ui-commons/constants/utils';
-import { USER_TYPES_CONST } from '../../../../carbonio-ui-commons/integrations/constants';
+import { ZIMBRA_STANDARD_COLORS } from '../../../../carbonio-ui-commons/constants';
+import { CONTACT_TYPES } from '../../../../carbonio-ui-commons/integrations/constants';
 import { useContactInput } from '../../../../carbonio-ui-commons/integrations/hooks';
 import { ContactInputItem } from '../../../../carbonio-ui-commons/integrations/types';
-import { Folder } from '../../../../carbonio-ui-commons/types/folder';
+import { Folder } from '../../../../carbonio-ui-commons/types';
 import { SelectFolderModal } from '../../../../ui-actions/modals/select-folder-modal';
 
 export const StyledIconButton = styled(IconButton)`
@@ -183,7 +183,7 @@ const FilterActionRows: FC<FilterActionRowProps> = ({
 						{
 							id: email,
 							label: email,
-							value: { id: email, email, type: USER_TYPES_CONST.CONTACT }
+							value: { id: email, email, type: CONTACT_TYPES.CONTACT }
 						}
 					]);
 				} else {

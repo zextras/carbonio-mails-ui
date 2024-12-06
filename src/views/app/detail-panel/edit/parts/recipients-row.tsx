@@ -8,7 +8,7 @@ import React, { FC, useCallback, useState } from 'react';
 import { map, some } from 'lodash';
 
 import { ParticipantRoleType } from '../../../../../carbonio-ui-commons/constants/participants';
-import { USER_TYPES_CONST } from '../../../../../carbonio-ui-commons/integrations/constants';
+import { CONTACT_TYPES } from '../../../../../carbonio-ui-commons/integrations/constants';
 import { useContactInput } from '../../../../../carbonio-ui-commons/integrations/hooks';
 import { ContactInputItem } from '../../../../../carbonio-ui-commons/integrations/types';
 import { Participant } from '../../../../../types';
@@ -54,15 +54,14 @@ export const RecipientsRow: FC<RecipientsRowProps> = ({
 				const alreadyExists = recipients.find(
 					(recipient) => recipient.address === contact.value.email
 				);
-				const isGroup = contact.value.type === USER_TYPES_CONST.DISTRIBUTION_LIST;
+				const isGroup = contact.value.type === CONTACT_TYPES.DISTRIBUTION_LIST;
 				return (
 					alreadyExists || {
 						id: contact.id,
 						type,
 						address: contact.value.email,
 						isGroup,
-						name:
-							contact.value.type === USER_TYPES_CONST.CONTACT ? contact.value.firstName : undefined
+						name: contact.value.type === CONTACT_TYPES.CONTACT ? contact.value.firstName : undefined
 					}
 				);
 			});
@@ -81,7 +80,7 @@ export const RecipientsRow: FC<RecipientsRowProps> = ({
 				value: {
 					id: recipient.address,
 					email: recipient.address,
-					type: recipient.isGroup ? USER_TYPES_CONST.DISTRIBUTION_LIST : USER_TYPES_CONST.CONTACT
+					type: recipient.isGroup ? CONTACT_TYPES.DISTRIBUTION_LIST : CONTACT_TYPES.CONTACT
 				},
 				error: recipient.error
 			}

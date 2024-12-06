@@ -9,31 +9,24 @@ import React, { useCallback, useState } from 'react';
 import { act, screen } from '@testing-library/react';
 
 import { ParticipantRole } from '../../../../../../carbonio-ui-commons/constants/participants';
-import { USER_TYPES_CONST } from '../../../../../../carbonio-ui-commons/integrations/constants';
+import { CONTACT_TYPES } from '../../../../../../carbonio-ui-commons/integrations/constants';
 import { DefaultContactInput } from '../../../../../../carbonio-ui-commons/integrations/default-contact-input';
 import * as contactInput from '../../../../../../carbonio-ui-commons/integrations/hooks';
-import { ContactInputItem } from '../../../../../../carbonio-ui-commons/integrations/types';
-import { mockContactInput } from '../../../../../../carbonio-ui-commons/test/mocks/integrations/mock-contact-input';
+import {
+	generateMockContactInputItem,
+	mockContactInput
+} from '../../../../../../carbonio-ui-commons/test/mocks/integrations/mock-contact-input';
 import { UserEvent, setupTest } from '../../../../../../carbonio-ui-commons/test/test-setup';
 import { Participant } from '../../../../../../types';
 import { RecipientsRow } from '../recipients-row';
 
-const generateContact = (): ContactInputItem => ({
-	id: '1',
-	label: 'Whatever',
-	value: {
-		id: '1',
-		email: 'test@test.com',
-		type: USER_TYPES_CONST.CONTACT
-	}
-});
 const triggerOnAdd = async (user: UserEvent): Promise<void> => {
 	await paste(user, screen.getByTestId('mockedContactInput'), 'any value is ok');
 };
 describe('recipients-row', () => {
 	describe('when contact input integration available', () => {
 		it('should call onChange with value of given type when adding a new value in input', async () => {
-			mockContactInput({ valueToAdd: { ...generateContact() } });
+			mockContactInput({ valueToAdd: { ...generateMockContactInputItem() } });
 			const mockOnChange = jest.fn();
 			const type = 'f';
 
@@ -51,8 +44,8 @@ describe('recipients-row', () => {
 			expect(mockOnChange).toHaveBeenCalledWith([expect.objectContaining({ type })]);
 		});
 		it('should call onChange with a value with isGroup false when adding a user contact', async () => {
-			const valueToAdd = { ...generateContact() };
-			valueToAdd.value.type = USER_TYPES_CONST.CONTACT;
+			const valueToAdd = { ...generateMockContactInputItem() };
+			valueToAdd.value.type = CONTACT_TYPES.CONTACT;
 			mockContactInput({ valueToAdd });
 			const mockOnChange = jest.fn();
 
@@ -70,8 +63,8 @@ describe('recipients-row', () => {
 			expect(mockOnChange).toHaveBeenCalledWith([expect.objectContaining({ isGroup: false })]);
 		});
 		it('should call onChange with a value with isGroup true when adding a distribution list', async () => {
-			const valueToAdd = { ...generateContact() };
-			valueToAdd.value.type = USER_TYPES_CONST.DISTRIBUTION_LIST;
+			const valueToAdd = { ...generateMockContactInputItem() };
+			valueToAdd.value.type = CONTACT_TYPES.DISTRIBUTION_LIST;
 			mockContactInput({ valueToAdd });
 			const mockOnChange = jest.fn();
 
@@ -89,7 +82,7 @@ describe('recipients-row', () => {
 			expect(mockOnChange).toHaveBeenCalledWith([expect.objectContaining({ isGroup: true })]);
 		});
 		it('should call onChange with a value with address equal to email after adding any contact', async () => {
-			const valueToAdd = { ...generateContact() };
+			const valueToAdd = { ...generateMockContactInputItem() };
 			valueToAdd.value.email = 'test@test.com';
 			mockContactInput({ valueToAdd });
 			const mockOnChange = jest.fn();
@@ -110,7 +103,7 @@ describe('recipients-row', () => {
 			]);
 		});
 		it('do not change the id received from ContactInput onChange', async () => {
-			mockContactInput({ valueToAdd: { ...generateContact(), id: 'fakeId' } });
+			mockContactInput({ valueToAdd: { ...generateMockContactInputItem(), id: 'fakeId' } });
 			const { user } = setupTest(<TestableRecipientsRow />);
 
 			await paste(user, screen.getByTestId('mockedContactInput'), 'another@ema.il');
