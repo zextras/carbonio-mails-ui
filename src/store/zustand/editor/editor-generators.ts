@@ -432,6 +432,8 @@ export const generateEditAsDraftEditor = (
 		action: EditViewActions.EDIT_AS_DRAFT,
 		identityId: (fromIdentity ?? getDefaultIdentity()).id,
 		id: editorId,
+		originalId: originalMessage.originalId,
+		replyType: originalMessage.replyType,
 		unsavedAttachments: [],
 		savedAttachments,
 		isRichText,
