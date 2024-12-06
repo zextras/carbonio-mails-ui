@@ -172,7 +172,7 @@ describe('Advanced filter modal', () => {
 		});
 	});
 
-	it('should display "to" and "from" query chip without edit action', async () => {
+	it('should remove edit action from query chip for "to" and "from" fields', async () => {
 		const valueToAdd = generateMockContactInputItem();
 		valueToAdd.actions = [EDIT_ACTION];
 		mockContactInput({ valueToAdd });
@@ -208,5 +208,37 @@ describe('Advanced filter modal', () => {
 				})
 			]);
 		});
+	});
+	it('should display "to" and "from" with edit action in their inputs', async () => {
+		const valueToAdd = generateMockContactInputItem();
+		valueToAdd.actions = [EDIT_ACTION];
+		mockContactInput({ valueToAdd });
+		const store = generateStore();
+		const mockUpdateQuery = jest.fn();
+
+		const { user } = setupTest(
+			<AdvancedFilterModal
+				open
+				isSharedFolderIncluded={false}
+				onClose={jest.fn()}
+				query={[]}
+				updateQuery={mockUpdateQuery}
+				setIsSharedFolderIncluded={jest.fn()}
+			/>,
+			{ store }
+		);
+
+		const sentTo = screen.getByTestId('sent-to-input');
+		await user.type(sentTo, 'validEmail@test.com');
+		await user.type(sentTo, '[Enter]');
+		const receivedFrom = screen.getByTestId('received-from-input');
+		await user.type(receivedFrom, 'validEmail2@test.com');
+		await user.type(receivedFrom, '[Enter]');
+		expect(sentTo).toBeInTheDocument();
+		const confirmButton = screen.getByText('action.search');
+		await user.click(confirmButton);
+		const mockContactInputValues = await screen.findAllByTestId('mockedContactValue');
+		expect(mockContactInputValues[0]).toHaveTextContent(/"icon":"EditOutline"/);
+		expect(mockContactInputValues[1]).toHaveTextContent(/"icon":"EditOutline"/);
 	});
 });
