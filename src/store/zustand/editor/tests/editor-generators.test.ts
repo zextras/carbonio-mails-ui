@@ -20,7 +20,7 @@ jest.mock('@zextras/carbonio-shell-ui', () => ({
 	getUserSettings: jest.fn(() => ({
 		prefs: { zimbraPrefComposeFormat: 'html' }
 	})),
-	t: jest.fn((key: string, fallback: string) => fallback)
+	t: jest.fn((_key: string, fallback: string) => fallback)
 }));
 
 jest.mock('../../../../helpers/identities', () => ({
