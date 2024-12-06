@@ -55,9 +55,7 @@ export const ShadowDomWrapper = ({ children }: ShadowDomWrapperProps): React.JSX
 
 			if (darkModeEnabled()) {
 				enableDarkReader({});
-				applyDarkReaderStyles().then((): void => {
-					/* empty */
-				});
+				applyDarkReaderStyles();
 			}
 
 			setShadowRootInitialized(true);
