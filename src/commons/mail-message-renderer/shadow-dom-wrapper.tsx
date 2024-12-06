@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useRef, useState, ReactNode, useEffect, useCallback } from 'react';
+import React, { ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 
 import { useUserSettings } from '@zextras/carbonio-shell-ui';
 import { enable as enableDarkReader, exportGeneratedCSS } from 'darkreader';
@@ -37,16 +37,27 @@ export const ShadowDomWrapper = ({ children }: ShadowDomWrapperProps): React.JSX
 		}
 	}, []);
 
-	const { props } = useUserSettings();
+	const { props: userSettings } = useUserSettings();
+
+	const darkModeEnabled = useCallback(() => {
+		const darkModeUserPref = find(userSettings, { name: 'zappDarkreaderMode' })?._content;
+		return (
+			darkModeUserPref === 'enabled' ||
+			(darkModeUserPref === 'auto' &&
+				window.matchMedia &&
+				window.matchMedia('(prefers-color-scheme: dark)').matches)
+		);
+	}, [userSettings]);
 
 	useEffect(() => {
 		if (containerRef.current && !shadowRootRef.current) {
 			shadowRootRef.current = containerRef.current.attachShadow({ mode: 'open' });
 
-			const darkReaderMode = find(props, { name: 'zappDarkreaderMode' })?._content;
-			if (darkReaderMode === 'enabled') {
+			if (darkModeEnabled()) {
 				enableDarkReader({});
-				applyDarkReaderStyles().then(() => {});
+				applyDarkReaderStyles().then((): void => {
+					/* empty */
+				});
 			}
 
 			setShadowRootInitialized(true);
@@ -58,7 +69,7 @@ export const ShadowDomWrapper = ({ children }: ShadowDomWrapperProps): React.JSX
 				darkReaderAppliedRef.current = false;
 			}
 		};
-	}, [props, applyDarkReaderStyles]);
+	}, [applyDarkReaderStyles, darkModeEnabled]);
 
 	return (
 		<div ref={containerRef}>
