@@ -503,15 +503,6 @@ export const generateEditAsNewEditor = (
 	return editor;
 };
 
-/**
- *
- * @param id
- */
-export const resumeEditor = (id: MailsEditorV2['id']): MailsEditorV2 | null => {
-	const editor = getEditor({ id });
-	return editor ?? null;
-};
-
 export type GenerateEditorParams = {
 	action: EditViewActionsType;
 	id?: string;
