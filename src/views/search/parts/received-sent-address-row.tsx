@@ -76,7 +76,7 @@ export const ReceivedSentAddressRow: FC<ReceivedSentAddressRowProps> = ({
 		() =>
 			map(receivedFromAddresses, (address) => {
 				const existingChip = receivedFromChips[address.email];
-				return existingChip || newChipFromAddress(address);
+				return existingChip ?? newChipFromAddress(address);
 			}),
 		[receivedFromAddresses, receivedFromChips]
 	);
@@ -84,7 +84,7 @@ export const ReceivedSentAddressRow: FC<ReceivedSentAddressRowProps> = ({
 		() =>
 			map(sentToAddresses, (address) => {
 				const existingChip = sentToChips[address.email];
-				return existingChip || newChipFromAddress(address);
+				return existingChip ?? newChipFromAddress(address);
 			}),
 		[sentToAddresses, sentToChips]
 	);

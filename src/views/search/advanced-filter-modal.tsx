@@ -295,7 +295,7 @@ export const AdvancedFilterModal = ({
 
 	const handleReceivedFromInput = (values: Array<ContactInputItem>): void => {
 		const newValues = values.map((val) => ({
-			id: val.id || val.value.email,
+			id: val.id ?? val.value.email,
 			label: `from:${val.label}`,
 			value: `from:${val.value.email}`,
 			actions: reject(val?.actions, ['icon', 'EditOutline'])
@@ -306,7 +306,7 @@ export const AdvancedFilterModal = ({
 	// TODO: search chip have actions but they don't work except remove
 	const handleSentToInput = (values: Array<ContactInputItem>): void => {
 		const newValues = values.map((val) => ({
-			id: val.id || val.value.email,
+			id: val.id ?? val.value.email,
 			label: `to:${val.label}`,
 			value: `to:${val.value.email}`,
 			actions: reject(val?.actions, ['icon', 'EditOutline'])
@@ -318,11 +318,11 @@ export const AdvancedFilterModal = ({
 	const receivedSentAddressRowProps = useMemo(
 		() => ({
 			receivedFromAddresses: receivedFromAddresses.map((val) => ({
-				email: val.value?.replace('from:', '') || ''
+				email: val.value?.replace('from:', '') ?? ''
 			})),
 			handleReceivedFromInput,
 			sentToAddresses: sentToAddresses.map((val) => ({
-				email: val.value?.replace('to:', '') || ''
+				email: val.value?.replace('to:', '') ?? ''
 			})),
 			handleSentToInput
 		}),
