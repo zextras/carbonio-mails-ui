@@ -18,7 +18,7 @@ import {
 	SearchRequestStatus
 } from '../../../../types';
 
-export function useConversationMessagesHook(
+function useConversationMessages(
 	conversationId: string,
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
 ): Array<MailMessage | IncompleteMessage> {
@@ -30,7 +30,7 @@ export function useConversationMessagesHook(
 	);
 	return messages;
 }
-export function updateConversationsOnlyHook(
+function updateConversationsOnly(
 	conversations: Array<NormalizedConversation>,
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
 ): void {
@@ -45,7 +45,7 @@ export function updateConversationsOnlyHook(
 		})
 	);
 }
-export function updateMessagesOnlyHook(
+function updateMessagesOnly(
 	messages: Array<IncompleteMessage>,
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
 ): void {
@@ -61,7 +61,7 @@ export function updateMessagesOnlyHook(
 	);
 }
 
-export function updateMessagesHook(
+function updateMessages(
 	messages: MailMessage[],
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
 ): void {
@@ -73,7 +73,7 @@ export function updateMessagesHook(
 		})
 	);
 }
-export function updateConversationStatusHook(
+function updateConversationStatus(
 	conversationId: string,
 	status: SearchRequestStatus,
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
@@ -84,7 +84,7 @@ export function updateConversationStatusHook(
 		})
 	);
 }
-export function updateMessageStatusHook(
+function updateMessageStatus(
 	messageId: string,
 	status: SearchRequestStatus,
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
@@ -95,7 +95,7 @@ export function updateMessageStatusHook(
 		})
 	);
 }
-export function removeMessagesHook(
+function removeMessages(
 	messageIds: Array<string>,
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
 ): void {
@@ -107,3 +107,13 @@ export function removeMessagesHook(
 		})
 	);
 }
+
+export const populatedItemsSliceUtils = {
+	removeMessages,
+	updateMessageStatus,
+	updateConversationStatus,
+	updateMessages,
+	updateMessagesOnly,
+	updateConversationsOnly,
+	useConversationMessages
+};

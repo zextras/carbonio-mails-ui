@@ -8,16 +8,8 @@
 import { create } from 'zustand';
 
 import { createMessageSlice } from './messages/messages-slice';
-import {
-	removeMessagesHook,
-	updateConversationsOnlyHook,
-	updateConversationStatusHook,
-	updateMessagesHook,
-	updateMessagesOnlyHook,
-	updateMessageStatusHook,
-	useConversationMessagesHook
-} from './populated-items/hooks';
 import { createPopulatedItemsSlice } from './populated-items/populated-items-slice';
+import { populatedItemsSliceUtils } from './populated-items/utils';
 import {
 	appendConversationsToSearchHook,
 	appendMessagesToSearchHook,
@@ -104,7 +96,7 @@ export function setMessagesInSearchSlice(messages: Array<MailMessage | Incomplet
 export function useConversationMessages(
 	conversationId: string
 ): Array<MailMessage | IncompleteMessage> {
-	return useConversationMessagesHook(conversationId, useEmailsStore);
+	return populatedItemsSliceUtils.useConversationMessages(conversationId, useEmailsStore);
 }
 export function useConversationById(id: string): NormalizedConversation {
 	return useEmailsStore(({ populatedItems }) => populatedItems.conversations[id]);
@@ -118,30 +110,30 @@ export function useConversationStatus(id: string): SearchRequestStatus {
 }
 
 export function updateConversationsOnly(conversations: Array<NormalizedConversation>): void {
-	updateConversationsOnlyHook(conversations, useEmailsStore);
+	populatedItemsSliceUtils.updateConversationsOnly(conversations, useEmailsStore);
 }
 
 export function updateMessagesOnly(messages: Array<IncompleteMessage>): void {
-	updateMessagesOnlyHook(messages, useEmailsStore);
+	populatedItemsSliceUtils.updateMessagesOnly(messages, useEmailsStore);
 }
 export function updateMessages(messages: MailMessage[]): void {
-	updateMessagesHook(messages, useEmailsStore);
+	populatedItemsSliceUtils.updateMessages(messages, useEmailsStore);
 }
 
 export function updateConversationStatus(
 	conversationId: string,
 	status: SearchRequestStatus
 ): void {
-	updateConversationStatusHook(conversationId, status, useEmailsStore);
+	populatedItemsSliceUtils.updateConversationStatus(conversationId, status, useEmailsStore);
 }
 
 export function updateMessageStatus(messageId: string, status: SearchRequestStatus): void {
-	updateMessageStatusHook(messageId, status, useEmailsStore);
+	populatedItemsSliceUtils.updateMessageStatus(messageId, status, useEmailsStore);
 }
 export function useMessageStatus(id: string): SearchRequestStatus {
 	return useEmailsStore((state) => state.populatedItems.messagesStatus?.[id]);
 }
 
 export function removeMessages(messageIds: Array<string>): void {
-	removeMessagesHook(messageIds, useEmailsStore);
+	populatedItemsSliceUtils.removeMessages(messageIds, useEmailsStore);
 }
