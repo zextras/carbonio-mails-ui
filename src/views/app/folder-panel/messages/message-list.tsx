@@ -41,11 +41,11 @@ export const MessageList: FC = () => {
 	const searchRequestStatus = useAppSelector(selectMessagesSearchRequestStatus);
 	const searchedInFolderStatus = useAppSelector(selectFolderMsgSearchStatus(folderId));
 
-	const messages = useMessageList();
+	const messageIds = useMessageList();
 
 	const { prefs } = useUserSettings();
 	const { sortOrder } = parseMessageSortingOptions(folderId, prefs.zimbraPrefSortOrder as string);
-
+	const items = [...messageIds].map((messageId) => ({ id: messageId }));
 	const {
 		selected,
 		deselectAll,
@@ -58,7 +58,7 @@ export const MessageList: FC = () => {
 	} = useSelection({
 		setCount,
 		count,
-		items: messages
+		items
 	});
 
 	const hasMore = useMemo(
@@ -68,7 +68,7 @@ export const MessageList: FC = () => {
 
 	const loadMore = useCallback(() => {
 		if (!hasMore) return;
-		const offset = messages.length;
+		const offset = messageIds.size;
 		dispatch(
 			search({
 				folderId,
@@ -78,10 +78,10 @@ export const MessageList: FC = () => {
 				types: 'message'
 			})
 		);
-	}, [dispatch, folderId, hasMore, messages.length, sortOrder]);
+	}, [dispatch, folderId, hasMore, messageIds.size, sortOrder]);
 
 	const displayerTitle = useMemo(() => {
-		if (messages?.length === 0) {
+		if (messageIds?.size === 0) {
 			if (getFolderIdParts(folderId).id === FOLDERS.SPAM) {
 				return t('displayer.list_spam_title', 'There are no spam e-mails');
 			}
@@ -97,24 +97,24 @@ export const MessageList: FC = () => {
 			return t('displayer.list_folder_title', 'It looks like there are no e-mails yet');
 		}
 		return null;
-	}, [messages, folderId]);
+	}, [messageIds, folderId]);
 
 	const listItems = useMemo(
 		() =>
-			map(messages, (message) => {
-				const isSelected = selected[message.id];
-				const active = itemId === message.id;
+			map(items, (item) => {
+				const isSelected = selected[item.id];
+				const active = itemId === item.id;
 				return (
 					<CustomListItem
-						key={message.id}
+						key={item.id}
 						selected={isSelected}
 						active={active}
-						background={message.read ? 'gray6' : 'gray5'}
+						background={'transparent'}
 					>
 						{(visible: boolean): ReactElement =>
 							visible ? (
 								<MessageListItemComponent
-									message={message}
+									messageId={item.id}
 									selected={selected}
 									isSelected={isSelected}
 									active={active}
@@ -122,7 +122,7 @@ export const MessageList: FC = () => {
 									isSelectModeOn={isSelectModeOn}
 									dragImageRef={dragImageRef}
 									draggedIds={draggedIds}
-									key={message.id}
+									key={item.id}
 									deselectAll={deselectAll}
 									visible={visible}
 									setDraggedIds={setDraggedIds}
@@ -135,12 +135,12 @@ export const MessageList: FC = () => {
 					</CustomListItem>
 				);
 			}),
-		[deselectAll, draggedIds, folderId, isSelectModeOn, itemId, messages, selected, toggle]
+		[deselectAll, draggedIds, folderId, isSelectModeOn, itemId, messageIds, selected, toggle]
 	);
 
 	const totalMessages = useMemo(
-		() => (sortOrder === 'readAsc' ? messages.length : (folder?.n ?? messages.length ?? 0)),
-		[folder?.n, messages.length, sortOrder]
+		() => (sortOrder === 'readAsc' ? messageIds.size : (folder?.n ?? messageIds.size ?? 0)),
+		[folder?.n, messageIds.size, sortOrder]
 	);
 
 	const selectedIds = useMemo(() => Object.keys(selected), [selected]);
@@ -163,7 +163,7 @@ export const MessageList: FC = () => {
 			messagesLoadingCompleted={messagesLoadingCompleted}
 			selectedIds={selectedIds}
 			folderId={folderId}
-			messages={messages}
+			messageIds={messageIds}
 			draggedIds={draggedIds}
 			setDraggedIds={setDraggedIds}
 			isSelectModeOn={isSelectModeOn}

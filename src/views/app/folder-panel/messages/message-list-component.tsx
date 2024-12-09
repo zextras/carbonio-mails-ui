@@ -12,7 +12,7 @@ import styled from 'styled-components';
 import { MessageListItem } from './message-list-item';
 import { CustomList } from '../../../../carbonio-ui-commons/components/list/list';
 import { useFolder, useRoot } from '../../../../carbonio-ui-commons/store/zustand/folder/hooks';
-import type { IncompleteMessage, MailMessage, MessageListItemProps } from '../../../../types';
+import type { IncompleteMessage, MessageListItemProps } from '../../../../types';
 import ShimmerList from '../../../search/shimmer-list';
 import { Breadcrumbs } from '../parts/breadcrumbs';
 import { MultipleSelectionActionsPanel } from '../parts/multiple-selection-actions-panel';
@@ -78,7 +78,7 @@ export type MessageListComponentProps = {
 	// the id of the current folder
 	folderId: string;
 	// the messages to display
-	messages: MailMessage[];
+	messageIds: Set<string>;
 	// the ids of the messages being dragged
 	draggedIds?: Record<string, boolean>;
 	// the function to call when the user starts dragging a message
@@ -114,7 +114,7 @@ export const MessageListComponent: FC<MessageListComponentProps> = memo(
 		messagesLoadingCompleted,
 		selectedIds,
 		folderId,
-		messages,
+		messageIds,
 		draggedIds,
 		setDraggedIds,
 		isSearchModule,
@@ -156,7 +156,7 @@ export const MessageListComponent: FC<MessageListComponentProps> = memo(
 			<>
 				{isSelectModeOn ? (
 					<MultipleSelectionActionsPanel
-						items={messages}
+						items={messageIds}
 						selectedIds={selectedIds}
 						deselectAll={deselectAll}
 						selectAll={selectAll}
@@ -202,7 +202,7 @@ export const MessageListComponent: FC<MessageListComponentProps> = memo(
 							</Container>
 						)}
 						<DragImageContainer ref={dragImageRef}>
-							<DragItems messages={messages} draggedIds={draggedIds ?? {}} folderId={folderId} />
+							<DragItems messages={messageIds} draggedIds={draggedIds ?? {}} folderId={folderId} />
 						</DragImageContainer>
 					</>
 				) : (

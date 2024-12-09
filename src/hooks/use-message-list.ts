@@ -6,55 +6,52 @@
 import { useEffect, useMemo } from 'react';
 
 import { useUserSettings } from '@zextras/carbonio-shell-ui';
-import { filter, sortBy } from 'lodash';
 import { useParams } from 'react-router-dom';
 
-import { useAppDispatch, useAppSelector } from './redux';
 import { getFolder } from '../carbonio-ui-commons/store/zustand/folder/hooks';
 import { LIST_LIMIT } from '../constants';
 import { parseMessageSortingOptions } from '../helpers/sorting';
 import { search } from '../store/actions';
-import { selectMessagesArray, selectMessagesSearchRequestStatus } from '../store/messages-slice';
-import type { MailMessage } from '../types';
+import { useMessages } from '../store/zustand/emails/store';
 
 type RouteParams = {
 	folderId: string;
 };
 
-export const useMessageList = (): Array<MailMessage> => {
+export const useMessageList = (): Set<string> => {
 	const { folderId } = <RouteParams>useParams();
-	const dispatch = useAppDispatch();
-	const { prefs } = useUserSettings();
-	const { sortOrder } = parseMessageSortingOptions(folderId, prefs.zimbraPrefSortOrder as string);
-
-	const searchRequestStatus = useAppSelector(selectMessagesSearchRequestStatus);
-	const messages = useAppSelector(selectMessagesArray);
-	const folder = getFolder(folderId);
-
-	const filteredMessages = useMemo(
-		() =>
-			folder
-				? filter(messages, [
-						'parent',
-						'rid' in folder && folder?.rid ? `${folder.zid}:${folder.rid}` : folder.id
-					])
-				: [],
-		[folder, messages]
+	const { prefs: userSettings } = useUserSettings();
+	const { sortOrder } = parseMessageSortingOptions(
+		folderId,
+		userSettings.zimbraPrefSortOrder as string
 	);
 
-	const sortedMessages = useMemo(() => sortBy(filteredMessages, 'sortIndex'), [filteredMessages]);
+	const messages = useMessages();
+	const folder = getFolder(folderId);
+
+	const filteredMessages = useMemo(() => {
+		const messageSet = new Set<string>();
+		if (folder) {
+			const wantedFolderId =
+				'rid' in folder && folder?.rid ? `${folder.zid}:${folder.rid}` : folder.id;
+			messages.messageIds.forEach((id) => {
+				if (id === wantedFolderId) {
+					messageSet.add(id);
+				}
+			});
+		}
+		return messageSet;
+	}, [folder, messages]);
 
 	useEffect(() => {
-		if (searchRequestStatus !== null) return;
-		dispatch(
-			search({
-				folderId,
-				limit: LIST_LIMIT.INITIAL_LIMIT + 1,
-				sortBy: sortOrder,
-				types: 'message'
-			})
-		);
-	}, [dispatch, folderId, searchRequestStatus, sortOrder]);
+		if (messages.status !== null) return;
+		search({
+			folderId,
+			limit: LIST_LIMIT.INITIAL_LIMIT + 1,
+			sortBy: sortOrder,
+			types: 'message'
+		});
+	}, [folderId, messages.status, sortOrder]);
 
-	return sortedMessages;
+	return filteredMessages;
 };

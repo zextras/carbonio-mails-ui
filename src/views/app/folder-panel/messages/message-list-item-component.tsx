@@ -8,11 +8,11 @@ import React, { FC, memo } from 'react';
 import { noop } from 'lodash';
 
 import { MessageListItem } from './message-list-item';
-import type { IncompleteMessage } from '../../../../types';
+import { useMessageById } from '../../../../store/zustand/emails/store';
 import { DragItemWrapper } from '../parts/drag-item-wrapper';
 
 export type ListItemComponentProps = {
-	message: IncompleteMessage;
+	messageId: string;
 	selected: Record<string, boolean>;
 	isSelected: boolean;
 	active: boolean;
@@ -29,7 +29,7 @@ export type ListItemComponentProps = {
 
 export const MessageListItemComponent: FC<ListItemComponentProps> = memo(
 	function MessageListItemComponent({
-		message,
+		messageId,
 		selected,
 		isSelected,
 		active,
@@ -42,6 +42,7 @@ export const MessageListItemComponent: FC<ListItemComponentProps> = memo(
 		setDraggedIds = noop,
 		currentFolderId
 	}) {
+		const message = useMessageById(messageId);
 		return (
 			<DragItemWrapper
 				item={message}

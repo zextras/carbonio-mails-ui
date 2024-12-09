@@ -127,3 +127,14 @@ export function useMessageStatus(id: string): SearchRequestStatus {
 export function removeMessages(messageIds: Array<string>): void {
 	populatedItemsSliceUtils.removeMessages(messageIds, useEmailsStore);
 }
+
+// ################################
+// #### Mail message related functions
+// ################################
+export function useMessages(): EmailsStoreState['messages'] {
+	return useEmailsStore(({ messages }) => messages);
+}
+
+export function useMessageIds(): EmailsStoreState['messages']['messageIds'] {
+	return useEmailsStore(({ messages }) => messages.messageIds);
+}
