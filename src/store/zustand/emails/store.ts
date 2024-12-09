@@ -10,18 +10,8 @@ import { create } from 'zustand';
 import { createMessageSlice } from './messages/messages-slice';
 import { createPopulatedItemsSlice } from './populated-items/populated-items-slice';
 import { populatedItemsSliceUtils } from './populated-items/utils';
-import {
-	appendConversationsToSearchHook,
-	appendMessagesToSearchHook,
-	deleteConversationsFromSearchHook,
-	deleteMessagesFromSearchHook,
-	resetSearchAndPopulatedItemsHook,
-	setMessagesInSearchSliceHook,
-	setSearchResultsByConversationHook,
-	setSearchResultsByMessageHook,
-	updateSearchResultsLoadingStatusHook
-} from './search/hooks';
 import { createSearchSlice } from './search/search-slice';
+import { searchSliceUtils } from './search/utils';
 import {
 	IncompleteMessage,
 	MailMessage,
@@ -41,13 +31,13 @@ const useEmailsStore = create<EmailsStoreState>()((...a) => ({
 // ##### Search related functions
 // ################################
 export function resetSearchAndPopulatedItems(): void {
-	resetSearchAndPopulatedItemsHook(useEmailsStore);
+	searchSliceUtils.resetSearchAndPopulatedItems(useEmailsStore);
 }
 export function setSearchResultsByMessage(
 	messages: Array<MailMessage | IncompleteMessage>,
 	more: boolean
 ): void {
-	setSearchResultsByMessageHook(messages, more, useEmailsStore);
+	searchSliceUtils.setSearchResultsByMessage(messages, more, useEmailsStore);
 }
 export function useSearchResults(): SearchSliceState['search'] {
 	return useEmailsStore(({ search }) => search);
@@ -57,37 +47,37 @@ export function setSearchResultsByConversation(
 	conversations: Array<NormalizedConversation>,
 	more: boolean
 ): void {
-	setSearchResultsByConversationHook(conversations, more, useEmailsStore);
+	searchSliceUtils.setSearchResultsByConversation(conversations, more, useEmailsStore);
 }
 export function appendConversations(
 	conversations: Array<NormalizedConversation>,
 	offset: number,
 	more: boolean
 ): void {
-	appendConversationsToSearchHook(conversations, offset, more, useEmailsStore);
+	searchSliceUtils.appendConversationsToSearch(conversations, offset, more, useEmailsStore);
 }
 export function deleteConversationsFromSearch(ids: Array<string>): void {
-	deleteConversationsFromSearchHook(ids, useEmailsStore);
+	searchSliceUtils.deleteConversationsFromSearch(ids, useEmailsStore);
 }
 export function deleteMessagesFromSearch(ids: Array<string>): void {
-	deleteMessagesFromSearchHook(ids, useEmailsStore);
+	searchSliceUtils.deleteMessagesFromSearch(ids, useEmailsStore);
 }
 export function getSearchResultsLoadingStatus(): SearchRequestStatus {
 	return useEmailsStore.getState().search.status;
 }
 
 export function updateSearchResultsLoadingStatus(status: SearchRequestStatus): void {
-	updateSearchResultsLoadingStatusHook(status, useEmailsStore);
+	searchSliceUtils.updateSearchResultsLoadingStatus(status, useEmailsStore);
 }
 export function appendMessagesToSearch(
 	messages: Array<MailMessage | IncompleteMessage>,
 	offset: number
 ): void {
-	appendMessagesToSearchHook(messages, offset, useEmailsStore);
+	searchSliceUtils.appendMessagesToSearch(messages, offset, useEmailsStore);
 }
 
 export function setMessagesInSearchSlice(messages: Array<MailMessage | IncompleteMessage>): void {
-	setMessagesInSearchSliceHook(messages, useEmailsStore);
+	searchSliceUtils.setMessagesInSearchSlice(messages, useEmailsStore);
 }
 
 // ################################

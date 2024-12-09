@@ -1,10 +1,10 @@
-/* eslint-disable no-param-reassign */
 /*
  * SPDX-FileCopyrightText: 2024 Zextras <https://www.zextras.com>
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+/* eslint-disable no-param-reassign */
 import produce, { enableMapSet } from 'immer';
 import { UseBoundStore, StoreApi } from 'zustand';
 
@@ -20,7 +20,7 @@ import {
 } from '../../../../types';
 import { POPULATED_ITEMS_INITIAL_STATE } from '../populated-items/populated-items-slice';
 
-export function resetSearchAndPopulatedItemsHook(
+function resetSearchAndPopulatedItems(
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
 ): void {
 	useEmailsStore.setState(
@@ -31,7 +31,7 @@ export function resetSearchAndPopulatedItemsHook(
 	);
 }
 
-export function setSearchResultsByConversationHook(
+function setSearchResultsByConversation(
 	conversations: Array<NormalizedConversation>,
 	more: boolean,
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
@@ -54,7 +54,7 @@ export function setSearchResultsByConversationHook(
 	);
 }
 
-export function setSearchResultsByMessageHook(
+function setSearchResultsByMessage(
 	messages: Array<MailMessage | IncompleteMessage>,
 	more: boolean,
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
@@ -76,7 +76,7 @@ export function setSearchResultsByMessageHook(
 		})
 	);
 }
-export function appendConversationsToSearchHook(
+function appendConversationsToSearch(
 	conversations: Array<NormalizedConversation>,
 	offset: number,
 	more: boolean,
@@ -98,7 +98,7 @@ export function appendConversationsToSearchHook(
 	);
 }
 
-export function deleteConversationsFromSearchHook(
+function deleteConversationsFromSearch(
 	ids: Array<string>,
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
 ): void {
@@ -113,7 +113,7 @@ export function deleteConversationsFromSearchHook(
 	);
 }
 
-export function deleteMessagesFromSearchHook(
+function deleteMessagesFromSearch(
 	ids: Array<string>,
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
 ): void {
@@ -128,7 +128,7 @@ export function deleteMessagesFromSearchHook(
 	);
 }
 
-export function updateSearchResultsLoadingStatusHook(
+function updateSearchResultsLoadingStatus(
 	status: SearchRequestStatus,
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
 ): void {
@@ -139,7 +139,7 @@ export function updateSearchResultsLoadingStatusHook(
 	);
 }
 
-export function appendMessagesToSearchHook(
+function appendMessagesToSearch(
 	messages: Array<MailMessage | IncompleteMessage>,
 	offset: number,
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
@@ -158,7 +158,7 @@ export function appendMessagesToSearchHook(
 	);
 }
 
-export function setMessagesInSearchSliceHook(
+function setMessagesInSearchSlice(
 	messages: Array<MailMessage | IncompleteMessage>,
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
 ): void {
@@ -180,3 +180,15 @@ export function setMessagesInSearchSliceHook(
 		}
 	}));
 }
+
+export const searchSliceUtils = {
+	resetSearchAndPopulatedItems,
+	setSearchResultsByConversation,
+	setSearchResultsByMessage,
+	appendConversationsToSearch,
+	deleteConversationsFromSearch,
+	deleteMessagesFromSearch,
+	updateSearchResultsLoadingStatus,
+	appendMessagesToSearch,
+	setMessagesInSearchSlice
+};
