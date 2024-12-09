@@ -21,6 +21,7 @@ export type UploadCallbacks = {
 	onUploadProgress?: (file: File, uploadId: string, percentage: number) => void;
 	onUploadComplete?: (file: File, uploadId: string, attachmentId: string) => void;
 	onUploadError?: (file: File, uploadId: string, error: string) => void;
+	onAbortError?: (file: File, uploadId: string, error: string) => void;
 };
 
 export type UploadAttachmentOptions = UploadCallbacks;
@@ -64,6 +65,12 @@ export const uploadAttachmentApi = (
 				const { loaded, total } = progressEvent;
 				const percent = total ? Math.round((loaded * 100) / total) : 0;
 				if (percent < 100) {
+					if ( percent > 0 && file.size > 52428800 ) {
+						abortController.abort();
+						options?.onAbortError &&
+							options?.onAbortError(file, uploadId, 'maxUploadFileSize');
+						return;
+					}
 					options?.onUploadProgress && options?.onUploadProgress(file, uploadId, percent);
 				}
 			},

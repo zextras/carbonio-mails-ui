@@ -33,13 +33,29 @@ const useNotifyUploadError = (): ((file: File) => void) => {
 		(file) => {
 			createSnackbar({
 				key: `upload-error`,
-				replace: true,
+				replace: false,
 				severity: 'error',
 				label: t('label.errors.upload_failed_generic', {
 					filename: file.name,
 					defaultValue: 'Upload failed for the file "{{filename}}"'
 				}),
 				autoHideTimeout: TIMEOUTS.SNACKBAR_DEFAULT_TIMEOUT
+			});
+		},
+		[createSnackbar]
+	);
+};
+
+const useNotifyAbortError = (): ((file: File) => void) => {
+	const { createSnackbar } = useUiUtilities();
+	return useCallback(
+		(file) => {
+			createSnackbar({
+				key: `upload-error`,
+				replace: false,
+				severity: 'error',
+				label: 'Il file '+file.name+' ha superato la grandezza massima per la conversione in smartlink! Si prega di eseguire l\'upload del file e condividerlo tramite files!',
+				autoHideTimeout: 15000
 			});
 		},
 		[createSnackbar]
@@ -86,6 +102,7 @@ type EditorAttachmentHook = {
 export const useEditorAttachments = (editorId: MailsEditorV2['id']): EditorAttachmentHook => {
 	const { debouncedSaveDraft } = useSaveDraftFromEditor();
 	const notifyUploadError = useNotifyUploadError();
+	const notifyAbortError = useNotifyAbortError();
 
 	const unsavedStandardAttachments = reject(
 		useEditorsStore((state) => state.editors[editorId].unsavedAttachments),
@@ -139,6 +156,18 @@ export const useEditorAttachments = (editorId: MailsEditorV2['id']): EditorAttac
 
 			onUploadsEnd: (completedUploadsId, failedUploadsId): void => {
 				callbacks?.onUploadsEnd && callbacks.onUploadsEnd(completedUploadsId, failedUploadsId);
+			},
+
+			onAbortError: (file: File, uploadId: string, error: string): void => {
+				const setUploadStatus = useEditorsStore.getState().setAttachmentUploadStatus;
+				const status: AttachmentUploadProcessStatus = {
+					status: 'aborted',
+					abortReason: error
+				};
+				notifyAbortError(file);
+				setUploadStatus(editorId, uploadId, status);
+				computeAndUpdateEditorStatus(editorId);
+				callbacks?.onAbortError && callbacks.onAbortError(file, uploadId, error);
 			}
 		};
 
