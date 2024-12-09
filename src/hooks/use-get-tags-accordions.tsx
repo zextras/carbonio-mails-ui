@@ -15,14 +15,14 @@ import {
 	Tooltip,
 	useModal
 } from '@zextras/carbonio-design-system';
-import { QueryChip } from '@zextras/carbonio-search-ui';
+import type { QueryChip } from '@zextras/carbonio-search-ui';
 import { t } from '@zextras/carbonio-shell-ui';
 import { reduce } from 'lodash';
 
 import { ZIMBRA_STANDARD_COLORS } from '../carbonio-ui-commons/constants/utils';
+import { useRunSearchIntegration } from '../carbonio-ui-commons/integrations/search/use-run-search';
 import { useTags } from '../carbonio-ui-commons/store/zustand/tags';
 import type { TagsAccordionItems } from '../carbonio-ui-commons/types/tags';
-import { useRunSearchIntegration } from '../integrations/search/use-run-search';
 import type { ItemType } from '../types';
 import { createTag, useGetTagsActions } from '../ui-actions/tag-actions';
 
