@@ -9,6 +9,7 @@ import produce, { enableMapSet } from 'immer';
 import { merge } from 'lodash';
 import { create } from 'zustand';
 
+import { createMessageSlice } from './messages-slice';
 import { createPopulatedItemsSlice, POPULATED_ITEMS_INITIAL_STATE } from './populated-items-slice';
 import { createSearchSlice, SEARCH_INITIAL_STATE } from './search-slice';
 import { API_REQUEST_STATUS } from '../../../constants';
@@ -24,6 +25,7 @@ import {
 
 const useMessageStore = create<MessageStoreState>()((...a) => ({
 	...createSearchSlice(...a),
+	...createMessageSlice(...a),
 	...createPopulatedItemsSlice(...a)
 }));
 
@@ -179,7 +181,7 @@ export function updateMessagesOnly(messages: Array<IncompleteMessage>): void {
 	);
 }
 
-export function setMessages(messages: Array<MailMessage | IncompleteMessage>): void {
+export function setMessagesInSearchSlice(messages: Array<MailMessage | IncompleteMessage>): void {
 	useMessageStore.setState((state: MessageStoreState) => ({
 		search: {
 			...state.search,

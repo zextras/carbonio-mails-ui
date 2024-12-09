@@ -247,6 +247,19 @@ export type SearchSliceState = {
 	};
 };
 
+export type MessageSliceState = {
+	messages: {
+		messageIds: Set<string>;
+		more: boolean;
+		offset: number;
+		sortBy?: SortBy;
+		query?: string;
+		status: SearchRequestStatus;
+		parent?: string;
+		tagName?: string;
+		error?: ErrorType;
+	};
+};
 export type PopulatedItemsSliceState = {
 	populatedItems: {
 		messages: Record<string, MailMessage | IncompleteMessage>;
@@ -256,4 +269,4 @@ export type PopulatedItemsSliceState = {
 	};
 };
 
-export type MessageStoreState = PopulatedItemsSliceState & SearchSliceState;
+export type MessageStoreState = PopulatedItemsSliceState & SearchSliceState & MessageSliceState;

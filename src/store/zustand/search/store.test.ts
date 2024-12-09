@@ -12,7 +12,7 @@ import {
 	updateMessages,
 	setSearchResultsByConversation,
 	updateConversationStatus,
-	setMessages,
+	setMessagesInSearchSlice,
 	updateMessagesOnly,
 	useConversationById,
 	useConversationMessages,
@@ -79,7 +79,7 @@ describe('message store', () => {
 			const conversation2Messages = [generateMessage({ id: '4' }), generateMessage({ id: '5' })];
 			const conversation2 = generateConversation({ id: '2', messages: conversation2Messages });
 			setSearchResultsByConversation([conversation1, conversation2], false);
-			setMessages([...conversation1Messages, ...conversation2Messages]);
+			setMessagesInSearchSlice([...conversation1Messages, ...conversation2Messages]);
 
 			updateMessages([generateMessage({ id: '100' })]);
 
@@ -93,7 +93,7 @@ describe('message store', () => {
 		it('should reset the searches and populated items', () => {
 			setSearchResultsByConversation([generateConversation({ id: '1', messages: [] })], false);
 			updateConversationStatus('1', API_REQUEST_STATUS.fulfilled);
-			setMessages([generateMessage({ id: '100' })]);
+			setMessagesInSearchSlice([generateMessage({ id: '100' })]);
 
 			resetSearch();
 
@@ -141,7 +141,7 @@ describe('message store', () => {
 			const conversation2Messages = [generateMessage({ id: '4' }), generateMessage({ id: '5' })];
 			const conversation2 = generateConversation({ id: '2', messages: conversation2Messages });
 			setSearchResultsByConversation([conversation1, conversation2], false);
-			setMessages([...conversation1Messages, ...conversation2Messages]);
+			setMessagesInSearchSlice([...conversation1Messages, ...conversation2Messages]);
 
 			deleteConversations(['1']);
 
@@ -176,7 +176,7 @@ describe('message store', () => {
 	describe('messages', () => {
 		it('should set and return a message', () => {
 			const message = generateMessage({ id: '1' });
-			setMessages([message]);
+			setMessagesInSearchSlice([message]);
 
 			const { result } = renderHook(() => useMessageById('1'));
 
@@ -192,7 +192,7 @@ describe('message store', () => {
 		});
 
 		it('should not unset fields on message', () => {
-			setMessages([generateMessage({ id: '1', folderId: FOLDERS.INBOX })]);
+			setMessagesInSearchSlice([generateMessage({ id: '1', folderId: FOLDERS.INBOX })]);
 
 			updateMessagesOnly([generateMessage({ id: '1', folderId: undefined })]);
 
@@ -203,7 +203,7 @@ describe('message store', () => {
 
 		it('should delete all messages', () => {
 			act(() => {
-				setMessages([generateMessage({ id: '1' }), generateMessage({ id: '2' })]);
+				setMessagesInSearchSlice([generateMessage({ id: '1' }), generateMessage({ id: '2' })]);
 			});
 
 			const { result: _message1 } = renderHook(() => useMessageById('1'));
@@ -223,7 +223,7 @@ describe('message store', () => {
 
 		it('should append messages to the store when appendMessages is called', () => {
 			enableMapSet();
-			setMessages([generateMessage({ id: '1' })]);
+			setMessagesInSearchSlice([generateMessage({ id: '1' })]);
 
 			appendMessages([generateMessage({ id: '2' }), generateMessage({ id: '3' })], 0);
 
@@ -239,7 +239,7 @@ describe('message store', () => {
 				generateMessage({ id: '3' })
 			];
 			setSearchResultsByMessage(messages, false);
-			setMessages(messages);
+			setMessagesInSearchSlice(messages);
 
 			deleteMessages(['1', '2']);
 

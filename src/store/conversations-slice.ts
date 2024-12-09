@@ -184,7 +184,7 @@ export const getConversationsSliceInitialState = (): ConversationsStateType =>
 		expandedStatus: {},
 		searchedInFolder: {},
 		searchRequestStatus: null
-	}) as ConversationsStateType;
+	}) as Convhttps://zextras.atlassian.net/browse/CO-1725ersationsStateType;
 
 export const conversationsSlice = createSlice({
 	name: 'conversations',

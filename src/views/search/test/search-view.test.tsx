@@ -31,7 +31,7 @@ import * as search from '../../../store/actions/search';
 import {
 	setSearchResultsByConversation,
 	updateConversationStatus,
-	setMessages
+	setMessagesInSearchSlice
 } from '../../../store/zustand/search/store';
 import { TESTID_SELECTORS } from '../../../tests/constants';
 import { generateConversation } from '../../../tests/generators/generateConversation';
@@ -282,7 +282,7 @@ describe('SearchView', () => {
 				[generateConversation({ id: '123', messages: [message] })],
 				false
 			);
-			setMessages([message]);
+			setMessagesInSearchSlice([message]);
 			updateConversationStatus('123', API_REQUEST_STATUS.fulfilled);
 			const searchViewProps: SearchViewProps = {
 				useQuery: () => [[], noop],
