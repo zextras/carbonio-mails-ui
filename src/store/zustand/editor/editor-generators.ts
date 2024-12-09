@@ -432,6 +432,8 @@ export const generateEditAsDraftEditor = (
 		action: EditViewActions.EDIT_AS_DRAFT,
 		identityId: (fromIdentity ?? getDefaultIdentity()).id,
 		id: editorId,
+		originalId: originalMessage.originalId,
+		replyType: originalMessage.replyType,
 		unsavedAttachments: [],
 		savedAttachments,
 		isRichText,
@@ -501,15 +503,6 @@ export const generateEditAsNewEditor = (
 	editor.sendAllowedStatus = computeSendAllowedStatus(editor);
 
 	return editor;
-};
-
-/**
- *
- * @param id
- */
-export const resumeEditor = (id: MailsEditorV2['id']): MailsEditorV2 | null => {
-	const editor = getEditor({ id });
-	return editor ?? null;
 };
 
 export type GenerateEditorParams = {
