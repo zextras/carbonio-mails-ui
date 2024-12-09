@@ -269,4 +269,4 @@ export type PopulatedItemsSliceState = {
 	};
 };
 
-export type MessageStoreState = PopulatedItemsSliceState & SearchSliceState & MessageSliceState;
+export type EmailsStoreState = PopulatedItemsSliceState & SearchSliceState & MessageSliceState;
