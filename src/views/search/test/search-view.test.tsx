@@ -29,9 +29,9 @@ import { API_REQUEST_STATUS } from '../../../constants';
 import * as useSelection from '../../../hooks/use-selection';
 import * as search from '../../../store/actions/search';
 import {
-	setSearchResultsByConversation,
 	updateConversationStatus,
-	setMessagesInSearchSlice
+	setMessagesInSearchSlice,
+	setSearchResultsByConversation
 } from '../../../store/zustand/emails/store';
 import { TESTID_SELECTORS } from '../../../tests/constants';
 import { generateConversation } from '../../../tests/generators/generateConversation';

@@ -24,11 +24,11 @@ import { tags } from '../../carbonio-ui-commons/test/mocks/tags/tags';
 import { folderWorker } from '../../carbonio-ui-commons/worker';
 import * as reduxHooks from '../../hooks/redux';
 import {
-	setSearchResultsByConversation,
 	setMessagesInSearchSlice,
 	useConversationById,
 	useMessageById,
-	setSearchResultsByMessage
+	setSearchResultsByMessage,
+	setSearchResultsByConversation
 } from '../../store/zustand/emails/store';
 import { generateConversation } from '../../tests/generators/generateConversation';
 import { generateMessage } from '../../tests/generators/generateMessage';

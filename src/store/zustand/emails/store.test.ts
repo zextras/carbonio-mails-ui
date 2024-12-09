@@ -8,9 +8,8 @@ import { enableMapSet } from 'immer';
 
 import {
 	removeMessages,
-	resetSearch,
+	resetSearchAndPopulatedItems,
 	updateMessages,
-	setSearchResultsByConversation,
 	updateConversationStatus,
 	setMessagesInSearchSlice,
 	updateMessagesOnly,
@@ -28,7 +27,8 @@ import {
 	useMessageStatus,
 	setSearchResultsByMessage,
 	deleteMessages,
-	updateConversationsOnly
+	updateConversationsOnly,
+	setSearchResultsByConversation
 } from './store';
 import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
 import { API_REQUEST_STATUS } from '../../../constants';
@@ -95,7 +95,7 @@ describe('message store', () => {
 			updateConversationStatus('1', API_REQUEST_STATUS.fulfilled);
 			setMessagesInSearchSlice([generateMessage({ id: '100' })]);
 
-			resetSearch();
+			resetSearchAndPopulatedItems();
 
 			expect(renderHook(() => useConversationById('1')).result.current).toBeUndefined();
 			expect(renderHook(() => useConversationStatus('1')).result.current).toBeUndefined();

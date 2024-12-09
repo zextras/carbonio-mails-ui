@@ -24,11 +24,11 @@ import { normalizeMailMessageFromSoap } from '../../normalizations/normalize-mes
 import {
 	appendConversations,
 	appendMessages,
-	setSearchResultsByConversation,
 	updateSearchResultsLoadingStatus,
 	useSearchResults,
-	resetSearch,
-	setSearchResultsByMessage
+	resetSearchAndPopulatedItems,
+	setSearchResultsByMessage,
+	setSearchResultsByConversation
 } from '../../store/zustand/emails/store';
 import { IncompleteMessage, MailMessage, SearchResponse, SearchSliceState } from '../../types';
 
@@ -118,7 +118,7 @@ export function handleSearchResults({
 		handleFulFilledMessagesResults({ searchResponse, tags });
 	}
 	if (searchResponse && !searchResponse.c && !searchResponse.m) {
-		resetSearch();
+		resetSearchAndPopulatedItems();
 		updateSearchResultsLoadingStatus(API_REQUEST_STATUS.fulfilled);
 	}
 }

@@ -10,12 +10,14 @@ import { merge } from 'lodash';
 import { create } from 'zustand';
 
 import { createMessageSlice } from './messages/messages-slice';
+import { createPopulatedItemsSlice } from './populated-items/populated-items-slice';
 import {
-	createPopulatedItemsSlice,
-	POPULATED_ITEMS_INITIAL_STATE
-} from './populated-items/populated-items-slice';
-import { createSearchSlice, SEARCH_INITIAL_STATE } from './search/search-slice';
-import { API_REQUEST_STATUS } from '../../../constants';
+	appendConversationsHook,
+	resetSearchAndPopulatedItemsHook,
+	setSearchResultsByConversationHook,
+	setSearchResultsByMessageHook
+} from './search/hooks';
+import { createSearchSlice } from './search/search-slice';
 import {
 	IncompleteMessage,
 	MailMessage,
@@ -32,27 +34,23 @@ const useEmailsStore = create<EmailsStoreState>()((...a) => ({
 	...createPopulatedItemsSlice(...a)
 }));
 
-export function useConversationById(id: string): NormalizedConversation {
-	return useEmailsStore((state) => state.populatedItems.conversations[id]);
-}
-
-export function resetSearch(): void {
-	useEmailsStore.setState(
-		produce((state: EmailsStoreState) => {
-			state.search = SEARCH_INITIAL_STATE;
-			state.populatedItems = POPULATED_ITEMS_INITIAL_STATE;
-		})
-	);
-}
-
-export function useMessageById(id: string): IncompleteMessage | MailMessage {
-	return useEmailsStore((state) => state.populatedItems.messages[id]);
+// Search related functions
+export function resetSearchAndPopulatedItems(): void {
+	resetSearchAndPopulatedItemsHook(useEmailsStore);
 }
 
 export function useSearchResults(): SearchSliceState['search'] {
 	return useEmailsStore(({ search }) => search);
 }
 
+export function setSearchResultsByConversation(
+	conversations: Array<NormalizedConversation>,
+	more: boolean
+): void {
+	setSearchResultsByConversationHook(conversations, more, useEmailsStore);
+}
+
+// Populated Items related functions
 export function useConversationMessages(
 	conversationId: string
 ): Array<MailMessage | IncompleteMessage> {
@@ -65,52 +63,22 @@ export function useConversationMessages(
 	);
 	return messages;
 }
+export function useConversationById(id: string): NormalizedConversation {
+	return useEmailsStore((state) => state.populatedItems.conversations[id]);
+}
 
+export function useMessageById(id: string): IncompleteMessage | MailMessage {
+	return useEmailsStore((state) => state.populatedItems.messages[id]);
+}
 export function useConversationStatus(id: string): SearchRequestStatus {
 	return useEmailsStore((state) => state.populatedItems.conversationsStatus?.[id]);
 }
 
-export function setSearchResultsByConversation(
-	conversations: Array<NormalizedConversation>,
-	more: boolean
-): void {
-	useEmailsStore.setState(
-		produce(({ search, populatedItems }) => {
-			search.conversationIds = new Set(conversations.map((c) => c.id));
-			search.status = API_REQUEST_STATUS.fulfilled;
-			search.messageIds = new Set();
-			search.offset = 0;
-			search.more = more;
-			populatedItems.conversations = conversations.reduce(
-				(acc, conv) => {
-					acc[conv.id] = conv;
-					return acc;
-				},
-				{} as Record<string, NormalizedConversation>
-			);
-		})
-	);
-}
 export function setSearchResultsByMessage(
 	messages: Array<MailMessage | IncompleteMessage>,
 	more: boolean
 ): void {
-	useEmailsStore.setState(
-		produce(({ search, populatedItems }) => {
-			search.messageIds = new Set(messages.map((message) => message.id));
-			search.status = API_REQUEST_STATUS.fulfilled;
-			search.conversationIds = new Set();
-			search.offset = 0;
-			search.more = more;
-			populatedItems.messages = messages.reduce(
-				(acc, message) => {
-					acc[message.id] = message;
-					return acc;
-				},
-				{} as Record<string, MailMessage | IncompleteMessage>
-			);
-		})
-	);
+	setSearchResultsByMessageHook(messages, more, useEmailsStore);
 }
 
 export function appendConversations(
@@ -118,20 +86,7 @@ export function appendConversations(
 	offset: number,
 	more: boolean
 ): void {
-	enableMapSet();
-	const newConversationsIds = new Set(conversations.map((c) => c.id));
-
-	useEmailsStore.setState(
-		produce((state: EmailsStoreState) => {
-			newConversationsIds.forEach((id) => state.search.conversationIds.add(id));
-			state.search.offset = offset;
-			state.search.more = more;
-			state.populatedItems.conversations = conversations.reduce((acc, conv) => {
-				acc[conv.id] = conv;
-				return acc;
-			}, state.populatedItems.conversations);
-		})
-	);
+	appendConversationsHook(conversations, offset, more, useEmailsStore);
 }
 
 export function updateConversationsOnly(conversations: Array<NormalizedConversation>): void {
