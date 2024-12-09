@@ -23,7 +23,7 @@ import { mapToNormalizedConversation } from '../../normalizations/normalize-conv
 import { normalizeMailMessageFromSoap } from '../../normalizations/normalize-message';
 import {
 	appendConversations,
-	appendMessages,
+	appendMessagesToSearch,
 	updateSearchResultsLoadingStatus,
 	useSearchResults,
 	resetSearchAndPopulatedItems,
@@ -90,14 +90,14 @@ function handleLoadMoreResults({
 			)
 		);
 		appendConversations(conversations, offset, searchResponse.more);
-		appendMessages(messages, offset);
+		appendMessagesToSearch(messages, offset);
 	}
 	if (searchResponse.m) {
 		const messages: (IncompleteMessage | MailMessage)[] = [];
 		searchResponse.m?.forEach((soapMessage) =>
 			messages.push(normalizeMailMessageFromSoap(soapMessage, false))
 		);
-		appendMessages(messages, offset);
+		appendMessagesToSearch(messages, offset);
 	}
 }
 

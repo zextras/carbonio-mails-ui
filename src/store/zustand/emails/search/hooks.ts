@@ -14,7 +14,9 @@ import {
 	EmailsStoreState,
 	IncompleteMessage,
 	MailMessage,
-	NormalizedConversation
+	NormalizedConversation,
+	SearchRequestStatus,
+	SearchSliceState
 } from '../../../../types';
 import { POPULATED_ITEMS_INITIAL_STATE } from '../populated-items/populated-items-slice';
 
@@ -74,7 +76,7 @@ export function setSearchResultsByMessageHook(
 		})
 	);
 }
-export function appendConversationsHook(
+export function appendConversationsToSearchHook(
 	conversations: Array<NormalizedConversation>,
 	offset: number,
 	more: boolean,
@@ -94,4 +96,87 @@ export function appendConversationsHook(
 			}, state.populatedItems.conversations);
 		})
 	);
+}
+
+export function deleteConversationsFromSearchHook(
+	ids: Array<string>,
+	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
+): void {
+	enableMapSet();
+	useEmailsStore.setState(
+		produce((state: EmailsStoreState) => {
+			ids.forEach((id) => {
+				state.search.conversationIds.delete(id);
+				delete state.populatedItems.conversations[id];
+			});
+		})
+	);
+}
+
+export function deleteMessagesFromSearchHook(
+	ids: Array<string>,
+	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
+): void {
+	enableMapSet();
+	useEmailsStore.setState(
+		produce((state: EmailsStoreState) => {
+			ids.forEach((id) => {
+				state.search.messageIds.delete(id);
+				delete state.populatedItems.messages[id];
+			});
+		})
+	);
+}
+
+export function updateSearchResultsLoadingStatusHook(
+	status: SearchRequestStatus,
+	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
+): void {
+	useEmailsStore.setState(
+		produce(({ search }: SearchSliceState) => {
+			search.status = status;
+		})
+	);
+}
+
+export function appendMessagesToSearchHook(
+	messages: Array<MailMessage | IncompleteMessage>,
+	offset: number,
+	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
+): void {
+	enableMapSet();
+	const newMessageIds = new Set(messages.map((message) => message.id));
+	useEmailsStore.setState(
+		produce((state: EmailsStoreState) => {
+			newMessageIds.forEach((messageId) => state.search.messageIds.add(messageId));
+			state.search.offset = offset;
+			state.populatedItems.messages = messages.reduce((acc, msg) => {
+				acc[msg.id] = msg;
+				return acc;
+			}, state.populatedItems.messages);
+		})
+	);
+}
+
+export function setMessagesInSearchSliceHook(
+	messages: Array<MailMessage | IncompleteMessage>,
+	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
+): void {
+	useEmailsStore.setState((state: EmailsStoreState) => ({
+		search: {
+			...state.search,
+			messageIds: new Set(messages.map((c) => c.id))
+		},
+		populatedItems: {
+			...state.populatedItems,
+			offset: 0,
+			messages: messages.reduce(
+				(acc, msg) => {
+					acc[msg.id] = msg;
+					return acc;
+				},
+				{} as Record<string, MailMessage | IncompleteMessage>
+			)
+		}
+	}));
 }

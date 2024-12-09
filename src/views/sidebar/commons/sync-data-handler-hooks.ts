@@ -36,8 +36,8 @@ import {
 	selectMessages
 } from '../../../store/messages-slice';
 import {
-	deleteConversations,
-	deleteMessages,
+	deleteConversationsFromSearch,
+	deleteMessagesFromSearch,
 	updateConversationsOnly,
 	updateMessagesOnly
 } from '../../../store/zustand/emails/store';
@@ -179,8 +179,8 @@ export const useSyncDataHandler = (): void => {
 								}
 							}
 							if (notify.deleted) {
-								deleteConversations(notify.deleted);
-								deleteMessages(notify.deleted);
+								deleteConversationsFromSearch(notify.deleted);
+								deleteMessagesFromSearch(notify.deleted);
 								dispatch(handleNotifyDeletedConversations(notify.deleted));
 								dispatch(handleDeletedMessages(notify.deleted));
 								dispatch(handleDeletedMessagesInConversation(notify.deleted));

@@ -18,15 +18,15 @@ import {
 	useConversationStatus,
 	useMessageById,
 	appendConversations,
-	appendMessages,
+	appendMessagesToSearch,
 	getSearchResultsLoadingStatus,
 	updateSearchResultsLoadingStatus,
-	deleteConversations,
+	deleteConversationsFromSearch,
 	useSearchResults,
 	updateMessageStatus,
 	useMessageStatus,
 	setSearchResultsByMessage,
-	deleteMessages,
+	deleteMessagesFromSearch,
 	updateConversationsOnly,
 	setSearchResultsByConversation
 } from './store';
@@ -143,7 +143,7 @@ describe('message store', () => {
 			setSearchResultsByConversation([conversation1, conversation2], false);
 			setMessagesInSearchSlice([...conversation1Messages, ...conversation2Messages]);
 
-			deleteConversations(['1']);
+			deleteConversationsFromSearch(['1']);
 
 			const { result } = renderHook(() => useSearchResults());
 			const { result: conversation1Store } = renderHook(() => useConversationById('1'));
@@ -225,7 +225,7 @@ describe('message store', () => {
 			enableMapSet();
 			setMessagesInSearchSlice([generateMessage({ id: '1' })]);
 
-			appendMessages([generateMessage({ id: '2' }), generateMessage({ id: '3' })], 0);
+			appendMessagesToSearch([generateMessage({ id: '2' }), generateMessage({ id: '3' })], 0);
 
 			expect(renderHook(() => useMessageById('1')).result.current).toBeDefined();
 			expect(renderHook(() => useMessageById('2')).result.current).toBeDefined();
@@ -241,7 +241,7 @@ describe('message store', () => {
 			setSearchResultsByMessage(messages, false);
 			setMessagesInSearchSlice(messages);
 
-			deleteMessages(['1', '2']);
+			deleteMessagesFromSearch(['1', '2']);
 
 			const { result } = renderHook(() => useSearchResults());
 			const { result: message1 } = renderHook(() => useMessageById('1'));
