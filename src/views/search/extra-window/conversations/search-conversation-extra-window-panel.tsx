@@ -10,7 +10,7 @@ import { useUserSettings } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
 
 import { API_REQUEST_STATUS } from '../../../../constants';
-import { useCompleteConversation } from '../../../../store/zustand/search/hooks/hooks';
+import { useCompleteConversation } from '../../../../store/zustand/emails/hooks/hooks';
 import { ConversationMessagePreview } from '../../../app/detail-panel/conversation-message-preview';
 import { useExtraWindow } from '../../../app/extra-windows/use-extra-window';
 import { SearchExtraWindowPanelHeader } from '../search-extra-window-panel-header';

@@ -18,7 +18,7 @@ import {
 	useConversationById,
 	useMessageById,
 	useSearchResults
-} from '../../../store/zustand/search/store';
+} from '../../../store/zustand/emails/store';
 import { generateConvMessageFromAPI } from '../../../tests/generators/api';
 import { generateConversation } from '../../../tests/generators/generateConversation';
 import { SearchRequest, SearchResponse, SoapConversation } from '../../../types';

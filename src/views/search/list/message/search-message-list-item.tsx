@@ -27,7 +27,7 @@ import { getTimeLabel, participantToString } from '../../../../commons/utils';
 import { EditViewActions } from '../../../../constants';
 import { useMsgPreviewOnSeparatedWindowFn } from '../../../../hooks/actions/use-msg-preview-on-separated-window';
 import { useMsgSetReadFn } from '../../../../hooks/actions/use-msg-set-read';
-import { useMessageById } from '../../../../store/zustand/search/store';
+import { useMessageById } from '../../../../store/zustand/emails/store';
 import { TextReadValuesType } from '../../../../types';
 import { useTagExist } from '../../../../ui-actions/tag-actions';
 import { createEditBoard } from '../../../app/detail-panel/edit/edit-view-board';

@@ -12,7 +12,7 @@ import { API_REQUEST_STATUS } from '../../../../../constants';
 import {
 	setSearchResultsByMessage,
 	updateMessageStatus
-} from '../../../../../store/zustand/search/store';
+} from '../../../../../store/zustand/emails/store';
 import { generateMessage } from '../../../../../tests/generators/generateMessage';
 import { generateStore } from '../../../../../tests/generators/store';
 import { SearchMessagePanel } from '../search-message-panel';

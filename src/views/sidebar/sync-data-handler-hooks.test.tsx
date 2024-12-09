@@ -29,7 +29,7 @@ import {
 	useConversationById,
 	useMessageById,
 	setSearchResultsByMessage
-} from '../../store/zustand/search/store';
+} from '../../store/zustand/emails/store';
 import { generateConversation } from '../../tests/generators/generateConversation';
 import { generateMessage } from '../../tests/generators/generateMessage';
 import { generateStore } from '../../tests/generators/store';

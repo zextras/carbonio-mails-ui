@@ -29,7 +29,7 @@ import {
 	useSearchResults,
 	resetSearch,
 	setSearchResultsByMessage
-} from '../../store/zustand/search/store';
+} from '../../store/zustand/emails/store';
 import { IncompleteMessage, MailMessage, SearchResponse, SearchSliceState } from '../../types';
 
 type UseRunSearchProps = {

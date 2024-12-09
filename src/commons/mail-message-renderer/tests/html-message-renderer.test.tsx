@@ -9,7 +9,7 @@ import { act, screen, waitFor } from '@testing-library/react';
 
 import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
-import { updateMessages } from '../../../store/zustand/search/store';
+import { updateMessages } from '../../../store/zustand/emails/store';
 import { generateCompleteMessageFromAPI } from '../../../tests/generators/api';
 import { generateMessage } from '../../../tests/generators/generateMessage';
 import { generateStore } from '../../../tests/generators/store';

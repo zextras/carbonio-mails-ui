@@ -12,7 +12,7 @@ import { useParams } from 'react-router-dom';
 
 import { SearchConversationMessagePanel } from './search-conversation-message-panel';
 import { API_REQUEST_STATUS } from '../../../../constants';
-import { useCompleteConversation } from '../../../../store/zustand/search/hooks/hooks';
+import { useCompleteConversation } from '../../../../store/zustand/emails/hooks/hooks';
 import { useExtraWindow } from '../../../app/extra-windows/use-extra-window';
 import { SearchExtraWindowPanelHeader } from '../../extra-window/search-extra-window-panel-header';
 

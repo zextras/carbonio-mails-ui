@@ -7,7 +7,7 @@ import React, { useCallback } from 'react';
 
 import { Padding } from '@zextras/carbonio-design-system';
 
-import { useMessageById } from '../../../../store/zustand/search/store';
+import { useMessageById } from '../../../../store/zustand/emails/store';
 import MailPreview from '../../../app/detail-panel/preview/mail-preview';
 
 export type SearchConversationMessagePreviewProps = {

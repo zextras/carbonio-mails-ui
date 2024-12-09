@@ -40,7 +40,7 @@ import {
 	deleteMessages,
 	updateConversationsOnly,
 	updateMessagesOnly
-} from '../../../store/zustand/search/store';
+} from '../../../store/zustand/emails/store';
 import type { Conversation, FolderState } from '../../../types';
 
 function handleFoldersNotify(

@@ -18,7 +18,7 @@ import { getAttachmentParts } from '../../helpers/attachments';
 import { getNoIdentityPlaceholder } from '../../helpers/identities';
 import { useAppDispatch } from '../../hooks/redux';
 import { getFullMsgAsyncThunk } from '../../store/actions';
-import { retrieveFullMessage } from '../../store/zustand/search/hooks/hooks';
+import { retrieveFullMessage } from '../../store/zustand/emails/hooks/hooks';
 import { BodyPart, MailMessage } from '../../types';
 import { useInSearchModule } from '../../ui-actions/utils';
 import { getOriginalHtmlContent, getQuotedTextFromOriginalContent } from '../get-quoted-text-util';

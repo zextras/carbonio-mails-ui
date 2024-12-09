@@ -12,7 +12,7 @@ import MailPreview from './preview/mail-preview';
 import { getParentFolderId } from '../../../helpers/folders';
 import { useAppSelector } from '../../../hooks/redux';
 import { selectMessage } from '../../../store/messages-slice';
-import { useMessageById } from '../../../store/zustand/search/store';
+import { useMessageById } from '../../../store/zustand/emails/store';
 import { ConvMessage, MailsStateType } from '../../../types';
 import { useInSearchModule } from '../../../ui-actions/utils';
 

@@ -28,12 +28,12 @@ import { participantToString } from '../../../../commons/utils';
 import { API_REQUEST_STATUS } from '../../../../constants';
 import { useConvPreviewOnSeparatedWindowFn } from '../../../../hooks/actions/use-conv-preview-on-separated-window';
 import { useConvSetReadFn } from '../../../../hooks/actions/use-conv-set-read';
-import { retrieveConversation } from '../../../../store/zustand/search/hooks/hooks';
+import { retrieveConversation } from '../../../../store/zustand/emails/hooks/hooks';
 import {
 	useConversationById,
 	useConversationMessages,
 	useConversationStatus
-} from '../../../../store/zustand/search/store';
+} from '../../../../store/zustand/emails/store';
 import type { Conversation, Participant, TextReadValuesProps } from '../../../../types';
 import { ConversationListItemActionWrapper } from '../../../app/folder-panel/conversations/conversation-list-item';
 import { ItemAvatar } from '../../../app/folder-panel/parts/item-avatar';

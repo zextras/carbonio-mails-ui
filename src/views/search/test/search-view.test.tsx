@@ -32,7 +32,7 @@ import {
 	setSearchResultsByConversation,
 	updateConversationStatus,
 	setMessagesInSearchSlice
-} from '../../../store/zustand/search/store';
+} from '../../../store/zustand/emails/store';
 import { TESTID_SELECTORS } from '../../../tests/constants';
 import { generateConversation } from '../../../tests/generators/generateConversation';
 import { generateMessage } from '../../../tests/generators/generateMessage';

@@ -177,14 +177,13 @@ function getConvRejected(state: ConversationsStateType, { meta }: any): void {
 	state.expandedStatus[meta.arg.conversationId] = meta.requestStatus;
 }
 
-export const getConversationsSliceInitialState = (): ConversationsStateType =>
-	({
-		currentFolder: FOLDERS.INBOX,
-		conversations: {},
-		expandedStatus: {},
-		searchedInFolder: {},
-		searchRequestStatus: null
-	}) as Convhttps://zextras.atlassian.net/browse/CO-1725ersationsStateType;
+export const getConversationsSliceInitialState = (): ConversationsStateType => ({
+	currentFolder: FOLDERS.INBOX,
+	conversations: {},
+	expandedStatus: {},
+	searchedInFolder: {},
+	searchRequestStatus: null
+});
 
 export const conversationsSlice = createSlice({
 	name: 'conversations',
