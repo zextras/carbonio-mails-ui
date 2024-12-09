@@ -74,7 +74,7 @@ export const RecipientsRow: FC<RecipientsRowProps> = ({
 		const email = recipient.address;
 		const exists = contacts[email];
 		return (
-			exists || {
+			exists ?? {
 				id: recipient.address,
 				label: recipient.address,
 				value: {
