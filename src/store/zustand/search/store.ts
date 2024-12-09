@@ -201,7 +201,7 @@ export function setMessagesInSearchSlice(messages: Array<MailMessage | Incomplet
 	}));
 }
 
-export function setMessagesInSearchSlice(messages: Array<MailMessage | IncompleteMessage>): void {
+export function setMessagesInMessagesSlice(messages: Array<MailMessage | IncompleteMessage>): void {
 	useEmailsStore.setState((state: EmailsStoreState) => ({
 		search: {
 			...state.search,
