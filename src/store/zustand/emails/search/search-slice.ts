@@ -6,7 +6,7 @@
 
 import { StateCreator } from 'zustand';
 
-import { PopulatedItemsSliceState, SearchSliceState } from '../../../types';
+import { MessageSliceState, PopulatedItemsSliceState, SearchSliceState } from '../../../../types';
 
 export const SEARCH_INITIAL_STATE: SearchSliceState['search'] = {
 	conversationIds: new Set<string>(),
@@ -16,7 +16,7 @@ export const SEARCH_INITIAL_STATE: SearchSliceState['search'] = {
 	status: null
 };
 export const createSearchSlice: StateCreator<
-	SearchSliceState & PopulatedItemsSliceState,
+	SearchSliceState & PopulatedItemsSliceState & MessageSliceState,
 	[],
 	[],
 	SearchSliceState

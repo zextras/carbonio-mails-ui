@@ -6,7 +6,7 @@
 
 import { StateCreator } from 'zustand';
 
-import { MessageSliceState, PopulatedItemsSliceState, SearchSliceState } from '../../../types';
+import { MessageSliceState, PopulatedItemsSliceState, SearchSliceState } from '../../../../types';
 
 export const MESSAGES_INITIAL_STATE: MessageSliceState['messages'] = {
 	messageIds: new Set<string>(),
