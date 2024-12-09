@@ -68,4 +68,25 @@ describe('replaceLinkToAnchor', () => {
 			'Visit <a href="http://example.com" target="_blank">http://example.com</a><br />';
 		expect(replaceLinkToAnchor(content)).toBe(result);
 	});
+
+	it('should handle special characters in urls', () => {
+		const urls = [
+			'http://foo.com/blah_blah_(wikipedia)',
+			'http://foo.com/blah_blah_(wikipedia)_(again)',
+			'http://✪df.ws/123',
+			'http://➡.ws/䨹',
+			'http://⌘.ws',
+			'http://foo.com/blah_(wikipedia)#cite-1',
+			'http://foo.com/blah_(wikipedia)_blah#cite-1',
+			'http://foo.com/unicode_(✪)_in_parens',
+			'http://foo.com/(something)?after=parens',
+			'http://☺.damowmow.com/'
+		];
+		urls.forEach((url) => {
+			const content = `Visit ${url}<br />`;
+			expect(replaceLinkToAnchor(content)).toBe(
+				`Visit <a href="${url}" target="_blank">${url}</a><br />`
+			);
+		});
+	});
 });
