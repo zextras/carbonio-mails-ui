@@ -15,7 +15,6 @@ import { useFolder, useRoot } from '../../../../carbonio-ui-commons/store/zustan
 import type { IncompleteMessage, MessageListItemProps } from '../../../../types';
 import ShimmerList from '../../../search/shimmer-list';
 import { Breadcrumbs } from '../parts/breadcrumbs';
-import { MultipleSelectionActionsPanel } from '../parts/multiple-selection-actions-panel';
 import { getFolderPath } from '../parts/utils/utils';
 
 const DragImageContainer = styled.div`
@@ -155,17 +154,19 @@ export const MessageListComponent: FC<MessageListComponentProps> = memo(
 		return (
 			<>
 				{isSelectModeOn ? (
-					<MultipleSelectionActionsPanel
-						items={messageIds}
-						selectedIds={selectedIds}
-						deselectAll={deselectAll}
-						selectAll={selectAll}
-						isAllSelected={isAllSelected}
-						selectAllModeOff={selectAllModeOff}
-						setIsSelectModeOn={setIsSelectModeOn}
-						folderId={folderId}
-					/>
+					<></>
 				) : (
+					// TODO: CO-1725 re-enable this
+					// <MultipleSelectionActionsPanel
+					// 	items={messageIds}
+					// 	selectedIds={selectedIds}
+					// 	deselectAll={deselectAll}
+					// 	selectAll={selectAll}
+					// 	isAllSelected={isAllSelected}
+					// 	selectAllModeOff={selectAllModeOff}
+					// 	setIsSelectModeOn={setIsSelectModeOn}
+					// 	folderId={folderId}
+					// />
 					showBreadcrumbs && (
 						<Breadcrumbs
 							folderPath={folderPath}
@@ -202,7 +203,8 @@ export const MessageListComponent: FC<MessageListComponentProps> = memo(
 							</Container>
 						)}
 						<DragImageContainer ref={dragImageRef}>
-							<DragItems messages={messageIds} draggedIds={draggedIds ?? {}} folderId={folderId} />
+							{/* TODO CO-1725 re-enable it */}
+							{/* <DragItems messages={messageIds} draggedIds={draggedIds ?? {}} folderId={folderId} /> */}
 						</DragImageContainer>
 					</>
 				) : (

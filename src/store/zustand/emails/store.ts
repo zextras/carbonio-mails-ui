@@ -8,6 +8,7 @@
 import { create } from 'zustand';
 
 import { createMessageSlice } from './messages/messages-slice';
+import { messageSliceUtils } from './messages/utils';
 import { createPopulatedItemsSlice } from './populated-items/populated-items-slice';
 import { populatedItemsSliceUtils } from './populated-items/utils';
 import { createSearchSlice } from './search/search-slice';
@@ -137,4 +138,19 @@ export function useMessages(): EmailsStoreState['messages'] {
 
 export function useMessageIds(): EmailsStoreState['messages']['messageIds'] {
 	return useEmailsStore(({ messages }) => messages.messageIds);
+}
+
+export function setMessagesInEmailStore(
+	messages: Array<MailMessage | IncompleteMessage>,
+	more: boolean
+): void {
+	messageSliceUtils.setMessages(messages, more, useEmailsStore);
+}
+
+export function updateMessagesResultsLoadingStatus(status: SearchRequestStatus): void {
+	messageSliceUtils.updateMessagesResultsLoadingStatus(status, useEmailsStore);
+}
+
+export function resetMessagesAndPopulatedItems(): void {
+	messageSliceUtils.resetMessagesAndPopulatedItems(useEmailsStore);
 }

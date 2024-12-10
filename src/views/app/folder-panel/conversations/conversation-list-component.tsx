@@ -16,7 +16,6 @@ import { useFolder, useRoot } from '../../../../carbonio-ui-commons/store/zustan
 import type { Conversation } from '../../../../types';
 import ShimmerList from '../../../search/shimmer-list';
 import { Breadcrumbs } from '../parts/breadcrumbs';
-import { MultipleSelectionActionsPanel } from '../parts/multiple-selection-actions-panel';
 import { getFolderPath } from '../parts/utils/utils';
 
 const DragImageContainer = styled.div`
@@ -155,17 +154,19 @@ export const ConversationListComponent: FC<ConversationListComponentProps> = mem
 		return (
 			<>
 				{isSelectModeOn ? (
-					<MultipleSelectionActionsPanel
-						items={conversations}
-						folderId={folderId}
-						selectedIds={selectedIds}
-						deselectAll={deselectAll}
-						selectAll={selectAll}
-						isAllSelected={isAllSelected}
-						selectAllModeOff={selectAllModeOff}
-						setIsSelectModeOn={setIsSelectModeOn}
-					/>
+					<></>
 				) : (
+					// TODO: CO-1725 re-enable this
+					// <MultipleSelectionActionsPanel
+					// 	items={conversations}
+					// 	folderId={folderId}
+					// 	selectedIds={selectedIds}
+					// 	deselectAll={deselectAll}
+					// 	selectAll={selectAll}
+					// 	isAllSelected={isAllSelected}
+					// 	selectAllModeOff={selectAllModeOff}
+					// 	setIsSelectModeOn={setIsSelectModeOn}
+					// />
 					showBreadcrumbs && (
 						<Breadcrumbs
 							folderPath={folderPath}

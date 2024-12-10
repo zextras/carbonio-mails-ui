@@ -7,7 +7,6 @@
 import React, { useMemo } from 'react';
 
 import { Breadcrumbs } from '../../../app/folder-panel/parts/breadcrumbs';
-import { MultipleSelectionActionsPanel } from '../../../app/folder-panel/parts/multiple-selection-actions-panel';
 
 type SearchConversationListHeaderProps = {
 	items: Array<{ id: string }>;
@@ -37,16 +36,18 @@ export const SearchListHeader = ({
 
 	if (isSelectModeOn && totalItems > 0)
 		return (
-			<MultipleSelectionActionsPanel
-				items={items}
-				folderId={folderId}
-				selectedIds={selectedIds}
-				deselectAll={deselectAll}
-				selectAll={selectAll}
-				isAllSelected={isAllSelected}
-				selectAllModeOff={selectAllModeOff}
-				setIsSelectModeOn={setIsSelectModeOn}
-			/>
+			<></>
+			// TODO: CO-1725 re-enable this
+			// <MultipleSelectionActionsPanel
+			// 	items={items}
+			// 	folderId={folderId}
+			// 	selectedIds={selectedIds}
+			// 	deselectAll={deselectAll}
+			// 	selectAll={selectAll}
+			// 	isAllSelected={isAllSelected}
+			// 	selectAllModeOff={selectAllModeOff}
+			// 	setIsSelectModeOn={setIsSelectModeOn}
+			// />
 		);
 	if (totalItems > 0)
 		return (
