@@ -22,13 +22,13 @@ import {
 	updateMessagesResultsLoadingStatus,
 	useMessages
 } from '../store/zustand/emails/store';
-import { SearchResponse } from '../types';
+import { MessageSliceState, SearchResponse } from '../types';
 
 type RouteParams = {
 	folderId: string;
 };
 
-export const useMessageList = (): Set<string> => {
+export const useMessageList = (): MessageSliceState => {
 	const { folderId } = <RouteParams>useParams();
 	const { prefs: userSettings } = useUserSettings();
 	const { sortOrder } = parseMessageSortingOptions(
@@ -39,19 +39,19 @@ export const useMessageList = (): Set<string> => {
 	const messages = useMessages();
 	const folder = getFolder(folderId);
 
-	const filteredMessages = useMemo(() => {
-		const messageSet = new Set<string>();
-		if (folder) {
-			const wantedFolderId =
-				'rid' in folder && folder?.rid ? `${folder.zid}:${folder.rid}` : folder.id;
-			messages.messageIds.forEach((id) => {
-				if (id === wantedFolderId) {
-					messageSet.add(id);
-				}
-			});
-		}
-		return messageSet;
-	}, [folder, messages]);
+	// const filteredMessages = useMemo(() => {
+	//
+	// 	if (folder) {
+	// 		const wantedFolderId =
+	// 			'rid' in folder && folder?.rid ? `${folder.zid}:${folder.rid}` : folder.id;
+	// 		messages.messageIds.forEach((id) => {
+	// 			if (id === wantedFolderId) {
+	// 				messageSet.add(id);
+	// 			}
+	// 		});
+	// 	}
+	// 	return messageSet;
+	// }, [folder, messages]);
 
 	const queryPart = [`inId:"${folderId}"`];
 
@@ -165,5 +165,5 @@ export const useMessageList = (): Set<string> => {
 		};
 	}, [finalQuery, firstSearchCallback]);
 
-	return filteredMessages;
+	return { messages };
 };

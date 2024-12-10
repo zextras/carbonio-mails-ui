@@ -25,10 +25,7 @@ import { useAppDispatch, useAppSelector } from '../../../../hooks/redux';
 import { useMessageList } from '../../../../hooks/use-message-list';
 import { useSelection } from '../../../../hooks/use-selection';
 import { search } from '../../../../store/actions';
-import {
-	selectFolderMsgSearchStatus,
-	selectMessagesSearchRequestStatus
-} from '../../../../store/messages-slice';
+import { selectFolderMsgSearchStatus } from '../../../../store/messages-slice';
 import type { AppContext } from '../../../../types';
 
 export const MessageList: FC = () => {
@@ -38,11 +35,11 @@ export const MessageList: FC = () => {
 	const { setCount, count } = useAppContext<AppContext>();
 	const [draggedIds, setDraggedIds] = useState<Record<string, boolean>>({});
 	const dragImageRef = useRef(null);
-	const searchRequestStatus = useAppSelector(selectMessagesSearchRequestStatus);
 	const searchedInFolderStatus = useAppSelector(selectFolderMsgSearchStatus(folderId));
 
-	const messageIds = useMessageList();
+	const { messages } = useMessageList();
 
+	const { messageIds, status } = messages;
 	const { prefs } = useUserSettings();
 	const { sortOrder } = parseMessageSortingOptions(folderId, prefs.zimbraPrefSortOrder as string);
 	const items = [...messageIds].map((messageId) => ({ id: messageId }));
@@ -145,10 +142,7 @@ export const MessageList: FC = () => {
 
 	const selectedIds = useMemo(() => Object.keys(selected), [selected]);
 
-	const messagesLoadingCompleted = useMemo(
-		() => searchRequestStatus === API_REQUEST_STATUS.fulfilled,
-		[searchRequestStatus]
-	);
+	const messagesLoadingCompleted = useMemo(() => status === API_REQUEST_STATUS.fulfilled, [status]);
 
 	useEffect(() => {
 		setDraggedIds(selected);
