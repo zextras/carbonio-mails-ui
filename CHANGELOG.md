@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.21.3](https://github.com/zextras/carbonio-mails-ui/compare/v1.21.2...v1.21.3) (2024-12-10)
+
+
+### Bug Fixes
+
+* fix chip input in filters ([b6bdec9](https://github.com/zextras/carbonio-mails-ui/commit/b6bdec93e10ce98db4156c71c3dc2385039ccdd6))
+
 ### [1.21.2](https://github.com/zextras/carbonio-mails-ui/compare/v1.21.1...v1.21.2) (2024-12-06)
 
 
