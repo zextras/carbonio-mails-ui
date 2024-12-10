@@ -6,11 +6,16 @@
 import React from 'react';
 
 import { faker } from '@faker-js/faker';
-import { screen, within } from '@testing-library/react';
+import { screen, waitFor, within } from '@testing-library/react';
 
+import {
+	EDIT_ACTION,
+	generateMockContactInputItem,
+	mockContactInput
+} from '../../../carbonio-ui-commons/test/mocks/integrations/mock-contact-input';
 import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
 import { generateStore } from '../../../tests/generators/store';
-import { AdvancedFilterModalProps } from '../../../types';
+import { AdvancedFilterModalProps, SearchQueryItem } from '../../../types';
 import { AdvancedFilterModal } from '../advanced-filter-modal';
 
 describe('Advanced filter modal', () => {
@@ -66,5 +71,174 @@ describe('Advanced filter modal', () => {
 		await user.click(subjectInputEle);
 
 		expect(actionButton).toBeEnabled();
+	});
+	it('should add "received from" to query with value and label including "from:" after adding a value in the input', async () => {
+		const store = generateStore();
+		const mockUpdateQuery = jest.fn();
+		const { user } = setupTest(
+			<AdvancedFilterModal
+				open
+				isSharedFolderIncluded={false}
+				onClose={jest.fn()}
+				query={[]}
+				updateQuery={mockUpdateQuery}
+				setIsSharedFolderIncluded={jest.fn()}
+			/>,
+			{ store }
+		);
+		const sentTo = screen.getByTestId('received-from-input');
+		await user.type(sentTo, 'validEmail@test.com');
+		await user.type(sentTo, '[Enter]');
+		expect(sentTo).toBeInTheDocument();
+		const confirmButton = screen.getByText('action.search');
+		await user.click(confirmButton);
+		await waitFor(() => {
+			expect(mockUpdateQuery).toHaveBeenCalledWith([
+				expect.objectContaining({
+					label: 'from:validEmail@test.com',
+					value: 'from:validEmail@test.com'
+				})
+			]);
+		});
+	});
+
+	it('should add "sent to" to query with value and label including "to:" after adding a value in the input', async () => {
+		const store = generateStore();
+		const mockUpdateQuery = jest.fn();
+		const { user } = setupTest(
+			<AdvancedFilterModal
+				open
+				isSharedFolderIncluded={false}
+				onClose={jest.fn()}
+				query={[]}
+				updateQuery={mockUpdateQuery}
+				setIsSharedFolderIncluded={jest.fn()}
+			/>,
+			{ store }
+		);
+		const sentTo = screen.getByTestId('sent-to-input');
+		await user.type(sentTo, 'validEmail@test.com');
+		await user.type(sentTo, '[Enter]');
+		expect(sentTo).toBeInTheDocument();
+		const confirmButton = screen.getByText('action.search');
+		await user.click(confirmButton);
+		await waitFor(() => {
+			expect(mockUpdateQuery).toHaveBeenCalledWith([
+				expect.objectContaining({
+					label: 'to:validEmail@test.com',
+					value: 'to:validEmail@test.com'
+				})
+			]);
+		});
+	});
+	it('should keep previous query first value after adding a new value in "sent to" input', async () => {
+		const store = generateStore();
+		const mockUpdateQuery = jest.fn();
+		const query: SearchQueryItem = {
+			id: 'query1',
+			label: 'from:someone@test.com',
+			value: 'from:someone@test.com'
+		};
+		const { user } = setupTest(
+			<AdvancedFilterModal
+				open
+				isSharedFolderIncluded={false}
+				onClose={jest.fn()}
+				query={[query]}
+				updateQuery={mockUpdateQuery}
+				setIsSharedFolderIncluded={jest.fn()}
+			/>,
+			{ store }
+		);
+		const sentTo = screen.getByTestId('sent-to-input');
+		await user.type(sentTo, 'validEmail@test.com');
+		await user.type(sentTo, '[Enter]');
+		expect(sentTo).toBeInTheDocument();
+		const confirmButton = screen.getByText('action.search');
+		await user.click(confirmButton);
+		await waitFor(() => {
+			expect(mockUpdateQuery).toHaveBeenCalledWith([
+				expect.objectContaining({
+					id: 'query1',
+					label: 'from:someone@test.com',
+					value: 'from:someone@test.com'
+				}),
+				expect.objectContaining({
+					id: 'validEmail@test.com',
+					label: 'to:validEmail@test.com',
+					value: 'to:validEmail@test.com'
+				})
+			]);
+		});
+	});
+
+	it('should remove edit action from query chip for "to" and "from" fields', async () => {
+		const valueToAdd = generateMockContactInputItem();
+		valueToAdd.actions = [EDIT_ACTION];
+		mockContactInput({ valueToAdd });
+		const store = generateStore();
+		const mockUpdateQuery = jest.fn();
+		const { user } = setupTest(
+			<AdvancedFilterModal
+				open
+				isSharedFolderIncluded={false}
+				onClose={jest.fn()}
+				query={[]}
+				updateQuery={mockUpdateQuery}
+				setIsSharedFolderIncluded={jest.fn()}
+			/>,
+			{ store }
+		);
+		const sentTo = screen.getByTestId('sent-to-input');
+		await user.type(sentTo, 'validEmail@test.com');
+		await user.type(sentTo, '[Enter]');
+		const receivedFrom = screen.getByTestId('received-from-input');
+		await user.type(receivedFrom, 'validEmail2@test.com');
+		await user.type(receivedFrom, '[Enter]');
+		expect(sentTo).toBeInTheDocument();
+		const confirmButton = screen.getByText('action.search');
+		await user.click(confirmButton);
+		await waitFor(() => {
+			expect(mockUpdateQuery).toHaveBeenCalledWith([
+				expect.objectContaining({
+					actions: []
+				}),
+				expect.objectContaining({
+					actions: []
+				})
+			]);
+		});
+	});
+	it('should display "to" and "from" with edit action in their inputs', async () => {
+		const valueToAdd = generateMockContactInputItem();
+		valueToAdd.actions = [EDIT_ACTION];
+		mockContactInput({ valueToAdd });
+		const store = generateStore();
+		const mockUpdateQuery = jest.fn();
+
+		const { user } = setupTest(
+			<AdvancedFilterModal
+				open
+				isSharedFolderIncluded={false}
+				onClose={jest.fn()}
+				query={[]}
+				updateQuery={mockUpdateQuery}
+				setIsSharedFolderIncluded={jest.fn()}
+			/>,
+			{ store }
+		);
+
+		const sentTo = screen.getByTestId('sent-to-input');
+		await user.type(sentTo, 'validEmail@test.com');
+		await user.type(sentTo, '[Enter]');
+		const receivedFrom = screen.getByTestId('received-from-input');
+		await user.type(receivedFrom, 'validEmail2@test.com');
+		await user.type(receivedFrom, '[Enter]');
+		expect(sentTo).toBeInTheDocument();
+		const confirmButton = screen.getByText('action.search');
+		await user.click(confirmButton);
+		const mockContactInputValues = await screen.findAllByTestId('mockedContactValue');
+		expect(mockContactInputValues[0]).toHaveTextContent(/"icon":"EditOutline"/);
+		expect(mockContactInputValues[1]).toHaveTextContent(/"icon":"EditOutline"/);
 	});
 });
