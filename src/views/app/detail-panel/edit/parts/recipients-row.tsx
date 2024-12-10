@@ -3,24 +3,15 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, useCallback, useMemo } from 'react';
+import React, { FC, useCallback, useState } from 'react';
 
-import { ChipInput, ChipItem } from '@zextras/carbonio-design-system';
-import { useIntegratedComponent } from '@zextras/carbonio-shell-ui';
-import { map, reject, some } from 'lodash';
+import { map, some } from 'lodash';
 
 import { ParticipantRoleType } from '../../../../../carbonio-ui-commons/constants/participants';
-import { isValidEmail, parseEmail } from '../../../../../carbonio-ui-commons/helpers/email-parser';
+import { CONTACT_TYPES } from '../../../../../carbonio-ui-commons/integrations/constants';
+import { useContactInput } from '../../../../../carbonio-ui-commons/integrations/hooks';
+import { ContactInputItem } from '../../../../../carbonio-ui-commons/integrations/types';
 import { Participant } from '../../../../../types';
-
-export interface ContactType extends ChipItem {
-	email: string;
-	firstName?: string;
-	lastName?: string;
-	fullName?: string;
-	label?: string;
-	error?: boolean;
-}
 
 export type RecipientsRowProps = {
 	type: ParticipantRoleType;
@@ -49,99 +40,62 @@ export const RecipientsRow: FC<RecipientsRowProps> = ({
 	dataTestid,
 	orderedAccountIds
 }) => {
-	const [ContactInput, isAvailable] = useIntegratedComponent('contact-input');
+	const ContactInput = useContactInput();
+	const [contacts, setContacts] = useState<Record<string, ContactInputItem | undefined>>({});
 
 	const onContactInputChange = useCallback(
-		(contacts: Array<ContactType>): void => {
-			const updatedRecipients = map<ContactType, Participant>(
-				contacts,
-				(contact) =>
-					({
-						...contact,
+		(contactChips: Array<ContactInputItem>): void => {
+			const newContactsState = {} as Record<string, ContactInputItem>;
+			contactChips.forEach((contact) => {
+				newContactsState[contact.value.email] = contact;
+			});
+			setContacts(newContactsState);
+			const updatedRecipients = map<ContactInputItem, Participant>(contactChips, (contact) => {
+				const alreadyExists = recipients.find(
+					(recipient) => recipient.address === contact.value.email
+				);
+				const isGroup = contact.value.type === CONTACT_TYPES.DISTRIBUTION_LIST;
+				return (
+					alreadyExists || {
+						id: contact.id,
 						type,
-						address: contact.email,
-						name: contact.firstName
-					}) as Participant
-			);
+						address: contact.value.email,
+						isGroup,
+						name: contact.value.type === CONTACT_TYPES.CONTACT ? contact.value.firstName : undefined
+					}
+				);
+			});
 			onRecipientsChange(updatedRecipients);
 		},
-		[onRecipientsChange, type]
+		[onRecipientsChange, recipients, type]
 	);
 
-	const recipientsAsContacts = useMemo(
-		() =>
-			map<Participant, ContactType>(recipients, (recipient) => ({
-				...recipient,
+	const recipientsAsContacts = map<Participant, ContactInputItem>(recipients, (recipient) => {
+		const email = recipient.address;
+		const exists = contacts[email];
+		return (
+			exists ?? {
+				id: recipient.address,
 				label: recipient.address,
-				email: recipient.address,
+				value: {
+					id: recipient.address,
+					email: recipient.address,
+					type: recipient.isGroup ? CONTACT_TYPES.DISTRIBUTION_LIST : CONTACT_TYPES.CONTACT
+				},
 				error: recipient.error
-			})),
-		[recipients]
-	);
-
-	const onChipInputAdd = useCallback((value: string | unknown): ChipItem => {
-		if (typeof value === 'string') {
-			const parsed = parseEmail(value) ?? value;
-			return { label: parsed, error: !isValidEmail(parsed) };
-		}
-		return { label: 'unknown data', error: true };
-	}, []);
-
-	const onChipInputChange = useCallback(
-		(contacts: Array<ChipItem>): void => {
-			const data = map(
-				reject(contacts, ['error', true]),
-				(contact) =>
-					({
-						name: contact.label,
-						address: contact.label,
-						fullName: contact.label,
-						type
-					}) as Participant
-			);
-			onRecipientsChange(data);
-		},
-		[onRecipientsChange, type]
-	);
+			}
+		);
+	});
 
 	return (
-		<>
-			{isAvailable ? (
-				<ContactInput
-					data-testid={dataTestid}
-					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-					// @ts-ignore
-					placeholder={label}
-					maxChips={null}
-					onChange={onContactInputChange}
-					defaultValue={recipientsAsContacts}
-					bottomBorderColor="transparent"
-					hasError={some(recipients || [], { error: true })}
-					dragAndDropEnabled
-					onInputTypeDebounce={600}
-					orderedAccountIds={orderedAccountIds}
-				/>
-			) : (
-				<ChipInput
-					data-testid={dataTestid}
-					placeholder={label}
-					maxChips={null}
-					onAdd={onChipInputAdd}
-					onChange={onChipInputChange}
-					defaultValue={recipientsAsContacts}
-					background={'gray5'}
-					hasError={some(recipients || [], { error: true })}
-					createChipOnPaste
-					onInputTypeDebounce={600}
-					pasteSeparators={[',', ';', '\n']}
-					separators={[
-						{ code: 'Enter', ctrlKey: false },
-						{ code: 'NumpadEnter', ctrlKey: false },
-						{ key: ',', ctrlKey: false },
-						{ key: ';', ctrlKey: false }
-					]}
-				/>
-			)}
-		</>
+		<ContactInput
+			data-testid={dataTestid}
+			placeholder={label}
+			onChange={onContactInputChange}
+			defaultValue={recipientsAsContacts}
+			hasError={some(recipients ?? [], { error: true })}
+			dragAndDropEnabled
+			orderedAccountIds={orderedAccountIds}
+		/>
 	);
 };

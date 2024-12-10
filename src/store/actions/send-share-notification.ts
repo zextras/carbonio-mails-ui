@@ -6,11 +6,20 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { map } from 'lodash';
 
+type SendShareNotification = {
+	contacts: {
+		email: string;
+	}[];
+	accounts: { name: string }[];
+	folder: { id: string };
+	standardMessage?: string;
+};
+
 export const sendShareNotification = createAsyncThunk(
 	'mail/sendShareNotification',
-	async (data: any, { getState }) =>
+	async (data: SendShareNotification) =>
 		Promise.all(
-			map(data.contacts, (contact, index) =>
+			map(data.contacts, (contact) =>
 				fetch('/service/soap/SendShareNotificationRequest', {
 					method: 'POST',
 					headers: {
@@ -29,7 +38,7 @@ export const sendShareNotification = createAsyncThunk(
                            <item id="${data.folder.id}"/>
                            <e a="${contact.email}"/>
                            ${
-															data.standardMessage.length > 0
+															data.standardMessage && data?.standardMessage?.length > 0
 																? `<notes>${data.standardMessage}</notes>`
 																: ''
 														}

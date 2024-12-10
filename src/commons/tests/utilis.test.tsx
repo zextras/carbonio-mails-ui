@@ -4,10 +4,10 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { convertHtmlToPlainText } from './utilities';
-import { getTimeLabel } from './utils';
-import * as shell from '../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
-import defaultSettings from '../carbonio-ui-commons/test/mocks/settings/default-settings';
+import * as shell from '../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
+import defaultSettings from '../../carbonio-ui-commons/test/mocks/settings/default-settings';
+import { convertHtmlToPlainText } from '../utilities';
+import { getTimeLabel } from '../utils';
 
 describe('getTimeLabel', () => {
 	describe('the date is formatted using local', () => {

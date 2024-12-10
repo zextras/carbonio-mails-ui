@@ -3,17 +3,18 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { ReactElement, useCallback, useMemo } from 'react';
+import React, { ReactElement, useCallback, useEffect, useMemo } from 'react';
 
 import { Container, Shimmer } from '@zextras/carbonio-design-system';
 import { useUserSettings } from '@zextras/carbonio-shell-ui';
-import { map } from 'lodash';
+import { debounce, map } from 'lodash';
 
 import { ConversationMessagePreview } from './conversation-message-preview';
-import { API_REQUEST_STATUS } from '../../../constants';
-import { useAppSelector } from '../../../hooks/redux';
-import { selectCurrentFolderExpandedStatus } from '../../../store/conversations-slice';
-import type { Conversation } from '../../../types';
+import { API_REQUEST_STATUS, DEFAULT_API_DEBOUNCE_TIME } from '../../../constants';
+import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
+import { searchConv } from '../../../store/actions';
+import { selectConversationExpandedStatus } from '../../../store/conversations-slice';
+import type { Conversation, MailsStateType } from '../../../types';
 
 export const ConversationPreviewPanel = ({
 	conversation,
@@ -22,7 +23,10 @@ export const ConversationPreviewPanel = ({
 	conversation: Conversation;
 	isInsideExtraWindow: boolean;
 }): ReactElement => {
-	const conversationStatus = useAppSelector(selectCurrentFolderExpandedStatus)[conversation.id];
+	const dispatch = useAppDispatch();
+	const conversationStatus = useAppSelector((state: MailsStateType) =>
+		selectConversationExpandedStatus(state, conversation.id)
+	);
 	const settings = useUserSettings();
 	const convSortOrder = settings.prefs.zimbraPrefConversationOrder as string;
 	const isExpanded = useCallback(
@@ -35,9 +39,32 @@ export const ConversationPreviewPanel = ({
 		[convSortOrder, conversation.messages.length]
 	);
 
+	const requestDebouncedConversation = useMemo(
+		() =>
+			debounce(
+				() => {
+					if (
+						(conversationStatus !== API_REQUEST_STATUS.fulfilled &&
+							conversationStatus !== API_REQUEST_STATUS.pending) ||
+						!conversationStatus
+					) {
+						dispatch(searchConv({ conversationId: conversation.id, fetch: 'all' }));
+					}
+				},
+				DEFAULT_API_DEBOUNCE_TIME,
+				{ leading: false, trailing: true }
+			),
+		[conversation.id, conversationStatus, dispatch]
+	);
+
 	const sortSign = useMemo(() => (convSortOrder === 'dateDesc' ? -1 : 1), [convSortOrder]);
 
 	const messages = conversation.messages.slice().sort((a, b) => sortSign * (a.date - b.date));
+
+	useEffect(() => {
+		requestDebouncedConversation();
+		return () => requestDebouncedConversation.cancel();
+	}, [requestDebouncedConversation]);
 
 	return (
 		<Container
