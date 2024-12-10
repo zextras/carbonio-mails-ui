@@ -155,7 +155,7 @@ export const useMessageList = (): Set<string> => {
 	useEffect(() => {
 		const controller = new AbortController();
 		const { signal } = controller;
-		if (previousQuery.current !== finalQuery && finalQuery.length > 0) {
+		if (finalQuery.length > 0) {
 			firstSearchCallback(signal);
 			previousQuery.current = finalQuery;
 		}
