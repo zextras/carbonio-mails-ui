@@ -27,8 +27,8 @@ import { v4 as uuidv4 } from 'uuid';
 import CustomSelect from './custom-select';
 import { getActionOptions, getMarkAsOptions } from './utils';
 import { ZIMBRA_STANDARD_COLORS } from '../../../../carbonio-ui-commons/constants/utils';
-import { SelectFolderModal } from '../../../../ui-actions/modals/select-folder-modal';
 import { Folder } from '../../../../carbonio-ui-commons/types/folder';
+import { SelectFolderModal } from '../../../../ui-actions/modals/select-folder-modal';
 
 export const StyledIconButton = styled(IconButton)`
 	border: 0.0625rem solid
@@ -97,12 +97,9 @@ const FilterActionRows: FC<FilterActionRowProps> = ({
 	const [ContactInput, integrationAvailable] = useIntegratedComponent('contact-input');
 
 	const onChange = useCallback(
-		(users: ChipItem<{ email: string }>[]): void => {
+		(users: any): void => {
 			const previous = tempActions.slice();
-			const email =
-				users?.length > 0 && (users[0]?.value as { email: string }).email !== ''
-					? (users[0]?.value as { email: string }).email
-					: '';
+			const email = users.length > 0 && users[0].email !== '' ? users[0].email : '';
 			previous[index] = {
 				actionRedirect: [{ a: email }],
 				id: uuidv4()
