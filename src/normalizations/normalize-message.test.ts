@@ -45,5 +45,17 @@ describe('Normalize message', () => {
 
 			expect(normalizedMessage.body.truncated).toBeFalsy();
 		});
+
+		it('should return replyType and origId message when they are available', () => {
+			const soapIncompleteMessage = generateMessageFromAPI({
+				rt: 'r',
+				origid: '123'
+			});
+
+			const normalizedMessage = normalizeMailMessageFromSoap(soapIncompleteMessage);
+
+			expect(normalizedMessage.originalId).toBe('123');
+			expect(normalizedMessage.replyType).toBe('r');
+		});
 	});
 });

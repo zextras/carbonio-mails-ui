@@ -3,171 +3,109 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, ReactElement, useCallback, useMemo } from 'react';
+import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
 
-import { Container, ChipInput, ChipItem } from '@zextras/carbonio-design-system';
-import { t, useIntegratedComponent } from '@zextras/carbonio-shell-ui';
+import { Container } from '@zextras/carbonio-design-system';
+import { t } from '@zextras/carbonio-shell-ui';
+import { map } from 'lodash';
 
-import { isValidEmail } from './utils';
-import type {
-	ContactInputItem,
-	Query,
-	RcvdSentAddressRowPropType,
-	SearchChipItem
-} from '../../../types';
-import { getChipItems } from '../utils';
-import { DefaultTheme } from 'styled-components';
+import { CONTACT_TYPES } from '../../../carbonio-ui-commons/integrations/constants';
+import { useContactInput } from '../../../carbonio-ui-commons/integrations/hooks';
+import { ContactInputItem } from '../../../carbonio-ui-commons/integrations/types';
+import { SearchEmailValue } from '../../../types';
 
-export const ReceivedSentAddressRow: FC<RcvdSentAddressRowPropType> = ({
+type ReceivedSentAddressRowProps = {
+	compProps: {
+		receivedFromAddresses: Array<SearchEmailValue>;
+		handleReceivedFromInput: (arg: Array<ContactInputItem>) => void;
+		sentToAddresses: Array<SearchEmailValue>;
+		handleSentToInput: (arg: Array<ContactInputItem>) => void;
+	};
+};
+
+function newChipFromAddress(searchValue: SearchEmailValue): ContactInputItem {
+	const { email } = searchValue;
+	return {
+		id: email,
+		label: email,
+		value: {
+			id: email,
+			email,
+			type: CONTACT_TYPES.CONTACT
+		}
+	};
+}
+export const ReceivedSentAddressRow: FC<ReceivedSentAddressRowProps> = ({
 	compProps
 }): ReactElement => {
-	const { receivedFromAddress, setReceivedFromAddress, sentToAddress, setSentToAddress } =
+	const { receivedFromAddresses, handleReceivedFromInput, sentToAddresses, handleSentToInput } =
 		compProps;
 
-	const [ContactInput, integrationAvailable] = useIntegratedComponent('contact-input');
+	const [sentToChips, setSentToChips] = useState<Record<string, ContactInputItem | undefined>>({});
+	const [receivedFromChips, setReceivedFromChips] = useState<
+		Record<string, ContactInputItem | undefined>
+	>({});
 
-	const onChange = useCallback((state: ChipItem[], stateHandler: (state: ChipItem[]) => void) => {
-		stateHandler(state);
-	}, []);
-
-	const recipOnChange = useCallback(
-		(label: ChipItem[]): void => onChange(label, setReceivedFromAddress),
-		[onChange, setReceivedFromAddress]
-	);
-
-	const sentToOnChange = useCallback(
-		(label: ChipItem[]): void => onChange(label, setSentToAddress),
-		[onChange, setSentToAddress]
-	);
-
-	const chipOnAdded = useCallback(
-		(
-			label: string | unknown,
-			preText: string,
-			hasAvatar: boolean,
-			isGeneric: boolean,
-			isQueryFilter: boolean,
-			hasError: boolean,
-			avatarIcon: keyof DefaultTheme['icons']
-		): SearchChipItem => ({
-			label: `${preText}:${label}`,
-			hasAvatar,
-			isGeneric,
-			isQueryFilter,
-			value: `${preText}:${label}`,
-			hasError,
-			avatarIcon
-		}),
-		[]
-	);
-
-	const recipChipOnAdd = useCallback(
-		(label: string | unknown): SearchChipItem =>
-			chipOnAdded(
-				label,
-				'from',
-				true,
-				false,
-				true,
-				!isValidEmail(typeof label === 'string' ? label : ''),
-				'EmailOutline'
-			),
-		[chipOnAdded]
-	);
-
-	const sentToChipOnAdd = useCallback(
-		(label: string | unknown): SearchChipItem =>
-			chipOnAdded(
-				label,
-				'to',
-				true,
-				false,
-				true,
-				!isValidEmail(typeof label === 'string' ? label : ''),
-				'EmailOutline'
-			),
-		[chipOnAdded]
-	);
-
-	const chipBackground = 'gray5';
+	const ContactInput = useContactInput();
 
 	const handleReceivedFromChange = useCallback(
 		(contacts: Array<ContactInputItem>) => {
-			const chips = getChipItems(contacts, 'from');
-			setReceivedFromAddress(chips);
+			const newValues = {} as Record<string, ContactInputItem>;
+			contacts.forEach((contact: ContactInputItem) => {
+				newValues[contact.value.email] = contact;
+			});
+			setReceivedFromChips(newValues);
+			handleReceivedFromInput(contacts);
 		},
-		[setReceivedFromAddress]
+		[handleReceivedFromInput]
 	);
 
 	const handleSentToChange = useCallback(
-		(contacts: Query | Array<ContactInputItem>) => {
-			const chips = getChipItems(contacts, 'to');
-			setSentToAddress(chips);
+		(contacts: Array<ContactInputItem>) => {
+			const newValues = {} as Record<string, ContactInputItem>;
+			contacts.forEach((contact: ContactInputItem) => {
+				newValues[contact.value.email] = contact;
+			});
+			setSentToChips(newValues);
+			handleSentToInput(contacts);
 		},
-		[setSentToAddress]
+		[handleSentToInput]
 	);
 
-	const receivedFromHasError = useMemo(
-		() => !!(receivedFromAddress && receivedFromAddress[0]?.hasError),
-		[receivedFromAddress]
+	const internalReceivedFromAddress: ContactInputItem[] = useMemo(
+		() =>
+			map(receivedFromAddresses, (address) => {
+				const existingChip = receivedFromChips[address.email];
+				return existingChip ?? newChipFromAddress(address);
+			}),
+		[receivedFromAddresses, receivedFromChips]
 	);
-
-	const sentFromHasError = useMemo(
-		() => !!(sentToAddress && sentToAddress[0]?.hasError),
-		[sentToAddress]
+	const internalSentToAddress: ContactInputItem[] = useMemo(
+		() =>
+			map(sentToAddresses, (address) => {
+				const existingChip = sentToChips[address.email];
+				return existingChip ?? newChipFromAddress(address);
+			}),
+		[sentToAddresses, sentToChips]
 	);
 
 	return (
 		<Container padding={{ bottom: 'small', top: 'medium' }} orientation="horizontal">
 			<Container padding={{ right: 'extrasmall' }} maxWidth="50%">
-				{integrationAvailable ? (
-					<ContactInput
-						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-						// @ts-ignore
-						placeholder={t('label.from', 'From')}
-						onChange={handleReceivedFromChange}
-						defaultValue={receivedFromAddress ?? []}
-					/>
-				) : (
-					<ChipInput
-						placeholder={t('label.from', 'From')}
-						background={chipBackground}
-						value={receivedFromAddress}
-						onChange={recipOnChange}
-						onAdd={recipChipOnAdd}
-						maxChips={1}
-						description={
-							receivedFromHasError
-								? t('label.error_address', 'A valid e-mail is required')
-								: undefined
-						}
-						hasError={receivedFromHasError}
-					/>
-				)}
+				<ContactInput
+					data-testid={'received-from-input'}
+					placeholder={t('label.from', 'From')}
+					onChange={handleReceivedFromChange}
+					defaultValue={internalReceivedFromAddress}
+				/>
 			</Container>
 			<Container padding={{ left: 'extrasmall' }} maxWidth="50%">
-				{integrationAvailable ? (
-					<ContactInput
-						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-						// @ts-ignore
-						placeholder={t('label.to', 'To')}
-						onChange={handleSentToChange}
-						defaultValue={sentToAddress ?? []}
-					/>
-				) : (
-					<ChipInput
-						placeholder={t('label.to', 'To')}
-						background={chipBackground}
-						value={sentToAddress}
-						onChange={sentToOnChange}
-						onAdd={sentToChipOnAdd}
-						maxChips={1}
-						description={
-							sentFromHasError ? t('label.error_address', 'A valid e-mail is required') : undefined
-						}
-						hasError={sentFromHasError}
-					/>
-				)}
+				<ContactInput
+					data-testid={'sent-to-input'}
+					placeholder={t('label.to', 'To')}
+					onChange={handleSentToChange}
+					defaultValue={internalSentToAddress}
+				/>
 			</Container>
 		</Container>
 	);
