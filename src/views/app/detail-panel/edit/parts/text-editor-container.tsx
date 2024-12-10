@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React, { FC, useCallback, useState } from 'react';
+import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
 import { useIntegratedComponent, useUserSettings } from '@zextras/carbonio-shell-ui';
@@ -12,7 +12,11 @@ import type { TinyMCE } from 'tinymce/tinymce';
 
 import * as StyledComp from './edit-view-styled-components';
 import { plainTextToHTML } from '../../../../../commons/utils';
-import { useEditorIsRichText, useEditorText } from '../../../../../store/zustand/editor';
+import {
+	useEditorIsRichText,
+	useEditorsStore,
+	useSaveDraftFromEditor
+} from '../../../../../store/zustand/editor';
 import { MailsEditorV2 } from '../../../../../types';
 import { getFontSizesOptions, getFonts } from '../../../../settings/components/utils';
 
@@ -33,10 +37,23 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 	minHeight,
 	disabled
 }) => {
+	const editorRef = useRef(null);
+	const [dirty, setDirty] = useState(false);
 	const [Composer, composerIsAvailable] = useIntegratedComponent('composer');
-	const [isFirstChangeEventFired, setIsFirstChangeEventFired] = useState(false);
-	const { text, setText } = useEditorText(editorId);
+	const initialValue = useEditorsStore((state) => state.editors[editorId].text);
 	const { isRichText } = useEditorIsRichText(editorId);
+	const { debouncedSaveDraft } = useSaveDraftFromEditor();
+
+	const setText = useCallback(
+		({ plainText, richText }: { plainText: string; richText: string }) => {
+			debouncedSaveDraft(editorId);
+			useEditorsStore.setState((state) => ({
+				...state.editors,
+				[editorId]: { ...state.editors[editorId], text: { plainText, richText } }
+			}));
+		},
+		[debouncedSaveDraft, editorId]
+	);
 
 	const onTextChanged = useCallback(
 		(txt: TextEditorContent): void => {
@@ -46,41 +63,83 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 	);
 
 	const { prefs } = useUserSettings();
-	const fontSizesOptions = getFontSizesOptions();
-	const fontFamilyOptions = getFonts();
+	const fontSizesOptions = useMemo(() => getFontSizesOptions(), []);
+	const fontFamilyOptions = useMemo(() => getFonts(), []);
 
-	const defaultFontFamily = prefs?.zimbraPrefHtmlEditorDefaultFontFamily;
-	const defaultFontSize = prefs?.zimbraPrefHtmlEditorDefaultFontSize;
-	const defaultColor = prefs?.zimbraPrefHtmlEditorDefaultFontColor;
-
-	const fontSizesOptionsToString = fontSizesOptions.map((fontSize: string) => fontSize).join(' ');
-	const fontsOptionsToString = fontFamilyOptions.map(
-		(font: { label: string; value: string }) => `${font.label}=${font.value};`
+	const defaultFontFamily = useMemo(
+		() => prefs?.zimbraPrefHtmlEditorDefaultFontFamily,
+		[prefs?.zimbraPrefHtmlEditorDefaultFontFamily]
+	);
+	const defaultFontSize = useMemo(
+		() => prefs?.zimbraPrefHtmlEditorDefaultFontSize,
+		[prefs?.zimbraPrefHtmlEditorDefaultFontSize]
+	);
+	const defaultColor = useMemo(
+		() => prefs?.zimbraPrefHtmlEditorDefaultFontColor,
+		[prefs?.zimbraPrefHtmlEditorDefaultFontColor]
 	);
 
-	const composerCustomOptions = {
-		toolbar_sticky: true,
-		ui_mode: 'split',
-		font_size_formats: fontSizesOptionsToString,
-		font_family_formats: fontsOptionsToString,
-		content_style: `p  {margin: 0;} body {color: ${defaultColor}; font-size: ${defaultFontSize}; font-family: ${defaultFontFamily}; }`,
-		toolbar: [
-			'fontfamily fontsize styles visualblocks',
-			'bold italic underline strikethrough',
-			'removeformat code',
-			'alignleft aligncenter alignright alignjustify',
-			'forecolor backcolor',
-			'bullist numlist outdent indent',
-			'ltr rtl',
-			'link table',
-			'insertfile image',
-			'imageSelector'
-		].join(' | ')
-	};
+	const fontSizesOptionsToString = useMemo(
+		() => fontSizesOptions.map((fontSize: string) => fontSize).join(' '),
+		[fontSizesOptions]
+	);
+	const fontsOptionsToString = useMemo(
+		() =>
+			fontFamilyOptions.map(
+				(font: { label: string; value: string }) => `${font.label}=${font.value};`
+			),
+		[fontFamilyOptions]
+	);
+
+	const composerCustomOptions = useMemo(
+		() => ({
+			toolbar_sticky: true,
+			ui_mode: 'split',
+			font_size_formats: fontSizesOptionsToString,
+			font_family_formats: fontsOptionsToString,
+			content_style: `p  {margin: 0;} body {color: ${defaultColor}; font-size: ${defaultFontSize}; font-family: ${defaultFontFamily}; }`,
+			toolbar: [
+				'fontfamily fontsize styles visualblocks',
+				'bold italic underline strikethrough',
+				'removeformat code',
+				'alignleft aligncenter alignright alignjustify',
+				'forecolor backcolor',
+				'bullist numlist outdent indent',
+				'ltr rtl',
+				'link table',
+				'insertfile image',
+				'imageSelector'
+			].join(' | ')
+		}),
+		[
+			defaultColor,
+			defaultFontFamily,
+			defaultFontSize,
+			fontSizesOptionsToString,
+			fontsOptionsToString
+		]
+	);
+
+	const onDirty = useCallback(() => {
+		if (editorRef.current) {
+			console.log('@@ setting dirty to false');
+			editorRef.current.setDirty(false);
+			setDirty(false);
+			const plainText = editorRef.current.getContent({ format: 'text' });
+			const richText = editorRef.current.getContent({ format: 'html' });
+			setText({ plainText, richText });
+		}
+	}, [setText]);
+
+	useEffect(() => {
+		if (editorRef?.current) {
+			onDirty();
+		}
+	}, [dirty, onDirty]);
 
 	return (
 		<>
-			{text && (
+			{initialValue && (
 				<Container
 					height="fit"
 					padding={{ all: 'small' }}
@@ -95,20 +154,13 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 						>
 							<StyledComp.EditorWrapper data-testid="MailEditorWrapper">
 								<Composer
-									// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-									// @ts-ignore
-									value={text.richText}
+									initialValue={initialValue.richText}
 									disabled={disabled}
+									onInit={(evt, editor) => (editorRef.current = editor)}
 									onFileSelect={onFilesSelected}
-									onEditorChange={(ev: [string, string]): void => {
-										if (isFirstChangeEventFired)
-											onTextChanged({ plainText: ev[0], richText: ev[1] });
-									}}
+									onDirty={() => setDirty(true)}
 									onDragOver={onDragOver}
 									customInitOptions={composerCustomOptions}
-									onFocus={(): void => {
-										if (!isFirstChangeEventFired) setIsFirstChangeEventFired(true);
-									}}
 								/>
 							</StyledComp.EditorWrapper>
 						</Container>
@@ -116,7 +168,7 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 						<Container background="gray6" height="fit">
 							<StyledComp.TextArea
 								data-testid="MailPlainTextEditor"
-								value={text.plainText}
+								value={initialValue.plainText}
 								style={{ fontFamily: defaultFontFamily }}
 								onFocus={(ev): void => {
 									ev.currentTarget.setSelectionRange(0, null);
