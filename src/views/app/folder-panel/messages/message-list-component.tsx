@@ -130,7 +130,7 @@ export const MessageListComponent: FC<MessageListComponentProps> = memo(
 		listRef
 	}) {
 		useEffect(() => {
-			setDraggedIds && setDraggedIds(selected);
+			setDraggedIds?.(selected);
 		}, [selected, setDraggedIds]);
 
 		const folder = useFolder(folderId);

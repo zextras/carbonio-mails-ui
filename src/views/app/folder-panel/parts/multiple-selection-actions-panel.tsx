@@ -9,13 +9,12 @@ import { Button, Container, IconButton, Row, Tooltip } from '@zextras/carbonio-d
 import { t, useUserSettings } from '@zextras/carbonio-shell-ui';
 
 import { useUiUtilities } from '../../../../hooks/use-ui-utilities';
-import type { Conversation, MailMessage } from '../../../../types';
 import { getFolderParentId } from '../../../../ui-actions/utils';
 import { ConversationsMultipleSelectionActions } from '../conversations/conversations-multiple-selection-actions';
 import { MessagesMultipleSelectionActions } from '../messages/messages-multiple-selection-actions';
 
 type MultipleSelectionActionsPanelProps = {
-	items: Array<Partial<MailMessage> & Pick<MailMessage, 'id'>> | Array<Conversation>;
+	items: Set<string>;
 	selectedIds: Array<string>;
 	deselectAll: () => void;
 	selectAll: () => void;
@@ -115,17 +114,17 @@ export const MultipleSelectionActionsPanel: FC<MultipleSelectionActionsPanelProp
 					<>
 						{isConversation ? (
 							<ConversationsMultipleSelectionActions
-								ids={selectedIds}
+								selectedIds={selectedIds}
 								deselectAll={deselectAll}
 								folderId={folderId}
-								items={items as Array<Conversation>}
+								items={items}
 							/>
 						) : (
 							<MessagesMultipleSelectionActions
 								ids={selectedIds}
 								deselectAll={deselectAll}
 								folderId={folderId}
-								items={items as Array<MailMessage>}
+								items={items}
 							/>
 						)}
 					</>

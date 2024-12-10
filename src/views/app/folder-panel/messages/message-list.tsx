@@ -135,7 +135,7 @@ export const MessageList: FC = () => {
 					</CustomListItem>
 				);
 			}),
-		[deselectAll, draggedIds, folderId, isSelectModeOn, itemId, messageIds, selected, toggle]
+		[deselectAll, draggedIds, folderId, isSelectModeOn, itemId, items, selected, toggle]
 	);
 
 	const totalMessages = useMemo(
