@@ -15,7 +15,6 @@ import { isTrash } from '../../carbonio-ui-commons/helpers/folders';
 import { MessageActionsDescriptors } from '../../constants';
 import { msgAction } from '../../store/actions';
 import { AppDispatch } from '../../store/redux';
-import { deleteMessagesFromMessageSlice } from '../../store/zustand/emails/store';
 import type {
 	ActionFn,
 	MsgActionParameters,
@@ -109,7 +108,7 @@ export const useMsgMoveToTrashFn = ({
 			).then((res) => {
 				if (res.type.includes('fulfilled')) {
 					deselectAll && deselectAll();
-					deleteMessagesFromMessageSlice(ids);
+					// deleteMessagesFromMessageSlice(ids);
 					if (!inSearchModule) {
 						shouldReplaceHistory && replaceHistory(`/folder/${folderId}`);
 					}

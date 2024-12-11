@@ -6,13 +6,12 @@
 import React, { FC, memo, useCallback, useEffect, useMemo } from 'react';
 
 import { Container, Padding, Text } from '@zextras/carbonio-design-system';
-import { map, noop } from 'lodash';
+import { noop } from 'lodash';
 import styled from 'styled-components';
 
-import { MessageListItem } from './message-list-item';
+import { DragItems } from './message-list-drag-component';
 import { CustomList } from '../../../../carbonio-ui-commons/components/list/list';
 import { useFolder, useRoot } from '../../../../carbonio-ui-commons/store/zustand/folder/hooks';
-import { getMessageById } from '../../../../store/zustand/emails/store';
 import ShimmerList from '../../../search/shimmer-list';
 import { Breadcrumbs } from '../parts/breadcrumbs';
 import { MultipleSelectionActionsPanel } from '../parts/multiple-selection-actions-panel';
@@ -25,30 +24,6 @@ const DragImageContainer = styled.div`
 	transform: translate(-100%, -100%);
 	width: 35vw;
 `;
-
-const DragItems: FC<{
-	draggedIds: Record<string, boolean>;
-	folderId: string;
-}> = ({ draggedIds, folderId }) => (
-	<>
-		{map(Object.keys(draggedIds), (draggedItemId) => {
-			const item = getMessageById(draggedItemId);
-			return (
-				<MessageListItem
-					item={item}
-					key={item.id}
-					isConvChildren={false}
-					toggle={noop}
-					selected={false}
-					selecting={false}
-					visible={false}
-					deselectAll={noop}
-					currentFolderId={folderId}
-				/>
-			);
-		})}
-	</>
-);
 
 export type MessageListComponentProps = {
 	// the text to display in the side panel
@@ -192,8 +167,7 @@ export const MessageListComponent: FC<MessageListComponentProps> = memo(
 						</Container>
 					)}
 					<DragImageContainer ref={dragImageRef}>
-						{/* TODO CO-1725 re-enable it */}
-						<DragItems draggedIds={draggedIds ?? {}} folderId={folderId} />
+						<DragItems draggedIds={draggedIds ?? {}} />
 					</DragImageContainer>
 				</>
 			</>

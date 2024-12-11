@@ -54,10 +54,10 @@ export const MessageListItem: FC<MessageListItemProps> = memo(function MessageLi
 	active,
 	isSearchModule,
 	deselectAll,
-	currentFolderId,
 	handleReplaceHistory
 }) {
-	const firstChildFolderId = currentFolderId ?? item.parent;
+	const { folderId } = useParams<{ folderId: string }>();
+	const firstChildFolderId = folderId ?? item.parent;
 	const { itemId } = useParams<RouteParams>();
 	const shouldReplaceHistory = useMemo(() => itemId === item.id, [item.id, itemId]);
 	const zimbraPrefMarkMsgRead = useUserSettings()?.prefs?.zimbraPrefMarkMsgRead !== '-1';
