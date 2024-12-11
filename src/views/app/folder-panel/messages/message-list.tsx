@@ -3,39 +3,32 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, ReactElement, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { FC, ReactElement, useEffect, useMemo, useRef, useState } from 'react';
 
 import { t, useAppContext, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
 import { useParams } from 'react-router-dom';
 
 import { MessageListComponent } from './message-list-component';
+import { useLoadMoreForMessagesSlice } from './message-list-hooks';
 import { MessageListItemComponent } from './message-list-item-component';
 import { CustomListItem } from '../../../../carbonio-ui-commons/components/list/list-item';
 import { FOLDERS } from '../../../../carbonio-ui-commons/constants/folders';
 import { useFolder } from '../../../../carbonio-ui-commons/store/zustand/folder/hooks';
-import {
-	API_REQUEST_STATUS,
-	LIST_LIMIT,
-	SEARCHED_FOLDER_STATE_STATUS
-} from '../../../../constants';
+import { API_REQUEST_STATUS, LIST_LIMIT } from '../../../../constants';
 import { getFolderIdParts } from '../../../../helpers/folders';
 import { parseMessageSortingOptions } from '../../../../helpers/sorting';
-import { useAppDispatch, useAppSelector } from '../../../../hooks/redux';
 import { useMessageList } from '../../../../hooks/use-message-list';
 import { useSelection } from '../../../../hooks/use-selection';
-import { search } from '../../../../store/actions';
-import { selectFolderMsgSearchStatus } from '../../../../store/messages-slice';
 import type { AppContext } from '../../../../types';
 
 export const MessageList: FC = () => {
 	const { itemId, folderId } = useParams<{ itemId: string; folderId: string }>();
+	const loadingMore = useRef<boolean>(false);
+	const dragImageRef = useRef(null);
 	const folder = useFolder(folderId);
-	const dispatch = useAppDispatch();
 	const { setCount, count } = useAppContext<AppContext>();
 	const [draggedIds, setDraggedIds] = useState<Record<string, boolean>>({});
-	const dragImageRef = useRef(null);
-	const searchedInFolderStatus = useAppSelector(selectFolderMsgSearchStatus(folderId));
 
 	const { messagesSlice } = useMessageList();
 	const { messageIds, status } = messagesSlice;
@@ -58,24 +51,27 @@ export const MessageList: FC = () => {
 		items
 	});
 
-	const hasMore = useMemo(
-		() => searchedInFolderStatus === SEARCHED_FOLDER_STATE_STATUS.hasMore,
-		[searchedInFolderStatus]
-	);
+	// const loadMore = useCallback(() => {
+	// 	if (!hasMore) return;
+	// 	const offset = messageIds.size;
+	// 	searchSoapApi({
+	// 		folderId,
+	// 		sortBy: sortOrder,
+	// 		offset,
+	// 		limit: LIST_LIMIT.LOAD_MORE_LIMIT,
+	// 		types: 'message'
+	// 	});
+	// }, [folderId, hasMore, messageIds.size, sortOrder]);
 
-	const loadMore = useCallback(() => {
-		if (!hasMore) return;
-		const offset = messageIds.size;
-		dispatch(
-			search({
-				folderId,
-				sortBy: sortOrder,
-				offset,
-				limit: LIST_LIMIT.LOAD_MORE_LIMIT,
-				types: 'message'
-			})
-		);
-	}, [dispatch, folderId, hasMore, messageIds.size, sortOrder]);
+	const loadMoreCallback = useLoadMoreForMessagesSlice({
+		folderId,
+		loadingMore,
+		hasMore: messagesSlice.more,
+		sortBy: sortOrder,
+		offset: messageIds.size,
+		limit: LIST_LIMIT.LOAD_MORE_LIMIT,
+		types: 'message'
+	});
 
 	const displayerTitle = useMemo(() => {
 		if (messageIds?.size === 0) {
@@ -153,7 +149,7 @@ export const MessageList: FC = () => {
 			totalMessages={totalMessages}
 			displayerTitle={displayerTitle}
 			listItems={listItems}
-			loadMore={loadMore}
+			loadMore={loadMoreCallback}
 			messagesLoadingCompleted={messagesLoadingCompleted}
 			selectedIds={selectedIds}
 			folderId={folderId}
@@ -168,7 +164,7 @@ export const MessageList: FC = () => {
 			selected={selected}
 			selectAllModeOff={selectAllModeOff}
 			dragImageRef={dragImageRef}
-			hasMore={hasMore}
+			hasMore={messagesSlice.more}
 		/>
 	);
 };

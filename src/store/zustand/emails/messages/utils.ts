@@ -5,7 +5,7 @@
  */
 
 /* eslint-disable no-param-reassign */
-import produce from 'immer';
+import produce, { enableMapSet } from 'immer';
 import { StoreApi, UseBoundStore } from 'zustand';
 
 import { MESSAGES_INITIAL_STATE } from './messages-slice';
@@ -77,10 +77,30 @@ function deleteMessagesFromMessageSlice(
 		})
 	);
 }
+function appendMessagesToMessagesSlice(
+	messages: Array<MailMessage | IncompleteMessage>,
+	offset: number,
+	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
+): void {
+	enableMapSet();
+	const newMessageIds = new Set(messages.map((message) => message.id));
+	useEmailsStore.setState(
+		produce((state: EmailsStoreState) => {
+			newMessageIds.forEach((messageId) => state.messagesSlice.messageIds.add(messageId));
+			state.messagesSlice.offset = offset;
+
+			state.populatedItemsSlice.messages = messages.reduce((acc, msg) => {
+				acc[msg.id] = msg;
+				return acc;
+			}, state.populatedItemsSlice.messages);
+		})
+	);
+}
 
 export const messageSliceUtils = {
 	setMessages,
 	updateMessagesResultsLoadingStatus,
 	resetMessagesAndPopulatedItems,
-	deleteMessagesFromMessageSlice
+	deleteMessagesFromMessageSlice,
+	appendMessagesToMessagesSlice
 };

@@ -171,3 +171,10 @@ export function resetMessagesAndPopulatedItems(): void {
 export function deleteMessagesFromMessageSlice(ids: Array<string>): void {
 	messageSliceUtils.deleteMessagesFromMessageSlice(ids, useEmailsStore);
 }
+
+export function appendMessagesToMessagesSlice(
+	messages: Array<MailMessage | IncompleteMessage>,
+	offset: number
+): void {
+	messageSliceUtils.appendMessagesToMessagesSlice(messages, offset, useEmailsStore);
+}

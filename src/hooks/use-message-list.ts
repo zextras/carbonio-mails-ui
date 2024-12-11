@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 
 import { type ErrorSoapBodyResponse, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
@@ -71,14 +71,6 @@ export const useMessageList = (): MessageSliceState => {
 		[settings.prefs.zimbraPrefLocale]
 	);
 
-	let finalQuery = '';
-
-	if (folderId) {
-		finalQuery = queryPart.join(' ');
-	}
-
-	const previousQuery = useRef(finalQuery);
-
 	function handleFulFilledMessagesResultsInEmailStore({
 		searchResponse
 	}: {
@@ -114,7 +106,6 @@ export const useMessageList = (): MessageSliceState => {
 		async (abortSignal: AbortSignal | undefined) => {
 			updateMessagesResultsLoadingStatus(API_REQUEST_STATUS.pending);
 			const searchResponse = await searchSoapApi({
-				query: finalQuery,
 				limit: LIST_LIMIT.INITIAL_LIMIT,
 				sortBy: finalsortBy,
 				types: 'message',
@@ -132,21 +123,20 @@ export const useMessageList = (): MessageSliceState => {
 				handleMessageResults({ searchResponse });
 			}
 		},
-		[finalQuery, finalsortBy, handleMessageResults, prefLocale]
+		[finalsortBy, handleMessageResults, prefLocale]
 	);
 
 	useEffect(() => {
 		const controller = new AbortController();
 		const { signal } = controller;
-		if (finalQuery.length > 0) {
+		// TODO CO-1725: previousQuery is not defined
+		if (true) {
 			firstSearchCallback(signal);
-			previousQuery.current = finalQuery;
 		}
 		return () => {
 			controller.abort();
-			previousQuery.current = finalQuery;
 		};
-	}, [finalQuery, firstSearchCallback]);
+	}, [firstSearchCallback]);
 
 	return { messagesSlice };
 };
