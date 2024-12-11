@@ -147,8 +147,9 @@ export const MessageListComponent: FC<MessageListComponentProps> = memo(
 			[root, folder, isSearchModule]
 		);
 
+		// TODO: CO-1725 fix this
 		const onListBottom = useCallback((): void => {
-			loadMore && loadMore();
+			loadMore?.();
 		}, [loadMore]);
 
 		return (
@@ -180,17 +181,16 @@ export const MessageListComponent: FC<MessageListComponentProps> = memo(
 				)}
 				<>
 					{!messagesLoadingCompleted && <ShimmerList count={totalMessages} />}
-					{(messagesLoadingCompleted && totalMessages > 0) ||
-						(hasMore && (
-							<CustomList
-								onListBottom={onListBottom}
-								data-testid={`message-list-${folderId}`}
-								ref={listRef}
-							>
-								{listItems}
-							</CustomList>
-						))}
-					{messagesLoadingCompleted && (totalMessages === 0 || !hasMore) && (
+					{messagesLoadingCompleted && (totalMessages > 0 || hasMore) && (
+						<CustomList
+							onListBottom={onListBottom}
+							data-testid={`message-list-${folderId}`}
+							ref={listRef}
+						>
+							{listItems}
+						</CustomList>
+					)}
+					{messagesLoadingCompleted && totalMessages === 0 && !hasMore && (
 						<Container>
 							<Padding top="medium">
 								<Text
