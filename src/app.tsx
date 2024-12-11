@@ -13,6 +13,7 @@ import { addComponentsToShell } from './app-utils/add-shell-components';
 import { registerShellActions } from './app-utils/register-shell-actions';
 import { registerShellIntegrations } from './app-utils/register-shell-integrations';
 import { toggleBackupSearchComponent } from './app-utils/toggle-backup-search-component';
+import { AuthGuard } from './auth-guard';
 import { StoreProvider } from './store/redux';
 import { useBackupSearchStore } from './store/zustand/backup-search/store';
 import { GlobalExtraWindowManager } from './views/app/extra-windows/global-extra-window-manager';
@@ -36,15 +37,17 @@ const App = (): React.JSX.Element => {
 	}, [hasBackupSearchMessages]);
 
 	return (
-		<StoreProvider>
-			<GlobalModalManager>
-				<GlobalExtraWindowManager>
-					<InitializeFolders />
-					<SyncDataHandler />
-					<InitializeServicesCatalog />
-				</GlobalExtraWindowManager>
-			</GlobalModalManager>
-		</StoreProvider>
+		<AuthGuard>
+			<StoreProvider>
+				<GlobalModalManager>
+					<GlobalExtraWindowManager>
+						<InitializeFolders />
+						<SyncDataHandler />
+						<InitializeServicesCatalog />
+					</GlobalExtraWindowManager>
+				</GlobalModalManager>
+			</StoreProvider>
+		</AuthGuard>
 	);
 };
 
