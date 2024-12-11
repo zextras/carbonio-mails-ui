@@ -178,9 +178,10 @@ export const MessageListComponent: FC<MessageListComponentProps> = memo(
 						/>
 					)
 				)}
-				{messagesLoadingCompleted ? (
-					<>
-						{totalMessages > 0 || hasMore ? (
+				<>
+					{!messagesLoadingCompleted && <ShimmerList count={totalMessages} />}
+					{(messagesLoadingCompleted && totalMessages > 0) ||
+						(hasMore && (
 							<CustomList
 								onListBottom={onListBottom}
 								data-testid={`message-list-${folderId}`}
@@ -188,28 +189,26 @@ export const MessageListComponent: FC<MessageListComponentProps> = memo(
 							>
 								{listItems}
 							</CustomList>
-						) : (
-							<Container>
-								<Padding top="medium">
-									<Text
-										color="gray1"
-										overflow="break-word"
-										size="small"
-										style={{ whiteSpace: 'pre-line', textAlign: 'center', paddingTop: '2rem' }}
-									>
-										{displayerTitle}
-									</Text>
-								</Padding>
-							</Container>
-						)}
-						<DragImageContainer ref={dragImageRef}>
-							{/* TODO CO-1725 re-enable it */}
-							{/* <DragItems messages={messageIds} draggedIds={draggedIds ?? {}} folderId={folderId} /> */}
-						</DragImageContainer>
-					</>
-				) : (
-					<ShimmerList count={totalMessages} />
-				)}
+						))}
+					{messagesLoadingCompleted && (totalMessages === 0 || !hasMore) && (
+						<Container>
+							<Padding top="medium">
+								<Text
+									color="gray1"
+									overflow="break-word"
+									size="small"
+									style={{ whiteSpace: 'pre-line', textAlign: 'center', paddingTop: '2rem' }}
+								>
+									{displayerTitle}
+								</Text>
+							</Padding>
+						</Container>
+					)}
+					<DragImageContainer ref={dragImageRef}>
+						{/* TODO CO-1725 re-enable it */}
+						{/* <DragItems messages={messageIds} draggedIds={draggedIds ?? {}} folderId={folderId} /> */}
+					</DragImageContainer>
+				</>
 			</>
 		);
 	}
