@@ -6,7 +6,7 @@
 /* eslint-disable no-param-reassign */
 
 import produce from 'immer';
-import { merge } from 'lodash';
+import { filter, includes, merge } from 'lodash';
 import { UseBoundStore, StoreApi } from 'zustand';
 
 import {
@@ -107,6 +107,14 @@ function removeMessages(
 		})
 	);
 }
+function useMessagesByIds(
+	ids: Array<string>,
+	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
+): Array<IncompleteMessage | MailMessage> {
+	return useEmailsStore(({ populatedItems }) =>
+		filter(populatedItems.messages, (message) => includes(ids, message.id))
+	);
+}
 
 export const populatedItemsSliceUtils = {
 	removeMessages,
@@ -115,5 +123,6 @@ export const populatedItemsSliceUtils = {
 	updateMessages,
 	updateMessagesOnly,
 	updateConversationsOnly,
-	useConversationMessages
+	useConversationMessages,
+	useMessagesByIds
 };
