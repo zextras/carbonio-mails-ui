@@ -22,20 +22,19 @@ import { useMsgSetSpamDescriptor } from '../../../../hooks/actions/use-msg-set-s
 import { useMsgSetUnflagDescriptor } from '../../../../hooks/actions/use-msg-set-unflag';
 import { useMsgSetUnreadDescriptor } from '../../../../hooks/actions/use-msg-set-unread';
 import { useTagDropdownItem } from '../../../../hooks/use-tag-dropdown-item';
-import { MailMessage } from '../../../../types';
+import { useMessagesByIds } from '../../../../store/zustand/emails/store';
 import { MultipleSelectionActionsComponent } from '../parts/multiple-selection-actions-component';
 
 export const MessagesMultipleSelectionActions = ({
 	ids,
 	deselectAll,
-	items,
 	folderId
 }: {
-	items: Array<MailMessage>;
 	ids: Array<string>;
 	deselectAll: () => void;
 	folderId: string;
 }): React.JSX.Element => {
+	const items = useMessagesByIds(ids);
 	const selectedItems = filter(items, (item) => ids.includes(item.id));
 	const messagesTags: Array<Array<string>> = map(selectedItems, (item) => item.tags);
 	const atLeastOneMsgIsUnread = some(selectedItems, (item) => !item.read);
