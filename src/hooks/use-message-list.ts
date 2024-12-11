@@ -13,7 +13,6 @@ import { searchSoapApi } from '../api/search';
 import { getTags } from '../carbonio-ui-commons/store/zustand/tags';
 import { Tags } from '../carbonio-ui-commons/types/tags';
 import { API_REQUEST_STATUS, LIST_LIMIT } from '../constants';
-import { parseMessageSortingOptions } from '../helpers/sorting';
 import { normalizeMailMessageFromSoap } from '../normalizations/normalize-message';
 import {
 	resetMessagesAndPopulatedItems,
@@ -23,53 +22,16 @@ import {
 } from '../store/zustand/emails/store';
 import { MessageSliceState, SearchResponse } from '../types';
 
-type RouteParams = {
-	folderId: string;
-};
-
 export const useMessageList = (): MessageSliceState => {
-	const { folderId } = <RouteParams>useParams();
-	const { prefs: userSettings } = useUserSettings();
-	const { sortOrder } = parseMessageSortingOptions(
-		folderId,
-		userSettings.zimbraPrefSortOrder as string
-	);
+	const { folderId } = useParams<{ folderId: string }>();
 
-	const messagesSlice = useMessagesSlice();
-
-	const queryPart = [`inId:"${folderId}"`];
-
-	let finalsortBy = sortOrder;
-	switch (sortOrder) {
-		case 'readAsc':
-			queryPart.push('is:unread');
-			finalsortBy = 'dateAsc';
-			break;
-		case 'readDesc':
-			queryPart.push('is:unread');
-			finalsortBy = 'dateDesc';
-			break;
-		case 'priorityAsc':
-		case 'priorityDesc':
-			queryPart.push('priority:high');
-			break;
-		case 'flagAsc':
-		case 'flagDesc':
-			queryPart.push('is:flagged');
-			break;
-		case 'attachAsc':
-		case 'attachDesc':
-			queryPart.push('has:attachment');
-			break;
-		default:
-			break;
-	}
 	const settings = useUserSettings();
-
 	const prefLocale = useMemo(
 		() => settings.prefs.zimbraPrefLocale,
 		[settings.prefs.zimbraPrefLocale]
 	);
+
+	const messagesSlice = useMessagesSlice();
 
 	function handleFulFilledMessagesResultsInEmailStore({
 		searchResponse
@@ -106,8 +68,8 @@ export const useMessageList = (): MessageSliceState => {
 		async (abortSignal: AbortSignal | undefined) => {
 			updateMessagesResultsLoadingStatus(API_REQUEST_STATUS.pending);
 			const searchResponse = await searchSoapApi({
+				folderId,
 				limit: LIST_LIMIT.INITIAL_LIMIT,
-				sortBy: finalsortBy,
 				types: 'message',
 				offset: 0,
 				recip: '0',
@@ -123,7 +85,7 @@ export const useMessageList = (): MessageSliceState => {
 				handleMessageResults({ searchResponse });
 			}
 		},
-		[finalsortBy, handleMessageResults, prefLocale]
+		[folderId, handleMessageResults, prefLocale]
 	);
 
 	useEffect(() => {
