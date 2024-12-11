@@ -51,18 +51,6 @@ export const MessageList: FC = () => {
 		items
 	});
 
-	// const loadMore = useCallback(() => {
-	// 	if (!hasMore) return;
-	// 	const offset = messageIds.size;
-	// 	searchSoapApi({
-	// 		folderId,
-	// 		sortBy: sortOrder,
-	// 		offset,
-	// 		limit: LIST_LIMIT.LOAD_MORE_LIMIT,
-	// 		types: 'message'
-	// 	});
-	// }, [folderId, hasMore, messageIds.size, sortOrder]);
-
 	const loadMoreCallback = useLoadMoreForMessagesSlice({
 		folderId,
 		loadingMore,
@@ -131,10 +119,12 @@ export const MessageList: FC = () => {
 		[deselectAll, draggedIds, folderId, isSelectModeOn, itemId, items, selected, toggle]
 	);
 
-	const totalMessages = useMemo(
-		() => (sortOrder === 'readAsc' ? messageIds.size : (folder?.n ?? messageIds.size ?? 0)),
-		[folder?.n, messageIds.size, sortOrder]
-	);
+	const totalMessages = useMemo(() => {
+		if (sortOrder === 'readAsc') {
+			return messageIds.size;
+		}
+		return folder?.n ?? messageIds.size ?? 0;
+	}, [folder?.n, messageIds.size, sortOrder]);
 
 	const selectedIds = useMemo(() => Object.keys(selected), [selected]);
 
