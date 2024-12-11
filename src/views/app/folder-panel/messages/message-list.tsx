@@ -37,9 +37,9 @@ export const MessageList: FC = () => {
 	const dragImageRef = useRef(null);
 	const searchedInFolderStatus = useAppSelector(selectFolderMsgSearchStatus(folderId));
 
-	const { messages } = useMessageList();
+	const { messagesSlice } = useMessageList();
 
-	const { messageIds, status } = messages;
+	const { messageIds, status } = messagesSlice;
 	const { prefs } = useUserSettings();
 	const { sortOrder } = parseMessageSortingOptions(folderId, prefs.zimbraPrefSortOrder as string);
 	const items = [...messageIds].map((messageId) => ({ id: messageId }));

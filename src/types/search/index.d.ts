@@ -32,7 +32,7 @@ export type SearchChipItem = ChipItem & {
 };
 
 export type SearchPanelProps = {
-	searchResults: SearchSliceState['search'];
+	searchResults: SearchSliceState['searchSlice'];
 	query: Array<QueryChip>;
 };
 
@@ -233,7 +233,7 @@ export type ChipType = {
 };
 
 export type SearchSliceState = {
-	search: {
+	searchSlice: {
 		conversationIds: Set<string>;
 		messageIds: Set<string>;
 		more: boolean;
@@ -248,7 +248,7 @@ export type SearchSliceState = {
 };
 
 export type MessageSliceState = {
-	messages: {
+	messagesSlice: {
 		messageIds: Set<string>;
 		more: boolean;
 		offset: number;
@@ -261,7 +261,7 @@ export type MessageSliceState = {
 	};
 };
 export type PopulatedItemsSliceState = {
-	populatedItems: {
+	populatedItemsSlice: {
 		messages: Record<string, MailMessage | IncompleteMessage>;
 		messagesStatus: Record<string, SearchRequestStatus>;
 		conversations: Record<string, NormalizedConversation>;

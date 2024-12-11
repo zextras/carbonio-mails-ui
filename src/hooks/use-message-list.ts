@@ -10,7 +10,6 @@ import { map } from 'lodash';
 import { useParams } from 'react-router-dom';
 
 import { searchSoapApi } from '../api/search';
-import { getFolder } from '../carbonio-ui-commons/store/zustand/folder/hooks';
 import { getTags } from '../carbonio-ui-commons/store/zustand/tags';
 import { Tags } from '../carbonio-ui-commons/types/tags';
 import { API_REQUEST_STATUS, LIST_LIMIT } from '../constants';
@@ -20,7 +19,7 @@ import {
 	resetMessagesAndPopulatedItems,
 	setMessagesInEmailStore,
 	updateMessagesResultsLoadingStatus,
-	useMessages
+	useMessagesSlice
 } from '../store/zustand/emails/store';
 import { MessageSliceState, SearchResponse } from '../types';
 
@@ -36,22 +35,7 @@ export const useMessageList = (): MessageSliceState => {
 		userSettings.zimbraPrefSortOrder as string
 	);
 
-	const messages = useMessages();
-	const folder = getFolder(folderId);
-
-	// const filteredMessages = useMemo(() => {
-	//
-	// 	if (folder) {
-	// 		const wantedFolderId =
-	// 			'rid' in folder && folder?.rid ? `${folder.zid}:${folder.rid}` : folder.id;
-	// 		messages.messageIds.forEach((id) => {
-	// 			if (id === wantedFolderId) {
-	// 				messageSet.add(id);
-	// 			}
-	// 		});
-	// 	}
-	// 	return messageSet;
-	// }, [folder, messages]);
+	const messagesSlice = useMessagesSlice();
 
 	const queryPart = [`inId:"${folderId}"`];
 
@@ -96,8 +80,7 @@ export const useMessageList = (): MessageSliceState => {
 	const previousQuery = useRef(finalQuery);
 
 	function handleFulFilledMessagesResultsInEmailStore({
-		searchResponse,
-		tags
+		searchResponse
 	}: {
 		searchResponse: SearchResponse;
 		tags: Tags;
@@ -165,5 +148,5 @@ export const useMessageList = (): MessageSliceState => {
 		};
 	}, [finalQuery, firstSearchCallback]);
 
-	return { messages };
+	return { messagesSlice };
 };

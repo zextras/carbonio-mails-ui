@@ -21,5 +21,5 @@ export const createPopulatedItemsSlice: StateCreator<
 	[],
 	PopulatedItemsSliceState
 > = () => ({
-	populatedItems: POPULATED_ITEMS_INITIAL_STATE
+	populatedItemsSlice: POPULATED_ITEMS_INITIAL_STATE
 });

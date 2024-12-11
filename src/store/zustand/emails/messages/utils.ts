@@ -48,7 +48,7 @@ function updateMessagesResultsLoadingStatus(
 ): void {
 	useEmailsStore.setState(
 		produce((state: MessageSliceState) => {
-			state.messages.status = status;
+			state.messagesSlice.status = status;
 		})
 	);
 }
@@ -58,8 +58,8 @@ function resetMessagesAndPopulatedItems(
 ): void {
 	useEmailsStore.setState(
 		produce((state: EmailsStoreState) => {
-			state.messages = MESSAGES_INITIAL_STATE;
-			state.populatedItems = POPULATED_ITEMS_INITIAL_STATE;
+			state.messagesSlice = MESSAGES_INITIAL_STATE;
+			state.populatedItemsSlice = POPULATED_ITEMS_INITIAL_STATE;
 		})
 	);
 }

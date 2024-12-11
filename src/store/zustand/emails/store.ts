@@ -40,8 +40,8 @@ export function setSearchResultsByMessage(
 ): void {
 	searchSliceUtils.setSearchResultsByMessage(messages, more, useEmailsStore);
 }
-export function useSearchResults(): SearchSliceState['search'] {
-	return useEmailsStore(({ search }) => search);
+export function useSearchResults(): SearchSliceState['searchSlice'] {
+	return useEmailsStore(({ searchSlice }) => searchSlice);
 }
 
 export function setSearchResultsByConversation(
@@ -64,7 +64,7 @@ export function deleteMessagesFromSearch(ids: Array<string>): void {
 	searchSliceUtils.deleteMessagesFromSearch(ids, useEmailsStore);
 }
 export function getSearchResultsLoadingStatus(): SearchRequestStatus {
-	return useEmailsStore.getState().search.status;
+	return useEmailsStore.getState().searchSlice.status;
 }
 
 export function updateSearchResultsLoadingStatus(status: SearchRequestStatus): void {
@@ -90,18 +90,18 @@ export function useConversationMessages(
 	return populatedItemsSliceUtils.useConversationMessages(conversationId, useEmailsStore);
 }
 export function useConversationById(id: string): NormalizedConversation {
-	return useEmailsStore(({ populatedItems }) => populatedItems.conversations[id]);
+	return useEmailsStore(({ populatedItemsSlice }) => populatedItemsSlice.conversations[id]);
 }
 
 export function useMessageById(id: string): IncompleteMessage | MailMessage {
-	return useEmailsStore(({ populatedItems }) => populatedItems.messages[id]);
+	return useEmailsStore(({ populatedItemsSlice }) => populatedItemsSlice.messages[id]);
 }
 export function useMessagesByIds(ids: Array<string>): Array<IncompleteMessage | MailMessage> {
 	return populatedItemsSliceUtils.useMessagesByIds(ids, useEmailsStore);
 }
 
 export function useConversationStatus(id: string): SearchRequestStatus {
-	return useEmailsStore(({ populatedItems }) => populatedItems.conversationsStatus?.[id]);
+	return useEmailsStore(({ populatedItemsSlice }) => populatedItemsSlice.conversationsStatus?.[id]);
 }
 
 export function updateConversationsOnly(conversations: Array<NormalizedConversation>): void {
@@ -126,7 +126,7 @@ export function updateMessageStatus(messageId: string, status: SearchRequestStat
 	populatedItemsSliceUtils.updateMessageStatus(messageId, status, useEmailsStore);
 }
 export function useMessageStatus(id: string): SearchRequestStatus {
-	return useEmailsStore((state) => state.populatedItems.messagesStatus?.[id]);
+	return useEmailsStore((state) => state.populatedItemsSlice.messagesStatus?.[id]);
 }
 
 export function removeMessages(messageIds: Array<string>): void {
@@ -136,12 +136,13 @@ export function removeMessages(messageIds: Array<string>): void {
 // ################################
 // #### Mail message related functions
 // ################################
-export function useMessages(): EmailsStoreState['messages'] {
-	return useEmailsStore(({ messages }) => messages);
+
+export function useMessagesSlice(): EmailsStoreState['messagesSlice'] {
+	return useEmailsStore(({ messagesSlice }) => messagesSlice);
 }
 
-export function useMessageIds(): EmailsStoreState['messages']['messageIds'] {
-	return useEmailsStore(({ messages }) => messages.messageIds);
+export function useMessageIds(): EmailsStoreState['messagesSlice']['messageIds'] {
+	return useEmailsStore(({ messagesSlice }) => messagesSlice.messageIds);
 }
 
 export function setMessagesInEmailStore(

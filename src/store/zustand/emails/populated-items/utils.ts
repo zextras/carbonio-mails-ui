@@ -23,9 +23,10 @@ function useConversationMessages(
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
 ): Array<MailMessage | IncompleteMessage> {
 	const messages: Array<MailMessage | IncompleteMessage> = [];
-	useEmailsStore(({ populatedItems }: EmailsStoreState) =>
-		populatedItems.conversations[conversationId].messages.forEach((message) => {
-			if (populatedItems.messages[message.id]) messages.push(populatedItems.messages[message.id]);
+	useEmailsStore(({ populatedItemsSlice }: EmailsStoreState) =>
+		populatedItemsSlice.conversations[conversationId].messages.forEach((message) => {
+			if (populatedItemsSlice.messages[message.id])
+				messages.push(populatedItemsSlice.messages[message.id]);
 		})
 	);
 	return messages;
@@ -35,10 +36,10 @@ function updateConversationsOnly(
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
 ): void {
 	useEmailsStore.setState(
-		produce(({ populatedItems }: PopulatedItemsSliceState) => {
+		produce(({ populatedItemsSlice }: PopulatedItemsSliceState) => {
 			conversations.forEach((conversation) => {
-				populatedItems.conversations[conversation.id] = {
-					...merge(populatedItems.conversations[conversation.id], conversation),
+				populatedItemsSlice.conversations[conversation.id] = {
+					...merge(populatedItemsSlice.conversations[conversation.id], conversation),
 					tags: conversation.tags
 				};
 			});
@@ -50,10 +51,10 @@ function updateMessagesOnly(
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
 ): void {
 	useEmailsStore.setState(
-		produce(({ populatedItems }: PopulatedItemsSliceState) => {
+		produce(({ populatedItemsSlice }: PopulatedItemsSliceState) => {
 			messages.forEach((message) => {
-				populatedItems.messages[message.id] = {
-					...merge(populatedItems.messages[message.id], message),
+				populatedItemsSlice.messages[message.id] = {
+					...merge(populatedItemsSlice.messages[message.id], message),
 					tags: message.tags
 				};
 			});
@@ -66,9 +67,9 @@ function updateMessages(
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
 ): void {
 	useEmailsStore.setState(
-		produce(({ populatedItems }: PopulatedItemsSliceState) => {
+		produce(({ populatedItemsSlice }: PopulatedItemsSliceState) => {
 			messages.forEach((message) => {
-				populatedItems.messages[message.id] = message;
+				populatedItemsSlice.messages[message.id] = message;
 			});
 		})
 	);
@@ -79,8 +80,8 @@ function updateConversationStatus(
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
 ): void {
 	useEmailsStore.setState(
-		produce(({ populatedItems }: PopulatedItemsSliceState) => {
-			populatedItems.conversationsStatus[conversationId] = status;
+		produce(({ populatedItemsSlice }: PopulatedItemsSliceState) => {
+			populatedItemsSlice.conversationsStatus[conversationId] = status;
 		})
 	);
 }
@@ -90,8 +91,8 @@ function updateMessageStatus(
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
 ): void {
 	useEmailsStore.setState(
-		produce(({ populatedItems }: PopulatedItemsSliceState) => {
-			populatedItems.messagesStatus[messageId] = status;
+		produce(({ populatedItemsSlice }: PopulatedItemsSliceState) => {
+			populatedItemsSlice.messagesStatus[messageId] = status;
 		})
 	);
 }
@@ -100,9 +101,9 @@ function removeMessages(
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
 ): void {
 	useEmailsStore.setState(
-		produce(({ populatedItems }: EmailsStoreState) => {
+		produce(({ populatedItemsSlice }: EmailsStoreState) => {
 			messageIds.forEach((messageId) => {
-				delete populatedItems.messages[messageId];
+				delete populatedItemsSlice.messages[messageId];
 			});
 		})
 	);
@@ -111,8 +112,8 @@ function useMessagesByIds(
 	ids: Array<string>,
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
 ): Array<IncompleteMessage | MailMessage> {
-	return useEmailsStore(({ populatedItems }) =>
-		filter(populatedItems.messages, (message) => includes(ids, message.id))
+	return useEmailsStore(({ populatedItemsSlice }) =>
+		filter(populatedItemsSlice.messages, (message) => includes(ids, message.id))
 	);
 }
 

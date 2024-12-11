@@ -25,8 +25,8 @@ function resetSearchAndPopulatedItems(
 ): void {
 	useEmailsStore.setState(
 		produce((state: EmailsStoreState) => {
-			state.search = SEARCH_INITIAL_STATE;
-			state.populatedItems = POPULATED_ITEMS_INITIAL_STATE;
+			state.searchSlice = SEARCH_INITIAL_STATE;
+			state.populatedItemsSlice = POPULATED_ITEMS_INITIAL_STATE;
 		})
 	);
 }
@@ -87,13 +87,13 @@ function appendConversationsToSearch(
 
 	useEmailsStore.setState(
 		produce((state: EmailsStoreState) => {
-			newConversationsIds.forEach((id) => state.search.conversationIds.add(id));
-			state.search.offset = offset;
-			state.search.more = more;
-			state.populatedItems.conversations = conversations.reduce((acc, conv) => {
+			newConversationsIds.forEach((id) => state.searchSlice.conversationIds.add(id));
+			state.searchSlice.offset = offset;
+			state.searchSlice.more = more;
+			state.populatedItemsSlice.conversations = conversations.reduce((acc, conv) => {
 				acc[conv.id] = conv;
 				return acc;
-			}, state.populatedItems.conversations);
+			}, state.populatedItemsSlice.conversations);
 		})
 	);
 }
@@ -106,8 +106,8 @@ function deleteConversationsFromSearch(
 	useEmailsStore.setState(
 		produce((state: EmailsStoreState) => {
 			ids.forEach((id) => {
-				state.search.conversationIds.delete(id);
-				delete state.populatedItems.conversations[id];
+				state.searchSlice.conversationIds.delete(id);
+				delete state.populatedItemsSlice.conversations[id];
 			});
 		})
 	);
@@ -121,8 +121,8 @@ function deleteMessagesFromSearch(
 	useEmailsStore.setState(
 		produce((state: EmailsStoreState) => {
 			ids.forEach((id) => {
-				state.search.messageIds.delete(id);
-				delete state.populatedItems.messages[id];
+				state.searchSlice.messageIds.delete(id);
+				delete state.populatedItemsSlice.messages[id];
 			});
 		})
 	);
@@ -133,8 +133,8 @@ function updateSearchResultsLoadingStatus(
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
 ): void {
 	useEmailsStore.setState(
-		produce(({ search }: SearchSliceState) => {
-			search.status = status;
+		produce(({ searchSlice }: SearchSliceState) => {
+			searchSlice.status = status;
 		})
 	);
 }
@@ -148,12 +148,12 @@ function appendMessagesToSearch(
 	const newMessageIds = new Set(messages.map((message) => message.id));
 	useEmailsStore.setState(
 		produce((state: EmailsStoreState) => {
-			newMessageIds.forEach((messageId) => state.search.messageIds.add(messageId));
-			state.search.offset = offset;
-			state.populatedItems.messages = messages.reduce((acc, msg) => {
+			newMessageIds.forEach((messageId) => state.searchSlice.messageIds.add(messageId));
+			state.searchSlice.offset = offset;
+			state.populatedItemsSlice.messages = messages.reduce((acc, msg) => {
 				acc[msg.id] = msg;
 				return acc;
-			}, state.populatedItems.messages);
+			}, state.populatedItemsSlice.messages);
 		})
 	);
 }
@@ -163,12 +163,12 @@ function setMessagesInSearchSlice(
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
 ): void {
 	useEmailsStore.setState((state: EmailsStoreState) => ({
-		search: {
-			...state.search,
+		searchSlice: {
+			...state.searchSlice,
 			messageIds: new Set(messages.map((c) => c.id))
 		},
-		populatedItems: {
-			...state.populatedItems,
+		populatedItemsSlice: {
+			...state.populatedItemsSlice,
 			offset: 0,
 			messages: messages.reduce(
 				(acc, msg) => {

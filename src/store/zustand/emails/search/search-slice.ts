@@ -8,7 +8,7 @@ import { StateCreator } from 'zustand';
 
 import { MessageSliceState, PopulatedItemsSliceState, SearchSliceState } from '../../../../types';
 
-export const SEARCH_INITIAL_STATE: SearchSliceState['search'] = {
+export const SEARCH_INITIAL_STATE: SearchSliceState['searchSlice'] = {
 	conversationIds: new Set<string>(),
 	messageIds: new Set<string>(),
 	more: false,
@@ -21,5 +21,5 @@ export const createSearchSlice: StateCreator<
 	[],
 	SearchSliceState
 > = () => ({
-	search: SEARCH_INITIAL_STATE
+	searchSlice: SEARCH_INITIAL_STATE
 });

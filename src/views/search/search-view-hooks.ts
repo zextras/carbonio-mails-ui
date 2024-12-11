@@ -137,7 +137,7 @@ export function useRunSearch({
 }: UseRunSearchProps): {
 	searchDisabled: boolean;
 	queryToString: string;
-	searchResults: SearchSliceState['search'];
+	searchResults: SearchSliceState['searchSlice'];
 	isInvalidQuery: boolean;
 	filterCount: number;
 } {
