@@ -38,8 +38,8 @@ export const MessageList: FC = () => {
 	const searchedInFolderStatus = useAppSelector(selectFolderMsgSearchStatus(folderId));
 
 	const { messagesSlice } = useMessageList();
-
 	const { messageIds, status } = messagesSlice;
+
 	const { prefs } = useUserSettings();
 	const { sortOrder } = parseMessageSortingOptions(folderId, prefs.zimbraPrefSortOrder as string);
 	const items = [...messageIds].map((messageId) => ({ id: messageId }));

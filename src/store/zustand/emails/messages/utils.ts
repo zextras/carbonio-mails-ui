@@ -25,13 +25,13 @@ function setMessages(
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
 ): void {
 	useEmailsStore.setState(
-		produce((draft) => {
-			draft.messages.messageIds = new Set(messages.map((message) => message.id));
-			draft.messages.status = API_REQUEST_STATUS.fulfilled;
-			draft.messages.offset = 0;
-			draft.messages.more = more;
+		produce((draft: EmailsStoreState) => {
+			draft.messagesSlice.messageIds = new Set(messages.map((message) => message.id));
+			draft.messagesSlice.status = API_REQUEST_STATUS.fulfilled;
+			draft.messagesSlice.offset = 0;
+			draft.messagesSlice.more = more;
 
-			draft.populatedItems.messages = messages.reduce(
+			draft.populatedItemsSlice.messages = messages.reduce(
 				(acc, message) => {
 					acc[message.id] = message;
 					return acc;
@@ -64,8 +64,23 @@ function resetMessagesAndPopulatedItems(
 	);
 }
 
+function deleteMessagesFromMessageSlice(
+	messageIds: Array<string>,
+	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
+): void {
+	useEmailsStore.setState(
+		produce((state: EmailsStoreState) => {
+			messageIds.forEach((id) => {
+				delete state.populatedItemsSlice.messages[id];
+				state.messagesSlice.messageIds.delete(id);
+			});
+		})
+	);
+}
+
 export const messageSliceUtils = {
 	setMessages,
 	updateMessagesResultsLoadingStatus,
-	resetMessagesAndPopulatedItems
+	resetMessagesAndPopulatedItems,
+	deleteMessagesFromMessageSlice
 };

@@ -140,11 +140,6 @@ export function removeMessages(messageIds: Array<string>): void {
 export function useMessagesSlice(): EmailsStoreState['messagesSlice'] {
 	return useEmailsStore(({ messagesSlice }) => messagesSlice);
 }
-
-export function useMessageIds(): EmailsStoreState['messagesSlice']['messageIds'] {
-	return useEmailsStore(({ messagesSlice }) => messagesSlice.messageIds);
-}
-
 export function setMessagesInEmailStore(
 	messages: Array<MailMessage | IncompleteMessage>,
 	more: boolean
@@ -152,10 +147,27 @@ export function setMessagesInEmailStore(
 	messageSliceUtils.setMessages(messages, more, useEmailsStore);
 }
 
+/**
+ * Updates the loading status of the messages results in the email store.
+ *
+ * @param {SearchRequestStatus} status - The new loading status to set.
+ */
 export function updateMessagesResultsLoadingStatus(status: SearchRequestStatus): void {
 	messageSliceUtils.updateMessagesResultsLoadingStatus(status, useEmailsStore);
 }
 
+/**
+ * Resets the messages and populated items in the email store.
+ */
 export function resetMessagesAndPopulatedItems(): void {
 	messageSliceUtils.resetMessagesAndPopulatedItems(useEmailsStore);
+}
+
+/**
+ * Deletes messages from the message and populated slice in the email store.
+ *
+ * @param {Array<string>} ids - The IDs of the messages to delete.
+ */
+export function deleteMessagesFromMessageSlice(ids: Array<string>): void {
+	messageSliceUtils.deleteMessagesFromMessageSlice(ids, useEmailsStore);
 }

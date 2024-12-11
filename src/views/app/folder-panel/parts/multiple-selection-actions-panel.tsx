@@ -39,7 +39,7 @@ export const MultipleSelectionActionsPanel: FC<MultipleSelectionActionsPanelProp
 	const { zimbraPrefGroupMailBy } = useUserSettings().prefs;
 	const isConversation = zimbraPrefGroupMailBy === 'conversation';
 
-	const fullItems = useMessagesByIds(itemsIds);
+	const fullItems = useMessagesByIds([...itemsIds]);
 	const folderParentId = getFolderParentId({ folderId, isConversation, items: fullItems });
 
 	const [currentFolderId] = useState(folderParentId);
