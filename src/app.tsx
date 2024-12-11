@@ -4,51 +4,33 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React, { useEffect } from 'react';
+import React from 'react';
 
-import { useAuthenticated } from '@zextras/carbonio-shell-ui';
-import { isEmpty } from 'lodash';
-
-import { addComponentsToShell } from './app-utils/add-shell-components';
-import { registerShellActions } from './app-utils/register-shell-actions';
-import { registerShellIntegrations } from './app-utils/register-shell-integrations';
-import { toggleBackupSearchComponent } from './app-utils/toggle-backup-search-component';
+import { BackupSearchComponentToggler } from './app-utils/backup-search-component-toggler';
+import { ShellRegistrations } from './app-utils/shell-registrations';
 import { AuthGuard } from './auth-guard';
 import { StoreProvider } from './store/redux';
-import { useBackupSearchStore } from './store/zustand/backup-search/store';
 import { GlobalExtraWindowManager } from './views/app/extra-windows/global-extra-window-manager';
 import { GlobalModalManager } from './views/global-modal-manager';
 import { InitializeFolders } from './views/sidebar/initialize-folders';
 import { InitializeServicesCatalog } from './views/sidebar/initialize-services-catalog';
 import { SyncDataHandler } from './views/sidebar/sync-data-handler';
 
-const App = (): React.JSX.Element => {
-	const hasBackupSearchMessages = !isEmpty(useBackupSearchStore().messages);
-	const isUserAuthenticated = useAuthenticated();
+const App = (): React.JSX.Element => (
+	<AuthGuard>
+		<ShellRegistrations />
+		<BackupSearchComponentToggler />
 
-	useEffect(() => {
-		addComponentsToShell();
-		registerShellIntegrations();
-		registerShellActions();
-	}, []);
-
-	useEffect(() => {
-		toggleBackupSearchComponent(hasBackupSearchMessages);
-	}, [hasBackupSearchMessages]);
-
-	return (
-		<AuthGuard>
-			<StoreProvider>
-				<GlobalModalManager>
-					<GlobalExtraWindowManager>
-						<InitializeFolders />
-						<SyncDataHandler />
-						<InitializeServicesCatalog />
-					</GlobalExtraWindowManager>
-				</GlobalModalManager>
-			</StoreProvider>
-		</AuthGuard>
-	);
-};
+		<StoreProvider>
+			<GlobalModalManager>
+				<GlobalExtraWindowManager>
+					<InitializeFolders />
+					<SyncDataHandler />
+					<InitializeServicesCatalog />
+				</GlobalExtraWindowManager>
+			</GlobalModalManager>
+		</StoreProvider>
+	</AuthGuard>
+);
 
 export default App;
