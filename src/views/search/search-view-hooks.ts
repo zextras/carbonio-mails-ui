@@ -57,11 +57,9 @@ function handleFulFilledConversationResults({
 }
 
 function handleFulFilledMessagesResults({
-	searchResponse,
-	tags
+	searchResponse
 }: {
 	searchResponse: SearchResponse;
-	tags: Tags;
 }): void {
 	const normalizedMessages = map(searchResponse.m, (msg) =>
 		normalizeMailMessageFromSoap(msg, false)
@@ -115,7 +113,7 @@ export function handleSearchResults({
 	}
 
 	if (searchResponse.m) {
-		handleFulFilledMessagesResults({ searchResponse, tags });
+		handleFulFilledMessagesResults({ searchResponse });
 	}
 	if (searchResponse && !searchResponse.c && !searchResponse.m) {
 		resetSearchAndPopulatedItems();
@@ -215,7 +213,7 @@ export function useRunSearch({
 	};
 }
 
-export function useLoadMore({
+export function useLoadMoreForSearchSlice({
 	query,
 	offset,
 	hasMore,

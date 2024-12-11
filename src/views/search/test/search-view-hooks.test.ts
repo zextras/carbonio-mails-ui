@@ -22,7 +22,7 @@ import {
 import { generateConvMessageFromAPI } from '../../../tests/generators/api';
 import { generateConversation } from '../../../tests/generators/generateConversation';
 import { SearchRequest, SearchResponse, SoapConversation } from '../../../types';
-import { useRunSearch, useLoadMore } from '../search-view-hooks';
+import { useRunSearch, useLoadMoreForSearchSlice } from '../search-view-hooks';
 
 describe('search view hooks', () => {
 	it('should reset conversations list when api result empty', async () => {
@@ -228,7 +228,7 @@ describe('useLoadMore', () => {
 		);
 
 		const { result } = renderHook(() =>
-			useLoadMore({
+			useLoadMoreForSearchSlice({
 				query: 'test query',
 				offset: 0,
 				hasMore: true,
@@ -261,7 +261,7 @@ describe('useLoadMore', () => {
 		);
 
 		const { result } = renderHook(() =>
-			useLoadMore({
+			useLoadMoreForSearchSlice({
 				query: 'test query',
 				offset: 0,
 				hasMore: true,
@@ -294,7 +294,7 @@ describe('useLoadMore', () => {
 		);
 
 		const { result } = renderHook(() =>
-			useLoadMore({
+			useLoadMoreForSearchSlice({
 				query: 'test query',
 				offset: 0,
 				hasMore: true,
@@ -324,7 +324,7 @@ describe('useLoadMore', () => {
 		);
 
 		const { result } = renderHook(() =>
-			useLoadMore({
+			useLoadMoreForSearchSlice({
 				query: 'test query',
 				offset: 0,
 				hasMore: true,
@@ -350,7 +350,7 @@ describe('useLoadMore', () => {
 		const mockedSearch = jest.spyOn(searchSoapApi, 'searchSoapApi');
 
 		const { result } = renderHook(() =>
-			useLoadMore({
+			useLoadMoreForSearchSlice({
 				query: 'test query',
 				offset: 0,
 				hasMore: false,
@@ -368,7 +368,7 @@ describe('useLoadMore', () => {
 		const mockedSearch = jest.spyOn(searchSoapApi, 'searchSoapApi');
 
 		const { result } = renderHook(() =>
-			useLoadMore({
+			useLoadMoreForSearchSlice({
 				query: 'test query',
 				offset: 0,
 				hasMore: false,
