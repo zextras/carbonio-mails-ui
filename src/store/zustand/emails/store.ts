@@ -92,6 +92,9 @@ export function useConversationMessages(
 export function useConversationById(id: string): NormalizedConversation {
 	return useEmailsStore(({ populatedItemsSlice }) => populatedItemsSlice.conversations[id]);
 }
+export function getMessageById(id: string): IncompleteMessage | MailMessage {
+	return useEmailsStore.getState().populatedItemsSlice.messages[id];
+}
 
 export function useMessageById(id: string): IncompleteMessage | MailMessage {
 	return useEmailsStore(({ populatedItemsSlice }) => populatedItemsSlice.messages[id]);

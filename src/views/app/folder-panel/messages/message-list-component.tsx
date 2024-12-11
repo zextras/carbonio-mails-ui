@@ -6,13 +6,13 @@
 import React, { FC, memo, useCallback, useEffect, useMemo } from 'react';
 
 import { Container, Padding, Text } from '@zextras/carbonio-design-system';
-import { find, map, noop, reduce } from 'lodash';
+import { map, noop } from 'lodash';
 import styled from 'styled-components';
 
 import { MessageListItem } from './message-list-item';
 import { CustomList } from '../../../../carbonio-ui-commons/components/list/list';
 import { useFolder, useRoot } from '../../../../carbonio-ui-commons/store/zustand/folder/hooks';
-import type { IncompleteMessage, MessageListItemProps } from '../../../../types';
+import { getMessageById } from '../../../../store/zustand/emails/store';
 import ShimmerList from '../../../search/shimmer-list';
 import { Breadcrumbs } from '../parts/breadcrumbs';
 import { MultipleSelectionActionsPanel } from '../parts/multiple-selection-actions-panel';
@@ -27,25 +27,13 @@ const DragImageContainer = styled.div`
 `;
 
 const DragItems: FC<{
-	messages: IncompleteMessage[];
 	draggedIds: Record<string, boolean>;
 	folderId: string;
-}> = ({ messages, draggedIds, folderId }) => {
-	const items = reduce<typeof draggedIds, MessageListItemProps['item'][]>(
-		draggedIds,
-		(acc, v, k) => {
-			const obj = find(messages, ['id', k]);
-			if (obj) {
-				return [...acc, obj];
-			}
-			return acc;
-		},
-		[]
-	);
-
-	return (
-		<>
-			{map(items, (item) => (
+}> = ({ draggedIds, folderId }) => (
+	<>
+		{map(Object.keys(draggedIds), (draggedItemId) => {
+			const item = getMessageById(draggedItemId);
+			return (
 				<MessageListItem
 					item={item}
 					key={item.id}
@@ -57,10 +45,10 @@ const DragItems: FC<{
 					deselectAll={noop}
 					currentFolderId={folderId}
 				/>
-			))}
-		</>
-	);
-};
+			);
+		})}
+	</>
+);
 
 export type MessageListComponentProps = {
 	// the text to display in the side panel
@@ -205,7 +193,7 @@ export const MessageListComponent: FC<MessageListComponentProps> = memo(
 					)}
 					<DragImageContainer ref={dragImageRef}>
 						{/* TODO CO-1725 re-enable it */}
-						{/* <DragItems messages={messageIds} draggedIds={draggedIds ?? {}} folderId={folderId} /> */}
+						<DragItems draggedIds={draggedIds ?? {}} folderId={folderId} />
 					</DragImageContainer>
 				</>
 			</>
