@@ -20,13 +20,13 @@ import { getFolderIdParts } from '../../../../helpers/folders';
 import { parseMessageSortingOptions } from '../../../../helpers/sorting';
 import { useMessageListByFolder } from '../../../../hooks/use-message-list';
 import { useSelection } from '../../../../hooks/use-selection';
-import type { AppContext } from '../../../../types';
+import type { AppContext, Folder } from '../../../../types';
 
 export const MessageList: FC = () => {
 	const { itemId, folderId } = useParams<{ itemId: string; folderId: string }>();
 	const loadingMore = useRef<boolean>(false);
 	const dragImageRef = useRef(null);
-	const folder = useFolder(folderId);
+	const folder = useFolder(folderId) as Folder;
 	const { setCount, count } = useAppContext<AppContext>();
 	const [draggedIds, setDraggedIds] = useState<Record<string, boolean>>({});
 
