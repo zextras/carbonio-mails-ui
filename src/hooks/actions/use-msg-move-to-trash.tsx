@@ -5,7 +5,6 @@
  */
 import { useCallback, useMemo } from 'react';
 
-import { AsyncThunkAction, Dispatch } from '@reduxjs/toolkit';
 import { useSnackbar } from '@zextras/carbonio-design-system';
 import { replaceHistory } from '@zextras/carbonio-shell-ui';
 import { useTranslation } from 'react-i18next';
@@ -14,33 +13,11 @@ import { msgActionSoapApi } from '../../api/msg-action';
 import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
 import { isTrash } from '../../carbonio-ui-commons/helpers/folders';
 import { MessageActionsDescriptors } from '../../constants';
-import { msgAction } from '../../store/actions';
-import { AppDispatch } from '../../store/redux';
-import type {
-	ActionFn,
-	MsgActionParameters,
-	MsgActionResult,
-	UIActionDescriptor
-} from '../../types';
+import type { ActionFn, UIActionDescriptor } from '../../types';
 import { useInSearchModule } from '../../ui-actions/utils';
-import { useAppDispatch } from '../redux';
 import { useUiUtilities } from '../use-ui-utilities';
 
-const dispatchMsgMove = (
-	dispatch: Dispatch<any>,
-	ids: Array<string>,
-	folderId: string
-): AsyncThunkAction<MsgActionResult, MsgActionParameters, Record<string, unknown>> =>
-	dispatch(
-		msgAction({
-			operation: 'move',
-			ids,
-			parent: folderId
-		})
-	);
-
 const useRestoreMessage = (): ((
-	dispatch: AppDispatch,
 	ids: Array<string>,
 	folderId: string,
 	closeEditor: boolean | undefined
@@ -48,32 +25,29 @@ const useRestoreMessage = (): ((
 	const { createSnackbar } = useUiUtilities();
 	const [t] = useTranslation();
 	return useCallback(
-		(dispatch, ids, folderId, closeEditor): void => {
-			dispatchMsgMove(dispatch, ids, folderId)
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-				// @ts-ignore
-				.then((res) => {
-					if (res.type.includes('fulfilled')) {
-						closeEditor && replaceHistory(`/folder/${folderId}/message/${ids[0]}`);
-						createSnackbar({
-							key: `move-${ids}`,
-							replace: true,
-							severity: 'success',
-							label: t('messages.snackbar.email_restored', 'E-mail restored in destination folder'),
-							autoHideTimeout: 3000,
-							hideButton: true
-						});
-					} else {
-						createSnackbar({
-							key: `move-${ids}`,
-							replace: true,
-							severity: 'error',
-							label: t('label.error_try_again', 'Something went wrong, please try again'),
-							autoHideTimeout: 3000,
-							hideButton: true
-						});
-					}
-				});
+		(ids, folderId, closeEditor): void => {
+			msgActionSoapApi({ ids, parent: folderId, operation: 'move' }).then((res) => {
+				if (!('Fault' in res)) {
+					closeEditor && replaceHistory(`/folder/${folderId}/message/${ids[0]}`);
+					createSnackbar({
+						key: `move-${ids}`,
+						replace: true,
+						severity: 'success',
+						label: t('messages.snackbar.email_restored', 'E-mail restored in destination folder'),
+						autoHideTimeout: 3000,
+						hideButton: true
+					});
+				} else {
+					createSnackbar({
+						key: `move-${ids}`,
+						replace: true,
+						severity: 'error',
+						label: t('label.error_try_again', 'Something went wrong, please try again'),
+						autoHideTimeout: 3000,
+						hideButton: true
+					});
+				}
+			});
 		},
 		[createSnackbar, t]
 	);
@@ -93,7 +67,6 @@ export const useMsgMoveToTrashFn = ({
 	shouldReplaceHistory
 }: MoveToTrashExecute): ActionFn => {
 	const canExecute = useCallback((): boolean => !isTrash(folderId), [folderId]);
-	const dispatch = useAppDispatch();
 	const createSnackbar = useSnackbar();
 	const restoreMessage = useRestoreMessage();
 	const inSearchModule = useInSearchModule();
@@ -118,7 +91,7 @@ export const useMsgMoveToTrashFn = ({
 						autoHideTimeout: 5000,
 						hideButton: false,
 						actionLabel: t('label.undo', 'Undo'),
-						onActionClick: () => restoreMessage(dispatch, ids, folderId, shouldReplaceHistory)
+						onActionClick: () => restoreMessage(ids, folderId, shouldReplaceHistory)
 					});
 				} else {
 					createSnackbar({
@@ -141,8 +114,7 @@ export const useMsgMoveToTrashFn = ({
 		t,
 		shouldReplaceHistory,
 		folderId,
-		restoreMessage,
-		dispatch
+		restoreMessage
 	]);
 
 	return useMemo(() => ({ canExecute, execute }), [canExecute, execute]);
