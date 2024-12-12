@@ -10,12 +10,13 @@ import { replaceHistory } from '@zextras/carbonio-shell-ui';
 import { noop, some } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
+import { msgActionSoapApi } from '../api/msg-action';
 import ModalFooter from '../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../carbonio-ui-commons/components/modals/modal-header';
 import { Folder } from '../carbonio-ui-commons/types/folder';
 import { isRoot } from '../helpers/folders';
 import { useUiUtilities } from '../hooks/use-ui-utilities';
-import { convAction, msgAction } from '../store/actions';
+import { convAction } from '../store/actions';
 import { createFolder } from '../store/actions/create-folder';
 import { AppDispatch } from '../store/redux';
 import { FolderSelector } from '../views/sidebar/commons/folder-selector';
@@ -97,15 +98,13 @@ const MoveConvMessage = ({
 
 	const onConfirmMessageMove = useCallback(
 		(newFolderId = '0') => {
-			dispatch(
-				msgAction({
-					operation: `move`,
-					ids: selectedIDs,
-					parent: newFolderId
-				})
-			)
+			msgActionSoapApi({
+				operation: `move`,
+				ids: selectedIDs,
+				parent: newFolderId
+			})
 				.then((res) => {
-					if (res.type.includes('fulfilled')) {
+					if (!('Fault' in res)) {
 						deselectAll?.();
 						createSnackbar({
 							key: `edit`,
@@ -132,7 +131,7 @@ const MoveConvMessage = ({
 				})
 				.catch(() => noop);
 		},
-		[dispatch, selectedIDs, onCloseModal, deselectAll, createSnackbar, isRestore, t]
+		[selectedIDs, onCloseModal, deselectAll, createSnackbar, isRestore, t]
 	);
 
 	const hasSameName = useMemo(
