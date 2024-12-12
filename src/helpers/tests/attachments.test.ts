@@ -3,13 +3,13 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { getMsgCall } from '../../store/actions';
+import { getMsg } from '../../api/helpers/get-msg-service';
 import { getAttachmentParts, isContentIdEqual } from '../attachments';
 
 describe('attachments', () => {
 	describe('getAttachmentParts', () => {
 		test('Inline attachment without content disposition are recognized anyway', async () => {
-			const msg = await getMsgCall({ msgId: '13' });
+			const msg = await getMsg({ msgId: '13' });
 			const attachmentParts = getAttachmentParts(msg.parts);
 			expect(attachmentParts).toHaveLength(1);
 			expect(attachmentParts[0].name).toBe('2');
