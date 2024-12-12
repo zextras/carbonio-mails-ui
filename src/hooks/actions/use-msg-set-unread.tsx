@@ -8,11 +8,10 @@ import { useCallback, useMemo } from 'react';
 import { replaceHistory } from '@zextras/carbonio-shell-ui';
 import { useTranslation } from 'react-i18next';
 
+import { msgActionSoapApi } from '../../api/msg-action';
 import { MessageActionsDescriptors } from '../../constants';
 import { isDraft } from '../../helpers/folders';
-import { msgAction } from '../../store/actions';
 import { ActionFn, UIActionDescriptor } from '../../types';
-import { useAppDispatch } from '../redux';
 
 type MsgSetUnreadFunctionsParameter = {
 	ids: Array<string>;
@@ -33,23 +32,20 @@ export const useMsgSetUnreadFn = ({
 		(): boolean => !isDraft(folderId) && isMessageRead,
 		[folderId, isMessageRead]
 	);
-	const dispatch = useAppDispatch();
 
 	const execute = useCallback((): void => {
 		if (canExecute()) {
-			dispatch(
-				msgAction({
-					operation: '!read',
-					ids
-				})
-			).then((res) => {
-				deselectAll && deselectAll();
-				if (res.type.includes('fulfilled') && shouldReplaceHistory) {
+			msgActionSoapApi({
+				operation: '!read',
+				ids
+			}).then((res) => {
+				deselectAll?.();
+				if (!('Fault' in res) && shouldReplaceHistory) {
 					replaceHistory(`/folder/${folderId}`);
 				}
 			});
 		}
-	}, [canExecute, deselectAll, dispatch, folderId, ids, shouldReplaceHistory]);
+	}, [canExecute, deselectAll, folderId, ids, shouldReplaceHistory]);
 
 	return useMemo(() => ({ canExecute, execute }), [canExecute, execute]);
 };
