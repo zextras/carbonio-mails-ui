@@ -8,12 +8,11 @@ import { useMemo } from 'react';
 import { includes, map } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
+import { msgActionSoapApi } from '../../api/msg-action';
 import { useTags } from '../../carbonio-ui-commons/store/zustand/tags';
 import { MessageActionsDescriptors, TIMEOUTS } from '../../constants';
 import { isSpam } from '../../helpers/folders';
-import { msgAction } from '../../store/actions';
 import { UIActionAggregator, UIActionDescriptor } from '../../types';
-import { useAppDispatch } from '../redux';
 import { useUiUtilities } from '../use-ui-utilities';
 
 export const useMsgApplyTagSubDescriptors = ({
@@ -26,7 +25,6 @@ export const useMsgApplyTagSubDescriptors = ({
 	folderId: string;
 }): UIActionDescriptor[] => {
 	const { createSnackbar } = useUiUtilities();
-	const dispatch = useAppDispatch();
 	const [t] = useTranslation();
 	const tags = useTags();
 
@@ -50,14 +48,8 @@ export const useMsgApplyTagSubDescriptors = ({
 
 				const execute = (): void => {
 					if (canExecute()) {
-						dispatch(
-							msgAction({
-								operation,
-								ids,
-								tagName: tag.name
-							})
-						).then((res: any) => {
-							if (res.type.includes('fulfilled')) {
+						msgActionSoapApi({ operation, ids, tagName: tag.name }).then((res: any) => {
+							if (!('Fault' in res)) {
 								createSnackbar({
 									key: `tag`,
 									replace: true,
@@ -88,7 +80,7 @@ export const useMsgApplyTagSubDescriptors = ({
 					canExecute
 				};
 			}),
-		[createSnackbar, dispatch, folderId, ids, messageTags, t, tags]
+		[createSnackbar, folderId, ids, messageTags, t, tags]
 	);
 
 	return useMemo(() => tagActions, [tagActions]);
