@@ -19,7 +19,8 @@ import {
 	EmailsStoreState,
 	NormalizedConversation,
 	SearchRequestStatus,
-	SearchSliceState
+	SearchSliceState,
+	Folder
 } from '../../../types';
 
 const useEmailsStore = create<EmailsStoreState>()((...a) => ({
@@ -143,6 +144,11 @@ export function removeMessages(messageIds: Array<string>): void {
 export function useMessagesSlice(): EmailsStoreState['messagesSlice'] {
 	return useEmailsStore(({ messagesSlice }) => messagesSlice);
 }
+
+export function useMessagesIdsByFolder(folder: Folder): Set<string> {
+	return messageSliceUtils.useMessagesIdsByFolder(folder, useEmailsStore);
+}
+
 export function setMessagesInEmailStore(
 	messages: Array<MailMessage | IncompleteMessage>,
 	more: boolean

@@ -6,12 +6,14 @@
 
 /* eslint-disable no-param-reassign */
 import produce, { enableMapSet } from 'immer';
+import { forEach } from 'lodash';
 import { StoreApi, UseBoundStore } from 'zustand';
 
 import { MESSAGES_INITIAL_STATE } from './messages-slice';
 import { API_REQUEST_STATUS } from '../../../../constants';
 import {
 	EmailsStoreState,
+	Folder,
 	IncompleteMessage,
 	MailMessage,
 	MessageSliceState,
@@ -25,13 +27,13 @@ function setMessages(
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
 ): void {
 	useEmailsStore.setState(
-		produce((draft: EmailsStoreState) => {
-			draft.messagesSlice.messageIds = new Set(messages.map((message) => message.id));
-			draft.messagesSlice.status = API_REQUEST_STATUS.fulfilled;
-			draft.messagesSlice.offset = 0;
-			draft.messagesSlice.more = more;
+		produce((store: EmailsStoreState) => {
+			store.messagesSlice.messageIds = new Set(messages.map((message) => message.id));
+			store.messagesSlice.status = API_REQUEST_STATUS.fulfilled;
+			store.messagesSlice.offset = 0;
+			store.messagesSlice.more = more;
 
-			draft.populatedItemsSlice.messages = messages.reduce(
+			store.populatedItemsSlice.messages = messages.reduce(
 				(acc, message) => {
 					acc[message.id] = message;
 					return acc;
@@ -40,6 +42,22 @@ function setMessages(
 			);
 		})
 	);
+}
+
+function useMessagesIdsByFolder(
+	folder: Folder,
+	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
+): Set<string> {
+	const folderMessagesIds = new Set<string>();
+	const { populatedItemsSlice, messagesSlice } = useEmailsStore();
+	const { messageIds } = messagesSlice;
+	forEach([...messageIds], (messageId) => {
+		const wantedFolder = 'rid' in folder && folder?.rid ? `${folder.zid}:${folder.rid}` : folder.id;
+		if (populatedItemsSlice.messages[messageId].parent === wantedFolder) {
+			folderMessagesIds.add(messageId);
+		}
+	});
+	return folderMessagesIds;
 }
 
 function updateMessagesResultsLoadingStatus(
@@ -102,5 +120,6 @@ export const messageSliceUtils = {
 	updateMessagesResultsLoadingStatus,
 	resetMessagesAndPopulatedItems,
 	deleteMessagesFromMessageSlice,
-	appendMessagesToMessagesSlice
+	appendMessagesToMessagesSlice,
+	useMessagesIdsByFolder
 };

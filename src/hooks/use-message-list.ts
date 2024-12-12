@@ -7,7 +7,6 @@ import { useCallback, useEffect, useMemo } from 'react';
 
 import { type ErrorSoapBodyResponse, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
-import { useParams } from 'react-router-dom';
 
 import { searchSoapApi } from '../api/search';
 import { getTags } from '../carbonio-ui-commons/store/zustand/tags';
@@ -18,13 +17,12 @@ import {
 	resetMessagesAndPopulatedItems,
 	setMessagesInEmailStore,
 	updateMessagesResultsLoadingStatus,
+	useMessagesIdsByFolder,
 	useMessagesSlice
 } from '../store/zustand/emails/store';
-import { MessageSliceState, SearchResponse } from '../types';
+import { Folder, MessageSliceState, SearchResponse } from '../types';
 
-export const useMessageList = (): MessageSliceState => {
-	const { folderId } = useParams<{ folderId: string }>();
-
+export const useMessageListByFolder = (folder: Folder): MessageSliceState => {
 	const settings = useUserSettings();
 	const prefLocale = useMemo(
 		() => settings.prefs.zimbraPrefLocale,
@@ -32,6 +30,7 @@ export const useMessageList = (): MessageSliceState => {
 	);
 
 	const messagesSlice = useMessagesSlice();
+	const messagesIds = useMessagesIdsByFolder(folder);
 
 	function handleFulFilledMessagesResultsInEmailStore({
 		searchResponse
@@ -100,5 +99,5 @@ export const useMessageList = (): MessageSliceState => {
 		};
 	}, [firstSearchCallback]);
 
-	return { messagesSlice };
+	return { messagesSlice: { ...messagesSlice, messageIds: messagesIds } };
 };

@@ -18,7 +18,7 @@ import { useFolder } from '../../../../carbonio-ui-commons/store/zustand/folder/
 import { API_REQUEST_STATUS, LIST_LIMIT } from '../../../../constants';
 import { getFolderIdParts } from '../../../../helpers/folders';
 import { parseMessageSortingOptions } from '../../../../helpers/sorting';
-import { useMessageList } from '../../../../hooks/use-message-list';
+import { useMessageListByFolder } from '../../../../hooks/use-message-list';
 import { useSelection } from '../../../../hooks/use-selection';
 import type { AppContext } from '../../../../types';
 
@@ -30,7 +30,7 @@ export const MessageList: FC = () => {
 	const { setCount, count } = useAppContext<AppContext>();
 	const [draggedIds, setDraggedIds] = useState<Record<string, boolean>>({});
 
-	const { messagesSlice } = useMessageList();
+	const { messagesSlice } = useMessageListByFolder(folder);
 	const { messageIds, status } = messagesSlice;
 
 	const { prefs } = useUserSettings();
