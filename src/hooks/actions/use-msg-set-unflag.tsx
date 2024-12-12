@@ -7,25 +7,21 @@ import { useCallback, useMemo } from 'react';
 
 import { useTranslation } from 'react-i18next';
 
+import { msgActionSoapApi } from '../../api/msg-action';
 import { MessageActionsDescriptors } from '../../constants';
-import { msgAction } from '../../store/actions';
 import { ActionFn, UIActionDescriptor } from '../../types';
-import { useAppDispatch } from '../redux';
 
 export const useMsgSetUnflagFn = (ids: Array<string>, isFlagged: boolean): ActionFn => {
 	const canExecute = useCallback((): boolean => isFlagged, [isFlagged]);
-	const dispatch = useAppDispatch();
 
 	const execute = useCallback((): void => {
 		if (canExecute()) {
-			dispatch(
-				msgAction({
-					operation: '!flag',
-					ids
-				})
-			);
+			msgActionSoapApi({
+				operation: '!flag',
+				ids
+			});
 		}
-	}, [canExecute, dispatch, ids]);
+	}, [canExecute, ids]);
 
 	return useMemo(() => ({ canExecute, execute }), [canExecute, execute]);
 };
