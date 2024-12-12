@@ -9,11 +9,10 @@ import { useSnackbar } from '@zextras/carbonio-design-system';
 import { replaceHistory } from '@zextras/carbonio-shell-ui';
 import { useTranslation } from 'react-i18next';
 
+import { msgActionSoapApi } from '../../api/msg-action';
 import { MessageActionsDescriptors, TIMEOUTS } from '../../constants';
 import { isSpam } from '../../helpers/folders';
-import { msgAction } from '../../store/actions';
 import { ActionFn, UIActionDescriptor } from '../../types';
-import { useAppDispatch } from '../redux';
 
 type MsgSetNotSpam = {
 	ids: Array<string>;
@@ -25,7 +24,6 @@ export const useMsgSetNotSpamFn = ({
 	shouldReplaceHistory,
 	folderId
 }: MsgSetNotSpam): ActionFn => {
-	const dispatch = useAppDispatch();
 	const createSnackbar = useSnackbar();
 	const [t] = useTranslation();
 
@@ -50,16 +48,11 @@ export const useMsgSetNotSpamFn = ({
 			setTimeout(() => {
 				/** If the user has not clicked on the undo button, we can proceed with the action */
 				if (!notCanceled) return;
-				dispatch(
-					msgAction({
-						operation: '!spam',
-						ids
-					})
-				).then((res) => {
-					if (res.type.includes('fulfilled') && shouldReplaceHistory) {
+				msgActionSoapApi({ operation: '!spam', ids }).then((res) => {
+					if (!('Fault' in res) && shouldReplaceHistory) {
 						replaceHistory(`/folder/${folderId}`);
 					}
-					if (!res.type.includes('fulfilled')) {
+					if ('Fault' in res) {
 						createSnackbar({
 							key: `trash-${ids}`,
 							replace: true,
@@ -71,7 +64,7 @@ export const useMsgSetNotSpamFn = ({
 				});
 			}, TIMEOUTS.SET_AS_SPAM);
 		}
-	}, [canExecute, createSnackbar, dispatch, folderId, ids, shouldReplaceHistory, t]);
+	}, [canExecute, createSnackbar, folderId, ids, shouldReplaceHistory, t]);
 
 	return useMemo(() => ({ canExecute, execute }), [canExecute, execute]);
 };
