@@ -10,9 +10,10 @@ import { findIndex } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
 import { useAppDispatch } from './redux';
+import { msgActionSoapApi } from '../api/msg-action';
 import { LIST_LIMIT, SEARCHED_FOLDER_STATE_STATUS } from '../constants';
 import { parseMessageSortingOptions } from '../helpers/sorting';
-import { convAction, msgAction, search } from '../store/actions';
+import { convAction, search } from '../store/actions';
 
 export type HeaderNavigationActionItem = {
 	tooltipLabel: string | undefined;
@@ -115,12 +116,10 @@ export const usePreviewHeaderNavigation = ({
 					})
 				);
 			} else if (itemsType === 'message') {
-				dispatch(
-					msgAction({
-						operation: 'read',
-						ids: [itemId]
-					})
-				);
+				msgActionSoapApi({
+					operation: 'read',
+					ids: [itemId]
+				});
 			}
 		},
 		[dispatch, itemsType]
