@@ -14,11 +14,10 @@ import {
 } from '@zextras/carbonio-shell-ui';
 import { filter } from 'lodash';
 
+import { msgActionSoapApi } from '../../../../../api/msg-action';
 import { MailMessageRenderer } from '../../../../../commons/mail-message-renderer/mail-message-renderer';
-import { useAppDispatch } from '../../../../../hooks/redux';
 import { useRequestDebouncedMessage } from '../../../../../hooks/use-request-debounced-message';
 import SharedInviteReply from '../../../../../integrations/shared-invite-reply';
-import { msgAction } from '../../../../../store/actions';
 import type { MailMessage, OpenEmlPreviewType } from '../../../../../types';
 import AttachmentsBlock from '../attachments-block';
 import ReadReceiptModal from '../read-receipt-modal';
@@ -40,17 +39,14 @@ export const MailPreviewContent: FC<MailPreviewContentProps> = ({
 	isInsideExtraWindow = false
 }) => {
 	const [showModal, setShowModal] = useState(true);
-	const dispatch = useAppDispatch();
 	const accounts = useUserAccounts();
 	const { prefs } = useUserSettings();
 	const moveToTrash = useCallback(() => {
-		dispatch(
-			msgAction({
-				operation: `trash`,
-				ids: [message.id]
-			})
-		);
-	}, [message, dispatch]);
+		msgActionSoapApi({
+			operation: `trash`,
+			ids: [message.id]
+		});
+	}, [message]);
 
 	useRequestDebouncedMessage(message.id, message?.isComplete);
 
