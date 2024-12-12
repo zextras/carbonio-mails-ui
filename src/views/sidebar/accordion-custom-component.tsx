@@ -32,6 +32,7 @@ import styled from 'styled-components';
 
 import { useFolderActions } from './use-folder-actions';
 import { getFolderIconColor, getFolderIconName, getFolderTranslatedName } from './utils';
+import { msgActionSoapApi } from '../../api/msg-action';
 import { ROOT_NAME } from '../../carbonio-ui-commons/constants';
 import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
 import { isSystemFolder } from '../../carbonio-ui-commons/helpers/folders';
@@ -42,7 +43,7 @@ import { isDraft, isSpam } from '../../helpers/folders';
 import { parseMessageSortingOptions } from '../../helpers/sorting';
 import { useAppDispatch } from '../../hooks/redux';
 import { useUiUtilities } from '../../hooks/use-ui-utilities';
-import { convAction, msgAction, search } from '../../store/actions';
+import { convAction, search } from '../../store/actions';
 import { folderAction } from '../../store/actions/folder-action';
 
 const FittedRow = styled(Row)`
@@ -176,14 +177,12 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item }) => {
 				}
 			});
 		} else {
-			dispatch(
-				msgAction({
-					operation: `move`,
-					ids: convMsgsIds,
-					parent: item.id
-				})
-			).then((res) => {
-				if (res.type.includes('fulfilled')) {
+			msgActionSoapApi({
+				operation: `move`,
+				ids: convMsgsIds,
+				parent: item.id
+			}).then((res) => {
+				if (!('Fault' in res)) {
 					data.data.deselectAll && data.data.deselectAll();
 					createSnackbar({
 						key: `edit`,
