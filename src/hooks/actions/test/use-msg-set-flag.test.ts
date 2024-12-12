@@ -3,15 +3,16 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import { act } from 'react';
+
 import { faker } from '@faker-js/faker';
 import { times } from 'lodash';
-import { act } from 'react';
 
 import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { setupHook } from '../../../carbonio-ui-commons/test/test-setup';
 import { API_REQUEST_STATUS } from '../../../constants';
 import { generateStore } from '../../../tests/generators/store';
-import { MsgActionRequest } from '../../../types';
+import { MsgActionRequest, MsgActionResponse } from '../../../types';
 import { useMsgSetFlagDescriptor, useMsgSetFlagFn } from '../use-msg-set-flag';
 
 describe('useMsgSetFlag', () => {
@@ -92,7 +93,13 @@ describe('useMsgSetFlag', () => {
 			});
 
 			it('should call the API with the proper params if the action can be executed', async () => {
-				const apiInterceptor = createSoapAPIInterceptor<MsgActionRequest>('MsgAction');
+				const response: MsgActionResponse = {
+					action: {
+						id: '',
+						op: 'trash'
+					}
+				};
+				const apiInterceptor = createSoapAPIInterceptor<MsgActionRequest>('MsgAction', response);
 				const ids = times(faker.number.int({ max: 20 }), () => faker.number.int().toString());
 
 				const {
