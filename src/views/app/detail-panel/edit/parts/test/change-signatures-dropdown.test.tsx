@@ -51,7 +51,7 @@ describe('Change signature while composing mail', () => {
 		expect(changeSignaturesIcon).toBeVisible();
 	});
 
-	test('Signatures should be display in dropdown list', async () => {
+	it('Signatures should be display in dropdown list', async () => {
 		createSoapAPIInterceptor('GetShareInfo');
 		createSoapAPIInterceptor('SaveDraft');
 		setupEditorStore({ editors: [] });
@@ -76,7 +76,7 @@ describe('Change signature while composing mail', () => {
 		});
 	});
 
-	test('Change signatures icon should not show if user do not have signatures', async () => {
+	it('Change signatures icon should not show if user do not have signatures', async () => {
 		createSoapAPIInterceptor('GetShareInfo');
 		const interceptor = aSuccessfullSaveDraft();
 		setupEditorStore({ editors: [] });
