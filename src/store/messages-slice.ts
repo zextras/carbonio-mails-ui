@@ -11,14 +11,8 @@ import { createSelector, createSlice } from '@reduxjs/toolkit';
 import produce from 'immer';
 import { forEach, map, merge } from 'lodash';
 
-import {
-	search,
-	getMsgAsyncThunk,
-	msgAction,
-	getConv,
-	searchConv,
-	getFullMsgAsyncThunk
-} from './actions';
+import { search, getMsgAsyncThunk, getConv, searchConv, getFullMsgAsyncThunk } from './actions';
+import { SEARCHED_FOLDER_STATE_STATUS } from '../constants';
 import { deleteAttachments } from './actions/delete-all-attachments';
 import { saveDraftAsyncThunk } from './actions/save-draft';
 import {
@@ -26,9 +20,6 @@ import {
 	handleModifiedMessagesReducer,
 	handleDeletedMessagesReducer
 } from './sync/message';
-import { FOLDERS } from '../carbonio-ui-commons/constants/folders';
-import { CONVACTIONS } from '../commons/utilities';
-import { SEARCHED_FOLDER_STATE_STATUS } from '../constants';
 import { normalizeMailMessageFromSoap } from '../normalizations/normalize-message';
 import type {
 	MsgMap,
@@ -113,38 +104,6 @@ function searchConvFulfilled(
 	});
 }
 
-function msgActionRejected({ messages }: MsgStateType, { meta }: { meta: any }): void {
-	messages = meta.arg.prevCache;
-}
-function msgActionPending(
-	{ messages, searchRequestStatus }: MsgStateType,
-	{ meta }: { meta: any }
-): void {
-	const { operation, ids } = meta.arg;
-	searchRequestStatus = meta.requestStatus;
-	meta.arg.prevCache = messages;
-	forEach(ids, (id) => {
-		const message = messages[id];
-		if (message) {
-			if (operation.includes(CONVACTIONS.FLAG)) {
-				message.flagged = !operation.startsWith('!');
-			} else if (operation.includes(CONVACTIONS.MARK_READ)) {
-				message.read = !operation.startsWith('!');
-			} else if (operation === CONVACTIONS.TRASH) {
-				message.parent = FOLDERS.TRASH;
-			} else if (operation === CONVACTIONS.DELETE) {
-				delete message[id];
-			} else if (operation === CONVACTIONS.MOVE) {
-				message.parent = meta.arg.parent;
-			} else if (operation === CONVACTIONS.MARK_SPAM) {
-				message.parent = FOLDERS.SPAM;
-			} else if (operation === CONVACTIONS.MARK_NOT_SPAM) {
-				message.parent = FOLDERS.INBOX;
-			}
-		}
-	});
-}
-
 function getConvFulfilled(
 	{ messages }: MsgStateType,
 	{ payload }: { payload: Partial<Conversation> }
@@ -175,8 +134,6 @@ export const messagesSlice = createSlice({
 		builder.addCase(getMsgAsyncThunk.fulfilled, produce(getMsgFulfilled));
 		builder.addCase(getFullMsgAsyncThunk.fulfilled, produce(getMsgFulfilled));
 		builder.addCase(searchConv.fulfilled, produce(searchConvFulfilled));
-		builder.addCase(msgAction.pending, produce(msgActionPending));
-		builder.addCase(msgAction.rejected, produce(msgActionRejected));
 		builder.addCase(getConv.fulfilled, produce(getConvFulfilled));
 		builder.addCase(saveDraftAsyncThunk.fulfilled, produce(saveDraftFulfilled));
 		builder.addCase(search.fulfilled, produce(fetchMessagesFulfilled));

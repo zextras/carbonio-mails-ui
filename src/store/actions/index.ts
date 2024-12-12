@@ -7,7 +7,6 @@ export * from './conv-action';
 export * from './search';
 export * from './get-conv';
 export * from './get-msg-async-thunk';
-export * from './msg-action';
 export * from './search-conv';
 export * from './redirect-action';
 export * from './get-msg-for-print';
