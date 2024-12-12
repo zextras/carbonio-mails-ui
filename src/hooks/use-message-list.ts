@@ -67,7 +67,7 @@ export const useMessageListByFolder = (folder: Folder): MessageSliceState => {
 		async (abortSignal: AbortSignal | undefined) => {
 			updateMessagesResultsLoadingStatus(API_REQUEST_STATUS.pending);
 			const searchResponse = await searchSoapApi({
-				folderId,
+				folderId: folder.id,
 				limit: LIST_LIMIT.INITIAL_LIMIT,
 				types: 'message',
 				offset: 0,
@@ -84,7 +84,7 @@ export const useMessageListByFolder = (folder: Folder): MessageSliceState => {
 				handleMessageResults({ searchResponse });
 			}
 		},
-		[folderId, handleMessageResults, prefLocale]
+		[folder.id, handleMessageResults, prefLocale]
 	);
 
 	useEffect(() => {
