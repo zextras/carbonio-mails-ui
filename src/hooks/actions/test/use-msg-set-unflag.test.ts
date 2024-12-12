@@ -11,7 +11,7 @@ import { times } from 'lodash';
 import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { setupHook } from '../../../carbonio-ui-commons/test/test-setup';
 import { generateStore } from '../../../tests/generators/store';
-import { MsgActionRequest } from '../../../types';
+import { MsgActionRequest, MsgActionResponse } from '../../../types';
 import { useMsgSetUnflagDescriptor, useMsgSetUnflagFn } from '../use-msg-set-unflag';
 
 describe('useMsgSetUnflag', () => {
@@ -86,7 +86,13 @@ describe('useMsgSetUnflag', () => {
 			});
 
 			it('should call the API with the proper params if the action can be executed', async () => {
-				const apiInterceptor = createSoapAPIInterceptor<MsgActionRequest>('MsgAction');
+				const response: MsgActionResponse = {
+					action: {
+						id: '',
+						op: 'trash'
+					}
+				};
+				const apiInterceptor = createSoapAPIInterceptor<MsgActionRequest>('MsgAction', response);
 				const ids = times(faker.number.int({ max: 20 }), () => faker.number.int().toString());
 
 				const {
