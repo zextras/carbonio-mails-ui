@@ -10,6 +10,7 @@ import { useSnackbar } from '@zextras/carbonio-design-system';
 import { replaceHistory } from '@zextras/carbonio-shell-ui';
 import { useTranslation } from 'react-i18next';
 
+import { msgActionSoapApi } from '../../api/msg-action';
 import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
 import { isTrash } from '../../carbonio-ui-commons/helpers/folders';
 import { MessageActionsDescriptors } from '../../constants';
@@ -100,14 +101,12 @@ export const useMsgMoveToTrashFn = ({
 
 	const execute = useCallback((): void => {
 		if (canExecute()) {
-			dispatch(
-				msgAction({
-					operation: 'trash',
-					ids
-				})
-			).then((res) => {
-				if (res.type.includes('fulfilled')) {
-					deselectAll && deselectAll();
+			msgActionSoapApi({
+				operation: 'trash',
+				ids
+			}).then((res) => {
+				if (!('Fault' in res)) {
+					deselectAll?.();
 					if (!inSearchModule) {
 						shouldReplaceHistory && replaceHistory(`/folder/${folderId}`);
 					}
@@ -135,7 +134,6 @@ export const useMsgMoveToTrashFn = ({
 		}
 	}, [
 		canExecute,
-		dispatch,
 		ids,
 		deselectAll,
 		inSearchModule,
@@ -143,7 +141,8 @@ export const useMsgMoveToTrashFn = ({
 		t,
 		shouldReplaceHistory,
 		folderId,
-		restoreMessage
+		restoreMessage,
+		dispatch
 	]);
 
 	return useMemo(() => ({ canExecute, execute }), [canExecute, execute]);
