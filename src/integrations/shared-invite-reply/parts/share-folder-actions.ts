@@ -7,6 +7,7 @@ import { useCallback } from 'react';
 
 import { map } from 'lodash';
 
+import { msgActionSoapApi } from '../../../api/msg-action';
 import { ParticipantRole } from '../../../carbonio-ui-commons/constants/participants';
 import { useUiUtilities } from '../../../hooks/use-ui-utilities';
 import { msgAction } from '../../../store/actions';
@@ -40,7 +41,6 @@ type Accept = {
 
 type MoveInviteToTrashType = {
 	t: (...args: any[]) => string;
-	dispatch: AppDispatch;
 	msgId: string;
 };
 
@@ -134,14 +134,12 @@ const sharedCalendarReplyFunc = ({
 const useMoveInviteToTrashFunc = (): ((arg: MoveInviteToTrashType) => any) => {
 	const { createSnackbar } = useUiUtilities();
 	return useCallback(
-		({ msgId, dispatch, t }) =>
-			dispatch(
-				msgAction({
-					operation: `trash`,
-					ids: [msgId]
-				})
-			).then((res2: any): void => {
-				if (!res2.type.includes('fulfilled')) {
+		({ msgId, t }) =>
+			msgActionSoapApi({
+				operation: `trash`,
+				ids: [msgId]
+			}).then((res2: any): void => {
+				if ('Fault' in res2) {
 					createSnackbar({
 						key: `share`,
 						replace: true,
@@ -205,7 +203,7 @@ export const useAccept = (): ((arg: Accept) => void) => {
 							allowedActions,
 							isAccepted: true
 						});
-					moveInviteToTrashFunc({ msgId, dispatch, t });
+					moveInviteToTrashFunc({ msgId, t });
 					createSnackbar({
 						key: `share_accepted`,
 						replace: true,
