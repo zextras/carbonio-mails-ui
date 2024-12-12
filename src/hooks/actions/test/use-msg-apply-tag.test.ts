@@ -14,7 +14,7 @@ import { setupHook } from '../../../carbonio-ui-commons/test/test-setup';
 import { FOLDERS_DESCRIPTORS } from '../../../constants';
 import { generateMessage } from '../../../tests/generators/generateMessage';
 import { generateStore } from '../../../tests/generators/store';
-import { ConvActionRequest } from '../../../types';
+import { MsgActionRequest, MsgActionResponse } from '../../../types';
 import { useMsgApplyTagDescriptor, useMsgApplyTagSubDescriptors } from '../use-msg-apply-tag';
 
 jest.mock('../../../carbonio-ui-commons/store/zustand/tags', () => ({
@@ -167,7 +167,16 @@ describe('useMsgApplyTag', () => {
 					}
 				};
 				(useTags as jest.Mock).mockReturnValue(tags);
-				const interceptor = createSoapAPIInterceptor<ConvActionRequest>('MsgAction');
+				const response: MsgActionResponse = {
+					action: {
+						id: '123',
+						op: 'tag'
+					}
+				};
+				const interceptor = createSoapAPIInterceptor<MsgActionRequest, MsgActionResponse>(
+					'MsgAction',
+					response
+				);
 				const {
 					result: { current: descriptor }
 				} = setupHook(useMsgApplyTagSubDescriptors, {
@@ -185,7 +194,7 @@ describe('useMsgApplyTag', () => {
 				expect(requestParameter.action.l).toBeUndefined();
 			});
 
-			it('should call the API to add the tag from the message', async () => {
+			it('should call the API to add the tag to the message', async () => {
 				const tags = {
 					'1': {
 						id: '1',
@@ -193,7 +202,16 @@ describe('useMsgApplyTag', () => {
 					}
 				};
 				(useTags as jest.Mock).mockReturnValue(tags);
-				const interceptor = createSoapAPIInterceptor<ConvActionRequest>('MsgAction');
+				const response: MsgActionResponse = {
+					action: {
+						id: '123',
+						op: 'tag'
+					}
+				};
+				const interceptor = createSoapAPIInterceptor<MsgActionRequest, MsgActionResponse>(
+					'MsgAction',
+					response
+				);
 				const {
 					result: { current: descriptor }
 				} = setupHook(useMsgApplyTagSubDescriptors, {

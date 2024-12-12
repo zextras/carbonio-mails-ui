@@ -21,7 +21,7 @@ export const msgActionSoapApi = async ({
 	tagName,
 	flag
 }: MsgActionParameters): Promise<MsgActionResult> => {
-	const { action } = (await soapFetch<MsgActionRequest, MsgActionResponse>('MsgAction', {
+	const { action } = await soapFetch<MsgActionRequest, MsgActionResponse>('MsgAction', {
 		_jsns: 'urn:zimbraMail',
 
 		action: omitBy(
@@ -34,7 +34,7 @@ export const msgActionSoapApi = async ({
 			},
 			isNil
 		)
-	})) as MsgActionResponse;
+	});
 	return {
 		ids: action.id.split(','),
 		operation: action.op
