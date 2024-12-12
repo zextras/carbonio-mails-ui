@@ -161,7 +161,10 @@ describe('useMsgSetRead', () => {
 						op: 'trash'
 					}
 				};
-				const apiInterceptor = createSoapAPIInterceptor<MsgActionRequest>('MsgAction', response);
+				const apiInterceptor = createSoapAPIInterceptor<MsgActionRequest, MsgActionResponse>(
+					'MsgAction',
+					response
+				);
 				const ids = times(faker.number.int({ max: 20 }), () => faker.number.int().toString());
 
 				const {
