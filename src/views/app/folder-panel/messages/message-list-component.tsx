@@ -111,7 +111,6 @@ export const MessageListComponent: FC<MessageListComponentProps> = memo(
 			[root, folder, isSearchModule]
 		);
 
-		// TODO: CO-1725 fix this
 		const onListBottom = useCallback((): void => {
 			loadMore?.();
 		}, [loadMore]);
