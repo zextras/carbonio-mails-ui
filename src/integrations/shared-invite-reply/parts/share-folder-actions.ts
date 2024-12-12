@@ -10,7 +10,6 @@ import { map } from 'lodash';
 import { msgActionSoapApi } from '../../../api/msg-action';
 import { ParticipantRole } from '../../../carbonio-ui-commons/constants/participants';
 import { useUiUtilities } from '../../../hooks/use-ui-utilities';
-import { msgAction } from '../../../store/actions';
 import { acceptSharedCalendarReply } from '../../../store/actions/acceptSharedCalendarReply';
 import {
 	CreateMountpointDataType,
@@ -249,13 +248,11 @@ export const useDecline = (): ((arg: DeclineType) => Promise<void>) => {
 			allowedActions,
 			notifyOrganizer
 		}) =>
-			dispatch(
-				msgAction({
-					operation: `trash`,
-					ids: [msgId]
-				})
-			).then((res): void => {
-				if (res.type.includes('fulfilled')) {
+			msgActionSoapApi({
+				operation: `trash`,
+				ids: [msgId]
+			}).then((res): void => {
+				if (!('Fault' in res)) {
 					notifyOrganizer &&
 						sharedCalendarReplyFunc({
 							dispatch,
