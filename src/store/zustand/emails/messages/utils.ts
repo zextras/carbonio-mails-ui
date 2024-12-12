@@ -82,19 +82,6 @@ function resetMessagesAndPopulatedItems(
 	);
 }
 
-function deleteMessagesFromMessageSlice(
-	messageIds: Array<string>,
-	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
-): void {
-	useEmailsStore.setState(
-		produce((state: EmailsStoreState) => {
-			messageIds.forEach((id) => {
-				delete state.populatedItemsSlice.messages[id];
-				state.messagesSlice.messageIds.delete(id);
-			});
-		})
-	);
-}
 function appendMessagesToMessagesSlice(
 	messages: Array<MailMessage | IncompleteMessage>,
 	offset: number,
@@ -119,7 +106,6 @@ export const messageSliceUtils = {
 	setMessages,
 	updateMessagesResultsLoadingStatus,
 	resetMessagesAndPopulatedItems,
-	deleteMessagesFromMessageSlice,
 	appendMessagesToMessagesSlice,
 	useMessagesIdsByFolder
 };

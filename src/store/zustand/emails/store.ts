@@ -172,15 +172,6 @@ export function resetMessagesAndPopulatedItems(): void {
 	messageSliceUtils.resetMessagesAndPopulatedItems(useEmailsStore);
 }
 
-/**
- * Deletes messages from the message and populated slice in the email store.
- *
- * @param {Array<string>} ids - The IDs of the messages to delete.
- */
-export function deleteMessagesFromMessageSlice(ids: Array<string>): void {
-	messageSliceUtils.deleteMessagesFromMessageSlice(ids, useEmailsStore);
-}
-
 export function appendMessagesToMessagesSlice(
 	messages: Array<MailMessage | IncompleteMessage>,
 	offset: number

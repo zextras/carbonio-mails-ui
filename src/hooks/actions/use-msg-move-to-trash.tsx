@@ -108,7 +108,6 @@ export const useMsgMoveToTrashFn = ({
 			).then((res) => {
 				if (res.type.includes('fulfilled')) {
 					deselectAll && deselectAll();
-					// deleteMessagesFromMessageSlice(ids);
 					if (!inSearchModule) {
 						shouldReplaceHistory && replaceHistory(`/folder/${folderId}`);
 					}
