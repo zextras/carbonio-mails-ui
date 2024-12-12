@@ -7,6 +7,7 @@ import { Dispatch } from '@reduxjs/toolkit';
 import { renderHook } from '@testing-library/react';
 import { CreateSnackbarFn, useSnackbar } from '@zextras/carbonio-design-system';
 
+import { createSoapAPIInterceptor } from '../../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { setupHook } from '../../../../carbonio-ui-commons/test/test-setup';
 import { useAccept } from '../share-folder-actions';
 
@@ -28,6 +29,13 @@ afterEach(() => {
 
 describe('share folder actions', () => {
 	it('should mount shared folder on accept', async () => {
+		const response = {
+			action: {
+				id: '',
+				op: 'trash'
+			}
+		};
+		createSoapAPIInterceptor('MsgAction', response);
 		const dispatch = jest.fn(() =>
 			Promise.resolve({
 				type: 'fulfilled'
