@@ -14,7 +14,6 @@ import {
 	IncompleteMessage,
 	EmailsStoreState,
 	NormalizedConversation,
-	PopulatedItemsSliceState,
 	SearchRequestStatus
 } from '../../../../types';
 
@@ -36,7 +35,7 @@ function updateConversationsOnly(
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
 ): void {
 	useEmailsStore.setState(
-		produce(({ populatedItemsSlice }: PopulatedItemsSliceState) => {
+		produce(({ populatedItemsSlice }: EmailsStoreState) => {
 			conversations.forEach((conversation) => {
 				populatedItemsSlice.conversations[conversation.id] = {
 					...merge(populatedItemsSlice.conversations[conversation.id], conversation),
@@ -51,7 +50,7 @@ function updateMessagesOnly(
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
 ): void {
 	useEmailsStore.setState(
-		produce(({ populatedItemsSlice }: PopulatedItemsSliceState) => {
+		produce(({ populatedItemsSlice }: EmailsStoreState) => {
 			messages.forEach((message) => {
 				populatedItemsSlice.messages[message.id] = {
 					...merge(populatedItemsSlice.messages[message.id], message),
@@ -67,7 +66,7 @@ function updateMessages(
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
 ): void {
 	useEmailsStore.setState(
-		produce(({ populatedItemsSlice }: PopulatedItemsSliceState) => {
+		produce(({ populatedItemsSlice }: EmailsStoreState) => {
 			messages.forEach((message) => {
 				populatedItemsSlice.messages[message.id] = message;
 			});
@@ -80,7 +79,7 @@ function updateConversationStatus(
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
 ): void {
 	useEmailsStore.setState(
-		produce(({ populatedItemsSlice }: PopulatedItemsSliceState) => {
+		produce(({ populatedItemsSlice }: EmailsStoreState) => {
 			populatedItemsSlice.conversationsStatus[conversationId] = status;
 		})
 	);
@@ -91,7 +90,7 @@ function updateMessageStatus(
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
 ): void {
 	useEmailsStore.setState(
-		produce(({ populatedItemsSlice }: PopulatedItemsSliceState) => {
+		produce(({ populatedItemsSlice }: EmailsStoreState) => {
 			populatedItemsSlice.messagesStatus[messageId] = status;
 		})
 	);
@@ -112,7 +111,7 @@ function useMessagesByIds(
 	ids: Array<string>,
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
 ): Array<IncompleteMessage | MailMessage> {
-	return useEmailsStore(({ populatedItemsSlice }) =>
+	return useEmailsStore(({ populatedItemsSlice }: EmailsStoreState) =>
 		filter(populatedItemsSlice.messages, (message) => includes(ids, message.id))
 	);
 }

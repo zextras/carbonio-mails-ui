@@ -15,8 +15,7 @@ import {
 	IncompleteMessage,
 	MailMessage,
 	NormalizedConversation,
-	SearchRequestStatus,
-	SearchSliceState
+	SearchRequestStatus
 } from '../../../../types';
 import { POPULATED_ITEMS_INITIAL_STATE } from '../populated-items/populated-items-slice';
 
@@ -37,13 +36,13 @@ function setSearchResultsByConversation(
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
 ): void {
 	useEmailsStore.setState(
-		produce(({ search, populatedItems }) => {
-			search.conversationIds = new Set(conversations.map((c) => c.id));
-			search.status = API_REQUEST_STATUS.fulfilled;
-			search.messageIds = new Set();
-			search.offset = 0;
-			search.more = more;
-			populatedItems.conversations = conversations.reduce(
+		produce(({ searchSlice, populatedItemsSlice }: EmailsStoreState) => {
+			searchSlice.conversationIds = new Set(conversations.map((c) => c.id));
+			searchSlice.status = API_REQUEST_STATUS.fulfilled;
+			searchSlice.messageIds = new Set();
+			searchSlice.offset = 0;
+			searchSlice.more = more;
+			populatedItemsSlice.conversations = conversations.reduce(
 				(acc, conv) => {
 					acc[conv.id] = conv;
 					return acc;
@@ -60,13 +59,13 @@ function setSearchResultsByMessage(
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
 ): void {
 	useEmailsStore.setState(
-		produce(({ search, populatedItems }) => {
-			search.messageIds = new Set(messages.map((message) => message.id));
-			search.status = API_REQUEST_STATUS.fulfilled;
-			search.conversationIds = new Set();
-			search.offset = 0;
-			search.more = more;
-			populatedItems.messages = messages.reduce(
+		produce(({ searchSlice, populatedItemsSlice }: EmailsStoreState) => {
+			searchSlice.messageIds = new Set(messages.map((message) => message.id));
+			searchSlice.status = API_REQUEST_STATUS.fulfilled;
+			searchSlice.conversationIds = new Set();
+			searchSlice.offset = 0;
+			searchSlice.more = more;
+			populatedItemsSlice.messages = messages.reduce(
 				(acc, message) => {
 					acc[message.id] = message;
 					return acc;
@@ -133,7 +132,7 @@ function updateSearchResultsLoadingStatus(
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
 ): void {
 	useEmailsStore.setState(
-		produce(({ searchSlice }: SearchSliceState) => {
+		produce(({ searchSlice }: EmailsStoreState) => {
 			searchSlice.status = status;
 		})
 	);
