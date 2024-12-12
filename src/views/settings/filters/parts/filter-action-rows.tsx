@@ -6,12 +6,9 @@
 import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
 
 import {
-	Button,
-	ChipInput,
 	Container,
 	CustomModal,
 	IconButton,
-	Input,
 	Padding,
 	Row,
 	Text,
@@ -25,6 +22,10 @@ import styled from 'styled-components';
 import { v4 as uuidv4 } from 'uuid';
 
 import CustomSelect from './custom-select';
+import { MarkAs } from './filter-actions/mark-as';
+import { MovetoFolder } from './filter-actions/move-to-folder';
+import { RedirectTo } from './filter-actions/redirect-to';
+import { ShowTag } from './filter-actions/show-tag';
 import { getActionOptions, getMarkAsOptions } from './utils';
 import { ZIMBRA_STANDARD_COLORS } from '../../../../carbonio-ui-commons/constants';
 import { CONTACT_TYPES } from '../../../../carbonio-ui-commons/integrations/constants';
@@ -403,66 +404,29 @@ const FilterActionRows: FC<FilterActionRowProps> = ({
 						</Row>
 					)}
 				{showBrowseBtn && (
-					<>
-						{destination && Object.keys(destination).length > 0 && destination?.name !== '' && (
-							<Row padding={{ right: 'small' }}>
-								<Input
-									label={t('label.destination_folder', 'Destination Folder')}
-									backgroundColor="gray5"
-									value={destination?.name}
-									disabled
-								/>
-							</Row>
-						)}
-						<Row>
-							<Button
-								disabled={openFolderModalDisabled}
-								label={t('settings.browse', 'Browse')}
-								type="outlined"
-								onClick={openModal}
-							/>
-						</Row>
-					</>
+					<MovetoFolder
+						destination={destination}
+						onClick={openModal}
+						disabled={openFolderModalDisabled}
+					/>
 				)}
 				{showMarksAsBtn && (
-					<Row padding={{ right: 'small' }} minWidth="12.5rem">
-						<CustomSelect
-							items={markAsOptions}
-							background="gray5"
-							label=""
-							onChange={handleMarkAsOptionChange}
-							defaultSelection={defaultMarkAsOption}
-						/>
-					</Row>
+					<MarkAs
+						options={markAsOptions}
+						onChange={handleMarkAsOptionChange}
+						selected={defaultMarkAsOption}
+					/>
 				)}
 
-				{showRedirectToAddrsInput && (
-					<Row padding={{ right: 'small' }} minWidth="22rem">
-						<ContactInput
-							data-testid={'filter-action-row-contact-input'}
-							placeholder={t('settings.address', 'Address')}
-							onChange={onChange}
-							defaultValue={contacts}
-							maxChips={1}
-						/>
-					</Row>
-				)}
+				{showRedirectToAddrsInput && <RedirectTo defaultValue={contacts} onChange={onChange} />}
 
 				{showTagOptions && (
-					<Row padding={{ right: 'small' }} minWidth="12.5rem">
-						<ChipInput
-							placeholder={t('label.tag', 'Tag')}
-							background="gray4"
-							defaultValue={[]}
-							options={tagOptions}
-							value={tag}
-							singleSelection
-							onChange={onTagChange}
-							onAdd={tagChipOnAdd}
-							disableOptions={false}
-							disabled
-						/>
-					</Row>
+					<ShowTag
+						value={tag}
+						tagOptions={tagOptions}
+						onTagChange={onTagChange}
+						onAddTag={tagChipOnAdd}
+					/>
 				)}
 			</Row>
 			<Container orientation="horizontal" mainAlignment="flex-end" width="auto">

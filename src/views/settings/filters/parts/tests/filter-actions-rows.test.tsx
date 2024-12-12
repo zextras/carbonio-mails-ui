@@ -31,12 +31,47 @@ describe('FilterActionsRows', () => {
 			{}
 		);
 	});
+
+	describe('Keep In Inbox', () => {
+		it('it should render the selected action', async () => {
+			setupTest(
+				<FilterActionRows
+					tmpFilter={{
+						actionKeep: [{}]
+					}}
+					index={0}
+					compProps={compProps}
+				/>,
+				{}
+			);
+		});
+	});
+	// describe('Discard', () => {});
+	// describe('Move Into Folder', () => {});
+	// describe('Tag With', () => {});
+
+	// describe('Mark as', () => {});
+
 	describe('Redirect To Address', () => {
 		it('should not display Contact Input when dropdown option is different from "Redirect To Address"', async () => {
 			setupTest(
 				<FilterActionRows
 					tmpFilter={{
 						actionStop: [{ flagName: 'flagged' }]
+					}}
+					index={0}
+					compProps={compProps}
+				/>,
+				{}
+			);
+			expect(screen.queryByTestId('filter-action-row-contact-input')).not.toBeInTheDocument();
+		});
+
+		it('should not display Contact Input when dropdown option is different from "Tag With"', async () => {
+			setupTest(
+				<FilterActionRows
+					tmpFilter={{
+						tagWith: [{ flagName: 'flagged' }]
 					}}
 					index={0}
 					compProps={compProps}
