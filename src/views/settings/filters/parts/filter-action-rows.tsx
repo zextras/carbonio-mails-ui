@@ -7,7 +7,6 @@ import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
 
 import {
 	Container,
-	CustomModal,
 	IconButton,
 	Padding,
 	Row,
@@ -16,6 +15,7 @@ import {
 	getColor,
 	ChipItem
 } from '@zextras/carbonio-design-system';
+import { Folder } from '@zextras/carbonio-shell-ui';
 import { TFunction } from 'i18next';
 import { filter, omit } from 'lodash';
 import styled from 'styled-components';
@@ -29,10 +29,7 @@ import { ShowTag } from './filter-actions/show-tag';
 import { getActionOptions, getMarkAsOptions } from './utils';
 import { ZIMBRA_STANDARD_COLORS } from '../../../../carbonio-ui-commons/constants';
 import { CONTACT_TYPES } from '../../../../carbonio-ui-commons/integrations/constants';
-import { useContactInput } from '../../../../carbonio-ui-commons/integrations/hooks';
 import { ContactInputItem } from '../../../../carbonio-ui-commons/integrations/types';
-import { Folder } from '../../../../carbonio-ui-commons/types';
-import { SelectFolderModal } from '../../../../ui-actions/modals/select-folder-modal';
 
 export const StyledIconButton = styled(IconButton)`
 	border: 0.0625rem solid
@@ -88,7 +85,6 @@ const FilterActionRows: FC<FilterActionRowProps> = ({
 		setTempActions,
 		zimbraFeatureMailForwardingInFiltersEnabled
 	} = compProps;
-	const [open, setOpen] = useState(false);
 	const [activeIndex, setActiveIndex] = useState(0);
 	const [destination, setDestination] = useState<{ name?: string }>({});
 	const [isRedirectToActionRemoved, setIsRedirectToActionRemoved] = useState(false);
@@ -113,7 +109,6 @@ const FilterActionRows: FC<FilterActionRowProps> = ({
 		[activeActionOption]
 	);
 	const [contacts, setContacts] = useState<ContactInputItem[]>([]);
-	const ContactInput = useContactInput();
 
 	const onChange = useCallback(
 		(users: ContactInputItem[]): void => {
@@ -128,10 +123,6 @@ const FilterActionRows: FC<FilterActionRowProps> = ({
 		},
 		[index, setTempActions, tempActions]
 	);
-	const onModalClose = useCallback(() => {
-		setDestination({});
-		setOpen(false);
-	}, []);
 
 	const defaultValue = useMemo(() => {
 		const action = Object.keys(omit(tmpFilter, 'id'))[0];
@@ -303,10 +294,6 @@ const FilterActionRows: FC<FilterActionRowProps> = ({
 		},
 		[index, isRedirectToActionRemoved, setTempActions, tempActions]
 	);
-	const openFolderModalDisabled = useMemo(
-		() => activeActionOption !== 'moveIntoFolder',
-		[activeActionOption]
-	);
 
 	const showTagOptions = useMemo(() => activeActionOption === 'tagWith', [activeActionOption]);
 
@@ -325,10 +312,9 @@ const FilterActionRows: FC<FilterActionRowProps> = ({
 		},
 		[tagOptions]
 	);
-	const openModal = useCallback(() => {
+	const onSelectFolder = useCallback(() => {
 		setActiveIndex(index);
-		setOpen(true);
-	}, [setOpen, setActiveIndex, index]);
+	}, [setActiveIndex, index]);
 
 	const onTagChange = useCallback(
 		(chip: ChipItem[]) => {
@@ -357,11 +343,7 @@ const FilterActionRows: FC<FilterActionRowProps> = ({
 	);
 
 	const confirmAction = useCallback(
-		(
-			folderDestination: Folder | undefined,
-			setFolderDestination: (_folder: Folder | undefined) => void,
-			_onModalClose: () => void
-		) => {
+		(folderDestination: Folder | undefined) => {
 			const previous = tempActions.slice();
 			previous[activeIndex] = {
 				id: previous[activeIndex]?.id,
@@ -369,14 +351,9 @@ const FilterActionRows: FC<FilterActionRowProps> = ({
 			};
 			setTempActions(previous);
 			setDestination({ name: folderDestination?.name });
-			setOpen(false);
 		},
-		[tempActions, activeIndex, setTempActions, setDestination, setOpen]
+		[tempActions, activeIndex, setTempActions, setDestination]
 	);
-
-	const headerTitle = t('label.choose_folder', 'Choose Folder');
-	const actionLabel = t('settings.choose', 'Choose');
-	const inputLabel = t('settings.filter_folder_message', 'Select a folder to apply your filter:');
 
 	return (
 		<Container
@@ -406,8 +383,9 @@ const FilterActionRows: FC<FilterActionRowProps> = ({
 				{showBrowseBtn && (
 					<MovetoFolder
 						destination={destination}
-						onClick={openModal}
-						disabled={openFolderModalDisabled}
+						setDestination={setDestination}
+						onSelectFolder={onSelectFolder}
+						onConfirmDestination={confirmAction}
 					/>
 				)}
 				{showMarksAsBtn && (
@@ -444,20 +422,6 @@ const FilterActionRows: FC<FilterActionRowProps> = ({
 					</Tooltip>
 				</Padding>
 			</Container>
-			<CustomModal open={open} onClose={onModalClose} maxHeight="90vh" size="medium">
-				<SelectFolderModal
-					onClose={onModalClose}
-					headerTitle={headerTitle}
-					actionLabel={actionLabel}
-					inputLabel={inputLabel}
-					confirmAction={confirmAction}
-					showSharedAccounts={false}
-					showSpamFolder
-					showTrashFolder
-					allowFolderCreation={false}
-					allowRootSelection={false}
-				/>
-			</CustomModal>
 		</Container>
 	);
 };
