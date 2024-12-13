@@ -3,16 +3,22 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 
-import { includes, map } from 'lodash';
+import { map } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
 import { msgActionSoapApi } from '../../api/msg-action';
 import { useTags } from '../../carbonio-ui-commons/store/zustand/tags';
+import { Tag } from '../../carbonio-ui-commons/types/tags';
 import { MessageActionsDescriptors, TIMEOUTS } from '../../constants';
 import { isSpam } from '../../helpers/folders';
-import { UIActionAggregator, UIActionDescriptor } from '../../types';
+import {
+	MsgActionOperation,
+	MsgActionResponse,
+	UIActionAggregator,
+	UIActionDescriptor
+} from '../../types';
 import { useUiUtilities } from '../use-ui-utilities';
 
 export const useMsgApplyTagSubDescriptors = ({
@@ -28,61 +34,83 @@ export const useMsgApplyTagSubDescriptors = ({
 	const [t] = useTranslation();
 	const tags = useTags();
 
+	const getTagOperationDetails = useCallback(
+		(
+			isTagIncluded: boolean,
+			tag: Tag
+		): { operation: MsgActionOperation; icon: string; snackbarSuccessLabel: string } => {
+			const operation = isTagIncluded ? '!tag' : 'tag';
+			const icon = isTagIncluded ? 'TagOutline' : 'Tag';
+			const snackbarSuccessLabel = isTagIncluded
+				? t('snackbar.tag_removed', {
+						tag: tag.name,
+						defaultValue: '"{{tag}}" tag removed'
+					})
+				: t('snackbar.tag_applied', {
+						tag: tag.name,
+						defaultValue: '"{{tag}}" tag applied'
+					});
+
+			return { operation, icon, snackbarSuccessLabel };
+		},
+		[t]
+	);
+
+	const canExecute = (id: string): boolean => !isSpam(id);
+
+	const handleApiResponse = useCallback(
+		async (response: MsgActionResponse, snackbarSuccessLabel: string): Promise<void> => {
+			if (!('Fault' in response)) {
+				createSnackbar({
+					key: 'tag',
+					replace: true,
+					hideButton: true,
+					severity: 'info',
+					label: snackbarSuccessLabel,
+					autoHideTimeout: TIMEOUTS.SNACKBAR_DEFAULT_TIMEOUT
+				});
+			} else {
+				createSnackbar({
+					key: 'tag',
+					replace: true,
+					severity: 'error',
+					label: t('label.error_try_again', 'Something went wrong, please try again'),
+					autoHideTimeout: TIMEOUTS.SNACKBAR_DEFAULT_TIMEOUT,
+					hideButton: true
+				});
+			}
+		},
+		[createSnackbar, t]
+	);
+
 	const tagActions = useMemo(
 		() =>
 			map(tags, (tag) => {
-				const isTagIncluded = includes(messageTags, tag.id);
-				const operation = isTagIncluded ? '!tag' : 'tag';
-				const icon = isTagIncluded ? 'TagOutline' : 'Tag';
-				const snackbarSuccessLabel = isTagIncluded
-					? t('snackbar.tag_removed', {
-							tag: tag.name,
-							defaultValue: '"{{tag}}" tag removed'
-						})
-					: t('snackbar.tag_applied', {
-							tag: tag.name,
-							defaultValue: '"{{tag}}" tag applied'
-						});
+				const isTagIncluded = messageTags.includes(tag.id);
 
-				const canExecute = (): boolean => !isSpam(folderId);
+				const { operation, icon, snackbarSuccessLabel } = getTagOperationDetails(
+					isTagIncluded,
+					tag
+				);
 
-				const execute = (): void => {
-					if (canExecute()) {
-						msgActionSoapApi({ operation, ids, tagName: tag.name }).then((res: any) => {
-							if (!('Fault' in res)) {
-								createSnackbar({
-									key: `tag`,
-									replace: true,
-									hideButton: true,
-									severity: 'info',
-									label: snackbarSuccessLabel,
-									autoHideTimeout: TIMEOUTS.SNACKBAR_DEFAULT_TIMEOUT
-								});
-							} else {
-								createSnackbar({
-									key: `tag`,
-									replace: true,
-									severity: 'error',
-									label: t('label.error_try_again', 'Something went wrong, please try again'),
-									autoHideTimeout: TIMEOUTS.SNACKBAR_DEFAULT_TIMEOUT,
-									hideButton: true
-								});
-							}
-						});
+				const execute = async (): Promise<void> => {
+					if (canExecute(folderId)) {
+						const res = await msgActionSoapApi({ operation, ids, tagName: tag.name });
+						handleApiResponse(res, snackbarSuccessLabel);
 					}
 				};
+
 				return {
 					id: tag.id,
 					icon,
 					label: tag.name,
 					color: tag.color,
 					execute,
-					canExecute
+					canExecute: () => canExecute(folderId)
 				};
 			}),
-		[createSnackbar, folderId, ids, messageTags, t, tags]
+		[folderId, getTagOperationDetails, handleApiResponse, ids, messageTags, tags]
 	);
-
 	return useMemo(() => tagActions, [tagActions]);
 };
 
