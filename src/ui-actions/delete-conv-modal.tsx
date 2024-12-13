@@ -21,12 +21,14 @@ type DeleteConvConfirmPropType = {
 	deselectAll?: () => void | undefined;
 	onClose: () => void;
 };
-export const DeleteConvConfirm: FC<DeleteConvConfirmPropType> = ({
+
+// TODO: CO-1725 - add test once dispatch has been removed
+export const DeleteConvConfirm = ({
 	selectedIDs,
 	isMessageView,
 	deselectAll,
 	onClose
-}) => {
+}: DeleteConvConfirmPropType): React.JSX.Element => {
 	const [t] = useTranslation();
 	const dispatch = useAppDispatch();
 	const { createSnackbar } = useUiUtilities();
