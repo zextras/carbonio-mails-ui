@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.22.0](https://github.com/zextras/carbonio-mails-ui/compare/v1.21.3...v1.22.0) (2024-12-12)
+
+
+### Features
+
+* add AuthGuard component to segregate authenticated-only content ([9936efc](https://github.com/zextras/carbonio-mails-ui/commit/9936efc3009a435af04c166f73266a8eda9e6e02))
+
+
+### Bug Fixes
+
+* prevent module to load if the user is not authenticated ([9c1c087](https://github.com/zextras/carbonio-mails-ui/commit/9c1c087c517283c30a507fa9c1e1811f1c6ecb75))
+
 ### [1.21.3](https://github.com/zextras/carbonio-mails-ui/compare/v1.21.2...v1.21.3) (2024-12-10)
 
 
