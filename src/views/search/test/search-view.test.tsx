@@ -61,7 +61,7 @@ type SetupTest = {
 	viewBy: 'message' | 'conversation';
 };
 
-const aRandomMsgActionResponse = {
+const aRandomMsgActionResponse: MsgActionResponse = {
 	action: {
 		id: '123',
 		op: 'trash'
@@ -576,7 +576,7 @@ describe('SearchView', () => {
 				m: [getSoapMessage('10', { su: 'message 1 Subject', f: 'u' })],
 				more: false
 			});
-			const msgActionInterceptor = createSoapAPIInterceptor<MsgActionRequest>(
+			const msgActionInterceptor = createSoapAPIInterceptor<MsgActionRequest, MsgActionResponse>(
 				'MsgAction',
 				aRandomMsgActionResponse
 			);
@@ -660,7 +660,7 @@ describe('SearchView', () => {
 		);
 		createSoapAPIInterceptor<GetMsgRequest, GetMsgResponse>('GetMsg', {
 			m: {}
-		});
+		} as GetMsgResponse);
 
 		const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
 		const setSearchDisabled = jest.fn();
@@ -765,7 +765,10 @@ describe('SearchView', () => {
 		});
 
 		const clickableMessage = await screen.findByTestId(`hover-container-10`);
-		createSoapAPIInterceptor<MsgActionRequest>('MsgAction', aRandomMsgActionResponse);
+		createSoapAPIInterceptor<MsgActionRequest, MsgActionResponse>(
+			'MsgAction',
+			aRandomMsgActionResponse
+		);
 		await act(async () => {
 			await user.click(clickableMessage);
 		});
