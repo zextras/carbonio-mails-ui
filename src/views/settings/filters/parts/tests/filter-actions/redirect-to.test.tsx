@@ -36,9 +36,24 @@ describe('Redirect To', () => {
 
 		expect(screen.getByText('test label')).toBeVisible();
 	});
+	it('it should call onChange only when adding the first value', async () => {
+		const store = generateStore();
+		const onChangeFn = jest.fn();
 
-	// TODO: check if we really wanna test the chipinput fallback of contact integration again here
-	it.skip('it should call onChange with the typed value', async () => {
+		const { user } = setupTest(<RedirectTo defaultValue={[]} onChange={onChangeFn} />, {
+			store
+		});
+
+		const redirectToAddressInput = await screen.findByTestId('filter-action-row-contact-input');
+		await user.type(redirectToAddressInput, 'valid@email.it');
+		await user.type(redirectToAddressInput, '[Enter]');
+		expect(onChangeFn).toHaveBeenCalledWith([
+			expect.objectContaining({
+				label: 'valid@email.it'
+			})
+		]);
+	});
+	it('it should not call onChange if adding a second value (max 1 chip)', async () => {
 		const store = generateStore();
 		const onChangeFn = jest.fn();
 		const label = 'test label';
@@ -62,23 +77,9 @@ describe('Redirect To', () => {
 			}
 		);
 
-		// const inputElement = screen.getByRole('textbox', {
-		// 	name: /address/i
-		// });
-		// const newValue = 'anothervalue@test.com';
-		// await user.type(inputElement, newValue);
-		// await user.type(inputElement, '[Enter]');
-
-		// await waitFor(() => {
-		// 	expect(onChangeFn).toHaveBeenCalledTimes(1);
-		// });
-		// expect(onChangeFn).toHaveBeenCalledWith(newValue);
-
 		const redirectToAddressInput = await screen.findByTestId('filter-action-row-contact-input');
 		await user.type(redirectToAddressInput, 'valid@email.it');
 		await user.type(redirectToAddressInput, '[Enter]');
-		expect(onChangeFn).toHaveBeenCalledWith([
-			expect.objectContaining({ actionRedirect: [{ a: 'valid@email.it' }] })
-		]);
+		expect(onChangeFn).not.toHaveBeenCalled();
 	});
 });
