@@ -18,7 +18,7 @@ import MailPreview, { MailPreviewProps } from '../mail-preview';
  * Test the Mail Preview component in different scenarios
  */
 // See: tests/mocks/network/msw/cases/getMsg/getMsg-${id} for relative msgId
-describe.skip('Mail preview', () => {
+describe('Mail preview', () => {
 	it('10 - 3 inline images', async () => {
 		const store = generateStore();
 		const msgId = '10';
@@ -38,8 +38,9 @@ describe.skip('Mail preview', () => {
 		// Render the component
 		setupTest(<MailPreview {...props} />, { store });
 
-		const messageRenderer: HTMLDivElement = await screen.findByTestId('message-renderer-container');
-		const content = messageRenderer.innerHTML.toString();
+		const { shadowRoot }: HTMLDivElement = await screen.findByTestId('shadow-dom-wrapper');
+
+		const content = shadowRoot?.innerHTML.toString();
 
 		// test if msg10 has 3 inline attachments
 		expect(content).toContain('img src="/service/home/');
@@ -66,10 +67,9 @@ describe.skip('Mail preview', () => {
 
 		// Render the component
 		setupTest(<MailPreview {...props} />, { store });
-		const messageRenderer: HTMLDivElement = await screen.findByTestId('message-renderer-container');
-		const content = messageRenderer.innerHTML.toString();
+		const { shadowRoot }: HTMLDivElement = await screen.findByTestId('shadow-dom-wrapper');
+		const content = shadowRoot?.innerHTML.toString();
 
-		expect(messageRenderer).toBeVisible();
 		expect(content).toContain('table');
 	});
 
@@ -91,10 +91,9 @@ describe.skip('Mail preview', () => {
 
 		// Render the component
 		setupTest(<MailPreview {...props} />, { store });
-		const messageRenderer: HTMLDivElement = await screen.findByTestId('message-renderer-container');
-		const content = messageRenderer.innerHTML.toString();
+		const { shadowRoot }: HTMLDivElement = await screen.findByTestId('shadow-dom-wrapper');
+		const content = shadowRoot?.innerHTML.toString();
 
-		expect(messageRenderer).toBeVisible();
 		expect(content).toContain('table');
 	});
 });

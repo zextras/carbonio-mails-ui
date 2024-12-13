@@ -70,7 +70,7 @@ export const ShadowDomWrapper = ({ children }: ShadowDomWrapperProps): React.JSX
 	}, [applyDarkReaderStyles, darkModeEnabled]);
 
 	return (
-		<div ref={containerRef}>
+		<div ref={containerRef} data-testid="shadow-dom-wrapper">
 			{shadowRootInitialized &&
 				shadowRootRef.current &&
 				createPortal(children, shadowRootRef.current)}

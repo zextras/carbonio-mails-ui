@@ -14,6 +14,7 @@ import { GlobalExtraWindowManager } from './views/app/extra-windows/global-extra
 import { GlobalModalManager } from './views/global-modal-manager';
 import { InitializeFolders } from './views/sidebar/initialize-folders';
 import { InitializeServicesCatalog } from './views/sidebar/initialize-services-catalog';
+import { InitializeTags } from './views/sidebar/initialize-tags';
 import { SyncDataHandler } from './views/sidebar/sync-data-handler';
 
 const App = (): React.JSX.Element => (
@@ -25,6 +26,7 @@ const App = (): React.JSX.Element => (
 			<GlobalModalManager>
 				<GlobalExtraWindowManager>
 					<InitializeFolders />
+					<InitializeTags />
 					<SyncDataHandler />
 					<InitializeServicesCatalog />
 				</GlobalExtraWindowManager>
