@@ -8,7 +8,7 @@ import React, { useCallback } from 'react';
 import { replaceHistory, t } from '@zextras/carbonio-shell-ui';
 import { forEach, isArray, map } from 'lodash';
 
-import DeleteConvConfirm from './delete-conv-modal';
+import { DeleteConvConfirm } from './delete-conv-modal';
 import { errorPage } from './error-page';
 import MoveConvMessage from './move-conv-msg';
 import { useInSearchModule } from './utils';

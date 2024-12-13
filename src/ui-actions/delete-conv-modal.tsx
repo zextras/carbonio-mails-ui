@@ -21,7 +21,7 @@ type DeleteConvConfirmPropType = {
 	deselectAll?: () => void | undefined;
 	onClose: () => void;
 };
-const DeleteConvConfirm: FC<DeleteConvConfirmPropType> = ({
+export const DeleteConvConfirm: FC<DeleteConvConfirmPropType> = ({
 	selectedIDs,
 	isMessageView,
 	deselectAll,
@@ -101,5 +101,3 @@ const DeleteConvConfirm: FC<DeleteConvConfirmPropType> = ({
 		</Container>
 	);
 };
-
-export default DeleteConvConfirm;

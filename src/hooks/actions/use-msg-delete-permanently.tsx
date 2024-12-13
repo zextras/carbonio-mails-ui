@@ -11,7 +11,7 @@ import { MessageActionsDescriptors } from '../../constants';
 import { isSpam, isTrash } from '../../helpers/folders';
 import { StoreProvider } from '../../store/redux';
 import { ActionFn, UIActionDescriptor } from '../../types';
-import DeleteConvConfirm from '../../ui-actions/delete-conv-modal';
+import { DeleteConvConfirm } from '../../ui-actions/delete-conv-modal';
 import { useUiUtilities } from '../use-ui-utilities';
 
 type MsgDeletePermanentlyFunctionsParameter = {
