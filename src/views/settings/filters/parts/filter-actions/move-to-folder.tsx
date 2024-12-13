@@ -10,28 +10,24 @@ import { useTranslation } from 'react-i18next';
 
 import { Folder } from '../../../../../carbonio-ui-commons/types/folder';
 import { SelectFolderModal } from '../../../../../ui-actions/modals/select-folder-modal';
-// TODO: spostare
-import { TempAction } from '../filter-action-rows';
 
 type MoveToFolderProps = {
-	initialDestinaton: TempAction | undefined;
+	destination?: { name?: string };
 	onSelectFolder: () => void;
 	onConfirmDestination: (destination: Folder | undefined) => void;
 };
 
 export const MovetoFolder = ({
-	initialDestinaton,
+	destination,
 	onSelectFolder,
 	onConfirmDestination
 }: MoveToFolderProps): React.JSX.Element => {
 	const [t] = useTranslation();
 	const [open, setOpen] = useState(false);
-	const [destination, setDestination] = useState<any>({ name: initialDestinaton?.folderPath });
 
 	const onModalClose = useCallback(() => {
-		setDestination({});
 		setOpen(false);
-	}, [setDestination]);
+	}, []);
 
 	const onInternalSelectFolder = useCallback(() => {
 		onSelectFolder();
@@ -40,16 +36,15 @@ export const MovetoFolder = ({
 
 	const onInternalConfirm = useCallback(
 		(folder: Folder | undefined) => {
-			setDestination({ name: folder?.name });
-			onConfirmDestination(destination);
+			onConfirmDestination(folder);
 			setOpen(false);
 		},
-		[destination, onConfirmDestination]
+		[onConfirmDestination]
 	);
 
 	return (
 		<>
-			{destination && Object.keys(destination).length > 0 && destination?.name !== '' && (
+			{destination?.name !== '' && (
 				<Row padding={{ right: 'small' }}>
 					<Input
 						label={t('label.destination_folder', 'Destination Folder')}

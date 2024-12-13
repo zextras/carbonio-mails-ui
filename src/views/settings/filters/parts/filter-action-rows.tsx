@@ -40,6 +40,9 @@ export const StyledIconButton = styled(IconButton)`
 	}
 `;
 
+type ActionFileInto = {
+	folderPath?: string;
+};
 // FIXME: this type was introduced just to start understanding what this code is doing but it is clear it is trying to represent a code that does too many things
 export type TempAction = {
 	id?: string;
@@ -50,7 +53,7 @@ export type TempAction = {
 	actionStop?: Array<unknown>;
 	actionRedirect?: Array<unknown>;
 	actionTag?: Array<unknown>;
-	actionFileInto?: Array<unknown>;
+	actionFileInto?: Array<ActionFileInto>;
 	actionDiscard?: Array<unknown>;
 	tagName?: string;
 	flagName?: string;
@@ -374,7 +377,11 @@ const FilterActionRows: FC<FilterActionRowProps> = ({
 					)}
 				{showBrowseBtn && (
 					<MovetoFolder
-						initialDestinaton={tmpFilter[activeActionOption]?.[0]}
+						destination={
+							tempActions[0]?.actionFileInto?.[0]
+								? { name: tempActions[0].actionFileInto[0].folderPath }
+								: undefined
+						}
 						onSelectFolder={onSelectFolder}
 						onConfirmDestination={confirmAction}
 					/>
