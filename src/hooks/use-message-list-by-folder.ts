@@ -53,12 +53,13 @@ export const useMessageListByFolder = (folder: Folder): MessageSliceState => {
 				updateMessagesResultsLoadingStatus(API_REQUEST_STATUS.error);
 				return;
 			}
-			const tags = getTags();
 
-			if (searchResponse.m) {
-				handleFulFilledMessagesResultsInEmailStore({ searchResponse, tags });
-			}
-			if (searchResponse && !searchResponse.m) {
+			if (searchResponse.m?.length) {
+				handleFulFilledMessagesResultsInEmailStore({
+					searchResponse,
+					tags: getTags()
+				});
+			} else {
 				resetMessagesAndPopulatedItems();
 				updateMessagesResultsLoadingStatus(API_REQUEST_STATUS.fulfilled);
 			}
