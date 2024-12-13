@@ -6,26 +6,28 @@
 import React, { useCallback, useState } from 'react';
 
 import { Button, CustomModal, Input, Row } from '@zextras/carbonio-design-system';
-import { Folder } from '@zextras/carbonio-shell-ui';
 import { useTranslation } from 'react-i18next';
 
+import { Folder } from '../../../../../carbonio-ui-commons/types/folder';
 import { SelectFolderModal } from '../../../../../ui-actions/modals/select-folder-modal';
+// TODO: spostare
+import { TempAction } from '../filter-action-rows';
 
 type MoveToFolderProps = {
-	destination: any;
-	setDestination: (destination: any) => void;
+	initialDestinaton: TempAction | undefined;
 	onSelectFolder: () => void;
 	onConfirmDestination: (destination: Folder | undefined) => void;
 };
 
 export const MovetoFolder = ({
-	destination,
-	setDestination,
+	initialDestinaton,
 	onSelectFolder,
 	onConfirmDestination
 }: MoveToFolderProps): React.JSX.Element => {
 	const [t] = useTranslation();
 	const [open, setOpen] = useState(false);
+	const [destination, setDestination] = useState<any>({ name: initialDestinaton?.folderPath });
+
 	const onModalClose = useCallback(() => {
 		setDestination({});
 		setOpen(false);
@@ -36,10 +38,14 @@ export const MovetoFolder = ({
 		setOpen(true);
 	}, [onSelectFolder]);
 
-	const onInternalConfirm = useCallback(() => {
-		onConfirmDestination(destination);
-		setOpen(false);
-	}, [destination, onConfirmDestination]);
+	const onInternalConfirm = useCallback(
+		(folder: Folder | undefined) => {
+			setDestination({ name: folder?.name });
+			onConfirmDestination(destination);
+			setOpen(false);
+		},
+		[destination, onConfirmDestination]
+	);
 
 	return (
 		<>

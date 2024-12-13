@@ -15,7 +15,6 @@ import {
 	getColor,
 	ChipItem
 } from '@zextras/carbonio-design-system';
-import { Folder } from '@zextras/carbonio-shell-ui';
 import { TFunction } from 'i18next';
 import { filter, omit } from 'lodash';
 import styled from 'styled-components';
@@ -30,6 +29,7 @@ import { getActionOptions, getMarkAsOptions } from './utils';
 import { ZIMBRA_STANDARD_COLORS } from '../../../../carbonio-ui-commons/constants';
 import { CONTACT_TYPES } from '../../../../carbonio-ui-commons/integrations/constants';
 import { ContactInputItem } from '../../../../carbonio-ui-commons/integrations/types';
+import { Folder } from '../../../../carbonio-ui-commons/types/folder';
 
 export const StyledIconButton = styled(IconButton)`
 	border: 0.0625rem solid
@@ -41,7 +41,7 @@ export const StyledIconButton = styled(IconButton)`
 `;
 
 // FIXME: this type was introduced just to start understanding what this code is doing but it is clear it is trying to represent a code that does too many things
-type TempAction = {
+export type TempAction = {
 	id?: string;
 	a?: string;
 	label?: string;
@@ -56,6 +56,7 @@ type TempAction = {
 	flagName?: string;
 	folderPath?: string;
 };
+
 // FIXME: what is "comp" supposed to be?
 type CompProps = {
 	t: TFunction;
@@ -86,7 +87,6 @@ const FilterActionRows: FC<FilterActionRowProps> = ({
 		zimbraFeatureMailForwardingInFiltersEnabled
 	} = compProps;
 	const [activeIndex, setActiveIndex] = useState(0);
-	const [destination, setDestination] = useState<{ name?: string }>({});
 	const [isRedirectToActionRemoved, setIsRedirectToActionRemoved] = useState(false);
 
 	const actionOptions = useMemo(
@@ -142,7 +142,6 @@ const FilterActionRows: FC<FilterActionRowProps> = ({
 			}
 			case 'actionFileInto': {
 				setActiveActionOption('moveIntoFolder');
-				setDestination({ name: tmpFilter[action][0].folderPath });
 				return actionOptions[2];
 			}
 			case 'actionFlag': {
@@ -257,20 +256,13 @@ const FilterActionRows: FC<FilterActionRowProps> = ({
 				}
 				case 'moveIntoFolder': {
 					const previous = tempActions.slice();
-					let folderDetail = [{}];
 					if (!previous[index].actionFileInto) {
-						folderDetail = [
-							{
-								name: ''
-							}
-						];
 						previous[index] = {
 							id: previous[index]?.id,
 							actionFileInto: [{ folderPath: '' }]
 						};
 					}
 					setTempActions(previous);
-					setDestination(folderDetail[0]);
 					break;
 				}
 				case 'redirectToAddress': {
@@ -350,9 +342,9 @@ const FilterActionRows: FC<FilterActionRowProps> = ({
 				actionFileInto: [{ folderPath: `${folderDestination?.absFolderPath}` }]
 			};
 			setTempActions(previous);
-			setDestination({ name: folderDestination?.name });
+			// setDestination({ name: folderDestination?.name });
 		},
-		[tempActions, activeIndex, setTempActions, setDestination]
+		[tempActions, activeIndex, setTempActions]
 	);
 
 	return (
@@ -382,8 +374,7 @@ const FilterActionRows: FC<FilterActionRowProps> = ({
 					)}
 				{showBrowseBtn && (
 					<MovetoFolder
-						destination={destination}
-						setDestination={setDestination}
+						initialDestinaton={tmpFilter[activeActionOption]?.[0]}
 						onSelectFolder={onSelectFolder}
 						onConfirmDestination={confirmAction}
 					/>
