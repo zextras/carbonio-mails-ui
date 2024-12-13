@@ -8,17 +8,16 @@ import React from 'react';
 import { screen } from '@testing-library/react';
 
 import { setupTest } from '../../../../../../carbonio-ui-commons/test/test-setup';
-import { MovetoFolder } from '../../filter-actions/move-to-folder';
 import { generateStore } from '../../../../../../tests/generators/store';
+import { MovetoFolder } from '../../filter-actions/move-to-folder';
 
 describe('Move to Folder', () => {
-	it('it should render the component', async () => {
+	it('it should render initial folder destination in input', async () => {
 		const store = generateStore();
 
 		setupTest(
 			<MovetoFolder
-				destination={undefined}
-				setDestination={jest.fn()}
+				initialDestinaton={{ folderPath: 'test path' }}
 				onSelectFolder={jest.fn()}
 				onConfirmDestination={jest.fn()}
 			/>,
@@ -26,7 +25,7 @@ describe('Move to Folder', () => {
 				store
 			}
 		);
-
-		expect(screen.getByText('sdsdasd')).toBeInTheDocument();
+		const input = screen.getByRole('textbox', { name: 'Destination Folder' });
+		expect(input).toHaveValue('test path');
 	});
 });
