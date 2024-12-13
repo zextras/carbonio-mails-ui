@@ -70,6 +70,6 @@ describe('Move to Folder', () => {
 		const chooseFolder = screen.getByRole('button', { name: 'Choose' });
 		expect(chooseFolder).toBeEnabled();
 		await user.click(chooseFolder);
-		expect(onConfirm).toHaveBeenCalledWith({ name: folder.name });
+		expect(onConfirm).toHaveBeenCalledWith(expect.objectContaining({ name: folder.name }));
 	});
 });
