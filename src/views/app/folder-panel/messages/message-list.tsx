@@ -18,7 +18,7 @@ import { useFolder } from '../../../../carbonio-ui-commons/store/zustand/folder/
 import { API_REQUEST_STATUS, LIST_LIMIT } from '../../../../constants';
 import { getFolderIdParts } from '../../../../helpers/folders';
 import { parseMessageSortingOptions } from '../../../../helpers/sorting';
-import { useMessageListByFolder } from '../../../../hooks/use-message-list';
+import { useMessageListByFolder } from '../../../../hooks/use-message-list-by-folder';
 import { useSelection } from '../../../../hooks/use-selection';
 import type { AppContext, Folder } from '../../../../types';
 

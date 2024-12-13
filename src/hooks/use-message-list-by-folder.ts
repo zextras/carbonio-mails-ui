@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 
 import { type ErrorSoapBodyResponse, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
@@ -29,6 +29,8 @@ export const useMessageListByFolder = (folder: Folder): MessageSliceState => {
 		[settings.prefs.zimbraPrefLocale]
 	);
 
+	const previousFolderId = useRef<string>('');
+
 	const messagesSlice = useMessagesSlice();
 	const messagesIds = useMessagesIdsByFolder(folder);
 
@@ -48,6 +50,7 @@ export const useMessageListByFolder = (folder: Folder): MessageSliceState => {
 	const handleMessageResults = useCallback(
 		({ searchResponse }: { searchResponse: SearchResponse | ErrorSoapBodyResponse }): void => {
 			if ('Fault' in searchResponse) {
+				updateMessagesResultsLoadingStatus(API_REQUEST_STATUS.error);
 				return;
 			}
 			const tags = getTags();
@@ -90,14 +93,15 @@ export const useMessageListByFolder = (folder: Folder): MessageSliceState => {
 	useEffect(() => {
 		const controller = new AbortController();
 		const { signal } = controller;
-		// TODO CO-1725: previousQuery is not defined
-		if (true) {
+		if (previousFolderId.current !== folder.id) {
+			previousFolderId.current = folder.id;
 			firstSearchCallback(signal);
 		}
 		return () => {
+			previousFolderId.current = '';
 			controller.abort();
 		};
-	}, [firstSearchCallback]);
+	}, [firstSearchCallback, folder.id]);
 
 	return { messagesSlice: { ...messagesSlice, messageIds: messagesIds } };
 };
