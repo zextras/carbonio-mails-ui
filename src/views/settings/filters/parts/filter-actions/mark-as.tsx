@@ -10,9 +10,9 @@ import { Row } from '@zextras/carbonio-design-system';
 import CustomSelect from '../custom-select';
 
 type MarkAsProps = {
-	options: any[];
-	onChange: (option: { label: string; value: any }) => void;
-	selected: any;
+	options: { label: string; value: string }[];
+	onChange: (option: { label: string; value: string }) => void;
+	selected: { label: string; value: string };
 };
 
 export const MarkAs = ({ options, onChange, selected }: MarkAsProps): React.JSX.Element => (

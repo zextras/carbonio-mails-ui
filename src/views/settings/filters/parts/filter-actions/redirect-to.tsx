@@ -12,7 +12,7 @@ import { useContactInput } from '../../../../../carbonio-ui-commons/integrations
 import { ContactInputItem } from '../../../../../carbonio-ui-commons/integrations/types';
 
 type RedirectToProps = {
-	defaultValue: any;
+	defaultValue: ContactInputItem[];
 	onChange: (chip: ContactInputItem[]) => void;
 };
 
