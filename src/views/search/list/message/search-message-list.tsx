@@ -126,7 +126,7 @@ export const SearchMessageList: FC<SearchListProps> = ({
 			{!isInvalidQuery && !loading && (
 				<>
 					<SearchListHeader
-						items={items}
+						itemIds={messageIds}
 						folderId={''}
 						selected={selected}
 						deselectAll={deselectAll}

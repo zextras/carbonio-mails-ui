@@ -7,9 +7,10 @@
 import React, { useMemo } from 'react';
 
 import { Breadcrumbs } from '../../../app/folder-panel/parts/breadcrumbs';
+import { MultipleSelectionActionsPanel } from '../../../app/folder-panel/parts/multiple-selection-actions-panel';
 
 type SearchConversationListHeaderProps = {
-	items: Array<{ id: string }>;
+	itemIds: Set<string>;
 	folderId: string;
 	selected: Record<string, boolean>;
 	deselectAll: () => void;
@@ -20,7 +21,7 @@ type SearchConversationListHeaderProps = {
 	selectAllModeOff: () => void;
 };
 export const SearchListHeader = ({
-	items,
+	itemIds,
 	folderId,
 	selected,
 	deselectAll,
@@ -30,24 +31,22 @@ export const SearchListHeader = ({
 	isAllSelected,
 	selectAllModeOff
 }: SearchConversationListHeaderProps): React.JSX.Element => {
-	const totalItems = items.length;
+	const totalItems = itemIds.size;
 
 	const selectedIds = useMemo(() => Object.keys(selected), [selected]);
 
 	if (isSelectModeOn && totalItems > 0)
 		return (
-			<></>
-			// TODO: CO-1725 re-enable this
-			// <MultipleSelectionActionsPanel
-			// 	items={items}
-			// 	folderId={folderId}
-			// 	selectedIds={selectedIds}
-			// 	deselectAll={deselectAll}
-			// 	selectAll={selectAll}
-			// 	isAllSelected={isAllSelected}
-			// 	selectAllModeOff={selectAllModeOff}
-			// 	setIsSelectModeOn={setIsSelectModeOn}
-			// />
+			<MultipleSelectionActionsPanel
+				itemsIds={itemIds}
+				folderId={folderId}
+				selectedIds={selectedIds}
+				deselectAll={deselectAll}
+				selectAll={selectAll}
+				isAllSelected={isAllSelected}
+				selectAllModeOff={selectAllModeOff}
+				setIsSelectModeOn={setIsSelectModeOn}
+			/>
 		);
 	if (totalItems > 0)
 		return (

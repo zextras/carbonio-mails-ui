@@ -61,6 +61,13 @@ type SetupTest = {
 	viewBy: 'message' | 'conversation';
 };
 
+const aRandomMsgActionResponse = {
+	action: {
+		id: '123',
+		op: 'trash'
+	}
+};
+
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 const setupSearchViewTest = ({ query, viewBy }: Partial<SetupTest>) => {
 	const store = generateStore();
@@ -160,9 +167,9 @@ function fakeCounter(): { count: number; setCount: (value: number) => void } {
 	return { count, setCount };
 }
 
-// TODO CO-1725 re enable tests
-describe.skip('SearchView', () => {
-	describe('view by conversations', () => {
+describe('SearchView', () => {
+	// TODO CO-1725 re enable tests
+	describe.skip('view by conversations', () => {
 		let store: ReturnType<typeof generateStore>;
 		let queryChip: QueryChip;
 		beforeEach(() => {
@@ -428,6 +435,7 @@ describe.skip('SearchView', () => {
 			expect(await screen.findByTestId('MessageListItem-10')).toBeInTheDocument();
 			expect(await screen.findByTestId('MessageListItem-11')).toBeInTheDocument();
 		});
+
 		it('should call MsgActionRequest with operation "trash" when moving message to trash in selection mode', async () => {
 			const searchInterceptor = createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
 				m: [getSoapMessage('10', { su: 'message 1 Subject', f: 'u' })],
@@ -550,7 +558,13 @@ describe.skip('SearchView', () => {
 			});
 
 			const clickableMessage = await screen.findByTestId(`hover-container-10`);
-			createSoapAPIInterceptor<MsgActionRequest>('MsgAction');
+			const response: MsgActionResponse = {
+				action: {
+					id: '123',
+					op: 'trash'
+				}
+			};
+			createSoapAPIInterceptor<MsgActionRequest, MsgActionResponse>('MsgAction', response);
 			await act(async () => {
 				await user.dblClick(clickableMessage);
 			});
@@ -562,7 +576,10 @@ describe.skip('SearchView', () => {
 				m: [getSoapMessage('10', { su: 'message 1 Subject', f: 'u' })],
 				more: false
 			});
-			const msgActionInterceptor = createSoapAPIInterceptor<MsgActionRequest>('MsgAction');
+			const msgActionInterceptor = createSoapAPIInterceptor<MsgActionRequest>(
+				'MsgAction',
+				aRandomMsgActionResponse
+			);
 
 			const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
 			const searchViewProps: SearchViewProps = {
@@ -641,6 +658,10 @@ describe.skip('SearchView', () => {
 				reason: 'Failed to execute search'
 			})
 		);
+		createSoapAPIInterceptor<GetMsgRequest, GetMsgResponse>('GetMsg', {
+			m: {}
+		});
+
 		const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
 		const setSearchDisabled = jest.fn();
 		const queryChip: QueryChip = {
@@ -716,7 +737,6 @@ describe.skip('SearchView', () => {
 		};
 		const settings = generateSettings(customSettings);
 		jest.spyOn(hooks, 'useUserSettings').mockReturnValue(settings);
-
 		const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
 		const searchViewProps: SearchViewProps = {
 			useQuery: () => [[queryChip], noop],
@@ -745,7 +765,7 @@ describe.skip('SearchView', () => {
 		});
 
 		const clickableMessage = await screen.findByTestId(`hover-container-10`);
-		createSoapAPIInterceptor<MsgActionRequest>('MsgAction');
+		createSoapAPIInterceptor<MsgActionRequest>('MsgAction', aRandomMsgActionResponse);
 		await act(async () => {
 			await user.click(clickableMessage);
 		});
