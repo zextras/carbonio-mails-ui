@@ -6,6 +6,7 @@
 import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
 
 import {
+	Button,
 	Container,
 	IconButton,
 	Padding,
@@ -30,10 +31,10 @@ import { CONTACT_TYPES } from '../../../../carbonio-ui-commons/integrations/cons
 import { ContactInputItem } from '../../../../carbonio-ui-commons/integrations/types';
 import { Folder } from '../../../../carbonio-ui-commons/types/folder';
 
-export const StyledIconButton = styled(IconButton)`
+export const StyledIconButton = styled(Button)`
 	border: 0.0625rem solid
-		${({ theme, disabled, iconColor = 'primary' }): string =>
-			disabled ? theme.palette.gray2.regular : getColor(String(iconColor), theme)};
+		${({ theme, disabled, color = 'primary' }): string =>
+			disabled ? theme.palette.gray2.regular : getColor(String(color), theme)};
 	svg {
 		border: none !important;
 	}
@@ -384,7 +385,12 @@ const FilterActionRows: FC<FilterActionRowProps> = ({
 			</Row>
 			<Container orientation="horizontal" mainAlignment="flex-end" width="auto">
 				<Tooltip label={t('settings.add_action', 'Add new action')} placement="top">
-					<StyledIconButton icon="PlusOutline" onClick={addFilterCondition} iconColor="primary" />
+					<StyledIconButton
+						icon="PlusOutline"
+						onClick={addFilterCondition}
+						color="primary"
+						type="outlined"
+					/>
 				</Tooltip>
 				<Padding left="small">
 					<Tooltip label={t('settings.remove_action', 'Remove this action')} placement="top">
@@ -392,7 +398,8 @@ const FilterActionRows: FC<FilterActionRowProps> = ({
 							icon="MinusOutline"
 							disabled={disableRemove}
 							onClick={onRemove}
-							iconColor="secondary"
+							color="secondary"
+							type="outlined"
 						/>
 					</Tooltip>
 				</Padding>
