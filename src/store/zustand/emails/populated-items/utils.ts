@@ -95,18 +95,7 @@ function updateMessageStatus(
 		})
 	);
 }
-function removeMessages(
-	messageIds: Array<string>,
-	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
-): void {
-	useEmailsStore.setState(
-		produce(({ populatedItemsSlice }: EmailsStoreState) => {
-			messageIds.forEach((messageId) => {
-				delete populatedItemsSlice.messages[messageId];
-			});
-		})
-	);
-}
+
 function useMessagesByIds(
 	ids: Array<string>,
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
@@ -117,7 +106,6 @@ function useMessagesByIds(
 }
 
 export const populatedItemsSliceUtils = {
-	removeMessages,
 	updateMessageStatus,
 	updateConversationStatus,
 	updateMessages,
