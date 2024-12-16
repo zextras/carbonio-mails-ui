@@ -5,7 +5,7 @@
  */
 import React, { FC, ReactElement, useMemo, useCallback } from 'react';
 
-import { Container, Padding, IconButton, Tooltip, getColor } from '@zextras/carbonio-design-system';
+import { Button, Container, Padding, Tooltip, getColor } from '@zextras/carbonio-design-system';
 import styled from 'styled-components';
 
 import DefaultCondition from './create-filters-conditions/default';
@@ -13,10 +13,10 @@ import CustomSelect from './custom-select';
 import { getRowFunc } from './get-row';
 import { getStatusOptions, findDefaultValue } from './utils';
 
-export const StyledIconButton = styled(IconButton)`
+export const StyledIconButton = styled(Button)`
 	border: 0.0625rem solid
-		${({ theme, disabled, iconColor = 'primary' }): string =>
-			disabled ? theme.palette.gray2.regular : getColor(String(iconColor), theme)};
+		${({ theme, disabled, color = 'primary' }): string =>
+			disabled ? theme.palette.gray2.regular : getColor(String(color), theme)};
 	svg {
 		border: none !important;
 	}
@@ -98,7 +98,12 @@ const FilterTestRows: FC<FilterTestRowProps> = ({ tmpFilter, index, compProps })
 
 			<Container orientation="horizontal" mainAlignment="flex-end">
 				<Tooltip label={t('settings.add_condition', 'Add new condition')} placement="top">
-					<StyledIconButton icon="PlusOutline" onClick={addFilterCondition} iconColor="primary" />
+					<StyledIconButton
+						icon="PlusOutline"
+						onClick={addFilterCondition}
+						color="primary"
+						type="outlined"
+					/>
 				</Tooltip>
 				<Padding left="small">
 					<Tooltip label={t('settings.remove_condition', 'Remove this condition')} placement="top">
@@ -106,7 +111,8 @@ const FilterTestRows: FC<FilterTestRowProps> = ({ tmpFilter, index, compProps })
 							disabled={disableRemove}
 							icon="MinusOutline"
 							onClick={onRemove}
-							iconColor="secondary"
+							color="secondary"
+							type="outlined"
 						/>
 					</Tooltip>
 				</Padding>
