@@ -103,7 +103,7 @@ describe('FilterActionsRows', () => {
 	});
 
 	describe('Keep In Inbox', () => {
-		it('it should render the selected action', async () => {
+		it('should render the selected action', async () => {
 			setupTest(
 				<FilterActionRows
 					tmpFilter={{
@@ -184,6 +184,75 @@ describe('FilterActionsRows', () => {
 			expect(mockSetActions).toHaveBeenCalledWith([
 				expect.objectContaining({ actionRedirect: [{ a: 'valid@email.it' }] })
 			]);
+		});
+	});
+
+	describe('Tag With', () => {
+		it('should display the saved tag', async () => {
+			const filterName = 'Test Designer';
+			setupTest(
+				<FilterActionRows
+					tmpFilter={{
+						actionTag: [{ tagName: filterName }]
+					}}
+					index={0}
+					compProps={compProps}
+				/>,
+				{}
+			);
+			expect(screen.getByText(filterName)).toBeVisible();
+		});
+
+		it('should reset the input value to empty after changing action', async () => {
+			const newCompProps = {
+				...compProps,
+				tempActions: [{}]
+			};
+			const filterName = 'Test Designer';
+			const { user } = setupTest(
+				<FilterActionRows
+					tmpFilter={{
+						actionTag: [{ tagName: filterName }]
+					}}
+					index={0}
+					compProps={newCompProps}
+				/>,
+				{}
+			);
+			expect(screen.getByText(filterName)).toBeVisible();
+
+			await user.click(screen.getByText('Tag with'));
+			await user.click(screen.getByText('Keep in Inbox'));
+			await user.click(screen.getByText('Keep in Inbox'));
+			await user.click(screen.getByText('Tag with'));
+
+			expect(screen.queryByText(filterName)).not.toBeInTheDocument();
+		});
+
+		it('should break if tempAction is empty and user is switching action', async () => {
+			const newCompProps = {
+				...compProps,
+				tempActions: []
+			};
+			const filterName = 'Test Designer';
+			const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+			const { user } = setupTest(
+				<FilterActionRows
+					tmpFilter={{
+						actionTag: [{ tagName: filterName }]
+					}}
+					index={0}
+					compProps={newCompProps}
+				/>,
+				{}
+			);
+			expect(screen.getByText(filterName)).toBeVisible();
+			await user.click(screen.getByText('Tag with'));
+			await user.click(screen.getByText('Keep in Inbox'));
+			expect(consoleSpy).toHaveBeenCalledWith(
+				`[Error: Uncaught [TypeError: Cannot read properties of undefined (reading 'id')]`
+			);
 		});
 	});
 });
