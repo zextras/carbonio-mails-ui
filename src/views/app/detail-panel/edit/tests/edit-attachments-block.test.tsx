@@ -16,6 +16,7 @@ import { generateStore } from '../../../../../tests/generators/store';
 import { EditAttachmentsBlock } from '../edit-attachments-block';
 
 describe('Attachments visualization', () => {
+	const setLargeFileUploadInfoBannerVisible = jest.fn();
 	test.each`
 		editorTestCaseId | attachmentType
 		${'1'}           | ${'Various format attachments'}
@@ -34,7 +35,8 @@ describe('Attachments visualization', () => {
 
 		// Create the props for the component
 		const props = {
-			editorId: editor.id
+			editorId: editor.id,
+			setLargeFileUploadInfoBannerVisible
 		};
 
 		// Render the component

@@ -2,6 +2,83 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.22.0](https://github.com/zextras/carbonio-mails-ui/compare/v1.21.3...v1.22.0) (2024-12-12)
+
+
+### Features
+
+* add AuthGuard component to segregate authenticated-only content ([9936efc](https://github.com/zextras/carbonio-mails-ui/commit/9936efc3009a435af04c166f73266a8eda9e6e02))
+
+
+### Bug Fixes
+
+* prevent module to load if the user is not authenticated ([9c1c087](https://github.com/zextras/carbonio-mails-ui/commit/9c1c087c517283c30a507fa9c1e1811f1c6ecb75))
+
+### [1.21.3](https://github.com/zextras/carbonio-mails-ui/compare/v1.21.2...v1.21.3) (2024-12-10)
+
+
+### Bug Fixes
+
+* fix chip input in filters ([b6bdec9](https://github.com/zextras/carbonio-mails-ui/commit/b6bdec93e10ce98db4156c71c3dc2385039ccdd6))
+
+### [1.21.2](https://github.com/zextras/carbonio-mails-ui/compare/v1.21.1...v1.21.2) (2024-12-06)
+
+
+### Bug Fixes
+
+* handle dark mode correctly in case user sets auto as darkmode settting ([f9642bf](https://github.com/zextras/carbonio-mails-ui/commit/f9642bfa58b90d1ef3409558497c52deee1062c2))
+
+### [1.21.1](https://github.com/zextras/carbonio-mails-ui/compare/v1.21.0...v1.21.1) (2024-12-05)
+
+
+### Bug Fixes
+
+* render the conversation in a new tab ([6941a8a](https://github.com/zextras/carbonio-mails-ui/commit/6941a8ada058cec9a9a60939cf716f1dd06768fa))
+* render the conversation in a new tab ([8a3d128](https://github.com/zextras/carbonio-mails-ui/commit/8a3d128055bed4e6bec0de4c97d8cb1184454a0c))
+
+## [1.21.0](https://github.com/zextras/carbonio-mails-ui/compare/v1.20.3...v1.21.0) (2024-12-05)
+
+
+### Features
+
+* integrate darkreader for shadow DOM styling ([9539e34](https://github.com/zextras/carbonio-mails-ui/commit/9539e340354fc3c37f97f10b48c78a5c41d5ac7d))
+* introduce large file upload info banner ([d0ffa06](https://github.com/zextras/carbonio-mails-ui/commit/d0ffa0643dae928a7beb4f5fe6d30496be14e057))
+* remove percentage from attachment upload ([68648cb](https://github.com/zextras/carbonio-mails-ui/commit/68648cb1299a9ccf9eee8907b11ada6c48f18722))
+* show spinner while saveDraft is being resolved ([7e52ad6](https://github.com/zextras/carbonio-mails-ui/commit/7e52ad667b71d4b3922bb174e8f5b2d12ea035c2))
+* update warning text for large file uploads ([dac545b](https://github.com/zextras/carbonio-mails-ui/commit/dac545bf732392ca286a61d48dee83cdcf9ae410))
+
+
+### Bug Fixes
+
+* apply force-white-bg style to Shadow DOM ([8875188](https://github.com/zextras/carbonio-mails-ui/commit/8875188538cf06fa52a28781dae18b7de41016f9))
+* set darkreader color to neutral text ([d3a3502](https://github.com/zextras/carbonio-mails-ui/commit/d3a35022e84935fbb0a0ee91954f98b7104b343d))
+
+### [1.20.3](https://github.com/zextras/carbonio-mails-ui/compare/v1.20.2...v1.20.3) (2024-12-04)
+
+
+### Bug Fixes
+
+* remove empty tags (removed) when normalizing conversation items ([269de8d](https://github.com/zextras/carbonio-mails-ui/commit/269de8d79efa690b296de0f4056b1b1e513a0bbd))
+* restored action to update redux store on message updates, to fix tags not updating in messages mode ([a38f05e](https://github.com/zextras/carbonio-mails-ui/commit/a38f05e5cde29436a55b4ad7b359add300cc15b9))
+
+### [1.20.2](https://github.com/zextras/carbonio-mails-ui/compare/v1.20.1...v1.20.2) (2024-12-03)
+
+
+### Bug Fixes
+
+* removed forward as attachment action from hover for conversation items ([aee33cc](https://github.com/zextras/carbonio-mails-ui/commit/aee33cc598b2dfb4e21a8f4ac357db4cef439aa7))
+
+### [1.20.1](https://github.com/zextras/carbonio-mails-ui/compare/v1.20.0...v1.20.1) (2024-11-29)
+
+## [1.20.0](https://github.com/zextras/carbonio-mails-ui/compare/v1.19.6...v1.20.0) (2024-11-28)
+
+
+### Features
+
+* add class to div and update shadow DOM mode ([b06b551](https://github.com/zextras/carbonio-mails-ui/commit/b06b5512ea384fcefafed6addc935859a2a561b6))
+* **mail-preview:** add class to force white background ([dc98153](https://github.com/zextras/carbonio-mails-ui/commit/dc98153ae889f0c95dc0cb019a64bd9f43efda50))
+* **renderer:** extract HTML container component ([985c1dc](https://github.com/zextras/carbonio-mails-ui/commit/985c1dc6a6511fda45dc2cf13233ade1afc24ccc))
+
 ### [1.19.6](https://github.com/zextras/carbonio-mails-ui/compare/v1.19.5...v1.19.6) (2024-11-27)
 
 

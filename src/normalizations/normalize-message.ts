@@ -369,6 +369,8 @@ export const normalizeMailMessageFromSoap = (
 			date: m.d,
 			size: m.s,
 			parent: m.l,
+			replyType: m.rt,
+			originalId: m.origid,
 			fragment: m.fr,
 			subject: m.su,
 			participants: m.e ? map(m.e || [], normalizeParticipantsFromSoap) : undefined,

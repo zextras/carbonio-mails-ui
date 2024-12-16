@@ -44,6 +44,8 @@ export type IncompleteMessage = MailHeaders & {
 	isDraft: boolean;
 	isScheduled: boolean;
 	autoSendTime?: number;
+	originalId?: string;
+	replyType?: 'r' | 'w';
 	attachments?: Array<AttachmentPart>;
 	participants?: Array<Participant>;
 	date: number;

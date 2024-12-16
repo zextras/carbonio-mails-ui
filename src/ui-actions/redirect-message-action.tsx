@@ -6,46 +6,26 @@
 
 import React, { ReactElement, useCallback, useMemo, useState } from 'react';
 
-import { ChipInput, ChipItem, Container, Divider, Text } from '@zextras/carbonio-design-system';
-import { useIntegratedComponent } from '@zextras/carbonio-shell-ui';
+import { Container, Divider, Text } from '@zextras/carbonio-design-system';
 import { map, some } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
 import ModalFooter from '../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../carbonio-ui-commons/components/modals/modal-header';
+import { useContactInput } from '../carbonio-ui-commons/integrations/hooks';
+import { ContactInputItem } from '../carbonio-ui-commons/integrations/types';
 import { TIMEOUTS } from '../constants';
 import { useUiUtilities } from '../hooks/use-ui-utilities';
 import { redirectMessageAction } from '../store/actions';
 
 type RedirectActionProps = { onClose: () => void; id: string };
 
-type ContactType = {
-	company?: string;
-	email: string;
-	firstName?: string;
-	fullName?: string;
-	id?: string;
-	label?: string;
-	lastName?: string;
-};
-
 const RedirectMessageAction = ({ onClose, id }: RedirectActionProps): ReactElement => {
 	const [t] = useTranslation();
 	const { createSnackbar } = useUiUtilities();
-	const [ContactInput, integrationAvailable] = useIntegratedComponent('contact-input');
-	const [contacts, setContacts] = useState<ContactType[]>([]);
-	const onChipInputChange = useCallback((items: ChipItem[]) => {
-		setContacts(
-			items.map<ContactType>(
-				(item) =>
-					({
-						address: item.label,
-						email: item.label
-					}) as ContactType
-			)
-		);
-	}, []);
-	const onContactChange = useCallback((users: ContactType[]) => setContacts(users), []);
+	const ContactInput = useContactInput();
+	const [contacts, setContacts] = useState<ContactInputItem[]>([]);
+	const onContactChange = useCallback((users: ContactInputItem[]) => setContacts(users), []);
 	const disableRedirect = useMemo(
 		() => contacts?.length === 0 || some(contacts, { error: true }),
 		[contacts]
@@ -66,7 +46,7 @@ const RedirectMessageAction = ({ onClose, id }: RedirectActionProps): ReactEleme
 			redirectMessageAction({
 				id,
 				e: map(contacts, (p) => ({
-					a: p.email,
+					a: p.value.email,
 					t: 't'
 				}))
 			})
@@ -125,24 +105,12 @@ const RedirectMessageAction = ({ onClose, id }: RedirectActionProps): ReactEleme
 						</Text>
 
 						<Container height="fit" padding={{ top: 'medium' }}>
-							{integrationAvailable ? (
-								<ContactInput
-									data-testid={'redirect-recipients-address'}
-									// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-									// @ts-ignore
-									placeholder={t('placeholder.add_new_recipients', 'Add new recipients')}
-									onChange={onContactChange}
-									defaultValue={contacts}
-									disablePortal
-								/>
-							) : (
-								<ChipInput
-									data-testid={'redirect-recipients-address'}
-									placeholder={t('label.to', 'To')}
-									onChange={onChipInputChange}
-									defaultValue={contacts}
-								/>
-							)}
+							<ContactInput
+								data-testid={'redirect-recipients-address'}
+								placeholder={t('placeholder.add_new_recipients', 'Add new recipients')}
+								onChange={onContactChange}
+								defaultValue={contacts}
+							/>
 						</Container>
 						<Divider color="primary" />
 						<ModalFooter

@@ -38,8 +38,9 @@ describe('Mail preview', () => {
 		// Render the component
 		setupTest(<MailPreview {...props} />, { store });
 
-		const messageRenderer: HTMLDivElement = await screen.findByTestId('message-renderer-container');
-		const content = messageRenderer.innerHTML.toString();
+		const { shadowRoot }: HTMLDivElement = await screen.findByTestId('shadow-dom-wrapper');
+
+		const content = shadowRoot?.innerHTML.toString();
 
 		// test if msg10 has 3 inline attachments
 		expect(content).toContain('img src="/service/home/');
@@ -66,10 +67,9 @@ describe('Mail preview', () => {
 
 		// Render the component
 		setupTest(<MailPreview {...props} />, { store });
-		const messageRenderer: HTMLDivElement = await screen.findByTestId('message-renderer-container');
-		const content = messageRenderer.innerHTML.toString();
+		const { shadowRoot }: HTMLDivElement = await screen.findByTestId('shadow-dom-wrapper');
+		const content = shadowRoot?.innerHTML.toString();
 
-		expect(messageRenderer).toBeVisible();
 		expect(content).toContain('table');
 	});
 
@@ -91,10 +91,9 @@ describe('Mail preview', () => {
 
 		// Render the component
 		setupTest(<MailPreview {...props} />, { store });
-		const messageRenderer: HTMLDivElement = await screen.findByTestId('message-renderer-container');
-		const content = messageRenderer.innerHTML.toString();
+		const { shadowRoot }: HTMLDivElement = await screen.findByTestId('shadow-dom-wrapper');
+		const content = shadowRoot?.innerHTML.toString();
 
-		expect(messageRenderer).toBeVisible();
 		expect(content).toContain('table');
 	});
 });

@@ -31,7 +31,6 @@ const ShareRevokeModal: FC<ShareRevokeModalType> = ({ folder, onClose, grant, go
 		if (sendNotification) {
 			dispatch(
 				sendShareNotification({
-					sendNotification,
 					standardMessage,
 					contacts: [{ email: grant?.d }],
 					folder,
