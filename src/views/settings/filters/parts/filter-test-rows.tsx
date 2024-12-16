@@ -89,7 +89,7 @@ const FilterTestRows: FC<FilterTestRowProps> = ({ tmpFilter, index, compProps })
 				<CustomSelect
 					items={statusOptions}
 					label=""
-					onChange={getRow(Number(index))}
+					onChange={getRow(parseInt(index, 10))}
 					defaultSelection={defaultSelection}
 				/>
 			</Container>

@@ -58,3 +58,8 @@ export const useSearchView = (): void => {
 		};
 	}, [addSearchView, isAddSearchViewAvailable, isRemoveSearchViewAvailable, removeSearchView, t]);
 };
+
+export const SearchRegistration = (): null => {
+	useSearchView();
+	return null;
+};

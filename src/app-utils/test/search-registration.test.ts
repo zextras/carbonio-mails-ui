@@ -7,7 +7,7 @@ import * as Shell from '@zextras/carbonio-shell-ui';
 
 import { setupHook } from '../../carbonio-ui-commons/test/test-setup';
 import { MAIL_APP_ID, MAILS_ROUTE } from '../../constants';
-import { useSearchView } from '../use-search-view';
+import { useSearchView } from '../search-registration';
 
 describe('useSearchView', () => {
 	it('should add search view if integration is available', () => {

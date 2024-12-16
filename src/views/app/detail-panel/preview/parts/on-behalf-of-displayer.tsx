@@ -5,10 +5,11 @@
  */
 import React, { FC, ReactElement, useMemo } from 'react';
 
-import { getColor, TextWithTooltip } from '@zextras/carbonio-design-system';
+import { getColor, Tooltip, Text } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import { capitalize } from 'lodash';
 import styled from 'styled-components';
+
 import type { Participant, MailMessage } from '../../../../../types';
 
 const StyledText = styled.span<{ isRead?: string | boolean; color?: string }>`
@@ -37,18 +38,28 @@ const OnBehalfOfDisplayer: FC<{
 	);
 
 	const behalfOfLabel = useMemo(() => t('label.behalf_of', 'behalf of'), []);
+
+	const messageLabel = useMemo(
+		(): React.JSX.Element => (
+			<>
+				<StyledText isRead={message.read ?? ''}>{fullName}</StyledText>
+				<StyledText color="secondary" isRead={message.read}>
+					{` <${address}> `}
+				</StyledText>
+				<StyledText color="text">{behalfOfLabel}</StyledText>
+				<StyledText isRead={message.read}>{mainContactFullName}</StyledText>
+				<StyledText color="secondary" isRead={message.read}>
+					{` <${mainContactAddress}> `}
+				</StyledText>
+			</>
+		),
+		[address, behalfOfLabel, fullName, mainContactAddress, mainContactFullName, message.read]
+	);
+
 	return (
-		<TextWithTooltip>
-			<StyledText isRead={message.read ?? ''}>{fullName}</StyledText>
-			<StyledText color="secondary" isRead={message.read}>
-				{` <${address}> `}
-			</StyledText>
-			<StyledText color="text">{behalfOfLabel}</StyledText>
-			<StyledText isRead={message.read}>{mainContactFullName}</StyledText>
-			<StyledText color="secondary" isRead={message.read}>
-				{` <${mainContactAddress}> `}
-			</StyledText>
-		</TextWithTooltip>
+		<Tooltip label={messageLabel} overflowTooltip>
+			<Text>{messageLabel}</Text>
+		</Tooltip>
 	);
 };
 
