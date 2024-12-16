@@ -15,7 +15,7 @@ import { MessageActionsDescriptors, TIMEOUTS } from '../../constants';
 import { isSpam } from '../../helpers/folders';
 import {
 	MsgActionOperation,
-	MsgActionResponse,
+	MsgActionResult,
 	UIActionAggregator,
 	UIActionDescriptor
 } from '../../types';
@@ -59,7 +59,7 @@ export const useMsgApplyTagSubDescriptors = ({
 	const canExecute = (id: string): boolean => !isSpam(id);
 
 	const handleApiResponse = useCallback(
-		async (response: MsgActionResponse, snackbarSuccessLabel: string): Promise<void> => {
+		async (response: MsgActionResult, snackbarSuccessLabel: string): Promise<void> => {
 			if (!('Fault' in response)) {
 				createSnackbar({
 					key: 'tag',
