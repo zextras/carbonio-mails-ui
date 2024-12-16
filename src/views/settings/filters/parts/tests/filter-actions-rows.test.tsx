@@ -6,14 +6,13 @@
 
 import React from 'react';
 
-import { screen } from '@testing-library/react';
+import { screen, within } from '@testing-library/react';
 
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
 import FilterActionRows from '../filter-action-rows';
 
 describe('FilterActionsRows', () => {
 	const compProps = {
-		t: jest.fn(),
 		isIncoming: true,
 		setTempActions: jest.fn(),
 		tempActions: [],
@@ -32,6 +31,77 @@ describe('FilterActionsRows', () => {
 		);
 	});
 
+	it('adds a new filter condition when the add button is clicked', async () => {
+		const { user } = setupTest(
+			<FilterActionRows
+				tmpFilter={{
+					anything: [{ flagName: 'flagged' }]
+				}}
+				index={0}
+				compProps={compProps}
+			/>,
+			{}
+		);
+		await user.click(screen.getByTestId('icon: PlusOutline'));
+
+		expect(compProps.setTempActions).toHaveBeenCalledWith([
+			expect.objectContaining({
+				actionKeep: [{}],
+				actionStop: [{}]
+			})
+		]);
+	});
+
+	it('removes a filter condition when the remove button is clicked', async () => {
+		const newCompProps = {
+			...compProps,
+			tempActions: [
+				{ id: '1', actionKeep: [{}] },
+				{ id: '2', actionStop: [{}] }
+			]
+		};
+		const { user } = setupTest(
+			<FilterActionRows
+				tmpFilter={{
+					anything: [{ flagName: 'flagged' }]
+				}}
+				index={0}
+				compProps={newCompProps}
+			/>,
+			{}
+		);
+		await user.click(screen.getByTestId('icon: MinusOutline'));
+
+		expect(compProps.setTempActions).toHaveBeenCalledWith([
+			expect.objectContaining({ id: '2', actionStop: [{}] })
+		]);
+	});
+
+	it('disables the remove button when there is only one filter condition', async () => {
+		const newCompProps = {
+			...compProps,
+			tempActions: [{ id: '1', actionKeep: [{}] }]
+		};
+
+		const { user } = setupTest(
+			<FilterActionRows
+				tmpFilter={{
+					anything: [{ flagName: 'flagged' }]
+				}}
+				index={0}
+				compProps={newCompProps}
+			/>,
+			{}
+		);
+
+		const removeButton = screen
+			.getAllByRole('button')
+			.filter((button) => within(button).queryByTestId('icon: MinusOutline'))[0];
+		expect(removeButton).toBeDisabled();
+		await user.click(removeButton);
+		expect(compProps.setTempActions).not.toHaveBeenCalled();
+	});
+
 	describe('Keep In Inbox', () => {
 		it('it should render the selected action', async () => {
 			setupTest(
@@ -44,14 +114,10 @@ describe('FilterActionsRows', () => {
 				/>,
 				{}
 			);
+			const newLocal = await screen.findByText('Keep in Inbox');
+			expect(newLocal).toBeVisible();
 		});
 	});
-	// describe('Discard', () => {});
-	// describe('Move Into Folder', () => {});
-	// describe('Tag With', () => {});
-
-	// describe('Mark as', () => {});
-
 	describe('Redirect To Address', () => {
 		it('should not display Contact Input when dropdown option is different from "Redirect To Address"', async () => {
 			setupTest(

@@ -131,11 +131,11 @@ describe('create-filter-modal', () => {
 		const { user } = setupTest(<CreateFilterModal t={t} onClose={(): void => closeModal()} />, {
 			store
 		});
-		await user.click(screen.getByText(/settings\.keep_in_inbox/i));
+		await user.click(screen.getByText('Keep in Inbox'));
 
-		await user.click(screen.getByText(/settings\.move_into_folder/i));
+		await user.click(screen.getByText('Move Into Folder'));
 		const button = screen.getByRole('button', {
-			name: /settings\.browse/i
+			name: 'Browse'
 		});
 		await act(async () => {
 			await user.click(button);

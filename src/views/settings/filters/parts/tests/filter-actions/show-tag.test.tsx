@@ -22,16 +22,17 @@ describe('Show Tag', () => {
 		expect(screen.getByText('Tag')).toBeVisible();
 	});
 
-	it.only('it should call onChange with the choosen value', async () => {
+	it('it should call onChange with the choosen value', async () => {
 		const store = generateStore();
 		const onChangeFn = jest.fn();
 		const tagOptions = [
 			{
-				color: 6,
-				id: '123',
+				avatarBackground: '#ffc107',
+				avatarIcon: 'Tag' as const,
+				background: 'gray2' as const,
+				hasAvatar: true,
 				label: 'tag option 1',
-				n: 2,
-				name: 'tag option 1'
+				color: 6
 			}
 		];
 

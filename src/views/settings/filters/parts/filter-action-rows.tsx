@@ -12,11 +12,10 @@ import {
 	Row,
 	Text,
 	Tooltip,
-	getColor,
-	ChipItem
+	getColor
 } from '@zextras/carbonio-design-system';
-import { TFunction } from 'i18next';
 import { filter, omit } from 'lodash';
+import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -73,7 +72,6 @@ export type TempAction = {
 
 // FIXME: what is "comp" supposed to be?
 type CompProps = {
-	t: TFunction;
 	isIncoming: boolean;
 	tempActions: Array<TempAction>;
 	setTempActions: (tempActions: Array<TempAction>) => void;
@@ -93,16 +91,11 @@ const FilterActionRows: FC<FilterActionRowProps> = ({
 	compProps,
 	tagOptions
 }): ReactElement => {
-	const {
-		t,
-		isIncoming,
-		tempActions,
-		setTempActions,
-		zimbraFeatureMailForwardingInFiltersEnabled
-	} = compProps;
+	const { isIncoming, tempActions, setTempActions, zimbraFeatureMailForwardingInFiltersEnabled } =
+		compProps;
 	const [activeIndex, setActiveIndex] = useState(0);
 	const [isRedirectToActionRemoved, setIsRedirectToActionRemoved] = useState(false);
-
+	const [t] = useTranslation();
 	const actionOptions = useMemo(
 		() => getActionOptions(t, zimbraFeatureMailForwardingInFiltersEnabled, isIncoming ?? false),
 		[t, zimbraFeatureMailForwardingInFiltersEnabled, isIncoming]
@@ -250,20 +243,13 @@ const FilterActionRows: FC<FilterActionRowProps> = ({
 				}
 				case 'tagWith': {
 					const previous = tempActions.slice();
-					let tagDetails;
 					if (!previous[index].actionTag) {
-						tagDetails = [
-							{
-								id: previous[index]?.id,
-								actionTag: [{ tagName: '' }]
-							}
-						];
 						previous[index] = {
 							id: previous[index]?.id,
 							actionTag: [{ tagName: '' }]
 						};
 						setTempActions(previous);
-						setTag(tagDetails);
+						setTag([]);
 					}
 
 					break;
