@@ -17,7 +17,7 @@ import {
 	useTheme
 } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
-import styled, { SimpleInterpolation } from 'styled-components';
+import styled from 'styled-components';
 
 import { AttachmentUploadStatus } from './attachment-upload-status';
 import { ToggleSmartLinkButton } from './parts/toggle-smart-link-button';
@@ -46,15 +46,13 @@ const AttachmentHoverBarContainer = styled(Container)`
 	display: none;
 `;
 
-const AttachmentContainer = styled(Container).attrs(
-	(props: { hoverBarDisabled: boolean; requiresSmartLinkConversion: boolean }) => ({
-		hoverBarDisabled: props.hoverBarDisabled,
-		requiresSmartLinkConversion: props.requiresSmartLinkConversion
-	})
-)`
-	border-bottom: ${({ requiresSmartLinkConversion, theme, background }): string => {
+const AttachmentContainer = styled(Container)<{
+	$requiresSmartLinkConversion: boolean;
+	$hoverBarDisabled: boolean;
+}>`
+	border-bottom: ${({ $requiresSmartLinkConversion, theme, background }): string => {
 		const color = getColor(`${background}.regular`, theme);
-		return requiresSmartLinkConversion
+		return $requiresSmartLinkConversion
 			? `1px solid ${theme.palette.primary.regular}`
 			: `1px solid ${color}`;
 	}};
@@ -67,10 +65,10 @@ const AttachmentContainer = styled(Container).attrs(
 			const color = getColor(`${background}.hover`, theme);
 			return `1px solid ${color}`;
 		}};
-		background-color: ${({ theme, background }): SimpleInterpolation =>
+		background-color: ${({ theme, background }): undefined | string =>
 			background && getColor(`${background}.hover`, theme)};
 		& ${AttachmentHoverBarContainer} {
-			display: ${(props): string => (props.hoverBarDisabled ? 'none' : 'flex')};
+			display: ${({ $hoverBarDisabled }): string => ($hoverBarDisabled ? 'none' : 'flex')};
 		}
 	}
 	&:focus {
@@ -78,7 +76,7 @@ const AttachmentContainer = styled(Container).attrs(
 			const color = getColor(`${background}.focus`, theme);
 			return `1px solid ${color}`;
 		}};
-		background-color: ${({ theme, background }): SimpleInterpolation =>
+		background-color: ${({ theme, background }): undefined | string =>
 			background && getColor(`${background}.focus`, theme)};
 	}
 	cursor: pointer;
@@ -91,7 +89,7 @@ const AttachmentLink = styled.a`
 `;
 
 const AttachmentExtension = styled(Text)<{
-	background: string;
+	$background: string;
 }>`
 	display: flex;
 	justify-content: center;
@@ -99,7 +97,7 @@ const AttachmentExtension = styled(Text)<{
 	width: 2rem;
 	height: 2rem;
 	border-radius: ${({ theme }): string => theme.borderRadius};
-	background-color: ${({ background }): string => background};
+	background-color: ${({ $background }): string => $background};
 	color: ${({ theme }): string => theme.palette.gray6.regular};
 	font-size: calc(${({ theme }): string => theme.sizes.font.small} - 0.125rem);
 	text-transform: uppercase;
@@ -219,8 +217,8 @@ export const AttachmentPreview: FC<AttachmentCardProps> = ({
 				height="fit"
 				background={backgroundColor}
 				data-testid={`attachment-container-${attachment.filename}`}
-				hoverBarDisabled={isUploading}
-				requiresSmartLinkConversion={requiresSmartLinkConversion}
+				$hoverBarDisabled={isUploading}
+				$requiresSmartLinkConversion={requiresSmartLinkConversion}
 			>
 				<Tooltip label={t('action.preview', 'Preview')}>
 					<Row
@@ -234,7 +232,7 @@ export const AttachmentPreview: FC<AttachmentCardProps> = ({
 						}}
 						takeAvailableSpace
 					>
-						<AttachmentExtension background={attachmentExtensionColor}>
+						<AttachmentExtension $background={attachmentExtensionColor}>
 							{attachmentExtensionContent}
 						</AttachmentExtension>
 						<Row orientation="vertical" crossAlignment="flex-start" takeAvailableSpace>

@@ -33,7 +33,7 @@ export type ResponseActionsProps = {
 	owner: string;
 	role: string;
 	allowedActions: string;
-	participants: Participant[s];
+	participants: Participant[];
 };
 
 export type ReplyShareParameters = {
@@ -42,7 +42,7 @@ export type ReplyShareParameters = {
 
 export type GranteeInfoProps = {
 	grant: Grant;
-	shareCalendarRoleOptions: ShareCalendarRoleOptions;
+	shareCalendarRoleOptions: ShareCalendarRoleOptions[];
 	hovered?: boolean;
 };
 
@@ -52,12 +52,12 @@ export type GranteeProps = {
 	onMouseLeave?: () => void;
 	onMouseEnter?: () => void;
 	setActiveModal: (modal: string) => void;
-	shareCalendarRoleOptions: ShareCalendarRoleOptions;
+	shareCalendarRoleOptions: ShareCalendarRoleOptions[];
 };
 
 export type ShareFolderPropertiesProps = {
 	folder: Folder;
-	setActiveModal;
+	setActiveModal: (modal: string) => void;
 };
 
 export type ShareCalendarRoleOptions = {

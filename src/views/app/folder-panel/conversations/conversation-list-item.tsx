@@ -57,8 +57,8 @@ import { ListItemHoverActions } from '../parts/list-item-hover-actions';
 import { RowInfo } from '../parts/row-info';
 import { SenderName } from '../parts/sender-name';
 
-const CollapseElement = styled(Container)<ContainerProps & { open: boolean }>`
-	display: ${({ open }): string => (open ? 'block' : 'none')};
+const CollapseElement = styled(Container)<{ $open: boolean }>`
+	display: ${({ $open }): string => ($open ? 'block' : 'none')};
 `;
 
 export const ConversationListItemActionWrapper = ({
@@ -503,7 +503,7 @@ export const ConversationListItem: FC<ConversationListItemProps> = memo(
 				</ConversationListItemActionWrapper>
 				{open && (
 					<CollapseElement
-						open={open}
+						$open={open}
 						data-testid="ConversationExpander"
 						padding={{ left: 'extralarge' }}
 						height="auto"
