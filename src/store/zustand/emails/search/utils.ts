@@ -8,7 +8,7 @@
 import produce, { enableMapSet } from 'immer';
 import { UseBoundStore, StoreApi } from 'zustand';
 
-import { SEARCH_INITIAL_STATE } from './search-slice';
+import { SEARCH_SLICE_INITIAL_STATE } from './search-slice';
 import { API_REQUEST_STATUS } from '../../../../constants';
 import {
 	EmailsStoreState,
@@ -17,15 +17,15 @@ import {
 	NormalizedConversation,
 	SearchRequestStatus
 } from '../../../../types';
-import { POPULATED_ITEMS_INITIAL_STATE } from '../populated-items/populated-items-slice';
+import { POPULATED_ITEMS_SLICE_INITIAL_STATE } from '../populated-items/populated-items-slice';
 
 function resetSearchAndPopulatedItems(
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
 ): void {
 	useEmailsStore.setState(
 		produce((state: EmailsStoreState) => {
-			state.searchSlice = SEARCH_INITIAL_STATE;
-			state.populatedItemsSlice = POPULATED_ITEMS_INITIAL_STATE;
+			state.searchSlice = SEARCH_SLICE_INITIAL_STATE;
+			state.populatedItemsSlice = POPULATED_ITEMS_SLICE_INITIAL_STATE;
 		})
 	);
 }

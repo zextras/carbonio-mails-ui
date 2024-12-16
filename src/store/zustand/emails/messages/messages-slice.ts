@@ -8,7 +8,7 @@ import { StateCreator } from 'zustand';
 
 import { MessageSliceState, PopulatedItemsSliceState } from '../../../../types';
 
-export const MESSAGES_INITIAL_STATE: MessageSliceState['messagesSlice'] = {
+export const MESSAGES_SLICE_INITIAL_STATE: MessageSliceState['messagesSlice'] = {
 	messageIds: new Set<string>(),
 	more: false,
 	offset: 0,
@@ -20,5 +20,5 @@ export const createMessageSlice: StateCreator<
 	[],
 	MessageSliceState
 > = () => ({
-	messagesSlice: MESSAGES_INITIAL_STATE
+	messagesSlice: MESSAGES_SLICE_INITIAL_STATE
 });

@@ -9,7 +9,7 @@ import produce, { enableMapSet } from 'immer';
 import { forEach } from 'lodash';
 import { StoreApi, UseBoundStore } from 'zustand';
 
-import { MESSAGES_INITIAL_STATE } from './messages-slice';
+import { MESSAGES_SLICE_INITIAL_STATE } from './messages-slice';
 import { API_REQUEST_STATUS } from '../../../../constants';
 import {
 	EmailsStoreState,
@@ -19,7 +19,7 @@ import {
 	MessageSliceState,
 	SearchRequestStatus
 } from '../../../../types';
-import { POPULATED_ITEMS_INITIAL_STATE } from '../populated-items/populated-items-slice';
+import { POPULATED_ITEMS_SLICE_INITIAL_STATE } from '../populated-items/populated-items-slice';
 
 function setMessages(
 	messages: Array<MailMessage | IncompleteMessage>,
@@ -76,8 +76,8 @@ function resetMessagesAndPopulatedItems(
 ): void {
 	useEmailsStore.setState(
 		produce((state: EmailsStoreState) => {
-			state.messagesSlice = MESSAGES_INITIAL_STATE;
-			state.populatedItemsSlice = POPULATED_ITEMS_INITIAL_STATE;
+			state.messagesSlice = MESSAGES_SLICE_INITIAL_STATE;
+			state.populatedItemsSlice = POPULATED_ITEMS_SLICE_INITIAL_STATE;
 		})
 	);
 }

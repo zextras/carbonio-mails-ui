@@ -9,7 +9,7 @@ import { StateCreator } from 'zustand';
 
 import { PopulatedItemsSliceState, SearchSliceState } from '../../../../types';
 
-export const POPULATED_ITEMS_INITIAL_STATE = {
+export const POPULATED_ITEMS_SLICE_INITIAL_STATE = {
 	messages: {},
 	conversations: {},
 	conversationsStatus: {},
@@ -21,5 +21,5 @@ export const createPopulatedItemsSlice: StateCreator<
 	[],
 	PopulatedItemsSliceState
 > = () => ({
-	populatedItemsSlice: POPULATED_ITEMS_INITIAL_STATE
+	populatedItemsSlice: POPULATED_ITEMS_SLICE_INITIAL_STATE
 });
