@@ -7,10 +7,12 @@ import { act } from 'react';
 
 import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
 import { useIntegratedFunction } from '../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
+import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { populateFoldersStore } from '../../../carbonio-ui-commons/test/mocks/store/folders';
 import { setupHook } from '../../../carbonio-ui-commons/test/test-setup';
 import { FOLDERS_DESCRIPTORS } from '../../../constants';
 import { generateMessage } from '../../../tests/generators/generateMessage';
+import { GetMsgRequest } from '../../../types';
 import {
 	useMsgCreateAppointmentDescriptor,
 	useMsgCreateAppointmentFn
@@ -120,6 +122,23 @@ describe('useMsgCreateAppointment', () => {
 						optionalAttendees: expect.any(Array)
 					})
 				);
+			});
+
+			it('should retrieve the message if the message is not complete', async () => {
+				const interceptor = createSoapAPIInterceptor<GetMsgRequest>('GetMsg');
+				populateFoldersStore();
+				const incompleteMsg = { ...msg, parent: FOLDERS.INBOX, isComplete: false };
+				const {
+					result: { current: functions }
+				} = setupHook(useMsgCreateAppointmentFn, { initialProps: [incompleteMsg, FOLDERS.INBOX] });
+
+				await act(async () => {
+					functions.execute();
+				});
+
+				const request = await interceptor;
+
+				expect(Object.keys(request)).not.toHaveLength(0);
 			});
 		});
 	});
