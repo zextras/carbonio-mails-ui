@@ -3,35 +3,86 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React from 'react';
+import React, { useCallback } from 'react';
 
-import { ChipInput, ChipItem, Row } from '@zextras/carbonio-design-system';
+import { ChipInput, ChipItem, DropdownItem, Row } from '@zextras/carbonio-design-system';
+import { useTranslation } from 'react-i18next';
 
-type ShowTagProps = {
-	value: any;
-	tagOptions: any[] | undefined;
-	onTagChange: (chip: ChipItem[]) => void;
-	onAddTag: (value: unknown) => ChipItem<unknown>;
+import { ZIMBRA_STANDARD_COLORS } from '../../../../../carbonio-ui-commons/constants';
+
+type Tag = {
+	label: string;
+	customComponent?: React.ReactNode;
+	hasAvatar: boolean;
+	avatarIcon: 'Tag';
+	background: 'gray2';
+	avatarBackground: string;
+	color?: number;
 };
 
-export const ShowTag = ({
-	value,
-	tagOptions,
-	onTagChange,
-	onAddTag
-}: ShowTagProps): React.JSX.Element => (
-	<Row padding={{ right: 'small' }} minWidth="12.5rem">
-		<ChipInput
-			placeholder={t('label.tag', 'Tag')}
-			background="gray4"
-			defaultValue={[]}
-			options={tagOptions}
-			value={value}
-			singleSelection
-			onChange={onTagChange}
-			onAdd={onAddTag}
-			disableOptions={false}
-			disabled
-		/>
-	</Row>
-);
+type ShowTagProps = {
+	value: Tag[];
+	tagOptions: Tag[] | undefined;
+	onTagChange: (chip: Tag[]) => void;
+};
+
+export const ShowTag = ({ value, tagOptions, onTagChange }: ShowTagProps): React.JSX.Element => {
+	const [t] = useTranslation();
+
+	const tagChipInput = value.map(
+		(tag): ChipItem<Tag> => ({
+			label: tag.label,
+			value: tag
+		})
+	);
+
+	const tagChipOptions = tagOptions?.map(
+		(
+			tag
+		): DropdownItem & {
+			value?: Tag;
+		} => ({
+			id: tag.label,
+			label: tag.label,
+			value: tag
+		})
+	);
+	const tagChipOnAdd = useCallback((tagValue: unknown): ChipItem<Tag> => {
+		const tag = tagValue as Tag;
+		return {
+			label: tag.label,
+			value: {
+				label: tag.label,
+				hasAvatar: true,
+				avatarIcon: 'Tag',
+				background: 'gray2',
+				avatarBackground: ZIMBRA_STANDARD_COLORS[tag.color ?? 0].hex
+			}
+		};
+	}, []);
+
+	const onTagInternalChange = useCallback(
+		(chips: ChipItem<Tag>[]) => {
+			const chipsValue = chips.map((chip) => chip.value) as Tag[];
+			onTagChange(chipsValue);
+		},
+		[onTagChange]
+	);
+
+	return (
+		<Row padding={{ right: 'small' }} minWidth="12.5rem">
+			<ChipInput
+				placeholder={t('label.tag', 'Tag')}
+				background="gray4"
+				defaultValue={[]}
+				options={tagChipOptions}
+				value={tagChipInput}
+				singleSelection
+				onChange={onTagInternalChange}
+				onAdd={tagChipOnAdd}
+				disableOptions={false}
+				disabled
+			/>
+		</Row>
+	);
+};

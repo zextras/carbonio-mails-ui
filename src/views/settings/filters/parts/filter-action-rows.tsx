@@ -40,6 +40,17 @@ export const StyledIconButton = styled(IconButton)`
 	}
 `;
 
+// TODO: move this one
+type Tag = {
+	label: string;
+	customComponent?: React.ReactNode;
+	hasAvatar: boolean;
+	avatarIcon: 'Tag';
+	background: 'gray2';
+	avatarBackground: string;
+	color?: number;
+};
+
 type ActionFileInto = {
 	folderPath?: string;
 };
@@ -97,7 +108,7 @@ const FilterActionRows: FC<FilterActionRowProps> = ({
 		[t, zimbraFeatureMailForwardingInFiltersEnabled, isIncoming]
 	);
 	const markAsOptions = useMemo(() => getMarkAsOptions(t), [t]);
-	const [tag, setTag] = useState<Array<any>>([]);
+	const [tag, setTag] = useState<Array<Tag>>([]);
 
 	const addFilterCondition = useCallback(() => {
 		const previousTempActions = tempActions.slice();
@@ -292,27 +303,12 @@ const FilterActionRows: FC<FilterActionRowProps> = ({
 
 	const showTagOptions = useMemo(() => activeActionOption === 'tagWith', [activeActionOption]);
 
-	const tagChipOnAdd = useCallback(
-		(label: unknown): ChipItem => {
-			const chipBg = filter(tagOptions, { label })[0];
-			return {
-				label: `${label}`,
-				hasAvatar: true,
-				avatarIcon: 'Tag',
-				background: 'gray2',
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-				// @ts-ignore
-				avatarBackground: ZIMBRA_STANDARD_COLORS[chipBg.color].hex
-			};
-		},
-		[tagOptions]
-	);
 	const onSelectFolder = useCallback(() => {
 		setActiveIndex(index);
 	}, [setActiveIndex, index]);
 
 	const onTagChange = useCallback(
-		(chip: ChipItem[]) => {
+		(chip: Tag[]) => {
 			const previous = tempActions.slice();
 			if (chip.length > 0) {
 				const requiredTag = chip.length > 1 ? chip[1] : chip[0];
@@ -397,12 +393,7 @@ const FilterActionRows: FC<FilterActionRowProps> = ({
 				{showRedirectToAddrsInput && <RedirectTo defaultValue={contacts} onChange={onChange} />}
 
 				{showTagOptions && (
-					<ShowTag
-						value={tag}
-						tagOptions={tagOptions}
-						onTagChange={onTagChange}
-						onAddTag={tagChipOnAdd}
-					/>
+					<ShowTag value={tag} tagOptions={tagOptions} onTagChange={onTagChange} />
 				)}
 			</Row>
 			<Container orientation="horizontal" mainAlignment="flex-end" width="auto">
