@@ -13,15 +13,6 @@ import CustomSelect from './custom-select';
 import { getRowFunc } from './get-row';
 import { getStatusOptions, findDefaultValue } from './utils';
 
-export const StyledIconButton = styled(Button)`
-	border: 0.0625rem solid
-		${({ theme, disabled, color = 'primary' }): string =>
-			disabled ? theme.palette.gray2.regular : getColor(String(color), theme)};
-	svg {
-		border: none !important;
-	}
-`;
-
 type FilterTestRowProps = {
 	tmpFilter: {
 		filterActions: Array<any>;
@@ -98,16 +89,11 @@ const FilterTestRows: FC<FilterTestRowProps> = ({ tmpFilter, index, compProps })
 
 			<Container orientation="horizontal" mainAlignment="flex-end">
 				<Tooltip label={t('settings.add_condition', 'Add new condition')} placement="top">
-					<StyledIconButton
-						icon="PlusOutline"
-						onClick={addFilterCondition}
-						color="primary"
-						type="outlined"
-					/>
+					<Button icon="PlusOutline" onClick={addFilterCondition} color="primary" type="outlined" />
 				</Tooltip>
 				<Padding left="small">
 					<Tooltip label={t('settings.remove_condition', 'Remove this condition')} placement="top">
-						<StyledIconButton
+						<Button
 							disabled={disableRemove}
 							icon="MinusOutline"
 							onClick={onRemove}

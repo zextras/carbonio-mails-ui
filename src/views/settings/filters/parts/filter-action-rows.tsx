@@ -31,15 +31,6 @@ import { CONTACT_TYPES } from '../../../../carbonio-ui-commons/integrations/cons
 import { ContactInputItem } from '../../../../carbonio-ui-commons/integrations/types';
 import { Folder } from '../../../../carbonio-ui-commons/types/folder';
 
-export const StyledIconButton = styled(Button)`
-	border: 0.0625rem solid
-		${({ theme, disabled, color = 'primary' }): string =>
-			disabled ? theme.palette.gray2.regular : getColor(String(color), theme)};
-	svg {
-		border: none !important;
-	}
-`;
-
 // TODO: move this one
 type Tag = {
 	label: string;
@@ -385,16 +376,11 @@ const FilterActionRows: FC<FilterActionRowProps> = ({
 			</Row>
 			<Container orientation="horizontal" mainAlignment="flex-end" width="auto">
 				<Tooltip label={t('settings.add_action', 'Add new action')} placement="top">
-					<StyledIconButton
-						icon="PlusOutline"
-						onClick={addFilterCondition}
-						color="primary"
-						type="outlined"
-					/>
+					<Button icon="PlusOutline" onClick={addFilterCondition} color="primary" type="outlined" />
 				</Tooltip>
 				<Padding left="small">
 					<Tooltip label={t('settings.remove_action', 'Remove this action')} placement="top">
-						<StyledIconButton
+						<Button
 							icon="MinusOutline"
 							disabled={disableRemove}
 							onClick={onRemove}
