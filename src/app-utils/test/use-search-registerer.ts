@@ -7,7 +7,7 @@ import * as Shell from '@zextras/carbonio-shell-ui';
 
 import { setupHook } from '../../carbonio-ui-commons/test/test-setup';
 import { MAIL_APP_ID, MAILS_ROUTE } from '../../constants';
-import { useSearchView } from '../search-registration';
+import { useSearchRegisterer } from '../use-search-registerer';
 
 describe('useSearchView', () => {
 	it('should add search view if integration is available', () => {
@@ -19,7 +19,7 @@ describe('useSearchView', () => {
 			return [(): void => undefined, false];
 		});
 
-		setupHook(useSearchView);
+		setupHook(useSearchRegisterer);
 
 		expect(addSearchViewFn).toHaveBeenCalledWith({
 			id: MAIL_APP_ID,
@@ -45,7 +45,7 @@ describe('useSearchView', () => {
 			return [(): void => undefined, false];
 		});
 
-		const { unmount } = setupHook(useSearchView);
+		const { unmount } = setupHook(useSearchRegisterer);
 
 		unmount();
 		expect(removeSearchViewFn).toHaveBeenCalledWith(MAIL_APP_ID);
@@ -60,7 +60,7 @@ describe('useSearchView', () => {
 			return [(): void => undefined, false];
 		});
 
-		setupHook(useSearchView);
+		setupHook(useSearchRegisterer);
 
 		expect(addSearchViewFn).not.toHaveBeenCalled();
 	});
