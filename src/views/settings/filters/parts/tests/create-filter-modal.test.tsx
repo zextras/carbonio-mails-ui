@@ -264,5 +264,59 @@ describe('create-filter-modal', () => {
 				]
 			});
 		});
+		test('create a filter with Mark As and Redirect To actions', async () => {
+			const store = generateStore();
+
+			const modifyFilterRulesInterceptor = createSoapAPIInterceptor('ModifyFilterRules');
+			const { user } = setupTest(<CreateFilterModal t={t} onClose={jest.fn()} />, {
+				store
+			});
+			await fillFilterName(user, 'any name');
+
+			await user.click(screen.getByText('Keep in Inbox'));
+			await user.click(screen.getByText('Mark as'));
+			await user.click(screen.getByText('Read'));
+			await user.click(screen.getByText('Flagged'));
+
+			await addAction(user);
+			await user.click(screen.getByText('Keep in Inbox'));
+			await user.click(screen.getByText('Redirect to address'));
+			const redirectToAddressInput = await screen.findByTestId('filter-action-row-contact-input');
+			await user.type(redirectToAddressInput, 'redirectTo@email.com');
+			await user.type(redirectToAddressInput, '[Enter]');
+
+			const createButton = screen.getByRole('button', {
+				name: /label\.create/i
+			});
+			await user.click(createButton);
+
+			const request = await modifyFilterRulesInterceptor;
+			expect(request).toEqual({
+				_jsns: 'urn:zimbraMail',
+				filterRules: [
+					{
+						filterRule: [
+							expect.objectContaining({
+								filterActions: [
+									{
+										actionFlag: [
+											{
+												flagName: 'flagged'
+											}
+										],
+										actionRedirect: [
+											{
+												a: 'redirectTo@email.com'
+											}
+										],
+										actionStop: [{}]
+									}
+								]
+							})
+						]
+					}
+				]
+			});
+		});
 	});
 });
