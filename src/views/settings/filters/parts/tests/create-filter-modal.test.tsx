@@ -372,5 +372,199 @@ describe('create-filter-modal', () => {
 				]
 			});
 		});
+
+		test('create a filter with multiple "from" condition', async () => {
+			const store = generateStore();
+
+			const modifyFilterRulesInterceptor = createSoapAPIInterceptor('ModifyFilterRules');
+			const { user } = setupTest(<CreateFilterModal t={t} onClose={jest.fn()} />, {
+				store
+			});
+			await fillFilterName(user, 'any name');
+
+			await user.click(screen.getByText('label.subject'));
+			await user.click(screen.getByText('label.from'));
+			await user.type(
+				screen.getByRole('textbox', {
+					name: 'settings.keyword'
+				}),
+				'anyemail'
+			);
+			await addCondition(user);
+			await user.click(screen.getByText('label.subject'));
+			await user.click(within(screen.getByTestId('dropdown-popper-list')).getByText('label.from'));
+			await user.type(
+				screen.getAllByRole('textbox', {
+					name: 'settings.keyword'
+				})[1],
+				'anotheremail'
+			);
+			await user.click(
+				screen.getByRole('button', {
+					name: /label\.create/i
+				})
+			);
+
+			const request = await modifyFilterRulesInterceptor;
+			expect(request).toEqual({
+				_jsns: 'urn:zimbraMail',
+				filterRules: [
+					{
+						filterRule: [
+							expect.objectContaining({
+								filterTests: [
+									{
+										addressTest: [
+											{
+												header: 'from',
+												part: 'all',
+												stringComparison: 'contains',
+												value: 'anyemail'
+											},
+											{
+												header: 'from',
+												part: 'all',
+												stringComparison: 'contains',
+												value: 'anotheremail'
+											}
+										],
+										condition: 'anyof'
+									}
+								]
+							})
+						]
+					}
+				]
+			});
+		});
+
+		test('create a filter with multiple different condition', async () => {
+			const store = generateStore();
+
+			const modifyFilterRulesInterceptor = createSoapAPIInterceptor('ModifyFilterRules');
+			const { user } = setupTest(<CreateFilterModal t={t} onClose={jest.fn()} />, {
+				store
+			});
+			await fillFilterName(user, 'any name');
+
+			await user.click(screen.getByText('label.subject'));
+			await user.click(screen.getByText('label.from'));
+			await user.type(
+				screen.getByRole('textbox', {
+					name: 'settings.keyword'
+				}),
+				'anyemail'
+			);
+			await addCondition(user);
+
+			await user.type(
+				screen.getAllByRole('textbox', {
+					name: 'settings.keyword'
+				})[1],
+				'anothervalue'
+			);
+
+			await user.click(
+				screen.getByRole('button', {
+					name: /label\.create/i
+				})
+			);
+
+			const request = await modifyFilterRulesInterceptor;
+			expect(request).toEqual({
+				_jsns: 'urn:zimbraMail',
+				filterRules: [
+					{
+						filterRule: [
+							expect.objectContaining({
+								filterTests: [
+									{
+										addressTest: [
+											{
+												header: 'from',
+												part: 'all',
+												stringComparison: 'contains',
+												value: 'anyemail'
+											}
+										],
+										headerTest: [
+											{
+												header: 'subject',
+												stringComparison: 'contains',
+												value: 'anothervalue'
+											}
+										],
+										condition: 'anyof'
+									}
+								]
+							})
+						]
+					}
+				]
+			});
+		});
+
+		test('removing a filter should call the api without the removed one', async () => {
+			const store = generateStore();
+
+			const modifyFilterRulesInterceptor = createSoapAPIInterceptor('ModifyFilterRules');
+			const { user } = setupTest(<CreateFilterModal t={t} onClose={jest.fn()} />, {
+				store
+			});
+			await fillFilterName(user, 'any name');
+
+			await user.click(screen.getByText('label.subject'));
+			await user.click(screen.getByText('label.from'));
+			await user.type(
+				screen.getByRole('textbox', {
+					name: 'settings.keyword'
+				}),
+				'anyemail'
+			);
+			await addCondition(user);
+
+			await user.type(
+				screen.getAllByRole('textbox', {
+					name: 'settings.keyword'
+				})[1],
+				'anothervalue'
+			);
+
+			await user.click(
+				within(screen.getByTestId('filter-conditions')).getAllByTestId('icon: MinusOutline')[1]
+			);
+
+			await user.click(
+				screen.getByRole('button', {
+					name: /label\.create/i
+				})
+			);
+
+			const request = await modifyFilterRulesInterceptor;
+			expect(request).toEqual({
+				_jsns: 'urn:zimbraMail',
+				filterRules: [
+					{
+						filterRule: [
+							expect.objectContaining({
+								filterTests: [
+									{
+										addressTest: [
+											{
+												header: 'from',
+												part: 'all',
+												stringComparison: 'contains',
+												value: 'anyemail'
+											}
+										],
+										condition: 'anyof'
+									}
+								]
+							})
+						]
+					}
+				]
+			});
+		});
 	});
 });

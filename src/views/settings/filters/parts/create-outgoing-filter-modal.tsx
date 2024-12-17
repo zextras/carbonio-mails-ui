@@ -13,7 +13,7 @@ import { map, omit, reduce } from 'lodash';
 import { CreateFilterContext } from './create-filter-context';
 import ModalFooter from './create-filter-modal-footer';
 import DefaultCondition from './create-filters-conditions/default';
-import FilterTestConditionRow from './filter-test-condition-row';
+import FilterConditionsPanel from './filter-conditions-panel';
 import FilterActionConditions from './new-filter-action-conditions';
 import { getButtonInfo } from './utils';
 import ModalHeader from '../../../../carbonio-ui-commons/components/modals/modal-header';
@@ -203,7 +203,7 @@ const CreateOutgoingFilterModal: FC<ComponentProps> = ({
 					maxWidth="100%"
 					width="100%"
 				>
-					<FilterTestConditionRow compProps={filterTestConditionRowProps} />
+					<FilterConditionsPanel compProps={filterTestConditionRowProps} />
 					<Padding top="medium" />
 					<Divider />
 					<FilterActionConditions compProps={filterActionProps} />

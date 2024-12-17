@@ -27,7 +27,7 @@ import { capitalise } from '../../../../sidebar/utils';
 import { CreateFilterContext } from '../create-filter-context';
 import ModalFooter from '../create-filter-modal-footer';
 import DefaultCondition from '../create-filters-conditions/default';
-import FilterTestConditionRow from '../filter-test-condition-row';
+import FilterConditionsPanel from '../filter-conditions-panel';
 import { findRowKey, getTestComponent } from '../get-test-component';
 import FilterActionConditions from '../new-filter-action-conditions';
 import { getButtonInfo } from '../utils';
@@ -352,7 +352,7 @@ const ModifyFilterModal: FC<ComponentProps> = ({
 					maxWidth="100%"
 					width="100%"
 				>
-					<FilterTestConditionRow compProps={filterTestConditionRowProps} />
+					<FilterConditionsPanel compProps={filterTestConditionRowProps} />
 					<Padding top="medium" />
 					<Divider />
 					<FilterActionConditions compProps={filterActionProps} />

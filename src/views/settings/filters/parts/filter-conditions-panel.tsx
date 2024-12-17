@@ -4,16 +4,18 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { FC, ReactElement, useMemo } from 'react';
+
 import { Container, Padding, Row, Text } from '@zextras/carbonio-design-system';
 import { map } from 'lodash';
-import Heading from '../../components/settings-heading';
+
 import CustomSelect from './custom-select';
+import FilterConditionRow from './filter-condition-row';
 import { getFieldOptions, findDefaultValue } from './utils';
-import FilterTestRows from './filter-test-rows';
+import Heading from '../../components/settings-heading';
 
 type FilterTestConditionRowProps = any;
 
-const FilterTestConditionRow: FC<FilterTestConditionRowProps> = ({ compProps }): ReactElement => {
+const FilterConditionsPanel: FC<FilterTestConditionRowProps> = ({ compProps }): ReactElement => {
 	const { t, newFilters, setCondition, selectedFilter } = compProps;
 	const fieldOptions = useMemo(() => getFieldOptions(t), [t]);
 
@@ -54,9 +56,9 @@ const FilterTestConditionRow: FC<FilterTestConditionRowProps> = ({ compProps }):
 			</Container>
 
 			<Padding top="small" />
-			<Container padding={{ top: 'small' }}>
+			<Container padding={{ top: 'small' }} data-testid={'filter-conditions'}>
 				{map(newFilters, (tmpFilter, index) => (
-					<FilterTestRows
+					<FilterConditionRow
 						key={`tmp-filter-${tmpFilter.key}-${index}`}
 						index={index}
 						tmpFilter={tmpFilter}
@@ -67,4 +69,4 @@ const FilterTestConditionRow: FC<FilterTestConditionRowProps> = ({ compProps }):
 		</Container>
 	);
 };
-export default FilterTestConditionRow;
+export default FilterConditionsPanel;

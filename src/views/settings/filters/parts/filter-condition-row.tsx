@@ -12,7 +12,7 @@ import CustomSelect from './custom-select';
 import { getRowFunc } from './get-row';
 import { getStatusOptions, findDefaultValue } from './utils';
 
-type FilterTestRowProps = {
+type FilterConditionRowrops = {
 	tmpFilter: {
 		filterActions: Array<any>;
 		active: boolean;
@@ -27,7 +27,11 @@ type FilterTestRowProps = {
 	compProps: any;
 };
 
-const FilterTestRows: FC<FilterTestRowProps> = ({ tmpFilter, index, compProps }): ReactElement => {
+const FilterConditionRow: FC<FilterConditionRowrops> = ({
+	tmpFilter,
+	index,
+	compProps
+}): ReactElement => {
 	const { t, newFilters, setNewFilters, condition, activeFilter, filterName } = compProps;
 	const statusOptions = useMemo(() => getStatusOptions(t), [t]);
 
@@ -86,11 +90,7 @@ const FilterTestRows: FC<FilterTestRowProps> = ({ tmpFilter, index, compProps })
 
 			{tmpFilter.comp}
 
-			<Container
-				orientation="horizontal"
-				mainAlignment="flex-end"
-				data-testid={'filter-conditions'}
-			>
+			<Container orientation="horizontal" mainAlignment="flex-end">
 				<Tooltip label={t('settings.add_condition', 'Add new condition')} placement="top">
 					<Button icon="PlusOutline" onClick={addFilterCondition} color="primary" type="outlined" />
 				</Tooltip>
@@ -110,4 +110,4 @@ const FilterTestRows: FC<FilterTestRowProps> = ({ tmpFilter, index, compProps })
 	);
 };
 
-export default FilterTestRows;
+export default FilterConditionRow;
