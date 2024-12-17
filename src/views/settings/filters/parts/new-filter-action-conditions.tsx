@@ -35,23 +35,21 @@ const FilterActionConditions: FC<ComponentProps> = ({ compProps }): ReactElement
 	);
 
 	return (
-		<>
-			<Container padding={{ top: 'medium' }} crossAlignment="flex-start" mainAlignment="flex-start">
-				<Heading title={t('settings.actions', 'Actions')} size="medium" />
-				<Text>{t('settings.perform_following_action', 'Perform the following actions:')}</Text>
-				<Container padding={{ top: 'small' }} mainAlignment="flex-start">
-					{map(tempActions, (tempAction, index: number) => (
-						<FilterActionRows
-							key={`filter-action-row-${index}`}
-							index={index}
-							tmpFilter={tempAction}
-							compProps={compProps}
-							tagOptions={tagOptions}
-						/>
-					))}
-				</Container>
+		<Container padding={{ top: 'medium' }} crossAlignment="flex-start" mainAlignment="flex-start">
+			<Heading title={t('settings.actions', 'Actions')} size="medium" />
+			<Text>{t('settings.perform_following_action', 'Perform the following actions:')}</Text>
+			<Container padding={{ top: 'small' }} mainAlignment="flex-start">
+				{map(tempActions, (tempAction, index: number) => (
+					<FilterActionRows
+						key={`filter-action-row-${index}`}
+						index={index}
+						tmpFilter={tempAction}
+						compProps={compProps}
+						tagOptions={tagOptions}
+					/>
+				))}
 			</Container>
-		</>
+		</Container>
 	);
 };
 

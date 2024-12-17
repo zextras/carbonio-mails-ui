@@ -566,5 +566,39 @@ describe('create-filter-modal', () => {
 				]
 			});
 		});
+
+		test('"Do not process additional filter" checbox should not send actionStop in checkbox if disabled', async () => {
+			const store = generateStore();
+
+			const modifyFilterRulesInterceptor = createSoapAPIInterceptor('ModifyFilterRules');
+			const { user } = setupTest(<CreateFilterModal t={t} onClose={jest.fn()} />, {
+				store
+			});
+
+			await fillFilterName(user, 'My Filter');
+			await user.click(screen.getByTestId('checkbox'));
+			await user.click(
+				screen.getByRole('button', {
+					name: /label\.create/i
+				})
+			);
+
+			const request = await modifyFilterRulesInterceptor;
+			expect(request).toEqual({
+				_jsns: 'urn:zimbraMail',
+				filterRules: [
+					{
+						filterRule: [
+							{
+								active: false,
+								name: 'My Filter',
+								filterActions: [expect.not.objectContaining({ actionStop: [{}] })],
+								filterTests: [{ condition: 'anyof' }]
+							}
+						]
+					}
+				]
+			});
+		});
 	});
 });

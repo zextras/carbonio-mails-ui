@@ -189,6 +189,36 @@ describe('FilterActionsRows', () => {
 				expect.objectContaining({ actionRedirect: [{ a: 'valid@email.it' }] })
 			]);
 		});
+
+		it('should call onChange with empty address after clearing input', async () => {
+			const mockSetActions = jest.fn();
+			const mockCompProps = {
+				t: jest.fn(),
+				isIncoming: true,
+				setTempActions: mockSetActions,
+				tempActions: [],
+				zimbraFeatureMailForwardingInFiltersEnabled: 'TRUE' as const
+			};
+			const { user } = setupTest(
+				<FilterActionRows
+					tmpFilter={{
+						actionRedirect: [{ flagName: 'flagged' }]
+					}}
+					index={0}
+					compProps={mockCompProps}
+				/>,
+				{}
+			);
+			const redirectToAddressInput = await screen.findByTestId('filter-action-row-contact-input');
+			await user.type(redirectToAddressInput, 'valid@email.it');
+			await user.type(redirectToAddressInput, '[Enter]');
+			const chipRemoveIcon = within(redirectToAddressInput).getByTestId('icon: Close');
+			await user.click(chipRemoveIcon);
+
+			expect(mockSetActions).toHaveBeenCalledWith([
+				expect.objectContaining({ actionRedirect: [{ a: '' }] })
+			]);
+		});
 	});
 
 	describe('Tag With', () => {
