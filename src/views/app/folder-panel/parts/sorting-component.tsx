@@ -15,6 +15,7 @@ import { searchSoapApi } from '../../../../api/search';
 import { FOLDERS } from '../../../../carbonio-ui-commons/constants/folders';
 import { SORTING_DIRECTION, SORTING_OPTIONS, SORT_ICONS } from '../../../../constants';
 import { parseMessageSortingOptions, updateSortingSettings } from '../../../../helpers/sorting';
+import { handleSearchSoapApiResults } from '../../../../store/zustand/emails/hooks/hooks';
 import { AppContext } from '../../../../types';
 
 export const SortingComponent = ({ folderId }: { folderId?: string }): React.JSX.Element => {
@@ -49,13 +50,14 @@ export const SortingComponent = ({ folderId }: { folderId?: string }): React.JSX
 
 	const { isMessageView } = useAppContext<AppContext>();
 	const performSearch = useCallback(
-		(sortBy: string): void => {
-			searchSoapApi({
+		async (sortBy: string): Promise<void> => {
+			const searchResponse = await searchSoapApi({
 				folderId,
 				limit: 100,
 				sortBy,
 				types: isMessageView ? 'message' : 'conversation'
 			});
+			handleSearchSoapApiResults({ searchResponse });
 		},
 		[folderId, isMessageView]
 	);

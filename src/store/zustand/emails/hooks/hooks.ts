@@ -6,19 +6,24 @@
 
 import { useEffect } from 'react';
 
+import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
 
 import { getMsgSoapAPI } from '../../../../api/get-msg';
 import { searchConvSoapAPI } from '../../../../api/search-conv';
 import { API_REQUEST_STATUS } from '../../../../constants';
-import { normalizeCompleteMailMessageFromSoap } from '../../../../normalizations/normalize-message';
+import {
+	normalizeCompleteMailMessageFromSoap,
+	normalizeMailMessageFromSoap
+} from '../../../../normalizations/normalize-message';
 import {
 	GetMsgResponse,
 	IncompleteMessage,
 	MailMessage,
 	NormalizedConversation,
 	SearchConvResponse,
-	SearchRequestStatus
+	SearchRequestStatus,
+	SearchResponse
 } from '../../../../types';
 import {
 	updateMessages,
@@ -27,7 +32,10 @@ import {
 	useConversationStatus,
 	useMessageById,
 	updateMessageStatus,
-	useMessageStatus
+	useMessageStatus,
+	updateMessagesResultsLoadingStatus,
+	resetMessagesAndPopulatedItems,
+	setMessagesInEmailStore
 } from '../store';
 
 function handleSearchConvResponse(conversationId: string, response: SearchConvResponse): void {
@@ -123,3 +131,24 @@ export function useCompleteMessage(messageId: string): MessageWithStatus {
 		messageStatus
 	};
 }
+export const handleSearchSoapApiResults = ({
+	searchResponse
+}: {
+	searchResponse: SearchResponse | ErrorSoapBodyResponse;
+}): void => {
+	if ('Fault' in searchResponse) {
+		updateMessagesResultsLoadingStatus(API_REQUEST_STATUS.error);
+		return;
+	}
+	// TODO CO-1725 add case for conversations
+	if (searchResponse.m?.length) {
+		const normalizedMessages = map(searchResponse.m, (msg) =>
+			normalizeMailMessageFromSoap(msg, false)
+		);
+
+		setMessagesInEmailStore(normalizedMessages, searchResponse.more);
+	} else {
+		resetMessagesAndPopulatedItems();
+		updateMessagesResultsLoadingStatus(API_REQUEST_STATUS.fulfilled);
+	}
+};

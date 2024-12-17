@@ -6,7 +6,7 @@
 
 import React from 'react';
 
-import { within } from '@testing-library/react';
+import { renderHook, within } from '@testing-library/react';
 import * as hooks from '@zextras/carbonio-shell-ui';
 import { AccountSettings } from '@zextras/carbonio-shell-ui';
 import { forEach, indexOf, noop, without } from 'lodash';
@@ -16,6 +16,11 @@ import { createSoapAPIInterceptor } from '../../../../../carbonio-ui-commons/tes
 import { generateSettings } from '../../../../../carbonio-ui-commons/test/mocks/settings/settings-generator';
 import { setupTest, screen } from '../../../../../carbonio-ui-commons/test/test-setup';
 import { SORTING_OPTIONS, SORTING_DIRECTION } from '../../../../../constants';
+import {
+	setMessagesInEmailStore,
+	useMessagesSlice
+} from '../../../../../store/zustand/emails/store';
+import { generateMessage } from '../../../../../tests/generators/generateMessage';
 import { generateStore } from '../../../../../tests/generators/store';
 import { SearchRequest } from '../../../../../types';
 import { Breadcrumbs } from '../breadcrumbs';
@@ -249,7 +254,7 @@ describe('Sorting component', () => {
 		expect(buttonOnPosition).toBe(orderParameterPosition);
 	});
 
-	test('clicking on the sorting direction icon makes a SearchRequest api call with correct parameters types, sortBy and query', async () => {
+	test('clicking on the sorting direction icon reverses the messages order', async () => {
 		const folderId = FOLDERS.INBOX;
 		const sortingOption = SORTING_OPTIONS.date;
 		const sortingDirection = SORTING_DIRECTION.DESCENDING;
@@ -260,12 +265,16 @@ describe('Sorting component', () => {
 			}
 		};
 		const settings = generateSettings(customSettings);
+		const message1 = generateMessage({ id: '1' });
+		const message2 = generateMessage({ id: '2' });
+		setMessagesInEmailStore([message1, message2], false);
+		const { result: initialOrder } = renderHook(() => useMessagesSlice());
+		expect(initialOrder.current.messageIds).toEqual(new Set(['1', '2']));
 
 		jest.spyOn(hooks, 'useUserSettings').mockReturnValue(settings);
 
 		const isMessageView = settings.prefs.zimbraPrefGroupMailBy === 'message';
 		jest.spyOn(hooks, 'useAppContext').mockReturnValue({ isMessageView });
-
 		const { user } = setupTest(<Breadcrumbs {...defaultProps} />);
 
 		expect(await screen.findByTestId(sortingDropdown)).toBeInTheDocument();
@@ -289,10 +298,13 @@ describe('Sorting component', () => {
 
 		const interceptor = createSoapAPIInterceptor<SearchRequest>('Search');
 		user.click(ascendingOption);
+
 		const req = await interceptor;
 		expect(req.sortBy).toBe(expectedRequest.sortBy);
 		expect(req.types).toBe(expectedRequest.types);
 		expect(req.query).toBe(expectedRequest.query);
+		const { result: newOrder } = renderHook(() => useMessagesSlice());
+		expect(newOrder.current.messageIds).toEqual(new Set(['2', '1']));
 	});
 
 	test('clicking on the sorting direction icon will switch the order direction', async () => {
