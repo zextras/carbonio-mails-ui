@@ -4,21 +4,20 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { Dropdown, DropdownItem, IconButton, Tooltip } from '@zextras/carbonio-design-system';
 import { t, useUserSettings, useAppContext, replaceHistory } from '@zextras/carbonio-shell-ui';
 import { noop } from 'lodash';
 
 import { getTooltipLabel } from './utils/utils';
+import { searchSoapApi } from '../../../../api/search';
 import { FOLDERS } from '../../../../carbonio-ui-commons/constants/folders';
 import { SORTING_DIRECTION, SORTING_OPTIONS, SORT_ICONS } from '../../../../constants';
 import { parseMessageSortingOptions, updateSortingSettings } from '../../../../helpers/sorting';
-import { useAppDispatch } from '../../../../hooks/redux';
-import { search } from '../../../../store/actions';
 import { AppContext } from '../../../../types';
 
-export const SortingComponent: FC<{ folderId?: string }> = ({ folderId }) => {
+export const SortingComponent = ({ folderId }: { folderId?: string }): React.JSX.Element => {
 	const buttonRef = useRef<HTMLDivElement>(null);
 	const { prefs } = useUserSettings();
 
@@ -28,7 +27,6 @@ export const SortingComponent: FC<{ folderId?: string }> = ({ folderId }) => {
 	) as string;
 	const { sortType, sortDirection } = parseMessageSortingOptions(folderId, prefSortOrder);
 
-	const dispatch = useAppDispatch();
 	const [sortDirectionState, setSortDirectionState] = useState(sortDirection);
 
 	const iconButtonIconProps = useMemo(
@@ -52,16 +50,14 @@ export const SortingComponent: FC<{ folderId?: string }> = ({ folderId }) => {
 	const { isMessageView } = useAppContext<AppContext>();
 	const performSearch = useCallback(
 		(sortBy: string): void => {
-			dispatch(
-				search({
-					folderId,
-					limit: 100,
-					sortBy,
-					types: isMessageView ? 'message' : 'conversation'
-				})
-			);
+			searchSoapApi({
+				folderId,
+				limit: 100,
+				sortBy,
+				types: isMessageView ? 'message' : 'conversation'
+			});
 		},
-		[dispatch, folderId, isMessageView]
+		[folderId, isMessageView]
 	);
 
 	const switchAscendingOrDescendingOrder = useCallback(() => {
