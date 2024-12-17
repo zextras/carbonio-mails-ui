@@ -5,8 +5,7 @@
  */
 import React, { FC, ReactElement, useMemo, useCallback } from 'react';
 
-import { Button, Container, Padding, Tooltip, getColor } from '@zextras/carbonio-design-system';
-import styled from 'styled-components';
+import { Button, Container, Padding, Tooltip } from '@zextras/carbonio-design-system';
 
 import DefaultCondition from './create-filters-conditions/default';
 import CustomSelect from './custom-select';
@@ -87,7 +86,11 @@ const FilterTestRows: FC<FilterTestRowProps> = ({ tmpFilter, index, compProps })
 
 			{tmpFilter.comp}
 
-			<Container orientation="horizontal" mainAlignment="flex-end">
+			<Container
+				orientation="horizontal"
+				mainAlignment="flex-end"
+				data-testid={'filter-conditions'}
+			>
 				<Tooltip label={t('settings.add_condition', 'Add new condition')} placement="top">
 					<Button icon="PlusOutline" onClick={addFilterCondition} color="primary" type="outlined" />
 				</Tooltip>

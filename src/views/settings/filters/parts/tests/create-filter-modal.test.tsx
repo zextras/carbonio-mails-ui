@@ -21,6 +21,11 @@ import CreateFilterModal from '../create-filter-modal';
 const addAction = async (user: UserEvent): Promise<void> => {
 	await user.click(within(screen.getByTestId('actions-panel')).getByTestId('icon: PlusOutline'));
 };
+const addCondition = async (user: UserEvent): Promise<void> => {
+	await user.click(
+		within(screen.getByTestId('filter-conditions')).getByTestId('icon: PlusOutline')
+	);
+};
 const fillFilterName = async (user: UserEvent, filterName: string): Promise<void> => {
 	const filterInputElement = screen.getByRole('textbox', {
 		name: 'settings.filter_name*'
@@ -310,6 +315,55 @@ describe('create-filter-modal', () => {
 											}
 										],
 										actionStop: [{}]
+									}
+								]
+							})
+						]
+					}
+				]
+			});
+		});
+		test('create a filter with "from" condition', async () => {
+			const store = generateStore();
+
+			const modifyFilterRulesInterceptor = createSoapAPIInterceptor('ModifyFilterRules');
+			const { user } = setupTest(<CreateFilterModal t={t} onClose={jest.fn()} />, {
+				store
+			});
+			await fillFilterName(user, 'any name');
+
+			await user.click(screen.getByText('label.subject'));
+			await user.click(screen.getByText('label.from'));
+			await user.type(
+				screen.getByRole('textbox', {
+					name: 'settings.keyword'
+				}),
+				'anyemail'
+			);
+
+			const createButton = screen.getByRole('button', {
+				name: /label\.create/i
+			});
+			await user.click(createButton);
+
+			const request = await modifyFilterRulesInterceptor;
+			expect(request).toEqual({
+				_jsns: 'urn:zimbraMail',
+				filterRules: [
+					{
+						filterRule: [
+							expect.objectContaining({
+								filterTests: [
+									{
+										addressTest: [
+											{
+												header: 'from',
+												part: 'all',
+												stringComparison: 'contains',
+												value: 'anyemail'
+											}
+										],
+										condition: 'anyof'
 									}
 								]
 							})
