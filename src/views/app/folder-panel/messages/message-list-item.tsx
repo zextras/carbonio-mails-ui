@@ -354,7 +354,8 @@ export const MessageListItem: FC<MessageListItemProps> = memo(function MessageLi
 											folderId: firstChildFolderId,
 											folderName: messageFolder?.name ?? ''
 										})}
-										type={textReadValues.badge}
+										backgroundColor={(textReadValues.badge === 'unread' && 'primary') || 'gray2'}
+										color={(textReadValues.badge === 'unread' && 'gray6') || 'gray0'}
 									/>
 								</Padding>
 							)}
