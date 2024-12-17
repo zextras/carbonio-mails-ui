@@ -16,7 +16,6 @@ import { MovetoFolder } from './filter-actions/move-to-folder';
 import { RedirectTo } from './filter-actions/redirect-to';
 import { ShowTag } from './filter-actions/show-tag';
 import { getActionOptions, getMarkAsOptions } from './utils';
-import { ZIMBRA_STANDARD_COLORS } from '../../../../carbonio-ui-commons/constants';
 import { CONTACT_TYPES } from '../../../../carbonio-ui-commons/integrations/constants';
 import { ContactInputItem } from '../../../../carbonio-ui-commons/integrations/types';
 import { Folder } from '../../../../carbonio-ui-commons/types/folder';
@@ -25,10 +24,6 @@ import { Folder } from '../../../../carbonio-ui-commons/types/folder';
 type Tag = {
 	label: string;
 	customComponent?: React.ReactNode;
-	hasAvatar: boolean;
-	avatarIcon: 'Tag';
-	background: 'gray2';
-	avatarBackground: string;
 	color?: number;
 };
 
@@ -145,10 +140,7 @@ const FilterActionRows: FC<FilterActionRowProps> = ({
 						? [
 								{
 									label: `${tmpFilter[action][0].tagName}`,
-									hasAvatar: true,
-									avatarIcon: 'Tag',
-									background: 'gray2',
-									avatarBackground: ZIMBRA_STANDARD_COLORS[chipBg?.color]?.hex
+									color: chipBg.color
 								}
 							]
 						: []

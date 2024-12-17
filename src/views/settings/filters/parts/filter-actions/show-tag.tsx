@@ -13,10 +13,6 @@ import { ZIMBRA_STANDARD_COLORS } from '../../../../../carbonio-ui-commons/const
 type Tag = {
 	label: string;
 	customComponent?: React.ReactNode;
-	hasAvatar: boolean;
-	avatarIcon: 'Tag';
-	background: 'gray2';
-	avatarBackground: string;
 	color?: number;
 };
 
@@ -32,7 +28,10 @@ export const ShowTag = ({ value, tagOptions, onTagChange }: ShowTagProps): React
 	const tagChipInput = value.map(
 		(tag): ChipItem<Tag> => ({
 			label: tag.label,
-			value: tag
+			value: tag,
+			avatarBackground: ZIMBRA_STANDARD_COLORS[tag.color ?? 0].hex,
+			hasAvatar: true,
+			avatarIcon: 'Tag'
 		})
 	);
 
@@ -44,20 +43,18 @@ export const ShowTag = ({ value, tagOptions, onTagChange }: ShowTagProps): React
 		} => ({
 			id: tag.label,
 			label: tag.label,
-			value: tag
+			value: tag,
+			customComponent: tag.customComponent
 		})
 	);
 	const tagChipOnAdd = useCallback((tagValue: unknown): ChipItem<Tag> => {
 		const tag = tagValue as Tag;
 		return {
 			label: tag.label,
-			value: {
-				label: tag.label,
-				hasAvatar: true,
-				avatarIcon: 'Tag',
-				background: 'gray2',
-				avatarBackground: ZIMBRA_STANDARD_COLORS[tag.color ?? 0].hex
-			}
+			value: tag,
+			avatarBackground: ZIMBRA_STANDARD_COLORS[tag.color ?? 0].hex,
+			hasAvatar: true,
+			avatarIcon: 'Tag'
 		};
 	}, []);
 

@@ -19,7 +19,7 @@ import { generateStore } from '../../../../../../tests/generators/store';
 import { MovetoFolder } from '../../filter-actions/move-to-folder';
 
 describe('Move to Folder', () => {
-	it('it should render initial folder destination in input', async () => {
+	it('should render initial folder destination in input', async () => {
 		const store = generateStore();
 
 		setupTest(
@@ -36,7 +36,7 @@ describe('Move to Folder', () => {
 		expect(input).toHaveValue('test path');
 	});
 
-	it('it should return selected destination on confirm', async () => {
+	it('should return selected destination on confirm', async () => {
 		const store = generateStore();
 		const folder = generateFolder({
 			id: '100',
@@ -71,5 +71,36 @@ describe('Move to Folder', () => {
 		expect(chooseFolder).toBeEnabled();
 		await user.click(chooseFolder);
 		expect(onConfirm).toHaveBeenCalledWith(expect.objectContaining({ name: folder.name }));
+	});
+
+	it('should  close the modal clicking on the cross icon ', async () => {
+		const store = generateStore();
+		const folder = generateFolder({
+			id: '100',
+			name: 'Test folder'
+		});
+		const rootFolder = generateFolder({ id: FOLDERS.USER_ROOT, name: 'Root', children: [folder] });
+		populateFoldersStore({
+			view: FOLDER_VIEW.message,
+			customFolders: [rootFolder]
+		});
+		const onConfirm = jest.fn();
+		const { user } = setupTest(
+			<MovetoFolder
+				destination={undefined}
+				onSelectFolder={jest.fn()}
+				onConfirmDestination={onConfirm}
+			/>,
+			{
+				store
+			}
+		);
+		const browseFolder = screen.getByRole('button', {
+			name: /browse/i
+		});
+		await user.click(browseFolder);
+		await user.click(screen.getByTestId('icon: CloseOutline'));
+
+		expect(screen.queryByTestId('modal')).not.toBeInTheDocument();
 	});
 });

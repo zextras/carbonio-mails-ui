@@ -12,7 +12,7 @@ import { generateStore } from '../../../../../../tests/generators/store';
 import { ShowTag } from '../../filter-actions/show-tag';
 
 describe('Show Tag', () => {
-	it('it should render selected option in the input', async () => {
+	it('should render selected option in the input', async () => {
 		const store = generateStore();
 
 		setupTest(<ShowTag value={[]} tagOptions={[]} onTagChange={jest.fn()} />, {
@@ -22,7 +22,7 @@ describe('Show Tag', () => {
 		expect(screen.getByText('Tag')).toBeVisible();
 	});
 
-	it('it should call onChange with the choosen value', async () => {
+	it('should call onChange with the chosen value', async () => {
 		const store = generateStore();
 		const onChangeFn = jest.fn();
 		const tagOptions = [
@@ -58,5 +58,29 @@ describe('Show Tag', () => {
 				label: 'tag option 1'
 			}
 		]);
+	});
+
+	// incomplete test
+	it.skip('should render the avatar background as black if no color is passed as tagOption', async () => {
+		const store = generateStore();
+		const onChangeFn = jest.fn();
+		const tagOptions = [
+			{
+				label: 'tag option 1'
+			}
+		];
+
+		const { user } = setupTest(
+			<ShowTag value={[]} tagOptions={tagOptions} onTagChange={onChangeFn} />,
+			{
+				store
+			}
+		);
+
+		await user.click(screen.getByText('Tag'));
+		await screen.findByTestId('dropdown-popper-list');
+
+		expect(screen.getByText(tagOptions[0].label)).toBeVisible();
+		screen.logTestingPlaygroundURL();
 	});
 });
