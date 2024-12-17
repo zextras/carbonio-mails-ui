@@ -8,6 +8,7 @@ import React from 'react';
 import { act, screen, within } from '@testing-library/react';
 import { t } from '@zextras/carbonio-shell-ui';
 
+import { createSoapAPIInterceptor } from '../../../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { populateFoldersStore } from '../../../../../carbonio-ui-commons/test/mocks/store/folders';
 import {
 	makeListItemsVisible,
@@ -17,6 +18,7 @@ import { generateStore } from '../../../../../tests/generators/store';
 import CreateFilterModal from '../create-filter-modal';
 
 describe('create-filter-modal', () => {
+	// TODO: these tests are not really helpful as they test the DS but not component logic
 	test('create button is disabled when filter name is empty', async () => {
 		const store = generateStore();
 
@@ -115,5 +117,39 @@ describe('create-filter-modal', () => {
 			jest.advanceTimersByTime(500);
 		});
 		expect(screen.getByText(/junk/i)).toBeVisible();
+	});
+
+	it('should call ModifyFiltersRule API when clicking create button', async () => {
+		const store = generateStore();
+
+		const modifyFilterRulesInterceptor = createSoapAPIInterceptor('ModifyFilterRules');
+		const { user } = setupTest(<CreateFilterModal t={t} onClose={jest.fn()} />, {
+			store
+		});
+		const filterInputElement = screen.getByRole('textbox', {
+			name: 'settings.filter_name*'
+		});
+		await user.type(filterInputElement, 'My filter');
+
+		const createButton = screen.getByRole('button', {
+			name: /label\.create/i
+		});
+		await user.click(createButton);
+		const request = await modifyFilterRulesInterceptor;
+		expect(request).toEqual({
+			_jsns: 'urn:zimbraMail',
+			filterRules: [
+				{
+					filterRule: [
+						{
+							active: false,
+							name: 'My filter',
+							filterActions: [{ actionKeep: [{}], actionStop: [{}] }],
+							filterTests: [{ condition: 'anyof' }]
+						}
+					]
+				}
+			]
+		});
 	});
 });
