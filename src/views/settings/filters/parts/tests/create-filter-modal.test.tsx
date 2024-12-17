@@ -18,7 +18,7 @@ import { generateStore } from '../../../../../tests/generators/store';
 import CreateFilterModal from '../create-filter-modal';
 
 describe('create-filter-modal', () => {
-	test('create filter add filter name and by default it will be deactive', async () => {
+	test('create filter add filter name and by default it will be inactive (in available filters)', async () => {
 		const closeModal = jest.fn();
 		const store = generateStore();
 
@@ -48,7 +48,7 @@ describe('create-filter-modal', () => {
 		expect(filterActiveChecked).toBeInTheDocument();
 	});
 
-	test('create button will be disable and enabled once filter name added', async () => {
+	test('create button will be disabled and enabled only once filter name is added', async () => {
 		const closeModal = jest.fn();
 		const store = generateStore();
 
