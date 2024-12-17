@@ -5,22 +5,17 @@
  */
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 
-import { type ErrorSoapBodyResponse, useUserSettings } from '@zextras/carbonio-shell-ui';
-import { map } from 'lodash';
+import { useUserSettings } from '@zextras/carbonio-shell-ui';
 
 import { searchSoapApi } from '../api/search';
-import { getTags } from '../carbonio-ui-commons/store/zustand/tags';
-import { Tags } from '../carbonio-ui-commons/types/tags';
 import { API_REQUEST_STATUS, LIST_LIMIT } from '../constants';
-import { normalizeMailMessageFromSoap } from '../normalizations/normalize-message';
+import { handleSearchSoapApiResults } from '../store/zustand/emails/hooks/hooks';
 import {
-	resetMessagesAndPopulatedItems,
-	setMessagesInEmailStore,
 	updateMessagesResultsLoadingStatus,
 	useMessagesIdsByFolder,
 	useMessagesSlice
 } from '../store/zustand/emails/store';
-import { Folder, MessageSliceState, SearchResponse } from '../types';
+import { Folder, MessageSliceState } from '../types';
 
 export const useMessageListByFolder = (folder: Folder): MessageSliceState => {
 	const settings = useUserSettings();
@@ -34,39 +29,6 @@ export const useMessageListByFolder = (folder: Folder): MessageSliceState => {
 	const messagesSlice = useMessagesSlice();
 	const messagesIds = useMessagesIdsByFolder(folder);
 
-	function handleFulFilledMessagesResultsInEmailStore({
-		searchResponse
-	}: {
-		searchResponse: SearchResponse;
-		tags: Tags;
-	}): void {
-		const normalizedMessages = map(searchResponse.m, (msg) =>
-			normalizeMailMessageFromSoap(msg, false)
-		);
-
-		setMessagesInEmailStore(normalizedMessages, searchResponse.more);
-	}
-
-	const handleMessageResults = useCallback(
-		({ searchResponse }: { searchResponse: SearchResponse | ErrorSoapBodyResponse }): void => {
-			if ('Fault' in searchResponse) {
-				updateMessagesResultsLoadingStatus(API_REQUEST_STATUS.error);
-				return;
-			}
-
-			if (searchResponse.m?.length) {
-				handleFulFilledMessagesResultsInEmailStore({
-					searchResponse,
-					tags: getTags()
-				});
-			} else {
-				resetMessagesAndPopulatedItems();
-				updateMessagesResultsLoadingStatus(API_REQUEST_STATUS.fulfilled);
-			}
-		},
-		[]
-	);
-
 	const firstSearchCallback = useCallback(
 		async (abortSignal: AbortSignal | undefined) => {
 			updateMessagesResultsLoadingStatus(API_REQUEST_STATUS.pending);
@@ -79,16 +41,9 @@ export const useMessageListByFolder = (folder: Folder): MessageSliceState => {
 				locale: prefLocale,
 				abortSignal
 			});
-			if (
-				'Fault' in searchResponse &&
-				searchResponse?.Fault?.Detail?.Error?.Code === 'mail.QUERY_PARSE_ERROR'
-			) {
-				updateMessagesResultsLoadingStatus(API_REQUEST_STATUS.error);
-			} else {
-				handleMessageResults({ searchResponse });
-			}
+			handleSearchSoapApiResults({ searchResponse });
 		},
-		[folder.id, handleMessageResults, prefLocale]
+		[folder.id, prefLocale]
 	);
 
 	useEffect(() => {
