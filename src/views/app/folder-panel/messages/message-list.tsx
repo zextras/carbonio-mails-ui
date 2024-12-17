@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, ReactElement, useEffect, useMemo, useRef, useState } from 'react';
+import React, { ReactElement, useEffect, useMemo, useRef, useState } from 'react';
 
 import { t, useAppContext, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
@@ -22,7 +22,7 @@ import { useMessageListByFolder } from '../../../../hooks/use-message-list-by-fo
 import { useSelection } from '../../../../hooks/use-selection';
 import type { AppContext, Folder } from '../../../../types';
 
-export const MessageList: FC = () => {
+export const MessageList = (): React.JSX.Element => {
 	const { itemId, folderId } = useParams<{ itemId: string; folderId: string }>();
 	const loadingMore = useRef<boolean>(false);
 	const dragImageRef = useRef(null);
