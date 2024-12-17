@@ -5,7 +5,6 @@
  */
 import React from 'react';
 
-import { faker } from '@faker-js/faker';
 import { act, screen, within } from '@testing-library/react';
 import { t } from '@zextras/carbonio-shell-ui';
 
@@ -18,41 +17,10 @@ import { generateStore } from '../../../../../tests/generators/store';
 import CreateFilterModal from '../create-filter-modal';
 
 describe('create-filter-modal', () => {
-	test('create filter add filter name and by default it will be inactive (in available filters)', async () => {
-		const closeModal = jest.fn();
+	test('create button is disabled when filter name is empty', async () => {
 		const store = generateStore();
 
-		const { user } = setupTest(<CreateFilterModal t={t} onClose={(): void => closeModal()} />, {
-			store
-		});
-
-		expect(screen.getByTestId('filter-name')).toBeInTheDocument();
-		const filterName = screen.getByTestId('filter-name');
-		const name = faker.lorem.word();
-		const filterInputElement = within(filterName).getByRole('textbox');
-		await user.clear(filterInputElement);
-
-		// Insert the new filter name into the text input
-		await act(() => user.type(filterInputElement, name));
-
-		const filterActiveUnChecked = within(screen.getByTestId('active-filter')).getByTestId(
-			'icon: Square'
-		);
-		expect(filterActiveUnChecked).toBeInTheDocument();
-		await act(() => user.click(filterActiveUnChecked));
-
-		const filterActiveChecked = within(screen.getByTestId('active-filter')).getByTestId(
-			'icon: CheckmarkSquare'
-		);
-
-		expect(filterActiveChecked).toBeInTheDocument();
-	});
-
-	test('create button will be disabled and enabled only once filter name is added', async () => {
-		const closeModal = jest.fn();
-		const store = generateStore();
-
-		const { user } = setupTest(<CreateFilterModal t={t} onClose={(): void => closeModal()} />, {
+		setupTest(<CreateFilterModal t={t} onClose={jest.fn()} />, {
 			store
 		});
 
@@ -60,19 +28,36 @@ describe('create-filter-modal', () => {
 			name: /label\.create/i
 		});
 		expect(createButton).toBeDisabled();
-		expect(screen.getByTestId('filter-name')).toBeInTheDocument();
-		const filterName = screen.getByTestId('filter-name');
-		const name = faker.lorem.word();
-		const filterInputElement = within(filterName).getByRole('textbox');
-		await user.clear(filterInputElement);
+	});
+	test('create button is enabled only when filter name is added', async () => {
+		const store = generateStore();
 
-		// Insert the new filter name into the text input
-		await user.type(filterInputElement, name);
+		const { user } = setupTest(<CreateFilterModal t={t} onClose={jest.fn()} />, {
+			store
+		});
+		const filterInputElement = screen.getByRole('textbox', {
+			name: 'settings.filter_name*'
+		});
+		await user.type(filterInputElement, 'My filter');
 
-		// filter name added so now create button should be enabled
+		const createButton = screen.getByRole('button', {
+			name: /label\.create/i
+		});
 		expect(createButton).toBeEnabled();
 	});
 
+	test('"Active filter" is unchecked by default', async () => {
+		const store = generateStore();
+
+		setupTest(<CreateFilterModal t={t} onClose={jest.fn()} />, {
+			store
+		});
+
+		const filterActiveUnChecked = within(screen.getByTestId('active-filter')).getByTestId(
+			'icon: Square'
+		);
+		expect(filterActiveUnChecked).toBeVisible();
+	});
 	test('clicking "Active filter" should check the checkbox', async () => {
 		const store = generateStore();
 
@@ -87,42 +72,16 @@ describe('create-filter-modal', () => {
 		const filterActiveChecked = within(screen.getByTestId('active-filter')).getByTestId(
 			'icon: CheckmarkSquare'
 		);
-		expect(filterActiveChecked).toBeInTheDocument();
+		expect(filterActiveChecked).toBeVisible();
 	});
 
-	test('create filter add filter name and add condition', async () => {
-		const closeModal = jest.fn();
+	test('Filter conditions should be visible', async () => {
 		const store = generateStore();
 
-		const { user } = setupTest(<CreateFilterModal t={t} onClose={(): void => closeModal()} />, {
+		const { user } = setupTest(<CreateFilterModal t={t} onClose={jest.fn()} />, {
 			store
 		});
-
-		expect(screen.getByTestId('filter-name')).toBeInTheDocument();
-		const filterName = screen.getByTestId('filter-name');
-		const name = faker.lorem.word();
-		const filterInputElement = within(filterName).getByRole('textbox');
-		await act(() => user.clear(filterInputElement));
-		await act(() => user.type(filterInputElement, name));
-
-		const filterActiveUnChecked = within(screen.getByTestId('active-filter')).getByTestId(
-			'icon: Square'
-		);
-		expect(filterActiveUnChecked).toBeInTheDocument();
-		await act(() => user.click(filterActiveUnChecked));
-
-		const filterActiveChecked = within(screen.getByTestId('active-filter')).getByTestId(
-			'icon: CheckmarkSquare'
-		);
-		expect(filterActiveChecked).toBeInTheDocument();
-		act(() => {
-			jest.advanceTimersByTime(5000);
-		});
-
-		const fieldLabel = screen.getByText(/settings\.field/i);
-		expect(fieldLabel).toBeInTheDocument();
-
-		await act(() => user.click(fieldLabel));
+		await user.click(screen.getByText(/settings\.field/i));
 
 		const fieldAnyOption = within(screen.getByTestId('dropdown-popper-list')).getByText(
 			/label\.any/i
@@ -132,14 +91,9 @@ describe('create-filter-modal', () => {
 		);
 		expect(fieldAnyOption).toBeInTheDocument();
 		expect(fieldAllOption).toBeInTheDocument();
-
-		const createButton = screen.getByRole('button', {
-			name: /label\.create/i
-		});
-		expect(createButton).toBeEnabled();
 	});
 
-	test('junk folder is selectable', async () => {
+	test('Move into folder action allows selecting junk folder', async () => {
 		const closeModal = jest.fn();
 		const store = generateStore();
 		populateFoldersStore();
