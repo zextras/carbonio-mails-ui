@@ -3,126 +3,132 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { Dispatch } from '@reduxjs/toolkit';
-import { renderHook } from '@testing-library/react';
-import { CreateSnackbarFn, useSnackbar } from '@zextras/carbonio-design-system';
+import { faker } from '@faker-js/faker';
+import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 
-import { setupHook } from '../../../../carbonio-ui-commons/test/test-setup';
+import { CreateMountpointError } from '../../../../api/errors/create-mountpoint-error';
+import { FOLDER_VIEW } from '../../../../carbonio-ui-commons/constants';
+import { createSoapAPIInterceptor } from '../../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
+import { buildSoapErrorResponseBody } from '../../../../carbonio-ui-commons/test/mocks/utils/soap';
+import { setupHook, screen, within } from '../../../../carbonio-ui-commons/test/test-setup';
+import { CreateMountpointResponse } from '../../../../store/actions/mount-shared-folder';
+import { generateStore } from '../../../../tests/generators/store';
+import { ISoapFolderObj } from '../../../../types';
 import { useAccept } from '../share-folder-actions';
-
-const createSnackbar = (arg: any): CreateSnackbarFn => arg;
-const createSnackbarSpy = jest.fn(createSnackbar);
-
-jest.mock('@zextras/carbonio-design-system', () => ({
-	...jest.requireActual('@zextras/carbonio-design-system'),
-	useSnackbar: jest.fn()
-}));
-
-beforeEach(() => {
-	(useSnackbar as jest.Mock).mockReturnValue(createSnackbarSpy);
-});
-
-afterEach(() => {
-	jest.clearAllMocks();
-});
 
 describe('share folder actions', () => {
 	it('should mount shared folder on accept', async () => {
-		const dispatch = jest.fn(() =>
-			Promise.resolve({
-				type: 'fulfilled'
-			})
-		) as Dispatch<any>;
-		const { unmount, result } = setupHook(useAccept);
 		const zid = 'zid';
-		const view = 'view';
+		const view = FOLDER_VIEW.message;
 		const rid = 'rid';
 		const folderName = 'folderName';
 		const color = 1;
-		const accounts = {};
+		const accounts = [{ name: 'account name' }];
+		const link: ISoapFolderObj = {
+			activesyncdisabled: false,
+			cn: [],
+			color: '',
+			deletable: false,
+			i4ms: 0,
+			i4next: 0,
+			l: '1',
+			luuid: '',
+			ms: 0,
+			n: 0,
+			rev: 0,
+			rgb: '',
+			s: 0,
+			webOfflineSyncDays: 0,
+			id: faker.string.numeric(),
+			uuid: faker.string.uuid(),
+			name: faker.word.noun(),
+			absFolderPath: `/${faker.word.noun()}`,
+			view
+		};
 
-		const { current: accept } = result;
-		renderHook(() =>
-			accept({
-				zid,
-				view,
-				rid,
-				folderName,
-				color,
-				accounts,
-				dispatch,
-				msgId: 'msgId',
-				sharedFolderName: folderName,
-				owner: 'owner',
-				participants: [],
-				grantee: 'grantee',
-				customMessage: 'customMessage',
-				role: 'role',
-				allowedActions: 'allowedActions',
-				notifyOrganizer: true,
-				t: (msg, _) => msg
-			})
-		);
-		await unmount();
-		expect(dispatch).toHaveBeenCalled();
-		expect(createSnackbarSpy).toHaveBeenCalledWith({
-			key: 'share_accepted',
-			replace: true,
-			autoHideTimeout: 3000,
-			hideButton: true,
-			label: 'message.snackbar.share.accepted',
-			severity: 'info'
-		});
+		const response: CreateMountpointResponse = {
+			link
+		};
+		createSoapAPIInterceptor<never, CreateMountpointResponse>('CreateMountpoint', response);
+		createSoapAPIInterceptor('MsgAction');
+
+		const store = generateStore();
+
+		const {
+			result: { current: accept }
+		} = setupHook(useAccept, { store });
+
+		const acceptParams = {
+			zid,
+			view,
+			rid,
+			folderName,
+			color,
+			accounts,
+			dispatch: store.dispatch,
+			msgId: 'msgId',
+			sharedFolderName: folderName,
+			owner: 'owner',
+			participants: [],
+			grantee: 'grantee',
+			customMessage: 'customMessage',
+			role: 'role',
+			allowedActions: 'allowedActions',
+			notifyOrganizer: false,
+			t: jest.fn()
+		};
+
+		setupHook(accept, { initialProps: [acceptParams] });
+
+		const snackbar = await screen.findByTestId('snackbar');
+		expect(within(snackbar).getByText(/You have accepted the share request/i)).toBeVisible();
 	});
 
 	it('should display an error on existing folder', async () => {
-		const dispatch = jest.fn(() =>
-			Promise.resolve({
-				type: 'error',
-				error: {
-					message: 'mail.ALREADY_EXISTS'
-				}
-			})
-		) as Dispatch<any>;
-		const { unmount, result } = setupHook(useAccept);
 		const zid = 'zid';
-		const view = 'view';
+		const view = FOLDER_VIEW.message;
 		const rid = 'rid';
 		const folderName = 'folderName';
 		const color = 1;
-		const accounts = {};
-		const { current: accept } = result;
-
-		renderHook(() =>
-			accept({
-				zid,
-				view,
-				rid,
-				folderName,
-				color,
-				accounts,
-				dispatch,
-				msgId: 'msgId',
-				sharedFolderName: folderName,
-				owner: 'owner',
-				participants: [],
-				grantee: 'grantee',
-				customMessage: 'customMessage',
-				role: 'role',
-				allowedActions: 'allowedActions',
-				notifyOrganizer: true,
-				t: (msg, _) => msg
-			})
-		);
-		await unmount();
-		expect(dispatch).toHaveBeenCalled();
-		expect(createSnackbarSpy).toHaveBeenCalledWith({
-			key: 'share',
-			replace: true,
-			autoHideTimeout: 3000,
-			hideButton: true,
-			label: 'label.error_folder_exists',
-			severity: 'error'
+		const accounts = [{ name: 'account name' }];
+		const response: ErrorSoapBodyResponse = buildSoapErrorResponseBody({
+			detailCode: CreateMountpointError.FOLDER_ALREADY_EXISTS
 		});
+		createSoapAPIInterceptor<never, ErrorSoapBodyResponse>('CreateMountpoint', response);
+
+		const store = generateStore();
+
+		const {
+			result: { current: accept }
+		} = setupHook(useAccept, { store });
+
+		const acceptParams = {
+			zid,
+			view,
+			rid,
+			folderName,
+			color,
+			accounts,
+			dispatch: store.dispatch,
+			msgId: 'msgId',
+			sharedFolderName: folderName,
+			owner: 'owner',
+			participants: [],
+			grantee: 'grantee',
+			customMessage: 'customMessage',
+			role: 'role',
+			allowedActions: 'allowedActions',
+			notifyOrganizer: false,
+			t: jest.fn()
+		};
+
+		setupHook(accept, { initialProps: [acceptParams] });
+
+		const snackbar = await screen.findByTestId('snackbar');
+		expect(
+			within(snackbar).getByText(
+				/A folder\/calendar\/addressbook with the same name already exists/i
+			)
+		).toBeVisible();
 	});
 });
