@@ -73,6 +73,23 @@ describe('create-filter-modal', () => {
 		expect(createButton).toBeEnabled();
 	});
 
+	test('clicking "Active filter" should check the checkbox', async () => {
+		const store = generateStore();
+
+		const { user } = setupTest(<CreateFilterModal t={t} onClose={jest.fn()} />, {
+			store
+		});
+		const filterActiveUnChecked = within(screen.getByTestId('active-filter')).getByTestId(
+			'icon: Square'
+		);
+		await act(() => user.click(filterActiveUnChecked));
+
+		const filterActiveChecked = within(screen.getByTestId('active-filter')).getByTestId(
+			'icon: CheckmarkSquare'
+		);
+		expect(filterActiveChecked).toBeInTheDocument();
+	});
+
 	test('create filter add filter name and add condition', async () => {
 		const closeModal = jest.fn();
 		const store = generateStore();
@@ -86,8 +103,6 @@ describe('create-filter-modal', () => {
 		const name = faker.lorem.word();
 		const filterInputElement = within(filterName).getByRole('textbox');
 		await act(() => user.clear(filterInputElement));
-
-		// Insert the new filter name into the text input
 		await act(() => user.type(filterInputElement, name));
 
 		const filterActiveUnChecked = within(screen.getByTestId('active-filter')).getByTestId(
