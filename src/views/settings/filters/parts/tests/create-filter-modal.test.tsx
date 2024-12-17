@@ -6,6 +6,7 @@
 import React from 'react';
 
 import { act, screen, within } from '@testing-library/react';
+import { UserEvent } from '@testing-library/user-event';
 import { t } from '@zextras/carbonio-shell-ui';
 
 import { createSoapAPIInterceptor } from '../../../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
@@ -16,6 +17,16 @@ import {
 } from '../../../../../carbonio-ui-commons/test/test-setup';
 import { generateStore } from '../../../../../tests/generators/store';
 import CreateFilterModal from '../create-filter-modal';
+
+const addAction = async (user: UserEvent): Promise<void> => {
+	await user.click(within(screen.getByTestId('actions-panel')).getByTestId('icon: PlusOutline'));
+};
+const fillFilterName = async (user: UserEvent, filterName: string): Promise<void> => {
+	const filterInputElement = screen.getByRole('textbox', {
+		name: 'settings.filter_name*'
+	});
+	await user.type(filterInputElement, filterName);
+};
 
 describe('create-filter-modal', () => {
 	// TODO: these tests are not really helpful as they test the DS but not component logic
@@ -150,6 +161,108 @@ describe('create-filter-modal', () => {
 					]
 				}
 			]
+		});
+	});
+	describe('ModifyFilterRules API', () => {
+		test('create an "Active" filter', async () => {
+			const store = generateStore();
+
+			const modifyFilterRulesInterceptor = createSoapAPIInterceptor('ModifyFilterRules');
+			const { user } = setupTest(<CreateFilterModal t={t} onClose={jest.fn()} />, {
+				store
+			});
+			const filterInputElement = screen.getByRole('textbox', {
+				name: 'settings.filter_name*'
+			});
+			await user.type(filterInputElement, 'My filter');
+			const filterActiveUnChecked = within(screen.getByTestId('active-filter')).getByTestId(
+				'icon: Square'
+			);
+			await act(() => user.click(filterActiveUnChecked));
+
+			const createButton = screen.getByRole('button', {
+				name: /label\.create/i
+			});
+			await user.click(createButton);
+			const request = await modifyFilterRulesInterceptor;
+			expect(request).toEqual({
+				_jsns: 'urn:zimbraMail',
+				filterRules: [
+					{
+						filterRule: [expect.objectContaining({ active: true })]
+					}
+				]
+			});
+		});
+		test('create a filter with Mark As action does not work if mark as flag (read, flagged) is untouched', async () => {
+			const store = generateStore();
+
+			const modifyFilterRulesInterceptor = createSoapAPIInterceptor('ModifyFilterRules');
+			const { user } = setupTest(<CreateFilterModal t={t} onClose={jest.fn()} />, {
+				store
+			});
+			await fillFilterName(user, 'any name');
+			const keepInInboxAction = screen.getByText('Keep in Inbox');
+			await user.click(keepInInboxAction);
+			await user.click(screen.getByText('Mark as'));
+
+			const createButton = screen.getByRole('button', {
+				name: /label\.create/i
+			});
+			await user.click(createButton);
+
+			const request = await modifyFilterRulesInterceptor;
+			expect(request).toEqual({
+				_jsns: 'urn:zimbraMail',
+				filterRules: [
+					{
+						filterRule: [
+							expect.objectContaining({ filterActions: [{ actionKeep: [{}], actionStop: [{}] }] })
+						]
+					}
+				]
+			});
+		});
+		test('create a filter with Mark As action Flagged', async () => {
+			const store = generateStore();
+
+			const modifyFilterRulesInterceptor = createSoapAPIInterceptor('ModifyFilterRules');
+			const { user } = setupTest(<CreateFilterModal t={t} onClose={jest.fn()} />, {
+				store
+			});
+			await fillFilterName(user, 'any name');
+			await user.click(screen.getByText('Keep in Inbox'));
+			await user.click(screen.getByText('Mark as'));
+			await user.click(screen.getByText('Read'));
+			await user.click(screen.getByText('Flagged'));
+
+			const createButton = screen.getByRole('button', {
+				name: /label\.create/i
+			});
+			await user.click(createButton);
+
+			const request = await modifyFilterRulesInterceptor;
+			expect(request).toEqual({
+				_jsns: 'urn:zimbraMail',
+				filterRules: [
+					{
+						filterRule: [
+							expect.objectContaining({
+								filterActions: [
+									{
+										actionFlag: [
+											{
+												flagName: 'flagged'
+											}
+										],
+										actionStop: [{}]
+									}
+								]
+							})
+						]
+					}
+				]
+			});
 		});
 	});
 });

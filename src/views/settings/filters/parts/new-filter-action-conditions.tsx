@@ -42,7 +42,7 @@ const FilterActionConditions: FC<ComponentProps> = ({ compProps }): ReactElement
 				<Container padding={{ top: 'small' }} mainAlignment="flex-start">
 					{map(tempActions, (tempAction, index: number) => (
 						<FilterActionRows
-							key={tempAction.id}
+							key={`filter-action-row-${index}`}
 							index={index}
 							tmpFilter={tempAction}
 							compProps={compProps}

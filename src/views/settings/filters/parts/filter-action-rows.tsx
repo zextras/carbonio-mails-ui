@@ -5,19 +5,9 @@
  */
 import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
 
-import {
-	Button,
-	Container,
-	IconButton,
-	Padding,
-	Row,
-	Text,
-	Tooltip,
-	getColor
-} from '@zextras/carbonio-design-system';
+import { Button, Container, Padding, Row, Text, Tooltip } from '@zextras/carbonio-design-system';
 import { filter, omit } from 'lodash';
 import { useTranslation } from 'react-i18next';
-import styled from 'styled-components';
 import { v4 as uuidv4 } from 'uuid';
 
 import CustomSelect from './custom-select';
@@ -330,6 +320,7 @@ const FilterActionRows: FC<FilterActionRowProps> = ({
 			crossAlignment="center"
 			orientation="horizontal"
 			padding={{ top: 'small' }}
+			data-testid={'actions-panel'}
 		>
 			<Row>
 				<Row padding={{ right: 'small' }} minWidth="12.5rem">
