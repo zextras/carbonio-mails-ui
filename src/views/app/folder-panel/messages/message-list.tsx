@@ -5,8 +5,9 @@
  */
 import React, { ReactElement, useEffect, useMemo, useRef, useState } from 'react';
 
-import { t, useAppContext, useUserSettings } from '@zextras/carbonio-shell-ui';
+import { useAppContext, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
+import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 
 import { MessageListComponent } from './message-list-component';
@@ -23,6 +24,7 @@ import { useSelection } from '../../../../hooks/use-selection';
 import type { AppContext, Folder } from '../../../../types';
 
 export const MessageList = (): React.JSX.Element => {
+	const [t] = useTranslation();
 	const { itemId, folderId } = useParams<{ itemId: string; folderId: string }>();
 	const loadingMore = useRef<boolean>(false);
 	const dragImageRef = useRef(null);
@@ -78,7 +80,7 @@ export const MessageList = (): React.JSX.Element => {
 			return t('displayer.list_folder_title', 'It looks like there are no e-mails yet');
 		}
 		return null;
-	}, [messageIds, folderId]);
+	}, [messageIds.size, folderId, t]);
 
 	const listItems = useMemo(
 		() =>
@@ -110,7 +112,7 @@ export const MessageList = (): React.JSX.Element => {
 									currentFolderId={folderId}
 								/>
 							) : (
-								<div style={{ height: '4rem' }} />
+								<div style={{ height: '4rem' }} data-testid="invisible-item" />
 							)
 						}
 					</CustomListItem>
