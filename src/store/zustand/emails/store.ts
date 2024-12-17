@@ -20,7 +20,8 @@ import {
 	NormalizedConversation,
 	SearchRequestStatus,
 	SearchSliceState,
-	Folder
+	Folder,
+	PopulatedItemsSliceState
 } from '../../../types';
 
 const useEmailsStore = create<EmailsStoreState>()((...a) => ({
@@ -92,6 +93,10 @@ export function useConversationMessages(
 }
 export function useConversationById(id: string): NormalizedConversation {
 	return useEmailsStore(({ populatedItemsSlice }) => populatedItemsSlice.conversations[id]);
+}
+
+export function usePopulatedItemsSlice(): PopulatedItemsSliceState['populatedItemsSlice'] {
+	return useEmailsStore((state) => state.populatedItemsSlice);
 }
 export function getMessageById(id: string): IncompleteMessage | MailMessage {
 	return useEmailsStore.getState().populatedItemsSlice.messages[id];
