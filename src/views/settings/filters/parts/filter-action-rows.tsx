@@ -6,7 +6,7 @@
 import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
 
 import { Button, Container, Padding, Row, Text, Tooltip } from '@zextras/carbonio-design-system';
-import { filter, omit } from 'lodash';
+import { omit } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -128,15 +128,11 @@ const FilterActionRows: FC<FilterActionRowProps> = ({
 			}
 			case 'actionTag': {
 				setActiveActionOption('tagWith');
-				const chipBg = filter(tagOptions, { label: tmpFilter[action][0].tagName })[0];
-				// TODO: this logic doesn't make sense here, it should be moved to show-tag component
-				// they are trying to get the color from corresponding option
 				setTag(
 					tmpFilter[action][0].tagName
 						? [
 								{
-									label: `${tmpFilter[action][0].tagName}`,
-									color: chipBg?.color
+									label: `${tmpFilter[action][0].tagName}`
 								}
 							]
 						: []
@@ -168,8 +164,7 @@ const FilterActionRows: FC<FilterActionRowProps> = ({
 		tempActions,
 		index,
 		setTempActions,
-		actionOptions,
-		tagOptions
+		actionOptions
 	]);
 
 	const defaultMarkAsOption = useMemo(() => {

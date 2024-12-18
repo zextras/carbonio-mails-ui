@@ -14,6 +14,7 @@ import {
 	Row,
 	Text
 } from '@zextras/carbonio-design-system';
+import { find } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
 import { ZIMBRA_STANDARD_COLORS } from '../../../../../carbonio-ui-commons/constants';
@@ -27,16 +28,6 @@ type ShowTagProps = {
 
 export const ShowTag = ({ value, tagOptions, onTagChange }: ShowTagProps): React.JSX.Element => {
 	const [t] = useTranslation();
-
-	const tagChipInput = value.map(
-		(tag): ChipItem<MailFilterTag> => ({
-			label: tag.label,
-			value: tag,
-			avatarBackground: ZIMBRA_STANDARD_COLORS[tag.color ?? 0].hex,
-			hasAvatar: true,
-			avatarIcon: 'Tag'
-		})
-	);
 
 	const tagChipOptions = tagOptions?.map(
 		(
@@ -60,6 +51,19 @@ export const ShowTag = ({ value, tagOptions, onTagChange }: ShowTagProps): React
 			};
 		}
 	);
+	const tagChipInput = value.map((tag): ChipItem<MailFilterTag> => {
+		const color = tag.color ?? find(tagOptions, (option) => option.label === tag.label)?.color ?? 0;
+		const tagColor = ZIMBRA_STANDARD_COLORS[color].hex;
+		return {
+			label: tag.label,
+			value: tag,
+			// @ts-ignore ignored just to check color is correct in tests
+			'data-testid': `tag-${tag.label}-${tagColor}`,
+			avatarBackground: tagColor,
+			hasAvatar: true,
+			avatarIcon: 'Tag'
+		};
+	});
 	const tagChipOnAdd = useCallback((tagValue: unknown): ChipItem<MailFilterTag> => {
 		const tag = tagValue as MailFilterTag;
 		return {

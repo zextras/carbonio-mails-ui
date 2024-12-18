@@ -268,30 +268,6 @@ describe('FilterActionsRows', () => {
 			);
 			expect(screen.getByText('Tag')).toBeVisible();
 		});
-		it('should display the tag with the same color of corresponding option', async () => {
-			const tagName = 'Test Designer';
-			const { user } = setupTest(
-				<FilterActionRows
-					tmpFilter={{
-						actionTag: [{ tagName }]
-					}}
-					index={0}
-					tagOptions={[
-						{
-							label: tagName,
-							color: 2 // See Zimbra Colors variable: #29B6F6
-						}
-					]}
-					compProps={compProps}
-				/>,
-				{}
-			);
-			await user.click(screen.getByText('Tag'));
-			const tagOptionsDropdown = await screen.findByTestId('dropdown-popper-list');
-			expect(
-				await within(tagOptionsDropdown).findByTestId(`tag-option-${tagName}-#29B6F6`)
-			).toBeVisible();
-		});
 		it('should reset the input value to empty after changing action', async () => {
 			const newCompProps = {
 				...compProps,
