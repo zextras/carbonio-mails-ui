@@ -8,6 +8,7 @@
 import { create } from 'zustand';
 
 import { createConversationsIndexSlice } from './conversations/conversations-index-slice';
+import { conversationsIndexSliceUtils } from './conversations/utils';
 import { createMessagesIndexSlice } from './messages/messages-slice';
 import { messagesIndexSliceUtils } from './messages/utils';
 import { createPopulatedItemsSlice } from './populated-items/populated-items-slice';
@@ -141,7 +142,7 @@ export function useMessageStatus(id: string): SearchRequestStatus {
 }
 
 // ################################
-// #### Mail message related functions
+// #### messagesIndexSlice related functions
 // ################################
 
 export function useMessagesSlice(): EmailsStoreState['messagesIndexSlice'] {
@@ -180,4 +181,37 @@ export function appendMessagesToMessagesSlice(
 	offset: number
 ): void {
 	messagesIndexSliceUtils.appendMessagesToMessagesSlice(messages, offset, useEmailsStore);
+}
+
+// ################################
+// #### conversationIndexSlice related functions
+// ################################
+export function useConversationsIdsByFolder(folder: Folder): Set<string> {
+	return conversationsIndexSliceUtils.useConversationsIdsByFolder(folder, useEmailsStore);
+}
+
+export function resetConversationAndPopulatedItems(): void {
+	return conversationsIndexSliceUtils.resetConversationAndPopulatedItems(useEmailsStore);
+}
+
+export function appendConversationsToConversationsIndexSlice(
+	conversations: Array<NormalizedConversation>,
+	offset: number
+): void {
+	return conversationsIndexSliceUtils.appendConversationsToConversationsIndexSlice(
+		conversations,
+		offset,
+		useEmailsStore
+	);
+}
+
+export function updateConversationsResultsLoadingStatus(status: SearchRequestStatus): void {
+	conversationsIndexSliceUtils.updateConversationsResultsLoadingStatus(status, useEmailsStore);
+}
+
+export function setConversations(
+	conversations: Array<NormalizedConversation>,
+	more: boolean
+): void {
+	conversationsIndexSliceUtils.setConversations(conversations, more, useEmailsStore);
 }
