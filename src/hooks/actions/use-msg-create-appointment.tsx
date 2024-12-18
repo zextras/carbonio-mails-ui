@@ -9,15 +9,14 @@ import { t, useIntegratedFunction } from '@zextras/carbonio-shell-ui';
 import { isNull } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
-import { getMsgSoapAPI } from '../../api/get-msg';
+import { getMsg } from '../../api/helpers/get-msg-service';
 import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
 import { getRoot } from '../../carbonio-ui-commons/store/zustand/folder';
 import { MessageActionsDescriptors } from '../../constants';
 import { getAttendees, getOptionalsAttendees, getSenderByOwner } from '../../helpers/appointmemt';
 import { isSpam, isDraft } from '../../helpers/folders';
-import { normalizeMailMessageFromSoap } from '../../normalizations/normalize-message';
 import { extractBody } from '../../store/editor-slice-utils';
-import type { ActionFn, GetMsgResponse, MailMessage, UIActionDescriptor } from '../../types';
+import type { ActionFn, MailMessage, UIActionDescriptor } from '../../types';
 import { CalendarType, SenderType } from '../../types/calendar';
 import { useUiUtilities } from '../use-ui-utilities';
 
@@ -31,20 +30,6 @@ export const useMsgCreateAppointmentFn = (item: MailMessage, folderId: string): 
 	);
 
 	const execute = useCallback((): void => {
-		const errorSnackbar = (): void => {
-			createSnackbar({
-				key: `get-msg-on-new-appointment`,
-				replace: true,
-				severity: 'warning',
-				hideButton: true,
-				label: t(
-					'message.snackbar.att_err',
-					'There seems to be a problem when saving, please try again'
-				),
-				autoHideTimeout: 3000
-			});
-		};
-
 		if (canExecute()) {
 			const attendees = getAttendees(item);
 			const optionalAttendees = getOptionalsAttendees(item);
@@ -61,12 +46,8 @@ export const useMsgCreateAppointmentFn = (item: MailMessage, folderId: string): 
 				sender = getSenderByOwner(rooFolder?.owner);
 			}
 			if (!item?.isComplete) {
-				getMsgSoapAPI({ msgId: item.id })
-					.then((response: GetMsgResponse) => {
-						if (!response.m || 'Fault' in response) {
-							errorSnackbar();
-						}
-						const message = normalizeMailMessageFromSoap(response.m[0]);
+				getMsg({ msgId: item.id })
+					.then((message) => {
 						const mailHtmlBody = extractBody(message)[1];
 						isAvailable &&
 							openAppointmentComposer({
@@ -80,7 +61,17 @@ export const useMsgCreateAppointmentFn = (item: MailMessage, folderId: string): 
 							});
 					})
 					.catch(() => {
-						errorSnackbar();
+						createSnackbar({
+							key: `get-msg-on-new-appointment`,
+							replace: true,
+							severity: 'warning',
+							hideButton: true,
+							label: t(
+								'message.snackbar.att_err',
+								'There seems to be a problem when saving, please try again'
+							),
+							autoHideTimeout: 3000
+						});
 					});
 			} else {
 				openAppointmentComposer({
