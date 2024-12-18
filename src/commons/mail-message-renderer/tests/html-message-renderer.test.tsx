@@ -244,14 +244,10 @@ describe('HTML message renderer', () => {
 				]
 			});
 
-			const { user } = setupTest(
-				<HtmlMessageRenderer message={message} />,
-
-				{
-					initialEntries: ['/mails'],
-					store
-				}
-			);
+			const { user } = setupTest(<HtmlMessageRenderer message={message} />, {
+				initialEntries: ['/mails'],
+				store
+			});
 
 			const loadMessageButton = await screen.findByText('warningBanner.truncatedMessage.button');
 			user.click(loadMessageButton);
