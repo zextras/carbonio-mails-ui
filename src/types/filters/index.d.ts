@@ -94,3 +94,7 @@ export type FilterActions = {
 		}
 	];
 };
+export type MarkAsOption = {
+	label: string;
+	value: { actionFlag: { flagName: string }[] };
+};

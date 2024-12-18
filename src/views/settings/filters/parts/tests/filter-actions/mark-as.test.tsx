@@ -15,8 +15,8 @@ describe('Mark As', () => {
 	it('it should render selected option in the input', async () => {
 		const store = generateStore();
 		const options = [
-			{ label: 'label 1', value: 'value_1' },
-			{ label: 'label 2', value: 'value_2' }
+			{ label: 'label 1', value: { actionFlag: [{ flagName: '1' }] } },
+			{ label: 'label 2', value: { actionFlag: [{ flagName: '2' }] } }
 		];
 		const selectedOption = options[0];
 
@@ -30,8 +30,8 @@ describe('Mark As', () => {
 	it('it should call onChange with the choosen value', async () => {
 		const store = generateStore();
 		const options = [
-			{ label: 'label 1', value: 'value_1' },
-			{ label: 'label 2', value: 'value_2' }
+			{ label: 'label 1', value: { actionFlag: [{ flagName: '1' }] } },
+			{ label: 'label 2', value: { actionFlag: [{ flagName: '2' }] } }
 		];
 		const selectedOption = options[0];
 		const secondOption = options[1];

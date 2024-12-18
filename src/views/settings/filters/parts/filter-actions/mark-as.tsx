@@ -7,12 +7,13 @@ import React from 'react';
 
 import { Row } from '@zextras/carbonio-design-system';
 
+import { MarkAsOption } from '../../../../../types';
 import CustomSelect from '../custom-select';
 
 type MarkAsProps = {
-	options: { label: string; value: string }[];
-	onChange: (option: { label: string; value: string }) => void;
-	selected: { label: string; value: string };
+	options: Array<MarkAsOption>;
+	onChange: (option: MarkAsOption) => void;
+	selected: MarkAsOption;
 };
 
 export const MarkAs = ({ options, onChange, selected }: MarkAsProps): React.JSX.Element => (

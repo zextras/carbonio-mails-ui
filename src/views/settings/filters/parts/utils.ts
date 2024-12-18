@@ -6,7 +6,7 @@
 import { TFunction } from 'i18next';
 import { find, forEach } from 'lodash';
 
-import { FilterActions } from '../../../../types';
+import { FilterActions, MarkAsOption } from '../../../../types';
 
 type DomainOption = {
 	label: string;
@@ -391,12 +391,7 @@ export const getActionOptions = (
 	...getConditionAction(t, zimbraFeatureMailForwardingInFiltersEnabled)
 ];
 
-type MarkAsOption = {
-	label: string;
-	value: { actionFlag: [{ flagName: string }] };
-};
-
-export const getMarkAsOptions = (t: TFunction): MarkAsOption[] => [
+export const getMarkAsOptions = (t: TFunction): Array<MarkAsOption> => [
 	{
 		label: t('label.read', 'Read'),
 		value: { actionFlag: [{ flagName: 'read' }] }
