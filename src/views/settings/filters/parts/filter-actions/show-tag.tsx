@@ -26,7 +26,12 @@ type ShowTagProps = {
 	onTagChange: (chip: MailFilterTag[]) => void;
 };
 
-export const ShowTag = ({ value, tagOptions, onTagChange }: ShowTagProps): React.JSX.Element => {
+export const ShowTag = ({
+	value,
+	tagOptions,
+	onTagChange,
+	...rest
+}: ShowTagProps): React.JSX.Element => {
 	const [t] = useTranslation();
 
 	const tagChipOptions = tagOptions?.map(
@@ -96,6 +101,7 @@ export const ShowTag = ({ value, tagOptions, onTagChange }: ShowTagProps): React
 				onAdd={tagChipOnAdd}
 				disableOptions={false}
 				disabled
+				{...rest}
 			/>
 		</Row>
 	);

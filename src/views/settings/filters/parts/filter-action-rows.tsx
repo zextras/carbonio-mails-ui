@@ -265,7 +265,6 @@ const FilterActionRows: FC<FilterActionRowProps> = ({
 				const requiredTag = chip.length > 1 ? chip[1] : chip[0];
 				setTag([requiredTag]);
 				previous[index] = { id: previous[index]?.id, actionTag: [{ tagName: requiredTag.label }] };
-				setTempActions(previous);
 			} else {
 				previous[index] = { id: previous[index]?.id, actionTag: [{ tagName: '' }] };
 				setTag([]);
@@ -345,7 +344,12 @@ const FilterActionRows: FC<FilterActionRowProps> = ({
 				{showRedirectToAddrsInput && <RedirectTo defaultValue={contacts} onChange={onChange} />}
 
 				{showTagOptions && (
-					<ShowTag value={tag} tagOptions={tagOptions} onTagChange={onTagChange} />
+					<ShowTag
+						value={tag}
+						tagOptions={tagOptions}
+						onTagChange={onTagChange}
+						data-testid={'tag-input'}
+					/>
 				)}
 			</Row>
 			<Container orientation="horizontal" mainAlignment="flex-end" width="auto">

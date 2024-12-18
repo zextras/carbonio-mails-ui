@@ -360,6 +360,8 @@ describe('FilterActionsRows', () => {
 
 			expect(screen.queryByText(filterName)).not.toBeInTheDocument();
 		});
+
+		// TODO: check if we still want this test since seems hard to retrieve the console error
 		it.skip('should break if tempAction is empty and user is switching action', async () => {
 			const newCompProps = {
 				...compProps,
@@ -383,6 +385,56 @@ describe('FilterActionsRows', () => {
 			user.click(screen.getByText('Keep in Inbox')).catch((error) => {
 				expect(error).toBe('');
 			});
+		});
+
+		it('should update tag action value if a new tag is selected', async () => {
+			const newCompProps = {
+				...compProps,
+				tempActions: [{}]
+			};
+			const { user } = setupTest(
+				<FilterActionRows
+					tmpFilter={{
+						actionTag: [{}]
+					}}
+					tagOptions={[{ label: 'Tag 1' }]}
+					index={0}
+					compProps={newCompProps}
+				/>,
+				{}
+			);
+
+			await user.click(screen.getByText('Tag'));
+			await user.click(screen.getByText('Tag 1'));
+
+			expect(compProps.setTempActions).toHaveBeenCalledTimes(1);
+			expect(compProps.setTempActions).toHaveBeenCalledWith([
+				{ actionTag: [{ tagName: 'Tag 1' }], id: undefined }
+			]);
+		});
+		it('should update tag action value if a new tag is selected', async () => {
+			const newCompProps = {
+				...compProps,
+				tempActions: [{}]
+			};
+			const { user } = setupTest(
+				<FilterActionRows
+					tmpFilter={{
+						actionTag: [{ tagName: 'Tag to remove' }]
+					}}
+					tagOptions={[{ label: 'Tag 1' }]}
+					index={0}
+					compProps={newCompProps}
+				/>,
+				{}
+			);
+
+			await user.click(within(screen.getByTestId('tag-input')).getByTestId('icon: Close'));
+
+			expect(compProps.setTempActions).toHaveBeenCalledTimes(1);
+			expect(compProps.setTempActions).toHaveBeenCalledWith([
+				{ actionTag: [{ tagName: '' }], id: undefined }
+			]);
 		});
 	});
 	describe('Discard', () => {
