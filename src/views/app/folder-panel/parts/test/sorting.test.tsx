@@ -6,7 +6,7 @@
 
 import React from 'react';
 
-import { renderHook, within } from '@testing-library/react';
+import { act, renderHook, within } from '@testing-library/react';
 import * as hooks from '@zextras/carbonio-shell-ui';
 import { AccountSettings } from '@zextras/carbonio-shell-ui';
 import { forEach, indexOf, noop, without } from 'lodash';
@@ -56,14 +56,14 @@ const dropdownRegex = /dropdown-popper-list/i;
 const listIconRegex = /icon: AzListOutline/i;
 const sortingOptionsWithoutSize = without(Object.values(SORTING_OPTIONS), SORTING_OPTIONS.size);
 describe('Sorting component', () => {
-	test('the sorting component appears on the breadcrumbs component', async () => {
+	it('the sorting component appears on the breadcrumbs component', async () => {
 		// Generate the store
 		const store = generateStore();
 
 		setupTest(<Breadcrumbs {...defaultProps} />, { store });
 		expect(await screen.findByTestId(sortingDropdown)).toBeInTheDocument();
 	});
-	test('in a folder different from SENT, clicking on the sorting component icon opens a dropdown containing all the sorting options excluded TO', async () => {
+	it('in a folder different from SENT, clicking on the sorting component icon opens a dropdown containing all the sorting options excluded TO', async () => {
 		// Generate the store
 		const store = generateStore();
 		const { user } = setupTest(<Breadcrumbs {...defaultProps} />, { store });
@@ -90,7 +90,7 @@ describe('Sorting component', () => {
 			}
 		});
 	});
-	test('in SENT folder, clicking on the sorting component icon opens a dropdown containing all the sorting options excluded FROM', async () => {
+	it('in SENT folder, clicking on the sorting component icon opens a dropdown containing all the sorting options excluded FROM', async () => {
 		// Generate the store
 		const store = generateStore();
 
@@ -121,7 +121,7 @@ describe('Sorting component', () => {
 			}
 		});
 	});
-	test('clicking on the sorting component icon when open will close the dropdown', async () => {
+	it('clicking on the sorting component icon when open will close the dropdown', async () => {
 		// Generate the store
 		const store = generateStore();
 
@@ -134,7 +134,7 @@ describe('Sorting component', () => {
 		expect(screen.queryByTestId(dropdownRegex)).not.toBeInTheDocument();
 	});
 
-	test('clicking on the sorting direction icon switches from name descending to name ascending order and back', async () => {
+	it('clicking on the sorting direction icon switches from name descending to name ascending order and back', async () => {
 		createSoapAPIInterceptor('Search');
 		const store = generateStore();
 		const { user } = setupTest(<Breadcrumbs {...defaultProps} />, { store });
@@ -157,7 +157,7 @@ describe('Sorting component', () => {
 		expect(descendingOption).toBeInTheDocument();
 	});
 
-	test.each`
+	it.each`
 		case  | folderId         | sortingOption
 		${1}  | ${FOLDERS.INBOX} | ${SORTING_OPTIONS.unread}
 		${2}  | ${FOLDERS.SENT}  | ${SORTING_OPTIONS.unread}
@@ -215,7 +215,7 @@ describe('Sorting component', () => {
 			expect(orderParameterPosition).toBe(buttonOnPosition);
 		}
 	);
-	test('if no sort order setting is detected for a folder, the setting should default to "DateDesc"', async () => {
+	it('if no sort order setting is detected for a folder, the setting should default to "DateDesc"', async () => {
 		// Generate the store
 		const store = generateStore();
 		const folderId = FOLDERS.INBOX;
@@ -254,7 +254,7 @@ describe('Sorting component', () => {
 		expect(buttonOnPosition).toBe(orderParameterPosition);
 	});
 
-	test('clicking on the sorting direction icon reverses the messages order', async () => {
+	it('clicking on the sorting direction icon reverses the messages order', async () => {
 		const folderId = FOLDERS.INBOX;
 		const sortingOption = SORTING_OPTIONS.date;
 		const sortingDirection = SORTING_DIRECTION.DESCENDING;
@@ -304,15 +304,17 @@ describe('Sorting component', () => {
 		expect(req.types).toBe(expectedRequest.types);
 		expect(req.query).toBe(expectedRequest.query);
 		const { result: newOrder } = renderHook(() => useMessagesSlice());
-		expect(newOrder.current.messageIds).toEqual(new Set(['2', '1']));
+		await act(async () => {
+			expect(newOrder.current.messageIds).toEqual(new Set(['1', '2']));
+		});
 	});
 
-	test('clicking on the sorting direction icon will switch the order direction', async () => {
-		const store = generateStore();
+	it('clicking on the sorting direction icon will switch the order direction', async () => {
+		createSoapAPIInterceptor('Search');
 		const folderId = FOLDERS.INBOX;
 		const sortingOption = SORTING_OPTIONS.date;
 		const sortingDirection = SORTING_DIRECTION.DESCENDING;
-		const { user } = setupTest(<Breadcrumbs {...defaultProps} />, { store });
+		const { user } = setupTest(<Breadcrumbs {...defaultProps} />);
 		const customSettings: Partial<AccountSettings> = {
 			prefs: {
 				zimbraPrefSortOrder: `${folderId}:${sortingOption.value}${sortingDirection},BDLV:,CAL:,CLV:,CLV-SR-1:dateDesc,CLV-SR-2:dateDesc,CLV-main:dateDesc,CNS:,CNSRC:,CNTGT:,CV:,TKL:,TKL-main:taskDueAsc,TV:,TV-main:dateDesc`
@@ -336,9 +338,7 @@ describe('Sorting component', () => {
 
 		expect(descendingOption).toBeInTheDocument();
 	});
-	test('clicking on the sorting direction icon with unread sortype makes a SearchRequest api call with correct parameters', async () => {
-		createSoapAPIInterceptor('Search');
-		const store = generateStore();
+	it('clicking on the sorting direction icon with unread sortype makes a SearchRequest api call with correct parameters', async () => {
 		const folderId = FOLDERS.INBOX;
 		const sortingOption = SORTING_OPTIONS.unread;
 		const sortingDirection = SORTING_DIRECTION.DESCENDING;
@@ -355,7 +355,7 @@ describe('Sorting component', () => {
 		const isMessageView = settings.prefs.zimbraPrefGroupMailBy === 'message';
 		jest.spyOn(hooks, 'useAppContext').mockReturnValue({ isMessageView });
 
-		const { user } = setupTest(<Breadcrumbs {...defaultProps} />, { store });
+		const { user } = setupTest(<Breadcrumbs {...defaultProps} />);
 
 		expect(await screen.findByTestId(sortingDropdown)).toBeInTheDocument();
 		const sortIcon = screen.getByRoleWithIcon('button', { icon: listIconRegex });
