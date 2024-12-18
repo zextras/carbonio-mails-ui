@@ -291,7 +291,6 @@ const FilterActionRows: FC<FilterActionRowProps> = ({
 				actionFileInto: [{ folderPath: `${folderDestination?.absFolderPath}` }]
 			};
 			setTempActions(previous);
-			// setDestination({ name: folderDestination?.name });
 		},
 		[tempActions, activeIndex, setTempActions]
 	);
