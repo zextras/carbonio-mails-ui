@@ -14,11 +14,8 @@ import { ParticipantRole } from '../../../carbonio-ui-commons/constants/particip
 import { getErrorMessage } from '../../../carbonio-ui-commons/helpers/errors';
 import { useAppDispatch } from '../../../hooks/redux';
 import { useUiUtilities } from '../../../hooks/use-ui-utilities';
-import { acceptSharedCalendarReply } from '../../../store/actions/acceptSharedCalendarReply';
-import {
-	CreateMountpointDataType,
-	mountSharedFolder
-} from '../../../store/actions/mount-shared-folder';
+import { acceptSharedFolderReply } from '../../../store/actions/acceptSharedFolderReply';
+import { mountSharedFolder } from '../../../store/actions/mount-shared-folder';
 import { AppDispatch } from '../../../store/redux';
 import type { Participant, SaveDraftResponse } from '../../../types';
 
@@ -172,7 +169,7 @@ export const useAccept = (): ((arg: Accept) => void) => {
 						isAccepted: true
 					});
 				})
-				.then(() => moveInviteToTrashFunc({ msgId, dispatch, t }))
+				.then(() => moveInviteToTrashFunc({ msgId, t }))
 				.then(() => {
 					createSnackbar({
 						key: `share_accepted`,
@@ -194,7 +191,7 @@ export const useAccept = (): ((arg: Accept) => void) => {
 					});
 				});
 		},
-		[createSnackbar, dispatch, moveInviteToTrashFunc, t]
+		[createSnackbar, moveInviteToTrashFunc, t]
 	);
 };
 
@@ -250,6 +247,6 @@ export const useDecline = (): ((arg: DeclineType) => Promise<void>) => {
 					});
 				}
 			}),
-		[createSnackbar, dispatch, t]
+		[createSnackbar, t]
 	);
 };
