@@ -14,13 +14,7 @@ import {
 	Text,
 	Tooltip
 } from '@zextras/carbonio-design-system';
-import {
-	Tag,
-	replaceHistory,
-	t,
-	useUserAccounts,
-	useUserSettings
-} from '@zextras/carbonio-shell-ui';
+import { replaceHistory, t, useUserAccounts, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { debounce, find, includes, isEmpty, noop, reduce } from 'lodash';
 import moment from 'moment';
 import { useParams } from 'react-router-dom';
@@ -29,6 +23,7 @@ import { MessageListItemActionWrapper } from './message-list-item-action-wrapper
 import { ZIMBRA_STANDARD_COLORS } from '../../../../carbonio-ui-commons/constants';
 import { useFolder } from '../../../../carbonio-ui-commons/store/zustand/folder';
 import { useTags } from '../../../../carbonio-ui-commons/store/zustand/tags';
+import { Tag } from '../../../../carbonio-ui-commons/types/tags';
 import { getTimeLabel, participantToString } from '../../../../commons/utils';
 import { EditViewActions } from '../../../../constants';
 import { useMsgPreviewOnSeparatedWindowFn } from '../../../../hooks/actions/use-msg-preview-on-separated-window';

@@ -5,17 +5,8 @@
  */
 import React, { ChangeEvent, FC, ReactElement, useCallback, useMemo, useState } from 'react';
 
-import {
-	Button,
-	Checkbox,
-	Divider,
-	Input,
-	Padding,
-	Row,
-	Text
-} from '@zextras/carbonio-design-system';
-import { useFoldersByView, useUserAccounts } from '@zextras/carbonio-shell-ui';
-import { find } from 'lodash';
+import { Button, Checkbox, Divider, Input, Padding, Row } from '@zextras/carbonio-design-system';
+import { useUserAccounts } from '@zextras/carbonio-shell-ui';
 
 import ColorSelect from './color-select';
 import { useAccept, useDecline } from './share-folder-actions';
@@ -41,16 +32,40 @@ const ResponseActions: FC<ResponseActionsProps> = ({
 	const [folderName, setFolderName] = useState(sharedFolderName);
 	const [selectedColor, setSelectedColor] = useState<string | null>('0');
 	const accounts = useUserAccounts();
-	const calFolders = useFoldersByView(FOLDER_VIEW.appointment);
-	const showError = useMemo(
-		() =>
-			find(
-				calFolders[0]?.children,
-				(item) => item?.name.toLowerCase() === folderName.toLowerCase()
-			),
-		[calFolders, folderName]
-	);
-	const disabled = useMemo(() => !!(folderName.length === 0 || showError), [folderName, showError]);
+
+	const folderNameLabel = useMemo(() => {
+		switch (view) {
+			case FOLDER_VIEW.message:
+				return t('label.folder_name', 'Folder name');
+			case FOLDER_VIEW.appointment:
+				return t('label.calendar_name', 'Calendar name');
+			case FOLDER_VIEW.contact:
+				return t('label.addressbook_name', 'Address book name');
+			default:
+				return t('label.type_name_here', 'Item name');
+		}
+	}, [t, view]);
+
+	const hasNameError = useMemo(() => folderName.length === 0, [folderName]);
+
+	const nameError = useMemo(() => {
+		if (folderName.length > 0) {
+			return undefined;
+		}
+
+		switch (view) {
+			case FOLDER_VIEW.message:
+				return t('messages.enter_folder_name', 'Enter a name to accept the folder');
+			case FOLDER_VIEW.appointment:
+				return t('messages.enter_calendar_name', 'Enter a name to accept the calendar');
+			case FOLDER_VIEW.contact:
+				return t('messages.enter_address_name', 'Enter a name to accept the address book');
+			default:
+				return undefined;
+		}
+	}, [folderName.length, t, view]);
+
+	const isConfirmDisabled = useMemo(() => hasNameError, [hasNameError]);
 
 	const accept = useAccept();
 	const acceptShare = useCallback(
@@ -152,10 +167,11 @@ const ResponseActions: FC<ResponseActionsProps> = ({
 			<Row width="fill" mainAlignment="space-around">
 				<Row width="50%" mainAlignment="flex-start">
 					<Input
-						label={t('label.type_name_here', 'Item name')}
+						label={folderNameLabel}
 						backgroundColor="gray5"
 						value={folderName}
-						hasError={disabled}
+						hasError={hasNameError}
+						description={nameError}
 						onChange={(e: ChangeEvent<HTMLInputElement>): void => setFolderName(e.target.value)}
 					/>
 				</Row>
@@ -169,26 +185,6 @@ const ResponseActions: FC<ResponseActionsProps> = ({
 						defaultColor={0}
 						label={t('label.calendar_color', `Item color`)}
 					/>
-				</Row>
-				<Row
-					width="100%"
-					height="1rem"
-					mainAlignment="flex-start"
-					style={{ marginBottom: '0.5rem' }}
-				>
-					{(folderName.length === 0 && (
-						<Text size="small" color="error">
-							{t('messages.enter_calendar_name', 'Enter a name to accept the calendar')}
-						</Text>
-					)) ||
-						(showError && (
-							<Text size="small" color="error">
-								{t(
-									'messages.cal_name_exist_warning',
-									'A calendar with the same name already exists in this path'
-								)}
-							</Text>
-						))}
 				</Row>
 			</Row>
 			<Divider />
@@ -204,7 +200,7 @@ const ResponseActions: FC<ResponseActionsProps> = ({
 					label={t('label.accept', 'Accept')}
 					icon="Checkmark"
 					onClick={acceptShare}
-					disabled={disabled}
+					disabled={isConfirmDisabled}
 				/>
 				<Padding horizontal="small" />
 				<Button
