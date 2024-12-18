@@ -3,14 +3,26 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import { TFunction } from 'i18next';
 import { find, forEach } from 'lodash';
 
-export const domainOptions = (t) => [
+type DomainOption = {
+	label: string;
+	value: string;
+};
+
+export const getDomainOptions = (t: TFunction): DomainOption[] => [
 	{ label: t('label.all', 'all'), value: 'all' },
 	{ label: t('settings.localpart', 'localpart'), value: 'localpart' },
 	{ label: t('settings.domain', 'domain'), value: 'domain' }
 ];
-export const getConditionStatements = (t) => [
+
+type ConditionStatement = {
+	label: string;
+	value: { stringComparison: 'is' | 'contains' | 'matches'; negative?: string };
+};
+
+export const getConditionStatements = (t: TFunction): ConditionStatement[] => [
 	{
 		label: t('settings.matches_exactly', 'matches exactly'),
 		value: { stringComparison: 'is' }
@@ -37,7 +49,12 @@ export const getConditionStatements = (t) => [
 	}
 ];
 
-export const getFieldOptions = (t) => [
+type FieldOption = {
+	label: string;
+	value: 'anyof' | 'allof';
+};
+
+export const getFieldOptions = (t: TFunction): FieldOption[] => [
 	{
 		label: t('label.any', 'any'),
 		value: 'anyof'
@@ -48,7 +65,12 @@ export const getFieldOptions = (t) => [
 	}
 ];
 
-export const getHeaderConditionStatements = (t) => [
+type HeaderConditionStatement = {
+	label: string;
+	value: string | ConditionStatement['value'];
+};
+
+export const getHeaderConditionStatements = (t: TFunction): HeaderConditionStatement[] => [
 	...getConditionStatements(t),
 	{
 		label: t('settings.does_not_match_wildcard_condition', 'does not match wildcard condition'),
@@ -64,7 +86,12 @@ export const getHeaderConditionStatements = (t) => [
 	}
 ];
 
-export const getIsOptions = (t) => [
+type IsOption = {
+	label: string;
+	value: 'TRUE' | 'FALSE';
+};
+
+export const getIsOptions = (t: TFunction): IsOption[] => [
 	{
 		label: t('settings.is', 'is'),
 		value: 'TRUE'
@@ -75,7 +102,15 @@ export const getIsOptions = (t) => [
 	}
 ];
 
-export const getMessageOptions = (t) => [
+type MessageOption = {
+	label: string;
+	value: {
+		value: { where?: 'started' | 'participated'; flagName?: 'flagged' };
+		key: 'conversationTest' | 'flaggedTest' | 'listTest' | 'bulkTest';
+	};
+};
+
+export const getMessageOptions = (t: TFunction): MessageOption[] => [
 	{
 		label: t('settings.conv_is_started', 'in conversation I started'),
 		value: { value: { where: 'started' }, key: 'conversationTest' }
@@ -98,7 +133,8 @@ export const getMessageOptions = (t) => [
 	}
 ];
 
-export const getSizeOptions = (t) => [
+type SizeOption = { label: string; value: { numberComparison: 'under' | 'over'; negative?: '1' } };
+export const getSizeOptions = (t: TFunction): SizeOption[] => [
 	{ label: t('settings.under', 'under'), value: { numberComparison: 'under' } },
 	{
 		label: t('settings.not_under', 'not under'),
@@ -111,7 +147,8 @@ export const getSizeOptions = (t) => [
 	}
 ];
 
-export const getSizeUnit = (t) => [
+type SizeUnit = { label: string; value: '' | 'K' | 'M' | 'G' };
+export const getSizeUnit = (t: TFunction): SizeUnit[] => [
 	{ label: t('settings.b', 'B'), value: '' },
 	{
 		label: t('settings.kb', 'KB'),
@@ -124,7 +161,8 @@ export const getSizeUnit = (t) => [
 	}
 ];
 
-export const getDateOptions = (t) => [
+type DateOption = { label: string; value: { dateComparison: 'before' | 'after'; negative?: '1' } };
+export const getDateOptions = (t: TFunction): DateOption[] => [
 	{ label: t('settings.before', 'before'), value: { dateComparison: 'before' } },
 	{
 		label: t('settings.not_before', 'not before'),
@@ -137,7 +175,9 @@ export const getDateOptions = (t) => [
 	}
 ];
 
-export const getBodyOptions = (t) => [
+type BodyOption = { label: string; value: { negative?: '1' } };
+
+export const getBodyOptions = (t: TFunction): BodyOption[] => [
 	{ label: t('settings.contains', 'contains'), value: {} },
 	{
 		label: t('settings.does_not_contain', 'does not contain'),
@@ -145,7 +185,8 @@ export const getBodyOptions = (t) => [
 	}
 ];
 
-export const getExistOptions = (t) => [
+type ExistOption = { label: string; value: { negative?: '1' } };
+export const getEns = (t: TFunction): ExistOption[] => [
 	{
 		label: t('settings.exists', 'exists'),
 		value: {}
@@ -156,7 +197,16 @@ export const getExistOptions = (t) => [
 	}
 ];
 
-export const getReadReceiptOptions = (t) => [
+type ReadReceiptOption = {
+	label: string;
+	value: {
+		header: 'Content-Type';
+		stringComparison: 'Contains';
+		value: 'message/disposition-notification';
+		negative?: '1';
+	};
+};
+export const getReadReceiptOptions = (t: TFunction): ReadReceiptOption[] => [
 	{
 		label: t('settings.exists', 'exists'),
 		value: {
@@ -175,7 +225,12 @@ export const getReadReceiptOptions = (t) => [
 		}
 	}
 ];
-export const getFromOptions = (t) => [
+
+type FromOption = {
+	label: string;
+	value: 'FROM' | 'TO' | 'CC' | 'TO,CC';
+};
+export const getFromOptions = (t: TFunction): FromOption[] => [
 	{
 		label: t('label.from', 'From'),
 		value: 'FROM'
@@ -194,7 +249,16 @@ export const getFromOptions = (t) => [
 	}
 ];
 
-export const getInOptions = (t) => [
+type InOption = {
+	label: string;
+	value: {
+		key: 'in' | 'myTest';
+		value: {
+			negative?: '1';
+		};
+	};
+};
+export const getInOptions = (t: TFunction): InOption[] => [
 	{
 		label: t('settings.in', 'in'),
 		value: { key: 'in', value: {} }
@@ -213,7 +277,11 @@ export const getInOptions = (t) => [
 	}
 ];
 
-export const getFolderOptions = (t) => [
+type FolderOption = {
+	label: string;
+	value: 'addressBookTest' | 'contactRankingTest';
+};
+export const getFolderOptions = (t: TFunction): FolderOption[] => [
 	{
 		label: t('settings.contacts', 'contacts'),
 		value: 'addressBookTest'
@@ -224,7 +292,11 @@ export const getFolderOptions = (t) => [
 	}
 ];
 
-export const getInviteRspOptions = (t) => [
+type InviteRspOption = {
+	label: string;
+	value: { method: [{ _content: 'anyrequest' | 'anyreply' }]; negative?: '1' };
+};
+export const getInviteRspOptions = (t: TFunction): InviteRspOption[] => [
 	{
 		label: t('settings.invite_requested', 'invite is requested'),
 		value: { method: [{ _content: 'anyrequest' }] }
@@ -243,7 +315,12 @@ export const getInviteRspOptions = (t) => [
 	}
 ];
 
-export const getSocialOptions = (t) => [
+type SocialOption = {
+	label: string;
+	value: { linkedinTest?: [object]; twitterTest?: [object]; facebookTest?: [object] };
+};
+
+export const getSocialOptions = (t: TFunction): SocialOption[] => [
 	{
 		label: t('settings.linkedin_msg', 'LinkedIn messages and connections'),
 		value: { linkedinTest: [{}] }
@@ -258,7 +335,14 @@ export const getSocialOptions = (t) => [
 	}
 ];
 
-const getConditionAction = (t, zimbraFeatureMailForwardingInFiltersEnabled) => {
+type ConditionAction = {
+	label: string;
+	value: 'redirectToAddress';
+};
+const getConditionAction = (
+	t: TFunction,
+	zimbraFeatureMailForwardingInFiltersEnabled: 'TRUE' | 'FALSE'
+): ConditionAction[] => {
 	if (zimbraFeatureMailForwardingInFiltersEnabled === 'TRUE') {
 		return [
 			{
@@ -270,11 +354,16 @@ const getConditionAction = (t, zimbraFeatureMailForwardingInFiltersEnabled) => {
 	return [];
 };
 
+type ActionOption = {
+	label: string;
+	value: string;
+};
+
 export const getActionOptions = (
-	t,
-	zimbraFeatureMailForwardingInFiltersEnabled,
+	t: TFunction,
+	zimbraFeatureMailForwardingInFiltersEnabled: 'TRUE' | 'FALSE',
 	isIncoming = true
-) => [
+): ActionOption[] => [
 	{
 		label: isIncoming
 			? t('settings.keep_in_inbox', 'Keep in Inbox')
@@ -300,7 +389,12 @@ export const getActionOptions = (
 	...getConditionAction(t, zimbraFeatureMailForwardingInFiltersEnabled)
 ];
 
-export const getMarkAsOptions = (t) => [
+type MarkAsOption = {
+	label: string;
+	value: { actionFlag: [{ flagName: string }] };
+};
+
+export const getMarkAsOptions = (t: TFunction): MarkAsOption[] => [
 	{
 		label: t('label.read', 'Read'),
 		value: { actionFlag: [{ flagName: 'read' }] }
@@ -310,13 +404,27 @@ export const getMarkAsOptions = (t) => [
 		value: { actionFlag: [{ flagName: 'flagged' }] }
 	}
 ];
-export const getDomainOptions = (t) => [
-	{ label: t('label.all', 'all'), value: 'all' },
-	{ label: t('settings.localpart', 'localpart'), value: 'localpart' },
-	{ label: t('settings.domain', 'domain'), value: 'domain' }
-];
-
-export const getStatusOptions = (t) => [
+type StatusOption = {
+	label: string;
+	value:
+		| 'from'
+		| 'to'
+		| 'cc'
+		| 'to,cc'
+		| 'subject'
+		| 'message'
+		| 'size'
+		| 'date'
+		| 'body'
+		| 'attachment'
+		| 'read receipt'
+		| 'address in'
+		| 'header named'
+		| 'calendar'
+		| 'social';
+	keyName?: 'addressBookTest';
+};
+export const getStatusOptions = (t: TFunction): StatusOption[] => [
 	{
 		label: t('label.from', 'From'),
 		value: 'from'

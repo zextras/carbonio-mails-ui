@@ -219,6 +219,25 @@ describe('FilterActionsRows', () => {
 				expect.objectContaining({ actionRedirect: [{ a: '' }] })
 			]);
 		});
+
+		it('dsaddas', async () => {
+			const newCompProps = {
+				...compProps,
+				tempActions: [{ id: '1', actionKeep: [{}] }],
+				zimbraFeatureMailForwardingInFiltersEnabled: 'FALSE' as const
+			};
+
+			const { user } = setupTest(
+				<FilterActionRows
+					tmpFilter={{
+						actionRedirect: [{ flagName: 'flagged' }]
+					}}
+					index={0}
+					compProps={newCompProps}
+				/>,
+				{}
+			);
+		});
 	});
 
 	describe('Tag With', () => {
