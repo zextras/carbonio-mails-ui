@@ -50,7 +50,13 @@ describe('share folder actions', () => {
 			link
 		};
 		createSoapAPIInterceptor<never, CreateMountpointResponse>('CreateMountpoint', response);
-		createSoapAPIInterceptor('MsgAction');
+		const msgActionResponse = {
+			action: {
+				id: '10',
+				op: 'trash'
+			}
+		};
+		createSoapAPIInterceptor('MsgAction', msgActionResponse);
 
 		const store = generateStore();
 
