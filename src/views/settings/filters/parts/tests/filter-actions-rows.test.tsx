@@ -220,14 +220,14 @@ describe('FilterActionsRows', () => {
 			]);
 		});
 
-		it('dsaddas', async () => {
+		it('should inform the user that redirect action is disabled when zimbraFeatureMailForwardingInFiltersEnabled is FALSE on an already existing filter with action redirect', async () => {
 			const newCompProps = {
 				...compProps,
 				tempActions: [{ id: '1', actionKeep: [{}] }],
 				zimbraFeatureMailForwardingInFiltersEnabled: 'FALSE' as const
 			};
 
-			const { user } = setupTest(
+			setupTest(
 				<FilterActionRows
 					tmpFilter={{
 						actionRedirect: [{ flagName: 'flagged' }]
@@ -237,6 +237,73 @@ describe('FilterActionsRows', () => {
 				/>,
 				{}
 			);
+
+			expect(screen.getByText('The Admin disabled the redirect action')).toBeVisible();
+		});
+		it('Redirect to address should not be the selected option if zimbraFeatureMailForwardingInFiltersEnabled is FALSE', async () => {
+			const newCompProps = {
+				...compProps,
+				tempActions: [{ id: '1', actionKeep: [{}] }],
+				zimbraFeatureMailForwardingInFiltersEnabled: 'FALSE' as const
+			};
+
+			setupTest(
+				<FilterActionRows
+					tmpFilter={{
+						actionRedirect: [{ flagName: 'flagged' }]
+					}}
+					index={0}
+					compProps={newCompProps}
+				/>,
+				{}
+			);
+
+			expect(screen.queryByText('Redirect to address')).not.toBeInTheDocument();
+		});
+
+		it('should  display Keep in Inbox as selected option if zimbraFeatureMailForwardingInFiltersEnabled is FALSE', async () => {
+			const newCompProps = {
+				...compProps,
+				tempActions: [{ id: '1', actionKeep: [{}] }],
+				zimbraFeatureMailForwardingInFiltersEnabled: 'FALSE' as const
+			};
+
+			setupTest(
+				<FilterActionRows
+					tmpFilter={{
+						actionRedirect: [{ flagName: 'flagged' }]
+					}}
+					index={0}
+					compProps={newCompProps}
+				/>,
+				{}
+			);
+
+			expect(screen.getByText('Keep in Inbox')).toBeVisible();
+		});
+
+		it('Redirect to address should not be present in the dropdown options if zimbraFeatureMailForwardingInFiltersEnabled is FALSE', async () => {
+			const newCompProps = {
+				...compProps,
+				tempActions: [{ id: '1', actionKeep: [{}] }],
+				zimbraFeatureMailForwardingInFiltersEnabled: 'FALSE' as const
+			};
+
+			const { user } = setupTest(
+				<FilterActionRows
+					tmpFilter={{
+						actionKeep: [{}]
+					}}
+					index={0}
+					compProps={newCompProps}
+				/>,
+				{}
+			);
+			await user.click(screen.getByText('Keep in Inbox'));
+
+			expect(
+				within(screen.getByTestId('dropdown-popper-list')).queryByText('Redirect to address')
+			).not.toBeInTheDocument();
 		});
 	});
 
