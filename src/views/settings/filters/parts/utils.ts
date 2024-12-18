@@ -6,6 +6,8 @@
 import { TFunction } from 'i18next';
 import { find, forEach } from 'lodash';
 
+import { FilterActions } from '../../../../types';
+
 type DomainOption = {
 	label: string;
 	value: string;
@@ -186,7 +188,7 @@ export const getBodyOptions = (t: TFunction): BodyOption[] => [
 ];
 
 type ExistOption = { label: string; value: { negative?: '1' } };
-export const getEns = (t: TFunction): ExistOption[] => [
+export const getExistOptions = (t: TFunction): ExistOption[] => [
 	{
 		label: t('settings.exists', 'exists'),
 		value: {}
@@ -475,11 +477,25 @@ export const getStatusOptions = (t: TFunction): StatusOption[] => [
 		value: 'header named'
 	}
 ];
+type ObjectWithValue<T> = {
+	value: T;
+};
+export function findDefaultValue<T>(
+	list: Array<ObjectWithValue<T>>,
+	key: T
+): ReturnType<typeof find<Array<ObjectWithValue<T>>>> {
+	return find(list, { value: key });
+}
+type Filters = {
+	filterActions: FilterActions[];
+};
 
-export const findDefaultValue = (list, key) => find(list, { value: key });
-export const findDefaultObjectValue = (list, key) => find(list, { value: key });
-
-export const getButtonInfo = (filterName, filters, t, isCreate = true) => {
+export const getButtonInfo = (
+	filterName: string,
+	filters: Filters,
+	t: TFunction,
+	isCreate = true
+): [boolean, string] => {
 	const keys = Object.keys(filters.filterActions[0]);
 	const actions = filters.filterActions[0];
 	if (filterName.length === 0) {
