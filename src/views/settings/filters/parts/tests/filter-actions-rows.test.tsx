@@ -318,4 +318,19 @@ describe('FilterActionsRows', () => {
 			});
 		});
 	});
+	describe('Discard', () => {
+		it('should render the the discard option', async () => {
+			setupTest(
+				<FilterActionRows
+					tmpFilter={{
+						actionDiscard: [{}]
+					}}
+					index={0}
+					compProps={compProps}
+				/>,
+				{}
+			);
+			expect(await screen.findByText('Discard')).toBeVisible();
+		});
+	});
 });
