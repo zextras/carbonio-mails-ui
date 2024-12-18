@@ -66,7 +66,7 @@ export const useMsgCreateAppointmentFn = (item: MailMessage, folderId: string): 
 						if (!response.m || 'Fault' in response) {
 							errorSnackbar();
 						}
-						const message = normalizeMailMessageFromSoap(response.m);
+						const message = normalizeMailMessageFromSoap(response.m[0]);
 						const mailHtmlBody = extractBody(message)[1];
 						isAvailable &&
 							openAppointmentComposer({
