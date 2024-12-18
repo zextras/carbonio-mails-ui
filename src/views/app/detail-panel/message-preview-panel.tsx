@@ -9,10 +9,7 @@ import { Container, Padding } from '@zextras/carbonio-design-system';
 
 import MailPreview from './preview/mail-preview';
 import PreviewPanelHeader from './preview/preview-panel-header';
-import { useAppSelector } from '../../../hooks/redux';
-import { useRequestDebouncedMessage } from '../../../hooks/use-request-debounced-message';
-import { selectMessage } from '../../../store/messages-slice';
-import type { MailsStateType } from '../../../types';
+import { useCompleteMessage } from '../../../store/zustand/emails/hooks/hooks';
 import { useExtraWindow } from '../extra-windows/use-extra-window';
 
 export const MessagePreviewPanel: FC<{ folderId: string; messageId: string }> = ({
@@ -21,9 +18,7 @@ export const MessagePreviewPanel: FC<{ folderId: string; messageId: string }> = 
 }) => {
 	const { isInsideExtraWindow } = useExtraWindow();
 
-	const message = useAppSelector((state: MailsStateType) => selectMessage(state, messageId));
-
-	useRequestDebouncedMessage(messageId, message?.isComplete);
+	const { message } = useCompleteMessage(messageId);
 
 	const messagePreviewFactory = useCallback(
 		() => <MessagePreviewPanel folderId={folderId} messageId={messageId} />,
