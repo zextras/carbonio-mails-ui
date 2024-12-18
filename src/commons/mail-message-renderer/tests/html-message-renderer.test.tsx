@@ -5,7 +5,7 @@
  */
 import React from 'react';
 
-import { act, screen, waitFor } from '@testing-library/react';
+import { act, screen } from '@testing-library/react';
 
 import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
@@ -118,8 +118,11 @@ describe('HTML message renderer', () => {
 				});
 
 				await interceptor;
-
-				expect(screen.queryByText('warningBanner.truncatedMessage.button')).not.toBeInTheDocument();
+				await act(async () => {
+					expect(
+						screen.queryByText('warningBanner.truncatedMessage.button')
+					).not.toBeInTheDocument();
+				});
 			});
 		});
 		it('should display empty fragment when message is set only mails store', () => {
@@ -254,7 +257,7 @@ describe('HTML message renderer', () => {
 			user.click(loadMessageButton);
 
 			await interceptor;
-			await waitFor(() => {
+			await act(async () => {
 				expect(screen.queryByText('warningBanner.truncatedMessage.button')).not.toBeInTheDocument();
 			});
 		});
