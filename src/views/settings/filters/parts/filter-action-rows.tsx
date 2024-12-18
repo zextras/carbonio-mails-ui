@@ -129,6 +129,8 @@ const FilterActionRows: FC<FilterActionRowProps> = ({
 			case 'actionTag': {
 				setActiveActionOption('tagWith');
 				const chipBg = filter(tagOptions, { label: tmpFilter[action][0].tagName })[0];
+				// TODO: this logic doesn't make sense here, it should be moved to show-tag component
+				// they are trying to get the color from corresponding option
 				setTag(
 					tmpFilter[action][0].tagName
 						? [

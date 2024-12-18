@@ -255,7 +255,19 @@ describe('FilterActionsRows', () => {
 			);
 			expect(screen.getByText(filterName)).toBeVisible();
 		});
-
+		it('should display empty tag in input', async () => {
+			setupTest(
+				<FilterActionRows
+					tmpFilter={{
+						actionTag: [{}]
+					}}
+					index={0}
+					compProps={compProps}
+				/>,
+				{}
+			);
+			expect(screen.getByText('Tag')).toBeVisible();
+		});
 		it('should display the tag with the same color of corresponding option', async () => {
 			const tagName = 'Test Designer';
 			const { user } = setupTest(
