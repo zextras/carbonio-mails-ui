@@ -126,6 +126,6 @@ describe('Show Tag', () => {
 			/>,
 			{}
 		);
-		expect(screen.getByTestId(`tag-${tagName}-${COLOR_2}`));
+		expect(screen.getByTestId(`tag-${tagName}-${COLOR_2}`)).toBeVisible();
 	});
 });
