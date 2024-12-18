@@ -5,11 +5,10 @@
  */
 import React, { FC, ReactElement, useMemo } from 'react';
 
-import { Container, Text, Icon, Row, Padding } from '@zextras/carbonio-design-system';
+import { Container, Text } from '@zextras/carbonio-design-system';
 import { map } from 'lodash';
 
 import FilterActionRows from './filter-action-rows';
-import { ZIMBRA_STANDARD_COLORS } from '../../../../carbonio-ui-commons/constants/utils';
 import { getTags } from '../../../../carbonio-ui-commons/store/zustand/tags';
 import Heading from '../../components/settings-heading';
 
@@ -21,15 +20,7 @@ const FilterActionConditions: FC<ComponentProps> = ({ compProps }): ReactElement
 		() =>
 			map(getTags(), (item) => ({
 				...item,
-				label: item.name,
-				customComponent: (
-					<Row>
-						<Icon icon="Tag" color={ZIMBRA_STANDARD_COLORS[item.color ?? 0].hex} />
-						<Padding left="small">
-							<Text>{item.name}</Text>
-						</Padding>
-					</Row>
-				)
+				label: item.name
 			})),
 		[]
 	);

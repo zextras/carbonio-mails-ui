@@ -5,7 +5,15 @@
  */
 import React, { useCallback } from 'react';
 
-import { ChipInput, ChipItem, DropdownItem, Row } from '@zextras/carbonio-design-system';
+import {
+	ChipInput,
+	ChipItem,
+	DropdownItem,
+	Icon,
+	Padding,
+	Row,
+	Text
+} from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
 
 import { ZIMBRA_STANDARD_COLORS } from '../../../../../carbonio-ui-commons/constants';
@@ -44,7 +52,14 @@ export const ShowTag = ({ value, tagOptions, onTagChange }: ShowTagProps): React
 			id: tag.label,
 			label: tag.label,
 			value: tag,
-			customComponent: tag.customComponent
+			customComponent: (
+				<Row>
+					<Icon icon="Tag" color={ZIMBRA_STANDARD_COLORS[tag.color ?? 0].hex} />
+					<Padding left="small">
+						<Text>{tag.label}</Text>
+					</Padding>
+				</Row>
+			)
 		})
 	);
 	const tagChipOnAdd = useCallback((tagValue: unknown): ChipItem<Tag> => {

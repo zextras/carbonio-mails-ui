@@ -5,14 +5,14 @@
  */
 import React from 'react';
 
-import { screen } from '@testing-library/react';
+import { screen, within } from '@testing-library/react';
 
 import { setupTest } from '../../../../../../carbonio-ui-commons/test/test-setup';
 import { generateStore } from '../../../../../../tests/generators/store';
 import { ShowTag } from '../../filter-actions/show-tag';
 
 describe('Show Tag', () => {
-	it('should render selected option in the input', async () => {
+	it('should render the tag input', async () => {
 		const store = generateStore();
 
 		setupTest(<ShowTag value={[]} tagOptions={[]} onTagChange={jest.fn()} />, {
@@ -27,10 +27,6 @@ describe('Show Tag', () => {
 		const onChangeFn = jest.fn();
 		const tagOptions = [
 			{
-				avatarBackground: '#ffc107',
-				avatarIcon: 'Tag' as const,
-				background: 'gray2' as const,
-				hasAvatar: true,
 				label: 'tag option 1',
 				color: 6
 			}
@@ -45,25 +41,19 @@ describe('Show Tag', () => {
 
 		await user.click(screen.getByText('Tag'));
 		await screen.findByTestId('dropdown-popper-list');
-
 		await user.click(screen.getByText(tagOptions[0].label));
 
 		expect(onChangeFn).toHaveBeenCalledTimes(1);
 		expect(onChangeFn).toHaveBeenCalledWith([
 			{
-				avatarBackground: '#ffc107',
-				avatarIcon: 'Tag',
-				background: 'gray2',
-				hasAvatar: true,
-				label: 'tag option 1'
+				label: 'tag option 1',
+				color: 6
 			}
 		]);
 	});
 
-	// incomplete test
-	it.skip('should render the avatar background as black if no color is passed as tagOption', async () => {
+	it('should render the option with the tag avatar', async () => {
 		const store = generateStore();
-		const onChangeFn = jest.fn();
 		const tagOptions = [
 			{
 				label: 'tag option 1'
@@ -71,16 +61,27 @@ describe('Show Tag', () => {
 		];
 
 		const { user } = setupTest(
-			<ShowTag value={[]} tagOptions={tagOptions} onTagChange={onChangeFn} />,
+			<ShowTag value={[]} tagOptions={tagOptions} onTagChange={jest.fn()} />,
 			{
 				store
 			}
 		);
 
 		await user.click(screen.getByText('Tag'));
-		await screen.findByTestId('dropdown-popper-list');
+		const dropdown = await screen.findByTestId('dropdown-popper-list');
 
-		expect(screen.getByText(tagOptions[0].label)).toBeVisible();
-		screen.logTestingPlaygroundURL();
+		expect(within(dropdown).getByTestId('icon: Tag')).toBeVisible();
+	});
+
+	it('should render added chip with the tag avatar', async () => {
+		const store = generateStore();
+		const value = {
+			label: 'tag option 1'
+		};
+		setupTest(<ShowTag value={[value]} tagOptions={[]} onTagChange={jest.fn()} />, {
+			store
+		});
+
+		expect(within(screen.getByTestId('chip')).getByTestId('icon: Tag')).toBeVisible();
 	});
 });
