@@ -9,7 +9,7 @@ import produce, { enableMapSet } from 'immer';
 import { forEach, some } from 'lodash';
 import { StoreApi, UseBoundStore } from 'zustand';
 
-import { MESSAGES_INDEX_SLICE_INITIAL_STATE } from './messages-slice';
+import { CONVERSATIONS_INDEX_SLICE_INITIAL_STATE } from './conversations-index-slice';
 import { API_REQUEST_STATUS } from '../../../../constants';
 import {
 	EmailsStoreState,
@@ -81,7 +81,7 @@ function resetConversationAndPopulatedItems(
 ): void {
 	useEmailsStore.setState(
 		produce((state: EmailsStoreState) => {
-			state.conversationsIndexSlice = MESSAGES_INDEX_SLICE_INITIAL_STATE;
+			state.conversationsIndexSlice = CONVERSATIONS_INDEX_SLICE_INITIAL_STATE;
 			state.populatedItemsSlice = POPULATED_ITEMS_SLICE_INITIAL_STATE;
 		})
 	);
