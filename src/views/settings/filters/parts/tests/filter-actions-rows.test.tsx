@@ -6,9 +6,17 @@
 
 import React from 'react';
 
-import { screen, within } from '@testing-library/react';
+import { act, screen, within } from '@testing-library/react';
 
-import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
+import { FOLDER_VIEW } from '../../../../../carbonio-ui-commons/constants';
+import { FOLDERS } from '../../../../../carbonio-ui-commons/constants/folders';
+import { generateFolder } from '../../../../../carbonio-ui-commons/test/mocks/folders/folders-generator';
+import { populateFoldersStore } from '../../../../../carbonio-ui-commons/test/mocks/store/folders';
+import {
+	makeListItemsVisible,
+	setupTest
+} from '../../../../../carbonio-ui-commons/test/test-setup';
+import { generateStore } from '../../../../../tests/generators/store';
 import FilterActionRows from '../filter-action-rows';
 
 describe('FilterActionsRows', () => {
@@ -30,7 +38,6 @@ describe('FilterActionsRows', () => {
 			{}
 		);
 	});
-
 	it('adds a new filter condition when the add button is clicked', async () => {
 		const newCompProps = {
 			...compProps,
@@ -56,7 +63,6 @@ describe('FilterActionsRows', () => {
 			})
 		]);
 	});
-
 	it('removes a filter condition when the remove button is clicked', async () => {
 		const newCompProps = {
 			...compProps,
@@ -81,7 +87,6 @@ describe('FilterActionsRows', () => {
 			expect.objectContaining({ id: '2', actionStop: [{}] })
 		]);
 	});
-
 	it('disables the remove button when there is only one filter condition', async () => {
 		const newCompProps = {
 			...compProps,
@@ -331,7 +336,6 @@ describe('FilterActionsRows', () => {
 			).not.toBeInTheDocument();
 		});
 	});
-
 	describe('Tag With', () => {
 		it('should display the saved tag', async () => {
 			const filterName = 'Test Designer';
@@ -459,6 +463,49 @@ describe('FilterActionsRows', () => {
 			expect(compProps.setTempActions).toHaveBeenCalledTimes(1);
 			expect(compProps.setTempActions).toHaveBeenCalledWith([
 				{ actionTag: [{ tagName: '' }], id: undefined }
+			]);
+		});
+	});
+	describe('Move To Folder', () => {
+		it('should update the action value with the selected folder on confirm', async () => {
+			const store = generateStore();
+			const folder = generateFolder({
+				id: '100',
+				name: 'Test folder'
+			});
+			const rootFolder = generateFolder({
+				id: FOLDERS.USER_ROOT,
+				name: 'Root',
+				children: [folder]
+			});
+			populateFoldersStore({
+				view: FOLDER_VIEW.message,
+				customFolders: [rootFolder]
+			});
+			const { user } = setupTest(
+				<FilterActionRows
+					tmpFilter={{
+						actionFileInto: [{}]
+					}}
+					index={0}
+					compProps={compProps}
+				/>,
+				{ store }
+			);
+			const browseFolder = screen.getByRole('button', {
+				name: /browse/i
+			});
+			await user.click(browseFolder);
+			makeListItemsVisible();
+			act(() => {
+				jest.advanceTimersByTime(1000);
+			});
+			await user.click(screen.getByTestId(`folder-accordion-item-${folder.id}`));
+			const chooseFolder = screen.getByRole('button', { name: 'Choose' });
+			expect(chooseFolder).toBeEnabled();
+			await user.click(chooseFolder);
+			expect(compProps.setTempActions).toHaveBeenCalledWith([
+				expect.objectContaining({ actionFileInto: expect.anything() })
 			]);
 		});
 	});
