@@ -106,6 +106,31 @@ describe('FilterActionsRows', () => {
 		await user.click(removeButton);
 		expect(compProps.setTempActions).not.toHaveBeenCalled();
 	});
+	it('should update actions using same action id as action at index number when selecting a new action', async () => {
+		const mockCompProps = {
+			...compProps,
+			tempActions: [{ id: '7' }, { id: '21' }, { id: '33' }]
+		};
+		const { user } = setupTest(
+			<FilterActionRows
+				tmpFilter={{
+					actionKeep: [{}]
+				}}
+				index={1}
+				compProps={mockCompProps}
+			/>,
+			{}
+		);
+		await user.click(screen.getByText('Keep in Inbox'));
+		const dropdown = screen.getByTestId('dropdown-popper-list');
+		await user.click(within(dropdown).getByText('Discard'));
+
+		expect(mockCompProps.setTempActions).toHaveBeenCalledWith([
+			{ id: '7' },
+			{ id: '21', actionDiscard: [{}] },
+			{ id: '33' }
+		]);
+	});
 
 	describe('Keep In Inbox', () => {
 		it('should render the selected action', async () => {
@@ -438,7 +463,7 @@ describe('FilterActionsRows', () => {
 		});
 	});
 	describe('Discard', () => {
-		it('should render the the discard option', async () => {
+		it('should render the the discard option if selected', async () => {
 			setupTest(
 				<FilterActionRows
 					tmpFilter={{
@@ -449,6 +474,27 @@ describe('FilterActionsRows', () => {
 				/>,
 				{}
 			);
+			expect(await screen.findByText('Discard')).toBeVisible();
+		});
+		it('should render the the discard option after selecting it', async () => {
+			const mockCompProps = {
+				...compProps,
+				tempActions: [{ id: '1' }]
+			};
+			const { user } = setupTest(
+				<FilterActionRows
+					tmpFilter={{
+						actionKeep: [{}]
+					}}
+					index={0}
+					compProps={mockCompProps}
+				/>,
+				{}
+			);
+			await user.click(screen.getByText('Keep in Inbox'));
+			const dropdown = screen.getByTestId('dropdown-popper-list');
+			await user.click(within(dropdown).getByText('Discard'));
+
 			expect(await screen.findByText('Discard')).toBeVisible();
 		});
 	});
