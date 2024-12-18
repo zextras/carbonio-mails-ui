@@ -17,24 +17,19 @@ import {
 import { useTranslation } from 'react-i18next';
 
 import { ZIMBRA_STANDARD_COLORS } from '../../../../../carbonio-ui-commons/constants';
-
-type Tag = {
-	label: string;
-	customComponent?: React.ReactNode;
-	color?: number;
-};
+import { MailFilterTag } from '../../../../../types';
 
 type ShowTagProps = {
-	value: Tag[];
-	tagOptions: Tag[] | undefined;
-	onTagChange: (chip: Tag[]) => void;
+	value: MailFilterTag[];
+	tagOptions: MailFilterTag[] | undefined;
+	onTagChange: (chip: MailFilterTag[]) => void;
 };
 
 export const ShowTag = ({ value, tagOptions, onTagChange }: ShowTagProps): React.JSX.Element => {
 	const [t] = useTranslation();
 
 	const tagChipInput = value.map(
-		(tag): ChipItem<Tag> => ({
+		(tag): ChipItem<MailFilterTag> => ({
 			label: tag.label,
 			value: tag,
 			avatarBackground: ZIMBRA_STANDARD_COLORS[tag.color ?? 0].hex,
@@ -47,23 +42,26 @@ export const ShowTag = ({ value, tagOptions, onTagChange }: ShowTagProps): React
 		(
 			tag
 		): DropdownItem & {
-			value?: Tag;
-		} => ({
-			id: tag.label,
-			label: tag.label,
-			value: tag,
-			customComponent: (
-				<Row>
-					<Icon icon="Tag" color={ZIMBRA_STANDARD_COLORS[tag.color ?? 0].hex} />
-					<Padding left="small">
-						<Text>{tag.label}</Text>
-					</Padding>
-				</Row>
-			)
-		})
+			value?: MailFilterTag;
+		} => {
+			const color: string = ZIMBRA_STANDARD_COLORS[tag.color ?? 0].hex;
+			return {
+				id: tag.label,
+				label: tag.label,
+				value: tag,
+				customComponent: (
+					<Row data-testid={`tag-option-${tag.label}-${color}`}>
+						<Icon icon="Tag" color={color} />
+						<Padding left="small">
+							<Text>{tag.label}</Text>
+						</Padding>
+					</Row>
+				)
+			};
+		}
 	);
-	const tagChipOnAdd = useCallback((tagValue: unknown): ChipItem<Tag> => {
-		const tag = tagValue as Tag;
+	const tagChipOnAdd = useCallback((tagValue: unknown): ChipItem<MailFilterTag> => {
+		const tag = tagValue as MailFilterTag;
 		return {
 			label: tag.label,
 			value: tag,
@@ -74,8 +72,8 @@ export const ShowTag = ({ value, tagOptions, onTagChange }: ShowTagProps): React
 	}, []);
 
 	const onTagInternalChange = useCallback(
-		(chips: ChipItem<Tag>[]) => {
-			const chipsValue = chips.map((chip) => chip.value) as Tag[];
+		(chips: ChipItem<MailFilterTag>[]) => {
+			const chipsValue = chips.map((chip) => chip.value) as MailFilterTag[];
 			onTagChange(chipsValue);
 		},
 		[onTagChange]

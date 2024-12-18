@@ -3,6 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+
 import { ChipProps } from '@zextras/carbonio-design-system';
 
 export type FilterTest = Record<string, string | Array<any>>;
@@ -97,4 +98,8 @@ export type FilterActions = {
 export type MarkAsOption = {
 	label: string;
 	value: { actionFlag: { flagName: string }[] };
+};
+export type MailFilterTag = {
+	label: string;
+	color?: number;
 };

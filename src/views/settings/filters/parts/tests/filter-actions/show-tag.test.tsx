@@ -11,6 +11,7 @@ import { setupTest } from '../../../../../../carbonio-ui-commons/test/test-setup
 import { generateStore } from '../../../../../../tests/generators/store';
 import { ShowTag } from '../../filter-actions/show-tag';
 
+const BLACK = '#000000';
 describe('Show Tag', () => {
 	it('should render the tag input', async () => {
 		const store = generateStore();
@@ -71,6 +72,27 @@ describe('Show Tag', () => {
 		const dropdown = await screen.findByTestId('dropdown-popper-list');
 
 		expect(within(dropdown).getByTestId('icon: Tag')).toBeVisible();
+	});
+	it('should render the option with a black tag avatar if tag has no color', async () => {
+		const store = generateStore();
+		const tagName = 'tag option 1';
+		const tagOptions = [
+			{
+				label: tagName
+			}
+		];
+
+		const { user } = setupTest(
+			<ShowTag value={[]} tagOptions={tagOptions} onTagChange={jest.fn()} />,
+			{
+				store
+			}
+		);
+
+		await user.click(screen.getByText('Tag'));
+		const dropdown = await screen.findByTestId('dropdown-popper-list');
+
+		expect(within(dropdown).getByTestId(`tag-option-${tagName}-${BLACK}`)).toBeVisible();
 	});
 
 	it('should render added chip with the tag avatar', async () => {

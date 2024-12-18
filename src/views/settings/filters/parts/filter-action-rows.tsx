@@ -19,13 +19,7 @@ import { getActionOptions, getMarkAsOptions } from './utils';
 import { CONTACT_TYPES } from '../../../../carbonio-ui-commons/integrations/constants';
 import { ContactInputItem } from '../../../../carbonio-ui-commons/integrations/types';
 import { Folder } from '../../../../carbonio-ui-commons/types/folder';
-
-// TODO: move this one
-type Tag = {
-	label: string;
-	customComponent?: React.ReactNode;
-	color?: number;
-};
+import { MailFilterTag } from '../../../../types';
 
 type ActionFileInto = {
 	folderPath?: string;
@@ -59,7 +53,7 @@ type FilterActionRowProps = {
 	tmpFilter: Record<string, [TempAction]>;
 	index: number;
 	compProps: CompProps;
-	tagOptions?: Array<any>;
+	tagOptions?: Array<MailFilterTag>;
 };
 
 const FilterActionRows: FC<FilterActionRowProps> = ({
@@ -78,7 +72,7 @@ const FilterActionRows: FC<FilterActionRowProps> = ({
 		[t, zimbraFeatureMailForwardingInFiltersEnabled, isIncoming]
 	);
 	const markAsOptions = useMemo(() => getMarkAsOptions(t), [t]);
-	const [tag, setTag] = useState<Array<Tag>>([]);
+	const [tag, setTag] = useState<Array<MailFilterTag>>([]);
 
 	const addFilterCondition = useCallback(() => {
 		const previousTempActions = tempActions.slice();
@@ -140,7 +134,7 @@ const FilterActionRows: FC<FilterActionRowProps> = ({
 						? [
 								{
 									label: `${tmpFilter[action][0].tagName}`,
-									color: chipBg.color
+									color: chipBg?.color
 								}
 							]
 						: []
@@ -268,7 +262,7 @@ const FilterActionRows: FC<FilterActionRowProps> = ({
 	}, [setActiveIndex, index]);
 
 	const onTagChange = useCallback(
-		(chip: Tag[]) => {
+		(chip: MailFilterTag[]) => {
 			const previous = tempActions.slice();
 			if (chip.length > 0) {
 				const requiredTag = chip.length > 1 ? chip[1] : chip[0];
