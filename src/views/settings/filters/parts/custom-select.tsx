@@ -4,8 +4,10 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { FC, ReactElement, useMemo } from 'react';
+
 import { Row, Select, Text, Padding, Icon, Container } from '@zextras/carbonio-design-system';
 import { map } from 'lodash';
+
 import {
 	ColorContainer,
 	TextUpperCase
@@ -80,7 +82,7 @@ const getItems = (items: Array<{ label: string; value: any }>): GetItemsReturnTy
 
 const CustomSelect: FC<{
 	onChange: (arg: any) => void;
-	defaultSelection: { label: string; value: any };
+	defaultSelection?: { label: string; value: any };
 	label: string;
 	items: Array<{ label: string; value: any }>;
 	background?: string;

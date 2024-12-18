@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { TFunction } from 'i18next';
-import { find, forEach } from 'lodash';
+import { forEach } from 'lodash';
 
 import { FilterActions, MarkAsOption } from '../../../../types';
 
@@ -472,14 +472,15 @@ export const getStatusOptions = (t: TFunction): StatusOption[] => [
 		value: 'header named'
 	}
 ];
-type ObjectWithValue<T> = {
+type ObjectWithLabelValue<T> = {
+	label: string;
 	value: T;
 };
 export function findDefaultValue<T>(
-	list: Array<ObjectWithValue<T>>,
+	list: Array<ObjectWithLabelValue<T>>,
 	key: T
-): ReturnType<typeof find<Array<ObjectWithValue<T>>>> {
-	return find(list, { value: key });
+): ObjectWithLabelValue<T> | undefined {
+	return list.find((item) => item.value === key);
 }
 type Filters = {
 	filterActions: FilterActions[];
