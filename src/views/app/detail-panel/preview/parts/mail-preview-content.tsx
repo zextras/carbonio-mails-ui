@@ -4,7 +4,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 
 import { Collapse, Container, Padding, Row } from '@zextras/carbonio-design-system';
 import {
@@ -16,39 +16,39 @@ import { filter } from 'lodash';
 
 import { msgActionSoapApi } from '../../../../../api/msg-action';
 import { MailMessageRenderer } from '../../../../../commons/mail-message-renderer/mail-message-renderer';
-import { useRequestDebouncedMessage } from '../../../../../hooks/use-request-debounced-message';
 import SharedInviteReply from '../../../../../integrations/shared-invite-reply';
-import type { MailMessage, OpenEmlPreviewType } from '../../../../../types';
+import { useCompleteMessage } from '../../../../../store/zustand/emails/hooks/hooks';
+import type { OpenEmlPreviewType } from '../../../../../types';
 import AttachmentsBlock from '../attachments-block';
 import ReadReceiptModal from '../read-receipt-modal';
 
 const [InviteResponse, integrationAvailable] = getIntegratedComponent('invites-reply');
 
 type MailPreviewContentProps = {
-	message: MailMessage;
+	messageId: string;
 	isMailPreviewOpen: boolean;
 	isExternalMessage?: boolean;
 	isInsideExtraWindow?: boolean;
 	openEmlPreview?: OpenEmlPreviewType;
 };
-export const MailPreviewContent: FC<MailPreviewContentProps> = ({
-	message,
+export const MailPreviewContent = ({
+	messageId,
 	isMailPreviewOpen,
 	isExternalMessage = false,
 	openEmlPreview,
 	isInsideExtraWindow = false
-}) => {
+}: MailPreviewContentProps): React.JSX.Element => {
 	const [showModal, setShowModal] = useState(true);
 	const accounts = useUserAccounts();
 	const { prefs } = useUserSettings();
 	const moveToTrash = useCallback(() => {
 		msgActionSoapApi({
 			operation: `trash`,
-			ids: [message.id]
+			ids: [messageId]
 		});
-	}, [message]);
+	}, [messageId]);
 
-	useRequestDebouncedMessage(message.id, message?.isComplete);
+	const { message } = useCompleteMessage(messageId);
 
 	const showAppointmentInvite = useMemo(
 		() =>

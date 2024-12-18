@@ -8,7 +8,7 @@
 import produce, { enableMapSet } from 'immer';
 import { UseBoundStore, StoreApi } from 'zustand';
 
-import { SEARCH_SLICE_INITIAL_STATE } from './search-slice';
+import { SEARCH_INDEX_SLICE_INITIAL_STATE } from './search-slice';
 import { API_REQUEST_STATUS } from '../../../../constants';
 import {
 	EmailsStoreState,
@@ -24,7 +24,7 @@ function resetSearchAndPopulatedItems(
 ): void {
 	useEmailsStore.setState(
 		produce((state: EmailsStoreState) => {
-			state.searchSlice = SEARCH_SLICE_INITIAL_STATE;
+			state.searchIndexSlice = SEARCH_INDEX_SLICE_INITIAL_STATE;
 			state.populatedItemsSlice = POPULATED_ITEMS_SLICE_INITIAL_STATE;
 		})
 	);
@@ -36,7 +36,7 @@ function setSearchResultsByConversation(
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
 ): void {
 	useEmailsStore.setState(
-		produce(({ searchSlice, populatedItemsSlice }: EmailsStoreState) => {
+		produce(({ searchIndexSlice: searchSlice, populatedItemsSlice }: EmailsStoreState) => {
 			searchSlice.conversationIds = new Set(conversations.map((c) => c.id));
 			searchSlice.status = API_REQUEST_STATUS.fulfilled;
 			searchSlice.messageIds = new Set();
@@ -59,7 +59,7 @@ function setSearchResultsByMessage(
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
 ): void {
 	useEmailsStore.setState(
-		produce(({ searchSlice, populatedItemsSlice }: EmailsStoreState) => {
+		produce(({ searchIndexSlice: searchSlice, populatedItemsSlice }: EmailsStoreState) => {
 			searchSlice.messageIds = new Set(messages.map((message) => message.id));
 			searchSlice.status = API_REQUEST_STATUS.fulfilled;
 			searchSlice.conversationIds = new Set();
@@ -86,9 +86,9 @@ function appendConversationsToSearch(
 
 	useEmailsStore.setState(
 		produce((state: EmailsStoreState) => {
-			newConversationsIds.forEach((id) => state.searchSlice.conversationIds.add(id));
-			state.searchSlice.offset = offset;
-			state.searchSlice.more = more;
+			newConversationsIds.forEach((id) => state.searchIndexSlice.conversationIds.add(id));
+			state.searchIndexSlice.offset = offset;
+			state.searchIndexSlice.more = more;
 			state.populatedItemsSlice.conversations = conversations.reduce((acc, conv) => {
 				acc[conv.id] = conv;
 				return acc;
@@ -105,7 +105,7 @@ function deleteConversationsFromSearch(
 	useEmailsStore.setState(
 		produce((state: EmailsStoreState) => {
 			ids.forEach((id) => {
-				state.searchSlice.conversationIds.delete(id);
+				state.searchIndexSlice.conversationIds.delete(id);
 				delete state.populatedItemsSlice.conversations[id];
 			});
 		})
@@ -120,7 +120,7 @@ function deleteMessagesFromSearch(
 	useEmailsStore.setState(
 		produce((state: EmailsStoreState) => {
 			ids.forEach((id) => {
-				state.searchSlice.messageIds.delete(id);
+				state.searchIndexSlice.messageIds.delete(id);
 				delete state.populatedItemsSlice.messages[id];
 			});
 		})
@@ -132,7 +132,7 @@ function updateSearchResultsLoadingStatus(
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
 ): void {
 	useEmailsStore.setState(
-		produce(({ searchSlice }: EmailsStoreState) => {
+		produce(({ searchIndexSlice: searchSlice }: EmailsStoreState) => {
 			searchSlice.status = status;
 		})
 	);
@@ -147,8 +147,8 @@ function appendMessagesToSearch(
 	const newMessageIds = new Set(messages.map((message) => message.id));
 	useEmailsStore.setState(
 		produce((state: EmailsStoreState) => {
-			newMessageIds.forEach((messageId) => state.searchSlice.messageIds.add(messageId));
-			state.searchSlice.offset = offset;
+			newMessageIds.forEach((messageId) => state.searchIndexSlice.messageIds.add(messageId));
+			state.searchIndexSlice.offset = offset;
 			state.populatedItemsSlice.messages = messages.reduce((acc, msg) => {
 				acc[msg.id] = msg;
 				return acc;
@@ -162,8 +162,8 @@ function setMessagesInSearchSlice(
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
 ): void {
 	useEmailsStore.setState((state: EmailsStoreState) => ({
-		searchSlice: {
-			...state.searchSlice,
+		searchIndexSlice: {
+			...state.searchIndexSlice,
 			messageIds: new Set(messages.map((c) => c.id))
 		},
 		populatedItemsSlice: {

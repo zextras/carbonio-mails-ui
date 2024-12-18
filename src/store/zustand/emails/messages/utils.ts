@@ -9,14 +9,14 @@ import produce, { enableMapSet } from 'immer';
 import { forEach } from 'lodash';
 import { StoreApi, UseBoundStore } from 'zustand';
 
-import { MESSAGES_SLICE_INITIAL_STATE } from './messages-slice';
+import { MESSAGES_INDEX_SLICE_INITIAL_STATE } from './messages-slice';
 import { API_REQUEST_STATUS } from '../../../../constants';
 import {
 	EmailsStoreState,
 	Folder,
 	IncompleteMessage,
 	MailMessage,
-	MessageSliceState,
+	MessagesIndexSliceState,
 	SearchRequestStatus
 } from '../../../../types';
 import { POPULATED_ITEMS_SLICE_INITIAL_STATE } from '../populated-items/populated-items-slice';
@@ -28,10 +28,10 @@ function setMessages(
 ): void {
 	useEmailsStore.setState(
 		produce((store: EmailsStoreState) => {
-			store.messagesSlice.messageIds = new Set(messages.map((message) => message.id));
-			store.messagesSlice.status = API_REQUEST_STATUS.fulfilled;
-			store.messagesSlice.offset = 0;
-			store.messagesSlice.more = more;
+			store.messagesIndexSlice.messagesIds = new Set(messages.map((message) => message.id));
+			store.messagesIndexSlice.status = API_REQUEST_STATUS.fulfilled;
+			store.messagesIndexSlice.offset = 0;
+			store.messagesIndexSlice.more = more;
 
 			store.populatedItemsSlice.messages = messages.reduce(
 				(acc, message) => {
@@ -49,8 +49,8 @@ function useMessagesIdsByFolder(
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
 ): Set<string> {
 	const folderMessagesIds = new Set<string>();
-	const { populatedItemsSlice, messagesSlice } = useEmailsStore();
-	const { messageIds } = messagesSlice;
+	const { populatedItemsSlice, messagesIndexSlice: messagesSlice } = useEmailsStore();
+	const { messagesIds: messageIds } = messagesSlice;
 	forEach([...messageIds], (messageId) => {
 		const wantedFolder = 'rid' in folder && folder?.rid ? `${folder.zid}:${folder.rid}` : folder.id;
 		if (populatedItemsSlice.messages[messageId].parent === wantedFolder) {
@@ -65,8 +65,8 @@ function updateMessagesResultsLoadingStatus(
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
 ): void {
 	useEmailsStore.setState(
-		produce((state: MessageSliceState) => {
-			state.messagesSlice.status = status;
+		produce((state: MessagesIndexSliceState) => {
+			state.messagesIndexSlice.status = status;
 		})
 	);
 }
@@ -76,7 +76,7 @@ function resetMessagesAndPopulatedItems(
 ): void {
 	useEmailsStore.setState(
 		produce((state: EmailsStoreState) => {
-			state.messagesSlice = MESSAGES_SLICE_INITIAL_STATE;
+			state.messagesIndexSlice = MESSAGES_INDEX_SLICE_INITIAL_STATE;
 			state.populatedItemsSlice = POPULATED_ITEMS_SLICE_INITIAL_STATE;
 		})
 	);
@@ -91,9 +91,8 @@ function appendMessagesToMessagesSlice(
 	const newMessageIds = new Set(messages.map((message) => message.id));
 	useEmailsStore.setState(
 		produce((state: EmailsStoreState) => {
-			newMessageIds.forEach((messageId) => state.messagesSlice.messageIds.add(messageId));
-			state.messagesSlice.offset = offset;
-
+			newMessageIds.forEach((messageId) => state.messagesIndexSlice.messagesIds.add(messageId));
+			state.messagesIndexSlice.offset = offset;
 			state.populatedItemsSlice.messages = messages.reduce((acc, msg) => {
 				acc[msg.id] = msg;
 				return acc;
@@ -102,7 +101,7 @@ function appendMessagesToMessagesSlice(
 	);
 }
 
-export const messageSliceUtils = {
+export const messagesIndexSliceUtils = {
 	setMessages,
 	updateMessagesResultsLoadingStatus,
 	resetMessagesAndPopulatedItems,

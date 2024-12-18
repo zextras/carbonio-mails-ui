@@ -7,11 +7,12 @@
 
 import { create } from 'zustand';
 
-import { createMessageSlice } from './messages/messages-slice';
-import { messageSliceUtils } from './messages/utils';
+import { createConversationsIndexSlice } from './conversations/conversations-index-slice';
+import { createMessagesIndexSlice } from './messages/messages-slice';
+import { messagesIndexSliceUtils } from './messages/utils';
 import { createPopulatedItemsSlice } from './populated-items/populated-items-slice';
 import { populatedItemsSliceUtils } from './populated-items/utils';
-import { createSearchSlice } from './search/search-slice';
+import { createSearchIndexSlice } from './search/search-slice';
 import { searchSliceUtils } from './search/utils';
 import {
 	IncompleteMessage,
@@ -19,14 +20,15 @@ import {
 	EmailsStoreState,
 	NormalizedConversation,
 	SearchRequestStatus,
-	SearchSliceState,
+	SearchIndexSliceState,
 	Folder,
 	PopulatedItemsSliceState
 } from '../../../types';
 
 const useEmailsStore = create<EmailsStoreState>()((...a) => ({
-	...createSearchSlice(...a),
-	...createMessageSlice(...a),
+	...createSearchIndexSlice(...a),
+	...createMessagesIndexSlice(...a),
+	...createConversationsIndexSlice(...a),
 	...createPopulatedItemsSlice(...a)
 }));
 
@@ -42,8 +44,8 @@ export function setSearchResultsByMessage(
 ): void {
 	searchSliceUtils.setSearchResultsByMessage(messages, more, useEmailsStore);
 }
-export function useSearchResults(): SearchSliceState['searchSlice'] {
-	return useEmailsStore(({ searchSlice }) => searchSlice);
+export function useSearchResults(): SearchIndexSliceState['searchIndexSlice'] {
+	return useEmailsStore(({ searchIndexSlice: searchSlice }) => searchSlice);
 }
 
 export function setSearchResultsByConversation(
@@ -66,7 +68,7 @@ export function deleteMessagesFromSearch(ids: Array<string>): void {
 	searchSliceUtils.deleteMessagesFromSearch(ids, useEmailsStore);
 }
 export function getSearchResultsLoadingStatus(): SearchRequestStatus {
-	return useEmailsStore.getState().searchSlice.status;
+	return useEmailsStore.getState().searchIndexSlice.status;
 }
 
 export function updateSearchResultsLoadingStatus(status: SearchRequestStatus): void {
@@ -142,19 +144,19 @@ export function useMessageStatus(id: string): SearchRequestStatus {
 // #### Mail message related functions
 // ################################
 
-export function useMessagesSlice(): EmailsStoreState['messagesSlice'] {
-	return useEmailsStore(({ messagesSlice }) => messagesSlice);
+export function useMessagesSlice(): EmailsStoreState['messagesIndexSlice'] {
+	return useEmailsStore(({ messagesIndexSlice: messagesSlice }) => messagesSlice);
 }
 
 export function useMessagesIdsByFolder(folder: Folder): Set<string> {
-	return messageSliceUtils.useMessagesIdsByFolder(folder, useEmailsStore);
+	return messagesIndexSliceUtils.useMessagesIdsByFolder(folder, useEmailsStore);
 }
 
 export function setMessagesInEmailStore(
 	messages: Array<MailMessage | IncompleteMessage>,
 	more: boolean
 ): void {
-	messageSliceUtils.setMessages(messages, more, useEmailsStore);
+	messagesIndexSliceUtils.setMessages(messages, more, useEmailsStore);
 }
 
 /**
@@ -163,19 +165,19 @@ export function setMessagesInEmailStore(
  * @param {SearchRequestStatus} status - The new loading status to set.
  */
 export function updateMessagesResultsLoadingStatus(status: SearchRequestStatus): void {
-	messageSliceUtils.updateMessagesResultsLoadingStatus(status, useEmailsStore);
+	messagesIndexSliceUtils.updateMessagesResultsLoadingStatus(status, useEmailsStore);
 }
 
 /**
  * Resets the messages and populated items in the email store.
  */
 export function resetMessagesAndPopulatedItems(): void {
-	messageSliceUtils.resetMessagesAndPopulatedItems(useEmailsStore);
+	messagesIndexSliceUtils.resetMessagesAndPopulatedItems(useEmailsStore);
 }
 
 export function appendMessagesToMessagesSlice(
 	messages: Array<MailMessage | IncompleteMessage>,
 	offset: number
 ): void {
-	messageSliceUtils.appendMessagesToMessagesSlice(messages, offset, useEmailsStore);
+	messagesIndexSliceUtils.appendMessagesToMessagesSlice(messages, offset, useEmailsStore);
 }

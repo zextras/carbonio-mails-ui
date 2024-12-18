@@ -15,9 +15,9 @@ import {
 	useMessagesIdsByFolder,
 	useMessagesSlice
 } from '../store/zustand/emails/store';
-import { Folder, MessageSliceState } from '../types';
+import { Folder, MessagesIndexSliceState } from '../types';
 
-export const useMessageListByFolder = (folder: Folder): MessageSliceState => {
+export const useMessageListByFolder = (folder: Folder): MessagesIndexSliceState => {
 	const settings = useUserSettings();
 	const prefLocale = useMemo(
 		() => settings.prefs.zimbraPrefLocale,
@@ -59,5 +59,5 @@ export const useMessageListByFolder = (folder: Folder): MessageSliceState => {
 		};
 	}, [firstSearchCallback, folder.id]);
 
-	return { messagesSlice: { ...messagesSlice, messageIds: messagesIds } };
+	return { messagesIndexSlice: { ...messagesSlice, messagesIds } };
 };

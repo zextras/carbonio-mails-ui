@@ -30,7 +30,7 @@ import {
 	setSearchResultsByMessage,
 	setSearchResultsByConversation
 } from '../../store/zustand/emails/store';
-import { IncompleteMessage, MailMessage, SearchResponse, SearchSliceState } from '../../types';
+import { IncompleteMessage, MailMessage, SearchResponse, SearchIndexSliceState } from '../../types';
 
 type UseRunSearchProps = {
 	query: QueryChip[];
@@ -135,7 +135,7 @@ export function useRunSearch({
 }: UseRunSearchProps): {
 	searchDisabled: boolean;
 	queryToString: string;
-	searchResults: SearchSliceState['searchSlice'];
+	searchResults: SearchIndexSliceState['searchIndexSlice'];
 	isInvalidQuery: boolean;
 	filterCount: number;
 } {

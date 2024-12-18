@@ -32,8 +32,8 @@ export const MessageList = (): React.JSX.Element => {
 	const { setCount, count } = useAppContext<AppContext>();
 	const [draggedIds, setDraggedIds] = useState<Record<string, boolean>>({});
 
-	const { messagesSlice } = useMessageListByFolder(folder);
-	const { messageIds, status } = messagesSlice;
+	const { messagesIndexSlice: messagesSlice } = useMessageListByFolder(folder);
+	const { messagesIds: messageIds, status } = messagesSlice;
 
 	const { prefs } = useUserSettings();
 	const { sortOrder } = parseMessageSortingOptions(folderId, prefs.zimbraPrefSortOrder as string);

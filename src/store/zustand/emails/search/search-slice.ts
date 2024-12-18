@@ -6,20 +6,24 @@
 
 import { StateCreator } from 'zustand';
 
-import { MessageSliceState, PopulatedItemsSliceState, SearchSliceState } from '../../../../types';
+import {
+	MessagesIndexSliceState,
+	PopulatedItemsSliceState,
+	SearchIndexSliceState
+} from '../../../../types';
 
-export const SEARCH_SLICE_INITIAL_STATE: SearchSliceState['searchSlice'] = {
+export const SEARCH_INDEX_SLICE_INITIAL_STATE: SearchIndexSliceState['searchIndexSlice'] = {
 	conversationIds: new Set<string>(),
 	messageIds: new Set<string>(),
 	more: false,
 	offset: 0,
 	status: null
 };
-export const createSearchSlice: StateCreator<
-	SearchSliceState & PopulatedItemsSliceState & MessageSliceState,
+export const createSearchIndexSlice: StateCreator<
+	SearchIndexSliceState & PopulatedItemsSliceState & MessagesIndexSliceState,
 	[],
 	[],
-	SearchSliceState
+	SearchIndexSliceState
 > = () => ({
-	searchSlice: SEARCH_SLICE_INITIAL_STATE
+	searchIndexSlice: SEARCH_INDEX_SLICE_INITIAL_STATE
 });

@@ -32,7 +32,7 @@ export type SearchChipItem = ChipItem & {
 };
 
 export type SearchPanelProps = {
-	searchResults: SearchSliceState['searchSlice'];
+	searchResults: SearchIndexSliceState['searchIndexSlice'];
 	query: Array<QueryChip>;
 };
 
@@ -224,8 +224,8 @@ export type ChipType = {
 	hasError?: boolean;
 };
 
-export type SearchSliceState = {
-	searchSlice: {
+export type SearchIndexSliceState = {
+	searchIndexSlice: {
 		conversationIds: Set<string>;
 		messageIds: Set<string>;
 		more: boolean;
@@ -239,9 +239,23 @@ export type SearchSliceState = {
 	};
 };
 
-export type MessageSliceState = {
-	messagesSlice: {
-		messageIds: Set<string>;
+export type MessagesIndexSliceState = {
+	messagesIndexSlice: {
+		messagesIds: Set<string>;
+		more: boolean;
+		offset: number;
+		sortBy?: SortBy;
+		query?: string;
+		status: SearchRequestStatus;
+		parent?: string;
+		tagName?: string;
+		error?: ErrorType;
+	};
+};
+
+export type ConversationsIndexSliceState = {
+	conversationsIndexSlice: {
+		conversationsIds: Set<string>;
 		more: boolean;
 		offset: number;
 		sortBy?: SortBy;
@@ -261,4 +275,7 @@ export type PopulatedItemsSliceState = {
 	};
 };
 
-export type EmailsStoreState = PopulatedItemsSliceState & SearchSliceState & MessageSliceState;
+export type EmailsStoreState = PopulatedItemsSliceState &
+	SearchIndexSliceState &
+	MessagesIndexSliceState &
+	ConversationsIndexSliceState;
