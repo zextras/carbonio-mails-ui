@@ -32,12 +32,12 @@ export const MessageList = (): React.JSX.Element => {
 	const { setCount, count } = useAppContext<AppContext>();
 	const [draggedIds, setDraggedIds] = useState<Record<string, boolean>>({});
 
-	const { messagesIndexSlice: messagesSlice } = useMessageListByFolder(folder);
-	const { messagesIds: messageIds, status } = messagesSlice;
+	const { messagesIndexSlice } = useMessageListByFolder(folder);
+	const { messagesIds, status } = messagesIndexSlice;
 
 	const { prefs } = useUserSettings();
 	const { sortOrder } = parseMessageSortingOptions(folderId, prefs.zimbraPrefSortOrder as string);
-	const items = [...messageIds].map((messageId) => ({ id: messageId }));
+	const items = [...messagesIds].map((messageId) => ({ id: messageId }));
 	const {
 		selected,
 		deselectAll,
@@ -56,15 +56,15 @@ export const MessageList = (): React.JSX.Element => {
 	const loadMoreCallback = useLoadMoreForMessagesSlice({
 		folderId,
 		loadingMore,
-		hasMore: messagesSlice.more,
+		hasMore: messagesIndexSlice.more,
 		sortBy: sortOrder,
-		offset: messageIds.size,
+		offset: messagesIds.size,
 		limit: LIST_LIMIT.LOAD_MORE_LIMIT,
 		types: 'message'
 	});
 
 	const displayerTitle = useMemo(() => {
-		if (messageIds?.size === 0) {
+		if (messagesIds?.size === 0) {
 			if (getFolderIdParts(folderId).id === FOLDERS.SPAM) {
 				return t('displayer.list_spam_title', 'There are no spam e-mails');
 			}
@@ -80,7 +80,7 @@ export const MessageList = (): React.JSX.Element => {
 			return t('displayer.list_folder_title', 'It looks like there are no e-mails yet');
 		}
 		return null;
-	}, [messageIds.size, folderId, t]);
+	}, [messagesIds.size, folderId, t]);
 
 	const listItems = useMemo(
 		() =>
@@ -123,10 +123,10 @@ export const MessageList = (): React.JSX.Element => {
 
 	const totalMessages = useMemo(() => {
 		if (sortOrder === 'readAsc') {
-			return messageIds.size;
+			return messagesIds.size;
 		}
-		return folder?.n ?? messageIds.size ?? 0;
-	}, [folder?.n, messageIds.size, sortOrder]);
+		return folder?.n ?? messagesIds.size ?? 0;
+	}, [folder?.n, messagesIds.size, sortOrder]);
 
 	const selectedIds = useMemo(() => Object.keys(selected), [selected]);
 
@@ -145,7 +145,7 @@ export const MessageList = (): React.JSX.Element => {
 			messagesLoadingCompleted={messagesLoadingCompleted}
 			selectedIds={selectedIds}
 			folderId={folderId}
-			messageIds={messageIds}
+			messageIds={messagesIds}
 			draggedIds={draggedIds}
 			setDraggedIds={setDraggedIds}
 			isSelectModeOn={isSelectModeOn}
@@ -156,7 +156,7 @@ export const MessageList = (): React.JSX.Element => {
 			selected={selected}
 			selectAllModeOff={selectAllModeOff}
 			dragImageRef={dragImageRef}
-			hasMore={messagesSlice.more}
+			hasMore={messagesIndexSlice.more}
 		/>
 	);
 };
