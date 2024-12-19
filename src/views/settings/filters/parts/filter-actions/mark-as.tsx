@@ -6,22 +6,21 @@
 import React, { useMemo } from 'react';
 
 import { Row } from '@zextras/carbonio-design-system';
+import { useTranslation } from 'react-i18next';
 
 import { MarkAsOption } from '../../../../../types';
 import CustomSelect from '../custom-select';
-import { useTranslation } from 'react-i18next';
 import { getMarkAsOptions } from '../utils';
 
 type MarkAsProps = {
 	onChange: (option: MarkAsOption) => void;
-	selected: MarkAsOption;
+	selected?: { flagName: string };
 };
 
 export const MarkAs = ({ onChange, selected }: MarkAsProps): React.JSX.Element => {
 	const [t] = useTranslation();
 	const options = useMemo(() => getMarkAsOptions(t), [t]);
-	const defaultSelection =
-		selected.value.actionFlag[0].flagName === 'flagged' ? options[1] : options[0];
+	const defaultSelection = selected?.flagName === 'flagged' ? options[1] : options[0];
 	return (
 		<Row padding={{ right: 'small' }} minWidth="12.5rem">
 			<CustomSelect

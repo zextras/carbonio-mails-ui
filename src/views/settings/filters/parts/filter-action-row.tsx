@@ -6,7 +6,6 @@
 import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
 
 import { Button, Container, Padding, Row, Text, Tooltip } from '@zextras/carbonio-design-system';
-import { omit } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -59,18 +58,28 @@ type TmpFilter = {
 	actionFileInto?: [{ folderPath: string }];
 	actionDiscard?: [object];
 };
-type ActionKey = keyof TmpFilter;
+
+type FilterKeep = {
+	actionKeep: [object];
+};
+type FilterRedirect = {
+	actionRedirect: [{ a: string }];
+};
+type FilterFlag = {
+	actionFlag: [{ flagName: string }];
+};
+type FilterFileInto = {
+	actionFileInto: [{ folderPath: string }];
+};
+type FilterDiscard = {
+	actionDiscard: [object];
+};
+type FilterTag = {
+	actionTag: [{ tagName: string }];
+};
 
 type DefaultAction = {
-	label: ActionKey;
-	value:
-		| Pick<TmpFilter, 'actionKeep'>
-		| Pick<TmpFilter, 'actionStop'>
-		| Pick<TmpFilter, 'actionRedirect'>
-		| Pick<TmpFilter, 'actionTag'>
-		| Pick<TmpFilter, 'actionFlag'>
-		| Pick<TmpFilter, 'actionFileInto'>
-		| Pick<TmpFilter, 'actionDiscard'>;
+	value: FilterKeep | FilterRedirect | FilterTag | FilterFlag | FilterFileInto | FilterDiscard;
 };
 
 type FilterActionRowProps = {
@@ -78,7 +87,6 @@ type FilterActionRowProps = {
 	index: number;
 	compProps: CompProps;
 	tagOptions?: Array<MailFilterTag>;
-	action: ActionKey;
 	defaultAction: DefaultAction;
 };
 
@@ -87,7 +95,6 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 	index,
 	compProps,
 	tagOptions,
-	action,
 	defaultAction
 }): ReactElement => {
 	const { isIncoming, tempActions, setTempActions, zimbraFeatureMailForwardingInFiltersEnabled } =
@@ -107,7 +114,7 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 		setTempActions(previousTempActions);
 	}, [tempActions, setTempActions]);
 
-	const [activeActionOption, setActiveActionOption] = useState<ActionKey>('actionKeep');
+	const [activeActionOption, setActiveActionOption] = useState<string>('actionKeep');
 	const showMarksAsBtn = useMemo(() => activeActionOption === 'actionFlag', [activeActionOption]);
 	const showRedirectToAddrsInput = useMemo(
 		() => activeActionOption === 'actionRedirect',
@@ -136,64 +143,61 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 	);
 
 	const defaultValue = useMemo(() => {
-		// const activeAction = Object.keys(tmpFilter).find((key) => key === action);
-		if (action === 'actionRedirect' && zimbraFeatureMailForwardingInFiltersEnabled === 'FALSE') {
+		const defaultActionValue = defaultAction.value;
+		if (
+			'actionRedirect' in defaultActionValue &&
+			zimbraFeatureMailForwardingInFiltersEnabled === 'FALSE'
+		) {
 			setIsRedirectToActionRemoved(true);
 			const previous = tempActions.slice();
 			previous[index] = { actionKeep: [{}], id: previous[index].id };
 			setTempActions(previous);
 			return actionOptions[0];
 		}
-		switch (activeAction) {
-			case 'actionDiscard': {
-				return actionOptions[1];
-			}
-			case 'actionKeep': {
-				return actionOptions[0];
-			}
-			case 'actionFileInto': {
-				setActiveActionOption('actionFileInto');
-				return actionOptions[2];
-			}
-			case 'actionFlag': {
-				setActiveActionOption('actionFlag');
-				return actionOptions[4];
-			}
-			case 'actionTag': {
-				setActiveActionOption('actionTag');
-				setTag(
-					defaultAction.value.actionTag[0].tagName
-						? [
-								{
-									label: `${tmpFilter[activeAction][0].tagName}`
-								}
-							]
-						: []
-				);
-				return actionOptions[3];
-			}
-			case 'actionRedirect': {
-				setActiveActionOption('actionRedirect');
-				const email = tmpFilter[activeAction][0].a;
-				if (email) {
-					setContacts([
-						{
-							id: email,
-							label: email,
-							value: { id: email, email, type: CONTACT_TYPES.CONTACT }
-						}
-					]);
-				} else {
-					setContacts([]);
-				}
-				return actionOptions[5];
-			}
-			default:
-				return actionOptions[0];
+		if ('actionDiscard' in defaultActionValue) {
+			return actionOptions[1];
 		}
+		if ('actionKeep' in defaultActionValue) {
+			return actionOptions[0];
+		}
+		if ('actionFileInto' in defaultActionValue) {
+			setActiveActionOption('actionFileInto');
+			return actionOptions[2];
+		}
+		if ('actionFlag' in defaultActionValue) {
+			setActiveActionOption('actionFlag');
+			return actionOptions[4];
+		}
+		if ('actionRedirect' in defaultActionValue) {
+			setActiveActionOption('actionRedirect');
+			const email = defaultActionValue.actionRedirect[0].a;
+			if (email) {
+				setContacts([
+					{
+						id: email,
+						label: email,
+						value: { id: email, email, type: CONTACT_TYPES.CONTACT }
+					}
+				]);
+			} else {
+				setContacts([]);
+			}
+			return actionOptions[5];
+		}
+		setActiveActionOption('actionTag');
+		const { tagName } = defaultActionValue.actionTag[0];
+		setTag(
+			tagName
+				? [
+						{
+							label: tagName
+						}
+					]
+				: []
+		);
+		return actionOptions[3];
 	}, [
-		tmpFilter,
-		action,
+		defaultAction.value,
 		zimbraFeatureMailForwardingInFiltersEnabled,
 		tempActions,
 		index,
@@ -317,6 +321,9 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 		[tempActions, activeIndex, setTempActions]
 	);
 
+	const defaultMarkAs =
+		'actionFlag' in defaultAction.value ? defaultAction.value.actionFlag[0] : undefined;
+
 	return (
 		<Container
 			mainAlignment="space-between"
@@ -354,7 +361,7 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 						onConfirmDestination={confirmAction}
 					/>
 				)}
-				{showMarksAsBtn && <MarkAs selected={} onChange={handleMarkAsOptionChange} />}
+				{showMarksAsBtn && <MarkAs selected={defaultMarkAs} onChange={handleMarkAsOptionChange} />}
 
 				{showRedirectToAddrsInput && <RedirectTo defaultValue={contacts} onChange={onChange} />}
 
