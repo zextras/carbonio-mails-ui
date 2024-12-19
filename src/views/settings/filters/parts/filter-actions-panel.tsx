@@ -11,11 +11,11 @@ import { useTranslation } from 'react-i18next';
 
 import { FilterActionRow } from './filter-action-row';
 import { getTags } from '../../../../carbonio-ui-commons/store/zustand/tags';
-import { CompProps, FilterAction } from '../../../../types';
+import { FilterActionsProps, FilterAction } from '../../../../types';
 import Heading from '../../components/settings-heading';
 
 type ComponentProps = {
-	compProps: CompProps;
+	compProps: FilterActionsProps;
 };
 export const FilterActionsPanel: FC<ComponentProps> = ({ compProps }): ReactElement => {
 	const [t] = useTranslation();

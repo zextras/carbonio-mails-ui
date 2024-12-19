@@ -9,12 +9,12 @@ import React from 'react';
 import { screen, within } from '@testing-library/react';
 
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
-import { CompProps } from '../../../../../types';
+import { FilterActionsProps } from '../../../../../types';
 import { FilterActionsPanel } from '../filter-actions-panel';
 
 describe('FilterActionsPanel', () => {
 	it('should update actions when switching an existing action for another one', async () => {
-		const mockCompProps: CompProps = {
+		const mockCompProps: FilterActionsProps = {
 			setTempActions: jest.fn(),
 			zimbraFeatureMailForwardingInFiltersEnabled: 'TRUE' as const,
 			isIncoming: true,
@@ -39,7 +39,7 @@ describe('FilterActionsPanel', () => {
 	// TODO: this test makes sense only when moved at higher level as it involves changes in state
 	it.skip('should reset the tag input after changing action from tag to keep back to tag', async () => {
 		const filterName = 'Test Designer';
-		const mockCompProps: CompProps = {
+		const mockCompProps: FilterActionsProps = {
 			setTempActions: jest.fn(),
 			zimbraFeatureMailForwardingInFiltersEnabled: 'TRUE' as const,
 			isIncoming: true,
