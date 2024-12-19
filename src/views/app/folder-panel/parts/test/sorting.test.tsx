@@ -269,7 +269,7 @@ describe('Sorting component', () => {
 		const message2 = generateMessage({ id: '2' });
 		setMessagesInEmailStore([message1, message2], false);
 		const { result: initialOrder } = renderHook(() => useMessagesSlice());
-		expect(initialOrder.current.messagesIds).toEqual(new Set(['1', '2']));
+		expect(initialOrder.current.messageIdSet).toEqual(new Set(['1', '2']));
 
 		jest.spyOn(hooks, 'useUserSettings').mockReturnValue(settings);
 
@@ -305,7 +305,7 @@ describe('Sorting component', () => {
 		expect(req.query).toBe(expectedRequest.query);
 		const { result: newOrder } = renderHook(() => useMessagesSlice());
 		await act(async () => {
-			expect(newOrder.current.messagesIds).toEqual(new Set(['1', '2']));
+			expect(newOrder.current.messageIdSet).toEqual(new Set(['1', '2']));
 		});
 	});
 

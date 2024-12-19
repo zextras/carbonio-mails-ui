@@ -9,8 +9,8 @@ import { create } from 'zustand';
 
 import { createConversationsIndexSlice } from './conversations/conversations-index-slice';
 import { conversationsIndexSliceUtils } from './conversations/utils';
-import { createMessagesIndexSlice } from './messages/messages-slice';
-import { messagesIndexSliceUtils } from './messages/utils';
+import { createMessageIndexSlice } from './messages/messages-slice';
+import { messageIndexSliceUtils } from './messages/utils';
 import { createPopulatedItemsSlice } from './populated-items/populated-items-slice';
 import { populatedItemsSliceUtils } from './populated-items/utils';
 import { createSearchIndexSlice } from './search/search-slice';
@@ -28,7 +28,7 @@ import {
 
 const useEmailsStore = create<EmailsStoreState>()((...a) => ({
 	...createSearchIndexSlice(...a),
-	...createMessagesIndexSlice(...a),
+	...createMessageIndexSlice(...a),
 	...createConversationsIndexSlice(...a),
 	...createPopulatedItemsSlice(...a)
 }));
@@ -145,23 +145,23 @@ export function useMessageStatus(id: string): SearchRequestStatus {
 	return useEmailsStore((state) => state.populatedItemsSlice.messagesStatus?.[id]);
 }
 
-// ################################
-// #### messagesIndexSlice related functions
-// ################################
+// ###########################################
+// #### messageIndexSlice related functions
+// ###########################################
 
-export function useMessagesSlice(): EmailsStoreState['messagesIndexSlice'] {
-	return useEmailsStore(({ messagesIndexSlice: messagesSlice }) => messagesSlice);
+export function useMessagesSlice(): EmailsStoreState['messageIndexSlice'] {
+	return useEmailsStore(({ messageIndexSlice: messagesSlice }) => messagesSlice);
 }
 
 export function useMessagesIdsByFolder(folder: Folder): Set<string> {
-	return messagesIndexSliceUtils.useMessagesIdsByFolder(folder, useEmailsStore);
+	return messageIndexSliceUtils.useMessagesIdsByFolder(folder, useEmailsStore);
 }
 
 export function setMessagesInEmailStore(
 	messages: Array<MailMessage | IncompleteMessage>,
 	more: boolean
 ): void {
-	messagesIndexSliceUtils.setMessages(messages, more, useEmailsStore);
+	messageIndexSliceUtils.setMessages(messages, more, useEmailsStore);
 }
 
 /**
@@ -170,21 +170,21 @@ export function setMessagesInEmailStore(
  * @param {SearchRequestStatus} status - The new loading status to set.
  */
 export function updateMessagesResultsLoadingStatus(status: SearchRequestStatus): void {
-	messagesIndexSliceUtils.updateMessagesResultsLoadingStatus(status, useEmailsStore);
+	messageIndexSliceUtils.updateMessagesResultsLoadingStatus(status, useEmailsStore);
 }
 
 /**
  * Resets the messages and populated items in the email store.
  */
 export function resetMessagesAndPopulatedItems(): void {
-	messagesIndexSliceUtils.resetMessagesAndPopulatedItems(useEmailsStore);
+	messageIndexSliceUtils.resetMessagesAndPopulatedItems(useEmailsStore);
 }
 
 export function appendMessagesToMessagesSlice(
 	messages: Array<MailMessage | IncompleteMessage>,
 	offset: number
 ): void {
-	messagesIndexSliceUtils.appendMessagesToMessagesSlice(messages, offset, useEmailsStore);
+	messageIndexSliceUtils.appendMessagesToMessagesSlice(messages, offset, useEmailsStore);
 }
 
 // ################################

@@ -32,8 +32,8 @@ export const MessageList = (): React.JSX.Element => {
 	const { setCount, count } = useAppContext<AppContext>();
 	const [draggedIds, setDraggedIds] = useState<Record<string, boolean>>({});
 
-	const { messagesIndexSlice } = useMessageListByFolder(folder);
-	const { messagesIds, status } = messagesIndexSlice;
+	const { messageIndexSlice } = useMessageListByFolder(folder);
+	const { messageIdSet: messagesIds, status } = messageIndexSlice;
 
 	const { prefs } = useUserSettings();
 	const { sortOrder } = parseMessageSortingOptions(folderId, prefs.zimbraPrefSortOrder as string);
@@ -53,10 +53,12 @@ export const MessageList = (): React.JSX.Element => {
 		items
 	});
 
+	const hasMore = messageIndexSlice.more;
+
 	const loadMoreCallback = useLoadMoreForMessagesSlice({
 		folderId,
 		loadingMore,
-		hasMore: messagesIndexSlice.more,
+		hasMore,
 		sortBy: sortOrder,
 		offset: messagesIds.size,
 		limit: LIST_LIMIT.LOAD_MORE_LIMIT,
@@ -156,7 +158,7 @@ export const MessageList = (): React.JSX.Element => {
 			selected={selected}
 			selectAllModeOff={selectAllModeOff}
 			dragImageRef={dragImageRef}
-			hasMore={messagesIndexSlice.more}
+			hasMore={hasMore}
 		/>
 	);
 };

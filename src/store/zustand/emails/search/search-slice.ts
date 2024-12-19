@@ -7,7 +7,7 @@
 import { StateCreator } from 'zustand';
 
 import {
-	MessagesIndexSliceState,
+	MessageIndexSliceState,
 	PopulatedItemsSliceState,
 	SearchIndexSliceState
 } from '../../../../types';
@@ -20,7 +20,7 @@ export const SEARCH_INDEX_SLICE_INITIAL_STATE: SearchIndexSliceState['searchInde
 	status: null
 };
 export const createSearchIndexSlice: StateCreator<
-	SearchIndexSliceState & PopulatedItemsSliceState & MessagesIndexSliceState,
+	SearchIndexSliceState & PopulatedItemsSliceState & MessageIndexSliceState,
 	[],
 	[],
 	SearchIndexSliceState
