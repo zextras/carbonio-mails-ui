@@ -6,6 +6,8 @@
 
 import { ChipProps } from '@zextras/carbonio-design-system';
 
+import { TempAction } from '../../views/settings/filters/parts/filter-action-row';
+
 export type FilterTest = Record<string, string | Array<any>>;
 
 export type Filter = {
@@ -102,4 +104,12 @@ export type MarkAsOption = {
 export type MailFilterTag = {
 	label: string;
 	color?: number;
+};
+
+// TODO: refactor the code and remove me after I'm not anymore needed
+export type CompProps = {
+	isIncoming: boolean;
+	tempActions: Array<TempAction>;
+	setTempActions: (tempActions: Array<TempAction>) => void;
+	zimbraFeatureMailForwardingInFiltersEnabled: 'TRUE' | 'FALSE';
 };

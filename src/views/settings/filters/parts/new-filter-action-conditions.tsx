@@ -7,15 +7,19 @@ import React, { FC, ReactElement, useMemo } from 'react';
 
 import { Container, Text } from '@zextras/carbonio-design-system';
 import { map } from 'lodash';
+import { useTranslation } from 'react-i18next';
 
 import { FilterActionRow } from './filter-action-row';
 import { getTags } from '../../../../carbonio-ui-commons/store/zustand/tags';
+import { CompProps } from '../../../../types';
 import Heading from '../../components/settings-heading';
 
-type ComponentProps = any;
-
+type ComponentProps = {
+	compProps: CompProps;
+};
 const FilterActionConditions: FC<ComponentProps> = ({ compProps }): ReactElement => {
-	const { t, tempActions } = compProps;
+	const [t] = useTranslation();
+	const { tempActions } = compProps;
 	const tagOptions = useMemo(
 		() =>
 			map(getTags(), (item) => ({
@@ -34,6 +38,7 @@ const FilterActionConditions: FC<ComponentProps> = ({ compProps }): ReactElement
 					<FilterActionRow
 						key={`filter-action-row-${index}`}
 						index={index}
+						defaultAction={tempAction}
 						tmpFilter={tempAction}
 						compProps={compProps}
 						tagOptions={tagOptions}

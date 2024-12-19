@@ -14,7 +14,7 @@ import { getMarkAsOptions } from '../utils';
 
 type MarkAsProps = {
 	onChange: (option: MarkAsOption) => void;
-	selected?: { flagName: string };
+	selected?: { flagName?: string };
 };
 
 export const MarkAs = ({ onChange, selected }: MarkAsProps): React.JSX.Element => {

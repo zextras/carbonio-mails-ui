@@ -18,7 +18,7 @@ import { getActionOptions } from './utils';
 import { CONTACT_TYPES } from '../../../../carbonio-ui-commons/integrations/constants';
 import { ContactInputItem } from '../../../../carbonio-ui-commons/integrations/types';
 import { Folder } from '../../../../carbonio-ui-commons/types/folder';
-import { MailFilterTag } from '../../../../types';
+import { CompProps, MailFilterTag } from '../../../../types';
 
 type ActionFileInto = {
 	folderPath?: string;
@@ -41,41 +41,23 @@ export type TempAction = {
 	folderPath?: string;
 };
 
-// FIXME: what is "comp" supposed to be?
-type CompProps = {
-	isIncoming: boolean;
-	tempActions: Array<TempAction>;
-	setTempActions: (tempActions: Array<TempAction>) => void;
-	zimbraFeatureMailForwardingInFiltersEnabled: 'TRUE' | 'FALSE';
-};
-
-type TmpFilter = {
-	actionKeep?: [object];
-	actionStop?: [object];
-	actionRedirect?: [{ a: string }];
-	actionTag?: [{ tagName: string }];
-	actionFlag?: [{ flagName: string }];
-	actionFileInto?: [{ folderPath: string }];
-	actionDiscard?: [object];
-};
-
 type FilterKeep = {
 	actionKeep: [object];
 };
 type FilterRedirect = {
-	actionRedirect: [{ a: string }];
+	actionRedirect: [{ a?: string }];
 };
 type FilterFlag = {
-	actionFlag: [{ flagName: string }];
+	actionFlag: [{ flagName?: string }];
 };
 type FilterFileInto = {
-	actionFileInto: [{ folderPath: string }];
+	actionFileInto: [{ folderPath?: string }];
 };
 type FilterDiscard = {
 	actionDiscard: [object];
 };
 type FilterTag = {
-	actionTag: [{ tagName: string }];
+	actionTag: [{ tagName?: string }];
 };
 
 type DefaultAction =

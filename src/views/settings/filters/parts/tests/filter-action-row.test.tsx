@@ -233,7 +233,7 @@ describe('FilterActionsRows', () => {
 			const { user } = setupTest(
 				<FilterActionRow
 					defaultAction={{
-						actionRedirect: [{ a: 'anything' }]
+						actionRedirect: [{}]
 					}}
 					index={0}
 					compProps={mockCompProps}
