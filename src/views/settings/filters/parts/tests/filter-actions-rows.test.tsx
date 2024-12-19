@@ -471,7 +471,8 @@ describe('FilterActionsRows', () => {
 			const store = generateStore();
 			const folder = generateFolder({
 				id: '100',
-				name: 'Test folder'
+				name: 'Test folder',
+				absFolderPath: '/my/folder/path'
 			});
 			const rootFolder = generateFolder({
 				id: FOLDERS.USER_ROOT,
@@ -482,13 +483,17 @@ describe('FilterActionsRows', () => {
 				view: FOLDER_VIEW.message,
 				customFolders: [rootFolder]
 			});
+			const mockCompProps = {
+				...compProps,
+				tempActions: [{ id: '123' }, { id: '456' }]
+			};
 			const { user } = setupTest(
 				<FilterActionRows
 					tmpFilter={{
 						actionFileInto: [{}]
 					}}
-					index={0}
-					compProps={compProps}
+					index={1}
+					compProps={mockCompProps}
 				/>,
 				{ store }
 			);
@@ -505,12 +510,13 @@ describe('FilterActionsRows', () => {
 			expect(chooseFolder).toBeEnabled();
 			await user.click(chooseFolder);
 			expect(compProps.setTempActions).toHaveBeenCalledWith([
-				expect.objectContaining({ actionFileInto: expect.anything() })
+				{ id: '123' },
+				{ actionFileInto: [{ folderPath: folder.absFolderPath }], id: '456' }
 			]);
 		});
 	});
 	describe('Discard', () => {
-		it('should render the the discard option if selected', async () => {
+		it('should render the discard option if selected', async () => {
 			setupTest(
 				<FilterActionRows
 					tmpFilter={{
