@@ -17,6 +17,7 @@ import {
 	setupTest
 } from '../../../../../carbonio-ui-commons/test/test-setup';
 import { generateStore } from '../../../../../tests/generators/store';
+import { CompProps } from '../../../../../types';
 import { FilterActionRow } from '../filter-action-row';
 
 const REDIRECT_TO_ADDRESS = /Redirect To Address/i;
@@ -28,7 +29,7 @@ describe('FilterActionsRows', () => {
 		zimbraFeatureMailForwardingInFiltersEnabled: 'TRUE' as const
 	};
 	it('adds a new filter condition when the add button is clicked', async () => {
-		const newCompProps = {
+		const newCompProps: CompProps = {
 			...compProps,
 			tempActions: [{ actionKeep: [{}] }]
 		};
@@ -53,11 +54,11 @@ describe('FilterActionsRows', () => {
 		]);
 	});
 	it('removes a filter condition when the remove button is clicked', async () => {
-		const newCompProps = {
+		const newCompProps: CompProps = {
 			...compProps,
 			tempActions: [
 				{ id: '1', actionKeep: [{}] },
-				{ id: '2', actionStop: [{}] }
+				{ id: '2', actionFileInto: [{}] }
 			]
 		};
 		const { user } = setupTest(
@@ -73,11 +74,11 @@ describe('FilterActionsRows', () => {
 		await user.click(screen.getByTestId('icon: MinusOutline'));
 
 		expect(compProps.setTempActions).toHaveBeenCalledWith([
-			expect.objectContaining({ id: '2', actionStop: [{}] })
+			expect.objectContaining({ id: '2', actionFileInto: [{}] })
 		]);
 	});
 	it('disables the remove button when there is only one filter condition', async () => {
-		const newCompProps = {
+		const newCompProps: CompProps = {
 			...compProps,
 			tempActions: [{ id: '1', actionKeep: [{}] }]
 		};
@@ -101,9 +102,13 @@ describe('FilterActionsRows', () => {
 		expect(compProps.setTempActions).not.toHaveBeenCalled();
 	});
 	it('should update actions using same action id as action at index number when selecting a new action', async () => {
-		const mockCompProps = {
+		const mockCompProps: CompProps = {
 			...compProps,
-			tempActions: [{ id: '7' }, { id: '21' }, { id: '33' }]
+			tempActions: [
+				{ id: '7', actionKeep: [{}] },
+				{ id: '21', actionDiscard: [{}] },
+				{ id: '33', actionRedirect: [{}] }
+			]
 		};
 		const { user } = setupTest(
 			<FilterActionRow
@@ -120,14 +125,14 @@ describe('FilterActionsRows', () => {
 		await user.click(within(dropdown).getByText('Discard'));
 
 		expect(mockCompProps.setTempActions).toHaveBeenCalledWith([
-			{ id: '7' },
+			{ id: '7', actionKeep: [{}] },
 			{ id: '21', actionDiscard: [{}] },
-			{ id: '33' }
+			{ id: '33', actionRedirect: [{}] }
 		]);
 	});
 
 	it('should render only first action even if multiple actions are provided', () => {
-		const mockCompProps = {
+		const mockCompProps: CompProps = {
 			...compProps,
 			tempActions: [
 				{ id: '1', actionKeep: [{}] },
@@ -224,7 +229,6 @@ describe('FilterActionsRows', () => {
 		it('should update actions after inserting a value in "Redirect To Address" input', async () => {
 			const mockSetActions = jest.fn();
 			const mockCompProps = {
-				t: jest.fn(),
 				isIncoming: true,
 				setTempActions: mockSetActions,
 				tempActions: [],
@@ -251,7 +255,6 @@ describe('FilterActionsRows', () => {
 		it('should call onChange with empty address after clearing input', async () => {
 			const mockSetActions = jest.fn();
 			const mockCompProps = {
-				t: jest.fn(),
 				isIncoming: true,
 				setTempActions: mockSetActions,
 				tempActions: [],
@@ -279,7 +282,7 @@ describe('FilterActionsRows', () => {
 		});
 
 		it('should inform the user that redirect action is disabled when zimbraFeatureMailForwardingInFiltersEnabled is FALSE on an already existing filter with action redirect', async () => {
-			const newCompProps = {
+			const newCompProps: CompProps = {
 				...compProps,
 				tempActions: [{ id: '1', actionKeep: [{}] }],
 				zimbraFeatureMailForwardingInFiltersEnabled: 'FALSE' as const
@@ -299,7 +302,7 @@ describe('FilterActionsRows', () => {
 			expect(screen.getByText('The Admin disabled the redirect action')).toBeVisible();
 		});
 		it('Redirect to address should not be the selected option if zimbraFeatureMailForwardingInFiltersEnabled is FALSE', async () => {
-			const newCompProps = {
+			const newCompProps: CompProps = {
 				...compProps,
 				tempActions: [{ id: '1', actionKeep: [{}] }],
 				zimbraFeatureMailForwardingInFiltersEnabled: 'FALSE' as const
@@ -320,7 +323,7 @@ describe('FilterActionsRows', () => {
 		});
 
 		it('should  display Keep in Inbox as selected option if zimbraFeatureMailForwardingInFiltersEnabled is FALSE', async () => {
-			const newCompProps = {
+			const newCompProps: CompProps = {
 				...compProps,
 				tempActions: [{ id: '1', actionKeep: [{}] }],
 				zimbraFeatureMailForwardingInFiltersEnabled: 'FALSE' as const
@@ -341,7 +344,7 @@ describe('FilterActionsRows', () => {
 		});
 
 		it('Redirect to address should not be present in the dropdown options if zimbraFeatureMailForwardingInFiltersEnabled is FALSE', async () => {
-			const newCompProps = {
+			const newCompProps: CompProps = {
 				...compProps,
 				tempActions: [{ id: '1', actionKeep: [{}] }],
 				zimbraFeatureMailForwardingInFiltersEnabled: 'FALSE' as const
@@ -393,9 +396,9 @@ describe('FilterActionsRows', () => {
 			expect(screen.getByText('Tag')).toBeVisible();
 		});
 		it('should reset the input value to empty after changing action', async () => {
-			const newCompProps = {
+			const newCompProps: CompProps = {
 				...compProps,
-				tempActions: [{}]
+				tempActions: [{ actionKeep: [{}] }]
 			};
 			const filterName = 'Test Designer';
 			const { user } = setupTest(
@@ -419,9 +422,9 @@ describe('FilterActionsRows', () => {
 		});
 
 		it('should update tag action value if a new tag is selected', async () => {
-			const newCompProps = {
+			const newCompProps: CompProps = {
 				...compProps,
-				tempActions: [{}]
+				tempActions: []
 			};
 			const { user } = setupTest(
 				<FilterActionRow
@@ -446,7 +449,7 @@ describe('FilterActionsRows', () => {
 		it('should update tag action value if a new tag is selected', async () => {
 			const newCompProps = {
 				...compProps,
-				tempActions: [{}]
+				tempActions: []
 			};
 			const { user } = setupTest(
 				<FilterActionRow
@@ -485,9 +488,12 @@ describe('FilterActionsRows', () => {
 				view: FOLDER_VIEW.message,
 				customFolders: [rootFolder]
 			});
-			const mockCompProps = {
+			const mockCompProps: CompProps = {
 				...compProps,
-				tempActions: [{ id: '123' }, { id: '456' }]
+				tempActions: [
+					{ id: '123', actionTag: [{}] },
+					{ id: '456', actionDiscard: [{}] }
+				]
 			};
 			const { user } = setupTest(
 				<FilterActionRow
@@ -512,7 +518,7 @@ describe('FilterActionsRows', () => {
 			expect(chooseFolder).toBeEnabled();
 			await user.click(chooseFolder);
 			expect(compProps.setTempActions).toHaveBeenCalledWith([
-				{ id: '123' },
+				{ id: '123', actionTag: [{}] },
 				{ actionFileInto: [{ folderPath: folder.absFolderPath }], id: '456' }
 			]);
 		});
@@ -532,9 +538,9 @@ describe('FilterActionsRows', () => {
 			expect(await screen.findByText('Discard')).toBeVisible();
 		});
 		it('should render the the discard option after selecting it', async () => {
-			const mockCompProps = {
+			const mockCompProps: CompProps = {
 				...compProps,
-				tempActions: [{ id: '1' }]
+				tempActions: [{ id: '1', actionKeep: [{}] }]
 			};
 			const { user } = setupTest(
 				<FilterActionRow
