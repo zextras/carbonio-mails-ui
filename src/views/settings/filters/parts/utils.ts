@@ -339,9 +339,9 @@ export const getSocialOptions = (t: TFunction): SocialOption[] => [
 
 type ConditionAction = {
 	label: string;
-	value: 'redirectToAddress';
+	value: 'actionRedirect';
 };
-const getConditionAction = (
+const getConditionRedirectAction = (
 	t: TFunction,
 	zimbraFeatureMailForwardingInFiltersEnabled: 'TRUE' | 'FALSE'
 ): ConditionAction[] => {
@@ -349,7 +349,7 @@ const getConditionAction = (
 		return [
 			{
 				label: t('settings.redirect_to_address', 'Redirect to address'),
-				value: 'redirectToAddress'
+				value: 'actionRedirect'
 			}
 		];
 	}
@@ -370,25 +370,25 @@ export const getActionOptions = (
 		label: isIncoming
 			? t('settings.keep_in_inbox', 'Keep in Inbox')
 			: t('settings.keep_in_sent', 'Keep in Sent'),
-		value: isIncoming ? 'inbox' : 'sent'
+		value: 'actionKeep'
 	},
 	{
 		label: t('settings.discard', 'Discard'),
-		value: 'discard'
+		value: 'actionDiscard'
 	},
 	{
 		label: t('settings.move_into_folder', 'Move Into Folder'),
-		value: 'moveIntoFolder'
+		value: 'actionFileInto'
 	},
 	{
 		label: t('settings.tag_with', 'Tag with'),
-		value: 'tagWith'
+		value: 'actionTag'
 	},
 	{
 		label: t('settings.mark_as', 'Mark as'),
-		value: 'markAs'
+		value: 'actionFlag'
 	},
-	...getConditionAction(t, zimbraFeatureMailForwardingInFiltersEnabled)
+	...getConditionRedirectAction(t, zimbraFeatureMailForwardingInFiltersEnabled)
 ];
 
 export const getMarkAsOptions = (t: TFunction): Array<MarkAsOption> => [

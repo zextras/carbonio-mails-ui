@@ -34,13 +34,12 @@ type FilterActionRowProps = {
 };
 
 type ActiveOption =
-	| 'inbox'
-	| 'markAs'
-	| 'moveIntoFolder'
-	| 'tagWith'
-	| 'redirectToAddress'
-	| 'discard';
-
+	| 'actionTag'
+	| 'actionKeep'
+	| 'actionFlag'
+	| 'actionRedirect'
+	| 'actionFileInto'
+	| 'actionDiscard';
 export const FilterActionRow: FC<FilterActionRowProps> = ({
 	isIncomingFilter,
 	mailForwardingEnabled,
@@ -60,17 +59,17 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 	);
 	const [tag, setTag] = useState<Array<MailFilterTag>>([]);
 
-	const [activeActionOption, setActiveActionOption] = useState<ActiveOption>('inbox');
-	const showMarksAsBtn = useMemo(() => activeActionOption === 'markAs', [activeActionOption]);
+	const [activeActionOption, setActiveActionOption] = useState<ActiveOption>('actionKeep');
+	const showMarksAsBtn = useMemo(() => activeActionOption === 'actionFlag', [activeActionOption]);
 	const showRedirectToAddrsInput = useMemo(
-		() => activeActionOption === 'redirectToAddress',
+		() => activeActionOption === 'actionRedirect',
 		[activeActionOption]
 	);
 	const showBrowseBtn = useMemo(
-		() => activeActionOption === 'moveIntoFolder',
+		() => activeActionOption === 'actionFileInto',
 		[activeActionOption]
 	);
-	const showTagOptions = useMemo(() => activeActionOption === 'tagWith', [activeActionOption]);
+	const showTagOptions = useMemo(() => activeActionOption === 'actionTag', [activeActionOption]);
 
 	const [contacts, setContacts] = useState<ContactInputItem[]>([]);
 
@@ -102,15 +101,15 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 			return actionOptions[0];
 		}
 		if ('actionFileInto' in defaultAction) {
-			setActiveActionOption('moveIntoFolder');
+			setActiveActionOption('actionFileInto');
 			return actionOptions[2];
 		}
 		if ('actionFlag' in defaultAction) {
-			setActiveActionOption('markAs');
+			setActiveActionOption('actionFlag');
 			return actionOptions[4];
 		}
 		if ('actionRedirect' in defaultAction) {
-			setActiveActionOption('redirectToAddress');
+			setActiveActionOption('actionRedirect');
 			const email = defaultAction.actionRedirect[0].a;
 			if (email) {
 				setContacts([
@@ -125,7 +124,7 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 			}
 			return actionOptions[5];
 		}
-		setActiveActionOption('tagWith');
+		setActiveActionOption('actionTag');
 		const { tagName } = defaultAction.actionTag[0];
 		setTag(
 			tagName
@@ -148,19 +147,19 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 		(str: ActiveOption) => {
 			let newAction: FilterAction = defaultAction;
 			switch (str) {
-				case 'discard': {
+				case 'actionDiscard': {
 					newAction = { actionDiscard: [{}] };
 					break;
 				}
-				case 'markAs': {
+				case 'actionFlag': {
 					newAction = { actionFlag: [{}] };
 					break;
 				}
-				case 'inbox': {
+				case 'actionKeep': {
 					newAction = { actionKeep: [{}] };
 					break;
 				}
-				case 'tagWith': {
+				case 'actionTag': {
 					if (!('actionTag' in defaultAction)) {
 						newAction = {
 							actionTag: [{ tagName: '' }]
@@ -169,7 +168,7 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 					}
 					break;
 				}
-				case 'moveIntoFolder': {
+				case 'actionFileInto': {
 					if (!('actionFileInto' in defaultAction)) {
 						newAction = {
 							actionFileInto: [{ folderPath: '' }]
@@ -177,7 +176,7 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 					}
 					break;
 				}
-				case 'redirectToAddress': {
+				case 'actionRedirect': {
 					if (!('actionRedirect' in defaultAction)) {
 						newAction = {
 							actionRedirect: [{ a: '' }]
@@ -262,14 +261,13 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 						defaultSelection={defaultValue}
 					/>
 				</Row>
-				{isRedirectToActionRemoved &&
-					(defaultValue.value === 'inbox' || defaultValue.value === 'sent') && (
-						<Row padding={{ right: 'small' }} minWidth="12.5rem">
-							<Text size="medium" color="info">
-								{t('label.admin_disabled_action', 'The Admin disabled the redirect action')}
-							</Text>
-						</Row>
-					)}
+				{isRedirectToActionRemoved && defaultValue.value === 'actionKeep' && (
+					<Row padding={{ right: 'small' }} minWidth="12.5rem">
+						<Text size="medium" color="info">
+							{t('label.admin_disabled_action', 'The Admin disabled the redirect action')}
+						</Text>
+					</Row>
+				)}
 
 				{showBrowseBtn && (
 					<MovetoFolder
