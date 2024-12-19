@@ -76,87 +76,39 @@ describe('FilterActionsRows', () => {
 		await user.click(removeButton);
 		expect(defaultProps.onRemoveAction).not.toHaveBeenCalled();
 	});
-	it('should update actions using same action id as action at index number when selecting a new action', async () => {
-		const mockCompProps: CompProps = {
-			...defaultProps,
-			tempActions: [
-				{ id: '7', actionKeep: [{}] },
-				{ id: '21', actionDiscard: [{}] },
-				{ id: '33', actionRedirect: [{}] }
-			]
-		};
-		const { user } = setupTest(
-			<FilterActionRow
-				defaultAction={{
-					actionKeep: [{}]
-				}}
-				index={1}
-				compProps={mockCompProps}
-			/>,
-			{}
-		);
+	it('should call on switch with new chosen action when switching action', async () => {
+		const { user } = setupTest(<FilterActionRow {...defaultProps} />, {});
 		await user.click(screen.getByText('Keep in Inbox'));
 		const dropdown = screen.getByTestId('dropdown-popper-list');
 		await user.click(within(dropdown).getByText('Discard'));
 
-		expect(mockCompProps.setTempActions).toHaveBeenCalledWith([
-			{ id: '7', actionKeep: [{}] },
-			{ id: '21', actionDiscard: [{}] },
-			{ id: '33', actionRedirect: [{}] }
-		]);
-	});
-
-	it('should render only first action even if multiple actions are provided', () => {
-		const mockCompProps: CompProps = {
-			...defaultProps,
-			tempActions: [
-				{ id: '1', actionKeep: [{}] },
-				{ id: '2', actionTag: [{}] },
-				{ id: '3', actionRedirect: [{}] }
-			]
-		};
-		setupTest(
-			<FilterActionRow
-				defaultAction={{
-					actionKeep: [{}],
-					actionTag: [{ tagName: 'tag 1' }],
-					actionRedirect: [{ a: 'redirectTo@mail.com' }]
-				}}
-				index={0}
-				compProps={mockCompProps}
-			/>,
-			{}
-		);
-		expect(screen.getByText('Keep in Inbox')).toBeVisible();
-		expect(screen.queryByText('Tag with')).not.toBeInTheDocument();
-		expect(screen.queryByText('Redirect to address')).not.toBeInTheDocument();
+		expect(defaultProps.onActionSwitch).toHaveBeenCalledWith({
+			actionDiscard: [{}]
+		});
 	});
 
 	describe('Keep In Inbox', () => {
 		it('should render the selected action', async () => {
 			setupTest(
 				<FilterActionRow
+					{...defaultProps}
 					defaultAction={{
 						actionKeep: [{}]
 					}}
-					index={0}
-					compProps={defaultProps}
 				/>,
 				{}
 			);
-			const newLocal = await screen.findByText('Keep in Inbox');
-			expect(newLocal).toBeVisible();
+			expect(await screen.findByText('Keep in Inbox')).toBeVisible();
 		});
 	});
 	describe('Redirect To Address', () => {
 		it('should display action "Redirect To Address" when selected', async () => {
 			setupTest(
 				<FilterActionRow
+					{...defaultProps}
 					defaultAction={{
 						actionRedirect: [{ a: 'test@test.com' }]
 					}}
-					index={0}
-					compProps={defaultProps}
 				/>,
 				{}
 			);
@@ -165,24 +117,10 @@ describe('FilterActionsRows', () => {
 		it('should not display Contact Input when dropdown option is different from "Redirect To Address"', async () => {
 			setupTest(
 				<FilterActionRow
+					{...defaultProps}
 					defaultAction={{
 						actionKeep: [{}]
 					}}
-					index={0}
-					compProps={defaultProps}
-				/>,
-				{}
-			);
-			expect(screen.queryByTestId('filter-action-row-contact-input')).not.toBeInTheDocument();
-		});
-		it('should not display Contact Input when dropdown option is different from "Tag With"', async () => {
-			setupTest(
-				<FilterActionRow
-					defaultAction={{
-						actionTag: [{ tagName: 'aaa' }]
-					}}
-					index={0}
-					compProps={defaultProps}
 				/>,
 				{}
 			);
@@ -191,57 +129,40 @@ describe('FilterActionsRows', () => {
 		it('should display Contact Input when selecting option "Redirect To Address"', async () => {
 			setupTest(
 				<FilterActionRow
+					{...defaultProps}
 					defaultAction={{
 						actionRedirect: [{ a: 'something' }]
 					}}
-					index={0}
-					compProps={defaultProps}
 				/>,
 				{}
 			);
 			await screen.findByTestId('filter-action-row-contact-input');
 		});
-		it('should update actions after inserting a value in "Redirect To Address" input', async () => {
-			const mockSetActions = jest.fn();
-			const mockCompProps = {
-				isIncoming: true,
-				setTempActions: mockSetActions,
-				tempActions: [],
-				zimbraFeatureMailForwardingInFiltersEnabled: 'TRUE' as const
-			};
+		it('should call on value change after inserting a value in "Redirect To Address" input', async () => {
 			const { user } = setupTest(
 				<FilterActionRow
+					{...defaultProps}
 					defaultAction={{
 						actionRedirect: [{}]
 					}}
-					index={0}
-					compProps={mockCompProps}
 				/>,
 				{}
 			);
 			const redirectToAddressInput = await screen.findByTestId('filter-action-row-contact-input');
 			await user.type(redirectToAddressInput, 'valid@email.it');
 			await user.type(redirectToAddressInput, '[Enter]');
-			expect(mockSetActions).toHaveBeenCalledWith([
-				expect.objectContaining({ actionRedirect: [{ a: 'valid@email.it' }] })
-			]);
+			expect(defaultProps.onDefaultActionValueChange).toHaveBeenCalledWith({
+				actionRedirect: [{ a: 'valid@email.it' }],
+				id: expect.any(String)
+			});
 		});
-
-		it('should call onChange with empty address after clearing input', async () => {
-			const mockSetActions = jest.fn();
-			const mockCompProps = {
-				isIncoming: true,
-				setTempActions: mockSetActions,
-				tempActions: [],
-				zimbraFeatureMailForwardingInFiltersEnabled: 'TRUE' as const
-			};
+		it('should call on value change with empty address after clearing redirect to input', async () => {
 			const { user } = setupTest(
 				<FilterActionRow
+					{...defaultProps}
 					defaultAction={{
 						actionRedirect: [{ a: 'anyvalue' }]
 					}}
-					index={0}
-					compProps={mockCompProps}
 				/>,
 				{}
 			);
@@ -251,25 +172,19 @@ describe('FilterActionsRows', () => {
 			const chipRemoveIcon = within(redirectToAddressInput).getByTestId('icon: Close');
 			await user.click(chipRemoveIcon);
 
-			expect(mockSetActions).toHaveBeenCalledWith([
-				expect.objectContaining({ actionRedirect: [{ a: '' }] })
-			]);
+			expect(defaultProps.onDefaultActionValueChange).toHaveBeenCalledWith({
+				actionRedirect: [{ a: '' }],
+				id: expect.any(String)
+			});
 		});
-
 		it('should inform the user that redirect action is disabled when zimbraFeatureMailForwardingInFiltersEnabled is FALSE on an already existing filter with action redirect', async () => {
-			const newCompProps: CompProps = {
-				...defaultProps,
-				tempActions: [{ id: '1', actionKeep: [{}] }],
-				zimbraFeatureMailForwardingInFiltersEnabled: 'FALSE' as const
-			};
-
 			setupTest(
 				<FilterActionRow
+					{...defaultProps}
 					defaultAction={{
 						actionRedirect: [{ a: 'aaa' }]
 					}}
-					index={0}
-					compProps={newCompProps}
+					mailForwardingEnabled={'FALSE'}
 				/>,
 				{}
 			);
@@ -277,61 +192,41 @@ describe('FilterActionsRows', () => {
 			expect(screen.getByText('The Admin disabled the redirect action')).toBeVisible();
 		});
 		it('Redirect to address should not be the selected option if zimbraFeatureMailForwardingInFiltersEnabled is FALSE', async () => {
-			const newCompProps: CompProps = {
-				...defaultProps,
-				tempActions: [{ id: '1', actionKeep: [{}] }],
-				zimbraFeatureMailForwardingInFiltersEnabled: 'FALSE' as const
-			};
-
 			setupTest(
 				<FilterActionRow
+					{...defaultProps}
 					defaultAction={{
 						actionRedirect: [{ a: 'bbb' }]
 					}}
-					index={0}
-					compProps={newCompProps}
+					mailForwardingEnabled={'FALSE'}
 				/>,
 				{}
 			);
 
 			expect(screen.queryByText(REDIRECT_TO_ADDRESS)).not.toBeInTheDocument();
 		});
-
-		it('should  display Keep in Inbox as selected option if zimbraFeatureMailForwardingInFiltersEnabled is FALSE', async () => {
-			const newCompProps: CompProps = {
-				...defaultProps,
-				tempActions: [{ id: '1', actionKeep: [{}] }],
-				zimbraFeatureMailForwardingInFiltersEnabled: 'FALSE' as const
-			};
-
+		it('should display Keep in Inbox as selected option if zimbraFeatureMailForwardingInFiltersEnabled is FALSE', async () => {
 			setupTest(
 				<FilterActionRow
+					{...defaultProps}
 					defaultAction={{
 						actionRedirect: [{ a: 'ccc' }]
 					}}
-					index={0}
-					compProps={newCompProps}
+					mailForwardingEnabled={'FALSE'}
 				/>,
 				{}
 			);
 
 			expect(screen.getByText('Keep in Inbox')).toBeVisible();
 		});
-
 		it('Redirect to address should not be present in the dropdown options if zimbraFeatureMailForwardingInFiltersEnabled is FALSE', async () => {
-			const newCompProps: CompProps = {
-				...defaultProps,
-				tempActions: [{ id: '1', actionKeep: [{}] }],
-				zimbraFeatureMailForwardingInFiltersEnabled: 'FALSE' as const
-			};
-
 			const { user } = setupTest(
 				<FilterActionRow
+					{...defaultProps}
 					defaultAction={{
 						actionKeep: [{}]
 					}}
-					index={0}
-					compProps={newCompProps}
+					mailForwardingEnabled={'FALSE'}
 				/>,
 				{}
 			);
