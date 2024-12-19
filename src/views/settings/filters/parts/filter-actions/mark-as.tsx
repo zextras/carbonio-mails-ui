@@ -11,7 +11,7 @@ import { MarkAsOption } from '../../../../../types';
 import CustomSelect from '../custom-select';
 
 type MarkAsProps = {
-	onChange: (option: MarkAsOption) => void;
+	onChange: (option: MarkAsOption['value']) => void;
 	options: MarkAsOption[];
 	selected?: { flagName?: string };
 };

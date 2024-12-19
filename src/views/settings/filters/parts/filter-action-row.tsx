@@ -19,7 +19,7 @@ import { getActionOptions, getMarkAsOptions } from './utils';
 import { CONTACT_TYPES } from '../../../../carbonio-ui-commons/integrations/constants';
 import { ContactInputItem } from '../../../../carbonio-ui-commons/integrations/types';
 import { Folder } from '../../../../carbonio-ui-commons/types/folder';
-import { FilterAction, MailFilterTag } from '../../../../types';
+import { FilterAction, MailFilterTag, MarkAsOption } from '../../../../types';
 
 type FilterActionRowProps = {
 	mailForwardingEnabled: 'TRUE' | 'FALSE';
@@ -152,6 +152,10 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 					newAction = { actionDiscard: [{}] };
 					break;
 				}
+				case 'markAs': {
+					newAction = { actionFlag: [{}] };
+					break;
+				}
 				case 'inbox': {
 					newAction = { actionKeep: [{}] };
 					break;
@@ -212,9 +216,8 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 	);
 
 	const handleMarkAsOptionChange = useCallback(
-		(option: { label: string; value: any }) => {
-			// TODO: check me
-			onDefaultActionValueChange({ actionFlag: [{ flagName: option.value }] });
+		(value: MarkAsOption['value']) => {
+			onDefaultActionValueChange(value);
 		},
 		[onDefaultActionValueChange]
 	);

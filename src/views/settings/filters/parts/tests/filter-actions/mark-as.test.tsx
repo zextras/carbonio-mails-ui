@@ -9,12 +9,13 @@ import { screen } from '@testing-library/react';
 
 import { setupTest } from '../../../../../../carbonio-ui-commons/test/test-setup';
 import { generateStore } from '../../../../../../tests/generators/store';
+import { MarkAsOption } from '../../../../../../types';
 import { MarkAs } from '../../filter-actions/mark-as';
 
 describe('Mark As', () => {
 	it('it should render selected option in the input', async () => {
 		const store = generateStore();
-		const options = [
+		const options: MarkAsOption[] = [
 			{ label: 'label 1', value: { actionFlag: [{ flagName: '1' }] } },
 			{ label: 'label 2', value: { actionFlag: [{ flagName: '2' }] } }
 		];
@@ -27,9 +28,9 @@ describe('Mark As', () => {
 		expect(screen.getByText('label 1')).toBeVisible();
 	});
 
-	it('it should call onChange with the choosen value', async () => {
+	it('it should call onChange with the chosen value', async () => {
 		const store = generateStore();
-		const options = [
+		const options: MarkAsOption[] = [
 			{ label: 'label 1', value: { actionFlag: [{ flagName: '1' }] } },
 			{ label: 'label 2', value: { actionFlag: [{ flagName: '2' }] } }
 		];

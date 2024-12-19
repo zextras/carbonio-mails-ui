@@ -57,7 +57,7 @@ export type ListPropsType = {
 };
 export type MarkAsOption = {
 	label: string;
-	value: { actionFlag: { flagName: string }[] };
+	value: { actionFlag: [{ flagName: string }] };
 };
 export type MailFilterTag = {
 	label: string;

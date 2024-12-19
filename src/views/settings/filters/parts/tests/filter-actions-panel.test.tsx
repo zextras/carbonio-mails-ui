@@ -74,4 +74,19 @@ describe('FilterActionsPanel', () => {
 			{ id: '33', actionRedirect: [{}] }
 		]);
 	});
+
+	it('should update single action if switching it', async () => {
+		const mockCompProps: FilterActionsProps = {
+			setTempActions: jest.fn(),
+			zimbraFeatureMailForwardingInFiltersEnabled: 'TRUE' as const,
+			isIncoming: true,
+			tempActions: [{ id: '7', actionKeep: [{}] }]
+		};
+		const { user } = setupTest(<FilterActionsPanel compProps={mockCompProps} />, {});
+		await user.click(screen.getByText('Keep in Inbox'));
+		const dropdown = screen.getByTestId('dropdown-popper-list');
+		await user.click(within(dropdown).getByText(/Mark as/i));
+
+		expect(mockCompProps.setTempActions).toHaveBeenCalledWith([{ id: '7', actionFlag: [{}] }]);
+	});
 });
