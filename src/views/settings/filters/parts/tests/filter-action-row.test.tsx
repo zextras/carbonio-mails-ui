@@ -87,6 +87,23 @@ describe('FilterActionsRows', () => {
 		});
 	});
 
+	it('should render the new chosen action when switching action', async () => {
+		const { user } = setupTest(
+			<FilterActionRow
+				{...defaultProps}
+				defaultAction={{
+					actionTag: [{}]
+				}}
+			/>,
+			{}
+		);
+		await user.click(screen.getByText(/Tag with/i));
+		const dropdown = screen.getByTestId('dropdown-popper-list');
+		await user.click(within(dropdown).getByText('Discard'));
+
+		expect(screen.getByText('Discard')).toBeVisible();
+	});
+
 	describe('Keep In Inbox', () => {
 		it('should render the selected action', async () => {
 			setupTest(

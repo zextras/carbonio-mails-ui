@@ -40,6 +40,7 @@ type ActiveOption =
 	| 'actionRedirect'
 	| 'actionFileInto'
 	| 'actionDiscard';
+
 export const FilterActionRow: FC<FilterActionRowProps> = ({
 	isIncomingFilter,
 	mailForwardingEnabled,
@@ -88,12 +89,22 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 		if ('actionRedirect' in defaultAction && mailForwardingEnabled === 'FALSE') {
 			setIsRedirectToActionRemoved(true);
 			onDefaultActionValueChange({ actionKeep: [{}] });
-			return actionOptions[0];
+			return {
+				label: isIncomingFilter
+					? t('settings.keep_in_inbox', 'Keep in Inbox')
+					: t('settings.keep_in_sent', 'Keep in Sent'),
+				value: 'actionKeep'
+			};
 		}
 		if ('actionDiscard' in defaultAction) {
-			return actionOptions[1];
+			setActiveActionOption('actionDiscard');
+			return {
+				label: t('settings.discard', 'Discard'),
+				value: 'actionDiscard'
+			};
 		}
 		if ('actionKeep' in defaultAction) {
+			setActiveActionOption('actionKeep');
 			return actionOptions[0];
 		}
 		// TODO: check me, what is the meaning of having just a stop action?
@@ -102,11 +113,17 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 		}
 		if ('actionFileInto' in defaultAction) {
 			setActiveActionOption('actionFileInto');
-			return actionOptions[2];
+			return {
+				label: t('settings.move_into_folder', 'Move Into Folder'),
+				value: 'actionFileInto'
+			};
 		}
 		if ('actionFlag' in defaultAction) {
 			setActiveActionOption('actionFlag');
-			return actionOptions[4];
+			return {
+				label: t('settings.mark_as', 'Mark as'),
+				value: 'actionFlag'
+			};
 		}
 		if ('actionRedirect' in defaultAction) {
 			setActiveActionOption('actionRedirect');
@@ -122,7 +139,10 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 			} else {
 				setContacts([]);
 			}
-			return actionOptions[5];
+			return {
+				label: t('settings.redirect_to_address', 'Redirect to address'),
+				value: 'actionRedirect'
+			};
 		}
 		setActiveActionOption('actionTag');
 		const { tagName } = defaultAction.actionTag[0];
@@ -135,8 +155,18 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 					]
 				: []
 		);
-		return actionOptions[3];
-	}, [defaultAction, mailForwardingEnabled, actionOptions, onDefaultActionValueChange]);
+		return {
+			label: t('settings.tag_with', 'Tag with'),
+			value: 'actionTag'
+		};
+	}, [
+		defaultAction,
+		mailForwardingEnabled,
+		t,
+		onDefaultActionValueChange,
+		isIncomingFilter,
+		actionOptions
+	]);
 
 	// TODO: pass me from outside
 	const onRemove = useMemo(
