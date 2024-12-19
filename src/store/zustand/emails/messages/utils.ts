@@ -49,9 +49,9 @@ function useMessagesIdsByFolder(
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
 ): Set<string> {
 	const folderMessagesIds = new Set<string>();
-	const { populatedItemsSlice, messageIndexSlice: messagesSlice } = useEmailsStore();
-	const { messageIdSet: messageIds } = messagesSlice;
-	forEach([...messageIds], (messageId) => {
+	const { populatedItemsSlice, messageIndexSlice } = useEmailsStore();
+	const { messageIdSet } = messageIndexSlice;
+	forEach([...messageIdSet], (messageId) => {
 		const wantedFolder = 'rid' in folder && folder?.rid ? `${folder.zid}:${folder.rid}` : folder.id;
 		if (populatedItemsSlice.messages[messageId].parent === wantedFolder) {
 			folderMessagesIds.add(messageId);
