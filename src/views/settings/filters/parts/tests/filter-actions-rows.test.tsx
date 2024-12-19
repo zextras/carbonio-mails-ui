@@ -192,7 +192,7 @@ describe('FilterActionsRows', () => {
 				/>,
 				{}
 			);
-			expect(screen.getByText(REDIRECT_TO_ADDRESS));
+			expect(screen.getByText(REDIRECT_TO_ADDRESS)).toBeVisible();
 		});
 		it('should not display Contact Input when dropdown option is different from "Redirect To Address"', async () => {
 			setupTest(
