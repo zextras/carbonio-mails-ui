@@ -244,12 +244,7 @@ export type MessageIndexSliceState = {
 		messageIdSet: Set<string>;
 		more: boolean;
 		offset: number;
-		sortBy?: SortBy;
-		query?: string;
 		status: SearchRequestStatus;
-		parent?: string;
-		tagName?: string;
-		error?: ErrorType;
 	};
 };
 
@@ -258,12 +253,7 @@ export type ConversationIndexSliceState = {
 		conversationIdSet: Set<string>;
 		more: boolean;
 		offset: number;
-		sortBy?: SortBy;
-		query?: string;
 		status: SearchRequestStatus;
-		parent?: string;
-		tagName?: string;
-		error?: ErrorType;
 	};
 };
 export type PopulatedItemsSliceState = {
