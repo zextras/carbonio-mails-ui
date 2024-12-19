@@ -146,15 +146,14 @@ export const handleSearchSoapApiResults = ({
 		const normalizedMessages = map(searchResponse.m, (msg) =>
 			normalizeMailMessageFromSoap(msg, false)
 		);
-
 		setMessagesInEmailStore(normalizedMessages, searchResponse.more);
+		return;
 	}
 	if (searchResponse.c?.length) {
 		const conversations = normalizeConversations(searchResponse.c);
-
 		setConversationsInEmailStore(conversations, searchResponse.more);
-	} else {
-		resetMessagesAndPopulatedItems();
-		updateMessagesResultsLoadingStatus(API_REQUEST_STATUS.fulfilled);
+		return;
 	}
+	resetMessagesAndPopulatedItems();
+	updateMessagesResultsLoadingStatus(API_REQUEST_STATUS.fulfilled);
 };
