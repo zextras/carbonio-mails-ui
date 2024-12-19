@@ -27,7 +27,7 @@ export const useMessageListByFolder = (folder: Folder): MessageIndexSliceState =
 	const previousFolderId = useRef<string>('');
 
 	const messagesSlice = useMessagesSlice();
-	const messagesIds = useMessagesIdsByFolder(folder);
+	const messageIdSet = useMessagesIdsByFolder(folder);
 
 	const firstSearchCallback = useCallback(
 		async (abortSignal: AbortSignal | undefined) => {
@@ -59,5 +59,5 @@ export const useMessageListByFolder = (folder: Folder): MessageIndexSliceState =
 		};
 	}, [firstSearchCallback, folder.id]);
 
-	return { messageIndexSlice: { ...messagesSlice, messageIdSet: messagesIds } };
+	return { messageIndexSlice: { ...messagesSlice, messageIdSet } };
 };
