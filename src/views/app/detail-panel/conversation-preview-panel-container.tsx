@@ -7,21 +7,16 @@ import React, { FC, useCallback, useEffect, useMemo } from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
 import { replaceHistory } from '@zextras/carbonio-shell-ui';
-import { debounce, filter, isEmpty } from 'lodash';
+import { filter, isEmpty } from 'lodash';
 import { useParams } from 'react-router-dom';
 
 import { ConversationPreviewPanel } from './conversation-preview-panel';
 import PreviewPanelHeader from './preview/preview-panel-header';
 import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
-import { API_REQUEST_STATUS, DEFAULT_API_DEBOUNCE_TIME } from '../../../constants';
 import { getFolderIdParts } from '../../../helpers/folders';
 import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
-import { getConv, searchConv } from '../../../store/actions';
-import {
-	selectConversation,
-	selectConversationExpandedStatus
-} from '../../../store/conversations-slice';
-import type { MailsStateType } from '../../../types';
+import { getConv } from '../../../store/actions';
+import { selectConversation } from '../../../store/conversations-slice';
 import { useExtraWindow } from '../extra-windows/use-extra-window';
 
 type ConversationPreviewPanelProps = { conversationId?: string; folderId?: string };
@@ -40,9 +35,6 @@ export const ConversationPreviewPanelContainer: FC<ConversationPreviewPanelProps
 	const { conversationId, folderId } = useConversationPreviewPanelParameters(props);
 	const { isInsideExtraWindow } = useExtraWindow();
 	const dispatch = useAppDispatch();
-	const conversationsStatus = useAppSelector((state: MailsStateType) =>
-		selectConversationExpandedStatus(state, conversationId)
-	);
 	const conversation = useAppSelector(selectConversation(conversationId));
 
 	const onConversationIdChange = useCallback(
@@ -57,29 +49,6 @@ export const ConversationPreviewPanelContainer: FC<ConversationPreviewPanelProps
 			dispatch(getConv({ conversationId, onConversationIdChange }));
 		}
 	}, [conversation, dispatch, conversationId, onConversationIdChange]);
-
-	const requestDebouncedConversation = useMemo(
-		() =>
-			debounce(
-				() => {
-					if (
-						(conversationsStatus !== API_REQUEST_STATUS.fulfilled &&
-							conversationsStatus !== API_REQUEST_STATUS.pending) ||
-						!conversationsStatus
-					) {
-						dispatch(searchConv({ conversationId, fetch: 'all', folderId }));
-					}
-				},
-				DEFAULT_API_DEBOUNCE_TIME,
-				{ leading: false, trailing: true }
-			),
-		[conversationId, conversationsStatus, dispatch, folderId]
-	);
-
-	useEffect(() => {
-		requestDebouncedConversation();
-		return () => requestDebouncedConversation.cancel();
-	}, [requestDebouncedConversation]);
 
 	const showPreviewPanel = useMemo(
 		(): boolean | undefined =>

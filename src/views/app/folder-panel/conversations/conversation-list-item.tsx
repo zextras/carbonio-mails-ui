@@ -113,7 +113,6 @@ export const ConversationListItemActionWrapper = ({
 			replyDescriptor,
 			replyAllDescriptor,
 			forwardDescriptor,
-			forwardAsAttachmentDescriptor,
 			moveToTrashDescriptor,
 			deletePermanentlyDescriptor,
 			setAsReadDescriptor,
@@ -126,7 +125,6 @@ export const ConversationListItemActionWrapper = ({
 			replyDescriptor,
 			replyAllDescriptor,
 			forwardDescriptor,
-			forwardAsAttachmentDescriptor,
 			moveToTrashDescriptor,
 			deletePermanentlyDescriptor,
 			setAsReadDescriptor,
@@ -465,7 +463,8 @@ export const ConversationListItem: FC<ConversationListItemProps> = memo(
 										<Badge
 											data-testid={`conversation-messages-count-${item.id}`}
 											value={getmsgToDisplayCount()}
-											type={textReadValues.badge}
+											backgroundColor={(textReadValues.badge === 'unread' && 'primary') || 'gray2'}
+											color={(textReadValues.badge === 'unread' && 'gray6') || 'gray0'}
 										/>
 									</Padding>
 								</Row>

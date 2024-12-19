@@ -44,9 +44,6 @@ export const AttachmentUploadStatus: FC<{
 		<UploadingRow padding={{ horizontal: 'small', vertical: 'small' }} crossAlignment={'center'}>
 			{uploadStatus.status === 'running' && (
 				<>
-					<Text color="gray1" size="small">
-						{uploadStatus.progress}%
-					</Text>
 					<Padding right="extrasmall" />
 
 					<Icon icon={'AnimatedLoader'} color={'gray1'} size="large" />

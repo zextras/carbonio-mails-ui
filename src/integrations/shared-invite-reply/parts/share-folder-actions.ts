@@ -5,18 +5,19 @@
  */
 import { useCallback } from 'react';
 
+import { TFunction } from 'i18next';
 import { map } from 'lodash';
+import { useTranslation } from 'react-i18next';
 
 import { ParticipantRole } from '../../../carbonio-ui-commons/constants/participants';
+import { getErrorMessage } from '../../../carbonio-ui-commons/helpers/errors';
+import { useAppDispatch } from '../../../hooks/redux';
 import { useUiUtilities } from '../../../hooks/use-ui-utilities';
 import { msgAction } from '../../../store/actions';
-import { acceptSharedCalendarReply } from '../../../store/actions/acceptSharedCalendarReply';
-import {
-	CreateMountpointDataType,
-	mountSharedFolder
-} from '../../../store/actions/mount-shared-folder';
+import { acceptSharedFolderReply } from '../../../store/actions/acceptSharedFolderReply';
+import { mountSharedFolder } from '../../../store/actions/mount-shared-folder';
 import { AppDispatch } from '../../../store/redux';
-import type { MailsEditor, Participant } from '../../../types';
+import type { Participant, SaveDraftResponse } from '../../../types';
 
 type Accept = {
 	zid: string;
@@ -25,7 +26,7 @@ type Accept = {
 	folderName: string;
 	color: number;
 	accounts: any;
-	t: (...args: any[]) => string;
+	t: TFunction;
 	dispatch: AppDispatch;
 	msgId: Array<string> | any;
 	sharedFolderName: string;
@@ -39,13 +40,12 @@ type Accept = {
 };
 
 type MoveInviteToTrashType = {
-	t: (...args: any[]) => string;
+	t: TFunction;
 	dispatch: AppDispatch;
 	msgId: string;
 };
 
 type AcceptSharedCalendarType = {
-	dispatch: AppDispatch;
 	sharedFolderName: string;
 	owner: string;
 	participants: Participant[];
@@ -58,7 +58,7 @@ type AcceptSharedCalendarType = {
 
 type DeclineType = {
 	dispatch: AppDispatch;
-	t: (...args: any[]) => string;
+	t: TFunction;
 	msgId: string;
 	sharedFolderName: string;
 	owner: string;
@@ -70,30 +70,7 @@ type DeclineType = {
 	notifyOrganizer: boolean;
 };
 
-type MountSharedFolderFuncType = CreateMountpointDataType & { dispatch: AppDispatch };
-
-const mountSharedFolderFunc = ({
-	zid,
-	view,
-	rid,
-	folderName,
-	color,
-	accounts,
-	dispatch
-}: MountSharedFolderFuncType): Promise<any> =>
-	dispatch(
-		mountSharedFolder({
-			zid,
-			view,
-			rid,
-			folderName,
-			color,
-			accounts
-		})
-	);
-
-const sharedCalendarReplyFunc = ({
-	dispatch,
+const sharedFolderReplyFunc = ({
 	sharedFolderName,
 	owner,
 	participants,
@@ -102,36 +79,29 @@ const sharedCalendarReplyFunc = ({
 	role,
 	allowedActions,
 	isAccepted
-}: AcceptSharedCalendarType): any => {
+}: AcceptSharedCalendarType): Promise<SaveDraftResponse> => {
 	const displayMessage = customMessage?.length > 0 ? customMessage : '';
-	return dispatch(
-		acceptSharedCalendarReply({
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-ignore
-			data: {
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-				// @ts-ignore
-				attach: [{ mp: [] }],
-				subject: isAccepted
-					? `Share Accepted: ${sharedFolderName} shared by ${owner}`
-					: `Share Declined: ${sharedFolderName} shared by ${owner}`,
-				participants: map(participants, (p) => {
-					if (p.type === ParticipantRole.FROM) {
-						return { ...p, type: ParticipantRole.TO };
-					}
-					return { ...p, type: ParticipantRole.FROM };
-				}),
-				text: [
-					isAccepted
-						? `Accepted: ${grantee} has accepted the sharing of "${sharedFolderName}"\n\n----------------------------------------------\n\nShared item: ${sharedFolderName}\nOwner: ${owner}\nGrantee: ${grantee}\nRole: ${role}\nAllowed actions: ${allowedActions}\n*~*~*~*~*~*~*~*~*~*\n${displayMessage}`
-						: `Declined: ${grantee} has declined the sharing of "${sharedFolderName}"\n\n----------------------------------------------\n\nShared item: ${sharedFolderName}\nOwner: ${owner}\nGrantee: ${grantee}\nRole: ${role}\nAllowed actions: ${allowedActions}\n*~*~*~*~*~*~*~*~*~*\n${displayMessage}`
-				]
-			} as MailsEditor
-		})
-	);
+	return acceptSharedFolderReply({
+		attach: [{ mp: [] }],
+		subject: isAccepted
+			? `Share Accepted: ${sharedFolderName} shared by ${owner}`
+			: `Share Declined: ${sharedFolderName} shared by ${owner}`,
+		participants: map(participants, (p) => {
+			if (p.type === ParticipantRole.FROM) {
+				return { ...p, type: ParticipantRole.TO };
+			}
+			return { ...p, type: ParticipantRole.FROM };
+		}),
+		text: [
+			isAccepted
+				? `Accepted: ${grantee} has accepted the sharing of "${sharedFolderName}"\n\n----------------------------------------------\n\nShared item: ${sharedFolderName}\nOwner: ${owner}\nGrantee: ${grantee}\nRole: ${role}\nAllowed actions: ${allowedActions}\n*~*~*~*~*~*~*~*~*~*\n${displayMessage}`
+				: `Declined: ${grantee} has declined the sharing of "${sharedFolderName}"\n\n----------------------------------------------\n\nShared item: ${sharedFolderName}\nOwner: ${owner}\nGrantee: ${grantee}\nRole: ${role}\nAllowed actions: ${allowedActions}\n*~*~*~*~*~*~*~*~*~*\n${displayMessage}`,
+			''
+		]
+	});
 };
 
-const useMoveInviteToTrashFunc = (): ((arg: MoveInviteToTrashType) => any) => {
+const useMoveInviteToTrashFunc = (): ((arg: MoveInviteToTrashType) => Promise<void>) => {
 	const { createSnackbar } = useUiUtilities();
 	return useCallback(
 		({ msgId, dispatch, t }) =>
@@ -156,12 +126,10 @@ const useMoveInviteToTrashFunc = (): ((arg: MoveInviteToTrashType) => any) => {
 	);
 };
 
-function isDuplicatedName(error: { message?: string }): boolean {
-	return error?.message?.includes('mail.ALREADY_EXISTS') ?? false;
-}
-
 export const useAccept = (): ((arg: Accept) => void) => {
 	const { createSnackbar } = useUiUtilities();
+	const [t] = useTranslation();
+	const dispatch = useAppDispatch();
 	const moveInviteToTrashFunc = useMoveInviteToTrashFunc();
 	return useCallback(
 		({
@@ -171,8 +139,6 @@ export const useAccept = (): ((arg: Accept) => void) => {
 			folderName,
 			color,
 			accounts,
-			t,
-			dispatch,
 			msgId,
 			sharedFolderName,
 			owner,
@@ -183,29 +149,31 @@ export const useAccept = (): ((arg: Accept) => void) => {
 			allowedActions,
 			notifyOrganizer
 		}) => {
-			mountSharedFolderFunc({
+			mountSharedFolder({
 				zid,
 				view,
 				rid,
 				folderName,
 				color,
-				accounts,
-				dispatch
-			}).then((res): void => {
-				if (res.type.includes('fulfilled')) {
-					notifyOrganizer &&
-						sharedCalendarReplyFunc({
-							dispatch,
-							sharedFolderName,
-							owner,
-							participants,
-							grantee,
-							customMessage,
-							role,
-							allowedActions,
-							isAccepted: true
-						});
-					moveInviteToTrashFunc({ msgId, dispatch, t });
+				accounts
+			})
+				.then((): Promise<SaveDraftResponse | void> => {
+					if (!notifyOrganizer) {
+						return Promise.resolve();
+					}
+					return sharedFolderReplyFunc({
+						sharedFolderName,
+						owner,
+						participants,
+						grantee,
+						customMessage,
+						role,
+						allowedActions,
+						isAccepted: true
+					});
+				})
+				.then(() => moveInviteToTrashFunc({ msgId, dispatch, t }))
+				.then(() => {
 					createSnackbar({
 						key: `share_accepted`,
 						replace: true,
@@ -214,33 +182,29 @@ export const useAccept = (): ((arg: Accept) => void) => {
 						autoHideTimeout: 3000,
 						hideButton: true
 					});
-				} else {
+				})
+				.catch((err) => {
 					createSnackbar({
 						key: `share`,
 						replace: true,
 						severity: 'error',
-						label: isDuplicatedName(res.error)
-							? t(
-									'label.error_folder_exists',
-									'A folder with the same name already exists, please choose a different one'
-								)
-							: t('label.error_try_again', 'Something went wrong, please try again'),
+						label: getErrorMessage(err, t),
 						autoHideTimeout: 3000,
 						hideButton: true
 					});
-				}
-			});
+				});
 		},
-		[createSnackbar, moveInviteToTrashFunc]
+		[createSnackbar, dispatch, moveInviteToTrashFunc, t]
 	);
 };
 
 export const useDecline = (): ((arg: DeclineType) => Promise<void>) => {
 	const { createSnackbar } = useUiUtilities();
+	const [t] = useTranslation();
+	const dispatch = useAppDispatch();
+
 	return useCallback(
 		({
-			dispatch,
-			t,
 			msgId,
 			sharedFolderName,
 			owner,
@@ -259,8 +223,7 @@ export const useDecline = (): ((arg: DeclineType) => Promise<void>) => {
 			).then((res): void => {
 				if (res.type.includes('fulfilled')) {
 					notifyOrganizer &&
-						sharedCalendarReplyFunc({
-							dispatch,
+						sharedFolderReplyFunc({
 							sharedFolderName,
 							owner,
 							participants,
@@ -289,6 +252,6 @@ export const useDecline = (): ((arg: DeclineType) => Promise<void>) => {
 					});
 				}
 			}),
-		[createSnackbar]
+		[createSnackbar, dispatch, t]
 	);
 };

@@ -29,6 +29,7 @@ import { useKeepOrDiscardDraft } from './parts/delete-draft';
 import { EditViewDraftSaveInfo } from './parts/edit-view-draft-save-info';
 import { EditViewIdentitySelector } from './parts/edit-view-identity-selector';
 import { EditViewSendButtons } from './parts/edit-view-send-buttons';
+import { LargeFileUploadInfoBanner } from './parts/large-file-upload-info-banner';
 import { OptionsDropdown } from './parts/options-dropdown';
 import { RecipientsRows } from './parts/recipients-rows';
 import { SizeExceededWarningBanner } from './parts/size-exceeded-waring-banner';
@@ -125,6 +126,7 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 	const { setAutoSendTime } = useEditorAutoSendTime(editorId);
 
 	const [isMailSizeWarning, setIsMailSizeWarning] = useState<boolean>(false);
+	const [largeFileUploadInfoBannerVisible, setLargeFileUploadInfoBannerVisible] = useState(false);
 	const { status: saveDraftAllowedStatus, saveDraft } = useEditorDraftSave(editorId);
 	const { did: draftId } = useEditorDid(editorId);
 	const { identityId } = useEditorIdentityId(editorId);
@@ -502,6 +504,7 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 				{/* Header end */}
 
 				<SendToYourselfWarningBanner editorId={editorId} />
+				{largeFileUploadInfoBannerVisible && <LargeFileUploadInfoBanner />}
 				<SizeExceededWarningBanner
 					editorId={editorId}
 					isMailSizeWarning={isMailSizeWarning}
@@ -521,7 +524,10 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 						<MemoizedSubjectRow editorId={editorId} />
 					</Container>
 
-					<EditAttachmentsBlock editorId={editorId} />
+					<EditAttachmentsBlock
+						editorId={editorId}
+						setLargeFileUploadInfoBannerVisible={setLargeFileUploadInfoBannerVisible}
+					/>
 
 					<MemoizedTextEditorContainer
 						onDragOver={onDragOverEvent}
