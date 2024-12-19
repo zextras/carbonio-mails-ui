@@ -15,7 +15,7 @@ import { MarkAs } from './filter-actions/mark-as';
 import { MovetoFolder } from './filter-actions/move-to-folder';
 import { RedirectTo } from './filter-actions/redirect-to';
 import { ShowTag } from './filter-actions/show-tag';
-import { getActionOptions } from './utils';
+import { getActionOptions, getMarkAsOptions } from './utils';
 import { CONTACT_TYPES } from '../../../../carbonio-ui-commons/integrations/constants';
 import { ContactInputItem } from '../../../../carbonio-ui-commons/integrations/types';
 import { Folder } from '../../../../carbonio-ui-commons/types/folder';
@@ -236,6 +236,7 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 		'actionFileInto' in defaultAction
 			? { name: defaultAction.actionFileInto[0].folderPath }
 			: undefined;
+	const markAsOptions = useMemo(() => getMarkAsOptions(t), [t]);
 	return (
 		<Container
 			mainAlignment="space-between"
@@ -270,7 +271,13 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 						onConfirmDestination={confirmMoveToFolder}
 					/>
 				)}
-				{showMarksAsBtn && <MarkAs selected={defaultMarkAs} onChange={handleMarkAsOptionChange} />}
+				{showMarksAsBtn && (
+					<MarkAs
+						selected={defaultMarkAs}
+						options={markAsOptions}
+						onChange={handleMarkAsOptionChange}
+					/>
+				)}
 
 				{showRedirectToAddrsInput && (
 					<RedirectTo defaultValue={contacts} onChange={onRedirectToChange} />

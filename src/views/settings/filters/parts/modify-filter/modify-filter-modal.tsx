@@ -15,6 +15,7 @@ import React, {
 
 import { Checkbox, Container, Divider, Input, Padding, Row } from '@zextras/carbonio-design-system';
 import { useUserSettings } from '@zextras/carbonio-shell-ui';
+import { BooleanString } from '@zextras/carbonio-shell-ui/lib/types/account';
 import { TFunction } from 'i18next';
 import { findIndex, forEach, isEqual, map, omit, reduce } from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
@@ -22,7 +23,7 @@ import { v4 as uuidv4 } from 'uuid';
 import ModalHeader from '../../../../../carbonio-ui-commons/components/modals/modal-header';
 import { useUiUtilities } from '../../../../../hooks/use-ui-utilities';
 import { modifyFilterRules } from '../../../../../store/actions/modify-filter-rules';
-import type { FilterActions } from '../../../../../types';
+import type { FilterAction, FilterActions } from '../../../../../types';
 import { capitalise } from '../../../../sidebar/utils';
 import { CreateFilterContext } from '../create-filter-context';
 import ModalFooter from '../create-filter-modal-footer';
@@ -60,11 +61,14 @@ const ModifyFilterModal: FC<ComponentProps> = ({
 	const [activeFilter, setActiveFilter] = useState(false);
 	const [condition, setCondition] = useState('anyof');
 	const [dontProcessAddFilters, setDontProcessAddFilters] = useState(true);
-	const [tempActions, setTempActions] = useState([{ actionKeep: [{}], id: uuidv4() }]);
+	const [tempActions, setTempActions] = useState<FilterActions>([
+		{ actionKeep: [{}], id: uuidv4() }
+	]);
 	const [copyRequiredFilters, setCopyRequiredFilters] = useState({});
 	const [reFetch, setReFetch] = useState(false);
 	const [updateRequiredFilters, setUpdateRequiredFilters] = useState(true);
-	const { zimbraFeatureMailForwardingInFiltersEnabled } = useUserSettings().attrs;
+	const zimbraFeatureMailForwardingInFiltersEnabled = useUserSettings().attrs
+		.zimbraFeatureMailForwardingInFiltersEnabled as BooleanString;
 	const { createSnackbar } = useUiUtilities();
 
 	const [newFilters, setNewFilters] = useState([
@@ -132,7 +136,7 @@ const ModifyFilterModal: FC<ComponentProps> = ({
 	const requiredFilters = useMemo(
 		() => ({
 			filterActions: dontProcessAddFilters
-				? ([{ ...omit(finalActions, 'id'), actionStop: [{}] }] as FilterActions[])
+				? ([{ ...omit(finalActions, 'id'), actionStop: [{}] }] as FilterAction[])
 				: ([{ ...omit(finalActions, 'id') }] as FilterActions[]),
 			active: activeFilter,
 			name: filterName,

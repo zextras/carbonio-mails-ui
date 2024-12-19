@@ -18,13 +18,13 @@ describe('Mark As', () => {
 			{ label: 'label 1', value: { actionFlag: [{ flagName: '1' }] } },
 			{ label: 'label 2', value: { actionFlag: [{ flagName: '2' }] } }
 		];
-		const selectedOption = options[0];
+		const selectedOption = { flagName: '1' };
 
 		setupTest(<MarkAs options={options} onChange={jest.fn()} selected={selectedOption} />, {
 			store
 		});
 
-		expect(screen.getByText(selectedOption.label)).toBeVisible();
+		expect(screen.getByText('label 1')).toBeVisible();
 	});
 
 	it('it should call onChange with the choosen value', async () => {
@@ -33,7 +33,7 @@ describe('Mark As', () => {
 			{ label: 'label 1', value: { actionFlag: [{ flagName: '1' }] } },
 			{ label: 'label 2', value: { actionFlag: [{ flagName: '2' }] } }
 		];
-		const selectedOption = options[0];
+		const selectedOption = { flagName: '1' };
 		const secondOption = options[1];
 
 		const onChangeFn = jest.fn();
@@ -44,7 +44,7 @@ describe('Mark As', () => {
 			}
 		);
 
-		await user.click(screen.getByText(selectedOption.label));
+		await user.click(screen.getByText('label 1'));
 		await user.click(screen.getByText(secondOption.label));
 
 		expect(onChangeFn).toHaveBeenCalledTimes(1);

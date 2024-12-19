@@ -7,6 +7,7 @@ import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
 
 import { Checkbox, Container, Divider, Input, Padding, Row } from '@zextras/carbonio-design-system';
 import { useUserSettings } from '@zextras/carbonio-shell-ui';
+import { BooleanString } from '@zextras/carbonio-shell-ui/lib/types/account';
 import { TFunction } from 'i18next';
 import { map, omit, reduce } from 'lodash';
 
@@ -41,8 +42,9 @@ const CreateOutgoingFilterModal: FC<ComponentProps> = ({
 	const [activeFilter, setActiveFilter] = useState(false);
 	const [condition, setCondition] = useState('anyof');
 	const [dontProcessAddFilters, setDontProcessAddFilters] = useState(true);
-	const [tempActions, setTempActions] = useState([{ actionKeep: [{}] }]);
-	const { zimbraFeatureMailForwardingInFiltersEnabled } = useUserSettings().attrs;
+	const [tempActions, setTempActions] = useState<FilterActions>([{ actionKeep: [{}] }]);
+	const zimbraFeatureMailForwardingInFiltersEnabled = useUserSettings().attrs
+		.zimbraFeatureMailForwardingInFiltersEnabled as BooleanString;
 
 	const finalActions = useMemo(
 		() =>

@@ -3,23 +3,20 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useMemo } from 'react';
+import React from 'react';
 
 import { Row } from '@zextras/carbonio-design-system';
-import { useTranslation } from 'react-i18next';
 
 import { MarkAsOption } from '../../../../../types';
 import CustomSelect from '../custom-select';
-import { getMarkAsOptions } from '../utils';
 
 type MarkAsProps = {
 	onChange: (option: MarkAsOption) => void;
+	options: MarkAsOption[];
 	selected?: { flagName?: string };
 };
 
-export const MarkAs = ({ onChange, selected }: MarkAsProps): React.JSX.Element => {
-	const [t] = useTranslation();
-	const options = useMemo(() => getMarkAsOptions(t), [t]);
+export const MarkAs = ({ onChange, selected, options }: MarkAsProps): React.JSX.Element => {
 	const defaultSelection = selected?.flagName === 'flagged' ? options[1] : options[0];
 	return (
 		<Row padding={{ right: 'small' }} minWidth="12.5rem">

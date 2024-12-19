@@ -55,46 +55,6 @@ export type ListPropsType = {
 	toggle: (arg: string) => void;
 	unSelect: () => void;
 };
-
-export type FilterActions = {
-	actionFileInto?: [
-		{
-			folderPath: string;
-			index: string;
-		}
-	];
-	actionRedirect?: [
-		{
-			a: string;
-			index: string;
-		}
-	];
-	actionFlag?: [
-		{
-			flagName: string;
-			index: string;
-		}
-	];
-	actionStop?: [
-		{
-			index?: string;
-		}
-	];
-	actionTag?: [
-		{
-			index?: string;
-			tagName: string | undefined;
-		}
-	];
-	actionDiscard?: {
-		index: string;
-	};
-	actionKeep?: [
-		{
-			index?: string;
-		}
-	];
-};
 export type MarkAsOption = {
 	label: string;
 	value: { actionFlag: { flagName: string }[] };
@@ -119,36 +79,47 @@ type ActionTag = {
 // TODO: refactor the code and remove me after I'm not anymore needed
 type CommonAction = {
 	id?: string;
-	actionStop?: [unknown];
+	actionStop?: [Record<string, never>];
 	// Only here for MarkAs
 	label?: string;
 	value?: string;
 };
-type FilterKeep = {
-	actionKeep: [unknown];
+type FilterKeep = CommonAction & {
+	actionKeep: [Record<string, never>];
 };
-type FilterRedirect = {
+type FilterRedirect = CommonAction & {
 	actionRedirect: [ActionRedirect];
 };
-type FilterFlag = {
+type FilterFlag = CommonAction & {
 	actionFlag: [ActionFlag];
 };
-type FilterFileInto = {
+type FilterFileInto = CommonAction & {
 	actionFileInto: [ActionFileInto];
 };
-type FilterDiscard = {
-	actionDiscard: [unknown];
+type FilterDiscard = CommonAction & {
+	actionDiscard: [Record<string, never>];
 };
-type FilterTag = {
+type FilterTag = CommonAction & {
 	actionTag: [ActionTag];
 };
+type FilterStop = CommonAction & {
+	actionStop: [Record<string, never>];
+};
 
-export type FilterAction = CommonAction &
-	(FilterKeep | FilterRedirect | FilterTag | FilterFlag | FilterFileInto | FilterDiscard);
+export type FilterAction =
+	| FilterKeep
+	| FilterRedirect
+	| FilterTag
+	| FilterFlag
+	| FilterFileInto
+	| FilterDiscard
+	| FilterStop;
 
-export type CompProps = {
+export type FilterActionsProps = {
 	isIncoming: boolean;
 	tempActions: Array<FilterAction>;
 	setTempActions: (tempActions: Array<FilterAction>) => void;
 	zimbraFeatureMailForwardingInFiltersEnabled: 'TRUE' | 'FALSE';
 };
+
+export type FilterActions = Array<FilterAction>;
