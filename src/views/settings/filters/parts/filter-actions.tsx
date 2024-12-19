@@ -20,7 +20,36 @@ type ComponentProps = {
 };
 const FilterActionConditions: FC<ComponentProps> = ({ compProps }): ReactElement => {
 	const [t] = useTranslation();
-	const { tempActions, setTempActions } = compProps;
+	const {
+		tempActions: actions,
+		setTempActions: setActions,
+		isIncoming,
+		zimbraFeatureMailForwardingInFiltersEnabled
+	} = compProps;
+	const onAddAction = useCallback(() => {
+		const newActions = actions.slice();
+		newActions.push({ actionKeep: [{}], actionStop: [{}], id: uuidv4() });
+		setActions(newActions);
+	}, [actions, setActions]);
+
+	const onRemoveAction = useCallback(
+		(indexToRemove: number) => () => {
+			const newActions = actions.slice();
+			newActions.splice(indexToRemove, 1);
+			setActions(newActions);
+		},
+		[actions, setActions]
+	);
+
+	const onActionUpdate = useCallback(
+		(indexToUpdate: number) => (newAction: FilterAction) => {
+			const newActions = actions.slice();
+			const oldValue = newActions[indexToUpdate];
+			newActions[indexToUpdate] = { id: oldValue.id, ...newAction };
+			setActions(newActions);
+		},
+		[actions, setActions]
+	);
 	const tagOptions = useMemo(
 		() =>
 			map(getTags(), (item) => ({
@@ -29,47 +58,22 @@ const FilterActionConditions: FC<ComponentProps> = ({ compProps }): ReactElement
 			})),
 		[]
 	);
-
-	const onAddAction = useCallback(() => {
-		const newActions = tempActions.slice();
-		newActions.push({ actionKeep: [{}], actionStop: [{}], id: uuidv4() });
-		setTempActions(newActions);
-	}, [setTempActions, tempActions]);
-
-	const onRemoveAction = useCallback(
-		(indexToRemove: number) => () => {
-			const newActions = tempActions.slice();
-			newActions.splice(indexToRemove, 1);
-			setTempActions(newActions);
-		},
-		[setTempActions, tempActions]
-	);
-
-	const onActionUpdate = useCallback(
-		(indexToUpdate: number) => (newAction: FilterAction) => {
-			const newActions = tempActions.slice();
-			const oldValue = newActions[indexToUpdate];
-			newActions[indexToUpdate] = { id: oldValue.id, ...newAction };
-			setTempActions(newActions);
-		},
-		[setTempActions, tempActions]
-	);
 	return (
 		<Container padding={{ top: 'medium' }} crossAlignment="flex-start" mainAlignment="flex-start">
 			<Heading title={t('settings.actions', 'Actions')} size="medium" />
 			<Text>{t('settings.perform_following_action', 'Perform the following actions:')}</Text>
 			<Container padding={{ top: 'small' }} mainAlignment="flex-start">
-				{map(tempActions, (tempAction, index: number) => (
+				{map(actions, (tempAction, index: number) => (
 					<FilterActionRow
 						key={`filter-action-row-${index}`}
-						index={index}
+						mailForwardingEnabled={zimbraFeatureMailForwardingInFiltersEnabled}
+						isIncomingFilter={isIncoming}
 						onAddNewAction={onAddAction}
 						onRemoveAction={onRemoveAction(index)}
 						onActionSwitch={onActionUpdate(index)}
-						disableRemove={tempActions.length > 1}
+						disableRemove={actions.length > 1}
 						onDefaultActionValueChange={onActionUpdate(index)}
 						defaultAction={tempAction}
-						compProps={compProps}
 						tagOptions={tagOptions}
 					/>
 				))}

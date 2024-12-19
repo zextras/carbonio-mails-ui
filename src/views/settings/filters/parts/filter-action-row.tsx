@@ -6,6 +6,7 @@
 import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
 
 import { Button, Container, Padding, Row, Text, Tooltip } from '@zextras/carbonio-design-system';
+import { noop } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -18,12 +19,11 @@ import { getActionOptions } from './utils';
 import { CONTACT_TYPES } from '../../../../carbonio-ui-commons/integrations/constants';
 import { ContactInputItem } from '../../../../carbonio-ui-commons/integrations/types';
 import { Folder } from '../../../../carbonio-ui-commons/types/folder';
-import { FilterAction, CompProps, MailFilterTag } from '../../../../types';
+import { FilterAction, MailFilterTag } from '../../../../types';
 
 type FilterActionRowProps = {
-	index: number;
-	compProps: Pick<CompProps, 'zimbraFeatureMailForwardingInFiltersEnabled'> &
-		Pick<CompProps, 'isIncoming'>;
+	mailForwardingEnabled: 'TRUE' | 'FALSE';
+	isIncomingFilter: boolean;
 	tagOptions?: Array<MailFilterTag>;
 	defaultAction: FilterAction;
 	onActionSwitch: (action: FilterAction) => void;
@@ -42,8 +42,8 @@ type ActiveOption =
 	| 'discard';
 
 export const FilterActionRow: FC<FilterActionRowProps> = ({
-	index,
-	compProps,
+	isIncomingFilter,
+	mailForwardingEnabled,
 	tagOptions,
 	defaultAction,
 	onAddNewAction,
@@ -52,13 +52,12 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 	disableRemove,
 	onDefaultActionValueChange
 }): ReactElement => {
-	const { isIncoming, zimbraFeatureMailForwardingInFiltersEnabled } = compProps;
 	const [activeIndex, setActiveIndex] = useState(0);
 	const [isRedirectToActionRemoved, setIsRedirectToActionRemoved] = useState(false);
 	const [t] = useTranslation();
 	const actionOptions = useMemo(
-		() => getActionOptions(t, zimbraFeatureMailForwardingInFiltersEnabled, isIncoming ?? false),
-		[t, zimbraFeatureMailForwardingInFiltersEnabled, isIncoming]
+		() => getActionOptions(t, mailForwardingEnabled, isIncomingFilter ?? false),
+		[t, mailForwardingEnabled, isIncomingFilter]
 	);
 	const [tag, setTag] = useState<Array<MailFilterTag>>([]);
 
@@ -88,10 +87,7 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 	);
 
 	const defaultValue = useMemo(() => {
-		if (
-			'actionRedirect' in defaultAction &&
-			zimbraFeatureMailForwardingInFiltersEnabled === 'FALSE'
-		) {
+		if ('actionRedirect' in defaultAction && mailForwardingEnabled === 'FALSE') {
 			setIsRedirectToActionRemoved(true);
 			onDefaultActionValueChange({ actionKeep: [{}] });
 			return actionOptions[0];
@@ -138,12 +134,7 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 				: []
 		);
 		return actionOptions[3];
-	}, [
-		defaultAction,
-		zimbraFeatureMailForwardingInFiltersEnabled,
-		actionOptions,
-		onDefaultActionValueChange
-	]);
+	}, [defaultAction, mailForwardingEnabled, actionOptions, onDefaultActionValueChange]);
 
 	// TODO: pass me from outside
 	const onRemove = useMemo(
@@ -201,11 +192,6 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 		[defaultAction, isRedirectToActionRemoved, onActionSwitch]
 	);
 
-	// TODO: check me, what is it useful for?
-	const onSelectFolder = useCallback(() => {
-		setActiveIndex(index);
-	}, [setActiveIndex, index]);
-
 	const onTagChange = useCallback(
 		(chip: MailFilterTag[]) => {
 			if (chip.length > 0) {
@@ -229,6 +215,7 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 		},
 		[onDefaultActionValueChange]
 	);
+	// TODO: check what we need to do 'on select folder' also as it is not clear
 
 	const confirmMoveToFolder = useCallback(
 		(folderDestination: Folder | undefined) => {
@@ -271,10 +258,11 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 							</Text>
 						</Row>
 					)}
+
 				{showBrowseBtn && (
 					<MovetoFolder
 						destination={defaultMoveToFolder}
-						onSelectFolder={onSelectFolder}
+						onSelectFolder={noop}
 						onConfirmDestination={confirmMoveToFolder}
 					/>
 				)}
