@@ -6,8 +6,6 @@
 
 import { ChipProps } from '@zextras/carbonio-design-system';
 
-import { TempAction } from '../../views/settings/filters/parts/filter-action-row';
-
 export type FilterTest = Record<string, string | Array<any>>;
 
 export type Filter = {
@@ -139,3 +137,30 @@ export type CompProps = {
 	setTempActions: (tempActions: Array<TempAction>) => void;
 	zimbraFeatureMailForwardingInFiltersEnabled: 'TRUE' | 'FALSE';
 };
+
+type FilterKeep = {
+	actionKeep: [object];
+};
+type FilterRedirect = {
+	actionRedirect: [{ a?: string }];
+};
+type FilterFlag = {
+	actionFlag: [{ flagName?: string }];
+};
+type FilterFileInto = {
+	actionFileInto: [{ folderPath?: string }];
+};
+type FilterDiscard = {
+	actionDiscard: [object];
+};
+type FilterTag = {
+	actionTag: [{ tagName?: string }];
+};
+
+export type ActionOption =
+	| FilterKeep
+	| FilterRedirect
+	| FilterTag
+	| FilterFlag
+	| FilterFileInto
+	| FilterDiscard;

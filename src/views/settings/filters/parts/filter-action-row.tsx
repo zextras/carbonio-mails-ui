@@ -18,41 +18,23 @@ import { getActionOptions } from './utils';
 import { CONTACT_TYPES } from '../../../../carbonio-ui-commons/integrations/constants';
 import { ContactInputItem } from '../../../../carbonio-ui-commons/integrations/types';
 import { Folder } from '../../../../carbonio-ui-commons/types/folder';
-import { CompProps, MailFilterTag } from '../../../../types';
-
-type FilterKeep = {
-	actionKeep: [object];
-};
-type FilterRedirect = {
-	actionRedirect: [{ a?: string }];
-};
-type FilterFlag = {
-	actionFlag: [{ flagName?: string }];
-};
-type FilterFileInto = {
-	actionFileInto: [{ folderPath?: string }];
-};
-type FilterDiscard = {
-	actionDiscard: [object];
-};
-type FilterTag = {
-	actionTag: [{ tagName?: string }];
-};
-
-type DefaultAction =
-	| FilterKeep
-	| FilterRedirect
-	| FilterTag
-	| FilterFlag
-	| FilterFileInto
-	| FilterDiscard;
+import { ActionOption, CompProps, MailFilterTag } from '../../../../types';
 
 type FilterActionRowProps = {
 	index: number;
 	compProps: CompProps;
 	tagOptions?: Array<MailFilterTag>;
-	defaultAction: DefaultAction;
+	defaultAction: ActionOption;
+	onActionChange?: (action: ActionOption) => void;
 };
+
+type ActiveOption =
+	| 'inbox'
+	| 'markAs'
+	| 'moveIntoFolder'
+	| 'tagWith'
+	| 'redirectToAddress'
+	| 'discard';
 
 export const FilterActionRow: FC<FilterActionRowProps> = ({
 	index,
@@ -77,21 +59,21 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 		setTempActions(previousTempActions);
 	}, [tempActions, setTempActions]);
 
-	const [activeActionOption, setActiveActionOption] = useState<string>('actionKeep');
-	const showMarksAsBtn = useMemo(() => activeActionOption === 'actionFlag', [activeActionOption]);
+	const [activeActionOption, setActiveActionOption] = useState<ActiveOption>('inbox');
+	const showMarksAsBtn = useMemo(() => activeActionOption === 'markAs', [activeActionOption]);
 	const showRedirectToAddrsInput = useMemo(
-		() => activeActionOption === 'actionRedirect',
+		() => activeActionOption === 'redirectToAddress',
 		[activeActionOption]
 	);
 	const showBrowseBtn = useMemo(
-		() => activeActionOption === 'actionFileInto',
+		() => activeActionOption === 'moveIntoFolder',
 		[activeActionOption]
 	);
-	const showTagOptions = useMemo(() => activeActionOption === 'actionTag', [activeActionOption]);
+	const showTagOptions = useMemo(() => activeActionOption === 'tagWith', [activeActionOption]);
 
 	const [contacts, setContacts] = useState<ContactInputItem[]>([]);
 
-	const onChange = useCallback(
+	const onRedirectToChange = useCallback(
 		(users: ContactInputItem[]): void => {
 			const previous = tempActions.slice();
 			const email = users?.length > 0 ? users[0].value.email : '';
@@ -123,15 +105,15 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 			return actionOptions[0];
 		}
 		if ('actionFileInto' in defaultAction) {
-			setActiveActionOption('actionFileInto');
+			setActiveActionOption('moveIntoFolder');
 			return actionOptions[2];
 		}
 		if ('actionFlag' in defaultAction) {
-			setActiveActionOption('actionFlag');
+			setActiveActionOption('markAs');
 			return actionOptions[4];
 		}
 		if ('actionRedirect' in defaultAction) {
-			setActiveActionOption('actionRedirect');
+			setActiveActionOption('redirectToAddress');
 			const email = defaultAction.actionRedirect[0].a;
 			if (email) {
 				setContacts([
@@ -146,7 +128,7 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 			}
 			return actionOptions[5];
 		}
-		setActiveActionOption('actionTag');
+		setActiveActionOption('tagWith');
 		const { tagName } = defaultAction.actionTag[0];
 		setTag(
 			tagName
@@ -182,7 +164,7 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 		[disableRemove, removeFilterCondition, index]
 	);
 	const onActionOptionChange = useCallback(
-		(str: string) => {
+		(str: ActiveOption) => {
 			switch (str) {
 				case 'discard': {
 					const previous = tempActions.slice();
@@ -206,7 +188,6 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 						setTempActions(previous);
 						setTag([]);
 					}
-
 					break;
 				}
 				case 'moveIntoFolder': {
@@ -324,7 +305,9 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 				)}
 				{showMarksAsBtn && <MarkAs selected={defaultMarkAs} onChange={handleMarkAsOptionChange} />}
 
-				{showRedirectToAddrsInput && <RedirectTo defaultValue={contacts} onChange={onChange} />}
+				{showRedirectToAddrsInput && (
+					<RedirectTo defaultValue={contacts} onChange={onRedirectToChange} />
+				)}
 
 				{showTagOptions && (
 					<ShowTag
