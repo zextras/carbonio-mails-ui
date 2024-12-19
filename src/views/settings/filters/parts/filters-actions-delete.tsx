@@ -45,7 +45,7 @@ type ComponentProps = {
 		outgoingFilters: ListType;
 	};
 };
-const FilterActions: FC<ComponentProps> = ({ compProps }): ReactElement => {
+const FilterActionsDelete: FC<ComponentProps> = ({ compProps }): ReactElement => {
 	const { t, availableList, activeList, selectedFilterType, outgoingFilters } = compProps;
 	const {
 		setFetchIncomingFilters,
@@ -213,4 +213,4 @@ const FilterActions: FC<ComponentProps> = ({ compProps }): ReactElement => {
 	);
 };
 
-export default FilterActions;
+export default FilterActionsDelete;

@@ -17,7 +17,7 @@ import Heading from '../../components/settings-heading';
 type ComponentProps = {
 	compProps: CompProps;
 };
-const FilterActionConditions: FC<ComponentProps> = ({ compProps }): ReactElement => {
+export const FilterActionsPanel: FC<ComponentProps> = ({ compProps }): ReactElement => {
 	const [t] = useTranslation();
 	const {
 		tempActions: actions,
@@ -83,5 +83,3 @@ const FilterActionConditions: FC<ComponentProps> = ({ compProps }): ReactElement
 		</Container>
 	);
 };
-
-export default FilterActionConditions;

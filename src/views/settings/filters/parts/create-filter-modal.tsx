@@ -14,7 +14,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { CreateFilterContext } from './create-filter-context';
 import ModalFooter from './create-filter-modal-footer';
 import DefaultCondition from './create-filters-conditions/default';
-import FilterActionConditions from './filter-actions';
+import { FilterActionsPanel } from './filter-actions-panel';
 import { FilterConditionsPanel } from './filter-conditions-panel';
 import { getButtonInfo } from './utils';
 import ModalHeader from '../../../../carbonio-ui-commons/components/modals/modal-header';
@@ -199,7 +199,7 @@ const CreateFilterModal: FC<ComponentProps> = ({
 					<FilterConditionsPanel compProps={filterTestConditionRowProps} />
 					<Padding top="medium" />
 					<Divider />
-					<FilterActionConditions compProps={filterActionProps} />
+					<FilterActionsPanel compProps={filterActionProps} />
 				</Row>
 				<ModalFooter
 					label={t('label.create', 'Create')}
