@@ -45,11 +45,11 @@ const FilterActionConditions: FC<ComponentProps> = ({ compProps }): ReactElement
 		[setTempActions, tempActions]
 	);
 
-	const onActionChange = useCallback(
-		(indexToUpdate: number) => (newActionValue: FilterAction) => {
+	const onActionUpdate = useCallback(
+		(indexToUpdate: number) => (newAction: FilterAction) => {
 			const newActions = tempActions.slice();
 			const oldValue = newActions[indexToUpdate];
-			newActions[indexToUpdate] = { id: oldValue.id, ...newActionValue };
+			newActions[indexToUpdate] = { id: oldValue.id, ...newAction };
 			setTempActions(newActions);
 		},
 		[setTempActions, tempActions]
@@ -65,7 +65,9 @@ const FilterActionConditions: FC<ComponentProps> = ({ compProps }): ReactElement
 						index={index}
 						onAddNewAction={onAddAction}
 						onRemoveAction={onRemoveAction(index)}
-						onActionChange={onActionChange(index)}
+						onActionSwitch={onActionUpdate(index)}
+						disableRemove={tempActions.length > 1}
+						onDefaultActionValueChange={onActionUpdate(index)}
 						defaultAction={tempAction}
 						compProps={compProps}
 						tagOptions={tagOptions}

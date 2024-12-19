@@ -22,11 +22,14 @@ import { FilterAction, CompProps, MailFilterTag } from '../../../../types';
 
 type FilterActionRowProps = {
 	index: number;
-	compProps: CompProps;
+	compProps: Pick<CompProps, 'zimbraFeatureMailForwardingInFiltersEnabled'> &
+		Pick<CompProps, 'isIncoming'>;
 	tagOptions?: Array<MailFilterTag>;
 	defaultAction: FilterAction;
-	onActionChange: (action: FilterAction) => void;
+	onActionSwitch: (action: FilterAction) => void;
+	onDefaultActionValueChange: (action: FilterAction) => void;
 	onRemoveAction: () => void;
+	disableRemove: boolean;
 	onAddNewAction: () => void;
 };
 
@@ -45,10 +48,11 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 	defaultAction,
 	onAddNewAction,
 	onRemoveAction,
-	onActionChange
+	onActionSwitch,
+	disableRemove,
+	onDefaultActionValueChange
 }): ReactElement => {
-	const { isIncoming, tempActions, setTempActions, zimbraFeatureMailForwardingInFiltersEnabled } =
-		compProps;
+	const { isIncoming, zimbraFeatureMailForwardingInFiltersEnabled } = compProps;
 	const [activeIndex, setActiveIndex] = useState(0);
 	const [isRedirectToActionRemoved, setIsRedirectToActionRemoved] = useState(false);
 	const [t] = useTranslation();
@@ -74,16 +78,13 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 
 	const onRedirectToChange = useCallback(
 		(users: ContactInputItem[]): void => {
-			const previous = tempActions.slice();
 			const email = users?.length > 0 ? users[0].value.email : '';
-			previous[index] = {
+			onDefaultActionValueChange({
 				actionRedirect: [{ a: email }],
 				id: uuidv4()
-			};
-			setContacts(users);
-			setTempActions(previous);
+			});
 		},
-		[index, setTempActions, tempActions]
+		[onDefaultActionValueChange]
 	);
 
 	const defaultValue = useMemo(() => {
@@ -92,9 +93,7 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 			zimbraFeatureMailForwardingInFiltersEnabled === 'FALSE'
 		) {
 			setIsRedirectToActionRemoved(true);
-			const previous = tempActions.slice();
-			previous[index] = { actionKeep: [{}], id: previous[index].id };
-			setTempActions(previous);
+			onDefaultActionValueChange({ actionKeep: [{}] });
 			return actionOptions[0];
 		}
 		if ('actionDiscard' in defaultAction) {
@@ -142,27 +141,16 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 	}, [
 		defaultAction,
 		zimbraFeatureMailForwardingInFiltersEnabled,
-		tempActions,
-		index,
-		setTempActions,
-		actionOptions
+		actionOptions,
+		onDefaultActionValueChange
 	]);
 
-	const removeFilterCondition = useCallback(
-		(indexToRemove: number) => (): void => {
-			const previousTempActions = tempActions.slice();
-			previousTempActions.splice(indexToRemove, 1);
-			setTempActions(previousTempActions);
-		},
-		[tempActions, setTempActions]
-	);
-
-	const disableRemove = useMemo(() => tempActions.length === 1, [tempActions]);
+	// TODO: pass me from outside
 	const onRemove = useMemo(
 		() => (disableRemove ? (): null => null : onRemoveAction),
 		[disableRemove, onRemoveAction]
 	);
-	const onActionOptionChange = useCallback(
+	const onSwitchAction = useCallback(
 		(str: ActiveOption) => {
 			let newAction: FilterAction = defaultAction;
 			switch (str) {
@@ -208,51 +196,47 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 				setIsRedirectToActionRemoved(false);
 			}
 			setActiveActionOption(str);
-			onActionChange(newAction);
+			onActionSwitch(newAction);
 		},
-		[defaultAction, isRedirectToActionRemoved, onActionChange]
+		[defaultAction, isRedirectToActionRemoved, onActionSwitch]
 	);
 
+	// TODO: check me, what is it useful for?
 	const onSelectFolder = useCallback(() => {
 		setActiveIndex(index);
 	}, [setActiveIndex, index]);
 
 	const onTagChange = useCallback(
 		(chip: MailFilterTag[]) => {
-			const previous = tempActions.slice();
 			if (chip.length > 0) {
 				const requiredTag = chip.length > 1 ? chip[1] : chip[0];
 				setTag([requiredTag]);
-				previous[index] = { id: previous[index]?.id, actionTag: [{ tagName: requiredTag.label }] };
+				onDefaultActionValueChange({
+					actionTag: [{ tagName: requiredTag.label }]
+				});
 			} else {
-				previous[index] = { id: previous[index]?.id, actionTag: [{ tagName: '' }] };
+				onDefaultActionValueChange({ actionTag: [{ tagName: '' }] });
 				setTag([]);
 			}
-			setTempActions(previous);
 		},
-		[setTag, tempActions, setTempActions, index]
+		[onDefaultActionValueChange]
 	);
 
 	const handleMarkAsOptionChange = useCallback(
 		(option: { label: string; value: any }) => {
-			const previous = tempActions.slice();
-			// TODO: how do I 100% know this option is markAs?
-			previous[index] = option;
-			setTempActions(previous);
+			// TODO: check me
+			onDefaultActionValueChange({ actionFlag: [{ flagName: option.value }] });
 		},
-		[tempActions, index, setTempActions]
+		[onDefaultActionValueChange]
 	);
 
-	const confirmAction = useCallback(
+	const confirmMoveToFolder = useCallback(
 		(folderDestination: Folder | undefined) => {
-			const previous = tempActions.slice();
-			previous[activeIndex] = {
-				id: previous[activeIndex]?.id,
+			onDefaultActionValueChange({
 				actionFileInto: [{ folderPath: `${folderDestination?.absFolderPath}` }]
-			};
-			setTempActions(previous);
+			});
 		},
-		[tempActions, activeIndex, setTempActions]
+		[onDefaultActionValueChange]
 	);
 
 	const defaultMarkAs = 'actionFlag' in defaultAction ? defaultAction.actionFlag[0] : undefined;
@@ -275,7 +259,7 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 						items={actionOptions}
 						background="gray5"
 						label={t('settings.actions', 'Actions')}
-						onChange={onActionOptionChange}
+						onChange={onSwitchAction}
 						defaultSelection={defaultValue}
 					/>
 				</Row>
@@ -291,7 +275,7 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 					<MovetoFolder
 						destination={defaultMoveToFolder}
 						onSelectFolder={onSelectFolder}
-						onConfirmDestination={confirmAction}
+						onConfirmDestination={confirmMoveToFolder}
 					/>
 				)}
 				{showMarksAsBtn && <MarkAs selected={defaultMarkAs} onChange={handleMarkAsOptionChange} />}
