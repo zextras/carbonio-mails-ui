@@ -97,6 +97,10 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 		if ('actionKeep' in defaultAction) {
 			return actionOptions[0];
 		}
+		// TODO: check me, what is the meaning of having just a stop action?
+		if ('actionStop' in defaultAction) {
+			return actionOptions[0];
+		}
 		if ('actionFileInto' in defaultAction) {
 			setActiveActionOption('moveIntoFolder');
 			return actionOptions[2];

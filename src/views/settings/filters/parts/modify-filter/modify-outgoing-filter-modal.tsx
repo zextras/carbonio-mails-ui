@@ -135,8 +135,8 @@ const ModifyOutgoingFilterModal: FC<ComponentProps> = ({
 	const requiredFilters = useMemo(
 		() => ({
 			filterActions: dontProcessAddFilters
-				? ([{ ...omit(finalActions, 'id'), actionStop: [{}] }] as FilterActions[])
-				: ([{ ...omit(finalActions, 'id') }] as FilterActions[]),
+				? ([{ ...omit(finalActions, 'id'), actionStop: [{}] }] as FilterActions)
+				: ([{ ...omit(finalActions, 'id') }] as FilterActions),
 			active: activeFilter,
 			name: filterName,
 			filterTests: [
