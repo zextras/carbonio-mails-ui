@@ -4,16 +4,16 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React, { FC, RefObject, memo, useEffect, useMemo } from 'react';
+import React, { RefObject, memo, useEffect, useMemo } from 'react';
 
 import { Container, Divider, Padding, Text } from '@zextras/carbonio-design-system';
-import { find, map, noop, reduce } from 'lodash';
+import { map, noop } from 'lodash';
 import styled from 'styled-components';
 
 import { ConversationListItemComponent } from './conversation-list-item-component';
 import { CustomList } from '../../../../carbonio-ui-commons/components/list/list';
 import { useFolder, useRoot } from '../../../../carbonio-ui-commons/store/zustand/folder/hooks';
-import type { Conversation } from '../../../../types';
+import { getConversationById } from '../../../../store/zustand/emails/store';
 import ShimmerList from '../../../search/shimmer-list';
 import { Breadcrumbs } from '../parts/breadcrumbs';
 import { getFolderPath } from '../parts/utils/utils';
@@ -26,30 +26,16 @@ const DragImageContainer = styled.div`
 	width: 35vw;
 `;
 
-const DragItems: FC<{
-	conversations: Conversation[];
-	draggedIds: Record<string, boolean> | undefined;
-}> = ({ conversations, draggedIds }) => {
-	const items = reduce(
-		draggedIds,
-		(acc: Conversation[], v, k) => {
-			const obj = find(conversations, ['id', k]);
-			if (obj) {
-				return [...acc, obj];
-			}
-			return acc;
-		},
-		[]
-	);
-
-	return (
-		<>
-			{map(items, (item) => (
+const DragItems = ({ draggedIds }: { draggedIds: Record<string, boolean> }): React.JSX.Element => (
+	<>
+		{map(Object.keys(draggedIds), (draggedItemId) => {
+			const conversation = getConversationById(draggedItemId);
+			return (
 				<ConversationListItemComponent
-					item={item}
-					key={item.id}
+					conversationId={conversation.id}
+					key={conversation.id}
 					draggedIds={draggedIds}
-					activeItemId={item.id}
+					activeItemId={conversation.id}
 					selected={false}
 					selecting={false}
 					toggle={noop}
@@ -58,10 +44,10 @@ const DragItems: FC<{
 					folderId=""
 					setDraggedIds={noop}
 				/>
-			))}
-		</>
-	);
-};
+			);
+		})}
+	</>
+);
 
 export type ConversationListComponentProps = {
 	// the text to display in the side panel
@@ -79,7 +65,7 @@ export type ConversationListComponentProps = {
 	// the id of the current folder
 	folderId: string;
 	// the conversations to display
-	conversations: Array<Conversation>;
+	conversationsIds: Set<string>;
 	// the ids of the conversations being dragged
 	draggedIds?: Record<string, boolean>;
 	// the function to call when the user starts dragging a conversation
@@ -106,113 +92,111 @@ export type ConversationListComponentProps = {
 	hasMore?: boolean;
 };
 
-export const ConversationListComponent: FC<ConversationListComponentProps> = memo(
-	function ConversationListComponent({
-		displayerTitle,
-		isSearchModule,
-		isSelectModeOn,
-		folderId,
-		conversations,
-		selected,
-		deselectAll,
-		selectAll,
-		isAllSelected,
-		selectAllModeOff,
-		setIsSelectModeOn,
-		conversationsLoadingCompleted,
-		draggedIds,
-		setDraggedIds,
-		loadMore = noop,
-		listItems,
-		totalConversations,
-		dragImageRef,
-		listRef,
-		hasMore
-	}) {
-		useEffect(() => {
-			setDraggedIds && setDraggedIds(selected);
-		}, [selected, setDraggedIds]);
+export const ConversationListComponent = memo(function ConversationListComponent({
+	displayerTitle,
+	isSearchModule,
+	isSelectModeOn,
+	folderId,
+	conversationsIds,
+	selected,
+	deselectAll,
+	selectAll,
+	isAllSelected,
+	selectAllModeOff,
+	setIsSelectModeOn,
+	conversationsLoadingCompleted,
+	draggedIds,
+	setDraggedIds,
+	loadMore = noop,
+	listItems,
+	totalConversations,
+	dragImageRef,
+	listRef,
+	hasMore
+}: ConversationListComponentProps): React.JSX.Element {
+	useEffect(() => {
+		setDraggedIds?.(selected);
+	}, [selected, setDraggedIds]);
 
-		const folder = useFolder(folderId);
-		const root = useRoot(folder?.id ?? '');
+	const folder = useFolder(folderId);
+	const root = useRoot(folder?.id ?? '');
 
-		const folderPath = useMemo(
-			() => getFolderPath(folder, root, isSearchModule),
-			[root, folder, isSearchModule]
-		);
+	const folderPath = useMemo(
+		() => getFolderPath(folder, root, isSearchModule),
+		[root, folder, isSearchModule]
+	);
 
-		const showBreadcrumbs = useMemo(
-			() =>
-				!isSearchModule ||
-				typeof isSearchModule === 'undefined' ||
-				(isSearchModule && totalConversations > 0),
-			[isSearchModule, totalConversations]
-		);
+	const showBreadcrumbs = useMemo(
+		() =>
+			!isSearchModule ||
+			typeof isSearchModule === 'undefined' ||
+			(isSearchModule && totalConversations > 0),
+		[isSearchModule, totalConversations]
+	);
 
-		const selectedIds = useMemo(() => Object.keys(selected), [selected]);
+	const selectedIds = useMemo(() => Object.keys(selected), [selected]);
 
-		return (
-			<>
-				{isSelectModeOn ? (
-					<></>
-				) : (
-					// TODO: CO-1725 re-enable this
-					// <MultipleSelectionActionsPanel
-					// 	items={conversations}
-					// 	folderId={folderId}
-					// 	selectedIds={selectedIds}
-					// 	deselectAll={deselectAll}
-					// 	selectAll={selectAll}
-					// 	isAllSelected={isAllSelected}
-					// 	selectAllModeOff={selectAllModeOff}
-					// 	setIsSelectModeOn={setIsSelectModeOn}
-					// />
-					showBreadcrumbs && (
-						<Breadcrumbs
-							folderPath={folderPath}
-							itemsCount={totalConversations}
-							isSelectModeOn={isSelectModeOn}
-							setIsSelectModeOn={setIsSelectModeOn}
-							folderId={folderId}
-							isSearchModule={isSearchModule}
-						/>
-					)
-				)}
-				{conversationsLoadingCompleted ? (
-					<>
-						<Divider color="gray2" />
-						{totalConversations > 0 || hasMore ? (
-							<CustomList
-								onListBottom={(): void => {
-									loadMore && loadMore();
-								}}
-								data-testid={`conversation-list-${folderId}`}
-								ref={listRef}
-							>
-								{listItems}
-							</CustomList>
-						) : (
-							<Container>
-								<Padding top="medium">
-									<Text
-										color="gray1"
-										overflow="break-word"
-										size="small"
-										style={{ whiteSpace: 'pre-line', textAlign: 'center', paddingTop: '2rem' }}
-									>
-										{displayerTitle}
-									</Text>
-								</Padding>
-							</Container>
-						)}
-						<DragImageContainer ref={dragImageRef}>
-							<DragItems conversations={conversations} draggedIds={draggedIds} />
-						</DragImageContainer>
-					</>
-				) : (
-					<ShimmerList count={totalConversations} delay={500} />
-				)}
-			</>
-		);
-	}
-);
+	return (
+		<>
+			{isSelectModeOn ? (
+				<></>
+			) : (
+				// TODO: CO-1725 re-enable this
+				// <MultipleSelectionActionsPanel
+				// 	items={conversations}
+				// 	folderId={folderId}
+				// 	selectedIds={selectedIds}
+				// 	deselectAll={deselectAll}
+				// 	selectAll={selectAll}
+				// 	isAllSelected={isAllSelected}
+				// 	selectAllModeOff={selectAllModeOff}
+				// 	setIsSelectModeOn={setIsSelectModeOn}
+				// />
+				showBreadcrumbs && (
+					<Breadcrumbs
+						folderPath={folderPath}
+						itemsCount={totalConversations}
+						isSelectModeOn={isSelectModeOn}
+						setIsSelectModeOn={setIsSelectModeOn}
+						folderId={folderId}
+						isSearchModule={isSearchModule}
+					/>
+				)
+			)}
+			{conversationsLoadingCompleted ? (
+				<>
+					<Divider color="gray2" />
+					{totalConversations > 0 || hasMore ? (
+						<CustomList
+							onListBottom={(): void => {
+								loadMore && loadMore();
+							}}
+							data-testid={`conversation-list-${folderId}`}
+							ref={listRef}
+						>
+							{listItems}
+						</CustomList>
+					) : (
+						<Container>
+							<Padding top="medium">
+								<Text
+									color="gray1"
+									overflow="break-word"
+									size="small"
+									style={{ whiteSpace: 'pre-line', textAlign: 'center', paddingTop: '2rem' }}
+								>
+									{displayerTitle}
+								</Text>
+							</Padding>
+						</Container>
+					)}
+					<DragImageContainer ref={dragImageRef}>
+						<DragItems draggedIds={draggedIds ?? {}} />
+					</DragImageContainer>
+				</>
+			) : (
+				<ShimmerList count={totalConversations} delay={500} />
+			)}
+		</>
+	);
+});

@@ -9,25 +9,20 @@ import React from 'react';
 import * as shell from '../../../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
 import { setupTest, screen } from '../../../../../carbonio-ui-commons/test/test-setup';
 import { getConv } from '../../../../../store/actions';
+import { generateConversation } from '../../../../../tests/generators/generateConversation';
 import { generateStore } from '../../../../../tests/generators/store';
 import { ConversationPreviewPanel } from '../../conversation-preview-panel';
 
+// TODO: CO-1725 fix it
 /**
  * Test the Conversation Preview Panel component in different scenarios
  */
 describe('Conversation Preview Panel', () => {
 	it('renders the Conversation Preview Panel component and every conversation message', async () => {
 		const conversationId = '1';
-		const store = generateStore();
-		await store.dispatch<any>(getConv({ conversationId }));
-		const state = store.getState();
-		const conversation = state.conversations.conversations[conversationId];
+		const conversation = generateConversation({ id: conversationId });
 
-		// Render the component
-		setupTest(
-			<ConversationPreviewPanel conversation={conversation} isInsideExtraWindow={false} />,
-			{ store }
-		);
+		setupTest(<ConversationPreviewPanel conversation={conversation} isInsideExtraWindow={false} />);
 		conversation.messages.forEach((message) => {
 			const mailPreviewDataTestId = `ConversationMessagePreview-${message.id}`;
 			expect(screen.getByTestId(mailPreviewDataTestId)).toBeInTheDocument();
@@ -50,7 +45,7 @@ describe('Conversation Preview Panel', () => {
 
 		const renderedMessagesIds = renderedMessages.map(
 			(message) => message.dataset.testid?.split('-')[1]
-		);
+		); 
 
 		const messagesSortedFromOldToNew = conversation.messages
 			.slice()

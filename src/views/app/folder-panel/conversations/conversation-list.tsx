@@ -3,47 +3,38 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 
 import { ListItem } from '@zextras/carbonio-design-system';
 import { t, useAppContext, useUserSettings } from '@zextras/carbonio-shell-ui';
-import { map } from 'lodash';
+import { map, noop } from 'lodash';
 import { useParams } from 'react-router-dom';
 
 import { ConversationListComponent } from './conversation-list-component';
 import { ConversationListItemComponent } from './conversation-list-item-component';
 import { FOLDERS } from '../../../../carbonio-ui-commons/constants/folders';
 import { useFolder } from '../../../../carbonio-ui-commons/store/zustand/folder/hooks';
-import {
-	API_REQUEST_STATUS,
-	LIST_LIMIT,
-	SEARCHED_FOLDER_STATE_STATUS
-} from '../../../../constants';
+import { API_REQUEST_STATUS } from '../../../../constants';
 import { getFolderIdParts } from '../../../../helpers/folders';
 import { parseMessageSortingOptions } from '../../../../helpers/sorting';
-import { useAppDispatch, useAppSelector } from '../../../../hooks/redux';
 import { useConversationKeyboardShortcuts } from '../../../../hooks/use-conversation-keyboard-shortcuts';
-import { useConversationListItems } from '../../../../hooks/use-conversation-list';
+import { useConversationListByFolder } from '../../../../hooks/use-conversations-list-by-folder';
 import { useSelection } from '../../../../hooks/use-selection';
-import { search } from '../../../../store/actions';
-import {
-	selectConversationsSearchRequestStatus,
-	selectFolderSearchStatus
-} from '../../../../store/conversations-slice';
-import type { AppContext } from '../../../../types';
+import type { AppContext, Folder } from '../../../../types';
 
-export const ConversationList: FC = () => {
+export const ConversationList = (): React.JSX.Element => {
 	const { folderId, itemId } = useParams<{ folderId: string; itemId: string }>();
 	const { setCount, count } = useAppContext<AppContext>();
-	const conversations = useConversationListItems();
+	const folder = useFolder(folderId);
+	const { conversationsIndexSlice } = useConversationListByFolder(folder as Folder);
+	const { status, conversationsIds } = conversationsIndexSlice;
 
 	const [draggedIds, setDraggedIds] = useState<Record<string, boolean>>();
 	const dragImageRef = useRef(null);
-	const dispatch = useAppDispatch();
-	const searchRequestStatus = useAppSelector(selectConversationsSearchRequestStatus);
 
-	const searchedInFolderStatus = useAppSelector(selectFolderSearchStatus(folderId));
-
+	const conversationIdsArray = [...conversationsIds].map((conversationId) => ({
+		id: conversationId
+	}));
 	const {
 		selected,
 		toggle,
@@ -53,38 +44,30 @@ export const ConversationList: FC = () => {
 		selectAll,
 		isAllSelected,
 		selectAllModeOff
-	} = useSelection({ setCount, count, items: conversations });
-
-	const folder = useFolder(folderId);
-	const hasMore = useMemo(
-		() => searchedInFolderStatus === SEARCHED_FOLDER_STATE_STATUS.hasMore,
-		[searchedInFolderStatus]
-	);
+	} = useSelection({ setCount, count, items: conversationIdsArray });
 
 	const { prefs } = useUserSettings();
 	const { sortOrder } = parseMessageSortingOptions(folderId, prefs.zimbraPrefSortOrder as string);
 
-	const loadMore = useCallback(() => {
-		if (!hasMore) return;
-		const offset = conversations.length;
-		dispatch(search({ folderId, offset, sortBy: sortOrder, limit: LIST_LIMIT.LOAD_MORE_LIMIT }));
-	}, [hasMore, conversations.length, dispatch, folderId, sortOrder]);
+	// TODO CO-1725 fix it
+	const loadMore = noop;
 
 	const keyboardActions = useConversationKeyboardShortcuts({
 		conversationId: itemId,
 		deselectAll,
 		folderId
 	});
+
 	useEffect(() => {
 		const handler = (event: KeyboardEvent): void => keyboardActions(event);
 		document.addEventListener('keydown', handler);
 		return () => {
 			document.removeEventListener('keydown', handler);
 		};
-	}, [folderId, itemId, conversations, dispatch, deselectAll, keyboardActions]);
+	}, [folderId, itemId, deselectAll, keyboardActions]);
 
 	const displayerTitle = useMemo(() => {
-		if (conversations?.length === 0) {
+		if (conversationsIds?.size === 0) {
 			if (getFolderIdParts(folderId).id === FOLDERS.SPAM) {
 				return t('displayer.list_spam_title', 'There are no spam e-mails');
 			}
@@ -100,24 +83,19 @@ export const ConversationList: FC = () => {
 			return t('displayer.list_folder_title', 'It looks like there are no e-mails yet');
 		}
 		return null;
-	}, [conversations, folderId]);
+	}, [conversationsIds?.size, folderId]);
 
 	const listItems = useMemo(
 		() =>
-			map(conversations, (conversation) => {
-				const active = itemId === conversation.id;
-				const isSelected = selected[conversation.id];
+			map(conversationIdsArray, (item) => {
+				const active = itemId === item.id;
+				const isSelected = selected[item.id];
 				return (
-					<ListItem
-						active={active}
-						selected={isSelected}
-						background={conversation.read ? 'gray6' : 'gray5'}
-						key={conversation.id}
-					>
+					<ListItem active={active} selected={isSelected} background={'transparent'} key={item.id}>
 						{(visible: boolean): React.JSX.Element =>
 							visible ? (
 								<ConversationListItemComponent
-									item={conversation}
+									conversationId={item.id}
 									visible={visible}
 									selected={isSelected}
 									activeItemId={itemId}
@@ -138,18 +116,18 @@ export const ConversationList: FC = () => {
 					</ListItem>
 				);
 			}),
-		[conversations, deselectAll, folderId, isSelectModeOn, itemId, selected, toggle]
+		[conversationIdsArray, deselectAll, folderId, isSelectModeOn, itemId, selected, toggle]
 	);
 
 	const totalConversations = useMemo(
-		() => conversations.length ?? folder?.n ?? 0,
-		[conversations.length, folder?.n]
+		() => conversationsIds.size ?? folder?.n ?? 0,
+		[conversationsIds.size, folder?.n]
 	);
 	const selectedIds = useMemo(() => Object.keys(selected), [selected]);
 
 	const conversationsLoadingCompleted = useMemo(
-		() => searchRequestStatus === API_REQUEST_STATUS.fulfilled,
-		[searchRequestStatus]
+		() => status === API_REQUEST_STATUS.fulfilled,
+		[status]
 	);
 
 	return (
@@ -167,11 +145,11 @@ export const ConversationList: FC = () => {
 			selectAllModeOff={selectAllModeOff}
 			draggedIds={draggedIds}
 			folderId={folderId}
-			conversations={conversations}
+			conversationsIds={conversationsIds}
 			selected={selected}
 			deselectAll={deselectAll}
 			dragImageRef={dragImageRef}
-			hasMore={hasMore}
+			hasMore={conversationsIndexSlice.more}
 		/>
 	);
 };

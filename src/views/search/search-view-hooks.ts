@@ -49,9 +49,7 @@ function handleFulFilledConversationResults({
 	searchResponse: SearchResponse;
 	tags: Tags;
 }): void {
-	const conversations = map(searchResponse.c, (conv) =>
-		mapToNormalizedConversation({ c: conv, tags })
-	);
+	const conversations = map(searchResponse.c, (conv) => mapToNormalizedConversation({ c: conv }));
 
 	setSearchResultsByConversation(conversations, searchResponse.more);
 }
@@ -78,9 +76,7 @@ function handleLoadMoreResults({
 	tags: Tags;
 }): void {
 	if (searchResponse.c) {
-		const conversations = map(searchResponse.c, (conv) =>
-			mapToNormalizedConversation({ c: conv, tags })
-		);
+		const conversations = map(searchResponse.c, (conv) => mapToNormalizedConversation({ c: conv }));
 		const messages: (IncompleteMessage | MailMessage)[] = [];
 		searchResponse.c?.forEach((soapConversation) =>
 			soapConversation.m.forEach((soapMessage) =>

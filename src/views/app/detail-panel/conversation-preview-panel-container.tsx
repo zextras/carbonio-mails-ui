@@ -14,9 +14,7 @@ import { ConversationPreviewPanel } from './conversation-preview-panel';
 import PreviewPanelHeader from './preview/preview-panel-header';
 import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
 import { getFolderIdParts } from '../../../helpers/folders';
-import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
-import { getConv } from '../../../store/actions';
-import { selectConversation } from '../../../store/conversations-slice';
+import { useConversationById } from '../../../store/zustand/emails/store';
 import { useExtraWindow } from '../extra-windows/use-extra-window';
 
 type ConversationPreviewPanelProps = { conversationId?: string; folderId?: string };
@@ -34,8 +32,7 @@ export const useConversationPreviewPanelParameters = (
 export const ConversationPreviewPanelContainer: FC<ConversationPreviewPanelProps> = (props) => {
 	const { conversationId, folderId } = useConversationPreviewPanelParameters(props);
 	const { isInsideExtraWindow } = useExtraWindow();
-	const dispatch = useAppDispatch();
-	const conversation = useAppSelector(selectConversation(conversationId));
+	const conversation = useConversationById(conversationId);
 
 	const onConversationIdChange = useCallback(
 		(newConversationId: string): void => {
@@ -46,9 +43,10 @@ export const ConversationPreviewPanelContainer: FC<ConversationPreviewPanelProps
 
 	useEffect(() => {
 		if (isEmpty(conversation)) {
-			dispatch(getConv({ conversationId, onConversationIdChange }));
+			// TODO CO-1725 fix it
+			// dispatch(getConv({ conversationId, onConversationIdChange }));
 		}
-	}, [conversation, dispatch, conversationId, onConversationIdChange]);
+	}, [conversation, conversationId, onConversationIdChange]);
 
 	const showPreviewPanel = useMemo(
 		(): boolean | undefined =>
@@ -73,7 +71,7 @@ export const ConversationPreviewPanelContainer: FC<ConversationPreviewPanelProps
 					)}
 					<ConversationPreviewPanel
 						data-testid={`conversation-preview-panel-${conversationId}`}
-						conversation={conversation}
+						conversationId={conversationId}
 						isInsideExtraWindow={isInsideExtraWindow}
 					/>
 				</>

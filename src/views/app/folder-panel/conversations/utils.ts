@@ -8,7 +8,6 @@ import type { Conversation } from '../../../../types';
 
 export function getFolderParentId({
 	folderId,
-	isConversation,
 	item
 }: {
 	folderId: string | undefined;
@@ -16,6 +15,5 @@ export function getFolderParentId({
 	item: Conversation;
 }): string {
 	if (folderId) return folderId;
-	if (isConversation) return item?.messages?.[0]?.parent;
-	return item?.parent;
+	return item?.messages?.[0]?.parent;
 }

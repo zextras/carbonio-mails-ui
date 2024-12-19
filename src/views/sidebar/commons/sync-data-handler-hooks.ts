@@ -10,8 +10,8 @@ import { filter, find, forEach, isEmpty, keyBy, map, reduce, sortBy } from 'loda
 import { StoreApi, UseBoundStore } from 'zustand';
 
 import { useFolderStore } from '../../../carbonio-ui-commons/store/zustand/folder';
-import { getTags, useTagStore } from '../../../carbonio-ui-commons/store/zustand/tags';
-import { folderWorker, tagsWorker } from '../../../carbonio-ui-commons/worker';
+import { getTags } from '../../../carbonio-ui-commons/store/zustand/tags';
+import { folderWorker } from '../../../carbonio-ui-commons/worker';
 import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
 import {
 	normalizeConversation,
@@ -103,7 +103,7 @@ export const useSyncDataHandler = (): void => {
 							if (notify.created) {
 								if (notify.created.c && notify.created.m) {
 									const conversations = map(notify.created.c, (i) =>
-										normalizeConversation({ c: i, m: notify.created.m, tags })
+										normalizeConversation({ c: i, m: notify.created.m })
 									);
 									// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 									// @ts-ignore
@@ -118,12 +118,12 @@ export const useSyncDataHandler = (): void => {
 								const soapModifiedConversations = notify.modified.c;
 								if (soapModifiedConversations) {
 									const conversations = map(soapModifiedConversations, (i) =>
-										normalizeConversation({ c: i, tags })
+										normalizeConversation({ c: i })
 									);
 									// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 									// @ts-ignore
 									dispatch(handleNotifyModifiedConversations(keyBy(conversations, 'id')));
-									updateConversationsOnly(normalizeConversations(soapModifiedConversations, tags));
+									updateConversationsOnly(normalizeConversations(soapModifiedConversations));
 								}
 								const soapModifiedMessages = notify.modified.m;
 								if (soapModifiedMessages) {

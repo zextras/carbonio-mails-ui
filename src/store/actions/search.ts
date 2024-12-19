@@ -113,7 +113,7 @@ export const search = createAsyncThunk<
 			const tags = getTags();
 			if (types === 'conversation') {
 				const conversations = map(result?.c ?? [], (obj, index) => ({
-					...normalizeConversation({ c: obj, tags }),
+					...normalizeConversation({ c: obj }),
 					sortIndex: index + (offset ?? 0)
 				}));
 				return {

@@ -12,6 +12,7 @@ import { map } from 'lodash';
 import { getMsgSoapAPI } from '../../../../api/get-msg';
 import { searchConvSoapAPI } from '../../../../api/search-conv';
 import { API_REQUEST_STATUS } from '../../../../constants';
+import { normalizeConversations } from '../../../../normalizations/normalize-conversation';
 import {
 	normalizeCompleteMailMessageFromSoap,
 	normalizeMailMessageFromSoap
@@ -35,7 +36,8 @@ import {
 	useMessageStatus,
 	updateMessagesResultsLoadingStatus,
 	resetMessagesAndPopulatedItems,
-	setMessagesInEmailStore
+	setMessagesInEmailStore,
+	setConversationsInEmailStore
 } from '../store';
 
 function handleSearchConvResponse(conversationId: string, response: SearchConvResponse): void {
@@ -140,13 +142,17 @@ export const handleSearchSoapApiResults = ({
 		updateMessagesResultsLoadingStatus(API_REQUEST_STATUS.error);
 		return;
 	}
-	// TODO CO-1725 add case for conversations
 	if (searchResponse.m?.length) {
 		const normalizedMessages = map(searchResponse.m, (msg) =>
 			normalizeMailMessageFromSoap(msg, false)
 		);
 
 		setMessagesInEmailStore(normalizedMessages, searchResponse.more);
+	}
+	if (searchResponse.c?.length) {
+		const conversations = normalizeConversations(searchResponse.c);
+
+		setConversationsInEmailStore(conversations, searchResponse.more);
 	} else {
 		resetMessagesAndPopulatedItems();
 		updateMessagesResultsLoadingStatus(API_REQUEST_STATUS.fulfilled);

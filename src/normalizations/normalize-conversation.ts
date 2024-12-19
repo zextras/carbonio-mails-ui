@@ -6,6 +6,7 @@
 import { filter, find, isNil, map } from 'lodash';
 
 import { normalizeParticipantsFromSoap } from './normalize-message';
+import { getTags } from '../carbonio-ui-commons/store/zustand/tags';
 import { Tags } from '../carbonio-ui-commons/types/tags';
 import { omitBy } from '../commons/utils';
 import type {
@@ -20,11 +21,8 @@ const getTagIdsFromName = (names: string | undefined, tags?: Tags): Array<string
 		(names?.split(',') ?? []).filter((n) => n),
 		(name) => (find(tags, { name }) ? find(tags, { name })?.id : `nil:${name}`)
 	);
-const getTagIds = (
-	t: string | undefined,
-	tn: string | undefined,
-	tags?: Tags
-): Array<string | undefined> => {
+const getTagIds = (t: string | undefined, tn: string | undefined): Array<string | undefined> => {
+	const tags = getTags();
 	if (!isNil(t)) {
 		return filter(t.split(','), (tag) => tag !== '');
 	}
@@ -36,15 +34,13 @@ const getTagIds = (
 
 export type NormalizeConversationProps = {
 	c: SoapConversation;
-	tags: Tags;
 	m?: Array<SoapIncompleteMessage>;
 };
 
 // @deprecated
 export const normalizeConversation = ({
 	c,
-	m,
-	tags
+	m
 }: NormalizeConversationProps): Partial<Conversation> => {
 	const filteredMsgs = c?.m ?? filter(m ?? [], ['cid', c?.id]);
 	const messages = filteredMsgs?.length
@@ -57,7 +53,7 @@ export const normalizeConversation = ({
 
 	return omitBy(
 		{
-			tags: getTagIds(c.t, c.tn, tags),
+			tags: getTagIds(c.t, c.tn),
 			id: c.id,
 			date: c.d,
 			messages,
@@ -87,8 +83,7 @@ function removeUndefinedValues<T>(items: (T | undefined)[]): T[] {
 
 export const mapToNormalizedConversation = ({
 	c,
-	m,
-	tags
+	m
 }: NormalizeConversationProps): NormalizedConversation => {
 	const filteredMsgs = c?.m ?? filter(m ?? [], ['cid', c?.id]);
 	const messages = filteredMsgs?.length
@@ -100,7 +95,7 @@ export const mapToNormalizedConversation = ({
 		: undefined;
 
 	return {
-		tags: removeUndefinedValues(getTagIds(c.t, c.tn, tags)),
+		tags: removeUndefinedValues(getTagIds(c.t, c.tn)),
 		id: c.id,
 		date: c.d,
 		messages: messages || [],
@@ -117,7 +112,6 @@ export const mapToNormalizedConversation = ({
 };
 
 export const normalizeConversations = (
-	soapConversations: Array<SoapConversation>,
-	tags: Tags
+	soapConversations: Array<SoapConversation>
 ): Array<NormalizedConversation> =>
-	map(soapConversations, (conv) => mapToNormalizedConversation({ c: conv, tags }));
+	map(soapConversations, (conv) => mapToNormalizedConversation({ c: conv }));

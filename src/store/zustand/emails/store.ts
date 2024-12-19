@@ -105,6 +105,10 @@ export function getMessageById(id: string): IncompleteMessage | MailMessage {
 	return useEmailsStore.getState().populatedItemsSlice.messages[id];
 }
 
+export function getConversationById(id: string): NormalizedConversation {
+	return useEmailsStore.getState().populatedItemsSlice.conversations[id];
+}
+
 export function useMessageById(id: string): IncompleteMessage | MailMessage {
 	return useEmailsStore(({ populatedItemsSlice }) => populatedItemsSlice.messages[id]);
 }
@@ -186,6 +190,10 @@ export function appendMessagesToMessagesSlice(
 // ################################
 // #### conversationIndexSlice related functions
 // ################################
+
+export function useConversationIndexSlice(): EmailsStoreState['conversationsIndexSlice'] {
+	return useEmailsStore(({ conversationsIndexSlice }) => conversationsIndexSlice);
+}
 export function useConversationsIdsByFolder(folder: Folder): Set<string> {
 	return conversationsIndexSliceUtils.useConversationsIdsByFolder(folder, useEmailsStore);
 }
@@ -209,7 +217,7 @@ export function updateConversationsResultsLoadingStatus(status: SearchRequestSta
 	conversationsIndexSliceUtils.updateConversationsResultsLoadingStatus(status, useEmailsStore);
 }
 
-export function setConversations(
+export function setConversationsInEmailStore(
 	conversations: Array<NormalizedConversation>,
 	more: boolean
 ): void {

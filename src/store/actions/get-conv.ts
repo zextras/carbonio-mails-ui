@@ -7,7 +7,6 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import { soapFetch } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
 
-import { getTags } from '../../carbonio-ui-commons/store/zustand/tags';
 import { API_REQUEST_STATUS, MAIL_VERIFICATION_HEADERS } from '../../constants';
 import { normalizeConversation } from '../../normalizations/normalize-conversation';
 import { normalizeMailMessageFromSoap } from '../../normalizations/normalize-message';
@@ -50,8 +49,7 @@ export const getConv = createAsyncThunk<
 			onConversationIdChange?.(result.c[0].id);
 		}
 
-		const tags = getTags();
-		const conversation = normalizeConversation({ c: result.c[0], tags });
+		const conversation = normalizeConversation({ c: result.c[0] });
 		const messages = map(result.c[0].m, (item) =>
 			normalizeMailMessageFromSoap(item, false)
 		) as unknown as Array<IncompleteMessage>;
