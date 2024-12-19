@@ -50,52 +50,31 @@ describe('FilterActionsRows', () => {
 		);
 	});
 	it('removes a filter condition when the remove button is clicked', async () => {
-		const newCompProps: CompProps = {
+		const testProps = {
 			...defaultProps,
-			tempActions: [
-				{ id: '1', actionKeep: [{}] },
-				{ id: '2', actionFileInto: [{}] }
-			]
+			defaultAction: {
+				actionFileInto: [{}]
+			} as FilterAction
 		};
-		const { user } = setupTest(
-			<FilterActionRow
-				defaultAction={{
-					actionKeep: [{}]
-				}}
-				index={0}
-				compProps={newCompProps}
-			/>,
-			{}
-		);
+		const { user } = setupTest(<FilterActionRow {...testProps} />, {});
 		await user.click(screen.getByTestId('icon: MinusOutline'));
 
-		expect(defaultProps.setTempActions).toHaveBeenCalledWith([
-			expect.objectContaining({ id: '2', actionFileInto: [{}] })
-		]);
+		expect(defaultProps.onRemoveAction).toHaveBeenCalledTimes(1);
 	});
-	it('disables the remove button when there is only one filter condition', async () => {
-		const newCompProps: CompProps = {
+	it('disables the remove button when disableRemove is true', async () => {
+		const testProps = {
 			...defaultProps,
-			tempActions: [{ id: '1', actionKeep: [{}] }]
+			disableRemove: true
 		};
 
-		const { user } = setupTest(
-			<FilterActionRow
-				defaultAction={{
-					actionKeep: [{}]
-				}}
-				index={0}
-				compProps={newCompProps}
-			/>,
-			{}
-		);
+		const { user } = setupTest(<FilterActionRow {...testProps} />, {});
 
 		const removeButton = screen
 			.getAllByRole('button')
 			.filter((button) => within(button).queryByTestId('icon: MinusOutline'))[0];
 		expect(removeButton).toBeDisabled();
 		await user.click(removeButton);
-		expect(defaultProps.setTempActions).not.toHaveBeenCalled();
+		expect(defaultProps.onRemoveAction).not.toHaveBeenCalled();
 	});
 	it('should update actions using same action id as action at index number when selecting a new action', async () => {
 		const mockCompProps: CompProps = {
