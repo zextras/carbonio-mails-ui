@@ -9,13 +9,15 @@ import { Container, Padding, Row, Text } from '@zextras/carbonio-design-system';
 import { map } from 'lodash';
 
 import CustomSelect from './custom-select';
-import FilterConditionRow from './filter-condition-row';
+import { FilterConditionRow } from './filter-condition-row';
 import { getFieldOptions, findDefaultValue } from './utils';
 import Heading from '../../components/settings-heading';
 
 type FilterTestConditionRowProps = any;
 
-const FilterConditionsPanel: FC<FilterTestConditionRowProps> = ({ compProps }): ReactElement => {
+export const FilterConditionsPanel: FC<FilterTestConditionRowProps> = ({
+	compProps
+}): ReactElement => {
 	const { t, newFilters, setCondition, selectedFilter } = compProps;
 	const fieldOptions = useMemo(() => getFieldOptions(t), [t]);
 
@@ -69,4 +71,3 @@ const FilterConditionsPanel: FC<FilterTestConditionRowProps> = ({ compProps }): 
 		</Container>
 	);
 };
-export default FilterConditionsPanel;

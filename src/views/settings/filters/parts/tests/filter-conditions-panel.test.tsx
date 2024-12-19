@@ -9,7 +9,7 @@ import React from 'react';
 import { screen } from '@testing-library/react';
 
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
-import FilterConditionsPanel from '../filter-conditions-panel';
+import { FilterConditionsPanel } from '../filter-conditions-panel';
 
 describe('Filter Condition Panel', () => {
 	const compProps = {

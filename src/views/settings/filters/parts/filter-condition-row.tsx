@@ -27,7 +27,7 @@ type FilterConditionRowrops = {
 	compProps: any;
 };
 
-const FilterConditionRow: FC<FilterConditionRowrops> = ({
+export const FilterConditionRow: FC<FilterConditionRowrops> = ({
 	tmpFilter,
 	index,
 	compProps
@@ -109,5 +109,3 @@ const FilterConditionRow: FC<FilterConditionRowrops> = ({
 		</Container>
 	);
 };
-
-export default FilterConditionRow;

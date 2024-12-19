@@ -17,7 +17,7 @@ import {
 	setupTest
 } from '../../../../../carbonio-ui-commons/test/test-setup';
 import { generateStore } from '../../../../../tests/generators/store';
-import FilterActionRows from '../filter-action-rows';
+import { FilterActionRow } from '../filter-action-row';
 
 const REDIRECT_TO_ADDRESS = /Redirect To Address/i;
 describe('FilterActionsRows', () => {
@@ -29,7 +29,7 @@ describe('FilterActionsRows', () => {
 	};
 	test('minimal setup to not make the component explode', () => {
 		setupTest(
-			<FilterActionRows
+			<FilterActionRow
 				tmpFilter={{
 					anything: [{ flagName: 'flagged' }]
 				}}
@@ -45,7 +45,7 @@ describe('FilterActionsRows', () => {
 			tempActions: [{ actionKeep: [{}] }]
 		};
 		const { user } = setupTest(
-			<FilterActionRows
+			<FilterActionRow
 				tmpFilter={{
 					actionKeep: [{}]
 				}}
@@ -73,7 +73,7 @@ describe('FilterActionsRows', () => {
 			]
 		};
 		const { user } = setupTest(
-			<FilterActionRows
+			<FilterActionRow
 				tmpFilter={{
 					anything: [{ flagName: 'flagged' }]
 				}}
@@ -95,7 +95,7 @@ describe('FilterActionsRows', () => {
 		};
 
 		const { user } = setupTest(
-			<FilterActionRows
+			<FilterActionRow
 				tmpFilter={{
 					anything: [{ flagName: 'flagged' }]
 				}}
@@ -118,7 +118,7 @@ describe('FilterActionsRows', () => {
 			tempActions: [{ id: '7' }, { id: '21' }, { id: '33' }]
 		};
 		const { user } = setupTest(
-			<FilterActionRows
+			<FilterActionRow
 				tmpFilter={{
 					actionKeep: [{}]
 				}}
@@ -148,7 +148,7 @@ describe('FilterActionsRows', () => {
 			]
 		};
 		setupTest(
-			<FilterActionRows
+			<FilterActionRow
 				tmpFilter={{
 					actionKeep: [{}],
 					actionTag: [{ tagName: 'tag 1' }],
@@ -167,7 +167,7 @@ describe('FilterActionsRows', () => {
 	describe('Keep In Inbox', () => {
 		it('should render the selected action', async () => {
 			setupTest(
-				<FilterActionRows
+				<FilterActionRow
 					tmpFilter={{
 						actionKeep: [{}]
 					}}
@@ -183,7 +183,7 @@ describe('FilterActionsRows', () => {
 	describe('Redirect To Address', () => {
 		it('should display action "Redirect To Address" when selected', async () => {
 			setupTest(
-				<FilterActionRows
+				<FilterActionRow
 					tmpFilter={{
 						actionRedirect: [{ a: 'test@test.com' }]
 					}}
@@ -196,7 +196,7 @@ describe('FilterActionsRows', () => {
 		});
 		it('should not display Contact Input when dropdown option is different from "Redirect To Address"', async () => {
 			setupTest(
-				<FilterActionRows
+				<FilterActionRow
 					tmpFilter={{
 						actionStop: [{ flagName: 'flagged' }]
 					}}
@@ -209,7 +209,7 @@ describe('FilterActionsRows', () => {
 		});
 		it('should not display Contact Input when dropdown option is different from "Tag With"', async () => {
 			setupTest(
-				<FilterActionRows
+				<FilterActionRow
 					tmpFilter={{
 						tagWith: [{ flagName: 'flagged' }]
 					}}
@@ -222,7 +222,7 @@ describe('FilterActionsRows', () => {
 		});
 		it('should display Contact Input when selecting option "Redirect To Address"', async () => {
 			setupTest(
-				<FilterActionRows
+				<FilterActionRow
 					tmpFilter={{
 						actionRedirect: [{ flagName: 'flagged' }]
 					}}
@@ -243,7 +243,7 @@ describe('FilterActionsRows', () => {
 				zimbraFeatureMailForwardingInFiltersEnabled: 'TRUE' as const
 			};
 			const { user } = setupTest(
-				<FilterActionRows
+				<FilterActionRow
 					tmpFilter={{
 						actionRedirect: [{ flagName: 'flagged' }]
 					}}
@@ -270,7 +270,7 @@ describe('FilterActionsRows', () => {
 				zimbraFeatureMailForwardingInFiltersEnabled: 'TRUE' as const
 			};
 			const { user } = setupTest(
-				<FilterActionRows
+				<FilterActionRow
 					tmpFilter={{
 						actionRedirect: [{ flagName: 'flagged' }]
 					}}
@@ -298,7 +298,7 @@ describe('FilterActionsRows', () => {
 			};
 
 			setupTest(
-				<FilterActionRows
+				<FilterActionRow
 					tmpFilter={{
 						actionRedirect: [{ flagName: 'flagged' }]
 					}}
@@ -318,7 +318,7 @@ describe('FilterActionsRows', () => {
 			};
 
 			setupTest(
-				<FilterActionRows
+				<FilterActionRow
 					tmpFilter={{
 						actionRedirect: [{ flagName: 'flagged' }]
 					}}
@@ -339,7 +339,7 @@ describe('FilterActionsRows', () => {
 			};
 
 			setupTest(
-				<FilterActionRows
+				<FilterActionRow
 					tmpFilter={{
 						actionRedirect: [{ flagName: 'flagged' }]
 					}}
@@ -360,7 +360,7 @@ describe('FilterActionsRows', () => {
 			};
 
 			const { user } = setupTest(
-				<FilterActionRows
+				<FilterActionRow
 					tmpFilter={{
 						actionKeep: [{}]
 					}}
@@ -380,7 +380,7 @@ describe('FilterActionsRows', () => {
 		it('should display the saved tag', async () => {
 			const filterName = 'Test Designer';
 			setupTest(
-				<FilterActionRows
+				<FilterActionRow
 					tmpFilter={{
 						actionTag: [{ tagName: filterName }]
 					}}
@@ -393,7 +393,7 @@ describe('FilterActionsRows', () => {
 		});
 		it('should display empty tag in input', async () => {
 			setupTest(
-				<FilterActionRows
+				<FilterActionRow
 					tmpFilter={{
 						actionTag: [{}]
 					}}
@@ -411,7 +411,7 @@ describe('FilterActionsRows', () => {
 			};
 			const filterName = 'Test Designer';
 			const { user } = setupTest(
-				<FilterActionRows
+				<FilterActionRow
 					tmpFilter={{
 						actionTag: [{ tagName: filterName }]
 					}}
@@ -436,7 +436,7 @@ describe('FilterActionsRows', () => {
 				tempActions: [{}]
 			};
 			const { user } = setupTest(
-				<FilterActionRows
+				<FilterActionRow
 					tmpFilter={{
 						actionTag: [{}]
 					}}
@@ -461,7 +461,7 @@ describe('FilterActionsRows', () => {
 				tempActions: [{}]
 			};
 			const { user } = setupTest(
-				<FilterActionRows
+				<FilterActionRow
 					tmpFilter={{
 						actionTag: [{ tagName: 'Tag to remove' }]
 					}}
@@ -502,7 +502,7 @@ describe('FilterActionsRows', () => {
 				tempActions: [{ id: '123' }, { id: '456' }]
 			};
 			const { user } = setupTest(
-				<FilterActionRows
+				<FilterActionRow
 					tmpFilter={{
 						actionFileInto: [{}]
 					}}
@@ -532,7 +532,7 @@ describe('FilterActionsRows', () => {
 	describe('Discard', () => {
 		it('should render the discard option if selected', async () => {
 			setupTest(
-				<FilterActionRows
+				<FilterActionRow
 					tmpFilter={{
 						actionDiscard: [{}]
 					}}
@@ -549,7 +549,7 @@ describe('FilterActionsRows', () => {
 				tempActions: [{ id: '1' }]
 			};
 			const { user } = setupTest(
-				<FilterActionRows
+				<FilterActionRow
 					tmpFilter={{
 						actionKeep: [{}]
 					}}

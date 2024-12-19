@@ -56,7 +56,7 @@ type FilterActionRowProps = {
 	tagOptions?: Array<MailFilterTag>;
 };
 
-const FilterActionRows: FC<FilterActionRowProps> = ({
+export const FilterActionRow: FC<FilterActionRowProps> = ({
 	tmpFilter,
 	index,
 	compProps,
@@ -370,5 +370,3 @@ const FilterActionRows: FC<FilterActionRowProps> = ({
 		</Container>
 	);
 };
-
-export default FilterActionRows;

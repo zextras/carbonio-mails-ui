@@ -8,7 +8,7 @@ import React, { FC, ReactElement, useMemo } from 'react';
 import { Container, Text } from '@zextras/carbonio-design-system';
 import { map } from 'lodash';
 
-import FilterActionRows from './filter-action-rows';
+import { FilterActionRow } from './filter-action-row';
 import { getTags } from '../../../../carbonio-ui-commons/store/zustand/tags';
 import Heading from '../../components/settings-heading';
 
@@ -31,7 +31,7 @@ const FilterActionConditions: FC<ComponentProps> = ({ compProps }): ReactElement
 			<Text>{t('settings.perform_following_action', 'Perform the following actions:')}</Text>
 			<Container padding={{ top: 'small' }} mainAlignment="flex-start">
 				{map(tempActions, (tempAction, index: number) => (
-					<FilterActionRows
+					<FilterActionRow
 						key={`filter-action-row-${index}`}
 						index={index}
 						tmpFilter={tempAction}
