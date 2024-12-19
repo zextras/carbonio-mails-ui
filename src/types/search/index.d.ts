@@ -226,8 +226,8 @@ export type ChipType = {
 
 export type SearchIndexSliceState = {
 	searchIndexSlice: {
-		conversationIds: Set<string>;
-		messageIds: Set<string>;
+		conversationIdSet: Set<string>;
+		messageIdSet: Set<string>;
 		more: boolean;
 		offset: number;
 		sortBy?: SortBy;

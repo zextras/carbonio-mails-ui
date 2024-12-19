@@ -93,7 +93,7 @@ const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHe
 							{isMessageView ? (
 								<SearchMessageList
 									searchDisabled={searchDisabled}
-									searchResults={searchResults.messageIds}
+									searchResults={searchResults.messageIdSet}
 									query={queryToString}
 									loading={loading}
 									filterCount={filterCount}
@@ -105,7 +105,7 @@ const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHe
 							) : (
 								<SearchConversationList
 									searchDisabled={searchDisabled}
-									searchResults={searchResults.conversationIds}
+									searchResults={searchResults.conversationIdSet}
 									query={queryToString}
 									loading={loading}
 									filterCount={filterCount}

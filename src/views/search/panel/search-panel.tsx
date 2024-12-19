@@ -19,7 +19,7 @@ const SearchPanel: FC<SearchPanelProps> = ({ searchResults }) => {
 
 	const trimmedPath = useMemo(() => trimEnd(path, '/'), [path]);
 	const displayerMessage = useMemo(() => {
-		if (searchResults.conversationIds.size > 0 || searchResults.messageIds.size > 0)
+		if (searchResults.conversationIdSet.size > 0 || searchResults.messageIdSet.size > 0)
 			return {
 				title: t(
 					'displayer.search_title4',
@@ -34,7 +34,7 @@ const SearchPanel: FC<SearchPanelProps> = ({ searchResults }) => {
 				'Or select “Advanced Filters” to refine your search.'
 			)
 		};
-	}, [searchResults.conversationIds.size, searchResults.messageIds.size]);
+	}, [searchResults.conversationIdSet.size, searchResults.messageIdSet.size]);
 
 	const displayerTitle = useMemo(() => displayerMessage?.title, [displayerMessage?.title]);
 	const displayerDescription = useMemo(

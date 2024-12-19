@@ -69,9 +69,9 @@ describe('emails store search slice', () => {
 			const { result } = renderHook(() => useSearchResults());
 			const { result: conversation1Store } = renderHook(() => useConversationById('1'));
 			const { result: conversation2Store } = renderHook(() => useConversationById('2'));
-			expect(result.current.conversationIds.size).toBe(1);
-			expect(result.current.conversationIds.has('1')).toBe(false);
-			expect(result.current.conversationIds.has('2')).toBe(true);
+			expect(result.current.conversationIdSet.size).toBe(1);
+			expect(result.current.conversationIdSet.has('1')).toBe(false);
+			expect(result.current.conversationIdSet.has('2')).toBe(true);
 			expect(conversation1Store.current).toBeUndefined();
 			expect(conversation2Store.current).toBeDefined();
 		});
@@ -106,8 +106,8 @@ describe('emails store search slice', () => {
 			const { result: message1 } = renderHook(() => useMessageById('1'));
 			const { result: message2 } = renderHook(() => useMessageById('2'));
 			const { result: message3 } = renderHook(() => useMessageById('3'));
-			expect(result.current.messageIds.size).toBe(1);
-			expect(result.current.messageIds.has('3')).toBeTruthy();
+			expect(result.current.messageIdSet.size).toBe(1);
+			expect(result.current.messageIdSet.has('3')).toBeTruthy();
 			expect(message1.current).toBeUndefined();
 			expect(message2.current).toBeUndefined();
 			expect(message3.current).toBeDefined();
