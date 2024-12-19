@@ -55,4 +55,23 @@ describe('FilterActionsPanel', () => {
 
 		expect(screen.queryByText(filterName)).not.toBeInTheDocument();
 	});
+	it('should allow removing action if more than one', async () => {
+		const mockCompProps: FilterActionsProps = {
+			setTempActions: jest.fn(),
+			zimbraFeatureMailForwardingInFiltersEnabled: 'TRUE' as const,
+			isIncoming: true,
+			tempActions: [
+				{ id: '7', actionKeep: [{}] },
+				{ id: '21', actionDiscard: [{}] },
+				{ id: '33', actionRedirect: [{}] }
+			]
+		};
+		const { user } = setupTest(<FilterActionsPanel compProps={mockCompProps} />, {});
+		await user.click(screen.getAllByTestId('icon: MinusOutline')[0]);
+
+		expect(mockCompProps.setTempActions).toHaveBeenCalledWith([
+			{ id: '21', actionDiscard: [{}] },
+			{ id: '33', actionRedirect: [{}] }
+		]);
+	});
 });
