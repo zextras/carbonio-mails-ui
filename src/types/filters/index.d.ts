@@ -116,51 +116,39 @@ type ActionFlag = {
 type ActionTag = {
 	tagName?: string;
 };
-// FIXME: this type was introduced just to start understanding what this code is doing but it is clear it is trying to represent a code that does too many things
-export type TempAction = {
+// TODO: refactor the code and remove me after I'm not anymore needed
+type CommonAction = {
 	id?: string;
-	a?: string;
+	actionStop?: [object];
+	// Only here for MarkAs
 	label?: string;
 	value?: string;
-	actionKeep?: Array<unknown>;
-	actionStop?: Array<unknown>;
-	actionRedirect?: Array<ActionRedirect>;
-	actionFlag?: Array<ActionFlag>;
-	actionTag?: Array<ActionTag>;
-	actionFileInto?: Array<ActionFileInto>;
-	actionDiscard?: Array<unknown>;
 };
-// TODO: refactor the code and remove me after I'm not anymore needed
-export type CompProps = {
-	isIncoming: boolean;
-	tempActions: Array<TempAction>;
-	setTempActions: (tempActions: Array<TempAction>) => void;
-	zimbraFeatureMailForwardingInFiltersEnabled: 'TRUE' | 'FALSE';
-};
-
 type FilterKeep = {
 	actionKeep: [object];
 };
 type FilterRedirect = {
-	actionRedirect: [{ a?: string }];
+	actionRedirect: [ActionRedirect];
 };
 type FilterFlag = {
-	actionFlag: [{ flagName?: string }];
+	actionFlag: [ActionFlag];
 };
 type FilterFileInto = {
-	actionFileInto: [{ folderPath?: string }];
+	actionFileInto: [ActionFileInto];
 };
 type FilterDiscard = {
 	actionDiscard: [object];
 };
 type FilterTag = {
-	actionTag: [{ tagName?: string }];
+	actionTag: [ActionTag];
 };
 
-export type ActionOption =
-	| FilterKeep
-	| FilterRedirect
-	| FilterTag
-	| FilterFlag
-	| FilterFileInto
-	| FilterDiscard;
+export type FilterAction = CommonAction &
+	(FilterKeep | FilterRedirect | FilterTag | FilterFlag | FilterFileInto | FilterDiscard);
+
+export type CompProps = {
+	isIncoming: boolean;
+	tempActions: Array<FilterAction>;
+	setTempActions: (tempActions: Array<FilterAction>) => void;
+	zimbraFeatureMailForwardingInFiltersEnabled: 'TRUE' | 'FALSE';
+};

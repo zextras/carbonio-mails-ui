@@ -18,14 +18,14 @@ import { getActionOptions } from './utils';
 import { CONTACT_TYPES } from '../../../../carbonio-ui-commons/integrations/constants';
 import { ContactInputItem } from '../../../../carbonio-ui-commons/integrations/types';
 import { Folder } from '../../../../carbonio-ui-commons/types/folder';
-import { ActionOption, CompProps, MailFilterTag } from '../../../../types';
+import { FilterAction, CompProps, MailFilterTag } from '../../../../types';
 
 type FilterActionRowProps = {
 	index: number;
 	compProps: CompProps;
 	tagOptions?: Array<MailFilterTag>;
-	defaultAction: ActionOption;
-	onActionChange?: (action: ActionOption) => void;
+	defaultAction: FilterAction;
+	onActionChange?: (action: FilterAction) => void;
 };
 
 type ActiveOption =
@@ -180,7 +180,7 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 				}
 				case 'tagWith': {
 					const previous = tempActions.slice();
-					if (!previous[index].actionTag) {
+					if (!('actionTag' in previous[index])) {
 						previous[index] = {
 							id: previous[index]?.id,
 							actionTag: [{ tagName: '' }]
@@ -192,7 +192,7 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 				}
 				case 'moveIntoFolder': {
 					const previous = tempActions.slice();
-					if (!previous[index].actionFileInto) {
+					if (!('actionFileInto' in previous[index])) {
 						previous[index] = {
 							id: previous[index]?.id,
 							actionFileInto: [{ folderPath: '' }]
@@ -203,7 +203,7 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 				}
 				case 'redirectToAddress': {
 					const previous = tempActions.slice();
-					if (!previous[index].actionRedirect) {
+					if (!('actionRedirect' in previous[index])) {
 						previous[index] = {
 							id: previous[index]?.id,
 							actionRedirect: [{ a: '' }]
@@ -246,6 +246,7 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 	const handleMarkAsOptionChange = useCallback(
 		(option: { label: string; value: any }) => {
 			const previous = tempActions.slice();
+			// TODO: how do I 100% know this option is markAs?
 			previous[index] = option;
 			setTempActions(previous);
 		},
@@ -266,6 +267,10 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 
 	const defaultMarkAs = 'actionFlag' in defaultAction ? defaultAction.actionFlag[0] : undefined;
 
+	const defaultMoveToFolder =
+		'actionFileInto' in defaultAction
+			? { name: defaultAction.actionFileInto[0].folderPath }
+			: undefined;
 	return (
 		<Container
 			mainAlignment="space-between"
@@ -294,11 +299,7 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 					)}
 				{showBrowseBtn && (
 					<MovetoFolder
-						destination={
-							tempActions[0]?.actionFileInto?.[0]
-								? { name: tempActions[0].actionFileInto[0].folderPath }
-								: undefined
-						}
+						destination={defaultMoveToFolder}
 						onSelectFolder={onSelectFolder}
 						onConfirmDestination={confirmAction}
 					/>
