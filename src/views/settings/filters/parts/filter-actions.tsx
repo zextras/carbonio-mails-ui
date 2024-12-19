@@ -9,7 +9,6 @@ import { Container, Text } from '@zextras/carbonio-design-system';
 import { map } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
-import { v4 as uuidv4 } from '*';
 import { FilterActionRow } from './filter-action-row';
 import { getTags } from '../../../../carbonio-ui-commons/store/zustand/tags';
 import { CompProps, FilterAction } from '../../../../types';
@@ -26,11 +25,14 @@ const FilterActionConditions: FC<ComponentProps> = ({ compProps }): ReactElement
 		isIncoming,
 		zimbraFeatureMailForwardingInFiltersEnabled
 	} = compProps;
-	const onAddAction = useCallback(() => {
-		const newActions = actions.slice();
-		newActions.push({ actionKeep: [{}], actionStop: [{}], id: uuidv4() });
-		setActions(newActions);
-	}, [actions, setActions]);
+	const onAddAction = useCallback(
+		(actionToAdd: FilterAction) => {
+			const newActions = actions.slice();
+			newActions.push(actionToAdd);
+			setActions(newActions);
+		},
+		[actions, setActions]
+	);
 
 	const onRemoveAction = useCallback(
 		(indexToRemove: number) => () => {

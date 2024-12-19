@@ -119,13 +119,13 @@ type ActionTag = {
 // TODO: refactor the code and remove me after I'm not anymore needed
 type CommonAction = {
 	id?: string;
-	actionStop?: [object];
+	actionStop?: [unknown];
 	// Only here for MarkAs
 	label?: string;
 	value?: string;
 };
 type FilterKeep = {
-	actionKeep: [object];
+	actionKeep: [unknown];
 };
 type FilterRedirect = {
 	actionRedirect: [ActionRedirect];
@@ -137,7 +137,7 @@ type FilterFileInto = {
 	actionFileInto: [ActionFileInto];
 };
 type FilterDiscard = {
-	actionDiscard: [object];
+	actionDiscard: [unknown];
 };
 type FilterTag = {
 	actionTag: [ActionTag];

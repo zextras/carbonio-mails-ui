@@ -30,7 +30,7 @@ type FilterActionRowProps = {
 	onDefaultActionValueChange: (action: FilterAction) => void;
 	onRemoveAction: () => void;
 	disableRemove: boolean;
-	onAddNewAction: () => void;
+	onAddNewAction: (action: FilterAction) => void;
 };
 
 type ActiveOption =
@@ -52,7 +52,6 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 	disableRemove,
 	onDefaultActionValueChange
 }): ReactElement => {
-	const [activeIndex, setActiveIndex] = useState(0);
 	const [isRedirectToActionRemoved, setIsRedirectToActionRemoved] = useState(false);
 	const [t] = useTranslation();
 	const actionOptions = useMemo(
@@ -226,6 +225,11 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 		[onDefaultActionValueChange]
 	);
 
+	const onAddingNewAction = useCallback((): void => {
+		// TODO: figure out if we want to pass the id here or on filter-actions file
+		onAddNewAction({ actionKeep: [{}], actionStop: [{}], id: uuidv4() });
+	}, [onAddNewAction]);
+
 	const defaultMarkAs = 'actionFlag' in defaultAction ? defaultAction.actionFlag[0] : undefined;
 
 	const defaultMoveToFolder =
@@ -283,7 +287,7 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 			</Row>
 			<Container orientation="horizontal" mainAlignment="flex-end" width="auto">
 				<Tooltip label={t('settings.add_action', 'Add new action')} placement="top">
-					<Button icon="PlusOutline" onClick={onAddNewAction} color="primary" type="outlined" />
+					<Button icon="PlusOutline" onClick={onAddingNewAction} color="primary" type="outlined" />
 				</Tooltip>
 				<Padding left="small">
 					<Tooltip label={t('settings.remove_action', 'Remove this action')} placement="top">
