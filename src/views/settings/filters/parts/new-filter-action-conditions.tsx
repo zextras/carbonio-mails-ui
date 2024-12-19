@@ -39,7 +39,6 @@ const FilterActionConditions: FC<ComponentProps> = ({ compProps }): ReactElement
 						key={`filter-action-row-${index}`}
 						index={index}
 						defaultAction={tempAction}
-						tmpFilter={tempAction}
 						compProps={compProps}
 						tagOptions={tagOptions}
 					/>

@@ -106,6 +106,32 @@ export type MailFilterTag = {
 	color?: number;
 };
 
+type ActionFileInto = {
+	folderPath?: string;
+};
+type ActionRedirect = {
+	a?: string;
+};
+type ActionFlag = {
+	flagName?: string;
+};
+type ActionTag = {
+	tagName?: string;
+};
+// FIXME: this type was introduced just to start understanding what this code is doing but it is clear it is trying to represent a code that does too many things
+export type TempAction = {
+	id?: string;
+	a?: string;
+	label?: string;
+	value?: string;
+	actionKeep?: Array<unknown>;
+	actionStop?: Array<unknown>;
+	actionRedirect?: Array<ActionRedirect>;
+	actionFlag?: Array<ActionFlag>;
+	actionTag?: Array<ActionTag>;
+	actionFileInto?: Array<ActionFileInto>;
+	actionDiscard?: Array<unknown>;
+};
 // TODO: refactor the code and remove me after I'm not anymore needed
 export type CompProps = {
 	isIncoming: boolean;

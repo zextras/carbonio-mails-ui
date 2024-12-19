@@ -20,27 +20,6 @@ import { ContactInputItem } from '../../../../carbonio-ui-commons/integrations/t
 import { Folder } from '../../../../carbonio-ui-commons/types/folder';
 import { CompProps, MailFilterTag } from '../../../../types';
 
-type ActionFileInto = {
-	folderPath?: string;
-};
-// FIXME: this type was introduced just to start understanding what this code is doing but it is clear it is trying to represent a code that does too many things
-export type TempAction = {
-	id?: string;
-	a?: string;
-	label?: string;
-	value?: string;
-	actionKeep?: Array<unknown>;
-	actionStop?: Array<unknown>;
-	actionRedirect?: Array<unknown>;
-	actionFlag?: Array<unknown>;
-	actionTag?: Array<unknown>;
-	actionFileInto?: Array<ActionFileInto>;
-	actionDiscard?: Array<unknown>;
-	tagName?: string;
-	flagName?: string;
-	folderPath?: string;
-};
-
 type FilterKeep = {
 	actionKeep: [object];
 };
