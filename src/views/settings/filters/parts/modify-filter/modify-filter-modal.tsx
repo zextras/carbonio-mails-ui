@@ -23,7 +23,7 @@ import { v4 as uuidv4 } from 'uuid';
 import ModalHeader from '../../../../../carbonio-ui-commons/components/modals/modal-header';
 import { useUiUtilities } from '../../../../../hooks/use-ui-utilities';
 import { modifyFilterRules } from '../../../../../store/actions/modify-filter-rules';
-import type { FilterAction, FilterActions } from '../../../../../types';
+import type { FilterActions } from '../../../../../types';
 import { capitalise } from '../../../../sidebar/utils';
 import { CreateFilterContext } from '../create-filter-context';
 import ModalFooter from '../create-filter-modal-footer';
@@ -33,7 +33,7 @@ import { FilterConditionsPanel } from '../filter-conditions-panel';
 import { findRowKey, getTestComponent } from '../get-test-component';
 import { getButtonInfo } from '../utils';
 
-type FilterType = {
+export type FilterType = {
 	active: boolean;
 	filterActions: Array<any>;
 	filterTests: Array<Record<string, any>>;
@@ -136,8 +136,8 @@ const ModifyFilterModal: FC<ComponentProps> = ({
 	const requiredFilters = useMemo(
 		() => ({
 			filterActions: dontProcessAddFilters
-				? ([{ ...omit(finalActions, 'id'), actionStop: [{}] }] as FilterAction[])
-				: ([{ ...omit(finalActions, 'id') }] as FilterActions[]),
+				? ([{ ...omit(finalActions, 'id'), actionStop: [{}] }] as FilterActions)
+				: ([{ ...omit(finalActions, 'id') }] as FilterActions),
 			active: activeFilter,
 			name: filterName,
 			filterTests: [
