@@ -390,32 +390,6 @@ describe('FilterActionsRows', () => {
 			expect(screen.queryByText(filterName)).not.toBeInTheDocument();
 		});
 
-		// TODO: check if we still want this test since seems hard to retrieve the console error
-		it.skip('should break if tempAction is empty and user is switching action', async () => {
-			const newCompProps = {
-				...compProps,
-				tempActions: []
-			};
-			const filterName = 'Test Designer';
-			const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
-
-			const { user } = setupTest(
-				<FilterActionRows
-					tmpFilter={{
-						actionTag: [{ tagName: filterName }]
-					}}
-					index={0}
-					compProps={newCompProps}
-				/>,
-				{}
-			);
-			expect(screen.getByText(filterName)).toBeVisible();
-			await user.click(screen.getByText('Tag with'));
-			user.click(screen.getByText('Keep in Inbox')).catch((error) => {
-				expect(error).toBe('');
-			});
-		});
-
 		it('should update tag action value if a new tag is selected', async () => {
 			const newCompProps = {
 				...compProps,
