@@ -27,18 +27,6 @@ describe('FilterActionsRows', () => {
 		tempActions: [],
 		zimbraFeatureMailForwardingInFiltersEnabled: 'TRUE' as const
 	};
-	test('minimal setup to not make the component explode', () => {
-		setupTest(
-			<FilterActionRow
-				tmpFilter={{
-					anything: [{ flagName: 'flagged' }]
-				}}
-				index={0}
-				compProps={compProps}
-			/>,
-			{}
-		);
-	});
 	it('adds a new filter condition when the add button is clicked', async () => {
 		const newCompProps = {
 			...compProps,
@@ -46,7 +34,7 @@ describe('FilterActionsRows', () => {
 		};
 		const { user } = setupTest(
 			<FilterActionRow
-				tmpFilter={{
+				defaultAction={{
 					actionKeep: [{}]
 				}}
 				index={0}
@@ -74,8 +62,8 @@ describe('FilterActionsRows', () => {
 		};
 		const { user } = setupTest(
 			<FilterActionRow
-				tmpFilter={{
-					anything: [{ flagName: 'flagged' }]
+				defaultAction={{
+					actionKeep: [{}]
 				}}
 				index={0}
 				compProps={newCompProps}
@@ -96,8 +84,8 @@ describe('FilterActionsRows', () => {
 
 		const { user } = setupTest(
 			<FilterActionRow
-				tmpFilter={{
-					anything: [{ flagName: 'flagged' }]
+				defaultAction={{
+					actionKeep: [{}]
 				}}
 				index={0}
 				compProps={newCompProps}
@@ -119,7 +107,7 @@ describe('FilterActionsRows', () => {
 		};
 		const { user } = setupTest(
 			<FilterActionRow
-				tmpFilter={{
+				defaultAction={{
 					actionKeep: [{}]
 				}}
 				index={1}
@@ -149,7 +137,7 @@ describe('FilterActionsRows', () => {
 		};
 		setupTest(
 			<FilterActionRow
-				tmpFilter={{
+				defaultAction={{
 					actionKeep: [{}],
 					actionTag: [{ tagName: 'tag 1' }],
 					actionRedirect: [{ a: 'redirectTo@mail.com' }]
@@ -168,7 +156,7 @@ describe('FilterActionsRows', () => {
 		it('should render the selected action', async () => {
 			setupTest(
 				<FilterActionRow
-					tmpFilter={{
+					defaultAction={{
 						actionKeep: [{}]
 					}}
 					index={0}
@@ -184,7 +172,7 @@ describe('FilterActionsRows', () => {
 		it('should display action "Redirect To Address" when selected', async () => {
 			setupTest(
 				<FilterActionRow
-					tmpFilter={{
+					defaultAction={{
 						actionRedirect: [{ a: 'test@test.com' }]
 					}}
 					index={0}
@@ -197,8 +185,8 @@ describe('FilterActionsRows', () => {
 		it('should not display Contact Input when dropdown option is different from "Redirect To Address"', async () => {
 			setupTest(
 				<FilterActionRow
-					tmpFilter={{
-						actionStop: [{ flagName: 'flagged' }]
+					defaultAction={{
+						actionKeep: [{}]
 					}}
 					index={0}
 					compProps={compProps}
@@ -210,8 +198,8 @@ describe('FilterActionsRows', () => {
 		it('should not display Contact Input when dropdown option is different from "Tag With"', async () => {
 			setupTest(
 				<FilterActionRow
-					tmpFilter={{
-						tagWith: [{ flagName: 'flagged' }]
+					defaultAction={{
+						actionTag: [{ tagName: 'aaa' }]
 					}}
 					index={0}
 					compProps={compProps}
@@ -223,8 +211,8 @@ describe('FilterActionsRows', () => {
 		it('should display Contact Input when selecting option "Redirect To Address"', async () => {
 			setupTest(
 				<FilterActionRow
-					tmpFilter={{
-						actionRedirect: [{ flagName: 'flagged' }]
+					defaultAction={{
+						actionRedirect: [{ a: 'something' }]
 					}}
 					index={0}
 					compProps={compProps}
@@ -244,8 +232,8 @@ describe('FilterActionsRows', () => {
 			};
 			const { user } = setupTest(
 				<FilterActionRow
-					tmpFilter={{
-						actionRedirect: [{ flagName: 'flagged' }]
+					defaultAction={{
+						actionRedirect: [{ a: 'anything' }]
 					}}
 					index={0}
 					compProps={mockCompProps}
@@ -271,8 +259,8 @@ describe('FilterActionsRows', () => {
 			};
 			const { user } = setupTest(
 				<FilterActionRow
-					tmpFilter={{
-						actionRedirect: [{ flagName: 'flagged' }]
+					defaultAction={{
+						actionRedirect: [{ a: 'anyvalue' }]
 					}}
 					index={0}
 					compProps={mockCompProps}
@@ -299,8 +287,8 @@ describe('FilterActionsRows', () => {
 
 			setupTest(
 				<FilterActionRow
-					tmpFilter={{
-						actionRedirect: [{ flagName: 'flagged' }]
+					defaultAction={{
+						actionRedirect: [{ a: 'aaa' }]
 					}}
 					index={0}
 					compProps={newCompProps}
@@ -319,8 +307,8 @@ describe('FilterActionsRows', () => {
 
 			setupTest(
 				<FilterActionRow
-					tmpFilter={{
-						actionRedirect: [{ flagName: 'flagged' }]
+					defaultAction={{
+						actionRedirect: [{ a: 'bbb' }]
 					}}
 					index={0}
 					compProps={newCompProps}
@@ -340,8 +328,8 @@ describe('FilterActionsRows', () => {
 
 			setupTest(
 				<FilterActionRow
-					tmpFilter={{
-						actionRedirect: [{ flagName: 'flagged' }]
+					defaultAction={{
+						actionRedirect: [{ a: 'ccc' }]
 					}}
 					index={0}
 					compProps={newCompProps}
@@ -361,7 +349,7 @@ describe('FilterActionsRows', () => {
 
 			const { user } = setupTest(
 				<FilterActionRow
-					tmpFilter={{
+					defaultAction={{
 						actionKeep: [{}]
 					}}
 					index={0}
@@ -381,7 +369,7 @@ describe('FilterActionsRows', () => {
 			const filterName = 'Test Designer';
 			setupTest(
 				<FilterActionRow
-					tmpFilter={{
+					defaultAction={{
 						actionTag: [{ tagName: filterName }]
 					}}
 					index={0}
@@ -394,8 +382,8 @@ describe('FilterActionsRows', () => {
 		it('should display empty tag in input', async () => {
 			setupTest(
 				<FilterActionRow
-					tmpFilter={{
-						actionTag: [{}]
+					defaultAction={{
+						actionTag: [{ tagName: 'tag 1' }]
 					}}
 					index={0}
 					compProps={compProps}
@@ -412,7 +400,7 @@ describe('FilterActionsRows', () => {
 			const filterName = 'Test Designer';
 			const { user } = setupTest(
 				<FilterActionRow
-					tmpFilter={{
+					defaultAction={{
 						actionTag: [{ tagName: filterName }]
 					}}
 					index={0}
@@ -437,8 +425,8 @@ describe('FilterActionsRows', () => {
 			};
 			const { user } = setupTest(
 				<FilterActionRow
-					tmpFilter={{
-						actionTag: [{}]
+					defaultAction={{
+						actionTag: [{ tagName: 'my tag' }]
 					}}
 					tagOptions={[{ label: 'Tag 1' }]}
 					index={0}
@@ -462,7 +450,7 @@ describe('FilterActionsRows', () => {
 			};
 			const { user } = setupTest(
 				<FilterActionRow
-					tmpFilter={{
+					defaultAction={{
 						actionTag: [{ tagName: 'Tag to remove' }]
 					}}
 					tagOptions={[{ label: 'Tag 1' }]}
@@ -503,8 +491,8 @@ describe('FilterActionsRows', () => {
 			};
 			const { user } = setupTest(
 				<FilterActionRow
-					tmpFilter={{
-						actionFileInto: [{}]
+					defaultAction={{
+						actionFileInto: [{ folderPath: '/my/path' }]
 					}}
 					index={1}
 					compProps={mockCompProps}
@@ -533,7 +521,7 @@ describe('FilterActionsRows', () => {
 		it('should render the discard option if selected', async () => {
 			setupTest(
 				<FilterActionRow
-					tmpFilter={{
+					defaultAction={{
 						actionDiscard: [{}]
 					}}
 					index={0}
@@ -550,7 +538,7 @@ describe('FilterActionsRows', () => {
 			};
 			const { user } = setupTest(
 				<FilterActionRow
-					tmpFilter={{
+					defaultAction={{
 						actionKeep: [{}]
 					}}
 					index={0}

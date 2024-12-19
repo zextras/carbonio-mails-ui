@@ -78,12 +78,15 @@ type FilterTag = {
 	actionTag: [{ tagName: string }];
 };
 
-type DefaultAction = {
-	value: FilterKeep | FilterRedirect | FilterTag | FilterFlag | FilterFileInto | FilterDiscard;
-};
+type DefaultAction =
+	| FilterKeep
+	| FilterRedirect
+	| FilterTag
+	| FilterFlag
+	| FilterFileInto
+	| FilterDiscard;
 
 type FilterActionRowProps = {
-	tmpFilter: TmpFilter;
 	index: number;
 	compProps: CompProps;
 	tagOptions?: Array<MailFilterTag>;
@@ -91,7 +94,6 @@ type FilterActionRowProps = {
 };
 
 export const FilterActionRow: FC<FilterActionRowProps> = ({
-	tmpFilter,
 	index,
 	compProps,
 	tagOptions,
@@ -143,9 +145,8 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 	);
 
 	const defaultValue = useMemo(() => {
-		const defaultActionValue = defaultAction.value;
 		if (
-			'actionRedirect' in defaultActionValue &&
+			'actionRedirect' in defaultAction &&
 			zimbraFeatureMailForwardingInFiltersEnabled === 'FALSE'
 		) {
 			setIsRedirectToActionRemoved(true);
@@ -154,23 +155,23 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 			setTempActions(previous);
 			return actionOptions[0];
 		}
-		if ('actionDiscard' in defaultActionValue) {
+		if ('actionDiscard' in defaultAction) {
 			return actionOptions[1];
 		}
-		if ('actionKeep' in defaultActionValue) {
+		if ('actionKeep' in defaultAction) {
 			return actionOptions[0];
 		}
-		if ('actionFileInto' in defaultActionValue) {
+		if ('actionFileInto' in defaultAction) {
 			setActiveActionOption('actionFileInto');
 			return actionOptions[2];
 		}
-		if ('actionFlag' in defaultActionValue) {
+		if ('actionFlag' in defaultAction) {
 			setActiveActionOption('actionFlag');
 			return actionOptions[4];
 		}
-		if ('actionRedirect' in defaultActionValue) {
+		if ('actionRedirect' in defaultAction) {
 			setActiveActionOption('actionRedirect');
-			const email = defaultActionValue.actionRedirect[0].a;
+			const email = defaultAction.actionRedirect[0].a;
 			if (email) {
 				setContacts([
 					{
@@ -185,7 +186,7 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 			return actionOptions[5];
 		}
 		setActiveActionOption('actionTag');
-		const { tagName } = defaultActionValue.actionTag[0];
+		const { tagName } = defaultAction.actionTag[0];
 		setTag(
 			tagName
 				? [
@@ -197,7 +198,7 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 		);
 		return actionOptions[3];
 	}, [
-		defaultAction.value,
+		defaultAction,
 		zimbraFeatureMailForwardingInFiltersEnabled,
 		tempActions,
 		index,
@@ -321,8 +322,7 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 		[tempActions, activeIndex, setTempActions]
 	);
 
-	const defaultMarkAs =
-		'actionFlag' in defaultAction.value ? defaultAction.value.actionFlag[0] : undefined;
+	const defaultMarkAs = 'actionFlag' in defaultAction ? defaultAction.actionFlag[0] : undefined;
 
 	return (
 		<Container
