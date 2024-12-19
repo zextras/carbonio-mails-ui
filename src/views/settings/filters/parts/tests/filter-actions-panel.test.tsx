@@ -35,4 +35,24 @@ describe('FilterActionsPanel', () => {
 			{ id: '33', actionRedirect: [{}] }
 		]);
 	});
+
+	// TODO: this test makes sense only when moved at higher level as it involves changes in state
+	it.skip('should reset the tag input after changing action from tag to keep back to tag', async () => {
+		const filterName = 'Test Designer';
+		const mockCompProps: CompProps = {
+			setTempActions: jest.fn(),
+			zimbraFeatureMailForwardingInFiltersEnabled: 'TRUE' as const,
+			isIncoming: true,
+			tempActions: [{ actionTag: [{ tagName: filterName }] }]
+		};
+		const { user } = setupTest(<FilterActionsPanel compProps={mockCompProps} />, {});
+		expect(screen.getByText(filterName)).toBeVisible();
+
+		await user.click(screen.getByText('Tag with'));
+		await user.click(screen.getByText('Keep in Inbox'));
+		await user.click(screen.getByText('Keep in Inbox'));
+		await user.click(screen.getByText('Tag with'));
+
+		expect(screen.queryByText(filterName)).not.toBeInTheDocument();
+	});
 });

@@ -17,7 +17,7 @@ import {
 	setupTest
 } from '../../../../../carbonio-ui-commons/test/test-setup';
 import { generateStore } from '../../../../../tests/generators/store';
-import { CompProps, FilterAction } from '../../../../../types';
+import { FilterAction } from '../../../../../types';
 import { FilterActionRow } from '../filter-action-row';
 
 const REDIRECT_TO_ADDRESS = /Redirect To Address/i;
@@ -238,72 +238,40 @@ describe('FilterActionsRows', () => {
 		});
 	});
 	describe('Tag With', () => {
-		it('should display the saved tag', async () => {
-			const filterName = 'Test Designer';
+		it('should display the tag input when tag action selected', async () => {
 			setupTest(
 				<FilterActionRow
+					{...defaultProps}
 					defaultAction={{
-						actionTag: [{ tagName: filterName }]
+						actionTag: [{}]
 					}}
-					index={0}
-					compProps={defaultProps}
-				/>,
-				{}
-			);
-			expect(screen.getByText(filterName)).toBeVisible();
-		});
-		it('should display empty tag in input', async () => {
-			setupTest(
-				<FilterActionRow
-					defaultAction={{
-						actionTag: [{ tagName: 'tag 1' }]
-					}}
-					index={0}
-					compProps={defaultProps}
 				/>,
 				{}
 			);
 			expect(screen.getByText('Tag')).toBeVisible();
 		});
-		it('should reset the input value to empty after changing action', async () => {
-			const newCompProps: CompProps = {
-				...defaultProps,
-				tempActions: [{ actionKeep: [{}] }]
-			};
+		it('should display the saved tag', async () => {
 			const filterName = 'Test Designer';
-			const { user } = setupTest(
+			setupTest(
 				<FilterActionRow
+					{...defaultProps}
 					defaultAction={{
 						actionTag: [{ tagName: filterName }]
 					}}
-					index={0}
-					compProps={newCompProps}
 				/>,
 				{}
 			);
 			expect(screen.getByText(filterName)).toBeVisible();
-
-			await user.click(screen.getByText('Tag with'));
-			await user.click(screen.getByText('Keep in Inbox'));
-			await user.click(screen.getByText('Keep in Inbox'));
-			await user.click(screen.getByText('Tag with'));
-
-			expect(screen.queryByText(filterName)).not.toBeInTheDocument();
 		});
 
 		it('should update tag action value if a new tag is selected', async () => {
-			const newCompProps: CompProps = {
-				...defaultProps,
-				tempActions: []
-			};
 			const { user } = setupTest(
 				<FilterActionRow
+					{...defaultProps}
 					defaultAction={{
 						actionTag: [{ tagName: 'my tag' }]
 					}}
 					tagOptions={[{ label: 'Tag 1' }]}
-					index={0}
-					compProps={newCompProps}
 				/>,
 				{}
 			);
@@ -311,34 +279,29 @@ describe('FilterActionsRows', () => {
 			await user.click(screen.getByText('Tag'));
 			await user.click(screen.getByText('Tag 1'));
 
-			expect(defaultProps.setTempActions).toHaveBeenCalledTimes(1);
-			expect(defaultProps.setTempActions).toHaveBeenCalledWith([
-				{ actionTag: [{ tagName: 'Tag 1' }], id: undefined }
-			]);
+			expect(defaultProps.onDefaultActionValueChange).toHaveBeenCalledTimes(1);
+			expect(defaultProps.onDefaultActionValueChange).toHaveBeenCalledWith({
+				actionTag: [{ tagName: 'Tag 1' }]
+			});
 		});
-		it('should update tag action value if a new tag is selected', async () => {
-			const newCompProps = {
-				...defaultProps,
-				tempActions: []
-			};
+		it('should update tag action value if tag is removed', async () => {
 			const { user } = setupTest(
 				<FilterActionRow
+					{...defaultProps}
 					defaultAction={{
 						actionTag: [{ tagName: 'Tag to remove' }]
 					}}
 					tagOptions={[{ label: 'Tag 1' }]}
-					index={0}
-					compProps={newCompProps}
 				/>,
 				{}
 			);
 
 			await user.click(within(screen.getByTestId('tag-input')).getByTestId('icon: Close'));
 
-			expect(defaultProps.setTempActions).toHaveBeenCalledTimes(1);
-			expect(defaultProps.setTempActions).toHaveBeenCalledWith([
-				{ actionTag: [{ tagName: '' }], id: undefined }
-			]);
+			expect(defaultProps.onDefaultActionValueChange).toHaveBeenCalledTimes(1);
+			expect(defaultProps.onDefaultActionValueChange).toHaveBeenCalledWith({
+				actionTag: [{ tagName: '' }]
+			});
 		});
 	});
 	describe('Move To Folder', () => {
@@ -358,20 +321,12 @@ describe('FilterActionsRows', () => {
 				view: FOLDER_VIEW.message,
 				customFolders: [rootFolder]
 			});
-			const mockCompProps: CompProps = {
-				...defaultProps,
-				tempActions: [
-					{ id: '123', actionTag: [{}] },
-					{ id: '456', actionDiscard: [{}] }
-				]
-			};
 			const { user } = setupTest(
 				<FilterActionRow
+					{...defaultProps}
 					defaultAction={{
 						actionFileInto: [{ folderPath: '/my/path' }]
 					}}
-					index={1}
-					compProps={mockCompProps}
 				/>,
 				{ store }
 			);
@@ -387,38 +342,31 @@ describe('FilterActionsRows', () => {
 			const chooseFolder = screen.getByRole('button', { name: 'Choose' });
 			expect(chooseFolder).toBeEnabled();
 			await user.click(chooseFolder);
-			expect(defaultProps.setTempActions).toHaveBeenCalledWith([
-				{ id: '123', actionTag: [{}] },
-				{ actionFileInto: [{ folderPath: folder.absFolderPath }], id: '456' }
-			]);
+			expect(defaultProps.onDefaultActionValueChange).toHaveBeenCalledWith({
+				actionFileInto: [{ folderPath: folder.absFolderPath }]
+			});
 		});
 	});
 	describe('Discard', () => {
 		it('should render the discard option if selected', async () => {
 			setupTest(
 				<FilterActionRow
+					{...defaultProps}
 					defaultAction={{
 						actionDiscard: [{}]
 					}}
-					index={0}
-					compProps={defaultProps}
 				/>,
 				{}
 			);
 			expect(await screen.findByText('Discard')).toBeVisible();
 		});
 		it('should render the the discard option after selecting it', async () => {
-			const mockCompProps: CompProps = {
-				...defaultProps,
-				tempActions: [{ id: '1', actionKeep: [{}] }]
-			};
 			const { user } = setupTest(
 				<FilterActionRow
+					{...defaultProps}
 					defaultAction={{
 						actionKeep: [{}]
 					}}
-					index={0}
-					compProps={mockCompProps}
 				/>,
 				{}
 			);
