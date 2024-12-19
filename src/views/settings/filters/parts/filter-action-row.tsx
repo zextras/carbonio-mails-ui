@@ -25,7 +25,9 @@ type FilterActionRowProps = {
 	compProps: CompProps;
 	tagOptions?: Array<MailFilterTag>;
 	defaultAction: FilterAction;
-	onActionChange?: (action: FilterAction) => void;
+	onActionChange: (action: FilterAction) => void;
+	onRemoveAction: () => void;
+	onAddNewAction: () => void;
 };
 
 type ActiveOption =
@@ -40,7 +42,10 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 	index,
 	compProps,
 	tagOptions,
-	defaultAction
+	defaultAction,
+	onAddNewAction,
+	onRemoveAction,
+	onActionChange
 }): ReactElement => {
 	const { isIncoming, tempActions, setTempActions, zimbraFeatureMailForwardingInFiltersEnabled } =
 		compProps;
@@ -52,12 +57,6 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 		[t, zimbraFeatureMailForwardingInFiltersEnabled, isIncoming]
 	);
 	const [tag, setTag] = useState<Array<MailFilterTag>>([]);
-
-	const addFilterCondition = useCallback(() => {
-		const previousTempActions = tempActions.slice();
-		previousTempActions.push({ actionKeep: [{}], actionStop: [{}], id: uuidv4() });
-		setTempActions(previousTempActions);
-	}, [tempActions, setTempActions]);
 
 	const [activeActionOption, setActiveActionOption] = useState<ActiveOption>('inbox');
 	const showMarksAsBtn = useMemo(() => activeActionOption === 'markAs', [activeActionOption]);
@@ -160,67 +159,58 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 
 	const disableRemove = useMemo(() => tempActions.length === 1, [tempActions]);
 	const onRemove = useMemo(
-		() => (disableRemove ? (): null => null : removeFilterCondition(index)),
-		[disableRemove, removeFilterCondition, index]
+		() => (disableRemove ? (): null => null : onRemoveAction),
+		[disableRemove, onRemoveAction]
 	);
 	const onActionOptionChange = useCallback(
 		(str: ActiveOption) => {
+			let newAction: FilterAction = defaultAction;
 			switch (str) {
 				case 'discard': {
-					const previous = tempActions.slice();
-					previous[index] = { id: previous[index].id, actionDiscard: [{}] };
-					setTempActions(previous);
+					newAction = { actionDiscard: [{}] };
 					break;
 				}
 				case 'inbox': {
-					const previous = tempActions.slice();
-					previous[index] = { actionKeep: [{}], id: previous[index].id };
-					setTempActions(previous);
+					newAction = { actionKeep: [{}] };
 					break;
 				}
 				case 'tagWith': {
-					const previous = tempActions.slice();
-					if (!('actionTag' in previous[index])) {
-						previous[index] = {
-							id: previous[index]?.id,
+					if (!('actionTag' in defaultAction)) {
+						newAction = {
 							actionTag: [{ tagName: '' }]
 						};
-						setTempActions(previous);
 						setTag([]);
 					}
 					break;
 				}
 				case 'moveIntoFolder': {
-					const previous = tempActions.slice();
-					if (!('actionFileInto' in previous[index])) {
-						previous[index] = {
-							id: previous[index]?.id,
+					if (!('actionFileInto' in defaultAction)) {
+						newAction = {
 							actionFileInto: [{ folderPath: '' }]
 						};
 					}
-					setTempActions(previous);
 					break;
 				}
 				case 'redirectToAddress': {
-					const previous = tempActions.slice();
-					if (!('actionRedirect' in previous[index])) {
-						previous[index] = {
-							id: previous[index]?.id,
+					if (!('actionRedirect' in defaultAction)) {
+						newAction = {
 							actionRedirect: [{ a: '' }]
 						};
 						setContacts([]);
 					}
-					setTempActions(previous);
 					break;
 				}
 				default:
+					newAction = { actionKeep: [{}] };
+					break;
 			}
 			if (isRedirectToActionRemoved) {
 				setIsRedirectToActionRemoved(false);
 			}
 			setActiveActionOption(str);
+			onActionChange(newAction);
 		},
-		[index, isRedirectToActionRemoved, setTempActions, tempActions]
+		[defaultAction, isRedirectToActionRemoved, onActionChange]
 	);
 
 	const onSelectFolder = useCallback(() => {
@@ -321,7 +311,7 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 			</Row>
 			<Container orientation="horizontal" mainAlignment="flex-end" width="auto">
 				<Tooltip label={t('settings.add_action', 'Add new action')} placement="top">
-					<Button icon="PlusOutline" onClick={addFilterCondition} color="primary" type="outlined" />
+					<Button icon="PlusOutline" onClick={onAddNewAction} color="primary" type="outlined" />
 				</Tooltip>
 				<Padding left="small">
 					<Tooltip label={t('settings.remove_action', 'Remove this action')} placement="top">
