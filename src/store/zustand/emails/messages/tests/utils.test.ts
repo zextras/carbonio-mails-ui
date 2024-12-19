@@ -10,7 +10,7 @@ import { UseBoundStore, StoreApi } from 'zustand';
 import { API_REQUEST_STATUS } from '../../../../../constants';
 import { generateMessage } from '../../../../../tests/generators/generateMessage';
 import { EmailsStoreState, MailMessage } from '../../../../../types';
-import { CONVERSATIONS_INDEX_SLICE_INITIAL_STATE } from '../../conversations/conversations-index-slice';
+import { CONVERSATION_INDEX_SLICE_INITIAL_STATE } from '../../conversations/conversations-index-slice';
 import { POPULATED_ITEMS_SLICE_INITIAL_STATE } from '../../populated-items/populated-items-slice';
 import { SEARCH_INDEX_SLICE_INITIAL_STATE } from '../../search/search-slice';
 import { MESSAGE_INDEX_SLICE_INITIAL_STATE } from '../messages-slice';
@@ -43,7 +43,7 @@ describe('setMessages', () => {
 			messageIndexSlice: MESSAGE_INDEX_SLICE_INITIAL_STATE,
 			populatedItemsSlice: POPULATED_ITEMS_SLICE_INITIAL_STATE,
 			searchIndexSlice: SEARCH_INDEX_SLICE_INITIAL_STATE,
-			conversationsIndexSlice: CONVERSATIONS_INDEX_SLICE_INITIAL_STATE
+			conversationIndexSlice: CONVERSATION_INDEX_SLICE_INITIAL_STATE
 		};
 
 		const newState = produce(initialState, stateUpdater);

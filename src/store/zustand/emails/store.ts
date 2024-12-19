@@ -7,8 +7,8 @@
 
 import { create } from 'zustand';
 
-import { createConversationsIndexSlice } from './conversations/conversations-index-slice';
-import { conversationsIndexSliceUtils } from './conversations/utils';
+import { createConversationIndexSlice } from './conversations/conversations-index-slice';
+import { conversationIndexSliceUtils } from './conversations/utils';
 import { createMessageIndexSlice } from './messages/messages-slice';
 import { messageIndexSliceUtils } from './messages/utils';
 import { createPopulatedItemsSlice } from './populated-items/populated-items-slice';
@@ -29,7 +29,7 @@ import {
 const useEmailsStore = create<EmailsStoreState>()((...a) => ({
 	...createSearchIndexSlice(...a),
 	...createMessageIndexSlice(...a),
-	...createConversationsIndexSlice(...a),
+	...createConversationIndexSlice(...a),
 	...createPopulatedItemsSlice(...a)
 }));
 
@@ -191,22 +191,22 @@ export function appendMessagesToMessagesSlice(
 // #### conversationIndexSlice related functions
 // ################################
 
-export function useConversationIndexSlice(): EmailsStoreState['conversationsIndexSlice'] {
-	return useEmailsStore(({ conversationsIndexSlice }) => conversationsIndexSlice);
+export function useConversationIndexSlice(): EmailsStoreState['conversationIndexSlice'] {
+	return useEmailsStore(({ conversationIndexSlice }) => conversationIndexSlice);
 }
 export function useConversationsIdsByFolder(folder: Folder): Set<string> {
-	return conversationsIndexSliceUtils.useConversationsIdsByFolder(folder, useEmailsStore);
+	return conversationIndexSliceUtils.useConversationsIdsByFolder(folder, useEmailsStore);
 }
 
 export function resetConversationAndPopulatedItems(): void {
-	return conversationsIndexSliceUtils.resetConversationAndPopulatedItems(useEmailsStore);
+	return conversationIndexSliceUtils.resetConversationAndPopulatedItems(useEmailsStore);
 }
 
-export function appendConversationsToConversationsIndexSlice(
+export function appendConversationsToConversationIndexSlice(
 	conversations: Array<NormalizedConversation>,
 	offset: number
 ): void {
-	return conversationsIndexSliceUtils.appendConversationsToConversationsIndexSlice(
+	return conversationIndexSliceUtils.appendConversationsToConversationIndexSlice(
 		conversations,
 		offset,
 		useEmailsStore
@@ -214,12 +214,12 @@ export function appendConversationsToConversationsIndexSlice(
 }
 
 export function updateConversationsResultsLoadingStatus(status: SearchRequestStatus): void {
-	conversationsIndexSliceUtils.updateConversationsResultsLoadingStatus(status, useEmailsStore);
+	conversationIndexSliceUtils.updateConversationsResultsLoadingStatus(status, useEmailsStore);
 }
 
 export function setConversationsInEmailStore(
 	conversations: Array<NormalizedConversation>,
 	more: boolean
 ): void {
-	conversationsIndexSliceUtils.setConversations(conversations, more, useEmailsStore);
+	conversationIndexSliceUtils.setConversations(conversations, more, useEmailsStore);
 }

@@ -6,20 +6,20 @@
 
 import { StateCreator } from 'zustand';
 
-import { ConversationsIndexSliceState, PopulatedItemsSliceState } from '../../../../types';
+import { ConversationIndexSliceState, PopulatedItemsSliceState } from '../../../../types';
 
-export const CONVERSATIONS_INDEX_SLICE_INITIAL_STATE: ConversationsIndexSliceState['conversationsIndexSlice'] =
+export const CONVERSATION_INDEX_SLICE_INITIAL_STATE: ConversationIndexSliceState['conversationIndexSlice'] =
 	{
-		conversationsIds: new Set<string>(),
+		conversationIdSet: new Set<string>(),
 		more: false,
 		offset: 0,
 		status: null
 	};
-export const createConversationsIndexSlice: StateCreator<
-	PopulatedItemsSliceState & ConversationsIndexSliceState,
+export const createConversationIndexSlice: StateCreator<
+	PopulatedItemsSliceState & ConversationIndexSliceState,
 	[],
 	[],
-	ConversationsIndexSliceState
+	ConversationIndexSliceState
 > = () => ({
-	conversationsIndexSlice: CONVERSATIONS_INDEX_SLICE_INITIAL_STATE
+	conversationIndexSlice: CONVERSATION_INDEX_SLICE_INITIAL_STATE
 });

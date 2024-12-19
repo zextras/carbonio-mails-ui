@@ -253,9 +253,9 @@ export type MessageIndexSliceState = {
 	};
 };
 
-export type ConversationsIndexSliceState = {
-	conversationsIndexSlice: {
-		conversationsIds: Set<string>;
+export type ConversationIndexSliceState = {
+	conversationIndexSlice: {
+		conversationIdSet: Set<string>;
 		more: boolean;
 		offset: number;
 		sortBy?: SortBy;
@@ -278,4 +278,4 @@ export type PopulatedItemsSliceState = {
 export type EmailsStoreState = PopulatedItemsSliceState &
 	SearchIndexSliceState &
 	MessageIndexSliceState &
-	ConversationsIndexSliceState;
+	ConversationIndexSliceState;

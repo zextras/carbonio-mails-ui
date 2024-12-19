@@ -9,7 +9,7 @@ import produce, { enableMapSet } from 'immer';
 import { forEach, some } from 'lodash';
 import { StoreApi, UseBoundStore } from 'zustand';
 
-import { CONVERSATIONS_INDEX_SLICE_INITIAL_STATE } from './conversations-index-slice';
+import { CONVERSATION_INDEX_SLICE_INITIAL_STATE } from './conversations-index-slice';
 import { API_REQUEST_STATUS } from '../../../../constants';
 import {
 	EmailsStoreState,
@@ -26,12 +26,12 @@ function setConversations(
 ): void {
 	useEmailsStore.setState(
 		produce((store: EmailsStoreState) => {
-			store.conversationsIndexSlice.conversationsIds = new Set(
+			store.conversationIndexSlice.conversationIdSet = new Set(
 				conversations.map((conv) => conv.id)
 			);
-			store.conversationsIndexSlice.status = API_REQUEST_STATUS.fulfilled;
-			store.conversationsIndexSlice.offset = 0;
-			store.conversationsIndexSlice.more = more;
+			store.conversationIndexSlice.status = API_REQUEST_STATUS.fulfilled;
+			store.conversationIndexSlice.offset = 0;
+			store.conversationIndexSlice.more = more;
 
 			store.populatedItemsSlice.conversations = conversations.reduce(
 				(acc, conv) => {
@@ -49,8 +49,8 @@ function useConversationsIdsByFolder(
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
 ): Set<string> {
 	const folderConversationsIds = new Set<string>();
-	const { populatedItemsSlice, conversationsIndexSlice } = useEmailsStore();
-	const { conversationsIds } = conversationsIndexSlice;
+	const { populatedItemsSlice, conversationIndexSlice } = useEmailsStore();
+	const { conversationIdSet: conversationsIds } = conversationIndexSlice;
 	forEach([...conversationsIds], (conversationId) => {
 		const wantedFolder = 'rid' in folder && folder?.rid ? `${folder.zid}:${folder.rid}` : folder.id;
 		if (
@@ -71,7 +71,7 @@ function updateConversationsResultsLoadingStatus(
 ): void {
 	useEmailsStore.setState(
 		produce((state: EmailsStoreState) => {
-			state.conversationsIndexSlice.status = status;
+			state.conversationIndexSlice.status = status;
 		})
 	);
 }
@@ -81,13 +81,13 @@ function resetConversationAndPopulatedItems(
 ): void {
 	useEmailsStore.setState(
 		produce((state: EmailsStoreState) => {
-			state.conversationsIndexSlice = CONVERSATIONS_INDEX_SLICE_INITIAL_STATE;
+			state.conversationIndexSlice = CONVERSATION_INDEX_SLICE_INITIAL_STATE;
 			state.populatedItemsSlice = POPULATED_ITEMS_SLICE_INITIAL_STATE;
 		})
 	);
 }
 
-function appendConversationsToConversationsIndexSlice(
+function appendConversationsToConversationIndexSlice(
 	conversations: Array<NormalizedConversation>,
 	offset: number,
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
@@ -97,9 +97,9 @@ function appendConversationsToConversationsIndexSlice(
 	useEmailsStore.setState(
 		produce((state: EmailsStoreState) => {
 			newConversationIds.forEach((convId) =>
-				state.conversationsIndexSlice.conversationsIds.add(convId)
+				state.conversationIndexSlice.conversationIdSet.add(convId)
 			);
-			state.conversationsIndexSlice.offset = offset;
+			state.conversationIndexSlice.offset = offset;
 			state.populatedItemsSlice.conversations = conversations.reduce((acc, conv) => {
 				acc[conv.id] = conv;
 				return acc;
@@ -108,10 +108,10 @@ function appendConversationsToConversationsIndexSlice(
 	);
 }
 
-export const conversationsIndexSliceUtils = {
+export const conversationIndexSliceUtils = {
 	setConversations,
 	useConversationsIdsByFolder,
 	resetConversationAndPopulatedItems,
-	appendConversationsToConversationsIndexSlice,
+	appendConversationsToConversationIndexSlice,
 	updateConversationsResultsLoadingStatus
 };

@@ -15,9 +15,9 @@ import {
 	useConversationIndexSlice,
 	useConversationsIdsByFolder
 } from '../store/zustand/emails/store';
-import { ConversationsIndexSliceState, Folder } from '../types';
+import { ConversationIndexSliceState, Folder } from '../types';
 
-export const useConversationListByFolder = (folder: Folder): ConversationsIndexSliceState => {
+export const useConversationListByFolder = (folder: Folder): ConversationIndexSliceState => {
 	const settings = useUserSettings();
 	const prefLocale = useMemo(
 		() => settings.prefs.zimbraPrefLocale,
@@ -26,7 +26,7 @@ export const useConversationListByFolder = (folder: Folder): ConversationsIndexS
 
 	const previousFolderId = useRef<string>('');
 
-	const conversationsIndexSlice = useConversationIndexSlice();
+	const conversationIndexSlice = useConversationIndexSlice();
 	const conversationsIds = useConversationsIdsByFolder(folder);
 
 	const firstSearchCallback = useCallback(
@@ -59,5 +59,7 @@ export const useConversationListByFolder = (folder: Folder): ConversationsIndexS
 		};
 	}, [firstSearchCallback, folder.id]);
 
-	return { conversationsIndexSlice: { ...conversationsIndexSlice, conversationsIds } };
+	return {
+		conversationIndexSlice: { ...conversationIndexSlice, conversationIdSet: conversationsIds }
+	};
 };

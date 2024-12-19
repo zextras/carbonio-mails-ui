@@ -26,8 +26,8 @@ export const ConversationList = (): React.JSX.Element => {
 	const { folderId, itemId } = useParams<{ folderId: string; itemId: string }>();
 	const { setCount, count } = useAppContext<AppContext>();
 	const folder = useFolder(folderId);
-	const { conversationsIndexSlice } = useConversationListByFolder(folder as Folder);
-	const { status, conversationsIds } = conversationsIndexSlice;
+	const { conversationIndexSlice } = useConversationListByFolder(folder as Folder);
+	const { status, conversationIdSet: conversationsIds } = conversationIndexSlice;
 
 	const [draggedIds, setDraggedIds] = useState<Record<string, boolean>>();
 	const dragImageRef = useRef(null);
@@ -149,7 +149,7 @@ export const ConversationList = (): React.JSX.Element => {
 			selected={selected}
 			deselectAll={deselectAll}
 			dragImageRef={dragImageRef}
-			hasMore={conversationsIndexSlice.more}
+			hasMore={conversationIndexSlice.more}
 		/>
 	);
 };
