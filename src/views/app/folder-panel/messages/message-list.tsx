@@ -33,11 +33,11 @@ export const MessageList = (): React.JSX.Element => {
 	const [draggedIds, setDraggedIds] = useState<Record<string, boolean>>({});
 
 	const { messageIndexSlice } = useMessageListByFolder(folder);
-	const { messageIdSet: messagesIds, status } = messageIndexSlice;
+	const { messageIdSet, status } = messageIndexSlice;
 
 	const { prefs } = useUserSettings();
 	const { sortOrder } = parseMessageSortingOptions(folderId, prefs.zimbraPrefSortOrder as string);
-	const items = [...messagesIds].map((messageId) => ({ id: messageId }));
+	const items = [...messageIdSet].map((messageId) => ({ id: messageId }));
 	const {
 		selected,
 		deselectAll,
@@ -60,13 +60,13 @@ export const MessageList = (): React.JSX.Element => {
 		loadingMore,
 		hasMore,
 		sortBy: sortOrder,
-		offset: messagesIds.size,
+		offset: messageIdSet.size,
 		limit: LIST_LIMIT.LOAD_MORE_LIMIT,
 		types: 'message'
 	});
 
 	const displayerTitle = useMemo(() => {
-		if (messagesIds?.size === 0) {
+		if (messageIdSet?.size === 0) {
 			if (getFolderIdParts(folderId).id === FOLDERS.SPAM) {
 				return t('displayer.list_spam_title', 'There are no spam e-mails');
 			}
@@ -82,7 +82,7 @@ export const MessageList = (): React.JSX.Element => {
 			return t('displayer.list_folder_title', 'It looks like there are no e-mails yet');
 		}
 		return null;
-	}, [messagesIds.size, folderId, t]);
+	}, [messageIdSet.size, folderId, t]);
 
 	const listItems = useMemo(
 		() =>
@@ -125,10 +125,10 @@ export const MessageList = (): React.JSX.Element => {
 
 	const totalMessages = useMemo(() => {
 		if (sortOrder === 'readAsc') {
-			return messagesIds.size;
+			return messageIdSet.size;
 		}
-		return folder?.n ?? messagesIds.size ?? 0;
-	}, [folder?.n, messagesIds.size, sortOrder]);
+		return folder?.n ?? messageIdSet.size ?? 0;
+	}, [folder?.n, messageIdSet.size, sortOrder]);
 
 	const selectedIds = useMemo(() => Object.keys(selected), [selected]);
 
@@ -147,7 +147,7 @@ export const MessageList = (): React.JSX.Element => {
 			messagesLoadingCompleted={messagesLoadingCompleted}
 			selectedIds={selectedIds}
 			folderId={folderId}
-			messageIds={messagesIds}
+			messageIds={messageIdSet}
 			draggedIds={draggedIds}
 			setDraggedIds={setDraggedIds}
 			isSelectModeOn={isSelectModeOn}
