@@ -19,6 +19,7 @@ import {
 import { generateStore } from '../../../../../tests/generators/store';
 import FilterActionRows from '../filter-action-rows';
 
+const REDIRECT_TO_ADDRESS = /Redirect To Address/i;
 describe('FilterActionsRows', () => {
 	const compProps = {
 		isIncoming: true,
@@ -137,6 +138,32 @@ describe('FilterActionsRows', () => {
 		]);
 	});
 
+	it('should render only first action even if multiple actions are provided', () => {
+		const mockCompProps = {
+			...compProps,
+			tempActions: [
+				{ id: '1', actionKeep: [{}] },
+				{ id: '2', actionTag: [{}] },
+				{ id: '3', actionRedirect: [{}] }
+			]
+		};
+		setupTest(
+			<FilterActionRows
+				tmpFilter={{
+					actionKeep: [{}],
+					actionTag: [{ tagName: 'tag 1' }],
+					actionRedirect: [{ a: 'redirectTo@mail.com' }]
+				}}
+				index={0}
+				compProps={mockCompProps}
+			/>,
+			{}
+		);
+		expect(screen.getByText('Keep in Inbox')).toBeVisible();
+		expect(screen.queryByText('Tag with')).not.toBeInTheDocument();
+		expect(screen.queryByText('Redirect to address')).not.toBeInTheDocument();
+	});
+
 	describe('Keep In Inbox', () => {
 		it('should render the selected action', async () => {
 			setupTest(
@@ -154,6 +181,19 @@ describe('FilterActionsRows', () => {
 		});
 	});
 	describe('Redirect To Address', () => {
+		it('should display action "Redirect To Address" when selected', async () => {
+			setupTest(
+				<FilterActionRows
+					tmpFilter={{
+						actionRedirect: [{ a: 'test@test.com' }]
+					}}
+					index={0}
+					compProps={compProps}
+				/>,
+				{}
+			);
+			expect(screen.getByText(REDIRECT_TO_ADDRESS));
+		});
 		it('should not display Contact Input when dropdown option is different from "Redirect To Address"', async () => {
 			setupTest(
 				<FilterActionRows
@@ -288,7 +328,7 @@ describe('FilterActionsRows', () => {
 				{}
 			);
 
-			expect(screen.queryByText('Redirect to address')).not.toBeInTheDocument();
+			expect(screen.queryByText(REDIRECT_TO_ADDRESS)).not.toBeInTheDocument();
 		});
 
 		it('should  display Keep in Inbox as selected option if zimbraFeatureMailForwardingInFiltersEnabled is FALSE', async () => {
@@ -332,7 +372,7 @@ describe('FilterActionsRows', () => {
 			await user.click(screen.getByText('Keep in Inbox'));
 
 			expect(
-				within(screen.getByTestId('dropdown-popper-list')).queryByText('Redirect to address')
+				within(screen.getByTestId('dropdown-popper-list')).queryByText(REDIRECT_TO_ADDRESS)
 			).not.toBeInTheDocument();
 		});
 	});
