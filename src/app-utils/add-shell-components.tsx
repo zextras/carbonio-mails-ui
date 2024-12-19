@@ -11,12 +11,13 @@ import {
 	addBoardView,
 	addSettingsView,
 	t,
-	SecondaryBarComponentProps
+	SecondaryBarComponentProps,
+	upsertApp
 } from '@zextras/carbonio-shell-ui';
 
 import { advancedAccountAPI } from '../api/advanced-account';
 import { Spinner } from '../assets/spinner';
-import { MAILS_BOARD_VIEW_ID, MAILS_ROUTE } from '../constants';
+import { MAIL_APP_ID, MAILS_BOARD_VIEW_ID, MAILS_ROUTE } from '../constants';
 import { StoreProvider } from '../store/redux';
 import { ExtraWindowsManager } from '../views/app/extra-windows/extra-window-manager';
 import { getSettingsSubSections } from '../views/settings/subsections';
@@ -103,5 +104,10 @@ export const addComponentsToShell = async (): Promise<void> => {
 		label,
 		subSections: getSettingsSubSections(backupSelfUndeleteAllowed),
 		component: SettingsView
+	});
+
+	upsertApp({
+		name: MAIL_APP_ID,
+		display: label
 	});
 };
