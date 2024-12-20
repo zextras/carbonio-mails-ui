@@ -116,6 +116,10 @@ export function useMessagesByIds(ids: Array<string>): Array<IncompleteMessage | 
 	return populatedItemsSliceUtils.useMessagesByIds(ids, useEmailsStore);
 }
 
+export function useConversationsByIds(ids: Array<string>): Array<NormalizedConversation> {
+	return populatedItemsSliceUtils.useConversationsByIds(ids, useEmailsStore);
+}
+
 export function useConversationStatus(id: string): SearchRequestStatus {
 	return useEmailsStore(({ populatedItemsSlice }) => populatedItemsSlice.conversationsStatus?.[id]);
 }
