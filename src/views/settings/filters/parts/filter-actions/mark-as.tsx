@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useEffect } from 'react';
+import React from 'react';
 
 import { Row } from '@zextras/carbonio-design-system';
 
@@ -20,12 +20,6 @@ export const MarkAs = ({ onChange, selected, options }: MarkAsProps): React.JSX.
 	const defaultSelection = options.find(
 		(option) => option.value.actionFlag[0].flagName === selected?.flagName
 	);
-
-	useEffect(() => {
-		if (!defaultSelection) {
-			options?.[0] && onChange(options[0].value);
-		}
-	});
 	return (
 		<Row padding={{ right: 'small' }} minWidth="12.5rem">
 			<CustomSelect

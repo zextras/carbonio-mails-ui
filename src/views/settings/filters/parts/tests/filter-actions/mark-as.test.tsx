@@ -52,7 +52,7 @@ describe('Mark As', () => {
 		expect(onChangeFn).toHaveBeenCalledWith(secondOption.value);
 	});
 
-	it('it should call onChange with first option when initial value does not have a flag', async () => {
+	it('it should display empty option when initial value does not match any options', async () => {
 		const store = generateStore();
 		const options: MarkAsOption[] = [
 			{ label: 'label 1', value: { actionFlag: [{ flagName: '1' }] } },
@@ -65,7 +65,7 @@ describe('Mark As', () => {
 			store
 		});
 
-		expect(onChangeFn).toHaveBeenCalledTimes(1);
-		expect(onChangeFn).toHaveBeenCalledWith(options[0].value);
+		expect(screen.queryByText('label 1')).not.toBeInTheDocument();
+		expect(screen.queryByText('label 2')).not.toBeInTheDocument();
 	});
 });

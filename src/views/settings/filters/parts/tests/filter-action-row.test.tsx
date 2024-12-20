@@ -364,6 +364,25 @@ describe('FilterActionsRows', () => {
 			});
 		});
 	});
+
+	describe('Mark as', () => {
+		it('should update the action value with the first option of mark as when selecting "Mark as"', async () => {
+			const { user } = setupTest(
+				<FilterActionRow
+					{...defaultProps}
+					defaultAction={{
+						actionKeep: [{}]
+					}}
+				/>,
+				{}
+			);
+			await user.click(screen.getByText('Keep in Inbox'));
+			await user.click(screen.getByText('Mark as'));
+			expect(defaultProps.onActionSwitch).toHaveBeenCalledWith({
+				actionFlag: [{ flagName: 'read' }]
+			});
+		});
+	});
 	describe('Discard', () => {
 		it('should render the discard option if selected', async () => {
 			setupTest(

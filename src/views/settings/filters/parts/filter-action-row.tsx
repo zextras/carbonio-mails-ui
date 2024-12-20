@@ -54,6 +54,7 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 }): ReactElement => {
 	const [isRedirectToActionRemoved, setIsRedirectToActionRemoved] = useState(false);
 	const [t] = useTranslation();
+	const markAsOptions = useMemo(() => getMarkAsOptions(t), [t]);
 	const actionOptions = useMemo(
 		() => getActionOptions(t, mailForwardingEnabled, isIncomingFilter ?? false),
 		[t, mailForwardingEnabled, isIncomingFilter]
@@ -61,7 +62,6 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 	const [tag, setTag] = useState<Array<MailFilterTag>>([]);
 
 	const [activeActionOption, setActiveActionOption] = useState<ActiveOption>('actionKeep');
-	const showMarksAsBtn = useMemo(() => activeActionOption === 'actionFlag', [activeActionOption]);
 	const showRedirectToAddrsInput = useMemo(
 		() => activeActionOption === 'actionRedirect',
 		[activeActionOption]
@@ -182,7 +182,9 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 					break;
 				}
 				case 'actionFlag': {
-					newAction = { actionFlag: [{}] };
+					newAction = {
+						actionFlag: [{ flagName: markAsOptions?.[0].value.actionFlag[0].flagName }]
+					};
 					break;
 				}
 				case 'actionKeep': {
@@ -225,7 +227,7 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 			setActiveActionOption(str);
 			onActionSwitch(newAction);
 		},
-		[defaultAction, isRedirectToActionRemoved, onActionSwitch]
+		[defaultAction, isRedirectToActionRemoved, markAsOptions, onActionSwitch]
 	);
 
 	const onTagChange = useCallback(
@@ -272,7 +274,7 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 		'actionFileInto' in defaultAction
 			? { name: defaultAction.actionFileInto[0].folderPath }
 			: undefined;
-	const markAsOptions = useMemo(() => getMarkAsOptions(t), [t]);
+
 	return (
 		<Container
 			mainAlignment="space-between"
@@ -306,9 +308,9 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 						onConfirmDestination={confirmMoveToFolder}
 					/>
 				)}
-				{showMarksAsBtn && (
+				{'actionFlag' in defaultAction && (
 					<MarkAs
-						selected={defaultMarkAs}
+						selected={defaultAction.actionFlag[0]}
 						options={markAsOptions}
 						onChange={handleMarkAsOptionChange}
 					/>
