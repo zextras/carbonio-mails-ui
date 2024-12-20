@@ -6,6 +6,13 @@
 
 import { findDefaultValue } from '../utils';
 
+type OptionalFlag = {
+	flagName?: string;
+};
+type ComplexType = {
+	label: string;
+	value: { actionFlag: Array<OptionalFlag> };
+};
 describe('Utils', () => {
 	describe('findDefaultValue', () => {
 		it('returns default value', () => {
@@ -46,6 +53,15 @@ describe('Utils', () => {
 				{ label: 'B', value: { test: 'b' } }
 			];
 			expect(findDefaultValue(items, undefined)).toBeUndefined();
+		});
+
+		// This test just document the current behavior but I don't think it's desired
+		it('should return first option even when no exact match', () => {
+			const options: Array<ComplexType> = [
+				{ label: 'label 1', value: { actionFlag: [{ flagName: '1' }] } },
+				{ label: 'label 2', value: { actionFlag: [{ flagName: '2' }] } }
+			];
+			expect(findDefaultValue(options, { actionFlag: [{}] })).toBeUndefined();
 		});
 	});
 });

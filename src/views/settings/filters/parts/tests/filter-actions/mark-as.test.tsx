@@ -51,4 +51,21 @@ describe('Mark As', () => {
 		expect(onChangeFn).toHaveBeenCalledTimes(1);
 		expect(onChangeFn).toHaveBeenCalledWith(secondOption.value);
 	});
+
+	it('it should call onChange with first option when initial value does not have a flag', async () => {
+		const store = generateStore();
+		const options: MarkAsOption[] = [
+			{ label: 'label 1', value: { actionFlag: [{ flagName: '1' }] } },
+			{ label: 'label 2', value: { actionFlag: [{ flagName: '2' }] } }
+		];
+		const selectedOption = {};
+
+		const onChangeFn = jest.fn();
+		setupTest(<MarkAs options={options} onChange={onChangeFn} selected={selectedOption} />, {
+			store
+		});
+
+		expect(onChangeFn).toHaveBeenCalledTimes(1);
+		expect(onChangeFn).toHaveBeenCalledWith(options[0].value);
+	});
 });
