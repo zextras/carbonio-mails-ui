@@ -19,9 +19,12 @@ import {
 	useMessageById,
 	useSearchResults
 } from '../../../store/zustand/emails/store';
-import { generateConvMessageFromAPI } from '../../../tests/generators/api';
+import {
+	generateConversationFromAPI,
+	generateConvMessageFromAPI
+} from '../../../tests/generators/api';
 import { generateConversation } from '../../../tests/generators/generateConversation';
-import { SearchRequest, SearchResponse, SoapConversation } from '../../../types';
+import { SearchRequest, SearchResponse } from '../../../types';
 import { useRunSearch, useLoadMoreForSearchSlice } from '../search-view-hooks';
 
 describe('search view hooks', () => {
@@ -155,8 +158,7 @@ describe('search view hooks', () => {
 		const useDisableSearch = (): [boolean, Function] => [false, noop];
 		const message = generateConvMessageFromAPI({ id: '1' });
 		const searchResponse = {
-			// eslint-disable-next-line @typescript-eslint/no-use-before-define
-			c: [conversationFromAPI({ id: '123', su: 'Subject', m: [message] })],
+			c: [generateConversationFromAPI({ id: '123', su: 'Subject', m: [message] })],
 			more: false
 		};
 		const interceptor = createSoapAPIInterceptor<SearchRequest, SearchResponse>(
@@ -194,22 +196,6 @@ describe('search view hooks', () => {
 	});
 });
 
-function conversationFromAPI(params: Partial<SoapConversation> = {}): SoapConversation {
-	return {
-		id: '123',
-		n: 1,
-		u: 1,
-		f: 'flag',
-		tn: 'tag names',
-		d: 123,
-		m: [],
-		e: [],
-		su: 'Subject',
-		fr: 'fragment',
-		...params
-	};
-}
-
 describe('useLoadMore', () => {
 	let loadingMore: { current: boolean };
 	beforeEach(() => {
@@ -217,8 +203,9 @@ describe('useLoadMore', () => {
 	});
 	it('should correcly handle response with both conversations and messages', async () => {
 		const message = generateConvMessageFromAPI({ id: '1' });
+		const conversation = generateConversationFromAPI({ id: '123', su: 'Subject', m: [message] });
 		const searchResponse = {
-			c: [conversationFromAPI({ id: '123', su: 'Subject', m: [message] })],
+			c: [conversation],
 			m: [message],
 			more: false
 		};
@@ -251,8 +238,9 @@ describe('useLoadMore', () => {
 
 	it('should correcly handle response with  conversations only', async () => {
 		const message = generateConvMessageFromAPI({ id: '1' });
+		const conversation = generateConversationFromAPI({ id: '123', su: 'Subject', m: [message] });
 		const searchResponse = {
-			c: [conversationFromAPI({ id: '123', su: 'Subject', m: [message] })],
+			c: [conversation],
 			more: false
 		};
 		const interceptor = createSoapAPIInterceptor<SearchRequest, SearchResponse>(
