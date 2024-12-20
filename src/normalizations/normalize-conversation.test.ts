@@ -7,7 +7,6 @@
 import { normalizeConversation } from './normalize-conversation';
 import { SoapConversation } from '../types';
 
-// TODO: CO-1725 fix it
 describe('normalize conversation', () => {
 	describe('normalizeConversationOld', () => {
 		it('should return a conversation with undefined parent if no messages', () => {
@@ -24,7 +23,7 @@ describe('normalize conversation', () => {
 				u: 0
 			};
 
-			const normalized = normalizeConversation({ c: soapConversation, tags: {} });
+			const normalized = normalizeConversation({ c: soapConversation });
 
 			expect(normalized.parent).toBeUndefined();
 		});
