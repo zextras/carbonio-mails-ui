@@ -62,7 +62,7 @@ function updateMessagesOnly(
 }
 
 function updateMessages(
-	messages: MailMessage[],
+	messages: Array<MailMessage>,
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
 ): void {
 	useEmailsStore.setState(
