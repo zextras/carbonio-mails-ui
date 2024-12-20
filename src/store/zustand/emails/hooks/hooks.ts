@@ -73,7 +73,7 @@ export function useCompleteConversation(
 	const conversation = useConversationById(conversationId);
 	const conversationStatus = useConversationStatus(conversationId);
 	useEffect(() => {
-		if (conversation && !conversationStatus) {
+		if (!conversation || !conversationStatus) {
 			retrieveConversation(conversationId, folderId);
 		}
 	}, [conversation, conversationId, conversationStatus, folderId]);
