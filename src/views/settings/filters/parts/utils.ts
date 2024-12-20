@@ -480,8 +480,9 @@ export function findDefaultValue<T>(
 	list: Array<ObjectWithLabelValue<T>>,
 	key: T
 ): ObjectWithLabelValue<T> | undefined {
-	// return find(list, { value: key });
-	return list?.find((item) => item?.value === key);
+	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+	// @ts-ignore
+	return find(list, { value: key });
 }
 type Filters = {
 	filterActions: FilterActions;
