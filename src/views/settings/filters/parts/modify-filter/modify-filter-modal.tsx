@@ -61,8 +61,8 @@ const ModifyFilterModal: FC<ComponentProps> = ({
 	const [activeFilter, setActiveFilter] = useState(false);
 	const [condition, setCondition] = useState('anyof');
 	const [dontProcessAddFilters, setDontProcessAddFilters] = useState(true);
-	const [tempActions, setTempActions] = useState<FilterActions>([
-		{ actionKeep: [{}], id: uuidv4() }
+	const [tempActions, setTempActions] = useState([
+		selectedFilter?.filterActions?.[0] ?? { actionKeep: [{}], id: uuidv4() }
 	]);
 	const [copyRequiredFilters, setCopyRequiredFilters] = useState({});
 	const [reFetch, setReFetch] = useState(false);

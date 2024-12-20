@@ -199,7 +199,7 @@ describe('create-filter-modal', () => {
 				]
 			});
 		});
-		test('create a filter with Mark As action does not work if mark as flag (read, flagged) is untouched', async () => {
+		test('create a filter with Mark As action works, but the default flag name should be read', async () => {
 			const store = generateStore();
 
 			const modifyFilterRulesInterceptor = createSoapAPIInterceptor('ModifyFilterRules');
@@ -222,7 +222,9 @@ describe('create-filter-modal', () => {
 				filterRules: [
 					{
 						filterRule: [
-							expect.objectContaining({ filterActions: [{ actionKeep: [{}], actionStop: [{}] }] })
+							expect.objectContaining({
+								filterActions: [{ actionFlag: [{ flagName: 'read' }], actionStop: [{}] }]
+							})
 						]
 					}
 				]

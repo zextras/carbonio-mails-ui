@@ -88,7 +88,7 @@ const CustomSelect: FC<{
 	background?: string;
 	disabled?: boolean;
 }> = ({ onChange, defaultSelection, label, items, disabled = false }) => {
-	const newItems = useMemo(() => getItems(items), [items]);
+	const internalItems = getItems(items);
 
 	return (
 		<Select
@@ -96,7 +96,7 @@ const CustomSelect: FC<{
 			background="gray4"
 			disabled={disabled}
 			onChange={onChange}
-			items={newItems}
+			items={internalItems}
 			defaultSelection={defaultSelection}
 			LabelFactory={LabelFactory}
 			maxHeight="20vh"
