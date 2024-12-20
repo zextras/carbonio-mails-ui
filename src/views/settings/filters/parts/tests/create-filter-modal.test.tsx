@@ -199,132 +199,147 @@ describe('create-filter-modal', () => {
 				]
 			});
 		});
-		test('create a filter with Mark As action works, but the default flag name should be read', async () => {
-			const store = generateStore();
+		describe('Mark As', () => {
+			test('creating a filter by selecting Mark As results in an API call with flag name "read"', async () => {
+				const store = generateStore();
 
-			const modifyFilterRulesInterceptor = createSoapAPIInterceptor('ModifyFilterRules');
-			const { user } = setupTest(<CreateFilterModal t={t} onClose={jest.fn()} />, {
-				store
+				const modifyFilterRulesInterceptor = createSoapAPIInterceptor('ModifyFilterRules');
+				const { user } = setupTest(<CreateFilterModal t={t} onClose={jest.fn()} />, {
+					store
+				});
+				await fillFilterName(user, 'any name');
+				const keepInInboxAction = screen.getByText('Keep in Inbox');
+				await user.click(keepInInboxAction);
+				await user.click(screen.getByText('Mark as'));
+
+				const createButton = screen.getByRole('button', {
+					name: /label\.create/i
+				});
+				await user.click(createButton);
+
+				const request = await modifyFilterRulesInterceptor;
+				expect(request).toEqual({
+					_jsns: 'urn:zimbraMail',
+					filterRules: [
+						{
+							filterRule: [
+								expect.objectContaining({
+									filterActions: [{ actionFlag: [{ flagName: 'read' }], actionStop: [{}] }]
+								})
+							]
+						}
+					]
+				});
 			});
-			await fillFilterName(user, 'any name');
-			const keepInInboxAction = screen.getByText('Keep in Inbox');
-			await user.click(keepInInboxAction);
-			await user.click(screen.getByText('Mark as'));
+			it('should display option "read" when switching to "Mark as" action', async () => {
+				const store = generateStore();
+				const { user } = setupTest(<CreateFilterModal t={t} onClose={jest.fn()} />, {
+					store
+				});
 
-			const createButton = screen.getByRole('button', {
-				name: /label\.create/i
+				const keepInInboxAction = screen.getByText('Keep in Inbox');
+				await user.click(keepInInboxAction);
+				await user.click(screen.getByText('Mark as'));
+
+				expect(screen.getByText('Read')).toBeVisible();
 			});
-			await user.click(createButton);
+			test('create a filter with Mark As action Flagged', async () => {
+				const store = generateStore();
 
-			const request = await modifyFilterRulesInterceptor;
-			expect(request).toEqual({
-				_jsns: 'urn:zimbraMail',
-				filterRules: [
-					{
-						filterRule: [
-							expect.objectContaining({
-								filterActions: [{ actionFlag: [{ flagName: 'read' }], actionStop: [{}] }]
-							})
-						]
-					}
-				]
+				const modifyFilterRulesInterceptor = createSoapAPIInterceptor('ModifyFilterRules');
+				const { user } = setupTest(<CreateFilterModal t={t} onClose={jest.fn()} />, {
+					store
+				});
+				await fillFilterName(user, 'any name');
+				await user.click(screen.getByText('Keep in Inbox'));
+				await user.click(screen.getByText('Mark as'));
+				await user.click(screen.getByText('Read'));
+				await user.click(screen.getByText('Flagged'));
+
+				const createButton = screen.getByRole('button', {
+					name: /label\.create/i
+				});
+				await user.click(createButton);
+
+				const request = await modifyFilterRulesInterceptor;
+				expect(request).toEqual({
+					_jsns: 'urn:zimbraMail',
+					filterRules: [
+						{
+							filterRule: [
+								expect.objectContaining({
+									filterActions: [
+										{
+											actionFlag: [
+												{
+													flagName: 'flagged'
+												}
+											],
+											actionStop: [{}]
+										}
+									]
+								})
+							]
+						}
+					]
+				});
+			});
+			test('create a filter with Mark As and Redirect To actions', async () => {
+				const store = generateStore();
+
+				const modifyFilterRulesInterceptor = createSoapAPIInterceptor('ModifyFilterRules');
+				const { user } = setupTest(<CreateFilterModal t={t} onClose={jest.fn()} />, {
+					store
+				});
+				await fillFilterName(user, 'any name');
+
+				await user.click(screen.getByText('Keep in Inbox'));
+				await user.click(screen.getByText('Mark as'));
+				await user.click(screen.getByText('Read'));
+				await user.click(screen.getByText('Flagged'));
+
+				await addAction(user);
+				await user.click(screen.getByText('Keep in Inbox'));
+				await user.click(screen.getByText('Redirect to address'));
+				const redirectToAddressInput = await screen.findByTestId('filter-action-row-contact-input');
+				await user.type(redirectToAddressInput, 'redirectTo@email.com');
+				await user.type(redirectToAddressInput, '[Enter]');
+
+				const createButton = screen.getByRole('button', {
+					name: /label\.create/i
+				});
+				await user.click(createButton);
+
+				const request = await modifyFilterRulesInterceptor;
+				expect(request).toEqual({
+					_jsns: 'urn:zimbraMail',
+					filterRules: [
+						{
+							filterRule: [
+								expect.objectContaining({
+									filterActions: [
+										{
+											actionFlag: [
+												{
+													flagName: 'flagged'
+												}
+											],
+											actionRedirect: [
+												{
+													a: 'redirectTo@email.com'
+												}
+											],
+											actionStop: [{}]
+										}
+									]
+								})
+							]
+						}
+					]
+				});
 			});
 		});
-		test('create a filter with Mark As action Flagged', async () => {
-			const store = generateStore();
 
-			const modifyFilterRulesInterceptor = createSoapAPIInterceptor('ModifyFilterRules');
-			const { user } = setupTest(<CreateFilterModal t={t} onClose={jest.fn()} />, {
-				store
-			});
-			await fillFilterName(user, 'any name');
-			await user.click(screen.getByText('Keep in Inbox'));
-			await user.click(screen.getByText('Mark as'));
-			await user.click(screen.getByText('Read'));
-			await user.click(screen.getByText('Flagged'));
-
-			const createButton = screen.getByRole('button', {
-				name: /label\.create/i
-			});
-			await user.click(createButton);
-
-			const request = await modifyFilterRulesInterceptor;
-			expect(request).toEqual({
-				_jsns: 'urn:zimbraMail',
-				filterRules: [
-					{
-						filterRule: [
-							expect.objectContaining({
-								filterActions: [
-									{
-										actionFlag: [
-											{
-												flagName: 'flagged'
-											}
-										],
-										actionStop: [{}]
-									}
-								]
-							})
-						]
-					}
-				]
-			});
-		});
-		test('create a filter with Mark As and Redirect To actions', async () => {
-			const store = generateStore();
-
-			const modifyFilterRulesInterceptor = createSoapAPIInterceptor('ModifyFilterRules');
-			const { user } = setupTest(<CreateFilterModal t={t} onClose={jest.fn()} />, {
-				store
-			});
-			await fillFilterName(user, 'any name');
-
-			await user.click(screen.getByText('Keep in Inbox'));
-			await user.click(screen.getByText('Mark as'));
-			await user.click(screen.getByText('Read'));
-			await user.click(screen.getByText('Flagged'));
-
-			await addAction(user);
-			await user.click(screen.getByText('Keep in Inbox'));
-			await user.click(screen.getByText('Redirect to address'));
-			const redirectToAddressInput = await screen.findByTestId('filter-action-row-contact-input');
-			await user.type(redirectToAddressInput, 'redirectTo@email.com');
-			await user.type(redirectToAddressInput, '[Enter]');
-
-			const createButton = screen.getByRole('button', {
-				name: /label\.create/i
-			});
-			await user.click(createButton);
-
-			const request = await modifyFilterRulesInterceptor;
-			expect(request).toEqual({
-				_jsns: 'urn:zimbraMail',
-				filterRules: [
-					{
-						filterRule: [
-							expect.objectContaining({
-								filterActions: [
-									{
-										actionFlag: [
-											{
-												flagName: 'flagged'
-											}
-										],
-										actionRedirect: [
-											{
-												a: 'redirectTo@email.com'
-											}
-										],
-										actionStop: [{}]
-									}
-								]
-							})
-						]
-					}
-				]
-			});
-		});
 		test('create a filter with "from" condition', async () => {
 			const store = generateStore();
 
