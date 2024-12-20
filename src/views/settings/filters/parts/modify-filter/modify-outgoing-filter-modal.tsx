@@ -173,7 +173,8 @@ const ModifyOutgoingFilterModal: FC<ComponentProps> = ({
 			filterName,
 			tempActions,
 			setTempActions,
-			zimbraFeatureMailForwardingInFiltersEnabled
+			zimbraFeatureMailForwardingInFiltersEnabled,
+			isIncoming: false
 		}),
 		[t, activeFilter, filterName, tempActions, zimbraFeatureMailForwardingInFiltersEnabled]
 	);

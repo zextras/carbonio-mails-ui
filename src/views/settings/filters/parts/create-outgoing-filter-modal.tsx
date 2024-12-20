@@ -107,7 +107,7 @@ const CreateOutgoingFilterModal: FC<ComponentProps> = ({
 		() => ({
 			filterActions: dontProcessAddFilters
 				? ([{ ...finalActions, actionStop: [{}] }] as FilterActions)
-				: ([{ ...finalActions }] as FilterActions[]),
+				: ([{ ...finalActions }] as FilterActions),
 			active: activeFilter,
 			name: filterName,
 			filterTests: [

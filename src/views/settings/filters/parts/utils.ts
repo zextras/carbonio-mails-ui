@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { TFunction } from 'i18next';
-import { forEach } from 'lodash';
+import { find, forEach } from 'lodash';
 
 import { FilterActions, MarkAsOption } from '../../../../types';
 
@@ -480,7 +480,8 @@ export function findDefaultValue<T>(
 	list: Array<ObjectWithLabelValue<T>>,
 	key: T
 ): ObjectWithLabelValue<T> | undefined {
-	return list.find((item) => item.value === key);
+	// return find(list, { value: key });
+	return list?.find((item) => item?.value === key);
 }
 type Filters = {
 	filterActions: FilterActions;

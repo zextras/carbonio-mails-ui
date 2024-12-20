@@ -12,12 +12,14 @@ import React, {
 	useEffect,
 	useCallback
 } from 'react';
+
 import { Container, DateTimePicker } from '@zextras/carbonio-design-system';
 import type { TFunction } from 'i18next';
 import moment from 'moment';
+
+import { CreateFilterContext } from '../create-filter-context';
 import CustomSelect from '../custom-select';
 import { getDateOptions, findDefaultValue } from '../utils';
-import { CreateFilterContext } from '../create-filter-context';
 
 type ComponentProps = {
 	t: TFunction;

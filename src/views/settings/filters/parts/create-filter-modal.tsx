@@ -117,7 +117,7 @@ const CreateFilterModal: FC<ComponentProps> = ({
 						{
 							...omit(finalActions, 'id')
 						}
-					] as FilterActions[]),
+					] as FilterActions),
 			active: activeFilter,
 			name: filterName,
 			filterTests: [

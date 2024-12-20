@@ -12,11 +12,13 @@ import React, {
 	useState,
 	useEffect
 } from 'react';
+
 import { Container } from '@zextras/carbonio-design-system';
 import type { TFunction } from 'i18next';
+
+import { CreateFilterContext } from '../create-filter-context';
 import CustomSelect from '../custom-select';
 import { getFromOptions, getInOptions, getFolderOptions, findDefaultValue } from '../utils';
-import { CreateFilterContext } from '../create-filter-context';
 
 type ComponentProps = {
 	t: TFunction;
