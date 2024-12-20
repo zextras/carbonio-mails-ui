@@ -32,11 +32,28 @@ import {
 
 describe('Searches store hooks', () => {
 	describe('useCompleteConversation', () => {
-		it('should return undefined conversation and status if no data available', async () => {
+		it('should retrieve the conversation if no data available', async () => {
+			const conversation = generateConversation({
+				id: '123',
+				messages: [generateMessage({ id: '1', subject: 'Test Message 1' })],
+				subject: 'Test Conversation'
+			});
+			setSearchResultsByConversation([conversation], false);
+
+			const response: SearchConvResponse = {
+				m: [generateConvMessageFromAPI({ id: '10' }), generateConvMessageFromAPI({ id: '2' })],
+				more: false,
+				offset: '',
+				orderBy: ''
+			};
+			createSoapAPIInterceptor<SearchConvRequest, SearchConvResponse>('SearchConv', response);
+
 			const { result } = renderHook(() => useCompleteConversation('123', '2'));
 
-			expect(result.current.conversation).toBeUndefined();
-			expect(result.current.conversationStatus).toBeUndefined();
+			expect(result.current.conversation).toMatchObject({ id: '123' });
+			await waitFor(() => {
+				expect(result.current.conversationStatus).toBe('fulfilled');
+			});
 		});
 
 		it('should update conversation status if conversation status is undefined', async () => {
