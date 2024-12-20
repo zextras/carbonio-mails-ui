@@ -9,6 +9,7 @@ import { DefaultBodyType, http, HttpResponse } from 'msw';
 
 import { getSetupServer } from '../../carbonio-ui-commons/test/jest-setup';
 import {
+	SoapConversation,
 	SoapIncompleteMessage,
 	SoapMailMessage,
 	SoapMailMessagePart,
@@ -25,19 +26,7 @@ export function generateMessagePartFromAPI(
 		...params
 	};
 }
-export function generateConvMessageFromAPI(params: Partial<SoapMailMessage> = {}): SoapMailMessage {
-	return {
-		...generateMessageFromAPI({ id: '987', d: 987 }),
-		su: 'Subject',
-		fr: 'Fragment',
-		e: [
-			generateFromParticipantFromAPI({ a: 'from@loc.al' }),
-			generateToParticipantFromAPI({ a: 'to@loc.al' })
-		],
-		mp: [generateMessagePartFromAPI()],
-		...params
-	};
-}
+export const generateConvMessageFromAPI = generateCompleteMessageFromAPI;
 
 export function generateCompleteMessageFromAPI(
 	params: Partial<SoapMailMessage> = {}
@@ -112,3 +101,20 @@ export const createSoapAPIInterceptorWithError = <RequestParamsType>(
 			)
 		);
 	});
+export function generateConversationFromAPI(
+	params: Partial<SoapConversation> = {}
+): SoapConversation {
+	return {
+		id: '123',
+		n: 1,
+		u: 1,
+		f: 'flag',
+		tn: 'tag names',
+		d: 123,
+		m: [],
+		e: [],
+		su: 'Subject',
+		fr: 'fragment',
+		...params
+	};
+}
