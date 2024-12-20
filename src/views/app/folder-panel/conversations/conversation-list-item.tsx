@@ -432,27 +432,59 @@ export const ConversationListItem = memo(function ConversationListItem({
 					style={{ alignSelf: 'center' }}
 					data-testid={`conversation-list-item-avatar-${item.id}`}
 				>
-					<ItemAvatar
-						item={item}
-						selected={selected}
-						selecting={selecting}
-						toggle={toggle}
-						folderId={folderParent}
-					/>
-					<Padding horizontal="extrasmall" />
-				</div>
-				<Row
-					takeAvailableSpace
-					orientation="horizontal"
-					wrap="wrap"
-					padding={{ left: 'small', top: 'small', bottom: 'small', right: 'large' }}
-				>
-					<Container orientation="horizontal" height="fit" width="fill">
-						<SenderName item={item as Conversation} textValues={textReadValues} />
-						<RowInfo item={item as Conversation} tags={tags} />
-					</Container>
-					<Container orientation="horizontal" height="fit" width="fill" crossAlignment="center">
-						{renderBadge && (
+					<div
+						style={{ alignSelf: 'center' }}
+						data-testid={`conversation-list-item-avatar-${item.id}`}
+					>
+						<ItemAvatar
+							item={item}
+							selected={selected}
+							selecting={selecting}
+							toggle={toggle}
+							folderId={folderParent}
+						/>
+						<Padding horizontal="extrasmall" />
+					</div>
+					<Row
+						takeAvailableSpace
+						orientation="horizontal"
+						wrap="wrap"
+						padding={{ left: 'small', top: 'small', bottom: 'small', right: 'large' }}
+					>
+						<Container orientation="horizontal" height="fit" width="fill">
+							<SenderName item={item} textValues={textReadValues} />
+							<RowInfo item={item} tags={tags} />
+						</Container>
+						<Container orientation="horizontal" height="fit" width="fill" crossAlignment="center">
+							{renderBadge && (
+								<Row>
+									<Padding right="extrasmall">
+										<Badge
+											data-testid={`conversation-messages-count-${item.id}`}
+											value={getmsgToDisplayCount()}
+											backgroundColor={(textReadValues.badge === 'unread' && 'primary') || 'gray2'}
+											color={(textReadValues.badge === 'unread' && 'gray6') || 'gray0'}
+										/>
+									</Padding>
+								</Row>
+							)}
+
+							<Tooltip label={subFragmentTooltipLabel} overflow="break-word" maxWidth="60vw">
+								<Row
+									wrap="nowrap"
+									takeAvailableSpace
+									mainAlignment="flex-start"
+									crossAlignment="baseline"
+								>
+									<Text
+										data-testid="Subject"
+										weight={textReadValues.weight}
+										color={item.subject ? 'text' : 'secondary'}
+									>
+										{subject}
+									</Text>
+								</Row>
+							</Tooltip>
 							<Row>
 								<Padding right="extrasmall">
 									<Badge
