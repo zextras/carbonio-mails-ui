@@ -30,7 +30,7 @@ describe('useMessagesSlice', () => {
 		setMessagesInEmailStore(messages, false);
 		const { result } = renderHook(() => useMessagesSlice());
 		const expectedResult = {
-			messageIds: new Set(['1', '2']),
+			messageIdSet: new Set(['1', '2']),
 			more: false,
 			offset: 0,
 			status: 'fulfilled'
