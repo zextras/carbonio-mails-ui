@@ -46,7 +46,7 @@ type ComponentProps = {
 	incomingFilters?: any;
 	setFetchIncomingFilters: (arg: boolean) => void;
 	setIncomingFilters: (arg: any) => void;
-	selectedFilter: FilterType | any;
+	selectedFilter: FilterType;
 };
 
 const ModifyFilterModal: FC<ComponentProps> = ({
