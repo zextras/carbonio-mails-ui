@@ -104,7 +104,14 @@ function useMessagesByIds(
 		filter(populatedItemsSlice.messages, (message) => includes(ids, message.id))
 	);
 }
-
+function useConversationsByIds(
+	ids: Array<string>,
+	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
+): Array<NormalizedConversation> {
+	return useEmailsStore(({ populatedItemsSlice }: EmailsStoreState) =>
+		filter(populatedItemsSlice.conversations, (conversation) => includes(ids, conversation.id))
+	);
+}
 export const populatedItemsSliceUtils = {
 	updateMessageStatus,
 	updateConversationStatus,
@@ -112,5 +119,6 @@ export const populatedItemsSliceUtils = {
 	updateMessagesOnly,
 	updateConversationsOnly,
 	useConversationMessages,
-	useMessagesByIds
+	useMessagesByIds,
+	useConversationsByIds
 };
