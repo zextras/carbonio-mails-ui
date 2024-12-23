@@ -116,13 +116,11 @@ export const MultipleSelectionActionsPanel = ({
 				{messagesArrayIsNotEmpty && (
 					<>
 						{isConversation ? (
-							<>
-								<ConversationsMultipleSelectionActions
-									selectedConversationsIds={selectedIds}
-									deselectAll={deselectAll}
-									folderId={folderId}
-								/>
-							</>
+							<ConversationsMultipleSelectionActions
+								selectedConversationsIds={selectedIds}
+								deselectAll={deselectAll}
+								folderId={folderId}
+							/>
 						) : (
 							<MessagesMultipleSelectionActions
 								ids={selectedIds}
