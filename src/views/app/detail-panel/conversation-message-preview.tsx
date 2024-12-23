@@ -10,11 +10,8 @@ import { Padding } from '@zextras/carbonio-design-system';
 import { MessagePreviewPanel } from './message-preview-panel';
 import MailPreview from './preview/mail-preview';
 import { getParentFolderId } from '../../../helpers/folders';
-import { useAppSelector } from '../../../hooks/redux';
-import { selectMessage } from '../../../store/messages-slice';
 import { useMessageById } from '../../../store/zustand/emails/store';
-import { ConvMessage, MailsStateType } from '../../../types';
-import { useInSearchModule } from '../../../ui-actions/utils';
+import { ConvMessage } from '../../../types';
 
 export type ConversationMessagePreviewProps = {
 	convMessage: ConvMessage;
@@ -29,14 +26,7 @@ export const ConversationMessagePreview: FC<ConversationMessagePreviewProps> = (
 	isAlone,
 	isInsideExtraWindow
 }) => {
-	const messageFromReduxStore = useAppSelector((state: MailsStateType) =>
-		selectMessage(state, convMessage.id)
-	);
-	const messageFromSearchStore = useMessageById(convMessage.id);
-	const isInSearchModule = useInSearchModule();
-
-	const message = isInSearchModule ? messageFromSearchStore : messageFromReduxStore;
-
+	const message = useMessageById(convMessage.id);
 	const messagePreviewFactory = useCallback(() => {
 		const folderId = getParentFolderId(message.parent);
 		return <MessagePreviewPanel folderId={folderId} messageId={message.id} />;
