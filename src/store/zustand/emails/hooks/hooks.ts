@@ -46,7 +46,6 @@ import {
 function handleSearchConvResponse(conversationId: string, response: SearchConvResponse): void {
 	const messages = map(response?.m ?? [], (msg) => normalizeCompleteMailMessageFromSoap(msg));
 	updateMessages(messages);
-	// TODO: CO-1725 possibly handle expanded status?
 	const convMessages: Array<ConvMessage> = map(response?.m ?? [], (msg) => ({
 		id: msg.id,
 		parent: msg.l,
