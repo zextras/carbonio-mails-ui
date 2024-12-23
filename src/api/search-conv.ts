@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { soapFetch } from '@zextras/carbonio-shell-ui';
+import { AccountSettings, getUserSettings, soapFetch } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
 
 import { MAIL_VERIFICATION_HEADERS } from '../constants';
@@ -20,11 +20,13 @@ export async function searchConvSoapAPI({
 	fetch = 'all',
 	folderId
 }: SearchConvParameters): Promise<SearchConvResponse> {
+	const userSettings: AccountSettings = getUserSettings();
+	const sortBy = userSettings.prefs.zimbraPrefConversationOrder as 'dateDesc' | 'dateAsc';
 	const request: SearchConvRequest = {
 		_jsns: 'urn:zimbraMail',
 		cid: conversationId,
 		recip: '2',
-		sortBy: 'dateDesc',
+		sortBy,
 		offset: 0,
 		fetch,
 		max: 250_000,
