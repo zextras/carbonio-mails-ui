@@ -55,7 +55,7 @@ describe('Utils', () => {
 			expect(findDefaultValue(items, undefined)).toBeUndefined();
 		});
 
-		// This test just document the current behavior but I don't think it's desired
+		// This test just documents the current behavior, but I don't think it's desired
 		it('should return first option even when no exact match', () => {
 			const options: Array<ComplexType> = [
 				{ label: 'label 1', value: { actionFlag: [{ flagName: '1' }] } },
