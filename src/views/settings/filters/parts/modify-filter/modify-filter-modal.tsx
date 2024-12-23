@@ -46,7 +46,7 @@ type ComponentProps = {
 	incomingFilters?: any;
 	setFetchIncomingFilters: (arg: boolean) => void;
 	setIncomingFilters: (arg: any) => void;
-	selectedFilter: FilterType;
+	selectedFilter: FilterType | any;
 };
 
 const ModifyFilterModal: FC<ComponentProps> = ({
@@ -164,8 +164,8 @@ const ModifyFilterModal: FC<ComponentProps> = ({
 	}, []);
 
 	useLayoutEffect(() => {
-		setDontProcessAddFilters(!!selectedFilter.filterActions[0]?.actionStop);
-	}, [selectedFilter.filterActions]);
+		setDontProcessAddFilters(!!selectedFilter?.filterActions[0]?.actionStop);
+	}, [selectedFilter?.filterActions]);
 
 	const filterActionProps = useMemo(
 		() => ({
