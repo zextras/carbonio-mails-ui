@@ -5,7 +5,6 @@
  */
 import React from 'react';
 
-// TODO: CO-1725 fix it
 import { screen } from '@testing-library/react';
 import { times } from 'lodash';
 
