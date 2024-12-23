@@ -40,6 +40,7 @@ type RouteParams = {
 	itemId: string;
 };
 
+// TODO: CO-1725 check if isSearchModule is still required
 export const MessageListItem: FC<MessageListItemProps> = memo(function MessageListItem({
 	item,
 	selected,
