@@ -168,7 +168,6 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 		actionOptions
 	]);
 
-	// TODO: pass me from outside
 	const onRemove = useMemo(
 		() => (disableRemove ? (): null => null : onRemoveAction),
 		[disableRemove, onRemoveAction]
@@ -252,7 +251,6 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 		},
 		[onDefaultActionValueChange]
 	);
-	// TODO: check what we need to do 'on select folder' also as it is not clear
 
 	const confirmMoveToFolder = useCallback(
 		(folderDestination: Folder | undefined) => {
@@ -264,11 +262,8 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 	);
 
 	const onAddingNewAction = useCallback((): void => {
-		// TODO: figure out if we want to pass the id here or on filter-actions file
 		onAddNewAction({ actionKeep: [{}], actionStop: [{}], id: uuidv4() });
 	}, [onAddNewAction]);
-
-	const defaultMarkAs = 'actionFlag' in defaultAction ? defaultAction.actionFlag[0] : undefined;
 
 	const defaultMoveToFolder =
 		'actionFileInto' in defaultAction
