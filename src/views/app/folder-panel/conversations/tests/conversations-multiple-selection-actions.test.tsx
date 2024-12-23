@@ -7,7 +7,11 @@
 import React from 'react';
 
 import { screen, within } from '@testing-library/react';
+import { map } from 'lodash';
 
+import { FOLDERS } from '../../../../../carbonio-ui-commons/constants/folders';
+import { useTagStore } from '../../../../../carbonio-ui-commons/store/zustand/tags';
+import { tags } from '../../../../../carbonio-ui-commons/test/mocks/tags/tags';
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
 import { updateConversationsOnly } from '../../../../../store/zustand/emails/store';
 import { generateConversation } from '../../../../../tests/generators/generateConversation';
@@ -116,6 +120,68 @@ describe('ConversationsMultipleSelectionActions', () => {
 
 			const actionsDropdown = screen.getByTestId('dropdown-popper-list');
 			expect(within(actionsDropdown).getByTestId('icon: Flag')).toBeVisible();
+		});
+		it('should contain "move" action', async () => {
+			const store = generateStore();
+			updateConversationsOnly([
+				generateConversation({ id: '1' }),
+				generateConversation({ id: '2' }),
+				generateConversation({ id: '3' })
+			]);
+			const { user } = setupTest(
+				<ConversationsMultipleSelectionActions
+					selectedConversationsIds={['1', '2']}
+					deselectAll={jest.fn()}
+					folderId={'folder-1'}
+				/>,
+				{ store }
+			);
+			const moreActionIcon = screen.getByTestId('icon: MoreVertical');
+			await user.click(moreActionIcon);
+
+			const actionsDropdown = screen.getByTestId('dropdown-popper-list');
+			expect(within(actionsDropdown).getByTestId('icon: MoveOutline')).toBeVisible();
+		});
+		it('should contain "delete permanently" action', async () => {
+			const store = generateStore();
+			updateConversationsOnly([
+				generateConversation({ id: '1' }),
+				generateConversation({ id: '2' }),
+				generateConversation({ id: '3' })
+			]);
+			setupTest(
+				<ConversationsMultipleSelectionActions
+					selectedConversationsIds={['1', '2']}
+					deselectAll={jest.fn()}
+					folderId={FOLDERS.TRASH}
+				/>,
+				{ store }
+			);
+
+			expect(screen.getByTestId('icon: DeletePermanentlyOutline')).toBeVisible();
+		});
+		it('should contain "tag" submenu item', async () => {
+			const tagItems = map(tags, (tag) => tag.name);
+			const store = generateStore();
+			updateConversationsOnly([
+				generateConversation({ id: '1', tags: tagItems }),
+				generateConversation({ id: '2', tags: tagItems }),
+				generateConversation({ id: '3' })
+			]);
+			useTagStore.setState({ tags });
+			const { user } = setupTest(
+				<ConversationsMultipleSelectionActions
+					selectedConversationsIds={['1', '2']}
+					deselectAll={jest.fn()}
+					folderId={FOLDERS.INBOX}
+				/>,
+				{ store }
+			);
+			const moreActionIcon = screen.getByTestId('icon: MoreVertical');
+			await user.click(moreActionIcon);
+
+			const actionsDropdown = screen.getByTestId('dropdown-popper-list');
+			expect(within(actionsDropdown).getByTestId('icon: TagsMoreOutline')).toBeVisible();
 		});
 	});
 });
