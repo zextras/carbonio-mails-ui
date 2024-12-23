@@ -9,10 +9,10 @@ import { Container } from '@zextras/carbonio-design-system';
 import { useAppContext } from '@zextras/carbonio-shell-ui';
 import { Route, Switch, useRouteMatch } from 'react-router-dom';
 
-import { ConversationPreviewPanelContainer } from './detail-panel/conversation-preview-panel-container';
 import { MessagePreviewPanelContainer } from './detail-panel/message-preview-panel-container';
 import { SelectionInteractive } from './detail-panel/selection-interactive';
 import type { AppContext } from '../../types';
+import { ConversationPreviewPanelContainer } from './detail-panel/conversation-preview-panel-container';
 
 const DetailPanel: FC = () => {
 	const { path } = useRouteMatch();

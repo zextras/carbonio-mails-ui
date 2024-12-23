@@ -3,18 +3,18 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, useCallback, useEffect, useMemo } from 'react';
+import React, { useMemo } from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
-import { replaceHistory } from '@zextras/carbonio-shell-ui';
-import { filter, isEmpty } from 'lodash';
+import { filter } from 'lodash';
 import { useParams } from 'react-router-dom';
 
 import { ConversationPreviewPanel } from './conversation-preview-panel';
 import PreviewPanelHeader from './preview/preview-panel-header';
 import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
+import { API_REQUEST_STATUS } from '../../../constants';
 import { getFolderIdParts } from '../../../helpers/folders';
-import { useConversationById } from '../../../store/zustand/emails/store';
+import { useCompleteConversation } from '../../../store/zustand/emails/hooks/hooks';
 import { useExtraWindow } from '../extra-windows/use-extra-window';
 
 type ConversationPreviewPanelProps = { conversationId?: string; folderId?: string };
@@ -29,24 +29,12 @@ export const useConversationPreviewPanelParameters = (
 	};
 };
 
-export const ConversationPreviewPanelContainer: FC<ConversationPreviewPanelProps> = (props) => {
+export const ConversationPreviewPanelContainer = (
+	props: ConversationPreviewPanelProps
+): React.JSX.Element => {
 	const { conversationId, folderId } = useConversationPreviewPanelParameters(props);
 	const { isInsideExtraWindow } = useExtraWindow();
-	const conversation = useConversationById(conversationId);
-
-	const onConversationIdChange = useCallback(
-		(newConversationId: string): void => {
-			replaceHistory(`/folder/${folderId}/conversation/${newConversationId}`);
-		},
-		[folderId]
-	);
-
-	useEffect(() => {
-		if (isEmpty(conversation)) {
-			// TODO CO-1725 fix it
-			// dispatch(getConv({ conversationId, onConversationIdChange }));
-		}
-	}, [conversation, conversationId, onConversationIdChange]);
+	const { conversation, conversationStatus } = useCompleteConversation(conversationId);
 
 	const showPreviewPanel = useMemo(
 		(): boolean | undefined =>
@@ -69,11 +57,18 @@ export const ConversationPreviewPanelContainer: FC<ConversationPreviewPanelProps
 							folderId={folderId}
 						/>
 					)}
-					<ConversationPreviewPanel
-						data-testid={`conversation-preview-panel-${conversationId}`}
-						conversationId={conversationId}
-						isInsideExtraWindow={isInsideExtraWindow}
-					/>
+
+					{conversation && conversationStatus === API_REQUEST_STATUS.fulfilled && (
+						<ConversationPreviewPanel
+							data-testid={`conversation-preview-panel-${conversationId}`}
+							conversation={conversation}
+							isInsideExtraWindow={isInsideExtraWindow}
+						/>
+					)}
+
+					{(conversationStatus === API_REQUEST_STATUS.error || conversationStatus === null) && (
+						<></>
+					)}
 				</>
 			)}
 		</Container>

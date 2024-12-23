@@ -33,7 +33,7 @@ describe.skip.each`
 			const messageCount = conversation.messages.length;
 
 			const props: ConversationListItemProps = {
-				item: conversation,
+				conversation,
 				selected: false,
 				selecting: false,
 				toggle: noop,
@@ -68,7 +68,7 @@ describe.skip.each`
 				});
 
 				const props: ConversationListItemProps = {
-					item: conversation,
+					conversation,
 					selected: false,
 					selecting: false,
 					toggle: noop,
@@ -106,7 +106,7 @@ describe.skip.each`
 				});
 
 				const props: ConversationListItemProps = {
-					item: conversation,
+					conversation,
 					selected: false,
 					selecting: false,
 					toggle: noop,
@@ -148,7 +148,7 @@ describe.skip.each`
 				});
 
 				const props: ConversationListItemProps = {
-					item: conversation,
+					conversation,
 					selected: false,
 					selecting: false,
 					toggle: noop,
@@ -191,7 +191,7 @@ describe.skip.each`
 				});
 
 				const props: ConversationListItemProps = {
-					item: conversation,
+					conversation,
 					selected: false,
 					selecting: false,
 					toggle: noop,
@@ -232,7 +232,7 @@ describe.skip.each`
 				});
 
 				const props: ConversationListItemProps = {
-					item: conversation,
+					conversation,
 					selected: false,
 					selecting: false,
 					toggle: noop,
@@ -287,7 +287,7 @@ describe.skip.each`
 				});
 
 				const props: ConversationListItemProps = {
-					item: conversation,
+					conversation,
 					selected: false,
 					selecting: false,
 					toggle: noop,
@@ -337,7 +337,7 @@ describe.skip.each`
 			});
 
 			const props: ConversationListItemProps = {
-				item: conversation,
+				conversation,
 				selected: false,
 				selecting: false,
 				toggle: noop,
@@ -379,7 +379,7 @@ describe.skip.each`
 			});
 
 			const props: ConversationListItemProps = {
-				item: conversation,
+				conversation,
 				selected: false,
 				selecting: false,
 				toggle: noop,
@@ -415,7 +415,7 @@ describe.skip.each`
 			const conversation = generateConversation({ folderId, isSingleMessageConversation: true });
 
 			const props: ConversationListItemProps = {
-				item: conversation,
+				conversation,
 				selected: false,
 				selecting: false,
 				toggle: noop,
@@ -452,7 +452,7 @@ describe.skip.each`
 		const conversationId = conversation.id;
 
 		const props: ConversationListItemProps = {
-			item: conversation,
+			conversation,
 			selected: false,
 			selecting: false,
 			toggle: noop,

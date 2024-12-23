@@ -94,6 +94,10 @@ export function useConversationMessages(
 ): Array<MailMessage | IncompleteMessage> {
 	return populatedItemsSliceUtils.useConversationMessages(conversationId, useEmailsStore);
 }
+
+/**
+ * Retrieves the conversation from the populatedItemsSlice of the email store.
+ */
 export function useConversationById(id: string): NormalizedConversation {
 	return useEmailsStore(({ populatedItemsSlice }) => populatedItemsSlice.conversations[id]);
 }

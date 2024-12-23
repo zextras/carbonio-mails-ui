@@ -87,7 +87,7 @@ export type ConversationMessagesListProps = {
 };
 
 export type ConversationListItemProps = {
-	item: NormalizedConversation;
+	conversation: NormalizedConversation;
 	selected: boolean;
 	selecting: boolean;
 	toggle: (id: string) => void;

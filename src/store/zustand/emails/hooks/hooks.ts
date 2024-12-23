@@ -78,6 +78,11 @@ export function retrieveConversation(conversationId: string, folderId?: string):
 		});
 }
 
+/**
+ * Provides a complete conversation with its status.
+ * If the conversation is not in the store, it will be fetched.
+ *
+ */
 export function useCompleteConversation(
 	conversationId: string,
 	folderId?: string

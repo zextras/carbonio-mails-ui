@@ -78,7 +78,7 @@ export const ConversationListItemActionWrapper = ({
 	deselectAll: () => void;
 }): React.JSX.Element => {
 	const conversationPreviewFactory = useCallback(
-		() => <ConversationPreviewPanel conversationId={item.id} isInsideExtraWindow />,
+		() => <ConversationPreviewPanel conversation={item} isInsideExtraWindow />,
 		[item]
 	);
 	const [t] = useTranslation();
@@ -219,7 +219,7 @@ export const ConversationListItemActionWrapper = ({
 };
 
 export const ConversationListItem = memo(function ConversationListItem({
-	item,
+	conversation,
 	selected,
 	selecting,
 	toggle,
@@ -233,30 +233,30 @@ export const ConversationListItem = memo(function ConversationListItem({
 }: ConversationListItemProps): React.JSX.Element {
 	const { itemId } = useParams<{ itemId: string }>();
 	const [open, setOpen] = useState(false);
-	const messages = useMessagesByIds(item.messages.map((m) => m.id));
-	const folderParent = folderId ?? item.messages?.[0]?.parent;
+	const messages = useMessagesByIds(conversation.messages.map((m) => m.id));
+	const folderParent = folderId ?? conversation.messages?.[0]?.parent;
 	const [t] = useTranslation();
 
 	const markAsRead = useConvSetReadFn({
-		ids: [item.id],
-		isConversationRead: item.read,
+		ids: [conversation.id],
+		isConversationRead: conversation.read,
 		deselectAll,
 		folderId: folderId ?? ''
 	});
 
 	const conversationPreviewFactory = useCallback(
-		() => <ConversationPreviewPanel conversationId={item.id} isInsideExtraWindow />,
-		[item]
+		() => <ConversationPreviewPanel conversation={conversation} isInsideExtraWindow />,
+		[conversation]
 	);
 
 	const previewOnSeparatedWindow = useConvPreviewOnSeparatedWindowFn({
-		conversationId: item.id,
-		subject: item.subject,
+		conversationId: conversation.id,
+		subject: conversation.subject,
 		conversationPreviewFactory
 	});
 
 	const conversationStatus = useAppSelector((state: MailsStateType) =>
-		selectConversationExpandedStatus(state, item.id)
+		selectConversationExpandedStatus(state, conversation.id)
 	);
 	const tagsFromStore = useTags();
 	const tags = useMemo(
@@ -265,16 +265,16 @@ export const ConversationListItem = memo(function ConversationListItem({
 				reduce(
 					tagsFromStore,
 					(acc: Array<Tag>, v) => {
-						if (includes(item.tags, v.id)) {
+						if (includes(conversation.tags, v.id)) {
 							acc.push({
 								...v,
 								// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 								// @ts-ignore
 								color: ZIMBRA_STANDARD_COLORS[v.color || 0].hex
 							});
-						} else if (item.tags?.length > 0 && !includes(item.tags, v.id)) {
+						} else if (conversation.tags?.length > 0 && !includes(conversation.tags, v.id)) {
 							forEach(
-								filter(item.tags, (tn) => tn.includes('nil:')),
+								filter(conversation.tags, (tn) => tn.includes('nil:')),
 								(tagNotInList) => {
 									acc.push({
 										id: tagNotInList,
@@ -290,7 +290,7 @@ export const ConversationListItem = memo(function ConversationListItem({
 				),
 				'id'
 			),
-		[item.tags, tagsFromStore]
+		[conversation.tags, tagsFromStore]
 	);
 
 	const sortBy = useUserSettings()?.prefs?.zimbraPrefConversationOrder || 'dateDesc';
@@ -316,23 +316,23 @@ export const ConversationListItem = memo(function ConversationListItem({
 
 	const debouncedPushHistory = useMemo(
 		() =>
-			debounce(() => pushHistory(`/folder/${folderParent}/conversation/${item.id}`), 200, {
+			debounce(() => pushHistory(`/folder/${folderParent}/conversation/${conversation.id}`), 200, {
 				leading: false,
 				trailing: true
 			}),
-		[folderParent, item.id]
+		[folderParent, conversation.id]
 	);
 
 	const _onClick = useCallback(
 		(e: React.MouseEvent<HTMLDivElement>) => {
 			if (!e.isDefaultPrevented()) {
-				if (item?.read === false && zimbraPrefMarkMsgRead) {
+				if (conversation?.read === false && zimbraPrefMarkMsgRead) {
 					markAsRead.canExecute() && markAsRead.execute();
 				}
 				debouncedPushHistory();
 			}
 		},
-		[item?.read, zimbraPrefMarkMsgRead, debouncedPushHistory, markAsRead]
+		[conversation?.read, zimbraPrefMarkMsgRead, debouncedPushHistory, markAsRead]
 	);
 
 	const _onDoubleClick = useCallback(
@@ -341,7 +341,7 @@ export const ConversationListItem = memo(function ConversationListItem({
 				return;
 			}
 			debouncedPushHistory.cancel();
-			const { id, isDraft } = item.messages[0];
+			const { id, isDraft } = conversation.messages[0];
 			if (isDraft) {
 				pushHistory(`/folder/${folderParent}/edit/${id}?action=editAsDraft`);
 			} else {
@@ -349,7 +349,7 @@ export const ConversationListItem = memo(function ConversationListItem({
 			}
 		},
 
-		[debouncedPushHistory, folderParent, item.messages, previewOnSeparatedWindow]
+		[debouncedPushHistory, folderParent, conversation.messages, previewOnSeparatedWindow]
 	);
 
 	const toggleExpandButtonLabel = useMemo(
@@ -357,12 +357,12 @@ export const ConversationListItem = memo(function ConversationListItem({
 		[open, t]
 	);
 	const subject = useMemo(
-		() => item.subject || t('label.no_subject_with_tags', '<No Subject>'),
-		[item.subject, t]
+		() => conversation.subject || t('label.no_subject_with_tags', '<No Subject>'),
+		[conversation.subject, t]
 	);
 	const subFragmentTooltipLabel = useMemo(
-		() => (!isEmpty(item.fragment) ? item.fragment : subject),
-		[subject, item.fragment]
+		() => (!isEmpty(conversation.fragment) ? conversation.fragment : subject),
+		[subject, conversation.fragment]
 	);
 	const sortSign = useMemo(() => (sortBy === 'dateDesc' ? -1 : 1), [sortBy]);
 
@@ -371,7 +371,7 @@ export const ConversationListItem = memo(function ConversationListItem({
 		() =>
 			uniqBy(
 				reduce<ConvMessage, IncompleteMessage[]>(
-					item.messages,
+					conversation.messages,
 					(acc, v) => {
 						const msg = find(messages, ['id', v.id]);
 
@@ -389,7 +389,7 @@ export const ConversationListItem = memo(function ConversationListItem({
 				).sort((a, b) => (a.date && b.date ? sortSign * (a.date - b.date) : 1)),
 				'id'
 			),
-		[item, messages, folderParent, sortSign]
+		[conversation, messages, folderParent, sortSign]
 	);
 
 	/**
@@ -397,31 +397,34 @@ export const ConversationListItem = memo(function ConversationListItem({
 	 * In search module we check if the user has enabled the option to show trashed and/or spam messages
 	 * @returns {number}
 	 */
-	const getmsgToDisplayCount = useCallback((): number => item.messagesInConversation, [item]);
+	const getmsgToDisplayCount = useCallback(
+		(): number => conversation.messagesInConversation,
+		[conversation]
+	);
 
 	const textReadValues: TextReadValuesProps = useMemo(() => {
-		if (typeof item.read === 'undefined')
+		if (typeof conversation.read === 'undefined')
 			return { color: 'text', weight: 'regular', badge: 'read' };
-		return item.read
+		return conversation.read
 			? { color: 'text', weight: 'regular', badge: 'read' }
 			: { color: 'primary', weight: 'bold', badge: 'unread' };
-	}, [item.read]);
+	}, [conversation.read]);
 
 	const renderBadge = useMemo(() => {
-		if (item.messagesInConversation === 1) return textReadValues.badge === 'unread';
-		if (item.messagesInConversation > 0) return true;
-		if (item?.messages?.length === 1) {
+		if (conversation.messagesInConversation === 1) return textReadValues.badge === 'unread';
+		if (conversation.messagesInConversation > 0) return true;
+		if (conversation?.messages?.length === 1) {
 			return textReadValues.badge === 'unread';
 		}
-		return item?.messages?.length > 0;
-	}, [item?.messages?.length, item.messagesInConversation, textReadValues.badge]);
+		return conversation?.messages?.length > 0;
+	}, [conversation?.messages?.length, conversation.messagesInConversation, textReadValues.badge]);
 
-	const shouldReplaceHistory = useMemo(() => itemId === item.id, [item.id, itemId]);
+	const shouldReplaceHistory = useMemo(() => itemId === conversation.id, [conversation.id, itemId]);
 
 	return (
-		<Container mainAlignment="flex-start" data-testid={`ConversationListItem-${item.id}`}>
+		<Container mainAlignment="flex-start" data-testid={`ConversationListItem-${conversation.id}`}>
 			<ConversationListItemActionWrapper
-				item={item}
+				item={conversation}
 				active={active}
 				onClick={_onClick}
 				onDoubleClick={_onDoubleClick}
@@ -430,10 +433,10 @@ export const ConversationListItem = memo(function ConversationListItem({
 			>
 				<div
 					style={{ alignSelf: 'center' }}
-					data-testid={`conversation-list-item-avatar-${item.id}`}
+					data-testid={`conversation-list-item-avatar-${conversation.id}`}
 				>
 					<ItemAvatar
-						item={item}
+						item={conversation}
 						selected={selected}
 						selecting={selecting}
 						toggle={toggle}
@@ -448,15 +451,15 @@ export const ConversationListItem = memo(function ConversationListItem({
 					padding={{ left: 'small', top: 'small', bottom: 'small', right: 'large' }}
 				>
 					<Container orientation="horizontal" height="fit" width="fill">
-						<SenderName item={item as Conversation} textValues={textReadValues} />
-						<RowInfo item={item as Conversation} tags={tags} />
+						<SenderName item={conversation as Conversation} textValues={textReadValues} />
+						<RowInfo item={conversation as Conversation} tags={tags} />
 					</Container>
 					<Container orientation="horizontal" height="fit" width="fill" crossAlignment="center">
 						{renderBadge && (
 							<Row>
 								<Padding right="extrasmall">
 									<Badge
-										data-testid={`conversation-messages-count-${item.id}`}
+										data-testid={`conversation-messages-count-${conversation.id}`}
 										value={getmsgToDisplayCount()}
 										backgroundColor={(textReadValues.badge === 'unread' && 'primary') || 'gray2'}
 										color={(textReadValues.badge === 'unread' && 'gray6') || 'gray0'}
@@ -475,7 +478,7 @@ export const ConversationListItem = memo(function ConversationListItem({
 								<Text
 									data-testid="Subject"
 									weight={textReadValues.weight}
-									color={item.subject ? 'text' : 'secondary'}
+									color={conversation.subject ? 'text' : 'secondary'}
 								>
 									{subject}
 								</Text>
@@ -484,7 +487,7 @@ export const ConversationListItem = memo(function ConversationListItem({
 						<Row>
 							<Padding right="extrasmall">
 								<Badge
-									data-testid={`conversation-messages-count-${item.id}`}
+									data-testid={`conversation-messages-count-${conversation.id}`}
 									value={getmsgToDisplayCount()}
 									type={textReadValues.badge}
 								/>
@@ -500,15 +503,17 @@ export const ConversationListItem = memo(function ConversationListItem({
 								<Text
 									data-testid="Subject"
 									weight={textReadValues.weight}
-									color={item.subject ? 'text' : 'secondary'}
+									color={conversation.subject ? 'text' : 'secondary'}
 								>
 									{subject}
 								</Text>
 							</Row>
 						</Tooltip>
 						<Row>
-							{item.urgent && <Icon data-testid="UrgentIcon" icon="ArrowUpward" color="error" />}
-							{item.messagesInConversation > 1 && (
+							{conversation.urgent && (
+								<Icon data-testid="UrgentIcon" icon="ArrowUpward" color="error" />
+							)}
+							{conversation.messagesInConversation > 1 && (
 								<Tooltip label={toggleExpandButtonLabel}>
 									<IconButton
 										data-testid="ToggleExpand"
@@ -531,7 +536,7 @@ export const ConversationListItem = memo(function ConversationListItem({
 				>
 					<ConversationMessagesList
 						active={activeItemId}
-						length={item.messagesInConversation}
+						length={conversation.messagesInConversation}
 						messages={messagesToRender}
 						conversationStatus={conversationStatus}
 						folderId={folderParent}

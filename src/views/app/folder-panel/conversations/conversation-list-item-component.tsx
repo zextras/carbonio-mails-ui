@@ -57,7 +57,7 @@ export const ConversationListItemComponent: FC<ConversationListItemComponentProp
 		>
 			<ConversationListItem
 				activeItemId={activeItemId}
-				item={conversation}
+				conversation={conversation}
 				selected={selected}
 				selecting={selecting}
 				toggle={toggle}

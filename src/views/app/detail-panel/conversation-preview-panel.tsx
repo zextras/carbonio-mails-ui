@@ -5,24 +5,22 @@
  */
 import React, { useCallback } from 'react';
 
-import { Container, Shimmer } from '@zextras/carbonio-design-system';
+import { Container } from '@zextras/carbonio-design-system';
 import { useUserSettings } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
 
 import { ConversationMessagePreview } from './conversation-message-preview';
-import { API_REQUEST_STATUS } from '../../../constants';
-import { useCompleteConversation } from '../../../store/zustand/emails/hooks/hooks';
+import { NormalizedConversation } from '../../../types';
 
 export const ConversationPreviewPanel = ({
-	conversationId,
+	conversation,
 	isInsideExtraWindow
 }: {
-	conversationId: string;
+	conversation: NormalizedConversation;
 	isInsideExtraWindow: boolean;
 }): React.JSX.Element => {
 	const settings = useUserSettings();
 	const convSortOrder = settings.prefs.zimbraPrefConversationOrder as string;
-	const { conversation, conversationStatus } = useCompleteConversation(conversationId);
 
 	const isExpanded = useCallback(
 		(index: number): boolean => {
@@ -31,7 +29,7 @@ export const ConversationPreviewPanel = ({
 			}
 			return index === 0;
 		},
-		[convSortOrder, conversation.messages.length]
+		[convSortOrder, conversation?.messages?.length]
 	);
 
 	const { messages } = conversation;
@@ -45,24 +43,18 @@ export const ConversationPreviewPanel = ({
 			mainAlignment="flex-start"
 		>
 			<Container height="100%" mainAlignment="flex-start" background="gray5">
-				{conversation && conversationStatus === API_REQUEST_STATUS.fulfilled ? (
-					<>
-						{map(messages, (message, index) =>
-							message ? (
-								<ConversationMessagePreview
-									key={message.id}
-									convMessage={message}
-									isExpanded={isExpanded(index)}
-									isAlone={conversation.messages?.length === 1}
-									isInsideExtraWindow={isInsideExtraWindow}
-								/>
-							) : (
-								<Shimmer.Logo size="large" />
-							)
-						)}
-					</>
-				) : (
-					<></>
+				{map(messages, (message, index) =>
+					message ? (
+						<ConversationMessagePreview
+							key={message.id}
+							convMessage={message}
+							isExpanded={isExpanded(index)}
+							isAlone={conversation.messages?.length === 1}
+							isInsideExtraWindow={isInsideExtraWindow}
+						/>
+					) : (
+						<></>
+					)
 				)}
 			</Container>
 		</Container>
