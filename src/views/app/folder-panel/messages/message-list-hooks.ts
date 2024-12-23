@@ -14,7 +14,7 @@ import {
 	appendMessagesToMessagesSlice,
 	updateMessagesResultsLoadingStatus
 } from '../../../../store/zustand/emails/store';
-import { IncompleteMessage, MailMessage, SearchResponse } from '../../../../types';
+import { SearchResponse } from '../../../../types';
 
 function handleLoadMoreResults({
 	searchResponse,
@@ -24,9 +24,8 @@ function handleLoadMoreResults({
 	offset: number;
 }): void {
 	if (searchResponse.m) {
-		const messages: (IncompleteMessage | MailMessage)[] = [];
-		searchResponse.m?.forEach((soapMessage) =>
-			messages.push(normalizeMailMessageFromSoap(soapMessage, false))
+		const messages = searchResponse.m?.map((soapMessage) =>
+			normalizeMailMessageFromSoap(soapMessage, false)
 		);
 		appendMessagesToMessagesSlice(messages, offset);
 	}
