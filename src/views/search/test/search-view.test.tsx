@@ -168,8 +168,7 @@ function fakeCounter(): { count: number; setCount: (value: number) => void } {
 }
 
 describe('SearchView', () => {
-	// TODO CO-1725 re enable tests
-	describe.skip('view by conversations', () => {
+	describe('view by conversations', () => {
 		let store: ReturnType<typeof generateStore>;
 		let queryChip: QueryChip;
 		beforeEach(() => {
