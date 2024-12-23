@@ -37,7 +37,6 @@ export function useLoadMoreForMessagesSlice({
 	limit,
 	hasMore,
 	loadingMore,
-	types,
 	folderId
 }: {
 	limit: number;
@@ -46,7 +45,6 @@ export function useLoadMoreForMessagesSlice({
 	offset: number;
 	hasMore?: boolean;
 	loadingMore: React.MutableRefObject<boolean>;
-	types: 'conversation' | 'message';
 }): () => Promise<void> {
 	return useCallback(async () => {
 		if (hasMore && !loadingMore.current) {
@@ -55,7 +53,7 @@ export function useLoadMoreForMessagesSlice({
 				folderId,
 				limit,
 				sortBy,
-				types,
+				types: 'message',
 				offset,
 				recip: '0'
 			}).finally(() => {
@@ -67,5 +65,5 @@ export function useLoadMoreForMessagesSlice({
 			}
 			handleLoadMoreResults({ searchResponse, offset });
 		}
-	}, [folderId, hasMore, limit, loadingMore, offset, sortBy, types]);
+	}, [folderId, hasMore, limit, loadingMore, offset, sortBy]);
 }

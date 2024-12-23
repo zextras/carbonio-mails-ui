@@ -61,8 +61,7 @@ export const MessageList = (): React.JSX.Element => {
 		hasMore,
 		sortBy: sortOrder,
 		offset: messageIdSet.size,
-		limit: LIST_LIMIT.LOAD_MORE_LIMIT,
-		types: 'message'
+		limit: LIST_LIMIT.LOAD_MORE_LIMIT
 	});
 
 	const displayerTitle = useMemo(() => {
