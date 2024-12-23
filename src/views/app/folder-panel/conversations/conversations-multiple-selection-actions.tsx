@@ -6,7 +6,7 @@
 import React from 'react';
 
 import { DropdownItem } from '@zextras/carbonio-design-system';
-import { filter, intersection, map, some } from 'lodash';
+import { intersection, map, some } from 'lodash';
 
 import { normalizeDropdownActionItem } from '../../../../helpers/actions';
 import { useConvApplyTagDescriptor } from '../../../../hooks/actions/use-conv-apply-tag';
@@ -20,52 +20,72 @@ import { useConvSetSpamDescriptor } from '../../../../hooks/actions/use-conv-set
 import { useConvSetUnflagDescriptor } from '../../../../hooks/actions/use-conv-set-unflag';
 import { useConvSetUnreadDescriptor } from '../../../../hooks/actions/use-conv-set-unread';
 import { useTagDropdownItem } from '../../../../hooks/use-tag-dropdown-item';
-import type { Conversation } from '../../../../types';
+import { useConversationsByIds } from '../../../../store/zustand/emails/store';
 import { MultipleSelectionActionsComponent } from '../parts/multiple-selection-actions-component';
 
 export const ConversationsMultipleSelectionActions = ({
-	ids,
+	selectedConversationsIds,
 	deselectAll,
-	items,
 	folderId
 }: {
-	items: Array<Conversation>;
-	ids: Array<string>;
+	selectedConversationsIds: Array<string>;
 	deselectAll: () => void;
 	folderId: string;
 }): React.JSX.Element => {
-	const selectedItems = filter(items, (item) => ids.includes(item.id));
+	const selectedItems = useConversationsByIds(selectedConversationsIds);
 	const conversationstags: Array<Array<string>> = map(selectedItems, (item) => item.tags);
 	const atLeastOneConvIsUnread = some(selectedItems, (item) => !item.read);
 	const atLeastOneConvIsUnflagged = some(selectedItems, (item) => !item.flagged);
 	const tagsInCommon = intersection(...conversationstags);
 	const setAsRead = useConvSetReadDescriptor({
-		ids,
+		ids: selectedConversationsIds,
 		deselectAll,
 		folderId,
 		isConversationRead: !atLeastOneConvIsUnread
 	});
 	const setAsUnread = useConvSetUnreadDescriptor({
-		ids,
+		ids: selectedConversationsIds,
 		deselectAll,
 		folderId,
 		isConversationRead: !atLeastOneConvIsUnread
 	});
-	const moveToTrash = useConvMoveToTrashDescriptor({ ids, deselectAll, folderId });
-	const deletePermanently = useConvDeletePermanentlyDescriptor({ ids, deselectAll, folderId });
+	const moveToTrash = useConvMoveToTrashDescriptor({
+		ids: selectedConversationsIds,
+		deselectAll,
+		folderId
+	});
+	const deletePermanently = useConvDeletePermanentlyDescriptor({
+		ids: selectedConversationsIds,
+		deselectAll,
+		folderId
+	});
 	const applyTagDescriptor = useConvApplyTagDescriptor({
-		ids,
+		ids: selectedConversationsIds,
 		conversationTags: tagsInCommon,
 		folderId
 	});
 	const tagItem = useTagDropdownItem(applyTagDescriptor, tagsInCommon);
 
-	const flagDescriptor = useConvSetFlagDescriptor(ids, !atLeastOneConvIsUnflagged);
-	const unflagDescriptor = useConvSetUnflagDescriptor(ids, !atLeastOneConvIsUnflagged);
-	const moveToFolderDescriptor = useConvMoveToFolderDescriptor({ folderId, deselectAll, ids });
-	const setAsSpam = useConvSetSpamDescriptor({ ids, shouldReplaceHistory: false, folderId });
+	const flagDescriptor = useConvSetFlagDescriptor(
+		selectedConversationsIds,
+		!atLeastOneConvIsUnflagged
+	);
+	const unflagDescriptor = useConvSetUnflagDescriptor(
+		selectedConversationsIds,
+		!atLeastOneConvIsUnflagged
+	);
+	const moveToFolderDescriptor = useConvMoveToFolderDescriptor({
+		folderId,
+		deselectAll,
+		ids: selectedConversationsIds
+	});
+	const setAsSpam = useConvSetSpamDescriptor({
+		ids: selectedConversationsIds,
+		shouldReplaceHistory: false,
+		folderId
+	});
 	const setAsNotSpam = useConvSetNotSpamDescriptor({
-		ids,
+		ids: selectedConversationsIds,
 		shouldReplaceHistory: false,
 		folderId
 	});

@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React, { FC, useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
 import { Button, Container, IconButton, Row, Tooltip } from '@zextras/carbonio-design-system';
 import { t, useUserSettings } from '@zextras/carbonio-shell-ui';
@@ -12,6 +12,7 @@ import { t, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { useUiUtilities } from '../../../../hooks/use-ui-utilities';
 import { useMessagesByIds } from '../../../../store/zustand/emails/store';
 import { getFolderParentId } from '../../../../ui-actions/utils';
+import { ConversationsMultipleSelectionActions } from '../conversations/conversations-multiple-selection-actions';
 import { MessagesMultipleSelectionActions } from '../messages/messages-multiple-selection-actions';
 
 type MultipleSelectionActionsPanelProps = {
@@ -25,7 +26,7 @@ type MultipleSelectionActionsPanelProps = {
 	folderId: string;
 };
 
-export const MultipleSelectionActionsPanel: FC<MultipleSelectionActionsPanelProps> = ({
+export const MultipleSelectionActionsPanel = ({
 	itemsIds,
 	selectedIds,
 	deselectAll,
@@ -34,7 +35,7 @@ export const MultipleSelectionActionsPanel: FC<MultipleSelectionActionsPanelProp
 	selectAllModeOff,
 	setIsSelectModeOn,
 	folderId
-}) => {
+}: MultipleSelectionActionsPanelProps): React.JSX.Element => {
 	const { createSnackbar } = useUiUtilities();
 	const { zimbraPrefGroupMailBy } = useUserSettings().prefs;
 	const isConversation = zimbraPrefGroupMailBy === 'conversation';
@@ -117,12 +118,11 @@ export const MultipleSelectionActionsPanel: FC<MultipleSelectionActionsPanelProp
 						{isConversation ? (
 							<>
 								{/* TODO: CO-1725 fix this */}
-								{/* <ConversationsMultipleSelectionActions */}
-								{/* 	selectedIds={selectedIds} */}
-								{/* 	deselectAll={deselectAll} */}
-								{/* 	folderId={folderId} */}
-								{/* 	items={items} */}
-								{/* /> */}
+								<ConversationsMultipleSelectionActions
+									selectedConversationsIds={selectedIds}
+									deselectAll={deselectAll}
+									folderId={folderId}
+								/>
 							</>
 						) : (
 							<MessagesMultipleSelectionActions
