@@ -142,7 +142,7 @@ describe('ConversationsMultipleSelectionActions', () => {
 			const actionsDropdown = screen.getByTestId('dropdown-popper-list');
 			expect(within(actionsDropdown).getByTestId('icon: MoveOutline')).toBeVisible();
 		});
-		it('should contain "delete permanently" action', async () => {
+		it('should contain "delete permanently" action when in trash folder', async () => {
 			const store = generateStore();
 			updateConversationsOnly([
 				generateConversation({ id: '1' }),
@@ -159,6 +159,48 @@ describe('ConversationsMultipleSelectionActions', () => {
 			);
 
 			expect(screen.getByTestId('icon: DeletePermanentlyOutline')).toBeVisible();
+		});
+		it('should contain "mark as spam" action', async () => {
+			const store = generateStore();
+			updateConversationsOnly([
+				generateConversation({ id: '1' }),
+				generateConversation({ id: '2' }),
+				generateConversation({ id: '3' })
+			]);
+			const { user } = setupTest(
+				<ConversationsMultipleSelectionActions
+					selectedConversationsIds={['1', '2']}
+					deselectAll={jest.fn()}
+					folderId={'folder-1'}
+				/>,
+				{ store }
+			);
+			const moreActionIcon = screen.getByTestId('icon: MoreVertical');
+			await user.click(moreActionIcon);
+
+			const actionsDropdown = screen.getByTestId('dropdown-popper-list');
+			expect(await within(actionsDropdown).findByText('Mark as spam')).toBeVisible();
+		});
+		it('should contain "mark as not spam" action when a conversation is in spam folder', async () => {
+			const store = generateStore();
+			updateConversationsOnly([
+				generateConversation({ id: '1' }),
+				generateConversation({ id: '2' }),
+				generateConversation({ id: '3' })
+			]);
+			const { user } = setupTest(
+				<ConversationsMultipleSelectionActions
+					selectedConversationsIds={['1', '2']}
+					deselectAll={jest.fn()}
+					folderId={FOLDERS.SPAM}
+				/>,
+				{ store }
+			);
+			const moreActionIcon = screen.getByTestId('icon: MoreVertical');
+			await user.click(moreActionIcon);
+
+			const actionsDropdown = screen.getByTestId('dropdown-popper-list');
+			expect(await within(actionsDropdown).findByText('Not spam')).toBeVisible();
 		});
 		it('should contain "tag" submenu item', async () => {
 			const tagItems = map(tags, (tag) => tag.name);

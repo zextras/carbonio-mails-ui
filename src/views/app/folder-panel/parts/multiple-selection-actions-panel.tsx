@@ -117,7 +117,6 @@ export const MultipleSelectionActionsPanel = ({
 					<>
 						{isConversation ? (
 							<>
-								{/* TODO: CO-1725 fix this */}
 								<ConversationsMultipleSelectionActions
 									selectedConversationsIds={selectedIds}
 									deselectAll={deselectAll}
