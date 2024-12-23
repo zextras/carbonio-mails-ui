@@ -87,6 +87,8 @@ describe('FilterActionsPanel', () => {
 		const dropdown = screen.getByTestId('dropdown-popper-list');
 		await user.click(within(dropdown).getByText(/Mark as/i));
 
-		expect(mockCompProps.setTempActions).toHaveBeenCalledWith([{ id: '7', actionFlag: [{}] }]);
+		expect(mockCompProps.setTempActions).toHaveBeenCalledWith([
+			{ id: '7', actionFlag: [{ flagName: 'read' }] }
+		]);
 	});
 });
