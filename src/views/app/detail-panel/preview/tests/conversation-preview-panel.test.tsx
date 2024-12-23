@@ -6,7 +6,7 @@
 
 import React from 'react';
 
-import { waitFor } from '@testing-library/react';
+import { act } from '@testing-library/react';
 
 import { setupTest, screen } from '../../../../../carbonio-ui-commons/test/test-setup';
 import { updateConversationsOnly, updateMessages } from '../../../../../store/zustand/emails/store';
@@ -23,6 +23,7 @@ describe('Conversation Preview Panel', () => {
 		const message1 = generateMessage({ id: '1' });
 		const message2 = generateMessage({ id: '2' });
 		const messages = [message1, message2];
+
 		updateMessages(messages);
 		const conversation = generateConversation({
 			id: '123',
@@ -37,10 +38,10 @@ describe('Conversation Preview Panel', () => {
 			}
 		);
 
-		await waitFor(() => {
+		await act(async () => {
 			expect(screen.getByTestId('ConversationMessagePreview-1')).toBeInTheDocument();
 		});
-		await waitFor(() => {
+		await act(async () => {
 			expect(screen.getByTestId('ConversationMessagePreview-2')).toBeInTheDocument();
 		});
 	});
