@@ -18,6 +18,7 @@ import {
 	normalizeMailMessageFromSoap
 } from '../../../../normalizations/normalize-message';
 import {
+	ConvMessage,
 	GetMsgResponse,
 	IncompleteMessage,
 	MailMessage,
@@ -37,12 +38,23 @@ import {
 	updateMessagesResultsLoadingStatus,
 	resetMessagesAndPopulatedItems,
 	setMessagesInEmailStore,
-	setConversationsInEmailStore
+	setConversationsInEmailStore,
+	updateConversationsOnly,
+	getConversationById
 } from '../store';
 
 function handleSearchConvResponse(conversationId: string, response: SearchConvResponse): void {
 	const messages = map(response?.m ?? [], (msg) => normalizeCompleteMailMessageFromSoap(msg));
 	updateMessages(messages);
+	// TODO: CO-1725 possibly handle expanded status?
+	const convMessages: Array<ConvMessage> = map(response?.m ?? [], (msg) => ({
+		id: msg.id,
+		parent: msg.l,
+		date: msg.d
+	}));
+	const conversation = getConversationById(conversationId);
+	const updatedConversation = { ...conversation, id: conversationId, messages: convMessages };
+	updateConversationsOnly([updatedConversation]);
 }
 
 type ConversationWithStatus = {
@@ -73,7 +85,7 @@ export function useCompleteConversation(
 	const conversation = useConversationById(conversationId);
 	const conversationStatus = useConversationStatus(conversationId);
 	useEffect(() => {
-		if (!conversation || !conversationStatus) {
+		if (conversation && !conversationStatus) {
 			retrieveConversation(conversationId, folderId);
 		}
 	}, [conversation, conversationId, conversationStatus, folderId]);
