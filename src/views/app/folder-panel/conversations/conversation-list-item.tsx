@@ -35,15 +35,13 @@ import { getFolderIdParts } from '../../../../helpers/folders';
 import { useConvActions } from '../../../../hooks/actions/use-conv-actions';
 import { useConvPreviewOnSeparatedWindowFn } from '../../../../hooks/actions/use-conv-preview-on-separated-window';
 import { useConvSetReadFn } from '../../../../hooks/actions/use-conv-set-read';
-import { useAppSelector } from '../../../../hooks/redux';
 import { useTagDropdownItem } from '../../../../hooks/use-tag-dropdown-item';
-import { selectConversationExpandedStatus } from '../../../../store/conversations-slice';
-import { useMessagesByIds } from '../../../../store/zustand/emails/store';
+import { retrieveConversation } from '../../../../store/zustand/emails/hooks/hooks';
+import { useConversationStatus, useMessagesByIds } from '../../../../store/zustand/emails/store';
 import {
 	ConvMessage,
 	ConversationListItemProps,
 	IncompleteMessage,
-	MailsStateType,
 	TextReadValuesProps,
 	NormalizedConversation,
 	Conversation
@@ -61,7 +59,7 @@ const CollapseElement = styled(Container)<{ $open: boolean }>`
 `;
 
 export const ConversationListItemActionWrapper = ({
-	item,
+	conversation,
 	active,
 	onClick,
 	onDoubleClick,
@@ -74,12 +72,12 @@ export const ConversationListItemActionWrapper = ({
 	onDoubleClick?: ContainerProps['onDoubleClick'];
 	shouldReplaceHistory?: boolean;
 	active?: boolean;
-	item: NormalizedConversation;
+	conversation: NormalizedConversation;
 	deselectAll: () => void;
 }): React.JSX.Element => {
 	const conversationPreviewFactory = useCallback(
-		() => <ConversationPreviewPanel conversation={item} isInsideExtraWindow />,
-		[item]
+		() => <ConversationPreviewPanel conversation={conversation} isInsideExtraWindow />,
+		[conversation]
 	);
 	const [t] = useTranslation();
 	const {
@@ -102,7 +100,7 @@ export const ConversationListItemActionWrapper = ({
 		previewOnSeparatedWindowDescriptor,
 		showOriginalDescriptor
 	} = useConvActions({
-		conversation: item as Conversation,
+		conversation: conversation as Conversation,
 		deselectAll,
 		conversationPreviewFactory,
 		shouldReplaceHistory
@@ -133,7 +131,7 @@ export const ConversationListItemActionWrapper = ({
 			restoreFolderDescriptor
 		]
 	);
-	const tagItem = useTagDropdownItem(applyTagDescriptor, item.tags);
+	const tagItem = useTagDropdownItem(applyTagDescriptor, conversation.tags);
 	const dropdownItems = useMemo(
 		() =>
 			[
@@ -192,10 +190,10 @@ export const ConversationListItemActionWrapper = ({
 			items={dropdownItems}
 			display="block"
 			style={{ width: '100%', height: '4rem' }}
-			data-testid={`secondary-actions-menu-${item.id}`}
+			data-testid={`secondary-actions-menu-${conversation.id}`}
 		>
 			<HoverContainer
-				data-testid={`hover-container-${item.id}`}
+				data-testid={`hover-container-${conversation.id}`}
 				orientation="horizontal"
 				mainAlignment="flex-start"
 				crossAlignment="unset"
@@ -209,7 +207,7 @@ export const ConversationListItemActionWrapper = ({
 					mainAlignment="flex-end"
 					crossAlignment="center"
 					background={active ? 'highlight' : 'gray6'}
-					data-testid={`primary-actions-bar-${item.id}`}
+					data-testid={`primary-actions-bar-${conversation.id}`}
 				>
 					<ListItemHoverActions actions={hoverActions} />
 				</HoverBarContainer>
@@ -249,15 +247,14 @@ export const ConversationListItem = memo(function ConversationListItem({
 		[conversation]
 	);
 
+	const conversationId = conversation.id;
 	const previewOnSeparatedWindow = useConvPreviewOnSeparatedWindowFn({
-		conversationId: conversation.id,
+		conversationId,
 		subject: conversation.subject,
 		conversationPreviewFactory
 	});
 
-	const conversationStatus = useAppSelector((state: MailsStateType) =>
-		selectConversationExpandedStatus(state, conversation.id)
-	);
+	const conversationStatus = useConversationStatus(conversationId);
 	const tagsFromStore = useTags();
 	const tags = useMemo(
 		() =>
@@ -305,13 +302,12 @@ export const ConversationListItem = memo(function ConversationListItem({
 					conversationStatus !== API_REQUEST_STATUS.fulfilled &&
 					conversationStatus !== API_REQUEST_STATUS.pending
 				) {
-					// TODO CO-1725 fix this
-					// dispatch(searchConv({ folderId: folderParent, conversationId: item.id, fetch: 'all' }));
+					retrieveConversation(conversationId);
 				}
 				return !currentlyOpen;
 			});
 		},
-		[conversationStatus]
+		[conversationId, conversationStatus]
 	);
 
 	const debouncedPushHistory = useMemo(
@@ -424,7 +420,7 @@ export const ConversationListItem = memo(function ConversationListItem({
 	return (
 		<Container mainAlignment="flex-start" data-testid={`ConversationListItem-${conversation.id}`}>
 			<ConversationListItemActionWrapper
-				item={conversation}
+				conversation={conversation}
 				active={active}
 				onClick={_onClick}
 				onDoubleClick={_onDoubleClick}
