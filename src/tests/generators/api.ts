@@ -118,3 +118,21 @@ export function generateConversationFromAPI(
 		...params
 	};
 }
+
+export function generateSoapConversationMessage(
+	messageId: string,
+	conversationId: string
+): SoapMailMessage {
+	return {
+		id: messageId,
+		cid: conversationId,
+		e: [],
+		su: 'conversations Subject',
+		s: 71116,
+		l: '2',
+		f: 'au',
+		fr: 'fragment',
+		mp: [],
+		d: 1717752296000
+	};
+}

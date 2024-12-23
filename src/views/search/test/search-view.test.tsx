@@ -34,6 +34,7 @@ import {
 	setSearchResultsByConversation
 } from '../../../store/zustand/emails/store';
 import { TESTID_SELECTORS } from '../../../tests/constants';
+import { generateSoapConversationMessage } from '../../../tests/generators/api';
 import { generateConversation } from '../../../tests/generators/generateConversation';
 import { generateMessage } from '../../../tests/generators/generateMessage';
 import { generateStore } from '../../../tests/generators/store';
@@ -99,21 +100,6 @@ const mockedUseSelection: ReturnType<typeof useSelection.useSelection> = {
 	isAllSelected: false,
 	selectAllModeOff: jest.fn()
 };
-
-function getSoapConversationMessage(messageId: string, conversationId: string): SoapMailMessage {
-	return {
-		id: messageId,
-		cid: conversationId,
-		e: [],
-		su: 'conversations Subject',
-		s: 71116,
-		l: '2',
-		f: 'au',
-		fr: 'fragment',
-		mp: [],
-		d: 1717752296000
-	};
-}
 
 async function waitAndMakeConversationVisible(conversationId: string): Promise<void> {
 	await screen.findByTestId(`invisible-conversation-${conversationId}`);
@@ -218,8 +204,8 @@ describe('SearchView', () => {
 		});
 
 		it('should display the number of messages in a conversation when soap API fulfilled', async () => {
-			const message1 = getSoapConversationMessage('100', '123');
-			const message2 = getSoapConversationMessage('200', '123');
+			const message1 = generateSoapConversationMessage('100', '123');
+			const message2 = generateSoapConversationMessage('200', '123');
 			const conversation = { ...getSoapConversation('123'), n: 2, m: [message1, message2] };
 			createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
 				c: [conversation],
@@ -246,8 +232,8 @@ describe('SearchView', () => {
 
 		it('should change the route when clicking a conversation in the list', async () => {
 			const defaultConversation = getSoapConversation('123');
-			const message1 = getSoapConversationMessage('100', '123');
-			const message2 = getSoapConversationMessage('200', '123');
+			const message1 = generateSoapConversationMessage('100', '123');
+			const message2 = generateSoapConversationMessage('200', '123');
 
 			const conversation = { ...defaultConversation, n: 2, m: [message1, message2] };
 			createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
@@ -361,8 +347,8 @@ describe('SearchView', () => {
 
 		it('should display the conversation view panel', async () => {
 			const defaultConversation = getSoapConversation('123');
-			const message1 = getSoapConversationMessage('100', '123');
-			const message2 = getSoapConversationMessage('200', '123');
+			const message1 = generateSoapConversationMessage('100', '123');
+			const message2 = generateSoapConversationMessage('200', '123');
 			const conversation = { ...defaultConversation, n: 2, m: [message1, message2] };
 			const searchApi = createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
 				c: [conversation],
