@@ -5,7 +5,6 @@
  */
 import React, { FC, useCallback, useMemo } from 'react';
 
-import { ContainerProps } from '@mui/material';
 import {
 	AccordionItem,
 	Avatar,
@@ -51,21 +50,21 @@ const FittedRow = styled(Row)`
 	height: 3rem;
 `;
 
-export const DropOverlayContainer = styled(Container)<ContainerProps & { folder: Folder }>`
+export const DropOverlayContainer = styled(Container)<{ $folder: Folder }>`
 	position: absolute;
-	width: calc(15.5rem - ${(props): number => props.folder.depth - 2}rem);
+	width: calc(15.5rem - ${({ $folder }): number => $folder.depth - 2}rem);
 	height: 100%;
-	background: ${(props): string => props.theme.palette.primary.regular};
+	background: ${({ theme }): string => theme.palette.primary.regular};
 	border-radius: 0.25rem;
 	border: 0.25rem solid #d5e3f6;
 	opacity: 0.4;
 `;
 
-const DropDenyOverlayContainer = styled(Container)<ContainerProps & { folder: Folder }>`
+const DropDenyOverlayContainer = styled(Container)<{ $folder: Folder }>`
 	position: absolute;
-	width: calc(15.5rem - ${(props): number => props.folder.depth - 2}rem);
+	width: calc(15.5rem - ${({ $folder }): number => $folder.depth - 2}rem);
 	height: 100%;
-	background: ${(props): string => props.theme.palette.gray1.regular};
+	background: ${({ theme }): string => theme.palette.gray1.regular};
 	border-radius: 0.25rem;
 	border: 0.25rem solid #d5e3f6;
 	opacity: 0.4;
@@ -321,8 +320,8 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item }) => {
 						event: data.event
 					} as OnDropActionProps)
 				}
-				overlayAcceptComponent={<DropOverlayContainer folder={item} />}
-				overlayDenyComponent={<DropDenyOverlayContainer folder={item} />}
+				overlayAcceptComponent={<DropOverlayContainer $folder={item} />}
+				overlayDenyComponent={<DropDenyOverlayContainer $folder={item} />}
 			>
 				<Drag
 					type="folder"

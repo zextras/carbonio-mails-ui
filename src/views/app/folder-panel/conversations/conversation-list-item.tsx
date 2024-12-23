@@ -56,8 +56,8 @@ import { ListItemHoverActions } from '../parts/list-item-hover-actions';
 import { RowInfo } from '../parts/row-info';
 import { SenderName } from '../parts/sender-name';
 
-const CollapseElement = styled(Container)<ContainerProps & { open: boolean }>`
-	display: ${({ open }): string => (open ? 'block' : 'none')};
+const CollapseElement = styled(Container)<{ $open: boolean }>`
+	display: ${({ $open }): string => ($open ? 'block' : 'none')};
 `;
 
 export const ConversationListItemActionWrapper = ({

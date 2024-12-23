@@ -4,8 +4,10 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { FC, ReactElement, useMemo } from 'react';
+
 import { Row, Select, Text, Padding, Icon, Container } from '@zextras/carbonio-design-system';
 import { map } from 'lodash';
+
 import {
 	ColorContainer,
 	TextUpperCase
@@ -35,7 +37,7 @@ const LabelFactory: FC<LabelFactoryPropsType> = ({
 		padding={{
 			all: 'extrasmall'
 		}}
-		disabled={disabled}
+		$disabled={disabled}
 		minHeight="3rem"
 	>
 		<Row width="100%" takeAvailableSpace mainAlignment="space-between">

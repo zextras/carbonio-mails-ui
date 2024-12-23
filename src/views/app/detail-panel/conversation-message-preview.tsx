@@ -33,12 +33,7 @@ export const ConversationMessagePreview: FC<ConversationMessagePreviewProps> = (
 	}, [message.id, message.parent]);
 
 	return (
-		<Padding
-			height="fit"
-			bottom="medium"
-			width="100%"
-			data-testid={`ConversationMessagePreview-${message.id}`}
-		>
+		<Padding bottom="medium" width="100%" data-testid={`ConversationMessagePreview-${message.id}`}>
 			<MailPreview
 				message={message}
 				expanded={isExpanded}

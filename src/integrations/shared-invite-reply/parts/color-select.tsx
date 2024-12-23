@@ -43,7 +43,7 @@ const LabelFactory = ({
 				<TextUpperCase>{selected[0].label}</TextUpperCase>
 			</Row>
 			<Padding right="small">
-				<Square color={ZIMBRA_STANDARD_COLORS[parseInt(selected[0].value, 10)].hex} />
+				<Square $color={ZIMBRA_STANDARD_COLORS[parseInt(selected[0].value, 10)].hex} />
 			</Padding>
 		</Row>
 		<Icon
@@ -69,11 +69,11 @@ export default function ColorSelect({
 	onChange,
 	defaultColor = 0,
 	label
-}: {
+}: Readonly<{
 	onChange: SingleSelectionOnChange;
 	defaultColor: number;
 	label: string;
-}): React.JSX.Element {
+}>): React.JSX.Element {
 	const colors = useMemo(
 		() =>
 			ZIMBRA_STANDARD_COLORS.map((el, index) => ({
@@ -89,7 +89,7 @@ export default function ColorSelect({
 						<Padding left="small">
 							<TextUpperCase>{getColorLabel(el.zLabel)}</TextUpperCase>
 						</Padding>
-						<Square color={el.hex} />
+						<Square $color={el.hex} />
 					</Container>
 				)
 			})),

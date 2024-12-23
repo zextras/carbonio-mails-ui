@@ -23,7 +23,6 @@ import {
 	Tooltip,
 	Chip,
 	Dropdown,
-	ContainerProps,
 	IconButton,
 	getColor,
 	AvatarPropTypes
@@ -60,9 +59,9 @@ import { retrieveAttachmentsType } from '../../../../../store/editor-slice-utils
 import type { MailMessage } from '../../../../../types';
 import { useTagExist } from '../../../../../ui-actions/tag-actions';
 
-const HoverContainer = styled(Container)<ContainerProps & { isExpanded: boolean }>`
+const HoverContainer = styled(Container)<{ $isExpanded: boolean }>`
 	cursor: pointer;
-	border-radius: ${({ isExpanded }): string => (isExpanded ? '0.25rem 0.25rem 0 0' : '0.25rem')};
+	border-radius: ${({ $isExpanded }): string => ($isExpanded ? '0.25rem 0.25rem 0 0' : '0.25rem')};
 	&:hover {
 		background: ${({ theme, background = 'currentColor' }): string =>
 			getColor(`${background}.hover`, theme)};
@@ -255,7 +254,7 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 			mainAlignment="flex-start"
 			crossAlignment="flex-start"
 			background="gray6"
-			isExpanded={open}
+			$isExpanded={open}
 			data-testid={`open-message-${message.id}`}
 			onClick={_onClick}
 		>
