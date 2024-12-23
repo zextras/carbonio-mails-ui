@@ -208,7 +208,7 @@ export const SearchConversationListItem: FC<SearchConversationListItemProps> = (
 	return (
 		<Container mainAlignment="flex-start" data-testid={`ConversationListItem-${conversationId}`}>
 			<ConversationListItemActionWrapper
-				item={conversation as Conversation}
+				conversation={conversation as Conversation}
 				active={active}
 				onClick={_onClick}
 				onDoubleClick={_onDoubleClick}
