@@ -4,41 +4,45 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { act } from 'react';
-
-import { renderHook } from '@testing-library/react';
+import { renderHook, act } from '@testing-library/react';
 
 import * as searchSoapApi from '../../../../../api/search';
+import { generateFolder } from '../../../../../carbonio-ui-commons/test/mocks/folders/folders-generator';
 import { createSoapAPIInterceptor } from '../../../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { API_REQUEST_STATUS } from '../../../../../constants';
 import * as storeHooks from '../../../../../store/zustand/emails/store';
-import { generateCompleteMessageFromAPI } from '../../../../../tests/generators/api';
-import { useLoadMoreForMessagesSlice } from '../message-list-hooks';
+import { generateConversationFromAPI } from '../../../../../tests/generators/api';
+import { useLoadMoreForConversationList } from '../conversation-list-hooks';
 
-describe('useLoadMoreForMessagesSlice', () => {
-	it('should load more results and append messages to the slice', async () => {
+describe('ConversationListHooks', () => {
+	it('should load more results for the current folder', async () => {
+		const hasMore = 0;
+		const conversation = generateConversationFromAPI({ id: '1' });
 		const searchResponse = {
-			m: [generateCompleteMessageFromAPI()],
-			more: false
+			c: [conversation],
+			more: hasMore
 		};
-		const appendMessagesSpy = jest.spyOn(storeHooks, 'appendMessagesToMessagesSlice');
 		const interceptor = createSoapAPIInterceptor('Search', searchResponse);
 		const loadingMore = { current: false };
+		const folder = generateFolder({ id: 'folder-1' });
+		const appendConversationsSpy = jest.spyOn(
+			storeHooks,
+			'appendConversationsToConversationIndexSlice'
+		);
 		const { result } = renderHook(() =>
-			useLoadMoreForMessagesSlice({
+			useLoadMoreForConversationList({
 				offset: 0,
 				sortBy: 'date',
 				limit: 20,
 				hasMore: true,
 				loadingMore,
-				folderId: 'inbox'
+				folderId: folder.id
 			})
 		);
 
 		await act(async () => {
 			await result.current();
 		});
-
 		const request = await interceptor;
 
 		expect(request).toEqual({
@@ -47,13 +51,13 @@ describe('useLoadMoreForMessagesSlice', () => {
 			limit: 20,
 			needExp: 1,
 			offset: 0,
-			query: 'inId:"inbox"',
+			query: `inId:"${folder.id}"`,
 			recip: '0',
 			sortBy: 'date',
-			types: 'message',
+			types: 'conversation',
 			wantContent: 'full'
 		});
-		expect(appendMessagesSpy).toHaveBeenCalledWith(expect.any(Array), 0);
+		expect(appendConversationsSpy).toHaveBeenCalledWith(expect.any(Array), hasMore);
 		expect(loadingMore.current).toBe(false);
 	});
 
@@ -61,14 +65,14 @@ describe('useLoadMoreForMessagesSlice', () => {
 		const searchResponse = {
 			Fault: {}
 		};
-		const updateMessagesResultsLoadingStatusSpy = jest.spyOn(
+		const updateConversationsResultsLoadingStatusSpy = jest.spyOn(
 			storeHooks,
-			'updateMessagesResultsLoadingStatus'
+			'updateConversationsResultsLoadingStatus'
 		);
 		const interceptor = createSoapAPIInterceptor('Search', searchResponse);
 		const loadingMore = { current: false };
 		const { result } = renderHook(() =>
-			useLoadMoreForMessagesSlice({
+			useLoadMoreForConversationList({
 				offset: 0,
 				sortBy: 'date',
 				limit: 20,
@@ -84,7 +88,9 @@ describe('useLoadMoreForMessagesSlice', () => {
 
 		await interceptor;
 
-		expect(updateMessagesResultsLoadingStatusSpy).toHaveBeenCalledWith(API_REQUEST_STATUS.error);
+		expect(updateConversationsResultsLoadingStatusSpy).toHaveBeenCalledWith(
+			API_REQUEST_STATUS.error
+		);
 		expect(loadingMore.current).toBe(false);
 	});
 
@@ -92,7 +98,7 @@ describe('useLoadMoreForMessagesSlice', () => {
 		const searchSpy = jest.spyOn(searchSoapApi, 'searchSoapApi');
 		const loadingMore = { current: false };
 		const { result } = renderHook(() =>
-			useLoadMoreForMessagesSlice({
+			useLoadMoreForConversationList({
 				offset: 0,
 				sortBy: 'date',
 				limit: 20,
@@ -115,7 +121,7 @@ describe('useLoadMoreForMessagesSlice', () => {
 
 		const searchSpy = jest.spyOn(searchSoapApi, 'searchSoapApi');
 		const { result } = renderHook(() =>
-			useLoadMoreForMessagesSlice({
+			useLoadMoreForConversationList({
 				offset: 0,
 				sortBy: 'date',
 				limit: 20,
