@@ -17,14 +17,13 @@ import {
 	Tooltip
 } from '@zextras/carbonio-design-system';
 import { pushHistory, t, useUserAccounts, useUserSettings } from '@zextras/carbonio-shell-ui';
-import { filter, forEach, includes, isEmpty, reduce, trimStart, uniqBy } from 'lodash';
+import { filter, forEach, includes, isEmpty, reduce, uniqBy } from 'lodash';
 import styled from 'styled-components';
 
 import { SearchConversationMessagesList } from './search-conversation-messages-list';
 import { ZIMBRA_STANDARD_COLORS } from '../../../../carbonio-ui-commons/constants';
 import { useTags } from '../../../../carbonio-ui-commons/store/zustand/tags';
 import { Tag } from '../../../../carbonio-ui-commons/types/tags';
-import { participantToString } from '../../../../commons/utils';
 import { API_REQUEST_STATUS } from '../../../../constants';
 import { useConvPreviewOnSeparatedWindowFn } from '../../../../hooks/actions/use-conv-preview-on-separated-window';
 import { useConvSetReadFn } from '../../../../hooks/actions/use-conv-set-read';
@@ -34,7 +33,7 @@ import {
 	useConversationMessages,
 	useConversationStatus
 } from '../../../../store/zustand/emails/store';
-import type { Conversation, Participant, TextReadValuesProps } from '../../../../types';
+import type { Conversation, TextReadValuesProps } from '../../../../types';
 import { ConversationListItemActionWrapper } from '../../../app/folder-panel/conversations/conversation-list-item';
 import { ItemAvatar } from '../../../app/folder-panel/parts/item-avatar';
 import { RowInfo } from '../../../app/folder-panel/parts/row-info';
@@ -106,15 +105,6 @@ export const SearchConversationListItem: FC<SearchConversationListItemProps> = (
 	);
 
 	const zimbraPrefMarkMsgRead = useUserSettings()?.prefs?.zimbraPrefMarkMsgRead !== '-1';
-	const participantsString = useMemo(
-		() =>
-			reduce(
-				uniqBy(conversation.participants, (em: Participant) => em.address),
-				(acc, part) => trimStart(`${acc}, ${participantToString(part, accounts)}`, ', '),
-				''
-			),
-		[conversation.participants, accounts]
-	);
 
 	const expandConversation = useCallback(
 		(e: React.MouseEvent<HTMLButtonElement> | React.KeyboardEvent | MouseEvent | KeyboardEvent) => {
