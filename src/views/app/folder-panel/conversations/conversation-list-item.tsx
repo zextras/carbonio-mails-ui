@@ -529,7 +529,7 @@ export const ConversationListItem = memo(function ConversationListItem({
 			</ConversationListItemActionWrapper>
 			{open && (
 				<CollapseElement
-					open={open}
+					$open={open}
 					data-testid="ConversationExpander"
 					padding={{ left: 'extralarge' }}
 					height="auto"
