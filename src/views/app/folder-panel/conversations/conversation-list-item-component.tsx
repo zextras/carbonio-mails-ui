@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, RefObject } from 'react';
+import React, { RefObject } from 'react';
 
 import { ConversationListItem } from './conversation-list-item';
 import { useConversationById } from '../../../../store/zustand/emails/store';
@@ -27,7 +27,7 @@ type ConversationListItemComponentProps = {
 	visible?: boolean;
 };
 
-export const ConversationListItemComponent: FC<ConversationListItemComponentProps> = ({
+export const ConversationListItemComponent = ({
 	activeItemId,
 	conversationId,
 	selected,
@@ -43,7 +43,7 @@ export const ConversationListItemComponent: FC<ConversationListItemComponentProp
 	deselectAll,
 	folderId,
 	visible
-}) => {
+}: ConversationListItemComponentProps): React.JSX.Element => {
 	const conversation = useConversationById(conversationId);
 	return (
 		<DragItemWrapper

@@ -12,6 +12,7 @@ import { times } from 'lodash';
 import { FOLDERS } from '../../../../../carbonio-ui-commons/constants/folders';
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
 import { API_REQUEST_STATUS } from '../../../../../constants';
+import { updateConversationsOnly } from '../../../../../store/zustand/emails/store';
 import { generateConversation } from '../../../../../tests/generators/generateConversation';
 import { generateStore } from '../../../../../tests/generators/store';
 import type { SearchRequestStatus } from '../../../../../types';
@@ -33,6 +34,7 @@ describe.each`
 		const conversations = times(CONVERSATIONS_COUNT, (index) =>
 			generateConversation({ id: `${index}`, folderId, isSingleMessageConversation: false })
 		);
+		updateConversationsOnly(conversations);
 
 		const toggle = jest.fn();
 		const selectAll = jest.fn();
@@ -44,7 +46,7 @@ describe.each`
 		const listItems = conversations.map((conversation, index) => (
 			<ConversationListItemComponent
 				key={index}
-				item={conversation}
+				conversationId={conversation.id}
 				activeItemId=""
 				selected={false}
 				selecting={false}
@@ -63,7 +65,7 @@ describe.each`
 			conversationsLoadingCompleted: true,
 			selectedIds: [],
 			folderId,
-			conversations,
+			conversationsIds: new Set(conversations.map((conversation) => conversation.id)),
 			isSelectModeOn: false,
 			selected: {},
 			deselectAll,
