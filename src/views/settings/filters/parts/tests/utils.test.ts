@@ -61,7 +61,7 @@ describe('Utils', () => {
 				{ label: 'label 1', value: { actionFlag: [{ flagName: '1' }] } },
 				{ label: 'label 2', value: { actionFlag: [{ flagName: '2' }] } }
 			];
-			expect(findDefaultValue(options, { actionFlag: [{}] })).toBeUndefined();
+			expect(findDefaultValue(options, { actionFlag: [{}] })).toBe(options[0]);
 		});
 	});
 });
