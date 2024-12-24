@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { Button, Row } from '@zextras/carbonio-design-system';
 import { editSettings, t, useUserSettings } from '@zextras/carbonio-shell-ui';
@@ -26,7 +26,7 @@ type HtmlMessageRendererType = {
 	message: MailMessage;
 };
 
-export const HtmlMessageRenderer: FC<HtmlMessageRendererType> = ({ message }) => {
+export const HtmlMessageRenderer = ({ message }: HtmlMessageRendererType): React.JSX.Element => {
 	const [isLoadingMessage, setIsLoadingMessage] = useState(false);
 	const body: BodyPart = message?.body ?? {
 		content: '',
