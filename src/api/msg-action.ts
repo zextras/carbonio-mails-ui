@@ -7,12 +7,7 @@
 import { soapFetch } from '@zextras/carbonio-shell-ui';
 import { omitBy, isNil } from 'lodash';
 
-import {
-	MsgActionParameters,
-	MsgActionRequest,
-	MsgActionResponse,
-	MsgActionResult
-} from '../types';
+import { MsgActionParameters, MsgActionRequest, MsgActionResponse } from '../types';
 
 export const msgActionSoapApi = async ({
 	ids,
@@ -20,8 +15,8 @@ export const msgActionSoapApi = async ({
 	parent,
 	tagName,
 	flag
-}: MsgActionParameters): Promise<MsgActionResult> => {
-	const { action } = await soapFetch<MsgActionRequest, MsgActionResponse>('MsgAction', {
+}: MsgActionParameters): Promise<MsgActionResponse> =>
+	soapFetch<MsgActionRequest, MsgActionResponse>('MsgAction', {
 		_jsns: 'urn:zimbraMail',
 
 		action: omitBy(
@@ -35,8 +30,3 @@ export const msgActionSoapApi = async ({
 			isNil
 		)
 	});
-	return {
-		ids: action.id.split(','),
-		operation: action.op
-	};
-};
