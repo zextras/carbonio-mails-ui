@@ -18,11 +18,11 @@ import { includes, noop } from 'lodash';
 import { EditView, EditViewHandle } from './edit-view';
 import { EditViewBoardContext } from './edit-view-board';
 import { EditViewActions } from '../../../../constants';
-import { useAppDispatch, useAppSelector } from '../../../../hooks/redux';
-import { getMsgAsyncThunk } from '../../../../store/actions';
+import { useAppSelector } from '../../../../hooks/redux';
 import { selectMessage } from '../../../../store/messages-slice';
 import { addEditor, useEditorSubject } from '../../../../store/zustand/editor';
 import { generateEditor } from '../../../../store/zustand/editor/editor-generators';
+import { retrieveFullMessage } from '../../../../store/zustand/emails/hooks/hooks';
 import type { EditViewActionsType, MailMessage } from '../../../../types';
 
 const parseAndValidateParams = (
@@ -60,7 +60,6 @@ type EditViewControllerCoreProps = {
 const MemoizedEditView = memo(EditView);
 
 const EditViewControllerCore: FC<EditViewControllerCoreProps> = ({ action, entityId, message }) => {
-	const messagesStoreDispatch = useAppDispatch();
 	const board = useBoard<EditViewBoardContext>();
 	const boardUtilities = useBoardHooks();
 	const editViewRef = useRef<EditViewHandle>(null);
@@ -86,7 +85,6 @@ const EditViewControllerCore: FC<EditViewControllerCoreProps> = ({ action, entit
 	const editor = generateEditor({
 		action,
 		id: entityId,
-		messagesStoreDispatch,
 		message,
 		compositionData
 	});
@@ -154,9 +152,7 @@ const MemoizedEditViewControllerCore = memo(EditViewControllerCore);
  * Get and parse the parameters. Get the original message if it is needed
  * @constructor
  */
-const EditViewController: FC = () => {
-	const messagesStoreDispatch = useAppDispatch();
-
+const EditViewController = (): React.JSX.Element => {
 	const boardContext = useBoard<EditViewBoardContext>().context;
 	const { action, id } = parseAndValidateParams(
 		boardContext?.originAction,
@@ -183,9 +179,9 @@ const EditViewController: FC = () => {
 	 */
 	useEffect(() => {
 		if (isMessageLoadingRequired && !!id) {
-			messagesStoreDispatch(getMsgAsyncThunk({ msgId: id }));
+			retrieveFullMessage(id);
 		}
-	}, [id, isMessageLoadingRequired, messagesStoreDispatch]);
+	}, [id, isMessageLoadingRequired]);
 
 	return isMessageLoadingRequired ? (
 		<Container>

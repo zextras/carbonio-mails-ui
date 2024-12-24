@@ -16,7 +16,6 @@ import {
 	SavedAttachment,
 	UnsavedAttachment
 } from '../../../types';
-import { AppDispatch } from '../../redux';
 
 // extra currying as suggested in https://github.com/pmndrs/zustand/blob/main/docs/guides/typescript.md#basic-usage
 export const useEditorsStore = create<EditorsStateTypeV2>()((set) => ({
@@ -354,15 +353,7 @@ export const useEditorsStore = create<EditorsStateTypeV2>()((set) => ({
 	 * @param id
 	 * @param dispatch
 	 */
-	setMessagesStoreDispatch: (id: MailsEditorV2['id'], dispatch: AppDispatch): void => {
-		set(
-			produce((state: EditorsStateTypeV2) => {
-				if (state?.editors?.[id]) {
-					state.editors[id].messagesStoreDispatch = dispatch;
-				}
-			})
-		);
-	},
+
 	setSignatureId: (id: MailsEditorV2['id'], signId: MailsEditorV2['signatureId']): void => {
 		set(
 			produce((state: EditorsStateTypeV2) => {

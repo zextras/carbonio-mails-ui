@@ -8,7 +8,6 @@ import { find } from 'lodash';
 
 import { EditViewActions } from '../../../../constants';
 import { generateMessage } from '../../../../tests/generators/generateMessage';
-import { generateStore } from '../../../../tests/generators/store';
 import { MailMessage } from '../../../../types';
 import { generateEditor } from '../editor-generators';
 
@@ -30,7 +29,6 @@ jest.mock('../../../../helpers/identities', () => ({
 
 // Test cases
 describe('generateEditor', () => {
-	const store = generateStore();
 	const message = {
 		...generateMessage(),
 		originalId: 'test-orig-id',
@@ -41,7 +39,6 @@ describe('generateEditor', () => {
 		const result = generateEditor({
 			action: EditViewActions.EDIT_AS_DRAFT,
 			id: 'test-id',
-			messagesStoreDispatch: store.dispatch,
 			message
 		});
 
@@ -62,7 +59,6 @@ describe('generateEditor', () => {
 			generateEditor({
 				action: EditViewActions.EDIT_AS_DRAFT,
 				id: undefined,
-				messagesStoreDispatch: store.dispatch,
 				message
 			})
 		).toThrow('Cannot generate a draft editor without a message id');
@@ -71,10 +67,9 @@ describe('generateEditor', () => {
 	it('should return null for unsupported actions', () => {
 		const result = generateEditor({
 			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-expect-error
+			// @ts-ignore
 			action: 'UNSUPPORTED_ACTION',
 			id: 'test-id',
-			messagesStoreDispatch: store.dispatch,
 			message
 		});
 
@@ -85,7 +80,6 @@ describe('generateEditor', () => {
 		const result = generateEditor({
 			action: EditViewActions.EDIT_AS_DRAFT,
 			id: 'test-id',
-			messagesStoreDispatch: store.dispatch,
 			message: null
 		});
 

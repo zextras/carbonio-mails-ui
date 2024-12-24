@@ -156,8 +156,7 @@ describe('Edit view', () => {
 		// warning
 		it('should correctly send a new email', async () => {
 			setupEditorStore({ editors: [] });
-			const reduxStore = generateStore();
-			const editor = generateNewMessageEditor(reduxStore.dispatch);
+			const editor = generateNewMessageEditor();
 			addEditor({ id: editor.id, editor });
 
 			// Get the default identity address
@@ -188,7 +187,7 @@ describe('Edit view', () => {
 
 			jest.spyOn(hooks, 'getUserSettings').mockReturnValue(settings);
 
-			const { user } = setupTest(<EditView {...props} />, { store: reduxStore });
+			const { user } = setupTest(<EditView {...props} />);
 
 			// Get the components
 			const btnSend = await screen.findByTestId(/BtnSendMail/i);
@@ -272,8 +271,8 @@ describe('Edit view', () => {
 
 		it('create a new email and text format should be as per setting', async () => {
 			setupEditorStore({ editors: [] });
-			const reduxStore = generateStore();
-			const editor = generateNewMessageEditor(reduxStore.dispatch);
+
+			const editor = generateNewMessageEditor();
 			addEditor({ id: editor.id, editor });
 
 			// Text format should be plain as per the settings done
@@ -342,12 +341,12 @@ describe('Edit view', () => {
 
 			aSuccessfullSaveDraft();
 			setupEditorStore({ editors: [] });
-			const reduxStore = generateStore();
-			const editor = generateNewMessageEditor(reduxStore.dispatch);
+
+			const editor = generateNewMessageEditor();
 			addEditor({ id: editor.id, editor: { ...editor, did: '123' } });
 
 			act(() => {
-				setupTest(<EditView editorId={editor.id} closeController={noop} />, { store: reduxStore });
+				setupTest(<EditView editorId={editor.id} closeController={noop} />);
 			});
 			await act(async () => {
 				jest.advanceTimersByTime(5_000);
@@ -358,11 +357,11 @@ describe('Edit view', () => {
 		it('is autosaved on initialization if draft id is not present', async () => {
 			const interceptor = aSuccessfullSaveDraft();
 			setupEditorStore({ editors: [] });
-			const reduxStore = generateStore();
-			const editor = generateNewMessageEditor(reduxStore.dispatch);
+
+			const editor = generateNewMessageEditor();
 			addEditor({ id: editor.id, editor });
 
-			setupTest(<EditView editorId={editor.id} closeController={noop} />, { store: reduxStore });
+			setupTest(<EditView editorId={editor.id} closeController={noop} />);
 			await interceptor;
 			expect(await screen.findByText('message.email_saved_at')).toBeVisible();
 		});
@@ -379,8 +378,8 @@ describe('Edit view', () => {
 
 			it('clicks on the save button', async () => {
 				setupEditorStore({ editors: [] });
-				const reduxStore = generateStore();
-				const editor = generateNewMessageEditor(reduxStore.dispatch);
+
+				const editor = generateNewMessageEditor();
 				addEditor({ id: editor.id, editor });
 
 				const props = {
@@ -389,7 +388,7 @@ describe('Edit view', () => {
 				};
 
 				const firstSaveDraftInterceptor = aSuccessfullSaveDraft();
-				const { user } = setupTest(<EditView {...props} />, { store: reduxStore });
+				const { user } = setupTest(<EditView {...props} />);
 
 				await firstSaveDraftInterceptor;
 				const draftSavingInterceptor = aSuccessfullSaveDraft();
@@ -451,15 +450,15 @@ describe('Edit view', () => {
 
 			it('changes the subject', async () => {
 				setupEditorStore({ editors: [] });
-				const reduxStore = generateStore();
-				const editor = generateNewMessageEditor(reduxStore.dispatch);
+
+				const editor = generateNewMessageEditor();
 				addEditor({ id: editor.id, editor });
 				const props = {
 					editorId: editor.id,
 					closeController: noop
 				};
 				const firstSaveDraftInterceptor = aSuccessfullSaveDraft();
-				const { user } = setupTest(<EditView {...props} />, { store: reduxStore });
+				const { user } = setupTest(<EditView {...props} />);
 				await firstSaveDraftInterceptor;
 				const draftSavingInterceptor = aSuccessfullSaveDraft();
 				const subjectText =
@@ -477,15 +476,15 @@ describe('Edit view', () => {
 
 			it('changes the recipient (to)', async () => {
 				setupEditorStore({ editors: [] });
-				const reduxStore = generateStore();
-				const editor = generateNewMessageEditor(reduxStore.dispatch);
+
+				const editor = generateNewMessageEditor();
 				addEditor({ id: editor.id, editor });
 				const props = {
 					editorId: editor.id,
 					closeController: noop
 				};
 				const firstSaveDraftInterceptor = aSuccessfullSaveDraft();
-				const { user } = setupTest(<EditView {...props} />, { store: reduxStore });
+				const { user } = setupTest(<EditView {...props} />);
 				await firstSaveDraftInterceptor;
 				const draftSavingInterceptor = aSuccessfullSaveDraft();
 				const recipient = createFakeIdentity().email;
@@ -506,15 +505,15 @@ describe('Edit view', () => {
 
 			it('changes the body', async () => {
 				setupEditorStore({ editors: [] });
-				const reduxStore = generateStore();
-				const editor = generateNewMessageEditor(reduxStore.dispatch);
+
+				const editor = generateNewMessageEditor();
 				addEditor({ id: editor.id, editor });
 				const props = {
 					editorId: editor.id,
 					closeController: noop
 				};
 				const firstSaveDraftInterceptor = aSuccessfullSaveDraft();
-				const { user } = setupTest(<EditView {...props} />, { store: reduxStore });
+				const { user } = setupTest(<EditView {...props} />);
 				await firstSaveDraftInterceptor;
 				const draftSavingInterceptor = aSuccessfullSaveDraft();
 				const body = faker.lorem.text();
@@ -535,8 +534,8 @@ describe('Edit view', () => {
 			it('attaches a file', async () => {
 				setupEditorStore({ editors: [] });
 				createAPIInterceptor('post', '/service/upload', new HttpResponse(null, { status: 200 }));
-				const reduxStore = generateStore();
-				const editor = generateNewMessageEditor(reduxStore.dispatch);
+
+				const editor = generateNewMessageEditor();
 				addEditor({ id: editor.id, editor });
 				const props = {
 					editorId: editor.id,
@@ -545,7 +544,7 @@ describe('Edit view', () => {
 				const saveDraftSpy = jest.spyOn(saveDraftAction, 'saveDraftV3');
 				const firstSaveDraft = aSuccessfullSaveDraft();
 
-				const { user } = setupTest(<EditView {...props} />, { store: reduxStore });
+				const { user } = setupTest(<EditView {...props} />);
 				await firstSaveDraft;
 				const draftSavingInterceptor = aSuccessfullSaveDraft();
 				const fileInput = screen.getByTestId('file-input');
@@ -567,12 +566,10 @@ describe('Edit view', () => {
 
 		describe('send button', () => {
 			describe('is disabled when draft cannot be saved', () => {
-				let reduxStore: ReturnType<typeof generateStore>;
 				let failingSaveDraft: Promise<SaveDraftRequest>;
 				beforeEach(() => {
 					failingSaveDraft = aFailingSaveDraft();
 					setupEditorStore({ editors: [] });
-					reduxStore = generateStore();
 				});
 				const checkSaveBtnIsDisabled = async (editor: MailsEditorV2): Promise<void> => {
 					addEditor({
@@ -592,7 +589,7 @@ describe('Edit view', () => {
 				};
 
 				it('and action is "new editor"', async () => {
-					const editor = generateNewMessageEditor(reduxStore.dispatch);
+					const editor = generateNewMessageEditor();
 					await checkSaveBtnIsDisabled(editor);
 				});
 
@@ -600,17 +597,15 @@ describe('Edit view', () => {
 					const message = generateMessage({
 						isComplete: true
 					});
-					const editor = generateReplyMsgEditor(reduxStore.dispatch, message);
+					const editor = generateReplyMsgEditor(message);
 					await checkSaveBtnIsDisabled(editor);
 				});
 			});
 
 			describe('is enabled when draft is saved', () => {
-				let reduxStore: ReturnType<typeof generateStore>;
 				beforeEach(() => {
 					aSuccessfullSaveDraft();
 					setupEditorStore({ editors: [] });
-					reduxStore = generateStore();
 				});
 				const checkSendBtnEnabled = async (editor: MailsEditorV2): Promise<void> => {
 					addEditor({
@@ -632,7 +627,7 @@ describe('Edit view', () => {
 						isComplete: true
 					});
 
-					const editor = generateReplyMsgEditor(reduxStore.dispatch, message);
+					const editor = generateReplyMsgEditor(message);
 
 					await checkSendBtnEnabled(editor);
 				});
@@ -642,7 +637,7 @@ describe('Edit view', () => {
 						isComplete: true
 					});
 
-					const editor = generateReplyAllMsgEditor(reduxStore.dispatch, message);
+					const editor = generateReplyAllMsgEditor(message);
 
 					await checkSendBtnEnabled(editor);
 				});
@@ -651,10 +646,9 @@ describe('Edit view', () => {
 			it('is enabled when an editor is created with "edit as new" action and a draft is saved', async () => {
 				aSuccessfullSaveDraft();
 				setupEditorStore({ editors: [] });
-				const reduxStore = generateStore();
 
 				const message = generateMessage({ isComplete: true });
-				const editor = generateEditAsNewEditor(reduxStore.dispatch, message);
+				const editor = generateEditAsNewEditor(message);
 
 				addEditor({
 					id: editor.id,
@@ -666,7 +660,7 @@ describe('Edit view', () => {
 					closeController: noop
 				};
 
-				setupTest(<EditView {...props} />, { store: reduxStore });
+				setupTest(<EditView {...props} />);
 				expect(await screen.findByText('message.email_saved_at')).toBeVisible();
 				const btnSend =
 					screen.queryByTestId('BtnSendMail') || screen.queryByTestId('BtnSendMailMulti');

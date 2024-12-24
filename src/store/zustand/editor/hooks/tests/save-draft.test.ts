@@ -13,7 +13,7 @@ import { useEditorDraftSave } from '../save-draft';
 describe('useEditorDraftSave', () => {
 	it('should return an object with specific data and callbacks', () => {
 		const messagesStore = generateStore();
-		const editor = generateNewMessageEditor(messagesStore.dispatch);
+		const editor = generateNewMessageEditor();
 		setupEditorStore({ editors: [editor] });
 		const { result: hookResult } = setupHook(useEditorDraftSave, {
 			initialProps: [editor.id],

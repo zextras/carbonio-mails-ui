@@ -45,7 +45,6 @@ import {
 	retrieveReplyTo,
 	retrieveTO
 } from '../../editor-slice-utils';
-import { AppDispatch } from '../../redux';
 
 // Regex reply msg title
 const REPLY_REGEX = /(^(re:\s)+)/i;
@@ -64,7 +63,7 @@ const labels = {
 /**
  *
  */
-export const generateNewMessageEditor = (messagesStoreDispatch: AppDispatch): MailsEditorV2 => {
+export const generateNewMessageEditor = (): MailsEditorV2 => {
 	const editorId = uuid();
 	const text = {
 		plainText: `\n\n${LineType.SIGNATURE_PRE_SEP}\n`,
@@ -74,7 +73,7 @@ export const generateNewMessageEditor = (messagesStoreDispatch: AppDispatch): Ma
 	const textWithSignature = getMailBodyWithSignature(text, defaultIdentity.defaultSignatureId);
 	const isRichText = getUserSettings().prefs?.zimbraPrefComposeFormat === 'html';
 
-	const editor = {
+	const editor: MailsEditorV2 = {
 		action: EditViewActions.NEW,
 		identityId: getDefaultIdentity().id,
 		id: editorId,
@@ -91,10 +90,10 @@ export const generateNewMessageEditor = (messagesStoreDispatch: AppDispatch): Ma
 		text: textWithSignature,
 		requestReadReceipt: false,
 		signatureId: defaultIdentity.defaultSignatureId,
-		messagesStoreDispatch,
+
 		size: 0,
 		totalSmartLinksSize: 0
-	} as MailsEditorV2;
+	};
 
 	editor.draftSaveAllowedStatus = computeDraftSaveAllowedStatus(editor);
 	editor.sendAllowedStatus = computeSendAllowedStatus(editor);
@@ -143,17 +142,14 @@ const normalizeParticipants = (
 /**
  *
  */
-export const generateIntegratedNewEditor = (
-	messagesStoreDispatch: AppDispatch,
-	compositionData?: EditorPrefillData
-): MailsEditorV2 => {
+export const generateIntegratedNewEditor = (compositionData?: EditorPrefillData): MailsEditorV2 => {
 	const editorId = uuid();
 
 	const plainText = compositionData?.text?.[0] ?? `\n\n${LineType.SIGNATURE_PRE_SEP}\n`;
 	const richText =
 		compositionData?.text?.[1] ?? `<p></p><div class="${LineType.SIGNATURE_CLASS}"></div>`;
 
-	const recipients = compositionData?.recipients
+	const recipients: Array<Participant> = compositionData?.recipients
 		? compositionData.recipients
 		: normalizeParticipants(compositionData?.to);
 
@@ -176,7 +172,7 @@ export const generateIntegratedNewEditor = (
 				})
 			);
 
-	const editor = {
+	const editor: MailsEditorV2 = {
 		action: EditViewActions.NEW,
 		identityId: getDefaultIdentity().id,
 		id: editorId,
@@ -192,11 +188,10 @@ export const generateIntegratedNewEditor = (
 		subject: compositionData?.subject ?? '',
 		text: textWithSignature,
 		requestReadReceipt: false,
-		messagesStoreDispatch,
 		size: 0,
 		totalSmartLinksSize: 0,
 		signatureId: defaultIdentity.defaultSignatureId
-	} as MailsEditorV2;
+	};
 
 	editor.draftSaveAllowedStatus = computeDraftSaveAllowedStatus(editor);
 	editor.sendAllowedStatus = computeSendAllowedStatus(editor);
@@ -207,7 +202,6 @@ export const generateIntegratedNewEditor = (
  *
  */
 const generateReplyAndReplyAllMsgEditor = (
-	messagesStoreDispatch: AppDispatch,
 	originalMessage: MailMessage,
 	action: EditViewActionsType
 ): MailsEditorV2 => {
@@ -243,10 +237,9 @@ const generateReplyAndReplyAllMsgEditor = (
 			? retrieveReplyTo(originalMessage)
 			: retrieveALL(originalMessage, accountName);
 
-	const editor = {
+	const editor: MailsEditorV2 = {
 		action: EditViewActions.REPLY,
 		identityId: from.identityId ?? defaultIdentity.id,
-		sender: undefined,
 		id: editorId,
 		unsavedAttachments: [],
 		savedAttachments: savedInlineAttachments,
@@ -265,11 +258,10 @@ const generateReplyAndReplyAllMsgEditor = (
 		replyType: 'r',
 		originalId: originalMessage.id,
 		originalMessage,
-		messagesStoreDispatch,
 		size: originalMessage.size,
 		totalSmartLinksSize: 0,
 		signatureId
-	} as MailsEditorV2;
+	};
 
 	editor.draftSaveAllowedStatus = computeDraftSaveAllowedStatus(editor);
 	editor.sendAllowedStatus = computeSendAllowedStatus(editor);
@@ -277,28 +269,15 @@ const generateReplyAndReplyAllMsgEditor = (
 	return editor;
 };
 
-export const generateReplyMsgEditor = (
-	messagesStoreDispatch: AppDispatch,
-	originalMessage: MailMessage
-): MailsEditorV2 =>
-	generateReplyAndReplyAllMsgEditor(messagesStoreDispatch, originalMessage, EditViewActions.REPLY);
+export const generateReplyMsgEditor = (originalMessage: MailMessage): MailsEditorV2 =>
+	generateReplyAndReplyAllMsgEditor(originalMessage, EditViewActions.REPLY);
 
-export const generateReplyAllMsgEditor = (
-	messagesStoreDispatch: AppDispatch,
-	originalMessage: MailMessage
-): MailsEditorV2 =>
-	generateReplyAndReplyAllMsgEditor(
-		messagesStoreDispatch,
-		originalMessage,
-		EditViewActions.REPLY_ALL
-	);
+export const generateReplyAllMsgEditor = (originalMessage: MailMessage): MailsEditorV2 =>
+	generateReplyAndReplyAllMsgEditor(originalMessage, EditViewActions.REPLY_ALL);
 /**
  *
  */
-export const generateForwardMsgEditor = (
-	messagesStoreDispatch: AppDispatch,
-	originalMessage: MailMessage
-): MailsEditorV2 => {
+export const generateForwardMsgEditor = (originalMessage: MailMessage): MailsEditorV2 => {
 	const editorId = uuid();
 	const savedAttachments = buildSavedAttachments(originalMessage);
 
@@ -321,7 +300,7 @@ export const generateForwardMsgEditor = (
 		)
 	};
 	const isRichText = getUserSettings().prefs?.zimbraPrefComposeFormat === 'html';
-	const editor = {
+	const editor: MailsEditorV2 = {
 		action: EditViewActions.REPLY,
 		identityId: from.identityId ?? defaultIdentity.id,
 		id: editorId,
@@ -342,11 +321,10 @@ export const generateForwardMsgEditor = (
 		replyType: 'w',
 		originalId: originalMessage.id,
 		originalMessage,
-		messagesStoreDispatch,
 		size: originalMessage.size,
 		totalSmartLinksSize: 0,
 		signatureId
-	} as MailsEditorV2;
+	};
 
 	editor.draftSaveAllowedStatus = computeDraftSaveAllowedStatus(editor);
 	editor.sendAllowedStatus = computeSendAllowedStatus(editor);
@@ -355,7 +333,6 @@ export const generateForwardMsgEditor = (
 };
 
 export const generateForwardAsAttachmentMsgEditor = (
-	messagesStoreDispatch: AppDispatch,
 	originalMessage: MailMessage,
 	attachments: Array<UnsavedAttachment>
 ): MailsEditorV2 => {
@@ -377,7 +354,7 @@ export const generateForwardAsAttachmentMsgEditor = (
 		richText: `${textWithSignature.richText}`
 	};
 	const isRichText = getUserSettings().prefs?.zimbraPrefComposeFormat === 'html';
-	const editor = {
+	const editor: MailsEditorV2 = {
 		action: EditViewActions.REPLY,
 		identityId: from.identityId ?? defaultIdentity.id,
 		id: editorId,
@@ -398,11 +375,10 @@ export const generateForwardAsAttachmentMsgEditor = (
 		replyType: 'w',
 		originalId: originalMessage.id,
 		originalMessage,
-		messagesStoreDispatch,
 		size: originalMessage.size,
 		totalSmartLinksSize: 0,
 		signatureId
-	} as MailsEditorV2;
+	};
 
 	editor.draftSaveAllowedStatus = computeDraftSaveAllowedStatus(editor);
 	editor.sendAllowedStatus = computeSendAllowedStatus(editor);
@@ -410,10 +386,7 @@ export const generateForwardAsAttachmentMsgEditor = (
 	return editor;
 };
 
-export const generateEditAsDraftEditor = (
-	messagesStoreDispatch: AppDispatch,
-	originalMessage: MailMessage
-): MailsEditorV2 => {
+export const generateEditAsDraftEditor = (originalMessage: MailMessage): MailsEditorV2 => {
 	const editorId = uuid();
 	const savedAttachments = buildSavedAttachments(originalMessage);
 	const richText = replaceCidUrlWithServiceUrl(
@@ -428,7 +401,7 @@ export const generateEditAsDraftEditor = (
 	const isRichText = getUserSettings().prefs?.zimbraPrefComposeFormat === 'html';
 	const fromParticipant = getFromParticipantFromMessage(originalMessage);
 	const fromIdentity = fromParticipant && getIdentityFromParticipant(fromParticipant);
-	const editor = {
+	const editor: MailsEditorV2 = {
 		action: EditViewActions.EDIT_AS_DRAFT,
 		identityId: (fromIdentity ?? getDefaultIdentity()).id,
 		id: editorId,
@@ -447,10 +420,9 @@ export const generateEditAsDraftEditor = (
 		text,
 		requestReadReceipt: false,
 		did: originalMessage.id,
-		messagesStoreDispatch,
 		size: originalMessage.size,
 		totalSmartLinksSize: 0
-	} as MailsEditorV2;
+	};
 
 	editor.draftSaveAllowedStatus = computeDraftSaveAllowedStatus(editor);
 	editor.sendAllowedStatus = computeSendAllowedStatus(editor);
@@ -458,10 +430,7 @@ export const generateEditAsDraftEditor = (
 	return editor;
 };
 
-export const generateEditAsNewEditor = (
-	messagesStoreDispatch: AppDispatch,
-	originalMessage: MailMessage
-): MailsEditorV2 => {
+export const generateEditAsNewEditor = (originalMessage: MailMessage): MailsEditorV2 => {
 	const editorId = uuid();
 	const savedAttachments = buildSavedAttachments(originalMessage);
 
@@ -476,7 +445,7 @@ export const generateEditAsNewEditor = (
 	const isRichText = getUserSettings().prefs?.zimbraPrefComposeFormat === 'html';
 	const fromParticipant = getFromParticipantFromMessage(originalMessage);
 	const fromIdentity = fromParticipant && getIdentityFromParticipant(fromParticipant);
-	const editor = {
+	const editor: MailsEditorV2 = {
 		action: EditViewActions.EDIT_AS_NEW,
 		identityId: (fromIdentity ?? getDefaultIdentity()).id,
 		id: editorId,
@@ -494,10 +463,9 @@ export const generateEditAsNewEditor = (
 		requestReadReceipt: false,
 		originalId: originalMessage.id,
 		originalMessage,
-		messagesStoreDispatch,
 		size: originalMessage.size,
 		totalSmartLinksSize: 0
-	} as MailsEditorV2;
+	};
 
 	editor.draftSaveAllowedStatus = computeDraftSaveAllowedStatus(editor);
 	editor.sendAllowedStatus = computeSendAllowedStatus(editor);
@@ -508,7 +476,6 @@ export const generateEditAsNewEditor = (
 export type GenerateEditorParams = {
 	action: EditViewActionsType;
 	id?: string;
-	messagesStoreDispatch: AppDispatch;
 	message?: MailMessage | null;
 	compositionData?: EditorPrefillData;
 };
@@ -517,13 +484,11 @@ export type GenerateEditorParams = {
  * Generate a new editor structure for the given action and message id
  * @param action
  * @param id
- * @param messagesStoreDispatch
  * @param message
  */
 export const generateEditor = ({
 	action,
 	id,
-	messagesStoreDispatch,
 	message,
 	compositionData
 }: GenerateEditorParams): MailsEditorV2 | null => {
@@ -534,13 +499,13 @@ export const generateEditor = ({
 			}
 			return getEditor({ id });
 		case EditViewActions.NEW:
-			return generateNewMessageEditor(messagesStoreDispatch);
+			return generateNewMessageEditor();
 		case EditViewActions.REPLY:
 			if (!id) {
 				throw new Error('Cannot generate a reply editor without a message id');
 			}
 			if (message) {
-				return generateReplyMsgEditor(messagesStoreDispatch, message);
+				return generateReplyMsgEditor(message);
 			}
 			break;
 		case EditViewActions.REPLY_ALL:
@@ -548,7 +513,7 @@ export const generateEditor = ({
 				throw new Error('Cannot generate a reply all editor without a message id');
 			}
 			if (message) {
-				return generateReplyAllMsgEditor(messagesStoreDispatch, message);
+				return generateReplyAllMsgEditor(message);
 			}
 			break;
 		case EditViewActions.FORWARD:
@@ -556,7 +521,7 @@ export const generateEditor = ({
 				throw new Error('Cannot generate a forward editor without a message id');
 			}
 			if (message) {
-				return generateForwardMsgEditor(messagesStoreDispatch, message);
+				return generateForwardMsgEditor(message);
 			}
 			break;
 		case EditViewActions.FORWARD_AS_ATTACHMENT:
@@ -564,11 +529,7 @@ export const generateEditor = ({
 				throw new Error('Cannot generate a forward editor without a message id');
 			}
 			if (message) {
-				return generateForwardAsAttachmentMsgEditor(
-					messagesStoreDispatch,
-					message,
-					compositionData?.attachments ?? []
-				);
+				return generateForwardAsAttachmentMsgEditor(message, compositionData?.attachments ?? []);
 			}
 			break;
 		case EditViewActions.EDIT_AS_DRAFT:
@@ -576,7 +537,7 @@ export const generateEditor = ({
 				throw new Error('Cannot generate a draft editor without a message id');
 			}
 			if (message) {
-				return generateEditAsDraftEditor(messagesStoreDispatch, message);
+				return generateEditAsDraftEditor(message);
 			}
 			break;
 		case EditViewActions.EDIT_AS_NEW:
@@ -584,13 +545,13 @@ export const generateEditor = ({
 				throw new Error('Cannot generate an edit as new editor without a message id');
 			}
 			if (message) {
-				return generateEditAsNewEditor(messagesStoreDispatch, message);
+				return generateEditAsNewEditor(message);
 			}
 			break;
 		case EditViewActions.MAIL_TO:
 		case EditViewActions.COMPOSE:
 		case EditViewActions.PREFILL_COMPOSE:
-			return generateIntegratedNewEditor(messagesStoreDispatch, compositionData);
+			return generateIntegratedNewEditor(compositionData);
 		default:
 			return null;
 	}

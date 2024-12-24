@@ -13,7 +13,7 @@ import { getEditor } from './editors';
 import { useUiUtilities } from '../../../../hooks/use-ui-utilities';
 import { normalizeMailMessageFromSoap } from '../../../../normalizations/normalize-message';
 import { MailsEditorV2 } from '../../../../types';
-import { saveDraftAsyncThunk, saveDraftV3 } from '../../../actions/save-draft';
+import { saveDraftV3 } from '../../../actions/save-draft';
 import { buildSavedAttachments } from '../editor-transformations';
 import { useEditorsStore } from '../store';
 import { getDraftSaveDelay } from '../store-utils';
@@ -95,8 +95,6 @@ export const useSaveDraftFromEditor = (): {
 					});
 					computeAndUpdateEditorStatus(editorId);
 					options?.onComplete && options?.onComplete();
-
-					editor.messagesStoreDispatch && editor.messagesStoreDispatch(saveDraftAsyncThunk(res));
 				})
 				.catch((err) => {
 					useEditorsStore.getState().setDraftSaveProcessStatus(editorId, {

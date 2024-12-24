@@ -5,7 +5,6 @@
  */
 import type { Folder } from '../../carbonio-ui-commons/types/folder';
 import { EDIT_VIEW_CLOSING_REASONS, EditViewActions } from '../../constants';
-import { type AppDispatch } from '../../store/redux';
 import { SavedAttachment, UnsavedAttachment } from '../attachments';
 import type { MailMessage } from '../messages';
 import type { Participant } from '../participant';
@@ -112,7 +111,7 @@ export type EditorPrefillData = {
 	aid?: Array<string>;
 	subject?: string;
 	urgent?: boolean;
-	recipients?: Array<Partial<Participant>>;
+	recipients?: Array<Participant>;
 	/**
 	 * @deprecated - added for backward compatibility
 	 */
@@ -120,7 +119,7 @@ export type EditorPrefillData = {
 	/**
 	 * @deprecated - added for backward compatibility
 	 */
-	to?: Array<Partial<Participant>>;
+	to?: Array<Participant>;
 	attachments?: Array<UnsavedAttachment>;
 };
 
@@ -172,8 +171,6 @@ export type MailsEditorV2 = {
 	sendProcessStatus?: SendProcessStatus;
 	// Id of the current selectesignature
 	signatureId?: string;
-	// dispatch function for the messages store
-	messagesStoreDispatch: AppDispatch;
 	// the size of the draft
 	size: number;
 	// the sum of the size of the attachments requiring smart link conversion

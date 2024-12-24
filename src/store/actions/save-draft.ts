@@ -3,7 +3,6 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { createAsyncThunk } from '@reduxjs/toolkit';
 import { soapFetch } from '@zextras/carbonio-shell-ui';
 
 import type { SaveDraftParameters, SaveDraftRequest, SaveDraftResponse } from '../../types';
@@ -19,10 +18,3 @@ export const saveDraftV3 = ({ editor, signal }: SaveDraftParameters): Promise<Sa
 		undefined,
 		signal
 	);
-
-export const saveDraftAsyncThunk = createAsyncThunk<{ resp: SaveDraftResponse }, SaveDraftResponse>(
-	'saveDraft',
-	(resp) => ({
-		resp
-	})
-);

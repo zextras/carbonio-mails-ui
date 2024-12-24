@@ -116,7 +116,6 @@ export const buildEditorCase = (messagesStoreDispatch: AppDispatch): MailsEditor
 				filename: 'cool-4k-wallpaper-10.jpg',
 				requiresSmartLinkConversion: false
 			}
-		],
-		messagesStoreDispatch
+		]
 	};
 };
