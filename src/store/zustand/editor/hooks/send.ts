@@ -71,14 +71,11 @@ const sendFromEditor = (
 
 	cancelableTimer.promise
 		.then(() => {
-			editor
-				.messagesStoreDispatch(sendMsgFromEditor({ editor }))
+			if (!editor || !editor.identityId) return;
+			sendMsgFromEditor({ editor })
 				.then((res) => {
-					// TODO try to handle the error only inside the sendMsgFromEditor (is the asyncThunk really necessary?)
-					if (res.meta.requestStatus === 'rejected') {
-						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-						// @ts-ignore
-						const errorDescription: string = res.payload.reason;
+					if ('Fault' in res) {
+						const errorDescription: string = res.Fault.Reason.Text;
 						useEditorsStore.getState().setSendProcessStatus(editorId, {
 							status: 'aborted',
 							abortReason: errorDescription

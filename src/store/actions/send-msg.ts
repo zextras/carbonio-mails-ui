@@ -3,16 +3,12 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { createAsyncThunk } from '@reduxjs/toolkit';
-import { soapFetch } from '@zextras/carbonio-shell-ui';
+import { ErrorSoapBodyResponse, soapFetch } from '@zextras/carbonio-shell-ui';
 
-import { getConv } from './get-conv';
-import { getMsgAsyncThunk } from './get-msg-async-thunk';
 import { ParticipantRole } from '../../carbonio-ui-commons/constants/participants';
 import { getAddressOwnerAccount, getIdentityDescriptor } from '../../helpers/identities';
 import { getParticipantsFromMessage } from '../../helpers/messages';
-import { MailMessage, SendMsgResult, SendMsgWithSmartLinksResponse } from '../../types';
-import type { SaveDraftRequest, SaveDraftResponse, SendMsgParameters } from '../../types';
+import { MailMessage, MailsEditorV2 } from '../../types';
 import { SoapSendMsgRequest, SoapSendMsgResponse } from '../../types/soap/send-msg';
 import { generateMailRequest } from '../editor-slice-utils';
 import { getCertificate } from '../zustand/certificates/certificate';
@@ -33,52 +29,27 @@ export const sendMsg = async ({ msg }: { msg: MailMessage }): Promise<SoapSendMs
 	);
 };
 
-export const sendMsgFromEditor = createAsyncThunk<SendMsgResult, SendMsgParameters>(
-	'sendMsg',
-	async ({ editor }, { rejectWithValue, dispatch }) => {
-		if (!editor) {
-			return rejectWithValue('No editor provided');
-		}
+export async function sendMsgFromEditor({
+	editor
+}: {
+	editor: MailsEditorV2;
+}): Promise<SoapSendMsgResponse | ErrorSoapBodyResponse> {
+	const msg = createSoapSendMsgRequestFromEditor(editor);
 
-		if (!editor.identityId) {
-			return rejectWithValue('Missing sender');
-		}
+	const identity = getIdentityDescriptor(editor.identityId);
 
-		const msg = createSoapSendMsgRequestFromEditor(editor);
-
-		const identity = getIdentityDescriptor(editor.identityId);
-
-		let resp: SendMsgWithSmartLinksResponse;
-		try {
-			resp = await soapFetch<SaveDraftRequest, SaveDraftResponse>(
-				'SendMsg',
-				{
-					_jsns: 'urn:zimbraMail',
-					m: msg,
-					...(editor.isSmimeSign
-						? {
-								sign: true,
-								...getCertificate({ accountId: identity?.fromAddress ?? '' })
-							}
-						: {})
-				},
-				identity?.ownerAccount ?? undefined
-			);
-		} catch (e) {
-			console.error(e);
-			return rejectWithValue(e);
-		}
-
-		const response: SendMsgResult['response'] = resp?.Fault ? { ...resp.Fault, error: true } : resp;
-		if (response?.error) {
-			return rejectWithValue(response);
-		}
-		if (response?.m && response?.m[0]?.id) {
-			dispatch(getMsgAsyncThunk({ msgId: response.m[0].id }));
-		}
-		if (response?.m && response?.m[0]?.cid) {
-			dispatch(getConv({ conversationId: response.m[0].cid }));
-		}
-		return { response };
-	}
-);
+	return soapFetch<SoapSendMsgRequest, SoapSendMsgResponse>(
+		'SendMsg',
+		{
+			_jsns: 'urn:zimbraMail',
+			m: msg,
+			...(editor.isSmimeSign
+				? {
+						sign: true,
+						...getCertificate({ accountId: identity?.fromAddress ?? '' })
+					}
+				: {})
+		},
+		identity?.ownerAccount ?? undefined
+	);
+}
