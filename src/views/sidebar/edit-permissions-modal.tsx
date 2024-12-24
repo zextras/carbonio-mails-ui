@@ -23,7 +23,6 @@ import ModalHeader from '../../carbonio-ui-commons/components/modals/modal-heade
 import { useContactInput } from '../../carbonio-ui-commons/integrations/hooks';
 import { ContactInputItem } from '../../carbonio-ui-commons/integrations/types';
 import type { EditPermissionsModalProps } from '../../carbonio-ui-commons/types/sidebar';
-import { useAppDispatch } from '../../hooks/redux';
 import { useUiUtilities } from '../../hooks/use-ui-utilities';
 import {
 	ShareCalendarRoleOptions,
@@ -40,7 +39,6 @@ const EditPermissionsModal: FC<EditPermissionsModalProps> = ({
 	grant,
 	goBack
 }) => {
-	const dispatch = useAppDispatch();
 	const ContactInput = useContactInput();
 	const shareCalendarRoleOptions = useMemo(() => ShareCalendarRoleOptions(t), []);
 	const [sendNotification, setSendNotification] = useState(true);
@@ -64,8 +62,8 @@ const EditPermissionsModal: FC<EditPermissionsModalProps> = ({
 		setshareWithUserRole(shareRole);
 	}, []);
 
-	const onConfirm = useCallback((): void => {
-		shareFolder({
+	const onConfirm = useCallback(async (): Promise<void> => {
+		const shareFolderResponse = await shareFolder({
 			sendNotification,
 			standardMessage,
 			contacts: editMode
@@ -74,46 +72,40 @@ const EditPermissionsModal: FC<EditPermissionsModalProps> = ({
 			shareWithUserRole,
 			folder,
 			accounts
-		}).then((res: { type: string }) => {
-			if (!('Fault' in res)) {
+		});
+		if (!('Fault' in shareFolderResponse)) {
+			createSnackbar({
+				key: `share-${folder.id}`,
+				replace: true,
+				hideButton: true,
+				severity: 'info',
+				label: editMode
+					? t('snackbar.share_updated', '"Access rights updated"')
+					: t('snackbar.folder_shared', 'Folder shared'),
+				autoHideTimeout: 3000
+			});
+			const sendNotificaitonResponse = await sendShareNotification?.({
+				standardMessage,
+				contacts: editMode
+					? [{ email: grant.d || grant.zid }]
+					: contacts.map((contact) => ({ email: contact.value.email })),
+
+				folder,
+				accounts
+			});
+			if (!sendNotificaitonResponse) {
 				createSnackbar({
 					key: `share-${folder.id}`,
 					replace: true,
+					severity: 'error',
 					hideButton: true,
-					severity: 'info',
-					label: editMode
-						? t('snackbar.share_updated', '"Access rights updated"')
-						: t('snackbar.folder_shared', 'Folder shared'),
+					label: t('label.error_try_again', 'Something went wrong, please try again'),
 					autoHideTimeout: 3000
 				});
-				sendNotification &&
-					dispatch(
-						sendShareNotification({
-							standardMessage,
-							contacts: editMode
-								? [{ email: grant.d || grant.zid }]
-								: contacts.map((contact) => ({ email: contact.value.email })),
-
-							folder,
-							accounts
-						})
-					).then((res2: { type: string }) => {
-						if (!res2.type.includes('fulfilled')) {
-							createSnackbar({
-								key: `share-${folder.id}`,
-								replace: true,
-								severity: 'error',
-								hideButton: true,
-								label: t('label.error_try_again', 'Something went wrong, please try again'),
-								autoHideTimeout: 3000
-							});
-						}
-					});
 			}
-			onClose();
-		});
+		}
+		onClose();
 	}, [
-		dispatch,
 		sendNotification,
 		standardMessage,
 		editMode,

@@ -3,7 +3,6 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { createAsyncThunk } from '@reduxjs/toolkit';
 import { map } from 'lodash';
 
 type SendShareNotification = {
@@ -15,17 +14,15 @@ type SendShareNotification = {
 	standardMessage?: string;
 };
 
-export const sendShareNotification = createAsyncThunk(
-	'mail/sendShareNotification',
-	async (data: SendShareNotification) =>
-		Promise.all(
-			map(data.contacts, (contact) =>
-				fetch('/service/soap/SendShareNotificationRequest', {
-					method: 'POST',
-					headers: {
-						'content-type': 'application/soap+xml'
-					},
-					body: `<?xml version="1.0" encoding="utf-8"?>
+export async function sendShareNotification(data: SendShareNotification): Promise<unknown> {
+	return Promise.all(
+		map(data.contacts, (contact) =>
+			fetch('/service/soap/SendShareNotificationRequest', {
+				method: 'POST',
+				headers: {
+					'content-type': 'application/soap+xml'
+				},
+				body: `<?xml version="1.0" encoding="utf-8"?>
                 <soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope">
                     <soap:Header>
                         <context xmlns="urn:zimbra">
@@ -47,7 +44,7 @@ export const sendShareNotification = createAsyncThunk(
                     </soap:Body>
                 </soap:Envelope>
             `
-				}).then((resData) => resData.json())
-			)
+			}).then((resData) => resData.json())
 		)
-);
+	);
+}

@@ -12,7 +12,6 @@ import { GranteeInfo } from './share-folder-properties';
 import ModalFooter from '../../../../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../../../../carbonio-ui-commons/components/modals/modal-header';
 import type { ShareRevokeModalType } from '../../../../carbonio-ui-commons/types/sidebar';
-import { useAppDispatch } from '../../../../hooks/redux';
 import { useUiUtilities } from '../../../../hooks/use-ui-utilities';
 import { ShareCalendarRoleOptions } from '../../../../integrations/shared-invite-reply/parts/utils';
 import { folderAction } from '../../../../store/actions/folder-action';
@@ -23,20 +22,17 @@ const ShareRevokeModal: FC<ShareRevokeModalType> = ({ folder, onClose, grant, go
 	const [standardMessage, setStandardMessage] = useState('');
 
 	const accounts = useUserAccounts();
-	const dispatch = useAppDispatch();
 
 	const { createSnackbar } = useUiUtilities();
 
 	const onConfirm = useCallback(() => {
 		if (sendNotification) {
-			dispatch(
-				sendShareNotification({
-					standardMessage,
-					contacts: [{ email: grant?.d }],
-					folder,
-					accounts
-				})
-			).then(() => {
+			sendShareNotification({
+				standardMessage,
+				contacts: [{ email: grant?.d }],
+				folder,
+				accounts
+			}).then(() => {
 				folderAction({ folder, zid: grant.zid, op: '!grant' }).then((res) => {
 					if (!('Fault' in res)) {
 						createSnackbar({
@@ -68,9 +64,8 @@ const ShareRevokeModal: FC<ShareRevokeModalType> = ({ folder, onClose, grant, go
 		}
 	}, [
 		sendNotification,
-		dispatch,
 		standardMessage,
-		grant.d,
+		grant?.d,
 		grant.zid,
 		folder,
 		accounts,
