@@ -188,6 +188,11 @@ export function resetMessagesAndPopulatedItems(): void {
 	messageIndexSliceUtils.resetMessagesAndPopulatedItems(useEmailsStore);
 }
 
+export function prependMessagesToMessagesSlice(
+	messages: Array<MailMessage | IncompleteMessage>
+): void {
+	messageIndexSliceUtils.prependMessagesToMessageSlice(messages, useEmailsStore);
+}
 export function appendMessagesToMessagesSlice(
 	messages: Array<MailMessage | IncompleteMessage>,
 	offset: number

@@ -37,6 +37,7 @@ import {
 import {
 	deleteConversationsFromSearch,
 	deleteMessagesFromSearch,
+	prependMessagesToMessagesSlice,
 	updateConversationsOnly,
 	updateMessagesOnly
 } from '../../../store/zustand/emails/store';
@@ -107,7 +108,12 @@ export const useSyncDataHandler = (): void => {
 									// @ts-ignore
 									dispatch(handleNotifyCreatedConversations(conversations));
 								}
-								if (notify.created.m) {
+								const soapCreatedMessages = notify.created.m;
+								if (soapCreatedMessages) {
+									const messages = map(soapCreatedMessages, (obj) =>
+										normalizeMailMessageFromSoap(obj)
+									);
+									prependMessagesToMessagesSlice(messages);
 									dispatch(handleCreatedMessages({ m: notify.created.m }));
 									dispatch(handleCreatedMessagesInConversation({ m: notify.created.m }));
 								}

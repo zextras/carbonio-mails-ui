@@ -101,10 +101,31 @@ function appendMessagesToMessagesSlice(
 	);
 }
 
+function prependMessagesToMessageSlice(
+	messages: Array<MailMessage | IncompleteMessage>,
+	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
+): void {
+	enableMapSet();
+	const newMessageIds = new Set(messages.map((message) => message.id));
+	useEmailsStore.setState(
+		produce((state: EmailsStoreState) => {
+			state.populatedItemsSlice.messages = messages.reduce((acc, msg) => {
+				acc[msg.id] = msg;
+				return acc;
+			}, state.populatedItemsSlice.messages);
+			state.messageIndexSlice.messageIdSet = new Set([
+				...newMessageIds,
+				...state.messageIndexSlice.messageIdSet
+			]);
+		})
+	);
+}
+
 export const messageIndexSliceUtils = {
 	setMessages,
 	updateMessagesResultsLoadingStatus,
 	resetMessagesAndPopulatedItems,
 	appendMessagesToMessagesSlice,
+	prependMessagesToMessageSlice,
 	useMessagesIdsByFolder
 };

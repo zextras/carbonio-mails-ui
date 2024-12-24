@@ -10,6 +10,8 @@ import { SoapNotify, useRefresh } from '@zextras/carbonio-shell-ui';
 import { http } from 'msw';
 import { Provider } from 'react-redux';
 
+import { generateMessageFromAPI } from '../../tests/generators/api';
+import { SoapIncompleteMessage } from '../../types';
 import { useSyncDataHandler } from './commons/sync-data-handler-hooks';
 import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
 import { useFolderStore } from '../../carbonio-ui-commons/store/zustand/folder';
@@ -124,6 +126,19 @@ function mockSoapDelete(mailboxNumber: number, deletedIds: Array<string>): void 
 	mockSoapRefresh(mailboxNumber);
 	const soapNotify = generateSoapAction({
 		deleted: deletedIds
+	});
+	(useNotify as jest.Mock).mockReturnValue([soapNotify]);
+}
+
+function mockSoapCreateMessage(
+	mailboxNumber: number,
+	messages: Array<SoapIncompleteMessage>
+): void {
+	mockSoapRefresh(mailboxNumber);
+	const soapNotify = generateSoapAction({
+		created: {
+			m: messages
+		}
 	});
 	(useNotify as jest.Mock).mockReturnValue([soapNotify]);
 }
@@ -356,6 +371,30 @@ describe('sync data handler', () => {
 			const { result: message3Result } = renderHook(() => useMessageById('3'));
 			await waitFor(() => {
 				expect(message3Result.current).toBeDefined();
+			});
+		});
+
+		it('should add message to store when created', async () => {
+			jest.spyOn(reduxHooks, 'useAppDispatch').mockReturnValue(jest.fn());
+			jest.spyOn(reduxHooks, 'useAppSelector').mockReturnValue(jest.fn());
+			const completeMessage1 = generateMessageFromAPI({
+				id: '1',
+				su: 'Message subject'
+			});
+			mockSoapCreateMessage(mailboxNumber, [completeMessage1]);
+
+			renderHook(() => useSyncDataHandler(), {
+				wrapper: getWrapper()
+			});
+
+			const { result: message1Result } = renderHook(() => useMessageById('1'));
+			await waitFor(() => {
+				expect(message1Result.current).toEqual(
+					expect.objectContaining({
+						id: '1',
+						subject: 'Message subject'
+					})
+				);
 			});
 		});
 	});
