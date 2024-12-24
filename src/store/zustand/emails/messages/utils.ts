@@ -53,7 +53,7 @@ function useMessagesIdsByFolder(
 	const { messageIdSet } = messageIndexSlice;
 	forEach([...messageIdSet], (messageId) => {
 		const wantedFolder = 'rid' in folder && folder?.rid ? `${folder.zid}:${folder.rid}` : folder.id;
-		if (populatedItemsSlice.messages[messageId].parent === wantedFolder) {
+		if (populatedItemsSlice.messages[messageId]?.parent === wantedFolder) {
 			folderMessagesIds.add(messageId);
 		}
 	});
