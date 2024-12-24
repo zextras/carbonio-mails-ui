@@ -13,48 +13,25 @@ import { getAddressOwnerAccount, getIdentityDescriptor } from '../../helpers/ide
 import { getParticipantsFromMessage } from '../../helpers/messages';
 import { MailMessage, SendMsgResult, SendMsgWithSmartLinksResponse } from '../../types';
 import type { SaveDraftRequest, SaveDraftResponse, SendMsgParameters } from '../../types';
+import { SoapSendMsgRequest, SoapSendMsgResponse } from '../../types/soap/send-msg';
 import { generateMailRequest } from '../editor-slice-utils';
 import { getCertificate } from '../zustand/certificates/certificate';
 import { createSoapSendMsgRequestFromEditor } from '../zustand/editor/editor-transformations';
 
-export const sendMsg = createAsyncThunk<any, { msg: MailMessage }>(
-	'sendMsg',
-	async ({ msg }, { rejectWithValue, dispatch }) => {
-		const toSend = generateMailRequest(msg);
-
-		const from = getParticipantsFromMessage(msg, ParticipantRole.FROM)?.[0].address;
-
-		// Get the sender account. If not determined then undefined is passed to the soapFetch which will use the default one
-		const account = getAddressOwnerAccount(from);
-		let resp;
-		try {
-			resp = await soapFetch<SaveDraftRequest, SaveDraftResponse>(
-				'SendMsg',
-				{
-					_jsns: 'urn:zimbraMail',
-					m: toSend
-				},
-				account ?? undefined
-			);
-		} catch (e) {
-			console.error(e);
-			return rejectWithValue(e);
-		}
-
-		const response = resp?.Fault ? { ...resp.Fault, error: true } : resp;
-		if (response?.error) {
-			return rejectWithValue(response);
-		}
-
-		if (response?.m && response?.m[0]?.id) {
-			dispatch(getMsgAsyncThunk({ msgId: response.m[0].id }));
-		}
-		if (response?.m && response?.m[0]?.cid) {
-			dispatch(getConv({ conversationId: response.m[0].cid }));
-		}
-		return { response };
-	}
-);
+export const sendMsg = async ({ msg }: { msg: MailMessage }): Promise<SoapSendMsgResponse> => {
+	const toSend = generateMailRequest(msg);
+	const from = getParticipantsFromMessage(msg, ParticipantRole.FROM)?.[0].address;
+	// Get the sender account. If not determined then undefined is passed to the soapFetch which will use the default one
+	const account = getAddressOwnerAccount(from);
+	return soapFetch<SoapSendMsgRequest, SoapSendMsgResponse>(
+		'SendMsg',
+		{
+			_jsns: 'urn:zimbraMail',
+			m: toSend
+		},
+		account ?? undefined
+	);
+};
 
 export const sendMsgFromEditor = createAsyncThunk<SendMsgResult, SendMsgParameters>(
 	'sendMsg',

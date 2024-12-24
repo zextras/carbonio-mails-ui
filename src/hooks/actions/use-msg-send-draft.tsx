@@ -12,21 +12,17 @@ import { MessageActionsDescriptors } from '../../constants';
 import { isDraft } from '../../helpers/folders';
 import { sendMsg } from '../../store/actions/send-msg';
 import { ActionFn, MailMessage, UIActionDescriptor } from '../../types';
-import { useAppDispatch } from '../redux';
 
 export const useMsgSendDraftFn = (message: MailMessage, folderId: string): ActionFn => {
 	const canExecute = useCallback((): boolean => isDraft(folderId), [folderId]);
-	const dispatch = useAppDispatch();
 
 	const execute = useCallback((): void => {
 		if (canExecute()) {
-			dispatch(
-				sendMsg({
-					msg: message
-				})
-			);
+			sendMsg({
+				msg: message
+			});
 		}
-	}, [canExecute, dispatch, message]);
+	}, [canExecute, message]);
 
 	return useMemo(() => ({ canExecute, execute }), [canExecute, execute]);
 };

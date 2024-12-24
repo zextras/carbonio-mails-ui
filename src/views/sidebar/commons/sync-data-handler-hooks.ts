@@ -10,7 +10,6 @@ import { filter, find, forEach, isEmpty, keyBy, map, reduce, sortBy } from 'loda
 import { StoreApi, UseBoundStore } from 'zustand';
 
 import { useFolderStore } from '../../../carbonio-ui-commons/store/zustand/folder';
-import { getTags } from '../../../carbonio-ui-commons/store/zustand/tags';
 import { folderWorker } from '../../../carbonio-ui-commons/worker';
 import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
 import {
@@ -99,7 +98,6 @@ export const useSyncDataHandler = (): void => {
 						if (!isEmpty(notify) && (notify.seq > seq || (seq > 1 && notify.seq === 1))) {
 							handleFoldersNotify(notifyList, notify, folderWorker, useFolderStore);
 
-							const tags = getTags();
 							if (notify.created) {
 								if (notify.created.c && notify.created.m) {
 									const conversations = map(notify.created.c, (i) =>
