@@ -126,7 +126,6 @@ const useMoveInviteToTrashFunc = (): ((arg: MoveInviteToTrashType) => Promise<vo
 export const useAccept = (): ((arg: Accept) => void) => {
 	const { createSnackbar } = useUiUtilities();
 	const [t] = useTranslation();
-	const dispatch = useAppDispatch();
 	const moveInviteToTrashFunc = useMoveInviteToTrashFunc();
 	return useCallback(
 		({
