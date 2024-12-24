@@ -18,7 +18,7 @@ import { API_REQUEST_STATUS } from '../../constants';
 import { generateMessage } from '../../tests/generators/generateMessage';
 import { generateStore } from '../../tests/generators/store';
 import { MailMessage, MsgActionRequest, MsgActionResponse } from '../../types';
-import MoveConvMessage from '../move-conv-msg';
+import { MoveConvMessage } from '../move-conv-msg';
 
 describe('MoveConvMsg', () => {
 	const { children: inboxChildren } = getFolder(FOLDERS.INBOX) ?? {};
@@ -44,7 +44,6 @@ describe('MoveConvMsg', () => {
 					isMessageView
 					isRestore={false}
 					deselectAll={jest.fn()}
-					dispatch={store.dispatch}
 				/>
 			);
 
@@ -62,7 +61,6 @@ describe('MoveConvMsg', () => {
 					isMessageView={false}
 					isRestore={false}
 					deselectAll={jest.fn()}
-					dispatch={store.dispatch}
 				/>
 			);
 
@@ -80,7 +78,6 @@ describe('MoveConvMsg', () => {
 					isMessageView
 					isRestore
 					deselectAll={jest.fn()}
-					dispatch={store.dispatch}
 				/>
 			);
 
@@ -100,7 +97,6 @@ describe('MoveConvMsg', () => {
 					isMessageView
 					isRestore={false}
 					deselectAll={jest.fn()}
-					dispatch={store.dispatch}
 				/>
 			);
 
@@ -125,7 +121,6 @@ describe('MoveConvMsg', () => {
 					isMessageView
 					isRestore={false}
 					deselectAll={jest.fn()}
-					dispatch={store.dispatch}
 				/>
 			);
 
@@ -188,7 +183,6 @@ describe('MoveConvMsg', () => {
 					isMessageView
 					isRestore={false}
 					deselectAll={jest.fn()}
-					dispatch={store.dispatch}
 				/>
 			);
 

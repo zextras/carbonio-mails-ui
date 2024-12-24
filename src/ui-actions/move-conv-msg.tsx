@@ -18,7 +18,6 @@ import { isRoot } from '../helpers/folders';
 import { useUiUtilities } from '../hooks/use-ui-utilities';
 import { convAction } from '../store/actions';
 import { createFolder } from '../store/actions/create-folder';
-import { AppDispatch } from '../store/redux';
 import { FolderSelector } from '../views/sidebar/commons/folder-selector';
 
 type MoveConvMessageProps = {
@@ -28,17 +27,15 @@ type MoveConvMessageProps = {
 	deselectAll?: () => void;
 	onClose: () => void;
 	folderId: string;
-	dispatch: AppDispatch;
 };
 
-const MoveConvMessage = ({
+export const MoveConvMessage = ({
 	selectedIDs,
 	isMessageView,
 	isRestore,
 	deselectAll,
 	onClose,
-	folderId,
-	dispatch
+	folderId
 }: MoveConvMessageProps): ReactElement => {
 	const [t] = useTranslation();
 	const { createSnackbar } = useUiUtilities();
@@ -311,5 +308,3 @@ const MoveConvMessage = ({
 		</Container>
 	);
 };
-
-export default MoveConvMessage;

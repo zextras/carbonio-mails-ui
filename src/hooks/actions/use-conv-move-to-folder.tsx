@@ -11,8 +11,7 @@ import { ConversationActionsDescriptors } from '../../constants';
 import { isTrash } from '../../helpers/folders';
 import { StoreProvider } from '../../store/redux';
 import { ActionFn, UIActionDescriptor } from '../../types';
-import MoveConvMessage from '../../ui-actions/move-conv-msg';
-import { useAppDispatch } from '../redux';
+import { MoveConvMessage } from '../../ui-actions/move-conv-msg';
 import { useUiUtilities } from '../use-ui-utilities';
 
 export const useConvMoveToFolderFn = ({
@@ -25,7 +24,6 @@ export const useConvMoveToFolderFn = ({
 	deselectAll: () => void;
 }): ActionFn => {
 	const { createModal, closeModal } = useUiUtilities();
-	const dispatch = useAppDispatch();
 	const canExecute = useCallback((): boolean => !isTrash(folderId), [folderId]);
 
 	const execute = useCallback((): void => {
@@ -48,14 +46,13 @@ export const useConvMoveToFolderFn = ({
 							isMessageView={false}
 							isRestore={false}
 							deselectAll={deselectAll}
-							dispatch={dispatch}
 						/>
 					</StoreProvider>
 				)
 			},
 			true
 		);
-	}, [canExecute, createModal, folderId, ids, deselectAll, dispatch, closeModal]);
+	}, [canExecute, createModal, folderId, ids, deselectAll, closeModal]);
 
 	return useMemo(() => ({ canExecute, execute }), [canExecute, execute]);
 };

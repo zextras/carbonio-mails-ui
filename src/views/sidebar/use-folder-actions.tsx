@@ -18,7 +18,7 @@ import { FolderActionsType, FOLDERS } from '../../carbonio-ui-commons/constants/
 import type { Folder } from '../../carbonio-ui-commons/types/folder';
 import { allowedActionOnSharedAccount } from '../../carbonio-ui-commons/utils/utils';
 import { getFolderIdParts } from '../../helpers/folders';
-import { useAppDispatch, useAppSelector } from '../../hooks/redux';
+import { useAppSelector } from '../../hooks/redux';
 import { useSelection } from '../../hooks/use-selection';
 import { useUiUtilities } from '../../hooks/use-ui-utilities';
 import { folderAction } from '../../store/actions/folder-action';
@@ -26,7 +26,7 @@ import { selectMessagesArray } from '../../store/messages-slice';
 import { StoreProvider } from '../../store/redux';
 import { AppContext } from '../../types';
 import { SelectFolderModal } from '../../ui-actions/modals/select-folder-modal';
-import MoveConvMessage from '../../ui-actions/move-conv-msg';
+import { MoveConvMessage } from '../../ui-actions/move-conv-msg';
 
 type FolderActionsProps = {
 	id: string;
@@ -37,7 +37,6 @@ type FolderActionsProps = {
 };
 
 export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
-	const dispatch = useAppDispatch();
 	const { createModal, closeModal } = useModal();
 	const folderIsTrash = getFolderIdParts(folder.id ?? '0').id === FOLDERS.TRASH;
 	const messages = useAppSelector(selectMessagesArray);
@@ -114,7 +113,6 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 											isMessageView
 											isRestore
 											deselectAll={deselectAll}
-											dispatch={dispatch}
 										/>
 									</StoreProvider>
 								)
@@ -342,16 +340,7 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 				}
 			}
 		],
-		[
-			closeModal,
-			createModal,
-			createSnackbar,
-			deselectAll,
-			dispatch,
-			folder,
-			folderIsTrash,
-			moveMessagesIds
-		]
+		[closeModal, createModal, createSnackbar, deselectAll, folder, folderIsTrash, moveMessagesIds]
 	);
 
 	const defaultFolderActions = useMemo(
