@@ -16,11 +16,8 @@ import { HtmlMessageRendererContainer } from './html-message-renderer-container'
 import { ParticipantRole } from '../../carbonio-ui-commons/constants/participants';
 import { getAttachmentParts } from '../../helpers/attachments';
 import { getNoIdentityPlaceholder } from '../../helpers/identities';
-import { useAppDispatch } from '../../hooks/redux';
-import { getFullMsgAsyncThunk } from '../../store/actions';
 import { retrieveFullMessage } from '../../store/zustand/emails/hooks/hooks';
 import { BodyPart, MailMessage } from '../../types';
-import { useInSearchModule } from '../../ui-actions/utils';
 import { getOriginalHtmlContent, getQuotedTextFromOriginalContent } from '../get-quoted-text-util';
 import { _CI_REGEX, _CI_SRC_REGEX, isAvailableInTrusteeList } from '../utils';
 import { ShadowDomWrapper } from './shadow-dom-wrapper';
@@ -31,7 +28,6 @@ type HtmlMessageRendererType = {
 
 export const HtmlMessageRenderer: FC<HtmlMessageRendererType> = ({ message }) => {
 	const [isLoadingMessage, setIsLoadingMessage] = useState(false);
-	const isInSearchModule = useInSearchModule();
 	const body: BodyPart = message?.body ?? {
 		content: '',
 		truncated: false
@@ -46,8 +42,6 @@ export const HtmlMessageRenderer: FC<HtmlMessageRendererType> = ({ message }) =>
 
 	const divRef = useRef<HTMLDivElement>(null);
 	const [showQuotedText, setShowQuotedText] = useState(false);
-
-	const dispatch = useAppDispatch();
 
 	const settingsPref = useUserSettings()?.prefs;
 	const from =
@@ -164,13 +158,9 @@ export const HtmlMessageRenderer: FC<HtmlMessageRendererType> = ({ message }) =>
 
 	const loadMessage = async (): Promise<void> => {
 		setIsLoadingMessage(true);
-		if (isInSearchModule) {
-			retrieveFullMessage(msgId).finally(() => {
-				setIsLoadingMessage(false);
-			});
-			return;
-		}
-		dispatch(getFullMsgAsyncThunk({ msgId })).finally(() => setIsLoadingMessage(false));
+		retrieveFullMessage(msgId).finally(() => {
+			setIsLoadingMessage(false);
+		});
 	};
 
 	return (
