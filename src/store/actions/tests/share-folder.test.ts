@@ -12,7 +12,6 @@ import { getFolder } from '../../../carbonio-ui-commons/store/zustand/folder/hoo
 import { getSetupServer } from '../../../carbonio-ui-commons/test/jest-setup';
 import { populateFoldersStore } from '../../../carbonio-ui-commons/test/mocks/store/folders';
 import { Folder } from '../../../carbonio-ui-commons/types/folder';
-import { generateStore } from '../../../tests/generators/store';
 import { FolderActionGrant } from '../../../types';
 import { shareFolder, ShareFolderDataType } from '../share-folder';
 
@@ -39,7 +38,6 @@ const setupInterceptor = (): Promise<Array<{ action: FolderActionGrant }>> =>
 
 describe('shareFolder', () => {
 	it('does not contain the INH attribute', async () => {
-		const store = generateStore();
 		populateFoldersStore();
 		const folder = getFolder(FOLDERS.INBOX) as Folder;
 		const shareFolderArgs: ShareFolderDataType = {
@@ -49,12 +47,7 @@ describe('shareFolder', () => {
 			accounts: []
 		};
 		const interceptor = setupInterceptor();
-
-		store.dispatch(
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-ignore
-			shareFolder(shareFolderArgs)
-		);
+		shareFolder(shareFolderArgs);
 		const requests = await interceptor;
 		requests.forEach((request) => {
 			const result = request.action.grant.inh;

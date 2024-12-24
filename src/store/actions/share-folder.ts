@@ -3,7 +3,6 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { createAsyncThunk } from '@reduxjs/toolkit';
 import { soapFetch } from '@zextras/carbonio-shell-ui';
 import type { Account, BatchRequest, BatchResponse } from '@zextras/carbonio-shell-ui';
 import { trim } from 'lodash';
@@ -20,33 +19,28 @@ export type ShareFolderDataType = {
 	accounts: Array<Account>;
 };
 
-export const shareFolder = createAsyncThunk(
-	'mail/shareFolder',
-	async (data: ShareFolderDataType) => {
-		const requests = data?.contacts?.map((contact, index) => ({
-			_jsns: 'urn:zimbraMail',
-			requestId: index,
-			action: {
-				id: data.folder.id,
-				op: 'grant',
-				grant: {
-					gt: 'usr',
-					d: trim(contact.email, '<>'),
-					perm: data.shareWithUserRole,
-					pw: '',
-					inh: '1'
-				}
-			} as FolderActionGrant
-		}));
+export async function shareFolder(data: ShareFolderDataType): Promise<BatchResponse> {
+	const requests = data?.contacts?.map((contact, index) => ({
+		_jsns: 'urn:zimbraMail',
+		requestId: index,
+		action: {
+			id: data.folder.id,
+			op: 'grant',
+			grant: {
+				gt: 'usr',
+				d: trim(contact.email, '<>'),
+				perm: data.shareWithUserRole,
+				pw: '',
+				inh: '1'
+			}
+		} as FolderActionGrant
+	}));
 
-		const response = await soapFetch<
-			BatchRequest & { FolderActionRequest?: Array<FolderActionRequest> },
-			BatchResponse
-		>('Batch', {
-			_jsns: 'urn:zimbra',
-			FolderActionRequest: requests
-		});
-
-		return { response };
-	}
-);
+	return soapFetch<
+		BatchRequest & { FolderActionRequest?: Array<FolderActionRequest> },
+		BatchResponse
+	>('Batch', {
+		_jsns: 'urn:zimbra',
+		FolderActionRequest: requests
+	});
+}
