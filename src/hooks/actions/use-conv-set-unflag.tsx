@@ -10,22 +10,18 @@ import { useTranslation } from 'react-i18next';
 import { ConversationActionsDescriptors } from '../../constants';
 import { convAction } from '../../store/actions';
 import { ActionFn, UIActionDescriptor } from '../../types';
-import { useAppDispatch } from '../redux';
 
 export const useConvSetUnflagFn = (ids: Array<string>, isFlagged: boolean): ActionFn => {
 	const canExecute = useCallback((): boolean => isFlagged, [isFlagged]);
-	const dispatch = useAppDispatch();
 
 	const execute = useCallback((): void => {
 		if (canExecute()) {
-			dispatch(
-				convAction({
-					operation: '!flag',
-					ids
-				})
-			);
+			convAction({
+				operation: '!flag',
+				ids
+			});
 		}
-	}, [canExecute, dispatch, ids]);
+	}, [canExecute, ids]);
 
 	return useMemo(() => ({ canExecute, execute }), [canExecute, execute]);
 };

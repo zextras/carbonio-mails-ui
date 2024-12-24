@@ -109,12 +109,10 @@ export const usePreviewHeaderNavigation = ({
 	const setItemAsRead = useCallback(
 		(itemId: string) => {
 			if (itemsType === 'conversation') {
-				dispatch(
-					convAction({
-						operation: 'read',
-						ids: [itemId]
-					})
-				);
+				convAction({
+					operation: 'read',
+					ids: [itemId]
+				});
 			} else if (itemsType === 'message') {
 				msgActionSoapApi({
 					operation: 'read',
@@ -122,7 +120,7 @@ export const usePreviewHeaderNavigation = ({
 				});
 			}
 		},
-		[dispatch, itemsType]
+		[itemsType]
 	);
 
 	const onNextAction = useCallback(() => {

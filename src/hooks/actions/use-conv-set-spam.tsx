@@ -13,7 +13,6 @@ import { ConversationActionsDescriptors } from '../../constants';
 import { isDraft, isSpam } from '../../helpers/folders';
 import { convAction } from '../../store/actions';
 import { ActionFn, UIActionDescriptor } from '../../types';
-import { useAppDispatch } from '../redux';
 
 type ConvSetSpamFunctionsParameter = {
 	ids: Array<string>;
@@ -26,7 +25,6 @@ export const useConvSetSpamFn = ({
 	shouldReplaceHistory,
 	folderId
 }: ConvSetSpamFunctionsParameter): ActionFn => {
-	const dispatch = useAppDispatch();
 	const createSnackbar = useSnackbar();
 	const [t] = useTranslation();
 
@@ -55,16 +53,14 @@ export const useConvSetSpamFn = ({
 		infoSnackbar();
 		setTimeout((): void => {
 			if (notCanceled) {
-				dispatch(
-					convAction({
-						operation: 'spam',
-						ids
-					})
-				).then((res) => {
-					if (res.type.includes('fulfilled') && shouldReplaceHistory) {
+				convAction({
+					operation: 'spam',
+					ids
+				}).then((res) => {
+					if (!('Fault' in res) && shouldReplaceHistory) {
 						replaceHistory(`/folder/${folderId}`);
 					}
-					if (!res.type.includes('fulfilled')) {
+					if ('Fault' in res) {
 						createSnackbar({
 							key: `trash-${ids}`,
 							replace: true,
@@ -76,7 +72,7 @@ export const useConvSetSpamFn = ({
 				});
 			}
 		}, 3000);
-	}, [createSnackbar, dispatch, folderId, ids, shouldReplaceHistory, t]);
+	}, [createSnackbar, folderId, ids, shouldReplaceHistory, t]);
 
 	return useMemo(() => ({ canExecute, execute }), [canExecute, execute]);
 };

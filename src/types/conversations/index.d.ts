@@ -3,6 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+
 import { Participant } from '../participant';
 import { ConvActionOperation } from '../soap';
 
@@ -51,11 +52,6 @@ export type ConvActionParameters = {
 	operation: ConvActionOperation;
 	parent?: string;
 	tagName?: string;
-};
-
-export type ConvActionResult = {
-	ids: Array<string>;
-	operation: ConvActionOperation;
 };
 
 export type FetchConversationsParameters = {

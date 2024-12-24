@@ -55,15 +55,13 @@ const MoveConvMessage = ({
 
 	const onConfirmConvMove = useCallback(
 		(id: string | undefined) => {
-			dispatch(
-				convAction({
-					operation: `move`,
-					ids: selectedIDs,
-					parent: id
-				})
-			)
+			convAction({
+				operation: `move`,
+				ids: selectedIDs,
+				parent: id
+			})
 				.then((res) => {
-					if (res.type.includes('fulfilled')) {
+					if (!('Fault' in res)) {
 						deselectAll?.();
 						createSnackbar({
 							key: `edit`,
@@ -93,7 +91,7 @@ const MoveConvMessage = ({
 				})
 				.catch(() => noop);
 		},
-		[dispatch, selectedIDs, onCloseModal, deselectAll, createSnackbar, isRestore, t]
+		[selectedIDs, onCloseModal, deselectAll, createSnackbar, isRestore, t]
 	);
 
 	const onConfirmMessageMove = useCallback(

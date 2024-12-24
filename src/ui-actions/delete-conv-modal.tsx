@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, useCallback } from 'react';
+import React, { useCallback } from 'react';
 
 import { Container, Text } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
@@ -11,7 +11,6 @@ import { useTranslation } from 'react-i18next';
 import { msgActionSoapApi } from '../api/msg-action';
 import ModalFooter from '../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../carbonio-ui-commons/components/modals/modal-header';
-import { useAppDispatch } from '../hooks/redux';
 import { useUiUtilities } from '../hooks/use-ui-utilities';
 import { convAction } from '../store/actions';
 
@@ -22,7 +21,6 @@ type DeleteConvConfirmPropType = {
 	onClose: () => void;
 };
 
-// TODO: CO-1725 - add test once dispatch has been removed
 export const DeleteConvConfirm = ({
 	selectedIDs,
 	isMessageView,
@@ -30,43 +28,39 @@ export const DeleteConvConfirm = ({
 	onClose
 }: DeleteConvConfirmPropType): React.JSX.Element => {
 	const [t] = useTranslation();
-	const dispatch = useAppDispatch();
 	const { createSnackbar } = useUiUtilities();
 
-	const onConfirmConvDelete = useCallback(() => {
-		isMessageView
-			? msgActionSoapApi({
+	const onConfirmConvDelete = useCallback(async () => {
+		const response = isMessageView
+			? await msgActionSoapApi({
 					operation: 'delete',
 					ids: selectedIDs
 				})
-			: dispatch(
-					convAction({
-						operation: 'delete',
-						ids: selectedIDs
-					})
-				).then((res) => {
-					if (res.type.includes('fulfilled') || !('Fault' in res)) {
-						deselectAll && deselectAll();
-						createSnackbar({
-							key: `trash-${selectedIDs}`,
-							replace: true,
-							severity: 'info',
-							label: t('label.email_perm_deleted', 'E-mail permanently deleted'),
-							autoHideTimeout: 3000,
-							hideButton: true
-						});
-					} else {
-						createSnackbar({
-							key: `edit`,
-							replace: true,
-							severity: 'error',
-							label: t('label.error_try_again', 'Something went wrong, please try again'),
-							autoHideTimeout: 3000
-						});
-					}
-					onClose();
+			: await convAction({
+					operation: 'delete',
+					ids: selectedIDs
 				});
-	}, [dispatch, isMessageView, selectedIDs, onClose, deselectAll, createSnackbar, t]);
+		if (!('Fault' in response)) {
+			deselectAll?.();
+			createSnackbar({
+				key: `trash-${selectedIDs}`,
+				replace: true,
+				severity: 'info',
+				label: t('label.email_perm_deleted', 'E-mail permanently deleted'),
+				autoHideTimeout: 3000,
+				hideButton: true
+			});
+		} else {
+			createSnackbar({
+				key: `edit`,
+				replace: true,
+				severity: 'error',
+				label: t('label.error_try_again', 'Something went wrong, please try again'),
+				autoHideTimeout: 3000
+			});
+		}
+		onClose();
+	}, [isMessageView, selectedIDs, onClose, deselectAll, createSnackbar, t]);
 
 	return (
 		<Container

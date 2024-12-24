@@ -12,8 +12,7 @@ import { useTags } from '../../carbonio-ui-commons/store/zustand/tags';
 import { ConversationActionsDescriptors, TIMEOUTS } from '../../constants';
 import { isSpam } from '../../helpers/folders';
 import { convAction } from '../../store/actions';
-import { UIActionAggregator, UIActionDescriptor } from '../../types';
-import { useAppDispatch } from '../redux';
+import { ConvActionResponse, UIActionAggregator, UIActionDescriptor } from '../../types';
 import { useUiUtilities } from '../use-ui-utilities';
 
 export const useConvApplyTagSubDescriptors = ({
@@ -26,7 +25,6 @@ export const useConvApplyTagSubDescriptors = ({
 	folderId: string;
 }): UIActionDescriptor[] => {
 	const { createSnackbar } = useUiUtilities();
-	const dispatch = useAppDispatch();
 	const [t] = useTranslation();
 	const tags = useTags();
 
@@ -50,14 +48,12 @@ export const useConvApplyTagSubDescriptors = ({
 
 				const execute = (): void => {
 					if (canExecute()) {
-						dispatch(
-							convAction({
-								operation,
-								ids,
-								tagName: tag.name
-							})
-						).then((res: any) => {
-							if (res.type.includes('fulfilled')) {
+						convAction({
+							operation,
+							ids,
+							tagName: tag.name
+						}).then((res: ConvActionResponse) => {
+							if (!('Fault' in res)) {
 								createSnackbar({
 									key: `tag`,
 									replace: true,
@@ -88,7 +84,7 @@ export const useConvApplyTagSubDescriptors = ({
 					canExecute
 				};
 			}),
-		[createSnackbar, dispatch, folderId, ids, conversationTags, t, tags]
+		[createSnackbar, folderId, ids, conversationTags, t, tags]
 	);
 
 	return useMemo(() => tagActions, [tagActions]);

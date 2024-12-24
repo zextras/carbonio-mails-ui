@@ -143,14 +143,12 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item }) => {
 				}
 			);
 		} else if ('messages' in data.data) {
-			dispatch(
-				convAction({
-					operation: `move`,
-					ids: convMsgsIds,
-					parent: item.id
-				})
-			).then((res) => {
-				if (res.type.includes('fulfilled')) {
+			convAction({
+				operation: `move`,
+				ids: convMsgsIds,
+				parent: item.id
+			}).then((res) => {
+				if (!('Fault' in res)) {
 					replaceHistory(`/folder/${folderId}`);
 					data.data.deselectAll && data.data.deselectAll();
 					createSnackbar({

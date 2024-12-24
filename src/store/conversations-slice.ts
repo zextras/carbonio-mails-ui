@@ -11,7 +11,7 @@ import { createSelector, createSlice } from '@reduxjs/toolkit';
 import produce from 'immer';
 import { forEach, merge, reduce } from 'lodash';
 
-import { convAction, getConv, search } from './actions';
+import { getConv, search } from './actions';
 import {
 	handleAddMessagesInConversationReducer,
 	handleCreatedConversationsReducer,
@@ -29,9 +29,9 @@ import type {
 	FetchConversationsReturn,
 	ConvMessage,
 	ConvActionParameters,
-	ConvActionResult,
 	Conversation,
-	SearchRequestStatus
+	SearchRequestStatus,
+	ConvActionOperation
 } from '../types';
 
 function fetchConversationsPending(state: ConversationsStateType, { payload, meta }: any): void {
@@ -113,15 +113,21 @@ function convActionFulfilled(
 	{
 		payload
 	}: {
-		payload: ConvActionResult;
-		meta: { arg: ConvActionParameters; requestId: string; requestStatus: string };
+		payload: {
+			action: {
+				id: string;
+				op: ConvActionOperation;
+			};
+			meta: { arg: ConvActionParameters; requestId: string; requestStatus: string };
+		};
 	}
 ): void {
-	const { ids, operation } = payload;
+	const { id: actionId, op } = payload.action;
+	const ids = actionId.split(',');
 
 	forEach(ids, (id: string) => {
 		if (conversations?.[id]) {
-			if (operation === 'delete') {
+			if (op === 'delete') {
 				delete conversations[id];
 			}
 		}
@@ -206,9 +212,9 @@ export const conversationsSlice = createSlice({
 		// builder.addCase(searchConv.pending, produce(searchConvPending));
 		// builder.addCase(searchConv.fulfilled, produce(searchConvFulfilled));
 		// builder.addCase(searchConv.rejected, produce(searchConvRejected));
-		builder.addCase(convAction.pending, produce(convActionPending));
-		builder.addCase(convAction.rejected, produce(convActionRejected));
-		builder.addCase(convAction.fulfilled, produce(convActionFulfilled));
+		// builder.addCase(convAction.pending, produce(convActionPending));
+		// builder.addCase(convAction.rejected, produce(convActionRejected));
+		// builder.addCase(convAction.fulfilled, produce(convActionFulfilled));
 		builder.addCase(getConv.pending, produce(getConvPending));
 		builder.addCase(getConv.fulfilled, produce(getConvFulfilled));
 		builder.addCase(getConv.rejected, produce(getConvRejected));
