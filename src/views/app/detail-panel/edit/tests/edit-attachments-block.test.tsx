@@ -12,7 +12,6 @@ import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
 import { addEditor } from '../../../../../store/zustand/editor';
 import { setupEditorStore } from '../../../../../tests/generators/editor-store';
 import { generateEditorV2Case } from '../../../../../tests/generators/editors';
-import { generateStore } from '../../../../../tests/generators/store';
 import { EditAttachmentsBlock } from '../edit-attachments-block';
 
 describe('Attachments visualization', () => {
@@ -22,9 +21,8 @@ describe('Attachments visualization', () => {
 		${'1'}           | ${'Various format attachments'}
 	`(`$attachmentType attachments are visible in email editor`, async ({ editorTestCaseId }) => {
 		// Generate editor info for the store
-		const reduxStore = generateStore();
 		setupEditorStore({ editors: [] });
-		const editor = await generateEditorV2Case(editorTestCaseId, reduxStore.dispatch);
+		const editor = await generateEditorV2Case(editorTestCaseId);
 		addEditor({ id: editor.id, editor });
 
 		// Get the attachment filename
@@ -40,7 +38,7 @@ describe('Attachments visualization', () => {
 		};
 
 		// Render the component
-		const { user } = setupTest(<EditAttachmentsBlock {...props} />, { store: reduxStore });
+		const { user } = setupTest(<EditAttachmentsBlock {...props} />);
 
 		// Check if the attachments list expansion link exists
 		const expansionLink = screen.queryByTestId('attachment-list-expand-link');

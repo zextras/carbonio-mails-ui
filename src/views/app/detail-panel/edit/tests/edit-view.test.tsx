@@ -285,7 +285,7 @@ describe('Edit view', () => {
 			defaultBeforeAllTests({ onUnhandledRequest: 'error' });
 		});
 
-		it.skip('should show error-try-again snackbar message on CreateSmartLink soap failure ', async () => {
+		it('should show error-try-again snackbar message on CreateSmartLink soap failure ', async () => {
 			createAPIInterceptor(
 				'post',
 				'/service/soap/GetShareInfoRequest',
@@ -295,7 +295,7 @@ describe('Edit view', () => {
 			const apiInterceptor = createSmartLinkFailureAPIInterceptor();
 			setupEditorStore({ editors: [] });
 			const store = generateStore();
-			const editor = await readyToBeSentEditorTestCase(store.dispatch, {
+			const editor = await readyToBeSentEditorTestCase({
 				id: '123-testId',
 				did: '123-testId',
 				savedAttachments: [
@@ -708,8 +708,6 @@ describe('Edit view', () => {
 				const mocksContext = getMocksContext();
 				const defaultIdentityAddress = mocksContext.identities.primary.identity.email;
 
-				const store = generateStore();
-
 				// Mock the "action" query param
 				jest.spyOn(useQueryParam, 'useQueryParam').mockImplementation((param) => {
 					if (param === 'action') {
@@ -726,7 +724,7 @@ describe('Edit view', () => {
 				};
 
 				// Create and wait for the component to be rendered
-				setupTest(<EditView {...props} />, { store });
+				setupTest(<EditView {...props} />);
 				await waitFor(
 					() => {
 						expect(screen.getByTestId('edit-view-editor')).toBeInTheDocument();

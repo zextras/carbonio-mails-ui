@@ -12,7 +12,6 @@ import { parseTextToHTMLDocument } from '../../helpers/text';
 import { useEditorsStore } from '../../store/zustand/editor/store';
 import { setupEditorStore } from '../../tests/generators/editor-store';
 import { generateEditorV2Case } from '../../tests/generators/editors';
-import { generateStore } from '../../tests/generators/store';
 import { CreateSmartLinksRequest, CreateSmartLinksResponse, MessageAction } from '../../types';
 import {
 	addSmartLinksToText,
@@ -114,7 +113,7 @@ describe('findMessageActionById', () => {
 
 describe('generateSmartLinkHtml', () => {
 	it('generates correct HTML for smart link with attachment filename', async () => {
-		const editor = await generateEditorV2Case(1, generateStore().dispatch);
+		const editor = await generateEditorV2Case(1);
 		setupEditorStore({ editors: [editor] });
 
 		const smartLink = { publicUrl: 'https://example.com/file' };
@@ -132,7 +131,7 @@ describe('generateSmartLinkHtml', () => {
 	});
 
 	it('falls back to publicUrl when filename is undefined', async () => {
-		const editor = await generateEditorV2Case(1, generateStore().dispatch);
+		const editor = await generateEditorV2Case(1);
 
 		const smartLink = { publicUrl: 'https://example.com/file' };
 		const index = 0;
@@ -152,7 +151,7 @@ describe('generateSmartLinkHtml', () => {
 });
 
 test('addSmartLinksToText add smartlinks to both plain and rich text correctly', async () => {
-	const editor = await generateEditorV2Case(1, generateStore().dispatch);
+	const editor = await generateEditorV2Case(1);
 	const createSmartLinkResponse = {
 		smartLinks: [
 			{ publicUrl: 'https://example.com/file1' },
@@ -180,7 +179,7 @@ test('addSmartLinksToText add smartlinks to both plain and rich text correctly',
 
 describe('createSmartLink', () => {
 	it('request should contain the correct array of smart link attachments', async () => {
-		const editor = await generateEditorV2Case(1, generateStore().dispatch);
+		const editor = await generateEditorV2Case(1);
 		const attachmentToConvert = editor.savedAttachments[0];
 		attachmentToConvert.requiresSmartLinkConversion = true;
 		setupEditorStore({ editors: [editor] });
@@ -206,7 +205,7 @@ describe('createSmartLink', () => {
 	});
 
 	it('should remove the attachment that has been converted to smartLink', async () => {
-		const editor = await generateEditorV2Case(1, generateStore().dispatch);
+		const editor = await generateEditorV2Case(1);
 		const oldSavedAttachments = editor.savedAttachments;
 		const oldSavedAttachmentsLength = oldSavedAttachments.length;
 		const attachmentToConvert = oldSavedAttachments[0];
@@ -231,7 +230,7 @@ describe('createSmartLink', () => {
 	});
 
 	it('should throw an error when the API call fails', async () => {
-		const editor = await generateEditorV2Case(1, generateStore().dispatch);
+		const editor = await generateEditorV2Case(1);
 		const oldSavedAttachments = editor.savedAttachments;
 		const oldSavedAttachmentsLength = oldSavedAttachments.length;
 		const attachmentToConvert = oldSavedAttachments[0];

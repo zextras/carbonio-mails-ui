@@ -9,7 +9,6 @@ import { act } from '@testing-library/react';
 import { setupHook } from '../../../../carbonio-ui-commons/test/test-setup';
 import { setupEditorStore } from '../../../../tests/generators/editor-store';
 import { generateEditorV2Case } from '../../../../tests/generators/editors';
-import { generateStore } from '../../../../tests/generators/store';
 import {
 	addEditor,
 	getEditor,
@@ -30,7 +29,7 @@ import {
 describe('all editor hooks', () => {
 	describe('adding, updating, removing editors', () => {
 		test('getEditor gets an editor from store', async () => {
-			const editor = await generateEditorV2Case(1, generateStore().dispatch);
+			const editor = await generateEditorV2Case(1);
 			setupEditorStore({ editors: [editor] });
 			const editorFromStore = getEditor({ id: editor.id });
 			expect(editorFromStore).toEqual(editor);
@@ -38,7 +37,7 @@ describe('all editor hooks', () => {
 
 		test('addEditor adds an editor to the store', async () => {
 			setupEditorStore({ editors: [] });
-			const editor = await generateEditorV2Case(1, generateStore().dispatch);
+			const editor = await generateEditorV2Case(1);
 			addEditor({ id: editor.id, editor });
 			const editorFromStore = getEditor({ id: editor.id });
 			expect(editorFromStore).toEqual(editor);
@@ -46,7 +45,7 @@ describe('all editor hooks', () => {
 
 		test('deleteEditor deletes an editor from the store', async () => {
 			setupEditorStore({ editors: [] });
-			const editor = await generateEditorV2Case(1, generateStore().dispatch);
+			const editor = await generateEditorV2Case(1);
 			addEditor({ id: editor.id, editor });
 			deleteEditor({ id: editor.id });
 			const editorFromStore = getEditor({ id: editor.id });
@@ -58,8 +57,7 @@ describe('all editor hooks', () => {
 		test('get the editor subject', async () => {
 			const text = 'initial subject';
 			setupEditorStore({ editors: [] });
-			const reduxStore = generateStore();
-			const editor = await generateEditorV2Case(1, reduxStore.dispatch);
+			const editor = await generateEditorV2Case(1);
 			editor.subject = text;
 			addEditor({ id: editor.id, editor });
 
@@ -72,7 +70,7 @@ describe('all editor hooks', () => {
 			const initialText = 'initial subject';
 			const newText = 'new subject';
 			setupEditorStore({ editors: [] });
-			const editor = await generateEditorV2Case(1, generateStore().dispatch);
+			const editor = await generateEditorV2Case(1);
 			editor.subject = initialText;
 			addEditor({ id: editor.id, editor });
 
@@ -91,7 +89,7 @@ describe('all editor hooks', () => {
 			const initialPlainText = 'initial plain text';
 			const initialRichText = 'initial <b>rich</b> text';
 			setupEditorStore({ editors: [] });
-			const editor = await generateEditorV2Case(1, generateStore().dispatch);
+			const editor = await generateEditorV2Case(1);
 			editor.text = {
 				plainText: initialPlainText,
 				richText: initialRichText
@@ -111,7 +109,7 @@ describe('all editor hooks', () => {
 			const newRichText = 'new <b>rich</b> text';
 
 			setupEditorStore({ editors: [] });
-			const editor = await generateEditorV2Case(1, generateStore().dispatch);
+			const editor = await generateEditorV2Case(1);
 			editor.text = {
 				plainText: initialPlainText,
 				richText: initialRichText
@@ -133,7 +131,7 @@ describe('all editor hooks', () => {
 		test('get the editor scheduled send time', async () => {
 			const initialAutoSendTime = 123456789;
 			setupEditorStore({ editors: [] });
-			const editor = await generateEditorV2Case(1, generateStore().dispatch);
+			const editor = await generateEditorV2Case(1);
 			editor.autoSendTime = initialAutoSendTime;
 			addEditor({ id: editor.id, editor });
 
@@ -148,7 +146,7 @@ describe('all editor hooks', () => {
 			const initialAutoSendTime = 987654321;
 			const newAutoSendTime = 123456789;
 			setupEditorStore({ editors: [] });
-			const editor = await generateEditorV2Case(1, generateStore().dispatch);
+			const editor = await generateEditorV2Case(1);
 			editor.autoSendTime = initialAutoSendTime;
 			addEditor({ id: editor.id, editor });
 

@@ -10,7 +10,6 @@ import {
 	aSmartLinkAttachment,
 	aSavedAttachment
 } from '../../../../tests/generators/editors';
-import { generateStore } from '../../../../tests/generators/store';
 import { SavedAttachment } from '../../../../types';
 import { useEditorsStore } from '../store';
 
@@ -22,8 +21,7 @@ const attachment = (size: number): SavedAttachment => ({ ...aSavedAttachment(), 
 
 describe('store', () => {
 	test('toggleSmartLink should set to true the requiresSmartLinkConversion value of an attachment', async () => {
-		const store = generateStore();
-		const oldEditor = await readyToBeSentEditorTestCase(store.dispatch, {
+		const oldEditor = await readyToBeSentEditorTestCase({
 			savedAttachments: [attachment(444)]
 		});
 		setupEditorStore({ editors: [oldEditor] });
@@ -34,8 +32,7 @@ describe('store', () => {
 		expect(newEditor.savedAttachments[0].requiresSmartLinkConversion).toBe(true);
 	});
 	test('toggleSmartLink should set to false the requiresSmartLinkConversion value of a smartlink attachment', async () => {
-		const store = generateStore();
-		const oldEditor = await readyToBeSentEditorTestCase(store.dispatch, {
+		const oldEditor = await readyToBeSentEditorTestCase({
 			savedAttachments: [smartLinkAttachment(444)]
 		});
 		setupEditorStore({ editors: [oldEditor] });
@@ -47,8 +44,7 @@ describe('store', () => {
 	});
 
 	test('toggleSmartLink should not change the value of requiresSmartLinkConversion if there is no current editor', async () => {
-		const store = generateStore();
-		const oldEditor = await readyToBeSentEditorTestCase(store.dispatch, {
+		const oldEditor = await readyToBeSentEditorTestCase({
 			savedAttachments: [attachment(444)]
 		});
 		setupEditorStore({ editors: [oldEditor] });
@@ -60,8 +56,7 @@ describe('store', () => {
 	});
 
 	test('setTotalSmartLinksSize should calculate the right total size for smart link attachments', async () => {
-		const store = generateStore();
-		const editor = await readyToBeSentEditorTestCase(store.dispatch, {
+		const editor = await readyToBeSentEditorTestCase({
 			savedAttachments: [smartLinkAttachment(333), attachment(444)]
 		});
 		setupEditorStore({ editors: [editor] });
@@ -73,8 +68,7 @@ describe('store', () => {
 	});
 
 	test('setSize should set the editor size for the provided editor id', async () => {
-		const store = generateStore();
-		const editor = await readyToBeSentEditorTestCase(store.dispatch);
+		const editor = await readyToBeSentEditorTestCase();
 		setupEditorStore({ editors: [editor] });
 
 		useEditorsStore.getState().setSize(editor.id, 123);
@@ -83,8 +77,7 @@ describe('store', () => {
 		expect(newEditor.size).toEqual(123);
 	});
 	test('size should be aligned in the new editor', async () => {
-		const store = generateStore();
-		const editor = await readyToBeSentEditorTestCase(store.dispatch, { size: 123 });
+		const editor = await readyToBeSentEditorTestCase({ size: 123 });
 		setupEditorStore({ editors: [editor] });
 
 		const newEditor = useEditorsStore.getState().editors[editor.id];

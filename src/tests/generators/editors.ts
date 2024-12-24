@@ -6,7 +6,6 @@
 import { faker } from '@faker-js/faker';
 
 import { ParticipantRole } from '../../carbonio-ui-commons/constants/participants';
-import { AppDispatch } from '../../store/redux';
 import {
 	computeDraftSaveAllowedStatus,
 	computeSendAllowedStatus
@@ -18,21 +17,17 @@ const alignState = (editor: MailsEditorV2): void => {
 	editor.sendAllowedStatus = computeSendAllowedStatus(editor);
 };
 
-export const generateEditorV2Case = async (
-	id: number,
-	messagesStoreDispatch: AppDispatch
-): Promise<MailsEditorV2> => {
+export const generateEditorV2Case = async (id: number): Promise<MailsEditorV2> => {
 	const { buildEditorCase } = await import(`./editorCases/editor-case-v2-${id}`);
-	const editor = buildEditorCase(messagesStoreDispatch);
+	const editor = buildEditorCase();
 	alignState(editor);
 	return editor;
 };
 
 export const readyToBeSentEditorTestCase = async (
-	messagesStoreDispatch: AppDispatch,
 	editorPropsOverride: Partial<MailsEditorV2> = {}
 ): Promise<MailsEditorV2> => {
-	let editor = await generateEditorV2Case(1, messagesStoreDispatch);
+	let editor = await generateEditorV2Case(1);
 	editor.subject = faker.lorem.words(3);
 	editor.recipients = {
 		to: [{ type: ParticipantRole.TO, address: faker.internet.email() }],
