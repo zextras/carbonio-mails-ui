@@ -19,6 +19,7 @@ import {
 	useMessagesSlice,
 	usePopulatedItemsSlice
 } from './store';
+import { useFolderStore } from '../../../carbonio-ui-commons/store/zustand/folder';
 import { generateFolder } from '../../../carbonio-ui-commons/test/mocks/folders/folders-generator';
 import { generateMessage } from '../../../tests/generators/generateMessage';
 
@@ -46,14 +47,18 @@ const message3 = generateMessage({ id: '3', folderId: '8' });
 describe('useMessagesIdsByFolder', () => {
 	it('should return message IDs for the specified folder', () => {
 		setMessagesInEmailStore([message1, message2], false);
-		const folder = generateFolder({ id: '5' });
-		const { result } = renderHook(() => useMessagesIdsByFolder(folder));
+		const folder1 = generateFolder({ id: '5' });
+		const folder2 = generateFolder({ id: '8' });
+		useFolderStore.setState({ folders: { [folder1.id]: folder1, [folder2.id]: folder2 } });
+		const { result } = renderHook(() => useMessagesIdsByFolder(folder1.id));
 		expect(result.current).toEqual(new Set(['1', '2']));
 	});
 	it('should return an empty set if no messages match the folder', () => {
 		setMessagesInEmailStore([message1, message2, message3], false);
-		const folder = generateFolder({ id: '4' });
-		const { result } = renderHook(() => useMessagesIdsByFolder(folder));
+		const folder1 = generateFolder({ id: '4' });
+		const folder2 = generateFolder({ id: '8' });
+		useFolderStore.setState({ folders: { [folder1.id]: folder1, [folder2.id]: folder2 } });
+		const { result } = renderHook(() => useMessagesIdsByFolder(folder1.id));
 		expect(result.current).toEqual(new Set([]));
 	});
 	it('should handle folders with rid and zid properties', () => {
@@ -61,19 +66,25 @@ describe('useMessagesIdsByFolder', () => {
 		const message5 = generateMessage({ id: '5', folderId: '5:123' });
 		const message6 = generateMessage({ id: '6', folderId: '5' });
 		setMessagesInEmailStore([message4, message5, message6], false);
-		const folder = generateFolder({ id: '5:123' });
-		const { result } = renderHook(() => useMessagesIdsByFolder(folder));
+		const folder1 = generateFolder({ id: '5:123' });
+		const folder2 = generateFolder({ id: '5' });
+		useFolderStore.setState({ folders: { [folder1.id]: folder1, [folder2.id]: folder2 } });
+		const { result } = renderHook(() => useMessagesIdsByFolder(folder1.id));
 		expect(result.current).toEqual(new Set(['4', '5']));
 	});
 	it('should not include message IDs from other folders', () => {
 		setMessagesInEmailStore([message1, message2, message3], false);
-		const folder = generateFolder({ id: '5' });
-		const { result } = renderHook(() => useMessagesIdsByFolder(folder));
+		const folder1 = generateFolder({ id: '5' });
+		const folder2 = generateFolder({ id: '8' });
+		useFolderStore.setState({ folders: { [folder1.id]: folder1, [folder2.id]: folder2 } });
+		const { result } = renderHook(() => useMessagesIdsByFolder(folder1.id));
 		expect(result.current).toEqual(new Set(['1', '2']));
 	});
 	it('should handle an empty messagesSlice gracefully', () => {
-		const folder = generateFolder({ id: '5' });
-		const { result } = renderHook(() => useMessagesIdsByFolder(folder));
+		const folder1 = generateFolder({ id: '5' });
+		const folder2 = generateFolder({ id: '8' });
+		useFolderStore.setState({ folders: { [folder1.id]: folder1, [folder2.id]: folder2 } });
+		const { result } = renderHook(() => useMessagesIdsByFolder(folder1.id));
 		expect(result.current).toEqual(new Set([]));
 	});
 });

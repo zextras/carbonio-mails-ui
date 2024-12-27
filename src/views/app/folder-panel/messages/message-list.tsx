@@ -21,18 +21,18 @@ import { getFolderIdParts } from '../../../../helpers/folders';
 import { parseMessageSortingOptions } from '../../../../helpers/sorting';
 import { useMessageListByFolder } from '../../../../hooks/use-message-list-by-folder';
 import { useSelection } from '../../../../hooks/use-selection';
-import type { AppContext, Folder } from '../../../../types';
+import type { AppContext } from '../../../../types';
 
 export const MessageList = (): React.JSX.Element => {
 	const [t] = useTranslation();
 	const { itemId, folderId } = useParams<{ itemId: string; folderId: string }>();
 	const loadingMore = useRef<boolean>(false);
 	const dragImageRef = useRef(null);
-	const folder = useFolder(folderId) as Folder;
+	const folder = useFolder(folderId);
 	const { setCount, count } = useAppContext<AppContext>();
 	const [draggedIds, setDraggedIds] = useState<Record<string, boolean>>({});
 
-	const { messageIndexSlice } = useMessageListByFolder(folder);
+	const { messageIndexSlice } = useMessageListByFolder(folderId);
 	const { messageIdSet, status } = messageIndexSlice;
 
 	const { prefs } = useUserSettings();

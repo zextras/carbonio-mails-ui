@@ -22,7 +22,6 @@ import {
 	NormalizedConversation,
 	SearchRequestStatus,
 	SearchIndexSliceState,
-	Folder,
 	PopulatedItemsSliceState
 } from '../../../types';
 
@@ -161,8 +160,8 @@ export function useMessagesSlice(): EmailsStoreState['messageIndexSlice'] {
 	return useEmailsStore(({ messageIndexSlice: messagesSlice }) => messagesSlice);
 }
 
-export function useMessagesIdsByFolder(folder: Folder): Set<string> {
-	return messageIndexSliceUtils.useMessagesIdsByFolder(folder, useEmailsStore);
+export function useMessagesIdsByFolder(folderId: string): Set<string> {
+	return messageIndexSliceUtils.useMessagesIdsByFolder(folderId, useEmailsStore);
 }
 
 export function setMessagesInEmailStore(

@@ -15,9 +15,9 @@ import {
 	useMessagesIdsByFolder,
 	useMessagesSlice
 } from '../store/zustand/emails/store';
-import { Folder, MessageIndexSliceState } from '../types';
+import { MessageIndexSliceState } from '../types';
 
-export const useMessageListByFolder = (folder: Folder): MessageIndexSliceState => {
+export const useMessageListByFolder = (folderId: string): MessageIndexSliceState => {
 	const settings = useUserSettings();
 	const prefLocale = useMemo(
 		() => settings.prefs.zimbraPrefLocale,
@@ -27,13 +27,13 @@ export const useMessageListByFolder = (folder: Folder): MessageIndexSliceState =
 	const previousFolderId = useRef<string>('');
 
 	const messagesSlice = useMessagesSlice();
-	const messageIdSet = useMessagesIdsByFolder(folder);
+	const messageIdSet = useMessagesIdsByFolder(folderId);
 
 	const firstSearchCallback = useCallback(
 		async (abortSignal: AbortSignal | undefined) => {
 			updateMessagesResultsLoadingStatus(API_REQUEST_STATUS.pending);
 			const searchResponse = await searchSoapApi({
-				folderId: folder.id,
+				folderId,
 				limit: LIST_LIMIT.INITIAL_LIMIT,
 				types: 'message',
 				offset: 0,
@@ -43,21 +43,21 @@ export const useMessageListByFolder = (folder: Folder): MessageIndexSliceState =
 			});
 			handleSearchSoapApiResults({ searchResponse });
 		},
-		[folder.id, prefLocale]
+		[folderId, prefLocale]
 	);
 
 	useEffect(() => {
 		const controller = new AbortController();
 		const { signal } = controller;
-		if (previousFolderId.current !== folder.id) {
-			previousFolderId.current = folder.id;
+		if (previousFolderId.current !== folderId) {
+			previousFolderId.current = folderId;
 			firstSearchCallback(signal);
 		}
 		return () => {
 			previousFolderId.current = '';
 			controller.abort();
 		};
-	}, [firstSearchCallback, folder.id]);
+	}, [firstSearchCallback, folderId]);
 
 	return { messageIndexSlice: { ...messagesSlice, messageIdSet } };
 };

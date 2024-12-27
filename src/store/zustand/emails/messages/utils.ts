@@ -10,10 +10,10 @@ import { forEach } from 'lodash';
 import { StoreApi, UseBoundStore } from 'zustand';
 
 import { MESSAGE_INDEX_SLICE_INITIAL_STATE } from './messages-slice';
+import { useFolder } from '../../../../carbonio-ui-commons/store/zustand/folder';
 import { API_REQUEST_STATUS } from '../../../../constants';
 import {
 	EmailsStoreState,
-	Folder,
 	IncompleteMessage,
 	MailMessage,
 	MessageIndexSliceState,
@@ -45,11 +45,13 @@ function setMessages(
 }
 
 function useMessagesIdsByFolder(
-	folder: Folder,
+	folderId: string,
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
 ): Set<string> {
 	const folderMessagesIds = new Set<string>();
+	const folder = useFolder(folderId);
 	const { populatedItemsSlice, messageIndexSlice } = useEmailsStore();
+	if (!folder) return folderMessagesIds;
 	const { messageIdSet } = messageIndexSlice;
 	forEach([...messageIdSet], (messageId) => {
 		const wantedFolder = 'rid' in folder && folder?.rid ? `${folder.zid}:${folder.rid}` : folder.id;

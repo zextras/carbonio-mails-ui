@@ -8,6 +8,7 @@ import { act } from 'react';
 
 import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui/lib/types/network/soap';
 
+import { useFolderStore } from '../../carbonio-ui-commons/store/zustand/folder';
 import { generateFolder } from '../../carbonio-ui-commons/test/mocks/folders/folders-generator';
 import { createSoapAPIInterceptor } from '../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { setupHook } from '../../carbonio-ui-commons/test/test-setup';
@@ -32,8 +33,9 @@ describe('useMessageListByFolder', () => {
 	it('should make search call with correct params', async () => {
 		const searchInterceptor = createSoapAPIInterceptor<SearchRequest>('Search');
 
+		useFolderStore.setState({ folders: { folderId: folder } });
 		setupHook(useMessageListByFolder, {
-			initialProps: [folder]
+			initialProps: [folder.id]
 		});
 
 		const requestParams = await searchInterceptor;
@@ -73,7 +75,7 @@ describe('useMessageListByFolder', () => {
 			}
 		);
 
-		setupHook(useMessageListByFolder, { initialProps: [folder] });
+		setupHook(useMessageListByFolder, { initialProps: [folder.id] });
 
 		await searchInterceptor;
 
@@ -88,7 +90,7 @@ describe('useMessageListByFolder', () => {
 		const searchInterceptor = createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
 			more: false
 		});
-		setupHook(() => useMessageListByFolder(folder));
+		setupHook(() => useMessageListByFolder(folder.id));
 
 		await searchInterceptor;
 
@@ -116,7 +118,7 @@ describe('useMessageListByFolder', () => {
 		jest.spyOn(global, 'AbortController').mockImplementation(() => controller);
 
 		const { rerender } = setupHook(useMessageListByFolder, {
-			initialProps: [folder]
+			initialProps: [folder.id]
 		});
 
 		await searchInterceptor;
@@ -125,7 +127,7 @@ describe('useMessageListByFolder', () => {
 			jest.advanceTimersByTime(0);
 		});
 
-		rerender([generateFolder({ id: '3' })]);
+		rerender(['3']);
 
 		expect(mockAbort).toHaveBeenCalled();
 	});
