@@ -19,6 +19,7 @@ import {
 	useConversationsIdsByFolder,
 	usePopulatedItemsSlice
 } from './store';
+import { useFolderStore } from '../../../carbonio-ui-commons/store/zustand/folder';
 import { generateFolder } from '../../../carbonio-ui-commons/test/mocks/folders/folders-generator';
 import { generateConversation } from '../../../tests/generators/generateConversation';
 
@@ -47,13 +48,15 @@ describe('useConversationsIdsByFolder', () => {
 	it('should return conversation IDs for the specified folder', () => {
 		setConversationsInEmailStore([conversation1, conversation2], false);
 		const folder = generateFolder({ id: '5' });
-		const { result } = renderHook(() => useConversationsIdsByFolder(folder));
+		useFolderStore.setState({ folders: { [folder.id]: folder } });
+		const { result } = renderHook(() => useConversationsIdsByFolder(folder.id));
 		expect(result.current).toEqual(new Set(['1', '2']));
 	});
 	it('should return an empty set if no conversations match the folder', () => {
 		setConversationsInEmailStore([conversation1, conversation2, conversation3], false);
 		const folder = generateFolder({ id: '4' });
-		const { result } = renderHook(() => useConversationsIdsByFolder(folder));
+		useFolderStore.setState({ folders: { [folder.id]: folder } });
+		const { result } = renderHook(() => useConversationsIdsByFolder(folder.id));
 		expect(result.current).toEqual(new Set([]));
 	});
 	it('should handle folders with rid and zid properties', () => {
@@ -61,19 +64,21 @@ describe('useConversationsIdsByFolder', () => {
 		const conversation5 = generateConversation({ id: '5', folderId: '5:123' });
 		const conversation6 = generateConversation({ id: '6', folderId: '5' });
 		setConversationsInEmailStore([conversation4, conversation5, conversation6], false);
-		const folder = generateFolder({ id: '5:123' });
-		const { result } = renderHook(() => useConversationsIdsByFolder(folder));
+		const folder1 = generateFolder({ id: '5:123' });
+		const folder2 = generateFolder({ id: '5' });
+		useFolderStore.setState({ folders: { [folder1.id]: folder1, [folder2.id]: folder2 } });
+		const { result } = renderHook(() => useConversationsIdsByFolder(folder1.id));
 		expect(result.current).toEqual(new Set(['4', '5']));
 	});
 	it('should not include conversation IDs from other folders', () => {
 		setConversationsInEmailStore([conversation1, conversation2, conversation3], false);
 		const folder = generateFolder({ id: '5' });
-		const { result } = renderHook(() => useConversationsIdsByFolder(folder));
+		useFolderStore.setState({ folders: { [folder.id]: folder } });
+		const { result } = renderHook(() => useConversationsIdsByFolder(folder.id));
 		expect(result.current).toEqual(new Set(['1', '2']));
 	});
 	it('should handle an empty conversationsSlice gracefully', () => {
-		const folder = generateFolder({ id: '5' });
-		const { result } = renderHook(() => useConversationsIdsByFolder(folder));
+		const { result } = renderHook(() => useConversationsIdsByFolder('5'));
 		expect(result.current).toEqual(new Set([]));
 	});
 });

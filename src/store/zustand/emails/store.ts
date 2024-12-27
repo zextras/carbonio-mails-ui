@@ -207,8 +207,8 @@ export function appendMessagesToMessagesSlice(
 export function useConversationIndexSlice(): EmailsStoreState['conversationIndexSlice'] {
 	return useEmailsStore(({ conversationIndexSlice }) => conversationIndexSlice);
 }
-export function useConversationsIdsByFolder(folder: Folder): Set<string> {
-	return conversationIndexSliceUtils.useConversationsIdsByFolder(folder, useEmailsStore);
+export function useConversationsIdsByFolder(folderId: string): Set<string> {
+	return conversationIndexSliceUtils.useConversationsIdsByFolder(folderId, useEmailsStore);
 }
 
 export function resetConversationAndPopulatedItems(): void {

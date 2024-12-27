@@ -15,9 +15,15 @@ import {
 	useConversationIndexSlice,
 	useConversationsIdsByFolder
 } from '../store/zustand/emails/store';
-import { ConversationIndexSliceState, Folder } from '../types';
+import { ConversationIndexSliceState } from '../types';
 
-export const useConversationListByFolder = (folder: Folder): ConversationIndexSliceState => {
+/**
+ *
+ * Manages the state and logic for retrieving and maintaining a list of conversation indices
+ * for a specific folder. Fetches conversations via `searchSoapApi` on folder change.
+ *
+ */
+export const useConversationListByFolder = (folderId: string): ConversationIndexSliceState => {
 	const settings = useUserSettings();
 	const prefLocale = useMemo(
 		() => settings.prefs.zimbraPrefLocale,
@@ -27,13 +33,13 @@ export const useConversationListByFolder = (folder: Folder): ConversationIndexSl
 	const previousFolderId = useRef<string>('');
 
 	const conversationIndexSlice = useConversationIndexSlice();
-	const conversationsIds = useConversationsIdsByFolder(folder);
+	const conversationsIds = useConversationsIdsByFolder(folderId);
 
 	const firstSearchCallback = useCallback(
 		async (abortSignal: AbortSignal | undefined) => {
 			updateConversationsResultsLoadingStatus(API_REQUEST_STATUS.pending);
 			const searchResponse = await searchSoapApi({
-				folderId: folder.id,
+				folderId,
 				limit: LIST_LIMIT.INITIAL_LIMIT,
 				types: 'conversation',
 				offset: 0,
@@ -43,21 +49,21 @@ export const useConversationListByFolder = (folder: Folder): ConversationIndexSl
 			});
 			handleSearchSoapApiResults({ searchResponse });
 		},
-		[folder.id, prefLocale]
+		[folderId, prefLocale]
 	);
 
 	useEffect(() => {
 		const controller = new AbortController();
 		const { signal } = controller;
-		if (previousFolderId.current !== folder.id) {
-			previousFolderId.current = folder.id;
+		if (previousFolderId.current !== folderId) {
+			previousFolderId.current = folderId;
 			firstSearchCallback(signal);
 		}
 		return () => {
 			previousFolderId.current = '';
 			controller.abort();
 		};
-	}, [firstSearchCallback, folder.id]);
+	}, [firstSearchCallback, folderId]);
 
 	return {
 		conversationIndexSlice: { ...conversationIndexSlice, conversationIdSet: conversationsIds }

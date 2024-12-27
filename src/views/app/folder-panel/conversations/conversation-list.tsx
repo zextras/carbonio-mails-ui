@@ -21,13 +21,13 @@ import { parseMessageSortingOptions } from '../../../../helpers/sorting';
 import { useConversationKeyboardShortcuts } from '../../../../hooks/use-conversation-keyboard-shortcuts';
 import { useConversationListByFolder } from '../../../../hooks/use-conversations-list-by-folder';
 import { useSelection } from '../../../../hooks/use-selection';
-import type { AppContext, Folder } from '../../../../types';
+import type { AppContext } from '../../../../types';
 
 export const ConversationList = (): React.JSX.Element => {
 	const { folderId, itemId } = useParams<{ folderId: string; itemId: string }>();
 	const { setCount, count } = useAppContext<AppContext>();
 	const folder = useFolder(folderId);
-	const { conversationIndexSlice } = useConversationListByFolder(folder as Folder);
+	const { conversationIndexSlice } = useConversationListByFolder(folderId);
 	const { status, conversationIdSet: conversationsIds } = conversationIndexSlice;
 	const loadingMore = useRef<boolean>(false);
 

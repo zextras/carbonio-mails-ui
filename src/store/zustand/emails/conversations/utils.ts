@@ -10,13 +10,9 @@ import { forEach, some } from 'lodash';
 import { StoreApi, UseBoundStore } from 'zustand';
 
 import { CONVERSATION_INDEX_SLICE_INITIAL_STATE } from './conversations-index-slice';
+import { useFolder } from '../../../../carbonio-ui-commons/store/zustand/folder';
 import { API_REQUEST_STATUS } from '../../../../constants';
-import {
-	EmailsStoreState,
-	Folder,
-	NormalizedConversation,
-	SearchRequestStatus
-} from '../../../../types';
+import { EmailsStoreState, NormalizedConversation, SearchRequestStatus } from '../../../../types';
 import { POPULATED_ITEMS_SLICE_INITIAL_STATE } from '../populated-items/populated-items-slice';
 
 function setConversations(
@@ -45,11 +41,15 @@ function setConversations(
 }
 
 function useConversationsIdsByFolder(
-	folder: Folder,
+	folderId: string,
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
 ): Set<string> {
-	const folderConversationsIds = new Set<string>();
+	const folder = useFolder(folderId);
 	const { populatedItemsSlice, conversationIndexSlice } = useEmailsStore();
+	const folderConversationsIds = new Set<string>();
+	if (!folder) {
+		return folderConversationsIds;
+	}
 	const { conversationIdSet: conversationsIds } = conversationIndexSlice;
 	forEach([...conversationsIds], (conversationId) => {
 		const wantedFolder = 'rid' in folder && folder?.rid ? `${folder.zid}:${folder.rid}` : folder.id;
