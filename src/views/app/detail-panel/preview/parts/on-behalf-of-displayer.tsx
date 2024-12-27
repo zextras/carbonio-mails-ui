@@ -40,7 +40,7 @@ const OnBehalfOfDisplayer: FC<{
 		(): React.JSX.Element => (
 			<>
 				<StyledText $isRead={message.read ?? ''}>{fullName}</StyledText>
-				<StyledText color="secondary" $isRead={message.read}>
+				<StyledText $color="secondary" $isRead={message.read}>
 					{` <${address}> `}
 				</StyledText>
 				<StyledText $color="text">{behalfOfLabel}</StyledText>
