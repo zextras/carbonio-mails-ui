@@ -10,7 +10,7 @@ import { Breadcrumbs } from '../../../app/folder-panel/parts/breadcrumbs';
 import { MultipleSelectionActionsPanel } from '../../../app/folder-panel/parts/multiple-selection-actions-panel';
 
 type SearchConversationListHeaderProps = {
-	itemIds: Set<string>;
+	itemIds: Array<string>;
 	folderId: string;
 	selected: Record<string, boolean>;
 	deselectAll: () => void;
@@ -31,7 +31,7 @@ export const SearchListHeader = ({
 	isAllSelected,
 	selectAllModeOff
 }: SearchConversationListHeaderProps): React.JSX.Element => {
-	const totalItems = itemIds.size;
+	const totalItems = itemIds.length;
 
 	const selectedIds = useMemo(() => Object.keys(selected), [selected]);
 

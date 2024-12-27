@@ -66,6 +66,6 @@ export const useConversationListByFolder = (folderId: string): ConversationIndex
 	}, [firstSearchCallback, folderId]);
 
 	return {
-		conversationIndexSlice: { ...conversationIndexSlice, conversationIdSet: conversationsIds }
+		conversationIndexSlice: { ...conversationIndexSlice, conversationListIndex: conversationsIds }
 	};
 };

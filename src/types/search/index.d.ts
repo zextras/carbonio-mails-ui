@@ -14,7 +14,7 @@ import { IncompleteMessage, MailMessage } from '../messages';
 import { ErrorType, SearchRequestStatus } from '../state';
 
 export type SearchListProps = {
-	searchResults: Set<string>;
+	searchResults: Array<string>;
 	query: string;
 	loading: boolean;
 	filterCount: number;
@@ -226,8 +226,8 @@ export type ChipType = {
 
 export type SearchIndexSliceState = {
 	searchIndexSlice: {
-		conversationIdSet: Set<string>;
-		messageIdSet: Set<string>;
+		conversationListIndex: Array<string>;
+		messageListIndex: Array<string>;
 		more: boolean;
 		offset: number;
 		sortBy?: SortBy;
@@ -241,7 +241,7 @@ export type SearchIndexSliceState = {
 
 export type MessageIndexSliceState = {
 	messageIndexSlice: {
-		messageIdSet: Set<string>;
+		messageListIndex: Array<string>;
 		more: boolean;
 		offset: number;
 		status: SearchRequestStatus;
@@ -250,7 +250,7 @@ export type MessageIndexSliceState = {
 
 export type ConversationIndexSliceState = {
 	conversationIndexSlice: {
-		conversationIdSet: Set<string>;
+		conversationListIndex: Array<string>;
 		more: boolean;
 		offset: number;
 		status: SearchRequestStatus;

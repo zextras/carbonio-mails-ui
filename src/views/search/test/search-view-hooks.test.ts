@@ -62,7 +62,7 @@ describe('search view hooks', () => {
 		});
 
 		await waitFor(() => {
-			expect(result.current.searchResults.conversationIdSet.size).toBe(0);
+			expect(result.current.searchResults.conversationListIndex.length).toBe(0);
 		});
 	});
 
@@ -100,7 +100,7 @@ describe('search view hooks', () => {
 		});
 
 		await waitFor(() => {
-			expect(result.current.searchResults.conversationIdSet.size).toBe(0);
+			expect(result.current.searchResults.conversationListIndex.length).toBe(0);
 		});
 	});
 

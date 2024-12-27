@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, useMemo } from 'react';
+import React, { useMemo } from 'react';
 
 import { Container, Padding, Text } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
@@ -14,12 +14,12 @@ import { SearchConversationPanel } from './conversation/search-conversation-pane
 import { SearchMessagePanel } from './message/search-message-panel';
 import { SearchPanelProps } from '../../../types';
 
-const SearchPanel: FC<SearchPanelProps> = ({ searchResults }) => {
+const SearchPanel = ({ searchResults }: SearchPanelProps): React.JSX.Element => {
 	const { path } = useRouteMatch();
 
 	const trimmedPath = useMemo(() => trimEnd(path, '/'), [path]);
 	const displayerMessage = useMemo(() => {
-		if (searchResults.conversationIdSet.size > 0 || searchResults.messageIdSet.size > 0)
+		if (searchResults.conversationListIndex.length > 0 || searchResults.messageListIndex.length > 0)
 			return {
 				title: t(
 					'displayer.search_title4',
@@ -34,7 +34,7 @@ const SearchPanel: FC<SearchPanelProps> = ({ searchResults }) => {
 				'Or select “Advanced Filters” to refine your search.'
 			)
 		};
-	}, [searchResults.conversationIdSet.size, searchResults.messageIdSet.size]);
+	}, [searchResults.conversationListIndex.length, searchResults.messageListIndex.length]);
 
 	const displayerTitle = useMemo(() => displayerMessage?.title, [displayerMessage?.title]);
 	const displayerDescription = useMemo(

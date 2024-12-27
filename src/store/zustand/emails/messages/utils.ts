@@ -5,7 +5,7 @@
  */
 
 /* eslint-disable no-param-reassign */
-import produce, { enableMapSet } from 'immer';
+import produce from 'immer';
 import { forEach } from 'lodash';
 import { StoreApi, UseBoundStore } from 'zustand';
 
@@ -28,7 +28,7 @@ function setMessages(
 ): void {
 	useEmailsStore.setState(
 		produce((store: EmailsStoreState) => {
-			store.messageIndexSlice.messageIdSet = new Set(messages.map((message) => message.id));
+			store.messageIndexSlice.messageListIndex = messages.map((message) => message.id);
 			store.messageIndexSlice.status = API_REQUEST_STATUS.fulfilled;
 			store.messageIndexSlice.offset = 0;
 			store.messageIndexSlice.more = more;
@@ -47,16 +47,16 @@ function setMessages(
 function useMessagesIdsByFolder(
 	folderId: string,
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
-): Set<string> {
-	const folderMessagesIds = new Set<string>();
+): Array<string> {
+	const folderMessagesIds: Array<string> = [];
 	const folder = useFolder(folderId);
 	const { populatedItemsSlice, messageIndexSlice } = useEmailsStore();
 	if (!folder) return folderMessagesIds;
-	const { messageIdSet } = messageIndexSlice;
-	forEach([...messageIdSet], (messageId) => {
+	const { messageListIndex } = messageIndexSlice;
+	forEach([...messageListIndex], (messageId) => {
 		const wantedFolder = 'rid' in folder && folder?.rid ? `${folder.zid}:${folder.rid}` : folder.id;
 		if (populatedItemsSlice.messages[messageId]?.parent === wantedFolder) {
-			folderMessagesIds.add(messageId);
+			folderMessagesIds.push(messageId);
 		}
 	});
 	return folderMessagesIds;
@@ -89,11 +89,14 @@ function appendMessagesToMessagesSlice(
 	offset: number,
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
 ): void {
-	enableMapSet();
-	const newMessageIds = new Set(messages.map((message) => message.id));
+	const newMessageIds = messages.map((message) => message.id);
 	useEmailsStore.setState(
 		produce((state: EmailsStoreState) => {
-			newMessageIds.forEach((messageId) => state.messageIndexSlice.messageIdSet.add(messageId));
+			const uniqueMessageIds = new Set(state.messageIndexSlice.messageListIndex);
+			newMessageIds.forEach((messageId) => {
+				uniqueMessageIds.add(messageId);
+			});
+			state.messageIndexSlice.messageListIndex = Array.from(uniqueMessageIds);
 			state.messageIndexSlice.offset = offset;
 			state.populatedItemsSlice.messages = messages.reduce((acc, msg) => {
 				acc[msg.id] = msg;
@@ -107,18 +110,16 @@ function prependMessagesToMessageSlice(
 	messages: Array<MailMessage | IncompleteMessage>,
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
 ): void {
-	enableMapSet();
-	const newMessageIds = new Set(messages.map((message) => message.id));
+	const newMessageIds = messages.map((message) => message.id);
 	useEmailsStore.setState(
 		produce((state: EmailsStoreState) => {
 			state.populatedItemsSlice.messages = messages.reduce((acc, msg) => {
 				acc[msg.id] = msg;
 				return acc;
 			}, state.populatedItemsSlice.messages);
-			state.messageIndexSlice.messageIdSet = new Set([
-				...newMessageIds,
-				...state.messageIndexSlice.messageIdSet
-			]);
+			state.messageIndexSlice.messageListIndex = Array.from(
+				new Set([...newMessageIds, ...state.messageIndexSlice.messageListIndex])
+			);
 		})
 	);
 }

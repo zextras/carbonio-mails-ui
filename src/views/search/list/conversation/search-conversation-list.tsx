@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, useMemo, useRef } from 'react';
+import React, { useMemo, useRef } from 'react';
 
 import { Container, Padding, Text } from '@zextras/carbonio-design-system';
 import { t, useAppContext } from '@zextras/carbonio-shell-ui';
@@ -21,7 +21,7 @@ import { useLoadMoreForSearchSlice } from '../../search-view-hooks';
 import ShimmerList from '../../shimmer-list';
 import { SearchListHeader } from '../parts/search-list-header';
 
-export const SearchConversationList: FC<SearchListProps> = ({
+export const SearchConversationList = ({
 	searchResults: conversationIds,
 	query,
 	loading,
@@ -31,13 +31,12 @@ export const SearchConversationList: FC<SearchListProps> = ({
 	searchDisabled,
 	invalidQueryTooltip,
 	hasMore
-}) => {
+}: SearchListProps): React.JSX.Element => {
 	const { itemId } = useParams<{ itemId: string }>();
 	const loadingMore = useRef<boolean>(false);
 	const { setCount, count } = useAppContext<AppContext>();
-	const items = [...conversationIds].map((conversationId) => ({ id: conversationId }));
 	const listRef = useRef<HTMLDivElement>(null);
-	const totalConversations = useMemo(() => conversationIds.size, [conversationIds]);
+	const totalConversations = useMemo(() => conversationIds.length, [conversationIds]);
 
 	const {
 		selected,
@@ -51,7 +50,7 @@ export const SearchConversationList: FC<SearchListProps> = ({
 	} = useSelection({
 		setCount,
 		count,
-		items
+		items: conversationIds
 	});
 
 	const displayerTitle = useMemo(() => {

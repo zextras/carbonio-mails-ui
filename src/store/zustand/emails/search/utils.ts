@@ -5,7 +5,7 @@
  */
 
 /* eslint-disable no-param-reassign */
-import produce, { enableMapSet } from 'immer';
+import produce from 'immer';
 import { UseBoundStore, StoreApi } from 'zustand';
 
 import { SEARCH_INDEX_SLICE_INITIAL_STATE } from './search-slice';
@@ -37,9 +37,9 @@ function setSearchResultsByConversation(
 ): void {
 	useEmailsStore.setState(
 		produce(({ searchIndexSlice: searchSlice, populatedItemsSlice }: EmailsStoreState) => {
-			searchSlice.conversationIdSet = new Set(conversations.map((c) => c.id));
+			searchSlice.conversationListIndex = conversations.map((c) => c.id);
 			searchSlice.status = API_REQUEST_STATUS.fulfilled;
-			searchSlice.messageIdSet = new Set();
+			searchSlice.messageListIndex = [];
 			searchSlice.offset = 0;
 			searchSlice.more = more;
 			populatedItemsSlice.conversations = conversations.reduce(
@@ -60,9 +60,9 @@ function setSearchResultsByMessage(
 ): void {
 	useEmailsStore.setState(
 		produce(({ searchIndexSlice: searchSlice, populatedItemsSlice }: EmailsStoreState) => {
-			searchSlice.messageIdSet = new Set(messages.map((message) => message.id));
+			searchSlice.messageListIndex = messages.map((message) => message.id);
 			searchSlice.status = API_REQUEST_STATUS.fulfilled;
-			searchSlice.conversationIdSet = new Set();
+			searchSlice.conversationListIndex = [];
 			searchSlice.offset = 0;
 			searchSlice.more = more;
 			populatedItemsSlice.messages = messages.reduce(
@@ -81,12 +81,11 @@ function appendConversationsToSearch(
 	more: boolean,
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
 ): void {
-	enableMapSet();
-	const newConversationsIds = new Set(conversations.map((c) => c.id));
+	const newConversationsIds = conversations.map((c) => c.id);
 
 	useEmailsStore.setState(
 		produce((state: EmailsStoreState) => {
-			newConversationsIds.forEach((id) => state.searchIndexSlice.conversationIdSet.add(id));
+			newConversationsIds.forEach((id) => state.searchIndexSlice.conversationListIndex.push(id));
 			state.searchIndexSlice.offset = offset;
 			state.searchIndexSlice.more = more;
 			state.populatedItemsSlice.conversations = conversations.reduce((acc, conv) => {
@@ -101,11 +100,11 @@ function deleteConversationsFromSearch(
 	ids: Array<string>,
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
 ): void {
-	enableMapSet();
 	useEmailsStore.setState(
 		produce((state: EmailsStoreState) => {
+			state.searchIndexSlice.conversationListIndex =
+				state.searchIndexSlice.conversationListIndex.filter((id) => !ids.includes(id));
 			ids.forEach((id) => {
-				state.searchIndexSlice.conversationIdSet.delete(id);
 				delete state.populatedItemsSlice.conversations[id];
 			});
 		})
@@ -116,11 +115,12 @@ function deleteMessagesFromSearch(
 	ids: Array<string>,
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
 ): void {
-	enableMapSet();
 	useEmailsStore.setState(
 		produce((state: EmailsStoreState) => {
+			state.searchIndexSlice.messageListIndex = state.searchIndexSlice.messageListIndex.filter(
+				(id) => !ids.includes(id)
+			);
 			ids.forEach((id) => {
-				state.searchIndexSlice.messageIdSet.delete(id);
 				delete state.populatedItemsSlice.messages[id];
 			});
 		})
@@ -143,11 +143,10 @@ function appendMessagesToSearch(
 	offset: number,
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
 ): void {
-	enableMapSet();
-	const newMessageIds = new Set(messages.map((message) => message.id));
+	const newMessageIds = messages.map((message) => message.id);
 	useEmailsStore.setState(
 		produce((state: EmailsStoreState) => {
-			newMessageIds.forEach((messageId) => state.searchIndexSlice.messageIdSet.add(messageId));
+			newMessageIds.forEach((messageId) => state.searchIndexSlice.messageListIndex.push(messageId));
 			state.searchIndexSlice.offset = offset;
 			state.populatedItemsSlice.messages = messages.reduce((acc, msg) => {
 				acc[msg.id] = msg;
@@ -164,7 +163,7 @@ function setMessagesInSearchSlice(
 	useEmailsStore.setState((state: EmailsStoreState) => ({
 		searchIndexSlice: {
 			...state.searchIndexSlice,
-			messageIdSet: new Set(messages.map((c) => c.id))
+			messageListIndex: messages.map((c) => c.id)
 		},
 		populatedItemsSlice: {
 			...state.populatedItemsSlice,

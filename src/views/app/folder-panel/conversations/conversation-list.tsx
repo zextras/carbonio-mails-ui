@@ -28,15 +28,12 @@ export const ConversationList = (): React.JSX.Element => {
 	const { setCount, count } = useAppContext<AppContext>();
 	const folder = useFolder(folderId);
 	const { conversationIndexSlice } = useConversationListByFolder(folderId);
-	const { status, conversationIdSet: conversationsIds } = conversationIndexSlice;
+	const { status, conversationListIndex: conversationsIds } = conversationIndexSlice;
 	const loadingMore = useRef<boolean>(false);
 
 	const [draggedIds, setDraggedIds] = useState<Record<string, boolean>>();
 	const dragImageRef = useRef(null);
 
-	const conversationIdsArray = [...conversationsIds].map((conversationId) => ({
-		id: conversationId
-	}));
 	const {
 		selected,
 		toggle,
@@ -46,14 +43,18 @@ export const ConversationList = (): React.JSX.Element => {
 		selectAll,
 		isAllSelected,
 		selectAllModeOff
-	} = useSelection({ setCount, count, items: conversationIdsArray });
+	} = useSelection({
+		setCount,
+		count,
+		items: conversationsIds
+	});
 
 	const { prefs } = useUserSettings();
 	const { sortOrder } = parseMessageSortingOptions(folderId, prefs.zimbraPrefSortOrder as string);
 
 	const loadMore = useLoadMoreForConversationList({
 		sortBy: sortOrder,
-		offset: conversationsIds.size,
+		offset: conversationsIds.length,
 		limit: LIST_LIMIT.LOAD_MORE_LIMIT,
 		hasMore: conversationIndexSlice.more,
 		loadingMore,
@@ -75,7 +76,7 @@ export const ConversationList = (): React.JSX.Element => {
 	}, [folderId, itemId, deselectAll, keyboardActions]);
 
 	const displayerTitle = useMemo(() => {
-		if (conversationsIds?.size === 0) {
+		if (conversationsIds?.length === 0) {
 			if (getFolderIdParts(folderId).id === FOLDERS.SPAM) {
 				return t('displayer.list_spam_title', 'There are no spam e-mails');
 			}
@@ -91,19 +92,19 @@ export const ConversationList = (): React.JSX.Element => {
 			return t('displayer.list_folder_title', 'It looks like there are no e-mails yet');
 		}
 		return null;
-	}, [conversationsIds?.size, folderId]);
+	}, [conversationsIds?.length, folderId]);
 
 	const listItems = useMemo(
 		() =>
-			map(conversationIdsArray, (item) => {
-				const active = itemId === item.id;
-				const isSelected = selected[item.id];
+			map(conversationsIds, (id) => {
+				const active = itemId === id;
+				const isSelected = selected[id];
 				return (
-					<ListItem active={active} selected={isSelected} background={'transparent'} key={item.id}>
+					<ListItem active={active} selected={isSelected} background={'transparent'} key={id}>
 						{(visible: boolean): React.JSX.Element =>
 							visible ? (
 								<ConversationListItemComponent
-									conversationId={item.id}
+									conversationId={id}
 									visible={visible}
 									selected={isSelected}
 									activeItemId={itemId}
@@ -124,12 +125,12 @@ export const ConversationList = (): React.JSX.Element => {
 					</ListItem>
 				);
 			}),
-		[conversationIdsArray, deselectAll, folderId, isSelectModeOn, itemId, selected, toggle]
+		[conversationsIds, deselectAll, folderId, isSelectModeOn, itemId, selected, toggle]
 	);
 
 	const totalConversations = useMemo(
-		() => conversationsIds.size ?? folder?.n ?? 0,
-		[conversationsIds.size, folder?.n]
+		() => conversationsIds.length ?? folder?.n ?? 0,
+		[conversationsIds.length, folder?.n]
 	);
 	const selectedIds = useMemo(() => Object.keys(selected), [selected]);
 

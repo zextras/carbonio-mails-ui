@@ -42,7 +42,7 @@ export const BackupSearchList = (): React.JSX.Element => {
 	} = useSelection({
 		setCount,
 		count,
-		items: [...Object.values(messages ?? {})]
+		items: [...Object.keys(messages ?? {})]
 	});
 
 	const selectedIds = useMemo(() => Object.keys(selectedMessage), [selectedMessage]);

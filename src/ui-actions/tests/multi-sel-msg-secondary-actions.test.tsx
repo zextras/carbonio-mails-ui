@@ -98,7 +98,7 @@ describe('Actions visibility', () => {
 
 				const testProps = {
 					...props,
-					itemsIds: new Set(messages.map((message) => message.id)),
+					itemsIds: messages.map((message) => message.id),
 					folderId: excludedFolder,
 					selectedIds
 				};
@@ -119,7 +119,7 @@ describe('Actions visibility', () => {
 				const selectedIds = getSelectedIds(messages);
 				const testProps = {
 					...props,
-					itemsIds: new Set(messages.map((message) => message.id)),
+					itemsIds: messages.map((message) => message.id),
 					folderId: folders.value[0],
 					selectedIds
 				};
@@ -152,7 +152,7 @@ describe('Actions visibility', () => {
 
 				const testProps = {
 					...props,
-					itemsIds: new Set(messages.map((message) => message.id)),
+					itemsIds: messages.map((message) => message.id),
 					folderId: excludedFolder,
 					selectedIds
 				};
@@ -172,7 +172,7 @@ describe('Actions visibility', () => {
 				const selectedIds = getSelectedIds(messages);
 				const testProps = {
 					...props,
-					itemsIds: new Set(messages.map((message) => message.id)),
+					itemsIds: messages.map((message) => message.id),
 					folderId: folders.value[0],
 					selectedIds
 				};
@@ -205,7 +205,7 @@ describe('Actions visibility', () => {
 
 				const testProps = {
 					...props,
-					itemsIds: new Set(messages.map((message) => message.id)),
+					itemsIds: messages.map((message) => message.id),
 					folderId: excludedFolder,
 					selectedIds
 				};
@@ -225,7 +225,7 @@ describe('Actions visibility', () => {
 				const selectedIds = getSelectedIds(messages);
 				const testProps = {
 					...props,
-					itemsIds: new Set(messages.map((message: MailMessage) => message.id)) as Set<string>,
+					itemsIds: messages.map((message: MailMessage) => message.id),
 					folderId: folders.value[0],
 					selectedIds
 				};
@@ -257,7 +257,7 @@ describe('Actions visibility', () => {
 
 				const testProps = {
 					...props,
-					itemsIds: new Set(messages.map((message) => message.id)),
+					itemsIds: messages.map((message) => message.id),
 					folderId: excludedFolder,
 					selectedIds
 				};
@@ -278,7 +278,7 @@ describe('Actions visibility', () => {
 				const selectedIds = getSelectedIds(messages);
 				const testProps = {
 					...props,
-					itemsIds: new Set(messages.map((message) => message.id)),
+					itemsIds: messages.map((message) => message.id),
 					folderId: folders.value[0],
 					selectedIds
 				};

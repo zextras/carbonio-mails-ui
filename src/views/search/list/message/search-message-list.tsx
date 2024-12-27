@@ -35,9 +35,8 @@ export const SearchMessageList: FC<SearchListProps> = ({
 	const { itemId } = useParams<{ itemId: string }>();
 	const loadingMore = useRef<boolean>(false);
 	const { setCount, count } = useAppContext<AppContext>();
-	const items = [...messageIds].map((messageId) => ({ id: messageId }));
 	const listRef = useRef<HTMLDivElement>(null);
-	const totalMessages = useMemo(() => messageIds.size, [messageIds]);
+	const totalMessages = useMemo(() => messageIds.length, [messageIds]);
 
 	const {
 		selected,
@@ -51,7 +50,7 @@ export const SearchMessageList: FC<SearchListProps> = ({
 	} = useSelection({
 		setCount,
 		count,
-		items
+		items: messageIds
 	});
 
 	const displayerTitle = useMemo(() => {

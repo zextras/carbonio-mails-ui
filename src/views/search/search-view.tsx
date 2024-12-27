@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, Suspense, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 
 import { Container, Spinner } from '@zextras/carbonio-design-system';
 import { SearchViewProps, setAppContext, t, useUserSettings } from '@zextras/carbonio-shell-ui';
@@ -18,7 +18,11 @@ import { useIsMessageView, useRunSearch } from './search-view-hooks';
 import { useUpdateView } from '../../carbonio-ui-commons/hooks/use-update-view';
 import { API_REQUEST_STATUS } from '../../constants';
 
-const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHeader }) => {
+const SearchView = ({
+	useDisableSearch,
+	useQuery,
+	ResultsHeader
+}: SearchViewProps): React.JSX.Element => {
 	useUpdateView();
 
 	const { path } = useRouteMatch();
@@ -93,7 +97,7 @@ const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHe
 							{isMessageView ? (
 								<SearchMessageList
 									searchDisabled={searchDisabled}
-									searchResults={searchResults.messageIdSet}
+									searchResults={searchResults.messageListIndex}
 									query={queryToString}
 									loading={loading}
 									filterCount={filterCount}
@@ -105,7 +109,7 @@ const SearchView: FC<SearchViewProps> = ({ useDisableSearch, useQuery, ResultsHe
 							) : (
 								<SearchConversationList
 									searchDisabled={searchDisabled}
-									searchResults={searchResults.conversationIdSet}
+									searchResults={searchResults.conversationListIndex}
 									query={queryToString}
 									loading={loading}
 									filterCount={filterCount}

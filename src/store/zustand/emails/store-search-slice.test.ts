@@ -5,7 +5,6 @@
  */
 
 import { renderHook } from '@testing-library/react';
-import { enableMapSet } from 'immer';
 
 import {
 	setSearchResultsByConversation,
@@ -69,9 +68,9 @@ describe('emails store search slice', () => {
 			const { result } = renderHook(() => useSearchResults());
 			const { result: conversation1Store } = renderHook(() => useConversationById('1'));
 			const { result: conversation2Store } = renderHook(() => useConversationById('2'));
-			expect(result.current.conversationIdSet.size).toBe(1);
-			expect(result.current.conversationIdSet.has('1')).toBe(false);
-			expect(result.current.conversationIdSet.has('2')).toBe(true);
+			expect(result.current.conversationListIndex.length).toBe(1);
+			expect(result.current.conversationListIndex.includes('1')).toBe(false);
+			expect(result.current.conversationListIndex.includes('2')).toBe(true);
 			expect(conversation1Store.current).toBeUndefined();
 			expect(conversation2Store.current).toBeDefined();
 		});
@@ -79,7 +78,6 @@ describe('emails store search slice', () => {
 
 	describe('appendMessagesToSearch', () => {
 		it('should append messages to the store', () => {
-			enableMapSet();
 			setMessagesInSearchSlice([generateMessage({ id: '1' })]);
 
 			appendMessagesToSearch([generateMessage({ id: '2' }), generateMessage({ id: '3' })], 0);
@@ -106,8 +104,8 @@ describe('emails store search slice', () => {
 			const { result: message1 } = renderHook(() => useMessageById('1'));
 			const { result: message2 } = renderHook(() => useMessageById('2'));
 			const { result: message3 } = renderHook(() => useMessageById('3'));
-			expect(result.current.messageIdSet.size).toBe(1);
-			expect(result.current.messageIdSet.has('3')).toBeTruthy();
+			expect(result.current.messageListIndex.length).toBe(1);
+			expect(result.current.messageListIndex.includes('3')).toBeTruthy();
 			expect(message1.current).toBeUndefined();
 			expect(message2.current).toBeUndefined();
 			expect(message3.current).toBeDefined();

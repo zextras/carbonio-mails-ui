@@ -16,7 +16,7 @@ import { ConversationsMultipleSelectionActions } from '../conversations/conversa
 import { MessagesMultipleSelectionActions } from '../messages/messages-multiple-selection-actions';
 
 type MultipleSelectionActionsPanelProps = {
-	itemsIds: Set<string>;
+	itemsIds: Array<string>;
 	selectedIds: Array<string>;
 	deselectAll: () => void;
 	selectAll: () => void;
@@ -40,7 +40,7 @@ export const MultipleSelectionActionsPanel = ({
 	const { zimbraPrefGroupMailBy } = useUserSettings().prefs;
 	const isConversation = zimbraPrefGroupMailBy === 'conversation';
 
-	const fullItems = useMessagesByIds([...itemsIds]);
+	const fullItems = useMessagesByIds(itemsIds);
 	const folderParentId = getFolderParentId({ folderId, isConversation, items: fullItems });
 
 	const [currentFolderId] = useState(folderParentId);

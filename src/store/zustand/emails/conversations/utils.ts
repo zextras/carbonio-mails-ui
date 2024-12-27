@@ -5,7 +5,7 @@
  */
 
 /* eslint-disable no-param-reassign */
-import produce, { enableMapSet } from 'immer';
+import produce from 'immer';
 import { forEach, some } from 'lodash';
 import { StoreApi, UseBoundStore } from 'zustand';
 
@@ -22,9 +22,7 @@ function setConversations(
 ): void {
 	useEmailsStore.setState(
 		produce((store: EmailsStoreState) => {
-			store.conversationIndexSlice.conversationIdSet = new Set(
-				conversations.map((conv) => conv.id)
-			);
+			store.conversationIndexSlice.conversationListIndex = conversations.map((conv) => conv.id);
 			store.conversationIndexSlice.status = API_REQUEST_STATUS.fulfilled;
 			store.conversationIndexSlice.offset = 0;
 			store.conversationIndexSlice.more = more;
@@ -43,14 +41,14 @@ function setConversations(
 function useConversationsIdsByFolder(
 	folderId: string,
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
-): Set<string> {
+): Array<string> {
 	const folder = useFolder(folderId);
 	const { populatedItemsSlice, conversationIndexSlice } = useEmailsStore();
-	const folderConversationsIds = new Set<string>();
+	const folderConversationsIds: Array<string> = [];
 	if (!folder) {
 		return folderConversationsIds;
 	}
-	const { conversationIdSet: conversationsIds } = conversationIndexSlice;
+	const { conversationListIndex: conversationsIds } = conversationIndexSlice;
 	forEach([...conversationsIds], (conversationId) => {
 		const wantedFolder = 'rid' in folder && folder?.rid ? `${folder.zid}:${folder.rid}` : folder.id;
 		if (
@@ -59,7 +57,7 @@ function useConversationsIdsByFolder(
 				(message) => message.parent === wantedFolder
 			)
 		) {
-			folderConversationsIds.add(conversationId);
+			folderConversationsIds.push(conversationId);
 		}
 	});
 	return folderConversationsIds;
@@ -92,13 +90,14 @@ function appendConversationsToConversationIndexSlice(
 	offset: number,
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
 ): void {
-	enableMapSet();
-	const newConversationIds = new Set(conversations.map((conv) => conv.id));
+	const newConversationIds = conversations.map((conv) => conv.id);
 	useEmailsStore.setState(
 		produce((state: EmailsStoreState) => {
-			newConversationIds.forEach((convId) =>
-				state.conversationIndexSlice.conversationIdSet.add(convId)
-			);
+			const uniqueConversationIds = new Set(state.conversationIndexSlice.conversationListIndex);
+			newConversationIds.forEach((id) => {
+				uniqueConversationIds.add(id);
+			});
+			state.conversationIndexSlice.conversationListIndex = Array.from(uniqueConversationIds);
 			state.conversationIndexSlice.offset = offset;
 			state.populatedItemsSlice.conversations = conversations.reduce((acc, conv) => {
 				acc[conv.id] = conv;

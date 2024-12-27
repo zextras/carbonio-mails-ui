@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React, { FC, memo, useMemo } from 'react';
+import React, { memo, useMemo } from 'react';
 
 import { Button, Container, ListV2 } from '@zextras/carbonio-design-system';
 import { useAppContext } from '@zextras/carbonio-shell-ui';
@@ -17,91 +17,89 @@ import type { AppContext, ConversationMessagesListProps } from '../../../../type
 import { MessageListItem } from '../messages/message-list-item';
 import { DragItemWrapper } from '../parts/drag-item-wrapper';
 
-export const ConversationMessagesList: FC<ConversationMessagesListProps> = memo(
-	function ConversationMessagesList({
-		active,
-		conversationStatus,
-		messages,
-		folderId,
-		length,
-		isSearchModule,
-		dragImageRef,
-		setDraggedIds = noop
-	}) {
-		const { setCount, count } = useAppContext<AppContext>();
+export const ConversationMessagesList = memo(function ConversationMessagesList({
+	active,
+	conversationStatus,
+	messages,
+	folderId,
+	length,
+	isSearchModule,
+	dragImageRef,
+	setDraggedIds = noop
+}: ConversationMessagesListProps): React.JSX.Element {
+	const { setCount, count } = useAppContext<AppContext>();
 
-		const { selected, toggle, deselectAll, isSelectModeOn } = useSelection({
-			setCount,
-			count,
-			items: messages
-		});
+	const { selected, toggle, deselectAll, isSelectModeOn } = useSelection({
+		setCount,
+		count,
+		items: messages.map((message) => message.id)
+	});
 
-		const listItems = useMemo(
-			() =>
-				map(messages, (message) => {
-					const isActive = active === message.id || active === message.conversation;
-					const isSelected = selected[message.id];
+	const listItems = useMemo(
+		() =>
+			map(messages, (message) => {
+				const isActive = active === message.id || active === message.conversation;
+				const isSelected = selected[message.id];
 
-					return (
-						<CustomListItem
-							selected={false}
-							active={isActive}
-							key={message.id}
-							background={'transparent'}
-						>
-							{(visible: boolean): React.JSX.Element =>
-								visible ? (
-									<DragItemWrapper
+				return (
+					<CustomListItem
+						selected={false}
+						active={isActive}
+						key={message.id}
+						background={'transparent'}
+					>
+						{(visible: boolean): React.JSX.Element =>
+							visible ? (
+								<DragItemWrapper
+									item={message}
+									selectedIds={[]}
+									selectedItems={{}}
+									setDraggedIds={setDraggedIds}
+									dragImageRef={dragImageRef}
+									dragAndDropIsDisabled={!!isSearchModule}
+									deselectAll={deselectAll}
+								>
+									<MessageListItem
 										item={message}
-										selectedIds={[]}
-										selectedItems={{}}
-										setDraggedIds={setDraggedIds}
-										dragImageRef={dragImageRef}
-										dragAndDropIsDisabled={!!isSearchModule}
+										selected={isSelected}
+										selecting={isSelectModeOn}
+										visible={visible}
+										toggle={toggle}
+										active={isActive}
+										isConvChildren
 										deselectAll={deselectAll}
-									>
-										<MessageListItem
-											item={message}
-											selected={isSelected}
-											selecting={isSelectModeOn}
-											visible={visible}
-											toggle={toggle}
-											active={isActive}
-											isConvChildren
-											deselectAll={deselectAll}
-											currentFolderId={folderId}
-											isSearchModule={isSearchModule}
-										/>
-									</DragItemWrapper>
-								) : (
-									<div style={{ height: '4rem' }} />
-								)
-							}
-						</CustomListItem>
-					);
-				}),
-			[
-				active,
-				deselectAll,
-				dragImageRef,
-				folderId,
-				isSearchModule,
-				isSelectModeOn,
-				messages,
-				selected,
-				setDraggedIds,
-				toggle
-			]
+										currentFolderId={folderId}
+										isSearchModule={isSearchModule}
+									/>
+								</DragItemWrapper>
+							) : (
+								<div style={{ height: '4rem' }} />
+							)
+						}
+					</CustomListItem>
+				);
+			}),
+		[
+			active,
+			deselectAll,
+			dragImageRef,
+			folderId,
+			isSearchModule,
+			isSelectModeOn,
+			messages,
+			selected,
+			setDraggedIds,
+			toggle
+		]
+	);
+
+	if (conversationStatus !== API_REQUEST_STATUS.fulfilled) {
+		return (
+			<Container height={64 * length}>
+				<Button loading disabled label="" type="ghost" onClick={noop} />
+			</Container>
 		);
-
-		if (conversationStatus !== API_REQUEST_STATUS.fulfilled) {
-			return (
-				<Container height={64 * length}>
-					<Button loading disabled label="" type="ghost" onClick={noop} />
-				</Container>
-			);
-		}
-
-		return <ListV2 style={{ paddingBottom: '0.25rem' }}>{listItems}</ListV2>;
 	}
-);
+
+	return <ListV2 style={{ paddingBottom: '0.25rem' }}>{listItems}</ListV2>;
+});

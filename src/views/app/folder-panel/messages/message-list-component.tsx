@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, memo, useCallback, useEffect, useMemo } from 'react';
+import React, { memo, useCallback, useEffect, useMemo } from 'react';
 
 import { Container, Padding, Text } from '@zextras/carbonio-design-system';
 import { noop } from 'lodash';
@@ -41,7 +41,7 @@ export type MessageListComponentProps = {
 	// the id of the current folder
 	folderId: string;
 	// the messages to display
-	messageIds: Set<string>;
+	messageIds: Array<string>;
 	// the ids of the messages being dragged
 	draggedIds?: Record<string, boolean>;
 	// the function to call when the user starts dragging a message
@@ -68,108 +68,106 @@ export type MessageListComponentProps = {
 	hasMore?: boolean;
 };
 
-export const MessageListComponent: FC<MessageListComponentProps> = memo(
-	function MessageListComponent({
-		displayerTitle,
-		listItems,
-		loadMore = noop,
-		totalMessages,
-		messagesLoadingCompleted,
-		selectedIds,
-		folderId,
-		messageIds,
-		draggedIds,
-		setDraggedIds,
-		isSearchModule,
-		isSelectModeOn,
-		selected,
-		deselectAll,
-		selectAll,
-		isAllSelected,
-		selectAllModeOff,
-		setIsSelectModeOn,
-		dragImageRef,
-		hasMore,
-		listRef
-	}) {
-		useEffect(() => {
-			setDraggedIds?.(selected);
-		}, [selected, setDraggedIds]);
+export const MessageListComponent = memo(function MessageListComponent({
+	displayerTitle,
+	listItems,
+	loadMore = noop,
+	totalMessages,
+	messagesLoadingCompleted,
+	selectedIds,
+	folderId,
+	messageIds,
+	draggedIds,
+	setDraggedIds,
+	isSearchModule,
+	isSelectModeOn,
+	selected,
+	deselectAll,
+	selectAll,
+	isAllSelected,
+	selectAllModeOff,
+	setIsSelectModeOn,
+	dragImageRef,
+	hasMore,
+	listRef
+}: MessageListComponentProps): React.JSX.Element {
+	useEffect(() => {
+		setDraggedIds?.(selected);
+	}, [selected, setDraggedIds]);
 
-		const folder = useFolder(folderId);
-		const root = useRoot(folder?.id ?? '');
-		const showBreadcrumbs = useMemo(
-			() =>
-				!isSearchModule ||
-				typeof isSearchModule === 'undefined' ||
-				(isSearchModule && totalMessages > 0),
-			[isSearchModule, totalMessages]
-		);
+	const folder = useFolder(folderId);
+	const root = useRoot(folder?.id ?? '');
+	const showBreadcrumbs = useMemo(
+		() =>
+			!isSearchModule ||
+			typeof isSearchModule === 'undefined' ||
+			(isSearchModule && totalMessages > 0),
+		[isSearchModule, totalMessages]
+	);
 
-		const folderPath = useMemo(
-			() => getFolderPath(folder, root, isSearchModule),
-			[root, folder, isSearchModule]
-		);
+	const folderPath = useMemo(
+		() => getFolderPath(folder, root, isSearchModule),
+		[root, folder, isSearchModule]
+	);
 
-		const onListBottom = useCallback((): void => {
-			loadMore?.();
-		}, [loadMore]);
+	const onListBottom = useCallback((): void => {
+		loadMore?.();
+	}, [loadMore]);
 
-		return (
-			<>
-				{isSelectModeOn ? (
-					<MultipleSelectionActionsPanel
-						itemsIds={messageIds}
-						selectedIds={selectedIds}
-						deselectAll={deselectAll}
-						selectAll={selectAll}
-						isAllSelected={isAllSelected}
-						selectAllModeOff={selectAllModeOff}
+	return (
+		<>
+			{isSelectModeOn ? (
+				<MultipleSelectionActionsPanel
+					itemsIds={messageIds}
+					selectedIds={selectedIds}
+					deselectAll={deselectAll}
+					selectAll={selectAll}
+					isAllSelected={isAllSelected}
+					selectAllModeOff={selectAllModeOff}
+					setIsSelectModeOn={setIsSelectModeOn}
+					folderId={folderId}
+				/>
+			) : (
+				showBreadcrumbs && (
+					<Breadcrumbs
+						folderPath={folderPath}
+						itemsCount={totalMessages}
+						isSelectModeOn={isSelectModeOn}
 						setIsSelectModeOn={setIsSelectModeOn}
 						folderId={folderId}
+						isSearchModule={isSearchModule}
 					/>
-				) : (
-					showBreadcrumbs && (
-						<Breadcrumbs
-							folderPath={folderPath}
-							itemsCount={totalMessages}
-							isSelectModeOn={isSelectModeOn}
-							setIsSelectModeOn={setIsSelectModeOn}
-							folderId={folderId}
-							isSearchModule={isSearchModule}
-						/>
-					)
+				)
+			)}
+			<>
+				{!messagesLoadingCompleted && <ShimmerList count={totalMessages} />}
+				{messagesLoadingCompleted && (totalMessages > 0 || hasMore) && (
+					<CustomList
+						onListBottom={onListBottom}
+						data-testid={`message-list-${folderId}`}
+						ref={listRef}
+					>
+						{listItems}
+					</CustomList>
 				)}
-				<>
-					{!messagesLoadingCompleted && <ShimmerList count={totalMessages} />}
-					{messagesLoadingCompleted && (totalMessages > 0 || hasMore) && (
-						<CustomList
-							onListBottom={onListBottom}
-							data-testid={`message-list-${folderId}`}
-							ref={listRef}
-						>
-							{listItems}
-						</CustomList>
-					)}
-					{messagesLoadingCompleted && totalMessages === 0 && !hasMore && (
-						<Container>
-							<Padding top="medium">
-								<Text
-									color="gray1"
-									overflow="break-word"
-									size="small"
-									style={{ whiteSpace: 'pre-line', textAlign: 'center', paddingTop: '2rem' }}
-								>
-									{displayerTitle}
-								</Text>
-							</Padding>
-						</Container>
-					)}
-					<DragImageContainer ref={dragImageRef}>
-						<DragItems draggedIds={draggedIds ?? {}} />
-					</DragImageContainer>
-				</>
+				{messagesLoadingCompleted && totalMessages === 0 && !hasMore && (
+					<Container>
+						<Padding top="medium">
+							<Text
+								color="gray1"
+								overflow="break-word"
+								size="small"
+								style={{ whiteSpace: 'pre-line', textAlign: 'center', paddingTop: '2rem' }}
+							>
+								{displayerTitle}
+							</Text>
+						</Padding>
+					</Container>
+				)}
+				<DragImageContainer ref={dragImageRef}>
+					<DragItems draggedIds={draggedIds ?? {}} />
+				</DragImageContainer>
 			</>
-		);
-	}
-);
+		</>
+	);
+});

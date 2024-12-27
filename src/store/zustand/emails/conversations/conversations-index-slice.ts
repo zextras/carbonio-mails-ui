@@ -10,7 +10,7 @@ import { ConversationIndexSliceState, PopulatedItemsSliceState } from '../../../
 
 export const CONVERSATION_INDEX_SLICE_INITIAL_STATE: ConversationIndexSliceState['conversationIndexSlice'] =
 	{
-		conversationIdSet: new Set<string>(),
+		conversationListIndex: [],
 		more: false,
 		offset: 0,
 		status: null

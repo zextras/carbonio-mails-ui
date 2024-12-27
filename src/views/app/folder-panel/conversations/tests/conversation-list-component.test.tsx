@@ -64,7 +64,7 @@ describe.each`
 			conversationsLoadingCompleted: true,
 			selectedIds: [],
 			folderId,
-			conversationsIds: new Set(conversations.map((conversation) => conversation.id)),
+			conversationsIds: conversations.map((conversation) => conversation.id),
 			isSelectModeOn: false,
 			selected: {},
 			deselectAll,

@@ -9,7 +9,7 @@ import { StateCreator } from 'zustand';
 import { MessageIndexSliceState, PopulatedItemsSliceState } from '../../../../types';
 
 export const MESSAGE_INDEX_SLICE_INITIAL_STATE: MessageIndexSliceState['messageIndexSlice'] = {
-	messageIdSet: new Set<string>(),
+	messageListIndex: [],
 	more: false,
 	offset: 0,
 	status: null

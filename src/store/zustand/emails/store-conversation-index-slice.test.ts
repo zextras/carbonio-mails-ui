@@ -31,7 +31,7 @@ describe('useConversationIndexSlice', () => {
 		setConversationsInEmailStore(conversations, false);
 		const { result } = renderHook(() => useConversationIndexSlice());
 		const expectedResult = {
-			conversationIdSet: new Set(['1', '2']),
+			conversationListIndex: ['1', '2'],
 			more: false,
 			offset: 0,
 			status: 'fulfilled'
@@ -50,14 +50,14 @@ describe('useConversationsIdsByFolder', () => {
 		const folder = generateFolder({ id: '5' });
 		useFolderStore.setState({ folders: { [folder.id]: folder } });
 		const { result } = renderHook(() => useConversationsIdsByFolder(folder.id));
-		expect(result.current).toEqual(new Set(['1', '2']));
+		expect(result.current).toEqual(['1', '2']);
 	});
 	it('should return an empty set if no conversations match the folder', () => {
 		setConversationsInEmailStore([conversation1, conversation2, conversation3], false);
 		const folder = generateFolder({ id: '4' });
 		useFolderStore.setState({ folders: { [folder.id]: folder } });
 		const { result } = renderHook(() => useConversationsIdsByFolder(folder.id));
-		expect(result.current).toEqual(new Set([]));
+		expect(result.current).toEqual([]);
 	});
 	it('should handle folders with rid and zid properties', () => {
 		const conversation4 = generateConversation({ id: '4', folderId: '5:123' });
@@ -68,18 +68,18 @@ describe('useConversationsIdsByFolder', () => {
 		const folder2 = generateFolder({ id: '5' });
 		useFolderStore.setState({ folders: { [folder1.id]: folder1, [folder2.id]: folder2 } });
 		const { result } = renderHook(() => useConversationsIdsByFolder(folder1.id));
-		expect(result.current).toEqual(new Set(['4', '5']));
+		expect(result.current).toEqual(['4', '5']);
 	});
 	it('should not include conversation IDs from other folders', () => {
 		setConversationsInEmailStore([conversation1, conversation2, conversation3], false);
 		const folder = generateFolder({ id: '5' });
 		useFolderStore.setState({ folders: { [folder.id]: folder } });
 		const { result } = renderHook(() => useConversationsIdsByFolder(folder.id));
-		expect(result.current).toEqual(new Set(['1', '2']));
+		expect(result.current).toEqual(['1', '2']);
 	});
 	it('should handle an empty conversationsSlice gracefully', () => {
 		const { result } = renderHook(() => useConversationsIdsByFolder('5'));
-		expect(result.current).toEqual(new Set([]));
+		expect(result.current).toEqual([]);
 	});
 });
 
@@ -88,7 +88,7 @@ describe('setConversationsInEmailStore', () => {
 		it('should set the conversation IDs correctly in the state', () => {
 			setConversationsInEmailStore([conversation1, conversation2, conversation3], false);
 			const { result } = renderHook(() => useConversationIndexSlice());
-			expect(result.current.conversationIdSet).toEqual(new Set(['1', '2', '3']));
+			expect(result.current.conversationListIndex).toEqual(['1', '2', '3']);
 		});
 
 		it('should set the conversations in populatedItemsSlice correctly', () => {
@@ -125,7 +125,7 @@ describe('setConversationsInEmailStore', () => {
 		it('should set the conversationIds as an empty Set', () => {
 			setConversationsInEmailStore([], false);
 			const { result } = renderHook(() => useConversationIndexSlice());
-			expect(result.current.conversationIdSet).toEqual(new Set([]));
+			expect(result.current.conversationListIndex).toEqual([]);
 		});
 
 		it('should set populatedItemsSlice.conversations as an empty object', () => {
@@ -161,7 +161,7 @@ describe('resetConversationsAndPopulatedItems', () => {
 		it('should reset conversationsSlice to its initial state', () => {
 			setConversationsInEmailStore([conversation1], true);
 			const { result: initialState } = renderHook(() => useConversationIndexSlice());
-			expect(initialState.current.conversationIdSet).toEqual(new Set(['1']));
+			expect(initialState.current.conversationListIndex).toEqual(['1']);
 			act(() => resetConversationAndPopulatedItems());
 			const { result } = renderHook(() => useConversationIndexSlice());
 			expect(result.current).toEqual(CONVERSATION_INDEX_SLICE_INITIAL_STATE);
@@ -170,7 +170,7 @@ describe('resetConversationsAndPopulatedItems', () => {
 		it('should reset populatedItemsSlice to its initial state', () => {
 			setConversationsInEmailStore([conversation1], true);
 			const { result: initialState } = renderHook(() => useConversationIndexSlice());
-			expect(initialState.current.conversationIdSet).toEqual(new Set(['1']));
+			expect(initialState.current.conversationListIndex).toEqual(['1']);
 			act(() => resetConversationAndPopulatedItems());
 			const { result } = renderHook(() => usePopulatedItemsSlice());
 			expect(result.current).toEqual(POPULATED_ITEMS_SLICE_INITIAL_STATE);
@@ -183,16 +183,16 @@ describe('appendConversationsToConversationIndexSlice', () => {
 		it('should add new conversation IDs to conversationsSlice.conversationIds', () => {
 			setConversationsInEmailStore([conversation1], true);
 			const { result: initialState } = renderHook(() => useConversationIndexSlice());
-			expect(initialState.current.conversationIdSet).toEqual(new Set(['1']));
+			expect(initialState.current.conversationListIndex).toEqual(['1']);
 			act(() => appendConversationsToConversationIndexSlice([conversation2], 0));
 			const { result } = renderHook(() => useConversationIndexSlice());
-			expect(result.current.conversationIdSet).toEqual(new Set(['1', '2']));
+			expect(result.current.conversationListIndex).toEqual(['1', '2']);
 		});
 
 		it('should update the offset in conversationsSlice', () => {
 			setConversationsInEmailStore([conversation1], true);
 			const { result: initialState } = renderHook(() => useConversationIndexSlice());
-			expect(initialState.current.conversationIdSet).toEqual(new Set(['1']));
+			expect(initialState.current.conversationListIndex).toEqual(['1']);
 			act(() => appendConversationsToConversationIndexSlice([conversation2], 555));
 			const { result } = renderHook(() => useConversationIndexSlice());
 			expect(result.current.offset).toEqual(555);
@@ -201,7 +201,7 @@ describe('appendConversationsToConversationIndexSlice', () => {
 		it('should append conversations to populatedItemsSlice.conversations without overwriting the existing ones', () => {
 			setConversationsInEmailStore([conversation1], true);
 			const { result: initialState } = renderHook(() => useConversationIndexSlice());
-			expect(initialState.current.conversationIdSet).toEqual(new Set(['1']));
+			expect(initialState.current.conversationListIndex).toEqual(['1']);
 			act(() => appendConversationsToConversationIndexSlice([conversation2], 0));
 			const { result } = renderHook(() => usePopulatedItemsSlice());
 			expect(result.current.conversations).toEqual({ '1': conversation1, '2': conversation2 });
@@ -212,16 +212,16 @@ describe('appendConversationsToConversationIndexSlice', () => {
 		it('should not modify conversationsSlice.conversationIds', () => {
 			setConversationsInEmailStore([conversation1], true);
 			const { result: initialState } = renderHook(() => useConversationIndexSlice());
-			expect(initialState.current.conversationIdSet).toEqual(new Set(['1']));
+			expect(initialState.current.conversationListIndex).toEqual(['1']);
 			act(() => appendConversationsToConversationIndexSlice([], 555));
 			const { result } = renderHook(() => useConversationIndexSlice());
-			expect(result.current.conversationIdSet).toEqual(new Set(['1']));
+			expect(result.current.conversationListIndex).toEqual(['1']);
 		});
 
 		it('should still update the offset', () => {
 			setConversationsInEmailStore([conversation1], true);
 			const { result: initialState } = renderHook(() => useConversationIndexSlice());
-			expect(initialState.current.conversationIdSet).toEqual(new Set(['1']));
+			expect(initialState.current.conversationListIndex).toEqual(['1']);
 			act(() => appendConversationsToConversationIndexSlice([], 555));
 			const { result } = renderHook(() => useConversationIndexSlice());
 			expect(result.current.offset).toEqual(555);
@@ -230,7 +230,7 @@ describe('appendConversationsToConversationIndexSlice', () => {
 		it('should not modify populatedItemsSlice.conversations', () => {
 			setConversationsInEmailStore([conversation1], true);
 			const { result: initialState } = renderHook(() => useConversationIndexSlice());
-			expect(initialState.current.conversationIdSet).toEqual(new Set(['1']));
+			expect(initialState.current.conversationListIndex).toEqual(['1']);
 			act(() => appendConversationsToConversationIndexSlice([], 0));
 			const { result } = renderHook(() => usePopulatedItemsSlice());
 			expect(result.current.conversations).toEqual({ '1': conversation1 });
@@ -241,7 +241,7 @@ describe('appendConversationsToConversationIndexSlice', () => {
 		it('should not add duplicate IDs to conversationsSlice.conversationIds', () => {
 			setConversationsInEmailStore([conversation1, conversation2], true);
 			const { result: initialState } = renderHook(() => useConversationIndexSlice());
-			expect(initialState.current.conversationIdSet).toEqual(new Set(['1', '2']));
+			expect(initialState.current.conversationListIndex).toEqual(['1', '2']);
 			act(() =>
 				appendConversationsToConversationIndexSlice(
 					[conversation2, conversation3, conversation3],
@@ -249,13 +249,13 @@ describe('appendConversationsToConversationIndexSlice', () => {
 				)
 			);
 			const { result } = renderHook(() => useConversationIndexSlice());
-			expect(result.current.conversationIdSet).toEqual(new Set(['1', '2', '3']));
+			expect(result.current.conversationListIndex).toEqual(['1', '2', '3']);
 		});
 
 		it('should update existing conversations in populatedItemsSlice.conversations if they exist', () => {
 			setConversationsInEmailStore([conversation1], true);
 			const { result: initialState } = renderHook(() => useConversationIndexSlice());
-			expect(initialState.current.conversationIdSet).toEqual(new Set(['1']));
+			expect(initialState.current.conversationListIndex).toEqual(['1']);
 			const updatedConversation1 = { ...conversation1, subject: 'Updated subject' };
 			act(() => appendConversationsToConversationIndexSlice([updatedConversation1], 555));
 			const { result } = renderHook(() => usePopulatedItemsSlice());

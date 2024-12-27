@@ -66,7 +66,7 @@ export type ConversationListComponentProps = {
 	// the id of the current folder
 	folderId: string;
 	// the conversations to display
-	conversationsIds: Set<string>;
+	conversationsIds: Array<string>;
 	// the ids of the conversations being dragged
 	draggedIds?: Record<string, boolean>;
 	// the function to call when the user starts dragging a conversation

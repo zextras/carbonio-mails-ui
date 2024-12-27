@@ -33,11 +33,10 @@ export const MessageList = (): React.JSX.Element => {
 	const [draggedIds, setDraggedIds] = useState<Record<string, boolean>>({});
 
 	const { messageIndexSlice } = useMessageListByFolder(folderId);
-	const { messageIdSet, status } = messageIndexSlice;
+	const { messageListIndex, status } = messageIndexSlice;
 
 	const { prefs } = useUserSettings();
 	const { sortOrder } = parseMessageSortingOptions(folderId, prefs.zimbraPrefSortOrder as string);
-	const items = [...messageIdSet].map((messageId) => ({ id: messageId }));
 	const {
 		selected,
 		deselectAll,
@@ -50,7 +49,7 @@ export const MessageList = (): React.JSX.Element => {
 	} = useSelection({
 		setCount,
 		count,
-		items
+		items: messageListIndex
 	});
 
 	const hasMore = messageIndexSlice.more;
@@ -60,12 +59,12 @@ export const MessageList = (): React.JSX.Element => {
 		loadingMore,
 		hasMore,
 		sortBy: sortOrder,
-		offset: messageIdSet.size,
+		offset: messageListIndex.length,
 		limit: LIST_LIMIT.LOAD_MORE_LIMIT
 	});
 
 	const displayerTitle = useMemo(() => {
-		if (messageIdSet?.size === 0) {
+		if (messageListIndex?.length === 0) {
 			if (getFolderIdParts(folderId).id === FOLDERS.SPAM) {
 				return t('displayer.list_spam_title', 'There are no spam e-mails');
 			}
@@ -81,24 +80,19 @@ export const MessageList = (): React.JSX.Element => {
 			return t('displayer.list_folder_title', 'It looks like there are no e-mails yet');
 		}
 		return null;
-	}, [messageIdSet.size, folderId, t]);
+	}, [messageListIndex?.length, folderId, t]);
 
 	const listItems = useMemo(
 		() =>
-			map(items, (item) => {
-				const isSelected = selected[item.id];
-				const active = itemId === item.id;
+			map(messageListIndex, (id) => {
+				const isSelected = selected[id];
+				const active = itemId === id;
 				return (
-					<CustomListItem
-						key={item.id}
-						selected={isSelected}
-						active={active}
-						background={'transparent'}
-					>
+					<CustomListItem key={id} selected={isSelected} active={active} background={'transparent'}>
 						{(visible: boolean): ReactElement =>
 							visible ? (
 								<MessageListItemComponent
-									messageId={item.id}
+									messageId={id}
 									selected={selected}
 									isSelected={isSelected}
 									active={active}
@@ -106,7 +100,7 @@ export const MessageList = (): React.JSX.Element => {
 									isSelectModeOn={isSelectModeOn}
 									dragImageRef={dragImageRef}
 									draggedIds={draggedIds}
-									key={item.id}
+									key={id}
 									deselectAll={deselectAll}
 									visible={visible}
 									setDraggedIds={setDraggedIds}
@@ -119,15 +113,15 @@ export const MessageList = (): React.JSX.Element => {
 					</CustomListItem>
 				);
 			}),
-		[deselectAll, draggedIds, folderId, isSelectModeOn, itemId, items, selected, toggle]
+		[deselectAll, draggedIds, folderId, isSelectModeOn, itemId, messageListIndex, selected, toggle]
 	);
 
 	const totalMessages = useMemo(() => {
 		if (sortOrder === 'readAsc') {
-			return messageIdSet.size;
+			return messageListIndex.length;
 		}
-		return folder?.n ?? messageIdSet.size ?? 0;
-	}, [folder?.n, messageIdSet.size, sortOrder]);
+		return folder?.n ?? messageListIndex.length ?? 0;
+	}, [folder?.n, messageListIndex.length, sortOrder]);
 
 	const selectedIds = useMemo(() => Object.keys(selected), [selected]);
 
@@ -146,7 +140,7 @@ export const MessageList = (): React.JSX.Element => {
 			messagesLoadingCompleted={messagesLoadingCompleted}
 			selectedIds={selectedIds}
 			folderId={folderId}
-			messageIds={messageIdSet}
+			messageIds={messageListIndex}
 			draggedIds={draggedIds}
 			setDraggedIds={setDraggedIds}
 			isSelectModeOn={isSelectModeOn}

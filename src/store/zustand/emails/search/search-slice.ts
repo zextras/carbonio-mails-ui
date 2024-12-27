@@ -13,8 +13,8 @@ import {
 } from '../../../../types';
 
 export const SEARCH_INDEX_SLICE_INITIAL_STATE: SearchIndexSliceState['searchIndexSlice'] = {
-	conversationIdSet: new Set<string>(),
-	messageIdSet: new Set<string>(),
+	conversationListIndex: [],
+	messageListIndex: [],
 	more: false,
 	offset: 0,
 	status: null

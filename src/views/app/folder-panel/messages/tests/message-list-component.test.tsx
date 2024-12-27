@@ -50,7 +50,7 @@ describe.each`
 			deselectAll: noop,
 			displayerTitle: 'test',
 			folderId,
-			messageIds: new Set(messages.map((msg) => msg.id)),
+			messageIds: messages.map((msg) => msg.id),
 			isAllSelected: false,
 			isSelectModeOn: false,
 			listItems,

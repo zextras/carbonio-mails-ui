@@ -160,7 +160,7 @@ export function useMessagesSlice(): EmailsStoreState['messageIndexSlice'] {
 	return useEmailsStore(({ messageIndexSlice: messagesSlice }) => messagesSlice);
 }
 
-export function useMessagesIdsByFolder(folderId: string): Set<string> {
+export function useMessagesIdsByFolder(folderId: string): Array<string> {
 	return messageIndexSliceUtils.useMessagesIdsByFolder(folderId, useEmailsStore);
 }
 
@@ -206,7 +206,7 @@ export function appendMessagesToMessagesSlice(
 export function useConversationIndexSlice(): EmailsStoreState['conversationIndexSlice'] {
 	return useEmailsStore(({ conversationIndexSlice }) => conversationIndexSlice);
 }
-export function useConversationsIdsByFolder(folderId: string): Set<string> {
+export function useConversationsIdsByFolder(folderId: string): Array<string> {
 	return conversationIndexSliceUtils.useConversationsIdsByFolder(folderId, useEmailsStore);
 }
 

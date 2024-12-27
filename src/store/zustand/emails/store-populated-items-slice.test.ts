@@ -5,7 +5,6 @@
  */
 
 import { renderHook } from '@testing-library/react';
-import { enableMapSet } from 'immer';
 
 import {
 	appendConversations,
@@ -92,8 +91,6 @@ describe('store-populated-items-slice', () => {
 
 	describe('getSearchResultsLoadingStatus', () => {
 		it('should update the search loading status when updateSearchResultsLoadingStatus is called', () => {
-			enableMapSet();
-
 			setSearchResultsByConversation([generateConversation({ id: '1', messages: [] })], false);
 			const { result } = renderHook(() => getSearchResultsLoadingStatus());
 
@@ -107,7 +104,6 @@ describe('store-populated-items-slice', () => {
 	});
 	describe('appendConversations', () => {
 		it('should append conversations to the store when appendConversations is called', () => {
-			enableMapSet();
 			setSearchResultsByConversation([generateConversation({ id: '1', messages: [] })], false);
 
 			appendConversations(
