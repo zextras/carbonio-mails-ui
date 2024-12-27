@@ -49,7 +49,7 @@ function useConversationsIdsByFolder(
 		return folderConversationsIds;
 	}
 	const { conversationListIndex: conversationsIds } = conversationIndexSlice;
-	forEach([...conversationsIds], (conversationId) => {
+	forEach(conversationsIds, (conversationId) => {
 		const wantedFolder = 'rid' in folder && folder?.rid ? `${folder.zid}:${folder.rid}` : folder.id;
 		if (
 			some(

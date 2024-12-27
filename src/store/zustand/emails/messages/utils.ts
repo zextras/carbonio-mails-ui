@@ -6,7 +6,6 @@
 
 /* eslint-disable no-param-reassign */
 import produce from 'immer';
-import { forEach } from 'lodash';
 import { StoreApi, UseBoundStore } from 'zustand';
 
 import { MESSAGE_INDEX_SLICE_INITIAL_STATE } from './messages-slice';
@@ -48,18 +47,17 @@ function useMessagesIdsByFolder(
 	folderId: string,
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
 ): Array<string> {
-	const folderMessagesIds: Array<string> = [];
-	const folder = useFolder(folderId);
 	const { populatedItemsSlice, messageIndexSlice } = useEmailsStore();
-	if (!folder) return folderMessagesIds;
+	const folder = useFolder(folderId);
+	if (!folder) return [];
+
 	const { messageListIndex } = messageIndexSlice;
-	forEach([...messageListIndex], (messageId) => {
-		const wantedFolder = 'rid' in folder && folder?.rid ? `${folder.zid}:${folder.rid}` : folder.id;
-		if (populatedItemsSlice.messages[messageId]?.parent === wantedFolder) {
-			folderMessagesIds.push(messageId);
-		}
-	});
-	return folderMessagesIds;
+
+	const wantedFolder = 'rid' in folder && folder?.rid ? `${folder.zid}:${folder.rid}` : folder.id;
+
+	return messageListIndex.filter(
+		(messageId) => populatedItemsSlice.messages[messageId]?.parent === wantedFolder
+	);
 }
 
 function updateMessagesResultsLoadingStatus(

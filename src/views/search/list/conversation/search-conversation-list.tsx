@@ -76,7 +76,7 @@ export const SearchConversationList = ({
 
 	const listItems = useMemo(
 		() =>
-			map([...conversationIds], (conversationId) => {
+			map(conversationIds, (conversationId) => {
 				const active = itemId === conversationId;
 
 				const isSelected = selected[conversationId];

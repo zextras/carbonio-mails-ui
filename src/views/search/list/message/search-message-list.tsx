@@ -75,7 +75,7 @@ export const SearchMessageList: FC<SearchListProps> = ({
 
 	const listItems = useMemo(
 		() =>
-			map([...messageIds], (messageId) => {
+			map(messageIds, (messageId) => {
 				const active = itemId === messageId;
 				const isSelected = selected[messageId];
 				return (
