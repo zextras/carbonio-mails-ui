@@ -8,10 +8,8 @@ import React, { Suspense, lazy } from 'react';
 import { ModalManager } from '@zextras/carbonio-design-system';
 import {
 	addRoute,
-	addSearchView,
 	addBoardView,
 	addSettingsView,
-	SearchViewProps,
 	t,
 	SecondaryBarComponentProps,
 	upsertApp
@@ -37,10 +35,6 @@ const LazyEditView = lazy(
 
 const LazySettingsView = lazy(
 	() => import(/* webpackChunkName: "mail-setting-view" */ '../views/settings/settings-view')
-);
-
-const LazySearchView = lazy(
-	() => import(/* webpackChunkName: "mail-search-view" */ '../views/search/search-view')
 );
 
 const LazySidebarView = lazy(
@@ -79,18 +73,6 @@ const SettingsView = (): React.JSX.Element => (
 	</Suspense>
 );
 
-const SearchView = (props: SearchViewProps): React.JSX.Element => (
-	<Suspense fallback={<Spinner />}>
-		<StoreProvider>
-			<ExtraWindowsManager>
-				<ModalManager>
-					<LazySearchView {...props} />
-				</ModalManager>
-			</ExtraWindowsManager>
-		</StoreProvider>
-	</Suspense>
-);
-
 const SidebarView = (props: SecondaryBarComponentProps): React.JSX.Element => (
 	<Suspense fallback={<Spinner />}>
 		<StoreProvider>
@@ -111,11 +93,6 @@ export const addComponentsToShell = async (): Promise<void> => {
 		primaryBar: 'MailModOutline',
 		secondaryBar: SidebarView,
 		appView: AppView
-	});
-	addSearchView({
-		route: MAILS_ROUTE,
-		component: SearchView,
-		label
 	});
 	addBoardView({
 		id: MAILS_BOARD_VIEW_ID,

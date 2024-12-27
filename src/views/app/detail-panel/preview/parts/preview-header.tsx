@@ -27,7 +27,7 @@ import {
 	getColor,
 	AvatarPropTypes
 } from '@zextras/carbonio-design-system';
-import { useUserAccounts, runSearch, t } from '@zextras/carbonio-shell-ui';
+import { useUserAccounts, t } from '@zextras/carbonio-shell-ui';
 import {
 	capitalize,
 	every,
@@ -51,6 +51,7 @@ import MessageContactsList from './message-contact-list';
 import OnBehalfOfDisplayer from './on-behalf-of-displayer';
 import { ParticipantRole } from '../../../../../carbonio-ui-commons/constants/participants';
 import { ZIMBRA_STANDARD_COLORS } from '../../../../../carbonio-ui-commons/constants/utils';
+import { useRunSearchIntegration } from '../../../../../carbonio-ui-commons/integrations/search/use-run-search';
 import { useTags } from '../../../../../carbonio-ui-commons/store/zustand/tags';
 import { Tag } from '../../../../../carbonio-ui-commons/types/tags';
 import { getTimeLabel, participantToString } from '../../../../../commons/utils';
@@ -214,9 +215,12 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 			every(message.tags, (tn) => tn !== ''),
 		[isTagInStore, message.tags, showMultiTagIcon]
 	);
+
+	const runSearch = useRunSearchIntegration();
+
 	const triggerSearch = useCallback(
 		(tagToSearch: Tag) =>
-			runSearch(
+			runSearch?.(
 				[
 					{
 						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -225,9 +229,6 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 						avatarIcon: 'Tag',
 						background: 'gray2',
 						hasAvatar: true,
-						// TODO: fix type definition
-						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-						// @ts-ignore
 						isGeneric: false,
 						isQueryFilter: true,
 						label: `tag:${tagToSearch?.name}`,
@@ -236,7 +237,7 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 				],
 				'mails'
 			),
-		[]
+		[runSearch]
 	);
 	const scheduledTime = useMemo(
 		() =>

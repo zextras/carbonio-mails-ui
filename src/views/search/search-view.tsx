@@ -6,7 +6,8 @@
 import React, { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 
 import { Container, Spinner } from '@zextras/carbonio-design-system';
-import { SearchViewProps, setAppContext, t, useUserSettings } from '@zextras/carbonio-shell-ui';
+import type { SearchViewProps } from '@zextras/carbonio-search-ui';
+import { setAppContext, t, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { trimEnd } from 'lodash';
 import { Route, Switch, useRouteMatch } from 'react-router-dom';
 

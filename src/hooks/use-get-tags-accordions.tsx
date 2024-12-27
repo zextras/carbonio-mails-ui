@@ -15,10 +15,12 @@ import {
 	Tooltip,
 	useModal
 } from '@zextras/carbonio-design-system';
-import { runSearch, t, QueryChip } from '@zextras/carbonio-shell-ui';
+import type { QueryChip } from '@zextras/carbonio-search-ui';
+import { t } from '@zextras/carbonio-shell-ui';
 import { reduce } from 'lodash';
 
 import { ZIMBRA_STANDARD_COLORS } from '../carbonio-ui-commons/constants/utils';
+import { useRunSearchIntegration } from '../carbonio-ui-commons/integrations/search/use-run-search';
 import { useTags } from '../carbonio-ui-commons/store/zustand/tags';
 import type { TagsAccordionItems } from '../carbonio-ui-commons/types/tags';
 import type { ItemType } from '../types';
@@ -31,9 +33,11 @@ type ItemProps = {
 const CustomComp: FC<ItemProps> = (props) => {
 	const actions = useGetTagsActions({ tag: props?.item });
 
+	const runSearch = useRunSearchIntegration();
+
 	const triggerSearch = useCallback(
 		() =>
-			runSearch(
+			runSearch?.(
 				[
 					// TODO: add a new type for query chips
 					{
@@ -49,7 +53,7 @@ const CustomComp: FC<ItemProps> = (props) => {
 				],
 				'mails'
 			),
-		[props?.item?.color, props?.item?.name]
+		[props?.item?.color, props?.item?.name, runSearch]
 	);
 
 	return (

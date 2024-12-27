@@ -156,4 +156,4 @@ const generateMessage = ({
 	messageIsFromDistributionList: false
 });
 
-export { MessageGenerationParams, generateMessage };
+export { type MessageGenerationParams, generateMessage };

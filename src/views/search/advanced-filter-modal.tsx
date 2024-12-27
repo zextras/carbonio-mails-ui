@@ -16,7 +16,8 @@ import {
 	Tooltip,
 	Text
 } from '@zextras/carbonio-design-system';
-import { QueryChip, t } from '@zextras/carbonio-shell-ui';
+import type { QueryChip } from '@zextras/carbonio-search-ui';
+import { t } from '@zextras/carbonio-shell-ui';
 import { concat, filter, includes, map, reject } from 'lodash';
 
 import AttachmentTypeEmailStatusRow from './parts/attachment-type-email-status-row';

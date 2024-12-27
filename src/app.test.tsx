@@ -13,6 +13,7 @@ import App from './app';
 import * as addComponentsToShell from './app-utils/add-shell-components';
 import * as registerShellActions from './app-utils/register-shell-actions';
 import * as registerShellIntegrations from './app-utils/register-shell-integrations';
+import * as useSearchRegisterer from './app-utils/use-search-registerer';
 import { generateFolder } from './carbonio-ui-commons/test/mocks/folders/folders-generator';
 import {
 	createAPIInterceptor,
@@ -81,6 +82,12 @@ describe('App', () => {
 		expect(addComponentsToShellSpy).toHaveBeenCalled();
 		expect(registerShellActionSpy).toHaveBeenCalled();
 		expect(registerShellIntegrationsSpy).toHaveBeenCalled();
+	});
+
+	it('should register the search', () => {
+		const useSearchRegistererSpy = jest.spyOn(useSearchRegisterer, 'useSearchRegisterer');
+		setupTest(<App />);
+		expect(useSearchRegistererSpy).toHaveBeenCalled();
 	});
 
 	it('should add the backup search route when the backup search messages are present', () => {

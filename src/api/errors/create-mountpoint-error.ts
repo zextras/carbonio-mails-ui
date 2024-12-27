@@ -10,7 +10,7 @@ import { GenericSoapApiError } from '../../carbonio-ui-commons/soap/errors/gener
 export class CreateMountpointError extends GenericSoapApiError {
 	public static readonly FOLDER_ALREADY_EXISTS = 'mail.ALREADY_EXISTS';
 
-	getLocalizedMessage(t: TFunction): string {
+	override getLocalizedMessage(t: TFunction): string {
 		if (this.fault.Detail.Error.Code === CreateMountpointError.FOLDER_ALREADY_EXISTS) {
 			return t(
 				'api.error.CreateMountpoint.folder_already_exists',

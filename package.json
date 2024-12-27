@@ -58,7 +58,8 @@
 		"@types/react-router-dom": "^5.3.3",
 		"@types/styled-components": "^5.1.26",
 		"@types/uuid": "^10.0.0",
-		"@zextras/carbonio-ui-configs": "^1.0.0",
+		"@zextras/carbonio-search-ui": "github:zextras/carbonio-search-ui#devel",
+		"@zextras/carbonio-ui-configs": "^2.0.1",
 		"@zextras/carbonio-ui-sdk": "^1.7.7",
 		"babel-plugin-styled-components": "^2.0.7",
 		"babel-plugin-transform-import-meta": "^2.2.0",
@@ -74,7 +75,7 @@
 		"msw": "^2.2.3",
 		"npm": "^10.5.0",
 		"ts-node": "^10.9.1",
-		"typescript": "^4.9.5"
+		"typescript": "^5.7.2"
 	},
 	"dependencies": {
 		"@emotion/react": "^11.11.4",
