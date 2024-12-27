@@ -6,7 +6,7 @@
 
 import { act } from 'react';
 
-import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui/lib/types/network/soap';
+import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 
 import { useFolderStore } from '../../carbonio-ui-commons/store/zustand/folder';
 import { generateFolder } from '../../carbonio-ui-commons/test/mocks/folders/folders-generator';

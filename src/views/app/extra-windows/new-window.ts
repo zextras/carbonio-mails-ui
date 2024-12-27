@@ -127,7 +127,7 @@ function copyStyles(source: Document, target: Document): void {
 
 					if (type === CSSRule.KEYFRAMES_RULE) {
 						returnText = getKeyFrameText(cssRule as CSSRuleType);
-					} else if ([CSSRule.IMPORT_RULE, CSSRule.FONT_FACE_RULE].includes(type)) {
+					} else if ([CSSRule.IMPORT_RULE, CSSRule.FONT_FACE_RULE].includes(type as 3 | 5)) {
 						returnText = fixUrlForRule(cssRule);
 					} else {
 						returnText = cssRule.cssText;
@@ -192,22 +192,22 @@ class NewWindow extends React.PureComponent<NewWindowProps> {
 
 	private released = false;
 
-	state = {
+	override state = {
 		mounted: false
 	};
 
-	render(): ReactPortal | null {
+	override render(): ReactPortal | null {
 		if (!this.state.mounted) return null;
 		return ReactDOM.createPortal(this.props.children, this.container!);
 	}
 
-	componentDidMount(): void {
+	override componentDidMount(): void {
 		if (!this.window && !this.container) {
 			this.openChild();
 		}
 	}
 
-	componentWillUnmount(): void {
+	override componentWillUnmount(): void {
 		if (this.state.mounted && this.window) {
 			if (this.props.closeOnUnmount) {
 				this.window.close();

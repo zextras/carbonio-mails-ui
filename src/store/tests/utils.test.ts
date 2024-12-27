@@ -10,7 +10,7 @@ import { extractIdsFromMessagesAndConversations } from '../utils';
 // and make it pass
 describe('extractIdsFromMessagesAndConversations', () => {
 	test('should return an empty array when no messages or conversations are passed', () => {
-		const result = extractIdsFromMessagesAndConversations([]);
+		const result = extractIdsFromMessagesAndConversations({});
 		expect(result).toEqual([]);
 	});
 });

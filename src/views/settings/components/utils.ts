@@ -342,10 +342,8 @@ export const ConversationSortingSettings = (): { label: string; value: string }[
 	{ label: t('settings.conv_sort_option.asc', 'From old to new'), value: 'dateAsc' }
 ];
 
-export const findLabel = (
-	list: { label: string; value: string }[],
-	value: string
-): string | undefined => filter(list, (item) => item.value === value)[0]?.label;
+export const findLabel = (list: { label: string; value: string }[], value: string): string =>
+	filter(list, (item) => item.value === value)[0]?.label;
 
 export const UnsendTimeOptions = (): { label: string; value: string }[] => [
 	{

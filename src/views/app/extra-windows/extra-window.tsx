@@ -93,14 +93,16 @@ const ExtraWindow: FC<ExtraWindowProps> = (props) => {
 			copyStyles: true,
 
 			// Intercept the opening event and update the state with the window object
-			onOpen: (newWindowObj: Window): void => {
-				newWindowObj.focus();
-				setWindowObj(newWindowObj);
-				styledElementsObserverRef.current = createStyledElementsObserver(
-					window.document,
-					newWindowObj
-				);
-				props.onOpen && props.onOpen(newWindowObj);
+			onOpen: (newWindowObj: Window | null): void => {
+				if (newWindowObj) {
+					newWindowObj.focus();
+					setWindowObj(newWindowObj);
+					styledElementsObserverRef.current = createStyledElementsObserver(
+						window.document,
+						newWindowObj
+					);
+				}
+				props.onOpen && props.onOpen(newWindowObj as Window);
 			},
 
 			// Intercept the blocked opening and inform the user

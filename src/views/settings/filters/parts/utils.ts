@@ -1,30 +1,30 @@
 /*
- * SPDX-FileCopyrightText: 2024 Zextras <https://www.zextras.com>
+ * SPDX-FileCopyrightText: 2021 Zextras <https://www.zextras.com>
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-
 import { TFunction } from 'i18next';
-import { find, forEach } from 'lodash';
+import { forEach } from 'lodash';
 
-import { FilterActions } from '../../../../types';
+import { FilterActions, MarkAsOption } from '../../../../types';
 
-type Option = {
+type DomainOption = {
 	label: string;
 	value: string;
 };
 
-export const domainOptions = (t: TFunction): Option[] => [
+export const getDomainOptions = (t: TFunction): DomainOption[] => [
 	{ label: t('label.all', 'all'), value: 'all' },
 	{ label: t('settings.localpart', 'localpart'), value: 'localpart' },
 	{ label: t('settings.domain', 'domain'), value: 'domain' }
 ];
 
-type ConditionStatements = {
+type ConditionStatement = {
 	label: string;
-	value: { stringComparison: string; negative?: string };
+	value: { stringComparison: 'is' | 'contains' | 'matches'; negative?: string };
 };
-export const getConditionStatements = (t: TFunction): ConditionStatements[] => [
+
+export const getConditionStatements = (t: TFunction): ConditionStatement[] => [
 	{
 		label: t('settings.matches_exactly', 'matches exactly'),
 		value: { stringComparison: 'is' }
@@ -51,7 +51,12 @@ export const getConditionStatements = (t: TFunction): ConditionStatements[] => [
 	}
 ];
 
-export const getFieldOptions = (t: TFunction): Option[] => [
+type FieldOption = {
+	label: string;
+	value: 'anyof' | 'allof';
+};
+
+export const getFieldOptions = (t: TFunction): FieldOption[] => [
 	{
 		label: t('label.any', 'any'),
 		value: 'anyof'
@@ -62,7 +67,33 @@ export const getFieldOptions = (t: TFunction): Option[] => [
 	}
 ];
 
-export const getIsOptions = (t: TFunction): Option[] => [
+type HeaderConditionStatement = {
+	label: string;
+	value: string | ConditionStatement['value'];
+};
+
+export const getHeaderConditionStatements = (t: TFunction): HeaderConditionStatement[] => [
+	...getConditionStatements(t),
+	{
+		label: t('settings.does_not_match_wildcard_condition', 'does not match wildcard condition'),
+		value: 'does not matche wildcard condition'
+	},
+	{
+		label: t('settings.exists', 'exists'),
+		value: 'exists'
+	},
+	{
+		label: t('settings.does_not_exists', 'does not exist'),
+		value: 'does not exist'
+	}
+];
+
+type IsOption = {
+	label: string;
+	value: 'TRUE' | 'FALSE';
+};
+
+export const getIsOptions = (t: TFunction): IsOption[] => [
 	{
 		label: t('settings.is', 'is'),
 		value: 'TRUE'
@@ -76,13 +107,11 @@ export const getIsOptions = (t: TFunction): Option[] => [
 type MessageOption = {
 	label: string;
 	value: {
-		value?: {
-			where?: string;
-			flagName?: string;
-		};
-		key: string;
+		value: { where?: 'started' | 'participated'; flagName?: 'flagged' };
+		key: 'conversationTest' | 'flaggedTest' | 'listTest' | 'bulkTest';
 	};
 };
+
 export const getMessageOptions = (t: TFunction): MessageOption[] => [
 	{
 		label: t('settings.conv_is_started', 'in conversation I started'),
@@ -106,13 +135,7 @@ export const getMessageOptions = (t: TFunction): MessageOption[] => [
 	}
 ];
 
-type SizeOption = {
-	label: string;
-	value: {
-		numberComparison: string;
-		negative?: string;
-	};
-};
+type SizeOption = { label: string; value: { numberComparison: 'under' | 'over'; negative?: '1' } };
 export const getSizeOptions = (t: TFunction): SizeOption[] => [
 	{ label: t('settings.under', 'under'), value: { numberComparison: 'under' } },
 	{
@@ -126,7 +149,8 @@ export const getSizeOptions = (t: TFunction): SizeOption[] => [
 	}
 ];
 
-export const getSizeUnit = (t: TFunction): Option[] => [
+type SizeUnit = { label: string; value: '' | 'K' | 'M' | 'G' };
+export const getSizeUnit = (t: TFunction): SizeUnit[] => [
 	{ label: t('settings.b', 'B'), value: '' },
 	{
 		label: t('settings.kb', 'KB'),
@@ -139,14 +163,7 @@ export const getSizeUnit = (t: TFunction): Option[] => [
 	}
 ];
 
-type DateOption = {
-	label: string;
-	value: {
-		dateComparison: 'before' | 'after';
-		negative?: '1';
-	};
-};
-
+type DateOption = { label: string; value: { dateComparison: 'before' | 'after'; negative?: '1' } };
 export const getDateOptions = (t: TFunction): DateOption[] => [
 	{ label: t('settings.before', 'before'), value: { dateComparison: 'before' } },
 	{
@@ -160,12 +177,8 @@ export const getDateOptions = (t: TFunction): DateOption[] => [
 	}
 ];
 
-type BodyOption = {
-	label: string;
-	value: {
-		negative?: '1';
-	};
-};
+type BodyOption = { label: string; value: { negative?: '1' } };
+
 export const getBodyOptions = (t: TFunction): BodyOption[] => [
 	{ label: t('settings.contains', 'contains'), value: {} },
 	{
@@ -174,14 +187,8 @@ export const getBodyOptions = (t: TFunction): BodyOption[] => [
 	}
 ];
 
-type ExistsOption = {
-	label: string;
-	value: {
-		negative?: '1';
-	};
-};
-
-export const getExistOptions = (t: TFunction): ExistsOption[] => [
+type ExistOption = { label: string; value: { negative?: '1' } };
+export const getExistOptions = (t: TFunction): ExistOption[] => [
 	{
 		label: t('settings.exists', 'exists'),
 		value: {}
@@ -195,13 +202,12 @@ export const getExistOptions = (t: TFunction): ExistsOption[] => [
 type ReadReceiptOption = {
 	label: string;
 	value: {
-		header: string;
-		stringComparison: string;
-		value: string;
-		negative?: string;
+		header: 'Content-Type';
+		stringComparison: 'Contains';
+		value: 'message/disposition-notification';
+		negative?: '1';
 	};
 };
-
 export const getReadReceiptOptions = (t: TFunction): ReadReceiptOption[] => [
 	{
 		label: t('settings.exists', 'exists'),
@@ -222,7 +228,11 @@ export const getReadReceiptOptions = (t: TFunction): ReadReceiptOption[] => [
 	}
 ];
 
-export const getFromOptions = (t: TFunction): Option[] => [
+type FromOption = {
+	label: string;
+	value: 'FROM' | 'TO' | 'CC' | 'TO,CC';
+};
+export const getFromOptions = (t: TFunction): FromOption[] => [
 	{
 		label: t('label.from', 'From'),
 		value: 'FROM'
@@ -241,6 +251,15 @@ export const getFromOptions = (t: TFunction): Option[] => [
 	}
 ];
 
+type InOption = {
+	label: string;
+	value: {
+		key: 'in' | 'myTest';
+		value: {
+			negative?: '1';
+		};
+	};
+};
 export const getInOptions = (t: TFunction): InOption[] => [
 	{
 		label: t('settings.in', 'in'),
@@ -260,17 +279,11 @@ export const getInOptions = (t: TFunction): InOption[] => [
 	}
 ];
 
-type InOption = {
+type FolderOption = {
 	label: string;
-	value: {
-		key: string;
-		value: {
-			negative?: string;
-		};
-	};
+	value: 'addressBookTest' | 'contactRankingTest';
 };
-
-export const getFolderOptions = (t: TFunction): Option[] => [
+export const getFolderOptions = (t: TFunction): FolderOption[] => [
 	{
 		label: t('settings.contacts', 'contacts'),
 		value: 'addressBookTest'
@@ -283,12 +296,8 @@ export const getFolderOptions = (t: TFunction): Option[] => [
 
 type InviteRspOption = {
 	label: string;
-	value: {
-		method: { _content: string }[];
-		negative?: string;
-	};
+	value: { method: [{ _content: 'anyrequest' | 'anyreply' }]; negative?: '1' };
 };
-
 export const getInviteRspOptions = (t: TFunction): InviteRspOption[] => [
 	{
 		label: t('settings.invite_requested', 'invite is requested'),
@@ -310,11 +319,7 @@ export const getInviteRspOptions = (t: TFunction): InviteRspOption[] => [
 
 type SocialOption = {
 	label: string;
-	value: {
-		linkedinTest?: object[];
-		twitterTest?: object[];
-		facebookTest?: object[];
-	};
+	value: { linkedinTest?: [object]; twitterTest?: [object]; facebookTest?: [object] };
 };
 
 export const getSocialOptions = (t: TFunction): SocialOption[] => [
@@ -332,10 +337,14 @@ export const getSocialOptions = (t: TFunction): SocialOption[] => [
 	}
 ];
 
+type ConditionAction = {
+	label: string;
+	value: 'redirectToAddress';
+};
 const getConditionAction = (
 	t: TFunction,
-	zimbraFeatureMailForwardingInFiltersEnabled: string
-): Option[] => {
+	zimbraFeatureMailForwardingInFiltersEnabled: 'TRUE' | 'FALSE'
+): ConditionAction[] => {
 	if (zimbraFeatureMailForwardingInFiltersEnabled === 'TRUE') {
 		return [
 			{
@@ -347,11 +356,16 @@ const getConditionAction = (
 	return [];
 };
 
+type ActionOption = {
+	label: string;
+	value: string;
+};
+
 export const getActionOptions = (
 	t: TFunction,
-	zimbraFeatureMailForwardingInFiltersEnabled: string,
+	zimbraFeatureMailForwardingInFiltersEnabled: 'TRUE' | 'FALSE',
 	isIncoming = true
-): Option[] => [
+): ActionOption[] => [
 	{
 		label: isIncoming
 			? t('settings.keep_in_inbox', 'Keep in Inbox')
@@ -377,13 +391,7 @@ export const getActionOptions = (
 	...getConditionAction(t, zimbraFeatureMailForwardingInFiltersEnabled)
 ];
 
-type MarkOption = {
-	label: string;
-	value: {
-		actionFlag: { flagName: string }[];
-	};
-};
-export const getMarkAsOptions = (t: TFunction): MarkOption[] => [
+export const getMarkAsOptions = (t: TFunction): Array<MarkAsOption> => [
 	{
 		label: t('label.read', 'Read'),
 		value: { actionFlag: [{ flagName: 'read' }] }
@@ -393,14 +401,27 @@ export const getMarkAsOptions = (t: TFunction): MarkOption[] => [
 		value: { actionFlag: [{ flagName: 'flagged' }] }
 	}
 ];
-
-export const getDomainOptions = (t: TFunction): Option[] => [
-	{ label: t('label.all', 'all'), value: 'all' },
-	{ label: t('settings.localpart', 'localpart'), value: 'localpart' },
-	{ label: t('settings.domain', 'domain'), value: 'domain' }
-];
-
-export const getStatusOptions = (t: TFunction): Option[] => [
+type StatusOption = {
+	label: string;
+	value:
+		| 'from'
+		| 'to'
+		| 'cc'
+		| 'to,cc'
+		| 'subject'
+		| 'message'
+		| 'size'
+		| 'date'
+		| 'body'
+		| 'attachment'
+		| 'read receipt'
+		| 'address in'
+		| 'header named'
+		| 'calendar'
+		| 'social';
+	keyName?: 'addressBookTest';
+};
+export const getStatusOptions = (t: TFunction): StatusOption[] => [
 	{
 		label: t('label.from', 'From'),
 		value: 'from'
@@ -441,7 +462,8 @@ export const getStatusOptions = (t: TFunction): Option[] => [
 	},
 	{
 		label: t('settings.address_in', 'Address In'),
-		value: 'address in'
+		value: 'address in',
+		keyName: 'addressBookTest'
 	},
 	{ label: t('settings.calendar', 'Calendar'), value: 'calendar' },
 	{ label: t('settings.social', 'Social'), value: 'social' },
@@ -450,20 +472,20 @@ export const getStatusOptions = (t: TFunction): Option[] => [
 		value: 'header named'
 	}
 ];
-
-export const findDefaultValue = (list: Option[], key: string): Option | undefined =>
-	find(list, { value: key });
-export const findDefaultObjectValue = (list: Option[], key: string): Option | undefined =>
-	find(list, { value: key });
-
+type ObjectWithLabelValue<T> = {
+	label: string;
+	value: T;
+};
+export function findDefaultValue<T>(
+	list: Array<ObjectWithLabelValue<T>>,
+	key: T
+): ObjectWithLabelValue<T> {
+	return list.find((item) => item.value === key) as ObjectWithLabelValue<T>;
+}
 type Filters = {
 	filterActions: FilterActions[];
-	active: boolean;
-	name: string;
-	filterTests: {
-		condition: string;
-	}[];
 };
+
 export const getButtonInfo = (
 	filterName: string,
 	filters: Filters,
