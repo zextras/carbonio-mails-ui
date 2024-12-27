@@ -5,7 +5,7 @@
  */
 
 import { faker } from '@faker-js/faker';
-import { QueryChip } from '@zextras/carbonio-shell-ui';
+import type { QueryChip } from '@zextras/carbonio-search-ui';
 import { keyBy } from 'lodash';
 
 import { createFakeIdentity } from '../../../carbonio-ui-commons/test/mocks/accounts/fakeAccounts';

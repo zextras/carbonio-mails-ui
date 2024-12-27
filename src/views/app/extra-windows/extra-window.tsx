@@ -49,9 +49,7 @@ const createStyledElementsObserver = (
 	debug('creation of STYLED ELEMENTS observer for', parentWindowDoc);
 	const observer = new MutationObserver((mutationList) => {
 		debug('STYLED ELEMENTS mutation detected!', mutationList);
-		// FIXME: I removed the timeout here since as is the function is invoked immediately.
-		//  Check if this is the wanted behavior, otherwise restore the timeout, but use an arrow function instead.
-		replaceStyles(parentWindowDoc, newWindowObj.document);
+		setTimeout(() => replaceStyles(parentWindowDoc, newWindowObj.document), 10);
 	});
 	observer.observe(newWindowObj.document.body, {
 		subtree: true,

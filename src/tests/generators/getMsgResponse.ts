@@ -122,4 +122,4 @@ const generateGetMsgResponse = ({
 	return result;
 };
 
-export { GetMsgResponseGenerationParams, generateGetMsgResponse };
+export { type GetMsgResponseGenerationParams, generateGetMsgResponse };

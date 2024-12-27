@@ -5,7 +5,7 @@
  */
 
 import { ChipProps, ChipItem } from '@zextras/carbonio-design-system';
-import { QueryChip } from '@zextras/carbonio-shell-ui';
+import type { QueryChip } from '@zextras/carbonio-search-ui';
 
 import { SortBy } from '../../carbonio-ui-commons/types';
 import { NormalizedConversation } from '../conversations';
@@ -93,17 +93,17 @@ export type Contact = {
 	lastName: string;
 	nickName: string;
 	parent: string;
-	address: ContactAddressMap;
+	address: unknown;
 	company: string;
 	department: string;
-	email: ContactEmailMap;
+	email: unknown;
 	image: string;
 	jobTitle: string;
 	notes: string;
-	phone: ContactPhoneMap;
+	phone: unknown;
 	nameSuffix: string;
 	namePrefix: string;
-	URL: ContactUrlMap;
+	URL: unknown;
 	fileAsStr: string;
 	avatarBackground?: ChipProps['background'];
 };
@@ -159,7 +159,7 @@ export type SubjectKeywordRowProps = {
 
 export type TagFolderRowProps = {
 	compProps: {
-		folder: Folder;
+		folder: KeywordState;
 		setFolder: (arg: any) => void;
 		tagOptions: Array<any>;
 		tag: Array<any>;

@@ -1,14 +1,13 @@
 {
-	"extends": "@zextras/carbonio-ui-configs/rules/typescript.json",
+	"extends": "@zextras/carbonio-ui-configs/rules/tsconfig.type-check.json",
 	"compilerOptions": {
-		"skipLibCheck": true,
-		"jsx": "react",
-		"allowJs": true
+		"noUncheckedIndexedAccess": false
 	},
 	"include": [
-		"src/**/*",
+		"**/*",
+		".eslintrc.js",
 		"jest.config.ts",
-		"jest-setup.ts",
+		"jest-setup.ts"
 	],
 	"exclude": ["./node_modules/*", "./dist/*"]
 }

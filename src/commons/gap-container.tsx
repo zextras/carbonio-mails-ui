@@ -48,4 +48,4 @@ const GapRow = React.forwardRef<HTMLDivElement, GapRowProps>(function GapRowFn(
 	);
 });
 
-export { GapContainer, GapRow, GapContainerProps, GapRowProps };
+export { GapContainer, GapRow, type GapContainerProps, type GapRowProps };
