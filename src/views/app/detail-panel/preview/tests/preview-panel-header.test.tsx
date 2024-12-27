@@ -14,7 +14,7 @@ import { MAILS_VIEW_LAYOUTS } from '../../../../../constants';
 import { TESTID_SELECTORS } from '../../../../../tests/constants';
 import { generateStore } from '../../../../../tests/generators/store';
 import { mockLayoutStorage } from '../../../../../tests/layouts-utils';
-import PreviewPanelHeader from '../preview-panel-header';
+import { PreviewPanelHeader } from '../preview-panel-header';
 
 describe('PreviewPanelHeader', () => {
 	it('renders correctly', () => {

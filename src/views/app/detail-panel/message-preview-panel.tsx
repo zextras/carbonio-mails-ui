@@ -8,7 +8,7 @@ import React, { FC, useCallback } from 'react';
 import { Container, Padding } from '@zextras/carbonio-design-system';
 
 import MailPreview from './preview/mail-preview';
-import PreviewPanelHeader from './preview/preview-panel-header';
+import { PreviewPanelHeader } from './preview/preview-panel-header';
 import { useCompleteMessage } from '../../../store/zustand/emails/hooks/hooks';
 import { useExtraWindow } from '../extra-windows/use-extra-window';
 
