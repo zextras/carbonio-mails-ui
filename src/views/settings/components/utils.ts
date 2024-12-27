@@ -1,6 +1,9 @@
 /*
- * SPDX-FileCopyrightText: 2021 Zextras <https://www.zextras.com>
+ * SPDX-FileCopyrightText: 2024 Zextras <https://www.zextras.com>
  *
+ * SPDX-License-Identifier: AGPL-3.0-only
+ */
+/*
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 /* eslint-disable no-nested-ternary */
@@ -15,16 +18,16 @@ const arraysProps = [
 	'amavisBlacklistSender'
 ];
 
-export const differenceObject = (object, base) => {
-	// eslint-disable-next-line no-shadow
-	function changes(object, base) {
-		return transform(object, (result, value, key) => {
+export const differenceObject = (
+	object: Record<string, any>,
+	base: Record<string, any>
+): Record<string, any> => {
+	function changes(object: Record<string, any>, base: Record<string, any>): Record<string, any> {
+		return transform(object, (result: Record<string, any>, value, key) => {
 			if (!isEqual(value, base[key])) {
 				if (arraysProps.includes(key)) {
-					// eslint-disable-next-line no-param-reassign
 					result[key] = value;
 				} else {
-					// eslint-disable-next-line no-param-reassign
 					result[key] = isObject(value) && isObject(base[key]) ? changes(value, base[key]) : value;
 				}
 			}
@@ -34,8 +37,8 @@ export const differenceObject = (object, base) => {
 	return changes(object, base);
 };
 
-export const differenceIdentities = (original, modified) => {
-	const matched = [];
+export const differenceIdentities = (original: any[], modified: any[]): any[] => {
+	const matched: any[] = [];
 	map(modified, (acc) => {
 		if (!isEqual(acc, find(original, ['id', acc.id]))) {
 			matched.push({
@@ -55,7 +58,10 @@ export const differenceIdentities = (original, modified) => {
 	return matched;
 };
 
-export const getPropsDiff = (original, modified) =>
+export const getPropsDiff = (
+	original: Record<string, any>,
+	modified: Record<string, any>
+): Record<string, any> =>
 	reduce(
 		Object.keys(modified),
 		(acc, v) => {
@@ -67,7 +73,10 @@ export const getPropsDiff = (original, modified) =>
 		{}
 	);
 
-export const CheckNewMailOptions = (isSecondsFormat, isMinutesFormat) => [
+export const CheckNewMailOptions = (
+	isSecondsFormat: boolean,
+	isMinutesFormat: boolean
+): { label: string; value: string }[] => [
 	{
 		label: t('settings.new_mail_optn.manually', 'Manually'),
 		value: isMinutesFormat ? '31536000' : isSecondsFormat ? '31536000s' : '31536000'
@@ -165,12 +174,13 @@ export const CheckNewMailOptions = (isSecondsFormat, isMinutesFormat) => [
 		value: isMinutesFormat ? '15m' : isSecondsFormat ? '900s' : '900'
 	}
 ];
-export const DisplayMailOptions = () => [
+
+export const DisplayMailOptions = (): { label: string; value: string }[] => [
 	{ label: t('settings.display_mail_options.html', 'As HTML(When Possible)'), value: 'TRUE' },
 	{ label: t('settings.display_mail_options.text', 'As text'), value: 'FALSE' }
 ];
 
-export const MessageSelectionOptions = () => [
+export const MessageSelectionOptions = (): { label: string; value: string }[] => [
 	{
 		label: t(
 			'settings.msg_selection_optn.below_deleted',
@@ -194,7 +204,7 @@ export const MessageSelectionOptions = () => [
 	}
 ];
 
-export const NotifyFolderOpts = () => [
+export const NotifyFolderOpts = (): { label: string; value: string }[] => [
 	{
 		label: t(
 			'settings.notify_folder_optn.new_message_inbox',
@@ -211,13 +221,13 @@ export const NotifyFolderOpts = () => [
 	}
 ];
 
-export const ReadReceiptOpts = () => [
+export const ReadReceiptOpts = (): { label: string; value: string }[] => [
 	{ label: t('settings.read_rcpt_optn.never', 'Never send a read reciept'), value: 'never' },
 	{ label: t('settings.read_rcpt_optn.always', 'Always send a read reciept'), value: 'always' },
 	{ label: t('settings.read_rcpt_optn.ask_me', 'Ask me'), value: 'prompt' }
 ];
 
-export const MsgsFromMeOpts = () => [
+export const MsgsFromMeOpts = (): { label: string; value: string }[] => [
 	{ label: t('settings.msg_from_optn.inbox', 'Place in inbox'), value: 'dedupeNone' },
 	{
 		label: t('settings.msg_from_optn.inbox_if_cc', "Place in inbox if I'm in To: or Cc:"),
@@ -229,7 +239,7 @@ export const MsgsFromMeOpts = () => [
 	}
 ];
 
-export const ReadSignatureSettings = () => [
+export const ReadSignatureSettings = (): { label: string; value: string }[] => [
 	{ label: t('settings.msg_from_optn.inbox', 'Place in inbox'), value: 'dedupeNone' },
 	{
 		label: t('settings.msg_from_optn.inbox_if_cc', "Place in inbox if I'm in To: or Cc:"),
@@ -241,7 +251,7 @@ export const ReadSignatureSettings = () => [
 	}
 ];
 
-export const getFontSizesOptions = () => [
+export const getFontSizesOptions = (): string[] => [
 	'8pt',
 	'9pt',
 	'10pt',
@@ -256,7 +266,7 @@ export const getFontSizesOptions = () => [
 	'48pt'
 ];
 
-export const getFonts = () => [
+export const getFonts = (): { label: string; value: string }[] => [
 	{
 		label: 'Andale Mono',
 		value: 'andale mono, times'
@@ -327,14 +337,17 @@ export const getFonts = () => [
 	}
 ];
 
-export const ConversationSortingSettings = () => [
+export const ConversationSortingSettings = (): { label: string; value: string }[] => [
 	{ label: t('settings.conv_sort_option.desc', 'From new to old'), value: 'dateDesc' },
 	{ label: t('settings.conv_sort_option.asc', 'From old to new'), value: 'dateAsc' }
 ];
 
-export const findLabel = (list, value) => filter(list, (item) => item.value === value)[0]?.label;
+export const findLabel = (
+	list: { label: string; value: string }[],
+	value: string
+): string | undefined => filter(list, (item) => item.value === value)[0]?.label;
 
-export const UnsendTimeOptions = () => [
+export const UnsendTimeOptions = (): { label: string; value: string }[] => [
 	{
 		label: t('settings.mail_unsend_time.no_delay', 'No delay'),
 		value: '0'
