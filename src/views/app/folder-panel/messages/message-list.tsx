@@ -11,7 +11,7 @@ import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 
 import { MessageListComponent } from './message-list-component';
-import { useLoadMoreForMessagesSlice } from './message-list-hooks';
+import { useLoadMoreForMessageList } from './message-list-hooks';
 import { MessageListItemComponent } from './message-list-item-component';
 import { CustomListItem } from '../../../../carbonio-ui-commons/components/list/list-item';
 import { FOLDERS } from '../../../../carbonio-ui-commons/constants/folders';
@@ -54,7 +54,7 @@ export const MessageList = (): React.JSX.Element => {
 
 	const hasMore = messageIndexSlice.more;
 
-	const loadMoreCallback = useLoadMoreForMessagesSlice({
+	const loadMoreCallback = useLoadMoreForMessageList({
 		folderId,
 		loadingMore,
 		hasMore,

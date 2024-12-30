@@ -3,17 +3,25 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 
 import { replaceHistory, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { findIndex } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
-import { useAppDispatch } from './redux';
 import { msgActionSoapApi } from '../api/msg-action';
-import { LIST_LIMIT, SEARCHED_FOLDER_STATE_STATUS } from '../constants';
+import { API_REQUEST_STATUS, LIST_LIMIT } from '../constants';
 import { parseMessageSortingOptions } from '../helpers/sorting';
-import { convAction, search } from '../store/actions';
+import { convAction } from '../store/actions';
+import {
+	useConversationsByIds,
+	useConversationsResultsLoadingStatus,
+	useMessagesByIds,
+	useMessagesResultsLoadingStatus
+} from '../store/zustand/emails/store';
+import { SearchRequestStatus } from '../types';
+import { useLoadMoreForConversationList } from '../views/app/folder-panel/conversations/conversation-list-hooks';
+import { useLoadMoreForMessageList } from '../views/app/folder-panel/messages/message-list-hooks';
 
 export type HeaderNavigationActionItem = {
 	tooltipLabel: string | undefined;
@@ -28,41 +36,46 @@ export type PreviewHeaderNavigationActions = {
 };
 
 export const usePreviewHeaderNavigation = ({
-	items,
+	itemIds,
 	folderId,
 	currentItemId,
 	itemsType,
+	hasMore,
 	searchedInFolderStatus
 }: {
-	items: Array<{ id: string; read: boolean | string }>;
+	itemIds: Array<string>;
 	folderId: string;
+	hasMore: boolean;
 	currentItemId: string;
 	itemsType: 'conversation' | 'message';
-	searchedInFolderStatus: string | undefined;
+	searchedInFolderStatus: SearchRequestStatus;
 }): PreviewHeaderNavigationActions => {
-	const dispatch = useAppDispatch();
 	const [t] = useTranslation();
 	const settings = useUserSettings();
 	const prefMarkMsgRead = settings?.prefs?.zimbraPrefMarkMsgRead !== '-1';
-	const [isLoadMoreFailed, setIsLoadMoreFailed] = useState(false);
+	const loadingMore = useRef(false);
+	const conversations = useConversationsByIds(itemIds);
+	const messages = useMessagesByIds(itemIds);
+	const isMessageView = itemsType === 'message';
+	const conversationLoadingStatus = useConversationsResultsLoadingStatus();
+	const messageLoadingStatus = useMessagesResultsLoadingStatus();
+	const loadMoreStatus = isMessageView ? messageLoadingStatus : conversationLoadingStatus;
+	const isLoadMoreFailed = loadMoreStatus === API_REQUEST_STATUS.error;
 
-	const itemIndex = findIndex(items, (item) => item.id === currentItemId);
+	const items = isMessageView ? messages : conversations;
+
+	const itemIndex = findIndex(itemIds, (item) => item === currentItemId);
 
 	const { sortOrder } = parseMessageSortingOptions(
 		folderId,
 		settings.prefs.zimbraPrefSortOrder as string
 	);
 
-	const hasMore = useMemo(
-		() => searchedInFolderStatus === SEARCHED_FOLDER_STATE_STATUS.hasMore,
-		[searchedInFolderStatus]
-	);
-
 	const isTheFirstListItem = useMemo(() => itemIndex <= 0, [itemIndex]);
 
 	const isTheLastListItem = useMemo(
 		() => itemIndex === items.length - 1 && !hasMore,
-		[hasMore, itemIndex, items.length]
+		[itemIndex, items.length, hasMore]
 	);
 
 	const isLoadMoreNeeded = useMemo(
@@ -122,7 +135,6 @@ export const usePreviewHeaderNavigation = ({
 		},
 		[itemsType]
 	);
-
 	const onNextAction = useCallback(() => {
 		if (isTheLastListItem) return;
 		const nextIndex = itemIndex + 1;
@@ -143,24 +155,31 @@ export const usePreviewHeaderNavigation = ({
 		replaceHistory(`/folder/${folderId}/${itemsType}/${previousItem.id}`);
 	}, [isTheFirstListItem, itemIndex, items, prefMarkMsgRead, folderId, itemsType, setItemAsRead]);
 
+	const loadMoreConversations = useLoadMoreForConversationList({
+		sortBy: sortOrder,
+		offset: items.length,
+		limit: LIST_LIMIT.LOAD_MORE_LIMIT,
+		hasMore,
+		loadingMore,
+		folderId
+	});
+
+	const loadMoreMessages = useLoadMoreForMessageList({
+		limit: LIST_LIMIT.LOAD_MORE_LIMIT,
+		sortBy: sortOrder,
+		offset: items.length,
+		hasMore,
+		loadingMore,
+		folderId
+	});
+
+	const loadMore = isMessageView ? loadMoreMessages : loadMoreConversations;
+
 	useEffect(() => {
 		if (isLoadMoreNeeded) {
-			dispatch(
-				search({
-					folderId,
-					limit: LIST_LIMIT.LOAD_MORE_LIMIT,
-					sortBy: sortOrder,
-					types: itemsType,
-					offset: items.length
-				})
-			).then((res) => {
-				// @ts-expect-error apparently the return type is wrong
-				if (res.error) {
-					setIsLoadMoreFailed(true);
-				}
-			});
+			loadMore();
 		}
-	}, [dispatch, folderId, isLoadMoreNeeded, items.length, sortOrder, itemsType]);
+	}, [isLoadMoreNeeded, loadMore]);
 
 	const nextActionItem = useMemo(
 		() => ({

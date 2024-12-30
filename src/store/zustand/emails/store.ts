@@ -199,6 +199,10 @@ export function appendMessagesToMessagesSlice(
 	messageIndexSliceUtils.appendMessagesToMessagesSlice(messages, offset, useEmailsStore);
 }
 
+export function useMessagesResultsLoadingStatus(): SearchRequestStatus {
+	return useEmailsStore(({ messageIndexSlice }) => messageIndexSlice.status);
+}
+
 // ################################
 // #### conversationIndexSlice related functions
 // ################################
@@ -227,6 +231,10 @@ export function appendConversationsToConversationIndexSlice(
 
 export function updateConversationsResultsLoadingStatus(status: SearchRequestStatus): void {
 	conversationIndexSliceUtils.updateConversationsResultsLoadingStatus(status, useEmailsStore);
+}
+
+export function useConversationsResultsLoadingStatus(): SearchRequestStatus {
+	return useEmailsStore(({ conversationIndexSlice }) => conversationIndexSlice.status);
 }
 
 export function setConversationsInEmailStore(

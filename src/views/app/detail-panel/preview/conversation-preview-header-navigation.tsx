@@ -8,21 +8,19 @@ import React from 'react';
 import { useParams } from 'react-router-dom';
 
 import { NavigationIconButton } from './parts/navigation-icon-button';
-import { useAppSelector } from '../../../../hooks/redux';
-import { useFolderSortedConversations } from '../../../../hooks/use-folder-sorted-conversations';
+import { useConversationListByFolder } from '../../../../hooks/use-conversations-list-by-folder';
 import { usePreviewHeaderNavigation } from '../../../../hooks/use-preview-header-navigation';
-import { selectFolderSearchStatus } from '../../../../store/conversations-slice';
 
 export const ConversationPreviewHeaderNavigation = (): React.JSX.Element => {
 	const { folderId, conversationId } = useParams<{ folderId: string; conversationId: string }>();
-	const conversations = useFolderSortedConversations(folderId);
-	const searchedInFolderStatus = useAppSelector(selectFolderSearchStatus(folderId));
+	const { conversationIndexSlice } = useConversationListByFolder(folderId);
 
 	const { previousActionItem, nextActionItem } = usePreviewHeaderNavigation({
-		items: conversations,
+		itemIds: conversationIndexSlice.conversationListIndex,
+		hasMore: conversationIndexSlice.more,
 		folderId,
 		currentItemId: conversationId,
-		searchedInFolderStatus,
+		searchedInFolderStatus: conversationIndexSlice.status,
 		itemsType: 'conversation'
 	});
 

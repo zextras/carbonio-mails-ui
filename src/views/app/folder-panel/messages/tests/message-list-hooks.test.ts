@@ -13,7 +13,7 @@ import { createSoapAPIInterceptor } from '../../../../../carbonio-ui-commons/tes
 import { API_REQUEST_STATUS } from '../../../../../constants';
 import * as storeHooks from '../../../../../store/zustand/emails/store';
 import { generateCompleteMessageFromAPI } from '../../../../../tests/generators/api';
-import { useLoadMoreForMessagesSlice } from '../message-list-hooks';
+import { useLoadMoreForMessageList } from '../message-list-hooks';
 
 describe('useLoadMoreForMessagesSlice', () => {
 	it('should load more results and append messages to the slice', async () => {
@@ -25,7 +25,7 @@ describe('useLoadMoreForMessagesSlice', () => {
 		const interceptor = createSoapAPIInterceptor('Search', searchResponse);
 		const loadingMore = { current: false };
 		const { result } = renderHook(() =>
-			useLoadMoreForMessagesSlice({
+			useLoadMoreForMessageList({
 				offset: 0,
 				sortBy: 'date',
 				limit: 20,
@@ -68,7 +68,7 @@ describe('useLoadMoreForMessagesSlice', () => {
 		const interceptor = createSoapAPIInterceptor('Search', searchResponse);
 		const loadingMore = { current: false };
 		const { result } = renderHook(() =>
-			useLoadMoreForMessagesSlice({
+			useLoadMoreForMessageList({
 				offset: 0,
 				sortBy: 'date',
 				limit: 20,
@@ -92,7 +92,7 @@ describe('useLoadMoreForMessagesSlice', () => {
 		const searchSpy = jest.spyOn(searchSoapApi, 'searchSoapApi');
 		const loadingMore = { current: false };
 		const { result } = renderHook(() =>
-			useLoadMoreForMessagesSlice({
+			useLoadMoreForMessageList({
 				offset: 0,
 				sortBy: 'date',
 				limit: 20,
@@ -115,7 +115,7 @@ describe('useLoadMoreForMessagesSlice', () => {
 
 		const searchSpy = jest.spyOn(searchSoapApi, 'searchSoapApi');
 		const { result } = renderHook(() =>
-			useLoadMoreForMessagesSlice({
+			useLoadMoreForMessageList({
 				offset: 0,
 				sortBy: 'date',
 				limit: 20,

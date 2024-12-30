@@ -44,7 +44,6 @@ export function useLoadMoreForConversationList({
 	loadingMore: React.MutableRefObject<boolean>;
 }): () => Promise<void> {
 	return useCallback(async () => {
-		console.log('useLoadMoreForConversationList %%%%%%%%%%%%%%%%%%%%%%%%%%%%');
 		if (hasMore && !loadingMore.current) {
 			loadingMore.current = true;
 			const searchResponse = await searchSoapApi({

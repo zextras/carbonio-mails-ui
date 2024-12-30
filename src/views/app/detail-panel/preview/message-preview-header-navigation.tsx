@@ -8,21 +8,19 @@ import React from 'react';
 import { useParams } from 'react-router-dom';
 
 import { NavigationIconButton } from './parts/navigation-icon-button';
-import { useAppSelector } from '../../../../hooks/redux';
-import { useFolderSortedMessages } from '../../../../hooks/use-folder-sorted-messages';
+import { useMessageListByFolder } from '../../../../hooks/use-message-list-by-folder';
 import { usePreviewHeaderNavigation } from '../../../../hooks/use-preview-header-navigation';
-import { selectFolderMsgSearchStatus } from '../../../../store/messages-slice';
 
 export const MessagePreviewHeaderNavigation = (): React.JSX.Element => {
 	const { folderId, messageId } = useParams<{ folderId: string; messageId: string }>();
-	const messages = useFolderSortedMessages(folderId);
-	const searchedInFolderStatus = useAppSelector(selectFolderMsgSearchStatus(folderId));
+	const { messageIndexSlice } = useMessageListByFolder(folderId);
 
 	const { previousActionItem, nextActionItem } = usePreviewHeaderNavigation({
-		items: messages,
+		itemIds: messageIndexSlice.messageListIndex,
+		hasMore: messageIndexSlice.more,
 		folderId,
 		currentItemId: messageId,
-		searchedInFolderStatus,
+		searchedInFolderStatus: messageIndexSlice.status,
 		itemsType: 'message'
 	});
 

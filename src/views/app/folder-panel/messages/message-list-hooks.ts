@@ -30,7 +30,7 @@ function handleLoadMoreResults({
 		appendMessagesToMessagesSlice(messages, offset);
 	}
 }
-export function useLoadMoreForMessagesSlice({
+export function useLoadMoreForMessageList({
 	offset,
 	sortBy,
 	limit,
