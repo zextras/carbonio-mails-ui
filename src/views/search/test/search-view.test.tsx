@@ -12,6 +12,7 @@ import * as hooks from '@zextras/carbonio-shell-ui';
 import { AccountSettings, ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 import { noop } from 'lodash';
 
+import * as searchSoapApi from '../../../api/search';
 import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { generateSettings } from '../../../carbonio-ui-commons/test/mocks/settings/settings-generator';
 import { buildSoapErrorResponseBody } from '../../../carbonio-ui-commons/test/mocks/utils/soap';
@@ -23,7 +24,6 @@ import {
 } from '../../../carbonio-ui-commons/test/test-setup';
 import { API_REQUEST_STATUS } from '../../../constants';
 import * as useSelection from '../../../hooks/use-selection';
-import * as search from '../../../store/actions/search';
 import {
 	updateConversationStatus,
 	setMessagesInSearchSlice,
@@ -610,7 +610,7 @@ describe('SearchView', () => {
 
 	it('should not call search API if query empty', async () => {
 		const store = generateStore();
-		const spySearch = jest.spyOn(search, 'search');
+		const searchSpy = jest.spyOn(searchSoapApi, 'searchSoapApi');
 		const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
 		const searchViewProps: SearchViewProps = {
 			useQuery: () => [[], noop],
@@ -627,7 +627,7 @@ describe('SearchView', () => {
 		});
 		expect(advancedFiltersButton).toBeVisible();
 		expect(advancedFiltersButton).toBeEnabled();
-		expect(spySearch).not.toHaveBeenCalled();
+		expect(searchSpy).not.toHaveBeenCalled();
 	});
 
 	it('should call setSearchDisabled button if Search API fails with mail.QUERY_PARSE_ERROR', async () => {

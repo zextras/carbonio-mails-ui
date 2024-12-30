@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 export * from './conv-action';
-export * from './search';
 export * from './get-conv';
 export * from './get-msg-async-thunk';
 export * from './search-conv';

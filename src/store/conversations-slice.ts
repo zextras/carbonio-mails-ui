@@ -11,7 +11,7 @@ import { createSelector, createSlice } from '@reduxjs/toolkit';
 import produce from 'immer';
 import { forEach, merge, reduce } from 'lodash';
 
-import { getConv, search } from './actions';
+import { getConv } from './actions';
 import {
 	handleAddMessagesInConversationReducer,
 	handleCreatedConversationsReducer,
@@ -206,9 +206,6 @@ export const conversationsSlice = createSlice({
 		setSearchedInFolder: produce(setSearchedInFolderReducer)
 	},
 	extraReducers: (builder) => {
-		builder.addCase(search.pending, produce(fetchConversationsPending));
-		builder.addCase(search.fulfilled, produce(fetchConversationsFulfilled));
-		builder.addCase(search.rejected, produce(fetchConversationsRejected));
 		// builder.addCase(searchConv.pending, produce(searchConvPending));
 		// builder.addCase(searchConv.fulfilled, produce(searchConvFulfilled));
 		// builder.addCase(searchConv.rejected, produce(searchConvRejected));

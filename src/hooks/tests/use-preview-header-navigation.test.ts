@@ -6,11 +6,11 @@
 import { act, waitFor } from '@testing-library/react';
 import { CreateSnackbarFn, useSnackbar } from '@zextras/carbonio-design-system';
 
+import * as searchSoapApi from '../../api/search';
 import * as shell from '../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
 import { createSoapAPIInterceptor } from '../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { setupHook } from '../../carbonio-ui-commons/test/test-setup';
 import * as convRequest from '../../store/actions/conv-action';
-import * as searchAPI from '../../store/actions/search';
 import { setConversationsInEmailStore } from '../../store/zustand/emails/store';
 import { createSoapAPIInterceptorWithError } from '../../tests/generators/api';
 import { generateConversation } from '../../tests/generators/generateConversation';
@@ -340,7 +340,7 @@ describe('usePreviewHeaderNavigation', () => {
 			const conv1 = generateConversation({ id: '1' });
 			setConversationsInEmailStore([conv1], false);
 
-			const searchSpy = jest.spyOn(searchAPI, 'search');
+			const searchSpy = jest.spyOn(searchSoapApi, 'searchSoapApi');
 			act(() => {
 				setupHook(usePreviewHeaderNavigation, {
 					initialProps: [
