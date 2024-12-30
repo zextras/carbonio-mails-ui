@@ -11,7 +11,7 @@ import { createSelector, createSlice } from '@reduxjs/toolkit';
 import produce from 'immer';
 import { forEach, map, merge } from 'lodash';
 
-import { getConv, getFullMsgAsyncThunk } from './actions';
+import { getConv } from './actions';
 import { SEARCHED_FOLDER_STATE_STATUS } from '../constants';
 import { deleteAttachments } from './actions/delete-all-attachments';
 import {
@@ -131,7 +131,7 @@ export const messagesSlice = createSlice({
 	},
 	extraReducers: (builder) => {
 		// builder.addCase(getMsgAsyncThunk.fulfilled, produce(getMsgFulfilled));
-		builder.addCase(getFullMsgAsyncThunk.fulfilled, produce(getMsgFulfilled));
+		// builder.addCase(getFullMsgAsyncThunk.fulfilled, produce(getMsgFulfilled));
 		// builder.addCase(searchConv.fulfilled, produce(searchConvFulfilled));
 		builder.addCase(getConv.fulfilled, produce(getConvFulfilled));
 		// builder.addCase(saveDraftAsyncThunk.fulfilled, produce(saveDraftFulfilled));
