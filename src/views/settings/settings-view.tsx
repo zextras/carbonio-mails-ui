@@ -3,25 +3,20 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { Container, FormSection } from '@zextras/carbonio-design-system';
 import {
 	AccountSettings,
-	BatchResponse,
 	IdentityAttrs,
-	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-	// @ts-ignore
 	SettingsHeader,
-	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-	// @ts-ignore
 	SettingsHeaderProps,
-	t,
 	updateAccount,
 	useUserAccount,
 	useUserSettings
 } from '@zextras/carbonio-shell-ui';
 import { cloneDeep, filter, find, isEmpty, isEqual, map, reduce, remove, unescape } from 'lodash';
+import { useTranslation } from 'react-i18next';
 
 import { differenceIdentities, differenceObject, getPropsDiff } from './components/utils';
 import ComposeMessage from './compose-msg-settings';
@@ -37,9 +32,8 @@ import TrusteeAddresses from './trustee-addresses';
 import { useUpdateView } from '../../carbonio-ui-commons/hooks/use-update-view';
 import { TIMEOUTS } from '../../constants';
 import { NO_SIGNATURE_ID } from '../../helpers/signatures';
-import { useAppDispatch } from '../../hooks/redux';
 import { useUiUtilities } from '../../hooks/use-ui-utilities';
-import { GetAllSignatures, SignatureRequest } from '../../store/actions/signatures';
+import { GetAllSignatures, signatureRequest } from '../../store/actions/signatures';
 import type {
 	AccountIdentity,
 	PrefsType,
@@ -56,7 +50,8 @@ import type {
  * All of them will have originalProps as default value
  * To keep track of unsaved changes we compare updatedProps with currentProps
  *   */
-const SettingsView: FC = () => {
+const SettingsView = (): React.JSX.Element => {
+	const [t] = useTranslation();
 	useUpdateView();
 	const { attrs, prefs, props } = useUserSettings();
 	const account = useUserAccount();
@@ -92,8 +87,6 @@ const SettingsView: FC = () => {
 	const [disabled, setDisabled] = useState(true);
 	const [flag, setFlag] = useState(false);
 
-	const dispatch = useAppDispatch();
-
 	const { createSnackbar } = useUiUtilities();
 
 	const originalPrefs = useMemo(() => {
@@ -111,13 +104,10 @@ const SettingsView: FC = () => {
 	}, [prefs]);
 
 	const onClose = useCallback(() => {
-		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-		// @ts-ignore
 		setCurrentPrefs({ ...prefs });
 		setUpdatedPrefs({});
 		setCurrentAttrs({ ...attrs });
 		setUpdatedAttrs({});
-		// we discard only latest updates keeping successfully saved changes
 		setUpdatedProps(currentProps);
 		setUpdatedIdentities(identities);
 	}, [currentProps, identities, prefs, attrs]);
@@ -327,17 +317,14 @@ const SettingsView: FC = () => {
 				setDefaultSignatureId = prefsToUpdate.zimbraPrefDefaultSignatureId;
 				delete prefsToUpdate.zimbraPrefDefaultSignatureId;
 			}
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-ignore
-			dispatch(SignatureRequest({ itemsAdd, itemsEdit, itemsDelete, account })).then((resp) => {
-				// setFetchSigns(true);
+			signatureRequest({ itemsAdd, itemsEdit, itemsDelete, account }).then((resp) => {
 				if (setForwardReplySignatureId !== '') {
 					setNewOrForwardSignatureId(itemsAdd, resp, setForwardReplySignatureId, true);
 				}
 				if (setDefaultSignatureId !== '') {
 					setNewOrForwardSignatureId(itemsAdd, resp, setDefaultSignatureId, false);
 				}
-				if (resp.type.includes('fulfilled')) {
+				if (!('Fault' in resp)) {
 					createSnackbar({
 						key: `new`,
 						replace: true,
@@ -423,16 +410,16 @@ const SettingsView: FC = () => {
 		propsToUpdate,
 		identitiesToUpdate,
 		validateSignatures,
-		dispatch,
 		account,
 		createSnackbar,
 		setNewOrForwardSignatureId,
+		t,
 		flag,
 		onSignaturesLoaded,
 		updatedIdentities
 	]);
 
-	const title = useMemo(() => t('label.mail_settings', 'Mails settings'), []);
+	const title = useMemo(() => t('label.mail_settings', 'Mails settings'), [t]);
 	const addressesConflict = useMemo(() => {
 		const allowed = getList(currentAttrs?.amavisWhitelistSender as string[] | undefined);
 		const blocked = getList(currentAttrs?.amavisBlacklistSender as string[] | undefined);

@@ -3,7 +3,6 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { createAsyncThunk } from '@reduxjs/toolkit';
 import { ErrorSoapBodyResponse, JSNS, soapFetch } from '@zextras/carbonio-shell-ui';
 import { map, escape } from 'lodash';
 
@@ -32,8 +31,8 @@ export async function GetAllSignatures(): Promise<GetSignaturesResponse> {
 	});
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const SignatureRequest = createAsyncThunk('SignatureRequest', async (data: any) => {
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+export async function signatureRequest(data: any): Promise<{ response: any }> {
 	const requests: any = {};
 	const { itemsAdd, itemsEdit, itemsDelete, account } = data;
 	let ItemsDeleteRequest = '';
@@ -99,4 +98,4 @@ export const SignatureRequest = createAsyncThunk('SignatureRequest', async (data
 	}
 
 	return { response };
-});
+}
