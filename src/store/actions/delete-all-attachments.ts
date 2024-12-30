@@ -3,10 +3,9 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { createAsyncThunk } from '@reduxjs/toolkit';
-import { soapFetch } from '@zextras/carbonio-shell-ui';
+import { ErrorSoapResponse, soapFetch } from '@zextras/carbonio-shell-ui';
 
-type removeAttachmentsPayload = {
+type RemoveAttachmentsProps = {
 	id: string;
 	attachments: string[];
 };
@@ -18,16 +17,14 @@ type RemoveAttachmentsResponse = {
 	};
 };
 
-export const deleteAttachments = createAsyncThunk(
-	'mails/deleteAttachments',
-	async ({ id, attachments }: removeAttachmentsPayload) => {
-		const res: RemoveAttachmentsResponse = await soapFetch('RemoveAttachments', {
-			_jsns: 'urn:zimbraMail',
-			m: {
-				id,
-				part: attachments.join(',')
-			}
-		});
-		return { res, attachments };
-	}
-);
+export const deleteAttachments = async ({
+	id,
+	attachments
+}: RemoveAttachmentsProps): Promise<RemoveAttachmentsResponse | ErrorSoapResponse> =>
+	soapFetch('RemoveAttachments', {
+		_jsns: 'urn:zimbraMail',
+		m: {
+			id,
+			part: attachments.join(',')
+		}
+	});

@@ -12,7 +12,6 @@ import produce from 'immer';
 import { forEach, map, merge } from 'lodash';
 
 import { SEARCHED_FOLDER_STATE_STATUS } from '../constants';
-import { deleteAttachments } from './actions/delete-all-attachments';
 import {
 	handleCreatedMessagesReducer,
 	handleModifiedMessagesReducer,
@@ -134,7 +133,7 @@ export const messagesSlice = createSlice({
 		// builder.addCase(searchConv.fulfilled, produce(searchConvFulfilled));
 		// builder.addCase(getConv.fulfilled, produce(getConvFulfilled));
 		// builder.addCase(saveDraftAsyncThunk.fulfilled, produce(saveDraftFulfilled));
-		builder.addCase(deleteAttachments.fulfilled, produce(deleteAttachmentsFulfilled));
+		// builder.addCase(deleteAttachments.fulfilled, produce(deleteAttachmentsFulfilled));
 	}
 });
 
