@@ -55,10 +55,14 @@ export function useLoadMoreForMessageList({
 				types: 'message',
 				offset,
 				recip: '0'
-			}).finally(() => {
-				loadingMore.current = false;
-			});
-			if ('Fault' in searchResponse) {
+			})
+				.finally(() => {
+					loadingMore.current = false;
+				})
+				.catch(() => {
+					updateMessagesResultsLoadingStatus(API_REQUEST_STATUS.error);
+				});
+			if (!searchResponse || 'Fault' in searchResponse) {
 				updateMessagesResultsLoadingStatus(API_REQUEST_STATUS.error);
 				return;
 			}
