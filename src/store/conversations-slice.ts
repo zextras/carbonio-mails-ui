@@ -11,7 +11,6 @@ import { createSelector, createSlice } from '@reduxjs/toolkit';
 import produce from 'immer';
 import { forEach, merge, reduce } from 'lodash';
 
-import { getConv } from './actions';
 import {
 	handleAddMessagesInConversationReducer,
 	handleCreatedConversationsReducer,
@@ -212,9 +211,9 @@ export const conversationsSlice = createSlice({
 		// builder.addCase(convAction.pending, produce(convActionPending));
 		// builder.addCase(convAction.rejected, produce(convActionRejected));
 		// builder.addCase(convAction.fulfilled, produce(convActionFulfilled));
-		builder.addCase(getConv.pending, produce(getConvPending));
-		builder.addCase(getConv.fulfilled, produce(getConvFulfilled));
-		builder.addCase(getConv.rejected, produce(getConvRejected));
+		// builder.addCase(getConv.pending, produce(getConvPending));
+		// builder.addCase(getConv.fulfilled, produce(getConvFulfilled));
+		// builder.addCase(getConv.rejected, produce(getConvRejected));
 	}
 });
 
