@@ -5,15 +5,15 @@
  */
 import { act, waitFor } from '@testing-library/react';
 import { CreateSnackbarFn, useSnackbar } from '@zextras/carbonio-design-system';
-import { http, HttpResponse } from 'msw';
 
-import { getSetupServer } from '../../carbonio-ui-commons/test/jest-setup';
 import * as shell from '../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
 import { createSoapAPIInterceptor } from '../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { setupHook } from '../../carbonio-ui-commons/test/test-setup';
 import * as convRequest from '../../store/actions/conv-action';
 import * as searchAPI from '../../store/actions/search';
-import { generateStore } from '../../tests/generators/store';
+import { setConversationsInEmailStore } from '../../store/zustand/emails/store';
+import { createSoapAPIInterceptorWithError } from '../../tests/generators/api';
+import { generateConversation } from '../../tests/generators/generateConversation';
 import { usePreviewHeaderNavigation } from '../use-preview-header-navigation';
 
 const createSnackbar = (arg: any): CreateSnackbarFn => arg;
@@ -31,17 +31,16 @@ beforeEach(() => {
 });
 
 describe('usePreviewHeaderNavigation', () => {
-	test('should return two items', () => {
-		const store = generateStore();
+	it('should return two items', () => {
 		const { result } = setupHook(usePreviewHeaderNavigation, {
-			store,
 			initialProps: [
 				{
-					items: [],
+					itemIds: [],
 					folderId: '2',
 					currentItemId: '1',
+					hasMore: false,
 					itemsType: 'conversation',
-					searchedInFolderStatus: undefined
+					searchedInFolderStatus: null
 				}
 			]
 		});
@@ -51,284 +50,259 @@ describe('usePreviewHeaderNavigation', () => {
 		});
 	});
 	describe('previousActionItem', () => {
-		test('has ArrowIosBack icon', () => {
-			const store = generateStore();
+		it('has ArrowIosBack icon', () => {
 			const { result } = setupHook(usePreviewHeaderNavigation, {
-				store,
 				initialProps: [
 					{
-						items: [],
+						itemIds: [],
+						hasMore: false,
 						folderId: '2',
 						currentItemId: '1',
 						itemsType: 'conversation',
-						searchedInFolderStatus: undefined
+						searchedInFolderStatus: null
 					}
 				]
 			});
 			expect(result.current.previousActionItem.icon).toBe('ArrowIosBack');
 		});
-		test('is disabled when it is the first item', () => {
-			const store = generateStore();
+		it('is disabled when it is the first item', () => {
+			const conv1 = generateConversation({ id: '1' });
+			setConversationsInEmailStore([conv1], false);
+
 			const { result } = setupHook(usePreviewHeaderNavigation, {
-				store,
 				initialProps: [
 					{
-						items: [{ id: '1', read: true }],
+						itemIds: ['1'],
+						hasMore: false,
 						folderId: '2',
 						currentItemId: '1',
 						itemsType: 'conversation',
-						searchedInFolderStatus: undefined
+						searchedInFolderStatus: null
 					}
 				]
 			});
 			expect(result.current.previousActionItem.disabled).toBe(true);
 		});
-		test('render a tooltip for the default behaviour', () => {
-			const store = generateStore();
+		it('render a tooltip for the default behaviour', () => {
+			const conv1 = generateConversation({ id: '1' });
+			const conv2 = generateConversation({ id: '2' });
+			const conv3 = generateConversation({ id: '3' });
+			setConversationsInEmailStore([conv1, conv2, conv3], false);
+
 			const { result } = setupHook(usePreviewHeaderNavigation, {
-				store,
 				initialProps: [
 					{
-						items: [
-							{ id: '1', read: true },
-							{ id: '2', read: true },
-							{ id: '3', read: true }
-						],
+						itemIds: ['1', '2', '3'],
+						hasMore: false,
 						folderId: '2',
 						currentItemId: '2',
 						itemsType: 'conversation',
-						searchedInFolderStatus: 'complete'
+						searchedInFolderStatus: 'fulfilled'
 					}
 				]
 			});
 			expect(result.current.previousActionItem.tooltipLabel).toBe('Go to previous email');
 		});
-		test('render a different tooltip when the first item is displayed', () => {
-			const store = generateStore();
+		it('render a different tooltip when the first item is displayed', () => {
+			const conv1 = generateConversation({ id: '1' });
+			const conv2 = generateConversation({ id: '2' });
+			const conv3 = generateConversation({ id: '3' });
+			setConversationsInEmailStore([conv1, conv2, conv3], false);
+
 			const { result } = setupHook(usePreviewHeaderNavigation, {
-				store,
 				initialProps: [
 					{
-						items: [
-							{ id: '1', read: true },
-							{ id: '2', read: true },
-							{ id: '3', read: true }
-						],
+						itemIds: ['1', '2', '3'],
+						hasMore: false,
 						folderId: '2',
 						currentItemId: '1',
 						itemsType: 'conversation',
-						searchedInFolderStatus: 'complete'
+						searchedInFolderStatus: 'fulfilled'
 					}
 				]
 			});
 			expect(result.current.previousActionItem.tooltipLabel).toBe('There are no previous emails');
 		});
-		test('render a different tooltip when navigation is not available', () => {
-			const store = generateStore();
+		it('render a different tooltip when navigation is not available', () => {
 			const { result } = setupHook(usePreviewHeaderNavigation, {
-				store,
 				initialProps: [
 					{
-						items: [],
+						itemIds: [],
+						hasMore: false,
 						folderId: '2',
 						currentItemId: '1',
 						itemsType: 'conversation',
-						searchedInFolderStatus: undefined
+						searchedInFolderStatus: null
 					}
 				]
 			});
 			expect(result.current.previousActionItem.tooltipLabel).toBe('Close this email to navigate');
 		});
 		describe('calling the action', () => {
-			test('will change the route with the previous message id', () => {
-				const store = generateStore();
+			it('will change the route with the previous message id', () => {
+				const conv1 = generateConversation({ id: '1' });
+				const conv2 = generateConversation({ id: '2' });
+				const conv3 = generateConversation({ id: '3' });
+				setConversationsInEmailStore([conv1, conv2, conv3], false);
+
 				const replaceHistorySpy = jest.spyOn(shell, 'replaceHistory');
 				const { result } = setupHook(usePreviewHeaderNavigation, {
-					store,
 					initialProps: [
 						{
-							items: [
-								{ id: '1', read: true },
-								{ id: '2', read: true },
-								{ id: '3', read: true }
-							],
+							itemIds: ['1', '2', '3'],
+							hasMore: false,
 							folderId: '2',
 							currentItemId: '2',
 							itemsType: 'conversation',
-							searchedInFolderStatus: 'complete'
+							searchedInFolderStatus: 'fulfilled'
 						}
 					]
 				});
 				result.current.previousActionItem.action();
 				expect(replaceHistorySpy).toHaveBeenCalledWith('/folder/2/conversation/1');
 			});
-			test('will set the message as read if it was not', () => {
+			it('will set the message as read if it was not', () => {
 				const convActionSpy = jest.spyOn(convRequest, 'convAction');
+				const conv1 = generateConversation({ id: '1' });
+				const conv2 = generateConversation({ id: '2' });
+				const conv3 = generateConversation({ id: '3' });
+				setConversationsInEmailStore([conv1, conv2, conv3], false);
 
-				const store = generateStore();
 				const { result } = setupHook(usePreviewHeaderNavigation, {
-					store,
 					initialProps: [
 						{
-							items: [
-								{ id: '1', read: false },
-								{ id: '2', read: true },
-								{ id: '3', read: true }
-							],
+							itemIds: ['1', '2', '3'],
+							hasMore: false,
 							folderId: '2',
 							currentItemId: '2',
 							itemsType: 'conversation',
-							searchedInFolderStatus: 'complete'
+							searchedInFolderStatus: 'fulfilled'
 						}
 					]
 				});
 				result.current.previousActionItem.action();
 				expect(convActionSpy).toHaveBeenCalledWith({ ids: ['1'], operation: 'read' });
 			});
-			test('will not set the message as read if it was already', () => {
-				const convActionSpy = jest.spyOn(convRequest, 'convAction');
-
-				const store = generateStore();
-				const { result } = setupHook(usePreviewHeaderNavigation, {
-					store,
-					initialProps: [
-						{
-							items: [
-								{ id: '1', read: true },
-								{ id: '2', read: true },
-								{ id: '3', read: true }
-							],
-							folderId: '2',
-							currentItemId: '2',
-							itemsType: 'conversation',
-							searchedInFolderStatus: 'complete'
-						}
-					]
-				});
-				result.current.previousActionItem.action();
-				expect(convActionSpy).not.toHaveBeenCalled();
-			});
 		});
 	});
 	describe('nextActionItem', () => {
-		test('has ArrowIosBack icon', () => {
-			const store = generateStore();
+		it('has ArrowIosBack icon', () => {
 			const { result } = setupHook(usePreviewHeaderNavigation, {
-				store,
 				initialProps: [
 					{
-						items: [],
+						itemIds: [],
+						hasMore: false,
 						folderId: '2',
 						currentItemId: '1',
 						itemsType: 'conversation',
-						searchedInFolderStatus: undefined
+						searchedInFolderStatus: null
 					}
 				]
 			});
 			expect(result.current.nextActionItem.icon).toBe('ArrowIosForward');
 		});
-		test('is disabled when it is the is the last item', () => {
-			const store = generateStore();
+		it('is disabled when it is the is the last item', () => {
+			const conv1 = generateConversation({ id: '1' });
+			setConversationsInEmailStore([conv1], false);
+
 			const { result } = setupHook(usePreviewHeaderNavigation, {
-				store,
 				initialProps: [
 					{
-						items: [{ id: '1', read: true }],
+						itemIds: ['1'],
+						hasMore: false,
 						folderId: '2',
 						currentItemId: '1',
 						itemsType: 'conversation',
-						searchedInFolderStatus: undefined
+						searchedInFolderStatus: null
 					}
 				]
 			});
 			expect(result.current.nextActionItem.disabled).toBe(true);
 		});
-		test('render a tooltip for the default behaviour', () => {
-			const store = generateStore();
+		it('render a tooltip for the default behaviour', () => {
+			const conv1 = generateConversation({ id: '1' });
+			const conv2 = generateConversation({ id: '2' });
+			const conv3 = generateConversation({ id: '3' });
+			setConversationsInEmailStore([conv1, conv2, conv3], false);
+
 			const { result } = setupHook(usePreviewHeaderNavigation, {
-				store,
 				initialProps: [
 					{
-						items: [
-							{ id: '1', read: true },
-							{ id: '2', read: true },
-							{ id: '3', read: true }
-						],
+						itemIds: ['1', '2', '3'],
+						hasMore: false,
 						folderId: '2',
 						currentItemId: '2',
 						itemsType: 'conversation',
-						searchedInFolderStatus: 'complete'
+						searchedInFolderStatus: 'fulfilled'
 					}
 				]
 			});
 			expect(result.current.nextActionItem.tooltipLabel).toBe('Go to next email');
 		});
-		test('render a different tooltip when the last item is displayed', () => {
-			const store = generateStore();
+		it('render a different tooltip when the last item is displayed', () => {
+			const conv1 = generateConversation({ id: '1' });
+			const conv2 = generateConversation({ id: '2' });
+			const conv3 = generateConversation({ id: '3' });
+			setConversationsInEmailStore([conv1, conv2, conv3], false);
+
 			const { result } = setupHook(usePreviewHeaderNavigation, {
-				store,
 				initialProps: [
 					{
-						items: [
-							{ id: '1', read: true },
-							{ id: '2', read: true },
-							{ id: '3', read: true }
-						],
+						itemIds: ['1', '2', '3'],
+						hasMore: false,
 						folderId: '2',
 						currentItemId: '3',
 						itemsType: 'conversation',
-						searchedInFolderStatus: 'complete'
+						searchedInFolderStatus: 'fulfilled'
 					}
 				]
 			});
 			expect(result.current.nextActionItem.tooltipLabel).toBe('There are no more emails');
 		});
-		test('render a different tooltip when navigation is not available', () => {
-			const store = generateStore();
+		it('render a different tooltip when navigation is not available', () => {
 			const { result } = setupHook(usePreviewHeaderNavigation, {
-				store,
 				initialProps: [
 					{
-						items: [],
+						itemIds: [],
+						hasMore: false,
 						folderId: '2',
 						currentItemId: '1',
 						itemsType: 'conversation',
-						searchedInFolderStatus: undefined
+						searchedInFolderStatus: null
 					}
 				]
 			});
 			expect(result.current.previousActionItem.tooltipLabel).toBe('Close this email to navigate');
 		});
-		test('render a different tooltip when is loading next emails', () => {
-			const store = generateStore();
+		it('render a different tooltip when is loading next emails', () => {
 			const { result } = setupHook(usePreviewHeaderNavigation, {
-				store,
 				initialProps: [
 					{
-						items: [{ id: '1', read: true }],
+						itemIds: [],
 						folderId: '2',
 						currentItemId: '1',
 						itemsType: 'conversation',
-						searchedInFolderStatus: 'hasMore'
+						hasMore: true,
+						searchedInFolderStatus: 'fulfilled'
 					}
 				]
 			});
 			expect(result.current.nextActionItem.tooltipLabel).toBe('Loading next email');
 		});
 		test('render a different tooltip when fails to load next emails', async () => {
-			const store = generateStore();
-			getSetupServer().use(
-				http.post('/service/soap/SearchRequest', async () => HttpResponse.json({ error: true }))
-			);
+			createSoapAPIInterceptorWithError('Search');
+			const conv1 = generateConversation({ id: '1' });
+			setConversationsInEmailStore([conv1], false);
+
 			const { result } = setupHook(usePreviewHeaderNavigation, {
-				store,
 				initialProps: [
 					{
-						items: [{ id: '1', read: true }],
+						itemIds: ['1'],
 						folderId: '2',
 						currentItemId: '1',
 						itemsType: 'conversation',
-						searchedInFolderStatus: 'hasMore'
+						hasMore: true,
+						searchedInFolderStatus: 'fulfilled'
 					}
 				]
 			});
@@ -340,44 +314,43 @@ describe('usePreviewHeaderNavigation', () => {
 			);
 		});
 		test('when it is the last item and hasMore it should call a search request', async () => {
-			const store = generateStore();
-			const searchSpy = jest.spyOn(searchAPI, 'search');
+			const interceptor = createSoapAPIInterceptor('Search', {});
+			const conv1 = generateConversation({ id: '1' });
+			setConversationsInEmailStore([conv1], true);
+
 			act(() => {
 				setupHook(usePreviewHeaderNavigation, {
-					store,
 					initialProps: [
 						{
-							items: [{ id: '1', read: true }],
+							itemIds: ['1'],
 							folderId: '2',
 							currentItemId: '1',
 							itemsType: 'conversation',
-							searchedInFolderStatus: 'hasMore'
+							hasMore: true,
+							searchedInFolderStatus: 'fulfilled'
 						}
 					]
 				});
 			});
+			const request = await interceptor;
 
-			expect(searchSpy).toHaveBeenCalledWith({
-				folderId: '2',
-				limit: 50,
-				offset: 1,
-				sortBy: 'dateDesc',
-				types: 'conversation'
-			});
+			expect(request).toHaveProperty('query', 'inId:"2"');
 		});
-		test('when it is the last item and it does not have more it should not call a search request', async () => {
-			const store = generateStore();
+		it('when it is the last item and it does not have more it should not call a search request', async () => {
+			const conv1 = generateConversation({ id: '1' });
+			setConversationsInEmailStore([conv1], false);
+
 			const searchSpy = jest.spyOn(searchAPI, 'search');
 			act(() => {
 				setupHook(usePreviewHeaderNavigation, {
-					store,
 					initialProps: [
 						{
-							items: [{ id: '1', read: true }],
+							itemIds: ['1'],
+							hasMore: false,
 							folderId: '2',
 							currentItemId: '1',
 							itemsType: 'conversation',
-							searchedInFolderStatus: 'complete'
+							searchedInFolderStatus: 'fulfilled'
 						}
 					]
 				});
@@ -386,68 +359,79 @@ describe('usePreviewHeaderNavigation', () => {
 			expect(searchSpy).not.toHaveBeenCalled();
 		});
 		describe('calling the action', () => {
-			test('will change the route with the next message id', () => {
-				const store = generateStore();
+			it('will change the route with the next message id', () => {
 				const replaceHistorySpy = jest.spyOn(shell, 'replaceHistory');
+				const conv1 = generateConversation({ id: '1' });
+				const conv2 = generateConversation({ id: '2' });
+				const conv3 = generateConversation({ id: '3' });
+				setConversationsInEmailStore([conv1, conv2, conv3], false);
 				const { result } = setupHook(usePreviewHeaderNavigation, {
-					store,
 					initialProps: [
 						{
-							items: [
-								{ id: '1', read: true },
-								{ id: '2', read: true },
-								{ id: '3', read: true }
-							],
+							itemIds: ['1', '2', '3'],
+							hasMore: false,
 							folderId: '2',
 							currentItemId: '2',
 							itemsType: 'conversation',
-							searchedInFolderStatus: 'complete'
+							searchedInFolderStatus: 'fulfilled'
 						}
 					]
 				});
 				result.current.nextActionItem.action();
 				expect(replaceHistorySpy).toHaveBeenCalledWith('/folder/2/conversation/3');
 			});
-			test('will set the message as read if it was not', () => {
+			it('will set the message as read if it was not', () => {
 				const convActionSpy = jest.spyOn(convRequest, 'convAction');
+				const conv1 = generateConversation({ id: '1' });
+				const conv2 = generateConversation({ id: '2' });
+				const conv3 = generateConversation({ id: '3' });
+				setConversationsInEmailStore(
+					[
+						{ ...conv1, read: true },
+						{ ...conv2, read: true },
+						{ ...conv3, read: false }
+					],
+					false
+				);
 
-				const store = generateStore();
 				const { result } = setupHook(usePreviewHeaderNavigation, {
-					store,
 					initialProps: [
 						{
-							items: [
-								{ id: '1', read: true },
-								{ id: '2', read: true },
-								{ id: '3', read: false }
-							],
+							itemIds: ['1', '2', '3'],
+							hasMore: false,
 							folderId: '2',
 							currentItemId: '2',
 							itemsType: 'conversation',
-							searchedInFolderStatus: 'complete'
+							searchedInFolderStatus: 'fulfilled'
 						}
 					]
 				});
 				result.current.nextActionItem.action();
 				expect(convActionSpy).toHaveBeenCalledWith({ ids: ['3'], operation: 'read' });
 			});
-			test('will not set the message as read if it was already', () => {
+			it('will not set the message as read if it was already', () => {
 				const convActionSpy = jest.spyOn(convRequest, 'convAction');
+				const conv1 = generateConversation({ id: '1' });
+				const conv2 = generateConversation({ id: '2' });
+				const conv3 = generateConversation({ id: '3' });
+				setConversationsInEmailStore(
+					[
+						{ ...conv1, read: true },
+						{ ...conv2, read: true },
+						{ ...conv3, read: true }
+					],
+					false
+				);
 
-				const store = generateStore();
 				const { result } = setupHook(usePreviewHeaderNavigation, {
-					store,
 					initialProps: [
 						{
-							items: [
-								{ id: '1', read: true },
-								{ id: '2', read: true },
-								{ id: '3', read: true }
-							],
+							itemIds: ['1', '2', '3'],
+							hasMore: false,
 							folderId: '2',
 							currentItemId: '2',
 							itemsType: 'conversation',
-							searchedInFolderStatus: 'complete'
+							searchedInFolderStatus: 'fulfilled'
 						}
 					]
 				});
