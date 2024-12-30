@@ -44,6 +44,7 @@ export function useLoadMoreForConversationList({
 	loadingMore: React.MutableRefObject<boolean>;
 }): () => Promise<void> {
 	return useCallback(async () => {
+		console.log('useLoadMoreForConversationList %%%%%%%%%%%%%%%%%%%%%%%%%%%%');
 		if (hasMore && !loadingMore.current) {
 			loadingMore.current = true;
 			const searchResponse = await searchSoapApi({
@@ -53,10 +54,14 @@ export function useLoadMoreForConversationList({
 				types: 'conversation',
 				offset,
 				recip: '0'
-			}).finally(() => {
-				loadingMore.current = false;
-			});
-			if ('Fault' in searchResponse) {
+			})
+				.catch(() => {
+					updateConversationsResultsLoadingStatus(API_REQUEST_STATUS.error);
+				})
+				.finally(() => {
+					loadingMore.current = false;
+				});
+			if (!searchResponse || 'Fault' in searchResponse) {
 				updateConversationsResultsLoadingStatus(API_REQUEST_STATUS.error);
 				return;
 			}

@@ -11,7 +11,10 @@ import { generateFolder } from '../../../../../carbonio-ui-commons/test/mocks/fo
 import { createSoapAPIInterceptor } from '../../../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { API_REQUEST_STATUS } from '../../../../../constants';
 import * as storeHooks from '../../../../../store/zustand/emails/store';
-import { generateConversationFromAPI } from '../../../../../tests/generators/api';
+import {
+	createSoapAPIInterceptorWithError,
+	generateConversationFromAPI
+} from '../../../../../tests/generators/api';
 import { useLoadMoreForConversationList } from '../conversation-list-hooks';
 
 describe('ConversationListHooks', () => {
@@ -70,6 +73,36 @@ describe('ConversationListHooks', () => {
 			'updateConversationsResultsLoadingStatus'
 		);
 		const interceptor = createSoapAPIInterceptor('Search', searchResponse);
+		const loadingMore = { current: false };
+		const { result } = renderHook(() =>
+			useLoadMoreForConversationList({
+				offset: 0,
+				sortBy: 'date',
+				limit: 20,
+				hasMore: true,
+				loadingMore,
+				folderId: 'inbox'
+			})
+		);
+
+		await act(async () => {
+			await result.current();
+		});
+
+		await interceptor;
+
+		expect(updateConversationsResultsLoadingStatusSpy).toHaveBeenCalledWith(
+			API_REQUEST_STATUS.error
+		);
+		expect(loadingMore.current).toBe(false);
+	});
+
+	it('should handle 500 gracefully', async () => {
+		const updateConversationsResultsLoadingStatusSpy = jest.spyOn(
+			storeHooks,
+			'updateConversationsResultsLoadingStatus'
+		);
+		const interceptor = createSoapAPIInterceptorWithError('Search');
 		const loadingMore = { current: false };
 		const { result } = renderHook(() =>
 			useLoadMoreForConversationList({
