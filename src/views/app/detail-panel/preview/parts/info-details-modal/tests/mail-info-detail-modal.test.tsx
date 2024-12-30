@@ -9,23 +9,23 @@ import React from 'react';
 import { screen } from '@testing-library/react';
 
 import { setupTest } from '../../../../../../../carbonio-ui-commons/test/test-setup';
-import { getMsgAsyncThunk } from '../../../../../../../store/actions';
-import { selectMessage } from '../../../../../../../store/messages-slice';
-import { generateStore } from '../../../../../../../tests/generators/store';
 import { MailInfoDetailModal } from '../mail-info-detail-modal';
 
+const signature = {
+	type: 'SMIME',
+	certificate: [],
+	message: 'Cannot find issuer certificate',
+	messageCode: 'ISSUER_CERT_NOT_FOUND',
+	valid: false
+};
 describe('MailInfoDetailModal', () => {
 	it(`Should correctly render all parts`, async () => {
 		const onClose = jest.fn();
-		const store = generateStore();
 
-		await store.dispatch<any>(getMsgAsyncThunk({ msgId: '15' }));
-		const state = store.getState();
-		const msg = selectMessage(state, '15');
 		setupTest(
 			<MailInfoDetailModal
 				onClose={onClose}
-				signature={msg.signature?.[0]}
+				signature={signature}
 				messageIdFromMailHeaders={'messageId'}
 				creationDateFromMailHeaders={'creationDate'}
 				// authenticationMailsHeaders={{
@@ -36,8 +36,7 @@ describe('MailInfoDetailModal', () => {
 				messageIsFromDistributionList
 				messageIsFromExternalDomain
 				sensitivityValue={'Private'}
-			/>,
-			{ store }
+			/>
 		);
 		expect(screen.getByText('Message details')).toBeVisible();
 
@@ -74,15 +73,11 @@ describe('MailInfoDetailModal', () => {
 
 	it(`Should not render undefined, but render other`, async () => {
 		const onClose = jest.fn();
-		const store = generateStore();
 
-		await store.dispatch<any>(getMsgAsyncThunk({ msgId: '15' }));
-		const state = store.getState();
-		const msg = selectMessage(state, '15');
 		setupTest(
 			<MailInfoDetailModal
 				onClose={onClose}
-				signature={msg.signature?.[0]}
+				signature={signature}
 				messageIdFromMailHeaders={undefined}
 				creationDateFromMailHeaders={undefined}
 				// authenticationMailsHeaders={{
@@ -93,8 +88,7 @@ describe('MailInfoDetailModal', () => {
 				messageIsFromDistributionList
 				messageIsFromExternalDomain
 				sensitivityValue={'Private'}
-			/>,
-			{ store }
+			/>
 		);
 		expect(screen.getByText('Message details')).toBeVisible();
 

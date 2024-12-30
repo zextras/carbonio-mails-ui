@@ -14,8 +14,7 @@ import { screen } from '@testing-library/react';
 import { useAppContext } from '../../../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
 import { previewContextMock } from '../../../../../carbonio-ui-commons/test/mocks/carbonio-ui-preview';
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
-import { getMsgAsyncThunk } from '../../../../../store/actions';
-import { selectMessage } from '../../../../../store/messages-slice';
+import { getMessageById } from '../../../../../store/zustand/emails/store';
 import { generateStore } from '../../../../../tests/generators/store';
 import AttachmentsBlock from '../attachments-block';
 
@@ -241,11 +240,7 @@ describe('Attachments visualization', () => {
 		// Generate the store
 		const store = generateStore();
 
-		// Invoke the fetch of the message and the store update
-		await store.dispatch<any>(getMsgAsyncThunk({ msgId }));
-		const state = store.getState();
-		const message = selectMessage(state, msgId);
-
+		const message = getMessageById(msgId);
 		// Get the attachment filename
 		const filenames = message?.attachments?.map((attachment) => attachment.filename);
 		if (!filenames) {
@@ -292,11 +287,8 @@ describe('Attachment actions visualization', () => {
 			// Generate the store
 			const store = generateStore();
 
-			// Invoke the fetch of the message and the store update
-			store.dispatch<any>(getMsgAsyncThunk({ msgId }));
-			// await store.dispatch(getMsg({ msgId }));
-			const state = store.getState();
-			const message = selectMessage(state, msgId);
+			const message = getMessageById(msgId);
+
 			// Get the attachment filename
 			const filenames = message?.attachments?.map((attachment) => attachment.filename);
 

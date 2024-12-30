@@ -6,17 +6,12 @@
 
 import { createAsyncThunk } from '@reduxjs/toolkit';
 
-import { getFullMsg, getMsg } from '../../api/helpers/get-msg-service';
+import { getFullMsg } from '../../api/helpers/get-msg-service';
 import type { MailMessage } from '../../types';
 
 type GetMsgCallProps = {
 	msgId: string;
 };
-
-export const getMsgAsyncThunk = createAsyncThunk<MailMessage, GetMsgCallProps>(
-	'messages/getMsg',
-	getMsg
-);
 
 export const getFullMsgAsyncThunk = createAsyncThunk<MailMessage, GetMsgCallProps>(
 	'messages/getFullMsg',

@@ -9,9 +9,7 @@ import React from 'react';
 import { screen } from '@testing-library/react';
 
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
-import { getMsgAsyncThunk } from '../../../../../store/actions';
-import { selectMessage } from '../../../../../store/messages-slice';
-import { setMessagesInEmailStore } from '../../../../../store/zustand/emails/store';
+import { getMessageById, setMessagesInEmailStore } from '../../../../../store/zustand/emails/store';
 import { generateMessage } from '../../../../../tests/generators/generateMessage';
 import { generateStore } from '../../../../../tests/generators/store';
 import MailPreview, { MailPreviewProps } from '../mail-preview';
@@ -54,9 +52,7 @@ describe.skip('Mail preview', () => {
 		const msgId = '11';
 
 		// Invoke the fetch of the message and the store update
-		await store.dispatch<any>(getMsgAsyncThunk({ msgId }));
-		const state = store.getState();
-		const message = selectMessage(state, msgId);
+		const message = getMessageById(msgId);
 		const props: MailPreviewProps = {
 			message,
 			expanded: true,
@@ -78,9 +74,7 @@ describe.skip('Mail preview', () => {
 		const msgId = '12';
 
 		// Invoke the fetch of the message and the store update
-		await store.dispatch<any>(getMsgAsyncThunk({ msgId }));
-		const state = store.getState();
-		const message = selectMessage(state, msgId);
+		const message = getMessageById(msgId);
 		const props: MailPreviewProps = {
 			message,
 			expanded: true,
