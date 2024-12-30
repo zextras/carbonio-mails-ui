@@ -199,6 +199,10 @@ export function appendMessagesToMessagesSlice(
 	messageIndexSliceUtils.appendMessagesToMessagesSlice(messages, offset, useEmailsStore);
 }
 
+export function deleteMessagesFromMessagesSlice(ids: Array<string>): void {
+	messageIndexSliceUtils.deleteMessagesFromMessageSlice(ids, useEmailsStore);
+}
+
 export function useMessagesResultsLoadingStatus(): SearchRequestStatus {
 	return useEmailsStore(({ messageIndexSlice }) => messageIndexSlice.status);
 }
@@ -242,4 +246,7 @@ export function setConversationsInEmailStore(
 	more: boolean
 ): void {
 	conversationIndexSliceUtils.setConversations(conversations, more, useEmailsStore);
+}
+export function deleteConversationsFromConversationSlice(ids: Array<string>): void {
+	conversationIndexSliceUtils.deleteConversationsFromConversationSlice(ids, useEmailsStore);
 }

@@ -122,11 +122,27 @@ function prependMessagesToMessageSlice(
 	);
 }
 
+function deleteMessagesFromMessageSlice(
+	ids: Array<string>,
+	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
+): void {
+	useEmailsStore.setState(
+		produce((state: EmailsStoreState) => {
+			state.messageIndexSlice.messageListIndex = state.messageIndexSlice.messageListIndex.filter(
+				(id) => !ids.includes(id)
+			);
+			ids.forEach((id) => {
+				delete state.populatedItemsSlice.messages[id];
+			});
+		})
+	);
+}
 export const messageIndexSliceUtils = {
 	setMessages,
 	updateMessagesResultsLoadingStatus,
 	resetMessagesAndPopulatedItems,
 	appendMessagesToMessagesSlice,
 	prependMessagesToMessageSlice,
+	deleteMessagesFromMessageSlice,
 	useMessagesIdsByFolder
 };
