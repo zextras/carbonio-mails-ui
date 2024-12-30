@@ -3,15 +3,14 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { Container, Divider, Padding, TabBar, TabBarProps } from '@zextras/carbonio-design-system';
-import { t } from '@zextras/carbonio-shell-ui';
+import { useTranslation } from 'react-i18next';
 
 import { FilterContext } from './filter-context';
 import IncomingMessageFilterTab from './incoming-message-filter-tab';
 import OutgoingMessageFilterTab from './outgoing-message-filter-tab';
-import { useAppDispatch } from '../../../../hooks/redux';
 import { useUiUtilities } from '../../../../hooks/use-ui-utilities';
 import { getIncomingFilters } from '../../../../store/actions/get-incoming-filters';
 import { getOutgoingFilters } from '../../../../store/actions/get-outgoing-filters';
@@ -25,7 +24,8 @@ type Item = {
 	name: string;
 };
 
-const FilterTabs: FC = (): ReactElement => {
+const FilterTabs = (): React.JSX.Element => {
+	const [t] = useTranslation();
 	const [selectedFilterType, setSelectedFilterType] = useState('incoming-messages');
 	const tabs = useMemo(
 		() => [
@@ -38,12 +38,11 @@ const FilterTabs: FC = (): ReactElement => {
 				label: t('filters.outgoing_message_filters', 'Outgoing Message Filters')
 			}
 		],
-		[]
+		[t]
 	);
 	const onChange = useCallback<TabBarProps['onChange']>((ev, selectedId) => {
 		setSelectedFilterType(selectedId);
 	}, []);
-	const dispatch = useAppDispatch();
 	const [incomingFilters, setIncomingFilters] = useState<Array<Item>>([]);
 	const [incomingLoading, setIncomingLoading] = useState(true);
 	const [outgoingLoading, setOutgoingLoading] = useState(true);
@@ -75,17 +74,17 @@ const FilterTabs: FC = (): ReactElement => {
 					setFetchIncomingFilters(false);
 				});
 		}
-	}, [createSnackbar, dispatch, fetchIncomingFilters]);
+	}, [createSnackbar, fetchIncomingFilters, t]);
 
 	useEffect(() => {
 		if (fetchOutgoingFilters) {
-			dispatch(getOutgoingFilters()).then((res) => {
+			getOutgoingFilters().then((res) => {
 				setOutgoingLoading(false);
-				setOutgoingFilters(res?.payload?.filterRules?.[0]?.filterRule);
+				setOutgoingFilters(res?.filterRules?.[0]?.filterRule);
 				setFetchOutgoingFilters(false);
 			});
 		}
-	}, [dispatch, fetchOutgoingFilters]);
+	}, [fetchOutgoingFilters]);
 
 	const moveUp = useCallback(
 		(index: number, list: Array<FilterListType>, listSetter: (tmp: FilterListType[]) => void) => {
