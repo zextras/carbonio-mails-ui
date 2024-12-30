@@ -20,22 +20,21 @@ import { normalizeMailMessageFromSoap } from '../../../normalizations/normalize-
 import {
 	handleAddMessagesInConversation,
 	handleCreatedMessagesInConversation,
-	handleDeletedMessagesInConversation,
 	handleModifiedMessagesInConversation,
 	handleNotifyCreatedConversations,
-	handleNotifyDeletedConversations,
 	handleNotifyModifiedConversations,
 	selectCurrentFolder,
 	setSearchedInFolder
 } from '../../../store/conversations-slice';
 import {
 	handleCreatedMessages,
-	handleDeletedMessages,
 	handleModifiedMessages,
 	selectMessages
 } from '../../../store/messages-slice';
 import {
+	deleteConversationsFromConversationSlice,
 	deleteConversationsFromSearch,
+	deleteMessagesFromMessagesSlice,
 	deleteMessagesFromSearch,
 	prependMessagesToMessagesSlice,
 	updateConversationsOnly,
@@ -80,7 +79,7 @@ export const useSyncDataHandler = (): void => {
 		if (!isEmpty(refresh) && !initialized) {
 			setInitialized(true);
 		}
-	}, [dispatch, initialized, refresh]);
+	}, [initialized, refresh]);
 
 	useEffect(() => {
 		forEach(notifyList, (notify) => {
@@ -185,9 +184,8 @@ export const useSyncDataHandler = (): void => {
 							if (notify.deleted) {
 								deleteConversationsFromSearch(notify.deleted);
 								deleteMessagesFromSearch(notify.deleted);
-								dispatch(handleNotifyDeletedConversations(notify.deleted));
-								dispatch(handleDeletedMessages(notify.deleted));
-								dispatch(handleDeletedMessagesInConversation(notify.deleted));
+								deleteMessagesFromMessagesSlice(notify.deleted);
+								deleteConversationsFromConversationSlice(notify.deleted);
 							}
 							setSeq(notify.seq);
 						}
