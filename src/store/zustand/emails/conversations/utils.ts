@@ -106,6 +106,24 @@ function appendConversationsToConversationIndexSlice(
 		})
 	);
 }
+
+function prependConversationsToConversationIndexSlice(
+	conversations: Array<NormalizedConversation>,
+	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
+): void {
+	const newConversationIds = conversations.map((conv) => conv.id);
+	useEmailsStore.setState(
+		produce((state: EmailsStoreState) => {
+			state.populatedItemsSlice.conversations = conversations.reduce((acc, conversation) => {
+				acc[conversation.id] = conversation;
+				return acc;
+			}, state.populatedItemsSlice.conversations);
+			state.conversationIndexSlice.conversationListIndex = Array.from(
+				new Set([...newConversationIds, ...state.conversationIndexSlice.conversationListIndex])
+			);
+		})
+	);
+}
 function deleteConversationsFromConversationSlice(
 	ids: Array<string>,
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
@@ -126,6 +144,7 @@ export const conversationIndexSliceUtils = {
 	useConversationsIdsByFolder,
 	resetConversationAndPopulatedItems,
 	appendConversationsToConversationIndexSlice,
+	prependConversationsToConversationIndexSlice,
 	updateConversationsResultsLoadingStatus,
 	deleteConversationsFromConversationSlice
 };

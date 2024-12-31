@@ -233,6 +233,15 @@ export function appendConversationsToConversationIndexSlice(
 	);
 }
 
+export function prependConversationsToConversationIndexSlice(
+	conversations: Array<NormalizedConversation>
+): void {
+	return conversationIndexSliceUtils.prependConversationsToConversationIndexSlice(
+		conversations,
+		useEmailsStore
+	);
+}
+
 export function updateConversationsResultsLoadingStatus(status: SearchRequestStatus): void {
 	conversationIndexSliceUtils.updateConversationsResultsLoadingStatus(status, useEmailsStore);
 }
