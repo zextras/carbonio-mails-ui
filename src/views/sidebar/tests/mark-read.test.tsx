@@ -14,7 +14,8 @@ import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mock
 import { populateFoldersStore } from '../../../carbonio-ui-commons/test/mocks/store/folders';
 import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
 import { MAIL_APP_ID, MAILS_ROUTE } from '../../../constants';
-import { generateStore } from '../../../tests/generators/store';
+import { setMessagesInEmailStore } from '../../../store/zustand/emails/store';
+import { generateMessage } from '../../../tests/generators/generateMessage';
 import { SoapFolderAction } from '../../../types';
 import Sidebar from '../sidebar';
 
@@ -29,9 +30,12 @@ describe('Mark all as read', () => {
 		const folderId = FOLDERS.INBOX;
 		useLocalStorage.mockReturnValue([[FOLDERS.USER_ROOT], jest.fn()]);
 
+		createSoapAPIInterceptor('Search');
+		const message = generateMessage();
+		setMessagesInEmailStore([message], false);
+
 		populateFoldersStore();
 		const options = {
-			store: generateStore(),
 			initialEntries: [`/mails/folder/${folderId}`],
 			path: '/mails'
 		};

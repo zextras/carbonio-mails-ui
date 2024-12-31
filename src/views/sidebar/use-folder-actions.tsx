@@ -18,11 +18,10 @@ import { FolderActionsType, FOLDERS } from '../../carbonio-ui-commons/constants/
 import type { Folder } from '../../carbonio-ui-commons/types/folder';
 import { allowedActionOnSharedAccount } from '../../carbonio-ui-commons/utils/utils';
 import { getFolderIdParts } from '../../helpers/folders';
-import { useAppSelector } from '../../hooks/redux';
+import { useMessageListByFolder } from '../../hooks/use-message-list-by-folder';
 import { useSelection } from '../../hooks/use-selection';
 import { useUiUtilities } from '../../hooks/use-ui-utilities';
 import { folderAction } from '../../store/actions/folder-action';
-import { selectMessagesArray } from '../../store/messages-slice';
 import { StoreProvider } from '../../store/redux';
 import { AppContext } from '../../types';
 import { SelectFolderModal } from '../../ui-actions/modals/select-folder-modal';
@@ -39,13 +38,10 @@ type FolderActionsProps = {
 export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 	const { createModal, closeModal } = useModal();
 	const folderIsTrash = getFolderIdParts(folder.id ?? '0').id === FOLDERS.TRASH;
-	const messages = useAppSelector(selectMessagesArray);
-	const trashMessages = messages.filter(
-		(message) => getFolderIdParts(message.parent).id === FOLDERS.TRASH
-	);
-	const moveMessagesIds = useMemo(
-		() => trashMessages.map((message) => message.id),
-		[trashMessages]
+	const { messageIndexSlice } = useMessageListByFolder(folder.id);
+
+	const trashMessages = messageIndexSlice.messageListIndex.filter(
+		() => getFolderIdParts(folder.id).id === FOLDERS.TRASH
 	);
 	const { setCount } = useAppContext<AppContext>();
 
@@ -105,7 +101,7 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 									<StoreProvider>
 										<MoveConvMessage
 											folderId={folder.id}
-											selectedIDs={moveMessagesIds}
+											selectedIDs={trashMessages}
 											// TODO: Fix it in DS
 											// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 											// @ts-ignore
@@ -340,7 +336,7 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 				}
 			}
 		],
-		[closeModal, createModal, createSnackbar, deselectAll, folder, folderIsTrash, moveMessagesIds]
+		[closeModal, createModal, createSnackbar, deselectAll, folder, folderIsTrash, trashMessages]
 	);
 
 	const defaultFolderActions = useMemo(
