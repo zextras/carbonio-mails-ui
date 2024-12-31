@@ -10,7 +10,6 @@ import { useTranslation } from 'react-i18next';
 
 import { ConversationActionsDescriptors } from '../../constants';
 import { isSpam, isTrash } from '../../helpers/folders';
-import { StoreProvider } from '../../store/redux';
 import { ActionFn, UIActionDescriptor } from '../../types';
 import { DeleteConvConfirm } from '../../ui-actions/delete-conv-modal';
 
@@ -36,14 +35,12 @@ export const useConvDeletePermanentlyFn = ({
 				{
 					id,
 					children: (
-						<StoreProvider>
-							<DeleteConvConfirm
-								selectedIDs={ids}
-								isMessageView={false}
-								onClose={(): void => closeModal(id)}
-								deselectAll={deselectAll}
-							/>
-						</StoreProvider>
+						<DeleteConvConfirm
+							selectedIDs={ids}
+							isMessageView={false}
+							onClose={(): void => closeModal(id)}
+							deselectAll={deselectAll}
+						/>
 					)
 				},
 				true

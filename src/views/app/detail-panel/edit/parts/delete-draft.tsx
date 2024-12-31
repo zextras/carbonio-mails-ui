@@ -13,7 +13,6 @@ import ModalFooter from '../../../../../carbonio-ui-commons/components/modals/mo
 import ModalHeader from '../../../../../carbonio-ui-commons/components/modals/modal-header';
 import { FOLDERS } from '../../../../../carbonio-ui-commons/constants/folders';
 import { useMsgMoveToTrashFn } from '../../../../../hooks/actions/use-msg-move-to-trash';
-import { StoreProvider } from '../../../../../store/redux';
 import { deleteEditor } from '../../../../../store/zustand/editor';
 import { MailsEditorV2 } from '../../../../../types';
 import { useGlobalModal } from '../../../../global-modal-manager';
@@ -92,14 +91,12 @@ export const useKeepOrDiscardDraft = (): ((arg: KeepDraftModalProps) => void) =>
 					{
 						id,
 						children: (
-							<StoreProvider>
-								<DeleteDraftModal
-									ids={[draftId]}
-									onDelete={onDelete}
-									onConfirm={(): void => onConfirm?.()}
-									onClose={(): void => closeModal(id)}
-								/>
-							</StoreProvider>
+							<DeleteDraftModal
+								ids={[draftId]}
+								onDelete={onDelete}
+								onConfirm={(): void => onConfirm?.()}
+								onClose={(): void => closeModal(id)}
+							/>
 						)
 					},
 					true

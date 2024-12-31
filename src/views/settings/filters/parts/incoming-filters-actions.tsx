@@ -15,7 +15,6 @@ import DeleteFilterModal from './delete-filter-modal';
 import { FilterContext } from './filter-context';
 import ModifyFilterModal from './modify-filter/modify-filter-modal';
 import { modifyFilterRules } from '../../../../store/actions/modify-filter-rules';
-import { StoreProvider } from '../../../../store/redux';
 import {
 	ApplyFilterUIActionExecutionParams,
 	getApplyFilterUIAction
@@ -113,15 +112,13 @@ const IncomingFilterActions: FC<ComponentProps> = ({ compProps }): ReactElement 
 				size: 'large',
 				maxHeight: '80vh',
 				children: (
-					<StoreProvider>
-						<CreateFilterModal
-							t={t}
-							onClose={(): void => closeModal(modalId)}
-							incomingFilters={incomingFilters}
-							setFetchIncomingFilters={setFetchIncomingFilters}
-							setIncomingFilters={setIncomingFilters}
-						/>
-					</StoreProvider>
+					<CreateFilterModal
+						t={t}
+						onClose={(): void => closeModal(modalId)}
+						incomingFilters={incomingFilters}
+						setFetchIncomingFilters={setFetchIncomingFilters}
+						setIncomingFilters={setIncomingFilters}
+					/>
 				)
 			},
 			true
@@ -135,24 +132,22 @@ const IncomingFilterActions: FC<ComponentProps> = ({ compProps }): ReactElement 
 				id: modalId,
 				size: 'small',
 				children: (
-					<StoreProvider>
-						<DeleteFilterModal
-							onClose={(): void => closeModal(modalId)}
-							t={t}
-							availableList={availableList}
-							activeList={activeList}
-							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-							// @ts-ignore
-							setFilters={setIncomingFilters}
-							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-							// @ts-ignore
-							setFetchFilters={setFetchIncomingFilters}
-							modifierFunc={modifyFilterRules}
-							filterName={selectedFilterName}
-							selectedFilter={selectedFilter}
-							incomingFilters={incomingFilters}
-						/>
-					</StoreProvider>
+					<DeleteFilterModal
+						onClose={(): void => closeModal(modalId)}
+						t={t}
+						availableList={availableList}
+						activeList={activeList}
+						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+						// @ts-ignore
+						setFilters={setIncomingFilters}
+						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+						// @ts-ignore
+						setFetchFilters={setFetchIncomingFilters}
+						modifierFunc={modifyFilterRules}
+						filterName={selectedFilterName}
+						selectedFilter={selectedFilter}
+						incomingFilters={incomingFilters}
+					/>
 				)
 			},
 			true
@@ -214,20 +209,18 @@ const IncomingFilterActions: FC<ComponentProps> = ({ compProps }): ReactElement 
 				size: 'large',
 				maxHeight: '80vh',
 				children: (
-					<StoreProvider>
-						<ModifyFilterModal
-							t={t}
-							selectedFilter={selectedFilter}
-							onClose={(): void => closeModal(modalId)}
-							incomingFilters={incomingFilters}
-							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-							// @ts-ignore
-							setFetchIncomingFilters={setFetchIncomingFilters}
-							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-							// @ts-ignore
-							setIncomingFilters={setIncomingFilters}
-						/>
-					</StoreProvider>
+					<ModifyFilterModal
+						t={t}
+						selectedFilter={selectedFilter}
+						onClose={(): void => closeModal(modalId)}
+						incomingFilters={incomingFilters}
+						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+						// @ts-ignore
+						setFetchIncomingFilters={setFetchIncomingFilters}
+						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+						// @ts-ignore
+						setIncomingFilters={setIncomingFilters}
+					/>
 				)
 			},
 			true

@@ -15,7 +15,6 @@ import DeleteOutgoingFilterModal from './delete-outgoing-filter-modal';
 import { FilterContext } from './filter-context';
 import ModifyOutgoingFilterModal from './modify-filter/modify-outgoing-filter-modal';
 import { modifyOutgoingFilterRules } from '../../../../store/actions/modify-filter-rules';
-import { StoreProvider } from '../../../../store/redux';
 
 type FilterListType = {
 	active: boolean;
@@ -82,19 +81,17 @@ const OutgoingFilterActions: FC<ComponentProps> = ({ compProps }): ReactElement 
 				size: 'large',
 				maxHeight: '80vh',
 				children: (
-					<StoreProvider>
-						<CreateOutgoingFilterModal
-							t={t}
-							onClose={(): void => closeModal(id)}
-							outgoingFilters={outgoingFilters}
-							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-							// @ts-ignore
-							setFetchOutgoingFilters={setFetchOutgoingFilters}
-							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-							// @ts-ignore
-							setOutgoingFilters={setOutgoingFilters}
-						/>
-					</StoreProvider>
+					<CreateOutgoingFilterModal
+						t={t}
+						onClose={(): void => closeModal(id)}
+						outgoingFilters={outgoingFilters}
+						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+						// @ts-ignore
+						setFetchOutgoingFilters={setFetchOutgoingFilters}
+						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+						// @ts-ignore
+						setOutgoingFilters={setOutgoingFilters}
+					/>
 				)
 			},
 			true
@@ -144,26 +141,24 @@ const OutgoingFilterActions: FC<ComponentProps> = ({ compProps }): ReactElement 
 				id,
 				size: 'small',
 				children: (
-					<StoreProvider>
-						<DeleteOutgoingFilterModal
-							onClose={(): void => closeModal(id)}
-							t={t}
-							availableList={availableList}
-							activeList={activeList}
-							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-							// @ts-ignore
-							setFilters={setOutgoingFilters}
-							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-							// @ts-ignore
-							setFetchFilters={setFetchOutgoingFilters}
-							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-							// @ts-ignore
-							modifierFunc={modifyOutgoingFilterRules}
-							filterName={selectedFilterName}
-							selectedFilter={selectedFilter}
-							outgoingFilters={outgoingFilters}
-						/>
-					</StoreProvider>
+					<DeleteOutgoingFilterModal
+						onClose={(): void => closeModal(id)}
+						t={t}
+						availableList={availableList}
+						activeList={activeList}
+						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+						// @ts-ignore
+						setFilters={setOutgoingFilters}
+						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+						// @ts-ignore
+						setFetchFilters={setFetchOutgoingFilters}
+						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+						// @ts-ignore
+						modifierFunc={modifyOutgoingFilterRules}
+						filterName={selectedFilterName}
+						selectedFilter={selectedFilter}
+						outgoingFilters={outgoingFilters}
+					/>
 				)
 			},
 			true
@@ -188,20 +183,18 @@ const OutgoingFilterActions: FC<ComponentProps> = ({ compProps }): ReactElement 
 				size: 'large',
 				maxHeight: '80vh',
 				children: (
-					<StoreProvider>
-						<ModifyOutgoingFilterModal
-							t={t}
-							selectedFilter={selectedFilter}
-							onClose={(): void => closeModal(id)}
-							outgoingFilters={outgoingFilters}
-							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-							// @ts-ignore
-							setFetchOutgoingFilters={setFetchOutgoingFilters}
-							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-							// @ts-ignore
-							setOutgoingFilters={setOutgoingFilters}
-						/>
-					</StoreProvider>
+					<ModifyOutgoingFilterModal
+						t={t}
+						selectedFilter={selectedFilter}
+						onClose={(): void => closeModal(id)}
+						outgoingFilters={outgoingFilters}
+						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+						// @ts-ignore
+						setFetchOutgoingFilters={setFetchOutgoingFilters}
+						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+						// @ts-ignore
+						setOutgoingFilters={setOutgoingFilters}
+					/>
 				)
 			},
 			true

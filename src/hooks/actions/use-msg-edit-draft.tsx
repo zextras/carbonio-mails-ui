@@ -11,7 +11,6 @@ import { useTranslation } from 'react-i18next';
 
 import { EditViewActions, MessageActionsDescriptors } from '../../constants';
 import { isDraft } from '../../helpers/folders';
-import { StoreProvider } from '../../store/redux';
 import { ActionFn, UIActionDescriptor } from '../../types';
 import { createEditBoard } from '../../views/app/detail-panel/edit/edit-view-board';
 import { useUiUtilities } from '../use-ui-utilities';
@@ -45,14 +44,12 @@ export const useMsgEditDraftFn = (
 					},
 					showCloseIcon: true,
 					children: (
-						<StoreProvider>
-							<Text overflow="break-word">
-								{t(
-									'messages.edit_schedule_warning',
-									'By editing this e-mail, the time and date previously set for delayed sending will be reset.'
-								)}
-							</Text>
-						</StoreProvider>
+						<Text overflow="break-word">
+							{t(
+								'messages.edit_schedule_warning',
+								'By editing this e-mail, the time and date previously set for delayed sending will be reset.'
+							)}
+						</Text>
 					)
 				});
 			} else {

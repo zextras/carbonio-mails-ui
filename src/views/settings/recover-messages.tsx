@@ -28,7 +28,6 @@ import {
 	BACKUP_SEARCH_STATUS,
 	RECOVER_MESSAGES_INTERVAL
 } from '../../constants';
-import { StoreProvider } from '../../store/redux';
 import { useAdvancedAccountStore } from '../../store/zustand/advanced-account/store';
 import { useBackupSearchStore } from '../../store/zustand/backup-search/store';
 
@@ -116,12 +115,10 @@ export const RecoverMessages = (): React.JSX.Element => {
 			{
 				id: modalId,
 				children: (
-					<StoreProvider>
-						<RecoverMessagesModal
-							onClose={(): void => closeModal(modalId)}
-							onConfirm={(): Promise<void> => restoreMessages(modalId)}
-						/>
-					</StoreProvider>
+					<RecoverMessagesModal
+						onClose={(): void => closeModal(modalId)}
+						onConfirm={(): Promise<void> => restoreMessages(modalId)}
+					/>
 				)
 			},
 			true

@@ -18,7 +18,6 @@ import {
 	modifyFilterRules,
 	modifyOutgoingFilterRules
 } from '../../../../store/actions/modify-filter-rules';
-import { StoreProvider } from '../../../../store/redux';
 
 type FilterListType = {
 	active: boolean;
@@ -79,11 +78,7 @@ const FilterActions: FC<ComponentProps> = ({ compProps }): ReactElement => {
 			{
 				id: modalId,
 				size: 'large',
-				children: (
-					<StoreProvider>
-						<CreateFilterModal t={t} onClose={(): void => closeModal(modalId)} />
-					</StoreProvider>
-				)
+				children: <CreateFilterModal t={t} onClose={(): void => closeModal(modalId)} />
 			},
 			true
 		);
@@ -131,16 +126,14 @@ const FilterActions: FC<ComponentProps> = ({ compProps }): ReactElement => {
 				size: 'large',
 				maxHeight: '70vh',
 				children: (
-					<StoreProvider>
-						<ModifyOutgoingFilterModal
-							t={t}
-							selectedFilter={selectedFilter}
-							onClose={(): void => closeModal(modalId)}
-							outgoingFilters={outgoingFilters}
-							setFetchOutgoingFilters={setFetchOutgoingFilters ?? emptyFilter}
-							setOutgoingFilters={setOutgoingFilters ?? emptyFilter}
-						/>
-					</StoreProvider>
+					<ModifyOutgoingFilterModal
+						t={t}
+						selectedFilter={selectedFilter}
+						onClose={(): void => closeModal(modalId)}
+						outgoingFilters={outgoingFilters}
+						setFetchOutgoingFilters={setFetchOutgoingFilters ?? emptyFilter}
+						setOutgoingFilters={setOutgoingFilters ?? emptyFilter}
+					/>
 				)
 			},
 			true

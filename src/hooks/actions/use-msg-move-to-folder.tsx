@@ -10,7 +10,6 @@ import { useTranslation } from 'react-i18next';
 
 import { MessageActionsDescriptors } from '../../constants';
 import { isTrash } from '../../helpers/folders';
-import { StoreProvider } from '../../store/redux';
 import { ActionFn, UIActionDescriptor } from '../../types';
 import { MoveConvMessage } from '../../ui-actions/move-conv-msg';
 import { useUiUtilities } from '../use-ui-utilities';
@@ -36,16 +35,14 @@ export const useMsgMoveToFolderFn = ({
 					maxHeight: '90vh',
 					size: 'medium',
 					children: (
-						<StoreProvider>
-							<MoveConvMessage
-								folderId={folderId}
-								selectedIDs={ids}
-								onClose={(): void => closeModal(modalId)}
-								isMessageView
-								isRestore={false}
-								deselectAll={deselectAll ?? noop}
-							/>
-						</StoreProvider>
+						<MoveConvMessage
+							folderId={folderId}
+							selectedIDs={ids}
+							onClose={(): void => closeModal(modalId)}
+							isMessageView
+							isRestore={false}
+							deselectAll={deselectAll ?? noop}
+						/>
 					)
 				},
 				true

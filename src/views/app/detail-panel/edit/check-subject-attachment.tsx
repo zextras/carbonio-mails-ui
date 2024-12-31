@@ -10,7 +10,6 @@ import { CloseModalFn, CreateModalFn, Text } from '@zextras/carbonio-design-syst
 import { t } from '@zextras/carbonio-shell-ui';
 
 import { LineType } from '../../../../commons/utils';
-import { StoreProvider } from '../../../../store/redux';
 import { getEditor } from '../../../../store/zustand/editor';
 import type { MailsEditorV2 } from '../../../../types';
 
@@ -94,14 +93,14 @@ export function checkSubjectAndAttachment({
 				closeModal(id);
 			},
 			children: (
-				<StoreProvider>
+				<>
 					<Text overflow="break-word" style={{ paddingTop: '1rem' }}>
 						{getSubjectOrAttachmentError({ attachmentIsExpected, hasAttachments, subject })}
 					</Text>
 					<Text overflow="break-word" style={{ paddingBottom: '1rem' }}>
 						{t('messages.modal.send_anyway.second', 'Do you still want to send the email?')}
 					</Text>
-				</StoreProvider>
+				</>
 			)
 		});
 	} else {

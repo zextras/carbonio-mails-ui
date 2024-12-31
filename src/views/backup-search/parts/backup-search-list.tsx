@@ -25,7 +25,6 @@ import { CustomList } from '../../../carbonio-ui-commons/components/list/list';
 import { CustomListItem } from '../../../carbonio-ui-commons/components/list/list-item';
 import { BACKUP_SEARCH_STATUS, MAILS_ROUTE } from '../../../constants';
 import { useSelection } from '../../../hooks/use-selection';
-import { StoreProvider } from '../../../store/redux';
 import { useBackupSearchStore } from '../../../store/zustand/backup-search/store';
 
 export const BackupSearchList = (): React.JSX.Element => {
@@ -87,14 +86,12 @@ export const BackupSearchList = (): React.JSX.Element => {
 				id: modalId,
 				maxHeight: '90vh',
 				children: (
-					<StoreProvider>
-						<BackupSearchRecoveryModal
-							onConfirm={(): Promise<void> =>
-								recoverEmailsCallback((): void => closeModal?.(modalId))
-							}
-							onClose={(): void => closeModal?.(modalId)}
-						/>
-					</StoreProvider>
+					<BackupSearchRecoveryModal
+						onConfirm={(): Promise<void> =>
+							recoverEmailsCallback((): void => closeModal?.(modalId))
+						}
+						onClose={(): void => closeModal?.(modalId)}
+					/>
 				)
 			},
 			true

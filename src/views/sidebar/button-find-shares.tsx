@@ -14,7 +14,6 @@ import { SharesModal } from './shares-modal';
 import { ResFolder } from '../../carbonio-ui-commons/utils';
 import { useUiUtilities } from '../../hooks/use-ui-utilities';
 import { getShareInfo } from '../../store/actions/get-share-info';
-import { StoreProvider } from '../../store/redux';
 
 export const ButtonFindShares = (): React.JSX.Element => {
 	const { createModal, closeModal } = useUiUtilities();
@@ -34,11 +33,7 @@ export const ButtonFindShares = (): React.JSX.Element => {
 					createModal(
 						{
 							id,
-							children: (
-								<StoreProvider>
-									<SharesModal folders={resFolders} onClose={(): void => closeModal(id)} />
-								</StoreProvider>
-							)
+							children: <SharesModal folders={resFolders} onClose={(): void => closeModal(id)} />
 						},
 						true
 					);

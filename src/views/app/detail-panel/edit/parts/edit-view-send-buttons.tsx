@@ -10,7 +10,6 @@ import { t, useUserSettings } from '@zextras/carbonio-shell-ui';
 
 import { SendLaterModal } from './send-later-modal';
 import { AnimatedLoader } from '../../../../../assets/animated-loader';
-import { StoreProvider } from '../../../../../store/redux';
 
 export type EditViewSendButtonsProps = {
 	onSendLater: (autoSendTime: number) => void;
@@ -37,15 +36,13 @@ export const EditViewSendButtons: FC<EditViewSendButtonsProps> = ({
 				id: modalId,
 				maxHeight: '90vh',
 				children: (
-					<StoreProvider>
-						<SendLaterModal
-							onAutoSendTimeSelected={(autoSendTime): void => {
-								onSendLater(autoSendTime);
-								closeModal(modalId);
-							}}
-							onClose={(): void => closeModal(modalId)}
-						/>
-					</StoreProvider>
+					<SendLaterModal
+						onAutoSendTimeSelected={(autoSendTime): void => {
+							onSendLater(autoSendTime);
+							closeModal(modalId);
+						}}
+						onClose={(): void => closeModal(modalId)}
+					/>
 				)
 			},
 			true

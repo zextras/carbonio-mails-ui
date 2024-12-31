@@ -42,7 +42,6 @@ import { useAttachmentIconColor } from '../../../../helpers/attachments';
 import { useUiUtilities } from '../../../../hooks/use-ui-utilities';
 import { getMsgsForPrint } from '../../../../store/actions';
 import { deleteAttachments } from '../../../../store/actions/delete-all-attachments';
-import { StoreProvider } from '../../../../store/redux';
 import type {
 	AppContext,
 	AttachmentPart,
@@ -177,13 +176,11 @@ const Attachment = ({
 				id,
 				maxHeight: '90vh',
 				children: (
-					<StoreProvider>
-						<DeleteAttachmentModal
-							onClose={(): void => closeModal(id)}
-							onDownloadAndDelete={onDownloadAndDelete}
-							onDeleteAttachment={onDeleteAttachment}
-						/>
-					</StoreProvider>
+					<DeleteAttachmentModal
+						onClose={(): void => closeModal(id)}
+						onDownloadAndDelete={onDownloadAndDelete}
+						onDeleteAttachment={onDeleteAttachment}
+					/>
 				)
 			},
 			true
