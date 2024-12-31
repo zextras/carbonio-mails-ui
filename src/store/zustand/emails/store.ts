@@ -25,24 +25,76 @@ import {
 	PopulatedItemsSliceState
 } from '../../../types';
 
-const useEmailsStore = create<EmailsStoreState>()((...a) => ({
-	...createSearchIndexSlice(...a),
-	...createMessageIndexSlice(...a),
-	...createConversationIndexSlice(...a),
-	...createPopulatedItemsSlice(...a)
+const useEmailsStore = create<
+	EmailsStoreState & {
+		queue: Array<() => Promise<void>>;
+		isExecuting: boolean;
+		addTask: (task: () => Promise<void>) => void;
+		executeTasks: () => Promise<void>;
+	}
+>()((set, get, ...a) => ({
+	...createSearchIndexSlice(set, get, ...a),
+	...createMessageIndexSlice(set, get, ...a),
+	...createConversationIndexSlice(set, get, ...a),
+	...createPopulatedItemsSlice(set, get, ...a),
+	queue: [], // Holds the tasks to be executed
+	isExecuting: false, // Tracks if execution is in progress
+
+	// Add a task to the queue
+	addTask: (task): void => {
+		const { queue, executeTasks } = get();
+		set({ queue: [...queue, task] });
+
+		// Start executing tasks if not already in progress
+		if (!get().isExecuting) {
+			executeTasks();
+		}
+	},
+
+	// Execute tasks sequentially
+	executeTasks: async (): Promise<void> => {
+		const { queue } = get();
+
+		if (queue.length === 0) {
+			set({ isExecuting: false });
+			return;
+		}
+
+		set({ isExecuting: true });
+
+		// Get the first task from the queue
+		const [currentTask, ...restQueue] = queue;
+
+		try {
+			// Await the execution of the task
+			await currentTask();
+		} catch (error) {
+			console.error('Task execution failed:', error);
+		} finally {
+			// Update the queue and recursively process the next task
+			set({ queue: restQueue });
+			get().executeTasks();
+		}
+	}
 }));
+
+const { addTask } = useEmailsStore.getState();
 
 // ################################
 // ##### Search related functions
 // ################################
 export function resetSearchAndPopulatedItems(): void {
-	searchSliceUtils.resetSearchAndPopulatedItems(useEmailsStore);
+	addTask(async () => {
+		searchSliceUtils.resetSearchAndPopulatedItems(useEmailsStore);
+	});
 }
 export function setSearchResultsByMessage(
 	messages: Array<MailMessage | IncompleteMessage>,
 	more: boolean
 ): void {
-	searchSliceUtils.setSearchResultsByMessage(messages, more, useEmailsStore);
+	addTask(async () => {
+		searchSliceUtils.setSearchResultsByMessage(messages, more, useEmailsStore);
+	});
 }
 export function useSearchResults(): SearchIndexSliceState['searchIndexSlice'] {
 	return useEmailsStore(({ searchIndexSlice: searchSlice }) => searchSlice);
@@ -52,37 +104,51 @@ export function setSearchResultsByConversation(
 	conversations: Array<NormalizedConversation>,
 	more: boolean
 ): void {
-	searchSliceUtils.setSearchResultsByConversation(conversations, more, useEmailsStore);
+	addTask(async () => {
+		searchSliceUtils.setSearchResultsByConversation(conversations, more, useEmailsStore);
+	});
 }
 export function appendConversations(
 	conversations: Array<NormalizedConversation>,
 	offset: number,
 	more: boolean
 ): void {
-	searchSliceUtils.appendConversationsToSearch(conversations, offset, more, useEmailsStore);
+	addTask(async () => {
+		searchSliceUtils.appendConversationsToSearch(conversations, offset, more, useEmailsStore);
+	});
 }
 export function deleteConversationsFromSearch(ids: Array<string>): void {
-	searchSliceUtils.deleteConversationsFromSearch(ids, useEmailsStore);
+	addTask(async () => {
+		searchSliceUtils.deleteConversationsFromSearch(ids, useEmailsStore);
+	});
 }
 export function deleteMessagesFromSearch(ids: Array<string>): void {
-	searchSliceUtils.deleteMessagesFromSearch(ids, useEmailsStore);
+	addTask(async () => {
+		searchSliceUtils.deleteMessagesFromSearch(ids, useEmailsStore);
+	});
 }
 export function getSearchResultsLoadingStatus(): SearchRequestStatus {
 	return useEmailsStore.getState().searchIndexSlice.status;
 }
 
 export function updateSearchResultsLoadingStatus(status: SearchRequestStatus): void {
-	searchSliceUtils.updateSearchResultsLoadingStatus(status, useEmailsStore);
+	addTask(async () => {
+		searchSliceUtils.updateSearchResultsLoadingStatus(status, useEmailsStore);
+	});
 }
 export function appendMessagesToSearch(
 	messages: Array<MailMessage | IncompleteMessage>,
 	offset: number
 ): void {
-	searchSliceUtils.appendMessagesToSearch(messages, offset, useEmailsStore);
+	addTask(async () => {
+		searchSliceUtils.appendMessagesToSearch(messages, offset, useEmailsStore);
+	});
 }
 
 export function setMessagesInSearchSlice(messages: Array<MailMessage | IncompleteMessage>): void {
-	searchSliceUtils.setMessagesInSearchSlice(messages, useEmailsStore);
+	addTask(async () => {
+		searchSliceUtils.setMessagesInSearchSlice(messages, useEmailsStore);
+	});
 }
 
 // ################################
@@ -128,25 +194,35 @@ export function useConversationStatus(id: string): SearchRequestStatus {
 }
 
 export function updateConversationsOnly(conversations: Array<NormalizedConversation>): void {
-	populatedItemsSliceUtils.updateConversationsOnly(conversations, useEmailsStore);
+	addTask(async () => {
+		populatedItemsSliceUtils.updateConversationsOnly(conversations, useEmailsStore);
+	});
 }
 
 export function updateMessagesOnly(messages: Array<IncompleteMessage>): void {
-	populatedItemsSliceUtils.updateMessagesOnly(messages, useEmailsStore);
+	addTask(async () => {
+		populatedItemsSliceUtils.updateMessagesOnly(messages, useEmailsStore);
+	});
 }
 export function updateMessages(messages: MailMessage[]): void {
-	populatedItemsSliceUtils.updateMessages(messages, useEmailsStore);
+	addTask(async () => {
+		populatedItemsSliceUtils.updateMessages(messages, useEmailsStore);
+	});
 }
 
 export function updateConversationStatus(
 	conversationId: string,
 	status: SearchRequestStatus
 ): void {
-	populatedItemsSliceUtils.updateConversationStatus(conversationId, status, useEmailsStore);
+	addTask(async () => {
+		populatedItemsSliceUtils.updateConversationStatus(conversationId, status, useEmailsStore);
+	});
 }
 
 export function updateMessageStatus(messageId: string, status: SearchRequestStatus): void {
-	populatedItemsSliceUtils.updateMessageStatus(messageId, status, useEmailsStore);
+	addTask(async () => {
+		populatedItemsSliceUtils.updateMessageStatus(messageId, status, useEmailsStore);
+	});
 }
 export function useMessageStatus(id: string): SearchRequestStatus {
 	return useEmailsStore((state) => state.populatedItemsSlice.messagesStatus?.[id]);
@@ -168,7 +244,9 @@ export function setMessagesInEmailStore(
 	messages: Array<MailMessage | IncompleteMessage>,
 	more: boolean
 ): void {
-	messageIndexSliceUtils.setMessages(messages, more, useEmailsStore);
+	addTask(async () => {
+		messageIndexSliceUtils.setMessages(messages, more, useEmailsStore);
+	});
 }
 
 /**
@@ -177,30 +255,40 @@ export function setMessagesInEmailStore(
  * @param {SearchRequestStatus} status - The new loading status to set.
  */
 export function updateMessagesResultsLoadingStatus(status: SearchRequestStatus): void {
-	messageIndexSliceUtils.updateMessagesResultsLoadingStatus(status, useEmailsStore);
+	addTask(async () => {
+		messageIndexSliceUtils.updateMessagesResultsLoadingStatus(status, useEmailsStore);
+	});
 }
 
 /**
  * Resets the messages and populated items in the email store.
  */
 export function resetMessagesAndPopulatedItems(): void {
-	messageIndexSliceUtils.resetMessagesAndPopulatedItems(useEmailsStore);
+	addTask(async () => {
+		messageIndexSliceUtils.resetMessagesAndPopulatedItems(useEmailsStore);
+	});
 }
 
 export function prependMessagesToMessagesSlice(
 	messages: Array<MailMessage | IncompleteMessage>
 ): void {
-	messageIndexSliceUtils.prependMessagesToMessageSlice(messages, useEmailsStore);
+	addTask(async () => {
+		messageIndexSliceUtils.prependMessagesToMessageSlice(messages, useEmailsStore);
+	});
 }
 export function appendMessagesToMessagesSlice(
 	messages: Array<MailMessage | IncompleteMessage>,
 	offset: number
 ): void {
-	messageIndexSliceUtils.appendMessagesToMessagesSlice(messages, offset, useEmailsStore);
+	addTask(async () => {
+		messageIndexSliceUtils.appendMessagesToMessagesSlice(messages, offset, useEmailsStore);
+	});
 }
 
 export function deleteMessagesFromMessagesSlice(ids: Array<string>): void {
-	messageIndexSliceUtils.deleteMessagesFromMessageSlice(ids, useEmailsStore);
+	addTask(async () => {
+		messageIndexSliceUtils.deleteMessagesFromMessageSlice(ids, useEmailsStore);
+	});
 }
 
 export function useMessagesResultsLoadingStatus(): SearchRequestStatus {
@@ -243,7 +331,9 @@ export function prependConversationsToConversationIndexSlice(
 }
 
 export function updateConversationsResultsLoadingStatus(status: SearchRequestStatus): void {
-	conversationIndexSliceUtils.updateConversationsResultsLoadingStatus(status, useEmailsStore);
+	addTask(async () => {
+		conversationIndexSliceUtils.updateConversationsResultsLoadingStatus(status, useEmailsStore);
+	});
 }
 
 export function useConversationsResultsLoadingStatus(): SearchRequestStatus {
@@ -254,8 +344,12 @@ export function setConversationsInEmailStore(
 	conversations: Array<NormalizedConversation>,
 	more: boolean
 ): void {
-	conversationIndexSliceUtils.setConversations(conversations, more, useEmailsStore);
+	addTask(async () => {
+		conversationIndexSliceUtils.setConversations(conversations, more, useEmailsStore);
+	});
 }
 export function deleteConversationsFromConversationSlice(ids: Array<string>): void {
-	conversationIndexSliceUtils.deleteConversationsFromConversationSlice(ids, useEmailsStore);
+	addTask(async () => {
+		conversationIndexSliceUtils.deleteConversationsFromConversationSlice(ids, useEmailsStore);
+	});
 }
