@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, useCallback } from 'react';
+import React, { useCallback } from 'react';
 
 import { Padding } from '@zextras/carbonio-design-system';
 
@@ -20,12 +20,12 @@ export type ConversationMessagePreviewProps = {
 	isInsideExtraWindow: boolean;
 };
 
-export const ConversationMessagePreview: FC<ConversationMessagePreviewProps> = ({
+export const ConversationMessagePreview = ({
 	convMessage,
 	isExpanded,
 	isAlone,
 	isInsideExtraWindow
-}) => {
+}: ConversationMessagePreviewProps): React.JSX.Element => {
 	const message = useMessageById(convMessage.id);
 	const messagePreviewFactory = useCallback(() => {
 		const folderId = getParentFolderId(message.parent);
