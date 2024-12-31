@@ -3,77 +3,51 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, useEffect, useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 
 import { Container, Padding, Text } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import { useParams } from 'react-router-dom';
 
-import {
-	DraftMessages,
-	EmptyFieldMessages,
-	EmptyListMessages,
-	SentMessages,
-	SpamMessages,
-	TrashMessages
-} from './utils';
+import { DraftMessages, SentMessages, SpamMessages, TrashMessages } from './utils';
 import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
 import { getFolderIdParts } from '../../../helpers/folders';
-import { useAppSelector } from '../../../hooks/redux';
-import { selectConversationsArray } from '../../../store/conversations-slice';
+import { useConversationsIdsByFolder } from '../../../store/zustand/emails/store';
 
-const generateListRandomNumber = (): number => Math.floor(Math.random() * 3);
-const generateFieldRandomNumber = (): number => Math.floor(Math.random() * 5);
-
-export const SelectionInteractive: FC<{ count: number }> = ({ count }) => {
+export const SelectionInteractive = ({ count }: { count: number }): React.JSX.Element => {
 	const { folderId } = useParams<{ folderId: string }>();
-	const conversations = useAppSelector(selectConversationsArray);
-	const emptyListMessages = useMemo(() => EmptyListMessages(), []);
-	const emptyFieldMessages = useMemo(() => EmptyFieldMessages(), []);
+	const conversationIds = useConversationsIdsByFolder(folderId);
 	const spamMessages = useMemo(() => SpamMessages(), []);
 	const sentMessages = useMemo(() => SentMessages(), []);
 	const draftMessages = useMemo(() => DraftMessages(), []);
 	const trashMessages = useMemo(() => TrashMessages(), []);
 
-	const [randomListIndex, setRandomListIndex] = useState(0);
-	const [randomFieldIndex, setRandomFieldIndex] = useState(0);
-	useEffect(() => {
-		const random = generateListRandomNumber();
-		setRandomListIndex(random);
-	}, [folderId]);
-	useEffect(() => {
-		const random = generateFieldRandomNumber();
-		setRandomFieldIndex(random);
-	}, [folderId]);
-
 	const displayerMessage = useMemo(() => {
 		if (getFolderIdParts(folderId).id === FOLDERS.SPAM) {
-			return conversations?.length > 0 ? spamMessages[1] : spamMessages[0];
+			return conversationIds?.length > 0 ? spamMessages[1] : spamMessages[0];
 		}
 		if (getFolderIdParts(folderId).id === FOLDERS.SENT) {
-			return conversations?.length > 0 ? sentMessages[1] : sentMessages[0];
+			return conversationIds?.length > 0 ? sentMessages[1] : sentMessages[0];
 		}
 		if (getFolderIdParts(folderId).id === FOLDERS.DRAFTS) {
-			return conversations?.length > 0 ? draftMessages[1] : draftMessages[0];
+			return conversationIds?.length > 0 ? draftMessages[1] : draftMessages[0];
 		}
 		if (getFolderIdParts(folderId).id === FOLDERS.TRASH) {
-			return conversations?.length > 0 ? trashMessages[1] : trashMessages[0];
+			return conversationIds?.length > 0 ? trashMessages[1] : trashMessages[0];
 		}
-		return conversations && conversations.length > 0
-			? emptyFieldMessages[randomFieldIndex]
-			: emptyListMessages[randomListIndex];
-	}, [
-		conversations,
-		emptyListMessages,
-		emptyFieldMessages,
-		randomListIndex,
-		randomFieldIndex,
-		folderId,
-		spamMessages,
-		sentMessages,
-		draftMessages,
-		trashMessages
-	]);
+		return conversationIds && conversationIds.length > 0
+			? {
+					title: t('displayer.title4', 'Select an e-mail to read it'),
+					description: t(
+						'displayer.description4',
+						'You can flag it, reply or forward it to other users.'
+					)
+				}
+			: {
+					title: t('displayer.title1', 'Compose a new e-mail by clicking the "NEW"button'),
+					description: ''
+				};
+	}, [conversationIds, folderId, spamMessages, sentMessages, draftMessages, trashMessages]);
 
 	const textContentTitle = useMemo(
 		() =>
