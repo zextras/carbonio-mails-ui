@@ -18,11 +18,10 @@ import { includes, noop } from 'lodash';
 import { EditView, EditViewHandle } from './edit-view';
 import { EditViewBoardContext } from './edit-view-board';
 import { EditViewActions } from '../../../../constants';
-import { useAppSelector } from '../../../../hooks/redux';
-import { selectMessage } from '../../../../store/messages-slice';
 import { addEditor, useEditorSubject } from '../../../../store/zustand/editor';
 import { generateEditor } from '../../../../store/zustand/editor/editor-generators';
 import { retrieveFullMessage } from '../../../../store/zustand/emails/hooks/hooks';
+import { useMessageById } from '../../../../store/zustand/emails/store';
 import type { EditViewActionsType, MailMessage } from '../../../../types';
 
 const parseAndValidateParams = (
@@ -164,9 +163,7 @@ const EditViewController = (): React.JSX.Element => {
 		[action, id]
 	);
 
-	const message = useAppSelector((state) =>
-		isMessageRequired && id ? selectMessage(state, id) : undefined
-	);
+	const message = useMessageById(id ?? '');
 
 	const isMessageLoadingRequired = useMemo<boolean>(
 		(): boolean => isMessageRequired && !message?.isComplete,
