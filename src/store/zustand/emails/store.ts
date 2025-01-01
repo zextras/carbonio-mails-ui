@@ -37,44 +37,48 @@ const useEmailsStore = create<
 	...createMessageIndexSlice(set, get, ...a),
 	...createConversationIndexSlice(set, get, ...a),
 	...createPopulatedItemsSlice(set, get, ...a),
+
 	queue: [], // Holds the tasks to be executed
 	isExecuting: false, // Tracks if execution is in progress
 
 	// Add a task to the queue
 	addTask: (task): void => {
-		const { queue, executeTasks } = get();
+		const { queue, isExecuting } = get();
 		set({ queue: [...queue, task] });
 
 		// Start executing tasks if not already in progress
-		if (!get().isExecuting) {
-			executeTasks();
+		if (!isExecuting) {
+			get().executeTasks();
 		}
 	},
 
 	// Execute tasks sequentially
 	executeTasks: async (): Promise<void> => {
-		const { queue } = get();
+		const { isExecuting } = get();
 
-		if (queue.length === 0) {
-			set({ isExecuting: false });
+		if (isExecuting) {
+			// Guard against overlapping executions
 			return;
 		}
 
 		set({ isExecuting: true });
 
-		// Get the first task from the queue
-		const [currentTask, ...restQueue] = queue;
+		while (get().queue.length > 0) {
+			const [currentTask, ...restQueue] = get().queue;
 
-		try {
-			// Await the execution of the task
-			await currentTask();
-		} catch (error) {
-			console.error('Task execution failed:', error);
-		} finally {
-			// Update the queue and recursively process the next task
-			set({ queue: restQueue });
-			get().executeTasks();
+			try {
+				// Execute the current task
+				currentTask();
+			} catch (error) {
+				console.error('Task execution failed:', error);
+			} finally {
+				// Update the queue
+				set({ queue: restQueue });
+			}
 		}
+
+		// Mark execution as complete
+		set({ isExecuting: false });
 	}
 }));
 
@@ -307,32 +311,44 @@ export function useConversationsIdsByFolder(folderId: string): Array<string> {
 }
 
 export function resetConversationAndPopulatedItems(): void {
-	return conversationIndexSliceUtils.resetConversationAndPopulatedItems(useEmailsStore);
+	addTask(async () => {
+		conversationIndexSliceUtils.resetConversationAndPopulatedItems(useEmailsStore);
+	});
 }
 
 export function appendConversationsToConversationIndexSlice(
 	conversations: Array<NormalizedConversation>,
 	offset: number
 ): void {
-	return conversationIndexSliceUtils.appendConversationsToConversationIndexSlice(
-		conversations,
-		offset,
-		useEmailsStore
-	);
+	addTask(async () => {
+		conversationIndexSliceUtils.appendConversationsToConversationIndexSlice(
+			conversations,
+			offset,
+			useEmailsStore
+		);
+	});
 }
 
 export function prependConversationsToConversationIndexSlice(
 	conversations: Array<NormalizedConversation>
 ): void {
-	return conversationIndexSliceUtils.prependConversationsToConversationIndexSlice(
-		conversations,
-		useEmailsStore
-	);
+	addTask(async () => {
+		conversationIndexSliceUtils.prependConversationsToConversationIndexSlice(
+			conversations,
+			useEmailsStore
+		);
+	});
 }
 
 export function updateConversationsResultsLoadingStatus(status: SearchRequestStatus): void {
 	addTask(async () => {
-		conversationIndexSliceUtils.updateConversationsResultsLoadingStatus(status, useEmailsStore);
+		useEmailsStore.setState((state) => ({
+			...state,
+			conversationIndexSlice: {
+				...state.conversationIndexSlice,
+				status
+			}
+		}));
 	});
 }
 
