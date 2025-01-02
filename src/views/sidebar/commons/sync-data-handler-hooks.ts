@@ -1,45 +1,35 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
+/* eslint-disable no-param-reassign */
 /*
  * SPDX-FileCopyrightText: 2025 Zextras <https://www.zextras.com>
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { useEffect, useRef, useState } from 'react';
+import { MutableRefObject, useEffect, useRef, useState } from 'react';
 
 import { useNotify, useRefresh } from '@zextras/carbonio-shell-ui';
-import { filter, find, forEach, isEmpty, map, reduce, sortBy } from 'lodash';
+import { filter, find, forEach, isEmpty, map, sortBy } from 'lodash';
 import { StoreApi, UseBoundStore } from 'zustand';
 
 import { useFolderStore } from '../../../carbonio-ui-commons/store/zustand/folder';
 import { Tag } from '../../../carbonio-ui-commons/types/tags';
 import { folderWorker } from '../../../carbonio-ui-commons/worker';
-import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
 import {
-	normalizeConversation,
+	mapToNormalizedConversation,
 	normalizeConversations
 } from '../../../normalizations/normalize-conversation';
 import { normalizeMailMessageFromSoap } from '../../../normalizations/normalize-message';
-import {
-	handleAddMessagesInConversation,
-	handleCreatedMessagesInConversation,
-	handleModifiedMessagesInConversation,
-	handleNotifyCreatedConversations,
-	selectCurrentFolder,
-	setSearchedInFolder
-} from '../../../store/conversations-slice';
-import { handleCreatedMessages, selectMessages } from '../../../store/messages-slice';
 import {
 	deleteConversationsFromConversationSlice,
 	deleteConversationsFromSearch,
 	deleteMessagesFromMessagesSlice,
 	deleteMessagesFromSearch,
+	prependConversationsToConversationIndexSlice,
 	prependMessagesToMessagesSlice,
 	updateConversationsOnly,
 	updateMessagesOnly
 } from '../../../store/zustand/emails/store';
 import {
-	ConvMessage,
 	FolderState,
 	SoapConversation,
 	SoapFolder,
@@ -100,26 +90,24 @@ function handleFoldersNotify({
 	}
 }
 
-function processCreatedNotifications(notify: SoapNotify, dispatch: any, messagesState: any): void {
+function processCreatedNotifications(notify: SoapNotify): void {
 	const { c: createdConversations, m: createdMessages } = notify.created || {};
 
 	if (createdConversations && createdMessages) {
 		const conversations = map(createdConversations, (conversation) =>
-			normalizeConversation({ c: conversation, m: createdMessages })
+			mapToNormalizedConversation({ c: conversation, m: createdMessages })
 		);
-		// @ts-ignore
-		dispatch(handleNotifyCreatedConversations(conversations));
+		prependConversationsToConversationIndexSlice(conversations);
 	}
 
 	if (createdMessages) {
 		const messages = map(createdMessages, (message) => normalizeMailMessageFromSoap(message));
 		prependMessagesToMessagesSlice(messages);
-		dispatch(handleCreatedMessages({ m: createdMessages }));
-		dispatch(handleCreatedMessagesInConversation({ m: createdMessages }));
+		// dispatch(handleCreatedMessagesInConversation({ m: createdMessages }));
 	}
 }
 
-function processModifiedNotifications(notify: SoapNotify, dispatch: any, messagesState: any): void {
+function processModifiedNotifications(notify: SoapNotify): void {
 	if (notify.modified?.c) {
 		updateConversationsOnly(normalizeConversations(notify.modified.c));
 	}
@@ -130,31 +118,28 @@ function processModifiedNotifications(notify: SoapNotify, dispatch: any, message
 
 		const toUpdate = filter(messages, 'parent');
 		if (!isEmpty(toUpdate)) {
-			// @ts-ignore
-			dispatch(handleModifiedMessagesInConversation(toUpdate));
+			// dispatch(handleModifiedMessagesInConversation(toUpdate));
 		}
 
 		const conversationToUpdate = filter(messages, 'conversation');
 		if (!isEmpty(conversationToUpdate)) {
-			const msgsReference = reduce(
-				conversationToUpdate,
-				(acc, msg) => {
-					const existingMessage = messagesState?.[msg?.id];
-					if (existingMessage) {
-						acc.push({
-							id: existingMessage.id,
-							parent: existingMessage.parent,
-							date: existingMessage.date,
-							// @ts-ignore
-							conversation: msg.conversation
-						});
-					}
-					return acc;
-				},
-				[] as Array<ConvMessage>
-			);
-			// @ts-ignore
-			dispatch(handleAddMessagesInConversation(msgsReference));
+			// const msgsReference = reduce(
+			// conversationToUpdate,
+			// (acc, msg) => {
+			// const existingMessage = messagesState?.[msg?.id];
+			// (existingMessage) {
+			// 		acc.push({
+			// 			id: existingMessage.id,
+			// 			parent: existingMessage.parent,
+			// 			date: existingMessage.date
+			// 			// conversation: msg.conversation
+			// 		});
+			// 	}
+			// 	return acc;
+			// },
+			// [] as Array<ConvMessage>
+			// );
+			// dispatch(handleAddMessagesInConversation(msgsReference));
 		}
 	}
 }
@@ -169,19 +154,15 @@ function processDeletedNotifications(notify: SoapNotify): void {
 type ProcessNotificationsProps = {
 	notifyList: SoapNotify[];
 	seq: number;
-	setSeq: any;
-	processedNotify: any;
-	messagesState: any;
-	dispatch: any;
+	setSeq: (arg: number) => void;
+	processedNotify: MutableRefObject<number>;
 };
 
 function processNotifications({
 	notifyList,
 	seq,
 	setSeq,
-	processedNotify,
-	dispatch,
-	messagesState
+	processedNotify
 }: ProcessNotificationsProps): void {
 	forEach(sortBy(notifyList, 'seq'), (notify) => {
 		if (
@@ -196,11 +177,11 @@ function processNotifications({
 		handleFoldersNotify({ notifyList, notify, worker: folderWorker, store: useFolderStore });
 
 		if (notify.created) {
-			processCreatedNotifications(notify, dispatch, messagesState);
+			processCreatedNotifications(notify);
 		}
 
 		if (notify.modified) {
-			processModifiedNotifications(notify, dispatch, messagesState);
+			processModifiedNotifications(notify);
 		}
 
 		if (notify.deleted) {
@@ -214,11 +195,10 @@ function processNotifications({
 export const useSyncDataHandler = (): void => {
 	const notifyList = useNotify() as Array<SoapNotify>;
 	const [seq, setSeq] = useState(-1);
-	const dispatch = useAppDispatch();
 	const [initialized, setInitialized] = useState(false);
-	const currentFolder = useAppSelector(selectCurrentFolder);
-	const messagesState = useAppSelector(selectMessages);
-	const processedNotify = useRef(-1);
+	const currentFolder = '2';
+	// const currentFolder = useAppSelector(selectCurrentFolder);
+	const processedNotify = useRef<number>(-1);
 
 	const refresh = useRefresh();
 	useEffect(() => {
@@ -229,17 +209,18 @@ export const useSyncDataHandler = (): void => {
 
 	useEffect(() => {
 		forEach(notifyList, (notify) => {
+			// TODO: CO-1725: is it still necessary to dispatch this action?
 			if (find(notify?.modified?.m, ['l', currentFolder])) {
 				// handle modified messages in the current folder
 				// is it still necessary to dispatch this action?
-				dispatch(setSearchedInFolder({ [currentFolder]: 'incomplete' }));
+				// dispatch(setSearchedInFolder({ [currentFolder]: 'incomplete' }));
 			}
 		});
-	}, [currentFolder, dispatch, notifyList]);
+	}, [currentFolder, notifyList]);
 
 	useEffect(() => {
 		if (initialized && notifyList.length > 0) {
-			processNotifications({ notifyList, seq, setSeq, processedNotify, messagesState, dispatch });
+			processNotifications({ notifyList, seq, setSeq, processedNotify });
 		}
-	}, [dispatch, initialized, messagesState, notifyList, seq]);
+	}, [initialized, notifyList, seq]);
 };

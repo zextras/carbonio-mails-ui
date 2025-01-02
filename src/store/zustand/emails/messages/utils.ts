@@ -6,12 +6,15 @@
 
 /* eslint-disable no-param-reassign */
 import produce from 'immer';
+import { filter, find, forEach, last, sortBy } from 'lodash';
 import { StoreApi, UseBoundStore } from 'zustand';
 
 import { MESSAGE_INDEX_SLICE_INITIAL_STATE } from './messages-slice';
+import { FOLDERS } from '../../../../carbonio-ui-commons/constants/folders';
 import { useFolder } from '../../../../carbonio-ui-commons/store/zustand/folder';
 import { API_REQUEST_STATUS } from '../../../../constants';
 import {
+	ConvMessage,
 	EmailsStoreState,
 	IncompleteMessage,
 	MailMessage,
@@ -103,21 +106,90 @@ function appendMessagesToMessagesSlice(
 		})
 	);
 }
+function oldFunction(m: any, state: any): void {
+	forEach(m, (msg) => {
+		const conversation = state.conversations?.[msg.cid];
+		if (msg?.cid && msg?.id && msg?.l && conversation) {
+			const messages = find(conversation.messages, ['id', msg.id])
+				? conversation.messages
+				: [...conversation.messages, { id: msg.id, parent: msg.l, date: Number(msg.d) }];
+
+			const date =
+				msg.l === FOLDERS.DRAFTS
+					? conversation.date
+					: (last(sortBy(filter(messages, { parent: state.currentFolder }), 'date')) as ConvMessage)
+							?.date;
+
+			const conv = {
+				[msg.cid]: {
+					...conversation,
+					messages,
+					fragment: msg?.fr ?? '',
+					date,
+					sortIndex: -JSON.stringify(Date.now())
+				}
+			};
+
+			state.conversations = { ...state.conversations, ...conv };
+		}
+	});
+}
 
 function prependMessagesToMessageSlice(
 	messages: Array<MailMessage | IncompleteMessage>,
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
 ): void {
 	const newMessageIds = messages.map((message) => message.id);
+
+	function addMessagesToMessageSlice(state: EmailsStoreState): void {
+		state.populatedItemsSlice.messages = messages.reduce((acc, msg) => {
+			acc[msg.id] = msg;
+			return acc;
+		}, state.populatedItemsSlice.messages);
+		state.messageIndexSlice.messageListIndex = Array.from(
+			new Set([...newMessageIds, ...state.messageIndexSlice.messageListIndex])
+		);
+	}
+
+	function addMessagesToConversation(state: EmailsStoreState): void {
+		forEach(messages, (msg) => {
+			const conversation = state.populatedItemsSlice.conversations?.[msg.conversation];
+			if (msg?.conversation && msg?.id && msg?.parent && conversation) {
+				const newMessages = find(conversation.messages, ['id', msg.id])
+					? conversation.messages
+					: [...conversation.messages, { id: msg.id, parent: msg.parent, date: msg.date }];
+
+				// const date =
+				// 	msg.parent === FOLDERS.DRAFTS
+				// 		? conversation.date
+				// 		: (
+				// 				last(
+				// 					sortBy(filter(newMessages, { parent: state.currentFolder }), 'date')
+				// 				) as ConvMessage
+				// 			)?.date;
+
+				const conv = {
+					[msg.conversation]: {
+						...conversation,
+						messages: newMessages,
+						fragment: msg?.fragment ?? '',
+						date: msg.date,
+						sortIndex: -JSON.stringify(Date.now())
+					}
+				};
+
+				state.populatedItemsSlice.conversations = {
+					...state.populatedItemsSlice.conversations,
+					...conv
+				};
+			}
+		});
+	}
+
 	useEmailsStore.setState(
 		produce((state: EmailsStoreState) => {
-			state.populatedItemsSlice.messages = messages.reduce((acc, msg) => {
-				acc[msg.id] = msg;
-				return acc;
-			}, state.populatedItemsSlice.messages);
-			state.messageIndexSlice.messageListIndex = Array.from(
-				new Set([...newMessageIds, ...state.messageIndexSlice.messageListIndex])
-			);
+			addMessagesToMessageSlice(state);
+			addMessagesToConversation(state);
 		})
 	);
 }
