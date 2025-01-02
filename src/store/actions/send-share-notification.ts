@@ -44,7 +44,9 @@ export async function sendShareNotification(data: SendShareNotification): Promis
                     </soap:Body>
                 </soap:Envelope>
             `
-			}).then((resData) => resData.json())
+			})
+				.then((resData) => resData.json())
+				.catch((err) => ({ error: err }))
 		)
 	);
 }
