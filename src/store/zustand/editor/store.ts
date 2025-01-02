@@ -349,9 +349,8 @@ export const useEditorsStore = create<EditorsStateTypeV2>()((set) => ({
 		);
 	},
 	/**
-	 * Dispatch function for messages store
+	 * Function for messages store
 	 * @param id
-	 * @param dispatch
 	 */
 
 	setSignatureId: (id: MailsEditorV2['id'], signId: MailsEditorV2['signatureId']): void => {

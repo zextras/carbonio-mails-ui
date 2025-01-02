@@ -24,7 +24,6 @@ import { handleGetFolderRequest } from '../../carbonio-ui-commons/test/mocks/net
 import { handleGetShareInfoRequest } from '../../carbonio-ui-commons/test/mocks/network/msw/handle-get-share-info';
 import { tags } from '../../carbonio-ui-commons/test/mocks/tags/tags';
 import { folderWorker } from '../../carbonio-ui-commons/worker';
-import * as reduxHooks from '../../hooks/redux';
 import {
 	setMessagesInSearchSlice,
 	useConversationById,
@@ -346,8 +345,6 @@ describe('sync data handler', () => {
 		});
 
 		it('should remove messages from store when permanently deleted', async () => {
-			jest.spyOn(reduxHooks, 'useAppDispatch').mockReturnValue(jest.fn());
-			jest.spyOn(reduxHooks, 'useAppSelector').mockReturnValue(jest.fn());
 			const completeMessage1 = generateMessage({ id: '1', folderId: 'aaa', isComplete: true });
 			const completeMessage2 = generateMessage({ id: '2', folderId: 'bbb', isComplete: true });
 			const completeMessage3 = generateMessage({ id: '3', folderId: 'bbb', isComplete: true });
@@ -375,8 +372,6 @@ describe('sync data handler', () => {
 		});
 
 		it('should add message to store when created', async () => {
-			jest.spyOn(reduxHooks, 'useAppDispatch').mockReturnValue(jest.fn());
-			jest.spyOn(reduxHooks, 'useAppSelector').mockReturnValue(jest.fn());
 			const completeMessage1 = generateMessageFromAPI({
 				id: '1',
 				su: 'Message subject'
@@ -401,8 +396,6 @@ describe('sync data handler', () => {
 
 	describe('folders', () => {
 		test('it will invoke the folders worker when a folders related notify is received', async () => {
-			jest.spyOn(reduxHooks, 'useAppDispatch').mockReturnValue(jest.fn());
-			jest.spyOn(reduxHooks, 'useAppSelector').mockReturnValue(jest.fn());
 			const folder = generateFolder({ id: '1' });
 			useFolderStore.setState({ folders: { [folder.id]: folder } });
 			const notify = { deleted: ['1'], seq: 0 };

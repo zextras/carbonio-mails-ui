@@ -8,13 +8,11 @@ import type { Grant } from '@zextras/carbonio-shell-ui';
 import { TFunction } from 'i18next';
 
 import type { Folder } from '../../carbonio-ui-commons/types/folder';
-import type { AppDispatch } from '../../store/redux';
 import type { Participant } from '../participant';
 
 export type ShareCalendarModalProps = {
 	openModal: () => void;
 	setModal: (a: any) => void;
-	dispatch: AppDispatch;
 	t: TFunction;
 	toggleSnackbar: () => void;
 	folder: string;
@@ -23,7 +21,6 @@ export type ShareCalendarModalProps = {
 };
 
 export type ResponseActionsProps = {
-	dispatch: AppDispatch;
 	t: TFunction;
 	zid: string;
 	view: string;

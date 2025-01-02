@@ -12,11 +12,9 @@ import { useTranslation } from 'react-i18next';
 import { msgActionSoapApi } from '../../../api/msg-action';
 import { ParticipantRole } from '../../../carbonio-ui-commons/constants/participants';
 import { getErrorMessage } from '../../../carbonio-ui-commons/helpers/errors';
-import { useAppDispatch } from '../../../hooks/redux';
 import { useUiUtilities } from '../../../hooks/use-ui-utilities';
 import { acceptSharedFolderReply } from '../../../store/actions/acceptSharedFolderReply';
 import { mountSharedFolder } from '../../../store/actions/mount-shared-folder';
-import { AppDispatch } from '../../../store/redux';
 import type { Participant, SaveDraftResponse } from '../../../types';
 
 type Accept = {
@@ -27,7 +25,6 @@ type Accept = {
 	color: number;
 	accounts: any;
 	t: TFunction;
-	dispatch: AppDispatch;
 	msgId: Array<string> | any;
 	sharedFolderName: string;
 	owner: string;
@@ -56,7 +53,6 @@ type AcceptSharedCalendarType = {
 };
 
 type DeclineType = {
-	dispatch: AppDispatch;
 	t: TFunction;
 	msgId: string;
 	sharedFolderName: string;
@@ -197,7 +193,6 @@ export const useAccept = (): ((arg: Accept) => void) => {
 export const useDecline = (): ((arg: DeclineType) => Promise<void>) => {
 	const { createSnackbar } = useUiUtilities();
 	const [t] = useTranslation();
-	const dispatch = useAppDispatch();
 
 	return useCallback(
 		({

@@ -8,12 +8,11 @@ import { faker } from '@faker-js/faker';
 
 import { getMocksContext } from '../../../carbonio-ui-commons/test/mocks/utils/mocks-context';
 import { EditViewActions } from '../../../constants';
-import { AppDispatch } from '../../../store/redux';
 import { MailsEditorV2 } from '../../../types';
 
 const FAKE_MESSAGE_ID = '11215';
 
-export const buildEditorCase = (messagesStoreDispatch: AppDispatch): MailsEditorV2 => {
+export const buildEditorCase = (): MailsEditorV2 => {
 	const mocksContext = getMocksContext();
 
 	return {
