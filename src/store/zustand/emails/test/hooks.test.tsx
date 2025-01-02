@@ -15,6 +15,7 @@ import {
 import { generateConversation } from '../../../../tests/generators/generateConversation';
 import { generateMessage } from '../../../../tests/generators/generateMessage';
 import {
+	ConvMessage,
 	GetMsgRequest,
 	GetMsgResponse,
 	SearchConvRequest,
@@ -22,10 +23,13 @@ import {
 } from '../../../../types';
 import { useCompleteConversation, useCompleteMessage } from '../hooks/hooks';
 import {
+	deleteMessagesFromConversation,
+	setConversationsInEmailStore,
 	setSearchResultsByConversation,
 	setSearchResultsByMessage,
 	updateConversationStatus,
 	updateMessageStatus,
+	useConversationById,
 	useConversationStatus,
 	useMessageStatus
 } from '../store';
@@ -149,5 +153,52 @@ describe('Searches store hooks', () => {
 				expect(result.current).toBe(API_REQUEST_STATUS.pending);
 			});
 		});
+	});
+
+	describe('deleteMessagesFromConversation', () => {
+		describe('When called with valid message IDs', () => {
+			it('should delete the specified messages from the conversation', () => {
+				const conversation = generateConversation({ id: '123' });
+				const messages = [{ id: '1' }, { id: '2' }] as Array<ConvMessage>;
+				setConversationsInEmailStore([{ ...conversation, messages }], false);
+				deleteMessagesFromConversation(['1']);
+				const { result } = renderHook(() => useConversationById('123'));
+				expect(result.current.messages).toHaveLength(1);
+			});
+
+			it('should not affect other messages in the conversations');
+		});
+
+		// describe('When called with an empty array of IDs', () => {
+		// 	it('should not modify any messages in the conversations');
+		// });
+		//
+		// describe('When called with non-existent message IDs', () => {
+		// 	it('should not delete any messages from the conversations');
+		// 	it('should not throw an error');
+		// });
+		//
+		// describe('When conversations have no messages', () => {
+		// 	it('should not throw an error');
+		// 	it('should leave the state unchanged');
+		// });
+		//
+		// describe('When the conversations array is empty', () => {
+		// 	it('should not throw an error');
+		// 	it('should leave the state unchanged');
+		// });
+		//
+		// describe('When called with null or undefined as IDs', () => {
+		// 	it('should throw an appropriate error');
+		// });
+		//
+		// describe('When useEmailsStore is invalid or undefined', () => {
+		// 	it('should throw an appropriate error');
+		// });
+		//
+		// describe('Performance and scalability', () => {
+		// 	it('should handle a large number of message IDs efficiently');
+		// 	it('should handle a large number of conversations and messages efficiently');
+		// });
 	});
 });

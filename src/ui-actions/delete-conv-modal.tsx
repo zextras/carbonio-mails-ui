@@ -13,6 +13,7 @@ import ModalFooter from '../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../carbonio-ui-commons/components/modals/modal-header';
 import { useUiUtilities } from '../hooks/use-ui-utilities';
 import { convAction } from '../store/actions';
+import { deleteMessagesFromConversation } from '../store/zustand/emails/store';
 
 type DeleteConvConfirmPropType = {
 	selectedIDs: Array<string>;
@@ -41,6 +42,9 @@ export const DeleteConvConfirm = ({
 					ids: selectedIDs
 				});
 		if (!('Fault' in response)) {
+			if (!isMessageView) {
+				deleteMessagesFromConversation(selectedIDs);
+			}
 			deselectAll?.();
 			createSnackbar({
 				key: `trash-${selectedIDs}`,

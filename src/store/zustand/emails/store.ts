@@ -203,6 +203,12 @@ export function updateConversationsOnly(conversations: Array<NormalizedConversat
 	});
 }
 
+export function deleteMessagesFromConversation(ids: Array<string>): void {
+	addTask(async () => {
+		populatedItemsSliceUtils.deleteMessagesFromConversation(ids, useEmailsStore);
+	});
+}
+
 export function updateMessagesOnly(messages: Array<IncompleteMessage>): void {
 	addTask(async () => {
 		populatedItemsSliceUtils.updateMessagesOnly(messages, useEmailsStore);
