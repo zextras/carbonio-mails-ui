@@ -113,20 +113,13 @@ function useConversationsByIds(
 	);
 }
 
-function deleteMessagesFromConversation(
-	ids: Array<string>,
-	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
-): void {
-	useEmailsStore.setState(
-		produce(({ populatedItemsSlice }: EmailsStoreState) => {
-			forEach(populatedItemsSlice.conversations, (conversation) => {
-				populatedItemsSlice.conversations[conversation.id].messages = filter(
-					conversation.messages,
-					(message) => !ids.includes(message.id)
-				);
-			});
-		})
-	);
+export function deleteMessagesFromConversation(ids: Array<string>, state: EmailsStoreState): void {
+	forEach(state.populatedItemsSlice.conversations, (conversation) => {
+		state.populatedItemsSlice.conversations[conversation.id].messages = filter(
+			conversation.messages,
+			(message) => !ids.includes(message.id)
+		);
+	});
 }
 
 export const populatedItemsSliceUtils = {
