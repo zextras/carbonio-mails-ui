@@ -10,8 +10,7 @@ import { times } from 'lodash';
 import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
 import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { setupHook } from '../../../carbonio-ui-commons/test/test-setup';
-import { API_REQUEST_STATUS, FOLDERS_DESCRIPTORS, TIMEOUTS } from '../../../constants';
-import { generateStore } from '../../../tests/generators/store';
+import { FOLDERS_DESCRIPTORS, TIMEOUTS } from '../../../constants';
 import { ConvActionRequest, ConvActionResponse } from '../../../types';
 import { useConvSetNotSpamDescriptor, useConvSetNotSpamFn } from '../use-conv-set-not-spam';
 
@@ -20,23 +19,10 @@ describe('useConvSetNotSpam', () => {
 		const ids = times(faker.number.int({ max: 42 }), () =>
 			faker.number.int({ max: 42000 }).toString()
 		);
-		const store = generateStore({
-			conversations: {
-				searchedInFolder: {},
-				conversations: {},
-				searchRequestStatus: API_REQUEST_STATUS.fulfilled,
-				currentFolder: FOLDERS.SPAM,
-				expandedStatus: {
-					[FOLDERS.SPAM]: 'fulfilled'
-				}
-			}
-		});
-
 		it('Should return an object with specific id, icon, label and 2 functions', () => {
 			const {
 				result: { current: descriptor }
 			} = setupHook(useConvSetNotSpamDescriptor, {
-				store,
 				initialProps: [{ ids, shouldReplaceHistory: false, folderId: FOLDERS.SPAM }]
 			});
 
@@ -54,13 +40,11 @@ describe('useConvSetNotSpam', () => {
 		const ids = times(faker.number.int({ max: 42 }), () =>
 			faker.number.int({ max: 42000 }).toString()
 		);
-		const store = generateStore();
 
 		it('Should return an object with execute and canExecute functions', () => {
 			const {
 				result: { current: functions }
 			} = setupHook(useConvSetNotSpamFn, {
-				store,
 				initialProps: [{ ids, shouldReplaceHistory: false, folderId: FOLDERS.SPAM }]
 			});
 
@@ -83,7 +67,6 @@ describe('useConvSetNotSpam', () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useConvSetNotSpamFn, {
-					store,
 					initialProps: [{ ids, shouldReplaceHistory: false, folderId: folder.id }]
 				});
 
@@ -99,7 +82,6 @@ describe('useConvSetNotSpam', () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useConvSetNotSpamFn, {
-					store,
 					initialProps: [{ ids, shouldReplaceHistory: false, folderId: FOLDERS.INBOX }]
 				});
 
@@ -124,7 +106,6 @@ describe('useConvSetNotSpam', () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useConvSetNotSpamFn, {
-					store,
 					initialProps: [{ ids, shouldReplaceHistory: false, folderId: FOLDERS.SPAM }]
 				});
 

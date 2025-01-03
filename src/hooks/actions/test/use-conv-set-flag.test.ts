@@ -3,36 +3,22 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { faker } from '@faker-js/faker';
-import { times } from 'lodash';
 import { act } from 'react';
 
-import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
+import { faker } from '@faker-js/faker';
+import { times } from 'lodash';
+
 import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { setupHook } from '../../../carbonio-ui-commons/test/test-setup';
-import { API_REQUEST_STATUS } from '../../../constants';
-import { generateStore } from '../../../tests/generators/store';
 import { ConvActionRequest } from '../../../types';
 import { useConvSetFlagDescriptor, useConvSetFlagFn } from '../use-conv-set-flag';
 
 describe('useConvSetFlag', () => {
 	describe('Descriptor', () => {
-		const store = generateStore({
-			conversations: {
-				searchedInFolder: {},
-				conversations: {},
-				searchRequestStatus: API_REQUEST_STATUS.fulfilled,
-				currentFolder: FOLDERS.SPAM,
-				expandedStatus: {
-					[FOLDERS.SPAM]: 'fulfilled'
-				}
-			}
-		});
-
 		it('Should return an object with specific id, icon, label and 2 functions', () => {
 			const {
 				result: { current: descriptor }
-			} = setupHook(useConvSetFlagDescriptor, { store, initialProps: [[], false] });
+			} = setupHook(useConvSetFlagDescriptor, { initialProps: [[], false] });
 
 			expect(descriptor).toEqual({
 				id: 'flag-conversation',
@@ -44,22 +30,10 @@ describe('useConvSetFlag', () => {
 		});
 	});
 	describe('Functions', () => {
-		const store = generateStore({
-			conversations: {
-				searchedInFolder: {},
-				conversations: {},
-				searchRequestStatus: API_REQUEST_STATUS.fulfilled,
-				currentFolder: FOLDERS.SPAM,
-				expandedStatus: {
-					[FOLDERS.SPAM]: 'fulfilled'
-				}
-			}
-		});
-
 		it('Should return an object with execute and canExecute functions', () => {
 			const {
 				result: { current: descriptor }
-			} = setupHook(useConvSetFlagFn, { store, initialProps: [[], false] });
+			} = setupHook(useConvSetFlagFn, { initialProps: [[], false] });
 
 			expect(descriptor).toEqual({
 				execute: expect.any(Function),
@@ -72,7 +46,6 @@ describe('useConvSetFlag', () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useConvSetFlagFn, {
-					store,
 					initialProps: [['1'], true]
 				});
 
@@ -83,7 +56,6 @@ describe('useConvSetFlag', () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useConvSetFlagFn, {
-					store,
 					initialProps: [['1'], false]
 				});
 
@@ -98,7 +70,7 @@ describe('useConvSetFlag', () => {
 
 				const {
 					result: { current: functions }
-				} = setupHook(useConvSetFlagFn, { store, initialProps: [['1'], true] });
+				} = setupHook(useConvSetFlagFn, { initialProps: [['1'], true] });
 
 				await act(async () => {
 					functions.execute();
@@ -114,7 +86,6 @@ describe('useConvSetFlag', () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useConvSetFlagFn, {
-					store,
 					initialProps: [ids, false]
 				});
 

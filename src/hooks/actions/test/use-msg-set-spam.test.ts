@@ -11,7 +11,6 @@ import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
 import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { setupHook } from '../../../carbonio-ui-commons/test/test-setup';
 import { FOLDERS_DESCRIPTORS, TIMEOUTS } from '../../../constants';
-import { generateStore } from '../../../tests/generators/store';
 import { MsgActionRequest, MsgActionResponse } from '../../../types';
 import { useMsgSetSpamDescriptor, useMsgSetSpamFn } from '../use-msg-set-spam';
 
@@ -19,14 +18,12 @@ describe('useMsgSetSpam', () => {
 	const ids = times(faker.number.int({ max: 42 }), () =>
 		faker.number.int({ max: 42000 }).toString()
 	);
-	const store = generateStore();
 
 	describe('Descriptor', () => {
 		it('Should return an object with specific id, icon, label and 2 functions', () => {
 			const {
 				result: { current: descriptor }
 			} = setupHook(useMsgSetSpamDescriptor, {
-				store,
 				initialProps: [{ ids, shouldReplaceHistory: false, folderId: FOLDERS.SPAM }]
 			});
 
@@ -45,7 +42,6 @@ describe('useMsgSetSpam', () => {
 			const {
 				result: { current: functions }
 			} = setupHook(useMsgSetSpamFn, {
-				store,
 				initialProps: [{ ids, shouldReplaceHistory: false, folderId: FOLDERS.SPAM }]
 			});
 
@@ -68,7 +64,6 @@ describe('useMsgSetSpam', () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useMsgSetSpamFn, {
-					store,
 					initialProps: [{ ids, shouldReplaceHistory: false, folderId: folder.id }]
 				});
 
@@ -84,7 +79,6 @@ describe('useMsgSetSpam', () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useMsgSetSpamFn, {
-					store,
 					initialProps: [{ ids, shouldReplaceHistory: false, folderId: FOLDERS.SPAM }]
 				});
 
@@ -109,7 +103,6 @@ describe('useMsgSetSpam', () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useMsgSetSpamFn, {
-					store,
 					initialProps: [{ ids, shouldReplaceHistory: false, folderId: FOLDERS.INBOX }]
 				});
 

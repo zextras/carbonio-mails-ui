@@ -10,25 +10,15 @@ import { times } from 'lodash';
 
 import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { setupHook } from '../../../carbonio-ui-commons/test/test-setup';
-import { API_REQUEST_STATUS } from '../../../constants';
-import { generateStore } from '../../../tests/generators/store';
 import { MsgActionRequest, MsgActionResponse } from '../../../types';
 import { useMsgSetFlagDescriptor, useMsgSetFlagFn } from '../use-msg-set-flag';
 
 describe('useMsgSetFlag', () => {
-	const store = generateStore({
-		messages: {
-			searchedInFolder: {},
-			messages: {},
-			searchRequestStatus: API_REQUEST_STATUS.fulfilled
-		}
-	});
-
 	describe('Descriptor', () => {
 		it('Should return an object with specific id, icon, label and 2 functions', () => {
 			const {
 				result: { current: descriptor }
-			} = setupHook(useMsgSetFlagDescriptor, { store, initialProps: [[], false] });
+			} = setupHook(useMsgSetFlagDescriptor, { initialProps: [[], false] });
 
 			expect(descriptor).toEqual({
 				id: 'message-flag',
@@ -44,7 +34,7 @@ describe('useMsgSetFlag', () => {
 		it('Should return an object with execute and canExecute functions', () => {
 			const {
 				result: { current: descriptor }
-			} = setupHook(useMsgSetFlagFn, { store, initialProps: [[], false] });
+			} = setupHook(useMsgSetFlagFn, { initialProps: [[], false] });
 
 			expect(descriptor).toEqual({
 				execute: expect.any(Function),
@@ -57,7 +47,6 @@ describe('useMsgSetFlag', () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useMsgSetFlagFn, {
-					store,
 					initialProps: [['1'], true]
 				});
 
@@ -68,7 +57,6 @@ describe('useMsgSetFlag', () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useMsgSetFlagFn, {
-					store,
 					initialProps: [['1'], false]
 				});
 
@@ -83,7 +71,7 @@ describe('useMsgSetFlag', () => {
 
 				const {
 					result: { current: functions }
-				} = setupHook(useMsgSetFlagFn, { store, initialProps: [['1'], true] });
+				} = setupHook(useMsgSetFlagFn, { initialProps: [['1'], true] });
 
 				await act(async () => {
 					functions.execute();
@@ -108,7 +96,6 @@ describe('useMsgSetFlag', () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useMsgSetFlagFn, {
-					store,
 					initialProps: [ids, false]
 				});
 

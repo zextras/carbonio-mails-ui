@@ -3,24 +3,22 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import { act } from 'react';
+
 import { faker } from '@faker-js/faker';
 import { times } from 'lodash';
-import { act } from 'react';
 
 import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { setupHook } from '../../../carbonio-ui-commons/test/test-setup';
-import { generateStore } from '../../../tests/generators/store';
 import { ConvActionRequest } from '../../../types';
 import { useConvSetUnflagDescriptor, useConvSetUnflagFn } from '../use-conv-set-unflag';
 
 describe('useConvSetUnflag', () => {
 	describe('Descriptor', () => {
-		const store = generateStore();
-
 		it('Should return an object with specific id, icon, label and 2 functions', () => {
 			const {
 				result: { current: descriptor }
-			} = setupHook(useConvSetUnflagDescriptor, { store, initialProps: [[], true] });
+			} = setupHook(useConvSetUnflagDescriptor, { initialProps: [[], true] });
 
 			expect(descriptor).toEqual({
 				id: 'unflag-conversation',
@@ -32,12 +30,10 @@ describe('useConvSetUnflag', () => {
 		});
 	});
 	describe('Functions', () => {
-		const store = generateStore();
-
 		it('Should return an object with execute and canExecute functions', () => {
 			const {
 				result: { current: descriptor }
-			} = setupHook(useConvSetUnflagFn, { store, initialProps: [[], true] });
+			} = setupHook(useConvSetUnflagFn, { initialProps: [[], true] });
 
 			expect(descriptor).toEqual({
 				execute: expect.any(Function),
@@ -50,7 +46,6 @@ describe('useConvSetUnflag', () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useConvSetUnflagFn, {
-					store,
 					initialProps: [['1'], false]
 				});
 
@@ -61,7 +56,6 @@ describe('useConvSetUnflag', () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useConvSetUnflagFn, {
-					store,
 					initialProps: [['1'], true]
 				});
 
@@ -76,7 +70,7 @@ describe('useConvSetUnflag', () => {
 
 				const {
 					result: { current: functions }
-				} = setupHook(useConvSetUnflagFn, { store, initialProps: [['1'], false] });
+				} = setupHook(useConvSetUnflagFn, { initialProps: [['1'], false] });
 
 				await act(async () => {
 					functions.execute();
@@ -92,7 +86,6 @@ describe('useConvSetUnflag', () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useConvSetUnflagFn, {
-					store,
 					initialProps: [ids, true]
 				});
 

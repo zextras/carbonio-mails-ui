@@ -3,15 +3,15 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import { act } from 'react';
+
 import { faker } from '@faker-js/faker';
 import { times } from 'lodash';
-import { act } from 'react';
 
 import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
 import { setupHook, screen } from '../../../carbonio-ui-commons/test/test-setup';
 import { FOLDERS_DESCRIPTORS } from '../../../constants';
 import { TIMERS } from '../../../tests/constants';
-import { generateStore } from '../../../tests/generators/store';
 import {
 	useConvDeletePermanentlyDescriptor,
 	useConvDeletePermanentlyFn
@@ -22,13 +22,11 @@ describe('useConvDeletePermanently', () => {
 		const ids = times(faker.number.int({ max: 42 }), () =>
 			faker.number.int({ max: 42000 }).toString()
 		);
-		const store = generateStore();
 
 		it('Should return an object with specific id, icon, label and 2 functions', () => {
 			const {
 				result: { current: descriptor }
 			} = setupHook(useConvDeletePermanentlyDescriptor, {
-				store,
 				initialProps: [{ ids, deselectAll: jest.fn(), folderId: FOLDERS.INBOX }]
 			});
 
@@ -45,13 +43,11 @@ describe('useConvDeletePermanently', () => {
 		const ids = times(faker.number.int({ max: 42 }), () =>
 			faker.number.int({ max: 42000 }).toString()
 		);
-		const store = generateStore();
 
 		it('Should return an object with execute and canExecute functions', () => {
 			const {
 				result: { current: functions }
 			} = setupHook(useConvDeletePermanentlyFn, {
-				store,
 				initialProps: [{ ids, deselectAll: jest.fn(), folderId: FOLDERS.INBOX }]
 			});
 
@@ -74,7 +70,6 @@ describe('useConvDeletePermanently', () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useConvDeletePermanentlyFn, {
-					store,
 					initialProps: [{ ids, deselectAll: jest.fn(), folderId: folder.id }]
 				});
 
@@ -87,7 +82,6 @@ describe('useConvDeletePermanently', () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useConvDeletePermanentlyFn, {
-					store,
 					initialProps: [{ ids, deselectAll: jest.fn(), folderId: FOLDERS.TRASH }]
 				});
 
@@ -108,7 +102,6 @@ describe('useConvDeletePermanently', () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useConvDeletePermanentlyFn, {
-					store,
 					initialProps: [{ ids, deselectAll: jest.fn(), folderId: FOLDERS.INBOX }]
 				});
 

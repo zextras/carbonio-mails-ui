@@ -12,7 +12,6 @@ import { createSoapAPIInterceptor } from '../../../../carbonio-ui-commons/test/m
 import { buildSoapErrorResponseBody } from '../../../../carbonio-ui-commons/test/mocks/utils/soap';
 import { setupHook, screen, within } from '../../../../carbonio-ui-commons/test/test-setup';
 import { CreateMountpointResponse } from '../../../../store/actions/mount-shared-folder';
-import { generateStore } from '../../../../tests/generators/store';
 import { ISoapFolderObj } from '../../../../types';
 import { useAccept } from '../share-folder-actions';
 
@@ -58,11 +57,9 @@ describe('share folder actions', () => {
 		};
 		createSoapAPIInterceptor('MsgAction', msgActionResponse);
 
-		const store = generateStore();
-
 		const {
 			result: { current: accept }
-		} = setupHook(useAccept, { store });
+		} = setupHook(useAccept);
 
 		const acceptParams = {
 			zid,
@@ -101,11 +98,9 @@ describe('share folder actions', () => {
 		});
 		createSoapAPIInterceptor<never, ErrorSoapBodyResponse>('CreateMountpoint', response);
 
-		const store = generateStore();
-
 		const {
 			result: { current: accept }
-		} = setupHook(useAccept, { store });
+		} = setupHook(useAccept);
 
 		const acceptParams = {
 			zid,

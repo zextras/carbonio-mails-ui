@@ -10,19 +10,17 @@ import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mock
 import { setupHook } from '../../../carbonio-ui-commons/test/test-setup';
 import { FOLDERS_DESCRIPTORS } from '../../../constants';
 import { generateMessage } from '../../../tests/generators/generateMessage';
-import { generateStore } from '../../../tests/generators/store';
 import { type SaveDraftRequest } from '../../../types';
 import { useMsgSendDraftDescriptor, useMsgSendDraftFn } from '../use-msg-send-draft';
 
 describe('useMsgSendDraft', () => {
 	const msg = generateMessage({ folderId: FOLDERS.DRAFTS });
-	const store = generateStore();
 
 	describe('Descriptor', () => {
 		it('Should return an object with specific id, icon, label and 2 functions', () => {
 			const {
 				result: { current: descriptor }
-			} = setupHook(useMsgSendDraftDescriptor, { store, initialProps: [msg, msg.parent] });
+			} = setupHook(useMsgSendDraftDescriptor, { initialProps: [msg, msg.parent] });
 
 			expect(descriptor).toEqual({
 				id: 'message-send',
@@ -38,7 +36,7 @@ describe('useMsgSendDraft', () => {
 		it('Should return an object with execute and canExecute functions', () => {
 			const {
 				result: { current: descriptor }
-			} = setupHook(useMsgSendDraftFn, { store, initialProps: [msg, msg.parent] });
+			} = setupHook(useMsgSendDraftFn, { initialProps: [msg, msg.parent] });
 
 			expect(descriptor).toEqual({
 				execute: expect.any(Function),
@@ -59,7 +57,6 @@ describe('useMsgSendDraft', () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useMsgSendDraftFn, {
-					store,
 					initialProps: [msg, folder.id]
 				});
 
@@ -74,7 +71,7 @@ describe('useMsgSendDraft', () => {
 
 				const {
 					result: { current: functions }
-				} = setupHook(useMsgSendDraftFn, { store, initialProps: [msg, FOLDERS.INBOX] });
+				} = setupHook(useMsgSendDraftFn, { initialProps: [msg, FOLDERS.INBOX] });
 
 				await act(async () => {
 					functions.execute();
@@ -89,7 +86,6 @@ describe('useMsgSendDraft', () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useMsgSendDraftFn, {
-					store,
 					initialProps: [msg, FOLDERS.DRAFTS]
 				});
 

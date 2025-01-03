@@ -12,12 +12,10 @@ import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
 import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { setupHook } from '../../../carbonio-ui-commons/test/test-setup';
 import { FOLDERS_DESCRIPTORS } from '../../../constants';
-import { generateStore } from '../../../tests/generators/store';
 import { MsgActionRequest, MsgActionResponse } from '../../../types';
 import { useMsgSetReadDescriptor, useMsgSetReadFn } from '../use-msg-set-read';
 
 describe('useMsgSetRead', () => {
-	const store = generateStore();
 	const ids = times(faker.number.int({ max: 42 }), () =>
 		faker.number.int({ max: 42000 }).toString()
 	);
@@ -27,7 +25,6 @@ describe('useMsgSetRead', () => {
 			const {
 				result: { current: descriptor }
 			} = setupHook(useMsgSetReadDescriptor, {
-				store,
 				initialProps: [
 					{
 						ids,
@@ -52,7 +49,6 @@ describe('useMsgSetRead', () => {
 			const {
 				result: { current: descriptor }
 			} = setupHook(useMsgSetReadFn, {
-				store,
 				initialProps: [
 					{
 						ids,
@@ -81,7 +77,6 @@ describe('useMsgSetRead', () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useMsgSetReadFn, {
-					store,
 					initialProps: [
 						{
 							ids,
@@ -98,7 +93,6 @@ describe('useMsgSetRead', () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useMsgSetReadFn, {
-					store,
 					initialProps: [
 						{
 							ids,
@@ -115,7 +109,6 @@ describe('useMsgSetRead', () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useMsgSetReadFn, {
-					store,
 					initialProps: [
 						{
 							ids,
@@ -137,7 +130,6 @@ describe('useMsgSetRead', () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useMsgSetReadFn, {
-					store,
 					initialProps: [
 						{
 							ids,
@@ -170,7 +162,6 @@ describe('useMsgSetRead', () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useMsgSetReadFn, {
-					store,
 					initialProps: [
 						{
 							ids,

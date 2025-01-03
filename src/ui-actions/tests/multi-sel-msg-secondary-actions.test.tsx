@@ -13,7 +13,6 @@ import { setupTest } from '../../carbonio-ui-commons/test/test-setup';
 import { FOLDERS_DESCRIPTORS, MessageActionsDescriptors } from '../../constants';
 import { ASSERTIONS, MSG_CONV_STATUS_DESCRIPTORS } from '../../tests/constants';
 import { generateMessage } from '../../tests/generators/generateMessage';
-import { generateStore } from '../../tests/generators/store';
 import type { MailMessage } from '../../types';
 import { MultipleSelectionActionsPanel } from '../../views/app/folder-panel/parts/multiple-selection-actions-panel';
 
@@ -67,7 +66,6 @@ function getFoldersAllowed(
 
 const deselectAll = jest.fn();
 const selectAll = jest.fn();
-const store = generateStore();
 
 const props = {
 	items: [],
@@ -103,7 +101,7 @@ describe('Actions visibility', () => {
 					selectedIds
 				};
 
-				setupTest(<MultipleSelectionActionsPanel {...testProps} />, { store });
+				setupTest(<MultipleSelectionActionsPanel {...testProps} />);
 				expect(
 					screen.queryByTestId(`primary-multi-action-button-${action.id}`)
 				).not.toBeInTheDocument();
@@ -124,7 +122,7 @@ describe('Actions visibility', () => {
 					selectedIds
 				};
 
-				setupTest(<MultipleSelectionActionsPanel {...testProps} />, { store });
+				setupTest(<MultipleSelectionActionsPanel {...testProps} />);
 				if (assertion === true)
 					expect(
 						screen.getByTestId(`primary-multi-action-button-${action.id}`)
@@ -157,7 +155,7 @@ describe('Actions visibility', () => {
 					selectedIds
 				};
 
-				setupTest(<MultipleSelectionActionsPanel {...testProps} />, { store });
+				setupTest(<MultipleSelectionActionsPanel {...testProps} />);
 				expect(
 					screen.queryByTestId(`primary-multi-action-button-${action.id}`)
 				).not.toBeInTheDocument();
@@ -177,7 +175,7 @@ describe('Actions visibility', () => {
 					selectedIds
 				};
 
-				setupTest(<MultipleSelectionActionsPanel {...testProps} />, { store });
+				setupTest(<MultipleSelectionActionsPanel {...testProps} />);
 				if (assertion === true)
 					expect(
 						screen.getByTestId(`primary-multi-action-button-${action.id}`)
@@ -210,7 +208,7 @@ describe('Actions visibility', () => {
 					selectedIds
 				};
 
-				setupTest(<MultipleSelectionActionsPanel {...testProps} />, { store });
+				setupTest(<MultipleSelectionActionsPanel {...testProps} />);
 				expect(
 					screen.queryByTestId(`primary-multi-action-button-${action.id}`)
 				).not.toBeInTheDocument();
@@ -230,7 +228,7 @@ describe('Actions visibility', () => {
 					selectedIds
 				};
 
-				setupTest(<MultipleSelectionActionsPanel {...testProps} />, { store });
+				setupTest(<MultipleSelectionActionsPanel {...testProps} />);
 				if (assertion === true)
 					expect(
 						screen.getByTestId(`primary-multi-action-button-${action.id}`)
@@ -262,7 +260,7 @@ describe('Actions visibility', () => {
 					selectedIds
 				};
 
-				setupTest(<MultipleSelectionActionsPanel {...testProps} />, { store });
+				setupTest(<MultipleSelectionActionsPanel {...testProps} />);
 				expect(
 					screen.queryByTestId(`primary-multi-action-button-${action.id}`)
 				).not.toBeInTheDocument();
@@ -283,7 +281,7 @@ describe('Actions visibility', () => {
 					selectedIds
 				};
 
-				setupTest(<MultipleSelectionActionsPanel {...testProps} />, { store });
+				setupTest(<MultipleSelectionActionsPanel {...testProps} />);
 				expect(screen.getByTestId(`primary-multi-action-button-${action.id}`)).toBeInTheDocument();
 				expect(
 					screen.queryByTestId(`primary-multi-action-button-${action.id}`)

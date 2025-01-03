@@ -3,9 +3,10 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import { act } from 'react';
+
 import { faker } from '@faker-js/faker';
 import { times } from 'lodash';
-import { act } from 'react';
 
 import { FOLDER_VIEW } from '../../../carbonio-ui-commons/constants';
 import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
@@ -13,7 +14,6 @@ import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mock
 import { populateFoldersStore } from '../../../carbonio-ui-commons/test/mocks/store/folders';
 import { setupHook } from '../../../carbonio-ui-commons/test/test-setup';
 import { FOLDERS_DESCRIPTORS } from '../../../constants';
-import { generateStore } from '../../../tests/generators/store';
 import { MsgActionRequest, MsgActionResponse } from '../../../types';
 import { useConvMoveToTrashDescriptor, useConvMoveToTrashFn } from '../use-conv-move-to-trash';
 
@@ -22,14 +22,12 @@ describe('useConMoveToTrash', () => {
 	const conversationsId = times(faker.number.int({ max: 42 }), () =>
 		faker.number.int({ max: 42000 }).toString()
 	);
-	const store = generateStore();
 
 	describe('descriptor', () => {
 		it('Should return an object with specific id, icon, label and 2 functions', () => {
 			const {
 				result: { current: descriptor }
 			} = setupHook(useConvMoveToTrashDescriptor, {
-				store,
 				initialProps: [{ ids: conversationsId, deselectAll: jest.fn(), folderId: FOLDERS.INBOX }]
 			});
 
@@ -48,7 +46,6 @@ describe('useConMoveToTrash', () => {
 			const {
 				result: { current: functions }
 			} = setupHook(useConvMoveToTrashFn, {
-				store,
 				initialProps: [{ ids: conversationsId, deselectAll: jest.fn(), folderId: FOLDERS.INBOX }]
 			});
 
@@ -71,7 +68,6 @@ describe('useConMoveToTrash', () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useConvMoveToTrashFn, {
-					store,
 					initialProps: [{ ids: conversationsId, deselectAll: jest.fn(), folderId: folder.id }]
 				});
 
@@ -95,7 +91,6 @@ describe('useConMoveToTrash', () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useConvMoveToTrashFn, {
-					store,
 					initialProps: [{ ids: conversationsId, deselectAll: jest.fn(), folderId: FOLDERS.INBOX }]
 				});
 
@@ -118,7 +113,6 @@ describe('useConMoveToTrash', () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useConvMoveToTrashFn, {
-					store,
 					initialProps: [{ ids: conversationsId, deselectAll: jest.fn(), folderId: FOLDERS.TRASH }]
 				});
 

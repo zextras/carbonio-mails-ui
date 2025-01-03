@@ -3,8 +3,9 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { faker } from '@faker-js/faker';
 import { act } from 'react';
+
+import { faker } from '@faker-js/faker';
 
 import { FOLDER_VIEW } from '../../../carbonio-ui-commons/constants';
 import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
@@ -12,20 +13,17 @@ import { populateFoldersStore } from '../../../carbonio-ui-commons/test/mocks/st
 import { setupHook, screen } from '../../../carbonio-ui-commons/test/test-setup';
 import { FOLDERS_DESCRIPTORS } from '../../../constants';
 import { TIMERS } from '../../../tests/constants';
-import { generateStore } from '../../../tests/generators/store';
 import { useMsgRestoreDescriptor, useMsgRestoreFn } from '../use-msg-restore';
 
 describe('useMsgRestore', () => {
 	populateFoldersStore({ view: FOLDER_VIEW.message });
 	const messageId = faker.number.int({ max: 42000 }).toString();
-	const store = generateStore();
 
 	describe('Descriptor', () => {
 		it('Should return an object with specific id, icon, label and 2 functions', () => {
 			const {
 				result: { current: descriptor }
 			} = setupHook(useMsgRestoreDescriptor, {
-				store,
 				initialProps: [{ messageId, deselectAll: jest.fn(), folderId: FOLDERS.INBOX }]
 			});
 
@@ -44,7 +42,6 @@ describe('useMsgRestore', () => {
 			const {
 				result: { current: functions }
 			} = setupHook(useMsgRestoreFn, {
-				store,
 				initialProps: [{ messageId, deselectAll: jest.fn(), folderId: FOLDERS.INBOX }]
 			});
 
@@ -67,7 +64,6 @@ describe('useMsgRestore', () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useMsgRestoreFn, {
-					store,
 					initialProps: [{ messageId, deselectAll: jest.fn(), folderId: folder.id }]
 				});
 
@@ -80,7 +76,6 @@ describe('useMsgRestore', () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useMsgRestoreFn, {
-					store,
 					initialProps: [{ messageId, deselectAll: jest.fn(), folderId: FOLDERS.TRASH }]
 				});
 
@@ -99,7 +94,6 @@ describe('useMsgRestore', () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useMsgRestoreFn, {
-					store,
 					initialProps: [{ messageId, deselectAll: jest.fn(), folderId: FOLDERS.INBOX }]
 				});
 

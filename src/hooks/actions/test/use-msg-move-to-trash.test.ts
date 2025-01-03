@@ -3,16 +3,16 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import { act } from 'react';
+
 import { faker } from '@faker-js/faker';
 import { times } from 'lodash';
-import { act } from 'react';
 
 import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
 import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { populateFoldersStore } from '../../../carbonio-ui-commons/test/mocks/store/folders';
 import { setupHook } from '../../../carbonio-ui-commons/test/test-setup';
 import { FOLDERS_DESCRIPTORS } from '../../../constants';
-import { generateStore } from '../../../tests/generators/store';
 import { MsgActionRequest, MsgActionResponse } from '../../../types';
 import { useMsgMoveToTrashDescriptor, useMsgMoveToTrashFn } from '../use-msg-move-to-trash';
 
@@ -21,14 +21,12 @@ describe('useMsgMoveToTrash', () => {
 	const messagesId = times(faker.number.int({ max: 42 }), () =>
 		faker.number.int({ max: 42000 }).toString()
 	);
-	const store = generateStore();
 
 	describe('Descriptor', () => {
 		it('Should return an object with specific id, icon, label and 2 functions', () => {
 			const {
 				result: { current: descriptor }
 			} = setupHook(useMsgMoveToTrashDescriptor, {
-				store,
 				initialProps: [{ ids: messagesId, deselectAll: jest.fn(), folderId: FOLDERS.INBOX }]
 			});
 
@@ -47,7 +45,6 @@ describe('useMsgMoveToTrash', () => {
 			const {
 				result: { current: functions }
 			} = setupHook(useMsgMoveToTrashFn, {
-				store,
 				initialProps: [{ ids: messagesId, deselectAll: jest.fn(), folderId: FOLDERS.INBOX }]
 			});
 
@@ -70,7 +67,6 @@ describe('useMsgMoveToTrash', () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useMsgMoveToTrashFn, {
-					store,
 					initialProps: [{ ids: messagesId, deselectAll: jest.fn(), folderId: folder.id }]
 				});
 
@@ -94,7 +90,6 @@ describe('useMsgMoveToTrash', () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useMsgMoveToTrashFn, {
-					store,
 					initialProps: [{ ids: messagesId, deselectAll: jest.fn(), folderId: FOLDERS.INBOX }]
 				});
 
@@ -117,7 +112,6 @@ describe('useMsgMoveToTrash', () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useMsgMoveToTrashFn, {
-					store,
 					initialProps: [{ ids: messagesId, deselectAll: jest.fn(), folderId: FOLDERS.TRASH }]
 				});
 

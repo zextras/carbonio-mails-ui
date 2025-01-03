@@ -3,8 +3,9 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { faker } from '@faker-js/faker';
 import { act } from 'react';
+
+import { faker } from '@faker-js/faker';
 
 import { FOLDER_VIEW } from '../../../carbonio-ui-commons/constants';
 import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
@@ -12,19 +13,16 @@ import { populateFoldersStore } from '../../../carbonio-ui-commons/test/mocks/st
 import { setupHook, screen } from '../../../carbonio-ui-commons/test/test-setup';
 import { FOLDERS_DESCRIPTORS } from '../../../constants';
 import { TIMERS } from '../../../tests/constants';
-import { generateStore } from '../../../tests/generators/store';
 import { useConvRestoreDescriptor, useConvRestoreFn } from '../use-conv-restore';
 
 describe('useConvRestore', () => {
 	const conversationId = faker.number.int({ max: 42000 }).toString();
-	const store = generateStore();
 
 	describe('descriptor', () => {
 		it('Should return an object with specific id, icon, label and 2 functions', () => {
 			const {
 				result: { current: descriptor }
 			} = setupHook(useConvRestoreDescriptor, {
-				store,
 				initialProps: [{ conversationId, deselectAll: jest.fn(), folderId: FOLDERS.INBOX }]
 			});
 
@@ -45,7 +43,6 @@ describe('useConvRestore', () => {
 			const {
 				result: { current: functions }
 			} = setupHook(useConvRestoreFn, {
-				store,
 				initialProps: [{ conversationId, deselectAll: jest.fn(), folderId: FOLDERS.INBOX }]
 			});
 
@@ -68,7 +65,6 @@ describe('useConvRestore', () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useConvRestoreFn, {
-					store,
 					initialProps: [{ conversationId, deselectAll: jest.fn(), folderId: folder.id }]
 				});
 
@@ -81,7 +77,6 @@ describe('useConvRestore', () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useConvRestoreFn, {
-					store,
 					initialProps: [{ conversationId, deselectAll: jest.fn(), folderId: FOLDERS.TRASH }]
 				});
 
@@ -100,7 +95,6 @@ describe('useConvRestore', () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useConvRestoreFn, {
-					store,
 					initialProps: [{ conversationId, deselectAll: jest.fn(), folderId: FOLDERS.INBOX }]
 				});
 

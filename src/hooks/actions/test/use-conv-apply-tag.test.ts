@@ -13,7 +13,6 @@ import { tags as mockTags } from '../../../carbonio-ui-commons/test/mocks/tags/t
 import { setupHook } from '../../../carbonio-ui-commons/test/test-setup';
 import { FOLDERS_DESCRIPTORS } from '../../../constants';
 import { generateConversation } from '../../../tests/generators/generateConversation';
-import { generateStore } from '../../../tests/generators/store';
 import { ConvActionRequest } from '../../../types';
 import { useConvApplyTagDescriptor, useConvApplyTagSubDescriptors } from '../use-conv-apply-tag';
 
@@ -23,15 +22,13 @@ jest.mock('../../../carbonio-ui-commons/store/zustand/tags', () => ({
 
 describe('useConvApplyTag', () => {
 	const conv = generateConversation();
-	const store = generateStore();
 	describe('Descriptor', () => {
 		it('Should return an object with specific id, icon, label and 2 functions', () => {
 			(useTags as jest.Mock).mockReturnValue(mockTags);
 			const {
 				result: { current: descriptor }
 			} = setupHook(useConvApplyTagDescriptor, {
-				initialProps: [{ ids: [conv.id], folderId: FOLDERS.INBOX, conversationTags: ['1'] }],
-				store
+				initialProps: [{ ids: [conv.id], folderId: FOLDERS.INBOX, conversationTags: ['1'] }]
 			});
 
 			expect(descriptor).toEqual({
@@ -58,8 +55,7 @@ describe('useConvApplyTag', () => {
 			const {
 				result: { current: descriptor }
 			} = setupHook(useConvApplyTagSubDescriptors, {
-				initialProps: [{ ids: [conv.id], folderId: FOLDERS.INBOX, conversationTags: [] }],
-				store
+				initialProps: [{ ids: [conv.id], folderId: FOLDERS.INBOX, conversationTags: [] }]
 			});
 			expect(descriptor[0]).toEqual(
 				expect.objectContaining({
@@ -77,8 +73,7 @@ describe('useConvApplyTag', () => {
 			const {
 				result: { current: descriptor }
 			} = setupHook(useConvApplyTagSubDescriptors, {
-				initialProps: [{ ids: [conv.id], folderId: FOLDERS.INBOX, conversationTags: ['2291'] }],
-				store
+				initialProps: [{ ids: [conv.id], folderId: FOLDERS.INBOX, conversationTags: ['2291'] }]
 			});
 			expect(descriptor[0]).toEqual({
 				canExecute: expect.any(Function),
@@ -118,8 +113,7 @@ describe('useConvApplyTag', () => {
 			const {
 				result: { current: descriptor }
 			} = setupHook(useConvApplyTagDescriptor, {
-				initialProps: [{ ids: [conv.id], folderId: FOLDERS.INBOX, conversationTags: conv.tags }],
-				store
+				initialProps: [{ ids: [conv.id], folderId: FOLDERS.INBOX, conversationTags: conv.tags }]
 			});
 
 			expect(descriptor.items).toHaveLength(5);
@@ -149,8 +143,7 @@ describe('useConvApplyTag', () => {
 				const {
 					result: { current: descriptor }
 				} = setupHook(useConvApplyTagSubDescriptors, {
-					initialProps: [{ ids: [conv.id], folderId: folder.id, conversationTags: ['1'] }],
-					store
+					initialProps: [{ ids: [conv.id], folderId: folder.id, conversationTags: ['1'] }]
 				});
 
 				expect(descriptor[0].canExecute()).toEqual(assertion);
@@ -170,8 +163,7 @@ describe('useConvApplyTag', () => {
 				const {
 					result: { current: descriptor }
 				} = setupHook(useConvApplyTagSubDescriptors, {
-					initialProps: [{ ids: [conv.id], folderId: FOLDERS.INBOX, conversationTags: ['1'] }],
-					store
+					initialProps: [{ ids: [conv.id], folderId: FOLDERS.INBOX, conversationTags: ['1'] }]
 				});
 
 				await act(async () => {
@@ -194,8 +186,7 @@ describe('useConvApplyTag', () => {
 				const {
 					result: { current: descriptor }
 				} = setupHook(useConvApplyTagSubDescriptors, {
-					initialProps: [{ ids: [conv.id], folderId: FOLDERS.INBOX, conversationTags: [] }],
-					store
+					initialProps: [{ ids: [conv.id], folderId: FOLDERS.INBOX, conversationTags: [] }]
 				});
 
 				await act(async () => {

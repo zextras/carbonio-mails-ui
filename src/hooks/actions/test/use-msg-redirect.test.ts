@@ -7,29 +7,19 @@ import { act } from 'react';
 
 import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
 import { setupHook, screen } from '../../../carbonio-ui-commons/test/test-setup';
-import { API_REQUEST_STATUS, FOLDERS_DESCRIPTORS } from '../../../constants';
+import { FOLDERS_DESCRIPTORS } from '../../../constants';
 import { TIMERS } from '../../../tests/constants';
 import { generateMessage } from '../../../tests/generators/generateMessage';
-import { generateStore } from '../../../tests/generators/store';
 import { useMsgRedirectDescriptor, useMsgRedirectFn } from '../use-msg-redirect';
 
 describe('useMsgRedirect', () => {
 	const msg = generateMessage();
-
-	const store = generateStore({
-		messages: {
-			searchedInFolder: {},
-			messages: { [msg.id]: msg },
-			searchRequestStatus: API_REQUEST_STATUS.fulfilled
-		}
-	});
 
 	describe('Descriptor', () => {
 		it('Should return an object with specific id, icon, label and 2 functions', () => {
 			const {
 				result: { current: descriptor }
 			} = setupHook(useMsgRedirectDescriptor, {
-				store,
 				initialProps: [msg.id, FOLDERS.INBOX]
 			});
 
@@ -48,7 +38,6 @@ describe('useMsgRedirect', () => {
 			const {
 				result: { current: functions }
 			} = setupHook(useMsgRedirectFn, {
-				store,
 				initialProps: [msg.id, FOLDERS.INBOX]
 			});
 
@@ -71,7 +60,6 @@ describe('useMsgRedirect', () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useMsgRedirectFn, {
-					store,
 					initialProps: [msg.id, folder.id]
 				});
 
@@ -84,7 +72,6 @@ describe('useMsgRedirect', () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useMsgRedirectFn, {
-					store,
 					initialProps: [msg.id, FOLDERS.INBOX]
 				});
 
@@ -103,7 +90,6 @@ describe('useMsgRedirect', () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useMsgRedirectFn, {
-					store,
 					initialProps: [msg.id, FOLDERS.TRASH]
 				});
 
