@@ -9,7 +9,7 @@ import React from 'react';
 import { screen } from '@testing-library/react';
 
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
-import { getMessageById, setMessagesInEmailStore } from '../../../../../store/zustand/emails/store';
+import { setMessagesInEmailStore } from '../../../../../store/zustand/emails/store';
 import { generateMessage } from '../../../../../tests/generators/generateMessage';
 import MailPreview, { MailPreviewProps } from '../mail-preview';
 
@@ -17,8 +17,7 @@ import MailPreview, { MailPreviewProps } from '../mail-preview';
  * Test the Mail Preview component in different scenarios
  */
 // See: tests/mocks/network/msw/cases/getMsg/getMsg-${id} for relative msgId
-// TODO: CO-1725 fix it -- the final boss
-describe.skip('Mail preview', () => {
+describe('Mail preview', () => {
 	it('10 - 3 inline images', async () => {
 		const msgId = '10';
 		const message = generateMessage({ id: msgId });
@@ -48,9 +47,10 @@ describe.skip('Mail preview', () => {
 
 	it('11 - table with a link', async () => {
 		const msgId = '11';
+		const message = generateMessage({ id: msgId });
+		setMessagesInEmailStore([message], false);
 
 		// Invoke the fetch of the message and the store update
-		const message = getMessageById(msgId);
 		const props: MailPreviewProps = {
 			message,
 			expanded: true,
@@ -69,9 +69,8 @@ describe.skip('Mail preview', () => {
 
 	it('12 - table with width greater than the previewer width', async () => {
 		const msgId = '12';
-
-		// Invoke the fetch of the message and the store update
-		const message = getMessageById(msgId);
+		const message = generateMessage({ id: msgId });
+		setMessagesInEmailStore([message], false);
 		const props: MailPreviewProps = {
 			message,
 			expanded: true,
