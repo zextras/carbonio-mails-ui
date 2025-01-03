@@ -12,24 +12,36 @@ import { FOLDERS } from '../../../../../carbonio-ui-commons/constants/folders';
 import { ParticipantRole } from '../../../../../carbonio-ui-commons/constants/participants';
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
 import { API_REQUEST_STATUS, FOLDERS_DESCRIPTORS } from '../../../../../constants';
-import { setConversationsInEmailStore } from '../../../../../store/zustand/emails/store';
+import {
+	setConversationsInEmailStore,
+	setMessagesInEmailStore
+} from '../../../../../store/zustand/emails/store';
 import { ASSERTIONS } from '../../../../../tests/constants';
 import { generateConversation } from '../../../../../tests/generators/generateConversation';
 import { generateMessage } from '../../../../../tests/generators/generateMessage';
 import { generateStore } from '../../../../../tests/generators/store';
-import type { ConversationListItemProps } from '../../../../../types';
+import type { ConversationListItemProps, ConvMessage } from '../../../../../types';
 import { ConversationListItem } from '../conversation-list-item';
 
 // TODO: CO-1725 fix it -- another final boss
-describe.skip.each`
+describe.each`
 	type                          | isSearchModule
 	${'conversation list'}        | ${false}
 	${'search conversation list'} | ${true}
 `('$type list item component', ({ isSearchModule }) => {
 	describe('in any folders', () => {
-		test.only('if the conversation contains more than 1 message then a badge with the messages count is visible', async () => {
+		test('if the conversation contains more than 1 message then a badge with the messages count is visible', async () => {
 			const folderId = FOLDERS.INBOX;
-			const conversation = generateConversation({ folderId, isSingleMessageConversation: false });
+			const message1 = generateMessage({ id: '1' });
+			const message2 = generateMessage({ id: '2' });
+			const messages = [message1, message2];
+			const conversation = generateConversation({
+				folderId,
+				isSingleMessageConversation: false,
+				messages: messages as Array<ConvMessage>
+			});
+			setConversationsInEmailStore([conversation], false);
+			setMessagesInEmailStore(messages, false);
 			const messageCount = conversation.messages.length;
 
 			const props: ConversationListItemProps = {
