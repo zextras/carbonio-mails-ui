@@ -12,7 +12,6 @@ import { setupTest, screen } from '../../../../../carbonio-ui-commons/test/test-
 import { updateConversationsOnly, updateMessages } from '../../../../../store/zustand/emails/store';
 import { generateConversation } from '../../../../../tests/generators/generateConversation';
 import { generateMessage } from '../../../../../tests/generators/generateMessage';
-import { generateStore } from '../../../../../tests/generators/store';
 import { ConversationPreviewPanel } from '../../conversation-preview-panel';
 
 /**
@@ -30,13 +29,7 @@ describe('Conversation Preview Panel', () => {
 			messages
 		});
 		updateConversationsOnly([conversation]);
-		const store = generateStore();
-		setupTest(
-			<ConversationPreviewPanel conversation={conversation} isInsideExtraWindow={false} />,
-			{
-				store
-			}
-		);
+		setupTest(<ConversationPreviewPanel conversation={conversation} isInsideExtraWindow={false} />);
 
 		await act(async () => {
 			expect(screen.getByTestId('ConversationMessagePreview-1')).toBeInTheDocument();

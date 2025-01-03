@@ -14,9 +14,7 @@ import { getFolder } from '../../carbonio-ui-commons/store/zustand/folder';
 import { createSoapAPIInterceptor } from '../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { populateFoldersStore } from '../../carbonio-ui-commons/test/mocks/store/folders';
 import { makeListItemsVisible, setupTest } from '../../carbonio-ui-commons/test/test-setup';
-import { API_REQUEST_STATUS } from '../../constants';
 import { generateMessage } from '../../tests/generators/generateMessage';
-import { generateStore } from '../../tests/generators/store';
 import { MailMessage, MsgActionRequest, MsgActionResponse } from '../../types';
 import { MoveConvMessage } from '../move-conv-msg';
 
@@ -25,14 +23,6 @@ describe('MoveConvMsg', () => {
 	const sourceFolder = inboxChildren?.[0].id ?? '';
 	const msgs: Array<MailMessage> = times(10, () => generateMessage({ folderId: sourceFolder }));
 	const msgIds = msgs.map<string>((msg) => msg.id);
-
-	const store = generateStore({
-		messages: {
-			searchedInFolder: {},
-			messages: msgs,
-			searchRequestStatus: API_REQUEST_STATUS.fulfilled
-		}
-	});
 
 	describe('Modal title', () => {
 		it('move mode - message view - should display the modal title', async () => {
@@ -47,7 +37,7 @@ describe('MoveConvMsg', () => {
 				/>
 			);
 
-			setupTest(component, { store });
+			setupTest(component);
 
 			expect(screen.getByText('Move Message')).toBeVisible();
 		});
@@ -64,7 +54,7 @@ describe('MoveConvMsg', () => {
 				/>
 			);
 
-			setupTest(component, { store });
+			setupTest(component);
 
 			expect(screen.getByText('Move Conversation')).toBeVisible();
 		});
@@ -81,7 +71,7 @@ describe('MoveConvMsg', () => {
 				/>
 			);
 
-			setupTest(component, { store });
+			setupTest(component);
 
 			expect(screen.getByText('Restore')).toBeVisible();
 		});
@@ -100,7 +90,7 @@ describe('MoveConvMsg', () => {
 				/>
 			);
 
-			setupTest(component, { store });
+			setupTest(component);
 
 			expect(
 				screen.getByRole('button', {
@@ -124,7 +114,7 @@ describe('MoveConvMsg', () => {
 				/>
 			);
 
-			const { user } = setupTest(component, { store });
+			const { user } = setupTest(component);
 			makeListItemsVisible();
 
 			const inboxFolderListItem = await screen.findByTestId(
@@ -157,14 +147,6 @@ describe('MoveConvMsg', () => {
 			const msgs: Array<MailMessage> = times(10, () => generateMessage({ folderId: sourceFolder }));
 			const msgIds = msgs.map<string>((msg) => msg.id);
 
-			const store = generateStore({
-				messages: {
-					searchedInFolder: {},
-					messages: msgs,
-					searchRequestStatus: API_REQUEST_STATUS.fulfilled
-				}
-			});
-
 			const interceptor = createSoapAPIInterceptor<MsgActionRequest, MsgActionResponse>(
 				'MsgAction',
 				{
@@ -186,7 +168,7 @@ describe('MoveConvMsg', () => {
 				/>
 			);
 
-			const { user } = setupTest(component, { store });
+			const { user } = setupTest(component);
 			makeListItemsVisible();
 
 			const inboxFolderListItem = await screen.findByTestId(

@@ -9,25 +9,17 @@ import { act, screen } from '@testing-library/react';
 
 import { ApplyFilterModal } from './apply-filter-modal';
 import { setupTest } from '../../carbonio-ui-commons/test/test-setup';
-import { generateStore } from '../../tests/generators/store';
 
 describe('Apply Filter Modal', () => {
 	test('should render the modal', async () => {
-		const store = generateStore();
-
-		setupTest(<ApplyFilterModal criteria={{ filterName: 'criteria' }} onClose={jest.fn()} />, {
-			store
-		});
+		setupTest(<ApplyFilterModal criteria={{ filterName: 'criteria' }} onClose={jest.fn()} />, {});
 
 		expect(await screen.findByText(/modals\.apply_filters\.title/i)).toBeInTheDocument();
 	});
 
 	test('should open folder selection modal when folder icon is clicked', async () => {
-		const store = generateStore();
-
 		const { user } = setupTest(
-			<ApplyFilterModal criteria={{ filterName: 'criteria' }} onClose={jest.fn()} />,
-			{ store }
+			<ApplyFilterModal criteria={{ filterName: 'criteria' }} onClose={jest.fn()} />
 		);
 
 		expect(await screen.findByText(/modals\.apply_filters\.title/i)).toBeInTheDocument();

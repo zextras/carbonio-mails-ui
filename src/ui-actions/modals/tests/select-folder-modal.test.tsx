@@ -15,7 +15,6 @@ import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
 import { Folder, RootFolder } from '../../../carbonio-ui-commons/types/folder';
 import { FOLDER_ACTIONS } from '../../../commons/utilities';
 import { folderAction } from '../../../store/actions/folder-action';
-import { generateStore } from '../../../tests/generators/store';
 import { FolderActionResponse, SoapFolderAction } from '../../../types';
 import { SelectFolderModal } from '../select-folder-modal';
 
@@ -92,7 +91,6 @@ const rootFolder = {
 describe('move-modal', () => {
 	test('folder selector is displaying correctly when root folder is selected', async () => {
 		const closeModal = jest.fn();
-		const store = generateStore();
 		const inputLabel = t(
 			'folder_panel.modal.move.body.message1',
 			'Select a folder to move the considered one to:'
@@ -112,10 +110,7 @@ describe('move-modal', () => {
 				showTrashFolder={false}
 				showSpamFolder={false}
 				allowRootSelection
-			/>,
-			{
-				store
-			}
+			/>
 		);
 
 		expect(screen.getByText(/folder_panel\.modal\.move\.body\.message1/i)).toBeInTheDocument();
@@ -133,7 +128,6 @@ describe('move-modal', () => {
 
 	test('move a nested folder to the root folder', async () => {
 		const closeModal = jest.fn();
-		const store = generateStore();
 		const inputLabel = t(
 			'folder_panel.modal.move.body.message1',
 			'Select a folder to move the considered one to:'
@@ -155,17 +149,13 @@ describe('move-modal', () => {
 				showTrashFolder={false}
 				showSpamFolder={false}
 				allowRootSelection
-			/>,
-			{
-				store
-			}
+			/>
 		);
 	});
 });
 
 test('API is called with the proper parameters to move the selected folder into the root folder', async () => {
 	const closeModal = jest.fn();
-	const store = generateStore();
 	populateFoldersStore();
 	const confirmAction = (): Promise<FolderActionResponse> =>
 		folderAction({ folder: folderToMove, l: rootFolder.id, op: 'move' });
@@ -183,10 +173,7 @@ test('API is called with the proper parameters to move the selected folder into 
 			showTrashFolder={false}
 			showSpamFolder={false}
 			allowRootSelection
-		/>,
-		{
-			store
-		}
+		/>
 	);
 	const actionButton = screen.getByRole('button', {
 		name: /label\.move/i

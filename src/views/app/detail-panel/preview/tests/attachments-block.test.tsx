@@ -15,13 +15,11 @@ import { useAppContext } from '../../../../../carbonio-ui-commons/test/mocks/car
 import { previewContextMock } from '../../../../../carbonio-ui-commons/test/mocks/carbonio-ui-preview';
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
 import { getMessageById } from '../../../../../store/zustand/emails/store';
-import { generateStore } from '../../../../../tests/generators/store';
 import AttachmentsBlock from '../attachments-block';
 
 describe('attachments-block', () => {
 	test('carbonio-preview available, file is a pdf, tooltip says click to preview', async () => {
 		useAppContext.mockReturnValue({ servicesCatalog: ['carbonio-preview'] });
-		const store = generateStore();
 		const messageAttachments = [
 			{
 				cd: 'attachment',
@@ -37,8 +35,7 @@ describe('attachments-block', () => {
 				messageId={'1'}
 				messageSubject={'test'}
 				messageAttachments={messageAttachments}
-			/>,
-			{ store }
+			/>
 		);
 
 		await user.hover(screen.getByText('large-document.pdf'));
@@ -47,7 +44,7 @@ describe('attachments-block', () => {
 	});
 	test('carbonio-preview available, file is a document, tooltip says click to download', async () => {
 		useAppContext.mockReturnValue({ servicesCatalog: ['carbonio-preview'] });
-		const store = generateStore();
+
 		const messageAttachments = [
 			{
 				cd: 'attachment',
@@ -63,8 +60,7 @@ describe('attachments-block', () => {
 				messageId={'1'}
 				messageSubject={'test'}
 				messageAttachments={messageAttachments}
-			/>,
-			{ store }
+			/>
 		);
 
 		await user.hover(screen.getByText('random.txt'));
@@ -73,7 +69,7 @@ describe('attachments-block', () => {
 	});
 	test('carbonio-preview not available, file is a pdf, tooltip says click to preview', async () => {
 		useAppContext.mockReturnValue({ servicesCatalog: [] });
-		const store = generateStore();
+
 		const messageAttachments = [
 			{
 				cd: 'attachment',
@@ -89,8 +85,7 @@ describe('attachments-block', () => {
 				messageId={'1'}
 				messageSubject={'test'}
 				messageAttachments={messageAttachments}
-			/>,
-			{ store }
+			/>
 		);
 
 		await user.hover(screen.getByText('any-document.pdf'));
@@ -99,7 +94,7 @@ describe('attachments-block', () => {
 	});
 	test('carbonio-preview available, file is a pdf, onclick call createPreview', async () => {
 		useAppContext.mockReturnValue({ servicesCatalog: ['carbonio-preview'] });
-		const store = generateStore();
+
 		const messageAttachments = [
 			{
 				cd: 'attachment',
@@ -115,8 +110,7 @@ describe('attachments-block', () => {
 				messageId={'1'}
 				messageSubject={'test'}
 				messageAttachments={messageAttachments}
-			/>,
-			{ store }
+			/>
 		);
 
 		await user.click(screen.getByText('any-document.pdf'));
@@ -125,7 +119,7 @@ describe('attachments-block', () => {
 	});
 	test('carbonio-docs-editor available, file is a document, onclick call createPreview', async () => {
 		useAppContext.mockReturnValue({ servicesCatalog: ['carbonio-docs-editor'] });
-		const store = generateStore();
+
 		const messageAttachments = [
 			{
 				cd: 'attachment',
@@ -141,8 +135,7 @@ describe('attachments-block', () => {
 				messageId={'1'}
 				messageSubject={'test'}
 				messageAttachments={messageAttachments}
-			/>,
-			{ store }
+			/>
 		);
 
 		await user.click(screen.getByText('any-document.csv'));
@@ -151,7 +144,7 @@ describe('attachments-block', () => {
 	});
 	test('carbonio-docs-editor available, file is a document, tooltip says click to preview', async () => {
 		useAppContext.mockReturnValue({ servicesCatalog: ['carbonio-docs-editor'] });
-		const store = generateStore();
+
 		const messageAttachments = [
 			{
 				cd: 'attachment',
@@ -167,8 +160,7 @@ describe('attachments-block', () => {
 				messageId={'1'}
 				messageSubject={'test'}
 				messageAttachments={messageAttachments}
-			/>,
-			{ store }
+			/>
 		);
 
 		await user.hover(screen.getByText('document.csv'));
@@ -177,7 +169,7 @@ describe('attachments-block', () => {
 	});
 	test('carbonio-docs-editor available, file is a pdf, tooltip says click to preview', async () => {
 		useAppContext.mockReturnValue({ servicesCatalog: ['carbonio-docs-editor'] });
-		const store = generateStore();
+
 		const messageAttachments = [
 			{
 				cd: 'attachment',
@@ -193,8 +185,7 @@ describe('attachments-block', () => {
 				messageId={'1'}
 				messageSubject={'test'}
 				messageAttachments={messageAttachments}
-			/>,
-			{ store }
+			/>
 		);
 
 		await user.hover(screen.getByText('document.pdf'));
@@ -203,7 +194,7 @@ describe('attachments-block', () => {
 	});
 	test('carbonio-docs-editor not available, file is a document, onclick wont call createPreview', async () => {
 		useAppContext.mockReturnValue({ servicesCatalog: [] });
-		const store = generateStore();
+
 		const messageAttachments = [
 			{
 				cd: 'attachment',
@@ -219,8 +210,7 @@ describe('attachments-block', () => {
 				messageId={'1'}
 				messageSubject={'test'}
 				messageAttachments={messageAttachments}
-			/>,
-			{ store }
+			/>
 		);
 
 		await user.click(screen.getByText('large-document.csv'));
@@ -238,7 +228,6 @@ describe('Attachments visualization', () => {
 		${'9'} | ${'PDF'}
 	`(`$attachmentType attachments are visible in email preview`, async ({ msgId }) => {
 		// Generate the store
-		const store = generateStore();
 
 		const message = getMessageById(msgId);
 		// Get the attachment filename
@@ -255,7 +244,7 @@ describe('Attachments visualization', () => {
 		};
 
 		// Render the component
-		const { user } = setupTest(<AttachmentsBlock {...props} />, { store });
+		const { user } = setupTest(<AttachmentsBlock {...props} />);
 
 		// Check if the attachments list expansion link exists
 		const expansionLink = screen.queryByTestId('attachment-list-expand-link');
@@ -285,7 +274,6 @@ describe('Attachment actions visualization', () => {
 		`$attachmentType attachments are visible in email preview`,
 		async ({ msgId, attachmentType }) => {
 			// Generate the store
-			const store = generateStore();
 
 			const message = getMessageById(msgId);
 
@@ -303,7 +291,7 @@ describe('Attachment actions visualization', () => {
 			};
 
 			// Render the component
-			const { user } = setupTest(<AttachmentsBlock {...props} />, { store });
+			const { user } = setupTest(<AttachmentsBlock {...props} />);
 
 			// Check if the attachments list expansion link exists
 			const expansionLink = screen.queryByTestId('attachment-list-expand-link');
@@ -331,7 +319,7 @@ describe('Attachment actions visualization', () => {
 describe('Attachment link validation', () => {
 	test('preview is available, should call image preview endpoint when content type is image/tiff', async () => {
 		useAppContext.mockReturnValue({ servicesCatalog: ['carbonio-preview'] });
-		const store = generateStore();
+
 		const messageAttachments = [
 			{
 				cd: 'attachment',
@@ -347,8 +335,7 @@ describe('Attachment link validation', () => {
 				messageId={'1'}
 				messageSubject={'test'}
 				messageAttachments={messageAttachments}
-			/>,
-			{ store }
+			/>
 		);
 
 		await user.hover(screen.getByText('image.tiff'));

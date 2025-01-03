@@ -11,7 +11,6 @@ import { screen } from '@testing-library/react';
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
 import { getMessageById, setMessagesInEmailStore } from '../../../../../store/zustand/emails/store';
 import { generateMessage } from '../../../../../tests/generators/generateMessage';
-import { generateStore } from '../../../../../tests/generators/store';
 import MailPreview, { MailPreviewProps } from '../mail-preview';
 
 /**
@@ -48,7 +47,6 @@ describe.skip('Mail preview', () => {
 	});
 
 	it('11 - table with a link', async () => {
-		const store = generateStore();
 		const msgId = '11';
 
 		// Invoke the fetch of the message and the store update
@@ -62,7 +60,7 @@ describe.skip('Mail preview', () => {
 		};
 
 		// Render the component
-		setupTest(<MailPreview {...props} />, { store });
+		setupTest(<MailPreview {...props} />);
 		const { shadowRoot }: HTMLDivElement = await screen.findByTestId('shadow-dom-wrapper');
 		const content = shadowRoot?.innerHTML.toString();
 
@@ -70,7 +68,6 @@ describe.skip('Mail preview', () => {
 	});
 
 	it('12 - table with width greater than the previewer width', async () => {
-		const store = generateStore();
 		const msgId = '12';
 
 		// Invoke the fetch of the message and the store update
@@ -84,7 +81,7 @@ describe.skip('Mail preview', () => {
 		};
 
 		// Render the component
-		setupTest(<MailPreview {...props} />, { store });
+		setupTest(<MailPreview {...props} />);
 		const { shadowRoot }: HTMLDivElement = await screen.findByTestId('shadow-dom-wrapper');
 		const content = shadowRoot?.innerHTML.toString();
 

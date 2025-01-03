@@ -19,7 +19,6 @@ import type { Folder } from '../../../../../carbonio-ui-commons/types/folder';
 import { FOLDERS_DESCRIPTORS } from '../../../../../constants';
 import { ASSERTIONS } from '../../../../../tests/constants';
 import { generateMessage } from '../../../../../tests/generators/generateMessage';
-import { generateStore } from '../../../../../tests/generators/store';
 import type { MessageListItemProps } from '../../../../../types';
 import { MessageListItem } from '../message-list-item';
 
@@ -82,15 +81,7 @@ describe.each`
 					currentFolderId: folder.id
 				};
 
-				const store = generateStore({
-					messages: {
-						searchedInFolder: {},
-						messages: [msg],
-						searchRequestStatus: null
-					}
-				});
-
-				setupTest(<MessageListItem {...props} />, { store });
+				setupTest(<MessageListItem {...props} />);
 
 				const avatar = screen.queryByTestId('AvatarContainer');
 				assertion.value ? expect(avatar).toBeVisible() : expect(avatar).not.toBeInTheDocument();
@@ -125,15 +116,7 @@ describe.each`
 					currentFolderId: folder.id
 				};
 
-				const store = generateStore({
-					messages: {
-						searchedInFolder: {},
-						messages: [msg],
-						searchRequestStatus: null
-					}
-				});
-
-				setupTest(<MessageListItem {...props} />, { store });
+				setupTest(<MessageListItem {...props} />);
 
 				const dateLabel = screen.queryByTestId('DateLabel');
 				if (assertion.value) {
@@ -172,15 +155,7 @@ describe.each`
 					currentFolderId: folder.id
 				};
 
-				const store = generateStore({
-					messages: {
-						searchedInFolder: {},
-						messages: [msg],
-						searchRequestStatus: null
-					}
-				});
-
-				setupTest(<MessageListItem {...props} />, { store });
+				setupTest(<MessageListItem {...props} />);
 
 				const subjectLabel = screen.queryByTestId('Subject');
 				if (assertion.value) {
@@ -220,15 +195,7 @@ describe.each`
 					currentFolderId: folder.id
 				};
 
-				const store = generateStore({
-					messages: {
-						searchedInFolder: {},
-						messages: [msg],
-						searchRequestStatus: null
-					}
-				});
-
-				setupTest(<MessageListItem {...props} />, { store });
+				setupTest(<MessageListItem {...props} />);
 
 				const subjectLabel = screen.queryByTestId('Subject');
 				if (assertion.value) {
@@ -267,15 +234,7 @@ describe.each`
 					currentFolderId: folder.id
 				};
 
-				const store = generateStore({
-					messages: {
-						searchedInFolder: {},
-						messages: [msg],
-						searchRequestStatus: null
-					}
-				});
-
-				setupTest(<MessageListItem {...props} />, { store });
+				setupTest(<MessageListItem {...props} />);
 
 				const senderLabel = screen.queryByTestId('participants-name-label');
 				if (assertion.value) {
@@ -313,15 +272,7 @@ describe.each`
 					currentFolderId: folder.id
 				};
 
-				const store = generateStore({
-					messages: {
-						searchedInFolder: {},
-						messages: [msg],
-						searchRequestStatus: null
-					}
-				});
-
-				setupTest(<MessageListItem {...props} />, { store });
+				setupTest(<MessageListItem {...props} />);
 
 				const senderLabel = screen.queryByTestId('participants-name-label');
 				expect(senderLabel).toHaveTextContent(labelContent);
@@ -354,7 +305,7 @@ describe.each`
 		// 		}
 		// 	});
 		//
-		// 	const { user } = setupTest(<MessageListItem {...props} />, { store });
+		// 	const { user } = setupTest(<MessageListItem {...props} />, );
 		//
 		// 	const actionsBar = await screen.findByTestId(`primary-actions-bar-${msgId}`);
 		// 	const container = await screen.findByTestId(`hover-container-${msgId}`);
@@ -390,15 +341,7 @@ describe.each`
 				currentFolderId: folderId
 			};
 
-			const store = generateStore({
-				messages: {
-					searchedInFolder: {},
-					messages: [msg],
-					searchRequestStatus: null
-				}
-			});
-
-			setupTest(<MessageListItem {...props} />, { store });
+			setupTest(<MessageListItem {...props} />);
 			const aRandomChild = await screen.findByTestId(`hover-container-${msgId}`);
 
 			// Initally the context menu is not created
@@ -437,15 +380,7 @@ describe('in the drafts folder', () => {
 				currentFolderId: folderId
 			};
 
-			const store = generateStore({
-				messages: {
-					searchedInFolder: {},
-					messages: [msg],
-					searchRequestStatus: null
-				}
-			});
-
-			setupTest(<MessageListItem {...props} />, { store });
+			setupTest(<MessageListItem {...props} />);
 			const matcher = expect(screen.queryByText('label.draft_folder'));
 			assertion.value ? matcher.toBeVisible() : matcher.not.toBeInTheDocument();
 		}
@@ -478,15 +413,7 @@ describe('in the drafts folder', () => {
 				currentFolderId: folderId
 			};
 
-			const store = generateStore({
-				messages: {
-					searchedInFolder: {},
-					messages: [msg],
-					searchRequestStatus: null
-				}
-			});
-
-			setupTest(<MessageListItem {...props} />, { store });
+			setupTest(<MessageListItem {...props} />);
 			if (assertion.value) {
 				const participantsLabel = screen.getByTestId('participants-name-label');
 				expect(participantsLabel).toHaveTextContent('mario');
@@ -520,15 +447,7 @@ describe('in the drafts folder', () => {
 				currentFolderId: folderId
 			};
 
-			const store = generateStore({
-				messages: {
-					searchedInFolder: {},
-					messages: [msg],
-					searchRequestStatus: null
-				}
-			});
-
-			setupTest(<MessageListItem {...props} />, { store });
+			setupTest(<MessageListItem {...props} />);
 			if (assertion.value) {
 				const fragment = screen.getByTestId('Fragment');
 				expect(fragment).toHaveTextContent(body);
@@ -561,16 +480,8 @@ describe('in the trash folder', () => {
 			currentFolderId: folderId
 		};
 
-		const store = generateStore({
-			messages: {
-				searchedInFolder: {},
-				messages: [msg],
-				searchRequestStatus: null
-			}
-		});
-
 		(useTags as jest.Mock).mockReturnValue(mockTags);
-		setupTest(<MessageListItem {...props} />, { store });
+		setupTest(<MessageListItem {...props} />);
 		const participantsLabel = screen.getByTestId('participants-name-label');
 		expect(participantsLabel).toHaveTextContent('mario');
 		expect(participantsLabel).toHaveTextContent('luigi');
@@ -599,15 +510,7 @@ describe('in the trash folder', () => {
 				currentFolderId: folderId
 			};
 
-			const store = generateStore({
-				messages: {
-					searchedInFolder: {},
-					messages: [msg],
-					searchRequestStatus: null
-				}
-			});
-
-			setupTest(<MessageListItem {...props} />, { store });
+			setupTest(<MessageListItem {...props} />);
 			if (assertion.value) {
 				const fragment = screen.getByTestId('Fragment');
 				expect(fragment).toHaveTextContent(body);

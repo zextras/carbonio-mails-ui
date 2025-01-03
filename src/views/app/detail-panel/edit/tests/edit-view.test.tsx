@@ -47,7 +47,6 @@ import {
 import { setupEditorStore } from '../../../../../tests/generators/editor-store';
 import { readyToBeSentEditorTestCase } from '../../../../../tests/generators/editors';
 import { generateMessage } from '../../../../../tests/generators/generateMessage';
-import { generateStore } from '../../../../../tests/generators/store';
 import type {
 	CreateSmartLinksRequest,
 	MailsEditorV2,
@@ -294,7 +293,6 @@ describe('Edit view', () => {
 			// setup api interceptor and mail to send editor
 			const apiInterceptor = createSmartLinkFailureAPIInterceptor();
 			setupEditorStore({ editors: [] });
-			const store = generateStore();
 			const editor = await readyToBeSentEditorTestCase({
 				id: '123-testId',
 				did: '123-testId',
@@ -312,9 +310,7 @@ describe('Edit view', () => {
 			});
 			addEditor({ id: editor.id, editor });
 
-			const { user } = setupTest(<EditView {...{ editorId: editor.id, closeController: noop }} />, {
-				store
-			});
+			const { user } = setupTest(<EditView {...{ editorId: editor.id, closeController: noop }} />);
 			const btnSend = screen.queryByTestId('BtnSendMailMulti');
 			await waitFor(() => expect(btnSend).toBeEnabled());
 			await act(async () => {
@@ -672,8 +668,6 @@ describe('Edit view', () => {
 
 	describe('Identities selection', () => {
 		test.skip('identity selector must be visible when multiple identities are present', async () => {
-			const store = generateStore();
-
 			// Mock the "action" query param
 			jest.spyOn(useQueryParam, 'useQueryParam').mockImplementation((param) => {
 				if (param === 'action') {
@@ -690,7 +684,7 @@ describe('Edit view', () => {
 			};
 
 			// Create and wait for the component to be rendered
-			setupTest(<EditView {...props} />, { store });
+			setupTest(<EditView {...props} />);
 			await waitFor(
 				() => {
 					expect(screen.getByTestId('edit-view-editor')).toBeInTheDocument();
@@ -747,16 +741,6 @@ describe('Edit view', () => {
 					// Generate the message
 					const msg = generateMessage({ isComplete: true });
 
-					const store = generateStore({
-						messages: {
-							searchedInFolder: {},
-							messages: {
-								[msg.id]: msg
-							},
-							searchRequestStatus: null
-						}
-					});
-
 					// Mock the "action" query param
 					jest.spyOn(useQueryParam, 'useQueryParam').mockImplementation((param) => {
 						if (param === 'action') {
@@ -778,7 +762,7 @@ describe('Edit view', () => {
 					};
 
 					// Create and wait for the component to be rendered
-					setupTest(<EditView {...props} />, { store });
+					setupTest(<EditView {...props} />);
 					await waitFor(
 						() => {
 							expect(screen.getByTestId('edit-view-editor')).toBeInTheDocument();
@@ -816,16 +800,6 @@ describe('Edit view', () => {
 					];
 					const msg = generateMessage({ to, folderId: FOLDERS.INBOX, isComplete: true });
 
-					const store = generateStore({
-						messages: {
-							searchedInFolder: {},
-							messages: {
-								[msg.id]: msg
-							},
-							searchRequestStatus: null
-						}
-					});
-
 					// Mock the "action" query param
 					jest.spyOn(useQueryParam, 'useQueryParam').mockImplementation((param) => {
 						if (param === 'action') {
@@ -847,7 +821,7 @@ describe('Edit view', () => {
 					};
 
 					// Create and wait for the component to be rendered
-					setupTest(<EditView {...props} />, { store });
+					setupTest(<EditView {...props} />);
 					expect(await screen.findByTestId('edit-view-editor')).toBeInTheDocument();
 
 					expect(screen.getByTestId('from-dropdown')).toBeInTheDocument();
@@ -879,16 +853,6 @@ describe('Edit view', () => {
 					const folderId = `${sharedAccountIdentity.id}:${FOLDERS.INBOX}`;
 					const msg = generateMessage({ id: msgId, to, folderId, isComplete: true });
 
-					const store = generateStore({
-						messages: {
-							searchedInFolder: {},
-							messages: {
-								[msg.id]: msg
-							},
-							searchRequestStatus: null
-						}
-					});
-
 					populateFoldersStore();
 
 					// Mock the "action" query param
@@ -912,7 +876,7 @@ describe('Edit view', () => {
 					};
 
 					// Create and wait for the component to be rendered
-					setupTest(<EditView {...props} />, { store });
+					setupTest(<EditView {...props} />);
 					expect(await screen.findByTestId('edit-view-editor')).toBeInTheDocument();
 
 					expect(screen.getByTestId('from-dropdown')).toBeInTheDocument();

@@ -10,11 +10,8 @@ import { times } from 'lodash';
 
 import { FOLDERS } from '../../../../../carbonio-ui-commons/constants/folders';
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
-import { API_REQUEST_STATUS } from '../../../../../constants';
 import { updateConversationsOnly } from '../../../../../store/zustand/emails/store';
 import { generateConversation } from '../../../../../tests/generators/generateConversation';
-import { generateStore } from '../../../../../tests/generators/store';
-import type { SearchRequestStatus } from '../../../../../types';
 import {
 	ConversationListComponent,
 	ConversationListComponentProps
@@ -76,28 +73,7 @@ describe.each`
 			dragImageRef
 		};
 
-		const store = generateStore({
-			conversations: {
-				currentFolder: folderId,
-				expandedStatus: conversations.reduce<Record<string, SearchRequestStatus>>(
-					(result, conversation): Record<string, SearchRequestStatus> => ({
-						...result,
-						[conversation.id]: API_REQUEST_STATUS.fulfilled
-					}),
-					{}
-				),
-				searchedInFolder: {},
-				conversations: {
-					...conversations.reduce(
-						(result, conversation) => ({ ...result, [conversation.id]: conversation }),
-						{}
-					)
-				},
-				searchRequestStatus: API_REQUEST_STATUS.fulfilled
-			}
-		});
-
-		setupTest(<ConversationListComponent {...props} />, { store });
+		setupTest(<ConversationListComponent {...props} />);
 
 		await screen.findByTestId(`conversation-list-${folderId}`);
 		const items = await screen.findAllByTestId(/ConversationListItem-/);

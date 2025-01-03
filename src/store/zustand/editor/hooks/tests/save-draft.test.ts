@@ -6,18 +6,15 @@
 
 import { setupHook } from '../../../../../carbonio-ui-commons/test/test-setup';
 import { setupEditorStore } from '../../../../../tests/generators/editor-store';
-import { generateStore } from '../../../../../tests/generators/store';
 import { generateNewMessageEditor } from '../../editor-generators';
 import { useEditorDraftSave } from '../save-draft';
 
 describe('useEditorDraftSave', () => {
 	it('should return an object with specific data and callbacks', () => {
-		const messagesStore = generateStore();
 		const editor = generateNewMessageEditor();
 		setupEditorStore({ editors: [editor] });
 		const { result: hookResult } = setupHook(useEditorDraftSave, {
-			initialProps: [editor.id],
-			store: messagesStore
+			initialProps: [editor.id]
 		});
 
 		expect(hookResult.current).toEqual({

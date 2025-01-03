@@ -12,12 +12,10 @@ import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
 import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { setupHook } from '../../../carbonio-ui-commons/test/test-setup';
 import { FOLDERS_DESCRIPTORS } from '../../../constants';
-import { generateStore } from '../../../tests/generators/store';
 import { MsgActionRequest, MsgActionResponse } from '../../../types';
 import { useMsgSetUnreadDescriptor, useMsgSetUnreadFn } from '../use-msg-set-unread';
 
 describe('useMsgSetUnread', () => {
-	const store = generateStore();
 	const ids = times(faker.number.int({ max: 42 }), () =>
 		faker.number.int({ max: 42000 }).toString()
 	);
@@ -27,7 +25,6 @@ describe('useMsgSetUnread', () => {
 			const {
 				result: { current: descriptor }
 			} = setupHook(useMsgSetUnreadDescriptor, {
-				store,
 				initialProps: [
 					{
 						ids,
@@ -52,7 +49,6 @@ describe('useMsgSetUnread', () => {
 			const {
 				result: { current: descriptor }
 			} = setupHook(useMsgSetUnreadFn, {
-				store,
 				initialProps: [
 					{
 						ids,
@@ -81,7 +77,6 @@ describe('useMsgSetUnread', () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useMsgSetUnreadFn, {
-					store,
 					initialProps: [
 						{
 							ids,
@@ -98,7 +93,6 @@ describe('useMsgSetUnread', () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useMsgSetUnreadFn, {
-					store,
 					initialProps: [
 						{
 							ids,
@@ -115,7 +109,6 @@ describe('useMsgSetUnread', () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useMsgSetUnreadFn, {
-					store,
 					initialProps: [
 						{
 							ids,
@@ -137,7 +130,6 @@ describe('useMsgSetUnread', () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useMsgSetUnreadFn, {
-					store,
 					initialProps: [
 						{
 							ids,
@@ -170,7 +162,6 @@ describe('useMsgSetUnread', () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useMsgSetUnreadFn, {
-					store,
 					initialProps: [
 						{
 							ids,
