@@ -6,6 +6,7 @@
 import React from 'react';
 
 import { faker } from '@faker-js/faker';
+import { waitFor } from '@testing-library/react';
 
 import { FOLDERS } from '../../../../../carbonio-ui-commons/constants/folders';
 import { createSoapAPIInterceptor } from '../../../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
@@ -61,7 +62,7 @@ describe('PreviewPanelHeader', () => {
 		).not.toBeInTheDocument();
 	});
 
-	it('should render navigation arrow if the current list layout is "no-split"', () => {
+	it('should render navigation arrow if the current list layout is "no-split"', async () => {
 		mockLayoutStorage({ layout: MAILS_VIEW_LAYOUTS.NO_SPLIT });
 		populateFoldersStore();
 		const conversation = generateConversation({ id: '1' });
@@ -75,11 +76,15 @@ describe('PreviewPanelHeader', () => {
 				path: '/mails/folder/:folderId/conversation/:conversationId'
 			}
 		);
-		expect(
-			screen.getByRoleWithIcon('button', { icon: TESTID_SELECTORS.icons.navigatePrevious })
-		).toBeVisible();
-		expect(
-			screen.getByRoleWithIcon('button', { icon: TESTID_SELECTORS.icons.navigateNext })
-		).toBeVisible();
+		await waitFor(async () => {
+			expect(
+				screen.getByRoleWithIcon('button', { icon: TESTID_SELECTORS.icons.navigatePrevious })
+			).toBeVisible();
+		});
+		await waitFor(async () => {
+			expect(
+				screen.getByRoleWithIcon('button', { icon: TESTID_SELECTORS.icons.navigateNext })
+			).toBeVisible();
+		});
 	});
 });
