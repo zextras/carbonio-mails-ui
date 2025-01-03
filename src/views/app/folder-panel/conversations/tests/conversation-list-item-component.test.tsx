@@ -11,7 +11,7 @@ import { noop } from 'lodash';
 import { FOLDERS } from '../../../../../carbonio-ui-commons/constants/folders';
 import { ParticipantRole } from '../../../../../carbonio-ui-commons/constants/participants';
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
-import { API_REQUEST_STATUS, FOLDERS_DESCRIPTORS } from '../../../../../constants';
+import { FOLDERS_DESCRIPTORS } from '../../../../../constants';
 import {
 	setConversationsInEmailStore,
 	setMessagesInEmailStore
@@ -19,11 +19,9 @@ import {
 import { ASSERTIONS } from '../../../../../tests/constants';
 import { generateConversation } from '../../../../../tests/generators/generateConversation';
 import { generateMessage } from '../../../../../tests/generators/generateMessage';
-import { generateStore } from '../../../../../tests/generators/store';
 import type { ConversationListItemProps, ConvMessage } from '../../../../../types';
 import { ConversationListItem } from '../conversation-list-item';
 
-// TODO: CO-1725 fix it -- another final boss
 describe.each`
 	type                          | isSearchModule
 	${'conversation list'}        | ${false}
@@ -255,22 +253,8 @@ describe.each`
 					folderId: folder.id
 				};
 
-				const store = generateStore({
-					conversations: {
-						currentFolder: folder.id,
-						expandedStatus: {
-							[conversation.id]: API_REQUEST_STATUS.fulfilled
-						},
-						searchedInFolder: {},
-						conversations: {
-							[conversation.id]: conversation
-						},
-						searchRequestStatus: API_REQUEST_STATUS.fulfilled
-					}
-				});
-
 				setConversationsInEmailStore([conversation], false);
-				setupTest(<ConversationListItem {...props} />, { store });
+				setupTest(<ConversationListItem {...props} />);
 
 				const senderLabel = screen.queryByTestId('participants-name-label');
 				if (assertion.value) {
@@ -310,22 +294,8 @@ describe.each`
 					folderId: folder.id
 				};
 
-				const store = generateStore({
-					conversations: {
-						currentFolder: folder.id,
-						expandedStatus: {
-							[conversation.id]: API_REQUEST_STATUS.fulfilled
-						},
-						searchedInFolder: {},
-						conversations: {
-							[conversation.id]: conversation
-						},
-						searchRequestStatus: API_REQUEST_STATUS.fulfilled
-					}
-				});
-
 				setConversationsInEmailStore([conversation], false);
-				setupTest(<ConversationListItem {...props} />, { store });
+				setupTest(<ConversationListItem {...props} />);
 
 				const senderLabel = screen.queryByTestId('participants-name-label');
 				expect(senderLabel).toHaveTextContent(labelContent);
@@ -360,22 +330,8 @@ describe.each`
 				folderId: FOLDERS.INBOX
 			};
 
-			const store = generateStore({
-				conversations: {
-					currentFolder: FOLDERS.INBOX,
-					expandedStatus: {
-						[conversation.id]: API_REQUEST_STATUS.fulfilled
-					},
-					searchedInFolder: {},
-					conversations: {
-						[conversation.id]: conversation
-					},
-					searchRequestStatus: API_REQUEST_STATUS.fulfilled
-				}
-			});
-
 			setConversationsInEmailStore([conversation], false);
-			setupTest(<ConversationListItem {...props} />, { store });
+			setupTest(<ConversationListItem {...props} />);
 			const senderLabel = screen.queryByTestId('participants-name-label');
 			expect(senderLabel).toHaveTextContent('mario');
 			expect(senderLabel).toHaveTextContent('luigi');
@@ -402,22 +358,8 @@ describe.each`
 				folderId
 			};
 
-			const store = generateStore({
-				conversations: {
-					currentFolder: folderId,
-					expandedStatus: {
-						[conversation.id]: API_REQUEST_STATUS.fulfilled
-					},
-					searchedInFolder: {},
-					conversations: {
-						[conversation.id]: conversation
-					},
-					searchRequestStatus: API_REQUEST_STATUS.fulfilled
-				}
-			});
-
 			setConversationsInEmailStore([conversation], false);
-			setupTest(<ConversationListItem {...props} />, { store });
+			setupTest(<ConversationListItem {...props} />);
 			const chevron = await screen.findByTestId(`ToggleExpand`);
 			expect(chevron).toBeVisible();
 		});
@@ -438,22 +380,8 @@ describe.each`
 				folderId
 			};
 
-			const store = generateStore({
-				conversations: {
-					currentFolder: folderId,
-					expandedStatus: {
-						[conversation.id]: API_REQUEST_STATUS.fulfilled
-					},
-					searchedInFolder: {},
-					conversations: {
-						[conversation.id]: conversation
-					},
-					searchRequestStatus: API_REQUEST_STATUS.fulfilled
-				}
-			});
-
 			setConversationsInEmailStore([conversation], false);
-			setupTest(<ConversationListItem {...props} />, { store });
+			setupTest(<ConversationListItem {...props} />);
 			expect(screen.queryByTestId('ToggleExpand')).not.toBeInTheDocument();
 		});
 	});
@@ -475,22 +403,8 @@ describe.each`
 			folderId
 		};
 
-		const store = generateStore({
-			conversations: {
-				currentFolder: folderId,
-				expandedStatus: {
-					[conversation.id]: API_REQUEST_STATUS.fulfilled
-				},
-				searchedInFolder: {},
-				conversations: {
-					[conversation.id]: conversation
-				},
-				searchRequestStatus: API_REQUEST_STATUS.fulfilled
-			}
-		});
-
 		setConversationsInEmailStore([conversation], false);
-		setupTest(<ConversationListItem {...props} />, { store });
+		setupTest(<ConversationListItem {...props} />);
 		const aRandomChild = await screen.findByTestId(`hover-container-${conversationId}`);
 
 		// Initally the context menu is not created
