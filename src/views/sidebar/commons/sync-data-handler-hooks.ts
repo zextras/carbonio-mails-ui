@@ -95,7 +95,7 @@ function processCreatedNotifications(notify: SoapNotify): void {
 
 	if (createdConversations && createdMessages) {
 		const conversations = map(createdConversations, (conversation) =>
-			mapToNormalizedConversation({ c: conversation, m: createdMessages })
+			mapToNormalizedConversation({ conversation, messages: createdMessages })
 		);
 		prependConversationsToConversationIndexSlice(conversations);
 	}

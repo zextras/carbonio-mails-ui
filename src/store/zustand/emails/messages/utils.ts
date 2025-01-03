@@ -4,13 +4,13 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import { getUserSettings } from '@zextras/carbonio-shell-ui';
 /* eslint-disable no-param-reassign */
 import produce from 'immer';
-import { filter, find, forEach, last, sortBy } from 'lodash';
+import { find, forEach } from 'lodash';
 import { StoreApi, UseBoundStore } from 'zustand';
 
 import { MESSAGE_INDEX_SLICE_INITIAL_STATE } from './messages-slice';
-import { FOLDERS } from '../../../../carbonio-ui-commons/constants/folders';
 import { useFolder } from '../../../../carbonio-ui-commons/store/zustand/folder';
 import { API_REQUEST_STATUS } from '../../../../constants';
 import {
@@ -107,34 +107,6 @@ function appendMessagesToMessagesSlice(
 		})
 	);
 }
-function oldFunction(m: any, state: any): void {
-	forEach(m, (msg) => {
-		const conversation = state.conversations?.[msg.cid];
-		if (msg?.cid && msg?.id && msg?.l && conversation) {
-			const messages = find(conversation.messages, ['id', msg.id])
-				? conversation.messages
-				: [...conversation.messages, { id: msg.id, parent: msg.l, date: Number(msg.d) }];
-
-			const date =
-				msg.l === FOLDERS.DRAFTS
-					? conversation.date
-					: (last(sortBy(filter(messages, { parent: state.currentFolder }), 'date')) as ConvMessage)
-							?.date;
-
-			const conv = {
-				[msg.cid]: {
-					...conversation,
-					messages,
-					fragment: msg?.fr ?? '',
-					date,
-					sortIndex: -JSON.stringify(Date.now())
-				}
-			};
-
-			state.conversations = { ...state.conversations, ...conv };
-		}
-	});
-}
 
 function prependMessagesToMessageSlice(
 	messages: Array<MailMessage | IncompleteMessage>,
@@ -152,22 +124,24 @@ function prependMessagesToMessageSlice(
 		);
 	}
 
+	function getOrderedMessagesForConversation(
+		convMessages: ConvMessage[],
+		message: IncompleteMessage
+	): ConvMessage[] {
+		const sortOrder = getUserSettings()?.prefs?.zimbraPrefConversationOrder || 'dateDesc';
+		if (sortOrder === 'dateDesc') {
+			return [{ id: message.id, parent: message.parent, date: message.date }, ...convMessages];
+		}
+		return [...convMessages, { id: message.id, parent: message.parent, date: message.date }];
+	}
+
 	function addMessagesToConversation(state: EmailsStoreState): void {
 		forEach(messages, (msg) => {
 			const conversation = state.populatedItemsSlice.conversations?.[msg.conversation];
 			if (msg?.conversation && msg?.id && msg?.parent && conversation) {
 				const newMessages = find(conversation.messages, ['id', msg.id])
 					? conversation.messages
-					: [...conversation.messages, { id: msg.id, parent: msg.parent, date: msg.date }];
-
-				// const date =
-				// 	msg.parent === FOLDERS.DRAFTS
-				// 		? conversation.date
-				// 		: (
-				// 				last(
-				// 					sortBy(filter(newMessages, { parent: state.currentFolder }), 'date')
-				// 				) as ConvMessage
-				// 			)?.date;
+					: getOrderedMessagesForConversation(conversation.messages, msg);
 
 				const conv = {
 					[msg.conversation]: {

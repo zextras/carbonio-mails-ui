@@ -124,6 +124,7 @@ function prependConversationsToConversationIndexSlice(
 		})
 	);
 }
+
 function deleteConversationsFromConversationSlice(
 	ids: Array<string>,
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>

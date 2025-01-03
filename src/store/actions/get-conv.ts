@@ -50,7 +50,7 @@ export const getConv = async ({
 		onConversationIdChange?.(result.c[0].id);
 	}
 
-	const conversation = normalizeConversation({ c: result.c[0] });
+	const conversation = normalizeConversation({ conversation: result.c[0] });
 	const messages = map(result.c[0].m, (item) =>
 		normalizeMailMessageFromSoap(item, false)
 	) as unknown as Array<IncompleteMessage>;

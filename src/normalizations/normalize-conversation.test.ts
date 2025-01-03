@@ -23,7 +23,7 @@ describe('normalize conversation', () => {
 				u: 0
 			};
 
-			const normalized = normalizeConversation({ c: soapConversation });
+			const normalized = normalizeConversation({ conversation: soapConversation });
 
 			expect(normalized.parent).toBeUndefined();
 		});
@@ -55,7 +55,7 @@ describe('normalize conversation', () => {
 				u: 0
 			};
 
-			const normalized = normalizeConversation({ c: soapConversation });
+			const normalized = normalizeConversation({ conversation: soapConversation });
 
 			expect(normalized.parent).toBeUndefined();
 		});
