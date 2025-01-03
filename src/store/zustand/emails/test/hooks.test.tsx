@@ -4,7 +4,8 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { renderHook, waitFor } from '@testing-library/react';
+import { act, renderHook, waitFor } from '@testing-library/react';
+import { map } from 'lodash';
 
 import { createSoapAPIInterceptor } from '../../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { API_REQUEST_STATUS } from '../../../../constants';
@@ -30,6 +31,7 @@ import {
 	updateConversationStatus,
 	updateMessageStatus,
 	useConversationById,
+	useConversationIndexSlice,
 	useConversationStatus,
 	useMessageStatus
 } from '../store';
@@ -161,44 +163,122 @@ describe('Searches store hooks', () => {
 				const conversation = generateConversation({ id: '123' });
 				const messages = [{ id: '1' }, { id: '2' }] as Array<ConvMessage>;
 				setConversationsInEmailStore([{ ...conversation, messages }], false);
-				deleteMessagesFromConversation(['1']);
+				const { result: initialValue } = renderHook(() => useConversationById('123'));
+				expect(initialValue.current.messages).toHaveLength(2);
+				act(() => {
+					deleteMessagesFromConversation(['1', '2']);
+				});
 				const { result } = renderHook(() => useConversationById('123'));
-				expect(result.current.messages).toHaveLength(1);
+				expect(result.current.messages).toHaveLength(0);
 			});
 
-			it('should not affect other messages in the conversations');
+			it('should not affect other messages in the conversation', () => {
+				const conversation = generateConversation({ id: '123' });
+				const messages = [{ id: '1' }, { id: '2' }, { id: '3' }] as Array<ConvMessage>;
+				setConversationsInEmailStore([{ ...conversation, messages }], false);
+				const { result: initialValue } = renderHook(() => useConversationById('123'));
+				expect(initialValue.current.messages).toHaveLength(3);
+				act(() => {
+					deleteMessagesFromConversation(['1', '2']);
+				});
+				const { result } = renderHook(() => useConversationById('123'));
+				expect(result.current.messages).toHaveLength(1);
+				expect(result.current.messages[0].id).toBe('3');
+			});
 		});
 
-		// describe('When called with an empty array of IDs', () => {
-		// 	it('should not modify any messages in the conversations');
-		// });
-		//
-		// describe('When called with non-existent message IDs', () => {
-		// 	it('should not delete any messages from the conversations');
-		// 	it('should not throw an error');
-		// });
-		//
-		// describe('When conversations have no messages', () => {
-		// 	it('should not throw an error');
-		// 	it('should leave the state unchanged');
-		// });
-		//
-		// describe('When the conversations array is empty', () => {
-		// 	it('should not throw an error');
-		// 	it('should leave the state unchanged');
-		// });
-		//
-		// describe('When called with null or undefined as IDs', () => {
-		// 	it('should throw an appropriate error');
-		// });
-		//
-		// describe('When useEmailsStore is invalid or undefined', () => {
-		// 	it('should throw an appropriate error');
-		// });
-		//
-		// describe('Performance and scalability', () => {
-		// 	it('should handle a large number of message IDs efficiently');
-		// 	it('should handle a large number of conversations and messages efficiently');
-		// });
+		describe('When called with an empty array of IDs', () => {
+			it('should not modify any messages in the conversations', () => {
+				const conversation = generateConversation({ id: '123' });
+				const messages = [{ id: '1' }, { id: '2' }, { id: '3' }] as Array<ConvMessage>;
+				setConversationsInEmailStore([{ ...conversation, messages }], false);
+				const { result: initialValue } = renderHook(() => useConversationById('123'));
+				expect(initialValue.current.messages).toHaveLength(3);
+				act(() => {
+					deleteMessagesFromConversation([]);
+				});
+				const { result } = renderHook(() => useConversationById('123'));
+				expect(result.current.messages).toHaveLength(3);
+			});
+		});
+
+		describe('When called with non-existent message IDs', () => {
+			it('should not delete any messages from the conversations', () => {
+				const conversation = generateConversation({ id: '123' });
+				const messages = [{ id: '1' }, { id: '2' }, { id: '3' }] as Array<ConvMessage>;
+				setConversationsInEmailStore([{ ...conversation, messages }], false);
+				const { result: initialValue } = renderHook(() => useConversationById('123'));
+				expect(initialValue.current.messages).toHaveLength(3);
+				act(() => {
+					deleteMessagesFromConversation(['4', '5']);
+				});
+				const { result } = renderHook(() => useConversationById('123'));
+				expect(result.current.messages).toHaveLength(3);
+			});
+		});
+
+		describe('When conversations have no messages', () => {
+			it('should leave the state unchanged', () => {
+				const conversation = generateConversation({ id: '123' });
+				const messages = [] as Array<ConvMessage>;
+				setConversationsInEmailStore([{ ...conversation, messages }], false);
+				const { result: initialValue } = renderHook(() => useConversationById('123'));
+				expect(initialValue.current.messages).toHaveLength(0);
+				act(() => {
+					deleteMessagesFromConversation(['1', '2']);
+				});
+				const { result } = renderHook(() => useConversationById('123'));
+				expect(result.current).toMatchObject(expect.objectContaining({ id: '123', messages: [] }));
+			});
+		});
+
+		describe('When the conversations array is empty', () => {
+			it('should leave the state unchanged', () => {
+				setConversationsInEmailStore([], false);
+				act(() => {
+					deleteMessagesFromConversation(['1', '2']);
+				});
+				const { result } = renderHook(() => useConversationIndexSlice());
+				expect(result.current.conversationListIndex).toHaveLength(0);
+			});
+		});
+
+		describe('Performance and scalability', () => {
+			it('should handle a large number of conversations efficiently', () => {
+				const numberOfConversations = 1000;
+				const conversaiontIds = Array.from({ length: numberOfConversations }, (_, index) =>
+					index.toString()
+				);
+				const conversations = map(conversaiontIds, (id) =>
+					generateConversation({ id, messages: [{ id: '1' } as ConvMessage] })
+				);
+				setConversationsInEmailStore(conversations, false);
+				const start = performance.now();
+				act(() => {
+					deleteMessagesFromConversation(['1', '2']);
+				});
+				const end = performance.now();
+				expect(end - start).toBeLessThan(10);
+			});
+			it('should handle a large number of conversations and messages efficiently', () => {
+				const numberOfMessages = 1000;
+				const numberOfConversations = 1000;
+				const messageIds = Array.from({ length: numberOfMessages }, (_, index) => index.toString());
+				const conversaiontIds = Array.from({ length: numberOfConversations }, (_, index) =>
+					index.toString()
+				);
+				const messages = map(messageIds, (id) => ({ id }));
+				const conversations = map(conversaiontIds, (id) =>
+					generateConversation({ id, messages: messages as Array<ConvMessage> })
+				);
+				setConversationsInEmailStore(conversations, false);
+				const start = performance.now();
+				act(() => {
+					deleteMessagesFromConversation(['1']);
+				});
+				const end = performance.now();
+				expect(end - start).toBeLessThan(10);
+			});
+		});
 	});
 });
