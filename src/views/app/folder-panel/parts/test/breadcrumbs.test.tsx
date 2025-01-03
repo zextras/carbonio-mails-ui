@@ -10,7 +10,6 @@ import { useTheme } from '@zextras/carbonio-design-system';
 
 import { setupHook, setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
 import { getFolderPathForBreadcrumb } from '../../../../../helpers/folders';
-import { generateStore } from '../../../../../tests/generators/store';
 import { Breadcrumbs } from '../breadcrumbs';
 
 jest.mock('../../../../../helpers/folders', () => ({
@@ -36,21 +35,18 @@ describe('Breadcrumbs Component', () => {
 	});
 
 	it('renders the Breadcrumbs component', () => {
-		const store = generateStore();
-		setupTest(<Breadcrumbs {...defaultProps} />, { store });
+		setupTest(<Breadcrumbs {...defaultProps} />);
 		expect(screen.getByTestId('BreadcrumbPathStart')).toBeInTheDocument();
 		expect(screen.getByTestId('BreadcrumbCount')).toBeInTheDocument();
 	});
 
 	it('displays the correct folder starting path', () => {
-		const store = generateStore();
-		setupTest(<Breadcrumbs {...defaultProps} />, { store });
+		setupTest(<Breadcrumbs {...defaultProps} />);
 		expect(screen.getByTestId('BreadcrumbPathStart')).toHaveTextContent('root/folder/');
 	});
 
 	it('the starting path has a gray1 color', () => {
-		const store = generateStore();
-		setupTest(<Breadcrumbs {...defaultProps} />, { store });
+		setupTest(<Breadcrumbs {...defaultProps} />);
 		const { result } = setupHook(useTheme);
 		expect(screen.getByTestId('BreadcrumbPathStart')).toHaveStyle(
 			`color: ${result.current.palette.gray1.regular}`
@@ -58,14 +54,12 @@ describe('Breadcrumbs Component', () => {
 	});
 
 	it('displays the correct folder ending path', () => {
-		const store = generateStore();
-		setupTest(<Breadcrumbs {...defaultProps} />, { store });
+		setupTest(<Breadcrumbs {...defaultProps} />);
 		expect(screen.getByTestId('BreadcrumbPathEnd')).toHaveTextContent('subfolder');
 	});
 
 	it('the ending path has a text color', () => {
-		const store = generateStore();
-		setupTest(<Breadcrumbs {...defaultProps} />, { store });
+		setupTest(<Breadcrumbs {...defaultProps} />);
 		const { result } = setupHook(useTheme);
 		expect(screen.getByTestId('BreadcrumbPathEnd')).toHaveStyle(
 			`color: ${result.current.palette.text.regular}`
@@ -73,20 +67,17 @@ describe('Breadcrumbs Component', () => {
 	});
 
 	it('displays the correct items count', () => {
-		const store = generateStore();
-		setupTest(<Breadcrumbs {...defaultProps} />, { store });
+		setupTest(<Breadcrumbs {...defaultProps} />);
 		expect(screen.getByTestId('BreadcrumbCount')).toHaveTextContent('5');
 	});
 
 	it('displays the correct items count when count exceeds 100', () => {
-		const store = generateStore();
-		setupTest(<Breadcrumbs {...defaultProps} itemsCount={1_000} />, { store });
+		setupTest(<Breadcrumbs {...defaultProps} itemsCount={1_000} />);
 		expect(screen.getByTestId('BreadcrumbCount')).toHaveTextContent('1000');
 	});
 
 	it('toggles selection mode when SelectIconCheckbox is clicked', async () => {
-		const store = generateStore();
-		const { user } = setupTest(<Breadcrumbs {...defaultProps} />, { store });
+		const { user } = setupTest(<Breadcrumbs {...defaultProps} />);
 		const checkbox = await screen.findByTestId('select-icon-checkbox');
 		await act(async () => {
 			await user.click(checkbox);
@@ -95,15 +86,13 @@ describe('Breadcrumbs Component', () => {
 	});
 
 	it('renders SortingComponent and LayoutComponent when not in search module', () => {
-		const store = generateStore();
-		setupTest(<Breadcrumbs {...defaultProps} />, { store });
+		setupTest(<Breadcrumbs {...defaultProps} />);
 		expect(screen.getByTestId('layout-component')).toBeInTheDocument();
 		expect(screen.getByTestId('sorting-dropdown')).toBeInTheDocument();
 	});
 
 	it('does not render SortingComponent and LayoutComponent when in search module', () => {
-		const store = generateStore();
-		setupTest(<Breadcrumbs {...defaultProps} isSearchModule />, { store });
+		setupTest(<Breadcrumbs {...defaultProps} isSearchModule />);
 		expect(screen.queryByTestId('layout-component')).not.toBeInTheDocument();
 		expect(screen.queryByTestId('sorting-dropdown')).not.toBeInTheDocument();
 	});

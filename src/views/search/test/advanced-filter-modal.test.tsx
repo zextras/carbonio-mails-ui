@@ -14,7 +14,6 @@ import {
 	mockContactInput
 } from '../../../carbonio-ui-commons/test/mocks/integrations/mock-contact-input';
 import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
-import { generateStore } from '../../../tests/generators/store';
 import { AdvancedFilterModalProps, SearchQueryItem } from '../../../types';
 import { AdvancedFilterModal } from '../advanced-filter-modal';
 
@@ -28,14 +27,12 @@ describe('Advanced filter modal', () => {
 		isSharedFolderIncluded: false
 	};
 	it('render the advanced filter modal', () => {
-		const store = generateStore();
-		setupTest(<AdvancedFilterModal {...props} />, { store });
+		setupTest(<AdvancedFilterModal {...props} />);
 		const fieldLabel = screen.getByText(/label\.single_advanced_filter/i);
 		expect(fieldLabel).toBeInTheDocument();
 	});
 	it('search button should be disable when modal open', () => {
-		const store = generateStore();
-		setupTest(<AdvancedFilterModal {...props} />, { store });
+		setupTest(<AdvancedFilterModal {...props} />);
 		const fieldLabel = screen.getByText(/label\.single_advanced_filter/i);
 		expect(fieldLabel).toBeInTheDocument();
 
@@ -46,8 +43,7 @@ describe('Advanced filter modal', () => {
 		expect(actionButton).toBeDisabled();
 	});
 	it('search button should be enable on keyword, subject change', async () => {
-		const store = generateStore();
-		const { user } = setupTest(<AdvancedFilterModal {...props} />, { store });
+		const { user } = setupTest(<AdvancedFilterModal {...props} />);
 		const fieldLabel = screen.getByText(/label\.single_advanced_filter/i);
 		expect(fieldLabel).toBeInTheDocument();
 
@@ -73,7 +69,6 @@ describe('Advanced filter modal', () => {
 		expect(actionButton).toBeEnabled();
 	});
 	it('should add "received from" to query with value and label including "from:" after adding a value in the input', async () => {
-		const store = generateStore();
 		const mockUpdateQuery = jest.fn();
 		const { user } = setupTest(
 			<AdvancedFilterModal
@@ -83,8 +78,7 @@ describe('Advanced filter modal', () => {
 				query={[]}
 				updateQuery={mockUpdateQuery}
 				setIsSharedFolderIncluded={jest.fn()}
-			/>,
-			{ store }
+			/>
 		);
 		const sentTo = screen.getByTestId('received-from-input');
 		await user.type(sentTo, 'validEmail@test.com');
@@ -103,7 +97,6 @@ describe('Advanced filter modal', () => {
 	});
 
 	it('should add "sent to" to query with value and label including "to:" after adding a value in the input', async () => {
-		const store = generateStore();
 		const mockUpdateQuery = jest.fn();
 		const { user } = setupTest(
 			<AdvancedFilterModal
@@ -113,8 +106,7 @@ describe('Advanced filter modal', () => {
 				query={[]}
 				updateQuery={mockUpdateQuery}
 				setIsSharedFolderIncluded={jest.fn()}
-			/>,
-			{ store }
+			/>
 		);
 		const sentTo = screen.getByTestId('sent-to-input');
 		await user.type(sentTo, 'validEmail@test.com');
@@ -132,7 +124,6 @@ describe('Advanced filter modal', () => {
 		});
 	});
 	it('should keep previous query first value after adding a new value in "sent to" input', async () => {
-		const store = generateStore();
 		const mockUpdateQuery = jest.fn();
 		const query: SearchQueryItem = {
 			id: 'query1',
@@ -147,8 +138,7 @@ describe('Advanced filter modal', () => {
 				query={[query]}
 				updateQuery={mockUpdateQuery}
 				setIsSharedFolderIncluded={jest.fn()}
-			/>,
-			{ store }
+			/>
 		);
 		const sentTo = screen.getByTestId('sent-to-input');
 		await user.type(sentTo, 'validEmail@test.com');
@@ -176,7 +166,7 @@ describe('Advanced filter modal', () => {
 		const valueToAdd = generateMockContactInputItem();
 		valueToAdd.actions = [EDIT_ACTION];
 		mockContactInput({ valueToAdd });
-		const store = generateStore();
+
 		const mockUpdateQuery = jest.fn();
 		const { user } = setupTest(
 			<AdvancedFilterModal
@@ -186,8 +176,7 @@ describe('Advanced filter modal', () => {
 				query={[]}
 				updateQuery={mockUpdateQuery}
 				setIsSharedFolderIncluded={jest.fn()}
-			/>,
-			{ store }
+			/>
 		);
 		const sentTo = screen.getByTestId('sent-to-input');
 		await user.type(sentTo, 'validEmail@test.com');
@@ -213,7 +202,7 @@ describe('Advanced filter modal', () => {
 		const valueToAdd = generateMockContactInputItem();
 		valueToAdd.actions = [EDIT_ACTION];
 		mockContactInput({ valueToAdd });
-		const store = generateStore();
+
 		const mockUpdateQuery = jest.fn();
 
 		const { user } = setupTest(
@@ -224,8 +213,7 @@ describe('Advanced filter modal', () => {
 				query={[]}
 				updateQuery={mockUpdateQuery}
 				setIsSharedFolderIncluded={jest.fn()}
-			/>,
-			{ store }
+			/>
 		);
 
 		const sentTo = screen.getByTestId('sent-to-input');

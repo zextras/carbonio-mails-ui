@@ -14,14 +14,13 @@ import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mock
 import { populateFoldersStore } from '../../../carbonio-ui-commons/test/mocks/store/folders';
 import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
 import { Folder } from '../../../carbonio-ui-commons/types/folder';
-import { generateStore } from '../../../tests/generators/store';
 import { SoapFolderAction } from '../../../types';
 import { EmptyModal } from '../empty-modal';
 
 describe('empty-modal', () => {
 	test('empty the folder except the trash folder', async () => {
 		const closeModal = jest.fn();
-		const store = generateStore();
+
 		const folder: Folder = {
 			id: FOLDERS.INBOX,
 			uuid: faker.string.uuid(),
@@ -51,9 +50,7 @@ describe('empty-modal', () => {
 			depth: 1
 		};
 
-		setupTest(<EmptyModal onClose={(): void => closeModal()} folder={folder} />, {
-			store
-		});
+		setupTest(<EmptyModal onClose={(): void => closeModal()} folder={folder} />, {});
 
 		expect(screen.getByText(/folder_panel\.modal\.wipe\.body\.message1/i)).toBeInTheDocument();
 		expect(screen.getByText(/folder_panel\.modal\.wipe\.body\.message2/i)).toBeInTheDocument();
@@ -67,7 +64,7 @@ describe('empty-modal', () => {
 
 	test('empty the trash folder', async () => {
 		const closeModal = jest.fn();
-		const store = generateStore();
+
 		const folder: Folder = {
 			id: `dfer4567-hy0e-i984-kjh6-c842dfr5tgyh:${FOLDERS.TRASH}`,
 			uuid: faker.string.uuid(),
@@ -92,9 +89,7 @@ describe('empty-modal', () => {
 			depth: 1
 		};
 
-		setupTest(<EmptyModal onClose={(): void => closeModal()} folder={folder} />, {
-			store
-		});
+		setupTest(<EmptyModal onClose={(): void => closeModal()} folder={folder} />, {});
 
 		expect(screen.getByText(/folder_panel\.modal\.empty\.body\.message1/i)).toBeInTheDocument();
 		expect(screen.getByText(/folder_panel\.modal\.empty\.body\.message2/i)).toBeInTheDocument();
@@ -107,7 +102,7 @@ describe('empty-modal', () => {
 
 	test('empty the trash folder of the shared account', async () => {
 		const closeModal = jest.fn();
-		const store = generateStore();
+
 		const folder: Folder = {
 			id: `dfer4567-hy0e-i984-kjh6-c842dfr5tgyh:${FOLDERS.TRASH}`,
 			uuid: faker.string.uuid(),
@@ -132,9 +127,7 @@ describe('empty-modal', () => {
 			depth: 1
 		};
 
-		setupTest(<EmptyModal onClose={(): void => closeModal()} folder={folder} />, {
-			store
-		});
+		setupTest(<EmptyModal onClose={(): void => closeModal()} folder={folder} />, {});
 
 		expect(screen.getByText(/folder_panel\.modal\.empty\.body\.message1/i)).toBeInTheDocument();
 		expect(screen.getByText(/folder_panel\.modal\.empty\.body\.message2/i)).toBeInTheDocument();
@@ -147,16 +140,17 @@ describe('empty-modal', () => {
 
 	test('API is called with the proper parameters', async () => {
 		const closeModal = jest.fn();
-		const store = generateStore();
+
 		populateFoldersStore();
 		const folder = getFolder(FOLDERS.TRASH);
 		if (!folder) {
 			return;
 		}
 
-		const { user } = setupTest(<EmptyModal onClose={(): void => closeModal()} folder={folder} />, {
-			store
-		});
+		const { user } = setupTest(
+			<EmptyModal onClose={(): void => closeModal()} folder={folder} />,
+			{}
+		);
 
 		const wipeButton = screen.getByRole('button', {
 			name: /label\.empty/i

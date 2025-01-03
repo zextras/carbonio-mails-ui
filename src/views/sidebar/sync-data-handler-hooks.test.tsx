@@ -3,12 +3,10 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { ReactElement, ReactNode } from 'react';
 
 import { waitFor, renderHook } from '@testing-library/react';
 import { SoapNotify, useRefresh } from '@zextras/carbonio-shell-ui';
 import { http } from 'msw';
-import { Provider } from 'react-redux';
 
 import { generateMessageFromAPI } from '../../tests/generators/api';
 import { SoapIncompleteMessage } from '../../types';
@@ -33,20 +31,11 @@ import {
 } from '../../store/zustand/emails/store';
 import { generateConversation } from '../../tests/generators/generateConversation';
 import { generateMessage } from '../../tests/generators/generateMessage';
-import { generateStore } from '../../tests/generators/store';
 
 const UNREAD = 'u';
 const READ = '';
 const FLAGGED = 'f';
 const NOTFLAGGED = '';
-
-function getWrapper(): (props: { children: ReactNode }) => ReactElement {
-	const store = generateStore();
-	function wrap({ children }: { children: ReactNode }): ReactElement {
-		return <Provider store={store}>{children}</Provider>;
-	}
-	return wrap;
-}
 
 function mockSoapRefresh(mailbox: number): void {
 	(useRefresh as jest.Mock).mockReturnValue({
@@ -160,9 +149,7 @@ describe('sync data handler', () => {
 			);
 			mockSoapModifyConversationAction(mailboxNumber, [READ]);
 
-			renderHook(() => useSyncDataHandler(), {
-				wrapper: getWrapper()
-			});
+			renderHook(() => useSyncDataHandler(), {});
 
 			const { result } = renderHook(() => useConversationById('123'));
 			await waitFor(() => {
@@ -176,9 +163,7 @@ describe('sync data handler', () => {
 			);
 			mockSoapModifyConversationAction(mailboxNumber, [UNREAD]);
 
-			renderHook(() => useSyncDataHandler(), {
-				wrapper: getWrapper()
-			});
+			renderHook(() => useSyncDataHandler(), {});
 
 			const { result } = renderHook(() => useConversationById('123'));
 			await waitFor(() => {
@@ -193,9 +178,7 @@ describe('sync data handler', () => {
 			);
 			mockSoapModifyConversationAction(mailboxNumber, [FLAGGED]);
 
-			renderHook(() => useSyncDataHandler(), {
-				wrapper: getWrapper()
-			});
+			renderHook(() => useSyncDataHandler(), {});
 
 			const { result } = renderHook(() => useConversationById('123'));
 			await waitFor(() => {
@@ -209,9 +192,7 @@ describe('sync data handler', () => {
 			);
 			mockSoapModifyConversationAction(mailboxNumber, [NOTFLAGGED]);
 
-			renderHook(() => useSyncDataHandler(), {
-				wrapper: getWrapper()
-			});
+			renderHook(() => useSyncDataHandler(), {});
 
 			const { result } = renderHook(() => useConversationById('123'));
 			await waitFor(() => {
@@ -225,9 +206,7 @@ describe('sync data handler', () => {
 			setMessagesInSearchSlice([generateMessage({ id: '1', isRead: false })]);
 			mockSoapModifyMessageAction(mailboxNumber, '1', [READ]);
 
-			renderHook(() => useSyncDataHandler(), {
-				wrapper: getWrapper()
-			});
+			renderHook(() => useSyncDataHandler(), {});
 
 			const { result } = renderHook(() => useMessageById('1'));
 			await waitFor(() => {
@@ -238,9 +217,7 @@ describe('sync data handler', () => {
 			setMessagesInSearchSlice([generateMessage({ id: '1', isRead: true })]);
 			mockSoapModifyMessageAction(mailboxNumber, '1', [UNREAD]);
 
-			renderHook(() => useSyncDataHandler(), {
-				wrapper: getWrapper()
-			});
+			renderHook(() => useSyncDataHandler(), {});
 
 			const { result } = renderHook(() => useMessageById('1'));
 			await waitFor(() => {
@@ -252,9 +229,7 @@ describe('sync data handler', () => {
 			setMessagesInSearchSlice([generateMessage({ id: '1', isFlagged: false })]);
 			mockSoapModifyMessageAction(mailboxNumber, '1', [FLAGGED]);
 
-			renderHook(() => useSyncDataHandler(), {
-				wrapper: getWrapper()
-			});
+			renderHook(() => useSyncDataHandler(), {});
 
 			const { result } = renderHook(() => useMessageById('1'));
 			await waitFor(() => {
@@ -265,9 +240,7 @@ describe('sync data handler', () => {
 			setMessagesInSearchSlice([generateMessage({ id: '1', isFlagged: true })]);
 			mockSoapModifyMessageAction(mailboxNumber, '1', [NOTFLAGGED]);
 
-			renderHook(() => useSyncDataHandler(), {
-				wrapper: getWrapper()
-			});
+			renderHook(() => useSyncDataHandler(), {});
 
 			const { result } = renderHook(() => useMessageById('1'));
 			await waitFor(() => {
@@ -279,9 +252,7 @@ describe('sync data handler', () => {
 			setMessagesInSearchSlice([generateMessage({ id: '1', folderId: FOLDERS.INBOX })]);
 			mockSoapModifyMessageFolder(mailboxNumber, '1', FOLDERS.SPAM);
 
-			renderHook(() => useSyncDataHandler(), {
-				wrapper: getWrapper()
-			});
+			renderHook(() => useSyncDataHandler(), {});
 
 			const { result } = renderHook(() => useMessageById('1'));
 			await waitFor(() => {
@@ -292,9 +263,7 @@ describe('sync data handler', () => {
 			setMessagesInSearchSlice([generateMessage({ id: '1', folderId: FOLDERS.SPAM })]);
 			mockSoapModifyMessageFolder(mailboxNumber, '1', FOLDERS.INBOX);
 
-			renderHook(() => useSyncDataHandler(), {
-				wrapper: getWrapper()
-			});
+			renderHook(() => useSyncDataHandler(), {});
 
 			const { result } = renderHook(() => useMessageById('1'));
 			await waitFor(() => {
@@ -306,9 +275,7 @@ describe('sync data handler', () => {
 			setMessagesInSearchSlice([generateMessage({ id: '1', folderId: FOLDERS.INBOX })]);
 			mockSoapModifyMessageFolder(mailboxNumber, '1', FOLDERS.TRASH);
 
-			renderHook(() => useSyncDataHandler(), {
-				wrapper: getWrapper()
-			});
+			renderHook(() => useSyncDataHandler(), {});
 
 			const { result } = renderHook(() => useMessageById('1'));
 			await waitFor(() => {
@@ -320,9 +287,7 @@ describe('sync data handler', () => {
 			setMessagesInSearchSlice([generateMessage({ id: '1', folderId: FOLDERS.TRASH })]);
 			mockSoapModifyMessageFolder(mailboxNumber, '1', FOLDERS.INBOX);
 
-			renderHook(() => useSyncDataHandler(), {
-				wrapper: getWrapper()
-			});
+			renderHook(() => useSyncDataHandler(), {});
 
 			const { result } = renderHook(() => useMessageById('1'));
 			await waitFor(() => {
@@ -334,9 +299,7 @@ describe('sync data handler', () => {
 			setMessagesInSearchSlice([generateMessage({ id: '1', folderId: 'aaa' })]);
 			mockSoapModifyMessageFolder(mailboxNumber, '1', 'bbb');
 
-			renderHook(() => useSyncDataHandler(), {
-				wrapper: getWrapper()
-			});
+			renderHook(() => useSyncDataHandler(), {});
 
 			const { result } = renderHook(() => useMessageById('1'));
 			await waitFor(() => {
@@ -351,9 +314,7 @@ describe('sync data handler', () => {
 			setSearchResultsByMessage([completeMessage1, completeMessage2, completeMessage3], false);
 			mockSoapDelete(mailboxNumber, ['1', '2']);
 
-			renderHook(() => useSyncDataHandler(), {
-				wrapper: getWrapper()
-			});
+			renderHook(() => useSyncDataHandler(), {});
 
 			const { result: message1Result } = renderHook(() => useMessageById('1'));
 			await waitFor(() => {
@@ -378,9 +339,7 @@ describe('sync data handler', () => {
 			});
 			mockSoapCreateMessage(mailboxNumber, [completeMessage1]);
 
-			renderHook(() => useSyncDataHandler(), {
-				wrapper: getWrapper()
-			});
+			renderHook(() => useSyncDataHandler(), {});
 
 			const { result: message1Result } = renderHook(() => useMessageById('1'));
 			await waitFor(() => {
@@ -407,9 +366,7 @@ describe('sync data handler', () => {
 			);
 
 			useNotify.mockReturnValueOnce([notify]);
-			renderHook(() => useSyncDataHandler(), {
-				wrapper: getWrapper()
-			});
+			renderHook(() => useSyncDataHandler(), {});
 
 			expect(workerSpy).toHaveBeenCalledTimes(1);
 			expect(workerSpy).toHaveBeenCalledWith(

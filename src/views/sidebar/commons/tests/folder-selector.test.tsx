@@ -26,12 +26,10 @@ import {
 	isTrash,
 	isTrashed
 } from '../../../../helpers/folders';
-import { generateStore } from '../../../../tests/generators/store';
 import { getSystemFolderTranslatedName } from '../../utils';
 import { FolderSelector, FolderSelectorProps } from '../folder-selector';
 
 describe('Folder selector', () => {
-	const store = generateStore();
 	test('The selector is visible', () => {
 		populateFoldersStore();
 		const props: FolderSelectorProps = {
@@ -43,7 +41,7 @@ describe('Folder selector', () => {
 			selectedFolderId: FOLDERS.INBOX,
 			onFolderSelected: jest.fn()
 		};
-		setupTest(<FolderSelector {...props} />, { store });
+		setupTest(<FolderSelector {...props} />);
 
 		expect(screen.getByTestId('folder-name-filter')).toBeVisible();
 	});
@@ -68,7 +66,7 @@ describe('Folder selector', () => {
 					selectedFolderId: FOLDERS.INBOX,
 					onFolderSelected: jest.fn()
 				};
-				setupTest(<FolderSelector {...props} />, { store });
+				setupTest(<FolderSelector {...props} />);
 				makeListItemsVisible();
 				folders.forEach((folder) => {
 					expect(screen.getByTestId(`folder-accordion-item-${folder.id}`)).toBeVisible();
@@ -93,7 +91,7 @@ describe('Folder selector', () => {
 				showTrashFolder: false,
 				onFolderSelected: jest.fn()
 			};
-			setupTest(<FolderSelector {...props} />, { store });
+			setupTest(<FolderSelector {...props} />);
 			makeListItemsVisible();
 			expect(screen.queryByText(ownerAccountName)).toBeVisible();
 		});
@@ -118,7 +116,7 @@ describe('Folder selector', () => {
 			const inboxFolderName = getSystemFolderTranslatedName({
 				folderName: 'Inbox'
 			});
-			const { user } = setupTest(<FolderSelector {...props} />, { store });
+			const { user } = setupTest(<FolderSelector {...props} />);
 			makeListItemsVisible();
 			const filterInput = screen.getByTestId('folder-name-filter');
 			await user.type(filterInput, inboxFolderName);
@@ -146,7 +144,7 @@ describe('Folder selector', () => {
 				selectedFolderId: FOLDERS.INBOX,
 				onFolderSelected: jest.fn()
 			};
-			const { user } = setupTest(<FolderSelector {...props} />, { store });
+			const { user } = setupTest(<FolderSelector {...props} />);
 			makeListItemsVisible();
 			const filterInput = screen.getByTestId('folder-name-filter');
 			await user.type(filterInput, inboxFolderName);
@@ -175,7 +173,7 @@ describe('Folder selector', () => {
 				selectedFolderId: FOLDERS.INBOX,
 				onFolderSelected: jest.fn()
 			};
-			const { user } = setupTest(<FolderSelector {...props} />, { store });
+			const { user } = setupTest(<FolderSelector {...props} />);
 			makeListItemsVisible();
 			const filterInput = screen.getByTestId('folder-name-filter');
 			await user.type(filterInput, inboxFirstChild.name);
@@ -197,7 +195,7 @@ describe('Folder selector', () => {
 				showTrashFolder: false,
 				onFolderSelected: jest.fn()
 			};
-			const { user } = setupTest(<FolderSelector {...props} />, { store });
+			const { user } = setupTest(<FolderSelector {...props} />);
 			makeListItemsVisible();
 			const filterInput = screen.getByTestId('folder-name-filter');
 			await user.type(filterInput, folderInPrimaryAccountOnly.name);
@@ -231,7 +229,7 @@ describe('Folder selector', () => {
 				showTrashFolder: false,
 				onFolderSelected: jest.fn()
 			};
-			setupTest(<FolderSelector {...props} />, { store });
+			setupTest(<FolderSelector {...props} />);
 			makeListItemsVisible();
 
 			// Cycle through all the roots, except for the primary account root
@@ -253,7 +251,7 @@ describe('Folder selector', () => {
 				showTrashFolder: false,
 				onFolderSelected: jest.fn()
 			};
-			setupTest(<FolderSelector {...props} />, { store });
+			setupTest(<FolderSelector {...props} />);
 			makeListItemsVisible();
 
 			const folders = getFoldersArrayByRoot(FOLDERS.USER_ROOT);
@@ -276,7 +274,7 @@ describe('Folder selector', () => {
 				showTrashFolder: true,
 				onFolderSelected: jest.fn()
 			};
-			setupTest(<FolderSelector {...props} />, { store });
+			setupTest(<FolderSelector {...props} />);
 			makeListItemsVisible();
 
 			const folders = getFoldersArrayByRoot(FOLDERS.USER_ROOT);
@@ -297,7 +295,7 @@ describe('Folder selector', () => {
 				showTrashFolder: false,
 				onFolderSelected: jest.fn()
 			};
-			setupTest(<FolderSelector {...props} />, { store });
+			setupTest(<FolderSelector {...props} />);
 			makeListItemsVisible();
 
 			const folders = getFoldersArrayByRoot(FOLDERS.USER_ROOT);
@@ -322,7 +320,7 @@ describe('Folder selector', () => {
 				showTrashFolder: true,
 				onFolderSelected: jest.fn()
 			};
-			setupTest(<FolderSelector {...props} />, { store });
+			setupTest(<FolderSelector {...props} />);
 			makeListItemsVisible();
 
 			const folders = getFoldersArrayByRoot(FOLDERS.USER_ROOT);
@@ -345,7 +343,7 @@ describe('Folder selector', () => {
 				showTrashFolder: false,
 				onFolderSelected: jest.fn()
 			};
-			setupTest(<FolderSelector {...props} />, { store });
+			setupTest(<FolderSelector {...props} />);
 			makeListItemsVisible();
 
 			const folders = getFoldersArrayByRoot(FOLDERS.USER_ROOT);
@@ -368,7 +366,7 @@ describe('Folder selector', () => {
 				showTrashFolder: false,
 				onFolderSelected: jest.fn()
 			};
-			setupTest(<FolderSelector {...props} />, { store });
+			setupTest(<FolderSelector {...props} />);
 			makeListItemsVisible();
 
 			const folders = getFoldersArrayByRoot(FOLDERS.USER_ROOT);

@@ -13,7 +13,6 @@ import { FOLDERS } from '../../../../../carbonio-ui-commons/constants/folders';
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
 import { setMessagesInEmailStore } from '../../../../../store/zustand/emails/store';
 import { generateMessage } from '../../../../../tests/generators/generateMessage';
-import { generateStore } from '../../../../../tests/generators/store';
 import { MessageListComponent, MessageListComponentProps } from '../message-list-component';
 import { MessageListItemComponent } from '../message-list-item-component';
 
@@ -65,17 +64,7 @@ describe.each`
 			setDraggedIds: noop
 		};
 
-		const store = generateStore({
-			messages: {
-				searchedInFolder: {},
-				messages: {
-					...messages.map((msg) => ({ [msg.id]: msg }))
-				},
-				searchRequestStatus: null
-			}
-		});
-
-		setupTest(<MessageListComponent {...props} />, { store });
+		setupTest(<MessageListComponent {...props} />);
 
 		await screen.findByTestId(`message-list-${folderId}`);
 		const items = await screen.findAllByTestId(/MessageListItem-/);

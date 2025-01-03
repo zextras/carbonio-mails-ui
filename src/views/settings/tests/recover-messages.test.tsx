@@ -13,7 +13,6 @@ import { defaultBeforeAllTests } from '../../../carbonio-ui-commons/test/jest-se
 import { createAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
 import { useAdvancedAccountStore } from '../../../store/zustand/advanced-account/store';
-import { generateStore } from '../../../tests/generators/store';
 import { RecoverMessages } from '../recover-messages';
 
 function getParams(url: string): Record<string, string> {
@@ -31,16 +30,14 @@ describe('Recover messages', () => {
 	});
 
 	it('should render view if backupSelfUndelete is allowed', () => {
-		const store = generateStore();
 		useAdvancedAccountStore.getState().updateBackupSelfUndeleteAllowed(true);
-		setupTest(<RecoverMessages />, { store });
+		setupTest(<RecoverMessages />);
 		expect(screen.getByTestId('recover-messages-form')).toBeInTheDocument();
 	});
 
 	it('should not render view if backupSelfUndelete is denied', () => {
-		const store = generateStore();
 		useAdvancedAccountStore.getState().updateBackupSelfUndeleteAllowed(false);
-		setupTest(<RecoverMessages />, { store });
+		setupTest(<RecoverMessages />);
 		expect(screen.queryByTestId('recover-messages-form')).not.toBeInTheDocument();
 	});
 

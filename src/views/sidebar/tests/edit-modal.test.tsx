@@ -17,14 +17,13 @@ import { populateFoldersStore } from '../../../carbonio-ui-commons/test/mocks/st
 import { buildSoapErrorResponseBody } from '../../../carbonio-ui-commons/test/mocks/utils/soap';
 import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
 import { Folder, FolderView } from '../../../carbonio-ui-commons/types/folder';
-import { generateStore } from '../../../tests/generators/store';
 import { SoapFolderAction } from '../../../types';
 import { EditModal } from '../edit-modal';
 
 describe('edit-modal', () => {
 	test('edit the folder excepting the system folders', async () => {
 		const closeModal = jest.fn();
-		const store = generateStore();
+
 		const folder: Folder = {
 			id: '106',
 			uuid: faker.string.uuid(),
@@ -52,9 +51,10 @@ describe('edit-modal', () => {
 			depth: 2
 		};
 
-		const { user } = setupTest(<EditModal onClose={(): void => closeModal()} folder={folder} />, {
-			store
-		});
+		const { user } = setupTest(
+			<EditModal onClose={(): void => closeModal()} folder={folder} />,
+			{}
+		);
 
 		expect(screen.getByText(/label\.folder_name/i)).toBeInTheDocument();
 		expect(screen.getByText(/label\.folder_name/i)).toBeEnabled();
@@ -80,7 +80,7 @@ describe('edit-modal', () => {
 
 	test('edit the system folder', async () => {
 		const closeModal = jest.fn();
-		const store = generateStore();
+
 		const folder: Folder = {
 			id: FOLDERS.INBOX,
 			uuid: faker.string.uuid(),
@@ -107,9 +107,10 @@ describe('edit-modal', () => {
 			depth: 1
 		};
 
-		const { user } = setupTest(<EditModal onClose={(): void => closeModal()} folder={folder} />, {
-			store
-		});
+		const { user } = setupTest(
+			<EditModal onClose={(): void => closeModal()} folder={folder} />,
+			{}
+		);
 
 		expect(screen.getByText(/label\.folder_name/i)).toBeInTheDocument();
 
@@ -134,7 +135,7 @@ describe('edit-modal', () => {
 
 	test('edit the folder with default retention policy is collapse', async () => {
 		const closeModal = jest.fn();
-		const store = generateStore();
+
 		const folder: Folder = {
 			id: '106',
 			uuid: faker.string.uuid(),
@@ -162,9 +163,7 @@ describe('edit-modal', () => {
 			depth: 2
 		};
 
-		setupTest(<EditModal onClose={(): void => closeModal()} folder={folder} />, {
-			store
-		});
+		setupTest(<EditModal onClose={(): void => closeModal()} folder={folder} />, {});
 
 		expect(screen.getByText(/label\.folder_name/i)).toBeInTheDocument();
 		expect(screen.getByText(/label\.folder_name/i)).toBeEnabled();
@@ -176,7 +175,7 @@ describe('edit-modal', () => {
 
 	test('Enable message retention and enable message disposal are uncheck by default', async () => {
 		const closeModal = jest.fn();
-		const store = generateStore();
+
 		const folder: Folder = {
 			id: '106',
 			uuid: faker.string.uuid(),
@@ -204,9 +203,7 @@ describe('edit-modal', () => {
 			depth: 2
 		};
 
-		setupTest(<EditModal onClose={(): void => closeModal()} folder={folder} />, {
-			store
-		});
+		setupTest(<EditModal onClose={(): void => closeModal()} folder={folder} />, {});
 
 		expect(screen.getByText(/label\.folder_name/i)).toBeInTheDocument();
 		expect(screen.getByText(/label\.folder_name/i)).toBeEnabled();
@@ -227,16 +224,17 @@ describe('edit-modal', () => {
 
 	test('API is called with the proper parameters', async () => {
 		const closeModal = jest.fn();
-		const store = generateStore();
+
 		populateFoldersStore();
 		const folder = getFolder(FOLDERS.TRASH);
 		if (!folder) {
 			return;
 		}
 
-		const { user } = setupTest(<EditModal onClose={(): void => closeModal()} folder={folder} />, {
-			store
-		});
+		const { user } = setupTest(
+			<EditModal onClose={(): void => closeModal()} folder={folder} />,
+			{}
+		);
 
 		const editButton = screen.getByRole('button', {
 			name: /label\.edit/i
@@ -256,7 +254,7 @@ describe('edit-modal', () => {
 
 	test('edited folder name should be pass in parameter', async () => {
 		const closeFn = jest.fn();
-		const store = generateStore();
+
 		const folder: Folder = {
 			id: '106',
 			uuid: faker.string.uuid(),
@@ -283,7 +281,7 @@ describe('edit-modal', () => {
 			parent: undefined,
 			depth: 2
 		};
-		const { user } = setupTest(<EditModal onClose={closeFn} folder={folder} />, { store });
+		const { user } = setupTest(<EditModal onClose={closeFn} folder={folder} />, {});
 
 		expect(screen.getByTestId('folder-name')).toBeInTheDocument();
 		const newFolder = screen.getByTestId('folder-name');
@@ -322,7 +320,7 @@ describe('edit-modal', () => {
 
 	test('folder name disable when edit system folder', async () => {
 		const closeModal = jest.fn();
-		const store = generateStore();
+
 		const folder: Folder = {
 			id: FOLDERS.INBOX,
 			uuid: faker.string.uuid(),
@@ -349,9 +347,7 @@ describe('edit-modal', () => {
 			depth: 1
 		};
 
-		setupTest(<EditModal onClose={(): void => closeModal()} folder={folder} />, {
-			store
-		});
+		setupTest(<EditModal onClose={(): void => closeModal()} folder={folder} />, {});
 
 		expect(screen.getByTestId('folder-name')).toBeInTheDocument();
 		const newFolder = screen.getByTestId('folder-name');
@@ -367,7 +363,7 @@ describe('edit-modal', () => {
 
 	test('error message display and edit button disable if syatem folder name use', async () => {
 		const closeModal = jest.fn();
-		const store = generateStore();
+
 		const folder: Folder = {
 			id: '106',
 			uuid: faker.string.uuid(),
@@ -395,9 +391,10 @@ describe('edit-modal', () => {
 			depth: 2
 		};
 
-		const { user } = setupTest(<EditModal onClose={(): void => closeModal()} folder={folder} />, {
-			store
-		});
+		const { user } = setupTest(
+			<EditModal onClose={(): void => closeModal()} folder={folder} />,
+			{}
+		);
 
 		expect(screen.getByTestId('folder-name')).toBeInTheDocument();
 		const newFolder = screen.getByTestId('folder-name');

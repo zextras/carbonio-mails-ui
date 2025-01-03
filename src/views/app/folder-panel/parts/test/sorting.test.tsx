@@ -21,7 +21,6 @@ import {
 	useMessagesSlice
 } from '../../../../../store/zustand/emails/store';
 import { generateMessage } from '../../../../../tests/generators/generateMessage';
-import { generateStore } from '../../../../../tests/generators/store';
 import { SearchRequest } from '../../../../../types';
 import { Breadcrumbs } from '../breadcrumbs';
 
@@ -58,15 +57,14 @@ const sortingOptionsWithoutSize = without(Object.values(SORTING_OPTIONS), SORTIN
 describe('Sorting component', () => {
 	it('the sorting component appears on the breadcrumbs component', async () => {
 		// Generate the store
-		const store = generateStore();
 
-		setupTest(<Breadcrumbs {...defaultProps} />, { store });
+		setupTest(<Breadcrumbs {...defaultProps} />);
 		expect(await screen.findByTestId(sortingDropdown)).toBeInTheDocument();
 	});
 	it('in a folder different from SENT, clicking on the sorting component icon opens a dropdown containing all the sorting options excluded TO', async () => {
 		// Generate the store
-		const store = generateStore();
-		const { user } = setupTest(<Breadcrumbs {...defaultProps} />, { store });
+
+		const { user } = setupTest(<Breadcrumbs {...defaultProps} />);
 		expect(await screen.findByTestId(sortingDropdown)).toBeInTheDocument();
 		const sortIcon = screen.getByRoleWithIcon('button', { icon: listIconRegex });
 		if (sortIcon) await user.click(sortIcon);
@@ -92,13 +90,12 @@ describe('Sorting component', () => {
 	});
 	it('in SENT folder, clicking on the sorting component icon opens a dropdown containing all the sorting options excluded FROM', async () => {
 		// Generate the store
-		const store = generateStore();
 
 		const props = {
 			...defaultProps,
 			folderId: FOLDERS.SENT
 		};
-		const { user } = setupTest(<Breadcrumbs {...props} />, { store });
+		const { user } = setupTest(<Breadcrumbs {...props} />);
 		expect(await screen.findByTestId(sortingDropdown)).toBeInTheDocument();
 		const sortIcon = screen.getByRoleWithIcon('button', { icon: listIconRegex });
 		if (sortIcon) await user.click(sortIcon);
@@ -123,9 +120,8 @@ describe('Sorting component', () => {
 	});
 	it('clicking on the sorting component icon when open will close the dropdown', async () => {
 		// Generate the store
-		const store = generateStore();
 
-		const { user } = setupTest(<Breadcrumbs {...defaultProps} />, { store });
+		const { user } = setupTest(<Breadcrumbs {...defaultProps} />);
 		expect(await screen.findByTestId(sortingDropdown)).toBeInTheDocument();
 		const sortIcon = screen.getByRoleWithIcon('button', { icon: listIconRegex });
 		if (sortIcon) await user.click(sortIcon);
@@ -136,8 +132,8 @@ describe('Sorting component', () => {
 
 	it('clicking on the sorting direction icon switches from name descending to name ascending order and back', async () => {
 		createSoapAPIInterceptor('Search');
-		const store = generateStore();
-		const { user } = setupTest(<Breadcrumbs {...defaultProps} />, { store });
+
+		const { user } = setupTest(<Breadcrumbs {...defaultProps} />);
 
 		expect(await screen.findByTestId(sortingDropdown)).toBeInTheDocument();
 		const sortIcon = screen.getByRoleWithIcon('button', { icon: listIconRegex });
@@ -180,7 +176,6 @@ describe('Sorting component', () => {
 	`(
 		`(case #$case) selecting order by $sortingOption.label.$sortingDirection`,
 		async ({ folderId, sortingOption }) => {
-			const store = generateStore();
 			const customSettings: Partial<AccountSettings> = {
 				prefs: {
 					zimbraPrefSortOrder: `${folderId}:${sortingOption.value}${SORTING_DIRECTION.DESCENDING},BDLV:,CAL:,CLV:,CLV-SR-1:dateDesc,CLV-SR-2:dateDesc,CLV-main:dateDesc,CNS:,CNSRC:,CNTGT:,CV:,TKL:,TKL-main:taskDueAsc,TV:,TV-main:dateDesc`
@@ -189,7 +184,7 @@ describe('Sorting component', () => {
 			const props = { ...defaultProps, folderId };
 			const account = generateSettings(customSettings);
 			jest.spyOn(hooks, 'useUserSettings').mockReturnValue(account);
-			const { user } = setupTest(<Breadcrumbs {...props} />, { store });
+			const { user } = setupTest(<Breadcrumbs {...props} />);
 
 			expect(await screen.findByTestId(sortingDropdown)).toBeInTheDocument();
 			const sortIcon = screen.getByRoleWithIcon('button', { icon: listIconRegex });
@@ -216,8 +211,6 @@ describe('Sorting component', () => {
 		}
 	);
 	it('if no sort order setting is detected for a folder, the setting should default to "DateDesc"', async () => {
-		// Generate the store
-		const store = generateStore();
 		const folderId = FOLDERS.INBOX;
 		const props = {
 			...defaultProps,
@@ -233,7 +226,7 @@ describe('Sorting component', () => {
 
 		jest.spyOn(hooks, 'useUserSettings').mockReturnValue(settings);
 
-		const { user } = setupTest(<Breadcrumbs {...props} />, { store });
+		const { user } = setupTest(<Breadcrumbs {...props} />);
 		const sortIcon = screen.getByRoleWithIcon('button', { icon: listIconRegex });
 		if (sortIcon) await user.click(sortIcon);
 		const orderParameters = within(screen.getByTestId(dropdownRegex)).queryAllByTestId(

@@ -14,17 +14,13 @@ import {
 	makeListItemsVisible,
 	setupTest
 } from '../../../../../carbonio-ui-commons/test/test-setup';
-import { generateStore } from '../../../../../tests/generators/store';
 import CreateFilterModal from '../create-filter-modal';
 
 describe('create-filter-modal', () => {
 	test('create filter add filter name and by default it will be deactive', async () => {
 		const closeModal = jest.fn();
-		const store = generateStore();
 
-		const { user } = setupTest(<CreateFilterModal t={t} onClose={(): void => closeModal()} />, {
-			store
-		});
+		const { user } = setupTest(<CreateFilterModal t={t} onClose={(): void => closeModal()} />, {});
 
 		expect(screen.getByTestId('filter-name')).toBeInTheDocument();
 		const filterName = screen.getByTestId('filter-name');
@@ -50,11 +46,8 @@ describe('create-filter-modal', () => {
 
 	test('create button will be disable and enabled once filter name added', async () => {
 		const closeModal = jest.fn();
-		const store = generateStore();
 
-		const { user } = setupTest(<CreateFilterModal t={t} onClose={(): void => closeModal()} />, {
-			store
-		});
+		const { user } = setupTest(<CreateFilterModal t={t} onClose={(): void => closeModal()} />, {});
 
 		const createButton = screen.getByRole('button', {
 			name: /label\.create/i
@@ -75,11 +68,8 @@ describe('create-filter-modal', () => {
 
 	test('create filter add filter name and add condition', async () => {
 		const closeModal = jest.fn();
-		const store = generateStore();
 
-		const { user } = setupTest(<CreateFilterModal t={t} onClose={(): void => closeModal()} />, {
-			store
-		});
+		const { user } = setupTest(<CreateFilterModal t={t} onClose={(): void => closeModal()} />, {});
 
 		expect(screen.getByTestId('filter-name')).toBeInTheDocument();
 		const filterName = screen.getByTestId('filter-name');
@@ -126,11 +116,9 @@ describe('create-filter-modal', () => {
 
 	test('junk folder is selectable', async () => {
 		const closeModal = jest.fn();
-		const store = generateStore();
+
 		populateFoldersStore();
-		const { user } = setupTest(<CreateFilterModal t={t} onClose={(): void => closeModal()} />, {
-			store
-		});
+		const { user } = setupTest(<CreateFilterModal t={t} onClose={(): void => closeModal()} />, {});
 		await user.click(screen.getByText(/settings\.keep_in_inbox/i));
 
 		await user.click(screen.getByText(/settings\.move_into_folder/i));

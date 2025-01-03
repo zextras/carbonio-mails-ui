@@ -33,7 +33,6 @@ import { TESTID_SELECTORS } from '../../../tests/constants';
 import { generateSoapConversationMessage } from '../../../tests/generators/api';
 import { generateConversation } from '../../../tests/generators/generateConversation';
 import { generateMessage } from '../../../tests/generators/generateMessage';
-import { generateStore } from '../../../tests/generators/store';
 import {
 	ConvActionRequest,
 	ConvActionResponse,
@@ -67,7 +66,6 @@ const aRandomMsgActionResponse: MsgActionResponse = {
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 const setupSearchViewTest = ({ query, viewBy }: Partial<SetupTest>) => {
-	const store = generateStore();
 	const queryChip: QueryChip = {
 		hasAvatar: false,
 		id: '0',
@@ -81,7 +79,6 @@ const setupSearchViewTest = ({ query, viewBy }: Partial<SetupTest>) => {
 	const settings = generateSettings(customSettings);
 	jest.spyOn(hooks, 'useUserSettings').mockReturnValue(settings);
 	return {
-		store,
 		settings,
 		queryChip
 	};
@@ -151,11 +148,9 @@ function fakeCounter(): { count: number; setCount: (value: number) => void } {
 
 describe('SearchView', () => {
 	describe('view by conversations', () => {
-		let store: ReturnType<typeof generateStore>;
 		let queryChip: QueryChip;
 		beforeEach(() => {
 			const searchSettings = setupSearchViewTest({ viewBy: 'conversation', query: 'hello' });
-			store = searchSettings.store;
 			queryChip = searchSettings.queryChip;
 		});
 
@@ -171,9 +166,7 @@ describe('SearchView', () => {
 				ResultsHeader: resultsHeader
 			};
 
-			setupTest(<SearchView {...searchViewProps} />, {
-				store
-			});
+			setupTest(<SearchView {...searchViewProps} />);
 			await searchInterceptor;
 
 			expect(await screen.findByText('label.results_for')).toBeInTheDocument();
@@ -191,9 +184,7 @@ describe('SearchView', () => {
 				ResultsHeader: resultsHeader
 			};
 
-			setupTest(<SearchView {...searchViewProps} />, {
-				store
-			});
+			setupTest(<SearchView {...searchViewProps} />);
 			await waitAndMakeConversationVisible('123');
 			const conversation = await screen.findByText('conversations Subject');
 			expect(conversation).toBeInTheDocument();
@@ -214,9 +205,7 @@ describe('SearchView', () => {
 				ResultsHeader: resultsHeader
 			};
 
-			setupTest(<SearchView {...searchViewProps} />, {
-				store
-			});
+			setupTest(<SearchView {...searchViewProps} />);
 			await waitAndMakeConversationVisible('123');
 			expect(await screen.findByText('conversations Subject')).toBeInTheDocument();
 			const chevron = await screen.findByTestId(`ToggleExpand`);
@@ -245,9 +234,7 @@ describe('SearchView', () => {
 				ResultsHeader: resultsHeader
 			};
 
-			const { user } = setupTest(<SearchView {...searchViewProps} />, {
-				store
-			});
+			const { user } = setupTest(<SearchView {...searchViewProps} />);
 			await waitAndMakeConversationVisible('123');
 			expect(await screen.findByText('conversations Subject')).toBeInTheDocument();
 			const conversationContainer = await screen.findByTestId(
@@ -281,9 +268,7 @@ describe('SearchView', () => {
 			const { count, setCount } = fakeCounter();
 			jest.spyOn(hooks, 'useAppContext').mockReturnValue({ count, setCount });
 
-			const { user } = setupTest(<SearchView {...searchViewProps} />, {
-				store
-			});
+			const { user } = setupTest(<SearchView {...searchViewProps} />);
 			await waitAndMakeConversationVisible('123');
 			const itemAvatar = await screen.findByTestId('conversation-list-item-avatar-123');
 			const avatar = within(itemAvatar).getByTestId('avatar');
@@ -306,9 +291,7 @@ describe('SearchView', () => {
 				ResultsHeader: resultsHeader
 			};
 			jest.spyOn(hooks, 'useAppContext').mockReturnValue(fakeCounter());
-			const { user } = setupTest(<SearchView {...searchViewProps} />, {
-				store
-			});
+			const { user } = setupTest(<SearchView {...searchViewProps} />);
 			await waitAndMakeConversationVisible('123');
 			const itemAvatar = await screen.findByTestId('conversation-list-item-avatar-123');
 			const avatar = within(itemAvatar).getByTestId('avatar');
@@ -363,7 +346,6 @@ describe('SearchView', () => {
 			};
 
 			setupTest(<SearchView {...searchViewProps} />, {
-				store,
 				initialEntries: ['/conversation/123']
 			});
 
@@ -380,11 +362,9 @@ describe('SearchView', () => {
 	});
 
 	describe('view by messages', () => {
-		let store: ReturnType<typeof generateStore>;
 		let queryChip: QueryChip;
 		beforeEach(() => {
 			const searchSettings = setupSearchViewTest({ viewBy: 'message', query: 'hello' });
-			store = searchSettings.store;
 			queryChip = searchSettings.queryChip;
 		});
 		it('should display messages when soap API fulfilled and settings is "display by message"', async () => {
@@ -402,9 +382,7 @@ describe('SearchView', () => {
 				ResultsHeader: resultsHeader
 			};
 
-			setupTest(<SearchView {...searchViewProps} />, {
-				store
-			});
+			setupTest(<SearchView {...searchViewProps} />);
 
 			await act(async () => {
 				await interceptor;
@@ -429,9 +407,7 @@ describe('SearchView', () => {
 				ResultsHeader: resultsHeader
 			};
 			jest.spyOn(hooks, 'useAppContext').mockReturnValue(fakeCounter());
-			const { user } = setupTest(<SearchView {...searchViewProps} />, {
-				store
-			});
+			const { user } = setupTest(<SearchView {...searchViewProps} />);
 			await waitFor(() => searchInterceptor);
 			await waitAndMakeMessageVisible('10');
 			const itemAvatar = await screen.findByTestId('message-list-item-avatar-10');
@@ -481,7 +457,6 @@ describe('SearchView', () => {
 			};
 
 			setupTest(<SearchView {...searchViewProps} />, {
-				store,
 				initialEntries: [`/message/${messageId}`]
 			});
 
@@ -521,9 +496,7 @@ describe('SearchView', () => {
 				createWindow: mockCreateWindow
 			};
 			spyUseGlobalExternalWindowManager.mockReturnValue(context);
-			const { user } = setupTest(<SearchView {...searchViewProps} />, {
-				store
-			});
+			const { user } = setupTest(<SearchView {...searchViewProps} />);
 
 			await act(async () => {
 				await interceptor;
@@ -570,9 +543,7 @@ describe('SearchView', () => {
 			};
 
 			jest.spyOn(useSelection, 'useSelection').mockReturnValue(mockedUseSelection);
-			const { user } = setupTest(<SearchView {...searchViewProps} />, {
-				store
-			});
+			const { user } = setupTest(<SearchView {...searchViewProps} />);
 			await waitFor(async () => searchInterceptor);
 
 			expect(await screen.findByText('label.results_for')).toBeInTheDocument();
@@ -589,8 +560,6 @@ describe('SearchView', () => {
 	});
 
 	it('should display a disabled Advanced Filters button when SearchDisabled is true', async () => {
-		const store = generateStore();
-
 		const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
 		const searchViewProps: SearchViewProps = {
 			useQuery: () => [[], noop],
@@ -598,9 +567,7 @@ describe('SearchView', () => {
 			ResultsHeader: resultsHeader
 		};
 
-		setupTest(<SearchView {...searchViewProps} />, {
-			store
-		});
+		setupTest(<SearchView {...searchViewProps} />);
 		const advancedFiltersButton = screen.getByRole('button', {
 			name: /label\.single_advanced_filter/i
 		});
@@ -609,7 +576,6 @@ describe('SearchView', () => {
 	});
 
 	it('should not call search API if query empty', async () => {
-		const store = generateStore();
 		const searchSpy = jest.spyOn(searchSoapApi, 'searchSoapApi');
 		const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
 		const searchViewProps: SearchViewProps = {
@@ -618,9 +584,7 @@ describe('SearchView', () => {
 			ResultsHeader: resultsHeader
 		};
 
-		setupTest(<SearchView {...searchViewProps} />, {
-			store
-		});
+		setupTest(<SearchView {...searchViewProps} />);
 
 		const advancedFiltersButton = screen.getByRole('button', {
 			name: /label\.single_advanced_filter/i
@@ -631,7 +595,6 @@ describe('SearchView', () => {
 	});
 
 	it('should call setSearchDisabled button if Search API fails with mail.QUERY_PARSE_ERROR', async () => {
-		const store = generateStore();
 		const interceptor = createSoapAPIInterceptor<SearchRequest, ErrorSoapBodyResponse>(
 			'Search',
 			buildSoapErrorResponseBody({
@@ -656,15 +619,12 @@ describe('SearchView', () => {
 			ResultsHeader: resultsHeader
 		};
 
-		setupTest(<SearchView {...searchViewProps} />, {
-			store
-		});
+		setupTest(<SearchView {...searchViewProps} />);
 		await interceptor;
 		await waitFor(() => expect(setSearchDisabled).toHaveBeenCalled());
 	});
 
 	it('should not call setSearchDisabled button if Search API fails with another error', async () => {
-		const store = generateStore();
 		const interceptor = createSoapAPIInterceptor<SearchRequest, ErrorSoapBodyResponse>(
 			'Search',
 			buildSoapErrorResponseBody({
@@ -685,9 +645,7 @@ describe('SearchView', () => {
 			ResultsHeader: resultsHeader
 		};
 
-		setupTest(<SearchView {...searchViewProps} />, {
-			store
-		});
+		setupTest(<SearchView {...searchViewProps} />);
 
 		await interceptor;
 		act(() => {
@@ -698,7 +656,6 @@ describe('SearchView', () => {
 	});
 
 	it('should route to message panel when clicking message in list', async () => {
-		const store = generateStore();
 		const interceptor = createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
 			m: [
 				getSoapMessage('10', { su: 'message 1 Subject' }),
@@ -728,9 +685,7 @@ describe('SearchView', () => {
 		jest.spyOn(useSelection, 'useSelection').mockReturnValue(mockedUseSelection);
 		jest.spyOn(hooks, 'useUserSettings').mockReturnValue(settings);
 		const spyReplaceHistory = jest.spyOn(hooks, 'replaceHistory');
-		const { user } = setupTest(<SearchView {...searchViewProps} />, {
-			store
-		});
+		const { user } = setupTest(<SearchView {...searchViewProps} />);
 
 		await act(async () => {
 			await interceptor;

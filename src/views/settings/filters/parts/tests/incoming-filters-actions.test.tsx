@@ -7,7 +7,6 @@
 
 import React from 'react';
 
-import { EnhancedStore } from '@reduxjs/toolkit';
 import { act, screen } from '@testing-library/react';
 import { useSnackbar } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
@@ -20,8 +19,6 @@ import {
 	setupTest
 } from '../../../../../carbonio-ui-commons/test/test-setup';
 import type { Folder } from '../../../../../carbonio-ui-commons/types';
-import { generateStore } from '../../../../../tests/generators/store';
-import { MailsStateType } from '../../../../../types';
 import { FilterListType } from '../../../../../types/filters';
 import { ListType } from '../actions';
 import IncomingFilterActions from '../incoming-filters-actions';
@@ -37,17 +34,15 @@ describe('incoming filters actions', () => {
 	describe('apply filters', () => {
 		const TEST_FOLDER_NAME = 'test-folder';
 		const OPEN_SELECT_FOLDER_ICON = 'icon: FolderOutline';
-		let store: EnhancedStore<MailsStateType>;
 
 		beforeEach(() => {
-			store = generateStore();
 			(useSnackbar as jest.Mock).mockReturnValue(createSnackbarSpy);
 			createSoapAPIInterceptor('ApplyFilterRules');
 		});
 
 		test('should disable apply filter if no filter is selected', async () => {
 			const props = propsWithIncomingFilter({ name: 'filter', isSelected: false });
-			setupTest(<IncomingFilterActions compProps={props} />, { store });
+			setupTest(<IncomingFilterActions compProps={props} />);
 
 			const applyFilterBtn = await screen.findByRole('button', { name: /filters\.apply/i });
 			expect(applyFilterBtn).toBeDisabled();
@@ -55,7 +50,7 @@ describe('incoming filters actions', () => {
 
 		test('should open a modal to search for a folder', async () => {
 			const props = propsWithIncomingFilter({ name: 'filter', isSelected: true });
-			const { user } = setupTest(<IncomingFilterActions compProps={props} />, { store });
+			const { user } = setupTest(<IncomingFilterActions compProps={props} />);
 
 			await act(() => user.click(screen.getByText(/filters\.apply/i)));
 			await act(() => user.click(screen.getByTestId(OPEN_SELECT_FOLDER_ICON)));
@@ -66,7 +61,7 @@ describe('incoming filters actions', () => {
 
 		test('should disable the select-folder button when no folder is selected', async () => {
 			const props = propsWithIncomingFilter({ name: 'filter', isSelected: true });
-			const { user } = setupTest(<IncomingFilterActions compProps={props} />, { store });
+			const { user } = setupTest(<IncomingFilterActions compProps={props} />);
 
 			await act(() => user.click(screen.getByText(/filters\.apply/i)));
 			await act(() => user.click(screen.getByTestId(OPEN_SELECT_FOLDER_ICON)));
@@ -78,7 +73,7 @@ describe('incoming filters actions', () => {
 		test('should add folder chip when a folder is selected', async () => {
 			mockFoldersToReturnASingleFolder(TEST_FOLDER_NAME);
 			const props = propsWithIncomingFilter({ name: 'filter', isSelected: true });
-			const { user } = setupTest(<IncomingFilterActions compProps={props} />, { store });
+			const { user } = setupTest(<IncomingFilterActions compProps={props} />);
 
 			await act(() => user.click(screen.getByText(/filters\.apply/i)));
 			await act(() => user.click(screen.getByTestId(OPEN_SELECT_FOLDER_ICON)));
@@ -95,7 +90,7 @@ describe('incoming filters actions', () => {
 		test('should apply filters and show the snackbar related to the process started', async () => {
 			mockFoldersToReturnASingleFolder(TEST_FOLDER_NAME);
 			const props = propsWithIncomingFilter({ name: 'filter', isSelected: true });
-			const { user } = setupTest(<IncomingFilterActions compProps={props} />, { store });
+			const { user } = setupTest(<IncomingFilterActions compProps={props} />);
 
 			await act(() => user.click(screen.getByText(/filters\.apply/i)));
 			await act(() => user.click(screen.getByTestId(OPEN_SELECT_FOLDER_ICON)));
