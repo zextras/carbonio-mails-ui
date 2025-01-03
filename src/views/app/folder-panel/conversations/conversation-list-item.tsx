@@ -19,19 +19,17 @@ import {
 	Tooltip
 } from '@zextras/carbonio-design-system';
 import { pushHistory, useUserSettings } from '@zextras/carbonio-shell-ui';
-import { debounce, filter, find, forEach, includes, isEmpty, reduce, uniqBy } from 'lodash';
+import { debounce, filter, forEach, includes, isEmpty, reduce, uniqBy } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { ConversationMessagesList } from './conversation-messages-list';
 import { ZIMBRA_STANDARD_COLORS } from '../../../../carbonio-ui-commons/constants';
-import { FOLDERS } from '../../../../carbonio-ui-commons/constants/folders';
 import { useTags } from '../../../../carbonio-ui-commons/store/zustand/tags';
 import { Tag } from '../../../../carbonio-ui-commons/types/tags';
 import { API_REQUEST_STATUS } from '../../../../constants';
 import { normalizeDropdownActionItem } from '../../../../helpers/actions';
-import { getFolderIdParts } from '../../../../helpers/folders';
 import { useConvActions } from '../../../../hooks/actions/use-conv-actions';
 import { useConvPreviewOnSeparatedWindowFn } from '../../../../hooks/actions/use-conv-preview-on-separated-window';
 import { useConvSetReadFn } from '../../../../hooks/actions/use-conv-set-read';
@@ -39,9 +37,7 @@ import { useTagDropdownItem } from '../../../../hooks/use-tag-dropdown-item';
 import { retrieveConversation } from '../../../../store/zustand/emails/hooks/hooks';
 import { useConversationStatus, useMessagesByIds } from '../../../../store/zustand/emails/store';
 import {
-	ConvMessage,
 	ConversationListItemProps,
-	IncompleteMessage,
 	TextReadValuesProps,
 	NormalizedConversation,
 	Conversation
@@ -290,7 +286,6 @@ export const ConversationListItem = memo(function ConversationListItem({
 		[conversation.tags, tagsFromStore]
 	);
 
-	const sortBy = useUserSettings()?.prefs?.zimbraPrefConversationOrder || 'dateDesc';
 	const zimbraPrefMarkMsgRead = useUserSettings()?.prefs?.zimbraPrefMarkMsgRead !== '-1';
 
 	const toggleOpen = useCallback(
@@ -359,33 +354,6 @@ export const ConversationListItem = memo(function ConversationListItem({
 	const subFragmentTooltipLabel = useMemo(
 		() => (!isEmpty(conversation.fragment) ? conversation.fragment : subject),
 		[subject, conversation.fragment]
-	);
-	const sortSign = useMemo(() => (sortBy === 'dateDesc' ? -1 : 1), [sortBy]);
-
-	// this is the array of all the messages of this conversation to render in this folder
-	const messagesToRender = useMemo(
-		() =>
-			uniqBy(
-				reduce<ConvMessage, IncompleteMessage[]>(
-					conversation.messages,
-					(acc, v) => {
-						const msg = find(messages, ['id', v.id]);
-
-						if (msg) {
-							// in trash, we show all messages of the conversation even if only one is deleted
-							if (getFolderIdParts(folderParent).id === FOLDERS.TRASH) {
-								return [...acc, msg];
-							}
-							// all other messages are valid and must be showed in the conversation
-							return [...acc, msg];
-						}
-						return acc;
-					},
-					[]
-				).sort((a, b) => (a.date && b.date ? sortSign * (a.date - b.date) : 1)),
-				'id'
-			),
-		[conversation, messages, folderParent, sortSign]
 	);
 
 	/**
@@ -533,7 +501,7 @@ export const ConversationListItem = memo(function ConversationListItem({
 					<ConversationMessagesList
 						active={activeItemId}
 						length={conversation.messagesInConversation}
-						messages={messagesToRender}
+						messages={messages}
 						conversationStatus={conversationStatus}
 						folderId={folderParent}
 						dragImageRef={dragImageRef}

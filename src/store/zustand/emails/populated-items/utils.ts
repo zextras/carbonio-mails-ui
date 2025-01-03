@@ -101,9 +101,12 @@ function useMessagesByIds(
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
 ): Array<IncompleteMessage | MailMessage> {
 	return useEmailsStore(({ populatedItemsSlice }: EmailsStoreState) =>
-		filter(populatedItemsSlice.messages, (message) => includes(ids, message.id))
+		ids
+			.map((id) => populatedItemsSlice.messages[id])
+			.filter((message): message is IncompleteMessage | MailMessage => !!message)
 	);
 }
+
 function useConversationsByIds(
 	ids: Array<string>,
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>

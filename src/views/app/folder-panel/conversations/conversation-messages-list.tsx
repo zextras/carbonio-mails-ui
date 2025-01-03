@@ -6,7 +6,7 @@
 
 import React, { memo, useMemo } from 'react';
 
-import { Button, Container, ListV2 } from '@zextras/carbonio-design-system';
+import { Button, Container, List } from '@zextras/carbonio-design-system';
 import { useAppContext } from '@zextras/carbonio-shell-ui';
 import { map, noop } from 'lodash';
 
@@ -101,5 +101,5 @@ export const ConversationMessagesList = memo(function ConversationMessagesList({
 		);
 	}
 
-	return <ListV2 style={{ paddingBottom: '0.25rem' }}>{listItems}</ListV2>;
+	return <List style={{ paddingBottom: '0.25rem' }}>{listItems}</List>;
 });
