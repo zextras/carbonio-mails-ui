@@ -6,7 +6,6 @@
 
 /* eslint-disable no-param-reassign */
 import produce from 'immer';
-import { forEach, some } from 'lodash';
 import { StoreApi, UseBoundStore } from 'zustand';
 
 import { CONVERSATION_INDEX_SLICE_INITIAL_STATE } from './conversations-index-slice';
@@ -49,18 +48,12 @@ function useConversationsIdsByFolder(
 		return folderConversationsIds;
 	}
 	const { conversationListIndex: conversationsIds } = conversationIndexSlice;
-	forEach(conversationsIds, (conversationId) => {
-		const wantedFolder = 'rid' in folder && folder?.rid ? `${folder.zid}:${folder.rid}` : folder.id;
-		if (
-			some(
-				populatedItemsSlice.conversations[conversationId].messages,
-				(message) => message.parent === wantedFolder
-			)
-		) {
-			folderConversationsIds.push(conversationId);
-		}
+	const wantedFolder = 'rid' in folder && folder?.rid ? `${folder.zid}:${folder.rid}` : folder.id;
+
+	return conversationsIds.filter((conversationId) => {
+		const messages = populatedItemsSlice.conversations[conversationId]?.messages || [];
+		return messages.some((message) => message.parent === wantedFolder);
 	});
-	return folderConversationsIds;
 }
 
 function updateConversationsResultsLoadingStatus(
