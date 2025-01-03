@@ -8,11 +8,11 @@ import React, { memo, ReactNode, useCallback, useMemo, useState } from 'react';
 
 import {
 	Badge,
+	Button,
 	Container,
 	ContainerProps,
 	Dropdown,
 	Icon,
-	IconButton,
 	Padding,
 	Row,
 	Text,
@@ -425,38 +425,12 @@ export const ConversationListItem = memo(function ConversationListItem({
 									<Badge
 										data-testid={`conversation-messages-count-${conversation.id}`}
 										value={getmsgToDisplayCount()}
-										backgroundColor={(textReadValues.badge === 'unread' && 'primary') || 'gray2'}
-										color={(textReadValues.badge === 'unread' && 'gray6') || 'gray0'}
+										backgroundColor={textReadValues.badge === 'unread' ? 'primary' : 'gray2'}
+										color={textReadValues.badge === 'unread' ? 'gray6' : 'gray0'}
 									/>
 								</Padding>
 							</Row>
 						)}
-
-						<Tooltip label={subFragmentTooltipLabel} overflow="break-word" maxWidth="60vw">
-							<Row
-								wrap="nowrap"
-								takeAvailableSpace
-								mainAlignment="flex-start"
-								crossAlignment="baseline"
-							>
-								<Text
-									data-testid="Subject"
-									weight={textReadValues.weight}
-									color={conversation.subject ? 'text' : 'secondary'}
-								>
-									{subject}
-								</Text>
-							</Row>
-						</Tooltip>
-						<Row>
-							<Padding right="extrasmall">
-								<Badge
-									data-testid={`conversation-messages-count-${conversation.id}`}
-									value={getmsgToDisplayCount()}
-									type={textReadValues.badge}
-								/>
-							</Padding>
-						</Row>
 						<Tooltip label={subFragmentTooltipLabel} overflow="break-word" maxWidth="60vw">
 							<Row
 								wrap="nowrap"
@@ -479,9 +453,13 @@ export const ConversationListItem = memo(function ConversationListItem({
 							)}
 							{conversation.messagesInConversation > 1 && (
 								<Tooltip label={toggleExpandButtonLabel}>
-									<IconButton
+									<Button
 										data-testid="ToggleExpand"
 										size="small"
+										shape="regular"
+										type="default"
+										labelColor="text"
+										backgroundColor="transparent"
 										icon={open ? 'ArrowIosUpward' : 'ArrowIosDownward'}
 										onClick={toggleOpen}
 									/>
