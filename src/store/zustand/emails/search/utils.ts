@@ -18,6 +18,7 @@ import {
 	SearchRequestStatus
 } from '../../../../types';
 import { POPULATED_ITEMS_SLICE_INITIAL_STATE } from '../populated-items/populated-items-slice';
+import { deleteMessagesFromConversation } from '../populated-items/utils';
 
 function resetSearchAndPopulatedItems(
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
@@ -122,6 +123,7 @@ function deleteMessagesFromSearch(
 			);
 			ids.forEach((id) => {
 				delete state.populatedItemsSlice.messages[id];
+				deleteMessagesFromConversation(ids, state);
 			});
 		})
 	);

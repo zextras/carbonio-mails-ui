@@ -22,6 +22,7 @@ import {
 	SearchRequestStatus
 } from '../../../../types';
 import { POPULATED_ITEMS_SLICE_INITIAL_STATE } from '../populated-items/populated-items-slice';
+import { deleteMessagesFromConversation } from '../populated-items/utils';
 
 function setMessages(
 	messages: Array<MailMessage | IncompleteMessage>,
@@ -205,6 +206,7 @@ function deleteMessagesFromMessageSlice(
 			);
 			ids.forEach((id) => {
 				delete state.populatedItemsSlice.messages[id];
+				deleteMessagesFromConversation(ids, state);
 			});
 		})
 	);
