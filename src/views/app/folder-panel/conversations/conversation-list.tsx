@@ -14,7 +14,7 @@ import { ConversationListComponent } from './conversation-list-component';
 import { useLoadMoreForConversationList } from './conversation-list-hooks';
 import { ConversationListItemComponent } from './conversation-list-item-component';
 import { FOLDERS } from '../../../../carbonio-ui-commons/constants/folders';
-import { useFolder } from '../../../../carbonio-ui-commons/store/zustand/folder/hooks';
+import { useFolder } from '../../../../carbonio-ui-commons/store/zustand/folder';
 import { API_REQUEST_STATUS, LIST_LIMIT } from '../../../../constants';
 import { getFolderIdParts } from '../../../../helpers/folders';
 import { parseMessageSortingOptions } from '../../../../helpers/sorting';
