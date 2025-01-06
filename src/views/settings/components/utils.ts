@@ -239,18 +239,6 @@ export const MsgsFromMeOpts = (): { label: string; value: string }[] => [
 	}
 ];
 
-export const ReadSignatureSettings = (): { label: string; value: string }[] => [
-	{ label: t('settings.msg_from_optn.inbox', 'Place in inbox'), value: 'dedupeNone' },
-	{
-		label: t('settings.msg_from_optn.inbox_if_cc', "Place in inbox if I'm in To: or Cc:"),
-		value: 'secondCopyifOnToOrCC'
-	},
-	{
-		label: t('settings.msg_from_optn.discard', 'Discard message automatically'),
-		value: 'dedupeAll'
-	}
-];
-
 export const getFontSizesOptions = (): string[] => [
 	'8pt',
 	'9pt',
