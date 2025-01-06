@@ -72,7 +72,7 @@ interface NewWindowProps {
 function getKeyFrameText(cssRule: CSSRuleType): string {
 	const tokens = ['@keyframes', cssRule.name ?? '', '{'];
 	Array.from(cssRule.cssRules ?? []).forEach((rule: CSSRuleType) => {
-		tokens.push((rule as CSSRuleType).keyText ?? '', '{', rule.style?.cssText ?? '', '}');
+		tokens.push(rule.keyText ?? '', '{', rule.style?.cssText ?? '', '}');
 	});
 	tokens.push('}');
 	return tokens.join(' ');
