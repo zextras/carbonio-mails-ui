@@ -71,33 +71,33 @@ const sendFromEditor = (
 
 	cancelableTimer.promise
 		.then(() => {
-			if (!editor || !editor.identityId) return;
-			sendMsgFromEditor({ editor })
-				.then((res) => {
-					if ('Fault' in res) {
-						const errorDescription: string = res.Fault.Reason.Text;
+			editor?.identityId &&
+				sendMsgFromEditor({ editor })
+					.then((res) => {
+						if ('Fault' in res) {
+							const errorDescription: string = res.Fault.Reason.Text;
+							useEditorsStore.getState().setSendProcessStatus(editorId, {
+								status: 'aborted',
+								abortReason: errorDescription
+							});
+							computeAndUpdateEditorStatus(editorId);
+							options?.onError && options.onError(errorDescription);
+						} else {
+							useEditorsStore.getState().setSendProcessStatus(editorId, {
+								status: 'completed'
+							});
+							computeAndUpdateEditorStatus(editorId);
+							options?.onComplete && options.onComplete();
+						}
+					})
+					.catch((err) => {
 						useEditorsStore.getState().setSendProcessStatus(editorId, {
 							status: 'aborted',
-							abortReason: errorDescription
+							abortReason: err
 						});
 						computeAndUpdateEditorStatus(editorId);
-						options?.onError && options.onError(errorDescription);
-					} else {
-						useEditorsStore.getState().setSendProcessStatus(editorId, {
-							status: 'completed'
-						});
-						computeAndUpdateEditorStatus(editorId);
-						options?.onComplete && options.onComplete();
-					}
-				})
-				.catch((err) => {
-					useEditorsStore.getState().setSendProcessStatus(editorId, {
-						status: 'aborted',
-						abortReason: err
+						options?.onError && options.onError(err);
 					});
-					computeAndUpdateEditorStatus(editorId);
-					options?.onError && options.onError(err);
-				});
 		})
 		.catch((err) => {
 			useEditorsStore.getState().setSendProcessStatus(editorId, {
