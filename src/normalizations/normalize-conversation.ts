@@ -60,7 +60,7 @@ export const normalizeConversation = ({
 			participants: conversation.e ? map(conversation.e, normalizeParticipantsFromSoap) : undefined,
 			subject: conversation.su,
 			fragment: conversation.fr,
-			read: !isNil(conversation.f) ? !/u/.test(conversation.f) : !(conversation.u > 0),
+			read: !isNil(conversation.f) ? !/u/.test(conversation.f) : conversation.u <= 0,
 			hasAttachment: !isNil(conversation.f) ? /a/.test(conversation.f) : undefined,
 			flagged: !isNil(conversation.f) ? /f/.test(conversation.f) : undefined,
 			urgent: !isNil(conversation.f) ? /!/.test(conversation.f) : undefined,
