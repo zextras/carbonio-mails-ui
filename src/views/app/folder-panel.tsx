@@ -5,7 +5,7 @@
  */
 /* eslint-disable no-nested-ternary */
 
-import React, { useEffect } from 'react';
+import React from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
 import { useAppContext } from '@zextras/carbonio-shell-ui';
@@ -21,16 +21,6 @@ import ShimmerList from '../search/shimmer-list';
 const FolderPanel = (): React.JSX.Element => {
 	const { folderId } = useParams<{ folderId: string }>();
 	const { isMessageView } = useAppContext<AppContext>();
-
-	useEffect(() => {
-		// TODO: CO-1725 is it needed?
-		if (folderId) {
-			// dispatch({
-			// 	type: 'conversations/setCurrentFolder',
-			// 	payload: folderId
-			// });
-		}
-	}, [folderId]);
 
 	return isNil(isMessageView) ? (
 		<ShimmerList />
