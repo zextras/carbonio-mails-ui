@@ -6,12 +6,12 @@
 
 import { act } from 'react';
 
+import { renderHook, waitFor } from '@testing-library/react';
 import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 
 import { useFolderStore } from '../../carbonio-ui-commons/store/zustand/folder';
 import { generateFolder } from '../../carbonio-ui-commons/test/mocks/folders/folders-generator';
 import { createSoapAPIInterceptor } from '../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
-import { setupHook } from '../../carbonio-ui-commons/test/test-setup';
 import { API_REQUEST_STATUS } from '../../constants';
 import {
 	resetMessagesAndPopulatedItems,
@@ -22,88 +22,74 @@ import { useFetchMessagesByFolder } from '../use-fetch-messages-by-folder';
 
 const folder = generateFolder({ id: '2' });
 jest.mock('../../store/zustand/emails/store', () => ({
+	...jest.requireActual('../../store/zustand/emails/store'),
 	setMessagesInEmailStore: jest.fn(),
 	resetMessagesAndPopulatedItems: jest.fn(),
 	updateMessagesResultsLoadingStatus: jest.fn(),
 	useMessagesIdsByFolder: jest.fn(),
 	useMessagesSlice: jest.fn()
 }));
-
 describe('useMessageListByFolder', () => {
 	it('should make search call with correct params', async () => {
 		const searchInterceptor = createSoapAPIInterceptor<SearchRequest>('Search');
 
 		useFolderStore.setState({ folders: { folderId: folder } });
-		setupHook(useFetchMessagesByFolder, {
-			initialProps: [folder.id]
-		});
 
-		const requestParams = await searchInterceptor;
+		renderHook(() => useFetchMessagesByFolder(folder.id));
 
 		await act(async () => {
-			jest.advanceTimersByTime(0);
-		});
-
-		expect(requestParams).toEqual({
-			_jsns: 'urn:zimbraMail',
-			fullConversation: 1,
-			limit: 100,
-			locale: {
-				_content: 'en'
-			},
-			needExp: 1,
-			offset: 0,
-			query: 'inId:"2"',
-			recip: '0',
-			sortBy: 'dateDesc',
-			types: 'message',
-			wantContent: 'full'
+			expect(await searchInterceptor).toEqual({
+				_jsns: 'urn:zimbraMail',
+				fullConversation: 1,
+				limit: 100,
+				locale: {
+					_content: 'en'
+				},
+				needExp: 1,
+				offset: 0,
+				query: 'inId:"2"',
+				recip: '0',
+				sortBy: 'dateDesc',
+				types: 'message',
+				wantContent: 'full'
+			});
 		});
 	});
 
 	it('should handle query parse errors', async () => {
-		const searchInterceptor = createSoapAPIInterceptor<SearchRequest, ErrorSoapBodyResponse>(
-			'Search',
-			{
-				Fault: {
-					Detail: {
-						Error: { Code: 'QUERY_PARSE_ERROR', Trace: 'trace' }
-					},
-					Reason: { Text: 'reason' },
-					Code: { Value: 'QUERY_PARSE_ERROR' }
-				}
+		createSoapAPIInterceptor<SearchRequest, ErrorSoapBodyResponse>('Search', {
+			Fault: {
+				Detail: {
+					Error: { Code: 'QUERY_PARSE_ERROR', Trace: 'trace' }
+				},
+				Reason: { Text: 'reason' },
+				Code: { Value: 'QUERY_PARSE_ERROR' }
 			}
-		);
-
-		setupHook(useFetchMessagesByFolder, { initialProps: [folder.id] });
-
-		await searchInterceptor;
-
-		await act(async () => {
-			jest.advanceTimersByTime(0);
 		});
 
-		expect(updateMessagesResultsLoadingStatus).toHaveBeenCalledWith(API_REQUEST_STATUS.error);
+		renderHook(() => useFetchMessagesByFolder(folder.id));
+
+		await waitFor(() => {
+			expect(updateMessagesResultsLoadingStatus).toHaveBeenCalledWith(API_REQUEST_STATUS.error);
+		});
 	});
 
 	it('should reset messages if searchResponse has no messages', async () => {
-		const searchInterceptor = createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
+		createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
 			more: false
 		});
-		setupHook(() => useFetchMessagesByFolder(folder.id));
+		renderHook(() => useFetchMessagesByFolder(folder.id));
 
-		await searchInterceptor;
-
-		await act(async () => {
-			jest.advanceTimersByTime(0);
+		await waitFor(() => {
+			expect(resetMessagesAndPopulatedItems).toHaveBeenCalled();
 		});
-
-		expect(resetMessagesAndPopulatedItems).toHaveBeenCalled();
-		expect(updateMessagesResultsLoadingStatus).toHaveBeenCalledWith(API_REQUEST_STATUS.fulfilled);
+		await waitFor(() => {
+			expect(updateMessagesResultsLoadingStatus).toHaveBeenCalledWith(API_REQUEST_STATUS.fulfilled);
+		});
 	});
 
 	it('should abort previous requests on folder change', async () => {
-		const searchInterceptor = createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
+		createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
 			more: false
 		});
 
@@ -117,17 +103,11 @@ describe('useMessageListByFolder', () => {
 
 		jest.spyOn(global, 'AbortController').mockImplementation(() => controller);
 
-		const { rerender } = setupHook(useFetchMessagesByFolder, {
-			initialProps: [folder.id]
+		const { rerender } = renderHook(useFetchMessagesByFolder, {
+			initialProps: folder.id
 		});
 
-		await searchInterceptor;
-
-		await act(async () => {
-			jest.advanceTimersByTime(0);
-		});
-
-		rerender(['3']);
+		rerender('3');
 
 		expect(mockAbort).toHaveBeenCalled();
 	});
