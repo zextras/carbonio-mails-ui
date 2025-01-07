@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { renderHook } from '@testing-library/react';
+import { renderHook, waitFor } from '@testing-library/react';
 
 import {
 	setSearchResultsByConversation,
@@ -26,11 +26,12 @@ import { generateMessage } from '../../../tests/generators/generateMessage';
 
 describe('emails store search slice', () => {
 	describe('resetSearchAndPopulatedItems', () => {
-		it('should reset the searches and populated items', () => {
+		it('should reset the searches and populated items', async () => {
 			setSearchResultsByConversation([generateConversation({ id: '1', messages: [] })], false);
 			updateConversationStatus('1', API_REQUEST_STATUS.fulfilled);
-			setMessagesInSearchSlice([generateMessage({ id: '100' })]);
-
+			await waitFor(() => {
+				setMessagesInSearchSlice([generateMessage({ id: '100' })]);
+			});
 			resetSearchAndPopulatedItems();
 
 			expect(renderHook(() => useConversationById('1')).result.current).toBeUndefined();
@@ -40,10 +41,11 @@ describe('emails store search slice', () => {
 	});
 
 	describe('setMessagesInSearchSlice', () => {
-		it('should set and return a message', () => {
+		it('should set and return a message', async () => {
 			const message = generateMessage({ id: '1' });
-			setMessagesInSearchSlice([message]);
-
+			await waitFor(() => {
+				setMessagesInSearchSlice([message]);
+			});
 			const { result } = renderHook(() => useMessageById('1'));
 
 			expect(result.current).toEqual(message);
@@ -51,7 +53,7 @@ describe('emails store search slice', () => {
 	});
 
 	describe('deleteConversationsFromSearch', () => {
-		it('should delete conversations from the state', () => {
+		it('should delete conversations from the state', async () => {
 			const conversation1Messages = [
 				generateMessage({ id: '1' }),
 				generateMessage({ id: '2' }),
@@ -61,8 +63,9 @@ describe('emails store search slice', () => {
 			const conversation2Messages = [generateMessage({ id: '4' }), generateMessage({ id: '5' })];
 			const conversation2 = generateConversation({ id: '2', messages: conversation2Messages });
 			setSearchResultsByConversation([conversation1, conversation2], false);
-			setMessagesInSearchSlice([...conversation1Messages, ...conversation2Messages]);
-
+			await waitFor(() => {
+				setMessagesInSearchSlice([...conversation1Messages, ...conversation2Messages]);
+			});
 			deleteConversationsFromSearch(['1']);
 
 			const { result } = renderHook(() => useSearchResults());
@@ -77,9 +80,10 @@ describe('emails store search slice', () => {
 	});
 
 	describe('appendMessagesToSearch', () => {
-		it('should append messages to the store', () => {
-			setMessagesInSearchSlice([generateMessage({ id: '1' })]);
-
+		it('should append messages to the store', async () => {
+			await waitFor(() => {
+				setMessagesInSearchSlice([generateMessage({ id: '1' })]);
+			});
 			appendMessagesToSearch([generateMessage({ id: '2' }), generateMessage({ id: '3' })], 0);
 
 			expect(renderHook(() => useMessageById('1')).result.current).toBeDefined();
@@ -89,15 +93,16 @@ describe('emails store search slice', () => {
 	});
 
 	describe('deleteMessagesFromSearch', () => {
-		it('should delete messages from populatedItems and messageIds', () => {
+		it('should delete messages from populatedItems and messageIds', async () => {
 			const messages = [
 				generateMessage({ id: '1' }),
 				generateMessage({ id: '2' }),
 				generateMessage({ id: '3' })
 			];
 			setSearchResultsByMessage(messages, false);
-			setMessagesInSearchSlice(messages);
-
+			await waitFor(() => {
+				setMessagesInSearchSlice(messages);
+			});
 			deleteMessagesFromSearch(['1', '2']);
 
 			const { result } = renderHook(() => useSearchResults());
