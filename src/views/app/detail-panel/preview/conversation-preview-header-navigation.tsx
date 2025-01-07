@@ -8,19 +8,19 @@ import React from 'react';
 import { useParams } from 'react-router-dom';
 
 import { NavigationIconButton } from './parts/navigation-icon-button';
-import { useConversationListByFolder } from '../../../../hooks/use-conversations-list-by-folder';
 import { usePreviewHeaderNavigation } from '../../../../hooks/use-preview-header-navigation';
+import { useConversationIndexSlice } from '../../../../store/zustand/emails/store';
 
 export const ConversationPreviewHeaderNavigation = (): React.JSX.Element => {
 	const { folderId, conversationId } = useParams<{ folderId: string; conversationId: string }>();
-	const { conversationIndexSlice } = useConversationListByFolder(folderId);
+	const { conversationListIndex, more, status } = useConversationIndexSlice();
 
 	const { previousActionItem, nextActionItem } = usePreviewHeaderNavigation({
-		itemIds: conversationIndexSlice.conversationListIndex,
-		hasMore: conversationIndexSlice.more,
+		itemIds: conversationListIndex,
+		hasMore: more,
 		folderId,
 		currentItemId: conversationId,
-		searchedInFolderStatus: conversationIndexSlice.status,
+		searchedInFolderStatus: status,
 		itemsType: 'conversation'
 	});
 
