@@ -51,6 +51,25 @@ describe('modify filter modal', () => {
 		expect(screen.getByText('Flagged')).toBeVisible();
 	});
 
+	it('should display existing filter with current title when modifying', async () => {
+		const store = generateStore();
+		setupTest(
+			<ModifyFilterModal
+				t={t}
+				onClose={jest.fn()}
+				setFetchIncomingFilters={jest.fn()}
+				setIncomingFilters={jest.fn()}
+				incomingFilters={[]}
+				selectedFilter={mockFilter({ name: 'Test Filter' })}
+			/>,
+			{
+				store
+			}
+		);
+		expect(screen.getByRole('textbox', { name: /settings\.filter_name\*/i })).toHaveValue(
+			'Test Filter'
+		);
+	});
 	it('should call ModifyFiltersRule API when clicking create button', async () => {
 		const store = generateStore();
 
