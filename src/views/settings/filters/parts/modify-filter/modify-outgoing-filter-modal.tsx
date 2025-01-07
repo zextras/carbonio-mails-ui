@@ -15,6 +15,7 @@ import React, {
 
 import { Checkbox, Container, Divider, Input, Padding, Row } from '@zextras/carbonio-design-system';
 import { useUserSettings } from '@zextras/carbonio-shell-ui';
+import { BooleanString } from '@zextras/carbonio-shell-ui/lib/types/account';
 import { TFunction } from 'i18next';
 import { findIndex, forEach, isEqual, map, omit, reduce } from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
@@ -27,9 +28,9 @@ import { capitalise } from '../../../../sidebar/utils';
 import { CreateFilterContext } from '../create-filter-context';
 import ModalFooter from '../create-filter-modal-footer';
 import DefaultCondition from '../create-filters-conditions/default';
+import { FilterActionsPanel } from '../filter-actions-panel';
 import { FilterConditionsPanel } from '../filter-conditions-panel';
 import { findRowKey, getTestComponent } from '../get-test-component';
-import FilterActionConditions from '../new-filter-action-conditions';
 import { getButtonInfo } from '../utils';
 
 type FilterType = {
@@ -61,11 +62,14 @@ const ModifyOutgoingFilterModal: FC<ComponentProps> = ({
 	const [activeFilter, setActiveFilter] = useState(false);
 	const [condition, setCondition] = useState('anyof');
 	const [dontProcessAddFilters, setDontProcessAddFilters] = useState(true);
-	const [tempActions, setTempActions] = useState([{ actionKeep: [{}], id: uuidv4() }]);
+	const [tempActions, setTempActions] = useState<FilterActions>([
+		{ actionKeep: [{}], id: uuidv4() }
+	]);
 	const [copyRequiredFilters, setCopyRequiredFilters] = useState({});
 	const [updateRequiredFilters, setUpdateRequiredFilters] = useState(true);
 	const [reFetch, setReFetch] = useState(false);
-	const { zimbraFeatureMailForwardingInFiltersEnabled } = useUserSettings().attrs;
+	const zimbraFeatureMailForwardingInFiltersEnabled = useUserSettings().attrs
+		.zimbraFeatureMailForwardingInFiltersEnabled as BooleanString;
 
 	const [newFilters, setNewFilters] = useState([
 		{
@@ -131,8 +135,8 @@ const ModifyOutgoingFilterModal: FC<ComponentProps> = ({
 	const requiredFilters = useMemo(
 		() => ({
 			filterActions: dontProcessAddFilters
-				? ([{ ...omit(finalActions, 'id'), actionStop: [{}] }] as FilterActions[])
-				: ([{ ...omit(finalActions, 'id') }] as FilterActions[]),
+				? ([{ ...omit(finalActions, 'id'), actionStop: [{}] }] as FilterActions)
+				: ([{ ...omit(finalActions, 'id') }] as FilterActions),
 			active: activeFilter,
 			name: filterName,
 			filterTests: [
@@ -169,7 +173,8 @@ const ModifyOutgoingFilterModal: FC<ComponentProps> = ({
 			filterName,
 			tempActions,
 			setTempActions,
-			zimbraFeatureMailForwardingInFiltersEnabled
+			zimbraFeatureMailForwardingInFiltersEnabled,
+			isIncoming: false
 		}),
 		[t, activeFilter, filterName, tempActions, zimbraFeatureMailForwardingInFiltersEnabled]
 	);
@@ -353,7 +358,7 @@ const ModifyOutgoingFilterModal: FC<ComponentProps> = ({
 					<FilterConditionsPanel compProps={filterTestConditionRowProps} />
 					<Padding top="medium" />
 					<Divider />
-					<FilterActionConditions compProps={filterActionProps} />
+					<FilterActionsPanel compProps={filterActionProps} />
 				</Row>
 
 				<ModalFooter

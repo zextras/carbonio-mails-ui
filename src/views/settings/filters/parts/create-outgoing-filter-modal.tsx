@@ -7,14 +7,15 @@ import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
 
 import { Checkbox, Container, Divider, Input, Padding, Row } from '@zextras/carbonio-design-system';
 import { useUserSettings } from '@zextras/carbonio-shell-ui';
+import { BooleanString } from '@zextras/carbonio-shell-ui/lib/types/account';
 import { TFunction } from 'i18next';
 import { map, omit, reduce } from 'lodash';
 
 import { CreateFilterContext } from './create-filter-context';
 import ModalFooter from './create-filter-modal-footer';
 import DefaultCondition from './create-filters-conditions/default';
+import { FilterActionsPanel } from './filter-actions-panel';
 import { FilterConditionsPanel } from './filter-conditions-panel';
-import FilterActionConditions from './new-filter-action-conditions';
 import { getButtonInfo } from './utils';
 import ModalHeader from '../../../../carbonio-ui-commons/components/modals/modal-header';
 import { useUiUtilities } from '../../../../hooks/use-ui-utilities';
@@ -41,8 +42,9 @@ const CreateOutgoingFilterModal: FC<ComponentProps> = ({
 	const [activeFilter, setActiveFilter] = useState(false);
 	const [condition, setCondition] = useState('anyof');
 	const [dontProcessAddFilters, setDontProcessAddFilters] = useState(true);
-	const [tempActions, setTempActions] = useState([{ actionKeep: [{}] }]);
-	const { zimbraFeatureMailForwardingInFiltersEnabled } = useUserSettings().attrs;
+	const [tempActions, setTempActions] = useState<FilterActions>([{ actionKeep: [{}] }]);
+	const zimbraFeatureMailForwardingInFiltersEnabled = useUserSettings().attrs
+		.zimbraFeatureMailForwardingInFiltersEnabled as BooleanString;
 
 	const finalActions = useMemo(
 		() =>
@@ -104,8 +106,8 @@ const CreateOutgoingFilterModal: FC<ComponentProps> = ({
 	const requiredFilters = useMemo(
 		() => ({
 			filterActions: dontProcessAddFilters
-				? ([{ ...finalActions, actionStop: [{}] }] as FilterActions[])
-				: ([{ ...finalActions }] as FilterActions[]),
+				? ([{ ...finalActions, actionStop: [{}] }] as FilterActions)
+				: ([{ ...finalActions }] as FilterActions),
 			active: activeFilter,
 			name: filterName,
 			filterTests: [
@@ -206,7 +208,7 @@ const CreateOutgoingFilterModal: FC<ComponentProps> = ({
 					<FilterConditionsPanel compProps={filterTestConditionRowProps} />
 					<Padding top="medium" />
 					<Divider />
-					<FilterActionConditions compProps={filterActionProps} />
+					<FilterActionsPanel compProps={filterActionProps} />
 				</Row>
 
 				<ModalFooter

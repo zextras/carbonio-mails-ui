@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { TFunction } from 'i18next';
-import { forEach } from 'lodash';
+import { find, forEach } from 'lodash';
 
 import { FilterActions, MarkAsOption } from '../../../../types';
 
@@ -339,9 +339,9 @@ export const getSocialOptions = (t: TFunction): SocialOption[] => [
 
 type ConditionAction = {
 	label: string;
-	value: 'redirectToAddress';
+	value: 'actionRedirect';
 };
-const getConditionAction = (
+const getConditionRedirectAction = (
 	t: TFunction,
 	zimbraFeatureMailForwardingInFiltersEnabled: 'TRUE' | 'FALSE'
 ): ConditionAction[] => {
@@ -349,7 +349,7 @@ const getConditionAction = (
 		return [
 			{
 				label: t('settings.redirect_to_address', 'Redirect to address'),
-				value: 'redirectToAddress'
+				value: 'actionRedirect'
 			}
 		];
 	}
@@ -370,25 +370,25 @@ export const getActionOptions = (
 		label: isIncoming
 			? t('settings.keep_in_inbox', 'Keep in Inbox')
 			: t('settings.keep_in_sent', 'Keep in Sent'),
-		value: isIncoming ? 'inbox' : 'sent'
+		value: 'actionKeep'
 	},
 	{
 		label: t('settings.discard', 'Discard'),
-		value: 'discard'
+		value: 'actionDiscard'
 	},
 	{
 		label: t('settings.move_into_folder', 'Move Into Folder'),
-		value: 'moveIntoFolder'
+		value: 'actionFileInto'
 	},
 	{
 		label: t('settings.tag_with', 'Tag with'),
-		value: 'tagWith'
+		value: 'actionTag'
 	},
 	{
 		label: t('settings.mark_as', 'Mark as'),
-		value: 'markAs'
+		value: 'actionFlag'
 	},
-	...getConditionAction(t, zimbraFeatureMailForwardingInFiltersEnabled)
+	...getConditionRedirectAction(t, zimbraFeatureMailForwardingInFiltersEnabled)
 ];
 
 export const getMarkAsOptions = (t: TFunction): Array<MarkAsOption> => [
@@ -480,10 +480,12 @@ export function findDefaultValue<T>(
 	list: Array<ObjectWithLabelValue<T>>,
 	key: T
 ): ObjectWithLabelValue<T> | undefined {
-	return list.find((item) => item.value === key);
+	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+	// @ts-ignore
+	return find(list, { value: key });
 }
 type Filters = {
-	filterActions: FilterActions[];
+	filterActions: FilterActions;
 };
 
 export const getButtonInfo = (
@@ -493,14 +495,14 @@ export const getButtonInfo = (
 	isCreate = true
 ): [boolean, string] => {
 	const keys = Object.keys(filters.filterActions[0]);
-	const actions = filters.filterActions[0];
+	const action = filters.filterActions[0];
 	if (filterName.length === 0) {
 		return [true, t('settings.label.filter_name_required', 'Filter name is required')];
 	}
-	if (keys.includes('actionTag')) {
+	if ('actionTag' in action) {
 		let isEmpty = false;
-		forEach(actions.actionTag, (action) => {
-			if (action.tagName === '') isEmpty = true;
+		forEach(action.actionTag, (actionTag) => {
+			if (actionTag.tagName === '') isEmpty = true;
 		});
 		if (isEmpty) {
 			return [
@@ -512,9 +514,9 @@ export const getButtonInfo = (
 			];
 		}
 	}
-	if (keys.includes('actionFileInto')) {
+	if ('actionFileInto' in action) {
 		let isEmpty = false;
-		forEach(actions.actionFileInto, (files) => {
+		forEach(action.actionFileInto, (files) => {
 			if (files.folderPath === '') isEmpty = true;
 		});
 		if (isEmpty) {
@@ -527,9 +529,9 @@ export const getButtonInfo = (
 			];
 		}
 	}
-	if (keys.includes('actionRedirect')) {
+	if ('actionRedirect' in action) {
 		let isEmpty = false;
-		forEach(actions.actionRedirect, (address) => {
+		forEach(action.actionRedirect, (address) => {
 			if (address.a === '') isEmpty = true;
 		});
 		if (isEmpty) {

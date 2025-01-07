@@ -6,7 +6,7 @@
 import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
 
 import { Button, Container, Padding, Row, Text, Tooltip } from '@zextras/carbonio-design-system';
-import { omit } from 'lodash';
+import { noop } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -19,281 +19,256 @@ import { getActionOptions, getMarkAsOptions } from './utils';
 import { CONTACT_TYPES } from '../../../../carbonio-ui-commons/integrations/constants';
 import { ContactInputItem } from '../../../../carbonio-ui-commons/integrations/types';
 import { Folder } from '../../../../carbonio-ui-commons/types/folder';
-import { MailFilterTag } from '../../../../types';
-
-type ActionFileInto = {
-	folderPath?: string;
-};
-// FIXME: this type was introduced just to start understanding what this code is doing but it is clear it is trying to represent a code that does too many things
-export type TempAction = {
-	id?: string;
-	a?: string;
-	label?: string;
-	value?: string;
-	actionKeep?: Array<unknown>;
-	actionStop?: Array<unknown>;
-	actionRedirect?: Array<unknown>;
-	actionTag?: Array<unknown>;
-	actionFileInto?: Array<ActionFileInto>;
-	actionDiscard?: Array<unknown>;
-	tagName?: string;
-	flagName?: string;
-	folderPath?: string;
-};
-
-// FIXME: what is "comp" supposed to be?
-type CompProps = {
-	isIncoming: boolean;
-	tempActions: Array<TempAction>;
-	setTempActions: (tempActions: Array<TempAction>) => void;
-	zimbraFeatureMailForwardingInFiltersEnabled: 'TRUE' | 'FALSE';
-};
+import { FilterAction, MailFilterTag, MarkAsOption } from '../../../../types';
 
 type FilterActionRowProps = {
-	tmpFilter: Record<string, [TempAction]>;
-	index: number;
-	compProps: CompProps;
+	mailForwardingEnabled: 'TRUE' | 'FALSE';
+	isIncomingFilter: boolean;
 	tagOptions?: Array<MailFilterTag>;
+	defaultAction: FilterAction;
+	onActionSwitch: (action: FilterAction) => void;
+	onDefaultActionValueChange: (action: FilterAction) => void;
+	onRemoveAction: () => void;
+	disableRemove: boolean;
+	onAddNewAction: (action: FilterAction) => void;
 };
 
+type ActiveOption =
+	| 'actionTag'
+	| 'actionKeep'
+	| 'actionFlag'
+	| 'actionRedirect'
+	| 'actionFileInto'
+	| 'actionDiscard';
+
 export const FilterActionRow: FC<FilterActionRowProps> = ({
-	tmpFilter,
-	index,
-	compProps,
-	tagOptions
+	isIncomingFilter,
+	mailForwardingEnabled,
+	tagOptions,
+	defaultAction,
+	onAddNewAction,
+	onRemoveAction,
+	onActionSwitch,
+	disableRemove,
+	onDefaultActionValueChange
 }): ReactElement => {
-	const { isIncoming, tempActions, setTempActions, zimbraFeatureMailForwardingInFiltersEnabled } =
-		compProps;
-	const [activeIndex, setActiveIndex] = useState(0);
 	const [isRedirectToActionRemoved, setIsRedirectToActionRemoved] = useState(false);
 	const [t] = useTranslation();
-	const actionOptions = useMemo(
-		() => getActionOptions(t, zimbraFeatureMailForwardingInFiltersEnabled, isIncoming ?? false),
-		[t, zimbraFeatureMailForwardingInFiltersEnabled, isIncoming]
-	);
 	const markAsOptions = useMemo(() => getMarkAsOptions(t), [t]);
+	const actionOptions = useMemo(
+		() => getActionOptions(t, mailForwardingEnabled, isIncomingFilter ?? false),
+		[t, mailForwardingEnabled, isIncomingFilter]
+	);
 	const [tag, setTag] = useState<Array<MailFilterTag>>([]);
 
-	const addFilterCondition = useCallback(() => {
-		const previousTempActions = tempActions.slice();
-		previousTempActions.push({ actionKeep: [{}], actionStop: [{}], id: uuidv4() });
-		setTempActions(previousTempActions);
-	}, [tempActions, setTempActions]);
-
-	const [activeActionOption, setActiveActionOption] = useState('inbox');
-	const showMarksAsBtn = useMemo(() => activeActionOption === 'markAs', [activeActionOption]);
+	const [activeActionOption, setActiveActionOption] = useState<ActiveOption>('actionKeep');
 	const showRedirectToAddrsInput = useMemo(
-		() => activeActionOption === 'redirectToAddress',
+		() => activeActionOption === 'actionRedirect',
 		[activeActionOption]
 	);
+	const showBrowseBtn = useMemo(
+		() => activeActionOption === 'actionFileInto',
+		[activeActionOption]
+	);
+	const showTagOptions = useMemo(() => activeActionOption === 'actionTag', [activeActionOption]);
+
 	const [contacts, setContacts] = useState<ContactInputItem[]>([]);
 
-	const onChange = useCallback(
+	const onRedirectToChange = useCallback(
 		(users: ContactInputItem[]): void => {
-			const previous = tempActions.slice();
 			const email = users?.length > 0 ? users[0].value.email : '';
-			previous[index] = {
+			onDefaultActionValueChange({
 				actionRedirect: [{ a: email }],
 				id: uuidv4()
-			};
-			setContacts(users);
-			setTempActions(previous);
+			});
 		},
-		[index, setTempActions, tempActions]
+		[onDefaultActionValueChange]
 	);
 
 	const defaultValue = useMemo(() => {
-		const action = Object.keys(omit(tmpFilter, 'id'))[0];
-		if (action === 'actionRedirect' && zimbraFeatureMailForwardingInFiltersEnabled === 'FALSE') {
+		if ('actionRedirect' in defaultAction && mailForwardingEnabled === 'FALSE') {
 			setIsRedirectToActionRemoved(true);
-			const previous = tempActions.slice();
-			previous[index] = { actionKeep: [{}], id: previous[index].id };
-			setTempActions(previous);
+			onDefaultActionValueChange({ actionKeep: [{}] });
+			return {
+				label: isIncomingFilter
+					? t('settings.keep_in_inbox', 'Keep in Inbox')
+					: t('settings.keep_in_sent', 'Keep in Sent'),
+				value: 'actionKeep'
+			};
+		}
+		if ('actionDiscard' in defaultAction) {
+			setActiveActionOption('actionDiscard');
+			return {
+				label: t('settings.discard', 'Discard'),
+				value: 'actionDiscard'
+			};
+		}
+		if ('actionKeep' in defaultAction) {
+			setActiveActionOption('actionKeep');
 			return actionOptions[0];
 		}
-		switch (action) {
-			case 'actionDiscard': {
-				return actionOptions[1];
-			}
-			case 'actionKeep': {
-				return actionOptions[0];
-			}
-			case 'actionFileInto': {
-				setActiveActionOption('moveIntoFolder');
-				return actionOptions[2];
-			}
-			case 'actionFlag': {
-				setActiveActionOption('markAs');
-				return actionOptions[4];
-			}
-			case 'actionTag': {
-				setActiveActionOption('tagWith');
-				setTag(
-					tmpFilter[action][0].tagName
-						? [
-								{
-									label: `${tmpFilter[action][0].tagName}`
-								}
-							]
-						: []
-				);
-				return actionOptions[3];
-			}
-			case 'actionRedirect': {
-				setActiveActionOption('redirectToAddress');
-				const email = tmpFilter[action][0].a;
-				if (email) {
-					setContacts([
-						{
-							id: email,
-							label: email,
-							value: { id: email, email, type: CONTACT_TYPES.CONTACT }
-						}
-					]);
-				} else {
-					setContacts([]);
-				}
-				return actionOptions[5];
-			}
-			default:
-				return actionOptions[0];
+		// TODO: check me, what is the meaning of having just a stop action?
+		if ('actionStop' in defaultAction) {
+			return actionOptions[0];
 		}
+		if ('actionFileInto' in defaultAction) {
+			setActiveActionOption('actionFileInto');
+			return {
+				label: t('settings.move_into_folder', 'Move Into Folder'),
+				value: 'actionFileInto'
+			};
+		}
+		if ('actionFlag' in defaultAction) {
+			setActiveActionOption('actionFlag');
+			return {
+				label: t('settings.mark_as', 'Mark as'),
+				value: 'actionFlag'
+			};
+		}
+		if ('actionRedirect' in defaultAction) {
+			setActiveActionOption('actionRedirect');
+			const email = defaultAction.actionRedirect[0].a;
+			if (email) {
+				setContacts([
+					{
+						id: email,
+						label: email,
+						value: { id: email, email, type: CONTACT_TYPES.CONTACT }
+					}
+				]);
+			} else {
+				setContacts([]);
+			}
+			return {
+				label: t('settings.redirect_to_address', 'Redirect to address'),
+				value: 'actionRedirect'
+			};
+		}
+		setActiveActionOption('actionTag');
+		const { tagName } = defaultAction.actionTag[0];
+		setTag(
+			tagName
+				? [
+						{
+							label: tagName
+						}
+					]
+				: []
+		);
+		return {
+			label: t('settings.tag_with', 'Tag with'),
+			value: 'actionTag'
+		};
 	}, [
-		tmpFilter,
-		zimbraFeatureMailForwardingInFiltersEnabled,
-		tempActions,
-		index,
-		setTempActions,
+		defaultAction,
+		mailForwardingEnabled,
+		t,
+		onDefaultActionValueChange,
+		isIncomingFilter,
 		actionOptions
 	]);
 
-	const defaultMarkAsOption = useMemo(() => {
-		const action = Object.keys(omit(tmpFilter, 'id'))[0];
-		return tmpFilter[action][0].flagName === 'flagged' ? markAsOptions[1] : markAsOptions[0];
-	}, [tmpFilter, markAsOptions]);
-
-	const showBrowseBtn = useMemo(
-		() => activeActionOption === 'moveIntoFolder',
-		[activeActionOption]
-	);
-
-	const removeFilterCondition = useCallback(
-		(indexToRemove: number) => (): void => {
-			const previousTempActions = tempActions.slice();
-			previousTempActions.splice(indexToRemove, 1);
-			setTempActions(previousTempActions);
-		},
-		[tempActions, setTempActions]
-	);
-
-	const disableRemove = useMemo(() => tempActions.length === 1, [tempActions]);
 	const onRemove = useMemo(
-		() => (disableRemove ? (): null => null : removeFilterCondition(index)),
-		[disableRemove, removeFilterCondition, index]
+		() => (disableRemove ? (): null => null : onRemoveAction),
+		[disableRemove, onRemoveAction]
 	);
-	const onActionOptionChange = useCallback(
-		(str: string) => {
+	const onSwitchAction = useCallback(
+		(str: ActiveOption) => {
+			let newAction: FilterAction = defaultAction;
 			switch (str) {
-				case 'discard': {
-					const previous = tempActions.slice();
-					previous[index] = { id: previous[index].id, actionDiscard: [{}] };
-					setTempActions(previous);
+				case 'actionDiscard': {
+					newAction = { actionDiscard: [{}] };
 					break;
 				}
-				case 'inbox': {
-					const previous = tempActions.slice();
-					previous[index] = { actionKeep: [{}], id: previous[index].id };
-					setTempActions(previous);
+				case 'actionFlag': {
+					newAction = {
+						actionFlag: [{ flagName: markAsOptions?.[0].value.actionFlag[0].flagName }]
+					};
 					break;
 				}
-				case 'tagWith': {
-					const previous = tempActions.slice();
-					if (!previous[index].actionTag) {
-						previous[index] = {
-							id: previous[index]?.id,
+				case 'actionKeep': {
+					newAction = { actionKeep: [{}] };
+					break;
+				}
+				case 'actionTag': {
+					if (!('actionTag' in defaultAction)) {
+						newAction = {
 							actionTag: [{ tagName: '' }]
 						};
-						setTempActions(previous);
 						setTag([]);
 					}
-
 					break;
 				}
-				case 'moveIntoFolder': {
-					const previous = tempActions.slice();
-					if (!previous[index].actionFileInto) {
-						previous[index] = {
-							id: previous[index]?.id,
+				case 'actionFileInto': {
+					if (!('actionFileInto' in defaultAction)) {
+						newAction = {
 							actionFileInto: [{ folderPath: '' }]
 						};
 					}
-					setTempActions(previous);
 					break;
 				}
-				case 'redirectToAddress': {
-					const previous = tempActions.slice();
-					if (!previous[index].actionRedirect) {
-						previous[index] = {
-							id: previous[index]?.id,
+				case 'actionRedirect': {
+					if (!('actionRedirect' in defaultAction)) {
+						newAction = {
 							actionRedirect: [{ a: '' }]
 						};
 						setContacts([]);
 					}
-					setTempActions(previous);
 					break;
 				}
 				default:
+					newAction = { actionKeep: [{}] };
+					break;
 			}
 			if (isRedirectToActionRemoved) {
 				setIsRedirectToActionRemoved(false);
 			}
 			setActiveActionOption(str);
+			onActionSwitch(newAction);
 		},
-		[index, isRedirectToActionRemoved, setTempActions, tempActions]
+		[defaultAction, isRedirectToActionRemoved, markAsOptions, onActionSwitch]
 	);
-
-	const showTagOptions = useMemo(() => activeActionOption === 'tagWith', [activeActionOption]);
-
-	const onSelectFolder = useCallback(() => {
-		setActiveIndex(index);
-	}, [setActiveIndex, index]);
 
 	const onTagChange = useCallback(
 		(chip: MailFilterTag[]) => {
-			const previous = tempActions.slice();
 			if (chip.length > 0) {
 				const requiredTag = chip.length > 1 ? chip[1] : chip[0];
 				setTag([requiredTag]);
-				previous[index] = { id: previous[index]?.id, actionTag: [{ tagName: requiredTag.label }] };
+				onDefaultActionValueChange({
+					actionTag: [{ tagName: requiredTag.label }]
+				});
 			} else {
-				previous[index] = { id: previous[index]?.id, actionTag: [{ tagName: '' }] };
+				onDefaultActionValueChange({ actionTag: [{ tagName: '' }] });
 				setTag([]);
 			}
-			setTempActions(previous);
 		},
-		[setTag, tempActions, setTempActions, index]
+		[onDefaultActionValueChange]
 	);
 
 	const handleMarkAsOptionChange = useCallback(
-		(option: { label: string; value: any }) => {
-			const previous = tempActions.slice();
-			previous[index] = option;
-			setTempActions(previous);
+		(value: MarkAsOption['value']) => {
+			onDefaultActionValueChange(value);
 		},
-		[tempActions, index, setTempActions]
+		[onDefaultActionValueChange]
 	);
 
-	const confirmAction = useCallback(
+	const confirmMoveToFolder = useCallback(
 		(folderDestination: Folder | undefined) => {
-			const previous = tempActions.slice();
-			previous[activeIndex] = {
-				id: previous[activeIndex]?.id,
+			onDefaultActionValueChange({
 				actionFileInto: [{ folderPath: `${folderDestination?.absFolderPath}` }]
-			};
-			setTempActions(previous);
+			});
 		},
-		[tempActions, activeIndex, setTempActions]
+		[onDefaultActionValueChange]
 	);
+
+	const onAddingNewAction = useCallback((): void => {
+		onAddNewAction({ actionKeep: [{}], actionStop: [{}], id: uuidv4() });
+	}, [onAddNewAction]);
+
+	const defaultMoveToFolder =
+		'actionFileInto' in defaultAction
+			? { name: defaultAction.actionFileInto[0].folderPath }
+			: undefined;
 
 	return (
 		<Container
@@ -309,38 +284,36 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 						items={actionOptions}
 						background="gray5"
 						label={t('settings.actions', 'Actions')}
-						onChange={onActionOptionChange}
+						onChange={onSwitchAction}
 						defaultSelection={defaultValue}
 					/>
 				</Row>
-				{isRedirectToActionRemoved &&
-					(defaultValue.value === 'inbox' || defaultValue.value === 'sent') && (
-						<Row padding={{ right: 'small' }} minWidth="12.5rem">
-							<Text size="medium" color="info">
-								{t('label.admin_disabled_action', 'The Admin disabled the redirect action')}
-							</Text>
-						</Row>
-					)}
+				{isRedirectToActionRemoved && defaultValue.value === 'actionKeep' && (
+					<Row padding={{ right: 'small' }} minWidth="12.5rem">
+						<Text size="medium" color="info">
+							{t('label.admin_disabled_action', 'The Admin disabled the redirect action')}
+						</Text>
+					</Row>
+				)}
+
 				{showBrowseBtn && (
 					<MovetoFolder
-						destination={
-							tempActions[0]?.actionFileInto?.[0]
-								? { name: tempActions[0].actionFileInto[0].folderPath }
-								: undefined
-						}
-						onSelectFolder={onSelectFolder}
-						onConfirmDestination={confirmAction}
+						destination={defaultMoveToFolder}
+						onSelectFolder={noop}
+						onConfirmDestination={confirmMoveToFolder}
 					/>
 				)}
-				{showMarksAsBtn && (
+				{'actionFlag' in defaultAction && (
 					<MarkAs
+						selected={defaultAction.actionFlag[0]}
 						options={markAsOptions}
 						onChange={handleMarkAsOptionChange}
-						selected={defaultMarkAsOption}
 					/>
 				)}
 
-				{showRedirectToAddrsInput && <RedirectTo defaultValue={contacts} onChange={onChange} />}
+				{showRedirectToAddrsInput && (
+					<RedirectTo defaultValue={contacts} onChange={onRedirectToChange} />
+				)}
 
 				{showTagOptions && (
 					<ShowTag
@@ -353,7 +326,7 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 			</Row>
 			<Container orientation="horizontal" mainAlignment="flex-end" width="auto">
 				<Tooltip label={t('settings.add_action', 'Add new action')} placement="top">
-					<Button icon="PlusOutline" onClick={addFilterCondition} color="primary" type="outlined" />
+					<Button icon="PlusOutline" onClick={onAddingNewAction} color="primary" type="outlined" />
 				</Tooltip>
 				<Padding left="small">
 					<Tooltip label={t('settings.remove_action', 'Remove this action')} placement="top">

@@ -11,19 +11,24 @@ import { MarkAsOption } from '../../../../../types';
 import CustomSelect from '../custom-select';
 
 type MarkAsProps = {
-	options: Array<MarkAsOption>;
-	onChange: (option: MarkAsOption) => void;
-	selected: MarkAsOption;
+	onChange: (option: MarkAsOption['value']) => void;
+	options: MarkAsOption[];
+	selected?: { flagName?: string };
 };
 
-export const MarkAs = ({ options, onChange, selected }: MarkAsProps): React.JSX.Element => (
-	<Row padding={{ right: 'small' }} minWidth="12.5rem">
-		<CustomSelect
-			items={options}
-			background="gray5"
-			label=""
-			onChange={onChange}
-			defaultSelection={selected}
-		/>
-	</Row>
-);
+export const MarkAs = ({ onChange, selected, options }: MarkAsProps): React.JSX.Element => {
+	const defaultSelection = options.find(
+		(option) => option.value.actionFlag[0].flagName === selected?.flagName
+	);
+	return (
+		<Row padding={{ right: 'small' }} minWidth="12.5rem">
+			<CustomSelect
+				items={options}
+				background="gray5"
+				label=""
+				onChange={onChange}
+				defaultSelection={defaultSelection}
+			/>
+		</Row>
+	);
+};
