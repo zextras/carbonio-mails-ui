@@ -18,7 +18,7 @@ import {
 	updateMessagesResultsLoadingStatus
 } from '../../store/zustand/emails/store';
 import { SearchRequest, SearchResponse } from '../../types';
-import { useMessageListByFolder } from '../use-message-list-by-folder';
+import { useFetchMessagesByFolder } from '../use-message-list-by-folder';
 
 const folder = generateFolder({ id: '2' });
 jest.mock('../../store/zustand/emails/store', () => ({
@@ -34,7 +34,7 @@ describe('useMessageListByFolder', () => {
 		const searchInterceptor = createSoapAPIInterceptor<SearchRequest>('Search');
 
 		useFolderStore.setState({ folders: { folderId: folder } });
-		setupHook(useMessageListByFolder, {
+		setupHook(useFetchMessagesByFolder, {
 			initialProps: [folder.id]
 		});
 
@@ -75,7 +75,7 @@ describe('useMessageListByFolder', () => {
 			}
 		);
 
-		setupHook(useMessageListByFolder, { initialProps: [folder.id] });
+		setupHook(useFetchMessagesByFolder, { initialProps: [folder.id] });
 
 		await searchInterceptor;
 
@@ -90,7 +90,7 @@ describe('useMessageListByFolder', () => {
 		const searchInterceptor = createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
 			more: false
 		});
-		setupHook(() => useMessageListByFolder(folder.id));
+		setupHook(() => useFetchMessagesByFolder(folder.id));
 
 		await searchInterceptor;
 
@@ -117,7 +117,7 @@ describe('useMessageListByFolder', () => {
 
 		jest.spyOn(global, 'AbortController').mockImplementation(() => controller);
 
-		const { rerender } = setupHook(useMessageListByFolder, {
+		const { rerender } = setupHook(useFetchMessagesByFolder, {
 			initialProps: [folder.id]
 		});
 

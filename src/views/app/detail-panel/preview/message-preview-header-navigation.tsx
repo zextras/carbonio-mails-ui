@@ -8,12 +8,12 @@ import React from 'react';
 import { useParams } from 'react-router-dom';
 
 import { NavigationIconButton } from './parts/navigation-icon-button';
-import { useMessageListByFolder } from '../../../../hooks/use-message-list-by-folder';
+import { useFetchMessagesByFolder } from '../../../../hooks/use-message-list-by-folder';
 import { usePreviewHeaderNavigation } from '../../../../hooks/use-preview-header-navigation';
 
 export const MessagePreviewHeaderNavigation = (): React.JSX.Element => {
 	const { folderId, messageId } = useParams<{ folderId: string; messageId: string }>();
-	const { messageIndexSlice } = useMessageListByFolder(folderId);
+	const { messageIndexSlice } = useFetchMessagesByFolder(folderId);
 
 	const { previousActionItem, nextActionItem } = usePreviewHeaderNavigation({
 		itemIds: messageIndexSlice.messageListIndex,
