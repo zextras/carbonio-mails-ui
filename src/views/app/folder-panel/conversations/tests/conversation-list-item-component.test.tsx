@@ -5,7 +5,7 @@
  */
 import React from 'react';
 
-import { fireEvent, screen } from '@testing-library/react';
+import { act, fireEvent, screen, waitFor } from '@testing-library/react';
 import { noop } from 'lodash';
 
 import { FOLDERS } from '../../../../../carbonio-ui-commons/constants/folders';
@@ -38,7 +38,9 @@ describe.each`
 				isSingleMessageConversation: false,
 				messages: messages as Array<ConvMessage>
 			});
-			setConversationsInEmailStore([conversation], false);
+			await waitFor(() => {
+				setConversationsInEmailStore([conversation], false);
+			});
 			setMessagesInEmailStore(messages, false);
 			const messageCount = conversation.messages.length;
 
@@ -57,8 +59,13 @@ describe.each`
 
 			setupTest(<ConversationListItem {...props} />);
 			const badge = await screen.findByTestId(`conversation-messages-count-${conversation.id}`);
-			expect(badge).toBeVisible();
-			expect(badge).toHaveTextContent(`${messageCount}`);
+
+			await act(async () => {
+				expect(badge).toBeVisible();
+			});
+			await act(async () => {
+				expect(badge).toHaveTextContent(`${messageCount}`);
+			});
 		});
 
 		test.each`
@@ -132,9 +139,13 @@ describe.each`
 
 				const dateLabel = screen.queryByTestId('DateLabel');
 				if (assertion.value) {
-					expect(dateLabel).toBeVisible();
+					await act(async () => {
+						expect(dateLabel).toBeVisible();
+					});
 				} else {
-					expect(dateLabel).not.toBeInTheDocument();
+					await act(async () => {
+						expect(dateLabel).not.toBeInTheDocument();
+					});
 				}
 			}
 		);
@@ -174,10 +185,16 @@ describe.each`
 
 				const subjectLabel = screen.queryByTestId('Subject');
 				if (assertion.value) {
-					expect(subjectLabel).toBeVisible();
-					expect(subjectLabel).toHaveTextContent(subject);
+					await act(async () => {
+						expect(subjectLabel).toBeVisible();
+					});
+					await act(async () => {
+						expect(subjectLabel).toHaveTextContent(subject);
+					});
 				} else {
-					expect(subjectLabel).not.toBeInTheDocument();
+					await act(async () => {
+						expect(subjectLabel).not.toBeInTheDocument();
+					});
 				}
 			}
 		);
@@ -217,10 +234,16 @@ describe.each`
 
 				const subjectLabel = screen.queryByTestId('Subject');
 				if (assertion.value) {
-					expect(subjectLabel).toBeVisible();
-					expect(subjectLabel).toHaveTextContent('<No Subject>');
+					await act(async () => {
+						expect(subjectLabel).toBeVisible();
+					});
+					await act(async () => {
+						expect(subjectLabel).toHaveTextContent('<No Subject>');
+					});
 				} else {
-					expect(subjectLabel).not.toBeInTheDocument();
+					await act(async () => {
+						expect(subjectLabel).not.toBeInTheDocument();
+					});
 				}
 			}
 		);
@@ -258,9 +281,13 @@ describe.each`
 
 				const senderLabel = screen.queryByTestId('participants-name-label');
 				if (assertion.value) {
-					expect(senderLabel).toBeVisible();
+					await act(async () => {
+						expect(senderLabel).toBeVisible();
+					});
 				} else {
-					expect(senderLabel).not.toBeInTheDocument();
+					await act(async () => {
+						expect(senderLabel).not.toBeInTheDocument();
+					});
 				}
 			}
 		);
@@ -298,7 +325,9 @@ describe.each`
 				setupTest(<ConversationListItem {...props} />);
 
 				const senderLabel = screen.queryByTestId('participants-name-label');
-				expect(senderLabel).toHaveTextContent(labelContent);
+				await act(async () => {
+					expect(senderLabel).toHaveTextContent(labelContent);
+				});
 			}
 		);
 
@@ -333,9 +362,15 @@ describe.each`
 			setConversationsInEmailStore([conversation], false);
 			setupTest(<ConversationListItem {...props} />);
 			const senderLabel = screen.queryByTestId('participants-name-label');
-			expect(senderLabel).toHaveTextContent('mario');
-			expect(senderLabel).toHaveTextContent('luigi');
-			expect(senderLabel).toHaveTextContent('bowser');
+			await act(async () => {
+				expect(senderLabel).toHaveTextContent('mario');
+			});
+			await act(async () => {
+				expect(senderLabel).toHaveTextContent('luigi');
+			});
+			await act(async () => {
+				expect(senderLabel).toHaveTextContent('bowser');
+			});
 		});
 
 		test('(case #9) if the conversation contains more than 1 message then a chevron must be visible', async () => {
@@ -382,7 +417,9 @@ describe.each`
 
 			setConversationsInEmailStore([conversation], false);
 			setupTest(<ConversationListItem {...props} />);
-			expect(screen.queryByTestId('ToggleExpand')).not.toBeInTheDocument();
+			await act(async () => {
+				expect(screen.queryByTestId('ToggleExpand')).not.toBeInTheDocument();
+			});
 		});
 	});
 
