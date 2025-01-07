@@ -6,7 +6,7 @@
 
 import React from 'react';
 
-import { screen, waitFor, within } from '@testing-library/react';
+import { act, screen, waitFor, within } from '@testing-library/react';
 import { map } from 'lodash';
 
 import { FOLDERS } from '../../../../../carbonio-ui-commons/constants/folders';
@@ -37,12 +37,14 @@ describe('ConversationsMultipleSelectionActions', () => {
 
 			expect(screen.getByTestId('icon: EmailOutline')).toBeVisible();
 		});
-		it('should display "mark as read" action if any selected items is unread', () => {
-			updateConversationsOnly([
-				generateConversation({ id: '1', isRead: true }),
-				generateConversation({ id: '2', isRead: false }),
-				generateConversation({ id: '3', isRead: true })
-			]);
+		it('should display "mark as read" action if any selected items is unread', async () => {
+			await act(async () => {
+				updateConversationsOnly([
+					generateConversation({ id: '1', isRead: true }),
+					generateConversation({ id: '2', isRead: false }),
+					generateConversation({ id: '3', isRead: true })
+				]);
+			});
 
 			setupTest(
 				<ConversationsMultipleSelectionActions
@@ -56,12 +58,14 @@ describe('ConversationsMultipleSelectionActions', () => {
 		});
 	});
 	describe('Delete action', () => {
-		it('should display "delete" action', () => {
-			updateConversationsOnly([
-				generateConversation({ id: '1' }),
-				generateConversation({ id: '2' }),
-				generateConversation({ id: '3' })
-			]);
+		it('should display "delete" action', async () => {
+			await act(async () => {
+				updateConversationsOnly([
+					generateConversation({ id: '1' }),
+					generateConversation({ id: '2' }),
+					generateConversation({ id: '3' })
+				]);
+			});
 			setupTest(
 				<ConversationsMultipleSelectionActions
 					selectedConversationsIds={['1', '2']}
@@ -75,11 +79,13 @@ describe('ConversationsMultipleSelectionActions', () => {
 	});
 	describe('More actions', () => {
 		it('should contain "add flag" action if at least one conversation is not flagged', async () => {
-			updateConversationsOnly([
-				generateConversation({ id: '1', isFlagged: true }),
-				generateConversation({ id: '2', isFlagged: false }),
-				generateConversation({ id: '3', isFlagged: true })
-			]);
+			await act(async () => {
+				updateConversationsOnly([
+					generateConversation({ id: '1', isFlagged: true }),
+					generateConversation({ id: '2', isFlagged: false }),
+					generateConversation({ id: '3', isFlagged: true })
+				]);
+			});
 			const { user } = setupTest(
 				<ConversationsMultipleSelectionActions
 					selectedConversationsIds={['1', '2']}
@@ -132,11 +138,13 @@ describe('ConversationsMultipleSelectionActions', () => {
 			expect(within(actionsDropdown).getByTestId('icon: MoveOutline')).toBeVisible();
 		});
 		it('should contain "delete permanently" action when in trash folder', async () => {
-			updateConversationsOnly([
-				generateConversation({ id: '1' }),
-				generateConversation({ id: '2' }),
-				generateConversation({ id: '3' })
-			]);
+			await act(async () => {
+				updateConversationsOnly([
+					generateConversation({ id: '1' }),
+					generateConversation({ id: '2' }),
+					generateConversation({ id: '3' })
+				]);
+			});
 			setupTest(
 				<ConversationsMultipleSelectionActions
 					selectedConversationsIds={['1', '2']}
