@@ -19,7 +19,6 @@ import {
 import { MessageIndexSliceState } from '../types';
 
 export const useFetchMessagesByFolder = (folderId: string): MessageIndexSliceState => {
-
 	const { prefs } = useUserSettings();
 	const prefLocale = useMemo(() => prefs.zimbraPrefLocale, [prefs.zimbraPrefLocale]);
 
@@ -45,11 +44,6 @@ export const useFetchMessagesByFolder = (folderId: string): MessageIndexSliceSta
 
 				handleSearchSoapApiResults({ searchResponse });
 			} catch (error) {
-				if (signal?.aborted) {
-					console.log('API call aborted');
-				} else {
-					console.error('Error fetching messages:', error);
-				}
 				updateMessagesResultsLoadingStatus(API_REQUEST_STATUS.error);
 			} finally {
 				updateMessagesResultsLoadingStatus(API_REQUEST_STATUS.fulfilled);
