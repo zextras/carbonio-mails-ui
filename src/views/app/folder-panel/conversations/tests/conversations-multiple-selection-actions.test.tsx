@@ -6,7 +6,7 @@
 
 import React from 'react';
 
-import { screen, within } from '@testing-library/react';
+import { screen, waitFor, within } from '@testing-library/react';
 import { map } from 'lodash';
 
 import { FOLDERS } from '../../../../../carbonio-ui-commons/constants/folders';
@@ -19,12 +19,14 @@ import { ConversationsMultipleSelectionActions } from '../conversations-multiple
 
 describe('ConversationsMultipleSelectionActions', () => {
 	describe('Mark as read action', () => {
-		it('should display "mark as unread" action if all selected items are read', () => {
-			updateConversationsOnly([
-				generateConversation({ id: '1', isRead: true }),
-				generateConversation({ id: '2', isRead: true }),
-				generateConversation({ id: '3', isRead: true })
-			]);
+		it('should display "mark as unread" action if all selected items are read', async () => {
+			await waitFor(() => {
+				updateConversationsOnly([
+					generateConversation({ id: '1', isRead: true }),
+					generateConversation({ id: '2', isRead: true }),
+					generateConversation({ id: '3', isRead: true })
+				]);
+			});
 			setupTest(
 				<ConversationsMultipleSelectionActions
 					selectedConversationsIds={['1', '2']}
