@@ -38,15 +38,19 @@ const useEmailsStore = create<
 	...createConversationIndexSlice(set, get, ...a),
 	...createPopulatedItemsSlice(set, get, ...a),
 
-	queue: [], // Holds the tasks to be executed
-	isExecuting: false, // Tracks if execution is in progress
+	queue: [],
+	isExecuting: false,
 
 	// Add a task to the queue
 	addTask: (task): void => {
+		if (typeof task !== 'function') {
+			console.error('Invalid task. Task must be a function that returns a Promise.');
+			return;
+		}
+
 		const { queue, isExecuting } = get();
 		set({ queue: [...queue, task] });
 
-		// Start executing tasks if not already in progress
 		if (!isExecuting) {
 			get().executeTasks();
 		}
@@ -57,28 +61,32 @@ const useEmailsStore = create<
 		const { isExecuting } = get();
 
 		if (isExecuting) {
-			// Guard against overlapping executions
 			return;
 		}
 
 		set({ isExecuting: true });
 
-		while (get().queue.length > 0) {
-			const [currentTask, ...restQueue] = get().queue;
+		try {
+			while (get().queue.length > 0) {
+				const { queue } = get();
+				const [currentTask, ...restQueue] = queue;
 
-			try {
-				// Execute the current task
-				currentTask();
-			} catch (error) {
-				console.error('Task execution failed:', error);
-			} finally {
-				// Update the queue
 				set({ queue: restQueue });
-			}
-		}
 
-		// Mark execution as complete
-		set({ isExecuting: false });
+				if (typeof currentTask === 'function') {
+					try {
+						// eslint-disable-next-line no-await-in-loop
+						await currentTask();
+					} catch (error) {
+						console.error('Task execution failed:', error);
+					}
+				} else {
+					console.warn('Skipping invalid task:', currentTask);
+				}
+			}
+		} finally {
+			set({ isExecuting: false });
+		}
 	}
 }));
 

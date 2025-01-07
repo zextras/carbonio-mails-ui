@@ -95,7 +95,9 @@ describe('Searches store hooks', () => {
 				subject: 'Test Conversation'
 			});
 			setSearchResultsByConversation([conversation], false);
-			updateConversationStatus(conversation.id, API_REQUEST_STATUS.pending);
+			await waitFor(() => {
+				updateConversationStatus(conversation.id, API_REQUEST_STATUS.pending);
+			});
 			const response: SearchConvResponse = {
 				m: [generateConvMessageFromAPI({ id: '10' }), generateConvMessageFromAPI({ id: '2' })],
 				more: false,
@@ -145,7 +147,9 @@ describe('Searches store hooks', () => {
 				subject: 'Test Message'
 			});
 			setSearchResultsByMessage([message], false);
-			updateMessageStatus(message.id, API_REQUEST_STATUS.pending);
+			await waitFor(() => {
+				updateMessageStatus(message.id, API_REQUEST_STATUS.pending);
+			});
 			const response: GetMsgResponse = {
 				m: [generateCompleteMessageFromAPI({ id: '1' })]
 			};
