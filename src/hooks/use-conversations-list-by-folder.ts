@@ -18,36 +18,39 @@ import {
 import { ConversationIndexSliceState } from '../types';
 
 /**
- *
  * Manages the state and logic for retrieving and maintaining a list of conversation indices
  * for a specific folder. Fetches conversations via `searchSoapApi` on folder change.
- *
  */
 export const useConversationListByFolder = (folderId: string): ConversationIndexSliceState => {
-	const settings = useUserSettings();
-	const prefLocale = useMemo(
-		() => settings.prefs.zimbraPrefLocale,
-		[settings.prefs.zimbraPrefLocale]
-	);
+	const { prefs } = useUserSettings();
+	const prefLocale = useMemo(() => prefs.zimbraPrefLocale, [prefs.zimbraPrefLocale]);
 
-	const previousFolderId = useRef<string>('');
+	const previousFolderId = useRef<string | null>(null);
 
 	const conversationIndexSlice = useConversationIndexSlice();
-	const conversationsIds = useConversationsIdsByFolder(folderId);
+	const conversationListIndex = useConversationsIdsByFolder(folderId);
 
-	const firstSearchCallback = useCallback(
-		async (abortSignal: AbortSignal | undefined) => {
-			updateConversationsResultsLoadingStatus(API_REQUEST_STATUS.pending);
-			const searchResponse = await searchSoapApi({
-				folderId,
-				limit: LIST_LIMIT.INITIAL_LIMIT,
-				types: 'conversation',
-				offset: 0,
-				recip: '0',
-				locale: prefLocale,
-				abortSignal
-			});
-			handleSearchSoapApiResults({ searchResponse });
+	const fetchConversations = useCallback(
+		async (signal: AbortSignal | undefined) => {
+			try {
+				updateConversationsResultsLoadingStatus(API_REQUEST_STATUS.pending);
+
+				const searchResponse = await searchSoapApi({
+					folderId,
+					limit: LIST_LIMIT.INITIAL_LIMIT,
+					types: 'conversation',
+					offset: 0,
+					recip: '0',
+					locale: prefLocale,
+					abortSignal: signal
+				});
+
+				handleSearchSoapApiResults({ searchResponse });
+			} catch (error) {
+				updateConversationsResultsLoadingStatus(API_REQUEST_STATUS.error);
+			} finally {
+				updateConversationsResultsLoadingStatus(API_REQUEST_STATUS.fulfilled);
+			}
 		},
 		[folderId, prefLocale]
 	);
@@ -55,17 +58,25 @@ export const useConversationListByFolder = (folderId: string): ConversationIndex
 	useEffect(() => {
 		const controller = new AbortController();
 		const { signal } = controller;
+
 		if (previousFolderId.current !== folderId) {
 			previousFolderId.current = folderId;
-			firstSearchCallback(signal);
+			fetchConversations(signal);
 		}
-		return () => {
-			previousFolderId.current = '';
-			controller.abort();
-		};
-	}, [firstSearchCallback, folderId]);
 
-	return {
-		conversationIndexSlice: { ...conversationIndexSlice, conversationListIndex: conversationsIds }
-	};
+		return () => {
+			controller.abort();
+			previousFolderId.current = null;
+		};
+	}, [fetchConversations, folderId]);
+
+	return useMemo(
+		() => ({
+			conversationIndexSlice: {
+				...conversationIndexSlice,
+				conversationListIndex
+			}
+		}),
+		[conversationIndexSlice, conversationListIndex]
+	);
 };
