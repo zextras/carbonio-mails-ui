@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { renderHook } from '@testing-library/react';
+import { act, renderHook } from '@testing-library/react';
 
 import {
 	appendConversations,
@@ -31,7 +31,7 @@ import { generateMessage } from '../../../tests/generators/generateMessage';
 
 describe('store-populated-items-slice', () => {
 	describe('useConversationById', () => {
-		it('should set and return a conversation', () => {
+		it('should set and return a conversation', async () => {
 			const conversation = generateConversation({ id: '1' });
 			setSearchResultsByConversation([conversation], false);
 
@@ -42,12 +42,12 @@ describe('store-populated-items-slice', () => {
 	});
 
 	describe('useConversationStatus', () => {
-		it('should get undefined if conversation loading status not present', () => {
+		it('should get undefined if conversation loading status not present', async () => {
 			const { result } = renderHook(() => useConversationStatus('123'));
 
 			expect(result.current).toBeUndefined();
 		});
-		it('should set and get conversation status if value present', () => {
+		it('should set and get conversation status if value present', async () => {
 			updateConversationStatus('123', API_REQUEST_STATUS.fulfilled);
 
 			const { result } = renderHook(() => useConversationStatus('123'));
@@ -57,7 +57,7 @@ describe('store-populated-items-slice', () => {
 	});
 
 	describe('useMessageById', () => {
-		it('should update populated store messages', () => {
+		it('should update populated store messages', async () => {
 			const message = generateMessage({ id: '1' });
 			updateMessages([message]);
 
@@ -79,7 +79,9 @@ describe('store-populated-items-slice', () => {
 			setSearchResultsByConversation([conversation1, conversation2], false);
 			setMessagesInSearchSlice([...conversation1Messages, ...conversation2Messages]);
 
-			updateMessages([generateMessage({ id: '100' })]);
+			await act(async () => {
+				updateMessages([generateMessage({ id: '100' })]);
+			});
 
 			const { result: conversation2StoreMessages } = renderHook(() => useConversationMessages('2'));
 			const messages2 = conversation2StoreMessages.current;
@@ -90,27 +92,31 @@ describe('store-populated-items-slice', () => {
 	});
 
 	describe('getSearchResultsLoadingStatus', () => {
-		it('should update the search loading status when updateSearchResultsLoadingStatus is called', () => {
+		it('should update the search loading status when updateSearchResultsLoadingStatus is called', async () => {
 			setSearchResultsByConversation([generateConversation({ id: '1', messages: [] })], false);
 			const { result } = renderHook(() => getSearchResultsLoadingStatus());
 
 			expect(result.current).toBe(API_REQUEST_STATUS.fulfilled);
 
-			renderHook(() => updateSearchResultsLoadingStatus(API_REQUEST_STATUS.pending));
+			await act(async () => {
+				updateSearchResultsLoadingStatus(API_REQUEST_STATUS.pending);
+			});
 			const { result: searchStatusAfterUpdate } = renderHook(() => getSearchResultsLoadingStatus());
 
 			expect(searchStatusAfterUpdate.current).toBe(API_REQUEST_STATUS.pending);
 		});
 	});
 	describe('appendConversations', () => {
-		it('should append conversations to the store when appendConversations is called', () => {
+		it('should append conversations to the store when appendConversations is called', async () => {
 			setSearchResultsByConversation([generateConversation({ id: '1', messages: [] })], false);
 
-			appendConversations(
-				[generateConversation({ id: '2' }), generateConversation({ id: '3' })],
-				0,
-				false
-			);
+			await act(async () => {
+				appendConversations(
+					[generateConversation({ id: '2' }), generateConversation({ id: '3' })],
+					0,
+					false
+				);
+			});
 
 			expect(renderHook(() => useConversationById('1')).result.current).toBeDefined();
 			expect(renderHook(() => useConversationById('2')).result.current).toBeDefined();
@@ -118,7 +124,7 @@ describe('store-populated-items-slice', () => {
 		});
 	});
 	describe('updateMessageStatus', () => {
-		it('should set message status if value present', () => {
+		it('should set message status if value present', async () => {
 			updateMessageStatus('1', API_REQUEST_STATUS.fulfilled);
 
 			const { result } = renderHook(() => useMessageStatus('1'));
@@ -127,7 +133,7 @@ describe('store-populated-items-slice', () => {
 		});
 	});
 	describe('updateConversationsOnly', () => {
-		it('should apply changes correctly', () => {
+		it('should apply changes correctly', async () => {
 			const conversation = generateConversation({
 				id: '1',
 				tags: ['tag1']
@@ -140,16 +146,20 @@ describe('store-populated-items-slice', () => {
 				tags: []
 			};
 
-			renderHook(() => updateConversationsOnly([newConversation]));
+			await act(async () => {
+				updateConversationsOnly([newConversation]);
+			});
 			const { result } = renderHook(() => useConversationById('1'));
 			expect(result.current.tags).toEqual([]);
 		});
 	});
 	describe('updateMessagesOnly', () => {
-		it('should not unset fields on message', () => {
+		it('should not unset fields on message', async () => {
 			setMessagesInSearchSlice([generateMessage({ id: '1', folderId: FOLDERS.INBOX })]);
 
-			updateMessagesOnly([generateMessage({ id: '1', folderId: undefined })]);
+			await act(async () => {
+				updateMessagesOnly([generateMessage({ id: '1', folderId: undefined })]);
+			});
 
 			const { result } = renderHook(() => useMessageById('1'));
 
@@ -157,7 +167,7 @@ describe('store-populated-items-slice', () => {
 		});
 	});
 	describe('updateMessagesOnly', () => {
-		it('should apply changes correctly', () => {
+		it('should apply changes correctly', async () => {
 			const message1 = generateMessage({ id: '1', tags: ['tag1'] });
 			const message2 = generateMessage({ id: '2', tags: ['tag2'] });
 			setSearchResultsByMessage([message1, message2], false);
@@ -165,7 +175,9 @@ describe('store-populated-items-slice', () => {
 			const newMessage1 = { ...message1, tags: [] };
 			const newMessage2 = { ...message2, tags: [] };
 
-			renderHook(() => updateMessagesOnly([newMessage1, newMessage2]));
+			await act(async () => {
+				updateMessagesOnly([newMessage1, newMessage2]);
+			});
 			const { result: resultMessage1 } = renderHook(() => useMessageById('1'));
 			const { result: resultMessage2 } = renderHook(() => useMessageById('2'));
 			expect(resultMessage1.current).toEqual(newMessage1);
