@@ -19,7 +19,7 @@ import { useFolder } from '../../../../carbonio-ui-commons/store/zustand/folder/
 import { API_REQUEST_STATUS, LIST_LIMIT } from '../../../../constants';
 import { getFolderIdParts } from '../../../../helpers/folders';
 import { parseMessageSortingOptions } from '../../../../helpers/sorting';
-import { useFetchMessagesByFolder } from '../../../../hooks/use-message-list-by-folder';
+import { useFetchMessagesByFolder } from '../../../../hooks/use-fetch-messages-by-folder';
 import { useSelection } from '../../../../hooks/use-selection';
 import type { AppContext } from '../../../../types';
 

@@ -8,7 +8,7 @@ import React from 'react';
 import { useParams } from 'react-router-dom';
 
 import { NavigationIconButton } from './parts/navigation-icon-button';
-import { useFetchMessagesByFolder } from '../../../../hooks/use-message-list-by-folder';
+import { useFetchMessagesByFolder } from '../../../../hooks/use-fetch-messages-by-folder';
 import { usePreviewHeaderNavigation } from '../../../../hooks/use-preview-header-navigation';
 
 export const MessagePreviewHeaderNavigation = (): React.JSX.Element => {

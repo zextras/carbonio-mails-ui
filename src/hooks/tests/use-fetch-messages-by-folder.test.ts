@@ -18,7 +18,7 @@ import {
 	updateMessagesResultsLoadingStatus
 } from '../../store/zustand/emails/store';
 import { SearchRequest, SearchResponse } from '../../types';
-import { useFetchMessagesByFolder } from '../use-message-list-by-folder';
+import { useFetchMessagesByFolder } from '../use-fetch-messages-by-folder';
 
 const folder = generateFolder({ id: '2' });
 jest.mock('../../store/zustand/emails/store', () => ({
