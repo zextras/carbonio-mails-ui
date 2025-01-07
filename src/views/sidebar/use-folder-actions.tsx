@@ -18,10 +18,10 @@ import { FolderActionsType, FOLDERS } from '../../carbonio-ui-commons/constants/
 import type { Folder } from '../../carbonio-ui-commons/types/folder';
 import { allowedActionOnSharedAccount } from '../../carbonio-ui-commons/utils/utils';
 import { getFolderIdParts } from '../../helpers/folders';
-import { useMessageListByFolder } from '../../hooks/use-message-list-by-folder';
 import { useSelection } from '../../hooks/use-selection';
 import { useUiUtilities } from '../../hooks/use-ui-utilities';
 import { folderAction } from '../../store/actions/folder-action';
+import { useMessagesByFolder } from '../../store/zustand/emails/store';
 import { AppContext } from '../../types';
 import { SelectFolderModal } from '../../ui-actions/modals/select-folder-modal';
 import { MoveConvMessage } from '../../ui-actions/move-conv-msg';
@@ -37,11 +37,11 @@ type FolderActionsProps = {
 export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 	const { createModal, closeModal } = useModal();
 	const folderIsTrash = getFolderIdParts(folder.id ?? '0').id === FOLDERS.TRASH;
-	const { messageIndexSlice } = useMessageListByFolder(folder.id);
+	const messagesInFolder = useMessagesByFolder(folder.id);
 
-	const trashMessages = messageIndexSlice.messageListIndex.filter(
-		() => getFolderIdParts(folder.id).id === FOLDERS.TRASH
-	);
+	const trashMessages = messagesInFolder
+		.filter(() => getFolderIdParts(folder.id).id === FOLDERS.TRASH)
+		.map((message) => message.id);
 	const { setCount } = useAppContext<AppContext>();
 
 	const { deselectAll } = useSelection({ setCount, count: 0 });

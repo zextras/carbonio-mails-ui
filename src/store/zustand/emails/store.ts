@@ -288,6 +288,9 @@ export function appendMessagesToMessagesSlice(
 		messageIndexSliceUtils.appendMessagesToMessagesSlice(messages, offset, useEmailsStore);
 	});
 }
+export function useMessagesByFolder(folderId: string): Array<MailMessage | IncompleteMessage> {
+	return populatedItemsSliceUtils.useMessagesByFolder(folderId, useEmailsStore);
+}
 
 export function deleteMessagesFromMessagesSlice(ids: Array<string>): void {
 	addTask(async () => {

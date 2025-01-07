@@ -9,6 +9,7 @@ import produce from 'immer';
 import { filter, forEach, includes, merge } from 'lodash';
 import { UseBoundStore, StoreApi } from 'zustand';
 
+import { useFolder } from '../../../../carbonio-ui-commons/store/zustand/folder';
 import {
 	MailMessage,
 	IncompleteMessage,
@@ -106,7 +107,25 @@ function useMessagesByIds(
 			.filter((message): message is IncompleteMessage | MailMessage => !!message)
 	);
 }
+function useMessagesByFolder(
+	folderId: string,
+	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
+): Array<MailMessage | IncompleteMessage> {
+	const { populatedItemsSlice, messageIndexSlice } = useEmailsStore();
+	const folder = useFolder(folderId);
+	if (!folder) return [];
 
+	const { messageListIndex } = messageIndexSlice;
+
+	const wantedFolder = 'rid' in folder && folder?.rid ? `${folder.zid}:${folder.rid}` : folder.id;
+
+	const wantedMessageIds = messageListIndex.filter(
+		(messageId) => populatedItemsSlice.messages[messageId]?.parent === wantedFolder
+	);
+	return wantedMessageIds
+		.map((id) => populatedItemsSlice.messages[id])
+		.filter((message): message is IncompleteMessage | MailMessage => !!message);
+}
 function useConversationsByIds(
 	ids: Array<string>,
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
@@ -134,5 +153,6 @@ export const populatedItemsSliceUtils = {
 	useConversationMessages,
 	useMessagesByIds,
 	useConversationsByIds,
-	deleteMessagesFromConversation
+	deleteMessagesFromConversation,
+	useMessagesByFolder
 };
