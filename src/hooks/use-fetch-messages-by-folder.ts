@@ -14,7 +14,7 @@ import { handleSearchSoapApiResults } from '../store/zustand/emails/hooks/hooks'
 import {
 	updateMessagesResultsLoadingStatus,
 	useMessagesIdsByFolder,
-	useMessagesSlice
+	useMessageIndexSlice
 } from '../store/zustand/emails/store';
 import { MessageIndexSliceState } from '../types';
 
@@ -24,7 +24,7 @@ export const useFetchMessagesByFolder = (folderId: string): MessageIndexSliceSta
 
 	const previousFolderId = useRef<string | null>(null);
 
-	const messagesSlice = useMessagesSlice();
+	const messageIndexSlice = useMessageIndexSlice();
 	const messageListIndex = useMessagesIdsByFolder(folderId);
 
 	const fetchMessages = useCallback(
@@ -70,10 +70,10 @@ export const useFetchMessagesByFolder = (folderId: string): MessageIndexSliceSta
 	return useMemo(
 		() => ({
 			messageIndexSlice: {
-				...messagesSlice,
+				...messageIndexSlice,
 				messageListIndex
 			}
 		}),
-		[messagesSlice, messageListIndex]
+		[messageIndexSlice, messageListIndex]
 	);
 };

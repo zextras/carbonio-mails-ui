@@ -18,7 +18,7 @@ import { setupTest, screen } from '../../../../../carbonio-ui-commons/test/test-
 import { SORTING_OPTIONS, SORTING_DIRECTION } from '../../../../../constants';
 import {
 	setMessagesInEmailStore,
-	useMessagesSlice
+	useMessageIndexSlice
 } from '../../../../../store/zustand/emails/store';
 import { generateMessage } from '../../../../../tests/generators/generateMessage';
 import { SearchRequest } from '../../../../../types';
@@ -261,7 +261,7 @@ describe('Sorting component', () => {
 		const message1 = generateMessage({ id: '1' });
 		const message2 = generateMessage({ id: '2' });
 		setMessagesInEmailStore([message1, message2], false);
-		const { result: initialOrder } = renderHook(() => useMessagesSlice());
+		const { result: initialOrder } = renderHook(() => useMessageIndexSlice());
 		expect(initialOrder.current.messageListIndex).toEqual(['1', '2']);
 
 		jest.spyOn(hooks, 'useUserSettings').mockReturnValue(settings);
@@ -296,7 +296,7 @@ describe('Sorting component', () => {
 		expect(req.sortBy).toBe(expectedRequest.sortBy);
 		expect(req.types).toBe(expectedRequest.types);
 		expect(req.query).toBe(expectedRequest.query);
-		const { result: newOrder } = renderHook(() => useMessagesSlice());
+		const { result: newOrder } = renderHook(() => useMessageIndexSlice());
 		await act(async () => {
 			expect(newOrder.current.messageListIndex).toEqual(['1', '2']);
 		});

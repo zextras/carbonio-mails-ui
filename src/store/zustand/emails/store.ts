@@ -236,8 +236,8 @@ export function useMessageStatus(id: string): SearchRequestStatus {
 // #### messageIndexSlice related functions
 // ###########################################
 
-export function useMessagesSlice(): EmailsStoreState['messageIndexSlice'] {
-	return useEmailsStore(({ messageIndexSlice: messagesSlice }) => messagesSlice);
+export function useMessageIndexSlice(): EmailsStoreState['messageIndexSlice'] {
+	return useEmailsStore(({ messageIndexSlice }) => messageIndexSlice);
 }
 
 export function useMessagesIdsByFolder(folderId: string): Array<string> {

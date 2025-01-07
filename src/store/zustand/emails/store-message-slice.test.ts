@@ -16,7 +16,7 @@ import {
 	useMessageById,
 	useMessagesByIds,
 	useMessagesIdsByFolder,
-	useMessagesSlice,
+	useMessageIndexSlice,
 	usePopulatedItemsSlice
 } from './store';
 import { useFolderStore } from '../../../carbonio-ui-commons/store/zustand/folder';
@@ -29,7 +29,7 @@ describe('useMessagesSlice', () => {
 		const message2 = generateMessage({ id: '2' });
 		const messages = [message1, message2];
 		setMessagesInEmailStore(messages, false);
-		const { result } = renderHook(() => useMessagesSlice());
+		const { result } = renderHook(() => useMessageIndexSlice());
 		const expectedResult = {
 			messageListIndex: ['1', '2'],
 			more: false,
@@ -93,7 +93,7 @@ describe('setMessagesInEmailStore', () => {
 	describe('when called with valid inputs', () => {
 		it('should set the message IDs correctly in the state', () => {
 			setMessagesInEmailStore([message1, message2, message3], false);
-			const { result } = renderHook(() => useMessagesSlice());
+			const { result } = renderHook(() => useMessageIndexSlice());
 			expect(result.current.messageListIndex).toEqual(['1', '2', '3']);
 		});
 
@@ -107,22 +107,22 @@ describe('setMessagesInEmailStore', () => {
 
 		it('should update the "more" flag correctly', () => {
 			setMessagesInEmailStore([message1], true);
-			const { result } = renderHook(() => useMessagesSlice());
+			const { result } = renderHook(() => useMessageIndexSlice());
 			expect(result.current.more).toEqual(true);
 		});
 
 		it('should reset the offset to 0', () => {
 			appendMessagesToMessagesSlice([message1], 5);
-			const { result: initialState } = renderHook(() => useMessagesSlice());
+			const { result: initialState } = renderHook(() => useMessageIndexSlice());
 			expect(initialState.current.offset).toEqual(5);
 			act(() => setMessagesInEmailStore([message2], false));
-			const { result } = renderHook(() => useMessagesSlice());
+			const { result } = renderHook(() => useMessageIndexSlice());
 			expect(result.current.offset).toEqual(0);
 		});
 
 		it('should set the request status to "fulfilled"', () => {
 			setMessagesInEmailStore([message1], true);
-			const { result } = renderHook(() => useMessagesSlice());
+			const { result } = renderHook(() => useMessageIndexSlice());
 			expect(result.current.status).toEqual('fulfilled');
 		});
 	});
@@ -130,7 +130,7 @@ describe('setMessagesInEmailStore', () => {
 	describe('when called with an empty messages array', () => {
 		it('should set the messageIds as an empty Set', () => {
 			setMessagesInEmailStore([], false);
-			const { result } = renderHook(() => useMessagesSlice());
+			const { result } = renderHook(() => useMessageIndexSlice());
 			expect(result.current.messageListIndex).toEqual([]);
 		});
 
@@ -145,7 +145,7 @@ describe('setMessagesInEmailStore', () => {
 
 		it('should update the "more" flag correctly', () => {
 			setMessagesInEmailStore([], true);
-			const { result } = renderHook(() => useMessagesSlice());
+			const { result } = renderHook(() => useMessageIndexSlice());
 			expect(result.current.more).toEqual(true);
 		});
 	});
@@ -154,10 +154,10 @@ describe('setMessagesInEmailStore', () => {
 describe('updateMessagesResultsLoadingStatus', () => {
 	it('should update the messagesSlice.status in the state', () => {
 		setMessagesInEmailStore([message1], true);
-		const { result: initialState } = renderHook(() => useMessagesSlice());
+		const { result: initialState } = renderHook(() => useMessageIndexSlice());
 		expect(initialState.current.status).toEqual('fulfilled');
 		act(() => updateMessagesResultsLoadingStatus('pending'));
-		const { result } = renderHook(() => useMessagesSlice());
+		const { result } = renderHook(() => useMessageIndexSlice());
 		expect(result.current.status).toEqual('pending');
 	});
 });
@@ -166,16 +166,16 @@ describe('resetMessagesAndPopulatedItems', () => {
 	describe('when called', () => {
 		it('should reset messagesSlice to its initial state', () => {
 			setMessagesInEmailStore([message1], true);
-			const { result: initialState } = renderHook(() => useMessagesSlice());
+			const { result: initialState } = renderHook(() => useMessageIndexSlice());
 			expect(initialState.current.messageListIndex).toEqual(['1']);
 			act(() => resetMessagesAndPopulatedItems());
-			const { result } = renderHook(() => useMessagesSlice());
+			const { result } = renderHook(() => useMessageIndexSlice());
 			expect(result.current).toEqual(MESSAGE_INDEX_SLICE_INITIAL_STATE);
 		});
 
 		it('should reset populatedItemsSlice to its initial state', () => {
 			setMessagesInEmailStore([message1], true);
-			const { result: initialState } = renderHook(() => useMessagesSlice());
+			const { result: initialState } = renderHook(() => useMessageIndexSlice());
 			expect(initialState.current.messageListIndex).toEqual(['1']);
 			act(() => resetMessagesAndPopulatedItems());
 			const { result } = renderHook(() => usePopulatedItemsSlice());
@@ -188,25 +188,25 @@ describe('appendMessagesToMessagesSlice', () => {
 	describe('when called with a non-empty messages array', () => {
 		it('should add new message IDs to messagesSlice.messageIds', () => {
 			setMessagesInEmailStore([message1], true);
-			const { result: initialState } = renderHook(() => useMessagesSlice());
+			const { result: initialState } = renderHook(() => useMessageIndexSlice());
 			expect(initialState.current.messageListIndex).toEqual(['1']);
 			act(() => appendMessagesToMessagesSlice([message2], 0));
-			const { result } = renderHook(() => useMessagesSlice());
+			const { result } = renderHook(() => useMessageIndexSlice());
 			expect(result.current.messageListIndex).toEqual(['1', '2']);
 		});
 
 		it('should update the offset in messagesSlice', () => {
 			setMessagesInEmailStore([message1], true);
-			const { result: initialState } = renderHook(() => useMessagesSlice());
+			const { result: initialState } = renderHook(() => useMessageIndexSlice());
 			expect(initialState.current.messageListIndex).toEqual(['1']);
 			act(() => appendMessagesToMessagesSlice([message2], 555));
-			const { result } = renderHook(() => useMessagesSlice());
+			const { result } = renderHook(() => useMessageIndexSlice());
 			expect(result.current.offset).toEqual(555);
 		});
 
 		it('should append messages to populatedItemsSlice.messages without overwriting the existing ones', () => {
 			setMessagesInEmailStore([message1], true);
-			const { result: initialState } = renderHook(() => useMessagesSlice());
+			const { result: initialState } = renderHook(() => useMessageIndexSlice());
 			expect(initialState.current.messageListIndex).toEqual(['1']);
 			act(() => appendMessagesToMessagesSlice([message2], 0));
 			const { result } = renderHook(() => usePopulatedItemsSlice());
@@ -217,25 +217,25 @@ describe('appendMessagesToMessagesSlice', () => {
 	describe('when called with an empty messages array', () => {
 		it('should not modify messagesSlice.messageIds', () => {
 			setMessagesInEmailStore([message1], true);
-			const { result: initialState } = renderHook(() => useMessagesSlice());
+			const { result: initialState } = renderHook(() => useMessageIndexSlice());
 			expect(initialState.current.messageListIndex).toEqual(['1']);
 			act(() => appendMessagesToMessagesSlice([], 555));
-			const { result } = renderHook(() => useMessagesSlice());
+			const { result } = renderHook(() => useMessageIndexSlice());
 			expect(result.current.messageListIndex).toEqual(['1']);
 		});
 
 		it('should still update the offset', () => {
 			setMessagesInEmailStore([message1], true);
-			const { result: initialState } = renderHook(() => useMessagesSlice());
+			const { result: initialState } = renderHook(() => useMessageIndexSlice());
 			expect(initialState.current.messageListIndex).toEqual(['1']);
 			act(() => appendMessagesToMessagesSlice([], 555));
-			const { result } = renderHook(() => useMessagesSlice());
+			const { result } = renderHook(() => useMessageIndexSlice());
 			expect(result.current.offset).toEqual(555);
 		});
 
 		it('should not modify populatedItemsSlice.messages', () => {
 			setMessagesInEmailStore([message1], true);
-			const { result: initialState } = renderHook(() => useMessagesSlice());
+			const { result: initialState } = renderHook(() => useMessageIndexSlice());
 			expect(initialState.current.messageListIndex).toEqual(['1']);
 			act(() => appendMessagesToMessagesSlice([], 0));
 			const { result } = renderHook(() => usePopulatedItemsSlice());
@@ -246,16 +246,16 @@ describe('appendMessagesToMessagesSlice', () => {
 	describe('when called with duplicate message IDs', () => {
 		it('should not add duplicate IDs to messagesSlice.messageIds', () => {
 			setMessagesInEmailStore([message1, message2], true);
-			const { result: initialState } = renderHook(() => useMessagesSlice());
+			const { result: initialState } = renderHook(() => useMessageIndexSlice());
 			expect(initialState.current.messageListIndex).toEqual(['1', '2']);
 			act(() => appendMessagesToMessagesSlice([message2, message3, message3], 555));
-			const { result } = renderHook(() => useMessagesSlice());
+			const { result } = renderHook(() => useMessageIndexSlice());
 			expect(result.current.messageListIndex).toEqual(['1', '2', '3']);
 		});
 
 		it('should update existing messages in populatedItemsSlice.messages if they exist', () => {
 			setMessagesInEmailStore([message1], true);
-			const { result: initialState } = renderHook(() => useMessagesSlice());
+			const { result: initialState } = renderHook(() => useMessageIndexSlice());
 			expect(initialState.current.messageListIndex).toEqual(['1']);
 			const updatedMessage1 = { ...message1, subject: 'Updated subject' };
 			act(() => appendMessagesToMessagesSlice([updatedMessage1], 555));
