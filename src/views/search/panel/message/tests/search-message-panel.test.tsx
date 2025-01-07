@@ -5,6 +5,7 @@
  */
 import React from 'react';
 
+import { waitFor } from '@testing-library/react';
 import { useParams } from 'react-router-dom';
 
 import { screen, setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
@@ -35,7 +36,10 @@ describe('Message Panel', () => {
 			],
 			false
 		);
-		updateMessageStatus('1', API_REQUEST_STATUS.fulfilled);
+
+		await waitFor(() => {
+			updateMessageStatus('1', API_REQUEST_STATUS.fulfilled);
+		});
 
 		setupTest(<SearchMessagePanel messageId="1" />);
 
