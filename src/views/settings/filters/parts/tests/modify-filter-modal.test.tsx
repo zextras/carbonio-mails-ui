@@ -206,19 +206,23 @@ describe('modify filter modal', () => {
 		});
 	});
 	// TODO: check line 287 of modify-filter-modal. When you modify the name of an existing filter the index is -1,
-	// so it puts the value at array[-1] causing a strange behavior
-	it('should call ModifyFiltersRule API with new modified filter name when clicking save button', async () => {
+	// so it puts the value at array[-1] causing a strange behavior.
+	// It appears these tests do not make much sense, because in a real scenario when you modify a filter you call setIncomingFilters
+	// however since these methods are mocked and data is being passed down, we end up with inconsistent data.
+	// The component is fragile
+	it('should call ModifyFiltersRule API with updated filter name after clicking save button', async () => {
 		const store = generateStore();
 
 		const modifyFilterRulesInterceptor = createSoapAPIInterceptor('ModifyFilterRules');
+		const selectedFilter = mockFilter({ name: 'Test Filter' });
 		const { user } = setupTest(
 			<ModifyFilterModal
 				t={t}
 				onClose={jest.fn()}
 				setFetchIncomingFilters={jest.fn()}
 				setIncomingFilters={jest.fn()}
-				incomingFilters={[]}
-				selectedFilter={mockFilter({ name: 'Test Filter' })}
+				incomingFilters={[selectedFilter]}
+				selectedFilter={selectedFilter}
 			/>,
 			{
 				store
@@ -227,6 +231,50 @@ describe('modify filter modal', () => {
 		const filterInputElement = screen.getByRole('textbox', {
 			name: 'settings.filter_name*'
 		});
+		await user.clear(filterInputElement);
+		await user.type(filterInputElement, 'My filter');
+
+		const saveButton = screen.getByRole('button', {
+			name: /label\.save/i
+		});
+		await act(async () => {
+			await user.click(saveButton);
+		});
+		const request = await modifyFilterRulesInterceptor;
+		expect(request).toEqual({
+			_jsns: 'urn:zimbraMail',
+			filterRules: [
+				{ filterRule: [{ ...selectedFilter, name: 'My filter', filterTests: [{}], id: undefined }] }
+			]
+		});
+	});
+
+	it('show that ModifyFiltersRule is called with whatever value we declare at beginning', async () => {
+		const store = generateStore();
+
+		const modifyFilterRulesInterceptor = createSoapAPIInterceptor('ModifyFilterRules');
+		const otherFilter = {
+			...mockFilter({ name: 'Test Filter 2', id: '2' }),
+			anotherFilter: 'this field should not be present but is sent to the API anyway'
+		};
+		const selectedFilter = mockFilter({ name: 'Test Filter' });
+		const { user } = setupTest(
+			<ModifyFilterModal
+				t={t}
+				onClose={jest.fn()}
+				setFetchIncomingFilters={jest.fn()}
+				setIncomingFilters={jest.fn()}
+				incomingFilters={[selectedFilter, otherFilter]}
+				selectedFilter={selectedFilter}
+			/>,
+			{
+				store
+			}
+		);
+		const filterInputElement = screen.getByRole('textbox', {
+			name: 'settings.filter_name*'
+		});
+		await user.clear(filterInputElement);
 		await user.type(filterInputElement, 'My filter');
 
 		const saveButton = screen.getByRole('button', {
@@ -241,19 +289,8 @@ describe('modify filter modal', () => {
 			filterRules: [
 				{
 					filterRule: [
-						{
-							'1': {
-								active: true,
-								filterActions: [
-									{
-										actionKeep: [{}],
-										actionStop: [{}]
-									}
-								],
-								filterTests: [{}],
-								name: 'ccccc'
-							}
-						}
+						{ ...selectedFilter, name: 'My filter', filterTests: [{}], id: undefined },
+						otherFilter
 					]
 				}
 			]
@@ -261,6 +298,7 @@ describe('modify filter modal', () => {
 	});
 });
 
+// TODO: after inspecting the production code the fields "id" is not sent to the API, do we really need it or is it an effect of the spread?
 function mockFilter({
 	id = '1',
 	name,
