@@ -24,7 +24,7 @@ import {
 	deleteConversationsFromSearch,
 	deleteMessagesFromMessagesSlice,
 	deleteMessagesFromSearch,
-	prependConversationsToConversationIndexSlice,
+	handleNotifyConversationsCreated,
 	handleNotifyMessagesCreated,
 	updateConversationsOnly,
 	updateMessagesOnly
@@ -97,7 +97,7 @@ function processCreatedNotifications(notify: SoapNotify): void {
 		const conversations = map(createdConversations, (conversation) =>
 			mapToNormalizedConversation({ conversation, messages: createdMessages })
 		);
-		prependConversationsToConversationIndexSlice(conversations);
+		handleNotifyConversationsCreated(conversations);
 	}
 
 	if (createdMessages) {

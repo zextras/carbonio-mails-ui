@@ -345,14 +345,16 @@ export function appendConversationsToConversationIndexSlice(
 	});
 }
 
-export function prependConversationsToConversationIndexSlice(
+/**
+ * Handles the creation of notify conversations by updating the application's email store state.
+ * This function processes incoming conversations and updates the conversation slice and index
+ * to include the new conversations.
+ */
+export function handleNotifyConversationsCreated(
 	conversations: Array<NormalizedConversation>
 ): void {
 	addTask(async () => {
-		conversationIndexSliceUtils.prependConversationsToConversationIndexSlice(
-			conversations,
-			useEmailsStore
-		);
+		conversationIndexSliceUtils.handleNotifyConversationsCreated(conversations, useEmailsStore);
 	});
 }
 

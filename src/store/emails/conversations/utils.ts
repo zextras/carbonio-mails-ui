@@ -100,7 +100,12 @@ function appendConversationsToConversationIndexSlice(
 	);
 }
 
-function prependConversationsToConversationIndexSlice(
+/**
+ * Handles the creation of notify conversations by updating the application's email store state.
+ * This function processes incoming conversations and updates the conversation slice and index
+ * to include the new conversations.
+ */
+function handleNotifyConversationsCreated(
 	conversations: Array<NormalizedConversation>,
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
 ): void {
@@ -138,7 +143,7 @@ export const conversationIndexSliceUtils = {
 	useConversationsIdsByFolder,
 	resetConversationAndPopulatedItems,
 	appendConversationsToConversationIndexSlice,
-	prependConversationsToConversationIndexSlice,
+	handleNotifyConversationsCreated,
 	updateConversationsResultsLoadingStatus,
 	deleteConversationsFromConversationSlice
 };
