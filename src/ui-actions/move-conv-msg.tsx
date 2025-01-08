@@ -10,9 +10,9 @@ import { replaceHistory } from '@zextras/carbonio-shell-ui';
 import { noop, some } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
-import { convAction } from '../api';
-import { createFolder } from '../api/create-folder';
-import { msgActionSoapApi } from '../api/msg-action';
+import { convActionSoapApi } from '../api';
+import { createFolderSoapApi } from '../api/create-folder-soap-api';
+import { msgActionSoapApi } from '../api/msg-action-soap-api';
 import ModalFooter from '../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../carbonio-ui-commons/components/modals/modal-header';
 import { Folder } from '../carbonio-ui-commons/types/folder';
@@ -52,7 +52,7 @@ export const MoveConvMessage = ({
 
 	const onConfirmConvMove = useCallback(
 		(id: string | undefined) => {
-			convAction({
+			convActionSoapApi({
 				operation: `move`,
 				ids: selectedIDs,
 				parent: id
@@ -152,7 +152,7 @@ export const MoveConvMessage = ({
 	);
 
 	const onConfirm = useCallback(() => {
-		createFolder({
+		createFolderSoapApi({
 			parentFolderId: folderDestination?.parent ?? '',
 			name: inputValue
 		})

@@ -9,7 +9,7 @@ import { Container, Divider, Text } from '@zextras/carbonio-design-system';
 import { report, t } from '@zextras/carbonio-shell-ui';
 import { startsWith } from 'lodash';
 
-import { folderAction } from '../../api/folder-action';
+import { folderActionSoapApi } from '../../api/folder-action-soap-api';
 import ModalFooter from '../../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../../carbonio-ui-commons/components/modals/modal-header';
 import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
@@ -24,7 +24,7 @@ export const DeleteModal: FC<ModalProps> = ({ folder, onClose }) => {
 	const onConfirm = useCallback(() => {
 		const inTrash = isTrashed({ folder });
 		const restoreFolder = (): void => {
-			folderAction({
+			folderActionSoapApi({
 				folder,
 				l: folder.parent,
 				op: FOLDER_ACTIONS.MOVE
@@ -53,7 +53,7 @@ export const DeleteModal: FC<ModalProps> = ({ folder, onClose }) => {
 				.catch(report);
 		};
 
-		folderAction(
+		folderActionSoapApi(
 			isSharedAccountFolder(folder.id) && !inTrash
 				? { folder, op: FOLDER_ACTIONS.TRASH }
 				: {

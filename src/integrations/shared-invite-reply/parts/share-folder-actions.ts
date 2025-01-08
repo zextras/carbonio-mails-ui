@@ -9,9 +9,9 @@ import { TFunction } from 'i18next';
 import { map } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
-import { acceptSharedFolderReply } from '../../../api/acceptSharedFolderReply';
-import { mountSharedFolder } from '../../../api/mount-shared-folder';
-import { msgActionSoapApi } from '../../../api/msg-action';
+import { acceptSharedFolderReply } from '../../../api/accept-shared-folder-reply';
+import { mountSharedFolderSoapApi } from '../../../api/mount-shared-folder-soap-api';
+import { msgActionSoapApi } from '../../../api/msg-action-soap-api';
 import { ParticipantRole } from '../../../carbonio-ui-commons/constants/participants';
 import { getErrorMessage } from '../../../carbonio-ui-commons/helpers/errors';
 import { useUiUtilities } from '../../../hooks/use-ui-utilities';
@@ -141,7 +141,7 @@ export const useAccept = (): ((arg: Accept) => void) => {
 			allowedActions,
 			notifyOrganizer
 		}) => {
-			mountSharedFolder({
+			mountSharedFolderSoapApi({
 				zid,
 				view,
 				rid,

@@ -6,7 +6,7 @@
 import { soapFetch } from '@zextras/carbonio-shell-ui';
 import { isEmpty, isNil, omitBy } from 'lodash';
 
-import type { Folder } from '../carbonio-ui-commons/types/folder';
+import type { Folder } from '../carbonio-ui-commons/types';
 import { DataProps } from '../carbonio-ui-commons/types/sidebar';
 import { FolderActionResponse } from '../types';
 
@@ -22,7 +22,7 @@ export type FolderActionProps = {
 	type?: string;
 };
 
-export async function folderAction({
+export async function folderActionSoapApi({
 	folder,
 	color,
 	zid,

@@ -30,9 +30,9 @@ import styled from 'styled-components';
 
 import { useFolderActions } from './use-folder-actions';
 import { getFolderIconColor, getFolderIconName, getFolderTranslatedName } from './utils';
-import { convAction } from '../../api';
-import { folderAction } from '../../api/folder-action';
-import { msgActionSoapApi } from '../../api/msg-action';
+import { convActionSoapApi } from '../../api';
+import { folderActionSoapApi } from '../../api/folder-action-soap-api';
+import { msgActionSoapApi } from '../../api/msg-action-soap-api';
 import { ROOT_NAME } from '../../carbonio-ui-commons/constants';
 import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
 import { isSystemFolder } from '../../carbonio-ui-commons/helpers/folders';
@@ -115,7 +115,7 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item }) => {
 		}
 
 		if (data.type === 'folder') {
-			folderAction({ folder: data.data, l: item.id || FOLDERS.USER_ROOT, op: 'move' }).then(
+			folderActionSoapApi({ folder: data.data, l: item.id || FOLDERS.USER_ROOT, op: 'move' }).then(
 				(res) => {
 					if (!('Fault' in res)) {
 						createSnackbar({
@@ -137,7 +137,7 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item }) => {
 				}
 			);
 		} else if ('messages' in data.data) {
-			convAction({
+			convActionSoapApi({
 				operation: `move`,
 				ids: convMsgsIds,
 				parent: item.id

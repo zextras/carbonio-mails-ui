@@ -9,7 +9,7 @@ import * as hooks from '@zextras/carbonio-shell-ui';
 import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 import { noop } from 'lodash';
 
-import * as searchSoapApi from '../../../api/search';
+import * as searchSoapApi from '../../../api/search-soap-api';
 import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { generateSettings } from '../../../carbonio-ui-commons/test/mocks/settings/settings-generator';
 import { buildSoapErrorResponseBody } from '../../../carbonio-ui-commons/test/mocks/utils/soap';

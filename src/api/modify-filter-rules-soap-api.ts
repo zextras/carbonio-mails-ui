@@ -5,18 +5,14 @@
  */
 import { soapFetch } from '@zextras/carbonio-shell-ui';
 
-export const modifyFilterRules = async (newRules: Array<any>): Promise<any> => {
-	const res = await soapFetch('ModifyFilterRules', {
+export const modifyFilterRulesSoapApi = async (newRules: Array<any>): Promise<any> =>
+	soapFetch('ModifyFilterRules', {
 		filterRules: [{ filterRule: newRules }],
 		_jsns: 'urn:zimbraMail'
 	});
-	return res;
-};
 
-export const modifyOutgoingFilterRules = async (newRules: Array<any>): Promise<any> => {
-	const res = await soapFetch('ModifyOutgoingFilterRules', {
+export const modifyOutgoingFilterRulesSoapApi = async (newRules: Array<any>): Promise<any> =>
+	soapFetch('ModifyOutgoingFilterRules', {
 		filterRules: [{ filterRule: newRules }],
 		_jsns: 'urn:zimbraMail'
 	});
-	return res;
-};

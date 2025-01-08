@@ -19,7 +19,7 @@ import { TFunction } from 'i18next';
 import { findIndex, forEach, isEqual, map, omit, reduce } from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
 
-import { modifyOutgoingFilterRules } from '../../../../../api/modify-filter-rules';
+import { modifyOutgoingFilterRulesSoapApi } from '../../../../../api/modify-filter-rules-soap-api';
 import ModalHeader from '../../../../../carbonio-ui-commons/components/modals/modal-header';
 import { useUiUtilities } from '../../../../../hooks/use-ui-utilities';
 import type { FilterActions } from '../../../../../types';
@@ -286,7 +286,7 @@ const ModifyOutgoingFilterModal: FC<ComponentProps> = ({
 		const toSend = outgoingFiltersCopy.slice();
 		toSend[selectedFilterIndex] = requiredFilters;
 		setOutgoingFilters(toSend);
-		modifyOutgoingFilterRules(toSend)
+		modifyOutgoingFilterRulesSoapApi(toSend)
 			.then(() => {
 				setFetchOutgoingFilters(true);
 				createSnackbar({

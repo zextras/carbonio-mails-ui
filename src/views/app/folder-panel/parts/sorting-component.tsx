@@ -11,7 +11,7 @@ import { t, useUserSettings, useAppContext, replaceHistory } from '@zextras/carb
 import { noop } from 'lodash';
 
 import { getTooltipLabel } from './utils/utils';
-import { searchSoapApi } from '../../../../api/search';
+import { searchSoapApi } from '../../../../api/search-soap-api';
 import { FOLDERS } from '../../../../carbonio-ui-commons/constants/folders';
 import { SORTING_DIRECTION, SORTING_OPTIONS, SORT_ICONS } from '../../../../constants';
 import { parseMessageSortingOptions, updateSortingSettings } from '../../../../helpers/sorting';

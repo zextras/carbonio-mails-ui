@@ -9,7 +9,7 @@ import { map } from 'lodash';
 import { FOLDERS } from '../carbonio-ui-commons/constants/folders';
 import { SharedObject } from '../carbonio-ui-commons/types/sidebar';
 
-export const createMountpoint = async (links: Array<SharedObject>): Promise<unknown> =>
+export const createMountpointSoapApi = async (links: Array<SharedObject>): Promise<unknown> =>
 	soapFetch('Batch', {
 		CreateMountpointRequest: map(links, (link) => ({
 			link: {

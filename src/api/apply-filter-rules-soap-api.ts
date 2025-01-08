@@ -123,7 +123,7 @@ export const extractMessagesIdFromSoapResponse = (
  * @param messagesId
  * @param foldersId
  */
-export const applyFilterRules = async ({
+export const applyFilterRulesSoapApi = async ({
 	ruleName,
 	messagesId,
 	foldersId

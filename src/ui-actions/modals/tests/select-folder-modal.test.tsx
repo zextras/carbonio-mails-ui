@@ -9,7 +9,7 @@ import { faker } from '@faker-js/faker';
 import { screen } from '@testing-library/react';
 import { t } from '@zextras/carbonio-shell-ui';
 
-import { folderAction } from '../../../api/folder-action';
+import { folderActionSoapApi } from '../../../api/folder-action-soap-api';
 import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { populateFoldersStore } from '../../../carbonio-ui-commons/test/mocks/store/folders';
 import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
@@ -134,7 +134,7 @@ describe('move-modal', () => {
 		);
 
 		const confirmAction = (): Promise<FolderActionResponse> =>
-			folderAction({ folder: folderToMove, l: rootFolder.id, op: 'move' });
+			folderActionSoapApi({ folder: folderToMove, l: rootFolder.id, op: 'move' });
 
 		setupTest(
 			<SelectFolderModal
@@ -158,7 +158,7 @@ test('API is called with the proper parameters to move the selected folder into 
 	const closeModal = jest.fn();
 	populateFoldersStore();
 	const confirmAction = (): Promise<FolderActionResponse> =>
-		folderAction({ folder: folderToMove, l: rootFolder.id, op: 'move' });
+		folderActionSoapApi({ folder: folderToMove, l: rootFolder.id, op: 'move' });
 
 	const { user } = setupTest(
 		<SelectFolderModal

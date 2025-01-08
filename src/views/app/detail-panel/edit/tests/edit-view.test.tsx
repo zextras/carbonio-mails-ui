@@ -15,8 +15,11 @@ import { find, noop } from 'lodash';
 import { HttpResponse } from 'msw';
 
 import { aFailingSaveDraft, aSuccessfullSaveDraft } from './utils/utils';
-import * as saveDraftAction from '../../../../../api/save-draft';
-import { GetSignaturesRequest, GetSignaturesResponse } from '../../../../../api/signatures';
+import {
+	GetSignaturesRequest,
+	GetSignaturesResponse
+} from '../../../../../api/get-signatures-soap-api';
+import * as saveDraftAction from '../../../../../api/save-draft-soap-api';
 import { FOLDERS } from '../../../../../carbonio-ui-commons/constants/folders';
 import { ParticipantRole } from '../../../../../carbonio-ui-commons/constants/participants';
 import { defaultBeforeAllTests } from '../../../../../carbonio-ui-commons/test/jest-setup';
@@ -330,7 +333,7 @@ describe('Edit view', () => {
 		});
 
 		it('is not autosaved on initialization if draft id is present', async () => {
-			const mockedSaveDraft = jest.spyOn(saveDraftAction, 'saveDraftV3');
+			const mockedSaveDraft = jest.spyOn(saveDraftAction, 'saveDraftSoapApi');
 
 			aSuccessfullSaveDraft();
 			setupEditorStore({ editors: [] });
@@ -534,7 +537,7 @@ describe('Edit view', () => {
 					editorId: editor.id,
 					closeController: noop
 				};
-				const saveDraftSpy = jest.spyOn(saveDraftAction, 'saveDraftV3');
+				const saveDraftSpy = jest.spyOn(saveDraftAction, 'saveDraftSoapApi');
 				const firstSaveDraft = aSuccessfullSaveDraft();
 
 				const { user } = setupTest(<EditView {...props} />);

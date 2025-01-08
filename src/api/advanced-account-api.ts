@@ -9,7 +9,7 @@ import {
 	useAdvancedAccountStore
 } from '../store/advanced-account/store';
 
-export const advancedAccountAPI = (): Promise<AdvancedAccountStore> =>
+export const advancedAccountApi = (): Promise<AdvancedAccountStore> =>
 	fetch('/zx/login/v3/account')
 		.then(async (data) => {
 			const { backupSelfUndeleteAllowed } = await data.json();

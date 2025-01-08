@@ -15,7 +15,7 @@ type SearchConvParameters = {
 	fetch: string;
 };
 
-export async function searchConvSoapAPI({
+export async function searchConvSoapApi({
 	conversationId,
 	fetch = 'all',
 	folderId

@@ -9,8 +9,8 @@ import { Checkbox, Container, Input, Row, Text } from '@zextras/carbonio-design-
 import { t, useUserAccounts } from '@zextras/carbonio-shell-ui';
 
 import { GranteeInfo } from './share-folder-properties';
-import { folderAction } from '../../../../api/folder-action';
-import { sendShareNotification } from '../../../../api/send-share-notification';
+import { folderActionSoapApi } from '../../../../api/folder-action-soap-api';
+import { sendShareNotificationSoapApi } from '../../../../api/send-share-notification-soap-api';
 import ModalFooter from '../../../../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../../../../carbonio-ui-commons/components/modals/modal-header';
 import type { ShareRevokeModalType } from '../../../../carbonio-ui-commons/types/sidebar';
@@ -27,13 +27,13 @@ const ShareRevokeModal: FC<ShareRevokeModalType> = ({ folder, onClose, grant, go
 
 	const onConfirm = useCallback(() => {
 		if (sendNotification) {
-			sendShareNotification({
+			sendShareNotificationSoapApi({
 				standardMessage,
 				contacts: [{ email: grant?.d }],
 				folder,
 				accounts
 			}).then(() => {
-				folderAction({ folder, zid: grant.zid, op: '!grant' }).then((res) => {
+				folderActionSoapApi({ folder, zid: grant.zid, op: '!grant' }).then((res) => {
 					if (!('Fault' in res)) {
 						createSnackbar({
 							key: `remove-share-${folder.id}`,
@@ -48,7 +48,7 @@ const ShareRevokeModal: FC<ShareRevokeModalType> = ({ folder, onClose, grant, go
 				});
 			});
 		} else {
-			folderAction({ folder, zid: grant.zid, op: '!grant' }).then((res) => {
+			folderActionSoapApi({ folder, zid: grant.zid, op: '!grant' }).then((res) => {
 				if (!('Fault' in res)) {
 					createSnackbar({
 						key: `remove-share-${folder.id}`,

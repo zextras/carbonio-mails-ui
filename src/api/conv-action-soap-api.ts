@@ -9,7 +9,7 @@ import { isNil } from 'lodash';
 import { omitBy } from '../commons/utils';
 import type { ConvActionParameters, ConvActionRequest, ConvActionResponse } from '../types';
 
-export async function convAction({
+export async function convActionSoapApi({
 	ids,
 	operation,
 	parent,

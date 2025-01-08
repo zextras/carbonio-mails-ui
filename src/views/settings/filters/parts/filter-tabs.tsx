@@ -11,8 +11,8 @@ import { useTranslation } from 'react-i18next';
 import { FilterContext } from './filter-context';
 import IncomingMessageFilterTab from './incoming-message-filter-tab';
 import OutgoingMessageFilterTab from './outgoing-message-filter-tab';
-import { getIncomingFilters } from '../../../../api/get-incoming-filters';
-import { getOutgoingFilters } from '../../../../api/get-outgoing-filters';
+import { getIncomingFiltersSoapApi } from '../../../../api/get-incoming-filters-soap-api';
+import { getOutgoingFiltersSoapApi } from '../../../../api/get-outgoing-filters-soap-api';
 import { useUiUtilities } from '../../../../hooks/use-ui-utilities';
 import { FilterListType } from '../../../../types';
 
@@ -53,7 +53,7 @@ const FilterTabs = (): React.JSX.Element => {
 
 	useEffect(() => {
 		if (fetchIncomingFilters) {
-			getIncomingFilters()
+			getIncomingFiltersSoapApi()
 				.then(({ filterRules }) => {
 					setIncomingLoading(false);
 					setIncomingFilters(filterRules?.[0]?.filterRule);
@@ -78,7 +78,7 @@ const FilterTabs = (): React.JSX.Element => {
 
 	useEffect(() => {
 		if (fetchOutgoingFilters) {
-			getOutgoingFilters().then((res) => {
+			getOutgoingFiltersSoapApi().then((res) => {
 				setOutgoingLoading(false);
 				setOutgoingFilters(res?.filterRules?.[0]?.filterRule);
 				setFetchOutgoingFilters(false);

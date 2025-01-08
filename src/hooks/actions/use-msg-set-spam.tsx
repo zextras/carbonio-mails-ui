@@ -9,7 +9,7 @@ import { useSnackbar } from '@zextras/carbonio-design-system';
 import { replaceHistory, t } from '@zextras/carbonio-shell-ui';
 import { useTranslation } from 'react-i18next';
 
-import { msgActionSoapApi } from '../../api/msg-action';
+import { msgActionSoapApi } from '../../api/msg-action-soap-api';
 import { MessageActionsDescriptors, TIMEOUTS } from '../../constants';
 import { isDraft, isSpam } from '../../helpers/folders';
 import { ActionFn, UIActionDescriptor } from '../../types';

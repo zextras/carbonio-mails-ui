@@ -9,8 +9,8 @@ import { replaceHistory, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { findIndex } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
-import { convAction } from '../api';
-import { msgActionSoapApi } from '../api/msg-action';
+import { convActionSoapApi } from '../api';
+import { msgActionSoapApi } from '../api/msg-action-soap-api';
 import { API_REQUEST_STATUS, LIST_LIMIT } from '../constants';
 import { parseMessageSortingOptions } from '../helpers/sorting';
 import {
@@ -122,7 +122,7 @@ export const usePreviewHeaderNavigation = ({
 	const setItemAsRead = useCallback(
 		(itemId: string) => {
 			if (itemsType === 'conversation') {
-				convAction({
+				convActionSoapApi({
 					operation: 'read',
 					ids: [itemId]
 				});

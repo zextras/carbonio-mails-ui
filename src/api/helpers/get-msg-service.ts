@@ -6,20 +6,20 @@
 
 import { normalizeMailMessageFromSoap } from '../../normalizations/normalize-message';
 import type { MailMessage } from '../../types';
-import { getMsgSoapAPI } from '../get-msg';
+import { getMsgSoapApi } from '../get-msg-soap-api';
 
 type GetMsgCallProps = {
 	msgId: string;
 };
 
 export const getMsg = async ({ msgId }: GetMsgCallProps): Promise<MailMessage> => {
-	const result = await getMsgSoapAPI({ msgId, max: 250000 });
+	const result = await getMsgSoapApi({ msgId, max: 250000 });
 	const msg = result?.m[0];
 	return normalizeMailMessageFromSoap(msg, true) as MailMessage;
 };
 
 export const getFullMsg = async ({ msgId }: GetMsgCallProps): Promise<MailMessage> => {
-	const result = await getMsgSoapAPI({ msgId });
+	const result = await getMsgSoapApi({ msgId });
 	const msg = result?.m[0];
 	return normalizeMailMessageFromSoap(msg, true) as MailMessage;
 };

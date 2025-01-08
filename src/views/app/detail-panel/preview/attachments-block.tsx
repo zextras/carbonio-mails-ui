@@ -37,8 +37,8 @@ import {
 	getAttachmentsLink,
 	getLocationOrigin
 } from './utils';
-import { getMsgsForPrint } from '../../../../api';
-import { deleteAttachments } from '../../../../api/delete-all-attachments';
+import { getMsgsForPrintSoapApi } from '../../../../api';
+import { deleteAttachmentsSoapApi } from '../../../../api/delete-all-attachments-soap-api';
 import { getFileExtension } from '../../../../commons/utilities';
 import { useAttachmentIconColor } from '../../../../helpers/attachments';
 import { useUiUtilities } from '../../../../hooks/use-ui-utilities';
@@ -161,7 +161,7 @@ const Attachment = ({
 	const isEML = extension === 'EML';
 
 	const onDeleteAttachment = useCallback(() => {
-		deleteAttachments({ id: messageId, attachments: [part] });
+		deleteAttachmentsSoapApi({ id: messageId, attachments: [part] });
 	}, [messageId, part]);
 
 	const onDownloadAndDelete = useCallback(() => {
@@ -261,7 +261,7 @@ const Attachment = ({
 	const [uploadIntegration, isUploadIntegrationAvailable] = getIntegratedFunction('select-nodes');
 
 	const showEMLPreview = useCallback(() => {
-		getMsgsForPrint({ ids: [messageId], part: att?.name })
+		getMsgsForPrintSoapApi({ ids: [messageId], part: att?.name })
 			.then((res) => {
 				openEmlPreview && openEmlPreview(messageId, att?.name, res[0]);
 			})

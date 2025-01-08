@@ -8,7 +8,7 @@ import { useCallback, useEffect, useMemo, useRef } from 'react';
 
 import { useUserSettings } from '@zextras/carbonio-shell-ui';
 
-import { searchSoapApi } from '../api/search';
+import { searchSoapApi } from '../api/search-soap-api';
 import { API_REQUEST_STATUS, LIST_LIMIT } from '../constants';
 import { handleSearchSoapApiResults } from '../store/emails/hooks/hooks';
 import {

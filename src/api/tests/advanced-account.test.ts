@@ -7,7 +7,7 @@ import { HttpResponse } from 'msw';
 
 import { createAPIInterceptor } from '../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { useAdvancedAccountStore } from '../../store/advanced-account/store';
-import { advancedAccountAPI } from '../advanced-account';
+import { advancedAccountApi } from '../advanced-account-api';
 
 const api = '/zx/login/v3/account';
 describe('advancedAccountAPI', () => {
@@ -17,11 +17,11 @@ describe('advancedAccountAPI', () => {
 		});
 
 		it('should return backupSelfUndeleteAllowed false', async () => {
-			expect((await advancedAccountAPI()).backupSelfUndeleteAllowed).toBe(false);
+			expect((await advancedAccountApi()).backupSelfUndeleteAllowed).toBe(false);
 		});
 
 		it('the store should have backupSelfUndeleteAllowed property set as false by default', async () => {
-			await advancedAccountAPI();
+			await advancedAccountApi();
 
 			expect(useAdvancedAccountStore.getState().backupSelfUndeleteAllowed).toBe(false);
 		});
@@ -33,11 +33,11 @@ describe('advancedAccountAPI', () => {
 		});
 
 		it('should return backupSelfUndeleteAllowed false', async () => {
-			expect((await advancedAccountAPI()).backupSelfUndeleteAllowed).toBe(false);
+			expect((await advancedAccountApi()).backupSelfUndeleteAllowed).toBe(false);
 		});
 
 		it('the store should have backupSelfUndeleteAllowed property set as false by default', async () => {
-			await advancedAccountAPI();
+			await advancedAccountApi();
 
 			expect(useAdvancedAccountStore.getState().backupSelfUndeleteAllowed).toBe(false);
 		});
@@ -53,11 +53,11 @@ describe('advancedAccountAPI', () => {
 		});
 
 		it('should return backupSelfUndeleteAllowed true', async () => {
-			expect((await advancedAccountAPI()).backupSelfUndeleteAllowed).toBe(true);
+			expect((await advancedAccountApi()).backupSelfUndeleteAllowed).toBe(true);
 		});
 
 		it('should set backupSelfUndeleteAllowed to true in the advanceAccount store', async () => {
-			await advancedAccountAPI();
+			await advancedAccountApi();
 
 			expect(useAdvancedAccountStore.getState().backupSelfUndeleteAllowed).toBe(true);
 		});
@@ -73,11 +73,11 @@ describe('advancedAccountAPI', () => {
 		});
 
 		it('should return backupSelfUndeleteAllowed false', async () => {
-			expect((await advancedAccountAPI()).backupSelfUndeleteAllowed).toBe(false);
+			expect((await advancedAccountApi()).backupSelfUndeleteAllowed).toBe(false);
 		});
 
 		it('should set backupSelfUndeleteAllowed to false in the advanceAccount store', async () => {
-			await advancedAccountAPI();
+			await advancedAccountApi();
 
 			expect(useAdvancedAccountStore.getState().backupSelfUndeleteAllowed).toBe(false);
 		});

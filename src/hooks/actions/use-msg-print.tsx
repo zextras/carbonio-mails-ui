@@ -7,7 +7,7 @@ import { useCallback, useMemo } from 'react';
 
 import { useTranslation } from 'react-i18next';
 
-import { getMsgsForPrint } from '../../api';
+import { getMsgsForPrintSoapApi } from '../../api';
 import { getContentForPrint } from '../../commons/print-conversation/print-conversation';
 import { MessageActionsDescriptors } from '../../constants';
 import { isDraft, isTrash } from '../../helpers/folders';
@@ -23,7 +23,7 @@ export const useMsgPrintFn = (message: MailMessage, folderId: string): ActionFn 
 	const execute = useCallback((): void => {
 		if (canExecute()) {
 			const printWindow = window.open('', '_blank');
-			getMsgsForPrint({ ids: [message.id] })
+			getMsgsForPrintSoapApi({ ids: [message.id] })
 				.then((res) => {
 					const content = getContentForPrint({
 						messages: res,

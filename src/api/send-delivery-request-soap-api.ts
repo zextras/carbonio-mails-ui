@@ -6,10 +6,8 @@
 
 import { soapFetch } from '@zextras/carbonio-shell-ui';
 
-export const sendDeliveryReport = async (messageId: string): Promise<any> => {
-	const res = await soapFetch('SendDeliveryReport', {
+export const sendDeliveryReportSoapApi = async (messageId: string): Promise<any> =>
+	soapFetch('SendDeliveryReport', {
 		mid: messageId,
 		_jsns: 'urn:zimbraMail'
 	});
-	return res;
-};

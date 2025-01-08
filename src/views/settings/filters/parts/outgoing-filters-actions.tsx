@@ -14,7 +14,7 @@ import CreateOutgoingFilterModal from './create-outgoing-filter-modal';
 import DeleteOutgoingFilterModal from './delete-outgoing-filter-modal';
 import { FilterContext } from './filter-context';
 import ModifyOutgoingFilterModal from './modify-filter/modify-outgoing-filter-modal';
-import { modifyOutgoingFilterRules } from '../../../../api/modify-filter-rules';
+import { modifyOutgoingFilterRulesSoapApi } from '../../../../api/modify-filter-rules-soap-api';
 
 type FilterListType = {
 	active: boolean;
@@ -111,7 +111,7 @@ const OutgoingFilterActions: FC<ComponentProps> = ({ compProps }): ReactElement 
 				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 				// @ts-ignore
 				setFetchFilters: setFetchOutgoingFilters,
-				modifierFunc: modifyOutgoingFilterRules
+				modifierFunc: modifyOutgoingFilterRulesSoapApi
 			}),
 		[removeFilter, t, availableList, activeList, setOutgoingFilters, setFetchOutgoingFilters]
 	);
@@ -129,7 +129,7 @@ const OutgoingFilterActions: FC<ComponentProps> = ({ compProps }): ReactElement 
 				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 				// @ts-ignore
 				setFetchFilters: setFetchOutgoingFilters,
-				modifierFunc: modifyOutgoingFilterRules
+				modifierFunc: modifyOutgoingFilterRulesSoapApi
 			}),
 		[addFilter, t, availableList, activeList, setOutgoingFilters, setFetchOutgoingFilters]
 	);
@@ -154,7 +154,7 @@ const OutgoingFilterActions: FC<ComponentProps> = ({ compProps }): ReactElement 
 						setFetchFilters={setFetchOutgoingFilters}
 						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 						// @ts-ignore
-						modifierFunc={modifyOutgoingFilterRules}
+						modifierFunc={modifyOutgoingFilterRulesSoapApi}
 						filterName={selectedFilterName}
 						selectedFilter={selectedFilter}
 						outgoingFilters={outgoingFilters}

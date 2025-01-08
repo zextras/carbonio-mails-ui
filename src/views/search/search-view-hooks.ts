@@ -11,7 +11,7 @@ import { type ErrorSoapBodyResponse, useUserSettings } from '@zextras/carbonio-s
 import { map } from 'lodash';
 
 import { generateQueryString, updateQueryChips } from './utils';
-import { searchSoapApi } from '../../api/search';
+import { searchSoapApi } from '../../api/search-soap-api';
 import { useFoldersMap } from '../../carbonio-ui-commons/store/zustand/folder';
 import { getTags } from '../../carbonio-ui-commons/store/zustand/tags';
 import { Tags } from '../../carbonio-ui-commons/types/tags';

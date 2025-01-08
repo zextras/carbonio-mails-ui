@@ -16,7 +16,7 @@ import DefaultCondition from './create-filters-conditions/default';
 import FilterTestConditionRow from './filter-test-condition-row';
 import FilterActionConditions from './new-filter-action-conditions';
 import { getButtonInfo } from './utils';
-import { modifyOutgoingFilterRules } from '../../../../api/modify-filter-rules';
+import { modifyOutgoingFilterRulesSoapApi } from '../../../../api/modify-filter-rules-soap-api';
 import ModalHeader from '../../../../carbonio-ui-commons/components/modals/modal-header';
 import { useUiUtilities } from '../../../../hooks/use-ui-utilities';
 import type { FilterActions } from '../../../../types';
@@ -127,7 +127,7 @@ const CreateOutgoingFilterModal: FC<ComponentProps> = ({
 	const onConfirm = useCallback(() => {
 		const toSend = [...outgoingFiltersCopy, requiredFilters];
 		setOutgoingFilters(toSend);
-		modifyOutgoingFilterRules(toSend)
+		modifyOutgoingFilterRulesSoapApi(toSend)
 			.then(() => {
 				setFetchOutgoingFilters(true);
 			})

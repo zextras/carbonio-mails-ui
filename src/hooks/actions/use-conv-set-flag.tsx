@@ -7,7 +7,7 @@ import { useCallback, useMemo } from 'react';
 
 import { useTranslation } from 'react-i18next';
 
-import { convAction } from '../../api';
+import { convActionSoapApi } from '../../api';
 import { ConversationActionsDescriptors } from '../../constants';
 import { ActionFn, UIActionDescriptor } from '../../types';
 
@@ -16,7 +16,7 @@ export const useConvSetFlagFn = (ids: Array<string>, isFlagged: boolean): Action
 
 	const execute = useCallback((): void => {
 		if (canExecute()) {
-			convAction({
+			convActionSoapApi({
 				operation: 'flag',
 				ids
 			});

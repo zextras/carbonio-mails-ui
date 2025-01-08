@@ -18,7 +18,7 @@ import {
 import { t } from '@zextras/carbonio-shell-ui';
 import { Trans } from 'react-i18next';
 
-import { applyFilterRules } from '../../api/apply-filter-rules';
+import { applyFilterRulesSoapApi } from '../../api/apply-filter-rules-soap-api';
 import { Folder } from '../../carbonio-ui-commons/types/folder';
 import { GapContainer } from '../../commons/gap-container';
 import { TextStyler } from '../../commons/text-styler';
@@ -51,7 +51,7 @@ export const ApplyFilterModal: FC<ApplyFilterModalProps> = ({ criteria, onClose 
 		if (!folder) {
 			return;
 		}
-		applyFilterRules({
+		applyFilterRulesSoapApi({
 			ruleName: criteria.filterName,
 			foldersId: [folder?.id]
 		})

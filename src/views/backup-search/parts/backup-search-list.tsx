@@ -20,7 +20,7 @@ import { useParams } from 'react-router-dom';
 
 import { BackupSearchMessageListItem } from './backup-search-message-list-item';
 import { BackupSearchRecoveryModal } from './backup-search-recovery-modal';
-import { restoreMessagesAPI } from '../../../api/restore-messages';
+import { restoreMessagesApi } from '../../../api/restore-messages-api';
 import { CustomList } from '../../../carbonio-ui-commons/components/list/list';
 import { CustomListItem } from '../../../carbonio-ui-commons/components/list/list-item';
 import { BACKUP_SEARCH_STATUS, MAILS_ROUTE } from '../../../constants';
@@ -49,7 +49,7 @@ export const BackupSearchList = (): React.JSX.Element => {
 
 	const recoverEmailsCallback = useCallback(
 		async (closeModal: () => void) => {
-			const response = await restoreMessagesAPI(selectedIds);
+			const response = await restoreMessagesApi(selectedIds);
 			closeModal();
 			if ('error' in response) {
 				createSnackbar({

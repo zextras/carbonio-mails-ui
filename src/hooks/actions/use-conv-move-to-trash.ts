@@ -9,7 +9,7 @@ import { useSnackbar } from '@zextras/carbonio-design-system';
 import { replaceHistory } from '@zextras/carbonio-shell-ui';
 import { useTranslation } from 'react-i18next';
 
-import { convAction } from '../../api';
+import { convActionSoapApi } from '../../api';
 import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
 import { isTrash } from '../../carbonio-ui-commons/helpers/folders';
 import { ConversationActionsDescriptors } from '../../constants';
@@ -32,7 +32,7 @@ const useRestoreConversation = (
 	const [t] = useTranslation();
 
 	return useCallback(() => {
-		convAction({
+		convActionSoapApi({
 			operation: `move`,
 			ids,
 			parent: folderId
@@ -79,7 +79,7 @@ export const useConvMoveToTrashFn = ({
 		if (!canExecute()) {
 			return;
 		}
-		convAction({
+		convActionSoapApi({
 			operation: `trash`,
 			ids
 		}).then((res) => {

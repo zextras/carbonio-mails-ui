@@ -18,8 +18,8 @@ import {
 import { t, useUserAccounts } from '@zextras/carbonio-shell-ui';
 
 import { GranteeInfo } from './parts/edit/share-folder-properties';
-import { sendShareNotification } from '../../api/send-share-notification';
-import { shareFolder } from '../../api/share-folder';
+import { sendShareNotificationSoapApi } from '../../api/send-share-notification-soap-api';
+import { shareFolderSoapApi } from '../../api/share-folder-soap-api';
 import ModalFooter from '../../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../../carbonio-ui-commons/components/modals/modal-header';
 import { useContactInput } from '../../carbonio-ui-commons/integrations/hooks';
@@ -63,7 +63,7 @@ const EditPermissionsModal: FC<EditPermissionsModalProps> = ({
 	}, []);
 
 	const onConfirm = useCallback(async (): Promise<void> => {
-		const shareFolderResponse = await shareFolder({
+		const shareFolderResponse = await shareFolderSoapApi({
 			sendNotification,
 			standardMessage,
 			contacts: editMode
@@ -84,7 +84,7 @@ const EditPermissionsModal: FC<EditPermissionsModalProps> = ({
 					: t('snackbar.folder_shared', 'Folder shared'),
 				autoHideTimeout: 3000
 			});
-			const sendNotificaitonResponse = await sendShareNotification?.({
+			const sendNotificaitonResponse = await sendShareNotificationSoapApi?.({
 				standardMessage,
 				contacts: editMode
 					? [{ email: grant.d || grant.zid }]

@@ -35,7 +35,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 
-import { createMountpoint } from '../../api/create-mountpoint';
+import { createMountpointSoapApi } from '../../api/create-mountpoint-soap-api';
 import ModalFooter from '../../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../../carbonio-ui-commons/components/modals/modal-header';
 import type {
@@ -94,7 +94,7 @@ export const SharesModal: FC<ShareModalProps> = ({ folders, onClose }) => {
 	const [t] = useTranslation();
 
 	const onConfirm = useCallback(() => {
-		createMountpoint(links);
+		createMountpointSoapApi(links);
 		onClose();
 	}, [links, onClose]);
 

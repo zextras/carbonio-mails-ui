@@ -13,7 +13,7 @@ import { getSetupServer } from '../../carbonio-ui-commons/test/jest-setup';
 import { populateFoldersStore } from '../../carbonio-ui-commons/test/mocks/store/folders';
 import { Folder } from '../../carbonio-ui-commons/types/folder';
 import { FolderActionGrant } from '../../types';
-import { shareFolder, ShareFolderDataType } from '../share-folder';
+import { shareFolderSoapApi, ShareFolderDataType } from '../share-folder-soap-api';
 
 const setupInterceptor = (): Promise<Array<{ action: FolderActionGrant }>> =>
 	new Promise<Array<{ action: FolderActionGrant }>>((resolve, reject) => {
@@ -47,7 +47,7 @@ describe('shareFolder', () => {
 			accounts: []
 		};
 		const interceptor = setupInterceptor();
-		shareFolder(shareFolderArgs);
+		shareFolderSoapApi(shareFolderArgs);
 		const requests = await interceptor;
 		requests.forEach((request) => {
 			const result = request.action.grant.inh;

@@ -14,7 +14,7 @@ import type {
 	MailMessage
 } from '../types';
 
-export const getMsgsForPrint = async ({
+export const getMsgsForPrintSoapApi = async ({
 	ids,
 	part
 }: GetMsgForPrintParameter): Promise<Array<MailMessage>> => {

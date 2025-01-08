@@ -6,7 +6,7 @@
 
 import { renderHook, act } from '@testing-library/react';
 
-import * as searchSoapApi from '../../../../../api/search';
+import * as searchSoapApi from '../../../../../api/search-soap-api';
 import { generateFolder } from '../../../../../carbonio-ui-commons/test/mocks/folders/folders-generator';
 import { createSoapAPIInterceptor } from '../../../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { API_REQUEST_STATUS } from '../../../../../constants';

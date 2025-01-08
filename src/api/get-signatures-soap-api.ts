@@ -17,7 +17,7 @@ export type GetSignaturesResponse = {
 	_jsns: typeof JSNS.account;
 };
 
-export async function GetAllSignatures(): Promise<GetSignaturesResponse> {
+export async function GetSignaturesSoapApi(): Promise<GetSignaturesResponse> {
 	return soapFetch<GetSignaturesRequest, GetSignaturesResponse | ErrorSoapBodyResponse>(
 		'GetSignatures',
 		{

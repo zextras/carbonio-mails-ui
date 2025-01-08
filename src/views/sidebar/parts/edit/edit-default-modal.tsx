@@ -13,7 +13,7 @@ import { FolderDetails } from './folder-details';
 import NameInputRow from './name-input';
 import RetentionPolicies from './retention-policies';
 import { ShareFolderProperties } from './share-folder-properties';
-import { folderAction } from '../../../../api/folder-action';
+import { folderActionSoapApi } from '../../../../api/folder-action-soap-api';
 import ModalFooter from '../../../../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../../../../carbonio-ui-commons/components/modals/modal-header';
 import { FolderActionsType, FOLDERS } from '../../../../carbonio-ui-commons/constants/folders';
@@ -195,7 +195,7 @@ const MainEditModal: FC<MainEditModalPropType> = ({ folder, onClose, setActiveMo
 			else if (dspYear === 'y') pr = Number(purgeValue) * 365;
 			else pr = Number(purgeValue);
 
-			folderAction({
+			folderActionSoapApi({
 				folder: {
 					...folder,
 					parent: folder.l || '',

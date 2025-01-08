@@ -6,7 +6,7 @@
 
 import { apiWrapper } from '../carbonio-ui-commons/helpers/api-wrapper';
 
-export async function restoreMessagesAPI(
+export async function restoreMessagesApi(
 	messages: Array<string>
 ): Promise<{ data: Response } | { error: unknown }> {
 	const apiCall = fetch(`/zx/backup/v1/restoreMessages`, {

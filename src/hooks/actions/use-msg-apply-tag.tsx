@@ -8,7 +8,7 @@ import { useCallback, useMemo } from 'react';
 import { map } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
-import { msgActionSoapApi } from '../../api/msg-action';
+import { msgActionSoapApi } from '../../api/msg-action-soap-api';
 import { useTags } from '../../carbonio-ui-commons/store/zustand/tags';
 import { Tag } from '../../carbonio-ui-commons/types/tags';
 import { MessageActionsDescriptors, TIMEOUTS } from '../../constants';

@@ -13,7 +13,10 @@ import { useRemoveFilter, useAddFilter } from './actions';
 import CreateFilterModal from './create-filter-modal';
 import { FilterContext } from './filter-context';
 import ModifyOutgoingFilterModal from './modify-filter/modify-outgoing-filter-modal';
-import { modifyFilterRules, modifyOutgoingFilterRules } from '../../../../api/modify-filter-rules';
+import {
+	modifyFilterRulesSoapApi,
+	modifyOutgoingFilterRulesSoapApi
+} from '../../../../api/modify-filter-rules-soap-api';
 import { useUiUtilities } from '../../../../hooks/use-ui-utilities';
 
 type FilterListType = {
@@ -86,7 +89,9 @@ const FilterActions: FC<ComponentProps> = ({ compProps }): ReactElement => {
 	const setFetchFilters =
 		selectedFilterType === 'incoming-messages' ? setFetchIncomingFilters : setFetchOutgoingFilters;
 	const modifierFunc =
-		selectedFilterType === 'incoming-messages' ? modifyFilterRules : modifyOutgoingFilterRules;
+		selectedFilterType === 'incoming-messages'
+			? modifyFilterRulesSoapApi
+			: modifyOutgoingFilterRulesSoapApi;
 	const emptyFilter = (): void => undefined;
 
 	const removeFilter = useRemoveFilter();

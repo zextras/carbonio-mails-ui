@@ -6,8 +6,8 @@
 import { renderHook, waitFor } from '@testing-library/react';
 import { CreateSnackbarFn, useSnackbar } from '@zextras/carbonio-design-system';
 
-import * as convRequest from '../../api/conv-action';
-import * as searchSoapApi from '../../api/search';
+import * as convRequest from '../../api/conv-action-soap-api';
+import * as searchSoapApi from '../../api/search-soap-api';
 import * as shell from '../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
 import { createSoapAPIInterceptor } from '../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { setConversationsInEmailStore } from '../../store/emails/store';
@@ -174,7 +174,7 @@ describe('usePreviewHeaderNavigation', () => {
 				});
 			});
 			it('will set the message as read if it was not', async () => {
-				const convActionSpy = jest.spyOn(convRequest, 'convAction');
+				const convActionSpy = jest.spyOn(convRequest, 'convActionSoapApi');
 				const conv1 = generateConversation({ id: '1' });
 				const conv2 = generateConversation({ id: '2' });
 				const conv3 = generateConversation({ id: '3' });
@@ -392,7 +392,7 @@ describe('usePreviewHeaderNavigation', () => {
 				});
 			});
 			it('will set the message as read if it was not', async () => {
-				const convActionSpy = jest.spyOn(convRequest, 'convAction');
+				const convActionSpy = jest.spyOn(convRequest, 'convActionSoapApi');
 				const conv1 = generateConversation({ id: '1' });
 				const conv2 = generateConversation({ id: '2' });
 				const conv3 = generateConversation({ id: '3' });
@@ -421,7 +421,7 @@ describe('usePreviewHeaderNavigation', () => {
 				});
 			});
 			it('will not set the message as read if it was already', async () => {
-				const convActionSpy = jest.spyOn(convRequest, 'convAction');
+				const convActionSpy = jest.spyOn(convRequest, 'convActionSoapApi');
 				const conv1 = generateConversation({ id: '1' });
 				const conv2 = generateConversation({ id: '2' });
 				const conv3 = generateConversation({ id: '3' });

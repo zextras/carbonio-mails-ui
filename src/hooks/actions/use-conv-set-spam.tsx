@@ -9,7 +9,7 @@ import { useSnackbar } from '@zextras/carbonio-design-system';
 import { replaceHistory } from '@zextras/carbonio-shell-ui';
 import { useTranslation } from 'react-i18next';
 
-import { convAction } from '../../api';
+import { convActionSoapApi } from '../../api';
 import { ConversationActionsDescriptors } from '../../constants';
 import { isDraft, isSpam } from '../../helpers/folders';
 import { ActionFn, UIActionDescriptor } from '../../types';
@@ -53,7 +53,7 @@ export const useConvSetSpamFn = ({
 		infoSnackbar();
 		setTimeout((): void => {
 			if (notCanceled) {
-				convAction({
+				convActionSoapApi({
 					operation: 'spam',
 					ids
 				}).then((res) => {

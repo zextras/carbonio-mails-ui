@@ -12,10 +12,10 @@ import { computeAndUpdateEditorStatus } from './commons';
 import { getEditor } from './editors';
 import { useSaveDraftFromEditor, SaveDraftOptions } from './save-draft';
 import {
-	uploadAttachments,
+	uploadAttachmentsApi,
 	UploadAttachmentsOptions,
 	UploadCallbacks
-} from '../../../api/upload-attachments';
+} from '../../../api/upload-attachments-api';
 import { TIMEOUTS } from '../../../constants';
 import { composeAttachmentDownloadUrl } from '../../../helpers/attachments';
 import { useUiUtilities } from '../../../hooks/use-ui-utilities';
@@ -142,7 +142,7 @@ export const useEditorAttachments = (editorId: MailsEditorV2['id']): EditorAttac
 			}
 		};
 
-		const uploadsResult = uploadAttachments(files, options);
+		const uploadsResult = uploadAttachmentsApi(files, options);
 		const { addUnsavedAttachments } = useEditorsStore.getState();
 
 		const unsavedAttachments = uploadsResult.map<UnsavedAttachment>(

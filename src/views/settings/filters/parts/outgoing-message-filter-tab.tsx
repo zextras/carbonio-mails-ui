@@ -14,7 +14,7 @@ import FilterItem from './filter-item';
 import LoadingShimmer from './loading-shimmer';
 import OutgoingFilterActions from './outgoing-filters-actions';
 import { useFilterSelection } from './use-filter-selection';
-import { modifyOutgoingFilterRules } from '../../../../api/modify-filter-rules';
+import { modifyOutgoingFilterRulesSoapApi } from '../../../../api/modify-filter-rules-soap-api';
 import Heading from '../../components/settings-heading';
 import { ListOld } from '../../list-old';
 
@@ -40,13 +40,13 @@ const OutgoingMsgFilterTab: FC<ComponentProps> = ({ t, selectedFilterType }): Re
 	const activeList = useFilterSelection(
 		active,
 		setFetchOutgoingFilters,
-		modifyOutgoingFilterRules,
+		modifyOutgoingFilterRulesSoapApi,
 		available
 	);
 	const availableList = useFilterSelection(
 		available,
 		setFetchOutgoingFilters,
-		modifyOutgoingFilterRules,
+		modifyOutgoingFilterRulesSoapApi,
 		active
 	);
 

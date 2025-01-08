@@ -8,7 +8,7 @@ import { useCallback, useMemo } from 'react';
 import { replaceHistory } from '@zextras/carbonio-shell-ui';
 import { useTranslation } from 'react-i18next';
 
-import { msgActionSoapApi } from '../../api/msg-action';
+import { msgActionSoapApi } from '../../api/msg-action-soap-api';
 import { MessageActionsDescriptors } from '../../constants';
 import { isDraft } from '../../helpers/folders';
 import { ActionFn, UIActionDescriptor } from '../../types';

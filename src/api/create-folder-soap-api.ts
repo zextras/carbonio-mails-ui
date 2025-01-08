@@ -8,7 +8,7 @@ import { soapFetch } from '@zextras/carbonio-shell-ui';
 import { FOLDERS } from '../carbonio-ui-commons/constants/folders';
 import { type CreateFolderResponse } from '../types';
 
-export function createFolder({
+export function createFolderSoapApi({
 	parentFolderId,
 	name
 }: {

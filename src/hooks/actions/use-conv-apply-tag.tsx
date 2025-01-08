@@ -10,7 +10,7 @@ import { TFunction } from 'i18next';
 import { includes, map } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
-import { convAction } from '../../api';
+import { convActionSoapApi } from '../../api';
 import { useTags } from '../../carbonio-ui-commons/store/zustand/tags';
 import { Tag } from '../../carbonio-ui-commons/types/tags';
 import { ConversationActionsDescriptors, TIMEOUTS } from '../../constants';
@@ -110,7 +110,7 @@ export const useConvApplyTagSubDescriptors = ({
 				const execute = (): void => {
 					executeTagAction({
 						canExecute,
-						action: convAction,
+						action: convActionSoapApi,
 						operation,
 						ids,
 						tag,

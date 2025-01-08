@@ -7,13 +7,13 @@
 import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
 import { createSoapAPIInterceptor } from '../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { SearchConvRequest } from '../../types';
-import { searchConvSoapAPI } from '../search-conv';
+import { searchConvSoapApi } from '../search-conv-soap-api';
 
 describe('searchConvSoapApi', () => {
 	test('the max property is set to 250_000', async () => {
 		const interceptor = createSoapAPIInterceptor<SearchConvRequest>('SearchConv');
 
-		searchConvSoapAPI({ conversationId: '1', folderId: FOLDERS.INBOX, fetch: 'all' });
+		searchConvSoapApi({ conversationId: '1', folderId: FOLDERS.INBOX, fetch: 'all' });
 
 		const req = await interceptor;
 		expect(req.max).toBe(250000);

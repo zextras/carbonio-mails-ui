@@ -8,8 +8,8 @@ import React, { FC, ReactElement, useCallback, useEffect, useMemo } from 'react'
 import { Container, CustomModal, Padding, Text } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 
-import { msgActionSoapApi } from '../../../../api/msg-action';
-import { sendDeliveryReport } from '../../../../api/send-delivery-request';
+import { msgActionSoapApi } from '../../../../api/msg-action-soap-api';
+import { sendDeliveryReportSoapApi } from '../../../../api/send-delivery-request-soap-api';
 import ModalFooter from '../../../../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../../../../carbonio-ui-commons/components/modals/modal-header';
 import { useUiUtilities } from '../../../../hooks/use-ui-utilities';
@@ -40,7 +40,7 @@ const ReadReceiptModal: FC<CompProps> = ({
 	}, [message?.id]);
 
 	const onNotify = useCallback(() => {
-		sendDeliveryReport(message.id).then(() => {
+		sendDeliveryReportSoapApi(message.id).then(() => {
 			createSnackbar({
 				key: `read-receipt-sent`,
 				replace: true,

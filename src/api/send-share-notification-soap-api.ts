@@ -14,7 +14,7 @@ type SendShareNotification = {
 	standardMessage?: string;
 };
 
-export async function sendShareNotification(data: SendShareNotification): Promise<unknown> {
+export async function sendShareNotificationSoapApi(data: SendShareNotification): Promise<unknown> {
 	return Promise.all(
 		map(data.contacts, (contact) =>
 			fetch('/service/soap/SendShareNotificationRequest', {

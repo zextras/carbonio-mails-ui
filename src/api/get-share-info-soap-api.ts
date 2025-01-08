@@ -5,7 +5,7 @@
  */
 import { soapFetch } from '@zextras/carbonio-shell-ui';
 
-export function getShareInfo(): Promise<{ share: any }> {
+export function getShareInfoSoapApi(): Promise<{ share: any }> {
 	return soapFetch('GetShareInfo', {
 		_jsns: 'urn:zimbraAccount',
 		includeSelf: 0

@@ -8,7 +8,7 @@ import { useCallback, useMemo } from 'react';
 import { forEach } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
-import { getMsgsForPrint } from '../../api';
+import { getMsgsForPrintSoapApi } from '../../api';
 import { getContentForPrint } from '../../commons/print-conversation/print-conversation';
 import { ConversationActionsDescriptors } from '../../constants';
 import { isDraft, isTrash } from '../../helpers/folders';
@@ -32,7 +32,7 @@ export const useConvPrintFn = (conversation: Array<Conversation>, folderId: stri
 			});
 
 			const printWindow = window.open('', '_blank');
-			getMsgsForPrint({ ids: messageIds })
+			getMsgsForPrintSoapApi({ ids: messageIds })
 				.then((res) => {
 					const content = getContentForPrint({
 						messages: res,

@@ -14,7 +14,7 @@ import { EditModal } from './edit-modal';
 import { EmptyModal } from './empty-modal';
 import { NewModal } from './new-modal';
 import { SharesInfoModal } from './shares-info-modal';
-import { folderAction } from '../../api/folder-action';
+import { folderActionSoapApi } from '../../api/folder-action-soap-api';
 import { FolderActionsType, FOLDERS } from '../../carbonio-ui-commons/constants/folders';
 import type { Folder } from '../../carbonio-ui-commons/types/folder';
 import { allowedActionOnSharedAccount } from '../../carbonio-ui-commons/utils/utils';
@@ -119,7 +119,7 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 							onClose: () => void
 						): void => {
 							const restoreFolder = (): Promise<void> =>
-								folderAction({ folder, l: folder.l, op: 'move' }).then((res) => {
+								folderActionSoapApi({ folder, l: folder.l, op: 'move' }).then((res) => {
 									if (!('Fault' in res)) {
 										createSnackbar({
 											key: `move-folder`,
@@ -140,7 +140,7 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 										});
 									}
 								});
-							folderAction({
+							folderActionSoapApi({
 								folder,
 								l: folderDestination?.id ?? FOLDERS.USER_ROOT,
 								op: 'move'
@@ -275,7 +275,7 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 				onClick: (e: SyntheticEvent<HTMLElement, Event> | KeyboardEvent): void => {
 					if (e) {
 						e.stopPropagation();
-						folderAction({ folder, op: 'delete' });
+						folderActionSoapApi({ folder, op: 'delete' });
 					}
 				}
 			},
@@ -308,7 +308,7 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 				onClick: (e: SyntheticEvent<HTMLElement, Event> | KeyboardEvent): void => {
 					if (e) {
 						e.stopPropagation();
-						folderAction({ folder, op: 'read', l: folder.id });
+						folderActionSoapApi({ folder, op: 'read', l: folder.id });
 					}
 				}
 			}

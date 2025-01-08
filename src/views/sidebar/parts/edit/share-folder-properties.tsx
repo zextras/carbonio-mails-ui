@@ -19,7 +19,7 @@ import { map } from 'lodash';
 import styled from 'styled-components';
 
 import { Context } from './edit-context';
-import { sendShareNotification } from '../../../../api/send-share-notification';
+import { sendShareNotificationSoapApi } from '../../../../api/send-share-notification-soap-api';
 import { useUiUtilities } from '../../../../hooks/use-ui-utilities';
 import {
 	findLabel,
@@ -75,7 +75,7 @@ const Actions = ({
 	const { createSnackbar } = useUiUtilities();
 
 	const onResend = useCallback(() => {
-		sendShareNotification({
+		sendShareNotificationSoapApi({
 			standardMessage: '',
 			contacts: [{ email: grant.d }],
 			folder,

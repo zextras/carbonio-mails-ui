@@ -8,7 +8,7 @@ import { ErrorSoapBodyResponse, SoapBody, soapFetch } from '@zextras/carbonio-sh
 
 import type { RedirectMessageActionRequest, MessageSpecification } from '../types';
 
-export const redirectMessageAction = ({
+export const redirectMessageSoapApi = ({
 	id,
 	e
 }: MessageSpecification): Promise<SoapBody | ErrorSoapBodyResponse> =>

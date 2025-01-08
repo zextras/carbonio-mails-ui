@@ -13,9 +13,9 @@ import { ISoapFolderObj } from '../../types';
 import { CreateMountpointError } from '../errors/create-mountpoint-error';
 import {
 	CreateMountpointResponse,
-	mountSharedFolder,
+	mountSharedFolderSoapApi,
 	MountSharedFolderParams
-} from '../mount-shared-folder';
+} from '../mount-shared-folder-soap-api';
 
 describe('mountShareCalendar', () => {
 	it('raise an error if the response is an error', async () => {
@@ -33,7 +33,7 @@ describe('mountShareCalendar', () => {
 			accounts: [{ name: faker.word.noun() }]
 		};
 
-		expect(mountSharedFolder(params)).rejects.toBeInstanceOf(CreateMountpointError);
+		expect(mountSharedFolderSoapApi(params)).rejects.toBeInstanceOf(CreateMountpointError);
 	});
 
 	it('returns the link if the response is success ', async () => {
@@ -73,7 +73,7 @@ describe('mountShareCalendar', () => {
 			accounts: [{ name: faker.word.noun() }]
 		};
 
-		const result = await mountSharedFolder(params);
+		const result = await mountSharedFolderSoapApi(params);
 		expect(result).toEqual(link);
 	});
 });

@@ -10,7 +10,7 @@ import { useTranslation } from 'react-i18next';
 
 import { computeAndUpdateEditorStatus } from './commons';
 import { getEditor } from './editors';
-import { saveDraftV3 } from '../../../api/save-draft';
+import { saveDraftSoapApi } from '../../../api/save-draft-soap-api';
 import { useUiUtilities } from '../../../hooks/use-ui-utilities';
 import { normalizeMailMessageFromSoap } from '../../../normalizations/normalize-message';
 import { MailsEditorV2 } from '../../../types';
@@ -67,7 +67,7 @@ export const useSaveDraftFromEditor = (): {
 			};
 
 			// Update messages store
-			saveDraftV3({ editor })
+			saveDraftSoapApi({ editor })
 				.then((res) => {
 					if ('Fault' in res) {
 						handleError(res.Fault.Detail?.Error?.Detail);

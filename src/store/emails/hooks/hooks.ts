@@ -9,8 +9,8 @@ import { useEffect } from 'react';
 import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
 
-import { getMsgSoapAPI } from '../../../api/get-msg';
-import { searchConvSoapAPI } from '../../../api/search-conv';
+import { getMsgSoapApi } from '../../../api/get-msg-soap-api';
+import { searchConvSoapApi } from '../../../api/search-conv-soap-api';
 import { API_REQUEST_STATUS } from '../../../constants';
 import { normalizeConversations } from '../../../normalizations/normalize-conversation';
 import {
@@ -63,7 +63,7 @@ type ConversationWithStatus = {
 
 export function retrieveConversation(conversationId: string, folderId?: string): void {
 	updateConversationStatus(conversationId, API_REQUEST_STATUS.pending);
-	searchConvSoapAPI({ conversationId, fetch: 'all', folderId })
+	searchConvSoapApi({ conversationId, fetch: 'all', folderId })
 		.then((response) => {
 			if ('Fault' in response) {
 				updateConversationStatus(conversationId, API_REQUEST_STATUS.error);
@@ -129,11 +129,11 @@ async function handleRetrieveMessage(
 }
 
 function retrieveMessage(messageId: string): void {
-	handleRetrieveMessage(messageId, (id) => getMsgSoapAPI({ msgId: id, max: 250_000 }));
+	handleRetrieveMessage(messageId, (id) => getMsgSoapApi({ msgId: id, max: 250_000 }));
 }
 
 export function retrieveFullMessage(messageId: string): Promise<void> {
-	return handleRetrieveMessage(messageId, (id) => getMsgSoapAPI({ msgId: id }));
+	return handleRetrieveMessage(messageId, (id) => getMsgSoapApi({ msgId: id }));
 }
 
 export function useCompleteMessage(messageId: string): MessageWithStatus {

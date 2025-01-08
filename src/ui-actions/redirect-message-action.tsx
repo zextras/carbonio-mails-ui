@@ -10,7 +10,7 @@ import { Container, Divider, Text } from '@zextras/carbonio-design-system';
 import { map, some } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
-import { redirectMessageAction } from '../api';
+import { redirectMessageSoapApi } from '../api';
 import ModalFooter from '../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../carbonio-ui-commons/components/modals/modal-header';
 import { useContactInput } from '../carbonio-ui-commons/integrations/hooks';
@@ -43,7 +43,7 @@ const RedirectMessageAction = ({ onClose, id }: RedirectActionProps): ReactEleme
 
 	const onConfirm = useCallback(
 		() =>
-			redirectMessageAction({
+			redirectMessageSoapApi({
 				id,
 				e: map(contacts, (p) => ({
 					a: p.value.email,

@@ -6,7 +6,7 @@
 
 import { ServicesCatalog } from '../types';
 
-export const requestServiceCatalog = (): Promise<ServicesCatalog> =>
+export const requestServiceCatalogApi = (): Promise<ServicesCatalog> =>
 	fetch('/services/catalog/services')
 		.then(async (response) => {
 			if (response.ok) {

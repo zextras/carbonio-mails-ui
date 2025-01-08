@@ -5,7 +5,10 @@
  */
 import { JSNS } from '@zextras/carbonio-shell-ui';
 
-import { GetSignaturesRequest, GetSignaturesResponse } from '../../../../api/signatures';
+import {
+	GetSignaturesRequest,
+	GetSignaturesResponse
+} from '../../../../api/get-signatures-soap-api';
 import { createSoapAPIInterceptor } from '../../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { SignItemType } from '../../../../types';
 

@@ -7,7 +7,7 @@ import { useCallback, useMemo } from 'react';
 
 import { useTranslation } from 'react-i18next';
 
-import { msgActionSoapApi } from '../../api/msg-action';
+import { msgActionSoapApi } from '../../api/msg-action-soap-api';
 import { MessageActionsDescriptors } from '../../constants';
 import { ActionFn, UIActionDescriptor } from '../../types';
 

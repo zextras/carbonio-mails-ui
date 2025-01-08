@@ -29,7 +29,7 @@ import { saveSettings } from './save-settings';
 import { SendersList, getList } from './senders-list';
 import SignatureSettings from './signature-settings';
 import TrusteeAddresses from './trustee-addresses';
-import { GetAllSignatures, signatureRequest } from '../../api/signatures';
+import { GetSignaturesSoapApi, signatureRequest } from '../../api/get-signatures-soap-api';
 import { useUpdateView } from '../../carbonio-ui-commons/hooks/use-update-view';
 import { TIMEOUTS } from '../../constants';
 import { NO_SIGNATURE_ID } from '../../helpers/signatures';
@@ -246,7 +246,7 @@ const SettingsView = (): React.JSX.Element => {
 
 	// Fetches signatures from the BE
 	useEffect(() => {
-		GetAllSignatures()
+		GetSignaturesSoapApi()
 			.then(({ signature: signs }) => onSignaturesLoaded(signs))
 			.catch((err) => {
 				console.error(err);
@@ -335,7 +335,7 @@ const SettingsView = (): React.JSX.Element => {
 					});
 					setFlag(!flag);
 					setDisabled(true);
-					GetAllSignatures()
+					GetSignaturesSoapApi()
 						.then(({ signature: signs }) => {
 							onSignaturesLoaded(signs);
 							updateAccount({ signatures: signs });

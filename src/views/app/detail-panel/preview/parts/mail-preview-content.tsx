@@ -14,7 +14,7 @@ import {
 } from '@zextras/carbonio-shell-ui';
 import { filter } from 'lodash';
 
-import { msgActionSoapApi } from '../../../../../api/msg-action';
+import { msgActionSoapApi } from '../../../../../api/msg-action-soap-api';
 import { MailMessageRenderer } from '../../../../../commons/mail-message-renderer/mail-message-renderer';
 import SharedInviteReply from '../../../../../integrations/shared-invite-reply';
 import { useCompleteMessage } from '../../../../../store/emails/hooks/hooks';

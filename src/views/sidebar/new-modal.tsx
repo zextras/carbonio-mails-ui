@@ -11,7 +11,7 @@ import { find, includes, noop } from 'lodash';
 
 import { FolderSelector } from './commons/folder-selector';
 import { translatedSystemFolders } from './utils';
-import { createFolder } from '../../api/create-folder';
+import { createFolderSoapApi } from '../../api/create-folder-soap-api';
 import ModalFooter from '../../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../../carbonio-ui-commons/components/modals/modal-header';
 import type { Folder } from '../../carbonio-ui-commons/types/folder';
@@ -67,7 +67,7 @@ export const NewModal: FC<ModalProps> = ({ folder, onClose }) => {
 	}, [folderDestination, inputValue, showWarning]);
 
 	const onConfirm = useCallback(() => {
-		createFolder({
+		createFolderSoapApi({
 			parentFolderId: folderDestination?.id ?? '',
 			name: inputValue
 		})

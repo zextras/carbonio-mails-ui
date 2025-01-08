@@ -17,7 +17,7 @@ type RemoveAttachmentsResponse = {
 	};
 };
 
-export const deleteAttachments = async ({
+export const deleteAttachmentsSoapApi = async ({
 	id,
 	attachments
 }: RemoveAttachmentsProps): Promise<RemoveAttachmentsResponse | ErrorSoapResponse> =>

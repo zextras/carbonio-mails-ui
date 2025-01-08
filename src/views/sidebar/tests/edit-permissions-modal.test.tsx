@@ -9,7 +9,7 @@ import { faker } from '@faker-js/faker';
 import { act, screen, within } from '@testing-library/react';
 import { CreateSnackbarFn, useSnackbar } from '@zextras/carbonio-design-system';
 
-import * as shareFolderModule from '../../../api/share-folder';
+import * as shareFolderModule from '../../../api/share-folder-soap-api';
 import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
 import { getFolder } from '../../../carbonio-ui-commons/store/zustand/folder';
 import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
@@ -278,7 +278,7 @@ describe('edit-permissions-modal', () => {
 			await user.tab();
 			await user.click(roleItem);
 
-			const shareFolderMock = jest.spyOn(shareFolderModule, 'shareFolder');
+			const shareFolderMock = jest.spyOn(shareFolderModule, 'shareFolderSoapApi');
 
 			await user.click(confirmButton);
 
@@ -327,7 +327,7 @@ describe('edit-permissions-modal', () => {
 			await user.type(userInput, viewer);
 			await user.tab();
 
-			const shareFolderMock = jest.spyOn(shareFolderModule, 'shareFolder');
+			const shareFolderMock = jest.spyOn(shareFolderModule, 'shareFolderSoapApi');
 			await user.click(confirmButton);
 
 			// Check that the shareFolder and the data passed
@@ -374,7 +374,7 @@ describe('edit-permissions-modal', () => {
 			await user.type(userInput, viewer);
 			await user.tab();
 
-			const shareFolderMock = jest.spyOn(shareFolderModule, 'shareFolder');
+			const shareFolderMock = jest.spyOn(shareFolderModule, 'shareFolderSoapApi');
 
 			await user.click(confirmButton);
 
@@ -439,7 +439,7 @@ describe('edit-permissions-modal', () => {
 			await user.click(standardMessage);
 			await user.type(standardMessage, note);
 
-			const shareFolderMock = jest.spyOn(shareFolderModule, 'shareFolder');
+			const shareFolderMock = jest.spyOn(shareFolderModule, 'shareFolderSoapApi');
 			await user.click(confirmButton);
 			// Check that the shareFolder and the data passed
 			expect(shareFolderMock).toHaveBeenCalled();
@@ -509,7 +509,7 @@ describe('edit-permissions-modal', () => {
 
 			expect(standardMessage).toBeDisabled();
 
-			const shareFolderMock = jest.spyOn(shareFolderModule, 'shareFolder');
+			const shareFolderMock = jest.spyOn(shareFolderModule, 'shareFolderSoapApi');
 			await act(async () => {
 				await user.click(confirmButton);
 			});

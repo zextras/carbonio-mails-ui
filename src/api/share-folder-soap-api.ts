@@ -19,7 +19,7 @@ export type ShareFolderDataType = {
 	accounts: Array<Account>;
 };
 
-export async function shareFolder(data: ShareFolderDataType): Promise<BatchResponse> {
+export async function shareFolderSoapApi(data: ShareFolderDataType): Promise<BatchResponse> {
 	const requests = data?.contacts?.map((contact, index) => ({
 		_jsns: 'urn:zimbraMail',
 		requestId: index,

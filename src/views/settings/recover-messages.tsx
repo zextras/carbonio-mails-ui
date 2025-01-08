@@ -22,7 +22,7 @@ import { isEmpty } from 'lodash';
 
 import { RecoverMessagesModal } from './components/recover-messages-modal';
 import { recoverMessagesSubSection } from './subsections';
-import { searchBackupDeletedMessagesAPI } from '../../api/search-backup-deleted-messages';
+import { searchBackupDeletedMessagesApi } from '../../api/search-backup-deleted-messages-api';
 import {
 	BACKUP_SEARCH_ROUTE,
 	BACKUP_SEARCH_STATUS,
@@ -62,7 +62,7 @@ export const RecoverMessages = (): React.JSX.Element => {
 				...interval,
 				...(searchString === '' ? {} : { searchString })
 			};
-			const response = await searchBackupDeletedMessagesAPI(searchParams);
+			const response = await searchBackupDeletedMessagesApi(searchParams);
 			closeModal(id);
 
 			if ('error' in response) {

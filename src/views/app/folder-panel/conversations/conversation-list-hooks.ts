@@ -7,7 +7,7 @@
 
 import { useCallback } from 'react';
 
-import { searchSoapApi } from '../../../../api/search';
+import { searchSoapApi } from '../../../../api/search-soap-api';
 import { API_REQUEST_STATUS } from '../../../../constants';
 import { normalizeConversations } from '../../../../normalizations/normalize-conversation';
 import {

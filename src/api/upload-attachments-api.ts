@@ -45,7 +45,7 @@ export type UploadAttachmentResult = {
  * @return An object containing the given uploaded file, the assigned uploadId and
  * the AbortController to cancel the upload connection
  */
-export const uploadAttachment = (
+export const uploadAttachmentApi = (
 	file: File,
 	options?: UploadAttachmentOptions
 ): UploadAttachmentResult => {
@@ -102,7 +102,7 @@ export const uploadAttachment = (
  * @return An array of objects containing, for each element, the given uploaded file, the assigned uploadId and
  * the AbortController to cancel the upload connection
  */
-export const uploadAttachments = (
+export const uploadAttachmentsApi = (
 	files: Array<File>,
 	options?: UploadAttachmentsOptions
 ): Array<UploadAttachmentResult> => {
@@ -140,7 +140,7 @@ export const uploadAttachments = (
 		}
 	};
 
-	const uploadsInfo = map(files, (file) => uploadAttachment(file, customizedOptions));
+	const uploadsInfo = map(files, (file) => uploadAttachmentApi(file, customizedOptions));
 
 	// Populate the list of the running uploads
 	uploadsInfo.forEach((uploadInfo) => {

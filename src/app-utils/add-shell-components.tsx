@@ -15,7 +15,7 @@ import {
 	upsertApp
 } from '@zextras/carbonio-shell-ui';
 
-import { advancedAccountAPI } from '../api/advanced-account';
+import { advancedAccountApi } from '../api/advanced-account-api';
 import { Spinner } from '../assets/spinner';
 import { MAIL_APP_ID, MAILS_BOARD_VIEW_ID, MAILS_ROUTE } from '../constants';
 import { ExtraWindowsManager } from '../views/app/extra-windows/extra-window-manager';
@@ -89,7 +89,7 @@ export const addComponentsToShell = async (): Promise<void> => {
 		id: MAILS_BOARD_VIEW_ID,
 		component: EditView
 	});
-	const { backupSelfUndeleteAllowed } = await advancedAccountAPI();
+	const { backupSelfUndeleteAllowed } = await advancedAccountApi();
 	addSettingsView({
 		route: MAILS_ROUTE,
 		label,

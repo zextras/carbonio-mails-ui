@@ -8,8 +8,8 @@ import React, { useCallback } from 'react';
 import { Container, Text } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
 
-import { convAction } from '../api';
-import { msgActionSoapApi } from '../api/msg-action';
+import { convActionSoapApi } from '../api';
+import { msgActionSoapApi } from '../api/msg-action-soap-api';
 import ModalFooter from '../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../carbonio-ui-commons/components/modals/modal-header';
 import { useUiUtilities } from '../hooks/use-ui-utilities';
@@ -36,7 +36,7 @@ export const DeleteConvConfirm = ({
 					operation: 'delete',
 					ids: selectedIDs
 				})
-			: await convAction({
+			: await convActionSoapApi({
 					operation: 'delete',
 					ids: selectedIDs
 				});

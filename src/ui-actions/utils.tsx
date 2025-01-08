@@ -9,7 +9,7 @@ import { TFunction } from 'i18next';
 import { find, truncate } from 'lodash';
 import { useLocation } from 'react-router-dom';
 
-import { createSmartLinksSoapAPI } from '../api/create-smart-links';
+import { createSmartLinksSoapApi } from '../api/create-smart-links-soap-api';
 import { useEditorsStore } from '../store/editor/store';
 import type {
 	CreateSmartLinksResponse,
@@ -134,7 +134,7 @@ export async function updateEditorWithSmartLinks({
 		.map((attachment) => ({ draftId: attachment.messageId, partName: attachment.partName }));
 
 	try {
-		const result = await createSmartLinksSoapAPI(attachmentsToConvert);
+		const result = await createSmartLinksSoapApi(attachmentsToConvert);
 
 		const { text } = useEditorsStore.getState().editors[editorId];
 

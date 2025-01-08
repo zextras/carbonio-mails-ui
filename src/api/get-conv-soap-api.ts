@@ -17,7 +17,7 @@ import type {
 	IncompleteMessage
 } from '../types';
 
-export const getConv = async ({
+export const getConvSoapApi = async ({
 	conversationId,
 	fetch = 'all',
 	onConversationIdChange

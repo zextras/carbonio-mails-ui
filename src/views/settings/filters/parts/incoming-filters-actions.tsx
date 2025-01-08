@@ -14,7 +14,7 @@ import CreateFilterModal from './create-filter-modal';
 import DeleteFilterModal from './delete-filter-modal';
 import { FilterContext } from './filter-context';
 import ModifyFilterModal from './modify-filter/modify-filter-modal';
-import { modifyFilterRules } from '../../../../api/modify-filter-rules';
+import { modifyFilterRulesSoapApi } from '../../../../api/modify-filter-rules-soap-api';
 import {
 	ApplyFilterUIActionExecutionParams,
 	getApplyFilterUIAction
@@ -143,7 +143,7 @@ const IncomingFilterActions: FC<ComponentProps> = ({ compProps }): ReactElement 
 						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 						// @ts-ignore
 						setFetchFilters={setFetchIncomingFilters}
-						modifierFunc={modifyFilterRules}
+						modifierFunc={modifyFilterRulesSoapApi}
 						filterName={selectedFilterName}
 						selectedFilter={selectedFilter}
 						incomingFilters={incomingFilters}
@@ -178,7 +178,7 @@ const IncomingFilterActions: FC<ComponentProps> = ({ compProps }): ReactElement 
 				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 				// @ts-ignore
 				setFetchFilters: setFetchIncomingFilters,
-				modifierFunc: modifyFilterRules
+				modifierFunc: modifyFilterRulesSoapApi
 			}),
 		[removeFilter, t, availableList, activeList, setIncomingFilters, setFetchIncomingFilters]
 	);
@@ -196,7 +196,7 @@ const IncomingFilterActions: FC<ComponentProps> = ({ compProps }): ReactElement 
 				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 				// @ts-ignore
 				setFetchFilters: setFetchIncomingFilters,
-				modifierFunc: modifyFilterRules
+				modifierFunc: modifyFilterRulesSoapApi
 			}),
 		[addFilter, t, availableList, activeList, setIncomingFilters, setFetchIncomingFilters]
 	);

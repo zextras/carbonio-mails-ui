@@ -44,7 +44,7 @@ export type MountSharedFolderParams = {
 	accounts: Array<{ name: string }>;
 };
 
-export const mountSharedFolder = async (
+export const mountSharedFolderSoapApi = async (
 	params: MountSharedFolderParams
 ): Promise<ISoapFolderObj> => {
 	const request: CreateMountPointRequest = {

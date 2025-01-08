@@ -5,7 +5,7 @@
  */
 import { ErrorSoapBodyResponse, soapFetch } from '@zextras/carbonio-shell-ui';
 
-import { getConv } from './get-conv';
+import { getConvSoapApi } from './get-conv-soap-api';
 import { getMsg } from './helpers/get-msg-service';
 import { ParticipantRole } from '../carbonio-ui-commons/constants/participants';
 import { getAddressOwnerAccount, getIdentityDescriptor } from '../helpers/identities';
@@ -36,7 +36,7 @@ export const sendMsg = async ({
 		getMsg({ msgId: response.m[0].id });
 	}
 	if (response?.m && response?.m[0]?.cid) {
-		getConv({ conversationId: response.m[0].cid });
+		getConvSoapApi({ conversationId: response.m[0].cid });
 	}
 	return response;
 };
@@ -68,7 +68,7 @@ export async function sendMsgFromEditor({
 		getMsg({ msgId: response.m[0].id });
 	}
 	if (response?.m && response?.m[0]?.cid) {
-		getConv({ conversationId: response.m[0].cid });
+		getConvSoapApi({ conversationId: response.m[0].cid });
 	}
 	return response;
 }
