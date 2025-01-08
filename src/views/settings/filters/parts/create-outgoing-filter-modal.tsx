@@ -6,8 +6,7 @@
 import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
 
 import { Checkbox, Container, Divider, Input, Padding, Row } from '@zextras/carbonio-design-system';
-import { useUserSettings } from '@zextras/carbonio-shell-ui';
-import { BooleanString } from '@zextras/carbonio-shell-ui/lib/types/account';
+import { BooleanString, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { TFunction } from 'i18next';
 import { map, omit, reduce } from 'lodash';
 

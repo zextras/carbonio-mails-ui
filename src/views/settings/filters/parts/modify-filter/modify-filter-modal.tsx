@@ -14,8 +14,7 @@ import React, {
 } from 'react';
 
 import { Checkbox, Container, Divider, Input, Padding, Row } from '@zextras/carbonio-design-system';
-import { useUserSettings } from '@zextras/carbonio-shell-ui';
-import { BooleanString } from '@zextras/carbonio-shell-ui/lib/types/account';
+import { useUserSettings, BooleanString } from '@zextras/carbonio-shell-ui';
 import { TFunction } from 'i18next';
 import { findIndex, forEach, isEqual, map, omit, reduce } from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
@@ -54,7 +53,7 @@ const ModifyFilterModal: FC<ComponentProps> = ({
 	onClose,
 	incomingFilters,
 	setFetchIncomingFilters,
-	// onIncomingFilterSave,
+	onIncomingFilterSave,
 	selectedFilter
 }): ReactElement => {
 	const [filterName, setFilterName] = useState('');
@@ -290,7 +289,7 @@ const ModifyFilterModal: FC<ComponentProps> = ({
 		);
 		const toSend = incomingFiltersCopy.slice();
 		toSend[selectedFilterIndex] = requiredFilters;
-		// onIncomingFilterSave(toSend);
+		onIncomingFilterSave(toSend);
 
 		modifyFilterRules(toSend)
 			.then(() => {
@@ -319,6 +318,7 @@ const ModifyFilterModal: FC<ComponentProps> = ({
 	}, [
 		incomingFiltersCopy,
 		requiredFilters,
+		onIncomingFilterSave,
 		onClose,
 		selectedFilter?.name,
 		setFetchIncomingFilters,
