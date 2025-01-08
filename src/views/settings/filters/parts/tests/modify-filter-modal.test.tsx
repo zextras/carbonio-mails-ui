@@ -37,7 +37,7 @@ describe('modify filter modal', () => {
 					]
 				}}
 				setFetchIncomingFilters={jest.fn()}
-				setIncomingFilters={jest.fn()}
+				onIncomingFilterSave={jest.fn()}
 			/>,
 			{
 				store
@@ -58,7 +58,7 @@ describe('modify filter modal', () => {
 				t={t}
 				onClose={jest.fn()}
 				setFetchIncomingFilters={jest.fn()}
-				setIncomingFilters={jest.fn()}
+				onIncomingFilterSave={jest.fn()}
 				incomingFilters={[]}
 				selectedFilter={mockFilter({ name: 'Test Filter' })}
 			/>,
@@ -83,7 +83,7 @@ describe('modify filter modal', () => {
 				t={t}
 				onClose={jest.fn()}
 				setFetchIncomingFilters={jest.fn()}
-				setIncomingFilters={jest.fn()}
+				onIncomingFilterSave={jest.fn()}
 				incomingFilters={incomingFilters}
 				selectedFilter={selectedFilter}
 			/>,
@@ -131,7 +131,7 @@ describe('modify filter modal', () => {
 				t={t}
 				onClose={jest.fn()}
 				setFetchIncomingFilters={jest.fn()}
-				setIncomingFilters={jest.fn()}
+				onIncomingFilterSave={jest.fn()}
 				incomingFilters={incomingFilters}
 				selectedFilter={selectedFilterId2}
 			/>,
@@ -174,7 +174,7 @@ describe('modify filter modal', () => {
 				t={t}
 				onClose={jest.fn()}
 				setFetchIncomingFilters={jest.fn()}
-				setIncomingFilters={jest.fn()}
+				onIncomingFilterSave={jest.fn()}
 				incomingFilters={incomingFilters}
 				selectedFilter={selectedFilter}
 			/>,
@@ -220,7 +220,7 @@ describe('modify filter modal', () => {
 				t={t}
 				onClose={jest.fn()}
 				setFetchIncomingFilters={jest.fn()}
-				setIncomingFilters={jest.fn()}
+				onIncomingFilterSave={jest.fn()}
 				incomingFilters={[selectedFilter]}
 				selectedFilter={selectedFilter}
 			/>,
@@ -255,7 +255,7 @@ describe('modify filter modal', () => {
 		const modifyFilterRulesInterceptor = createSoapAPIInterceptor('ModifyFilterRules');
 		const otherFilter = {
 			...mockFilter({ name: 'Test Filter 2', id: '2' }),
-			anotherFilter: 'this field should not be present but is sent to the API anyway'
+			anotherField: 'this field should not be present but is sent to the API anyway'
 		};
 		const selectedFilter = mockFilter({ name: 'Test Filter' });
 		const { user } = setupTest(
@@ -263,7 +263,7 @@ describe('modify filter modal', () => {
 				t={t}
 				onClose={jest.fn()}
 				setFetchIncomingFilters={jest.fn()}
-				setIncomingFilters={jest.fn()}
+				onIncomingFilterSave={jest.fn()}
 				incomingFilters={[selectedFilter, otherFilter]}
 				selectedFilter={selectedFilter}
 			/>,

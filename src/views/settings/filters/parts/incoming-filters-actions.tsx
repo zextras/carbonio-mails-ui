@@ -225,7 +225,7 @@ const IncomingFilterActions: FC<ComponentProps> = ({ compProps }): ReactElement 
 							setFetchIncomingFilters={setFetchIncomingFilters}
 							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 							// @ts-ignore
-							setIncomingFilters={setIncomingFilters}
+							onIncomingFilterSave={setIncomingFilters}
 						/>
 					</StoreProvider>
 				)

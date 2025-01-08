@@ -45,7 +45,7 @@ type ComponentProps = {
 	onClose: () => void;
 	incomingFilters?: any;
 	setFetchIncomingFilters: (arg: boolean) => void;
-	setIncomingFilters: (arg: any) => void;
+	onIncomingFilterSave: (arg: any) => void;
 	selectedFilter: FilterType | any;
 };
 
@@ -54,7 +54,7 @@ const ModifyFilterModal: FC<ComponentProps> = ({
 	onClose,
 	incomingFilters,
 	setFetchIncomingFilters,
-	setIncomingFilters,
+	// onIncomingFilterSave,
 	selectedFilter
 }): ReactElement => {
 	const [filterName, setFilterName] = useState('');
@@ -290,7 +290,7 @@ const ModifyFilterModal: FC<ComponentProps> = ({
 		);
 		const toSend = incomingFiltersCopy.slice();
 		toSend[selectedFilterIndex] = requiredFilters;
-		setIncomingFilters(toSend);
+		// onIncomingFilterSave(toSend);
 
 		modifyFilterRules(toSend)
 			.then(() => {
@@ -319,7 +319,6 @@ const ModifyFilterModal: FC<ComponentProps> = ({
 	}, [
 		incomingFiltersCopy,
 		requiredFilters,
-		setIncomingFilters,
 		onClose,
 		selectedFilter?.name,
 		setFetchIncomingFilters,
