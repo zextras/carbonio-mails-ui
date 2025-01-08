@@ -18,7 +18,7 @@ import {
 	useConversationsResultsLoadingStatus,
 	useMessagesByIds,
 	useMessagesResultsLoadingStatus
-} from '../store/zustand/emails/store';
+} from '../store/emails/store';
 import { SearchRequestStatus } from '../types';
 import { useLoadMoreForConversationList } from '../views/app/folder-panel/conversations/conversation-list-hooks';
 import { useLoadMoreForMessageList } from '../views/app/folder-panel/messages/message-list-hooks';

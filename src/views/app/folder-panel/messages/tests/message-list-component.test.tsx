@@ -11,7 +11,7 @@ import { noop, times } from 'lodash';
 
 import { FOLDERS } from '../../../../../carbonio-ui-commons/constants/folders';
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
-import { setMessagesInEmailStore } from '../../../../../store/zustand/emails/store';
+import { setMessagesInEmailStore } from '../../../../../store/emails/store';
 import { generateMessage } from '../../../../../tests/generators/generateMessage';
 import { MessageListComponent, MessageListComponentProps } from '../message-list-component';
 import { MessageListItemComponent } from '../message-list-item-component';

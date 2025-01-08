@@ -13,8 +13,8 @@ import {
 	useIntegratedFunction
 } from '../../../../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
 import { setupTest, screen } from '../../../../../../carbonio-ui-commons/test/test-setup';
-import { getEditor } from '../../../../../../store/zustand/editor';
-import { generateNewMessageEditor } from '../../../../../../store/zustand/editor/editor-generators';
+import { getEditor } from '../../../../../../store/editor';
+import { generateNewMessageEditor } from '../../../../../../store/editor/editor-generators';
 import { TESTID_SELECTORS } from '../../../../../../tests/constants';
 import { setupEditorStore } from '../../../../../../tests/generators/editor-store';
 import { FileNode } from '../../edit-utils-hooks/use-upload-from-files';

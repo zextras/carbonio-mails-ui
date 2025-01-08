@@ -12,7 +12,7 @@ import { HttpResponse } from 'msw';
 import { defaultBeforeAllTests } from '../../../carbonio-ui-commons/test/jest-setup';
 import { createAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
-import { useAdvancedAccountStore } from '../../../store/zustand/advanced-account/store';
+import { useAdvancedAccountStore } from '../../../store/advanced-account/store';
 import { RecoverMessages } from '../recover-messages';
 
 function getParams(url: string): Record<string, string> {

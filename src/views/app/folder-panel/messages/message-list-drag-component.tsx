@@ -9,7 +9,7 @@ import React from 'react';
 import { map, noop } from 'lodash';
 
 import { MessageListItem } from './message-list-item';
-import { getMessageById } from '../../../../store/zustand/emails/store';
+import { getMessageById } from '../../../../store/emails/store';
 
 export const DragItems = ({
 	draggedIds

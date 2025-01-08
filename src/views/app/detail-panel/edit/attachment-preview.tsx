@@ -27,17 +27,13 @@ import {
 	getSizeDescription,
 	useAttachmentIconColor
 } from '../../../../helpers/attachments';
-import {
-	getEditor,
-	useEditorAttachments,
-	useEditorSubject
-} from '../../../../store/zustand/editor';
+import { getEditor, useEditorAttachments, useEditorSubject } from '../../../../store/editor';
 import {
 	isAttachmentUploading,
 	isSavedAttachment,
 	isUnsavedAttachment
-} from '../../../../store/zustand/editor/editor-utils';
-import { useEditorUploadProcess } from '../../../../store/zustand/editor/hooks/updload';
+} from '../../../../store/editor/editor-utils';
+import { useEditorUploadProcess } from '../../../../store/editor/hooks/updload';
 import StyledWrapper from '../../../../styled-wrapper';
 import { MailsEditorV2, SavedAttachment, UnsavedAttachment } from '../../../../types';
 import { getAttachmentsLink } from '../preview/utils';

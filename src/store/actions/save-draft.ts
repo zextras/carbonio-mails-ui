@@ -6,7 +6,7 @@
 import { soapFetch } from '@zextras/carbonio-shell-ui';
 
 import type { SaveDraftParameters, SaveDraftRequest, SaveDraftResponse } from '../../types';
-import { createSoapDraftRequestFromEditor } from '../zustand/editor/editor-transformations';
+import { createSoapDraftRequestFromEditor } from '../editor/editor-transformations';
 
 export const saveDraftV3 = ({ editor, signal }: SaveDraftParameters): Promise<SaveDraftResponse> =>
 	soapFetch<SaveDraftRequest, SaveDraftResponse>(

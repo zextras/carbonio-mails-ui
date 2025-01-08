@@ -10,7 +10,7 @@ import * as searchSoapApi from '../../../../../api/search';
 import { generateFolder } from '../../../../../carbonio-ui-commons/test/mocks/folders/folders-generator';
 import { createSoapAPIInterceptor } from '../../../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { API_REQUEST_STATUS } from '../../../../../constants';
-import * as storeHooks from '../../../../../store/zustand/emails/store';
+import * as storeHooks from '../../../../../store/emails/store';
 import {
 	createSoapAPIInterceptorWithError,
 	generateConversationFromAPI

@@ -9,7 +9,7 @@ import { useParams } from 'react-router-dom';
 
 import { NavigationIconButton } from './parts/navigation-icon-button';
 import { usePreviewHeaderNavigation } from '../../../../hooks/use-preview-header-navigation';
-import { useMessageIndexSlice } from '../../../../store/zustand/emails/store';
+import { useMessageIndexSlice } from '../../../../store/emails/store';
 
 export const MessagePreviewHeaderNavigation = (): React.JSX.Element => {
 	const { folderId, messageId } = useParams<{ folderId: string; messageId: string }>();

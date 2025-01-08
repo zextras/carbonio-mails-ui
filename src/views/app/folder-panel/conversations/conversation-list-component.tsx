@@ -13,7 +13,7 @@ import styled from 'styled-components';
 import { ConversationListItemComponent } from './conversation-list-item-component';
 import { CustomList } from '../../../../carbonio-ui-commons/components/list/list';
 import { useFolder, useRoot } from '../../../../carbonio-ui-commons/store/zustand/folder/hooks';
-import { getConversationById } from '../../../../store/zustand/emails/store';
+import { getConversationById } from '../../../../store/emails/store';
 import ShimmerList from '../../../search/shimmer-list';
 import { Breadcrumbs } from '../parts/breadcrumbs';
 import { MultipleSelectionActionsPanel } from '../parts/multiple-selection-actions-panel';

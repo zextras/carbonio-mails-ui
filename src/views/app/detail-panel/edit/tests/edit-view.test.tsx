@@ -37,13 +37,13 @@ import {
 	GetSignaturesRequest,
 	GetSignaturesResponse
 } from '../../../../../store/actions/signatures';
-import { addEditor } from '../../../../../store/zustand/editor';
+import { addEditor } from '../../../../../store/editor';
 import {
 	generateEditAsNewEditor,
 	generateNewMessageEditor,
 	generateReplyAllMsgEditor,
 	generateReplyMsgEditor
-} from '../../../../../store/zustand/editor/editor-generators';
+} from '../../../../../store/editor/editor-generators';
 import { setupEditorStore } from '../../../../../tests/generators/editor-store';
 import { readyToBeSentEditorTestCase } from '../../../../../tests/generators/editors';
 import { generateMessage } from '../../../../../tests/generators/generateMessage';
@@ -141,8 +141,8 @@ const clearAndInsertText =
 		await user.type(target, text);
 	};
 
-jest.mock('../../../../../store/zustand/editor', () => ({
-	...jest.requireActual('../../../../../store/zustand/editor'),
+jest.mock('../../../../../store/editor', () => ({
+	...jest.requireActual('../../../../../store/editor'),
 	deleteEditor: jest.fn()
 }));
 

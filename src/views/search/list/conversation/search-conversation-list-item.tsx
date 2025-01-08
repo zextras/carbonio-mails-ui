@@ -27,12 +27,12 @@ import { Tag } from '../../../../carbonio-ui-commons/types/tags';
 import { API_REQUEST_STATUS } from '../../../../constants';
 import { useConvPreviewOnSeparatedWindowFn } from '../../../../hooks/actions/use-conv-preview-on-separated-window';
 import { useConvSetReadFn } from '../../../../hooks/actions/use-conv-set-read';
-import { retrieveConversation } from '../../../../store/zustand/emails/hooks/hooks';
+import { retrieveConversation } from '../../../../store/emails/hooks/hooks';
 import {
 	useConversationById,
 	useConversationMessages,
 	useConversationStatus
-} from '../../../../store/zustand/emails/store';
+} from '../../../../store/emails/store';
 import type { Conversation, TextReadValuesProps } from '../../../../types';
 import { ConversationListItemActionWrapper } from '../../../app/folder-panel/conversations/conversation-list-item';
 import { ItemAvatar } from '../../../app/folder-panel/parts/item-avatar';

@@ -9,12 +9,12 @@ import { useUserSettings } from '@zextras/carbonio-shell-ui';
 
 import { searchSoapApi } from '../api/search';
 import { API_REQUEST_STATUS, LIST_LIMIT } from '../constants';
-import { handleSearchSoapApiResults } from '../store/zustand/emails/hooks/hooks';
+import { handleSearchSoapApiResults } from '../store/emails/hooks/hooks';
 import {
 	updateConversationsResultsLoadingStatus,
 	useConversationIndexSlice,
 	useConversationsIdsByFolder
-} from '../store/zustand/emails/store';
+} from '../store/emails/store';
 import { ConversationIndexSliceState } from '../types';
 
 /**

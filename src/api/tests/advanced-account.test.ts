@@ -6,7 +6,7 @@
 import { HttpResponse } from 'msw';
 
 import { createAPIInterceptor } from '../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
-import { useAdvancedAccountStore } from '../../store/zustand/advanced-account/store';
+import { useAdvancedAccountStore } from '../../store/advanced-account/store';
 import { advancedAccountAPI } from '../advanced-account';
 
 const api = '/zx/login/v3/account';

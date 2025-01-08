@@ -9,7 +9,7 @@ import { ParticipantRole } from '../../carbonio-ui-commons/constants/participant
 import {
 	computeDraftSaveAllowedStatus,
 	computeSendAllowedStatus
-} from '../../store/zustand/editor/editor-utils';
+} from '../../store/editor/editor-utils';
 import type { MailsEditorV2, SavedAttachment, UnsavedAttachment } from '../../types';
 
 const alignState = (editor: MailsEditorV2): void => {

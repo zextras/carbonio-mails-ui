@@ -18,10 +18,10 @@ import { includes, noop } from 'lodash';
 import { EditView, EditViewHandle } from './edit-view';
 import { EditViewBoardContext } from './edit-view-board';
 import { EditViewActions } from '../../../../constants';
-import { addEditor, useEditorSubject } from '../../../../store/zustand/editor';
-import { generateEditor } from '../../../../store/zustand/editor/editor-generators';
-import { retrieveFullMessage } from '../../../../store/zustand/emails/hooks/hooks';
-import { useMessageById } from '../../../../store/zustand/emails/store';
+import { addEditor, useEditorSubject } from '../../../../store/editor';
+import { generateEditor } from '../../../../store/editor/editor-generators';
+import { retrieveFullMessage } from '../../../../store/emails/hooks/hooks';
+import { useMessageById } from '../../../../store/emails/store';
 import type { EditViewActionsType, MailMessage } from '../../../../types';
 
 const parseAndValidateParams = (

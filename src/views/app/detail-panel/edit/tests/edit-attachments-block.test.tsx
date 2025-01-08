@@ -9,7 +9,7 @@ import React from 'react';
 import { screen } from '@testing-library/react';
 
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
-import { addEditor } from '../../../../../store/zustand/editor';
+import { addEditor } from '../../../../../store/editor';
 import { setupEditorStore } from '../../../../../tests/generators/editor-store';
 import { generateEditorV2Case } from '../../../../../tests/generators/editors';
 import { EditAttachmentsBlock } from '../edit-attachments-block';

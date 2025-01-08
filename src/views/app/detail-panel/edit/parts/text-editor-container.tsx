@@ -12,7 +12,7 @@ import type { TinyMCE } from 'tinymce/tinymce';
 
 import * as StyledComp from './edit-view-styled-components';
 import { plainTextToHTML } from '../../../../../commons/utils';
-import { useEditorIsRichText, useEditorText } from '../../../../../store/zustand/editor';
+import { useEditorIsRichText, useEditorText } from '../../../../../store/editor';
 import { MailsEditorV2 } from '../../../../../types';
 import { getFontSizesOptions, getFonts } from '../../../../settings/components/utils';
 

@@ -11,7 +11,7 @@ import { act } from '@testing-library/react';
 import { getIntegratedFunction } from '../../../../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
 import { createSoapAPIInterceptor } from '../../../../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { setupTest, screen } from '../../../../../../carbonio-ui-commons/test/test-setup';
-import { addEditor, useEditorsStore } from '../../../../../../store/zustand/editor';
+import { addEditor, useEditorsStore } from '../../../../../../store/editor';
 import { setupEditorStore } from '../../../../../../tests/generators/editor-store';
 import {
 	readyToBeSentEditorTestCase,

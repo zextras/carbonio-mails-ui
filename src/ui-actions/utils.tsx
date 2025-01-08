@@ -10,7 +10,7 @@ import { find, truncate } from 'lodash';
 import { useLocation } from 'react-router-dom';
 
 import { createSmartLinksSoapAPI } from '../store/actions/create-smart-links';
-import { useEditorsStore } from '../store/zustand/editor/store';
+import { useEditorsStore } from '../store/editor/store';
 import type {
 	CreateSmartLinksResponse,
 	SmartLinkUrl,

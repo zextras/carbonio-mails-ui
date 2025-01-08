@@ -17,7 +17,7 @@ import { filter } from 'lodash';
 import { msgActionSoapApi } from '../../../../../api/msg-action';
 import { MailMessageRenderer } from '../../../../../commons/mail-message-renderer/mail-message-renderer';
 import SharedInviteReply from '../../../../../integrations/shared-invite-reply';
-import { useCompleteMessage } from '../../../../../store/zustand/emails/hooks/hooks';
+import { useCompleteMessage } from '../../../../../store/emails/hooks/hooks';
 import type { OpenEmlPreviewType } from '../../../../../types';
 import AttachmentsBlock from '../attachments-block';
 import ReadReceiptModal from '../read-receipt-modal';

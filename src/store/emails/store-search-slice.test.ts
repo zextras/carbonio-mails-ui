@@ -1,0 +1,119 @@
+/*
+ * SPDX-FileCopyrightText: 2024 Zextras <https://www.zextras.com>
+ *
+ * SPDX-License-Identifier: AGPL-3.0-only
+ */
+
+import { renderHook, waitFor } from '@testing-library/react';
+
+import {
+	setSearchResultsByConversation,
+	updateConversationStatus,
+	setMessagesInSearchSlice,
+	resetSearchAndPopulatedItems,
+	useConversationById,
+	useConversationStatus,
+	useMessageById,
+	setSearchResultsByMessage,
+	deleteConversationsFromSearch,
+	useSearchResults,
+	appendMessagesToSearch,
+	deleteMessagesFromSearch
+} from './store';
+import { API_REQUEST_STATUS } from '../../constants';
+import { generateConversation } from '../../tests/generators/generateConversation';
+import { generateMessage } from '../../tests/generators/generateMessage';
+
+describe('emails store search slice', () => {
+	describe('resetSearchAndPopulatedItems', () => {
+		it('should reset the searches and populated items', async () => {
+			setSearchResultsByConversation([generateConversation({ id: '1', messages: [] })], false);
+			updateConversationStatus('1', API_REQUEST_STATUS.fulfilled);
+			await waitFor(() => {
+				setMessagesInSearchSlice([generateMessage({ id: '100' })]);
+			});
+			resetSearchAndPopulatedItems();
+
+			expect(renderHook(() => useConversationById('1')).result.current).toBeUndefined();
+			expect(renderHook(() => useConversationStatus('1')).result.current).toBeUndefined();
+			expect(renderHook(() => useMessageById('100')).result.current).toBeUndefined();
+		});
+	});
+
+	describe('setMessagesInSearchSlice', () => {
+		it('should set and return a message', async () => {
+			const message = generateMessage({ id: '1' });
+			await waitFor(() => {
+				setMessagesInSearchSlice([message]);
+			});
+			const { result } = renderHook(() => useMessageById('1'));
+
+			expect(result.current).toEqual(message);
+		});
+	});
+
+	describe('deleteConversationsFromSearch', () => {
+		it('should delete conversations from the state', async () => {
+			const conversation1Messages = [
+				generateMessage({ id: '1' }),
+				generateMessage({ id: '2' }),
+				generateMessage({ id: '3' })
+			];
+			const conversation1 = generateConversation({ id: '1', messages: conversation1Messages });
+			const conversation2Messages = [generateMessage({ id: '4' }), generateMessage({ id: '5' })];
+			const conversation2 = generateConversation({ id: '2', messages: conversation2Messages });
+			setSearchResultsByConversation([conversation1, conversation2], false);
+			await waitFor(() => {
+				setMessagesInSearchSlice([...conversation1Messages, ...conversation2Messages]);
+			});
+			deleteConversationsFromSearch(['1']);
+
+			const { result } = renderHook(() => useSearchResults());
+			const { result: conversation1Store } = renderHook(() => useConversationById('1'));
+			const { result: conversation2Store } = renderHook(() => useConversationById('2'));
+			expect(result.current.conversationListIndex.length).toBe(1);
+			expect(result.current.conversationListIndex.includes('1')).toBe(false);
+			expect(result.current.conversationListIndex.includes('2')).toBe(true);
+			expect(conversation1Store.current).toBeUndefined();
+			expect(conversation2Store.current).toBeDefined();
+		});
+	});
+
+	describe('appendMessagesToSearch', () => {
+		it('should append messages to the store', async () => {
+			await waitFor(() => {
+				setMessagesInSearchSlice([generateMessage({ id: '1' })]);
+			});
+			appendMessagesToSearch([generateMessage({ id: '2' }), generateMessage({ id: '3' })], 0);
+
+			expect(renderHook(() => useMessageById('1')).result.current).toBeDefined();
+			expect(renderHook(() => useMessageById('2')).result.current).toBeDefined();
+			expect(renderHook(() => useMessageById('3')).result.current).toBeDefined();
+		});
+	});
+
+	describe('deleteMessagesFromSearch', () => {
+		it('should delete messages from populatedItems and messageIds', async () => {
+			const messages = [
+				generateMessage({ id: '1' }),
+				generateMessage({ id: '2' }),
+				generateMessage({ id: '3' })
+			];
+			setSearchResultsByMessage(messages, false);
+			await waitFor(() => {
+				setMessagesInSearchSlice(messages);
+			});
+			deleteMessagesFromSearch(['1', '2']);
+
+			const { result } = renderHook(() => useSearchResults());
+			const { result: message1 } = renderHook(() => useMessageById('1'));
+			const { result: message2 } = renderHook(() => useMessageById('2'));
+			const { result: message3 } = renderHook(() => useMessageById('3'));
+			expect(result.current.messageListIndex.length).toBe(1);
+			expect(result.current.messageListIndex.includes('3')).toBeTruthy();
+			expect(message1.current).toBeUndefined();
+			expect(message2.current).toBeUndefined();
+			expect(message3.current).toBeDefined();
+		});
+	});
+});

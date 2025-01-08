@@ -26,7 +26,7 @@ import {
 	resetSearchAndPopulatedItems,
 	setSearchResultsByMessage,
 	setSearchResultsByConversation
-} from '../../store/zustand/emails/store';
+} from '../../store/emails/store';
 import { IncompleteMessage, MailMessage, SearchResponse, SearchIndexSliceState } from '../../types';
 
 type UseRunSearchProps = {

@@ -10,7 +10,7 @@ import { times } from 'lodash';
 
 import { FOLDERS } from '../../../../../carbonio-ui-commons/constants/folders';
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
-import { updateConversationsOnly } from '../../../../../store/zustand/emails/store';
+import { updateConversationsOnly } from '../../../../../store/emails/store';
 import { generateConversation } from '../../../../../tests/generators/generateConversation';
 import {
 	ConversationListComponent,

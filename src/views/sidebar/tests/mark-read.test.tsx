@@ -14,7 +14,7 @@ import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mock
 import { populateFoldersStore } from '../../../carbonio-ui-commons/test/mocks/store/folders';
 import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
 import { MAIL_APP_ID, MAILS_ROUTE } from '../../../constants';
-import { setMessagesInEmailStore } from '../../../store/zustand/emails/store';
+import { setMessagesInEmailStore } from '../../../store/emails/store';
 import { generateMessage } from '../../../tests/generators/generateMessage';
 import { SoapFolderAction } from '../../../types';
 import Sidebar from '../sidebar';

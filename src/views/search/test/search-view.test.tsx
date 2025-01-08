@@ -28,7 +28,7 @@ import {
 	updateConversationStatus,
 	setMessagesInSearchSlice,
 	setSearchResultsByConversation
-} from '../../../store/zustand/emails/store';
+} from '../../../store/emails/store';
 import { TESTID_SELECTORS } from '../../../tests/constants';
 import { generateSoapConversationMessage } from '../../../tests/generators/api';
 import { generateConversation } from '../../../tests/generators/generateConversation';

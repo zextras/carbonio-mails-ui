@@ -19,7 +19,7 @@ import {
 	useConversationById,
 	useMessageById,
 	useSearchResults
-} from '../../../store/zustand/emails/store';
+} from '../../../store/emails/store';
 import {
 	generateConversationFromAPI,
 	generateConvMessageFromAPI

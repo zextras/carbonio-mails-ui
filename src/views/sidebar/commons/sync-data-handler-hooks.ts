@@ -28,7 +28,7 @@ import {
 	prependMessagesToMessagesSlice,
 	updateConversationsOnly,
 	updateMessagesOnly
-} from '../../../store/zustand/emails/store';
+} from '../../../store/emails/store';
 import {
 	FolderState,
 	SoapConversation,

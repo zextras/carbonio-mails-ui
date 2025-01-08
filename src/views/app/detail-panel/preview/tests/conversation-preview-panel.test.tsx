@@ -9,7 +9,7 @@ import React from 'react';
 import { act } from '@testing-library/react';
 
 import { setupTest, screen } from '../../../../../carbonio-ui-commons/test/test-setup';
-import { updateConversationsOnly, updateMessages } from '../../../../../store/zustand/emails/store';
+import { updateConversationsOnly, updateMessages } from '../../../../../store/emails/store';
 import { generateConversation } from '../../../../../tests/generators/generateConversation';
 import { generateMessage } from '../../../../../tests/generators/generateMessage';
 import { ConversationPreviewPanel } from '../../conversation-preview-panel';

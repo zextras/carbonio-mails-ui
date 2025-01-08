@@ -13,7 +13,7 @@ import { FOLDERS } from '../../../../../carbonio-ui-commons/constants/folders';
 import { useTagStore } from '../../../../../carbonio-ui-commons/store/zustand/tags';
 import { tags } from '../../../../../carbonio-ui-commons/test/mocks/tags/tags';
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
-import { updateConversationsOnly } from '../../../../../store/zustand/emails/store';
+import { updateConversationsOnly } from '../../../../../store/emails/store';
 import { generateConversation } from '../../../../../tests/generators/generateConversation';
 import { ConversationsMultipleSelectionActions } from '../conversations-multiple-selection-actions';
 

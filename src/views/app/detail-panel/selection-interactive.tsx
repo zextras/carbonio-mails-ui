@@ -12,7 +12,7 @@ import { useParams } from 'react-router-dom';
 import { DraftMessages, SentMessages, SpamMessages, TrashMessages } from './utils';
 import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
 import { getFolderIdParts } from '../../../helpers/folders';
-import { useConversationsIdsByFolder } from '../../../store/zustand/emails/store';
+import { useConversationsIdsByFolder } from '../../../store/emails/store';
 
 export const SelectionInteractive = ({ count }: { count: number }): React.JSX.Element => {
 	const { folderId } = useParams<{ folderId: string }>();

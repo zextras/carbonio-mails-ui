@@ -9,7 +9,7 @@ import { ErrorSoapBodyResponse, SoapFault } from '@zextras/carbonio-shell-ui';
 
 import { createSoapAPIInterceptor } from '../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { parseTextToHTMLDocument } from '../../helpers/text';
-import { useEditorsStore } from '../../store/zustand/editor/store';
+import { useEditorsStore } from '../../store/editor/store';
 import { setupEditorStore } from '../../tests/generators/editor-store';
 import { generateEditorV2Case } from '../../tests/generators/editors';
 import { CreateSmartLinksRequest, CreateSmartLinksResponse, MessageAction } from '../../types';

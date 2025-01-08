@@ -28,7 +28,7 @@ import {
 	useMessageById,
 	setSearchResultsByMessage,
 	setSearchResultsByConversation
-} from '../../store/zustand/emails/store';
+} from '../../store/emails/store';
 import { generateConversation } from '../../tests/generators/generateConversation';
 import { generateMessage } from '../../tests/generators/generateMessage';
 

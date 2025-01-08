@@ -13,7 +13,7 @@ import { normalizeMailMessageFromSoap } from '../../../../normalizations/normali
 import {
 	appendMessagesToMessagesSlice,
 	updateMessagesResultsLoadingStatus
-} from '../../../../store/zustand/emails/store';
+} from '../../../../store/emails/store';
 import { SearchResponse } from '../../../../types';
 
 function handleLoadMoreResults({

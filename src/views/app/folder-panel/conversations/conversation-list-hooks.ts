@@ -13,7 +13,7 @@ import { normalizeConversations } from '../../../../normalizations/normalize-con
 import {
 	appendConversationsToConversationIndexSlice,
 	updateConversationsResultsLoadingStatus
-} from '../../../../store/zustand/emails/store';
+} from '../../../../store/emails/store';
 import { SearchResponse } from '../../../../types';
 
 function handleLoadMoreResults({

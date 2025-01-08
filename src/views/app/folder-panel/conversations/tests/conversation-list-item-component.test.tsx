@@ -15,7 +15,7 @@ import { FOLDERS_DESCRIPTORS } from '../../../../../constants';
 import {
 	setConversationsInEmailStore,
 	setMessagesInEmailStore
-} from '../../../../../store/zustand/emails/store';
+} from '../../../../../store/emails/store';
 import { ASSERTIONS } from '../../../../../tests/constants';
 import { generateConversation } from '../../../../../tests/generators/generateConversation';
 import { generateMessage } from '../../../../../tests/generators/generateMessage';

@@ -20,7 +20,7 @@ import { useConvSetSpamDescriptor } from '../../../../hooks/actions/use-conv-set
 import { useConvSetUnflagDescriptor } from '../../../../hooks/actions/use-conv-set-unflag';
 import { useConvSetUnreadDescriptor } from '../../../../hooks/actions/use-conv-set-unread';
 import { useTagDropdownItem } from '../../../../hooks/use-tag-dropdown-item';
-import { useConversationsByIds } from '../../../../store/zustand/emails/store';
+import { useConversationsByIds } from '../../../../store/emails/store';
 import { MultipleSelectionActionsComponent } from '../parts/multiple-selection-actions-component';
 
 export const ConversationsMultipleSelectionActions = ({

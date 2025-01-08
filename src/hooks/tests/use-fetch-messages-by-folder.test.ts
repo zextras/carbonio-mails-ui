@@ -16,13 +16,13 @@ import { API_REQUEST_STATUS } from '../../constants';
 import {
 	resetMessagesAndPopulatedItems,
 	updateMessagesResultsLoadingStatus
-} from '../../store/zustand/emails/store';
+} from '../../store/emails/store';
 import { SearchRequest, SearchResponse } from '../../types';
 import { useFetchMessagesByFolder } from '../use-fetch-messages-by-folder';
 
 const folder = generateFolder({ id: '2' });
-jest.mock('../../store/zustand/emails/store', () => ({
-	...jest.requireActual('../../store/zustand/emails/store'),
+jest.mock('../../store/emails/store', () => ({
+	...jest.requireActual('../../store/emails/store'),
 	setMessagesInEmailStore: jest.fn(),
 	resetMessagesAndPopulatedItems: jest.fn(),
 	updateMessagesResultsLoadingStatus: jest.fn(),

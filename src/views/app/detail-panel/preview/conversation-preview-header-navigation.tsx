@@ -9,7 +9,7 @@ import { useParams } from 'react-router-dom';
 
 import { NavigationIconButton } from './parts/navigation-icon-button';
 import { usePreviewHeaderNavigation } from '../../../../hooks/use-preview-header-navigation';
-import { useConversationIndexSlice } from '../../../../store/zustand/emails/store';
+import { useConversationIndexSlice } from '../../../../store/emails/store';
 
 export const ConversationPreviewHeaderNavigation = (): React.JSX.Element => {
 	const { folderId, conversationId } = useParams<{ folderId: string; conversationId: string }>();

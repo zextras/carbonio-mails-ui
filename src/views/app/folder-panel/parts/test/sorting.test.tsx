@@ -16,10 +16,7 @@ import { createSoapAPIInterceptor } from '../../../../../carbonio-ui-commons/tes
 import { generateSettings } from '../../../../../carbonio-ui-commons/test/mocks/settings/settings-generator';
 import { setupTest, screen } from '../../../../../carbonio-ui-commons/test/test-setup';
 import { SORTING_OPTIONS, SORTING_DIRECTION } from '../../../../../constants';
-import {
-	setMessagesInEmailStore,
-	useMessageIndexSlice
-} from '../../../../../store/zustand/emails/store';
+import { setMessagesInEmailStore, useMessageIndexSlice } from '../../../../../store/emails/store';
 import { generateMessage } from '../../../../../tests/generators/generateMessage';
 import { SearchRequest } from '../../../../../types';
 import { Breadcrumbs } from '../breadcrumbs';

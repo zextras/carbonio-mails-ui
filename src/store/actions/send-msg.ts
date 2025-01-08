@@ -12,8 +12,8 @@ import { getAddressOwnerAccount, getIdentityDescriptor } from '../../helpers/ide
 import { getParticipantsFromMessage } from '../../helpers/messages';
 import { MailMessage, MailsEditorV2, SaveDraftRequest, SaveDraftResponse } from '../../types';
 import { generateMailRequest } from '../editor-slice-utils';
-import { getCertificate } from '../zustand/certificates/certificate';
-import { createSoapSendMsgRequestFromEditor } from '../zustand/editor/editor-transformations';
+import { getCertificate } from '../certificates/certificate';
+import { createSoapSendMsgRequestFromEditor } from '../editor/editor-transformations';
 
 export const sendMsg = async ({
 	msg

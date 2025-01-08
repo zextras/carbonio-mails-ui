@@ -13,8 +13,8 @@ import { cloneDeep, noop } from 'lodash';
 
 import { createSoapAPIInterceptor } from '../../../../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { screen, setupTest } from '../../../../../../carbonio-ui-commons/test/test-setup';
-import { addEditor } from '../../../../../../store/zustand/editor';
-import { generateNewMessageEditor } from '../../../../../../store/zustand/editor/editor-generators';
+import { addEditor } from '../../../../../../store/editor';
+import { generateNewMessageEditor } from '../../../../../../store/editor/editor-generators';
 import { setupEditorStore } from '../../../../../../tests/generators/editor-store';
 import { Signature } from '../../../../../../types';
 import { EditView, EditViewProp } from '../../edit-view';

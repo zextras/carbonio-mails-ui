@@ -10,7 +10,7 @@ import { CloseModalFn, CreateModalFn, Text } from '@zextras/carbonio-design-syst
 import { t } from '@zextras/carbonio-shell-ui';
 
 import { LineType } from '../../../../commons/utils';
-import { getEditor } from '../../../../store/zustand/editor';
+import { getEditor } from '../../../../store/editor';
 import type { MailsEditorV2 } from '../../../../types';
 
 export const attachmentWords: Array<string> = [

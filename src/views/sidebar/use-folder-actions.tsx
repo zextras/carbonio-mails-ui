@@ -21,7 +21,7 @@ import { getFolderIdParts } from '../../helpers/folders';
 import { useSelection } from '../../hooks/use-selection';
 import { useUiUtilities } from '../../hooks/use-ui-utilities';
 import { folderAction } from '../../store/actions/folder-action';
-import { useMessagesByFolder } from '../../store/zustand/emails/store';
+import { useMessagesByFolder } from '../../store/emails/store';
 import { AppContext } from '../../types';
 import { SelectFolderModal } from '../../ui-actions/modals/select-folder-modal';
 import { MoveConvMessage } from '../../ui-actions/move-conv-msg';

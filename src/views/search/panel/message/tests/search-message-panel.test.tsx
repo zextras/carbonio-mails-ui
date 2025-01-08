@@ -10,10 +10,7 @@ import { useParams } from 'react-router-dom';
 
 import { screen, setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
 import { API_REQUEST_STATUS } from '../../../../../constants';
-import {
-	setSearchResultsByMessage,
-	updateMessageStatus
-} from '../../../../../store/zustand/emails/store';
+import { setSearchResultsByMessage, updateMessageStatus } from '../../../../../store/emails/store';
 import { generateMessage } from '../../../../../tests/generators/generateMessage';
 import { SearchMessagePanel } from '../search-message-panel';
 

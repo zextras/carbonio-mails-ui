@@ -18,7 +18,7 @@ import {
 import { removeRoute, replaceHistory, t, useUserSettings } from '@zextras/carbonio-shell-ui';
 
 import { BACKUP_SEARCH_ROUTE, MAILS_ROUTE } from '../../../constants';
-import { useBackupSearchStore } from '../../../store/zustand/backup-search/store';
+import { useBackupSearchStore } from '../../../store/backup-search/store';
 
 export const BackupSearchHeader = (): React.JSX.Element => {
 	const clearSearchText = t('label.clear_search_query', 'CLEAR SEARCH');

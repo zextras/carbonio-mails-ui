@@ -10,7 +10,7 @@ import { Padding } from '@zextras/carbonio-design-system';
 import { MessagePreviewPanel } from './message-preview-panel';
 import MailPreview from './preview/mail-preview';
 import { getParentFolderId } from '../../../helpers/folders';
-import { useMessageById } from '../../../store/zustand/emails/store';
+import { useMessageById } from '../../../store/emails/store';
 import { ConvMessage } from '../../../types';
 
 export type ConversationMessagePreviewProps = {

@@ -9,7 +9,7 @@ import React from 'react';
 import { screen } from '@testing-library/react';
 
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
-import { setMessagesInEmailStore } from '../../../../../store/zustand/emails/store';
+import { setMessagesInEmailStore } from '../../../../../store/emails/store';
 import { generateMessage } from '../../../../../tests/generators/generateMessage';
 import MailPreview, { MailPreviewProps } from '../mail-preview';
 

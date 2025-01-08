@@ -9,7 +9,7 @@ import React from 'react';
 import { noop } from 'lodash';
 
 import { setupTest } from '../../../../../../carbonio-ui-commons/test/test-setup';
-import { addEditor } from '../../../../../../store/zustand/editor';
+import { addEditor } from '../../../../../../store/editor';
 import { setupEditorStore } from '../../../../../../tests/generators/editor-store';
 import { generateEditorV2Case } from '../../../../../../tests/generators/editors';
 import { calculateMailSize, SizeExceededWarningBanner } from '../size-exceeded-waring-banner';

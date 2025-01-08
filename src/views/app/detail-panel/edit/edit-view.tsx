@@ -44,7 +44,7 @@ import {
 	getIdentitiesDescriptors,
 	getIdentityDescriptor
 } from '../../../../helpers/identities';
-import { Certificate, useCertificatesStore } from '../../../../store/zustand/certificates/store';
+import { Certificate, useCertificatesStore } from '../../../../store/certificates/store';
 import {
 	useEditorAutoSendTime,
 	useEditorDraftSave,
@@ -56,7 +56,7 @@ import {
 	useEditorsStore,
 	useEditorIsSmimeSign,
 	useEditorIdentityId
-} from '../../../../store/zustand/editor';
+} from '../../../../store/editor';
 import { EditViewClosingReasons } from '../../../../types';
 import { updateEditorWithSmartLinks } from '../../../../ui-actions/utils';
 

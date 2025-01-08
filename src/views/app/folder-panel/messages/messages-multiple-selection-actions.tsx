@@ -22,7 +22,7 @@ import { useMsgSetSpamDescriptor } from '../../../../hooks/actions/use-msg-set-s
 import { useMsgSetUnflagDescriptor } from '../../../../hooks/actions/use-msg-set-unflag';
 import { useMsgSetUnreadDescriptor } from '../../../../hooks/actions/use-msg-set-unread';
 import { useTagDropdownItem } from '../../../../hooks/use-tag-dropdown-item';
-import { useMessagesByIds } from '../../../../store/zustand/emails/store';
+import { useMessagesByIds } from '../../../../store/emails/store';
 import { MultipleSelectionActionsComponent } from '../parts/multiple-selection-actions-component';
 
 export const MessagesMultipleSelectionActions = ({

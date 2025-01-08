@@ -7,7 +7,7 @@
 import {
 	type AdvancedAccountStore,
 	useAdvancedAccountStore
-} from '../store/zustand/advanced-account/store';
+} from '../store/advanced-account/store';
 
 export const advancedAccountAPI = (): Promise<AdvancedAccountStore> =>
 	fetch('/zx/login/v3/account')

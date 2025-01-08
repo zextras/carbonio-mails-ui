@@ -14,7 +14,7 @@ import { screen } from '@testing-library/react';
 import { useAppContext } from '../../../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
 import { previewContextMock } from '../../../../../carbonio-ui-commons/test/mocks/carbonio-ui-preview';
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
-import { getMessageById } from '../../../../../store/zustand/emails/store';
+import { getMessageById } from '../../../../../store/emails/store';
 import AttachmentsBlock from '../attachments-block';
 
 describe('attachments-block', () => {

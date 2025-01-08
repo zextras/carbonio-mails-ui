@@ -10,7 +10,7 @@ import { Button, Container, IconButton, Row, Tooltip } from '@zextras/carbonio-d
 import { t, useUserSettings } from '@zextras/carbonio-shell-ui';
 
 import { useUiUtilities } from '../../../../hooks/use-ui-utilities';
-import { useMessagesByIds } from '../../../../store/zustand/emails/store';
+import { useMessagesByIds } from '../../../../store/emails/store';
 import { getFolderParentId } from '../../../../ui-actions/utils';
 import { ConversationsMultipleSelectionActions } from '../conversations/conversations-multiple-selection-actions';
 import { MessagesMultipleSelectionActions } from '../messages/messages-multiple-selection-actions';

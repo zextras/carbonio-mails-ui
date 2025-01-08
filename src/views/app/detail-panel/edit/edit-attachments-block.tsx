@@ -11,7 +11,7 @@ import { map } from 'lodash';
 
 import { AttachmentPreview } from './attachment-preview';
 import * as StyledComp from './parts/edit-view-styled-components';
-import { useEditorAttachments } from '../../../../store/zustand/editor';
+import { useEditorAttachments } from '../../../../store/editor';
 import type { MailsEditorV2, SavedAttachment, UnsavedAttachment } from '../../../../types';
 
 export const EditAttachmentsBlock: FC<{

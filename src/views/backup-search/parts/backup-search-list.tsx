@@ -25,7 +25,7 @@ import { CustomList } from '../../../carbonio-ui-commons/components/list/list';
 import { CustomListItem } from '../../../carbonio-ui-commons/components/list/list-item';
 import { BACKUP_SEARCH_STATUS, MAILS_ROUTE } from '../../../constants';
 import { useSelection } from '../../../hooks/use-selection';
-import { useBackupSearchStore } from '../../../store/zustand/backup-search/store';
+import { useBackupSearchStore } from '../../../store/backup-search/store';
 
 export const BackupSearchList = (): React.JSX.Element => {
 	const [count, setCount] = useState(0);

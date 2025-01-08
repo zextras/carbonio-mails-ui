@@ -28,8 +28,8 @@ import {
 	BACKUP_SEARCH_STATUS,
 	RECOVER_MESSAGES_INTERVAL
 } from '../../constants';
-import { useAdvancedAccountStore } from '../../store/zustand/advanced-account/store';
-import { useBackupSearchStore } from '../../store/zustand/backup-search/store';
+import { useAdvancedAccountStore } from '../../store/advanced-account/store';
+import { useBackupSearchStore } from '../../store/backup-search/store';
 
 function calculateInterval(recoverDate: Date | null): { startDate?: Date; endDate?: Date } {
 	if (!recoverDate) return {};

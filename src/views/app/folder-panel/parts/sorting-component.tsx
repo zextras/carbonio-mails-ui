@@ -15,7 +15,7 @@ import { searchSoapApi } from '../../../../api/search';
 import { FOLDERS } from '../../../../carbonio-ui-commons/constants/folders';
 import { SORTING_DIRECTION, SORTING_OPTIONS, SORT_ICONS } from '../../../../constants';
 import { parseMessageSortingOptions, updateSortingSettings } from '../../../../helpers/sorting';
-import { handleSearchSoapApiResults } from '../../../../store/zustand/emails/hooks/hooks';
+import { handleSearchSoapApiResults } from '../../../../store/emails/hooks/hooks';
 import { AppContext } from '../../../../types';
 
 export const SortingComponent = ({ folderId }: { folderId?: string }): React.JSX.Element => {

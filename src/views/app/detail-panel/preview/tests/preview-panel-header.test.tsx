@@ -13,7 +13,7 @@ import { createSoapAPIInterceptor } from '../../../../../carbonio-ui-commons/tes
 import { populateFoldersStore } from '../../../../../carbonio-ui-commons/test/mocks/store/folders';
 import { setupTest, screen } from '../../../../../carbonio-ui-commons/test/test-setup';
 import { MAILS_VIEW_LAYOUTS } from '../../../../../constants';
-import { setConversationsInEmailStore } from '../../../../../store/zustand/emails/store';
+import { setConversationsInEmailStore } from '../../../../../store/emails/store';
 import { TESTID_SELECTORS } from '../../../../../tests/constants';
 import { generateConversation } from '../../../../../tests/generators/generateConversation';
 import { mockLayoutStorage } from '../../../../../tests/layouts-utils';

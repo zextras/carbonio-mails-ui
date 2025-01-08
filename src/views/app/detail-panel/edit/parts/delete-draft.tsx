@@ -13,7 +13,7 @@ import ModalFooter from '../../../../../carbonio-ui-commons/components/modals/mo
 import ModalHeader from '../../../../../carbonio-ui-commons/components/modals/modal-header';
 import { FOLDERS } from '../../../../../carbonio-ui-commons/constants/folders';
 import { useMsgMoveToTrashFn } from '../../../../../hooks/actions/use-msg-move-to-trash';
-import { deleteEditor } from '../../../../../store/zustand/editor';
+import { deleteEditor } from '../../../../../store/editor';
 import { MailsEditorV2 } from '../../../../../types';
 import { useGlobalModal } from '../../../../global-modal-manager';
 

@@ -9,7 +9,7 @@ import { useUserSettings } from '@zextras/carbonio-shell-ui';
 import { useTranslation } from 'react-i18next';
 
 import { WarningBanner } from './warning-banner';
-import { getEditor } from '../../../../../store/zustand/editor/hooks/editors';
+import { getEditor } from '../../../../../store/editor/hooks/editors';
 import { MailsEditorV2 } from '../../../../../types';
 
 export const calculateMailSize = (editor: MailsEditorV2): number => {

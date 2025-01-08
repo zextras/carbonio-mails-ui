@@ -10,7 +10,7 @@ import * as searchSoapApi from '../../api/search';
 import * as shell from '../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
 import { createSoapAPIInterceptor } from '../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import * as convRequest from '../../store/actions/conv-action';
-import { setConversationsInEmailStore } from '../../store/zustand/emails/store';
+import { setConversationsInEmailStore } from '../../store/emails/store';
 import { createSoapAPIInterceptorWithError } from '../../tests/generators/api';
 import { generateConversation } from '../../tests/generators/generateConversation';
 import { usePreviewHeaderNavigation } from '../use-preview-header-navigation';
