@@ -32,10 +32,10 @@ export const sendMsg = async ({
 		},
 		account ?? undefined
 	);
-	if (response?.m && response?.m[0]?.id) {
+	if (response?.m?.[0]?.id) {
 		getMsg({ msgId: response.m[0].id });
 	}
-	if (response?.m && response?.m[0]?.cid) {
+	if (response?.m?.[0]?.cid) {
 		getConvSoapApi({ conversationId: response.m[0].cid });
 	}
 	return response;
