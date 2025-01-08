@@ -161,17 +161,6 @@ export function handleNotifyMessagesDeletionInSearch(messageIds: Array<string>):
 	});
 }
 
-/**
- * Handles the deletion of conversations and messages from search indexes,
- * message and conversation index slices, and populated items within the
- * application's email store state.
- */
-export function handleNotifyDeleted(ids: string[]): void {
-	addTask(async () => {
-		syncDataHandlerUtils.handleNotityDeleted(ids, useEmailsStore);
-	});
-}
-
 export function getSearchResultsLoadingStatus(): SearchRequestStatus {
 	return useEmailsStore.getState().searchIndexSlice.status;
 }
@@ -443,5 +432,20 @@ export function setConversationsInEmailStore(
 export function deleteConversationsFromConversationSlice(ids: Array<string>): void {
 	addTask(async () => {
 		conversationIndexSliceUtils.deleteConversationsFromConversationSlice(ids, useEmailsStore);
+	});
+}
+
+// ##########################################
+// ##### sync-data-handler related functions
+// ##########################################
+
+/**
+ * Handles the deletion of conversations and messages from search indexes,
+ * message and conversation index slices, and populated items within the
+ * application's email store state.
+ */
+export function handleNotifyDeleted(ids: string[]): void {
+	addTask(async () => {
+		syncDataHandlerUtils.handleNotityDeleted(ids, useEmailsStore);
 	});
 }
