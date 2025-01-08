@@ -160,6 +160,21 @@ export function handleNotifyMessagesDeletionInSearch(messageIds: Array<string>):
 	});
 }
 
+export function handleNotifyDeleted(ids: string[]): void {
+	addTask(async () => {
+		searchSliceUtils.handleNotifyConversationsDeletionInSearch(ids, useEmailsStore);
+	});
+	addTask(async () => {
+		searchSliceUtils.handleNotifyMessagesDeletionInSearch(ids, useEmailsStore);
+	});
+	addTask(async () => {
+		messageIndexSliceUtils.deleteMessagesFromMessageSlice(ids, useEmailsStore);
+	});
+	addTask(async () => {
+		conversationIndexSliceUtils.deleteConversationsFromConversationSlice(ids, useEmailsStore);
+	});
+}
+
 export function getSearchResultsLoadingStatus(): SearchRequestStatus {
 	return useEmailsStore.getState().searchIndexSlice.status;
 }

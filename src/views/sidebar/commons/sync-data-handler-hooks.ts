@@ -20,14 +20,11 @@ import {
 } from '../../../normalizations/normalize-conversation';
 import { normalizeMailMessageFromSoap } from '../../../normalizations/normalize-message';
 import {
-	deleteConversationsFromConversationSlice,
-	handleNotifyConversationsDeletionInSearch,
-	deleteMessagesFromMessagesSlice,
-	handleNotifyMessagesDeletionInSearch,
 	handleNotifyConversationsCreated,
 	handleNotifyMessagesCreated,
 	handleNotifyConversationsModified,
-	handleNotifyMessagesModified
+	handleNotifyMessagesModified,
+	handleNotifyDeleted
 } from '../../../store/emails/store';
 import {
 	FolderState,
@@ -144,13 +141,6 @@ function processModifiedNotifications(notify: SoapNotify): void {
 	}
 }
 
-function processDeletedNotifications(notify: SoapNotify): void {
-	handleNotifyConversationsDeletionInSearch(notify.deleted);
-	handleNotifyMessagesDeletionInSearch(notify.deleted);
-	deleteMessagesFromMessagesSlice(notify.deleted);
-	deleteConversationsFromConversationSlice(notify.deleted);
-}
-
 type ProcessNotificationsProps = {
 	notifyList: SoapNotify[];
 	seq: number;
@@ -185,7 +175,7 @@ function processNotifications({
 		}
 
 		if (notify.deleted) {
-			processDeletedNotifications(notify);
+			handleNotifyDeleted(notify.deleted);
 		}
 
 		setSeq(notify.seq);
