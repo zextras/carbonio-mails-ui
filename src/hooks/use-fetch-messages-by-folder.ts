@@ -37,7 +37,6 @@ export const useFetchMessagesByFolder = (folderId: string): MessageIndexSliceSta
 					limit: LIST_LIMIT.INITIAL_LIMIT,
 					types: 'message',
 					offset: 0,
-					recip: '0',
 					locale: prefLocale,
 					abortSignal: signal
 				});

@@ -17,7 +17,6 @@ export async function searchSoapApi({
 	sortBy = 'dateDesc',
 	query,
 	offset,
-	recip = '2',
 	wantContent = 'full',
 	locale,
 	abortSignal
@@ -65,7 +64,7 @@ export async function searchSoapApi({
 			_jsns: 'urn:zimbraMail',
 			limit,
 			needExp: 1,
-			recip,
+			recip: '2',
 			fullConversation: 1,
 			wantContent,
 			sortBy: finalsortBy,
