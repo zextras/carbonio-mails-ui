@@ -31,7 +31,12 @@ function useConversationMessages(
 	);
 	return messages;
 }
-function updateConversationsOnly(
+
+/**
+ * Updates existing conversations in the email store state by merging new conversation data.
+ * Ensures that only the relevant conversations are updated while preserving existing data.
+ */
+function updateConversations(
 	conversations: Array<NormalizedConversation>,
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
 ): void {
@@ -149,7 +154,7 @@ export const populatedItemsSliceUtils = {
 	updateConversationStatus,
 	updateMessages,
 	updateMessagesOnly,
-	updateConversationsOnly,
+	updateConversations,
 	useConversationMessages,
 	useMessagesByIds,
 	useConversationsByIds,

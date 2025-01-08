@@ -12,7 +12,7 @@ import {
 	setMessagesInSearchSlice,
 	setSearchResultsByConversation,
 	setSearchResultsByMessage,
-	updateConversationsOnly,
+	updateConversations,
 	updateConversationStatus,
 	updateMessages,
 	updateMessagesOnly,
@@ -147,7 +147,7 @@ describe('store-populated-items-slice', () => {
 			};
 
 			await act(async () => {
-				updateConversationsOnly([newConversation]);
+				updateConversations([newConversation]);
 			});
 			const { result } = renderHook(() => useConversationById('1'));
 			expect(result.current.tags).toEqual([]);

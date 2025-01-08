@@ -205,9 +205,9 @@ export function useConversationStatus(id: string): SearchRequestStatus {
 	return useEmailsStore(({ populatedItemsSlice }) => populatedItemsSlice.conversationsStatus?.[id]);
 }
 
-export function updateConversationsOnly(conversations: Array<NormalizedConversation>): void {
+export function updateConversations(conversations: Array<NormalizedConversation>): void {
 	addTask(async () => {
-		populatedItemsSliceUtils.updateConversationsOnly(conversations, useEmailsStore);
+		populatedItemsSliceUtils.updateConversations(conversations, useEmailsStore);
 	});
 }
 

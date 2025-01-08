@@ -26,7 +26,7 @@ import {
 	deleteMessagesFromSearch,
 	handleNotifyConversationsCreated,
 	handleNotifyMessagesCreated,
-	updateConversationsOnly,
+	updateConversations,
 	updateMessagesOnly
 } from '../../../store/emails/store';
 import {
@@ -108,7 +108,7 @@ function processCreatedNotifications(notify: SoapNotify): void {
 
 function processModifiedNotifications(notify: SoapNotify): void {
 	if (notify.modified?.c) {
-		updateConversationsOnly(normalizeConversations(notify.modified.c));
+		updateConversations(normalizeConversations(notify.modified.c));
 	}
 
 	if (notify.modified?.m) {
