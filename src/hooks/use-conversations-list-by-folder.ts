@@ -40,7 +40,6 @@ export const useConversationListByFolder = (folderId: string): ConversationIndex
 					limit: LIST_LIMIT.INITIAL_LIMIT,
 					types: 'conversation',
 					offset: 0,
-					recip: '0',
 					locale: prefLocale,
 					abortSignal: signal
 				});

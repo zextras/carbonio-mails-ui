@@ -48,7 +48,7 @@ describe('useMessageListByFolder', () => {
 				needExp: 1,
 				offset: 0,
 				query: 'inId:"2"',
-				recip: '0',
+				recip: '2',
 				sortBy: 'dateDesc',
 				types: 'message',
 				wantContent: 'full'

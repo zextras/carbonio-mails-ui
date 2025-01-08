@@ -55,7 +55,7 @@ describe('ConversationListHooks', () => {
 			needExp: 1,
 			offset: 0,
 			query: `inId:"${folder.id}"`,
-			recip: '0',
+			recip: '2',
 			sortBy: 'date',
 			types: 'conversation',
 			wantContent: 'full'

@@ -168,7 +168,6 @@ export function useRunSearch({
 				sortBy: 'dateDesc',
 				types: isMessageView ? 'message' : 'conversation',
 				offset: 0,
-				recip: '0',
 				locale: prefLocale,
 				abortSignal
 			});

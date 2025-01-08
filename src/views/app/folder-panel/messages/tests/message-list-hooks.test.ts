@@ -51,7 +51,7 @@ describe('useLoadMoreForMessagesSlice', () => {
 			needExp: 1,
 			offset: 0,
 			query: 'inId:"inbox"',
-			recip: '0',
+			recip: '2',
 			sortBy: 'date',
 			types: 'message',
 			wantContent: 'full'
