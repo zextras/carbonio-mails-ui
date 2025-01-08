@@ -15,8 +15,8 @@ import React, {
 
 import { Checkbox, Container, Divider, Input, Padding, Row } from '@zextras/carbonio-design-system';
 import { useUserSettings, BooleanString } from '@zextras/carbonio-shell-ui';
-import { TFunction } from 'i18next';
 import { findIndex, forEach, isEqual, map, omit, reduce } from 'lodash';
+import { useTranslation } from 'react-i18next';
 import { v4 as uuidv4 } from 'uuid';
 
 import ModalHeader from '../../../../../carbonio-ui-commons/components/modals/modal-header';
@@ -40,7 +40,6 @@ export type FilterType = {
 	name: string;
 };
 type ComponentProps = {
-	t: TFunction;
 	onClose: () => void;
 	incomingFilters?: any;
 	setFetchIncomingFilters: (arg: boolean) => void;
@@ -48,14 +47,14 @@ type ComponentProps = {
 	selectedFilter: FilterType | any;
 };
 
-const ModifyFilterModal: FC<ComponentProps> = ({
-	t,
+export const ModifyFilterModal: FC<ComponentProps> = ({
 	onClose,
 	incomingFilters,
 	setFetchIncomingFilters,
 	onIncomingFilterSave,
 	selectedFilter
 }): ReactElement => {
+	const [t] = useTranslation();
 	const [filterName, setFilterName] = useState('');
 	const [activeFilter, setActiveFilter] = useState(false);
 	const [condition, setCondition] = useState('anyof');
@@ -376,5 +375,3 @@ const ModifyFilterModal: FC<ComponentProps> = ({
 		</CreateFilterContext.Provider>
 	);
 };
-
-export default ModifyFilterModal;

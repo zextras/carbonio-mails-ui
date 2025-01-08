@@ -8,20 +8,18 @@
 import React, { act } from 'react';
 
 import { screen } from '@testing-library/react';
-import { t } from '@zextras/carbonio-shell-ui';
 
 import { createSoapAPIInterceptor } from '../../../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
 import { generateStore } from '../../../../../tests/generators/store';
 import { FilterListType } from '../../../../../types';
-import ModifyFilterModal from '../modify-filter/modify-filter-modal';
+import { ModifyFilterModal } from '../modify-filter/modify-filter-modal';
 
 describe('modify filter modal', () => {
 	it('should display modal with current saved actions', async () => {
 		const store = generateStore();
 		setupTest(
 			<ModifyFilterModal
-				t={t}
 				onClose={jest.fn()}
 				selectedFilter={{
 					id: '1',
@@ -55,7 +53,6 @@ describe('modify filter modal', () => {
 		const store = generateStore();
 		setupTest(
 			<ModifyFilterModal
-				t={t}
 				onClose={jest.fn()}
 				setFetchIncomingFilters={jest.fn()}
 				onIncomingFilterSave={jest.fn()}
@@ -66,9 +63,7 @@ describe('modify filter modal', () => {
 				store
 			}
 		);
-		expect(screen.getByRole('textbox', { name: /settings\.filter_name\*/i })).toHaveValue(
-			'Test Filter'
-		);
+		expect(screen.getByRole('textbox', { name: 'Filter Name*' })).toHaveValue('Test Filter');
 	});
 	// TODO: check the tests below, they show a very strange behavior, for example the "id" is removed from the selected filter
 	it('should call ModifyFiltersRule API with old data name when clicking save button', async () => {
@@ -80,7 +75,6 @@ describe('modify filter modal', () => {
 		const modifyFilterRulesInterceptor = createSoapAPIInterceptor('ModifyFilterRules');
 		const { user } = setupTest(
 			<ModifyFilterModal
-				t={t}
 				onClose={jest.fn()}
 				setFetchIncomingFilters={jest.fn()}
 				onIncomingFilterSave={jest.fn()}
@@ -93,7 +87,7 @@ describe('modify filter modal', () => {
 		);
 
 		const saveButton = screen.getByRole('button', {
-			name: /label\.save/i
+			name: 'Save'
 		});
 		await act(async () => {
 			await user.click(saveButton);
@@ -128,7 +122,6 @@ describe('modify filter modal', () => {
 		const modifyFilterRulesInterceptor = createSoapAPIInterceptor('ModifyFilterRules');
 		const { user } = setupTest(
 			<ModifyFilterModal
-				t={t}
 				onClose={jest.fn()}
 				setFetchIncomingFilters={jest.fn()}
 				onIncomingFilterSave={jest.fn()}
@@ -141,7 +134,7 @@ describe('modify filter modal', () => {
 		);
 
 		const saveButton = screen.getByRole('button', {
-			name: /label\.save/i
+			name: 'Save'
 		});
 		await act(async () => {
 			await user.click(saveButton);
@@ -171,7 +164,6 @@ describe('modify filter modal', () => {
 		const modifyFilterRulesInterceptor = createSoapAPIInterceptor('ModifyFilterRules');
 		const { user } = setupTest(
 			<ModifyFilterModal
-				t={t}
 				onClose={jest.fn()}
 				setFetchIncomingFilters={jest.fn()}
 				onIncomingFilterSave={jest.fn()}
@@ -184,7 +176,7 @@ describe('modify filter modal', () => {
 		);
 
 		const saveButton = screen.getByRole('button', {
-			name: /label\.save/i
+			name: 'Save'
 		});
 		await act(async () => {
 			await user.click(saveButton);
@@ -217,7 +209,6 @@ describe('modify filter modal', () => {
 		const selectedFilter = mockFilter({ name: 'Test Filter' });
 		const { user } = setupTest(
 			<ModifyFilterModal
-				t={t}
 				onClose={jest.fn()}
 				setFetchIncomingFilters={jest.fn()}
 				onIncomingFilterSave={jest.fn()}
@@ -229,13 +220,13 @@ describe('modify filter modal', () => {
 			}
 		);
 		const filterInputElement = screen.getByRole('textbox', {
-			name: 'settings.filter_name*'
+			name: 'Filter Name*'
 		});
 		await user.clear(filterInputElement);
 		await user.type(filterInputElement, 'My filter');
 
 		const saveButton = screen.getByRole('button', {
-			name: /label\.save/i
+			name: 'Save'
 		});
 		await act(async () => {
 			await user.click(saveButton);
@@ -260,7 +251,6 @@ describe('modify filter modal', () => {
 		const selectedFilter = mockFilter({ name: 'Test Filter' });
 		const { user } = setupTest(
 			<ModifyFilterModal
-				t={t}
 				onClose={jest.fn()}
 				setFetchIncomingFilters={jest.fn()}
 				onIncomingFilterSave={jest.fn()}
@@ -272,13 +262,13 @@ describe('modify filter modal', () => {
 			}
 		);
 		const filterInputElement = screen.getByRole('textbox', {
-			name: 'settings.filter_name*'
+			name: 'Filter Name*'
 		});
 		await user.clear(filterInputElement);
 		await user.type(filterInputElement, 'My filter');
 
 		const saveButton = screen.getByRole('button', {
-			name: /label\.save/i
+			name: 'Save'
 		});
 		await act(async () => {
 			await user.click(saveButton);

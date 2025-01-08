@@ -13,7 +13,7 @@ import { useRemoveFilter, useAddFilter } from './actions';
 import CreateFilterModal from './create-filter-modal';
 import DeleteFilterModal from './delete-filter-modal';
 import { FilterContext } from './filter-context';
-import ModifyFilterModal from './modify-filter/modify-filter-modal';
+import { ModifyFilterModal } from './modify-filter/modify-filter-modal';
 import { modifyFilterRules } from '../../../../store/actions/modify-filter-rules';
 import { StoreProvider } from '../../../../store/redux';
 import {
@@ -216,7 +216,6 @@ const IncomingFilterActions: FC<ComponentProps> = ({ compProps }): ReactElement 
 				children: (
 					<StoreProvider>
 						<ModifyFilterModal
-							t={t}
 							selectedFilter={selectedFilter}
 							onClose={(): void => closeModal(modalId)}
 							incomingFilters={incomingFilters}
