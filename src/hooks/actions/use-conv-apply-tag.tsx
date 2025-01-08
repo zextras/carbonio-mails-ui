@@ -47,16 +47,25 @@ const getSnackbarLabel = (isTagIncluded: boolean, tag: Tag, t: TFunction): strin
 				tag: tag.name,
 				defaultValue: '"{{tag}}" tag applied'
 			});
-const executeTagAction = (
-	canExecute: () => boolean,
-	action: (params: ConvActionParameters) => Promise<ConvActionResponse>,
-	operation: ConvActionParameters['operation'],
-	ids: Array<string>,
-	tag: Tag,
-	createSnackbar: CreateSnackbarFn,
-	snackbarSuccessLabel: string,
-	t: TFunction
-): void => {
+const executeTagAction = ({
+	canExecute,
+	action,
+	operation,
+	ids,
+	tag,
+	createSnackbar,
+	snackbarSuccessLabel,
+	t
+}: {
+	canExecute: () => boolean;
+	action: (params: ConvActionParameters) => Promise<ConvActionResponse>;
+	operation: ConvActionParameters['operation'];
+	ids: Array<string>;
+	tag: Tag;
+	createSnackbar: CreateSnackbarFn;
+	snackbarSuccessLabel: string;
+	t: TFunction;
+}): void => {
 	if (canExecute()) {
 		action({
 			operation,
@@ -99,16 +108,16 @@ export const useConvApplyTagSubDescriptors = ({
 				const canExecute = (): boolean => !isSpam(folderId);
 
 				const execute = (): void => {
-					executeTagAction(
+					executeTagAction({
 						canExecute,
-						convAction,
+						action: convAction,
 						operation,
 						ids,
 						tag,
 						createSnackbar,
 						snackbarSuccessLabel,
 						t
-					);
+					});
 				};
 
 				return {
