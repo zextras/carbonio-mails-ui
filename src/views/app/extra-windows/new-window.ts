@@ -95,6 +95,10 @@ function fixUrlForRule(cssRule: CSSRule): string {
 		.join('url(');
 }
 
+function getNameValueString(name: string, value: boolean): string {
+	return `${name}=${value ? 'yes' : 'no'}`;
+}
+
 /**
  * Convert feature props to a window features string.
  * @param obj - The feature props.
@@ -103,7 +107,7 @@ function fixUrlForRule(cssRule: CSSRule): string {
 function toWindowFeatures(obj: WindowFeatures): string {
 	return Object.entries(obj)
 		.map(([name, value]) =>
-			typeof value === 'boolean' ? `${name}=${value ? 'yes' : 'no'}` : `${name}=${value}`
+			typeof value === 'boolean' ? getNameValueString(name, value) : `${name}=${value}`
 		)
 		.join(',');
 }
