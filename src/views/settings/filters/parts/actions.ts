@@ -5,11 +5,13 @@
  */
 import { useCallback } from 'react';
 
+import { useSnackbar } from '@zextras/carbonio-design-system';
 import { TFunction } from 'i18next';
 import { concat, filter, findIndex } from 'lodash';
 
 import { useUiUtilities } from '../../../../hooks/use-ui-utilities';
 import { FilterListType } from '../../../../types';
+import { useTranslation } from 'react-i18next';
 
 export type ListType = {
 	isSelecting: boolean;
@@ -32,7 +34,7 @@ export type CompProps = {
 
 export type DeleteFilterCompProps = CompProps & {
 	onClose: () => void;
-	selectedFilter: FilterListType;
+	filterToDelete: FilterListType;
 	incomingFilters: FilterListType[];
 };
 
@@ -163,14 +165,14 @@ export const useDeleteOutgoingFilter = (): ((args: DeleteOutgoingFilterCompProps
 };
 
 export const useDeleteFilter = (): ((args: DeleteFilterCompProps) => void) => {
-	const { createSnackbar } = useUiUtilities();
+	const createSnackbar = useSnackbar();
+	const [t] = useTranslation();
 	return useCallback(
 		({
-			t,
 			setFetchFilters,
 			modifierFunc,
 			onClose,
-			selectedFilter,
+			filterToDelete: selectedFilter,
 			incomingFilters
 		}: DeleteFilterCompProps): void => {
 			const newFilters = filter(incomingFilters, (f) => f.name !== selectedFilter.name);
@@ -195,6 +197,6 @@ export const useDeleteFilter = (): ((args: DeleteFilterCompProps) => void) => {
 				});
 			onClose();
 		},
-		[createSnackbar]
+		[createSnackbar, t]
 	);
 };

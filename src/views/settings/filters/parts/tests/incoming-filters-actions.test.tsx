@@ -232,7 +232,7 @@ describe('incoming filters actions', () => {
 			{ store }
 		);
 
-		const deleteFilterBtn = await screen.findByRole('button', { name: /label\.delete/i });
+		const deleteFilterBtn = await screen.findByRole('button', { name: 'label.delete' });
 		await user.click(deleteFilterBtn);
 		makeAllItemsVisible();
 		const modal = screen.getByTestId('modal');
@@ -240,7 +240,7 @@ describe('incoming filters actions', () => {
 		await act(async () => {
 			await user.click(
 				within(modal).getByRole('button', {
-					name: 'label.delete'
+					name: 'Delete'
 				})
 			);
 		});

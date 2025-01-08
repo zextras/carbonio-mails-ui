@@ -9,7 +9,7 @@ import { Button, Padding, useModal } from '@zextras/carbonio-design-system';
 import type { TFunction } from 'i18next';
 import { find } from 'lodash';
 
-import { useRemoveFilter, useAddFilter } from './actions';
+import { useRemoveFilter, useAddFilter, useDeleteFilter } from './actions';
 import CreateFilterModal from './create-filter-modal';
 import DeleteFilterModal from './delete-filter-modal';
 import { FilterContext } from './filter-context';
@@ -128,8 +128,29 @@ const IncomingFilterActions: FC<ComponentProps> = ({ compProps }): ReactElement 
 		);
 	}, [createModal, t, incomingFilters, setFetchIncomingFilters, setIncomingFilters, closeModal]);
 
+	const deleteFilter = useDeleteFilter();
+
 	const openDeleteModal = useCallback(() => {
+		if (!selectedFilter) return;
 		const modalId = Date.now().toString();
+		const modalClose = (): void => closeModal(modalId);
+
+		const deleteConfirm = (): void =>
+			deleteFilter({
+				onClose: modalClose,
+				availableList,
+				activeList,
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// @ts-ignore
+				setFetchFilters: setFetchIncomingFilters,
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// @ts-ignore
+				setFilters: setIncomingFilters,
+				modifierFunc: modifyFilterRules,
+				filterToDelete: selectedFilter,
+				incomingFilters
+			});
+
 		createModal(
 			{
 				id: modalId,
@@ -137,20 +158,9 @@ const IncomingFilterActions: FC<ComponentProps> = ({ compProps }): ReactElement 
 				children: (
 					<StoreProvider>
 						<DeleteFilterModal
-							onClose={(): void => closeModal(modalId)}
-							t={t}
-							availableList={availableList}
-							activeList={activeList}
-							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-							// @ts-ignore
-							setFilters={setIncomingFilters}
-							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-							// @ts-ignore
-							setFetchFilters={setFetchIncomingFilters}
-							modifierFunc={modifyFilterRules}
-							filterName={selectedFilterName}
+							onClose={modalClose}
+							onConfirmDelete={deleteConfirm}
 							selectedFilter={selectedFilter}
-							incomingFilters={incomingFilters}
 						/>
 					</StoreProvider>
 				)
@@ -162,12 +172,11 @@ const IncomingFilterActions: FC<ComponentProps> = ({ compProps }): ReactElement 
 		availableList,
 		closeModal,
 		createModal,
+		deleteFilter,
 		incomingFilters,
 		selectedFilter,
-		selectedFilterName,
 		setFetchIncomingFilters,
-		setIncomingFilters,
-		t
+		setIncomingFilters
 	]);
 
 	const removeFilter = useRemoveFilter();
