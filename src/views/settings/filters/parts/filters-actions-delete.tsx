@@ -13,11 +13,8 @@ import { useRemoveFilter, useAddFilter } from './actions';
 import CreateFilterModal from './create-filter-modal';
 import { FilterContext } from './filter-context';
 import ModifyOutgoingFilterModal from './modify-filter/modify-outgoing-filter-modal';
+import { modifyFilterRules, modifyOutgoingFilterRules } from '../../../../api/modify-filter-rules';
 import { useUiUtilities } from '../../../../hooks/use-ui-utilities';
-import {
-	modifyFilterRules,
-	modifyOutgoingFilterRules
-} from '../../../../store/actions/modify-filter-rules';
 
 type FilterListType = {
 	active: boolean;

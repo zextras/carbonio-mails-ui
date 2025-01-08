@@ -10,9 +10,9 @@ import { find } from 'lodash';
 
 import { computeAndUpdateEditorStatus } from './commons';
 import { getEditor } from './editors';
+import { sendMsgFromEditor } from '../../../api/send-msg';
 import { createCancelableTimer } from '../../../helpers/timers';
 import { MailsEditorV2 } from '../../../types';
-import { sendMsgFromEditor } from '../../actions/send-msg';
 import { useEditorsStore } from '../store';
 
 export type SendMessageOptions = {

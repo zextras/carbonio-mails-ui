@@ -7,9 +7,9 @@ import { useCallback, useMemo } from 'react';
 
 import { useTranslation } from 'react-i18next';
 
+import { convAction } from '../../api';
 import { ConversationActionsDescriptors } from '../../constants';
 import { isDraft } from '../../helpers/folders';
-import { convAction } from '../../store/actions';
 import { ActionFn, UIActionDescriptor } from '../../types';
 
 type ConvSetMsgReadFunctionsParameter = {

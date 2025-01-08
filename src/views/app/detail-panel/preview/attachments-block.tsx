@@ -37,11 +37,11 @@ import {
 	getAttachmentsLink,
 	getLocationOrigin
 } from './utils';
+import { getMsgsForPrint } from '../../../../api';
+import { deleteAttachments } from '../../../../api/delete-all-attachments';
 import { getFileExtension } from '../../../../commons/utilities';
 import { useAttachmentIconColor } from '../../../../helpers/attachments';
 import { useUiUtilities } from '../../../../hooks/use-ui-utilities';
-import { getMsgsForPrint } from '../../../../store/actions';
-import { deleteAttachments } from '../../../../store/actions/delete-all-attachments';
 import type {
 	AppContext,
 	AttachmentPart,

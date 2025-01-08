@@ -14,7 +14,7 @@ import FilterItem from './filter-item';
 import LoadingShimmer from './loading-shimmer';
 import OutgoingFilterActions from './outgoing-filters-actions';
 import { useFilterSelection } from './use-filter-selection';
-import { modifyOutgoingFilterRules } from '../../../../store/actions/modify-filter-rules';
+import { modifyOutgoingFilterRules } from '../../../../api/modify-filter-rules';
 import Heading from '../../components/settings-heading';
 import { ListOld } from '../../list-old';
 

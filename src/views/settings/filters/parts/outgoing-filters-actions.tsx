@@ -14,7 +14,7 @@ import CreateOutgoingFilterModal from './create-outgoing-filter-modal';
 import DeleteOutgoingFilterModal from './delete-outgoing-filter-modal';
 import { FilterContext } from './filter-context';
 import ModifyOutgoingFilterModal from './modify-filter/modify-outgoing-filter-modal';
-import { modifyOutgoingFilterRules } from '../../../../store/actions/modify-filter-rules';
+import { modifyOutgoingFilterRules } from '../../../../api/modify-filter-rules';
 
 type FilterListType = {
 	active: boolean;

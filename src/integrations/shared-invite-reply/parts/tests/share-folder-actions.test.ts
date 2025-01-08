@@ -7,11 +7,11 @@ import { faker } from '@faker-js/faker';
 import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 
 import { CreateMountpointError } from '../../../../api/errors/create-mountpoint-error';
+import { CreateMountpointResponse } from '../../../../api/mount-shared-folder';
 import { FOLDER_VIEW } from '../../../../carbonio-ui-commons/constants';
 import { createSoapAPIInterceptor } from '../../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { buildSoapErrorResponseBody } from '../../../../carbonio-ui-commons/test/mocks/utils/soap';
 import { setupHook, screen, within } from '../../../../carbonio-ui-commons/test/test-setup';
-import { CreateMountpointResponse } from '../../../../store/actions/mount-shared-folder';
 import { ISoapFolderObj } from '../../../../types';
 import { useAccept } from '../share-folder-actions';
 

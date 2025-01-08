@@ -11,9 +11,9 @@ import { t } from '@zextras/carbonio-shell-ui';
 import { filter, isEqual, uniqWith } from 'lodash';
 
 import { SharesModal } from './shares-modal';
+import { getShareInfo } from '../../api/get-share-info';
 import { ResFolder } from '../../carbonio-ui-commons/utils';
 import { useUiUtilities } from '../../hooks/use-ui-utilities';
-import { getShareInfo } from '../../store/actions/get-share-info';
 
 export const ButtonFindShares = (): React.JSX.Element => {
 	const { createModal, closeModal } = useUiUtilities();

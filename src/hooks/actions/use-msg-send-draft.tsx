@@ -8,9 +8,9 @@ import { useCallback, useMemo } from 'react';
 
 import { useTranslation } from 'react-i18next';
 
+import { sendMsg } from '../../api/send-msg';
 import { MessageActionsDescriptors } from '../../constants';
 import { isDraft } from '../../helpers/folders';
-import { sendMsg } from '../../store/actions/send-msg';
 import { ActionFn, MailMessage, UIActionDescriptor } from '../../types';
 
 export const useMsgSendDraftFn = (message: MailMessage, folderId: string): ActionFn => {

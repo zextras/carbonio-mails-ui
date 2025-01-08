@@ -7,12 +7,12 @@
 import { soapFetch } from '@zextras/carbonio-shell-ui';
 import { isNull, map, omitBy } from 'lodash';
 
-import { normalizeMailMessageFromSoap } from '../../normalizations/normalize-message';
+import { normalizeMailMessageFromSoap } from '../normalizations/normalize-message';
 import type {
 	GetMsgForPrintParameter,
 	GetMsgResponse as GetMsgResponseType,
 	MailMessage
-} from '../../types';
+} from '../types';
 
 export const getMsgsForPrint = async ({
 	ids,

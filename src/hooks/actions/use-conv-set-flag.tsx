@@ -7,8 +7,8 @@ import { useCallback, useMemo } from 'react';
 
 import { useTranslation } from 'react-i18next';
 
+import { convAction } from '../../api';
 import { ConversationActionsDescriptors } from '../../constants';
-import { convAction } from '../../store/actions';
 import { ActionFn, UIActionDescriptor } from '../../types';
 
 export const useConvSetFlagFn = (ids: Array<string>, isFlagged: boolean): ActionFn => {

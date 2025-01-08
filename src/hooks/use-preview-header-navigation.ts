@@ -9,10 +9,10 @@ import { replaceHistory, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { findIndex } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
+import { convAction } from '../api';
 import { msgActionSoapApi } from '../api/msg-action';
 import { API_REQUEST_STATUS, LIST_LIMIT } from '../constants';
 import { parseMessageSortingOptions } from '../helpers/sorting';
-import { convAction } from '../store/actions';
 import {
 	useConversationsByIds,
 	useConversationsResultsLoadingStatus,

@@ -9,12 +9,12 @@ import { faker } from '@faker-js/faker';
 import { act, screen, within } from '@testing-library/react';
 import { CreateSnackbarFn, useSnackbar } from '@zextras/carbonio-design-system';
 
+import * as shareFolderModule from '../../../api/share-folder';
 import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
 import { getFolder } from '../../../carbonio-ui-commons/store/zustand/folder';
 import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { populateFoldersStore } from '../../../carbonio-ui-commons/test/mocks/store/folders';
 import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
-import * as shareFolderModule from '../../../store/actions/share-folder';
 import EditPermissionsModal from '../edit-permissions-modal';
 
 const createSnackbar = (arg: any): CreateSnackbarFn => arg;

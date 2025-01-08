@@ -19,12 +19,12 @@ import { map } from 'lodash';
 import styled from 'styled-components';
 
 import { Context } from './edit-context';
+import { sendShareNotification } from '../../../../api/send-share-notification';
 import { useUiUtilities } from '../../../../hooks/use-ui-utilities';
 import {
 	findLabel,
 	ShareCalendarRoleOptions
 } from '../../../../integrations/shared-invite-reply/parts/utils';
-import { sendShareNotification } from '../../../../store/actions/send-share-notification';
 import type {
 	ActionProps,
 	GranteeInfoProps,

@@ -9,13 +9,13 @@ import { Checkbox, Container, Input, Row, Text } from '@zextras/carbonio-design-
 import { t, useUserAccounts } from '@zextras/carbonio-shell-ui';
 
 import { GranteeInfo } from './share-folder-properties';
+import { folderAction } from '../../../../api/folder-action';
+import { sendShareNotification } from '../../../../api/send-share-notification';
 import ModalFooter from '../../../../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../../../../carbonio-ui-commons/components/modals/modal-header';
 import type { ShareRevokeModalType } from '../../../../carbonio-ui-commons/types/sidebar';
 import { useUiUtilities } from '../../../../hooks/use-ui-utilities';
 import { ShareCalendarRoleOptions } from '../../../../integrations/shared-invite-reply/parts/utils';
-import { folderAction } from '../../../../store/actions/folder-action';
-import { sendShareNotification } from '../../../../store/actions/send-share-notification';
 
 const ShareRevokeModal: FC<ShareRevokeModalType> = ({ folder, onClose, grant, goBack }) => {
 	const [sendNotification, setSendNotification] = useState(false);

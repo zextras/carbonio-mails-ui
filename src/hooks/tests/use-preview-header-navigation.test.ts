@@ -6,10 +6,10 @@
 import { renderHook, waitFor } from '@testing-library/react';
 import { CreateSnackbarFn, useSnackbar } from '@zextras/carbonio-design-system';
 
+import * as convRequest from '../../api/conv-action';
 import * as searchSoapApi from '../../api/search';
 import * as shell from '../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
 import { createSoapAPIInterceptor } from '../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
-import * as convRequest from '../../store/actions/conv-action';
 import { setConversationsInEmailStore } from '../../store/emails/store';
 import { createSoapAPIInterceptorWithError } from '../../tests/generators/api';
 import { generateConversation } from '../../tests/generators/generateConversation';

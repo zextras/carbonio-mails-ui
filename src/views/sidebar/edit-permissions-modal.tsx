@@ -18,6 +18,8 @@ import {
 import { t, useUserAccounts } from '@zextras/carbonio-shell-ui';
 
 import { GranteeInfo } from './parts/edit/share-folder-properties';
+import { sendShareNotification } from '../../api/send-share-notification';
+import { shareFolder } from '../../api/share-folder';
 import ModalFooter from '../../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../../carbonio-ui-commons/components/modals/modal-header';
 import { useContactInput } from '../../carbonio-ui-commons/integrations/hooks';
@@ -28,8 +30,6 @@ import {
 	ShareCalendarRoleOptions,
 	findLabel
 } from '../../integrations/shared-invite-reply/parts/utils';
-import { sendShareNotification } from '../../store/actions/send-share-notification';
-import { shareFolder } from '../../store/actions/share-folder';
 
 // TODO refactor IRIS-4324
 const EditPermissionsModal: FC<EditPermissionsModalProps> = ({

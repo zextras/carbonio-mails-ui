@@ -11,15 +11,15 @@ import { omit, reject } from 'lodash';
 import { computeAndUpdateEditorStatus } from './commons';
 import { getEditor } from './editors';
 import { useSaveDraftFromEditor, SaveDraftOptions } from './save-draft';
-import { TIMEOUTS } from '../../../constants';
-import { composeAttachmentDownloadUrl } from '../../../helpers/attachments';
-import { useUiUtilities } from '../../../hooks/use-ui-utilities';
-import { AttachmentUploadProcessStatus, MailsEditorV2, UnsavedAttachment } from '../../../types';
 import {
 	uploadAttachments,
 	UploadAttachmentsOptions,
 	UploadCallbacks
-} from '../../actions/upload-attachments';
+} from '../../../api/upload-attachments';
+import { TIMEOUTS } from '../../../constants';
+import { composeAttachmentDownloadUrl } from '../../../helpers/attachments';
+import { useUiUtilities } from '../../../hooks/use-ui-utilities';
+import { AttachmentUploadProcessStatus, MailsEditorV2, UnsavedAttachment } from '../../../types';
 import { composeCidUrlFromContentId } from '../editor-transformations';
 import {
 	filterUnsavedAttachmentsByUploadId,

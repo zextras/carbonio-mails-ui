@@ -9,7 +9,7 @@ import { TFunction } from 'i18next';
 import { find, truncate } from 'lodash';
 import { useLocation } from 'react-router-dom';
 
-import { createSmartLinksSoapAPI } from '../store/actions/create-smart-links';
+import { createSmartLinksSoapAPI } from '../api/create-smart-links';
 import { useEditorsStore } from '../store/editor/store';
 import type {
 	CreateSmartLinksResponse,

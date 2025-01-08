@@ -6,7 +6,7 @@
 
 import { ErrorSoapBodyResponse, SoapBody, soapFetch } from '@zextras/carbonio-shell-ui';
 
-import type { RedirectMessageActionRequest, MessageSpecification } from '../../types';
+import type { RedirectMessageActionRequest, MessageSpecification } from '../types';
 
 export const redirectMessageAction = ({
 	id,

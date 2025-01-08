@@ -19,9 +19,9 @@ import { TFunction } from 'i18next';
 import { findIndex, forEach, isEqual, map, omit, reduce } from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
 
+import { modifyFilterRules } from '../../../../../api/modify-filter-rules';
 import ModalHeader from '../../../../../carbonio-ui-commons/components/modals/modal-header';
 import { useUiUtilities } from '../../../../../hooks/use-ui-utilities';
-import { modifyFilterRules } from '../../../../../store/actions/modify-filter-rules';
 import type { FilterActions } from '../../../../../types';
 import { capitalise } from '../../../../sidebar/utils';
 import { CreateFilterContext } from '../create-filter-context';

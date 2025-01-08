@@ -9,12 +9,12 @@ import { faker } from '@faker-js/faker';
 import { screen } from '@testing-library/react';
 import { t } from '@zextras/carbonio-shell-ui';
 
+import { folderAction } from '../../../api/folder-action';
 import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { populateFoldersStore } from '../../../carbonio-ui-commons/test/mocks/store/folders';
 import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
 import { Folder, RootFolder } from '../../../carbonio-ui-commons/types/folder';
 import { FOLDER_ACTIONS } from '../../../commons/utilities';
-import { folderAction } from '../../../store/actions/folder-action';
 import { FolderActionResponse, SoapFolderAction } from '../../../types';
 import { SelectFolderModal } from '../select-folder-modal';
 

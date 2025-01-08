@@ -6,16 +6,16 @@
 import { soapFetch } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
 
-import { MAIL_VERIFICATION_HEADERS } from '../../constants';
-import { normalizeConversation } from '../../normalizations/normalize-conversation';
-import { normalizeMailMessageFromSoap } from '../../normalizations/normalize-message';
+import { MAIL_VERIFICATION_HEADERS } from '../constants';
+import { normalizeConversation } from '../normalizations/normalize-conversation';
+import { normalizeMailMessageFromSoap } from '../normalizations/normalize-message';
 import type {
 	Conversation,
 	GetConvParameters,
 	GetConvRequest,
 	GetConvResponse,
 	IncompleteMessage
-} from '../../types';
+} from '../types';
 
 export const getConv = async ({
 	conversationId,

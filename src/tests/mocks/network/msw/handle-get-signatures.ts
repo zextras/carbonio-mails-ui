@@ -5,8 +5,8 @@
  */
 import { JSNS } from '@zextras/carbonio-shell-ui';
 
+import { GetSignaturesRequest, GetSignaturesResponse } from '../../../../api/signatures';
 import { createSoapAPIInterceptor } from '../../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
-import { GetSignaturesRequest, GetSignaturesResponse } from '../../../../store/actions/signatures';
 import { SignItemType } from '../../../../types';
 
 export const handleGetSignaturesRequest = (signatures: Array<SignItemType>): void => {

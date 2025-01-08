@@ -10,10 +10,10 @@ import { useTranslation } from 'react-i18next';
 
 import { computeAndUpdateEditorStatus } from './commons';
 import { getEditor } from './editors';
+import { saveDraftV3 } from '../../../api/save-draft';
 import { useUiUtilities } from '../../../hooks/use-ui-utilities';
 import { normalizeMailMessageFromSoap } from '../../../normalizations/normalize-message';
 import { MailsEditorV2 } from '../../../types';
-import { saveDraftV3 } from '../../actions/save-draft';
 import { buildSavedAttachments } from '../editor-transformations';
 import { useEditorsStore } from '../store';
 import { getDraftSaveDelay } from '../store-utils';

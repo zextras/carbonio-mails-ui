@@ -5,7 +5,7 @@
  */
 import { soapFetch } from '@zextras/carbonio-shell-ui';
 
-import type { FilterRules } from '../../types';
+import type { FilterRules } from '../types';
 
 export async function getOutgoingFilters(): Promise<{ filterRules: FilterRules }> {
 	const { filterRules } = (await soapFetch('GetOutgoingFilterRules', {

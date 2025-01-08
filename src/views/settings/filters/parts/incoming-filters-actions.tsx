@@ -14,7 +14,7 @@ import CreateFilterModal from './create-filter-modal';
 import DeleteFilterModal from './delete-filter-modal';
 import { FilterContext } from './filter-context';
 import ModifyFilterModal from './modify-filter/modify-filter-modal';
-import { modifyFilterRules } from '../../../../store/actions/modify-filter-rules';
+import { modifyFilterRules } from '../../../../api/modify-filter-rules';
 import {
 	ApplyFilterUIActionExecutionParams,
 	getApplyFilterUIAction

@@ -29,11 +29,11 @@ import { saveSettings } from './save-settings';
 import { SendersList, getList } from './senders-list';
 import SignatureSettings from './signature-settings';
 import TrusteeAddresses from './trustee-addresses';
+import { GetAllSignatures, signatureRequest } from '../../api/signatures';
 import { useUpdateView } from '../../carbonio-ui-commons/hooks/use-update-view';
 import { TIMEOUTS } from '../../constants';
 import { NO_SIGNATURE_ID } from '../../helpers/signatures';
 import { useUiUtilities } from '../../hooks/use-ui-utilities';
-import { GetAllSignatures, signatureRequest } from '../../store/actions/signatures';
 import type {
 	AccountIdentity,
 	PrefsType,

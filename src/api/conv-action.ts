@@ -6,8 +6,8 @@
 import { soapFetch } from '@zextras/carbonio-shell-ui';
 import { isNil } from 'lodash';
 
-import { omitBy } from '../../commons/utils';
-import type { ConvActionParameters, ConvActionRequest, ConvActionResponse } from '../../types';
+import { omitBy } from '../commons/utils';
+import type { ConvActionParameters, ConvActionRequest, ConvActionResponse } from '../types';
 
 export async function convAction({
 	ids,

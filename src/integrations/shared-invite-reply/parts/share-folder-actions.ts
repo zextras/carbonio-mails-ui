@@ -9,12 +9,12 @@ import { TFunction } from 'i18next';
 import { map } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
+import { acceptSharedFolderReply } from '../../../api/acceptSharedFolderReply';
+import { mountSharedFolder } from '../../../api/mount-shared-folder';
 import { msgActionSoapApi } from '../../../api/msg-action';
 import { ParticipantRole } from '../../../carbonio-ui-commons/constants/participants';
 import { getErrorMessage } from '../../../carbonio-ui-commons/helpers/errors';
 import { useUiUtilities } from '../../../hooks/use-ui-utilities';
-import { acceptSharedFolderReply } from '../../../store/actions/acceptSharedFolderReply';
-import { mountSharedFolder } from '../../../store/actions/mount-shared-folder';
 import type { Participant, SaveDraftResponse } from '../../../types';
 
 type Accept = {

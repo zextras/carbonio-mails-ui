@@ -11,9 +11,9 @@ import { useTranslation } from 'react-i18next';
 import { FilterContext } from './filter-context';
 import IncomingMessageFilterTab from './incoming-message-filter-tab';
 import OutgoingMessageFilterTab from './outgoing-message-filter-tab';
+import { getIncomingFilters } from '../../../../api/get-incoming-filters';
+import { getOutgoingFilters } from '../../../../api/get-outgoing-filters';
 import { useUiUtilities } from '../../../../hooks/use-ui-utilities';
-import { getIncomingFilters } from '../../../../store/actions/get-incoming-filters';
-import { getOutgoingFilters } from '../../../../store/actions/get-outgoing-filters';
 import { FilterListType } from '../../../../types';
 
 type Item = {

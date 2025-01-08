@@ -16,9 +16,9 @@ import DefaultCondition from './create-filters-conditions/default';
 import FilterTestConditionRow from './filter-test-condition-row';
 import FilterActionConditions from './new-filter-action-conditions';
 import { getButtonInfo } from './utils';
+import { modifyOutgoingFilterRules } from '../../../../api/modify-filter-rules';
 import ModalHeader from '../../../../carbonio-ui-commons/components/modals/modal-header';
 import { useUiUtilities } from '../../../../hooks/use-ui-utilities';
-import { modifyOutgoingFilterRules } from '../../../../store/actions/modify-filter-rules';
 import type { FilterActions } from '../../../../types';
 
 type ComponentProps = {

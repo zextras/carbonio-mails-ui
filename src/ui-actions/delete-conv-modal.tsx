@@ -8,11 +8,11 @@ import React, { useCallback } from 'react';
 import { Container, Text } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
 
+import { convAction } from '../api';
 import { msgActionSoapApi } from '../api/msg-action';
 import ModalFooter from '../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../carbonio-ui-commons/components/modals/modal-header';
 import { useUiUtilities } from '../hooks/use-ui-utilities';
-import { convAction } from '../store/actions';
 
 type DeleteConvConfirmPropType = {
 	selectedIDs: Array<string>;

@@ -6,7 +6,7 @@
 import { ErrorSoapBodyResponse, JSNS, soapFetch } from '@zextras/carbonio-shell-ui';
 import { map, escape } from 'lodash';
 
-import { Signature } from '../../types';
+import { Signature } from '../types';
 
 export type GetSignaturesRequest = {
 	_jsns: typeof JSNS.account;

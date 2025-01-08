@@ -15,6 +15,8 @@ import { find, noop } from 'lodash';
 import { HttpResponse } from 'msw';
 
 import { aFailingSaveDraft, aSuccessfullSaveDraft } from './utils/utils';
+import * as saveDraftAction from '../../../../../api/save-draft';
+import { GetSignaturesRequest, GetSignaturesResponse } from '../../../../../api/signatures';
 import { FOLDERS } from '../../../../../carbonio-ui-commons/constants/folders';
 import { ParticipantRole } from '../../../../../carbonio-ui-commons/constants/participants';
 import { defaultBeforeAllTests } from '../../../../../carbonio-ui-commons/test/jest-setup';
@@ -32,11 +34,6 @@ import { buildSoapErrorResponseBody } from '../../../../../carbonio-ui-commons/t
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
 import { EditViewActions, MAILS_ROUTE } from '../../../../../constants';
 import * as useQueryParam from '../../../../../hooks/use-query-param';
-import * as saveDraftAction from '../../../../../store/actions/save-draft';
-import {
-	GetSignaturesRequest,
-	GetSignaturesResponse
-} from '../../../../../store/actions/signatures';
 import { addEditor } from '../../../../../store/editor';
 import {
 	generateEditAsNewEditor,

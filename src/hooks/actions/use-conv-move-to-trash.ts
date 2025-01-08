@@ -9,10 +9,10 @@ import { useSnackbar } from '@zextras/carbonio-design-system';
 import { replaceHistory } from '@zextras/carbonio-shell-ui';
 import { useTranslation } from 'react-i18next';
 
+import { convAction } from '../../api';
 import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
 import { isTrash } from '../../carbonio-ui-commons/helpers/folders';
 import { ConversationActionsDescriptors } from '../../constants';
-import { convAction } from '../../store/actions';
 import type { ActionFn, UIActionDescriptor } from '../../types';
 import { useInSearchModule } from '../../ui-actions/utils';
 

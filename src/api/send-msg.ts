@@ -6,14 +6,14 @@
 import { ErrorSoapBodyResponse, soapFetch } from '@zextras/carbonio-shell-ui';
 
 import { getConv } from './get-conv';
-import { getMsg } from '../../api/helpers/get-msg-service';
-import { ParticipantRole } from '../../carbonio-ui-commons/constants/participants';
-import { getAddressOwnerAccount, getIdentityDescriptor } from '../../helpers/identities';
-import { getParticipantsFromMessage } from '../../helpers/messages';
-import { MailMessage, MailsEditorV2, SaveDraftRequest, SaveDraftResponse } from '../../types';
-import { generateMailRequest } from '../editor-slice-utils';
-import { getCertificate } from '../certificates/certificate';
-import { createSoapSendMsgRequestFromEditor } from '../editor/editor-transformations';
+import { getMsg } from './helpers/get-msg-service';
+import { ParticipantRole } from '../carbonio-ui-commons/constants/participants';
+import { getAddressOwnerAccount, getIdentityDescriptor } from '../helpers/identities';
+import { getParticipantsFromMessage } from '../helpers/messages';
+import { getCertificate } from '../store/certificates/certificate';
+import { createSoapSendMsgRequestFromEditor } from '../store/editor/editor-transformations';
+import { generateMailRequest } from '../store/editor-slice-utils';
+import { MailMessage, MailsEditorV2, SaveDraftRequest, SaveDraftResponse } from '../types';
 
 export const sendMsg = async ({
 	msg
