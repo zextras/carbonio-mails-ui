@@ -175,7 +175,7 @@ function replaceStyles(source: Document, target: Document): void {
  * A React component to manage new browser windows.
  */
 class NewWindow extends React.PureComponent<NewWindowProps> {
-	static defaultProps: Partial<NewWindowProps> = {
+	static readonly defaultProps: Partial<NewWindowProps> = {
 		url: '',
 		name: '',
 		title: '',
@@ -224,7 +224,7 @@ class NewWindow extends React.PureComponent<NewWindowProps> {
 	}
 
 	private openChild(): void {
-		const { url, title, name, features, onBlock, onOpen, center } = this.props;
+		const { url, name, features, onBlock, onOpen, center } = this.props;
 
 		if (center === 'parent') {
 			const width =
