@@ -33,3 +33,13 @@ export const useCertificatesStore = create<CertificatesState>((set, get) => ({
 		}),
 	getCertificate: (accountId: string): Certificate | undefined => get().certificates[accountId]
 }));
+
+export type PasswordStore = {
+	password: string;
+	updatePassword: (value: string) => void;
+};
+
+export const usePasswordStore = create<PasswordStore>()((set) => ({
+	password: '',
+	updatePassword: (value: string): void => set({ password: value })
+}));

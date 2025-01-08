@@ -17,7 +17,7 @@ import {
 
 import { advancedAccountAPI } from '../api/advanced-account';
 import { Spinner } from '../assets/spinner';
-import { MAIL_APP_ID, MAILS_BOARD_VIEW_ID, MAILS_ROUTE } from '../constants';
+import { CERTIFICATES_ROUTE, MAIL_APP_ID, MAILS_BOARD_VIEW_ID, MAILS_ROUTE } from '../constants';
 import { StoreProvider } from '../store/redux';
 import { ExtraWindowsManager } from '../views/app/extra-windows/extra-window-manager';
 import { getSettingsSubSections } from '../views/settings/subsections';
@@ -35,6 +35,13 @@ const LazyEditView = lazy(
 
 const LazySettingsView = lazy(
 	() => import(/* webpackChunkName: "mail-setting-view" */ '../views/settings/settings-view')
+);
+
+const LazyCertificatsView = lazy(
+	() =>
+		import(
+			/* webpackChunkName: "mail-certificates-view" */ '../views/settings/certificates/certificates-view'
+		)
 );
 
 const LazySidebarView = lazy(
@@ -73,6 +80,16 @@ const SettingsView = (): React.JSX.Element => (
 	</Suspense>
 );
 
+const CertificatesView = (): React.JSX.Element => (
+	<Suspense fallback={<Spinner />}>
+		<StoreProvider>
+			<ModalManager>
+				<LazyCertificatsView />
+			</ModalManager>
+		</StoreProvider>
+	</Suspense>
+);
+
 const SidebarView = (props: SecondaryBarComponentProps): React.JSX.Element => (
 	<Suspense fallback={<Spinner />}>
 		<StoreProvider>
@@ -104,6 +121,12 @@ export const addComponentsToShell = async (): Promise<void> => {
 		label,
 		subSections: getSettingsSubSections(backupSelfUndeleteAllowed),
 		component: SettingsView
+	});
+	addSettingsView({
+		icon: 'AwardOutline',
+		route: CERTIFICATES_ROUTE,
+		label: t('settings.certificatePassword.certificates', 'Certificates'),
+		component: CertificatesView
 	});
 
 	upsertApp({
