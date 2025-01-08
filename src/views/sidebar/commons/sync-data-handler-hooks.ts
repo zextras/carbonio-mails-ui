@@ -8,7 +8,7 @@
 import { MutableRefObject, useEffect, useRef, useState } from 'react';
 
 import { useNotify, useRefresh } from '@zextras/carbonio-shell-ui';
-import { filter, find, forEach, isEmpty, map, sortBy } from 'lodash';
+import { find, forEach, isEmpty, map, sortBy } from 'lodash';
 import { StoreApi, UseBoundStore } from 'zustand';
 
 import { useFolderStore } from '../../../carbonio-ui-commons/store/zustand/folder';
@@ -112,32 +112,6 @@ function processModifiedNotifications(notify: SoapNotify): void {
 	if (notify.modified?.m) {
 		const messages = map(notify.modified.m, (message) => normalizeMailMessageFromSoap(message));
 		handleNotifyMessagesModified(messages);
-
-		const toUpdate = filter(messages, 'parent');
-		if (!isEmpty(toUpdate)) {
-			// dispatch(handleModifiedMessagesInConversation(toUpdate));
-		}
-
-		const conversationToUpdate = filter(messages, 'conversation');
-		if (!isEmpty(conversationToUpdate)) {
-			// const msgsReference = reduce(
-			// conversationToUpdate,
-			// (acc, msg) => {
-			// const existingMessage = messagesState?.[msg?.id];
-			// (existingMessage) {
-			// 		acc.push({
-			// 			id: existingMessage.id,
-			// 			parent: existingMessage.parent,
-			// 			date: existingMessage.date
-			// 			// conversation: msg.conversation
-			// 		});
-			// 	}
-			// 	return acc;
-			// },
-			// [] as Array<ConvMessage>
-			// );
-			// dispatch(handleAddMessagesInConversation(msgsReference));
-		}
 	}
 }
 
