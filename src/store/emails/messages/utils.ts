@@ -4,17 +4,14 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { getUserSettings } from '@zextras/carbonio-shell-ui';
 /* eslint-disable no-param-reassign */
 import produce from 'immer';
-import { find, forEach } from 'lodash';
 import { StoreApi, UseBoundStore } from 'zustand';
 
 import { MESSAGE_INDEX_SLICE_INITIAL_STATE } from './messages-slice';
 import { useFolder } from '../../../carbonio-ui-commons/store/zustand/folder';
 import { API_REQUEST_STATUS } from '../../../constants';
 import {
-	ConvMessage,
 	EmailsStoreState,
 	IncompleteMessage,
 	MailMessage,
@@ -109,73 +106,6 @@ function appendMessagesToMessagesSlice(
 }
 
 /**
- * Handles the creation of notify messages by updating the application's email store state.
- *
- * This function processes incoming messages, updates the message slice, and ensures conversations
- * are updated with the new messages in the appropriate order.
- */
-function handleNotifyMessagesCreated(
-	messages: Array<MailMessage | IncompleteMessage>,
-	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
-): void {
-	const newMessageIds = messages.map((message) => message.id);
-
-	function addMessagesToMessageSlice(state: EmailsStoreState): void {
-		state.populatedItemsSlice.messages = messages.reduce((acc, msg) => {
-			acc[msg.id] = msg;
-			return acc;
-		}, state.populatedItemsSlice.messages);
-		state.messageIndexSlice.messageListIndex = Array.from(
-			new Set([...newMessageIds, ...state.messageIndexSlice.messageListIndex])
-		);
-	}
-
-	function getOrderedMessagesForConversation(
-		convMessages: ConvMessage[],
-		message: IncompleteMessage
-	): ConvMessage[] {
-		const sortOrder = getUserSettings()?.prefs?.zimbraPrefConversationOrder || 'dateDesc';
-		if (sortOrder === 'dateDesc') {
-			return [{ id: message.id, parent: message.parent, date: message.date }, ...convMessages];
-		}
-		return [...convMessages, { id: message.id, parent: message.parent, date: message.date }];
-	}
-
-	function addMessagesToConversation(state: EmailsStoreState): void {
-		forEach(messages, (msg) => {
-			const conversation = state.populatedItemsSlice.conversations?.[msg.conversation];
-			if (msg?.conversation && msg?.id && msg?.parent && conversation) {
-				const newMessages = find(conversation.messages, ['id', msg.id])
-					? conversation.messages
-					: getOrderedMessagesForConversation(conversation.messages, msg);
-
-				const conv = {
-					[msg.conversation]: {
-						...conversation,
-						messages: newMessages,
-						fragment: msg?.fragment ?? '',
-						date: msg.date,
-						sortIndex: -JSON.stringify(Date.now())
-					}
-				};
-
-				state.populatedItemsSlice.conversations = {
-					...state.populatedItemsSlice.conversations,
-					...conv
-				};
-			}
-		});
-	}
-
-	useEmailsStore.setState(
-		produce((state: EmailsStoreState) => {
-			addMessagesToMessageSlice(state);
-			addMessagesToConversation(state);
-		})
-	);
-}
-
-/**
  * Deletes specified messages from the message slice in the state, including their references
  * in the message list index and populated items.
  *
@@ -210,7 +140,6 @@ function deleteMessagesFromMessageSlice(
 
 export const messageIndexSliceUtils = {
 	setMessages,
-	handleNotifyMessagesCreated,
 	updateMessagesResultsLoadingStatus,
 	resetMessagesAndPopulatedItems,
 	appendMessagesToMessagesSlice,

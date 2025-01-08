@@ -305,20 +305,6 @@ export function resetMessagesAndPopulatedItems(): void {
 		messageIndexSliceUtils.resetMessagesAndPopulatedItems(useEmailsStore);
 	});
 }
-
-/**
- * Handles the creation of notify messages by updating the application's email store state.
- *
- * This function processes incoming messages, updates the message slice, and ensures conversations
- * are updated with the new messages in the appropriate order.
- */
-export function handleNotifyMessagesCreated(
-	messages: Array<MailMessage | IncompleteMessage>
-): void {
-	addTask(async () => {
-		messageIndexSliceUtils.handleNotifyMessagesCreated(messages, useEmailsStore);
-	});
-}
 export function appendMessagesToMessagesSlice(
 	messages: Array<MailMessage | IncompleteMessage>,
 	offset: number
@@ -409,23 +395,23 @@ export function deleteConversationsFromConversationSlice(ids: Array<string>): vo
 // ##########################################
 // ##### sync-data-handler related functions
 // ##########################################
-
 /**
- * Handles the deletion of conversations and messages from search indexes,
- * message and conversation index slices, and populated items within the
- * application's email store state.
+ * Queues a task to handle the deletion of conversations and messages from search indexes,
+ * message and conversation index slices, and the email store state.
+ *
+ * @param ids - An array of string IDs representing the items to be deleted.
  */
 export function handleNotifyDeleted(ids: string[]): void {
 	addTask(async () => {
-		syncDataHandlerUtils.handleNotityDeleted(ids, useEmailsStore);
+		syncDataHandlerUtils.handleNotifyDeleted(ids, useEmailsStore);
 	});
 }
 
 /**
- * Queues a task to update the state with modified conversation data.
+ * Queues a task to update the email store state with modified conversation data.
  *
- * @param updatedConversations - An array of updated conversation objects, each containing an `id`
- * and other properties to update in the state.
+ * @param updatedConversations - An array of `NormalizedConversation` objects,
+ * each containing an `id` and other properties to be updated in the state.
  */
 export function handleNotifyConversationsModified(
 	updatedConversations: Array<NormalizedConversation>
@@ -436,9 +422,10 @@ export function handleNotifyConversationsModified(
 }
 
 /**
- * Handles the creation of notify conversations by updating the application's email store state.
- * This function processes incoming conversations and updates the conversation slice and index
- * to include the new conversations.
+ * Queues a task to handle the addition of new conversations by updating the email store state.
+ *
+ * @param conversations - An array of `NormalizedConversation` objects to be
+ * added to the conversation slice and index in the email store.
  */
 export function handleNotifyConversationsCreated(
 	conversations: Array<NormalizedConversation>
@@ -449,13 +436,27 @@ export function handleNotifyConversationsCreated(
 }
 
 /**
- * Queues a task to update the state with modified message data.
+ * Queues a task to update the email store state with modified message data.
  *
- * @param updatedMessages - An array of updated message objects, each containing an `id`
- * and other properties to update in the state.
+ * @param updatedMessages - An array of `IncompleteMessage` objects, each
+ * containing an `id` and other properties to be updated in the state.
  */
 export function handleNotifyMessagesModified(updatedMessages: Array<IncompleteMessage>): void {
 	addTask(async () => {
 		syncDataHandlerUtils.handleNotifyMessagesModified(updatedMessages, useEmailsStore);
+	});
+}
+
+/**
+ * Queues a task to handle the addition of new messages by updating the email store state.
+ *
+ * @param messages - An array of `MailMessage` or `IncompleteMessage` objects
+ * to be added to the message slice and associated conversations.
+ */
+export function handleNotifyMessagesCreated(
+	messages: Array<MailMessage | IncompleteMessage>
+): void {
+	addTask(async () => {
+		syncDataHandlerUtils.handleNotifyMessagesCreated(messages, useEmailsStore);
 	});
 }
