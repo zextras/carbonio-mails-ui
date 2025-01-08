@@ -8,7 +8,7 @@
 import React from 'react';
 
 import { EnhancedStore } from '@reduxjs/toolkit';
-import { act, screen } from '@testing-library/react';
+import { act, screen, within } from '@testing-library/react';
 import { useSnackbar } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 
@@ -120,89 +120,269 @@ describe('incoming filters actions', () => {
 		});
 	});
 
-	describe('modify filter', () => {
-		it('should call Modify Filter API with all incoming filters', async () => {
-			const store = generateStore();
-			(useSnackbar as jest.Mock).mockReturnValue(createSnackbarSpy);
-			const availableList = createList([]);
-			const otherFilter = activeIncomingFilter('Other filter');
-			const myFilter = activeIncomingFilter('My filter');
-			const incomingFilters = [otherFilter, myFilter];
-			const activeList = createList(incomingFilters, 'My filter');
-			const modifyFilterRulesInterceptor = createSoapAPIInterceptor('ModifyFilterRules');
-			const props = { t, availableList, activeList, incomingFilters };
+	test('modify filter should call Modify Filter API with all incoming filters', async () => {
+		const store = generateStore();
+		(useSnackbar as jest.Mock).mockReturnValue(createSnackbarSpy);
+		const availableList = createList([]);
+		const otherFilter = activeIncomingFilter('Other filter');
+		const myFilter = activeIncomingFilter('My filter');
+		const incomingFilters = [otherFilter, myFilter];
+		const activeList = createList(incomingFilters, 'My filter');
+		const modifyFilterRulesInterceptor = createSoapAPIInterceptor('ModifyFilterRules');
+		const props = { t, availableList, activeList, incomingFilters };
 
-			const { user } = setupTest(
-				<FilterContext.Provider
-					value={{
-						incomingFilters,
-						incomingLoading: true,
-						setFetchIncomingFilters: jest.fn(),
-						outgoingFilters: [],
-						outgoingLoading: false,
-						moveUp: jest.fn(),
-						setIncomingFilters: jest.fn(),
-						setOutgoingFilters: jest.fn(),
-						setFetchOutgoingFilters: jest.fn()
-					}}
-				>
-					<IncomingFilterActions compProps={props} />
-				</FilterContext.Provider>,
-				{ store }
-			);
-			const modifyFilterBtn = await screen.findByRole('button', { name: /label\.edit/i });
-			await user.click(modifyFilterBtn);
-			makeAllItemsVisible();
-			expect(screen.getByTestId('modal')).toBeVisible();
-			const filterNameInput = screen.getByRole('textbox', {
-				name: 'Filter Name*'
-			});
-			await user.clear(filterNameInput);
-			await user.type(filterNameInput, 'Edited filter');
-			const saveButton = screen.getByRole('button', {
-				name: 'Save'
-			});
-			expect(saveButton).toBeEnabled();
-			await act(async () => {
-				await user.click(saveButton);
-			});
+		const { user } = setupTest(
+			<FilterContext.Provider
+				value={{
+					incomingFilters,
+					incomingLoading: true,
+					setFetchIncomingFilters: jest.fn(),
+					outgoingFilters: [],
+					outgoingLoading: false,
+					moveUp: jest.fn(),
+					setIncomingFilters: jest.fn(),
+					setOutgoingFilters: jest.fn(),
+					setFetchOutgoingFilters: jest.fn()
+				}}
+			>
+				<IncomingFilterActions compProps={props} />
+			</FilterContext.Provider>,
+			{ store }
+		);
+		const modifyFilterBtn = await screen.findByRole('button', { name: /label\.edit/i });
+		await user.click(modifyFilterBtn);
+		makeAllItemsVisible();
+		expect(screen.getByTestId('modal')).toBeVisible();
+		const filterNameInput = screen.getByRole('textbox', {
+			name: 'Filter Name*'
+		});
+		await user.clear(filterNameInput);
+		await user.type(filterNameInput, 'Edited filter');
+		const saveButton = screen.getByRole('button', {
+			name: 'Save'
+		});
+		expect(saveButton).toBeEnabled();
+		await act(async () => {
+			await user.click(saveButton);
+		});
 
-			const request = await modifyFilterRulesInterceptor;
-			expect(request).toEqual({
-				_jsns: 'urn:zimbraMail',
-				filterRules: [
-					{
-						filterRule: [
-							otherFilter,
-							{
-								active: true,
-								filterActions: [
-									{
-										actionKeep: [{}],
-										actionStop: [{}]
-									}
-								],
-								filterTests: [
-									{
-										condition: 'anyof',
-										headerTest: [
-											{
-												header: 'subject',
-												stringComparison: 'contains',
-												testName: 'headerTest',
-												value: 'testddsareafreafdastewa'
-											}
-										]
-									}
-								],
-								name: 'Edited filter'
-							}
-						]
-					}
-				]
-			});
+		const request = await modifyFilterRulesInterceptor;
+		expect(request).toEqual({
+			_jsns: 'urn:zimbraMail',
+			filterRules: [
+				{
+					filterRule: [
+						otherFilter,
+						{
+							active: true,
+							filterActions: [
+								{
+									actionKeep: [{}],
+									actionStop: [{}]
+								}
+							],
+							filterTests: [
+								{
+									condition: 'anyof',
+									headerTest: [
+										{
+											header: 'subject',
+											stringComparison: 'contains',
+											testName: 'headerTest',
+											value: 'testddsareafreafdastewa'
+										}
+									]
+								}
+							],
+							name: 'Edited filter'
+						}
+					]
+				}
+			]
 		});
 	});
+
+	test('delete filter should call Modify Filter API without the deleted filter', async () => {
+		const store = generateStore();
+		(useSnackbar as jest.Mock).mockReturnValue(createSnackbarSpy);
+		const availableList = createList([]);
+		const otherFilter = activeIncomingFilter('Other filter');
+		const myFilter = activeIncomingFilter('My filter');
+		const incomingFilters = [otherFilter, myFilter];
+		const activeList = createList(incomingFilters, 'My filter');
+		const modifyFilterRulesInterceptor = createSoapAPIInterceptor('ModifyFilterRules');
+		const props = { t, availableList, activeList, incomingFilters };
+
+		const { user } = setupTest(
+			<FilterContext.Provider
+				value={{
+					incomingFilters,
+					incomingLoading: true,
+					setFetchIncomingFilters: jest.fn(),
+					outgoingFilters: [],
+					outgoingLoading: false,
+					moveUp: jest.fn(),
+					setIncomingFilters: jest.fn(),
+					setOutgoingFilters: jest.fn(),
+					setFetchOutgoingFilters: jest.fn()
+				}}
+			>
+				<IncomingFilterActions compProps={props} />
+			</FilterContext.Provider>,
+			{ store }
+		);
+
+		const deleteFilterBtn = await screen.findByRole('button', { name: /label\.delete/i });
+		await user.click(deleteFilterBtn);
+		makeAllItemsVisible();
+		const modal = screen.getByTestId('modal');
+		expect(modal).toBeVisible();
+		await act(async () => {
+			await user.click(
+				within(modal).getByRole('button', {
+					name: 'label.delete'
+				})
+			);
+		});
+		const request = await modifyFilterRulesInterceptor;
+
+		expect(request).toEqual({
+			_jsns: 'urn:zimbraMail',
+			filterRules: [
+				{
+					filterRule: [otherFilter]
+				}
+			]
+		});
+	});
+
+	test('remove filter should call Modify Filter API with the removed filter', async () => {
+		const store = generateStore();
+		(useSnackbar as jest.Mock).mockReturnValue(createSnackbarSpy);
+		const availableList = createList([]);
+		const otherFilter = activeIncomingFilter('Other filter');
+		const myFilter = activeIncomingFilter('My filter');
+		const incomingFilters = [otherFilter, myFilter];
+		const activeList = createList(incomingFilters, 'My filter');
+		const modifyFilterRulesInterceptor = createSoapAPIInterceptor('ModifyFilterRules');
+		const props = { t, availableList, activeList, incomingFilters };
+
+		const { user } = setupTest(
+			<FilterContext.Provider
+				value={{
+					incomingFilters,
+					incomingLoading: true,
+					setFetchIncomingFilters: jest.fn(),
+					outgoingFilters: [],
+					outgoingLoading: false,
+					moveUp: jest.fn(),
+					setIncomingFilters: jest.fn(),
+					setOutgoingFilters: jest.fn(),
+					setFetchOutgoingFilters: jest.fn()
+				}}
+			>
+				<IncomingFilterActions compProps={props} />
+			</FilterContext.Provider>,
+			{ store }
+		);
+
+		const removeFilterBtn = await screen.findByRole('button', { name: /label\.remove/i });
+		await user.click(removeFilterBtn);
+
+		const request = await modifyFilterRulesInterceptor;
+
+		expect(request).toEqual({
+			_jsns: 'urn:zimbraMail',
+			filterRules: [
+				{
+					filterRule: [otherFilter, { ...myFilter, active: false }]
+				}
+			]
+		});
+	});
+	test('add filter should call Modify Filter API with the added filter', async () => {
+		const store = generateStore();
+		(useSnackbar as jest.Mock).mockReturnValue(createSnackbarSpy);
+		const firstFilter = { ...activeIncomingFilter('First filter'), active: false };
+		const secondFilter = { ...activeIncomingFilter('Second filter'), active: false };
+		const availableList = createList([firstFilter, secondFilter], 'First filter');
+
+		const thirdFilter = { ...activeIncomingFilter('Third filter'), active: true };
+		const fourthFilter = { ...activeIncomingFilter('Third filter'), active: true };
+		const activeList = createList([thirdFilter, fourthFilter]);
+
+		const incomingFilters = [firstFilter, secondFilter, thirdFilter, fourthFilter];
+		const modifyFilterRulesInterceptor = createSoapAPIInterceptor('ModifyFilterRules');
+		const props = { t, availableList, activeList, incomingFilters };
+
+		const { user } = setupTest(
+			<FilterContext.Provider
+				value={{
+					incomingFilters,
+					incomingLoading: true,
+					setFetchIncomingFilters: jest.fn(),
+					outgoingFilters: [],
+					outgoingLoading: false,
+					moveUp: jest.fn(),
+					setIncomingFilters: jest.fn(),
+					setOutgoingFilters: jest.fn(),
+					setFetchOutgoingFilters: jest.fn()
+				}}
+			>
+				<IncomingFilterActions compProps={props} />
+			</FilterContext.Provider>,
+			{ store }
+		);
+
+		const addFilterBtn = await screen.findByRole('button', { name: /label\.add/i });
+		await user.click(addFilterBtn);
+
+		const request = await modifyFilterRulesInterceptor;
+
+		expect(request).toEqual({
+			_jsns: 'urn:zimbraMail',
+			filterRules: [
+				{
+					filterRule: [thirdFilter, fourthFilter, { ...firstFilter, active: true }, secondFilter]
+				}
+			]
+		});
+	});
+});
+
+it('should close the modal', async () => {
+	const store = generateStore();
+	(useSnackbar as jest.Mock).mockReturnValue(createSnackbarSpy);
+	const availableList = createList([]);
+	const myFilter = activeIncomingFilter('My filter');
+	const incomingFilters = [myFilter];
+	const activeList = createList(incomingFilters, 'My filter');
+	const props = { t, availableList, activeList, incomingFilters };
+
+	const { user } = setupTest(
+		<FilterContext.Provider
+			value={{
+				incomingFilters,
+				incomingLoading: true,
+				setFetchIncomingFilters: jest.fn(),
+				outgoingFilters: [],
+				outgoingLoading: false,
+				moveUp: jest.fn(),
+				setIncomingFilters: jest.fn(),
+				setOutgoingFilters: jest.fn(),
+				setFetchOutgoingFilters: jest.fn()
+			}}
+		>
+			<IncomingFilterActions compProps={props} />
+		</FilterContext.Provider>,
+		{ store }
+	);
+
+	await user.click(screen.getByRole('button', { name: /label\.create/i }));
+	makeAllItemsVisible();
+	expect(screen.getByTestId('modal')).toBeVisible();
+	await user.click(screen.getByTestId('icon: CloseOutline'));
+	expect(screen.queryByTestId('modal')).not.toBeInTheDocument();
 });
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type

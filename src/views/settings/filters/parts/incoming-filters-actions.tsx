@@ -234,7 +234,6 @@ const IncomingFilterActions: FC<ComponentProps> = ({ compProps }): ReactElement 
 	}, [
 		createModal,
 		closeModal,
-		t,
 		incomingFilters,
 		setIncomingFilters,
 		setFetchIncomingFilters,

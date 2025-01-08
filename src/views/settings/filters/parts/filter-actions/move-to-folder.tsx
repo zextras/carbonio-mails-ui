@@ -48,7 +48,7 @@ export const MovetoFolder = ({
 				<Row padding={{ right: 'small' }}>
 					<Input
 						label={t('label.destination_folder', 'Destination Folder')}
-						backgroundColor="gray5"
+						background="gray5"
 						value={destination?.name}
 						disabled
 					/>
