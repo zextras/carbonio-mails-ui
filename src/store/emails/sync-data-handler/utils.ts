@@ -3,7 +3,7 @@ import produce from 'immer';
 import { filter, forEach, merge } from 'lodash';
 import { StoreApi, UseBoundStore } from 'zustand';
 
-import { EmailsStoreState, NormalizedConversation } from '../../../types';
+import { EmailsStoreState, IncompleteMessage, NormalizedConversation } from '../../../types';
 
 /*
  * SPDX-FileCopyrightText: 2025 Zextras <https://www.zextras.com>
@@ -118,6 +118,29 @@ function handleNotifyConversationsModified(
 }
 
 /**
+ * Updates the messages in the application state with modified message data.
+ *
+ * @param updatedMessages - An array of updated message objects, each containing an `id`
+ * and other properties to update in the state.
+ * @param useEmailsStore - A state management hook for accessing and updating the `EmailsStoreState`.
+ */
+function handleNotifyMessagesModified(
+	updatedMessages: Array<IncompleteMessage>,
+	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
+): void {
+	useEmailsStore.setState(
+		produce(({ populatedItemsSlice }: EmailsStoreState) => {
+			updatedMessages.forEach((message) => {
+				populatedItemsSlice.messages[message.id] = {
+					...merge(populatedItemsSlice.messages[message.id], message),
+					tags: message.tags
+				};
+			});
+		})
+	);
+}
+
+/**
  * Handles the creation of notify conversations by updating the application's email store state.
  * This function processes incoming conversations and updates the conversation slice and index
  * to include the new conversations.
@@ -141,6 +164,7 @@ function handleNotifyConversationsCreated(
 }
 export const syncDataHandlerUtils = {
 	handleNotityDeleted,
+	handleNotifyMessagesModified,
 	handleNotifyConversationsModified,
 	handleNotifyConversationsCreated
 };

@@ -241,18 +241,6 @@ export function useConversationStatus(id: string): SearchRequestStatus {
 	return useEmailsStore(({ populatedItemsSlice }) => populatedItemsSlice.conversationsStatus?.[id]);
 }
 
-/**
- * Queues a task to update the state with modified message data.
- *
- * @param updatedMessages - An array of updated message objects, each containing an `id`
- * and other properties to update in the state.
- */
-export function handleNotifyMessagesModified(updatedMessages: Array<IncompleteMessage>): void {
-	addTask(async () => {
-		populatedItemsSliceUtils.handleNotifyMessagesModified(updatedMessages, useEmailsStore);
-	});
-}
-
 export function updateMessages(messages: MailMessage[]): void {
 	addTask(async () => {
 		populatedItemsSliceUtils.updateMessages(messages, useEmailsStore);
@@ -457,5 +445,17 @@ export function handleNotifyConversationsCreated(
 ): void {
 	addTask(async () => {
 		syncDataHandlerUtils.handleNotifyConversationsCreated(conversations, useEmailsStore);
+	});
+}
+
+/**
+ * Queues a task to update the state with modified message data.
+ *
+ * @param updatedMessages - An array of updated message objects, each containing an `id`
+ * and other properties to update in the state.
+ */
+export function handleNotifyMessagesModified(updatedMessages: Array<IncompleteMessage>): void {
+	addTask(async () => {
+		syncDataHandlerUtils.handleNotifyMessagesModified(updatedMessages, useEmailsStore);
 	});
 }
