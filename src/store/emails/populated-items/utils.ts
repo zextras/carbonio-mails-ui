@@ -46,7 +46,7 @@ function useConversationMessages(
  * - The `tags` property is explicitly replaced with the value from the `conversation` parameter.
  * - Other properties are merged into the existing data for the corresponding conversation.
  */
-function handleNotifyConversationsModified(
+function updateConversations(
 	updatedConversations: Array<NormalizedConversation>,
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
 ): void {
@@ -168,11 +168,11 @@ export function deleteMessagesFromConversation(ids: Array<string>, state: Emails
 }
 
 export const populatedItemsSliceUtils = {
+	updateConversations,
 	updateMessageStatus,
 	updateConversationStatus,
 	updateMessages,
 	handleNotifyMessagesModified,
-	handleNotifyConversationsModified,
 	useConversationMessages,
 	useMessagesByIds,
 	useConversationsByIds,

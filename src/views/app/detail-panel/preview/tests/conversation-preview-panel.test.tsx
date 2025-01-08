@@ -9,10 +9,7 @@ import React from 'react';
 import { act } from '@testing-library/react';
 
 import { setupTest, screen } from '../../../../../carbonio-ui-commons/test/test-setup';
-import {
-	handleNotifyConversationsModified,
-	updateMessages
-} from '../../../../../store/emails/store';
+import { updateConversations, updateMessages } from '../../../../../store/emails/store';
 import { generateConversation } from '../../../../../tests/generators/generateConversation';
 import { generateMessage } from '../../../../../tests/generators/generateMessage';
 import { ConversationPreviewPanel } from '../../conversation-preview-panel';
@@ -31,7 +28,7 @@ describe('Conversation Preview Panel', () => {
 			id: '123',
 			messages
 		});
-		handleNotifyConversationsModified([conversation]);
+		updateConversations([conversation]);
 		setupTest(<ConversationPreviewPanel conversation={conversation} isInsideExtraWindow={false} />);
 
 		await act(async () => {

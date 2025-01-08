@@ -39,8 +39,8 @@ import {
 	resetMessagesAndPopulatedItems,
 	setMessagesInEmailStore,
 	setConversationsInEmailStore,
-	handleNotifyConversationsModified,
-	getConversationById
+	getConversationById,
+	updateConversations
 } from '../store';
 
 function handleSearchConvResponse(conversationId: string, response: SearchConvResponse): void {
@@ -53,7 +53,7 @@ function handleSearchConvResponse(conversationId: string, response: SearchConvRe
 	}));
 	const conversation = getConversationById(conversationId);
 	const updatedConversation = { ...conversation, id: conversationId, messages: convMessages };
-	handleNotifyConversationsModified([updatedConversation]);
+	updateConversations([updatedConversation]);
 }
 
 type ConversationWithStatus = {

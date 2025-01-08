@@ -11,13 +11,13 @@ import {
 	appendConversationsToConversationIndexSlice,
 	resetConversationAndPopulatedItems,
 	setConversationsInEmailStore,
-	handleNotifyConversationsModified,
 	updateConversationsResultsLoadingStatus,
 	useConversationById,
 	useConversationIndexSlice,
 	useConversationsByIds,
 	useConversationsIdsByFolder,
-	usePopulatedItemsSlice
+	usePopulatedItemsSlice,
+	updateConversations
 } from './store';
 import { useFolderStore } from '../../carbonio-ui-commons/store/zustand/folder';
 import { generateFolder } from '../../carbonio-ui-commons/test/mocks/folders/folders-generator';
@@ -139,7 +139,7 @@ describe('setConversationsInEmailStore', () => {
 		});
 
 		it('should set populatedItemsSlice.conversations as an empty object', async () => {
-			handleNotifyConversationsModified([conversation1]);
+			updateConversations([conversation1]);
 			const { result: initialState } = renderHook(() => useConversationsByIds(['1']));
 			expect(initialState.current).toEqual([conversation1]);
 			await act(async () => setConversationsInEmailStore([], false));

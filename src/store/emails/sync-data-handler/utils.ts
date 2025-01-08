@@ -1,8 +1,9 @@
+/* eslint-disable no-param-reassign */
 import produce from 'immer';
-import { filter, forEach } from 'lodash';
+import { filter, forEach, merge } from 'lodash';
 import { StoreApi, UseBoundStore } from 'zustand';
 
-import { EmailsStoreState } from '../../../types';
+import { EmailsStoreState, NormalizedConversation } from '../../../types';
 
 /*
  * SPDX-FileCopyrightText: 2025 Zextras <https://www.zextras.com>
@@ -85,6 +86,38 @@ function handleNotityDeleted(
 		})
 	);
 }
+
+/**
+ * Updates the conversations in the application state with the modified conversation data.
+ *
+ * @param updatedConversations - An array of normalized conversation objects containing the updates.
+ * Each conversation must include an `id` and any other properties to merge with the existing state.
+ *
+ * @param useEmailsStore - A state management hook based on Zustand, which provides access
+ * to and updates the `EmailsStoreState`. The store maintains the `populatedItemsSlice`
+ * that tracks the conversation data.
+ *
+ * @remarks
+ * - The `tags` property is explicitly replaced with the value from the `conversation` parameter.
+ * - Other properties are merged into the existing data for the corresponding conversation.
+ */
+function handleNotifyConversationsModified(
+	updatedConversations: Array<NormalizedConversation>,
+	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
+): void {
+	useEmailsStore.setState(
+		produce(({ populatedItemsSlice }: EmailsStoreState) => {
+			updatedConversations.forEach((conversation) => {
+				populatedItemsSlice.conversations[conversation.id] = {
+					...merge(populatedItemsSlice.conversations[conversation.id], conversation),
+					tags: conversation.tags
+				};
+			});
+		})
+	);
+}
+
 export const syncDataHandlerUtils = {
-	handleNotityDeleted
+	handleNotityDeleted,
+	handleNotifyConversationsModified
 };

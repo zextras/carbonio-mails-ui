@@ -209,6 +209,19 @@ export function getMessageById(id: string): IncompleteMessage | MailMessage {
 	return useEmailsStore.getState().populatedItemsSlice.messages[id];
 }
 
+/**
+ * Queues a task to update the state with modified conversation data.
+ *
+ * @param updatedConversations - An array of updated conversation objects, each containing an `id`
+ * and other properties to update in the state.
+ */
+
+export function updateConversations(updatedConversations: Array<NormalizedConversation>): void {
+	addTask(async () => {
+		populatedItemsSliceUtils.updateConversations(updatedConversations, useEmailsStore);
+	});
+}
+
 export function getConversationById(id: string): NormalizedConversation {
 	return useEmailsStore.getState().populatedItemsSlice.conversations[id];
 }
@@ -226,23 +239,6 @@ export function useConversationsByIds(ids: Array<string>): Array<NormalizedConve
 
 export function useConversationStatus(id: string): SearchRequestStatus {
 	return useEmailsStore(({ populatedItemsSlice }) => populatedItemsSlice.conversationsStatus?.[id]);
-}
-
-/**
- * Queues a task to update the state with modified conversation data.
- *
- * @param updatedConversations - An array of updated conversation objects, each containing an `id`
- * and other properties to update in the state.
- */
-export function handleNotifyConversationsModified(
-	updatedConversations: Array<NormalizedConversation>
-): void {
-	addTask(async () => {
-		populatedItemsSliceUtils.handleNotifyConversationsModified(
-			updatedConversations,
-			useEmailsStore
-		);
-	});
 }
 
 /**
@@ -447,5 +443,19 @@ export function deleteConversationsFromConversationSlice(ids: Array<string>): vo
 export function handleNotifyDeleted(ids: string[]): void {
 	addTask(async () => {
 		syncDataHandlerUtils.handleNotityDeleted(ids, useEmailsStore);
+	});
+}
+
+/**
+ * Queues a task to update the state with modified conversation data.
+ *
+ * @param updatedConversations - An array of updated conversation objects, each containing an `id`
+ * and other properties to update in the state.
+ */
+export function handleNotifyConversationsModified(
+	updatedConversations: Array<NormalizedConversation>
+): void {
+	addTask(async () => {
+		syncDataHandlerUtils.handleNotifyConversationsModified(updatedConversations, useEmailsStore);
 	});
 }

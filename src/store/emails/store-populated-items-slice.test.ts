@@ -12,7 +12,6 @@ import {
 	setMessagesInSearchSlice,
 	setSearchResultsByConversation,
 	setSearchResultsByMessage,
-	handleNotifyConversationsModified,
 	updateConversationStatus,
 	updateMessages,
 	handleNotifyMessagesModified,
@@ -22,7 +21,8 @@ import {
 	useConversationMessages,
 	useConversationStatus,
 	useMessageById,
-	useMessageStatus
+	useMessageStatus,
+	updateConversations
 } from './store';
 import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
 import { API_REQUEST_STATUS } from '../../constants';
@@ -147,7 +147,7 @@ describe('store-populated-items-slice', () => {
 			};
 
 			await act(async () => {
-				handleNotifyConversationsModified([newConversation]);
+				updateConversations([newConversation]);
 			});
 			const { result } = renderHook(() => useConversationById('1'));
 			expect(result.current.tags).toEqual([]);
