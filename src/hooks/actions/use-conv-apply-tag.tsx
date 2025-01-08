@@ -5,16 +5,76 @@
  */
 import { useMemo } from 'react';
 
+import { CreateSnackbarFn, CreateSnackbarFnArgs } from '@zextras/carbonio-design-system';
+import { TFunction } from 'i18next';
 import { includes, map } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
 import { useTags } from '../../carbonio-ui-commons/store/zustand/tags';
+import { Tag } from '../../carbonio-ui-commons/types/tags';
 import { ConversationActionsDescriptors, TIMEOUTS } from '../../constants';
 import { isSpam } from '../../helpers/folders';
 import { convAction } from '../../store/actions';
-import { ConvActionResponse, UIActionAggregator, UIActionDescriptor } from '../../types';
+import {
+	ConvActionParameters,
+	ConvActionResponse,
+	UIActionAggregator,
+	UIActionDescriptor
+} from '../../types';
 import { useUiUtilities } from '../use-ui-utilities';
 
+const createSnackbarMessage = (
+	createSnackbar: CreateSnackbarFn,
+	label: string,
+	severity: CreateSnackbarFnArgs['severity']
+): void => {
+	createSnackbar({
+		key: `tag`,
+		replace: true,
+		hideButton: true,
+		severity,
+		label,
+		autoHideTimeout: TIMEOUTS.SNACKBAR_DEFAULT_TIMEOUT
+	});
+};
+const getSnackbarLabel = (isTagIncluded: boolean, tag: Tag, t: TFunction): string =>
+	isTagIncluded
+		? t('snackbar.tag_removed', {
+				tag: tag.name,
+				defaultValue: '"{{tag}}" tag removed'
+			})
+		: t('snackbar.tag_applied', {
+				tag: tag.name,
+				defaultValue: '"{{tag}}" tag applied'
+			});
+const executeTagAction = (
+	canExecute: () => boolean,
+	action: (params: ConvActionParameters) => Promise<ConvActionResponse>,
+	operation: ConvActionParameters['operation'],
+	ids: Array<string>,
+	tag: Tag,
+	createSnackbar: CreateSnackbarFn,
+	snackbarSuccessLabel: string,
+	t: TFunction
+): void => {
+	if (canExecute()) {
+		action({
+			operation,
+			ids,
+			tagName: tag.name
+		}).then((res: ConvActionResponse) => {
+			if (!('Fault' in res)) {
+				createSnackbarMessage(createSnackbar, snackbarSuccessLabel, 'info');
+			} else {
+				createSnackbarMessage(
+					createSnackbar,
+					t('label.error_try_again', 'Something went wrong, please try again'),
+					'error'
+				);
+			}
+		});
+	}
+};
 export const useConvApplyTagSubDescriptors = ({
 	ids,
 	conversationTags,
@@ -34,47 +94,23 @@ export const useConvApplyTagSubDescriptors = ({
 				const isTagIncluded = includes(conversationTags, tag.id);
 				const operation = isTagIncluded ? '!tag' : 'tag';
 				const icon = isTagIncluded ? 'TagOutline' : 'Tag';
-				const snackbarSuccessLabel = isTagIncluded
-					? t('snackbar.tag_removed', {
-							tag: tag.name,
-							defaultValue: '"{{tag}}" tag removed'
-						})
-					: t('snackbar.tag_applied', {
-							tag: tag.name,
-							defaultValue: '"{{tag}}" tag applied'
-						});
+				const snackbarSuccessLabel = getSnackbarLabel(isTagIncluded, tag, t);
 
 				const canExecute = (): boolean => !isSpam(folderId);
 
 				const execute = (): void => {
-					if (canExecute()) {
-						convAction({
-							operation,
-							ids,
-							tagName: tag.name
-						}).then((res: ConvActionResponse) => {
-							if (!('Fault' in res)) {
-								createSnackbar({
-									key: `tag`,
-									replace: true,
-									hideButton: true,
-									severity: 'info',
-									label: snackbarSuccessLabel,
-									autoHideTimeout: TIMEOUTS.SNACKBAR_DEFAULT_TIMEOUT
-								});
-							} else {
-								createSnackbar({
-									key: `tag`,
-									replace: true,
-									severity: 'error',
-									label: t('label.error_try_again', 'Something went wrong, please try again'),
-									autoHideTimeout: TIMEOUTS.SNACKBAR_DEFAULT_TIMEOUT,
-									hideButton: true
-								});
-							}
-						});
-					}
+					executeTagAction(
+						canExecute,
+						convAction,
+						operation,
+						ids,
+						tag,
+						createSnackbar,
+						snackbarSuccessLabel,
+						t
+					);
 				};
+
 				return {
 					id: tag.id,
 					icon,
@@ -84,7 +120,7 @@ export const useConvApplyTagSubDescriptors = ({
 					canExecute
 				};
 			}),
-		[createSnackbar, folderId, ids, conversationTags, t, tags]
+		[tags, conversationTags, t, folderId, ids, createSnackbar]
 	);
 
 	return useMemo(() => tagActions, [tagActions]);
