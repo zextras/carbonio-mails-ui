@@ -5,9 +5,9 @@
  */
 import React, { FC, ReactElement, useCallback, useContext, useMemo } from 'react';
 
-import { Button, Padding, useModal } from '@zextras/carbonio-design-system';
+import { Button, Padding, useModal, useSnackbar } from '@zextras/carbonio-design-system';
 import type { TFunction } from 'i18next';
-import { find } from 'lodash';
+import { find, findIndex } from 'lodash';
 
 import { useRemoveFilter, useAddFilter, useDeleteFilter } from './actions';
 import CreateFilterModal from './create-filter-modal';
@@ -215,8 +215,53 @@ const IncomingFilterActions: FC<ComponentProps> = ({ compProps }): ReactElement 
 		[addFilter, t, availableList, activeList, setIncomingFilters, setFetchIncomingFilters]
 	);
 
+	const incomingFiltersCopy = useMemo(() => incomingFilters?.slice(), [incomingFilters]);
+	const createSnackbar = useSnackbar();
+
 	const openFilterModifyModal = useCallback(() => {
 		const modalId = Date.now().toString();
+		const modalClose = (): void => closeModal(modalId);
+
+		const onModifyConfirm = (requiredFilter: FilterListType): void => {
+			const selectedFilterIndex = findIndex(
+				incomingFiltersCopy,
+				(filterCopy: any) => filterCopy.name === selectedFilter?.name
+			);
+			const toSend = incomingFiltersCopy.slice();
+			toSend[selectedFilterIndex] = requiredFilter;
+			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+			// @ts-ignore
+			setIncomingFilters(toSend);
+
+			modifyFilterRules(toSend)
+				.then(() => {
+					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+					// @ts-ignore
+					setFetchIncomingFilters(true);
+					createSnackbar({
+						key: `share`,
+						replace: true,
+						hideButton: true,
+						severity: 'info',
+						label: t('label.filter_modified', 'Filter modified succesfully'),
+						autoHideTimeout: 5000
+					});
+				})
+				.catch((error) => {
+					createSnackbar({
+						key: `share`,
+						replace: true,
+						hideButton: true,
+						severity: 'error',
+						label:
+							error?.message ||
+							t('label.error_try_again', 'Something went wrong, please try again'),
+						autoHideTimeout: 5000
+					});
+				});
+			modalClose();
+		};
+
 		createModal(
 			{
 				id: modalId,
@@ -226,14 +271,8 @@ const IncomingFilterActions: FC<ComponentProps> = ({ compProps }): ReactElement 
 					<StoreProvider>
 						<ModifyFilterModal
 							selectedFilter={selectedFilter}
-							onClose={(): void => closeModal(modalId)}
-							incomingFilters={incomingFilters}
-							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-							// @ts-ignore
-							setFetchIncomingFilters={setFetchIncomingFilters}
-							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-							// @ts-ignore
-							onIncomingFilterSave={setIncomingFilters}
+							onClose={modalClose}
+							onModifyConfirm={onModifyConfirm}
 						/>
 					</StoreProvider>
 				)
@@ -242,11 +281,13 @@ const IncomingFilterActions: FC<ComponentProps> = ({ compProps }): ReactElement 
 		);
 	}, [
 		createModal,
+		selectedFilter,
 		closeModal,
-		incomingFilters,
+		incomingFiltersCopy,
 		setIncomingFilters,
 		setFetchIncomingFilters,
-		selectedFilter
+		createSnackbar,
+		t
 	]);
 
 	return (

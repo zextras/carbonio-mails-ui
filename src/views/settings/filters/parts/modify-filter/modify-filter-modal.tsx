@@ -22,7 +22,7 @@ import { v4 as uuidv4 } from 'uuid';
 import ModalHeader from '../../../../../carbonio-ui-commons/components/modals/modal-header';
 import { useUiUtilities } from '../../../../../hooks/use-ui-utilities';
 import { modifyFilterRules } from '../../../../../store/actions/modify-filter-rules';
-import type { FilterActions } from '../../../../../types';
+import type { FilterActions, FilterListType } from '../../../../../types';
 import { capitalise } from '../../../../sidebar/utils';
 import { CreateFilterContext } from '../create-filter-context';
 import ModalFooter from '../create-filter-modal-footer';
@@ -39,19 +39,15 @@ export type FilterType = {
 	id: string;
 	name: string;
 };
-type ComponentProps = {
+type ModifyFilterModalProps = {
 	onClose: () => void;
-	incomingFilters?: any;
-	setFetchIncomingFilters: (arg: boolean) => void;
-	onIncomingFilterSave: (arg: any) => void;
+	onModifyConfirm: (modifiedFilter: FilterListType) => void;
 	selectedFilter: FilterType | any;
 };
 
-export const ModifyFilterModal: FC<ComponentProps> = ({
+export const ModifyFilterModal: FC<ModifyFilterModalProps> = ({
 	onClose,
-	incomingFilters,
-	setFetchIncomingFilters,
-	onIncomingFilterSave,
+	onModifyConfirm,
 	selectedFilter
 }): ReactElement => {
 	const [t] = useTranslation();
@@ -67,7 +63,6 @@ export const ModifyFilterModal: FC<ComponentProps> = ({
 	const [updateRequiredFilters, setUpdateRequiredFilters] = useState(true);
 	const zimbraFeatureMailForwardingInFiltersEnabled = useUserSettings().attrs
 		.zimbraFeatureMailForwardingInFiltersEnabled as BooleanString;
-	const { createSnackbar } = useUiUtilities();
 
 	const [newFilters, setNewFilters] = useState([
 		{
@@ -91,8 +86,6 @@ export const ModifyFilterModal: FC<ComponentProps> = ({
 		() => `${t('label.edit', 'Edit')} ${selectedFilter?.name}`,
 		[t, selectedFilter?.name]
 	);
-	const inputLabel = useMemo(() => `${t('settings.filter_name', 'Filter Name')}*`, [t]);
-	const activeFilterLabel = useMemo(() => t('settings.active_filter', 'Active filter'), [t]);
 
 	const requiredFilterTest = useMemo(() => {
 		const allTest = map(newFilters, (f) => f.filterTests[0]);
@@ -130,7 +123,6 @@ export const ModifyFilterModal: FC<ComponentProps> = ({
 			),
 		[tempActions]
 	);
-
 	const requiredFilters = useMemo(
 		() => ({
 			filterActions: dontProcessAddFilters
@@ -147,15 +139,12 @@ export const ModifyFilterModal: FC<ComponentProps> = ({
 		}),
 		[activeFilter, filterName, condition, requiredFilterTest, dontProcessAddFilters, finalActions]
 	);
-
 	const [createFilterDisabled, buttonTooltip] = useMemo(() => {
 		if (isEqual(copyRequiredFilters, requiredFilters)) {
 			return [true, t('settings.label.not_changed_anything', 'No change was made')];
 		}
 		return getButtonInfo(filterName, requiredFilters, t, false);
 	}, [copyRequiredFilters, filterName, requiredFilters, t]);
-
-	const incomingFiltersCopy = useMemo(() => incomingFilters?.slice(), [incomingFilters]);
 
 	const toggleCheckBox = useCallback(() => {
 		setDontProcessAddFilters((prev) => !prev);
@@ -281,50 +270,6 @@ export const ModifyFilterModal: FC<ComponentProps> = ({
 		if (reFetch) setReFetch(false);
 	}, [modifiedNewFilters, reFetch]);
 
-	const onConfirm = useCallback(() => {
-		const selectedFilterIndex = findIndex(
-			incomingFiltersCopy,
-			(filterCopy: any) => filterCopy.name === selectedFilter?.name
-		);
-		const toSend = incomingFiltersCopy.slice();
-		toSend[selectedFilterIndex] = requiredFilters;
-		onIncomingFilterSave(toSend);
-
-		modifyFilterRules(toSend)
-			.then(() => {
-				setFetchIncomingFilters(true);
-				createSnackbar({
-					key: `share`,
-					replace: true,
-					hideButton: true,
-					severity: 'info',
-					label: t('label.filter_modified', 'Filter modified succesfully'),
-					autoHideTimeout: 5000
-				});
-			})
-			.catch((error) => {
-				createSnackbar({
-					key: `share`,
-					replace: true,
-					hideButton: true,
-					severity: 'error',
-					label:
-						error?.message || t('label.error_try_again', 'Something went wrong, please try again'),
-					autoHideTimeout: 5000
-				});
-			});
-		onClose();
-	}, [
-		incomingFiltersCopy,
-		requiredFilters,
-		onIncomingFilterSave,
-		onClose,
-		selectedFilter?.name,
-		setFetchIncomingFilters,
-		createSnackbar,
-		t
-	]);
-
 	return (
 		<CreateFilterContext.Provider value={{ newFilters, setNewFilters }}>
 			<Container
@@ -336,13 +281,17 @@ export const ModifyFilterModal: FC<ComponentProps> = ({
 			>
 				<ModalHeader title={modalTitle} onClose={onClose} />
 				<Input
-					label={inputLabel}
+					label={`${t('settings.filter_name', 'Filter Name')}*`}
 					value={filterName}
 					onChange={onFilterNameChange}
-					backgroundColor="gray5"
+					background="gray5"
 				/>
 				<Padding top="small" />
-				<Checkbox value={activeFilter} onClick={toggleActiveFilter} label={activeFilterLabel} />
+				<Checkbox
+					value={activeFilter}
+					onClick={toggleActiveFilter}
+					label={t('settings.active_filter', 'Active filter')}
+				/>
 				<Row
 					padding={{ vertical: 'medium' }}
 					height="fit"
@@ -362,7 +311,7 @@ export const ModifyFilterModal: FC<ComponentProps> = ({
 				<ModalFooter
 					label={t('label.save', 'Save')}
 					toolTipText={buttonTooltip}
-					onConfirm={onConfirm}
+					onConfirm={(): void => onModifyConfirm(requiredFilters)}
 					disabled={createFilterDisabled}
 					onSecondaryAction={toggleCheckBox}
 					checked={dontProcessAddFilters}
