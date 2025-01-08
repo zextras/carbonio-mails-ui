@@ -24,6 +24,7 @@ import { generateStore } from '../../../../../tests/generators/store';
 import { MailsStateType } from '../../../../../types';
 import { FilterListType } from '../../../../../types/filters';
 import { ListType } from '../actions';
+import { FilterContext } from '../filter-context';
 import IncomingFilterActions from '../incoming-filters-actions';
 
 jest.mock('@zextras/carbonio-design-system', () => ({
@@ -83,7 +84,7 @@ describe('incoming filters actions', () => {
 			await act(() => user.click(screen.getByText(/filters\.apply/i)));
 			await act(() => user.click(screen.getByTestId(OPEN_SELECT_FOLDER_ICON)));
 
-			makeAllListItemsVisible();
+			makeAllItemsVisible();
 			await act(() => user.click(screen.getByText(TEST_FOLDER_NAME)));
 
 			const selectFolderBtn = await screen.findByRole('button', { name: /label\.select_folder/i });
@@ -100,7 +101,7 @@ describe('incoming filters actions', () => {
 			await act(() => user.click(screen.getByText(/filters\.apply/i)));
 			await act(() => user.click(screen.getByTestId(OPEN_SELECT_FOLDER_ICON)));
 
-			makeAllListItemsVisible();
+			makeAllItemsVisible();
 			await act(() => user.click(screen.getByText(TEST_FOLDER_NAME)));
 
 			const selectFolderBtn = await screen.findByRole('button', { name: /label\.select_folder/i });
@@ -115,6 +116,90 @@ describe('incoming filters actions', () => {
 				label: 'messages.snackbar.apply_filter_rules_started',
 				replace: true,
 				severity: 'info'
+			});
+		});
+	});
+
+	describe('modify filter', () => {
+		it('should call Modify Filter API with all incoming filters', async () => {
+			const store = generateStore();
+			(useSnackbar as jest.Mock).mockReturnValue(createSnackbarSpy);
+			const availableList = createList([]);
+			const otherFilter = activeIncomingFilter('Other filter');
+			const myFilter = activeIncomingFilter('My filter');
+			const incomingFilters = [otherFilter, myFilter];
+			const activeList = createList(incomingFilters, 'My filter');
+			const modifyFilterRulesInterceptor = createSoapAPIInterceptor('ModifyFilterRules');
+			const props = { t, availableList, activeList, incomingFilters };
+
+			const { user } = setupTest(
+				<FilterContext.Provider
+					value={{
+						incomingFilters,
+						incomingLoading: true,
+						setFetchIncomingFilters: jest.fn(),
+						outgoingFilters: [],
+						outgoingLoading: false,
+						moveUp: jest.fn(),
+						setIncomingFilters: jest.fn(),
+						setOutgoingFilters: jest.fn(),
+						setFetchOutgoingFilters: jest.fn()
+					}}
+				>
+					<IncomingFilterActions compProps={props} />
+				</FilterContext.Provider>,
+				{ store }
+			);
+			const modifyFilterBtn = await screen.findByRole('button', { name: /label\.edit/i });
+			await user.click(modifyFilterBtn);
+			makeAllItemsVisible();
+			expect(screen.getByTestId('modal')).toBeVisible();
+			const filterNameInput = screen.getByRole('textbox', {
+				name: 'Filter Name*'
+			});
+			await user.clear(filterNameInput);
+			await user.type(filterNameInput, 'Edited filter');
+			const saveButton = screen.getByRole('button', {
+				name: 'Save'
+			});
+			expect(saveButton).toBeEnabled();
+			await act(async () => {
+				await user.click(saveButton);
+			});
+
+			const request = await modifyFilterRulesInterceptor;
+			expect(request).toEqual({
+				_jsns: 'urn:zimbraMail',
+				filterRules: [
+					{
+						filterRule: [
+							otherFilter,
+							{
+								active: true,
+								filterActions: [
+									{
+										actionKeep: [{}],
+										actionStop: [{}]
+									}
+								],
+								filterTests: [
+									{
+										condition: 'anyof',
+										headerTest: [
+											{
+												header: 'subject',
+												stringComparison: 'contains',
+												testName: 'headerTest',
+												value: 'testddsareafreafdastewa'
+											}
+										]
+									}
+								],
+								name: 'Edited filter'
+							}
+						]
+					}
+				]
 			});
 		});
 	});
@@ -187,7 +272,7 @@ function rootFolderWith(children: Array<Folder>): Array<Folder> {
 	];
 }
 
-function makeAllListItemsVisible(): void {
+function makeAllItemsVisible(): void {
 	makeListItemsVisible();
 	act(() => {
 		jest.advanceTimersByTime(1000);
