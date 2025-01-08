@@ -8,7 +8,7 @@
 import { MutableRefObject, useEffect, useRef, useState } from 'react';
 
 import { useNotify, useRefresh } from '@zextras/carbonio-shell-ui';
-import { find, forEach, isEmpty, map, sortBy } from 'lodash';
+import { forEach, isEmpty, map, sortBy } from 'lodash';
 import { StoreApi, UseBoundStore } from 'zustand';
 
 import { useFolderStore } from '../../../carbonio-ui-commons/store/zustand/folder';
@@ -160,8 +160,6 @@ export const useSyncDataHandler = (): void => {
 	const notifyList = useNotify() as Array<SoapNotify>;
 	const [seq, setSeq] = useState(-1);
 	const [initialized, setInitialized] = useState(false);
-	const currentFolder = '2';
-	// const currentFolder = useAppSelector(selectCurrentFolder);
 	const processedNotify = useRef<number>(-1);
 
 	const refresh = useRefresh();
@@ -170,17 +168,6 @@ export const useSyncDataHandler = (): void => {
 			setInitialized(true);
 		}
 	}, [initialized, refresh]);
-
-	useEffect(() => {
-		forEach(notifyList, (notify) => {
-			// TODO: CO-1725: is it still necessary to dispatch this action?
-			if (find(notify?.modified?.m, ['l', currentFolder])) {
-				// handle modified messages in the current folder
-				// is it still necessary to dispatch this action?
-				// dispatch(setSearchedInFolder({ [currentFolder]: 'incomplete' }));
-			}
-		});
-	}, [currentFolder, notifyList]);
 
 	useEffect(() => {
 		if (initialized && notifyList.length > 0) {
