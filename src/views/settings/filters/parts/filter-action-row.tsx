@@ -107,10 +107,7 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 			setActiveActionOption('actionKeep');
 			return actionOptions[0];
 		}
-		// TODO: check me, what is the meaning of having just a stop action?
-		if ('actionStop' in defaultAction) {
-			return actionOptions[0];
-		}
+
 		if ('actionFileInto' in defaultAction) {
 			setActiveActionOption('actionFileInto');
 			return {
@@ -144,21 +141,24 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 				value: 'actionRedirect'
 			};
 		}
-		setActiveActionOption('actionTag');
-		const { tagName } = defaultAction.actionTag[0];
-		setTag(
-			tagName
-				? [
-						{
-							label: tagName
-						}
-					]
-				: []
-		);
-		return {
-			label: t('settings.tag_with', 'Tag with'),
-			value: 'actionTag'
-		};
+		if ('actionTag' in defaultAction) {
+			setActiveActionOption('actionTag');
+			const { tagName } = defaultAction.actionTag[0];
+			setTag(
+				tagName
+					? [
+							{
+								label: tagName
+							}
+						]
+					: []
+			);
+			return {
+				label: t('settings.tag_with', 'Tag with'),
+				value: 'actionTag'
+			};
+		}
+		return actionOptions[0];
 	}, [
 		defaultAction,
 		mailForwardingEnabled,

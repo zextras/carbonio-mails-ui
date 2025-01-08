@@ -104,6 +104,20 @@ describe('FilterActionsRows', () => {
 		expect(screen.getByText('Discard')).toBeVisible();
 	});
 
+	it('should render tag when passing both actionTag and actionStop', async () => {
+		setupTest(
+			<FilterActionRow
+				{...defaultProps}
+				defaultAction={{
+					actionStop: [{}],
+					actionTag: [{}]
+				}}
+			/>,
+			{}
+		);
+		expect(screen.getByText(/Tag with/i)).toBeVisible();
+	});
+
 	describe('Keep In Inbox', () => {
 		it('should render the selected action', async () => {
 			setupTest(
