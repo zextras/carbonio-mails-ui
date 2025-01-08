@@ -388,19 +388,6 @@ export function appendConversationsToConversationIndexSlice(
 	});
 }
 
-/**
- * Handles the creation of notify conversations by updating the application's email store state.
- * This function processes incoming conversations and updates the conversation slice and index
- * to include the new conversations.
- */
-export function handleNotifyConversationsCreated(
-	conversations: Array<NormalizedConversation>
-): void {
-	addTask(async () => {
-		conversationIndexSliceUtils.handleNotifyConversationsCreated(conversations, useEmailsStore);
-	});
-}
-
 export function updateConversationsResultsLoadingStatus(status: SearchRequestStatus): void {
 	addTask(async () => {
 		useEmailsStore.setState((state) => ({
@@ -457,5 +444,18 @@ export function handleNotifyConversationsModified(
 ): void {
 	addTask(async () => {
 		syncDataHandlerUtils.handleNotifyConversationsModified(updatedConversations, useEmailsStore);
+	});
+}
+
+/**
+ * Handles the creation of notify conversations by updating the application's email store state.
+ * This function processes incoming conversations and updates the conversation slice and index
+ * to include the new conversations.
+ */
+export function handleNotifyConversationsCreated(
+	conversations: Array<NormalizedConversation>
+): void {
+	addTask(async () => {
+		syncDataHandlerUtils.handleNotifyConversationsCreated(conversations, useEmailsStore);
 	});
 }

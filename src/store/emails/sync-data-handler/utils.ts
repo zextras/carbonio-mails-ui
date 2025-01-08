@@ -117,7 +117,30 @@ function handleNotifyConversationsModified(
 	);
 }
 
+/**
+ * Handles the creation of notify conversations by updating the application's email store state.
+ * This function processes incoming conversations and updates the conversation slice and index
+ * to include the new conversations.
+ */
+function handleNotifyConversationsCreated(
+	conversations: Array<NormalizedConversation>,
+	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
+): void {
+	const newConversationIds = conversations.map((conv) => conv.id);
+	useEmailsStore.setState(
+		produce((state: EmailsStoreState) => {
+			state.populatedItemsSlice.conversations = conversations.reduce((acc, conversation) => {
+				acc[conversation.id] = conversation;
+				return acc;
+			}, state.populatedItemsSlice.conversations);
+			state.conversationIndexSlice.conversationListIndex = Array.from(
+				new Set([...newConversationIds, ...state.conversationIndexSlice.conversationListIndex])
+			);
+		})
+	);
+}
 export const syncDataHandlerUtils = {
 	handleNotityDeleted,
-	handleNotifyConversationsModified
+	handleNotifyConversationsModified,
+	handleNotifyConversationsCreated
 };
