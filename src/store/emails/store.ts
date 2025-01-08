@@ -100,6 +100,7 @@ export function resetSearchAndPopulatedItems(): void {
 		searchSliceUtils.resetSearchAndPopulatedItems(useEmailsStore);
 	});
 }
+
 export function setSearchResultsByMessage(
 	messages: Array<MailMessage | IncompleteMessage>,
 	more: boolean
@@ -108,6 +109,7 @@ export function setSearchResultsByMessage(
 		searchSliceUtils.setSearchResultsByMessage(messages, more, useEmailsStore);
 	});
 }
+
 export function useSearchResults(): SearchIndexSliceState['searchIndexSlice'] {
 	return useEmailsStore(({ searchIndexSlice: searchSlice }) => searchSlice);
 }
@@ -120,6 +122,7 @@ export function setSearchResultsByConversation(
 		searchSliceUtils.setSearchResultsByConversation(conversations, more, useEmailsStore);
 	});
 }
+
 export function appendConversations(
 	conversations: Array<NormalizedConversation>,
 	offset: number,
@@ -129,16 +132,34 @@ export function appendConversations(
 		searchSliceUtils.appendConversationsToSearch(conversations, offset, more, useEmailsStore);
 	});
 }
-export function deleteConversationsFromSearch(ids: Array<string>): void {
+
+/**
+ * Queues a task to handle the deletion of conversations in the search context.
+ *
+ * @param conversationIdsToRemove - An array of conversation IDs to be removed from the search index and populated items.
+ */
+export function handleNotifyConversationsDeletionInSearch(
+	conversationIdsToRemove: Array<string>
+): void {
 	addTask(async () => {
-		searchSliceUtils.deleteConversationsFromSearch(ids, useEmailsStore);
+		searchSliceUtils.handleNotifyConversationsDeletionInSearch(
+			conversationIdsToRemove,
+			useEmailsStore
+		);
 	});
 }
-export function deleteMessagesFromSearch(ids: Array<string>): void {
+
+/**
+ * Queues a task to handle the deletion of messages from the search context.
+ *
+ * @param messageIds - An array of message IDs to be removed from the search index and populated items.
+ */
+export function handleNotifyMessagesDeletionInSearch(messageIds: Array<string>): void {
 	addTask(async () => {
-		searchSliceUtils.deleteMessagesFromSearch(ids, useEmailsStore);
+		searchSliceUtils.handleNotifyMessagesDeletionInSearch(messageIds, useEmailsStore);
 	});
 }
+
 export function getSearchResultsLoadingStatus(): SearchRequestStatus {
 	return useEmailsStore.getState().searchIndexSlice.status;
 }
@@ -148,6 +169,7 @@ export function updateSearchResultsLoadingStatus(status: SearchRequestStatus): v
 		searchSliceUtils.updateSearchResultsLoadingStatus(status, useEmailsStore);
 	});
 }
+
 export function appendMessagesToSearch(
 	messages: Array<MailMessage | IncompleteMessage>,
 	offset: number
@@ -205,17 +227,35 @@ export function useConversationStatus(id: string): SearchRequestStatus {
 	return useEmailsStore(({ populatedItemsSlice }) => populatedItemsSlice.conversationsStatus?.[id]);
 }
 
-export function updateConversations(conversations: Array<NormalizedConversation>): void {
+/**
+ * Queues a task to update the state with modified conversation data.
+ *
+ * @param updatedConversations - An array of updated conversation objects, each containing an `id`
+ * and other properties to update in the state.
+ */
+export function handleNotifyConversationsModified(
+	updatedConversations: Array<NormalizedConversation>
+): void {
 	addTask(async () => {
-		populatedItemsSliceUtils.updateConversations(conversations, useEmailsStore);
+		populatedItemsSliceUtils.handleNotifyConversationsModified(
+			updatedConversations,
+			useEmailsStore
+		);
 	});
 }
 
-export function updateMessagesOnly(messages: Array<IncompleteMessage>): void {
+/**
+ * Queues a task to update the state with modified message data.
+ *
+ * @param updatedMessages - An array of updated message objects, each containing an `id`
+ * and other properties to update in the state.
+ */
+export function handleNotifyMessagesModified(updatedMessages: Array<IncompleteMessage>): void {
 	addTask(async () => {
-		populatedItemsSliceUtils.updateMessagesOnly(messages, useEmailsStore);
+		populatedItemsSliceUtils.handleNotifyMessagesModified(updatedMessages, useEmailsStore);
 	});
 }
+
 export function updateMessages(messages: MailMessage[]): void {
 	addTask(async () => {
 		populatedItemsSliceUtils.updateMessages(messages, useEmailsStore);
@@ -283,6 +323,7 @@ export function resetMessagesAndPopulatedItems(): void {
 
 /**
  * Handles the creation of notify messages by updating the application's email store state.
+ *
  * This function processes incoming messages, updates the message slice, and ensures conversations
  * are updated with the new messages in the appropriate order.
  */
@@ -305,9 +346,14 @@ export function useMessagesByFolder(folderId: string): Array<MailMessage | Incom
 	return populatedItemsSliceUtils.useMessagesByFolder(folderId, useEmailsStore);
 }
 
-export function deleteMessagesFromMessagesSlice(ids: Array<string>): void {
+/**
+ * Queues a task to delete messages from the message slice in the state.
+ *
+ * @param messageIds - An array of message IDs to be deleted from the message slice.
+ */
+export function deleteMessagesFromMessagesSlice(messageIds: Array<string>): void {
 	addTask(async () => {
-		messageIndexSliceUtils.deleteMessagesFromMessageSlice(ids, useEmailsStore);
+		messageIndexSliceUtils.deleteMessagesFromMessageSlice(messageIds, useEmailsStore);
 	});
 }
 

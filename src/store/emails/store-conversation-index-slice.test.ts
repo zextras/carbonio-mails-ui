@@ -11,7 +11,7 @@ import {
 	appendConversationsToConversationIndexSlice,
 	resetConversationAndPopulatedItems,
 	setConversationsInEmailStore,
-	updateConversations,
+	handleNotifyConversationsModified,
 	updateConversationsResultsLoadingStatus,
 	useConversationById,
 	useConversationIndexSlice,
@@ -139,7 +139,7 @@ describe('setConversationsInEmailStore', () => {
 		});
 
 		it('should set populatedItemsSlice.conversations as an empty object', async () => {
-			updateConversations([conversation1]);
+			handleNotifyConversationsModified([conversation1]);
 			const { result: initialState } = renderHook(() => useConversationsByIds(['1']));
 			expect(initialState.current).toEqual([conversation1]);
 			await act(async () => setConversationsInEmailStore([], false));

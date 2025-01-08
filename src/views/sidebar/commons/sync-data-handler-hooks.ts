@@ -21,13 +21,13 @@ import {
 import { normalizeMailMessageFromSoap } from '../../../normalizations/normalize-message';
 import {
 	deleteConversationsFromConversationSlice,
-	deleteConversationsFromSearch,
+	handleNotifyConversationsDeletionInSearch,
 	deleteMessagesFromMessagesSlice,
-	deleteMessagesFromSearch,
+	handleNotifyMessagesDeletionInSearch,
 	handleNotifyConversationsCreated,
 	handleNotifyMessagesCreated,
-	updateConversations,
-	updateMessagesOnly
+	handleNotifyConversationsModified,
+	handleNotifyMessagesModified
 } from '../../../store/emails/store';
 import {
 	FolderState,
@@ -108,12 +108,13 @@ function processCreatedNotifications(notify: SoapNotify): void {
 
 function processModifiedNotifications(notify: SoapNotify): void {
 	if (notify.modified?.c) {
-		updateConversations(normalizeConversations(notify.modified.c));
+		const updatedConversations = normalizeConversations(notify.modified.c);
+		handleNotifyConversationsModified(updatedConversations);
 	}
 
 	if (notify.modified?.m) {
 		const messages = map(notify.modified.m, (message) => normalizeMailMessageFromSoap(message));
-		updateMessagesOnly(messages);
+		handleNotifyMessagesModified(messages);
 
 		const toUpdate = filter(messages, 'parent');
 		if (!isEmpty(toUpdate)) {
@@ -144,8 +145,8 @@ function processModifiedNotifications(notify: SoapNotify): void {
 }
 
 function processDeletedNotifications(notify: SoapNotify): void {
-	deleteConversationsFromSearch(notify.deleted);
-	deleteMessagesFromSearch(notify.deleted);
+	handleNotifyConversationsDeletionInSearch(notify.deleted);
+	handleNotifyMessagesDeletionInSearch(notify.deleted);
 	deleteMessagesFromMessagesSlice(notify.deleted);
 	deleteConversationsFromConversationSlice(notify.deleted);
 }

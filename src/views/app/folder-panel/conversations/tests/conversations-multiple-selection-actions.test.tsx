@@ -13,7 +13,7 @@ import { FOLDERS } from '../../../../../carbonio-ui-commons/constants/folders';
 import { useTagStore } from '../../../../../carbonio-ui-commons/store/zustand/tags';
 import { tags } from '../../../../../carbonio-ui-commons/test/mocks/tags/tags';
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
-import { updateConversations } from '../../../../../store/emails/store';
+import { handleNotifyConversationsModified } from '../../../../../store/emails/store';
 import { generateConversation } from '../../../../../tests/generators/generateConversation';
 import { ConversationsMultipleSelectionActions } from '../conversations-multiple-selection-actions';
 
@@ -21,7 +21,7 @@ describe('ConversationsMultipleSelectionActions', () => {
 	describe('Mark as read action', () => {
 		it('should display "mark as unread" action if all selected items are read', async () => {
 			await waitFor(() => {
-				updateConversations([
+				handleNotifyConversationsModified([
 					generateConversation({ id: '1', isRead: true }),
 					generateConversation({ id: '2', isRead: true }),
 					generateConversation({ id: '3', isRead: true })
@@ -39,7 +39,7 @@ describe('ConversationsMultipleSelectionActions', () => {
 		});
 		it('should display "mark as read" action if any selected items is unread', async () => {
 			await act(async () => {
-				updateConversations([
+				handleNotifyConversationsModified([
 					generateConversation({ id: '1', isRead: true }),
 					generateConversation({ id: '2', isRead: false }),
 					generateConversation({ id: '3', isRead: true })
@@ -60,7 +60,7 @@ describe('ConversationsMultipleSelectionActions', () => {
 	describe('Delete action', () => {
 		it('should display "delete" action', async () => {
 			await act(async () => {
-				updateConversations([
+				handleNotifyConversationsModified([
 					generateConversation({ id: '1' }),
 					generateConversation({ id: '2' }),
 					generateConversation({ id: '3' })
@@ -80,7 +80,7 @@ describe('ConversationsMultipleSelectionActions', () => {
 	describe('More actions', () => {
 		it('should contain "add flag" action if at least one conversation is not flagged', async () => {
 			await act(async () => {
-				updateConversations([
+				handleNotifyConversationsModified([
 					generateConversation({ id: '1', isFlagged: true }),
 					generateConversation({ id: '2', isFlagged: false }),
 					generateConversation({ id: '3', isFlagged: true })
@@ -100,7 +100,7 @@ describe('ConversationsMultipleSelectionActions', () => {
 			expect(within(actionsDropdown).getByTestId('icon: FlagOutline')).toBeVisible();
 		});
 		it('should contain "remove flag" action if all conversations are flagged', async () => {
-			updateConversations([
+			handleNotifyConversationsModified([
 				generateConversation({ id: '1', isFlagged: true }),
 				generateConversation({ id: '2', isFlagged: true }),
 				generateConversation({ id: '3', isFlagged: true })
@@ -119,7 +119,7 @@ describe('ConversationsMultipleSelectionActions', () => {
 			expect(within(actionsDropdown).getByTestId('icon: Flag')).toBeVisible();
 		});
 		it('should contain "move" action', async () => {
-			updateConversations([
+			handleNotifyConversationsModified([
 				generateConversation({ id: '1' }),
 				generateConversation({ id: '2' }),
 				generateConversation({ id: '3' })
@@ -139,7 +139,7 @@ describe('ConversationsMultipleSelectionActions', () => {
 		});
 		it('should contain "delete permanently" action when in trash folder', async () => {
 			await act(async () => {
-				updateConversations([
+				handleNotifyConversationsModified([
 					generateConversation({ id: '1' }),
 					generateConversation({ id: '2' }),
 					generateConversation({ id: '3' })
@@ -156,7 +156,7 @@ describe('ConversationsMultipleSelectionActions', () => {
 			expect(screen.getByTestId('icon: DeletePermanentlyOutline')).toBeVisible();
 		});
 		it('should contain "mark as spam" action', async () => {
-			updateConversations([
+			handleNotifyConversationsModified([
 				generateConversation({ id: '1' }),
 				generateConversation({ id: '2' }),
 				generateConversation({ id: '3' })
@@ -175,7 +175,7 @@ describe('ConversationsMultipleSelectionActions', () => {
 			expect(await within(actionsDropdown).findByText('Mark as spam')).toBeVisible();
 		});
 		it('should contain "mark as not spam" action when a conversation is in spam folder', async () => {
-			updateConversations([
+			handleNotifyConversationsModified([
 				generateConversation({ id: '1' }),
 				generateConversation({ id: '2' }),
 				generateConversation({ id: '3' })
@@ -195,7 +195,7 @@ describe('ConversationsMultipleSelectionActions', () => {
 		});
 		it('should contain "tag" submenu item', async () => {
 			const tagItems = map(tags, (tag) => tag.name);
-			updateConversations([
+			handleNotifyConversationsModified([
 				generateConversation({ id: '1', tags: tagItems }),
 				generateConversation({ id: '2', tags: tagItems }),
 				generateConversation({ id: '3' })

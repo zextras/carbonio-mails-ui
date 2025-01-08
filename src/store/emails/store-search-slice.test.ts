@@ -15,10 +15,10 @@ import {
 	useConversationStatus,
 	useMessageById,
 	setSearchResultsByMessage,
-	deleteConversationsFromSearch,
+	handleNotifyConversationsDeletionInSearch,
 	useSearchResults,
 	appendMessagesToSearch,
-	deleteMessagesFromSearch
+	handleNotifyMessagesDeletionInSearch
 } from './store';
 import { API_REQUEST_STATUS } from '../../constants';
 import { generateConversation } from '../../tests/generators/generateConversation';
@@ -66,7 +66,7 @@ describe('emails store search slice', () => {
 			await waitFor(() => {
 				setMessagesInSearchSlice([...conversation1Messages, ...conversation2Messages]);
 			});
-			deleteConversationsFromSearch(['1']);
+			handleNotifyConversationsDeletionInSearch(['1']);
 
 			const { result } = renderHook(() => useSearchResults());
 			const { result: conversation1Store } = renderHook(() => useConversationById('1'));
@@ -103,7 +103,7 @@ describe('emails store search slice', () => {
 			await waitFor(() => {
 				setMessagesInSearchSlice(messages);
 			});
-			deleteMessagesFromSearch(['1', '2']);
+			handleNotifyMessagesDeletionInSearch(['1', '2']);
 
 			const { result } = renderHook(() => useSearchResults());
 			const { result: message1 } = renderHook(() => useMessageById('1'));

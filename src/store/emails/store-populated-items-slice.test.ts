@@ -12,10 +12,10 @@ import {
 	setMessagesInSearchSlice,
 	setSearchResultsByConversation,
 	setSearchResultsByMessage,
-	updateConversations,
+	handleNotifyConversationsModified,
 	updateConversationStatus,
 	updateMessages,
-	updateMessagesOnly,
+	handleNotifyMessagesModified,
 	updateMessageStatus,
 	updateSearchResultsLoadingStatus,
 	useConversationById,
@@ -147,7 +147,7 @@ describe('store-populated-items-slice', () => {
 			};
 
 			await act(async () => {
-				updateConversations([newConversation]);
+				handleNotifyConversationsModified([newConversation]);
 			});
 			const { result } = renderHook(() => useConversationById('1'));
 			expect(result.current.tags).toEqual([]);
@@ -158,7 +158,7 @@ describe('store-populated-items-slice', () => {
 			setMessagesInSearchSlice([generateMessage({ id: '1', folderId: FOLDERS.INBOX })]);
 
 			await act(async () => {
-				updateMessagesOnly([generateMessage({ id: '1', folderId: undefined })]);
+				handleNotifyMessagesModified([generateMessage({ id: '1', folderId: undefined })]);
 			});
 
 			const { result } = renderHook(() => useMessageById('1'));
@@ -176,7 +176,7 @@ describe('store-populated-items-slice', () => {
 			const newMessage2 = { ...message2, tags: [] };
 
 			await act(async () => {
-				updateMessagesOnly([newMessage1, newMessage2]);
+				handleNotifyMessagesModified([newMessage1, newMessage2]);
 			});
 			const { result: resultMessage1 } = renderHook(() => useMessageById('1'));
 			const { result: resultMessage2 } = renderHook(() => useMessageById('2'));

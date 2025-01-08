@@ -33,16 +33,26 @@ function useConversationMessages(
 }
 
 /**
- * Updates existing conversations in the email store state by merging new conversation data.
- * Ensures that only the relevant conversations are updated while preserving existing data.
+ * Updates the conversations in the application state with the modified conversation data.
+ *
+ * @param updatedConversations - An array of normalized conversation objects containing the updates.
+ * Each conversation must include an `id` and any other properties to merge with the existing state.
+ *
+ * @param useEmailsStore - A state management hook based on Zustand, which provides access
+ * to and updates the `EmailsStoreState`. The store maintains the `populatedItemsSlice`
+ * that tracks the conversation data.
+ *
+ * @remarks
+ * - The `tags` property is explicitly replaced with the value from the `conversation` parameter.
+ * - Other properties are merged into the existing data for the corresponding conversation.
  */
-function updateConversations(
-	conversations: Array<NormalizedConversation>,
+function handleNotifyConversationsModified(
+	updatedConversations: Array<NormalizedConversation>,
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
 ): void {
 	useEmailsStore.setState(
 		produce(({ populatedItemsSlice }: EmailsStoreState) => {
-			conversations.forEach((conversation) => {
+			updatedConversations.forEach((conversation) => {
 				populatedItemsSlice.conversations[conversation.id] = {
 					...merge(populatedItemsSlice.conversations[conversation.id], conversation),
 					tags: conversation.tags
@@ -51,13 +61,21 @@ function updateConversations(
 		})
 	);
 }
-function updateMessagesOnly(
-	messages: Array<IncompleteMessage>,
+
+/**
+ * Updates the messages in the application state with modified message data.
+ *
+ * @param updatedMessages - An array of updated message objects, each containing an `id`
+ * and other properties to update in the state.
+ * @param useEmailsStore - A state management hook for accessing and updating the `EmailsStoreState`.
+ */
+function handleNotifyMessagesModified(
+	updatedMessages: Array<IncompleteMessage>,
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
 ): void {
 	useEmailsStore.setState(
 		produce(({ populatedItemsSlice }: EmailsStoreState) => {
-			messages.forEach((message) => {
+			updatedMessages.forEach((message) => {
 				populatedItemsSlice.messages[message.id] = {
 					...merge(populatedItemsSlice.messages[message.id], message),
 					tags: message.tags
@@ -153,8 +171,8 @@ export const populatedItemsSliceUtils = {
 	updateMessageStatus,
 	updateConversationStatus,
 	updateMessages,
-	updateMessagesOnly,
-	updateConversations,
+	handleNotifyMessagesModified,
+	handleNotifyConversationsModified,
 	useConversationMessages,
 	useMessagesByIds,
 	useConversationsByIds,

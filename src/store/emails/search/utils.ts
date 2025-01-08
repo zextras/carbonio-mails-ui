@@ -97,33 +97,54 @@ function appendConversationsToSearch(
 	);
 }
 
-function deleteConversationsFromSearch(
-	ids: Array<string>,
+/**
+ * Handles the deletion of conversations in the search context by updating the state.
+ *
+ * @param conversationIds - An array of conversation IDs to be removed.
+ * @param useEmailsStore - A state management hook for accessing and updating the `EmailsStoreState`.
+ *
+ * @remarks
+ * - Removes the specified IDs from the `conversationListIndex` in the `searchIndexSlice`.
+ * - Deletes the corresponding conversations from the `populatedItemsSlice`.
+ */
+function handleNotifyConversationsDeletionInSearch(
+	conversationIds: Array<string>,
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
 ): void {
 	useEmailsStore.setState(
 		produce((state: EmailsStoreState) => {
 			state.searchIndexSlice.conversationListIndex =
-				state.searchIndexSlice.conversationListIndex.filter((id) => !ids.includes(id));
-			ids.forEach((id) => {
+				state.searchIndexSlice.conversationListIndex.filter((id) => !conversationIds.includes(id));
+			conversationIds.forEach((id) => {
 				delete state.populatedItemsSlice.conversations[id];
 			});
 		})
 	);
 }
 
-function deleteMessagesFromSearch(
-	ids: Array<string>,
+/**
+ * Handles the deletion of messages from the search context by updating the state.
+ *
+ * @param messageIds - An array of message IDs to be removed.
+ * @param useEmailsStore - A state management hook for accessing and updating the `EmailsStoreState`.
+ *
+ * @remarks
+ * - Removes the specified message IDs from the `messageListIndex` in the `searchIndexSlice`.
+ * - Deletes the corresponding messages from the `populatedItemsSlice`.
+ * - Calls `deleteMessagesFromConversation` to handle related updates for conversations.
+ */
+function handleNotifyMessagesDeletionInSearch(
+	messageIds: Array<string>,
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
 ): void {
 	useEmailsStore.setState(
 		produce((state: EmailsStoreState) => {
 			state.searchIndexSlice.messageListIndex = state.searchIndexSlice.messageListIndex.filter(
-				(id) => !ids.includes(id)
+				(id) => !messageIds.includes(id)
 			);
-			ids.forEach((id) => {
+			messageIds.forEach((id) => {
 				delete state.populatedItemsSlice.messages[id];
-				deleteMessagesFromConversation(ids, state);
+				deleteMessagesFromConversation(messageIds, state);
 			});
 		})
 	);
@@ -186,8 +207,8 @@ export const searchSliceUtils = {
 	setSearchResultsByConversation,
 	setSearchResultsByMessage,
 	appendConversationsToSearch,
-	deleteConversationsFromSearch,
-	deleteMessagesFromSearch,
+	handleNotifyConversationsDeletionInSearch,
+	handleNotifyMessagesDeletionInSearch,
 	updateSearchResultsLoadingStatus,
 	appendMessagesToSearch,
 	setMessagesInSearchSlice

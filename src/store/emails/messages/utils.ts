@@ -110,6 +110,7 @@ function appendMessagesToMessagesSlice(
 
 /**
  * Handles the creation of notify messages by updating the application's email store state.
+ *
  * This function processes incoming messages, updates the message slice, and ensures conversations
  * are updated with the new messages in the appropriate order.
  */
@@ -174,22 +175,39 @@ function handleNotifyMessagesCreated(
 	);
 }
 
+/**
+ * Deletes specified messages from the message slice in the state, including their references
+ * in the message list index and populated items.
+ *
+ * @param messageIds - An array of message IDs to be removed from the message slice and the message list index.
+ * @param useEmailsStore - A state management hook for accessing and updating the `EmailsStoreState`.
+ *
+ * @remarks
+ * - The specified message IDs are removed from the `messageListIndex` and the `populatedItemsSlice.messages`.
+ * - The `deleteMessagesFromConversation` function is called to handle any updates to conversations
+ *   affected by the deletion of these messages.
+ */
 function deleteMessagesFromMessageSlice(
-	ids: Array<string>,
+	messageIds: Array<string>,
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
 ): void {
 	useEmailsStore.setState(
 		produce((state: EmailsStoreState) => {
+			const messageIdsSet = new Set(messageIds);
+
 			state.messageIndexSlice.messageListIndex = state.messageIndexSlice.messageListIndex.filter(
-				(id) => !ids.includes(id)
+				(id) => !messageIdsSet.has(id)
 			);
-			ids.forEach((id) => {
+
+			messageIds.forEach((id) => {
 				delete state.populatedItemsSlice.messages[id];
-				deleteMessagesFromConversation(ids, state);
 			});
+
+			deleteMessagesFromConversation(messageIds, state);
 		})
 	);
 }
+
 export const messageIndexSliceUtils = {
 	setMessages,
 	handleNotifyMessagesCreated,

@@ -10,7 +10,7 @@ import { times } from 'lodash';
 
 import { FOLDERS } from '../../../../../carbonio-ui-commons/constants/folders';
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
-import { updateConversations } from '../../../../../store/emails/store';
+import { handleNotifyConversationsModified } from '../../../../../store/emails/store';
 import { generateConversation } from '../../../../../tests/generators/generateConversation';
 import {
 	ConversationListComponent,
@@ -30,7 +30,7 @@ describe.each`
 		const conversations = times(CONVERSATIONS_COUNT, (index) =>
 			generateConversation({ id: `${index}`, folderId, isSingleMessageConversation: false })
 		);
-		updateConversations(conversations);
+		handleNotifyConversationsModified(conversations);
 
 		const toggle = jest.fn();
 		const selectAll = jest.fn();
