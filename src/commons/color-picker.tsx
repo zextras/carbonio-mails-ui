@@ -5,14 +5,14 @@
  */
 import React, { FC, useCallback, useRef, useState } from 'react';
 
-import { Container, ContainerProps, Icon } from '@zextras/carbonio-design-system';
+import { Container, Icon } from '@zextras/carbonio-design-system';
 import { HexColorPicker } from 'react-colorful';
 import styled from 'styled-components';
 
 import useClickOutside from '../hooks/use-click-outside-picker';
 import { ColorContainer } from '../integrations/shared-invite-reply/parts/styled-components';
 
-const ColorBox = styled(Container)<ContainerProps & { disabled: boolean; color: string }>`
+const ColorBox = styled(Container)<{ $disabled: boolean; $color: string }>`
 	width: 1.75rem;
 	height: 1.75rem;
 	border-radius: 0.5rem;
@@ -20,9 +20,9 @@ const ColorBox = styled(Container)<ContainerProps & { disabled: boolean; color: 
 	box-shadow:
 		0 0 0 0.0625rem rgba(0, 0, 0, 0.1),
 		inset 0 0 0 0.0625rem rgba(0, 0, 0, 0.1);
-	cursor: ${({ disabled }): string => (disabled ? 'no-drop' : 'pointer')};
-	background-color: ${({ color }): string => color};
-	opacity: ${({ disabled }): string => (disabled ? '0.5' : '1')};
+	cursor: ${({ $disabled }): string => ($disabled ? 'no-drop' : 'pointer')};
+	background-color: ${({ $color }): string => $color};
+	opacity: ${({ $disabled }): string => ($disabled ? '0.5' : '1')};
 `;
 
 const PopOver = styled(Container)`
@@ -60,7 +60,7 @@ export const ColorPicker: FC<{
 			height="3rem"
 		>
 			<Container style={{ position: 'relative' }} orientation="horizontal" width="fit">
-				<ColorBox color={color} disabled={disabled} data-testid="color-picker-color-box" />
+				<ColorBox $color={color} $disabled={disabled} data-testid="color-picker-color-box" />
 				{isOpen && (
 					<PopOver ref={popover}>
 						<HexColorPicker color={color} onChange={onChange} />

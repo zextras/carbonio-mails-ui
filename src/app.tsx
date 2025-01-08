@@ -7,6 +7,7 @@
 import React from 'react';
 
 import { BackupSearchComponentToggler } from './app-utils/backup-search-component-toggler';
+import { SearchRegistration } from './app-utils/search-registration';
 import { ShellRegistrations } from './app-utils/shell-registrations';
 import { AuthGuard } from './auth-guard';
 import { StoreProvider } from './store/redux';
@@ -21,6 +22,7 @@ const App = (): React.JSX.Element => (
 	<AuthGuard>
 		<ShellRegistrations />
 		<BackupSearchComponentToggler />
+		<SearchRegistration />
 
 		<StoreProvider>
 			<GlobalModalManager>

@@ -37,7 +37,7 @@ const LabelFactory: FC<LabelFactoryPropsType> = ({
 		padding={{
 			all: 'extrasmall'
 		}}
-		disabled={disabled}
+		$disabled={disabled}
 		minHeight="3rem"
 	>
 		<Row width="100%" takeAvailableSpace mainAlignment="space-between">

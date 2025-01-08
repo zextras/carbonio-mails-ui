@@ -7,13 +7,9 @@
 import React, { ReactElement } from 'react';
 
 import { act, waitFor } from '@testing-library/react';
+import type { QueryChip, SearchViewProps } from '@zextras/carbonio-search-ui';
 import * as hooks from '@zextras/carbonio-shell-ui';
-import {
-	AccountSettings,
-	ErrorSoapBodyResponse,
-	QueryChip,
-	SearchViewProps
-} from '@zextras/carbonio-shell-ui';
+import { AccountSettings, ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 import { noop } from 'lodash';
 
 import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';

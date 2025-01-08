@@ -94,7 +94,7 @@ const DateCondition: FC<ComponentProps> = ({ t, activeIndex, defaultValue }): Re
 			</Container>
 			<Container minWidth="20%" maxWidth="20%" padding={{ right: 'small' }}>
 				<DateTimePicker
-					includeTime={false}
+					showTimeSelect={false}
 					defaultValue={defaultDate}
 					label={t('settings.choose_date', 'Choose Date')}
 					backgroundColor="gray5"

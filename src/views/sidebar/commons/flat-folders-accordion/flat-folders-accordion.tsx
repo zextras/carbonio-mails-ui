@@ -10,8 +10,6 @@ import {
 	Avatar,
 	Collapse,
 	Container,
-	ContainerProps,
-	getColor,
 	Icon,
 	IconButton,
 	ListItem,
@@ -41,31 +39,18 @@ const RootAccordion = styled(Row)`
 	cursor: pointer;
 `;
 
-const CustomContainer = styled(Container)<ContainerProps & { active?: boolean }>`
+const CustomContainer = styled(Container)<{ $active?: boolean }>`
 	&:hover {
-		background-color: ${({ theme, active }): string =>
-			active ? theme.palette.highlight.active : theme.palette.gray6.hover};
+		background-color: ${({ theme, $active }): string =>
+			$active ? theme.palette.highlight.active : theme.palette.gray6.hover};
 	}
 `;
 
-const CustomListItemHelper = styled(ListItem)``;
-
-export const CustomListItem = styled(CustomListItemHelper).attrs(
-	({
-		background = 'gray6',
-		active,
-		activeBackground = 'highlight',
-		selected,
-		selectedBackground = 'gray5',
-		theme
-	}) => ({
-		$baseBackgroundColor: getColor(
-			(active && activeBackground) || (selected && selectedBackground) || background,
-			theme
-		),
-		$focusBackgroundColor: getColor(`${(active && activeBackground) || 'gray6'}.focus`, theme)
-	})
-)``;
+export const CustomListItem = styled(ListItem).attrs({
+	background: 'gray6',
+	activeBackground: 'highlight',
+	selectedBackground: 'gray5'
+})``;
 
 type FlatFoldersAccordionFolderProps = {
 	folder: Folder;
@@ -208,7 +193,7 @@ const FlatFoldersAccordionRoot: FC<FlatFoldersAccordionRootProps> = ({
 				padding={'small'}
 				onClick={onClick}
 				background={selectedFolderId === folder.id ? 'highlight.active' : 'gray6'}
-				active={selectedFolderId === folder.id}
+				$active={selectedFolderId === folder.id}
 			>
 				<Container orientation="horizontal" width="fill" mainAlignment="flex-start">
 					<Padding horizontal="small">

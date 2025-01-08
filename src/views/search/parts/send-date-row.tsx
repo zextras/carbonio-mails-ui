@@ -110,7 +110,7 @@ const SendReceivedDateRow: FC<SendReceivedDateRowPropType> = ({ compProps }): Re
 					chipProps={{ avatarBackground: 'gray1', avatarIcon: 'CalendarOutline' }}
 					dateFormat={PICKER_DATE_FORMAT}
 					locale={prefLocale}
-					includeTime={false}
+					showTimeSelect={false}
 					defaultValue={sentBeforeDefault}
 					onChange={onSentBeforeChange}
 				/>
@@ -123,7 +123,7 @@ const SendReceivedDateRow: FC<SendReceivedDateRowPropType> = ({ compProps }): Re
 					chipProps={{ avatarBackground: 'gray1', avatarIcon: 'CalendarOutline' }}
 					dateFormat={PICKER_DATE_FORMAT}
 					locale={prefLocale}
-					includeTime={false}
+					showTimeSelect={false}
 					defaultValue={sentAfterDefault}
 					onChange={onSentAfterChange}
 				/>
@@ -136,7 +136,7 @@ const SendReceivedDateRow: FC<SendReceivedDateRowPropType> = ({ compProps }): Re
 					chipProps={{ avatarBackground: 'gray1', avatarIcon: 'CalendarOutline' }}
 					dateFormat={PICKER_DATE_FORMAT}
 					locale={prefLocale}
-					includeTime={false}
+					showTimeSelect={false}
 					onChange={onSentOnChange}
 					defaultValue={sentOnDefault}
 				/>

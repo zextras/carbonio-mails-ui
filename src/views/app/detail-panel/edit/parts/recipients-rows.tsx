@@ -78,7 +78,7 @@ export const RecipientsRows = ({ editorId }: RecipientsRowsProps): React.JSX.Ele
 				orientation="horizontal"
 				background={'gray5'}
 				style={{ overflow: 'hidden' }}
-				padding={{ all: 'none' }}
+				padding={{ all: 0 }}
 			>
 				<Container background={'gray5'} style={{ overflow: 'hidden' }}>
 					<RecipientsRow
