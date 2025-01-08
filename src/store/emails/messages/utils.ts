@@ -108,7 +108,12 @@ function appendMessagesToMessagesSlice(
 	);
 }
 
-function prependMessagesToMessageSlice(
+/**
+ * Handles the creation of notify messages by updating the application's email store state.
+ * This function processes incoming messages, updates the message slice, and ensures conversations
+ * are updated with the new messages in the appropriate order.
+ */
+function handleNotifyMessagesCreated(
 	messages: Array<MailMessage | IncompleteMessage>,
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
 ): void {
@@ -187,10 +192,10 @@ function deleteMessagesFromMessageSlice(
 }
 export const messageIndexSliceUtils = {
 	setMessages,
+	handleNotifyMessagesCreated,
 	updateMessagesResultsLoadingStatus,
 	resetMessagesAndPopulatedItems,
 	appendMessagesToMessagesSlice,
-	prependMessagesToMessageSlice,
 	deleteMessagesFromMessageSlice,
 	useMessagesIdsByFolder
 };

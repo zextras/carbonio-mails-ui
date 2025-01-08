@@ -281,11 +281,16 @@ export function resetMessagesAndPopulatedItems(): void {
 	});
 }
 
-export function prependMessagesToMessagesSlice(
+/**
+ * Handles the creation of notify messages by updating the application's email store state.
+ * This function processes incoming messages, updates the message slice, and ensures conversations
+ * are updated with the new messages in the appropriate order.
+ */
+export function handleNotifyMessagesCreated(
 	messages: Array<MailMessage | IncompleteMessage>
 ): void {
 	addTask(async () => {
-		messageIndexSliceUtils.prependMessagesToMessageSlice(messages, useEmailsStore);
+		messageIndexSliceUtils.handleNotifyMessagesCreated(messages, useEmailsStore);
 	});
 }
 export function appendMessagesToMessagesSlice(

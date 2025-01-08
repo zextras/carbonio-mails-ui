@@ -25,7 +25,7 @@ import {
 	deleteMessagesFromMessagesSlice,
 	deleteMessagesFromSearch,
 	prependConversationsToConversationIndexSlice,
-	prependMessagesToMessagesSlice,
+	handleNotifyMessagesCreated,
 	updateConversationsOnly,
 	updateMessagesOnly
 } from '../../../store/emails/store';
@@ -102,8 +102,7 @@ function processCreatedNotifications(notify: SoapNotify): void {
 
 	if (createdMessages) {
 		const messages = map(createdMessages, (message) => normalizeMailMessageFromSoap(message));
-		prependMessagesToMessagesSlice(messages);
-		// dispatch(handleCreatedMessagesInConversation({ m: createdMessages }));
+		handleNotifyMessagesCreated(messages);
 	}
 }
 
