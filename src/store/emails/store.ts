@@ -24,6 +24,7 @@ import {
 	SearchIndexSliceState,
 	PopulatedItemsSliceState
 } from '../../types';
+import { syncDataHandlerUtils } from './sync-data-handler/utils';
 
 const useEmailsStore = create<
 	EmailsStoreState & {
@@ -160,18 +161,14 @@ export function handleNotifyMessagesDeletionInSearch(messageIds: Array<string>):
 	});
 }
 
+/**
+ * Handles the deletion of conversations and messages from search indexes,
+ * message and conversation index slices, and populated items within the
+ * application's email store state.
+ */
 export function handleNotifyDeleted(ids: string[]): void {
 	addTask(async () => {
-		searchSliceUtils.handleNotifyConversationsDeletionInSearch(ids, useEmailsStore);
-	});
-	addTask(async () => {
-		searchSliceUtils.handleNotifyMessagesDeletionInSearch(ids, useEmailsStore);
-	});
-	addTask(async () => {
-		messageIndexSliceUtils.deleteMessagesFromMessageSlice(ids, useEmailsStore);
-	});
-	addTask(async () => {
-		conversationIndexSliceUtils.deleteConversationsFromConversationSlice(ids, useEmailsStore);
+		syncDataHandlerUtils.handleNotityDeleted(ids, useEmailsStore);
 	});
 }
 
