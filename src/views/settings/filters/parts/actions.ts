@@ -10,12 +10,12 @@ import { TFunction } from 'i18next';
 import { concat, filter, findIndex } from 'lodash';
 
 import { useUiUtilities } from '../../../../hooks/use-ui-utilities';
-import { FilterListType } from '../../../../types';
+import { Filter } from '../../../../types';
 import { useTranslation } from 'react-i18next';
 
 export type ListType = {
 	isSelecting: boolean;
-	list: Array<FilterListType>;
+	list: Array<Filter>;
 	moveDown: (arg: number) => void;
 	moveUp: (arg: number) => void;
 	selected: Record<string, boolean>;
@@ -27,21 +27,21 @@ export type CompProps = {
 	t: TFunction;
 	availableList: ListType;
 	activeList: ListType;
-	setFilters: (arg: Array<FilterListType>) => void;
+	setFilters: (arg: Array<Filter>) => void;
 	setFetchFilters: (arg: boolean) => void;
-	modifierFunc: (arg: FilterListType[]) => Promise<void>;
+	modifierFunc: (arg: Filter[]) => Promise<void>;
 };
 
 export type DeleteFilterCompProps = CompProps & {
 	onClose: () => void;
-	filterToDelete: FilterListType;
-	incomingFilters: FilterListType[];
+	filterToDelete: Filter;
+	incomingFilters: Filter[];
 };
 
 export type DeleteOutgoingFilterCompProps = CompProps & {
 	onClose: () => void;
-	selectedFilter: FilterListType;
-	outgoingFilters: FilterListType[];
+	selectedFilter: Filter;
+	outgoingFilters: Filter[];
 };
 
 export const useRemoveFilter = (): ((arg: CompProps) => void) => {
@@ -58,7 +58,7 @@ export const useRemoveFilter = (): ((arg: CompProps) => void) => {
 		}: CompProps): void => {
 			const activeFiltersCopy = activeList?.list?.slice();
 			const availableFiltersCopy = availableList?.list?.slice();
-			const activeFilter = filter(activeFiltersCopy, { id: Object.keys(activeList.selected)[0] });
+			const activeFilter = filter(activeFiltersCopy, { name: Object.keys(activeList.selected)[0] });
 			const activeIndex = findIndex(activeFiltersCopy, activeFilter[0]);
 			activeFiltersCopy.splice(activeIndex, 1);
 			availableFiltersCopy.push({ ...activeFilter[0], active: false });
@@ -101,7 +101,7 @@ export const useAddFilter = (): ((arg: CompProps) => void) => {
 			const activeFiltersCopy = activeList?.list?.slice();
 			const availableFiltersCopy = availableList?.list?.slice();
 			const activeFilter = filter(availableFiltersCopy, {
-				id: Object.keys(availableList.selected)[0]
+				name: Object.keys(availableList.selected)[0]
 			});
 			const activeIndex = findIndex(availableFiltersCopy, activeFilter[0]);
 			availableFiltersCopy.splice(activeIndex, 1);

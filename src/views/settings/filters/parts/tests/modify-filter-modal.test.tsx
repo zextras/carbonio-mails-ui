@@ -12,7 +12,7 @@ import { omit } from 'lodash';
 
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
 import { generateStore } from '../../../../../tests/generators/store';
-import { FilterListType } from '../../../../../types';
+import { Filter } from '../../../../../types';
 import { ModifyFilterModal } from '../modify-filter/modify-filter-modal';
 
 describe('modify filter modal', () => {
@@ -22,7 +22,6 @@ describe('modify filter modal', () => {
 			<ModifyFilterModal
 				onClose={jest.fn()}
 				selectedFilter={{
-					id: '1',
 					name: 'Test Filter',
 					active: true,
 					filterTests: [],
@@ -237,7 +236,7 @@ function mockFilter({
 	name: string;
 	flagName?: string;
 	tagName?: string;
-}): FilterListType {
+}): Filter {
 	return {
 		id,
 		name,

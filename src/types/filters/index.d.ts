@@ -6,11 +6,21 @@
 
 import { ChipProps } from '@zextras/carbonio-design-system';
 
-export type FilterTest = Record<string, string | Array<any>>;
+export type FilterTest = Record<string, string>;
+
+type ApiFilterAction = {
+	actionRedirect?: Array<ActionRedirect>;
+	actionTag?: Array<ActionTag>;
+	actionFlag?: Array<ActionFlag>;
+	actionFileInto?: Array<ActionFileInto>;
+	actionDiscard?: Array<Record<string, never>>;
+	actionStop?: Array<Record<string, never>>;
+	actionKeep?: Array<Record<string, never>>;
+};
 
 export type Filter = {
 	active: boolean;
-	filterActions: Array<any>;
+	filterActions: Array<ApiFilterAction>;
 	filterTests: Array<FilterTest>;
 	name: string;
 };
@@ -39,16 +49,9 @@ export type SearchEmailValue = {
 	email: string;
 };
 
-export type FilterListType = {
-	active: boolean;
-	filterActions: Array<any>;
-	filterTests: Array<any>;
-	id?: string;
-	name: string;
-};
 export type ListPropsType = {
 	isSelecting: boolean;
-	list: Array<FilterListType>;
+	list: Array<Filter>;
 	moveDown: (arg: number) => void;
 	moveUp: (arg: number) => void;
 	selected: Record<string, boolean>;
@@ -123,3 +126,5 @@ export type FilterActionsProps = {
 };
 
 export type FilterActions = Array<FilterAction>;
+
+export type Pippo = keyof ApiFilterAction;

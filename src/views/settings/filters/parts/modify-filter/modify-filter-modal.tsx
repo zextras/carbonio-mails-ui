@@ -20,7 +20,13 @@ import { useTranslation } from 'react-i18next';
 import { v4 as uuidv4 } from 'uuid';
 
 import ModalHeader from '../../../../../carbonio-ui-commons/components/modals/modal-header';
-import type { FilterActions, FilterListType } from '../../../../../types';
+import type {
+	FilterActions,
+	Filter,
+	Pippo,
+	FilterAction,
+	ApiFilterAction
+} from '../../../../../types';
 import { capitalise } from '../../../../sidebar/utils';
 import { CreateFilterContext } from '../create-filter-context';
 import ModalFooter from '../create-filter-modal-footer';
@@ -32,9 +38,18 @@ import { getButtonInfo } from '../utils';
 
 type ModifyFilterModalProps = {
 	onClose: () => void;
-	onModifyConfirm: (modifiedFilter: FilterListType) => void;
-	selectedFilter: FilterListType;
+	onModifyConfirm: (modifiedFilter: Filter) => void;
+	selectedFilter: Filter;
 };
+
+const AVAILABLE_ACTIONS = [
+	'actionRedirect',
+	'actionTag',
+	'actionFlag',
+	'actionFileInto',
+	'actionKeep',
+	'actionDiscard'
+];
 
 export const ModifyFilterModal: FC<ModifyFilterModalProps> = ({
 	onClose,
@@ -47,16 +62,52 @@ export const ModifyFilterModal: FC<ModifyFilterModalProps> = ({
 	const [condition, setCondition] = useState('anyof');
 	const [dontProcessAddFilters, setDontProcessAddFilters] = useState(true);
 
-	const initialActions = useMemo((): Array<any> => {
+	const initialActions = useMemo((): FilterActions => {
 		if (selectedFilter) {
-			const actions: Array<any> = [];
-			forEach(selectedFilter?.filterActions?.[0], (value, key) => {
-				if (key !== 'actionStop') {
-					forEach(value, (val) => {
-						actions.push({ [key]: [{ ...omit(val, 'index') }], id: uuidv4() });
-					});
+			const actions: FilterActions = [];
+			const filterActions = selectedFilter?.filterActions?.[0];
+
+			const filterActionsKeys: Array<keyof ApiFilterAction> = Object.keys(filterActions) as Array<
+				keyof ApiFilterAction
+			>;
+
+			forEach(filterActionsKeys, (key) => {
+				switch (key) {
+					case 'actionTag':
+						filterActions.actionTag?.forEach((value) => {
+							actions.push({ actionTag: [{ ...omit(value, 'index') }] });
+						});
+						break;
+					case 'actionFlag':
+						filterActions.actionFlag?.forEach((value) => {
+							actions.push({ actionFlag: [{ ...omit(value, 'index') }] });
+						});
+						break;
+					case 'actionRedirect':
+						filterActions.actionRedirect?.forEach((value) => {
+							actions.push({ actionRedirect: [{ ...omit(value, 'index') }] });
+						});
+						break;
+					case 'actionFileInto':
+						filterActions.actionFileInto?.forEach((value) => {
+							actions.push({ actionFileInto: [{ ...omit(value, 'index') }] });
+						});
+						break;
+					case 'actionKeep':
+						filterActions.actionKeep?.forEach((value) => {
+							actions.push({ actionKeep: [{ ...omit(value, 'index') }] });
+						});
+						break;
+					case 'actionDiscard':
+						filterActions.actionDiscard?.forEach((value) => {
+							actions.push({ actionDiscard: [{ ...omit(value, 'index') }] });
+						});
+						break;
+					default:
+						break;
 				}
 			});
+
 			return actions;
 		}
 		return [{ actionKeep: [{}], id: uuidv4() }];

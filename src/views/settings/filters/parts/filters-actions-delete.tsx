@@ -19,17 +19,11 @@ import {
 	modifyOutgoingFilterRules
 } from '../../../../store/actions/modify-filter-rules';
 import { StoreProvider } from '../../../../store/redux';
+import { Filter } from '../../../../types';
 
-type FilterListType = {
-	active: boolean;
-	filterActions: Array<any>;
-	filterTests: Array<any>;
-	id?: string;
-	name: string;
-};
 type ListType = {
 	isSelecting: boolean;
-	list: Array<FilterListType>;
+	list: Array<Filter>;
 	moveDown: (arg: number) => void;
 	moveUp: (arg: number) => void;
 	selected: Record<string, boolean>;

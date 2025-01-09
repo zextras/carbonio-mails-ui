@@ -11,11 +11,11 @@ import { TFunction } from 'i18next';
 import { useDeleteOutgoingFilter } from './actions';
 import ModalFooter from '../../../../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../../../../carbonio-ui-commons/components/modals/modal-header';
-import type { FilterListType } from '../../../../types';
+import type { Filter } from '../../../../types';
 
 type ListType = {
 	isSelecting: boolean;
-	list: Array<FilterListType>;
+	list: Array<Filter>;
 	moveDown: (arg: number) => void;
 	moveUp: (arg: number) => void;
 	selected: Record<string, boolean>;
@@ -28,9 +28,9 @@ type ComponentProps = {
 	onClose: () => void;
 	availableList: ListType;
 	activeList: ListType;
-	setFilters: (arg: Array<FilterListType>) => void;
+	setFilters: (arg: Array<Filter>) => void;
 	setFetchFilters: (arg: boolean) => void;
-	modifierFunc: (arg: FilterListType[]) => Promise<void>;
+	modifierFunc: (arg: Filter[]) => Promise<void>;
 	selectedFilter: any;
 	outgoingFilters: any;
 };

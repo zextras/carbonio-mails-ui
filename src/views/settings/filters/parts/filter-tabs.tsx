@@ -15,7 +15,7 @@ import { useAppDispatch } from '../../../../hooks/redux';
 import { useUiUtilities } from '../../../../hooks/use-ui-utilities';
 import { getIncomingFilters } from '../../../../store/actions/get-incoming-filters';
 import { getOutgoingFilters } from '../../../../store/actions/get-outgoing-filters';
-import { FilterListType } from '../../../../types';
+import { Filter } from '../../../../types';
 
 type Item = {
 	active: boolean;
@@ -88,7 +88,7 @@ const FilterTabs: FC = (): ReactElement => {
 	}, [dispatch, fetchOutgoingFilters]);
 
 	const moveUp = useCallback(
-		(index: number, list: Array<FilterListType>, listSetter: (tmp: FilterListType[]) => void) => {
+		(index: number, list: Array<Filter>, listSetter: (tmp: Filter[]) => void) => {
 			const tmp = list.slice();
 
 			if (index === tmp.length - 1) return;

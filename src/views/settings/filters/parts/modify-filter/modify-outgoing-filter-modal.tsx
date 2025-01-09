@@ -22,7 +22,7 @@ import { v4 as uuidv4 } from 'uuid';
 import ModalHeader from '../../../../../carbonio-ui-commons/components/modals/modal-header';
 import { useUiUtilities } from '../../../../../hooks/use-ui-utilities';
 import { modifyOutgoingFilterRules } from '../../../../../store/actions/modify-filter-rules';
-import type { FilterActions, FilterListType } from '../../../../../types';
+import type { FilterActions, Filter } from '../../../../../types';
 import { capitalise } from '../../../../sidebar/utils';
 import { CreateFilterContext } from '../create-filter-context';
 import ModalFooter from '../create-filter-modal-footer';
@@ -38,7 +38,7 @@ type ComponentProps = {
 	outgoingFilters?: any;
 	setFetchOutgoingFilters: (arg: boolean) => void;
 	setOutgoingFilters: (arg: any) => void;
-	selectedFilter: FilterListType;
+	selectedFilter: Filter;
 };
 
 const ModifyOutgoingFilterModal: FC<ComponentProps> = ({
@@ -198,8 +198,8 @@ const ModifyOutgoingFilterModal: FC<ComponentProps> = ({
 			setFilterName(selectedFilter?.name);
 			setActiveFilter(selectedFilter?.active);
 			setCondition(selectedFilter?.filterTests?.[0]?.condition);
-			const previousActions = (): Array<any> => {
-				const actions: Array<any> = [];
+			const previousActions = (): FilterActions => {
+				const actions: FilterActions = [];
 				forEach(selectedFilter?.filterActions?.[0], (value, key) => {
 					if (key !== 'actionStop') {
 						forEach(value, (val) => {

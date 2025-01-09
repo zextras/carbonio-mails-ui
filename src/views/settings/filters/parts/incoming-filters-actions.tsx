@@ -16,22 +16,15 @@ import { FilterContext } from './filter-context';
 import { ModifyFilterModal } from './modify-filter/modify-filter-modal';
 import { modifyFilterRules } from '../../../../store/actions/modify-filter-rules';
 import { StoreProvider } from '../../../../store/redux';
+import { Filter } from '../../../../types';
 import {
 	ApplyFilterUIActionExecutionParams,
 	getApplyFilterUIAction
 } from '../../../../ui-actions/apply-filter';
 
-type FilterListType = {
-	active: boolean;
-	filterActions: Array<any>;
-	filterTests: Array<any>;
-	id?: string;
-	name: string;
-};
-
 type ListType = {
 	isSelecting: boolean;
-	list: Array<FilterListType>;
+	list: Array<Filter>;
 	moveDown: (arg: number) => void;
 	moveUp: (arg: number) => void;
 	selected: Record<string, boolean>;
@@ -44,7 +37,7 @@ type ComponentProps = {
 		t: TFunction;
 		availableList: ListType;
 		activeList: ListType;
-		incomingFilters: FilterListType[];
+		incomingFilters: Filter[];
 	};
 };
 
@@ -216,7 +209,7 @@ export const IncomingFilterActions: FC<ComponentProps> = ({ compProps }): ReactE
 		const modalId = Date.now().toString();
 		const modalClose = (): void => closeModal(modalId);
 
-		const onModifyConfirm = (requiredFilter: FilterListType): void => {
+		const onModifyConfirm = (requiredFilter: Filter): void => {
 			const selectedFilterIndex = findIndex(
 				incomingFiltersCopy,
 				(filterCopy: any) => filterCopy.name === selectedFilter?.name

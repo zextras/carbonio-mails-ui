@@ -21,7 +21,7 @@ import {
 } from '../../../../../carbonio-ui-commons/test/test-setup';
 import type { Folder } from '../../../../../carbonio-ui-commons/types';
 import { generateStore } from '../../../../../tests/generators/store';
-import { MailsStateType, FilterListType } from '../../../../../types';
+import { MailsStateType, Filter } from '../../../../../types';
 import { ListType } from '../actions';
 import { FilterContext } from '../filter-context';
 import { IncomingFilterActions } from '../incoming-filters-actions';
@@ -394,7 +394,7 @@ function propsWithIncomingFilter({ name, isSelected }: { name: string; isSelecte
 	};
 }
 
-function createList(filterList: FilterListType[], selectedName?: string): ListType {
+function createList(filterList: Filter[], selectedName?: string): ListType {
 	const selected = (selectedName && { [selectedName]: true }) || {};
 
 	return {
@@ -408,9 +408,8 @@ function createList(filterList: FilterListType[], selectedName?: string): ListTy
 	};
 }
 
-function activeIncomingFilter(name: string): FilterListType {
+function activeIncomingFilter(name: string): Filter {
 	return {
-		id: name,
 		name,
 		active: true,
 		filterTests: [
