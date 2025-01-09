@@ -3,14 +3,16 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
-import { filter } from 'lodash';
+import { replaceHistory } from '@zextras/carbonio-shell-ui';
+import { filter, isEmpty } from 'lodash';
 import { useParams } from 'react-router-dom';
 
 import { ConversationPreviewPanel } from './conversation-preview-panel';
 import { PreviewPanelHeader } from './preview/preview-panel-header';
+import { getConvSoapApi } from '../../../api';
 import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
 import { API_REQUEST_STATUS } from '../../../constants';
 import { getFolderIdParts } from '../../../helpers/folders';
@@ -35,6 +37,19 @@ export const ConversationPreviewPanelContainer = (
 	const { conversationId, folderId } = useConversationPreviewPanelParameters(props);
 	const { isInsideExtraWindow } = useExtraWindow();
 	const { conversation, conversationStatus } = useCompleteConversation(conversationId);
+
+	const onConversationIdChange = useCallback(
+		(newConversationId: string): void => {
+			replaceHistory(`/folder/${folderId}/conversation/${newConversationId}`);
+		},
+		[folderId]
+	);
+
+	useEffect(() => {
+		if (isEmpty(conversation)) {
+			getConvSoapApi({ conversationId, onConversationIdChange });
+		}
+	}, [conversation, conversationId, onConversationIdChange]);
 
 	const showPreviewPanel = useMemo(
 		(): boolean | undefined =>
