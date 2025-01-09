@@ -43,9 +43,8 @@ function useConversationsIdsByFolder(
 ): Array<string> {
 	const folder = useFolder(folderId);
 	const { populatedItemsSlice, conversationIndexSlice } = useEmailsStore();
-	const folderConversationsIds: Array<string> = [];
 	if (!folder) {
-		return folderConversationsIds;
+		return [];
 	}
 	const { conversationListIndex: conversationsIds } = conversationIndexSlice;
 	const wantedFolder = 'rid' in folder && folder?.rid ? `${folder.zid}:${folder.rid}` : folder.id;
