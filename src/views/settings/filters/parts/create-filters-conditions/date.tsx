@@ -12,12 +12,14 @@ import React, {
 	useEffect,
 	useCallback
 } from 'react';
+
 import { Container, DateTimePicker } from '@zextras/carbonio-design-system';
 import type { TFunction } from 'i18next';
 import moment from 'moment';
+
+import { CreateFilterContext } from '../create-filter-context';
 import CustomSelect from '../custom-select';
 import { getDateOptions, findDefaultValue } from '../utils';
-import { CreateFilterContext } from '../create-filter-context';
 
 type ComponentProps = {
 	t: TFunction;
@@ -92,7 +94,7 @@ const DateCondition: FC<ComponentProps> = ({ t, activeIndex, defaultValue }): Re
 			</Container>
 			<Container minWidth="20%" maxWidth="20%" padding={{ right: 'small' }}>
 				<DateTimePicker
-					includeTime={false}
+					showTimeSelect={false}
 					defaultValue={defaultDate}
 					label={t('settings.choose_date', 'Choose Date')}
 					backgroundColor="gray5"

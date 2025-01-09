@@ -40,7 +40,7 @@ export const SendLaterModal: FC<SendLaterModalProps> = ({ onAutoSendTimeSelected
 		if (moment(selectedTime).isBefore(moment(), 'hour') || !selectedTime) {
 			return new Date();
 		}
-		return moment().hours(0).minutes(0);
+		return moment().hours(0).minutes(0).toDate();
 	}, [selectedTime]);
 
 	const maxTime = useMemo(() => new Date(0, 0, 0, 23, 45, 0, 0), []);

@@ -8,7 +8,6 @@ import React, { useMemo, useState, useCallback } from 'react';
 import {
 	Container,
 	Divider,
-	TextWithTooltip,
 	Padding,
 	Tooltip,
 	Button,
@@ -131,7 +130,9 @@ export const SendersList = ({
 					<Heading title={sectionTitle.label} size="medium" />
 				</Container>
 				<Container crossAlignment="flex-start" padding={'none'}>
-					<TextWithTooltip size="extrasmall">{message}</TextWithTooltip>
+					<Tooltip label={message} overflowTooltip>
+						<Text size="extrasmall">{message}</Text>
+					</Tooltip>
 				</Container>
 			</Container>
 			<Divider />

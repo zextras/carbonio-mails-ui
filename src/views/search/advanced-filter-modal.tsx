@@ -9,13 +9,15 @@ import {
 	CustomModal,
 	Icon,
 	Row,
-	TextWithTooltip,
 	Padding,
 	ModalHeader,
 	Divider,
-	ModalFooter
+	ModalFooter,
+	Tooltip,
+	Text
 } from '@zextras/carbonio-design-system';
-import { QueryChip, t } from '@zextras/carbonio-shell-ui';
+import type { QueryChip } from '@zextras/carbonio-search-ui';
+import { t } from '@zextras/carbonio-shell-ui';
 import { concat, filter, includes, map, reject } from 'lodash';
 
 import AttachmentTypeEmailStatusRow from './parts/attachment-type-email-status-row';
@@ -76,7 +78,9 @@ export const AdvancedFilterModal = ({
 								</Padding>
 							</Row>
 							<Row takeAvailableSpace mainAlignment="flex-start">
-								<TextWithTooltip>{item.name}</TextWithTooltip>
+								<Tooltip label={item.name} overflowTooltip>
+									<Text>{item.name}</Text>
+								</Tooltip>
 							</Row>
 						</Row>
 					</Row>

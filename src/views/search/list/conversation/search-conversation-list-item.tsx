@@ -10,20 +10,20 @@ import {
 	Badge,
 	Button,
 	Container,
-	ContainerProps,
 	Icon,
 	Padding,
 	Row,
 	Text,
 	Tooltip
 } from '@zextras/carbonio-design-system';
-import { Tag, pushHistory, t, useUserAccounts, useUserSettings } from '@zextras/carbonio-shell-ui';
+import { pushHistory, t, useUserAccounts, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { filter, forEach, includes, isEmpty, reduce, trimStart, uniqBy } from 'lodash';
 import styled from 'styled-components';
 
 import { SearchConversationMessagesList } from './search-conversation-messages-list';
 import { ZIMBRA_STANDARD_COLORS } from '../../../../carbonio-ui-commons/constants';
 import { useTags } from '../../../../carbonio-ui-commons/store/zustand/tags';
+import { Tag } from '../../../../carbonio-ui-commons/types/tags';
 import { participantToString } from '../../../../commons/utils';
 import { API_REQUEST_STATUS } from '../../../../constants';
 import { useConvPreviewOnSeparatedWindowFn } from '../../../../hooks/actions/use-conv-preview-on-separated-window';
@@ -41,8 +41,8 @@ import { RowInfo } from '../../../app/folder-panel/parts/row-info';
 import { SenderName } from '../../../app/folder-panel/parts/sender-name';
 import { SearchConversationExtraWindowPanelContainer } from '../../extra-window/conversations/search-conversation-extra-window-panel';
 
-const CollapseElement = styled(Container)<ContainerProps & { open: boolean }>`
-	display: ${({ open }): string => (open ? 'block' : 'none')};
+const CollapseElement = styled(Container)<{ $open: boolean }>`
+	display: ${({ $open }): string => ($open ? 'block' : 'none')};
 `;
 type SearchConversationListItemProps = {
 	conversationId: string;
@@ -301,7 +301,7 @@ export const SearchConversationListItem: FC<SearchConversationListItemProps> = (
 			</ConversationListItemActionWrapper>
 			{open && (
 				<CollapseElement
-					open={open}
+					$open={open}
 					data-testid="ConversationExpander"
 					padding={{ left: 'extralarge' }}
 					height="auto"

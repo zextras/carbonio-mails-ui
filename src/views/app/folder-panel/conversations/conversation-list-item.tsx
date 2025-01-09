@@ -57,8 +57,8 @@ import { ListItemHoverActions } from '../parts/list-item-hover-actions';
 import { RowInfo } from '../parts/row-info';
 import { SenderName } from '../parts/sender-name';
 
-const CollapseElement = styled(Container)<ContainerProps & { open: boolean }>`
-	display: ${({ open }): string => (open ? 'block' : 'none')};
+const CollapseElement = styled(Container)<{ $open: boolean }>`
+	display: ${({ $open }): string => ($open ? 'block' : 'none')};
 `;
 
 export const ConversationListItemActionWrapper = ({
@@ -463,7 +463,8 @@ export const ConversationListItem: FC<ConversationListItemProps> = memo(
 										<Badge
 											data-testid={`conversation-messages-count-${item.id}`}
 											value={getmsgToDisplayCount()}
-											type={textReadValues.badge}
+											backgroundColor={(textReadValues.badge === 'unread' && 'primary') || 'gray2'}
+											color={(textReadValues.badge === 'unread' && 'gray6') || 'gray0'}
 										/>
 									</Padding>
 								</Row>
@@ -503,7 +504,7 @@ export const ConversationListItem: FC<ConversationListItemProps> = memo(
 				</ConversationListItemActionWrapper>
 				{open && (
 					<CollapseElement
-						open={open}
+						$open={open}
 						data-testid="ConversationExpander"
 						padding={{ left: 'extralarge' }}
 						height="auto"

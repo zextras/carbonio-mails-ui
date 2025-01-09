@@ -43,7 +43,7 @@ export const BannerMessageTruncated = ({
 					label={loadingMessageLabel}
 					icon={AnimatedLoaderWarning}
 					iconPlacement="left"
-					color="warning"
+					labelColor="warning"
 					onClick={noop}
 				/>
 			) : (
@@ -51,7 +51,7 @@ export const BannerMessageTruncated = ({
 					backgroundColor="transparent"
 					type="outlined"
 					label={truncatedWarningButtonLabel}
-					color="warning"
+					labelColor="warning"
 					onClick={loadMessage}
 				/>
 			)}

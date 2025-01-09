@@ -4,13 +4,15 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import React, { createContext, FC, useCallback, useMemo, useRef, useState } from 'react';
+
 import { ModalManager, ThemeProvider } from '@zextras/carbonio-design-system';
 import { PreviewManager } from '@zextras/carbonio-ui-preview';
 import { omit } from 'lodash';
-import React, { createContext, FC, useCallback, useMemo, useRef, useState } from 'react';
 import { DefaultTheme } from 'styled-components';
-import type { ExtraWindowContextType, ExtraWindowProps } from '../../../types';
+
 import NewWindow, { replaceStyles } from './new-window';
+import type { ExtraWindowContextType, ExtraWindowProps } from '../../../types';
 
 // Enable debug console output
 const DEBUG = false;
@@ -47,7 +49,7 @@ const createStyledElementsObserver = (
 	debug('creation of STYLED ELEMENTS observer for', parentWindowDoc);
 	const observer = new MutationObserver((mutationList) => {
 		debug('STYLED ELEMENTS mutation detected!', mutationList);
-		setTimeout(replaceStyles(parentWindowDoc, newWindowObj.document), 10);
+		setTimeout(() => replaceStyles(parentWindowDoc, newWindowObj.document), 10);
 	});
 	observer.observe(newWindowObj.document.body, {
 		subtree: true,

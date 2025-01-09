@@ -8,13 +8,14 @@ import React, { useMemo, useState, useEffect, useCallback, FC, ReactElement, use
 import {
 	Container,
 	FormSubSection,
-	TextWithTooltip,
 	Input,
 	Row,
 	Button,
 	Padding,
 	SelectItem,
-	ButtonProps
+	ButtonProps,
+	Tooltip,
+	Text
 } from '@zextras/carbonio-design-system';
 import { t, useIntegratedComponent } from '@zextras/carbonio-shell-ui';
 import { map, reject, concat } from 'lodash';
@@ -166,7 +167,9 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 			>
 				<Row height="2.5rem" padding={{ all: 'small' }}>
 					<Container orientation="horizontal" mainAlignment="space-between">
-						<TextWithTooltip weight="bold">{item.label}</TextWithTooltip>
+						<Tooltip label={item.label} overflowTooltip>
+							<Text weight="bold">{item.label}</Text>
+						</Tooltip>
 						<DeleteButton
 							label={t('label.delete', 'Delete')}
 							type="outlined"

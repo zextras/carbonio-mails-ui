@@ -23,12 +23,11 @@ import {
 	Tooltip,
 	Chip,
 	Dropdown,
-	ContainerProps,
 	IconButton,
 	getColor,
 	AvatarPropTypes
 } from '@zextras/carbonio-design-system';
-import { useUserAccounts, runSearch, t } from '@zextras/carbonio-shell-ui';
+import { useUserAccounts, t } from '@zextras/carbonio-shell-ui';
 import {
 	capitalize,
 	every,
@@ -52,6 +51,7 @@ import MessageContactsList from './message-contact-list';
 import OnBehalfOfDisplayer from './on-behalf-of-displayer';
 import { ParticipantRole } from '../../../../../carbonio-ui-commons/constants/participants';
 import { ZIMBRA_STANDARD_COLORS } from '../../../../../carbonio-ui-commons/constants/utils';
+import { useRunSearchIntegration } from '../../../../../carbonio-ui-commons/integrations/search/use-run-search';
 import { useTags } from '../../../../../carbonio-ui-commons/store/zustand/tags';
 import { Tag } from '../../../../../carbonio-ui-commons/types/tags';
 import { getTimeLabel, participantToString } from '../../../../../commons/utils';
@@ -60,9 +60,9 @@ import { retrieveAttachmentsType } from '../../../../../store/editor-slice-utils
 import type { MailMessage } from '../../../../../types';
 import { useTagExist } from '../../../../../ui-actions/tag-actions';
 
-const HoverContainer = styled(Container)<ContainerProps & { isExpanded: boolean }>`
+const HoverContainer = styled(Container)<{ $isExpanded: boolean }>`
 	cursor: pointer;
-	border-radius: ${({ isExpanded }): string => (isExpanded ? '0.25rem 0.25rem 0 0' : '0.25rem')};
+	border-radius: ${({ $isExpanded }): string => ($isExpanded ? '0.25rem 0.25rem 0 0' : '0.25rem')};
 	&:hover {
 		background: ${({ theme, background = 'currentColor' }): string =>
 			getColor(`${background}.hover`, theme)};
@@ -215,9 +215,12 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 			every(message.tags, (tn) => tn !== ''),
 		[isTagInStore, message.tags, showMultiTagIcon]
 	);
+
+	const runSearch = useRunSearchIntegration();
+
 	const triggerSearch = useCallback(
 		(tagToSearch: Tag) =>
-			runSearch(
+			runSearch?.(
 				[
 					{
 						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -226,9 +229,6 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 						avatarIcon: 'Tag',
 						background: 'gray2',
 						hasAvatar: true,
-						// TODO: fix type definition
-						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-						// @ts-ignore
 						isGeneric: false,
 						isQueryFilter: true,
 						label: `tag:${tagToSearch?.name}`,
@@ -237,7 +237,7 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 				],
 				'mails'
 			),
-		[]
+		[runSearch]
 	);
 	const scheduledTime = useMemo(
 		() =>
@@ -255,7 +255,7 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 			mainAlignment="flex-start"
 			crossAlignment="flex-start"
 			background="gray6"
-			isExpanded={open}
+			$isExpanded={open}
 			data-testid={`open-message-${message.id}`}
 			onClick={_onClick}
 		>

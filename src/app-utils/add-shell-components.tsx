@@ -8,17 +8,16 @@ import React, { Suspense, lazy } from 'react';
 import { ModalManager } from '@zextras/carbonio-design-system';
 import {
 	addRoute,
-	addSearchView,
 	addBoardView,
 	addSettingsView,
-	SearchViewProps,
 	t,
-	SecondaryBarComponentProps
+	SecondaryBarComponentProps,
+	upsertApp
 } from '@zextras/carbonio-shell-ui';
 
 import { advancedAccountAPI } from '../api/advanced-account';
 import { Spinner } from '../assets/spinner';
-import { MAILS_BOARD_VIEW_ID, MAILS_ROUTE } from '../constants';
+import { MAIL_APP_ID, MAILS_BOARD_VIEW_ID, MAILS_ROUTE } from '../constants';
 import { StoreProvider } from '../store/redux';
 import { ExtraWindowsManager } from '../views/app/extra-windows/extra-window-manager';
 import { getSettingsSubSections } from '../views/settings/subsections';
@@ -36,10 +35,6 @@ const LazyEditView = lazy(
 
 const LazySettingsView = lazy(
 	() => import(/* webpackChunkName: "mail-setting-view" */ '../views/settings/settings-view')
-);
-
-const LazySearchView = lazy(
-	() => import(/* webpackChunkName: "mail-search-view" */ '../views/search/search-view')
 );
 
 const LazySidebarView = lazy(
@@ -78,18 +73,6 @@ const SettingsView = (): React.JSX.Element => (
 	</Suspense>
 );
 
-const SearchView = (props: SearchViewProps): React.JSX.Element => (
-	<Suspense fallback={<Spinner />}>
-		<StoreProvider>
-			<ExtraWindowsManager>
-				<ModalManager>
-					<LazySearchView {...props} />
-				</ModalManager>
-			</ExtraWindowsManager>
-		</StoreProvider>
-	</Suspense>
-);
-
 const SidebarView = (props: SecondaryBarComponentProps): React.JSX.Element => (
 	<Suspense fallback={<Spinner />}>
 		<StoreProvider>
@@ -111,11 +94,6 @@ export const addComponentsToShell = async (): Promise<void> => {
 		secondaryBar: SidebarView,
 		appView: AppView
 	});
-	addSearchView({
-		route: MAILS_ROUTE,
-		component: SearchView,
-		label
-	});
 	addBoardView({
 		id: MAILS_BOARD_VIEW_ID,
 		component: EditView
@@ -126,5 +104,10 @@ export const addComponentsToShell = async (): Promise<void> => {
 		label,
 		subSections: getSettingsSubSections(backupSelfUndeleteAllowed),
 		component: SettingsView
+	});
+
+	upsertApp({
+		name: MAIL_APP_ID,
+		display: label
 	});
 };

@@ -7,7 +7,7 @@
 
 import React from 'react';
 
-import { act, fireEvent, screen, waitFor } from '@testing-library/react';
+import { act, screen, waitFor } from '@testing-library/react';
 
 import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
 import { UpdateSettingsProps } from '../../../types/settings';
@@ -59,7 +59,7 @@ describe('compose-msg-settings', () => {
 		expect(screen.getByText('12pt')).toBeInTheDocument();
 		expect(screen.getByLabelText('label.as_html')).toBeChecked();
 		expect(screen.getByLabelText('label.as_text')).not.toBeChecked();
-		expect(screen.getByTestId('color-picker-color-box')).toHaveAttribute('color', '#24cb77');
+		expect(screen.getByTestId('color-picker-color-box')).toHaveStyle('background-color: #24cb77');
 	});
 
 	it('should call update settings with modified settings', async () => {

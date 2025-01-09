@@ -194,7 +194,7 @@ export const AddAttachmentsDropdown: FC<AddAttachmentsDropdownProps> = ({ editor
 				)}
 			/>
 			<Tooltip label={t('tooltip.add_attachments', 'Add attachments')}>
-				<Dropdown items={actionsItems} display="inline-block" width="fit">
+				<Dropdown items={actionsItems} display="inline-block">
 					<StyledComp.ResizedIconCheckbox onChange={(): null => null} icon="AttachOutline" />
 				</Dropdown>
 			</Tooltip>

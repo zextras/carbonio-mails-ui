@@ -6,12 +6,11 @@
  */
 
 import { updateAccount, updateSettings, xmlSoapFetch } from '@zextras/carbonio-shell-ui';
-import { AppDependantExports } from '@zextras/carbonio-shell-ui/lib/boot/app/app-dependant-exports';
 
 import { saveSettings } from '../save-settings';
 
 jest.mock('@zextras/carbonio-shell-ui', () => ({
-	xmlSoapFetch: jest.fn() as jest.MockedFunction<AppDependantExports['soapFetch']>,
+	xmlSoapFetch: jest.fn<ReturnType<typeof xmlSoapFetch>, Parameters<typeof xmlSoapFetch>>(),
 	updateAccount: jest.fn(),
 	updateSettings: jest.fn()
 }));
@@ -46,9 +45,7 @@ const mockSoapResponse = {
 
 describe('saveSettings', () => {
 	it('should generate the correct XML requests and call update functions', async () => {
-		(xmlSoapFetch as jest.MockedFunction<AppDependantExports['soapFetch']>).mockResolvedValue(
-			mockSoapResponse
-		);
+		jest.mocked(xmlSoapFetch).mockResolvedValue(mockSoapResponse);
 
 		await saveSettings(settingsToUpdate, APP_ID);
 
