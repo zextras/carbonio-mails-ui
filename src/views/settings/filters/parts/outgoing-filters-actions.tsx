@@ -181,6 +181,7 @@ const OutgoingFilterActions: FC<ComponentProps> = ({ compProps }): ReactElement 
 		t
 	]);
 	const openFilterModifyModal = useCallback(() => {
+		if (!selectedFilter) return;
 		const id = Date.now().toString();
 		createModal(
 			{

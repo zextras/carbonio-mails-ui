@@ -30,17 +30,10 @@ import { FilterConditionsPanel } from '../filter-conditions-panel';
 import { findRowKey, getTestComponent } from '../get-test-component';
 import { getButtonInfo } from '../utils';
 
-export type FilterType = {
-	active: boolean;
-	filterActions: Array<any>;
-	filterTests: Array<Record<string, any>>;
-	id: string;
-	name: string;
-};
 type ModifyFilterModalProps = {
 	onClose: () => void;
 	onModifyConfirm: (modifiedFilter: FilterListType) => void;
-	selectedFilter: FilterType;
+	selectedFilter: FilterListType;
 };
 
 export const ModifyFilterModal: FC<ModifyFilterModalProps> = ({

@@ -124,6 +124,7 @@ const FilterActionsDelete: FC<ComponentProps> = ({ compProps }): ReactElement =>
 	);
 
 	const openFilterModifyModal = useCallback(() => {
+		if (!selectedFilter) return;
 		const modalId = Date.now().toString();
 		createModal(
 			{

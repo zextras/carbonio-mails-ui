@@ -22,7 +22,7 @@ import { v4 as uuidv4 } from 'uuid';
 import ModalHeader from '../../../../../carbonio-ui-commons/components/modals/modal-header';
 import { useUiUtilities } from '../../../../../hooks/use-ui-utilities';
 import { modifyOutgoingFilterRules } from '../../../../../store/actions/modify-filter-rules';
-import type { FilterActions } from '../../../../../types';
+import type { FilterActions, FilterListType } from '../../../../../types';
 import { capitalise } from '../../../../sidebar/utils';
 import { CreateFilterContext } from '../create-filter-context';
 import ModalFooter from '../create-filter-modal-footer';
@@ -32,20 +32,13 @@ import { FilterConditionsPanel } from '../filter-conditions-panel';
 import { findRowKey, getTestComponent } from '../get-test-component';
 import { getButtonInfo } from '../utils';
 
-type FilterType = {
-	active: boolean;
-	filterActions: Array<any>;
-	filterTests: Array<Record<string, any>>;
-	id: string;
-	name: string;
-};
 type ComponentProps = {
 	t: TFunction;
 	onClose: () => void;
 	outgoingFilters?: any;
 	setFetchOutgoingFilters: (arg: boolean) => void;
 	setOutgoingFilters: (arg: any) => void;
-	selectedFilter: FilterType | any;
+	selectedFilter: FilterListType;
 };
 
 const ModifyOutgoingFilterModal: FC<ComponentProps> = ({

@@ -212,6 +212,7 @@ export const IncomingFilterActions: FC<ComponentProps> = ({ compProps }): ReactE
 	const createSnackbar = useSnackbar();
 
 	const openFilterModifyModal = useCallback(() => {
+		if (!selectedFilter) return;
 		const modalId = Date.now().toString();
 		const modalClose = (): void => closeModal(modalId);
 
