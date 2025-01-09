@@ -62,7 +62,7 @@ export const ShowTag = ({
 		return {
 			label: tag.label,
 			value: tag,
-			// @ts-ignore ignored just to check color is correct in tests
+			// @ts-expect-error ignored just to check color is correct in tests
 			'data-testid': `tag-${tag.label}-${tagColor}`,
 			avatarBackground: tagColor,
 			hasAvatar: true,

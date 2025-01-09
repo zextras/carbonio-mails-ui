@@ -24,24 +24,22 @@ const DeleteFilterModal: FC<DeleteFilterModalProps> = ({
 }): ReactElement => {
 	const [t] = useTranslation();
 	return (
-		<>
-			<Container padding={{ bottom: 'medium' }}>
-				<ModalHeader title={t('settings.delete_filter', 'Delete filter')} onClose={onClose} />
-				<Container orientation="horizontal" padding={{ all: 'medium' }}>
-					<Text overflow="break-word">
-						{t('settings.delete_filter_text', 'Are you sure to delete filter ')}
-					</Text>
-					<Text weight="bold" style={{ paddingLeft: '0.3125rem', paddingRight: '0.3125rem' }}>
-						{`"${selectedFilter?.name}" ?`}
-					</Text>
-				</Container>
-				<ModalFooter
-					onConfirm={onConfirmDelete}
-					label={t('label.delete', 'Delete')}
-					background="error"
-				/>
+		<Container padding={{ bottom: 'medium' }}>
+			<ModalHeader title={t('settings.delete_filter', 'Delete filter')} onClose={onClose} />
+			<Container orientation="horizontal" padding={{ all: 'medium' }}>
+				<Text overflow="break-word">
+					{t('settings.delete_filter_text', 'Are you sure to delete filter ')}
+				</Text>
+				<Text weight="bold" style={{ paddingLeft: '0.3125rem', paddingRight: '0.3125rem' }}>
+					{`"${selectedFilter?.name}" ?`}
+				</Text>
 			</Container>
-		</>
+			<ModalFooter
+				onConfirm={onConfirmDelete}
+				label={t('label.delete', 'Delete')}
+				background="error"
+			/>
+		</Container>
 	);
 };
 

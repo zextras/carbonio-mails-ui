@@ -21,11 +21,10 @@ import {
 } from '../../../../../carbonio-ui-commons/test/test-setup';
 import type { Folder } from '../../../../../carbonio-ui-commons/types';
 import { generateStore } from '../../../../../tests/generators/store';
-import { MailsStateType } from '../../../../../types';
-import { FilterListType } from '../../../../../types/filters';
+import { MailsStateType, FilterListType } from '../../../../../types';
 import { ListType } from '../actions';
 import { FilterContext } from '../filter-context';
-import IncomingFilterActions from '../incoming-filters-actions';
+import { IncomingFilterActions } from '../incoming-filters-actions';
 
 jest.mock('@zextras/carbonio-design-system', () => ({
 	...jest.requireActual('@zextras/carbonio-design-system'),

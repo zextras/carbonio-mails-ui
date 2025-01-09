@@ -48,7 +48,7 @@ type ComponentProps = {
 	};
 };
 
-const IncomingFilterActions: FC<ComponentProps> = ({ compProps }): ReactElement => {
+export const IncomingFilterActions: FC<ComponentProps> = ({ compProps }): ReactElement => {
 	const { t, availableList, activeList, incomingFilters } = compProps;
 	const { setFetchIncomingFilters, setIncomingFilters } = useContext(FilterContext);
 	const { createModal, closeModal } = useModal();
@@ -73,13 +73,6 @@ const IncomingFilterActions: FC<ComponentProps> = ({ compProps }): ReactElement 
 		() => Object.keys(activeList.selected)[0],
 		[activeList.selected]
 	);
-
-	const selectedAvailableFilterName = useMemo(
-		() => Object.keys(availableList.selected)[0],
-		[availableList.selected]
-	);
-
-	const selectedFilterName = selectedActiveFilterName || selectedAvailableFilterName;
 
 	const selectedFilter = useMemo(
 		() =>
@@ -347,5 +340,3 @@ const IncomingFilterActions: FC<ComponentProps> = ({ compProps }): ReactElement 
 		</>
 	);
 };
-
-export default IncomingFilterActions;

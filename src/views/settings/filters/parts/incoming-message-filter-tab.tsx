@@ -11,7 +11,7 @@ import { filter, map } from 'lodash';
 
 import { FilterContext } from './filter-context';
 import FilterItem from './filter-item';
-import IncomingFilterActions from './incoming-filters-actions';
+import { IncomingFilterActions } from './incoming-filters-actions';
 import LoadingShimmer from './loading-shimmer';
 import { useFilterSelection } from './use-filter-selection';
 import { modifyFilterRules } from '../../../../store/actions/modify-filter-rules';
