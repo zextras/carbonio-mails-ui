@@ -20,6 +20,7 @@ export const computeAndUpdateEditorStatus = (editorId: MailsEditorV2['id']): voi
 		return;
 	}
 
+	console.log('@@ saving with length', editor.text.richText.length);
 	useEditorsStore
 		.getState()
 		.setDraftSaveAllowedStatus(editorId, computeDraftSaveAllowedStatus(editor));

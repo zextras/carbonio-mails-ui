@@ -38,19 +38,23 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 	disabled
 }) => {
 	const editorRef = useRef(null);
-	const [dirty, setDirty] = useState(false);
 	const [Composer, composerIsAvailable] = useIntegratedComponent('composer');
 	const initialValue = useEditorsStore((state) => state.editors[editorId].text);
+	const [richTextState, setRichTextState] = useState(initialValue.richText ?? '');
+	const [plainTextState, setPlainTextState] = useState(initialValue.plainText ?? '');
 	const { isRichText } = useEditorIsRichText(editorId);
+
 	const { debouncedSaveDraft } = useSaveDraftFromEditor();
 
 	const setText = useCallback(
 		({ plainText, richText }: { plainText: string; richText: string }) => {
-			debouncedSaveDraft(editorId);
+			setRichTextState(richText);
+			setPlainTextState(plainText);
 			useEditorsStore.setState((state) => ({
 				...state.editors,
 				[editorId]: { ...state.editors[editorId], text: { plainText, richText } }
 			}));
+			debouncedSaveDraft(editorId);
 		},
 		[debouncedSaveDraft, editorId]
 	);
@@ -120,22 +124,23 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 		]
 	);
 
-	const onDirty = useCallback(() => {
-		if (editorRef.current) {
-			console.log('@@ setting dirty to false');
-			editorRef.current.setDirty(false);
-			setDirty(false);
-			const plainText = editorRef.current.getContent({ format: 'text' });
-			const richText = editorRef.current.getContent({ format: 'html' });
-			setText({ plainText, richText });
-		}
-	}, [setText]);
-
 	useEffect(() => {
-		if (editorRef?.current) {
-			onDirty();
-		}
-	}, [dirty, onDirty]);
+		const intervalId = setInterval(() => {
+			const richText = editorRef.current.getContent({ format: 'html' });
+			const plainText = editorRef.current.getContent({ format: 'text' });
+			console.log('@@ checking...', richText.length);
+			if (isRichText && richText !== richTextState) {
+				console.log('@@ saving...');
+				setText({ plainText, richText });
+			}
+			if (!isRichText && plainText !== plainTextState) {
+				console.log('@@ saving...');
+				setText({ plainText, richText });
+			}
+		}, 5000);
+
+		return () => clearInterval(intervalId);
+	}, [isRichText, plainTextState, richTextState, setText]);
 
 	return (
 		<>
@@ -158,7 +163,6 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 									disabled={disabled}
 									onInit={(evt, editor) => (editorRef.current = editor)}
 									onFileSelect={onFilesSelected}
-									onDirty={() => setDirty(true)}
 									onDragOver={onDragOver}
 									customInitOptions={composerCustomOptions}
 								/>
