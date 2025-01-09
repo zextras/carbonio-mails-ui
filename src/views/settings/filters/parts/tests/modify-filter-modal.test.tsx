@@ -8,14 +8,12 @@
 import React, { act } from 'react';
 
 import { screen } from '@testing-library/react';
+import { omit } from 'lodash';
 
-import { createSoapAPIInterceptor } from '../../../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
 import { generateStore } from '../../../../../tests/generators/store';
 import { FilterListType } from '../../../../../types';
 import { ModifyFilterModal } from '../modify-filter/modify-filter-modal';
-import { omit } from 'lodash';
-import { object } from 'prop-types';
 
 describe('modify filter modal', () => {
 	it('should display modal with current saved actions', async () => {

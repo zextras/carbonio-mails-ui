@@ -40,7 +40,7 @@ export type FilterType = {
 type ModifyFilterModalProps = {
 	onClose: () => void;
 	onModifyConfirm: (modifiedFilter: FilterListType) => void;
-	selectedFilter: FilterType | any;
+	selectedFilter: FilterType;
 };
 
 export const ModifyFilterModal: FC<ModifyFilterModalProps> = ({
@@ -53,9 +53,23 @@ export const ModifyFilterModal: FC<ModifyFilterModalProps> = ({
 	const [activeFilter, setActiveFilter] = useState(false);
 	const [condition, setCondition] = useState('anyof');
 	const [dontProcessAddFilters, setDontProcessAddFilters] = useState(true);
-	const [tempActions, setTempActions] = useState([
-		selectedFilter?.filterActions?.[0] ?? { actionKeep: [{}], id: uuidv4() }
-	]);
+
+	const initialActions = useMemo((): Array<any> => {
+		if (selectedFilter) {
+			const actions: Array<any> = [];
+			forEach(selectedFilter?.filterActions?.[0], (value, key) => {
+				if (key !== 'actionStop') {
+					forEach(value, (val) => {
+						actions.push({ [key]: [{ ...omit(val, 'index') }], id: uuidv4() });
+					});
+				}
+			});
+			return actions;
+		}
+		return [{ actionKeep: [{}], id: uuidv4() }];
+	}, [selectedFilter]);
+
+	const [tempActions, setTempActions] = useState(initialActions);
 	const [copyRequiredFilters, setCopyRequiredFilters] = useState({});
 	const [reFetch, setReFetch] = useState(false);
 	const [updateRequiredFilters, setUpdateRequiredFilters] = useState(true);
@@ -107,15 +121,18 @@ export const ModifyFilterModal: FC<ModifyFilterModalProps> = ({
 		() =>
 			reduce(
 				tempActions,
-				(acc, i) => {
-					const firstKey = Object.keys(omit(i, 'id'))[0];
-					if (Object.keys(acc).includes(firstKey)) {
+				(acc, action) => {
+					const firstActionKey = Object.keys(omit(action, 'id'))[0];
+					if (Object.keys(acc).includes(firstActionKey)) {
 						const accWithoutId = omit(acc, 'id');
-						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-						// @ts-ignore
-						return { ...accWithoutId, [firstKey]: [...accWithoutId[firstKey], ...i[firstKey]] };
+						return {
+							...accWithoutId,
+							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+							// @ts-ignore
+							[firstActionKey]: [...accWithoutId[firstActionKey], ...action[firstActionKey]]
+						};
 					}
-					return { ...acc, ...i };
+					return { ...acc, ...action };
 				},
 				{}
 			),
@@ -192,18 +209,6 @@ export const ModifyFilterModal: FC<ModifyFilterModalProps> = ({
 			setFilterName(selectedFilter?.name);
 			setActiveFilter(selectedFilter?.active);
 			setCondition(selectedFilter?.filterTests?.[0]?.condition);
-			const previousActions = (): Array<any> => {
-				const actions: Array<any> = [];
-				forEach(selectedFilter?.filterActions?.[0], (value, key) => {
-					if (key !== 'actionStop') {
-						forEach(value, (val) => {
-							actions.push({ [key]: [{ ...omit(val, 'index') }], id: uuidv4() });
-						});
-					}
-				});
-				return actions;
-			};
-			setTempActions(previousActions);
 		}
 	}, [selectedFilter]);
 

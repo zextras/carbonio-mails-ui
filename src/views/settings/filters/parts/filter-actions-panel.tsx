@@ -65,7 +65,7 @@ export const FilterActionsPanel: FC<ComponentProps> = ({ compProps }): ReactElem
 			<Heading title={t('settings.actions', 'Actions')} size="medium" />
 			<Text>{t('settings.perform_following_action', 'Perform the following actions:')}</Text>
 			<Container padding={{ top: 'small' }} mainAlignment="flex-start">
-				{map(actions, (tempAction, index: number) => (
+				{map(actions, (action, index: number) => (
 					<FilterActionRow
 						key={`filter-action-row-${index}`}
 						mailForwardingEnabled={zimbraFeatureMailForwardingInFiltersEnabled}
@@ -75,7 +75,7 @@ export const FilterActionsPanel: FC<ComponentProps> = ({ compProps }): ReactElem
 						onActionSwitch={onActionUpdate(index)}
 						disableRemove={actions.length < 2}
 						onDefaultActionValueChange={onActionUpdate(index)}
-						defaultAction={tempAction}
+						defaultAction={action}
 						tagOptions={tagOptions}
 					/>
 				))}
