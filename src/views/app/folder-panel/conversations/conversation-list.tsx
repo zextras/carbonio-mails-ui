@@ -119,7 +119,7 @@ export const ConversationList = (): React.JSX.Element => {
 									folderId={folderId}
 								/>
 							) : (
-								<div style={{ height: '4rem' }} />
+								<div style={{ height: '4rem' }} data-testid="invisible-item" />
 							)
 						}
 					</ListItem>
