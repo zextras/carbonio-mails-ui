@@ -7,9 +7,9 @@ import React, { FC, ReactElement, useCallback, useContext, useMemo } from 'react
 
 import { Button, Padding, useModal, useSnackbar } from '@zextras/carbonio-design-system';
 import type { TFunction } from 'i18next';
-import { find, findIndex } from 'lodash';
+import { find, findIndex, noop } from 'lodash';
 
-import { useRemoveFilter, useAddFilter, useDeleteOutgoingFilter } from './actions';
+import { useRemoveFilter, useAddFilter, useDeleteFilter } from './actions';
 import CreateOutgoingFilterModal from './create-outgoing-filter-modal';
 import DeleteFilterModal from './delete-filter-modal';
 import { FilterContext } from './filter-context';
@@ -46,10 +46,7 @@ const OutgoingFilterActions: FC<ComponentProps> = ({ compProps }): ReactElement 
 		() => Object.keys(activeList.selected).length <= 0,
 		[activeList.selected]
 	);
-	const selectedFilterName = useMemo(
-		() => Object.keys(activeList.selected)[0] || Object.keys(availableList.selected)[0],
-		[activeList.selected, availableList.selected]
-	);
+
 	const selectedFilter = useMemo(
 		() =>
 			find(availableList.list, { name: Object.keys(availableList.selected)[0] }) ||
@@ -61,7 +58,6 @@ const OutgoingFilterActions: FC<ComponentProps> = ({ compProps }): ReactElement 
 		() => !Object.keys(activeList.selected).length && !Object.keys(availableList.selected).length,
 		[activeList.selected, availableList.selected]
 	);
-	const disableRun = useMemo(() => true, []);
 	const disableDelete = useMemo(
 		() => !Object.keys(activeList.selected).length && !Object.keys(availableList.selected).length,
 		[activeList.selected, availableList.selected]
@@ -130,22 +126,21 @@ const OutgoingFilterActions: FC<ComponentProps> = ({ compProps }): ReactElement 
 			}),
 		[addFilter, t, availableList, activeList, setOutgoingFilters, setFetchOutgoingFilters]
 	);
-	const deleteOutgoingFilter = useDeleteOutgoingFilter();
+	const deleteFilter = useDeleteFilter();
 	const openDeleteModal = useCallback(() => {
+		if (!selectedFilter) return;
 		const modalId = Date.now().toString();
 		const modalClose = (): void => closeModal(modalId);
 		const deleteConfirm = (): void =>
-			deleteOutgoingFilter({
+			deleteFilter({
 				onClose: modalClose,
 				availableList,
 				activeList,
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-				// @ts-ignore
-				setFetchFilters: setFetchOutgoingFilters,
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-				// @ts-ignore
-				setFilters: setOutgoingFilters,
-				modifierFunc: modifyOutgoingFilterRules
+				setFetchFilters: setFetchOutgoingFilters ?? noop,
+				setFilters: setOutgoingFilters ?? noop,
+				modifierFunc: modifyOutgoingFilterRules,
+				filterToDelete: selectedFilter,
+				filters: outgoingFilters
 			});
 		createModal(
 			{
@@ -168,7 +163,8 @@ const OutgoingFilterActions: FC<ComponentProps> = ({ compProps }): ReactElement 
 		availableList,
 		closeModal,
 		createModal,
-		deleteOutgoingFilter,
+		deleteFilter,
+		outgoingFilters,
 		selectedFilter,
 		setFetchOutgoingFilters,
 		setOutgoingFilters
@@ -231,6 +227,7 @@ const OutgoingFilterActions: FC<ComponentProps> = ({ compProps }): ReactElement 
 				children: (
 					<StoreProvider>
 						<ModifyFilterModal
+							isIncoming={false}
 							selectedFilter={selectedFilter}
 							onClose={modalClose}
 							onModifyConfirm={onModifyConfirm}

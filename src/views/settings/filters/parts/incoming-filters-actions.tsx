@@ -7,7 +7,7 @@ import React, { FC, ReactElement, useCallback, useContext, useMemo } from 'react
 
 import { Button, Padding, useModal, useSnackbar } from '@zextras/carbonio-design-system';
 import type { TFunction } from 'i18next';
-import { find, findIndex } from 'lodash';
+import { find, findIndex, noop } from 'lodash';
 
 import { useRemoveFilter, useAddFilter, useDeleteFilter } from './actions';
 import CreateFilterModal from './create-filter-modal';
@@ -126,15 +126,13 @@ export const IncomingFilterActions: FC<ComponentProps> = ({ compProps }): ReactE
 				onClose: modalClose,
 				availableList,
 				activeList,
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-				// @ts-ignore
-				setFetchFilters: setFetchIncomingFilters,
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-				// @ts-ignore
-				setFilters: setIncomingFilters,
+
+				setFetchFilters: setFetchIncomingFilters ?? noop,
+
+				setFilters: setIncomingFilters ?? noop,
 				modifierFunc: modifyFilterRules,
 				filterToDelete: selectedFilter,
-				incomingFilters
+				filters: incomingFilters
 			});
 
 		createModal(
@@ -257,6 +255,7 @@ export const IncomingFilterActions: FC<ComponentProps> = ({ compProps }): ReactE
 				children: (
 					<StoreProvider>
 						<ModifyFilterModal
+							isIncoming
 							selectedFilter={selectedFilter}
 							onClose={modalClose}
 							onModifyConfirm={onModifyConfirm}

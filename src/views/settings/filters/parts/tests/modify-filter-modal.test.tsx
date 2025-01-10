@@ -19,6 +19,7 @@ describe('modify filter modal', () => {
 		const store = generateStore();
 		setupTest(
 			<ModifyFilterModal
+				isIncoming
 				onClose={jest.fn()}
 				selectedFilter={{
 					name: 'Test Filter',
@@ -50,6 +51,7 @@ describe('modify filter modal', () => {
 		const store = generateStore();
 		setupTest(
 			<ModifyFilterModal
+				isIncoming
 				onClose={jest.fn()}
 				onModifyConfirm={jest.fn()}
 				selectedFilter={mockFilter({ name: 'Test Filter' })}
@@ -66,6 +68,7 @@ describe('modify filter modal', () => {
 		const selectedFilter = mockFilter({ name: 'Test Filter' });
 		const { user } = setupTest(
 			<ModifyFilterModal
+				isIncoming
 				onClose={jest.fn()}
 				onModifyConfirm={onConfirm}
 				selectedFilter={selectedFilter}
@@ -131,6 +134,7 @@ describe('modify filter modal', () => {
 		const selectedFilter = mockFilter({ name: 'Test Filter' });
 		const { user } = setupTest(
 			<ModifyFilterModal
+				isIncoming
 				onClose={jest.fn()}
 				onModifyConfirm={onConfirm}
 				selectedFilter={selectedFilter}

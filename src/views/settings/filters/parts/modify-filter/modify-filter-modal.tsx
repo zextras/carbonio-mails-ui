@@ -40,12 +40,14 @@ type ModifyFilterModalProps = {
 	onClose: () => void;
 	onModifyConfirm: (modifiedFilter: Filter) => void;
 	selectedFilter: Filter;
+	isIncoming: boolean;
 };
 
 export const ModifyFilterModal: FC<ModifyFilterModalProps> = ({
 	onClose,
 	onModifyConfirm,
-	selectedFilter
+	selectedFilter,
+	isIncoming
 }): ReactElement => {
 	const [t] = useTranslation();
 	const [filterName, setFilterName] = useState('');
@@ -209,12 +211,19 @@ export const ModifyFilterModal: FC<ModifyFilterModalProps> = ({
 			t,
 			activeFilter,
 			filterName,
-			isIncoming: true,
+			isIncoming,
 			tempActions,
 			setTempActions,
 			zimbraFeatureMailForwardingInFiltersEnabled
 		}),
-		[t, activeFilter, filterName, tempActions, zimbraFeatureMailForwardingInFiltersEnabled]
+		[
+			t,
+			activeFilter,
+			filterName,
+			isIncoming,
+			tempActions,
+			zimbraFeatureMailForwardingInFiltersEnabled
+		]
 	);
 	const filterTestConditionRowProps = useMemo(
 		() => ({

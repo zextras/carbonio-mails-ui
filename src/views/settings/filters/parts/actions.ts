@@ -6,12 +6,11 @@
 import { useCallback } from 'react';
 
 import { useSnackbar } from '@zextras/carbonio-design-system';
-import { TFunction } from 'i18next';
 import { concat, filter, findIndex } from 'lodash';
+import { useTranslation } from 'react-i18next';
 
 import { useUiUtilities } from '../../../../hooks/use-ui-utilities';
 import { Filter } from '../../../../types';
-import { useTranslation } from 'react-i18next';
 
 export type ListType = {
 	isSelecting: boolean;
@@ -24,7 +23,6 @@ export type ListType = {
 };
 
 export type CompProps = {
-	t: TFunction;
 	availableList: ListType;
 	activeList: ListType;
 	setFilters: (arg: Array<Filter>) => void;
@@ -35,27 +33,15 @@ export type CompProps = {
 export type DeleteFilterCompProps = CompProps & {
 	onClose: () => void;
 	filterToDelete: Filter;
-	incomingFilters: Filter[];
-};
-
-export type DeleteOutgoingFilterCompProps = CompProps & {
-	onClose: () => void;
-	selectedFilter: Filter;
-	outgoingFilters: Filter[];
+	filters: Filter[];
 };
 
 export const useRemoveFilter = (): ((arg: CompProps) => void) => {
 	const { createSnackbar } = useUiUtilities();
+	const [t] = useTranslation();
 
 	return useCallback(
-		({
-			t,
-			activeList,
-			availableList,
-			setFilters,
-			setFetchFilters,
-			modifierFunc
-		}: CompProps): void => {
+		({ activeList, availableList, setFilters, setFetchFilters, modifierFunc }: CompProps): void => {
 			const activeFiltersCopy = activeList?.list?.slice();
 			const availableFiltersCopy = availableList?.list?.slice();
 			const activeFilter = filter(activeFiltersCopy, { name: Object.keys(activeList.selected)[0] });
@@ -83,21 +69,16 @@ export const useRemoveFilter = (): ((arg: CompProps) => void) => {
 					});
 				});
 		},
-		[createSnackbar]
+		[createSnackbar, t]
 	);
 };
 
 export const useAddFilter = (): ((arg: CompProps) => void) => {
 	const { createSnackbar } = useUiUtilities();
+	const [t] = useTranslation();
+
 	return useCallback(
-		({
-			t,
-			activeList,
-			availableList,
-			setFilters,
-			setFetchFilters,
-			modifierFunc
-		}: CompProps): void => {
+		({ activeList, availableList, setFilters, setFetchFilters, modifierFunc }: CompProps): void => {
 			const activeFiltersCopy = activeList?.list?.slice();
 			const availableFiltersCopy = availableList?.list?.slice();
 			const activeFilter = filter(availableFiltersCopy, {
@@ -123,45 +104,7 @@ export const useAddFilter = (): ((arg: CompProps) => void) => {
 					});
 				});
 		},
-		[createSnackbar]
-	);
-};
-
-export const useDeleteOutgoingFilter = (): ((args: DeleteOutgoingFilterCompProps) => void) => {
-	const createSnackbar = useSnackbar();
-	const [t] = useTranslation();
-
-	return useCallback(
-		({
-			setFetchFilters,
-			modifierFunc,
-			onClose,
-			selectedFilter,
-			outgoingFilters
-		}: DeleteOutgoingFilterCompProps): void => {
-			const newFilters = filter(outgoingFilters, (f) => f.name !== selectedFilter.name);
-			modifierFunc(newFilters)
-				.then(() => {
-					createSnackbar({
-						key: 'filter-delete-success',
-						severity: 'info',
-						label: t('settings.filter_deleted', 'Filter successfully deleted'),
-						hideButton: true
-					});
-					setFetchFilters(true);
-				})
-				.catch((error: { message: any }) => {
-					createSnackbar({
-						key: 'filter-delete-error',
-						severity: 'error',
-						label:
-							error.message || t('label.error_try_again', 'Something went wrong, please try again'),
-						hideButton: true
-					});
-				});
-			onClose();
-		},
-		[createSnackbar]
+		[createSnackbar, t]
 	);
 };
 
@@ -173,10 +116,10 @@ export const useDeleteFilter = (): ((args: DeleteFilterCompProps) => void) => {
 			setFetchFilters,
 			modifierFunc,
 			onClose,
-			filterToDelete: selectedFilter,
-			incomingFilters
+			filterToDelete,
+			filters
 		}: DeleteFilterCompProps): void => {
-			const newFilters = filter(incomingFilters, (f) => f.name !== selectedFilter.name);
+			const newFilters = filter(filters, (f) => f.name !== filterToDelete.name);
 			modifierFunc(newFilters)
 				.then(() => {
 					createSnackbar({
