@@ -9,7 +9,7 @@ import { Container } from '@zextras/carbonio-design-system';
 import { useUserSettings } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
 
-import { ConversationMessagePreview } from './conversation-message-preview';
+import { ConversationMessagePreviewWrapper } from './conversation-message-preview-wrapper';
 import { NormalizedConversation } from '../../../types';
 
 export const ConversationPreviewPanel = ({
@@ -43,11 +43,11 @@ export const ConversationPreviewPanel = ({
 			mainAlignment="flex-start"
 		>
 			<Container height="100%" mainAlignment="flex-start" background="gray5">
-				{map(messages, (message, index) =>
-					message ? (
-						<ConversationMessagePreview
-							key={message.id}
-							convMessage={message}
+				{map(messages, (convMessage, index) =>
+					convMessage ? (
+						<ConversationMessagePreviewWrapper
+							key={convMessage.id}
+							convMessageId={convMessage.id}
 							isExpanded={isExpanded(index)}
 							isAlone={conversation.messages?.length === 1}
 							isInsideExtraWindow={isInsideExtraWindow}

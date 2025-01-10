@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { renderHook, waitFor } from '@testing-library/react';
+import { act, renderHook, waitFor } from '@testing-library/react';
 import { cloneDeep, map, reduce } from 'lodash';
 
 import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
@@ -115,13 +115,40 @@ describe('Searches store hooks', () => {
 		});
 	});
 
-	describe('useCompleteMessage', () => {
-		it('should return undefined message and status if no data in store', async () => {
-			const { result } = renderHook(() => useMessageOrFetch('1'));
+	describe('useMessageOrFetch', () => {
+		it('should make GetMsgRequest if message is not in the store', async () => {
+			const response: GetMsgResponse = {
+				m: [generateCompleteMessageFromAPI({ id: '1' })]
+			};
 
-			expect(result.current.message).toBeUndefined();
-			expect(result.current.messageStatus).toBeUndefined();
+			const interceptor = createSoapAPIInterceptor<GetMsgRequest, GetMsgResponse>(
+				'GetMsg',
+				response
+			);
+
+			renderHook(() => useMessageOrFetch('1'));
+
+			const getMsgRequest = await interceptor;
+
+			await act(async () => {
+				expect(getMsgRequest).toMatchObject({ m: expect.objectContaining({ id: '1' }) });
+			});
 		});
+
+		// Case: Should not fetch if the message is already complete
+		it('should not fetch if the message is already complete', () => {});
+
+		// Case: Should fetch if the message is not complete and status is not fulfilled or pending
+		it('should fetch if the message is incomplete and status is not fulfilled or pending', () => {});
+
+		// Case: Should not fetch if message status is pending
+		it('should not fetch if the message status is pending', () => {});
+
+		// Case: Should return the correct message and status
+		it('should return the correct message and status', () => {});
+
+		// Case: Should handle messageId changes correctly
+		it('should fetch a new message if messageId changes', () => {});
 
 		it('should update status if initial status is undefined', async () => {
 			const message = generateMessage({

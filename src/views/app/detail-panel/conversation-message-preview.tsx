@@ -10,27 +10,25 @@ import { Padding } from '@zextras/carbonio-design-system';
 import { MessagePreviewPanel } from './message-preview-panel';
 import MailPreview from './preview/mail-preview';
 import { getParentFolderId } from '../../../helpers/folders';
-import { useMessageById } from '../../../store/emails/store';
-import { ConvMessage } from '../../../types';
+import { MailMessage } from '../../../types';
 
 export type ConversationMessagePreviewProps = {
-	convMessage: ConvMessage;
+	message: MailMessage;
 	isExpanded: boolean;
 	isAlone: boolean;
 	isInsideExtraWindow: boolean;
 };
 
 export const ConversationMessagePreview = ({
-	convMessage,
+	message,
 	isExpanded,
 	isAlone,
 	isInsideExtraWindow
 }: ConversationMessagePreviewProps): React.JSX.Element => {
-	const message = useMessageById(convMessage.id);
 	const messagePreviewFactory = useCallback(() => {
 		const folderId = getParentFolderId(message.parent);
 		return <MessagePreviewPanel folderId={folderId} messageId={message.id} />;
-	}, [message.id, message.parent]);
+	}, [message]);
 
 	return (
 		<Padding bottom="medium" width="100%" data-testid={`ConversationMessagePreview-${message.id}`}>

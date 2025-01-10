@@ -146,17 +146,20 @@ export function useMessageOrFetch(messageId: string): MessageWithStatus {
 
 	useEffect(() => {
 		if (
-			(!message && messageStatus !== API_REQUEST_STATUS.pending && messageStatus !== undefined) ||
-			message?.isComplete === false
+			!message?.isComplete &&
+			messageStatus !== API_REQUEST_STATUS.fulfilled &&
+			messageStatus !== API_REQUEST_STATUS.pending
 		) {
 			retrieveMessageCallback();
 		}
 	}, [message, messageId, messageStatus, retrieveMessageCallback]);
+
 	return {
 		message,
 		messageStatus
 	};
 }
+
 export const handleSearchSoapApiResults = ({
 	searchResponse
 }: {
