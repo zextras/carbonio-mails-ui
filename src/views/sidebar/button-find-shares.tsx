@@ -11,7 +11,7 @@ import { t } from '@zextras/carbonio-shell-ui';
 import { filter, isEqual, uniqWith } from 'lodash';
 
 import { SharesModal } from './shares-modal';
-import { getShareInfoSoapApi } from '../../api/get-share-info-soap-api';
+import { getShareInfoRequest } from '../../carbonio-ui-commons/soap/get-share-info';
 import { ResFolder } from '../../carbonio-ui-commons/utils';
 import { useUiUtilities } from '../../hooks/use-ui-utilities';
 
@@ -22,11 +22,11 @@ export const ButtonFindShares = (): React.JSX.Element => {
 	const openFindShares = useCallback(
 		(ev: SyntheticEvent<HTMLButtonElement, Event> | KeyboardEvent): void => {
 			ev.stopPropagation();
-			getShareInfoSoapApi().then((res) => {
+			getShareInfoRequest().then((res) => {
 				if ('Fault' in res) return;
-				if (res.share?.length > 0) {
+				if (res.folders?.length > 0) {
 					const resFolders: Array<ResFolder> = uniqWith(
-						filter(res.share, ['view', 'message']),
+						filter(res.folders, ['view', 'message']),
 						isEqual
 					);
 					const id = Date.now().toString();
