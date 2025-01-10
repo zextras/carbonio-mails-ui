@@ -34,7 +34,7 @@ import { useConvActions } from '../../../../hooks/actions/use-conv-actions';
 import { useConvPreviewOnSeparatedWindowFn } from '../../../../hooks/actions/use-conv-preview-on-separated-window';
 import { useConvSetReadFn } from '../../../../hooks/actions/use-conv-set-read';
 import { useTagDropdownItem } from '../../../../hooks/use-tag-dropdown-item';
-import { retrieveConversation } from '../../../../store/emails/hooks/hooks';
+import { fetchConversation } from '../../../../store/emails/hooks/hooks';
 import { useConversationStatus, useMessagesByIds } from '../../../../store/emails/store';
 import {
 	ConversationListItemProps,
@@ -297,7 +297,7 @@ export const ConversationListItem = memo(function ConversationListItem({
 					conversationStatus !== API_REQUEST_STATUS.fulfilled &&
 					conversationStatus !== API_REQUEST_STATUS.pending
 				) {
-					retrieveConversation(conversationId);
+					fetchConversation(conversationId);
 				}
 				return !currentlyOpen;
 			});

@@ -61,20 +61,18 @@ type ConversationWithStatus = {
 	conversationStatus: SearchRequestStatus;
 };
 
-export function retrieveConversation(conversationId: string, folderId?: string): void {
+export async function fetchConversation(conversationId: string, folderId?: string): Promise<void> {
 	updateConversationStatus(conversationId, API_REQUEST_STATUS.pending);
-	searchConvSoapApi({ conversationId, fetch: 'all', folderId })
-		.then((response) => {
-			if ('Fault' in response) {
-				updateConversationStatus(conversationId, API_REQUEST_STATUS.error);
-				return;
-			}
-			handleSearchConvResponse(conversationId, response);
-			updateConversationStatus(conversationId, API_REQUEST_STATUS.fulfilled);
-		})
-		.catch(() => {
-			updateConversationStatus(conversationId, API_REQUEST_STATUS.error);
-		});
+	const response = await searchConvSoapApi({ conversationId, fetch: 'all', folderId }).catch(() => {
+		updateConversationStatus(conversationId, API_REQUEST_STATUS.error);
+	});
+	if (!response) return;
+	if ('Fault' in response) {
+		updateConversationStatus(conversationId, API_REQUEST_STATUS.error);
+		return;
+	}
+	handleSearchConvResponse(conversationId, response);
+	updateConversationStatus(conversationId, API_REQUEST_STATUS.fulfilled);
 }
 
 /**
@@ -90,7 +88,7 @@ export function useCompleteConversationOrFetch(
 	const conversationStatus = useConversationStatus(conversationId);
 	useEffect(() => {
 		if (conversation && !conversationStatus) {
-			retrieveConversation(conversationId, folderId);
+			fetchConversation(conversationId, folderId);
 		}
 	}, [conversation, conversationId, conversationStatus, folderId]);
 	return {

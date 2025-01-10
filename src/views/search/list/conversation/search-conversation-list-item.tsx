@@ -27,7 +27,7 @@ import { Tag } from '../../../../carbonio-ui-commons/types/tags';
 import { API_REQUEST_STATUS } from '../../../../constants';
 import { useConvPreviewOnSeparatedWindowFn } from '../../../../hooks/actions/use-conv-preview-on-separated-window';
 import { useConvSetReadFn } from '../../../../hooks/actions/use-conv-set-read';
-import { retrieveConversation } from '../../../../store/emails/hooks/hooks';
+import { fetchConversation } from '../../../../store/emails/hooks/hooks';
 import {
 	useConversationById,
 	useConversationMessages,
@@ -115,7 +115,7 @@ export const SearchConversationListItem: FC<SearchConversationListItemProps> = (
 					conversationStatus !== API_REQUEST_STATUS.fulfilled &&
 					conversationStatus !== API_REQUEST_STATUS.pending
 				) {
-					retrieveConversation(conversationId);
+					fetchConversation(conversationId);
 				}
 				return !currentlyOpen;
 			});
