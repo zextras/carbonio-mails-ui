@@ -128,10 +128,11 @@ export const useAddFilter = (): ((arg: CompProps) => void) => {
 };
 
 export const useDeleteOutgoingFilter = (): ((args: DeleteOutgoingFilterCompProps) => void) => {
-	const { createSnackbar } = useUiUtilities();
+	const createSnackbar = useSnackbar();
+	const [t] = useTranslation();
+
 	return useCallback(
 		({
-			t,
 			setFetchFilters,
 			modifierFunc,
 			onClose,

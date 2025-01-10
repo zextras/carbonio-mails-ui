@@ -5,15 +5,15 @@
  */
 import React, { FC, ReactElement, useCallback, useContext, useMemo } from 'react';
 
-import { Button, Padding, useModal } from '@zextras/carbonio-design-system';
+import { Button, Padding, useModal, useSnackbar } from '@zextras/carbonio-design-system';
 import type { TFunction } from 'i18next';
-import { find } from 'lodash';
+import { find, findIndex } from 'lodash';
 
-import { useRemoveFilter, useAddFilter } from './actions';
+import { useRemoveFilter, useAddFilter, useDeleteOutgoingFilter } from './actions';
 import CreateOutgoingFilterModal from './create-outgoing-filter-modal';
-import DeleteOutgoingFilterModal from './delete-outgoing-filter-modal';
+import DeleteFilterModal from './delete-filter-modal';
 import { FilterContext } from './filter-context';
-import ModifyOutgoingFilterModal from './modify-filter/modify-outgoing-filter-modal';
+import { ModifyFilterModal } from './modify-filter/modify-filter-modal';
 import { modifyOutgoingFilterRules } from '../../../../store/actions/modify-filter-rules';
 import { StoreProvider } from '../../../../store/redux';
 import { Filter } from '../../../../types';
@@ -32,7 +32,7 @@ type ComponentProps = {
 		t: TFunction;
 		availableList: ListType;
 		activeList: ListType;
-		outgoingFilters: ListType;
+		outgoingFilters: Filter[];
 	};
 };
 const OutgoingFilterActions: FC<ComponentProps> = ({ compProps }): ReactElement => {
@@ -130,32 +130,33 @@ const OutgoingFilterActions: FC<ComponentProps> = ({ compProps }): ReactElement 
 			}),
 		[addFilter, t, availableList, activeList, setOutgoingFilters, setFetchOutgoingFilters]
 	);
-
+	const deleteOutgoingFilter = useDeleteOutgoingFilter();
 	const openDeleteModal = useCallback(() => {
-		const id = Date.now().toString();
+		const modalId = Date.now().toString();
+		const modalClose = (): void => closeModal(modalId);
+		const deleteConfirm = (): void =>
+			deleteOutgoingFilter({
+				onClose: modalClose,
+				availableList,
+				activeList,
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// @ts-ignore
+				setFetchFilters: setFetchOutgoingFilters,
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// @ts-ignore
+				setFilters: setOutgoingFilters,
+				modifierFunc: modifyOutgoingFilterRules
+			});
 		createModal(
 			{
-				id,
+				id: modalId,
 				size: 'small',
 				children: (
 					<StoreProvider>
-						<DeleteOutgoingFilterModal
-							onClose={(): void => closeModal(id)}
-							t={t}
-							availableList={availableList}
-							activeList={activeList}
-							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-							// @ts-ignore
-							setFilters={setOutgoingFilters}
-							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-							// @ts-ignore
-							setFetchFilters={setFetchOutgoingFilters}
-							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-							// @ts-ignore
-							modifierFunc={modifyOutgoingFilterRules}
-							filterName={selectedFilterName}
+						<DeleteFilterModal
+							onClose={modalClose}
+							onConfirmDelete={deleteConfirm}
 							selectedFilter={selectedFilter}
-							outgoingFilters={outgoingFilters}
 						/>
 					</StoreProvider>
 				)
@@ -167,34 +168,72 @@ const OutgoingFilterActions: FC<ComponentProps> = ({ compProps }): ReactElement 
 		availableList,
 		closeModal,
 		createModal,
-		outgoingFilters,
+		deleteOutgoingFilter,
 		selectedFilter,
-		selectedFilterName,
 		setFetchOutgoingFilters,
-		setOutgoingFilters,
-		t
+		setOutgoingFilters
 	]);
+
+	const outgoingFiltersCopy = useMemo(() => outgoingFilters?.slice(), [outgoingFilters]);
+
+	const createSnackbar = useSnackbar();
+
 	const openFilterModifyModal = useCallback(() => {
 		if (!selectedFilter) return;
-		const id = Date.now().toString();
+		const modalId = Date.now().toString();
+		const modalClose = (): void => closeModal(modalId);
+
+		const onModifyConfirm = (requiredFilter: Filter): void => {
+			const selectedFilterIndex = findIndex(
+				outgoingFiltersCopy,
+				(filterCopy: any) => filterCopy.name === selectedFilter?.name
+			);
+			const toSend = outgoingFiltersCopy.slice();
+			toSend[selectedFilterIndex] = requiredFilter;
+			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+			// @ts-ignore
+			setOutgoingFilters(toSend);
+
+			modifyOutgoingFilterRules(toSend)
+				.then(() => {
+					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+					// @ts-ignore
+					setFetchOutgoingFilters(true);
+					createSnackbar({
+						key: `share`,
+						replace: true,
+						hideButton: true,
+						severity: 'info',
+						label: t('label.filter_modified', 'Filter modified succesfully'),
+						autoHideTimeout: 5000
+					});
+				})
+				.catch((error) => {
+					createSnackbar({
+						key: `share`,
+						replace: true,
+						hideButton: true,
+						severity: 'error',
+						label:
+							error?.message ||
+							t('label.error_try_again', 'Something went wrong, please try again'),
+						autoHideTimeout: 5000
+					});
+				});
+			modalClose();
+		};
+
 		createModal(
 			{
-				id,
+				id: modalId,
 				size: 'large',
 				maxHeight: '80vh',
 				children: (
 					<StoreProvider>
-						<ModifyOutgoingFilterModal
-							t={t}
+						<ModifyFilterModal
 							selectedFilter={selectedFilter}
-							onClose={(): void => closeModal(id)}
-							outgoingFilters={outgoingFilters}
-							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-							// @ts-ignore
-							setFetchOutgoingFilters={setFetchOutgoingFilters}
-							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-							// @ts-ignore
-							setOutgoingFilters={setOutgoingFilters}
+							onClose={modalClose}
+							onModifyConfirm={onModifyConfirm}
 						/>
 					</StoreProvider>
 				)
@@ -202,13 +241,14 @@ const OutgoingFilterActions: FC<ComponentProps> = ({ compProps }): ReactElement 
 			true
 		);
 	}, [
-		createModal,
-		t,
 		selectedFilter,
-		outgoingFilters,
-		setFetchOutgoingFilters,
+		createModal,
+		closeModal,
+		outgoingFiltersCopy,
 		setOutgoingFilters,
-		closeModal
+		setFetchOutgoingFilters,
+		createSnackbar,
+		t
 	]);
 	return (
 		<>
@@ -240,8 +280,6 @@ const OutgoingFilterActions: FC<ComponentProps> = ({ compProps }): ReactElement 
 				width="fill"
 				onClick={openFilterModifyModal}
 			/>
-			<Padding bottom="medium" />
-			{/* <Button label={t('filters.run', 'Run')} type="outlined" disabled={disableRun} size="fill" /> */}
 			<Padding bottom="medium" />
 			<Button
 				label={t('label.delete', 'Delete')}

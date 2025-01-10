@@ -42,15 +42,6 @@ type ModifyFilterModalProps = {
 	selectedFilter: Filter;
 };
 
-const AVAILABLE_ACTIONS = [
-	'actionRedirect',
-	'actionTag',
-	'actionFlag',
-	'actionFileInto',
-	'actionKeep',
-	'actionDiscard'
-];
-
 export const ModifyFilterModal: FC<ModifyFilterModalProps> = ({
 	onClose,
 	onModifyConfirm,
