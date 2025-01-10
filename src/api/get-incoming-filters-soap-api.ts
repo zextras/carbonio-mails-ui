@@ -6,11 +6,19 @@
 import { soapFetch } from '@zextras/carbonio-shell-ui';
 
 import { normalizeFilterRulesFromSoap } from '../normalizations/normalize-filter-rules';
-import type { FilterRules } from '../types';
+import { FilterRules } from '../types';
 
-export const getIncomingFiltersSoapApi = async (): Promise<any> => {
-	const { filterRules } = (await soapFetch('GetFilterRules', {
+type GetFilterRulesResponse = {
+	filterRules: FilterRules;
+};
+export const getIncomingFiltersSoapApi = async (): Promise<{ filterRules: FilterRules }> => {
+	const response = await soapFetch<unknown, GetFilterRulesResponse>('GetFilterRules', {
 		_jsns: 'urn:zimbraMail'
-	})) as { filterRules: FilterRules };
-	return normalizeFilterRulesFromSoap(filterRules);
+	}).catch(() => {
+		console.warn('Failed to fetch filter rules');
+	});
+	if (!response) {
+		return { filterRules: [{ filterRule: [] }] };
+	}
+	return normalizeFilterRulesFromSoap(response.filterRules as FilterRules);
 };
