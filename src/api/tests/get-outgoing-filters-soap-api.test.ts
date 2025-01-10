@@ -14,15 +14,18 @@ import {
 import { createSoapAPIInterceptorWithError } from '../../tests/generators/api';
 import { getOutgoingFiltersSoapApi } from '../get-outgoing-filters-soap-api';
 
-describe('getIncomingFiltersSoapApi', () => {
-	it('should fetch filter rules using soapFetch and normalize them', async () => {
+describe('getOutgoingFiltersSoapApi', () => {
+	it('should fetch filter rules using soapFetch', async () => {
 		const response = { filterRules: { filterRules: 'value' } };
 		const interceptor = createSoapAPIInterceptor('GetOutgoingFilterRules', response);
 
-		getOutgoingFiltersSoapApi();
+		const { result } = renderHook(() => getOutgoingFiltersSoapApi());
 		const request = await interceptor;
 
 		expect(request).toEqual({ _jsns: 'urn:zimbraMail' });
+		await waitFor(async () => {
+			expect(await result.current).toMatchObject(response);
+		});
 	});
 
 	it('should return empty filter rules if the call fails', async () => {
