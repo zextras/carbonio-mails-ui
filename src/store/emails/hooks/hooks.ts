@@ -145,11 +145,8 @@ export function useCompleteMessageOrFetch(messageId: string): MessageWithStatus 
 	}, [messageId]);
 
 	useEffect(() => {
-		if (
-			!message?.isComplete &&
-			messageStatus !== API_REQUEST_STATUS.fulfilled &&
-			messageStatus !== API_REQUEST_STATUS.pending
-		) {
+		if (messageStatus === API_REQUEST_STATUS.pending) return;
+		if (!message?.isComplete && messageStatus !== API_REQUEST_STATUS.fulfilled) {
 			retrieveMessageCallback();
 		}
 	}, [message, messageId, messageStatus, retrieveMessageCallback]);

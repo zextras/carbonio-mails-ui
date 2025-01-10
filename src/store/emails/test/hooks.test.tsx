@@ -7,6 +7,7 @@
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { cloneDeep, map, reduce } from 'lodash';
 
+import * as getMsg from '../../../api/get-msg-soap-api';
 import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { API_REQUEST_STATUS } from '../../../constants';
 import {
@@ -31,6 +32,7 @@ import { MESSAGE_INDEX_SLICE_INITIAL_STATE } from '../messages/messages-slice';
 import { deleteMessagesFromConversation } from '../populated-items/utils';
 import { SEARCH_INDEX_SLICE_INITIAL_STATE } from '../search/search-slice';
 import {
+	setMessagesInEmailStore,
 	setSearchResultsByConversation,
 	setSearchResultsByMessage,
 	updateConversationStatus,
@@ -135,20 +137,69 @@ describe('Searches store hooks', () => {
 			});
 		});
 
-		// Case: Should not fetch if the message is already complete
-		it('should not fetch if the message is already complete', () => {});
+		it('should fetch if the message is not complete', async () => {
+			const message = generateMessage({ id: '1' });
+			setMessagesInEmailStore([{ ...message, isComplete: false }], false);
+			const getMsgSpy = jest.spyOn(getMsg, 'getMsgSoapApi');
+			renderHook(() => useCompleteMessageOrFetch('1'));
 
-		// Case: Should fetch if the message is not complete and status is not fulfilled or pending
-		it('should fetch if the message is incomplete and status is not fulfilled or pending', () => {});
+			await act(async () => {
+				expect(getMsgSpy).toHaveBeenCalled();
+			});
+		});
 
-		// Case: Should not fetch if message status is pending
-		it('should not fetch if the message status is pending', () => {});
+		it('should not fetch if the message is complete', async () => {
+			const message = generateMessage({ id: '1' });
+			setMessagesInEmailStore([{ ...message, isComplete: true }], false);
+			const getMsgSpy = jest.spyOn(getMsg, 'getMsgSoapApi');
+			renderHook(() => useCompleteMessageOrFetch('1'));
 
-		// Case: Should return the correct message and status
-		it('should return the correct message and status', () => {});
+			await act(async () => {
+				expect(getMsgSpy).not.toHaveBeenCalled();
+			});
+		});
 
-		// Case: Should handle messageId changes correctly
-		it('should fetch a new message if messageId changes', () => {});
+		it('should fetch if the message is incomplete and status is not fulfilled or pending', async () => {
+			const message = generateMessage({ id: '1' });
+			setMessagesInEmailStore([{ ...message, isComplete: false }], false);
+			updateMessageStatus('1', API_REQUEST_STATUS.error);
+			const getMsgSpy = jest.spyOn(getMsg, 'getMsgSoapApi');
+			renderHook(() => useCompleteMessageOrFetch('1'));
+
+			await act(async () => {
+				expect(getMsgSpy).toHaveBeenCalled();
+			});
+		});
+
+		it('should not fetch if the message status is pending', async () => {
+			const message = generateMessage({ id: '1' });
+			setMessagesInEmailStore([{ ...message, isComplete: false }], false);
+			await act(async () => {
+				updateMessageStatus('1', API_REQUEST_STATUS.pending);
+			});
+			const { result } = renderHook(() => useMessageStatus('1'));
+			expect(result.current).toBe(API_REQUEST_STATUS.pending);
+			const getMsgSpy = jest.spyOn(getMsg, 'getMsgSoapApi');
+			renderHook(() => useCompleteMessageOrFetch('1'));
+
+			await act(async () => {
+				expect(getMsgSpy).not.toHaveBeenCalled();
+			});
+		});
+
+		it('should fetch a new message if messageId changes', async () => {
+			const getMsgSpy = jest.spyOn(getMsg, 'getMsgSoapApi');
+			const { rerender } = renderHook(({ id }) => useCompleteMessageOrFetch(id), {
+				initialProps: { id: '1' }
+			});
+
+			await act(async () => {
+				expect(getMsgSpy).toHaveBeenCalled();
+			});
+
+			rerender({ id: '2' });
+			expect(getMsgSpy).toHaveBeenCalledTimes(2);
+		});
 
 		it('should update status if initial status is undefined', async () => {
 			const message = generateMessage({
