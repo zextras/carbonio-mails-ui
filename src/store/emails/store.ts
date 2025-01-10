@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { create } from 'zustand';
+import { create, StoreApi, UseBoundStore } from 'zustand';
 
 import { createConversationIndexSlice } from './conversations/conversations-index-slice';
 import { conversationIndexSliceUtils } from './conversations/utils';
@@ -26,14 +26,14 @@ import {
 } from '../../types';
 import { syncDataHandlerUtils } from './sync-data-handler/utils';
 
-const useEmailsStore = create<
-	EmailsStoreState & {
-		queue: Array<() => Promise<void>>;
-		isExecuting: boolean;
-		addTask: (task: () => Promise<void>) => void;
-		executeTasks: () => Promise<void>;
-	}
->()((set, get, ...a) => ({
+type TaskManagement = {
+	queue: Array<() => Promise<void>>;
+	isExecuting: boolean;
+	addTask: (task: () => Promise<void>) => void;
+	executeTasks: () => Promise<void>;
+};
+
+const useEmailsStore = create<EmailsStoreState & TaskManagement>()((set, get, ...a) => ({
 	...createSearchIndexSlice(set, get, ...a),
 	...createMessageIndexSlice(set, get, ...a),
 	...createConversationIndexSlice(set, get, ...a),
@@ -91,6 +91,14 @@ const useEmailsStore = create<
 	}
 }));
 
+/**
+ * Exports the store for testing purposes only.
+ */
+export function getUseEmailStoreForTesting(): UseBoundStore<
+	StoreApi<EmailsStoreState & TaskManagement>
+> {
+	return useEmailsStore;
+}
 const { addTask } = useEmailsStore.getState();
 
 // ################################
