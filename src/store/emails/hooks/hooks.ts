@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 
 import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
@@ -139,11 +139,19 @@ export function retrieveFullMessage(messageId: string): Promise<void> {
 export function useCompleteMessage(messageId: string): MessageWithStatus {
 	const message = useMessageById(messageId);
 	const messageStatus = useMessageStatus(messageId);
+
+	const retrieveMessageCallback = useCallback(() => {
+		retrieveMessage(messageId);
+	}, [messageId]);
+
 	useEffect(() => {
-		if (message && !messageStatus) {
-			retrieveMessage(messageId);
+		if (
+			(!message && messageStatus !== API_REQUEST_STATUS.pending && messageStatus !== undefined) ||
+			message?.isComplete === false
+		) {
+			retrieveMessageCallback();
 		}
-	}, [message, messageId, messageStatus]);
+	}, [message, messageId, messageStatus, retrieveMessageCallback]);
 	return {
 		message,
 		messageStatus
