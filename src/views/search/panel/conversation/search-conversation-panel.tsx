@@ -12,7 +12,7 @@ import { useParams } from 'react-router-dom';
 
 import { SearchConversationMessagePanel } from './search-conversation-message-panel';
 import { API_REQUEST_STATUS } from '../../../../constants';
-import { useCompleteConversation } from '../../../../store/emails/hooks/hooks';
+import { useCompleteConversationOrFetch } from '../../../../store/emails/hooks/hooks';
 import { useExtraWindow } from '../../../app/extra-windows/use-extra-window';
 import { SearchExtraWindowPanelHeader } from '../../extra-window/search-extra-window-panel-header';
 
@@ -20,7 +20,7 @@ export const SearchConversationPanel = (): React.JSX.Element => {
 	const { conversationId } = useParams<{ conversationId: string }>();
 
 	const { isInsideExtraWindow } = useExtraWindow();
-	const { conversation, conversationStatus } = useCompleteConversation(conversationId);
+	const { conversation, conversationStatus } = useCompleteConversationOrFetch(conversationId);
 
 	const settings = useUserSettings();
 	const convSortOrder = settings.prefs.zimbraPrefConversationOrder as string;

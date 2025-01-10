@@ -82,7 +82,7 @@ export function retrieveConversation(conversationId: string, folderId?: string):
  * If the conversation is not in the store, it will be fetched.
  *
  */
-export function useCompleteConversation(
+export function useCompleteConversationOrFetch(
 	conversationId: string,
 	folderId?: string
 ): ConversationWithStatus {
@@ -136,6 +136,10 @@ export function retrieveFullMessage(messageId: string): Promise<void> {
 	return handleRetrieveMessage(messageId, (id) => getMsgSoapApi({ msgId: id }));
 }
 
+/**
+ * Get the message from the store or fetch it.
+ * Ensures that incomplete messages are fetched if their status indicates they are not yet fulfilled.
+ */
 export function useCompleteMessageOrFetch(messageId: string): MessageWithStatus {
 	const message = useMessageById(messageId);
 	const messageStatus = useMessageStatus(messageId);

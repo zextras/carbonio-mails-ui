@@ -27,7 +27,7 @@ import {
 	SearchConvResponse
 } from '../../../types';
 import { CONVERSATION_INDEX_SLICE_INITIAL_STATE } from '../conversations/conversations-index-slice';
-import { useCompleteConversation, useCompleteMessageOrFetch } from '../hooks/hooks';
+import { useCompleteConversationOrFetch, useCompleteMessageOrFetch } from '../hooks/hooks';
 import { MESSAGE_INDEX_SLICE_INITIAL_STATE } from '../messages/messages-slice';
 import { deleteMessagesFromConversation } from '../populated-items/utils';
 import { SEARCH_INDEX_SLICE_INITIAL_STATE } from '../search/search-slice';
@@ -59,7 +59,7 @@ describe('Searches store hooks', () => {
 			};
 			createSoapAPIInterceptor<SearchConvRequest, SearchConvResponse>('SearchConv', response);
 
-			const { result } = renderHook(() => useCompleteConversation('123', '2'));
+			const { result } = renderHook(() => useCompleteConversationOrFetch('123', '2'));
 
 			expect(result.current.conversation).toMatchObject({ id: '123' });
 			await waitFor(() => {
@@ -84,7 +84,7 @@ describe('Searches store hooks', () => {
 			createSoapAPIInterceptor<SearchConvRequest, SearchConvResponse>('SearchConv', response);
 
 			const { result } = renderHook(() => useConversationStatus('123'));
-			renderHook(() => useCompleteConversation('123', '2'));
+			renderHook(() => useCompleteConversationOrFetch('123', '2'));
 			await waitFor(() => {
 				expect(result.current).toBe(API_REQUEST_STATUS.fulfilled);
 			});
@@ -110,7 +110,7 @@ describe('Searches store hooks', () => {
 			createSoapAPIInterceptor<SearchConvRequest, SearchConvResponse>('SearchConv', response);
 
 			const { result } = renderHook(() => useConversationStatus('123'));
-			renderHook(() => useCompleteConversation('123', '2'));
+			renderHook(() => useCompleteConversationOrFetch('123', '2'));
 			await waitFor(() => {
 				expect(result.current).toBe(API_REQUEST_STATUS.pending);
 			});

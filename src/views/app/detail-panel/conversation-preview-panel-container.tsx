@@ -16,7 +16,7 @@ import { getConvSoapApi } from '../../../api';
 import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
 import { API_REQUEST_STATUS } from '../../../constants';
 import { getFolderIdParts } from '../../../helpers/folders';
-import { useCompleteConversation } from '../../../store/emails/hooks/hooks';
+import { useCompleteConversationOrFetch } from '../../../store/emails/hooks/hooks';
 import { useExtraWindow } from '../extra-windows/use-extra-window';
 
 type ConversationPreviewPanelProps = { conversationId?: string; folderId?: string };
@@ -36,7 +36,7 @@ export const ConversationPreviewPanelContainer = (
 ): React.JSX.Element => {
 	const { conversationId, folderId } = useConversationPreviewPanelParameters(props);
 	const { isInsideExtraWindow } = useExtraWindow();
-	const { conversation, conversationStatus } = useCompleteConversation(conversationId);
+	const { conversation, conversationStatus } = useCompleteConversationOrFetch(conversationId);
 
 	const onConversationIdChange = useCallback(
 		(newConversationId: string): void => {
