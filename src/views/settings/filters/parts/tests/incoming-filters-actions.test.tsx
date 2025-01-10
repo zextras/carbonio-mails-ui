@@ -426,8 +426,8 @@ function activeIncomingFilter(name: string): Filter {
 		],
 		filterActions: [
 			{
-				actionKeep: [{ index: 0 }],
-				actionStop: [{ index: 1 }]
+				actionKeep: [{}],
+				actionStop: [{}]
 			}
 		]
 	};

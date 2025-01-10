@@ -23,9 +23,9 @@ import ModalHeader from '../../../../../carbonio-ui-commons/components/modals/mo
 import type {
 	FilterActions,
 	Filter,
-	Pippo,
-	FilterAction,
-	ApiFilterAction
+	ApiFilterAction,
+	AllFiltersTest,
+	FilterTest
 } from '../../../../../types';
 import { capitalise } from '../../../../sidebar/utils';
 import { CreateFilterContext } from '../create-filter-context';
@@ -193,7 +193,7 @@ export const ModifyFilterModal: FC<ModifyFilterModalProps> = ({
 				{
 					...requiredFilterTest,
 					condition
-				}
+				} as AllFiltersTest
 			]
 		}),
 		[activeFilter, filterName, condition, requiredFilterTest, dontProcessAddFilters, finalActions]
@@ -272,9 +272,13 @@ export const ModifyFilterModal: FC<ModifyFilterModalProps> = ({
 	}, [selectedFilter, setCopyOfFilter, updateRequiredFilters]);
 
 	const previousFilterTests = useMemo(() => {
-		const tempTests: Array<any> = [];
-		forEach(selectedFilter?.filterTests?.[0], (value, key) => {
+		const tempTests: Array<FilterTest> = [];
+		const filterTest = selectedFilter?.filterTests?.[0];
+		if (!filterTest) return tempTests;
+		const keys = Object.keys(filterTest) as Array<keyof AllFiltersTest>;
+		forEach(keys, (key) => {
 			if (key !== 'condition') {
+				const value = filterTest[key];
 				map(value, (test) => {
 					tempTests.push({ ...test, testName: key });
 				});

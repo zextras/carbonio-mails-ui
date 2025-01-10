@@ -8,7 +8,6 @@
 import React, { act } from 'react';
 
 import { screen } from '@testing-library/react';
-import { omit } from 'lodash';
 
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
 import { generateStore } from '../../../../../tests/generators/store';
@@ -64,7 +63,7 @@ describe('modify filter modal', () => {
 	it('should call onConfirm with old data if there are no changes', async () => {
 		const onConfirm = jest.fn();
 		const store = generateStore();
-		const selectedFilter = mockFilter({ name: 'Test Filter', id: '1' });
+		const selectedFilter = mockFilter({ name: 'Test Filter' });
 		const { user } = setupTest(
 			<ModifyFilterModal
 				onClose={jest.fn()}
@@ -82,7 +81,7 @@ describe('modify filter modal', () => {
 		await act(async () => {
 			await user.click(saveButton);
 		});
-		expect(onConfirm).toHaveBeenCalledWith(omit({ ...selectedFilter, filterTests: [{}] }, 'id'));
+		expect(onConfirm).toHaveBeenCalledWith({ ...selectedFilter, filterTests: [{}] });
 	});
 	// it('should call onConfirm all incoming filters in initial order when clicking save button', async () => {
 	// 	const store = generateStore();
@@ -125,29 +124,6 @@ describe('modify filter modal', () => {
 	// 		]
 	// 	});
 	// });
-	it('should call onConfirm by omitting id of selected filter when clicking save button', async () => {
-		const onConfirm = jest.fn();
-		const store = generateStore();
-		const selectedFilter = mockFilter({ name: 'Test Filter', id: '1' });
-		const { user } = setupTest(
-			<ModifyFilterModal
-				onClose={jest.fn()}
-				onModifyConfirm={onConfirm}
-				selectedFilter={selectedFilter}
-			/>,
-			{
-				store
-			}
-		);
-
-		const saveButton = screen.getByRole('button', {
-			name: 'Save'
-		});
-		await act(async () => {
-			await user.click(saveButton);
-		});
-		expect(onConfirm).toHaveBeenCalledWith(omit({ ...selectedFilter, filterTests: [{}] }, 'id'));
-	});
 
 	it('should call onConfirm with updated filter name after clicking save button', async () => {
 		const onConfirm = jest.fn();
@@ -225,20 +201,16 @@ describe('modify filter modal', () => {
 	// });
 });
 
-// TODO: after inspecting the production code the fields "id" is not sent to the API, do we really need it or is it an effect of the spread?
 function mockFilter({
-	id = '1',
 	name,
 	flagName = 'flagged',
 	tagName = 'tag 1'
 }: {
-	id?: string;
 	name: string;
 	flagName?: string;
 	tagName?: string;
 }): Filter {
 	return {
-		id,
 		name,
 		active: true,
 		filterTests: [],

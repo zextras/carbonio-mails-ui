@@ -6,7 +6,31 @@
 
 import { ChipProps } from '@zextras/carbonio-design-system';
 
+const TEST_CONDITIONS = [
+	'bodyTest',
+	'addressTest',
+	'headerTest',
+	'sizeTest',
+	'attachmentTest',
+	'bulkTest',
+	'listTest',
+	'flaggedTest',
+	'conversationTest',
+	'dateTest',
+	'mimeHeaderTest',
+	'addressBookTest',
+	'contactRankingTest',
+	'meTest',
+	'inviteTest',
+	'linkedinTest',
+	'facebookTest',
+	'twitterTest'
+] as const;
+
 export type FilterTest = Record<string, string>;
+export type AllFiltersTest = { condition: string } & Partial<
+	Record<(typeof TEST_CONDITIONS)[number], Array<FilterTest>>
+>;
 
 type ApiFilterAction = {
 	actionRedirect?: Array<ActionRedirect>;
@@ -18,10 +42,11 @@ type ApiFilterAction = {
 	actionKeep?: Array<Record<string, never>>;
 };
 
+// TODO: add index to API actions
 export type Filter = {
 	active: boolean;
 	filterActions: Array<ApiFilterAction>;
-	filterTests: Array<FilterTest>;
+	filterTests: Array<AllFiltersTest>;
 	name: string;
 };
 
@@ -126,5 +151,3 @@ export type FilterActionsProps = {
 };
 
 export type FilterActions = Array<FilterAction>;
-
-export type Pippo = keyof ApiFilterAction;
