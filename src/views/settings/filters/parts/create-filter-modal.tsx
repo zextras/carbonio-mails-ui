@@ -7,8 +7,8 @@ import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
 
 import { Input, Container, Checkbox, Padding, Divider, Row } from '@zextras/carbonio-design-system';
 import { BooleanString, useUserSettings } from '@zextras/carbonio-shell-ui';
-import type { TFunction } from 'i18next';
 import { map, omit, reduce } from 'lodash';
+import { useTranslation } from 'react-i18next';
 import { v4 as uuidv4 } from 'uuid';
 
 import { CreateFilterContext } from './create-filter-context';
@@ -18,24 +18,20 @@ import { FilterActionsPanel } from './filter-actions-panel';
 import { FilterConditionsPanel } from './filter-conditions-panel';
 import { getButtonInfo } from './utils';
 import ModalHeader from '../../../../carbonio-ui-commons/components/modals/modal-header';
-import { modifyFilterRules } from '../../../../store/actions/modify-filter-rules';
-import type { FilterActions } from '../../../../types';
+import type { Filter, FilterActions } from '../../../../types';
 
 type ComponentProps = {
-	t: TFunction;
 	onClose: () => void;
-	incomingFilters?: any;
-	setFetchIncomingFilters?: (arg: boolean) => void;
-	setIncomingFilters?: (arg: any) => void;
+	onConfirm: (newFilter: Filter) => void;
+	isIncoming: boolean;
 };
 
 const CreateFilterModal: FC<ComponentProps> = ({
-	t,
 	onClose,
-	incomingFilters,
-	setFetchIncomingFilters,
-	setIncomingFilters
+	onConfirm,
+	isIncoming
 }): ReactElement => {
+	const [t] = useTranslation();
 	const [filterName, setFilterName] = useState('');
 	const [activeFilter, setActiveFilter] = useState(false);
 	const [condition, setCondition] = useState('anyof');
@@ -82,9 +78,6 @@ const CreateFilterModal: FC<ComponentProps> = ({
 		(ev: React.ChangeEvent<HTMLInputElement>) => setFilterName(ev.target.value),
 		[]
 	);
-	const modalTitle = useMemo(() => t('settings.create_new_filter', 'Create new Filter'), [t]);
-	const inputLabel = useMemo(() => `${t('settings.filter_name', 'Filter Name')}*`, [t]);
-	const activeFilterLabel = useMemo(() => t('settings.active_filter', 'Active filter'), [t]);
 
 	const requiredFilterTest = useMemo(() => {
 		const allTest = map(newFilters, (f) => f.filterTests[0]);
@@ -134,16 +127,6 @@ const CreateFilterModal: FC<ComponentProps> = ({
 		[filterName, requiredFilters, t]
 	);
 
-	const incomingFiltersCopy = useMemo(() => incomingFilters?.slice() || [], [incomingFilters]);
-	const onConfirm = useCallback(() => {
-		const toSend = [...incomingFiltersCopy, requiredFilters];
-		setIncomingFilters?.(toSend);
-		modifyFilterRules(toSend).then(() => {
-			setFetchIncomingFilters?.(true);
-		});
-		onClose();
-	}, [incomingFiltersCopy, onClose, requiredFilters, setFetchIncomingFilters, setIncomingFilters]);
-
 	const toggleCheckBox = useCallback(() => {
 		setDontProcessAddFilters(!dontProcessAddFilters);
 	}, [dontProcessAddFilters]);
@@ -153,12 +136,19 @@ const CreateFilterModal: FC<ComponentProps> = ({
 			t,
 			activeFilter,
 			filterName,
-			isIncoming: true,
+			isIncoming,
 			tempActions,
 			setTempActions,
 			zimbraFeatureMailForwardingInFiltersEnabled
 		}),
-		[t, activeFilter, filterName, tempActions, zimbraFeatureMailForwardingInFiltersEnabled]
+		[
+			t,
+			activeFilter,
+			filterName,
+			isIncoming,
+			tempActions,
+			zimbraFeatureMailForwardingInFiltersEnabled
+		]
 	);
 	const filterTestConditionRowProps = useMemo(
 		() => ({ t, newFilters, setNewFilters, condition, setCondition, activeFilter, filterName }),
@@ -173,19 +163,22 @@ const CreateFilterModal: FC<ComponentProps> = ({
 				maxHeight="100%"
 				style={{ overflowY: 'scroll', overflowX: 'hidden' }}
 			>
-				<ModalHeader title={modalTitle} onClose={onClose} />
+				<ModalHeader
+					title={t('settings.create_new_filter', 'Create new Filter')}
+					onClose={onClose}
+				/>
 				<Input
-					label={inputLabel}
+					label={`${t('settings.filter_name', 'Filter Name')}*`}
 					value={filterName}
 					onChange={onFilterNameChange}
-					backgroundColor="gray5"
+					background="gray5"
 					data-testid="filter-name"
 				/>
 				<Padding top="small" />
 				<Checkbox
 					value={activeFilter}
 					onClick={toggleActiveFilter}
-					label={activeFilterLabel}
+					label={t('settings.active_filter', 'Active filter')}
 					data-testid={'active-filter'}
 				/>
 				<Row
@@ -207,7 +200,7 @@ const CreateFilterModal: FC<ComponentProps> = ({
 				<ModalFooter
 					label={t('label.create', 'Create')}
 					toolTipText={buttonTooltip}
-					onConfirm={onConfirm}
+					onConfirm={(): void => onConfirm(requiredFilters)}
 					disabled={createFilterDisabled}
 					onSecondaryAction={toggleCheckBox}
 					checked={dontProcessAddFilters}

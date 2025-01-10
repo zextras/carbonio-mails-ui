@@ -17,6 +17,7 @@ import { ModifyFilterModal } from './modify-filter/modify-filter-modal';
 import { modifyOutgoingFilterRules } from '../../../../store/actions/modify-filter-rules';
 import { StoreProvider } from '../../../../store/redux';
 import { Filter } from '../../../../types';
+import CreateFilterModal from './create-filter-modal';
 
 type ListType = {
 	isSelecting: boolean;
@@ -36,6 +37,7 @@ type ComponentProps = {
 	};
 };
 const OutgoingFilterActions: FC<ComponentProps> = ({ compProps }): ReactElement => {
+	const createSnackbar = useSnackbar();
 	const { t, availableList, activeList, outgoingFilters } = compProps;
 	const { setFetchOutgoingFilters, setOutgoingFilters } = useContext(FilterContext);
 	const disableAdd = useMemo(
@@ -62,34 +64,57 @@ const OutgoingFilterActions: FC<ComponentProps> = ({ compProps }): ReactElement 
 		() => !Object.keys(activeList.selected).length && !Object.keys(availableList.selected).length,
 		[activeList.selected, availableList.selected]
 	);
+	const outgoingFiltersCopy = useMemo(() => outgoingFilters?.slice(), [outgoingFilters]);
+
 	const disablCreate = useMemo(() => false, []);
 	const { createModal, closeModal } = useModal();
 	const openCreateModal = useCallback(() => {
-		const id = Date.now().toString();
+		const modalId = Date.now().toString();
+		const modalClose = (): void => closeModal(modalId);
+
+		const onCreateConfirm = (newFilter: Filter): void => {
+			const toSend = [...outgoingFiltersCopy, newFilter];
+			setOutgoingFilters?.(toSend);
+			modifyOutgoingFilterRules(toSend)
+				.then(() => {
+					setFetchOutgoingFilters?.(true);
+				})
+				.catch((error) => {
+					createSnackbar({
+						key: `share`,
+						replace: true,
+						hideButton: true,
+						severity: 'error',
+						label:
+							error?.message ||
+							t('label.error_try_again', 'Something went wrong, please try again'),
+						autoHideTimeout: 5000
+					});
+				});
+			modalClose();
+		};
 		createModal(
 			{
-				id,
+				id: modalId,
 				size: 'large',
 				maxHeight: '80vh',
 				children: (
 					<StoreProvider>
-						<CreateOutgoingFilterModal
-							t={t}
-							onClose={(): void => closeModal(id)}
-							outgoingFilters={outgoingFilters}
-							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-							// @ts-ignore
-							setFetchOutgoingFilters={setFetchOutgoingFilters}
-							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-							// @ts-ignore
-							setOutgoingFilters={setOutgoingFilters}
-						/>
+						<CreateFilterModal onConfirm={onCreateConfirm} onClose={modalClose} isIncoming />
 					</StoreProvider>
 				)
 			},
 			true
 		);
-	}, [createModal, t, outgoingFilters, setFetchOutgoingFilters, setOutgoingFilters, closeModal]);
+	}, [
+		createModal,
+		closeModal,
+		outgoingFiltersCopy,
+		setOutgoingFilters,
+		setFetchOutgoingFilters,
+		createSnackbar,
+		t
+	]);
 
 	const removeFilter = useRemoveFilter();
 	const onRemove = useCallback(
@@ -169,10 +194,6 @@ const OutgoingFilterActions: FC<ComponentProps> = ({ compProps }): ReactElement 
 		setFetchOutgoingFilters,
 		setOutgoingFilters
 	]);
-
-	const outgoingFiltersCopy = useMemo(() => outgoingFilters?.slice(), [outgoingFilters]);
-
-	const createSnackbar = useSnackbar();
 
 	const openFilterModifyModal = useCallback(() => {
 		if (!selectedFilter) return;

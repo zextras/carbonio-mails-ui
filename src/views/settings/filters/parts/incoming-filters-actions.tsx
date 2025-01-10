@@ -32,7 +32,7 @@ type ListType = {
 	unSelect: () => void;
 };
 
-type ComponentProps = {
+type IncomingFilterProps = {
 	compProps: {
 		t: TFunction;
 		availableList: ListType;
@@ -41,7 +41,7 @@ type ComponentProps = {
 	};
 };
 
-export const IncomingFilterActions: FC<ComponentProps> = ({ compProps }): ReactElement => {
+export const IncomingFilterActions: FC<IncomingFilterProps> = ({ compProps }): ReactElement => {
 	const { t, availableList, activeList, incomingFilters } = compProps;
 	const { setFetchIncomingFilters, setIncomingFilters } = useContext(FilterContext);
 	const { createModal, closeModal } = useModal();
@@ -91,8 +91,20 @@ export const IncomingFilterActions: FC<ComponentProps> = ({ compProps }): ReactE
 		action?.openModal?.(executionParams);
 	}, [closeModal, createModal, selectedActiveFilterName]);
 
+	const incomingFiltersCopy = useMemo(() => incomingFilters?.slice(), [incomingFilters]);
+
 	const openCreateModal = useCallback(() => {
 		const modalId = Date.now().toString();
+		const modalClose = (): void => closeModal(modalId);
+
+		const onCreateConfirm = (newFilter: Filter): void => {
+			const toSend = [...incomingFiltersCopy, newFilter];
+			setIncomingFilters?.(toSend);
+			modifyFilterRules(toSend).then(() => {
+				setFetchIncomingFilters?.(true);
+			});
+			modalClose();
+		};
 		createModal(
 			{
 				id: modalId,
@@ -100,19 +112,13 @@ export const IncomingFilterActions: FC<ComponentProps> = ({ compProps }): ReactE
 				maxHeight: '80vh',
 				children: (
 					<StoreProvider>
-						<CreateFilterModal
-							t={t}
-							onClose={(): void => closeModal(modalId)}
-							incomingFilters={incomingFilters}
-							setFetchIncomingFilters={setFetchIncomingFilters}
-							setIncomingFilters={setIncomingFilters}
-						/>
+						<CreateFilterModal onConfirm={onCreateConfirm} onClose={modalClose} isIncoming />
 					</StoreProvider>
 				)
 			},
 			true
 		);
-	}, [createModal, t, incomingFilters, setFetchIncomingFilters, setIncomingFilters, closeModal]);
+	}, [createModal, closeModal, incomingFiltersCopy, setIncomingFilters, setFetchIncomingFilters]);
 
 	const deleteFilter = useDeleteFilter();
 
@@ -199,7 +205,6 @@ export const IncomingFilterActions: FC<ComponentProps> = ({ compProps }): ReactE
 		[addFilter, t, availableList, activeList, setIncomingFilters, setFetchIncomingFilters]
 	);
 
-	const incomingFiltersCopy = useMemo(() => incomingFilters?.slice(), [incomingFilters]);
 	const createSnackbar = useSnackbar();
 
 	const openFilterModifyModal = useCallback(() => {

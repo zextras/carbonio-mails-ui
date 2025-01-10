@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-use-before-define */
 /*
  * SPDX-FileCopyrightText: 2023 Zextras <https://www.zextras.com>
  *
@@ -7,9 +8,7 @@ import React from 'react';
 
 import { act, screen, within } from '@testing-library/react';
 import { UserEvent } from '@testing-library/user-event';
-import { t } from '@zextras/carbonio-shell-ui';
 
-import { createSoapAPIInterceptor } from '../../../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { populateFoldersStore } from '../../../../../carbonio-ui-commons/test/mocks/store/folders';
 import {
 	makeListItemsVisible,
@@ -28,48 +27,35 @@ const addCondition = async (user: UserEvent): Promise<void> => {
 };
 const fillFilterName = async (user: UserEvent, filterName: string): Promise<void> => {
 	const filterInputElement = screen.getByRole('textbox', {
-		name: 'settings.filter_name*'
+		name: 'Filter Name*'
 	});
 	await user.type(filterInputElement, filterName);
 };
 
-describe('create-filter-modal', () => {
-	// TODO: these tests are not really helpful as they test the DS but not component logic
+describe('create filter modal', () => {
 	test('create button is disabled when filter name is empty', async () => {
-		const store = generateStore();
-
-		setupTest(<CreateFilterModal t={t} onClose={jest.fn()} />, {
-			store
-		});
+		setupCreateFilterModal();
 
 		const createButton = screen.getByRole('button', {
-			name: /label\.create/i
+			name: 'Create'
 		});
 		expect(createButton).toBeDisabled();
 	});
 	test('create button is enabled only when filter name is added', async () => {
-		const store = generateStore();
-
-		const { user } = setupTest(<CreateFilterModal t={t} onClose={jest.fn()} />, {
-			store
-		});
+		const { user } = setupCreateFilterModal();
 		const filterInputElement = screen.getByRole('textbox', {
-			name: 'settings.filter_name*'
+			name: 'Filter Name*'
 		});
 		await user.type(filterInputElement, 'My filter');
 
 		const createButton = screen.getByRole('button', {
-			name: /label\.create/i
+			name: 'Create'
 		});
 		expect(createButton).toBeEnabled();
 	});
 
 	test('"Active filter" is unchecked by default', async () => {
-		const store = generateStore();
-
-		setupTest(<CreateFilterModal t={t} onClose={jest.fn()} />, {
-			store
-		});
+		setupCreateFilterModal();
 
 		const filterActiveUnChecked = within(screen.getByTestId('active-filter')).getByTestId(
 			'icon: Square'
@@ -77,11 +63,8 @@ describe('create-filter-modal', () => {
 		expect(filterActiveUnChecked).toBeVisible();
 	});
 	test('clicking "Active filter" should check the checkbox', async () => {
-		const store = generateStore();
+		const { user } = setupCreateFilterModal();
 
-		const { user } = setupTest(<CreateFilterModal t={t} onClose={jest.fn()} />, {
-			store
-		});
 		const filterActiveUnChecked = within(screen.getByTestId('active-filter')).getByTestId(
 			'icon: Square'
 		);
@@ -94,19 +77,12 @@ describe('create-filter-modal', () => {
 	});
 
 	test('Filter conditions should be visible', async () => {
-		const store = generateStore();
+		const { user } = setupCreateFilterModal();
 
-		const { user } = setupTest(<CreateFilterModal t={t} onClose={jest.fn()} />, {
-			store
-		});
-		await user.click(screen.getByText(/settings\.field/i));
+		await user.click(screen.getByText('Field'));
 
-		const fieldAnyOption = within(screen.getByTestId('dropdown-popper-list')).getByText(
-			/label\.any/i
-		);
-		const fieldAllOption = within(screen.getByTestId('dropdown-popper-list')).getByText(
-			/label\.all/i
-		);
+		const fieldAnyOption = within(screen.getByTestId('dropdown-popper-list')).getByText('any');
+		const fieldAllOption = within(screen.getByTestId('dropdown-popper-list')).getByText('all');
 		expect(fieldAnyOption).toBeInTheDocument();
 		expect(fieldAllOption).toBeInTheDocument();
 	});
@@ -115,9 +91,12 @@ describe('create-filter-modal', () => {
 		const closeModal = jest.fn();
 		const store = generateStore();
 		populateFoldersStore();
-		const { user } = setupTest(<CreateFilterModal t={t} onClose={(): void => closeModal()} />, {
-			store
-		});
+		const { user } = setupTest(
+			<CreateFilterModal onClose={(): void => closeModal()} onConfirm={jest.fn()} isIncoming />,
+			{
+				store
+			}
+		);
 		await user.click(screen.getByText('Keep in Inbox'));
 
 		await user.click(screen.getByText('Move Into Folder'));
@@ -135,49 +114,32 @@ describe('create-filter-modal', () => {
 		expect(screen.getByText(/junk/i)).toBeVisible();
 	});
 
-	it('should call ModifyFiltersRule API when clicking create button', async () => {
-		const store = generateStore();
+	it('should call onConfirm with the new filter when clicking create button', async () => {
+		const onConfirm = jest.fn();
+		const { user } = setupCreateFilterModal({ onConfirm });
 
-		const modifyFilterRulesInterceptor = createSoapAPIInterceptor('ModifyFilterRules');
-		const { user } = setupTest(<CreateFilterModal t={t} onClose={jest.fn()} />, {
-			store
-		});
 		const filterInputElement = screen.getByRole('textbox', {
-			name: 'settings.filter_name*'
+			name: 'Filter Name*'
 		});
 		await user.type(filterInputElement, 'My filter');
 
 		const createButton = screen.getByRole('button', {
-			name: /label\.create/i
+			name: 'Create'
 		});
 		await user.click(createButton);
-		const request = await modifyFilterRulesInterceptor;
-		expect(request).toEqual({
-			_jsns: 'urn:zimbraMail',
-			filterRules: [
-				{
-					filterRule: [
-						{
-							active: false,
-							name: 'My filter',
-							filterActions: [{ actionKeep: [{}], actionStop: [{}] }],
-							filterTests: [{ condition: 'anyof' }]
-						}
-					]
-				}
-			]
+		expect(onConfirm).toHaveBeenCalledWith({
+			active: false,
+			name: 'My filter',
+			filterActions: [{ actionKeep: [{}], actionStop: [{}] }],
+			filterTests: [{ condition: 'anyof' }]
 		});
 	});
-	describe('ModifyFilterRules API', () => {
-		test('create an "Active" filter', async () => {
-			const store = generateStore();
-
-			const modifyFilterRulesInterceptor = createSoapAPIInterceptor('ModifyFilterRules');
-			const { user } = setupTest(<CreateFilterModal t={t} onClose={jest.fn()} />, {
-				store
-			});
+	describe('onConfirm', () => {
+		it('should create an "Active" filter', async () => {
+			const onConfirm = jest.fn();
+			const { user } = setupCreateFilterModal({ onConfirm });
 			const filterInputElement = screen.getByRole('textbox', {
-				name: 'settings.filter_name*'
+				name: 'Filter Name*'
 			});
 			await user.type(filterInputElement, 'My filter');
 			const filterActiveUnChecked = within(screen.getByTestId('active-filter')).getByTestId(
@@ -186,56 +148,35 @@ describe('create-filter-modal', () => {
 			await act(() => user.click(filterActiveUnChecked));
 
 			const createButton = screen.getByRole('button', {
-				name: /label\.create/i
+				name: 'Create'
 			});
 			await user.click(createButton);
-			const request = await modifyFilterRulesInterceptor;
-			expect(request).toEqual({
-				_jsns: 'urn:zimbraMail',
-				filterRules: [
-					{
-						filterRule: [expect.objectContaining({ active: true })]
-					}
-				]
-			});
+
+			expect(onConfirm).toHaveBeenCalledWith(expect.objectContaining({ active: true }));
 		});
 		describe('Mark As', () => {
-			test('creating a filter by selecting Mark As results in an API call with flag name "read"', async () => {
-				const store = generateStore();
+			it(' should create a filter with "read" when selecting Mark As by default', async () => {
+				const onConfirm = jest.fn();
+				const { user } = setupCreateFilterModal({ onConfirm });
 
-				const modifyFilterRulesInterceptor = createSoapAPIInterceptor('ModifyFilterRules');
-				const { user } = setupTest(<CreateFilterModal t={t} onClose={jest.fn()} />, {
-					store
-				});
 				await fillFilterName(user, 'any name');
 				const keepInInboxAction = screen.getByText('Keep in Inbox');
 				await user.click(keepInInboxAction);
 				await user.click(screen.getByText('Mark as'));
 
 				const createButton = screen.getByRole('button', {
-					name: /label\.create/i
+					name: 'Create'
 				});
 				await user.click(createButton);
 
-				const request = await modifyFilterRulesInterceptor;
-				expect(request).toEqual({
-					_jsns: 'urn:zimbraMail',
-					filterRules: [
-						{
-							filterRule: [
-								expect.objectContaining({
-									filterActions: [{ actionFlag: [{ flagName: 'read' }], actionStop: [{}] }]
-								})
-							]
-						}
-					]
-				});
+				expect(onConfirm).toHaveBeenCalledWith(
+					expect.objectContaining({
+						filterActions: [{ actionFlag: [{ flagName: 'read' }], actionStop: [{}] }]
+					})
+				);
 			});
 			it('should display option "read" when switching to "Mark as" action', async () => {
-				const store = generateStore();
-				const { user } = setupTest(<CreateFilterModal t={t} onClose={jest.fn()} />, {
-					store
-				});
+				const { user } = setupCreateFilterModal();
 
 				const keepInInboxAction = screen.getByText('Keep in Inbox');
 				await user.click(keepInInboxAction);
@@ -243,13 +184,10 @@ describe('create-filter-modal', () => {
 
 				expect(screen.getByText('Read')).toBeVisible();
 			});
-			test('create a filter with Mark As action Flagged', async () => {
-				const store = generateStore();
+			it('should create a filter with Mark As action Flagged', async () => {
+				const onConfirm = jest.fn();
+				const { user } = setupCreateFilterModal({ onConfirm });
 
-				const modifyFilterRulesInterceptor = createSoapAPIInterceptor('ModifyFilterRules');
-				const { user } = setupTest(<CreateFilterModal t={t} onClose={jest.fn()} />, {
-					store
-				});
 				await fillFilterName(user, 'any name');
 				await user.click(screen.getByText('Keep in Inbox'));
 				await user.click(screen.getByText('Mark as'));
@@ -257,365 +195,298 @@ describe('create-filter-modal', () => {
 				await user.click(screen.getByText('Flagged'));
 
 				const createButton = screen.getByRole('button', {
-					name: /label\.create/i
+					name: 'Create'
 				});
 				await user.click(createButton);
 
-				const request = await modifyFilterRulesInterceptor;
-				expect(request).toEqual({
-					_jsns: 'urn:zimbraMail',
-					filterRules: [
-						{
-							filterRule: [
-								expect.objectContaining({
-									filterActions: [
-										{
-											actionFlag: [
-												{
-													flagName: 'flagged'
-												}
-											],
-											actionStop: [{}]
-										}
-									]
-								})
-							]
-						}
-					]
-				});
+				expect(onConfirm).toHaveBeenCalledWith(
+					expect.objectContaining({
+						filterActions: [
+							{
+								actionFlag: [
+									{
+										flagName: 'flagged'
+									}
+								],
+								actionStop: [{}]
+							}
+						]
+					})
+				);
 			});
-			test('create a filter with Mark As and Redirect To actions', async () => {
-				const store = generateStore();
+			it('should create a filter with Mark As and Redirect To actions', async () => {
+				const onConfirm = jest.fn();
+				const { user } = setupCreateFilterModal({ onConfirm });
 
-				const modifyFilterRulesInterceptor = createSoapAPIInterceptor('ModifyFilterRules');
-				const { user } = setupTest(<CreateFilterModal t={t} onClose={jest.fn()} />, {
-					store
-				});
 				await fillFilterName(user, 'any name');
-
 				await user.click(screen.getByText('Keep in Inbox'));
 				await user.click(screen.getByText('Mark as'));
 				await user.click(screen.getByText('Read'));
 				await user.click(screen.getByText('Flagged'));
-
 				await addAction(user);
 				await user.click(screen.getByText('Keep in Inbox'));
 				await user.click(screen.getByText('Redirect to address'));
 				const redirectToAddressInput = await screen.findByTestId('filter-action-row-contact-input');
 				await user.type(redirectToAddressInput, 'redirectTo@email.com');
 				await user.type(redirectToAddressInput, '[Enter]');
-
 				const createButton = screen.getByRole('button', {
-					name: /label\.create/i
+					name: 'Create'
 				});
 				await user.click(createButton);
 
-				const request = await modifyFilterRulesInterceptor;
-				expect(request).toEqual({
-					_jsns: 'urn:zimbraMail',
-					filterRules: [
-						{
-							filterRule: [
-								expect.objectContaining({
-									filterActions: [
-										{
-											actionFlag: [
-												{
-													flagName: 'flagged'
-												}
-											],
-											actionRedirect: [
-												{
-													a: 'redirectTo@email.com'
-												}
-											],
-											actionStop: [{}]
-										}
-									]
-								})
-							]
-						}
-					]
-				});
+				expect(onConfirm).toHaveBeenCalledWith(
+					expect.objectContaining({
+						filterActions: [
+							{
+								actionFlag: [
+									{
+										flagName: 'flagged'
+									}
+								],
+								actionRedirect: [
+									{
+										a: 'redirectTo@email.com'
+									}
+								],
+								actionStop: [{}]
+							}
+						]
+					})
+				);
 			});
 		});
 
-		test('create a filter with "from" condition', async () => {
-			const store = generateStore();
+		it('should create a filter with "from" condition', async () => {
+			const onConfirm = jest.fn();
+			const { user } = setupCreateFilterModal({ onConfirm });
 
-			const modifyFilterRulesInterceptor = createSoapAPIInterceptor('ModifyFilterRules');
-			const { user } = setupTest(<CreateFilterModal t={t} onClose={jest.fn()} />, {
-				store
-			});
 			await fillFilterName(user, 'any name');
-
-			await user.click(screen.getByText('label.subject'));
-			await user.click(screen.getByText('label.from'));
+			await user.click(screen.getByText('Subject'));
+			await user.click(screen.getByText('From'));
 			await user.type(
 				screen.getByRole('textbox', {
-					name: 'settings.keyword'
+					name: 'Keyword'
 				}),
 				'anyemail'
 			);
-
 			const createButton = screen.getByRole('button', {
-				name: /label\.create/i
+				name: 'Create'
 			});
 			await user.click(createButton);
 
-			const request = await modifyFilterRulesInterceptor;
-			expect(request).toEqual({
-				_jsns: 'urn:zimbraMail',
-				filterRules: [
-					{
-						filterRule: [
-							expect.objectContaining({
-								filterTests: [
-									{
-										addressTest: [
-											{
-												header: 'from',
-												part: 'all',
-												stringComparison: 'contains',
-												value: 'anyemail'
-											}
-										],
-										condition: 'anyof'
-									}
-								]
-							})
-						]
-					}
-				]
-			});
+			expect(onConfirm).toHaveBeenCalledWith(
+				expect.objectContaining({
+					filterTests: [
+						{
+							addressTest: [
+								{
+									header: 'from',
+									part: 'all',
+									stringComparison: 'contains',
+									value: 'anyemail'
+								}
+							],
+							condition: 'anyof'
+						}
+					]
+				})
+			);
 		});
 
-		test('create a filter with multiple "from" condition', async () => {
-			const store = generateStore();
+		it('should create a filter with multiple "from" condition', async () => {
+			const onConfirm = jest.fn();
+			const { user } = setupCreateFilterModal({ onConfirm });
 
-			const modifyFilterRulesInterceptor = createSoapAPIInterceptor('ModifyFilterRules');
-			const { user } = setupTest(<CreateFilterModal t={t} onClose={jest.fn()} />, {
-				store
-			});
 			await fillFilterName(user, 'any name');
-
-			await user.click(screen.getByText('label.subject'));
-			await user.click(screen.getByText('label.from'));
+			await user.click(screen.getByText('Subject'));
+			await user.click(screen.getByText('From'));
 			await user.type(
 				screen.getByRole('textbox', {
-					name: 'settings.keyword'
+					name: 'Keyword'
 				}),
 				'anyemail'
 			);
 			await addCondition(user);
-			await user.click(screen.getByText('label.subject'));
-			await user.click(within(screen.getByTestId('dropdown-popper-list')).getByText('label.from'));
+			await user.click(screen.getByText('Subject'));
+			await user.click(within(screen.getByTestId('dropdown-popper-list')).getByText('From'));
 			await user.type(
 				screen.getAllByRole('textbox', {
-					name: 'settings.keyword'
+					name: 'Keyword'
 				})[1],
 				'anotheremail'
 			);
 			await user.click(
 				screen.getByRole('button', {
-					name: /label\.create/i
+					name: 'Create'
 				})
 			);
 
-			const request = await modifyFilterRulesInterceptor;
-			expect(request).toEqual({
-				_jsns: 'urn:zimbraMail',
-				filterRules: [
-					{
-						filterRule: [
-							expect.objectContaining({
-								filterTests: [
-									{
-										addressTest: [
-											{
-												header: 'from',
-												part: 'all',
-												stringComparison: 'contains',
-												value: 'anyemail'
-											},
-											{
-												header: 'from',
-												part: 'all',
-												stringComparison: 'contains',
-												value: 'anotheremail'
-											}
-										],
-										condition: 'anyof'
-									}
-								]
-							})
-						]
-					}
-				]
-			});
+			expect(onConfirm).toHaveBeenCalledWith(
+				expect.objectContaining({
+					filterTests: [
+						{
+							addressTest: [
+								{
+									header: 'from',
+									part: 'all',
+									stringComparison: 'contains',
+									value: 'anyemail'
+								},
+								{
+									header: 'from',
+									part: 'all',
+									stringComparison: 'contains',
+									value: 'anotheremail'
+								}
+							],
+							condition: 'anyof'
+						}
+					]
+				})
+			);
 		});
 
-		test('create a filter with multiple different condition', async () => {
-			const store = generateStore();
+		it('should create a filter with multiple different condition', async () => {
+			const onConfirm = jest.fn();
+			const { user } = setupCreateFilterModal({ onConfirm });
 
-			const modifyFilterRulesInterceptor = createSoapAPIInterceptor('ModifyFilterRules');
-			const { user } = setupTest(<CreateFilterModal t={t} onClose={jest.fn()} />, {
-				store
-			});
 			await fillFilterName(user, 'any name');
-
-			await user.click(screen.getByText('label.subject'));
-			await user.click(screen.getByText('label.from'));
+			await user.click(screen.getByText('Subject'));
+			await user.click(screen.getByText('From'));
 			await user.type(
 				screen.getByRole('textbox', {
-					name: 'settings.keyword'
+					name: 'Keyword'
 				}),
 				'anyemail'
 			);
 			await addCondition(user);
-
 			await user.type(
 				screen.getAllByRole('textbox', {
-					name: 'settings.keyword'
+					name: 'Keyword'
 				})[1],
 				'anothervalue'
 			);
-
 			await user.click(
 				screen.getByRole('button', {
-					name: /label\.create/i
+					name: 'Create'
 				})
 			);
 
-			const request = await modifyFilterRulesInterceptor;
-			expect(request).toEqual({
-				_jsns: 'urn:zimbraMail',
-				filterRules: [
-					{
-						filterRule: [
-							expect.objectContaining({
-								filterTests: [
-									{
-										addressTest: [
-											{
-												header: 'from',
-												part: 'all',
-												stringComparison: 'contains',
-												value: 'anyemail'
-											}
-										],
-										headerTest: [
-											{
-												header: 'subject',
-												stringComparison: 'contains',
-												value: 'anothervalue'
-											}
-										],
-										condition: 'anyof'
-									}
-								]
-							})
-						]
-					}
-				]
-			});
+			expect(onConfirm).toHaveBeenCalledWith(
+				expect.objectContaining({
+					filterTests: [
+						{
+							addressTest: [
+								{
+									header: 'from',
+									part: 'all',
+									stringComparison: 'contains',
+									value: 'anyemail'
+								}
+							],
+							headerTest: [
+								{
+									header: 'subject',
+									stringComparison: 'contains',
+									value: 'anothervalue'
+								}
+							],
+							condition: 'anyof'
+						}
+					]
+				})
+			);
 		});
 
-		test('removing a filter should call the api without the removed one', async () => {
-			const store = generateStore();
+		it('should create a filter without the action removed by clicking MinusOutline', async () => {
+			const onConfirm = jest.fn();
+			const { user } = setupCreateFilterModal({ onConfirm });
 
-			const modifyFilterRulesInterceptor = createSoapAPIInterceptor('ModifyFilterRules');
-			const { user } = setupTest(<CreateFilterModal t={t} onClose={jest.fn()} />, {
-				store
-			});
 			await fillFilterName(user, 'any name');
-
-			await user.click(screen.getByText('label.subject'));
-			await user.click(screen.getByText('label.from'));
+			await user.click(screen.getByText('Subject'));
+			await user.click(screen.getByText('From'));
 			await user.type(
 				screen.getByRole('textbox', {
-					name: 'settings.keyword'
+					name: 'Keyword'
 				}),
 				'anyemail'
 			);
 			await addCondition(user);
-
 			await user.type(
 				screen.getAllByRole('textbox', {
-					name: 'settings.keyword'
+					name: 'Keyword'
 				})[1],
 				'anothervalue'
 			);
-
 			await user.click(
 				within(screen.getByTestId('filter-conditions')).getAllByTestId('icon: MinusOutline')[1]
 			);
-
 			await user.click(
 				screen.getByRole('button', {
-					name: /label\.create/i
+					name: 'Create'
 				})
 			);
 
-			const request = await modifyFilterRulesInterceptor;
-			expect(request).toEqual({
-				_jsns: 'urn:zimbraMail',
-				filterRules: [
-					{
-						filterRule: [
-							expect.objectContaining({
-								filterTests: [
-									{
-										addressTest: [
-											{
-												header: 'from',
-												part: 'all',
-												stringComparison: 'contains',
-												value: 'anyemail'
-											}
-										],
-										condition: 'anyof'
-									}
-								]
-							})
-						]
-					}
-				]
-			});
+			expect(onConfirm).toHaveBeenCalledWith(
+				expect.objectContaining({
+					filterTests: [
+						{
+							addressTest: [
+								{
+									header: 'from',
+									part: 'all',
+									stringComparison: 'contains',
+									value: 'anyemail'
+								}
+							],
+							condition: 'anyof'
+						}
+					]
+				})
+			);
 		});
 
-		test('"Do not process additional filter" checbox should not send actionStop in checkbox if disabled', async () => {
-			const store = generateStore();
-
-			const modifyFilterRulesInterceptor = createSoapAPIInterceptor('ModifyFilterRules');
-			const { user } = setupTest(<CreateFilterModal t={t} onClose={jest.fn()} />, {
-				store
-			});
+		it('should create a filter without action stop if "Do not process additional filter" checkbox is disabled', async () => {
+			const onConfirm = jest.fn();
+			const { user } = setupCreateFilterModal({ onConfirm });
 
 			await fillFilterName(user, 'My Filter');
 			await user.click(screen.getByTestId('checkbox'));
 			await user.click(
 				screen.getByRole('button', {
-					name: /label\.create/i
+					name: 'Create'
 				})
 			);
 
-			const request = await modifyFilterRulesInterceptor;
-			expect(request).toEqual({
-				_jsns: 'urn:zimbraMail',
-				filterRules: [
-					{
-						filterRule: [
-							{
-								active: false,
-								name: 'My Filter',
-								filterActions: [expect.not.objectContaining({ actionStop: [{}] })],
-								filterTests: [{ condition: 'anyof' }]
-							}
-						]
-					}
-				]
+			expect(onConfirm).toHaveBeenCalledWith({
+				active: false,
+				name: 'My Filter',
+				filterActions: [expect.not.objectContaining({ actionStop: [{}] })],
+				filterTests: [{ condition: 'anyof' }]
 			});
 		});
+		// TODO
+		// test('isIncoming should define if outgoing or incoming filters should be handled', async () => {
+		// 	const closeModal = jest.fn();
+		// 	const store = generateStore();
+		// 	populateFoldersStore();
+		// 	const { user } = setupTest(
+		// 		<CreateFilterModal onClose={(): void => closeModal()} onConfirm={jest.fn()} isIncoming />,
+		// 		{
+		// 			store
+		// 		}
+		// 	);
+		// });
 	});
 });
+
+const setupCreateFilterModal = ({
+	onConfirm = jest.fn()
+}: {
+	onConfirm?: () => void;
+} = {}): ReturnType<typeof setupTest> => {
+	const store = generateStore();
+	return setupTest(<CreateFilterModal onClose={jest.fn()} onConfirm={onConfirm} isIncoming />, {
+		store
+	});
+};
