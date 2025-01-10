@@ -63,18 +63,6 @@ export const CertificatePasswordModal = ({
 										'At least 8 characters long.'
 									)}
 								</li>
-								<li>
-									{t(
-										'settings.certificatePassword.create_password_rule2',
-										'Include a mix of uppercase and lowercase letters, numbers, and special characters'
-									)}
-								</li>
-								<li>
-									{t(
-										'settings.certificatePassword.create_password_rule3',
-										'Be unique and not used for other accounts or purposes.'
-									)}
-								</li>
 							</ul>
 						</Text>
 					</Container>
@@ -94,18 +82,6 @@ export const CertificatePasswordModal = ({
 									{t(
 										'settings.certificatePassword.create_password_rule1',
 										'At least 8 characters long.'
-									)}
-								</li>
-								<li>
-									{t(
-										'settings.certificatePassword.create_password_rule2',
-										'Include a mix of uppercase and lowercase letters, numbers, and special characters'
-									)}
-								</li>
-								<li>
-									{t(
-										'settings.certificatePassword.create_password_rule3',
-										'Be unique and not used for other accounts or purposes.'
 									)}
 								</li>
 							</ul>

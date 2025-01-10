@@ -3,18 +3,20 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, ReactElement, useCallback } from 'react';
+import React, { FC, ReactElement, useCallback, useEffect, useState } from 'react';
 
 import {
 	Button,
 	Container,
 	FormSubSection,
 	Padding,
+	Table,
 	useModal
 } from '@zextras/carbonio-design-system';
 
 import { CertificatePasswordModal } from './certificate-password-modal';
 import { EnterPasswordModal } from './enter-password-modal';
+import { getRecipientsCertificates } from '../../../store/actions/get-recipient-certificates-action';
 import type { AccountIdentity, IdentityProps } from '../../../types';
 
 type RecipientsCertificateSettingsPropsType = {
@@ -33,10 +35,82 @@ const RecipientsCertificateSettings: FC<RecipientsCertificateSettingsPropsType> 
 	updateIdentities
 }): ReactElement => {
 	const { createModal, closeModal } = useModal();
+	const [certificates, setCertificates] = useState([]);
 	const id = Date.now().toString();
 	const onPasswordConfirm = useCallback((password: string) => {
 		console.log('===>> onPasswordConfirm called');
 	}, []);
+
+	const headers = [
+		{
+			id: 'email',
+			label: 'Mail address',
+			width: '20%',
+			bold: true
+		},
+		{
+			id: 'issuer',
+			label: 'Issuer',
+			width: '30%',
+			bold: true
+		},
+		{
+			id: 'validfrom',
+			label: 'Valid From',
+			width: '20%',
+			bold: true
+		},
+		{
+			id: 'validto',
+			label: 'Valid To',
+			width: '20%',
+			bold: true
+		},
+		{
+			id: 'status',
+			label: 'Status',
+			width: '20%',
+			bold: true
+		},
+		{
+			id: 'action',
+			label: ''
+		}
+	];
+
+	const setRecipientsCertificatesData = useCallback((res: any) => {
+		if ('data' in res) {
+			setCertificates(res.data.list);
+		} else {
+			// Error
+		}
+	}, []);
+
+	useEffect(() => {
+		getRecipientsCertificates().then((res) => {
+			setRecipientsCertificatesData(res);
+		});
+	}, [setRecipientsCertificatesData]);
+
+	const items = certificates.map((certificate: any, index) => ({
+		id: index.toString(),
+		columns: [
+			certificate.email,
+			certificate.issuer,
+			new Date(certificate.notBefore).toLocaleString(),
+			new Date(certificate.notAfter).toLocaleString(),
+			certificate.notAfter > Date.now() ? 'Active' : 'Expired',
+			<Container key={index}>
+				<Button
+					icon="Trash2Outline"
+					onClick={(): void => {
+						console.log('===>> Delete certificate;;>>', certificate);
+					}}
+					type="ghost"
+				/>
+			</Container>
+		]
+	}));
 
 	const onCertificatePassword = useCallback(
 		(isReset?: boolean): void => {
@@ -86,7 +160,9 @@ const RecipientsCertificateSettings: FC<RecipientsCertificateSettingsPropsType> 
 				label="Recipients certificates for encryption"
 				id={''}
 				padding={{ all: 'large' }}
-			></FormSubSection>
+			>
+				<Table rows={items} headers={headers} showCheckbox={false} multiSelect={false} />
+			</FormSubSection>
 
 			{/* This is temporary buttons to open password modal */}
 			<FormSubSection label="Password for S/MIME operations" id={''} padding={{ all: 'large' }}>
