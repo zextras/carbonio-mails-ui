@@ -19,10 +19,13 @@ describe('getIncomingFiltersSoapApi', () => {
 		const response = { filterRules: { filterRules: 'value' } };
 		const interceptor = createSoapAPIInterceptor('GetFilterRules', response);
 
-		getIncomingFiltersSoapApi();
+		const { result } = renderHook(() => getIncomingFiltersSoapApi());
 		const request = await interceptor;
 
 		expect(request).toEqual({ _jsns: 'urn:zimbraMail' });
+		await waitFor(async () => {
+			expect(await result.current).toMatchObject({ filterRules: [{ filterRule: [] }] });
+		});
 	});
 
 	it('should return empty filter rules if the call fails', async () => {
