@@ -10,6 +10,7 @@ import { useUserSettings } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
 
 import { ConversationMessagePreviewWrapper } from './conversation-message-preview-wrapper';
+import { Spinner } from '../../../assets/spinner';
 import { NormalizedConversation } from '../../../types';
 
 export const ConversationPreviewPanel = ({
@@ -53,7 +54,7 @@ export const ConversationPreviewPanel = ({
 							isInsideExtraWindow={isInsideExtraWindow}
 						/>
 					) : (
-						<></>
+						<Spinner />
 					)
 				)}
 			</Container>

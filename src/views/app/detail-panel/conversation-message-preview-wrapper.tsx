@@ -6,6 +6,7 @@
 import React from 'react';
 
 import { ConversationMessagePreview } from './conversation-message-preview';
+import { Spinner } from '../../../assets/spinner';
 import { useCompleteMessageOrFetch } from '../../../store/emails/hooks/hooks';
 
 export const ConversationMessagePreviewWrapper = ({
@@ -29,6 +30,6 @@ export const ConversationMessagePreviewWrapper = ({
 			isInsideExtraWindow={isInsideExtraWindow}
 		/>
 	) : (
-		<></>
+		<Spinner />
 	);
 };
