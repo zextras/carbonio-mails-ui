@@ -9,13 +9,13 @@ import { Container, Padding } from '@zextras/carbonio-design-system';
 import { replaceHistory } from '@zextras/carbonio-shell-ui';
 
 import { API_REQUEST_STATUS } from '../../../../constants';
-import { useCompleteMessage } from '../../../../store/emails/hooks/hooks';
+import { useMessageOrFetch } from '../../../../store/emails/hooks/hooks';
 import MailPreview from '../../../app/detail-panel/preview/mail-preview';
 import { useExtraWindow } from '../../../app/extra-windows/use-extra-window';
 import { SearchExtraWindowPanelHeader } from '../../extra-window/search-extra-window-panel-header';
 
 export const SearchMessagePanel = ({ messageId }: { messageId: string }): React.JSX.Element => {
-	const { message, messageStatus } = useCompleteMessage(messageId);
+	const { message, messageStatus } = useMessageOrFetch(messageId);
 
 	const { isInsideExtraWindow } = useExtraWindow();
 

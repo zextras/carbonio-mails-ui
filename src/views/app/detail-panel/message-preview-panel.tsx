@@ -9,7 +9,7 @@ import { Container, Padding } from '@zextras/carbonio-design-system';
 
 import MailPreview from './preview/mail-preview';
 import { PreviewPanelHeader } from './preview/preview-panel-header';
-import { useCompleteMessage } from '../../../store/emails/hooks/hooks';
+import { useMessageOrFetch } from '../../../store/emails/hooks/hooks';
 import { useExtraWindow } from '../extra-windows/use-extra-window';
 
 export const MessagePreviewPanel: FC<{ folderId: string; messageId: string }> = ({
@@ -18,7 +18,7 @@ export const MessagePreviewPanel: FC<{ folderId: string; messageId: string }> = 
 }) => {
 	const { isInsideExtraWindow } = useExtraWindow();
 
-	const { message } = useCompleteMessage(messageId);
+	const { message } = useMessageOrFetch(messageId);
 
 	const messagePreviewFactory = useCallback(
 		() => <MessagePreviewPanel folderId={folderId} messageId={messageId} />,

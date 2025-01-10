@@ -26,7 +26,7 @@ import {
 	SearchConvResponse
 } from '../../../types';
 import { CONVERSATION_INDEX_SLICE_INITIAL_STATE } from '../conversations/conversations-index-slice';
-import { useCompleteConversation, useCompleteMessage } from '../hooks/hooks';
+import { useCompleteConversation, useMessageOrFetch } from '../hooks/hooks';
 import { MESSAGE_INDEX_SLICE_INITIAL_STATE } from '../messages/messages-slice';
 import { deleteMessagesFromConversation } from '../populated-items/utils';
 import { SEARCH_INDEX_SLICE_INITIAL_STATE } from '../search/search-slice';
@@ -117,7 +117,7 @@ describe('Searches store hooks', () => {
 
 	describe('useCompleteMessage', () => {
 		it('should return undefined message and status if no data in store', async () => {
-			const { result } = renderHook(() => useCompleteMessage('1'));
+			const { result } = renderHook(() => useMessageOrFetch('1'));
 
 			expect(result.current.message).toBeUndefined();
 			expect(result.current.messageStatus).toBeUndefined();
@@ -135,7 +135,7 @@ describe('Searches store hooks', () => {
 			createSoapAPIInterceptor<GetMsgRequest, GetMsgResponse>('GetMsg', response);
 
 			const { result } = renderHook(() => useMessageStatus('1'));
-			renderHook(() => useCompleteMessage('1'));
+			renderHook(() => useMessageOrFetch('1'));
 			await waitFor(() => {
 				expect(result.current).toBe(API_REQUEST_STATUS.fulfilled);
 			});
@@ -157,7 +157,7 @@ describe('Searches store hooks', () => {
 			createSoapAPIInterceptor<GetMsgRequest, GetMsgResponse>('GetMsg', response);
 
 			const { result } = renderHook(() => useMessageStatus('1'));
-			renderHook(() => useCompleteMessage('1'));
+			renderHook(() => useMessageOrFetch('1'));
 			await waitFor(() => {
 				expect(result.current).toBe(API_REQUEST_STATUS.pending);
 			});

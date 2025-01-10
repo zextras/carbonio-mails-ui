@@ -136,7 +136,7 @@ export function retrieveFullMessage(messageId: string): Promise<void> {
 	return handleRetrieveMessage(messageId, (id) => getMsgSoapApi({ msgId: id }));
 }
 
-export function useCompleteMessage(messageId: string): MessageWithStatus {
+export function useMessageOrFetch(messageId: string): MessageWithStatus {
 	const message = useMessageById(messageId);
 	const messageStatus = useMessageStatus(messageId);
 
