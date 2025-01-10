@@ -10,14 +10,13 @@ import type { TFunction } from 'i18next';
 import { find, findIndex, noop } from 'lodash';
 
 import { useRemoveFilter, useAddFilter, useDeleteFilter } from './actions';
-import CreateOutgoingFilterModal from './create-outgoing-filter-modal';
+import CreateFilterModal from './create-filter-modal';
 import DeleteFilterModal from './delete-filter-modal';
 import { FilterContext } from './filter-context';
 import { ModifyFilterModal } from './modify-filter/modify-filter-modal';
 import { modifyOutgoingFilterRules } from '../../../../store/actions/modify-filter-rules';
 import { StoreProvider } from '../../../../store/redux';
 import { Filter } from '../../../../types';
-import CreateFilterModal from './create-filter-modal';
 
 type ListType = {
 	isSelecting: boolean;
