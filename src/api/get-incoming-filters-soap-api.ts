@@ -11,7 +11,7 @@ import { FilterRules } from '../types';
 type GetFilterRulesResponse = {
 	filterRules: FilterRules;
 };
-export const getIncomingFiltersSoapApi = async (): Promise<{ filterRules: FilterRules }> => {
+export const getIncomingFiltersSoapApi = async (): Promise<GetFilterRulesResponse> => {
 	const response = await soapFetch<unknown, GetFilterRulesResponse>('GetFilterRules', {
 		_jsns: 'urn:zimbraMail'
 	}).catch(() => {
