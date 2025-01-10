@@ -6,7 +6,7 @@
 import React from 'react';
 
 import { ConversationMessagePreview } from './conversation-message-preview';
-import { useMessageOrFetch } from '../../../store/emails/hooks/hooks';
+import { useCompleteMessageOrFetch } from '../../../store/emails/hooks/hooks';
 
 export const ConversationMessagePreviewWrapper = ({
 	convMessageId,
@@ -19,7 +19,7 @@ export const ConversationMessagePreviewWrapper = ({
 	isInsideExtraWindow: boolean;
 	isAlone: boolean;
 }): React.JSX.Element => {
-	const { message } = useMessageOrFetch(convMessageId);
+	const { message } = useCompleteMessageOrFetch(convMessageId);
 	return message ? (
 		<ConversationMessagePreview
 			key={message.id}

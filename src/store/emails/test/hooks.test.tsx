@@ -26,7 +26,7 @@ import {
 	SearchConvResponse
 } from '../../../types';
 import { CONVERSATION_INDEX_SLICE_INITIAL_STATE } from '../conversations/conversations-index-slice';
-import { useCompleteConversation, useMessageOrFetch } from '../hooks/hooks';
+import { useCompleteConversation, useCompleteMessageOrFetch } from '../hooks/hooks';
 import { MESSAGE_INDEX_SLICE_INITIAL_STATE } from '../messages/messages-slice';
 import { deleteMessagesFromConversation } from '../populated-items/utils';
 import { SEARCH_INDEX_SLICE_INITIAL_STATE } from '../search/search-slice';
@@ -115,7 +115,7 @@ describe('Searches store hooks', () => {
 		});
 	});
 
-	describe('useMessageOrFetch', () => {
+	describe('useCompleteMessageOrFetch', () => {
 		it('should make GetMsgRequest if message is not in the store', async () => {
 			const response: GetMsgResponse = {
 				m: [generateCompleteMessageFromAPI({ id: '1' })]
@@ -126,7 +126,7 @@ describe('Searches store hooks', () => {
 				response
 			);
 
-			renderHook(() => useMessageOrFetch('1'));
+			renderHook(() => useCompleteMessageOrFetch('1'));
 
 			const getMsgRequest = await interceptor;
 
@@ -162,7 +162,7 @@ describe('Searches store hooks', () => {
 			createSoapAPIInterceptor<GetMsgRequest, GetMsgResponse>('GetMsg', response);
 
 			const { result } = renderHook(() => useMessageStatus('1'));
-			renderHook(() => useMessageOrFetch('1'));
+			renderHook(() => useCompleteMessageOrFetch('1'));
 			await waitFor(() => {
 				expect(result.current).toBe(API_REQUEST_STATUS.fulfilled);
 			});
@@ -184,7 +184,7 @@ describe('Searches store hooks', () => {
 			createSoapAPIInterceptor<GetMsgRequest, GetMsgResponse>('GetMsg', response);
 
 			const { result } = renderHook(() => useMessageStatus('1'));
-			renderHook(() => useMessageOrFetch('1'));
+			renderHook(() => useCompleteMessageOrFetch('1'));
 			await waitFor(() => {
 				expect(result.current).toBe(API_REQUEST_STATUS.pending);
 			});

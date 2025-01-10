@@ -17,7 +17,7 @@ import { filter } from 'lodash';
 import { msgActionSoapApi } from '../../../../../api/msg-action-soap-api';
 import { MailMessageRenderer } from '../../../../../commons/mail-message-renderer/mail-message-renderer';
 import SharedInviteReply from '../../../../../integrations/shared-invite-reply';
-import { useMessageOrFetch } from '../../../../../store/emails/hooks/hooks';
+import { useCompleteMessageOrFetch } from '../../../../../store/emails/hooks/hooks';
 import type { OpenEmlPreviewType } from '../../../../../types';
 import AttachmentsBlock from '../attachments-block';
 import ReadReceiptModal from '../read-receipt-modal';
@@ -48,7 +48,7 @@ export const MailPreviewContent = ({
 		});
 	}, [messageId]);
 
-	const { message } = useMessageOrFetch(messageId);
+	const { message } = useCompleteMessageOrFetch(messageId);
 
 	const showAppointmentInvite = useMemo(
 		() =>
