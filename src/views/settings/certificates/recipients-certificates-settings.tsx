@@ -142,7 +142,6 @@ const RecipientsCertificateSettings: FC<RecipientsCertificateSettingsPropsType> 
 				children: (
 					<Container crossAlignment="baseline">
 						<EnterPasswordModal
-							emailAddress=""
 							onPasswordReset={(): void => onCertificatePassword(true)}
 							onConfirm={onPasswordConfirm}
 							onClose={(): void => closeModal?.(id)}

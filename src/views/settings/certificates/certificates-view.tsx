@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, useCallback, useEffect, useMemo } from 'react';
+import React, { FC, useCallback, useEffect, useMemo, useRef } from 'react';
 
 import { Container, FormSection, useModal } from '@zextras/carbonio-design-system';
 import {
@@ -25,6 +25,7 @@ import { usePasswordStore } from '../../../store/zustand/certificates/store';
 const CertificatesView: FC = () => {
 	useUpdateView();
 	const { createModal, closeModal } = useModal();
+	const isExistPasswordCheck = useRef(false);
 	const id = Date.now().toString();
 	const { password } = usePasswordStore();
 
@@ -44,6 +45,7 @@ const CertificatesView: FC = () => {
 
 	const onCertificatePassword = useCallback(
 		(isReset?: boolean): void => {
+			closeModal && closeModal(id);
 			createModal(
 				{
 					id,
@@ -96,12 +98,13 @@ const CertificatesView: FC = () => {
 	);
 
 	useEffect(() => {
-		if (!password || password === '') {
+		if (!isExistPasswordCheck.current && (!password || password === '')) {
+			isExistPasswordCheck.current = true;
 			checkExistEncryptionPassword().then((res) => {
 				onPasswordCheck(res);
 			});
 		}
-	}, [onPasswordCheck, password]);
+	}, [isExistPasswordCheck, onPasswordCheck, password]);
 
 	const title = useMemo(() => t('label.smime_certificates', 'S/MIME Certificates'), []);
 	return (

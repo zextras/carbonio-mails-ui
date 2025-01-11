@@ -5,11 +5,20 @@
  */
 import React, { useCallback, useState } from 'react';
 
-import { Container, Padding, PasswordInput, Row, Text } from '@zextras/carbonio-design-system';
+import {
+	Container,
+	Padding,
+	PasswordInput,
+	Row,
+	Text,
+	useSnackbar
+} from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
 
 import ModalFooter from '../../../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../../../carbonio-ui-commons/components/modals/modal-header';
+import { createEncryptionPassword } from '../../../store/actions/create-password-action';
+import { usePasswordStore } from '../../../store/zustand/certificates/store';
 
 type CertificatePasswordModalPropType = {
 	isReset?: boolean;
@@ -22,7 +31,36 @@ export const CertificatePasswordModal = ({
 	onClose
 }: CertificatePasswordModalPropType): React.JSX.Element => {
 	const [password, setPassword] = useState<string>('');
+	const [confirmPassword, setConfirmPassword] = useState<string>('');
+	const createSnackbar = useSnackbar();
 	const [t] = useTranslation();
+
+	const onPasswordCreate = useCallback(async (): Promise<void> => {
+		createEncryptionPassword(password, isReset).then((res) => {
+			if ('data' in res) {
+				onClose();
+				usePasswordStore.getState().updatePassword(password);
+				createSnackbar({
+					key: `error-on-certificate-upload`,
+					replace: true,
+					severity: 'success',
+					label: 'Password created', // Add translation
+					autoHideTimeout: 3000,
+					hideButton: true
+				});
+			} else {
+				usePasswordStore.getState().updatePassword('');
+				createSnackbar({
+					key: `error-on-certificate-upload`,
+					replace: true,
+					severity: 'error',
+					label: `${res?.error}` || 'Password is incorrect', // Add translation
+					autoHideTimeout: 3000,
+					hideButton: true
+				});
+			}
+		});
+	}, [createSnackbar, isReset, onClose, password]);
 
 	const modalHeaderTitle = !isReset
 		? t(
@@ -31,8 +69,28 @@ export const CertificatePasswordModal = ({
 			)
 		: t('settings.certificatePassword.reset_password', 'Reset Password');
 	const onPasswordConfirm = useCallback(async (): Promise<void> => {
-		console.log('===>> onPasswordConfirm called');
-	}, []);
+		if (password !== confirmPassword) {
+			createSnackbar({
+				key: `error-on-certificate-upload`,
+				replace: true,
+				severity: 'error',
+				label: 'Passwords do not match', // Add translation
+				autoHideTimeout: 3000,
+				hideButton: true
+			});
+		} else if (password.length < 8) {
+			createSnackbar({
+				key: `error-on-certificate-upload`,
+				replace: true,
+				severity: 'error',
+				label: 'Password must be at least 8 characters long', // Add translation
+				autoHideTimeout: 3000,
+				hideButton: true
+			});
+		} else {
+			onPasswordCreate();
+		}
+	}, [confirmPassword, createSnackbar, onPasswordCreate, password]);
 
 	return (
 		<Container mainAlignment="center" crossAlignment="flex-start" height="fit">
@@ -105,9 +163,9 @@ export const CertificatePasswordModal = ({
 					</Row>
 					<Row mainAlignment="flex-start" width="22rem" padding={{ left: 'small' }}>
 						<PasswordInput
-							value={password}
+							value={confirmPassword}
 							onChange={(ev): void => {
-								setPassword && setPassword(ev.target.value);
+								setConfirmPassword && setConfirmPassword(ev.target.value);
 							}}
 							label={t('settings.certificatePassword.confirm_password', 'Confirm Password')}
 							data-testid="confirm_password"
