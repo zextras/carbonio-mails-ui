@@ -127,24 +127,6 @@ const FilterTabs: FC = (): ReactElement => {
 		activeOutgoing
 	);
 
-	const outgoingActionButtonsProps = useMemo(
-		() => ({
-			t,
-			availableList: availableOutgoingList,
-			activeList: activeOutgoingList,
-			selectedFilterType,
-			outgoingFilters: outgoingFiltersCopy,
-			setFetchOutgoingFilters
-		}),
-		[
-			availableOutgoingList,
-			activeOutgoingList,
-			selectedFilterType,
-			outgoingFiltersCopy,
-			setFetchOutgoingFilters
-		]
-	);
-
 	return (
 		<Container crossAlignment="baseline" padding={{ top: 'medium' }}>
 			<FilterContext.Provider
@@ -178,7 +160,11 @@ const FilterTabs: FC = (): ReactElement => {
 							activeList={activeOutgoingList}
 							loading={outgoingLoading}
 						>
-							<OutgoingFilterActions compProps={outgoingActionButtonsProps} />
+							<OutgoingFilterActions
+								availableList={availableOutgoingList}
+								activeList={activeOutgoingList}
+								outgoingFilters={outgoingFilters}
+							/>
 						</MessageFilterTab>
 					)}
 				</Container>

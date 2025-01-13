@@ -5,19 +5,20 @@
  */
 import React, { FC, ReactElement, ReactNode } from 'react';
 
-import { Container, List } from '@zextras/carbonio-design-system';
+import { Container } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
 
 import FilterItem from './filter-item';
 import LoadingShimmer from './loading-shimmer';
+import { FilterListType } from '../../../../types';
 import Heading from '../../components/settings-heading';
-// todo: remove listold
+// TODO: in order to remove the listold we should define the structure of the inner mapped ListItem - is it worth?
 import { ListOld } from '../../list-old';
 
 type MessageFilterProps = {
 	children: ReactNode;
-	availableList: any;
-	activeList: any;
+	availableList: FilterListType;
+	activeList: FilterListType;
 	loading: boolean;
 };
 export const MessageFilterTab: FC<MessageFilterProps> = ({
@@ -57,7 +58,7 @@ export const MessageFilterTab: FC<MessageFilterProps> = ({
 					{loading ? (
 						<LoadingShimmer />
 					) : (
-						<List
+						<ListOld
 							items={availableList.list}
 							selected={availableList.selected}
 							ItemComponent={FilterItem}

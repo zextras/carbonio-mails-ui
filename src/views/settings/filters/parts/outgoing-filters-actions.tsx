@@ -6,8 +6,8 @@
 import React, { FC, ReactElement, useCallback, useContext, useMemo } from 'react';
 
 import { Button, Padding, useModal, useSnackbar } from '@zextras/carbonio-design-system';
-import type { TFunction } from 'i18next';
 import { find, findIndex, noop } from 'lodash';
+import { useTranslation } from 'react-i18next';
 
 import { useRemoveFilter, useAddFilter, useDeleteFilter } from './actions';
 import CreateFilterModal from './create-filter-modal';
@@ -28,16 +28,17 @@ type ListType = {
 	unSelect: () => void;
 };
 type ComponentProps = {
-	compProps: {
-		t: TFunction;
-		availableList: ListType;
-		activeList: ListType;
-		outgoingFilters: Filter[];
-	};
+	availableList: ListType;
+	activeList: ListType;
+	outgoingFilters: Filter[];
 };
-const OutgoingFilterActions: FC<ComponentProps> = ({ compProps }): ReactElement => {
+const OutgoingFilterActions: FC<ComponentProps> = ({
+	availableList,
+	activeList,
+	outgoingFilters
+}): ReactElement => {
 	const createSnackbar = useSnackbar();
-	const { t, availableList, activeList, outgoingFilters } = compProps;
+	const { t } = useTranslation();
 	const { setFetchOutgoingFilters, setOutgoingFilters } = useContext(FilterContext);
 	const disableAdd = useMemo(
 		() => Object.keys(availableList.selected).length <= 0,

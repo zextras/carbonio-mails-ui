@@ -50,6 +50,16 @@ export type Filter = {
 	name: string;
 };
 
+export type FilterListType = {
+	isSelecting: boolean;
+	list: Array<Filter>;
+	moveDown: (arg: number) => void;
+	moveUp: (arg: number) => void;
+	selected: Record<string, boolean>;
+	toggle: (arg: string) => void;
+	unSelect: () => void;
+};
+
 export type FilterRules = [
 	{
 		filterRule: Array<Filter>;
