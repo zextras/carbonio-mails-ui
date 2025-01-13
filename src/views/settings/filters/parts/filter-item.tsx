@@ -35,14 +35,14 @@ type Item = {
 	id: string;
 	name: string;
 };
-type ComponentProps = {
+type FilterItemProps = {
 	selected: boolean;
 	unSelect: () => void;
 	item: Item;
 	listProps: ListPropsType;
 };
 // // TODO remove the any type after the Accordion refactor in the DS
-const FilterItem: FC<any> = ({ item, selected, unSelect, listProps }): ReactElement => {
+const FilterItem: FC<FilterItemProps> = ({ item, selected, unSelect, listProps }): ReactElement => {
 	const { toggle, list, moveDown, moveUp } = listProps;
 	const _onClick = useCallback(() => {
 		unSelect();

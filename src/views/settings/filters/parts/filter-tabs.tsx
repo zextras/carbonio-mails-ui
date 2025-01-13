@@ -91,20 +91,6 @@ const FilterTabs: FC = (): ReactElement => {
 		}
 	}, [dispatch, fetchOutgoingFilters]);
 
-	const moveUp = useCallback(
-		(index: number, list: Array<Filter>, listSetter: (tmp: Filter[]) => void) => {
-			const tmp = list.slice();
-
-			if (index === tmp.length - 1) return;
-			const index2 = index + 1;
-			const itemBelow = tmp[index2];
-			tmp[index + 1] = tmp[index];
-			tmp[index] = itemBelow;
-			listSetter(tmp);
-		},
-		[]
-	);
-
 	const outgoingFiltersCopy = useMemo(() => outgoingFilters?.slice(), [outgoingFilters]);
 	const [activeOutgoing, availableOutgoing] = useMemo(
 		() => [
@@ -129,7 +115,8 @@ const FilterTabs: FC = (): ReactElement => {
 
 	return (
 		<Container crossAlignment="baseline" padding={{ top: 'medium' }}>
-			<FilterContext.Provider
+			{/* We can probably remove this after the nester provider removal */}
+			{/* <FilterContext.Provider
 				value={{
 					incomingFilters,
 					incomingLoading,
@@ -141,37 +128,40 @@ const FilterTabs: FC = (): ReactElement => {
 					setOutgoingFilters,
 					setFetchOutgoingFilters
 				}}
-			>
-				<TabBar
-					background="gray5"
-					items={tabs}
-					selected={selectedFilterType}
-					height="3.75rem"
-					onChange={onChange}
-				/>
-				<Container crossAlignment="flex-start" padding={{ top: 'small' }}>
-					{selectedFilterType === 'incoming-messages' && (
+			> */}
+			<TabBar
+				background="gray5"
+				items={tabs}
+				selected={selectedFilterType}
+				height="3.75rem"
+				onChange={onChange}
+			/>
+			<Container crossAlignment="flex-start" padding={{ top: 'small' }}>
+				{/* re enable after test of provider removal */}
+				{/* {selectedFilterType === 'incoming-messages' && (
 						<IncomingMessageFilterTab selectedFilterType={selectedFilterType} t={t} />
-					)}
-					{selectedFilterType === 'outgoing-messages' && (
-						// <OutgoingMessageFilterTab selectedFilterType={selectedFilterType} t={t} />
-						<MessageFilterTab
+					)} */}
+				{selectedFilterType === 'outgoing-messages' && (
+					// <OutgoingMessageFilterTab selectedFilterType={selectedFilterType} t={t} />
+					<MessageFilterTab
+						availableList={availableOutgoingList}
+						activeList={activeOutgoingList}
+						loading={outgoingLoading}
+					>
+						<OutgoingFilterActions
 							availableList={availableOutgoingList}
 							activeList={activeOutgoingList}
-							loading={outgoingLoading}
-						>
-							<OutgoingFilterActions
-								availableList={availableOutgoingList}
-								activeList={activeOutgoingList}
-								outgoingFilters={outgoingFilters}
-							/>
-						</MessageFilterTab>
-					)}
-				</Container>
+							outgoingFilters={outgoingFilters}
+							setFetchOutgoingFilters={setFetchOutgoingFilters}
+							setOutgoingFilters={setOutgoingFilters}
+						/>
+					</MessageFilterTab>
+				)}
+			</Container>
 
-				<Padding top="medium" />
-				<Divider />
-			</FilterContext.Provider>
+			<Padding top="medium" />
+			<Divider />
+			{/* </FilterContext.Provider> */}
 		</Container>
 	);
 };

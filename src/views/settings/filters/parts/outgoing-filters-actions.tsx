@@ -12,7 +12,6 @@ import { useTranslation } from 'react-i18next';
 import { useRemoveFilter, useAddFilter, useDeleteFilter } from './actions';
 import CreateFilterModal from './create-filter-modal';
 import DeleteFilterModal from './delete-filter-modal';
-import { FilterContext } from './filter-context';
 import { ModifyFilterModal } from './modify-filter/modify-filter-modal';
 import { modifyOutgoingFilterRules } from '../../../../store/actions/modify-filter-rules';
 import { StoreProvider } from '../../../../store/redux';
@@ -31,19 +30,20 @@ type ComponentProps = {
 	availableList: ListType;
 	activeList: ListType;
 	outgoingFilters: Filter[];
+	setFetchOutgoingFilters?: (arg: any) => void;
+	setOutgoingFilters?: (arg: any) => void;
 };
 const OutgoingFilterActions: FC<ComponentProps> = ({
 	availableList,
 	activeList,
-	outgoingFilters
+	outgoingFilters,
+	setFetchOutgoingFilters,
+	setOutgoingFilters
 }): ReactElement => {
 	const createSnackbar = useSnackbar();
 	const { t } = useTranslation();
-	const { setFetchOutgoingFilters, setOutgoingFilters } = useContext(FilterContext);
-	const disableAdd = useMemo(
-		() => Object.keys(availableList.selected).length <= 0,
-		[availableList.selected]
-	);
+	const { selected: availableSelected } = availableList;
+	const disableAdd = useMemo(() => Object.keys(availableSelected).length <= 0, [availableSelected]);
 	const disableRemove = useMemo(
 		() => Object.keys(activeList.selected).length <= 0,
 		[activeList.selected]
@@ -56,9 +56,10 @@ const OutgoingFilterActions: FC<ComponentProps> = ({
 		[availableList, activeList]
 	);
 
+	const activeSelected = activeList.selected;
 	const disableEdit = useMemo(
-		() => !Object.keys(activeList.selected).length && !Object.keys(availableList.selected).length,
-		[activeList.selected, availableList.selected]
+		() => !Object.keys(activeSelected).length && !Object.keys(availableList.selected).length,
+		[activeSelected, availableList.selected]
 	);
 	const disableDelete = useMemo(
 		() => !Object.keys(activeList.selected).length && !Object.keys(availableList.selected).length,
