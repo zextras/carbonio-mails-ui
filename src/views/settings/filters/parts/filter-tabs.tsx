@@ -139,7 +139,6 @@ const FilterTabs: FC = (): ReactElement => {
 						<IncomingMessageFilterTab selectedFilterType={selectedFilterType} t={t} />
 					)} */}
 				{selectedFilterType === 'outgoing-messages' && (
-					// <OutgoingMessageFilterTab selectedFilterType={selectedFilterType} t={t} />
 					<MessageFilterTab
 						availableList={availableOutgoingList}
 						activeList={activeOutgoingList}
