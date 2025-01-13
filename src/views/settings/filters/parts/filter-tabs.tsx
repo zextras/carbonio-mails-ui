@@ -3,31 +3,15 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
 
 import { Container, Divider, Padding, TabBar, TabBarProps } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
-import { filter, map } from 'lodash';
 
+import { getFilterActions } from './filter-actions';
 import { MessageFilterTab } from './message-filter-tab';
-import OutgoingFilterActions from './outgoing-filters-actions';
-import { useFilterSelection } from './use-filter-selection';
-import { useAppDispatch } from '../../../../hooks/redux';
-import { useUiUtilities } from '../../../../hooks/use-ui-utilities';
 import { getIncomingFilters } from '../../../../store/actions/get-incoming-filters';
 import { getOutgoingFilters } from '../../../../store/actions/get-outgoing-filters';
-import {
-	modifyFilterRules,
-	modifyOutgoingFilterRules
-} from '../../../../store/actions/modify-filter-rules';
-
-type Item = {
-	active: boolean;
-	filterActions: Array<any>;
-	filterTests: Array<any>;
-	id?: string;
-	name: string;
-};
 
 const FilterTabs: FC = (): ReactElement => {
 	const [selectedFilterType, setSelectedFilterType] = useState('incoming-messages');
@@ -47,111 +31,9 @@ const FilterTabs: FC = (): ReactElement => {
 	const onChange = useCallback<TabBarProps['onChange']>((ev, selectedId) => {
 		setSelectedFilterType(selectedId);
 	}, []);
-	const dispatch = useAppDispatch();
-	const [incomingFilters, setIncomingFilters] = useState<Array<Item>>([]);
-	const [incomingLoading, setIncomingLoading] = useState(true);
-	const [outgoingLoading, setOutgoingLoading] = useState(true);
-	const [outgoingFilters, setOutgoingFilters] = useState<Array<Item>>([]);
-	const [fetchIncomingFilters, setFetchIncomingFilters] = useState(true);
-	const [fetchOutgoingFilters, setFetchOutgoingFilters] = useState(true);
-	const { createSnackbar } = useUiUtilities();
-
-	useEffect(() => {
-		if (fetchIncomingFilters) {
-			getIncomingFilters()
-				.then(({ filterRules }) => {
-					setIncomingLoading(false);
-					setIncomingFilters(filterRules?.[0]?.filterRule);
-					setFetchIncomingFilters(false);
-				})
-				.catch((error) => {
-					createSnackbar({
-						key: `share`,
-						replace: true,
-						hideButton: true,
-						severity: 'error',
-						label:
-							error?.message ||
-							t('label.error_try_again', 'Something went wrong, please try again'),
-						autoHideTimeout: 5000
-					});
-					setIncomingLoading(false);
-					setFetchIncomingFilters(false);
-				});
-		}
-	}, [createSnackbar, dispatch, fetchIncomingFilters]);
-
-	useEffect(() => {
-		if (fetchOutgoingFilters) {
-			dispatch(getOutgoingFilters()).then((res) => {
-				setOutgoingLoading(false);
-				setOutgoingFilters(res?.payload?.filterRules?.[0]?.filterRule);
-				setFetchOutgoingFilters(false);
-			});
-		}
-	}, [dispatch, fetchOutgoingFilters]);
-
-	const outgoingFiltersCopy = useMemo(() => outgoingFilters?.slice(), [outgoingFilters]);
-	const incomingFiltersCopy = useMemo(() => incomingFilters?.slice(), [incomingFilters]);
-	const [activeOutgoing, availableOutgoing] = useMemo(
-		() => [
-			map(filter(outgoingFiltersCopy, { active: true }), (f) => ({ ...f, id: f.name })),
-			map(filter(outgoingFiltersCopy, { active: false }), (f) => ({ ...f, id: f.name }))
-		],
-		[outgoingFiltersCopy]
-	);
-
-	const [activeIncoming, availableIncoming] = useMemo(
-		() => [
-			map(filter(incomingFiltersCopy, { active: true }), (f) => ({ ...f, id: f.name })),
-			map(filter(incomingFiltersCopy, { active: false }), (f) => ({ ...f, id: f.name }))
-		],
-		[incomingFiltersCopy]
-	);
-
-	const activeIncomingList = useFilterSelection(
-		activeIncoming,
-		setFetchIncomingFilters,
-		modifyFilterRules,
-		availableIncoming
-	);
-
-	const availableIncomingList = useFilterSelection(
-		availableIncoming,
-		setFetchIncomingFilters,
-		modifyFilterRules,
-		activeIncoming
-	);
-
-	const activeOutgoingList = useFilterSelection(
-		activeOutgoing,
-		setFetchOutgoingFilters,
-		modifyOutgoingFilterRules,
-		availableOutgoing
-	);
-	const availableOutgoingList = useFilterSelection(
-		availableOutgoing,
-		setFetchOutgoingFilters,
-		modifyOutgoingFilterRules,
-		activeOutgoing
-	);
 
 	return (
 		<Container crossAlignment="baseline" padding={{ top: 'medium' }}>
-			{/* We can probably remove this after the nester provider removal */}
-			{/* <FilterContext.Provider
-				value={{
-					incomingFilters,
-					incomingLoading,
-					outgoingFilters,
-					outgoingLoading,
-					setFetchIncomingFilters,
-					moveUp,
-					setIncomingFilters,
-					setOutgoingFilters,
-					setFetchOutgoingFilters
-				}}
-			> */}
 			<TabBar
 				background="gray5"
 				items={tabs}
@@ -162,39 +44,20 @@ const FilterTabs: FC = (): ReactElement => {
 			<Container crossAlignment="flex-start" padding={{ top: 'small' }}>
 				{selectedFilterType === 'incoming-messages' && (
 					<MessageFilterTab
-						availableList={availableIncomingList}
-						activeList={activeIncomingList}
-						loading={incomingLoading}
-					>
-						<OutgoingFilterActions
-							availableList={availableIncomingList}
-							activeList={activeIncomingList}
-							outgoingFilters={incomingFilters}
-							setFetchOutgoingFilters={setFetchIncomingFilters}
-							setOutgoingFilters={setIncomingFilters}
-						/>
-					</MessageFilterTab>
+						getFilters={getIncomingFilters}
+						FilterActionsComponent={getFilterActions(true)}
+					/>
 				)}
 				{selectedFilterType === 'outgoing-messages' && (
 					<MessageFilterTab
-						availableList={availableOutgoingList}
-						activeList={activeOutgoingList}
-						loading={outgoingLoading}
-					>
-						<OutgoingFilterActions
-							availableList={availableOutgoingList}
-							activeList={activeOutgoingList}
-							outgoingFilters={outgoingFilters}
-							setFetchOutgoingFilters={setFetchOutgoingFilters}
-							setOutgoingFilters={setOutgoingFilters}
-						/>
-					</MessageFilterTab>
+						getFilters={getOutgoingFilters}
+						FilterActionsComponent={getFilterActions(false)}
+					/>
 				)}
 			</Container>
 
 			<Padding top="medium" />
 			<Divider />
-			{/* </FilterContext.Provider> */}
 		</Container>
 	);
 };
