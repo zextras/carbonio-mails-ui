@@ -7,9 +7,10 @@ import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
 
 import { Container, Text, Row, Icon, Padding } from '@zextras/carbonio-design-system';
 import styled from 'styled-components';
+
 import { Filter } from '../../../../types';
 
-const Filter = styled(Row)`
+const StyledFilterRow = styled(Row)`
 	border-bottom: 0.0625rem solid ${({ theme }): string => theme.palette.gray2.regular};
 	display: block;
 	border-radius: 0;
@@ -62,7 +63,7 @@ export const FilterItem: FC<FilterItemProps> = ({
 	const onMoveDown = useCallback(() => moveDown(index), [index, moveDown]);
 
 	return (
-		<Filter
+		<StyledFilterRow
 			onClick={_onClick}
 			height="fit"
 			background={background}
@@ -97,6 +98,6 @@ export const FilterItem: FC<FilterItemProps> = ({
 					)}
 				</Container>
 			</Row>
-		</Filter>
+		</StyledFilterRow>
 	);
 };

@@ -3,13 +3,12 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, ReactElement, ReactNode, useCallback, useMemo } from 'react';
+import React, { FC, ReactElement, ReactNode } from 'react';
 
-import { Container, List, ListItem } from '@zextras/carbonio-design-system';
-import { map } from 'lodash';
+import { Container } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
 
-import { FilterItem } from './filter-item';
+import { FilterList } from './filter-list';
 import LoadingShimmer from './loading-shimmer';
 import { FilterListType } from '../../../../types';
 import Heading from '../../components/settings-heading';
@@ -27,55 +26,25 @@ export const MessageFilterTab: FC<MessageFilterProps> = ({
 	loading
 }): ReactElement => {
 	const { t } = useTranslation();
-	const disableMoveUp = useCallback((index: number) => index === 0, []);
-	const disableMoveDown = useCallback(
-		(index: number) => index === activeList.list.length - 1,
-		[activeList.list.length]
-	);
-
-	function generateList(
-		activeList: FilterListType,
-		availableList: FilterListType,
-		disableMoveUp: (index: number) => boolean,
-		disableMoveDown: (index: number) => boolean
-	): () => React.JSX.Element[] {
-		return () =>
-			map(activeList.list, (activeFilter, index) => {
-				const isSelected = activeList.selected[activeFilter.name];
-				return (
-					<ListItem key={`filter-item-${index}`}>
-						{(visible: boolean): React.JSX.Element =>
-							visible ? (
-								<FilterItem
-									index={index}
-									selected={isSelected}
-									unSelect={availableList.unSelect}
-									item={activeFilter}
-									moveDown={activeList.moveDown}
-									moveUp={activeList.moveUp}
-									toggle={activeList.toggle}
-									disableMoveUp={disableMoveUp(index)}
-									disableMoveDown={disableMoveDown(index)}
-								/>
-							) : (
-								<></>
-							)
-						}
-					</ListItem>
-				);
-			});
-	}
-
-	const activeListItems = useMemo(
-		() => generateList(activeList, availableList, disableMoveUp, disableMoveDown),
-		[activeList, availableList, disableMoveDown, disableMoveUp]
-	);
 
 	return (
 		<Container crossAlignment="flex-start" mainAlignment="flex-start" orientation="horizontal">
 			<Container width="43%" minHeight="30vh" mainAlignment="flex-start">
 				<Heading title={t('filters.active_filters', 'Active Filters')} size="small" />
-				<Container>{loading ? <LoadingShimmer /> : <List>{activeListItems}</List>}</Container>
+				<Container>
+					{loading ? (
+						<LoadingShimmer />
+					) : (
+						<FilterList
+							filters={activeList.list}
+							selected={activeList.selected}
+							unSelect={availableList.unSelect}
+							moveDown={activeList.moveDown}
+							moveUp={activeList.moveUp}
+							toggle={activeList.toggle}
+						/>
+					)}
+				</Container>
 			</Container>
 			<Container width="14%" padding={{ all: 'large' }} mainAlignment="space-between">
 				{children}
@@ -86,14 +55,13 @@ export const MessageFilterTab: FC<MessageFilterProps> = ({
 					{loading ? (
 						<LoadingShimmer />
 					) : (
-						<ListFilterItem
-							items={availableList.list}
+						<FilterList
+							filters={availableList.list}
 							selected={availableList.selected}
-							ItemComponent={FilterItem}
-							itemProps={{
-								listProps: availableList,
-								unSelect: activeList.unSelect
-							}}
+							unSelect={activeList.unSelect}
+							moveDown={availableList.moveDown}
+							moveUp={availableList.moveUp}
+							toggle={availableList.toggle}
 						/>
 					)}
 				</Container>

@@ -16,7 +16,10 @@ import { useAppDispatch } from '../../../../hooks/redux';
 import { useUiUtilities } from '../../../../hooks/use-ui-utilities';
 import { getIncomingFilters } from '../../../../store/actions/get-incoming-filters';
 import { getOutgoingFilters } from '../../../../store/actions/get-outgoing-filters';
-import { modifyOutgoingFilterRules } from '../../../../store/actions/modify-filter-rules';
+import {
+	modifyFilterRules,
+	modifyOutgoingFilterRules
+} from '../../../../store/actions/modify-filter-rules';
 
 type Item = {
 	active: boolean;
@@ -89,12 +92,35 @@ const FilterTabs: FC = (): ReactElement => {
 	}, [dispatch, fetchOutgoingFilters]);
 
 	const outgoingFiltersCopy = useMemo(() => outgoingFilters?.slice(), [outgoingFilters]);
+	const incomingFiltersCopy = useMemo(() => incomingFilters?.slice(), [incomingFilters]);
 	const [activeOutgoing, availableOutgoing] = useMemo(
 		() => [
 			map(filter(outgoingFiltersCopy, { active: true }), (f) => ({ ...f, id: f.name })),
 			map(filter(outgoingFiltersCopy, { active: false }), (f) => ({ ...f, id: f.name }))
 		],
 		[outgoingFiltersCopy]
+	);
+
+	const [activeIncoming, availableIncoming] = useMemo(
+		() => [
+			map(filter(incomingFiltersCopy, { active: true }), (f) => ({ ...f, id: f.name })),
+			map(filter(incomingFiltersCopy, { active: false }), (f) => ({ ...f, id: f.name }))
+		],
+		[incomingFiltersCopy]
+	);
+
+	const activeIncomingList = useFilterSelection(
+		activeIncoming,
+		setFetchIncomingFilters,
+		modifyFilterRules,
+		availableIncoming
+	);
+
+	const availableIncomingList = useFilterSelection(
+		availableIncoming,
+		setFetchIncomingFilters,
+		modifyFilterRules,
+		activeIncoming
 	);
 
 	const activeOutgoingList = useFilterSelection(
@@ -134,10 +160,21 @@ const FilterTabs: FC = (): ReactElement => {
 				onChange={onChange}
 			/>
 			<Container crossAlignment="flex-start" padding={{ top: 'small' }}>
-				{/* re enable after test of provider removal */}
-				{/* {selectedFilterType === 'incoming-messages' && (
-						<IncomingMessageFilterTab selectedFilterType={selectedFilterType} t={t} />
-					)} */}
+				{selectedFilterType === 'incoming-messages' && (
+					<MessageFilterTab
+						availableList={availableIncomingList}
+						activeList={activeIncomingList}
+						loading={incomingLoading}
+					>
+						<OutgoingFilterActions
+							availableList={availableIncomingList}
+							activeList={activeIncomingList}
+							outgoingFilters={incomingFilters}
+							setFetchOutgoingFilters={setFetchIncomingFilters}
+							setOutgoingFilters={setIncomingFilters}
+						/>
+					</MessageFilterTab>
+				)}
 				{selectedFilterType === 'outgoing-messages' && (
 					<MessageFilterTab
 						availableList={availableOutgoingList}
