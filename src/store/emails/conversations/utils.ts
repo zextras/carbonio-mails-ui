@@ -99,26 +99,10 @@ function appendConversationsToConversationIndexSlice(
 	);
 }
 
-function deleteConversationsFromConversationSlice(
-	ids: Array<string>,
-	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
-): void {
-	useEmailsStore.setState(
-		produce((state: EmailsStoreState) => {
-			state.conversationIndexSlice.conversationListIndex =
-				state.conversationIndexSlice.conversationListIndex.filter((id) => !ids.includes(id));
-			ids.forEach((id) => {
-				delete state.populatedItemsSlice.conversations[id];
-			});
-		})
-	);
-}
-
 export const conversationIndexSliceUtils = {
 	setConversations,
 	useConversationsIdsByFolder,
 	resetConversationAndPopulatedItems,
 	appendConversationsToConversationIndexSlice,
-	updateConversationsResultsLoadingStatus,
-	deleteConversationsFromConversationSlice
+	updateConversationsResultsLoadingStatus
 };

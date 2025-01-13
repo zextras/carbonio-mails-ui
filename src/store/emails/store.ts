@@ -457,23 +457,39 @@ export function useMessageLoadingStatus(): SearchRequestStatus {
 	return useEmailsStore(({ messageIndexSlice }) => messageIndexSlice.status);
 }
 
-// ################################
+// #################################################
 // #### conversationIndexSlice related functions
-// ################################
-
+// #################################################
+/**
+ * Provides access to the `conversationIndexSlice` from the emails store.
+ * This function retrieves the `conversationIndexSlice` state for use in other components or logic.
+ */
 export function useConversationIndexSlice(): EmailsStoreState['conversationIndexSlice'] {
 	return useEmailsStore(({ conversationIndexSlice }) => conversationIndexSlice);
 }
+
+/**
+ * Retrieves the list of conversation IDs that belong to a specific folder from the store.
+ * This function filters conversation IDs based on the folder ID and the messages' parent references.
+ */
 export function useConversationsIdsByFolder(folderId: string): Array<string> {
 	return conversationIndexSliceUtils.useConversationsIdsByFolder(folderId, useEmailsStore);
 }
 
-export function resetConversationAndPopulatedItems(): void {
+/**
+ * Resets the `conversationIndexSlice` and `populatedItemsSlice` in the store to their initial states.
+ * This function clears the data in both slices, restoring them to their predefined initial states.
+ */
+function resetConversationAndPopulatedItems(): void {
 	addTask(async () => {
 		conversationIndexSliceUtils.resetConversationAndPopulatedItems(useEmailsStore);
 	});
 }
 
+/**
+ * Appends new conversations to the `conversationIndexSlice` and `populatedItemsSlice` in the store.
+ * This function adds new conversation IDs to the existing list, updates the offset, and merges the new conversations into the `populatedItemsSlice`.
+ */
 export function appendConversationsToConversationIndexSlice(
 	conversations: Array<NormalizedConversation>,
 	offset: number
@@ -487,6 +503,10 @@ export function appendConversationsToConversationIndexSlice(
 	});
 }
 
+/**
+ * Updates the loading status of the conversations results in the `conversationIndexSlice`.
+ * This function modifies the `status` in the `conversationIndexSlice` to reflect the provided loading state.
+ */
 export function updateConversationsResultsLoadingStatus(status: SearchRequestStatus): void {
 	addTask(async () => {
 		useEmailsStore.setState((state) => ({
@@ -499,21 +519,25 @@ export function updateConversationsResultsLoadingStatus(status: SearchRequestSta
 	});
 }
 
+/**
+ * Retrieves the loading status of the conversations results from the `conversationIndexSlice`.
+ * This function accesses the `status` in the `conversationIndexSlice` to indicate the current loading state of conversation results.
+ */
 export function useConversationsResultsLoadingStatus(): SearchRequestStatus {
 	return useEmailsStore(({ conversationIndexSlice }) => conversationIndexSlice.status);
 }
 
+/**
+ * Sets a list of conversations in the store and updates related state in both the `conversationIndexSlice` and `populatedItemsSlice`.
+ * This function updates the list of conversation IDs, status, offset, and the `more` flag in the `conversationIndexSlice`,
+ * and sets the conversations in the `populatedItemsSlice`.
+ */
 export function setConversationsInEmailStore(
 	conversations: Array<NormalizedConversation>,
 	more: boolean
 ): void {
 	addTask(async () => {
 		conversationIndexSliceUtils.setConversations(conversations, more, useEmailsStore);
-	});
-}
-export function deleteConversationsFromConversationSlice(ids: Array<string>): void {
-	addTask(async () => {
-		conversationIndexSliceUtils.deleteConversationsFromConversationSlice(ids, useEmailsStore);
 	});
 }
 
@@ -593,6 +617,12 @@ export function getUseEmailStoreAndHooksForTesting(): {
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState & TaskManagement>>;
 	setMessagesInSearchSlice: typeof setMessagesInSearchSlice;
 	usePopulatedItemsSlice: typeof usePopulatedItemsSlice;
+	resetConversationAndPopulatedItems: typeof resetConversationAndPopulatedItems;
 } {
-	return { useEmailsStore, setMessagesInSearchSlice, usePopulatedItemsSlice };
+	return {
+		useEmailsStore,
+		setMessagesInSearchSlice,
+		usePopulatedItemsSlice,
+		resetConversationAndPopulatedItems
+	};
 }

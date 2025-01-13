@@ -9,7 +9,6 @@ import { CONVERSATION_INDEX_SLICE_INITIAL_STATE } from './conversations/conversa
 import { POPULATED_ITEMS_SLICE_INITIAL_STATE } from './populated-items/populated-items-slice';
 import {
 	appendConversationsToConversationIndexSlice,
-	resetConversationAndPopulatedItems,
 	setConversationsInEmailStore,
 	updateConversationsResultsLoadingStatus,
 	useConversationById,
@@ -172,7 +171,9 @@ describe('resetConversationsAndPopulatedItems', () => {
 			setConversationsInEmailStore([conversation1], true);
 			const { result: initialState } = renderHook(() => useConversationIndexSlice());
 			expect(initialState.current.conversationListIndex).toEqual(['1']);
-			await act(async () => resetConversationAndPopulatedItems());
+			await act(async () =>
+				getUseEmailStoreAndHooksForTesting().resetConversationAndPopulatedItems()
+			);
 			const { result } = renderHook(() => useConversationIndexSlice());
 			expect(result.current).toEqual(CONVERSATION_INDEX_SLICE_INITIAL_STATE);
 		});
@@ -181,7 +182,9 @@ describe('resetConversationsAndPopulatedItems', () => {
 			setConversationsInEmailStore([conversation1], true);
 			const { result: initialState } = renderHook(() => useConversationIndexSlice());
 			expect(initialState.current.conversationListIndex).toEqual(['1']);
-			await act(async () => resetConversationAndPopulatedItems());
+			await act(async () =>
+				getUseEmailStoreAndHooksForTesting().resetConversationAndPopulatedItems()
+			);
 			const { result } = renderHook(() =>
 				getUseEmailStoreAndHooksForTesting().usePopulatedItemsSlice()
 			);
