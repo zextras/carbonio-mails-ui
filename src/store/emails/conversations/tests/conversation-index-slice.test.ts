@@ -5,8 +5,10 @@
  */
 import { act, renderHook } from '@testing-library/react';
 
-import { CONVERSATION_INDEX_SLICE_INITIAL_STATE } from './conversations/conversations-index-slice';
-import { POPULATED_ITEMS_SLICE_INITIAL_STATE } from './populated-items/populated-items-slice';
+import { useFolderStore } from '../../../../carbonio-ui-commons/store/zustand/folder';
+import { generateFolder } from '../../../../carbonio-ui-commons/test/mocks/folders/folders-generator';
+import { generateConversation } from '../../../../tests/generators/generateConversation';
+import { POPULATED_ITEMS_SLICE_INITIAL_STATE } from '../../populated-items/populated-items-slice';
 import {
 	appendConversationsToConversationIndexSlice,
 	setConversationsInEmailStore,
@@ -17,10 +19,8 @@ import {
 	useConversationsIdsByFolder,
 	updateConversations,
 	getUseEmailStoreAndHooksForTesting
-} from './store';
-import { useFolderStore } from '../../carbonio-ui-commons/store/zustand/folder';
-import { generateFolder } from '../../carbonio-ui-commons/test/mocks/folders/folders-generator';
-import { generateConversation } from '../../tests/generators/generateConversation';
+} from '../../store';
+import { CONVERSATION_INDEX_SLICE_INITIAL_STATE } from '../conversations-index-slice';
 
 describe('useConversationIndexSlice', () => {
 	it('should return the conversationsSlice state', async () => {

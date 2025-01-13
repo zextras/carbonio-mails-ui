@@ -7,15 +7,15 @@
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { cloneDeep, map, reduce } from 'lodash';
 
-import * as getMsg from '../../../api/get-msg-soap-api';
-import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
-import { API_REQUEST_STATUS } from '../../../constants';
+import * as getMsg from '../../../../api/get-msg-soap-api';
+import { createSoapAPIInterceptor } from '../../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
+import { API_REQUEST_STATUS } from '../../../../constants';
 import {
 	generateCompleteMessageFromAPI,
 	generateConvMessageFromAPI
-} from '../../../tests/generators/api';
-import { generateConversation } from '../../../tests/generators/generateConversation';
-import { generateMessage } from '../../../tests/generators/generateMessage';
+} from '../../../../tests/generators/api';
+import { generateConversation } from '../../../../tests/generators/generateConversation';
+import { generateMessage } from '../../../../tests/generators/generateMessage';
 import {
 	ConvMessage,
 	EmailsStoreState,
@@ -25,12 +25,11 @@ import {
 	PopulatedItemsSliceState,
 	SearchConvRequest,
 	SearchConvResponse
-} from '../../../types';
-import { CONVERSATION_INDEX_SLICE_INITIAL_STATE } from '../conversations/conversations-index-slice';
-import { useCompleteConversationOrFetch, useCompleteMessageOrFetch } from '../hooks/hooks';
-import { MESSAGE_INDEX_SLICE_INITIAL_STATE } from '../messages/messages-slice';
-import { deleteMessagesFromConversation } from '../populated-items/utils';
-import { SEARCH_INDEX_SLICE_INITIAL_STATE } from '../search/search-slice';
+} from '../../../../types';
+import { CONVERSATION_INDEX_SLICE_INITIAL_STATE } from '../../conversations/conversations-index-slice';
+import { MESSAGE_INDEX_SLICE_INITIAL_STATE } from '../../messages/messages-slice';
+import { deleteMessagesFromConversation } from '../../populated-items/utils';
+import { SEARCH_INDEX_SLICE_INITIAL_STATE } from '../../search/search-slice';
 import {
 	setMessagesInEmailStore,
 	setSearchResultsByConversation,
@@ -39,7 +38,8 @@ import {
 	updateMessageStatus,
 	useConversationStatus,
 	useMessageStatus
-} from '../store';
+} from '../../store';
+import { useCompleteConversationOrFetch, useCompleteMessageOrFetch } from '../hooks';
 
 describe('Searches store hooks', () => {
 	describe('useCompleteConversation', () => {
