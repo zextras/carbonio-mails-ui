@@ -59,7 +59,7 @@ function handleFulFilledMessagesResults({
 	searchResponse: SearchResponse;
 }): void {
 	const normalizedMessages = map(searchResponse.m, (msg) =>
-		normalizeMailMessageFromSoap(msg, false)
+		normalizeMailMessageFromSoap(msg, true)
 	);
 
 	setSearchResultsByMessage(normalizedMessages, searchResponse.more);
