@@ -39,7 +39,7 @@ describe('emails store search slice', () => {
 			expect(renderHook(() => useSearchResults()).result.current.messageListIndex).toEqual([]);
 		});
 
-		it.skip('should remove conversations that are not in conversationListIndex while keeping the ones that are', async () => {
+		it('should remove conversations that are not in conversationListIndex while keeping the ones that are', async () => {
 			const conversation1 = generateConversation({ id: '1' });
 			const conversation2 = generateConversation({ id: '2' });
 			setConversationsInEmailStore([conversation1], false);
@@ -54,7 +54,22 @@ describe('emails store search slice', () => {
 			});
 		});
 
-		it.skip('should remove messages that are not in messageListIndex while keeping the ones that are', async () => {});
+		it('should remove messages that are not in messageListIndex while keeping the ones that are', async () => {
+			const message1 = generateMessage({ id: '1' });
+			const message2 = generateMessage({ id: '2' });
+			setMessagesInSearchSlice([message1]);
+			await act(async () => {
+				setSearchResultsByMessage([message1, message2], false);
+			});
+			resetSearchAndPopulatedItems();
+
+			await act(async () => {
+				expect(renderHook(() => useMessageById('1')).result.current).toBeDefined();
+			});
+			await waitFor(async () => {
+				expect(renderHook(() => useMessageById('2')).result.current).toBeUndefined();
+			});
+		});
 	});
 
 	describe('setMessagesInSearchSlice', () => {

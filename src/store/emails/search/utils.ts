@@ -39,7 +39,7 @@ function resetSearchAndPopulatedItems(
 			Object.keys(state.populatedItemsSlice.conversations)
 				.filter((convId) => !validConversations.has(convId))
 				.forEach((convId) => {
-					delete state.populatedItemsSlice.messages[convId];
+					delete state.populatedItemsSlice.conversations[convId];
 				});
 		})
 	);
