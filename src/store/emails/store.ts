@@ -245,9 +245,13 @@ function setMessagesInSearchSlice(messages: Array<MailMessage | IncompleteMessag
 	});
 }
 
-// ################################
-// #### Populated Items related functions
-// ################################
+// ###########################################
+// #### populatedItemsSlice related functions
+// ###########################################
+/**
+ * Retrieves messages belonging to a specific conversation from the store.
+ * This function compiles an array of messages associated with the given conversation ID.
+ */
 export function useConversationMessages(
 	conversationId: string
 ): Array<MailMessage | IncompleteMessage> {
@@ -261,51 +265,85 @@ export function useConversationById(id: string): NormalizedConversation {
 	return useEmailsStore(({ populatedItemsSlice }) => populatedItemsSlice.conversations[id]);
 }
 
-export function usePopulatedItemsSlice(): PopulatedItemsSliceState['populatedItemsSlice'] {
+/**
+ * Provides access to the populated items slice from the emails store.
+ * This function retrieves the `populatedItemsSlice` state.
+ */
+function usePopulatedItemsSlice(): PopulatedItemsSliceState['populatedItemsSlice'] {
 	return useEmailsStore((state) => state.populatedItemsSlice);
 }
+
+/**
+ * Retrieves a message by its id from the `populatedItemsSlice`.
+ * This function accesses the emails store to fetch the corresponding message.
+ */
 export function getMessageById(id: string): IncompleteMessage | MailMessage {
 	return useEmailsStore.getState().populatedItemsSlice.messages[id];
 }
 
 /**
- * Queues a task to update the state with modified conversation data.
- *
- * @param updatedConversations - An array of updated conversation objects, each containing an `id`
- * and other properties to update in the state.
+ * Updates the state with modified conversation data.
  */
-
 export function updateConversations(updatedConversations: Array<NormalizedConversation>): void {
 	addTask(async () => {
 		populatedItemsSliceUtils.updateConversations(updatedConversations, useEmailsStore);
 	});
 }
 
+/**
+ * Retrieves a conversation by its ID from the populated items slice.
+ * This function directly accesses the emails store to fetch the corresponding conversation.
+ */
 export function getConversationById(id: string): NormalizedConversation {
 	return useEmailsStore.getState().populatedItemsSlice.conversations[id];
 }
 
+/**
+ * Provides access to a specific message by its ID from the populated items slice.
+ * This function retrieves the message using the provided store selector.
+ */
 export function useMessageById(id: string): IncompleteMessage | MailMessage {
 	return useEmailsStore(({ populatedItemsSlice }) => populatedItemsSlice.messages[id]);
 }
+
+/**
+ * Retrieves messages corresponding to a list of unique identifiers from the `populatedItemsSlice`.
+ * This function filters and returns only the valid messages from the emails store.
+ */
 export function useMessagesByIds(ids: Array<string>): Array<IncompleteMessage | MailMessage> {
 	return populatedItemsSliceUtils.useMessagesByIds(ids, useEmailsStore);
 }
 
+/**
+ * Retrieves conversations corresponding to a list of unique identifiers from the `populatedItemsSlice`.
+ * This function filters and returns only the conversations that match the provided IDs.
+ */
 export function useConversationsByIds(ids: Array<string>): Array<NormalizedConversation> {
 	return populatedItemsSliceUtils.useConversationsByIds(ids, useEmailsStore);
 }
 
+/**
+ * Retrieves the status of a specific conversation by its unique identifier from the `populatedItemsSlice`.
+ * This function accesses the conversation status in the emails store.
+ */
 export function useConversationStatus(id: string): SearchRequestStatus {
 	return useEmailsStore(({ populatedItemsSlice }) => populatedItemsSlice.conversationsStatus?.[id]);
 }
 
+/**
+ * Updates the messages in the `populatedItemsSlice` of the emails store.
+ * This function modifies the store state to include the provided messages, indexed by their unique identifiers.
+ */
 export function updateMessages(messages: MailMessage[]): void {
 	addTask(async () => {
 		populatedItemsSliceUtils.updateMessages(messages, useEmailsStore);
 	});
 }
 
+/**
+ * Updates the status of a specific conversation in the `populatedItemsSlice` of the emails store.
+ * This function modifies the store state to set the provided status for the given conversation ID.
+ */
 export function updateConversationStatus(
 	conversationId: string,
 	status: SearchRequestStatus
@@ -315,11 +353,20 @@ export function updateConversationStatus(
 	});
 }
 
+/**
+ * Updates the status of a specific message in the `populatedItemsSlice` of the emails store.
+ * This function modifies the store state to set the provided status for the given message ID.
+ */
 export function updateMessageStatus(messageId: string, status: SearchRequestStatus): void {
 	addTask(async () => {
 		populatedItemsSliceUtils.updateMessageStatus(messageId, status, useEmailsStore);
 	});
 }
+
+/**
+ * Retrieves the status of a specific message from the `populatedItemsSlice`.
+ * This function accesses the `populatedItemsSlice` to get the status of the given message ID.
+ */
 export function useMessageStatus(id: string): SearchRequestStatus {
 	return useEmailsStore((state) => state.populatedItemsSlice.messagesStatus?.[id]);
 }
@@ -328,14 +375,27 @@ export function useMessageStatus(id: string): SearchRequestStatus {
 // #### messageIndexSlice related functions
 // ###########################################
 
+/**
+ * Provides access to the `messageIndexSlice` from the emails store.
+ * This function retrieves the `messageIndexSlice` state for use in other components or logic.
+ */
 export function useMessageIndexSlice(): EmailsStoreState['messageIndexSlice'] {
 	return useEmailsStore(({ messageIndexSlice }) => messageIndexSlice);
 }
 
+/**
+ * Retrieves the list of message IDs for a specific folder from the `messageIndexSlice` and `populatedItemsSlice`.
+ * This function filters the message IDs based on the folder ID and checks if the messages belong to the specified folder.
+ */
 export function useMessagesIdsByFolder(folderId: string): Array<string> {
 	return messageIndexSliceUtils.useMessagesIdsByFolder(folderId, useEmailsStore);
 }
 
+/**
+ * Sets a list of messages in the store and updates related state in both the `messageIndexSlice` and `populatedItemsSlice`.
+ * This function updates the list of message IDs, status, offset, and the `more` flag in the `messageIndexSlice`,
+ * and sets the messages in the `populatedItemsSlice`.
+ */
 export function setMessagesInEmailStore(
 	messages: Array<MailMessage | IncompleteMessage>,
 	more: boolean
@@ -346,9 +406,8 @@ export function setMessagesInEmailStore(
 }
 
 /**
- * Updates the loading status of the messages results in the email store.
- *
- * @param {SearchRequestStatus} status - The new loading status to set.
+ * Updates the loading status of the messages results in the `messageIndexSlice`.
+ * This function modifies the `status` in the `messageIndexSlice` based on the provided loading status.
  */
 export function updateMessagesResultsLoadingStatus(status: SearchRequestStatus): void {
 	addTask(async () => {
@@ -357,13 +416,20 @@ export function updateMessagesResultsLoadingStatus(status: SearchRequestStatus):
 }
 
 /**
- * Resets the messages and populated items in the email store.
+ * Resets the `messageIndexSlice` and `populatedItemsSlice` in the store to their initial states.
+ * This function clears the data in both slices, restoring them to their predefined initial states.
  */
 export function resetMessagesAndPopulatedItems(): void {
 	addTask(async () => {
 		messageIndexSliceUtils.resetMessagesAndPopulatedItems(useEmailsStore);
 	});
 }
+
+/**
+ * Appends new messages to the `messageIndexSlice` and `populatedItemsSlice` in the store.
+ * This function adds new message IDs to the existing list, updates the offset, and merges
+ * the new messages into the `populatedItemsSlice`.
+ */
 export function appendMessagesToMessagesSlice(
 	messages: Array<MailMessage | IncompleteMessage>,
 	offset: number
@@ -372,22 +438,22 @@ export function appendMessagesToMessagesSlice(
 		messageIndexSliceUtils.appendMessagesToMessagesSlice(messages, offset, useEmailsStore);
 	});
 }
+
+/**
+ * Retrieves the list of messages belonging to a specific folder from the store.
+ * This function filters messages based on the folder ID and `parent` reference,
+ * returning only the messages belonging to the specified folder.
+ */
 export function useMessagesByFolder(folderId: string): Array<MailMessage | IncompleteMessage> {
 	return populatedItemsSliceUtils.useMessagesByFolder(folderId, useEmailsStore);
 }
 
 /**
- * Queues a task to delete messages from the message slice in the state.
- *
- * @param messageIds - An array of message IDs to be deleted from the message slice.
+ * Retrieves the loading status of the message from the `messageIndexSlice`.
+ * This function accesses the `status` in the `messageIndexSlice` to indicate
+ * the current loading state of message.
  */
-export function deleteMessagesFromMessagesSlice(messageIds: Array<string>): void {
-	addTask(async () => {
-		messageIndexSliceUtils.deleteMessagesFromMessageSlice(messageIds, useEmailsStore);
-	});
-}
-
-export function useMessagesResultsLoadingStatus(): SearchRequestStatus {
+export function useMessageLoadingStatus(): SearchRequestStatus {
 	return useEmailsStore(({ messageIndexSlice }) => messageIndexSlice.status);
 }
 
@@ -526,6 +592,7 @@ export function handleNotifyMessagesCreated(
 export function getUseEmailStoreAndHooksForTesting(): {
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState & TaskManagement>>;
 	setMessagesInSearchSlice: typeof setMessagesInSearchSlice;
+	usePopulatedItemsSlice: typeof usePopulatedItemsSlice;
 } {
-	return { useEmailsStore, setMessagesInSearchSlice };
+	return { useEmailsStore, setMessagesInSearchSlice, usePopulatedItemsSlice };
 }

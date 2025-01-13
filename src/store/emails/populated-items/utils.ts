@@ -74,6 +74,7 @@ function updateMessages(
 		})
 	);
 }
+
 function updateConversationStatus(
 	conversationId: string,
 	status: SearchRequestStatus,
@@ -85,6 +86,7 @@ function updateConversationStatus(
 		})
 	);
 }
+
 function updateMessageStatus(
 	messageId: string,
 	status: SearchRequestStatus,
@@ -107,6 +109,7 @@ function useMessagesByIds(
 			.filter((message): message is IncompleteMessage | MailMessage => !!message)
 	);
 }
+
 function useMessagesByFolder(
 	folderId: string,
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
@@ -126,6 +129,7 @@ function useMessagesByFolder(
 		.map((id) => populatedItemsSlice.messages[id])
 		.filter((message): message is IncompleteMessage | MailMessage => !!message);
 }
+
 function useConversationsByIds(
 	ids: Array<string>,
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>

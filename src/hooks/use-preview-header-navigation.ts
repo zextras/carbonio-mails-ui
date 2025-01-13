@@ -17,7 +17,7 @@ import {
 	useConversationsByIds,
 	useConversationsResultsLoadingStatus,
 	useMessagesByIds,
-	useMessagesResultsLoadingStatus
+	useMessageLoadingStatus
 } from '../store/emails/store';
 import { SearchRequestStatus } from '../types';
 import { useLoadMoreForConversationList } from '../views/app/folder-panel/conversations/conversation-list-hooks';
@@ -58,7 +58,7 @@ export const usePreviewHeaderNavigation = ({
 	const messages = useMessagesByIds(itemIds);
 	const isMessageView = itemsType === 'message';
 	const conversationLoadingStatus = useConversationsResultsLoadingStatus();
-	const messageLoadingStatus = useMessagesResultsLoadingStatus();
+	const messageLoadingStatus = useMessageLoadingStatus();
 	const loadMoreStatus = isMessageView ? messageLoadingStatus : conversationLoadingStatus;
 	const isLoadMoreFailed = loadMoreStatus === API_REQUEST_STATUS.error;
 

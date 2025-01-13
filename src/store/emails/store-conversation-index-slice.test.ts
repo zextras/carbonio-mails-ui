@@ -16,8 +16,8 @@ import {
 	useConversationIndexSlice,
 	useConversationsByIds,
 	useConversationsIdsByFolder,
-	usePopulatedItemsSlice,
-	updateConversations
+	updateConversations,
+	getUseEmailStoreAndHooksForTesting
 } from './store';
 import { useFolderStore } from '../../carbonio-ui-commons/store/zustand/folder';
 import { generateFolder } from '../../carbonio-ui-commons/test/mocks/folders/folders-generator';
@@ -182,7 +182,9 @@ describe('resetConversationsAndPopulatedItems', () => {
 			const { result: initialState } = renderHook(() => useConversationIndexSlice());
 			expect(initialState.current.conversationListIndex).toEqual(['1']);
 			await act(async () => resetConversationAndPopulatedItems());
-			const { result } = renderHook(() => usePopulatedItemsSlice());
+			const { result } = renderHook(() =>
+				getUseEmailStoreAndHooksForTesting().usePopulatedItemsSlice()
+			);
 			expect(result.current).toEqual(POPULATED_ITEMS_SLICE_INITIAL_STATE);
 		});
 	});
@@ -213,7 +215,9 @@ describe('appendConversationsToConversationIndexSlice', () => {
 			const { result: initialState } = renderHook(() => useConversationIndexSlice());
 			expect(initialState.current.conversationListIndex).toEqual(['1']);
 			await act(async () => appendConversationsToConversationIndexSlice([conversation2], 0));
-			const { result } = renderHook(() => usePopulatedItemsSlice());
+			const { result } = renderHook(() =>
+				getUseEmailStoreAndHooksForTesting().usePopulatedItemsSlice()
+			);
 			expect(result.current.conversations).toEqual({ '1': conversation1, '2': conversation2 });
 		});
 	});
@@ -242,7 +246,9 @@ describe('appendConversationsToConversationIndexSlice', () => {
 			const { result: initialState } = renderHook(() => useConversationIndexSlice());
 			expect(initialState.current.conversationListIndex).toEqual(['1']);
 			await act(async () => appendConversationsToConversationIndexSlice([], 0));
-			const { result } = renderHook(() => usePopulatedItemsSlice());
+			const { result } = renderHook(() =>
+				getUseEmailStoreAndHooksForTesting().usePopulatedItemsSlice()
+			);
 			expect(result.current.conversations).toEqual({ '1': conversation1 });
 		});
 	});
@@ -270,7 +276,9 @@ describe('appendConversationsToConversationIndexSlice', () => {
 			await act(async () =>
 				appendConversationsToConversationIndexSlice([updatedConversation1], 555)
 			);
-			const { result } = renderHook(() => usePopulatedItemsSlice());
+			const { result } = renderHook(() =>
+				getUseEmailStoreAndHooksForTesting().usePopulatedItemsSlice()
+			);
 			expect(result.current.conversations).toEqual({ '1': updatedConversation1 });
 		});
 	});

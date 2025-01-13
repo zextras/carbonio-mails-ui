@@ -19,7 +19,6 @@ import {
 	SearchRequestStatus
 } from '../../../types';
 import { POPULATED_ITEMS_SLICE_INITIAL_STATE } from '../populated-items/populated-items-slice';
-import { deleteMessagesFromConversation } from '../populated-items/utils';
 
 function setMessages(
 	messages: Array<MailMessage | IncompleteMessage>,
@@ -105,44 +104,10 @@ function appendMessagesToMessagesSlice(
 	);
 }
 
-/**
- * Deletes specified messages from the message slice in the state, including their references
- * in the message list index and populated items.
- *
- * @param messageIds - An array of message IDs to be removed from the message slice and the message list index.
- * @param useEmailsStore - A state management hook for accessing and updating the `EmailsStoreState`.
- *
- * @remarks
- * - The specified message IDs are removed from the `messageListIndex` and the `populatedItemsSlice.messages`.
- * - The `deleteMessagesFromConversation` function is called to handle any updates to conversations
- *   affected by the deletion of these messages.
- */
-function deleteMessagesFromMessageSlice(
-	messageIds: Array<string>,
-	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
-): void {
-	useEmailsStore.setState(
-		produce((state: EmailsStoreState) => {
-			const messageIdsSet = new Set(messageIds);
-
-			state.messageIndexSlice.messageListIndex = state.messageIndexSlice.messageListIndex.filter(
-				(id) => !messageIdsSet.has(id)
-			);
-
-			messageIds.forEach((id) => {
-				delete state.populatedItemsSlice.messages[id];
-			});
-
-			deleteMessagesFromConversation(messageIds, state);
-		})
-	);
-}
-
 export const messageIndexSliceUtils = {
 	setMessages,
 	updateMessagesResultsLoadingStatus,
 	resetMessagesAndPopulatedItems,
 	appendMessagesToMessagesSlice,
-	deleteMessagesFromMessageSlice,
 	useMessagesIdsByFolder
 };
