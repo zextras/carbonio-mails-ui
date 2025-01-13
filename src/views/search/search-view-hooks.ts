@@ -23,9 +23,9 @@ import {
 	appendMessagesToSearch,
 	updateSearchResultsLoadingStatus,
 	useSearchResults,
-	resetSearchAndPopulatedItems,
 	setSearchResultsByMessage,
-	setSearchResultsByConversation
+	setSearchResultsByConversation,
+	resetSearchAndPopulatedItems
 } from '../../store/emails/store';
 import { IncompleteMessage, MailMessage, SearchResponse, SearchIndexSliceState } from '../../types';
 
@@ -67,8 +67,7 @@ function handleFulFilledMessagesResults({
 
 function handleLoadMoreResults({
 	searchResponse,
-	offset,
-	tags
+	offset
 }: {
 	searchResponse: SearchResponse;
 	offset: number;

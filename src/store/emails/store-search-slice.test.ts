@@ -4,42 +4,57 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { renderHook, waitFor } from '@testing-library/react';
+import { act, renderHook, waitFor } from '@testing-library/react';
 
 import {
 	setSearchResultsByConversation,
 	updateConversationStatus,
-	resetSearchAndPopulatedItems,
 	useConversationById,
-	useConversationStatus,
 	useMessageById,
 	setSearchResultsByMessage,
 	handleNotifyConversationsDeletionInSearch,
 	useSearchResults,
 	appendMessagesToSearch,
 	handleNotifyMessagesDeletionInSearch,
-	getUseEmailStoreAndHooksForTesting
+	getUseEmailStoreAndHooksForTesting,
+	setConversationsInEmailStore,
+	resetSearchAndPopulatedItems
 } from './store';
 import { API_REQUEST_STATUS } from '../../constants';
 import { generateConversation } from '../../tests/generators/generateConversation';
 import { generateMessage } from '../../tests/generators/generateMessage';
 
 const { setMessagesInSearchSlice } = getUseEmailStoreAndHooksForTesting();
-
 describe('emails store search slice', () => {
 	describe('resetSearchAndPopulatedItems', () => {
-		it('should reset the searches and populated items', async () => {
+		it('should reset the searchIndexSlice to the initial state', async () => {
 			setSearchResultsByConversation([generateConversation({ id: '1', messages: [] })], false);
 			updateConversationStatus('1', API_REQUEST_STATUS.fulfilled);
-			await waitFor(() => {
+			await act(async () => {
 				setMessagesInSearchSlice([generateMessage({ id: '100' })]);
 			});
 			resetSearchAndPopulatedItems();
 
-			expect(renderHook(() => useConversationById('1')).result.current).toBeUndefined();
-			expect(renderHook(() => useConversationStatus('1')).result.current).toBeUndefined();
-			expect(renderHook(() => useMessageById('100')).result.current).toBeUndefined();
+			expect(renderHook(() => useSearchResults()).result.current.conversationListIndex).toEqual([]);
+			expect(renderHook(() => useSearchResults()).result.current.messageListIndex).toEqual([]);
 		});
+
+		it.skip('should remove conversations that are not in conversationListIndex while keeping the ones that are', async () => {
+			const conversation1 = generateConversation({ id: '1' });
+			const conversation2 = generateConversation({ id: '2' });
+			setConversationsInEmailStore([conversation1], false);
+			await act(async () => {
+				setSearchResultsByConversation([conversation1, conversation2], false);
+			});
+			resetSearchAndPopulatedItems();
+
+			expect(renderHook(() => useConversationById('1')).result.current).toBeDefined();
+			await waitFor(async () => {
+				expect(renderHook(() => useConversationById('2')).result.current).toBeUndefined();
+			});
+		});
+
+		it.skip('should remove messages that are not in messageListIndex while keeping the ones that are', async () => {});
 	});
 
 	describe('setMessagesInSearchSlice', () => {

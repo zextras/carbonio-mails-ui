@@ -17,7 +17,6 @@ import {
 	NormalizedConversation,
 	SearchRequestStatus
 } from '../../../types';
-import { POPULATED_ITEMS_SLICE_INITIAL_STATE } from '../populated-items/populated-items-slice';
 import { deleteMessagesFromConversation } from '../populated-items/utils';
 
 function resetSearchAndPopulatedItems(
@@ -26,7 +25,22 @@ function resetSearchAndPopulatedItems(
 	useEmailsStore.setState(
 		produce((state: EmailsStoreState) => {
 			state.searchIndexSlice = SEARCH_INDEX_SLICE_INITIAL_STATE;
-			state.populatedItemsSlice = POPULATED_ITEMS_SLICE_INITIAL_STATE;
+
+			// remove messages that are not in the messageListIndex
+			const validMessages = new Set(state.messageIndexSlice.messageListIndex);
+			Object.keys(state.populatedItemsSlice.messages)
+				.filter((messageId) => !validMessages.has(messageId))
+				.forEach((messageId) => {
+					delete state.populatedItemsSlice.messages[messageId];
+				});
+
+			// remove conversations that are not in the conversationListIndex
+			const validConversations = new Set(state.conversationIndexSlice.conversationListIndex);
+			Object.keys(state.populatedItemsSlice.conversations)
+				.filter((convId) => !validConversations.has(convId))
+				.forEach((convId) => {
+					delete state.populatedItemsSlice.messages[convId];
+				});
 		})
 	);
 }
@@ -181,9 +195,9 @@ function setMessagesInSearchSlice(
 }
 
 export const searchSliceUtils = {
-	resetSearchAndPopulatedItems,
 	setSearchResultsByConversation,
 	setSearchResultsByMessage,
+	resetSearchAndPopulatedItems,
 	appendConversationsToSearch,
 	handleNotifyConversationsDeletionInSearch,
 	handleNotifyMessagesDeletionInSearch,

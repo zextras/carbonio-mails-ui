@@ -97,7 +97,6 @@ const { addTask } = useEmailsStore.getState();
 // ##### Search related functions
 // ################################
 
-// TODO: CO-1725 see how this interfers with message and covnersation lists
 /**
  * Resets the search and populated items state slices in the EmailsStore.
  *
