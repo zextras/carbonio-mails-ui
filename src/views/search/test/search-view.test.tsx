@@ -26,8 +26,8 @@ import { API_REQUEST_STATUS } from '../../../constants';
 import * as useSelection from '../../../hooks/use-selection';
 import {
 	updateConversationStatus,
-	setMessagesInSearchSlice,
-	setSearchResultsByConversation
+	setSearchResultsByConversation,
+	getUseEmailStoreAndHooksForTesting
 } from '../../../store/emails/store';
 import { TESTID_SELECTORS } from '../../../tests/constants';
 import { generateSoapConversationMessage } from '../../../tests/generators/api';
@@ -56,6 +56,8 @@ type SetupTest = {
 	query: string;
 	viewBy: 'message' | 'conversation';
 };
+
+const { setMessagesInSearchSlice } = getUseEmailStoreAndHooksForTesting();
 
 const aRandomMsgActionResponse: MsgActionResponse = {
 	action: {

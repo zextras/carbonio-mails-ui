@@ -23,11 +23,11 @@ import { handleGetShareInfoRequest } from '../../carbonio-ui-commons/test/mocks/
 import { tags } from '../../carbonio-ui-commons/test/mocks/tags/tags';
 import { folderWorker } from '../../carbonio-ui-commons/worker';
 import {
-	setMessagesInSearchSlice,
 	useConversationById,
 	useMessageById,
 	setSearchResultsByMessage,
-	setSearchResultsByConversation
+	setSearchResultsByConversation,
+	getUseEmailStoreAndHooksForTesting
 } from '../../store/emails/store';
 import { generateConversation } from '../../tests/generators/generateConversation';
 import { generateMessage } from '../../tests/generators/generateMessage';
@@ -37,6 +37,7 @@ const READ = '';
 const FLAGGED = 'f';
 const NOTFLAGGED = '';
 
+const { setMessagesInSearchSlice } = getUseEmailStoreAndHooksForTesting();
 function mockSoapRefresh(mailbox: number): void {
 	(useRefresh as jest.Mock).mockReturnValue({
 		mbx: [{ s: mailbox }]

@@ -6,9 +6,9 @@
 
 import { act, waitFor } from '@testing-library/react';
 
-import { getUseEmailStoreForTesting } from '../store';
+import { getUseEmailStoreAndHooksForTesting } from '../store';
 
-const useEmailsStore = getUseEmailStoreForTesting();
+const { useEmailsStore } = getUseEmailStoreAndHooksForTesting();
 
 // Import or mock the `useEmailsStore` implementation
 describe('useEmailsStore', () => {

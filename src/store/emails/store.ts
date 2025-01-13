@@ -91,25 +91,35 @@ const useEmailsStore = create<EmailsStoreState & TaskManagement>()((set, get, ..
 	}
 }));
 
-/**
- * Exports the store for testing purposes only.
- */
-export function getUseEmailStoreForTesting(): UseBoundStore<
-	StoreApi<EmailsStoreState & TaskManagement>
-> {
-	return useEmailsStore;
-}
 const { addTask } = useEmailsStore.getState();
 
 // ################################
 // ##### Search related functions
 // ################################
+
+// TODO: CO-1725 see how this interfers with message and covnersation lists
+/**
+ * Resets the search and populated items state slices in the EmailsStore.
+ *
+ * This function modifies the state of the emailsStore by resetting
+ * the `searchIndexSlice` and `populatedItemsSlice` properties to their initial states
+ *
+ */
 export function resetSearchAndPopulatedItems(): void {
 	addTask(async () => {
 		searchSliceUtils.resetSearchAndPopulatedItems(useEmailsStore);
 	});
 }
 
+/**
+ * Updates the search results and populated items in the EmailsStore based on the provided messages.
+ *
+ * This function sets the `messageListIndex` in the `searchIndexSlice` to an array of message IDs,
+ * marks the search status as `fulfilled`, clears the `conversationListIndex`, resets the offset to 0,
+ * and updates the `more` flag. It also populates the `messages` field in the `populatedItemsSlice`
+ * with the provided messages, indexed by their IDs.
+ *
+ */
 export function setSearchResultsByMessage(
 	messages: Array<MailMessage | IncompleteMessage>,
 	more: boolean
@@ -119,10 +129,26 @@ export function setSearchResultsByMessage(
 	});
 }
 
+/**
+ * Custom hook to access the `searchIndexSlice` state from the EmailsStore.
+ *
+ * This hook retrieves and returns the `searchIndexSlice` portion of the state
+ * from the EmailsStore.
+ *
+ */
 export function useSearchResults(): SearchIndexSliceState['searchIndexSlice'] {
 	return useEmailsStore(({ searchIndexSlice: searchSlice }) => searchSlice);
 }
 
+/**
+ * Updates the search results and populated items in the EmailsStore based on the provided conversations.
+ *
+ * This function sets the `conversationListIndex` in the `searchIndexSlice` to an array of conversation IDs,
+ * marks the search status as `fulfilled`, clears the `messageListIndex`, resets the offset to 0,
+ * and updates the `more` flag. It also populates the `conversations` field in the `populatedItemsSlice`
+ * with the provided conversations, indexed by their IDs.
+ *
+ */
 export function setSearchResultsByConversation(
 	conversations: Array<NormalizedConversation>,
 	more: boolean
@@ -132,6 +158,14 @@ export function setSearchResultsByConversation(
 	});
 }
 
+/**
+ * Appends conversations to the search results and updates the state in the EmailsStore.
+ *
+ * This function adds new conversation IDs to the `conversationListIndex` in the `searchIndexSlice`,
+ * updates the offset and `more` flag, and populates the `conversations` field in the `populatedItemsSlice`
+ * with the provided conversations, maintaining the existing conversations.
+ *
+ */
 export function appendConversations(
 	conversations: Array<NormalizedConversation>,
 	offset: number,
@@ -143,9 +177,11 @@ export function appendConversations(
 }
 
 /**
- * Queues a task to handle the deletion of conversations in the search context.
+ * Handles the deletion of conversations from the search results and updates the EmailsStore state.
  *
- * @param conversationIdsToRemove - An array of conversation IDs to be removed from the search index and populated items.
+ * This function removes specified conversation IDs from the `conversationListIndex` in the `searchIndexSlice`
+ * and deletes the corresponding conversation data from the `populatedItemsSlice.conversations`.
+ *
  */
 export function handleNotifyConversationsDeletionInSearch(
 	conversationIdsToRemove: Array<string>
@@ -159,9 +195,11 @@ export function handleNotifyConversationsDeletionInSearch(
 }
 
 /**
- * Queues a task to handle the deletion of messages from the search context.
+ * Handles the deletion of messages from the search results and updates the EmailsStore state.
  *
- * @param messageIds - An array of message IDs to be removed from the search index and populated items.
+ * This function removes specified message IDs from the `messageListIndex` in the `searchIndexSlice`
+ * and deletes the corresponding message data from the `populatedItemsSlice.messages`. It also ensures
+ * messages are removed from conversations using `deleteMessagesFromConversation`.
  */
 export function handleNotifyMessagesDeletionInSearch(messageIds: Array<string>): void {
 	addTask(async () => {
@@ -169,16 +207,23 @@ export function handleNotifyMessagesDeletionInSearch(messageIds: Array<string>):
 	});
 }
 
-export function getSearchResultsLoadingStatus(): SearchRequestStatus {
-	return useEmailsStore.getState().searchIndexSlice.status;
-}
-
+/**
+ * Updates the loading status of the search results in the EmailsStore.
+ *
+ * This function sets the `status` field in the `searchIndexSlice` to the specified value.
+ */
 export function updateSearchResultsLoadingStatus(status: SearchRequestStatus): void {
 	addTask(async () => {
 		searchSliceUtils.updateSearchResultsLoadingStatus(status, useEmailsStore);
 	});
 }
 
+/**
+ * Appends messages to the search results and updates the EmailsStore state.
+ *
+ * This function adds at the bottom of the array new message IDs to the `messageListIndex` in the `searchIndexSlice`, updates the offset,
+ * and populates the `messages` field in the `populatedItemsSlice` with the provided messages, maintaining the existing messages.
+ */
 export function appendMessagesToSearch(
 	messages: Array<MailMessage | IncompleteMessage>,
 	offset: number
@@ -188,7 +233,13 @@ export function appendMessagesToSearch(
 	});
 }
 
-export function setMessagesInSearchSlice(messages: Array<MailMessage | IncompleteMessage>): void {
+/**
+ * Sets the messages in the search slice of the EmailsStore.
+ *
+ * This function updates the `messageListIndex` in the `searchIndexSlice` with the provided message IDs
+ * and replaces the `messages` in the `populatedItemsSlice` with the provided messages, resetting the offset to 0.
+ */
+function setMessagesInSearchSlice(messages: Array<MailMessage | IncompleteMessage>): void {
 	addTask(async () => {
 		searchSliceUtils.setMessagesInSearchSlice(messages, useEmailsStore);
 	});
@@ -467,4 +518,14 @@ export function handleNotifyMessagesCreated(
 	addTask(async () => {
 		syncDataHandlerUtils.handleNotifyMessagesCreated(messages, useEmailsStore);
 	});
+}
+
+/**
+ * Exports the store and hooks for testing purposes only.
+ */
+export function getUseEmailStoreAndHooksForTesting(): {
+	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState & TaskManagement>>;
+	setMessagesInSearchSlice: typeof setMessagesInSearchSlice;
+} {
+	return { useEmailsStore, setMessagesInSearchSlice };
 }

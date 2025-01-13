@@ -8,26 +8,26 @@ import { act, renderHook } from '@testing-library/react';
 
 import {
 	appendConversations,
-	getSearchResultsLoadingStatus,
-	setMessagesInSearchSlice,
 	setSearchResultsByConversation,
 	setSearchResultsByMessage,
 	updateConversationStatus,
 	updateMessages,
 	handleNotifyMessagesModified,
 	updateMessageStatus,
-	updateSearchResultsLoadingStatus,
 	useConversationById,
 	useConversationMessages,
 	useConversationStatus,
 	useMessageById,
 	useMessageStatus,
-	updateConversations
+	updateConversations,
+	getUseEmailStoreAndHooksForTesting
 } from './store';
 import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
 import { API_REQUEST_STATUS } from '../../constants';
 import { generateConversation } from '../../tests/generators/generateConversation';
 import { generateMessage } from '../../tests/generators/generateMessage';
+
+const { setMessagesInSearchSlice } = getUseEmailStoreAndHooksForTesting();
 
 describe('store-populated-items-slice', () => {
 	describe('useConversationById', () => {
@@ -77,6 +77,7 @@ describe('store-populated-items-slice', () => {
 			const conversation2Messages = [generateMessage({ id: '4' }), generateMessage({ id: '5' })];
 			const conversation2 = generateConversation({ id: '2', messages: conversation2Messages });
 			setSearchResultsByConversation([conversation1, conversation2], false);
+
 			setMessagesInSearchSlice([...conversation1Messages, ...conversation2Messages]);
 
 			await act(async () => {
@@ -91,21 +92,6 @@ describe('store-populated-items-slice', () => {
 		});
 	});
 
-	describe('getSearchResultsLoadingStatus', () => {
-		it('should update the search loading status when updateSearchResultsLoadingStatus is called', async () => {
-			setSearchResultsByConversation([generateConversation({ id: '1', messages: [] })], false);
-			const { result } = renderHook(() => getSearchResultsLoadingStatus());
-
-			expect(result.current).toBe(API_REQUEST_STATUS.fulfilled);
-
-			await act(async () => {
-				updateSearchResultsLoadingStatus(API_REQUEST_STATUS.pending);
-			});
-			const { result: searchStatusAfterUpdate } = renderHook(() => getSearchResultsLoadingStatus());
-
-			expect(searchStatusAfterUpdate.current).toBe(API_REQUEST_STATUS.pending);
-		});
-	});
 	describe('appendConversations', () => {
 		it('should append conversations to the store when appendConversations is called', async () => {
 			setSearchResultsByConversation([generateConversation({ id: '1', messages: [] })], false);

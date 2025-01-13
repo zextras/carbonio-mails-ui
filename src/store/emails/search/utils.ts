@@ -96,17 +96,6 @@ function appendConversationsToSearch(
 		})
 	);
 }
-
-/**
- * Handles the deletion of conversations in the search context by updating the state.
- *
- * @param conversationIds - An array of conversation IDs to be removed.
- * @param useEmailsStore - A state management hook for accessing and updating the `EmailsStoreState`.
- *
- * @remarks
- * - Removes the specified IDs from the `conversationListIndex` in the `searchIndexSlice`.
- * - Deletes the corresponding conversations from the `populatedItemsSlice`.
- */
 function handleNotifyConversationsDeletionInSearch(
 	conversationIds: Array<string>,
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
@@ -122,17 +111,6 @@ function handleNotifyConversationsDeletionInSearch(
 	);
 }
 
-/**
- * Handles the deletion of messages from the search context by updating the state.
- *
- * @param messageIds - An array of message IDs to be removed.
- * @param useEmailsStore - A state management hook for accessing and updating the `EmailsStoreState`.
- *
- * @remarks
- * - Removes the specified message IDs from the `messageListIndex` in the `searchIndexSlice`.
- * - Deletes the corresponding messages from the `populatedItemsSlice`.
- * - Calls `deleteMessagesFromConversation` to handle related updates for conversations.
- */
 function handleNotifyMessagesDeletionInSearch(
 	messageIds: Array<string>,
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
