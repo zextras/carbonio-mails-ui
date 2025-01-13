@@ -13,7 +13,6 @@ import { useRemoveFilter, useAddFilter, useDeleteFilter } from './actions';
 import CreateFilterModal from './create-filter-modal';
 import DeleteFilterModal from './delete-filter-modal';
 import { ModifyFilterModal } from './modify-filter/modify-filter-modal';
-import { modifyOutgoingFilterRules } from '../../../../store/actions/modify-filter-rules';
 import { StoreProvider } from '../../../../store/redux';
 import { Filter } from '../../../../types';
 
@@ -34,14 +33,18 @@ export type FilterActionProps = {
 	setFilters?: (arg: any) => void;
 };
 
-type InternalFilterActionProps = FilterActionProps & { isIncoming: boolean };
+type InternalFilterActionProps = FilterActionProps & {
+	isIncoming: boolean;
+	onFiltersSave: (toSave: Array<any>) => Promise<any>;
+};
 const FilterActions: FC<InternalFilterActionProps> = ({
 	availableList,
 	activeList,
 	filters,
 	setFetchFilters,
 	setFilters,
-	isIncoming
+	isIncoming,
+	onFiltersSave
 }): ReactElement => {
 	const createSnackbar = useSnackbar();
 	const { t } = useTranslation();
@@ -68,7 +71,7 @@ const FilterActions: FC<InternalFilterActionProps> = ({
 		() => !Object.keys(activeList.selected).length && !Object.keys(availableList.selected).length,
 		[activeList.selected, availableList.selected]
 	);
-	const outgoingFiltersCopy = useMemo(() => filters?.slice(), [filters]);
+	const filtersCopy = useMemo(() => filters?.slice(), [filters]);
 
 	const disablCreate = useMemo(() => false, []);
 	const { createModal, closeModal } = useModal();
@@ -77,9 +80,9 @@ const FilterActions: FC<InternalFilterActionProps> = ({
 		const modalClose = (): void => closeModal(modalId);
 
 		const onCreateConfirm = (newFilter: Filter): void => {
-			const toSend = [...outgoingFiltersCopy, newFilter];
+			const toSend = [...filtersCopy, newFilter];
 			setFilters?.(toSend);
-			modifyOutgoingFilterRules(toSend)
+			onFiltersSave(toSend)
 				.then(() => {
 					setFetchFilters?.(true);
 				})
@@ -118,8 +121,9 @@ const FilterActions: FC<InternalFilterActionProps> = ({
 		createModal,
 		isIncoming,
 		closeModal,
-		outgoingFiltersCopy,
+		filtersCopy,
 		setFilters,
+		onFiltersSave,
 		setFetchFilters,
 		createSnackbar,
 		t
@@ -138,9 +142,9 @@ const FilterActions: FC<InternalFilterActionProps> = ({
 				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 				// @ts-ignore
 				setFetchFilters,
-				modifierFunc: modifyOutgoingFilterRules
+				modifierFunc: onFiltersSave
 			}),
-		[removeFilter, t, availableList, activeList, setFilters, setFetchFilters]
+		[removeFilter, t, availableList, activeList, setFilters, setFetchFilters, onFiltersSave]
 	);
 
 	const addFilter = useAddFilter();
@@ -156,9 +160,9 @@ const FilterActions: FC<InternalFilterActionProps> = ({
 				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 				// @ts-ignore
 				setFetchFilters,
-				modifierFunc: modifyOutgoingFilterRules
+				modifierFunc: onFiltersSave
 			}),
-		[addFilter, t, availableList, activeList, setFilters, setFetchFilters]
+		[addFilter, t, availableList, activeList, setFilters, setFetchFilters, onFiltersSave]
 	);
 	const deleteFilter = useDeleteFilter();
 	const openDeleteModal = useCallback(() => {
@@ -172,7 +176,7 @@ const FilterActions: FC<InternalFilterActionProps> = ({
 				activeList,
 				setFetchFilters: setFetchFilters ?? noop,
 				setFilters: setFilters ?? noop,
-				modifierFunc: modifyOutgoingFilterRules,
+				modifierFunc: onFiltersSave,
 				filterToDelete: selectedFilter,
 				filters
 			});
@@ -199,6 +203,7 @@ const FilterActions: FC<InternalFilterActionProps> = ({
 		createModal,
 		deleteFilter,
 		filters,
+		onFiltersSave,
 		selectedFilter,
 		setFetchFilters,
 		setFilters
@@ -211,16 +216,16 @@ const FilterActions: FC<InternalFilterActionProps> = ({
 
 		const onModifyConfirm = (requiredFilter: Filter): void => {
 			const selectedFilterIndex = findIndex(
-				outgoingFiltersCopy,
+				filtersCopy,
 				(filterCopy: any) => filterCopy.name === selectedFilter?.name
 			);
-			const toSend = outgoingFiltersCopy.slice();
+			const toSend = filtersCopy.slice();
 			toSend[selectedFilterIndex] = requiredFilter;
 			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 			// @ts-ignore
 			setFilters(toSend);
 
-			modifyOutgoingFilterRules(toSend)
+			onFiltersSave(toSend)
 				.then(() => {
 					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 					// @ts-ignore
@@ -272,8 +277,9 @@ const FilterActions: FC<InternalFilterActionProps> = ({
 		createModal,
 		isIncoming,
 		closeModal,
-		outgoingFiltersCopy,
+		filtersCopy,
 		setFilters,
+		onFiltersSave,
 		setFetchFilters,
 		createSnackbar,
 		t
@@ -329,7 +335,15 @@ const FilterActions: FC<InternalFilterActionProps> = ({
 	);
 };
 
-export function getFilterActions(isIncoming: boolean): (props: FilterActionProps) => ReactElement {
+// TODO: avoid isIncoming and such boolean. We should declare how, not what.
+//  For example the onFilterSave defines a way (how) to save filters.
+//  instead of using isIncoming we should pass the actionOptions through the function getActionOptions
+export function getFilterActions(
+	isIncoming: boolean,
+	onFilterSave: (filters: Array<any>) => Promise<any>
+): (props: FilterActionProps) => ReactElement {
 	// eslint-disable-next-line react/display-name
-	return (props: FilterActionProps) => <FilterActions {...props} isIncoming={isIncoming} />;
+	return (props: FilterActionProps) => (
+		<FilterActions {...props} onFiltersSave={onFilterSave} isIncoming={isIncoming} />
+	);
 }

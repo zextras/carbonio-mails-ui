@@ -12,6 +12,10 @@ import { getFilterActions } from './filter-actions';
 import { MessageFilterTab } from './message-filter-tab';
 import { getIncomingFilters } from '../../../../store/actions/get-incoming-filters';
 import { getOutgoingFilters } from '../../../../store/actions/get-outgoing-filters';
+import {
+	modifyFilterRules,
+	modifyOutgoingFilterRules
+} from '../../../../store/actions/modify-filter-rules';
 
 const FilterTabs: FC = (): ReactElement => {
 	const [selectedFilterType, setSelectedFilterType] = useState('incoming-messages');
@@ -45,13 +49,13 @@ const FilterTabs: FC = (): ReactElement => {
 				{selectedFilterType === 'incoming-messages' && (
 					<MessageFilterTab
 						getFilters={getIncomingFilters}
-						FilterActionsComponent={getFilterActions(true)}
+						FilterActionsComponent={getFilterActions(true, modifyFilterRules)}
 					/>
 				)}
 				{selectedFilterType === 'outgoing-messages' && (
 					<MessageFilterTab
 						getFilters={getOutgoingFilters}
-						FilterActionsComponent={getFilterActions(false)}
+						FilterActionsComponent={getFilterActions(false, modifyOutgoingFilterRules)}
 					/>
 				)}
 			</Container>
