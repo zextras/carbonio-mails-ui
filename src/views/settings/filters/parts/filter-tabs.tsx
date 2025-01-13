@@ -7,14 +7,18 @@ import React, { FC, ReactElement, useCallback, useEffect, useMemo, useState } fr
 
 import { Container, Divider, Padding, TabBar, TabBarProps } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
+import { filter, map } from 'lodash';
 
 import { FilterContext } from './filter-context';
 import IncomingMessageFilterTab from './incoming-message-filter-tab';
-import OutgoingMessageFilterTab from './outgoing-message-filter-tab';
+import { MessageFilterTab } from './message-filter-tab';
+import OutgoingFilterActions from './outgoing-filters-actions';
+import { useFilterSelection } from './use-filter-selection';
 import { useAppDispatch } from '../../../../hooks/redux';
 import { useUiUtilities } from '../../../../hooks/use-ui-utilities';
 import { getIncomingFilters } from '../../../../store/actions/get-incoming-filters';
 import { getOutgoingFilters } from '../../../../store/actions/get-outgoing-filters';
+import { modifyOutgoingFilterRules } from '../../../../store/actions/modify-filter-rules';
 import { Filter } from '../../../../types';
 
 type Item = {
@@ -101,15 +105,55 @@ const FilterTabs: FC = (): ReactElement => {
 		[]
 	);
 
+	const outgoingFiltersCopy = useMemo(() => outgoingFilters?.slice(), [outgoingFilters]);
+	const [activeOutgoing, availableOutgoing] = useMemo(
+		() => [
+			map(filter(outgoingFiltersCopy, { active: true }), (f) => ({ ...f, id: f.name })),
+			map(filter(outgoingFiltersCopy, { active: false }), (f) => ({ ...f, id: f.name }))
+		],
+		[outgoingFiltersCopy]
+	);
+
+	const activeOutgoingList = useFilterSelection(
+		activeOutgoing,
+		setFetchOutgoingFilters,
+		modifyOutgoingFilterRules,
+		availableOutgoing
+	);
+	const availableOutgoingList = useFilterSelection(
+		availableOutgoing,
+		setFetchOutgoingFilters,
+		modifyOutgoingFilterRules,
+		activeOutgoing
+	);
+
+	const outgoingActionButtonsProps = useMemo(
+		() => ({
+			t,
+			availableList: availableOutgoingList,
+			activeList: activeOutgoingList,
+			selectedFilterType,
+			outgoingFilters: outgoingFiltersCopy,
+			setFetchOutgoingFilters
+		}),
+		[
+			availableOutgoingList,
+			activeOutgoingList,
+			selectedFilterType,
+			outgoingFiltersCopy,
+			setFetchOutgoingFilters
+		]
+	);
+
 	return (
 		<Container crossAlignment="baseline" padding={{ top: 'medium' }}>
 			<FilterContext.Provider
 				value={{
 					incomingFilters,
 					incomingLoading,
-					setFetchIncomingFilters,
 					outgoingFilters,
 					outgoingLoading,
+					setFetchIncomingFilters,
 					moveUp,
 					setIncomingFilters,
 					setOutgoingFilters,
@@ -128,7 +172,14 @@ const FilterTabs: FC = (): ReactElement => {
 						<IncomingMessageFilterTab selectedFilterType={selectedFilterType} t={t} />
 					)}
 					{selectedFilterType === 'outgoing-messages' && (
-						<OutgoingMessageFilterTab selectedFilterType={selectedFilterType} t={t} />
+						// <OutgoingMessageFilterTab selectedFilterType={selectedFilterType} t={t} />
+						<MessageFilterTab
+							availableList={availableOutgoingList}
+							activeList={activeOutgoingList}
+							loading={outgoingLoading}
+						>
+							<OutgoingFilterActions compProps={outgoingActionButtonsProps} />
+						</MessageFilterTab>
 					)}
 				</Container>
 
