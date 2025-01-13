@@ -6,10 +6,8 @@
 import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
 
 import { Container, Text, Row, Icon, Padding } from '@zextras/carbonio-design-system';
-import { indexOf } from 'lodash';
 import styled from 'styled-components';
-
-import type { ListPropsType } from '../../../../types';
+import { Filter } from '../../../../types';
 
 const Filter = styled(Row)`
 	border-bottom: 0.0625rem solid ${({ theme }): string => theme.palette.gray2.regular};
@@ -28,30 +26,34 @@ const ButtonEl = styled(Icon)`
 			disabled ? theme.palette.primary.disabled : theme.palette.primary.regular};
 `;
 
-type Item = {
-	active: boolean;
-	filterActions: Array<any>;
-	filterTests: Array<any>;
-	id: string;
-	name: string;
-};
 type FilterItemProps = {
+	item: Filter;
 	selected: boolean;
+	index: number;
+	disableMoveUp: boolean;
+	disableMoveDown: boolean;
 	unSelect: () => void;
-	item: Item;
-	listProps: ListPropsType;
+	toggle: (arg: string) => void;
+	moveDown: (arg: number) => void;
+	moveUp: (arg: number) => void;
 };
 // // TODO remove the any type after the Accordion refactor in the DS
-const FilterItem: FC<FilterItemProps> = ({ item, selected, unSelect, listProps }): ReactElement => {
-	const { toggle, list, moveDown, moveUp } = listProps;
+export const FilterItem: FC<FilterItemProps> = ({
+	item,
+	selected,
+	index,
+	disableMoveUp,
+	disableMoveDown,
+	unSelect,
+	toggle,
+	moveDown,
+	moveUp
+}): ReactElement => {
 	const _onClick = useCallback(() => {
 		unSelect();
-		toggle(item.id);
-	}, [item.id, toggle, unSelect]);
+		toggle(item.name);
+	}, [item.name, toggle, unSelect]);
 	const background = useMemo(() => (selected ? 'highlight' : ''), [selected]);
-	const index = useMemo(() => indexOf(list, item), [list, item]);
-	const disableMoveUp = useMemo(() => index === 0, [index]);
-	const disableMoveDown = useMemo(() => index === list.length - 1, [index, list.length]);
 	const [hovered, setHovered] = useState(false);
 	const onMouseEnter = useCallback(() => setHovered(true), []);
 	const onMouseLeave = useCallback(() => setHovered(false), []);
@@ -98,5 +100,3 @@ const FilterItem: FC<FilterItemProps> = ({ item, selected, unSelect, listProps }
 		</Filter>
 	);
 };
-
-export default FilterItem;

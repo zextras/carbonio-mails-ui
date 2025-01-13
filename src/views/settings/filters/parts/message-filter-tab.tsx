@@ -3,17 +3,16 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, ReactElement, ReactNode } from 'react';
+import React, { FC, ReactElement, ReactNode, useCallback, useMemo } from 'react';
 
-import { Container } from '@zextras/carbonio-design-system';
+import { Container, List, ListItem } from '@zextras/carbonio-design-system';
+import { map } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
-import FilterItem from './filter-item';
+import { FilterItem } from './filter-item';
 import LoadingShimmer from './loading-shimmer';
 import { FilterListType } from '../../../../types';
 import Heading from '../../components/settings-heading';
-// TODO: in order to remove the listold we should define the structure of the inner mapped ListItem - is it worth?
-import { ListOld } from '../../list-old';
 
 type MessageFilterProps = {
 	children: ReactNode;
@@ -29,6 +28,59 @@ export const MessageFilterTab: FC<MessageFilterProps> = ({
 }): ReactElement => {
 	const { t } = useTranslation();
 
+	// items={activeList.list}
+	// selected={activeList.selected}
+	// ItemComponent={FilterItem}
+	// itemProps={{
+	//     listProps: activeList,
+	//     unSelect: availableList.unSelect
+	// }}
+
+	const disableMoveUp = useCallback((index: number) => index === 0, []);
+	const disableMoveDown = useCallback(
+		(index: number) => index === activeList.list.length - 1,
+		[activeList.list.length]
+	);
+
+	const activeListItems = useMemo(
+		() =>
+			map(activeList.list, (activeFilter, index) => {
+				const isSelected = activeList.selected[activeFilter.name];
+
+				return (
+					<ListItem key={''}>
+						{(visible: boolean): React.JSX.Element =>
+							visible ? (
+								<FilterItem
+									index={index}
+									selected={isSelected}
+									unSelect={availableList.unSelect}
+									item={activeFilter}
+									moveDown={activeList.moveDown}
+									moveUp={activeList.moveUp}
+									toggle={activeList.toggle}
+									disableMoveUp={disableMoveUp(index)}
+									disableMoveDown={disableMoveDown(index)}
+								/>
+							) : (
+								<div style={{ height: '4rem' }} />
+							)
+						}
+					</ListItem>
+				);
+			}),
+		[
+			activeList.list,
+			activeList.moveDown,
+			activeList.moveUp,
+			activeList.selected,
+			activeList.toggle,
+			availableList.unSelect,
+			disableMoveDown,
+			disableMoveUp
+		]
+	);
+
 	return (
 		<Container crossAlignment="flex-start" mainAlignment="flex-start" orientation="horizontal">
 			<Container width="43%" minHeight="30vh" mainAlignment="flex-start">
@@ -37,15 +89,17 @@ export const MessageFilterTab: FC<MessageFilterProps> = ({
 					{loading ? (
 						<LoadingShimmer />
 					) : (
-						<ListOld
-							items={activeList.list}
-							selected={activeList.selected}
-							ItemComponent={FilterItem}
-							itemProps={{
-								listProps: activeList,
-								unSelect: availableList.unSelect
-							}}
-						/>
+						// <ListFilterItem
+						// 	items={activeList.list}
+						// 	selected={activeList.selected}
+						// 	ItemComponent={FilterItem}
+						// 	itemProps={{
+						// 		listProps: activeList,
+						// 		unSelect: availableList.unSelect
+						// 	}}
+						// />
+
+						<List>{activeListItems}</List>
 					)}
 				</Container>
 			</Container>
@@ -55,10 +109,10 @@ export const MessageFilterTab: FC<MessageFilterProps> = ({
 			<Container width="43%" mainAlignment="flex-start">
 				<Heading title={t('filters.available_filters', 'Available Filters')} size="small" />
 				<Container>
-					{loading ? (
+					{/* {loading ? (
 						<LoadingShimmer />
 					) : (
-						<ListOld
+						<ListFilterItem
 							items={availableList.list}
 							selected={availableList.selected}
 							ItemComponent={FilterItem}
@@ -67,7 +121,7 @@ export const MessageFilterTab: FC<MessageFilterProps> = ({
 								unSelect: activeList.unSelect
 							}}
 						/>
-					)}
+					)} */}
 				</Container>
 			</Container>
 		</Container>

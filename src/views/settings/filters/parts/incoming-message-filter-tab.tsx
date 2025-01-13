@@ -10,7 +10,7 @@ import type { TFunction } from 'i18next';
 import { filter, map } from 'lodash';
 
 import { FilterContext } from './filter-context';
-import FilterItem from './filter-item';
+import { FilterItem } from './filter-item';
 import { IncomingFilterActions } from './incoming-filters-actions';
 import LoadingShimmer from './loading-shimmer';
 import { useFilterSelection } from './use-filter-selection';

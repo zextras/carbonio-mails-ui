@@ -9,8 +9,6 @@ import { Container, Divider, Padding, TabBar, TabBarProps } from '@zextras/carbo
 import { t } from '@zextras/carbonio-shell-ui';
 import { filter, map } from 'lodash';
 
-import { FilterContext } from './filter-context';
-import IncomingMessageFilterTab from './incoming-message-filter-tab';
 import { MessageFilterTab } from './message-filter-tab';
 import OutgoingFilterActions from './outgoing-filters-actions';
 import { useFilterSelection } from './use-filter-selection';
@@ -19,7 +17,6 @@ import { useUiUtilities } from '../../../../hooks/use-ui-utilities';
 import { getIncomingFilters } from '../../../../store/actions/get-incoming-filters';
 import { getOutgoingFilters } from '../../../../store/actions/get-outgoing-filters';
 import { modifyOutgoingFilterRules } from '../../../../store/actions/modify-filter-rules';
-import { Filter } from '../../../../types';
 
 type Item = {
 	active: boolean;
