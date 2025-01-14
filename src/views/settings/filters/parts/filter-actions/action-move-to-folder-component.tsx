@@ -9,16 +9,13 @@ import React, { useCallback } from 'react';
 import { noop } from 'lodash';
 
 import { MovetoFolder } from './move-to-folder';
-import { FilterAction, FilterFileInto, Folder } from '../../../../../types';
+import { FilterFileInto, Folder } from '../../../../../types';
+import { ActionComponentProps } from '../../types';
 
-type ActionMoveToFolderComponentProps = {
-	value: FilterFileInto;
-	onChange: (filterValue: FilterAction) => void;
-};
 export const ActionMoveToFolderComponent = ({
 	value,
 	onChange
-}: ActionMoveToFolderComponentProps): React.JSX.Element => {
+}: ActionComponentProps<FilterFileInto>): React.JSX.Element => {
 	const defaultMoveToFolder = { name: value.actionFileInto[0].folderPath };
 	const confirmMoveToFolder = useCallback(
 		(folderDestination: Folder | undefined) => {

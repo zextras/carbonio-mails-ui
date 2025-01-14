@@ -10,16 +10,13 @@ import { map } from 'lodash';
 
 import { ShowTag } from './show-tag';
 import { getTags } from '../../../../../carbonio-ui-commons/store/zustand/tags';
-import { FilterAction, FilterTag, MailFilterTag } from '../../../../../types';
+import { FilterTag, MailFilterTag } from '../../../../../types';
+import { ActionComponentProps } from '../../types';
 
-type ActionTagComponentProps = {
-	value: FilterTag;
-	onChange: (filterValue: FilterAction) => void;
-};
 export const ActionTagComponent = ({
 	value,
 	onChange
-}: ActionTagComponentProps): React.JSX.Element => {
+}: ActionComponentProps<FilterTag>): React.JSX.Element => {
 	const tagOptions = useMemo(
 		() =>
 			map(getTags(), (item) => ({

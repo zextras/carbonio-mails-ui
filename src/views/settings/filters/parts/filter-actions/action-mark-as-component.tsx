@@ -8,18 +8,15 @@ import React, { useCallback, useMemo } from 'react';
 
 import { useTranslation } from 'react-i18next';
 
+import { ActionComponentProps } from '../../types';
 import { getMarkAsOptions } from '../utils';
 import { MarkAs } from './mark-as';
-import { FilterAction, FilterFlag, MarkAsOption } from '../../../../../types';
+import { FilterFlag, MarkAsOption } from '../../../../../types';
 
-type ActionMarkAsComponentProps = {
-	value: FilterFlag;
-	onChange: (filterValue: FilterAction) => void;
-};
 export const ActionMarkAsComponent = ({
 	value,
 	onChange
-}: ActionMarkAsComponentProps): React.JSX.Element => {
+}: ActionComponentProps<FilterFlag>): React.JSX.Element => {
 	const [t] = useTranslation();
 	const markAsOptions = useMemo(() => getMarkAsOptions(t), [t]);
 

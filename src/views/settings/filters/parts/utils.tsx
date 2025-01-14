@@ -6,8 +6,13 @@
 import { TFunction } from 'i18next';
 import { find, forEach } from 'lodash';
 
-import { ActionKey, FilterActions, MarkAsOption } from '../../../../types';
+import { ActionKey, FilterAction, FilterActions, MarkAsOption } from '../../../../types';
 import { ACTION_OPTION_KEYS } from '../constants';
+import { ActionComponent } from '../types';
+import { ActionMarkAsComponent } from './filter-actions/action-mark-as-component';
+import { ActionMoveToFolderComponent } from './filter-actions/action-move-to-folder-component';
+import { ActionRedirectToComponent } from './filter-actions/action-redirect-to-component';
+import { ActionTagComponent } from './filter-actions/action-tag-component';
 
 type DomainOption = {
 	label: string;
@@ -337,7 +342,12 @@ export const getSocialOptions = (t: TFunction): SocialOption[] => [
 		value: { facebookTest: [{}] }
 	}
 ];
-
+export const getActionComponents = (): Record<ActionKey, ActionComponent<FilterAction>> => ({
+	[ACTION_OPTION_KEYS[2]]: ActionMoveToFolderComponent,
+	[ACTION_OPTION_KEYS[3]]: ActionTagComponent,
+	[ACTION_OPTION_KEYS[4]]: ActionMarkAsComponent,
+	[ACTION_OPTION_KEYS[5]]: ActionRedirectToComponent
+});
 export const getActionTranslations =
 	(isIncoming: boolean): ((t: TFunction) => Record<ActionKey, string>) =>
 	(t: TFunction) => ({

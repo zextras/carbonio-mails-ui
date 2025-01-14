@@ -11,16 +11,13 @@ import { v4 as uuidv4 } from 'uuid';
 import { RedirectTo } from './redirect-to';
 import { CONTACT_TYPES } from '../../../../../carbonio-ui-commons/integrations/constants';
 import { ContactInputItem } from '../../../../../carbonio-ui-commons/integrations/types';
-import { FilterAction, FilterRedirect } from '../../../../../types';
+import { FilterRedirect } from '../../../../../types';
+import { ActionComponentProps } from '../../types';
 
-type ActionRedirectToComponentProps = {
-	value: FilterRedirect;
-	onChange: (filterValue: FilterAction) => void;
-};
 export const ActionRedirectToComponent = ({
 	value,
 	onChange
-}: ActionRedirectToComponentProps): React.JSX.Element => {
+}: ActionComponentProps<FilterRedirect>): React.JSX.Element => {
 	const onRedirectToChange = useCallback(
 		(users: ContactInputItem[]): void => {
 			const email = users?.length > 0 ? users[0].value.email : '';

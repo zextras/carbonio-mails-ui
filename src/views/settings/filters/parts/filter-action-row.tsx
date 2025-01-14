@@ -16,7 +16,6 @@ import { ActionMoveToFolderComponent } from './filter-actions/action-move-to-fol
 import { ActionRedirectToComponent } from './filter-actions/action-redirect-to-component';
 import { ActionTagComponent } from './filter-actions/action-tag-component';
 import { getMarkAsOptions } from './utils';
-import { ContactInputItem } from '../../../../carbonio-ui-commons/integrations/types';
 import {
 	ActionKey,
 	FilterAction,
@@ -83,17 +82,6 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 		[activeActionOption]
 	);
 	const showTagOptions = useMemo(() => 'actionTag' in selectedAction, [selectedAction]);
-
-	const onRedirectToChange = useCallback(
-		(users: ContactInputItem[]): void => {
-			const email = users?.length > 0 ? users[0].value.email : '';
-			onActionValueChange({
-				actionRedirect: [{ a: email }],
-				id: uuidv4()
-			});
-		},
-		[onActionValueChange]
-	);
 
 	const defaultValue = {
 		label: optionsTranslations[activeActionOption],
