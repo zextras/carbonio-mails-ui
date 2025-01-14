@@ -13,8 +13,8 @@ import { useSnackbar } from '@zextras/carbonio-design-system';
 import { createSoapAPIInterceptor } from '../../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { makeListItemsVisible, setupTest } from '../../../../carbonio-ui-commons/test/test-setup';
 import { generateStore } from '../../../../tests/generators/store';
-import { Filter } from '../../../../types';
 import { IncomingFiltersTab } from '../incoming-filters-tab';
+import { mockFilter } from './utils.test';
 
 jest.mock('@zextras/carbonio-design-system', () => ({
 	...jest.requireActual('@zextras/carbonio-design-system'),
@@ -131,29 +131,6 @@ describe('Incoming Filters', () => {
 		);
 	});
 });
-
-function mockFilter({
-	name,
-	flagName = 'flagged',
-	tagName = 'tag 1'
-}: {
-	name: string;
-	flagName?: string;
-	tagName?: string;
-}): Filter {
-	return {
-		name,
-		active: true,
-		filterTests: [{ condition: 'anyof' }],
-		filterActions: [
-			{
-				actionKeep: [{}],
-				actionTag: [{ tagName }],
-				actionFlag: [{ flagName }]
-			}
-		]
-	};
-}
 
 function makeAllItemsVisible(): void {
 	makeListItemsVisible();
