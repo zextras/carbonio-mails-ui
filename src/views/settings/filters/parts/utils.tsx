@@ -6,7 +6,7 @@
 import { TFunction } from 'i18next';
 import { find, forEach } from 'lodash';
 
-import { ActionKey, FilterAction, FilterActions, MarkAsOption } from '../../../../types';
+import { ActionKey, FilterActions, MarkAsOption } from '../../../../types';
 import { ACTION_OPTION_KEYS } from '../constants';
 import { ActionComponent } from '../types';
 import { ActionMarkAsComponent } from './filter-actions/action-mark-as-component';
@@ -342,7 +342,8 @@ export const getSocialOptions = (t: TFunction): SocialOption[] => [
 		value: { facebookTest: [{}] }
 	}
 ];
-export const getActionComponents = (): Record<ActionKey, ActionComponent<FilterAction>> => ({
+// TODO: do not use any
+export const getActionComponents = (): Record<string, ActionComponent<any>> => ({
 	[ACTION_OPTION_KEYS[2]]: ActionMoveToFolderComponent,
 	[ACTION_OPTION_KEYS[3]]: ActionTagComponent,
 	[ACTION_OPTION_KEYS[4]]: ActionMarkAsComponent,

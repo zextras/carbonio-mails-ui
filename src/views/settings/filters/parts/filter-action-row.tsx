@@ -11,19 +11,8 @@ import { useTranslation } from 'react-i18next';
 import { v4 as uuidv4 } from 'uuid';
 
 import CustomSelect from './custom-select';
-import { ActionMarkAsComponent } from './filter-actions/action-mark-as-component';
-import { ActionMoveToFolderComponent } from './filter-actions/action-move-to-folder-component';
-import { ActionRedirectToComponent } from './filter-actions/action-redirect-to-component';
-import { ActionTagComponent } from './filter-actions/action-tag-component';
-import { getMarkAsOptions } from './utils';
-import {
-	ActionKey,
-	FilterAction,
-	FilterFileInto,
-	FilterFlag,
-	FilterRedirect,
-	FilterTag
-} from '../../../../types';
+import { getActionComponents, getMarkAsOptions } from './utils';
+import { ActionKey, FilterAction } from '../../../../types';
 
 export type FilterActionRowProps = {
 	getOptionsTranslations: (t: TFunction) => Record<ActionKey, string>;
@@ -61,8 +50,11 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 	const userChoseRedirectToActionInThePast =
 		mailForwardingEnabled === 'FALSE' && 'actionRedirect' in selectedAction;
 
+	const actionsComponents = getActionComponents();
+
 	const activeActionOption: ActionKey = (optionsToDisplay.find((key) => key in selectedAction) ??
 		'actionKeep') as ActionKey;
+	const ActionComponentToDisplay = actionsComponents[activeActionOption];
 
 	const [t] = useTranslation();
 	const markAsOptions = useMemo(() => getMarkAsOptions(t), [t]);
@@ -72,16 +64,6 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 		value: actionKey,
 		label: optionsTranslations[actionKey]
 	}));
-
-	const showRedirectToAddrsInput = useMemo(
-		() => activeActionOption === 'actionRedirect',
-		[activeActionOption]
-	);
-	const showBrowseBtn = useMemo(
-		() => activeActionOption === 'actionFileInto',
-		[activeActionOption]
-	);
-	const showTagOptions = useMemo(() => 'actionTag' in selectedAction, [selectedAction]);
 
 	const defaultValue = {
 		label: optionsTranslations[activeActionOption],
@@ -171,29 +153,8 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 						</Text>
 					</Row>
 				)}
-
-				{showBrowseBtn && (
-					<ActionMoveToFolderComponent
-						value={selectedAction as FilterFileInto}
-						onChange={onActionValueChange}
-					/>
-				)}
-				{'actionFlag' in selectedAction && (
-					<ActionMarkAsComponent
-						value={selectedAction as FilterFlag}
-						onChange={onActionValueChange}
-					/>
-				)}
-
-				{showRedirectToAddrsInput && (
-					<ActionRedirectToComponent
-						value={selectedAction as FilterRedirect}
-						onChange={onActionValueChange}
-					/>
-				)}
-
-				{showTagOptions && (
-					<ActionTagComponent onChange={onActionValueChange} value={selectedAction as FilterTag} />
+				{ActionComponentToDisplay && (
+					<ActionComponentToDisplay value={selectedAction} onChange={onActionValueChange} />
 				)}
 			</Row>
 			<Container orientation="horizontal" mainAlignment="flex-end" width="auto">
