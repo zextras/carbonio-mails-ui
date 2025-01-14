@@ -22,6 +22,21 @@ jest.mock('@zextras/carbonio-design-system', () => ({
 }));
 
 describe('Incoming Filters', () => {
+	it('should include "Apply" filter action', async () => {
+		const store = generateStore();
+		const getIncomingFiltersInterceptor = createSoapAPIInterceptor('GetFilterRules', {
+			_jsns: 'urn:zimbraMail',
+			filterRules: [
+				{
+					filterRule: [mockFilter({ name: 'Filter 1' })]
+				}
+			]
+		});
+		setupTest(<IncomingFiltersTab />, { store });
+		await getIncomingFiltersInterceptor;
+
+		expect(screen.getByRole('button', { name: 'Apply' })).toBeVisible();
+	});
 	it('should display incoming filters received from API', async () => {
 		const store = generateStore();
 		const getIncomingFiltersInterceptor = createSoapAPIInterceptor('GetFilterRules', {

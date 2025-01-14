@@ -15,6 +15,21 @@ import { OutgoingFiltersTab } from '../outgoing-filters-tab';
 import { mockFilter } from './utils.test';
 
 describe('Outgoing Filters', () => {
+	it('should not contain "Apply" filter action', async () => {
+		const store = generateStore();
+		const getOutgoingFiltersInterceptor = createSoapAPIInterceptor('GetOutgoingFilterRules', {
+			_jsns: 'urn:zimbraMail',
+			filterRules: [
+				{
+					filterRule: [mockFilter({ name: 'Filter 1' })]
+				}
+			]
+		});
+		setupTest(<OutgoingFiltersTab />, { store });
+		await getOutgoingFiltersInterceptor;
+
+		expect(screen.queryByRole('button', { name: 'Apply' })).not.toBeInTheDocument();
+	});
 	it('should display outgoing filters received from API', async () => {
 		const store = generateStore();
 		const getOutgoingFiltersInterceptor = createSoapAPIInterceptor('GetOutgoingFilterRules', {

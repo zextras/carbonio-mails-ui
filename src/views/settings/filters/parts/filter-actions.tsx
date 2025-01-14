@@ -15,6 +15,10 @@ import DeleteFilterModal from './delete-filter-modal';
 import { ModifyFilterModal } from './modify-filter/modify-filter-modal';
 import { StoreProvider } from '../../../../store/redux';
 import { Filter } from '../../../../types';
+import {
+	ApplyFilterUIActionExecutionParams,
+	getApplyFilterUIAction
+} from '../../../../ui-actions/apply-filter';
 
 type ListType = {
 	isSelecting: boolean;
@@ -71,10 +75,28 @@ const FilterActions: FC<InternalFilterActionProps> = ({
 		() => !Object.keys(activeList.selected).length && !Object.keys(availableList.selected).length,
 		[activeList.selected, availableList.selected]
 	);
+	const disableApply = !selectedFilter;
 	const filtersCopy = useMemo(() => filters?.slice(), [filters]);
 
 	const disablCreate = useMemo(() => false, []);
 	const { createModal, closeModal } = useModal();
+
+	const applySelectedFilter = useCallback((): void => {
+		if (disableApply) {
+			return;
+		}
+		const action = getApplyFilterUIAction();
+		const executionParams: ApplyFilterUIActionExecutionParams = {
+			uiUtilities: {
+				closeModal,
+				createModal
+			},
+			criteria: {
+				filterName: selectedFilter?.name
+			}
+		};
+		action?.openModal?.(executionParams);
+	}, [closeModal, createModal, disableApply, selectedFilter?.name]);
 	const openCreateModal = useCallback(() => {
 		const modalId = Date.now().toString();
 		const modalClose = (): void => closeModal(modalId);
@@ -302,6 +324,16 @@ const FilterActions: FC<InternalFilterActionProps> = ({
 				width="fill"
 				onClick={openFilterModifyModal}
 			/>
+			<Padding bottom="medium" />
+			{isIncoming && (
+				<Button
+					label={t('filters.apply', 'Apply')}
+					type="outlined"
+					disabled={disableApply}
+					width="fill"
+					onClick={applySelectedFilter}
+				/>
+			)}
 			<Padding bottom="medium" />
 			<Button
 				label={t('label.delete', 'Delete')}
