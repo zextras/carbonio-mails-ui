@@ -56,13 +56,11 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 	const optionsToDisplay =
 		mailForwardingEnabled === 'TRUE' ? OPTIONS_WITH_REDIRECT : COMMON_OPTIONS;
 
-	const selectedActionKeys = Object.keys(selectedAction);
 	const userChoseRedirectToActionInThePast =
-		mailForwardingEnabled === 'FALSE' && selectedActionKeys.includes('actionRedirect');
+		mailForwardingEnabled === 'FALSE' && 'actionRedirect' in selectedAction;
 
-	const activeActionOption: ActionKey = (selectedActionKeys.find((key) =>
-		optionsToDisplay.includes(key)
-	) ?? 'actionKeep') as ActionKey;
+	const activeActionOption: ActionKey = (optionsToDisplay.find((key) => key in selectedAction) ??
+		'actionKeep') as ActionKey;
 
 	const [t] = useTranslation();
 	const markAsOptions = useMemo(() => getMarkAsOptions(t), [t]);
