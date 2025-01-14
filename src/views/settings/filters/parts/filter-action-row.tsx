@@ -7,19 +7,17 @@ import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
 
 import { Button, Container, Padding, Row, Text, Tooltip } from '@zextras/carbonio-design-system';
 import { TFunction } from 'i18next';
-import { noop } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { v4 as uuidv4 } from 'uuid';
 
 import CustomSelect from './custom-select';
 import { ActionMarkAsComponent } from './filter-actions/action-mark-as-component';
+import { ActionMoveToFolderComponent } from './filter-actions/action-move-to-folder-component';
 import { ActionTagComponent } from './filter-actions/action-tag-component';
-import { MovetoFolder } from './filter-actions/move-to-folder';
 import { RedirectTo } from './filter-actions/redirect-to';
 import { getMarkAsOptions } from './utils';
 import { ContactInputItem } from '../../../../carbonio-ui-commons/integrations/types';
-import { Folder } from '../../../../carbonio-ui-commons/types';
-import { ActionKey, FilterAction, FilterFlag, FilterTag, MarkAsOption } from '../../../../types';
+import { ActionKey, FilterAction, FilterFileInto, FilterFlag, FilterTag } from '../../../../types';
 
 export type FilterActionRowProps = {
 	getOptionsTranslations: (t: TFunction) => Record<ActionKey, string>;
@@ -152,30 +150,9 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 		[selectedAction, markAsOptions, onActionSwitch]
 	);
 
-	const handleMarkAsOptionChange = useCallback(
-		(value: MarkAsOption['value']) => {
-			onActionValueChange(value);
-		},
-		[onActionValueChange]
-	);
-
-	const confirmMoveToFolder = useCallback(
-		(folderDestination: Folder | undefined) => {
-			onActionValueChange({
-				actionFileInto: [{ folderPath: `${folderDestination?.absFolderPath}` }]
-			});
-		},
-		[onActionValueChange]
-	);
-
 	const onAddingNewAction = useCallback((): void => {
 		onAddNewAction({ actionKeep: [{}], actionStop: [{}], id: uuidv4() });
 	}, [onAddNewAction]);
-
-	const defaultMoveToFolder =
-		'actionFileInto' in selectedAction
-			? { name: selectedAction.actionFileInto[0].folderPath }
-			: undefined;
 
 	return (
 		<Container
@@ -204,10 +181,9 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 				)}
 
 				{showBrowseBtn && (
-					<MovetoFolder
-						destination={defaultMoveToFolder}
-						onSelectFolder={noop}
-						onConfirmDestination={confirmMoveToFolder}
+					<ActionMoveToFolderComponent
+						value={selectedAction as FilterFileInto}
+						onChange={onActionValueChange}
 					/>
 				)}
 				{'actionFlag' in selectedAction && (
