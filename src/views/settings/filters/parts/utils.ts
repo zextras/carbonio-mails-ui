@@ -6,7 +6,8 @@
 import { TFunction } from 'i18next';
 import { find, forEach } from 'lodash';
 
-import { ACTION_OPTION_KEYS, ActionKey, FilterActions, MarkAsOption } from '../../../../types';
+import { ActionKey, FilterActions, MarkAsOption } from '../../../../types';
+import { ACTION_OPTION_KEYS } from '../constants';
 
 type DomainOption = {
 	label: string;
@@ -337,59 +338,18 @@ export const getSocialOptions = (t: TFunction): SocialOption[] => [
 	}
 ];
 
-type ConditionAction = {
-	label: string;
-	value: 'actionRedirect';
-};
-const getConditionRedirectAction = (
-	t: TFunction,
-	zimbraFeatureMailForwardingInFiltersEnabled: 'TRUE' | 'FALSE'
-): ConditionAction[] => {
-	if (zimbraFeatureMailForwardingInFiltersEnabled === 'TRUE') {
-		return [
-			{
-				label: t('settings.redirect_to_address', 'Redirect to address'),
-				value: ACTION_OPTION_KEYS[5]
-			}
-		];
-	}
-	return [];
-};
-
-type ActionOption = {
-	label: string;
-	value: ActionKey;
-};
-
-export const getActionOptions = (
-	t: TFunction,
-	mailForwardingEnabled: 'TRUE' | 'FALSE',
-	isIncoming = true
-): ActionOption[] => [
-	{
-		label: isIncoming
+export const getActionTranslations =
+	(isIncoming: boolean): ((t: TFunction) => Record<ActionKey, string>) =>
+	(t: TFunction) => ({
+		[ACTION_OPTION_KEYS[0]]: isIncoming
 			? t('settings.keep_in_inbox', 'Keep in Inbox')
 			: t('settings.keep_in_sent', 'Keep in Sent'),
-		value: ACTION_OPTION_KEYS[0]
-	},
-	{
-		label: t('settings.discard', 'Discard'),
-		value: ACTION_OPTION_KEYS[1]
-	},
-	{
-		label: t('settings.move_into_folder', 'Move Into Folder'),
-		value: ACTION_OPTION_KEYS[2]
-	},
-	{
-		label: t('settings.tag_with', 'Tag with'),
-		value: ACTION_OPTION_KEYS[3]
-	},
-	{
-		label: t('settings.mark_as', 'Mark as'),
-		value: ACTION_OPTION_KEYS[4]
-	},
-	...getConditionRedirectAction(t, mailForwardingEnabled)
-];
+		[ACTION_OPTION_KEYS[1]]: t('settings.discard', 'Discard'),
+		[ACTION_OPTION_KEYS[2]]: t('settings.move_into_folder', 'Move Into Folder'),
+		[ACTION_OPTION_KEYS[3]]: t('settings.tag_with', 'Tag with'),
+		[ACTION_OPTION_KEYS[4]]: t('settings.tag_with', 'Tag with'),
+		[ACTION_OPTION_KEYS[5]]: t('settings.redirect_to_address', 'Redirect to address')
+	});
 
 export const getMarkAsOptions = (t: TFunction): Array<MarkAsOption> => [
 	{

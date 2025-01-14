@@ -6,6 +6,7 @@
 import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
 
 import { Button, Container, Padding, Row, Text, Tooltip } from '@zextras/carbonio-design-system';
+import { TFunction } from 'i18next';
 import { noop } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { v4 as uuidv4 } from 'uuid';
@@ -15,45 +16,60 @@ import { MarkAs } from './filter-actions/mark-as';
 import { MovetoFolder } from './filter-actions/move-to-folder';
 import { RedirectTo } from './filter-actions/redirect-to';
 import { ShowTag } from './filter-actions/show-tag';
-import { getActionOptions, getMarkAsOptions } from './utils';
-import { CONTACT_TYPES } from '../../../../carbonio-ui-commons/integrations/constants';
+import { getMarkAsOptions } from './utils';
 import { ContactInputItem } from '../../../../carbonio-ui-commons/integrations/types';
 import { Folder } from '../../../../carbonio-ui-commons/types';
 import { ActionKey, FilterAction, MailFilterTag, MarkAsOption } from '../../../../types';
 
-type FilterActionRowProps = {
+export type FilterActionRowProps = {
+	getOptionsTranslations: (t: TFunction) => Record<ActionKey, string>;
 	mailForwardingEnabled: 'TRUE' | 'FALSE';
-	isIncomingFilter: boolean;
 	tagOptions?: Array<MailFilterTag>;
-	defaultAction: FilterAction;
+	selectedAction: FilterAction;
 	onActionSwitch: (action: FilterAction) => void;
-	onDefaultActionValueChange: (action: FilterAction) => void;
+	onActionValueChange: (action: FilterAction) => void;
 	onRemoveAction: () => void;
 	disableRemove: boolean;
 	onAddNewAction: (action: FilterAction) => void;
 };
 
+const COMMON_OPTIONS = [
+	'actionKeep',
+	'actionDiscard',
+	'actionFileInto',
+	'actionTag',
+	'actionFlag'
+] as const;
+
+const OPTIONS_WITH_REDIRECT = [...COMMON_OPTIONS, 'actionRedirect'] as const;
 export const FilterActionRow: FC<FilterActionRowProps> = ({
-	isIncomingFilter,
+	getOptionsTranslations,
 	mailForwardingEnabled,
 	tagOptions,
-	defaultAction,
+	selectedAction,
 	onAddNewAction,
 	onRemoveAction,
 	onActionSwitch,
 	disableRemove,
-	onDefaultActionValueChange
+	onActionValueChange
 }): ReactElement => {
+	const optionsToDisplay =
+		mailForwardingEnabled === 'TRUE' ? OPTIONS_WITH_REDIRECT : COMMON_OPTIONS;
+	const activeActionOption: ActionKey = (Object.keys(selectedAction).find((key) =>
+		optionsToDisplay.includes(key)
+	) ?? 'actionKeep') as ActionKey;
 	const [isRedirectToActionRemoved, setIsRedirectToActionRemoved] = useState(false);
 	const [t] = useTranslation();
 	const markAsOptions = useMemo(() => getMarkAsOptions(t), [t]);
-	const actionOptions = useMemo(
-		() => getActionOptions(t, mailForwardingEnabled, isIncomingFilter ?? false),
-		[t, mailForwardingEnabled, isIncomingFilter]
-	);
+
+	const optionsTranslations = getOptionsTranslations(t);
+	const actionOptions = optionsToDisplay.map((actionKey) => ({
+		value: actionKey,
+		label: optionsTranslations[actionKey]
+	}));
+
 	const [tag, setTag] = useState<Array<MailFilterTag>>([]);
 
-	const [activeActionOption, setActiveActionOption] = useState<ActionKey>('actionKeep');
 	const showRedirectToAddrsInput = useMemo(
 		() => activeActionOption === 'actionRedirect',
 		[activeActionOption]
@@ -69,104 +85,81 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 	const onRedirectToChange = useCallback(
 		(users: ContactInputItem[]): void => {
 			const email = users?.length > 0 ? users[0].value.email : '';
-			onDefaultActionValueChange({
+			onActionValueChange({
 				actionRedirect: [{ a: email }],
 				id: uuidv4()
 			});
 		},
-		[onDefaultActionValueChange]
+		[onActionValueChange]
 	);
 
-	const defaultValue = useMemo(() => {
-		if ('actionRedirect' in defaultAction && mailForwardingEnabled === 'FALSE') {
-			setIsRedirectToActionRemoved(true);
-			onDefaultActionValueChange({ actionKeep: [{}] });
-			return {
-				label: isIncomingFilter
-					? t('settings.keep_in_inbox', 'Keep in Inbox')
-					: t('settings.keep_in_sent', 'Keep in Sent'),
-				value: 'actionKeep'
-			};
-		}
-		if ('actionDiscard' in defaultAction) {
-			setActiveActionOption('actionDiscard');
-			return {
-				label: t('settings.discard', 'Discard'),
-				value: 'actionDiscard'
-			};
-		}
-		if ('actionKeep' in defaultAction) {
-			setActiveActionOption('actionKeep');
-			return actionOptions[0];
-		}
+	// const defaultValue = useMemo(() => {
+	// 	if ('actionRedirect' in selectedAction && mailForwardingEnabled === 'FALSE') {
+	// 		setIsRedirectToActionRemoved(true);
+	// 		onActionValueChange({ actionKeep: [{}] });
+	// 		return actionOptions[0];
+	// 	}
+	// 	if ('actionDiscard' in selectedAction) {
+	// 		setActiveActionOption('actionDiscard');
+	// 		return actionOptions[1];
+	// 	}
+	// 	if ('actionKeep' in selectedAction) {
+	// 		setActiveActionOption('actionKeep');
+	// 		return actionOptions[0];
+	// 	}
+	//
+	// 	if ('actionFileInto' in selectedAction) {
+	// 		setActiveActionOption('actionFileInto');
+	// 		return actionOptions[2];
+	// 	}
+	// 	if ('actionFlag' in selectedAction) {
+	// 		setActiveActionOption('actionFlag');
+	// 		return actionOptions[4];
+	// 	}
+	// 	if ('actionRedirect' in selectedAction) {
+	// 		setActiveActionOption('actionRedirect');
+	// 		const email = selectedAction.actionRedirect[0].a;
+	// 		if (email) {
+	// 			setContacts([
+	// 				{
+	// 					id: email,
+	// 					label: email,
+	// 					value: { id: email, email, type: CONTACT_TYPES.CONTACT }
+	// 				}
+	// 			]);
+	// 		} else {
+	// 			setContacts([]);
+	// 		}
+	// 		return actionOptions[5];
+	// 	}
+	// 	if ('actionTag' in selectedAction) {
+	// 		setActiveActionOption('actionTag');
+	// 		const { tagName } = selectedAction.actionTag[0];
+	// 		setTag(
+	// 			tagName
+	// 				? [
+	// 						{
+	// 							label: tagName
+	// 						}
+	// 					]
+	// 				: []
+	// 		);
+	// 		return actionOptions[4];
+	// 	}
+	// 	return actionOptions[0];
+	// }, [selectedAction, mailForwardingEnabled, onActionValueChange, actionOptions]);
 
-		if ('actionFileInto' in defaultAction) {
-			setActiveActionOption('actionFileInto');
-			return {
-				label: t('settings.move_into_folder', 'Move Into Folder'),
-				value: 'actionFileInto'
-			};
-		}
-		if ('actionFlag' in defaultAction) {
-			setActiveActionOption('actionFlag');
-			return {
-				label: t('settings.mark_as', 'Mark as'),
-				value: 'actionFlag'
-			};
-		}
-		if ('actionRedirect' in defaultAction) {
-			setActiveActionOption('actionRedirect');
-			const email = defaultAction.actionRedirect[0].a;
-			if (email) {
-				setContacts([
-					{
-						id: email,
-						label: email,
-						value: { id: email, email, type: CONTACT_TYPES.CONTACT }
-					}
-				]);
-			} else {
-				setContacts([]);
-			}
-			return {
-				label: t('settings.redirect_to_address', 'Redirect to address'),
-				value: 'actionRedirect'
-			};
-		}
-		if ('actionTag' in defaultAction) {
-			setActiveActionOption('actionTag');
-			const { tagName } = defaultAction.actionTag[0];
-			setTag(
-				tagName
-					? [
-							{
-								label: tagName
-							}
-						]
-					: []
-			);
-			return {
-				label: t('settings.tag_with', 'Tag with'),
-				value: 'actionTag'
-			};
-		}
-		return actionOptions[0];
-	}, [
-		defaultAction,
-		mailForwardingEnabled,
-		t,
-		onDefaultActionValueChange,
-		isIncomingFilter,
-		actionOptions
-	]);
-
+	const defaultValue = {
+		label: optionsTranslations[activeActionOption],
+		value: activeActionOption
+	};
 	const onRemove = useMemo(
 		() => (disableRemove ? (): null => null : onRemoveAction),
 		[disableRemove, onRemoveAction]
 	);
 	const onSwitchAction = useCallback(
 		(str: ActionKey) => {
-			let newAction: FilterAction = defaultAction;
+			let newAction: FilterAction = selectedAction;
 			switch (str) {
 				case 'actionDiscard': {
 					newAction = { actionDiscard: [{}] };
@@ -183,7 +176,7 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 					break;
 				}
 				case 'actionTag': {
-					if (!('actionTag' in defaultAction)) {
+					if (!('actionTag' in selectedAction)) {
 						newAction = {
 							actionTag: [{ tagName: '' }]
 						};
@@ -192,7 +185,7 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 					break;
 				}
 				case 'actionFileInto': {
-					if (!('actionFileInto' in defaultAction)) {
+					if (!('actionFileInto' in selectedAction)) {
 						newAction = {
 							actionFileInto: [{ folderPath: '' }]
 						};
@@ -200,7 +193,7 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 					break;
 				}
 				case 'actionRedirect': {
-					if (!('actionRedirect' in defaultAction)) {
+					if (!('actionRedirect' in selectedAction)) {
 						newAction = {
 							actionRedirect: [{ a: '' }]
 						};
@@ -215,10 +208,9 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 			if (isRedirectToActionRemoved) {
 				setIsRedirectToActionRemoved(false);
 			}
-			setActiveActionOption(str);
 			onActionSwitch(newAction);
 		},
-		[defaultAction, isRedirectToActionRemoved, markAsOptions, onActionSwitch]
+		[selectedAction, isRedirectToActionRemoved, markAsOptions, onActionSwitch]
 	);
 
 	const onTagChange = useCallback(
@@ -226,31 +218,31 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 			if (chip.length > 0) {
 				const requiredTag = chip.length > 1 ? chip[1] : chip[0];
 				setTag([requiredTag]);
-				onDefaultActionValueChange({
+				onActionValueChange({
 					actionTag: [{ tagName: requiredTag.label }]
 				});
 			} else {
-				onDefaultActionValueChange({ actionTag: [{ tagName: '' }] });
+				onActionValueChange({ actionTag: [{ tagName: '' }] });
 				setTag([]);
 			}
 		},
-		[onDefaultActionValueChange]
+		[onActionValueChange]
 	);
 
 	const handleMarkAsOptionChange = useCallback(
 		(value: MarkAsOption['value']) => {
-			onDefaultActionValueChange(value);
+			onActionValueChange(value);
 		},
-		[onDefaultActionValueChange]
+		[onActionValueChange]
 	);
 
 	const confirmMoveToFolder = useCallback(
 		(folderDestination: Folder | undefined) => {
-			onDefaultActionValueChange({
+			onActionValueChange({
 				actionFileInto: [{ folderPath: `${folderDestination?.absFolderPath}` }]
 			});
 		},
-		[onDefaultActionValueChange]
+		[onActionValueChange]
 	);
 
 	const onAddingNewAction = useCallback((): void => {
@@ -258,8 +250,8 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 	}, [onAddNewAction]);
 
 	const defaultMoveToFolder =
-		'actionFileInto' in defaultAction
-			? { name: defaultAction.actionFileInto[0].folderPath }
+		'actionFileInto' in selectedAction
+			? { name: selectedAction.actionFileInto[0].folderPath }
 			: undefined;
 
 	return (
@@ -295,9 +287,9 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 						onConfirmDestination={confirmMoveToFolder}
 					/>
 				)}
-				{'actionFlag' in defaultAction && (
+				{'actionFlag' in selectedAction && (
 					<MarkAs
-						selected={defaultAction.actionFlag[0]}
+						selected={selectedAction.actionFlag[0]}
 						options={markAsOptions}
 						onChange={handleMarkAsOptionChange}
 					/>

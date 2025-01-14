@@ -1,10 +1,12 @@
 /*
- * SPDX-FileCopyrightText: 2021 Zextras <https://www.zextras.com>
+ * SPDX-FileCopyrightText: 2025 Zextras <https://www.zextras.com>
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
 import { ChipProps } from '@zextras/carbonio-design-system';
+
+import { ACTION_OPTION_KEYS } from '../../views/settings/filters/constants';
 
 const TEST_CONDITIONS = [
 	'bodyTest',
@@ -142,14 +144,5 @@ export type FilterActionsProps = {
 };
 
 export type FilterActions = Array<FilterAction>;
-
-export const ACTION_OPTION_KEYS = [
-	'actionKeep',
-	'actionDiscard',
-	'actionFileInto',
-	'actionTag',
-	'actionFlag',
-	'actionRedirect'
-] as const;
 
 export type ActionKey = (typeof ACTION_OPTION_KEYS)[number];

@@ -21,11 +21,11 @@ import { v4 as uuidv4 } from 'uuid';
 
 import ModalHeader from '../../../../../carbonio-ui-commons/components/modals/modal-header';
 import type {
-	FilterActions,
 	Filter,
 	ApiFilterAction,
 	AllFiltersTest,
-	FilterTest
+	FilterTest,
+	FilterActions
 } from '../../../../../types';
 import { capitalise } from '../../../../sidebar/utils';
 import { CreateFilterContext } from '../create-filter-context';

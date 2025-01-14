@@ -18,22 +18,32 @@ import {
 } from '../../../../../carbonio-ui-commons/test/test-setup';
 import { generateStore } from '../../../../../tests/generators/store';
 import { FilterAction } from '../../../../../types';
-import { FilterActionRow } from '../filter-action-row';
+import { FilterActionRow, FilterActionRowProps } from '../filter-action-row';
+import { getActionTranslations } from '../utils';
 
 const REDIRECT_TO_ADDRESS = /Redirect To Address/i;
+
 describe('FilterActionsRows', () => {
 	const defaultAction: FilterAction = { actionKeep: [{}] };
-	const defaultProps = {
-		isIncomingFilter: true,
+	const defaultProps: FilterActionRowProps = {
+		getOptionsTranslations: getActionTranslations(true),
 		mailForwardingEnabled: 'TRUE' as const,
 		tagOptions: [],
-		defaultAction,
+		selectedAction: defaultAction,
 		onAddNewAction: jest.fn(),
 		onRemoveAction: jest.fn(),
 		onActionSwitch: jest.fn(),
 		disableRemove: false,
-		onDefaultActionValueChange: jest.fn()
+		onActionValueChange: jest.fn()
 	};
+	it('should display filter actions', async () => {
+		const testProps = {
+			...defaultProps,
+			tempActions: [{ actionKeep: [{}] }]
+		};
+		setupTest(<FilterActionRow {...testProps} />, {});
+		expect(await screen.findByText('Keep in Inbox')).toBeInTheDocument();
+	});
 	it('adds a new filter condition when the add button is clicked', async () => {
 		const testProps = {
 			...defaultProps,
@@ -91,7 +101,7 @@ describe('FilterActionsRows', () => {
 		const { user } = setupTest(
 			<FilterActionRow
 				{...defaultProps}
-				defaultAction={{
+				selectedAction={{
 					actionTag: [{}]
 				}}
 			/>,
@@ -108,7 +118,7 @@ describe('FilterActionsRows', () => {
 		setupTest(
 			<FilterActionRow
 				{...defaultProps}
-				defaultAction={{
+				selectedAction={{
 					actionStop: [{}],
 					actionTag: [{}]
 				}}
@@ -123,7 +133,7 @@ describe('FilterActionsRows', () => {
 			setupTest(
 				<FilterActionRow
 					{...defaultProps}
-					defaultAction={{
+					selectedAction={{
 						actionKeep: [{}]
 					}}
 				/>,
@@ -137,7 +147,7 @@ describe('FilterActionsRows', () => {
 			setupTest(
 				<FilterActionRow
 					{...defaultProps}
-					defaultAction={{
+					selectedAction={{
 						actionRedirect: [{ a: 'test@test.com' }]
 					}}
 				/>,
@@ -149,7 +159,7 @@ describe('FilterActionsRows', () => {
 			setupTest(
 				<FilterActionRow
 					{...defaultProps}
-					defaultAction={{
+					selectedAction={{
 						actionKeep: [{}]
 					}}
 				/>,
@@ -161,7 +171,7 @@ describe('FilterActionsRows', () => {
 			setupTest(
 				<FilterActionRow
 					{...defaultProps}
-					defaultAction={{
+					selectedAction={{
 						actionRedirect: [{ a: 'something' }]
 					}}
 				/>,
@@ -173,7 +183,7 @@ describe('FilterActionsRows', () => {
 			const { user } = setupTest(
 				<FilterActionRow
 					{...defaultProps}
-					defaultAction={{
+					selectedAction={{
 						actionRedirect: [{}]
 					}}
 				/>,
@@ -182,7 +192,7 @@ describe('FilterActionsRows', () => {
 			const redirectToAddressInput = await screen.findByTestId('filter-action-row-contact-input');
 			await user.type(redirectToAddressInput, 'valid@email.it');
 			await user.type(redirectToAddressInput, '[Enter]');
-			expect(defaultProps.onDefaultActionValueChange).toHaveBeenCalledWith({
+			expect(defaultProps.onActionValueChange).toHaveBeenCalledWith({
 				actionRedirect: [{ a: 'valid@email.it' }],
 				id: expect.any(String)
 			});
@@ -191,7 +201,7 @@ describe('FilterActionsRows', () => {
 			const { user } = setupTest(
 				<FilterActionRow
 					{...defaultProps}
-					defaultAction={{
+					selectedAction={{
 						actionRedirect: [{ a: 'anyvalue' }]
 					}}
 				/>,
@@ -203,7 +213,7 @@ describe('FilterActionsRows', () => {
 			const chipRemoveIcon = within(redirectToAddressInput).getByTestId('icon: Close');
 			await user.click(chipRemoveIcon);
 
-			expect(defaultProps.onDefaultActionValueChange).toHaveBeenCalledWith({
+			expect(defaultProps.onActionValueChange).toHaveBeenCalledWith({
 				actionRedirect: [{ a: '' }],
 				id: expect.any(String)
 			});
@@ -212,7 +222,7 @@ describe('FilterActionsRows', () => {
 			setupTest(
 				<FilterActionRow
 					{...defaultProps}
-					defaultAction={{
+					selectedAction={{
 						actionRedirect: [{ a: 'aaa' }]
 					}}
 					mailForwardingEnabled={'FALSE'}
@@ -226,7 +236,7 @@ describe('FilterActionsRows', () => {
 			setupTest(
 				<FilterActionRow
 					{...defaultProps}
-					defaultAction={{
+					selectedAction={{
 						actionRedirect: [{ a: 'bbb' }]
 					}}
 					mailForwardingEnabled={'FALSE'}
@@ -240,7 +250,7 @@ describe('FilterActionsRows', () => {
 			setupTest(
 				<FilterActionRow
 					{...defaultProps}
-					defaultAction={{
+					selectedAction={{
 						actionRedirect: [{ a: 'ccc' }]
 					}}
 					mailForwardingEnabled={'FALSE'}
@@ -254,7 +264,7 @@ describe('FilterActionsRows', () => {
 			const { user } = setupTest(
 				<FilterActionRow
 					{...defaultProps}
-					defaultAction={{
+					selectedAction={{
 						actionKeep: [{}]
 					}}
 					mailForwardingEnabled={'FALSE'}
@@ -273,7 +283,7 @@ describe('FilterActionsRows', () => {
 			setupTest(
 				<FilterActionRow
 					{...defaultProps}
-					defaultAction={{
+					selectedAction={{
 						actionTag: [{}]
 					}}
 				/>,
@@ -286,7 +296,7 @@ describe('FilterActionsRows', () => {
 			setupTest(
 				<FilterActionRow
 					{...defaultProps}
-					defaultAction={{
+					selectedAction={{
 						actionTag: [{ tagName: filterName }]
 					}}
 				/>,
@@ -299,7 +309,7 @@ describe('FilterActionsRows', () => {
 			const { user } = setupTest(
 				<FilterActionRow
 					{...defaultProps}
-					defaultAction={{
+					selectedAction={{
 						actionTag: [{ tagName: 'my tag' }]
 					}}
 					tagOptions={[{ label: 'Tag 1' }]}
@@ -310,8 +320,8 @@ describe('FilterActionsRows', () => {
 			await user.click(screen.getByText('Tag'));
 			await user.click(screen.getByText('Tag 1'));
 
-			expect(defaultProps.onDefaultActionValueChange).toHaveBeenCalledTimes(1);
-			expect(defaultProps.onDefaultActionValueChange).toHaveBeenCalledWith({
+			expect(defaultProps.onActionValueChange).toHaveBeenCalledTimes(1);
+			expect(defaultProps.onActionValueChange).toHaveBeenCalledWith({
 				actionTag: [{ tagName: 'Tag 1' }]
 			});
 		});
@@ -319,7 +329,7 @@ describe('FilterActionsRows', () => {
 			const { user } = setupTest(
 				<FilterActionRow
 					{...defaultProps}
-					defaultAction={{
+					selectedAction={{
 						actionTag: [{ tagName: 'Tag to remove' }]
 					}}
 					tagOptions={[{ label: 'Tag 1' }]}
@@ -329,8 +339,8 @@ describe('FilterActionsRows', () => {
 
 			await user.click(within(screen.getByTestId('tag-input')).getByTestId('icon: Close'));
 
-			expect(defaultProps.onDefaultActionValueChange).toHaveBeenCalledTimes(1);
-			expect(defaultProps.onDefaultActionValueChange).toHaveBeenCalledWith({
+			expect(defaultProps.onActionValueChange).toHaveBeenCalledTimes(1);
+			expect(defaultProps.onActionValueChange).toHaveBeenCalledWith({
 				actionTag: [{ tagName: '' }]
 			});
 		});
@@ -355,7 +365,7 @@ describe('FilterActionsRows', () => {
 			const { user } = setupTest(
 				<FilterActionRow
 					{...defaultProps}
-					defaultAction={{
+					selectedAction={{
 						actionFileInto: [{ folderPath: '/my/path' }]
 					}}
 				/>,
@@ -373,7 +383,7 @@ describe('FilterActionsRows', () => {
 			const chooseFolder = screen.getByRole('button', { name: 'Choose' });
 			expect(chooseFolder).toBeEnabled();
 			await user.click(chooseFolder);
-			expect(defaultProps.onDefaultActionValueChange).toHaveBeenCalledWith({
+			expect(defaultProps.onActionValueChange).toHaveBeenCalledWith({
 				actionFileInto: [{ folderPath: folder.absFolderPath }]
 			});
 		});
@@ -384,7 +394,7 @@ describe('FilterActionsRows', () => {
 			const { user } = setupTest(
 				<FilterActionRow
 					{...defaultProps}
-					defaultAction={{
+					selectedAction={{
 						actionKeep: [{}]
 					}}
 				/>,
@@ -402,7 +412,7 @@ describe('FilterActionsRows', () => {
 			setupTest(
 				<FilterActionRow
 					{...defaultProps}
-					defaultAction={{
+					selectedAction={{
 						actionDiscard: [{}]
 					}}
 				/>,
@@ -414,7 +424,7 @@ describe('FilterActionsRows', () => {
 			const { user } = setupTest(
 				<FilterActionRow
 					{...defaultProps}
-					defaultAction={{
+					selectedAction={{
 						actionKeep: [{}]
 					}}
 				/>,

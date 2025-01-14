@@ -10,6 +10,7 @@ import { map } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
 import { FilterActionRow } from './filter-action-row';
+import { getActionTranslations } from './utils';
 import { getTags } from '../../../../carbonio-ui-commons/store/zustand/tags';
 import { FilterAction } from '../../../../types';
 import Heading from '../../components/settings-heading';
@@ -66,6 +67,7 @@ export const FilterActionsPanel: FC<ComponentProps> = ({ compProps }): ReactElem
 			})),
 		[]
 	);
+	const optionsTranslationFactory = getActionTranslations(isIncoming);
 	return (
 		<Container padding={{ top: 'medium' }} crossAlignment="flex-start" mainAlignment="flex-start">
 			<Heading title={t('settings.actions', 'Actions')} size="medium" />
@@ -75,13 +77,13 @@ export const FilterActionsPanel: FC<ComponentProps> = ({ compProps }): ReactElem
 					<FilterActionRow
 						key={`filter-action-row-${index}`}
 						mailForwardingEnabled={zimbraFeatureMailForwardingInFiltersEnabled}
-						isIncomingFilter={isIncoming}
+						getOptionsTranslations={optionsTranslationFactory}
 						onAddNewAction={onAddAction}
 						onRemoveAction={onRemoveAction(index)}
 						onActionSwitch={onActionUpdate(index)}
 						disableRemove={actions.length < 2}
-						onDefaultActionValueChange={onActionUpdate(index)}
-						defaultAction={action}
+						onActionValueChange={onActionUpdate(index)}
+						selectedAction={action}
 						tagOptions={tagOptions}
 					/>
 				))}
