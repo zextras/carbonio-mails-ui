@@ -15,7 +15,7 @@ import { PreviewPanelHeader } from './preview/preview-panel-header';
 import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
 import { API_REQUEST_STATUS } from '../../../constants';
 import { getFolderIdParts } from '../../../helpers/folders';
-import { getConvAction } from '../../../store/emails/actions/getConvAction';
+import { getConvAction } from '../../../store/emails/actions/get-conv-action';
 import { useCompleteConversationOrFetch } from '../../../store/emails/hooks/hooks';
 import { useExtraWindow } from '../extra-windows/use-extra-window';
 
