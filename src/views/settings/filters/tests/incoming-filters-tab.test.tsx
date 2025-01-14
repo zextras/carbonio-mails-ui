@@ -122,9 +122,7 @@ describe('Incoming Filters', () => {
 			await user.click(saveButton);
 		});
 
-		const modifyRequest = await modifyIncomingFiltersInterceptor;
-		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-		// @ts-expect-error
+		const modifyRequest = (await modifyIncomingFiltersInterceptor) as any;
 		expect(modifyRequest.filterRules[0].filterRule).toEqual(
 			expect.arrayContaining([
 				...existingFilters,
