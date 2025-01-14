@@ -7,14 +7,14 @@ import { soapFetch } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
 
 import { MAIL_VERIFICATION_HEADERS } from '../constants';
-import { normalizeConversation } from '../normalizations/normalize-conversation';
+import { normalizeConversations } from '../normalizations/normalize-conversation';
 import { normalizeMailMessageFromSoap } from '../normalizations/normalize-message';
 import type {
-	Conversation,
 	GetConvParameters,
 	GetConvRequest,
 	GetConvResponse,
-	IncompleteMessage
+	IncompleteMessage,
+	NormalizedConversation
 } from '../types';
 
 export const getConvSoapApi = async ({
@@ -22,7 +22,7 @@ export const getConvSoapApi = async ({
 	fetch = 'all',
 	onConversationIdChange
 }: GetConvParameters): Promise<{
-	conversation: Partial<Conversation>;
+	conversation: Array<NormalizedConversation>;
 	messages: Array<IncompleteMessage>;
 }> => {
 	const result = await soapFetch<GetConvRequest, GetConvResponse>('GetConv', {
@@ -50,7 +50,7 @@ export const getConvSoapApi = async ({
 		onConversationIdChange?.(result.c[0].id);
 	}
 
-	const conversation = normalizeConversation({ conversation: result.c[0] });
+	const conversation = normalizeConversations([result.c[0]]);
 	const messages = map(result.c[0].m, (item) =>
 		normalizeMailMessageFromSoap(item, false)
 	) as unknown as Array<IncompleteMessage>;

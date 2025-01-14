@@ -32,20 +32,6 @@ function useConversationMessages(
 	return messages;
 }
 
-/**
- * Updates the conversations in the application state with the modified conversation data.
- *
- * @param updatedConversations - An array of normalized conversation objects containing the updates.
- * Each conversation must include an `id` and any other properties to merge with the existing state.
- *
- * @param useEmailsStore - A state management hook based on Zustand, which provides access
- * to and updates the `EmailsStoreState`. The store maintains the `populatedItemsSlice`
- * that tracks the conversation data.
- *
- * @remarks
- * - The `tags` property is explicitly replaced with the value from the `conversation` parameter.
- * - Other properties are merged into the existing data for the corresponding conversation.
- */
 function updateConversations(
 	updatedConversations: Array<NormalizedConversation>,
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
@@ -53,10 +39,14 @@ function updateConversations(
 	useEmailsStore.setState(
 		produce(({ populatedItemsSlice }: EmailsStoreState) => {
 			updatedConversations.forEach((conversation) => {
-				populatedItemsSlice.conversations[conversation.id] = {
-					...merge(populatedItemsSlice.conversations[conversation.id], conversation),
-					tags: conversation.tags
-				};
+				if (populatedItemsSlice.conversations[conversation.id]) {
+					populatedItemsSlice.conversations[conversation.id] = {
+						...merge(populatedItemsSlice.conversations[conversation.id], conversation),
+						tags: conversation.tags
+					};
+				} else {
+					populatedItemsSlice.conversations[conversation.id] = conversation;
+				}
 			});
 		})
 	);

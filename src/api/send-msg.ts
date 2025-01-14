@@ -13,6 +13,7 @@ import { getParticipantsFromMessage } from '../helpers/messages';
 import { getCertificate } from '../store/certificates/certificate';
 import { createSoapSendMsgRequestFromEditor } from '../store/editor/editor-transformations';
 import { generateMailRequest } from '../store/editor-slice-utils';
+import { updateConversations, updateMessages } from '../store/emails/store';
 import { MailMessage, MailsEditorV2, SaveDraftRequest, SaveDraftResponse } from '../types';
 
 export const sendMsg = async ({
@@ -36,7 +37,9 @@ export const sendMsg = async ({
 		getMsg({ msgId: response.m[0].id });
 	}
 	if (response?.m?.[0]?.cid) {
-		getConvSoapApi({ conversationId: response.m[0].cid });
+		const getConvResponse = await getConvSoapApi({ conversationId: response.m[0].cid });
+		updateMessages(getConvResponse.messages);
+		updateConversations(getConvResponse.conversation);
 	}
 	return response;
 };
