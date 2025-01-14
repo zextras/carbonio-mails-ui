@@ -15,7 +15,7 @@ import { API_REQUEST_STATUS } from '../../../constants';
 import { useUiUtilities } from '../../../hooks/use-ui-utilities';
 import { normalizeMailMessageFromSoap } from '../../../normalizations/normalize-message';
 import { MailsEditorV2 } from '../../../types';
-import { updateMessages, updateMessageStatus } from '../../emails/store';
+import { updateMessageById, updateMessages, updateMessageStatus } from '../../emails/store';
 import { buildSavedAttachments } from '../editor-transformations';
 import { useEditorsStore } from '../store';
 import { getDraftSaveDelay } from '../store-utils';
@@ -96,6 +96,15 @@ export const useSaveDraftFromEditor = (): {
 						lastSaveTimestamp: new Date()
 					});
 					computeAndUpdateEditorStatus(editorId);
+					if (
+						parseInt(editor?.originalMessage?.conversation ?? '0', 10) < 0 &&
+						editor.originalMessage?.conversation !== mailMessage.id
+					) {
+						updateMessageById({
+							originalConvId: editor.originalMessage?.conversation,
+							newConvId: mailMessage.conversation
+						});
+					}
 					updateMessages([mailMessage]);
 					updateMessageStatus(mailMessage.id, API_REQUEST_STATUS.fulfilled);
 					options?.onComplete?.();
