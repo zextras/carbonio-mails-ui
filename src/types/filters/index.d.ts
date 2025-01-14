@@ -50,16 +50,6 @@ export type Filter = {
 	name: string;
 };
 
-export type FilterListType = {
-	isSelecting: boolean;
-	list: Array<Filter>;
-	moveDown: (arg: number) => void;
-	moveUp: (arg: number) => void;
-	selected: Record<string, boolean>;
-	toggle: (arg: string) => void;
-	unSelect: () => void;
-};
-
 export type FilterRules = [
 	{
 		filterRule: Array<Filter>;
@@ -84,15 +74,6 @@ export type SearchEmailValue = {
 	email: string;
 };
 
-export type ListPropsType = {
-	isSelecting: boolean;
-	list: Array<Filter>;
-	moveDown: (arg: number) => void;
-	moveUp: (arg: number) => void;
-	selected: Record<string, boolean>;
-	toggle: (arg: string) => void;
-	unSelect: () => void;
-};
 export type MarkAsOption = {
 	label: string;
 	value: { actionFlag: [{ flagName: string }] };
@@ -161,3 +142,14 @@ export type FilterActionsProps = {
 };
 
 export type FilterActions = Array<FilterAction>;
+
+export const ACTION_OPTION_KEYS = [
+	'actionKeep',
+	'actionDiscard',
+	'actionFileInto',
+	'actionTag',
+	'actionFlag',
+	'actionRedirect'
+] as const;
+
+export type ActionKey = (typeof ACTION_OPTION_KEYS)[number];

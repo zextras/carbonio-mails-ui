@@ -11,9 +11,15 @@ import { useTranslation } from 'react-i18next';
 
 import { FilterActionRow } from './filter-action-row';
 import { getTags } from '../../../../carbonio-ui-commons/store/zustand/tags';
-import { FilterActionsProps, FilterAction } from '../../../../types';
+import { FilterAction } from '../../../../types';
 import Heading from '../../components/settings-heading';
 
+export type FilterActionsProps = {
+	isIncoming: boolean;
+	tempActions: Array<FilterAction>;
+	setTempActions: (tempActions: Array<FilterAction>) => void;
+	zimbraFeatureMailForwardingInFiltersEnabled: 'TRUE' | 'FALSE';
+};
 type ComponentProps = {
 	compProps: FilterActionsProps;
 };

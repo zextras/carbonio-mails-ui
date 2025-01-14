@@ -6,7 +6,7 @@
 import { TFunction } from 'i18next';
 import { find, forEach } from 'lodash';
 
-import { FilterActions, MarkAsOption } from '../../../../types';
+import { ACTION_OPTION_KEYS, ActionKey, FilterActions, MarkAsOption } from '../../../../types';
 
 type DomainOption = {
 	label: string;
@@ -358,7 +358,7 @@ const getConditionRedirectAction = (
 
 type ActionOption = {
 	label: string;
-	value: string;
+	value: ActionKey;
 };
 
 export const getActionOptions = (
@@ -370,15 +370,15 @@ export const getActionOptions = (
 		label: isIncoming
 			? t('settings.keep_in_inbox', 'Keep in Inbox')
 			: t('settings.keep_in_sent', 'Keep in Sent'),
-		value: 'actionKeep'
+		value: ACTION_OPTION_KEYS[0]
 	},
 	{
 		label: t('settings.discard', 'Discard'),
-		value: 'actionDiscard'
+		value: ACTION_OPTION_KEYS[1]
 	},
 	{
 		label: t('settings.move_into_folder', 'Move Into Folder'),
-		value: 'actionFileInto'
+		value: ACTION_OPTION_KEYS[2]
 	},
 	{
 		label: t('settings.tag_with', 'Tag with'),

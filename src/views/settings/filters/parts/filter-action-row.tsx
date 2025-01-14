@@ -18,8 +18,8 @@ import { ShowTag } from './filter-actions/show-tag';
 import { getActionOptions, getMarkAsOptions } from './utils';
 import { CONTACT_TYPES } from '../../../../carbonio-ui-commons/integrations/constants';
 import { ContactInputItem } from '../../../../carbonio-ui-commons/integrations/types';
-import { Folder } from '../../../../carbonio-ui-commons/types/folder';
-import { FilterAction, MailFilterTag, MarkAsOption } from '../../../../types';
+import { Folder } from '../../../../carbonio-ui-commons/types';
+import { ActionKey, FilterAction, MailFilterTag, MarkAsOption } from '../../../../types';
 
 type FilterActionRowProps = {
 	mailForwardingEnabled: 'TRUE' | 'FALSE';
@@ -32,14 +32,6 @@ type FilterActionRowProps = {
 	disableRemove: boolean;
 	onAddNewAction: (action: FilterAction) => void;
 };
-
-type ActiveOption =
-	| 'actionTag'
-	| 'actionKeep'
-	| 'actionFlag'
-	| 'actionRedirect'
-	| 'actionFileInto'
-	| 'actionDiscard';
 
 export const FilterActionRow: FC<FilterActionRowProps> = ({
 	isIncomingFilter,
@@ -61,7 +53,7 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 	);
 	const [tag, setTag] = useState<Array<MailFilterTag>>([]);
 
-	const [activeActionOption, setActiveActionOption] = useState<ActiveOption>('actionKeep');
+	const [activeActionOption, setActiveActionOption] = useState<ActionKey>('actionKeep');
 	const showRedirectToAddrsInput = useMemo(
 		() => activeActionOption === 'actionRedirect',
 		[activeActionOption]
@@ -173,7 +165,7 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 		[disableRemove, onRemoveAction]
 	);
 	const onSwitchAction = useCallback(
-		(str: ActiveOption) => {
+		(str: ActionKey) => {
 			let newAction: FilterAction = defaultAction;
 			switch (str) {
 				case 'actionDiscard': {
