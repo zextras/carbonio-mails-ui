@@ -7,7 +7,7 @@
 // eslint-disable-next-line @typescript-eslint/no-use-before-define
 import React from 'react';
 
-import { act, screen } from '@testing-library/react';
+import { act, screen, within } from '@testing-library/react';
 import { useSnackbar } from '@zextras/carbonio-design-system';
 
 import { createSoapAPIInterceptor } from '../../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
@@ -85,6 +85,52 @@ describe('Incoming Filters', () => {
 				}
 			]
 		});
+	});
+	it('should call ModifyFilterRules API with all incoming filters when creating a new filter', async () => {
+		const store = generateStore();
+		(useSnackbar as jest.Mock).mockReturnValue(createSnackbarSpy);
+		const modifyIncomingFiltersInterceptor = createSoapAPIInterceptor('ModifyFilterRules');
+		const existingFilters = [mockFilter({ name: 'Filter 1' }), mockFilter({ name: 'Filter 2' })];
+		const getIncomingFiltersInterceptor = createSoapAPIInterceptor('GetFilterRules', {
+			_jsns: 'urn:zimbraMail',
+			filterRules: [
+				{
+					filterRule: existingFilters
+				}
+			]
+		});
+
+		const { user } = setupTest(<IncomingFiltersTab />, { store });
+		await getIncomingFiltersInterceptor;
+
+		expect(await screen.findByText('Filter 1')).toBeVisible();
+		const createFilterBtn = await screen.findByRole('button', { name: 'Create' });
+		await user.click(createFilterBtn);
+		makeAllItemsVisible();
+		const createModal = screen.getByTestId('modal');
+		expect(createModal).toBeVisible();
+		const filterNameInput = screen.getByRole('textbox', {
+			name: 'Filter Name*'
+		});
+		await user.clear(filterNameInput);
+		await user.type(filterNameInput, 'My new filter');
+		const saveButton = within(createModal).getByRole('button', {
+			name: 'Create'
+		});
+		expect(saveButton).toBeEnabled();
+		await act(async () => {
+			await user.click(saveButton);
+		});
+
+		const modifyRequest = await modifyIncomingFiltersInterceptor;
+		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+		// @ts-expect-error
+		expect(modifyRequest.filterRules[0].filterRule).toEqual(
+			expect.arrayContaining([
+				...existingFilters,
+				expect.objectContaining({ name: 'My new filter' })
+			])
+		);
 	});
 });
 
