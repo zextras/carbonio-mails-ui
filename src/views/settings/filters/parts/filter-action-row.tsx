@@ -15,16 +15,15 @@ import CustomSelect from './custom-select';
 import { MarkAs } from './filter-actions/mark-as';
 import { MovetoFolder } from './filter-actions/move-to-folder';
 import { RedirectTo } from './filter-actions/redirect-to';
-import { ShowTag } from './filter-actions/show-tag';
+import { ActionTagComponent } from './tests/filter-actions/action-tag-component';
 import { getMarkAsOptions } from './utils';
 import { ContactInputItem } from '../../../../carbonio-ui-commons/integrations/types';
 import { Folder } from '../../../../carbonio-ui-commons/types';
-import { ActionKey, FilterAction, MailFilterTag, MarkAsOption } from '../../../../types';
+import { ActionKey, FilterAction, FilterTag, MarkAsOption } from '../../../../types';
 
 export type FilterActionRowProps = {
 	getOptionsTranslations: (t: TFunction) => Record<ActionKey, string>;
 	mailForwardingEnabled: 'TRUE' | 'FALSE';
-	tagOptions?: Array<MailFilterTag>;
 	selectedAction: FilterAction;
 	onActionSwitch: (action: FilterAction) => void;
 	onActionValueChange: (action: FilterAction) => void;
@@ -45,7 +44,6 @@ const OPTIONS_WITH_REDIRECT = [...COMMON_OPTIONS, 'actionRedirect'] as const;
 export const FilterActionRow: FC<FilterActionRowProps> = ({
 	getOptionsTranslations,
 	mailForwardingEnabled,
-	tagOptions,
 	selectedAction,
 	onAddNewAction,
 	onRemoveAction,
@@ -71,8 +69,6 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 		label: optionsTranslations[actionKey]
 	}));
 
-	const [tag, setTag] = useState<Array<MailFilterTag>>([]);
-
 	const showRedirectToAddrsInput = useMemo(
 		() => activeActionOption === 'actionRedirect',
 		[activeActionOption]
@@ -81,7 +77,7 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 		() => activeActionOption === 'actionFileInto',
 		[activeActionOption]
 	);
-	const showTagOptions = useMemo(() => activeActionOption === 'actionTag', [activeActionOption]);
+	const showTagOptions = useMemo(() => 'actionTag' in selectedAction, [selectedAction]);
 
 	const [contacts, setContacts] = useState<ContactInputItem[]>([]);
 
@@ -95,62 +91,6 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 		},
 		[onActionValueChange]
 	);
-
-	// const defaultValue = useMemo(() => {
-	// 	if ('actionRedirect' in selectedAction && mailForwardingEnabled === 'FALSE') {
-	// 		setIsRedirectToActionRemoved(true);
-	// 		onActionValueChange({ actionKeep: [{}] });
-	// 		return actionOptions[0];
-	// 	}
-	// 	if ('actionDiscard' in selectedAction) {
-	// 		setActiveActionOption('actionDiscard');
-	// 		return actionOptions[1];
-	// 	}
-	// 	if ('actionKeep' in selectedAction) {
-	// 		setActiveActionOption('actionKeep');
-	// 		return actionOptions[0];
-	// 	}
-	//
-	// 	if ('actionFileInto' in selectedAction) {
-	// 		setActiveActionOption('actionFileInto');
-	// 		return actionOptions[2];
-	// 	}
-	// 	if ('actionFlag' in selectedAction) {
-	// 		setActiveActionOption('actionFlag');
-	// 		return actionOptions[4];
-	// 	}
-	// 	if ('actionRedirect' in selectedAction) {
-	// 		setActiveActionOption('actionRedirect');
-	// 		const email = selectedAction.actionRedirect[0].a;
-	// 		if (email) {
-	// 			setContacts([
-	// 				{
-	// 					id: email,
-	// 					label: email,
-	// 					value: { id: email, email, type: CONTACT_TYPES.CONTACT }
-	// 				}
-	// 			]);
-	// 		} else {
-	// 			setContacts([]);
-	// 		}
-	// 		return actionOptions[5];
-	// 	}
-	// 	if ('actionTag' in selectedAction) {
-	// 		setActiveActionOption('actionTag');
-	// 		const { tagName } = selectedAction.actionTag[0];
-	// 		setTag(
-	// 			tagName
-	// 				? [
-	// 						{
-	// 							label: tagName
-	// 						}
-	// 					]
-	// 				: []
-	// 		);
-	// 		return actionOptions[4];
-	// 	}
-	// 	return actionOptions[0];
-	// }, [selectedAction, mailForwardingEnabled, onActionValueChange, actionOptions]);
 
 	const defaultValue = {
 		label: optionsTranslations[activeActionOption],
@@ -183,7 +123,6 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 						newAction = {
 							actionTag: [{ tagName: '' }]
 						};
-						setTag([]);
 					}
 					break;
 				}
@@ -211,22 +150,6 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 			onActionSwitch(newAction);
 		},
 		[selectedAction, markAsOptions, onActionSwitch]
-	);
-
-	const onTagChange = useCallback(
-		(chip: MailFilterTag[]) => {
-			if (chip.length > 0) {
-				const requiredTag = chip.length > 1 ? chip[1] : chip[0];
-				setTag([requiredTag]);
-				onActionValueChange({
-					actionTag: [{ tagName: requiredTag.label }]
-				});
-			} else {
-				onActionValueChange({ actionTag: [{ tagName: '' }] });
-				setTag([]);
-			}
-		},
-		[onActionValueChange]
 	);
 
 	const handleMarkAsOptionChange = useCallback(
@@ -300,12 +223,7 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 				)}
 
 				{showTagOptions && (
-					<ShowTag
-						value={tag}
-						tagOptions={tagOptions}
-						onTagChange={onTagChange}
-						data-testid={'tag-input'}
-					/>
+					<ActionTagComponent onChange={onActionValueChange} value={selectedAction as FilterTag} />
 				)}
 			</Row>
 			<Container orientation="horizontal" mainAlignment="flex-end" width="auto">

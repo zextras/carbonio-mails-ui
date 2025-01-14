@@ -10,6 +10,7 @@ import { act, screen, within } from '@testing-library/react';
 
 import { FOLDER_VIEW } from '../../../../../carbonio-ui-commons/constants';
 import { FOLDERS } from '../../../../../carbonio-ui-commons/constants/folders';
+import { useTagStore } from '../../../../../carbonio-ui-commons/store/zustand/tags';
 import { generateFolder } from '../../../../../carbonio-ui-commons/test/mocks/folders/folders-generator';
 import { populateFoldersStore } from '../../../../../carbonio-ui-commons/test/mocks/store/folders';
 import {
@@ -28,7 +29,6 @@ describe('FilterActionsRows', () => {
 	const defaultProps: FilterActionRowProps = {
 		getOptionsTranslations: getActionTranslations(true),
 		mailForwardingEnabled: 'TRUE' as const,
-		tagOptions: [],
 		selectedAction: defaultAction,
 		onAddNewAction: jest.fn(),
 		onRemoveAction: jest.fn(),
@@ -292,27 +292,34 @@ describe('FilterActionsRows', () => {
 			expect(screen.getByText('Tag')).toBeVisible();
 		});
 		it('should display the saved tag', async () => {
-			const filterName = 'Test Designer';
+			const tagName = 'Test Designer';
 			setupTest(
 				<FilterActionRow
 					{...defaultProps}
 					selectedAction={{
-						actionTag: [{ tagName: filterName }]
+						actionTag: [{ tagName }]
 					}}
 				/>,
 				{}
 			);
-			expect(screen.getByText(filterName)).toBeVisible();
+			expect(await screen.findByText(tagName)).toBeVisible();
 		});
 
 		it('should update tag action value if a new tag is selected', async () => {
+			const tagOptions = {
+				'Tag 1': {
+					id: 'Tag 1',
+					name: 'Tag 1',
+					color: 0
+				}
+			};
+			useTagStore.setState({ tags: tagOptions });
 			const { user } = setupTest(
 				<FilterActionRow
 					{...defaultProps}
 					selectedAction={{
 						actionTag: [{ tagName: 'my tag' }]
 					}}
-					tagOptions={[{ label: 'Tag 1' }]}
 				/>,
 				{}
 			);
@@ -332,7 +339,6 @@ describe('FilterActionsRows', () => {
 					selectedAction={{
 						actionTag: [{ tagName: 'Tag to remove' }]
 					}}
-					tagOptions={[{ label: 'Tag 1' }]}
 				/>,
 				{}
 			);

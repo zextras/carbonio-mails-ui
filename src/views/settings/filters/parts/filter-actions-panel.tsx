@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, ReactElement, useCallback, useMemo } from 'react';
+import React, { FC, ReactElement, useCallback } from 'react';
 
 import { Container, Text } from '@zextras/carbonio-design-system';
 import { map } from 'lodash';
@@ -11,7 +11,6 @@ import { useTranslation } from 'react-i18next';
 
 import { FilterActionRow } from './filter-action-row';
 import { getActionTranslations } from './utils';
-import { getTags } from '../../../../carbonio-ui-commons/store/zustand/tags';
 import { FilterAction } from '../../../../types';
 import Heading from '../../components/settings-heading';
 
@@ -59,14 +58,6 @@ export const FilterActionsPanel: FC<ComponentProps> = ({ compProps }): ReactElem
 		},
 		[actions, setActions]
 	);
-	const tagOptions = useMemo(
-		() =>
-			map(getTags(), (item) => ({
-				...item,
-				label: item.name
-			})),
-		[]
-	);
 	const optionsTranslationFactory = getActionTranslations(isIncoming);
 	return (
 		<Container padding={{ top: 'medium' }} crossAlignment="flex-start" mainAlignment="flex-start">
@@ -84,7 +75,6 @@ export const FilterActionsPanel: FC<ComponentProps> = ({ compProps }): ReactElem
 						disableRemove={actions.length < 2}
 						onActionValueChange={onActionUpdate(index)}
 						selectedAction={action}
-						tagOptions={tagOptions}
 					/>
 				))}
 			</Container>
