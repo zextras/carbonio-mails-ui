@@ -26,8 +26,8 @@ export const ActionTagComponent = ({ value, onChange }: ActionTagProps): React.J
 		[]
 	);
 	const tag = useMemo(
-		() => tagOptions.filter((option) => option.label === value.value),
-		[tagOptions, value.value]
+		() => tagOptions.filter((option) => option.label === value.actionTag[0].tagName),
+		[tagOptions, value.actionTag]
 	);
 	const onTagChange = useCallback(
 		(chip: MailFilterTag[]) => {

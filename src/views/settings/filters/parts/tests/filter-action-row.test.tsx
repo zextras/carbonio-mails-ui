@@ -293,6 +293,14 @@ describe('FilterActionsRows', () => {
 		});
 		it('should display the saved tag', async () => {
 			const tagName = 'Test Designer';
+			const tagOptions = {
+				[tagName]: {
+					id: tagName,
+					name: tagName,
+					color: 0
+				}
+			};
+			useTagStore.setState({ tags: tagOptions });
 			setupTest(
 				<FilterActionRow
 					{...defaultProps}
