@@ -20,7 +20,7 @@ import { EditViewBoardContext } from './edit-view-board';
 import { EditViewActions } from '../../../../constants';
 import { addEditor, useEditorSubject } from '../../../../store/editor';
 import { generateEditor } from '../../../../store/editor/editor-generators';
-import { retrieveFullMessage } from '../../../../store/emails/hooks/hooks';
+import { getFullMessage } from '../../../../store/emails/hooks/hooks';
 import { useMessageById } from '../../../../store/emails/store';
 import type { EditViewActionsType, MailMessage } from '../../../../types';
 
@@ -176,7 +176,7 @@ const EditViewController = (): React.JSX.Element => {
 	 */
 	useEffect(() => {
 		if (isMessageLoadingRequired && !!id) {
-			retrieveFullMessage(id);
+			getFullMessage(id);
 		}
 	}, [id, isMessageLoadingRequired]);
 

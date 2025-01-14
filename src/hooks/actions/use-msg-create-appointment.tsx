@@ -9,13 +9,13 @@ import { t, useIntegratedFunction } from '@zextras/carbonio-shell-ui';
 import { isNull } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
-import { getMsg } from '../../api/helpers/get-msg-service';
 import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
 import { getRoot } from '../../carbonio-ui-commons/store/zustand/folder';
 import { MessageActionsDescriptors } from '../../constants';
 import { getAttendees, getOptionalsAttendees, getSenderByOwner } from '../../helpers/appointmemt';
 import { isSpam, isDraft } from '../../helpers/folders';
 import { extractBody } from '../../store/editor-slice-utils';
+import { getMessage } from '../../store/emails/hooks/hooks';
 import type { ActionFn, MailMessage, UIActionDescriptor } from '../../types';
 import { CalendarType, SenderType } from '../../types/calendar';
 import { useUiUtilities } from '../use-ui-utilities';
@@ -46,8 +46,9 @@ export const useMsgCreateAppointmentFn = (item: MailMessage, folderId: string): 
 				sender = getSenderByOwner(rooFolder?.owner);
 			}
 			if (!item?.isComplete) {
-				getMsg({ msgId: item.id })
+				getMessage(item.id)
 					.then((message) => {
+						if (!message) return;
 						const mailHtmlBody = extractBody(message)[1];
 						isAvailable &&
 							openAppointmentComposer({

@@ -5,8 +5,6 @@
  */
 import { ErrorSoapBodyResponse, soapFetch } from '@zextras/carbonio-shell-ui';
 
-import { getConvSoapApi } from './get-conv-soap-api';
-import { getMsg } from './helpers/get-msg-service';
 import { ParticipantRole } from '../carbonio-ui-commons/constants/participants';
 import { getAddressOwnerAccount, getIdentityDescriptor } from '../helpers/identities';
 import { getParticipantsFromMessage } from '../helpers/messages';
@@ -14,6 +12,7 @@ import { getCertificate } from '../store/certificates/certificate';
 import { createSoapSendMsgRequestFromEditor } from '../store/editor/editor-transformations';
 import { generateMailRequest } from '../store/editor-slice-utils';
 import { getConvAction } from '../store/emails/actions/get-conv-action';
+import { getMessage } from '../store/emails/hooks/hooks';
 import { MailMessage, MailsEditorV2, SaveDraftRequest, SaveDraftResponse } from '../types';
 
 export const sendMsg = async ({
@@ -34,7 +33,7 @@ export const sendMsg = async ({
 		account ?? undefined
 	);
 	if (response?.m?.[0]?.id) {
-		getMsg({ msgId: response.m[0].id });
+		getMessage(response.m[0].id);
 	}
 	if (response?.m?.[0]?.cid) {
 		getConvAction({ id: response.m[0].cid });
@@ -66,10 +65,10 @@ export async function sendMsgFromEditor({
 		identity?.ownerAccount ?? undefined
 	);
 	if (response?.m?.[0]?.id) {
-		getMsg({ msgId: response.m[0].id });
+		getMessage(response.m[0].id);
 	}
 	if (response?.m?.[0]?.cid) {
-		getConvSoapApi({ conversationId: response.m[0].cid });
+		getConvAction({ id: response.m[0].cid });
 	}
 	return response;
 }

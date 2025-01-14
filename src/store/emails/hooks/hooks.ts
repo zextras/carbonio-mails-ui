@@ -106,31 +106,29 @@ function handleGetMsgResponse(response: GetMsgResponse): void {
 	const messages = map(response?.m ?? [], (msg) => normalizeCompleteMailMessageFromSoap(msg));
 	updateMessages(messages);
 }
-
 async function handleRetrieveMessage(
 	messageId: string,
 	apiCall: (id: string) => Promise<GetMsgResponse>
-): Promise<void> {
+): Promise<MailMessage | undefined> {
 	updateMessageStatus(messageId, API_REQUEST_STATUS.pending);
-	return apiCall(messageId)
-		.then((response) => {
-			if ('Fault' in response) {
-				updateMessageStatus(messageId, API_REQUEST_STATUS.error);
-				return;
-			}
-			handleGetMsgResponse(response);
-			updateMessageStatus(messageId, API_REQUEST_STATUS.fulfilled);
-		})
-		.catch(() => {
-			updateMessageStatus(messageId, API_REQUEST_STATUS.error);
-		});
+	const response = await apiCall(messageId).catch(() => {
+		updateMessageStatus(messageId, API_REQUEST_STATUS.error);
+	});
+	if (!response) return undefined;
+	if ('Fault' in response) {
+		updateMessageStatus(messageId, API_REQUEST_STATUS.error);
+		return undefined;
+	}
+	handleGetMsgResponse(response);
+	updateMessageStatus(messageId, API_REQUEST_STATUS.fulfilled);
+	return normalizeMailMessageFromSoap(response.m[0], true) as MailMessage;
 }
 
-function retrieveMessage(messageId: string): void {
-	handleRetrieveMessage(messageId, (id) => getMsgSoapApi({ msgId: id, max: 250_000 }));
+export function getMessage(messageId: string): Promise<MailMessage | undefined> {
+	return handleRetrieveMessage(messageId, (id) => getMsgSoapApi({ msgId: id, max: 250_000 }));
 }
 
-export function retrieveFullMessage(messageId: string): Promise<void> {
+export function getFullMessage(messageId: string): Promise<MailMessage | undefined> {
 	return handleRetrieveMessage(messageId, (id) => getMsgSoapApi({ msgId: id }));
 }
 
@@ -143,7 +141,7 @@ export function useCompleteMessageOrFetch(messageId: string): MessageWithStatus 
 	const messageStatus = useMessageStatus(messageId);
 
 	const retrieveMessageCallback = useCallback(() => {
-		retrieveMessage(messageId);
+		getMessage(messageId);
 	}, [messageId]);
 
 	useEffect(() => {

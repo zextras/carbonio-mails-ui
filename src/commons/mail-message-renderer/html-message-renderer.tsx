@@ -16,7 +16,7 @@ import { HtmlMessageRendererContainer } from './html-message-renderer-container'
 import { ParticipantRole } from '../../carbonio-ui-commons/constants/participants';
 import { getAttachmentParts } from '../../helpers/attachments';
 import { getNoIdentityPlaceholder } from '../../helpers/identities';
-import { retrieveFullMessage } from '../../store/emails/hooks/hooks';
+import { getFullMessage } from '../../store/emails/hooks/hooks';
 import { BodyPart, MailMessage } from '../../types';
 import { getOriginalHtmlContent, getQuotedTextFromOriginalContent } from '../get-quoted-text-util';
 import { _CI_REGEX, _CI_SRC_REGEX, isAvailableInTrusteeList } from '../utils';
@@ -158,7 +158,7 @@ export const HtmlMessageRenderer = ({ message }: HtmlMessageRendererType): React
 
 	const loadMessage = async (): Promise<void> => {
 		setIsLoadingMessage(true);
-		retrieveFullMessage(msgId).finally(() => {
+		getFullMessage(msgId).finally(() => {
 			setIsLoadingMessage(false);
 		});
 	};
