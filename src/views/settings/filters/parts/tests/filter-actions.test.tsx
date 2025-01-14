@@ -23,7 +23,6 @@ import { generateStore } from '../../../../../tests/generators/store';
 import { MailsStateType, Filter } from '../../../../../types';
 import { ListType } from '../actions';
 import { FilterActionProps, getFilterActions } from '../filter-actions';
-import { FilterContext } from '../filter-context';
 
 jest.mock('@zextras/carbonio-design-system', () => ({
 	...jest.requireActual('@zextras/carbonio-design-system'),
@@ -36,6 +35,29 @@ mockSave.mockReturnValue(Promise.resolve());
 const IncomingFilterActions = getFilterActions(true, mockSave);
 
 describe('incoming filters actions', () => {
+	it('should close the create filter modal', async () => {
+		const store = generateStore();
+		(useSnackbar as jest.Mock).mockReturnValue(createSnackbarSpy);
+		const availableList = createList([]);
+		const myFilter = activeIncomingFilter('My filter');
+		const filters = [myFilter];
+		const activeList = createList(filters, 'My filter');
+		const props = {
+			availableList,
+			activeList,
+			filters,
+			setFetchFilters: jest.fn(),
+			setFilters: jest.fn()
+		};
+
+		const { user } = setupTest(<IncomingFilterActions {...props} />, { store });
+
+		await user.click(screen.getByRole('button', { name: 'Create' }));
+		makeAllItemsVisible();
+		expect(screen.getByTestId('modal')).toBeVisible();
+		await user.click(screen.getByTestId('icon: CloseOutline'));
+		expect(screen.queryByTestId('modal')).not.toBeInTheDocument();
+	});
 	describe.skip('apply filters to folder button', () => {
 		const TEST_FOLDER_NAME = 'test-folder';
 		const OPEN_SELECT_FOLDER_ICON = 'icon: FolderOutline';
@@ -271,47 +293,6 @@ describe('incoming filters actions', () => {
 			secondFilter
 		]);
 	});
-});
-
-it('should close the modal', async () => {
-	const store = generateStore();
-	(useSnackbar as jest.Mock).mockReturnValue(createSnackbarSpy);
-	const availableList = createList([]);
-	const myFilter = activeIncomingFilter('My filter');
-	const filters = [myFilter];
-	const activeList = createList(filters, 'My filter');
-	const props = {
-		availableList,
-		activeList,
-		filters,
-		setFetchFilters: jest.fn(),
-		setFilters: jest.fn()
-	};
-
-	const { user } = setupTest(
-		<FilterContext.Provider
-			value={{
-				incomingFilters: filters,
-				incomingLoading: true,
-				setFetchIncomingFilters: jest.fn(),
-				outgoingFilters: [],
-				outgoingLoading: false,
-				moveUp: jest.fn(),
-				setIncomingFilters: jest.fn(),
-				setOutgoingFilters: jest.fn(),
-				setFetchOutgoingFilters: jest.fn()
-			}}
-		>
-			<IncomingFilterActions {...props} />
-		</FilterContext.Provider>,
-		{ store }
-	);
-
-	await user.click(screen.getByRole('button', { name: /label\.create/i }));
-	makeAllItemsVisible();
-	expect(screen.getByTestId('modal')).toBeVisible();
-	await user.click(screen.getByTestId('icon: CloseOutline'));
-	expect(screen.queryByTestId('modal')).not.toBeInTheDocument();
 });
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
