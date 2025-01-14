@@ -341,11 +341,20 @@ describe('FilterActionsRows', () => {
 			});
 		});
 		it('should update tag action value if tag is removed', async () => {
+			const tagName = 'Tag to remove';
+			const tagOptions = {
+				[tagName]: {
+					id: tagName,
+					name: tagName,
+					color: 0
+				}
+			};
+			useTagStore.setState({ tags: tagOptions });
 			const { user } = setupTest(
 				<FilterActionRow
 					{...defaultProps}
 					selectedAction={{
-						actionTag: [{ tagName: 'Tag to remove' }]
+						actionTag: [{ tagName }]
 					}}
 				/>,
 				{}
