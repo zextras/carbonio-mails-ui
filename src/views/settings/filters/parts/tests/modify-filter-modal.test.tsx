@@ -86,47 +86,6 @@ describe('modify filter modal', () => {
 		});
 		expect(onConfirm).toHaveBeenCalledWith({ ...selectedFilter, filterTests: [{}] });
 	});
-	// it('should call onConfirm all incoming filters in initial order when clicking save button', async () => {
-	// 	const store = generateStore();
-	// 	const filterId1 = mockFilter({ name: 'Test Filter 2', id: '1', flagName: 'bbb' });
-	// 	const selectedFilterId2 = mockFilter({ name: 'Test Filter', id: '2' });
-	// 	const filterId3 = mockFilter({ name: 'Test Filter 3', id: '3' });
-	// 	const modifyFilterRulesInterceptor = createSoapAPIInterceptor('ModifyFilterRules');
-	// 	const { user } = setupTest(
-	// 		<ModifyFilterModal
-	// 			onClose={jest.fn()}
-	// 			onModifyConfirm={jest.fn()}
-	// 			selectedFilter={selectedFilterId2}
-	// 		/>,
-	// 		{
-	// 			store
-	// 		}
-	// 	);
-
-	// 	const saveButton = screen.getByRole('button', {
-	// 		name: 'Save'
-	// 	});
-	// 	await act(async () => {
-	// 		await user.click(saveButton);
-	// 	});
-	// 	const request = await modifyFilterRulesInterceptor;
-	// 	expect(request).toEqual({
-	// 		_jsns: 'urn:zimbraMail',
-	// 		filterRules: [
-	// 			{
-	// 				filterRule: [
-	// 					filterId3,
-	// 					{
-	// 						...selectedFilterId2,
-	// 						id: undefined,
-	// 						filterTests: [{}]
-	// 					},
-	// 					filterId1
-	// 				]
-	// 			}
-	// 		]
-	// 	});
-	// });
 
 	it('should call onConfirm with updated filter name after clicking save button', async () => {
 		const onConfirm = jest.fn();
@@ -158,51 +117,6 @@ describe('modify filter modal', () => {
 
 		expect(onConfirm).toHaveBeenCalledWith(expect.objectContaining({ name: 'My filter' }));
 	});
-
-	// it('show that onConfirm is called with whatever value we declare at beginning', async () => {
-	// 	const store = generateStore();
-
-	// 	const modifyFilterRulesInterceptor = createSoapAPIInterceptor('ModifyFilterRules');
-	// 	const otherFilter = {
-	// 		...mockFilter({ name: 'Test Filter 2', id: '2' }),
-	// 		anotherField: 'this field should not be present but is sent to the API anyway'
-	// 	};
-	// 	const selectedFilter = mockFilter({ name: 'Test Filter' });
-	// 	const { user } = setupTest(
-	// 		<ModifyFilterModal
-	// 			onClose={jest.fn()}
-	// 			onModifyConfirm={jest.fn()}
-	// 			selectedFilter={selectedFilter}
-	// 		/>,
-	// 		{
-	// 			store
-	// 		}
-	// 	);
-	// 	const filterInputElement = screen.getByRole('textbox', {
-	// 		name: 'Filter Name*'
-	// 	});
-	// 	await user.clear(filterInputElement);
-	// 	await user.type(filterInputElement, 'My filter');
-
-	// 	const saveButton = screen.getByRole('button', {
-	// 		name: 'Save'
-	// 	});
-	// 	await act(async () => {
-	// 		await user.click(saveButton);
-	// 	});
-	// 	const request = await modifyFilterRulesInterceptor;
-	// 	expect(request).toEqual({
-	// 		_jsns: 'urn:zimbraMail',
-	// 		filterRules: [
-	// 			{
-	// 				filterRule: [
-	// 					{ ...selectedFilter, name: 'My filter', filterTests: [{}], id: undefined },
-	// 					otherFilter
-	// 				]
-	// 			}
-	// 		]
-	// 	});
-	// });
 });
 
 function mockFilter({
