@@ -29,8 +29,8 @@ export type FilterActionProps = {
 	availableList: ListType;
 	activeList: ListType;
 	filters: Filter[];
-	setFetchFilters?: (arg: any) => void;
-	setFilters?: (arg: any) => void;
+	setFetchFilters: (arg: any) => void;
+	setFilters: (arg: any) => void;
 };
 
 type InternalFilterActionProps = FilterActionProps & {
@@ -47,7 +47,7 @@ const FilterActions: FC<InternalFilterActionProps> = ({
 	onFiltersSave
 }): ReactElement => {
 	const createSnackbar = useSnackbar();
-	const { t } = useTranslation();
+	const [t] = useTranslation();
 	const { selected: availableSelected } = availableList;
 	const disableAdd = useMemo(() => Object.keys(availableSelected).length <= 0, [availableSelected]);
 	const disableRemove = useMemo(
@@ -133,36 +133,26 @@ const FilterActions: FC<InternalFilterActionProps> = ({
 	const onRemove = useCallback(
 		() =>
 			removeFilter({
-				t,
 				availableList,
 				activeList,
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-				// @ts-ignore
 				setFilters,
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-				// @ts-ignore
 				setFetchFilters,
 				modifierFunc: onFiltersSave
 			}),
-		[removeFilter, t, availableList, activeList, setFilters, setFetchFilters, onFiltersSave]
+		[removeFilter, availableList, activeList, setFilters, setFetchFilters, onFiltersSave]
 	);
 
 	const addFilter = useAddFilter();
 	const onAdd = useCallback(
 		() =>
 			addFilter({
-				t,
 				availableList,
 				activeList,
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-				// @ts-ignore
 				setFilters,
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-				// @ts-ignore
 				setFetchFilters,
 				modifierFunc: onFiltersSave
 			}),
-		[addFilter, t, availableList, activeList, setFilters, setFetchFilters, onFiltersSave]
+		[addFilter, availableList, activeList, setFilters, setFetchFilters, onFiltersSave]
 	);
 	const deleteFilter = useDeleteFilter();
 	const openDeleteModal = useCallback(() => {
@@ -221,9 +211,7 @@ const FilterActions: FC<InternalFilterActionProps> = ({
 			);
 			const toSend = filtersCopy.slice();
 			toSend[selectedFilterIndex] = requiredFilter;
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-ignore
-			setFilters(toSend);
+			setFilters?.(toSend);
 
 			onFiltersSave(toSend)
 				.then(() => {
