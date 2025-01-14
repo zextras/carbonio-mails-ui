@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: 2021 Zextras <https://www.zextras.com>
+ * SPDX-FileCopyrightText: 2025 Zextras <https://www.zextras.com>
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
@@ -11,7 +11,7 @@ import { t } from '@zextras/carbonio-shell-ui';
 import { IncomingFiltersTab } from './incoming-filters-tab';
 import { OutgoingFiltersTab } from './outgoing-filters-tab';
 
-const FilterTabs: FC = (): ReactElement => {
+export const FilterTabs: FC = (): ReactElement => {
 	const [selectedFilterType, setSelectedFilterType] = useState('incoming-messages');
 	const tabs = useMemo(
 		() => [
@@ -49,5 +49,3 @@ const FilterTabs: FC = (): ReactElement => {
 		</Container>
 	);
 };
-
-export default FilterTabs;

@@ -6,10 +6,10 @@
 
 import React from 'react';
 
-import { getFilterActions } from './filter-actions';
-import { MessageFilterTab } from './message-filter-tab';
-import { getOutgoingFilters } from '../../../../store/actions/get-outgoing-filters';
-import { modifyOutgoingFilterRules } from '../../../../store/actions/modify-filter-rules';
+import { getFilterActions } from './parts/filter-actions';
+import { MessageFilterTab } from './parts/message-filter-tab';
+import { getOutgoingFilters } from '../../../store/actions/get-outgoing-filters';
+import { modifyOutgoingFilterRules } from '../../../store/actions/modify-filter-rules';
 
 export const OutgoingFiltersTab = (): React.JSX.Element => (
 	<MessageFilterTab
