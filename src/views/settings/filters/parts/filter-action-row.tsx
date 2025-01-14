@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
+import React, { FC, ReactElement, useCallback, useMemo } from 'react';
 
 import { Button, Container, Padding, Row, Text, Tooltip } from '@zextras/carbonio-design-system';
 import { TFunction } from 'i18next';
@@ -13,11 +13,18 @@ import { v4 as uuidv4 } from 'uuid';
 import CustomSelect from './custom-select';
 import { ActionMarkAsComponent } from './filter-actions/action-mark-as-component';
 import { ActionMoveToFolderComponent } from './filter-actions/action-move-to-folder-component';
+import { ActionRedirectToComponent } from './filter-actions/action-redirect-to-component';
 import { ActionTagComponent } from './filter-actions/action-tag-component';
-import { RedirectTo } from './filter-actions/redirect-to';
 import { getMarkAsOptions } from './utils';
 import { ContactInputItem } from '../../../../carbonio-ui-commons/integrations/types';
-import { ActionKey, FilterAction, FilterFileInto, FilterFlag, FilterTag } from '../../../../types';
+import {
+	ActionKey,
+	FilterAction,
+	FilterFileInto,
+	FilterFlag,
+	FilterRedirect,
+	FilterTag
+} from '../../../../types';
 
 export type FilterActionRowProps = {
 	getOptionsTranslations: (t: TFunction) => Record<ActionKey, string>;
@@ -77,8 +84,6 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 	);
 	const showTagOptions = useMemo(() => 'actionTag' in selectedAction, [selectedAction]);
 
-	const [contacts, setContacts] = useState<ContactInputItem[]>([]);
-
 	const onRedirectToChange = useCallback(
 		(users: ContactInputItem[]): void => {
 			const email = users?.length > 0 ? users[0].value.email : '';
@@ -137,7 +142,6 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 						newAction = {
 							actionRedirect: [{ a: '' }]
 						};
-						setContacts([]);
 					}
 					break;
 				}
@@ -194,7 +198,10 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 				)}
 
 				{showRedirectToAddrsInput && (
-					<RedirectTo defaultValue={contacts} onChange={onRedirectToChange} />
+					<ActionRedirectToComponent
+						value={selectedAction as FilterRedirect}
+						onChange={onActionValueChange}
+					/>
 				)}
 
 				{showTagOptions && (
