@@ -347,7 +347,7 @@ export const getActionTranslations =
 		[ACTION_OPTION_KEYS[1]]: t('settings.discard', 'Discard'),
 		[ACTION_OPTION_KEYS[2]]: t('settings.move_into_folder', 'Move Into Folder'),
 		[ACTION_OPTION_KEYS[3]]: t('settings.tag_with', 'Tag with'),
-		[ACTION_OPTION_KEYS[4]]: t('settings.tag_with', 'Tag with'),
+		[ACTION_OPTION_KEYS[4]]: t('settings.mark_as', 'Mark as'),
 		[ACTION_OPTION_KEYS[5]]: t('settings.redirect_to_address', 'Redirect to address')
 	});
 

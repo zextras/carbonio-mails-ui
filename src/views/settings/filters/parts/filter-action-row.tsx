@@ -12,14 +12,14 @@ import { useTranslation } from 'react-i18next';
 import { v4 as uuidv4 } from 'uuid';
 
 import CustomSelect from './custom-select';
-import { MarkAs } from './filter-actions/mark-as';
+import { ActionMarkAsComponent } from './filter-actions/action-mark-as-component';
+import { ActionTagComponent } from './filter-actions/action-tag-component';
 import { MovetoFolder } from './filter-actions/move-to-folder';
 import { RedirectTo } from './filter-actions/redirect-to';
-import { ActionTagComponent } from './tests/filter-actions/action-tag-component';
 import { getMarkAsOptions } from './utils';
 import { ContactInputItem } from '../../../../carbonio-ui-commons/integrations/types';
 import { Folder } from '../../../../carbonio-ui-commons/types';
-import { ActionKey, FilterAction, FilterTag, MarkAsOption } from '../../../../types';
+import { ActionKey, FilterAction, FilterFlag, FilterTag, MarkAsOption } from '../../../../types';
 
 export type FilterActionRowProps = {
 	getOptionsTranslations: (t: TFunction) => Record<ActionKey, string>;
@@ -211,10 +211,9 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 					/>
 				)}
 				{'actionFlag' in selectedAction && (
-					<MarkAs
-						selected={selectedAction.actionFlag[0]}
-						options={markAsOptions}
-						onChange={handleMarkAsOptionChange}
+					<ActionMarkAsComponent
+						value={selectedAction as FilterFlag}
+						onChange={onActionValueChange}
 					/>
 				)}
 

@@ -8,15 +8,18 @@ import React, { useCallback, useMemo } from 'react';
 
 import { map } from 'lodash';
 
-import { getTags } from '../../../../../../carbonio-ui-commons/store/zustand/tags';
-import { FilterAction, FilterTag, MailFilterTag } from '../../../../../../types';
-import { ShowTag } from '../../filter-actions/show-tag';
+import { ShowTag } from './show-tag';
+import { getTags } from '../../../../../carbonio-ui-commons/store/zustand/tags';
+import { FilterAction, FilterTag, MailFilterTag } from '../../../../../types';
 
-type ActionTagProps = {
+type ActionTagComponentProps = {
 	value: FilterTag;
 	onChange: (filterValue: FilterAction) => void;
 };
-export const ActionTagComponent = ({ value, onChange }: ActionTagProps): React.JSX.Element => {
+export const ActionTagComponent = ({
+	value,
+	onChange
+}: ActionTagComponentProps): React.JSX.Element => {
 	const tagOptions = useMemo(
 		() =>
 			map(getTags(), (item) => ({
