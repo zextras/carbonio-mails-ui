@@ -349,7 +349,7 @@ const getConditionRedirectAction = (
 		return [
 			{
 				label: t('settings.redirect_to_address', 'Redirect to address'),
-				value: 'actionRedirect'
+				value: ACTION_OPTION_KEYS[5]
 			}
 		];
 	}
@@ -363,7 +363,7 @@ type ActionOption = {
 
 export const getActionOptions = (
 	t: TFunction,
-	zimbraFeatureMailForwardingInFiltersEnabled: 'TRUE' | 'FALSE',
+	mailForwardingEnabled: 'TRUE' | 'FALSE',
 	isIncoming = true
 ): ActionOption[] => [
 	{
@@ -382,13 +382,13 @@ export const getActionOptions = (
 	},
 	{
 		label: t('settings.tag_with', 'Tag with'),
-		value: 'actionTag'
+		value: ACTION_OPTION_KEYS[3]
 	},
 	{
 		label: t('settings.mark_as', 'Mark as'),
-		value: 'actionFlag'
+		value: ACTION_OPTION_KEYS[4]
 	},
-	...getConditionRedirectAction(t, zimbraFeatureMailForwardingInFiltersEnabled)
+	...getConditionRedirectAction(t, mailForwardingEnabled)
 ];
 
 export const getMarkAsOptions = (t: TFunction): Array<MarkAsOption> => [
