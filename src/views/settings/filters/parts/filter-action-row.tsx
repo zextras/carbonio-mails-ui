@@ -55,10 +55,15 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 }): ReactElement => {
 	const optionsToDisplay =
 		mailForwardingEnabled === 'TRUE' ? OPTIONS_WITH_REDIRECT : COMMON_OPTIONS;
-	const activeActionOption: ActionKey = (Object.keys(selectedAction).find((key) =>
+
+	const selectedActionKeys = Object.keys(selectedAction);
+	const userChoseRedirectToActionInThePast =
+		mailForwardingEnabled === 'FALSE' && selectedActionKeys.includes('actionRedirect');
+
+	const activeActionOption: ActionKey = (selectedActionKeys.find((key) =>
 		optionsToDisplay.includes(key)
 	) ?? 'actionKeep') as ActionKey;
-	const [isRedirectToActionRemoved, setIsRedirectToActionRemoved] = useState(false);
+
 	const [t] = useTranslation();
 	const markAsOptions = useMemo(() => getMarkAsOptions(t), [t]);
 
@@ -205,12 +210,9 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 					newAction = { actionKeep: [{}] };
 					break;
 			}
-			if (isRedirectToActionRemoved) {
-				setIsRedirectToActionRemoved(false);
-			}
 			onActionSwitch(newAction);
 		},
-		[selectedAction, isRedirectToActionRemoved, markAsOptions, onActionSwitch]
+		[selectedAction, markAsOptions, onActionSwitch]
 	);
 
 	const onTagChange = useCallback(
@@ -272,7 +274,7 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 						defaultSelection={defaultValue}
 					/>
 				</Row>
-				{isRedirectToActionRemoved && defaultValue.value === 'actionKeep' && (
+				{userChoseRedirectToActionInThePast && (
 					<Row padding={{ right: 'small' }} minWidth="12.5rem">
 						<Text size="medium" color="info">
 							{t('label.admin_disabled_action', 'The Admin disabled the redirect action')}
