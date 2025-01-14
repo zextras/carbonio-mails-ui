@@ -11,9 +11,11 @@ import { useTranslation } from 'react-i18next';
 import { computeAndUpdateEditorStatus } from './commons';
 import { getEditor } from './editors';
 import { saveDraftSoapApi } from '../../../api/save-draft-soap-api';
+import { API_REQUEST_STATUS } from '../../../constants';
 import { useUiUtilities } from '../../../hooks/use-ui-utilities';
 import { normalizeMailMessageFromSoap } from '../../../normalizations/normalize-message';
 import { MailsEditorV2 } from '../../../types';
+import { updateMessages, updateMessageStatus } from '../../emails/store';
 import { buildSavedAttachments } from '../editor-transformations';
 import { useEditorsStore } from '../store';
 import { getDraftSaveDelay } from '../store-utils';
@@ -81,7 +83,7 @@ export const useSaveDraftFromEditor = (): {
 						return;
 					}
 
-					const mailMessage = normalizeMailMessageFromSoap(res.m[0]);
+					const mailMessage = normalizeMailMessageFromSoap(res.m[0], true);
 					useEditorsStore.getState().setDid(editorId, mailMessage.id);
 					useEditorsStore.getState().setSize(editorId, mailMessage.size);
 					useEditorsStore.getState().removeUnsavedAttachments(editorId);
@@ -94,7 +96,9 @@ export const useSaveDraftFromEditor = (): {
 						lastSaveTimestamp: new Date()
 					});
 					computeAndUpdateEditorStatus(editorId);
-					options?.onComplete && options?.onComplete();
+					updateMessages([mailMessage]);
+					updateMessageStatus(mailMessage.id, API_REQUEST_STATUS.fulfilled);
+					options?.onComplete?.();
 				})
 				.catch((err) => {
 					useEditorsStore.getState().setDraftSaveProcessStatus(editorId, {
@@ -104,7 +108,7 @@ export const useSaveDraftFromEditor = (): {
 					// FIXME use a subscription to the store update
 					computeAndUpdateEditorStatus(editorId);
 					handleError(err);
-					options?.onError && options?.onError(err);
+					options?.onError?.(err);
 				});
 
 			useEditorsStore.getState().setDraftSaveProcessStatus(editorId, {
