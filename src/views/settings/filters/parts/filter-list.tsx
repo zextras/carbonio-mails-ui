@@ -33,27 +33,24 @@ export const FilterList = ({
 		(index: number) => index === filters.length - 1,
 		[filters.length]
 	);
+	// TODO: do we need visible? check tests
 	const filtersList = map(filters, (activeFilter, index) => {
 		const isSelected = selected[activeFilter.name];
 		return (
 			<ListItem key={`filter-item-${index}`}>
-				{(visible: boolean): React.JSX.Element =>
-					visible ? (
-						<FilterItem
-							index={index}
-							selected={isSelected}
-							unSelect={unSelect}
-							item={activeFilter}
-							moveDown={moveDown}
-							moveUp={moveUp}
-							toggle={toggle}
-							disableMoveUp={disableMoveUp(index)}
-							disableMoveDown={disableMoveDown(index)}
-						/>
-					) : (
-						<></>
-					)
-				}
+				{(visible: boolean): React.JSX.Element => (
+					<FilterItem
+						index={index}
+						selected={isSelected}
+						unSelect={unSelect}
+						item={activeFilter}
+						moveDown={moveDown}
+						moveUp={moveUp}
+						toggle={toggle}
+						disableMoveUp={disableMoveUp(index)}
+						disableMoveDown={disableMoveDown(index)}
+					/>
+				)}
 			</ListItem>
 		);
 	});
