@@ -15,22 +15,22 @@ describe('Apply Filter Modal', () => {
 	test('should render the modal', async () => {
 		const store = generateStore();
 
-		setupTest(<ApplyFilterModal criteria={{ filterName: 'criteria' }} onClose={jest.fn()} />, {
+		setupTest(<ApplyFilterModal criteria={{ filterName: 'My filter' }} onClose={jest.fn()} />, {
 			store
 		});
 
-		expect(await screen.findByText(/modals\.apply_filters\.title/i)).toBeInTheDocument();
+		expect(await screen.findByText('Application filter My filter')).toBeInTheDocument();
 	});
 
 	test('should open folder selection modal when folder icon is clicked', async () => {
 		const store = generateStore();
 
 		const { user } = setupTest(
-			<ApplyFilterModal criteria={{ filterName: 'criteria' }} onClose={jest.fn()} />,
+			<ApplyFilterModal criteria={{ filterName: 'My filter' }} onClose={jest.fn()} />,
 			{ store }
 		);
 
-		expect(await screen.findByText(/modals\.apply_filters\.title/i)).toBeInTheDocument();
+		expect(await screen.findByText('Application filter My filter')).toBeInTheDocument();
 		const folderButton = screen.getByTestId('icon: FolderOutline');
 		act(() => {
 			user.click(folderButton);
