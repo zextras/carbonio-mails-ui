@@ -97,28 +97,6 @@ function updateMessageStatus(
 	);
 }
 
-function updateMessageById(
-	originalConvId: string,
-	newConvId: string,
-	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
-): void {
-	useEmailsStore.setState(
-		produce(({ populatedItemsSlice, conversationIndexSlice }: EmailsStoreState) => {
-			// update the conversation list index
-			conversationIndexSlice.conversationListIndex = [
-				newConvId,
-				...conversationIndexSlice.conversationListIndex
-			];
-			// update the conversation in the populatedItemsSlice
-			const oldConversation = populatedItemsSlice.conversations[originalConvId];
-			populatedItemsSlice.conversations[newConvId] = {
-				...oldConversation,
-				id: newConvId
-			};
-		})
-	);
-}
-
 function useMessagesByIds(
 	ids: Array<string>,
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
@@ -290,7 +268,6 @@ export const populatedItemsSliceUtils = {
 	useConversationsByIds,
 	deleteMessagesFromConversation,
 	useMessagesByFolder,
-	updateMessageById,
 	handleDeleteAttachments,
 	handleConvActionResponse,
 	optimisticallyHandleConvActions

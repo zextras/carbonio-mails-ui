@@ -394,17 +394,6 @@ export function updateMessages(messages: MailMessage[]): void {
 	});
 }
 
-export function updateMessageById({
-	originalConvId,
-	newConvId
-}: {
-	originalConvId: string;
-	newConvId: string;
-}): void {
-	addTask(async () => {
-		populatedItemsSliceUtils.updateMessageById(originalConvId, newConvId, useEmailsStore);
-	});
-}
 /**
  * Updates the status of a specific conversation in the `populatedItemsSlice` of the emails store.
  * This function modifies the store state to set the provided status for the given conversation ID.

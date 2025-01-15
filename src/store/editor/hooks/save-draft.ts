@@ -96,16 +96,7 @@ export const useSaveDraftFromEditor = (): {
 						lastSaveTimestamp: new Date()
 					});
 					computeAndUpdateEditorStatus(editorId);
-					// TODO: CO-1725 remove this?
-					// if (
-					// 	parseInt(editor?.originalMessage?.conversation ?? '0', 10) < 0 &&
-					// 	editor.originalMessage?.conversation !== mailMessage.id
-					// ) {
-					// 	updateMessageById({
-					// 		originalConvId: editor.originalMessage?.conversation,
-					// 		newConvId: mailMessage.conversation
-					// 	});
-					// }
+
 					updateMessages([mailMessage]);
 					updateMessageStatus(mailMessage.id, API_REQUEST_STATUS.fulfilled);
 					options?.onComplete?.();
