@@ -5,6 +5,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 import { create, StoreApi, UseBoundStore } from 'zustand';
 
 import { createConversationIndexSlice } from './conversations/conversations-index-slice';
@@ -26,6 +27,7 @@ import {
 	MsgActionResponse
 } from '../../types';
 import { syncDataHandlerUtils } from './sync-data-handler/utils';
+import { RemoveAttachmentsResponse } from '../../api/delete-all-attachments-soap-api';
 
 type TaskManagement = {
 	queue: Array<() => Promise<void>>;
@@ -256,6 +258,12 @@ export function useConversationMessages(
 	conversationId: string
 ): Array<MailMessage | IncompleteMessage> {
 	return populatedItemsSliceUtils.useConversationMessages(conversationId, useEmailsStore);
+}
+
+export function handleDeleteAttachments(
+	response: RemoveAttachmentsResponse | ErrorSoapBodyResponse
+): void {
+	populatedItemsSliceUtils.handleDeleteAttachments(response, useEmailsStore);
 }
 
 export function handleMessageActionsResults(response: MsgActionResponse, newParent?: string): void {

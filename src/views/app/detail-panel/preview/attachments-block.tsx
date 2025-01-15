@@ -38,10 +38,10 @@ import {
 	getLocationOrigin
 } from './utils';
 import { getMsgsForPrintSoapApi } from '../../../../api';
-import { deleteAttachmentsSoapApi } from '../../../../api/delete-all-attachments-soap-api';
 import { getFileExtension } from '../../../../commons/utilities';
 import { useAttachmentIconColor } from '../../../../helpers/attachments';
 import { useUiUtilities } from '../../../../hooks/use-ui-utilities';
+import { deleteAttachmentsEmailStoreAction } from '../../../../store/emails/actions/delete-attachments-action';
 import type {
 	AppContext,
 	AttachmentPart,
@@ -161,7 +161,7 @@ const Attachment = ({
 	const isEML = extension === 'EML';
 
 	const onDeleteAttachment = useCallback(() => {
-		deleteAttachmentsSoapApi({ id: messageId, attachments: [part] });
+		deleteAttachmentsEmailStoreAction({ id: messageId, attachments: [part] });
 	}, [messageId, part]);
 
 	const onDownloadAndDelete = useCallback(() => {

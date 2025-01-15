@@ -5,13 +5,16 @@
  */
 /* eslint-disable no-param-reassign */
 
+import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 import produce from 'immer';
 import { filter, forEach, includes, merge } from 'lodash';
 import { UseBoundStore, StoreApi } from 'zustand';
 
+import { RemoveAttachmentsResponse } from '../../../api/delete-all-attachments-soap-api';
 import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
 import { useFolder } from '../../../carbonio-ui-commons/store/zustand/folder';
 import { CONVACTIONS } from '../../../commons/utilities';
+import { normalizeMailMessageFromSoap } from '../../../normalizations/normalize-message';
 import {
 	MailMessage,
 	IncompleteMessage,
@@ -194,6 +197,29 @@ function handleMessageActionsResults(
 	);
 }
 
+function handleDeleteAttachments(
+	response: RemoveAttachmentsResponse | ErrorSoapBodyResponse,
+	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
+): void {
+	useEmailsStore.setState(
+		produce(({ populatedItemsSlice }: EmailsStoreState) => {
+			if ('Fault' in response) return;
+			if (!response) return;
+			const ids = response.m?.map((m) => m.id);
+			ids.forEach((id) => {
+				const message = populatedItemsSlice.messages[id];
+				if (message) {
+					const normalizeMsg = normalizeMailMessageFromSoap(response.m[0], true);
+					populatedItemsSlice.messages[id] = {
+						...message,
+						parts: normalizeMsg.parts
+					};
+				}
+			});
+		})
+	);
+}
+
 export const populatedItemsSliceUtils = {
 	handleMessageActionsResults,
 	updateConversations,
@@ -205,5 +231,6 @@ export const populatedItemsSliceUtils = {
 	useConversationsByIds,
 	deleteMessagesFromConversation,
 	useMessagesByFolder,
-	updateMessageById
+	updateMessageById,
+	handleDeleteAttachments
 };

@@ -160,6 +160,7 @@ export const useSyncDataHandler = (): void => {
 	const notifyList = useNotify() as Array<SoapNotify>;
 	const [seq, setSeq] = useState(-1);
 	const [initialized, setInitialized] = useState(false);
+	// const currentFolder = useAppSelector(selectCurrentFolder);
 	const processedNotify = useRef<number>(-1);
 
 	const refresh = useRefresh();
