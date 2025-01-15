@@ -45,38 +45,39 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 	disableRemove,
 	onActionValueChange
 }): ReactElement => {
-	const optionsToDisplay =
+	const [t] = useTranslation();
+
+	const selectActionOptionKeys =
 		mailForwardingEnabled === 'TRUE' ? OPTIONS_WITH_REDIRECT : COMMON_OPTIONS;
+	const selectedOptionKey =
+		selectActionOptionKeys.find((key) => key in selectedAction) ?? 'actionKeep';
+
+	const selectActionOptionsTranslations = getOptionsTranslations(t);
+	const selectActionOptions = selectActionOptionKeys.map((actionKey) => ({
+		value: actionKey,
+		label: selectActionOptionsTranslations[actionKey]
+	}));
+	const selectActionDefaultValue = {
+		label: selectActionOptionsTranslations[selectedOptionKey],
+		value: selectedOptionKey
+	};
 
 	const userChoseRedirectToActionInThePast =
 		mailForwardingEnabled === 'FALSE' && 'actionRedirect' in selectedAction;
 
-	const activeActionOption = optionsToDisplay.find((key) => key in selectedAction) ?? 'actionKeep';
 	const actionComponentToDisplay = getActionComponent(selectedAction, onActionValueChange);
 
-	const [t] = useTranslation();
-
-	const optionsTranslations = getOptionsTranslations(t);
-	const actionOptions = optionsToDisplay.map((actionKey) => ({
-		value: actionKey,
-		label: optionsTranslations[actionKey]
-	}));
-
-	const defaultValue = {
-		label: optionsTranslations[activeActionOption],
-		value: activeActionOption
-	};
 	const onRemove = useMemo(
 		() => (disableRemove ? (): null => null : onRemoveAction),
 		[disableRemove, onRemoveAction]
 	);
-	const initialValues = getActionsInitialValues(t);
+	const initialValuesOnSwitchAction = getActionsInitialValues(t);
 	const onSwitchAction = useCallback(
 		(str: ActionKey) => {
-			const newAction = initialValues[str];
+			const newAction = initialValuesOnSwitchAction[str];
 			onActionSwitch(newAction);
 		},
-		[initialValues, onActionSwitch]
+		[initialValuesOnSwitchAction, onActionSwitch]
 	);
 
 	const onAddingNewAction = useCallback((): void => {
@@ -94,11 +95,11 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 			<Row>
 				<Row padding={{ right: 'small' }} minWidth="12.5rem">
 					<CustomSelect
-						items={actionOptions}
+						items={selectActionOptions}
 						background="gray5"
 						label={t('settings.actions', 'Actions')}
 						onChange={onSwitchAction}
-						defaultSelection={defaultValue}
+						defaultSelection={selectActionDefaultValue}
 					/>
 				</Row>
 				{userChoseRedirectToActionInThePast && (
