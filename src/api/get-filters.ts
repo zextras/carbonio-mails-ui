@@ -14,15 +14,18 @@ export type FilterRulesAPIResponse = {
 };
 
 export const getIncomingFilters = async (): Promise<FilterRulesAPIResponse> => {
-	const { filterRules } = (await soapFetch('GetFilterRules', {
+	const { filterRules } = await soapFetch<unknown, FilterRulesAPIResponse>('GetFilterRules', {
 		_jsns: 'urn:zimbraMail'
-	})) as { filterRules: FilterRules };
+	});
 	return normalizeFilterRulesFromSoap(filterRules);
 };
 
 export const getOutgoingFilters = async (): Promise<FilterRulesAPIResponse> => {
-	const { filterRules } = (await soapFetch('GetOutgoingFilterRules', {
-		_jsns: 'urn:zimbraMail'
-	})) as { filterRules: FilterRules };
+	const { filterRules } = await soapFetch<unknown, FilterRulesAPIResponse>(
+		'GetOutgoingFilterRules',
+		{
+			_jsns: 'urn:zimbraMail'
+		}
+	);
 	return { filterRules };
 };
