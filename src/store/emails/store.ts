@@ -263,7 +263,9 @@ export function useConversationMessages(
 export function handleDeleteAttachments(
 	response: RemoveAttachmentsResponse | ErrorSoapBodyResponse
 ): void {
-	populatedItemsSliceUtils.handleDeleteAttachments(response, useEmailsStore);
+	addTask(async () => {
+		populatedItemsSliceUtils.handleDeleteAttachments(response, useEmailsStore);
+	});
 }
 
 export function handleMessageActionsResults(response: MsgActionResponse, newParent?: string): void {
