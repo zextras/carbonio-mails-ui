@@ -87,9 +87,7 @@ describe('Incoming Filters', () => {
 			name: 'Save'
 		});
 		expect(saveButton).toBeEnabled();
-		await act(async () => {
-			await user.click(saveButton);
-		});
+		await user.click(saveButton);
 
 		const modifyRequest = await modifyIncomingFiltersInterceptor;
 		expect(modifyRequest).toEqual({
@@ -133,9 +131,7 @@ describe('Incoming Filters', () => {
 			name: 'Create'
 		});
 		expect(saveButton).toBeEnabled();
-		await act(async () => {
-			await user.click(saveButton);
-		});
+		await user.click(saveButton);
 
 		const modifyRequest = (await modifyIncomingFiltersInterceptor) as any;
 		expect(modifyRequest.filterRules[0].filterRule).toEqual(
