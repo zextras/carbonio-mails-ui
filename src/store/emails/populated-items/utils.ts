@@ -9,13 +9,16 @@ import produce from 'immer';
 import { filter, forEach, includes, merge } from 'lodash';
 import { UseBoundStore, StoreApi } from 'zustand';
 
+import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
 import { useFolder } from '../../../carbonio-ui-commons/store/zustand/folder';
+import { CONVACTIONS } from '../../../commons/utilities';
 import {
 	MailMessage,
 	IncompleteMessage,
 	EmailsStoreState,
 	NormalizedConversation,
-	SearchRequestStatus
+	SearchRequestStatus,
+	MsgActionResponse
 } from '../../../types';
 
 function useConversationMessages(
@@ -160,7 +163,39 @@ export function deleteMessagesFromConversation(ids: Array<string>, state: Emails
 	});
 }
 
+function handleMessageActionsResults(
+	response: MsgActionResponse,
+	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>,
+	newParent?: string
+): void {
+	useEmailsStore.setState(
+		produce(({ populatedItemsSlice }: EmailsStoreState) => {
+			const { id, op } = response.action;
+
+			const message = populatedItemsSlice.messages[id];
+			if (message) {
+				if (op.includes(CONVACTIONS.FLAG)) {
+					message.flagged = !op.startsWith('!');
+				} else if (op.includes(CONVACTIONS.MARK_READ)) {
+					message.read = !op.startsWith('!');
+				} else if (op === CONVACTIONS.TRASH) {
+					message.parent = FOLDERS.TRASH;
+				} else if (op === CONVACTIONS.DELETE) {
+					delete populatedItemsSlice.messages[id];
+				} else if (op === CONVACTIONS.MOVE) {
+					message.parent = newParent ?? FOLDERS.INBOX;
+				} else if (op === CONVACTIONS.MARK_SPAM) {
+					message.parent = FOLDERS.SPAM;
+				} else if (op === CONVACTIONS.MARK_NOT_SPAM) {
+					message.parent = FOLDERS.INBOX;
+				}
+			}
+		})
+	);
+}
+
 export const populatedItemsSliceUtils = {
+	handleMessageActionsResults,
 	updateConversations,
 	updateMessageStatus,
 	updateConversationStatus,

@@ -32,7 +32,6 @@ import { useFolderActions } from './use-folder-actions';
 import { getFolderIconColor, getFolderIconName, getFolderTranslatedName } from './utils';
 import { convActionSoapApi } from '../../api';
 import { folderActionSoapApi } from '../../api/folder-action-soap-api';
-import { msgActionSoapApi } from '../../api/msg-action-soap-api';
 import { ROOT_NAME } from '../../carbonio-ui-commons/constants';
 import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
 import { isSystemFolder } from '../../carbonio-ui-commons/helpers/folders';
@@ -40,6 +39,7 @@ import type { Folder } from '../../carbonio-ui-commons/types/folder';
 import type { DragEnterAction, OnDropActionProps } from '../../carbonio-ui-commons/types/sidebar';
 import { isDraft, isSpam } from '../../helpers/folders';
 import { useUiUtilities } from '../../hooks/use-ui-utilities';
+import { msgActionEmailStoreAction } from '../../store/emails/actions/msg-action-action';
 
 const FittedRow = styled(Row)`
 	max-width: calc(100% - (2 * ${({ theme }): string => theme.sizes.padding.small}));
@@ -168,7 +168,7 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item }) => {
 				}
 			});
 		} else {
-			msgActionSoapApi({
+			msgActionEmailStoreAction({
 				operation: `move`,
 				ids: convMsgsIds,
 				parent: item.id

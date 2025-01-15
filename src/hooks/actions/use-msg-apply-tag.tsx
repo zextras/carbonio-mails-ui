@@ -8,11 +8,11 @@ import { useCallback, useMemo } from 'react';
 import { map } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
-import { msgActionSoapApi } from '../../api/msg-action-soap-api';
 import { useTags } from '../../carbonio-ui-commons/store/zustand/tags';
 import { Tag } from '../../carbonio-ui-commons/types/tags';
 import { MessageActionsDescriptors, TIMEOUTS } from '../../constants';
 import { isSpam } from '../../helpers/folders';
+import { msgActionEmailStoreAction } from '../../store/emails/actions/msg-action-action';
 import {
 	MsgActionOperation,
 	MsgActionResponse,
@@ -95,7 +95,7 @@ export const useMsgApplyTagSubDescriptors = ({
 
 				const execute = async (): Promise<void> => {
 					if (canExecute(folderId)) {
-						const res = await msgActionSoapApi({ operation, ids, tagName: tag.name });
+						const res = await msgActionEmailStoreAction({ operation, ids, tagName: tag.name });
 						handleApiResponse(res, snackbarSuccessLabel);
 					}
 				};

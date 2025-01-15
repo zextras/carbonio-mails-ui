@@ -14,9 +14,9 @@ import {
 } from '@zextras/carbonio-shell-ui';
 import { filter } from 'lodash';
 
-import { msgActionSoapApi } from '../../../../../api/msg-action-soap-api';
 import { MailMessageRenderer } from '../../../../../commons/mail-message-renderer/mail-message-renderer';
 import SharedInviteReply from '../../../../../integrations/shared-invite-reply';
+import { msgActionEmailStoreAction } from '../../../../../store/emails/actions/msg-action-action';
 import { useCompleteMessageOrFetch } from '../../../../../store/emails/hooks/hooks';
 import type { OpenEmlPreviewType } from '../../../../../types';
 import AttachmentsBlock from '../attachments-block';
@@ -42,7 +42,7 @@ export const MailPreviewContent = ({
 	const accounts = useUserAccounts();
 	const { prefs } = useUserSettings();
 	const moveToTrash = useCallback(() => {
-		msgActionSoapApi({
+		msgActionEmailStoreAction({
 			operation: `trash`,
 			ids: [messageId]
 		});

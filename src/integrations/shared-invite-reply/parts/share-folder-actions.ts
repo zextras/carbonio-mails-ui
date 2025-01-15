@@ -11,10 +11,10 @@ import { useTranslation } from 'react-i18next';
 
 import { acceptSharedFolderReply } from '../../../api/accept-shared-folder-reply';
 import { mountSharedFolderSoapApi } from '../../../api/mount-shared-folder-soap-api';
-import { msgActionSoapApi } from '../../../api/msg-action-soap-api';
 import { ParticipantRole } from '../../../carbonio-ui-commons/constants/participants';
 import { getErrorMessage } from '../../../carbonio-ui-commons/helpers/errors';
 import { useUiUtilities } from '../../../hooks/use-ui-utilities';
+import { msgActionEmailStoreAction } from '../../../store/emails/actions/msg-action-action';
 import type { Participant, SaveDraftResponse } from '../../../types';
 
 type Accept = {
@@ -100,7 +100,7 @@ const useMoveInviteToTrashFunc = (): ((arg: MoveInviteToTrashType) => Promise<vo
 	const { createSnackbar } = useUiUtilities();
 	return useCallback(
 		({ msgId, t }) =>
-			msgActionSoapApi({
+			msgActionEmailStoreAction({
 				operation: `trash`,
 				ids: [msgId]
 			}).then((res2: any): void => {
@@ -206,7 +206,7 @@ export const useDecline = (): ((arg: DeclineType) => Promise<void>) => {
 			allowedActions,
 			notifyOrganizer
 		}) =>
-			msgActionSoapApi({
+			msgActionEmailStoreAction({
 				operation: `trash`,
 				ids: [msgId]
 			}).then((res): void => {

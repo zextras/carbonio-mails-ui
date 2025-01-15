@@ -7,8 +7,8 @@ import { useCallback, useMemo } from 'react';
 
 import { useTranslation } from 'react-i18next';
 
-import { msgActionSoapApi } from '../../api/msg-action-soap-api';
 import { MessageActionsDescriptors } from '../../constants';
+import { msgActionEmailStoreAction } from '../../store/emails/actions/msg-action-action';
 import { ActionFn, UIActionDescriptor } from '../../types';
 
 export const useMsgSetFlagFn = (ids: Array<string>, isFlagged: boolean): ActionFn => {
@@ -16,7 +16,7 @@ export const useMsgSetFlagFn = (ids: Array<string>, isFlagged: boolean): ActionF
 
 	const execute = useCallback((): void => {
 		if (canExecute()) {
-			msgActionSoapApi({ ids, operation: 'flag' });
+			msgActionEmailStoreAction({ ids, operation: 'flag' });
 		}
 	}, [canExecute, ids]);
 

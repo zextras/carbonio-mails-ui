@@ -9,10 +9,10 @@ import { useSnackbar } from '@zextras/carbonio-design-system';
 import { replaceHistory } from '@zextras/carbonio-shell-ui';
 import { useTranslation } from 'react-i18next';
 
-import { msgActionSoapApi } from '../../api/msg-action-soap-api';
 import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
 import { isTrash } from '../../carbonio-ui-commons/helpers/folders';
 import { MessageActionsDescriptors } from '../../constants';
+import { msgActionEmailStoreAction } from '../../store/emails/actions/msg-action-action';
 import type { ActionFn, UIActionDescriptor } from '../../types';
 import { useInSearchModule } from '../../ui-actions/utils';
 import { useUiUtilities } from '../use-ui-utilities';
@@ -26,7 +26,7 @@ const useRestoreMessage = (): ((
 	const [t] = useTranslation();
 	return useCallback(
 		(ids, folderId, closeEditor): void => {
-			msgActionSoapApi({ ids, parent: folderId, operation: 'move' }).then((res) => {
+			msgActionEmailStoreAction({ ids, parent: folderId, operation: 'move' }).then((res) => {
 				if (!('Fault' in res)) {
 					closeEditor && replaceHistory(`/folder/${folderId}/message/${ids[0]}`);
 					createSnackbar({
@@ -74,7 +74,7 @@ export const useMsgMoveToTrashFn = ({
 
 	const execute = useCallback((): void => {
 		if (canExecute()) {
-			msgActionSoapApi({
+			msgActionEmailStoreAction({
 				operation: 'trash',
 				ids
 			}).then((res) => {

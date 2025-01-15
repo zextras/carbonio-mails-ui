@@ -8,9 +8,9 @@ import { useCallback, useMemo } from 'react';
 import { replaceHistory } from '@zextras/carbonio-shell-ui';
 import { useTranslation } from 'react-i18next';
 
-import { msgActionSoapApi } from '../../api/msg-action-soap-api';
 import { MessageActionsDescriptors } from '../../constants';
 import { isDraft } from '../../helpers/folders';
+import { msgActionEmailStoreAction } from '../../store/emails/actions/msg-action-action';
 import { ActionFn, UIActionDescriptor } from '../../types';
 
 type MsgSetReadFunctionsParameter = {
@@ -35,7 +35,7 @@ export const useMsgSetReadFn = ({
 
 	const execute = useCallback((): void => {
 		if (canExecute()) {
-			msgActionSoapApi({ operation: 'read', ids }).then((res) => {
+			msgActionEmailStoreAction({ operation: 'read', ids }).then((res) => {
 				deselectAll && deselectAll();
 				if (!('Fault' in res) && shouldReplaceHistory) {
 					replaceHistory(`/folder/${folderId}`);

@@ -8,11 +8,11 @@ import React, { FC, ReactElement, useCallback, useEffect, useMemo } from 'react'
 import { Container, CustomModal, Padding, Text } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 
-import { msgActionSoapApi } from '../../../../api/msg-action-soap-api';
 import { sendDeliveryReportSoapApi } from '../../../../api/send-delivery-request-soap-api';
 import ModalFooter from '../../../../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../../../../carbonio-ui-commons/components/modals/modal-header';
 import { useUiUtilities } from '../../../../hooks/use-ui-utilities';
+import { msgActionEmailStoreAction } from '../../../../store/emails/actions/msg-action-action';
 import type { MailMessage } from '../../../../types';
 
 type CompProps = {
@@ -32,7 +32,7 @@ const ReadReceiptModal: FC<CompProps> = ({
 
 	const title = useMemo(() => t('label.read_receipt_req', 'Read receipt required'), []);
 	const onConfirm = useCallback(() => {
-		msgActionSoapApi({
+		msgActionEmailStoreAction({
 			operation: 'update',
 			ids: [message?.id],
 			flag: 'n'

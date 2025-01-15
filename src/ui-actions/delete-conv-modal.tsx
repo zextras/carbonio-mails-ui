@@ -9,10 +9,10 @@ import { Container, Text } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
 
 import { convActionSoapApi } from '../api';
-import { msgActionSoapApi } from '../api/msg-action-soap-api';
 import ModalFooter from '../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../carbonio-ui-commons/components/modals/modal-header';
 import { useUiUtilities } from '../hooks/use-ui-utilities';
+import { msgActionEmailStoreAction } from '../store/emails/actions/msg-action-action';
 
 type DeleteConvConfirmPropType = {
 	selectedIDs: Array<string>;
@@ -32,7 +32,7 @@ export const DeleteConvConfirm = ({
 
 	const onConfirmConvDelete = useCallback(async () => {
 		const response = isMessageView
-			? await msgActionSoapApi({
+			? await msgActionEmailStoreAction({
 					operation: 'delete',
 					ids: selectedIDs
 				})

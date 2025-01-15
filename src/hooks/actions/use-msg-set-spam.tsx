@@ -9,9 +9,9 @@ import { useSnackbar } from '@zextras/carbonio-design-system';
 import { replaceHistory, t } from '@zextras/carbonio-shell-ui';
 import { useTranslation } from 'react-i18next';
 
-import { msgActionSoapApi } from '../../api/msg-action-soap-api';
 import { MessageActionsDescriptors, TIMEOUTS } from '../../constants';
 import { isDraft, isSpam } from '../../helpers/folders';
+import { msgActionEmailStoreAction } from '../../store/emails/actions/msg-action-action';
 import { ActionFn, UIActionDescriptor } from '../../types';
 
 type MsgSetSpam = {
@@ -46,7 +46,7 @@ export const useMsgSetSpamFn = ({ ids, shouldReplaceHistory, folderId }: MsgSetS
 			setTimeout(() => {
 				/** If the user has not clicked on the undo button, we can proceed with the action */
 				if (!notCanceled) return;
-				msgActionSoapApi({ operation: 'spam', ids }).then((res) => {
+				msgActionEmailStoreAction({ operation: 'spam', ids }).then((res) => {
 					if (!('Fault' in res) && shouldReplaceHistory) {
 						replaceHistory(`/folder/${folderId}`);
 					}

@@ -10,9 +10,9 @@ import { findIndex } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
 import { convActionSoapApi } from '../api';
-import { msgActionSoapApi } from '../api/msg-action-soap-api';
 import { API_REQUEST_STATUS, LIST_LIMIT } from '../constants';
 import { parseMessageSortingOptions } from '../helpers/sorting';
+import { msgActionEmailStoreAction } from '../store/emails/actions/msg-action-action';
 import {
 	useConversationsByIds,
 	useConversationsResultsLoadingStatus,
@@ -127,7 +127,7 @@ export const usePreviewHeaderNavigation = ({
 					ids: [itemId]
 				});
 			} else if (itemsType === 'message') {
-				msgActionSoapApi({
+				msgActionEmailStoreAction({
 					operation: 'read',
 					ids: [itemId]
 				});

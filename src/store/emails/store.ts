@@ -22,7 +22,8 @@ import {
 	NormalizedConversation,
 	SearchRequestStatus,
 	SearchIndexSliceState,
-	PopulatedItemsSliceState
+	PopulatedItemsSliceState,
+	MsgActionResponse
 } from '../../types';
 import { syncDataHandlerUtils } from './sync-data-handler/utils';
 
@@ -257,6 +258,10 @@ export function useConversationMessages(
 	return populatedItemsSliceUtils.useConversationMessages(conversationId, useEmailsStore);
 }
 
+export function handleMessageActionsResults(response: MsgActionResponse, newParent?: string): void {
+	return populatedItemsSliceUtils.handleMessageActionsResults(response, useEmailsStore, newParent);
+}
+
 /**
  * Retrieves the conversation from the populatedItemsSlice of the email store.
  */
@@ -463,6 +468,7 @@ export function useMessagesByFolder(folderId: string): Array<MailMessage | Incom
  * This function accesses the `status` in the `messageIndexSlice` to indicate
  * the current loading state of message.
  */
+
 export function useMessageLoadingStatus(): SearchRequestStatus {
 	return useEmailsStore(({ messageIndexSlice }) => messageIndexSlice.status);
 }
