@@ -54,7 +54,7 @@ export type Filter = {
 
 export type FilterRules = [
 	{
-		filterRule: Array<Filter>;
+		filterRule?: Array<Filter>;
 	}
 ];
 

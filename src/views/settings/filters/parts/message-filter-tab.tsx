@@ -13,12 +13,13 @@ import { FilterActionProps } from './filter-actions';
 import { FilterList } from './filter-list';
 import LoadingShimmer from './loading-shimmer';
 import { useFilterSelection } from './use-filter-selection';
+import { FilterRulesAPIResponse } from '../../../../api/get-filters';
 import { modifyOutgoingFilterRules } from '../../../../store/actions/modify-filter-rules';
 import { Filter } from '../../../../types';
 import Heading from '../../components/settings-heading';
 
 type MessageFilterProps = {
-	getFilters: () => Promise<any>;
+	getFilters: () => Promise<FilterRulesAPIResponse>;
 	FilterActionsComponent: (props: FilterActionProps) => React.JSX.Element;
 };
 export const MessageFilterTab: FC<MessageFilterProps> = ({
@@ -55,12 +56,8 @@ export const MessageFilterTab: FC<MessageFilterProps> = ({
 	useEffect(() => {
 		getFilters()
 			.then(({ filterRules }) => {
-				// TODO: I noticed that the APIs does not return filterRule in case there are no filters.
-				//  Example: {"filterRules":[{}] so in that case we are passing undefined instead of empty array and there is a bug
-				// fix types instead of using any
-				const receivedFilters = filterRules?.[0]?.filterRule ?? [];
 				setLoading(false);
-				setFilters(receivedFilters);
+				setFilters(filterRules?.[0]?.filterRule ?? []);
 				setFetchFilters(false);
 			})
 			.catch((error) => {

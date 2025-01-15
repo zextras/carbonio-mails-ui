@@ -8,7 +8,7 @@ import React from 'react';
 
 import { getFilterActions } from './parts/filter-actions';
 import { MessageFilterTab } from './parts/message-filter-tab';
-import { getIncomingFilters } from '../../../store/actions/get-incoming-filters';
+import { getIncomingFilters } from '../../../api/get-filters';
 import { modifyFilterRules } from '../../../store/actions/modify-filter-rules';
 
 export const IncomingFiltersTab = (): React.JSX.Element => (

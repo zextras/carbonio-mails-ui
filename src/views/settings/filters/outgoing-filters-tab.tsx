@@ -8,7 +8,7 @@ import React from 'react';
 
 import { getFilterActions } from './parts/filter-actions';
 import { MessageFilterTab } from './parts/message-filter-tab';
-import { getOutgoingFilters } from '../../../store/actions/get-outgoing-filters';
+import { getOutgoingFilters } from '../../../api/get-filters';
 import { modifyOutgoingFilterRules } from '../../../store/actions/modify-filter-rules';
 
 export const OutgoingFiltersTab = (): React.JSX.Element => (
