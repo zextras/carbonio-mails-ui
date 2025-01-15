@@ -124,11 +124,11 @@ async function handleRetrieveMessage(
 	return normalizeMailMessageFromSoap(response.m[0], true) as MailMessage;
 }
 
-export function getMessage(messageId: string): Promise<MailMessage | undefined> {
+export function getMessageAction(messageId: string): Promise<MailMessage | undefined> {
 	return handleRetrieveMessage(messageId, (id) => getMsgSoapApi({ msgId: id, max: 250_000 }));
 }
 
-export function getFullMessage(messageId: string): Promise<MailMessage | undefined> {
+export function getFullMessageAction(messageId: string): Promise<MailMessage | undefined> {
 	return handleRetrieveMessage(messageId, (id) => getMsgSoapApi({ msgId: id }));
 }
 
@@ -141,7 +141,7 @@ export function useCompleteMessageOrFetch(messageId: string): MessageWithStatus 
 	const messageStatus = useMessageStatus(messageId);
 
 	const retrieveMessageCallback = useCallback(() => {
-		getMessage(messageId);
+		getMessageAction(messageId);
 	}, [messageId]);
 
 	useEffect(() => {
