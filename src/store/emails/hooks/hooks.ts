@@ -9,7 +9,6 @@ import { useCallback, useEffect } from 'react';
 import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
 
-import { getMsgSoapApi } from '../../../api/get-msg-soap-api';
 import { searchConvSoapApi } from '../../../api/search-conv-soap-api';
 import { API_REQUEST_STATUS } from '../../../constants';
 import { normalizeConversations } from '../../../normalizations/normalize-conversation';
@@ -19,7 +18,6 @@ import {
 } from '../../../normalizations/normalize-message';
 import {
 	ConvMessage,
-	GetMsgResponse,
 	IncompleteMessage,
 	MailMessage,
 	NormalizedConversation,
@@ -27,13 +25,13 @@ import {
 	SearchRequestStatus,
 	SearchResponse
 } from '../../../types';
+import { getMessageEmailStoreAction } from '../actions/get-message';
 import {
 	updateMessages,
 	updateConversationStatus,
 	useConversationById,
 	useConversationStatus,
 	useMessageById,
-	updateMessageStatus,
 	useMessageStatus,
 	updateMessagesResultsLoadingStatus,
 	resetMessagesAndPopulatedItems,
@@ -102,36 +100,6 @@ type MessageWithStatus = {
 	messageStatus: SearchRequestStatus;
 };
 
-function handleGetMsgResponse(response: GetMsgResponse): void {
-	const messages = map(response?.m ?? [], (msg) => normalizeCompleteMailMessageFromSoap(msg));
-	updateMessages(messages);
-}
-async function handleRetrieveMessage(
-	messageId: string,
-	apiCall: (id: string) => Promise<GetMsgResponse>
-): Promise<MailMessage | undefined> {
-	updateMessageStatus(messageId, API_REQUEST_STATUS.pending);
-	const response = await apiCall(messageId).catch(() => {
-		updateMessageStatus(messageId, API_REQUEST_STATUS.error);
-	});
-	if (!response) return undefined;
-	if ('Fault' in response) {
-		updateMessageStatus(messageId, API_REQUEST_STATUS.error);
-		return undefined;
-	}
-	handleGetMsgResponse(response);
-	updateMessageStatus(messageId, API_REQUEST_STATUS.fulfilled);
-	return normalizeMailMessageFromSoap(response.m[0], true) as MailMessage;
-}
-
-export function getMessageAction(messageId: string): Promise<MailMessage | undefined> {
-	return handleRetrieveMessage(messageId, (id) => getMsgSoapApi({ msgId: id, max: 250_000 }));
-}
-
-export function getFullMessageAction(messageId: string): Promise<MailMessage | undefined> {
-	return handleRetrieveMessage(messageId, (id) => getMsgSoapApi({ msgId: id }));
-}
-
 /**
  * Get the message from the store or fetch it.
  * Ensures that incomplete messages are fetched if their status indicates they are not yet fulfilled.
@@ -141,7 +109,7 @@ export function useCompleteMessageOrFetch(messageId: string): MessageWithStatus 
 	const messageStatus = useMessageStatus(messageId);
 
 	const retrieveMessageCallback = useCallback(() => {
-		getMessageAction(messageId);
+		getMessageEmailStoreAction(messageId);
 	}, [messageId]);
 
 	useEffect(() => {

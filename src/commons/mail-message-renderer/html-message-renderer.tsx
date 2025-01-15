@@ -16,11 +16,11 @@ import { HtmlMessageRendererContainer } from './html-message-renderer-container'
 import { ParticipantRole } from '../../carbonio-ui-commons/constants/participants';
 import { getAttachmentParts } from '../../helpers/attachments';
 import { getNoIdentityPlaceholder } from '../../helpers/identities';
-import { getFullMessageAction } from '../../store/emails/hooks/hooks';
 import { BodyPart, MailMessage } from '../../types';
 import { getOriginalHtmlContent, getQuotedTextFromOriginalContent } from '../get-quoted-text-util';
 import { _CI_REGEX, _CI_SRC_REGEX, isAvailableInTrusteeList } from '../utils';
 import { ShadowDomWrapper } from './shadow-dom-wrapper';
+import { getFullMessageEmailStoreAction } from '../../store/emails/actions/get-message';
 
 type HtmlMessageRendererType = {
 	message: MailMessage;
@@ -158,7 +158,7 @@ export const HtmlMessageRenderer = ({ message }: HtmlMessageRendererType): React
 
 	const loadMessage = async (): Promise<void> => {
 		setIsLoadingMessage(true);
-		getFullMessageAction(msgId).finally(() => {
+		getFullMessageEmailStoreAction(msgId).finally(() => {
 			setIsLoadingMessage(false);
 		});
 	};

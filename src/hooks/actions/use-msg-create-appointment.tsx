@@ -15,7 +15,7 @@ import { MessageActionsDescriptors } from '../../constants';
 import { getAttendees, getOptionalsAttendees, getSenderByOwner } from '../../helpers/appointmemt';
 import { isSpam, isDraft } from '../../helpers/folders';
 import { extractBody } from '../../store/editor-slice-utils';
-import { getMessageAction } from '../../store/emails/hooks/hooks';
+import { getMessageEmailStoreAction } from '../../store/emails/actions/get-message';
 import type { ActionFn, MailMessage, UIActionDescriptor } from '../../types';
 import { CalendarType, SenderType } from '../../types/calendar';
 import { useUiUtilities } from '../use-ui-utilities';
@@ -46,7 +46,7 @@ export const useMsgCreateAppointmentFn = (item: MailMessage, folderId: string): 
 				sender = getSenderByOwner(rooFolder?.owner);
 			}
 			if (!item?.isComplete) {
-				getMessageAction(item.id)
+				getMessageEmailStoreAction(item.id)
 					.then((message) => {
 						if (!message) return;
 						const mailHtmlBody = extractBody(message)[1];

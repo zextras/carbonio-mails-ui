@@ -12,7 +12,7 @@ import { getCertificate } from '../store/certificates/certificate';
 import { createSoapSendMsgRequestFromEditor } from '../store/editor/editor-transformations';
 import { generateMailRequest } from '../store/editor-slice-utils';
 import { getConvEmailStoreAction } from '../store/emails/actions/get-conv-action';
-import { getMessageAction } from '../store/emails/hooks/hooks';
+import { getMessageEmailStoreAction } from '../store/emails/actions/get-message';
 import { MailMessage, MailsEditorV2, SaveDraftRequest, SaveDraftResponse } from '../types';
 
 export const sendMsg = async ({
@@ -33,7 +33,7 @@ export const sendMsg = async ({
 		account ?? undefined
 	);
 	if (response?.m?.[0]?.id) {
-		getMessageAction(response.m[0].id);
+		getMessageEmailStoreAction(response.m[0].id);
 	}
 	if (response?.m?.[0]?.cid) {
 		getConvEmailStoreAction({ id: response.m[0].cid });
@@ -65,7 +65,7 @@ export async function sendMsgFromEditor({
 		identity?.ownerAccount ?? undefined
 	);
 	if (response?.m?.[0]?.id) {
-		getMessageAction(response.m[0].id);
+		getMessageEmailStoreAction(response.m[0].id);
 	}
 	if (response?.m?.[0]?.cid) {
 		getConvEmailStoreAction({ id: response.m[0].cid });
