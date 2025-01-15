@@ -261,6 +261,10 @@ export function useConversationMessages(
 	return populatedItemsSliceUtils.useConversationMessages(conversationId, useEmailsStore);
 }
 
+/**
+ * Handles the response for removing attachments from messages using `deleteAttachmentsSoapApi`
+ * and updates the emails store state.
+ */
 export function handleDeleteAttachments(
 	response: RemoveAttachmentsResponse | ErrorSoapBodyResponse
 ): void {
