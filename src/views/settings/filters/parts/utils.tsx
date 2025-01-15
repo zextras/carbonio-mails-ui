@@ -3,10 +3,11 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+
 import { TFunction } from 'i18next';
 import { find, forEach } from 'lodash';
 
-import { ActionKey, FilterActions, MarkAsOption } from '../../../../types';
+import { ActionKey, FilterAction, FilterActions, MarkAsOption } from '../../../../types';
 import { ACTION_OPTION_KEYS } from '../constants';
 import { ActionComponent } from '../types';
 import { ActionMarkAsComponent } from './filter-actions/action-mark-as-component';
@@ -343,12 +344,40 @@ export const getSocialOptions = (t: TFunction): SocialOption[] => [
 	}
 ];
 // TODO: do not use any
-export const getActionComponents = (): Record<string, ActionComponent<any>> => ({
+export const getActionsComponents = (): Record<string, ActionComponent<any>> => ({
 	[ACTION_OPTION_KEYS[2]]: ActionMoveToFolderComponent,
 	[ACTION_OPTION_KEYS[3]]: ActionTagComponent,
 	[ACTION_OPTION_KEYS[4]]: ActionMarkAsComponent,
 	[ACTION_OPTION_KEYS[5]]: ActionRedirectToComponent
 });
+
+export const getMarkAsOptions = (t: TFunction): Array<MarkAsOption> => [
+	{
+		label: t('label.read', 'Read'),
+		value: { actionFlag: [{ flagName: 'read' }] }
+	},
+	{
+		label: t('label.flagged', 'Flagged'),
+		value: { actionFlag: [{ flagName: 'flagged' }] }
+	}
+];
+
+export const getActionsInitialValues = (t: TFunction): Record<ActionKey, FilterAction> => {
+	const markAsOptions = getMarkAsOptions(t);
+	return {
+		[ACTION_OPTION_KEYS[0]]: { actionKeep: [{}] },
+		[ACTION_OPTION_KEYS[1]]: { actionDiscard: [{}] },
+		[ACTION_OPTION_KEYS[2]]: { actionFileInto: [{ folderPath: '' }] },
+		[ACTION_OPTION_KEYS[3]]: { actionTag: [{ tagName: '' }] },
+		[ACTION_OPTION_KEYS[4]]: {
+			actionFlag: [{ flagName: markAsOptions?.[0].value.actionFlag[0].flagName }]
+		},
+		[ACTION_OPTION_KEYS[5]]: {
+			actionRedirect: [{ a: '' }]
+		}
+	};
+};
+
 export const getActionTranslations =
 	(isIncoming: boolean): ((t: TFunction) => Record<ActionKey, string>) =>
 	(t: TFunction) => ({
@@ -362,16 +391,6 @@ export const getActionTranslations =
 		[ACTION_OPTION_KEYS[5]]: t('settings.redirect_to_address', 'Redirect to address')
 	});
 
-export const getMarkAsOptions = (t: TFunction): Array<MarkAsOption> => [
-	{
-		label: t('label.read', 'Read'),
-		value: { actionFlag: [{ flagName: 'read' }] }
-	},
-	{
-		label: t('label.flagged', 'Flagged'),
-		value: { actionFlag: [{ flagName: 'flagged' }] }
-	}
-];
 type StatusOption = {
 	label: string;
 	value:

@@ -11,7 +11,7 @@ import { useTranslation } from 'react-i18next';
 import { v4 as uuidv4 } from 'uuid';
 
 import CustomSelect from './custom-select';
-import { getActionComponents, getMarkAsOptions } from './utils';
+import { getActionsComponents, getActionsInitialValues, getMarkAsOptions } from './utils';
 import { ActionKey, FilterAction } from '../../../../types';
 
 export type FilterActionRowProps = {
@@ -50,7 +50,7 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 	const userChoseRedirectToActionInThePast =
 		mailForwardingEnabled === 'FALSE' && 'actionRedirect' in selectedAction;
 
-	const actionsComponents = getActionComponents();
+	const actionsComponents = getActionsComponents();
 
 	const activeActionOption: ActionKey = (optionsToDisplay.find((key) => key in selectedAction) ??
 		'actionKeep') as ActionKey;
@@ -73,55 +73,13 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 		() => (disableRemove ? (): null => null : onRemoveAction),
 		[disableRemove, onRemoveAction]
 	);
+	const initialValues = getActionsInitialValues(t);
 	const onSwitchAction = useCallback(
 		(str: ActionKey) => {
-			let newAction: FilterAction = selectedAction;
-			switch (str) {
-				case 'actionDiscard': {
-					newAction = { actionDiscard: [{}] };
-					break;
-				}
-				case 'actionFlag': {
-					newAction = {
-						actionFlag: [{ flagName: markAsOptions?.[0].value.actionFlag[0].flagName }]
-					};
-					break;
-				}
-				case 'actionKeep': {
-					newAction = { actionKeep: [{}] };
-					break;
-				}
-				case 'actionTag': {
-					if (!('actionTag' in selectedAction)) {
-						newAction = {
-							actionTag: [{ tagName: '' }]
-						};
-					}
-					break;
-				}
-				case 'actionFileInto': {
-					if (!('actionFileInto' in selectedAction)) {
-						newAction = {
-							actionFileInto: [{ folderPath: '' }]
-						};
-					}
-					break;
-				}
-				case 'actionRedirect': {
-					if (!('actionRedirect' in selectedAction)) {
-						newAction = {
-							actionRedirect: [{ a: '' }]
-						};
-					}
-					break;
-				}
-				default:
-					newAction = { actionKeep: [{}] };
-					break;
-			}
+			const newAction = initialValues[str];
 			onActionSwitch(newAction);
 		},
-		[selectedAction, markAsOptions, onActionSwitch]
+		[initialValues, onActionSwitch]
 	);
 
 	const onAddingNewAction = useCallback((): void => {
