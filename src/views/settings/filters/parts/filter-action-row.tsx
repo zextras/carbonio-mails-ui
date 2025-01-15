@@ -52,8 +52,7 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 
 	const actionsComponents = getActionsComponents();
 
-	const activeActionOption: ActionKey = (optionsToDisplay.find((key) => key in selectedAction) ??
-		'actionKeep') as ActionKey;
+	const activeActionOption = optionsToDisplay.find((key) => key in selectedAction) ?? 'actionKeep';
 	const ActionComponentToDisplay = actionsComponents[activeActionOption];
 
 	const [t] = useTranslation();

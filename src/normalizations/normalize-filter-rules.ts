@@ -18,17 +18,6 @@ const normalizeFilterTests = (filterTests: AllFiltersTest): AllFiltersTest => {
 	return result;
 };
 
-// TODO: consider normalizing filterActions here instead of in modify-filter-modal
-
-// const normalizeFilterActions = (filterActions: ApiFilterAction): ApiFilterAction => {
-// 	const result: ApiFilterAction = {};
-// 	const keys = Object.keys(filterActions) as Array<keyof ApiFilterAction>;
-// 	keys.forEach((testKey) => {
-// 		result[testKey] = map(filterActions[testKey], (filterAction) => omit(filterAction, 'index'));
-// 	});
-// 	return result;
-// };
-
 export const normalizeFilterRulesFromSoap = (
 	filterRules: FilterRules
 ): { filterRules: FilterRules } => {
