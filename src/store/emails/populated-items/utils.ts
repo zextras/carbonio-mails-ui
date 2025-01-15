@@ -21,7 +21,8 @@ import {
 	EmailsStoreState,
 	NormalizedConversation,
 	SearchRequestStatus,
-	MsgActionResponse
+	MsgActionResponse,
+	type ConvActionResponse
 } from '../../../types';
 
 function useConversationMessages(
@@ -220,6 +221,24 @@ function handleDeleteAttachments(
 	);
 }
 
+function handleConvAction(
+	response: ConvActionResponse | ErrorSoapBodyResponse,
+	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
+): void {
+	useEmailsStore.setState(
+		produce(({ populatedItemsSlice }: EmailsStoreState) => {
+			if ('Fault' in response || !response?.action) return;
+
+			const { id, op } = response.action;
+			if (op === CONVACTIONS.DELETE) {
+				id.split(',').forEach((convId) => {
+					delete populatedItemsSlice.conversations[convId];
+				});
+			}
+		})
+	);
+}
+
 export const populatedItemsSliceUtils = {
 	handleMessageActionsResults,
 	updateConversations,
@@ -232,5 +251,6 @@ export const populatedItemsSliceUtils = {
 	deleteMessagesFromConversation,
 	useMessagesByFolder,
 	updateMessageById,
-	handleDeleteAttachments
+	handleDeleteAttachments,
+	handleConvAction
 };

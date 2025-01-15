@@ -8,10 +8,10 @@ import React, { useCallback } from 'react';
 import { Container, Text } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
 
-import { convActionSoapApi } from '../api';
 import ModalFooter from '../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../carbonio-ui-commons/components/modals/modal-header';
 import { useUiUtilities } from '../hooks/use-ui-utilities';
+import { convActionEmailStoreAction } from '../store/emails/actions/conv-action-action';
 import { msgActionEmailStoreAction } from '../store/emails/actions/msg-action-action';
 
 type DeleteConvConfirmPropType = {
@@ -36,7 +36,7 @@ export const DeleteConvConfirm = ({
 					operation: 'delete',
 					ids: selectedIDs
 				})
-			: await convActionSoapApi({
+			: await convActionEmailStoreAction({
 					operation: 'delete',
 					ids: selectedIDs
 				});

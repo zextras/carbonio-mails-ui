@@ -7,8 +7,8 @@ import { useCallback, useMemo } from 'react';
 
 import { useTranslation } from 'react-i18next';
 
-import { convActionSoapApi } from '../../api';
 import { ConversationActionsDescriptors } from '../../constants';
+import { convActionEmailStoreAction } from '../../store/emails/actions/conv-action-action';
 import { ActionFn, UIActionDescriptor } from '../../types';
 
 export const useConvSetUnflagFn = (ids: Array<string>, isFlagged: boolean): ActionFn => {
@@ -16,7 +16,7 @@ export const useConvSetUnflagFn = (ids: Array<string>, isFlagged: boolean): Acti
 
 	const execute = useCallback((): void => {
 		if (canExecute()) {
-			convActionSoapApi({
+			convActionEmailStoreAction({
 				operation: '!flag',
 				ids
 			});

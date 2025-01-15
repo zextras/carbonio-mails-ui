@@ -24,7 +24,8 @@ import {
 	SearchRequestStatus,
 	SearchIndexSliceState,
 	PopulatedItemsSliceState,
-	MsgActionResponse
+	MsgActionResponse,
+	ConvActionResponse
 } from '../../types';
 import { syncDataHandlerUtils } from './sync-data-handler/utils';
 import { RemoveAttachmentsResponse } from '../../api/delete-all-attachments-soap-api';
@@ -265,6 +266,15 @@ export function handleDeleteAttachments(
 ): void {
 	addTask(async () => {
 		populatedItemsSliceUtils.handleDeleteAttachments(response, useEmailsStore);
+	});
+}
+
+/**
+ * Handles a conversation action response from `convActionSoapApi` and updates the emails store.
+ */
+export function handleConvAction(response: ConvActionResponse | ErrorSoapBodyResponse): void {
+	addTask(async () => {
+		populatedItemsSliceUtils.handleConvAction(response, useEmailsStore);
 	});
 }
 

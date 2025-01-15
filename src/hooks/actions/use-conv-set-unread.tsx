@@ -7,9 +7,9 @@ import { useCallback, useMemo } from 'react';
 
 import { useTranslation } from 'react-i18next';
 
-import { convActionSoapApi } from '../../api';
 import { ConversationActionsDescriptors } from '../../constants';
 import { isDraft } from '../../helpers/folders';
+import { convActionEmailStoreAction } from '../../store/emails/actions/conv-action-action';
 import { ActionFn, UIActionDescriptor } from '../../types';
 
 type ConvSetUnreadFunctionsParameter = {
@@ -32,7 +32,7 @@ export const useConvSetUnreadFn = ({
 
 	const execute = useCallback((): void => {
 		if (canExecute()) {
-			convActionSoapApi({
+			convActionEmailStoreAction({
 				operation: '!read',
 				ids
 			}).then(() => {

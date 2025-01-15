@@ -10,11 +10,11 @@ import { TFunction } from 'i18next';
 import { includes, map } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
-import { convActionSoapApi } from '../../api';
 import { useTags } from '../../carbonio-ui-commons/store/zustand/tags';
 import { Tag } from '../../carbonio-ui-commons/types/tags';
 import { ConversationActionsDescriptors, TIMEOUTS } from '../../constants';
 import { isSpam } from '../../helpers/folders';
+import { convActionEmailStoreAction } from '../../store/emails/actions/conv-action-action';
 import {
 	ConvActionParameters,
 	ConvActionResponse,
@@ -110,7 +110,7 @@ export const useConvApplyTagSubDescriptors = ({
 				const execute = (): void => {
 					executeTagAction({
 						canExecute,
-						action: convActionSoapApi,
+						action: convActionEmailStoreAction,
 						operation,
 						ids,
 						tag,

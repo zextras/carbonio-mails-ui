@@ -3,7 +3,6 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 
 import { ZimbraRequest } from './zimbra-request';
 
@@ -31,10 +30,8 @@ export type ConvActionRequest = ZimbraRequest & {
 };
 
 export type ConvActionResponse = {
-	action:
-		| {
-				id: string;
-				op: ConvActionOperation;
-		  }
-		| ErrorSoapBodyResponse;
+	action: {
+		id: string;
+		op: ConvActionOperation;
+	};
 };

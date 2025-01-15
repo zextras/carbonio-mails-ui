@@ -9,9 +9,9 @@ import { useSnackbar } from '@zextras/carbonio-design-system';
 import { replaceHistory } from '@zextras/carbonio-shell-ui';
 import { useTranslation } from 'react-i18next';
 
-import { convActionSoapApi } from '../../api';
 import { ConversationActionsDescriptors } from '../../constants';
 import { isSpam } from '../../helpers/folders';
+import { convActionEmailStoreAction } from '../../store/emails/actions/conv-action-action';
 import { ActionFn, UIActionDescriptor } from '../../types';
 
 type ConvSetNotSpamFunctionsParameter = {
@@ -50,7 +50,7 @@ export const useConvSetNotSpamFn = ({
 		infoSnackbar();
 		setTimeout((): void => {
 			if (notCanceled) {
-				convActionSoapApi({
+				convActionEmailStoreAction({
 					operation: '!spam',
 					ids
 				}).then((res) => {

@@ -10,13 +10,13 @@ import { replaceHistory } from '@zextras/carbonio-shell-ui';
 import { noop, some } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
-import { convActionSoapApi } from '../api';
 import { createFolderSoapApi } from '../api/create-folder-soap-api';
 import ModalFooter from '../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../carbonio-ui-commons/components/modals/modal-header';
 import { Folder } from '../carbonio-ui-commons/types/folder';
 import { isRoot } from '../helpers/folders';
 import { useUiUtilities } from '../hooks/use-ui-utilities';
+import { convActionEmailStoreAction } from '../store/emails/actions/conv-action-action';
 import { msgActionEmailStoreAction } from '../store/emails/actions/msg-action-action';
 import { FolderSelector } from '../views/sidebar/commons/folder-selector';
 
@@ -52,7 +52,7 @@ export const MoveConvMessage = ({
 
 	const onConfirmConvMove = useCallback(
 		(id: string | undefined) => {
-			convActionSoapApi({
+			convActionEmailStoreAction({
 				operation: `move`,
 				ids: selectedIDs,
 				parent: id
