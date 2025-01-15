@@ -31,7 +31,7 @@ export const MessageFilterTab: FC<MessageFilterProps> = ({
 	const createSnackbar = useSnackbar();
 	const [t] = useTranslation();
 
-	const filtersCopy = useMemo(() => filters?.slice(), [filters]);
+	const filtersCopy = useMemo(() => filters.slice(), [filters]);
 	const [activeFilters, availableFilters] = useMemo(
 		() => [
 			map(filter(filtersCopy, { active: true }), (f) => ({ ...f, id: f.name })),
@@ -55,8 +55,12 @@ export const MessageFilterTab: FC<MessageFilterProps> = ({
 	useEffect(() => {
 		getFilters()
 			.then(({ filterRules }) => {
+				// TODO: I noticed that the APIs does not return filterRule in case there are no filters.
+				//  Example: {"filterRules":[{}] so in that case we are passing undefined instead of empty array and there is a bug
+				// fix types instead of using any
+				const receivedFilters = filterRules?.[0]?.filterRule ?? [];
 				setLoading(false);
-				setFilters(filterRules?.[0]?.filterRule);
+				setFilters(receivedFilters);
 				setFetchFilters(false);
 			})
 			.catch((error) => {

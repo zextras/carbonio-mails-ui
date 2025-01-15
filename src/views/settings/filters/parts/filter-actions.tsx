@@ -76,9 +76,9 @@ const FilterActions: FC<InternalFilterActionProps> = ({
 		[activeList.selected, availableList.selected]
 	);
 	const disableApply = !selectedFilter;
-	const filtersCopy = useMemo(() => filters?.slice(), [filters]);
+	const filtersCopy = useMemo(() => filters.slice(), [filters]);
 
-	const disablCreate = useMemo(() => false, []);
+	const disableCreate = useMemo(() => false, []);
 	const { createModal, closeModal } = useModal();
 
 	const applySelectedFilter = useCallback((): void => {
@@ -345,7 +345,7 @@ const FilterActions: FC<InternalFilterActionProps> = ({
 			<Button
 				label={t('label.create', 'Create')}
 				type="outlined"
-				disabled={disablCreate}
+				disabled={disableCreate}
 				width="fill"
 				onClick={openCreateModal}
 			/>
