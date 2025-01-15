@@ -22,7 +22,8 @@ import {
 	NormalizedConversation,
 	SearchRequestStatus,
 	type ConvActionResponse,
-	MsgActionParameters
+	MsgActionParameters,
+	ConvActionParameters
 } from '../../../types';
 
 function useConversationMessages(
@@ -224,20 +225,56 @@ function handleDeleteAttachments(
 	);
 }
 
-function handleConvAction(
+function handleConvActionResponse(
+	convActionParams: ConvActionParameters,
 	response: ConvActionResponse | ErrorSoapBodyResponse,
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
 ): void {
 	useEmailsStore.setState(
 		produce(({ populatedItemsSlice }: EmailsStoreState) => {
-			if ('Fault' in response || !response?.action) return;
-
+			if (!response || 'Fault' in response) {
+				forEach(convActionParams.ids, (id: string) => {
+					if (populatedItemsSlice.conversations?.[id]) {
+						if (convActionParams.operation.includes('flag')) {
+							populatedItemsSlice.conversations[id].flagged =
+								convActionParams.operation.startsWith('!');
+						} else if (convActionParams.operation.includes('read')) {
+							populatedItemsSlice.conversations[id].read =
+								convActionParams.operation.startsWith('!');
+						}
+					}
+				});
+				return;
+			}
+			if (!response.action) return;
 			const { id, op } = response.action;
 			if (op === CONVACTIONS.DELETE) {
 				id.split(',').forEach((convId) => {
 					delete populatedItemsSlice.conversations[convId];
 				});
 			}
+		})
+	);
+}
+
+function optimisticallyHandleConvActions({
+	ids,
+	operation,
+	useEmailsStore
+}: MsgActionParameters & {
+	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>;
+}): void {
+	useEmailsStore.setState(
+		produce(({ populatedItemsSlice }: EmailsStoreState) => {
+			forEach(ids, (id: string) => {
+				if (populatedItemsSlice.conversations?.[id]) {
+					if (operation.includes('flag')) {
+						populatedItemsSlice.conversations[id].flagged = !operation.startsWith('!');
+					} else if (operation.includes('read')) {
+						populatedItemsSlice.conversations[id].read = !operation.startsWith('!');
+					}
+				}
+			});
 		})
 	);
 }
@@ -255,5 +292,6 @@ export const populatedItemsSliceUtils = {
 	useMessagesByFolder,
 	updateMessageById,
 	handleDeleteAttachments,
-	handleConvAction
+	handleConvActionResponse,
+	optimisticallyHandleConvActions
 };

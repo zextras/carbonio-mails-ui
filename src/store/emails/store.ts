@@ -25,7 +25,8 @@ import {
 	SearchIndexSliceState,
 	PopulatedItemsSliceState,
 	ConvActionResponse,
-	MsgActionParameters
+	MsgActionParameters,
+	ConvActionParameters
 } from '../../types';
 import { syncDataHandlerUtils } from './sync-data-handler/utils';
 import { RemoveAttachmentsResponse } from '../../api/delete-all-attachments-soap-api';
@@ -276,18 +277,29 @@ export function handleDeleteAttachments(
 /**
  * Handles a conversation action response from `convActionSoapApi` and updates the emails store.
  */
-export function handleConvAction(response: ConvActionResponse | ErrorSoapBodyResponse): void {
+export function handleConvActionResponse(
+	response: ConvActionResponse | ErrorSoapBodyResponse,
+	convActionParams: ConvActionParameters
+): void {
 	addTask(async () => {
-		populatedItemsSliceUtils.handleConvAction(response, useEmailsStore);
+		populatedItemsSliceUtils.handleConvActionResponse(convActionParams, response, useEmailsStore);
 	});
 }
 
+export function optimisticallyHandleConvActions({ ids, operation }: ConvActionParameters): void {
+	addTask(async () => {
+		populatedItemsSliceUtils.optimisticallyHandleConvActions({
+			ids,
+			operation,
+			useEmailsStore
+		});
+	});
+}
 export function optimisticallyHandleMessageActions({
 	ids,
 	operation,
 	parent,
-	tagName,
-	flag
+	tagName
 }: MsgActionParameters): void {
 	addTask(async () => {
 		populatedItemsSliceUtils.optimisticallyHandleMessageActions({
@@ -295,7 +307,6 @@ export function optimisticallyHandleMessageActions({
 			operation,
 			parent,
 			tagName,
-			flag,
 			useEmailsStore
 		});
 	});

@@ -5,21 +5,17 @@
  */
 
 import { convActionSoapApi } from '../../../api';
-import { ConvActionOperation } from '../../../types';
-import { handleConvAction } from '../store';
+import { ConvActionParameters } from '../../../types/conversations';
+import { handleConvActionResponse, optimisticallyHandleConvActions } from '../store';
 
 export async function convActionEmailStoreAction({
 	ids,
 	operation,
 	parent,
 	tagName
-}: {
-	ids: Array<string>;
-	operation: ConvActionOperation;
-	parent?: string;
-	tagName?: string;
-}): ReturnType<typeof convActionSoapApi> {
+}: ConvActionParameters): ReturnType<typeof convActionSoapApi> {
+	optimisticallyHandleConvActions({ ids, operation });
 	const response = await convActionSoapApi({ ids, operation, parent, tagName });
-	handleConvAction(response);
+	handleConvActionResponse(response, { ids, operation });
 	return response;
 }
