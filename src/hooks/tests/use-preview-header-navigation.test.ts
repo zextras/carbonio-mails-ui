@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { renderHook, waitFor } from '@testing-library/react';
+import { act, renderHook, waitFor } from '@testing-library/react';
 import { CreateSnackbarFn, useSnackbar } from '@zextras/carbonio-design-system';
 
 import * as convRequest from '../../api/conv-action-soap-api';
@@ -168,7 +168,9 @@ describe('usePreviewHeaderNavigation', () => {
 						searchedInFolderStatus: 'fulfilled'
 					}
 				});
-				result.current.previousActionItem.action();
+				await act(async () => {
+					result.current.previousActionItem.action();
+				});
 				await waitFor(() => {
 					expect(replaceHistorySpy).toHaveBeenCalledWith('/folder/2/conversation/1');
 				});
@@ -190,7 +192,9 @@ describe('usePreviewHeaderNavigation', () => {
 						searchedInFolderStatus: 'fulfilled'
 					}
 				});
-				result.current.previousActionItem.action();
+				await act(async () => {
+					result.current.previousActionItem.action();
+				});
 				await waitFor(() => {
 					expect(convActionSpy).toHaveBeenCalledWith({ ids: ['1'], operation: 'read' });
 				});
@@ -386,7 +390,9 @@ describe('usePreviewHeaderNavigation', () => {
 						searchedInFolderStatus: 'fulfilled'
 					}
 				});
-				result.current.nextActionItem.action();
+				await act(async () => {
+					result.current.nextActionItem.action();
+				});
 				await waitFor(() => {
 					expect(replaceHistorySpy).toHaveBeenCalledWith('/folder/2/conversation/3');
 				});
@@ -415,7 +421,9 @@ describe('usePreviewHeaderNavigation', () => {
 						searchedInFolderStatus: 'fulfilled'
 					}
 				});
-				result.current.nextActionItem.action();
+				await act(async () => {
+					result.current.nextActionItem.action();
+				});
 				await waitFor(() => {
 					expect(convActionSpy).toHaveBeenCalledWith({ ids: ['3'], operation: 'read' });
 				});
