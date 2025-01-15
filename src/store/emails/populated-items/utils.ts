@@ -21,8 +21,8 @@ import {
 	EmailsStoreState,
 	NormalizedConversation,
 	SearchRequestStatus,
-	MsgActionResponse,
-	type ConvActionResponse
+	type ConvActionResponse,
+	MsgActionParameters
 } from '../../../types';
 
 function useConversationMessages(
@@ -167,33 +167,36 @@ export function deleteMessagesFromConversation(ids: Array<string>, state: Emails
 	});
 }
 
-function handleMessageActionsResults(
-	response: MsgActionResponse,
-	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>,
-	newParent?: string
-): void {
+function optimisticallyHandleMessageActions({
+	ids,
+	operation: op,
+	useEmailsStore,
+	parent
+}: MsgActionParameters & {
+	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>;
+}): void {
 	useEmailsStore.setState(
 		produce(({ populatedItemsSlice }: EmailsStoreState) => {
-			const { id, op } = response.action;
-
-			const message = populatedItemsSlice.messages[id];
-			if (message) {
-				if (op.includes(CONVACTIONS.FLAG)) {
-					message.flagged = !op.startsWith('!');
-				} else if (op.includes(CONVACTIONS.MARK_READ)) {
-					message.read = !op.startsWith('!');
-				} else if (op === CONVACTIONS.TRASH) {
-					message.parent = FOLDERS.TRASH;
-				} else if (op === CONVACTIONS.DELETE) {
-					delete populatedItemsSlice.messages[id];
-				} else if (op === CONVACTIONS.MOVE) {
-					message.parent = newParent ?? FOLDERS.INBOX;
-				} else if (op === CONVACTIONS.MARK_SPAM) {
-					message.parent = FOLDERS.SPAM;
-				} else if (op === CONVACTIONS.MARK_NOT_SPAM) {
-					message.parent = FOLDERS.INBOX;
+			ids.forEach((id) => {
+				const message = populatedItemsSlice.messages[id];
+				if (message) {
+					if (op.includes(CONVACTIONS.FLAG)) {
+						message.flagged = !op.startsWith('!');
+					} else if (op.includes(CONVACTIONS.MARK_READ)) {
+						message.read = !op.startsWith('!');
+					} else if (op === CONVACTIONS.TRASH) {
+						message.parent = FOLDERS.TRASH;
+					} else if (op === CONVACTIONS.DELETE) {
+						delete populatedItemsSlice.messages[id];
+					} else if (op === CONVACTIONS.MOVE) {
+						message.parent = parent ?? FOLDERS.INBOX;
+					} else if (op === CONVACTIONS.MARK_SPAM) {
+						message.parent = FOLDERS.SPAM;
+					} else if (op === CONVACTIONS.MARK_NOT_SPAM) {
+						message.parent = FOLDERS.INBOX;
+					}
 				}
-			}
+			});
 		})
 	);
 }
@@ -240,7 +243,7 @@ function handleConvAction(
 }
 
 export const populatedItemsSliceUtils = {
-	handleMessageActionsResults,
+	optimisticallyHandleMessageActions,
 	updateConversations,
 	updateMessageStatus,
 	updateConversationStatus,

@@ -6,7 +6,7 @@
 
 import { msgActionSoapApi } from '../../../api/msg-action-soap-api';
 import { MsgActionParameters, MsgActionResponse } from '../../../types/soap/msg-action';
-import { handleMessageActionsResults } from '../store';
+import { optimisticallyHandleMessageActions } from '../store';
 
 export async function msgActionEmailStoreAction({
 	ids,
@@ -15,7 +15,6 @@ export async function msgActionEmailStoreAction({
 	tagName,
 	flag
 }: MsgActionParameters): Promise<MsgActionResponse> {
-	const res = await msgActionSoapApi({ ids, operation, parent, tagName, flag });
-	handleMessageActionsResults(res, parent);
-	return res;
+	optimisticallyHandleMessageActions({ ids, operation, parent, tagName, flag });
+	return msgActionSoapApi({ ids, operation, parent, tagName, flag });
 }

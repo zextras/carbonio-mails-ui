@@ -24,8 +24,8 @@ import {
 	SearchRequestStatus,
 	SearchIndexSliceState,
 	PopulatedItemsSliceState,
-	MsgActionResponse,
-	ConvActionResponse
+	ConvActionResponse,
+	MsgActionParameters
 } from '../../types';
 import { syncDataHandlerUtils } from './sync-data-handler/utils';
 import { RemoveAttachmentsResponse } from '../../api/delete-all-attachments-soap-api';
@@ -282,8 +282,23 @@ export function handleConvAction(response: ConvActionResponse | ErrorSoapBodyRes
 	});
 }
 
-export function handleMessageActionsResults(response: MsgActionResponse, newParent?: string): void {
-	return populatedItemsSliceUtils.handleMessageActionsResults(response, useEmailsStore, newParent);
+export function optimisticallyHandleMessageActions({
+	ids,
+	operation,
+	parent,
+	tagName,
+	flag
+}: MsgActionParameters): void {
+	addTask(async () => {
+		populatedItemsSliceUtils.optimisticallyHandleMessageActions({
+			ids,
+			operation,
+			parent,
+			tagName,
+			flag,
+			useEmailsStore
+		});
+	});
 }
 
 /**
