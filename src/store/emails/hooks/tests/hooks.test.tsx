@@ -198,7 +198,9 @@ describe('Searches store hooks', () => {
 			});
 
 			rerender({ id: '2' });
-			expect(getMsgSpy).toHaveBeenCalledTimes(2);
+			await act(async () => {
+				expect(getMsgSpy).toHaveBeenCalledTimes(2);
+			});
 		});
 
 		it('should update status if initial status is undefined', async () => {
