@@ -8,16 +8,18 @@ import { Filter } from '../../../../types';
 
 export function mockFilter({
 	name,
+	active = true,
 	flagName = 'flagged',
 	tagName = 'tag 1'
 }: {
 	name: string;
+	active?: boolean;
 	flagName?: string;
 	tagName?: string;
 }): Filter {
 	return {
 		name,
-		active: true,
+		active,
 		filterTests: [{ condition: 'anyof' }],
 		filterActions: [
 			{

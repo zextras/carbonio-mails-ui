@@ -7,20 +7,15 @@
 
 import React from 'react';
 
-import { EnhancedStore } from '@reduxjs/toolkit';
 import { act, screen, within } from '@testing-library/react';
 import { useSnackbar } from '@zextras/carbonio-design-system';
 
-import * as folderHooks from '../../../../../carbonio-ui-commons/store/zustand/folder/hooks';
-import { generateFolder } from '../../../../../carbonio-ui-commons/test/mocks/folders/folders-generator';
-import { createSoapAPIInterceptor } from '../../../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import {
 	makeListItemsVisible,
 	setupTest
 } from '../../../../../carbonio-ui-commons/test/test-setup';
-import type { Folder } from '../../../../../carbonio-ui-commons/types';
 import { generateStore } from '../../../../../tests/generators/store';
-import { MailsStateType, Filter } from '../../../../../types';
+import { Filter } from '../../../../../types';
 import { ListType } from '../actions';
 import { FilterActionProps, getFilterActions } from '../filter-actions';
 
@@ -57,90 +52,6 @@ describe('incoming filters actions', () => {
 		expect(screen.getByTestId('modal')).toBeVisible();
 		await user.click(screen.getByTestId('icon: CloseOutline'));
 		expect(screen.queryByTestId('modal')).not.toBeInTheDocument();
-	});
-	describe.skip('apply filters to folder button', () => {
-		const TEST_FOLDER_NAME = 'test-folder';
-		const OPEN_SELECT_FOLDER_ICON = 'icon: FolderOutline';
-		let store: EnhancedStore<MailsStateType>;
-
-		beforeEach(() => {
-			store = generateStore();
-			(useSnackbar as jest.Mock).mockReturnValue(createSnackbarSpy);
-			createSoapAPIInterceptor('ApplyFilterRules');
-		});
-
-		it('should disable apply filter if no filter is selected', async () => {
-			const props = propsWithFilter({ name: 'filter', isSelected: false });
-			setupTest(<IncomingFilterActions {...props} />, { store });
-
-			const applyFilterBtn = await screen.findByRole('button', { name: /filters\.apply/i });
-			expect(applyFilterBtn).toBeDisabled();
-		});
-
-		it('should open a modal to search for a folder when clicking apply for selected filter', async () => {
-			const props = propsWithFilter({ name: 'filter', isSelected: true });
-			const { user } = setupTest(<IncomingFilterActions {...props} />, { store });
-
-			await act(() => user.click(screen.getByText(/filters\.apply/i)));
-			await act(() => user.click(screen.getByTestId(OPEN_SELECT_FOLDER_ICON)));
-
-			const selectFolderBtn = await screen.findByRole('button', { name: /label\.select_folder/i });
-			expect(selectFolderBtn).toBeInTheDocument();
-		});
-
-		it('should disable the select-folder button when no folder is selected', async () => {
-			const props = propsWithFilter({ name: 'filter', isSelected: true });
-			const { user } = setupTest(<IncomingFilterActions {...props} />, { store });
-
-			await act(() => user.click(screen.getByText(/filters\.apply/i)));
-			await act(() => user.click(screen.getByTestId(OPEN_SELECT_FOLDER_ICON)));
-
-			const selectFolderBtn = await screen.findByRole('button', { name: /label\.select_folder/i });
-			expect(selectFolderBtn).toBeDisabled();
-		});
-
-		it('should add folder chip when a folder is selected', async () => {
-			mockFoldersToReturnASingleFolder(TEST_FOLDER_NAME);
-			const props = propsWithFilter({ name: 'filter', isSelected: true });
-			const { user } = setupTest(<IncomingFilterActions {...props} />, { store });
-
-			await act(() => user.click(screen.getByText(/filters\.apply/i)));
-			await act(() => user.click(screen.getByTestId(OPEN_SELECT_FOLDER_ICON)));
-
-			makeAllItemsVisible();
-			await act(() => user.click(screen.getByText(TEST_FOLDER_NAME)));
-
-			const selectFolderBtn = await screen.findByRole('button', { name: /label\.select_folder/i });
-			await act(() => user.click(selectFolderBtn));
-
-			expect(screen.getByTestId('chip')).toBeInTheDocument();
-		});
-
-		it('should apply filters and show the snackbar related to the process started when confirming folder', async () => {
-			mockFoldersToReturnASingleFolder(TEST_FOLDER_NAME);
-			const props = propsWithFilter({ name: 'filter', isSelected: true });
-			const { user } = setupTest(<IncomingFilterActions {...props} />, { store });
-
-			await act(() => user.click(screen.getByText(/filters\.apply/i)));
-			await act(() => user.click(screen.getByTestId(OPEN_SELECT_FOLDER_ICON)));
-
-			makeAllItemsVisible();
-			await act(() => user.click(screen.getByText(TEST_FOLDER_NAME)));
-
-			const selectFolderBtn = await screen.findByRole('button', { name: /label\.select_folder/i });
-			await act(() => user.click(selectFolderBtn));
-
-			await act(() => user.click(screen.getByText(/modals\.apply_filters\.button_apply/i)));
-
-			expect(createSnackbarSpy).toHaveBeenCalledWith({
-				autoHideTimeout: 3000,
-				hideButton: true,
-				key: 'applyFilter-filter-started',
-				label: 'messages.snackbar.apply_filter_rules_started',
-				replace: true,
-				severity: 'info'
-			});
-		});
 	});
 
 	test('modify filter should save filters with all incoming filters', async () => {
@@ -351,37 +262,9 @@ function activeIncomingFilter(name: string): Filter {
 	};
 }
 
-function rootFolderWith(children: Array<Folder>): Array<Folder> {
-	return [
-		{
-			uuid: '1',
-			id: '1',
-			name: 'USER_ROOT',
-			checked: false,
-			activesyncdisabled: false,
-			recursive: false,
-			deletable: false,
-			isLink: false,
-			children,
-			depth: 0
-		}
-	];
-}
-
 function makeAllItemsVisible(): void {
 	makeListItemsVisible();
 	act(() => {
 		jest.advanceTimersByTime(1000);
 	});
-}
-
-function mockFoldersToReturnASingleFolder(folderName: string): void {
-	jest.spyOn(folderHooks, 'useRootsArray').mockReturnValue(
-		rootFolderWith([
-			generateFolder({
-				name: folderName,
-				absFolderPath: `/${folderName}`
-			})
-		])
-	);
 }
