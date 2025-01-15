@@ -12,7 +12,7 @@ import { createSoapAPIInterceptor } from '../../../../carbonio-ui-commons/test/m
 import { setupTest } from '../../../../carbonio-ui-commons/test/test-setup';
 import { generateStore } from '../../../../tests/generators/store';
 import { OutgoingFiltersTab } from '../outgoing-filters-tab';
-import { mockFilter } from './utils.test';
+import { mockFilter } from './test-utils';
 
 describe('Outgoing Filters', () => {
 	it('should not contain "Apply" filter action', async () => {

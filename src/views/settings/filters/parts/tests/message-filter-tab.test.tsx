@@ -10,7 +10,7 @@ import { useSnackbar } from '@zextras/carbonio-design-system';
 
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
 import { generateStore } from '../../../../../tests/generators/store';
-import { mockFilter } from '../../tests/utils.test';
+import { mockFilter } from '../../tests/test-utils';
 import { getFilterActions } from '../filter-actions';
 import { MessageFilterTab } from '../message-filter-tab';
 

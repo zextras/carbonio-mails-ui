@@ -14,7 +14,7 @@ import { createSoapAPIInterceptor } from '../../../../carbonio-ui-commons/test/m
 import { makeListItemsVisible, setupTest } from '../../../../carbonio-ui-commons/test/test-setup';
 import { generateStore } from '../../../../tests/generators/store';
 import { IncomingFiltersTab } from '../incoming-filters-tab';
-import { mockFilter } from './utils.test';
+import { mockFilter } from './test-utils';
 
 jest.mock('@zextras/carbonio-design-system', () => ({
 	...jest.requireActual('@zextras/carbonio-design-system'),
