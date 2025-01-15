@@ -57,7 +57,7 @@ describe('Outgoing Filters', () => {
 
 		expect(await screen.findByText('Filter 1')).toBeVisible();
 	});
-	it('should call ModifyFilterRules API with outgoing filter when creating a new filter', async () => {
+	it('should call ModifyOutgoingFilterRules API with outgoing filter when creating a new filter', async () => {
 		const store = generateStore();
 		(useSnackbar as jest.Mock).mockReturnValue(createSnackbarSpy);
 		const modifyIncomingFiltersInterceptor = createSoapAPIInterceptor('ModifyOutgoingFilterRules');
