@@ -75,27 +75,6 @@ export const getFieldOptions = (t: TFunction): FieldOption[] => [
 	}
 ];
 
-type HeaderConditionStatement = {
-	label: string;
-	value: string | ConditionStatement['value'];
-};
-
-export const getHeaderConditionStatements = (t: TFunction): HeaderConditionStatement[] => [
-	...getConditionStatements(t),
-	{
-		label: t('settings.does_not_match_wildcard_condition', 'does not match wildcard condition'),
-		value: 'does not matche wildcard condition'
-	},
-	{
-		label: t('settings.exists', 'exists'),
-		value: 'exists'
-	},
-	{
-		label: t('settings.does_not_exists', 'does not exist'),
-		value: 'does not exist'
-	}
-];
-
 type IsOption = {
 	label: string;
 	value: 'TRUE' | 'FALSE';
@@ -474,7 +453,6 @@ export const getButtonInfo = (
 	t: TFunction,
 	isCreate = true
 ): [boolean, string] => {
-	const keys = Object.keys(filters.filterActions[0]);
 	const action = filters.filterActions[0];
 	if (filterName.length === 0) {
 		return [true, t('settings.label.filter_name_required', 'Filter name is required')];
