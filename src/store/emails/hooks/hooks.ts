@@ -9,26 +9,19 @@ import { useCallback, useEffect } from 'react';
 import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
 
-import { searchConvSoapApi } from '../../../api/search-conv-soap-api';
 import { API_REQUEST_STATUS } from '../../../constants';
 import { normalizeConversations } from '../../../normalizations/normalize-conversation';
+import { normalizeMailMessageFromSoap } from '../../../normalizations/normalize-message';
 import {
-	normalizeCompleteMailMessageFromSoap,
-	normalizeMailMessageFromSoap
-} from '../../../normalizations/normalize-message';
-import {
-	ConvMessage,
 	IncompleteMessage,
 	MailMessage,
 	NormalizedConversation,
-	SearchConvResponse,
 	SearchRequestStatus,
 	SearchResponse
 } from '../../../types';
 import { getMessageEmailStoreAction } from '../actions/get-message';
+import { searchConvEmailStoreAction } from '../actions/search-conv-action';
 import {
-	updateMessages,
-	updateConversationStatus,
 	useConversationById,
 	useConversationStatus,
 	useMessageById,
@@ -36,43 +29,13 @@ import {
 	updateMessagesResultsLoadingStatus,
 	resetMessagesAndPopulatedItems,
 	setMessagesInEmailStore,
-	setConversationsInEmailStore,
-	getConversationById,
-	updateConversations
+	setConversationsInEmailStore
 } from '../store';
-
-function handleSearchConvResponse(conversationId: string, response: SearchConvResponse): void {
-	const messages = map(response?.m ?? [], (msg) => normalizeCompleteMailMessageFromSoap(msg));
-	updateMessages(messages);
-	const convMessages: Array<ConvMessage> = map(response?.m ?? [], (msg) => ({
-		id: msg.id,
-		parent: msg.l,
-		date: msg.d
-	}));
-	const conversation = getConversationById(conversationId);
-	const updatedConversation = { ...conversation, id: conversationId, messages: convMessages };
-	updateConversations([updatedConversation]);
-}
 
 type ConversationWithStatus = {
 	conversation: NormalizedConversation;
 	conversationStatus: SearchRequestStatus;
 };
-
-export async function fetchConversation(conversationId: string, folderId?: string): Promise<void> {
-	updateConversationStatus(conversationId, API_REQUEST_STATUS.pending);
-	const response = await searchConvSoapApi({ conversationId, fetch: 'all', folderId }).catch(() => {
-		updateConversationStatus(conversationId, API_REQUEST_STATUS.error);
-	});
-	if (!response) return;
-	if ('Fault' in response) {
-		updateConversationStatus(conversationId, API_REQUEST_STATUS.error);
-		return;
-	}
-	handleSearchConvResponse(conversationId, response);
-	updateConversationStatus(conversationId, API_REQUEST_STATUS.fulfilled);
-}
-
 /**
  * Provides a complete conversation with its status.
  * If the conversation is not in the store, it will be fetched.
@@ -86,7 +49,7 @@ export function useCompleteConversationOrFetch(
 	const conversationStatus = useConversationStatus(conversationId);
 	useEffect(() => {
 		if (conversation && !conversationStatus) {
-			fetchConversation(conversationId, folderId);
+			searchConvEmailStoreAction(conversationId, folderId);
 		}
 	}, [conversation, conversationId, conversationStatus, folderId]);
 	return {
