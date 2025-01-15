@@ -25,10 +25,14 @@ export const ActionTagComponent = ({
 			})),
 		[]
 	);
-	const tag = useMemo(
-		() => tagOptions.filter((option) => option.label === value.actionTag[0].tagName),
-		[tagOptions, value.actionTag]
-	);
+	const { tagName } = value.actionTag[0];
+	const tag = tagName
+		? [
+				{
+					label: tagName
+				}
+			]
+		: [];
 	const onTagChange = useCallback(
 		(chip: MailFilterTag[]) => {
 			if (chip.length > 0) {
