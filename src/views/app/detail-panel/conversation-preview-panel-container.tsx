@@ -15,7 +15,7 @@ import { PreviewPanelHeader } from './preview/preview-panel-header';
 import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
 import { API_REQUEST_STATUS } from '../../../constants';
 import { getFolderIdParts } from '../../../helpers/folders';
-import { getConvAction } from '../../../store/emails/actions/get-conv-action';
+import { getConvEmailStoreAction } from '../../../store/emails/actions/get-conv-action';
 import { useCompleteConversationOrFetch } from '../../../store/emails/hooks/hooks';
 import { useExtraWindow } from '../extra-windows/use-extra-window';
 
@@ -47,7 +47,7 @@ export const ConversationPreviewPanelContainer = (
 
 	useEffect(() => {
 		if (isEmpty(conversation)) {
-			getConvAction({ id: conversationId, onConversationIdChange });
+			getConvEmailStoreAction({ id: conversationId, onConversationIdChange });
 		}
 	}, [conversation, conversationId, onConversationIdChange]);
 

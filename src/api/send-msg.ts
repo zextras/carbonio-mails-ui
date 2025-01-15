@@ -11,7 +11,7 @@ import { getParticipantsFromMessage } from '../helpers/messages';
 import { getCertificate } from '../store/certificates/certificate';
 import { createSoapSendMsgRequestFromEditor } from '../store/editor/editor-transformations';
 import { generateMailRequest } from '../store/editor-slice-utils';
-import { getConvAction } from '../store/emails/actions/get-conv-action';
+import { getConvEmailStoreAction } from '../store/emails/actions/get-conv-action';
 import { getMessageAction } from '../store/emails/hooks/hooks';
 import { MailMessage, MailsEditorV2, SaveDraftRequest, SaveDraftResponse } from '../types';
 
@@ -36,7 +36,7 @@ export const sendMsg = async ({
 		getMessageAction(response.m[0].id);
 	}
 	if (response?.m?.[0]?.cid) {
-		getConvAction({ id: response.m[0].cid });
+		getConvEmailStoreAction({ id: response.m[0].cid });
 	}
 	return response;
 };
@@ -68,7 +68,7 @@ export async function sendMsgFromEditor({
 		getMessageAction(response.m[0].id);
 	}
 	if (response?.m?.[0]?.cid) {
-		getConvAction({ id: response.m[0].cid });
+		getConvEmailStoreAction({ id: response.m[0].cid });
 	}
 	return response;
 }

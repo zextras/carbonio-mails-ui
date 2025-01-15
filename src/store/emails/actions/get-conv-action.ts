@@ -7,7 +7,7 @@
 import { getConvSoapApi } from '../../../api/get-conv-soap-api';
 import { updateConversations, updateMessages } from '../store';
 
-export async function getConvAction({
+export async function getConvEmailStoreAction({
 	id,
 	onConversationIdChange
 }: {
