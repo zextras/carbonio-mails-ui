@@ -10,6 +10,7 @@ import { TFunction } from 'i18next';
 import { useTranslation } from 'react-i18next';
 import { v4 as uuidv4 } from 'uuid';
 
+import { ACTION_OPTIONS } from '../constants';
 import CustomSelect from './custom-select';
 import { getActionsComponents, getActionsInitialValues } from './utils';
 import { ActionKey, FilterAction } from '../../../../types';
@@ -26,14 +27,14 @@ export type FilterActionRowProps = {
 };
 
 const COMMON_OPTIONS = [
-	'actionKeep',
-	'actionDiscard',
-	'actionFileInto',
-	'actionTag',
-	'actionFlag'
+	ACTION_OPTIONS.KEEP,
+	ACTION_OPTIONS.DISCARD,
+	ACTION_OPTIONS.MOVE_TO_FOLDER,
+	ACTION_OPTIONS.TAG,
+	ACTION_OPTIONS.MARK_AS
 ] as const;
 
-const OPTIONS_WITH_REDIRECT = [...COMMON_OPTIONS, 'actionRedirect'] as const;
+const OPTIONS_WITH_REDIRECT = [...COMMON_OPTIONS, ACTION_OPTIONS.REDIRECT_TO] as const;
 export const FilterActionRow: FC<FilterActionRowProps> = ({
 	getOptionsTranslations,
 	mailForwardingEnabled,

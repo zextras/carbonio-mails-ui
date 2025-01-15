@@ -4,11 +4,13 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-export const ACTION_OPTION_KEYS = [
-	'actionKeep',
-	'actionDiscard',
-	'actionFileInto',
-	'actionTag',
-	'actionFlag',
-	'actionRedirect'
-] as const;
+export const ACTION_OPTIONS = {
+	KEEP: 'actionKeep',
+	DISCARD: 'actionDiscard',
+	MOVE_TO_FOLDER: 'actionFileInto',
+	TAG: 'actionTag',
+	MARK_AS: 'actionFlag',
+	REDIRECT_TO: 'actionRedirect'
+} as const;
+
+export type ACTION_OPTION_KEYS = (typeof ACTION_OPTIONS)[keyof typeof ACTION_OPTIONS];

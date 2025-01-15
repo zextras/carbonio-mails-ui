@@ -8,7 +8,7 @@ import { TFunction } from 'i18next';
 import { find, forEach } from 'lodash';
 
 import { ActionKey, FilterAction, FilterActions } from '../../../../types';
-import { ACTION_OPTION_KEYS } from '../constants';
+import { ACTION_OPTION_KEYS, ACTION_OPTIONS } from '../constants';
 import { ActionComponent } from '../types';
 import { ActionMarkAsComponent } from './filter-actions/action-mark-as-component';
 import { ActionMoveToFolderComponent } from './filter-actions/action-move-to-folder-component';
@@ -324,24 +324,26 @@ export const getSocialOptions = (t: TFunction): SocialOption[] => [
 	}
 ];
 // TODO: do not use any
-export const getActionsComponents = (): Record<string, ActionComponent<any>> => ({
-	[ACTION_OPTION_KEYS[2]]: ActionMoveToFolderComponent,
-	[ACTION_OPTION_KEYS[3]]: ActionTagComponent,
-	[ACTION_OPTION_KEYS[4]]: ActionMarkAsComponent,
-	[ACTION_OPTION_KEYS[5]]: ActionRedirectToComponent
+export const getActionsComponents = (): Partial<
+	Record<ACTION_OPTION_KEYS, ActionComponent<any>>
+> => ({
+	[ACTION_OPTIONS.MOVE_TO_FOLDER]: ActionMoveToFolderComponent,
+	[ACTION_OPTIONS.TAG]: ActionTagComponent,
+	[ACTION_OPTIONS.MARK_AS]: ActionMarkAsComponent,
+	[ACTION_OPTIONS.REDIRECT_TO]: ActionRedirectToComponent
 });
 
 export const getActionsInitialValues = (t: TFunction): Record<ActionKey, FilterAction> => {
 	const markAsOptions = getMarkAsOptions(t);
 	return {
-		[ACTION_OPTION_KEYS[0]]: { actionKeep: [{}] },
-		[ACTION_OPTION_KEYS[1]]: { actionDiscard: [{}] },
-		[ACTION_OPTION_KEYS[2]]: { actionFileInto: [{ folderPath: '' }] },
-		[ACTION_OPTION_KEYS[3]]: { actionTag: [{ tagName: '' }] },
-		[ACTION_OPTION_KEYS[4]]: {
+		[ACTION_OPTIONS.KEEP]: { actionKeep: [{}] },
+		[ACTION_OPTIONS.DISCARD]: { actionDiscard: [{}] },
+		[ACTION_OPTIONS.MOVE_TO_FOLDER]: { actionFileInto: [{ folderPath: '' }] },
+		[ACTION_OPTIONS.TAG]: { actionTag: [{ tagName: '' }] },
+		[ACTION_OPTIONS.MARK_AS]: {
 			actionFlag: [{ flagName: markAsOptions?.[0].value.actionFlag[0].flagName }]
 		},
-		[ACTION_OPTION_KEYS[5]]: {
+		[ACTION_OPTIONS.REDIRECT_TO]: {
 			actionRedirect: [{ a: '' }]
 		}
 	};
@@ -350,14 +352,14 @@ export const getActionsInitialValues = (t: TFunction): Record<ActionKey, FilterA
 export const getActionTranslations =
 	(isIncoming: boolean): ((t: TFunction) => Record<ActionKey, string>) =>
 	(t: TFunction) => ({
-		[ACTION_OPTION_KEYS[0]]: isIncoming
+		[ACTION_OPTIONS.KEEP]: isIncoming
 			? t('settings.keep_in_inbox', 'Keep in Inbox')
 			: t('settings.keep_in_sent', 'Keep in Sent'),
-		[ACTION_OPTION_KEYS[1]]: t('settings.discard', 'Discard'),
-		[ACTION_OPTION_KEYS[2]]: t('settings.move_into_folder', 'Move Into Folder'),
-		[ACTION_OPTION_KEYS[3]]: t('settings.tag_with', 'Tag with'),
-		[ACTION_OPTION_KEYS[4]]: t('settings.mark_as', 'Mark as'),
-		[ACTION_OPTION_KEYS[5]]: t('settings.redirect_to_address', 'Redirect to address')
+		[ACTION_OPTIONS.DISCARD]: t('settings.discard', 'Discard'),
+		[ACTION_OPTIONS.MOVE_TO_FOLDER]: t('settings.move_into_folder', 'Move Into Folder'),
+		[ACTION_OPTIONS.TAG]: t('settings.tag_with', 'Tag with'),
+		[ACTION_OPTIONS.MARK_AS]: t('settings.mark_as', 'Mark as'),
+		[ACTION_OPTIONS.REDIRECT_TO]: t('settings.redirect_to_address', 'Redirect to address')
 	});
 
 type StatusOption = {
