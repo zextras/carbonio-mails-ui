@@ -25,7 +25,7 @@ export const FilterTabs: FC = (): ReactElement => {
 				label: t('filters.outgoing_message_filters', 'Outgoing Message Filters')
 			}
 		],
-		[]
+		[t]
 	);
 	const onChange = useCallback<TabBarProps['onChange']>((ev, selectedId) => {
 		setSelectedFilterType(selectedId);
