@@ -4,12 +4,14 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import React from 'react';
+
 import { TFunction } from 'i18next';
 import { find, forEach } from 'lodash';
 
 import { ActionKey, FilterAction, FilterActions } from '../../../../types';
-import { ACTION_OPTION_KEYS, ACTION_OPTIONS } from '../constants';
-import { ActionComponent } from '../types';
+import { ACTION_OPTIONS } from '../constants';
+import { OnFilterActionChange } from '../types';
 import { ActionMarkAsComponent } from './filter-actions/action-mark-as-component';
 import { ActionMoveToFolderComponent } from './filter-actions/action-move-to-folder-component';
 import { ActionRedirectToComponent } from './filter-actions/action-redirect-to-component';
@@ -323,15 +325,24 @@ export const getSocialOptions = (t: TFunction): SocialOption[] => [
 		value: { facebookTest: [{}] }
 	}
 ];
-// TODO: do not use any
-export const getActionsComponents = (): Partial<
-	Record<ACTION_OPTION_KEYS, ActionComponent<any>>
-> => ({
-	[ACTION_OPTIONS.MOVE_TO_FOLDER]: ActionMoveToFolderComponent,
-	[ACTION_OPTIONS.TAG]: ActionTagComponent,
-	[ACTION_OPTIONS.MARK_AS]: ActionMarkAsComponent,
-	[ACTION_OPTIONS.REDIRECT_TO]: ActionRedirectToComponent
-});
+export const getActionComponent = (
+	action: FilterAction,
+	onChange: OnFilterActionChange
+): React.JSX.Element | undefined => {
+	if (ACTION_OPTIONS.MOVE_TO_FOLDER in action) {
+		return <ActionMoveToFolderComponent value={action} onChange={onChange} />;
+	}
+	if (ACTION_OPTIONS.MARK_AS in action) {
+		return <ActionMarkAsComponent value={action} onChange={onChange} />;
+	}
+	if (ACTION_OPTIONS.REDIRECT_TO in action) {
+		return <ActionRedirectToComponent value={action} onChange={onChange} />;
+	}
+	if (ACTION_OPTIONS.TAG in action) {
+		return <ActionTagComponent value={action} onChange={onChange} />;
+	}
+	return undefined;
+};
 
 export const getActionsInitialValues = (t: TFunction): Record<ActionKey, FilterAction> => {
 	const markAsOptions = getMarkAsOptions(t);

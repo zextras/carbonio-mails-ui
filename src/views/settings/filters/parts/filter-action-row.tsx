@@ -12,7 +12,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { ACTION_OPTIONS } from '../constants';
 import CustomSelect from './custom-select';
-import { getActionsComponents, getActionsInitialValues } from './utils';
+import { getActionComponent, getActionsInitialValues } from './utils';
 import { ActionKey, FilterAction } from '../../../../types';
 
 export type FilterActionRowProps = {
@@ -51,10 +51,8 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 	const userChoseRedirectToActionInThePast =
 		mailForwardingEnabled === 'FALSE' && 'actionRedirect' in selectedAction;
 
-	const actionsComponents = getActionsComponents();
-
 	const activeActionOption = optionsToDisplay.find((key) => key in selectedAction) ?? 'actionKeep';
-	const ActionComponentToDisplay = actionsComponents[activeActionOption];
+	const actionComponentToDisplay = getActionComponent(selectedAction, onActionValueChange);
 
 	const [t] = useTranslation();
 
@@ -110,9 +108,7 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 						</Text>
 					</Row>
 				)}
-				{ActionComponentToDisplay && (
-					<ActionComponentToDisplay value={selectedAction} onChange={onActionValueChange} />
-				)}
+				{actionComponentToDisplay}
 			</Row>
 			<Container orientation="horizontal" mainAlignment="flex-end" width="auto">
 				<Tooltip label={t('settings.add_action', 'Add new action')} placement="top">

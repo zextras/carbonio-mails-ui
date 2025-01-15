@@ -6,12 +6,9 @@
 
 import { FilterAction } from '../../../types';
 
+export type OnFilterActionChange = (filterActionValue: FilterAction) => void;
+
 export type ActionComponentProps<T extends FilterAction> = {
 	value: T;
-	onChange: (filterValue: FilterAction) => void;
+	onChange: OnFilterActionChange;
 };
-
-export type ActionComponent<T extends FilterAction> = ({
-	value,
-	onChange
-}: ActionComponentProps<T>) => React.JSX.Element;
