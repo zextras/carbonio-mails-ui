@@ -353,12 +353,9 @@ const FilterActions: FC<InternalFilterActionProps> = ({
 	);
 };
 
-// TODO: avoid isIncoming and such boolean. We should declare how, not what.
-//  For example the onFilterSave defines a way (how) to save filters.
-//  instead of using isIncoming we should pass the actionOptions through the function getActionOptions
 export function getFilterActions(
 	isIncoming: boolean,
-	onFilterSave: (filters: Array<any>) => Promise<any>
+	onFilterSave: (filters: Array<Filter>) => Promise<void>
 ): (props: FilterActionProps) => ReactElement {
 	// eslint-disable-next-line react/display-name
 	return (props: FilterActionProps) => (

@@ -33,7 +33,6 @@ export const FilterList = ({
 		(index: number) => index === filters.length - 1,
 		[filters.length]
 	);
-	// TODO: do we need visible? check tests
 	const filtersList = map(filters, (activeFilter, index) => {
 		const isSelected = selected[activeFilter.name];
 		return (
