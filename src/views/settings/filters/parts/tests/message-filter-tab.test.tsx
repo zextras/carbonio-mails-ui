@@ -5,7 +5,7 @@
  */
 import React from 'react';
 
-import { screen } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import { useSnackbar } from '@zextras/carbonio-design-system';
 
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
@@ -25,15 +25,13 @@ describe('Message filters tab', () => {
 		(useSnackbar as jest.Mock).mockReturnValue(createSnackbarSpy);
 		const store = generateStore();
 		const filters = [mockFilter({ name: 'Test filter 1' }), mockFilter({ name: 'Test filter 2' })];
-		const getFilters = (): Promise<any> =>
-			Promise.resolve({ filterRules: [{ filterRule: filters }] });
 		const mockSave = jest.fn();
 		mockSave.mockReturnValue(Promise.resolve());
 		getFilterActions(true, mockSave);
 
 		const { user } = setupTest(
 			<MessageFilterTab
-				getFilters={getFilters}
+				getFilters={() => Promise.resolve({ filterRules: [{ filterRule: filters }] })}
 				FilterActionsComponent={getFilterActions(true, mockSave)}
 			/>,
 			{
@@ -51,5 +49,29 @@ describe('Message filters tab', () => {
 		await user.click(saveButton);
 
 		expect(mockSave).toHaveBeenCalledWith(filters);
+	});
+
+	it('should display snackbar with error if not able to retrieve filters', async () => {
+		(useSnackbar as jest.Mock).mockReturnValue(createSnackbarSpy);
+		const store = generateStore();
+		const mockSave = jest.fn();
+		getFilterActions(true, mockSave);
+
+		setupTest(
+			<MessageFilterTab
+				getFilters={() => Promise.reject()}
+				FilterActionsComponent={getFilterActions(true, mockSave)}
+			/>,
+			{
+				store
+			}
+		);
+		await waitFor(() =>
+			expect(createSnackbarSpy).toHaveBeenCalledWith(
+				expect.objectContaining({
+					label: 'Something went wrong, please try again'
+				})
+			)
+		);
 	});
 });
