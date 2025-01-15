@@ -11,7 +11,7 @@ import { useTranslation } from 'react-i18next';
 import { v4 as uuidv4 } from 'uuid';
 
 import CustomSelect from './custom-select';
-import { getActionsComponents, getActionsInitialValues, getMarkAsOptions } from './utils';
+import { getActionsComponents, getActionsInitialValues } from './utils';
 import { ActionKey, FilterAction } from '../../../../types';
 
 export type FilterActionRowProps = {
@@ -57,7 +57,6 @@ export const FilterActionRow: FC<FilterActionRowProps> = ({
 	const ActionComponentToDisplay = actionsComponents[activeActionOption];
 
 	const [t] = useTranslation();
-	const markAsOptions = useMemo(() => getMarkAsOptions(t), [t]);
 
 	const optionsTranslations = getOptionsTranslations(t);
 	const actionOptions = optionsToDisplay.map((actionKey) => ({

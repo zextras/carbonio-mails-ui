@@ -7,13 +7,14 @@
 import { TFunction } from 'i18next';
 import { find, forEach } from 'lodash';
 
-import { ActionKey, FilterAction, FilterActions, MarkAsOption } from '../../../../types';
+import { ActionKey, FilterAction, FilterActions } from '../../../../types';
 import { ACTION_OPTION_KEYS } from '../constants';
 import { ActionComponent } from '../types';
 import { ActionMarkAsComponent } from './filter-actions/action-mark-as-component';
 import { ActionMoveToFolderComponent } from './filter-actions/action-move-to-folder-component';
 import { ActionRedirectToComponent } from './filter-actions/action-redirect-to-component';
 import { ActionTagComponent } from './filter-actions/action-tag-component';
+import { getMarkAsOptions } from './filter-actions/mark-as-utils';
 
 type DomainOption = {
 	label: string;
@@ -350,17 +351,6 @@ export const getActionsComponents = (): Record<string, ActionComponent<any>> => 
 	[ACTION_OPTION_KEYS[4]]: ActionMarkAsComponent,
 	[ACTION_OPTION_KEYS[5]]: ActionRedirectToComponent
 });
-
-export const getMarkAsOptions = (t: TFunction): Array<MarkAsOption> => [
-	{
-		label: t('label.read', 'Read'),
-		value: { actionFlag: [{ flagName: 'read' }] }
-	},
-	{
-		label: t('label.flagged', 'Flagged'),
-		value: { actionFlag: [{ flagName: 'flagged' }] }
-	}
-];
 
 export const getActionsInitialValues = (t: TFunction): Record<ActionKey, FilterAction> => {
 	const markAsOptions = getMarkAsOptions(t);
