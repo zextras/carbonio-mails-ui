@@ -6,12 +6,13 @@
 import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
 
 import { Container, Divider, Padding, TabBar, TabBarProps } from '@zextras/carbonio-design-system';
-import { t } from '@zextras/carbonio-shell-ui';
+import { useTranslation } from 'react-i18next';
 
 import { IncomingFiltersTab } from './incoming-filters-tab';
 import { OutgoingFiltersTab } from './outgoing-filters-tab';
 
 export const FilterTabs: FC = (): ReactElement => {
+	const [t] = useTranslation();
 	const [selectedFilterType, setSelectedFilterType] = useState('incoming-messages');
 	const tabs = useMemo(
 		() => [
