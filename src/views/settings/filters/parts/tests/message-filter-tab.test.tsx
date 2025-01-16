@@ -26,6 +26,22 @@ jest.mock('@zextras/carbonio-design-system', () => ({
 const createSnackbarSpy = jest.fn((arg) => arg);
 
 describe('Message filters tab', () => {
+	it('should call getFilters only once', async () => {
+		(useSnackbar as jest.Mock).mockReturnValue(createSnackbarSpy);
+		const store = generateStore();
+		const getFilters = jest.fn(() => Promise.reject());
+		setupTest(
+			<MessageFilterTab
+				saveFilters={jest.fn()}
+				getFilters={getFilters}
+				FilterActionsComponent={getFilterActions(true)}
+			/>,
+			{
+				store
+			}
+		);
+		await waitFor(() => expect(getFilters).toHaveBeenCalledTimes(1));
+	});
 	it('should call onConfirm with filters as declared in initial order when saving an edited filter', async () => {
 		(useSnackbar as jest.Mock).mockReturnValue(createSnackbarSpy);
 		const filters = [mockFilter({ name: 'Test filter 1' }), mockFilter({ name: 'Test filter 2' })];
