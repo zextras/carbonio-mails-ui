@@ -331,12 +331,7 @@ const FilterActions: FC<InternalFilterActionProps> = ({
 	);
 };
 
-export function getFilterActions(
-	isIncoming: boolean,
-	onFilterSave: (filters: Array<Filter>) => Promise<void>
-): (props: FilterActionProps) => ReactElement {
+export function getFilterActions(isIncoming: boolean): (props: FilterActionProps) => ReactElement {
 	// eslint-disable-next-line react/display-name
-	return (props: FilterActionProps) => (
-		<FilterActions {...props} onFiltersSave={onFilterSave} isIncoming={isIncoming} />
-	);
+	return (props: FilterActionProps) => <FilterActions {...props} isIncoming={isIncoming} />;
 }

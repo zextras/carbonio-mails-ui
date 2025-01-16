@@ -30,7 +30,6 @@ describe('Message filters tab', () => {
 		const filters = [mockFilter({ name: 'Test filter 1' }), mockFilter({ name: 'Test filter 2' })];
 		const mockSave = jest.fn();
 		mockSave.mockReturnValue(Promise.resolve());
-		getFilterActions(true, mockSave);
 
 		const user = setupTestWithFilters({ filters, onSave: mockSave });
 
@@ -49,14 +48,12 @@ describe('Message filters tab', () => {
 	it('should display snackbar with error if not able to retrieve filters', async () => {
 		(useSnackbar as jest.Mock).mockReturnValue(createSnackbarSpy);
 		const store = generateStore();
-		const mockSave = jest.fn();
-		getFilterActions(true, mockSave);
 
 		setupTest(
 			<MessageFilterTab
 				saveFilters={jest.fn()}
 				getFilters={() => Promise.reject()}
-				FilterActionsComponent={getFilterActions(true, mockSave)}
+				FilterActionsComponent={getFilterActions(true)}
 			/>,
 			{
 				store
@@ -179,7 +176,6 @@ function setupTestWithFilters({
 }): UserEvent {
 	(useSnackbar as jest.Mock).mockReturnValue(createSnackbarSpy);
 	const store = generateStore();
-	getFilterActions(true, onSave);
 	const filtersFromAPI: FilterRulesAPIResponse = {
 		filterRules: [
 			{
@@ -190,9 +186,9 @@ function setupTestWithFilters({
 
 	const { user } = setupTest(
 		<MessageFilterTab
-			saveFilters={jest.fn()}
+			saveFilters={onSave}
 			getFilters={() => Promise.resolve(filtersFromAPI)}
-			FilterActionsComponent={getFilterActions(true, onSave)}
+			FilterActionsComponent={getFilterActions(true)}
 		/>,
 		{
 			store

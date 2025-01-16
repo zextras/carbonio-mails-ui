@@ -25,9 +25,7 @@ jest.mock('@zextras/carbonio-design-system', () => ({
 }));
 
 const createSnackbarSpy = jest.fn((arg) => arg);
-const mockSave = jest.fn();
-mockSave.mockReturnValue(Promise.resolve());
-const IncomingFilterActions = getFilterActions(true, mockSave);
+const IncomingFilterActions = getFilterActions(true);
 
 describe('incoming filters actions', () => {
 	it('should close the create filter modal', async () => {
@@ -62,11 +60,12 @@ describe('incoming filters actions', () => {
 		const myFilter = activeIncomingFilter('My filter');
 		const filters = [otherFilter, myFilter];
 		const activeList = createList(filters, 'My filter');
+		const mockSave = jest.fn(() => Promise.resolve());
 		const props = {
 			availableList,
 			activeList,
 			filters,
-			onFiltersSave: jest.fn(),
+			onFiltersSave: mockSave,
 			setFilters: jest.fn()
 		};
 
@@ -124,11 +123,12 @@ describe('incoming filters actions', () => {
 		const myFilter = activeIncomingFilter('My filter');
 		const filters = [otherFilter, myFilter];
 		const activeList = createList(filters, 'My filter');
+		const mockSave = jest.fn(() => Promise.resolve());
 		const props = {
 			availableList,
 			activeList,
 			filters,
-			onFiltersSave: jest.fn(),
+			onFiltersSave: mockSave,
 			setFilters: jest.fn()
 		};
 
@@ -158,11 +158,12 @@ describe('incoming filters actions', () => {
 		const myFilter = activeIncomingFilter('My filter');
 		const filters = [otherFilter, myFilter];
 		const activeList = createList(filters, 'My filter');
+		const mockSave = jest.fn(() => Promise.resolve());
 		const props = {
 			availableList,
 			activeList,
 			filters,
-			onFiltersSave: jest.fn(),
+			onFiltersSave: mockSave,
 			setFilters: jest.fn()
 		};
 
@@ -184,11 +185,12 @@ describe('incoming filters actions', () => {
 		const fourthFilter = { ...activeIncomingFilter('Third filter'), active: true };
 		const activeList = createList([thirdFilter, fourthFilter]);
 		const filters = [firstFilter, secondFilter, thirdFilter, fourthFilter];
+		const mockSave = jest.fn(() => Promise.resolve());
 		const props = {
 			availableList,
 			activeList,
 			filters,
-			onFiltersSave: jest.fn(),
+			onFiltersSave: mockSave,
 			setFilters: jest.fn()
 		};
 

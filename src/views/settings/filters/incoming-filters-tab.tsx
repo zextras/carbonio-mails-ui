@@ -15,6 +15,6 @@ export const IncomingFiltersTab = (): React.JSX.Element => (
 	<MessageFilterTab
 		saveFilters={modifyFilterRules}
 		getFilters={getIncomingFilters}
-		FilterActionsComponent={getFilterActions(true, modifyFilterRules)}
+		FilterActionsComponent={getFilterActions(true)}
 	/>
 );

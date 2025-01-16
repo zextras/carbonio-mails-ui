@@ -9,15 +9,12 @@ import React from 'react';
 import { getFilterActions } from './parts/filter-actions';
 import { MessageFilterTab } from './parts/message-filter-tab';
 import { getOutgoingFilters } from '../../../api/get-filters';
-import {
-	modifyFilterRules,
-	modifyOutgoingFilterRules
-} from '../../../store/actions/modify-filter-rules';
+import { modifyOutgoingFilterRules } from '../../../store/actions/modify-filter-rules';
 
 export const OutgoingFiltersTab = (): React.JSX.Element => (
 	<MessageFilterTab
-		saveFilters={modifyFilterRules}
+		saveFilters={modifyOutgoingFilterRules}
 		getFilters={getOutgoingFilters}
-		FilterActionsComponent={getFilterActions(false, modifyOutgoingFilterRules)}
+		FilterActionsComponent={getFilterActions(false)}
 	/>
 );
