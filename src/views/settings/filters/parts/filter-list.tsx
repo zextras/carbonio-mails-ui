@@ -35,6 +35,8 @@ export const FilterList = ({
 	);
 	const filtersList = map(filters, (activeFilter, index) => {
 		const isSelected = selected[activeFilter.name];
+		const moveUpDisabled = disableMoveUp(index);
+		const moveDownDisabled = disableMoveDown(index);
 		return (
 			<ListItem key={`filter-item-${index}`}>
 				{(visible: boolean): React.JSX.Element => (
@@ -46,8 +48,8 @@ export const FilterList = ({
 						moveDown={moveDown}
 						moveUp={moveUp}
 						toggle={toggle}
-						disableMoveUp={disableMoveUp(index)}
-						disableMoveDown={disableMoveDown(index)}
+						disableMoveUp={moveUpDisabled}
+						disableMoveDown={moveDownDisabled}
 					/>
 				)}
 			</ListItem>

@@ -38,7 +38,7 @@ type FilterItemProps = {
 	moveDown: (arg: number) => void;
 	moveUp: (arg: number) => void;
 };
-// // TODO remove the any type after the Accordion refactor in the DS
+
 export const FilterItem: FC<FilterItemProps> = ({
 	item,
 	selected,

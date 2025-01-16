@@ -4,9 +4,10 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+
 import React from 'react';
 
-import { screen, waitFor, within } from '@testing-library/react';
+import { act, screen, waitFor, within } from '@testing-library/react';
 import { UserEvent } from '@testing-library/user-event';
 import { useSnackbar } from '@zextras/carbonio-design-system';
 
@@ -164,6 +165,27 @@ describe('Message filters tab', () => {
 		await user.click(saveButton);
 
 		expect(onSave).toHaveBeenCalledWith([expect.objectContaining({ name: 'My new filter' })]);
+	});
+
+	describe('Move selected filter', () => {
+		it('should move filter up when clicking move up button', async () => {
+			const onSave = jest.fn(() => Promise.resolve());
+			const filter1 = mockFilter({ name: 'Filter 1' });
+			const filter2 = mockFilter({ name: 'Filter 2' });
+			const existingFilters = [filter1, filter2];
+
+			const user = setupTestWithFilters({ filters: existingFilters, onSave });
+
+			const filter2Component = await screen.findByText('Filter 2');
+			await user.hover(filter2Component);
+			const moveUp = screen.getByTestId('icon: ArrowheadUpOutline');
+			await act(() => user.click(moveUp));
+
+			await waitFor(() => {
+				expect(onSave).toHaveBeenCalled();
+			});
+			expect(onSave).toHaveBeenCalledWith([filter2, filter1]);
+		});
 	});
 });
 
