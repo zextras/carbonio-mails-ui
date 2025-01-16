@@ -8,9 +8,8 @@ import { useCallback, useEffect, useMemo, useRef } from 'react';
 
 import { useUserSettings } from '@zextras/carbonio-shell-ui';
 
-import { searchSoapApi } from '../api/search-soap-api';
 import { API_REQUEST_STATUS, LIST_LIMIT } from '../constants';
-import { handleSearchSoapApiResults } from '../store/emails/hooks/hooks';
+import { searchEmailStoreAction } from '../store/emails/actions/search-action';
 import {
 	updateMessagesResultsLoadingStatus,
 	useMessagesIdsByFolder,
@@ -29,24 +28,21 @@ export const useFetchMessagesByFolder = (folderId: string): MessageIndexSliceSta
 
 	const fetchMessages = useCallback(
 		async (signal: AbortSignal | undefined) => {
-			try {
-				updateMessagesResultsLoadingStatus(API_REQUEST_STATUS.pending);
-
-				const searchResponse = await searchSoapApi({
-					folderId,
-					limit: LIST_LIMIT.INITIAL_LIMIT,
-					types: 'message',
-					offset: 0,
-					locale: prefLocale,
-					abortSignal: signal
+			updateMessagesResultsLoadingStatus(API_REQUEST_STATUS.pending);
+			searchEmailStoreAction({
+				folderId,
+				limit: LIST_LIMIT.INITIAL_LIMIT,
+				types: 'message',
+				offset: 0,
+				locale: prefLocale,
+				abortSignal: signal
+			})
+				.catch(() => {
+					updateMessagesResultsLoadingStatus(API_REQUEST_STATUS.error);
+				})
+				.finally(() => {
+					updateMessagesResultsLoadingStatus(API_REQUEST_STATUS.fulfilled);
 				});
-
-				handleSearchSoapApiResults({ searchResponse });
-			} catch (error) {
-				updateMessagesResultsLoadingStatus(API_REQUEST_STATUS.error);
-			} finally {
-				updateMessagesResultsLoadingStatus(API_REQUEST_STATUS.fulfilled);
-			}
 		},
 		[folderId, prefLocale]
 	);

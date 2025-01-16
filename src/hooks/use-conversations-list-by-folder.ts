@@ -7,9 +7,8 @@ import { useCallback, useEffect, useMemo, useRef } from 'react';
 
 import { useUserSettings } from '@zextras/carbonio-shell-ui';
 
-import { searchSoapApi } from '../api/search-soap-api';
 import { API_REQUEST_STATUS, LIST_LIMIT } from '../constants';
-import { handleSearchSoapApiResults } from '../store/emails/hooks/hooks';
+import { searchEmailStoreAction } from '../store/emails/actions/search-action';
 import {
 	updateConversationsResultsLoadingStatus,
 	useConversationIndexSlice,
@@ -32,24 +31,21 @@ export const useConversationListByFolder = (folderId: string): ConversationIndex
 
 	const fetchConversations = useCallback(
 		async (signal: AbortSignal | undefined) => {
-			try {
-				updateConversationsResultsLoadingStatus(API_REQUEST_STATUS.pending);
-
-				const searchResponse = await searchSoapApi({
-					folderId,
-					limit: LIST_LIMIT.INITIAL_LIMIT,
-					types: 'conversation',
-					offset: 0,
-					locale: prefLocale,
-					abortSignal: signal
+			updateConversationsResultsLoadingStatus(API_REQUEST_STATUS.pending);
+			searchEmailStoreAction({
+				folderId,
+				limit: LIST_LIMIT.INITIAL_LIMIT,
+				types: 'conversation',
+				offset: 0,
+				locale: prefLocale,
+				abortSignal: signal
+			})
+				.catch(() => {
+					updateConversationsResultsLoadingStatus(API_REQUEST_STATUS.error);
+				})
+				.finally(() => {
+					updateConversationsResultsLoadingStatus(API_REQUEST_STATUS.fulfilled);
 				});
-
-				handleSearchSoapApiResults({ searchResponse });
-			} catch (error) {
-				updateConversationsResultsLoadingStatus(API_REQUEST_STATUS.error);
-			} finally {
-				updateConversationsResultsLoadingStatus(API_REQUEST_STATUS.fulfilled);
-			}
 		},
 		[folderId, prefLocale]
 	);

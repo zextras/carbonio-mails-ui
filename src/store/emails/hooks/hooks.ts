@@ -6,18 +6,12 @@
 
 import { useCallback, useEffect } from 'react';
 
-import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
-import { map } from 'lodash';
-
 import { API_REQUEST_STATUS } from '../../../constants';
-import { normalizeConversations } from '../../../normalizations/normalize-conversation';
-import { normalizeMailMessageFromSoap } from '../../../normalizations/normalize-message';
 import {
 	IncompleteMessage,
 	MailMessage,
 	NormalizedConversation,
-	SearchRequestStatus,
-	SearchResponse
+	SearchRequestStatus
 } from '../../../types';
 import { getMessageEmailStoreAction } from '../actions/get-message';
 import { searchConvEmailStoreAction } from '../actions/search-conv-action';
@@ -25,11 +19,7 @@ import {
 	useConversationById,
 	useConversationStatus,
 	useMessageById,
-	useMessageStatus,
-	updateMessagesResultsLoadingStatus,
-	resetMessagesAndPopulatedItems,
-	setMessagesInEmailStore,
-	setConversationsInEmailStore
+	useMessageStatus
 } from '../store';
 
 type ConversationWithStatus = {
@@ -87,28 +77,3 @@ export function useCompleteMessageOrFetch(messageId: string): MessageWithStatus 
 		messageStatus
 	};
 }
-
-export const handleSearchSoapApiResults = ({
-	searchResponse
-}: {
-	searchResponse: SearchResponse | ErrorSoapBodyResponse;
-}): void => {
-	if ('Fault' in searchResponse) {
-		updateMessagesResultsLoadingStatus(API_REQUEST_STATUS.error);
-		return;
-	}
-	if (searchResponse.m?.length) {
-		const normalizedMessages = map(searchResponse.m, (msg) =>
-			normalizeMailMessageFromSoap(msg, false)
-		);
-		setMessagesInEmailStore(normalizedMessages, searchResponse.more);
-		return;
-	}
-	if (searchResponse.c?.length) {
-		const conversations = normalizeConversations(searchResponse.c);
-		setConversationsInEmailStore(conversations, searchResponse.more);
-		return;
-	}
-	resetMessagesAndPopulatedItems();
-	updateMessagesResultsLoadingStatus(API_REQUEST_STATUS.fulfilled);
-};

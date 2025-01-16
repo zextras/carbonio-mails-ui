@@ -11,11 +11,10 @@ import { t, useUserSettings, useAppContext, replaceHistory } from '@zextras/carb
 import { noop } from 'lodash';
 
 import { getTooltipLabel } from './utils/utils';
-import { searchSoapApi } from '../../../../api/search-soap-api';
 import { FOLDERS } from '../../../../carbonio-ui-commons/constants/folders';
 import { SORTING_DIRECTION, SORTING_OPTIONS, SORT_ICONS } from '../../../../constants';
 import { parseMessageSortingOptions, updateSortingSettings } from '../../../../helpers/sorting';
-import { handleSearchSoapApiResults } from '../../../../store/emails/hooks/hooks';
+import { searchEmailStoreAction } from '../../../../store/emails/actions/search-action';
 import { AppContext } from '../../../../types';
 
 export const SortingComponent = ({ folderId }: { folderId?: string }): React.JSX.Element => {
@@ -51,13 +50,12 @@ export const SortingComponent = ({ folderId }: { folderId?: string }): React.JSX
 	const { isMessageView } = useAppContext<AppContext>();
 	const performSearch = useCallback(
 		async (sortBy: string): Promise<void> => {
-			const searchResponse = await searchSoapApi({
+			searchEmailStoreAction({
 				folderId,
 				limit: 100,
 				sortBy,
 				types: isMessageView ? 'message' : 'conversation'
 			});
-			handleSearchSoapApiResults({ searchResponse });
 		},
 		[folderId, isMessageView]
 	);
