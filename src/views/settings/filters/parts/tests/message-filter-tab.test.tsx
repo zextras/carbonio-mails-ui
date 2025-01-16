@@ -187,6 +187,25 @@ describe('Message filters tab', () => {
 			});
 			expect(onSave).toHaveBeenCalledWith([filter2, filter1]);
 		});
+		it('should move filter down when clicking move down button', async () => {
+			const onSave = jest.fn(() => Promise.resolve());
+			const filter1 = mockFilter({ name: 'Filter 1' });
+			const filter2 = mockFilter({ name: 'Filter 2' });
+			const existingFilters = [filter1, filter2];
+
+			const user = setupTestWithFilters({ filters: existingFilters, onSave });
+
+			const filter1Component = await screen.findByText('Filter 1');
+			await user.hover(filter1Component);
+			const moveUp = screen.getByTestId('icon: ArrowheadDownOutline');
+			// eslint-disable-next-line testing-library/prefer-user-event
+			fireEvent.click(moveUp);
+
+			await waitFor(() => {
+				expect(onSave).toHaveBeenCalled();
+			});
+			expect(onSave).toHaveBeenCalledWith([filter2, filter1]);
+		});
 	});
 });
 
