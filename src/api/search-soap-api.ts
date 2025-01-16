@@ -7,7 +7,7 @@
 
 import { ErrorSoapBodyResponse, soapFetch } from '@zextras/carbonio-shell-ui';
 
-import type { FetchConversationsParameters, SearchRequest, SearchResponse } from '../types';
+import type { SearchSoapApiParams, SearchRequest, SearchResponse } from '../types';
 
 export async function searchSoapApi({
 	folderId,
@@ -20,7 +20,7 @@ export async function searchSoapApi({
 	wantContent = 'full',
 	locale,
 	abortSignal
-}: FetchConversationsParameters): Promise<SearchResponse | ErrorSoapBodyResponse> {
+}: SearchSoapApiParams): Promise<SearchResponse | ErrorSoapBodyResponse> {
 	const queryPart = [`inId:"${folderId}"`];
 	let finalsortBy = sortBy;
 	if (before) queryPart.push(`before:${before.getTime()}`);

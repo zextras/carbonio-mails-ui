@@ -54,7 +54,7 @@ export type ConvActionParameters = {
 	tagName?: string;
 };
 
-export type FetchConversationsParameters = {
+export type SearchSoapApiParams = {
 	folderId?: string;
 	limit: number;
 	before?: Date | null;
