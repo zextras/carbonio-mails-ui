@@ -5,10 +5,20 @@
  */
 import React, { FC, ReactElement, useCallback, useEffect, useState } from 'react';
 
-import { Container, FormSubSection, Table, useModal } from '@zextras/carbonio-design-system';
+import {
+	Button,
+	Container,
+	FormSubSection,
+	Padding,
+	Table,
+	useModal
+} from '@zextras/carbonio-design-system';
 
+import { CertificateUploadModal } from './certificate-upload-modal';
 import { ShowAllCertificatesModal } from './show-all-certificates-modal';
 import { getPersonalCertificates } from '../../../store/actions/get-personal-certificates-action';
+import { uploadPersonalCertificate } from '../../../store/actions/upload-personal-certificate-action';
+import { Certificate, usePasswordStore } from '../../../store/zustand/certificates/store';
 import type { AccountIdentity, IdentityProps } from '../../../types';
 
 type PersonalCertificatesSettingsPropsType = {
@@ -30,6 +40,7 @@ const PersonalCertificatesSettings: FC<PersonalCertificatesSettingsPropsType> = 
 
 	const { createModal, closeModal } = useModal();
 	const id = Date.now().toString();
+	const { password } = usePasswordStore();
 
 	const showAllCertificate = useCallback(
 		(certificate: any): void => {
@@ -41,7 +52,7 @@ const PersonalCertificatesSettings: FC<PersonalCertificatesSettingsPropsType> = 
 					children: (
 						<Container crossAlignment="baseline">
 							<ShowAllCertificatesModal
-								certificate={certificate}
+								certificates={certificate}
 								onClose={(): void => closeModal?.(id)}
 							/>
 						</Container>
@@ -99,6 +110,37 @@ const PersonalCertificatesSettings: FC<PersonalCertificatesSettingsPropsType> = 
 		}
 	}, []);
 
+	const onCertificateUploadConfirm = useCallback(
+		(certificate: Certificate) => {
+			console.log('==== onCertificateUploadConfirm::>>', { certificate });
+			uploadPersonalCertificate(certificate, password, false).then((res) => {
+				console.log('==== onCertificateUploadConfirm::>>', { res });
+				// return res;
+			});
+		},
+		[password]
+	);
+
+	const onUploadCertificate = useCallback(() => {
+		console.log('==== onUploadCertificate::>>');
+		const id = Date.now().toString();
+		createModal(
+			{
+				id,
+				size: 'medium',
+				children: (
+					<Container crossAlignment="baseline">
+						<CertificateUploadModal
+							onConfirm={onCertificateUploadConfirm}
+							onClose={(): void => closeModal?.(id)}
+						/>
+					</Container>
+				)
+			},
+			true
+		);
+	}, [closeModal, createModal, onCertificateUploadConfirm]);
+
 	useEffect(() => {
 		getPersonalCertificates().then((res) => {
 			setPersonalCertificatesData(res);
@@ -117,8 +159,14 @@ const PersonalCertificatesSettings: FC<PersonalCertificatesSettingsPropsType> = 
 		],
 		onClick: (e: React.MouseEvent<HTMLTableRowElement>): void => {
 			// Add your onClick logic here
-			console.log('==== Row clicked::>>', { e, certificate });
-			showAllCertificate(certificate);
+			console.log('==== Row clicked::>>', { email: certificate.email });
+			getPersonalCertificates(certificate.email).then((res) => {
+				if ('data' in res) {
+					showAllCertificate(res.data);
+				} else {
+					// Error
+				}
+			});
 		},
 		clickable: true
 	}));
@@ -130,6 +178,8 @@ const PersonalCertificatesSettings: FC<PersonalCertificatesSettingsPropsType> = 
 				padding={{ all: 'large' }}
 			>
 				<Table rows={items} headers={headers} showCheckbox multiSelect={false} />
+				<Padding all="large" />
+				<Button onClick={(): void => onUploadCertificate()} label="Upload Certificate" />
 			</FormSubSection>
 		</>
 	);

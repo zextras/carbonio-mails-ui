@@ -32,6 +32,7 @@ export const CertificatePasswordModal = ({
 }: CertificatePasswordModalPropType): React.JSX.Element => {
 	const [password, setPassword] = useState<string>('');
 	const [confirmPassword, setConfirmPassword] = useState<string>('');
+	const [isPasswordValid, setIsPasswordValid] = useState<boolean>(true);
 	const createSnackbar = useSnackbar();
 	const [t] = useTranslation();
 
@@ -87,6 +88,20 @@ export const CertificatePasswordModal = ({
 				autoHideTimeout: 3000,
 				hideButton: true
 			});
+		} else if (
+			!/[A-Z]/.test(password) ||
+			!/[a-z]/.test(password) ||
+			!/[0-9]/.test(password) ||
+			!/[!@#$%^&*]/.test(password)
+		) {
+			createSnackbar({
+				key: `error-on-certificate-upload`,
+				replace: true,
+				severity: 'error',
+				label: 'Password must include uppercase, lowercase, numbers, and special characters', // Add translation
+				autoHideTimeout: 3000,
+				hideButton: true
+			});
 		} else {
 			onPasswordCreate();
 		}
@@ -121,6 +136,12 @@ export const CertificatePasswordModal = ({
 										'At least 8 characters long.'
 									)}
 								</li>
+								<li>
+									{t(
+										'settings.certificatePassword.create_password_rule2',
+										'Include a mix of uppercase and lowercase letters, numbers, and special characters'
+									)}
+								</li>
 							</ul>
 						</Text>
 					</Container>
@@ -140,6 +161,12 @@ export const CertificatePasswordModal = ({
 									{t(
 										'settings.certificatePassword.create_password_rule1',
 										'At least 8 characters long.'
+									)}
+								</li>
+								<li>
+									{t(
+										'settings.certificatePassword.create_password_rule2',
+										'Include a mix of uppercase and lowercase letters, numbers, and special characters'
 									)}
 								</li>
 							</ul>
@@ -169,6 +196,7 @@ export const CertificatePasswordModal = ({
 							}}
 							label={t('settings.certificatePassword.confirm_password', 'Confirm Password')}
 							data-testid="confirm_password"
+							hasError={password !== confirmPassword}
 						/>
 					</Row>
 				</Container>

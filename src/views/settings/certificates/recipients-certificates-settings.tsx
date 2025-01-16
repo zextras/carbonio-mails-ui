@@ -9,7 +9,6 @@ import {
 	Button,
 	Container,
 	FormSubSection,
-	Padding,
 	Table,
 	useModal
 } from '@zextras/carbonio-design-system';
@@ -164,6 +163,10 @@ const RecipientsCertificateSettings: FC<RecipientsCertificateSettingsPropsType> 
 			</FormSubSection>
 
 			{/* This is temporary buttons to open password modal */}
+			{/* <Padding top={'extralarge'} />
+			<Padding top={'extralarge'} />
+			<Padding top={'extralarge'} />
+			<Padding top={'extralarge'} />
 			<FormSubSection label="Password for S/MIME operations" id={''} padding={{ all: 'large' }}>
 				<Container crossAlignment="flex-start" orientation="horizontal" padding={{ all: 'medium' }}>
 					<Button onClick={(): void => onCertificatePassword()} label="Create Password" />
@@ -172,7 +175,7 @@ const RecipientsCertificateSettings: FC<RecipientsCertificateSettingsPropsType> 
 					<Padding all="medium" />
 					<Button onClick={(): void => onCertificatePassword(true)} label="Reset Password" />
 				</Container>
-			</FormSubSection>
+			</FormSubSection> */}
 		</>
 	);
 };

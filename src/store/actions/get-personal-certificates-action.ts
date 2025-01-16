@@ -6,10 +6,10 @@
 
 import { Certificate } from '../../types/certificates';
 
-export async function getPersonalCertificates(): Promise<
+export async function getPersonalCertificates(email?: string): Promise<
 	{ data: Certificate } | { error: unknown }
 > {
-	const apiCall = fetch(`/service/extension/encryption/smime/personal/list`, {
+	const apiCall = fetch(`/service/extension/encryption/smime/personal/list/${email ?? ''}`, {
 		method: 'GET'
 	});
 
