@@ -6,7 +6,7 @@
 import React, { FC, ReactElement, useCallback, useMemo } from 'react';
 
 import { Button, Padding, useModal, useSnackbar } from '@zextras/carbonio-design-system';
-import { find, findIndex, noop } from 'lodash';
+import { find, findIndex } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
 import { FiltersListType } from '../types';
@@ -26,7 +26,6 @@ export type FilterActionProps = {
 	activeList: FiltersListType;
 	filters: Filter[];
 	onFiltersSave: (arg: Array<Filter>) => Promise<void>;
-	setFilters: (arg: any) => void;
 };
 
 type InternalFilterActionProps = FilterActionProps & {
@@ -36,7 +35,6 @@ const FilterActions: FC<InternalFilterActionProps> = ({
 	availableList,
 	activeList,
 	filters,
-	setFilters,
 	isIncoming,
 	onFiltersSave
 }): ReactElement => {
@@ -93,7 +91,6 @@ const FilterActions: FC<InternalFilterActionProps> = ({
 
 		const onCreateConfirm = (newFilter: Filter): void => {
 			const toSend = [...filtersCopy, newFilter];
-			setFilters?.(toSend);
 			onFiltersSave(toSend).catch((error) => {
 				createSnackbar({
 					key: `share`,
@@ -124,16 +121,7 @@ const FilterActions: FC<InternalFilterActionProps> = ({
 			},
 			true
 		);
-	}, [
-		createModal,
-		isIncoming,
-		closeModal,
-		filtersCopy,
-		setFilters,
-		onFiltersSave,
-		createSnackbar,
-		t
-	]);
+	}, [createModal, isIncoming, closeModal, filtersCopy, onFiltersSave, createSnackbar, t]);
 
 	const removeFilter = useRemoveFilter();
 	const onRemove = useCallback(
@@ -141,10 +129,9 @@ const FilterActions: FC<InternalFilterActionProps> = ({
 			removeFilter({
 				availableList,
 				activeList,
-				setFilters,
 				modifierFunc: onFiltersSave
 			}),
-		[removeFilter, availableList, activeList, setFilters, onFiltersSave]
+		[removeFilter, availableList, activeList, onFiltersSave]
 	);
 
 	const addFilter = useAddFilter();
@@ -153,10 +140,9 @@ const FilterActions: FC<InternalFilterActionProps> = ({
 			addFilter({
 				availableList,
 				activeList,
-				setFilters,
 				modifierFunc: onFiltersSave
 			}),
-		[addFilter, availableList, activeList, setFilters, onFiltersSave]
+		[addFilter, availableList, activeList, onFiltersSave]
 	);
 	const deleteFilter = useDeleteFilter();
 	const openDeleteModal = useCallback(() => {
@@ -168,7 +154,6 @@ const FilterActions: FC<InternalFilterActionProps> = ({
 				onClose: modalClose,
 				availableList,
 				activeList,
-				setFilters: setFilters ?? noop,
 				modifierFunc: onFiltersSave,
 				filterToDelete: selectedFilter,
 				filters
@@ -197,8 +182,7 @@ const FilterActions: FC<InternalFilterActionProps> = ({
 		deleteFilter,
 		filters,
 		onFiltersSave,
-		selectedFilter,
-		setFilters
+		selectedFilter
 	]);
 
 	const openFilterModifyModal = useCallback(() => {
@@ -213,7 +197,6 @@ const FilterActions: FC<InternalFilterActionProps> = ({
 			);
 			const toSend = filtersCopy.slice();
 			toSend[selectedFilterIndex] = requiredFilter;
-			setFilters?.(toSend);
 
 			onFiltersSave(toSend)
 				.then(() => {
@@ -265,7 +248,6 @@ const FilterActions: FC<InternalFilterActionProps> = ({
 		isIncoming,
 		closeModal,
 		filtersCopy,
-		setFilters,
 		onFiltersSave,
 		createSnackbar,
 		t

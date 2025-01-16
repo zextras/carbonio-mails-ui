@@ -25,7 +25,6 @@ export type ListType = {
 export type CompProps = {
 	availableList: ListType;
 	activeList: ListType;
-	setFilters: (arg: Array<Filter>) => void;
 	modifierFunc: (arg: Filter[]) => Promise<void>;
 };
 
@@ -40,7 +39,7 @@ export const useRemoveFilter = (): ((arg: CompProps) => void) => {
 	const [t] = useTranslation();
 
 	return useCallback(
-		({ activeList, availableList, setFilters, modifierFunc }: CompProps): void => {
+		({ activeList, availableList, modifierFunc }: CompProps): void => {
 			const activeFiltersCopy = activeList?.list?.slice();
 			const availableFiltersCopy = availableList?.list?.slice();
 			const activeFilter = filter(activeFiltersCopy, { name: Object.keys(activeList.selected)[0] });
@@ -48,7 +47,6 @@ export const useRemoveFilter = (): ((arg: CompProps) => void) => {
 			activeFiltersCopy.splice(activeIndex, 1);
 			availableFiltersCopy.push({ ...activeFilter[0], active: false });
 			const newFilters = concat(activeFiltersCopy, availableFiltersCopy);
-			setFilters(newFilters);
 			activeList.unSelect();
 
 			modifierFunc(newFilters).catch((error) => {
@@ -72,7 +70,7 @@ export const useAddFilter = (): ((arg: CompProps) => void) => {
 	const [t] = useTranslation();
 
 	return useCallback(
-		({ activeList, availableList, setFilters, modifierFunc }: CompProps): void => {
+		({ activeList, availableList, modifierFunc }: CompProps): void => {
 			const activeFiltersCopy = activeList?.list?.slice();
 			const availableFiltersCopy = availableList?.list?.slice();
 			const activeFilter = filter(availableFiltersCopy, {
@@ -82,7 +80,6 @@ export const useAddFilter = (): ((arg: CompProps) => void) => {
 			availableFiltersCopy.splice(activeIndex, 1);
 			activeFiltersCopy.push({ ...activeFilter[0], active: true });
 			const newFilters = concat(activeFiltersCopy, availableFiltersCopy);
-			setFilters(newFilters);
 			availableList.unSelect();
 			modifierFunc(newFilters).catch((error: { message: string }) => {
 				createSnackbar({

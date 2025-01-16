@@ -39,8 +39,7 @@ describe('incoming filters actions', () => {
 			availableList,
 			activeList,
 			filters,
-			onFiltersSave: jest.fn(),
-			setFilters: jest.fn()
+			onFiltersSave: jest.fn()
 		};
 
 		const { user } = setupTest(<IncomingFilterActions {...props} />, { store });
@@ -65,8 +64,7 @@ describe('incoming filters actions', () => {
 			availableList,
 			activeList,
 			filters,
-			onFiltersSave: mockSave,
-			setFilters: jest.fn()
+			onFiltersSave: mockSave
 		};
 
 		const { user } = setupTest(<IncomingFilterActions {...props} />, { store });
@@ -128,8 +126,7 @@ describe('incoming filters actions', () => {
 			availableList,
 			activeList,
 			filters,
-			onFiltersSave: mockSave,
-			setFilters: jest.fn()
+			onFiltersSave: mockSave
 		};
 
 		const { user } = setupTest(<IncomingFilterActions {...props} />, { store });
@@ -163,8 +160,7 @@ describe('incoming filters actions', () => {
 			availableList,
 			activeList,
 			filters,
-			onFiltersSave: mockSave,
-			setFilters: jest.fn()
+			onFiltersSave: mockSave
 		};
 
 		const { user } = setupTest(<IncomingFilterActions {...props} />, { store });
@@ -190,8 +186,7 @@ describe('incoming filters actions', () => {
 			availableList,
 			activeList,
 			filters,
-			onFiltersSave: mockSave,
-			setFilters: jest.fn()
+			onFiltersSave: mockSave
 		};
 
 		const { user } = setupTest(<IncomingFilterActions {...props} />, { store });

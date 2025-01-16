@@ -40,36 +40,49 @@ export const MessageFilterTab = ({
 		],
 		[filtersCopy]
 	);
-	const fetchFilters = useCallback(() => {
-		getFilters()
-			.then(({ filterRules }) => {
-				setLoading(false);
-				setFilters(filterRules?.[0]?.filterRule ?? []);
-			})
-			.catch((error) => {
-				createSnackbar({
-					key: `share`,
-					replace: true,
-					hideButton: true,
-					severity: 'error',
-					label:
-						error?.message || t('label.error_try_again', 'Something went wrong, please try again'),
-					autoHideTimeout: 5000
-				});
-				setLoading(false);
-			});
-	}, [createSnackbar, getFilters, t]);
+	const fetchFilters = useCallback(
+		() =>
+			getFilters()
+				.then(({ filterRules }) => {
+					setFilters(filterRules?.[0]?.filterRule ?? []);
+					setLoading(false);
+				})
+				.catch((error) => {
+					setLoading(false);
+					createSnackbar({
+						key: `share`,
+						replace: true,
+						hideButton: true,
+						severity: 'error',
+						label:
+							error?.message ||
+							t('label.error_try_again', 'Something went wrong, please try again'),
+						autoHideTimeout: 5000
+					});
+				}),
+		[createSnackbar, getFilters, t]
+	);
 
 	const modifyFilter = useCallback(
 		(newFilters: Array<Filter>) =>
-			saveFilters(newFilters).then(() => {
-				fetchFilters();
-			}),
-		[fetchFilters, saveFilters]
+			saveFilters(newFilters)
+				.then(fetchFilters)
+				.catch(() => {
+					createSnackbar({
+						key: `share`,
+						replace: true,
+						hideButton: true,
+						severity: 'error',
+						label: t('label.error_try_again', 'Something went wrong, please try again'),
+						autoHideTimeout: 5000
+					});
+				}),
+		[createSnackbar, fetchFilters, saveFilters, t]
 	);
 
 	useEffect(() => {
-		fetchFilters();
+		const _ignored = fetchFilters();
+		return () => {};
 	}, [fetchFilters]);
 
 	const activeList = useFilterSelection(activeFilters, modifyFilter, availableFilters);
@@ -97,7 +110,6 @@ export const MessageFilterTab = ({
 			<Container width="14%" padding={{ all: 'large' }} mainAlignment="space-between">
 				<FilterActionsComponent
 					filters={filters}
-					setFilters={setFilters}
 					activeList={activeList}
 					onFiltersSave={modifyFilter}
 					availableList={availableList}

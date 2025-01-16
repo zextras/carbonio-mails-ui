@@ -7,8 +7,8 @@
 
 import React from 'react';
 
-import { fireEvent, screen, waitFor, within } from '@testing-library/react';
-import { UserEvent } from '@testing-library/user-event';
+import { screen, waitFor, within } from '@testing-library/react';
+import userEvent, { UserEvent } from '@testing-library/user-event';
 import { useSnackbar } from '@zextras/carbonio-design-system';
 
 import { FilterRulesAPIResponse } from '../../../../../api/get-filters';
@@ -29,7 +29,18 @@ describe('Message filters tab', () => {
 	it('should call getFilters only once', async () => {
 		(useSnackbar as jest.Mock).mockReturnValue(createSnackbarSpy);
 		const store = generateStore();
-		const getFilters = jest.fn(() => Promise.reject());
+		const filters = [mockFilter({ name: 'Filter 1' })];
+
+		const getFilters = jest.fn();
+		getFilters.mockReturnValue(
+			Promise.resolve({
+				filterRules: [
+					{
+						filterRule: filters
+					}
+				]
+			})
+		);
 		setupTest(
 			<MessageFilterTab
 				saveFilters={jest.fn()}
@@ -40,6 +51,7 @@ describe('Message filters tab', () => {
 				store
 			}
 		);
+		await screen.findByText('Filter 1');
 		await waitFor(() => expect(getFilters).toHaveBeenCalledTimes(1));
 	});
 	it('should call onConfirm with filters as declared in initial order when saving an edited filter', async () => {
@@ -185,22 +197,22 @@ describe('Message filters tab', () => {
 
 	describe('Move selected filter', () => {
 		it('should move filter up when clicking move up button', async () => {
-			const onSave = jest.fn(() => Promise.resolve());
+			const onSave = jest.fn();
+			onSave.mockReturnValue(Promise.resolve());
 			const filter1 = mockFilter({ name: 'Filter 1' });
 			const filter2 = mockFilter({ name: 'Filter 2' });
 			const existingFilters = [filter1, filter2];
 
 			const user = setupTestWithFilters({ filters: existingFilters, onSave });
-
 			const filter2Component = await screen.findByText('Filter 2');
 			await user.hover(filter2Component);
 			const moveUp = screen.getByTestId('icon: ArrowheadUpOutline');
-			// eslint-disable-next-line testing-library/prefer-user-event
-			fireEvent.click(moveUp);
+			await user.click(moveUp);
 
 			await waitFor(() => {
 				expect(onSave).toHaveBeenCalled();
 			});
+
 			expect(onSave).toHaveBeenCalledWith([filter2, filter1]);
 		});
 		it('should move filter down when clicking move down button', async () => {
@@ -214,8 +226,7 @@ describe('Message filters tab', () => {
 			const filter1Component = await screen.findByText('Filter 1');
 			await user.hover(filter1Component);
 			const moveUp = screen.getByTestId('icon: ArrowheadDownOutline');
-			// eslint-disable-next-line testing-library/prefer-user-event
-			fireEvent.click(moveUp);
+			await user.click(moveUp);
 
 			await waitFor(() => {
 				expect(onSave).toHaveBeenCalled();
@@ -242,7 +253,7 @@ function setupTestWithFilters({
 		]
 	};
 
-	const { user } = setupTest(
+	setupTest(
 		<MessageFilterTab
 			saveFilters={onSave}
 			getFilters={() => Promise.resolve(filtersFromAPI)}
@@ -252,5 +263,6 @@ function setupTestWithFilters({
 			store
 		}
 	);
-	return user;
+	// See: https://github.com/testing-library/user-event/issues/1187
+	return userEvent.setup({ delay: null, skipHover: true });
 }
