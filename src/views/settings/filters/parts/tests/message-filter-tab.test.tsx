@@ -27,21 +27,12 @@ const createSnackbarSpy = jest.fn((arg) => arg);
 describe('Message filters tab', () => {
 	it('should call onConfirm with filters as declared in initial order when saving an edited filter', async () => {
 		(useSnackbar as jest.Mock).mockReturnValue(createSnackbarSpy);
-		const store = generateStore();
 		const filters = [mockFilter({ name: 'Test filter 1' }), mockFilter({ name: 'Test filter 2' })];
 		const mockSave = jest.fn();
 		mockSave.mockReturnValue(Promise.resolve());
 		getFilterActions(true, mockSave);
 
-		const { user } = setupTest(
-			<MessageFilterTab
-				getFilters={() => Promise.resolve({ filterRules: [{ filterRule: filters }] })}
-				FilterActionsComponent={getFilterActions(true, mockSave)}
-			/>,
-			{
-				store
-			}
-		);
+		const user = setupTestWithFilters({ filters, onSave: mockSave });
 
 		const filter1 = await screen.findByText('Test filter 1');
 		expect(filter1).toBeVisible();
@@ -63,6 +54,7 @@ describe('Message filters tab', () => {
 
 		setupTest(
 			<MessageFilterTab
+				saveFilters={jest.fn()}
 				getFilters={() => Promise.reject()}
 				FilterActionsComponent={getFilterActions(true, mockSave)}
 			/>,
@@ -198,6 +190,7 @@ function setupTestWithFilters({
 
 	const { user } = setupTest(
 		<MessageFilterTab
+			saveFilters={jest.fn()}
 			getFilters={() => Promise.resolve(filtersFromAPI)}
 			FilterActionsComponent={getFilterActions(true, onSave)}
 		/>,

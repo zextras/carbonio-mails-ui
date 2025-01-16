@@ -17,7 +17,7 @@ import {
 import { generateStore } from '../../../../../tests/generators/store';
 import { Filter } from '../../../../../types';
 import { ListType } from '../actions';
-import { FilterActionProps, getFilterActions } from '../filter-actions';
+import { getFilterActions } from '../filter-actions';
 
 jest.mock('@zextras/carbonio-design-system', () => ({
 	...jest.requireActual('@zextras/carbonio-design-system'),
@@ -41,7 +41,7 @@ describe('incoming filters actions', () => {
 			availableList,
 			activeList,
 			filters,
-			setFetchFilters: jest.fn(),
+			onFiltersSave: jest.fn(),
 			setFilters: jest.fn()
 		};
 
@@ -66,7 +66,7 @@ describe('incoming filters actions', () => {
 			availableList,
 			activeList,
 			filters,
-			setFetchFilters: jest.fn(),
+			onFiltersSave: jest.fn(),
 			setFilters: jest.fn()
 		};
 
@@ -128,7 +128,7 @@ describe('incoming filters actions', () => {
 			availableList,
 			activeList,
 			filters,
-			setFetchFilters: jest.fn(),
+			onFiltersSave: jest.fn(),
 			setFilters: jest.fn()
 		};
 
@@ -162,7 +162,7 @@ describe('incoming filters actions', () => {
 			availableList,
 			activeList,
 			filters,
-			setFetchFilters: jest.fn(),
+			onFiltersSave: jest.fn(),
 			setFilters: jest.fn()
 		};
 
@@ -188,7 +188,7 @@ describe('incoming filters actions', () => {
 			availableList,
 			activeList,
 			filters,
-			setFetchFilters: jest.fn(),
+			onFiltersSave: jest.fn(),
 			setFilters: jest.fn()
 		};
 
@@ -205,23 +205,6 @@ describe('incoming filters actions', () => {
 		]);
 	});
 });
-
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-function propsWithFilter({
-	name,
-	isSelected
-}: {
-	name: string;
-	isSelected: boolean;
-}): FilterActionProps {
-	return {
-		availableList: createList([]),
-		activeList: createList([activeIncomingFilter(name)], isSelected ? name : undefined),
-		filters: [activeIncomingFilter('test')],
-		setFetchFilters: jest.fn(),
-		setFilters: jest.fn()
-	};
-}
 
 function createList(filterList: Filter[], selectedName?: string): ListType {
 	const selected = (selectedName && { [selectedName]: true }) || {};

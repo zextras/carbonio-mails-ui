@@ -13,6 +13,7 @@ import { modifyFilterRules } from '../../../store/actions/modify-filter-rules';
 
 export const IncomingFiltersTab = (): React.JSX.Element => (
 	<MessageFilterTab
+		saveFilters={modifyFilterRules}
 		getFilters={getIncomingFilters}
 		FilterActionsComponent={getFilterActions(true, modifyFilterRules)}
 	/>

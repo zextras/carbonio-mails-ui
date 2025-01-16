@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, ReactElement, useEffect, useMemo, useState } from 'react';
+import React, { ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
 
 import { Container, useSnackbar } from '@zextras/carbonio-design-system';
 import { filter, map } from 'lodash';
@@ -14,21 +14,21 @@ import { FilterList } from './filter-list';
 import LoadingShimmer from './loading-shimmer';
 import { useFilterSelection } from './use-filter-selection';
 import { FilterRulesAPIResponse } from '../../../../api/get-filters';
-import { modifyOutgoingFilterRules } from '../../../../store/actions/modify-filter-rules';
 import { Filter } from '../../../../types';
 import Heading from '../../components/settings-heading';
 
 type MessageFilterProps = {
 	getFilters: () => Promise<FilterRulesAPIResponse>;
+	saveFilters: (filters: Array<any>) => Promise<void>;
 	FilterActionsComponent: (props: FilterActionProps) => React.JSX.Element;
 };
-export const MessageFilterTab: FC<MessageFilterProps> = ({
+export const MessageFilterTab = ({
 	getFilters,
+	saveFilters,
 	FilterActionsComponent
-}): ReactElement => {
+}: MessageFilterProps): ReactElement => {
 	const [filters, setFilters] = useState<Array<Filter>>([]);
 	const [loading, setLoading] = useState(true);
-	const [fetchFilters, setFetchFilters] = useState(true);
 	const createSnackbar = useSnackbar();
 	const [t] = useTranslation();
 
@@ -40,25 +40,11 @@ export const MessageFilterTab: FC<MessageFilterProps> = ({
 		],
 		[filtersCopy]
 	);
-
-	const activeList = useFilterSelection(
-		activeFilters,
-		setFetchFilters,
-		modifyOutgoingFilterRules,
-		availableFilters
-	);
-	const availableList = useFilterSelection(
-		availableFilters,
-		setFetchFilters,
-		modifyOutgoingFilterRules,
-		activeFilters
-	);
-	useEffect(() => {
+	const fetchFilters = useCallback(() => {
 		getFilters()
 			.then(({ filterRules }) => {
 				setLoading(false);
 				setFilters(filterRules?.[0]?.filterRule ?? []);
-				setFetchFilters(false);
 			})
 			.catch((error) => {
 				createSnackbar({
@@ -71,9 +57,23 @@ export const MessageFilterTab: FC<MessageFilterProps> = ({
 					autoHideTimeout: 5000
 				});
 				setLoading(false);
-				setFetchFilters(false);
 			});
-	}, [createSnackbar, fetchFilters, getFilters, t]);
+	}, [createSnackbar, getFilters, t]);
+
+	const modifyFilter = useCallback(
+		(newFilters: Array<Filter>) =>
+			saveFilters(newFilters).then(() => {
+				fetchFilters();
+			}),
+		[fetchFilters, saveFilters]
+	);
+
+	useEffect(() => {
+		fetchFilters();
+	}, [fetchFilters]);
+
+	const activeList = useFilterSelection(activeFilters, modifyFilter, availableFilters);
+	const availableList = useFilterSelection(availableFilters, modifyFilter, activeFilters);
 
 	return (
 		<Container crossAlignment="flex-start" mainAlignment="flex-start" orientation="horizontal">
@@ -98,8 +98,8 @@ export const MessageFilterTab: FC<MessageFilterProps> = ({
 				<FilterActionsComponent
 					filters={filters}
 					setFilters={setFilters}
-					setFetchFilters={setFetchFilters}
 					activeList={activeList}
+					onFiltersSave={modifyFilter}
 					availableList={availableList}
 				/>
 			</Container>

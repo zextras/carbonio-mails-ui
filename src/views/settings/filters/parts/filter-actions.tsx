@@ -9,6 +9,7 @@ import { Button, Padding, useModal, useSnackbar } from '@zextras/carbonio-design
 import { find, findIndex, noop } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
+import { FiltersListType } from '../types';
 import { useRemoveFilter, useAddFilter, useDeleteFilter } from './actions';
 import CreateFilterModal from './create-filter-modal';
 import DeleteFilterModal from './delete-filter-modal';
@@ -20,32 +21,21 @@ import {
 	getApplyFilterUIAction
 } from '../../../../ui-actions/apply-filter';
 
-type ListType = {
-	isSelecting: boolean;
-	list: Array<Filter>;
-	moveDown: (arg: number) => void;
-	moveUp: (arg: number) => void;
-	selected: Record<string, boolean>;
-	toggle: (arg: string) => void;
-	unSelect: () => void;
-};
 export type FilterActionProps = {
-	availableList: ListType;
-	activeList: ListType;
+	availableList: FiltersListType;
+	activeList: FiltersListType;
 	filters: Filter[];
-	setFetchFilters: (arg: any) => void;
+	onFiltersSave: (arg: Array<Filter>) => Promise<void>;
 	setFilters: (arg: any) => void;
 };
 
 type InternalFilterActionProps = FilterActionProps & {
 	isIncoming: boolean;
-	onFiltersSave: (toSave: Array<any>) => Promise<any>;
 };
 const FilterActions: FC<InternalFilterActionProps> = ({
 	availableList,
 	activeList,
 	filters,
-	setFetchFilters,
 	setFilters,
 	isIncoming,
 	onFiltersSave
@@ -104,22 +94,17 @@ const FilterActions: FC<InternalFilterActionProps> = ({
 		const onCreateConfirm = (newFilter: Filter): void => {
 			const toSend = [...filtersCopy, newFilter];
 			setFilters?.(toSend);
-			onFiltersSave(toSend)
-				.then(() => {
-					setFetchFilters?.(true);
-				})
-				.catch((error) => {
-					createSnackbar({
-						key: `share`,
-						replace: true,
-						hideButton: true,
-						severity: 'error',
-						label:
-							error?.message ||
-							t('label.error_try_again', 'Something went wrong, please try again'),
-						autoHideTimeout: 5000
-					});
+			onFiltersSave(toSend).catch((error) => {
+				createSnackbar({
+					key: `share`,
+					replace: true,
+					hideButton: true,
+					severity: 'error',
+					label:
+						error?.message || t('label.error_try_again', 'Something went wrong, please try again'),
+					autoHideTimeout: 5000
 				});
+			});
 			modalClose();
 		};
 		createModal(
@@ -146,7 +131,6 @@ const FilterActions: FC<InternalFilterActionProps> = ({
 		filtersCopy,
 		setFilters,
 		onFiltersSave,
-		setFetchFilters,
 		createSnackbar,
 		t
 	]);
@@ -158,10 +142,9 @@ const FilterActions: FC<InternalFilterActionProps> = ({
 				availableList,
 				activeList,
 				setFilters,
-				setFetchFilters,
 				modifierFunc: onFiltersSave
 			}),
-		[removeFilter, availableList, activeList, setFilters, setFetchFilters, onFiltersSave]
+		[removeFilter, availableList, activeList, setFilters, onFiltersSave]
 	);
 
 	const addFilter = useAddFilter();
@@ -171,10 +154,9 @@ const FilterActions: FC<InternalFilterActionProps> = ({
 				availableList,
 				activeList,
 				setFilters,
-				setFetchFilters,
 				modifierFunc: onFiltersSave
 			}),
-		[addFilter, availableList, activeList, setFilters, setFetchFilters, onFiltersSave]
+		[addFilter, availableList, activeList, setFilters, onFiltersSave]
 	);
 	const deleteFilter = useDeleteFilter();
 	const openDeleteModal = useCallback(() => {
@@ -186,7 +168,6 @@ const FilterActions: FC<InternalFilterActionProps> = ({
 				onClose: modalClose,
 				availableList,
 				activeList,
-				setFetchFilters: setFetchFilters ?? noop,
 				setFilters: setFilters ?? noop,
 				modifierFunc: onFiltersSave,
 				filterToDelete: selectedFilter,
@@ -217,7 +198,6 @@ const FilterActions: FC<InternalFilterActionProps> = ({
 		filters,
 		onFiltersSave,
 		selectedFilter,
-		setFetchFilters,
 		setFilters
 	]);
 
@@ -237,7 +217,6 @@ const FilterActions: FC<InternalFilterActionProps> = ({
 
 			onFiltersSave(toSend)
 				.then(() => {
-					setFetchFilters(true);
 					createSnackbar({
 						key: `share`,
 						replace: true,
@@ -288,7 +267,6 @@ const FilterActions: FC<InternalFilterActionProps> = ({
 		filtersCopy,
 		setFilters,
 		onFiltersSave,
-		setFetchFilters,
 		createSnackbar,
 		t
 	]);
