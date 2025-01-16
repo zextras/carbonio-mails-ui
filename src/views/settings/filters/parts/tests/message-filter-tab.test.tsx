@@ -7,7 +7,7 @@
 
 import React from 'react';
 
-import { act, screen, waitFor, within } from '@testing-library/react';
+import { fireEvent, screen, waitFor, within } from '@testing-library/react';
 import { UserEvent } from '@testing-library/user-event';
 import { useSnackbar } from '@zextras/carbonio-design-system';
 
@@ -179,7 +179,8 @@ describe('Message filters tab', () => {
 			const filter2Component = await screen.findByText('Filter 2');
 			await user.hover(filter2Component);
 			const moveUp = screen.getByTestId('icon: ArrowheadUpOutline');
-			await act(() => user.click(moveUp));
+			// eslint-disable-next-line testing-library/prefer-user-event
+			fireEvent.click(moveUp);
 
 			await waitFor(() => {
 				expect(onSave).toHaveBeenCalled();
