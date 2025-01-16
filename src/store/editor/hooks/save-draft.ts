@@ -10,12 +10,10 @@ import { useTranslation } from 'react-i18next';
 
 import { computeAndUpdateEditorStatus } from './commons';
 import { getEditor } from './editors';
-import { saveDraftSoapApi } from '../../../api/save-draft-soap-api';
-import { API_REQUEST_STATUS } from '../../../constants';
 import { useUiUtilities } from '../../../hooks/use-ui-utilities';
 import { normalizeMailMessageFromSoap } from '../../../normalizations/normalize-message';
 import { MailsEditorV2 } from '../../../types';
-import { updateMessages, updateMessageStatus } from '../../emails/store';
+import { saveDraftEmailStoreAction } from '../../emails/actions/save-draft-action';
 import { buildSavedAttachments } from '../editor-transformations';
 import { useEditorsStore } from '../store';
 import { getDraftSaveDelay } from '../store-utils';
@@ -69,7 +67,7 @@ export const useSaveDraftFromEditor = (): {
 			};
 
 			// Update messages store
-			saveDraftSoapApi({ editor })
+			saveDraftEmailStoreAction({ editor })
 				.then((res) => {
 					if ('Fault' in res) {
 						handleError(res.Fault.Detail?.Error?.Detail);
@@ -97,8 +95,6 @@ export const useSaveDraftFromEditor = (): {
 					});
 					computeAndUpdateEditorStatus(editorId);
 
-					updateMessages([mailMessage]);
-					updateMessageStatus(mailMessage.id, API_REQUEST_STATUS.fulfilled);
 					options?.onComplete?.();
 				})
 				.catch((err) => {
