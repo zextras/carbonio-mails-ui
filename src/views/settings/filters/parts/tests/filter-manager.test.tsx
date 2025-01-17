@@ -17,7 +17,7 @@ import {
 import { generateStore } from '../../../../../tests/generators/store';
 import { Filter } from '../../../../../types';
 import { ListType } from '../actions';
-import { getFilterActions } from '../filter-actions';
+import { getFiltermanager } from '../filter-manager';
 
 jest.mock('@zextras/carbonio-design-system', () => ({
 	...jest.requireActual('@zextras/carbonio-design-system'),
@@ -25,7 +25,7 @@ jest.mock('@zextras/carbonio-design-system', () => ({
 }));
 
 const createSnackbarSpy = jest.fn((arg) => arg);
-const IncomingFilterActions = getFilterActions(true);
+const IncomingFilterActions = getFiltermanager(true);
 
 describe('incoming filters actions', () => {
 	it('should close the create filter modal', async () => {

@@ -9,8 +9,8 @@ import { Container, useSnackbar } from '@zextras/carbonio-design-system';
 import { filter, map } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
-import { FilterActionProps } from './filter-actions';
 import { FilterList } from './filter-list';
+import { FilterManagerProps } from './filter-manager';
 import LoadingShimmer from './loading-shimmer';
 import { useFilterSelection } from './use-filter-selection';
 import { FilterRulesAPIResponse } from '../../../../api/get-filters';
@@ -20,12 +20,12 @@ import Heading from '../../components/settings-heading';
 type MessageFilterProps = {
 	getFilters: () => Promise<FilterRulesAPIResponse>;
 	saveFilters: (filters: Array<Filter>) => Promise<void>;
-	FilterActionsComponent: (props: FilterActionProps) => React.JSX.Element;
+	FiltersManagerComponent: (props: FilterManagerProps) => React.JSX.Element;
 };
 export const MessageFilterTab = ({
 	getFilters,
 	saveFilters,
-	FilterActionsComponent
+	FiltersManagerComponent
 }: MessageFilterProps): ReactElement => {
 	const [filters, setFilters] = useState<Array<Filter>>([]);
 	const [loading, setLoading] = useState(true);
@@ -81,8 +81,8 @@ export const MessageFilterTab = ({
 		fetchFilters();
 	}, [fetchFilters]);
 
-	const activeList = useFilterSelection(activeFilters, modifyFilter, availableFilters);
-	const availableList = useFilterSelection(availableFilters, modifyFilter, activeFilters);
+	const activeListSelection = useFilterSelection(activeFilters, modifyFilter, availableFilters);
+	const availableListSelection = useFilterSelection(availableFilters, modifyFilter, activeFilters);
 
 	return (
 		<Container crossAlignment="flex-start" mainAlignment="flex-start" orientation="horizontal">
@@ -93,22 +93,22 @@ export const MessageFilterTab = ({
 						<LoadingShimmer />
 					) : (
 						<FilterList
-							filters={activeList.list}
-							selected={activeList.selected}
-							unSelect={availableList.unSelect}
-							moveDown={activeList.moveDown}
-							moveUp={activeList.moveUp}
-							toggle={activeList.toggle}
+							filters={activeListSelection.list}
+							selected={activeListSelection.selected}
+							unSelect={availableListSelection.unSelect}
+							moveDown={activeListSelection.moveDown}
+							moveUp={activeListSelection.moveUp}
+							toggle={activeListSelection.toggle}
 						/>
 					)}
 				</Container>
 			</Container>
 			<Container width="14%" padding={{ all: 'large' }} mainAlignment="space-between">
-				<FilterActionsComponent
+				<FiltersManagerComponent
 					filters={filters}
-					activeList={activeList}
+					activeList={activeListSelection}
 					onFiltersSave={modifyFilter}
-					availableList={availableList}
+					availableList={availableListSelection}
 				/>
 			</Container>
 			<Container width="43%" mainAlignment="flex-start">
@@ -118,12 +118,12 @@ export const MessageFilterTab = ({
 						<LoadingShimmer />
 					) : (
 						<FilterList
-							filters={availableList.list}
-							selected={availableList.selected}
-							unSelect={activeList.unSelect}
-							moveDown={availableList.moveDown}
-							moveUp={availableList.moveUp}
-							toggle={availableList.toggle}
+							filters={availableListSelection.list}
+							selected={availableListSelection.selected}
+							unSelect={activeListSelection.unSelect}
+							moveDown={availableListSelection.moveDown}
+							moveUp={availableListSelection.moveUp}
+							toggle={availableListSelection.toggle}
 						/>
 					)}
 				</Container>

@@ -6,18 +6,18 @@
 
 import React, { useMemo } from 'react';
 
-import { getFilterActions } from './parts/filter-actions';
+import { getFiltermanager } from './parts/filter-manager';
 import { MessageFilterTab } from './parts/message-filter-tab';
 import { getIncomingFilters } from '../../../api/get-filters';
 import { modifyFilterRules } from '../../../store/actions/modify-filter-rules';
 
 export const IncomingFiltersTab = (): React.JSX.Element => {
-	const filterActionsComponent = useMemo(() => getFilterActions(true), []);
+	const filtersManagerComponent = useMemo(() => getFiltermanager(true), []);
 	return (
 		<MessageFilterTab
 			saveFilters={modifyFilterRules}
 			getFilters={getIncomingFilters}
-			FilterActionsComponent={filterActionsComponent}
+			FiltersManagerComponent={filtersManagerComponent}
 		/>
 	);
 };

@@ -9,35 +9,30 @@ import { Button, Padding, useModal, useSnackbar } from '@zextras/carbonio-design
 import { find, findIndex } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
-import { FiltersListType } from '../types';
-import { useRemoveFilter, useAddFilter, useDeleteFilter } from './actions';
-import CreateFilterModal from './create-filter-modal';
-import DeleteFilterModal from './delete-filter-modal';
-import { ModifyFilterModal } from './modify-filter/modify-filter-modal';
 import { StoreProvider } from '../../../../store/redux';
 import { Filter } from '../../../../types';
 import {
 	ApplyFilterUIActionExecutionParams,
 	getApplyFilterUIAction
 } from '../../../../ui-actions/apply-filter';
+import { FiltersListType } from '../types';
+import { useAddFilter, useDeleteFilter, useRemoveFilter } from './actions';
+import CreateFilterModal from './create-filter-modal';
+import DeleteFilterModal from './delete-filter-modal';
+import { ModifyFilterModal } from './modify-filter/modify-filter-modal';
 
-export type FilterActionProps = {
+export type FilterManagerProps = {
 	availableList: FiltersListType;
 	activeList: FiltersListType;
 	filters: Filter[];
 	onFiltersSave: (arg: Array<Filter>) => Promise<void>;
 };
 
-type InternalFilterActionProps = FilterActionProps & {
-	isIncoming: boolean;
-};
-const FilterActions: FC<InternalFilterActionProps> = ({
-	availableList,
-	activeList,
-	filters,
-	isIncoming,
-	onFiltersSave
-}): ReactElement => {
+const FilterManager: FC<
+	FilterManagerProps & {
+		isIncoming: boolean;
+	}
+> = ({ availableList, activeList, filters, isIncoming, onFiltersSave }): ReactElement => {
 	const createSnackbar = useSnackbar();
 	const [t] = useTranslation();
 	const { selected: availableSelected } = availableList;
@@ -313,7 +308,7 @@ const FilterActions: FC<InternalFilterActionProps> = ({
 	);
 };
 
-export function getFilterActions(isIncoming: boolean): (props: FilterActionProps) => ReactElement {
+export function getFiltermanager(isIncoming: boolean): (props: FilterManagerProps) => ReactElement {
 	// eslint-disable-next-line react/display-name
-	return (props: FilterActionProps) => <FilterActions {...props} isIncoming={isIncoming} />;
+	return (props: FilterManagerProps) => <FilterManager {...props} isIncoming={isIncoming} />;
 }

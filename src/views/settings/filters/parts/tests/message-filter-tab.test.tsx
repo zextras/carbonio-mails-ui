@@ -16,7 +16,7 @@ import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
 import { generateStore } from '../../../../../tests/generators/store';
 import { Filter } from '../../../../../types';
 import { makeAllItemsVisible, mockFilter } from '../../tests/test-utils';
-import { getFilterActions } from '../filter-actions';
+import { getFiltermanager } from '../filter-manager';
 import { MessageFilterTab } from '../message-filter-tab';
 
 jest.mock('@zextras/carbonio-design-system', () => ({
@@ -45,7 +45,7 @@ describe('Message filters tab', () => {
 			<MessageFilterTab
 				saveFilters={jest.fn()}
 				getFilters={getFilters}
-				FilterActionsComponent={getFilterActions(true)}
+				FiltersManagerComponent={getFiltermanager(true)}
 			/>,
 			{
 				store
@@ -82,7 +82,7 @@ describe('Message filters tab', () => {
 			<MessageFilterTab
 				saveFilters={jest.fn()}
 				getFilters={() => Promise.reject()}
-				FilterActionsComponent={getFilterActions(true)}
+				FiltersManagerComponent={getFiltermanager(true)}
 			/>,
 			{
 				store
@@ -257,7 +257,7 @@ function setupTestWithFilters({
 		<MessageFilterTab
 			saveFilters={onSave}
 			getFilters={() => Promise.resolve(filtersFromAPI)}
-			FilterActionsComponent={getFilterActions(true)}
+			FiltersManagerComponent={getFiltermanager(true)}
 		/>,
 		{
 			store
