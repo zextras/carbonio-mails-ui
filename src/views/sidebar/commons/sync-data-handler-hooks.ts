@@ -97,7 +97,7 @@ function handleTagsNotify({ notify, worker, store }: HandleTagsNotifyProps): voi
 	worker.postMessage({
 		op: 'notify',
 		notify,
-		state: store.getState().tags
+		state: store.getState()
 	});
 }
 

@@ -21,7 +21,7 @@ import { generateFolder } from '../../carbonio-ui-commons/test/mocks/folders/fol
 import { handleGetFolderRequest } from '../../carbonio-ui-commons/test/mocks/network/msw/handle-get-folder';
 import { handleGetShareInfoRequest } from '../../carbonio-ui-commons/test/mocks/network/msw/handle-get-share-info';
 import { tags } from '../../carbonio-ui-commons/test/mocks/tags/tags';
-import { folderWorker } from '../../carbonio-ui-commons/worker';
+import { folderWorker, tagsWorker } from '../../carbonio-ui-commons/worker';
 import {
 	useConversationById,
 	useMessageById,
@@ -383,9 +383,7 @@ describe('sync data handler', () => {
 			mockSoapDelete(mailboxNumber, ['1']);
 			const workerSpy = jest.spyOn(tagsWorker, 'postMessage');
 			mockSoapRefresh(mailboxNumber);
-			renderHook(() => useSyncDataHandler(), {
-				wrapper: getWrapper()
-			});
+			renderHook(() => useSyncDataHandler(), {});
 
 			expect(workerSpy).toHaveBeenCalledTimes(1);
 			expect(workerSpy).toHaveBeenCalledWith(
