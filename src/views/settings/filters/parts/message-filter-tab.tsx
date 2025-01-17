@@ -40,28 +40,25 @@ export const MessageFilterTab = ({
 		],
 		[filtersCopy]
 	);
-	const fetchFilters = useCallback(
-		() =>
-			getFilters()
-				.then(({ filterRules }) => {
-					setFilters(filterRules?.[0]?.filterRule ?? []);
-					setLoading(false);
-				})
-				.catch((error) => {
-					setLoading(false);
-					createSnackbar({
-						key: `share`,
-						replace: true,
-						hideButton: true,
-						severity: 'error',
-						label:
-							error?.message ||
-							t('label.error_try_again', 'Something went wrong, please try again'),
-						autoHideTimeout: 5000
-					});
-				}),
-		[createSnackbar, getFilters, t]
-	);
+	const fetchFilters = useCallback(() => {
+		getFilters()
+			.then(({ filterRules }) => {
+				setFilters(filterRules?.[0]?.filterRule ?? []);
+				setLoading(false);
+			})
+			.catch((error) => {
+				setLoading(false);
+				createSnackbar({
+					key: `share`,
+					replace: true,
+					hideButton: true,
+					severity: 'error',
+					label:
+						error?.message || t('label.error_try_again', 'Something went wrong, please try again'),
+					autoHideTimeout: 5000
+				});
+			});
+	}, [createSnackbar, getFilters, t]);
 
 	const modifyFilter = useCallback(
 		(newFilters: Array<Filter>) =>
@@ -81,8 +78,7 @@ export const MessageFilterTab = ({
 	);
 
 	useEffect(() => {
-		const _ignored = fetchFilters();
-		return () => {};
+		fetchFilters();
 	}, [fetchFilters]);
 
 	const activeList = useFilterSelection(activeFilters, modifyFilter, availableFilters);
