@@ -12,8 +12,9 @@ import { forEach, isEmpty, map, sortBy } from 'lodash';
 import { StoreApi, UseBoundStore } from 'zustand';
 
 import { useFolderStore } from '../../../carbonio-ui-commons/store/zustand/folder';
-import { Tag } from '../../../carbonio-ui-commons/types/tags';
-import { folderWorker } from '../../../carbonio-ui-commons/worker';
+import { useTagStore } from '../../../carbonio-ui-commons/store/zustand/tags';
+import { Tag, TagState } from '../../../carbonio-ui-commons/types/tags';
+import { folderWorker, tagsWorker } from '../../../carbonio-ui-commons/worker';
 import {
 	mapToNormalizedConversation,
 	normalizeConversations
@@ -64,6 +65,11 @@ type HandleFoldersNotifyProps = {
 	store: UseBoundStore<StoreApi<FolderState>>;
 };
 
+type HandleTagsNotifyProps = {
+	notify: SoapNotify;
+	worker: Worker;
+	store: UseBoundStore<StoreApi<TagState>>;
+};
 function handleFoldersNotify({
 	notifyList,
 	notify,
@@ -85,6 +91,14 @@ function handleFoldersNotify({
 			state: store.getState().folders
 		});
 	}
+}
+
+function handleTagsNotify({ notify, worker, store }: HandleTagsNotifyProps): void {
+	worker.postMessage({
+		op: 'notify',
+		notify,
+		state: store.getState().tags
+	});
 }
 
 function processCreatedNotifications(notify: SoapNotify): void {
@@ -139,6 +153,7 @@ function processNotifications({
 
 		processedNotify.current = notify.seq;
 		handleFoldersNotify({ notifyList, notify, worker: folderWorker, store: useFolderStore });
+		handleTagsNotify({ notify, worker: tagsWorker, store: useTagStore });
 
 		if (notify.created) {
 			processCreatedNotifications(notify);
