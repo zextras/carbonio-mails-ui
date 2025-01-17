@@ -21,7 +21,7 @@ import { generateFolder } from '../../carbonio-ui-commons/test/mocks/folders/fol
 import { handleGetFolderRequest } from '../../carbonio-ui-commons/test/mocks/network/msw/handle-get-folder';
 import { handleGetShareInfoRequest } from '../../carbonio-ui-commons/test/mocks/network/msw/handle-get-share-info';
 import { tags } from '../../carbonio-ui-commons/test/mocks/tags/tags';
-import { folderWorker } from '../../carbonio-ui-commons/worker';
+import { folderWorker, tagsWorker } from '../../carbonio-ui-commons/worker';
 import * as reduxHooks from '../../hooks/redux';
 import {
 	setSearchResultsByConversation,
@@ -375,6 +375,24 @@ describe('sync data handler', () => {
 			);
 
 			useNotify.mockReturnValueOnce([notify]);
+			renderHook(() => useSyncDataHandler(), {
+				wrapper: getWrapper()
+			});
+
+			expect(workerSpy).toHaveBeenCalledTimes(1);
+			expect(workerSpy).toHaveBeenCalledWith(
+				expect.objectContaining({ op: 'notify', notify, state: expect.any(Object) })
+			);
+		});
+	});
+
+	describe('tags', () => {
+		test('it will invoke the tags worker when a notify is received', async () => {
+			useTagStore.setState({ tags: {} });
+			const notify = { deleted: ['1'], seq: 0 };
+			mockSoapDelete(mailboxNumber, ['1']);
+			const workerSpy = jest.spyOn(tagsWorker, 'postMessage');
+			mockSoapRefresh(mailboxNumber);
 			renderHook(() => useSyncDataHandler(), {
 				wrapper: getWrapper()
 			});
