@@ -3,10 +3,20 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { TFunction } from 'i18next';
-import { forEach } from 'lodash';
 
-import { FilterActions, MarkAsOption } from '../../../../types';
+import React from 'react';
+
+import { TFunction } from 'i18next';
+import { find, forEach } from 'lodash';
+
+import { ActionKey, FilterAction, FilterActions } from '../../../../types';
+import { ACTION_OPTIONS } from '../constants';
+import { OnFilterActionChange } from '../types';
+import { ActionMarkAsComponent } from './filter-actions/action-mark-as-component';
+import { ActionMoveToFolderComponent } from './filter-actions/action-move-to-folder-component';
+import { ActionRedirectToComponent } from './filter-actions/action-redirect-to-component';
+import { ActionTagComponent } from './filter-actions/action-tag-component';
+import { getMarkAsOptions } from './filter-actions/mark-as-utils';
 
 type DomainOption = {
 	label: string;
@@ -64,27 +74,6 @@ export const getFieldOptions = (t: TFunction): FieldOption[] => [
 	{
 		label: t('label.all', 'all'),
 		value: 'allof'
-	}
-];
-
-type HeaderConditionStatement = {
-	label: string;
-	value: string | ConditionStatement['value'];
-};
-
-export const getHeaderConditionStatements = (t: TFunction): HeaderConditionStatement[] => [
-	...getConditionStatements(t),
-	{
-		label: t('settings.does_not_match_wildcard_condition', 'does not match wildcard condition'),
-		value: 'does not matche wildcard condition'
-	},
-	{
-		label: t('settings.exists', 'exists'),
-		value: 'exists'
-	},
-	{
-		label: t('settings.does_not_exists', 'does not exist'),
-		value: 'does not exist'
 	}
 ];
 
@@ -336,71 +325,54 @@ export const getSocialOptions = (t: TFunction): SocialOption[] => [
 		value: { facebookTest: [{}] }
 	}
 ];
-
-type ConditionAction = {
-	label: string;
-	value: 'redirectToAddress';
-};
-const getConditionAction = (
-	t: TFunction,
-	zimbraFeatureMailForwardingInFiltersEnabled: 'TRUE' | 'FALSE'
-): ConditionAction[] => {
-	if (zimbraFeatureMailForwardingInFiltersEnabled === 'TRUE') {
-		return [
-			{
-				label: t('settings.redirect_to_address', 'Redirect to address'),
-				value: 'redirectToAddress'
-			}
-		];
+export const getActionComponent = (
+	action: FilterAction,
+	onChange: OnFilterActionChange
+): React.JSX.Element | undefined => {
+	if (ACTION_OPTIONS.MOVE_TO_FOLDER in action) {
+		return <ActionMoveToFolderComponent value={action} onChange={onChange} />;
 	}
-	return [];
+	if (ACTION_OPTIONS.MARK_AS in action) {
+		return <ActionMarkAsComponent value={action} onChange={onChange} />;
+	}
+	if (ACTION_OPTIONS.REDIRECT_TO in action) {
+		return <ActionRedirectToComponent value={action} onChange={onChange} />;
+	}
+	if (ACTION_OPTIONS.TAG in action) {
+		return <ActionTagComponent value={action} onChange={onChange} />;
+	}
+	return undefined;
 };
 
-type ActionOption = {
-	label: string;
-	value: string;
+export const getActionsInitialValues = (t: TFunction): Record<ActionKey, FilterAction> => {
+	const markAsOptions = getMarkAsOptions(t);
+	return {
+		[ACTION_OPTIONS.KEEP]: { actionKeep: [{}] },
+		[ACTION_OPTIONS.DISCARD]: { actionDiscard: [{}] },
+		[ACTION_OPTIONS.MOVE_TO_FOLDER]: { actionFileInto: [{ folderPath: '' }] },
+		[ACTION_OPTIONS.TAG]: { actionTag: [{ tagName: '' }] },
+		[ACTION_OPTIONS.MARK_AS]: {
+			actionFlag: [{ flagName: markAsOptions?.[0].value.actionFlag[0].flagName }]
+		},
+		[ACTION_OPTIONS.REDIRECT_TO]: {
+			actionRedirect: [{ a: '' }]
+		}
+	};
 };
 
-export const getActionOptions = (
-	t: TFunction,
-	zimbraFeatureMailForwardingInFiltersEnabled: 'TRUE' | 'FALSE',
-	isIncoming = true
-): ActionOption[] => [
-	{
-		label: isIncoming
+export const getActionTranslations =
+	(isIncoming: boolean): ((t: TFunction) => Record<ActionKey, string>) =>
+	(t: TFunction) => ({
+		[ACTION_OPTIONS.KEEP]: isIncoming
 			? t('settings.keep_in_inbox', 'Keep in Inbox')
 			: t('settings.keep_in_sent', 'Keep in Sent'),
-		value: isIncoming ? 'inbox' : 'sent'
-	},
-	{
-		label: t('settings.discard', 'Discard'),
-		value: 'discard'
-	},
-	{
-		label: t('settings.move_into_folder', 'Move Into Folder'),
-		value: 'moveIntoFolder'
-	},
-	{
-		label: t('settings.tag_with', 'Tag with'),
-		value: 'tagWith'
-	},
-	{
-		label: t('settings.mark_as', 'Mark as'),
-		value: 'markAs'
-	},
-	...getConditionAction(t, zimbraFeatureMailForwardingInFiltersEnabled)
-];
+		[ACTION_OPTIONS.DISCARD]: t('settings.discard', 'Discard'),
+		[ACTION_OPTIONS.MOVE_TO_FOLDER]: t('settings.move_into_folder', 'Move Into Folder'),
+		[ACTION_OPTIONS.TAG]: t('settings.tag_with', 'Tag with'),
+		[ACTION_OPTIONS.MARK_AS]: t('settings.mark_as', 'Mark as'),
+		[ACTION_OPTIONS.REDIRECT_TO]: t('settings.redirect_to_address', 'Redirect to address')
+	});
 
-export const getMarkAsOptions = (t: TFunction): Array<MarkAsOption> => [
-	{
-		label: t('label.read', 'Read'),
-		value: { actionFlag: [{ flagName: 'read' }] }
-	},
-	{
-		label: t('label.flagged', 'Flagged'),
-		value: { actionFlag: [{ flagName: 'flagged' }] }
-	}
-];
 type StatusOption = {
 	label: string;
 	value:
@@ -479,11 +451,13 @@ type ObjectWithLabelValue<T> = {
 export function findDefaultValue<T>(
 	list: Array<ObjectWithLabelValue<T>>,
 	key: T
-): ObjectWithLabelValue<T> {
-	return list.find((item) => item.value === key) as ObjectWithLabelValue<T>;
+): ObjectWithLabelValue<T> | undefined {
+	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+	// @ts-ignore
+	return find(list, { value: key });
 }
 type Filters = {
-	filterActions: FilterActions[];
+	filterActions: FilterActions;
 };
 
 export const getButtonInfo = (
@@ -492,15 +466,14 @@ export const getButtonInfo = (
 	t: TFunction,
 	isCreate = true
 ): [boolean, string] => {
-	const keys = Object.keys(filters.filterActions[0]);
-	const actions = filters.filterActions[0];
+	const action = filters.filterActions[0];
 	if (filterName.length === 0) {
 		return [true, t('settings.label.filter_name_required', 'Filter name is required')];
 	}
-	if (keys.includes('actionTag')) {
+	if ('actionTag' in action) {
 		let isEmpty = false;
-		forEach(actions.actionTag, (action) => {
-			if (action.tagName === '') isEmpty = true;
+		forEach(action.actionTag, (actionTag) => {
+			if (actionTag.tagName === '') isEmpty = true;
 		});
 		if (isEmpty) {
 			return [
@@ -512,9 +485,9 @@ export const getButtonInfo = (
 			];
 		}
 	}
-	if (keys.includes('actionFileInto')) {
+	if ('actionFileInto' in action) {
 		let isEmpty = false;
-		forEach(actions.actionFileInto, (files) => {
+		forEach(action.actionFileInto, (files) => {
 			if (files.folderPath === '') isEmpty = true;
 		});
 		if (isEmpty) {
@@ -527,9 +500,9 @@ export const getButtonInfo = (
 			];
 		}
 	}
-	if (keys.includes('actionRedirect')) {
+	if ('actionRedirect' in action) {
 		let isEmpty = false;
-		forEach(actions.actionRedirect, (address) => {
+		forEach(action.actionRedirect, (address) => {
 			if (address.a === '') isEmpty = true;
 		});
 		if (isEmpty) {

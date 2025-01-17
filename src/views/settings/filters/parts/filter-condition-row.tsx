@@ -5,24 +5,14 @@
  */
 import React, { FC, ReactElement, useMemo, useCallback } from 'react';
 
-import { Container, Padding, IconButton, Tooltip, getColor } from '@zextras/carbonio-design-system';
-import styled from 'styled-components';
+import { Button, Container, Padding, Tooltip } from '@zextras/carbonio-design-system';
 
 import DefaultCondition from './create-filters-conditions/default';
 import CustomSelect from './custom-select';
 import { getRowFunc } from './get-row';
 import { getStatusOptions, findDefaultValue } from './utils';
 
-export const StyledIconButton = styled(IconButton)`
-	border: 0.0625rem solid
-		${({ theme, disabled, iconColor = 'primary' }): string =>
-			disabled ? theme.palette.gray2.regular : getColor(String(iconColor), theme)};
-	svg {
-		border: none !important;
-	}
-`;
-
-type FilterTestRowProps = {
+type FilterConditionRowrops = {
 	tmpFilter: {
 		filterActions: Array<any>;
 		active: boolean;
@@ -37,7 +27,11 @@ type FilterTestRowProps = {
 	compProps: any;
 };
 
-const FilterTestRows: FC<FilterTestRowProps> = ({ tmpFilter, index, compProps }): ReactElement => {
+export const FilterConditionRow: FC<FilterConditionRowrops> = ({
+	tmpFilter,
+	index,
+	compProps
+}): ReactElement => {
 	const { t, newFilters, setNewFilters, condition, activeFilter, filterName } = compProps;
 	const statusOptions = useMemo(() => getStatusOptions(t), [t]);
 
@@ -98,15 +92,16 @@ const FilterTestRows: FC<FilterTestRowProps> = ({ tmpFilter, index, compProps })
 
 			<Container orientation="horizontal" mainAlignment="flex-end">
 				<Tooltip label={t('settings.add_condition', 'Add new condition')} placement="top">
-					<StyledIconButton icon="PlusOutline" onClick={addFilterCondition} iconColor="primary" />
+					<Button icon="PlusOutline" onClick={addFilterCondition} color="primary" type="outlined" />
 				</Tooltip>
 				<Padding left="small">
 					<Tooltip label={t('settings.remove_condition', 'Remove this condition')} placement="top">
-						<StyledIconButton
+						<Button
 							disabled={disableRemove}
 							icon="MinusOutline"
 							onClick={onRemove}
-							iconColor="secondary"
+							color="secondary"
+							type="outlined"
 						/>
 					</Tooltip>
 				</Padding>
@@ -114,5 +109,3 @@ const FilterTestRows: FC<FilterTestRowProps> = ({ tmpFilter, index, compProps })
 		</Container>
 	);
 };
-
-export default FilterTestRows;
