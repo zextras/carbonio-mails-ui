@@ -27,10 +27,12 @@ export const useMsgPrintFn = (message: MailMessage, folderId: string): ActionFn 
 				.then((res) => {
 					const content = getContentForPrint({
 						messages: res,
-						conversations: {
-							conversation: message.conversation,
-							subject: message.subject
-						},
+						conversations: [
+							{
+								id: message.conversation,
+								subject: message.subject
+							}
+						],
 						isMsg: true
 					});
 					if (printWindow?.top) {
