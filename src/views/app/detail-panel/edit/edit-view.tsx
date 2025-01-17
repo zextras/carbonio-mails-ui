@@ -4,7 +4,15 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React, { memo, useCallback, useEffect, useImperativeHandle, useMemo, useState } from 'react';
+import React, {
+	memo,
+	useCallback,
+	useEffect,
+	useImperativeHandle,
+	useMemo,
+	useRef,
+	useState
+} from 'react';
 
 import {
 	Button,
@@ -124,7 +132,6 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 	ref
 ) {
 	const { setAutoSendTime } = useEditorAutoSendTime(editorId);
-
 	const [isMailSizeWarning, setIsMailSizeWarning] = useState<boolean>(false);
 	const [largeFileUploadInfoBannerVisible, setLargeFileUploadInfoBannerVisible] = useState(false);
 	const { status: saveDraftAllowedStatus, saveDraft } = useEditorDraftSave(editorId);
@@ -133,6 +140,10 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 	const identityEmailAddress = getIdentityDescriptor(identityId)?.fromAddress;
 	const { isSmimeSign, setIsSmimeSign } = useEditorIsSmimeSign(editorId);
 	const getCertificate = useCertificatesStore((state) => state.getCertificate);
+	const composerInitialValueRef = useRef(
+		useEditorsStore?.getState()?.editors[editorId]?.text?.richText
+	);
+	const composerRef = useRef(null);
 
 	useEffect(() => {
 		if (!draftId) saveDraft();
@@ -469,7 +480,7 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 
 					<GapRow mainAlignment={'flex-end'} gap={'medium'}>
 						<MemoizedAddAttachmentsDropdown editorId={editorId} />
-						<MemoizedChangeSignaturesDropdown editorId={editorId} />
+						<MemoizedChangeSignaturesDropdown editorId={editorId} composerRef={composerRef} />
 						<MemoizedOptionsDropdown
 							editorId={editorId}
 							onSmimeOptionChange={onSmimeOptionChange}
@@ -533,8 +544,8 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 						onDragOver={onDragOverEvent}
 						onFilesSelected={onInlineAttachmentsSelected}
 						editorId={editorId}
-						minHeight={0}
-						disabled={false}
+						composerInitialValueRef={composerInitialValueRef}
+						composerRef={composerRef}
 					/>
 					<EditViewDraftSaveInfo processStatus={draftSaveProcessStatus} />
 				</GapContainer>

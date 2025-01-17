@@ -8,6 +8,7 @@ import React, { FC, useCallback, useMemo } from 'react';
 import { Dropdown, DropdownItem, IconButton } from '@zextras/carbonio-design-system';
 import { getUserAccount, t } from '@zextras/carbonio-shell-ui';
 import { map, noop, unescape } from 'lodash';
+import type { Editor } from 'tinymce';
 
 import { getMailBodyWithSignature } from '../../../../../helpers/signatures';
 import { useEditorSignatureId, useEditorText } from '../../../../../store/zustand/editor';
@@ -15,9 +16,13 @@ import { MailsEditorV2, SignItemType } from '../../../../../types';
 
 export type SignaturesDropdownProps = {
 	editorId: MailsEditorV2['id'];
+	composerRef: React.MutableRefObject<Editor | null>;
 };
 
-export const ChangeSignaturesDropdown: FC<SignaturesDropdownProps> = ({ editorId }) => {
+export const ChangeSignaturesDropdown: FC<SignaturesDropdownProps> = ({
+	editorId,
+	composerRef
+}) => {
 	const account = getUserAccount();
 	const { signatureId, setSignatureId } = useEditorSignatureId(editorId);
 	const { text, setText } = useEditorText(editorId);
@@ -45,10 +50,15 @@ export const ChangeSignaturesDropdown: FC<SignaturesDropdownProps> = ({ editorId
 	const onSignatureSelected = useCallback(
 		(signature: SignItemType): void => {
 			setSignatureId(signature.id);
-			const textWithSignature = getMailBodyWithSignature(text, signature.id);
+			const richText = composerRef.current?.getContent({ format: 'html' }) ?? '';
+			const plainText = composerRef.current?.getContent({ format: 'text' }) ?? '';
+
+			const textWithSignature = getMailBodyWithSignature({ plainText, richText }, signature.id);
+			composerRef.current?.setContent(textWithSignature.richText, { format: 'html' });
+
 			setText(textWithSignature);
 		},
-		[setSignatureId, setText, text]
+		[composerRef, setSignatureId, setText]
 	);
 
 	const dropdownEntries = useMemo<Array<DropdownItem>>(
