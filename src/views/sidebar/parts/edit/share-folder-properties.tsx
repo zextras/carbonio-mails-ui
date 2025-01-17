@@ -8,7 +8,6 @@ import React, { FC, useCallback, useContext, useEffect, useMemo, useState } from
 import {
 	Button,
 	Chip,
-	ChipProps,
 	Container,
 	Divider,
 	Padding,
@@ -34,9 +33,9 @@ import type {
 	ShareFolderPropertiesProps
 } from '../../../../types';
 
-const HoverChip = styled(Chip)<ChipProps & { hovered?: boolean }>`
-	background-color: ${({ theme, hovered }): string =>
-		hovered ? theme.palette.gray3.hover : theme.palette.gray3.regular};
+const HoverChip = styled(Chip)<{ $hovered?: boolean }>`
+	background-color: ${({ theme, $hovered }): string =>
+		$hovered ? theme.palette.gray3.hover : theme.palette.gray3.regular};
 `;
 
 export const GranteeInfo: FC<GranteeInfoProps> = ({ grant, shareCalendarRoleOptions, hovered }) => {
@@ -53,7 +52,7 @@ export const GranteeInfo: FC<GranteeInfoProps> = ({ grant, shareCalendarRoleOpti
 	return (
 		<Container crossAlignment="flex-start">
 			<Text>
-				<HoverChip label={label} hovered={hovered} />
+				<HoverChip label={label} $hovered={hovered} />
 			</Text>
 		</Container>
 	);

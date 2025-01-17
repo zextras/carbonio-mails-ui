@@ -14,7 +14,6 @@ export function getCompleteHTML({ content }: { content: string }): string {
 		<head>
 			<title>Carbonio</title>
                 <style>
-                    max-width: 100% !important;
                     body {
                         max-width: 100% !important;
                         margin: 0;
@@ -26,7 +25,6 @@ export function getCompleteHTML({ content }: { content: string }): string {
                     body pre, body pre * {
                         white-space: pre-wrap;
                         word-wrap: anywhere !important;
-                        text-wrap: suppress !important;
                     }
                     img {
                         max-width: 100%

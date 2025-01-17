@@ -6,7 +6,7 @@
 import React, { CSSProperties, useMemo, useRef } from 'react';
 
 import { Container, ContainerProps } from '@zextras/carbonio-design-system';
-import styled, { css, SimpleInterpolation } from 'styled-components';
+import styled, { css } from 'styled-components';
 
 import { BORDERS } from '../constants';
 import { Border, useResize } from '../hooks/use-resize';
@@ -45,19 +45,19 @@ interface BorderWithResizeProps {
 	$translateTransform?: { x?: string; y?: string };
 }
 
-const HoverableContainer = styled(Container)<ContainerProps & { border: Border }>`
+const HoverableContainer = styled(Container)<{ $border: Border }>`
 	& > * {
-		border-right: ${({ theme, border }): string =>
-			border === BORDERS.EAST ? `1px solid ${theme.palette.gray2.regular}` : '0'};
-		border-bottom: ${({ theme, border }): string =>
-			border === BORDERS.SOUTH ? `1px solid ${theme.palette.gray2.regular}` : '0'};
+		border-right: ${({ theme, $border }): string =>
+			$border === BORDERS.EAST ? `1px solid ${theme.palette.gray2.regular}` : '0'};
+		border-bottom: ${({ theme, $border }): string =>
+			$border === BORDERS.SOUTH ? `1px solid ${theme.palette.gray2.regular}` : '0'};
 		transition: 0.2s ease-out;
 	}
 	&:hover > * {
-		border-right: ${({ theme, border }): string =>
-			border === BORDERS.EAST ? `1px solid ${theme.palette.primary.regular}` : '0'};
-		border-bottom: ${({ theme, border }): string =>
-			border === BORDERS.SOUTH ? `1px solid ${theme.palette.primary.regular}` : '0'};
+		border-right: ${({ theme, $border }): string =>
+			$border === BORDERS.EAST ? `1px solid ${theme.palette.primary.regular}` : '0'};
+		border-bottom: ${({ theme, $border }): string =>
+			$border === BORDERS.SOUTH ? `1px solid ${theme.palette.primary.regular}` : '0'};
 	}
 `;
 
@@ -72,8 +72,8 @@ const BorderWithResize = styled.div<
 	cursor: ${({ $cursor }): CSSProperties['cursor'] => $cursor};
 	width: ${({ $width }): string => $width};
 	height: ${({ $height }): string => $height};
-	${({ $position }): SimpleInterpolation => $position};
-	${({ $translateTransform }): SimpleInterpolation =>
+	${({ $position }): BorderWithResizeProps['$position'] => $position};
+	${({ $translateTransform }): undefined | string | ReturnType<typeof css> =>
 		($translateTransform?.x || $translateTransform?.y) &&
 		css`
 			transform: translate(${$translateTransform?.x ?? 0}, ${$translateTransform?.y ?? 0});
@@ -111,7 +111,7 @@ const ResizableBorder = ({ elementToResize, border }: ResizableBorderProps): Rea
 			<HoverableContainer
 				width={'100%'}
 				height={'100%'}
-				border={border}
+				$border={border}
 				mainAlignment="flex-start"
 				crossAlignment="flex-start"
 			>

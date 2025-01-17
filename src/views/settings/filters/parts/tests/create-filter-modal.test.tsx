@@ -9,7 +9,11 @@ import { faker } from '@faker-js/faker';
 import { act, screen, within } from '@testing-library/react';
 import { t } from '@zextras/carbonio-shell-ui';
 
-import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
+import { populateFoldersStore } from '../../../../../carbonio-ui-commons/test/mocks/store/folders';
+import {
+	makeListItemsVisible,
+	setupTest
+} from '../../../../../carbonio-ui-commons/test/test-setup';
 import { generateStore } from '../../../../../tests/generators/store';
 import CreateFilterModal from '../create-filter-modal';
 
@@ -118,5 +122,29 @@ describe('create-filter-modal', () => {
 			name: /label\.create/i
 		});
 		expect(createButton).toBeEnabled();
+	});
+
+	test('junk folder is selectable', async () => {
+		const closeModal = jest.fn();
+		const store = generateStore();
+		populateFoldersStore();
+		const { user } = setupTest(<CreateFilterModal t={t} onClose={(): void => closeModal()} />, {
+			store
+		});
+		await user.click(screen.getByText(/settings\.keep_in_inbox/i));
+
+		await user.click(screen.getByText(/settings\.move_into_folder/i));
+		const button = screen.getByRole('button', {
+			name: /settings\.browse/i
+		});
+		await act(async () => {
+			await user.click(button);
+		});
+
+		makeListItemsVisible();
+		act(() => {
+			jest.advanceTimersByTime(500);
+		});
+		expect(screen.getByText(/junk/i)).toBeVisible();
 	});
 });

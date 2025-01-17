@@ -7,14 +7,14 @@ import React from 'react';
 
 import { act, screen, waitFor } from '@testing-library/react';
 
-import { HtmlMessageRenderer } from './html-message-renderer';
-import { createSoapAPIInterceptor } from '../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
-import { setupTest } from '../../carbonio-ui-commons/test/test-setup';
-import { updateMessages } from '../../store/zustand/search/store';
-import { generateCompleteMessageFromAPI } from '../../tests/generators/api';
-import { generateMessage } from '../../tests/generators/generateMessage';
-import { generateStore } from '../../tests/generators/store';
-import { GetMsgRequest, GetMsgResponse } from '../../types';
+import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
+import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
+import { updateMessages } from '../../../store/zustand/search/store';
+import { generateCompleteMessageFromAPI } from '../../../tests/generators/api';
+import { generateMessage } from '../../../tests/generators/generateMessage';
+import { generateStore } from '../../../tests/generators/store';
+import { GetMsgRequest, GetMsgResponse } from '../../../types';
+import { HtmlMessageRenderer } from '../html-message-renderer';
 
 describe('HTML message renderer', () => {
 	describe('Search Module', () => {

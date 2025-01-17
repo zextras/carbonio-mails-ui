@@ -15,7 +15,7 @@ import { useBoard as mockedUseBoard } from '../../../../../carbonio-ui-commons/t
 import { populateFoldersStore } from '../../../../../carbonio-ui-commons/test/mocks/store/folders';
 import { getMocksContext } from '../../../../../carbonio-ui-commons/test/mocks/utils/mocks-context';
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
-import { convertHtmlToPlainText } from '../../../../../carbonio-ui-commons/utils/text/html';
+import { convertHtmlToPlainText } from '../../../../../commons/utilities';
 import { EditViewActions, MAILS_ROUTE } from '../../../../../constants';
 import {
 	getSignatureValue,

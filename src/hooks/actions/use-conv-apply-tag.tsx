@@ -5,10 +5,10 @@
  */
 import { useMemo } from 'react';
 
-import { useTags } from '@zextras/carbonio-shell-ui';
 import { includes, map } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
+import { useTags } from '../../carbonio-ui-commons/store/zustand/tags';
 import { ConversationActionsDescriptors, TIMEOUTS } from '../../constants';
 import { isSpam } from '../../helpers/folders';
 import { convAction } from '../../store/actions';

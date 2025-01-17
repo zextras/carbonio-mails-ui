@@ -5,6 +5,7 @@
  */
 
 import type { Grant } from '@zextras/carbonio-shell-ui';
+import { TFunction } from 'i18next';
 
 import type { Folder } from '../../carbonio-ui-commons/types/folder';
 import type { AppDispatch } from '../../store/redux';
@@ -14,7 +15,7 @@ export type ShareCalendarModalProps = {
 	openModal: () => void;
 	setModal: (a: any) => void;
 	dispatch: AppDispatch;
-	t: (...args: any[]) => string;
+	t: TFunction;
 	toggleSnackbar: () => void;
 	folder: string;
 	folders: any;
@@ -23,7 +24,7 @@ export type ShareCalendarModalProps = {
 
 export type ResponseActionsProps = {
 	dispatch: AppDispatch;
-	t: (...args: any[]) => string;
+	t: TFunction;
 	zid: string;
 	view: string;
 	rid: string;
@@ -33,7 +34,7 @@ export type ResponseActionsProps = {
 	owner: string;
 	role: string;
 	allowedActions: string;
-	participants: Participant[s];
+	participants: Participant[];
 };
 
 export type ReplyShareParameters = {
@@ -42,7 +43,7 @@ export type ReplyShareParameters = {
 
 export type GranteeInfoProps = {
 	grant: Grant;
-	shareCalendarRoleOptions: ShareCalendarRoleOptions;
+	shareCalendarRoleOptions: ShareCalendarRoleOptions[];
 	hovered?: boolean;
 };
 
@@ -52,12 +53,12 @@ export type GranteeProps = {
 	onMouseLeave?: () => void;
 	onMouseEnter?: () => void;
 	setActiveModal: (modal: string) => void;
-	shareCalendarRoleOptions: ShareCalendarRoleOptions;
+	shareCalendarRoleOptions: ShareCalendarRoleOptions[];
 };
 
 export type ShareFolderPropertiesProps = {
 	folder: Folder;
-	setActiveModal;
+	setActiveModal: (modal: string) => void;
 };
 
 export type ShareCalendarRoleOptions = {

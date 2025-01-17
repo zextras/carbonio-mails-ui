@@ -8,7 +8,7 @@ import { faker } from '@faker-js/faker';
 
 import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
 import { ParticipantRole } from '../../carbonio-ui-commons/constants/participants';
-import { convertHtmlToPlainText } from '../../carbonio-ui-commons/utils/text/html';
+import { convertHtmlToPlainText } from '../../commons/utilities';
 import { MailMessage, Participant, Sensitivity } from '../../types';
 
 /**
@@ -156,4 +156,4 @@ const generateMessage = ({
 	messageIsFromDistributionList: false
 });
 
-export { MessageGenerationParams, generateMessage };
+export { type MessageGenerationParams, generateMessage };

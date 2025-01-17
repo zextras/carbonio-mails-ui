@@ -3,10 +3,10 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { Tags } from '@zextras/carbonio-shell-ui';
 import { filter, find, isNil, map } from 'lodash';
 
 import { normalizeParticipantsFromSoap } from './normalize-message';
+import { Tags } from '../carbonio-ui-commons/types/tags';
 import { omitBy } from '../commons/utils';
 import type {
 	Conversation,

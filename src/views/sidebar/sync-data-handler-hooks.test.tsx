@@ -13,11 +13,14 @@ import { Provider } from 'react-redux';
 import { useSyncDataHandler } from './commons/sync-data-handler-hooks';
 import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
 import { useFolderStore } from '../../carbonio-ui-commons/store/zustand/folder';
+import { getTags } from '../../carbonio-ui-commons/store/zustand/tags';
+import { useTagStore } from '../../carbonio-ui-commons/store/zustand/tags/store';
 import { getSetupServer } from '../../carbonio-ui-commons/test/jest-setup';
 import { useNotify } from '../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
 import { generateFolder } from '../../carbonio-ui-commons/test/mocks/folders/folders-generator';
 import { handleGetFolderRequest } from '../../carbonio-ui-commons/test/mocks/network/msw/handle-get-folder';
 import { handleGetShareInfoRequest } from '../../carbonio-ui-commons/test/mocks/network/msw/handle-get-share-info';
+import { tags } from '../../carbonio-ui-commons/test/mocks/tags/tags';
 import { folderWorker } from '../../carbonio-ui-commons/worker';
 import * as reduxHooks from '../../hooks/redux';
 import {
@@ -125,10 +128,18 @@ function mockSoapDelete(mailboxNumber: number, deletedIds: Array<string>): void 
 	(useNotify as jest.Mock).mockReturnValue([soapNotify]);
 }
 
+jest.mock('../../carbonio-ui-commons/store/zustand/tags', () => ({
+	...jest.requireActual('../../carbonio-ui-commons/store/zustand/tags'),
+	getTags: jest.fn()
+}));
+
 describe('sync data handler', () => {
 	const mailboxNumber = 1000;
 	describe('conversations', () => {
 		it('should mark conversation as read', async () => {
+			(getTags as jest.Mock).mockReturnValue(tags);
+
+			useTagStore.setState({ tags });
 			setSearchResultsByConversation(
 				[generateConversation({ id: '123', messages: [], isRead: false })],
 				false

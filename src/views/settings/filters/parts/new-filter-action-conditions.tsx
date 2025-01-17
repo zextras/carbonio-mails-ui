@@ -6,11 +6,11 @@
 import React, { FC, ReactElement, useMemo } from 'react';
 
 import { Container, Text, Icon, Row, Padding } from '@zextras/carbonio-design-system';
-import { getTags } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
 
 import FilterActionRows from './filter-action-rows';
 import { ZIMBRA_STANDARD_COLORS } from '../../../../carbonio-ui-commons/constants/utils';
+import { getTags } from '../../../../carbonio-ui-commons/store/zustand/tags';
 import Heading from '../../components/settings-heading';
 
 type ComponentProps = any;

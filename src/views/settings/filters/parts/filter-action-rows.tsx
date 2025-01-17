@@ -19,15 +19,18 @@ import {
 	getColor,
 	ChipItem
 } from '@zextras/carbonio-design-system';
-import { useIntegratedComponent } from '@zextras/carbonio-shell-ui';
+import { TFunction } from 'i18next';
 import { filter, omit } from 'lodash';
 import styled from 'styled-components';
 import { v4 as uuidv4 } from 'uuid';
 
 import CustomSelect from './custom-select';
 import { getActionOptions, getMarkAsOptions } from './utils';
-import { ZIMBRA_STANDARD_COLORS } from '../../../../carbonio-ui-commons/constants/utils';
-import { Folder } from '../../../../carbonio-ui-commons/types/folder';
+import { ZIMBRA_STANDARD_COLORS } from '../../../../carbonio-ui-commons/constants';
+import { CONTACT_TYPES } from '../../../../carbonio-ui-commons/integrations/constants';
+import { useContactInput } from '../../../../carbonio-ui-commons/integrations/hooks';
+import { ContactInputItem } from '../../../../carbonio-ui-commons/integrations/types';
+import { Folder } from '../../../../carbonio-ui-commons/types';
 import { SelectFolderModal } from '../../../../ui-actions/modals/select-folder-modal';
 
 export const StyledIconButton = styled(IconButton)`
@@ -39,21 +42,36 @@ export const StyledIconButton = styled(IconButton)`
 	}
 `;
 
-type FilterActionRowProps = {
-	tmpFilter: any;
-	index: number;
-	compProps: any;
-	tagOptions?: Array<any>;
+// FIXME: this type was introduced just to start understanding what this code is doing but it is clear it is trying to represent a code that does too many things
+type TempAction = {
+	id?: string;
+	a?: string;
+	label?: string;
+	value?: string;
+	actionKeep?: Array<unknown>;
+	actionStop?: Array<unknown>;
+	actionRedirect?: Array<unknown>;
+	actionTag?: Array<unknown>;
+	actionFileInto?: Array<unknown>;
+	actionDiscard?: Array<unknown>;
+	tagName?: string;
+	flagName?: string;
+	folderPath?: string;
+};
+// FIXME: what is "comp" supposed to be?
+type CompProps = {
+	t: TFunction;
+	isIncoming: boolean;
+	tempActions: Array<TempAction>;
+	setTempActions: (tempActions: Array<TempAction>) => void;
+	zimbraFeatureMailForwardingInFiltersEnabled: 'TRUE' | 'FALSE';
 };
 
-type ContactType = {
-	company?: string;
-	email: string;
-	firstName?: string;
-	fullName?: string;
-	id?: string;
-	label?: string;
-	lastName?: string;
+type FilterActionRowProps = {
+	tmpFilter: Record<string, [TempAction]>;
+	index: number;
+	compProps: CompProps;
+	tagOptions?: Array<any>;
 };
 
 const FilterActionRows: FC<FilterActionRowProps> = ({
@@ -93,18 +111,18 @@ const FilterActionRows: FC<FilterActionRowProps> = ({
 		() => activeActionOption === 'redirectToAddress',
 		[activeActionOption]
 	);
-	const [contacts, setContacts] = useState<ContactType[]>([]);
-	const [ContactInput, integrationAvailable] = useIntegratedComponent('contact-input');
+	const [contacts, setContacts] = useState<ContactInputItem[]>([]);
+	const ContactInput = useContactInput();
 
 	const onChange = useCallback(
-		(users: any): void => {
+		(users: ContactInputItem[]): void => {
 			const previous = tempActions.slice();
-			const email = users.length > 0 && users[0].email !== '' ? users[0].email : '';
+			const email = users?.length > 0 ? users[0].value.email : '';
 			previous[index] = {
 				actionRedirect: [{ a: email }],
 				id: uuidv4()
 			};
-			setContacts([{ email }]);
+			setContacts(users);
 			setTempActions(previous);
 		},
 		[index, setTempActions, tempActions]
@@ -159,8 +177,15 @@ const FilterActionRows: FC<FilterActionRowProps> = ({
 			}
 			case 'actionRedirect': {
 				setActiveActionOption('redirectToAddress');
-				if (tmpFilter[action][0].a) {
-					setContacts([{ email: tmpFilter[action][0].a }]);
+				const email = tmpFilter[action][0].a;
+				if (email) {
+					setContacts([
+						{
+							id: email,
+							label: email,
+							value: { id: email, email, type: CONTACT_TYPES.CONTACT }
+						}
+					]);
 				} else {
 					setContacts([]);
 				}
@@ -263,7 +288,7 @@ const FilterActionRows: FC<FilterActionRowProps> = ({
 							id: previous[index]?.id,
 							actionRedirect: [{ a: '' }]
 						};
-						setContacts([{ email: '' }]);
+						setContacts([]);
 					}
 					setTempActions(previous);
 					break;
@@ -394,7 +419,6 @@ const FilterActionRows: FC<FilterActionRowProps> = ({
 								disabled={openFolderModalDisabled}
 								label={t('settings.browse', 'Browse')}
 								type="outlined"
-								// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 								onClick={openModal}
 							/>
 						</Row>
@@ -414,24 +438,13 @@ const FilterActionRows: FC<FilterActionRowProps> = ({
 
 				{showRedirectToAddrsInput && (
 					<Row padding={{ right: 'small' }} minWidth="22rem">
-						{integrationAvailable ? (
-							<ContactInput
-								// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-								// @ts-ignore
-								placeholder={t('settings.address', 'Address')}
-								onChange={onChange}
-								defaultValue={contacts}
-								disablePortal
-								maxChips={1}
-							/>
-						) : (
-							<ChipInput
-								placeholder={t('settings.address', 'Address')}
-								onChange={onChange}
-								defaultValue={contacts}
-								maxChips={1}
-							/>
-						)}
+						<ContactInput
+							data-testid={'filter-action-row-contact-input'}
+							placeholder={t('settings.address', 'Address')}
+							onChange={onChange}
+							defaultValue={contacts}
+							maxChips={1}
+						/>
 					</Row>
 				)}
 
@@ -475,7 +488,7 @@ const FilterActionRows: FC<FilterActionRowProps> = ({
 					inputLabel={inputLabel}
 					confirmAction={confirmAction}
 					showSharedAccounts={false}
-					showSpamFolder={false}
+					showSpamFolder
 					showTrashFolder
 					allowFolderCreation={false}
 					allowRootSelection={false}

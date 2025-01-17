@@ -14,11 +14,13 @@ import {
 	Text,
 	useModal
 } from '@zextras/carbonio-design-system';
-import { Tag, t, useTags } from '@zextras/carbonio-shell-ui';
+import { t } from '@zextras/carbonio-shell-ui';
 import { find, reduce, some } from 'lodash';
 
 import DeleteTagModal from '../carbonio-ui-commons/components/tags/delete-tag-modal';
 import { TagsActionsType, ZIMBRA_STANDARD_COLORS } from '../carbonio-ui-commons/constants';
+import { useTags } from '../carbonio-ui-commons/store/zustand/tags';
+import { Tag } from '../carbonio-ui-commons/types/tags';
 import { StoreProvider } from '../store/redux';
 import type { ArgumentType, ItemType, TagActionsReturnType, UIActionDescriptor } from '../types';
 import CreateUpdateTagModal from '../views/sidebar/parts/tags/create-update-tag-modal';

@@ -9,30 +9,33 @@ import { type SoapMailParticipant } from './soap-mail-participant';
 type MailHeaderAttrs = {
 	[K in MailVerificationHeader]: K extends 'Authentication-Results' ? string | string[] : string;
 };
+
 export type SoapIncompleteMessage = {
 	readonly id: string;
-	/** Conversation id */ cid: string;
-	/** Message id */ mid?: string;
-	/** Folder id */ l: string;
-	/** Size */ s: number;
-	/** Date */ d: number;
-	/** Send date */ sd?: number;
-	/** Revision */ rev?: number;
+	cid: string; // Conversation id
+	mid?: string; // Message id
+	l: string; // Folder id
+	s: number; // Size
+	d: number; // Date
+	sd?: number; // Send date
+	rev?: number; // Revision
 	// Flags. (u)nread, (f)lagged, has (a)ttachment, (r)eplied, (s)ent by me,
 	// for(w)arded, calendar in(v)ite, (d)raft, IMAP-\Deleted (x), (n)otification sent,
 	// urgent (!), low-priority (?), priority (+)
-	/** Flags */ f?: string;
-	/** TagNames */ tn?: string;
-	/** TagIds */ t?: string;
-	/** Subject */ su?: string;
-	/** Fragment */ fr?: string;
-	/** Contacts */ e?: Array<SoapMailParticipant>;
-	/** Parts */ mp?: Array<SoapMailMessagePart>;
-	/** Scheduled time */ autoSendTime?: number;
-	/** Invite */ inv?: Array<any>;
-	/** Shared */ shr?: Array<any>;
-	/** Signature */ signature?: Array<MessageSignature>;
-	/** MailHeader attrs */ _attrs?: Partial<MailHeaderAttrs>;
+	f?: string; // Flags
+	origid?: string; // Original message id (for drafts)
+	tn?: string; // TagNames
+	t?: string; // TagIds
+	rt?: 'r' | 'w'; // ReplyType: r = replied, f = forwarded
+	su?: string; // Subject
+	fr?: string; // Fragment
+	e?: Array<SoapMailParticipant>; // Contacts
+	mp?: Array<SoapMailMessagePart>; // Parts
+	autoSendTime?: number; // Scheduled time
+	inv?: Array<any>; // Invite
+	shr?: Array<any>; // Shared
+	signature?: Array<MessageSignature>; // Signature
+	_attrs?: Partial<MailHeaderAttrs>; // MailHeader attrs
 };
 
 export type MessageSignature = {

@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { QueryChip } from '@zextras/carbonio-shell-ui';
+import type { QueryChip } from '@zextras/carbonio-search-ui';
 import { includes, map, reduce } from 'lodash';
 import { v4 as uuid } from 'uuid';
 
@@ -35,7 +35,7 @@ export function getChipString(item: SearchQueryItem | ContactInputItem, prefix: 
 	return regex.test(resultString) ? resultString : `${prefix}:${resultString}`;
 }
 
-export function getChipValue(item: SearchQueryItem | ContactInputItem, prefix: string): string {
+function getChipValue(item: SearchQueryItem | ContactInputItem, prefix: string): string {
 	const regex = getRegex(prefix);
 	let resultString = '';
 	if ((item as SearchQueryItem).value) {
@@ -50,12 +50,12 @@ export function getChipValue(item: SearchQueryItem | ContactInputItem, prefix: s
 	return regex.test(resultString) ? resultString : `${prefix}:${resultString}`;
 }
 
-export function getChipItems(chips: Query | Array<ContactInputItem>, prefix: string): KeywordState {
+export function getChipItems(chips: Array<ContactInputItem>, prefix: string): KeywordState {
 	return chips.map((chip) => ({
 		...chip,
 		error: false,
 		id: chip.id ?? `${uuid()} ${chip.label}`,
-		avatarBackground: (chip as ContactInputItem).avatarBackground ?? 'secondary',
+		avatarBackground: chip.avatarBackground ?? 'secondary',
 		hasAvatar: true,
 		avatarIcon: 'EmailOutline',
 		isGeneric: false,

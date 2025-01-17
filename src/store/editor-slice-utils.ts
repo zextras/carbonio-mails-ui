@@ -12,8 +12,8 @@ import {
 	ParticipantRole,
 	ParticipantRoleType
 } from '../carbonio-ui-commons/constants/participants';
-import { convertHtmlToPlainText } from '../carbonio-ui-commons/utils/text/html';
 import { htmlEncode } from '../commons/get-quoted-text-util';
+import { convertHtmlToPlainText } from '../commons/utilities';
 import { LineType } from '../commons/utils';
 import { getAddressOwnerAccount, getIdentityDescriptor } from '../helpers/identities';
 import type {

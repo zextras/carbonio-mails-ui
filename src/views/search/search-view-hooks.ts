@@ -6,18 +6,15 @@
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-import {
-	type QueryChip,
-	type ErrorSoapBodyResponse,
-	getTags,
-	type Tags,
-	useUserSettings
-} from '@zextras/carbonio-shell-ui';
+import type { QueryChip } from '@zextras/carbonio-search-ui';
+import { type ErrorSoapBodyResponse, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
 
 import { generateQueryString, updateQueryChips } from './utils';
 import { searchSoapApi } from '../../api/search';
 import { useFoldersMap } from '../../carbonio-ui-commons/store/zustand/folder';
+import { getTags } from '../../carbonio-ui-commons/store/zustand/tags';
+import { Tags } from '../../carbonio-ui-commons/types/tags';
 import { API_REQUEST_STATUS, LIST_LIMIT } from '../../constants';
 import { mapToNormalizedConversation } from '../../normalizations/normalize-conversation';
 import { normalizeMailMessageFromSoap } from '../../normalizations/normalize-message';

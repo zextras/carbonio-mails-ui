@@ -307,30 +307,3 @@ export type SaveDraftParameters = {
 export type SaveDraftResult = {
 	resp: SaveDraftResponse;
 };
-
-export type MountpointSpecType = {
-	l?: number;
-	name: string;
-	zid?: string;
-	rid?: string;
-	view?: string;
-	color?: number;
-	rgb?: string;
-	url?: string;
-	fie?: boolean;
-	reminder?: boolean;
-	owner?: string;
-	path?: string;
-	f?: string;
-};
-
-export type MountpointType = ISoapFolderObj;
-
-export type CreateMountPointRequest = {
-	_jsns: 'urn:zimbraMail';
-	link: MountpointSpecType;
-};
-
-export type CreateMountpointResponse = {
-	link: MountpointType;
-};

@@ -7,8 +7,9 @@ import { act } from '@testing-library/react';
 import { find, forEach } from 'lodash';
 
 import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
-import { useTags } from '../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
+import { useTags } from '../../../carbonio-ui-commons/store/zustand/tags';
 import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
+import { tags as mockTags } from '../../../carbonio-ui-commons/test/mocks/tags/tags';
 import { setupHook } from '../../../carbonio-ui-commons/test/test-setup';
 import { FOLDERS_DESCRIPTORS } from '../../../constants';
 import { generateMessage } from '../../../tests/generators/generateMessage';
@@ -16,11 +17,16 @@ import { generateStore } from '../../../tests/generators/store';
 import { ConvActionRequest } from '../../../types';
 import { useMsgApplyTagDescriptor, useMsgApplyTagSubDescriptors } from '../use-msg-apply-tag';
 
+jest.mock('../../../carbonio-ui-commons/store/zustand/tags', () => ({
+	useTags: jest.fn()
+}));
+
 describe('useMsgApplyTag', () => {
 	const msg = generateMessage();
 	const store = generateStore();
 
 	describe('Descriptor', () => {
+		(useTags as jest.Mock).mockReturnValue(mockTags);
 		it('Should return an object with specific id, icon, label and 2 functions', () => {
 			const {
 				result: { current: descriptor }
@@ -49,6 +55,7 @@ describe('useMsgApplyTag', () => {
 
 	describe('SubDescriptors', () => {
 		it('Should return an object with specific icon if message does not contains the tag', () => {
+			(useTags as jest.Mock).mockReturnValue(mockTags);
 			const {
 				result: { current: descriptor }
 			} = setupHook(useMsgApplyTagSubDescriptors, {
@@ -68,6 +75,7 @@ describe('useMsgApplyTag', () => {
 		});
 
 		it('Should return an object with specific icon if conversation contains the tag', () => {
+			(useTags as jest.Mock).mockReturnValue(mockTags);
 			const {
 				result: { current: descriptor }
 			} = setupHook(useMsgApplyTagSubDescriptors, {
@@ -106,7 +114,7 @@ describe('useMsgApplyTag', () => {
 					name: 'tag 5'
 				}
 			};
-			useTags.mockReturnValue(tags);
+			(useTags as jest.Mock).mockReturnValue(tags);
 			const {
 				result: { current: descriptor }
 			} = setupHook(useMsgApplyTagDescriptor, {
@@ -137,7 +145,7 @@ describe('useMsgApplyTag', () => {
 						name: 'tag 1'
 					}
 				};
-				useTags.mockReturnValue(tags);
+				(useTags as jest.Mock).mockReturnValue(tags);
 
 				const {
 					result: { current: descriptor }
@@ -158,7 +166,7 @@ describe('useMsgApplyTag', () => {
 						name: 'tag 1'
 					}
 				};
-				useTags.mockReturnValue(tags);
+				(useTags as jest.Mock).mockReturnValue(tags);
 				const interceptor = createSoapAPIInterceptor<ConvActionRequest>('MsgAction');
 				const {
 					result: { current: descriptor }
@@ -184,7 +192,7 @@ describe('useMsgApplyTag', () => {
 						name: 'tag 1'
 					}
 				};
-				useTags.mockReturnValue(tags);
+				(useTags as jest.Mock).mockReturnValue(tags);
 				const interceptor = createSoapAPIInterceptor<ConvActionRequest>('MsgAction');
 				const {
 					result: { current: descriptor }

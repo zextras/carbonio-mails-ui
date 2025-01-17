@@ -15,6 +15,7 @@ import {
 import { getEditor } from './hooks';
 import { ParticipantRole } from '../../../carbonio-ui-commons/constants/participants';
 import { getRootsMap } from '../../../carbonio-ui-commons/store/zustand/folder';
+import { convertHtmlToPlainText } from '../../../commons/utilities';
 import { LineType } from '../../../commons/utils';
 import { EditViewActions, NO_ACCOUNT_NAME } from '../../../constants';
 import {
@@ -31,7 +32,8 @@ import {
 	MailMessage,
 	MailsEditorV2,
 	UnsavedAttachment,
-	Participant
+	Participant,
+	EditorText
 } from '../../../types';
 import {
 	extractBody,
@@ -225,13 +227,14 @@ const generateReplyAndReplyAllMsgEditor = (
 		? from.forwardReplySignatureId
 		: defaultIdentity.forwardReplySignatureId;
 	const textWithSignature = getMailBodyWithSignature(text, signatureId);
+	const richText = replaceCidUrlWithServiceUrl(
+		`${textWithSignature.richText} ${generateReplyText(originalMessage, labels)[1]}`,
+		savedInlineAttachments
+	);
 
 	const textWithSignatureRepliesForwards = {
-		plainText: `${textWithSignature.plainText} ${generateReplyText(originalMessage, labels)[0]}`,
-		richText: replaceCidUrlWithServiceUrl(
-			`${textWithSignature.richText} ${generateReplyText(originalMessage, labels)[1]}`,
-			savedInlineAttachments
-		)
+		plainText: `${textWithSignature.plainText} ${convertHtmlToPlainText(generateReplyText(originalMessage, labels)[1])}`,
+		richText
 	};
 	const accountName = getAddressOwnerAccount(from.address) ?? NO_ACCOUNT_NAME;
 	const isRichText = getUserSettings().prefs?.zimbraPrefComposeFormat === 'html';
@@ -311,7 +314,7 @@ export const generateForwardMsgEditor = (
 		: defaultIdentity.forwardReplySignatureId;
 	const textWithSignature = getMailBodyWithSignature(text, signatureId);
 	const textWithSignatureRepliesForwards = {
-		plainText: `${textWithSignature.plainText} ${generateReplyText(originalMessage, labels)[0]}`,
+		plainText: `${textWithSignature.plainText} ${convertHtmlToPlainText(generateReplyText(originalMessage, labels)[1])}`,
 		richText: replaceCidUrlWithServiceUrl(
 			`${textWithSignature.richText} ${generateReplyText(originalMessage, labels)[1]}`,
 			savedAttachments
@@ -413,9 +416,13 @@ export const generateEditAsDraftEditor = (
 ): MailsEditorV2 => {
 	const editorId = uuid();
 	const savedAttachments = buildSavedAttachments(originalMessage);
-	const text = {
-		plainText: `${extractBody(originalMessage)[0]}`,
-		richText: replaceCidUrlWithServiceUrl(`${extractBody(originalMessage)[1]}`, savedAttachments)
+	const richText = replaceCidUrlWithServiceUrl(
+		`${extractBody(originalMessage)[1]}`,
+		savedAttachments
+	);
+	const text: EditorText = {
+		plainText: convertHtmlToPlainText(richText),
+		richText
 	};
 
 	const isRichText = getUserSettings().prefs?.zimbraPrefComposeFormat === 'html';
@@ -425,6 +432,8 @@ export const generateEditAsDraftEditor = (
 		action: EditViewActions.EDIT_AS_DRAFT,
 		identityId: (fromIdentity ?? getDefaultIdentity()).id,
 		id: editorId,
+		originalId: originalMessage.originalId,
+		replyType: originalMessage.replyType,
 		unsavedAttachments: [],
 		savedAttachments,
 		isRichText,
@@ -456,9 +465,13 @@ export const generateEditAsNewEditor = (
 	const editorId = uuid();
 	const savedAttachments = buildSavedAttachments(originalMessage);
 
+	const richText = replaceCidUrlWithServiceUrl(
+		`${extractBody(originalMessage)[1]}`,
+		savedAttachments
+	);
 	const text = {
-		plainText: `${extractBody(originalMessage)[0]}`,
-		richText: replaceCidUrlWithServiceUrl(`${extractBody(originalMessage)[1]}`, savedAttachments)
+		plainText: convertHtmlToPlainText(richText),
+		richText
 	};
 	const isRichText = getUserSettings().prefs?.zimbraPrefComposeFormat === 'html';
 	const fromParticipant = getFromParticipantFromMessage(originalMessage);
@@ -490,15 +503,6 @@ export const generateEditAsNewEditor = (
 	editor.sendAllowedStatus = computeSendAllowedStatus(editor);
 
 	return editor;
-};
-
-/**
- *
- * @param id
- */
-export const resumeEditor = (id: MailsEditorV2['id']): MailsEditorV2 | null => {
-	const editor = getEditor({ id });
-	return editor ?? null;
 };
 
 export type GenerateEditorParams = {

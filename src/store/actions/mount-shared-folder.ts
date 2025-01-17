@@ -3,12 +3,39 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { createAsyncThunk } from '@reduxjs/toolkit';
+
 import { ErrorSoapBodyResponse, soapFetch } from '@zextras/carbonio-shell-ui';
 
-import { CreateMountPointRequest, CreateMountpointResponse, MountpointSpecType } from '../../types';
+import { CreateMountpointError } from '../../api/errors/create-mountpoint-error';
+import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
+import { ISoapFolderObj } from '../../types';
 
-export type CreateMountpointDataType = {
+type MountpointSpecType = {
+	l?: string;
+	name: string;
+	zid?: string;
+	rid?: string;
+	view?: string;
+	color?: number;
+	rgb?: string;
+	url?: string;
+	fie?: boolean;
+	reminder?: boolean;
+	owner?: string;
+	path?: string;
+	f?: string;
+};
+
+export type CreateMountPointRequest = {
+	_jsns: 'urn:zimbraMail';
+	link: MountpointSpecType;
+};
+
+export type CreateMountpointResponse = {
+	link: ISoapFolderObj;
+};
+
+export type MountSharedFolderParams = {
 	zid: string;
 	view: string;
 	rid: string;
@@ -17,30 +44,30 @@ export type CreateMountpointDataType = {
 	accounts: Array<{ name: string }>;
 };
 
-export const mountSharedFolder = createAsyncThunk(
-	'mails/mountSharedFolder',
-	async (data: CreateMountpointDataType) => {
-		const request = {
-			_jsns: 'urn:zimbraMail' as const,
-			link: {
-				l: 1,
-				name: data.folderName,
-				zid: data.zid,
-				rid: data.rid,
-				view: data.view,
-				color: data.color,
-				f: '#'
-			} as MountpointSpecType
-		};
-		const response = await soapFetch<
-			CreateMountPointRequest,
-			CreateMountpointResponse & ErrorSoapBodyResponse
-		>('CreateMountpoint', request, data.accounts[0].name);
-
-		if (response.Fault) {
-			throw new Error(response.Fault.Detail.Error.Code);
+export const mountSharedFolder = async (
+	params: MountSharedFolderParams
+): Promise<ISoapFolderObj> => {
+	const request: CreateMountPointRequest = {
+		_jsns: 'urn:zimbraMail' as const,
+		link: {
+			l: FOLDERS.USER_ROOT,
+			name: params.folderName,
+			zid: params.zid,
+			rid: params.rid,
+			view: params.view,
+			color: params.color,
+			f: '#'
 		}
+	};
 
-		return { response };
+	const response = await soapFetch<
+		CreateMountPointRequest,
+		CreateMountpointResponse & ErrorSoapBodyResponse
+	>('CreateMountpoint', request, params.accounts[0].name);
+
+	if (response.Fault) {
+		throw new CreateMountpointError(response.Fault);
 	}
-);
+
+	return response.link;
+};

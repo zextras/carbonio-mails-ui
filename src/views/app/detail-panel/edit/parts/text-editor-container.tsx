@@ -11,10 +11,10 @@ import { useIntegratedComponent, useUserSettings } from '@zextras/carbonio-shell
 import type { TinyMCE } from 'tinymce/tinymce';
 
 import * as StyledComp from './edit-view-styled-components';
+import { plainTextToHTML } from '../../../../../commons/utils';
 import { useEditorIsRichText, useEditorText } from '../../../../../store/zustand/editor';
 import { MailsEditorV2 } from '../../../../../types';
 import { getFontSizesOptions, getFonts } from '../../../../settings/components/utils';
-import { plainTextToHTML } from '../../../../../commons/utils';
 
 export type TextEditorContent = { plainText: string; richText: string };
 
@@ -39,8 +39,8 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 	const { isRichText } = useEditorIsRichText(editorId);
 
 	const onTextChanged = useCallback(
-		(text: TextEditorContent): void => {
-			setText({ plainText: text.plainText, richText: text.richText });
+		(txt: TextEditorContent): void => {
+			setText({ plainText: txt.plainText, richText: txt.richText });
 		},
 		[setText]
 	);
@@ -63,7 +63,7 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 		ui_mode: 'split',
 		font_size_formats: fontSizesOptionsToString,
 		font_family_formats: fontsOptionsToString,
-		content_style: `p  {margin: 0;  color: ${defaultColor}; font-size: ${defaultFontSize}; font-family: ${defaultFontFamily}; }`,
+		content_style: `p  {margin: 0;} body {color: ${defaultColor}; font-size: ${defaultFontSize}; font-family: ${defaultFontFamily}; }`,
 		toolbar: [
 			'fontfamily fontsize styles visualblocks',
 			'bold italic underline strikethrough',

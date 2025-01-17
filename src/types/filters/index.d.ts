@@ -34,6 +34,10 @@ export type KeywordState = Array<{
 	fullName?: string;
 }>;
 
+export type SearchEmailValue = {
+	email: string;
+};
+
 export type FilterListType = {
 	active: boolean;
 	filterActions: Array<any>;

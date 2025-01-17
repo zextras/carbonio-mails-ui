@@ -5,10 +5,10 @@
  */
 import React, { lazy, Suspense, useMemo } from 'react';
 
-import { Spinner } from '@zextras/carbonio-shell-ui';
 import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom';
 
 import { ResizableContainer } from './resizable-container';
+import { Spinner } from '../assets/spinner';
 import { BORDERS, MAILS_VIEW_LAYOUTS, MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS } from '../constants';
 import { useViewLayout } from '../hooks/use-view-layout';
 

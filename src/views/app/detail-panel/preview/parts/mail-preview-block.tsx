@@ -56,7 +56,7 @@ export const MailPreviewBlock: FC<MailPreviewBlockType> = ({
 					padding={{ bottom: 'medium' }}
 				>
 					<Container background="gray6" orientation="horizontal" padding={{ all: 'small' }}>
-						<Row width="50%" display="flex" crossAlignment="center" mainAlignment="baseline">
+						<Row width="50%" display="flex" crossAlignment="center" mainAlignment="flex-start">
 							<Padding right="small">
 								<Icon icon="AlertCircleOutline" size="medium" />
 							</Padding>
