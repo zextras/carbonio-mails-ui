@@ -5,15 +5,16 @@
  */
 import { useCallback } from 'react';
 
-import { TFunction } from 'i18next';
+import { useSnackbar } from '@zextras/carbonio-design-system';
 import { concat, filter, findIndex } from 'lodash';
+import { useTranslation } from 'react-i18next';
 
 import { useUiUtilities } from '../../../../hooks/use-ui-utilities';
-import { FilterListType } from '../../../../types';
+import { Filter } from '../../../../types';
 
 export type ListType = {
 	isSelecting: boolean;
-	list: Array<FilterListType>;
+	list: Array<Filter>;
 	moveDown: (arg: number) => void;
 	moveUp: (arg: number) => void;
 	selected: Record<string, boolean>;
@@ -22,158 +23,84 @@ export type ListType = {
 };
 
 export type CompProps = {
-	t: TFunction;
 	availableList: ListType;
 	activeList: ListType;
-	setFilters: (arg: Array<FilterListType>) => void;
-	setFetchFilters: (arg: boolean) => void;
-	modifierFunc: (arg: FilterListType[]) => Promise<void>;
+	modifierFunc: (arg: Filter[]) => Promise<void>;
 };
 
 export type DeleteFilterCompProps = CompProps & {
 	onClose: () => void;
-	selectedFilter: FilterListType;
-	incomingFilters: FilterListType[];
-};
-
-export type DeleteOutgoingFilterCompProps = CompProps & {
-	onClose: () => void;
-	selectedFilter: FilterListType;
-	outgoingFilters: FilterListType[];
+	filterToDelete: Filter;
+	filters: Filter[];
 };
 
 export const useRemoveFilter = (): ((arg: CompProps) => void) => {
 	const { createSnackbar } = useUiUtilities();
+	const [t] = useTranslation();
 
 	return useCallback(
-		({
-			t,
-			activeList,
-			availableList,
-			setFilters,
-			setFetchFilters,
-			modifierFunc
-		}: CompProps): void => {
+		({ activeList, availableList, modifierFunc }: CompProps): void => {
 			const activeFiltersCopy = activeList?.list?.slice();
 			const availableFiltersCopy = availableList?.list?.slice();
-			const activeFilter = filter(activeFiltersCopy, { id: Object.keys(activeList.selected)[0] });
+			const activeFilter = filter(activeFiltersCopy, { name: Object.keys(activeList.selected)[0] });
 			const activeIndex = findIndex(activeFiltersCopy, activeFilter[0]);
 			activeFiltersCopy.splice(activeIndex, 1);
 			availableFiltersCopy.push({ ...activeFilter[0], active: false });
 			const newFilters = concat(activeFiltersCopy, availableFiltersCopy);
-			setFilters(newFilters);
 			activeList.unSelect();
 
-			modifierFunc(newFilters)
-				.then(() => {
-					setFetchFilters(true);
-				})
-				.catch((error) => {
-					createSnackbar({
-						key: `share`,
-						replace: true,
-						hideButton: true,
-						severity: 'error',
-						label:
-							error?.message ||
-							t('label.error_try_again', 'Something went wrong, please try again'),
-						autoHideTimeout: 5000
-					});
+			modifierFunc(newFilters).catch((error) => {
+				createSnackbar({
+					key: `share`,
+					replace: true,
+					hideButton: true,
+					severity: 'error',
+					label:
+						error?.message || t('label.error_try_again', 'Something went wrong, please try again'),
+					autoHideTimeout: 5000
 				});
+			});
 		},
-		[createSnackbar]
+		[createSnackbar, t]
 	);
 };
 
 export const useAddFilter = (): ((arg: CompProps) => void) => {
 	const { createSnackbar } = useUiUtilities();
+	const [t] = useTranslation();
+
 	return useCallback(
-		({
-			t,
-			activeList,
-			availableList,
-			setFilters,
-			setFetchFilters,
-			modifierFunc
-		}: CompProps): void => {
+		({ activeList, availableList, modifierFunc }: CompProps): void => {
 			const activeFiltersCopy = activeList?.list?.slice();
 			const availableFiltersCopy = availableList?.list?.slice();
 			const activeFilter = filter(availableFiltersCopy, {
-				id: Object.keys(availableList.selected)[0]
+				name: Object.keys(availableList.selected)[0]
 			});
 			const activeIndex = findIndex(availableFiltersCopy, activeFilter[0]);
 			availableFiltersCopy.splice(activeIndex, 1);
 			activeFiltersCopy.push({ ...activeFilter[0], active: true });
 			const newFilters = concat(activeFiltersCopy, availableFiltersCopy);
-			setFilters(newFilters);
 			availableList.unSelect();
-			modifierFunc(newFilters)
-				.then(() => {
-					setFetchFilters(true);
-				})
-				.catch((error: { message: string }) => {
-					createSnackbar({
-						key: 'filter-delete-error',
-						severity: 'error',
-						label:
-							error.message || t('label.error_try_again', 'Something went wrong, please try again'),
-						hideButton: true
-					});
+			modifierFunc(newFilters).catch((error: { message: string }) => {
+				createSnackbar({
+					key: 'filter-delete-error',
+					severity: 'error',
+					label:
+						error.message || t('label.error_try_again', 'Something went wrong, please try again'),
+					hideButton: true
 				});
+			});
 		},
-		[createSnackbar]
-	);
-};
-
-export const useDeleteOutgoingFilter = (): ((args: DeleteOutgoingFilterCompProps) => void) => {
-	const { createSnackbar } = useUiUtilities();
-	return useCallback(
-		({
-			t,
-			setFetchFilters,
-			modifierFunc,
-			onClose,
-			selectedFilter,
-			outgoingFilters
-		}: DeleteOutgoingFilterCompProps): void => {
-			const newFilters = filter(outgoingFilters, (f) => f.name !== selectedFilter.name);
-			modifierFunc(newFilters)
-				.then(() => {
-					createSnackbar({
-						key: 'filter-delete-success',
-						severity: 'info',
-						label: t('settings.filter_deleted', 'Filter successfully deleted'),
-						hideButton: true
-					});
-					setFetchFilters(true);
-				})
-				.catch((error: { message: any }) => {
-					createSnackbar({
-						key: 'filter-delete-error',
-						severity: 'error',
-						label:
-							error.message || t('label.error_try_again', 'Something went wrong, please try again'),
-						hideButton: true
-					});
-				});
-			onClose();
-		},
-		[createSnackbar]
+		[createSnackbar, t]
 	);
 };
 
 export const useDeleteFilter = (): ((args: DeleteFilterCompProps) => void) => {
-	const { createSnackbar } = useUiUtilities();
+	const createSnackbar = useSnackbar();
+	const [t] = useTranslation();
 	return useCallback(
-		({
-			t,
-			setFetchFilters,
-			modifierFunc,
-			onClose,
-			selectedFilter,
-			incomingFilters
-		}: DeleteFilterCompProps): void => {
-			const newFilters = filter(incomingFilters, (f) => f.name !== selectedFilter.name);
+		({ modifierFunc, onClose, filterToDelete, filters }: DeleteFilterCompProps): void => {
+			const newFilters = filter(filters, (f) => f.name !== filterToDelete.name);
 			modifierFunc(newFilters)
 				.then(() => {
 					createSnackbar({
@@ -182,7 +109,6 @@ export const useDeleteFilter = (): ((args: DeleteFilterCompProps) => void) => {
 						label: t('settings.filter_deleted', 'Filter successfully deleted'),
 						hideButton: true
 					});
-					setFetchFilters(true);
 				})
 				.catch((error: { message: string }) => {
 					createSnackbar({
@@ -195,6 +121,6 @@ export const useDeleteFilter = (): ((args: DeleteFilterCompProps) => void) => {
 				});
 			onClose();
 		},
-		[createSnackbar]
+		[createSnackbar, t]
 	);
 };

@@ -14,58 +14,104 @@ import React, {
 } from 'react';
 
 import { Checkbox, Container, Divider, Input, Padding, Row } from '@zextras/carbonio-design-system';
-import { useUserSettings } from '@zextras/carbonio-shell-ui';
-import { TFunction } from 'i18next';
-import { findIndex, forEach, isEqual, map, omit, reduce } from 'lodash';
+import { useUserSettings, BooleanString } from '@zextras/carbonio-shell-ui';
+import { forEach, isEqual, map, omit, reduce } from 'lodash';
+import { useTranslation } from 'react-i18next';
 import { v4 as uuidv4 } from 'uuid';
 
 import ModalHeader from '../../../../../carbonio-ui-commons/components/modals/modal-header';
-import { useUiUtilities } from '../../../../../hooks/use-ui-utilities';
-import { modifyFilterRules } from '../../../../../store/actions/modify-filter-rules';
-import type { FilterActions } from '../../../../../types';
+import type {
+	Filter,
+	ApiFilterAction,
+	AllFiltersTest,
+	FilterTest,
+	FilterActions
+} from '../../../../../types';
 import { capitalise } from '../../../../sidebar/utils';
 import { CreateFilterContext } from '../create-filter-context';
 import ModalFooter from '../create-filter-modal-footer';
 import DefaultCondition from '../create-filters-conditions/default';
-import FilterTestConditionRow from '../filter-test-condition-row';
+import { FilterActionsPanel } from '../filter-actions-panel';
+import { FilterConditionsPanel } from '../filter-conditions-panel';
 import { findRowKey, getTestComponent } from '../get-test-component';
-import FilterActionConditions from '../new-filter-action-conditions';
 import { getButtonInfo } from '../utils';
 
-type FilterType = {
-	active: boolean;
-	filterActions: Array<any>;
-	filterTests: Array<Record<string, any>>;
-	id: string;
-	name: string;
-};
-type ComponentProps = {
-	t: TFunction;
+type ModifyFilterModalProps = {
 	onClose: () => void;
-	incomingFilters?: any;
-	setFetchIncomingFilters: (arg: boolean) => void;
-	setIncomingFilters: (arg: any) => void;
-	selectedFilter: FilterType | any;
+	onModifyConfirm: (modifiedFilter: Filter) => void;
+	selectedFilter: Filter;
+	isIncoming: boolean;
 };
 
-const ModifyFilterModal: FC<ComponentProps> = ({
-	t,
+export const ModifyFilterModal: FC<ModifyFilterModalProps> = ({
 	onClose,
-	incomingFilters,
-	setFetchIncomingFilters,
-	setIncomingFilters,
-	selectedFilter
+	onModifyConfirm,
+	selectedFilter,
+	isIncoming
 }): ReactElement => {
+	const [t] = useTranslation();
 	const [filterName, setFilterName] = useState('');
 	const [activeFilter, setActiveFilter] = useState(false);
 	const [condition, setCondition] = useState('anyof');
 	const [dontProcessAddFilters, setDontProcessAddFilters] = useState(true);
-	const [tempActions, setTempActions] = useState([{ actionKeep: [{}], id: uuidv4() }]);
+
+	const initialActions = useMemo((): FilterActions => {
+		if (selectedFilter) {
+			const actions: FilterActions = [];
+			const filterActions = selectedFilter?.filterActions?.[0];
+
+			const filterActionsKeys: Array<keyof ApiFilterAction> = Object.keys(filterActions) as Array<
+				keyof ApiFilterAction
+			>;
+
+			forEach(filterActionsKeys, (key) => {
+				switch (key) {
+					case 'actionTag':
+						filterActions.actionTag?.forEach((value) => {
+							actions.push({ actionTag: [{ ...omit(value, 'index') }] });
+						});
+						break;
+					case 'actionFlag':
+						filterActions.actionFlag?.forEach((value) => {
+							actions.push({ actionFlag: [{ ...omit(value, 'index') }] });
+						});
+						break;
+					case 'actionRedirect':
+						filterActions.actionRedirect?.forEach((value) => {
+							actions.push({ actionRedirect: [{ ...omit(value, 'index') }] });
+						});
+						break;
+					case 'actionFileInto':
+						filterActions.actionFileInto?.forEach((value) => {
+							actions.push({ actionFileInto: [{ ...omit(value, 'index') }] });
+						});
+						break;
+					case 'actionKeep':
+						filterActions.actionKeep?.forEach((value) => {
+							actions.push({ actionKeep: [{ ...omit(value, 'index') }] });
+						});
+						break;
+					case 'actionDiscard':
+						filterActions.actionDiscard?.forEach((value) => {
+							actions.push({ actionDiscard: [{ ...omit(value, 'index') }] });
+						});
+						break;
+					default:
+						break;
+				}
+			});
+
+			return actions;
+		}
+		return [{ actionKeep: [{}], id: uuidv4() }];
+	}, [selectedFilter]);
+
+	const [tempActions, setTempActions] = useState(initialActions);
 	const [copyRequiredFilters, setCopyRequiredFilters] = useState({});
 	const [reFetch, setReFetch] = useState(false);
 	const [updateRequiredFilters, setUpdateRequiredFilters] = useState(true);
-	const { zimbraFeatureMailForwardingInFiltersEnabled } = useUserSettings().attrs;
-	const { createSnackbar } = useUiUtilities();
+	const zimbraFeatureMailForwardingInFiltersEnabled = useUserSettings().attrs
+		.zimbraFeatureMailForwardingInFiltersEnabled as BooleanString;
 
 	const [newFilters, setNewFilters] = useState([
 		{
@@ -89,8 +135,6 @@ const ModifyFilterModal: FC<ComponentProps> = ({
 		() => `${t('label.edit', 'Edit')} ${selectedFilter?.name}`,
 		[t, selectedFilter?.name]
 	);
-	const inputLabel = useMemo(() => `${t('settings.filter_name', 'Filter Name')}*`, [t]);
-	const activeFilterLabel = useMemo(() => t('settings.active_filter', 'Active filter'), [t]);
 
 	const requiredFilterTest = useMemo(() => {
 		const allTest = map(newFilters, (f) => f.filterTests[0]);
@@ -114,38 +158,39 @@ const ModifyFilterModal: FC<ComponentProps> = ({
 		() =>
 			reduce(
 				tempActions,
-				(acc, i) => {
-					const firstKey = Object.keys(omit(i, 'id'))[0];
-					if (Object.keys(acc).includes(firstKey)) {
+				(acc, action) => {
+					const firstActionKey = Object.keys(omit(action, 'id'))[0];
+					if (Object.keys(acc).includes(firstActionKey)) {
 						const accWithoutId = omit(acc, 'id');
-						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-						// @ts-ignore
-						return { ...accWithoutId, [firstKey]: [...accWithoutId[firstKey], ...i[firstKey]] };
+						return {
+							...accWithoutId,
+							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+							// @ts-ignore
+							[firstActionKey]: [...accWithoutId[firstActionKey], ...action[firstActionKey]]
+						};
 					}
-					return { ...acc, ...i };
+					return { ...acc, ...action };
 				},
 				{}
 			),
 		[tempActions]
 	);
-
 	const requiredFilters = useMemo(
 		() => ({
 			filterActions: dontProcessAddFilters
-				? ([{ ...omit(finalActions, 'id'), actionStop: [{}] }] as FilterActions[])
-				: ([{ ...omit(finalActions, 'id') }] as FilterActions[]),
+				? ([{ ...omit(finalActions, 'id'), actionStop: [{}] }] as FilterActions)
+				: ([{ ...omit(finalActions, 'id') }] as FilterActions),
 			active: activeFilter,
 			name: filterName,
 			filterTests: [
 				{
 					...requiredFilterTest,
 					condition
-				}
+				} as AllFiltersTest
 			]
 		}),
 		[activeFilter, filterName, condition, requiredFilterTest, dontProcessAddFilters, finalActions]
 	);
-
 	const [createFilterDisabled, buttonTooltip] = useMemo(() => {
 		if (isEqual(copyRequiredFilters, requiredFilters)) {
 			return [true, t('settings.label.not_changed_anything', 'No change was made')];
@@ -153,27 +198,32 @@ const ModifyFilterModal: FC<ComponentProps> = ({
 		return getButtonInfo(filterName, requiredFilters, t, false);
 	}, [copyRequiredFilters, filterName, requiredFilters, t]);
 
-	const incomingFiltersCopy = useMemo(() => incomingFilters?.slice(), [incomingFilters]);
-
 	const toggleCheckBox = useCallback(() => {
 		setDontProcessAddFilters((prev) => !prev);
 	}, []);
 
 	useLayoutEffect(() => {
-		setDontProcessAddFilters(!!selectedFilter.filterActions[0]?.actionStop);
-	}, [selectedFilter.filterActions]);
+		setDontProcessAddFilters(!!selectedFilter?.filterActions[0]?.actionStop);
+	}, [selectedFilter?.filterActions]);
 
 	const filterActionProps = useMemo(
 		() => ({
 			t,
 			activeFilter,
 			filterName,
-			isIncoming: true,
+			isIncoming,
 			tempActions,
 			setTempActions,
 			zimbraFeatureMailForwardingInFiltersEnabled
 		}),
-		[t, activeFilter, filterName, tempActions, zimbraFeatureMailForwardingInFiltersEnabled]
+		[
+			t,
+			activeFilter,
+			filterName,
+			isIncoming,
+			tempActions,
+			zimbraFeatureMailForwardingInFiltersEnabled
+		]
 	);
 	const filterTestConditionRowProps = useMemo(
 		() => ({
@@ -203,18 +253,6 @@ const ModifyFilterModal: FC<ComponentProps> = ({
 			setFilterName(selectedFilter?.name);
 			setActiveFilter(selectedFilter?.active);
 			setCondition(selectedFilter?.filterTests?.[0]?.condition);
-			const previousActions = (): Array<any> => {
-				const actions: Array<any> = [];
-				forEach(selectedFilter?.filterActions?.[0], (value, key) => {
-					if (key !== 'actionStop') {
-						forEach(value, (val) => {
-							actions.push({ [key]: [{ ...omit(val, 'index') }], id: uuidv4() });
-						});
-					}
-				});
-				return actions;
-			};
-			setTempActions(previousActions);
 		}
 	}, [selectedFilter]);
 
@@ -234,9 +272,13 @@ const ModifyFilterModal: FC<ComponentProps> = ({
 	}, [selectedFilter, setCopyOfFilter, updateRequiredFilters]);
 
 	const previousFilterTests = useMemo(() => {
-		const tempTests: Array<any> = [];
-		forEach(selectedFilter?.filterTests?.[0], (value, key) => {
+		const tempTests: Array<FilterTest> = [];
+		const filterTest = selectedFilter?.filterTests?.[0];
+		if (!filterTest) return tempTests;
+		const keys = Object.keys(filterTest) as Array<keyof AllFiltersTest>;
+		forEach(keys, (key) => {
 			if (key !== 'condition') {
+				const value = filterTest[key];
 				map(value, (test) => {
 					tempTests.push({ ...test, testName: key });
 				});
@@ -279,50 +321,6 @@ const ModifyFilterModal: FC<ComponentProps> = ({
 		if (reFetch) setReFetch(false);
 	}, [modifiedNewFilters, reFetch]);
 
-	const onConfirm = useCallback(() => {
-		const selectedFilterIndex = findIndex(
-			incomingFiltersCopy,
-			(filterCopy: any) => filterCopy.name === selectedFilter?.name
-		);
-		const toSend = incomingFiltersCopy.slice();
-		toSend[selectedFilterIndex] = requiredFilters;
-		setIncomingFilters(toSend);
-
-		modifyFilterRules(toSend)
-			.then(() => {
-				setFetchIncomingFilters(true);
-				createSnackbar({
-					key: `share`,
-					replace: true,
-					hideButton: true,
-					severity: 'info',
-					label: t('label.filter_modified', 'Filter modified succesfully'),
-					autoHideTimeout: 5000
-				});
-			})
-			.catch((error) => {
-				createSnackbar({
-					key: `share`,
-					replace: true,
-					hideButton: true,
-					severity: 'error',
-					label:
-						error?.message || t('label.error_try_again', 'Something went wrong, please try again'),
-					autoHideTimeout: 5000
-				});
-			});
-		onClose();
-	}, [
-		incomingFiltersCopy,
-		requiredFilters,
-		setIncomingFilters,
-		onClose,
-		selectedFilter?.name,
-		setFetchIncomingFilters,
-		createSnackbar,
-		t
-	]);
-
 	return (
 		<CreateFilterContext.Provider value={{ newFilters, setNewFilters }}>
 			<Container
@@ -334,13 +332,17 @@ const ModifyFilterModal: FC<ComponentProps> = ({
 			>
 				<ModalHeader title={modalTitle} onClose={onClose} />
 				<Input
-					label={inputLabel}
+					label={`${t('settings.filter_name', 'Filter Name')}*`}
 					value={filterName}
 					onChange={onFilterNameChange}
-					backgroundColor="gray5"
+					background="gray5"
 				/>
 				<Padding top="small" />
-				<Checkbox value={activeFilter} onClick={toggleActiveFilter} label={activeFilterLabel} />
+				<Checkbox
+					value={activeFilter}
+					onClick={toggleActiveFilter}
+					label={t('settings.active_filter', 'Active filter')}
+				/>
 				<Row
 					padding={{ vertical: 'medium' }}
 					height="fit"
@@ -352,15 +354,15 @@ const ModifyFilterModal: FC<ComponentProps> = ({
 					maxWidth="100%"
 					width="100%"
 				>
-					<FilterTestConditionRow compProps={filterTestConditionRowProps} />
+					<FilterConditionsPanel compProps={filterTestConditionRowProps} />
 					<Padding top="medium" />
 					<Divider />
-					<FilterActionConditions compProps={filterActionProps} />
+					<FilterActionsPanel compProps={filterActionProps} />
 				</Row>
 				<ModalFooter
 					label={t('label.save', 'Save')}
 					toolTipText={buttonTooltip}
-					onConfirm={onConfirm}
+					onConfirm={(): void => onModifyConfirm(requiredFilters)}
 					disabled={createFilterDisabled}
 					onSecondaryAction={toggleCheckBox}
 					checked={dontProcessAddFilters}
@@ -373,5 +375,3 @@ const ModifyFilterModal: FC<ComponentProps> = ({
 		</CreateFilterContext.Provider>
 	);
 };
-
-export default ModifyFilterModal;

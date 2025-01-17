@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-use-before-define */
 /*
  * SPDX-FileCopyrightText: 2023 Zextras <https://www.zextras.com>
  *
@@ -5,9 +6,8 @@
  */
 import React from 'react';
 
-import { faker } from '@faker-js/faker';
 import { act, screen, within } from '@testing-library/react';
-import { t } from '@zextras/carbonio-shell-ui';
+import { UserEvent } from '@testing-library/user-event';
 
 import { populateFoldersStore } from '../../../../../carbonio-ui-commons/test/mocks/store/folders';
 import {
@@ -17,125 +17,91 @@ import {
 import { generateStore } from '../../../../../tests/generators/store';
 import CreateFilterModal from '../create-filter-modal';
 
-describe('create-filter-modal', () => {
-	test('create filter add filter name and by default it will be deactive', async () => {
-		const closeModal = jest.fn();
-		const store = generateStore();
-
-		const { user } = setupTest(<CreateFilterModal t={t} onClose={(): void => closeModal()} />, {
-			store
-		});
-
-		expect(screen.getByTestId('filter-name')).toBeInTheDocument();
-		const filterName = screen.getByTestId('filter-name');
-		const name = faker.lorem.word();
-		const filterInputElement = within(filterName).getByRole('textbox');
-		await user.clear(filterInputElement);
-
-		// Insert the new filter name into the text input
-		await act(() => user.type(filterInputElement, name));
-
-		const filterActiveUnChecked = within(screen.getByTestId('active-filter')).getByTestId(
-			'icon: Square'
-		);
-		expect(filterActiveUnChecked).toBeInTheDocument();
-		await act(() => user.click(filterActiveUnChecked));
-
-		const filterActiveChecked = within(screen.getByTestId('active-filter')).getByTestId(
-			'icon: CheckmarkSquare'
-		);
-
-		expect(filterActiveChecked).toBeInTheDocument();
+const addAction = async (user: UserEvent): Promise<void> => {
+	await user.click(within(screen.getByTestId('actions-panel')).getByTestId('icon: PlusOutline'));
+};
+const addCondition = async (user: UserEvent): Promise<void> => {
+	await user.click(
+		within(screen.getByTestId('filter-conditions')).getByTestId('icon: PlusOutline')
+	);
+};
+const fillFilterName = async (user: UserEvent, filterName: string): Promise<void> => {
+	const filterInputElement = screen.getByRole('textbox', {
+		name: 'Filter Name*'
 	});
+	await user.type(filterInputElement, filterName);
+};
 
-	test('create button will be disable and enabled once filter name added', async () => {
-		const closeModal = jest.fn();
-		const store = generateStore();
-
-		const { user } = setupTest(<CreateFilterModal t={t} onClose={(): void => closeModal()} />, {
-			store
-		});
+describe('create filter modal', () => {
+	test('create button is disabled when filter name is empty', async () => {
+		setupCreateFilterModal();
 
 		const createButton = screen.getByRole('button', {
-			name: /label\.create/i
+			name: 'Create'
 		});
 		expect(createButton).toBeDisabled();
-		expect(screen.getByTestId('filter-name')).toBeInTheDocument();
-		const filterName = screen.getByTestId('filter-name');
-		const name = faker.lorem.word();
-		const filterInputElement = within(filterName).getByRole('textbox');
-		await user.clear(filterInputElement);
+	});
+	test('create button is enabled only when filter name is added', async () => {
+		const { user } = setupCreateFilterModal();
+		const filterInputElement = screen.getByRole('textbox', {
+			name: 'Filter Name*'
+		});
+		await user.type(filterInputElement, 'My filter');
 
-		// Insert the new filter name into the text input
-		await user.type(filterInputElement, name);
-
-		// filter name added so now create button should be enabled
+		const createButton = screen.getByRole('button', {
+			name: 'Create'
+		});
 		expect(createButton).toBeEnabled();
 	});
 
-	test('create filter add filter name and add condition', async () => {
-		const closeModal = jest.fn();
-		const store = generateStore();
-
-		const { user } = setupTest(<CreateFilterModal t={t} onClose={(): void => closeModal()} />, {
-			store
-		});
-
-		expect(screen.getByTestId('filter-name')).toBeInTheDocument();
-		const filterName = screen.getByTestId('filter-name');
-		const name = faker.lorem.word();
-		const filterInputElement = within(filterName).getByRole('textbox');
-		await act(() => user.clear(filterInputElement));
-
-		// Insert the new filter name into the text input
-		await act(() => user.type(filterInputElement, name));
+	test('"Active filter" is unchecked by default', async () => {
+		setupCreateFilterModal();
 
 		const filterActiveUnChecked = within(screen.getByTestId('active-filter')).getByTestId(
 			'icon: Square'
 		);
-		expect(filterActiveUnChecked).toBeInTheDocument();
+		expect(filterActiveUnChecked).toBeVisible();
+	});
+	test('clicking "Active filter" should check the checkbox', async () => {
+		const { user } = setupCreateFilterModal();
+
+		const filterActiveUnChecked = within(screen.getByTestId('active-filter')).getByTestId(
+			'icon: Square'
+		);
 		await act(() => user.click(filterActiveUnChecked));
 
 		const filterActiveChecked = within(screen.getByTestId('active-filter')).getByTestId(
 			'icon: CheckmarkSquare'
 		);
-		expect(filterActiveChecked).toBeInTheDocument();
-		act(() => {
-			jest.advanceTimersByTime(5000);
-		});
-
-		const fieldLabel = screen.getByText(/settings\.field/i);
-		expect(fieldLabel).toBeInTheDocument();
-
-		await act(() => user.click(fieldLabel));
-
-		const fieldAnyOption = within(screen.getByTestId('dropdown-popper-list')).getByText(
-			/label\.any/i
-		);
-		const fieldAllOption = within(screen.getByTestId('dropdown-popper-list')).getByText(
-			/label\.all/i
-		);
-		expect(fieldAnyOption).toBeInTheDocument();
-		expect(fieldAllOption).toBeInTheDocument();
-
-		const createButton = screen.getByRole('button', {
-			name: /label\.create/i
-		});
-		expect(createButton).toBeEnabled();
+		expect(filterActiveChecked).toBeVisible();
 	});
 
-	test('junk folder is selectable', async () => {
+	test('Filter conditions should be visible', async () => {
+		const { user } = setupCreateFilterModal();
+
+		await user.click(screen.getByText('Field'));
+
+		const fieldAnyOption = within(screen.getByTestId('dropdown-popper-list')).getByText('any');
+		const fieldAllOption = within(screen.getByTestId('dropdown-popper-list')).getByText('all');
+		expect(fieldAnyOption).toBeInTheDocument();
+		expect(fieldAllOption).toBeInTheDocument();
+	});
+
+	test('Move into folder action allows selecting junk folder', async () => {
 		const closeModal = jest.fn();
 		const store = generateStore();
 		populateFoldersStore();
-		const { user } = setupTest(<CreateFilterModal t={t} onClose={(): void => closeModal()} />, {
-			store
-		});
-		await user.click(screen.getByText(/settings\.keep_in_inbox/i));
+		const { user } = setupTest(
+			<CreateFilterModal onClose={(): void => closeModal()} onConfirm={jest.fn()} isIncoming />,
+			{
+				store
+			}
+		);
+		await user.click(screen.getByText('Keep in Inbox'));
 
-		await user.click(screen.getByText(/settings\.move_into_folder/i));
+		await user.click(screen.getByText('Move Into Folder'));
 		const button = screen.getByRole('button', {
-			name: /settings\.browse/i
+			name: 'Browse'
 		});
 		await act(async () => {
 			await user.click(button);
@@ -147,4 +113,380 @@ describe('create-filter-modal', () => {
 		});
 		expect(screen.getByText(/junk/i)).toBeVisible();
 	});
+
+	it('should call onConfirm with the new filter when clicking create button', async () => {
+		const onConfirm = jest.fn();
+		const { user } = setupCreateFilterModal({ onConfirm });
+
+		const filterInputElement = screen.getByRole('textbox', {
+			name: 'Filter Name*'
+		});
+		await user.type(filterInputElement, 'My filter');
+
+		const createButton = screen.getByRole('button', {
+			name: 'Create'
+		});
+		await user.click(createButton);
+		expect(onConfirm).toHaveBeenCalledWith({
+			active: false,
+			name: 'My filter',
+			filterActions: [{ actionKeep: [{}], actionStop: [{}] }],
+			filterTests: [{ condition: 'anyof' }]
+		});
+	});
+	describe('onConfirm', () => {
+		it('should create an "Active" filter', async () => {
+			const onConfirm = jest.fn();
+			const { user } = setupCreateFilterModal({ onConfirm });
+			const filterInputElement = screen.getByRole('textbox', {
+				name: 'Filter Name*'
+			});
+			await user.type(filterInputElement, 'My filter');
+			const filterActiveUnChecked = within(screen.getByTestId('active-filter')).getByTestId(
+				'icon: Square'
+			);
+			await act(() => user.click(filterActiveUnChecked));
+
+			const createButton = screen.getByRole('button', {
+				name: 'Create'
+			});
+			await user.click(createButton);
+
+			expect(onConfirm).toHaveBeenCalledWith(expect.objectContaining({ active: true }));
+		});
+		describe('Mark As', () => {
+			it(' should create a filter with "read" when selecting Mark As by default', async () => {
+				const onConfirm = jest.fn();
+				const { user } = setupCreateFilterModal({ onConfirm });
+
+				await fillFilterName(user, 'any name');
+				const keepInInboxAction = screen.getByText('Keep in Inbox');
+				await user.click(keepInInboxAction);
+				await user.click(screen.getByText('Mark as'));
+
+				const createButton = screen.getByRole('button', {
+					name: 'Create'
+				});
+				await user.click(createButton);
+
+				expect(onConfirm).toHaveBeenCalledWith(
+					expect.objectContaining({
+						filterActions: [{ actionFlag: [{ flagName: 'read' }], actionStop: [{}] }]
+					})
+				);
+			});
+			it('should display option "read" when switching to "Mark as" action', async () => {
+				const { user } = setupCreateFilterModal();
+
+				const keepInInboxAction = screen.getByText('Keep in Inbox');
+				await user.click(keepInInboxAction);
+				await user.click(screen.getByText('Mark as'));
+
+				expect(screen.getByText('Read')).toBeVisible();
+			});
+			it('should create a filter with Mark As action Flagged', async () => {
+				const onConfirm = jest.fn();
+				const { user } = setupCreateFilterModal({ onConfirm });
+
+				await fillFilterName(user, 'any name');
+				await user.click(screen.getByText('Keep in Inbox'));
+				await user.click(screen.getByText('Mark as'));
+				await user.click(screen.getByText('Read'));
+				await user.click(screen.getByText('Flagged'));
+
+				const createButton = screen.getByRole('button', {
+					name: 'Create'
+				});
+				await user.click(createButton);
+
+				expect(onConfirm).toHaveBeenCalledWith(
+					expect.objectContaining({
+						filterActions: [
+							{
+								actionFlag: [
+									{
+										flagName: 'flagged'
+									}
+								],
+								actionStop: [{}]
+							}
+						]
+					})
+				);
+			});
+			it('should create a filter with Mark As and Redirect To actions', async () => {
+				const onConfirm = jest.fn();
+				const { user } = setupCreateFilterModal({ onConfirm });
+
+				await fillFilterName(user, 'any name');
+				await user.click(screen.getByText('Keep in Inbox'));
+				await user.click(screen.getByText('Mark as'));
+				await user.click(screen.getByText('Read'));
+				await user.click(screen.getByText('Flagged'));
+				await addAction(user);
+				await user.click(screen.getByText('Keep in Inbox'));
+				await user.click(screen.getByText('Redirect to address'));
+				const redirectToAddressInput = await screen.findByTestId('filter-action-row-contact-input');
+				await user.type(redirectToAddressInput, 'redirectTo@email.com');
+				await user.type(redirectToAddressInput, '[Enter]');
+				const createButton = screen.getByRole('button', {
+					name: 'Create'
+				});
+				await user.click(createButton);
+
+				expect(onConfirm).toHaveBeenCalledWith(
+					expect.objectContaining({
+						filterActions: [
+							{
+								actionFlag: [
+									{
+										flagName: 'flagged'
+									}
+								],
+								actionRedirect: [
+									{
+										a: 'redirectTo@email.com'
+									}
+								],
+								actionStop: [{}]
+							}
+						]
+					})
+				);
+			});
+		});
+
+		it('should create a filter with "from" condition', async () => {
+			const onConfirm = jest.fn();
+			const { user } = setupCreateFilterModal({ onConfirm });
+
+			await fillFilterName(user, 'any name');
+			await user.click(screen.getByText('Subject'));
+			await user.click(screen.getByText('From'));
+			await user.type(
+				screen.getByRole('textbox', {
+					name: 'Keyword'
+				}),
+				'anyemail'
+			);
+			const createButton = screen.getByRole('button', {
+				name: 'Create'
+			});
+			await user.click(createButton);
+
+			expect(onConfirm).toHaveBeenCalledWith(
+				expect.objectContaining({
+					filterTests: [
+						{
+							addressTest: [
+								{
+									header: 'from',
+									part: 'all',
+									stringComparison: 'contains',
+									value: 'anyemail'
+								}
+							],
+							condition: 'anyof'
+						}
+					]
+				})
+			);
+		});
+
+		it('should create a filter with multiple "from" condition', async () => {
+			const onConfirm = jest.fn();
+			const { user } = setupCreateFilterModal({ onConfirm });
+
+			await fillFilterName(user, 'any name');
+			await user.click(screen.getByText('Subject'));
+			await user.click(screen.getByText('From'));
+			await user.type(
+				screen.getByRole('textbox', {
+					name: 'Keyword'
+				}),
+				'anyemail'
+			);
+			await addCondition(user);
+			await user.click(screen.getByText('Subject'));
+			await user.click(within(screen.getByTestId('dropdown-popper-list')).getByText('From'));
+			await user.type(
+				screen.getAllByRole('textbox', {
+					name: 'Keyword'
+				})[1],
+				'anotheremail'
+			);
+			await user.click(
+				screen.getByRole('button', {
+					name: 'Create'
+				})
+			);
+
+			expect(onConfirm).toHaveBeenCalledWith(
+				expect.objectContaining({
+					filterTests: [
+						{
+							addressTest: [
+								{
+									header: 'from',
+									part: 'all',
+									stringComparison: 'contains',
+									value: 'anyemail'
+								},
+								{
+									header: 'from',
+									part: 'all',
+									stringComparison: 'contains',
+									value: 'anotheremail'
+								}
+							],
+							condition: 'anyof'
+						}
+					]
+				})
+			);
+		});
+
+		it('should create a filter with multiple different condition', async () => {
+			const onConfirm = jest.fn();
+			const { user } = setupCreateFilterModal({ onConfirm });
+
+			await fillFilterName(user, 'any name');
+			await user.click(screen.getByText('Subject'));
+			await user.click(screen.getByText('From'));
+			await user.type(
+				screen.getByRole('textbox', {
+					name: 'Keyword'
+				}),
+				'anyemail'
+			);
+			await addCondition(user);
+			await user.type(
+				screen.getAllByRole('textbox', {
+					name: 'Keyword'
+				})[1],
+				'anothervalue'
+			);
+			await user.click(
+				screen.getByRole('button', {
+					name: 'Create'
+				})
+			);
+
+			expect(onConfirm).toHaveBeenCalledWith(
+				expect.objectContaining({
+					filterTests: [
+						{
+							addressTest: [
+								{
+									header: 'from',
+									part: 'all',
+									stringComparison: 'contains',
+									value: 'anyemail'
+								}
+							],
+							headerTest: [
+								{
+									header: 'subject',
+									stringComparison: 'contains',
+									value: 'anothervalue'
+								}
+							],
+							condition: 'anyof'
+						}
+					]
+				})
+			);
+		});
+
+		it('should create a filter without the action removed by clicking MinusOutline', async () => {
+			const onConfirm = jest.fn();
+			const { user } = setupCreateFilterModal({ onConfirm });
+
+			await fillFilterName(user, 'any name');
+			await user.click(screen.getByText('Subject'));
+			await user.click(screen.getByText('From'));
+			await user.type(
+				screen.getByRole('textbox', {
+					name: 'Keyword'
+				}),
+				'anyemail'
+			);
+			await addCondition(user);
+			await user.type(
+				screen.getAllByRole('textbox', {
+					name: 'Keyword'
+				})[1],
+				'anothervalue'
+			);
+			await user.click(
+				within(screen.getByTestId('filter-conditions')).getAllByTestId('icon: MinusOutline')[1]
+			);
+			await user.click(
+				screen.getByRole('button', {
+					name: 'Create'
+				})
+			);
+
+			expect(onConfirm).toHaveBeenCalledWith(
+				expect.objectContaining({
+					filterTests: [
+						{
+							addressTest: [
+								{
+									header: 'from',
+									part: 'all',
+									stringComparison: 'contains',
+									value: 'anyemail'
+								}
+							],
+							condition: 'anyof'
+						}
+					]
+				})
+			);
+		});
+
+		it('should create a filter without action stop if "Do not process additional filter" checkbox is disabled', async () => {
+			const onConfirm = jest.fn();
+			const { user } = setupCreateFilterModal({ onConfirm });
+
+			await fillFilterName(user, 'My Filter');
+			await user.click(screen.getByTestId('checkbox'));
+			await user.click(
+				screen.getByRole('button', {
+					name: 'Create'
+				})
+			);
+
+			expect(onConfirm).toHaveBeenCalledWith({
+				active: false,
+				name: 'My Filter',
+				filterActions: [expect.not.objectContaining({ actionStop: [{}] })],
+				filterTests: [{ condition: 'anyof' }]
+			});
+		});
+		// TODO
+		// test('isIncoming should define if outgoing or incoming filters should be handled', async () => {
+		// 	const closeModal = jest.fn();
+		// 	const store = generateStore();
+		// 	populateFoldersStore();
+		// 	const { user } = setupTest(
+		// 		<CreateFilterModal onClose={(): void => closeModal()} onConfirm={jest.fn()} isIncoming />,
+		// 		{
+		// 			store
+		// 		}
+		// 	);
+		// });
+	});
 });
+
+const setupCreateFilterModal = ({
+	onConfirm = jest.fn()
+}: {
+	onConfirm?: () => void;
+} = {}): ReturnType<typeof setupTest> => {
+	const store = generateStore();
+	return setupTest(<CreateFilterModal onClose={jest.fn()} onConfirm={onConfirm} isIncoming />, {
+		store
+	});
+};
