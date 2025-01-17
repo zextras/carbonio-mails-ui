@@ -5,9 +5,12 @@
  */
 
 import React, { FC, ReactElement, useCallback, useMemo } from 'react';
+
 import { Container, Text, Row, Select, SelectItem } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import { find } from 'lodash';
+
+import { PRIMARY_IDENTITY_NAME } from '../../../helpers/identities';
 import { NO_SIGNATURE_ID, NO_SIGNATURE_LABEL } from '../../../helpers/signatures';
 import type { AccountIdentity, IdentityProps, SignItemType } from '../../../types';
 
@@ -62,6 +65,11 @@ const SelectIdentitySignature: FC<SelectIdentitySignProps> = ({
 		]
 	);
 
+	const accountName =
+		acc.name === PRIMARY_IDENTITY_NAME
+			? t('settings.label.default', PRIMARY_IDENTITY_NAME)
+			: acc.name;
+
 	return (
 		<Row width="100%" padding={{ horizontal: 'small', vertical: 'small' }}>
 			<Container
@@ -70,7 +78,7 @@ const SelectIdentitySignature: FC<SelectIdentitySignProps> = ({
 				crossAlignment="flex-start"
 				padding={{ right: 'medium' }}
 			>
-				<Text>{acc.name}</Text>
+				<Text>{accountName}</Text>
 			</Container>
 			<Container width="40%" padding={{ right: 'medium' }}>
 				<Select
