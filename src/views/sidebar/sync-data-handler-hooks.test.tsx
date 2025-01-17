@@ -375,4 +375,22 @@ describe('sync data handler', () => {
 			);
 		});
 	});
+
+	describe('tags', () => {
+		test('it will invoke the tags worker when a notify is received', async () => {
+			useTagStore.setState({ tags: {} });
+			const notify = { deleted: ['1'], seq: 0 };
+			mockSoapDelete(mailboxNumber, ['1']);
+			const workerSpy = jest.spyOn(tagsWorker, 'postMessage');
+			mockSoapRefresh(mailboxNumber);
+			renderHook(() => useSyncDataHandler(), {
+				wrapper: getWrapper()
+			});
+
+			expect(workerSpy).toHaveBeenCalledTimes(1);
+			expect(workerSpy).toHaveBeenCalledWith(
+				expect.objectContaining({ op: 'notify', notify, state: expect.any(Object) })
+			);
+		});
+	});
 });
