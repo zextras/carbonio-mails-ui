@@ -19,7 +19,7 @@ import Heading from '../../components/settings-heading';
 
 type MessageFilterProps = {
 	getFilters: () => Promise<FilterRulesAPIResponse>;
-	saveFilters: (filters: Array<any>) => Promise<void>;
+	saveFilters: (filters: Array<Filter>) => Promise<void>;
 	FilterActionsComponent: (props: FilterActionProps) => React.JSX.Element;
 };
 export const MessageFilterTab = ({
