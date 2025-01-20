@@ -40,7 +40,9 @@ describe('Incoming Filters', () => {
 			setupTest(<IncomingFiltersTab />);
 			await getIncomingFiltersInterceptor;
 
-			expect(screen.getByRole('button', { name: 'Apply' })).toBeVisible();
+			await act(async () => {
+				expect(screen.getByRole('button', { name: 'Apply' })).toBeVisible();
+			});
 		});
 
 		it('should disable apply filter if no filter is selected', async () => {
@@ -51,7 +53,10 @@ describe('Incoming Filters', () => {
 			await getIncomingFiltersInterceptor;
 
 			const applyFilterBtn = await screen.findByRole('button', { name: 'Apply' });
-			expect(applyFilterBtn).toBeDisabled();
+
+			await act(async () => {
+				expect(applyFilterBtn).toBeDisabled();
+			});
 		});
 
 		it('should open a modal to search for a folder when clicking apply for selected filter', async () => {
@@ -65,7 +70,10 @@ describe('Incoming Filters', () => {
 			await user.click(screen.getByTestId(OPEN_SELECT_FOLDER_ICON));
 
 			const selectFolderBtn = await screen.findByRole('button', { name: /label\.select_folder/i });
-			expect(selectFolderBtn).toBeInTheDocument();
+
+			await act(async () => {
+				expect(selectFolderBtn).toBeInTheDocument();
+			});
 		});
 
 		it('should disable the select-folder button when no folder is selected during apply filter', async () => {
@@ -79,7 +87,10 @@ describe('Incoming Filters', () => {
 			await user.click(screen.getByTestId(OPEN_SELECT_FOLDER_ICON));
 
 			const selectFolderBtn = await screen.findByRole('button', { name: /label\.select_folder/i });
-			expect(selectFolderBtn).toBeDisabled();
+
+			await act(async () => {
+				expect(selectFolderBtn).toBeDisabled();
+			});
 		});
 
 		it('should add folder chip when a folder is selected', async () => {
@@ -100,7 +111,9 @@ describe('Incoming Filters', () => {
 			const selectFolderBtn = await screen.findByRole('button', { name: /label\.select_folder/i });
 			await act(() => user.click(selectFolderBtn));
 
-			expect(screen.getByTestId('chip')).toBeInTheDocument();
+			await act(async () => {
+				expect(screen.getByTestId('chip')).toBeInTheDocument();
+			});
 		});
 
 		it('should "apply" filters and show the snackbar related to the process started when confirming folder', async () => {
@@ -120,13 +133,15 @@ describe('Incoming Filters', () => {
 			await user.click(selectFolderBtn);
 			await user.click(within(screen.getByTestId('modal')).getByRole('button', { name: 'Apply' }));
 
-			expect(createSnackbarSpy).toHaveBeenCalledWith({
-				autoHideTimeout: 3000,
-				hideButton: true,
-				key: 'applyFilter-Filter 1-started',
-				label: "Filter 'Filter 1' is being applied to the messages of the folder '/test-folder'",
-				replace: true,
-				severity: 'info'
+			await act(async () => {
+				expect(createSnackbarSpy).toHaveBeenCalledWith({
+					autoHideTimeout: 3000,
+					hideButton: true,
+					key: 'applyFilter-Filter 1-started',
+					label: "Filter 'Filter 1' is being applied to the messages of the folder '/test-folder'",
+					replace: true,
+					severity: 'info'
+				});
 			});
 		});
 	});
