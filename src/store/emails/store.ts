@@ -243,6 +243,12 @@ export function handleConvActionResponse(
 	});
 }
 
+/**
+ * Optimistically handles conversation actions by updating the state of conversations in the emails store.
+ *
+ * It supports actions such as flagging and marking conversations as
+ * read/unread. Updates are applied directly to the `populatedItemsSlice.conversations`.
+ */
 export function optimisticallyHandleConvActions({ ids, operation }: ConvActionParameters): void {
 	addTask(async () => {
 		populatedItemsSliceUtils.optimisticallyHandleConvActions({
@@ -252,6 +258,13 @@ export function optimisticallyHandleConvActions({ ids, operation }: ConvActionPa
 		});
 	});
 }
+
+/**
+ * Optimistically handles message actions by updating the state of messages in the emails store.
+ *
+ * It supports various operations such as flagging, marking as read/unread, moving to folders,
+ * tagging, and deleting messages. The updates are applied directly to the `populatedItemsSlice`.
+ */
 export function optimisticallyHandleMessageActions({
 	ids,
 	operation,
@@ -465,7 +478,6 @@ export function useMessagesByFolder(folderId: string): Array<MailMessage | Incom
  * This function accesses the `status` in the `messageIndexSlice` to indicate
  * the current loading state of message.
  */
-
 export function useMessageLoadingStatus(): SearchRequestStatus {
 	return useEmailsStore(({ messageIndexSlice }) => messageIndexSlice.status);
 }
