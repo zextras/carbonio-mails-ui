@@ -10,11 +10,11 @@ import produce from 'immer';
 import { filter, forEach, includes, merge } from 'lodash';
 import { UseBoundStore, StoreApi } from 'zustand';
 
-import { RemoveAttachmentsResponse } from '../../../api/delete-all-attachments-soap-api';
-import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
-import { useFolder } from '../../../carbonio-ui-commons/store/zustand/folder';
-import { CONVACTIONS } from '../../../commons/utilities';
-import { normalizeMailMessageFromSoap } from '../../../normalizations/normalize-message';
+import { RemoveAttachmentsResponse } from '../../../../api/delete-all-attachments-soap-api';
+import { FOLDERS } from '../../../../carbonio-ui-commons/constants/folders';
+import { useFolder } from '../../../../carbonio-ui-commons/store/zustand/folder';
+import { CONVACTIONS } from '../../../../commons/utilities';
+import { normalizeMailMessageFromSoap } from '../../../../normalizations/normalize-message';
 import {
 	MailMessage,
 	IncompleteMessage,
@@ -24,7 +24,7 @@ import {
 	type ConvActionResponse,
 	MsgActionParameters,
 	ConvActionParameters
-} from '../../../types';
+} from '../../../../types';
 
 function useConversationMessages(
 	conversationId: string,

@@ -7,7 +7,7 @@
 
 import { StateCreator } from 'zustand';
 
-import { PopulatedItemsSliceState, SearchIndexSliceState } from '../../../types';
+import { PopulatedItemsSliceState, SearchIndexSliceState } from '../../../../types';
 
 export const POPULATED_ITEMS_SLICE_INITIAL_STATE = {
 	messages: {},

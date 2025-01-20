@@ -9,14 +9,14 @@ import produce from 'immer';
 import { UseBoundStore, StoreApi } from 'zustand';
 
 import { SEARCH_INDEX_SLICE_INITIAL_STATE } from './search-slice';
-import { API_REQUEST_STATUS } from '../../../constants';
+import { API_REQUEST_STATUS } from '../../../../constants';
 import {
 	EmailsStoreState,
 	IncompleteMessage,
 	MailMessage,
 	NormalizedConversation,
 	SearchRequestStatus
-} from '../../../types';
+} from '../../../../types';
 import { deleteMessagesFromConversation } from '../populated-items/utils';
 
 function resetSearchAndPopulatedItems(

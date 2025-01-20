@@ -8,14 +8,6 @@
 import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 import { create, StoreApi, UseBoundStore } from 'zustand';
 
-import { createConversationIndexSlice } from './conversations/conversations-index-slice';
-import { conversationIndexSliceUtils } from './conversations/utils';
-import { createMessageIndexSlice } from './messages/messages-slice';
-import { messageIndexSliceUtils } from './messages/utils';
-import { createPopulatedItemsSlice } from './populated-items/populated-items-slice';
-import { populatedItemsSliceUtils } from './populated-items/utils';
-import { createSearchIndexSlice } from './search/search-slice';
-import { searchSliceUtils } from './search/utils';
 import {
 	IncompleteMessage,
 	MailMessage,
@@ -28,6 +20,14 @@ import {
 	MsgActionParameters,
 	ConvActionParameters
 } from '../../types';
+import { createConversationIndexSlice } from './slices/conversations/conversations-index-slice';
+import { conversationIndexSliceUtils } from './slices/conversations/utils';
+import { createMessageIndexSlice } from './slices/messages/messages-slice';
+import { messageIndexSliceUtils } from './slices/messages/utils';
+import { createPopulatedItemsSlice } from './slices/populated-items/populated-items-slice';
+import { populatedItemsSliceUtils } from './slices/populated-items/utils';
+import { createSearchIndexSlice } from './slices/search/search-slice';
+import { searchSliceUtils } from './slices/search/utils';
 import { syncDataHandlerUtils } from './sync-data-handler/utils';
 import { createTaskQueueManager } from './task-management/create-task-queue-manager';
 import { RemoveAttachmentsResponse } from '../../api/delete-all-attachments-soap-api';

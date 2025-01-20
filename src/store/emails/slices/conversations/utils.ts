@@ -9,9 +9,9 @@ import produce from 'immer';
 import { StoreApi, UseBoundStore } from 'zustand';
 
 import { CONVERSATION_INDEX_SLICE_INITIAL_STATE } from './conversations-index-slice';
-import { useFolder } from '../../../carbonio-ui-commons/store/zustand/folder';
-import { API_REQUEST_STATUS } from '../../../constants';
-import { EmailsStoreState, NormalizedConversation, SearchRequestStatus } from '../../../types';
+import { useFolder } from '../../../../carbonio-ui-commons/store/zustand/folder';
+import { API_REQUEST_STATUS } from '../../../../constants';
+import { EmailsStoreState, NormalizedConversation, SearchRequestStatus } from '../../../../types';
 import { POPULATED_ITEMS_SLICE_INITIAL_STATE } from '../populated-items/populated-items-slice';
 
 function setConversations(

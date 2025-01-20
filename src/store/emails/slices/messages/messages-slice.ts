@@ -6,7 +6,7 @@
 
 import { StateCreator } from 'zustand';
 
-import { MessageIndexSliceState, PopulatedItemsSliceState } from '../../../types';
+import { MessageIndexSliceState, PopulatedItemsSliceState } from '../../../../types';
 
 export const MESSAGE_INDEX_SLICE_INITIAL_STATE: MessageIndexSliceState['messageIndexSlice'] = {
 	messageListIndex: [],

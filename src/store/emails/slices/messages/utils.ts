@@ -9,15 +9,15 @@ import produce from 'immer';
 import { StoreApi, UseBoundStore } from 'zustand';
 
 import { MESSAGE_INDEX_SLICE_INITIAL_STATE } from './messages-slice';
-import { useFolder } from '../../../carbonio-ui-commons/store/zustand/folder';
-import { API_REQUEST_STATUS } from '../../../constants';
+import { useFolder } from '../../../../carbonio-ui-commons/store/zustand/folder';
+import { API_REQUEST_STATUS } from '../../../../constants';
 import {
 	EmailsStoreState,
 	IncompleteMessage,
 	MailMessage,
 	MessageIndexSliceState,
 	SearchRequestStatus
-} from '../../../types';
+} from '../../../../types';
 import { POPULATED_ITEMS_SLICE_INITIAL_STATE } from '../populated-items/populated-items-slice';
 
 function setMessages(

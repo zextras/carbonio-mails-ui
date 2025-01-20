@@ -26,10 +26,10 @@ import {
 	SearchConvRequest,
 	SearchConvResponse
 } from '../../../../types';
-import { CONVERSATION_INDEX_SLICE_INITIAL_STATE } from '../../conversations/conversations-index-slice';
-import { MESSAGE_INDEX_SLICE_INITIAL_STATE } from '../../messages/messages-slice';
-import { deleteMessagesFromConversation } from '../../populated-items/utils';
-import { SEARCH_INDEX_SLICE_INITIAL_STATE } from '../../search/search-slice';
+import { CONVERSATION_INDEX_SLICE_INITIAL_STATE } from '../../slices/conversations/conversations-index-slice';
+import { MESSAGE_INDEX_SLICE_INITIAL_STATE } from '../../slices/messages/messages-slice';
+import { deleteMessagesFromConversation } from '../../slices/populated-items/utils';
+import { SEARCH_INDEX_SLICE_INITIAL_STATE } from '../../slices/search/search-slice';
 import {
 	setMessagesInEmailStore,
 	setSearchResultsByConversation,

@@ -6,10 +6,10 @@
 
 import { act, renderHook } from '@testing-library/react';
 
-import { FOLDERS } from '../../../../carbonio-ui-commons/constants/folders';
-import { API_REQUEST_STATUS } from '../../../../constants';
-import { generateConversation } from '../../../../tests/generators/generateConversation';
-import { generateMessage } from '../../../../tests/generators/generateMessage';
+import { FOLDERS } from '../../../../../carbonio-ui-commons/constants/folders';
+import { API_REQUEST_STATUS } from '../../../../../constants';
+import { generateConversation } from '../../../../../tests/generators/generateConversation';
+import { generateMessage } from '../../../../../tests/generators/generateMessage';
 import {
 	appendConversations,
 	setSearchResultsByConversation,
@@ -25,7 +25,7 @@ import {
 	useMessageStatus,
 	updateConversations,
 	getUseEmailStoreAndHooksForTesting
-} from '../../store';
+} from '../../../store';
 
 const { setMessagesInSearchSlice } = getUseEmailStoreAndHooksForTesting();
 

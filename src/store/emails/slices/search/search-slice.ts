@@ -10,7 +10,7 @@ import {
 	MessageIndexSliceState,
 	PopulatedItemsSliceState,
 	SearchIndexSliceState
-} from '../../../types';
+} from '../../../../types';
 
 export const SEARCH_INDEX_SLICE_INITIAL_STATE: SearchIndexSliceState['searchIndexSlice'] = {
 	conversationListIndex: [],

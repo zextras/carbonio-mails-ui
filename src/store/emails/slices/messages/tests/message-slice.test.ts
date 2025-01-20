@@ -5,10 +5,9 @@
  */
 import { act, renderHook } from '@testing-library/react';
 
-import { useFolderStore } from '../../../../carbonio-ui-commons/store/zustand/folder';
-import { generateFolder } from '../../../../carbonio-ui-commons/test/mocks/folders/folders-generator';
-import { generateMessage } from '../../../../tests/generators/generateMessage';
-import { POPULATED_ITEMS_SLICE_INITIAL_STATE } from '../../populated-items/populated-items-slice';
+import { useFolderStore } from '../../../../../carbonio-ui-commons/store/zustand/folder';
+import { generateFolder } from '../../../../../carbonio-ui-commons/test/mocks/folders/folders-generator';
+import { generateMessage } from '../../../../../tests/generators/generateMessage';
 import {
 	appendMessagesToMessagesSlice,
 	resetMessagesAndPopulatedItems,
@@ -20,7 +19,8 @@ import {
 	useMessagesIdsByFolder,
 	useMessageIndexSlice,
 	getUseEmailStoreAndHooksForTesting
-} from '../../store';
+} from '../../../store';
+import { POPULATED_ITEMS_SLICE_INITIAL_STATE } from '../../populated-items/populated-items-slice';
 import { MESSAGE_INDEX_SLICE_INITIAL_STATE } from '../messages-slice';
 
 const { usePopulatedItemsSlice } = getUseEmailStoreAndHooksForTesting();
