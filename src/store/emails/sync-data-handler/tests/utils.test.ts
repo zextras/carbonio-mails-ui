@@ -80,54 +80,52 @@ jest.mock('../../../../carbonio-ui-commons/store/zustand/tags', () => ({
 
 describe('handleNotifyConversationsCreated', () => {
 	it('should add new conversations to the store', async () => {
-		act(() => {
-			setConversationsInEmailStore(normalizeConversations([getSoapConversation('1')]), false);
-		});
-
+		setConversationsInEmailStore(normalizeConversations([getSoapConversation('1')]), false);
 		const newConversation = getSoapConversation('2');
-
 		mockSoapCreateConversation([newConversation]);
 
-		renderHook(() => useSyncDataHandler(), {});
+		// eslint-disable-next-line testing-library/no-unnecessary-act
+		await act(async () => {
+			renderHook(() => useSyncDataHandler());
+		});
 
 		const expectedConversationsInStore = ['1', '2'];
 		const { result: conversationsInStore } = renderHook(() =>
 			useConversationsByIds(expectedConversationsInStore)
 		);
 
-		await waitFor(() => {
-			expect(conversationsInStore.current.length).toBe(2);
-		});
+		expect(conversationsInStore.current.length).toBe(2);
+
 		expect(conversationsInStore.current.map((c) => c.id)).toEqual(expectedConversationsInStore);
 	});
 
-	// TODO: CO-1725 - Fix this test with proper act wrapping
-	// it('should not duplicate conversations in the index', async () => {
-	// 	act(() => {
-	// 		setConversationsInEmailStore(normalizeConversations([getSoapConversation('1')]), false);
-	// 	});
-	//
-	// 	const newConversation = getSoapConversation('1');
-	// 	mockSoapCreateConversation([newConversation]);
-	//
-	// 	renderHook(() => useSyncDataHandler());
-	// 	const { result: conversationsInStore } = renderHook(() => useConversationsByIds(['1']));
-	//
-	// 	await waitFor(() => {
-	// 		expect(conversationsInStore.current.length).toBe(1);
-	// 	});
-	// 	await waitFor(() => {
-	// 		expect(conversationsInStore.current.map((c) => c.id)).toEqual(['1']);
-	// 	});
-	// });
-	//
-	// it('should handle empty conversations array', async () => {
-	// 	mockSoapCreateConversation([]);
-	//
-	// 	renderHook(() => useSyncDataHandler());
-	//
-	// 	const { result: conversationsInStore } = renderHook(() => useConversationsByIds([]));
-	//
-	// 	expect(conversationsInStore.current).toEqual([]);
-	// });
+	it('should not duplicate conversations', async () => {
+		setConversationsInEmailStore(normalizeConversations([getSoapConversation('1')]), false);
+
+		const newConversation = getSoapConversation('1');
+		mockSoapCreateConversation([newConversation]);
+
+		// eslint-disable-next-line testing-library/no-unnecessary-act
+		await act(async () => {
+			renderHook(() => useSyncDataHandler());
+		});
+		const { result: conversationsInStore } = renderHook(() => useConversationsByIds(['1']));
+
+		expect(conversationsInStore.current.length).toBe(1);
+		expect(conversationsInStore.current.map((c) => c.id)).toEqual(['1']);
+	});
+
+	it('should handle empty conversations array', async () => {
+		mockSoapCreateConversation([]);
+
+		// eslint-disable-next-line testing-library/no-unnecessary-act
+		await act(async () => {
+			renderHook(() => useSyncDataHandler());
+		});
+
+		const { result: conversationsInStore } = renderHook(() => useConversationsByIds([]));
+		await waitFor(() => {
+			expect(conversationsInStore.current).toEqual([]);
+		});
+	});
 });
