@@ -29,7 +29,7 @@ import {
 	ConvActionParameters
 } from '../../types';
 import { syncDataHandlerUtils } from './sync-data-handler/utils';
-import { taskManagement } from './task-management/task-management';
+import { createTaskQueueManager } from './task-management/create-task-queue-manager';
 import { RemoveAttachmentsResponse } from '../../api/delete-all-attachments-soap-api';
 
 type TaskManagement = {
@@ -44,7 +44,7 @@ const useEmailsStore = create<EmailsStoreState & TaskManagement>()((set, get, ..
 	...createMessageIndexSlice(set, get, ...a),
 	...createConversationIndexSlice(set, get, ...a),
 	...createPopulatedItemsSlice(set, get, ...a),
-	...taskManagement(set, get, ...a)
+	...createTaskQueueManager(set, get, ...a)
 }));
 
 const { addTask } = useEmailsStore.getState();
