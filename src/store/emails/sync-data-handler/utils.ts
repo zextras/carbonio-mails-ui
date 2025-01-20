@@ -236,6 +236,7 @@ function handleNotifyConversationsCreated(
 		})
 	);
 }
+
 export const syncDataHandlerUtils = {
 	handleNotifyDeleted,
 	handleNotifyMessagesModified,
