@@ -6,7 +6,7 @@
 
 import { StateCreator } from 'zustand';
 
-import { ConversationIndexSliceState, PopulatedItemsSliceState } from '../../../../types';
+import { ConversationIndexSliceState } from '../../../../types';
 
 export const CONVERSATION_INDEX_SLICE_INITIAL_STATE: ConversationIndexSliceState['conversationIndexSlice'] =
 	{
@@ -15,11 +15,6 @@ export const CONVERSATION_INDEX_SLICE_INITIAL_STATE: ConversationIndexSliceState
 		offset: 0,
 		status: null
 	};
-export const createConversationIndexSlice: StateCreator<
-	PopulatedItemsSliceState & ConversationIndexSliceState,
-	[],
-	[],
-	ConversationIndexSliceState
-> = () => ({
+export const createConversationIndexSlice: StateCreator<ConversationIndexSliceState> = () => ({
 	conversationIndexSlice: CONVERSATION_INDEX_SLICE_INITIAL_STATE
 });
