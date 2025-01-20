@@ -63,7 +63,7 @@ describe('store-populated-items-slice', () => {
 
 			const { result } = renderHook(() => useMessageById('1'));
 
-			expect(result.current).toBe(message);
+			expect(result.current).toEqual(message);
 		});
 	});
 	describe('useConversationMessages', () => {
