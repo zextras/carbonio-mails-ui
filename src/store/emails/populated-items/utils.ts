@@ -67,7 +67,12 @@ function updateMessages(
 	useEmailsStore.setState(
 		produce(({ populatedItemsSlice }: EmailsStoreState) => {
 			messages.forEach((message) => {
-				populatedItemsSlice.messages[message.id] = message;
+				if (!message?.id) return;
+				const existingMessage = populatedItemsSlice.messages?.[message.id] || {};
+				populatedItemsSlice.messages[message.id] = {
+					...merge(existingMessage, message),
+					participants: message.participants
+				};
 			});
 		})
 	);
