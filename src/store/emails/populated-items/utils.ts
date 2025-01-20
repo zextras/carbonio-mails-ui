@@ -155,7 +155,8 @@ function optimisticallyHandleMessageActions({
 	ids,
 	operation: op,
 	useEmailsStore,
-	parent
+	parent,
+	tagName
 }: MsgActionParameters & {
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>;
 }): void {
@@ -178,6 +179,10 @@ function optimisticallyHandleMessageActions({
 						message.parent = FOLDERS.SPAM;
 					} else if (op === CONVACTIONS.MARK_NOT_SPAM) {
 						message.parent = FOLDERS.INBOX;
+					} else if (op === CONVACTIONS.TAG && tagName) {
+						message.tags = [...message.tags, tagName];
+					} else if (op === CONVACTIONS.UNTAG && tagName) {
+						message.tags = filter(message.tags, (tag) => tag !== tagName);
 					}
 				}
 			});
