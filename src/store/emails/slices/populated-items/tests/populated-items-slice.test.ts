@@ -8,6 +8,7 @@ import { act, renderHook } from '@testing-library/react';
 
 import { FOLDERS } from '../../../../../carbonio-ui-commons/constants/folders';
 import { API_REQUEST_STATUS } from '../../../../../constants';
+import { generateCompleteMessageFromAPI } from '../../../../../tests/generators/api';
 import { generateConversation } from '../../../../../tests/generators/generateConversation';
 import { generateMessage } from '../../../../../tests/generators/generateMessage';
 import {
@@ -24,7 +25,8 @@ import {
 	useMessageById,
 	useMessageStatus,
 	updateConversations,
-	getUseEmailStoreAndHooksForTesting
+	getUseEmailStoreAndHooksForTesting,
+	handleDeleteAttachments
 } from '../../../store';
 
 const { setMessagesInSearchSlice } = getUseEmailStoreAndHooksForTesting();
@@ -168,6 +170,21 @@ describe('store-populated-items-slice', () => {
 			const { result: resultMessage2 } = renderHook(() => useMessageById('2'));
 			expect(resultMessage1.current).toEqual(newMessage1);
 			expect(resultMessage2.current).toEqual(newMessage2);
+		});
+	});
+
+	describe('handleDeleteAttachments', () => {
+		it('should delete attachment from message', async () => {
+			const message = generateMessage({ id: '1' });
+			updateMessages([message]);
+
+			await act(async () => {
+				handleDeleteAttachments({ m: [generateCompleteMessageFromAPI({ id: '1', mp: [] })] });
+			});
+
+			const { result } = renderHook(() => useMessageById('1'));
+
+			expect(result.current.parts?.length).toBe(0);
 		});
 	});
 });

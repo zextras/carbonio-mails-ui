@@ -198,8 +198,8 @@ function handleDeleteAttachments(
 		produce(({ populatedItemsSlice }: EmailsStoreState) => {
 			if ('Fault' in response) return;
 			if (!response) return;
-			const ids = response.m?.map((m) => m.id);
-			ids.forEach((id) => {
+			const messageIds = response.m?.map((m) => m.id);
+			messageIds.forEach((id) => {
 				const message = populatedItemsSlice.messages[id];
 				if (message) {
 					const normalizeMsg = normalizeMailMessageFromSoap(response.m[0], true);
