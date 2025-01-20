@@ -44,6 +44,12 @@ const useEmailsStore = create<EmailsStoreState & TaskManagement>()((set, get, ..
 	...createMessageIndexSlice(set, get, ...a),
 	...createConversationIndexSlice(set, get, ...a),
 	...createPopulatedItemsSlice(set, get, ...a),
+
+	/**
+	 * TaskQueueManager is a store extension that provides functionality
+	 * for managing and executing asynchronous tasks sequentially in a queue.
+	 * This implementation safeguards against race conditions.
+	 */
 	...createTaskQueueManager(set, get, ...a)
 }));
 
