@@ -29,6 +29,7 @@ import {
 	ConvActionParameters
 } from '../../types';
 import { syncDataHandlerUtils } from './sync-data-handler/utils';
+import { taskManagement } from './task-management/task-management';
 import { RemoveAttachmentsResponse } from '../../api/delete-all-attachments-soap-api';
 
 type TaskManagement = {
@@ -43,57 +44,7 @@ const useEmailsStore = create<EmailsStoreState & TaskManagement>()((set, get, ..
 	...createMessageIndexSlice(set, get, ...a),
 	...createConversationIndexSlice(set, get, ...a),
 	...createPopulatedItemsSlice(set, get, ...a),
-
-	queue: [],
-	isExecuting: false,
-
-	// Add a task to the queue
-	addTask: (task): void => {
-		if (typeof task !== 'function') {
-			console.error('Invalid task. Task must be a function that returns a Promise.');
-			return;
-		}
-
-		const { queue, isExecuting } = get();
-		set({ queue: [...queue, task] });
-
-		if (!isExecuting) {
-			get().executeTasks();
-		}
-	},
-
-	// Execute tasks sequentially
-	executeTasks: async (): Promise<void> => {
-		const { isExecuting } = get();
-
-		if (isExecuting) {
-			return;
-		}
-
-		set({ isExecuting: true });
-
-		try {
-			while (get().queue.length > 0) {
-				const { queue } = get();
-				const [currentTask, ...restQueue] = queue;
-
-				set({ queue: restQueue });
-
-				if (typeof currentTask === 'function') {
-					try {
-						// eslint-disable-next-line no-await-in-loop
-						await currentTask();
-					} catch (error) {
-						console.error('Task execution failed:', error);
-					}
-				} else {
-					console.warn('Skipping invalid task:', currentTask);
-				}
-			}
-		} finally {
-			set({ isExecuting: false });
-		}
-	}
+	...taskManagement(set, get, ...a)
 }));
 
 const { addTask } = useEmailsStore.getState();

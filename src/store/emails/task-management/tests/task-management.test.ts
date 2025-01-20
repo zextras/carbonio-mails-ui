@@ -6,14 +6,12 @@
 
 import { act, waitFor } from '@testing-library/react';
 
-import { getUseEmailStoreAndHooksForTesting } from '../store';
+import { getUseEmailStoreAndHooksForTesting } from '../../store';
 
 const { useEmailsStore } = getUseEmailStoreAndHooksForTesting();
 
-// Import or mock the `useEmailsStore` implementation
 describe('useEmailsStore', () => {
 	beforeEach(() => {
-		// Reset the store before each test
 		useEmailsStore.setState({ queue: [], isExecuting: false });
 	});
 
@@ -90,34 +88,34 @@ describe('useEmailsStore', () => {
 		expect(task2).toHaveBeenCalledTimes(1);
 	});
 
-	// it('should handle task execution errors gracefully', async () => {
-	// 	const consoleErrorMock = jest.spyOn(console, 'error').mockImplementation(jest.fn());
-	// 	const results: string[] = [];
-	// 	const task1 = jest.fn(() => {
-	// 		results.push('task1');
-	// 		return Promise.resolve();
-	// 	});
-	// 	const failingTask = jest.fn(() => Promise.reject(new Error('Task failed')));
-	// 	const task3 = jest.fn(() => {
-	// 		results.push('task1');
-	// 		return Promise.resolve();
-	// 	});
-	//
-	// 	useEmailsStore.getState().addTask(task1);
-	// 	useEmailsStore.getState().addTask(failingTask);
-	// 	useEmailsStore.getState().addTask(task3);
-	//
-	// 	await waitFor(() => {
-	// 		expect(results).toEqual(['task1', 'task3']);
-	// 	});
-	//
-	// 	expect(task1).toHaveBeenCalledTimes(1);
-	// 	expect(failingTask).toHaveBeenCalledTimes(1);
-	// 	expect(task3).toHaveBeenCalledTimes(1);
-	// 	expect(consoleErrorMock).toHaveBeenCalledWith('Task execution failed:', expect.any(Error));
-	//
-	// 	consoleErrorMock.mockRestore();
-	// });
+	it('should handle task execution errors gracefully', async () => {
+		const consoleWarnMock = jest.spyOn(console, 'warn').mockImplementation(jest.fn());
+		const results: string[] = [];
+		const task1 = jest.fn(() => {
+			results.push('task1');
+			return Promise.resolve();
+		});
+		const failingTask = jest.fn(() => Promise.reject(new Error('Task failed')));
+		const task3 = jest.fn(() => {
+			results.push('task3');
+			return Promise.resolve();
+		});
+
+		useEmailsStore.getState().addTask(task1);
+		useEmailsStore.getState().addTask(failingTask);
+		useEmailsStore.getState().addTask(task3);
+
+		await waitFor(() => {
+			expect(results).toEqual(['task1', 'task3']);
+		});
+
+		expect(task1).toHaveBeenCalledTimes(1);
+		expect(failingTask).toHaveBeenCalledTimes(1);
+		expect(task3).toHaveBeenCalledTimes(1);
+		expect(consoleWarnMock).toHaveBeenCalledWith('Task execution failed:', expect.any(Error));
+
+		consoleWarnMock.mockRestore();
+	});
 
 	test('should not re-trigger execution if already running', async () => {
 		const results: string[] = [];
