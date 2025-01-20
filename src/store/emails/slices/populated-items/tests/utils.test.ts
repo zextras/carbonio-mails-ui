@@ -4,9 +4,12 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { act, renderHook } from '@testing-library/react';
+import { act, renderHook, waitFor } from '@testing-library/react';
 
 import { FOLDERS } from '../../../../../carbonio-ui-commons/constants/folders';
+import { useTags } from '../../../../../carbonio-ui-commons/store/zustand/tags/hooks';
+import { tags as mockTags } from '../../../../../carbonio-ui-commons/test/mocks/tags/tags';
+import { CONVACTIONS } from '../../../../../commons/utilities';
 import { API_REQUEST_STATUS } from '../../../../../constants';
 import { generateCompleteMessageFromAPI } from '../../../../../tests/generators/api';
 import { generateConversation } from '../../../../../tests/generators/generateConversation';
@@ -26,11 +29,15 @@ import {
 	useMessageStatus,
 	updateConversations,
 	getUseEmailStoreAndHooksForTesting,
-	handleDeleteAttachments
+	handleDeleteAttachments,
+	optimisticallyHandleMessageActions
 } from '../../../store';
 
 const { setMessagesInSearchSlice } = getUseEmailStoreAndHooksForTesting();
 
+jest.mock('../../../../../carbonio-ui-commons/store/zustand/tags/hooks', () => ({
+	useTags: jest.fn()
+}));
 describe('store-populated-items-slice', () => {
 	describe('useConversationById', () => {
 		it('should set and return a conversation', async () => {
@@ -185,6 +192,157 @@ describe('store-populated-items-slice', () => {
 			const { result } = renderHook(() => useMessageById('1'));
 
 			expect(result.current.parts?.length).toBe(0);
+		});
+	});
+
+	describe('optimisticallyHandleMessageActions', () => {
+		it('should flag a message when operation is FLAG', async () => {
+			const message = generateMessage({ id: '1' });
+			updateMessages([{ ...message, flagged: false }]);
+			optimisticallyHandleMessageActions({
+				ids: ['1'],
+				operation: CONVACTIONS.FLAG
+			});
+			await waitFor(async () => {
+				expect(renderHook(() => useMessageById('1')).result.current?.flagged).toBe(true);
+			});
+		});
+
+		it('should unflag a message when operation is UNFLAG', async () => {
+			const message = generateMessage({ id: '1' });
+			updateMessages([{ ...message, flagged: true }]);
+			optimisticallyHandleMessageActions({
+				ids: ['1'],
+				operation: CONVACTIONS.UNFLAG
+			});
+			await waitFor(async () => {
+				expect(renderHook(() => useMessageById('1')).result.current?.flagged).toBe(false);
+			});
+		});
+
+		it('should mark a message as read when operation is MARK_READ', async () => {
+			const message = generateMessage({ id: '1' });
+			updateMessages([{ ...message, read: false }]);
+			optimisticallyHandleMessageActions({
+				ids: ['1'],
+				operation: CONVACTIONS.MARK_READ
+			});
+			await waitFor(async () => {
+				expect(renderHook(() => useMessageById('1')).result.current?.read).toBe(true);
+			});
+		});
+
+		it('should mark a message as unread when operation is MARK_AS_UNREAD', async () => {
+			const message = generateMessage({ id: '1' });
+			updateMessages([{ ...message, read: true }]);
+			optimisticallyHandleMessageActions({
+				ids: ['1'],
+				operation: CONVACTIONS.MARK_UNREAD
+			});
+			await waitFor(async () => {
+				expect(renderHook(() => useMessageById('1')).result.current?.read).toBe(false);
+			});
+		});
+
+		it('should move a message to trash when operation is TRASH', async () => {
+			const message = generateMessage({ id: '1' });
+			updateMessages([message]);
+			optimisticallyHandleMessageActions({
+				ids: ['1'],
+				operation: CONVACTIONS.TRASH
+			});
+			await waitFor(async () => {
+				expect(renderHook(() => useMessageById('1')).result.current?.parent).toBe(FOLDERS.TRASH);
+			});
+		});
+
+		it('should delete a message when operation is DELETE', async () => {
+			const message = generateMessage({ id: '1' });
+			updateMessages([message]);
+			optimisticallyHandleMessageActions({
+				ids: ['1'],
+				operation: CONVACTIONS.DELETE
+			});
+			await waitFor(async () => {
+				expect(renderHook(() => useMessageById('1')).result.current).not.toBeDefined();
+			});
+		});
+
+		it('should move a message to a specified folder when operation is MOVE', async () => {
+			const message = generateMessage({ id: '1' });
+			updateMessages([message]);
+			optimisticallyHandleMessageActions({
+				ids: ['1'],
+				parent: '77',
+				operation: CONVACTIONS.MOVE
+			});
+			await waitFor(async () => {
+				expect(renderHook(() => useMessageById('1')).result.current?.parent).toBe('77');
+			});
+		});
+
+		it('should move a message to inbox when operation is MOVE and no parent is specified', async () => {
+			const message = generateMessage({ id: '1' });
+			updateMessages([message]);
+			optimisticallyHandleMessageActions({
+				ids: ['1'],
+				operation: CONVACTIONS.MOVE
+			});
+			await waitFor(async () => {
+				expect(renderHook(() => useMessageById('1')).result.current?.parent).toBe(FOLDERS.INBOX);
+			});
+		});
+
+		it('should mark a message as spam when operation is MARK_SPAM', async () => {
+			const message = generateMessage({ id: '1' });
+			updateMessages([{ ...message, parent: FOLDERS.INBOX }]);
+			optimisticallyHandleMessageActions({
+				ids: ['1'],
+				operation: CONVACTIONS.MARK_SPAM
+			});
+			await waitFor(async () => {
+				expect(renderHook(() => useMessageById('1')).result.current?.parent).toBe(FOLDERS.SPAM);
+			});
+		});
+
+		it('should mark a message as not spam when operation is MARK_NOT_SPAM', async () => {
+			const message = generateMessage({ id: '1' });
+			updateMessages([{ ...message, parent: FOLDERS.SPAM }]);
+			optimisticallyHandleMessageActions({
+				ids: ['1'],
+				operation: CONVACTIONS.MARK_NOT_SPAM
+			});
+			await waitFor(async () => {
+				expect(renderHook(() => useMessageById('1')).result.current?.parent).toBe(FOLDERS.INBOX);
+			});
+		});
+
+		it('should tag a message when operation is TAG and tagName is provided', async () => {
+			(useTags as jest.Mock).mockReturnValue(mockTags);
+			const message = generateMessage({ id: '1' });
+			updateMessages([message]);
+			optimisticallyHandleMessageActions({
+				ids: ['1'],
+				operation: CONVACTIONS.TAG,
+				tagName: 'Test555'
+			});
+			await waitFor(async () => {
+				expect(renderHook(() => useMessageById('1')).result.current?.tags).toEqual(['Test555']);
+			});
+		});
+
+		it('should untag a message when operation is UNTAG and tagName is provided', async () => {
+			(useTags as jest.Mock).mockReturnValue(mockTags);
+			const message = generateMessage({ id: '1', tags: ['Test555', 'AnotherTag'] });
+			updateMessages([message]);
+			optimisticallyHandleMessageActions({
+				ids: ['1'],
+				operation: CONVACTIONS.UNTAG,
+				tagName: 'Test555'
+			});
+			await waitFor(async () => {
+				expect(renderHook(() => useMessageById('1')).result.current?.tags).toEqual(['AnotherTag']);
+			});
 		});
 	});
 });
