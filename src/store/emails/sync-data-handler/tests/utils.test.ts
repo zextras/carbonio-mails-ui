@@ -29,10 +29,6 @@ function mockSoapRefresh(mailbox: number): void {
 	});
 }
 
-jest.mock('@zextras/carbonio-shell-ui', () => ({
-	getUserSettings: jest.fn()
-}));
-
 function generateSoapAction(partial?: Partial<SoapNotify>): SoapNotify {
 	return {
 		deleted: [],
