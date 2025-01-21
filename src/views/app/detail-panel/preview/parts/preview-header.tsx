@@ -403,6 +403,7 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 										name: string;
 									}) => (
 										<TagChip
+											key={tag.id}
 											label={tag?.label}
 											avatarBackground={tag.color}
 											background="gray2"

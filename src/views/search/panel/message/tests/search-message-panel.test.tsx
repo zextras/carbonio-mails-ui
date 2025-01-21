@@ -5,16 +5,13 @@
  */
 import React from 'react';
 
+import { waitFor } from '@testing-library/react';
 import { useParams } from 'react-router-dom';
 
 import { screen, setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
 import { API_REQUEST_STATUS } from '../../../../../constants';
-import {
-	setSearchResultsByMessage,
-	updateMessageStatus
-} from '../../../../../store/zustand/search/store';
+import { setSearchResultsByMessage, updateMessageStatus } from '../../../../../store/emails/store';
 import { generateMessage } from '../../../../../tests/generators/generateMessage';
-import { generateStore } from '../../../../../tests/generators/store';
 import { SearchMessagePanel } from '../search-message-panel';
 
 jest.mock('react-router-dom', () => ({
@@ -23,12 +20,6 @@ jest.mock('react-router-dom', () => ({
 }));
 
 describe('Message Panel', () => {
-	let store: ReturnType<typeof generateStore>;
-
-	beforeEach(() => {
-		store = generateStore();
-	});
-
 	it('should render a message when status fulfilled', async () => {
 		(useParams as jest.Mock).mockReturnValue({ messageId: '1' });
 		setSearchResultsByMessage(
@@ -42,9 +33,12 @@ describe('Message Panel', () => {
 			],
 			false
 		);
-		updateMessageStatus('1', API_REQUEST_STATUS.fulfilled);
 
-		setupTest(<SearchMessagePanel messageId="1" />, { store });
+		await waitFor(() => {
+			updateMessageStatus('1', API_REQUEST_STATUS.fulfilled);
+		});
+
+		setupTest(<SearchMessagePanel messageId="1" />);
 
 		expect(await screen.findByTestId('MessagePanel-1')).toBeVisible();
 		expect(await screen.findByText('Test subject')).toBeInTheDocument();

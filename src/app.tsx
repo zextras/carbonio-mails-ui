@@ -10,7 +10,6 @@ import { BackupSearchComponentToggler } from './app-utils/backup-search-componen
 import { SearchRegistration } from './app-utils/search-registration';
 import { ShellRegistrations } from './app-utils/shell-registrations';
 import { AuthGuard } from './auth-guard';
-import { StoreProvider } from './store/redux';
 import { GlobalExtraWindowManager } from './views/app/extra-windows/global-extra-window-manager';
 import { GlobalModalManager } from './views/global-modal-manager';
 import { InitializeFolders } from './views/sidebar/initialize-folders';
@@ -23,17 +22,14 @@ const App = (): React.JSX.Element => (
 		<ShellRegistrations />
 		<BackupSearchComponentToggler />
 		<SearchRegistration />
-
-		<StoreProvider>
-			<GlobalModalManager>
-				<GlobalExtraWindowManager>
-					<InitializeFolders />
-					<InitializeTags />
-					<SyncDataHandler />
-					<InitializeServicesCatalog />
-				</GlobalExtraWindowManager>
-			</GlobalModalManager>
-		</StoreProvider>
+		<GlobalModalManager>
+			<GlobalExtraWindowManager>
+				<InitializeFolders />
+				<InitializeTags />
+				<SyncDataHandler />
+				<InitializeServicesCatalog />
+			</GlobalExtraWindowManager>
+		</GlobalModalManager>
 	</AuthGuard>
 );
 

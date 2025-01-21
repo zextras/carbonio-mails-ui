@@ -14,7 +14,6 @@ import { FOLDER_VIEW } from '../../../carbonio-ui-commons/constants';
 import { ResponseActionsProps } from '../../../types';
 
 const ResponseActions: FC<ResponseActionsProps> = ({
-	dispatch,
 	t,
 	zid,
 	view,
@@ -78,7 +77,6 @@ const ResponseActions: FC<ResponseActionsProps> = ({
 				color: parseInt(selectedColor ?? '0', 10),
 				accounts,
 				t,
-				dispatch,
 				msgId,
 				sharedFolderName,
 				owner,
@@ -98,7 +96,6 @@ const ResponseActions: FC<ResponseActionsProps> = ({
 			selectedColor,
 			accounts,
 			t,
-			dispatch,
 			msgId,
 			sharedFolderName,
 			owner,
@@ -114,7 +111,6 @@ const ResponseActions: FC<ResponseActionsProps> = ({
 	const decline = useDecline();
 	const declined = useCallback(() => {
 		decline({
-			dispatch,
 			t,
 			msgId,
 			sharedFolderName,
@@ -128,7 +124,6 @@ const ResponseActions: FC<ResponseActionsProps> = ({
 		});
 	}, [
 		decline,
-		dispatch,
 		t,
 		msgId,
 		sharedFolderName,

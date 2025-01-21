@@ -28,6 +28,7 @@ import { getTimeLabel, participantToString } from '../../../../commons/utils';
 import { EditViewActions } from '../../../../constants';
 import { useMsgPreviewOnSeparatedWindowFn } from '../../../../hooks/actions/use-msg-preview-on-separated-window';
 import { useMsgSetReadFn } from '../../../../hooks/actions/use-msg-set-read';
+import { useMessageById } from '../../../../store/emails/store';
 import { MessageListItemProps, TextReadValuesType } from '../../../../types';
 import { useTagExist } from '../../../../ui-actions/tag-actions';
 import { getFolderTranslatedName } from '../../../sidebar/utils';
@@ -49,45 +50,53 @@ export const MessageListItem: FC<MessageListItemProps> = memo(function MessageLi
 	active,
 	isSearchModule,
 	deselectAll,
-	currentFolderId,
 	handleReplaceHistory
 }) {
-	const firstChildFolderId = currentFolderId ?? item.parent;
+	const completeMessage = useMessageById(item.id);
+	const { folderId } = useParams<{ folderId: string }>();
+	const firstChildFolderId = folderId ?? completeMessage.parent;
 	const { itemId } = useParams<RouteParams>();
-	const shouldReplaceHistory = useMemo(() => itemId === item.id, [item.id, itemId]);
+	const shouldReplaceHistory = useMemo(
+		() => itemId === completeMessage.id,
+		[completeMessage.id, itemId]
+	);
 	const zimbraPrefMarkMsgRead = useUserSettings()?.prefs?.zimbraPrefMarkMsgRead !== '-1';
 
 	const messagePreviewFactory = useCallback(
-		() => <MessagePreviewPanel folderId={firstChildFolderId} messageId={item.id} />,
-		[firstChildFolderId, item.id]
+		() => <MessagePreviewPanel folderId={firstChildFolderId} messageId={completeMessage.id} />,
+		[firstChildFolderId, completeMessage.id]
 	);
 
 	const previewOnSeparatedWindow = useMsgPreviewOnSeparatedWindowFn({
-		messageId: item.id,
-		subject: item.subject,
+		messageId: completeMessage.id,
+		subject: completeMessage.subject,
 		messagePreviewFactory
 	});
 
 	const setAsRead = useMsgSetReadFn({
-		ids: [item.id],
+		ids: [completeMessage.id],
 		shouldReplaceHistory,
-		isMessageRead: item.read,
+		isMessageRead: completeMessage.read,
 		deselectAll,
 		folderId: firstChildFolderId
 	});
 
 	const debouncedPushHistory = useMemo(
 		() =>
-			debounce(() => replaceHistory(`/folder/${firstChildFolderId}/message/${item.id}`), 200, {
-				leading: false,
-				trailing: true
-			}),
-		[firstChildFolderId, item.id]
+			debounce(
+				() => replaceHistory(`/folder/${firstChildFolderId}/message/${completeMessage.id}`),
+				200,
+				{
+					leading: false,
+					trailing: true
+				}
+			),
+		[firstChildFolderId, completeMessage.id]
 	);
 	const onClick = useCallback<MouseEventHandler<HTMLDivElement>>(
 		(e) => {
 			if (!e.isDefaultPrevented()) {
-				if (item.read === false && zimbraPrefMarkMsgRead) {
+				if (!completeMessage.read && zimbraPrefMarkMsgRead) {
 					setAsRead.canExecute() && setAsRead.execute();
 				}
 				if (handleReplaceHistory) {
@@ -97,13 +106,19 @@ export const MessageListItem: FC<MessageListItemProps> = memo(function MessageLi
 				}
 			}
 		},
-		[item.read, zimbraPrefMarkMsgRead, handleReplaceHistory, setAsRead, debouncedPushHistory]
+		[
+			completeMessage.read,
+			zimbraPrefMarkMsgRead,
+			handleReplaceHistory,
+			setAsRead,
+			debouncedPushHistory
+		]
 	);
 	const onDoubleClick = useCallback(
 		(e: React.MouseEvent) => {
 			if (!e.isDefaultPrevented()) {
 				debouncedPushHistory.cancel();
-				const { id, isDraft } = item;
+				const { id, isDraft } = completeMessage;
 				if (isDraft) {
 					createEditBoard({
 						action: EditViewActions.EDIT_AS_DRAFT,
@@ -114,61 +129,66 @@ export const MessageListItem: FC<MessageListItemProps> = memo(function MessageLi
 				}
 			}
 		},
-		[debouncedPushHistory, previewOnSeparatedWindow, item]
+		[debouncedPushHistory, previewOnSeparatedWindow, completeMessage]
 	);
 
 	const accounts = useUserAccounts();
 	const tagsFromStore = useTags();
-	const messageFolder = useFolder(item.parent);
+	const messageFolder = useFolder(completeMessage.parent);
 	const [date] = useMemo(() => {
-		if (item) {
-			const sender = find(item.participants, ['type', 'f']);
-			return [getTimeLabel(item.date), participantToString(sender, accounts)];
+		if (completeMessage) {
+			const sender = find(completeMessage.participants, ['type', 'f']);
+			return [getTimeLabel(completeMessage.date), participantToString(sender, accounts)];
 		}
 		return ['.', '.', '', ''];
-	}, [item, accounts]);
+	}, [completeMessage, accounts]);
 
 	const [showIcon, icon, iconTooltip, iconId, color] = useMemo(() => {
-		if (!item) return [false, '', '', '', ''];
-		if (item.isSentByMe && !item.isDraft && !item.isReplied && !item.isForwarded) {
+		if (!completeMessage) return [false, '', '', '', ''];
+		if (
+			completeMessage.isSentByMe &&
+			!completeMessage.isDraft &&
+			!completeMessage.isReplied &&
+			!completeMessage.isForwarded
+		) {
 			return [true, 'PaperPlaneOutline', t('label.sent', 'Sent'), 'SentIcon', 'secondary'];
 		}
-		if (item.isDraft) {
+		if (completeMessage.isDraft) {
 			return [true, 'FileOutline', t('label.draft', 'Draft'), 'DraftIcon', 'secondary'];
 		}
-		if (item.isReplied) {
+		if (completeMessage.isReplied) {
 			return [true, 'UndoOutline', t('label.replied', 'Replied'), 'RepliedIcon', 'secondary'];
 		}
 		if (
-			item.read === false &&
-			!item.isReplied &&
-			!item.isDraft &&
-			!item.isSentByMe &&
-			!item.isForwarded
+			!completeMessage.read &&
+			!completeMessage.isReplied &&
+			!completeMessage.isDraft &&
+			!completeMessage.isSentByMe &&
+			!completeMessage.isForwarded
 		) {
 			return [true, 'EmailOutline', t('search.unread', 'Unread'), 'UnreadIcon', 'primary'];
 		}
 		if (
-			item.read !== false &&
-			!item.isReplied &&
-			!item.isDraft &&
-			!item.isSentByMe &&
-			!item.isForwarded
+			completeMessage.read &&
+			!completeMessage.isReplied &&
+			!completeMessage.isDraft &&
+			!completeMessage.isSentByMe &&
+			!completeMessage.isForwarded
 		) {
 			return [true, 'EmailReadOutline', t('label.read', 'Read'), 'ReadIcon', 'secondary'];
 		}
-		if (item.isForwarded) {
+		if (completeMessage.isForwarded) {
 			return [true, 'Forward', t('label.forwarded', 'Forwarded'), 'ForwardedIcon', 'secondary'];
 		}
 		return [false, '', '', '', ''];
-	}, [item]);
+	}, [completeMessage]);
 
 	const tags = useMemo(
 		() =>
 			reduce(
 				tagsFromStore,
 				(acc, v) => {
-					if (includes(item.tags, v.id))
+					if (includes(completeMessage.tags, v.id))
 						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 						// @ts-ignore
 						acc.push({ ...v, color: ZIMBRA_STANDARD_COLORS[v.color ?? '0'].hex });
@@ -176,53 +196,57 @@ export const MessageListItem: FC<MessageListItemProps> = memo(function MessageLi
 				},
 				[] as Array<Tag & { color: string }>
 			),
-		[item.tags, tagsFromStore]
+		[completeMessage.tags, tagsFromStore]
 	);
 
 	const fragmentLabel = useMemo(
-		() => (isConvChildren ? item.fragment : ` - ${item.fragment}`),
-		[item.fragment, isConvChildren]
+		() => (isConvChildren ? completeMessage.fragment : ` - ${completeMessage.fragment}`),
+		[completeMessage.fragment, isConvChildren]
 	);
 	const textReadValues = useMemo<TextReadValuesType>(() => {
-		if (typeof item.read === 'undefined')
+		if (typeof completeMessage.read === 'undefined')
 			return { color: 'text', weight: 'regular', badge: 'read' };
-		return item.read
+		return completeMessage.read
 			? { color: 'text', weight: 'regular', badge: 'read' }
 			: { color: 'primary', weight: 'bold', badge: 'unread' };
-	}, [item.read]);
+	}, [completeMessage.read]);
 
 	const isTagInStore = useTagExist(tags);
 	const showTagIcon = useMemo(
-		() => item.tags && item.tags.length !== 0 && item.tags?.[0] !== '' && isTagInStore,
-		[isTagInStore, item.tags]
+		() =>
+			completeMessage.tags &&
+			completeMessage.tags.length !== 0 &&
+			completeMessage.tags?.[0] !== '' &&
+			isTagInStore,
+		[isTagInStore, completeMessage.tags]
 	);
 	const tagIcon = useMemo(() => (tags.length > 1 ? 'TagsMoreOutline' : 'Tag'), [tags]);
 	const tagIconColor = useMemo(() => (tags.length === 1 ? tags[0].color : undefined), [tags]);
 	const subject = useMemo(
-		() => item.subject || t('label.no_subject_with_tags', '<No Subject>'),
-		[item.subject]
+		() => completeMessage.subject || t('label.no_subject_with_tags', '<No Subject>'),
+		[completeMessage.subject]
 	);
 	const subFragmentTooltipLabel = useMemo(
-		() => (!isEmpty(item.fragment) ? item.fragment : subject),
-		[subject, item.fragment]
+		() => (!isEmpty(completeMessage.fragment) ? completeMessage.fragment : subject),
+		[subject, completeMessage.fragment]
 	);
 
 	const scheduledTime = useMemo(
 		() =>
 			t('message.schedule_time', {
-				date: moment(item?.autoSendTime).format('DD/MM/YYYY'),
-				time: moment(item?.autoSendTime).format('HH:mm'),
+				date: moment(completeMessage?.autoSendTime).format('DD/MM/YYYY'),
+				time: moment(completeMessage?.autoSendTime).format('HH:mm'),
 				defaultValue: 'for {{date}} at {{time}}'
 			}),
-		[item?.autoSendTime]
+		[completeMessage?.autoSendTime]
 	);
 
 	const onToggle = useMemo(() => (isConvChildren ? noop : toggle), [isConvChildren, toggle]);
 
 	return (
-		<Container mainAlignment="flex-start" data-testid={`MessageListItem-${item.id}`}>
+		<Container mainAlignment="flex-start" data-testid={`MessageListItem-${completeMessage.id}`}>
 			<MessageListItemActionWrapper
-				item={item}
+				item={completeMessage}
 				active={active}
 				onClick={onClick}
 				onDoubleClick={onDoubleClick}
@@ -230,9 +254,12 @@ export const MessageListItem: FC<MessageListItemProps> = memo(function MessageLi
 				deselectAll={deselectAll}
 				messagePreviewFactory={messagePreviewFactory}
 			>
-				<div style={{ alignSelf: 'center' }} data-testid={`message-list-item-avatar-${item.id}`}>
+				<div
+					style={{ alignSelf: 'center' }}
+					data-testid={`message-list-item-avatar-${completeMessage.id}`}
+				>
 					<ItemAvatar
-						item={item}
+						item={completeMessage}
 						selected={selected}
 						selecting={selecting}
 						toggle={onToggle}
@@ -247,25 +274,29 @@ export const MessageListItem: FC<MessageListItemProps> = memo(function MessageLi
 					padding={{ left: 'small', top: 'small', bottom: 'small', right: 'large' }}
 				>
 					<Container orientation="horizontal" height="fit" width="fill">
-						<SenderName item={item} textValues={textReadValues} isSearchModule={isSearchModule} />
+						<SenderName
+							item={completeMessage}
+							textValues={textReadValues}
+							isSearchModule={isSearchModule}
+						/>
 						<Row>
 							{showTagIcon && (
 								<Padding left="small">
 									<Icon data-testid="TagIcon" icon={tagIcon} color={tagIconColor} />
 								</Padding>
 							)}
-							{item.hasAttachment && (
+							{completeMessage.hasAttachment && (
 								<Padding left="small">
 									<Icon data-testid="AttachmentIcon" icon="AttachOutline" />
 								</Padding>
 							)}
-							{item.flagged && (
+							{completeMessage.flagged && (
 								<Padding left="small">
 									<Icon data-testid="FlagIcon" color="error" icon="Flag" />
 								</Padding>
 							)}
 							<Padding left="small">
-								{item?.isScheduled ? (
+								{completeMessage?.isScheduled ? (
 									<Row>
 										<Padding right="extrasmall">
 											<Icon data-testid={iconId} icon="SendDelayedOutline" color="primary" />
@@ -307,13 +338,13 @@ export const MessageListItem: FC<MessageListItemProps> = memo(function MessageLi
 										<Text
 											data-testid="Subject"
 											weight={textReadValues.weight}
-											color={item.subject ? 'text' : 'secondary'}
+											color={completeMessage.subject ? 'text' : 'secondary'}
 										>
 											{subject}
 										</Text>
 									)}
 
-									{!isEmpty(item.fragment) && (
+									{!isEmpty(completeMessage.fragment) && (
 										<Row
 											takeAvailableSpace
 											mainAlignment="flex-start"
@@ -333,13 +364,13 @@ export const MessageListItem: FC<MessageListItemProps> = memo(function MessageLi
 							</Tooltip>
 						</Row>
 						<Row>
-							{item.urgent && (
+							{completeMessage.urgent && (
 								<Padding left="extrasmall">
 									<Icon data-testid="UrgentIcon" icon="ArrowUpward" color="error" />
 								</Padding>
 							)}
 
-							{item?.isScheduled && (
+							{completeMessage?.isScheduled && (
 								<Tooltip label={scheduledTime}>
 									<Text data-testid="DelayedMailLabel" size="extrasmall" color="primary">
 										{scheduledTime}
@@ -354,8 +385,8 @@ export const MessageListItem: FC<MessageListItemProps> = memo(function MessageLi
 											folderId: firstChildFolderId,
 											folderName: messageFolder?.name ?? ''
 										})}
-										backgroundColor={(textReadValues.badge === 'unread' && 'primary') || 'gray2'}
-										color={(textReadValues.badge === 'unread' && 'gray6') || 'gray0'}
+										backgroundColor={textReadValues.badge === 'unread' ? 'primary' : 'gray2'}
+										color={textReadValues.badge === 'unread' ? 'gray6' : 'gray0'}
 									/>
 								</Padding>
 							)}

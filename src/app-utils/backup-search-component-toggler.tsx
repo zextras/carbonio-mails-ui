@@ -8,7 +8,7 @@ import { FC, useEffect } from 'react';
 import { isEmpty } from 'lodash';
 
 import { toggleBackupSearchComponent } from './toggle-backup-search-component';
-import { useBackupSearchStore } from '../store/zustand/backup-search/store';
+import { useBackupSearchStore } from '../store/backup-search/store';
 
 export const BackupSearchComponentToggler: FC = () => {
 	const hasBackupSearchMessages = !isEmpty(useBackupSearchStore().messages);

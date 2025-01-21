@@ -8,24 +8,18 @@ import React from 'react';
 import { screen, within } from '@testing-library/react';
 
 import { setupTest } from '../../../../../../carbonio-ui-commons/test/test-setup';
-import { generateStore } from '../../../../../../tests/generators/store';
 import { ShowTag } from '../../filter-actions/show-tag';
 
 const BLACK = '#000000';
 const COLOR_2 = '#29B6F6';
 describe('Show Tag', () => {
 	it('should render the tag input', async () => {
-		const store = generateStore();
-
-		setupTest(<ShowTag value={[]} tagOptions={[]} onTagChange={jest.fn()} />, {
-			store
-		});
+		setupTest(<ShowTag value={[]} tagOptions={[]} onTagChange={jest.fn()} />);
 
 		expect(screen.getByText('Tag')).toBeVisible();
 	});
 
 	it('should call onChange with the chosen value', async () => {
-		const store = generateStore();
 		const onChangeFn = jest.fn();
 		const tagOptions = [
 			{
@@ -35,10 +29,7 @@ describe('Show Tag', () => {
 		];
 
 		const { user } = setupTest(
-			<ShowTag value={[]} tagOptions={tagOptions} onTagChange={onChangeFn} />,
-			{
-				store
-			}
+			<ShowTag value={[]} tagOptions={tagOptions} onTagChange={onChangeFn} />
 		);
 
 		await user.click(screen.getByText('Tag'));
@@ -55,7 +46,6 @@ describe('Show Tag', () => {
 	});
 
 	it('should render the option with the tag avatar', async () => {
-		const store = generateStore();
 		const tagOptions = [
 			{
 				label: 'tag option 1'
@@ -63,10 +53,7 @@ describe('Show Tag', () => {
 		];
 
 		const { user } = setupTest(
-			<ShowTag value={[]} tagOptions={tagOptions} onTagChange={jest.fn()} />,
-			{
-				store
-			}
+			<ShowTag value={[]} tagOptions={tagOptions} onTagChange={jest.fn()} />
 		);
 
 		await user.click(screen.getByText('Tag'));
@@ -75,7 +62,6 @@ describe('Show Tag', () => {
 		expect(within(dropdown).getByTestId('icon: Tag')).toBeVisible();
 	});
 	it('should render the option with a black tag avatar if tag has no color', async () => {
-		const store = generateStore();
 		const tagName = 'tag option 1';
 		const tagOptions = [
 			{
@@ -84,10 +70,7 @@ describe('Show Tag', () => {
 		];
 
 		const { user } = setupTest(
-			<ShowTag value={[]} tagOptions={tagOptions} onTagChange={jest.fn()} />,
-			{
-				store
-			}
+			<ShowTag value={[]} tagOptions={tagOptions} onTagChange={jest.fn()} />
 		);
 
 		await user.click(screen.getByText('Tag'));
@@ -97,14 +80,11 @@ describe('Show Tag', () => {
 	});
 
 	it('should render added chip with the tag avatar', async () => {
-		const store = generateStore();
 		const tagName = 'tag option 1';
 		const value = {
 			label: tagName
 		};
-		setupTest(<ShowTag value={[value]} tagOptions={[]} onTagChange={jest.fn()} />, {
-			store
-		});
+		setupTest(<ShowTag value={[value]} tagOptions={[]} onTagChange={jest.fn()} />);
 
 		expect(
 			within(screen.getByTestId(`tag-${tagName}-${BLACK}`)).getByTestId('icon: Tag')

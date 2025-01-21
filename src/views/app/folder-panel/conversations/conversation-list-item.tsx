@@ -4,49 +4,42 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React, { FC, memo, ReactNode, useCallback, useMemo, useState } from 'react';
+import React, { memo, ReactNode, useCallback, useMemo, useState } from 'react';
 
 import {
 	Badge,
+	Button,
 	Container,
 	ContainerProps,
 	Dropdown,
 	Icon,
-	IconButton,
 	Padding,
 	Row,
 	Text,
 	Tooltip
 } from '@zextras/carbonio-design-system';
 import { pushHistory, useUserSettings } from '@zextras/carbonio-shell-ui';
-import { debounce, filter, find, forEach, includes, isEmpty, reduce, uniqBy } from 'lodash';
+import { debounce, filter, forEach, includes, isEmpty, reduce, uniqBy } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { ConversationMessagesList } from './conversation-messages-list';
-import { getFolderParentId } from './utils';
 import { ZIMBRA_STANDARD_COLORS } from '../../../../carbonio-ui-commons/constants';
-import { FOLDERS } from '../../../../carbonio-ui-commons/constants/folders';
 import { useTags } from '../../../../carbonio-ui-commons/store/zustand/tags';
 import { Tag } from '../../../../carbonio-ui-commons/types/tags';
 import { API_REQUEST_STATUS } from '../../../../constants';
 import { normalizeDropdownActionItem } from '../../../../helpers/actions';
-import { getFolderIdParts } from '../../../../helpers/folders';
 import { useConvActions } from '../../../../hooks/actions/use-conv-actions';
 import { useConvPreviewOnSeparatedWindowFn } from '../../../../hooks/actions/use-conv-preview-on-separated-window';
 import { useConvSetReadFn } from '../../../../hooks/actions/use-conv-set-read';
-import { useAppDispatch, useAppSelector } from '../../../../hooks/redux';
 import { useTagDropdownItem } from '../../../../hooks/use-tag-dropdown-item';
-import { searchConv } from '../../../../store/actions';
-import { selectConversationExpandedStatus } from '../../../../store/conversations-slice';
-import { selectMessages } from '../../../../store/messages-slice';
+import { searchConvEmailStoreAction } from '../../../../store/emails/actions/search-conv-action';
+import { useConversationStatus, useMessagesByIds } from '../../../../store/emails/store';
 import {
-	ConvMessage,
 	ConversationListItemProps,
-	IncompleteMessage,
-	MailsStateType,
 	TextReadValuesProps,
+	NormalizedConversation,
 	Conversation
 } from '../../../../types';
 import { ConversationPreviewPanel } from '../../detail-panel/conversation-preview-panel';
@@ -62,7 +55,7 @@ const CollapseElement = styled(Container)<{ $open: boolean }>`
 `;
 
 export const ConversationListItemActionWrapper = ({
-	item,
+	conversation,
 	active,
 	onClick,
 	onDoubleClick,
@@ -75,12 +68,12 @@ export const ConversationListItemActionWrapper = ({
 	onDoubleClick?: ContainerProps['onDoubleClick'];
 	shouldReplaceHistory?: boolean;
 	active?: boolean;
-	item: Conversation;
+	conversation: NormalizedConversation;
 	deselectAll: () => void;
 }): React.JSX.Element => {
 	const conversationPreviewFactory = useCallback(
-		() => <ConversationPreviewPanel conversation={item} isInsideExtraWindow />,
-		[item]
+		() => <ConversationPreviewPanel conversation={conversation} isInsideExtraWindow />,
+		[conversation]
 	);
 	const [t] = useTranslation();
 	const {
@@ -103,7 +96,7 @@ export const ConversationListItemActionWrapper = ({
 		previewOnSeparatedWindowDescriptor,
 		showOriginalDescriptor
 	} = useConvActions({
-		conversation: item,
+		conversation: conversation as Conversation,
 		deselectAll,
 		conversationPreviewFactory,
 		shouldReplaceHistory
@@ -134,7 +127,7 @@ export const ConversationListItemActionWrapper = ({
 			restoreFolderDescriptor
 		]
 	);
-	const tagItem = useTagDropdownItem(applyTagDescriptor, item.tags);
+	const tagItem = useTagDropdownItem(applyTagDescriptor, conversation.tags);
 	const dropdownItems = useMemo(
 		() =>
 			[
@@ -193,10 +186,10 @@ export const ConversationListItemActionWrapper = ({
 			items={dropdownItems}
 			display="block"
 			style={{ width: '100%', height: '4rem' }}
-			data-testid={`secondary-actions-menu-${item.id}`}
+			data-testid={`secondary-actions-menu-${conversation.id}`}
 		>
 			<HoverContainer
-				data-testid={`hover-container-${item.id}`}
+				data-testid={`hover-container-${conversation.id}`}
 				orientation="horizontal"
 				mainAlignment="flex-start"
 				crossAlignment="unset"
@@ -210,7 +203,7 @@ export const ConversationListItemActionWrapper = ({
 					mainAlignment="flex-end"
 					crossAlignment="center"
 					background={active ? 'highlight' : 'gray6'}
-					data-testid={`primary-actions-bar-${item.id}`}
+					data-testid={`primary-actions-bar-${conversation.id}`}
 				>
 					<ListItemHoverActions actions={hoverActions} />
 				</HoverBarContainer>
@@ -219,309 +212,282 @@ export const ConversationListItemActionWrapper = ({
 	);
 };
 
-export const ConversationListItem: FC<ConversationListItemProps> = memo(
-	function ConversationListItem({
-		item,
-		selected,
-		selecting,
-		toggle,
-		active,
-		isSearchModule,
-		activeItemId,
-		dragImageRef,
+export const ConversationListItem = memo(function ConversationListItem({
+	conversation,
+	selected,
+	selecting,
+	toggle,
+	active,
+	isSearchModule,
+	activeItemId,
+	dragImageRef,
+	deselectAll,
+	folderId,
+	setDraggedIds
+}: ConversationListItemProps): React.JSX.Element {
+	const { itemId } = useParams<{ itemId: string }>();
+	const [open, setOpen] = useState(false);
+	const messages = useMessagesByIds(conversation.messages.map((m) => m.id));
+	const folderParent = folderId ?? conversation.messages?.[0]?.parent;
+	const [t] = useTranslation();
+
+	const markAsRead = useConvSetReadFn({
+		ids: [conversation.id],
+		isConversationRead: conversation.read,
 		deselectAll,
-		folderId,
-		setDraggedIds
-	}) {
-		const { itemId } = useParams<{ itemId: string }>();
-		const dispatch = useAppDispatch();
-		const [open, setOpen] = useState(false);
-		const messages = useAppSelector(selectMessages);
-		const isConversation = 'messages' in (item || {});
-		const folderParent = getFolderParentId({ folderId: folderId ?? '', isConversation, item });
-		const [t] = useTranslation();
+		folderId: folderId ?? ''
+	});
 
-		const markAsRead = useConvSetReadFn({
-			ids: [item.id],
-			isConversationRead: item.read,
-			deselectAll,
-			folderId: folderId ?? ''
-		});
+	const conversationPreviewFactory = useCallback(
+		() => <ConversationPreviewPanel conversation={conversation} isInsideExtraWindow />,
+		[conversation]
+	);
 
-		const conversationPreviewFactory = useCallback(
-			() => <ConversationPreviewPanel conversation={item} isInsideExtraWindow />,
-			[item]
-		);
+	const conversationId = conversation.id;
+	const previewOnSeparatedWindow = useConvPreviewOnSeparatedWindowFn({
+		conversationId,
+		subject: conversation.subject,
+		conversationPreviewFactory
+	});
 
-		const previewOnSeparatedWindow = useConvPreviewOnSeparatedWindowFn({
-			conversationId: item.id,
-			subject: item.subject,
-			conversationPreviewFactory
-		});
-
-		const conversationStatus = useAppSelector((state: MailsStateType) =>
-			selectConversationExpandedStatus(state, item.id)
-		);
-		const tagsFromStore = useTags();
-		const tags = useMemo(
-			() =>
-				uniqBy(
-					reduce(
-						tagsFromStore,
-						(acc: Array<Tag>, v) => {
-							if (includes(item.tags, v.id)) {
-								acc.push({
-									...v,
-									// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-									// @ts-ignore
-									color: ZIMBRA_STANDARD_COLORS[v.color || 0].hex
-								});
-							} else if (item.tags?.length > 0 && !includes(item.tags, v.id)) {
-								forEach(
-									filter(item.tags, (tn) => tn.includes('nil:')),
-									(tagNotInList) => {
-										acc.push({
-											id: tagNotInList,
-											name: tagNotInList.split(':')[1],
-											color: 1
-										});
-									}
-								);
-							}
-							return acc;
-						},
-						[]
-					),
-					'id'
-				),
-			[item.tags, tagsFromStore]
-		);
-
-		const sortBy = useUserSettings()?.prefs?.zimbraPrefConversationOrder || 'dateDesc';
-		const zimbraPrefMarkMsgRead = useUserSettings()?.prefs?.zimbraPrefMarkMsgRead !== '-1';
-
-		const toggleOpen = useCallback(
-			(
-				e: React.MouseEvent<HTMLButtonElement> | React.KeyboardEvent | MouseEvent | KeyboardEvent
-			) => {
-				e.preventDefault();
-				setOpen((currentlyOpen) => {
-					if (
-						!currentlyOpen &&
-						conversationStatus !== API_REQUEST_STATUS.fulfilled &&
-						conversationStatus !== API_REQUEST_STATUS.pending
-					) {
-						dispatch(searchConv({ folderId: folderParent, conversationId: item.id, fetch: 'all' }));
-					}
-					return !currentlyOpen;
-				});
-			},
-			[conversationStatus, dispatch, folderParent, item.id]
-		);
-
-		const debouncedPushHistory = useMemo(
-			() =>
-				debounce(() => pushHistory(`/folder/${folderParent}/conversation/${item.id}`), 200, {
-					leading: false,
-					trailing: true
-				}),
-			[folderParent, item.id]
-		);
-
-		const _onClick = useCallback(
-			(e: React.MouseEvent<HTMLDivElement>) => {
-				if (!e.isDefaultPrevented()) {
-					if (item?.read === false && zimbraPrefMarkMsgRead) {
-						markAsRead.canExecute() && markAsRead.execute();
-					}
-					debouncedPushHistory();
-				}
-			},
-			[item?.read, zimbraPrefMarkMsgRead, debouncedPushHistory, markAsRead]
-		);
-
-		const _onDoubleClick = useCallback(
-			(e: React.MouseEvent<HTMLDivElement>) => {
-				if (e.isDefaultPrevented()) {
-					return;
-				}
-				debouncedPushHistory.cancel();
-				const { id, isDraft } = item.messages[0];
-				if (isDraft) {
-					pushHistory(`/folder/${folderParent}/edit/${id}?action=editAsDraft`);
-				} else {
-					previewOnSeparatedWindow.canExecute() && previewOnSeparatedWindow.execute();
-				}
-			},
-
-			[debouncedPushHistory, folderParent, item.messages, previewOnSeparatedWindow]
-		);
-
-		const toggleExpandButtonLabel = useMemo(
-			() => (open ? t('label.hide', 'Hide') : t('label.expand', 'Expand')),
-			[open, t]
-		);
-		const subject = useMemo(
-			() => item.subject || t('label.no_subject_with_tags', '<No Subject>'),
-			[item.subject, t]
-		);
-		const subFragmentTooltipLabel = useMemo(
-			() => (!isEmpty(item.fragment) ? item.fragment : subject),
-			[subject, item.fragment]
-		);
-		const sortSign = useMemo(() => (sortBy === 'dateDesc' ? -1 : 1), [sortBy]);
-
-		// this is the array of all the messages of this conversation to render in this folder
-		const messagesToRender = useMemo(
-			() =>
-				uniqBy(
-					reduce<ConvMessage, IncompleteMessage[]>(
-						item.messages,
-						(acc, v) => {
-							const msg = find(messages, ['id', v.id]);
-
-							if (msg) {
-								// in trash, we show all messages of the conversation even if only one is deleted
-								if (getFolderIdParts(folderParent).id === FOLDERS.TRASH) {
-									return [...acc, msg];
+	const conversationStatus = useConversationStatus(conversationId);
+	const tagsFromStore = useTags();
+	const tags = useMemo(
+		() =>
+			uniqBy(
+				reduce(
+					tagsFromStore,
+					(acc: Array<Tag>, v) => {
+						if (includes(conversation.tags, v.id)) {
+							acc.push({
+								...v,
+								// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+								// @ts-ignore
+								color: ZIMBRA_STANDARD_COLORS[v.color || 0].hex
+							});
+						} else if (conversation.tags?.length > 0 && !includes(conversation.tags, v.id)) {
+							forEach(
+								filter(conversation.tags, (tn) => tn.includes('nil:')),
+								(tagNotInList) => {
+									acc.push({
+										id: tagNotInList,
+										name: tagNotInList.split(':')[1],
+										color: 1
+									});
 								}
-								// all other messages are valid and must be showed in the conversation
-								return [...acc, msg];
-							}
-							return acc;
-						},
-						[]
-					).sort((a, b) => (a.date && b.date ? sortSign * (a.date - b.date) : 1)),
-					'id'
+							);
+						}
+						return acc;
+					},
+					[]
 				),
-			[item, messages, folderParent, sortSign]
-		);
+				'id'
+			),
+		[conversation.tags, tagsFromStore]
+	);
 
-		/**
-		 * This is the number of messages to display in the conversation badge.
-		 * In search module we check if the user has enabled the option to show trashed and/or spam messages
-		 * @returns {number}
-		 */
-		const getmsgToDisplayCount = useCallback((): number => item.messagesInConversation, [item]);
+	const zimbraPrefMarkMsgRead = useUserSettings()?.prefs?.zimbraPrefMarkMsgRead !== '-1';
 
-		const textReadValues: TextReadValuesProps = useMemo(() => {
-			if (typeof item.read === 'undefined')
-				return { color: 'text', weight: 'regular', badge: 'read' };
-			return item.read
-				? { color: 'text', weight: 'regular', badge: 'read' }
-				: { color: 'primary', weight: 'bold', badge: 'unread' };
-		}, [item.read]);
+	const toggleOpen = useCallback(
+		(e: React.MouseEvent<HTMLButtonElement> | React.KeyboardEvent | MouseEvent | KeyboardEvent) => {
+			e.preventDefault();
+			setOpen((currentlyOpen) => {
+				if (
+					!currentlyOpen &&
+					conversationStatus !== API_REQUEST_STATUS.fulfilled &&
+					conversationStatus !== API_REQUEST_STATUS.pending
+				) {
+					searchConvEmailStoreAction(conversationId);
+				}
+				return !currentlyOpen;
+			});
+		},
+		[conversationId, conversationStatus]
+	);
 
-		const renderBadge = useMemo(() => {
-			if (item.messagesInConversation === 1) return textReadValues.badge === 'unread';
-			if (item.messagesInConversation > 0) return true;
-			if (item?.messages?.length === 1) {
-				return textReadValues.badge === 'unread';
+	const debouncedPushHistory = useMemo(
+		() =>
+			debounce(() => pushHistory(`/folder/${folderParent}/conversation/${conversation.id}`), 200, {
+				leading: false,
+				trailing: true
+			}),
+		[folderParent, conversation.id]
+	);
+
+	const _onClick = useCallback(
+		(e: React.MouseEvent<HTMLDivElement>) => {
+			if (!e.isDefaultPrevented()) {
+				if (conversation?.read === false && zimbraPrefMarkMsgRead) {
+					markAsRead.canExecute() && markAsRead.execute();
+				}
+				debouncedPushHistory();
 			}
-			return item?.messages?.length > 0;
-		}, [item?.messages?.length, item.messagesInConversation, textReadValues.badge]);
+		},
+		[conversation?.read, zimbraPrefMarkMsgRead, debouncedPushHistory, markAsRead]
+	);
 
-		const shouldReplaceHistory = useMemo(() => itemId === item.id, [item.id, itemId]);
+	const _onDoubleClick = useCallback(
+		(e: React.MouseEvent<HTMLDivElement>) => {
+			if (e.isDefaultPrevented()) {
+				return;
+			}
+			debouncedPushHistory.cancel();
+			const { id, isDraft } = conversation.messages[0];
+			if (isDraft) {
+				pushHistory(`/folder/${folderParent}/edit/${id}?action=editAsDraft`);
+			} else {
+				previewOnSeparatedWindow.canExecute() && previewOnSeparatedWindow.execute();
+			}
+		},
 
-		return (
-			<Container mainAlignment="flex-start" data-testid={`ConversationListItem-${item.id}`}>
-				<ConversationListItemActionWrapper
-					item={item}
-					active={active}
-					onClick={_onClick}
-					onDoubleClick={_onDoubleClick}
-					shouldReplaceHistory={shouldReplaceHistory}
-					deselectAll={deselectAll}
+		[debouncedPushHistory, folderParent, conversation.messages, previewOnSeparatedWindow]
+	);
+
+	const toggleExpandButtonLabel = useMemo(
+		() => (open ? t('label.hide', 'Hide') : t('label.expand', 'Expand')),
+		[open, t]
+	);
+	const subject = useMemo(
+		() => conversation.subject || t('label.no_subject_with_tags', '<No Subject>'),
+		[conversation.subject, t]
+	);
+	const subFragmentTooltipLabel = useMemo(
+		() => (!isEmpty(conversation.fragment) ? conversation.fragment : subject),
+		[subject, conversation.fragment]
+	);
+
+	/**
+	 * This is the number of messages to display in the conversation badge.
+	 * In search module we check if the user has enabled the option to show trashed and/or spam messages
+	 * @returns {number}
+	 */
+	const getmsgToDisplayCount = useCallback(
+		(): number => conversation.messagesInConversation,
+		[conversation]
+	);
+
+	const textReadValues: TextReadValuesProps = useMemo(() => {
+		if (typeof conversation.read === 'undefined')
+			return { color: 'text', weight: 'regular', badge: 'read' };
+		return conversation.read
+			? { color: 'text', weight: 'regular', badge: 'read' }
+			: { color: 'primary', weight: 'bold', badge: 'unread' };
+	}, [conversation.read]);
+
+	const renderBadge = useMemo(() => {
+		if (conversation.messagesInConversation === 1) return textReadValues.badge === 'unread';
+		if (conversation.messagesInConversation > 0) return true;
+		if (conversation?.messages?.length === 1) {
+			return textReadValues.badge === 'unread';
+		}
+		return conversation?.messages?.length > 0;
+	}, [conversation?.messages?.length, conversation.messagesInConversation, textReadValues.badge]);
+
+	const shouldReplaceHistory = useMemo(() => itemId === conversation.id, [conversation.id, itemId]);
+
+	return (
+		<Container mainAlignment="flex-start" data-testid={`ConversationListItem-${conversation.id}`}>
+			<ConversationListItemActionWrapper
+				conversation={conversation}
+				active={active}
+				onClick={_onClick}
+				onDoubleClick={_onDoubleClick}
+				shouldReplaceHistory={shouldReplaceHistory}
+				deselectAll={deselectAll}
+			>
+				<div
+					style={{ alignSelf: 'center' }}
+					data-testid={`conversation-list-item-avatar-${conversation.id}`}
 				>
-					<div
-						style={{ alignSelf: 'center' }}
-						data-testid={`conversation-list-item-avatar-${item.id}`}
-					>
-						<ItemAvatar
-							item={item}
-							selected={selected}
-							selecting={selecting}
-							toggle={toggle}
-							folderId={folderParent}
-						/>
-						<Padding horizontal="extrasmall" />
-					</div>
-					<Row
-						takeAvailableSpace
-						orientation="horizontal"
-						wrap="wrap"
-						padding={{ left: 'small', top: 'small', bottom: 'small', right: 'large' }}
-					>
-						<Container orientation="horizontal" height="fit" width="fill">
-							<SenderName item={item} textValues={textReadValues} />
-							<RowInfo item={item} tags={tags} />
-						</Container>
-						<Container orientation="horizontal" height="fit" width="fill" crossAlignment="center">
-							{renderBadge && (
-								<Row>
-									<Padding right="extrasmall">
-										<Badge
-											data-testid={`conversation-messages-count-${item.id}`}
-											value={getmsgToDisplayCount()}
-											backgroundColor={(textReadValues.badge === 'unread' && 'primary') || 'gray2'}
-											color={(textReadValues.badge === 'unread' && 'gray6') || 'gray0'}
-										/>
-									</Padding>
-								</Row>
-							)}
-
-							<Tooltip label={subFragmentTooltipLabel} overflow="break-word" maxWidth="60vw">
-								<Row
-									wrap="nowrap"
-									takeAvailableSpace
-									mainAlignment="flex-start"
-									crossAlignment="baseline"
-								>
-									<Text
-										data-testid="Subject"
-										weight={textReadValues.weight}
-										color={item.subject ? 'text' : 'secondary'}
-									>
-										{subject}
-									</Text>
-								</Row>
-							</Tooltip>
+					<ItemAvatar
+						item={conversation}
+						selected={selected}
+						selecting={selecting}
+						toggle={toggle}
+						folderId={folderParent}
+					/>
+					<Padding horizontal="extrasmall" />
+				</div>
+				<Row
+					takeAvailableSpace
+					orientation="horizontal"
+					wrap="wrap"
+					padding={{ left: 'small', top: 'small', bottom: 'small', right: 'large' }}
+				>
+					<Container orientation="horizontal" height="fit" width="fill">
+						<SenderName item={conversation as Conversation} textValues={textReadValues} />
+						<RowInfo item={conversation as Conversation} tags={tags} />
+					</Container>
+					<Container orientation="horizontal" height="fit" width="fill" crossAlignment="center">
+						{renderBadge && (
 							<Row>
-								{item.urgent && <Icon data-testid="UrgentIcon" icon="ArrowUpward" color="error" />}
-								{item.messagesInConversation > 1 && (
-									<Tooltip label={toggleExpandButtonLabel}>
-										<IconButton
-											data-testid="ToggleExpand"
-											size="small"
-											icon={open ? 'ArrowIosUpward' : 'ArrowIosDownward'}
-											onClick={toggleOpen}
-										/>
-									</Tooltip>
-								)}
+								<Padding right="extrasmall">
+									<Badge
+										data-testid={`conversation-messages-count-${conversation.id}`}
+										value={getmsgToDisplayCount()}
+										backgroundColor={textReadValues.badge === 'unread' ? 'primary' : 'gray2'}
+										color={textReadValues.badge === 'unread' ? 'gray6' : 'gray0'}
+									/>
+								</Padding>
 							</Row>
-						</Container>
-					</Row>
-				</ConversationListItemActionWrapper>
-				{open && (
-					<CollapseElement
-						$open={open}
-						data-testid="ConversationExpander"
-						padding={{ left: 'extralarge' }}
-						height="auto"
-					>
-						<ConversationMessagesList
-							active={activeItemId}
-							length={item.messagesInConversation}
-							messages={messagesToRender}
-							conversationStatus={conversationStatus}
-							folderId={folderParent}
-							dragImageRef={dragImageRef}
-							isSearchModule={isSearchModule}
-							setDraggedIds={setDraggedIds}
-						/>
-					</CollapseElement>
-				)}
-			</Container>
-		);
-	}
-);
+						)}
+						<Tooltip label={subFragmentTooltipLabel} overflow="break-word" maxWidth="60vw">
+							<Row
+								wrap="nowrap"
+								takeAvailableSpace
+								mainAlignment="flex-start"
+								crossAlignment="baseline"
+							>
+								<Text
+									data-testid="Subject"
+									weight={textReadValues.weight}
+									color={conversation.subject ? 'text' : 'secondary'}
+								>
+									{subject}
+								</Text>
+							</Row>
+						</Tooltip>
+						<Row>
+							{conversation.urgent && (
+								<Icon data-testid="UrgentIcon" icon="ArrowUpward" color="error" />
+							)}
+							{conversation.messagesInConversation > 1 && (
+								<Tooltip label={toggleExpandButtonLabel}>
+									<Button
+										data-testid="ToggleExpand"
+										size="small"
+										shape="regular"
+										type="default"
+										labelColor="text"
+										backgroundColor="transparent"
+										icon={open ? 'ArrowIosUpward' : 'ArrowIosDownward'}
+										onClick={toggleOpen}
+									/>
+								</Tooltip>
+							)}
+						</Row>
+					</Container>
+				</Row>
+			</ConversationListItemActionWrapper>
+			{open && (
+				<CollapseElement
+					$open={open}
+					data-testid="ConversationExpander"
+					padding={{ left: 'extralarge' }}
+					height="auto"
+				>
+					<ConversationMessagesList
+						active={activeItemId}
+						length={conversation.messagesInConversation}
+						messages={messages}
+						conversationStatus={conversationStatus}
+						folderId={folderParent}
+						dragImageRef={dragImageRef}
+						isSearchModule={isSearchModule}
+						setDraggedIds={setDraggedIds}
+					/>
+				</CollapseElement>
+			)}
+		</Container>
+	);
+});

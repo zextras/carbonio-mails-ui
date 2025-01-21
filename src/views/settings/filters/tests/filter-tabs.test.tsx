@@ -10,16 +10,14 @@ import { screen } from '@testing-library/react';
 
 import { createSoapAPIInterceptor } from '../../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { setupTest } from '../../../../carbonio-ui-commons/test/test-setup';
-import { generateStore } from '../../../../tests/generators/store';
 import { FilterTabs } from '../filter-tabs';
 import { mockFilter } from './test-utils';
 
 describe('FilterTabs', () => {
 	it('should display Incoming and Outgoing filters tab titles', async () => {
-		const store = generateStore();
 		const getFiltersInterceptor = createSoapAPIInterceptor('GetFilterRules');
 
-		setupTest(<FilterTabs />, { store });
+		setupTest(<FilterTabs />);
 		await getFiltersInterceptor;
 
 		expect(screen.getByText('Incoming Message Filters')).toBeVisible();
@@ -27,7 +25,6 @@ describe('FilterTabs', () => {
 	});
 
 	it('should display Incoming filters by default', async () => {
-		const store = generateStore();
 		const getFiltersInterceptor = createSoapAPIInterceptor('GetFilterRules', {
 			_jsns: 'urn:zimbraMail',
 			filterRules: [
@@ -40,7 +37,7 @@ describe('FilterTabs', () => {
 			]
 		});
 
-		setupTest(<FilterTabs />, { store });
+		setupTest(<FilterTabs />);
 		await getFiltersInterceptor;
 
 		expect(await screen.findByText('Incoming Filter 1')).toBeVisible();
@@ -48,7 +45,6 @@ describe('FilterTabs', () => {
 	});
 
 	it('should display Outgoing filters when selecting Outgoing tab', async () => {
-		const store = generateStore();
 		const getIncomingFiltersInterceptor = createSoapAPIInterceptor('GetFilterRules', {
 			_jsns: 'urn:zimbraMail',
 			filterRules: [
@@ -70,7 +66,7 @@ describe('FilterTabs', () => {
 			]
 		});
 
-		const { user } = setupTest(<FilterTabs />, { store });
+		const { user } = setupTest(<FilterTabs />);
 		await getIncomingFiltersInterceptor;
 		expect(await screen.findByText('Incoming Filter 1')).toBeVisible();
 		expect(screen.getByText('Incoming Filter 2')).toBeVisible();

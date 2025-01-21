@@ -187,8 +187,8 @@ const MessageContactList: FC<{
 								folderId,
 								folderName: messageFolder.name
 							})}
-							backgroundColor={(textReadValues.badge === 'unread' && 'primary') || 'gray2'}
-							color={(textReadValues.badge === 'unread' && 'gray6') || 'gray0'}
+							backgroundColor={textReadValues.badge === 'unread' ? 'primary' : 'gray2'}
+							color={textReadValues.badge === 'unread' ? 'gray6' : 'gray0'}
 						/>
 					</Padding>
 				)}

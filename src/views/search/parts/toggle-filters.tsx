@@ -3,9 +3,8 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useCallback, useState, useEffect, FC, ReactElement } from 'react';
+import React, { useCallback, useState, useEffect, FC, ReactElement, useId } from 'react';
 
-import { nanoid } from '@reduxjs/toolkit';
 import { Container, Switch, Text, Padding } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import { filter } from 'lodash';
@@ -25,6 +24,7 @@ const ToggleFilters: FC<ToggleFiltersProps> = ({ compProps }): ReactElement => {
 	const [isUnread, setIsUnread] = useState(false);
 	const [hasAttachment, setHasAttachment] = useState(false);
 	const [isFlagged, setIsFlagged] = useState(false);
+	const id = useId();
 
 	const toggleUnread = useCallback(() => {
 		setIsUnread(!isUnread);
@@ -32,7 +32,7 @@ const ToggleFilters: FC<ToggleFiltersProps> = ({ compProps }): ReactElement => {
 			? setUnreadFilter([])
 			: setUnreadFilter([
 					{
-						id: nanoid(),
+						id,
 						label: 'is:unread',
 						value: 'is:unread',
 						isQueryFilter: true,
@@ -40,7 +40,7 @@ const ToggleFilters: FC<ToggleFiltersProps> = ({ compProps }): ReactElement => {
 						avatarBackground: 'gray1'
 					}
 				]);
-	}, [isUnread, setUnreadFilter]);
+	}, [id, isUnread, setUnreadFilter]);
 
 	const toggleFlagged = useCallback(() => {
 		setIsFlagged(!isFlagged);
@@ -48,7 +48,7 @@ const ToggleFilters: FC<ToggleFiltersProps> = ({ compProps }): ReactElement => {
 			? setFlaggedFilter([])
 			: setFlaggedFilter([
 					{
-						id: nanoid(),
+						id,
 						label: 'is:flagged',
 						value: 'is:flagged',
 						isQueryFilter: true,
@@ -56,7 +56,7 @@ const ToggleFilters: FC<ToggleFiltersProps> = ({ compProps }): ReactElement => {
 						avatarBackground: 'error'
 					}
 				]);
-	}, [isFlagged, setFlaggedFilter]);
+	}, [id, isFlagged, setFlaggedFilter]);
 
 	const toggleAttachment = useCallback(() => {
 		setHasAttachment(!hasAttachment);
@@ -64,7 +64,7 @@ const ToggleFilters: FC<ToggleFiltersProps> = ({ compProps }): ReactElement => {
 			? setAttachmentFilter([])
 			: setAttachmentFilter([
 					{
-						id: nanoid(),
+						id,
 						label: 'has:attachment',
 						value: 'has:attachment',
 						isQueryFilter: true,
@@ -72,7 +72,7 @@ const ToggleFilters: FC<ToggleFiltersProps> = ({ compProps }): ReactElement => {
 						avatarBackground: 'gray1'
 					}
 				]);
-	}, [hasAttachment, setAttachmentFilter]);
+	}, [hasAttachment, id, setAttachmentFilter]);
 
 	const toggleSharedFolder = useCallback(() => {
 		setIsSharedFolderIncludedTobe(!isSharedFolderIncludedTobe);
@@ -86,7 +86,7 @@ const ToggleFilters: FC<ToggleFiltersProps> = ({ compProps }): ReactElement => {
 			setIsUnread(true);
 			setUnreadFilter([
 				{
-					id: nanoid(),
+					id,
 					label: 'is:unread',
 					value: 'is:unread',
 					isQueryFilter: true,
@@ -102,7 +102,7 @@ const ToggleFilters: FC<ToggleFiltersProps> = ({ compProps }): ReactElement => {
 			setIsFlagged(true);
 			setFlaggedFilter([
 				{
-					id: nanoid(),
+					id,
 					label: 'is:flagged',
 					value: 'is:flagged',
 					isQueryFilter: true,
@@ -123,7 +123,7 @@ const ToggleFilters: FC<ToggleFiltersProps> = ({ compProps }): ReactElement => {
 			setHasAttachment(true);
 			setAttachmentFilter([
 				{
-					id: nanoid(),
+					id,
 					label: 'has:attachment',
 					value: 'has:attachment',
 					isQueryFilter: true,
@@ -131,7 +131,7 @@ const ToggleFilters: FC<ToggleFiltersProps> = ({ compProps }): ReactElement => {
 				}
 			]);
 		}
-	}, [query, setAttachmentFilter, setFlaggedFilter, setUnreadFilter]);
+	}, [id, query, setAttachmentFilter, setFlaggedFilter, setUnreadFilter]);
 
 	return (
 		<>

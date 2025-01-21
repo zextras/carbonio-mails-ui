@@ -9,17 +9,16 @@ import { screen } from '@testing-library/react';
 import { noop } from 'lodash';
 
 import { setupTest } from '../../../../../../carbonio-ui-commons/test/test-setup';
-import { generateStore } from '../../../../../../tests/generators/store';
 import { SendLaterModal } from '../send-later-modal';
 
 describe('send-later-modal', () => {
 	it('all elements of the component are visible', async () => {
 		const closeModal = jest.fn();
-		const store = generateStore();
 
-		setupTest(<SendLaterModal onClose={(): void => closeModal()} onAutoSendTimeSelected={noop} />, {
-			store
-		});
+		setupTest(
+			<SendLaterModal onClose={(): void => closeModal()} onAutoSendTimeSelected={noop} />,
+			{}
+		);
 
 		const modalTitle = screen.getByText(/label\.send_later/i);
 		expect(modalTitle).toBeVisible();

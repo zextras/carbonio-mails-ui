@@ -21,7 +21,7 @@ import styled from 'styled-components';
 import { handleCertificateFileUpload } from './certificate-utils';
 import ModalFooter from '../../../../../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../../../../../carbonio-ui-commons/components/modals/modal-header';
-import { Certificate } from '../../../../../store/zustand/certificates/store';
+import { Certificate } from '../../../../../store/certificates/store';
 
 const FileInput = styled.input`
 	display: none;

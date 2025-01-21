@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, useCallback, useEffect, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
 import { replaceHistory } from '@zextras/carbonio-shell-ui';
@@ -11,12 +11,12 @@ import { filter, isEmpty } from 'lodash';
 import { useParams } from 'react-router-dom';
 
 import { ConversationPreviewPanel } from './conversation-preview-panel';
-import PreviewPanelHeader from './preview/preview-panel-header';
+import { PreviewPanelHeader } from './preview/preview-panel-header';
 import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
+import { API_REQUEST_STATUS } from '../../../constants';
 import { getFolderIdParts } from '../../../helpers/folders';
-import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
-import { getConv } from '../../../store/actions';
-import { selectConversation } from '../../../store/conversations-slice';
+import { getConvEmailStoreAction } from '../../../store/emails/actions/get-conv-action';
+import { useCompleteConversationOrFetch } from '../../../store/emails/hooks/hooks';
 import { useExtraWindow } from '../extra-windows/use-extra-window';
 
 type ConversationPreviewPanelProps = { conversationId?: string; folderId?: string };
@@ -31,11 +31,12 @@ export const useConversationPreviewPanelParameters = (
 	};
 };
 
-export const ConversationPreviewPanelContainer: FC<ConversationPreviewPanelProps> = (props) => {
+export const ConversationPreviewPanelContainer = (
+	props: ConversationPreviewPanelProps
+): React.JSX.Element => {
 	const { conversationId, folderId } = useConversationPreviewPanelParameters(props);
 	const { isInsideExtraWindow } = useExtraWindow();
-	const dispatch = useAppDispatch();
-	const conversation = useAppSelector(selectConversation(conversationId));
+	const { conversation, conversationStatus } = useCompleteConversationOrFetch(conversationId);
 
 	const onConversationIdChange = useCallback(
 		(newConversationId: string): void => {
@@ -46,9 +47,9 @@ export const ConversationPreviewPanelContainer: FC<ConversationPreviewPanelProps
 
 	useEffect(() => {
 		if (isEmpty(conversation)) {
-			dispatch(getConv({ conversationId, onConversationIdChange }));
+			getConvEmailStoreAction({ id: conversationId, onConversationIdChange });
 		}
-	}, [conversation, dispatch, conversationId, onConversationIdChange]);
+	}, [conversation, conversationId, onConversationIdChange]);
 
 	const showPreviewPanel = useMemo(
 		(): boolean | undefined =>
@@ -71,11 +72,18 @@ export const ConversationPreviewPanelContainer: FC<ConversationPreviewPanelProps
 							folderId={folderId}
 						/>
 					)}
-					<ConversationPreviewPanel
-						data-testid={`conversation-preview-panel-${conversationId}`}
-						conversation={conversation}
-						isInsideExtraWindow={isInsideExtraWindow}
-					/>
+
+					{conversation && conversationStatus === API_REQUEST_STATUS.fulfilled && (
+						<ConversationPreviewPanel
+							data-testid={`conversation-preview-panel-${conversationId}`}
+							conversation={conversation}
+							isInsideExtraWindow={isInsideExtraWindow}
+						/>
+					)}
+
+					{(conversationStatus === API_REQUEST_STATUS.error || conversationStatus === null) && (
+						<></>
+					)}
 				</>
 			)}
 		</Container>

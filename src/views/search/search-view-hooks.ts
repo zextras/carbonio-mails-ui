@@ -11,7 +11,7 @@ import { type ErrorSoapBodyResponse, useUserSettings } from '@zextras/carbonio-s
 import { map } from 'lodash';
 
 import { generateQueryString, updateQueryChips } from './utils';
-import { searchSoapApi } from '../../api/search';
+import { searchSoapApi } from '../../api/search-soap-api';
 import { useFoldersMap } from '../../carbonio-ui-commons/store/zustand/folder';
 import { getTags } from '../../carbonio-ui-commons/store/zustand/tags';
 import { Tags } from '../../carbonio-ui-commons/types/tags';
@@ -20,14 +20,14 @@ import { mapToNormalizedConversation } from '../../normalizations/normalize-conv
 import { normalizeMailMessageFromSoap } from '../../normalizations/normalize-message';
 import {
 	appendConversations,
-	appendMessages,
-	setSearchResultsByConversation,
+	appendMessagesToSearch,
 	updateSearchResultsLoadingStatus,
 	useSearchResults,
-	resetSearch,
-	setSearchResultsByMessage
-} from '../../store/zustand/search/store';
-import { IncompleteMessage, MailMessage, SearchResponse, SearchSliceState } from '../../types';
+	setSearchResultsByMessage,
+	setSearchResultsByConversation,
+	resetSearchAndPopulatedItems
+} from '../../store/emails/store';
+import { IncompleteMessage, MailMessage, SearchResponse, SearchIndexSliceState } from '../../types';
 
 type UseRunSearchProps = {
 	query: QueryChip[];
@@ -47,21 +47,19 @@ function handleFulFilledConversationResults({
 	tags: Tags;
 }): void {
 	const conversations = map(searchResponse.c, (conv) =>
-		mapToNormalizedConversation({ c: conv, tags })
+		mapToNormalizedConversation({ conversation: conv })
 	);
 
 	setSearchResultsByConversation(conversations, searchResponse.more);
 }
 
 function handleFulFilledMessagesResults({
-	searchResponse,
-	tags
+	searchResponse
 }: {
 	searchResponse: SearchResponse;
-	tags: Tags;
 }): void {
 	const normalizedMessages = map(searchResponse.m, (msg) =>
-		normalizeMailMessageFromSoap(msg, false)
+		normalizeMailMessageFromSoap(msg, true)
 	);
 
 	setSearchResultsByMessage(normalizedMessages, searchResponse.more);
@@ -69,8 +67,7 @@ function handleFulFilledMessagesResults({
 
 function handleLoadMoreResults({
 	searchResponse,
-	offset,
-	tags
+	offset
 }: {
 	searchResponse: SearchResponse;
 	offset: number;
@@ -78,7 +75,7 @@ function handleLoadMoreResults({
 }): void {
 	if (searchResponse.c) {
 		const conversations = map(searchResponse.c, (conv) =>
-			mapToNormalizedConversation({ c: conv, tags })
+			mapToNormalizedConversation({ conversation: conv })
 		);
 		const messages: (IncompleteMessage | MailMessage)[] = [];
 		searchResponse.c?.forEach((soapConversation) =>
@@ -87,14 +84,14 @@ function handleLoadMoreResults({
 			)
 		);
 		appendConversations(conversations, offset, searchResponse.more);
-		appendMessages(messages, offset);
+		appendMessagesToSearch(messages, offset);
 	}
 	if (searchResponse.m) {
 		const messages: (IncompleteMessage | MailMessage)[] = [];
 		searchResponse.m?.forEach((soapMessage) =>
 			messages.push(normalizeMailMessageFromSoap(soapMessage, false))
 		);
-		appendMessages(messages, offset);
+		appendMessagesToSearch(messages, offset);
 	}
 }
 
@@ -112,10 +109,10 @@ export function handleSearchResults({
 	}
 
 	if (searchResponse.m) {
-		handleFulFilledMessagesResults({ searchResponse, tags });
+		handleFulFilledMessagesResults({ searchResponse });
 	}
 	if (searchResponse && !searchResponse.c && !searchResponse.m) {
-		resetSearch();
+		resetSearchAndPopulatedItems();
 		updateSearchResultsLoadingStatus(API_REQUEST_STATUS.fulfilled);
 	}
 }
@@ -134,7 +131,7 @@ export function useRunSearch({
 }: UseRunSearchProps): {
 	searchDisabled: boolean;
 	queryToString: string;
-	searchResults: SearchSliceState['search'];
+	searchResults: SearchIndexSliceState['searchIndexSlice'];
 	isInvalidQuery: boolean;
 	filterCount: number;
 } {
@@ -170,7 +167,6 @@ export function useRunSearch({
 				sortBy: 'dateDesc',
 				types: isMessageView ? 'message' : 'conversation',
 				offset: 0,
-				recip: '0',
 				locale: prefLocale,
 				abortSignal
 			});
@@ -212,7 +208,7 @@ export function useRunSearch({
 	};
 }
 
-export function useLoadMore({
+export function useLoadMoreForSearchSlice({
 	query,
 	offset,
 	hasMore,

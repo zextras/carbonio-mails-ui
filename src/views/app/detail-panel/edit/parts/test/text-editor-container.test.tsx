@@ -9,7 +9,7 @@ import React from 'react';
 import { useIntegratedComponent, useUserSettings } from '@zextras/carbonio-shell-ui';
 
 import { setupTest, screen } from '../../../../../../carbonio-ui-commons/test/test-setup';
-import { useEditorIsRichText, useEditorText } from '../../../../../../store/zustand/editor';
+import { useEditorIsRichText, useEditorText } from '../../../../../../store/editor';
 import { TextEditorContainer, TextEditorContainerProps } from '../text-editor-container';
 
 jest.mock('@zextras/carbonio-shell-ui', () => ({
@@ -17,7 +17,7 @@ jest.mock('@zextras/carbonio-shell-ui', () => ({
 	useUserSettings: jest.fn()
 }));
 
-jest.mock('../../../../../../store/zustand/editor', () => ({
+jest.mock('../../../../../../store/editor', () => ({
 	useEditorIsRichText: jest.fn(),
 	useEditorText: jest.fn()
 }));

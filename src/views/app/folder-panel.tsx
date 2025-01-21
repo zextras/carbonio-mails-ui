@@ -5,7 +5,7 @@
  */
 /* eslint-disable no-nested-ternary */
 
-import React, { FC, useEffect } from 'react';
+import React from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
 import { useAppContext } from '@zextras/carbonio-shell-ui';
@@ -15,23 +15,12 @@ import { useParams } from 'react-router-dom';
 import { ConversationList } from './folder-panel/conversations/conversation-list';
 import { MessageList } from './folder-panel/messages/message-list';
 import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
-import { useAppDispatch } from '../../hooks/redux';
 import type { AppContext } from '../../types';
 import ShimmerList from '../search/shimmer-list';
 
-const FolderPanel: FC = () => {
+const FolderPanel = (): React.JSX.Element => {
 	const { folderId } = useParams<{ folderId: string }>();
-	const dispatch = useAppDispatch();
 	const { isMessageView } = useAppContext<AppContext>();
-
-	useEffect(() => {
-		if (folderId) {
-			dispatch({
-				type: 'conversations/setCurrentFolder',
-				payload: folderId
-			});
-		}
-	}, [folderId, dispatch]);
 
 	return isNil(isMessageView) ? (
 		<ShimmerList />

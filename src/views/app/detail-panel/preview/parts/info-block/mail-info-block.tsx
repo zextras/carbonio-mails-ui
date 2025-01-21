@@ -12,7 +12,6 @@ import { DistributionListIcon } from './distribution-list-icon';
 import { ExternalDomainIcon } from './external-domain-icon';
 import { MailSensitivityIcon } from './mail-sensitivity-icon';
 import { SmimeIcon } from './smime-icon';
-import { StoreProvider } from '../../../../../../store/redux';
 import { IncompleteMessage } from '../../../../../../types';
 import { MailInfoDetailModal } from '../info-details-modal/mail-info-detail-modal';
 
@@ -42,18 +41,16 @@ export const MailInfoBlock = ({ msg }: MailInfoProps): React.JSX.Element | null 
 					id: modalId,
 					maxHeight: '90vh',
 					children: (
-						<StoreProvider>
-							<MailInfoDetailModal
-								onClose={(): void => closeModal(modalId)}
-								signature={signature}
-								creationDateFromMailHeaders={creationDateFromHeaders}
-								messageIdFromMailHeaders={messageIdFromHeaders}
-								messageIsFromDistributionList={fromDistributionList}
-								messageIsFromExternalDomain={fromExternalDomain}
-								// authenticationMailsHeaders={authenticationMailsHeaders}
-								sensitivityValue={sensitivityHeader}
-							/>
-						</StoreProvider>
+						<MailInfoDetailModal
+							onClose={(): void => closeModal(modalId)}
+							signature={signature}
+							creationDateFromMailHeaders={creationDateFromHeaders}
+							messageIdFromMailHeaders={messageIdFromHeaders}
+							messageIsFromDistributionList={fromDistributionList}
+							messageIsFromExternalDomain={fromExternalDomain}
+							// authenticationMailsHeaders={authenticationMailsHeaders}
+							sensitivityValue={sensitivityHeader}
+						/>
 					)
 				},
 				true

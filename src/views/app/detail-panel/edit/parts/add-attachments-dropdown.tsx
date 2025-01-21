@@ -22,7 +22,7 @@ import styled from 'styled-components';
 import * as StyledComp from './edit-view-styled-components';
 import { buildArrayFromFileList } from '../../../../../helpers/files';
 import { isFulfilled } from '../../../../../helpers/promises';
-import { useEditorAttachments, useEditorText } from '../../../../../store/zustand/editor';
+import { useEditorAttachments, useEditorText } from '../../../../../store/editor';
 import { MailsEditorV2 } from '../../../../../types';
 import { useGetPublicUrl, UseGetPublicUrlRespType } from '../edit-utils-hooks/use-get-public-url';
 import {

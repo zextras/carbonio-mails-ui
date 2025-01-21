@@ -11,7 +11,6 @@ import { addRoute, removeRoute, t } from '@zextras/carbonio-shell-ui';
 import { Route, useRouteMatch } from 'react-router-dom';
 
 import { BACKUP_SEARCH_ROUTE } from '../constants';
-import { StoreProvider } from '../store/redux';
 
 const LazyBackupSearchView = React.lazy(
 	() =>
@@ -23,13 +22,11 @@ const LazyBackupSearchView = React.lazy(
 const BackupSearchViewComponent = (): React.JSX.Element => {
 	const { path } = useRouteMatch();
 	return (
-		<StoreProvider>
-			<ModalManager>
-				<Route path={`${path}/:itemId?`}>
-					<LazyBackupSearchView />
-				</Route>
-			</ModalManager>
-		</StoreProvider>
+		<ModalManager>
+			<Route path={`${path}/:itemId?`}>
+				<LazyBackupSearchView />
+			</Route>
+		</ModalManager>
 	);
 };
 

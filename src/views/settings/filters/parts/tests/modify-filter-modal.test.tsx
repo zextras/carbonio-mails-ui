@@ -10,13 +10,11 @@ import React, { act } from 'react';
 import { screen } from '@testing-library/react';
 
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
-import { generateStore } from '../../../../../tests/generators/store';
 import { Filter } from '../../../../../types';
 import { ModifyFilterModal } from '../modify-filter/modify-filter-modal';
 
 describe('modify filter modal', () => {
 	it('should display modal with current saved actions', async () => {
-		const store = generateStore();
 		setupTest(
 			<ModifyFilterModal
 				isIncoming
@@ -34,10 +32,7 @@ describe('modify filter modal', () => {
 					]
 				}}
 				onModifyConfirm={jest.fn()}
-			/>,
-			{
-				store
-			}
+			/>
 		);
 
 		expect(screen.getByText('Keep in Inbox')).toBeVisible();
@@ -48,23 +43,18 @@ describe('modify filter modal', () => {
 	});
 
 	it('should display existing filter with current title when modifying', async () => {
-		const store = generateStore();
 		setupTest(
 			<ModifyFilterModal
 				isIncoming
 				onClose={jest.fn()}
 				onModifyConfirm={jest.fn()}
 				selectedFilter={mockFilter({ name: 'Test Filter' })}
-			/>,
-			{
-				store
-			}
+			/>
 		);
 		expect(screen.getByRole('textbox', { name: 'Filter Name*' })).toHaveValue('Test Filter');
 	});
 	it('should call onConfirm with old data if there are no changes', async () => {
 		const onConfirm = jest.fn();
-		const store = generateStore();
 		const selectedFilter = mockFilter({ name: 'Test Filter' });
 		const { user } = setupTest(
 			<ModifyFilterModal
@@ -72,10 +62,7 @@ describe('modify filter modal', () => {
 				onClose={jest.fn()}
 				onModifyConfirm={onConfirm}
 				selectedFilter={selectedFilter}
-			/>,
-			{
-				store
-			}
+			/>
 		);
 
 		const saveButton = screen.getByRole('button', {
@@ -89,7 +76,6 @@ describe('modify filter modal', () => {
 
 	it('should call onConfirm with updated filter name after clicking save button', async () => {
 		const onConfirm = jest.fn();
-		const store = generateStore();
 		const selectedFilter = mockFilter({ name: 'Test Filter' });
 		const { user } = setupTest(
 			<ModifyFilterModal
@@ -97,10 +83,7 @@ describe('modify filter modal', () => {
 				onClose={jest.fn()}
 				onModifyConfirm={onConfirm}
 				selectedFilter={selectedFilter}
-			/>,
-			{
-				store
-			}
+			/>
 		);
 
 		const filterInputElement = screen.getByRole('textbox', {

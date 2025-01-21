@@ -3,49 +3,40 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, ReactElement, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { ReactElement, useEffect, useMemo, useRef, useState } from 'react';
 
-import { t, useAppContext, useUserSettings } from '@zextras/carbonio-shell-ui';
+import { useAppContext, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
+import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 
 import { MessageListComponent } from './message-list-component';
+import { useLoadMoreForMessageList } from './message-list-hooks';
 import { MessageListItemComponent } from './message-list-item-component';
 import { CustomListItem } from '../../../../carbonio-ui-commons/components/list/list-item';
 import { FOLDERS } from '../../../../carbonio-ui-commons/constants/folders';
 import { useFolder } from '../../../../carbonio-ui-commons/store/zustand/folder/hooks';
-import {
-	API_REQUEST_STATUS,
-	LIST_LIMIT,
-	SEARCHED_FOLDER_STATE_STATUS
-} from '../../../../constants';
+import { API_REQUEST_STATUS, LIST_LIMIT } from '../../../../constants';
 import { getFolderIdParts } from '../../../../helpers/folders';
 import { parseMessageSortingOptions } from '../../../../helpers/sorting';
-import { useAppDispatch, useAppSelector } from '../../../../hooks/redux';
-import { useMessageList } from '../../../../hooks/use-message-list';
+import { useFetchMessagesByFolder } from '../../../../hooks/use-fetch-messages-by-folder';
 import { useSelection } from '../../../../hooks/use-selection';
-import { search } from '../../../../store/actions';
-import {
-	selectFolderMsgSearchStatus,
-	selectMessagesSearchRequestStatus
-} from '../../../../store/messages-slice';
 import type { AppContext } from '../../../../types';
 
-export const MessageList: FC = () => {
+export const MessageList = (): React.JSX.Element => {
+	const [t] = useTranslation();
 	const { itemId, folderId } = useParams<{ itemId: string; folderId: string }>();
+	const loadingMore = useRef<boolean>(false);
+	const dragImageRef = useRef(null);
 	const folder = useFolder(folderId);
-	const dispatch = useAppDispatch();
 	const { setCount, count } = useAppContext<AppContext>();
 	const [draggedIds, setDraggedIds] = useState<Record<string, boolean>>({});
-	const dragImageRef = useRef(null);
-	const searchRequestStatus = useAppSelector(selectMessagesSearchRequestStatus);
-	const searchedInFolderStatus = useAppSelector(selectFolderMsgSearchStatus(folderId));
 
-	const messages = useMessageList();
+	const { messageIndexSlice } = useFetchMessagesByFolder(folderId);
+	const { messageListIndex, status } = messageIndexSlice;
 
 	const { prefs } = useUserSettings();
 	const { sortOrder } = parseMessageSortingOptions(folderId, prefs.zimbraPrefSortOrder as string);
-
 	const {
 		selected,
 		deselectAll,
@@ -58,30 +49,22 @@ export const MessageList: FC = () => {
 	} = useSelection({
 		setCount,
 		count,
-		items: messages
+		items: messageListIndex
 	});
 
-	const hasMore = useMemo(
-		() => searchedInFolderStatus === SEARCHED_FOLDER_STATE_STATUS.hasMore,
-		[searchedInFolderStatus]
-	);
+	const hasMore = messageIndexSlice.more;
 
-	const loadMore = useCallback(() => {
-		if (!hasMore) return;
-		const offset = messages.length;
-		dispatch(
-			search({
-				folderId,
-				sortBy: sortOrder,
-				offset,
-				limit: LIST_LIMIT.LOAD_MORE_LIMIT,
-				types: 'message'
-			})
-		);
-	}, [dispatch, folderId, hasMore, messages.length, sortOrder]);
+	const loadMoreCallback = useLoadMoreForMessageList({
+		folderId,
+		loadingMore,
+		hasMore,
+		sortBy: sortOrder,
+		offset: messageListIndex.length,
+		limit: LIST_LIMIT.LOAD_MORE_LIMIT
+	});
 
 	const displayerTitle = useMemo(() => {
-		if (messages?.length === 0) {
+		if (messageListIndex?.length === 0) {
 			if (getFolderIdParts(folderId).id === FOLDERS.SPAM) {
 				return t('displayer.list_spam_title', 'There are no spam e-mails');
 			}
@@ -97,24 +80,19 @@ export const MessageList: FC = () => {
 			return t('displayer.list_folder_title', 'It looks like there are no e-mails yet');
 		}
 		return null;
-	}, [messages, folderId]);
+	}, [messageListIndex?.length, folderId, t]);
 
 	const listItems = useMemo(
 		() =>
-			map(messages, (message) => {
-				const isSelected = selected[message.id];
-				const active = itemId === message.id;
+			map(messageListIndex, (id) => {
+				const isSelected = selected[id];
+				const active = itemId === id;
 				return (
-					<CustomListItem
-						key={message.id}
-						selected={isSelected}
-						active={active}
-						background={message.read ? 'gray6' : 'gray5'}
-					>
+					<CustomListItem key={id} selected={isSelected} active={active} background={'transparent'}>
 						{(visible: boolean): ReactElement =>
 							visible ? (
 								<MessageListItemComponent
-									message={message}
+									messageId={id}
 									selected={selected}
 									isSelected={isSelected}
 									active={active}
@@ -122,33 +100,32 @@ export const MessageList: FC = () => {
 									isSelectModeOn={isSelectModeOn}
 									dragImageRef={dragImageRef}
 									draggedIds={draggedIds}
-									key={message.id}
+									key={id}
 									deselectAll={deselectAll}
 									visible={visible}
 									setDraggedIds={setDraggedIds}
 									currentFolderId={folderId}
 								/>
 							) : (
-								<div style={{ height: '4rem' }} />
+								<div style={{ height: '4rem' }} data-testid="invisible-item" />
 							)
 						}
 					</CustomListItem>
 				);
 			}),
-		[deselectAll, draggedIds, folderId, isSelectModeOn, itemId, messages, selected, toggle]
+		[deselectAll, draggedIds, folderId, isSelectModeOn, itemId, messageListIndex, selected, toggle]
 	);
 
-	const totalMessages = useMemo(
-		() => (sortOrder === 'readAsc' ? messages.length : (folder?.n ?? messages.length ?? 0)),
-		[folder?.n, messages.length, sortOrder]
-	);
+	const totalMessages = useMemo(() => {
+		if (sortOrder === 'readAsc') {
+			return messageListIndex.length;
+		}
+		return folder?.n ?? messageListIndex.length ?? 0;
+	}, [folder?.n, messageListIndex.length, sortOrder]);
 
 	const selectedIds = useMemo(() => Object.keys(selected), [selected]);
 
-	const messagesLoadingCompleted = useMemo(
-		() => searchRequestStatus === API_REQUEST_STATUS.fulfilled,
-		[searchRequestStatus]
-	);
+	const messagesLoadingCompleted = useMemo(() => status === API_REQUEST_STATUS.fulfilled, [status]);
 
 	useEffect(() => {
 		setDraggedIds(selected);
@@ -159,11 +136,11 @@ export const MessageList: FC = () => {
 			totalMessages={totalMessages}
 			displayerTitle={displayerTitle}
 			listItems={listItems}
-			loadMore={loadMore}
+			loadMore={loadMoreCallback}
 			messagesLoadingCompleted={messagesLoadingCompleted}
 			selectedIds={selectedIds}
 			folderId={folderId}
-			messages={messages}
+			messageIds={messageListIndex}
 			draggedIds={draggedIds}
 			setDraggedIds={setDraggedIds}
 			isSelectModeOn={isSelectModeOn}

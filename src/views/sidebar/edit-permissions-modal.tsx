@@ -7,8 +7,6 @@ import React, { ChangeEvent, FC, useCallback, useMemo, useState } from 'react';
 
 import {
 	Checkbox,
-	ChipInput,
-	ChipItem,
 	Container,
 	Input,
 	Padding,
@@ -18,22 +16,20 @@ import {
 	Text
 } from '@zextras/carbonio-design-system';
 import { t, useUserAccounts } from '@zextras/carbonio-shell-ui';
-import { map } from 'lodash';
 
 import { GranteeInfo } from './parts/edit/share-folder-properties';
+import { sendShareNotificationSoapApi } from '../../api/send-share-notification-soap-api';
+import { shareFolderSoapApi } from '../../api/share-folder-soap-api';
 import ModalFooter from '../../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../../carbonio-ui-commons/components/modals/modal-header';
 import { useContactInput } from '../../carbonio-ui-commons/integrations/hooks';
+import { ContactInputItem } from '../../carbonio-ui-commons/integrations/types';
 import type { EditPermissionsModalProps } from '../../carbonio-ui-commons/types/sidebar';
-import { useAppDispatch } from '../../hooks/redux';
 import { useUiUtilities } from '../../hooks/use-ui-utilities';
 import {
 	ShareCalendarRoleOptions,
 	findLabel
 } from '../../integrations/shared-invite-reply/parts/utils';
-import { sendShareNotification } from '../../store/actions/send-share-notification';
-import { shareFolder } from '../../store/actions/share-folder';
-import { ContactInputItem } from '../../carbonio-ui-commons/integrations/types';
 
 // TODO refactor IRIS-4324
 const EditPermissionsModal: FC<EditPermissionsModalProps> = ({
@@ -43,7 +39,6 @@ const EditPermissionsModal: FC<EditPermissionsModalProps> = ({
 	grant,
 	goBack
 }) => {
-	const dispatch = useAppDispatch();
 	const ContactInput = useContactInput();
 	const shareCalendarRoleOptions = useMemo(() => ShareCalendarRoleOptions(t), []);
 	const [sendNotification, setSendNotification] = useState(true);
@@ -67,58 +62,50 @@ const EditPermissionsModal: FC<EditPermissionsModalProps> = ({
 		setshareWithUserRole(shareRole);
 	}, []);
 
-	const onConfirm = useCallback((): void => {
-		dispatch(
-			shareFolder({
-				sendNotification,
+	const onConfirm = useCallback(async (): Promise<void> => {
+		const shareFolderResponse = await shareFolderSoapApi({
+			sendNotification,
+			standardMessage,
+			contacts: editMode
+				? [{ email: grant.d || grant.zid }]
+				: contacts.map((contact) => ({ email: contact.value.email })),
+			shareWithUserRole,
+			folder,
+			accounts
+		});
+		if (!('Fault' in shareFolderResponse)) {
+			createSnackbar({
+				key: `share-${folder.id}`,
+				replace: true,
+				hideButton: true,
+				severity: 'info',
+				label: editMode
+					? t('snackbar.share_updated', '"Access rights updated"')
+					: t('snackbar.folder_shared', 'Folder shared'),
+				autoHideTimeout: 3000
+			});
+			const sendNotificaitonResponse = await sendShareNotificationSoapApi?.({
 				standardMessage,
 				contacts: editMode
 					? [{ email: grant.d || grant.zid }]
 					: contacts.map((contact) => ({ email: contact.value.email })),
-				shareWithUserRole,
+
 				folder,
 				accounts
-			})
-		).then((res: { type: string }) => {
-			if (!('Fault' in res)) {
+			});
+			if (!sendNotificaitonResponse) {
 				createSnackbar({
 					key: `share-${folder.id}`,
 					replace: true,
+					severity: 'error',
 					hideButton: true,
-					severity: 'info',
-					label: editMode
-						? t('snackbar.share_updated', '"Access rights updated"')
-						: t('snackbar.folder_shared', 'Folder shared'),
+					label: t('label.error_try_again', 'Something went wrong, please try again'),
 					autoHideTimeout: 3000
 				});
-				sendNotification &&
-					dispatch(
-						sendShareNotification({
-							standardMessage,
-							contacts: editMode
-								? [{ email: grant.d || grant.zid }]
-								: contacts.map((contact) => ({ email: contact.value.email })),
-
-							folder,
-							accounts
-						})
-					).then((res2: { type: string }) => {
-						if (!res2.type.includes('fulfilled')) {
-							createSnackbar({
-								key: `share-${folder.id}`,
-								replace: true,
-								severity: 'error',
-								hideButton: true,
-								label: t('label.error_try_again', 'Something went wrong, please try again'),
-								autoHideTimeout: 3000
-							});
-						}
-					});
 			}
-			onClose();
-		});
+		}
+		onClose();
 	}, [
-		dispatch,
 		sendNotification,
 		standardMessage,
 		editMode,

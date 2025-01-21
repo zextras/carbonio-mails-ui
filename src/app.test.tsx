@@ -21,7 +21,7 @@ import {
 } from './carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { setupTest } from './carbonio-ui-commons/test/test-setup';
 import { BACKUP_SEARCH_ROUTE } from './constants';
-import { useBackupSearchStore } from './store/zustand/backup-search/store';
+import { useBackupSearchStore } from './store/backup-search/store';
 import { DeletedMessageFromAPI } from './types';
 
 // Mocking the worker. In commons jest-setup the worker is already mocked, but is improperly defined with wrong types and

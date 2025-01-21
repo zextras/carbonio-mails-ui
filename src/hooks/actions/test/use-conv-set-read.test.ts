@@ -3,21 +3,20 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import { act } from 'react';
+
 import { faker } from '@faker-js/faker';
 import { times } from 'lodash';
-import { act } from 'react';
 
 import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
 import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { setupHook } from '../../../carbonio-ui-commons/test/test-setup';
 import { FOLDERS_DESCRIPTORS } from '../../../constants';
-import { generateStore } from '../../../tests/generators/store';
 import { ConvActionRequest } from '../../../types';
 import { useConvSetReadDescriptor, useConvSetReadFn } from '../use-conv-set-read';
 
 describe('useConvSetRead', () => {
 	describe('Descriptor', () => {
-		const store = generateStore();
 		const ids = times(faker.number.int({ max: 42 }), () =>
 			faker.number.int({ max: 42000 }).toString()
 		);
@@ -26,7 +25,6 @@ describe('useConvSetRead', () => {
 			const {
 				result: { current: descriptor }
 			} = setupHook(useConvSetReadDescriptor, {
-				store,
 				initialProps: [
 					{
 						ids,
@@ -46,7 +44,6 @@ describe('useConvSetRead', () => {
 		});
 	});
 	describe('Functions', () => {
-		const store = generateStore();
 		const ids = times(faker.number.int({ max: 42 }), () =>
 			faker.number.int({ max: 42000 }).toString()
 		);
@@ -55,7 +52,6 @@ describe('useConvSetRead', () => {
 			const {
 				result: { current: descriptor }
 			} = setupHook(useConvSetReadFn, {
-				store,
 				initialProps: [
 					{
 						ids,
@@ -84,7 +80,6 @@ describe('useConvSetRead', () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useConvSetReadFn, {
-					store,
 					initialProps: [
 						{
 							ids,
@@ -101,7 +96,6 @@ describe('useConvSetRead', () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useConvSetReadFn, {
-					store,
 					initialProps: [
 						{
 							ids,
@@ -118,7 +112,6 @@ describe('useConvSetRead', () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useConvSetReadFn, {
-					store,
 					initialProps: [
 						{
 							ids,
@@ -140,7 +133,6 @@ describe('useConvSetRead', () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useConvSetReadFn, {
-					store,
 					initialProps: [
 						{
 							ids,
@@ -163,7 +155,6 @@ describe('useConvSetRead', () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useConvSetReadFn, {
-					store,
 					initialProps: [
 						{
 							ids,

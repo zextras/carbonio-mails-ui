@@ -9,7 +9,7 @@ import * as hooks from '@zextras/carbonio-shell-ui';
 import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 import { noop } from 'lodash';
 
-import * as searchSoapApi from '../../../api/search';
+import * as searchSoapApi from '../../../api/search-soap-api';
 import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { generateSettings } from '../../../carbonio-ui-commons/test/mocks/settings/settings-generator';
 import { buildSoapErrorResponseBody } from '../../../carbonio-ui-commons/test/mocks/utils/soap';
@@ -19,11 +19,14 @@ import {
 	useConversationById,
 	useMessageById,
 	useSearchResults
-} from '../../../store/zustand/search/store';
-import { generateConvMessageFromAPI } from '../../../tests/generators/api';
+} from '../../../store/emails/store';
+import {
+	generateConversationFromAPI,
+	generateConvMessageFromAPI
+} from '../../../tests/generators/api';
 import { generateConversation } from '../../../tests/generators/generateConversation';
-import { SearchRequest, SearchResponse, SoapConversation } from '../../../types';
-import { useRunSearch, useLoadMore } from '../search-view-hooks';
+import { SearchRequest, SearchResponse } from '../../../types';
+import { useRunSearch, useLoadMoreForSearchSlice } from '../search-view-hooks';
 
 describe('search view hooks', () => {
 	it('should reset conversations list when api result empty', async () => {
@@ -60,7 +63,7 @@ describe('search view hooks', () => {
 		});
 
 		await waitFor(() => {
-			expect(result.current.searchResults.conversationIds.size).toBe(0);
+			expect(result.current.searchResults.conversationListIndex.length).toBe(0);
 		});
 	});
 
@@ -98,7 +101,7 @@ describe('search view hooks', () => {
 		});
 
 		await waitFor(() => {
-			expect(result.current.searchResults.conversationIds.size).toBe(0);
+			expect(result.current.searchResults.conversationListIndex.length).toBe(0);
 		});
 	});
 
@@ -156,8 +159,7 @@ describe('search view hooks', () => {
 		const useDisableSearch = (): [boolean, Function] => [false, noop];
 		const message = generateConvMessageFromAPI({ id: '1' });
 		const searchResponse = {
-			// eslint-disable-next-line @typescript-eslint/no-use-before-define
-			c: [conversationFromAPI({ id: '123', su: 'Subject', m: [message] })],
+			c: [generateConversationFromAPI({ id: '123', su: 'Subject', m: [message] })],
 			more: false
 		};
 		const interceptor = createSoapAPIInterceptor<SearchRequest, SearchResponse>(
@@ -195,22 +197,6 @@ describe('search view hooks', () => {
 	});
 });
 
-function conversationFromAPI(params: Partial<SoapConversation> = {}): SoapConversation {
-	return {
-		id: '123',
-		n: 1,
-		u: 1,
-		f: 'flag',
-		tn: 'tag names',
-		d: 123,
-		m: [],
-		e: [],
-		su: 'Subject',
-		fr: 'fragment',
-		...params
-	};
-}
-
 describe('useLoadMore', () => {
 	let loadingMore: { current: boolean };
 	beforeEach(() => {
@@ -218,8 +204,9 @@ describe('useLoadMore', () => {
 	});
 	it('should correcly handle response with both conversations and messages', async () => {
 		const message = generateConvMessageFromAPI({ id: '1' });
+		const conversation = generateConversationFromAPI({ id: '123', su: 'Subject', m: [message] });
 		const searchResponse = {
-			c: [conversationFromAPI({ id: '123', su: 'Subject', m: [message] })],
+			c: [conversation],
 			m: [message],
 			more: false
 		};
@@ -229,7 +216,7 @@ describe('useLoadMore', () => {
 		);
 
 		const { result } = renderHook(() =>
-			useLoadMore({
+			useLoadMoreForSearchSlice({
 				query: 'test query',
 				offset: 0,
 				hasMore: true,
@@ -252,8 +239,9 @@ describe('useLoadMore', () => {
 
 	it('should correcly handle response with  conversations only', async () => {
 		const message = generateConvMessageFromAPI({ id: '1' });
+		const conversation = generateConversationFromAPI({ id: '123', su: 'Subject', m: [message] });
 		const searchResponse = {
-			c: [conversationFromAPI({ id: '123', su: 'Subject', m: [message] })],
+			c: [conversation],
 			more: false
 		};
 		const interceptor = createSoapAPIInterceptor<SearchRequest, SearchResponse>(
@@ -262,7 +250,7 @@ describe('useLoadMore', () => {
 		);
 
 		const { result } = renderHook(() =>
-			useLoadMore({
+			useLoadMoreForSearchSlice({
 				query: 'test query',
 				offset: 0,
 				hasMore: true,
@@ -295,7 +283,7 @@ describe('useLoadMore', () => {
 		);
 
 		const { result } = renderHook(() =>
-			useLoadMore({
+			useLoadMoreForSearchSlice({
 				query: 'test query',
 				offset: 0,
 				hasMore: true,
@@ -325,7 +313,7 @@ describe('useLoadMore', () => {
 		);
 
 		const { result } = renderHook(() =>
-			useLoadMore({
+			useLoadMoreForSearchSlice({
 				query: 'test query',
 				offset: 0,
 				hasMore: true,
@@ -351,7 +339,7 @@ describe('useLoadMore', () => {
 		const mockedSearch = jest.spyOn(searchSoapApi, 'searchSoapApi');
 
 		const { result } = renderHook(() =>
-			useLoadMore({
+			useLoadMoreForSearchSlice({
 				query: 'test query',
 				offset: 0,
 				hasMore: false,
@@ -369,7 +357,7 @@ describe('useLoadMore', () => {
 		const mockedSearch = jest.spyOn(searchSoapApi, 'searchSoapApi');
 
 		const { result } = renderHook(() =>
-			useLoadMore({
+			useLoadMoreForSearchSlice({
 				query: 'test query',
 				offset: 0,
 				hasMore: false,

@@ -10,10 +10,8 @@ import { times } from 'lodash';
 
 import { FOLDERS } from '../../../../../carbonio-ui-commons/constants/folders';
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
-import { API_REQUEST_STATUS } from '../../../../../constants';
+import { updateConversations } from '../../../../../store/emails/store';
 import { generateConversation } from '../../../../../tests/generators/generateConversation';
-import { generateStore } from '../../../../../tests/generators/store';
-import type { SearchRequestStatus } from '../../../../../types';
 import {
 	ConversationListComponent,
 	ConversationListComponentProps
@@ -32,6 +30,7 @@ describe.each`
 		const conversations = times(CONVERSATIONS_COUNT, (index) =>
 			generateConversation({ id: `${index}`, folderId, isSingleMessageConversation: false })
 		);
+		updateConversations(conversations);
 
 		const toggle = jest.fn();
 		const selectAll = jest.fn();
@@ -43,7 +42,7 @@ describe.each`
 		const listItems = conversations.map((conversation, index) => (
 			<ConversationListItemComponent
 				key={index}
-				item={conversation}
+				conversationId={conversation.id}
 				activeItemId=""
 				selected={false}
 				selecting={false}
@@ -62,7 +61,7 @@ describe.each`
 			conversationsLoadingCompleted: true,
 			selectedIds: [],
 			folderId,
-			conversations,
+			conversationsIds: conversations.map((conversation) => conversation.id),
 			isSelectModeOn: false,
 			selected: {},
 			deselectAll,
@@ -74,28 +73,7 @@ describe.each`
 			dragImageRef
 		};
 
-		const store = generateStore({
-			conversations: {
-				currentFolder: folderId,
-				expandedStatus: conversations.reduce<Record<string, SearchRequestStatus>>(
-					(result, conversation): Record<string, SearchRequestStatus> => ({
-						...result,
-						[conversation.id]: API_REQUEST_STATUS.fulfilled
-					}),
-					{}
-				),
-				searchedInFolder: {},
-				conversations: {
-					...conversations.reduce(
-						(result, conversation) => ({ ...result, [conversation.id]: conversation }),
-						{}
-					)
-				},
-				searchRequestStatus: API_REQUEST_STATUS.fulfilled
-			}
-		});
-
-		setupTest(<ConversationListComponent {...props} />, { store });
+		setupTest(<ConversationListComponent {...props} />);
 
 		await screen.findByTestId(`conversation-list-${folderId}`);
 		const items = await screen.findAllByTestId(/ConversationListItem-/);
