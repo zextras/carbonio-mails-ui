@@ -45,16 +45,18 @@ const handleSearchSoapApiResults = ({
 			normalizeMailMessageFromSoap(msg, false)
 		);
 		setMessagesInEmailStore(normalizedMessages, searchResponse.more);
+		updateMessagesResultsLoadingStatus(API_REQUEST_STATUS.fulfilled);
 		return;
 	}
 	if (searchResponse.c?.length) {
 		const conversations = normalizeConversations(searchResponse.c);
 		setConversationsInEmailStore(conversations, searchResponse.more);
+		updateConversationsResultsLoadingStatus(API_REQUEST_STATUS.fulfilled);
 		return;
 	}
 	resetMessagesAndPopulatedItems();
-	updateMessagesResultsLoadingStatus(API_REQUEST_STATUS.fulfilled);
 };
+
 export async function searchEmailStoreAction({
 	folderId,
 	limit,
