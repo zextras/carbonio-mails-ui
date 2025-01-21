@@ -534,13 +534,7 @@ export function appendConversationsToConversationIndexSlice(
  */
 export function updateConversationsResultsLoadingStatus(status: SearchRequestStatus): void {
 	addTask(async () => {
-		useEmailsStore.setState((state) => ({
-			...state,
-			conversationIndexSlice: {
-				...state.conversationIndexSlice,
-				status
-			}
-		}));
+		conversationIndexSliceUtils.updateConversationsResultsLoadingStatus(status, useEmailsStore);
 	});
 }
 
