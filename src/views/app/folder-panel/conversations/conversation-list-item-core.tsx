@@ -18,6 +18,7 @@ import {
 import { uniqBy, reduce, includes, forEach, filter, isEmpty } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
+import { ZIMBRA_STANDARD_COLORS } from '../../../../carbonio-ui-commons/constants/utils';
 import { useTags } from '../../../../carbonio-ui-commons/store/zustand/tags';
 import { Tag } from '../../../../carbonio-ui-commons/types/tags';
 import { TextReadValuesProps } from '../../../../types';
