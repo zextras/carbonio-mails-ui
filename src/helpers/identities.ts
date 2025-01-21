@@ -564,6 +564,7 @@ export function getExtraAccountsIds(): Array<string> {
 }
 
 export {
+	PRIMARY_IDENTITY_NAME,
 	type IdentityDescriptor,
 	type MatchingReplyIdentity,
 	type RecipientWeight,
