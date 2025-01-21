@@ -10,7 +10,6 @@ import {
 	Container,
 	Input,
 	Padding,
-	PasswordInput,
 	Row,
 	Tooltip,
 	useSnackbar
@@ -18,25 +17,22 @@ import {
 import { t } from '@zextras/carbonio-shell-ui';
 import styled from 'styled-components';
 
-import { handleCertificateFileUpload } from './certificate-utils';
 import ModalFooter from '../../../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../../../carbonio-ui-commons/components/modals/modal-header';
-import { PersonalCertificate } from '../../../store/zustand/certificates/store';
 
 const FileInput = styled.input`
 	display: none;
 `;
 
-type CertificateUploadModalPropType = {
-	onConfirm: (certificate: PersonalCertificate) => void;
+type RecipientsCertificateUploadModalPropType = {
+	onConfirm: (certificateContent: string | ArrayBuffer) => void;
 	onClose: () => void;
 };
-export const CertificateUploadModal = ({
+export const RecipientsCertificateUploadModal = ({
 	onConfirm,
 	onClose
-}: CertificateUploadModalPropType): React.JSX.Element => {
+}: RecipientsCertificateUploadModalPropType): React.JSX.Element => {
 	const [selectedFile, setSelectedFile] = useState<File | null>();
-	const [password, setPassword] = useState<string>('');
 	const inputRef = useRef<HTMLInputElement>(null);
 	const createSnackbar = useSnackbar();
 
@@ -57,39 +53,24 @@ export const CertificateUploadModal = ({
 
 	const onCertificateFileUpload = useCallback(async (): Promise<void> => {
 		if (selectedFile) {
-			try {
-				const result = await handleCertificateFileUpload(selectedFile, password ?? '');
-				if (result.caCertificate) {
-					const certificate = {
-						privateKey: result.privateKey,
-						certificate: result.certificate,
-						caCertificate: result.caCertificate
-					};
-					onConfirm(certificate);
-					onClose();
+			const reader = new FileReader();
+			reader.onload = async (e: ProgressEvent<FileReader>): Promise<void> => {
+				const fileContent = e.target?.result;
+				if (fileContent !== null && fileContent !== undefined) {
+					onConfirm(fileContent);
 				} else {
-					throw new Error(
-						t(
-							'composer.uploadCertificate.emailNotMatch',
-							'Certificate email does not match with sender email'
-						)
-					);
+					console.error('=== File content is null');
 				}
-			} catch (error) {
-				createSnackbar({
-					key: `error-on-certificate-upload`,
-					replace: true,
-					severity: 'error',
-					label:
-						error instanceof Error
-							? error.message
-							: t('composer.uploadCertificate.failed', 'Failed to upload certificate'),
-					autoHideTimeout: 3000,
-					hideButton: true
-				});
-			}
+			};
+
+			reader.onerror = (): void => {
+				console.error('====Failed to read the file');
+			};
+
+			// Read the file as text
+			reader.readAsText(selectedFile);
 		}
-	}, [createSnackbar, onClose, onConfirm, password, selectedFile]);
+	}, [onConfirm, selectedFile]);
 
 	return (
 		<Container mainAlignment="center" crossAlignment="flex-start" height="fit">
@@ -124,16 +105,6 @@ export const CertificateUploadModal = ({
 							/>
 						</Tooltip>
 					</Padding>
-					<Row mainAlignment="flex-start" width="22rem" padding={{ left: 'small' }}>
-						<PasswordInput
-							value={password}
-							onChange={(ev): void => {
-								setPassword && setPassword(ev.target.value);
-							}}
-							label={t('modal.uploadCertificate.certificatePassword', 'Certificate Password')}
-							data-testid="certificate-password"
-						/>
-					</Row>
 				</Container>
 				<FileInput
 					type="file"

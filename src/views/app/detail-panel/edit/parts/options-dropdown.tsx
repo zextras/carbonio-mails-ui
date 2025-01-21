@@ -11,6 +11,7 @@ import { noop } from 'lodash';
 
 import {
 	useEditorIsRichText,
+	useEditorIsSmimeEncrypt,
 	useEditorIsSmimeSign,
 	useEditorIsUrgent,
 	useEditorRequestReadReceipt
@@ -20,13 +21,20 @@ import { MailsEditorV2 } from '../../../../../types';
 export type OptionsDropdownProps = {
 	editorId: MailsEditorV2['id'];
 	onSmimeOptionChange: (isSmimeSet: boolean) => void;
+	onSmimeEncryptOptionChange: (isSmimeEncryptSet: boolean) => void;
 };
 
-export const OptionsDropdown: FC<OptionsDropdownProps> = ({ editorId, onSmimeOptionChange }) => {
+export const OptionsDropdown: FC<OptionsDropdownProps> = ({
+	editorId,
+	onSmimeOptionChange,
+	onSmimeEncryptOptionChange
+}) => {
 	const { isRichText, setIsRichText } = useEditorIsRichText(editorId);
 	const { isUrgent, setIsUrgent } = useEditorIsUrgent(editorId);
 	const { requestReadReceipt, setRequestReadReceipt } = useEditorRequestReadReceipt(editorId);
 	const { isSmimeSign } = useEditorIsSmimeSign(editorId);
+	const { isSmimeEncrypt } = useEditorIsSmimeEncrypt(editorId);
+
 	const toggleRichTextEditor = useCallback(() => {
 		setIsRichText(!isRichText);
 	}, [isRichText, setIsRichText]);
@@ -42,6 +50,10 @@ export const OptionsDropdown: FC<OptionsDropdownProps> = ({ editorId, onSmimeOpt
 	const toggleUseSmimeCertificateRequest = useCallback(() => {
 		onSmimeOptionChange(!isSmimeSign);
 	}, [isSmimeSign, onSmimeOptionChange]);
+
+	const toggleUseSmimeEncryptCertificateRequest = useCallback(() => {
+		onSmimeEncryptOptionChange(!isSmimeEncrypt);
+	}, [isSmimeEncrypt, onSmimeEncryptOptionChange]);
 
 	const isCarbonioCE = useIsCarbonioCE();
 
@@ -75,6 +87,19 @@ export const OptionsDropdown: FC<OptionsDropdownProps> = ({ editorId, onSmimeOpt
 										'Use certificate to sign (S/MIME)'
 									),
 							onClick: toggleUseSmimeCertificateRequest
+						},
+						{
+							id: 'is_smime_encrypt',
+							label: isSmimeEncrypt
+								? t(
+										'composer.uploadCertificate.removeCertificateToEncrypt',
+										'Remove certificate to encrypt (S/MIME)'
+									)
+								: t(
+										'composer.uploadCertificate.useCertificateToEncrypt',
+										'Use certificate to encrypt (S/MIME)'
+									),
+							onClick: toggleUseSmimeEncryptCertificateRequest
 						}
 					]
 				: []),
@@ -94,6 +119,8 @@ export const OptionsDropdown: FC<OptionsDropdownProps> = ({ editorId, onSmimeOpt
 			isCarbonioCE,
 			isSmimeSign,
 			toggleUseSmimeCertificateRequest,
+			isSmimeEncrypt,
+			toggleUseSmimeEncryptCertificateRequest,
 			requestReadReceipt,
 			toggleReceiptRequest
 		]

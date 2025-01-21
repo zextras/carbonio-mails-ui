@@ -18,17 +18,19 @@ import { useTranslation } from 'react-i18next';
 import ModalFooter from '../../../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../../../carbonio-ui-commons/components/modals/modal-header';
 import { checkEncryptionPassword } from '../../../store/actions/check-password-action';
-import { usePasswordStore } from '../../../store/zustand/certificates/store';
+import { useSmimePasswordStore } from '../../../store/zustand/certificates/store';
 
 type EnterPasswordModalPropType = {
-	onPasswordReset: () => void;
-	onConfirm: (password: string) => void;
+	onPasswordReset?: () => void;
+	onConfirm?: (password: string) => void;
 	onClose: () => void;
+	hideReset?: boolean;
 };
 export const EnterPasswordModal = ({
 	onPasswordReset,
 	onConfirm,
-	onClose
+	onClose,
+	hideReset = false
 }: EnterPasswordModalPropType): React.JSX.Element => {
 	const [password, setPassword] = useState<string>('');
 	const createSnackbar = useSnackbar();
@@ -38,8 +40,7 @@ export const EnterPasswordModal = ({
 	const onPasswordConfirm = useCallback(async (): Promise<void> => {
 		checkEncryptionPassword(password).then((res) => {
 			if ('data' in res) {
-				onClose();
-				usePasswordStore.getState().updatePassword(password);
+				useSmimePasswordStore.getState().updateSmimePassword(password);
 				createSnackbar({
 					key: `error-on-certificate-upload`,
 					replace: true,
@@ -48,8 +49,10 @@ export const EnterPasswordModal = ({
 					autoHideTimeout: 3000,
 					hideButton: true
 				});
+				onConfirm && onConfirm(password);
+				onClose();
 			} else {
-				usePasswordStore.getState().updatePassword('');
+				useSmimePasswordStore.getState().updateSmimePassword('');
 				createSnackbar({
 					key: `error-on-certificate-upload`,
 					replace: true,
@@ -60,10 +63,10 @@ export const EnterPasswordModal = ({
 				});
 			}
 		});
-	}, [createSnackbar, onClose, password]);
+	}, [createSnackbar, onClose, onConfirm, password]);
 
 	const resetPassword = useCallback(() => {
-		onPasswordReset();
+		onPasswordReset && onPasswordReset();
 	}, [onPasswordReset]);
 
 	return (
@@ -94,11 +97,13 @@ export const EnterPasswordModal = ({
 						/>
 					</Row>
 				</Container>
-				<Container orientation="vertical" mainAlignment="flex-start" crossAlignment="flex-start">
-					<Link underlined onClick={resetPassword}>
-						{t('settings.certificatePassword.reset_password', 'Reset password')}
-					</Link>
-				</Container>
+				{!hideReset && (
+					<Container orientation="vertical" mainAlignment="flex-start" crossAlignment="flex-start">
+						<Link underlined onClick={resetPassword}>
+							{t('settings.certificatePassword.reset_password', 'Reset password')}
+						</Link>
+					</Container>
+				)}
 				<ModalFooter
 					onConfirm={onPasswordConfirm}
 					label={t('settings.certificatePassword.enter', 'Enter')}

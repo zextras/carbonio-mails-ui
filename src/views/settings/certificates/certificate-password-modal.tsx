@@ -7,6 +7,7 @@ import React, { useCallback, useState } from 'react';
 
 import {
 	Container,
+	Icon,
 	Padding,
 	PasswordInput,
 	Row,
@@ -18,7 +19,7 @@ import { useTranslation } from 'react-i18next';
 import ModalFooter from '../../../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../../../carbonio-ui-commons/components/modals/modal-header';
 import { createEncryptionPassword } from '../../../store/actions/create-password-action';
-import { usePasswordStore } from '../../../store/zustand/certificates/store';
+import { useSmimePasswordStore } from '../../../store/zustand/certificates/store';
 
 type CertificatePasswordModalPropType = {
 	isReset?: boolean;
@@ -40,7 +41,7 @@ export const CertificatePasswordModal = ({
 		createEncryptionPassword(password, isReset).then((res) => {
 			if ('data' in res) {
 				onClose();
-				usePasswordStore.getState().updatePassword(password);
+				useSmimePasswordStore.getState().updateSmimePassword(password);
 				createSnackbar({
 					key: `error-on-certificate-upload`,
 					replace: true,
@@ -50,7 +51,7 @@ export const CertificatePasswordModal = ({
 					hideButton: true
 				});
 			} else {
-				usePasswordStore.getState().updatePassword('');
+				useSmimePasswordStore.getState().updateSmimePassword('');
 				createSnackbar({
 					key: `error-on-certificate-upload`,
 					replace: true,
@@ -202,10 +203,11 @@ export const CertificatePasswordModal = ({
 				</Container>
 				{!isReset ? (
 					<Container orientation="vertical" mainAlignment="flex-start" crossAlignment="flex-start">
-						<Text size="small">
-							⚠️
-							{t('settings.certificatePassword.important', 'Important')}:
-						</Text>
+						<Row mainAlignment="flex-start">
+							<Icon icon="alertTriangleOutline" size="large" color="warning" />
+							<Padding left="small" />
+							<Text size="small">{t('settings.certificatePassword.important', 'Important')}:</Text>
+						</Row>
 						<Text size="small" overflow="break-word">
 							{t(
 								'settings.certificatePassword.create_password_msg3',
@@ -215,7 +217,11 @@ export const CertificatePasswordModal = ({
 					</Container>
 				) : (
 					<Container orientation="vertical" mainAlignment="flex-start" crossAlignment="flex-start">
-						<Text size="small">⚠️ {t('settings.certificatePassword.important', 'Important')}:</Text>
+						<Row mainAlignment="flex-start">
+							<Icon icon="alertTriangleOutline" size="large" color="warning" />
+							<Padding left="small" />
+							<Text size="small">{t('settings.certificatePassword.important', 'Important')}:</Text>
+						</Row>
 						<Text size="small" overflow="break-word">
 							{t(
 								'settings.certificatePassword.reset_password_msg2',

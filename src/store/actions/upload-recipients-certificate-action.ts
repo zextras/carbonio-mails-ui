@@ -1,17 +1,13 @@
-import { PersonalCertificate } from '../zustand/certificates/store';
-
 /*
  * SPDX-FileCopyrightText: 2021 Zextras <https://www.zextras.com>
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-export async function uploadPersonalCertificate(
-	certificate: PersonalCertificate,
-	password: string,
-	isSelected?: boolean
+export async function uploadRecipientCertificate(
+	certificateContent: string | ArrayBuffer
 ): Promise<{ data: Response } | { error: unknown }> {
 	const apiCall = fetch(
-		`/service/extension/encryption/smime/personal
+		`/service/extension/encryption/smime/recipient
 `,
 		{
 			method: 'POST',
@@ -19,11 +15,7 @@ export async function uploadPersonalCertificate(
 				'Content-Type': 'application/json'
 			},
 			body: JSON.stringify({
-				password,
-				privateKey: certificate.privateKey,
-				certificate: certificate.certificate,
-				caCertificate: certificate.caCertificate,
-				selected: isSelected
+				certificate: certificateContent
 			})
 		}
 	);

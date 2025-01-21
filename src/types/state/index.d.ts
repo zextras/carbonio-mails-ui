@@ -82,6 +82,10 @@ export type EditorsStateTypeV2 = {
 	toggleSmartLink: (id: MailsEditorV2['id'], partName: string) => void;
 	setSignatureId: (id: MailsEditorV2['id'], signId: MailsEditorV2['signatureId']) => void;
 	setIsSmimeSign: (id: MailsEditorV2['id'], isSmimeSign: MailsEditorV2['isSmimeSign']) => void;
+	setIsSmimeEncrypt: (
+		id: MailsEditorV2['id'],
+		isSmimeEncrypt: MailsEditorV2['isSmimeEncrypt']
+	) => void;
 };
 
 export type MsgStateType = {

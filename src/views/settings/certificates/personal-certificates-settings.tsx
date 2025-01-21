@@ -11,15 +11,20 @@ import {
 	FormSubSection,
 	Padding,
 	Table,
-	useModal
+	useModal,
+	useSnackbar
 } from '@zextras/carbonio-design-system';
 
 import { CertificateUploadModal } from './certificate-upload-modal';
 import { ShowAllCertificatesModal } from './show-all-certificates-modal';
 import { getPersonalCertificates } from '../../../store/actions/get-personal-certificates-action';
 import { uploadPersonalCertificate } from '../../../store/actions/upload-personal-certificate-action';
-import { Certificate, usePasswordStore } from '../../../store/zustand/certificates/store';
+import {
+	PersonalCertificate,
+	useSmimePasswordStore
+} from '../../../store/zustand/certificates/store';
 import type { AccountIdentity, IdentityProps } from '../../../types';
+import { Certificate } from '../../../types/certificates';
 
 type PersonalCertificatesSettingsPropsType = {
 	updatedIdentities?: AccountIdentity[];
@@ -36,33 +41,12 @@ const PersonalCertificatesSettings: FC<PersonalCertificatesSettingsPropsType> = 
 	updatedIdentities,
 	updateIdentities
 }): ReactElement => {
-	const [certificates, setCertificates] = useState([]);
+	const [certificates, setCertificates] = useState<Certificate[]>([]);
 
 	const { createModal, closeModal } = useModal();
 	const id = Date.now().toString();
-	const { password } = usePasswordStore();
-
-	const showAllCertificate = useCallback(
-		(certificate: any): void => {
-			closeModal && closeModal(id);
-			createModal(
-				{
-					id,
-					size: 'large',
-					children: (
-						<Container crossAlignment="baseline">
-							<ShowAllCertificatesModal
-								certificates={certificate}
-								onClose={(): void => closeModal?.(id)}
-							/>
-						</Container>
-					)
-				},
-				true
-			);
-		},
-		[closeModal, createModal, id]
-	);
+	const { smimePassword } = useSmimePasswordStore();
+	const createSnackbar = useSnackbar();
 
 	const headers = [
 		{
@@ -102,23 +86,78 @@ const PersonalCertificatesSettings: FC<PersonalCertificatesSettingsPropsType> = 
 			bold: true
 		}
 	];
-	const setPersonalCertificatesData = useCallback((res: any) => {
-		if ('data' in res) {
-			setCertificates(res.data);
-		} else {
-			// Error
-		}
-	}, []);
+
+	const loadPersonalCertificates = useCallback(() => {
+		getPersonalCertificates().then((res) => {
+			if ('data' in res) {
+				setCertificates(res.data);
+			} else {
+				createSnackbar({
+					key: `error-on-certificate-upload`,
+					replace: true,
+					severity: 'error',
+					label: 'Error loading certificates',
+					autoHideTimeout: 3000,
+					hideButton: true
+				});
+			}
+		});
+	}, [createSnackbar]);
+
+	const showAllCertificate = useCallback(
+		(certificate: any): void => {
+			closeModal && closeModal(id);
+			createModal(
+				{
+					id,
+					size: 'large',
+					children: (
+						<Container crossAlignment="baseline">
+							<ShowAllCertificatesModal
+								certificates={certificate}
+								onClose={(): void => closeModal?.(id)}
+								onCertificateUpdate={(): void => {
+									loadPersonalCertificates();
+									console.log('===>> onCertificateUpdate called');
+								}}
+							/>
+						</Container>
+					)
+				},
+				true
+			);
+		},
+		[closeModal, createModal, id]
+	);
 
 	const onCertificateUploadConfirm = useCallback(
-		(certificate: Certificate) => {
+		(certificate: PersonalCertificate) => {
 			console.log('==== onCertificateUploadConfirm::>>', { certificate });
-			uploadPersonalCertificate(certificate, password, false).then((res) => {
-				console.log('==== onCertificateUploadConfirm::>>', { res });
-				// return res;
+			uploadPersonalCertificate(certificate, smimePassword, false).then((res) => {
+				if ('data' in res) {
+					createSnackbar({
+						key: `error-on-certificate-upload`,
+						replace: true,
+						severity: 'success',
+						label: 'Certificate uploaded successfully',
+						autoHideTimeout: 3000,
+						hideButton: true
+					});
+					loadPersonalCertificates();
+				} else {
+					useSmimePasswordStore.getState().updateSmimePassword('');
+					createSnackbar({
+						key: `error-on-certificate-upload`,
+						replace: true,
+						severity: 'error',
+						label: 'Error uploading certificate',
+						autoHideTimeout: 3000,
+						hideButton: true
+					});
+				}
 			});
 		},
-		[password]
+		[createSnackbar, loadPersonalCertificates, smimePassword]
 	);
 
 	const onUploadCertificate = useCallback(() => {
@@ -142,10 +181,8 @@ const PersonalCertificatesSettings: FC<PersonalCertificatesSettingsPropsType> = 
 	}, [closeModal, createModal, onCertificateUploadConfirm]);
 
 	useEffect(() => {
-		getPersonalCertificates().then((res) => {
-			setPersonalCertificatesData(res);
-		});
-	}, [setPersonalCertificatesData]);
+		loadPersonalCertificates();
+	}, [loadPersonalCertificates]);
 
 	const items = certificates.map((certificate: any, index) => ({
 		id: index.toString(),
@@ -158,8 +195,6 @@ const PersonalCertificatesSettings: FC<PersonalCertificatesSettingsPropsType> = 
 			certificate.serial
 		],
 		onClick: (e: React.MouseEvent<HTMLTableRowElement>): void => {
-			// Add your onClick logic here
-			console.log('==== Row clicked::>>', { email: certificate.email });
 			getPersonalCertificates(certificate.email).then((res) => {
 				if ('data' in res) {
 					showAllCertificate(res.data);

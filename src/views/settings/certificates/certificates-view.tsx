@@ -5,14 +5,17 @@
  */
 import React, { FC, useCallback, useEffect, useMemo, useRef } from 'react';
 
-import { Container, FormSection, useModal } from '@zextras/carbonio-design-system';
 import {
-	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-	// @ts-ignore
-	SettingsHeader,
-	SettingsHeaderProps,
-	t
-} from '@zextras/carbonio-shell-ui';
+	Breadcrumbs,
+	Container,
+	Crumb,
+	Divider,
+	FormSection,
+	Row,
+	useModal
+} from '@zextras/carbonio-design-system';
+import { t } from '@zextras/carbonio-shell-ui';
+import styled from 'styled-components';
 
 import { CertificatePasswordModal } from './certificate-password-modal';
 import { EnterPasswordModal } from './enter-password-modal';
@@ -20,24 +23,35 @@ import PersonalCertificatesSettings from './personal-certificates-settings';
 import RecipientsCertificateSettings from './recipients-certificates-settings';
 import { useUpdateView } from '../../../carbonio-ui-commons/hooks/use-update-view';
 import { checkExistEncryptionPassword } from '../../../store/actions/check-exist-password-action';
-import { usePasswordStore } from '../../../store/zustand/certificates/store';
+import { useSmimePasswordStore } from '../../../store/zustand/certificates/store';
 
+const CustomBreadcrumbs = styled(Breadcrumbs)`
+	.breadcrumbCrumb {
+		cursor: default;
+	}
+`;
 const CertificatesView: FC = () => {
 	useUpdateView();
 	const { createModal, closeModal } = useModal();
 	const isExistPasswordCheck = useRef(false);
 	const id = Date.now().toString();
-	const { password } = usePasswordStore();
+	const { smimePassword } = useSmimePasswordStore();
 
-	const onClose = useCallback(() => {
-		// Add your onClose logic here
-		console.log('Close button clicked');
-	}, []);
-
-	const saveChanges = useCallback<SettingsHeaderProps['onSave']>(async () => {
-		console.log('===>> saveChanges called');
-		return Promise.resolve([]);
-	}, []);
+	const crumbs = useMemo(
+		(): Crumb[] => [
+			{
+				id: 'settings',
+				label: t('settings.app', 'Settings'),
+				className: 'breadcrumbCrumb'
+			},
+			{
+				id: 'general',
+				label: t('label.smime_certificates', 'S/MIME Certificates'),
+				className: 'breadcrumbCrumb'
+			}
+		],
+		[]
+	);
 
 	const onPasswordConfirm = useCallback((password: string) => {
 		console.log('===>> onPasswordConfirm called');
@@ -98,19 +112,33 @@ const CertificatesView: FC = () => {
 	);
 
 	useEffect(() => {
-		if (!isExistPasswordCheck.current && (!password || password === '')) {
+		if (!isExistPasswordCheck.current && (!smimePassword || smimePassword === '')) {
 			isExistPasswordCheck.current = true;
 			checkExistEncryptionPassword().then((res) => {
 				onPasswordCheck(res);
 			});
 		}
-	}, [isExistPasswordCheck, onPasswordCheck, password]);
+	}, [isExistPasswordCheck, onPasswordCheck, smimePassword]);
 
-	const title = useMemo(() => t('label.smime_certificates', 'S/MIME Certificates'), []);
 	return (
 		<>
-			<SettingsHeader onSave={saveChanges} onCancel={onClose} isDirty={false} title={title} />
-			{password !== '' && (
+			<Container
+				orientation="vertical"
+				mainAlignment="space-around"
+				background={'gray5'}
+				height="fit"
+			>
+				<Row
+					padding={{ horizontal: 'small', vertical: 'medium' }}
+					mainAlignment="flex-start"
+					width="100%"
+					crossAlignment="flex-start"
+				>
+					<CustomBreadcrumbs crumbs={crumbs} />
+				</Row>
+			</Container>
+			<Divider />
+			{smimePassword !== '' && (
 				<Container
 					orientation="vertical"
 					mainAlignment="baseline"

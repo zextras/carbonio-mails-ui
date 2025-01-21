@@ -43,7 +43,6 @@ export const handleCertificateFileUpload = (
 ): Promise<CertificateFileUploadResult> =>
 	new Promise((resolve, reject) => {
 		const reader = new FileReader();
-
 		reader.onload = async (e: ProgressEvent<FileReader>): Promise<void> => {
 			try {
 				const arrayBuffer = e.target?.result;

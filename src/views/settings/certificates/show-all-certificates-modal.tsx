@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 
 import { Button, Container, Table, useSnackbar } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
@@ -11,22 +11,25 @@ import { useTranslation } from 'react-i18next';
 import ModalFooter from '../../../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../../../carbonio-ui-commons/components/modals/modal-header';
 import { deletePersonalCertificate } from '../../../store/actions/delete-personal-certificate-action';
-import { usePasswordStore } from '../../../store/zustand/certificates/store';
+import { selectPersonalCertificate } from '../../../store/actions/select-personal-certificate-action';
+import { useSmimePasswordStore } from '../../../store/zustand/certificates/store';
 import { Certificate } from '../../../types/certificates';
 
 type EnterPasswordModalPropType = {
 	certificates: Certificate[];
 	onClose: () => void;
+	onCertificateUpdate: () => void;
 };
 export const ShowAllCertificatesModal = ({
 	certificates,
-	onClose
+	onClose,
+	onCertificateUpdate
 }: EnterPasswordModalPropType): React.JSX.Element => {
 	const [t] = useTranslation();
 	const createSnackbar = useSnackbar();
-	const { password } = usePasswordStore();
-	const modalHeaderTitle = `Perosnal Cetificates of ${certificates[0].email}`; // t('settings.certificatePassword.enter_password', 'Enter password');
-
+	const { smimePassword } = useSmimePasswordStore();
+	const modalHeaderTitle = `Personal Cetificates of ${certificates[0].email}`; // t('settings.certificatePassword.enter_password', 'Enter password');
+	const [selectedRows, setSelectedRows] = useState<string[]>([]);
 	const headers = [
 		{
 			id: 'issuer',
@@ -68,9 +71,9 @@ export const ShowAllCertificatesModal = ({
 	const deleteCertificate = useCallback(
 		(certificate: Certificate) => {
 			console.log('===>> Delete certificate;;>>', certificate);
-			deletePersonalCertificate(certificate.id, password).then((res) => {
+
+			deletePersonalCertificate(certificate.id, smimePassword).then((res) => {
 				if ('data' in res) {
-					usePasswordStore.getState().updatePassword(password);
 					createSnackbar({
 						key: `error-on-certificate-upload`,
 						replace: true,
@@ -79,8 +82,12 @@ export const ShowAllCertificatesModal = ({
 						autoHideTimeout: 3000,
 						hideButton: true
 					});
+					// setSelectedRows((prevSelectedRows) =>
+					// 	prevSelectedRows.filter((rowId) => rowId !== certificate.id.toString())
+					// );
+					// items.filter((item) => item.id !== certificate.id.toString());
+					// setItems(updatedItems);
 				} else {
-					usePasswordStore.getState().updatePassword('');
 					createSnackbar({
 						key: `error-on-certificate-upload`,
 						replace: true,
@@ -92,7 +99,7 @@ export const ShowAllCertificatesModal = ({
 				}
 			});
 		},
-		[createSnackbar, password]
+		[createSnackbar, smimePassword]
 	);
 
 	const items = certificates.map((certificate: Certificate, index: number) => ({
@@ -111,21 +118,63 @@ export const ShowAllCertificatesModal = ({
 				<Button
 					icon="Trash2Outline"
 					onClick={(): void => {
-						console.log('===>> Delete certificate;;>>', certificate);
-						// deleteCertificate(certificate);
+						console.log('===>> Delete certificate:>>', certificate);
+						deleteCertificate(certificate);
 					}}
+					size="large"
 					type="ghost"
 				/>
 			</Container>
 		]
 	}));
 
+	const activateSelectedCertificate = useCallback(() => {
+		const selectedCertificate = certificates[parseInt(selectedRows[0], 10)];
+		if (selectedCertificate.id) {
+			selectPersonalCertificate(smimePassword, selectedCertificate.id).then((res) => {
+				if ('data' in res) {
+					createSnackbar({
+						key: `error-on-certificate-upload`,
+						replace: true,
+						severity: 'success',
+						label: 'Certificate activated successfully',
+						autoHideTimeout: 3000,
+						hideButton: true
+					});
+				} else {
+					createSnackbar({
+						key: `error-on-certificate-upload`,
+						replace: true,
+						severity: 'error',
+						label: 'Error activating certificate',
+						autoHideTimeout: 3000,
+						hideButton: true
+					});
+				}
+			});
+		}
+	}, [certificates, createSnackbar, selectedRows, smimePassword]);
+
 	return (
 		<Container mainAlignment="center" crossAlignment="flex-start" height="fit">
 			<ModalHeader onClose={onClose} title={modalHeaderTitle} />
 			<Container padding={{ all: 'small' }} crossAlignment="flex-start" height="fit">
-				<Table rows={items} headers={headers} showCheckbox multiSelect={false} />
-				<ModalFooter onConfirm={onClose} label={t('label.close', 'Close')} />
+				<Table
+					rows={items}
+					headers={headers}
+					showCheckbox
+					multiSelect={false}
+					onSelectionChange={(selected): void => {
+						setSelectedRows(selected);
+					}}
+				/>
+				<ModalFooter
+					onConfirm={activateSelectedCertificate}
+					label="Set Active"
+					disabled={selectedRows.length === 0}
+					secondaryLabel={t('label.close', 'Close')}
+					secondaryAction={onClose}
+				/>
 			</Container>
 		</Container>
 	);

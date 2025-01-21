@@ -14,7 +14,7 @@ import { getParticipantsFromMessage } from '../../helpers/messages';
 import { MailMessage, SendMsgResult, SendMsgWithSmartLinksResponse } from '../../types';
 import type { SaveDraftRequest, SaveDraftResponse, SendMsgParameters } from '../../types';
 import { generateMailRequest } from '../editor-slice-utils';
-import { getCertificate } from '../zustand/certificates/certificate';
+import { getCertificatesPassword } from '../zustand/certificates/certificate';
 import { createSoapSendMsgRequestFromEditor } from '../zustand/editor/editor-transformations';
 
 export const sendMsg = createAsyncThunk<any, { msg: MailMessage }>(
@@ -62,7 +62,6 @@ export const sendMsgFromEditor = createAsyncThunk<SendMsgResult, SendMsgParamete
 		if (!editor) {
 			return rejectWithValue('No editor provided');
 		}
-
 		if (!editor.identityId) {
 			return rejectWithValue('Missing sender');
 		}
@@ -70,7 +69,6 @@ export const sendMsgFromEditor = createAsyncThunk<SendMsgResult, SendMsgParamete
 		const msg = createSoapSendMsgRequestFromEditor(editor);
 
 		const identity = getIdentityDescriptor(editor.identityId);
-
 		let resp: SendMsgWithSmartLinksResponse;
 		try {
 			resp = await soapFetch<SaveDraftRequest, SaveDraftResponse>(
@@ -78,10 +76,20 @@ export const sendMsgFromEditor = createAsyncThunk<SendMsgResult, SendMsgParamete
 				{
 					_jsns: 'urn:zimbraMail',
 					m: msg,
+					...(editor.isSmimeSign || editor.isSmimeEncrypt
+						? {
+								encryptionPassword: getCertificatesPassword(),
+								encryptionType: 'smime'
+							}
+						: {}),
 					...(editor.isSmimeSign
 						? {
-								sign: true,
-								...getCertificate({ accountId: identity?.fromAddress ?? '' })
+								sign: true
+							}
+						: {}),
+					...(editor.isSmimeEncrypt
+						? {
+								encrypt: true
 							}
 						: {})
 				},

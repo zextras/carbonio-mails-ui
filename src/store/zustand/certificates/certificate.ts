@@ -3,7 +3,10 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { Certificate, useCertificatesStore } from './store';
+import { Certificate, useCertificatesStore, useSmimePasswordStore } from './store';
 
 export const getCertificate = ({ accountId }: { accountId: string }): Certificate | null =>
 	useCertificatesStore.getState()?.certificates?.[accountId] ?? null;
+
+export const getCertificatesPassword = (): string =>
+	useSmimePasswordStore.getState()?.smimePassword ?? '';

@@ -402,3 +402,29 @@ export const useEditorIsSmimeSign = (
 		[id, debouncedSaveDraft, setter, value]
 	);
 };
+
+/**
+ * Returns reactive reference to the isUrgent value and to its setter
+ * @param id
+ */
+export const useEditorIsSmimeEncrypt = (
+	id: MailsEditorV2['id']
+): {
+	isSmimeEncrypt: MailsEditorV2['isSmimeEncrypt'];
+	setIsSmimeEncrypt: (isSmimeEncrypt: MailsEditorV2['isSmimeEncrypt']) => void;
+} => {
+	const { debouncedSaveDraft } = useSaveDraftFromEditor();
+	const value = useEditorsStore((state) => state.editors[id].isSmimeEncrypt);
+	const setter = useEditorsStore((state) => state.setIsSmimeEncrypt);
+
+	return useMemo(
+		() => ({
+			isSmimeEncrypt: value,
+			setIsSmimeEncrypt: (val: MailsEditorV2['isSmimeEncrypt']): void => {
+				setter(id, val);
+				debouncedSaveDraft(id);
+			}
+		}),
+		[id, debouncedSaveDraft, setter, value]
+	);
+};

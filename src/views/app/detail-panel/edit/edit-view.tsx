@@ -23,7 +23,6 @@ import DropZoneAttachment from './dropzone-attachment';
 import { EditAttachmentsBlock } from './edit-attachments-block';
 import { createEditBoard } from './edit-view-board';
 import { AddAttachmentsDropdown } from './parts/add-attachments-dropdown';
-import { CertificateUploadModal } from './parts/certificate-upload-modal';
 import { ChangeSignaturesDropdown } from './parts/change-signatures-dropdown';
 import { useKeepOrDiscardDraft } from './parts/delete-draft';
 import { EditViewDraftSaveInfo } from './parts/edit-view-draft-save-info';
@@ -44,7 +43,12 @@ import {
 	getIdentitiesDescriptors,
 	getIdentityDescriptor
 } from '../../../../helpers/identities';
-import { Certificate, useCertificatesStore } from '../../../../store/zustand/certificates/store';
+import { checkExistEncryptionPassword } from '../../../../store/actions/check-exist-password-action';
+import { checkPersonalCertificateExist } from '../../../../store/actions/check-personal-certificate-exist-action';
+import {
+	useCertificatesStore,
+	useSmimePasswordStore
+} from '../../../../store/zustand/certificates/store';
 import {
 	useEditorAutoSendTime,
 	useEditorDraftSave,
@@ -55,10 +59,12 @@ import {
 	useEditorDid,
 	useEditorsStore,
 	useEditorIsSmimeSign,
-	useEditorIdentityId
+	useEditorIdentityId,
+	useEditorIsSmimeEncrypt
 } from '../../../../store/zustand/editor';
 import { EditViewClosingReasons } from '../../../../types';
 import { updateEditorWithSmartLinks } from '../../../../ui-actions/utils';
+import { EnterPasswordModal } from '../../../settings/certificates/enter-password-modal';
 
 export type EditViewProp = {
 	editorId: string;
@@ -132,22 +138,12 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 	const { identityId } = useEditorIdentityId(editorId);
 	const identityEmailAddress = getIdentityDescriptor(identityId)?.fromAddress;
 	const { isSmimeSign, setIsSmimeSign } = useEditorIsSmimeSign(editorId);
+	const { isSmimeEncrypt, setIsSmimeEncrypt } = useEditorIsSmimeEncrypt(editorId);
 	const getCertificate = useCertificatesStore((state) => state.getCertificate);
-
+	const { smimePassword } = useSmimePasswordStore();
 	useEffect(() => {
 		if (!draftId) saveDraft();
 	}, [draftId, saveDraft]);
-
-	useEffect(() => {
-		if (identityEmailAddress && isSmimeSign) {
-			const certificate = getCertificate(identityEmailAddress);
-			if (certificate) {
-				setIsSmimeSign(true);
-			} else {
-				setIsSmimeSign(false);
-			}
-		}
-	}, [identityEmailAddress, getCertificate, setIsSmimeSign, isSmimeSign]);
 
 	const { status: sendAllowedStatus, send: sendMessage } = useEditorSend(editorId);
 	const draftSaveProcessStatus = useEditorDraftSaveProcessStatus(editorId);
@@ -354,24 +350,59 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 		createSmartLinksAction
 	]);
 
-	const addCertificate = useCertificatesStore((state) => state.addCertificate);
-	const onCertificateUploadConfirm = useCallback(
-		(certificate: Certificate) => {
-			if (identityEmailAddress) {
-				addCertificate(identityEmailAddress, certificate);
-				setIsSmimeSign(true);
-			}
-		},
-		[addCertificate, identityEmailAddress, setIsSmimeSign]
-	);
+	// const addCertificate = useCertificatesStore((state) => state.addCertificate);
+	// const onCertificateUploadConfirm = useCallback(
+	// 	(certificate: Certificate) => {
+	// 		if (identityEmailAddress) {
+	// 			addCertificate(identityEmailAddress, certificate);
+	// 			setIsSmimeSign(true);
+	// 		}
+	// 	},
+	// 	[addCertificate, identityEmailAddress, setIsSmimeSign]
+	// );
 
-	const onSmimeOptionChange = useCallback(
-		(isSmimeSet: boolean): void => {
-			if (isSmimeSet && identityEmailAddress) {
-				const certificate = getCertificate(identityEmailAddress);
-				if (certificate) {
+	const handleCertificateResponse = useCallback(
+		(option: string, res: { data: Response } | { error: unknown }) => {
+			if ('data' in res) {
+				if (option === 'sign') {
 					setIsSmimeSign(true);
 				} else {
+					setIsSmimeEncrypt(true);
+				}
+			} else {
+				if (option === 'sign') {
+					setIsSmimeSign(false);
+				} else {
+					setIsSmimeEncrypt(false);
+				}
+				createSnackbar({
+					key: `info-on-certificate-missing`,
+					replace: true,
+					severity: 'info',
+					label: 'Please upload your certificate from settings',
+					autoHideTimeout: 3000,
+					hideButton: true
+				});
+			}
+		},
+		[createSnackbar, setIsSmimeEncrypt, setIsSmimeSign]
+	);
+
+	const checkCertificateExist = useCallback(
+		(option: string, password?: string) => {
+			if (identityEmailAddress) {
+				checkPersonalCertificateExist(password ?? smimePassword, identityEmailAddress).then((res) =>
+					handleCertificateResponse(option, res)
+				);
+			}
+		},
+		[identityEmailAddress, smimePassword, handleCertificateResponse]
+	);
+
+	const checkEncryptionPassword = useCallback(
+		(option: string) => {
+			checkExistEncryptionPassword().then((res) => {
+				if ('data' in res) {
 					const id = Date.now().toString();
 					createModal(
 						{
@@ -379,28 +410,103 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 							size: 'medium',
 							children: (
 								<Container crossAlignment="baseline">
-									<CertificateUploadModal
-										emailAddress={identityEmailAddress}
-										onConfirm={onCertificateUploadConfirm}
+									<EnterPasswordModal
+										onConfirm={(password): void => {
+											checkCertificateExist(option, password);
+										}}
 										onClose={(): void => closeModal?.(id)}
+										hideReset
 									/>
 								</Container>
 							)
 						},
 						true
 					);
+				} else {
+					if (option === 'sign') {
+						setIsSmimeSign(false);
+					} else {
+						setIsSmimeEncrypt(false);
+					}
+					createSnackbar({
+						key: `info-on-certificate-missing`,
+						replace: true,
+						severity: 'info',
+						label: 'Please create your encryption password from settings',
+						autoHideTimeout: 3000,
+						hideButton: true
+					});
+				}
+			});
+		},
+		[
+			createModal,
+			checkCertificateExist,
+			closeModal,
+			createSnackbar,
+			setIsSmimeSign,
+			setIsSmimeEncrypt
+		]
+	);
+
+	useEffect(() => {
+		if (identityEmailAddress && (isSmimeSign || isSmimeEncrypt)) {
+			console.log('identityEmailAddress #######', identityEmailAddress);
+			if (isSmimeSign) {
+				checkCertificateExist('sign');
+			} else {
+				checkCertificateExist('encrypt');
+			}
+		}
+	}, [
+		identityEmailAddress,
+		getCertificate,
+		setIsSmimeSign,
+		isSmimeSign,
+		isSmimeEncrypt,
+		checkEncryptionPassword,
+		checkCertificateExist
+	]);
+
+	const onSmimeOptionChange = useCallback(
+		(isSmimeSet: boolean): void => {
+			if (isSmimeSet && identityEmailAddress) {
+				if (smimePassword !== '') {
+					checkCertificateExist('sign');
+				} else {
+					checkEncryptionPassword('sign');
 				}
 			} else {
 				setIsSmimeSign(false);
 			}
 		},
 		[
-			closeModal,
-			createModal,
-			getCertificate,
+			checkCertificateExist,
+			checkEncryptionPassword,
 			identityEmailAddress,
-			onCertificateUploadConfirm,
-			setIsSmimeSign
+			setIsSmimeSign,
+			smimePassword
+		]
+	);
+
+	const onSmimeEncryptOptionChange = useCallback(
+		(isSmimeEncryptSet: boolean): void => {
+			if (isSmimeEncryptSet && identityEmailAddress) {
+				if (smimePassword !== '') {
+					checkCertificateExist('encrypt');
+				} else {
+					checkEncryptionPassword('encrypt');
+				}
+			} else {
+				setIsSmimeEncrypt(false);
+			}
+		},
+		[
+			checkCertificateExist,
+			checkEncryptionPassword,
+			identityEmailAddress,
+			setIsSmimeEncrypt,
+			smimePassword
 		]
 	);
 
@@ -473,6 +579,7 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 						<MemoizedOptionsDropdown
 							editorId={editorId}
 							onSmimeOptionChange={onSmimeOptionChange}
+							onSmimeEncryptOptionChange={onSmimeEncryptOptionChange}
 						/>
 						<Tooltip
 							label={saveDraftAllowedStatus?.reason}

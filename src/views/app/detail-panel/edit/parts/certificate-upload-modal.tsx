@@ -21,7 +21,7 @@ import styled from 'styled-components';
 import { handleCertificateFileUpload } from './certificate-utils';
 import ModalFooter from '../../../../../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../../../../../carbonio-ui-commons/components/modals/modal-header';
-import { Certificate } from '../../../../../store/zustand/certificates/store';
+import { PersonalCertificate } from '../../../../../store/zustand/certificates/store';
 
 const FileInput = styled.input`
 	display: none;
@@ -29,7 +29,7 @@ const FileInput = styled.input`
 
 type CertificateUploadModalPropType = {
 	emailAddress?: string;
-	onConfirm: (certificate: Certificate) => void;
+	onConfirm: (certificate: PersonalCertificate) => void;
 	onClose: () => void;
 };
 export const CertificateUploadModal = ({

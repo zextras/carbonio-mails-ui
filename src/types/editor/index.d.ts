@@ -178,8 +178,10 @@ export type MailsEditorV2 = {
 	size: number;
 	// the sum of the size of the attachments requiring smart link conversion
 	totalSmartLinksSize: number;
-	// flag for the S/MIME request
+	// flag for the S/MIME Sign request
 	isSmimeSign?: boolean;
+	// flag for the S/MIME Encrypt request
+	isSmimeEncrypt?: boolean;
 };
 
 type IdentityType = {
