@@ -46,8 +46,6 @@ describe('ConversationList Component', () => {
 	});
 
 	it('displays a list of conversations', async () => {
-		populateFoldersStore();
-
 		const message = generateConvMessageFromAPI({ id: '1', l: '2' });
 		const conversation1 = generateConversationFromAPI({ id: '-1', m: [message] });
 		const conversation2 = generateConversationFromAPI({ id: '-2', m: [message] });
