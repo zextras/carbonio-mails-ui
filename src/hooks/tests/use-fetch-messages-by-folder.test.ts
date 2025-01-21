@@ -12,6 +12,7 @@ import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 import { useFolderStore } from '../../carbonio-ui-commons/store/zustand/folder';
 import { generateFolder } from '../../carbonio-ui-commons/test/mocks/folders/folders-generator';
 import { createSoapAPIInterceptor } from '../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
+import { buildSoapErrorResponseBody } from '../../carbonio-ui-commons/test/mocks/utils/soap';
 import { API_REQUEST_STATUS } from '../../constants';
 import {
 	resetMessagesAndPopulatedItems,
@@ -85,6 +86,16 @@ describe('useMessageListByFolder', () => {
 		});
 		await waitFor(() => {
 			expect(updateMessagesResultsLoadingStatus).toHaveBeenCalledWith(API_REQUEST_STATUS.fulfilled);
+		});
+	});
+
+	it('should call updateMessagesResultsLoadingStatus messages if the API call fails', async () => {
+		const response = buildSoapErrorResponseBody();
+		createSoapAPIInterceptor('Search', response);
+		renderHook(() => useFetchMessagesByFolder(folder.id));
+
+		await waitFor(() => {
+			expect(updateMessagesResultsLoadingStatus).toHaveBeenCalledWith(API_REQUEST_STATUS.error);
 		});
 	});
 
