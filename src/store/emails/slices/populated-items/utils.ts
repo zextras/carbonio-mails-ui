@@ -222,19 +222,18 @@ function handleConvActionResponse(
 		produce(({ populatedItemsSlice }: EmailsStoreState) => {
 			if (!response || 'Fault' in response) {
 				forEach(convActionParams.ids, (id: string) => {
-					if (populatedItemsSlice.conversations?.[id]) {
-						if (convActionParams.operation === CONVACTIONS.FLAG) {
-							populatedItemsSlice.conversations[id].flagged = true;
-						}
-						if (convActionParams.operation === CONVACTIONS.UNFLAG) {
-							populatedItemsSlice.conversations[id].flagged = false;
-						}
-						if (convActionParams.operation === CONVACTIONS.MARK_READ) {
-							populatedItemsSlice.conversations[id].read = true;
-						}
-						if (convActionParams.operation === CONVACTIONS.MARK_UNREAD) {
-							populatedItemsSlice.conversations[id].read = false;
-						}
+					if (!populatedItemsSlice.conversations?.[id]) return;
+					if (convActionParams.operation === CONVACTIONS.FLAG) {
+						populatedItemsSlice.conversations[id].flagged = true;
+					}
+					if (convActionParams.operation === CONVACTIONS.UNFLAG) {
+						populatedItemsSlice.conversations[id].flagged = false;
+					}
+					if (convActionParams.operation === CONVACTIONS.MARK_READ) {
+						populatedItemsSlice.conversations[id].read = true;
+					}
+					if (convActionParams.operation === CONVACTIONS.MARK_UNREAD) {
+						populatedItemsSlice.conversations[id].read = false;
 					}
 				});
 				return;
