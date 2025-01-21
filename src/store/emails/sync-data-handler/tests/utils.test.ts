@@ -5,19 +5,33 @@
  */
 
 import { act, renderHook, waitFor } from '@testing-library/react';
-import { SoapNotify, useRefresh } from '@zextras/carbonio-shell-ui';
+import { getUserSettings, SoapNotify, useRefresh } from '@zextras/carbonio-shell-ui';
 
 import { useNotify } from '../../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
 import { normalizeConversations } from '../../../../normalizations/normalize-conversation';
+import { generateConversation } from '../../../../tests/generators/generateConversation';
+import { generateMessage } from '../../../../tests/generators/generateMessage';
 import { SoapConversation, SoapIncompleteMessage, SoapMailMessage } from '../../../../types';
 import { useSyncDataHandler } from '../../../../views/sidebar/commons/sync-data-handler-hooks';
-import { setConversationsInEmailStore, useConversationsByIds } from '../../store';
+import {
+	handleNotifyMessagesCreated,
+	setConversationsInEmailStore,
+	setMessagesInEmailStore,
+	useConversationById,
+	useConversationsByIds,
+	useMessageById,
+	useMessageIndexSlice
+} from '../../store';
 
 function mockSoapRefresh(mailbox: number): void {
 	(useRefresh as jest.Mock).mockReturnValue({
 		mbx: [{ s: mailbox }]
 	});
 }
+
+jest.mock('@zextras/carbonio-shell-ui', () => ({
+	getUserSettings: jest.fn()
+}));
 
 function generateSoapAction(partial?: Partial<SoapNotify>): SoapNotify {
 	return {
@@ -126,6 +140,71 @@ describe('handleNotifyConversationsCreated', () => {
 		const { result: conversationsInStore } = renderHook(() => useConversationsByIds([]));
 		await waitFor(() => {
 			expect(conversationsInStore.current).toEqual([]);
+		});
+	});
+});
+
+describe('handleNotifyMessagesCreated', () => {
+	describe('addMessagesToMessageSlice', () => {
+		it('should add messages to populatedItemsSlice.messages', async () => {
+			const message = generateMessage({ id: '1' });
+			setMessagesInEmailStore([message], false);
+			const newMessage = generateMessage({ id: '2' });
+			handleNotifyMessagesCreated([newMessage]);
+			const { result } = renderHook(() => useMessageById(newMessage.id));
+			await waitFor(async () => {
+				expect(result.current).toEqual(newMessage);
+			});
+		});
+
+		it('should update messageListIndex with new message ids', async () => {
+			const message = generateMessage({ id: '1' });
+			setMessagesInEmailStore([message], false);
+			const newMessage = generateMessage({ id: '2' });
+			handleNotifyMessagesCreated([newMessage]);
+			const { result } = renderHook(() => useMessageIndexSlice());
+			await waitFor(async () => {
+				expect(result.current?.messageListIndex).toEqual(['2', '1']);
+			});
+		});
+	});
+
+	describe('getOrderedMessagesForConversation', () => {
+		it('should return messages in descending order when sortOrder is dateDesc', async () => {
+			(getUserSettings as jest.Mock).mockReturnValue({
+				prefs: { zimbraPrefConversationOrder: 'dateDesc' }
+			});
+			const message = generateMessage({ id: '1' });
+			setConversationsInEmailStore(
+				[generateConversation({ id: '123', messages: [message] })],
+				false
+			);
+			const newMessage = { ...generateMessage({ id: '2' }), conversation: '123' };
+			handleNotifyMessagesCreated([newMessage]);
+			const { result } = renderHook(() => useConversationById('123'));
+			await waitFor(async () => {
+				const messagesIds = result.current.messages.map((m) => m.id);
+				expect(messagesIds).toEqual(['2', '1']);
+			});
+		});
+
+		it('should return messages in ascending order when sortOrder is not dateDesc', async () => {
+			(getUserSettings as jest.Mock).mockReturnValue({
+				prefs: { zimbraPrefConversationOrder: 'dateAsc' }
+			});
+
+			const message = generateMessage({ id: '1' });
+			setConversationsInEmailStore(
+				[generateConversation({ id: '123', messages: [message] })],
+				false
+			);
+			const newMessage = { ...generateMessage({ id: '2' }), conversation: '123' };
+			handleNotifyMessagesCreated([newMessage]);
+			const { result } = renderHook(() => useConversationById('123'));
+			await waitFor(async () => {
+				const messagesIds = result.current.messages.map((m) => m.id);
+				expect(messagesIds).toEqual(['1', '2']);
+			});
 		});
 	});
 });
