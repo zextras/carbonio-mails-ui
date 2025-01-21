@@ -28,6 +28,15 @@ describe('SelectIdentitySignature', () => {
 		}
 	};
 
+	const mockNonDefaultAccount = {
+		id: '1',
+		name: 'Secondary Identity',
+		_attrs: {
+			zimbraPrefDefaultSignatureId: 'sig1',
+			zimbraPrefForwardReplySignatureId: 'sig2'
+		}
+	};
+
 	const mockSignatures: SignItemType[] = [
 		{
 			id: 'sig1',
@@ -56,8 +65,25 @@ describe('SelectIdentitySignature', () => {
 			/>
 		);
 
+		// Assert that the translated string was called for default accounts
 		expect(mockT).toHaveBeenCalledWith('settings.label.default', PRIMARY_IDENTITY_NAME);
-		expect(screen.getByText(PRIMARY_IDENTITY_NAME)).toBeInTheDocument();
+		expect(screen.getByText(PRIMARY_IDENTITY_NAME)).toBeInTheDocument(); // DEFAULT
+		expect(screen.getByText('Signature 1 Label')).toBeInTheDocument();
+	});
+
+	it('renders non default accounts without translation', () => {
+		setupTest(
+			<SelectIdentitySignature
+				acc={mockNonDefaultAccount}
+				signatures={mockSignatures}
+				signatureSelectItems={mockSignatureSelectItems}
+				updateIdentities={mockUpdateIdentities}
+			/>
+		);
+
+		// Assert that the translated string was not called for non-default accounts
+		expect(mockT).not.toHaveBeenCalledWith('settings.label.default', 'Secondary Identity');
+		expect(screen.getByText('Secondary Identity')).toBeInTheDocument();
 		expect(screen.getByText('Signature 1 Label')).toBeInTheDocument();
 	});
 });
