@@ -72,11 +72,18 @@ describe('searchEmailStoreAction', () => {
 		);
 	});
 
-	it('handles error response', async () => {
+	it('should update message loading status when error response and type is message', async () => {
 		const errorResponse = { Fault: {} };
 		(searchSoapApi as jest.Mock).mockResolvedValueOnce(errorResponse);
-		await searchEmailStoreAction(searchParams);
+		await searchEmailStoreAction({ ...searchParams, types: 'message' });
 		expect(updateMessagesResultsLoadingStatus).toHaveBeenCalledWith(API_REQUEST_STATUS.error);
+	});
+
+	it('should update conversation loading status when error response and type is conversation', async () => {
+		const errorResponse = { Fault: {} };
+		(searchSoapApi as jest.Mock).mockResolvedValueOnce(errorResponse);
+		await searchEmailStoreAction({ ...searchParams, types: 'conversation' });
+		expect(updateConversationsResultsLoadingStatus).toHaveBeenCalledWith(API_REQUEST_STATUS.error);
 	});
 
 	it('handles empty message response', async () => {
