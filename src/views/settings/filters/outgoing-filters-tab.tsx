@@ -9,13 +9,13 @@ import React, { useMemo } from 'react';
 import { getFiltermanager } from './parts/filter-manager';
 import { MessageFilterTab } from './parts/message-filter-tab';
 import { getOutgoingFilters } from '../../../api/get-filters';
-import { modifyOutgoingFilterRules } from '../../../store/actions/modify-filter-rules';
+import { modifyOutgoingFilterRulesSoapApi } from '../../../api/modify-filter-rules-soap-api';
 
 export const OutgoingFiltersTab = (): React.JSX.Element => {
 	const filtersManagerComponent = useMemo(() => getFiltermanager(false), []);
 	return (
 		<MessageFilterTab
-			saveFilters={modifyOutgoingFilterRules}
+			saveFilters={modifyOutgoingFilterRulesSoapApi}
 			getFilters={getOutgoingFilters}
 			FiltersManagerComponent={filtersManagerComponent}
 		/>

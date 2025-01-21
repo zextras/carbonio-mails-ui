@@ -4,36 +4,43 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React, { FC, memo, ReactNode, useCallback, useMemo, useState } from 'react';
+import React, { memo, ReactNode, useCallback, useMemo, useState } from 'react';
 
-import { Container, ContainerProps, Dropdown } from '@zextras/carbonio-design-system';
+import {
+	Badge,
+	Button,
+	Container,
+	ContainerProps,
+	Dropdown,
+	Icon,
+	Padding,
+	Row,
+	Text,
+	Tooltip
+} from '@zextras/carbonio-design-system';
 import { pushHistory, useUserSettings } from '@zextras/carbonio-shell-ui';
-import { debounce, find, reduce, uniqBy } from 'lodash';
+import { debounce, filter, forEach, includes, isEmpty, reduce, uniqBy } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { ConversationListItemCore } from './conversation-list-item-core';
 import { ConversationMessagesList } from './conversation-messages-list';
-import { getFolderParentId } from './utils';
-import { FOLDERS } from '../../../../carbonio-ui-commons/constants/folders';
+import { ZIMBRA_STANDARD_COLORS } from '../../../../carbonio-ui-commons/constants';
+import { useTags } from '../../../../carbonio-ui-commons/store/zustand/tags';
+import { Tag } from '../../../../carbonio-ui-commons/types/tags';
 import { API_REQUEST_STATUS } from '../../../../constants';
 import { normalizeDropdownActionItem } from '../../../../helpers/actions';
-import { getFolderIdParts } from '../../../../helpers/folders';
 import { useConvActions } from '../../../../hooks/actions/use-conv-actions';
 import { useConvPreviewOnSeparatedWindowFn } from '../../../../hooks/actions/use-conv-preview-on-separated-window';
 import { useConvSetReadFn } from '../../../../hooks/actions/use-conv-set-read';
-import { useAppDispatch, useAppSelector } from '../../../../hooks/redux';
-import { useOnMouseHover } from '../../../../hooks/use-on-mouse-over';
 import { useTagDropdownItem } from '../../../../hooks/use-tag-dropdown-item';
-import { searchConv } from '../../../../store/actions';
-import { selectConversationExpandedStatus } from '../../../../store/conversations-slice';
-import { selectMessages } from '../../../../store/messages-slice';
+import { searchConvEmailStoreAction } from '../../../../store/emails/actions/search-conv-action';
+import { useConversationStatus, useMessagesByIds } from '../../../../store/emails/store';
 import {
-	ConvMessage,
 	ConversationListItemProps,
-	IncompleteMessage,
-	MailsStateType,
+	TextReadValuesProps,
+	NormalizedConversation,
 	Conversation
 } from '../../../../types';
 import { ConversationPreviewPanel } from '../../detail-panel/conversation-preview-panel';
@@ -46,7 +53,7 @@ const CollapseElement = styled(Container)<{ $open: boolean }>`
 `;
 
 export const ConversationListItemActionWrapper = ({
-	item,
+	conversation,
 	active,
 	onClick,
 	onDoubleClick,
@@ -59,12 +66,12 @@ export const ConversationListItemActionWrapper = ({
 	onDoubleClick?: ContainerProps['onDoubleClick'];
 	shouldReplaceHistory?: boolean;
 	active?: boolean;
-	item: Conversation;
+	conversation: NormalizedConversation;
 	deselectAll: () => void;
 }): React.JSX.Element => {
 	const conversationPreviewFactory = useCallback(
-		() => <ConversationPreviewPanel conversation={item} isInsideExtraWindow />,
-		[item]
+		() => <ConversationPreviewPanel conversation={conversation} isInsideExtraWindow />,
+		[conversation]
 	);
 	const [t] = useTranslation();
 	const {
@@ -87,7 +94,7 @@ export const ConversationListItemActionWrapper = ({
 		previewOnSeparatedWindowDescriptor,
 		showOriginalDescriptor
 	} = useConvActions({
-		conversation: item,
+		conversation: conversation as Conversation,
 		deselectAll,
 		conversationPreviewFactory,
 		shouldReplaceHistory
@@ -119,7 +126,7 @@ export const ConversationListItemActionWrapper = ({
 			restoreFolderDescriptor
 		]
 	);
-	const tagItem = useTagDropdownItem(applyTagDescriptor, item.tags);
+	const tagItem = useTagDropdownItem(applyTagDescriptor, conversation.tags);
 	const dropdownItems = useMemo(
 		() =>
 			[
@@ -179,10 +186,10 @@ export const ConversationListItemActionWrapper = ({
 			items={dropdownItems}
 			display="block"
 			style={{ width: '100%', height: '4rem' }}
-			data-testid={`secondary-actions-menu-${item.id}`}
+			data-testid={`secondary-actions-menu-${conversation.id}`}
 		>
 			<HoverContainer
-				data-testid={`hover-container-${item.id}`}
+				data-testid={`hover-container-${conversation.id}`}
 				orientation="horizontal"
 				mainAlignment="flex-start"
 				crossAlignment="unset"
@@ -196,7 +203,7 @@ export const ConversationListItemActionWrapper = ({
 					mainAlignment="flex-end"
 					crossAlignment="center"
 					background={active ? 'highlight' : 'gray6'}
-					data-testid={`primary-actions-bar-${item.id}`}
+					data-testid={`primary-actions-bar-${conversation.id}`}
 				>
 					<ListItemHoverActions actions={hoverActions} />
 				</HoverBarContainer>
@@ -205,39 +212,43 @@ export const ConversationListItemActionWrapper = ({
 	);
 };
 
-export const ConversationListItem: FC<ConversationListItemProps> = memo(
-	function ConversationListItem({
-		item,
-		selected,
-		selecting,
-		toggle,
-		active,
-		isSearchModule,
-		activeItemId,
-		dragImageRef,
+export const ConversationListItem = memo(function ConversationListItem({
+	conversation,
+	selected,
+	selecting,
+	toggle,
+	active,
+	isSearchModule,
+	activeItemId,
+	dragImageRef,
+	deselectAll,
+	folderId,
+	setDraggedIds
+}: ConversationListItemProps): React.JSX.Element {
+	const { itemId } = useParams<{ itemId: string }>();
+	const [open, setOpen] = useState(false);
+	const messages = useMessagesByIds(conversation.messages.map((m) => m.id));
+	const folderParent = folderId ?? conversation.messages?.[0]?.parent;
+	const [t] = useTranslation();
+
+	const markAsRead = useConvSetReadFn({
+		ids: [conversation.id],
+		isConversationRead: conversation.read,
 		deselectAll,
-		folderId,
-		setDraggedIds
-	}) {
-		const { itemId } = useParams<{ itemId: string }>();
-		const dispatch = useAppDispatch();
-		const [open, setOpen] = useState(false);
-		const messages = useAppSelector(selectMessages);
-		const isConversation = 'messages' in (item || {});
-		const folderParent = getFolderParentId({ folderId: folderId ?? '', isConversation, item });
-		const [t] = useTranslation();
+		folderId: folderId ?? ''
+	});
 
-		const markAsRead = useConvSetReadFn({
-			ids: [item.id],
-			isConversationRead: item.read,
-			deselectAll,
-			folderId: folderId ?? ''
-		});
+	const conversationPreviewFactory = useCallback(
+		() => <ConversationPreviewPanel conversation={conversation} isInsideExtraWindow />,
+		[conversation]
+	);
 
-		const conversationPreviewFactory = useCallback(
-			() => <ConversationPreviewPanel conversation={item} isInsideExtraWindow />,
-			[item]
-		);
+	const conversationId = conversation.id;
+	const previewOnSeparatedWindow = useConvPreviewOnSeparatedWindowFn({
+		conversationId,
+		subject: conversation.subject,
+		conversationPreviewFactory
+	});
 
 		const previewOnSeparatedWindow = useConvPreviewOnSeparatedWindowFn({
 			conversationId: item.id,
@@ -325,17 +336,16 @@ export const ConversationListItem: FC<ConversationListItemProps> = memo(
 								if (getFolderIdParts(folderParent).id === FOLDERS.TRASH) {
 									return [...acc, msg];
 								}
-								// all other messages are valid and must be showed in the conversation
-								return [...acc, msg];
-							}
-							return acc;
-						},
-						[]
-					).sort((a, b) => (a.date && b.date ? sortSign * (a.date - b.date) : 1)),
-					'id'
+							);
+						}
+						return acc;
+					},
+					[]
 				),
-			[item, messages, folderParent, sortSign]
-		);
+				'id'
+			),
+		[conversation.tags, tagsFromStore]
+	);
 
 		const shouldReplaceHistory = useMemo(() => itemId === item.id, [item.id, itemId]);
 		const [ref, isHovered] = useOnMouseHover();

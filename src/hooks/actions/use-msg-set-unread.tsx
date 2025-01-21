@@ -10,9 +10,8 @@ import { useTranslation } from 'react-i18next';
 
 import { MessageActionsDescriptors } from '../../constants';
 import { isDraft } from '../../helpers/folders';
-import { msgAction } from '../../store/actions';
+import { msgActionEmailStoreAction } from '../../store/emails/actions/msg-action-action';
 import { ActionFn, UIActionDescriptor } from '../../types';
-import { useAppDispatch } from '../redux';
 
 type MsgSetUnreadFunctionsParameter = {
 	ids: Array<string>;
@@ -33,23 +32,20 @@ export const useMsgSetUnreadFn = ({
 		(): boolean => !isDraft(folderId) && isMessageRead,
 		[folderId, isMessageRead]
 	);
-	const dispatch = useAppDispatch();
 
 	const execute = useCallback((): void => {
 		if (canExecute()) {
-			dispatch(
-				msgAction({
-					operation: '!read',
-					ids
-				})
-			).then((res) => {
-				deselectAll && deselectAll();
-				if (res.type.includes('fulfilled') && shouldReplaceHistory) {
+			msgActionEmailStoreAction({
+				operation: '!read',
+				ids
+			}).then((res) => {
+				deselectAll?.();
+				if (!('Fault' in res) && shouldReplaceHistory) {
 					replaceHistory(`/folder/${folderId}`);
 				}
 			});
 		}
-	}, [canExecute, deselectAll, dispatch, folderId, ids, shouldReplaceHistory]);
+	}, [canExecute, deselectAll, folderId, ids, shouldReplaceHistory]);
 
 	return useMemo(() => ({ canExecute, execute }), [canExecute, execute]);
 };

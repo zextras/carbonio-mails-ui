@@ -9,7 +9,7 @@ import React, { ReactNode } from 'react';
 import { ContainerProps } from '@zextras/carbonio-design-system';
 
 import { UIActionDescriptor } from '../actions';
-import { Conversation } from '../conversations';
+import { Conversation, NormalizedConversation } from '../conversations';
 import { IncompleteMessage, MailMessage } from '../messages';
 import { SearchRequestStatus } from '../state';
 import { TextReadValuesProps } from '../utils';
@@ -24,7 +24,7 @@ export type SenderNameProps = {
 };
 
 export type MessageListItemProps = {
-	item: IncompleteMessage & { isSearchModule?: boolean };
+	item: IncompleteMessage;
 	selected: boolean;
 	selecting: boolean;
 	toggle: (id: string) => void;
@@ -87,7 +87,7 @@ export type ConversationMessagesListProps = {
 };
 
 export type ConversationListItemProps = {
-	item: Conversation;
+	conversation: NormalizedConversation;
 	selected: boolean;
 	selecting: boolean;
 	toggle: (id: string) => void;

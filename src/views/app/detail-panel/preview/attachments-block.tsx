@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, ReactElement, useCallback, useContext, useMemo, useRef, useState } from 'react';
+import React, { ReactElement, useCallback, useContext, useMemo, useRef, useState } from 'react';
 
 import {
 	Container,
@@ -37,13 +37,11 @@ import {
 	getAttachmentsLink,
 	getLocationOrigin
 } from './utils';
+import { getMsgsForPrintSoapApi } from '../../../../api';
 import { getFileExtension } from '../../../../commons/utilities';
 import { useAttachmentIconColor } from '../../../../helpers/attachments';
-import { useAppDispatch } from '../../../../hooks/redux';
 import { useUiUtilities } from '../../../../hooks/use-ui-utilities';
-import { getMsgsForPrint } from '../../../../store/actions';
-import { deleteAttachments } from '../../../../store/actions/delete-all-attachments';
-import { StoreProvider } from '../../../../store/redux';
+import { deleteAttachmentsEmailStoreAction } from '../../../../store/emails/actions/delete-attachments-action';
 import type {
 	AppContext,
 	AttachmentPart,
@@ -121,7 +119,7 @@ const AttachmentExtension = styled(Text)<{
 	margin-right: ${({ theme }): string => theme.sizes.padding.small};
 `;
 
-const Attachment: FC<AttachmentType> = ({
+const Attachment = ({
 	filename,
 	size,
 	link,
@@ -131,7 +129,7 @@ const Attachment: FC<AttachmentType> = ({
 	part,
 	att,
 	openEmlPreview
-}) => {
+}: AttachmentType): React.JSX.Element => {
 	const [t] = useTranslation();
 	const { createPreview } = useContext(PreviewsManagerContext);
 	const { isInsideExtraWindow } = useExtraWindow();
@@ -141,7 +139,6 @@ const Attachment: FC<AttachmentType> = ({
 
 	const inputRef = useRef<HTMLAnchorElement>(null);
 	const inputRef2 = useRef<HTMLAnchorElement>(null);
-	const dispatch = useAppDispatch();
 
 	const pType = previewType(att.contentType);
 	const [createContact, isAvailable] = useIntegratedFunction('create_contact_from_vcard');
@@ -164,8 +161,8 @@ const Attachment: FC<AttachmentType> = ({
 	const isEML = extension === 'EML';
 
 	const onDeleteAttachment = useCallback(() => {
-		dispatch(deleteAttachments({ id: messageId, attachments: [part] }));
-	}, [dispatch, messageId, part]);
+		deleteAttachmentsEmailStoreAction({ id: messageId, attachments: [part] });
+	}, [messageId, part]);
 
 	const onDownloadAndDelete = useCallback(() => {
 		downloadAttachment();
@@ -179,13 +176,11 @@ const Attachment: FC<AttachmentType> = ({
 				id,
 				maxHeight: '90vh',
 				children: (
-					<StoreProvider>
-						<DeleteAttachmentModal
-							onClose={(): void => closeModal(id)}
-							onDownloadAndDelete={onDownloadAndDelete}
-							onDeleteAttachment={onDeleteAttachment}
-						/>
-					</StoreProvider>
+					<DeleteAttachmentModal
+						onClose={(): void => closeModal(id)}
+						onDownloadAndDelete={onDownloadAndDelete}
+						onDeleteAttachment={onDeleteAttachment}
+					/>
 				)
 			},
 			true
@@ -266,7 +261,7 @@ const Attachment: FC<AttachmentType> = ({
 	const [uploadIntegration, isUploadIntegrationAvailable] = getIntegratedFunction('select-nodes');
 
 	const showEMLPreview = useCallback(() => {
-		getMsgsForPrint({ ids: [messageId], part: att?.name })
+		getMsgsForPrintSoapApi({ ids: [messageId], part: att?.name })
 			.then((res) => {
 				openEmlPreview && openEmlPreview(messageId, att?.name, res[0]);
 			})
@@ -536,20 +531,20 @@ const copyToFiles = (
 		part: att.name,
 		destinationFolderId: nodes?.[0]?.id
 	});
-
-const AttachmentsBlock: FC<{
+type AttachmentsBlockProps = {
 	messageId: MailMessage['id'];
 	messageSubject: MailMessage['subject'];
 	messageAttachments: MailMessage['attachments'];
 	isExternalMessage?: boolean;
 	openEmlPreview?: OpenEmlPreviewType;
-}> = ({
+};
+const AttachmentsBlock = ({
 	isExternalMessage = false,
 	openEmlPreview,
 	messageId,
 	messageSubject,
 	messageAttachments
-}): ReactElement => {
+}: AttachmentsBlockProps): React.JSX.Element => {
 	const [t] = useTranslation();
 	const { createSnackbar } = useUiUtilities();
 	const [expanded, setExpanded] = useState(false);

@@ -13,7 +13,7 @@ import {
 	useEditorIsUrgent,
 	useEditorRequestReadReceipt,
 	useEditorSubject
-} from '../../../../../store/zustand/editor';
+} from '../../../../../store/editor';
 import { MailsEditorV2 } from '../../../../../types';
 
 export type SubjectRowProps = {

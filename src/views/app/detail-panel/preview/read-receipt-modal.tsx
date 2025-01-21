@@ -8,12 +8,11 @@ import React, { FC, ReactElement, useCallback, useEffect, useMemo } from 'react'
 import { Container, CustomModal, Padding, Text } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 
+import { sendDeliveryReportSoapApi } from '../../../../api/send-delivery-request-soap-api';
 import ModalFooter from '../../../../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../../../../carbonio-ui-commons/components/modals/modal-header';
-import { useAppDispatch } from '../../../../hooks/redux';
 import { useUiUtilities } from '../../../../hooks/use-ui-utilities';
-import { msgAction } from '../../../../store/actions';
-import { sendDeliveryReport } from '../../../../store/actions/send-delivery-request';
+import { msgActionEmailStoreAction } from '../../../../store/emails/actions/msg-action-action';
 import type { MailMessage } from '../../../../types';
 
 type CompProps = {
@@ -30,21 +29,18 @@ const ReadReceiptModal: FC<CompProps> = ({
 	readReceiptSetting
 }): ReactElement => {
 	const { createSnackbar } = useUiUtilities();
-	const dispatch = useAppDispatch();
 
 	const title = useMemo(() => t('label.read_receipt_req', 'Read receipt required'), []);
 	const onConfirm = useCallback(() => {
-		dispatch(
-			msgAction({
-				operation: 'update',
-				ids: [message?.id],
-				flag: 'n'
-			})
-		);
-	}, [dispatch, message?.id]);
+		msgActionEmailStoreAction({
+			operation: 'update',
+			ids: [message?.id],
+			flag: 'n'
+		});
+	}, [message?.id]);
 
 	const onNotify = useCallback(() => {
-		sendDeliveryReport(message.id).then(() => {
+		sendDeliveryReportSoapApi(message.id).then(() => {
 			createSnackbar({
 				key: `read-receipt-sent`,
 				replace: true,

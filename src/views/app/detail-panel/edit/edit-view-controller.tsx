@@ -18,11 +18,10 @@ import { includes, noop } from 'lodash';
 import { EditView, EditViewHandle } from './edit-view';
 import { EditViewBoardContext } from './edit-view-board';
 import { EditViewActions } from '../../../../constants';
-import { useAppDispatch, useAppSelector } from '../../../../hooks/redux';
-import { getMsgAsyncThunk } from '../../../../store/actions';
-import { selectMessage } from '../../../../store/messages-slice';
-import { addEditor, useEditorSubject } from '../../../../store/zustand/editor';
-import { generateEditor } from '../../../../store/zustand/editor/editor-generators';
+import { addEditor, useEditorSubject } from '../../../../store/editor';
+import { generateEditor } from '../../../../store/editor/editor-generators';
+import { getFullMessageEmailStoreAction } from '../../../../store/emails/actions/get-message';
+import { useMessageById } from '../../../../store/emails/store';
 import type { EditViewActionsType, MailMessage } from '../../../../types';
 
 const parseAndValidateParams = (
@@ -60,7 +59,6 @@ type EditViewControllerCoreProps = {
 const MemoizedEditView = memo(EditView);
 
 const EditViewControllerCore: FC<EditViewControllerCoreProps> = ({ action, entityId, message }) => {
-	const messagesStoreDispatch = useAppDispatch();
 	const board = useBoard<EditViewBoardContext>();
 	const boardUtilities = useBoardHooks();
 	const editViewRef = useRef<EditViewHandle>(null);
@@ -86,7 +84,6 @@ const EditViewControllerCore: FC<EditViewControllerCoreProps> = ({ action, entit
 	const editor = generateEditor({
 		action,
 		id: entityId,
-		messagesStoreDispatch,
 		message,
 		compositionData
 	});
@@ -154,9 +151,7 @@ const MemoizedEditViewControllerCore = memo(EditViewControllerCore);
  * Get and parse the parameters. Get the original message if it is needed
  * @constructor
  */
-const EditViewController: FC = () => {
-	const messagesStoreDispatch = useAppDispatch();
-
+const EditViewController = (): React.JSX.Element => {
 	const boardContext = useBoard<EditViewBoardContext>().context;
 	const { action, id } = parseAndValidateParams(
 		boardContext?.originAction,
@@ -168,9 +163,7 @@ const EditViewController: FC = () => {
 		[action, id]
 	);
 
-	const message = useAppSelector((state) =>
-		isMessageRequired && id ? selectMessage(state, id) : undefined
-	);
+	const message = useMessageById(id ?? '');
 
 	const isMessageLoadingRequired = useMemo<boolean>(
 		(): boolean => isMessageRequired && !message?.isComplete,
@@ -183,9 +176,9 @@ const EditViewController: FC = () => {
 	 */
 	useEffect(() => {
 		if (isMessageLoadingRequired && !!id) {
-			messagesStoreDispatch(getMsgAsyncThunk({ msgId: id }));
+			getFullMessageEmailStoreAction(id);
 		}
-	}, [id, isMessageLoadingRequired, messagesStoreDispatch]);
+	}, [id, isMessageLoadingRequired]);
 
 	return isMessageLoadingRequired ? (
 		<Container>

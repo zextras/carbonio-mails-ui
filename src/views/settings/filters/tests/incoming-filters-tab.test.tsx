@@ -14,7 +14,6 @@ import * as folderHooks from '../../../../carbonio-ui-commons/store/zustand/fold
 import { generateFolder } from '../../../../carbonio-ui-commons/test/mocks/folders/folders-generator';
 import { createSoapAPIInterceptor } from '../../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { setupTest } from '../../../../carbonio-ui-commons/test/test-setup';
-import { generateStore } from '../../../../tests/generators/store';
 import { Filter, type Folder } from '../../../../types';
 import { IncomingFiltersTab } from '../incoming-filters-tab';
 import { makeAllItemsVisible, mockFilter } from './test-utils';
@@ -34,66 +33,73 @@ describe('Incoming Filters', () => {
 			createSoapAPIInterceptor('ApplyFilterRules');
 		});
 		it('should display "Apply" filter button', async () => {
-			const store = generateStore();
 			const getIncomingFiltersInterceptor = createGetIncomingFiltersInterceptor([
 				mockFilter({ name: 'Filter 1' })
 			]);
 
-			setupTest(<IncomingFiltersTab />, { store });
+			setupTest(<IncomingFiltersTab />);
 			await getIncomingFiltersInterceptor;
 
-			expect(screen.getByRole('button', { name: 'Apply' })).toBeVisible();
+			await act(async () => {
+				expect(screen.getByRole('button', { name: 'Apply' })).toBeVisible();
+			});
 		});
 
 		it('should disable apply filter if no filter is selected', async () => {
-			const store = generateStore();
 			const filters = [mockFilter({ name: 'Filter 1', active: true })];
 			const getIncomingFiltersInterceptor = createGetIncomingFiltersInterceptor(filters);
 
-			setupTest(<IncomingFiltersTab />, { store });
+			setupTest(<IncomingFiltersTab />);
 			await getIncomingFiltersInterceptor;
 
 			const applyFilterBtn = await screen.findByRole('button', { name: 'Apply' });
-			expect(applyFilterBtn).toBeDisabled();
+
+			await act(async () => {
+				expect(applyFilterBtn).toBeDisabled();
+			});
 		});
 
 		it('should open a modal to search for a folder when clicking apply for selected filter', async () => {
-			const store = generateStore();
 			const filters = [mockFilter({ name: 'Filter 1', active: true })];
 			const getIncomingFiltersInterceptor = createGetIncomingFiltersInterceptor(filters);
 
-			const { user } = setupTest(<IncomingFiltersTab />, { store });
+			const { user } = setupTest(<IncomingFiltersTab />);
 			await getIncomingFiltersInterceptor;
 			await user.click(await screen.findByText('Filter 1'));
 			await user.click(screen.getByText('Apply'));
 			await user.click(screen.getByTestId(OPEN_SELECT_FOLDER_ICON));
 
 			const selectFolderBtn = await screen.findByRole('button', { name: /label\.select_folder/i });
-			expect(selectFolderBtn).toBeInTheDocument();
+
+			await act(async () => {
+				expect(selectFolderBtn).toBeInTheDocument();
+			});
 		});
 
 		it('should disable the select-folder button when no folder is selected during apply filter', async () => {
-			const store = generateStore();
 			const filters = [mockFilter({ name: 'Filter 1', active: true })];
 			const getIncomingFiltersInterceptor = createGetIncomingFiltersInterceptor(filters);
 
-			const { user } = setupTest(<IncomingFiltersTab />, { store });
+			const { user } = setupTest(<IncomingFiltersTab />);
 			await getIncomingFiltersInterceptor;
 			await user.click(await screen.findByText('Filter 1'));
 			await user.click(screen.getByText('Apply'));
 			await user.click(screen.getByTestId(OPEN_SELECT_FOLDER_ICON));
 
 			const selectFolderBtn = await screen.findByRole('button', { name: /label\.select_folder/i });
-			expect(selectFolderBtn).toBeDisabled();
+
+			await act(async () => {
+				expect(selectFolderBtn).toBeDisabled();
+			});
 		});
 
 		it('should add folder chip when a folder is selected', async () => {
 			mockFoldersToReturnASingleFolder(TEST_FOLDER_NAME);
-			const store = generateStore();
+
 			const filters = [mockFilter({ name: 'Filter 1', active: true })];
 			const getIncomingFiltersInterceptor = createGetIncomingFiltersInterceptor(filters);
 
-			const { user } = setupTest(<IncomingFiltersTab />, { store });
+			const { user } = setupTest(<IncomingFiltersTab />);
 			await getIncomingFiltersInterceptor;
 			await user.click(await screen.findByText('Filter 1'));
 			await user.click(screen.getByText('Apply'));
@@ -105,16 +111,18 @@ describe('Incoming Filters', () => {
 			const selectFolderBtn = await screen.findByRole('button', { name: /label\.select_folder/i });
 			await act(() => user.click(selectFolderBtn));
 
-			expect(screen.getByTestId('chip')).toBeInTheDocument();
+			await act(async () => {
+				expect(screen.getByTestId('chip')).toBeInTheDocument();
+			});
 		});
 
 		it('should "apply" filters and show the snackbar related to the process started when confirming folder', async () => {
 			mockFoldersToReturnASingleFolder(TEST_FOLDER_NAME);
-			const store = generateStore();
+
 			const filters = [mockFilter({ name: 'Filter 1', active: true })];
 			const getIncomingFiltersInterceptor = createGetIncomingFiltersInterceptor(filters);
 
-			const { user } = setupTest(<IncomingFiltersTab />, { store });
+			const { user } = setupTest(<IncomingFiltersTab />);
 			await getIncomingFiltersInterceptor;
 			await user.click(await screen.findByText('Filter 1'));
 			await user.click(screen.getByText('Apply'));
@@ -125,13 +133,15 @@ describe('Incoming Filters', () => {
 			await user.click(selectFolderBtn);
 			await user.click(within(screen.getByTestId('modal')).getByRole('button', { name: 'Apply' }));
 
-			expect(createSnackbarSpy).toHaveBeenCalledWith({
-				autoHideTimeout: 3000,
-				hideButton: true,
-				key: 'applyFilter-Filter 1-started',
-				label: "Filter 'Filter 1' is being applied to the messages of the folder '/test-folder'",
-				replace: true,
-				severity: 'info'
+			await act(async () => {
+				expect(createSnackbarSpy).toHaveBeenCalledWith({
+					autoHideTimeout: 3000,
+					hideButton: true,
+					key: 'applyFilter-Filter 1-started',
+					label: "Filter 'Filter 1' is being applied to the messages of the folder '/test-folder'",
+					replace: true,
+					severity: 'info'
+				});
 			});
 		});
 	});

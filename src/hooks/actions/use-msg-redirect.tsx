@@ -9,7 +9,6 @@ import { useTranslation } from 'react-i18next';
 
 import { MessageActionsDescriptors } from '../../constants';
 import { isDraft, isTrash } from '../../helpers/folders';
-import { StoreProvider } from '../../store/redux';
 import { ActionFn, UIActionDescriptor } from '../../types';
 import RedirectAction from '../../ui-actions/redirect-message-action';
 import { useUiUtilities } from '../use-ui-utilities';
@@ -29,11 +28,7 @@ export const useMsgRedirectFn = (messageId: string, folderId: string): ActionFn 
 				{
 					id: modalId,
 					maxHeight: '90vh',
-					children: (
-						<StoreProvider>
-							<RedirectAction onClose={(): void => closeModal(modalId)} id={messageId} />
-						</StoreProvider>
-					)
+					children: <RedirectAction onClose={(): void => closeModal(modalId)} id={messageId} />
 				},
 				true
 			);

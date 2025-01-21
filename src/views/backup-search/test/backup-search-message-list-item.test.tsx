@@ -11,7 +11,7 @@ import * as folderHooks from '../../../carbonio-ui-commons/store/zustand/folder/
 import { getUserAccount } from '../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
 import { generateFolder } from '../../../carbonio-ui-commons/test/mocks/folders/folders-generator';
 import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
-import { useBackupSearchStore } from '../../../store/zustand/backup-search/store';
+import { useBackupSearchStore } from '../../../store/backup-search/store';
 import { BackupSearchMessageListItem } from '../parts/backup-search-message-list-item';
 
 const deletedMessage = {

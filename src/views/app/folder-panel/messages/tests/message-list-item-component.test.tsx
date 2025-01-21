@@ -17,9 +17,9 @@ import { tags as mockTags } from '../../../../../carbonio-ui-commons/test/mocks/
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
 import type { Folder } from '../../../../../carbonio-ui-commons/types/folder';
 import { FOLDERS_DESCRIPTORS } from '../../../../../constants';
+import { setMessagesInEmailStore } from '../../../../../store/emails/store';
 import { ASSERTIONS } from '../../../../../tests/constants';
 import { generateMessage } from '../../../../../tests/generators/generateMessage';
-import { generateStore } from '../../../../../tests/generators/store';
 import type { MessageListItemProps } from '../../../../../types';
 import { MessageListItem } from '../message-list-item';
 
@@ -67,10 +67,11 @@ describe.each`
 			`(case #$case) the avatar $assertion.desc for a message in $folder.desc folder`,
 			async ({ folder, assertion }) => {
 				(useTags as jest.Mock).mockReturnValue(mockTags);
-				const msg = generateMessage({ folderId: folder.id });
+				const message = generateMessage({ folderId: folder.id });
 
+				setMessagesInEmailStore([message], false);
 				const props: MessageListItemProps = {
-					item: msg,
+					item: message,
 					selected: false,
 					selecting: false,
 					isConvChildren: false,
@@ -82,15 +83,7 @@ describe.each`
 					currentFolderId: folder.id
 				};
 
-				const store = generateStore({
-					messages: {
-						searchedInFolder: {},
-						messages: [msg],
-						searchRequestStatus: null
-					}
-				});
-
-				setupTest(<MessageListItem {...props} />, { store });
+				setupTest(<MessageListItem {...props} />);
 
 				const avatar = screen.queryByTestId('AvatarContainer');
 				assertion.value ? expect(avatar).toBeVisible() : expect(avatar).not.toBeInTheDocument();
@@ -110,10 +103,11 @@ describe.each`
 			async ({ folder, assertion }) => {
 				(useTags as jest.Mock).mockReturnValue(mockTags);
 				const receiveDate = Date.parse('2023-04-07T12:59:06');
-				const msg = generateMessage({ receiveDate, folderId: folder.id });
+				const message = generateMessage({ receiveDate, folderId: folder.id });
+				setMessagesInEmailStore([message], false);
 
 				const props: MessageListItemProps = {
-					item: msg,
+					item: message,
 					selected: false,
 					selecting: false,
 					isConvChildren: false,
@@ -125,15 +119,7 @@ describe.each`
 					currentFolderId: folder.id
 				};
 
-				const store = generateStore({
-					messages: {
-						searchedInFolder: {},
-						messages: [msg],
-						searchRequestStatus: null
-					}
-				});
-
-				setupTest(<MessageListItem {...props} />, { store });
+				setupTest(<MessageListItem {...props} />);
 
 				const dateLabel = screen.queryByTestId('DateLabel');
 				if (assertion.value) {
@@ -157,10 +143,11 @@ describe.each`
 			async ({ folder, assertion }) => {
 				(useTags as jest.Mock).mockReturnValue(mockTags);
 				const subject = 'This is an interesting subject';
-				const msg = generateMessage({ subject, folderId: folder.id });
+				const message = generateMessage({ subject, folderId: folder.id });
+				setMessagesInEmailStore([message], false);
 
 				const props: MessageListItemProps = {
-					item: msg,
+					item: message,
 					selected: false,
 					selecting: false,
 					isConvChildren: false,
@@ -172,15 +159,7 @@ describe.each`
 					currentFolderId: folder.id
 				};
 
-				const store = generateStore({
-					messages: {
-						searchedInFolder: {},
-						messages: [msg],
-						searchRequestStatus: null
-					}
-				});
-
-				setupTest(<MessageListItem {...props} />, { store });
+				setupTest(<MessageListItem {...props} />);
 
 				const subjectLabel = screen.queryByTestId('Subject');
 				if (assertion.value) {
@@ -205,10 +184,11 @@ describe.each`
 			async ({ folder, assertion }) => {
 				(useTags as jest.Mock).mockReturnValue(mockTags);
 				const subject = '';
-				const msg = generateMessage({ subject, folderId: folder.id });
+				const message = generateMessage({ subject, folderId: folder.id });
+				setMessagesInEmailStore([message], false);
 
 				const props: MessageListItemProps = {
-					item: msg,
+					item: message,
 					selected: false,
 					selecting: false,
 					isConvChildren: false,
@@ -220,15 +200,7 @@ describe.each`
 					currentFolderId: folder.id
 				};
 
-				const store = generateStore({
-					messages: {
-						searchedInFolder: {},
-						messages: [msg],
-						searchRequestStatus: null
-					}
-				});
-
-				setupTest(<MessageListItem {...props} />, { store });
+				setupTest(<MessageListItem {...props} />);
 
 				const subjectLabel = screen.queryByTestId('Subject');
 				if (assertion.value) {
@@ -252,10 +224,11 @@ describe.each`
 			`(case #$case) the sender label $assertion.desc for a message in $folder.desc folder`,
 			async ({ folder, assertion }) => {
 				(useTags as jest.Mock).mockReturnValue(mockTags);
-				const msg = generateMessage({ folderId: folder.id });
+				const message = generateMessage({ folderId: folder.id });
+				setMessagesInEmailStore([message], false);
 
 				const props: MessageListItemProps = {
-					item: msg,
+					item: message,
 					selected: false,
 					selecting: false,
 					isConvChildren: false,
@@ -267,15 +240,7 @@ describe.each`
 					currentFolderId: folder.id
 				};
 
-				const store = generateStore({
-					messages: {
-						searchedInFolder: {},
-						messages: [msg],
-						searchRequestStatus: null
-					}
-				});
-
-				setupTest(<MessageListItem {...props} />, { store });
+				setupTest(<MessageListItem {...props} />);
 
 				const senderLabel = screen.queryByTestId('participants-name-label');
 				if (assertion.value) {
@@ -298,10 +263,11 @@ describe.each`
 			async ({ folder, senderAddress, labelContent }) => {
 				(useTags as jest.Mock).mockReturnValue(mockTags);
 				const from = { type: ParticipantRole.FROM, address: senderAddress };
-				const msg = generateMessage({ from, folderId: folder.id });
+				const message = generateMessage({ from, folderId: folder.id });
+				setMessagesInEmailStore([message], false);
 
 				const props: MessageListItemProps = {
-					item: msg,
+					item: message,
 					selected: false,
 					selecting: false,
 					isConvChildren: false,
@@ -313,15 +279,7 @@ describe.each`
 					currentFolderId: folder.id
 				};
 
-				const store = generateStore({
-					messages: {
-						searchedInFolder: {},
-						messages: [msg],
-						searchRequestStatus: null
-					}
-				});
-
-				setupTest(<MessageListItem {...props} />, { store });
+				setupTest(<MessageListItem {...props} />);
 
 				const senderLabel = screen.queryByTestId('participants-name-label');
 				expect(senderLabel).toHaveTextContent(labelContent);
@@ -354,7 +312,7 @@ describe.each`
 		// 		}
 		// 	});
 		//
-		// 	const { user } = setupTest(<MessageListItem {...props} />, { store });
+		// 	const { user } = setupTest(<MessageListItem {...props} />, );
 		//
 		// 	const actionsBar = await screen.findByTestId(`primary-actions-bar-${msgId}`);
 		// 	const container = await screen.findByTestId(`hover-container-${msgId}`);
@@ -374,11 +332,12 @@ describe.each`
 
 		test('(case #8) when right-click the message the secondary actions contextual menu must be visible', async () => {
 			const folderId = FOLDERS.INBOX;
-			const msg = generateMessage({ folderId });
-			const msgId = msg.id;
+			const message = generateMessage({ folderId });
+			const messageId = message.id;
+			setMessagesInEmailStore([message], false);
 
 			const props: MessageListItemProps = {
-				item: msg,
+				item: message,
 				selected: false,
 				selecting: false,
 				isConvChildren: false,
@@ -390,16 +349,8 @@ describe.each`
 				currentFolderId: folderId
 			};
 
-			const store = generateStore({
-				messages: {
-					searchedInFolder: {},
-					messages: [msg],
-					searchRequestStatus: null
-				}
-			});
-
-			setupTest(<MessageListItem {...props} />, { store });
-			const aRandomChild = await screen.findByTestId(`hover-container-${msgId}`);
+			setupTest(<MessageListItem {...props} />);
+			const aRandomChild = await screen.findByTestId(`hover-container-${messageId}`);
 
 			// Initally the context menu is not created
 			expect(screen.queryByTestId('dropdown-popper-list')).not.toBeInTheDocument();
@@ -422,10 +373,11 @@ describe('in the drafts folder', () => {
 	`(
 		'(case #$case) in a $listType item the string [DRAFT] $assertion.desc',
 		async ({ isSearchModule, assertion }) => {
-			const msg = generateMessage({ folderId });
+			const message = generateMessage({ folderId });
+			setMessagesInEmailStore([message], false);
 
 			const props: MessageListItemProps = {
-				item: msg,
+				item: message,
 				selected: false,
 				selecting: false,
 				isConvChildren: false,
@@ -437,15 +389,7 @@ describe('in the drafts folder', () => {
 				currentFolderId: folderId
 			};
 
-			const store = generateStore({
-				messages: {
-					searchedInFolder: {},
-					messages: [msg],
-					searchRequestStatus: null
-				}
-			});
-
-			setupTest(<MessageListItem {...props} />, { store });
+			setupTest(<MessageListItem {...props} />);
 			const matcher = expect(screen.queryByText('label.draft_folder'));
 			assertion.value ? matcher.toBeVisible() : matcher.not.toBeInTheDocument();
 		}
@@ -463,10 +407,11 @@ describe('in the drafts folder', () => {
 				{ type: ParticipantRole.TO, address: 'mario@foo.bar' },
 				{ type: ParticipantRole.TO, address: 'luigi@foo.bar' }
 			];
-			const msg = generateMessage({ to, folderId });
+			const message = generateMessage({ to, folderId });
+			setMessagesInEmailStore([message], false);
 
 			const props: MessageListItemProps = {
-				item: msg,
+				item: message,
 				selected: false,
 				selecting: false,
 				isConvChildren: false,
@@ -478,15 +423,7 @@ describe('in the drafts folder', () => {
 				currentFolderId: folderId
 			};
 
-			const store = generateStore({
-				messages: {
-					searchedInFolder: {},
-					messages: [msg],
-					searchRequestStatus: null
-				}
-			});
-
-			setupTest(<MessageListItem {...props} />, { store });
+			setupTest(<MessageListItem {...props} />);
 			if (assertion.value) {
 				const participantsLabel = screen.getByTestId('participants-name-label');
 				expect(participantsLabel).toHaveTextContent('mario');
@@ -505,10 +442,11 @@ describe('in the drafts folder', () => {
 		'(case #$case) in a $listType item, if the body content is set, the fragment $assertion.desc',
 		async ({ isSearchModule, assertion }) => {
 			const body = 'Message body content';
-			const msg = generateMessage({ body, folderId });
+			const message = generateMessage({ body, folderId });
+			setMessagesInEmailStore([message], false);
 
 			const props: MessageListItemProps = {
-				item: msg,
+				item: message,
 				selected: false,
 				selecting: false,
 				isConvChildren: false,
@@ -520,15 +458,7 @@ describe('in the drafts folder', () => {
 				currentFolderId: folderId
 			};
 
-			const store = generateStore({
-				messages: {
-					searchedInFolder: {},
-					messages: [msg],
-					searchRequestStatus: null
-				}
-			});
-
-			setupTest(<MessageListItem {...props} />, { store });
+			setupTest(<MessageListItem {...props} />);
 			if (assertion.value) {
 				const fragment = screen.getByTestId('Fragment');
 				expect(fragment).toHaveTextContent(body);
@@ -547,10 +477,10 @@ describe('in the trash folder', () => {
 			{ type: ParticipantRole.TO, address: 'mario@foo.bar' },
 			{ type: ParticipantRole.TO, address: 'luigi@foo.bar' }
 		];
-		const msg = generateMessage({ to, folderId });
+		const message = generateMessage({ to, folderId });
 
 		const props: MessageListItemProps = {
-			item: msg,
+			item: message,
 			selected: false,
 			selecting: false,
 			isConvChildren: false,
@@ -561,16 +491,9 @@ describe('in the trash folder', () => {
 			currentFolderId: folderId
 		};
 
-		const store = generateStore({
-			messages: {
-				searchedInFolder: {},
-				messages: [msg],
-				searchRequestStatus: null
-			}
-		});
-
 		(useTags as jest.Mock).mockReturnValue(mockTags);
-		setupTest(<MessageListItem {...props} />, { store });
+		setMessagesInEmailStore([message], false);
+		setupTest(<MessageListItem {...props} />);
 		const participantsLabel = screen.getByTestId('participants-name-label');
 		expect(participantsLabel).toHaveTextContent('mario');
 		expect(participantsLabel).toHaveTextContent('luigi');
@@ -584,10 +507,11 @@ describe('in the trash folder', () => {
 		'(case #$case) in a $listType item, if the body content is set, the fragment $assertion.desc',
 		async ({ isSearchModule, assertion }) => {
 			const body = 'Message body content';
-			const msg = generateMessage({ body, folderId });
+			const message = generateMessage({ body, folderId });
 
+			setMessagesInEmailStore([message], false);
 			const props: MessageListItemProps = {
-				item: msg,
+				item: message,
 				selected: false,
 				selecting: false,
 				isConvChildren: false,
@@ -599,15 +523,7 @@ describe('in the trash folder', () => {
 				currentFolderId: folderId
 			};
 
-			const store = generateStore({
-				messages: {
-					searchedInFolder: {},
-					messages: [msg],
-					searchRequestStatus: null
-				}
-			});
-
-			setupTest(<MessageListItem {...props} />, { store });
+			setupTest(<MessageListItem {...props} />);
 			if (assertion.value) {
 				const fragment = screen.getByTestId('Fragment');
 				expect(fragment).toHaveTextContent(body);

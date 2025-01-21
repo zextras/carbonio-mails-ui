@@ -8,28 +8,23 @@ import React from 'react';
 import { screen } from '@testing-library/react';
 
 import { setupTest } from '../../../../../../carbonio-ui-commons/test/test-setup';
-import { generateStore } from '../../../../../../tests/generators/store';
 import { MarkAsOption } from '../../../../../../types';
 import { MarkAs } from '../../filter-actions/mark-as';
 
 describe('Mark As', () => {
 	it('it should render selected option in the input', async () => {
-		const store = generateStore();
 		const options: MarkAsOption[] = [
 			{ label: 'label 1', value: { actionFlag: [{ flagName: '1' }] } },
 			{ label: 'label 2', value: { actionFlag: [{ flagName: '2' }] } }
 		];
 		const selectedOption = { flagName: '1' };
 
-		setupTest(<MarkAs options={options} onChange={jest.fn()} selected={selectedOption} />, {
-			store
-		});
+		setupTest(<MarkAs options={options} onChange={jest.fn()} selected={selectedOption} />);
 
 		expect(screen.getByText('label 1')).toBeVisible();
 	});
 
 	it('it should call onChange with the chosen value', async () => {
-		const store = generateStore();
 		const options: MarkAsOption[] = [
 			{ label: 'label 1', value: { actionFlag: [{ flagName: '1' }] } },
 			{ label: 'label 2', value: { actionFlag: [{ flagName: '2' }] } }
@@ -39,10 +34,7 @@ describe('Mark As', () => {
 
 		const onChangeFn = jest.fn();
 		const { user } = setupTest(
-			<MarkAs options={options} onChange={onChangeFn} selected={selectedOption} />,
-			{
-				store
-			}
+			<MarkAs options={options} onChange={onChangeFn} selected={selectedOption} />
 		);
 
 		await user.click(screen.getByText('label 1'));
@@ -53,7 +45,6 @@ describe('Mark As', () => {
 	});
 
 	it('it should display empty option when initial value does not match any options', async () => {
-		const store = generateStore();
 		const options: MarkAsOption[] = [
 			{ label: 'label 1', value: { actionFlag: [{ flagName: '1' }] } },
 			{ label: 'label 2', value: { actionFlag: [{ flagName: '2' }] } }
@@ -61,9 +52,7 @@ describe('Mark As', () => {
 		const selectedOption = {};
 
 		const onChangeFn = jest.fn();
-		setupTest(<MarkAs options={options} onChange={onChangeFn} selected={selectedOption} />, {
-			store
-		});
+		setupTest(<MarkAs options={options} onChange={onChangeFn} selected={selectedOption} />);
 
 		expect(screen.queryByText('label 1')).not.toBeInTheDocument();
 		expect(screen.queryByText('label 2')).not.toBeInTheDocument();

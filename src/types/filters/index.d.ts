@@ -58,6 +58,11 @@ export type FilterRules = [
 	}
 ];
 
+export type MailFilterTag = {
+	label: string;
+	color?: number;
+};
+
 export type KeywordState = Array<{
 	id: string;
 	label: string;
@@ -79,10 +84,6 @@ export type SearchEmailValue = {
 export type MarkAsOption = {
 	label: string;
 	value: { actionFlag: [{ flagName: string }] };
-};
-export type MailFilterTag = {
-	label: string;
-	color?: number;
 };
 
 type ActionFileInto = {

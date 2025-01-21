@@ -20,13 +20,12 @@ import { useParams } from 'react-router-dom';
 
 import { BackupSearchMessageListItem } from './backup-search-message-list-item';
 import { BackupSearchRecoveryModal } from './backup-search-recovery-modal';
-import { restoreMessagesAPI } from '../../../api/restore-messages';
+import { restoreMessagesApi } from '../../../api/restore-messages-api';
 import { CustomList } from '../../../carbonio-ui-commons/components/list/list';
 import { CustomListItem } from '../../../carbonio-ui-commons/components/list/list-item';
 import { BACKUP_SEARCH_STATUS, MAILS_ROUTE } from '../../../constants';
 import { useSelection } from '../../../hooks/use-selection';
-import { StoreProvider } from '../../../store/redux';
-import { useBackupSearchStore } from '../../../store/zustand/backup-search/store';
+import { useBackupSearchStore } from '../../../store/backup-search/store';
 
 export const BackupSearchList = (): React.JSX.Element => {
 	const [count, setCount] = useState(0);
@@ -42,7 +41,7 @@ export const BackupSearchList = (): React.JSX.Element => {
 	} = useSelection({
 		setCount,
 		count,
-		items: [...Object.values(messages ?? {})]
+		items: [...Object.keys(messages ?? {})]
 	});
 
 	const selectedIds = useMemo(() => Object.keys(selectedMessage), [selectedMessage]);
@@ -50,7 +49,7 @@ export const BackupSearchList = (): React.JSX.Element => {
 
 	const recoverEmailsCallback = useCallback(
 		async (closeModal: () => void) => {
-			const response = await restoreMessagesAPI(selectedIds);
+			const response = await restoreMessagesApi(selectedIds);
 			closeModal();
 			if ('error' in response) {
 				createSnackbar({
@@ -87,14 +86,12 @@ export const BackupSearchList = (): React.JSX.Element => {
 				id: modalId,
 				maxHeight: '90vh',
 				children: (
-					<StoreProvider>
-						<BackupSearchRecoveryModal
-							onConfirm={(): Promise<void> =>
-								recoverEmailsCallback((): void => closeModal?.(modalId))
-							}
-							onClose={(): void => closeModal?.(modalId)}
-						/>
-					</StoreProvider>
+					<BackupSearchRecoveryModal
+						onConfirm={(): Promise<void> =>
+							recoverEmailsCallback((): void => closeModal?.(modalId))
+						}
+						onClose={(): void => closeModal?.(modalId)}
+					/>
 				)
 			},
 			true

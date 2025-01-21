@@ -23,7 +23,6 @@ import {
 } from '../../../../../helpers/signatures';
 import * as useQueryParam from '../../../../../hooks/use-query-param';
 import { generateMessage } from '../../../../../tests/generators/generateMessage';
-import { generateStore } from '../../../../../tests/generators/store';
 import { EditView, EditViewProp } from '../edit-view';
 
 /**
@@ -41,7 +40,6 @@ describe('New and Replay email view', () => {
 				? defaultIdentity.signatures?.newEmailSignature.id
 				: '';
 			const signatureContent = getSignatureValue(account, signatureId);
-			const store = generateStore();
 			// Mock the "action" query param
 			jest.spyOn(useQueryParam, 'useQueryParam').mockImplementation((param) => {
 				if (param === 'action') {
@@ -55,7 +53,7 @@ describe('New and Replay email view', () => {
 			};
 
 			// Create and wait for the component to be rendered
-			setupTest(<EditView {...props} />, { store });
+			setupTest(<EditView {...props} />);
 			await waitFor(
 				() => {
 					expect(screen.getByTestId('edit-view-editor')).toBeInTheDocument();
@@ -105,16 +103,6 @@ describe('New and Replay email view', () => {
 			const folderId = `${sharedAccountIdentity.identity.id}:${FOLDERS.INBOX}`;
 			const msg = generateMessage({ id: msgId, to, folderId, isComplete: true });
 
-			const store = generateStore({
-				messages: {
-					searchedInFolder: {},
-					messages: {
-						[msg.id]: msg
-					},
-					searchRequestStatus: null
-				}
-			});
-
 			populateFoldersStore();
 
 			// Mock the "action" query param
@@ -137,7 +125,7 @@ describe('New and Replay email view', () => {
 			};
 
 			// Create and wait for the component to be rendered
-			setupTest(<EditView {...props} />, { store });
+			setupTest(<EditView {...props} />);
 			expect(await screen.findByTestId('edit-view-editor')).toBeInTheDocument();
 			expect(screen.getByTestId('from-identity-address')).toHaveTextContent(
 				sharedAccountIdentity.identity.email

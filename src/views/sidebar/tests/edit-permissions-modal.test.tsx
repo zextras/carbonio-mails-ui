@@ -9,13 +9,12 @@ import { faker } from '@faker-js/faker';
 import { act, screen, within } from '@testing-library/react';
 import { CreateSnackbarFn, useSnackbar } from '@zextras/carbonio-design-system';
 
+import * as shareFolderModule from '../../../api/share-folder-soap-api';
 import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
 import { getFolder } from '../../../carbonio-ui-commons/store/zustand/folder';
 import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { populateFoldersStore } from '../../../carbonio-ui-commons/test/mocks/store/folders';
 import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
-import * as shareFolderModule from '../../../store/actions/share-folder';
-import { generateStore } from '../../../tests/generators/store';
 import EditPermissionsModal from '../edit-permissions-modal';
 
 const createSnackbar = (arg: any): CreateSnackbarFn => arg;
@@ -43,7 +42,7 @@ describe('edit-permissions-modal', () => {
 				perm: 'r'
 			} as const
 		];
-		const store = generateStore();
+
 		const folder = {
 			id: FOLDERS.INBOX,
 			uuid: faker.string.uuid(),
@@ -79,8 +78,7 @@ describe('edit-permissions-modal', () => {
 				goBack={goBack}
 				grant={grant}
 				editMode={false}
-			/>,
-			{ store }
+			/>
 		);
 
 		const roleLabel = screen.getByText(/share\.options\.share_calendar_role\.viewer/i);
@@ -121,7 +119,7 @@ describe('edit-permissions-modal', () => {
 				perm: 'r'
 			} as const
 		];
-		const store = generateStore();
+
 		const folder = {
 			id: FOLDERS.INBOX,
 			uuid: faker.string.uuid(),
@@ -157,8 +155,7 @@ describe('edit-permissions-modal', () => {
 				goBack={goBack}
 				grant={grant}
 				editMode={false}
-			/>,
-			{ store }
+			/>
 		);
 
 		const sendNotificationUnCheckbox = within(
@@ -192,7 +189,7 @@ describe('edit-permissions-modal', () => {
 				perm: 'r'
 			} as const
 		];
-		const store = generateStore();
+
 		const folder = {
 			id: FOLDERS.INBOX,
 			uuid: faker.string.uuid(),
@@ -228,8 +225,7 @@ describe('edit-permissions-modal', () => {
 				goBack={goBack}
 				grant={grant}
 				editMode={false}
-			/>,
-			{ store }
+			/>
 		);
 		const chipInput = screen.getByRole('textbox', {
 			name: /share\.recipients_address/i
@@ -250,7 +246,7 @@ describe('edit-permissions-modal', () => {
 			const folderId = FOLDERS.INBOX;
 			const closeFn = jest.fn();
 			const goBack = jest.fn();
-			const store = generateStore();
+
 			populateFoldersStore();
 			const folder = getFolder(folderId);
 			const { user } = setupTest(
@@ -260,8 +256,7 @@ describe('edit-permissions-modal', () => {
 					goBack={goBack}
 					grant={{}}
 					editMode={false}
-				/>,
-				{ store }
+				/>
 			);
 			const userInput = screen.getByRole('textbox', {
 				name: /share\.recipients_address/i
@@ -283,7 +278,7 @@ describe('edit-permissions-modal', () => {
 			await user.tab();
 			await user.click(roleItem);
 
-			const shareFolderMock = jest.spyOn(shareFolderModule, 'shareFolder');
+			const shareFolderMock = jest.spyOn(shareFolderModule, 'shareFolderSoapApi');
 
 			await user.click(confirmButton);
 
@@ -299,7 +294,6 @@ describe('edit-permissions-modal', () => {
 			const closeFn = jest.fn();
 			const goBack = jest.fn();
 
-			const store = generateStore();
 			populateFoldersStore();
 			const folder = getFolder(folderId);
 			const { user } = setupTest(
@@ -309,8 +303,7 @@ describe('edit-permissions-modal', () => {
 					goBack={goBack}
 					grant={{}}
 					editMode={false}
-				/>,
-				{ store }
+				/>
 			);
 			const userInput = screen.getByRole('textbox', {
 				name: /share\.recipients_address/i
@@ -334,7 +327,7 @@ describe('edit-permissions-modal', () => {
 			await user.type(userInput, viewer);
 			await user.tab();
 
-			const shareFolderMock = jest.spyOn(shareFolderModule, 'shareFolder');
+			const shareFolderMock = jest.spyOn(shareFolderModule, 'shareFolderSoapApi');
 			await user.click(confirmButton);
 
 			// Check that the shareFolder and the data passed
@@ -349,7 +342,6 @@ describe('edit-permissions-modal', () => {
 			const closeFn = jest.fn();
 			const goBack = jest.fn();
 
-			const store = generateStore();
 			populateFoldersStore();
 			const folder = getFolder(folderId);
 			const { user } = setupTest(
@@ -359,8 +351,7 @@ describe('edit-permissions-modal', () => {
 					goBack={goBack}
 					grant={{}}
 					editMode={false}
-				/>,
-				{ store }
+				/>
 			);
 			const userInput = screen.getByRole('textbox', {
 				name: /share\.recipients_address/i
@@ -383,7 +374,7 @@ describe('edit-permissions-modal', () => {
 			await user.type(userInput, viewer);
 			await user.tab();
 
-			const shareFolderMock = jest.spyOn(shareFolderModule, 'shareFolder');
+			const shareFolderMock = jest.spyOn(shareFolderModule, 'shareFolderSoapApi');
 
 			await user.click(confirmButton);
 
@@ -400,7 +391,6 @@ describe('edit-permissions-modal', () => {
 			const closeFn = jest.fn();
 			const goBack = jest.fn();
 
-			const store = generateStore();
 			populateFoldersStore();
 			const folder = getFolder(folderId);
 			const { user } = setupTest(
@@ -410,8 +400,7 @@ describe('edit-permissions-modal', () => {
 					goBack={goBack}
 					grant={{}}
 					editMode={false}
-				/>,
-				{ store }
+				/>
 			);
 			const userInput = screen.getByRole('textbox', {
 				name: /share\.recipients_address/i
@@ -450,7 +439,7 @@ describe('edit-permissions-modal', () => {
 			await user.click(standardMessage);
 			await user.type(standardMessage, note);
 
-			const shareFolderMock = jest.spyOn(shareFolderModule, 'shareFolder');
+			const shareFolderMock = jest.spyOn(shareFolderModule, 'shareFolderSoapApi');
 			await user.click(confirmButton);
 			// Check that the shareFolder and the data passed
 			expect(shareFolderMock).toHaveBeenCalled();
@@ -464,7 +453,6 @@ describe('edit-permissions-modal', () => {
 			const closeFn = jest.fn();
 			const goBack = jest.fn();
 
-			const store = generateStore();
 			populateFoldersStore();
 			const folder = act(() => {
 				getFolder(folderId);
@@ -476,8 +464,7 @@ describe('edit-permissions-modal', () => {
 					goBack={goBack}
 					grant={{}}
 					editMode={false}
-				/>,
-				{ store }
+				/>
 			);
 			const userInput = screen.getByRole('textbox', {
 				name: /share\.recipients_address/i
@@ -522,7 +509,7 @@ describe('edit-permissions-modal', () => {
 
 			expect(standardMessage).toBeDisabled();
 
-			const shareFolderMock = jest.spyOn(shareFolderModule, 'shareFolder');
+			const shareFolderMock = jest.spyOn(shareFolderModule, 'shareFolderSoapApi');
 			await act(async () => {
 				await user.click(confirmButton);
 			});

@@ -15,10 +15,9 @@ import {
 	upsertApp
 } from '@zextras/carbonio-shell-ui';
 
-import { advancedAccountAPI } from '../api/advanced-account';
+import { advancedAccountApi } from '../api/advanced-account-api';
 import { Spinner } from '../assets/spinner';
 import { MAIL_APP_ID, MAILS_BOARD_VIEW_ID, MAILS_ROUTE } from '../constants';
-import { StoreProvider } from '../store/redux';
 import { ExtraWindowsManager } from '../views/app/extra-windows/extra-window-manager';
 import { getSettingsSubSections } from '../views/settings/subsections';
 
@@ -43,43 +42,35 @@ const LazySidebarView = lazy(
 
 const AppView = (): React.JSX.Element => (
 	<Suspense fallback={<Spinner />}>
-		<StoreProvider>
-			<ModalManager>
-				<ExtraWindowsManager>
-					<LazyAppView />
-				</ExtraWindowsManager>
-			</ModalManager>
-		</StoreProvider>
+		<ModalManager>
+			<ExtraWindowsManager>
+				<LazyAppView />
+			</ExtraWindowsManager>
+		</ModalManager>
 	</Suspense>
 );
 
 const EditView = (): React.JSX.Element => (
 	<Suspense fallback={<Spinner />}>
-		<StoreProvider>
-			<ModalManager>
-				<LazyEditView />
-			</ModalManager>
-		</StoreProvider>
+		<ModalManager>
+			<LazyEditView />
+		</ModalManager>
 	</Suspense>
 );
 
 const SettingsView = (): React.JSX.Element => (
 	<Suspense fallback={<Spinner />}>
-		<StoreProvider>
-			<ModalManager>
-				<LazySettingsView />
-			</ModalManager>
-		</StoreProvider>
+		<ModalManager>
+			<LazySettingsView />
+		</ModalManager>
 	</Suspense>
 );
 
 const SidebarView = (props: SecondaryBarComponentProps): React.JSX.Element => (
 	<Suspense fallback={<Spinner />}>
-		<StoreProvider>
-			<ModalManager>
-				<LazySidebarView {...props} />
-			</ModalManager>
-		</StoreProvider>
+		<ModalManager>
+			<LazySidebarView {...props} />
+		</ModalManager>
 	</Suspense>
 );
 
@@ -98,7 +89,7 @@ export const addComponentsToShell = async (): Promise<void> => {
 		id: MAILS_BOARD_VIEW_ID,
 		component: EditView
 	});
-	const { backupSelfUndeleteAllowed } = await advancedAccountAPI();
+	const { backupSelfUndeleteAllowed } = await advancedAccountApi();
 	addSettingsView({
 		route: MAILS_ROUTE,
 		label,

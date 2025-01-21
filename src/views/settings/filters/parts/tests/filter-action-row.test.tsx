@@ -17,7 +17,6 @@ import {
 	makeListItemsVisible,
 	setupTest
 } from '../../../../../carbonio-ui-commons/test/test-setup';
-import { generateStore } from '../../../../../tests/generators/store';
 import { FilterAction } from '../../../../../types';
 import { FilterActionRow, FilterActionRowProps } from '../filter-action-row';
 import { getActionTranslations } from '../utils';
@@ -370,7 +369,6 @@ describe('FilterActionsRows', () => {
 	});
 	describe('Move To Folder', () => {
 		it('should update the action value with the selected folder on confirm', async () => {
-			const store = generateStore();
 			const folder = generateFolder({
 				id: '100',
 				name: 'Test folder',
@@ -391,8 +389,7 @@ describe('FilterActionsRows', () => {
 					selectedAction={{
 						actionFileInto: [{ folderPath: '/my/path' }]
 					}}
-				/>,
-				{ store }
+				/>
 			);
 			const browseFolder = screen.getByRole('button', {
 				name: /browse/i

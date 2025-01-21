@@ -14,7 +14,7 @@ import { IncompleteMessage, MailMessage } from '../messages';
 import { ErrorType, SearchRequestStatus } from '../state';
 
 export type SearchListProps = {
-	searchResults: Set<string>;
+	searchResults: Array<string>;
 	query: string;
 	loading: boolean;
 	filterCount: number;
@@ -32,7 +32,7 @@ export type SearchChipItem = ChipItem & {
 };
 
 export type SearchPanelProps = {
-	searchResults: SearchSliceState['search'];
+	searchResults: SearchIndexSliceState['searchIndexSlice'];
 	query: Array<QueryChip>;
 };
 
@@ -224,10 +224,10 @@ export type ChipType = {
 	hasError?: boolean;
 };
 
-export type SearchSliceState = {
-	search: {
-		conversationIds: Set<string>;
-		messageIds: Set<string>;
+export type SearchIndexSliceState = {
+	searchIndexSlice: {
+		conversationListIndex: Array<string>;
+		messageListIndex: Array<string>;
 		more: boolean;
 		offset: number;
 		sortBy?: SortBy;
@@ -239,8 +239,25 @@ export type SearchSliceState = {
 	};
 };
 
+export type MessageIndexSliceState = {
+	messageIndexSlice: {
+		messageListIndex: Array<string>;
+		more: boolean;
+		offset: number;
+		status: SearchRequestStatus;
+	};
+};
+
+export type ConversationIndexSliceState = {
+	conversationIndexSlice: {
+		conversationListIndex: Array<string>;
+		more: boolean;
+		offset: number;
+		status: SearchRequestStatus;
+	};
+};
 export type PopulatedItemsSliceState = {
-	populatedItems: {
+	populatedItemsSlice: {
 		messages: Record<string, MailMessage | IncompleteMessage>;
 		messagesStatus: Record<string, SearchRequestStatus>;
 		conversations: Record<string, NormalizedConversation>;
@@ -248,4 +265,7 @@ export type PopulatedItemsSliceState = {
 	};
 };
 
-export type MessageStoreState = PopulatedItemsSliceState & SearchSliceState;
+export type EmailsStoreState = PopulatedItemsSliceState &
+	SearchIndexSliceState &
+	MessageIndexSliceState &
+	ConversationIndexSliceState;

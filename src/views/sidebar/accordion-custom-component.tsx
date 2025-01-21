@@ -23,26 +23,23 @@ import {
 	pushHistory,
 	replaceHistory,
 	t,
-	useUserAccount,
-	useUserSettings
+	useUserAccount
 } from '@zextras/carbonio-shell-ui';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { useFolderActions } from './use-folder-actions';
 import { getFolderIconColor, getFolderIconName, getFolderTranslatedName } from './utils';
+import { folderActionSoapApi } from '../../api/folder-action-soap-api';
 import { ROOT_NAME } from '../../carbonio-ui-commons/constants';
 import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
 import { isSystemFolder } from '../../carbonio-ui-commons/helpers/folders';
 import type { Folder } from '../../carbonio-ui-commons/types/folder';
 import type { DragEnterAction, OnDropActionProps } from '../../carbonio-ui-commons/types/sidebar';
-import { LIST_LIMIT } from '../../constants';
 import { isDraft, isSpam } from '../../helpers/folders';
-import { parseMessageSortingOptions } from '../../helpers/sorting';
-import { useAppDispatch } from '../../hooks/redux';
 import { useUiUtilities } from '../../hooks/use-ui-utilities';
-import { convAction, msgAction, search } from '../../store/actions';
-import { folderAction } from '../../store/actions/folder-action';
+import { convActionEmailStoreAction } from '../../store/emails/actions/conv-action-action';
+import { msgActionEmailStoreAction } from '../../store/emails/actions/msg-action-action';
 
 const FittedRow = styled(Row)`
 	max-width: calc(100% - (2 * ${({ theme }): string => theme.sizes.padding.small}));
@@ -73,10 +70,8 @@ const badgeCount = (v?: number): number | undefined => (v && v > 0 ? v : undefin
 
 const AccordionCustomComponent: FC<{ item: Folder }> = ({ item }) => {
 	const accountName = useUserAccount().name;
-	const dispatch = useAppDispatch();
 	const { folderId } = useParams<{ folderId: string }>();
 	const { createSnackbar } = useUiUtilities();
-	const { prefs } = useUserSettings();
 
 	const onDragEnterAction = useCallback(
 		(data: OnDropActionProps): DragEnterAction => {
@@ -120,7 +115,7 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item }) => {
 		}
 
 		if (data.type === 'folder') {
-			folderAction({ folder: data.data, l: item.id || FOLDERS.USER_ROOT, op: 'move' }).then(
+			folderActionSoapApi({ folder: data.data, l: item.id || FOLDERS.USER_ROOT, op: 'move' }).then(
 				(res) => {
 					if (!('Fault' in res)) {
 						createSnackbar({
@@ -142,14 +137,12 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item }) => {
 				}
 			);
 		} else if ('messages' in data.data) {
-			dispatch(
-				convAction({
-					operation: `move`,
-					ids: convMsgsIds,
-					parent: item.id
-				})
-			).then((res) => {
-				if (res.type.includes('fulfilled')) {
+			convActionEmailStoreAction({
+				operation: `move`,
+				ids: convMsgsIds,
+				parent: item.id
+			}).then((res) => {
+				if (!('Fault' in res)) {
 					replaceHistory(`/folder/${folderId}`);
 					data.data.deselectAll && data.data.deselectAll();
 					createSnackbar({
@@ -175,14 +168,12 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item }) => {
 				}
 			});
 		} else {
-			dispatch(
-				msgAction({
-					operation: `move`,
-					ids: convMsgsIds,
-					parent: item.id
-				})
-			).then((res) => {
-				if (res.type.includes('fulfilled')) {
+			msgActionEmailStoreAction({
+				operation: `move`,
+				ids: convMsgsIds,
+				parent: item.id
+			}).then((res) => {
+				if (!('Fault' in res)) {
 					data.data.deselectAll && data.data.deselectAll();
 					createSnackbar({
 						key: `edit`,
@@ -213,25 +204,10 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item }) => {
 		() => isSystemFolder(item.id) || item.isLink, // Default folders and shared folders not allowed to drag
 		[item.id, item.isLink]
 	);
-	const { zimbraPrefGroupMailBy } = useUserSettings().prefs;
 
 	const onClick = useCallback((): void => {
 		pushHistory(`/folder/${item.id}`);
-		const { sortOrder } = parseMessageSortingOptions(item.id, prefs.zimbraPrefSortOrder as string);
-		dispatch(
-			search({
-				folderId: item.id,
-				limit: LIST_LIMIT.INITIAL_LIMIT,
-				sortBy: sortOrder,
-				types:
-					item.id === FOLDERS.DRAFTS ||
-					item.id === FOLDERS.TRASH ||
-					typeof zimbraPrefGroupMailBy !== 'string'
-						? 'message'
-						: zimbraPrefGroupMailBy
-			})
-		);
-	}, [dispatch, item.id, prefs.zimbraPrefSortOrder, zimbraPrefGroupMailBy]);
+	}, [item.id]);
 
 	const badgeType: 'read' | 'unread' = useMemo(
 		() => (item.id && item.id === FOLDERS.DRAFTS ? 'read' : 'unread'),

@@ -13,7 +13,6 @@ import { useSnackbar } from '@zextras/carbonio-design-system';
 
 import { FilterRulesAPIResponse } from '../../../../../api/get-filters';
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
-import { generateStore } from '../../../../../tests/generators/store';
 import { Filter } from '../../../../../types';
 import { makeAllItemsVisible, mockFilter } from '../../tests/test-utils';
 import { getFiltermanager } from '../filter-manager';
@@ -28,7 +27,6 @@ const createSnackbarSpy = jest.fn((arg) => arg);
 describe('Message filters tab', () => {
 	it('should call getFilters only once', async () => {
 		(useSnackbar as jest.Mock).mockReturnValue(createSnackbarSpy);
-		const store = generateStore();
 		const filters = [mockFilter({ name: 'Filter 1' })];
 
 		const getFilters = jest.fn();
@@ -46,10 +44,7 @@ describe('Message filters tab', () => {
 				saveFilters={jest.fn()}
 				getFilters={getFilters}
 				FiltersManagerComponent={getFiltermanager(true)}
-			/>,
-			{
-				store
-			}
+			/>
 		);
 		await screen.findByText('Filter 1');
 		await waitFor(() => expect(getFilters).toHaveBeenCalledTimes(1));
@@ -76,17 +71,13 @@ describe('Message filters tab', () => {
 
 	it('should display snackbar with error if not able to retrieve filters', async () => {
 		(useSnackbar as jest.Mock).mockReturnValue(createSnackbarSpy);
-		const store = generateStore();
 
 		setupTest(
 			<MessageFilterTab
 				saveFilters={jest.fn()}
 				getFilters={() => Promise.reject()}
 				FiltersManagerComponent={getFiltermanager(true)}
-			/>,
-			{
-				store
-			}
+			/>
 		);
 		await waitFor(() =>
 			expect(createSnackbarSpy).toHaveBeenCalledWith(
@@ -244,7 +235,6 @@ function setupTestWithFilters({
 	onSave?: (filters: Filter[]) => Promise<void>;
 }): UserEvent {
 	(useSnackbar as jest.Mock).mockReturnValue(createSnackbarSpy);
-	const store = generateStore();
 	const filtersFromAPI: FilterRulesAPIResponse = {
 		filterRules: [
 			{
@@ -258,10 +248,7 @@ function setupTestWithFilters({
 			saveFilters={onSave}
 			getFilters={() => Promise.resolve(filtersFromAPI)}
 			FiltersManagerComponent={getFiltermanager(true)}
-		/>,
-		{
-			store
-		}
+		/>
 	);
 	// See: https://github.com/testing-library/user-event/issues/1187
 	return userEvent.setup({ delay: null, skipHover: true });

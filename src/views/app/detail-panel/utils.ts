@@ -25,32 +25,6 @@ export const EmptyListMessages = (): ReturnType => [
 	}
 ];
 
-export const EmptyFieldMessages = (): ReturnType => [
-	{
-		title: t('displayer.title4', 'Select an e-mail to read it'),
-		description: t('displayer.description4', 'You can flag it, reply or forward it to other users.')
-	},
-	{
-		title: t('displayer.title4', 'Select an e-mail to read it'),
-		description: t(
-			'displayer.description5',
-			'Check out what other users want to talk with you about.'
-		)
-	},
-	{
-		title: t('displayer.title4', 'Select an e-mail to read it'),
-		description: t('displayer.description6', 'Reply to this e-mail or forward it to other users.')
-	},
-	{
-		title: t('displayer.title3', 'Stay in touch with other users'),
-		description: t('displayer.description7', 'Select an e-mail to reply.')
-	},
-	{
-		title: t('displayer.title8', 'Select an e-mail to read or delete it.'),
-		description: ''
-	}
-];
-
 export const SpamMessages = (): ReturnType => [
 	{
 		title: t(

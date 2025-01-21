@@ -5,7 +5,7 @@
  */
 import React from 'react';
 
-import { act, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 
 import { FolderActionsType, FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
 import * as shellMock from '../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
@@ -14,7 +14,8 @@ import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mock
 import { populateFoldersStore } from '../../../carbonio-ui-commons/test/mocks/store/folders';
 import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
 import { MAIL_APP_ID, MAILS_ROUTE } from '../../../constants';
-import { generateStore } from '../../../tests/generators/store';
+import { setMessagesInEmailStore } from '../../../store/emails/store';
+import { generateMessage } from '../../../tests/generators/generateMessage';
 import { SoapFolderAction } from '../../../types';
 import Sidebar from '../sidebar';
 
@@ -29,9 +30,12 @@ describe('Mark all as read', () => {
 		const folderId = FOLDERS.INBOX;
 		useLocalStorage.mockReturnValue([[FOLDERS.USER_ROOT], jest.fn()]);
 
+		createSoapAPIInterceptor('Search');
+		const message = generateMessage();
+		setMessagesInEmailStore([message], false);
+
 		populateFoldersStore();
 		const options = {
-			store: generateStore(),
 			initialEntries: [`/mails/folder/${folderId}`],
 			path: '/mails'
 		};
@@ -39,9 +43,7 @@ describe('Mark all as read', () => {
 		const { user } = setupTest(<Sidebar expanded />, options);
 
 		const inboxItem = screen.getByTestId(`accordion-folder-item-${folderId}`);
-		await act(async () => {
-			await user.rightClick(inboxItem);
-		});
+		await user.rightClick(inboxItem);
 		await screen.findByTestId(`folder-context-menu-${folderId}`);
 		const actionMenuItem = await screen.findByTestId(
 			`folder-action-${FolderActionsType.MARK_ALL_READ}`
@@ -50,9 +52,7 @@ describe('Mark all as read', () => {
 			'FolderAction'
 		);
 
-		await act(async () => {
-			await user.click(actionMenuItem);
-		});
+		await user.click(actionMenuItem);
 		const { action } = await folderActionInterceptor;
 		expect(action.l).toBe(folderId);
 		expect(action.op).toBe('read');

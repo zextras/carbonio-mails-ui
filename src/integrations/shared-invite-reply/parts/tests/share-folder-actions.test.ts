@@ -7,12 +7,11 @@ import { faker } from '@faker-js/faker';
 import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 
 import { CreateMountpointError } from '../../../../api/errors/create-mountpoint-error';
+import { CreateMountpointResponse } from '../../../../api/mount-shared-folder-soap-api';
 import { FOLDER_VIEW } from '../../../../carbonio-ui-commons/constants';
 import { createSoapAPIInterceptor } from '../../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { buildSoapErrorResponseBody } from '../../../../carbonio-ui-commons/test/mocks/utils/soap';
 import { setupHook, screen, within } from '../../../../carbonio-ui-commons/test/test-setup';
-import { CreateMountpointResponse } from '../../../../store/actions/mount-shared-folder';
-import { generateStore } from '../../../../tests/generators/store';
 import { ISoapFolderObj } from '../../../../types';
 import { useAccept } from '../share-folder-actions';
 
@@ -50,13 +49,17 @@ describe('share folder actions', () => {
 			link
 		};
 		createSoapAPIInterceptor<never, CreateMountpointResponse>('CreateMountpoint', response);
-		createSoapAPIInterceptor('MsgAction');
-
-		const store = generateStore();
+		const msgActionResponse = {
+			action: {
+				id: '10',
+				op: 'trash'
+			}
+		};
+		createSoapAPIInterceptor('MsgAction', msgActionResponse);
 
 		const {
 			result: { current: accept }
-		} = setupHook(useAccept, { store });
+		} = setupHook(useAccept);
 
 		const acceptParams = {
 			zid,
@@ -65,7 +68,6 @@ describe('share folder actions', () => {
 			folderName,
 			color,
 			accounts,
-			dispatch: store.dispatch,
 			msgId: 'msgId',
 			sharedFolderName: folderName,
 			owner: 'owner',
@@ -96,11 +98,9 @@ describe('share folder actions', () => {
 		});
 		createSoapAPIInterceptor<never, ErrorSoapBodyResponse>('CreateMountpoint', response);
 
-		const store = generateStore();
-
 		const {
 			result: { current: accept }
-		} = setupHook(useAccept, { store });
+		} = setupHook(useAccept);
 
 		const acceptParams = {
 			zid,
@@ -109,7 +109,6 @@ describe('share folder actions', () => {
 			folderName,
 			color,
 			accounts,
-			dispatch: store.dispatch,
 			msgId: 'msgId',
 			sharedFolderName: folderName,
 			owner: 'owner',

@@ -18,7 +18,7 @@ import {
 	useEditorCcRecipients,
 	useEditorIdentityId,
 	useEditorToRecipients
-} from '../../../../../store/zustand/editor';
+} from '../../../../../store/editor';
 import { MailsEditorV2, Participant } from '../../../../../types';
 
 export type RecipientsRowsProps = {

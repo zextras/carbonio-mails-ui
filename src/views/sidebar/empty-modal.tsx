@@ -8,19 +8,19 @@ import React, { FC, useCallback, useMemo } from 'react';
 import { Container, Text } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 
+import { folderActionSoapApi } from '../../api/folder-action-soap-api';
 import ModalFooter from '../../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../../carbonio-ui-commons/components/modals/modal-header';
 import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
 import { getFolderIdParts } from '../../helpers/folders';
 import { useUiUtilities } from '../../hooks/use-ui-utilities';
-import { folderAction } from '../../store/actions/folder-action';
 import type { ModalProps } from '../../types';
 
 export const EmptyModal: FC<ModalProps> = ({ folder, onClose }) => {
 	const { createSnackbar } = useUiUtilities();
 
 	const onConfirm = useCallback(() => {
-		folderAction({ folder, recursive: true, op: 'empty', type: 'emails' }).then((res) => {
+		folderActionSoapApi({ folder, recursive: true, op: 'empty', type: 'emails' }).then((res) => {
 			if (!('Fault' in res)) {
 				createSnackbar({
 					key: `trash`,

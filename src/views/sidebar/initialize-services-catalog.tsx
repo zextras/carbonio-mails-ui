@@ -8,7 +8,7 @@ import { useEffect } from 'react';
 import { setAppContext, useAppContext } from '@zextras/carbonio-shell-ui';
 import { isNil } from 'lodash';
 
-import { requestServiceCatalog } from '../../api/request-service-catalog';
+import { requestServiceCatalogApi } from '../../api/request-service-catalog-api';
 import { AppContext } from '../../types';
 
 export const InitializeServicesCatalog = (): null => {
@@ -16,7 +16,7 @@ export const InitializeServicesCatalog = (): null => {
 
 	useEffect(() => {
 		if (!servicesCatalog) {
-			requestServiceCatalog().then((res) => {
+			requestServiceCatalogApi().then((res) => {
 				if (!isNil(res)) {
 					setAppContext({ servicesCatalog: res });
 				} else {

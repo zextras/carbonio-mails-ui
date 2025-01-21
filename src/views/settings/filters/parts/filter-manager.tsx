@@ -9,7 +9,6 @@ import { Button, Padding, useModal, useSnackbar } from '@zextras/carbonio-design
 import { find, findIndex } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
-import { StoreProvider } from '../../../../store/redux';
 import { Filter } from '../../../../types';
 import {
 	ApplyFilterUIActionExecutionParams,
@@ -105,13 +104,11 @@ const FilterManager: FC<
 				size: 'large',
 				maxHeight: '80vh',
 				children: (
-					<StoreProvider>
-						<CreateFilterModal
-							onConfirm={onCreateConfirm}
-							onClose={modalClose}
-							isIncoming={isIncoming}
-						/>
-					</StoreProvider>
+					<CreateFilterModal
+						onConfirm={onCreateConfirm}
+						onClose={modalClose}
+						isIncoming={isIncoming}
+					/>
 				)
 			},
 			true
@@ -158,13 +155,11 @@ const FilterManager: FC<
 				id: modalId,
 				size: 'small',
 				children: (
-					<StoreProvider>
-						<DeleteFilterModal
-							onClose={modalClose}
-							onConfirmDelete={deleteConfirm}
-							selectedFilter={selectedFilter}
-						/>
-					</StoreProvider>
+					<DeleteFilterModal
+						onClose={modalClose}
+						onConfirmDelete={deleteConfirm}
+						selectedFilter={selectedFilter}
+					/>
 				)
 			},
 			true
@@ -225,14 +220,12 @@ const FilterManager: FC<
 				size: 'large',
 				maxHeight: '80vh',
 				children: (
-					<StoreProvider>
-						<ModifyFilterModal
-							isIncoming={isIncoming}
-							selectedFilter={selectedFilter}
-							onClose={modalClose}
-							onModifyConfirm={onModifyConfirm}
-						/>
-					</StoreProvider>
+					<ModifyFilterModal
+						isIncoming={isIncoming}
+						selectedFilter={selectedFilter}
+						onClose={modalClose}
+						onModifyConfirm={onModifyConfirm}
+					/>
 				)
 			},
 			true

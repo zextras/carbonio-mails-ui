@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, useMemo, useRef } from 'react';
+import React, { useMemo, useRef } from 'react';
 
 import { Container, Padding, Text } from '@zextras/carbonio-design-system';
 import { t, useAppContext } from '@zextras/carbonio-shell-ui';
@@ -17,11 +17,11 @@ import { useSelection } from '../../../../hooks/use-selection';
 import type { AppContext, SearchListProps } from '../../../../types';
 import { Divider } from '../../../app/detail-panel/edit/parts/edit-view-styled-components';
 import { AdvancedFilterButton } from '../../parts/advanced-filter-button';
-import { useLoadMore } from '../../search-view-hooks';
+import { useLoadMoreForSearchSlice } from '../../search-view-hooks';
 import ShimmerList from '../../shimmer-list';
 import { SearchListHeader } from '../parts/search-list-header';
 
-export const SearchConversationList: FC<SearchListProps> = ({
+export const SearchConversationList = ({
 	searchResults: conversationIds,
 	query,
 	loading,
@@ -31,13 +31,12 @@ export const SearchConversationList: FC<SearchListProps> = ({
 	searchDisabled,
 	invalidQueryTooltip,
 	hasMore
-}) => {
+}: SearchListProps): React.JSX.Element => {
 	const { itemId } = useParams<{ itemId: string }>();
 	const loadingMore = useRef<boolean>(false);
 	const { setCount, count } = useAppContext<AppContext>();
-	const items = [...conversationIds].map((conversationId) => ({ id: conversationId }));
 	const listRef = useRef<HTMLDivElement>(null);
-	const totalConversations = useMemo(() => conversationIds.size, [conversationIds]);
+	const totalConversations = useMemo(() => conversationIds.length, [conversationIds]);
 
 	const {
 		selected,
@@ -51,7 +50,7 @@ export const SearchConversationList: FC<SearchListProps> = ({
 	} = useSelection({
 		setCount,
 		count,
-		items
+		items: conversationIds
 	});
 
 	const displayerTitle = useMemo(() => {
@@ -67,7 +66,7 @@ export const SearchConversationList: FC<SearchListProps> = ({
 		return null;
 	}, [isInvalidQuery, conversationIds]);
 
-	const onScrollBottom = useLoadMore({
+	const onScrollBottom = useLoadMoreForSearchSlice({
 		query,
 		offset: totalConversations,
 		hasMore,
@@ -77,7 +76,7 @@ export const SearchConversationList: FC<SearchListProps> = ({
 
 	const listItems = useMemo(
 		() =>
-			map([...conversationIds], (conversationId) => {
+			map(conversationIds, (conversationId) => {
 				const active = itemId === conversationId;
 
 				const isSelected = selected[conversationId];
@@ -124,7 +123,7 @@ export const SearchConversationList: FC<SearchListProps> = ({
 			{!isInvalidQuery && !loading && (
 				<>
 					<SearchListHeader
-						items={items}
+						itemIds={conversationIds}
 						folderId={''}
 						selected={selected}
 						deselectAll={deselectAll}

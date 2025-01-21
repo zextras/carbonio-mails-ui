@@ -3,24 +3,22 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import { act } from 'react';
+
 import { faker } from '@faker-js/faker';
 import { times } from 'lodash';
-import { act } from 'react';
 
 import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { setupHook } from '../../../carbonio-ui-commons/test/test-setup';
-import { generateStore } from '../../../tests/generators/store';
-import { MsgActionRequest } from '../../../types';
+import { MsgActionRequest, MsgActionResponse } from '../../../types';
 import { useMsgSetUnflagDescriptor, useMsgSetUnflagFn } from '../use-msg-set-unflag';
 
 describe('useMsgSetUnflag', () => {
-	const store = generateStore();
-
 	describe('Descriptor', () => {
 		it('Should return an object with specific id, icon, label and 2 functions', () => {
 			const {
 				result: { current: descriptor }
-			} = setupHook(useMsgSetUnflagDescriptor, { store, initialProps: [[], true] });
+			} = setupHook(useMsgSetUnflagDescriptor, { initialProps: [[], true] });
 
 			expect(descriptor).toEqual({
 				id: 'message-unflag',
@@ -36,7 +34,7 @@ describe('useMsgSetUnflag', () => {
 		it('Should return an object with execute and canExecute functions', () => {
 			const {
 				result: { current: descriptor }
-			} = setupHook(useMsgSetUnflagFn, { store, initialProps: [[], true] });
+			} = setupHook(useMsgSetUnflagFn, { initialProps: [[], true] });
 
 			expect(descriptor).toEqual({
 				execute: expect.any(Function),
@@ -49,7 +47,6 @@ describe('useMsgSetUnflag', () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useMsgSetUnflagFn, {
-					store,
 					initialProps: [['1'], false]
 				});
 
@@ -60,7 +57,6 @@ describe('useMsgSetUnflag', () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useMsgSetUnflagFn, {
-					store,
 					initialProps: [['1'], true]
 				});
 
@@ -75,7 +71,7 @@ describe('useMsgSetUnflag', () => {
 
 				const {
 					result: { current: functions }
-				} = setupHook(useMsgSetUnflagFn, { store, initialProps: [['1'], false] });
+				} = setupHook(useMsgSetUnflagFn, { initialProps: [['1'], false] });
 
 				await act(async () => {
 					functions.execute();
@@ -85,13 +81,21 @@ describe('useMsgSetUnflag', () => {
 			});
 
 			it('should call the API with the proper params if the action can be executed', async () => {
-				const apiInterceptor = createSoapAPIInterceptor<MsgActionRequest>('MsgAction');
+				const response: MsgActionResponse = {
+					action: {
+						id: '',
+						op: 'trash'
+					}
+				};
+				const apiInterceptor = createSoapAPIInterceptor<MsgActionRequest, MsgActionResponse>(
+					'MsgAction',
+					response
+				);
 				const ids = times(faker.number.int({ max: 20 }), () => faker.number.int().toString());
 
 				const {
 					result: { current: functions }
 				} = setupHook(useMsgSetUnflagFn, {
-					store,
 					initialProps: [ids, true]
 				});
 

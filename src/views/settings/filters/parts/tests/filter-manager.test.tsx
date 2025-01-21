@@ -14,7 +14,6 @@ import {
 	makeListItemsVisible,
 	setupTest
 } from '../../../../../carbonio-ui-commons/test/test-setup';
-import { generateStore } from '../../../../../tests/generators/store';
 import { Filter } from '../../../../../types';
 import { ListType } from '../actions';
 import { getFiltermanager } from '../filter-manager';
@@ -29,7 +28,6 @@ const IncomingFilterActions = getFiltermanager(true);
 
 describe('incoming filters actions', () => {
 	it('should close the create filter modal', async () => {
-		const store = generateStore();
 		(useSnackbar as jest.Mock).mockReturnValue(createSnackbarSpy);
 		const availableList = createList([]);
 		const myFilter = activeIncomingFilter('My filter');
@@ -42,7 +40,7 @@ describe('incoming filters actions', () => {
 			onFiltersSave: jest.fn()
 		};
 
-		const { user } = setupTest(<IncomingFilterActions {...props} />, { store });
+		const { user } = setupTest(<IncomingFilterActions {...props} />);
 
 		await user.click(screen.getByRole('button', { name: 'Create' }));
 		makeAllItemsVisible();
@@ -52,7 +50,6 @@ describe('incoming filters actions', () => {
 	});
 
 	test('modify filter should save filters with all incoming filters', async () => {
-		const store = generateStore();
 		(useSnackbar as jest.Mock).mockReturnValue(createSnackbarSpy);
 		const availableList = createList([]);
 		const otherFilter = activeIncomingFilter('Other filter');
@@ -67,7 +64,7 @@ describe('incoming filters actions', () => {
 			onFiltersSave: mockSave
 		};
 
-		const { user } = setupTest(<IncomingFilterActions {...props} />, { store });
+		const { user } = setupTest(<IncomingFilterActions {...props} />);
 		const modifyFilterBtn = await screen.findByRole('button', { name: 'Edit' });
 		await user.click(modifyFilterBtn);
 		makeAllItemsVisible();
@@ -114,7 +111,6 @@ describe('incoming filters actions', () => {
 	});
 
 	test('delete filter should save filters without the deleted filter', async () => {
-		const store = generateStore();
 		(useSnackbar as jest.Mock).mockReturnValue(createSnackbarSpy);
 		const availableList = createList([]);
 		const otherFilter = activeIncomingFilter('Other filter');
@@ -129,7 +125,7 @@ describe('incoming filters actions', () => {
 			onFiltersSave: mockSave
 		};
 
-		const { user } = setupTest(<IncomingFilterActions {...props} />, { store });
+		const { user } = setupTest(<IncomingFilterActions {...props} />);
 
 		const deleteFilterBtn = await screen.findByRole('button', { name: 'Delete' });
 		await user.click(deleteFilterBtn);
@@ -148,7 +144,6 @@ describe('incoming filters actions', () => {
 	});
 
 	test('remove filter should save filters without the removed filter', async () => {
-		const store = generateStore();
 		(useSnackbar as jest.Mock).mockReturnValue(createSnackbarSpy);
 		const availableList = createList([]);
 		const otherFilter = activeIncomingFilter('Other filter');
@@ -163,7 +158,7 @@ describe('incoming filters actions', () => {
 			onFiltersSave: mockSave
 		};
 
-		const { user } = setupTest(<IncomingFilterActions {...props} />, { store });
+		const { user } = setupTest(<IncomingFilterActions {...props} />);
 
 		const removeFilterBtn = await screen.findByRole('button', { name: 'Remove' });
 		await user.click(removeFilterBtn);
@@ -171,7 +166,6 @@ describe('incoming filters actions', () => {
 		expect(mockSave).toHaveBeenCalledWith([otherFilter, { ...myFilter, active: false }]);
 	});
 	test('add filter should save filters with the added filter', async () => {
-		const store = generateStore();
 		(useSnackbar as jest.Mock).mockReturnValue(createSnackbarSpy);
 		const firstFilter = { ...activeIncomingFilter('First filter'), active: false };
 		const secondFilter = { ...activeIncomingFilter('Second filter'), active: false };
@@ -189,7 +183,7 @@ describe('incoming filters actions', () => {
 			onFiltersSave: mockSave
 		};
 
-		const { user } = setupTest(<IncomingFilterActions {...props} />, { store });
+		const { user } = setupTest(<IncomingFilterActions {...props} />);
 
 		const addFilterBtn = await screen.findByRole('button', { name: 'Add' });
 		await user.click(addFilterBtn);

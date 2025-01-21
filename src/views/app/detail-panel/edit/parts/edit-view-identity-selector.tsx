@@ -31,7 +31,7 @@ import {
 	useEditorIdentityId,
 	useEditorSignatureId,
 	useEditorText
-} from '../../../../../store/zustand/editor';
+} from '../../../../../store/editor';
 import { MailsEditorV2 } from '../../../../../types';
 
 const SelectorContainer = styled(Row)`

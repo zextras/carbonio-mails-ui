@@ -13,10 +13,9 @@ import { cloneDeep, noop } from 'lodash';
 
 import { createSoapAPIInterceptor } from '../../../../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { screen, setupTest } from '../../../../../../carbonio-ui-commons/test/test-setup';
-import { addEditor } from '../../../../../../store/zustand/editor';
-import { generateNewMessageEditor } from '../../../../../../store/zustand/editor/editor-generators';
+import { addEditor } from '../../../../../../store/editor';
+import { generateNewMessageEditor } from '../../../../../../store/editor/editor-generators';
 import { setupEditorStore } from '../../../../../../tests/generators/editor-store';
-import { generateStore } from '../../../../../../tests/generators/store';
 import { Signature } from '../../../../../../types';
 import { EditView, EditViewProp } from '../../edit-view';
 import { aSuccessfullSaveDraft } from '../../tests/utils/utils';
@@ -29,15 +28,14 @@ describe('Change signature while composing mail', () => {
 		createSoapAPIInterceptor('GetShareInfo');
 		const interceptor = aSuccessfullSaveDraft();
 		setupEditorStore({ editors: [] });
-		const reduxStore = generateStore();
-		const editor = generateNewMessageEditor(reduxStore.dispatch);
+		const editor = generateNewMessageEditor();
 		addEditor({ id: editor.id, editor });
 
 		const props: EditViewProp = {
 			editorId: editor.id,
 			closeController: noop
 		};
-		setupTest(<EditView {...props} />, { store: reduxStore });
+		setupTest(<EditView {...props} />);
 		await act(async () => {
 			await interceptor;
 		});
@@ -51,12 +49,11 @@ describe('Change signature while composing mail', () => {
 		expect(changeSignaturesIcon).toBeVisible();
 	});
 
-	test('Signatures should be display in dropdown list', async () => {
+	it('Signatures should be display in dropdown list', async () => {
 		createSoapAPIInterceptor('GetShareInfo');
 		createSoapAPIInterceptor('SaveDraft');
 		setupEditorStore({ editors: [] });
-		const reduxStore = generateStore();
-		const editor = generateNewMessageEditor(reduxStore.dispatch);
+		const editor = generateNewMessageEditor();
 		addEditor({ id: editor.id, editor });
 		const account = getUserAccount();
 		const signatures: Signature[] = account?.signatures.signature ?? [];
@@ -64,7 +61,7 @@ describe('Change signature while composing mail', () => {
 			editorId: editor.id,
 			closeController: noop
 		};
-		const { user } = setupTest(<EditView {...props} />, { store: reduxStore });
+		const { user } = setupTest(<EditView {...props} />);
 		expect(await screen.findByTestId('edit-view-editor')).toBeInTheDocument();
 		const changeSignaturesIcon = screen.getByTestId('change-sign-dropdown-icon');
 		expect(changeSignaturesIcon).toBeVisible();
@@ -76,12 +73,11 @@ describe('Change signature while composing mail', () => {
 		});
 	});
 
-	test('Change signatures icon should not show if user do not have signatures', async () => {
+	it('Change signatures icon should not show if user do not have signatures', async () => {
 		createSoapAPIInterceptor('GetShareInfo');
 		const interceptor = aSuccessfullSaveDraft();
 		setupEditorStore({ editors: [] });
-		const reduxStore = generateStore();
-		const editor = generateNewMessageEditor(reduxStore.dispatch);
+		const editor = generateNewMessageEditor();
 		addEditor({ id: editor.id, editor });
 
 		const account = cloneDeep(getUserAccount());
@@ -92,7 +88,7 @@ describe('Change signature while composing mail', () => {
 			editorId: editor.id,
 			closeController: noop
 		};
-		setupTest(<EditView {...props} />, { store: reduxStore });
+		setupTest(<EditView {...props} />);
 		await act(async () => {
 			await interceptor;
 		});

@@ -13,7 +13,7 @@ import { useParams } from 'react-router-dom';
 
 import { createAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
-import { useBackupSearchStore } from '../../../store/zustand/backup-search/store';
+import { useBackupSearchStore } from '../../../store/backup-search/store';
 import { BackupSearchList } from '../parts/backup-search-list';
 
 const message1 = {

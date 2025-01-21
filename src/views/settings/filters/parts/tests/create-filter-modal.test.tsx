@@ -14,7 +14,6 @@ import {
 	makeListItemsVisible,
 	setupTest
 } from '../../../../../carbonio-ui-commons/test/test-setup';
-import { generateStore } from '../../../../../tests/generators/store';
 import CreateFilterModal from '../create-filter-modal';
 
 const addAction = async (user: UserEvent): Promise<void> => {
@@ -89,13 +88,9 @@ describe('create filter modal', () => {
 
 	test('Move into folder action allows selecting junk folder', async () => {
 		const closeModal = jest.fn();
-		const store = generateStore();
 		populateFoldersStore();
 		const { user } = setupTest(
-			<CreateFilterModal onClose={(): void => closeModal()} onConfirm={jest.fn()} isIncoming />,
-			{
-				store
-			}
+			<CreateFilterModal onClose={(): void => closeModal()} onConfirm={jest.fn()} isIncoming />
 		);
 		await user.click(screen.getByText('Keep in Inbox'));
 
@@ -484,9 +479,5 @@ const setupCreateFilterModal = ({
 	onConfirm = jest.fn()
 }: {
 	onConfirm?: () => void;
-} = {}): ReturnType<typeof setupTest> => {
-	const store = generateStore();
-	return setupTest(<CreateFilterModal onClose={jest.fn()} onConfirm={onConfirm} isIncoming />, {
-		store
-	});
-};
+} = {}): ReturnType<typeof setupTest> =>
+	setupTest(<CreateFilterModal onClose={jest.fn()} onConfirm={onConfirm} isIncoming />);
