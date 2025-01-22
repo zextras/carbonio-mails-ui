@@ -9,7 +9,10 @@ import { Container, Padding } from '@zextras/carbonio-design-system';
 
 import MailPreview from './preview/mail-preview';
 import { PreviewPanelHeader } from './preview/preview-panel-header';
+import { Spinner } from '../../../assets/spinner';
+import { API_REQUEST_STATUS } from '../../../constants';
 import { useCompleteMessageOrFetch } from '../../../store/emails/hooks/hooks';
+import { useMessageStatus } from '../../../store/emails/store';
 import { useExtraWindow } from '../extra-windows/use-extra-window';
 
 export const MessagePreviewPanel: FC<{ folderId: string; messageId: string }> = ({
@@ -17,25 +20,39 @@ export const MessagePreviewPanel: FC<{ folderId: string; messageId: string }> = 
 	messageId
 }) => {
 	const { isInsideExtraWindow } = useExtraWindow();
-
 	const { message } = useCompleteMessageOrFetch(messageId);
+	const messageLoadingStatus = useMessageStatus(messageId);
 
 	const messagePreviewFactory = useCallback(
 		() => <MessagePreviewPanel folderId={folderId} messageId={messageId} />,
 		[folderId, messageId]
 	);
 
-	return (
-		<Container orientation="vertical" mainAlignment="flex-start" crossAlignment="flex-start">
-			{!isInsideExtraWindow && (
-				<PreviewPanelHeader
-					folderId={folderId}
-					itemType={'message'}
-					isRead={message?.read}
-					subject={message?.subject}
-				/>
-			)}
-			{message?.isComplete && (
+	if (messageLoadingStatus === API_REQUEST_STATUS.pending) {
+		return (
+			<Container
+				style={{ overflowY: 'auto' }}
+				height="fill"
+				background="gray5"
+				mainAlignment="center"
+				crossAlignment="center"
+			>
+				<Spinner />
+			</Container>
+		);
+	}
+
+	if (message?.isComplete) {
+		return (
+			<Container orientation="vertical" mainAlignment="flex-start" crossAlignment="flex-start">
+				{!isInsideExtraWindow && (
+					<PreviewPanelHeader
+						folderId={folderId}
+						itemType={'message'}
+						isRead={message?.read}
+						subject={message?.subject}
+					/>
+				)}
 				<Container
 					style={{ overflowY: 'auto' }}
 					height="fill"
@@ -56,7 +73,9 @@ export const MessagePreviewPanel: FC<{ folderId: string; messageId: string }> = 
 						</Padding>
 					</Container>
 				</Container>
-			)}
-		</Container>
-	);
+			</Container>
+		);
+	}
+
+	return null;
 };
