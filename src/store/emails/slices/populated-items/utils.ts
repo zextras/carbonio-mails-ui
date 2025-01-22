@@ -14,6 +14,7 @@ import { RemoveAttachmentsResponse } from '../../../../api/delete-all-attachment
 import { FOLDERS } from '../../../../carbonio-ui-commons/constants/folders';
 import { useFolder } from '../../../../carbonio-ui-commons/store/zustand/folder';
 import { CONVACTIONS } from '../../../../commons/utilities';
+import { API_REQUEST_STATUS } from '../../../../constants';
 import { normalizeMailMessageFromSoap } from '../../../../normalizations/normalize-message';
 import {
 	MailMessage,
@@ -73,6 +74,11 @@ function updateMessages(
 					...merge(existingMessage, message),
 					participants: message.participants
 				};
+
+				// Update the status if the message is complete
+				if (message.isComplete) {
+					populatedItemsSlice.messagesStatus[message.id] = API_REQUEST_STATUS.fulfilled;
+				}
 			});
 		})
 	);
