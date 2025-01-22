@@ -357,7 +357,8 @@ export function useConversationStatus(id: string): SearchRequestStatus {
 /**
  * Updates the messages in the `populatedItemsSlice` of the emails store.
  * It iterates through array of passed mail message and updates the store's state
- * by merging each message with its existing entry (if any).
+ * by merging each message with its existing entry (if any), if the message is complete
+ * the API_REQUEST_STATUS for the message is also updated to fulfilled.
  */
 export function updateMessages(messages: MailMessage[]): void {
 	addTask(async () => {
