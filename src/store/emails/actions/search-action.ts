@@ -32,15 +32,18 @@ const handleSearchSoapApiResults = ({
 	searchResponse: SearchResponse | ErrorSoapBodyResponse;
 	types: string | undefined;
 }): void => {
+	// Handle error
 	if ('Fault' in searchResponse) {
 		if (types === 'message') {
 			updateMessagesResultsLoadingStatus(API_REQUEST_STATUS.error);
-			return;
+		} else {
+			updateConversationsResultsLoadingStatus(API_REQUEST_STATUS.error);
 		}
-		updateConversationsResultsLoadingStatus(API_REQUEST_STATUS.error);
 		return;
 	}
-	if (searchResponse.m?.length) {
+
+	// Handle messages
+	if (Array.isArray(searchResponse.m) && searchResponse.m.length > 0) {
 		const normalizedMessages = map(searchResponse.m, (msg) =>
 			normalizeMailMessageFromSoap(msg, false)
 		);
@@ -48,13 +51,13 @@ const handleSearchSoapApiResults = ({
 		updateMessagesResultsLoadingStatus(API_REQUEST_STATUS.fulfilled);
 		return;
 	}
-	if (searchResponse.c?.length) {
+
+	// Handle conversations
+	if (Array.isArray(searchResponse.c) && searchResponse.c.length > 0) {
 		const conversations = normalizeConversations(searchResponse.c);
 		setConversationsInEmailStore(conversations, searchResponse.more);
 		updateConversationsResultsLoadingStatus(API_REQUEST_STATUS.fulfilled);
-		return;
 	}
-	resetMessagesAndPopulatedItems();
 };
 
 export async function searchEmailStoreAction({
@@ -81,6 +84,9 @@ export async function searchEmailStoreAction({
 		locale,
 		abortSignal
 	});
+	// Reset state before handling new results
+	resetMessagesAndPopulatedItems();
+
 	handleSearchSoapApiResults({ searchResponse, types });
 	return searchResponse;
 }
