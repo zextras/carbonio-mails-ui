@@ -1,3 +1,4 @@
+/* eslint-disable sonarjs/no-duplicate-string */
 /*
  * SPDX-FileCopyrightText: 2024 Zextras <https://www.zextras.com>
  *
@@ -148,15 +149,41 @@ describe('Searches store hooks', () => {
 			});
 		});
 
-		it('should not fetch if the message is complete', async () => {
+		it('should not fetch if the message is complete and messageStatus is fulfilled', async () => {
 			const message = generateMessage({ id: '1' });
-			setMessagesInEmailStore([{ ...message, isComplete: true }], false);
-			const getMsgSpy = jest.spyOn(getMsg, 'getMsgSoapApi');
-			renderHook(() => useCompleteMessageOrFetch('1'));
+			await act(async () => {
+				setMessagesInEmailStore([{ ...message, isComplete: true }], false);
+			});
 
 			await act(async () => {
-				expect(getMsgSpy).not.toHaveBeenCalled();
+				updateMessageStatus(message.id, API_REQUEST_STATUS.fulfilled);
 			});
+			const getMsgSpy = jest.spyOn(getMsg, 'getMsgSoapApi');
+			// eslint-disable-next-line testing-library/no-unnecessary-act
+			await act(async () => {
+				renderHook(() => useCompleteMessageOrFetch(message.id));
+			});
+
+			expect(getMsgSpy).not.toHaveBeenCalled();
+		});
+
+		it('should fetch if the messageStatus is undefined', async () => {
+			const message = generateMessage({ id: '1' });
+			await act(async () => {
+				setMessagesInEmailStore([{ ...message, isComplete: true }], false);
+			});
+
+			await act(async () => {
+				updateMessageStatus(message.id, undefined as never);
+			});
+			const getMsgSpy = jest.spyOn(getMsg, 'getMsgSoapApi');
+
+			// eslint-disable-next-line testing-library/no-unnecessary-act
+			await act(async () => {
+				renderHook(() => useCompleteMessageOrFetch(message.id));
+			});
+
+			expect(getMsgSpy).toHaveBeenCalledTimes(1);
 		});
 
 		it('should fetch if the message is incomplete and status is not fulfilled or pending', async () => {
@@ -194,13 +221,15 @@ describe('Searches store hooks', () => {
 			});
 
 			await act(async () => {
-				expect(getMsgSpy).toHaveBeenCalled();
+				expect(getMsgSpy).toHaveBeenCalledTimes(1);
 			});
 
-			rerender({ id: '2' });
-			await act(async () => {
-				expect(getMsgSpy).toHaveBeenCalledTimes(2);
+			await waitFor(async () => {
+				// eslint-disable-next-line testing-library/no-wait-for-side-effects
+				rerender({ id: '2' });
 			});
+
+			expect(getMsgSpy).toHaveBeenCalledTimes(2);
 		});
 
 		it('should update status if initial status is undefined', async () => {
@@ -209,13 +238,19 @@ describe('Searches store hooks', () => {
 				subject: 'Test Message'
 			});
 			setSearchResultsByMessage([message], false);
+			await act(async () => {
+				updateMessageStatus(message.id, undefined as never);
+			});
+
 			const response: GetMsgResponse = {
-				m: [generateCompleteMessageFromAPI({ id: '10' })]
+				m: [generateCompleteMessageFromAPI({ id: message.id })]
 			};
+
 			createSoapAPIInterceptor<GetMsgRequest, GetMsgResponse>('GetMsg', response);
 
-			const { result } = renderHook(() => useMessageStatus('1'));
-			renderHook(() => useCompleteMessageOrFetch('1'));
+			const { result } = renderHook(() => useMessageStatus(message.id));
+			renderHook(() => useCompleteMessageOrFetch(message.id));
+
 			await waitFor(() => {
 				expect(result.current).toBe(API_REQUEST_STATUS.fulfilled);
 			});

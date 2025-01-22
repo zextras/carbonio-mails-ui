@@ -61,16 +61,18 @@ export function useCompleteMessageOrFetch(messageId: string): MessageWithStatus 
 	const message = useMessageById(messageId);
 	const messageStatus = useMessageStatus(messageId);
 
-	const retrieveMessageCallback = useCallback(() => {
+	const retrieveMessage = useCallback(() => {
 		getMessageEmailStoreAction(messageId);
 	}, [messageId]);
 
 	useEffect(() => {
-		if (messageStatus === API_REQUEST_STATUS.pending) return;
-		if (!message?.isComplete && messageStatus !== API_REQUEST_STATUS.fulfilled) {
-			retrieveMessageCallback();
+		if (
+			messageStatus !== API_REQUEST_STATUS.pending &&
+			(!message?.isComplete || messageStatus === undefined)
+		) {
+			retrieveMessage();
 		}
-	}, [message, messageId, messageStatus, retrieveMessageCallback]);
+	}, [message, messageId, messageStatus, retrieveMessage]);
 
 	return {
 		message,
