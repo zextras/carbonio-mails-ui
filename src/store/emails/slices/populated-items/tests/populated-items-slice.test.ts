@@ -1,3 +1,4 @@
+/* eslint-disable */
 /*
  * SPDX-FileCopyrightText: 2024 Zextras <https://www.zextras.com>
  *
@@ -8,7 +9,7 @@ import { act, renderHook, waitFor } from '@testing-library/react';
 import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 
 import { FOLDERS } from '../../../../../carbonio-ui-commons/constants/folders';
-import { useTags } from '../../../../../carbonio-ui-commons/store/zustand/tags/hooks';
+import { useTags } from '../../../../../carbonio-ui-commons/store/zustand/tags';
 import { tags as mockTags } from '../../../../../carbonio-ui-commons/test/mocks/tags/tags';
 import { buildSoapErrorResponseBody } from '../../../../../carbonio-ui-commons/test/mocks/utils/soap';
 import { CONVACTIONS } from '../../../../../commons/utilities';
@@ -16,7 +17,7 @@ import { API_REQUEST_STATUS } from '../../../../../constants';
 import { generateCompleteMessageFromAPI } from '../../../../../tests/generators/api';
 import { generateConversation } from '../../../../../tests/generators/generateConversation';
 import { generateMessage } from '../../../../../tests/generators/generateMessage';
-import { ConvActionResponse } from '../../../../../types/soap/conv-action';
+import { ConvActionResponse } from '../../../../../types';
 import {
 	appendConversations,
 	setSearchResultsByConversation,
@@ -36,7 +37,9 @@ import {
 	optimisticallyHandleMessageActions,
 	handleConvActionResponse,
 	setConversationsInEmailStore,
-	useConversationIndexSlice
+	useConversationIndexSlice,
+	useMessagesByFolder,
+	useMessagesIdsByFolder
 } from '../../../store';
 
 const { setMessagesInSearchSlice } = getUseEmailStoreAndHooksForTesting();
@@ -44,7 +47,67 @@ const { setMessagesInSearchSlice } = getUseEmailStoreAndHooksForTesting();
 jest.mock('../../../../../carbonio-ui-commons/store/zustand/tags/hooks', () => ({
 	useTags: jest.fn()
 }));
+
 describe('store-populated-items-slice', () => {
+	describe('updateMessages', () => {
+		it('updates messages correctly', async () => {
+			const messages = [generateMessage({ id: '1' }), generateMessage({ id: '2' })];
+			act(() => {
+				updateMessages(messages);
+			});
+
+			const { result: message1 } = renderHook(() => useMessageById('1'));
+			const { result: message2 } = renderHook(() => useMessageById('2'));
+
+			expect(message1.current.id).toBe('1');
+			expect(message2.current.id).toBe('2');
+		});
+
+		it('does not update messages without id', async () => {
+			const messages = [
+				{ ...generateMessage({}), id: undefined as never, folderId: FOLDERS.INBOX }, // No id
+				generateMessage({ id: '2', folderId: FOLDERS.INBOX }) // Has id
+			];
+
+			act(() => {
+				updateMessages(messages);
+			});
+
+			// @ts-ignore
+			const { result: messageWithoutId } = renderHook(() => useMessageById(undefined));
+			const { result: message2 } = renderHook(() => useMessageById('2'));
+
+			expect(messageWithoutId.current).toBeUndefined();
+			expect(message2.current.id).toBe('2');
+		});
+
+		it('updates message status to fulfilled if complete', () => {
+			const messages = [generateMessage({ id: '1', isComplete: true })];
+			act(() => {
+				updateMessages(messages);
+			});
+
+			const { result: message1 } = renderHook(() => useMessageById('1'));
+			const { result: message1Status } = renderHook(() => useMessageStatus('1'));
+
+			expect(message1.current.id).toBe('1');
+			expect(message1Status.current).toBe(API_REQUEST_STATUS.fulfilled);
+		});
+
+		it('does not update message status if not complete', () => {
+			const messages = [generateMessage({ id: '1', isComplete: false })];
+			act(() => {
+				updateMessages(messages);
+			});
+
+			const { result: message1 } = renderHook(() => useMessageById('1'));
+			const { result: message1Status } = renderHook(() => useMessageStatus('1'));
+
+			expect(message1.current.id).toBe('1');
+			expect(message1Status.current).toBeUndefined();
+		});
+	});
+
 	describe('useConversationById', () => {
 		it('should set and return a conversation', async () => {
 			const conversation = generateConversation({ id: '1' });
@@ -81,6 +144,7 @@ describe('store-populated-items-slice', () => {
 			expect(result.current).toEqual(message);
 		});
 	});
+
 	describe('useConversationMessages', () => {
 		it('should not override other conversation messages', async () => {
 			const conversation1Messages = [
@@ -124,6 +188,7 @@ describe('store-populated-items-slice', () => {
 			expect(renderHook(() => useConversationById('3')).result.current).toBeDefined();
 		});
 	});
+
 	describe('updateMessageStatus', () => {
 		it('should set message status if value present', async () => {
 			updateMessageStatus('1', API_REQUEST_STATUS.fulfilled);
@@ -133,6 +198,7 @@ describe('store-populated-items-slice', () => {
 			expect(result.current).toBe(API_REQUEST_STATUS.fulfilled);
 		});
 	});
+
 	describe('updateConversationsOnly', () => {
 		it('should apply changes correctly', async () => {
 			const conversation = generateConversation({
@@ -154,6 +220,7 @@ describe('store-populated-items-slice', () => {
 			expect(result.current.tags).toEqual([]);
 		});
 	});
+
 	describe('updateMessagesOnly', () => {
 		it('should not unset fields on message', async () => {
 			setMessagesInSearchSlice([generateMessage({ id: '1', folderId: FOLDERS.INBOX })]);
@@ -167,6 +234,7 @@ describe('store-populated-items-slice', () => {
 			expect(result.current.parent).toEqual(FOLDERS.INBOX);
 		});
 	});
+
 	describe('updateMessagesOnly', () => {
 		it('should apply changes correctly', async () => {
 			const message1 = generateMessage({ id: '1', tags: ['tag1'] });
@@ -214,7 +282,7 @@ describe('store-populated-items-slice', () => {
 			});
 		});
 
-		it('should unflag a message when operation is UNFLAG', async () => {
+		it('should un-flag a message when operation is UNFLAG', async () => {
 			const message = generateMessage({ id: '1' });
 			updateMessages([{ ...message, flagged: true }]);
 			optimisticallyHandleMessageActions({
@@ -351,113 +419,113 @@ describe('store-populated-items-slice', () => {
 			});
 		});
 	});
-});
 
-describe('handleConvActionResponse', () => {
-	it('should handle a Fault response by updating conversation flags when operation is FLAG', async () => {
-		const conversation = generateConversation({ id: '1', isFlagged: false });
-		setConversationsInEmailStore([conversation], false);
-		const convActionParams = {
-			ids: ['1'],
-			operation: CONVACTIONS.FLAG
-		};
-		const response: ErrorSoapBodyResponse = buildSoapErrorResponseBody({ reason: 'any reason' });
+	describe('handleConvActionResponse', () => {
+		it('should handle a Fault response by updating conversation flags when operation is FLAG', async () => {
+			const conversation = generateConversation({ id: '1', isFlagged: false });
+			setConversationsInEmailStore([conversation], false);
+			const convActionParams = {
+				ids: ['1'],
+				operation: CONVACTIONS.FLAG
+			};
+			const response: ErrorSoapBodyResponse = buildSoapErrorResponseBody({ reason: 'any reason' });
 
-		handleConvActionResponse(response, convActionParams);
-		const { result } = renderHook(() => useConversationById('1'));
-		await waitFor(async () => {
-			expect(result.current?.flagged).toBe(true);
+			handleConvActionResponse(response, convActionParams);
+			const { result } = renderHook(() => useConversationById('1'));
+			await waitFor(async () => {
+				expect(result.current?.flagged).toBe(true);
+			});
 		});
-	});
 
-	it('should handle a Fault response by updating conversation flags when operation is UNFLAG', async () => {
-		const conversation = generateConversation({ id: '1', isFlagged: true });
-		setConversationsInEmailStore([conversation], false);
-		const convActionParams = {
-			ids: ['1'],
-			operation: CONVACTIONS.UNFLAG
-		};
-		const response: ErrorSoapBodyResponse = buildSoapErrorResponseBody({ reason: 'any reason' });
+		it('should handle a Fault response by updating conversation flags when operation is UNFLAG', async () => {
+			const conversation = generateConversation({ id: '1', isFlagged: true });
+			setConversationsInEmailStore([conversation], false);
+			const convActionParams = {
+				ids: ['1'],
+				operation: CONVACTIONS.UNFLAG
+			};
+			const response: ErrorSoapBodyResponse = buildSoapErrorResponseBody({ reason: 'any reason' });
 
-		handleConvActionResponse(response, convActionParams);
-		const { result } = renderHook(() => useConversationById('1'));
-		await waitFor(async () => {
-			expect(result.current?.flagged).toBe(false);
+			handleConvActionResponse(response, convActionParams);
+			const { result } = renderHook(() => useConversationById('1'));
+			await waitFor(async () => {
+				expect(result.current?.flagged).toBe(false);
+			});
 		});
-	});
 
-	it('should handle a Fault response by updating conversation read status when operation is MARK_READ', async () => {
-		const conversation = generateConversation({ id: '1', isRead: false });
-		setConversationsInEmailStore([conversation], false);
-		const convActionParams = {
-			ids: ['1'],
-			operation: CONVACTIONS.MARK_READ
-		};
-		const response: ErrorSoapBodyResponse = buildSoapErrorResponseBody({ reason: 'any reason' });
+		it('should handle a Fault response by updating conversation read status when operation is MARK_READ', async () => {
+			const conversation = generateConversation({ id: '1', isRead: false });
+			setConversationsInEmailStore([conversation], false);
+			const convActionParams = {
+				ids: ['1'],
+				operation: CONVACTIONS.MARK_READ
+			};
+			const response: ErrorSoapBodyResponse = buildSoapErrorResponseBody({ reason: 'any reason' });
 
-		handleConvActionResponse(response, convActionParams);
-		const { result } = renderHook(() => useConversationById('1'));
-		await waitFor(async () => {
-			expect(result.current?.read).toBe(true);
+			handleConvActionResponse(response, convActionParams);
+			const { result } = renderHook(() => useConversationById('1'));
+			await waitFor(async () => {
+				expect(result.current?.read).toBe(true);
+			});
 		});
-	});
 
-	it('should handle a Fault response by updating conversation read status when operation is MARK_UNREAD', async () => {
-		const conversation = generateConversation({ id: '1', isRead: true });
-		setConversationsInEmailStore([conversation], false);
-		const convActionParams = {
-			ids: ['1'],
-			operation: CONVACTIONS.MARK_UNREAD
-		};
-		const response: ErrorSoapBodyResponse = buildSoapErrorResponseBody({ reason: 'any reason' });
+		it('should handle a Fault response by updating conversation read status when operation is MARK_UNREAD', async () => {
+			const conversation = generateConversation({ id: '1', isRead: true });
+			setConversationsInEmailStore([conversation], false);
+			const convActionParams = {
+				ids: ['1'],
+				operation: CONVACTIONS.MARK_UNREAD
+			};
+			const response: ErrorSoapBodyResponse = buildSoapErrorResponseBody({ reason: 'any reason' });
 
-		handleConvActionResponse(response, convActionParams);
-		const { result } = renderHook(() => useConversationById('1'));
-		await waitFor(async () => {
-			expect(result.current?.read).toBe(false);
+			handleConvActionResponse(response, convActionParams);
+			const { result } = renderHook(() => useConversationById('1'));
+			await waitFor(async () => {
+				expect(result.current?.read).toBe(false);
+			});
 		});
-	});
 
-	it('should do nothing if the response is null', async () => {
-		const conversation = generateConversation({ id: '1' });
-		setConversationsInEmailStore([conversation], false);
-		const convActionParams = {
-			ids: ['1'],
-			operation: CONVACTIONS.MARK_UNREAD
-		};
+		it('should do nothing if the response is null', async () => {
+			const conversation = generateConversation({ id: '1' });
+			setConversationsInEmailStore([conversation], false);
+			const convActionParams = {
+				ids: ['1'],
+				operation: CONVACTIONS.MARK_UNREAD
+			};
 
-		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-		// @ts-ignore
-		handleConvActionResponse(null, convActionParams);
-		const { result } = renderHook(() => useConversationById('1'));
-		await waitFor(async () => {
-			expect(result.current).toEqual(conversation);
+			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+			// @ts-ignore
+			handleConvActionResponse(null, convActionParams);
+			const { result } = renderHook(() => useConversationById('1'));
+			await waitFor(async () => {
+				expect(result.current).toEqual(conversation);
+			});
 		});
-	});
 
-	it('should delete conversations if action is DELETE', async () => {
-		const conversation1 = generateConversation({ id: '1' });
-		const conversation2 = generateConversation({ id: '2' });
-		setConversationsInEmailStore([conversation1, conversation2], false);
-		const convActionParams = {
-			ids: ['1'],
-			operation: CONVACTIONS.DELETE
-		};
+		it('should delete conversations if action is DELETE', async () => {
+			const conversation1 = generateConversation({ id: '1' });
+			const conversation2 = generateConversation({ id: '2' });
+			setConversationsInEmailStore([conversation1, conversation2], false);
+			const convActionParams = {
+				ids: ['1'],
+				operation: CONVACTIONS.DELETE
+			};
 
-		const response: ConvActionResponse = {
-			action: {
-				id: '1',
-				op: CONVACTIONS.DELETE
-			}
-		};
-		handleConvActionResponse(response, convActionParams);
-		const { result: list } = renderHook(() => useConversationIndexSlice());
-		await waitFor(async () => {
-			expect(list.current?.conversationListIndex).toEqual(['2']);
-		});
-		const { result: conversation1Result } = renderHook(() => useConversationById('1'));
-		await waitFor(async () => {
-			expect(conversation1Result.current).toBeUndefined();
+			const response: ConvActionResponse = {
+				action: {
+					id: '1',
+					op: CONVACTIONS.DELETE
+				}
+			};
+			handleConvActionResponse(response, convActionParams);
+			const { result: list } = renderHook(() => useConversationIndexSlice());
+			await waitFor(async () => {
+				expect(list.current?.conversationListIndex).toEqual(['2']);
+			});
+			const { result: conversation1Result } = renderHook(() => useConversationById('1'));
+			await waitFor(async () => {
+				expect(conversation1Result.current).toBeUndefined();
+			});
 		});
 	});
 });
