@@ -26,8 +26,7 @@ export async function handleRetrieveMessage(
 	const response = await apiCall(messageId).catch(() => {
 		updateMessageStatus(messageId, API_REQUEST_STATUS.error);
 	});
-	if (!response) return undefined;
-	if ('Fault' in response) {
+	if (!response || 'Fault' in response) {
 		updateMessageStatus(messageId, API_REQUEST_STATUS.error);
 		return undefined;
 	}
