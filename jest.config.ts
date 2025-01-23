@@ -14,6 +14,15 @@ import { defaultConfig } from './src/carbonio-ui-commons/test/jest-config';
 
 const config: Config = {
 	...defaultConfig,
+	collectCoverageFrom: [
+		'src/**/*.{js,ts}(x)?',
+		'!**/__mocks__/**', // Exclude mock files
+		'!**/__tests__/**', // Exclude test files
+		'!**/*.test.{js,jsx,ts,tsx}', // Exclude test files
+		'!**/*.spec.{js,jsx,ts,tsx}', // Exclude test files
+		'!src/tests/**', // Exclude test files from src/tests
+		'!src/**/test/mocks/**' // Exclude test files from src/**/test/mocks
+	],
 	moduleNameMapper: {
 		...defaultConfig.moduleNameMapper,
 		'\\.(css|less)$': '<rootDir>/__mocks__/fileMock.js'
