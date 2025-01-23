@@ -15,7 +15,7 @@ import {
 	Tooltip
 } from '@zextras/carbonio-design-system';
 import { replaceHistory, t, useUserAccounts, useUserSettings } from '@zextras/carbonio-shell-ui';
-import { find, includes, isEmpty, noop, reduce } from 'lodash';
+import { find, includes, isEmpty, reduce } from 'lodash';
 import moment from 'moment';
 import { useParams } from 'react-router-dom';
 
@@ -41,10 +41,7 @@ type SearchMessageListItemProps = {
 	selected: boolean;
 	selecting: boolean;
 	toggle: (id: string) => void;
-	isConvChildren: boolean;
 	active?: boolean;
-	isSearchModule?: boolean;
-	isConversation?: boolean;
 	deselectAll: () => void;
 };
 export const SearchMessageListItem: FC<SearchMessageListItemProps> = memo(function MessageListItem({
@@ -52,9 +49,7 @@ export const SearchMessageListItem: FC<SearchMessageListItemProps> = memo(functi
 	selected,
 	selecting,
 	toggle,
-	isConvChildren,
 	active,
-	isSearchModule,
 	deselectAll
 }) {
 	const itemId = completeMessage.id;
@@ -181,10 +176,7 @@ export const SearchMessageListItem: FC<SearchMessageListItemProps> = memo(functi
 		[completeMessage.tags, tagsFromStore]
 	);
 
-	const fragmentLabel = useMemo(
-		() => (isConvChildren ? completeMessage.fragment : ` - ${completeMessage.fragment}`),
-		[completeMessage.fragment, isConvChildren]
-	);
+	const fragmentLabel = useMemo(() => ` - ${completeMessage.fragment}`, [completeMessage.fragment]);
 	const textReadValues = useMemo<TextReadValuesType>(() => {
 		if (typeof completeMessage.read === 'undefined')
 			return { color: 'text', weight: 'regular', badge: 'read' };
@@ -223,7 +215,7 @@ export const SearchMessageListItem: FC<SearchMessageListItemProps> = memo(functi
 		[completeMessage?.autoSendTime]
 	);
 
-	const onToggle = useMemo(() => (isConvChildren ? noop : toggle), [isConvChildren, toggle]);
+	const onToggle = useMemo(() => toggle, [toggle]);
 
 	return (
 		<Container mainAlignment="flex-start" data-testid={`MessageListItem-${completeMessage.id}`}>
@@ -256,11 +248,7 @@ export const SearchMessageListItem: FC<SearchMessageListItemProps> = memo(functi
 					padding={{ left: 'small', top: 'small', bottom: 'small', right: 'large' }}
 				>
 					<Container orientation="horizontal" height="fit" width="fill">
-						<SenderName
-							item={completeMessage}
-							textValues={textReadValues}
-							isSearchModule={isSearchModule}
-						/>
+						<SenderName item={completeMessage} textValues={textReadValues} isSearchModule />
 						<Row>
 							{showTagIcon && (
 								<Padding left="small">
@@ -316,16 +304,6 @@ export const SearchMessageListItem: FC<SearchMessageListItemProps> = memo(functi
 									mainAlignment="flex-start"
 									crossAlignment="baseline"
 								>
-									{!isConvChildren && (
-										<Text
-											data-testid="Subject"
-											weight={textReadValues.weight}
-											color={completeMessage.subject ? 'text' : 'secondary'}
-										>
-											{subject}
-										</Text>
-									)}
-
 									{!isEmpty(completeMessage.fragment) && (
 										<Row
 											takeAvailableSpace

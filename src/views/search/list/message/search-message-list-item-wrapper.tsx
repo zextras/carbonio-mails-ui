@@ -32,7 +32,6 @@ export const SearchMessageListItemWrapper = memo(function MessageListItem({
 				key={messageId}
 				selected={selected}
 				selecting={selecting}
-				isConvChildren={false}
 				toggle={toggle}
 				active={active}
 				deselectAll={deselectAll}
