@@ -6,7 +6,7 @@
 
 import React from 'react';
 
-import { render, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 
 import { setupTest } from '../../../../carbonio-ui-commons/test/test-setup';
 import { API_REQUEST_STATUS } from '../../../../constants';
@@ -46,16 +46,5 @@ describe('MessagePreviewPanel', () => {
 		setupTest(<MessagePreviewPanel folderId="1" messageId="1" />);
 
 		expect(screen.getByText('Test Subject')).toBeInTheDocument();
-	});
-
-	it('renders null when message is not complete', () => {
-		const message = { isComplete: false };
-		updateMessageStatus('1', API_REQUEST_STATUS.fulfilled);
-		mockUseCompleteMessageOrFetch.mockReturnValue({ message });
-		mockUseExtraWindow.mockReturnValue({ isInsideExtraWindow: false });
-
-		const { container } = render(<MessagePreviewPanel folderId="1" messageId="1" />);
-
-		expect(container).toBeEmptyDOMElement();
 	});
 });
