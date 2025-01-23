@@ -28,38 +28,24 @@ export const MessagePreviewPanel: FC<{ folderId: string; messageId: string }> = 
 		[folderId, messageId]
 	);
 
-	if (messageLoadingStatus === API_REQUEST_STATUS.pending) {
-		return (
+	return (
+		<Container orientation="vertical" mainAlignment="flex-start" crossAlignment="flex-start">
+			{!isInsideExtraWindow && (
+				<PreviewPanelHeader
+					folderId={folderId}
+					itemType={'message'}
+					isRead={message?.read}
+					subject={message?.subject}
+				/>
+			)}
 			<Container
 				style={{ overflowY: 'auto' }}
 				height="fill"
 				background="gray5"
-				mainAlignment="center"
-				crossAlignment="center"
+				padding={{ horizontal: 'large', bottom: 'small', top: 'large' }}
+				mainAlignment="flex-start"
 			>
-				<Spinner />
-			</Container>
-		);
-	}
-
-	if (message?.isComplete) {
-		return (
-			<Container orientation="vertical" mainAlignment="flex-start" crossAlignment="flex-start">
-				{!isInsideExtraWindow && (
-					<PreviewPanelHeader
-						folderId={folderId}
-						itemType={'message'}
-						isRead={message?.read}
-						subject={message?.subject}
-					/>
-				)}
-				<Container
-					style={{ overflowY: 'auto' }}
-					height="fill"
-					background="gray5"
-					padding={{ horizontal: 'large', bottom: 'small', top: 'large' }}
-					mainAlignment="flex-start"
-				>
+				{messageLoadingStatus === API_REQUEST_STATUS.fulfilled ? (
 					<Container height="fit" mainAlignment="flex-start" background="gray5">
 						<Padding bottom="medium" width="100%">
 							<MailPreview
@@ -72,10 +58,18 @@ export const MessagePreviewPanel: FC<{ folderId: string; messageId: string }> = 
 							/>
 						</Padding>
 					</Container>
-				</Container>
+				) : (
+					<Container
+						style={{ overflowY: 'auto' }}
+						height="fill"
+						background="gray5"
+						mainAlignment="center"
+						crossAlignment="center"
+					>
+						<Spinner />
+					</Container>
+				)}
 			</Container>
-		);
-	}
-
-	return null;
+		</Container>
+	);
 };
