@@ -133,9 +133,8 @@ function useMessagesByFolder(
 	const wantedMessageIds = messageListIndex.filter(
 		(messageId) => populatedItemsSlice.messages[messageId]?.parent === wantedFolder
 	);
-	return wantedMessageIds
-		.map((id) => populatedItemsSlice.messages[id])
-		.filter((message): message is IncompleteMessage | MailMessage => !!message);
+
+	return wantedMessageIds.map((id) => populatedItemsSlice.messages[id]).filter(Boolean);
 }
 
 function useConversationsByIds(

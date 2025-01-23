@@ -10,6 +10,7 @@ import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 
 import { FOLDERS } from '../../../../../carbonio-ui-commons/constants/folders';
 import { useTags } from '../../../../../carbonio-ui-commons/store/zustand/tags';
+import { populateFoldersStore } from '../../../../../carbonio-ui-commons/test/mocks/store/folders';
 import { tags as mockTags } from '../../../../../carbonio-ui-commons/test/mocks/tags/tags';
 import { buildSoapErrorResponseBody } from '../../../../../carbonio-ui-commons/test/mocks/utils/soap';
 import { CONVACTIONS } from '../../../../../commons/utilities';
@@ -39,7 +40,9 @@ import {
 	setConversationsInEmailStore,
 	useConversationIndexSlice,
 	useMessagesByIds,
-	useConversationsByIds
+	useConversationsByIds,
+	useMessagesByFolder,
+	setMessagesInEmailStore
 } from '../../../store';
 
 const { setMessagesInSearchSlice } = getUseEmailStoreAndHooksForTesting();
@@ -120,6 +123,43 @@ describe('store-populated-items-slice', () => {
 
 			await waitFor(async () => {
 				expect(result.current).toEqual([message2, message1]);
+			});
+		});
+	});
+
+	describe('useMessagesByFolder', () => {
+		it('should return messages by folder', async () => {
+			populateFoldersStore();
+
+			const message1 = generateMessage({ id: '1', folderId: FOLDERS.INBOX });
+			const message2 = generateMessage({ id: '2', folderId: FOLDERS.SENT });
+			const messages = [message1, message2];
+
+			setMessagesInEmailStore(messages, false);
+
+			const { result } = renderHook(() => useMessagesByFolder(FOLDERS.INBOX));
+
+			await waitFor(async () => {
+				expect(result.current).toEqual([message1]);
+			});
+		});
+
+		it('should return messages by folder keeping the order from the messageIndexSlice', async () => {
+			populateFoldersStore();
+
+			const message1 = generateMessage({ id: '1', folderId: FOLDERS.INBOX });
+			const message2 = generateMessage({ id: '2', folderId: FOLDERS.INBOX });
+			const message3 = generateMessage({ id: '3', folderId: FOLDERS.INBOX });
+			const message4 = generateMessage({ id: '4', folderId: FOLDERS.SENT });
+
+			const messages = [message2, message1, message4, message3];
+
+			setMessagesInEmailStore(messages, false);
+
+			const { result } = renderHook(() => useMessagesByFolder(FOLDERS.INBOX));
+
+			await waitFor(async () => {
+				expect(result.current).toEqual([message2, message1, message3]);
 			});
 		});
 	});
