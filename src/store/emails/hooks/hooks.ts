@@ -4,9 +4,11 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { useCallback, useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 
-import { API_REQUEST_STATUS } from '../../../constants';
+import { debounce } from 'lodash';
+
+import { API_REQUEST_STATUS, DEFAULT_API_DEBOUNCE_TIME } from '../../../constants';
 import {
 	IncompleteMessage,
 	MailMessage,
@@ -37,11 +39,27 @@ export function useCompleteConversationOrFetch(
 ): ConversationWithStatus {
 	const conversation = useConversationById(conversationId);
 	const conversationStatus = useConversationStatus(conversationId);
+
+	const requestDebouncedConversation = useMemo(
+		() =>
+			debounce(
+				() => {
+					if (conversation && !conversationStatus) {
+						searchConvEmailStoreAction(conversationId, folderId);
+					}
+				},
+				DEFAULT_API_DEBOUNCE_TIME,
+				{ leading: false, trailing: true }
+			),
+		[conversation, conversationId, conversationStatus, folderId]
+	);
 	useEffect(() => {
-		if (conversation && !conversationStatus) {
-			searchConvEmailStoreAction(conversationId, folderId);
-		}
-	}, [conversation, conversationId, conversationStatus, folderId]);
+		requestDebouncedConversation();
+		return () => {
+			requestDebouncedConversation.cancel();
+		};
+	}, [requestDebouncedConversation]);
+
 	return {
 		conversation,
 		conversationStatus
@@ -61,18 +79,29 @@ export function useCompleteMessageOrFetch(messageId: string): MessageWithStatus 
 	const message = useMessageById(messageId);
 	const messageStatus = useMessageStatus(messageId);
 
-	const retrieveMessage = useCallback(() => {
-		getMessageEmailStoreAction(messageId);
-	}, [messageId]);
+	const requestDebouncedMessage = useMemo(
+		() =>
+			debounce(
+				() => {
+					if (
+						messageStatus !== API_REQUEST_STATUS.pending &&
+						(!message?.isComplete || messageStatus === undefined)
+					) {
+						getMessageEmailStoreAction(messageId);
+					}
+				},
+				DEFAULT_API_DEBOUNCE_TIME,
+				{ leading: false, trailing: true }
+			),
+		[message?.isComplete, messageId, messageStatus]
+	);
 
 	useEffect(() => {
-		if (
-			messageStatus !== API_REQUEST_STATUS.pending &&
-			(!message?.isComplete || messageStatus === undefined)
-		) {
-			retrieveMessage();
-		}
-	}, [message, messageId, messageStatus, retrieveMessage]);
+		requestDebouncedMessage();
+		return () => {
+			requestDebouncedMessage.cancel();
+		};
+	}, [requestDebouncedMessage]);
 
 	return {
 		message,
