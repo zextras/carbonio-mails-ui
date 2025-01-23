@@ -332,7 +332,8 @@ export function useMessageById(id: string): IncompleteMessage | MailMessage {
 
 /**
  * Retrieves messages corresponding to a list of unique identifiers from the `populatedItemsSlice`.
- * This function filters and returns only the valid messages from the emails store.
+ * This function filters and returns only the valid messages from the emails store, respecting
+ * the provided order.
  */
 export function useMessagesByIds(ids: Array<string>): Array<IncompleteMessage | MailMessage> {
 	return populatedItemsSliceUtils.useMessagesByIds(ids, useEmailsStore);
@@ -340,7 +341,8 @@ export function useMessagesByIds(ids: Array<string>): Array<IncompleteMessage | 
 
 /**
  * Retrieves conversations corresponding to a list of unique identifiers from the `populatedItemsSlice`.
- * This function filters and returns only the conversations that match the provided IDs.
+ * This function filters and returns only the conversations that match the provided IDs, respecting
+ * the provided order.
  */
 export function useConversationsByIds(ids: Array<string>): Array<NormalizedConversation> {
 	return populatedItemsSliceUtils.useConversationsByIds(ids, useEmailsStore);

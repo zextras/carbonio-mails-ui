@@ -7,7 +7,7 @@
 
 import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 import produce from 'immer';
-import { filter, forEach, includes, merge } from 'lodash';
+import { filter, forEach, keyBy, merge } from 'lodash';
 import { UseBoundStore, StoreApi } from 'zustand';
 
 import { RemoveAttachmentsResponse } from '../../../../api/delete-all-attachments-soap-api';
@@ -112,11 +112,10 @@ function useMessagesByIds(
 	ids: Array<string>,
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
 ): Array<IncompleteMessage | MailMessage> {
-	return useEmailsStore(({ populatedItemsSlice }: EmailsStoreState) =>
-		ids
-			.map((id) => populatedItemsSlice.messages[id])
-			.filter((message): message is IncompleteMessage | MailMessage => !!message)
-	);
+	return useEmailsStore(({ populatedItemsSlice }: EmailsStoreState) => {
+		const messagesById = keyBy(populatedItemsSlice.messages, 'id');
+		return ids.map((id) => messagesById[id]).filter(Boolean);
+	});
 }
 
 function useMessagesByFolder(
@@ -143,9 +142,10 @@ function useConversationsByIds(
 	ids: Array<string>,
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
 ): Array<NormalizedConversation> {
-	return useEmailsStore(({ populatedItemsSlice }: EmailsStoreState) =>
-		filter(populatedItemsSlice.conversations, (conversation) => includes(ids, conversation.id))
-	);
+	return useEmailsStore(({ populatedItemsSlice }: EmailsStoreState) => {
+		const conversationsById = keyBy(populatedItemsSlice.conversations, 'id');
+		return ids.map((id) => conversationsById[id]).filter(Boolean);
+	});
 }
 
 export function deleteMessagesFromConversation(ids: Array<string>, state: EmailsStoreState): void {
