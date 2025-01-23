@@ -38,8 +38,8 @@ import {
 	handleConvActionResponse,
 	setConversationsInEmailStore,
 	useConversationIndexSlice,
-	useMessagesByFolder,
-	useMessagesIdsByFolder
+	useMessagesByIds,
+	useConversationsByIds
 } from '../../../store';
 
 const { setMessagesInSearchSlice } = getUseEmailStoreAndHooksForTesting();
@@ -105,6 +105,40 @@ describe('store-populated-items-slice', () => {
 
 			expect(message1.current.id).toBe('1');
 			expect(message1Status.current).toBeUndefined();
+		});
+	});
+
+	describe('useMessagesByIds', () => {
+		it('returns messages by ids, respecting the order', async () => {
+			const message1 = generateMessage({ id: '1' });
+			const message2 = generateMessage({ id: '2' });
+			const messages = [message1, message2];
+
+			updateMessages(messages);
+
+			const { result } = renderHook(() => useMessagesByIds([message2.id, message1.id]));
+
+			await waitFor(async () => {
+				expect(result.current).toEqual([message2, message1]);
+			});
+		});
+	});
+
+	describe('useConversationsByIds', () => {
+		it('returns conversation by ids, respecting the order', async () => {
+			const conversation1 = generateConversation({ id: '1' });
+			const conversation2 = generateConversation({ id: '2' });
+			const conversations = [conversation1, conversation2];
+
+			updateConversations(conversations);
+
+			const { result } = renderHook(() =>
+				useConversationsByIds([conversation2.id, conversation1.id])
+			);
+
+			await waitFor(async () => {
+				expect(result.current).toEqual([conversation2, conversation1]);
+			});
 		});
 	});
 
