@@ -452,12 +452,12 @@ describe('SearchView', () => {
 
 			const messageId = '10';
 			const soapMessage = getSoapMessage(messageId, { su: 'message 1 Subject', f: 'u' });
-			const searchInterceptor = createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
+			createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
 				m: [soapMessage],
 				more: false
 			});
 
-			const getMsgInterceptor = createSoapAPIInterceptor<GetMsgRequest, GetMsgResponse>('GetMsg', {
+			createSoapAPIInterceptor<GetMsgRequest, GetMsgResponse>('GetMsg', {
 				m: [soapMessage]
 			});
 
@@ -472,14 +472,7 @@ describe('SearchView', () => {
 				initialEntries: [`/message/${messageId}`]
 			});
 
-			await act(async () => {
-				await searchInterceptor;
-			});
-
-			await act(async () => {
-				await getMsgInterceptor;
-			});
-
+			// await waitFor(() => searchInterceptor);
 			expect(await screen.findByTestId(`SearchMessagePanel-${messageId}`)).toBeInTheDocument();
 		});
 
