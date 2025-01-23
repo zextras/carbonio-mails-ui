@@ -27,8 +27,7 @@ import { getTimeLabel, participantToString } from '../../../../commons/utils';
 import { EditViewActions } from '../../../../constants';
 import { useMsgPreviewOnSeparatedWindowFn } from '../../../../hooks/actions/use-msg-preview-on-separated-window';
 import { useMsgSetReadFn } from '../../../../hooks/actions/use-msg-set-read';
-import { useMessageById } from '../../../../store/emails/store';
-import { TextReadValuesType } from '../../../../types';
+import { MailMessage, TextReadValuesType } from '../../../../types';
 import { useTagExist } from '../../../../ui-actions/tag-actions';
 import { createEditBoard } from '../../../app/detail-panel/edit/edit-view-board';
 import { MessageListItemActionWrapper } from '../../../app/folder-panel/messages/message-list-item-action-wrapper';
@@ -38,7 +37,7 @@ import { getFolderTranslatedName } from '../../../sidebar/utils';
 import { SearchMessagePanel } from '../../panel/message/search-message-panel';
 
 type SearchMessageListItemProps = {
-	itemId: string;
+	completeMessage: MailMessage;
 	selected: boolean;
 	selecting: boolean;
 	toggle: (id: string) => void;
@@ -49,7 +48,7 @@ type SearchMessageListItemProps = {
 	deselectAll: () => void;
 };
 export const SearchMessageListItem: FC<SearchMessageListItemProps> = memo(function MessageListItem({
-	itemId,
+	completeMessage,
 	selected,
 	selecting,
 	toggle,
@@ -58,7 +57,7 @@ export const SearchMessageListItem: FC<SearchMessageListItemProps> = memo(functi
 	isSearchModule,
 	deselectAll
 }) {
-	const completeMessage = useMessageById(itemId);
+	const itemId = completeMessage.id;
 	const folderId = completeMessage.parent;
 	const { itemId: messageId } = useParams<{ itemId: string | undefined }>();
 
