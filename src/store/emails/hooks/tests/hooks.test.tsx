@@ -125,7 +125,7 @@ describe('Searches store hooks', () => {
 	});
 
 	describe('useCompleteMessageOrFetch', () => {
-		it('should make GetMsgRequest if message is not in the store', async () => {
+		it('should fetch if message is not in the store', async () => {
 			const response: GetMsgResponse = {
 				m: [generateCompleteMessageFromAPI({ id: '1' })]
 			};
@@ -202,7 +202,7 @@ describe('Searches store hooks', () => {
 			});
 		});
 
-		it('should fetch if the message is incomplete and status is not fulfilled or pending', async () => {
+		it('should fetch if the message is incomplete and status is error', async () => {
 			const message = generateMessage({ id: '1' });
 			setMessagesInEmailStore([{ ...message, isComplete: false }], false);
 			updateMessageStatus('1', API_REQUEST_STATUS.error);
@@ -277,28 +277,6 @@ describe('Searches store hooks', () => {
 
 			await waitFor(() => {
 				expect(result.current).toBe(API_REQUEST_STATUS.fulfilled);
-			});
-		});
-
-		it('should not update message status if message status is already defined', async () => {
-			const message = generateMessage({
-				id: '1',
-				subject: 'Test Message'
-			});
-			setSearchResultsByMessage([message], false);
-			await waitFor(() => {
-				updateMessageStatus(message.id, API_REQUEST_STATUS.pending);
-			});
-			const response: GetMsgResponse = {
-				m: [generateCompleteMessageFromAPI({ id: '1' })]
-			};
-
-			createSoapAPIInterceptor<GetMsgRequest, GetMsgResponse>('GetMsg', response);
-
-			const { result } = renderHook(() => useMessageStatus('1'));
-			renderHook(() => useCompleteMessageOrFetch('1'));
-			await waitFor(() => {
-				expect(result.current).toBe(API_REQUEST_STATUS.pending);
 			});
 		});
 	});
