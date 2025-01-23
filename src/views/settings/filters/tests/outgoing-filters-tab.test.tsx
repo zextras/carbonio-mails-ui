@@ -20,7 +20,7 @@ jest.mock('@zextras/carbonio-design-system', () => ({
 
 describe('Outgoing Filters', () => {
 	it('should not contain "Apply" filter action', async () => {
-		const getOutgoingFiltersInterceptor = createSoapAPIInterceptor('GetOutgoingFilterRules', {
+		createSoapAPIInterceptor('GetOutgoingFilterRules', {
 			_jsns: 'urn:zimbraMail',
 			filterRules: [
 				{
@@ -29,7 +29,8 @@ describe('Outgoing Filters', () => {
 			]
 		});
 		setupTest(<OutgoingFiltersTab />);
-		await getOutgoingFiltersInterceptor;
+
+		await screen.findByText('Filter 1');
 
 		expect(screen.queryByRole('button', { name: 'Apply' })).not.toBeInTheDocument();
 	});
