@@ -10,7 +10,7 @@ import { cloneDeep, map, reduce } from 'lodash';
 
 import * as getMsg from '../../../../api/get-msg-soap-api';
 import { createSoapAPIInterceptor } from '../../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
-import { API_REQUEST_STATUS } from '../../../../constants';
+import { API_REQUEST_STATUS, DEFAULT_API_DEBOUNCE_TIME } from '../../../../constants';
 import {
 	generateCompleteMessageFromAPI,
 	generateConvMessageFromAPI
@@ -41,6 +41,12 @@ import {
 	useMessageStatus
 } from '../../store';
 import { useCompleteConversationOrFetch, useCompleteMessageOrFetch } from '../hooks';
+
+function awaitDebounce(): void {
+	act(() => {
+		jest.advanceTimersByTime(DEFAULT_API_DEBOUNCE_TIME);
+	});
+}
 
 describe('Searches store hooks', () => {
 	describe('useCompleteConversation', () => {
@@ -131,6 +137,10 @@ describe('Searches store hooks', () => {
 
 			renderHook(() => useCompleteMessageOrFetch('1'));
 
+			act(() => {
+				jest.advanceTimersByTime(DEFAULT_API_DEBOUNCE_TIME);
+			});
+
 			const getMsgRequest = await interceptor;
 
 			await act(async () => {
@@ -143,6 +153,8 @@ describe('Searches store hooks', () => {
 			setMessagesInEmailStore([{ ...message, isComplete: false }], false);
 			const getMsgSpy = jest.spyOn(getMsg, 'getMsgSoapApi');
 			renderHook(() => useCompleteMessageOrFetch('1'));
+
+			awaitDebounce();
 
 			await act(async () => {
 				expect(getMsgSpy).toHaveBeenCalled();
@@ -183,7 +195,11 @@ describe('Searches store hooks', () => {
 				renderHook(() => useCompleteMessageOrFetch(message.id));
 			});
 
-			expect(getMsgSpy).toHaveBeenCalledTimes(1);
+			awaitDebounce();
+
+			await waitFor(async () => {
+				expect(getMsgSpy).toHaveBeenCalledTimes(1);
+			});
 		});
 
 		it('should fetch if the message is incomplete and status is not fulfilled or pending', async () => {
@@ -192,6 +208,8 @@ describe('Searches store hooks', () => {
 			updateMessageStatus('1', API_REQUEST_STATUS.error);
 			const getMsgSpy = jest.spyOn(getMsg, 'getMsgSoapApi');
 			renderHook(() => useCompleteMessageOrFetch('1'));
+
+			awaitDebounce();
 
 			await act(async () => {
 				expect(getMsgSpy).toHaveBeenCalled();
@@ -220,6 +238,8 @@ describe('Searches store hooks', () => {
 				initialProps: { id: '1' }
 			});
 
+			awaitDebounce();
+
 			await act(async () => {
 				expect(getMsgSpy).toHaveBeenCalledTimes(1);
 			});
@@ -229,7 +249,11 @@ describe('Searches store hooks', () => {
 				rerender({ id: '2' });
 			});
 
-			expect(getMsgSpy).toHaveBeenCalledTimes(2);
+			awaitDebounce();
+
+			await act(async () => {
+				expect(getMsgSpy).toHaveBeenCalledTimes(2);
+			});
 		});
 
 		it('should update status if initial status is undefined', async () => {
