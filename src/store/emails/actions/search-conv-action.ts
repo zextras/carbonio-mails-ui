@@ -38,8 +38,7 @@ export async function searchConvEmailStoreAction(
 	const response = await searchConvSoapApi({ conversationId, fetch: 'all', folderId }).catch(() => {
 		updateConversationStatus(conversationId, API_REQUEST_STATUS.error);
 	});
-	if (!response) return;
-	if ('Fault' in response) {
+	if (!response || 'Fault' in response) {
 		updateConversationStatus(conversationId, API_REQUEST_STATUS.error);
 		return;
 	}
