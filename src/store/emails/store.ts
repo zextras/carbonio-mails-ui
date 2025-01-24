@@ -324,9 +324,10 @@ export function getConversationById(id: string): NormalizedConversation {
 
 /**
  * Provides access to a specific message by its ID from the populated items slice.
- * This function retrieves the message using the provided store selector.
+ * If the message is not found, it is not fetched from the server.
+ * For fetching the message, use `useCompleteMessageOrFetch` instead.
  */
-export function useMessageById(id: string): IncompleteMessage | MailMessage {
+export function useMessageById(id: string): IncompleteMessage | MailMessage | undefined {
 	return useEmailsStore(({ populatedItemsSlice }) => populatedItemsSlice.messages[id]);
 }
 

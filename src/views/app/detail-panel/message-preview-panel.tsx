@@ -48,14 +48,17 @@ export const MessagePreviewPanel: FC<{ folderId: string; messageId: string }> = 
 				{messageLoadingStatus === API_REQUEST_STATUS.fulfilled ? (
 					<Container height="fit" mainAlignment="flex-start" background="gray5">
 						<Padding bottom="medium" width="100%">
-							<MailPreview
-								message={message}
-								expanded
-								isAlone
-								isMessageView
-								isInsideExtraWindow={isInsideExtraWindow}
-								messagePreviewFactory={messagePreviewFactory}
-							/>
+							{message && (
+								<MailPreview
+									message={message}
+									expanded
+									isAlone
+									isMessageView
+									isInsideExtraWindow={isInsideExtraWindow}
+									messagePreviewFactory={messagePreviewFactory}
+								/>
+							)}
+							)
 						</Padding>
 					</Container>
 				) : (

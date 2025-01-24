@@ -62,8 +62,8 @@ describe('store-populated-items-slice', () => {
 			const { result: message1 } = renderHook(() => useMessageById('1'));
 			const { result: message2 } = renderHook(() => useMessageById('2'));
 
-			expect(message1.current.id).toBe('1');
-			expect(message2.current.id).toBe('2');
+			expect(message1.current?.id).toBe('1');
+			expect(message2.current?.id).toBe('2');
 		});
 
 		it('does not update messages without id', async () => {
@@ -81,7 +81,7 @@ describe('store-populated-items-slice', () => {
 			const { result: message2 } = renderHook(() => useMessageById('2'));
 
 			expect(messageWithoutId.current).toBeUndefined();
-			expect(message2.current.id).toBe('2');
+			expect(message2.current?.id).toBe('2');
 		});
 
 		it('updates message status to fulfilled if complete', () => {
@@ -93,7 +93,7 @@ describe('store-populated-items-slice', () => {
 			const { result: message1 } = renderHook(() => useMessageById('1'));
 			const { result: message1Status } = renderHook(() => useMessageStatus('1'));
 
-			expect(message1.current.id).toBe('1');
+			expect(message1.current?.id).toBe('1');
 			expect(message1Status.current).toBe(API_REQUEST_STATUS.fulfilled);
 		});
 
@@ -106,7 +106,7 @@ describe('store-populated-items-slice', () => {
 			const { result: message1 } = renderHook(() => useMessageById('1'));
 			const { result: message1Status } = renderHook(() => useMessageStatus('1'));
 
-			expect(message1.current.id).toBe('1');
+			expect(message1.current?.id).toBe('1');
 			expect(message1Status.current).toBeUndefined();
 		});
 	});
@@ -305,7 +305,7 @@ describe('store-populated-items-slice', () => {
 
 			const { result } = renderHook(() => useMessageById('1'));
 
-			expect(result.current.parent).toEqual(FOLDERS.INBOX);
+			expect(result.current?.parent).toEqual(FOLDERS.INBOX);
 		});
 	});
 
@@ -339,7 +339,7 @@ describe('store-populated-items-slice', () => {
 
 			const { result } = renderHook(() => useMessageById('1'));
 
-			expect(result.current.parts?.length).toBe(0);
+			expect(result.current?.parts?.length).toBe(0);
 		});
 	});
 

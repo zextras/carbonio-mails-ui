@@ -71,7 +71,7 @@ describe.each`
 
 				setMessagesInEmailStore([message], false);
 				const props: MessageListItemProps = {
-					item: message,
+					message,
 					selected: false,
 					selecting: false,
 					isConvChildren: false,
@@ -107,7 +107,7 @@ describe.each`
 				setMessagesInEmailStore([message], false);
 
 				const props: MessageListItemProps = {
-					item: message,
+					message,
 					selected: false,
 					selecting: false,
 					isConvChildren: false,
@@ -147,7 +147,7 @@ describe.each`
 				setMessagesInEmailStore([message], false);
 
 				const props: MessageListItemProps = {
-					item: message,
+					message,
 					selected: false,
 					selecting: false,
 					isConvChildren: false,
@@ -188,7 +188,7 @@ describe.each`
 				setMessagesInEmailStore([message], false);
 
 				const props: MessageListItemProps = {
-					item: message,
+					message,
 					selected: false,
 					selecting: false,
 					isConvChildren: false,
@@ -228,7 +228,7 @@ describe.each`
 				setMessagesInEmailStore([message], false);
 
 				const props: MessageListItemProps = {
-					item: message,
+					message,
 					selected: false,
 					selecting: false,
 					isConvChildren: false,
@@ -267,7 +267,7 @@ describe.each`
 				setMessagesInEmailStore([message], false);
 
 				const props: MessageListItemProps = {
-					item: message,
+					message,
 					selected: false,
 					selecting: false,
 					isConvChildren: false,
@@ -337,7 +337,7 @@ describe.each`
 			setMessagesInEmailStore([message], false);
 
 			const props: MessageListItemProps = {
-				item: message,
+				message,
 				selected: false,
 				selecting: false,
 				isConvChildren: false,
@@ -377,7 +377,7 @@ describe('in the drafts folder', () => {
 			setMessagesInEmailStore([message], false);
 
 			const props: MessageListItemProps = {
-				item: message,
+				message,
 				selected: false,
 				selecting: false,
 				isConvChildren: false,
@@ -411,7 +411,7 @@ describe('in the drafts folder', () => {
 			setMessagesInEmailStore([message], false);
 
 			const props: MessageListItemProps = {
-				item: message,
+				message,
 				selected: false,
 				selecting: false,
 				isConvChildren: false,
@@ -446,7 +446,7 @@ describe('in the drafts folder', () => {
 			setMessagesInEmailStore([message], false);
 
 			const props: MessageListItemProps = {
-				item: message,
+				message,
 				selected: false,
 				selecting: false,
 				isConvChildren: false,
@@ -480,7 +480,7 @@ describe('in the trash folder', () => {
 		const message = generateMessage({ to, folderId });
 
 		const props: MessageListItemProps = {
-			item: message,
+			message,
 			selected: false,
 			selecting: false,
 			isConvChildren: false,
@@ -511,7 +511,7 @@ describe('in the trash folder', () => {
 
 			setMessagesInEmailStore([message], false);
 			const props: MessageListItemProps = {
-				item: message,
+				message,
 				selected: false,
 				selecting: false,
 				isConvChildren: false,

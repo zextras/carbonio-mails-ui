@@ -67,7 +67,7 @@ export function useCompleteConversationOrFetch(
 }
 
 type MessageWithStatus = {
-	message: MailMessage | IncompleteMessage;
+	message: MailMessage | IncompleteMessage | undefined;
 	messageStatus: SearchRequestStatus;
 };
 

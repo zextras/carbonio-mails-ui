@@ -21,7 +21,7 @@ export const DragItems = ({
 			const item = getMessageById(draggedItemId);
 			return (
 				<MessageListItem
-					item={item}
+					message={item}
 					key={item.id}
 					isConvChildren={false}
 					toggle={noop}

@@ -154,7 +154,7 @@ describe('sync data handler', () => {
 
 			const { result } = renderHook(() => useConversationById('123'));
 			await waitFor(() => {
-				expect(result.current.read).toBe(true);
+				expect(result.current?.read).toBe(true);
 			});
 		});
 		it('should mark conversation as unread', async () => {
@@ -168,7 +168,7 @@ describe('sync data handler', () => {
 
 			const { result } = renderHook(() => useConversationById('123'));
 			await waitFor(() => {
-				expect(result.current.read).toBe(false);
+				expect(result.current?.read).toBe(false);
 			});
 		});
 
@@ -183,7 +183,7 @@ describe('sync data handler', () => {
 
 			const { result } = renderHook(() => useConversationById('123'));
 			await waitFor(() => {
-				expect(result.current.flagged).toBe(true);
+				expect(result.current?.flagged).toBe(true);
 			});
 		});
 		it('should mark conversation as not flagged', async () => {
@@ -197,7 +197,7 @@ describe('sync data handler', () => {
 
 			const { result } = renderHook(() => useConversationById('123'));
 			await waitFor(() => {
-				expect(result.current.flagged).toBe(false);
+				expect(result.current?.flagged).toBe(false);
 			});
 		});
 	});
@@ -211,7 +211,7 @@ describe('sync data handler', () => {
 
 			const { result } = renderHook(() => useMessageById('1'));
 			await waitFor(() => {
-				expect(result.current.read).toBe(true);
+				expect(result.current?.read).toBe(true);
 			});
 		});
 		it('should mark messages as unread', async () => {
@@ -222,7 +222,7 @@ describe('sync data handler', () => {
 
 			const { result } = renderHook(() => useMessageById('1'));
 			await waitFor(() => {
-				expect(result.current.read).toBe(false);
+				expect(result.current?.read).toBe(false);
 			});
 		});
 
@@ -234,7 +234,7 @@ describe('sync data handler', () => {
 
 			const { result } = renderHook(() => useMessageById('1'));
 			await waitFor(() => {
-				expect(result.current.flagged).toBe(true);
+				expect(result.current?.flagged).toBe(true);
 			});
 		});
 		it('should mark messages as not flagged', async () => {
@@ -245,7 +245,7 @@ describe('sync data handler', () => {
 
 			const { result } = renderHook(() => useMessageById('1'));
 			await waitFor(() => {
-				expect(result.current.flagged).toBe(false);
+				expect(result.current?.flagged).toBe(false);
 			});
 		});
 
@@ -257,7 +257,7 @@ describe('sync data handler', () => {
 
 			const { result } = renderHook(() => useMessageById('1'));
 			await waitFor(() => {
-				expect(result.current.parent).toBe(FOLDERS.SPAM);
+				expect(result.current?.parent).toBe(FOLDERS.SPAM);
 			});
 		});
 		it('should mark message as not spam', async () => {
@@ -268,7 +268,7 @@ describe('sync data handler', () => {
 
 			const { result } = renderHook(() => useMessageById('1'));
 			await waitFor(() => {
-				expect(result.current.parent).toBe(FOLDERS.INBOX);
+				expect(result.current?.parent).toBe(FOLDERS.INBOX);
 			});
 		});
 
@@ -280,7 +280,7 @@ describe('sync data handler', () => {
 
 			const { result } = renderHook(() => useMessageById('1'));
 			await waitFor(() => {
-				expect(result.current.parent).toBe(FOLDERS.TRASH);
+				expect(result.current?.parent).toBe(FOLDERS.TRASH);
 			});
 		});
 
@@ -292,7 +292,7 @@ describe('sync data handler', () => {
 
 			const { result } = renderHook(() => useMessageById('1'));
 			await waitFor(() => {
-				expect(result.current.parent).toBe(FOLDERS.INBOX);
+				expect(result.current?.parent).toBe(FOLDERS.INBOX);
 			});
 		});
 
@@ -304,7 +304,7 @@ describe('sync data handler', () => {
 
 			const { result } = renderHook(() => useMessageById('1'));
 			await waitFor(() => {
-				expect(result.current.parent).toBe('bbb');
+				expect(result.current?.parent).toBe('bbb');
 			});
 		});
 

@@ -24,7 +24,7 @@ export type SenderNameProps = {
 };
 
 export type MessageListItemProps = {
-	item: IncompleteMessage;
+	message: IncompleteMessage;
 	selected: boolean;
 	selecting: boolean;
 	toggle: (id: string) => void;

@@ -37,6 +37,7 @@ export const SearchConversationMessagePanel = ({
 		[convMessageId, isAlone, isExpanded, isInsideExtraWindow]
 	);
 
+	if (!message) return <></>;
 	return (
 		<Padding bottom="medium" width="100%" data-testid={`ConversationMessagePreview-${message.id}`}>
 			<MailPreview

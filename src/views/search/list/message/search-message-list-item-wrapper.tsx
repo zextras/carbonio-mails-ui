@@ -3,6 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+
 import React, { memo } from 'react';
 
 import { SearchMessageListItem } from './search-message-list-item';
@@ -25,17 +26,20 @@ export const SearchMessageListItemWrapper = memo(function MessageListItem({
 	deselectAll
 }: SearchMessageListItemWrapperProps): React.JSX.Element {
 	const completeMessage = useMessageById(messageId);
+
+	if (!completeMessage) {
+		return <></>;
+	}
+
 	return (
-		completeMessage && (
-			<SearchMessageListItem
-				completeMessage={completeMessage}
-				key={messageId}
-				selected={selected}
-				selecting={selecting}
-				toggle={toggle}
-				active={active}
-				deselectAll={deselectAll}
-			/>
-		)
+		<SearchMessageListItem
+			completeMessage={completeMessage}
+			key={messageId}
+			selected={selected}
+			selecting={selecting}
+			toggle={toggle}
+			active={active}
+			deselectAll={deselectAll}
+		/>
 	);
 });
