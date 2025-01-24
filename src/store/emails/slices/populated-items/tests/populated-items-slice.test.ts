@@ -226,9 +226,15 @@ describe('store-populated-items-slice', () => {
 				generateMessage({ id: '2' }),
 				generateMessage({ id: '3' })
 			];
-			const conversation1 = generateConversation({ id: '1', messages: conversation1Messages });
+			const conversation1 = generateConversation({
+				id: '1',
+				messageIds: conversation1Messages.map((message) => message.id)
+			});
 			const conversation2Messages = [generateMessage({ id: '4' }), generateMessage({ id: '5' })];
-			const conversation2 = generateConversation({ id: '2', messages: conversation2Messages });
+			const conversation2 = generateConversation({
+				id: '2',
+				messageIds: conversation2Messages.map((message) => message.id)
+			});
 			setSearchResultsByConversation([conversation1, conversation2], false);
 
 			setMessagesInSearchSlice([...conversation1Messages, ...conversation2Messages]);
@@ -247,7 +253,7 @@ describe('store-populated-items-slice', () => {
 
 	describe('appendConversations', () => {
 		it('should append conversations to the store when appendConversations is called', async () => {
-			setSearchResultsByConversation([generateConversation({ id: '1', messages: [] })], false);
+			setSearchResultsByConversation([generateConversation({ id: '1', messageIds: [] })], false);
 
 			await act(async () => {
 				appendConversations(

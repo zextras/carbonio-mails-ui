@@ -10,11 +10,11 @@ import { Icon, Padding, Row, Text } from '@zextras/carbonio-design-system';
 
 import { Tag } from '../../../../carbonio-ui-commons/types/tags';
 import { getTimeLabel } from '../../../../commons/utils';
-import type { Conversation } from '../../../../types';
+import { NormalizedConversation } from '../../../../types';
 import { useTagExist } from '../../../../ui-actions/tag-actions';
 
 type RowInfoProps = {
-	item: Conversation;
+	item: NormalizedConversation;
 	tags: Array<Tag>;
 	isSearchModule?: boolean;
 	allMessagesInTrash?: boolean;

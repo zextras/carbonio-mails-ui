@@ -32,7 +32,7 @@ import { useTagExist } from '../../../../ui-actions/tag-actions';
 import { createEditBoard } from '../../../app/detail-panel/edit/edit-view-board';
 import { MessageListItemActionWrapper } from '../../../app/folder-panel/messages/message-list-item-action-wrapper';
 import { ItemAvatar } from '../../../app/folder-panel/parts/item-avatar';
-import { SenderName } from '../../../app/folder-panel/parts/sender-name';
+import { ParticipantsName } from '../../../app/folder-panel/parts/sender-name';
 import { getFolderTranslatedName } from '../../../sidebar/utils';
 import { SearchMessagePanel } from '../../panel/message/search-message-panel';
 
@@ -248,7 +248,7 @@ export const SearchMessageListItem: FC<SearchMessageListItemProps> = memo(functi
 					padding={{ left: 'small', top: 'small', bottom: 'small', right: 'large' }}
 				>
 					<Container orientation="horizontal" height="fit" width="fill">
-						<SenderName item={completeMessage} textValues={textReadValues} isSearchModule />
+						<ParticipantsName item={completeMessage} textValues={textReadValues} isSearchModule />
 						<Row>
 							{showTagIcon && (
 								<Padding left="small">

@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, useMemo } from 'react';
+import React, { useMemo } from 'react';
 
 import { Padding, Row, Text, Tooltip } from '@zextras/carbonio-design-system';
 import { t, useUserAccount } from '@zextras/carbonio-shell-ui';
@@ -13,12 +13,28 @@ import { FOLDERS } from '../../../../carbonio-ui-commons/constants/folders';
 import { ParticipantRole } from '../../../../carbonio-ui-commons/constants/participants';
 import { participantToString } from '../../../../commons/utils';
 import { getFolderIdParts } from '../../../../helpers/folders';
-import type { SenderNameProps } from '../../../../types';
+import { isConversation } from '../../../../helpers/messages';
+import { getConversationMessages } from '../../../../store/emails/store';
+import { NormalizedConversation, IncompleteMessage, TextReadValuesProps } from '../../../../types';
 
-// TODO since it renders also the recipients we should rename it to ParticipantsName
-export const SenderName: FC<SenderNameProps> = ({ item, textValues, isSearchModule = false }) => {
+export type ParticipantsNameProps = {
+	item: NormalizedConversation | IncompleteMessage;
+	isSearchModule?: boolean;
+	textValues?: TextReadValuesProps;
+	folderId?: string;
+};
+
+export const ParticipantsName = ({
+	item,
+	textValues,
+	isSearchModule = false
+}: ParticipantsNameProps): React.JSX.Element => {
 	const account = useUserAccount();
-	const folderId = getFolderIdParts(item.parent).id;
+
+	const parent = isConversation(item) ? getConversationMessages(item.id)[0].parent : item.id;
+
+	const folderId = getFolderIdParts(parent).id;
+
 	const participantsString = useMemo(() => {
 		const participants = filter(item.participants, (p) => {
 			if (folderId === FOLDERS.INBOX) return p.type === ParticipantRole.FROM; // inbox

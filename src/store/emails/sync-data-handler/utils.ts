@@ -10,7 +10,6 @@ import { filter, find, forEach, merge } from 'lodash';
 import { StoreApi, UseBoundStore } from 'zustand';
 
 import {
-	ConvMessage,
 	EmailsStoreState,
 	IncompleteMessage,
 	MailMessage,
@@ -34,18 +33,18 @@ function deleteMessagesInSearch(state: EmailsStoreState, messageIds: Array<strin
 	messageIds.forEach((id) => {
 		delete state.populatedItemsSlice.messages[id];
 		forEach(state.populatedItemsSlice.conversations, (conversation) => {
-			state.populatedItemsSlice.conversations[conversation.id].messages = filter(
-				conversation.messages,
-				(message) => !messageIds.includes(message.id)
+			state.populatedItemsSlice.conversations[conversation.id].messageIds = filter(
+				conversation.messageIds,
+				(messageId) => !messageIds.includes(messageId)
 			);
 		});
 	});
 }
-export function deleteMessagesFromConversation(ids: Array<string>, state: EmailsStoreState): void {
+function deleteMessagesFromConversation(ids: Array<string>, state: EmailsStoreState): void {
 	forEach(state.populatedItemsSlice.conversations, (conversation) => {
-		state.populatedItemsSlice.conversations[conversation.id].messages = filter(
-			conversation.messages,
-			(message) => !ids.includes(message.id)
+		state.populatedItemsSlice.conversations[conversation.id].messageIds = filter(
+			conversation.messageIds,
+			(messageId) => !ids.includes(messageId)
 		);
 	});
 }
@@ -170,31 +169,30 @@ function handleNotifyMessagesCreated(
 	}
 
 	function getOrderedMessagesForConversation(
-		convMessages: ConvMessage[],
+		convMessagesIds: Array<string>,
 		message: IncompleteMessage
-	): ConvMessage[] {
+	): Array<string> {
 		const sortOrder = getUserSettings()?.prefs?.zimbraPrefConversationOrder || 'dateDesc';
 		if (sortOrder === 'dateDesc') {
-			return [{ id: message.id, parent: message.parent, date: message.date }, ...convMessages];
+			return [message.id, ...convMessagesIds];
 		}
-		return [...convMessages, { id: message.id, parent: message.parent, date: message.date }];
+		return [...convMessagesIds, message.id];
 	}
 
 	function addMessagesToConversation(state: EmailsStoreState): void {
 		forEach(messages, (msg) => {
 			const conversation = state.populatedItemsSlice.conversations?.[msg.conversation];
 			if (msg?.conversation && msg?.id && msg?.parent && conversation) {
-				const newMessages = find(conversation.messages, ['id', msg.id])
-					? conversation.messages
-					: getOrderedMessagesForConversation(conversation.messages, msg);
+				const newMessages = find(conversation.messageIds, msg.id)
+					? conversation.messageIds
+					: getOrderedMessagesForConversation(conversation.messageIds, msg);
 
 				const conv = {
 					[msg.conversation]: {
 						...conversation,
-						messages: newMessages,
+						messageIds: newMessages,
 						fragment: msg?.fragment ?? '',
-						date: msg.date,
-						sortIndex: -JSON.stringify(Date.now())
+						date: msg.date
 					}
 				};
 

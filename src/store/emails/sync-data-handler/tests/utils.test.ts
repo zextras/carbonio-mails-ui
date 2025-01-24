@@ -8,6 +8,7 @@ import { act, renderHook, waitFor } from '@testing-library/react';
 import { getUserSettings, SoapNotify, useRefresh } from '@zextras/carbonio-shell-ui';
 
 import { useNotify } from '../../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
+import { populateFoldersStore } from '../../../../carbonio-ui-commons/test/mocks/store/folders';
 import { normalizeConversations } from '../../../../normalizations/normalize-conversation';
 import { generateConversation } from '../../../../tests/generators/generateConversation';
 import { generateMessage } from '../../../../tests/generators/generateMessage';
@@ -90,6 +91,7 @@ jest.mock('../../../../carbonio-ui-commons/store/zustand/tags', () => ({
 
 describe('handleNotifyConversationsCreated', () => {
 	it('should add new conversations to the store', async () => {
+		populateFoldersStore();
 		setConversationsInEmailStore(normalizeConversations([getSoapConversation('1')]), false);
 		const newConversation = getSoapConversation('2');
 		mockSoapCreateConversation([newConversation]);
@@ -172,15 +174,14 @@ describe('handleNotifyMessagesCreated', () => {
 			});
 			const message = generateMessage({ id: '1' });
 			setConversationsInEmailStore(
-				[generateConversation({ id: '123', messages: [message] })],
+				[generateConversation({ id: '123', messageIds: [message.id] })],
 				false
 			);
 			const newMessage = { ...generateMessage({ id: '2' }), conversation: '123' };
 			handleNotifyMessagesCreated([newMessage]);
 			const { result } = renderHook(() => useConversationById('123'));
 			await waitFor(async () => {
-				const messagesIds = result.current.messages.map((m) => m.id);
-				expect(messagesIds).toEqual(['2', '1']);
+				expect(result.current.messageIds).toEqual(['2', '1']);
 			});
 		});
 
@@ -191,14 +192,14 @@ describe('handleNotifyMessagesCreated', () => {
 
 			const message = generateMessage({ id: '1' });
 			setConversationsInEmailStore(
-				[generateConversation({ id: '123', messages: [message] })],
+				[generateConversation({ id: '123', messageIds: [message.id] })],
 				false
 			);
 			const newMessage = { ...generateMessage({ id: '2' }), conversation: '123' };
 			handleNotifyMessagesCreated([newMessage]);
 			const { result } = renderHook(() => useConversationById('123'));
 			await waitFor(async () => {
-				const messagesIds = result.current.messages.map((m) => m.id);
+				const messagesIds = result.current.messageIds;
 				expect(messagesIds).toEqual(['1', '2']);
 			});
 		});

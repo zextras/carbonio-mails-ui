@@ -35,12 +35,11 @@ import { useConvPreviewOnSeparatedWindowFn } from '../../../../hooks/actions/use
 import { useConvSetReadFn } from '../../../../hooks/actions/use-conv-set-read';
 import { useTagDropdownItem } from '../../../../hooks/use-tag-dropdown-item';
 import { searchConvEmailStoreAction } from '../../../../store/emails/actions/search-conv-action';
-import { useConversationStatus, useMessagesByIds } from '../../../../store/emails/store';
+import { useConversationMessages, useConversationStatus } from '../../../../store/emails/store';
 import {
 	ConversationListItemProps,
 	TextReadValuesProps,
-	NormalizedConversation,
-	Conversation
+	NormalizedConversation
 } from '../../../../types';
 import { ConversationPreviewPanel } from '../../detail-panel/conversation-preview-panel';
 import { HoverBarContainer } from '../parts/hover-bar-container';
@@ -48,7 +47,7 @@ import { HoverContainer } from '../parts/hover-container';
 import { ItemAvatar } from '../parts/item-avatar';
 import { ListItemHoverActions } from '../parts/list-item-hover-actions';
 import { RowInfo } from '../parts/row-info';
-import { SenderName } from '../parts/sender-name';
+import { ParticipantsName } from '../parts/sender-name';
 
 const CollapseElement = styled(Container)<{ $open: boolean }>`
 	display: ${({ $open }): string => ($open ? 'block' : 'none')};
@@ -96,7 +95,7 @@ export const ConversationListItemActionWrapper = ({
 		previewOnSeparatedWindowDescriptor,
 		showOriginalDescriptor
 	} = useConvActions({
-		conversation: conversation as Conversation,
+		conversation,
 		deselectAll,
 		conversationPreviewFactory,
 		shouldReplaceHistory
@@ -227,8 +226,8 @@ export const ConversationListItem = memo(function ConversationListItem({
 }: ConversationListItemProps): React.JSX.Element {
 	const { itemId } = useParams<{ itemId: string }>();
 	const [open, setOpen] = useState(false);
-	const messages = useMessagesByIds(conversation.messages.map((m) => m.id));
-	const folderParent = folderId ?? conversation.messages?.[0]?.parent;
+	const messages = useConversationMessages(conversation.id);
+	const folderParent = folderId ?? messages?.[0]?.parent;
 	const [t] = useTranslation();
 
 	const markAsRead = useConvSetReadFn({
@@ -332,7 +331,7 @@ export const ConversationListItem = memo(function ConversationListItem({
 				return;
 			}
 			debouncedPushHistory.cancel();
-			const { id, isDraft } = conversation.messages[0];
+			const { id, isDraft } = messages[0];
 			if (isDraft) {
 				pushHistory(`/folder/${folderParent}/edit/${id}?action=editAsDraft`);
 			} else {
@@ -340,7 +339,7 @@ export const ConversationListItem = memo(function ConversationListItem({
 			}
 		},
 
-		[debouncedPushHistory, folderParent, conversation.messages, previewOnSeparatedWindow]
+		[debouncedPushHistory, messages, folderParent, previewOnSeparatedWindow]
 	);
 
 	const toggleExpandButtonLabel = useMemo(
@@ -377,11 +376,11 @@ export const ConversationListItem = memo(function ConversationListItem({
 	const renderBadge = useMemo(() => {
 		if (conversation.messagesInConversation === 1) return textReadValues.badge === 'unread';
 		if (conversation.messagesInConversation > 0) return true;
-		if (conversation?.messages?.length === 1) {
+		if (conversation?.messageIds?.length === 1) {
 			return textReadValues.badge === 'unread';
 		}
-		return conversation?.messages?.length > 0;
-	}, [conversation?.messages?.length, conversation.messagesInConversation, textReadValues.badge]);
+		return conversation?.messageIds?.length > 0;
+	}, [conversation?.messageIds?.length, conversation.messagesInConversation, textReadValues.badge]);
 
 	const shouldReplaceHistory = useMemo(() => itemId === conversation.id, [conversation.id, itemId]);
 
@@ -415,8 +414,8 @@ export const ConversationListItem = memo(function ConversationListItem({
 					padding={{ left: 'small', top: 'small', bottom: 'small', right: 'large' }}
 				>
 					<Container orientation="horizontal" height="fit" width="fill">
-						<SenderName item={conversation as Conversation} textValues={textReadValues} />
-						<RowInfo item={conversation as Conversation} tags={tags} />
+						<ParticipantsName item={conversation} textValues={textReadValues} />
+						<RowInfo item={conversation} tags={tags} />
 					</Container>
 					<Container orientation="horizontal" height="fit" width="fill" crossAlignment="center">
 						{renderBadge && (

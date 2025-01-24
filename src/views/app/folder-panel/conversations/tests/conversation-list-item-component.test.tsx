@@ -19,7 +19,7 @@ import {
 import { ASSERTIONS } from '../../../../../tests/constants';
 import { generateConversation } from '../../../../../tests/generators/generateConversation';
 import { generateMessage } from '../../../../../tests/generators/generateMessage';
-import type { ConversationListItemProps, ConvMessage } from '../../../../../types';
+import type { ConversationListItemProps } from '../../../../../types';
 import { ConversationListItem } from '../conversation-list-item';
 
 describe.each`
@@ -36,13 +36,13 @@ describe.each`
 			const conversation = generateConversation({
 				folderId,
 				isSingleMessageConversation: false,
-				messages: messages as Array<ConvMessage>
+				messageIds: messages.map((m) => m.id)
 			});
 			await waitFor(() => {
 				setConversationsInEmailStore([conversation], false);
 			});
 			setMessagesInEmailStore(messages, false);
-			const messageCount = conversation.messages.length;
+			const messageCount = conversation.messageIds.length;
 
 			const props: ConversationListItemProps = {
 				conversation,
@@ -336,13 +336,14 @@ describe.each`
 			const fromLuigi = { type: ParticipantRole.FROM, address: 'luigi@foo.baz' };
 			const fromBowser = { type: ParticipantRole.FROM, address: 'bowser@foo.baz' };
 			const toMyself = { type: ParticipantRole.TO, address: `me@myself.com` };
+			const messages = [
+				generateMessage({ folderId: FOLDERS.INBOX, to: [toMyself], from: fromMario }),
+				generateMessage({ folderId: FOLDERS.INBOX, to: [toMyself], from: fromLuigi }),
+				generateMessage({ folderId: FOLDERS.INBOX, to: [toMyself], from: fromBowser })
+			];
 			const conversation = generateConversation({
 				folderId: FOLDERS.INBOX,
-				messages: [
-					generateMessage({ folderId: FOLDERS.INBOX, to: [toMyself], from: fromMario }),
-					generateMessage({ folderId: FOLDERS.INBOX, to: [toMyself], from: fromLuigi }),
-					generateMessage({ folderId: FOLDERS.INBOX, to: [toMyself], from: fromBowser })
-				],
+				messageIds: messages.map((m) => m.id),
 				to: [toMyself],
 				from: [fromMario, fromLuigi, fromBowser]
 			});

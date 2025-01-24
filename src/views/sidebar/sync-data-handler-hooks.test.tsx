@@ -145,7 +145,7 @@ describe('sync data handler', () => {
 
 			useTagStore.setState({ tags });
 			setSearchResultsByConversation(
-				[generateConversation({ id: '123', messages: [], isRead: false })],
+				[generateConversation({ id: '123', messageIds: [], isRead: false })],
 				false
 			);
 			mockSoapModifyConversationAction(mailboxNumber, [READ]);
@@ -159,7 +159,7 @@ describe('sync data handler', () => {
 		});
 		it('should mark conversation as unread', async () => {
 			setSearchResultsByConversation(
-				[generateConversation({ id: '123', messages: [], isRead: true })],
+				[generateConversation({ id: '123', messageIds: [], isRead: true })],
 				false
 			);
 			mockSoapModifyConversationAction(mailboxNumber, [UNREAD]);
@@ -174,7 +174,7 @@ describe('sync data handler', () => {
 
 		it('should mark conversation as flagged', async () => {
 			setSearchResultsByConversation(
-				[generateConversation({ id: '123', messages: [], isFlagged: false })],
+				[generateConversation({ id: '123', messageIds: [], isFlagged: false })],
 				false
 			);
 			mockSoapModifyConversationAction(mailboxNumber, [FLAGGED]);
@@ -188,7 +188,7 @@ describe('sync data handler', () => {
 		});
 		it('should mark conversation as not flagged', async () => {
 			setSearchResultsByConversation(
-				[generateConversation({ id: '123', messages: [], isFlagged: true })],
+				[generateConversation({ id: '123', messageIds: [], isFlagged: true })],
 				false
 			);
 			mockSoapModifyConversationAction(mailboxNumber, [NOTFLAGGED]);

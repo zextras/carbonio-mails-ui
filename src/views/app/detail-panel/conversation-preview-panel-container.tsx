@@ -17,6 +17,7 @@ import { API_REQUEST_STATUS } from '../../../constants';
 import { getFolderIdParts } from '../../../helpers/folders';
 import { getConvEmailStoreAction } from '../../../store/emails/actions/get-conv-action';
 import { useCompleteConversationOrFetch } from '../../../store/emails/hooks/hooks';
+import { useConversationMessages } from '../../../store/emails/store';
 import { useExtraWindow } from '../extra-windows/use-extra-window';
 
 type ConversationPreviewPanelProps = { conversationId?: string; folderId?: string };
@@ -37,6 +38,7 @@ export const ConversationPreviewPanelContainer = (
 	const { conversationId, folderId } = useConversationPreviewPanelParameters(props);
 	const { isInsideExtraWindow } = useExtraWindow();
 	const { conversation, conversationStatus } = useCompleteConversationOrFetch(conversationId);
+	const messages = useConversationMessages(conversationId);
 
 	const onConversationIdChange = useCallback(
 		(newConversationId: string): void => {
@@ -54,10 +56,9 @@ export const ConversationPreviewPanelContainer = (
 	const showPreviewPanel = useMemo(
 		(): boolean | undefined =>
 			getFolderIdParts(folderId).id === FOLDERS.TRASH
-				? conversation && conversation?.messages?.length > 0
-				: filter(conversation?.messages, (m) => getFolderIdParts(m.parent).id !== FOLDERS.TRASH)
-						.length > 0,
-		[conversation, folderId]
+				? conversation && conversation?.messageIds?.length > 0
+				: filter(messages, (m) => getFolderIdParts(m.parent).id !== FOLDERS.TRASH).length > 0,
+		[conversation, folderId, messages]
 	);
 
 	return (

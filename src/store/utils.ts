@@ -4,7 +4,8 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { includes, map } from 'lodash';
-import type { Conversation, FetchConversationsReturn, MailMessage } from '../types';
+
+import type { FetchConversationsReturn, MailMessage, NormalizedConversation } from '../types';
 
 /**
  * Extracts all ids from conversations and messages
@@ -12,13 +13,13 @@ import type { Conversation, FetchConversationsReturn, MailMessage } from '../typ
  * @returns array of ids
  */
 export function extractIdsFromMessagesAndConversations(
-	items: Record<string, Conversation> | Record<string, MailMessage> | undefined
+	items: Record<string, NormalizedConversation> | Record<string, MailMessage> | undefined
 ): Array<string> {
 	return Object.keys(items ?? []).reduce((acc: Array<string>, itemId) => {
 		const item = items?.[itemId];
 		item && acc.push(itemId);
-		if (item && 'messages' in item) {
-			acc.push(...item.messages.map((msg) => msg.id));
+		if (item && 'messageIds' in item) {
+			acc.push(...item.messageIds);
 		}
 		return acc;
 	}, []);

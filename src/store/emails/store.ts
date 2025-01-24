@@ -219,6 +219,11 @@ export function useConversationMessages(
 	return populatedItemsSliceUtils.useConversationMessages(conversationId, useEmailsStore);
 }
 
+export function getConversationMessages(
+	conversationId: string
+): Array<MailMessage | IncompleteMessage> {
+	return populatedItemsSliceUtils.getConversationMessages(conversationId, useEmailsStore);
+}
 /**
  * Handles the response for removing attachments from messages using `deleteAttachmentsSoapApi`
  * and updates the emails store state.

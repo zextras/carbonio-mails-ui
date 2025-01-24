@@ -1,12 +1,14 @@
-/* eslint-disable sonarjs/no-duplicate-string */
 /*
  * SPDX-FileCopyrightText: 2024 Zextras <https://www.zextras.com>
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+/* eslint-disable sonarjs/no-duplicate-string */
+/* eslint-disable no-param-reassign */
+
 import { act, renderHook, waitFor } from '@testing-library/react';
-import { cloneDeep, map, reduce } from 'lodash';
+import { cloneDeep, map } from 'lodash';
 
 import * as getMsg from '../../../../api/get-msg-soap-api';
 import { createSoapAPIInterceptor } from '../../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
@@ -22,8 +24,8 @@ import {
 	EmailsStoreState,
 	GetMsgRequest,
 	GetMsgResponse,
+	MailMessage,
 	NormalizedConversation,
-	PopulatedItemsSliceState,
 	SearchConvRequest,
 	SearchConvResponse
 } from '../../../../types';
@@ -51,9 +53,10 @@ function awaitDebounce(): void {
 describe('Searches store hooks', () => {
 	describe('useCompleteConversation', () => {
 		it('should retrieve the conversation if no data available', async () => {
+			const message = generateMessage({ id: '1', subject: 'Test Message 1' });
 			const conversation = generateConversation({
 				id: '123',
-				messages: [generateMessage({ id: '1', subject: 'Test Message 1' })],
+				messageIds: [message.id],
 				subject: 'Test Conversation'
 			});
 			setSearchResultsByConversation([conversation], false);
@@ -75,9 +78,10 @@ describe('Searches store hooks', () => {
 		});
 
 		it('should update conversation status if conversation status is undefined', async () => {
+			const message = generateMessage({ id: '1', subject: 'Test Message 1' });
 			const conversation = generateConversation({
 				id: '123',
-				messages: [generateMessage({ id: '1', subject: 'Test Message 1' })],
+				messageIds: [message.id],
 				subject: 'Test Conversation'
 			});
 			setSearchResultsByConversation([conversation], false);
@@ -98,9 +102,10 @@ describe('Searches store hooks', () => {
 		});
 
 		it('should not update conversation status if conversation status is already defined', async () => {
+			const message = generateMessage({ id: '1', subject: 'Test Message 1' });
 			const conversation = generateConversation({
 				id: '123',
-				messages: [generateMessage({ id: '1', subject: 'Test Message 1' })],
+				messageIds: [message.id],
 				subject: 'Test Conversation'
 			});
 			setSearchResultsByConversation([conversation], false);
@@ -281,58 +286,90 @@ describe('Searches store hooks', () => {
 		});
 	});
 
+	function arrayToRecord<T extends { id: string }>(items: Array<T> | undefined): Record<string, T> {
+		if (!items) return {};
+		return items.reduce(
+			(acc, item) => {
+				acc[item.id as string] = item;
+				return acc;
+			},
+			{} as Record<string, T>
+		);
+	}
+
 	function generateEmailsStoreState(
-		conversations: Record<string, NormalizedConversation>
+		conversations: Array<NormalizedConversation>,
+		messages?: Array<MailMessage>
 	): EmailsStoreState {
 		return {
 			messageIndexSlice: MESSAGE_INDEX_SLICE_INITIAL_STATE,
 			searchIndexSlice: SEARCH_INDEX_SLICE_INITIAL_STATE,
 			conversationIndexSlice: CONVERSATION_INDEX_SLICE_INITIAL_STATE,
 			populatedItemsSlice: {
-				conversations,
-				messages: {},
+				conversations: arrayToRecord(conversations),
+				messages: arrayToRecord(messages),
 				messagesStatus: {},
 				conversationsStatus: {}
 			}
 		};
 	}
-
 	describe('deleteMessagesFromConversation', () => {
 		describe('When called with valid message IDs', () => {
 			it('should delete the specified messages from the conversation', () => {
-				const messages = [{ id: '1' }, { id: '2' }] as Array<ConvMessage>;
-				const conversation = { ...generateConversation({ id: '123' }), messages };
-				const state = generateEmailsStoreState({ [conversation.id]: conversation });
+				const messages = [generateMessage({ id: '1' }), generateMessage({ id: '2' })];
+				const conversation = { ...generateConversation({ id: '123' }), messageIds: ['1', '2'] };
+				const state = generateEmailsStoreState([conversation], messages);
 				deleteMessagesFromConversation(['1', '2'], state);
-				expect(state.populatedItemsSlice.conversations['123'].messages).toHaveLength(0);
+				expect(state.populatedItemsSlice.conversations['123'].messageIds).toHaveLength(0);
 			});
 
 			it('should not affect other messages in the conversation', () => {
-				const messages = [{ id: '1' }, { id: '2' }, { id: '3' }] as Array<ConvMessage>;
-				const conversation = { ...generateConversation({ id: '123' }), messages };
-				const state = generateEmailsStoreState({ [conversation.id]: conversation });
+				const messages = [
+					generateMessage({ id: '1' }),
+					generateMessage({ id: '2' }),
+					generateMessage({ id: '3' })
+				];
+				const conversation = {
+					...generateConversation({ id: '123' }),
+					messageIds: messages.map((m) => m.id)
+				};
+				const state = generateEmailsStoreState([conversation], messages);
 				deleteMessagesFromConversation(['1', '2'], state);
-				expect(state.populatedItemsSlice.conversations['123'].messages).toHaveLength(1);
+				expect(state.populatedItemsSlice.conversations['123'].messageIds).toHaveLength(1);
 			});
 		});
 
 		describe('When called with an empty array of IDs', () => {
 			it('should not modify any messages in the conversations', () => {
-				const messages = [{ id: '1' }, { id: '2' }, { id: '3' }] as Array<ConvMessage>;
-				const conversation = { ...generateConversation({ id: '123' }), messages };
-				const state = generateEmailsStoreState({ [conversation.id]: conversation });
+				const messages = [
+					generateMessage({ id: '1' }),
+					generateMessage({ id: '2' }),
+					generateMessage({ id: '3' })
+				];
+				const conversation = {
+					...generateConversation({ id: '123' }),
+					messageIds: ['1', '2', '3']
+				};
+				const state = generateEmailsStoreState([conversation], messages);
 				deleteMessagesFromConversation([], state);
-				expect(state.populatedItemsSlice.conversations['123'].messages).toHaveLength(3);
+				expect(state.populatedItemsSlice.conversations['123'].messageIds).toHaveLength(3);
 			});
 		});
 
 		describe('When called with non-existent message IDs', () => {
 			it('should not delete any messages from the conversations', () => {
-				const messages = [{ id: '1' }, { id: '2' }, { id: '3' }] as Array<ConvMessage>;
-				const conversation = { ...generateConversation({ id: '123' }), messages };
-				const state = generateEmailsStoreState({ [conversation.id]: conversation });
+				const messages = [
+					generateMessage({ id: '1' }),
+					generateMessage({ id: '2' }),
+					generateMessage({ id: '3' })
+				];
+				const conversation = {
+					...generateConversation({ id: '123' }),
+					messageIds: messages.map((m) => m.id)
+				};
+				const state = generateEmailsStoreState([conversation], messages);
 				deleteMessagesFromConversation(['4', '5'], state);
-				expect(state.populatedItemsSlice.conversations['123'].messages).toHaveLength(3);
+				expect(state.populatedItemsSlice.conversations['123'].messageIds).toHaveLength(3);
 			});
 		});
 
@@ -340,7 +377,7 @@ describe('Searches store hooks', () => {
 			it('should leave the state unchanged', () => {
 				const messages = [] as Array<ConvMessage>;
 				const conversation = { ...generateConversation({ id: '123' }), messages };
-				const state = generateEmailsStoreState({ [conversation.id]: conversation });
+				const state = generateEmailsStoreState([conversation]);
 				deleteMessagesFromConversation(['1', '2'], state);
 				expect(state.populatedItemsSlice.conversations['123']).toMatchObject(
 					expect.objectContaining({ id: '123', messages: [] })
@@ -350,7 +387,7 @@ describe('Searches store hooks', () => {
 
 		describe('When the conversations array is empty', () => {
 			it('should leave the state unchanged', () => {
-				const state = generateEmailsStoreState({});
+				const state = generateEmailsStoreState([]);
 				const expectedState = cloneDeep(state);
 				deleteMessagesFromConversation(['1', '2'], state);
 				expect(state).toMatchObject(expectedState);
@@ -363,14 +400,8 @@ describe('Searches store hooks', () => {
 				const conversaiontIds = Array.from({ length: numberOfConversations }, (_, index) =>
 					index.toString()
 				);
-				const conversations = reduce(
-					conversaiontIds,
-					(acc, id) => ({
-						...acc,
-						[id.toString()]: generateConversation({ id, messages: [{ id: '1' } as ConvMessage] })
-					}),
-					{} as PopulatedItemsSliceState['populatedItemsSlice']['conversations']
-				);
+
+				const conversations = conversaiontIds.map((id) => generateConversation({ id }));
 				const state = generateEmailsStoreState(conversations);
 				const start = performance.now();
 				deleteMessagesFromConversation(['1', '2'], state);
@@ -384,16 +415,10 @@ describe('Searches store hooks', () => {
 				const conversaiontIds = Array.from({ length: numberOfConversations }, (_, index) =>
 					index.toString()
 				);
-				const messages = map(messageIds, (id) => ({ id }));
-				const conversations = reduce(
-					conversaiontIds,
-					(acc, id) => ({
-						...acc,
-						[id.toString()]: generateConversation({ id, messages: messages as Array<ConvMessage> })
-					}),
-					{} as PopulatedItemsSliceState['populatedItemsSlice']['conversations']
-				);
-				const state = generateEmailsStoreState(conversations);
+				const messages = map(messageIds, (id) => generateMessage({ id }));
+				const conversations = conversaiontIds.map((id) => generateConversation({ id }));
+
+				const state = generateEmailsStoreState(conversations, messages);
 				const start = performance.now();
 				deleteMessagesFromConversation(['1'], state);
 				const end = performance.now();

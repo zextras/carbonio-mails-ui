@@ -26,7 +26,7 @@ describe('Conversation Preview Panel', () => {
 		updateMessages(messages);
 		const conversation = generateConversation({
 			id: '123',
-			messages
+			messageIds: messages.map((m) => m.id)
 		});
 		updateConversations([conversation]);
 		setupTest(<ConversationPreviewPanel conversation={conversation} isInsideExtraWindow={false} />);

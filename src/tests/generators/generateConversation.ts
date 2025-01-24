@@ -13,7 +13,7 @@ import {
 	ParticipantRole,
 	ParticipantRoleType
 } from '../../carbonio-ui-commons/constants/participants';
-import type { Conversation, ConvMessage, Participant } from '../../types';
+import type { NormalizedConversation, Participant } from '../../types';
 
 /**
  *
@@ -29,8 +29,7 @@ type ConversationGenerationParams = {
 	isRead?: boolean;
 	isFlagged?: boolean;
 	isSingleMessageConversation?: boolean;
-	// TODO: messages should be of type ConvMessage
-	messages?: Array<ConvMessage>;
+	messageIds?: Array<string>;
 	messageGenerationCount?: number;
 	tags?: Array<string>;
 };
@@ -69,17 +68,17 @@ const generateConversation = ({
 	subject = faker.lorem.word(6),
 	isRead = false,
 	isFlagged = false,
-	messages,
+	messageIds,
 	messageGenerationCount = 1,
 	tags = []
-}: ConversationGenerationParams = {}): Conversation => {
+}: ConversationGenerationParams = {}): NormalizedConversation => {
 	const finalFrom =
 		from ?? generateRandomParticipants(messageGenerationCount, ParticipantRole.FROM);
 	const finalTo = to ?? generateRandomParticipants(messageGenerationCount, ParticipantRole.TO);
 	const finalCc =
 		cc ?? generateRandomParticipants(messageGenerationCount, ParticipantRole.CARBON_COPY);
 	const finalMessages =
-		messages ?? times(messageGenerationCount, () => generateMessage({ folderId }));
+		messageIds ?? times(messageGenerationCount, () => generateMessage({ folderId }).id);
 
 	return {
 		date: receiveDate,
@@ -87,15 +86,13 @@ const generateConversation = ({
 		fragment: '',
 		hasAttachment: false,
 		id,
-		parent: folderId,
 		participants: [...finalFrom, ...finalTo, ...finalCc],
 		read: isRead,
 		subject,
 		tags,
 		urgent: false,
-		messages: finalMessages,
-		messagesInConversation: finalMessages.length,
-		sortIndex: Number(Date.now())
+		messageIds: finalMessages,
+		messagesInConversation: finalMessages.length
 	};
 };
 

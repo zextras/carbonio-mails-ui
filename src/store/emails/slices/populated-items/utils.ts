@@ -31,14 +31,23 @@ function useConversationMessages(
 	conversationId: string,
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
 ): Array<MailMessage | IncompleteMessage> {
-	const messages: Array<MailMessage | IncompleteMessage> = [];
-	useEmailsStore(({ populatedItemsSlice }: EmailsStoreState) =>
-		populatedItemsSlice.conversations[conversationId].messages.forEach((message) => {
-			if (populatedItemsSlice.messages[message.id])
-				messages.push(populatedItemsSlice.messages[message.id]);
-		})
+	return useEmailsStore(({ populatedItemsSlice }) =>
+		populatedItemsSlice.conversations[conversationId].messageIds
+			.map((messageId) => populatedItemsSlice.messages[messageId])
+			.filter(Boolean)
 	);
-	return messages;
+}
+
+function getConversationMessages(
+	conversationId: string,
+	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
+): Array<MailMessage | IncompleteMessage> {
+	return useEmailsStore
+		.getState()
+		.populatedItemsSlice.conversations[conversationId].messageIds.map(
+			(messageId) => useEmailsStore.getState().populatedItemsSlice.messages[messageId]
+		)
+		.filter(Boolean);
 }
 
 function updateConversations(
@@ -76,7 +85,7 @@ function updateMessages(
 				};
 
 				// Update the status if the message is complete
-				if (message.isComplete) {
+				if (populatedItemsSlice.messages[message.id].isComplete) {
 					populatedItemsSlice.messagesStatus[message.id] = API_REQUEST_STATUS.fulfilled;
 				}
 			});
@@ -149,9 +158,9 @@ function useConversationsByIds(
 
 export function deleteMessagesFromConversation(ids: Array<string>, state: EmailsStoreState): void {
 	forEach(state.populatedItemsSlice.conversations, (conversation) => {
-		state.populatedItemsSlice.conversations[conversation.id].messages = filter(
-			conversation.messages,
-			(message) => !ids.includes(message.id)
+		state.populatedItemsSlice.conversations[conversation.id].messageIds = filter(
+			conversation.messageIds,
+			(messageId) => !ids.includes(messageId)
 		);
 	});
 }
@@ -292,6 +301,7 @@ export const populatedItemsSliceUtils = {
 	updateConversationStatus,
 	updateMessages,
 	useConversationMessages,
+	getConversationMessages,
 	useMessagesByIds,
 	useConversationsByIds,
 	deleteMessagesFromConversation,

@@ -34,7 +34,7 @@ import { getFolderTranslatedName } from '../../../sidebar/utils';
 import { createEditBoard } from '../../detail-panel/edit/edit-view-board';
 import { MessagePreviewPanel } from '../../detail-panel/message-preview-panel';
 import { ItemAvatar } from '../parts/item-avatar';
-import { SenderName } from '../parts/sender-name';
+import { ParticipantsName } from '../parts/sender-name';
 
 type RouteParams = {
 	itemId: string;
@@ -247,7 +247,7 @@ export const MessageListItem = memo(function MessageListItem({
 					padding={{ left: 'small', top: 'small', bottom: 'small', right: 'large' }}
 				>
 					<Container orientation="horizontal" height="fit" width="fill">
-						<SenderName
+						<ParticipantsName
 							item={message}
 							textValues={textReadValues}
 							isSearchModule={isSearchModule}

@@ -6,6 +6,7 @@
 
 /* eslint-disable no-param-reassign */
 import produce from 'immer';
+import { filter } from 'lodash';
 import { StoreApi, UseBoundStore } from 'zustand';
 
 import { CONVERSATION_INDEX_SLICE_INITIAL_STATE } from './conversations-index-slice';
@@ -50,7 +51,10 @@ function useConversationsIdsByFolder(
 	const wantedFolder = 'rid' in folder && folder?.rid ? `${folder.zid}:${folder.rid}` : folder.id;
 
 	return conversationsIds.filter((conversationId) => {
-		const messages = populatedItemsSlice.conversations[conversationId]?.messages || [];
+		const messageIds = populatedItemsSlice.conversations[conversationId]?.messageIds || [];
+		const messages = filter(populatedItemsSlice.messages, (message) =>
+			messageIds.includes(message.id)
+		);
 		return messages.some((message) => message.parent === wantedFolder);
 	});
 }

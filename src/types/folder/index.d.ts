@@ -12,16 +12,8 @@ import { UIActionDescriptor } from '../actions';
 import { Conversation, NormalizedConversation } from '../conversations';
 import { IncompleteMessage, MailMessage } from '../messages';
 import { SearchRequestStatus } from '../state';
-import { TextReadValuesProps } from '../utils';
 
 export type GrantType = { gt: string; perm: string; zid: string; d?: string };
-
-export type SenderNameProps = {
-	item: Conversation | IncompleteMessage;
-	isSearchModule?: boolean;
-	textValues?: TextReadValuesProps;
-	folderId?: string;
-};
 
 export type MessageListItemProps = {
 	message: IncompleteMessage;

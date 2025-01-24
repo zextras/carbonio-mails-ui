@@ -136,7 +136,7 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item }) => {
 					}
 				}
 			);
-		} else if ('messages' in data.data) {
+		} else if ('messageIds' in data.data) {
 			convActionEmailStoreAction({
 				operation: `move`,
 				ids: convMsgsIds,

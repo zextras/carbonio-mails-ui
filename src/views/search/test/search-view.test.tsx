@@ -262,7 +262,7 @@ describe('SearchView', () => {
 		it('should display conversation as selected when user clicks on avatar', async () => {
 			const message = generateMessage({ id: '1' });
 			setSearchResultsByConversation(
-				[generateConversation({ id: '123', messages: [message] })],
+				[generateConversation({ id: '123', messageIds: [message.id] })],
 				false
 			);
 			setMessagesInSearchSlice([message]);
