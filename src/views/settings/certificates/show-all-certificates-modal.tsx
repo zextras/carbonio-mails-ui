@@ -5,7 +5,7 @@
  */
 import React, { useCallback, useState } from 'react';
 
-import { Button, Container, Table, useSnackbar } from '@zextras/carbonio-design-system';
+import { Button, Container, Table, Tooltip, useSnackbar } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
 
 import ModalFooter from '../../../carbonio-ui-commons/components/modals/modal-footer';
@@ -119,15 +119,17 @@ export const ShowAllCertificatesModal = ({
 			})(),
 			certificate.serial,
 			<Container key={index}>
-				<Button
-					icon="Trash2Outline"
-					onClick={(): void => {
-						deleteCertificate(certificate);
-					}}
-					size="large"
-					type="ghost"
-					color={'error'}
-				/>
+				<Tooltip label={t('settings.uploadCertificate.deleteCertificate', 'Delete Certificate')}>
+					<Button
+						icon="Trash2Outline"
+						onClick={(): void => {
+							deleteCertificate(certificate);
+						}}
+						size="large"
+						type="ghost"
+						color={'error'}
+					/>
+				</Tooltip>
 			</Container>
 		]
 	}));

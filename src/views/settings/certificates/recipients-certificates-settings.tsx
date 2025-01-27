@@ -12,6 +12,7 @@ import {
 	Padding,
 	Table,
 	Text,
+	Tooltip,
 	useModal,
 	useSnackbar
 } from '@zextras/carbonio-design-system';
@@ -136,17 +137,18 @@ const RecipientsCertificateSettings: FC = (): ReactElement => {
 			certificate.notAfter > Date.now()
 				? t('settings.uploadCertificate.active', 'Active')
 				: t('settings.uploadCertificate.expired', 'Expired'),
-
 			<Container key={index}>
-				<Button
-					icon="Trash2Outline"
-					onClick={(): void => {
-						deleteCertificate(certificate);
-					}}
-					size="large"
-					type="ghost"
-					color={'error'}
-				/>
+				<Tooltip label={t('settings.uploadCertificate.deleteCertificate', 'Delete Certificate')}>
+					<Button
+						icon="Trash2Outline"
+						onClick={(): void => {
+							deleteCertificate(certificate);
+						}}
+						size="large"
+						type="ghost"
+						color={'error'}
+					/>
+				</Tooltip>
 			</Container>
 		]
 	}));
