@@ -40,10 +40,9 @@ import {
 export function extractConvMessage(
 	createdConversations: Array<SoapConversation>
 ): Array<IncompleteMessage> {
-	const soapMessages = flatten(map(createdConversations, (conversation) => conversation.m));
-	return soapMessages?.length > 0
-		? map(soapMessages, (message) => normalizeMailMessageFromSoap(message))
-		: [];
+	return flatten(createdConversations.map((conversation) => conversation.m || [])).map((message) =>
+		normalizeMailMessageFromSoap(message)
+	);
 }
 
 type SoapNotify = {
