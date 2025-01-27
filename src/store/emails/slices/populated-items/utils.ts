@@ -31,10 +31,11 @@ function useConversationMessages(
 	conversationId: string,
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
 ): Array<MailMessage | IncompleteMessage> {
+	console.log('conversationId', conversationId);
 	return useEmailsStore(({ populatedItemsSlice }) =>
-		populatedItemsSlice.conversations[conversationId].messageIds
-			.map((messageId) => populatedItemsSlice.messages[messageId])
-			.filter(Boolean)
+		populatedItemsSlice.conversations[conversationId].messageIds.map(
+			(messageId) => populatedItemsSlice.messages[messageId]
+		)
 	);
 }
 

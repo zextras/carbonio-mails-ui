@@ -13,7 +13,7 @@ import {
 	ParticipantRole,
 	ParticipantRoleType
 } from '../../carbonio-ui-commons/constants/participants';
-import { setConversationsInEmailStore, setMessagesInEmailStore } from '../../store/emails/store';
+import { setConversationsInEmailStore, updateMessages } from '../../store/emails/store';
 import type { MailMessage, NormalizedConversation, Participant } from '../../types';
 
 /**
@@ -137,17 +137,20 @@ const populateConversationInEmailStore = ({
 	const messagesFromMessageGeneratorParams = messageGeneratorParams?.map((messageGeneratorParam) =>
 		generateMessage(messageGeneratorParam)
 	);
-	const defaultMessages = times(conversationMessagesNumber, () =>
-		generateMessage({ folderId: FOLDERS.INBOX })
+	const conversationMessagesNumberArray = Array.from({ length: conversationMessagesNumber }).map(
+		(_, index) => (index + 100).toString()
+	);
+	const defaultMessages = conversationMessagesNumberArray.map((id) =>
+		generateMessage({ id, folderId: FOLDERS.INBOX, cid: conversationParams.id })
 	);
 
 	const generatedMessages =
 		messagesFromMessageIds ?? messagesFromMessageGeneratorParams ?? defaultMessages;
-	setMessagesInEmailStore(generatedMessages, false);
+	updateMessages(generatedMessages);
 
 	const generatedConversation = generateConversation({
 		id: conversationParams.id,
-		messageIds
+		messageIds: messageIds ?? conversationMessagesNumberArray
 	});
 	setConversationsInEmailStore([generatedConversation], false);
 	return { conversation: generatedConversation, messages: generatedMessages };

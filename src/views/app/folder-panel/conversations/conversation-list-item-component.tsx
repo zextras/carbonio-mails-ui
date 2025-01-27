@@ -46,32 +46,34 @@ export const ConversationListItemComponent = ({
 }: ConversationListItemComponentProps): React.JSX.Element => {
 	const conversation = useConversationById(conversationId);
 	return (
-		<DragItemWrapper
-			item={conversation}
-			selectedIds={selectedIds}
-			selectedItems={selectedItems}
-			setDraggedIds={setDraggedIds}
-			dragImageRef={dragImageRef}
-			dragAndDropIsDisabled={!!isSearchModule}
-			deselectAll={deselectAll}
-		>
-			<ConversationListItem
-				activeItemId={activeItemId}
-				conversation={conversation}
-				selected={selected}
-				selecting={selecting}
-				toggle={toggle}
-				active={active}
-				setDraggedIds={setDraggedIds}
-				draggedIds={draggedIds}
+		conversation && (
+			<DragItemWrapper
+				item={conversation}
+				selectedIds={selectedIds}
 				selectedItems={selectedItems}
+				setDraggedIds={setDraggedIds}
 				dragImageRef={dragImageRef}
-				isSearchModule={isSearchModule}
-				isConvChildren
+				dragAndDropIsDisabled={!!isSearchModule}
 				deselectAll={deselectAll}
-				folderId={folderId}
-				visible={visible}
-			/>
-		</DragItemWrapper>
+			>
+				<ConversationListItem
+					activeItemId={activeItemId}
+					conversation={conversation}
+					selected={selected}
+					selecting={selecting}
+					toggle={toggle}
+					active={active}
+					setDraggedIds={setDraggedIds}
+					draggedIds={draggedIds}
+					selectedItems={selectedItems}
+					dragImageRef={dragImageRef}
+					isSearchModule={isSearchModule}
+					isConvChildren
+					deselectAll={deselectAll}
+					folderId={folderId}
+					visible={visible}
+				/>
+			</DragItemWrapper>
+		)
 	);
 };
