@@ -32,12 +32,6 @@ export const ShowAllCertificatesModal = ({
 	const [isUpdateList, setIsUpdateList] = useState(false);
 	const headers = [
 		{
-			id: 'id',
-			label: 'Id',
-			width: '30%',
-			bold: true
-		},
-		{
 			id: 'issuer',
 			label: t('settings.uploadCertificate.issuer', 'Issuer'),
 			width: '30%',
@@ -114,14 +108,14 @@ export const ShowAllCertificatesModal = ({
 	const items = localCertificates.map((certificate: Certificate, index: number) => ({
 		id: index.toString(),
 		columns: [
-			certificate.id,
 			certificate.issuer,
 			new Date(certificate.notBefore).toLocaleString(),
 			new Date(certificate.notAfter).toLocaleString(),
 			((): string => {
-				if (certificate.selected) return 'Active';
-				if (certificate.notAfter > Date.now()) return 'Deactive';
-				return 'Expired';
+				if (certificate.selected) return t('settings.uploadCertificate.active', 'Active');
+				if (certificate.notAfter > Date.now())
+					return t('settings.uploadCertificate.deactive', 'Deactive');
+				return t('settings.uploadCertificate.expired', 'Expired');
 			})(),
 			certificate.serial,
 			<Container key={index}>

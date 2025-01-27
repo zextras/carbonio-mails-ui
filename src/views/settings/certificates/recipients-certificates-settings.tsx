@@ -133,7 +133,10 @@ const RecipientsCertificateSettings: FC = (): ReactElement => {
 			certificate.issuer,
 			new Date(certificate.notBefore).toLocaleString(),
 			new Date(certificate.notAfter).toLocaleString(),
-			certificate.notAfter > Date.now() ? 'Active' : 'Expired',
+			certificate.notAfter > Date.now()
+				? t('settings.uploadCertificate.active', 'Active')
+				: t('settings.uploadCertificate.expired', 'Expired'),
+
 			<Container key={index}>
 				<Button
 					icon="Trash2Outline"

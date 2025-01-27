@@ -186,9 +186,10 @@ const PersonalCertificatesSettings: FC = (): ReactElement => {
 			new Date(certificate.notBefore).toLocaleString(),
 			new Date(certificate.notAfter).toLocaleString(),
 			((): string => {
-				if (certificate.selected) return 'Active';
-				if (certificate.notAfter > Date.now()) return 'Deactive';
-				return 'Expired';
+				if (certificate.selected) return t('settings.uploadCertificate.active', 'Active');
+				if (certificate.notAfter > Date.now())
+					return t('settings.uploadCertificate.deactive', 'Deactive');
+				return t('settings.uploadCertificate.expired', 'Expired');
 			})(),
 			certificate.serial
 		],
