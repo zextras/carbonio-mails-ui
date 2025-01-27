@@ -45,6 +45,7 @@ type MessageGenerationParams = {
 /**
  *
  * @param id
+ * @param cid
  * @param folderId
  * @param receiveDate
  * @param to
@@ -63,6 +64,11 @@ type MessageGenerationParams = {
  * @param isReplied
  * @param isScheduled
  * @param isSentByMe
+ * @param tags
+ * @param truncated
+ * @param sensitivity
+ * @param messageIdFromMailHeaders
+ * @param creationDateFromMailHeaders
  */
 const generateMessage = ({
 	id = faker.number.int().toString(),

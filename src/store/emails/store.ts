@@ -209,6 +209,7 @@ function setMessagesInSearchSlice(messages: Array<MailMessage | IncompleteMessag
 // ###########################################
 // #### populatedItemsSlice related functions
 // ###########################################
+
 /**
  * Retrieves messages belonging to a specific conversation from the store.
  * This function compiles an array of messages associated with the given conversation ID.
@@ -572,6 +573,7 @@ export function setConversationsInEmailStore(
 // ##########################################
 // ##### sync-data-handler related functions
 // ##########################################
+
 /**
  * Queues a task to handle the deletion of conversations and messages from search indexes,
  * message and conversation index slices, and the email store state.

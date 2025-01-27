@@ -13,6 +13,7 @@ import {
 	ParticipantRole,
 	ParticipantRoleType
 } from '../../carbonio-ui-commons/constants/participants';
+import { setConversationsInEmailStore, setMessagesInEmailStore } from '../../store/emails/store';
 import type { NormalizedConversation, Participant } from '../../types';
 
 /**
@@ -77,7 +78,7 @@ const generateConversation = ({
 	const finalTo = to ?? generateRandomParticipants(messageGenerationCount, ParticipantRole.TO);
 	const finalCc =
 		cc ?? generateRandomParticipants(messageGenerationCount, ParticipantRole.CARBON_COPY);
-	const finalMessages =
+	const finalMessageIds =
 		messageIds ?? times(messageGenerationCount, () => generateMessage({ folderId }).id);
 
 	return {
@@ -91,9 +92,32 @@ const generateConversation = ({
 		subject,
 		tags,
 		urgent: false,
-		messageIds: finalMessages,
-		messagesInConversation: finalMessages.length
+		messageIds: finalMessageIds,
+		messagesInConversation: finalMessageIds.length
 	};
 };
 
-export { type ConversationGenerationParams, generateConversation };
+const populateConversationInEmailStore = ({
+	conversation,
+	messageIds
+}: {
+	conversation: ConversationGenerationParams;
+	messageIds: string[];
+}): void => {
+	const messages = messageIds.map((messageId) =>
+		generateMessage({ id: messageId, folderId: FOLDERS.INBOX, cid: conversation.id })
+	);
+	setMessagesInEmailStore(messages);
+
+	const generatedConversation = generateConversation({
+		id: conversation.id,
+		messageIds
+	});
+	setConversationsInEmailStore([generatedConversation], false);
+};
+
+export {
+	type ConversationGenerationParams,
+	generateConversation,
+	populateConversationInEmailStore
+};

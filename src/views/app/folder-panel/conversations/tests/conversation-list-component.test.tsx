@@ -6,12 +6,11 @@
 import React from 'react';
 
 import { screen } from '@testing-library/react';
-import { times } from 'lodash';
 
 import { FOLDERS } from '../../../../../carbonio-ui-commons/constants/folders';
+import { populateFoldersStore } from '../../../../../carbonio-ui-commons/test/mocks/store/folders';
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
-import { updateConversations } from '../../../../../store/emails/store';
-import { generateConversation } from '../../../../../tests/generators/generateConversation';
+import { populateConversationInEmailStore } from '../../../../../tests/generators/generateConversation';
 import {
 	ConversationListComponent,
 	ConversationListComponentProps
@@ -24,13 +23,20 @@ describe.each`
 	${'search conversation list'} | ${true}
 `('$type list component', ({ isSearchModule }) => {
 	test('populate a conversation list and check that the conversations are visible', async () => {
-		// Populate a conversation list
-		const CONVERSATIONS_COUNT = 100;
+		const CONVERSATIONS_COUNT: number = 100;
 		const folderId = FOLDERS.INBOX;
-		const conversations = times(CONVERSATIONS_COUNT, (index) =>
-			generateConversation({ id: `${index}`, folderId, isSingleMessageConversation: false })
+		populateFoldersStore();
+
+		Array.from({ length: CONVERSATIONS_COUNT }).forEach((_, index) => {
+			populateConversationInEmailStore({
+				conversation: { id: index.toString() },
+				messageIds: ['1']
+			});
+		});
+
+		const conversationsIds = Array.from({ length: CONVERSATIONS_COUNT }).map((_, index) =>
+			index.toString()
 		);
-		updateConversations(conversations);
 
 		const toggle = jest.fn();
 		const selectAll = jest.fn();
@@ -39,10 +45,10 @@ describe.each`
 		const setIsSelectModeOn = jest.fn();
 		const dragImageRef = React.createRef<HTMLInputElement>();
 
-		const listItems = conversations.map((conversation, index) => (
+		const listItems = conversationsIds.map((conversationId, index) => (
 			<ConversationListItemComponent
 				key={index}
-				conversationId={conversation.id}
+				conversationId={conversationId}
 				activeItemId=""
 				selected={false}
 				selecting={false}
@@ -57,11 +63,11 @@ describe.each`
 		const props: ConversationListComponentProps = {
 			displayerTitle: null,
 			listItems,
-			totalConversations: conversations.length,
+			totalConversations: conversationsIds.length,
 			conversationsLoadingCompleted: true,
 			selectedIds: [],
 			folderId,
-			conversationsIds: conversations.map((conversation) => conversation.id),
+			conversationsIds,
 			isSelectModeOn: false,
 			selected: {},
 			deselectAll,
@@ -79,7 +85,7 @@ describe.each`
 		const items = await screen.findAllByTestId(/ConversationListItem-/);
 
 		// Test that there is a list item for each conversation
-		expect(items.length).toBe(conversations.length);
+		expect(items.length).toBe(conversationsIds.length);
 
 		// Test that every list item is visible
 		items.forEach((item) => {

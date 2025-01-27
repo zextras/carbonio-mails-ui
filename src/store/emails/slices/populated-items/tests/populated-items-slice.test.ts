@@ -111,6 +111,34 @@ describe('store-populated-items-slice', () => {
 		});
 	});
 
+	describe('updateConversations', () => {
+		it('updates conversations correctly', async () => {
+			const convId = '1';
+			const messages = [
+				generateMessage({ id: '1', cid: convId }),
+				generateMessage({ id: '2', cid: convId })
+			];
+			act(() => {
+				setMessagesInEmailStore(messages);
+			});
+
+			const conversation = generateConversation({
+				id: convId,
+				messageIds: messages.map((message) => message.id)
+			});
+
+			act(() => {
+				setConversationsInEmailStore([conversation], false);
+			});
+
+			const { result: conversationFromStore } = renderHook(() =>
+				useConversationById(conversation.id)
+			);
+
+			expect(conversationFromStore.current?.id).toBe(conversation.id);
+		});
+	});
+
 	describe('useMessagesByIds', () => {
 		it('returns messages by ids, respecting the order', async () => {
 			const message1 = generateMessage({ id: '1' });
@@ -220,6 +248,34 @@ describe('store-populated-items-slice', () => {
 	});
 
 	describe('useConversationMessages', () => {
+		it('should return messages from conversation', async () => {
+			const messages = [
+				generateMessage({ id: '1' }),
+				generateMessage({ id: '2' }),
+				generateMessage({ id: '3' })
+			];
+			const conversation = generateConversation({
+				id: '1',
+				messageIds: messages.map((message) => message.id)
+			});
+
+			act(() => {
+				updateMessages(messages);
+			});
+			act(() => {
+				updateConversations([conversation]);
+			});
+
+			const { result: conversation1StoreMessages } = renderHook(() =>
+				useConversationMessages(conversation.id)
+			);
+
+			expect(conversation1StoreMessages.current).toHaveLength(3);
+			expect(conversation1StoreMessages.current[0].id).toBe('1');
+			expect(conversation1StoreMessages.current[1].id).toBe('2');
+			expect(conversation1StoreMessages.current[2].id).toBe('3');
+		});
+
 		it('should not override other conversation messages', async () => {
 			const conversation1Messages = [
 				generateMessage({ id: '1' }),
