@@ -11,6 +11,7 @@ import {
 	FormSubSection,
 	Padding,
 	Table,
+	Text,
 	useModal,
 	useSnackbar
 } from '@zextras/carbonio-design-system';
@@ -211,6 +212,16 @@ const RecipientsCertificateSettings: FC = (): ReactElement => {
 				padding={{ all: 'large' }}
 			>
 				<Table rows={items} headers={headers} showCheckbox={false} multiSelect={false} />
+				{items.length === 0 && (
+					<Container padding={{ vertical: 'large' }}>
+						<Text>
+							{t(
+								'settings.uploadCertificate.noRecipientCertificate',
+								'Recipients certificate list is empty'
+							)}
+						</Text>
+					</Container>
+				)}
 				<Padding all="large" />
 				<Button
 					onClick={(): void => onUploadCertificate()}

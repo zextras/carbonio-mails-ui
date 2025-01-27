@@ -11,6 +11,7 @@ import {
 	FormSubSection,
 	Padding,
 	Table,
+	Text,
 	useModal,
 	useSnackbar
 } from '@zextras/carbonio-design-system';
@@ -217,12 +218,22 @@ const PersonalCertificatesSettings: FC = (): ReactElement => {
 			<FormSubSection
 				label={t(
 					'settings.uploadCertificate.personalCertificatesTitle',
-					'Personal certificates for signing and encryption'
+					'Personal certificates for signing, encryption and decryption'
 				)}
 				id={'personal-certificates'}
 				padding={{ all: 'large' }}
 			>
 				<Table rows={items} headers={headers} showCheckbox multiSelect={false} />
+				{items.length === 0 && (
+					<Container padding={{ vertical: 'large' }}>
+						<Text>
+							{t(
+								'settings.uploadCertificate.noPersonalCertificate',
+								'Personal certificate list is empty'
+							)}
+						</Text>
+					</Container>
+				)}
 				<Padding all="large" />
 				<Button
 					onClick={(): void => onUploadCertificate()}

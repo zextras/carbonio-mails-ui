@@ -30,8 +30,13 @@ export const ShowAllCertificatesModal = ({
 	const [selectedRows, setSelectedRows] = useState<string[]>([]);
 	const [localCertificates, setLocalCertificates] = useState(certificates);
 	const [isUpdateList, setIsUpdateList] = useState(false);
-
 	const headers = [
+		{
+			id: 'id',
+			label: 'Id',
+			width: '30%',
+			bold: true
+		},
 		{
 			id: 'issuer',
 			label: t('settings.uploadCertificate.issuer', 'Issuer'),
@@ -109,6 +114,7 @@ export const ShowAllCertificatesModal = ({
 	const items = localCertificates.map((certificate: Certificate, index: number) => ({
 		id: index.toString(),
 		columns: [
+			certificate.id,
 			certificate.issuer,
 			new Date(certificate.notBefore).toLocaleString(),
 			new Date(certificate.notAfter).toLocaleString(),
@@ -133,7 +139,7 @@ export const ShowAllCertificatesModal = ({
 	}));
 
 	const activateSelectedCertificate = useCallback(() => {
-		const selectedCertificate = certificates[parseInt(selectedRows[0], 10)];
+		const selectedCertificate = localCertificates[parseInt(selectedRows[0], 10)];
 		if (selectedCertificate.id) {
 			selectPersonalCertificate(smimePassword, selectedCertificate.id).then((res) => {
 				if ('data' in res) {
@@ -164,7 +170,7 @@ export const ShowAllCertificatesModal = ({
 				}
 			});
 		}
-	}, [certificates, createSnackbar, onClose, selectedRows, smimePassword, t]);
+	}, [createSnackbar, localCertificates, onClose, selectedRows, smimePassword, t]);
 
 	const onCloseModal = useCallback(() => {
 		onClose(isUpdateList);
