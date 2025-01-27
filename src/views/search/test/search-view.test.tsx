@@ -108,11 +108,12 @@ async function waitAndMakeMessageVisible(messageId: string): Promise<void> {
 
 function getSoapMessage(
 	messageId: string,
-	initialData?: Partial<SoapIncompleteMessage>
+	initialData?: Partial<SoapIncompleteMessage>,
+	id?: string
 ): SoapMailMessage {
 	return {
 		id: messageId,
-		cid: '1',
+		cid: id ?? '1',
 		e: [],
 		su: 'message Subject',
 		s: 71116,
@@ -133,7 +134,7 @@ function getSoapConversation(id: string): SoapConversation {
 		f: 'flag',
 		tn: 'tag names',
 		d: 123,
-		m: [getSoapMessage('123')],
+		m: [getSoapMessage('123', undefined, id)],
 		e: [],
 		su: 'conversations Subject',
 		fr: 'fragment'
@@ -174,7 +175,7 @@ describe('SearchView', () => {
 			const searchSettings = setupSearchViewTest({ viewBy: 'conversation', query: 'hello' });
 			const { queryChip } = searchSettings;
 
-			createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
+			const interceptor = createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
 				c: [getSoapConversation('123')],
 				more: false
 			});
@@ -186,6 +187,7 @@ describe('SearchView', () => {
 			};
 
 			setupTest(<SearchView {...searchViewProps} />);
+			await interceptor;
 			await waitAndMakeConversationVisible('123');
 			const conversation = await screen.findByText('conversations Subject');
 			expect(conversation).toBeInTheDocument();
@@ -260,7 +262,7 @@ describe('SearchView', () => {
 		});
 
 		it('should display conversation as selected when user clicks on avatar', async () => {
-			const message = generateMessage({ id: '1' });
+			const message = generateMessage({ id: '1', cid: '123' });
 			setSearchResultsByConversation(
 				[generateConversation({ id: '123', messageIds: [message.id] })],
 				false
