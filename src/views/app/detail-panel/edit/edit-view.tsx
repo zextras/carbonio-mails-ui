@@ -350,17 +350,6 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 		createSmartLinksAction
 	]);
 
-	// const addCertificate = useCertificatesStore((state) => state.addCertificate);
-	// const onCertificateUploadConfirm = useCallback(
-	// 	(certificate: Certificate) => {
-	// 		if (identityEmailAddress) {
-	// 			addCertificate(identityEmailAddress, certificate);
-	// 			setIsSmimeSign(true);
-	// 		}
-	// 	},
-	// 	[addCertificate, identityEmailAddress, setIsSmimeSign]
-	// );
-
 	const handleCertificateResponse = useCallback(
 		(option: string, res: { data: Response } | { error: unknown }) => {
 			if ('data' in res) {
@@ -379,7 +368,10 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 					key: `info-on-certificate-missing`,
 					replace: true,
 					severity: 'info',
-					label: 'Please upload your certificate from settings',
+					label: t(
+						'settings.uploadCertificate.uploadCertificateInSettings',
+						'Please upload your certificate from settings'
+					),
 					autoHideTimeout: 3000,
 					hideButton: true
 				});
@@ -429,10 +421,13 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 						setIsSmimeEncrypt(false);
 					}
 					createSnackbar({
-						key: `info-on-certificate-missing`,
+						key: `info-on-password-missing`,
 						replace: true,
 						severity: 'info',
-						label: 'Please create your encryption password from settings',
+						label: t(
+							'settings.uploadCertificate.createPasswordFromSettings',
+							'Please create your encryption password from settings'
+						),
 						autoHideTimeout: 3000,
 						hideButton: true
 					});
@@ -451,7 +446,6 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 
 	useEffect(() => {
 		if (identityEmailAddress && (isSmimeSign || isSmimeEncrypt)) {
-			console.log('identityEmailAddress #######', identityEmailAddress);
 			if (isSmimeSign) {
 				checkCertificateExist('sign');
 			} else {

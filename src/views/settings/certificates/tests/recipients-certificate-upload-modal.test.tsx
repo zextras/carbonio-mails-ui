@@ -8,15 +8,18 @@ import React from 'react';
 import { screen } from '@testing-library/react';
 
 import { setupTest } from '../../../../carbonio-ui-commons/test/test-setup';
-import { CertificateUploadModal } from '../certificate-upload-modal';
+import { RecipientsCertificateUploadModal } from '../recipients-certificate-upload-modal';
 
-describe('CertificateUploadModal', () => {
+describe('RecipientsCertificateUploadModal', () => {
 	const onConfirm = jest.fn();
 	const onClose = jest.fn();
 
 	it('should render the modal with the correct title', async () => {
 		setupTest(
-			<CertificateUploadModal onClose={(): void => onClose()} onConfirm={(): void => onConfirm()} />
+			<RecipientsCertificateUploadModal
+				onClose={(): void => onClose()}
+				onConfirm={(): void => onConfirm()}
+			/>
 		);
 		const modalTitle = screen.getByText('Upload Certificate');
 		expect(modalTitle).toBeVisible();
@@ -24,7 +27,10 @@ describe('CertificateUploadModal', () => {
 
 	it('should render certificate browse button', async () => {
 		setupTest(
-			<CertificateUploadModal onClose={(): void => onClose()} onConfirm={(): void => onConfirm()} />
+			<RecipientsCertificateUploadModal
+				onClose={(): void => onClose()}
+				onConfirm={(): void => onConfirm()}
+			/>
 		);
 		const button = screen.getByRole('button', {
 			name: 'Browse'
@@ -34,7 +40,10 @@ describe('CertificateUploadModal', () => {
 
 	it('should render certificate upload button', async () => {
 		setupTest(
-			<CertificateUploadModal onClose={(): void => onClose()} onConfirm={(): void => onConfirm()} />
+			<RecipientsCertificateUploadModal
+				onClose={(): void => onClose()}
+				onConfirm={(): void => onConfirm()}
+			/>
 		);
 		const button = screen.getByRole('button', {
 			name: 'Upload'
@@ -44,22 +53,20 @@ describe('CertificateUploadModal', () => {
 
 	it('should render the file input field', () => {
 		setupTest(
-			<CertificateUploadModal onClose={(): void => onClose()} onConfirm={(): void => onConfirm()} />
+			<RecipientsCertificateUploadModal
+				onClose={(): void => onClose()}
+				onConfirm={(): void => onConfirm()}
+			/>
 		);
 		const text = screen.getByTestId('certificate-file-name');
 		expect(text).toBeInTheDocument();
 	});
-
-	it('should render the password input field', () => {
-		setupTest(
-			<CertificateUploadModal onClose={(): void => onClose()} onConfirm={(): void => onConfirm()} />
-		);
-		const text = screen.getByTestId('certificate-password');
-		expect(text).toBeInTheDocument();
-	});
 	it('should disable certificate upload button', async () => {
 		setupTest(
-			<CertificateUploadModal onClose={(): void => onClose()} onConfirm={(): void => onConfirm()} />
+			<RecipientsCertificateUploadModal
+				onClose={(): void => onClose()}
+				onConfirm={(): void => onConfirm()}
+			/>
 		);
 		const button = screen.getByRole('button', {
 			name: 'Upload'

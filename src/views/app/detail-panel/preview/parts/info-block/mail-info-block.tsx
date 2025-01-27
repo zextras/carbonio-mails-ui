@@ -110,10 +110,13 @@ export const MailInfoBlock = ({ msg }: MailInfoProps): React.JSX.Element | null 
 						);
 					} else {
 						createSnackbar({
-							key: `info-on-certificate-missing`,
+							key: `info-on-password-missing`,
 							replace: true,
 							severity: 'info',
-							label: 'Please create your encryption password from settings',
+							label: t(
+								'settings.uploadCertificate.createPasswordFromSettings',
+								'Please create your encryption password from settings'
+							),
 							autoHideTimeout: 3000,
 							hideButton: true
 						});
@@ -121,7 +124,7 @@ export const MailInfoBlock = ({ msg }: MailInfoProps): React.JSX.Element | null 
 				});
 			}
 		},
-		[closeModal, createModal, createSnackbar, messagesStoreDispatch, msg, smimePassword]
+		[closeModal, createModal, createSnackbar, messagesStoreDispatch, msg.id, smimePassword, t]
 	);
 
 	const showInfoDetails =
