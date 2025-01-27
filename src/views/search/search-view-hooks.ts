@@ -25,9 +25,11 @@ import {
 	useSearchResults,
 	setSearchResultsByMessage,
 	setSearchResultsByConversation,
-	resetSearchAndPopulatedItems
+	resetSearchAndPopulatedItems,
+	setMessagesInEmailStore
 } from '../../store/emails/store';
 import { IncompleteMessage, MailMessage, SearchResponse, SearchIndexSliceState } from '../../types';
+import { extractConvMessage } from '../sidebar/commons/sync-data-handler-hooks';
 
 type UseRunSearchProps = {
 	query: QueryChip[];
@@ -106,6 +108,8 @@ export function handleSearchResults({
 	const tags = getTags();
 	if (searchResponse.c) {
 		handleFulFilledConversationResults({ searchResponse, tags });
+		const messages = extractConvMessage(searchResponse.c);
+		setMessagesInEmailStore(messages);
 	}
 
 	if (searchResponse.m) {

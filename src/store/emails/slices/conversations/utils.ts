@@ -15,7 +15,7 @@ import { API_REQUEST_STATUS } from '../../../../constants';
 import { EmailsStoreState, NormalizedConversation, SearchRequestStatus } from '../../../../types';
 import { POPULATED_ITEMS_SLICE_INITIAL_STATE } from '../populated-items/populated-items-slice';
 
-function setConversations(
+function setConversationsInEmailStore(
 	conversations: Array<NormalizedConversation>,
 	more: boolean,
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
@@ -26,7 +26,6 @@ function setConversations(
 			store.conversationIndexSlice.status = API_REQUEST_STATUS.fulfilled;
 			store.conversationIndexSlice.offset = 0;
 			store.conversationIndexSlice.more = more;
-
 			store.populatedItemsSlice.conversations = conversations.reduce(
 				(acc, conv) => {
 					acc[conv.id] = conv;
@@ -104,7 +103,7 @@ function appendConversationsToConversationIndexSlice(
 }
 
 export const conversationIndexSliceUtils = {
-	setConversations,
+	setConversationsInEmailStore,
 	useConversationsIdsByFolder,
 	resetConversationAndPopulatedItems,
 	appendConversationsToConversationIndexSlice,

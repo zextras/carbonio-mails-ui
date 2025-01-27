@@ -18,6 +18,7 @@ type MessageGenerationParams = {
 	id?: string;
 	folderId?: string;
 	from?: Participant;
+	cid?: string;
 	to?: Array<Participant>;
 	cc?: Array<Participant>;
 	receiveDate?: number;
@@ -65,6 +66,7 @@ type MessageGenerationParams = {
  */
 const generateMessage = ({
 	id = faker.number.int().toString(),
+	cid = '123',
 	folderId = FOLDERS.INBOX,
 	receiveDate = faker.date.recent({ days: 1 }).valueOf(),
 	to = [{ type: ParticipantRole.TO, address: faker.internet.email() }],
@@ -92,7 +94,7 @@ const generateMessage = ({
 	attachments: undefined,
 	autoSendTime: 0,
 	body: { content: body, contentType: 'text/plain', truncated },
-	conversation: '',
+	conversation: cid,
 	date: receiveDate,
 	did: '',
 	flagged: isFlagged,

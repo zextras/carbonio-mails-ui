@@ -17,6 +17,7 @@ import { API_REQUEST_STATUS } from '../../../constants';
 import { normalizeConversations } from '../../../normalizations/normalize-conversation';
 import { normalizeMailMessageFromSoap } from '../../../normalizations/normalize-message';
 import { SearchResponse, SearchSoapApiParams } from '../../../types';
+import { extractConvMessage } from '../../../views/sidebar/commons/sync-data-handler-hooks';
 import {
 	updateMessagesResultsLoadingStatus,
 	setMessagesInEmailStore,
@@ -55,6 +56,8 @@ const handleSearchSoapApiResults = ({
 	// Handle conversations
 	if (Array.isArray(searchResponse.c) && searchResponse.c.length > 0) {
 		const conversations = normalizeConversations(searchResponse.c);
+		const messages = extractConvMessage(searchResponse.c);
+		if (messages.length > 0) setMessagesInEmailStore(messages);
 		setConversationsInEmailStore(conversations, searchResponse.more);
 		updateConversationsResultsLoadingStatus(API_REQUEST_STATUS.fulfilled);
 	}

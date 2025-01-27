@@ -37,11 +37,13 @@ import {
 	SoapLink
 } from '../../../types';
 
-function extractConvMessage(
+export function extractConvMessage(
 	createdConversations: Array<SoapConversation>
 ): Array<IncompleteMessage> {
 	const soapMessages = flatten(map(createdConversations, (conversation) => conversation.m));
-	return map(soapMessages, (message) => normalizeMailMessageFromSoap(message));
+	return soapMessages?.length > 0
+		? map(soapMessages, (message) => normalizeMailMessageFromSoap(message))
+		: [];
 }
 
 type SoapNotify = {

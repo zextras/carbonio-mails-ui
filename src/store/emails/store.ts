@@ -432,10 +432,10 @@ export function useMessagesIdsByFolder(folderId: string): Array<string> {
  */
 export function setMessagesInEmailStore(
 	messages: Array<MailMessage | IncompleteMessage>,
-	more: boolean
+	more?: boolean
 ): void {
 	addTask(async () => {
-		messageIndexSliceUtils.setMessages(messages, more, useEmailsStore);
+		messageIndexSliceUtils.setMessagesInEmailStore(messages, useEmailsStore, more);
 	});
 }
 
@@ -565,7 +565,7 @@ export function setConversationsInEmailStore(
 	more: boolean
 ): void {
 	addTask(async () => {
-		conversationIndexSliceUtils.setConversations(conversations, more, useEmailsStore);
+		conversationIndexSliceUtils.setConversationsInEmailStore(conversations, more, useEmailsStore);
 	});
 }
 
