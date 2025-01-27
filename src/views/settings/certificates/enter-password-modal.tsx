@@ -35,17 +35,17 @@ export const EnterPasswordModal = ({
 	const [password, setPassword] = useState<string>('');
 	const createSnackbar = useSnackbar();
 	const [t] = useTranslation();
-	const modalHeaderTitle = t('settings.certificatePassword.enter_password', 'Enter password');
+	const modalHeaderTitle = t('settings.uploadCertificate.enter_password', 'Enter password');
 
 	const onPasswordConfirm = useCallback(async (): Promise<void> => {
 		checkEncryptionPassword(password).then((res) => {
 			if ('data' in res) {
 				useSmimePasswordStore.getState().updateSmimePassword(password);
 				createSnackbar({
-					key: `error-on-certificate-upload`,
+					key: `password-is-correct`,
 					replace: true,
 					severity: 'success',
-					label: 'Password is correct',
+					label: t('settings.uploadCertificate.passwordIsCorrect', 'Password is correct'),
 					autoHideTimeout: 3000,
 					hideButton: true
 				});
@@ -54,16 +54,16 @@ export const EnterPasswordModal = ({
 			} else {
 				useSmimePasswordStore.getState().updateSmimePassword('');
 				createSnackbar({
-					key: `error-on-certificate-upload`,
+					key: `password-is-incorrect`,
 					replace: true,
 					severity: 'error',
-					label: 'Password is incorrect',
+					label: t('settings.uploadCertificate.passwordIsInCorrect', 'Password is incorrect'),
 					autoHideTimeout: 3000,
 					hideButton: true
 				});
 			}
 		});
-	}, [createSnackbar, onClose, onConfirm, password]);
+	}, [createSnackbar, onClose, onConfirm, password, t]);
 
 	const resetPassword = useCallback(() => {
 		onPasswordReset && onPasswordReset();
@@ -74,9 +74,9 @@ export const EnterPasswordModal = ({
 			<ModalHeader onClose={onClose} title={modalHeaderTitle} />
 			<Container padding={{ all: 'small' }} crossAlignment="flex-start" height="fit">
 				<Container orientation="vertical" mainAlignment="flex-start" crossAlignment="flex-start">
-					<Text size="small" overflow="break-word">
+					<Text size="medium" overflow="break-word">
 						{t(
-							'settings.certificatePassword.enter_password_msg',
+							'settings.uploadCertificate.EnterPasswordMsg',
 							'To use S/MIME related actions enter the password'
 						)}
 					</Text>
@@ -92,7 +92,7 @@ export const EnterPasswordModal = ({
 							onChange={(ev): void => {
 								setPassword && setPassword(ev.target.value);
 							}}
-							label={t('settings.certificatePassword.password', 'Password')}
+							label={t('settings.uploadCertificate.password', 'Password')}
 							data-testid="enter-password"
 						/>
 					</Row>
@@ -100,13 +100,13 @@ export const EnterPasswordModal = ({
 				{!hideReset && (
 					<Container orientation="vertical" mainAlignment="flex-start" crossAlignment="flex-start">
 						<Link underlined onClick={resetPassword}>
-							{t('settings.certificatePassword.reset_password', 'Reset password')}
+							{t('settings.uploadCertificate.resetPassword', 'Reset password')}
 						</Link>
 					</Container>
 				)}
 				<ModalFooter
 					onConfirm={onPasswordConfirm}
-					label={t('settings.certificatePassword.enter', 'Enter')}
+					label={t('settings.uploadCertificate.enter', 'Enter')}
 					secondaryAction={onClose}
 					secondaryLabel={t('label.close', 'Close')}
 				/>

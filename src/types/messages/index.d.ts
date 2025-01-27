@@ -59,6 +59,7 @@ export type IncompleteMessage = MailHeaders & {
 	isComplete: boolean;
 	isReplied: boolean;
 	isReadReceiptRequested?: boolean;
+	isEncrypted?: boolean;
 };
 
 export type MailMessagePart = {

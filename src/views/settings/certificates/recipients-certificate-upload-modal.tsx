@@ -5,16 +5,8 @@
  */
 import React, { useCallback, useRef, useState } from 'react';
 
-import {
-	Button,
-	Container,
-	Input,
-	Padding,
-	Row,
-	Tooltip,
-	useSnackbar
-} from '@zextras/carbonio-design-system';
-import { t } from '@zextras/carbonio-shell-ui';
+import { Button, Container, Input, Padding, Row, Tooltip } from '@zextras/carbonio-design-system';
+import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 
 import ModalFooter from '../../../carbonio-ui-commons/components/modals/modal-footer';
@@ -34,9 +26,9 @@ export const RecipientsCertificateUploadModal = ({
 }: RecipientsCertificateUploadModalPropType): React.JSX.Element => {
 	const [selectedFile, setSelectedFile] = useState<File | null>();
 	const inputRef = useRef<HTMLInputElement>(null);
-	const createSnackbar = useSnackbar();
+	const [t] = useTranslation();
 
-	const modalHeaderTitle = t('modal.uploadCertificate.uploadCertificate', 'Upload Certificate');
+	const modalHeaderTitle = t('settings.uploadCertificate.uploadCertificate', 'Upload Certificate');
 	const onCertificateFileBrowse = useCallback(() => {
 		if (inputRef.current) {
 			inputRef.current.value = '';
@@ -59,14 +51,12 @@ export const RecipientsCertificateUploadModal = ({
 				if (fileContent !== null && fileContent !== undefined) {
 					onConfirm(fileContent);
 				} else {
-					console.error('=== File content is null');
+					console.error('Error file content is null');
 				}
 			};
-
 			reader.onerror = (): void => {
-				console.error('====Failed to read the file');
+				console.error('Failed to read the file');
 			};
-
 			// Read the file as text
 			reader.readAsText(selectedFile);
 		}
@@ -85,13 +75,13 @@ export const RecipientsCertificateUploadModal = ({
 					<Row mainAlignment="flex-start" width="22rem">
 						<Input
 							label={t(
-								'modal.uploadCertificate.smimeCertificate',
-								'S/MIME Certificate (i.e. certificate.p12)'
+								'settings.uploadCertificate.smimeRecipientCertificate',
+								'S/MIME Certificate (i.e. certificate.crt)'
 							)}
 							value={selectedFile ? selectedFile.name : ''}
-							hideBorder
 							data-testid="certificate-file-name"
 							onChange={(): null => null}
+							style={{ pointerEvents: 'none' }}
 						/>
 					</Row>
 					<Padding left="medium">
@@ -111,10 +101,12 @@ export const RecipientsCertificateUploadModal = ({
 					ref={inputRef}
 					data-testid="certificate-file-input"
 					onChange={onChange}
+					accept=".crt"
 				/>
 				<ModalFooter
 					onConfirm={onCertificateFileUpload}
-					label={t('modal.uploadCertificate.upload', 'Upload')}
+					label={t('settings.uploadCertificate.upload', 'Upload')}
+					disabled={!selectedFile}
 				/>
 			</Container>
 		</Container>

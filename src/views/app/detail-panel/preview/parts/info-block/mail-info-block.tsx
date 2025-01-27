@@ -5,15 +5,20 @@
  */
 import React, { useCallback } from 'react';
 
-import { Container, Link, useModal } from '@zextras/carbonio-design-system';
+import { Container, Link, Padding, useModal, useSnackbar } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
 
 import { DistributionListIcon } from './distribution-list-icon';
 import { ExternalDomainIcon } from './external-domain-icon';
 import { MailSensitivityIcon } from './mail-sensitivity-icon';
 import { SmimeIcon } from './smime-icon';
+import { useAppDispatch } from '../../../../../../hooks/redux';
+import { getMsgAsyncThunk } from '../../../../../../store/actions';
+import { checkExistEncryptionPassword } from '../../../../../../store/actions/check-exist-password-action';
 import { StoreProvider } from '../../../../../../store/redux';
+import { useSmimePasswordStore } from '../../../../../../store/zustand/certificates/store';
 import { IncompleteMessage } from '../../../../../../types';
+import { EnterPasswordModal } from '../../../../../settings/certificates/enter-password-modal';
 import { MailInfoDetailModal } from '../info-details-modal/mail-info-detail-modal';
 
 type MailInfoProps = {
@@ -23,6 +28,9 @@ type MailInfoProps = {
 export const MailInfoBlock = ({ msg }: MailInfoProps): React.JSX.Element | null => {
 	const [t] = useTranslation();
 	const { createModal, closeModal } = useModal();
+	const messagesStoreDispatch = useAppDispatch();
+	const { smimePassword } = useSmimePasswordStore();
+	const createSnackbar = useSnackbar();
 
 	const signature = msg.signature?.[0];
 	const creationDateFromHeaders = msg.creationDateFromMailHeaders;
@@ -71,6 +79,51 @@ export const MailInfoBlock = ({ msg }: MailInfoProps): React.JSX.Element | null 
 		]
 	);
 
+	const dencryptMessage = useCallback(
+		(event: React.MouseEvent): void => {
+			event.stopPropagation();
+			if (smimePassword !== '') {
+				messagesStoreDispatch(getMsgAsyncThunk({ msgId: msg.id, smimePassword }));
+			} else {
+				checkExistEncryptionPassword().then((res) => {
+					if ('data' in res) {
+						const id = Date.now().toString();
+						createModal(
+							{
+								id,
+								size: 'medium',
+								children: (
+									<Container crossAlignment="baseline">
+										<EnterPasswordModal
+											onConfirm={(password): void => {
+												messagesStoreDispatch(
+													getMsgAsyncThunk({ msgId: msg.id, smimePassword: password })
+												);
+											}}
+											onClose={(): void => closeModal?.(id)}
+											hideReset
+										/>
+									</Container>
+								)
+							},
+							true
+						);
+					} else {
+						createSnackbar({
+							key: `info-on-certificate-missing`,
+							replace: true,
+							severity: 'info',
+							label: 'Please create your encryption password from settings',
+							autoHideTimeout: 3000,
+							hideButton: true
+						});
+					}
+				});
+			}
+		},
+		[closeModal, createModal, createSnackbar, messagesStoreDispatch, msg, smimePassword]
+	);
+
 	const showInfoDetails =
 		!!messageIdFromHeaders ||
 		!!creationDateFromHeaders ||
@@ -93,6 +146,14 @@ export const MailInfoBlock = ({ msg }: MailInfoProps): React.JSX.Element | null 
 				<Link size="medium" onClick={showMailDetailsModal}>
 					{t('label.show_details', 'Show Details')}
 				</Link>
+			)}
+			{msg.isEncrypted && (
+				<>
+					<Padding right="small" />
+					<Link size="medium" onClick={dencryptMessage}>
+						{t('label.decrypt_message', 'Decrypt Message')}
+					</Link>
+				</>
 			)}
 		</Container>
 	);

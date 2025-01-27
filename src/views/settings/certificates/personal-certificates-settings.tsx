@@ -14,6 +14,7 @@ import {
 	useModal,
 	useSnackbar
 } from '@zextras/carbonio-design-system';
+import { useTranslation } from 'react-i18next';
 
 import { CertificateUploadModal } from './certificate-upload-modal';
 import { ShowAllCertificatesModal } from './show-all-certificates-modal';
@@ -23,65 +24,51 @@ import {
 	PersonalCertificate,
 	useSmimePasswordStore
 } from '../../../store/zustand/certificates/store';
-import type { AccountIdentity, IdentityProps } from '../../../types';
 import { Certificate } from '../../../types/certificates';
 
-type PersonalCertificatesSettingsPropsType = {
-	updatedIdentities?: AccountIdentity[];
-	updateIdentities?: (arg: {
-		target?: {
-			name: string;
-			value: string;
-		};
-		_attrs?: IdentityProps;
-	}) => void;
-};
-
-const PersonalCertificatesSettings: FC<PersonalCertificatesSettingsPropsType> = ({
-	updatedIdentities,
-	updateIdentities
-}): ReactElement => {
+const PersonalCertificatesSettings: FC = (): ReactElement => {
 	const [certificates, setCertificates] = useState<Certificate[]>([]);
 
 	const { createModal, closeModal } = useModal();
 	const id = Date.now().toString();
 	const { smimePassword } = useSmimePasswordStore();
 	const createSnackbar = useSnackbar();
+	const [t] = useTranslation();
 
 	const headers = [
 		{
 			id: 'email',
-			label: 'Mail address',
+			label: t('settings.uploadCertificate.mailAddress', 'Mail address'),
 			width: '20%',
 			bold: true
 		},
 		{
 			id: 'issuer',
-			label: 'Issuer',
+			label: t('settings.uploadCertificate.issuer', 'Issuer'),
 			width: '30%',
 			bold: true
 		},
 		{
 			id: 'validfrom',
-			label: 'Valid From',
+			label: t('settings.uploadCertificate.validFrom', 'Valid From'),
 			width: '20%',
 			bold: true
 		},
 		{
 			id: 'validto',
-			label: 'Valid To',
+			label: t('settings.uploadCertificate.validTo', 'Valid To'),
 			width: '20%',
 			bold: true
 		},
 		{
 			id: 'status',
-			label: 'Status',
+			label: t('settings.uploadCertificate.status', 'Status'),
 			width: '20%',
 			bold: true
 		},
 		{
 			id: 'serial',
-			label: 'Serial',
+			label: t('settings.uploadCertificate.serial', 'Serial'),
 			width: '20%',
 			bold: true
 		}
@@ -93,19 +80,22 @@ const PersonalCertificatesSettings: FC<PersonalCertificatesSettingsPropsType> = 
 				setCertificates(res.data);
 			} else {
 				createSnackbar({
-					key: `error-on-certificate-upload`,
+					key: `error-on-fetching-certificate`,
 					replace: true,
 					severity: 'error',
-					label: 'Error loading certificates',
+					label: t(
+						'settings.uploadCertificate.errorWhileFetchingCert',
+						'Error while fetching certificates'
+					),
 					autoHideTimeout: 3000,
 					hideButton: true
 				});
 			}
 		});
-	}, [createSnackbar]);
+	}, [createSnackbar, t]);
 
 	const showAllCertificate = useCallback(
-		(certificate: any): void => {
+		(certificate: Certificate[]): void => {
 			closeModal && closeModal(id);
 			createModal(
 				{
@@ -115,10 +105,11 @@ const PersonalCertificatesSettings: FC<PersonalCertificatesSettingsPropsType> = 
 						<Container crossAlignment="baseline">
 							<ShowAllCertificatesModal
 								certificates={certificate}
-								onClose={(): void => closeModal?.(id)}
-								onCertificateUpdate={(): void => {
-									loadPersonalCertificates();
-									console.log('===>> onCertificateUpdate called');
+								onClose={(isUpdateList): void => {
+									if (isUpdateList) {
+										loadPersonalCertificates();
+									}
+									closeModal?.(id);
 								}}
 							/>
 						</Container>
@@ -127,42 +118,44 @@ const PersonalCertificatesSettings: FC<PersonalCertificatesSettingsPropsType> = 
 				true
 			);
 		},
-		[closeModal, createModal, id]
+		[closeModal, createModal, id, loadPersonalCertificates]
 	);
 
 	const onCertificateUploadConfirm = useCallback(
 		(certificate: PersonalCertificate) => {
-			console.log('==== onCertificateUploadConfirm::>>', { certificate });
-			uploadPersonalCertificate(certificate, smimePassword, false).then((res) => {
+			uploadPersonalCertificate(certificate, smimePassword, true).then((res) => {
 				if ('data' in res) {
 					createSnackbar({
-						key: `error-on-certificate-upload`,
+						key: `certificate-uploaded`,
 						replace: true,
 						severity: 'success',
-						label: 'Certificate uploaded successfully',
+						label: t(
+							'settings.uploadCertificate.certtificateUploaded',
+							'Certificate uploaded successfully'
+						),
 						autoHideTimeout: 3000,
 						hideButton: true
 					});
 					loadPersonalCertificates();
 				} else {
-					useSmimePasswordStore.getState().updateSmimePassword('');
 					createSnackbar({
 						key: `error-on-certificate-upload`,
 						replace: true,
 						severity: 'error',
-						label: 'Error uploading certificate',
+						label: t(
+							'settings.uploadCertificate.errorWhileUploadCert',
+							'Error while uploading certificate'
+						),
 						autoHideTimeout: 3000,
 						hideButton: true
 					});
 				}
 			});
 		},
-		[createSnackbar, loadPersonalCertificates, smimePassword]
+		[createSnackbar, loadPersonalCertificates, smimePassword, t]
 	);
 
 	const onUploadCertificate = useCallback(() => {
-		console.log('==== onUploadCertificate::>>');
-		const id = Date.now().toString();
 		createModal(
 			{
 				id,
@@ -178,28 +171,42 @@ const PersonalCertificatesSettings: FC<PersonalCertificatesSettingsPropsType> = 
 			},
 			true
 		);
-	}, [closeModal, createModal, onCertificateUploadConfirm]);
+	}, [closeModal, createModal, id, onCertificateUploadConfirm]);
 
 	useEffect(() => {
 		loadPersonalCertificates();
 	}, [loadPersonalCertificates]);
 
-	const items = certificates.map((certificate: any, index) => ({
+	const items = certificates.map((certificate: Certificate, index) => ({
 		id: index.toString(),
 		columns: [
 			certificate.email,
 			certificate.issuer,
 			new Date(certificate.notBefore).toLocaleString(),
 			new Date(certificate.notAfter).toLocaleString(),
-			certificate.notAfter > Date.now() ? 'Active' : 'Expired',
+			((): string => {
+				if (certificate.selected) return 'Active';
+				if (certificate.notAfter > Date.now()) return 'Deactive';
+				return 'Expired';
+			})(),
 			certificate.serial
 		],
-		onClick: (e: React.MouseEvent<HTMLTableRowElement>): void => {
+		onClick: (): void => {
 			getPersonalCertificates(certificate.email).then((res) => {
 				if ('data' in res) {
 					showAllCertificate(res.data);
 				} else {
-					// Error
+					createSnackbar({
+						key: `error-on-get-certificate`,
+						replace: true,
+						severity: 'error',
+						label: t(
+							'settings.uploadCertificate.errorWhileFetchingCert',
+							'Error while fetching certificates'
+						),
+						autoHideTimeout: 3000,
+						hideButton: true
+					});
 				}
 			});
 		},
@@ -208,13 +215,19 @@ const PersonalCertificatesSettings: FC<PersonalCertificatesSettingsPropsType> = 
 	return (
 		<>
 			<FormSubSection
-				label="Personal certificates for signing and encryption"
-				id={''}
+				label={t(
+					'settings.uploadCertificate.personalCertificatesTitle',
+					'Personal certificates for signing and encryption'
+				)}
+				id={'personal-certificates'}
 				padding={{ all: 'large' }}
 			>
 				<Table rows={items} headers={headers} showCheckbox multiSelect={false} />
 				<Padding all="large" />
-				<Button onClick={(): void => onUploadCertificate()} label="Upload Certificate" />
+				<Button
+					onClick={(): void => onUploadCertificate()}
+					label={t('settings.uploadCertificate.uploadCertificate', 'Upload Certificate')}
+				/>
 			</FormSubSection>
 		</>
 	);

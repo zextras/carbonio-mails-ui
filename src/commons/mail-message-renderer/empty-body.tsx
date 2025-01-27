@@ -13,3 +13,9 @@ export const EmptyBody = (): React.JSX.Element => (
 		<Text>{`(${t('messages.no_content', 'This message has no text content')}.)`}</Text>
 	</Container>
 );
+
+export const EncryptedMsg = (): React.JSX.Element => (
+	<Container padding={{ bottom: 'medium' }}>
+		<Text>{`(${t('messages.encrypted_message', 'This message has been encrypted. To view it click on "Decrypt Message"')}.)`}</Text>
+	</Container>
+);

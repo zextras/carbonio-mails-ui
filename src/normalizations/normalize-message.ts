@@ -385,6 +385,7 @@ export const normalizeMailMessageFromSoap = (
 			autoSendTime: m.autoSendTime,
 			...flags,
 			isReadReceiptRequested: haveReadReceipt(m.e, m.f, m.l) && !isNil(isComplete) && isComplete,
+			isEncrypted: !!find(m.mp, (part) => part.ct === 'application/pkcs7-mime'),
 			...normalizedMailHeaders
 		},
 		isNil

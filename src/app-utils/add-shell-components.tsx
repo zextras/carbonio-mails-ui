@@ -125,7 +125,7 @@ export const addComponentsToShell = async (): Promise<void> => {
 	addSettingsView({
 		icon: 'AwardOutline',
 		route: CERTIFICATES_ROUTE,
-		label: t('label.smime_certificates', 'S/MIME Certificates'),
+		label: t('settings.smime_certificates', 'S/MIME Certificates'),
 		component: CertificatesView
 	});
 

@@ -17,47 +17,48 @@ import { Certificate } from '../../../types/certificates';
 
 type EnterPasswordModalPropType = {
 	certificates: Certificate[];
-	onClose: () => void;
-	onCertificateUpdate: () => void;
+	onClose: (isUpdateList: boolean) => void;
 };
 export const ShowAllCertificatesModal = ({
 	certificates,
-	onClose,
-	onCertificateUpdate
+	onClose
 }: EnterPasswordModalPropType): React.JSX.Element => {
 	const [t] = useTranslation();
 	const createSnackbar = useSnackbar();
 	const { smimePassword } = useSmimePasswordStore();
 	const modalHeaderTitle = `Personal Cetificates of ${certificates[0].email}`; // t('settings.certificatePassword.enter_password', 'Enter password');
 	const [selectedRows, setSelectedRows] = useState<string[]>([]);
+	const [localCertificates, setLocalCertificates] = useState(certificates);
+	const [isUpdateList, setIsUpdateList] = useState(false);
+
 	const headers = [
 		{
 			id: 'issuer',
-			label: 'Issuer',
+			label: t('settings.uploadCertificate.issuer', 'Issuer'),
 			width: '30%',
 			bold: true
 		},
 		{
 			id: 'validfrom',
-			label: 'Valid From',
+			label: t('settings.uploadCertificate.validFrom', 'Valid From'),
 			width: '20%',
 			bold: true
 		},
 		{
 			id: 'validto',
-			label: 'Valid To',
+			label: t('settings.uploadCertificate.validTo', 'Valid To'),
 			width: '20%',
 			bold: true
 		},
 		{
 			id: 'status',
-			label: 'Status',
+			label: t('settings.uploadCertificate.status', 'Status'),
 			width: '20%',
 			bold: true
 		},
 		{
 			id: 'serial',
-			label: 'Serial',
+			label: t('settings.uploadCertificate.serial', 'Serial'),
 			width: '20%',
 			bold: true
 		},
@@ -70,39 +71,42 @@ export const ShowAllCertificatesModal = ({
 
 	const deleteCertificate = useCallback(
 		(certificate: Certificate) => {
-			console.log('===>> Delete certificate;;>>', certificate);
-
 			deletePersonalCertificate(certificate.id, smimePassword).then((res) => {
 				if ('data' in res) {
 					createSnackbar({
-						key: `error-on-certificate-upload`,
+						key: `certificate-deleted`,
 						replace: true,
 						severity: 'success',
-						label: 'Certificate deleted successfully',
+						label: t(
+							'settings.uploadCertificate.certificateDeleted',
+							'Certificate deleted successfully'
+						),
 						autoHideTimeout: 3000,
 						hideButton: true
 					});
-					// setSelectedRows((prevSelectedRows) =>
-					// 	prevSelectedRows.filter((rowId) => rowId !== certificate.id.toString())
-					// );
-					// items.filter((item) => item.id !== certificate.id.toString());
-					// setItems(updatedItems);
+					setLocalCertificates((prevCertificates) =>
+						prevCertificates.filter((cert) => cert.id !== certificate.id)
+					);
+					setIsUpdateList(true);
 				} else {
 					createSnackbar({
-						key: `error-on-certificate-upload`,
+						key: `error-on-certificate-delete`,
 						replace: true,
 						severity: 'error',
-						label: 'Failed to delete certificate',
+						label: t(
+							'settings.uploadCertificate.certificateDeleteFailed',
+							'Failed to delete certificate'
+						),
 						autoHideTimeout: 3000,
 						hideButton: true
 					});
 				}
 			});
 		},
-		[createSnackbar, smimePassword]
+		[createSnackbar, smimePassword, t]
 	);
 
-	const items = certificates.map((certificate: Certificate, index: number) => ({
+	const items = localCertificates.map((certificate: Certificate, index: number) => ({
 		id: index.toString(),
 		columns: [
 			certificate.issuer,
@@ -118,11 +122,11 @@ export const ShowAllCertificatesModal = ({
 				<Button
 					icon="Trash2Outline"
 					onClick={(): void => {
-						console.log('===>> Delete certificate:>>', certificate);
 						deleteCertificate(certificate);
 					}}
 					size="large"
 					type="ghost"
+					color={'error'}
 				/>
 			</Container>
 		]
@@ -134,30 +138,41 @@ export const ShowAllCertificatesModal = ({
 			selectPersonalCertificate(smimePassword, selectedCertificate.id).then((res) => {
 				if ('data' in res) {
 					createSnackbar({
-						key: `error-on-certificate-upload`,
+						key: `certificate-activated`,
 						replace: true,
 						severity: 'success',
-						label: 'Certificate activated successfully',
+						label: t(
+							'settings.uploadCertificate.certificateActivated',
+							'Certificate activated successfully'
+						),
 						autoHideTimeout: 3000,
 						hideButton: true
 					});
+					onClose(true);
 				} else {
 					createSnackbar({
-						key: `error-on-certificate-upload`,
+						key: `error-on-certificate-activate`,
 						replace: true,
 						severity: 'error',
-						label: 'Error activating certificate',
+						label: t(
+							'settings.uploadCertificate.certificateActivateFailed',
+							'Failed to activate certificate'
+						),
 						autoHideTimeout: 3000,
 						hideButton: true
 					});
 				}
 			});
 		}
-	}, [certificates, createSnackbar, selectedRows, smimePassword]);
+	}, [certificates, createSnackbar, onClose, selectedRows, smimePassword, t]);
+
+	const onCloseModal = useCallback(() => {
+		onClose(isUpdateList);
+	}, [isUpdateList, onClose]);
 
 	return (
 		<Container mainAlignment="center" crossAlignment="flex-start" height="fit">
-			<ModalHeader onClose={onClose} title={modalHeaderTitle} />
+			<ModalHeader onClose={onCloseModal} title={modalHeaderTitle} />
 			<Container padding={{ all: 'small' }} crossAlignment="flex-start" height="fit">
 				<Table
 					rows={items}
@@ -170,10 +185,10 @@ export const ShowAllCertificatesModal = ({
 				/>
 				<ModalFooter
 					onConfirm={activateSelectedCertificate}
-					label="Set Active"
+					label={t('settings.uploadCertificate.setActive', 'Set Active')}
 					disabled={selectedRows.length === 0}
 					secondaryLabel={t('label.close', 'Close')}
-					secondaryAction={onClose}
+					secondaryAction={onCloseModal}
 				/>
 			</Container>
 		</Container>

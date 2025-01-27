@@ -9,7 +9,11 @@ import { map } from 'lodash';
 import { MAIL_VERIFICATION_HEADERS } from '../constants';
 import type { GetMsgParameters, GetMsgRequest, GetMsgResponse } from '../types';
 
-export async function getMsgSoapAPI({ msgId, max }: GetMsgParameters): Promise<GetMsgResponse> {
+export async function getMsgSoapAPI({
+	msgId,
+	max,
+	smimePassword
+}: GetMsgParameters): Promise<GetMsgResponse> {
 	return soapFetch<GetMsgRequest, GetMsgResponse>('GetMsg', {
 		_jsns: 'urn:zimbraMail',
 		m: {
@@ -18,6 +22,7 @@ export async function getMsgSoapAPI({ msgId, max }: GetMsgParameters): Promise<G
 			needExp: 1,
 			header: map(MAIL_VERIFICATION_HEADERS, (header) => ({ n: header })),
 			...{ max }
-		}
+		},
+		...(smimePassword && { encryptionPassword: smimePassword })
 	});
 }

@@ -14,7 +14,7 @@ import {
 	Row,
 	useModal
 } from '@zextras/carbonio-design-system';
-import { t } from '@zextras/carbonio-shell-ui';
+import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 
 import { CertificatePasswordModal } from './certificate-password-modal';
@@ -36,6 +36,7 @@ const CertificatesView: FC = () => {
 	const isExistPasswordCheck = useRef(false);
 	const id = Date.now().toString();
 	const { smimePassword } = useSmimePasswordStore();
+	const [t] = useTranslation();
 
 	const crumbs = useMemo(
 		(): Crumb[] => [
@@ -46,16 +47,12 @@ const CertificatesView: FC = () => {
 			},
 			{
 				id: 'general',
-				label: t('label.smime_certificates', 'S/MIME Certificates'),
+				label: t('settings.smime_certificates', 'S/MIME Certificates'),
 				className: 'breadcrumbCrumb'
 			}
 		],
-		[]
+		[t]
 	);
-
-	const onPasswordConfirm = useCallback((password: string) => {
-		console.log('===>> onPasswordConfirm called');
-	}, []);
 
 	const onCertificatePassword = useCallback(
 		(isReset?: boolean): void => {
@@ -66,18 +63,14 @@ const CertificatesView: FC = () => {
 					size: 'medium',
 					children: (
 						<Container crossAlignment="baseline">
-							<CertificatePasswordModal
-								isReset={isReset}
-								onConfirm={onPasswordConfirm}
-								onClose={(): void => closeModal?.(id)}
-							/>
+							<CertificatePasswordModal isReset={isReset} onClose={(): void => closeModal?.(id)} />
 						</Container>
 					)
 				},
 				true
 			);
 		},
-		[closeModal, createModal, id, onPasswordConfirm]
+		[closeModal, createModal, id]
 	);
 
 	const onEnterPassword = useCallback((): void => {
@@ -90,7 +83,6 @@ const CertificatesView: FC = () => {
 					<Container crossAlignment="baseline">
 						<EnterPasswordModal
 							onPasswordReset={(): void => onCertificatePassword(true)}
-							onConfirm={onPasswordConfirm}
 							onClose={(): void => closeModal?.(id)}
 						/>
 					</Container>
@@ -98,10 +90,10 @@ const CertificatesView: FC = () => {
 			},
 			true
 		);
-	}, [closeModal, createModal, id, onCertificatePassword, onPasswordConfirm]);
+	}, [closeModal, createModal, id, onCertificatePassword]);
 
 	const onPasswordCheck = useCallback(
-		(res: any) => {
+		(res: { data: Response } | { error: unknown }) => {
 			if ('data' in res) {
 				onEnterPassword();
 			} else {

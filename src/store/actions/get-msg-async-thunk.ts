@@ -11,10 +11,14 @@ import type { MailMessage } from '../../types';
 
 type GetMsgCallProps = {
 	msgId: string;
+	smimePassword?: string;
 };
 
-export const getMsgCall = async ({ msgId }: GetMsgCallProps): Promise<MailMessage> => {
-	const result = await getMsgSoapAPI({ msgId, max: 250000 });
+export const getMsgCall = async ({
+	msgId,
+	smimePassword
+}: GetMsgCallProps): Promise<MailMessage> => {
+	const result = await getMsgSoapAPI({ msgId, max: 250000, smimePassword });
 	const msg = result?.m[0];
 	return normalizeMailMessageFromSoap(msg, true) as MailMessage;
 };

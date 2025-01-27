@@ -23,17 +23,14 @@ import { useSmimePasswordStore } from '../../../store/zustand/certificates/store
 
 type CertificatePasswordModalPropType = {
 	isReset?: boolean;
-	onConfirm: (password: string) => void;
 	onClose: () => void;
 };
 export const CertificatePasswordModal = ({
 	isReset,
-	onConfirm,
 	onClose
 }: CertificatePasswordModalPropType): React.JSX.Element => {
 	const [password, setPassword] = useState<string>('');
 	const [confirmPassword, setConfirmPassword] = useState<string>('');
-	const [isPasswordValid, setIsPasswordValid] = useState<boolean>(true);
 	const createSnackbar = useSnackbar();
 	const [t] = useTranslation();
 
@@ -43,26 +40,28 @@ export const CertificatePasswordModal = ({
 				onClose();
 				useSmimePasswordStore.getState().updateSmimePassword(password);
 				createSnackbar({
-					key: `error-on-certificate-upload`,
+					key: `password-created`,
 					replace: true,
 					severity: 'success',
-					label: 'Password created', // Add translation
+					label: t('settings.certificatePassword.passwordCreated', 'Password created successfully'),
 					autoHideTimeout: 3000,
 					hideButton: true
 				});
 			} else {
 				useSmimePasswordStore.getState().updateSmimePassword('');
 				createSnackbar({
-					key: `error-on-certificate-upload`,
+					key: `error-on-password-creation`,
 					replace: true,
 					severity: 'error',
-					label: `${res?.error}` || 'Password is incorrect', // Add translation
+					label:
+						`${res?.error}` ||
+						t('settings.certificatePassword.passwordCreatedFailed', 'Password creation failed'),
 					autoHideTimeout: 3000,
 					hideButton: true
 				});
 			}
 		});
-	}, [createSnackbar, isReset, onClose, password]);
+	}, [createSnackbar, isReset, onClose, password, t]);
 
 	const modalHeaderTitle = !isReset
 		? t(
@@ -70,22 +69,26 @@ export const CertificatePasswordModal = ({
 				'Create a Password for S/MIME Operations'
 			)
 		: t('settings.certificatePassword.reset_password', 'Reset Password');
+
 	const onPasswordConfirm = useCallback(async (): Promise<void> => {
 		if (password !== confirmPassword) {
 			createSnackbar({
-				key: `error-on-certificate-upload`,
+				key: `error-on-password-not-match`,
 				replace: true,
 				severity: 'error',
-				label: 'Passwords do not match', // Add translation
+				label: t('settings.certificatePassword.passwordNotMatch', 'Passwords do not match'),
 				autoHideTimeout: 3000,
 				hideButton: true
 			});
 		} else if (password.length < 8) {
 			createSnackbar({
-				key: `error-on-certificate-upload`,
+				key: `error-on-password-length-not-match`,
 				replace: true,
 				severity: 'error',
-				label: 'Password must be at least 8 characters long', // Add translation
+				label: t(
+					'settings.certificatePassword.passwordLengthNotMatch',
+					'Password must be at least 8 characters long'
+				),
 				autoHideTimeout: 3000,
 				hideButton: true
 			});
@@ -96,17 +99,20 @@ export const CertificatePasswordModal = ({
 			!/[!@#$%^&*]/.test(password)
 		) {
 			createSnackbar({
-				key: `error-on-certificate-upload`,
+				key: `error-on-pwd-not-include-characters`,
 				replace: true,
 				severity: 'error',
-				label: 'Password must include uppercase, lowercase, numbers, and special characters', // Add translation
+				label: t(
+					'settings.certificatePassword.pswdNotIncludeCharacters',
+					'Password must include uppercase, lowercase, numbers, and special characters'
+				),
 				autoHideTimeout: 3000,
 				hideButton: true
 			});
 		} else {
 			onPasswordCreate();
 		}
-	}, [confirmPassword, createSnackbar, onPasswordCreate, password]);
+	}, [confirmPassword, createSnackbar, onPasswordCreate, password, t]);
 
 	return (
 		<Container mainAlignment="center" crossAlignment="flex-start" height="fit">
@@ -114,32 +120,32 @@ export const CertificatePasswordModal = ({
 			<Container padding={{ all: 'small' }} crossAlignment="flex-start" height="fit">
 				{!isReset ? (
 					<Container orientation="vertical" mainAlignment="flex-start" crossAlignment="flex-start">
-						<Text size="small" overflow="break-word">
+						<Text size="medium" overflow="break-word">
 							{t(
-								'settings.certificatePassword.create_password_msg1',
+								'settings.certificatePassword.createPasswordMsg1',
 								'To ensure the security of your email communications, you need to create a password that will be used for every S/MIME operation.'
 							)}
 						</Text>
 						<Padding top="medium" />
-						<Text size="small" overflow="break-word">
+						<Text size="medium" overflow="break-word">
 							{t(
-								'settings.certificatePassword.create_password_msg2',
+								'settings.certificatePassword.createPasswordMsg2',
 								'This password is essential for signing, encrypting and decrypting emails.'
 							)}
 						</Text>
 						<Padding top="medium" />
-						<Text size="small">
-							{t('settings.certificatePassword.create_password_rule', 'Your password must be:')}
+						<Text size="medium">
+							{t('settings.certificatePassword.createPasswordRule', 'Your password must be:')}
 							<ul>
 								<li>
 									{t(
-										'settings.certificatePassword.create_password_rule1',
+										'settings.certificatePassword.createPasswordRule1',
 										'At least 8 characters long.'
 									)}
 								</li>
 								<li>
 									{t(
-										'settings.certificatePassword.create_password_rule2',
+										'settings.certificatePassword.createPasswordRule2',
 										'Include a mix of uppercase and lowercase letters, numbers, and special characters'
 									)}
 								</li>
@@ -148,25 +154,25 @@ export const CertificatePasswordModal = ({
 					</Container>
 				) : (
 					<Container orientation="vertical" mainAlignment="flex-start" crossAlignment="flex-start">
-						<Text size="small" overflow="break-word">
+						<Text size="medium" overflow="break-word">
 							{t(
-								'settings.certificatePassword.reset_password_msg1',
+								'settings.certificatePassword.resetPasswordMsg1',
 								'Resetting your password will revoke access to all your personal certificates. This means you will need to re-upload your certificates to regain access.'
 							)}
 						</Text>
 						<Padding top="medium" />
-						<Text size="small">
-							{t('settings.certificatePassword.create_password_rule', 'Your password must be:')}
+						<Text size="medium">
+							{t('settings.certificatePassword.createPasswordRule', 'Your password must be:')}
 							<ul>
 								<li>
 									{t(
-										'settings.certificatePassword.create_password_rule1',
+										'settings.certificatePassword.createPasswordRule1',
 										'At least 8 characters long.'
 									)}
 								</li>
 								<li>
 									{t(
-										'settings.certificatePassword.create_password_rule2',
+										'settings.certificatePassword.createPasswordRule2',
 										'Include a mix of uppercase and lowercase letters, numbers, and special characters'
 									)}
 								</li>
@@ -195,7 +201,7 @@ export const CertificatePasswordModal = ({
 							onChange={(ev): void => {
 								setConfirmPassword && setConfirmPassword(ev.target.value);
 							}}
-							label={t('settings.certificatePassword.confirm_password', 'Confirm Password')}
+							label={t('settings.certificatePassword.confirmPassword', 'Confirm Password')}
 							data-testid="confirm_password"
 							hasError={password !== confirmPassword}
 						/>
@@ -206,11 +212,11 @@ export const CertificatePasswordModal = ({
 						<Row mainAlignment="flex-start">
 							<Icon icon="alertTriangleOutline" size="large" color="warning" />
 							<Padding left="small" />
-							<Text size="small">{t('settings.certificatePassword.important', 'Important')}:</Text>
+							<Text size="medium">{t('settings.certificatePassword.important', 'Important')}:</Text>
 						</Row>
-						<Text size="small" overflow="break-word">
+						<Text size="medium" overflow="break-word">
 							{t(
-								'settings.certificatePassword.create_password_msg3',
+								'settings.certificatePassword.createPasswordMsg3',
 								'If you forget this password, we will not be able to recover your certificates or access your encrypted messages. Please store it securely in a password manager or another safe place.'
 							)}
 						</Text>
@@ -219,12 +225,12 @@ export const CertificatePasswordModal = ({
 					<Container orientation="vertical" mainAlignment="flex-start" crossAlignment="flex-start">
 						<Row mainAlignment="flex-start">
 							<Icon icon="alertTriangleOutline" size="large" color="warning" />
-							<Padding left="small" />
+							<Padding left="medium" />
 							<Text size="small">{t('settings.certificatePassword.important', 'Important')}:</Text>
 						</Row>
-						<Text size="small" overflow="break-word">
+						<Text size="medium" overflow="break-word">
 							{t(
-								'settings.certificatePassword.reset_password_msg2',
+								'settings.certificatePassword.resetPasswordMsg2',
 								'If you are certain you want to proceed, click “Reset Password” to create a new one.'
 							)}
 						</Text>

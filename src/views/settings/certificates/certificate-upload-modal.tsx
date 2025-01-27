@@ -15,7 +15,7 @@ import {
 	Tooltip,
 	useSnackbar
 } from '@zextras/carbonio-design-system';
-import { t } from '@zextras/carbonio-shell-ui';
+import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 
 import { handleCertificateFileUpload } from './certificate-utils';
@@ -39,8 +39,9 @@ export const CertificateUploadModal = ({
 	const [password, setPassword] = useState<string>('');
 	const inputRef = useRef<HTMLInputElement>(null);
 	const createSnackbar = useSnackbar();
+	const [t] = useTranslation();
 
-	const modalHeaderTitle = t('modal.uploadCertificate.uploadCertificate', 'Upload Certificate');
+	const modalHeaderTitle = t('settings.uploadCertificate.uploadCertificate', 'Upload Certificate');
 	const onCertificateFileBrowse = useCallback(() => {
 		if (inputRef.current) {
 			inputRef.current.value = '';
@@ -70,7 +71,7 @@ export const CertificateUploadModal = ({
 				} else {
 					throw new Error(
 						t(
-							'composer.uploadCertificate.emailNotMatch',
+							'settings.uploadCertificate.emailNotMatch',
 							'Certificate email does not match with sender email'
 						)
 					);
@@ -83,13 +84,13 @@ export const CertificateUploadModal = ({
 					label:
 						error instanceof Error
 							? error.message
-							: t('composer.uploadCertificate.failed', 'Failed to upload certificate'),
+							: t('settings.uploadCertificate.failed', 'Failed to upload certificate'),
 					autoHideTimeout: 3000,
 					hideButton: true
 				});
 			}
 		}
-	}, [createSnackbar, onClose, onConfirm, password, selectedFile]);
+	}, [createSnackbar, onClose, onConfirm, password, selectedFile, t]);
 
 	return (
 		<Container mainAlignment="center" crossAlignment="flex-start" height="fit">
@@ -104,13 +105,13 @@ export const CertificateUploadModal = ({
 					<Row mainAlignment="flex-start" width="22rem">
 						<Input
 							label={t(
-								'modal.uploadCertificate.smimeCertificate',
+								'settings.uploadCertificate.smimeCertificate',
 								'S/MIME Certificate (i.e. certificate.p12)'
 							)}
 							value={selectedFile ? selectedFile.name : ''}
-							hideBorder
 							data-testid="certificate-file-name"
 							onChange={(): null => null}
+							style={{ pointerEvents: 'none' }}
 						/>
 					</Row>
 					<Padding left="medium">
@@ -130,7 +131,7 @@ export const CertificateUploadModal = ({
 							onChange={(ev): void => {
 								setPassword && setPassword(ev.target.value);
 							}}
-							label={t('modal.uploadCertificate.certificatePassword', 'Certificate Password')}
+							label={t('settings.uploadCertificate.certificatePassword', 'Certificate Password')}
 							data-testid="certificate-password"
 						/>
 					</Row>
@@ -140,10 +141,12 @@ export const CertificateUploadModal = ({
 					ref={inputRef}
 					data-testid="certificate-file-input"
 					onChange={onChange}
+					accept=".p12"
 				/>
 				<ModalFooter
 					onConfirm={onCertificateFileUpload}
-					label={t('modal.uploadCertificate.upload', 'Upload')}
+					label={t('settings.uploadCertificate.upload', 'Upload')}
+					disabled={!selectedFile}
 				/>
 			</Container>
 		</Container>

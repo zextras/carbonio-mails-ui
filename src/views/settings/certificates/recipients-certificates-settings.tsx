@@ -14,66 +14,50 @@ import {
 	useModal,
 	useSnackbar
 } from '@zextras/carbonio-design-system';
+import { useTranslation } from 'react-i18next';
 
-import { CertificatePasswordModal } from './certificate-password-modal';
-import { EnterPasswordModal } from './enter-password-modal';
 import { RecipientsCertificateUploadModal } from './recipients-certificate-upload-modal';
+import { deleteRecipientCertificate } from '../../../store/actions/delete-recipient-certificate-action';
 import { getRecipientsCertificates } from '../../../store/actions/get-recipient-certificates-action';
 import { uploadRecipientCertificate } from '../../../store/actions/upload-recipients-certificate-action';
-import type { AccountIdentity, IdentityProps } from '../../../types';
 import { Certificate } from '../../../types/certificates';
 
-type RecipientsCertificateSettingsPropsType = {
-	updatedIdentities?: AccountIdentity[];
-	updateIdentities?: (arg: {
-		target?: {
-			name: string;
-			value: string;
-		};
-		_attrs?: IdentityProps;
-	}) => void;
-};
-
-const RecipientsCertificateSettings: FC<RecipientsCertificateSettingsPropsType> = ({
-	updatedIdentities,
-	updateIdentities
-}): ReactElement => {
+const RecipientsCertificateSettings: FC = (): ReactElement => {
 	const { createModal, closeModal } = useModal();
 	const [certificates, setCertificates] = useState<Certificate[]>([]);
 	const id = Date.now().toString();
-	const onPasswordConfirm = useCallback((password: string) => {
-		console.log('===>> onPasswordConfirm called');
-	}, []);
+
 	const createSnackbar = useSnackbar();
+	const [t] = useTranslation();
 
 	const headers = [
 		{
 			id: 'email',
-			label: 'Mail address',
+			label: t('settings.uploadCertificate.mailAddress', 'Mail address'),
 			width: '20%',
 			bold: true
 		},
 		{
 			id: 'issuer',
-			label: 'Issuer',
+			label: t('settings.uploadCertificate.issuer', 'Issuer'),
 			width: '30%',
 			bold: true
 		},
 		{
 			id: 'validfrom',
-			label: 'Valid From',
+			label: t('settings.uploadCertificate.validFrom', 'Valid From'),
 			width: '20%',
 			bold: true
 		},
 		{
 			id: 'validto',
-			label: 'Valid To',
+			label: t('settings.uploadCertificate.validTo', 'Valid To'),
 			width: '20%',
 			bold: true
 		},
 		{
 			id: 'status',
-			label: 'Status',
+			label: t('settings.uploadCertificate.status', 'Status'),
 			width: '20%',
 			bold: true
 		},
@@ -83,37 +67,65 @@ const RecipientsCertificateSettings: FC<RecipientsCertificateSettingsPropsType> 
 		}
 	];
 
-	const setRecipientsCertificatesData = useCallback((res: any) => {
-		if ('data' in res) {
-			setCertificates(res.data.list);
-		} else {
-			// Error
-		}
-	}, []);
-
 	const loadRecipientsCertificates = useCallback(() => {
 		getRecipientsCertificates().then((res) => {
-			console.log('==== loadRecipientsCertificates::>>', { res });
 			if ('data' in res) {
 				setCertificates(res.data.list);
 			} else {
 				createSnackbar({
-					key: `error-on-certificate-upload`,
+					key: `error-on-fetching-certificate`,
 					replace: true,
 					severity: 'error',
-					label: 'Error loading certificates',
+					label: t(
+						'settings.uploadCertificate.errorWhileFetchingCert',
+						'Error while fetching certificates'
+					),
 					autoHideTimeout: 3000,
 					hideButton: true
 				});
 			}
 		});
-	}, [createSnackbar]);
+	}, [createSnackbar, t]);
 
 	useEffect(() => {
 		loadRecipientsCertificates();
-	}, [loadRecipientsCertificates, setRecipientsCertificatesData]);
+	}, [loadRecipientsCertificates]);
 
-	const items = certificates.map((certificate: any, index) => ({
+	const deleteCertificate = useCallback(
+		(certificate: Certificate) => {
+			deleteRecipientCertificate(certificate.email).then((res) => {
+				if ('data' in res) {
+					createSnackbar({
+						key: `certificate-deleted`,
+						replace: true,
+						severity: 'success',
+						label: t(
+							'settings.uploadCertificate.certificateDeleted',
+							'Certificate deleted successfully'
+						),
+						autoHideTimeout: 3000,
+						hideButton: true
+					});
+					loadRecipientsCertificates();
+				} else {
+					createSnackbar({
+						key: `error-on-certificate-delete`,
+						replace: true,
+						severity: 'error',
+						label: t(
+							'settings.uploadCertificate.certificateDeleteFailed',
+							'Failed to delete certificate'
+						),
+						autoHideTimeout: 3000,
+						hideButton: true
+					});
+				}
+			});
+		},
+		[createSnackbar, loadRecipientsCertificates, t]
+	);
+
+	const items = certificates.map((certificate: Certificate, index) => ({
 		id: index.toString(),
 		columns: [
 			certificate.email,
@@ -125,83 +137,49 @@ const RecipientsCertificateSettings: FC<RecipientsCertificateSettingsPropsType> 
 				<Button
 					icon="Trash2Outline"
 					onClick={(): void => {
-						console.log('===>> Delete certificate;;>>', certificate);
+						deleteCertificate(certificate);
 					}}
 					size="large"
 					type="ghost"
+					color={'error'}
 				/>
 			</Container>
 		]
 	}));
 
-	const onCertificatePassword = useCallback(
-		(isReset?: boolean): void => {
-			createModal(
-				{
-					id,
-					size: 'medium',
-					children: (
-						<Container crossAlignment="baseline">
-							<CertificatePasswordModal
-								isReset={isReset}
-								onConfirm={onPasswordConfirm}
-								onClose={(): void => closeModal?.(id)}
-							/>
-						</Container>
-					)
-				},
-				true
-			);
-		},
-		[closeModal, createModal, id, onPasswordConfirm]
-	);
-
-	const onEnterPassword = useCallback((): void => {
-		createModal(
-			{
-				id,
-				size: 'medium',
-				children: (
-					<Container crossAlignment="baseline">
-						<EnterPasswordModal
-							onPasswordReset={(): void => onCertificatePassword(true)}
-							onConfirm={onPasswordConfirm}
-							onClose={(): void => closeModal?.(id)}
-						/>
-					</Container>
-				)
-			},
-			true
-		);
-	}, [closeModal, createModal, id, onCertificatePassword, onPasswordConfirm]);
-
 	const onCertificateUploadConfirm = useCallback(
 		(certificateContent: string | ArrayBuffer) => {
 			uploadRecipientCertificate(certificateContent).then((res) => {
-				console.log('==== onCertificateUploadConfirm::>>', { res });
 				if ('data' in res) {
 					createSnackbar({
-						key: `error-on-certificate-upload`,
+						key: `certificate-uploaded`,
 						replace: true,
 						severity: 'success',
-						label: 'Certificate uploaded successfully',
+						label: t(
+							'settings.uploadCertificate.certtificateUploaded',
+							'Certificate uploaded successfully'
+						),
 						autoHideTimeout: 3000,
 						hideButton: true
 					});
 					loadRecipientsCertificates();
+					closeModal?.(id);
 				} else {
 					createSnackbar({
 						key: `error-on-certificate-upload`,
 						replace: true,
 						severity: 'error',
-						label: 'Error uploading certificate',
+						label: t(
+							'settings.uploadCertificate.errorWhileUploadCert',
+							'Error while uploading certificate'
+						),
 						autoHideTimeout: 3000,
 						hideButton: true
 					});
 				}
 			});
 		},
-		[createSnackbar, loadRecipientsCertificates]
+		[closeModal, createSnackbar, id, loadRecipientsCertificates, t]
 	);
 
 	const onUploadCertificate = useCallback(() => {
@@ -225,13 +203,19 @@ const RecipientsCertificateSettings: FC<RecipientsCertificateSettingsPropsType> 
 	return (
 		<>
 			<FormSubSection
-				label="Recipients certificates for encryption"
-				id={''}
+				label={t(
+					'settings.uploadCertificate.recipientCertificatesTitle',
+					'Recipients certificates for encryption'
+				)}
+				id={'recipient-certificates'}
 				padding={{ all: 'large' }}
 			>
 				<Table rows={items} headers={headers} showCheckbox={false} multiSelect={false} />
 				<Padding all="large" />
-				<Button onClick={(): void => onUploadCertificate()} label="Upload Certificate" />
+				<Button
+					onClick={(): void => onUploadCertificate()}
+					label={t('settings.uploadCertificate.uploadCertificate', 'Upload Certificate')}
+				/>
 			</FormSubSection>
 		</>
 	);
