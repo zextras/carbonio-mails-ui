@@ -9,7 +9,7 @@ import { map } from 'lodash';
 import { MAIL_VERIFICATION_HEADERS } from '../constants';
 import type { GetMsgParameters, GetMsgRequest, GetMsgResponse } from '../types';
 
-export async function getMsgSoapAPI({
+export async function getMsgSoapApi({
 	msgId,
 	max,
 	smimePassword

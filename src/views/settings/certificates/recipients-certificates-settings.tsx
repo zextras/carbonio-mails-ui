@@ -22,7 +22,7 @@ import { RecipientsCertificateUploadModal } from './recipients-certificate-uploa
 import { deleteRecipientCertificate } from '../../../api/delete-recipient-certificate-action';
 import { getRecipientsCertificates } from '../../../api/get-recipient-certificates-action';
 import { uploadRecipientCertificate } from '../../../api/upload-recipients-certificate-action';
-import { Certificate } from '../../../types/certificates';
+import { Certificate } from '../../../types/certificates/certificates';
 
 const RecipientsCertificateSettings: FC = (): ReactElement => {
 	const { createModal, closeModal } = useModal();

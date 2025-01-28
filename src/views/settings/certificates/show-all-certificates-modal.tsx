@@ -13,7 +13,7 @@ import { selectPersonalCertificate } from '../../../api/select-personal-certific
 import ModalFooter from '../../../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../../../carbonio-ui-commons/components/modals/modal-header';
 import { useSmimePasswordStore } from '../../../store/certificates/store';
-import { Certificate } from '../../../types/certificates';
+import { Certificate } from '../../../types/certificates/certificates';
 
 type EnterPasswordModalPropType = {
 	certificates: Certificate[];

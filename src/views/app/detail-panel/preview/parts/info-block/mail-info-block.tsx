@@ -13,9 +13,8 @@ import { ExternalDomainIcon } from './external-domain-icon';
 import { MailSensitivityIcon } from './mail-sensitivity-icon';
 import { SmimeIcon } from './smime-icon';
 import { checkExistEncryptionPassword } from '../../../../../../api/check-exist-password-action';
-import { useAppDispatch } from '../../../../../../hooks/redux';
-import { getMsgAsyncThunk } from '../../../../../../store/actions';
 import { useSmimePasswordStore } from '../../../../../../store/certificates/store';
+import { getMessageEmailStoreAction } from '../../../../../../store/emails/actions/get-message';
 import { IncompleteMessage } from '../../../../../../types';
 import { EnterPasswordModal } from '../../../../../settings/certificates/enter-password-modal';
 import { MailInfoDetailModal } from '../info-details-modal/mail-info-detail-modal';
@@ -27,7 +26,6 @@ type MailInfoProps = {
 export const MailInfoBlock = ({ msg }: MailInfoProps): React.JSX.Element | null => {
 	const [t] = useTranslation();
 	const { createModal, closeModal } = useModal();
-	const messagesStoreDispatch = useAppDispatch();
 	const { smimePassword } = useSmimePasswordStore();
 	const createSnackbar = useSnackbar();
 
@@ -80,7 +78,7 @@ export const MailInfoBlock = ({ msg }: MailInfoProps): React.JSX.Element | null 
 		(event: React.MouseEvent): void => {
 			event.stopPropagation();
 			if (smimePassword !== '') {
-				messagesStoreDispatch(getMsgAsyncThunk({ msgId: msg.id, smimePassword }));
+				getMessageEmailStoreAction(msg.id, smimePassword);
 			} else {
 				checkExistEncryptionPassword().then((res) => {
 					if ('data' in res) {
@@ -93,9 +91,7 @@ export const MailInfoBlock = ({ msg }: MailInfoProps): React.JSX.Element | null 
 									<Container crossAlignment="baseline">
 										<EnterPasswordModal
 											onConfirm={(password): void => {
-												messagesStoreDispatch(
-													getMsgAsyncThunk({ msgId: msg.id, smimePassword: password })
-												);
+												getMessageEmailStoreAction(msg.id, password);
 											}}
 											onClose={(): void => closeModal?.(id)}
 											hideReset
@@ -121,7 +117,7 @@ export const MailInfoBlock = ({ msg }: MailInfoProps): React.JSX.Element | null 
 				});
 			}
 		},
-		[closeModal, createModal, createSnackbar, messagesStoreDispatch, msg.id, smimePassword, t]
+		[closeModal, createModal, createSnackbar, msg.id, smimePassword, t]
 	);
 
 	const showInfoDetails =

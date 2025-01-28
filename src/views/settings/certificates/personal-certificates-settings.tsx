@@ -22,7 +22,7 @@ import { ShowAllCertificatesModal } from './show-all-certificates-modal';
 import { getPersonalCertificates } from '../../../api/get-personal-certificates-action';
 import { uploadPersonalCertificate } from '../../../api/upload-personal-certificate-action';
 import { PersonalCertificate, useSmimePasswordStore } from '../../../store/certificates/store';
-import { Certificate } from '../../../types/certificates';
+import { Certificate } from '../../../types/certificates/certificates';
 
 const PersonalCertificatesSettings: FC = (): ReactElement => {
 	const [certificates, setCertificates] = useState<Certificate[]>([]);
