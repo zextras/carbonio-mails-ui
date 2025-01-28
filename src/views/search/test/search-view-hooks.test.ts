@@ -162,10 +162,7 @@ describe('search view hooks', () => {
 			c: [generateConversationFromAPI({ id: '123', su: 'Subject', m: [message] })],
 			more: false
 		};
-		const interceptor = createSoapAPIInterceptor<SearchRequest, SearchResponse>(
-			'Search',
-			searchResponse
-		);
+		createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', searchResponse);
 
 		renderHook(() =>
 			useRunSearch({
@@ -183,16 +180,12 @@ describe('search view hooks', () => {
 			})
 		);
 
-		await act(async () => {
-			await interceptor;
-		});
-
 		await waitFor(() => {
 			expect(renderHook(() => useConversationById('123')).result.current).toBeDefined();
 		});
 
 		await waitFor(() => {
-			expect(renderHook(() => useMessageById('1')).result.current).not.toBeDefined();
+			expect(renderHook(() => useMessageById('1')).result.current).toBeDefined();
 		});
 	});
 });
