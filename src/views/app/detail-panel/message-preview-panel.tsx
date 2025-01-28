@@ -58,7 +58,6 @@ export const MessagePreviewPanel: FC<{ folderId: string; messageId: string }> = 
 									messagePreviewFactory={messagePreviewFactory}
 								/>
 							)}
-							)
 						</Padding>
 					</Container>
 				) : (
