@@ -31,7 +31,7 @@ export const ParticipantsName = ({
 }: ParticipantsNameProps): React.JSX.Element => {
 	const account = useUserAccount();
 
-	const parent = isConversation(item) ? getConversationMessages(item.id)[0].parent : item.id;
+	const parent = isConversation(item) ? getConversationMessages(item.id)[0].parent : item.parent;
 
 	const folderId = getFolderIdParts(parent).id;
 
