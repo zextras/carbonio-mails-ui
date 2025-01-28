@@ -204,6 +204,18 @@ describe('store-populated-items-slice', () => {
 				expect(result.current).toEqual([message2, message1, message3]);
 			});
 		});
+
+		it('should return an empty array if folder or messages are missing', async () => {
+			const { result } = renderHook(() => useMessagesByFolder(FOLDERS.INBOX));
+
+			expect(result.current).toHaveLength(0);
+		});
+
+		it('should return an empty array if folder is invalid', async () => {
+			const { result } = renderHook(() => useMessagesByFolder('invalid-folder'));
+
+			expect(result.current).toHaveLength(0);
+		});
 	});
 
 	describe('useConversationsByIds', () => {
