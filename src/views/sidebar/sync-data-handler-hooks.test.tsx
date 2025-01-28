@@ -4,12 +4,12 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { waitFor, renderHook } from '@testing-library/react';
+import { waitFor, renderHook, act } from '@testing-library/react';
 import { SoapNotify, useRefresh } from '@zextras/carbonio-shell-ui';
 import { http } from 'msw';
 
-import { generateMessageFromAPI } from '../../tests/generators/api';
-import { SoapIncompleteMessage } from '../../types';
+import { generateConversationFromAPI, generateMessageFromAPI } from '../../tests/generators/api';
+import { SoapConversation, SoapIncompleteMessage } from '../../types';
 import { useSyncDataHandler } from './commons/sync-data-handler-hooks';
 import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
 import { useFolderStore } from '../../carbonio-ui-commons/store/zustand/folder';
@@ -153,6 +153,21 @@ function mockSoapCreateMessage(
 	const soapNotify = generateSoapAction({
 		created: {
 			m: messages
+		}
+	});
+	(useNotify as jest.Mock).mockReturnValue([soapNotify]);
+}
+
+function mockSoapCreateMessageAndConversation(
+	mailboxNumber: number,
+	messages: Array<SoapIncompleteMessage>,
+	conversation: Array<SoapConversation>
+): void {
+	mockSoapRefresh(mailboxNumber);
+	const soapNotify = generateSoapAction({
+		created: {
+			m: messages,
+			c: conversation
 		}
 	});
 	(useNotify as jest.Mock).mockReturnValue([soapNotify]);
@@ -357,9 +372,10 @@ describe('sync data handler', () => {
 		});
 
 		it('should add message to store when created', async () => {
+			const messageSubject = 'Message subject';
 			const completeMessage1 = generateMessageFromAPI({
 				id: '1',
-				su: 'Message subject'
+				su: messageSubject
 			});
 			mockSoapCreateMessage(mailboxNumber, [completeMessage1]);
 
@@ -370,7 +386,7 @@ describe('sync data handler', () => {
 				expect(message1Result.current).toEqual(
 					expect.objectContaining({
 						id: '1',
-						subject: 'Message subject'
+						subject: messageSubject
 					})
 				);
 			});
@@ -378,7 +394,7 @@ describe('sync data handler', () => {
 	});
 
 	describe('conversation and messages both', () => {
-		it('should mark conversation as read and message as read', async () => {
+		it('should modify conversation and message by marking them as read', async () => {
 			setSearchResultsByConversation(
 				[generateConversation({ id: '123', messageIds: ['1'], isRead: false })],
 				false
@@ -397,6 +413,37 @@ describe('sync data handler', () => {
 			const { result: messageResult } = renderHook(() => useMessageById('1'));
 			await waitFor(() => {
 				expect(messageResult.current?.read).toBe(true);
+			});
+		});
+
+		it('should create message and conversation when received', async () => {
+			mockSoapCreateMessageAndConversation(
+				mailboxNumber,
+				[
+					generateMessageFromAPI({
+						id: '1',
+						su: 'Message subject',
+						cid: '123'
+					})
+				],
+				[
+					generateConversationFromAPI({
+						id: '123',
+						su: 'Conversation subject'
+					})
+				]
+			);
+
+			renderHook(() => useSyncDataHandler(), {});
+
+			const { result: conversationResult } = renderHook(() => useConversationById('123'));
+			await act(async () => {
+				expect(conversationResult.current).toBeDefined();
+			});
+
+			const { result: messageResult } = renderHook(() => useMessageById('1'));
+			await act(async () => {
+				expect(messageResult.current).toBeDefined();
 			});
 		});
 	});
