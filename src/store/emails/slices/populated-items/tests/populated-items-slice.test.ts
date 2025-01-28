@@ -16,33 +16,36 @@ import { buildSoapErrorResponseBody } from '../../../../../carbonio-ui-commons/t
 import { CONVACTIONS } from '../../../../../commons/utilities';
 import { API_REQUEST_STATUS } from '../../../../../constants';
 import { generateCompleteMessageFromAPI } from '../../../../../tests/generators/api';
-import { generateConversation } from '../../../../../tests/generators/generateConversation';
+import {
+	generateConversation,
+	populateConversationInEmailStore
+} from '../../../../../tests/generators/generateConversation';
 import { generateMessage } from '../../../../../tests/generators/generateMessage';
-import { ConvActionResponse } from '../../../../../types';
+import { ConvActionResponse, MailMessage } from '../../../../../types';
 import {
 	appendConversations,
+	getUseEmailStoreAndHooksForTesting,
+	handleConvActionResponse,
+	handleDeleteAttachments,
+	handleNotifyMessagesModified,
+	optimisticallyHandleMessageActions,
+	setConversationsInEmailStore,
+	setMessagesInEmailStore,
 	setSearchResultsByConversation,
 	setSearchResultsByMessage,
+	updateConversations,
 	updateConversationStatus,
 	updateMessages,
-	handleNotifyMessagesModified,
 	updateMessageStatus,
 	useConversationById,
+	useConversationIndexSlice,
 	useConversationMessages,
+	useConversationsByIds,
 	useConversationStatus,
 	useMessageById,
-	useMessageStatus,
-	updateConversations,
-	getUseEmailStoreAndHooksForTesting,
-	handleDeleteAttachments,
-	optimisticallyHandleMessageActions,
-	handleConvActionResponse,
-	setConversationsInEmailStore,
-	useConversationIndexSlice,
-	useMessagesByIds,
-	useConversationsByIds,
 	useMessagesByFolder,
-	setMessagesInEmailStore
+	useMessagesByIds,
+	useMessageStatus
 } from '../../../store';
 
 const { setMessagesInSearchSlice } = getUseEmailStoreAndHooksForTesting();
@@ -113,29 +116,35 @@ describe('store-populated-items-slice', () => {
 
 	describe('updateConversations', () => {
 		it('updates conversations correctly', async () => {
-			const convId = '1';
-			const messages = [
-				generateMessage({ id: '1', cid: convId }),
-				generateMessage({ id: '2', cid: convId })
-			];
-			act(() => {
-				setMessagesInEmailStore(messages);
+			const conversationId = '1';
+
+			const oldSubject = 'Old Subject';
+			await waitFor(() => {
+				populateConversationInEmailStore({
+					conversationParams: {
+						id: conversationId,
+						subject: oldSubject,
+						folderId: FOLDERS.INBOX
+					}
+				});
 			});
 
-			const conversation = generateConversation({
-				id: convId,
-				messageIds: messages.map((message) => message.id)
+			const updatedSubject = 'Updated Subject';
+			const updatedConversation = generateConversation({
+				id: conversationId,
+				subject: updatedSubject
 			});
 
-			act(() => {
-				setConversationsInEmailStore([conversation], false);
+			await act(async () => {
+				updateConversations([updatedConversation]);
 			});
 
-			const { result: conversationFromStore } = renderHook(() =>
-				useConversationById(conversation.id)
+			const { result: updatedConversationFromStore } = renderHook(() =>
+				useConversationById(conversationId)
 			);
 
-			expect(conversationFromStore.current?.id).toBe(conversation.id);
+			expect(updatedConversationFromStore.current?.subject).not.toEqual(oldSubject);
+			expect(updatedConversationFromStore.current?.subject).toEqual(updatedSubject);
 		});
 	});
 
@@ -249,31 +258,25 @@ describe('store-populated-items-slice', () => {
 
 	describe('useConversationMessages', () => {
 		it('should return messages from conversation', async () => {
-			const messages = [
-				generateMessage({ id: '1' }),
-				generateMessage({ id: '2' }),
-				generateMessage({ id: '3' })
-			];
-			const conversation = generateConversation({
-				id: '1',
-				messageIds: messages.map((message) => message.id)
+			const conversationId = '1';
+
+			await waitFor(() => {
+				populateConversationInEmailStore({
+					conversationParams: {
+						id: conversationId
+					},
+					messageIds: ['10', '22', '35']
+				});
 			});
 
-			act(() => {
-				updateMessages(messages);
-			});
-			act(() => {
-				updateConversations([conversation]);
-			});
-
-			const { result: conversation1StoreMessages } = renderHook(() =>
-				useConversationMessages(conversation.id)
+			const { result: conversationMessages } = renderHook(() =>
+				useConversationMessages(conversationId)
 			);
 
-			expect(conversation1StoreMessages.current).toHaveLength(3);
-			expect(conversation1StoreMessages.current[0].id).toBe('1');
-			expect(conversation1StoreMessages.current[1].id).toBe('2');
-			expect(conversation1StoreMessages.current[2].id).toBe('3');
+			expect(conversationMessages.current).toHaveLength(3);
+			expect(conversationMessages.current[0].id).toBe('10');
+			expect(conversationMessages.current[1].id).toBe('22');
+			expect(conversationMessages.current[2].id).toBe('35');
 		});
 
 		it('should not override other conversation messages', async () => {
