@@ -21,7 +21,6 @@ export type ParticipantsNameProps = {
 	item: NormalizedConversation | IncompleteMessage;
 	isSearchModule?: boolean;
 	textValues?: TextReadValuesProps;
-	folderId?: string;
 };
 
 export const ParticipantsName = ({
