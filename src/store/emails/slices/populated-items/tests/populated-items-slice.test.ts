@@ -468,8 +468,22 @@ describe('store-populated-items-slice', () => {
 			});
 
 			const { result } = renderHook(() => useMessageById('1'));
-
 			expect(result.current?.parts?.length).toBe(0);
+		});
+
+		it('should not delete attachment from message if API return FAULT', async () => {
+			const message = generateMessage({ id: '1' });
+			updateMessages([message]);
+			const attachmentCountsBeforeAPICall = message?.parts?.length;
+
+			const response: ErrorSoapBodyResponse = buildSoapErrorResponseBody({ reason: 'any reason' });
+
+			await act(async () => {
+				handleDeleteAttachments(response);
+			});
+
+			const { result } = renderHook(() => useMessageById('1'));
+			expect(result.current?.parts?.length).toBe(attachmentCountsBeforeAPICall);
 		});
 	});
 
