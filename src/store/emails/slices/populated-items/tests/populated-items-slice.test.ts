@@ -773,5 +773,27 @@ describe('store-populated-items-slice', () => {
 				expect(conversation1Result.current).toBeUndefined();
 			});
 		});
+
+		it('should not delete existing conversations in the store if the requested conversation does not exists in the store ', async () => {
+			const conversation1 = generateConversation({ id: '1' });
+			const conversation2 = generateConversation({ id: '2' });
+			setConversationsInEmailStore([conversation1, conversation2], false);
+			const convActionParams = {
+				ids: ['3'],
+				operation: CONVACTIONS.DELETE
+			};
+
+			const response: ConvActionResponse = {
+				action: {
+					id: '3',
+					op: CONVACTIONS.DELETE
+				}
+			};
+			handleConvActionResponse(response, convActionParams);
+			const { result: list } = renderHook(() => useConversationIndexSlice());
+			await waitFor(async () => {
+				expect(list.current?.conversationListIndex).toEqual(['1', '2']);
+			});
+		});
 	});
 });
