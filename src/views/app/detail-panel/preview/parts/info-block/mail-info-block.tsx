@@ -12,11 +12,10 @@ import { DistributionListIcon } from './distribution-list-icon';
 import { ExternalDomainIcon } from './external-domain-icon';
 import { MailSensitivityIcon } from './mail-sensitivity-icon';
 import { SmimeIcon } from './smime-icon';
+import { checkExistEncryptionPassword } from '../../../../../../api/check-exist-password-action';
 import { useAppDispatch } from '../../../../../../hooks/redux';
 import { getMsgAsyncThunk } from '../../../../../../store/actions';
-import { checkExistEncryptionPassword } from '../../../../../../store/actions/check-exist-password-action';
-import { StoreProvider } from '../../../../../../store/redux';
-import { useSmimePasswordStore } from '../../../../../../store/zustand/certificates/store';
+import { useSmimePasswordStore } from '../../../../../../store/certificates/store';
 import { IncompleteMessage } from '../../../../../../types';
 import { EnterPasswordModal } from '../../../../../settings/certificates/enter-password-modal';
 import { MailInfoDetailModal } from '../info-details-modal/mail-info-detail-modal';
@@ -50,18 +49,16 @@ export const MailInfoBlock = ({ msg }: MailInfoProps): React.JSX.Element | null 
 					id: modalId,
 					maxHeight: '90vh',
 					children: (
-						<StoreProvider>
-							<MailInfoDetailModal
-								onClose={(): void => closeModal(modalId)}
-								signature={signature}
-								creationDateFromMailHeaders={creationDateFromHeaders}
-								messageIdFromMailHeaders={messageIdFromHeaders}
-								messageIsFromDistributionList={fromDistributionList}
-								messageIsFromExternalDomain={fromExternalDomain}
-								// authenticationMailsHeaders={authenticationMailsHeaders}
-								sensitivityValue={sensitivityHeader}
-							/>
-						</StoreProvider>
+						<MailInfoDetailModal
+							onClose={(): void => closeModal(modalId)}
+							signature={signature}
+							creationDateFromMailHeaders={creationDateFromHeaders}
+							messageIdFromMailHeaders={messageIdFromHeaders}
+							messageIsFromDistributionList={fromDistributionList}
+							messageIsFromExternalDomain={fromExternalDomain}
+							// authenticationMailsHeaders={authenticationMailsHeaders}
+							sensitivityValue={sensitivityHeader}
+						/>
 					)
 				},
 				true

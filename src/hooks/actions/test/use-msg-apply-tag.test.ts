@@ -13,8 +13,7 @@ import { tags as mockTags } from '../../../carbonio-ui-commons/test/mocks/tags/t
 import { setupHook } from '../../../carbonio-ui-commons/test/test-setup';
 import { FOLDERS_DESCRIPTORS } from '../../../constants';
 import { generateMessage } from '../../../tests/generators/generateMessage';
-import { generateStore } from '../../../tests/generators/store';
-import { ConvActionRequest } from '../../../types';
+import { MsgActionRequest, MsgActionResponse } from '../../../types';
 import { useMsgApplyTagDescriptor, useMsgApplyTagSubDescriptors } from '../use-msg-apply-tag';
 
 jest.mock('../../../carbonio-ui-commons/store/zustand/tags', () => ({
@@ -23,7 +22,6 @@ jest.mock('../../../carbonio-ui-commons/store/zustand/tags', () => ({
 
 describe('useMsgApplyTag', () => {
 	const msg = generateMessage();
-	const store = generateStore();
 
 	describe('Descriptor', () => {
 		(useTags as jest.Mock).mockReturnValue(mockTags);
@@ -31,8 +29,7 @@ describe('useMsgApplyTag', () => {
 			const {
 				result: { current: descriptor }
 			} = setupHook(useMsgApplyTagDescriptor, {
-				initialProps: [{ ids: [msg.id], folderId: FOLDERS.INBOX, messageTags: ['1'] }],
-				store
+				initialProps: [{ ids: [msg.id], folderId: FOLDERS.INBOX, messageTags: ['1'] }]
 			});
 
 			expect(descriptor).toEqual({
@@ -59,8 +56,7 @@ describe('useMsgApplyTag', () => {
 			const {
 				result: { current: descriptor }
 			} = setupHook(useMsgApplyTagSubDescriptors, {
-				initialProps: [{ ids: [msg.id], folderId: FOLDERS.INBOX, messageTags: [] }],
-				store
+				initialProps: [{ ids: [msg.id], folderId: FOLDERS.INBOX, messageTags: [] }]
 			});
 			expect(descriptor[0]).toEqual(
 				expect.objectContaining({
@@ -79,8 +75,7 @@ describe('useMsgApplyTag', () => {
 			const {
 				result: { current: descriptor }
 			} = setupHook(useMsgApplyTagSubDescriptors, {
-				initialProps: [{ ids: [msg.id], folderId: FOLDERS.INBOX, messageTags: ['2291'] }],
-				store
+				initialProps: [{ ids: [msg.id], folderId: FOLDERS.INBOX, messageTags: ['2291'] }]
 			});
 			expect(descriptor[0]).toEqual({
 				canExecute: expect.any(Function),
@@ -118,8 +113,7 @@ describe('useMsgApplyTag', () => {
 			const {
 				result: { current: descriptor }
 			} = setupHook(useMsgApplyTagDescriptor, {
-				initialProps: [{ ids: [msg.id], folderId: FOLDERS.INBOX, messageTags: msg.tags }],
-				store
+				initialProps: [{ ids: [msg.id], folderId: FOLDERS.INBOX, messageTags: msg.tags }]
 			});
 
 			expect(descriptor.items).toHaveLength(5);
@@ -150,8 +144,7 @@ describe('useMsgApplyTag', () => {
 				const {
 					result: { current: descriptor }
 				} = setupHook(useMsgApplyTagSubDescriptors, {
-					initialProps: [{ ids: [msg.id], folderId: folder.id, messageTags: ['1'] }],
-					store
+					initialProps: [{ ids: [msg.id], folderId: folder.id, messageTags: ['1'] }]
 				});
 
 				expect(descriptor[0].canExecute()).toEqual(assertion);
@@ -167,12 +160,20 @@ describe('useMsgApplyTag', () => {
 					}
 				};
 				(useTags as jest.Mock).mockReturnValue(tags);
-				const interceptor = createSoapAPIInterceptor<ConvActionRequest>('MsgAction');
+				const response: MsgActionResponse = {
+					action: {
+						id: '123',
+						op: 'tag'
+					}
+				};
+				const interceptor = createSoapAPIInterceptor<MsgActionRequest, MsgActionResponse>(
+					'MsgAction',
+					response
+				);
 				const {
 					result: { current: descriptor }
 				} = setupHook(useMsgApplyTagSubDescriptors, {
-					initialProps: [{ ids: [msg.id], folderId: FOLDERS.INBOX, messageTags: ['1'] }],
-					store
+					initialProps: [{ ids: [msg.id], folderId: FOLDERS.INBOX, messageTags: ['1'] }]
 				});
 
 				await act(async () => {
@@ -185,7 +186,7 @@ describe('useMsgApplyTag', () => {
 				expect(requestParameter.action.l).toBeUndefined();
 			});
 
-			it('should call the API to add the tag from the message', async () => {
+			it('should call the API to add the tag to the message', async () => {
 				const tags = {
 					'1': {
 						id: '1',
@@ -193,12 +194,20 @@ describe('useMsgApplyTag', () => {
 					}
 				};
 				(useTags as jest.Mock).mockReturnValue(tags);
-				const interceptor = createSoapAPIInterceptor<ConvActionRequest>('MsgAction');
+				const response: MsgActionResponse = {
+					action: {
+						id: '123',
+						op: 'tag'
+					}
+				};
+				const interceptor = createSoapAPIInterceptor<MsgActionRequest, MsgActionResponse>(
+					'MsgAction',
+					response
+				);
 				const {
 					result: { current: descriptor }
 				} = setupHook(useMsgApplyTagSubDescriptors, {
-					initialProps: [{ ids: [msg.id], folderId: FOLDERS.INBOX, messageTags: [] }],
-					store
+					initialProps: [{ ids: [msg.id], folderId: FOLDERS.INBOX, messageTags: [] }]
 				});
 
 				await act(async () => {

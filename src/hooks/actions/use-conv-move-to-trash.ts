@@ -12,10 +12,9 @@ import { useTranslation } from 'react-i18next';
 import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
 import { isTrash } from '../../carbonio-ui-commons/helpers/folders';
 import { ConversationActionsDescriptors } from '../../constants';
-import { convAction } from '../../store/actions';
+import { convActionEmailStoreAction } from '../../store/emails/actions/conv-action-action';
 import type { ActionFn, UIActionDescriptor } from '../../types';
 import { useInSearchModule } from '../../ui-actions/utils';
-import { useAppDispatch } from '../redux';
 
 type ConvRestoreFunctionsParameter = {
 	ids: Array<string>;
@@ -28,20 +27,17 @@ const useRestoreConversation = (
 	folderId: string,
 	deselectAll?: () => void
 ): (() => void) => {
-	const dispatch = useAppDispatch();
 	const createSnackbar = useSnackbar();
 	const inSearchModule = useInSearchModule();
 	const [t] = useTranslation();
 
 	return useCallback(() => {
-		dispatch(
-			convAction({
-				operation: `move`,
-				ids,
-				parent: folderId
-			})
-		).then((res) => {
-			if (res.type.includes('fulfilled')) {
+		convActionEmailStoreAction({
+			operation: `move`,
+			ids,
+			parent: folderId
+		}).then((res) => {
+			if (!('Fault' in res)) {
 				deselectAll?.();
 				if (!inSearchModule) {
 					replaceHistory(`/folder/${folderId}/conversation/${ids[0]}`);
@@ -65,7 +61,7 @@ const useRestoreConversation = (
 				});
 			}
 		});
-	}, [createSnackbar, deselectAll, dispatch, folderId, ids, inSearchModule, t]);
+	}, [createSnackbar, deselectAll, folderId, ids, inSearchModule, t]);
 };
 
 export const useConvMoveToTrashFn = ({
@@ -74,7 +70,6 @@ export const useConvMoveToTrashFn = ({
 	folderId = FOLDERS.INBOX
 }: ConvRestoreFunctionsParameter): ActionFn => {
 	const canExecute = useCallback((): boolean => !isTrash(folderId), [folderId]);
-	const dispatch = useAppDispatch();
 	const createSnackbar = useSnackbar();
 	const restoreConversation = useRestoreConversation(ids, folderId, deselectAll);
 	const inSearchModule = useInSearchModule();
@@ -84,13 +79,11 @@ export const useConvMoveToTrashFn = ({
 		if (!canExecute()) {
 			return;
 		}
-		dispatch(
-			convAction({
-				operation: `trash`,
-				ids
-			})
-		).then((res) => {
-			if (res.type.includes('fulfilled')) {
+		convActionEmailStoreAction({
+			operation: `trash`,
+			ids
+		}).then((res) => {
+			if (!('Fault' in res)) {
 				deselectAll?.();
 				if (!inSearchModule) {
 					replaceHistory(`/folder/${folderId}/`);
@@ -117,7 +110,6 @@ export const useConvMoveToTrashFn = ({
 		});
 	}, [
 		canExecute,
-		dispatch,
 		ids,
 		deselectAll,
 		inSearchModule,

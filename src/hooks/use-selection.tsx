@@ -9,7 +9,7 @@ import { map, omit } from 'lodash';
 
 type UseSelectionProps = {
 	count: number;
-	items?: Array<{ id: string }>;
+	items?: Array<string>;
 	setCount: (value: number | ((prevState: number) => number)) => void;
 };
 
@@ -59,9 +59,9 @@ export const useSelection = ({
 	}, [setCount, setIsSelectModeOn]);
 
 	const selectAll = useCallback(() => {
-		map(items, (item) => {
-			if (!selected.current[item.id]) {
-				selectItem(item.id);
+		map(items, (id) => {
+			if (!selected.current[id]) {
+				selectItem(id);
 			}
 		});
 	}, [items, selectItem, selected]);

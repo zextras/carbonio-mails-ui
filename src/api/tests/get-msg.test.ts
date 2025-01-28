@@ -6,18 +6,18 @@
 
 import { createSoapAPIInterceptor } from '../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { GetMsgRequest } from '../../types';
-import { getMsgSoapAPI } from '../get-msg';
+import { getMsgSoapApi } from '../get-msg-soap-api';
 
 describe('GetMsg', () => {
 	it('should send max parameter if present', async () => {
 		const interceptor = createSoapAPIInterceptor<GetMsgRequest>('GetMsg');
-		getMsgSoapAPI({ msgId: '1', max: 10 });
+		getMsgSoapApi({ msgId: '1', max: 10 });
 		const request = await interceptor;
 		expect(request.m.max).toBe(10);
 	});
 	it('should not send max parameter if not present', async () => {
 		const interceptor = createSoapAPIInterceptor<GetMsgRequest>('GetMsg');
-		getMsgSoapAPI({ msgId: '1' });
+		getMsgSoapApi({ msgId: '1' });
 		const request = await interceptor;
 		expect(request.m.max).not.toBeDefined();
 	});

@@ -12,7 +12,6 @@ import { omit } from 'lodash';
 
 import { ParticipantRoleType } from '../../../../../../carbonio-ui-commons/constants/participants';
 import { setupTest, screen } from '../../../../../../carbonio-ui-commons/test/test-setup';
-import { generateStore } from '../../../../../../tests/generators/store';
 import { Participant } from '../../../../../../types';
 import {
 	copyEmailToClipboard,
@@ -62,22 +61,19 @@ const props = {
 
 describe('Attachments visualization', () => {
 	it('renders the contact names component with the exact number of chips', async () => {
-		const store = generateStore();
-		setupTest(<ContactNameChip {...props} />, { store });
+		setupTest(<ContactNameChip {...props} />);
 		const chips = screen.getAllByTestId('chip-', { exact: false });
 		expect(chips.length).toBe(contacts.length);
 	});
 
 	it('renders the label correctly', async () => {
-		const store = generateStore();
-		setupTest(<ContactNameChip {...props} />, { store });
+		setupTest(<ContactNameChip {...props} />);
 		const expectedLabel = screen.getByText(label);
 		expect(expectedLabel).toBeInTheDocument();
 	});
 
 	it('renders each contact with the correct name and address', async () => {
-		const store = generateStore();
-		setupTest(<ContactNameChip {...props} />, { store });
+		setupTest(<ContactNameChip {...props} />);
 
 		contacts.forEach((contact) => {
 			expect(screen.getByTestId(`chip-${contact.address}`)).toBeInTheDocument();
@@ -88,19 +84,17 @@ describe('Attachments visualization', () => {
 
 	it('calls sendMsg when Send e-mail icon is clicked', async () => {
 		const sendIcon = /icon: EmailOutline/i;
-		const store = generateStore();
 
-		const { user } = setupTest(<ContactNameChip {...props} />, { store });
+		const { user } = setupTest(<ContactNameChip {...props} />);
 		await user.click(screen.getAllByRoleWithIcon('button', { icon: sendIcon })[0]);
 		expect(sendMsg).toHaveBeenCalledWith(contacts[0]);
 	});
 
 	it('calls copyEmailToClipboard when Copy icon is clicked', async () => {
 		const copyIcon = /icon: Copy/i;
-		const store = generateStore();
 
 		const createSnackbar = useSnackbar();
-		const { user } = setupTest(<ContactNameChip {...props} />, { store });
+		const { user } = setupTest(<ContactNameChip {...props} />);
 		await user.click(screen.getAllByRoleWithIcon('button', { icon: copyIcon })[0]);
 		expect(copyEmailToClipboard).toHaveBeenCalledWith(contacts[0].address, createSnackbar);
 	});

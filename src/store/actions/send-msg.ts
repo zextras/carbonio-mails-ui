@@ -13,9 +13,9 @@ import { getAddressOwnerAccount, getIdentityDescriptor } from '../../helpers/ide
 import { getParticipantsFromMessage } from '../../helpers/messages';
 import { MailMessage, SendMsgResult, SendMsgWithSmartLinksResponse } from '../../types';
 import type { SaveDraftRequest, SaveDraftResponse, SendMsgParameters } from '../../types';
+import { getCertificatesPassword } from '../certificates/certificate';
+import { createSoapSendMsgRequestFromEditor } from '../editor/editor-transformations';
 import { generateMailRequest } from '../editor-slice-utils';
-import { getCertificatesPassword } from '../zustand/certificates/certificate';
-import { createSoapSendMsgRequestFromEditor } from '../zustand/editor/editor-transformations';
 
 export const sendMsg = createAsyncThunk<any, { msg: MailMessage }>(
 	'sendMsg',

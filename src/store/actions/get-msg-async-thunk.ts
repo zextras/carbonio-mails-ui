@@ -5,7 +5,7 @@
  */
 import { createAsyncThunk } from '@reduxjs/toolkit';
 
-import { getMsgSoapAPI } from '../../api/get-msg';
+import { getMsgSoapAPI } from '../../api/get-msg-soap-api';
 import { normalizeMailMessageFromSoap } from '../../normalizations/normalize-message';
 import type { MailMessage } from '../../types';
 

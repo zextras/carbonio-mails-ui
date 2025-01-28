@@ -15,9 +15,7 @@ import { createFakeIdentity } from '../../carbonio-ui-commons/test/mocks/account
 import { createSoapAPIInterceptor } from '../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { populateFoldersStore } from '../../carbonio-ui-commons/test/mocks/store/folders';
 import { setupTest } from '../../carbonio-ui-commons/test/test-setup';
-import { API_REQUEST_STATUS } from '../../constants';
 import { generateMessage } from '../../tests/generators/generateMessage';
-import { generateStore } from '../../tests/generators/store';
 import { RedirectMessageActionRequest } from '../../types';
 import RedirectMessageAction from '../redirect-message-action';
 
@@ -38,16 +36,9 @@ describe('RedirectMessageAction', () => {
 	it('should enable the "redirect" button when at least one recipient address is set', async () => {
 		populateFoldersStore({ view: FOLDER_VIEW.message });
 		const msg = generateMessage({});
-		const store = generateStore({
-			messages: {
-				searchedInFolder: {},
-				messages: { [msg.id]: msg },
-				searchRequestStatus: API_REQUEST_STATUS.fulfilled
-			}
-		});
 
 		const component = <RedirectMessageAction id={msg.id} onClose={jest.fn()} />;
-		const { user } = setupTest(component, { store });
+		const { user } = setupTest(component);
 
 		const recipient = createFakeIdentity().email;
 		const title = screen.getByText(/Redirect e-mail/i);
@@ -70,17 +61,11 @@ describe('RedirectMessageAction', () => {
 	it('should call the API for one recipients', async () => {
 		populateFoldersStore({ view: FOLDER_VIEW.message });
 		const msg = generateMessage({});
-		const store = generateStore({
-			messages: {
-				searchedInFolder: {},
-				messages: { [msg.id]: msg },
-				searchRequestStatus: API_REQUEST_STATUS.fulfilled
-			}
-		});
+
 		const interceptor = createSoapAPIInterceptor<RedirectMessageActionRequest>('BounceMsg');
 
 		const component = <RedirectMessageAction id={msg.id} onClose={jest.fn()} />;
-		const { user } = setupTest(component, { store });
+		const { user } = setupTest(component);
 
 		const recipient = createFakeIdentity().email;
 		const recipientsInputElement = within(
@@ -104,17 +89,11 @@ describe('RedirectMessageAction', () => {
 	it('should call the API for 5 recipients', async () => {
 		populateFoldersStore({ view: FOLDER_VIEW.message });
 		const msg = generateMessage({});
-		const store = generateStore({
-			messages: {
-				searchedInFolder: {},
-				messages: { [msg.id]: msg },
-				searchRequestStatus: API_REQUEST_STATUS.fulfilled
-			}
-		});
+
 		const interceptor = createSoapAPIInterceptor<RedirectMessageActionRequest>('BounceMsg');
 
 		const component = <RedirectMessageAction id={msg.id} onClose={jest.fn()} />;
-		const { user } = setupTest(component, { store });
+		const { user } = setupTest(component);
 		const recipients = times(5, () => createFakeIdentity().email);
 		const recipientsInputElement = within(
 			screen.getByTestId('redirect-recipients-address')

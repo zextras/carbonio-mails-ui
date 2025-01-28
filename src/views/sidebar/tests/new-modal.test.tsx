@@ -8,18 +8,17 @@ import React from 'react';
 import { faker } from '@faker-js/faker';
 import { act, screen, within } from '@testing-library/react';
 
+import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
 import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { populateFoldersStore } from '../../../carbonio-ui-commons/test/mocks/store/folders';
 import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
 import { Folder, SoapFolder } from '../../../carbonio-ui-commons/types/folder';
-import { generateStore } from '../../../tests/generators/store';
 import { NewModal } from '../new-modal';
-import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
 
 describe('new-modal', () => {
 	test('add folder name and create button should enabled', async () => {
 		const closeFn = jest.fn();
-		const store = generateStore();
+
 		populateFoldersStore();
 		const folder: Folder = {
 			id: FOLDERS.INBOX,
@@ -49,7 +48,7 @@ describe('new-modal', () => {
 			parent: undefined,
 			depth: 1
 		};
-		const { user } = setupTest(<NewModal onClose={closeFn} folder={folder} />, { store });
+		const { user } = setupTest(<NewModal onClose={closeFn} folder={folder} />);
 
 		expect(screen.getByTestId('new-folder-name')).toBeInTheDocument();
 		const newFolder = screen.getByTestId('new-folder-name');
@@ -75,7 +74,7 @@ describe('new-modal', () => {
 
 	test('create button should be disabled on blank folder name', async () => {
 		const closeFn = jest.fn();
-		const store = generateStore();
+
 		populateFoldersStore();
 		const folder: Folder = {
 			id: FOLDERS.INBOX,
@@ -105,7 +104,7 @@ describe('new-modal', () => {
 			parent: undefined,
 			depth: 1
 		};
-		const { user } = setupTest(<NewModal onClose={closeFn} folder={folder} />, { store });
+		const { user } = setupTest(<NewModal onClose={closeFn} folder={folder} />);
 
 		expect(screen.getByTestId('new-folder-name')).toBeInTheDocument();
 		const newFolder = screen.getByTestId('new-folder-name');
@@ -127,7 +126,6 @@ describe('new-modal', () => {
 
 	test('API is called with the proper parameters to create new folder', async () => {
 		const closeFn = jest.fn();
-		const store = generateStore();
 		populateFoldersStore();
 		const folder: Folder = {
 			id: FOLDERS.INBOX,
@@ -157,7 +155,7 @@ describe('new-modal', () => {
 			parent: undefined,
 			depth: 1
 		};
-		const { user } = setupTest(<NewModal onClose={closeFn} folder={folder} />, { store });
+		const { user } = setupTest(<NewModal onClose={closeFn} folder={folder} />);
 
 		expect(screen.getByTestId('new-folder-name')).toBeInTheDocument();
 		const newFolderName = screen.getByTestId('new-folder-name');

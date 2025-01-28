@@ -5,18 +5,21 @@
  */
 import React from 'react';
 
-import { fireEvent, screen } from '@testing-library/react';
+import { act, fireEvent, screen, waitFor } from '@testing-library/react';
 import { noop } from 'lodash';
 
 import { FOLDERS } from '../../../../../carbonio-ui-commons/constants/folders';
 import { ParticipantRole } from '../../../../../carbonio-ui-commons/constants/participants';
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
-import { API_REQUEST_STATUS, FOLDERS_DESCRIPTORS } from '../../../../../constants';
+import { FOLDERS_DESCRIPTORS } from '../../../../../constants';
+import {
+	setConversationsInEmailStore,
+	setMessagesInEmailStore
+} from '../../../../../store/emails/store';
 import { ASSERTIONS } from '../../../../../tests/constants';
 import { generateConversation } from '../../../../../tests/generators/generateConversation';
 import { generateMessage } from '../../../../../tests/generators/generateMessage';
-import { generateStore } from '../../../../../tests/generators/store';
-import type { ConversationListItemProps } from '../../../../../types';
+import type { ConversationListItemProps, ConvMessage } from '../../../../../types';
 import { ConversationListItem } from '../conversation-list-item';
 
 describe.each`
@@ -27,11 +30,22 @@ describe.each`
 	describe('in any folders', () => {
 		test('if the conversation contains more than 1 message then a badge with the messages count is visible', async () => {
 			const folderId = FOLDERS.INBOX;
-			const conversation = generateConversation({ folderId, isSingleMessageConversation: false });
+			const message1 = generateMessage({ id: '1' });
+			const message2 = generateMessage({ id: '2' });
+			const messages = [message1, message2];
+			const conversation = generateConversation({
+				folderId,
+				isSingleMessageConversation: false,
+				messages: messages as Array<ConvMessage>
+			});
+			await waitFor(() => {
+				setConversationsInEmailStore([conversation], false);
+			});
+			setMessagesInEmailStore(messages, false);
 			const messageCount = conversation.messages.length;
 
 			const props: ConversationListItemProps = {
-				item: conversation,
+				conversation,
 				selected: false,
 				selecting: false,
 				toggle: noop,
@@ -41,25 +55,17 @@ describe.each`
 				isSearchModule,
 				folderId
 			};
+			setConversationsInEmailStore([conversation], false);
 
-			const store = generateStore({
-				conversations: {
-					currentFolder: folderId,
-					expandedStatus: {
-						[conversation.id]: API_REQUEST_STATUS.fulfilled
-					},
-					searchedInFolder: {},
-					conversations: {
-						[conversation.id]: conversation
-					},
-					searchRequestStatus: API_REQUEST_STATUS.fulfilled
-				}
-			});
-
-			setupTest(<ConversationListItem {...props} />, { store });
+			setupTest(<ConversationListItem {...props} />);
 			const badge = await screen.findByTestId(`conversation-messages-count-${conversation.id}`);
-			expect(badge).toBeVisible();
-			expect(badge).toHaveTextContent(`${messageCount}`);
+
+			await act(async () => {
+				expect(badge).toBeVisible();
+			});
+			await act(async () => {
+				expect(badge).toHaveTextContent(`${messageCount}`);
+			});
 		});
 
 		test.each`
@@ -79,7 +85,7 @@ describe.each`
 				});
 
 				const props: ConversationListItemProps = {
-					item: conversation,
+					conversation,
 					selected: false,
 					selecting: false,
 					toggle: noop,
@@ -89,22 +95,8 @@ describe.each`
 					isSearchModule,
 					folderId: folder.id
 				};
-
-				const store = generateStore({
-					conversations: {
-						currentFolder: folder.id,
-						expandedStatus: {
-							[conversation.id]: API_REQUEST_STATUS.fulfilled
-						},
-						searchedInFolder: {},
-						conversations: {
-							[conversation.id]: conversation
-						},
-						searchRequestStatus: API_REQUEST_STATUS.fulfilled
-					}
-				});
-
-				setupTest(<ConversationListItem {...props} />, { store });
+				setConversationsInEmailStore([conversation], false);
+				setupTest(<ConversationListItem {...props} />);
 				const avatar = await screen.findByTestId(
 					`conversation-list-item-avatar-${conversation.id}`
 				);
@@ -131,7 +123,7 @@ describe.each`
 				});
 
 				const props: ConversationListItemProps = {
-					item: conversation,
+					conversation,
 					selected: false,
 					selecting: false,
 					toggle: noop,
@@ -142,27 +134,18 @@ describe.each`
 					folderId: folder.id
 				};
 
-				const store = generateStore({
-					conversations: {
-						currentFolder: folder.id,
-						expandedStatus: {
-							[conversation.id]: API_REQUEST_STATUS.fulfilled
-						},
-						searchedInFolder: {},
-						conversations: {
-							[conversation.id]: conversation
-						},
-						searchRequestStatus: API_REQUEST_STATUS.fulfilled
-					}
-				});
-
-				setupTest(<ConversationListItem {...props} />, { store });
+				setConversationsInEmailStore([conversation], false);
+				setupTest(<ConversationListItem {...props} />);
 
 				const dateLabel = screen.queryByTestId('DateLabel');
 				if (assertion.value) {
-					expect(dateLabel).toBeVisible();
+					await act(async () => {
+						expect(dateLabel).toBeVisible();
+					});
 				} else {
-					expect(dateLabel).not.toBeInTheDocument();
+					await act(async () => {
+						expect(dateLabel).not.toBeInTheDocument();
+					});
 				}
 			}
 		);
@@ -186,7 +169,7 @@ describe.each`
 				});
 
 				const props: ConversationListItemProps = {
-					item: conversation,
+					conversation,
 					selected: false,
 					selecting: false,
 					toggle: noop,
@@ -197,28 +180,21 @@ describe.each`
 					folderId: folder.id
 				};
 
-				const store = generateStore({
-					conversations: {
-						currentFolder: folder.id,
-						expandedStatus: {
-							[conversation.id]: API_REQUEST_STATUS.fulfilled
-						},
-						searchedInFolder: {},
-						conversations: {
-							[conversation.id]: conversation
-						},
-						searchRequestStatus: API_REQUEST_STATUS.fulfilled
-					}
-				});
-
-				setupTest(<ConversationListItem {...props} />, { store });
+				setConversationsInEmailStore([conversation], false);
+				setupTest(<ConversationListItem {...props} />);
 
 				const subjectLabel = screen.queryByTestId('Subject');
 				if (assertion.value) {
-					expect(subjectLabel).toBeVisible();
-					expect(subjectLabel).toHaveTextContent(subject);
+					await act(async () => {
+						expect(subjectLabel).toBeVisible();
+					});
+					await act(async () => {
+						expect(subjectLabel).toHaveTextContent(subject);
+					});
 				} else {
-					expect(subjectLabel).not.toBeInTheDocument();
+					await act(async () => {
+						expect(subjectLabel).not.toBeInTheDocument();
+					});
 				}
 			}
 		);
@@ -242,7 +218,7 @@ describe.each`
 				});
 
 				const props: ConversationListItemProps = {
-					item: conversation,
+					conversation,
 					selected: false,
 					selecting: false,
 					toggle: noop,
@@ -253,28 +229,21 @@ describe.each`
 					folderId: folder.id
 				};
 
-				const store = generateStore({
-					conversations: {
-						currentFolder: folder.id,
-						expandedStatus: {
-							[conversation.id]: API_REQUEST_STATUS.fulfilled
-						},
-						searchedInFolder: {},
-						conversations: {
-							[conversation.id]: conversation
-						},
-						searchRequestStatus: API_REQUEST_STATUS.fulfilled
-					}
-				});
-
-				setupTest(<ConversationListItem {...props} />, { store });
+				setConversationsInEmailStore([conversation], false);
+				setupTest(<ConversationListItem {...props} />);
 
 				const subjectLabel = screen.queryByTestId('Subject');
 				if (assertion.value) {
-					expect(subjectLabel).toBeVisible();
-					expect(subjectLabel).toHaveTextContent('<No Subject>');
+					await act(async () => {
+						expect(subjectLabel).toBeVisible();
+					});
+					await act(async () => {
+						expect(subjectLabel).toHaveTextContent('<No Subject>');
+					});
 				} else {
-					expect(subjectLabel).not.toBeInTheDocument();
+					await act(async () => {
+						expect(subjectLabel).not.toBeInTheDocument();
+					});
 				}
 			}
 		);
@@ -296,7 +265,7 @@ describe.each`
 				});
 
 				const props: ConversationListItemProps = {
-					item: conversation,
+					conversation,
 					selected: false,
 					selecting: false,
 					toggle: noop,
@@ -307,27 +276,18 @@ describe.each`
 					folderId: folder.id
 				};
 
-				const store = generateStore({
-					conversations: {
-						currentFolder: folder.id,
-						expandedStatus: {
-							[conversation.id]: API_REQUEST_STATUS.fulfilled
-						},
-						searchedInFolder: {},
-						conversations: {
-							[conversation.id]: conversation
-						},
-						searchRequestStatus: API_REQUEST_STATUS.fulfilled
-					}
-				});
-
-				setupTest(<ConversationListItem {...props} />, { store });
+				setConversationsInEmailStore([conversation], false);
+				setupTest(<ConversationListItem {...props} />);
 
 				const senderLabel = screen.queryByTestId('participants-name-label');
 				if (assertion.value) {
-					expect(senderLabel).toBeVisible();
+					await act(async () => {
+						expect(senderLabel).toBeVisible();
+					});
 				} else {
-					expect(senderLabel).not.toBeInTheDocument();
+					await act(async () => {
+						expect(senderLabel).not.toBeInTheDocument();
+					});
 				}
 			}
 		);
@@ -350,7 +310,7 @@ describe.each`
 				});
 
 				const props: ConversationListItemProps = {
-					item: conversation,
+					conversation,
 					selected: false,
 					selecting: false,
 					toggle: noop,
@@ -361,24 +321,13 @@ describe.each`
 					folderId: folder.id
 				};
 
-				const store = generateStore({
-					conversations: {
-						currentFolder: folder.id,
-						expandedStatus: {
-							[conversation.id]: API_REQUEST_STATUS.fulfilled
-						},
-						searchedInFolder: {},
-						conversations: {
-							[conversation.id]: conversation
-						},
-						searchRequestStatus: API_REQUEST_STATUS.fulfilled
-					}
-				});
-
-				setupTest(<ConversationListItem {...props} />, { store });
+				setConversationsInEmailStore([conversation], false);
+				setupTest(<ConversationListItem {...props} />);
 
 				const senderLabel = screen.queryByTestId('participants-name-label');
-				expect(senderLabel).toHaveTextContent(labelContent);
+				await act(async () => {
+					expect(senderLabel).toHaveTextContent(labelContent);
+				});
 			}
 		);
 
@@ -399,7 +348,7 @@ describe.each`
 			});
 
 			const props: ConversationListItemProps = {
-				item: conversation,
+				conversation,
 				selected: false,
 				selecting: false,
 				toggle: noop,
@@ -410,25 +359,18 @@ describe.each`
 				folderId: FOLDERS.INBOX
 			};
 
-			const store = generateStore({
-				conversations: {
-					currentFolder: FOLDERS.INBOX,
-					expandedStatus: {
-						[conversation.id]: API_REQUEST_STATUS.fulfilled
-					},
-					searchedInFolder: {},
-					conversations: {
-						[conversation.id]: conversation
-					},
-					searchRequestStatus: API_REQUEST_STATUS.fulfilled
-				}
-			});
-
-			setupTest(<ConversationListItem {...props} />, { store });
+			setConversationsInEmailStore([conversation], false);
+			setupTest(<ConversationListItem {...props} />);
 			const senderLabel = screen.queryByTestId('participants-name-label');
-			expect(senderLabel).toHaveTextContent('mario');
-			expect(senderLabel).toHaveTextContent('luigi');
-			expect(senderLabel).toHaveTextContent('bowser');
+			await act(async () => {
+				expect(senderLabel).toHaveTextContent('mario');
+			});
+			await act(async () => {
+				expect(senderLabel).toHaveTextContent('luigi');
+			});
+			await act(async () => {
+				expect(senderLabel).toHaveTextContent('bowser');
+			});
 		});
 
 		test('(case #9) if the conversation contains more than 1 message then a chevron must be visible', async () => {
@@ -440,7 +382,7 @@ describe.each`
 			});
 
 			const props: ConversationListItemProps = {
-				item: conversation,
+				conversation,
 				selected: false,
 				selecting: false,
 				toggle: noop,
@@ -451,21 +393,8 @@ describe.each`
 				folderId
 			};
 
-			const store = generateStore({
-				conversations: {
-					currentFolder: folderId,
-					expandedStatus: {
-						[conversation.id]: API_REQUEST_STATUS.fulfilled
-					},
-					searchedInFolder: {},
-					conversations: {
-						[conversation.id]: conversation
-					},
-					searchRequestStatus: API_REQUEST_STATUS.fulfilled
-				}
-			});
-
-			setupTest(<ConversationListItem {...props} />, { store });
+			setConversationsInEmailStore([conversation], false);
+			setupTest(<ConversationListItem {...props} />);
 			const chevron = await screen.findByTestId(`ToggleExpand`);
 			expect(chevron).toBeVisible();
 		});
@@ -475,7 +404,7 @@ describe.each`
 			const conversation = generateConversation({ folderId, isSingleMessageConversation: true });
 
 			const props: ConversationListItemProps = {
-				item: conversation,
+				conversation,
 				selected: false,
 				selecting: false,
 				toggle: noop,
@@ -486,22 +415,11 @@ describe.each`
 				folderId
 			};
 
-			const store = generateStore({
-				conversations: {
-					currentFolder: folderId,
-					expandedStatus: {
-						[conversation.id]: API_REQUEST_STATUS.fulfilled
-					},
-					searchedInFolder: {},
-					conversations: {
-						[conversation.id]: conversation
-					},
-					searchRequestStatus: API_REQUEST_STATUS.fulfilled
-				}
+			setConversationsInEmailStore([conversation], false);
+			setupTest(<ConversationListItem {...props} />);
+			await act(async () => {
+				expect(screen.queryByTestId('ToggleExpand')).not.toBeInTheDocument();
 			});
-
-			setupTest(<ConversationListItem {...props} />, { store });
-			expect(screen.queryByTestId('ToggleExpand')).not.toBeInTheDocument();
 		});
 	});
 
@@ -511,7 +429,7 @@ describe.each`
 		const conversationId = conversation.id;
 
 		const props: ConversationListItemProps = {
-			item: conversation,
+			conversation,
 			selected: false,
 			selecting: false,
 			toggle: noop,
@@ -522,21 +440,8 @@ describe.each`
 			folderId
 		};
 
-		const store = generateStore({
-			conversations: {
-				currentFolder: folderId,
-				expandedStatus: {
-					[conversation.id]: API_REQUEST_STATUS.fulfilled
-				},
-				searchedInFolder: {},
-				conversations: {
-					[conversation.id]: conversation
-				},
-				searchRequestStatus: API_REQUEST_STATUS.fulfilled
-			}
-		});
-
-		setupTest(<ConversationListItem {...props} />, { store });
+		setConversationsInEmailStore([conversation], false);
+		setupTest(<ConversationListItem {...props} />);
 		const aRandomChild = await screen.findByTestId(`hover-container-${conversationId}`);
 
 		// Initally the context menu is not created

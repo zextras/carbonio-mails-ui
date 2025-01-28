@@ -21,9 +21,9 @@ import { CertificatePasswordModal } from './certificate-password-modal';
 import { EnterPasswordModal } from './enter-password-modal';
 import PersonalCertificatesSettings from './personal-certificates-settings';
 import RecipientsCertificateSettings from './recipients-certificates-settings';
+import { checkExistEncryptionPassword } from '../../../api/check-exist-password-action';
 import { useUpdateView } from '../../../carbonio-ui-commons/hooks/use-update-view';
-import { checkExistEncryptionPassword } from '../../../store/actions/check-exist-password-action';
-import { useSmimePasswordStore } from '../../../store/zustand/certificates/store';
+import { useSmimePasswordStore } from '../../../store/certificates/store';
 
 const CustomBreadcrumbs = styled(Breadcrumbs)`
 	.breadcrumbCrumb {

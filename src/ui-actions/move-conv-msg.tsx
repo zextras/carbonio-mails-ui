@@ -10,14 +10,14 @@ import { replaceHistory } from '@zextras/carbonio-shell-ui';
 import { noop, some } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
+import { createFolderSoapApi } from '../api/create-folder-soap-api';
 import ModalFooter from '../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../carbonio-ui-commons/components/modals/modal-header';
 import { Folder } from '../carbonio-ui-commons/types/folder';
 import { isRoot } from '../helpers/folders';
 import { useUiUtilities } from '../hooks/use-ui-utilities';
-import { convAction, msgAction } from '../store/actions';
-import { createFolder } from '../store/actions/create-folder';
-import { AppDispatch } from '../store/redux';
+import { convActionEmailStoreAction } from '../store/emails/actions/conv-action-action';
+import { msgActionEmailStoreAction } from '../store/emails/actions/msg-action-action';
 import { FolderSelector } from '../views/sidebar/commons/folder-selector';
 
 type MoveConvMessageProps = {
@@ -27,17 +27,15 @@ type MoveConvMessageProps = {
 	deselectAll?: () => void;
 	onClose: () => void;
 	folderId: string;
-	dispatch: AppDispatch;
 };
 
-const MoveConvMessage = ({
+export const MoveConvMessage = ({
 	selectedIDs,
 	isMessageView,
 	isRestore,
 	deselectAll,
 	onClose,
-	folderId,
-	dispatch
+	folderId
 }: MoveConvMessageProps): ReactElement => {
 	const [t] = useTranslation();
 	const { createSnackbar } = useUiUtilities();
@@ -54,15 +52,13 @@ const MoveConvMessage = ({
 
 	const onConfirmConvMove = useCallback(
 		(id: string | undefined) => {
-			dispatch(
-				convAction({
-					operation: `move`,
-					ids: selectedIDs,
-					parent: id
-				})
-			)
+			convActionEmailStoreAction({
+				operation: `move`,
+				ids: selectedIDs,
+				parent: id
+			})
 				.then((res) => {
-					if (res.type.includes('fulfilled')) {
+					if (!('Fault' in res)) {
 						deselectAll?.();
 						createSnackbar({
 							key: `edit`,
@@ -92,20 +88,18 @@ const MoveConvMessage = ({
 				})
 				.catch(() => noop);
 		},
-		[dispatch, selectedIDs, onCloseModal, deselectAll, createSnackbar, isRestore, t]
+		[selectedIDs, onCloseModal, deselectAll, createSnackbar, isRestore, t]
 	);
 
 	const onConfirmMessageMove = useCallback(
 		(newFolderId = '0') => {
-			dispatch(
-				msgAction({
-					operation: `move`,
-					ids: selectedIDs,
-					parent: newFolderId
-				})
-			)
+			msgActionEmailStoreAction({
+				operation: `move`,
+				ids: selectedIDs,
+				parent: newFolderId
+			})
 				.then((res) => {
-					if (res.type.includes('fulfilled')) {
+					if (!('Fault' in res)) {
 						deselectAll?.();
 						createSnackbar({
 							key: `edit`,
@@ -132,7 +126,7 @@ const MoveConvMessage = ({
 				})
 				.catch(() => noop);
 		},
-		[dispatch, selectedIDs, onCloseModal, deselectAll, createSnackbar, isRestore, t]
+		[selectedIDs, onCloseModal, deselectAll, createSnackbar, isRestore, t]
 	);
 
 	const hasSameName = useMemo(
@@ -158,7 +152,7 @@ const MoveConvMessage = ({
 	);
 
 	const onConfirm = useCallback(() => {
-		createFolder({
+		createFolderSoapApi({
 			parentFolderId: folderDestination?.parent ?? '',
 			name: inputValue
 		})
@@ -314,5 +308,3 @@ const MoveConvMessage = ({
 		</Container>
 	);
 };
-
-export default MoveConvMessage;

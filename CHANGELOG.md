@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.22.1](https://github.com/zextras/carbonio-mails-ui/compare/v1.22.0...v1.22.1) (2025-01-17)
+
+
+### Bug Fixes
+
+* avoid content duplication on message print ([6449aff](https://github.com/zextras/carbonio-mails-ui/commit/6449affd55a9b642961204060c5f5bf180f5c7c6))
+* avoid content duplication on message print ([f368ba3](https://github.com/zextras/carbonio-mails-ui/commit/f368ba3f00fcd4cc4adeeb744778d9a5aa44d7f3))
+
 ## [1.22.0](https://github.com/zextras/carbonio-mails-ui/compare/v1.21.3...v1.22.0) (2024-12-12)
 
 

@@ -19,12 +19,9 @@ import { useTranslation } from 'react-i18next';
 
 import { CertificateUploadModal } from './certificate-upload-modal';
 import { ShowAllCertificatesModal } from './show-all-certificates-modal';
-import { getPersonalCertificates } from '../../../store/actions/get-personal-certificates-action';
-import { uploadPersonalCertificate } from '../../../store/actions/upload-personal-certificate-action';
-import {
-	PersonalCertificate,
-	useSmimePasswordStore
-} from '../../../store/zustand/certificates/store';
+import { getPersonalCertificates } from '../../../api/get-personal-certificates-action';
+import { uploadPersonalCertificate } from '../../../api/upload-personal-certificate-action';
+import { PersonalCertificate, useSmimePasswordStore } from '../../../store/certificates/store';
 import { Certificate } from '../../../types/certificates';
 
 const PersonalCertificatesSettings: FC = (): ReactElement => {

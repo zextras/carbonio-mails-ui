@@ -35,6 +35,8 @@ import { SizeExceededWarningBanner } from './parts/size-exceeded-waring-banner';
 import { SubjectRow } from './parts/subject-row';
 import { TextEditorContainer } from './parts/text-editor-container';
 import { WarningBanner } from './parts/warning-banner';
+import { checkExistEncryptionPassword } from '../../../../api/check-exist-password-action';
+import { checkPersonalCertificateExist } from '../../../../api/check-personal-certificate-exist-action';
 import { GapContainer, GapRow } from '../../../../commons/gap-container';
 import { EDIT_VIEW_CLOSING_REASONS, EditViewActions, TIMEOUTS } from '../../../../constants';
 import { buildArrayFromFileList } from '../../../../helpers/files';
@@ -43,12 +45,7 @@ import {
 	getIdentitiesDescriptors,
 	getIdentityDescriptor
 } from '../../../../helpers/identities';
-import { checkExistEncryptionPassword } from '../../../../store/actions/check-exist-password-action';
-import { checkPersonalCertificateExist } from '../../../../store/actions/check-personal-certificate-exist-action';
-import {
-	useCertificatesStore,
-	useSmimePasswordStore
-} from '../../../../store/zustand/certificates/store';
+import { useCertificatesStore, useSmimePasswordStore } from '../../../../store/certificates/store';
 import {
 	useEditorAutoSendTime,
 	useEditorDraftSave,
@@ -61,7 +58,7 @@ import {
 	useEditorIsSmimeSign,
 	useEditorIdentityId,
 	useEditorIsSmimeEncrypt
-} from '../../../../store/zustand/editor';
+} from '../../../../store/editor';
 import { EditViewClosingReasons } from '../../../../types';
 import { updateEditorWithSmartLinks } from '../../../../ui-actions/utils';
 import { EnterPasswordModal } from '../../../settings/certificates/enter-password-modal';

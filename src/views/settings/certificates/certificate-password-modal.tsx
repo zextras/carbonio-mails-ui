@@ -16,10 +16,10 @@ import {
 } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
 
+import { createEncryptionPassword } from '../../../api/create-password-action';
 import ModalFooter from '../../../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../../../carbonio-ui-commons/components/modals/modal-header';
-import { createEncryptionPassword } from '../../../store/actions/create-password-action';
-import { useSmimePasswordStore } from '../../../store/zustand/certificates/store';
+import { useSmimePasswordStore } from '../../../store/certificates/store';
 
 type CertificatePasswordModalPropType = {
 	isReset?: boolean;

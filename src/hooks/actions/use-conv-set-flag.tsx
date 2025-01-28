@@ -8,24 +8,20 @@ import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { ConversationActionsDescriptors } from '../../constants';
-import { convAction } from '../../store/actions';
+import { convActionEmailStoreAction } from '../../store/emails/actions/conv-action-action';
 import { ActionFn, UIActionDescriptor } from '../../types';
-import { useAppDispatch } from '../redux';
 
 export const useConvSetFlagFn = (ids: Array<string>, isFlagged: boolean): ActionFn => {
 	const canExecute = useCallback((): boolean => !isFlagged, [isFlagged]);
-	const dispatch = useAppDispatch();
 
 	const execute = useCallback((): void => {
 		if (canExecute()) {
-			dispatch(
-				convAction({
-					operation: 'flag',
-					ids
-				})
-			);
+			convActionEmailStoreAction({
+				operation: 'flag',
+				ids
+			});
 		}
-	}, [canExecute, dispatch, ids]);
+	}, [canExecute, ids]);
 
 	return useMemo(() => ({ canExecute, execute }), [canExecute, execute]);
 };

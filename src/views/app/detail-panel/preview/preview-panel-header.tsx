@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useCallback, FC, useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 
 import {
 	Button,
@@ -34,12 +34,19 @@ const PreviewHeaderNavigation = ({
 	return <ConversationPreviewHeaderNavigation />;
 };
 
-const PreviewPanelHeader: FC<{
+type PreviewPanelHeaderProps = {
 	itemType: 'message' | 'conversation';
 	subject?: MailMessage['subject'];
 	isRead?: MailMessage['read'];
 	folderId: string;
-}> = ({ subject, isRead, folderId, itemType }) => {
+};
+
+export const PreviewPanelHeader = ({
+	subject,
+	isRead,
+	folderId,
+	itemType
+}: PreviewPanelHeaderProps): React.JSX.Element => {
 	const [t] = useTranslation();
 
 	const replaceHistoryCallback = useCallback(
@@ -99,5 +106,3 @@ const PreviewPanelHeader: FC<{
 		</>
 	);
 };
-
-export default PreviewPanelHeader;

@@ -9,9 +9,8 @@ import React from 'react';
 import { screen } from '@testing-library/react';
 
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
-import { getMsgAsyncThunk } from '../../../../../store/actions';
-import { selectMessage } from '../../../../../store/messages-slice';
-import { generateStore } from '../../../../../tests/generators/store';
+import { setMessagesInEmailStore } from '../../../../../store/emails/store';
+import { generateMessage } from '../../../../../tests/generators/generateMessage';
 import MailPreview, { MailPreviewProps } from '../mail-preview';
 
 /**
@@ -20,13 +19,10 @@ import MailPreview, { MailPreviewProps } from '../mail-preview';
 // See: tests/mocks/network/msw/cases/getMsg/getMsg-${id} for relative msgId
 describe('Mail preview', () => {
 	it('10 - 3 inline images', async () => {
-		const store = generateStore();
 		const msgId = '10';
+		const message = generateMessage({ id: msgId });
+		setMessagesInEmailStore([message], false);
 
-		// Invoke the fetch of the message and the store update
-		await store.dispatch<any>(getMsgAsyncThunk({ msgId }));
-		const state = store.getState();
-		const message = selectMessage(state, msgId);
 		const props: MailPreviewProps = {
 			message,
 			expanded: true,
@@ -36,7 +32,7 @@ describe('Mail preview', () => {
 		};
 
 		// Render the component
-		setupTest(<MailPreview {...props} />, { store });
+		setupTest(<MailPreview {...props} />);
 
 		const { shadowRoot }: HTMLDivElement = await screen.findByTestId('shadow-dom-wrapper');
 
@@ -50,13 +46,11 @@ describe('Mail preview', () => {
 	});
 
 	it('11 - table with a link', async () => {
-		const store = generateStore();
 		const msgId = '11';
+		const message = generateMessage({ id: msgId });
+		setMessagesInEmailStore([message], false);
 
 		// Invoke the fetch of the message and the store update
-		await store.dispatch<any>(getMsgAsyncThunk({ msgId }));
-		const state = store.getState();
-		const message = selectMessage(state, msgId);
 		const props: MailPreviewProps = {
 			message,
 			expanded: true,
@@ -66,7 +60,7 @@ describe('Mail preview', () => {
 		};
 
 		// Render the component
-		setupTest(<MailPreview {...props} />, { store });
+		setupTest(<MailPreview {...props} />);
 		const { shadowRoot }: HTMLDivElement = await screen.findByTestId('shadow-dom-wrapper');
 		const content = shadowRoot?.innerHTML.toString();
 
@@ -74,13 +68,9 @@ describe('Mail preview', () => {
 	});
 
 	it('12 - table with width greater than the previewer width', async () => {
-		const store = generateStore();
 		const msgId = '12';
-
-		// Invoke the fetch of the message and the store update
-		await store.dispatch<any>(getMsgAsyncThunk({ msgId }));
-		const state = store.getState();
-		const message = selectMessage(state, msgId);
+		const message = generateMessage({ id: msgId });
+		setMessagesInEmailStore([message], false);
 		const props: MailPreviewProps = {
 			message,
 			expanded: true,
@@ -90,7 +80,7 @@ describe('Mail preview', () => {
 		};
 
 		// Render the component
-		setupTest(<MailPreview {...props} />, { store });
+		setupTest(<MailPreview {...props} />);
 		const { shadowRoot }: HTMLDivElement = await screen.findByTestId('shadow-dom-wrapper');
 		const content = shadowRoot?.innerHTML.toString();
 

@@ -35,6 +35,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 
+import { createMountpointSoapApi } from '../../api/create-mountpoint-soap-api';
 import ModalFooter from '../../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../../carbonio-ui-commons/components/modals/modal-header';
 import type {
@@ -42,7 +43,6 @@ import type {
 	ShareModalProps,
 	SharedObject
 } from '../../carbonio-ui-commons/types/sidebar';
-import { createMountpoint } from '../../store/actions/create-mountpoint';
 
 const ContainerEl = styled(Container)`
 	overflow-y: auto;
@@ -94,7 +94,7 @@ export const SharesModal: FC<ShareModalProps> = ({ folders, onClose }) => {
 	const [t] = useTranslation();
 
 	const onConfirm = useCallback(() => {
-		createMountpoint(links);
+		createMountpointSoapApi(links);
 		onClose();
 	}, [links, onClose]);
 

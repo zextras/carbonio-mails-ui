@@ -1,54 +1,81 @@
+/* eslint-disable no-param-reassign */
 /*
- * SPDX-FileCopyrightText: 2024 Zextras <https://www.zextras.com>
+ * SPDX-FileCopyrightText: 2025 Zextras <https://www.zextras.com>
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { useEffect, useRef, useState } from 'react';
 
-import { SoapNotify, useNotify, useRefresh } from '@zextras/carbonio-shell-ui';
-import { filter, find, forEach, isEmpty, keyBy, map, reduce, sortBy } from 'lodash';
+import { MutableRefObject, useEffect, useRef, useState } from 'react';
+
+import { useNotify, useRefresh } from '@zextras/carbonio-shell-ui';
+import { forEach, isEmpty, map, sortBy } from 'lodash';
 import { StoreApi, UseBoundStore } from 'zustand';
 
 import { useFolderStore } from '../../../carbonio-ui-commons/store/zustand/folder';
-import { getTags, useTagStore } from '../../../carbonio-ui-commons/store/zustand/tags';
+import { useTagStore } from '../../../carbonio-ui-commons/store/zustand/tags';
+import { Tag, TagState } from '../../../carbonio-ui-commons/types/tags';
 import { folderWorker, tagsWorker } from '../../../carbonio-ui-commons/worker';
-import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
 import {
-	normalizeConversation,
+	mapToNormalizedConversation,
 	normalizeConversations
 } from '../../../normalizations/normalize-conversation';
 import { normalizeMailMessageFromSoap } from '../../../normalizations/normalize-message';
 import {
-	handleAddMessagesInConversation,
-	handleCreatedMessagesInConversation,
-	handleDeletedMessagesInConversation,
-	handleModifiedMessagesInConversation,
-	handleNotifyCreatedConversations,
-	handleNotifyDeletedConversations,
-	handleNotifyModifiedConversations,
-	selectCurrentFolder,
-	setSearchedInFolder
-} from '../../../store/conversations-slice';
+	handleNotifyConversationsCreated,
+	handleNotifyMessagesCreated,
+	handleNotifyConversationsModified,
+	handleNotifyMessagesModified,
+	handleNotifyDeleted
+} from '../../../store/emails/store';
 import {
-	handleCreatedMessages,
-	handleDeletedMessages,
-	handleModifiedMessages,
-	selectMessages
-} from '../../../store/messages-slice';
-import {
-	deleteConversations,
-	deleteMessages,
-	updateConversationsOnly,
-	updateMessagesOnly
-} from '../../../store/zustand/search/store';
-import type { Conversation, FolderState } from '../../../types';
+	FolderState,
+	SoapConversation,
+	SoapFolder,
+	SoapIncompleteMessage,
+	SoapLink
+} from '../../../types';
 
-function handleFoldersNotify(
-	notifyList: Array<SoapNotify>,
-	notify: SoapNotify,
-	worker: Worker,
-	store: UseBoundStore<StoreApi<FolderState>>
-): void {
+type SoapNotify = {
+	seq: number;
+	created?: {
+		m?: Array<SoapIncompleteMessage>;
+		c?: Array<SoapConversation>;
+		folder?: Array<SoapFolder>;
+		link?: Array<SoapLink>;
+		tag?: Array<Tag>;
+	};
+	modified?: {
+		m?: Array<SoapIncompleteMessage>;
+		c?: Array<SoapConversation>;
+		folder?: Array<Partial<SoapFolder>>;
+		link?: Array<Partial<SoapLink>>;
+		tag?: Array<Partial<Tag>>;
+		mbx: [
+			{
+				s: number;
+			}
+		];
+	};
+	deleted: Array<string>;
+};
+type HandleFoldersNotifyProps = {
+	notifyList: Array<SoapNotify>;
+	notify: SoapNotify;
+	worker: Worker;
+	store: UseBoundStore<StoreApi<FolderState>>;
+};
+
+type HandleTagsNotifyProps = {
+	notify: SoapNotify;
+	worker: Worker;
+	store: UseBoundStore<StoreApi<TagState>>;
+};
+function handleFoldersNotify({
+	notifyList,
+	notify,
+	worker,
+	store
+}: HandleFoldersNotifyProps): void {
 	const isNotifyRelatedToFolders =
 		!isEmpty(notifyList) &&
 		(notify?.created?.folder ||
@@ -66,130 +93,100 @@ function handleFoldersNotify(
 	}
 }
 
+function handleTagsNotify({ notify, worker, store }: HandleTagsNotifyProps): void {
+	worker.postMessage({
+		op: 'notify',
+		notify,
+		state: store.getState().tags
+	});
+}
+
+function processCreatedNotifications(notify: SoapNotify): void {
+	const { c: createdConversations, m: createdMessages } = notify.created || {};
+
+	if (createdConversations && createdMessages) {
+		const conversations = map(createdConversations, (conversation) =>
+			mapToNormalizedConversation({ conversation, messages: createdMessages })
+		);
+		handleNotifyConversationsCreated(conversations);
+	}
+
+	if (createdMessages) {
+		const messages = map(createdMessages, (message) => normalizeMailMessageFromSoap(message));
+		handleNotifyMessagesCreated(messages);
+	}
+}
+
+function processModifiedNotifications(notify: SoapNotify): void {
+	if (notify.modified?.c) {
+		const updatedConversations = normalizeConversations(notify.modified.c);
+		handleNotifyConversationsModified(updatedConversations);
+	}
+
+	if (notify.modified?.m) {
+		const messages = map(notify.modified.m, (message) => normalizeMailMessageFromSoap(message));
+		handleNotifyMessagesModified(messages);
+	}
+}
+
+type ProcessNotificationsProps = {
+	notifyList: SoapNotify[];
+	seq: number;
+	setSeq: (arg: number) => void;
+	processedNotify: MutableRefObject<number>;
+};
+
+function processNotifications({
+	notifyList,
+	seq,
+	setSeq,
+	processedNotify
+}: ProcessNotificationsProps): void {
+	forEach(sortBy(notifyList, 'seq'), (notify) => {
+		if (
+			processedNotify.current >= notify.seq ||
+			isEmpty(notify) ||
+			(notify.seq <= seq && !(seq > 1 && notify.seq === 1))
+		) {
+			return;
+		}
+
+		processedNotify.current = notify.seq;
+		handleFoldersNotify({ notifyList, notify, worker: folderWorker, store: useFolderStore });
+		handleTagsNotify({ notify, worker: tagsWorker, store: useTagStore });
+
+		if (notify.created) {
+			processCreatedNotifications(notify);
+		}
+
+		if (notify.modified) {
+			processModifiedNotifications(notify);
+		}
+
+		if (notify.deleted) {
+			handleNotifyDeleted(notify.deleted);
+		}
+
+		setSeq(notify.seq);
+	});
+}
+
 export const useSyncDataHandler = (): void => {
-	const notifyList = useNotify();
+	const notifyList = useNotify() as Array<SoapNotify>;
 	const [seq, setSeq] = useState(-1);
-	const dispatch = useAppDispatch();
 	const [initialized, setInitialized] = useState(false);
-	const currentFolder = useAppSelector(selectCurrentFolder);
-	const messagesState = useAppSelector(selectMessages);
-	const processedNotify = useRef(-1);
+	const processedNotify = useRef<number>(-1);
 
 	const refresh = useRefresh();
 	useEffect(() => {
 		if (!isEmpty(refresh) && !initialized) {
 			setInitialized(true);
 		}
-	}, [dispatch, initialized, refresh]);
+	}, [initialized, refresh]);
 
 	useEffect(() => {
-		forEach(notifyList, (notify) => {
-			// this intercept all changes made from different folders towards the current one, it triggers a search request if it finds at least one item which affect currentFolder
-			if (find(notify?.modified?.m, ['l', currentFolder])) {
-				dispatch(setSearchedInFolder({ [currentFolder]: 'incomplete' }));
-			}
-		});
-	}, [currentFolder, dispatch, notifyList]);
-	useEffect(() => {
-		if (initialized) {
-			if (notifyList.length > 0) {
-				forEach(sortBy(notifyList, 'seq'), (notify: any) => {
-					if (processedNotify.current < notify.seq) {
-						processedNotify.current = notify.seq;
-						if (!isEmpty(notify) && (notify.seq > seq || (seq > 1 && notify.seq === 1))) {
-							handleFoldersNotify(notifyList, notify, folderWorker, useFolderStore);
-
-							const tags = getTags();
-							if (notify.created) {
-								if (notify.created.c && notify.created.m) {
-									const conversations = map(notify.created.c, (i) =>
-										normalizeConversation({ c: i, m: notify.created.m, tags })
-									);
-									// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-									// @ts-ignore
-									dispatch(handleNotifyCreatedConversations(conversations));
-								}
-								if (notify.created.m) {
-									dispatch(handleCreatedMessages({ m: notify.created.m }));
-									dispatch(handleCreatedMessagesInConversation({ m: notify.created.m }));
-								}
-							}
-							if (notify.modified) {
-								const soapModifiedConversations = notify.modified.c;
-								if (soapModifiedConversations) {
-									const conversations = map(soapModifiedConversations, (i) =>
-										normalizeConversation({ c: i, tags })
-									);
-									// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-									// @ts-ignore
-									dispatch(handleNotifyModifiedConversations(keyBy(conversations, 'id')));
-									updateConversationsOnly(normalizeConversations(soapModifiedConversations, tags));
-								}
-								const soapModifiedMessages = notify.modified.m;
-								if (soapModifiedMessages) {
-									const messages = map(soapModifiedMessages, (obj) =>
-										normalizeMailMessageFromSoap(obj)
-									);
-									// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-									// @ts-ignore
-									dispatch(handleModifiedMessages(messages));
-									updateMessagesOnly(messages);
-
-									// the condition filters messages with parent property (the only ones we need to update)
-									const toUpdate = filter(messages, 'parent');
-									if (toUpdate?.length > 0) {
-										// this function updates messages' parent in conversations. If parent never changes it does not need to be called
-										// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-										// @ts-ignore
-										dispatch(handleModifiedMessagesInConversation(toUpdate));
-									}
-									// the condition filters messages with conversation property (the only ones we need to add to conversation)
-									const conversationToUpdate = filter(messages, 'conversation');
-									if (conversationToUpdate?.length > 0) {
-										const msgsReference = reduce(
-											conversationToUpdate,
-											(
-												acc: Array<{
-													id: string;
-													parent: string | undefined;
-													date: number | undefined;
-													conversation: Conversation;
-												}>,
-												msg: any
-											) => {
-												if (messagesState?.[msg?.id]) {
-													return [
-														...acc,
-														{
-															id: messagesState?.[msg?.id].id,
-															parent: messagesState?.[msg?.id].parent,
-															date: messagesState?.[msg?.id].date,
-															conversation: msg.conversation
-														}
-													];
-												}
-												return acc;
-											},
-											[]
-										);
-										// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-										// @ts-ignore
-										dispatch(handleAddMessagesInConversation(msgsReference));
-									}
-								}
-							}
-							if (notify.deleted) {
-								deleteConversations(notify.deleted);
-								deleteMessages(notify.deleted);
-								dispatch(handleNotifyDeletedConversations(notify.deleted));
-								dispatch(handleDeletedMessages(notify.deleted));
-								dispatch(handleDeletedMessagesInConversation(notify.deleted));
-							}
-							setSeq(notify.seq);
-						}
-					}
-				});
-			}
+		if (initialized && notifyList.length > 0) {
+			processNotifications({ notifyList, seq, setSeq, processedNotify });
 		}
-	}, [dispatch, initialized, messagesState, notifyList, seq]);
+	}, [initialized, notifyList, seq]);
 };

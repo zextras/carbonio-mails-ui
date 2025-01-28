@@ -7,7 +7,7 @@
 import { HttpResponse } from 'msw';
 
 import { createAPIInterceptor } from '../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
-import { searchBackupDeletedMessagesAPI } from '../search-backup-deleted-messages';
+import { searchBackupDeletedMessagesApi } from '../search-backup-deleted-messages-api';
 
 describe('search backup deleted messages', () => {
 	it('should return the correct response when status is 200', async () => {
@@ -19,7 +19,7 @@ describe('search backup deleted messages', () => {
 			HttpResponse.json(apiResponse, { status: 200 })
 		);
 
-		expect(await searchBackupDeletedMessagesAPI({})).toMatchObject(expectedResponseBody);
+		expect(await searchBackupDeletedMessagesApi({})).toMatchObject(expectedResponseBody);
 	});
 
 	it('should pass the correct parameters to the fetch call', async () => {
@@ -29,7 +29,7 @@ describe('search backup deleted messages', () => {
 			'/zx/backup/v1/searchDeleted',
 			HttpResponse.json(mockedResponse, { status: 200 })
 		);
-		const response = await searchBackupDeletedMessagesAPI({
+		const response = await searchBackupDeletedMessagesApi({
 			startDate: new Date('2022-01-05T00:00:00.000+02:00'),
 			endDate: new Date('2022-01-06T00:00:00.000+02:00'),
 			searchString: 'test'

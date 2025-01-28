@@ -3,13 +3,15 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { getMsgCall } from '../../store/actions';
+import { getMsgSoapApi } from '../../api/get-msg-soap-api';
+import { normalizeMailMessageFromSoap } from '../../normalizations/normalize-message';
 import { getAttachmentParts, isContentIdEqual } from '../attachments';
 
 describe('attachments', () => {
 	describe('getAttachmentParts', () => {
 		test('Inline attachment without content disposition are recognized anyway', async () => {
-			const msg = await getMsgCall({ msgId: '13' });
+			const getMsgResponse = await getMsgSoapApi({ msgId: '13' });
+			const msg = normalizeMailMessageFromSoap(getMsgResponse.m[0], true);
 			const attachmentParts = getAttachmentParts(msg.parts);
 			expect(attachmentParts).toHaveLength(1);
 			expect(attachmentParts[0].name).toBe('2');

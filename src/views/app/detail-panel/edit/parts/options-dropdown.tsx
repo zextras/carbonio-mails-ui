@@ -15,7 +15,7 @@ import {
 	useEditorIsSmimeSign,
 	useEditorIsUrgent,
 	useEditorRequestReadReceipt
-} from '../../../../../store/zustand/editor';
+} from '../../../../../store/editor';
 import { MailsEditorV2 } from '../../../../../types';
 
 export type OptionsDropdownProps = {

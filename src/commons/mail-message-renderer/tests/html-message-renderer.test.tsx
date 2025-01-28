@@ -5,14 +5,13 @@
  */
 import React from 'react';
 
-import { act, screen, waitFor } from '@testing-library/react';
+import { act, screen } from '@testing-library/react';
 
 import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
-import { updateMessages } from '../../../store/zustand/search/store';
+import { updateMessages } from '../../../store/emails/store';
 import { generateCompleteMessageFromAPI } from '../../../tests/generators/api';
 import { generateMessage } from '../../../tests/generators/generateMessage';
-import { generateStore } from '../../../tests/generators/store';
 import { GetMsgRequest, GetMsgResponse } from '../../../types';
 import { HtmlMessageRenderer } from '../html-message-renderer';
 
@@ -20,7 +19,6 @@ describe('HTML message renderer', () => {
 	describe('Search Module', () => {
 		describe('Message too large banner', () => {
 			it('should display banner if body truncated', async () => {
-				const store = generateStore();
 				const message = generateMessage({
 					id: '1',
 					body: 'Test',
@@ -29,15 +27,13 @@ describe('HTML message renderer', () => {
 				updateMessages([message]);
 
 				setupTest(<HtmlMessageRenderer message={message} />, {
-					initialEntries: ['/search'],
-					store
+					initialEntries: ['/search']
 				});
 
 				expect(await screen.findByText('warningBanner.truncatedMessage.label')).toBeVisible();
 			});
 
 			it('should not display banner if body not truncated', async () => {
-				const store = generateStore();
 				const message = generateMessage({
 					id: '1',
 					body: 'Test',
@@ -46,15 +42,13 @@ describe('HTML message renderer', () => {
 				updateMessages([message]);
 
 				setupTest(<HtmlMessageRenderer message={message} />, {
-					initialEntries: ['/search'],
-					store
+					initialEntries: ['/search']
 				});
 
 				expect(screen.queryByText('warningBanner.truncatedMessage.label')).not.toBeInTheDocument();
 			});
 
 			it('should call GetMsg API when clicking load message', async () => {
-				const store = generateStore();
 				const response: GetMsgResponse = {
 					m: [generateCompleteMessageFromAPI({ id: '1' })]
 				};
@@ -70,8 +64,7 @@ describe('HTML message renderer', () => {
 				updateMessages([message]);
 
 				const { user } = setupTest(<HtmlMessageRenderer message={message} />, {
-					initialEntries: ['/search'],
-					store
+					initialEntries: ['/search']
 				});
 
 				const loadMessageButton = await screen.findByText('warningBanner.truncatedMessage.button');
@@ -85,7 +78,6 @@ describe('HTML message renderer', () => {
 			});
 
 			it('should remove message too large banner after clicking load message', async () => {
-				const store = generateStore();
 				const message = generateMessage({ id: '1', body: 'Initial body', truncated: true });
 				updateMessages([message]);
 				const interceptor = createSoapAPIInterceptor<GetMsgRequest, GetMsgResponse>('GetMsg', {
@@ -107,8 +99,7 @@ describe('HTML message renderer', () => {
 				});
 
 				const { user } = setupTest(<HtmlMessageRenderer message={message} />, {
-					initialEntries: ['/search'],
-					store
+					initialEntries: ['/search']
 				});
 
 				const loadMessageButton = await screen.findByText('warningBanner.truncatedMessage.button');
@@ -118,8 +109,11 @@ describe('HTML message renderer', () => {
 				});
 
 				await interceptor;
-
-				expect(screen.queryByText('warningBanner.truncatedMessage.button')).not.toBeInTheDocument();
+				await act(async () => {
+					expect(
+						screen.queryByText('warningBanner.truncatedMessage.button')
+					).not.toBeInTheDocument();
+				});
 			});
 		});
 		it('should display empty fragment when message is set only mails store', () => {
@@ -129,17 +123,8 @@ describe('HTML message renderer', () => {
 				body: messageBody,
 				truncated: true
 			});
-			const store = generateStore({
-				messages: {
-					messages: { '1': message },
-					searchedInFolder: {},
-					searchRequestStatus: 'fulfilled'
-				}
-			});
-
 			setupTest(<HtmlMessageRenderer message={message} />, {
-				initialEntries: ['/search'],
-				store
+				initialEntries: ['/search']
 			});
 			expect(screen.queryByText(messageBody)).not.toBeInTheDocument();
 		});
@@ -148,17 +133,8 @@ describe('HTML message renderer', () => {
 	describe('Mails Module', () => {
 		it('should display banner if body truncated', async () => {
 			const message = generateMessage({ id: '1', body: 'Initial body', truncated: true });
-			const store = generateStore({
-				messages: {
-					messages: { '1': message },
-					searchedInFolder: {},
-					searchRequestStatus: 'fulfilled'
-				}
-			});
-
 			setupTest(<HtmlMessageRenderer message={message} />, {
-				initialEntries: ['/mails'],
-				store
+				initialEntries: ['/mails']
 			});
 
 			expect(await screen.findByText('warningBanner.truncatedMessage.label')).toBeVisible();
@@ -166,17 +142,9 @@ describe('HTML message renderer', () => {
 
 		it('should not display banner if body not truncated', async () => {
 			const message = generateMessage({ id: '1', body: 'Initial body', truncated: false });
-			const store = generateStore({
-				messages: {
-					messages: { '1': message },
-					searchedInFolder: {},
-					searchRequestStatus: 'fulfilled'
-				}
-			});
 
 			setupTest(<HtmlMessageRenderer message={message} />, {
-				initialEntries: ['/mails'],
-				store
+				initialEntries: ['/mails']
 			});
 
 			expect(screen.queryByText('warningBanner.truncatedMessage.label')).not.toBeInTheDocument();
@@ -184,13 +152,7 @@ describe('HTML message renderer', () => {
 
 		it('should call GetMsg API when clicking load message', async () => {
 			const message = generateMessage({ id: '1', body: 'Initial body', truncated: true });
-			const store = generateStore({
-				messages: {
-					messages: { '1': message },
-					searchedInFolder: {},
-					searchRequestStatus: 'fulfilled'
-				}
-			});
+
 			const response: GetMsgResponse = {
 				m: [generateCompleteMessageFromAPI({ id: '1' })]
 			};
@@ -200,8 +162,7 @@ describe('HTML message renderer', () => {
 			);
 
 			const { user } = setupTest(<HtmlMessageRenderer message={message} />, {
-				initialEntries: ['/mails'],
-				store
+				initialEntries: ['/mails']
 			});
 
 			const loadMessageButton = await screen.findByText('warningBanner.truncatedMessage.button');
@@ -216,13 +177,7 @@ describe('HTML message renderer', () => {
 
 		it('should remove message too large banner after clicking load message', async () => {
 			const message = generateMessage({ id: '1', body: 'Initial body', truncated: true });
-			const store = generateStore({
-				messages: {
-					messages: { '1': message },
-					searchedInFolder: {},
-					searchRequestStatus: 'fulfilled'
-				}
-			});
+
 			const interceptor = createSoapAPIInterceptor<GetMsgRequest, GetMsgResponse>('GetMsg', {
 				m: [
 					generateCompleteMessageFromAPI({
@@ -241,20 +196,15 @@ describe('HTML message renderer', () => {
 				]
 			});
 
-			const { user } = setupTest(
-				<HtmlMessageRenderer message={message} />,
-
-				{
-					initialEntries: ['/mails'],
-					store
-				}
-			);
+			const { user } = setupTest(<HtmlMessageRenderer message={message} />, {
+				initialEntries: ['/mails']
+			});
 
 			const loadMessageButton = await screen.findByText('warningBanner.truncatedMessage.button');
 			user.click(loadMessageButton);
 
 			await interceptor;
-			await waitFor(() => {
+			await act(async () => {
 				expect(screen.queryByText('warningBanner.truncatedMessage.button')).not.toBeInTheDocument();
 			});
 		});

@@ -10,6 +10,9 @@ type FilterContextType = {
 	incomingLoading: boolean;
 	outgoingFilters: Record<string, any> | Array<any>;
 	outgoingLoading: boolean;
+	// filters: Record<string, any> | Array<any>;
+	// loading: boolean;
+
 	setFetchIncomingFilters?: (arg: boolean) => void;
 	moveUp?: (index: number, list: Array<any>, listSetter: (arg2: any) => void) => void;
 	setIncomingFilters?: (arg: any) => void;
@@ -21,4 +24,6 @@ export const FilterContext = createContext<FilterContextType>({
 	incomingLoading: true,
 	outgoingFilters: {},
 	outgoingLoading: true
+	// filters: {},
+	// loading: true
 });

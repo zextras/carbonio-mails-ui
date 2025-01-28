@@ -12,7 +12,7 @@ import styled from 'styled-components';
 
 import { BackupSearchPanelTextLine } from './backup-search-panel-text-line';
 import { getFolder } from '../../../carbonio-ui-commons/store/zustand/folder';
-import { useBackupSearchStore } from '../../../store/zustand/backup-search/store';
+import { useBackupSearchStore } from '../../../store/backup-search/store';
 
 const SearchIcon = styled(Icon)`
 	width: 3.3rem;

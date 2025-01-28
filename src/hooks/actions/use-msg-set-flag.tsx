@@ -8,24 +8,17 @@ import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { MessageActionsDescriptors } from '../../constants';
-import { msgAction } from '../../store/actions';
+import { msgActionEmailStoreAction } from '../../store/emails/actions/msg-action-action';
 import { ActionFn, UIActionDescriptor } from '../../types';
-import { useAppDispatch } from '../redux';
 
 export const useMsgSetFlagFn = (ids: Array<string>, isFlagged: boolean): ActionFn => {
 	const canExecute = useCallback((): boolean => !isFlagged, [isFlagged]);
-	const dispatch = useAppDispatch();
 
 	const execute = useCallback((): void => {
 		if (canExecute()) {
-			dispatch(
-				msgAction({
-					operation: 'flag',
-					ids
-				})
-			);
+			msgActionEmailStoreAction({ ids, operation: 'flag' });
 		}
-	}, [canExecute, dispatch, ids]);
+	}, [canExecute, ids]);
 
 	return useMemo(() => ({ canExecute, execute }), [canExecute, execute]);
 };

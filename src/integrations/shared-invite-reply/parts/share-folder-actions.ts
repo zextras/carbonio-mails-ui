@@ -9,14 +9,12 @@ import { TFunction } from 'i18next';
 import { map } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
+import { acceptSharedFolderReply } from '../../../api/accept-shared-folder-reply';
+import { mountSharedFolderSoapApi } from '../../../api/mount-shared-folder-soap-api';
 import { ParticipantRole } from '../../../carbonio-ui-commons/constants/participants';
 import { getErrorMessage } from '../../../carbonio-ui-commons/helpers/errors';
-import { useAppDispatch } from '../../../hooks/redux';
 import { useUiUtilities } from '../../../hooks/use-ui-utilities';
-import { msgAction } from '../../../store/actions';
-import { acceptSharedFolderReply } from '../../../store/actions/acceptSharedFolderReply';
-import { mountSharedFolder } from '../../../store/actions/mount-shared-folder';
-import { AppDispatch } from '../../../store/redux';
+import { msgActionEmailStoreAction } from '../../../store/emails/actions/msg-action-action';
 import type { Participant, SaveDraftResponse } from '../../../types';
 
 type Accept = {
@@ -27,7 +25,6 @@ type Accept = {
 	color: number;
 	accounts: any;
 	t: TFunction;
-	dispatch: AppDispatch;
 	msgId: Array<string> | any;
 	sharedFolderName: string;
 	owner: string;
@@ -40,8 +37,7 @@ type Accept = {
 };
 
 type MoveInviteToTrashType = {
-	t: TFunction;
-	dispatch: AppDispatch;
+	t: (...args: any[]) => string;
 	msgId: string;
 };
 
@@ -57,7 +53,6 @@ type AcceptSharedCalendarType = {
 };
 
 type DeclineType = {
-	dispatch: AppDispatch;
 	t: TFunction;
 	msgId: string;
 	sharedFolderName: string;
@@ -104,14 +99,12 @@ const sharedFolderReplyFunc = ({
 const useMoveInviteToTrashFunc = (): ((arg: MoveInviteToTrashType) => Promise<void>) => {
 	const { createSnackbar } = useUiUtilities();
 	return useCallback(
-		({ msgId, dispatch, t }) =>
-			dispatch(
-				msgAction({
-					operation: `trash`,
-					ids: [msgId]
-				})
-			).then((res2: any): void => {
-				if (!res2.type.includes('fulfilled')) {
+		({ msgId, t }) =>
+			msgActionEmailStoreAction({
+				operation: `trash`,
+				ids: [msgId]
+			}).then((res2: any): void => {
+				if ('Fault' in res2) {
 					createSnackbar({
 						key: `share`,
 						replace: true,
@@ -129,7 +122,6 @@ const useMoveInviteToTrashFunc = (): ((arg: MoveInviteToTrashType) => Promise<vo
 export const useAccept = (): ((arg: Accept) => void) => {
 	const { createSnackbar } = useUiUtilities();
 	const [t] = useTranslation();
-	const dispatch = useAppDispatch();
 	const moveInviteToTrashFunc = useMoveInviteToTrashFunc();
 	return useCallback(
 		({
@@ -149,7 +141,7 @@ export const useAccept = (): ((arg: Accept) => void) => {
 			allowedActions,
 			notifyOrganizer
 		}) => {
-			mountSharedFolder({
+			mountSharedFolderSoapApi({
 				zid,
 				view,
 				rid,
@@ -172,7 +164,7 @@ export const useAccept = (): ((arg: Accept) => void) => {
 						isAccepted: true
 					});
 				})
-				.then(() => moveInviteToTrashFunc({ msgId, dispatch, t }))
+				.then(() => moveInviteToTrashFunc({ msgId, t }))
 				.then(() => {
 					createSnackbar({
 						key: `share_accepted`,
@@ -194,14 +186,13 @@ export const useAccept = (): ((arg: Accept) => void) => {
 					});
 				});
 		},
-		[createSnackbar, dispatch, moveInviteToTrashFunc, t]
+		[createSnackbar, moveInviteToTrashFunc, t]
 	);
 };
 
 export const useDecline = (): ((arg: DeclineType) => Promise<void>) => {
 	const { createSnackbar } = useUiUtilities();
 	const [t] = useTranslation();
-	const dispatch = useAppDispatch();
 
 	return useCallback(
 		({
@@ -215,13 +206,11 @@ export const useDecline = (): ((arg: DeclineType) => Promise<void>) => {
 			allowedActions,
 			notifyOrganizer
 		}) =>
-			dispatch(
-				msgAction({
-					operation: `trash`,
-					ids: [msgId]
-				})
-			).then((res): void => {
-				if (res.type.includes('fulfilled')) {
+			msgActionEmailStoreAction({
+				operation: `trash`,
+				ids: [msgId]
+			}).then((res): void => {
+				if (!('Fault' in res)) {
 					notifyOrganizer &&
 						sharedFolderReplyFunc({
 							sharedFolderName,
@@ -252,6 +241,6 @@ export const useDecline = (): ((arg: DeclineType) => Promise<void>) => {
 					});
 				}
 			}),
-		[createSnackbar, dispatch, t]
+		[createSnackbar, t]
 	);
 };

@@ -8,11 +8,11 @@ import React, { useCallback, useState } from 'react';
 import { Button, Container, Table, Tooltip, useSnackbar } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
 
+import { deletePersonalCertificate } from '../../../api/delete-personal-certificate-action';
+import { selectPersonalCertificate } from '../../../api/select-personal-certificate-action';
 import ModalFooter from '../../../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../../../carbonio-ui-commons/components/modals/modal-header';
-import { deletePersonalCertificate } from '../../../store/actions/delete-personal-certificate-action';
-import { selectPersonalCertificate } from '../../../store/actions/select-personal-certificate-action';
-import { useSmimePasswordStore } from '../../../store/zustand/certificates/store';
+import { useSmimePasswordStore } from '../../../store/certificates/store';
 import { Certificate } from '../../../types/certificates';
 
 type EnterPasswordModalPropType = {
