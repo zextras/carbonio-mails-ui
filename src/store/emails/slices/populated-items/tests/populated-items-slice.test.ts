@@ -622,6 +622,22 @@ describe('store-populated-items-slice', () => {
 				expect(renderHook(() => useMessageById('1')).result.current?.tags).toEqual(['AnotherTag']);
 			});
 		});
+
+		it('should not untag a message when operation is UNTAG but tagName is not provided or is undefined', async () => {
+			(useTags as jest.Mock).mockReturnValue(mockTags);
+			const message = generateMessage({ id: '1', tags: ['Test555', 'AnotherTag'] });
+			updateMessages([message]);
+			optimisticallyHandleMessageActions({
+				ids: ['1'],
+				operation: CONVACTIONS.UNTAG
+			});
+			await waitFor(async () => {
+				expect(renderHook(() => useMessageById('1')).result.current?.tags).toEqual([
+					'Test555',
+					'AnotherTag'
+				]);
+			});
+		});
 	});
 
 	describe('handleConvActionResponse', () => {
