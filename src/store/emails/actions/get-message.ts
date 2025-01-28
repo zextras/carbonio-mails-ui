@@ -18,7 +18,7 @@ function handleGetMsgResponse(response: GetMsgResponse): void {
 	const messages = map(response?.m ?? [], (msg) => normalizeCompleteMailMessageFromSoap(msg));
 	updateMessages(messages);
 }
-export async function handleRetrieveMessage(
+async function handleRetrieveMessage(
 	messageId: string,
 	apiCall: (id: string) => Promise<GetMsgResponse>
 ): Promise<MailMessage | undefined> {
