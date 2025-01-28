@@ -33,6 +33,7 @@ import {
 	handleConvActionResponse,
 	handleDeleteAttachments,
 	handleNotifyMessagesModified,
+	optimisticallyHandleConvActions,
 	optimisticallyHandleMessageActions,
 	setConversationsInEmailStore,
 	setMessagesInEmailStore,
@@ -662,6 +663,56 @@ describe('store-populated-items-slice', () => {
 					'Test555',
 					'AnotherTag'
 				]);
+			});
+		});
+	});
+
+	describe('optimisticallyHandleConvActions', () => {
+		it('should flag a conversation when operation is FLAG', async () => {
+			const conversation = generateConversation({ id: '1' });
+			setConversationsInEmailStore([conversation], false);
+			optimisticallyHandleConvActions({
+				ids: ['1'],
+				operation: CONVACTIONS.FLAG
+			});
+			await waitFor(async () => {
+				expect(renderHook(() => useConversationById('1')).result.current?.flagged).toBe(true);
+			});
+		});
+
+		it('should un-flag a conversation when operation is UNFLAG', async () => {
+			const conversation = generateConversation({ id: '1', isFlagged: true });
+			setConversationsInEmailStore([conversation], false);
+			optimisticallyHandleConvActions({
+				ids: ['1'],
+				operation: CONVACTIONS.UNFLAG
+			});
+			await waitFor(async () => {
+				expect(renderHook(() => useConversationById('1')).result.current?.flagged).toBe(false);
+			});
+		});
+
+		it('should mark a conversation as read when operation is MARK_READ', async () => {
+			const conversation = generateConversation({ id: '1', isRead: false });
+			setConversationsInEmailStore([conversation], false);
+			optimisticallyHandleConvActions({
+				ids: ['1'],
+				operation: CONVACTIONS.MARK_READ
+			});
+			await waitFor(async () => {
+				expect(renderHook(() => useConversationById('1')).result.current?.read).toBe(true);
+			});
+		});
+
+		it('should mark a conversation as unread when operation is MARK_UNREAD', async () => {
+			const conversation = generateConversation({ id: '1', isRead: true });
+			setConversationsInEmailStore([conversation], false);
+			optimisticallyHandleConvActions({
+				ids: ['1'],
+				operation: CONVACTIONS.MARK_UNREAD
+			});
+			await waitFor(async () => {
+				expect(renderHook(() => useConversationById('1')).result.current?.read).toBe(false);
 			});
 		});
 	});
