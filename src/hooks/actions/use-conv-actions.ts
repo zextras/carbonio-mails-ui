@@ -64,15 +64,12 @@ export const useConvActions = ({
 	shouldReplaceHistory = false,
 	conversationPreviewFactory
 }: ConversationActionsArgumentType): ConversationActionsReturnType => {
-	console.log(conversation);
 	const messages = useConversationMessages(conversation.id);
-	console.log('messages', messages);
 	const firstConversationMessage =
 		find(messages, (msg) => {
 			const folderIdParts = getFolderIdParts(msg.parent).id ?? '';
 			return !isTrash(folderIdParts) && !isDraft(folderIdParts);
 		}) ?? messages?.[0];
-	console.log(firstConversationMessage);
 
 	// TODO: This condition is not the proper one as the first message is not a good indication of the folder id we are currently navigating.
 	const folderId = firstConversationMessage.parent;

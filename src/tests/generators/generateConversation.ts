@@ -13,13 +13,13 @@ import {
 	ParticipantRole,
 	ParticipantRoleType
 } from '../../carbonio-ui-commons/constants/participants';
-import { setConversationsInEmailStore, updateMessages } from '../../store/emails/store';
+import { updateConversations, updateMessages } from '../../store/emails/store';
 import type { MailMessage, NormalizedConversation, Participant } from '../../types';
 
 /**
  *
  */
-type ConversationGenerationParams = {
+export type ConversationGenerationParams = {
 	id?: string;
 	folderId?: string;
 	from?: Array<Participant>;
@@ -59,7 +59,7 @@ const generateRandomParticipants = (count: number, type: ParticipantRoleType): A
  * @param messages
  * @param messageGenerationCount
  */
-const generateConversation = ({
+export const generateConversation = ({
 	id = faker.number.int().toString(),
 	folderId = FOLDERS.INBOX,
 	receiveDate = faker.date.recent({ days: 1 }).valueOf(),
@@ -100,27 +100,12 @@ const generateConversation = ({
 /**
  * Populates the email store with a conversation and its associated messages, and returns the generated conversation and messages.
  * The function generates messages based on provided message IDs, message generation parameters, or a default count.
- * It then updates the email store with the generated messages and the corresponding conversation.
+ * MessageGenerationParams take precedence over messageIds. conversationMessagesNumber is the last fallback.
  *
- * @param {Object} params - The parameters for populating the conversation in the email store.
- * @param {ConversationGenerationParams} params.conversationParams - The parameters for generating the conversation.
- * @param {number} [params.conversationMessagesNumber=1] - The number of default messages to generate if no message IDs or generation parameters are provided.
- * @param {Array<string>} [params.messageIds] - An array of message IDs to generate messages from. If provided, these will be used to create messages.
- * @param {Array<MessageGenerationParams>} [params.messageGeneratorParams] - An array of message generation parameters. If provided, these will be used to create messages.
- * @returns {Object} - An object containing the generated conversation and messages.
- * @returns {NormalizedConversation} return.conversation - The generated conversation.
- * @returns {Array<MailMessage>} return.messages - The array of generated messages.
+ * It then updates the email store with the generated messages and the corresponding conversation and returns them.
  *
- * @example
- * // Example usage:
- * const { conversation, messages } = populateConversationInEmailStore({
- *   conversationParams: { id: 'conv1' },
- *   conversationMessagesNumber: 3,
- *   messageIds: ['msg1', 'msg2'],
- *   messageGeneratorParams: [{ id: 'msg3', folderId: 'inbox', cid: 'conv1' }]
- * });
  */
-const populateConversationInEmailStore = ({
+export const populateConversationInEmailStore = ({
 	conversationParams,
 	conversationMessagesNumber = 1,
 	messageIds,
@@ -152,12 +137,6 @@ const populateConversationInEmailStore = ({
 		id: conversationParams.id,
 		messageIds: messageIds ?? conversationMessagesNumberArray
 	});
-	setConversationsInEmailStore([generatedConversation], false);
+	updateConversations([generatedConversation]);
 	return { conversation: generatedConversation, messages: generatedMessages };
-};
-
-export {
-	type ConversationGenerationParams,
-	generateConversation,
-	populateConversationInEmailStore
 };
