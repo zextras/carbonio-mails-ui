@@ -172,8 +172,8 @@ export const populateMessagesInEmailStore = ({
 	const messagesFromMessageIds = messageIds?.map((messageId) =>
 		generateMessage({
 			id: messageId,
-			folderId: FOLDERS.INBOX, // Default folder ID
-			cid: '1' // Default conversation ID
+			folderId: FOLDERS.INBOX,
+			cid: '1'
 		})
 	);
 
@@ -185,9 +185,9 @@ export const populateMessagesInEmailStore = ({
 	// Generate default messages if no message IDs or parameters are provided
 	const defaultMessages = Array.from({ length: messagesNumber }).map((_, index) =>
 		generateMessage({
-			id: (index + 100).toString(), // Default message ID
-			folderId: FOLDERS.INBOX, // Default folder ID
-			cid: '1' // Default conversation ID
+			id: (index + 100).toString(),
+			folderId: FOLDERS.INBOX,
+			cid: '1'
 		})
 	);
 
@@ -195,9 +195,7 @@ export const populateMessagesInEmailStore = ({
 	const generatedMessages =
 		messagesFromMessageIds ?? messagesFromMessageGeneratorParams ?? defaultMessages;
 
-	// Update the store with the generated messages
 	updateMessages(generatedMessages);
 
-	// Return the generated messages
 	return generatedMessages;
 };
