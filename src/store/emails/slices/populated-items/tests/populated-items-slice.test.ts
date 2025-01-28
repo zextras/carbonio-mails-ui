@@ -471,7 +471,7 @@ describe('store-populated-items-slice', () => {
 			expect(result.current?.parts?.length).toBe(0);
 		});
 
-		it('should not delete attachment from message if API return FAULT', async () => {
+		it('should not delete attachment from message if API response contains FAULT', async () => {
 			const message = generateMessage({ id: '1' });
 			updateMessages([message]);
 			const attachmentCountsBeforeAPICall = message?.parts?.length;
@@ -484,6 +484,18 @@ describe('store-populated-items-slice', () => {
 
 			const { result } = renderHook(() => useMessageById('1'));
 			expect(result.current?.parts?.length).toBe(attachmentCountsBeforeAPICall);
+		});
+
+		it('should not affect other messages in the store if there is no message in the store to update', async () => {
+			const message = generateMessage({ id: '1' });
+			updateMessages([message]);
+
+			await act(async () => {
+				handleDeleteAttachments({ m: [generateCompleteMessageFromAPI({ id: '2', mp: [] })] });
+			});
+
+			const { result } = renderHook(() => useMessageById('1'));
+			expect(result.current?.parts?.length).toBe(1);
 		});
 	});
 
