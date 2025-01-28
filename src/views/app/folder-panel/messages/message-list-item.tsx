@@ -37,6 +37,7 @@ import { ItemAvatar } from '../parts/item-avatar';
 import { ParticipantsName } from '../parts/sender-name';
 
 type RouteParams = {
+	folderId: string;
 	itemId: string;
 };
 
@@ -51,9 +52,8 @@ export const MessageListItem = memo(function MessageListItem({
 	deselectAll,
 	handleReplaceHistory
 }: MessageListItemProps): React.JSX.Element {
-	const { folderId } = useParams<{ folderId: string }>();
+	const { folderId, itemId } = useParams<RouteParams>();
 	const firstChildFolderId = folderId ?? message?.parent;
-	const { itemId } = useParams<RouteParams>();
 	const shouldReplaceHistory = useMemo(() => itemId === message.id, [message.id, itemId]);
 	const zimbraPrefMarkMsgRead = useUserSettings()?.prefs?.zimbraPrefMarkMsgRead !== '-1';
 
