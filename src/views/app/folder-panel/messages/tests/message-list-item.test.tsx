@@ -1,0 +1,162 @@
+/*
+ * SPDX-FileCopyrightText: 2025 Zextras <https://www.zextras.com>
+ *
+ * SPDX-License-Identifier: AGPL-3.0-only
+ */
+import React from 'react';
+
+import { screen, waitFor } from '@testing-library/react';
+import { useParams } from 'react-router-dom';
+
+import { FOLDERS } from '../../../../../carbonio-ui-commons/constants/folders';
+import { useTagStore } from '../../../../../carbonio-ui-commons/store/zustand/tags';
+import { populateFoldersStore } from '../../../../../carbonio-ui-commons/test/mocks/store/folders';
+import { tags as mockTags } from '../../../../../carbonio-ui-commons/test/mocks/tags/tags';
+import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
+import { generateMessage } from '../../../../../tests/generators/generateMessage';
+import { MessageListItemProps } from '../../../../../types';
+import { MessageListItem } from '../message-list-item';
+
+jest.mock('react-router-dom', () => ({
+	...jest.requireActual('react-router-dom'),
+	useParams: jest.fn()
+}));
+
+describe('MessageListItem Component', () => {
+	const message = generateMessage({ id: '1' });
+	const defaultProps: MessageListItemProps = {
+		message,
+		selected: false,
+		selecting: false,
+		toggle: jest.fn(),
+		isConvChildren: false,
+		visible: true,
+		active: false,
+		isSearchModule: false,
+		deselectAll: jest.fn(),
+		handleReplaceHistory: jest.fn()
+	};
+
+	beforeEach(() => {
+		(useParams as jest.Mock).mockReturnValue({
+			folderId: '2',
+			itemId: '1'
+		});
+	});
+
+	it('should setupTest the component without crashing', () => {
+		setupTest(<MessageListItem {...defaultProps} />);
+		expect(screen.getByTestId(`MessageListItem-${defaultProps.message.id}`)).toBeInTheDocument();
+	});
+
+	it('should display the subject if provided', async () => {
+		setupTest(<MessageListItem {...defaultProps} />);
+		await waitFor(() => {
+			expect(screen.getByTestId('Subject')).toHaveTextContent(message.subject);
+		});
+	});
+
+	it('should display "No Subject" if subject is not provided', () => {
+		const props = { ...defaultProps, message: { ...defaultProps.message, subject: '' } };
+		setupTest(<MessageListItem {...props} />);
+		expect(screen.getByTestId('Subject')).toHaveTextContent('label.no_subject_with_tags');
+	});
+
+	it('should display the fragment if provided', () => {
+		const props = {
+			...defaultProps,
+			message: { ...defaultProps.message, fragment: 'test fragment' }
+		};
+		setupTest(<MessageListItem {...props} />);
+		expect(screen.getByTestId('Fragment')).toHaveTextContent('test fragment');
+	});
+
+	it('should display the correct icon for an unread message', () => {
+		const props = { ...defaultProps, message: { ...defaultProps.message, read: false } };
+		setupTest(<MessageListItem {...props} />);
+		expect(screen.getByTestId('UnreadIcon')).toBeInTheDocument();
+	});
+
+	it('should display the correct icon for a read message', () => {
+		const props = { ...defaultProps, message: { ...defaultProps.message, read: true } };
+		setupTest(<MessageListItem {...props} />);
+		expect(screen.getByTestId('ReadIcon')).toBeInTheDocument();
+	});
+
+	it('should display the correct icon for a draft message', () => {
+		const props = { ...defaultProps, message: { ...defaultProps.message, isDraft: true } };
+		setupTest(<MessageListItem {...props} />);
+		expect(screen.getByTestId('DraftIcon')).toBeInTheDocument();
+	});
+
+	it('should display the correct icon for a replied message', () => {
+		const props = { ...defaultProps, message: { ...defaultProps.message, isReplied: true } };
+		setupTest(<MessageListItem {...props} />);
+		expect(screen.getByTestId('RepliedIcon')).toBeInTheDocument();
+	});
+
+	it('should display the correct icon for a forwarded message', () => {
+		const props = { ...defaultProps, message: { ...defaultProps.message, isForwarded: true } };
+		setupTest(<MessageListItem {...props} />);
+		expect(screen.getByTestId('ForwardedIcon')).toBeInTheDocument();
+	});
+
+	it('should display the correct icon for a sent message', () => {
+		const props = { ...defaultProps, message: { ...defaultProps.message, isSentByMe: true } };
+		setupTest(<MessageListItem {...props} />);
+		expect(screen.getByTestId('SentIcon')).toBeInTheDocument();
+	});
+
+	it('should display the attachment icon if the message has an attachment', () => {
+		const props = { ...defaultProps, message: { ...defaultProps.message, hasAttachment: true } };
+		setupTest(<MessageListItem {...props} />);
+		expect(screen.getByTestId('AttachmentIcon')).toBeInTheDocument();
+	});
+
+	it('should display the flag icon if the message is flagged', () => {
+		const props = { ...defaultProps, message: { ...defaultProps.message, flagged: true } };
+		setupTest(<MessageListItem {...props} />);
+		expect(screen.getByTestId('FlagIcon')).toBeInTheDocument();
+	});
+
+	it('should display the urgent icon if the message is urgent', () => {
+		const props = { ...defaultProps, message: { ...defaultProps.message, urgent: true } };
+		setupTest(<MessageListItem {...props} />);
+		expect(screen.getByTestId('UrgentIcon')).toBeInTheDocument();
+	});
+
+	it('should display the tag icon if the message has tags', () => {
+		const props = {
+			...defaultProps,
+			message: { ...defaultProps.message, tags: [Object.entries(mockTags)[0][0]] }
+		};
+
+		useTagStore.setState({ tags: mockTags });
+		setupTest(<MessageListItem {...props} />);
+		expect(screen.getByTestId('TagIcon')).toBeInTheDocument();
+	});
+
+	it('in search module it should display the correct folder badge if the message is in a different folder', () => {
+		populateFoldersStore();
+		const props = {
+			...defaultProps,
+			message: { ...defaultProps.message, isSearchModule: true, parent: FOLDERS.TRASH }
+		};
+		setupTest(<MessageListItem {...props} />);
+		expect(screen.getByTestId('FolderBadge')).toBeInTheDocument();
+	});
+
+	it('should display the scheduled time if the message is scheduled', () => {
+		const props = {
+			...defaultProps,
+			message: {
+				...defaultProps.message,
+				isScheduled: true,
+				autoSendTime: Number(new Date())
+			}
+		};
+		setupTest(<MessageListItem {...props} />);
+		expect(screen.getByText('label.send_scheduled')).toBeVisible();
+		expect(screen.getByText('message.schedule_time')).toBeVisible();
+	});
+});
