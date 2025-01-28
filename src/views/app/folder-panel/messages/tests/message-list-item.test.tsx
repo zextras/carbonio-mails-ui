@@ -3,23 +3,31 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React from 'react';
+import React, { act } from 'react';
 
 import { screen, waitFor } from '@testing-library/react';
 import { useParams } from 'react-router-dom';
 
 import { FOLDERS } from '../../../../../carbonio-ui-commons/constants/folders';
 import { useTagStore } from '../../../../../carbonio-ui-commons/store/zustand/tags';
+import { createSoapAPIInterceptor } from '../../../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { populateFoldersStore } from '../../../../../carbonio-ui-commons/test/mocks/store/folders';
 import { tags as mockTags } from '../../../../../carbonio-ui-commons/test/mocks/tags/tags';
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
+import { useMsgPreviewOnSeparatedWindowFn } from '../../../../../hooks/actions/use-msg-preview-on-separated-window';
 import { generateMessage } from '../../../../../tests/generators/generateMessage';
-import { MessageListItemProps } from '../../../../../types';
+import { MessageListItemProps, MsgActionRequest } from '../../../../../types';
 import { MessageListItem } from '../message-list-item';
 
 jest.mock('react-router-dom', () => ({
 	...jest.requireActual('react-router-dom'),
 	useParams: jest.fn()
+}));
+
+const canExecuteCallback = jest.fn();
+jest.mock('../../../../../hooks/actions/use-msg-preview-on-separated-window', () => ({
+	...jest.requireActual('../../../../../hooks/actions/use-msg-preview-on-separated-window'),
+	useMsgPreviewOnSeparatedWindowFn: jest.fn()
 }));
 
 describe('MessageListItem Component', () => {
@@ -144,6 +152,57 @@ describe('MessageListItem Component', () => {
 		};
 		setupTest(<MessageListItem {...props} />);
 		expect(screen.getByTestId('FolderBadge')).toBeInTheDocument();
+	});
+
+	it('should call the onClick handler when the message is clicked', async () => {
+		createSoapAPIInterceptor<MsgActionRequest>('MsgAction');
+
+		const handleReplaceHistory = jest.fn();
+		const props = { ...defaultProps, handleReplaceHistory };
+		const { user } = setupTest(<MessageListItem {...props} />);
+
+		const actionWrapper = await screen.findByTestId(`MessageListItem-${defaultProps.message.id}`);
+
+		user.hover(actionWrapper);
+
+		const hoverContainer = screen.getByTestId(/hover-container-/);
+		await waitFor(() => {
+			expect(screen.getByTestId(/hover-container-/)).toBeInTheDocument();
+		});
+
+		await act(async () => {
+			user.click(hoverContainer);
+		});
+
+		await waitFor(async () => {
+			expect(handleReplaceHistory).toHaveBeenCalled();
+		});
+	});
+
+	it('should call the doubleClick handler when the message is doubleClicked', async () => {
+		(useMsgPreviewOnSeparatedWindowFn as jest.Mock).mockReturnValue({
+			canExecute: canExecuteCallback,
+			execute: jest.fn()
+		});
+		createSoapAPIInterceptor<MsgActionRequest>('MsgAction');
+		const { user } = setupTest(<MessageListItem {...defaultProps} />);
+
+		const actionWrapper = await screen.findByTestId(`MessageListItem-${defaultProps.message.id}`);
+
+		user.hover(actionWrapper);
+
+		const hoverContainer = screen.getByTestId(/hover-container-/);
+		await waitFor(() => {
+			expect(screen.getByTestId(/hover-container-/)).toBeInTheDocument();
+		});
+
+		await act(async () => {
+			user.dblClick(hoverContainer);
+		});
+
+		await waitFor(async () => {
+			expect(canExecuteCallback).toHaveBeenCalled();
+		});
 	});
 
 	it('should display the scheduled time if the message is scheduled', () => {
