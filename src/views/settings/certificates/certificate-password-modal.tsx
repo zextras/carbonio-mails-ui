@@ -95,7 +95,7 @@ export const CertificatePasswordModal = ({
 		} else if (
 			!/[A-Z]/.test(password) ||
 			!/[a-z]/.test(password) ||
-			!/[0-9]/.test(password) ||
+			!/\d/.test(password) ||
 			!/[!@#$%^&*]/.test(password)
 		) {
 			createSnackbar({

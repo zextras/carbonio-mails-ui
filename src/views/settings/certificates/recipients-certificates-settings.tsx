@@ -137,7 +137,7 @@ const RecipientsCertificateSettings: FC = (): ReactElement => {
 			certificate.notAfter > Date.now()
 				? t('settings.uploadCertificate.active', 'Active')
 				: t('settings.uploadCertificate.expired', 'Expired'),
-			<Container key={index}>
+			<Container key={certificate.email}>
 				<Tooltip label={t('settings.uploadCertificate.deleteCertificate', 'Delete Certificate')}>
 					<Button
 						icon="Trash2Outline"
@@ -207,33 +207,31 @@ const RecipientsCertificateSettings: FC = (): ReactElement => {
 	}, [closeModal, createModal, id, onCertificateUploadConfirm]);
 
 	return (
-		<>
-			<FormSubSection
-				label={t(
-					'settings.uploadCertificate.recipientCertificatesTitle',
-					'Recipients certificates for encryption'
-				)}
-				id={'recipient-certificates'}
-				padding={{ all: 'large' }}
-			>
-				<Table rows={items} headers={headers} showCheckbox={false} multiSelect={false} />
-				{items.length === 0 && (
-					<Container padding={{ vertical: 'large' }}>
-						<Text>
-							{t(
-								'settings.uploadCertificate.noRecipientCertificate',
-								'Recipients certificate list is empty'
-							)}
-						</Text>
-					</Container>
-				)}
-				<Padding all="large" />
-				<Button
-					onClick={(): void => onUploadCertificate()}
-					label={t('settings.uploadCertificate.uploadCertificate', 'Upload Certificate')}
-				/>
-			</FormSubSection>
-		</>
+		<FormSubSection
+			label={t(
+				'settings.uploadCertificate.recipientCertificatesTitle',
+				'Recipients certificates for encryption'
+			)}
+			id={'recipient-certificates'}
+			padding={{ all: 'large' }}
+		>
+			<Table rows={items} headers={headers} showCheckbox={false} multiSelect={false} />
+			{items.length === 0 && (
+				<Container padding={{ vertical: 'large' }}>
+					<Text>
+						{t(
+							'settings.uploadCertificate.noRecipientCertificate',
+							'Recipients certificate list is empty'
+						)}
+					</Text>
+				</Container>
+			)}
+			<Padding all="large" />
+			<Button
+				onClick={(): void => onUploadCertificate()}
+				label={t('settings.uploadCertificate.uploadCertificate', 'Upload Certificate')}
+			/>
+		</FormSubSection>
 	);
 };
 

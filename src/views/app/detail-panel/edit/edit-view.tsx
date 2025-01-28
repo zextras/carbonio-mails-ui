@@ -460,8 +460,8 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 	]);
 
 	const onSmimeOptionChange = useCallback(
-		(isSmimeSet: boolean): void => {
-			if (isSmimeSet && identityEmailAddress) {
+		(isSmimeSelected: boolean): void => {
+			if (isSmimeSelected && identityEmailAddress) {
 				if (smimePassword !== '') {
 					checkCertificateExist('sign');
 				} else {
@@ -481,8 +481,8 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 	);
 
 	const onSmimeEncryptOptionChange = useCallback(
-		(isSmimeEncryptSet: boolean): void => {
-			if (isSmimeEncryptSet && identityEmailAddress) {
+		(isEncryptSelected: boolean): void => {
+			if (isEncryptSelected && identityEmailAddress) {
 				if (smimePassword !== '') {
 					checkCertificateExist('encrypt');
 				} else {

@@ -20,8 +20,8 @@ import { MailsEditorV2 } from '../../../../../types';
 
 export type OptionsDropdownProps = {
 	editorId: MailsEditorV2['id'];
-	onSmimeOptionChange: (isSmimeSet: boolean) => void;
-	onSmimeEncryptOptionChange: (isSmimeEncryptSet: boolean) => void;
+	onSmimeOptionChange: (isSmimeSelected: boolean) => void;
+	onSmimeEncryptOptionChange: (isEncryptSelected: boolean) => void;
 };
 
 export const OptionsDropdown: FC<OptionsDropdownProps> = ({

@@ -212,33 +212,31 @@ const PersonalCertificatesSettings: FC = (): ReactElement => {
 		clickable: true
 	}));
 	return (
-		<>
-			<FormSubSection
-				label={t(
-					'settings.uploadCertificate.personalCertificatesTitle',
-					'Personal certificates for signing, encryption and decryption'
-				)}
-				id={'personal-certificates'}
-				padding={{ all: 'large' }}
-			>
-				<Table rows={items} headers={headers} showCheckbox multiSelect={false} />
-				{items.length === 0 && (
-					<Container padding={{ vertical: 'large' }}>
-						<Text>
-							{t(
-								'settings.uploadCertificate.noPersonalCertificate',
-								'Personal certificate list is empty'
-							)}
-						</Text>
-					</Container>
-				)}
-				<Padding all="large" />
-				<Button
-					onClick={(): void => onUploadCertificate()}
-					label={t('settings.uploadCertificate.uploadCertificate', 'Upload Certificate')}
-				/>
-			</FormSubSection>
-		</>
+		<FormSubSection
+			label={t(
+				'settings.uploadCertificate.personalCertificatesTitle',
+				'Personal certificates for signing, encryption and decryption'
+			)}
+			id={'personal-certificates'}
+			padding={{ all: 'large' }}
+		>
+			<Table rows={items} headers={headers} showCheckbox multiSelect={false} />
+			{items.length === 0 && (
+				<Container padding={{ vertical: 'large' }}>
+					<Text>
+						{t(
+							'settings.uploadCertificate.noPersonalCertificate',
+							'Personal certificate list is empty'
+						)}
+					</Text>
+				</Container>
+			)}
+			<Padding all="large" />
+			<Button
+				onClick={(): void => onUploadCertificate()}
+				label={t('settings.uploadCertificate.uploadCertificate', 'Upload Certificate')}
+			/>
+		</FormSubSection>
 	);
 };
 

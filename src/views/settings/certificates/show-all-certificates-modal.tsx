@@ -26,7 +26,8 @@ export const ShowAllCertificatesModal = ({
 	const [t] = useTranslation();
 	const createSnackbar = useSnackbar();
 	const { smimePassword } = useSmimePasswordStore();
-	const modalHeaderTitle = `Personal Cetificates of ${certificates[0].email}`; // t('settings.certificatePassword.enter_password', 'Enter password');
+	const modalHeaderTitle = `${t('settings.uploadCertificate.personalCertificate', 'Personal Cetificates of')} ${certificates[0].email}`;
+
 	const [selectedRows, setSelectedRows] = useState<string[]>([]);
 	const [localCertificates, setLocalCertificates] = useState(certificates);
 	const [isUpdateList, setIsUpdateList] = useState(false);
@@ -118,7 +119,7 @@ export const ShowAllCertificatesModal = ({
 				return t('settings.uploadCertificate.expired', 'Expired');
 			})(),
 			certificate.serial,
-			<Container key={index}>
+			<Container key={certificate.email}>
 				<Tooltip label={t('settings.uploadCertificate.deleteCertificate', 'Delete Certificate')}>
 					<Button
 						icon="Trash2Outline"
