@@ -31,22 +31,32 @@ function useConversationMessages(
 	conversationId: string,
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
 ): Array<MailMessage | IncompleteMessage> {
-	return useEmailsStore(({ populatedItemsSlice }) =>
-		populatedItemsSlice.conversations[conversationId].messageIds.map(
-			(messageId) => populatedItemsSlice.messages[messageId]
-		)
-	);
+	return useEmailsStore(({ populatedItemsSlice }) => {
+		const conversation = populatedItemsSlice.conversations[conversationId];
+
+		if (!conversation?.messageIds) {
+			return [];
+		}
+
+		return conversation.messageIds
+			.map((messageId) => populatedItemsSlice.messages[messageId])
+			.filter(Boolean);
+	});
 }
 
 function getConversationMessages(
 	conversationId: string,
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
 ): Array<MailMessage | IncompleteMessage> {
-	return useEmailsStore
-		.getState()
-		.populatedItemsSlice.conversations[conversationId].messageIds.map(
-			(messageId) => useEmailsStore.getState().populatedItemsSlice.messages[messageId]
-		)
+	const { populatedItemsSlice } = useEmailsStore.getState();
+	const conversation = populatedItemsSlice.conversations[conversationId];
+
+	if (!conversation?.messageIds) {
+		return [];
+	}
+
+	return conversation.messageIds
+		.map((messageId) => populatedItemsSlice.messages[messageId])
 		.filter(Boolean);
 }
 
