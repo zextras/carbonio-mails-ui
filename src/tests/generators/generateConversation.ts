@@ -107,26 +107,35 @@ export const generateConversation = ({
  */
 export const populateConversationInEmailStore = ({
 	conversationParams,
-	conversationMessagesNumber = 1,
+	messageGeneratorParams,
 	messageIds,
-	messageGeneratorParams
+	conversationMessagesNumber = 1
 }: {
-	conversationParams: ConversationGenerationParams;
-	conversationMessagesNumber?: number;
-	messageIds?: Array<string>;
+	conversationParams?: ConversationGenerationParams;
 	messageGeneratorParams?: Array<MessageGenerationParams>;
+	messageIds?: Array<string>;
+	conversationMessagesNumber?: number;
 }): { conversation: NormalizedConversation; messages: Array<MailMessage> } => {
+	const conversationId = conversationParams?.id ?? '1';
 	const messagesFromMessageIds = messageIds?.map((messageId) =>
-		generateMessage({ id: messageId, folderId: FOLDERS.INBOX, cid: conversationParams.id })
+		generateMessage({
+			id: messageId,
+			folderId: conversationParams?.folderId ?? FOLDERS.INBOX,
+			cid: conversationId
+		})
 	);
 	const messagesFromMessageGeneratorParams = messageGeneratorParams?.map((messageGeneratorParam) =>
-		generateMessage(messageGeneratorParam)
+		generateMessage({ ...messageGeneratorParam, cid: conversationId })
 	);
 	const conversationMessagesNumberArray = Array.from({ length: conversationMessagesNumber }).map(
 		(_, index) => (index + 100).toString()
 	);
 	const defaultMessages = conversationMessagesNumberArray.map((id) =>
-		generateMessage({ id, folderId: FOLDERS.INBOX, cid: conversationParams.id })
+		generateMessage({
+			id,
+			folderId: conversationParams?.folderId ?? FOLDERS.INBOX,
+			cid: conversationId
+		})
 	);
 
 	const generatedMessages =
@@ -134,8 +143,10 @@ export const populateConversationInEmailStore = ({
 	updateMessages(generatedMessages);
 
 	const generatedConversation = generateConversation({
-		id: conversationParams.id,
-		messageIds: messageIds ?? conversationMessagesNumberArray
+		...conversationParams,
+		id: conversationId,
+		messageIds:
+			generatedMessages.map((msg) => msg.id) ?? messageIds ?? conversationMessagesNumberArray
 	});
 	updateConversations([generatedConversation]);
 	return { conversation: generatedConversation, messages: generatedMessages };
