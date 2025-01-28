@@ -20,7 +20,7 @@ import MailPreview, { MailPreviewProps } from '../mail-preview';
 describe('Mail preview', () => {
 	const shadowDomWrapperTestId = 'shadow-dom-wrapper';
 
-	it('10 - 3 inline images', async () => {
+	it('msg 10 - 3 inline images', async () => {
 		const getMsgResponse = await getMsgSoapApi({ msgId: '10' });
 		const message = normalizeMailMessageFromSoap(getMsgResponse?.m[0], true);
 
@@ -44,7 +44,7 @@ describe('Mail preview', () => {
 		expect(content).toContain('pnsrc="cid:2dbe26b8-2c96-40a0-94c5-ad891bac1f9a');
 	});
 
-	it('11 - table with a link', async () => {
+	it('msg 11 - table with a link', async () => {
 		const getMsgResponse = await getMsgSoapApi({ msgId: '11' });
 		const message = normalizeMailMessageFromSoap(getMsgResponse?.m[0], true);
 
@@ -64,7 +64,7 @@ describe('Mail preview', () => {
 		expect(content).toContain('table');
 	});
 
-	it('12 - table with width greater than the previewer width', async () => {
+	it('msg 12 - table with width greater than the previewer width', async () => {
 		const getMsgResponse = await getMsgSoapApi({ msgId: '12' });
 		const message = normalizeMailMessageFromSoap(getMsgResponse?.m[0], true);
 
