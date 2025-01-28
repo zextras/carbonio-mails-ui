@@ -151,3 +151,53 @@ export const populateConversationInEmailStore = ({
 	updateConversations([generatedConversation]);
 	return { conversation: generatedConversation, messages: generatedMessages };
 };
+
+/**
+ * Populates the email store with messages and returns the generated messages.
+ * The function generates messages based on provided message IDs or message generation parameters.
+ * If neither is provided, it generates a default set of messages.
+ *
+ * It then updates the email store with the generated messages and returns them.
+ */
+export const populateMessagesInEmailStore = ({
+	messageGeneratorParams,
+	messageIds,
+	messagesNumber = 1
+}: {
+	messageGeneratorParams?: Array<MessageGenerationParams>;
+	messageIds?: Array<string>;
+	messagesNumber?: number;
+}): Array<MailMessage> => {
+	// Generate messages based on provided message IDs
+	const messagesFromMessageIds = messageIds?.map((messageId) =>
+		generateMessage({
+			id: messageId,
+			folderId: FOLDERS.INBOX, // Default folder ID
+			cid: '1' // Default conversation ID
+		})
+	);
+
+	// Generate messages based on provided message generation parameters
+	const messagesFromMessageGeneratorParams = messageGeneratorParams?.map((messageGeneratorParam) =>
+		generateMessage({ ...messageGeneratorParam })
+	);
+
+	// Generate default messages if no message IDs or parameters are provided
+	const defaultMessages = Array.from({ length: messagesNumber }).map((_, index) =>
+		generateMessage({
+			id: (index + 100).toString(), // Default message ID
+			folderId: FOLDERS.INBOX, // Default folder ID
+			cid: '1' // Default conversation ID
+		})
+	);
+
+	// Use the provided messages or fall back to default messages
+	const generatedMessages =
+		messagesFromMessageIds ?? messagesFromMessageGeneratorParams ?? defaultMessages;
+
+	// Update the store with the generated messages
+	updateMessages(generatedMessages);
+
+	// Return the generated messages
+	return generatedMessages;
+};

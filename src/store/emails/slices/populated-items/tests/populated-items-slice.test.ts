@@ -5,6 +5,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import { awaitExpression } from '@babel/types';
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 
@@ -18,12 +19,14 @@ import { API_REQUEST_STATUS } from '../../../../../constants';
 import { generateCompleteMessageFromAPI } from '../../../../../tests/generators/api';
 import {
 	generateConversation,
-	populateConversationInEmailStore
+	populateConversationInEmailStore,
+	populateMessagesInEmailStore
 } from '../../../../../tests/generators/generateConversation';
 import { generateMessage } from '../../../../../tests/generators/generateMessage';
-import { ConvActionResponse, MailMessage } from '../../../../../types';
+import { ConvActionResponse, IncompleteMessage, MailMessage } from '../../../../../types';
 import {
 	appendConversations,
+	getConversationMessages,
 	getUseEmailStoreAndHooksForTesting,
 	handleConvActionResponse,
 	handleDeleteAttachments,
@@ -279,6 +282,14 @@ describe('store-populated-items-slice', () => {
 			expect(conversationMessages.current[2].id).toBe('35');
 		});
 
+		it('should return an empty array if conversation or messages are missing', async () => {
+			const conversationId = 'non-existent-id';
+
+			const { result } = renderHook(() => useConversationMessages(conversationId));
+
+			expect(result.current).toHaveLength(0);
+		});
+
 		it('should not override other conversation messages', async () => {
 			const conversation1Messages = [
 				generateMessage({ id: '1' }),
@@ -307,6 +318,46 @@ describe('store-populated-items-slice', () => {
 			expect(messages2).toHaveLength(2);
 			expect(messages2[0].id).toBe('4');
 			expect(messages2[1].id).toBe('5');
+		});
+	});
+
+	describe('getConversationMessages', () => {
+		it('should return messages from conversation', async () => {
+			const conversationId = '1';
+
+			await waitFor(() => {
+				populateConversationInEmailStore({
+					conversationParams: {
+						id: conversationId
+					},
+					messageIds: ['10', '22', '35']
+				});
+			});
+
+			await waitFor(() => {
+				populateMessagesInEmailStore({
+					messageGeneratorParams: [
+						{ id: '10', cid: conversationId },
+						{ id: '22', cid: conversationId },
+						{ id: '35', cid: conversationId }
+					]
+				});
+			});
+
+			const messages = getConversationMessages(conversationId);
+
+			expect(messages).toHaveLength(3);
+			expect(messages[0].id).toBe('10');
+			expect(messages[1].id).toBe('22');
+			expect(messages[2].id).toBe('35');
+		});
+
+		it('should return an empty array if conversation or messages are missing', () => {
+			const conversationId = 'non-existent-id';
+
+			const messages = getConversationMessages(conversationId);
+
+			expect(messages).toHaveLength(0);
 		});
 	});
 
