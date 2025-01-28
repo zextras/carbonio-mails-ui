@@ -13,13 +13,12 @@ import { SoapIncompleteMessage } from '../../types';
 import { useSyncDataHandler } from './commons/sync-data-handler-hooks';
 import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
 import { useFolderStore } from '../../carbonio-ui-commons/store/zustand/folder';
-import { getTags, useTagStore } from '../../carbonio-ui-commons/store/zustand/tags';
+import { useTagStore } from '../../carbonio-ui-commons/store/zustand/tags';
 import { getSetupServer } from '../../carbonio-ui-commons/test/jest-setup';
 import { useNotify } from '../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
 import { generateFolder } from '../../carbonio-ui-commons/test/mocks/folders/folders-generator';
 import { handleGetFolderRequest } from '../../carbonio-ui-commons/test/mocks/network/msw/handle-get-folder';
 import { handleGetShareInfoRequest } from '../../carbonio-ui-commons/test/mocks/network/msw/handle-get-share-info';
-import { tags } from '../../carbonio-ui-commons/test/mocks/tags/tags';
 import { folderWorker, tagsWorker } from '../../carbonio-ui-commons/worker';
 import {
 	useConversationById,
@@ -89,6 +88,34 @@ function mockSoapModifyMessageAction(
 	(useNotify as jest.Mock).mockReturnValue([soapNotify]);
 }
 
+function mockSoapMessageActionAndConversationModified(
+	mailboxNumber: number,
+	messageId: string,
+	conversationId: string,
+	actions: Array<string>
+): void {
+	mockSoapRefresh(mailboxNumber);
+	const action = actions.join('');
+	const soapNotify = generateSoapAction({
+		modified: {
+			mbx: [{ s: 1000 }],
+			m: [
+				{
+					id: messageId,
+					f: `s${action}`
+				}
+			],
+			c: [
+				{
+					id: conversationId,
+					f: `s${action}`
+				}
+			]
+		}
+	});
+	(useNotify as jest.Mock).mockReturnValue([soapNotify]);
+}
+
 function mockSoapModifyMessageFolder(
 	mailboxNumber: number,
 	messageId: string,
@@ -140,9 +167,6 @@ describe('sync data handler', () => {
 	const mailboxNumber = 1000;
 	describe('conversations', () => {
 		it('should mark conversation as read', async () => {
-			(getTags as jest.Mock).mockReturnValue(tags);
-
-			useTagStore.setState({ tags });
 			setSearchResultsByConversation(
 				[generateConversation({ id: '123', messageIds: [], isRead: false })],
 				false
@@ -349,6 +373,30 @@ describe('sync data handler', () => {
 						subject: 'Message subject'
 					})
 				);
+			});
+		});
+	});
+
+	describe('conversation and messages both', () => {
+		it('should mark conversation as read and message as read', async () => {
+			setSearchResultsByConversation(
+				[generateConversation({ id: '123', messageIds: ['1'], isRead: false })],
+				false
+			);
+			setMessagesInSearchSlice([generateMessage({ id: '1', isRead: false })]);
+
+			mockSoapMessageActionAndConversationModified(mailboxNumber, '1', '123', [READ]);
+
+			renderHook(() => useSyncDataHandler(), {});
+
+			const { result: conversationResult } = renderHook(() => useConversationById('123'));
+			await waitFor(() => {
+				expect(conversationResult.current?.read).toBe(true);
+			});
+
+			const { result: messageResult } = renderHook(() => useMessageById('1'));
+			await waitFor(() => {
+				expect(messageResult.current?.read).toBe(true);
 			});
 		});
 	});
