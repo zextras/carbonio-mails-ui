@@ -19,10 +19,12 @@ import { API_REQUEST_STATUS } from '../../../../../constants';
 import { generateCompleteMessageFromAPI } from '../../../../../tests/generators/api';
 import {
 	generateConversation,
-	populateConversationInEmailStore,
-	populateMessagesInEmailStore
+	populateConversationInEmailStore
 } from '../../../../../tests/generators/generateConversation';
-import { generateMessage } from '../../../../../tests/generators/generateMessage';
+import {
+	generateMessage,
+	populateMessagesInEmailStore
+} from '../../../../../tests/generators/generateMessage';
 import { ConvActionResponse, IncompleteMessage, MailMessage } from '../../../../../types';
 import {
 	appendConversations,

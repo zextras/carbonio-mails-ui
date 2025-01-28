@@ -9,12 +9,10 @@ import { faker } from '@faker-js/faker';
 import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
 import { ParticipantRole } from '../../carbonio-ui-commons/constants/participants';
 import { convertHtmlToPlainText } from '../../commons/utilities';
+import { updateMessages } from '../../store/emails/store';
 import { MailMessage, Participant, Sensitivity } from '../../types';
 
-/**
- *
- */
-type MessageGenerationParams = {
+export type MessageGenerationParams = {
 	id?: string;
 	folderId?: string;
 	from?: Participant;
@@ -42,35 +40,7 @@ type MessageGenerationParams = {
 	creationDateFromMailHeaders?: string;
 };
 
-/**
- *
- * @param id
- * @param cid
- * @param folderId
- * @param receiveDate
- * @param to
- * @param cc
- * @param from
- * @param subject
- * @param body
- * @param isRead
- * @param isFlagged
- * @param isComplete
- * @param isDeleted
- * @param isDraft
- * @param isForwarded
- * @param isInvite
- * @param isReadReceiptRequested
- * @param isReplied
- * @param isScheduled
- * @param isSentByMe
- * @param tags
- * @param truncated
- * @param sensitivity
- * @param messageIdFromMailHeaders
- * @param creationDateFromMailHeaders
- */
-const generateMessage = ({
+export const generateMessage = ({
 	id = faker.number.int().toString(),
 	cid = '123',
 	folderId = FOLDERS.INBOX,
@@ -164,4 +134,50 @@ const generateMessage = ({
 	messageIsFromDistributionList: false
 });
 
-export { type MessageGenerationParams, generateMessage };
+/**
+ * Populates the email store with messages and returns the generated messages.
+ * The function generates messages based on provided message IDs or message generation parameters.
+ * If neither is provided, it generates a default set of messages.
+ *
+ * It then updates the email store with the generated messages and returns them.
+ */
+export const populateMessagesInEmailStore = ({
+	messageGeneratorParams,
+	messageIds,
+	messagesNumber = 1
+}: {
+	messageGeneratorParams?: Array<MessageGenerationParams>;
+	messageIds?: Array<string>;
+	messagesNumber?: number;
+}): Array<MailMessage> => {
+	// Generate messages based on provided message IDs
+	const messagesFromMessageIds = messageIds?.map((messageId) =>
+		generateMessage({
+			id: messageId,
+			folderId: FOLDERS.INBOX,
+			cid: '1'
+		})
+	);
+
+	// Generate messages based on provided message generation parameters
+	const messagesFromMessageGeneratorParams = messageGeneratorParams?.map((messageGeneratorParam) =>
+		generateMessage({ ...messageGeneratorParam })
+	);
+
+	// Generate default messages if no message IDs or parameters are provided
+	const defaultMessages = Array.from({ length: messagesNumber }).map((_, index) =>
+		generateMessage({
+			id: (index + 100).toString(),
+			folderId: FOLDERS.INBOX,
+			cid: '1'
+		})
+	);
+
+	// Use the provided messages or fall back to default messages
+	const generatedMessages =
+		messagesFromMessageIds ?? messagesFromMessageGeneratorParams ?? defaultMessages;
+
+	updateMessages(generatedMessages);
+
+	return generatedMessages;
+};
