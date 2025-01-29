@@ -12,9 +12,15 @@ import { WarningBanner } from './warning-banner';
 import { useEditorsStore } from '../../../../../store/editor';
 import { MailsEditorV2 } from '../../../../../types';
 
+function calculateTotalSmartLinksSize(savedAttachments: MailsEditorV2['savedAttachments']): number {
+	return savedAttachments.reduce(
+		(acc, attachment) => (attachment.requiresSmartLinkConversion ? acc + attachment.size : acc),
+		0
+	);
+}
 export const calculateMailSize = (editor: MailsEditorV2): number => {
 	const saveDraftSize = editor?.size ?? 0;
-	const totalSmartLinksSize = editor?.totalSmartLinksSize ?? 0;
+	const totalSmartLinksSize = calculateTotalSmartLinksSize(editor.savedAttachments);
 	return saveDraftSize - totalSmartLinksSize * 0.9;
 };
 
