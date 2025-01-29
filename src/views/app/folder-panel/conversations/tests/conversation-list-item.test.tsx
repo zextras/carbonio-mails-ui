@@ -3,9 +3,9 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { act } from 'react';
+import React from 'react';
 
-import { fireEvent, screen, waitFor } from '@testing-library/react';
+import { act, fireEvent, screen, waitFor } from '@testing-library/react';
 import * as hooks from '@zextras/carbonio-shell-ui';
 import { noop } from 'lodash';
 
@@ -14,7 +14,7 @@ import { ParticipantRole } from '../../../../../carbonio-ui-commons/constants/pa
 import { createSoapAPIInterceptor } from '../../../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
 import { FOLDERS_DESCRIPTORS } from '../../../../../constants';
-import { useMsgPreviewOnSeparatedWindowFn } from '../../../../../hooks/actions/use-msg-preview-on-separated-window';
+import { useConvPreviewOnSeparatedWindowFn } from '../../../../../hooks/actions/use-conv-preview-on-separated-window';
 import { setConversationsInEmailStore } from '../../../../../store/emails/store';
 import { ASSERTIONS } from '../../../../../tests/constants';
 import { populateConversationInEmailStore } from '../../../../../tests/generators/generateConversation';
@@ -22,9 +22,10 @@ import type { ConvActionRequest, ConversationListItemProps } from '../../../../.
 import { ConversationListItem } from '../conversation-list-item';
 
 const canExecuteCallback = jest.fn();
-jest.mock('../../../../../hooks/actions/use-msg-preview-on-separated-window', () => ({
-	...jest.requireActual('../../../../../hooks/actions/use-msg-preview-on-separated-window'),
-	useMsgPreviewOnSeparatedWindowFn: jest.fn()
+
+jest.mock('../../../../../hooks/actions/use-conv-preview-on-separated-window', () => ({
+	...jest.requireActual('../../../../../hooks/actions/use-conv-preview-on-separated-window'),
+	useConvPreviewOnSeparatedWindowFn: jest.fn()
 }));
 
 describe('conversation-list-item component', () => {
@@ -516,7 +517,7 @@ describe('conversation-list-item component', () => {
 		});
 
 		it('should call the doubleClick handler when the message is doubleClicked', async () => {
-			(useMsgPreviewOnSeparatedWindowFn as jest.Mock).mockReturnValue({
+			(useConvPreviewOnSeparatedWindowFn as jest.Mock).mockReturnValue({
 				canExecute: canExecuteCallback,
 				execute: jest.fn()
 			});
@@ -546,13 +547,11 @@ describe('conversation-list-item component', () => {
 			});
 
 			const hoverContainer = screen.getByTestId(/hover-container-/);
-			await waitFor(() => {
-				expect(screen.getByTestId(/hover-container-/)).toBeInTheDocument();
-			});
 
-			await act(async () => {
-				user.dblClick(hoverContainer);
-			});
+			expect(await screen.findByTestId(/hover-container-/)).toBeInTheDocument();
+
+			// eslint-disable-next-line testing-library/prefer-user-event
+			fireEvent.dblClick(hoverContainer);
 
 			await waitFor(async () => {
 				expect(canExecuteCallback).toHaveBeenCalled();
@@ -600,6 +599,48 @@ describe('conversation-list-item component', () => {
 			});
 			await waitFor(async () => {
 				expect(spyPushHistory).toHaveBeenCalled();
+			});
+		});
+
+		it('should call the doubleClick handler when the message is doubleClicked', async () => {
+			(useConvPreviewOnSeparatedWindowFn as jest.Mock).mockReturnValue({
+				canExecute: canExecuteCallback,
+				execute: jest.fn()
+			});
+			createSoapAPIInterceptor<ConvActionRequest>('ConvAction');
+			const { conversation } = await waitFor(() => populateConversationInEmailStore({}));
+
+			const props: ConversationListItemProps = {
+				conversation,
+				selected: false,
+				selecting: false,
+				toggle: noop,
+				isConvChildren: false,
+				activeItemId: '',
+				deselectAll: noop,
+				isSearchModule: true,
+				folderId: FOLDERS.INBOX
+			};
+
+			const { user } = setupTest(<ConversationListItem {...props} />);
+
+			const actionWrapper = await screen.findByTestId(
+				`ConversationListItem-${props.conversation.id}`
+			);
+
+			await act(async () => {
+				user.hover(actionWrapper);
+			});
+
+			const hoverContainer = screen.getByTestId(/hover-container-/);
+
+			expect(await screen.findByTestId(/hover-container-/)).toBeInTheDocument();
+
+			// eslint-disable-next-line testing-library/prefer-user-event
+			fireEvent.dblClick(hoverContainer);
+
+			await waitFor(async () => {
+				expect(canExecuteCallback).toHaveBeenCalled();
 			});
 		});
 	});
