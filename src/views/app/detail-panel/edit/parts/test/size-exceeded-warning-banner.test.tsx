@@ -6,94 +6,121 @@
 
 import React from 'react';
 
-import { noop } from 'lodash';
+import { act } from '@testing-library/react';
+import * as hooks from '@zextras/carbonio-shell-ui';
 
+import { generateSettings } from '../../../../../../carbonio-ui-commons/test/mocks/settings/settings-generator';
 import { setupTest } from '../../../../../../carbonio-ui-commons/test/test-setup';
-import { addEditor } from '../../../../../../store/editor';
+import { addEditor, useEditorsStore } from '../../../../../../store/editor';
 import { setupEditorStore } from '../../../../../../tests/generators/editor-store';
 import { generateEditorV2Case } from '../../../../../../tests/generators/editors';
 import { MailsEditorV2 } from '../../../../../../types';
 import { calculateMailSize, SizeExceededWarningBanner } from '../size-exceeded-waring-banner';
 
-const ERROR_MSG_EXCEED_LIMIT =
-	'The message size exceeds the limit. Please convert some attachments to smart links.';
-
 describe('sizeExceededWarningBanner', () => {
-	describe('sizeExceededWarningBanner', () => {
-		it('render warning banner when the mail size exceeds limit', async () => {
-			setupEditorStore({ editors: [] });
-			const editor = await generateEditorV2Case(1);
-			editor.size = 999999999;
-			addEditor({ id: editor.id, editor });
+	beforeEach(() => {
+		const settings = generateSettings({
+			attrs: {
+				zimbraMtaMaxMessageSize: 100
+			}
+		});
+		jest.spyOn(hooks, 'useUserSettings').mockReturnValue(settings);
+	});
 
-			const { getByText } = setupTest(
-				<SizeExceededWarningBanner
-					editorId={editor.id}
-					isMailSizeWarning
-					setIsMailSizeWarning={noop}
-				/>,
-				{}
-			);
-			expect(getByText(ERROR_MSG_EXCEED_LIMIT)).toBeInTheDocument();
+	it('render warning banner when the mail size exceeds limit', async () => {
+		setupEditorStore({ editors: [] });
+		const editor = await generateEditorV2Case(1);
+		editor.size = 200;
+		addEditor({ id: editor.id, editor });
+
+		const setIsMailSizeWarningSpy = jest.fn();
+		setupTest(
+			<SizeExceededWarningBanner
+				editorId={editor.id}
+				isMailSizeWarning={false}
+				setIsMailSizeWarning={setIsMailSizeWarningSpy}
+			/>,
+			{}
+		);
+
+		expect(setIsMailSizeWarningSpy).toHaveBeenCalledWith(true);
+	});
+
+	it('does not render warning banner when the mail size does not exceed limit', async () => {
+		setupEditorStore({ editors: [] });
+		const editor = await generateEditorV2Case(1);
+		editor.size = 10;
+		addEditor({ id: editor.id, editor });
+
+		const setIsMailSizeWarningSpy = jest.fn();
+
+		setupTest(
+			<SizeExceededWarningBanner
+				editorId={editor.id}
+				isMailSizeWarning
+				setIsMailSizeWarning={setIsMailSizeWarningSpy}
+			/>
+		);
+
+		expect(setIsMailSizeWarningSpy).toHaveBeenCalledWith(false);
+	});
+
+	it('does not render a warning banner when a smartLink is marked for convertion', async () => {
+		setupEditorStore({ editors: [] });
+		const editor = await generateEditorV2Case(1);
+		editor.size = 200;
+		editor.totalSmartLinksSize = 150;
+		addEditor({ id: editor.id, editor });
+
+		const setIsMailSizeWarningSpy = jest.fn();
+
+		setupTest(
+			<SizeExceededWarningBanner
+				editorId={editor.id}
+				isMailSizeWarning
+				setIsMailSizeWarning={setIsMailSizeWarningSpy}
+			/>,
+			{}
+		);
+
+		expect(setIsMailSizeWarningSpy).toHaveBeenCalledWith(false);
+	});
+
+	it('does remove the banner when a smartLink is marked for conversion', async () => {
+		setupEditorStore({ editors: [] });
+		const editor = await generateEditorV2Case(1);
+		editor.size = 200;
+		editor.totalSmartLinksSize = 0;
+		addEditor({ id: editor.id, editor });
+
+		const setIsMailSizeWarningSpy = jest.fn();
+
+		const { rerender } = setupTest(
+			<SizeExceededWarningBanner
+				editorId={editor.id}
+				isMailSizeWarning
+				setIsMailSizeWarning={setIsMailSizeWarningSpy}
+			/>
+		);
+
+		expect(setIsMailSizeWarningSpy).toHaveBeenCalledWith(true);
+
+		act(() => {
+			useEditorsStore.setState({
+				editors: { [editor.id]: { ...editor, totalSmartLinksSize: 150 } }
+			});
 		});
 
-		it('does not render warning banner when the mail size does not exceed limit', async () => {
-			setupEditorStore({ editors: [] });
-			const editor = await generateEditorV2Case(1);
-			editor.size = 0;
-			addEditor({ id: editor.id, editor });
+		const setIsMailSizeWarningSpyNew = jest.fn();
+		rerender(
+			<SizeExceededWarningBanner
+				editorId={editor.id}
+				isMailSizeWarning
+				setIsMailSizeWarning={setIsMailSizeWarningSpyNew}
+			/>
+		);
 
-			const { queryByText } = setupTest(
-				<SizeExceededWarningBanner
-					editorId={editor.id}
-					isMailSizeWarning={false}
-					setIsMailSizeWarning={noop}
-				/>
-			);
-			expect(queryByText(ERROR_MSG_EXCEED_LIMIT)).not.toBeInTheDocument();
-		});
-
-		it('renders warning banner when the total mail size (editor size + smart link size) exceeds limit', async () => {
-			setupEditorStore({ editors: [] });
-			const editor = await generateEditorV2Case(1);
-			editor.size = 30_000_000;
-			editor.totalSmartLinksSize = 600;
-			addEditor({ id: editor.id, editor });
-
-			const setIsMailSizeWarningSpy = jest.fn();
-
-			setupTest(
-				<SizeExceededWarningBanner
-					editorId={editor.id}
-					isMailSizeWarning
-					setIsMailSizeWarning={setIsMailSizeWarningSpy}
-				/>,
-				{}
-			);
-
-			expect(setIsMailSizeWarningSpy).toHaveBeenCalledWith(true);
-		});
-
-		it('does not render warning banner when the total mail size (editor size + smart link size) does not exceed limit', async () => {
-			setupEditorStore({ editors: [] });
-			const editor = await generateEditorV2Case(1);
-			editor.size = 30_000_000;
-			editor.totalSmartLinksSize = 20_000_000;
-			addEditor({ id: editor.id, editor });
-
-			const setIsMailSizeWarningSpy = jest.fn();
-
-			setupTest(
-				<SizeExceededWarningBanner
-					editorId={editor.id}
-					isMailSizeWarning
-					setIsMailSizeWarning={setIsMailSizeWarningSpy}
-				/>,
-				{}
-			);
-
-			expect(setIsMailSizeWarningSpy).toHaveBeenCalledWith(false);
-		});
+		expect(setIsMailSizeWarningSpyNew).toHaveBeenCalledWith(false);
 	});
 
 	describe('calculateMailSize', () => {
