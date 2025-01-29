@@ -13,6 +13,7 @@ import { useEditorsStore } from '../../../../../store/editor';
 import { MailsEditorV2 } from '../../../../../types';
 
 function calculateTotalSmartLinksSize(savedAttachments: MailsEditorV2['savedAttachments']): number {
+	if (!savedAttachments) return 0;
 	return savedAttachments.reduce(
 		(acc, attachment) => (attachment.requiresSmartLinkConversion ? acc + attachment.size : acc),
 		0

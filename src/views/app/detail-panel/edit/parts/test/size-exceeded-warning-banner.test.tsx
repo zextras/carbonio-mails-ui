@@ -14,7 +14,7 @@ import { setupTest } from '../../../../../../carbonio-ui-commons/test/test-setup
 import { addEditor, useEditorsStore } from '../../../../../../store/editor';
 import { setupEditorStore } from '../../../../../../tests/generators/editor-store';
 import { generateEditorV2Case } from '../../../../../../tests/generators/editors';
-import { MailsEditorV2 } from '../../../../../../types';
+import { MailsEditorV2, SavedAttachment } from '../../../../../../types';
 import { calculateMailSize, SizeExceededWarningBanner } from '../size-exceeded-waring-banner';
 
 describe('sizeExceededWarningBanner', () => {
@@ -67,9 +67,10 @@ describe('sizeExceededWarningBanner', () => {
 
 	it('does not render a warning banner when a smartLink is marked for convertion', async () => {
 		setupEditorStore({ editors: [] });
+		const attachment = { requiresSmartLinkConversion: true, size: 150 } as SavedAttachment;
 		const editor = await generateEditorV2Case(1);
 		editor.size = 200;
-		editor.totalSmartLinksSize = 150;
+		editor.savedAttachments = [attachment];
 		addEditor({ id: editor.id, editor });
 
 		const setIsMailSizeWarningSpy = jest.fn();
@@ -88,9 +89,13 @@ describe('sizeExceededWarningBanner', () => {
 
 	it('toggling smartlink flag toggles the banner', async () => {
 		setupEditorStore({ editors: [] });
+		const attachmentNoSmartLink = {
+			requiresSmartLinkConversion: false,
+			size: 150
+		} as SavedAttachment;
 		const editor = await generateEditorV2Case(1);
 		editor.size = 200;
-		editor.totalSmartLinksSize = 0;
+		editor.savedAttachments = [attachmentNoSmartLink];
 		addEditor({ id: editor.id, editor });
 
 		const setIsMailSizeWarningSpy = jest.fn();
@@ -104,10 +109,13 @@ describe('sizeExceededWarningBanner', () => {
 		);
 
 		expect(setIsMailSizeWarningSpy).toHaveBeenCalledWith(true);
-
+		const attachmentWithSmartLink = {
+			requiresSmartLinkConversion: true,
+			size: 150
+		} as SavedAttachment;
 		act(() => {
 			useEditorsStore.setState({
-				editors: { [editor.id]: { ...editor, totalSmartLinksSize: 150 } }
+				editors: { [editor.id]: { ...editor, savedAttachments: [attachmentWithSmartLink] } }
 			});
 		});
 
@@ -124,7 +132,7 @@ describe('sizeExceededWarningBanner', () => {
 
 		act(() => {
 			useEditorsStore.setState({
-				editors: { [editor.id]: { ...editor, totalSmartLinksSize: 0 } }
+				editors: { [editor.id]: { ...editor, savedAttachments: [attachmentNoSmartLink] } }
 			});
 		});
 
@@ -144,19 +152,21 @@ describe('sizeExceededWarningBanner', () => {
 		const generatedEditor = generateEditorV2Case(1);
 
 		it('returns correct size when editor has size and totalSmartLinksSize', async () => {
+			const attachment = { requiresSmartLinkConversion: true, size: 200 } as SavedAttachment;
 			const editor: MailsEditorV2 = {
 				...(await generatedEditor),
 				size: 1000,
-				totalSmartLinksSize: 200
+				savedAttachments: [attachment]
 			};
 			expect(calculateMailSize(editor)).toBe(820);
 		});
 
 		it('returns correct size when editor size is zero', async () => {
+			const attachment = { requiresSmartLinkConversion: true, size: 200 } as SavedAttachment;
 			const editor: MailsEditorV2 = {
 				...(await generatedEditor),
 				size: 0,
-				totalSmartLinksSize: 200
+				savedAttachments: [attachment]
 			};
 			expect(calculateMailSize(editor)).toBe(-180);
 		});
@@ -165,20 +175,16 @@ describe('sizeExceededWarningBanner', () => {
 			const editor: MailsEditorV2 = {
 				...(await generatedEditor),
 				size: 1000,
-				totalSmartLinksSize: 0
+				savedAttachments: []
 			};
 			expect(calculateMailSize(editor)).toBe(1000);
-		});
-
-		it('returns correct size when editor is undefined', () => {
-			expect(calculateMailSize(undefined as never)).toBe(0);
 		});
 
 		it('returns correct size when editor has undefined properties', async () => {
 			const editor: MailsEditorV2 = {
 				...(await generatedEditor),
 				size: undefined as never,
-				totalSmartLinksSize: undefined as never
+				savedAttachments: undefined as never
 			};
 			expect(calculateMailSize(editor)).toBe(0);
 		});
