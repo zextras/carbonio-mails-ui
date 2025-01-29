@@ -285,7 +285,7 @@ describe.each`
 			}
 		);
 
-		test.only.each`
+		test.each`
 			case | folder                              | senderAddress      | labelContent
 			${6} | ${FOLDERS_DESCRIPTORS.INBOX}        | ${'luigi@foo.bar'} | ${'luigi'}
 			${6} | ${FOLDERS_DESCRIPTORS.DRAFTS}       | ${'luigi@foo.bar'} | ${'luigi'}
