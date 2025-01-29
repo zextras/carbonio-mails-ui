@@ -9,7 +9,7 @@ import { useUserSettings } from '@zextras/carbonio-shell-ui';
 import { useTranslation } from 'react-i18next';
 
 import { WarningBanner } from './warning-banner';
-import { getEditor } from '../../../../../store/editor/hooks/editors';
+import { useEditorsStore } from '../../../../../store/editor';
 import { MailsEditorV2 } from '../../../../../types';
 
 export const calculateMailSize = (editor: MailsEditorV2): number => {
@@ -30,12 +30,12 @@ export const SizeExceededWarningBanner = ({
 	const maxMessageSize = useUserSettings().attrs?.zimbraMtaMaxMessageSize;
 	const { t } = useTranslation();
 	const maxAllowedMailSize = parseInt(maxMessageSize as string, 10);
-	const editor = getEditor({ id: editorId });
-	const editorSize = editor ? calculateMailSize(editor) : 0;
+	const editor = useEditorsStore((state) => state.editors[editorId]);
+	const calculatedEditorSize = editor ? calculateMailSize(editor) : 0;
 
 	useEffect(() => {
-		setIsMailSizeWarning(editorSize > maxAllowedMailSize);
-	}, [editorSize, maxAllowedMailSize, setIsMailSizeWarning]);
+		setIsMailSizeWarning(calculatedEditorSize > maxAllowedMailSize);
+	}, [calculatedEditorSize, maxAllowedMailSize, setIsMailSizeWarning]);
 
 	const mailSizeWarningBannerText = t(
 		'editor.warning.mail_size_exceeds_limit',
