@@ -473,14 +473,6 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 		setIsSmimeSign(false);
 	}, [setIsSmimeSign]);
 
-	// Combined method to handle the change
-	const onSmimeOptionChange = useCallback(
-		(isSmimeSelected: boolean): void => {
-			isSmimeSelected ? handleSmimeSelected() : handleSmimeDeselected();
-		},
-		[handleSmimeSelected, handleSmimeDeselected]
-	);
-
 	const handleEncryptSelected = useCallback((): void => {
 		if (identityEmailAddress) {
 			if (smimePassword !== '') {
@@ -571,7 +563,9 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 						<MemoizedChangeSignaturesDropdown editorId={editorId} />
 						<MemoizedOptionsDropdown
 							editorId={editorId}
-							onSmimeOptionChange={onSmimeOptionChange}
+							onSmimeOptionChange={(isSmimeSelected: boolean): void =>
+								isSmimeSelected ? handleSmimeSelected() : handleSmimeDeselected()
+							}
 							onSmimeEncryptOptionChange={onSmimeEncryptOptionChange}
 						/>
 						<Tooltip
