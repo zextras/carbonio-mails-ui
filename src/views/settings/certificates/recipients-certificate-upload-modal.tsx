@@ -80,9 +80,9 @@ export const RecipientsCertificateUploadModal = ({
 								'settings.uploadCertificate.smimeRecipientCertificate',
 								'S/MIME Certificate (i.e. certificate.crt)'
 							)}
-							value={selectedFile?.name || ''}
+							value={selectedFile ? selectedFile.name : ''}
 							data-testid="certificate-file-name"
-							readOnly
+							onChange={(): null => null}
 							style={{ pointerEvents: 'none' }}
 						/>
 					</Row>
