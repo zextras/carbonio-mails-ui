@@ -11,7 +11,7 @@ import { t, useAppContext } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
 import { useParams } from 'react-router-dom';
 
-import { SearchMessageListItem } from './search-message-list-item';
+import { SearchMessageListItemWrapper } from './search-message-list-item-wrapper';
 import { CustomList } from '../../../../carbonio-ui-commons/components/list/list';
 import { CustomListItem } from '../../../../carbonio-ui-commons/components/list/list-item';
 import { useSelection } from '../../../../hooks/use-selection';
@@ -87,12 +87,11 @@ export const SearchMessageList: FC<SearchListProps> = ({
 					>
 						{(visible: boolean): React.JSX.Element =>
 							visible ? (
-								<SearchMessageListItem
-									itemId={messageId}
+								<SearchMessageListItemWrapper
 									key={messageId}
+									messageId={messageId}
 									selected={isSelected}
 									selecting={isSelectModeOn}
-									isConvChildren={false}
 									toggle={toggle}
 									active={active}
 									deselectAll={deselectAll}

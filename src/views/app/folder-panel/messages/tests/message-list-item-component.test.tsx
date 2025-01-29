@@ -6,7 +6,7 @@
 import React from 'react';
 
 import { faker } from '@faker-js/faker';
-import { fireEvent, screen } from '@testing-library/react';
+import { fireEvent, screen, waitFor } from '@testing-library/react';
 import { noop } from 'lodash';
 
 import { FOLDERS } from '../../../../../carbonio-ui-commons/constants/folders';
@@ -71,7 +71,7 @@ describe.each`
 
 				setMessagesInEmailStore([message], false);
 				const props: MessageListItemProps = {
-					item: message,
+					message,
 					selected: false,
 					selecting: false,
 					isConvChildren: false,
@@ -107,7 +107,7 @@ describe.each`
 				setMessagesInEmailStore([message], false);
 
 				const props: MessageListItemProps = {
-					item: message,
+					message,
 					selected: false,
 					selecting: false,
 					isConvChildren: false,
@@ -147,7 +147,7 @@ describe.each`
 				setMessagesInEmailStore([message], false);
 
 				const props: MessageListItemProps = {
-					item: message,
+					message,
 					selected: false,
 					selecting: false,
 					isConvChildren: false,
@@ -188,7 +188,7 @@ describe.each`
 				setMessagesInEmailStore([message], false);
 
 				const props: MessageListItemProps = {
-					item: message,
+					message,
 					selected: false,
 					selecting: false,
 					isConvChildren: false,
@@ -228,7 +228,7 @@ describe.each`
 				setMessagesInEmailStore([message], false);
 
 				const props: MessageListItemProps = {
-					item: message,
+					message,
 					selected: false,
 					selecting: false,
 					isConvChildren: false,
@@ -267,7 +267,7 @@ describe.each`
 				setMessagesInEmailStore([message], false);
 
 				const props: MessageListItemProps = {
-					item: message,
+					message,
 					selected: false,
 					selecting: false,
 					isConvChildren: false,
@@ -337,7 +337,7 @@ describe.each`
 			setMessagesInEmailStore([message], false);
 
 			const props: MessageListItemProps = {
-				item: message,
+				message,
 				selected: false,
 				selecting: false,
 				isConvChildren: false,
@@ -366,34 +366,49 @@ describe.each`
 
 describe('in the drafts folder', () => {
 	const folderId = FOLDERS.DRAFTS;
-	test.each`
-		case | listType                 | isSearchModule | assertion
-		${4} | ${'message list'}        | ${false}       | ${ASSERTIONS.IS_VISIBLE}
-		${0} | ${'search message list'} | ${true}        | ${ASSERTIONS.IS_NOT_VISIBLE}
-	`(
-		'(case #$case) in a $listType item the string [DRAFT] $assertion.desc',
-		async ({ isSearchModule, assertion }) => {
-			const message = generateMessage({ folderId });
-			setMessagesInEmailStore([message], false);
+	it('should make the draft label visible', async () => {
+		const message = generateMessage({ folderId, isDraft: true });
+		setMessagesInEmailStore([message], false);
 
-			const props: MessageListItemProps = {
-				item: message,
-				selected: false,
-				selecting: false,
-				isConvChildren: false,
-				visible: true,
-				active: true,
-				toggle: noop,
-				deselectAll: noop,
-				isSearchModule,
-				currentFolderId: folderId
-			};
+		const props: MessageListItemProps = {
+			message,
+			selected: false,
+			selecting: false,
+			isConvChildren: false,
+			visible: true,
+			active: true,
+			toggle: noop,
+			deselectAll: noop,
+			isSearchModule: false,
+			currentFolderId: folderId
+		};
 
+		await waitFor(() => {
 			setupTest(<MessageListItem {...props} />);
-			const matcher = expect(screen.queryByText('label.draft_folder'));
-			assertion.value ? matcher.toBeVisible() : matcher.not.toBeInTheDocument();
-		}
-	);
+		});
+
+		expect(await screen.findByText('label.draft_folder')).toBeVisible();
+	});
+	it('should not make the draft label visible', async () => {
+		const message = generateMessage({ folderId });
+		setMessagesInEmailStore([message], false);
+
+		const props: MessageListItemProps = {
+			message,
+			selected: false,
+			selecting: false,
+			isConvChildren: false,
+			visible: true,
+			active: true,
+			toggle: noop,
+			deselectAll: noop,
+			isSearchModule: true,
+			currentFolderId: folderId
+		};
+
+		setupTest(<MessageListItem {...props} />);
+		expect(screen.queryByText('label.draft_folder')).not.toBeInTheDocument();
+	});
 
 	// TODO add the following test parameters:
 	// ${0} | ${'search message list'} | ${true}        | ${ASSERTIONS.IS_VISIBLE}
@@ -411,7 +426,7 @@ describe('in the drafts folder', () => {
 			setMessagesInEmailStore([message], false);
 
 			const props: MessageListItemProps = {
-				item: message,
+				message,
 				selected: false,
 				selecting: false,
 				isConvChildren: false,
@@ -446,7 +461,7 @@ describe('in the drafts folder', () => {
 			setMessagesInEmailStore([message], false);
 
 			const props: MessageListItemProps = {
-				item: message,
+				message,
 				selected: false,
 				selecting: false,
 				isConvChildren: false,
@@ -480,7 +495,7 @@ describe('in the trash folder', () => {
 		const message = generateMessage({ to, folderId });
 
 		const props: MessageListItemProps = {
-			item: message,
+			message,
 			selected: false,
 			selecting: false,
 			isConvChildren: false,
@@ -511,7 +526,7 @@ describe('in the trash folder', () => {
 
 			setMessagesInEmailStore([message], false);
 			const props: MessageListItemProps = {
-				item: message,
+				message,
 				selected: false,
 				selecting: false,
 				isConvChildren: false,

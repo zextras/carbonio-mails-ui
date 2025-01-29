@@ -50,6 +50,16 @@ describe('searchEmailStoreAction', () => {
 		jest.clearAllMocks();
 	});
 
+	it(
+		'calls resetMessagesAndPopulatedItems to reset Messages And PopulatedItems slice' +
+			' before handling searchSoapApi response',
+		async () => {
+			(searchSoapApi as jest.Mock).mockResolvedValueOnce(mockSearchResponseTypeMessage);
+			await searchEmailStoreAction(searchParams);
+			expect(resetMessagesAndPopulatedItems).toHaveBeenCalledTimes(1);
+		}
+	);
+
 	it('handles successful message search response', async () => {
 		(searchSoapApi as jest.Mock).mockResolvedValueOnce(mockSearchResponseTypeMessage);
 		await searchEmailStoreAction(searchParams);
@@ -72,14 +82,14 @@ describe('searchEmailStoreAction', () => {
 		);
 	});
 
-	it('should update message loading status when error response and type is message', async () => {
+	it('updates message loading status when error response and type is message', async () => {
 		const errorResponse = { Fault: {} };
 		(searchSoapApi as jest.Mock).mockResolvedValueOnce(errorResponse);
 		await searchEmailStoreAction({ ...searchParams, types: 'message' });
 		expect(updateMessagesResultsLoadingStatus).toHaveBeenCalledWith(API_REQUEST_STATUS.error);
 	});
 
-	it('should update conversation loading status when error response and type is conversation', async () => {
+	it('updates conversation loading status when error response and type is conversation', async () => {
 		const errorResponse = { Fault: {} };
 		(searchSoapApi as jest.Mock).mockResolvedValueOnce(errorResponse);
 		await searchEmailStoreAction({ ...searchParams, types: 'conversation' });

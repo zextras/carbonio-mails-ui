@@ -28,7 +28,7 @@ const { setMessagesInSearchSlice } = getUseEmailStoreAndHooksForTesting();
 describe('emails store search slice', () => {
 	describe('resetSearchAndPopulatedItems', () => {
 		it('should reset the searchIndexSlice to the initial state', async () => {
-			setSearchResultsByConversation([generateConversation({ id: '1', messages: [] })], false);
+			setSearchResultsByConversation([generateConversation({ id: '1', messageIds: [] })], false);
 			updateConversationStatus('1', API_REQUEST_STATUS.fulfilled);
 			await act(async () => {
 				setMessagesInSearchSlice([generateMessage({ id: '100' })]);
@@ -91,9 +91,15 @@ describe('emails store search slice', () => {
 				generateMessage({ id: '2' }),
 				generateMessage({ id: '3' })
 			];
-			const conversation1 = generateConversation({ id: '1', messages: conversation1Messages });
+			const conversation1 = generateConversation({
+				id: '1',
+				messageIds: conversation1Messages.map((message) => message.id)
+			});
 			const conversation2Messages = [generateMessage({ id: '4' }), generateMessage({ id: '5' })];
-			const conversation2 = generateConversation({ id: '2', messages: conversation2Messages });
+			const conversation2 = generateConversation({
+				id: '2',
+				messageIds: conversation2Messages.map((message) => message.id)
+			});
 			setSearchResultsByConversation([conversation1, conversation2], false);
 			await waitFor(() => {
 				setMessagesInSearchSlice([...conversation1Messages, ...conversation2Messages]);

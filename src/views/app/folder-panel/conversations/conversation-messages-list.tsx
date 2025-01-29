@@ -49,7 +49,7 @@ export const ConversationMessagesList = memo(function ConversationMessagesList({
 						background={'transparent'}
 					>
 						{(visible: boolean): React.JSX.Element =>
-							visible ? (
+							visible && message ? (
 								<DragItemWrapper
 									item={message}
 									selectedIds={[]}
@@ -60,7 +60,7 @@ export const ConversationMessagesList = memo(function ConversationMessagesList({
 									deselectAll={deselectAll}
 								>
 									<MessageListItem
-										item={message}
+										message={message}
 										selected={isSelected}
 										selecting={isSelectModeOn}
 										visible={visible}

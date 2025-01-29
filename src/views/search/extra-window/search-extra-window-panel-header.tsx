@@ -16,10 +16,10 @@ import {
 } from '@zextras/carbonio-design-system';
 import { replaceHistory, t } from '@zextras/carbonio-shell-ui';
 
-import type { Conversation, MailMessage } from '../../../types';
+import type { MailMessage, NormalizedConversation } from '../../../types';
 
 export const SearchExtraWindowPanelHeader: FC<{
-	item: Conversation | (Partial<MailMessage> & Pick<MailMessage, 'id'>);
+	item: NormalizedConversation | (Partial<MailMessage> & Pick<MailMessage, 'id'>);
 }> = ({ item }) => {
 	const replaceHistoryCallback = useCallback(() => replaceHistory(`/`), []);
 

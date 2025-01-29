@@ -26,14 +26,14 @@ export const ConversationPreviewPanel = ({
 	const isExpanded = useCallback(
 		(index: number): boolean => {
 			if (convSortOrder === 'dateAsc') {
-				return index === conversation.messages.length - 1;
+				return index === conversation.messageIds.length - 1;
 			}
 			return index === 0;
 		},
-		[convSortOrder, conversation?.messages?.length]
+		[convSortOrder, conversation?.messageIds?.length]
 	);
 
-	const { messages } = conversation;
+	const { messageIds } = conversation;
 
 	return (
 		<Container
@@ -44,13 +44,13 @@ export const ConversationPreviewPanel = ({
 			mainAlignment="flex-start"
 		>
 			<Container height="100%" mainAlignment="flex-start" background="gray5">
-				{map(messages, (convMessage, index) =>
-					convMessage ? (
+				{map(messageIds, (convMessageId, index) =>
+					convMessageId ? (
 						<ConversationMessagePreviewWrapper
-							key={convMessage.id}
-							convMessageId={convMessage.id}
+							key={convMessageId}
+							convMessageId={convMessageId}
 							isExpanded={isExpanded(index)}
-							isAlone={conversation.messages?.length === 1}
+							isAlone={conversation.messageIds?.length === 1}
 							isInsideExtraWindow={isInsideExtraWindow}
 						/>
 					) : (

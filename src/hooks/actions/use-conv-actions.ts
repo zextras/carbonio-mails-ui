@@ -27,10 +27,11 @@ import { useConvSetUnreadDescriptor } from './use-conv-set-unread';
 import { useConvShowOriginalDescriptor } from './use-conv-show-original';
 import { isTrash } from '../../carbonio-ui-commons/helpers/folders';
 import { getFolderIdParts, isDraft } from '../../helpers/folders';
-import { Conversation, UIActionAggregator, UIActionDescriptor } from '../../types';
+import { useConversationMessages } from '../../store/emails/store';
+import { NormalizedConversation, UIActionAggregator, UIActionDescriptor } from '../../types';
 
 export type ConversationActionsArgumentType = {
-	conversation: Conversation;
+	conversation: NormalizedConversation;
 	deselectAll: () => void;
 	shouldReplaceHistory?: boolean;
 	conversationPreviewFactory: () => React.JSX.Element;
@@ -63,11 +64,12 @@ export const useConvActions = ({
 	shouldReplaceHistory = false,
 	conversationPreviewFactory
 }: ConversationActionsArgumentType): ConversationActionsReturnType => {
+	const messages = useConversationMessages(conversation.id);
 	const firstConversationMessage =
-		find(conversation?.messages, (msg) => {
+		find(messages, (msg) => {
 			const folderIdParts = getFolderIdParts(msg.parent).id ?? '';
 			return !isTrash(folderIdParts) && !isDraft(folderIdParts);
-		}) ?? conversation?.messages?.[0];
+		}) ?? messages?.[0];
 
 	// TODO: This condition is not the proper one as the first message is not a good indication of the folder id we are currently navigating.
 	const folderId = firstConversationMessage.parent;
@@ -75,22 +77,22 @@ export const useConvActions = ({
 	const replyDescriptor = useConvReplyDescriptor({
 		firstMessageId: firstConversationMessage.id,
 		folderId,
-		messagesLength: conversation.messages.length
+		messagesLength: messages.length
 	});
 	const replyAllDescriptor = useConvReplyAllDescriptor({
 		firstMessageId: firstConversationMessage.id,
 		folderId,
-		messagesLength: conversation.messages.length
+		messagesLength: messages.length
 	});
 	const forwardDescriptor = useConvForwardDescriptor({
 		firstMessageId: firstConversationMessage.id,
 		folderId,
-		messagesLength: conversation.messages.length
+		messagesLength: messages.length
 	});
 	const forwardAsAttachmentDescriptor = useConvForwardAsAttachmentDescriptor({
 		firstMessageId: firstConversationMessage.id,
 		folderId,
-		messagesLength: conversation.messages.length
+		messagesLength: messages.length
 	});
 	const moveToTrashDescriptor = useConvMoveToTrashDescriptor({
 		ids: [conversation.id],

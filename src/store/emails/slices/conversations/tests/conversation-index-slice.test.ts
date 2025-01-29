@@ -3,11 +3,12 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { act, renderHook } from '@testing-library/react';
+import { act, renderHook, waitFor } from '@testing-library/react';
 
 import { useFolderStore } from '../../../../../carbonio-ui-commons/store/zustand/folder';
 import { generateFolder } from '../../../../../carbonio-ui-commons/test/mocks/folders/folders-generator';
 import { generateConversation } from '../../../../../tests/generators/generateConversation';
+import { generateMessage } from '../../../../../tests/generators/generateMessage';
 import {
 	appendConversationsToConversationIndexSlice,
 	setConversationsInEmailStore,
@@ -17,7 +18,8 @@ import {
 	useConversationsByIds,
 	useConversationsIdsByFolder,
 	updateConversations,
-	getUseEmailStoreAndHooksForTesting
+	getUseEmailStoreAndHooksForTesting,
+	setMessagesInEmailStore
 } from '../../../store';
 import { POPULATED_ITEMS_SLICE_INITIAL_STATE } from '../../populated-items/populated-items-slice';
 import { CONVERSATION_INDEX_SLICE_INITIAL_STATE } from '../conversations-index-slice';
@@ -40,22 +42,28 @@ describe('conversation-index-slice', () => {
 		});
 	});
 
-	const conversation1 = generateConversation({ id: '1', folderId: '5' });
-	const conversation2 = generateConversation({ id: '2', folderId: '5' });
-	const conversation3 = generateConversation({ id: '3', folderId: '8' });
+	const message1 = generateMessage({ id: '11', folderId: '5' });
+	const message2 = generateMessage({ id: '21', folderId: '5' });
+	const message3 = generateMessage({ id: '31', folderId: '8' });
+	const messages = [message1, message2, message3];
+	const conversation1 = generateConversation({ id: '1', folderId: '5', messageIds: ['11'] });
+	const conversation2 = generateConversation({ id: '2', folderId: '5', messageIds: ['21'] });
+	const conversation3 = generateConversation({ id: '3', folderId: '8', messageIds: ['31'] });
 
 	describe('useConversationsIdsByFolder', () => {
 		it('should return conversation IDs for the specified folder', async () => {
 			setConversationsInEmailStore([conversation1, conversation2], false);
+			setMessagesInEmailStore(messages, false);
 			const folder = generateFolder({ id: '5' });
 			useFolderStore.setState({ folders: { [folder.id]: folder } });
 			const { result } = renderHook(() => useConversationsIdsByFolder(folder.id));
-			await act(async () => {
+			await waitFor(async () => {
 				expect(result.current).toEqual(['1', '2']);
 			});
 		});
 		it('should return an empty set if no conversations match the folder', async () => {
 			setConversationsInEmailStore([conversation1, conversation2, conversation3], false);
+			setMessagesInEmailStore(messages, false);
 			const folder = generateFolder({ id: '4' });
 			useFolderStore.setState({ folders: { [folder.id]: folder } });
 			const { result } = renderHook(() => useConversationsIdsByFolder(folder.id));
@@ -64,24 +72,38 @@ describe('conversation-index-slice', () => {
 			});
 		});
 		it('should handle folders with rid and zid properties', async () => {
-			const conversation4 = generateConversation({ id: '4', folderId: '5:123' });
-			const conversation5 = generateConversation({ id: '5', folderId: '5:123' });
-			const conversation6 = generateConversation({ id: '6', folderId: '5' });
+			const messageInSharedFolder = generateMessage({ id: 'message1', folderId: '5:123' });
+			const conversation4 = generateConversation({
+				id: '4',
+				folderId: '5:123',
+				messageIds: [messageInSharedFolder.id]
+			});
+			const conversation5 = generateConversation({
+				id: '5',
+				folderId: '5:123',
+				messageIds: [messageInSharedFolder.id]
+			});
+			const conversation6 = generateConversation({
+				id: '6',
+				folderId: '5'
+			});
 			setConversationsInEmailStore([conversation4, conversation5, conversation6], false);
+			setMessagesInEmailStore([messageInSharedFolder], false);
 			const folder1 = generateFolder({ id: '5:123' });
 			const folder2 = generateFolder({ id: '5' });
 			useFolderStore.setState({ folders: { [folder1.id]: folder1, [folder2.id]: folder2 } });
 			const { result } = renderHook(() => useConversationsIdsByFolder(folder1.id));
-			await act(async () => {
+			await waitFor(async () => {
 				expect(result.current).toEqual(['4', '5']);
 			});
 		});
 		it('should not include conversation IDs from other folders', async () => {
 			setConversationsInEmailStore([conversation1, conversation2, conversation3], false);
+			setMessagesInEmailStore(messages, false);
 			const folder = generateFolder({ id: '5' });
 			useFolderStore.setState({ folders: { [folder.id]: folder } });
 			const { result } = renderHook(() => useConversationsIdsByFolder(folder.id));
-			await act(async () => {
+			await waitFor(async () => {
 				expect(result.current).toEqual(['1', '2']);
 			});
 		});

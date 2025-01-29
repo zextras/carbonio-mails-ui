@@ -20,7 +20,11 @@ describe('useConvForward', () => {
 				result: { current: descriptor }
 			} = setupHook(useConvForwardDescriptor, {
 				initialProps: [
-					{ firstMessageId: conv.id, folderId: FOLDERS.INBOX, messagesLength: conv.messages.length }
+					{
+						firstMessageId: conv.id,
+						folderId: FOLDERS.INBOX,
+						messagesLength: conv.messageIds.length
+					}
 				]
 			});
 
@@ -41,7 +45,11 @@ describe('useConvForward', () => {
 				result: { current: functions }
 			} = setupHook(useConvForwardFn, {
 				initialProps: [
-					{ firstMessageId: conv.id, folderId: FOLDERS.INBOX, messagesLength: conv.messages.length }
+					{
+						firstMessageId: conv.id,
+						folderId: FOLDERS.INBOX,
+						messagesLength: conv.messageIds.length
+					}
 				]
 			});
 
@@ -65,7 +73,7 @@ describe('useConvForward', () => {
 					result: { current: functions }
 				} = setupHook(useConvForwardFn, {
 					initialProps: [
-						{ firstMessageId: conv.id, folderId: folder.id, messagesLength: conv.messages.length }
+						{ firstMessageId: conv.id, folderId: folder.id, messagesLength: conv.messageIds.length }
 					]
 				});
 
@@ -82,7 +90,7 @@ describe('useConvForward', () => {
 						{
 							firstMessageId: conv.id,
 							folderId: FOLDERS.INBOX,
-							messagesLength: conv.messages.length
+							messagesLength: conv.messageIds.length
 						}
 					]
 				});
@@ -108,7 +116,7 @@ describe('useConvForward', () => {
 						{
 							firstMessageId: conv.id,
 							folderId: FOLDERS.DRAFTS,
-							messagesLength: conv.messages.length
+							messagesLength: conv.messageIds.length
 						}
 					]
 				});

@@ -20,17 +20,17 @@ import {
 } from '../../../../types';
 import { POPULATED_ITEMS_SLICE_INITIAL_STATE } from '../populated-items/populated-items-slice';
 
-function setMessages(
+function setMessagesInEmailStore(
 	messages: Array<MailMessage | IncompleteMessage>,
-	more: boolean,
-	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
+	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>,
+	more?: boolean
 ): void {
 	useEmailsStore.setState(
 		produce((store: EmailsStoreState) => {
 			store.messageIndexSlice.messageListIndex = messages.map((message) => message.id);
 			store.messageIndexSlice.status = API_REQUEST_STATUS.fulfilled;
 			store.messageIndexSlice.offset = 0;
-			store.messageIndexSlice.more = more;
+			store.messageIndexSlice.more = !!more;
 
 			store.populatedItemsSlice.messages = messages.reduce(
 				(acc, message) => {
@@ -105,7 +105,7 @@ function appendMessagesToMessagesSlice(
 }
 
 export const messageIndexSliceUtils = {
-	setMessages,
+	setMessagesInEmailStore,
 	updateMessagesResultsLoadingStatus,
 	resetMessagesAndPopulatedItems,
 	appendMessagesToMessagesSlice,

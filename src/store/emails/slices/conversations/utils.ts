@@ -6,6 +6,7 @@
 
 /* eslint-disable no-param-reassign */
 import produce from 'immer';
+import { filter } from 'lodash';
 import { StoreApi, UseBoundStore } from 'zustand';
 
 import { CONVERSATION_INDEX_SLICE_INITIAL_STATE } from './conversations-index-slice';
@@ -14,7 +15,7 @@ import { API_REQUEST_STATUS } from '../../../../constants';
 import { EmailsStoreState, NormalizedConversation, SearchRequestStatus } from '../../../../types';
 import { POPULATED_ITEMS_SLICE_INITIAL_STATE } from '../populated-items/populated-items-slice';
 
-function setConversations(
+function setConversationsInEmailStore(
 	conversations: Array<NormalizedConversation>,
 	more: boolean,
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
@@ -25,7 +26,6 @@ function setConversations(
 			store.conversationIndexSlice.status = API_REQUEST_STATUS.fulfilled;
 			store.conversationIndexSlice.offset = 0;
 			store.conversationIndexSlice.more = more;
-
 			store.populatedItemsSlice.conversations = conversations.reduce(
 				(acc, conv) => {
 					acc[conv.id] = conv;
@@ -50,7 +50,10 @@ function useConversationsIdsByFolder(
 	const wantedFolder = 'rid' in folder && folder?.rid ? `${folder.zid}:${folder.rid}` : folder.id;
 
 	return conversationsIds.filter((conversationId) => {
-		const messages = populatedItemsSlice.conversations[conversationId]?.messages || [];
+		const messageIds = populatedItemsSlice.conversations[conversationId]?.messageIds || [];
+		const messages = filter(populatedItemsSlice.messages, (message) =>
+			messageIds.includes(message.id)
+		);
 		return messages.some((message) => message.parent === wantedFolder);
 	});
 }
@@ -100,7 +103,7 @@ function appendConversationsToConversationIndexSlice(
 }
 
 export const conversationIndexSliceUtils = {
-	setConversations,
+	setConversationsInEmailStore,
 	useConversationsIdsByFolder,
 	resetConversationAndPopulatedItems,
 	appendConversationsToConversationIndexSlice,
