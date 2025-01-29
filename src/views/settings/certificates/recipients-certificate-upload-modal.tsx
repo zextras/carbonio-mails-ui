@@ -16,50 +16,52 @@ const FileInput = styled.input`
 	display: none;
 `;
 
-type RecipientsCertificateUploadModalPropType = {
+type RecipientsCertificateUploadModalProps = {
 	onConfirm: (certificateContent: string | ArrayBuffer) => void;
 	onClose: () => void;
 };
+
 export const RecipientsCertificateUploadModal = ({
 	onConfirm,
 	onClose
-}: RecipientsCertificateUploadModalPropType): React.JSX.Element => {
-	const [selectedFile, setSelectedFile] = useState<File | null>();
+}: RecipientsCertificateUploadModalProps): React.JSX.Element => {
+	const [selectedFile, setSelectedFile] = useState<File | null>(null);
 	const inputRef = useRef<HTMLInputElement>(null);
-	const [t] = useTranslation();
+	const { t } = useTranslation();
 
 	const modalHeaderTitle = t('settings.uploadCertificate.uploadCertificate', 'Upload Certificate');
-	const onCertificateFileBrowse = useCallback(() => {
+
+	// Browse for file
+	const handleFileBrowse = useCallback(() => {
 		if (inputRef.current) {
 			inputRef.current.value = '';
 			inputRef.current.click();
 		}
 	}, []);
 
-	const onChange = useCallback((): void => {
-		if (inputRef?.current?.files) {
-			const file = inputRef?.current?.files[0];
-			setSelectedFile(file);
-		}
+	// Handle file selection
+	const handleFileChange = useCallback(() => {
+		const file = inputRef.current?.files?.[0] ?? null;
+		setSelectedFile(file);
 	}, []);
 
-	const onCertificateFileUpload = useCallback(async (): Promise<void> => {
-		if (selectedFile) {
-			const reader = new FileReader();
-			reader.onload = async (e: ProgressEvent<FileReader>): Promise<void> => {
-				const fileContent = e.target?.result;
-				if (fileContent !== null && fileContent !== undefined) {
-					onConfirm(fileContent);
-				} else {
-					console.error('Error file content is null');
-				}
-			};
-			reader.onerror = (): void => {
-				console.error('Failed to read the file');
-			};
-			// Read the file as text
-			reader.readAsText(selectedFile);
-		}
+	// Upload file
+	const handleFileUpload = useCallback(() => {
+		if (!selectedFile) return;
+		const reader = new FileReader();
+
+		reader.onload = (e): void => {
+			const fileContent = e.target?.result;
+			if (fileContent) {
+				onConfirm(fileContent);
+			} else {
+				console.error('Error: file content is null');
+			}
+		};
+
+		reader.onerror = (): void => console.error('Failed to read the file');
+
+		reader.readAsText(selectedFile);
 	}, [onConfirm, selectedFile]);
 
 	return (
@@ -78,9 +80,9 @@ export const RecipientsCertificateUploadModal = ({
 								'settings.uploadCertificate.smimeRecipientCertificate',
 								'S/MIME Certificate (i.e. certificate.crt)'
 							)}
-							value={selectedFile ? selectedFile.name : ''}
+							value={selectedFile?.name || ''}
 							data-testid="certificate-file-name"
-							onChange={(): null => null}
+							readOnly
 							style={{ pointerEvents: 'none' }}
 						/>
 					</Row>
@@ -90,7 +92,7 @@ export const RecipientsCertificateUploadModal = ({
 								minWidth="6rem"
 								data-testid="BtnUploadCert"
 								type="outlined"
-								onClick={onCertificateFileBrowse}
+								onClick={handleFileBrowse}
 								label={t('settings.browse', 'Browse')}
 							/>
 						</Tooltip>
@@ -100,11 +102,11 @@ export const RecipientsCertificateUploadModal = ({
 					type="file"
 					ref={inputRef}
 					data-testid="certificate-file-input"
-					onChange={onChange}
+					onChange={handleFileChange}
 					accept=".crt"
 				/>
 				<ModalFooter
-					onConfirm={onCertificateFileUpload}
+					onConfirm={handleFileUpload}
 					label={t('settings.uploadCertificate.upload', 'Upload')}
 					disabled={!selectedFile}
 				/>
