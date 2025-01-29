@@ -459,46 +459,56 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 		checkCertificateExist
 	]);
 
+	const handleSmimeSelected = useCallback((): void => {
+		if (identityEmailAddress) {
+			if (smimePassword !== '') {
+				checkCertificateExist('sign');
+			} else {
+				checkEncryptionPassword('sign');
+			}
+		}
+	}, [checkCertificateExist, checkEncryptionPassword, identityEmailAddress, smimePassword]);
+
+	const handleSmimeDeselected = useCallback((): void => {
+		setIsSmimeSign(false);
+	}, [setIsSmimeSign]);
+
+	// Combined method to handle the change
 	const onSmimeOptionChange = useCallback(
 		(isSmimeSelected: boolean): void => {
-			if (isSmimeSelected && identityEmailAddress) {
-				if (smimePassword !== '') {
-					checkCertificateExist('sign');
-				} else {
-					checkEncryptionPassword('sign');
-				}
+			if (isSmimeSelected) {
+				handleSmimeSelected();
 			} else {
-				setIsSmimeSign(false);
+				handleSmimeDeselected();
 			}
 		},
-		[
-			checkCertificateExist,
-			checkEncryptionPassword,
-			identityEmailAddress,
-			setIsSmimeSign,
-			smimePassword
-		]
+		[handleSmimeSelected, handleSmimeDeselected]
 	);
 
+	const handleEncryptSelected = useCallback((): void => {
+		if (identityEmailAddress) {
+			if (smimePassword !== '') {
+				checkCertificateExist('encrypt');
+			} else {
+				checkEncryptionPassword('encrypt');
+			}
+		}
+	}, [checkCertificateExist, checkEncryptionPassword, identityEmailAddress, smimePassword]);
+
+	const handleEncryptDeselected = useCallback((): void => {
+		setIsSmimeEncrypt(false);
+	}, [setIsSmimeEncrypt]);
+
+	// Combined method to handle the change
 	const onSmimeEncryptOptionChange = useCallback(
 		(isEncryptSelected: boolean): void => {
-			if (isEncryptSelected && identityEmailAddress) {
-				if (smimePassword !== '') {
-					checkCertificateExist('encrypt');
-				} else {
-					checkEncryptionPassword('encrypt');
-				}
+			if (isEncryptSelected) {
+				handleEncryptSelected();
 			} else {
-				setIsSmimeEncrypt(false);
+				handleEncryptDeselected();
 			}
 		},
-		[
-			checkCertificateExist,
-			checkEncryptionPassword,
-			identityEmailAddress,
-			setIsSmimeEncrypt,
-			smimePassword
-		]
+		[handleEncryptSelected, handleEncryptDeselected]
 	);
 
 	const onSendLaterClick = useCallback(
