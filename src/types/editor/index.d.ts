@@ -173,8 +173,6 @@ export type MailsEditorV2 = {
 	signatureId?: string;
 	// the size of the draft
 	size: number;
-	// the sum of the size of the attachments requiring smart link conversion
-	totalSmartLinksSize: number;
 	// flag for the S/MIME request
 	isSmimeSign?: boolean;
 };

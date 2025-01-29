@@ -91,8 +91,7 @@ export const generateNewMessageEditor = (): MailsEditorV2 => {
 		requestReadReceipt: false,
 		signatureId: defaultIdentity.defaultSignatureId,
 
-		size: 0,
-		totalSmartLinksSize: 0
+		size: 0
 	};
 
 	editor.draftSaveAllowedStatus = computeDraftSaveAllowedStatus(editor);
@@ -189,7 +188,6 @@ export const generateIntegratedNewEditor = (compositionData?: EditorPrefillData)
 		text: textWithSignature,
 		requestReadReceipt: false,
 		size: 0,
-		totalSmartLinksSize: 0,
 		signatureId: defaultIdentity.defaultSignatureId
 	};
 
@@ -259,7 +257,6 @@ const generateReplyAndReplyAllMsgEditor = (
 		originalId: originalMessage.id,
 		originalMessage,
 		size: originalMessage.size,
-		totalSmartLinksSize: 0,
 		signatureId
 	};
 
@@ -322,7 +319,6 @@ export const generateForwardMsgEditor = (originalMessage: MailMessage): MailsEdi
 		originalId: originalMessage.id,
 		originalMessage,
 		size: originalMessage.size,
-		totalSmartLinksSize: 0,
 		signatureId
 	};
 
@@ -376,7 +372,6 @@ export const generateForwardAsAttachmentMsgEditor = (
 		originalId: originalMessage.id,
 		originalMessage,
 		size: originalMessage.size,
-		totalSmartLinksSize: 0,
 		signatureId
 	};
 
@@ -420,8 +415,7 @@ export const generateEditAsDraftEditor = (originalMessage: MailMessage): MailsEd
 		text,
 		requestReadReceipt: false,
 		did: originalMessage.id,
-		size: originalMessage.size,
-		totalSmartLinksSize: 0
+		size: originalMessage.size
 	};
 
 	editor.draftSaveAllowedStatus = computeDraftSaveAllowedStatus(editor);
@@ -463,8 +457,7 @@ export const generateEditAsNewEditor = (originalMessage: MailMessage): MailsEdit
 		requestReadReceipt: false,
 		originalId: originalMessage.id,
 		originalMessage,
-		size: originalMessage.size,
-		totalSmartLinksSize: 0
+		size: originalMessage.size
 	};
 
 	editor.draftSaveAllowedStatus = computeDraftSaveAllowedStatus(editor);
