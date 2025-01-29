@@ -3,6 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+/* eslint-disable testing-library/prefer-user-event */
 import React from 'react';
 
 import { act, fireEvent, screen, waitFor } from '@testing-library/react';
@@ -508,9 +509,8 @@ describe('conversation-list-item component', () => {
 				expect(await screen.findByTestId(/hover-container-/)).toBeInTheDocument();
 			});
 
-			await act(async () => {
-				user.click(hoverContainer);
-			});
+			fireEvent.click(hoverContainer);
+
 			await waitFor(async () => {
 				expect(spyPushHistory).toHaveBeenCalled();
 			});
@@ -594,9 +594,8 @@ describe('conversation-list-item component', () => {
 				expect(await screen.findByTestId(/hover-container-/)).toBeInTheDocument();
 			});
 
-			await act(async () => {
-				user.click(hoverContainer);
-			});
+			fireEvent.click(hoverContainer);
+
 			await waitFor(async () => {
 				expect(spyPushHistory).toHaveBeenCalled();
 			});
