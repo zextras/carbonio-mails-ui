@@ -476,11 +476,7 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 	// Combined method to handle the change
 	const onSmimeOptionChange = useCallback(
 		(isSmimeSelected: boolean): void => {
-			if (isSmimeSelected) {
-				handleSmimeSelected();
-			} else {
-				handleSmimeDeselected();
-			}
+			isSmimeSelected ? handleSmimeSelected() : handleSmimeDeselected();
 		},
 		[handleSmimeSelected, handleSmimeDeselected]
 	);
@@ -502,11 +498,7 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 	// Combined method to handle the change
 	const onSmimeEncryptOptionChange = useCallback(
 		(isEncryptSelected: boolean): void => {
-			if (isEncryptSelected) {
-				handleEncryptSelected();
-			} else {
-				handleEncryptDeselected();
-			}
+			isEncryptSelected ? handleEncryptSelected() : handleEncryptDeselected();
 		},
 		[handleEncryptSelected, handleEncryptDeselected]
 	);
