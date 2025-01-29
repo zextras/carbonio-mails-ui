@@ -34,7 +34,7 @@ import {
 	useConversationStatus
 } from '../../../../store/emails/store';
 import type { TextReadValuesProps } from '../../../../types';
-import { ConversationListItemActionWrapper } from '../../../app/folder-panel/conversations/conversation-list-item';
+import { ConversationListItemActionWrapper } from '../../../app/folder-panel/conversations/conversation-list-item-wrapper';
 import { ItemAvatar } from '../../../app/folder-panel/parts/item-avatar';
 import { RowInfo } from '../../../app/folder-panel/parts/row-info';
 import { ParticipantsName } from '../../../app/folder-panel/parts/sender-name';
