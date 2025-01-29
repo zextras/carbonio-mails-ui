@@ -487,14 +487,6 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 		setIsSmimeEncrypt(false);
 	}, [setIsSmimeEncrypt]);
 
-	// Combined method to handle the change
-	const onSmimeEncryptOptionChange = useCallback(
-		(isEncryptSelected: boolean): void => {
-			isEncryptSelected ? handleEncryptSelected() : handleEncryptDeselected();
-		},
-		[handleEncryptSelected, handleEncryptDeselected]
-	);
-
 	const onSendLaterClick = useCallback(
 		(scheduledTime: number): void => {
 			const onConfirmCallback = async (): Promise<void> => {
@@ -566,7 +558,9 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 							onSmimeOptionChange={(isSmimeSelected: boolean): void =>
 								isSmimeSelected ? handleSmimeSelected() : handleSmimeDeselected()
 							}
-							onSmimeEncryptOptionChange={onSmimeEncryptOptionChange}
+							onSmimeEncryptOptionChange={(isEncryptSelected: boolean): void =>
+								isEncryptSelected ? handleEncryptSelected() : handleEncryptDeselected()
+							}
 						/>
 						<Tooltip
 							label={saveDraftAllowedStatus?.reason}
