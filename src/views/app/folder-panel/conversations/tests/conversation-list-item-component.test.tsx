@@ -3,20 +3,29 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React from 'react';
+import React, { act } from 'react';
 
-import { act, fireEvent, screen, waitFor } from '@testing-library/react';
+import { fireEvent, screen, waitFor } from '@testing-library/react';
+import * as hooks from '@zextras/carbonio-shell-ui';
 import { noop } from 'lodash';
 
 import { FOLDERS } from '../../../../../carbonio-ui-commons/constants/folders';
 import { ParticipantRole } from '../../../../../carbonio-ui-commons/constants/participants';
+import { createSoapAPIInterceptor } from '../../../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
 import { FOLDERS_DESCRIPTORS } from '../../../../../constants';
+import { useMsgPreviewOnSeparatedWindowFn } from '../../../../../hooks/actions/use-msg-preview-on-separated-window';
 import { setConversationsInEmailStore } from '../../../../../store/emails/store';
 import { ASSERTIONS } from '../../../../../tests/constants';
 import { populateConversationInEmailStore } from '../../../../../tests/generators/generateConversation';
-import type { ConversationListItemProps } from '../../../../../types';
+import type { ConvActionRequest, ConversationListItemProps } from '../../../../../types';
 import { ConversationListItem } from '../conversation-list-item';
+
+const canExecuteCallback = jest.fn();
+jest.mock('../../../../../hooks/actions/use-msg-preview-on-separated-window', () => ({
+	...jest.requireActual('../../../../../hooks/actions/use-msg-preview-on-separated-window'),
+	useMsgPreviewOnSeparatedWindowFn: jest.fn()
+}));
 
 describe.each`
 	type                          | isSearchModule
@@ -49,7 +58,6 @@ describe.each`
 
 			setupTest(<ConversationListItem {...props} />);
 			const badge = await screen.findByTestId(`conversation-messages-count-${conversation.id}`);
-
 			await act(async () => {
 				expect(badge).toBeVisible();
 			});
@@ -452,5 +460,90 @@ describe.each`
 
 		const menu = await screen.findByTestId('dropdown-popper-list');
 		expect(menu).toBeVisible();
+	});
+	it('should call the onClick handler when the message is clicked', async () => {
+		createSoapAPIInterceptor<ConvActionRequest>('ConvAction');
+
+		const { conversation } = await waitFor(() => populateConversationInEmailStore({}));
+
+		const props: ConversationListItemProps = {
+			conversation,
+			selected: false,
+			selecting: false,
+			toggle: noop,
+			isConvChildren: false,
+			activeItemId: '',
+			deselectAll: noop,
+			isSearchModule,
+			folderId: FOLDERS.INBOX
+		};
+
+		const { user } = await waitFor(() => setupTest(<ConversationListItem {...props} />));
+
+		const spyPushHistory = jest.spyOn(hooks, 'pushHistory');
+
+		const actionWrapper = await waitFor(() =>
+			screen.findByTestId(`ConversationListItem-${props.conversation.id}`)
+		);
+
+		await act(async () => {
+			user.hover(actionWrapper);
+		});
+
+		const hoverContainer = await waitFor(() => screen.findByTestId(/hover-container-/));
+		await act(async () => {
+			expect(await screen.findByTestId(/hover-container-/)).toBeInTheDocument();
+		});
+
+		await act(async () => {
+			user.click(hoverContainer);
+		});
+		await waitFor(async () => {
+			expect(spyPushHistory).toHaveBeenCalled();
+		});
+	});
+
+	it('should call the doubleClick handler when the message is doubleClicked', async () => {
+		(useMsgPreviewOnSeparatedWindowFn as jest.Mock).mockReturnValue({
+			canExecute: canExecuteCallback,
+			execute: jest.fn()
+		});
+		createSoapAPIInterceptor<ConvActionRequest>('ConvAction');
+		const { conversation } = await waitFor(() => populateConversationInEmailStore({}));
+
+		const props: ConversationListItemProps = {
+			conversation,
+			selected: false,
+			selecting: false,
+			toggle: noop,
+			isConvChildren: false,
+			activeItemId: '',
+			deselectAll: noop,
+			isSearchModule,
+			folderId: FOLDERS.INBOX
+		};
+
+		const { user } = setupTest(<ConversationListItem {...props} />);
+
+		const actionWrapper = await screen.findByTestId(
+			`ConversationListItem-${props.conversation.id}`
+		);
+
+		await act(async () => {
+			user.hover(actionWrapper);
+		});
+
+		const hoverContainer = screen.getByTestId(/hover-container-/);
+		await waitFor(() => {
+			expect(screen.getByTestId(/hover-container-/)).toBeInTheDocument();
+		});
+
+		await act(async () => {
+			user.dblClick(hoverContainer);
+		});
+
+		await waitFor(async () => {
+			expect(canExecuteCallback).toHaveBeenCalled();
+		});
 	});
 });
