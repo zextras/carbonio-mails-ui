@@ -16,7 +16,7 @@ import {
 	Text,
 	Tooltip
 } from '@zextras/carbonio-design-system';
-import { pushHistory, t, useUserAccounts, useUserSettings } from '@zextras/carbonio-shell-ui';
+import { pushHistory, t, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { filter, forEach, includes, isEmpty, reduce, uniqBy } from 'lodash';
 import styled from 'styled-components';
 
@@ -33,11 +33,11 @@ import {
 	useConversationMessages,
 	useConversationStatus
 } from '../../../../store/emails/store';
-import type { Conversation, TextReadValuesProps } from '../../../../types';
-import { ConversationListItemActionWrapper } from '../../../app/folder-panel/conversations/conversation-list-item';
+import type { TextReadValuesProps } from '../../../../types';
+import { ConversationListItemActionWrapper } from '../../../app/folder-panel/conversations/conversation-list-item-wrapper';
 import { ItemAvatar } from '../../../app/folder-panel/parts/item-avatar';
 import { RowInfo } from '../../../app/folder-panel/parts/row-info';
-import { SenderName } from '../../../app/folder-panel/parts/sender-name';
+import { ParticipantsName } from '../../../app/folder-panel/parts/sender-name';
 import { SearchConversationExtraWindowPanelContainer } from '../../extra-window/conversations/search-conversation-extra-window-panel';
 
 const CollapseElement = styled(Container)<{ $open: boolean }>`
@@ -64,11 +64,10 @@ export const SearchConversationListItem: FC<SearchConversationListItemProps> = (
 }) => {
 	const conversation = useConversationById(conversationId);
 	const [open, setOpen] = useState(false);
-	const accounts = useUserAccounts();
 	const messages = useConversationMessages(conversationId);
 	const conversationStatus = useConversationStatus(conversationId);
 	const tagsFromStore = useTags();
-	const { id, isDraft, parent } = conversation.messages[0];
+	const { id, isDraft, parent } = messages[0];
 
 	const tags = useMemo(
 		() =>
@@ -198,17 +197,17 @@ export const SearchConversationListItem: FC<SearchConversationListItemProps> = (
 	const renderBadge = useMemo(() => {
 		if (conversation.messagesInConversation === 1) return textReadValues.badge === 'unread';
 		if (conversation.messagesInConversation > 0) return true;
-		if (conversation?.messages?.length === 1) {
+		if (conversation?.messageIds?.length === 1) {
 			return textReadValues.badge === 'unread';
 		}
-		return conversation?.messages?.length > 0;
-	}, [conversation?.messages?.length, conversation.messagesInConversation, textReadValues.badge]);
+		return conversation?.messageIds?.length > 0;
+	}, [conversation?.messageIds?.length, conversation.messagesInConversation, textReadValues.badge]);
 
-	const avatarFolderId = conversation.messages.length === 1 ? conversation.messages[0].parent : '';
+	const avatarFolderId = conversation.messageIds.length === 1 ? messages[0].parent : '';
 	return (
 		<Container mainAlignment="flex-start" data-testid={`ConversationListItem-${conversationId}`}>
 			<ConversationListItemActionWrapper
-				conversation={conversation as Conversation}
+				conversation={conversation}
 				active={active}
 				onClick={_onClick}
 				onDoubleClick={_onDoubleClick}
@@ -234,8 +233,8 @@ export const SearchConversationListItem: FC<SearchConversationListItemProps> = (
 					padding={{ left: 'small', top: 'small', bottom: 'small', right: 'large' }}
 				>
 					<Container orientation="horizontal" height="fit" width="fill">
-						<SenderName item={conversation as Conversation} textValues={textReadValues} />
-						<RowInfo item={conversation as Conversation} tags={tags} />
+						<ParticipantsName item={conversation} textValues={textReadValues} />
+						<RowInfo item={conversation} tags={tags} />
 					</Container>
 					<Container orientation="horizontal" height="fit" width="fill" crossAlignment="center">
 						{renderBadge && (

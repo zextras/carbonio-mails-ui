@@ -98,7 +98,7 @@ const MailPreview: FC<MailPreviewProps> = ({
 			>
 				{isMailPreviewOpen && (
 					<MailPreviewContent
-						messageId={message.id}
+						message={message}
 						isMailPreviewOpen={isMailPreviewOpen}
 						openEmlPreview={openEmlPreview}
 						isExternalMessage={isExternalMessage}

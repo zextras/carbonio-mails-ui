@@ -31,11 +31,11 @@ export const SearchConversationExtraWindowPanelContainer: FC<
 	const isExpanded = useCallback(
 		(index: number): boolean => {
 			if (convSortOrder === 'dateAsc') {
-				return index === conversation.messages.length - 1;
+				return index === conversation.messageIds.length - 1;
 			}
 			return index === 0;
 		},
-		[convSortOrder, conversation.messages.length]
+		[convSortOrder, conversation.messageIds.length]
 	);
 
 	return (
@@ -58,12 +58,12 @@ export const SearchConversationExtraWindowPanelContainer: FC<
 					<Container height="fit" mainAlignment="flex-start" background={'gray5'}>
 						{conversation && conversationStatus === API_REQUEST_STATUS.fulfilled ? (
 							<>
-								{map(conversation.messages, (convMessage, index) => (
+								{map(conversation.messageIds, (convMessageId, index) => (
 									<ConversationMessagePreviewWrapper
-										key={convMessage.id}
-										convMessageId={convMessage.id}
+										key={convMessageId}
+										convMessageId={convMessageId}
 										isExpanded={isExpanded(index)}
-										isAlone={conversation.messages?.length === 1}
+										isAlone={conversation.messageIds?.length === 1}
 										isInsideExtraWindow={isInsideExtraWindow}
 									/>
 								))}

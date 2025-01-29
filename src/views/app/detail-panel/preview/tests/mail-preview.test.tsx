@@ -8,9 +8,9 @@ import React from 'react';
 
 import { screen } from '@testing-library/react';
 
+import { getMsgSoapApi } from '../../../../../api/get-msg-soap-api';
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
-import { setMessagesInEmailStore } from '../../../../../store/emails/store';
-import { generateMessage } from '../../../../../tests/generators/generateMessage';
+import { normalizeMailMessageFromSoap } from '../../../../../normalizations/normalize-message';
 import MailPreview, { MailPreviewProps } from '../mail-preview';
 
 /**
@@ -18,10 +18,11 @@ import MailPreview, { MailPreviewProps } from '../mail-preview';
  */
 // See: tests/mocks/network/msw/cases/getMsg/getMsg-${id} for relative msgId
 describe('Mail preview', () => {
-	it('10 - 3 inline images', async () => {
-		const msgId = '10';
-		const message = generateMessage({ id: msgId });
-		setMessagesInEmailStore([message], false);
+	const shadowDomWrapperTestId = 'shadow-dom-wrapper';
+
+	it('msg 10 - 3 inline images', async () => {
+		const getMsgResponse = await getMsgSoapApi({ msgId: '10' });
+		const message = normalizeMailMessageFromSoap(getMsgResponse?.m[0], true);
 
 		const props: MailPreviewProps = {
 			message,
@@ -31,26 +32,22 @@ describe('Mail preview', () => {
 			messagePreviewFactory: () => <></>
 		};
 
-		// Render the component
 		setupTest(<MailPreview {...props} />);
 
-		const { shadowRoot }: HTMLDivElement = await screen.findByTestId('shadow-dom-wrapper');
-
-		const content = shadowRoot?.innerHTML.toString();
+		const shadowRoot = (await screen.findByTestId(shadowDomWrapperTestId)).shadowRoot as ShadowRoot;
+		const content = shadowRoot.innerHTML;
 
 		// test if msg10 has 3 inline attachments
 		expect(content).toContain('img src="/service/home/');
-		expect(content).toContain('pnsrc="cid:b8c321cd-0b7b-4a18-8b86-da38b937b6eb');
+		expect(content).toContain('pnsrc="cid:2dbe26b8-2c96-40a0-94c5-ad891bac1f9a@zimbra');
 		expect(content).toContain('pnsrc="cid:65766eee-4439-438c-a375-1ac111ed1a07');
 		expect(content).toContain('pnsrc="cid:2dbe26b8-2c96-40a0-94c5-ad891bac1f9a');
 	});
 
-	it('11 - table with a link', async () => {
-		const msgId = '11';
-		const message = generateMessage({ id: msgId });
-		setMessagesInEmailStore([message], false);
+	it('msg 11 - table with a link', async () => {
+		const getMsgResponse = await getMsgSoapApi({ msgId: '11' });
+		const message = normalizeMailMessageFromSoap(getMsgResponse?.m[0], true);
 
-		// Invoke the fetch of the message and the store update
 		const props: MailPreviewProps = {
 			message,
 			expanded: true,
@@ -61,16 +58,16 @@ describe('Mail preview', () => {
 
 		// Render the component
 		setupTest(<MailPreview {...props} />);
-		const { shadowRoot }: HTMLDivElement = await screen.findByTestId('shadow-dom-wrapper');
+		const { shadowRoot }: HTMLDivElement = await screen.findByTestId(shadowDomWrapperTestId);
 		const content = shadowRoot?.innerHTML.toString();
 
 		expect(content).toContain('table');
 	});
 
-	it('12 - table with width greater than the previewer width', async () => {
-		const msgId = '12';
-		const message = generateMessage({ id: msgId });
-		setMessagesInEmailStore([message], false);
+	it('msg 12 - table with width greater than the previewer width', async () => {
+		const getMsgResponse = await getMsgSoapApi({ msgId: '12' });
+		const message = normalizeMailMessageFromSoap(getMsgResponse?.m[0], true);
+
 		const props: MailPreviewProps = {
 			message,
 			expanded: true,
@@ -81,7 +78,7 @@ describe('Mail preview', () => {
 
 		// Render the component
 		setupTest(<MailPreview {...props} />);
-		const { shadowRoot }: HTMLDivElement = await screen.findByTestId('shadow-dom-wrapper');
+		const { shadowRoot }: HTMLDivElement = await screen.findByTestId(shadowDomWrapperTestId);
 		const content = shadowRoot?.innerHTML.toString();
 
 		expect(content).toContain('table');

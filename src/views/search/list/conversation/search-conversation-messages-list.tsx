@@ -54,9 +54,9 @@ export const SearchConversationMessagesList = memo(function SearchConversationMe
 						background={'transparent'}
 					>
 						{(visible: boolean): React.JSX.Element =>
-							visible ? (
+							visible && message ? (
 								<MessageListItem
-									item={message}
+									message={message}
 									selected={isSelected}
 									selecting={isSelectModeOn}
 									visible={visible}

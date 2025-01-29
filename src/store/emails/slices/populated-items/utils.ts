@@ -7,13 +7,14 @@
 
 import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 import produce from 'immer';
-import { assign, filter, forEach, includes, merge } from 'lodash';
+import { assign, filter, forEach, keyBy, merge } from 'lodash';
 import { UseBoundStore, StoreApi } from 'zustand';
 
 import { RemoveAttachmentsResponse } from '../../../../api/delete-all-attachments-soap-api';
 import { FOLDERS } from '../../../../carbonio-ui-commons/constants/folders';
 import { useFolder } from '../../../../carbonio-ui-commons/store/zustand/folder';
 import { CONVACTIONS } from '../../../../commons/utilities';
+import { API_REQUEST_STATUS } from '../../../../constants';
 import { normalizeMailMessageFromSoap } from '../../../../normalizations/normalize-message';
 import {
 	MailMessage,
@@ -30,14 +31,33 @@ function useConversationMessages(
 	conversationId: string,
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
 ): Array<MailMessage | IncompleteMessage> {
-	const messages: Array<MailMessage | IncompleteMessage> = [];
-	useEmailsStore(({ populatedItemsSlice }: EmailsStoreState) =>
-		populatedItemsSlice.conversations[conversationId].messages.forEach((message) => {
-			if (populatedItemsSlice.messages[message.id])
-				messages.push(populatedItemsSlice.messages[message.id]);
-		})
-	);
-	return messages;
+	return useEmailsStore(({ populatedItemsSlice }) => {
+		const conversation = populatedItemsSlice.conversations[conversationId];
+
+		if (!conversation?.messageIds) {
+			return [];
+		}
+
+		return conversation.messageIds
+			.map((messageId) => populatedItemsSlice.messages[messageId])
+			.filter(Boolean);
+	});
+}
+
+function getConversationMessages(
+	conversationId: string,
+	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
+): Array<MailMessage | IncompleteMessage> {
+	const { populatedItemsSlice } = useEmailsStore.getState();
+	const conversation = populatedItemsSlice.conversations[conversationId];
+
+	if (!conversation?.messageIds) {
+		return [];
+	}
+
+	return conversation.messageIds
+		.map((messageId) => populatedItemsSlice.messages[messageId])
+		.filter(Boolean);
 }
 
 function updateConversations(
@@ -73,6 +93,11 @@ function updateMessages(
 					...assign(existingMessage, message),
 					participants: message.participants
 				};
+
+				// Update the status if the message is complete
+				if (populatedItemsSlice.messages[message.id].isComplete) {
+					populatedItemsSlice.messagesStatus[message.id] = API_REQUEST_STATUS.fulfilled;
+				}
 			});
 		})
 	);
@@ -106,11 +131,10 @@ function useMessagesByIds(
 	ids: Array<string>,
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
 ): Array<IncompleteMessage | MailMessage> {
-	return useEmailsStore(({ populatedItemsSlice }: EmailsStoreState) =>
-		ids
-			.map((id) => populatedItemsSlice.messages[id])
-			.filter((message): message is IncompleteMessage | MailMessage => !!message)
-	);
+	return useEmailsStore(({ populatedItemsSlice }: EmailsStoreState) => {
+		const messagesById = keyBy(populatedItemsSlice.messages, 'id');
+		return ids.map((id) => messagesById[id]).filter(Boolean);
+	});
 }
 
 function useMessagesByFolder(
@@ -128,25 +152,25 @@ function useMessagesByFolder(
 	const wantedMessageIds = messageListIndex.filter(
 		(messageId) => populatedItemsSlice.messages[messageId]?.parent === wantedFolder
 	);
-	return wantedMessageIds
-		.map((id) => populatedItemsSlice.messages[id])
-		.filter((message): message is IncompleteMessage | MailMessage => !!message);
+
+	return wantedMessageIds.map((id) => populatedItemsSlice.messages[id]).filter(Boolean);
 }
 
 function useConversationsByIds(
 	ids: Array<string>,
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
 ): Array<NormalizedConversation> {
-	return useEmailsStore(({ populatedItemsSlice }: EmailsStoreState) =>
-		filter(populatedItemsSlice.conversations, (conversation) => includes(ids, conversation.id))
-	);
+	return useEmailsStore(({ populatedItemsSlice }: EmailsStoreState) => {
+		const conversationsById = keyBy(populatedItemsSlice.conversations, 'id');
+		return ids.map((id) => conversationsById[id]).filter(Boolean);
+	});
 }
 
 export function deleteMessagesFromConversation(ids: Array<string>, state: EmailsStoreState): void {
 	forEach(state.populatedItemsSlice.conversations, (conversation) => {
-		state.populatedItemsSlice.conversations[conversation.id].messages = filter(
-			conversation.messages,
-			(message) => !ids.includes(message.id)
+		state.populatedItemsSlice.conversations[conversation.id].messageIds = filter(
+			conversation.messageIds,
+			(messageId) => !ids.includes(messageId)
 		);
 	});
 }
@@ -287,6 +311,7 @@ export const populatedItemsSliceUtils = {
 	updateConversationStatus,
 	updateMessages,
 	useConversationMessages,
+	getConversationMessages,
 	useMessagesByIds,
 	useConversationsByIds,
 	deleteMessagesFromConversation,

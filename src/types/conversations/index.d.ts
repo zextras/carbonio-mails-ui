@@ -14,28 +14,10 @@ export type ConvMessage = {
 	isDraft?: boolean;
 };
 
-export type Conversation = {
-	readonly id: string;
-	date: number;
-	messages: Array<ConvMessage>;
-	participants: Participant[];
-	subject: string;
-	fragment: string;
-	read: boolean;
-	hasAttachment: boolean;
-	flagged: boolean;
-	urgent: boolean;
-	tags: string[];
-	parent: string;
-	messagesInConversation: number;
-	sortIndex: number;
-};
-
-// A Conversation has no parent/folder. Only the messages in it have it.
 export type NormalizedConversation = {
 	readonly id: string;
 	date: number;
-	messages: Array<ConvMessage>;
+	messageIds: Array<string>;
 	participants: Participant[];
 	subject: string;
 	fragment: string;

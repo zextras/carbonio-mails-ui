@@ -11,19 +11,20 @@ import { useLocation } from 'react-router-dom';
 
 import { createSmartLinksSoapApi } from '../api/create-smart-links-soap-api';
 import { useEditorsStore } from '../store/editor/store';
+import { getConversationMessages } from '../store/emails/store';
 import type {
 	CreateSmartLinksResponse,
 	SmartLinkUrl,
-	Conversation,
 	MailMessage,
 	MailsEditorV2,
-	MessageAction
+	MessageAction,
+	NormalizedConversation
 } from '../types';
 
 type GetFolderParentIdProps = {
 	folderId: string;
 	isConversation: boolean;
-	items: Array<Partial<MailMessage> & Pick<MailMessage, 'id'>> | Array<Conversation>;
+	items: Array<Partial<MailMessage> & Pick<MailMessage, 'id'>> | Array<NormalizedConversation>;
 };
 
 // FIXME the function name and the parameters are misleading
@@ -36,7 +37,10 @@ export function getFolderParentId({
 	items
 }: GetFolderParentIdProps): string {
 	if (folderId) return folderId;
-	if (isConversation) return (items as Conversation[])?.[0]?.messages?.[0]?.parent;
+	if (isConversation) {
+		const messages = getConversationMessages(items[0].id);
+		return messages?.[0]?.parent;
+	}
 	return (items as MailMessage[])?.[0]?.parent;
 }
 

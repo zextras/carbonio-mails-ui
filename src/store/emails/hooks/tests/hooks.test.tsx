@@ -4,12 +4,15 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+/* eslint-disable sonarjs/no-duplicate-string */
+/* eslint-disable no-param-reassign */
+
 import { act, renderHook, waitFor } from '@testing-library/react';
-import { cloneDeep, map, reduce } from 'lodash';
+import { cloneDeep, map } from 'lodash';
 
 import * as getMsg from '../../../../api/get-msg-soap-api';
 import { createSoapAPIInterceptor } from '../../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
-import { API_REQUEST_STATUS } from '../../../../constants';
+import { API_REQUEST_STATUS, DEFAULT_API_DEBOUNCE_TIME } from '../../../../constants';
 import {
 	generateCompleteMessageFromAPI,
 	generateConvMessageFromAPI
@@ -21,8 +24,8 @@ import {
 	EmailsStoreState,
 	GetMsgRequest,
 	GetMsgResponse,
+	MailMessage,
 	NormalizedConversation,
-	PopulatedItemsSliceState,
 	SearchConvRequest,
 	SearchConvResponse
 } from '../../../../types';
@@ -41,12 +44,19 @@ import {
 } from '../../store';
 import { useCompleteConversationOrFetch, useCompleteMessageOrFetch } from '../hooks';
 
+function awaitDebounce(): void {
+	act(() => {
+		jest.advanceTimersByTime(DEFAULT_API_DEBOUNCE_TIME);
+	});
+}
+
 describe('Searches store hooks', () => {
 	describe('useCompleteConversation', () => {
 		it('should retrieve the conversation if no data available', async () => {
+			const message = generateMessage({ id: '1', subject: 'Test Message 1' });
 			const conversation = generateConversation({
 				id: '123',
-				messages: [generateMessage({ id: '1', subject: 'Test Message 1' })],
+				messageIds: [message.id],
 				subject: 'Test Conversation'
 			});
 			setSearchResultsByConversation([conversation], false);
@@ -68,9 +78,10 @@ describe('Searches store hooks', () => {
 		});
 
 		it('should update conversation status if conversation status is undefined', async () => {
+			const message = generateMessage({ id: '1', subject: 'Test Message 1' });
 			const conversation = generateConversation({
 				id: '123',
-				messages: [generateMessage({ id: '1', subject: 'Test Message 1' })],
+				messageIds: [message.id],
 				subject: 'Test Conversation'
 			});
 			setSearchResultsByConversation([conversation], false);
@@ -91,9 +102,10 @@ describe('Searches store hooks', () => {
 		});
 
 		it('should not update conversation status if conversation status is already defined', async () => {
+			const message = generateMessage({ id: '1', subject: 'Test Message 1' });
 			const conversation = generateConversation({
 				id: '123',
-				messages: [generateMessage({ id: '1', subject: 'Test Message 1' })],
+				messageIds: [message.id],
 				subject: 'Test Conversation'
 			});
 			setSearchResultsByConversation([conversation], false);
@@ -118,7 +130,7 @@ describe('Searches store hooks', () => {
 	});
 
 	describe('useCompleteMessageOrFetch', () => {
-		it('should make GetMsgRequest if message is not in the store', async () => {
+		it('should fetch if message is not in the store', async () => {
 			const response: GetMsgResponse = {
 				m: [generateCompleteMessageFromAPI({ id: '1' })]
 			};
@@ -129,6 +141,10 @@ describe('Searches store hooks', () => {
 			);
 
 			renderHook(() => useCompleteMessageOrFetch('1'));
+
+			act(() => {
+				jest.advanceTimersByTime(DEFAULT_API_DEBOUNCE_TIME);
+			});
 
 			const getMsgRequest = await interceptor;
 
@@ -143,28 +159,62 @@ describe('Searches store hooks', () => {
 			const getMsgSpy = jest.spyOn(getMsg, 'getMsgSoapApi');
 			renderHook(() => useCompleteMessageOrFetch('1'));
 
+			awaitDebounce();
+
 			await act(async () => {
 				expect(getMsgSpy).toHaveBeenCalled();
 			});
 		});
 
-		it('should not fetch if the message is complete', async () => {
+		it('should not fetch if the message is complete and messageStatus is fulfilled', async () => {
 			const message = generateMessage({ id: '1' });
-			setMessagesInEmailStore([{ ...message, isComplete: true }], false);
-			const getMsgSpy = jest.spyOn(getMsg, 'getMsgSoapApi');
-			renderHook(() => useCompleteMessageOrFetch('1'));
+			await act(async () => {
+				setMessagesInEmailStore([{ ...message, isComplete: true }], false);
+			});
 
 			await act(async () => {
-				expect(getMsgSpy).not.toHaveBeenCalled();
+				updateMessageStatus(message.id, API_REQUEST_STATUS.fulfilled);
+			});
+			const getMsgSpy = jest.spyOn(getMsg, 'getMsgSoapApi');
+			// eslint-disable-next-line testing-library/no-unnecessary-act
+			await act(async () => {
+				renderHook(() => useCompleteMessageOrFetch(message.id));
+			});
+
+			expect(getMsgSpy).not.toHaveBeenCalled();
+		});
+
+		it('should fetch if the messageStatus is undefined', async () => {
+			const message = generateMessage({ id: '1' });
+			await act(async () => {
+				setMessagesInEmailStore([{ ...message, isComplete: true }], false);
+			});
+
+			await act(async () => {
+				updateMessageStatus(message.id, undefined as never);
+			});
+			const getMsgSpy = jest.spyOn(getMsg, 'getMsgSoapApi');
+
+			// eslint-disable-next-line testing-library/no-unnecessary-act
+			await act(async () => {
+				renderHook(() => useCompleteMessageOrFetch(message.id));
+			});
+
+			awaitDebounce();
+
+			await waitFor(async () => {
+				expect(getMsgSpy).toHaveBeenCalledTimes(1);
 			});
 		});
 
-		it('should fetch if the message is incomplete and status is not fulfilled or pending', async () => {
+		it('should fetch if the message is incomplete and status is error', async () => {
 			const message = generateMessage({ id: '1' });
 			setMessagesInEmailStore([{ ...message, isComplete: false }], false);
 			updateMessageStatus('1', API_REQUEST_STATUS.error);
 			const getMsgSpy = jest.spyOn(getMsg, 'getMsgSoapApi');
 			renderHook(() => useCompleteMessageOrFetch('1'));
+
+			awaitDebounce();
 
 			await act(async () => {
 				expect(getMsgSpy).toHaveBeenCalled();
@@ -193,11 +243,19 @@ describe('Searches store hooks', () => {
 				initialProps: { id: '1' }
 			});
 
+			awaitDebounce();
+
 			await act(async () => {
-				expect(getMsgSpy).toHaveBeenCalled();
+				expect(getMsgSpy).toHaveBeenCalledTimes(1);
 			});
 
-			rerender({ id: '2' });
+			await waitFor(async () => {
+				// eslint-disable-next-line testing-library/no-wait-for-side-effects
+				rerender({ id: '2' });
+			});
+
+			awaitDebounce();
+
 			await act(async () => {
 				expect(getMsgSpy).toHaveBeenCalledTimes(2);
 			});
@@ -209,93 +267,109 @@ describe('Searches store hooks', () => {
 				subject: 'Test Message'
 			});
 			setSearchResultsByMessage([message], false);
+			await act(async () => {
+				updateMessageStatus(message.id, undefined as never);
+			});
+
 			const response: GetMsgResponse = {
-				m: [generateCompleteMessageFromAPI({ id: '10' })]
+				m: [generateCompleteMessageFromAPI({ id: message.id })]
 			};
+
 			createSoapAPIInterceptor<GetMsgRequest, GetMsgResponse>('GetMsg', response);
 
-			const { result } = renderHook(() => useMessageStatus('1'));
-			renderHook(() => useCompleteMessageOrFetch('1'));
+			const { result } = renderHook(() => useMessageStatus(message.id));
+			renderHook(() => useCompleteMessageOrFetch(message.id));
+
 			await waitFor(() => {
 				expect(result.current).toBe(API_REQUEST_STATUS.fulfilled);
 			});
 		});
-
-		it('should not update message status if message status is already defined', async () => {
-			const message = generateMessage({
-				id: '1',
-				subject: 'Test Message'
-			});
-			setSearchResultsByMessage([message], false);
-			await waitFor(() => {
-				updateMessageStatus(message.id, API_REQUEST_STATUS.pending);
-			});
-			const response: GetMsgResponse = {
-				m: [generateCompleteMessageFromAPI({ id: '1' })]
-			};
-
-			createSoapAPIInterceptor<GetMsgRequest, GetMsgResponse>('GetMsg', response);
-
-			const { result } = renderHook(() => useMessageStatus('1'));
-			renderHook(() => useCompleteMessageOrFetch('1'));
-			await waitFor(() => {
-				expect(result.current).toBe(API_REQUEST_STATUS.pending);
-			});
-		});
 	});
 
+	function arrayToRecord<T extends { id: string }>(items: Array<T> | undefined): Record<string, T> {
+		if (!items) return {};
+		return items.reduce(
+			(acc, item) => {
+				acc[item.id as string] = item;
+				return acc;
+			},
+			{} as Record<string, T>
+		);
+	}
+
 	function generateEmailsStoreState(
-		conversations: Record<string, NormalizedConversation>
+		conversations: Array<NormalizedConversation>,
+		messages?: Array<MailMessage>
 	): EmailsStoreState {
 		return {
 			messageIndexSlice: MESSAGE_INDEX_SLICE_INITIAL_STATE,
 			searchIndexSlice: SEARCH_INDEX_SLICE_INITIAL_STATE,
 			conversationIndexSlice: CONVERSATION_INDEX_SLICE_INITIAL_STATE,
 			populatedItemsSlice: {
-				conversations,
-				messages: {},
+				conversations: arrayToRecord(conversations),
+				messages: arrayToRecord(messages),
 				messagesStatus: {},
 				conversationsStatus: {}
 			}
 		};
 	}
-
 	describe('deleteMessagesFromConversation', () => {
 		describe('When called with valid message IDs', () => {
 			it('should delete the specified messages from the conversation', () => {
-				const messages = [{ id: '1' }, { id: '2' }] as Array<ConvMessage>;
-				const conversation = { ...generateConversation({ id: '123' }), messages };
-				const state = generateEmailsStoreState({ [conversation.id]: conversation });
+				const messages = [generateMessage({ id: '1' }), generateMessage({ id: '2' })];
+				const conversation = { ...generateConversation({ id: '123' }), messageIds: ['1', '2'] };
+				const state = generateEmailsStoreState([conversation], messages);
 				deleteMessagesFromConversation(['1', '2'], state);
-				expect(state.populatedItemsSlice.conversations['123'].messages).toHaveLength(0);
+				expect(state.populatedItemsSlice.conversations['123'].messageIds).toHaveLength(0);
 			});
 
 			it('should not affect other messages in the conversation', () => {
-				const messages = [{ id: '1' }, { id: '2' }, { id: '3' }] as Array<ConvMessage>;
-				const conversation = { ...generateConversation({ id: '123' }), messages };
-				const state = generateEmailsStoreState({ [conversation.id]: conversation });
+				const messages = [
+					generateMessage({ id: '1' }),
+					generateMessage({ id: '2' }),
+					generateMessage({ id: '3' })
+				];
+				const conversation = {
+					...generateConversation({ id: '123' }),
+					messageIds: messages.map((m) => m.id)
+				};
+				const state = generateEmailsStoreState([conversation], messages);
 				deleteMessagesFromConversation(['1', '2'], state);
-				expect(state.populatedItemsSlice.conversations['123'].messages).toHaveLength(1);
+				expect(state.populatedItemsSlice.conversations['123'].messageIds).toHaveLength(1);
 			});
 		});
 
 		describe('When called with an empty array of IDs', () => {
 			it('should not modify any messages in the conversations', () => {
-				const messages = [{ id: '1' }, { id: '2' }, { id: '3' }] as Array<ConvMessage>;
-				const conversation = { ...generateConversation({ id: '123' }), messages };
-				const state = generateEmailsStoreState({ [conversation.id]: conversation });
+				const messages = [
+					generateMessage({ id: '1' }),
+					generateMessage({ id: '2' }),
+					generateMessage({ id: '3' })
+				];
+				const conversation = {
+					...generateConversation({ id: '123' }),
+					messageIds: ['1', '2', '3']
+				};
+				const state = generateEmailsStoreState([conversation], messages);
 				deleteMessagesFromConversation([], state);
-				expect(state.populatedItemsSlice.conversations['123'].messages).toHaveLength(3);
+				expect(state.populatedItemsSlice.conversations['123'].messageIds).toHaveLength(3);
 			});
 		});
 
 		describe('When called with non-existent message IDs', () => {
 			it('should not delete any messages from the conversations', () => {
-				const messages = [{ id: '1' }, { id: '2' }, { id: '3' }] as Array<ConvMessage>;
-				const conversation = { ...generateConversation({ id: '123' }), messages };
-				const state = generateEmailsStoreState({ [conversation.id]: conversation });
+				const messages = [
+					generateMessage({ id: '1' }),
+					generateMessage({ id: '2' }),
+					generateMessage({ id: '3' })
+				];
+				const conversation = {
+					...generateConversation({ id: '123' }),
+					messageIds: messages.map((m) => m.id)
+				};
+				const state = generateEmailsStoreState([conversation], messages);
 				deleteMessagesFromConversation(['4', '5'], state);
-				expect(state.populatedItemsSlice.conversations['123'].messages).toHaveLength(3);
+				expect(state.populatedItemsSlice.conversations['123'].messageIds).toHaveLength(3);
 			});
 		});
 
@@ -303,7 +377,7 @@ describe('Searches store hooks', () => {
 			it('should leave the state unchanged', () => {
 				const messages = [] as Array<ConvMessage>;
 				const conversation = { ...generateConversation({ id: '123' }), messages };
-				const state = generateEmailsStoreState({ [conversation.id]: conversation });
+				const state = generateEmailsStoreState([conversation]);
 				deleteMessagesFromConversation(['1', '2'], state);
 				expect(state.populatedItemsSlice.conversations['123']).toMatchObject(
 					expect.objectContaining({ id: '123', messages: [] })
@@ -313,7 +387,7 @@ describe('Searches store hooks', () => {
 
 		describe('When the conversations array is empty', () => {
 			it('should leave the state unchanged', () => {
-				const state = generateEmailsStoreState({});
+				const state = generateEmailsStoreState([]);
 				const expectedState = cloneDeep(state);
 				deleteMessagesFromConversation(['1', '2'], state);
 				expect(state).toMatchObject(expectedState);
@@ -326,14 +400,8 @@ describe('Searches store hooks', () => {
 				const conversaiontIds = Array.from({ length: numberOfConversations }, (_, index) =>
 					index.toString()
 				);
-				const conversations = reduce(
-					conversaiontIds,
-					(acc, id) => ({
-						...acc,
-						[id.toString()]: generateConversation({ id, messages: [{ id: '1' } as ConvMessage] })
-					}),
-					{} as PopulatedItemsSliceState['populatedItemsSlice']['conversations']
-				);
+
+				const conversations = conversaiontIds.map((id) => generateConversation({ id }));
 				const state = generateEmailsStoreState(conversations);
 				const start = performance.now();
 				deleteMessagesFromConversation(['1', '2'], state);
@@ -347,16 +415,10 @@ describe('Searches store hooks', () => {
 				const conversaiontIds = Array.from({ length: numberOfConversations }, (_, index) =>
 					index.toString()
 				);
-				const messages = map(messageIds, (id) => ({ id }));
-				const conversations = reduce(
-					conversaiontIds,
-					(acc, id) => ({
-						...acc,
-						[id.toString()]: generateConversation({ id, messages: messages as Array<ConvMessage> })
-					}),
-					{} as PopulatedItemsSliceState['populatedItemsSlice']['conversations']
-				);
-				const state = generateEmailsStoreState(conversations);
+				const messages = map(messageIds, (id) => generateMessage({ id }));
+				const conversations = conversaiontIds.map((id) => generateConversation({ id }));
+
+				const state = generateEmailsStoreState(conversations, messages);
 				const start = performance.now();
 				deleteMessagesFromConversation(['1'], state);
 				const end = performance.now();

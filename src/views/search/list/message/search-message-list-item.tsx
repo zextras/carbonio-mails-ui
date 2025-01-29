@@ -15,7 +15,7 @@ import {
 	Tooltip
 } from '@zextras/carbonio-design-system';
 import { replaceHistory, t, useUserAccounts, useUserSettings } from '@zextras/carbonio-shell-ui';
-import { find, includes, isEmpty, noop, reduce } from 'lodash';
+import { find, includes, isEmpty, reduce } from 'lodash';
 import moment from 'moment';
 import { useParams } from 'react-router-dom';
 
@@ -27,38 +27,32 @@ import { getTimeLabel, participantToString } from '../../../../commons/utils';
 import { EditViewActions } from '../../../../constants';
 import { useMsgPreviewOnSeparatedWindowFn } from '../../../../hooks/actions/use-msg-preview-on-separated-window';
 import { useMsgSetReadFn } from '../../../../hooks/actions/use-msg-set-read';
-import { useMessageById } from '../../../../store/emails/store';
-import { TextReadValuesType } from '../../../../types';
+import { MailMessage, TextReadValuesType } from '../../../../types';
 import { useTagExist } from '../../../../ui-actions/tag-actions';
 import { createEditBoard } from '../../../app/detail-panel/edit/edit-view-board';
 import { MessageListItemActionWrapper } from '../../../app/folder-panel/messages/message-list-item-action-wrapper';
 import { ItemAvatar } from '../../../app/folder-panel/parts/item-avatar';
-import { SenderName } from '../../../app/folder-panel/parts/sender-name';
+import { ParticipantsName } from '../../../app/folder-panel/parts/sender-name';
 import { getFolderTranslatedName } from '../../../sidebar/utils';
 import { SearchMessagePanel } from '../../panel/message/search-message-panel';
 
 type SearchMessageListItemProps = {
-	itemId: string;
+	completeMessage: MailMessage;
 	selected: boolean;
 	selecting: boolean;
 	toggle: (id: string) => void;
-	isConvChildren: boolean;
 	active?: boolean;
-	isSearchModule?: boolean;
-	isConversation?: boolean;
 	deselectAll: () => void;
 };
 export const SearchMessageListItem: FC<SearchMessageListItemProps> = memo(function MessageListItem({
-	itemId,
+	completeMessage,
 	selected,
 	selecting,
 	toggle,
-	isConvChildren,
 	active,
-	isSearchModule,
 	deselectAll
 }) {
-	const completeMessage = useMessageById(itemId);
+	const itemId = completeMessage.id;
 	const folderId = completeMessage.parent;
 	const { itemId: messageId } = useParams<{ itemId: string | undefined }>();
 
@@ -182,10 +176,7 @@ export const SearchMessageListItem: FC<SearchMessageListItemProps> = memo(functi
 		[completeMessage.tags, tagsFromStore]
 	);
 
-	const fragmentLabel = useMemo(
-		() => (isConvChildren ? completeMessage.fragment : ` - ${completeMessage.fragment}`),
-		[completeMessage.fragment, isConvChildren]
-	);
+	const fragmentLabel = useMemo(() => ` - ${completeMessage.fragment}`, [completeMessage.fragment]);
 	const textReadValues = useMemo<TextReadValuesType>(() => {
 		if (typeof completeMessage.read === 'undefined')
 			return { color: 'text', weight: 'regular', badge: 'read' };
@@ -224,7 +215,7 @@ export const SearchMessageListItem: FC<SearchMessageListItemProps> = memo(functi
 		[completeMessage?.autoSendTime]
 	);
 
-	const onToggle = useMemo(() => (isConvChildren ? noop : toggle), [isConvChildren, toggle]);
+	const onToggle = useMemo(() => toggle, [toggle]);
 
 	return (
 		<Container mainAlignment="flex-start" data-testid={`MessageListItem-${completeMessage.id}`}>
@@ -257,11 +248,7 @@ export const SearchMessageListItem: FC<SearchMessageListItemProps> = memo(functi
 					padding={{ left: 'small', top: 'small', bottom: 'small', right: 'large' }}
 				>
 					<Container orientation="horizontal" height="fit" width="fill">
-						<SenderName
-							item={completeMessage}
-							textValues={textReadValues}
-							isSearchModule={isSearchModule}
-						/>
+						<ParticipantsName item={completeMessage} textValues={textReadValues} isSearchModule />
 						<Row>
 							{showTagIcon && (
 								<Padding left="small">
@@ -317,16 +304,6 @@ export const SearchMessageListItem: FC<SearchMessageListItemProps> = memo(functi
 									mainAlignment="flex-start"
 									crossAlignment="baseline"
 								>
-									{!isConvChildren && (
-										<Text
-											data-testid="Subject"
-											weight={textReadValues.weight}
-											color={completeMessage.subject ? 'text' : 'secondary'}
-										>
-											{subject}
-										</Text>
-									)}
-
 									{!isEmpty(completeMessage.fragment) && (
 										<Row
 											takeAvailableSpace
