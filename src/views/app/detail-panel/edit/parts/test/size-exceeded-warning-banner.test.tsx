@@ -86,7 +86,7 @@ describe('sizeExceededWarningBanner', () => {
 		expect(setIsMailSizeWarningSpy).toHaveBeenCalledWith(false);
 	});
 
-	it('does remove the banner when a smartLink is marked for conversion', async () => {
+	it('toggling smartlink flag toggles the banner', async () => {
 		setupEditorStore({ editors: [] });
 		const editor = await generateEditorV2Case(1);
 		editor.size = 200;
@@ -111,16 +111,33 @@ describe('sizeExceededWarningBanner', () => {
 			});
 		});
 
-		const setIsMailSizeWarningSpyNew = jest.fn();
+		const setIsMailSizeWarningSpy2 = jest.fn();
 		rerender(
 			<SizeExceededWarningBanner
 				editorId={editor.id}
 				isMailSizeWarning
-				setIsMailSizeWarning={setIsMailSizeWarningSpyNew}
+				setIsMailSizeWarning={setIsMailSizeWarningSpy2}
 			/>
 		);
 
-		expect(setIsMailSizeWarningSpyNew).toHaveBeenCalledWith(false);
+		expect(setIsMailSizeWarningSpy2).toHaveBeenCalledWith(false);
+
+		act(() => {
+			useEditorsStore.setState({
+				editors: { [editor.id]: { ...editor, totalSmartLinksSize: 0 } }
+			});
+		});
+
+		const setIsMailSizeWarningSpy3 = jest.fn();
+		rerender(
+			<SizeExceededWarningBanner
+				editorId={editor.id}
+				isMailSizeWarning={false}
+				setIsMailSizeWarning={setIsMailSizeWarningSpy3}
+			/>
+		);
+
+		expect(setIsMailSizeWarningSpy3).toHaveBeenCalledWith(true);
 	});
 
 	describe('calculateMailSize', () => {
