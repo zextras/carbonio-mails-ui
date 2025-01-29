@@ -3,39 +3,31 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+
 export async function deletePersonalCertificate(
 	id: string,
 	password: string
-): Promise<{ data: Response } | { error: unknown }> {
-	const apiCall = fetch(
-		`/service/extension/encryption/smime/personal
-`,
-		{
+): Promise<{ data?: Response; error?: unknown }> {
+	try {
+		const response = await fetch(`/service/extension/encryption/smime/personal`, {
 			method: 'DELETE',
 			headers: {
 				'Content-Type': 'application/json'
 			},
-			body: JSON.stringify({
-				password,
-				id
-			})
-		}
-	);
-	return Promise.allSettled([apiCall])
-		.then(async ([result]) => {
-			if (result.status === 'fulfilled') {
-				const response = result.value;
-				if (response.ok) {
-					return { data: response };
-				}
-				try {
-					return await response.json();
-				} catch (error) {
-					console.error('Error parsing response:', error);
-					return { error };
-				}
+			body: JSON.stringify({ id, password })
+		});
+
+		if (!response.ok) {
+			try {
+				const errorData = await response.json();
+				return { error: errorData };
+			} catch (jsonError) {
+				return { error: 'Unknown error occurred' };
 			}
-			return { error: result };
-		})
-		.catch((error) => ({ error }));
+		}
+
+		return { data: response };
+	} catch (error) {
+		return { error };
+	}
 }
