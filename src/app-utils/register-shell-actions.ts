@@ -21,7 +21,7 @@ interface MailToActionType extends Action {
 	disabled: boolean;
 }
 
-interface MailToReceiversActionType extends Action {
+interface MailToRecipientsActionType extends Action {
 	id: string;
 	icon: string;
 	execute: (e: SyntheticEvent<HTMLElement, Event> | KeyboardEvent) => void;
@@ -57,7 +57,7 @@ export const mailToAction = (contacts: unknown): MailToActionType => ({
 	disabled: isArray(contacts) && some(contacts, (contact) => !contact.address)
 });
 
-export type Receiver = {
+export type Recipient = {
 	email: string;
 	name: string;
 	carbonCopy?: boolean;
@@ -65,7 +65,7 @@ export type Receiver = {
 
 type MailDescription = {
 	subject: string;
-	receivers: Receiver[];
+	recipients: Recipient[];
 };
 
 function isMailDescription(mailDescription: unknown): mailDescription is MailDescription {
@@ -73,26 +73,26 @@ function isMailDescription(mailDescription: unknown): mailDescription is MailDes
 		typeof mailDescription === 'object' &&
 		mailDescription !== null &&
 		'subject' in mailDescription &&
-		'receivers' in mailDescription &&
-		isArray(mailDescription.receivers) &&
-		mailDescription.receivers.every(
-			(receiver) =>
-				typeof receiver === 'object' &&
-				receiver !== null &&
-				'email' in receiver &&
-				'name' in receiver
+		'recipients' in mailDescription &&
+		isArray(mailDescription.recipients) &&
+		mailDescription.recipients.every(
+			(recipient) =>
+				typeof recipient === 'object' &&
+				recipient !== null &&
+				'email' in recipient &&
+				'name' in recipient
 		) &&
 		isString(mailDescription.subject)
 	);
 }
 
-export const mailToReceiversActionOnClick = (
+export const mailToRecipientsActionOnClick = (
 	e: SyntheticEvent<HTMLElement, Event> | KeyboardEvent,
 	mailDescription: unknown
 ): void => {
 	e?.preventDefault?.();
 	if (isMailDescription(mailDescription)) {
-		const participants = mailDescription.receivers.map((receiver) => ({
+		const participants = mailDescription.recipients.map((receiver) => ({
 			type: receiver.carbonCopy ? ParticipantRole.CARBON_COPY : ParticipantRole.TO,
 			address: receiver.email,
 			fullName: receiver.name
@@ -102,11 +102,11 @@ export const mailToReceiversActionOnClick = (
 	}
 };
 
-export const mailToReceiversAction = (mailDescription: unknown): MailToReceiversActionType => ({
+export const mailToRecipientsAction = (mailDescription: unknown): MailToRecipientsActionType => ({
 	id: 'mail-to',
 	label: t('label.send_mail', 'Send Mail'),
 	icon: 'MailModOutline',
-	execute: (e) => mailToReceiversActionOnClick(e, mailDescription),
+	execute: (e) => mailToRecipientsActionOnClick(e, mailDescription),
 	disabled: false
 });
 
@@ -141,9 +141,9 @@ export const registerShellActions = (): void => {
 		id: 'mail-to',
 		type: 'contact-list'
 	});
-	registerActions<MailToReceiversActionType>({
-		action: mailToReceiversAction,
-		id: 'mail-to-receivers',
-		type: 'contact-list'
+	registerActions<MailToRecipientsActionType>({
+		action: mailToRecipientsAction,
+		id: 'mail-to',
+		type: 'recipients'
 	});
 };
