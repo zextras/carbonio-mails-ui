@@ -29,15 +29,17 @@ const normalizePEM = (pemString: string): string => pemString.replace(/\r\n/g, '
 /**
  * Parses a PEM certificate string into a pkijs.Certificate object.
  */
-const getCertificate = async (certArg: string): Promise<pkijs.Certificate> => {
+const getCertificate = async (certArgPersonal: string): Promise<pkijs.Certificate> => {
 	try {
-		const sanitizedCert = certArg
+		const sanitizedCertPersonal = certArgPersonal
 			.replace(/-----BEGIN CERTIFICATE-----/, '')
 			.replace(/-----END CERTIFICATE-----/, '')
 			.replace(/\s+/g, '');
 
-		const binaryDer = Uint8Array.from(atob(sanitizedCert), (char) => char.charCodeAt(0));
-		const asn1 = asn1js.fromBER(binaryDer.buffer);
+		const binaryDerPersonal = Uint8Array.from(atob(sanitizedCertPersonal), (char) =>
+			char.charCodeAt(0)
+		);
+		const asn1 = asn1js.fromBER(binaryDerPersonal.buffer);
 
 		if (asn1.offset === -1) {
 			throw new Error('Invalid ASN.1 structure in certificate.');
@@ -67,52 +69,52 @@ export const handleCertificateFileUpload = (
 				}
 
 				// Convert file to PKCS#12 format
-				const p12Der = forge.util.createBuffer(arrayBuffer as ArrayBuffer);
-				const p12Asn1 = forge.asn1.fromDer(p12Der);
-				const p12 = forge.pkcs12.pkcs12FromAsn1(p12Asn1, false, password);
+				const p12DerPersonal = forge.util.createBuffer(arrayBuffer as ArrayBuffer);
+				const p12Asn1Personal = forge.asn1.fromDer(p12DerPersonal);
+				const p12 = forge.pkcs12.pkcs12FromAsn1(p12Asn1Personal, false, password);
 
 				// Extract private key
-				const keyBags = p12.getBags({ bagType: forge.pki.oids.pkcs8ShroudedKeyBag });
-				const privateKeyObj = keyBags[forge.pki.oids.pkcs8ShroudedKeyBag]?.[0]?.key;
+				const keyBagsPersonal = p12.getBags({ bagType: forge.pki.oids.pkcs8ShroudedKeyBag });
+				const privateKeyObjPersonal = keyBagsPersonal[forge.pki.oids.pkcs8ShroudedKeyBag]?.[0]?.key;
 
 				// Extract certificates
-				const certBags = p12.getBags({ bagType: forge.pki.oids.certBag });
-				const certificates = certBags[forge.pki.oids.certBag];
+				const certBagsPersonal = p12.getBags({ bagType: forge.pki.oids.certBag });
+				const certificatesPersonal = certBagsPersonal[forge.pki.oids.certBag];
 
-				if (!privateKeyObj || !certificates || certificates.length === 0) {
+				if (!privateKeyObjPersonal || !certificatesPersonal || certificatesPersonal.length === 0) {
 					return reject(new Error(ERROR_MESSAGE));
 				}
 
 				// Process certificates
-				const endEntityCertFile = certificates[0]?.cert;
-				const caCerts = certificates.slice(1);
+				const endEntityCertFile = certificatesPersonal[0]?.cert;
+				const caCerts = certificatesPersonal.slice(1);
 
 				if (!endEntityCertFile) {
 					return reject(new Error(ERROR_MESSAGE));
 				}
 
 				// Convert private key to PEM format
-				const pkcs8PrivateKey = forge.pki.privateKeyToAsn1(privateKeyObj);
-				const wrapPrivateKey = forge.pki.wrapRsaPrivateKey(pkcs8PrivateKey);
-				const privateKey = forge.pki.privateKeyInfoToPem(wrapPrivateKey);
+				const pkcs8PrivateKeyPersonal = forge.pki.privateKeyToAsn1(privateKeyObjPersonal);
+				const wrapPrivateKeyPersonal = forge.pki.wrapRsaPrivateKey(pkcs8PrivateKeyPersonal);
+				const privateKeyPersonal = forge.pki.privateKeyInfoToPem(wrapPrivateKeyPersonal);
 
 				// Convert certificates to PEM format
-				const endEntityCert = forge.pki.certificateToPem(endEntityCertFile);
-				const caCertificate = caCerts
+				const endEntityCertPersonal = forge.pki.certificateToPem(endEntityCertFile);
+				const caCertificatePersonal = caCerts
 					.map((cert) => (cert?.cert ? forge.pki.certificateToPem(cert.cert) : ''))
 					.join('\n');
 
 				// Extract email address from certificate
-				const certificate = await getCertificate(endEntityCert);
-				const emailAddress = certificate.subject.typesAndValues.map(
+				const certificatePersonal = await getCertificate(endEntityCertPersonal);
+				const emailAddress = certificatePersonal.subject.typesAndValues.map(
 					(typeAndValue) => typeAndValue.value.valueBlock.value
 				);
 
 				// Return the parsed certificate data
 				return resolve({
-					privateKey: normalizePEM(privateKey),
-					certificate: normalizePEM(endEntityCert),
-					caCertificate: normalizePEM(caCertificate),
+					privateKey: normalizePEM(privateKeyPersonal),
+					certificate: normalizePEM(endEntityCertPersonal),
+					caCertificate: normalizePEM(caCertificatePersonal),
 					emailAddress
 				});
 			} catch (err) {
