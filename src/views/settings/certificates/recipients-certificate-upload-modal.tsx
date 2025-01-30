@@ -34,34 +34,34 @@ export const RecipientsCertificateUploadModal = ({
 	// Browse for file
 	const handleFileBrowse = useCallback(() => {
 		if (inputRef.current) {
-			inputRef.current.value = '';
+			inputRef.current.value = ''; // Reset input to allow selecting the same file again
 			inputRef.current.click();
 		}
 	}, []);
 
 	// Handle file selection
-	const handleFileChange = useCallback(() => {
-		const file = inputRef.current?.files?.[0] ?? null;
+	const handleFileChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+		const file = event.target.files?.[0] ?? null;
 		setSelectedFile(file);
 	}, []);
 
 	// Upload file
 	const handleFileUpload = useCallback(() => {
 		if (!selectedFile) return;
+
 		const reader = new FileReader();
+		reader.readAsText(selectedFile);
 
 		reader.onload = (e): void => {
 			const fileContent = e.target?.result;
 			if (fileContent) {
 				onConfirm(fileContent);
 			} else {
-				console.error('Error: file content is null');
+				console.error('Error: File content is null');
 			}
 		};
 
-		reader.onerror = (): void => console.error('Failed to read the file');
-
-		reader.readAsText(selectedFile);
+		reader.onerror = (): void => console.error('Error: Failed to read the file');
 	}, [onConfirm, selectedFile]);
 
 	return (
@@ -82,7 +82,6 @@ export const RecipientsCertificateUploadModal = ({
 							)}
 							value={selectedFile ? selectedFile.name : ''}
 							data-testid="certificate-file-name"
-							onChange={(): null => null}
 							style={{ pointerEvents: 'none' }}
 						/>
 					</Row>
