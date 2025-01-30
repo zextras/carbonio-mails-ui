@@ -9,11 +9,15 @@ import { EditorPrefillData } from '../types';
 import type { Participant } from '../types';
 import { createEditBoard } from '../views/app/detail-panel/edit/edit-view-board';
 
-export const mailToSharedFunction: (contacts: Array<Participant>) => void = (contacts) => {
+export const mailToSharedFunction: (contacts: Array<Participant>, subject?: string) => void = (
+	contacts,
+	subject
+) => {
 	createEditBoard({
 		action: EditViewActions.MAIL_TO,
 		compositionData: {
-			recipients: contacts
+			recipients: contacts,
+			subject
 		}
 	});
 };

@@ -7,7 +7,7 @@
 import { SyntheticEvent } from 'react';
 
 import { Action, ACTION_TYPES, NewAction, registerActions, t } from '@zextras/carbonio-shell-ui';
-import { isArray, some } from 'lodash';
+import { isArray, isString, some } from 'lodash';
 
 import { ParticipantRole } from '../carbonio-ui-commons/constants/participants';
 import { EditViewActions, MAIL_APP_ID } from '../constants';
@@ -15,6 +15,13 @@ import { mailToSharedFunction } from '../integrations/shared-functions';
 import { createEditBoard } from '../views/app/detail-panel/edit/edit-view-board';
 
 interface MailToActionType extends Action {
+	id: string;
+	icon: string;
+	execute: (e: SyntheticEvent<HTMLElement, Event> | KeyboardEvent) => void;
+	disabled: boolean;
+}
+
+interface MailToReceiversActionType extends Action {
 	id: string;
 	icon: string;
 	execute: (e: SyntheticEvent<HTMLElement, Event> | KeyboardEvent) => void;
@@ -50,6 +57,59 @@ export const mailToAction = (contacts: unknown): MailToActionType => ({
 	disabled: isArray(contacts) && some(contacts, (contact) => !contact.address)
 });
 
+export type Receiver = {
+	email: string;
+	name: string;
+	carbonCopy?: boolean;
+};
+
+type MailDescription = {
+	subject: string;
+	receivers: Receiver[];
+};
+
+function isMailDescription(mailDescription: unknown): mailDescription is MailDescription {
+	return (
+		typeof mailDescription === 'object' &&
+		mailDescription !== null &&
+		'subject' in mailDescription &&
+		'receivers' in mailDescription &&
+		isArray(mailDescription.receivers) &&
+		mailDescription.receivers.every(
+			(receiver) =>
+				typeof receiver === 'object' &&
+				receiver !== null &&
+				'email' in receiver &&
+				'name' in receiver
+		) &&
+		isString(mailDescription.subject)
+	);
+}
+
+export const mailToReceiversActionOnClick = (
+	e: SyntheticEvent<HTMLElement, Event> | KeyboardEvent,
+	mailDescription: unknown
+): void => {
+	e?.preventDefault?.();
+	if (isMailDescription(mailDescription)) {
+		const participants = mailDescription.receivers.map((receiver) => ({
+			type: receiver.carbonCopy ? ParticipantRole.CARBON_COPY : ParticipantRole.TO,
+			address: receiver.email,
+			fullName: receiver.name
+		}));
+
+		mailToSharedFunction(participants, mailDescription.subject);
+	}
+};
+
+export const mailToReceiversAction = (mailDescription: unknown): MailToReceiversActionType => ({
+	id: 'mail-to',
+	label: t('label.send_mail', 'Send Mail'),
+	icon: 'MailModOutline',
+	execute: (e) => mailToReceiversActionOnClick(e, mailDescription),
+	disabled: false
+});
+
 export const newEmailActionOnClick = (
 	e: SyntheticEvent<HTMLElement, Event> | KeyboardEvent
 ): void => {
@@ -79,6 +139,11 @@ export const registerShellActions = (): void => {
 	registerActions<MailToActionType>({
 		action: mailToAction,
 		id: 'mail-to',
+		type: 'contact-list'
+	});
+	registerActions<MailToReceiversActionType>({
+		action: mailToReceiversAction,
+		id: 'mail-to-receivers',
 		type: 'contact-list'
 	});
 };
