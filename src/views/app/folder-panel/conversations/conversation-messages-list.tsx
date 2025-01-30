@@ -43,6 +43,7 @@ export const ConversationMessagesList = memo(function ConversationMessagesList({
 
 				return (
 					<CustomListItem
+						data-testid={`conversation-message-list-item-${message.id}`}
 						selected={false}
 						active={isActive}
 						key={message.id}
