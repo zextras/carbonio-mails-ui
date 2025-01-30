@@ -134,7 +134,7 @@ export const CertificatePasswordModal = ({
 							)}
 						</Text>
 						<Padding top="medium" />
-						<Text size="medium">
+						<Text size="medium" overflow="break-word">
 							{t('settings.certificatePassword.createPasswordRule', 'Your password must be:')}
 							<ul>
 								<li>
@@ -161,7 +161,7 @@ export const CertificatePasswordModal = ({
 							)}
 						</Text>
 						<Padding top="medium" />
-						<Text size="medium">
+						<Text size="medium" overflow="break-word">
 							{t('settings.certificatePassword.createPasswordRule', 'Your password must be:')}
 							<ul>
 								<li>

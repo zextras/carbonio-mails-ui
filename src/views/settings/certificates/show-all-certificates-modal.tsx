@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: 2024 Zextras <https://www.zextras.com>
+ * SPDX-FileCopyrightText: 2025 Zextras <https://www.zextras.com>
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
@@ -20,19 +20,20 @@ type EnterPasswordModalPropType = {
 	onClose: (isUpdateList: boolean) => void;
 };
 
-export const ShowAllCertificatesModal = ({
+const ShowAllCertificatesModal = ({
 	certificates,
 	onClose
 }: EnterPasswordModalPropType): React.JSX.Element => {
 	const [t] = useTranslation();
 	const createSnackbar = useSnackbar();
 	const { smimePassword } = useSmimePasswordStore();
-	const modalHeaderTitle = `${t('settings.uploadCertificate.personalCertificate', 'Personal Certificates of')} ${certificates[0]?.email}`;
 
+	const modalHeaderTitle = `${t('settings.uploadCertificate.personalCertificate', 'Personal Certificates of')} ${certificates[0]?.email}`;
 	const [selectedRows, setSelectedRows] = useState<string[]>([]);
 	const [localCertificates, setLocalCertificates] = useState(certificates);
 	const [isUpdateList, setIsUpdateList] = useState(false);
 
+	// Common header configuration
 	const headers = useMemo(
 		() => [
 			{
@@ -70,6 +71,7 @@ export const ShowAllCertificatesModal = ({
 		[t]
 	);
 
+	// Show Snackbar utility
 	const showSnackbar = useCallback(
 		(key: string, severity: 'success' | 'error', label: string) => {
 			createSnackbar({
@@ -84,6 +86,18 @@ export const ShowAllCertificatesModal = ({
 		[createSnackbar]
 	);
 
+	// Get certificate status
+	const getCertificateStatus = useCallback(
+		(certificate: Certificate) => {
+			if (certificate.selected) return t('settings.uploadCertificate.active', 'Active');
+			if (certificate.notAfter > Date.now())
+				return t('settings.uploadCertificate.deactive', 'Deactive');
+			return t('settings.uploadCertificate.expired', 'Expired');
+		},
+		[t]
+	);
+
+	// Handle delete operation for a certificate
 	const handleDeleteCertificate = useCallback(
 		async (certificate: Certificate) => {
 			const res = await deletePersonalCertificate(certificate.id, smimePassword);
@@ -106,19 +120,10 @@ export const ShowAllCertificatesModal = ({
 		[showSnackbar, smimePassword, t]
 	);
 
-	const getCertificateStatus = useCallback(
-		(certificate: Certificate) => {
-			if (certificate.selected) return t('settings.uploadCertificate.active', 'Active');
-			if (certificate.notAfter > Date.now())
-				return t('settings.uploadCertificate.deactive', 'Deactive');
-			return t('settings.uploadCertificate.expired', 'Expired');
-		},
-		[t]
-	);
-
+	// Create table rows dynamically from certificates
 	const getCertificateRows = useMemo(
 		() =>
-			localCertificates.map((certificate: Certificate, index: number) => ({
+			localCertificates.map((certificate, index) => ({
 				id: index.toString(),
 				columns: [
 					certificate.issuer,
@@ -132,9 +137,7 @@ export const ShowAllCertificatesModal = ({
 						>
 							<Button
 								icon="Trash2Outline"
-								onClick={(): void => {
-									handleDeleteCertificate(certificate);
-								}}
+								onClick={(): Promise<void> => handleDeleteCertificate(certificate)}
 								size="large"
 								type="ghost"
 								color="error"
@@ -146,6 +149,7 @@ export const ShowAllCertificatesModal = ({
 		[localCertificates, getCertificateStatus, handleDeleteCertificate, t]
 	);
 
+	// Handle certificate activation
 	const activateSelectedCertificate = useCallback(async () => {
 		const selectedCertificate = localCertificates[parseInt(selectedRows[0], 10)];
 		if (!selectedCertificate?.id) return;
@@ -167,6 +171,7 @@ export const ShowAllCertificatesModal = ({
 		}
 	}, [showSnackbar, localCertificates, onClose, selectedRows, smimePassword, t]);
 
+	// Close modal callback
 	const onCloseModal = useCallback(() => onClose(isUpdateList), [isUpdateList, onClose]);
 
 	return (
@@ -191,3 +196,5 @@ export const ShowAllCertificatesModal = ({
 		</Container>
 	);
 };
+
+export default ShowAllCertificatesModal;

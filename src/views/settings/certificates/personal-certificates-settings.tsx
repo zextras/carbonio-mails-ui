@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: 2021 Zextras <https://www.zextras.com>
+ * SPDX-FileCopyrightText: 2024 Zextras <https://www.zextras.com>
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
@@ -18,7 +18,7 @@ import {
 import { useTranslation } from 'react-i18next';
 
 import { CertificateUploadModal } from './certificate-upload-modal';
-import { ShowAllCertificatesModal } from './show-all-certificates-modal';
+import ShowAllCertificatesModal from './show-all-certificates-modal';
 import { getPersonalCertificates } from '../../../api/get-personal-certificates-action';
 import { uploadPersonalCertificate } from '../../../api/upload-personal-certificate-action';
 import { PersonalCertificate, useSmimePasswordStore } from '../../../store/certificates/store';
@@ -71,26 +71,34 @@ const PersonalCertificatesSettings: FC = (): ReactElement => {
 			bold: true
 		}
 	];
-
+	const showSnackbar = useCallback(
+		(severity: 'error' | 'success', message: string) => {
+			createSnackbar({
+				key: `certificate-action-${severity}`,
+				replace: true,
+				severity,
+				label: message,
+				autoHideTimeout: 3000,
+				hideButton: true
+			});
+		},
+		[createSnackbar]
+	);
 	const loadPersonalCertificates = useCallback(() => {
 		getPersonalCertificates().then((res) => {
 			if ('data' in res) {
 				setCertificates(res.data);
 			} else {
-				createSnackbar({
-					key: `error-on-fetching-certificate`,
-					replace: true,
-					severity: 'error',
-					label: t(
+				showSnackbar(
+					'error',
+					t(
 						'settings.uploadCertificate.errorWhileFetchingCert',
 						'Error while fetching certificates'
-					),
-					autoHideTimeout: 3000,
-					hideButton: true
-				});
+					)
+				);
 			}
 		});
-	}, [createSnackbar, t]);
+	}, [showSnackbar, t]);
 
 	const showAllCertificate = useCallback(
 		(certificate: Certificate[]): void => {
@@ -120,37 +128,29 @@ const PersonalCertificatesSettings: FC = (): ReactElement => {
 	);
 
 	const onCertificateUploadConfirm = useCallback(
-		(certificate: PersonalCertificate) => {
-			uploadPersonalCertificate(certificate, smimePassword, false).then((res) => {
+		(certificate: PersonalCertificate, isSelected?: boolean) => {
+			uploadPersonalCertificate(certificate, smimePassword, isSelected).then((res) => {
 				if ('data' in res) {
-					createSnackbar({
-						key: `certificate-uploaded`,
-						replace: true,
-						severity: 'success',
-						label: t(
+					showSnackbar(
+						'success',
+						t(
 							'settings.uploadCertificate.certtificateUploaded',
 							'Certificate uploaded successfully'
-						),
-						autoHideTimeout: 3000,
-						hideButton: true
-					});
+						)
+					);
 					loadPersonalCertificates();
 				} else {
-					createSnackbar({
-						key: `error-on-certificate-upload`,
-						replace: true,
-						severity: 'error',
-						label: t(
+					showSnackbar(
+						'error',
+						t(
 							'settings.uploadCertificate.errorWhileUploadCert',
 							'Error while uploading certificate'
-						),
-						autoHideTimeout: 3000,
-						hideButton: true
-					});
+						)
+					);
 				}
 			});
 		},
-		[createSnackbar, loadPersonalCertificates, smimePassword, t]
+		[loadPersonalCertificates, showSnackbar, smimePassword, t]
 	);
 
 	const onUploadCertificate = useCallback(() => {
@@ -175,42 +175,47 @@ const PersonalCertificatesSettings: FC = (): ReactElement => {
 		loadPersonalCertificates();
 	}, [loadPersonalCertificates]);
 
-	const items = certificates.map((certificate: Certificate, index) => ({
-		id: index.toString(),
-		columns: [
-			certificate.email,
-			certificate.issuer,
-			new Date(certificate.notBefore).toLocaleString(),
-			new Date(certificate.notAfter).toLocaleString(),
-			((): string => {
-				if (certificate.selected) return t('settings.uploadCertificate.active', 'Active');
-				if (certificate.notAfter > Date.now())
-					return t('settings.uploadCertificate.deactive', 'Deactive');
-				return t('settings.uploadCertificate.expired', 'Expired');
-			})(),
-			certificate.serial
-		],
-		onClick: (): void => {
-			getPersonalCertificates(certificate.email).then((res) => {
-				if ('data' in res) {
-					showAllCertificate(res.data);
-				} else {
-					createSnackbar({
-						key: `error-on-get-certificate`,
-						replace: true,
-						severity: 'error',
-						label: t(
-							'settings.uploadCertificate.errorWhileFetchingCert',
-							'Error while fetching certificates'
-						),
-						autoHideTimeout: 3000,
-						hideButton: true
-					});
-				}
-			});
-		},
-		clickable: true
-	}));
+	const items = certificates.map((certificate: Certificate, index) => {
+		let certificateStatus = '';
+
+		// Determining certificate status
+		if (certificate.selected) {
+			certificateStatus = t('settings.uploadCertificate.active', 'Active');
+		} else if (certificate.notAfter > Date.now()) {
+			certificateStatus = t('settings.uploadCertificate.deactive', 'Deactive');
+		} else {
+			certificateStatus = t('settings.uploadCertificate.expired', 'Expired');
+		}
+
+		return {
+			id: index.toString(),
+			columns: [
+				certificate.email,
+				certificate.issuer,
+				new Date(certificate.notBefore).toLocaleString(),
+				new Date(certificate.notAfter).toLocaleString(),
+				certificateStatus,
+				certificate.serial
+			],
+			onClick: (): void => {
+				getPersonalCertificates(certificate.email).then((res) => {
+					if ('data' in res) {
+						showAllCertificate(res.data);
+					} else {
+						showSnackbar(
+							'error',
+							t(
+								'settings.uploadCertificate.errorWhileFetchingCert',
+								'Error while fetching certificates'
+							)
+						);
+					}
+				});
+			},
+			clickable: true
+		};
+	});
+
 	return (
 		<FormSubSection
 			label={t(

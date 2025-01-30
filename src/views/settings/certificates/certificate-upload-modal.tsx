@@ -7,6 +7,7 @@ import React, { useCallback, useRef, useState } from 'react';
 
 import {
 	Button,
+	Checkbox,
 	Container,
 	Input,
 	Padding,
@@ -28,7 +29,7 @@ const FileInput = styled.input`
 `;
 
 type CertificateUploadModalPropType = {
-	onConfirm: (certificate: PersonalCertificate) => void;
+	onConfirm: (certificate: PersonalCertificate, isSelected: boolean) => void;
 	onClose: () => void;
 };
 export const CertificateUploadModal = ({
@@ -37,6 +38,7 @@ export const CertificateUploadModal = ({
 }: CertificateUploadModalPropType): React.JSX.Element => {
 	const [selectedFile, setSelectedFile] = useState<File | null>();
 	const [password, setPassword] = useState<string>('');
+	const [isSelected, setIsSelected] = useState<boolean>(true);
 	const inputRef = useRef<HTMLInputElement>(null);
 	const createSnackbar = useSnackbar();
 	const [t] = useTranslation();
@@ -66,7 +68,7 @@ export const CertificateUploadModal = ({
 						certificate: result.certificate,
 						caCertificate: result.caCertificate
 					};
-					onConfirm(certificate);
+					onConfirm(certificate, isSelected);
 					onClose();
 				} else {
 					throw new Error(
@@ -90,7 +92,7 @@ export const CertificateUploadModal = ({
 				});
 			}
 		}
-	}, [createSnackbar, onClose, onConfirm, password, selectedFile, t]);
+	}, [createSnackbar, isSelected, onClose, onConfirm, password, selectedFile, t]);
 
 	return (
 		<Container mainAlignment="center" crossAlignment="flex-start" height="fit">
@@ -134,6 +136,17 @@ export const CertificateUploadModal = ({
 							label={t('settings.uploadCertificate.certificatePassword', 'Certificate Password')}
 							data-testid="certificate-password"
 						/>
+					</Row>
+				</Container>
+				<Container orientation="horizontal" mainAlignment="flex-start">
+					<Row width="auto">
+						<Padding top="large">
+							<Checkbox
+								value={isSelected}
+								onClick={(): void => setIsSelected(!isSelected)}
+								label={t('settings.uploadCertificate.active', 'Active')}
+							/>
+						</Padding>
 					</Row>
 				</Container>
 				<FileInput
