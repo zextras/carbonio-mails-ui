@@ -14,7 +14,7 @@ import {
 	useSnackbar,
 	useModal
 } from '@zextras/carbonio-design-system';
-import { t } from '@zextras/carbonio-shell-ui';
+import { t, useIsCarbonioCE } from '@zextras/carbonio-shell-ui';
 import { filter, map } from 'lodash';
 import type { TinyMCE } from 'tinymce/tinymce';
 
@@ -36,6 +36,7 @@ import { SubjectRow } from './parts/subject-row';
 import { TextEditorContainer } from './parts/text-editor-container';
 import { WarningBanner } from './parts/warning-banner';
 import { checkExistEncryptionPassword } from '../../../../api/check-exist-password-action';
+import { checkIsSmimeEnabled } from '../../../../api/check-is-smime-enable-api';
 import { checkPersonalCertificateExist } from '../../../../api/check-personal-certificate-exist-action';
 import { GapContainer, GapRow } from '../../../../commons/gap-container';
 import { EDIT_VIEW_CLOSING_REASONS, EditViewActions, TIMEOUTS } from '../../../../constants';
@@ -138,6 +139,9 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 	const { isSmimeEncrypt, setIsSmimeEncrypt } = useEditorIsSmimeEncrypt(editorId);
 	const getCertificate = useCertificatesStore((state) => state.getCertificate);
 	const { smimePassword } = useSmimePasswordStore();
+	const isCarbonioCE = useIsCarbonioCE();
+	const [isSmimeEnabled, setIsSmimeEnabled] = useState(false);
+
 	useEffect(() => {
 		if (!draftId) saveDraft();
 	}, [draftId, saveDraft]);
@@ -149,6 +153,20 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 	const { addStandardAttachments, addInlineAttachments } = useEditorAttachments(editorId);
 
 	const keepOrDiscardDraft = useKeepOrDiscardDraft();
+
+	useEffect(() => {
+		if (!isCarbonioCE) {
+			checkIsSmimeEnabled().then((res) => {
+				if ('data' in res) {
+					setIsSmimeEnabled(true);
+				} else {
+					setIsSmimeEnabled(false);
+				}
+			});
+		} else {
+			setIsSmimeEnabled(false);
+		}
+	}, [isCarbonioCE]);
 
 	// Performs cleanups and invoke the external callback
 	const close = useCallback(

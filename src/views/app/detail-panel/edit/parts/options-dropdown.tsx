@@ -6,7 +6,7 @@
 import React, { FC, useCallback, useMemo } from 'react';
 
 import { Dropdown, IconButton } from '@zextras/carbonio-design-system';
-import { t, useIsCarbonioCE } from '@zextras/carbonio-shell-ui';
+import { t } from '@zextras/carbonio-shell-ui';
 import { noop } from 'lodash';
 
 import {
@@ -22,12 +22,14 @@ export type OptionsDropdownProps = {
 	editorId: MailsEditorV2['id'];
 	onSmimeOptionChange: (isSmimeSelected: boolean) => void;
 	onSmimeEncryptOptionChange: (isEncryptSelected: boolean) => void;
+	isSmimeEnabled?: boolean;
 };
 
 export const OptionsDropdown: FC<OptionsDropdownProps> = ({
 	editorId,
 	onSmimeOptionChange,
-	onSmimeEncryptOptionChange
+	onSmimeEncryptOptionChange,
+	isSmimeEnabled = false
 }) => {
 	const { isRichText, setIsRichText } = useEditorIsRichText(editorId);
 	const { isUrgent, setIsUrgent } = useEditorIsUrgent(editorId);
@@ -55,8 +57,6 @@ export const OptionsDropdown: FC<OptionsDropdownProps> = ({
 		onSmimeEncryptOptionChange(!isSmimeEncrypt);
 	}, [isSmimeEncrypt, onSmimeEncryptOptionChange]);
 
-	const isCarbonioCE = useIsCarbonioCE();
-
 	const options = useMemo(
 		() => [
 			{
@@ -73,7 +73,7 @@ export const OptionsDropdown: FC<OptionsDropdownProps> = ({
 					: t('label.mark_as_important', 'Mark as important'),
 				onClick: toggleImportant
 			},
-			...(!isCarbonioCE
+			...(isSmimeEnabled
 				? [
 						{
 							id: 'is_smimesign',
@@ -116,7 +116,7 @@ export const OptionsDropdown: FC<OptionsDropdownProps> = ({
 			toggleRichTextEditor,
 			isUrgent,
 			toggleImportant,
-			isCarbonioCE,
+			isSmimeEnabled,
 			isSmimeSign,
 			toggleUseSmimeCertificateRequest,
 			isSmimeEncrypt,
