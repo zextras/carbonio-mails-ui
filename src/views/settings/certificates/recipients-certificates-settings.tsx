@@ -19,9 +19,9 @@ import {
 import { useTranslation } from 'react-i18next';
 
 import { RecipientsCertificateUploadModal } from './recipients-certificate-upload-modal';
-import { deleteRecipientCertificate } from '../../../api/delete-recipient-certificate-action';
-import { getRecipientsCertificates } from '../../../api/get-recipient-certificates-action';
-import { uploadRecipientCertificate } from '../../../api/upload-recipients-certificate-action';
+import { deleteRecipientCertificate } from '../../../api/delete-recipient-certificate-api';
+import { getRecipientsCertificates } from '../../../api/get-recipient-certificates-api';
+import { uploadRecipientCertificate } from '../../../api/upload-recipients-certificate-api';
 import { Certificate } from '../../../types/certificates/certificates';
 
 const RecipientsCertificateSettings: FC = (): ReactElement => {

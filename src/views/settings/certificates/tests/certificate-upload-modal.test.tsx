@@ -16,7 +16,7 @@ describe('CertificateUploadModal', () => {
 
 	it('should render the modal with the correct title', async () => {
 		setupTest(
-			<CertificateUploadModal onClose={(): void => onClose()} onConfirm={(): void => onConfirm()} />
+			<CertificateUploadModal onClose={(): void => onClose()} onConfirm={onConfirm({}, true)} />
 		);
 		const modalTitle = screen.getByText('Upload Certificate');
 		expect(modalTitle).toBeVisible();
@@ -24,7 +24,10 @@ describe('CertificateUploadModal', () => {
 
 	it('should render certificate browse button', async () => {
 		setupTest(
-			<CertificateUploadModal onClose={(): void => onClose()} onConfirm={(): void => onConfirm()} />
+			<CertificateUploadModal
+				onClose={(): void => onClose()}
+				onConfirm={(): void => onConfirm({}, true)}
+			/>
 		);
 		const button = screen.getByRole('button', {
 			name: 'Browse'
@@ -34,7 +37,10 @@ describe('CertificateUploadModal', () => {
 
 	it('should render certificate upload button', async () => {
 		setupTest(
-			<CertificateUploadModal onClose={(): void => onClose()} onConfirm={(): void => onConfirm()} />
+			<CertificateUploadModal
+				onClose={(): void => onClose()}
+				onConfirm={(): void => onConfirm({}, true)}
+			/>
 		);
 		const button = screen.getByRole('button', {
 			name: 'Upload'

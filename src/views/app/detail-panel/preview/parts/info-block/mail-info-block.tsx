@@ -12,7 +12,7 @@ import { DistributionListIcon } from './distribution-list-icon';
 import { ExternalDomainIcon } from './external-domain-icon';
 import { MailSensitivityIcon } from './mail-sensitivity-icon';
 import { SmimeIcon } from './smime-icon';
-import { checkExistEncryptionPassword } from '../../../../../../api/check-exist-password-action';
+import { checkExistEncryptionPassword } from '../../../../../../api/check-exist-password-api';
 import { useSmimePasswordStore } from '../../../../../../store/certificates/store';
 import { getMessageEmailStoreAction } from '../../../../../../store/emails/actions/get-message';
 import { IncompleteMessage } from '../../../../../../types';

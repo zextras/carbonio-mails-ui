@@ -15,7 +15,7 @@ import {
 } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
 
-import { checkEncryptionPassword } from '../../../api/check-password-action';
+import { checkEncryptionPassword } from '../../../api/check-password-api';
 import ModalFooter from '../../../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../../../carbonio-ui-commons/components/modals/modal-header';
 import { useSmimePasswordStore } from '../../../store/certificates/store';

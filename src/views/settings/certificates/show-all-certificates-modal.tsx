@@ -8,8 +8,8 @@ import React, { useCallback, useState, useMemo } from 'react';
 import { Button, Container, Table, Tooltip, useSnackbar } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
 
-import { deletePersonalCertificate } from '../../../api/delete-personal-certificate-action';
-import { selectPersonalCertificate } from '../../../api/select-personal-certificate-action';
+import { deletePersonalCertificate } from '../../../api/delete-personal-certificate-api';
+import { selectPersonalCertificate } from '../../../api/select-personal-certificate-api';
 import ModalFooter from '../../../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../../../carbonio-ui-commons/components/modals/modal-header';
 import { useSmimePasswordStore } from '../../../store/certificates/store';

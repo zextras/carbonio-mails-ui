@@ -35,9 +35,9 @@ import { SizeExceededWarningBanner } from './parts/size-exceeded-waring-banner';
 import { SubjectRow } from './parts/subject-row';
 import { TextEditorContainer } from './parts/text-editor-container';
 import { WarningBanner } from './parts/warning-banner';
-import { checkExistEncryptionPassword } from '../../../../api/check-exist-password-action';
+import { checkExistEncryptionPassword } from '../../../../api/check-exist-password-api';
 import { checkIsSmimeEnabled } from '../../../../api/check-is-smime-enable-api';
-import { checkPersonalCertificateExist } from '../../../../api/check-personal-certificate-exist-action';
+import { checkPersonalCertificateExist } from '../../../../api/check-personal-certificate-exist-api';
 import { GapContainer, GapRow } from '../../../../commons/gap-container';
 import { EDIT_VIEW_CLOSING_REASONS, EditViewActions, TIMEOUTS } from '../../../../constants';
 import { buildArrayFromFileList } from '../../../../helpers/files';
@@ -579,6 +579,7 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 							onSmimeEncryptOptionChange={(isEncryptSelected: boolean): void =>
 								isEncryptSelected ? handleEncryptSelected() : handleEncryptDeselected()
 							}
+							isSmimeEnabled={isSmimeEnabled}
 						/>
 						<Tooltip
 							label={saveDraftAllowedStatus?.reason}

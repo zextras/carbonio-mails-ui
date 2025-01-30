@@ -21,7 +21,7 @@ import { CertificatePasswordModal } from './certificate-password-modal';
 import { EnterPasswordModal } from './enter-password-modal';
 import PersonalCertificatesSettings from './personal-certificates-settings';
 import RecipientsCertificateSettings from './recipients-certificates-settings';
-import { checkExistEncryptionPassword } from '../../../api/check-exist-password-action';
+import { checkExistEncryptionPassword } from '../../../api/check-exist-password-api';
 import { useUpdateView } from '../../../carbonio-ui-commons/hooks/use-update-view';
 import { useSmimePasswordStore } from '../../../store/certificates/store';
 
