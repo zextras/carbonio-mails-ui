@@ -10,6 +10,8 @@ import * as sharedFunctions from '../../integrations/shared-functions';
 import {
 	mailToAction,
 	mailToActionOnClick,
+	mailToRecipientsAction,
+	mailToRecipientsActionOnClick,
 	newEmailAction,
 	newEmailActionOnClick,
 	registerShellActions
@@ -23,6 +25,11 @@ describe('registerShellActions', () => {
 			action: expect.any(Function),
 			id: 'mail-to',
 			type: 'contact-list'
+		});
+		expect(registerActions).toHaveBeenCalledWith({
+			action: expect.any(Function),
+			id: 'mail-to',
+			type: 'recipients'
 		});
 		expect(registerActions).toHaveBeenCalledWith({
 			action: expect.any(Function),
@@ -74,6 +81,30 @@ describe('mailToActionOnClick', () => {
 		];
 		expect(sharedFunctions.mailToSharedFunction).toHaveBeenCalledWith(
 			expectedMailToSharedFunctionArgument
+		);
+	});
+});
+
+describe('mailToRecipientsActionOnClick', () => {
+	it('when called it should invoke mailToSharedFunction with the correct parameter', async () => {
+		jest.spyOn(sharedFunctions, 'mailToSharedFunction');
+
+		const recipients = [
+			{ email: 'anymail', name: 'any', carbonCopy: false },
+			{ email: 'anothermail', name: 'another', carbonCopy: true }
+		];
+
+		mailToRecipientsActionOnClick({} as KeyboardEvent, {
+			recipients,
+			subject: 'any subject'
+		});
+		const expectedRecipients = [
+			{ address: 'anymail', fullName: 'any', type: 't' },
+			{ address: 'anothermail', fullName: 'another', type: 'c' }
+		];
+		expect(sharedFunctions.mailToSharedFunction).toHaveBeenCalledWith(
+			expectedRecipients,
+			'any subject'
 		);
 	});
 });
