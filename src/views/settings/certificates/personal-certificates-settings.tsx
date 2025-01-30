@@ -121,7 +121,7 @@ const PersonalCertificatesSettings: FC = (): ReactElement => {
 
 	const onCertificateUploadConfirm = useCallback(
 		(certificate: PersonalCertificate) => {
-			uploadPersonalCertificate(certificate, smimePassword, true).then((res) => {
+			uploadPersonalCertificate(certificate, smimePassword, false).then((res) => {
 				if ('data' in res) {
 					createSnackbar({
 						key: `certificate-uploaded`,
