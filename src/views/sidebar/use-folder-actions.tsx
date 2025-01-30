@@ -100,7 +100,6 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 										// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 										// @ts-ignore
 										onClose={(): void => closeModal()}
-										isMessageView
 										isRestore
 										deselectAll={deselectAll}
 									/>

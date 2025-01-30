@@ -18,11 +18,11 @@ import { isRoot } from '../helpers/folders';
 import { useUiUtilities } from '../hooks/use-ui-utilities';
 import { convActionEmailStoreAction } from '../store/emails/actions/conv-action-action';
 import { msgActionEmailStoreAction } from '../store/emails/actions/msg-action-action';
+import { useIsMessageView } from '../views/search/search-view-hooks';
 import { FolderSelector } from '../views/sidebar/commons/folder-selector';
 
 type MoveConvMessageProps = {
 	selectedIDs: string[];
-	isMessageView: boolean;
 	isRestore?: boolean;
 	deselectAll?: () => void;
 	onClose: () => void;
@@ -31,13 +31,13 @@ type MoveConvMessageProps = {
 
 export const MoveConvMessage = ({
 	selectedIDs,
-	isMessageView,
 	isRestore,
 	deselectAll,
 	onClose,
 	folderId
 }: MoveConvMessageProps): ReactElement => {
 	const [t] = useTranslation();
+	const isMessageView = useIsMessageView();
 	const { createSnackbar } = useUiUtilities();
 	const [inputValue, setInputValue] = useState('');
 	const [folderDestination, setFolderDestination] = useState<Folder | undefined>();
