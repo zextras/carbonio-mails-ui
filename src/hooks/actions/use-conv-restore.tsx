@@ -39,7 +39,7 @@ export const useConvRestoreFn = ({
 							folderId={folderId}
 							selectedIDs={[conversationId]}
 							onClose={(): void => closeModal(modalId)}
-							isMessageView
+							isMessageView={false}
 							isRestore
 							deselectAll={deselectAll ?? noop}
 						/>

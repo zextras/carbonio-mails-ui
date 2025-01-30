@@ -134,7 +134,7 @@ export const MoveConvMessage = ({
 		[folderDestination?.children, inputValue]
 	);
 
-	const isDisabled = useMemo(() => {
+	const isDestinationFolderSelectionInvalid = useMemo(() => {
 		if (moveConvModal) {
 			return (
 				!folderDestination || folderDestination?.id === folderId || isRoot(folderDestination?.id)
@@ -233,7 +233,7 @@ export const MoveConvMessage = ({
 			: t('folder_panel.modal.new.create_footer', 'Create and Move');
 	}, [isRestore, moveConvModal, t]);
 
-	const modalFooterTooltip = isDisabled
+	const modalFooterTooltip = isDestinationFolderSelectionInvalid
 		? ''
 		: t('label.folder_not_valid_destination', 'The selected folder is not a valid destination');
 
@@ -302,7 +302,7 @@ export const MoveConvMessage = ({
 					secondaryAction={footerSecondary}
 					label={footerLabel}
 					secondaryLabel={moveConvModal ? t('label.cancel', 'Cancel') : t('go_back', 'Go Back')}
-					disabled={isDisabled}
+					disabled={isDestinationFolderSelectionInvalid}
 				/>
 			</Container>
 		</Container>
