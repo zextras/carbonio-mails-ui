@@ -6,34 +6,21 @@
 export async function uploadRecipientCertificate(
 	certificateContent: string | ArrayBuffer
 ): Promise<{ data: Response } | { error: unknown }> {
-	const apiCall = fetch(
-		`/service/extension/encryption/smime/recipient
-`,
-		{
+	try {
+		const response = await fetch(`/service/extension/encryption/smime/recipient`, {
 			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify({
-				certificate: certificateContent
-			})
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ certificate: certificateContent })
+		});
+
+		if (!response.ok) {
+			console.error('Response not OK:', response.status, response.statusText);
+			return { error: response.statusText };
 		}
-	);
-	return Promise.allSettled([apiCall])
-		.then(async ([result]) => {
-			if (result.status === 'fulfilled') {
-				const response = result.value;
-				if (response.ok) {
-					return { data: response };
-				}
-				try {
-					return await response.json();
-				} catch (error) {
-					console.error('Error parsing response:', error);
-					return { error };
-				}
-			}
-			return { error: result };
-		})
-		.catch((error) => ({ error }));
+
+		return { data: response };
+	} catch (error) {
+		console.error('Error during fetch:', error);
+		return { error };
+	}
 }

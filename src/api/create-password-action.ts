@@ -3,32 +3,34 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+
 export async function createEncryptionPassword(
 	password: string,
 	isReset?: boolean
 ): Promise<{ data: Response } | { error: unknown }> {
-	const apiCall = fetch(`/service/extension/encryption/password${isReset ? '/reset' : ''}`, {
-		method: 'POST',
-		headers: {
-			'Content-Type': 'application/json'
-		},
-		body: JSON.stringify({ password })
-	});
-	return Promise.allSettled([apiCall])
-		.then(async ([result]) => {
-			if (result.status === 'fulfilled') {
-				const response = result.value;
-				if (response.ok) {
-					return { data: response };
-				}
-				try {
-					return await response.json();
-				} catch (error) {
-					console.error('Error parsing response:', error);
-					return { error };
-				}
+	try {
+		const response = await fetch(
+			`/service/extension/encryption/password${isReset ? '/reset' : ''}`,
+			{
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ password })
 			}
-			return { error: result };
-		})
-		.catch((error) => ({ error }));
+		);
+
+		if (!response.ok) {
+			console.error('Response not OK:', response.status, response.statusText);
+			return { error: response.statusText };
+		}
+
+		try {
+			return { data: response };
+		} catch (error) {
+			console.error('Error parsing response:', error);
+			return { error };
+		}
+	} catch (error) {
+		console.error('Error during fetch:', error);
+		return { error };
+	}
 }
