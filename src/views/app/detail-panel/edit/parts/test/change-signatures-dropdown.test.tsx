@@ -10,8 +10,12 @@ import { act } from '@testing-library/react';
 import { getUserAccount } from '@zextras/carbonio-shell-ui';
 import * as hooks from '@zextras/carbonio-shell-ui';
 import { cloneDeep, noop } from 'lodash';
+import { HttpResponse } from 'msw';
 
-import { createSoapAPIInterceptor } from '../../../../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
+import {
+	createAPIInterceptor,
+	createSoapAPIInterceptor
+} from '../../../../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { screen, setupTest } from '../../../../../../carbonio-ui-commons/test/test-setup';
 import { addEditor } from '../../../../../../store/editor';
 import { generateNewMessageEditor } from '../../../../../../store/editor/editor-generators';
@@ -26,6 +30,11 @@ describe('Change signature while composing mail', () => {
 	 */
 	it('Change signatures icon should show if user have signatures', async () => {
 		createSoapAPIInterceptor('GetShareInfo');
+		createAPIInterceptor(
+			'get',
+			'/service/extension/encryption/password/enabled',
+			HttpResponse.json({ enabled: true })
+		);
 		const interceptor = aSuccessfullSaveDraft();
 		setupEditorStore({ editors: [] });
 		const editor = generateNewMessageEditor();
