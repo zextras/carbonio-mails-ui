@@ -32,7 +32,7 @@ const RecipientsCertificateSettings: FC = (): ReactElement => {
 	const createSnackbar = useSnackbar();
 	const [t] = useTranslation();
 
-	const headers = [
+	const recipientsCertificateHeaders = [
 		{
 			id: 'email',
 			label: t('settings.uploadCertificate.mailAddress', 'Mail address'),
@@ -215,7 +215,12 @@ const RecipientsCertificateSettings: FC = (): ReactElement => {
 			id={'recipient-certificates'}
 			padding={{ all: 'large' }}
 		>
-			<Table rows={items} headers={headers} showCheckbox={false} multiSelect={false} />
+			<Table
+				rows={items}
+				headers={recipientsCertificateHeaders}
+				showCheckbox={false}
+				multiSelect={false}
+			/>
 			{items.length === 0 && (
 				<Container padding={{ vertical: 'large' }}>
 					<Text>

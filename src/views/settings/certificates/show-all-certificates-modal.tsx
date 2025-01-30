@@ -34,7 +34,7 @@ const ShowAllCertificatesModal = ({
 	const [isUpdateList, setIsUpdateList] = useState(false);
 
 	// Common header configuration
-	const headers = useMemo(
+	const allCertificatesHeaders = useMemo(
 		() => [
 			{
 				id: 'issuer',
@@ -180,7 +180,7 @@ const ShowAllCertificatesModal = ({
 			<Container padding={{ all: 'small' }} crossAlignment="flex-start" height="fit">
 				<Table
 					rows={getCertificateRows}
-					headers={headers}
+					headers={allCertificatesHeaders}
 					showCheckbox
 					multiSelect={false}
 					onSelectionChange={setSelectedRows}
