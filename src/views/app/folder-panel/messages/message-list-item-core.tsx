@@ -149,7 +149,7 @@ export const MessageListItemCore = ({
 	const onToggle = useMemo(() => (isConvChildren ? noop : toggle), [isConvChildren, toggle]);
 
 	return (
-		<>
+		<Container mainAlignment="flex-start" orientation="horizontal" height={'4rem'}>
 			<div style={{ alignSelf: 'center' }} data-testid={`message-list-item-avatar-${message.id}`}>
 				<ItemAvatar
 					item={message}
@@ -281,6 +281,6 @@ export const MessageListItemCore = ({
 					</Row>
 				</Container>
 			</Row>
-		</>
+		</Container>
 	);
 };
