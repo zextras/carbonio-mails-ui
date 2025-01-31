@@ -8,7 +8,7 @@
 import { MutableRefObject, useEffect, useRef, useState } from 'react';
 
 import { useNotify, useRefresh } from '@zextras/carbonio-shell-ui';
-import { forEach, isEmpty, map, sortBy } from 'lodash';
+import { flatten, forEach, isEmpty, map, sortBy } from 'lodash';
 import { StoreApi, UseBoundStore } from 'zustand';
 
 import { useFolderStore } from '../../../carbonio-ui-commons/store/zustand/folder';
@@ -25,15 +25,25 @@ import {
 	handleNotifyMessagesCreated,
 	handleNotifyConversationsModified,
 	handleNotifyMessagesModified,
-	handleNotifyDeleted
+	handleNotifyDeleted,
+	updateMessages
 } from '../../../store/emails/store';
 import {
 	FolderState,
+	IncompleteMessage,
 	SoapConversation,
 	SoapFolder,
 	SoapIncompleteMessage,
 	SoapLink
 } from '../../../types';
+
+export function extractConvMessage(
+	createdConversations: Array<SoapConversation>
+): Array<IncompleteMessage> {
+	return flatten(createdConversations.map((conversation) => conversation.m || [])).map((message) =>
+		normalizeMailMessageFromSoap(message)
+	);
+}
 
 type SoapNotify = {
 	seq: number;
@@ -80,7 +90,7 @@ function handleFoldersNotify({
 		!isEmpty(notifyList) &&
 		(notify?.created?.folder ||
 			notify?.modified?.folder ||
-			notify.deleted ||
+			notify?.deleted?.length > 0 ||
 			notify?.created?.link ||
 			notify?.modified?.link);
 
@@ -109,6 +119,8 @@ function processCreatedNotifications(notify: SoapNotify): void {
 			mapToNormalizedConversation({ conversation, messages: createdMessages })
 		);
 		handleNotifyConversationsCreated(conversations);
+		const convMessages = extractConvMessage(createdConversations);
+		updateMessages(convMessages);
 	}
 
 	if (createdMessages) {
@@ -121,6 +133,9 @@ function processModifiedNotifications(notify: SoapNotify): void {
 	if (notify.modified?.c) {
 		const updatedConversations = normalizeConversations(notify.modified.c);
 		handleNotifyConversationsModified(updatedConversations);
+
+		const convMessages = extractConvMessage(notify.modified.c);
+		updateMessages(convMessages);
 	}
 
 	if (notify.modified?.m) {

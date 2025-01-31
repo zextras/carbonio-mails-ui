@@ -10,7 +10,7 @@ import { getBodyWrapper } from './get-body-wrapper';
 import { getCompleteHTML } from './get-complete-html';
 import { getHeader } from './get-header';
 import { findAttachments } from '../../helpers/attachments';
-import { Conversation, type MailMessage } from '../../types';
+import { NormalizedConversation, type MailMessage } from '../../types';
 import { _CI_REGEX, _CI_SRC_REGEX, plainTextToHTML } from '../utils';
 
 function getSs(conversationMessage: Array<MailMessage>): Array<string> {
@@ -70,7 +70,7 @@ export const getContentForPrint = ({
 	isMsg = false
 }: {
 	messages: Array<MailMessage>;
-	conversations: Array<Pick<Conversation, 'id' | 'subject'>>;
+	conversations: Array<Pick<NormalizedConversation, 'id' | 'subject'>>;
 	isMsg: boolean;
 }): string => {
 	let content = '';

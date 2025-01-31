@@ -209,6 +209,7 @@ function setMessagesInSearchSlice(messages: Array<MailMessage | IncompleteMessag
 // ###########################################
 // #### populatedItemsSlice related functions
 // ###########################################
+
 /**
  * Retrieves messages belonging to a specific conversation from the store.
  * This function compiles an array of messages associated with the given conversation ID.
@@ -219,6 +220,11 @@ export function useConversationMessages(
 	return populatedItemsSliceUtils.useConversationMessages(conversationId, useEmailsStore);
 }
 
+export function getConversationMessages(
+	conversationId: string
+): Array<MailMessage | IncompleteMessage> {
+	return populatedItemsSliceUtils.getConversationMessages(conversationId, useEmailsStore);
+}
 /**
  * Handles the response for removing attachments from messages using `deleteAttachmentsSoapApi`
  * and updates the emails store state.
@@ -324,15 +330,17 @@ export function getConversationById(id: string): NormalizedConversation {
 
 /**
  * Provides access to a specific message by its ID from the populated items slice.
- * This function retrieves the message using the provided store selector.
+ * If the message is not found, it is not fetched from the server.
+ * For fetching the message, use `useCompleteMessageOrFetch` instead.
  */
-export function useMessageById(id: string): IncompleteMessage | MailMessage {
+export function useMessageById(id: string): IncompleteMessage | MailMessage | undefined {
 	return useEmailsStore(({ populatedItemsSlice }) => populatedItemsSlice.messages[id]);
 }
 
 /**
  * Retrieves messages corresponding to a list of unique identifiers from the `populatedItemsSlice`.
- * This function filters and returns only the valid messages from the emails store.
+ * This function filters and returns only the valid messages from the emails store, respecting
+ * the provided order.
  */
 export function useMessagesByIds(ids: Array<string>): Array<IncompleteMessage | MailMessage> {
 	return populatedItemsSliceUtils.useMessagesByIds(ids, useEmailsStore);
@@ -340,7 +348,8 @@ export function useMessagesByIds(ids: Array<string>): Array<IncompleteMessage | 
 
 /**
  * Retrieves conversations corresponding to a list of unique identifiers from the `populatedItemsSlice`.
- * This function filters and returns only the conversations that match the provided IDs.
+ * This function filters and returns only the conversations that match the provided IDs, respecting
+ * the provided order.
  */
 export function useConversationsByIds(ids: Array<string>): Array<NormalizedConversation> {
 	return populatedItemsSliceUtils.useConversationsByIds(ids, useEmailsStore);
@@ -357,7 +366,8 @@ export function useConversationStatus(id: string): SearchRequestStatus {
 /**
  * Updates the messages in the `populatedItemsSlice` of the emails store.
  * It iterates through array of passed mail message and updates the store's state
- * by merging each message with its existing entry (if any).
+ * by merging each message with its existing entry (if any), if the message is complete
+ * the API_REQUEST_STATUS for the message is also updated to fulfilled.
  */
 export function updateMessages(messages: MailMessage[]): void {
 	addTask(async () => {
@@ -423,10 +433,10 @@ export function useMessagesIdsByFolder(folderId: string): Array<string> {
  */
 export function setMessagesInEmailStore(
 	messages: Array<MailMessage | IncompleteMessage>,
-	more: boolean
+	more?: boolean
 ): void {
 	addTask(async () => {
-		messageIndexSliceUtils.setMessages(messages, more, useEmailsStore);
+		messageIndexSliceUtils.setMessagesInEmailStore(messages, useEmailsStore, more);
 	});
 }
 
@@ -556,13 +566,14 @@ export function setConversationsInEmailStore(
 	more: boolean
 ): void {
 	addTask(async () => {
-		conversationIndexSliceUtils.setConversations(conversations, more, useEmailsStore);
+		conversationIndexSliceUtils.setConversationsInEmailStore(conversations, more, useEmailsStore);
 	});
 }
 
 // ##########################################
 // ##### sync-data-handler related functions
 // ##########################################
+
 /**
  * Queues a task to handle the deletion of conversations and messages from search indexes,
  * message and conversation index slices, and the email store state.

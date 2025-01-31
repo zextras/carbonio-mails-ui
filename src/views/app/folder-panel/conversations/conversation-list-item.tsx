@@ -4,14 +4,12 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React, { memo, ReactNode, useCallback, useMemo, useState } from 'react';
+import React, { memo, useCallback, useMemo, useState } from 'react';
 
 import {
 	Badge,
 	Button,
 	Container,
-	ContainerProps,
-	Dropdown,
 	Icon,
 	Padding,
 	Row,
@@ -30,19 +28,11 @@ import { ZIMBRA_STANDARD_COLORS } from '../../../../carbonio-ui-commons/constant
 import { useTags } from '../../../../carbonio-ui-commons/store/zustand/tags';
 import { Tag } from '../../../../carbonio-ui-commons/types/tags';
 import { API_REQUEST_STATUS } from '../../../../constants';
-import { normalizeDropdownActionItem } from '../../../../helpers/actions';
-import { useConvActions } from '../../../../hooks/actions/use-conv-actions';
 import { useConvPreviewOnSeparatedWindowFn } from '../../../../hooks/actions/use-conv-preview-on-separated-window';
 import { useConvSetReadFn } from '../../../../hooks/actions/use-conv-set-read';
-import { useTagDropdownItem } from '../../../../hooks/use-tag-dropdown-item';
 import { searchConvEmailStoreAction } from '../../../../store/emails/actions/search-conv-action';
-import { useConversationStatus, useMessagesByIds } from '../../../../store/emails/store';
-import {
-	ConversationListItemProps,
-	TextReadValuesProps,
-	NormalizedConversation,
-	Conversation
-} from '../../../../types';
+import { useConversationMessages, useConversationStatus } from '../../../../store/emails/store';
+import { ConversationListItemProps, TextReadValuesProps } from '../../../../types';
 import { ConversationPreviewPanel } from '../../detail-panel/conversation-preview-panel';
 import { HoverBarContainer } from '../parts/hover-bar-container';
 import { HoverContainer } from '../parts/hover-container';
@@ -227,8 +217,8 @@ export const ConversationListItem = memo(function ConversationListItem({
 }: ConversationListItemProps): React.JSX.Element {
 	const { itemId } = useParams<{ itemId: string }>();
 	const [open, setOpen] = useState(false);
-	const messages = useMessagesByIds(conversation.messages.map((m) => m.id));
-	const folderParent = folderId ?? conversation.messages?.[0]?.parent;
+	const messages = useConversationMessages(conversation.id);
+	const folderParent = folderId ?? messages?.[0]?.parent;
 	const [t] = useTranslation();
 
 	const markAsRead = useConvSetReadFn({

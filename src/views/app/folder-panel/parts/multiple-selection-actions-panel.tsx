@@ -10,7 +10,7 @@ import { Button, Container, IconButton, Row, Tooltip } from '@zextras/carbonio-d
 import { t, useUserSettings } from '@zextras/carbonio-shell-ui';
 
 import { useUiUtilities } from '../../../../hooks/use-ui-utilities';
-import { useMessagesByIds } from '../../../../store/emails/store';
+import { useConversationsByIds, useMessagesByIds } from '../../../../store/emails/store';
 import { getFolderParentId } from '../../../../ui-actions/utils';
 import { ConversationsMultipleSelectionActions } from '../conversations/conversations-multiple-selection-actions';
 import { MessagesMultipleSelectionActions } from '../messages/messages-multiple-selection-actions';
@@ -40,7 +40,9 @@ export const MultipleSelectionActionsPanel = ({
 	const { zimbraPrefGroupMailBy } = useUserSettings().prefs;
 	const isConversation = zimbraPrefGroupMailBy === 'conversation';
 
-	const fullItems = useMessagesByIds(itemsIds);
+	const messages = useMessagesByIds(itemsIds);
+	const conversations = useConversationsByIds(itemsIds);
+	const fullItems = isConversation ? conversations : messages;
 	const folderParentId = getFolderParentId({ folderId, isConversation, items: fullItems });
 
 	const [currentFolderId] = useState(folderParentId);

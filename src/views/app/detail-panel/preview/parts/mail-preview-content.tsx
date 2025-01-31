@@ -17,28 +17,28 @@ import { filter } from 'lodash';
 import { MailMessageRenderer } from '../../../../../commons/mail-message-renderer/mail-message-renderer';
 import SharedInviteReply from '../../../../../integrations/shared-invite-reply';
 import { msgActionEmailStoreAction } from '../../../../../store/emails/actions/msg-action-action';
-import { useCompleteMessageOrFetch } from '../../../../../store/emails/hooks/hooks';
-import type { OpenEmlPreviewType } from '../../../../../types';
+import type { IncompleteMessage, MailMessage, OpenEmlPreviewType } from '../../../../../types';
 import AttachmentsBlock from '../attachments-block';
 import ReadReceiptModal from '../read-receipt-modal';
 
 const [InviteResponse, integrationAvailable] = getIntegratedComponent('invites-reply');
 
 type MailPreviewContentProps = {
-	messageId: string;
+	message: MailMessage | IncompleteMessage;
 	isMailPreviewOpen: boolean;
 	isExternalMessage?: boolean;
 	isInsideExtraWindow?: boolean;
 	openEmlPreview?: OpenEmlPreviewType;
 };
 export const MailPreviewContent = ({
-	messageId,
+	message,
 	isMailPreviewOpen,
 	isExternalMessage = false,
 	openEmlPreview,
 	isInsideExtraWindow = false
 }: MailPreviewContentProps): React.JSX.Element => {
 	const [showModal, setShowModal] = useState(true);
+	const messageId = message.id;
 	const accounts = useUserAccounts();
 	const { prefs } = useUserSettings();
 	const moveToTrash = useCallback(() => {
@@ -47,8 +47,6 @@ export const MailPreviewContent = ({
 			ids: [messageId]
 		});
 	}, [messageId]);
-
-	const { message } = useCompleteMessageOrFetch(messageId);
 
 	const showAppointmentInvite = useMemo(
 		() =>

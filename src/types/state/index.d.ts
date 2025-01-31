@@ -26,7 +26,6 @@ export type EditorsStateTypeV2 = {
 	setAutoSendTime: (id: MailsEditorV2['id'], autoSendTime: MailsEditorV2['autoSendTime']) => void;
 	setDid: (id: MailsEditorV2['id'], did: MailsEditorV2['did']) => void;
 	setSize: (id: MailsEditorV2['id'], size: MailsEditorV2['size']) => void;
-	setTotalSmartLinksSize: (id: MailsEditorV2['id']) => void;
 	setIsRichText: (id: MailsEditorV2['id'], isRichText: MailsEditorV2['isRichText']) => void;
 	setIsUrgent: (id: MailsEditorV2['id'], isUrgent: MailsEditorV2['isUrgent']) => void;
 	setRequestReadReceipt: (

@@ -13,11 +13,11 @@ import { useConvSetSpamFn } from './actions/use-conv-set-spam';
 import { useConvSetUnflagFn } from './actions/use-conv-set-unflag';
 import { useConvSetUnreadFn } from './actions/use-conv-set-unread';
 import { useConversationById } from '../store/emails/store';
-import { Conversation } from '../types';
+import { NormalizedConversation } from '../types';
 
 type HandleKeyboardShortcutsArguments = {
 	deselectAll: () => void;
-	conversationId: Conversation['id'];
+	conversationId: NormalizedConversation['id'];
 	folderId: string;
 };
 

@@ -55,18 +55,6 @@ describe('store', () => {
 		expect(newEditor.savedAttachments[0].requiresSmartLinkConversion).toBe(false);
 	});
 
-	test('setTotalSmartLinksSize should calculate the right total size for smart link attachments', async () => {
-		const editor = await readyToBeSentEditorTestCase({
-			savedAttachments: [smartLinkAttachment(333), attachment(444)]
-		});
-		setupEditorStore({ editors: [editor] });
-
-		useEditorsStore.getState().setTotalSmartLinksSize(editor.id);
-
-		const newEditor = useEditorsStore.getState().editors[editor.id];
-		expect(newEditor.totalSmartLinksSize).toEqual(333);
-	});
-
 	test('setSize should set the editor size for the provided editor id', async () => {
 		const editor = await readyToBeSentEditorTestCase();
 		setupEditorStore({ editors: [editor] });

@@ -6,7 +6,7 @@
 
 import React from 'react';
 
-import { act } from '@testing-library/react';
+import { waitFor } from '@testing-library/react';
 
 import { setupTest, screen } from '../../../../../carbonio-ui-commons/test/test-setup';
 import { updateConversations, updateMessages } from '../../../../../store/emails/store';
@@ -26,15 +26,15 @@ describe('Conversation Preview Panel', () => {
 		updateMessages(messages);
 		const conversation = generateConversation({
 			id: '123',
-			messages
+			messageIds: messages.map((m) => m.id)
 		});
 		updateConversations([conversation]);
 		setupTest(<ConversationPreviewPanel conversation={conversation} isInsideExtraWindow={false} />);
 
-		await act(async () => {
+		await waitFor(async () => {
 			expect(screen.getByTestId('ConversationMessagePreview-1')).toBeInTheDocument();
 		});
-		await act(async () => {
+		await waitFor(async () => {
 			expect(screen.getByTestId('ConversationMessagePreview-2')).toBeInTheDocument();
 		});
 	});

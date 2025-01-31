@@ -4,23 +4,21 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { waitFor, renderHook } from '@testing-library/react';
+import { waitFor, renderHook, act } from '@testing-library/react';
 import { SoapNotify, useRefresh } from '@zextras/carbonio-shell-ui';
 import { http } from 'msw';
 
-import { generateMessageFromAPI } from '../../tests/generators/api';
-import { SoapIncompleteMessage } from '../../types';
+import { generateConversationFromAPI, generateMessageFromAPI } from '../../tests/generators/api';
+import { SoapConversation, SoapIncompleteMessage } from '../../types';
 import { useSyncDataHandler } from './commons/sync-data-handler-hooks';
 import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
 import { useFolderStore } from '../../carbonio-ui-commons/store/zustand/folder';
-import { getTags } from '../../carbonio-ui-commons/store/zustand/tags';
-import { useTagStore } from '../../carbonio-ui-commons/store/zustand/tags/store';
+import { useTagStore } from '../../carbonio-ui-commons/store/zustand/tags';
 import { getSetupServer } from '../../carbonio-ui-commons/test/jest-setup';
 import { useNotify } from '../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
 import { generateFolder } from '../../carbonio-ui-commons/test/mocks/folders/folders-generator';
 import { handleGetFolderRequest } from '../../carbonio-ui-commons/test/mocks/network/msw/handle-get-folder';
 import { handleGetShareInfoRequest } from '../../carbonio-ui-commons/test/mocks/network/msw/handle-get-share-info';
-import { tags } from '../../carbonio-ui-commons/test/mocks/tags/tags';
 import { folderWorker, tagsWorker } from '../../carbonio-ui-commons/worker';
 import {
 	useConversationById,
@@ -90,6 +88,34 @@ function mockSoapModifyMessageAction(
 	(useNotify as jest.Mock).mockReturnValue([soapNotify]);
 }
 
+function mockSoapMessageActionAndConversationModified(
+	mailboxNumber: number,
+	messageId: string,
+	conversationId: string,
+	actions: Array<string>
+): void {
+	mockSoapRefresh(mailboxNumber);
+	const action = actions.join('');
+	const soapNotify = generateSoapAction({
+		modified: {
+			mbx: [{ s: 1000 }],
+			m: [
+				{
+					id: messageId,
+					f: `s${action}`
+				}
+			],
+			c: [
+				{
+					id: conversationId,
+					f: `s${action}`
+				}
+			]
+		}
+	});
+	(useNotify as jest.Mock).mockReturnValue([soapNotify]);
+}
+
 function mockSoapModifyMessageFolder(
 	mailboxNumber: number,
 	messageId: string,
@@ -132,6 +158,21 @@ function mockSoapCreateMessage(
 	(useNotify as jest.Mock).mockReturnValue([soapNotify]);
 }
 
+function mockSoapCreateMessageAndConversation(
+	mailboxNumber: number,
+	messages: Array<SoapIncompleteMessage>,
+	conversation: Array<SoapConversation>
+): void {
+	mockSoapRefresh(mailboxNumber);
+	const soapNotify = generateSoapAction({
+		created: {
+			m: messages,
+			c: conversation
+		}
+	});
+	(useNotify as jest.Mock).mockReturnValue([soapNotify]);
+}
+
 jest.mock('../../carbonio-ui-commons/store/zustand/tags', () => ({
 	...jest.requireActual('../../carbonio-ui-commons/store/zustand/tags'),
 	getTags: jest.fn()
@@ -141,11 +182,8 @@ describe('sync data handler', () => {
 	const mailboxNumber = 1000;
 	describe('conversations', () => {
 		it('should mark conversation as read', async () => {
-			(getTags as jest.Mock).mockReturnValue(tags);
-
-			useTagStore.setState({ tags });
 			setSearchResultsByConversation(
-				[generateConversation({ id: '123', messages: [], isRead: false })],
+				[generateConversation({ id: '123', messageIds: [], isRead: false })],
 				false
 			);
 			mockSoapModifyConversationAction(mailboxNumber, [READ]);
@@ -154,12 +192,12 @@ describe('sync data handler', () => {
 
 			const { result } = renderHook(() => useConversationById('123'));
 			await waitFor(() => {
-				expect(result.current.read).toBe(true);
+				expect(result.current?.read).toBe(true);
 			});
 		});
 		it('should mark conversation as unread', async () => {
 			setSearchResultsByConversation(
-				[generateConversation({ id: '123', messages: [], isRead: true })],
+				[generateConversation({ id: '123', messageIds: [], isRead: true })],
 				false
 			);
 			mockSoapModifyConversationAction(mailboxNumber, [UNREAD]);
@@ -168,13 +206,13 @@ describe('sync data handler', () => {
 
 			const { result } = renderHook(() => useConversationById('123'));
 			await waitFor(() => {
-				expect(result.current.read).toBe(false);
+				expect(result.current?.read).toBe(false);
 			});
 		});
 
 		it('should mark conversation as flagged', async () => {
 			setSearchResultsByConversation(
-				[generateConversation({ id: '123', messages: [], isFlagged: false })],
+				[generateConversation({ id: '123', messageIds: [], isFlagged: false })],
 				false
 			);
 			mockSoapModifyConversationAction(mailboxNumber, [FLAGGED]);
@@ -183,12 +221,12 @@ describe('sync data handler', () => {
 
 			const { result } = renderHook(() => useConversationById('123'));
 			await waitFor(() => {
-				expect(result.current.flagged).toBe(true);
+				expect(result.current?.flagged).toBe(true);
 			});
 		});
 		it('should mark conversation as not flagged', async () => {
 			setSearchResultsByConversation(
-				[generateConversation({ id: '123', messages: [], isFlagged: true })],
+				[generateConversation({ id: '123', messageIds: [], isFlagged: true })],
 				false
 			);
 			mockSoapModifyConversationAction(mailboxNumber, [NOTFLAGGED]);
@@ -197,7 +235,7 @@ describe('sync data handler', () => {
 
 			const { result } = renderHook(() => useConversationById('123'));
 			await waitFor(() => {
-				expect(result.current.flagged).toBe(false);
+				expect(result.current?.flagged).toBe(false);
 			});
 		});
 	});
@@ -211,7 +249,7 @@ describe('sync data handler', () => {
 
 			const { result } = renderHook(() => useMessageById('1'));
 			await waitFor(() => {
-				expect(result.current.read).toBe(true);
+				expect(result.current?.read).toBe(true);
 			});
 		});
 		it('should mark messages as unread', async () => {
@@ -222,7 +260,7 @@ describe('sync data handler', () => {
 
 			const { result } = renderHook(() => useMessageById('1'));
 			await waitFor(() => {
-				expect(result.current.read).toBe(false);
+				expect(result.current?.read).toBe(false);
 			});
 		});
 
@@ -234,7 +272,7 @@ describe('sync data handler', () => {
 
 			const { result } = renderHook(() => useMessageById('1'));
 			await waitFor(() => {
-				expect(result.current.flagged).toBe(true);
+				expect(result.current?.flagged).toBe(true);
 			});
 		});
 		it('should mark messages as not flagged', async () => {
@@ -245,7 +283,7 @@ describe('sync data handler', () => {
 
 			const { result } = renderHook(() => useMessageById('1'));
 			await waitFor(() => {
-				expect(result.current.flagged).toBe(false);
+				expect(result.current?.flagged).toBe(false);
 			});
 		});
 
@@ -257,7 +295,7 @@ describe('sync data handler', () => {
 
 			const { result } = renderHook(() => useMessageById('1'));
 			await waitFor(() => {
-				expect(result.current.parent).toBe(FOLDERS.SPAM);
+				expect(result.current?.parent).toBe(FOLDERS.SPAM);
 			});
 		});
 		it('should mark message as not spam', async () => {
@@ -268,7 +306,7 @@ describe('sync data handler', () => {
 
 			const { result } = renderHook(() => useMessageById('1'));
 			await waitFor(() => {
-				expect(result.current.parent).toBe(FOLDERS.INBOX);
+				expect(result.current?.parent).toBe(FOLDERS.INBOX);
 			});
 		});
 
@@ -280,7 +318,7 @@ describe('sync data handler', () => {
 
 			const { result } = renderHook(() => useMessageById('1'));
 			await waitFor(() => {
-				expect(result.current.parent).toBe(FOLDERS.TRASH);
+				expect(result.current?.parent).toBe(FOLDERS.TRASH);
 			});
 		});
 
@@ -292,7 +330,7 @@ describe('sync data handler', () => {
 
 			const { result } = renderHook(() => useMessageById('1'));
 			await waitFor(() => {
-				expect(result.current.parent).toBe(FOLDERS.INBOX);
+				expect(result.current?.parent).toBe(FOLDERS.INBOX);
 			});
 		});
 
@@ -304,7 +342,7 @@ describe('sync data handler', () => {
 
 			const { result } = renderHook(() => useMessageById('1'));
 			await waitFor(() => {
-				expect(result.current.parent).toBe('bbb');
+				expect(result.current?.parent).toBe('bbb');
 			});
 		});
 
@@ -334,9 +372,10 @@ describe('sync data handler', () => {
 		});
 
 		it('should add message to store when created', async () => {
+			const messageSubject = 'Message subject';
 			const completeMessage1 = generateMessageFromAPI({
 				id: '1',
-				su: 'Message subject'
+				su: messageSubject
 			});
 			mockSoapCreateMessage(mailboxNumber, [completeMessage1]);
 
@@ -347,9 +386,64 @@ describe('sync data handler', () => {
 				expect(message1Result.current).toEqual(
 					expect.objectContaining({
 						id: '1',
-						subject: 'Message subject'
+						subject: messageSubject
 					})
 				);
+			});
+		});
+	});
+
+	describe('conversation and messages both', () => {
+		it('should modify conversation and message by marking them as read', async () => {
+			setSearchResultsByConversation(
+				[generateConversation({ id: '123', messageIds: ['1'], isRead: false })],
+				false
+			);
+			setMessagesInSearchSlice([generateMessage({ id: '1', isRead: false })]);
+
+			mockSoapMessageActionAndConversationModified(mailboxNumber, '1', '123', [READ]);
+
+			renderHook(() => useSyncDataHandler(), {});
+
+			const { result: conversationResult } = renderHook(() => useConversationById('123'));
+			await waitFor(() => {
+				expect(conversationResult.current?.read).toBe(true);
+			});
+
+			const { result: messageResult } = renderHook(() => useMessageById('1'));
+			await waitFor(() => {
+				expect(messageResult.current?.read).toBe(true);
+			});
+		});
+
+		it('should create message and conversation when received', async () => {
+			mockSoapCreateMessageAndConversation(
+				mailboxNumber,
+				[
+					generateMessageFromAPI({
+						id: '1',
+						su: 'Message subject',
+						cid: '123'
+					})
+				],
+				[
+					generateConversationFromAPI({
+						id: '123',
+						su: 'Conversation subject'
+					})
+				]
+			);
+
+			renderHook(() => useSyncDataHandler(), {});
+
+			const { result: conversationResult } = renderHook(() => useConversationById('123'));
+			await act(async () => {
+				expect(conversationResult.current).toBeDefined();
+			});
+
+			const { result: messageResult } = renderHook(() => useMessageById('1'));
+			await act(async () => {
+				expect(messageResult.current).toBeDefined();
 			});
 		});
 	});

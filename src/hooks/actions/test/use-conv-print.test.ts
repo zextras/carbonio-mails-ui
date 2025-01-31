@@ -11,7 +11,7 @@ import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mock
 import { setupHook } from '../../../carbonio-ui-commons/test/test-setup';
 import { FOLDERS_DESCRIPTORS } from '../../../constants';
 import { generateConversation } from '../../../tests/generators/generateConversation';
-import { Conversation } from '../../../types';
+import { NormalizedConversation } from '../../../types';
 import { useConvPrintDescriptor, useConvPrintFn } from '../use-conv-print';
 
 describe('useConvPrint', () => {
@@ -21,7 +21,7 @@ describe('useConvPrint', () => {
 
 			const {
 				result: { current: descriptor }
-			} = setupHook(useConvPrintDescriptor, { initialProps: [[conv], conv.parent] });
+			} = setupHook(useConvPrintDescriptor, { initialProps: [[conv], FOLDERS.INBOX] });
 
 			expect(descriptor).toEqual({
 				id: 'conversation-print',
@@ -84,7 +84,7 @@ describe('useConvPrint', () => {
 			);
 
 			it('should open a new window and write a specific content into it', async () => {
-				const batchResponse: Array<Conversation> = [conv];
+				const batchResponse: Array<NormalizedConversation> = [conv];
 				createSoapAPIInterceptor('Batch', batchResponse);
 				const {
 					result: { current: functions }
@@ -100,7 +100,7 @@ describe('useConvPrint', () => {
 			});
 
 			it('should not open a new window', async () => {
-				const batchResponse: Array<Conversation> = [conv];
+				const batchResponse: Array<NormalizedConversation> = [conv];
 				createSoapAPIInterceptor('Batch', batchResponse);
 				const {
 					result: { current: functions }

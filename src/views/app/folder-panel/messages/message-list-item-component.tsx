@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, memo } from 'react';
+import React, { memo } from 'react';
 
 import { noop } from 'lodash';
 
@@ -27,45 +27,44 @@ export type ListItemComponentProps = {
 	currentFolderId?: string;
 };
 
-export const MessageListItemComponent: FC<ListItemComponentProps> = memo(
-	function MessageListItemComponent({
-		messageId,
-		selected,
-		isSelected,
-		active,
-		toggle,
-		isSelectModeOn,
-		dragImageRef,
-		isSearchModule,
-		deselectAll,
-		visible,
-		setDraggedIds = noop,
-		currentFolderId
-	}) {
-		const message = useMessageById(messageId);
-		return (
-			<DragItemWrapper
-				item={message}
-				selectedIds={[]}
-				selectedItems={selected}
-				setDraggedIds={setDraggedIds}
-				dragImageRef={dragImageRef}
-				dragAndDropIsDisabled={!!isSearchModule}
+export const MessageListItemComponent = memo(function MessageListItemComponent({
+	messageId,
+	selected,
+	isSelected,
+	active,
+	toggle,
+	isSelectModeOn,
+	dragImageRef,
+	isSearchModule,
+	deselectAll,
+	visible,
+	setDraggedIds = noop,
+	currentFolderId
+}: ListItemComponentProps): React.JSX.Element {
+	const message = useMessageById(messageId);
+	if (!message) return <></>;
+	return (
+		<DragItemWrapper
+			item={message}
+			selectedIds={[]}
+			selectedItems={selected}
+			setDraggedIds={setDraggedIds}
+			dragImageRef={dragImageRef}
+			dragAndDropIsDisabled={!!isSearchModule}
+			deselectAll={deselectAll}
+		>
+			<MessageListItem
+				message={message}
+				selected={isSelected}
+				selecting={isSelectModeOn}
+				isConvChildren={false}
+				toggle={toggle}
+				active={active}
+				visible={visible}
+				isSearchModule={isSearchModule}
 				deselectAll={deselectAll}
-			>
-				<MessageListItem
-					item={message}
-					selected={isSelected}
-					selecting={isSelectModeOn}
-					isConvChildren={false}
-					toggle={toggle}
-					active={active}
-					visible={visible}
-					isSearchModule={isSearchModule}
-					deselectAll={deselectAll}
-					currentFolderId={currentFolderId}
-				/>
-			</DragItemWrapper>
-		);
-	}
-);
+				currentFolderId={currentFolderId}
+			/>
+		</DragItemWrapper>
+	);
+});

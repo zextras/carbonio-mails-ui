@@ -7,7 +7,7 @@ import {
 	ParticipantRole,
 	ParticipantRoleType
 } from '../carbonio-ui-commons/constants/participants';
-import type { Conversation, MailMessage, Participant } from '../types';
+import type { MailMessage, NormalizedConversation, Participant } from '../types';
 
 /**
  * Collect all the participants of the given type (or any type if the type params is not set)
@@ -65,12 +65,13 @@ export const getFromParticipantFromMessage = (message: MailMessage): Participant
 /**
  * @param item
  */
-export const isConversation = (item: MailMessage | Conversation): item is Conversation =>
-	'messages' in (item || {});
+export const isConversation = (
+	item: MailMessage | NormalizedConversation
+): item is NormalizedConversation => 'messageIds' in (item || {});
 
 /**
  *
  * @param item
  */
-export const isSingleMessageConversation = (item: MailMessage | Conversation): boolean =>
-	isConversation(item) && item.messages.length === 1;
+export const isSingleMessageConversation = (item: MailMessage | NormalizedConversation): boolean =>
+	isConversation(item) && item.messageIds.length === 1;

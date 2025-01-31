@@ -27,12 +27,12 @@ export const SearchConversationPanel = (): React.JSX.Element => {
 
 	const isExpanded = useCallback(
 		(index: number): boolean => {
-			if (convSortOrder === 'dateAsc' && conversation?.messages) {
-				return index === conversation.messages.length - 1;
+			if (convSortOrder === 'dateAsc' && conversation?.messageIds) {
+				return index === conversation.messageIds.length - 1;
 			}
 			return index === 0;
 		},
-		[convSortOrder, conversation?.messages]
+		[convSortOrder, conversation?.messageIds]
 	);
 
 	if (!conversation) {
@@ -43,7 +43,7 @@ export const SearchConversationPanel = (): React.JSX.Element => {
 		return <></>;
 	}
 
-	const { messages } = conversation;
+	const { messageIds } = conversation;
 
 	return (
 		<Container
@@ -64,12 +64,12 @@ export const SearchConversationPanel = (): React.JSX.Element => {
 					<Container height="fit" mainAlignment="flex-start" background="gray5">
 						{conversation && conversationStatus === API_REQUEST_STATUS.fulfilled && (
 							<>
-								{map(messages, (message, index) => (
+								{map(messageIds, (messageId, index) => (
 									<SearchConversationMessagePanel
-										key={message.id}
-										convMessageId={message.id}
+										key={messageId}
+										convMessageId={messageId}
 										isExpanded={isExpanded(index)}
-										isAlone={conversation.messages?.length === 1}
+										isAlone={conversation.messageIds?.length === 1}
 										isInsideExtraWindow={isInsideExtraWindow}
 									/>
 								))}

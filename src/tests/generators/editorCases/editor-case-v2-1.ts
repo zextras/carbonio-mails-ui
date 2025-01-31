@@ -23,7 +23,6 @@ export const buildEditorCase = (): MailsEditorV2 => {
 		isRichText: true,
 		isUrgent: false,
 		requestReadReceipt: false,
-		totalSmartLinksSize: 0,
 		size: 5433935,
 		text: {
 			richText:
