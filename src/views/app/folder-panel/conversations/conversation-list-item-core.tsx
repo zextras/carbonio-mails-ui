@@ -122,7 +122,7 @@ export const ConversationListItemCore = ({
 		[subject, conversation.fragment]
 	);
 	return (
-		<Container mainAlignment="flex-start" data-testid={`ConversationListItem-${conversation.id}`}>
+		<Container mainAlignment="flex-start">
 			<div
 				style={{ alignSelf: 'center' }}
 				data-testid={`conversation-list-item-avatar-${conversation.id}`}
