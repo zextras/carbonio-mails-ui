@@ -5,36 +5,20 @@
  */
 import React, { memo, MouseEventHandler, useCallback, useMemo } from 'react';
 
-import {
-	Badge,
-	Container,
-	Icon,
-	Padding,
-	Row,
-	Text,
-	Tooltip
-} from '@zextras/carbonio-design-system';
-import { replaceHistory, t, useUserAccounts, useUserSettings } from '@zextras/carbonio-shell-ui';
-import { debounce, find, includes, isEmpty, noop, reduce } from 'lodash';
-import moment from 'moment';
+import { Container } from '@zextras/carbonio-design-system';
+import { replaceHistory, useUserSettings } from '@zextras/carbonio-shell-ui';
+import { debounce } from 'lodash';
 import { useParams } from 'react-router-dom';
 
 import { MessageListItemActionWrapper } from './message-list-item-action-wrapper';
-import { ZIMBRA_STANDARD_COLORS } from '../../../../carbonio-ui-commons/constants';
-import { useFolder } from '../../../../carbonio-ui-commons/store/zustand/folder';
-import { useTags } from '../../../../carbonio-ui-commons/store/zustand/tags';
-import { Tag } from '../../../../carbonio-ui-commons/types/tags';
-import { getTimeLabel, participantToString } from '../../../../commons/utils';
+import { MessageListItemCore } from './message-list-item-core';
 import { EditViewActions } from '../../../../constants';
 import { useMsgPreviewOnSeparatedWindowFn } from '../../../../hooks/actions/use-msg-preview-on-separated-window';
 import { useMsgSetReadFn } from '../../../../hooks/actions/use-msg-set-read';
-import { MessageListItemProps, TextReadValuesType } from '../../../../types';
-import { useTagExist } from '../../../../ui-actions/tag-actions';
-import { getFolderTranslatedName } from '../../../sidebar/utils';
+import { useOnMouseHover } from '../../../../hooks/use-on-mouse-hover';
+import { MessageListItemProps } from '../../../../types';
 import { createEditBoard } from '../../detail-panel/edit/edit-view-board';
 import { MessagePreviewPanel } from '../../detail-panel/message-preview-panel';
-import { ItemAvatar } from '../parts/item-avatar';
-import { ParticipantsName } from '../parts/sender-name';
 
 type RouteParams = {
 	folderId: string;
@@ -84,7 +68,7 @@ export const MessageListItem = memo(function MessageListItem({
 			}),
 		[firstChildFolderId, message.id]
 	);
-	const onClick = useCallback<MouseEventHandler<HTMLDivElement>>(
+	const onClickCallback = useCallback<MouseEventHandler<HTMLDivElement>>(
 		(e) => {
 			if (!e.isDefaultPrevented()) {
 				if (!message.read && zimbraPrefMarkMsgRead) {
@@ -99,7 +83,7 @@ export const MessageListItem = memo(function MessageListItem({
 		},
 		[message.read, zimbraPrefMarkMsgRead, handleReplaceHistory, setAsRead, debouncedPushHistory]
 	);
-	const onDoubleClick = useCallback(
+	const onDoubleClickCallback = useCallback(
 		(e: React.MouseEvent) => {
 			if (!e.isDefaultPrevented()) {
 				debouncedPushHistory.cancel();
@@ -117,256 +101,41 @@ export const MessageListItem = memo(function MessageListItem({
 		[debouncedPushHistory, previewOnSeparatedWindow, message]
 	);
 
-	const accounts = useUserAccounts();
-	const tagsFromStore = useTags();
-	const messageFolder = useFolder(message.parent);
-	const [date] = useMemo(() => {
-		if (message) {
-			const sender = find(message.participants, ['type', 'f']);
-			return [getTimeLabel(message.date), participantToString(sender, accounts)];
-		}
-		return ['.', '.', '', ''];
-	}, [message, accounts]);
-
-	const [showIcon, icon, iconTooltip, iconId, color] = useMemo(() => {
-		if (!message) return [false, '', '', '', ''];
-		if (message.isSentByMe && !message.isDraft && !message.isReplied && !message.isForwarded) {
-			return [true, 'PaperPlaneOutline', t('label.sent', 'Sent'), 'SentIcon', 'secondary'];
-		}
-		if (message.isDraft) {
-			return [true, 'FileOutline', t('label.draft', 'Draft'), 'DraftIcon', 'secondary'];
-		}
-		if (message.isReplied) {
-			return [true, 'UndoOutline', t('label.replied', 'Replied'), 'RepliedIcon', 'secondary'];
-		}
-		if (
-			!message.read &&
-			!message.isReplied &&
-			!message.isDraft &&
-			!message.isSentByMe &&
-			!message.isForwarded
-		) {
-			return [true, 'EmailOutline', t('search.unread', 'Unread'), 'UnreadIcon', 'primary'];
-		}
-		if (
-			message.read &&
-			!message.isReplied &&
-			!message.isDraft &&
-			!message.isSentByMe &&
-			!message.isForwarded
-		) {
-			return [true, 'EmailReadOutline', t('label.read', 'Read'), 'ReadIcon', 'secondary'];
-		}
-		if (message.isForwarded) {
-			return [true, 'Forward', t('label.forwarded', 'Forwarded'), 'ForwardedIcon', 'secondary'];
-		}
-		return [false, '', '', '', ''];
-	}, [message]);
-
-	const tags = useMemo(
-		() =>
-			reduce(
-				tagsFromStore,
-				(acc, v) => {
-					if (includes(message.tags, v.id))
-						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-						// @ts-ignore
-						acc.push({ ...v, color: ZIMBRA_STANDARD_COLORS[v.color ?? '0'].hex });
-					return acc;
-				},
-				[] as Array<Tag & { color: string }>
-			),
-		[message.tags, tagsFromStore]
-	);
-
-	const fragmentLabel = useMemo(
-		() => (isConvChildren ? message.fragment : ` - ${message.fragment}`),
-		[message.fragment, isConvChildren]
-	);
-	const textReadValues = useMemo<TextReadValuesType>(() => {
-		if (typeof message.read === 'undefined')
-			return { color: 'text', weight: 'regular', badge: 'read' };
-		return message.read
-			? { color: 'text', weight: 'regular', badge: 'read' }
-			: { color: 'primary', weight: 'bold', badge: 'unread' };
-	}, [message.read]);
-
-	const isTagInStore = useTagExist(tags);
-	const showTagIcon = useMemo(
-		() => message.tags && message.tags.length !== 0 && message.tags?.[0] !== '' && isTagInStore,
-		[isTagInStore, message.tags]
-	);
-	const tagIcon = useMemo(() => (tags.length > 1 ? 'TagsMoreOutline' : 'Tag'), [tags]);
-	const tagIconColor = useMemo(() => (tags.length === 1 ? tags[0].color : undefined), [tags]);
-	const subject = useMemo(
-		() => message.subject || t('label.no_subject_with_tags', '<No Subject>'),
-		[message.subject]
-	);
-	const subFragmentTooltipLabel = useMemo(
-		() => (!isEmpty(message.fragment) ? message.fragment : subject),
-		[subject, message.fragment]
-	);
-
-	const scheduledTime = useMemo(
-		() =>
-			t('message.schedule_time', {
-				date: moment(message?.autoSendTime).format('DD/MM/YYYY'),
-				time: moment(message?.autoSendTime).format('HH:mm'),
-				defaultValue: 'for {{date}} at {{time}}'
-			}),
-		[message?.autoSendTime]
-	);
-
-	const onToggle = useMemo(() => (isConvChildren ? noop : toggle), [isConvChildren, toggle]);
+	const [ref, isHovered] = useOnMouseHover();
 
 	return (
-		<Container mainAlignment="flex-start" data-testid={`MessageListItem-${message.id}`}>
-			<MessageListItemActionWrapper
-				item={message}
-				active={active}
-				onClick={onClick}
-				onDoubleClick={onDoubleClick}
-				shouldReplaceHistory={shouldReplaceHistory}
-				deselectAll={deselectAll}
-				messagePreviewFactory={messagePreviewFactory}
-			>
-				<div style={{ alignSelf: 'center' }} data-testid={`message-list-item-avatar-${message.id}`}>
-					<ItemAvatar
-						item={message}
+		<Container ref={ref} mainAlignment="flex-start" data-testid={`MessageListItem-${message.id}`}>
+			{isHovered ? (
+				<MessageListItemActionWrapper
+					item={message}
+					active={active}
+					onClick={onClickCallback}
+					onDoubleClick={onDoubleClickCallback}
+					shouldReplaceHistory={shouldReplaceHistory}
+					deselectAll={deselectAll}
+					messagePreviewFactory={messagePreviewFactory}
+				>
+					<MessageListItemCore
+						message={message}
 						selected={selected}
 						selecting={selecting}
-						toggle={onToggle}
-						folderId={firstChildFolderId}
-					/>
-					<Padding horizontal="extrasmall" />
-				</div>
-				<Row
-					wrap="wrap"
-					orientation="horizontal"
-					takeAvailableSpace
-					padding={{ left: 'small', top: 'small', bottom: 'small', right: 'large' }}
-				>
-					<Container orientation="horizontal" height="fit" width="fill">
-						<ParticipantsName
-							item={message}
-							textValues={textReadValues}
-							isSearchModule={isSearchModule}
-						/>
-						<Row>
-							{showTagIcon && (
-								<Padding left="small">
-									<Icon data-testid="TagIcon" icon={tagIcon} color={tagIconColor} />
-								</Padding>
-							)}
-							{message.hasAttachment && (
-								<Padding left="small">
-									<Icon data-testid="AttachmentIcon" icon="AttachOutline" />
-								</Padding>
-							)}
-							{message.flagged && (
-								<Padding left="small">
-									<Icon data-testid="FlagIcon" color="error" icon="Flag" />
-								</Padding>
-							)}
-							<Padding left="small">
-								{message?.isScheduled ? (
-									<Row>
-										<Padding right="extrasmall">
-											<Icon data-testid={iconId} icon="SendDelayedOutline" color="primary" />
-										</Padding>
-										<Text data-testid="DelayedMailLabel" size="extrasmall" color="primary">
-											{t('label.send_scheduled', 'Send Scheduled')}
-										</Text>
-									</Row>
-								) : (
-									<Text data-testid="DateLabel" size="extrasmall">
-										{date}
-									</Text>
-								)}
-							</Padding>
-						</Row>
-					</Container>
-					<Container orientation="horizontal" height="fit" width="fill" crossAlignment="center">
-						<Row
-							wrap="nowrap"
-							takeAvailableSpace
-							mainAlignment="flex-start"
-							crossAlignment="center"
-						>
-							{showIcon && (
-								<Tooltip label={iconTooltip} placement="bottom">
-									<Padding right="extrasmall">
-										<Icon data-testid={iconId} icon={icon} color={color} />
-									</Padding>
-								</Tooltip>
-							)}
-							<Tooltip label={subFragmentTooltipLabel} overflow="break-word" maxWidth="60vw">
-								<Row
-									wrap="nowrap"
-									takeAvailableSpace
-									mainAlignment="flex-start"
-									crossAlignment="baseline"
-								>
-									{!isConvChildren && (
-										<Text
-											data-testid="Subject"
-											weight={textReadValues.weight}
-											color={message.subject ? 'text' : 'secondary'}
-										>
-											{subject}
-										</Text>
-									)}
-
-									{!isEmpty(message.fragment) && (
-										<Row
-											takeAvailableSpace
-											mainAlignment="flex-start"
-											padding={{ left: 'extrasmall' }}
-										>
-											<Text
-												data-testid="Fragment"
-												size="small"
-												color="secondary"
-												weight={textReadValues.weight}
-											>
-												{fragmentLabel}
-											</Text>
-										</Row>
-									)}
-								</Row>
-							</Tooltip>
-						</Row>
-						<Row>
-							{message.urgent && (
-								<Padding left="extrasmall">
-									<Icon data-testid="UrgentIcon" icon="ArrowUpward" color="error" />
-								</Padding>
-							)}
-
-							{message?.isScheduled && (
-								<Tooltip label={scheduledTime}>
-									<Text data-testid="DelayedMailLabel" size="extrasmall" color="primary">
-										{scheduledTime}
-									</Text>
-								</Tooltip>
-							)}
-							{((messageFolder && messageFolder.id !== firstChildFolderId) || isSearchModule) && (
-								<Padding left="small">
-									<Badge
-										data-testid="FolderBadge"
-										value={getFolderTranslatedName({
-											folderId: firstChildFolderId,
-											folderName: messageFolder?.name ?? ''
-										})}
-										backgroundColor={textReadValues.badge === 'unread' ? 'primary' : 'gray2'}
-										color={textReadValues.badge === 'unread' ? 'gray6' : 'gray0'}
-									/>
-								</Padding>
-							)}
-						</Row>
-					</Container>
-				</Row>
-			</MessageListItemActionWrapper>
+						isConvChildren={isConvChildren}
+						toggle={toggle}
+						isSearchModule={isSearchModule}
+						firstChildFolderId={firstChildFolderId}
+					></MessageListItemCore>
+				</MessageListItemActionWrapper>
+			) : (
+				<MessageListItemCore
+					message={message}
+					selected={selected}
+					selecting={selecting}
+					isConvChildren={isConvChildren}
+					toggle={toggle}
+					isSearchModule={isSearchModule}
+					firstChildFolderId={firstChildFolderId}
+				></MessageListItemCore>
+			)}
 		</Container>
 	);
 });
