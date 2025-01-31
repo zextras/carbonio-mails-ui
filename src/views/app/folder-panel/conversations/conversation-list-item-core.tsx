@@ -10,10 +10,10 @@ import {
 	Badge,
 	Container,
 	Icon,
-	IconButton,
 	Padding,
 	Row,
-	Tooltip
+	Tooltip,
+	Button
 } from '@zextras/carbonio-design-system';
 import { uniqBy, reduce, includes, forEach, filter, isEmpty } from 'lodash';
 import { useTranslation } from 'react-i18next';
@@ -21,14 +21,13 @@ import { useTranslation } from 'react-i18next';
 import { ZIMBRA_STANDARD_COLORS } from '../../../../carbonio-ui-commons/constants/utils';
 import { useTags } from '../../../../carbonio-ui-commons/store/zustand/tags';
 import { Tag } from '../../../../carbonio-ui-commons/types/tags';
-import { TextReadValuesProps } from '../../../../types';
-import { Conversation } from '../../../../types/conversations';
+import { NormalizedConversation, TextReadValuesProps } from '../../../../types';
 import { ItemAvatar } from '../parts/item-avatar';
 import { RowInfo } from '../parts/row-info';
-import { SenderName } from '../parts/sender-name';
+import { ParticipantsName } from '../parts/sender-name';
 
 type ConversationListItemCoreProps = {
-	item: Conversation;
+	conversation: NormalizedConversation;
 	selected: boolean;
 	selecting: boolean;
 	toggle: (id: string) => void;
@@ -39,7 +38,7 @@ type ConversationListItemCoreProps = {
 	) => void;
 };
 export const ConversationListItemCore = ({
-	item,
+	conversation,
 	selected,
 	selecting,
 	toggle,
@@ -54,16 +53,16 @@ export const ConversationListItemCore = ({
 				reduce(
 					tagsFromStore,
 					(acc: Array<Tag>, v) => {
-						if (includes(item.tags, v.id)) {
+						if (includes(conversation.tags, v.id)) {
 							acc.push({
 								...v,
 								// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 								// @ts-ignore
 								color: ZIMBRA_STANDARD_COLORS[v.color || 0].hex
 							});
-						} else if (item.tags?.length > 0 && !includes(item.tags, v.id)) {
+						} else if (conversation.tags?.length > 0 && !includes(conversation.tags, v.id)) {
 							forEach(
-								filter(item.tags, (tn) => tn.includes('nil:')),
+								filter(conversation.tags, (tn) => tn.includes('nil:')),
 								(tagNotInList) => {
 									acc.push({
 										id: tagNotInList,
@@ -79,7 +78,7 @@ export const ConversationListItemCore = ({
 				),
 				'id'
 			),
-		[item.tags, tagsFromStore]
+		[conversation.tags, tagsFromStore]
 	);
 
 	const [t] = useTranslation();
@@ -88,42 +87,48 @@ export const ConversationListItemCore = ({
 	 * In search module we check if the user has enabled the option to show trashed and/or spam messages
 	 * @returns {number}
 	 */
-	const getmsgToDisplayCount = useCallback((): number => item.messagesInConversation, [item]);
+	const getmsgToDisplayCount = useCallback(
+		(): number => conversation.messagesInConversation,
+		[conversation]
+	);
 
 	const textReadValues: TextReadValuesProps = useMemo(() => {
-		if (typeof item.read === 'undefined')
+		if (typeof conversation.read === 'undefined')
 			return { color: 'text', weight: 'regular', badge: 'read' };
-		return item.read
+		return conversation.read
 			? { color: 'text', weight: 'regular', badge: 'read' }
 			: { color: 'primary', weight: 'bold', badge: 'unread' };
-	}, [item.read]);
+	}, [conversation.read]);
 
 	const renderBadge = useMemo(() => {
-		if (item.messagesInConversation === 1) return textReadValues.badge === 'unread';
-		if (item.messagesInConversation > 0) return true;
-		if (item?.messages?.length === 1) {
+		if (conversation.messagesInConversation === 1) return textReadValues.badge === 'unread';
+		if (conversation.messagesInConversation > 0) return true;
+		if (conversation?.messageIds?.length === 1) {
 			return textReadValues.badge === 'unread';
 		}
-		return item?.messages?.length > 0;
-	}, [item?.messages?.length, item.messagesInConversation, textReadValues.badge]);
+		return conversation?.messageIds?.length > 0;
+	}, [conversation?.messageIds?.length, conversation.messagesInConversation, textReadValues.badge]);
 
 	const toggleExpandButtonLabel = useMemo(
 		() => (open ? t('label.hide', 'Hide') : t('label.expand', 'Expand')),
 		[open, t]
 	);
 	const subject = useMemo(
-		() => item.subject || t('label.no_subject_with_tags', '<No Subject>'),
-		[item.subject, t]
+		() => conversation.subject || t('label.no_subject_with_tags', '<No Subject>'),
+		[conversation.subject, t]
 	);
 	const subFragmentTooltipLabel = useMemo(
-		() => (!isEmpty(item.fragment) ? item.fragment : subject),
-		[subject, item.fragment]
+		() => (!isEmpty(conversation.fragment) ? conversation.fragment : subject),
+		[subject, conversation.fragment]
 	);
 	return (
-		<Container mainAlignment="flex-start" data-testid={`ConversationListItem-${item.id}`}>
-			<div style={{ alignSelf: 'center' }} data-testid={`conversation-list-item-avatar-${item.id}`}>
+		<Container mainAlignment="flex-start" data-testid={`ConversationListItem-${conversation.id}`}>
+			<div
+				style={{ alignSelf: 'center' }}
+				data-testid={`conversation-list-item-avatar-${conversation.id}`}
+			>
 				<ItemAvatar
-					item={item}
+					item={conversation}
 					selected={selected}
 					selecting={selecting}
 					toggle={toggle}
@@ -138,23 +143,22 @@ export const ConversationListItemCore = ({
 				padding={{ left: 'small', top: 'small', bottom: 'small', right: 'large' }}
 			>
 				<Container orientation="horizontal" height="fit" width="fill">
-					<SenderName item={item} textValues={textReadValues} />
-					<RowInfo item={item} tags={tags} />
+					<ParticipantsName item={conversation} textValues={textReadValues} />
+					<RowInfo item={conversation} tags={tags} />
 				</Container>
 				<Container orientation="horizontal" height="fit" width="fill" crossAlignment="center">
 					{renderBadge && (
 						<Row>
 							<Padding right="extrasmall">
 								<Badge
-									data-testid={`conversation-messages-count-${item.id}`}
+									data-testid={`conversation-messages-count-${conversation.id}`}
 									value={getmsgToDisplayCount()}
-									backgroundColor={(textReadValues.badge === 'unread' && 'primary') || 'gray2'}
-									color={(textReadValues.badge === 'unread' && 'gray6') || 'gray0'}
+									backgroundColor={textReadValues.badge === 'unread' ? 'primary' : 'gray2'}
+									color={textReadValues.badge === 'unread' ? 'gray6' : 'gray0'}
 								/>
 							</Padding>
 						</Row>
 					)}
-
 					<Tooltip label={subFragmentTooltipLabel} overflow="break-word" maxWidth="60vw">
 						<Row
 							wrap="nowrap"
@@ -165,19 +169,25 @@ export const ConversationListItemCore = ({
 							<Text
 								data-testid="Subject"
 								weight={textReadValues.weight}
-								color={item.subject ? 'text' : 'secondary'}
+								color={conversation.subject ? 'text' : 'secondary'}
 							>
 								{subject}
 							</Text>
 						</Row>
 					</Tooltip>
 					<Row>
-						{item.urgent && <Icon data-testid="UrgentIcon" icon="ArrowUpward" color="error" />}
-						{item.messagesInConversation > 1 && (
+						{conversation.urgent && (
+							<Icon data-testid="UrgentIcon" icon="ArrowUpward" color="error" />
+						)}
+						{conversation.messagesInConversation > 1 && (
 							<Tooltip label={toggleExpandButtonLabel}>
-								<IconButton
+								<Button
 									data-testid="ToggleExpand"
 									size="small"
+									shape="regular"
+									type="default"
+									labelColor="text"
+									backgroundColor="transparent"
 									icon={open ? 'ArrowIosUpward' : 'ArrowIosDownward'}
 									onClick={toggleOpen}
 								/>

@@ -146,7 +146,7 @@ export const ConversationListItem = memo(function ConversationListItem({
 					deselectAll={deselectAll}
 				>
 					<ConversationListItemCore
-						item={conversation}
+						conversation={conversation}
 						selected={selected}
 						selecting={selecting}
 						toggle={toggle}
@@ -157,7 +157,7 @@ export const ConversationListItem = memo(function ConversationListItem({
 				</ConversationListItemActionWrapper>
 			) : (
 				<ConversationListItemCore
-					item={conversation}
+					conversation={conversation}
 					selected={selected}
 					selecting={selecting}
 					toggle={toggle}
