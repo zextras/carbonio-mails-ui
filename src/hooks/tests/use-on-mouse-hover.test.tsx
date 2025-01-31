@@ -6,7 +6,7 @@
 /* eslint-disable testing-library/prefer-user-event,sonarjs/no-duplicate-string */
 import React from 'react';
 
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, renderHook, screen } from '@testing-library/react';
 
 import { useOnMouseHover } from '../use-on-mouse-hover';
 
@@ -56,5 +56,17 @@ describe('useOnMouseHover', () => {
 		fireEvent.mouseOver(hoverElement);
 
 		// Since it's unmounted, we can't directly check state, but we ensure no errors occurred
+	});
+
+	it('does not attach or remove event listeners if ref.current is null', () => {
+		const { result, rerender, unmount } = renderHook(() => useOnMouseHover());
+
+		expect(result.current[0].current).toBeNull();
+
+		// should do nothing since ref is null
+		rerender();
+
+		// Unmount should not throw errors since cleanup should handle null case
+		expect(() => unmount()).not.toThrow();
 	});
 });
