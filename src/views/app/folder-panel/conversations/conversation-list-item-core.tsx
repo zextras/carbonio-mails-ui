@@ -122,7 +122,7 @@ export const ConversationListItemCore = ({
 		[subject, conversation.fragment]
 	);
 	return (
-		<Container mainAlignment="flex-start">
+		<Container mainAlignment="flex-start" orientation="horizontal" height={'4rem'}>
 			<div
 				style={{ alignSelf: 'center' }}
 				data-testid={`conversation-list-item-avatar-${conversation.id}`}
