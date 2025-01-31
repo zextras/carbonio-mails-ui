@@ -9,7 +9,6 @@ import React, { memo, useCallback, useMemo, useState } from 'react';
 import { Container } from '@zextras/carbonio-design-system';
 import { pushHistory, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { debounce } from 'lodash';
-import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 
@@ -46,7 +45,6 @@ export const ConversationListItem = memo(function ConversationListItem({
 	const [open, setOpen] = useState(false);
 	const messages = useConversationMessages(conversation.id);
 	const folderParent = folderId ?? messages?.[0]?.parent;
-	const [t] = useTranslation();
 
 	const [ref, isHovered] = useOnMouseHover();
 
