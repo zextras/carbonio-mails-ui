@@ -6,6 +6,24 @@
 
 import { useState, useRef, useEffect, MutableRefObject } from 'react';
 
+/**
+ * Custom hook to track mouse hover state on a referenced DOM element.
+ *
+ * @returns {[MutableRefObject<HTMLDivElement | null>, boolean]} - A tuple where:
+ *   - `ref` is a `MutableRefObject` that should be attached to a `div` element.
+ *   - `isHovered` is a boolean indicating whether the element is hovered.
+ *
+ * @example
+ * function MyComponent() {
+ *   const [ref, isHovered] = useOnMouseHover();
+ *
+ *   return (
+ *     <div ref={ref} style={{ backgroundColor: isHovered ? 'blue' : 'gray' }}>
+ *       Hover over me!
+ *     </div>
+ *   );
+ * }
+ */
 export function useOnMouseHover(): [
 	ref: MutableRefObject<HTMLDivElement | null>,
 	isHovered: boolean
