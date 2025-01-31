@@ -15,7 +15,7 @@ import ModalHeader from '../../../carbonio-ui-commons/components/modals/modal-he
 import { useSmimePasswordStore } from '../../../store/certificates/store';
 import { Certificate } from '../../../types/certificates/certificates';
 
-type EnterPasswordModalPropType = {
+type ShowAllCertificatesModalPropType = {
 	certificates: Certificate[];
 	onClose: (isUpdateList: boolean) => void;
 };
@@ -23,7 +23,7 @@ type EnterPasswordModalPropType = {
 const ShowAllCertificatesModal = ({
 	certificates,
 	onClose
-}: EnterPasswordModalPropType): React.JSX.Element => {
+}: ShowAllCertificatesModalPropType): React.JSX.Element => {
 	const [t] = useTranslation();
 	const createSnackbar = useSnackbar();
 	const { smimePassword } = useSmimePasswordStore();
