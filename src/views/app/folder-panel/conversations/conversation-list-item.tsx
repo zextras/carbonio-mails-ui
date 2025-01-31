@@ -18,7 +18,7 @@ import { ConversationMessagesList } from './conversation-messages-list';
 import { API_REQUEST_STATUS } from '../../../../constants';
 import { useConvPreviewOnSeparatedWindowFn } from '../../../../hooks/actions/use-conv-preview-on-separated-window';
 import { useConvSetReadFn } from '../../../../hooks/actions/use-conv-set-read';
-import { useOnMouseHover } from '../../../../hooks/use-on-mouse-over';
+import { useOnMouseHover } from '../../../../hooks/use-on-mouse-hover';
 import { searchConvEmailStoreAction } from '../../../../store/emails/actions/search-conv-action';
 import { useConversationMessages, useConversationStatus } from '../../../../store/emails/store';
 import { ConversationListItemProps } from '../../../../types';
