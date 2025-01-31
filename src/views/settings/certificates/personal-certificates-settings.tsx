@@ -240,6 +240,7 @@ const PersonalCertificatesSettings: FC = (): ReactElement => {
 			<Button
 				onClick={(): void => onUploadCertificate()}
 				label={t('settings.uploadCertificate.uploadCertificate', 'Upload Certificate')}
+				data-testid="upload-personal-certificate-btn"
 			/>
 		</FormSubSection>
 	);
