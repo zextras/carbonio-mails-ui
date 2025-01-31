@@ -58,7 +58,7 @@ export const ConversationListItemCore = ({
 								...v,
 								// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 								// @ts-ignore
-								color: ZIMBRA_STANDARD_COLORS[v.color || 0].hex
+								color: ZIMBRA_STANDARD_COLORS[v.color ?? 0].hex
 							});
 						} else if (conversation.tags?.length > 0 && !includes(conversation.tags, v.id)) {
 							forEach(
