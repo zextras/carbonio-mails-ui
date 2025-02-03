@@ -18,6 +18,7 @@ import {
 import { filter, forEach, includes, isEmpty, reduce, uniqBy } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
+import { ZIMBRA_STANDARD_COLORS } from '../../../../carbonio-ui-commons/constants/utils';
 import { useTags } from '../../../../carbonio-ui-commons/store/zustand/tags/hooks';
 import { Tag } from '../../../../carbonio-ui-commons/types/tags';
 import { API_REQUEST_STATUS } from '../../../../constants';
@@ -63,9 +64,8 @@ export const SearchConversationListItemCore = ({
 						if (includes(conversation.tags, v.id)) {
 							acc.push({
 								...v,
-								// eslint-disable-next-line
-								// @ts-ignore
-								color: ZIMBRA_STANDARD_COLORS[v.color ?? 0].hex
+								// casting type to avoid tsignore
+								color: ZIMBRA_STANDARD_COLORS[v.color ?? 0].hex as unknown as number
 							});
 						} else if (conversation.tags?.length > 0 && !includes(conversation.tags, v.id)) {
 							forEach(

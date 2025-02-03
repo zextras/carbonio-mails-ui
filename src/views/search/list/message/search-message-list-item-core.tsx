@@ -19,6 +19,7 @@ import { find, includes, isEmpty, reduce } from 'lodash';
 import moment from 'moment';
 import { useTranslation } from 'react-i18next';
 
+import { ZIMBRA_STANDARD_COLORS } from '../../../../carbonio-ui-commons/constants/utils';
 import { useFolder } from '../../../../carbonio-ui-commons/store/zustand/folder';
 import { useTags } from '../../../../carbonio-ui-commons/store/zustand/tags';
 import { Tag } from '../../../../carbonio-ui-commons/types/tags';
@@ -103,12 +104,14 @@ export const SearchMessageListItemCore = ({
 				tagsFromStore,
 				(acc, v) => {
 					if (includes(completeMessage.tags, v.id))
-						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-						// @ts-ignore
-						acc.push({ ...v, color: ZIMBRA_STANDARD_COLORS[v.color ?? '0'].hex });
+						acc.push({
+							...v,
+							// casting type to avoid tsignore
+							color: ZIMBRA_STANDARD_COLORS[v.color ?? '0'].hex as unknown as number
+						});
 					return acc;
 				},
-				[] as Array<Tag & { color: string }>
+				[] as Array<Tag>
 			),
 		[completeMessage.tags, tagsFromStore]
 	);
