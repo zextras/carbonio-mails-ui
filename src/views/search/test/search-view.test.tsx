@@ -421,8 +421,12 @@ describe('SearchView', () => {
 			const { user } = setupTest(<SearchView {...searchViewProps} />);
 			await waitFor(() => searchInterceptor);
 			await waitAndMakeMessageVisible('10');
+			const actionWrapper = await screen.findByTestId(`MessageListItem-10`);
+			await user.hover(actionWrapper);
+
 			const itemAvatar = await screen.findByTestId('message-list-item-avatar-10');
 			const avatar = await within(itemAvatar).findByTestId('avatar');
+
 			user.click(avatar);
 			await within(itemAvatar).findByTestId('icon: Checkmark');
 			const multipleSelectionPanel = await screen.findByTestId('MultipleSelectionActionPanel');
