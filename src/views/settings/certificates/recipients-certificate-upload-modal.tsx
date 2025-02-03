@@ -102,7 +102,7 @@ export const RecipientsCertificateUploadModal = ({
 					ref={inputRef}
 					data-testid="certificate-file-input"
 					onChange={handleFileChange}
-					accept=".crt"
+					accept=".crt,.pem"
 				/>
 				<ModalFooter
 					onConfirm={handleFileUpload}

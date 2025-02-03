@@ -18,6 +18,7 @@ import {
 } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
 
+import CertificateDeleteModal from './certificate-delete-modal';
 import { RecipientsCertificateUploadModal } from './recipients-certificate-upload-modal';
 import { deleteRecipientCertificate } from '../../../api/delete-recipient-certificate-api';
 import { getRecipientsCertificates } from '../../../api/get-recipient-certificates-api';
@@ -142,7 +143,23 @@ const RecipientsCertificateSettings: FC = (): ReactElement => {
 					<Button
 						icon="Trash2Outline"
 						onClick={(): void => {
-							deleteCertificate(certificate);
+							createModal(
+								{
+									id: index.toString(),
+									size: 'small',
+									children: (
+										<CertificateDeleteModal
+											onClose={(): void => closeModal?.(index.toString())}
+											onConfirmDelete={(): void => {
+												closeModal?.(index.toString());
+												deleteCertificate(certificate);
+											}}
+											email={certificate.email}
+										/>
+									)
+								},
+								true
+							);
 						}}
 						size="large"
 						type="ghost"

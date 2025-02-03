@@ -89,7 +89,7 @@ const SidebarView = (props: SecondaryBarComponentProps): React.JSX.Element => (
 	</Suspense>
 );
 
-export const addComponentsToShell = async (): Promise<void> => {
+export const addComponentsToShell = async (isCarbonioCE: boolean | undefined): Promise<void> => {
 	const label = t('label.app_name', 'Mails');
 	addRoute({
 		route: MAILS_ROUTE,
@@ -111,12 +111,14 @@ export const addComponentsToShell = async (): Promise<void> => {
 		subSections: getSettingsSubSections(backupSelfUndeleteAllowed),
 		component: SettingsView
 	});
-	addSettingsView({
-		icon: 'AwardOutline',
-		route: CERTIFICATES_ROUTE,
-		label: t('settings.smime_certificates', 'S/MIME Certificates'),
-		component: CertificatesView
-	});
+	if (!isCarbonioCE) {
+		addSettingsView({
+			icon: 'AwardOutline',
+			route: CERTIFICATES_ROUTE,
+			label: t('settings.smime_certificates', 'S/MIME Certificates'),
+			component: CertificatesView
+		});
+	}
 
 	upsertApp({
 		name: MAIL_APP_ID,

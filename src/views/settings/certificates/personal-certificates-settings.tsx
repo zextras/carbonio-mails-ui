@@ -117,6 +117,8 @@ const PersonalCertificatesSettings: FC = (): ReactElement => {
 									}
 									closeModal?.(id);
 								}}
+								createModal={createModal}
+								closeModal={closeModal}
 							/>
 						</Container>
 					)
@@ -182,7 +184,7 @@ const PersonalCertificatesSettings: FC = (): ReactElement => {
 		if (certificate.selected) {
 			certificateStatus = t('settings.uploadCertificate.active', 'Active');
 		} else if (certificate.notAfter > Date.now()) {
-			certificateStatus = t('settings.uploadCertificate.deactive', 'Deactive');
+			certificateStatus = t('settings.uploadCertificate.inactive', 'Inactive');
 		} else {
 			certificateStatus = t('settings.uploadCertificate.expired', 'Expired');
 		}
