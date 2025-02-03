@@ -123,7 +123,7 @@ export const MessageListItem = memo(function MessageListItem({
 						toggle={toggle}
 						isSearchModule={isSearchModule}
 						firstChildFolderId={firstChildFolderId}
-					></MessageListItemCore>
+					/>
 				</MessageListItemActionWrapper>
 			) : (
 				<MessageListItemCore
