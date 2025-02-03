@@ -46,7 +46,7 @@ export const ConversationListItem = memo(function ConversationListItem({
 	const messages = useConversationMessages(conversation.id);
 	const folderParent = folderId ?? messages?.[0]?.parent;
 
-	const [ref, isHovered] = useOnMouseHover();
+	const { ref, hasBeenHovered } = useOnMouseHover();
 
 	const markAsRead = useConvSetReadFn({
 		ids: [conversation.id],
@@ -134,7 +134,7 @@ export const ConversationListItem = memo(function ConversationListItem({
 			mainAlignment="flex-start"
 			data-testid={`ConversationListItem-${conversation.id}`}
 		>
-			{isHovered ? (
+			{hasBeenHovered ? (
 				<ConversationListItemActionWrapper
 					conversation={conversation}
 					active={active}

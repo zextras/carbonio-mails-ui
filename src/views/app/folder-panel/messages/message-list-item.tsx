@@ -101,11 +101,11 @@ export const MessageListItem = memo(function MessageListItem({
 		[debouncedPushHistory, previewOnSeparatedWindow, message]
 	);
 
-	const [ref, isHovered] = useOnMouseHover();
+	const { ref, hasBeenHovered } = useOnMouseHover();
 
 	return (
 		<Container ref={ref} mainAlignment="flex-start" data-testid={`MessageListItem-${message.id}`}>
-			{isHovered ? (
+			{hasBeenHovered ? (
 				<MessageListItemActionWrapper
 					item={message}
 					active={active}

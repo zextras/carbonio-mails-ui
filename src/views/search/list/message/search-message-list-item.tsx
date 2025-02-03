@@ -35,7 +35,7 @@ export const SearchMessageListItem: FC<SearchMessageListItemProps> = memo(functi
 	active,
 	deselectAll
 }) {
-	const [ref, isHovered] = useOnMouseHover();
+	const { ref, hasBeenHovered } = useOnMouseHover();
 	const itemId = completeMessage.id;
 	const folderId = completeMessage.parent;
 	const { itemId: messageId } = useParams<{ itemId: string | undefined }>();
@@ -99,7 +99,7 @@ export const SearchMessageListItem: FC<SearchMessageListItemProps> = memo(functi
 			mainAlignment="flex-start"
 			data-testid={`MessageListItem-${completeMessage.id}`}
 		>
-			{isHovered ? (
+			{hasBeenHovered ? (
 				<MessageListItemActionWrapper
 					item={completeMessage}
 					active={active}

@@ -46,7 +46,7 @@ export const SearchConversationListItem: FC<SearchConversationListItemProps> = (
 	deselectAll
 }) => {
 	const conversation = useConversationById(conversationId);
-	const [ref, isHovered] = useOnMouseHover();
+	const { ref, hasBeenHovered } = useOnMouseHover();
 	const [open, setOpen] = useState(false);
 	const messages = useConversationMessages(conversationId);
 	const conversationStatus = useConversationStatus(conversationId);
@@ -106,7 +106,7 @@ export const SearchConversationListItem: FC<SearchConversationListItemProps> = (
 			mainAlignment="flex-start"
 			data-testid={`ConversationListItem-${conversationId}`}
 		>
-			{isHovered ? (
+			{hasBeenHovered ? (
 				<ConversationListItemActionWrapper
 					conversation={conversation}
 					active={active}
