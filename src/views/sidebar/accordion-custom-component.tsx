@@ -327,14 +327,16 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item: folder }) => {
 								</Tooltip>
 							</FolderActionWrapper>
 						) : (
-							<Tooltip label={accordionItem.label} placement="right" maxWidth="100%">
-								<AccordionItem
-									data-testid={`accordion-folder-item-${folder.id}`}
-									item={accordionItem}
-								>
-									{statusIcon}
-								</AccordionItem>
-							</Tooltip>
+							<Container padding={{ left: 'small' }}>
+								<Tooltip label={accordionItem.label} placement="right" maxWidth="100%">
+									<AccordionItem
+										data-testid={`accordion-folder-item-${folder.id}`}
+										item={accordionItem}
+									>
+										{statusIcon}
+									</AccordionItem>
+								</Tooltip>
+							</Container>
 						)}
 					</AppLink>
 				</Drag>
