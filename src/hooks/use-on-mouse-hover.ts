@@ -15,7 +15,7 @@ import { useState, useRef, useEffect, MutableRefObject } from 'react';
  *
  * @example
  * function MyComponent() {
- *   const [ref, isHovered] = useOnMouseHover();
+ *   const {ref, isHovered} = useOnMouseHover();
  *
  *   return (
  *     <div ref={ref} style={{ backgroundColor: isHovered ? 'blue' : 'gray' }}>
@@ -24,20 +24,30 @@ import { useState, useRef, useEffect, MutableRefObject } from 'react';
  *   );
  * }
  */
-export function useOnMouseHover(): [
-	ref: MutableRefObject<HTMLDivElement | null>,
-	isHovered: boolean
-] {
+
+type UseOnMouseHoverReturnType = {
+	ref: MutableRefObject<HTMLDivElement | null>;
+	isHovered: boolean;
+	hasBeenHovered: boolean;
+};
+export function useOnMouseHover(): UseOnMouseHoverReturnType {
 	const [isHovered, setIsHovered] = useState(false);
+	const [hasBeenHovered, setHasBeenHovered] = useState(false);
 	const ref = useRef<HTMLDivElement | null>(null);
+
 	useEffect(() => {
-		const handleMouseOver = (): void => setIsHovered(true);
+		const handleMouseOver = (): void => {
+			setIsHovered(true);
+			setHasBeenHovered(true);
+		};
 		const handleMouseOut = (): void => setIsHovered(false);
 		const node = ref.current;
+
 		if (node) {
 			node.addEventListener('mouseover', handleMouseOver);
 			node.addEventListener('mouseout', handleMouseOut);
 		}
+
 		return () => {
 			if (node) {
 				node.removeEventListener('mouseover', handleMouseOver);
@@ -45,5 +55,6 @@ export function useOnMouseHover(): [
 			}
 		};
 	}, []);
-	return [ref, isHovered];
+
+	return { ref, isHovered, hasBeenHovered };
 }

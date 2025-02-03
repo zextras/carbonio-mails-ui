@@ -13,7 +13,7 @@ import { useOnMouseHover } from '../use-on-mouse-hover';
 describe('useOnMouseHover', () => {
 	const hoverElementDataTestId = 'hover-element';
 	const TestComponent: () => React.JSX.Element = () => {
-		const [ref, isHovered] = useOnMouseHover();
+		const { ref, isHovered } = useOnMouseHover();
 		return (
 			<div ref={ref} data-testid={hoverElementDataTestId}>
 				{isHovered ? 'Hovered' : 'Not hovered'}
@@ -61,7 +61,7 @@ describe('useOnMouseHover', () => {
 	it('does not attach or remove event listeners if ref.current is null', () => {
 		const { result, rerender, unmount } = renderHook(() => useOnMouseHover());
 
-		expect(result.current[0].current).toBeNull();
+		expect(result.current.hasBeenHovered).toBe(false);
 
 		// should do nothing since ref is null
 		rerender();
