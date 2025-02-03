@@ -316,7 +316,7 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item: folder }) => {
 						style={{ width: '100%', height: '100%', textDecoration: 'none' }}
 					>
 						{hasBeenHovered ? (
-							<FolderActionWrapper folderId={folder.id}>
+							<FolderActionWrapper folder={folder}>
 								<Tooltip label={accordionItem.label} placement="right" maxWidth="100%">
 									<AccordionItem
 										data-testid={`accordion-folder-item-${folder.id}`}

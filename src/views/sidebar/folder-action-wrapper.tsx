@@ -8,23 +8,21 @@ import React from 'react';
 import { Dropdown, Row, Padding } from '@zextras/carbonio-design-system';
 
 import { useFolderActions } from './use-folder-actions';
-import { useFolder } from '../../carbonio-ui-commons/store/zustand/folder/hooks';
 import { Folder } from '../../carbonio-ui-commons/types/folder';
 
 type FolderActionWrapperProps = {
-	folderId: Folder['id'];
+	folder: Folder;
 	children?: React.JSX.Element;
 };
 export const FolderActionWrapper = ({
-	folderId,
+	folder,
 	children
 }: FolderActionWrapperProps): React.JSX.Element => {
-	const folder = useFolder(folderId);
-	const dropdownItems = useFolderActions(folder as Folder);
+	const dropdownItems = useFolderActions(folder);
 
 	return (
 		<Dropdown
-			data-testid={`folder-context-menu-${folderId}`}
+			data-testid={`folder-context-menu-${folder.id}`}
 			contextMenu
 			items={dropdownItems}
 			display="block"
