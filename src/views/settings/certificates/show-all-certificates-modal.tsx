@@ -5,9 +5,18 @@
  */
 import React, { useCallback, useState, useMemo } from 'react';
 
-import { Button, Container, Table, Tooltip, useSnackbar } from '@zextras/carbonio-design-system';
+import {
+	Button,
+	CloseModalFn,
+	Container,
+	CreateModalFn,
+	Table,
+	Tooltip,
+	useSnackbar
+} from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
 
+import CertificateDeleteModal from './certificate-delete-modal';
 import { deletePersonalCertificate } from '../../../api/delete-personal-certificate-api';
 import { selectPersonalCertificate } from '../../../api/select-personal-certificate-api';
 import ModalFooter from '../../../carbonio-ui-commons/components/modals/modal-footer';
@@ -15,15 +24,19 @@ import ModalHeader from '../../../carbonio-ui-commons/components/modals/modal-he
 import { useSmimePasswordStore } from '../../../store/certificates/store';
 import { Certificate } from '../../../types/certificates/certificates';
 
-type EnterPasswordModalPropType = {
+type ShowAllCertificatesModalPropType = {
 	certificates: Certificate[];
 	onClose: (isUpdateList: boolean) => void;
+	createModal: CreateModalFn;
+	closeModal: CloseModalFn;
 };
 
 const ShowAllCertificatesModal = ({
 	certificates,
-	onClose
-}: EnterPasswordModalPropType): React.JSX.Element => {
+	onClose,
+	createModal,
+	closeModal
+}: ShowAllCertificatesModalPropType): React.JSX.Element => {
 	const [t] = useTranslation();
 	const createSnackbar = useSnackbar();
 	const { smimePassword } = useSmimePasswordStore();
@@ -91,7 +104,7 @@ const ShowAllCertificatesModal = ({
 		(certificate: Certificate) => {
 			if (certificate.selected) return t('settings.uploadCertificate.active', 'Active');
 			if (certificate.notAfter > Date.now())
-				return t('settings.uploadCertificate.deactive', 'Deactive');
+				return t('settings.uploadCertificate.inactive', 'Inactive');
 			return t('settings.uploadCertificate.expired', 'Expired');
 		},
 		[t]
@@ -119,6 +132,28 @@ const ShowAllCertificatesModal = ({
 		},
 		[showSnackbar, smimePassword, t]
 	);
+	const deleteCertificateModal = useCallback(
+		(certificate: Certificate) => {
+			createModal(
+				{
+					id: certificate.email,
+					size: 'small',
+					children: (
+						<CertificateDeleteModal
+							onClose={(): void => closeModal?.(certificate.email)}
+							onConfirmDelete={(): void => {
+								closeModal?.(certificate.email);
+								handleDeleteCertificate(certificate);
+							}}
+							email={certificate.email}
+						/>
+					)
+				},
+				true
+			);
+		},
+		[createModal, closeModal, handleDeleteCertificate]
+	);
 
 	// Create table rows dynamically from certificates
 	const getCertificateRows = useMemo(
@@ -137,7 +172,7 @@ const ShowAllCertificatesModal = ({
 						>
 							<Button
 								icon="Trash2Outline"
-								onClick={(): Promise<void> => handleDeleteCertificate(certificate)}
+								onClick={(): void => deleteCertificateModal(certificate)}
 								size="large"
 								type="ghost"
 								color="error"
@@ -146,7 +181,7 @@ const ShowAllCertificatesModal = ({
 					</Container>
 				]
 			})),
-		[localCertificates, getCertificateStatus, handleDeleteCertificate, t]
+		[localCertificates, getCertificateStatus, t, deleteCertificateModal]
 	);
 
 	// Handle certificate activation
