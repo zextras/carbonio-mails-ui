@@ -40,6 +40,9 @@ export type MessageGenerationParams = {
 	creationDateFromMailHeaders?: string;
 };
 
+const loremBody =
+	'Lorem ipsum dolor sit amet, consectetur adipiscing elit.\nInteger nec odio. Praesent libero. Sed cursus ante dapibus diam.\nNam nec ante. Sed lacinia, urna non tincidunt mattis, tortor neque adipiscing diam, a cursus ipsum ante quis turpis.\nFusce nec tellus sed augue semper porta. Mauris massa.';
+
 export const generateMessage = ({
 	id = faker.number.int().toString(),
 	cid = '123',
@@ -49,7 +52,7 @@ export const generateMessage = ({
 	cc = [],
 	from = { type: ParticipantRole.FROM, address: faker.internet.email() },
 	subject = faker.lorem.word(6),
-	body = faker.lorem.paragraph(4).trim(),
+	body = loremBody,
 	isRead = false,
 	isFlagged = false,
 	isComplete = false,
