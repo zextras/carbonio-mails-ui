@@ -12,7 +12,6 @@ import {
 	Drag,
 	DragObj,
 	Drop,
-	Dropdown,
 	Icon,
 	Padding,
 	Row,
@@ -28,7 +27,7 @@ import {
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 
-import { useFolderActions } from './use-folder-actions';
+import { FolderActionWrapper } from './folder-action-wrapper';
 import { getFolderIconColor, getFolderIconName, getFolderTranslatedName } from './utils';
 import { folderActionSoapApi } from '../../api/folder-action-soap-api';
 import { ROOT_NAME } from '../../carbonio-ui-commons/constants';
@@ -37,6 +36,7 @@ import { isSystemFolder } from '../../carbonio-ui-commons/helpers/folders';
 import type { Folder } from '../../carbonio-ui-commons/types/folder';
 import type { DragEnterAction, OnDropActionProps } from '../../carbonio-ui-commons/types/sidebar';
 import { isDraft, isSpam } from '../../helpers/folders';
+import { useOnMouseHover } from '../../hooks/use-on-mouse-hover';
 import { useUiUtilities } from '../../hooks/use-ui-utilities';
 import { convActionEmailStoreAction } from '../../store/emails/actions/conv-action-action';
 import { msgActionEmailStoreAction } from '../../store/emails/actions/msg-action-action';
@@ -68,7 +68,8 @@ const DropDenyOverlayContainer = styled(Container)<{ $folder: Folder }>`
 
 const badgeCount = (v?: number): number | undefined => (v && v > 0 ? v : undefined);
 
-const AccordionCustomComponent: FC<{ item: Folder }> = ({ item }) => {
+const AccordionCustomComponent: FC<{ item: Folder }> = ({ item: folder }) => {
+	const { ref, hasBeenHovered } = useOnMouseHover();
 	const accountName = useUserAccount().name;
 	const { folderId } = useParams<{ folderId: string }>();
 	const { createSnackbar } = useUiUtilities();
@@ -77,29 +78,29 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item }) => {
 		(data: OnDropActionProps): DragEnterAction => {
 			if (data.type === 'conversation' || data.type === 'message') {
 				if (
-					data.data.parentFolderId === item.id || // same folder not allowed
-					(data.data.parentFolderId === FOLDERS.INBOX && [5, 6].includes(Number(item.id))) || // from inbox not allowed in draft and sent
-					(data.data.parentFolderId === FOLDERS.DRAFTS && ![3].includes(Number(item.id))) || // from draft only allowed in Trash
-					(item.id === FOLDERS.DRAFTS && data.data.parentFolderId !== FOLDERS.TRASH) || // only from Trash can move in Draft
-					(item.isLink && item.perm?.indexOf('w') === -1) || // only if shared folder have write permission
-					item.id === FOLDERS.USER_ROOT ||
-					(item.isLink && item.oname === ROOT_NAME)
+					data.data.parentFolderId === folder.id || // same folder not allowed
+					(data.data.parentFolderId === FOLDERS.INBOX && [5, 6].includes(Number(folder.id))) || // from inbox not allowed in draft and sent
+					(data.data.parentFolderId === FOLDERS.DRAFTS && ![3].includes(Number(folder.id))) || // from draft only allowed in Trash
+					(folder.id === FOLDERS.DRAFTS && data.data.parentFolderId !== FOLDERS.TRASH) || // only from Trash can move in Draft
+					(folder.isLink && folder.perm?.indexOf('w') === -1) || // only if shared folder have write permission
+					folder.id === FOLDERS.USER_ROOT ||
+					(folder.isLink && folder.oname === ROOT_NAME)
 				) {
 					return { success: false };
 				}
 			}
 			if (data.type === 'folder') {
 				if (
-					item.id === data.data.id || // same folder not allowed
-					item.isLink || //  shared folder not allowed
-					isDraft(item.id) ||
-					isSpam(item.id) // cannot be moved inside Draft and Spam
+					folder.id === data.data.id || // same folder not allowed
+					folder.isLink || //  shared folder not allowed
+					isDraft(folder.id) ||
+					isSpam(folder.id) // cannot be moved inside Draft and Spam
 				)
 					return { success: false };
 			}
 			return undefined;
 		},
-		[item]
+		[folder]
 	);
 
 	const onDropAction = (data: OnDropActionProps): void => {
@@ -115,32 +116,34 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item }) => {
 		}
 
 		if (data.type === 'folder') {
-			folderActionSoapApi({ folder: data.data, l: item.id || FOLDERS.USER_ROOT, op: 'move' }).then(
-				(res) => {
-					if (!('Fault' in res)) {
-						createSnackbar({
-							key: `move`,
-							replace: true,
-							severity: 'success',
-							label: t('messages.snackbar.folder_moved', 'Folder successfully moved'),
-							autoHideTimeout: 3000
-						});
-					} else {
-						createSnackbar({
-							key: `move`,
-							replace: true,
-							severity: 'error',
-							label: t('label.error_try_again', 'Something went wrong, please try again.'),
-							autoHideTimeout: 3000
-						});
-					}
+			folderActionSoapApi({
+				folder: data.data,
+				l: folder.id || FOLDERS.USER_ROOT,
+				op: 'move'
+			}).then((res) => {
+				if (!('Fault' in res)) {
+					createSnackbar({
+						key: `move`,
+						replace: true,
+						severity: 'success',
+						label: t('messages.snackbar.folder_moved', 'Folder successfully moved'),
+						autoHideTimeout: 3000
+					});
+				} else {
+					createSnackbar({
+						key: `move`,
+						replace: true,
+						severity: 'error',
+						label: t('label.error_try_again', 'Something went wrong, please try again.'),
+						autoHideTimeout: 3000
+					});
 				}
-			);
+			});
 		} else if ('messageIds' in data.data) {
 			convActionEmailStoreAction({
 				operation: `move`,
 				ids: convMsgsIds,
-				parent: item.id
+				parent: folder.id
 			}).then((res) => {
 				if (!('Fault' in res)) {
 					replaceHistory(`/folder/${folderId}`);
@@ -153,7 +156,7 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item }) => {
 						autoHideTimeout: 3000,
 						actionLabel: t('action.goto_folder', 'GO TO FOLDER'),
 						onActionClick: () => {
-							replaceHistory(`/folder/${item.id}`);
+							replaceHistory(`/folder/${folder.id}`);
 						}
 					});
 				} else {
@@ -171,7 +174,7 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item }) => {
 			msgActionEmailStoreAction({
 				operation: `move`,
 				ids: convMsgsIds,
-				parent: item.id
+				parent: folder.id
 			}).then((res) => {
 				if (!('Fault' in res)) {
 					data.data.deselectAll && data.data.deselectAll();
@@ -183,7 +186,7 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item }) => {
 						autoHideTimeout: 3000,
 						actionLabel: t('action.goto_folder', 'GO TO FOLDER'),
 						onActionClick: () => {
-							replaceHistory(`/folder/${item.id}`);
+							replaceHistory(`/folder/${folder.id}`);
 						}
 					});
 				} else {
@@ -201,17 +204,17 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item }) => {
 	};
 
 	const dragFolderDisable = useMemo(
-		() => isSystemFolder(item.id) || item.isLink, // Default folders and shared folders not allowed to drag
-		[item.id, item.isLink]
+		() => isSystemFolder(folder.id) || folder.isLink, // Default folders and shared folders not allowed to drag
+		[folder.id, folder.isLink]
 	);
 
 	const onClick = useCallback((): void => {
-		pushHistory(`/folder/${item.id}`);
-	}, [item.id]);
+		pushHistory(`/folder/${folder.id}`);
+	}, [folder.id]);
 
 	const badgeType: 'read' | 'unread' = useMemo(
-		() => (item.id && item.id === FOLDERS.DRAFTS ? 'read' : 'unread'),
-		[item.id]
+		() => (folder.id && folder.id === FOLDERS.DRAFTS ? 'read' : 'unread'),
+		[folder.id]
 	);
 
 	const textProps: { size: 'small' } = useMemo(
@@ -222,22 +225,20 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item }) => {
 	);
 	const accordionItem = useMemo(
 		() => ({
-			...item,
+			...folder,
 			label:
-				item.id === FOLDERS.USER_ROOT
+				folder.id === FOLDERS.USER_ROOT
 					? accountName
-					: (getFolderTranslatedName({ folderId: item.id, folderName: item.name }) ?? ''),
-			icon: getFolderIconName(item) ?? undefined,
-			iconColor: getFolderIconColor(item) ?? '',
-			badgeCounter: badgeCount(item.id === FOLDERS.DRAFTS ? item.n : item?.u),
+					: (getFolderTranslatedName({ folderId: folder.id, folderName: folder.name }) ?? ''),
+			icon: getFolderIconName(folder) ?? undefined,
+			iconColor: getFolderIconColor(folder) ?? '',
+			badgeCounter: badgeCount(folder.id === FOLDERS.DRAFTS ? folder.n : folder?.u),
 			badgeType,
-			to: `/folder/${item.id}`,
+			to: `/folder/${folder.id}`,
 			textProps
 		}),
-		[item, accountName, badgeType, textProps]
+		[folder, accountName, badgeType, textProps]
 	);
-
-	const dropdownItems = useFolderActions(item);
 
 	const statusIcon = useMemo(() => {
 		const RowWithIcon = (icon: string, color: string, tooltipText: string): React.JSX.Element => (
@@ -250,37 +251,40 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item }) => {
 			</Padding>
 		);
 
-		if (item.acl?.grant) {
+		if (folder.acl?.grant) {
 			const tooltipText = t('tooltip.folder_sharing_status', {
-				count: item.acl.grant.length,
+				count: folder.acl.grant.length,
 				defaultValue_one: 'Shared with {{count}} person',
 				defaultValue: 'Shared with {{count}} people'
 			});
 			return RowWithIcon('Shared', 'shared', tooltipText);
 		}
-		if (item.isLink) {
+		if (folder.isLink) {
 			const tooltipText = t('tooltip.folder_linked_status', 'Linked to me');
 			return RowWithIcon('Linked', 'linked', tooltipText);
 		}
 		return '';
-	}, [item]);
+	}, [folder.acl?.grant, folder.isLink]);
 
 	// hide folders where a share was provided and subsequently removed
-	if (item.isLink && item.broken) {
+	if (folder.isLink && folder.broken) {
 		return <></>;
 	}
 
-	return item.id === FOLDERS.USER_ROOT || (item.isLink && item.oname === ROOT_NAME) ? (
-		<FittedRow>
-			<Padding left="small">
-				<Avatar label={accordionItem.label} colorLabel={accordionItem.iconColor} size="medium" />
-			</Padding>
-			<Tooltip label={accordionItem.label} placement="right" maxWidth="100%">
-				<AccordionItem data-testid={`accordion-folder-item-${item.id}`} item={accordionItem} />
-			</Tooltip>
-		</FittedRow>
-	) : (
-		<Row width="fill" minWidth={0}>
+	if (folder.id === FOLDERS.USER_ROOT || (folder.isLink && folder.oname === ROOT_NAME))
+		return (
+			<FittedRow>
+				<Padding left="small">
+					<Avatar label={accordionItem.label} colorLabel={accordionItem.iconColor} size="medium" />
+				</Padding>
+				<Tooltip label={accordionItem.label} placement="right" maxWidth="100%">
+					<AccordionItem data-testid={`accordion-folder-item-${folder.id}`} item={accordionItem} />
+				</Tooltip>
+			</FittedRow>
+		);
+
+	return (
+		<Row width="fill" minWidth={0} ref={ref}>
 			<Drop
 				acceptType={['message', 'conversation', 'folder']}
 				onDrop={(data: DragObj): void => {
@@ -297,39 +301,41 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item }) => {
 						event: data.event
 					} as OnDropActionProps)
 				}
-				overlayAcceptComponent={<DropOverlayContainer $folder={item} />}
-				overlayDenyComponent={<DropDenyOverlayContainer $folder={item} />}
+				overlayAcceptComponent={<DropOverlayContainer $folder={folder} />}
+				overlayDenyComponent={<DropDenyOverlayContainer $folder={folder} />}
 			>
 				<Drag
 					type="folder"
-					data={item}
+					data={folder}
 					dragDisabled={dragFolderDisable}
 					style={{ display: 'block' }}
 				>
 					<AppLink
 						onClick={onClick}
-						to={`/folder/${item.id}`}
+						to={`/folder/${folder.id}`}
 						style={{ width: '100%', height: '100%', textDecoration: 'none' }}
 					>
-						<Dropdown
-							data-testid={`folder-context-menu-${item.id}`}
-							contextMenu
-							items={dropdownItems}
-							display="block"
-							width="100%"
-						>
-							<Row>
-								<Padding left="small" />
+						{hasBeenHovered ? (
+							<FolderActionWrapper folderId={folder.id}>
 								<Tooltip label={accordionItem.label} placement="right" maxWidth="100%">
 									<AccordionItem
-										data-testid={`accordion-folder-item-${item.id}`}
+										data-testid={`accordion-folder-item-${folder.id}`}
 										item={accordionItem}
 									>
 										{statusIcon}
 									</AccordionItem>
 								</Tooltip>
-							</Row>
-						</Dropdown>
+							</FolderActionWrapper>
+						) : (
+							<Tooltip label={accordionItem.label} placement="right" maxWidth="100%">
+								<AccordionItem
+									data-testid={`accordion-folder-item-${folder.id}`}
+									item={accordionItem}
+								>
+									{statusIcon}
+								</AccordionItem>
+							</Tooltip>
+						)}
 					</AppLink>
 				</Drag>
 			</Drop>
