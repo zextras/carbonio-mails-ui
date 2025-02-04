@@ -464,7 +464,9 @@ describe('conversation-list-item component', () => {
 				folderId
 			};
 
-			setupTest(<ConversationListItem {...props} />);
+			const { user } = setupTest(<ConversationListItem {...props} />);
+			const conversationItem = screen.getByTestId(`ConversationListItem-${conversation.id}`);
+			await user.hover(conversationItem);
 			const aRandomChild = await screen.findByTestId(`hover-container-${conversation.id}`);
 
 			// Initally the context menu is not created
