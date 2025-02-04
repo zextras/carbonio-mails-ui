@@ -101,12 +101,9 @@ export const ConversationListItemCore = ({
 	}, [conversation.read]);
 
 	const renderBadge = useMemo(() => {
-		if (conversation.messagesInConversation === 1) return textReadValues.badge === 'unread';
-		if (conversation.messagesInConversation > 0) return true;
-		if (conversation?.messageIds?.length === 1) {
+		if (conversation.messagesInConversation === 1 || conversation?.messageIds?.length === 1)
 			return textReadValues.badge === 'unread';
-		}
-		return conversation?.messageIds?.length > 0;
+		return conversation.messagesInConversation > 0 || conversation?.messageIds?.length > 0;
 	}, [conversation?.messageIds?.length, conversation.messagesInConversation, textReadValues.badge]);
 
 	const toggleExpandButtonLabel = useMemo(
