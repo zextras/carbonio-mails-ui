@@ -164,7 +164,7 @@ export const ConversationListItem = memo(function ConversationListItem({
 					toggleOpen={toggleOpen}
 				/>
 			)}
-			{open && (
+			{open && conversation.messagesInConversation > 1 && (
 				<CollapseElement
 					$open={open}
 					data-testid="ConversationExpander"
