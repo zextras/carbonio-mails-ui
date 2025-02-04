@@ -28,14 +28,18 @@ import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { FolderActionWrapper } from './folder-action-wrapper';
-import { getFolderIconColor, getFolderIconName, getFolderTranslatedName } from './utils';
+import {
+	getFolderIconColor,
+	getFolderIconName,
+	getFolderTranslatedName,
+	handleDragEnter
+} from './utils';
 import { folderActionSoapApi } from '../../api/folder-action-soap-api';
 import { ROOT_NAME } from '../../carbonio-ui-commons/constants';
 import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
 import { isSystemFolder } from '../../carbonio-ui-commons/helpers/folders';
 import type { Folder } from '../../carbonio-ui-commons/types/folder';
-import type { DragEnterAction, OnDropActionProps } from '../../carbonio-ui-commons/types/sidebar';
-import { isDraft, isSpam } from '../../helpers/folders';
+import type { OnDropActionProps } from '../../carbonio-ui-commons/types/sidebar';
 import { useOnMouseHover } from '../../hooks/use-on-mouse-hover';
 import { useUiUtilities } from '../../hooks/use-ui-utilities';
 import { convActionEmailStoreAction } from '../../store/emails/actions/conv-action-action';
@@ -74,37 +78,8 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item: folder }) => {
 	const { folderId } = useParams<{ folderId: string }>();
 	const { createSnackbar } = useUiUtilities();
 
-	const onDragEnterAction = useCallback(
-		(data: OnDropActionProps): DragEnterAction => {
-			if (data.type === 'conversation' || data.type === 'message') {
-				if (
-					data.data.parentFolderId === folder.id || // same folder not allowed
-					(data.data.parentFolderId === FOLDERS.INBOX && [5, 6].includes(Number(folder.id))) || // from inbox not allowed in draft and sent
-					(data.data.parentFolderId === FOLDERS.DRAFTS && ![3].includes(Number(folder.id))) || // from draft only allowed in Trash
-					(folder.id === FOLDERS.DRAFTS && data.data.parentFolderId !== FOLDERS.TRASH) || // only from Trash can move in Draft
-					(folder.isLink && folder.perm?.indexOf('w') === -1) || // only if shared folder have write permission
-					folder.id === FOLDERS.USER_ROOT ||
-					(folder.isLink && folder.oname === ROOT_NAME)
-				) {
-					return { success: false };
-				}
-			}
-			if (data.type === 'folder') {
-				if (
-					folder.id === data.data.id || // same folder not allowed
-					folder.isLink || //  shared folder not allowed
-					isDraft(folder.id) ||
-					isSpam(folder.id) // cannot be moved inside Draft and Spam
-				)
-					return { success: false };
-			}
-			return undefined;
-		},
-		[folder]
-	);
-
 	const onDropAction = (data: OnDropActionProps): void => {
-		const dragEnterResponse = onDragEnterAction(data);
+		const dragEnterResponse = handleDragEnter(data, folder);
 		if (dragEnterResponse && dragEnterResponse?.success === false) return;
 		let convMsgsIds = [data.data.id];
 		if (
@@ -295,11 +270,14 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item: folder }) => {
 					} as OnDropActionProps);
 				}}
 				onDragEnter={(data: DragObj): { success: boolean } | undefined =>
-					onDragEnterAction({
-						type: data.type ?? '',
-						data: data.data,
-						event: data.event
-					} as OnDropActionProps)
+					handleDragEnter(
+						{
+							type: data.type ?? '',
+							data: data.data,
+							event: data.event
+						} as OnDropActionProps,
+						folder
+					)
 				}
 				overlayAcceptComponent={<DropOverlayContainer $folder={folder} />}
 				overlayDenyComponent={<DropDenyOverlayContainer $folder={folder} />}
