@@ -182,7 +182,11 @@ export const SearchMessageListItemCore = ({
 					<Row>
 						{showTagIcon && (
 							<Padding left="small">
-								<Icon data-testid="TagIcon" icon={tagIcon} color={tagIconColor} />
+								<Icon
+									data-testid="TagIcon"
+									icon={tagIcon}
+									color={tagIconColor as unknown as string}
+								/>
 							</Padding>
 						)}
 						{completeMessage.hasAttachment && (
