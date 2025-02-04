@@ -192,7 +192,7 @@ export function handleDragEnter(data: OnDropActionProps, folder: Folder): DragEn
 			(isInbox && restrictedInboxTargets.has(id)) || // Inbox to Draft/Sent not allowed
 			(isDrafts && !restrictedDraftTargets.has(id)) || // Drafts only to Trash
 			(id === FOLDERS.DRAFTS && !isTrash) || // Only Trash to Drafts
-			(isLink && (!perm || !perm.includes('w'))) || // Shared folder must have write permission
+			(isLink && !perm?.includes('w')) || // Shared folder must have write permission
 			restrictedDestinations.has(id) || // Root not allowed
 			(isLink && folder.oname === ROOT_NAME) // Root link not allowed
 		) {
