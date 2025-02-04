@@ -164,64 +164,66 @@ describe('SearchConversationListItemCore', () => {
 		expect(screen.getByTestId('conversation-list-item-avatar-123')).toBeInTheDocument();
 	});
 
-	it('adds tag with color from ZIMBRA_STANDARD_COLORS when tag id is included in conversation tags and tag exists in store', async () => {
-		const { conversation } = await waitFor(() =>
-			populateConversationInEmailStore({
-				conversationParams: { id: '123', tags: ['tag1'], subject: 'Test Subject' },
-				conversationMessagesNumber: 3
-			})
-		);
+	describe('Tag Icon', () => {
+		it('adds tag with color from ZIMBRA_STANDARD_COLORS when tag id is included in conversation tags and tag exists in store', async () => {
+			const { conversation } = await waitFor(() =>
+				populateConversationInEmailStore({
+					conversationParams: { id: '123', tags: ['tag1'], subject: 'Test Subject' },
+					conversationMessagesNumber: 3
+				})
+			);
 
-		(useTagExist as jest.Mock).mockReturnValue(true);
+			(useTagExist as jest.Mock).mockReturnValue(true);
 
-		const tagsFromStore = [
-			{ id: 'tag1', name: 'Tag 1', color: 0 },
-			{ id: 'tag2', name: 'Tag 2', color: 0 }
-		];
-		(useTags as jest.Mock).mockReturnValue(tagsFromStore);
+			const tagsFromStore = [
+				{ id: 'tag1', name: 'Tag 1', color: 0 },
+				{ id: 'tag2', name: 'Tag 2', color: 0 }
+			];
+			(useTags as jest.Mock).mockReturnValue(tagsFromStore);
 
-		setupTest(
-			<SearchConversationListItemCore
-				conversation={conversation}
-				selected={false}
-				selecting={false}
-				toggle={mockToggle}
-				open={false}
-				setOpen={jest.fn()}
-				conversationStatus={API_REQUEST_STATUS.fulfilled}
-				parent={FOLDERS.INBOX}
-			/>
-		);
+			setupTest(
+				<SearchConversationListItemCore
+					conversation={conversation}
+					selected={false}
+					selecting={false}
+					toggle={mockToggle}
+					open={false}
+					setOpen={jest.fn()}
+					conversationStatus={API_REQUEST_STATUS.fulfilled}
+					parent={FOLDERS.INBOX}
+				/>
+			);
 
-		expect(screen.getByTestId('TagIcon')).toBeInTheDocument();
-	});
+			expect(screen.getByTestId('TagIcon')).toBeInTheDocument();
+		});
 
-	it('adds tag with default color when tag id is not included in conversation tags but has nil: prefix', async () => {
-		const { conversation } = await waitFor(() =>
-			populateConversationInEmailStore({
-				conversationParams: { id: '123', tags: ['nil:tag2'], subject: 'Test Subject' },
-				conversationMessagesNumber: 3
-			})
-		);
+		it('adds tag with default color when tag id is not included in conversation tags but has nil: prefix', async () => {
+			const { conversation } = await waitFor(() =>
+				populateConversationInEmailStore({
+					conversationParams: { id: '123', tags: ['nil:tag2'], subject: 'Test Subject' },
+					conversationMessagesNumber: 3
+				})
+			);
 
-		(useTagExist as jest.Mock).mockReturnValue(true);
+			(useTagExist as jest.Mock).mockReturnValue(true);
 
-		const tagsFromStore = [{ id: 'tag1', name: 'Tag 1', color: 0 }];
-		(useTags as jest.Mock).mockReturnValue(tagsFromStore);
+			const tagsFromStore = [{ id: 'tag1', name: 'Tag 1', color: 0 }];
+			(useTags as jest.Mock).mockReturnValue(tagsFromStore);
 
-		setupTest(
-			<SearchConversationListItemCore
-				conversation={conversation}
-				selected={false}
-				selecting={false}
-				toggle={mockToggle}
-				open={false}
-				setOpen={jest.fn()}
-				conversationStatus={API_REQUEST_STATUS.fulfilled}
-				parent={FOLDERS.INBOX}
-			/>
-		);
+			setupTest(
+				<SearchConversationListItemCore
+					conversation={conversation}
+					selected={false}
+					selecting={false}
+					toggle={mockToggle}
+					open={false}
+					setOpen={jest.fn()}
+					conversationStatus={API_REQUEST_STATUS.fulfilled}
+					parent={FOLDERS.INBOX}
+				/>
+			);
 
-		expect(screen.getByTestId('TagIcon')).toBeInTheDocument();
+			expect(screen.getByTestId('TagIcon')).toBeInTheDocument();
+		});
 	});
 });
