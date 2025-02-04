@@ -13,40 +13,40 @@ import { useOnMouseHover } from '../use-on-mouse-hover';
 describe('useOnMouseHover', () => {
 	const hoverElementDataTestId = 'hover-element';
 	const TestComponent: () => React.JSX.Element = () => {
-		const { ref, isHovered } = useOnMouseHover();
+		const { ref, hasBeenHovered } = useOnMouseHover();
 		return (
 			<div ref={ref} data-testid={hoverElementDataTestId}>
-				{isHovered ? 'Hovered' : 'Not hovered'}
+				{hasBeenHovered ? 'Hovered' : 'Not hovered'}
 			</div>
 		);
 	};
 
-	it('returns false initially for isHovered', () => {
+	it('returns false initially for hasBeenHovered', () => {
 		render(<TestComponent />);
 		expect(screen.getByTestId(hoverElementDataTestId)).toHaveTextContent('Not hovered');
 	});
 
-	it('sets isHovered to true on mouse over', async () => {
+	it('sets hasBeenHovered to true on mouse over', async () => {
 		render(<TestComponent />);
 		const hoverElement = screen.getByTestId(hoverElementDataTestId);
 		fireEvent.mouseOver(hoverElement);
 		expect(hoverElement).toHaveTextContent('Hovered');
 	});
 
-	it('sets isHovered to false on mouse out', () => {
+	it('keeps hasBeenHovered to true on mouse out', () => {
 		render(<TestComponent />);
 		const hoverElement = screen.getByTestId(hoverElementDataTestId);
 		fireEvent.mouseOver(hoverElement);
 		expect(hoverElement).toHaveTextContent('Hovered');
 		fireEvent.mouseOut(hoverElement);
-		expect(hoverElement).toHaveTextContent('Not hovered');
+		expect(hoverElement).toHaveTextContent('Hovered');
 	});
 
 	it('cleans up event listeners on unmount', () => {
 		const { unmount } = render(<TestComponent />);
 		const hoverElement = screen.getByTestId(hoverElementDataTestId);
 
-		// Simulate hover to set isHovered = true
+		// Simulate hover to set hasBeenHovered = true
 		fireEvent.mouseOver(hoverElement);
 		expect(hoverElement).toHaveTextContent('Hovered');
 
