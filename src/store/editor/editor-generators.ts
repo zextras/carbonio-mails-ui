@@ -22,8 +22,7 @@ import {
 	getAddressOwnerAccount,
 	getDefaultIdentity,
 	getIdentityFromParticipant,
-	getRecipientReplyIdentity,
-	getRecipients
+	getRecipientReplyIdentity
 } from '../../helpers/identities';
 import { getFromParticipantFromMessage } from '../../helpers/messages';
 import { getMailBodyWithSignature } from '../../helpers/signatures';

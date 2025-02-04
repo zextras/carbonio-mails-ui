@@ -39,6 +39,49 @@ describe('registerShellActions', () => {
 	});
 });
 
+describe('mailToRecipientsAction', () => {
+	it('should return an object with disabled property set to false when arg is of MailDescription type', () => {
+		const expectedMailToActionResult = {
+			id: 'mail-to',
+			label: 'label.send_mail',
+			icon: 'MailModOutline',
+			execute: expect.any(Function),
+			disabled: false
+		};
+		expect(
+			mailToRecipientsAction({
+				recipients: [{ email: 'anymail', name: 'any', carbonCopy: false }],
+				subject: 'any'
+			})
+		).toMatchObject(expectedMailToActionResult);
+	});
+	it('should return an object with disabled property set to true when there is no recipient', () => {
+		const expectedMailToActionResult = {
+			id: 'mail-to',
+			label: 'label.send_mail',
+			icon: 'MailModOutline',
+			execute: expect.any(Function),
+			disabled: true
+		};
+		expect(
+			mailToRecipientsAction({
+				recipients: [],
+				subject: 'any'
+			})
+		).toMatchObject(expectedMailToActionResult);
+	});
+	it('should return an object with disabled property set to true when arg is not of MailDescription type', () => {
+		const expectedMailToActionResult = {
+			id: 'mail-to',
+			label: 'label.send_mail',
+			icon: 'MailModOutline',
+			execute: expect.any(Function),
+			disabled: true
+		};
+		expect(mailToRecipientsAction({})).toMatchObject(expectedMailToActionResult);
+	});
+});
+
 describe('mailToAction', () => {
 	it('should return an object with disabled property set to false when contacts is not an array', () => {
 		const expectedMailToActionResult = {

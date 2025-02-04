@@ -107,7 +107,7 @@ export const mailToRecipientsAction = (mailDescription: unknown): MailToRecipien
 	label: t('label.send_mail', 'Send Mail'),
 	icon: 'MailModOutline',
 	execute: (e) => mailToRecipientsActionOnClick(e, mailDescription),
-	disabled: false
+	disabled: !isMailDescription(mailDescription) || mailDescription.recipients.length === 0
 });
 
 export const newEmailActionOnClick = (
