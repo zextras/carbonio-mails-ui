@@ -14,7 +14,7 @@ import { MailSensitivityIcon } from './mail-sensitivity-icon';
 import { SmimeIcon } from './smime-icon';
 import { checkExistEncryptionPassword } from '../../../../../../api/check-exist-password-api';
 import { useSmimePasswordStore } from '../../../../../../store/certificates/store';
-import { getMessageEmailStoreAction } from '../../../../../../store/emails/actions/get-message';
+import { getMessageDecryptEmailStoreAction } from '../../../../../../store/emails/actions/get-message';
 import { IncompleteMessage } from '../../../../../../types';
 import { EnterPasswordModal } from '../../../../../settings/certificates/enter-password-modal';
 import { MailInfoDetailModal } from '../info-details-modal/mail-info-detail-modal';
@@ -74,11 +74,29 @@ export const MailInfoBlock = ({ msg }: MailInfoProps): React.JSX.Element | null 
 		]
 	);
 
+	const decryptMsgAction = useCallback(
+		(msgId: string, password: string) => {
+			getMessageDecryptEmailStoreAction(msgId, password).then((response) => {
+				if (!response) {
+					createSnackbar({
+						key: `unable-to-decrypt`,
+						replace: true,
+						severity: 'error',
+						label: t('settings.uploadCertificate.unableToDecrypt', 'Unable to decrypt'),
+						autoHideTimeout: 3000,
+						hideButton: true
+					});
+				}
+			});
+		},
+		[createSnackbar, t]
+	);
+
 	const dencryptMessage = useCallback(
 		(event: React.MouseEvent): void => {
 			event.stopPropagation();
 			if (smimePassword !== '') {
-				getMessageEmailStoreAction(msg.id, smimePassword);
+				decryptMsgAction(msg.id, smimePassword);
 			} else {
 				checkExistEncryptionPassword().then((res) => {
 					if ('data' in res) {
@@ -90,9 +108,7 @@ export const MailInfoBlock = ({ msg }: MailInfoProps): React.JSX.Element | null 
 								children: (
 									<Container crossAlignment="baseline">
 										<EnterPasswordModal
-											onConfirm={(password): void => {
-												getMessageEmailStoreAction(msg.id, password);
-											}}
+											onConfirm={(password): void => decryptMsgAction(msg.id, password)}
 											onClose={(): void => closeModal?.(id)}
 											hideReset
 										/>
@@ -117,7 +133,7 @@ export const MailInfoBlock = ({ msg }: MailInfoProps): React.JSX.Element | null 
 				});
 			}
 		},
-		[closeModal, createModal, createSnackbar, msg.id, smimePassword, t]
+		[closeModal, createModal, createSnackbar, decryptMsgAction, msg.id, smimePassword, t]
 	);
 
 	const showInfoDetails =
