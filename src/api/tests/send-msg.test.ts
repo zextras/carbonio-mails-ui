@@ -8,10 +8,8 @@ import { waitFor } from '@testing-library/react';
 
 import { createSoapAPIInterceptor } from '../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { getConvEmailStoreAction } from '../../store/emails/actions/get-conv-action';
-import {
-	getMessageEmailStoreAction,
-	getMessageWithExistingParticipantsEmailStoreAction
-} from '../../store/emails/actions/get-message';
+import { getMessageEmailStoreAction } from '../../store/emails/actions/get-message';
+import { getMessageWithExistingParticipantsEmailStoreAction } from '../../store/emails/actions/get-message-with-existing-participants';
 import { generateMessage } from '../../tests/generators/generateMessage';
 import { sendMsg } from '../send-msg';
 

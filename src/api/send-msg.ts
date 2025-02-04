@@ -12,10 +12,8 @@ import { getCertificate } from '../store/certificates/certificate';
 import { createSoapSendMsgRequestFromEditor } from '../store/editor/editor-transformations';
 import { generateMailRequest } from '../store/editor-slice-utils';
 import { getConvEmailStoreAction } from '../store/emails/actions/get-conv-action';
-import {
-	getMessageEmailStoreAction,
-	getMessageWithExistingParticipantsEmailStoreAction
-} from '../store/emails/actions/get-message';
+import { getMessageEmailStoreAction } from '../store/emails/actions/get-message';
+import { getMessageWithExistingParticipantsEmailStoreAction } from '../store/emails/actions/get-message-with-existing-participants';
 import { MailMessage, MailsEditorV2, SaveDraftRequest, SaveDraftResponse } from '../types';
 
 export const sendMsg = async ({
