@@ -28,7 +28,7 @@ export const FolderActionWrapper = ({
 			display="block"
 			width="100%"
 		>
-			<Row>
+			<Row data-testid="folder-context-menu-child">
 				<Padding left="small" />
 				{children}
 			</Row>
