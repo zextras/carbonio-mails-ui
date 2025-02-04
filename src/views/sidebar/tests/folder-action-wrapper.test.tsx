@@ -15,6 +15,9 @@ import { Folder } from '../../../carbonio-ui-commons/types/folder';
 import { FolderActionWrapper } from '../folder-action-wrapper';
 import { useFolderActions } from '../use-folder-actions';
 
+jest.mock('../use-folder-actions', () => ({
+	useFolderActions: jest.fn()
+}));
 describe('FolderActionWrapper', () => {
 	it('renders correctly with given folder and children', () => {
 		populateFoldersStore();
