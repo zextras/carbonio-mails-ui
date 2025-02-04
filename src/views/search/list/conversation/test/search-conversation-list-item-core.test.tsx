@@ -15,18 +15,22 @@ import { tags } from '../../../../../carbonio-ui-commons/test/mocks/tags/tags';
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
 import { API_REQUEST_STATUS } from '../../../../../constants';
 import { populateConversationInEmailStore } from '../../../../../tests/generators/generateConversation';
+import { useTagExist } from '../../../../../ui-actions/tag-actions';
 import { SearchConversationListItemCore } from '../search-conversation-list-item-core';
 
 jest.mock('../../../../../carbonio-ui-commons/store/zustand/tags', () => ({
 	useTags: jest.fn()
 }));
+jest.mock('../../../../../ui-actions/tag-actions', () => ({
+	useTagExist: jest.fn()
+}));
 
 const mockToggle = jest.fn();
 const tagsArray = Object.values(tags);
 
-describe('ConversationListItemCore', () => {
+describe('SearchConversationListItemCore', () => {
 	beforeEach(() => {
-		(useTags as jest.Mock).mockReturnValue(tags);
+		jest.clearAllMocks();
 	});
 
 	it('renders conversation details correctly', async () => {
@@ -87,7 +91,7 @@ describe('ConversationListItemCore', () => {
 			})
 		);
 		populateFoldersStore();
-		const mockSsetOpen = jest.fn();
+		const mockSetOpen = jest.fn();
 
 		const { user } = setupTest(
 			<SearchConversationListItemCore
@@ -96,7 +100,7 @@ describe('ConversationListItemCore', () => {
 				selecting={false}
 				toggle={mockToggle}
 				open={false}
-				setOpen={mockSsetOpen}
+				setOpen={mockSetOpen}
 				conversationStatus={API_REQUEST_STATUS.fulfilled}
 				parent={FOLDERS.INBOX}
 			/>
@@ -106,7 +110,7 @@ describe('ConversationListItemCore', () => {
 		await user.click(expandButton);
 
 		await waitFor(() => {
-			expect(mockSsetOpen).toHaveBeenCalledTimes(1);
+			expect(mockSetOpen).toHaveBeenCalledTimes(1);
 		});
 	});
 
@@ -158,5 +162,37 @@ describe('ConversationListItemCore', () => {
 		);
 
 		expect(screen.getByTestId('conversation-list-item-avatar-123')).toBeInTheDocument();
+	});
+
+	it('adds tag when tag id is included in conversation tags', async () => {
+		const { conversation } = await waitFor(() =>
+			populateConversationInEmailStore({
+				conversationParams: { id: '123', tags: ['tag1'], subject: 'Test Subject' },
+				conversationMessagesNumber: 3
+			})
+		);
+
+		(useTagExist as jest.Mock).mockReturnValue(true);
+
+		const tagsFromStore = [
+			{ id: 'tag1', name: 'Tag 1', color: 0 },
+			{ id: 'tag2', name: 'Tag 2', color: 0 }
+		];
+		(useTags as jest.Mock).mockReturnValue(tagsFromStore);
+
+		setupTest(
+			<SearchConversationListItemCore
+				conversation={conversation}
+				selected={false}
+				selecting={false}
+				toggle={mockToggle}
+				open={false}
+				setOpen={jest.fn()}
+				conversationStatus={API_REQUEST_STATUS.fulfilled}
+				parent={FOLDERS.INBOX}
+			/>
+		);
+
+		expect(screen.getByTestId('TagIcon66')).toBeInTheDocument();
 	});
 });
