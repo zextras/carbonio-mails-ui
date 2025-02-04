@@ -164,7 +164,7 @@ describe('SearchConversationListItemCore', () => {
 		expect(screen.getByTestId('conversation-list-item-avatar-123')).toBeInTheDocument();
 	});
 
-	it('adds tag when tag id is included in conversation tags', async () => {
+	it('adds tag with color from ZIMBRA_STANDARD_COLORS when tag id is included in conversation tags and tag exists in store', async () => {
 		const { conversation } = await waitFor(() =>
 			populateConversationInEmailStore({
 				conversationParams: { id: '123', tags: ['tag1'], subject: 'Test Subject' },
