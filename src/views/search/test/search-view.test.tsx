@@ -279,6 +279,9 @@ describe('SearchView', () => {
 
 			const { user } = setupTest(<SearchView {...searchViewProps} />);
 			await waitAndMakeConversationVisible('123');
+			const actionWrapper = await screen.findByTestId(`ConversationListItem-123`);
+			await user.hover(actionWrapper);
+
 			const itemAvatar = await screen.findByTestId('conversation-list-item-avatar-123');
 			const avatar = within(itemAvatar).getByTestId('avatar');
 			await act(async () => {
@@ -337,6 +340,9 @@ describe('SearchView', () => {
 			jest.spyOn(hooks, 'useAppContext').mockReturnValue(fakeCounter());
 			const { user } = setupTest(<SearchView {...searchViewProps} />);
 			await waitAndMakeConversationVisible('123');
+			const actionWrapper = await screen.findByTestId(`ConversationListItem-123`);
+			await user.hover(actionWrapper);
+
 			const itemAvatar = await screen.findByTestId('conversation-list-item-avatar-123');
 			const avatar = within(itemAvatar).getByTestId('avatar');
 			await act(async () => {
@@ -421,8 +427,12 @@ describe('SearchView', () => {
 			const { user } = setupTest(<SearchView {...searchViewProps} />);
 			await waitFor(() => searchInterceptor);
 			await waitAndMakeMessageVisible('10');
+			const actionWrapper = await screen.findByTestId(`MessageListItem-10`);
+			await user.hover(actionWrapper);
+
 			const itemAvatar = await screen.findByTestId('message-list-item-avatar-10');
 			const avatar = await within(itemAvatar).findByTestId('avatar');
+
 			user.click(avatar);
 			await within(itemAvatar).findByTestId('icon: Checkmark');
 			const multipleSelectionPanel = await screen.findByTestId('MultipleSelectionActionPanel');

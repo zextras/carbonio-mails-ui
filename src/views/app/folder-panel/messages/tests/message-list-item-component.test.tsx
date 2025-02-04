@@ -349,7 +349,11 @@ describe.each`
 				currentFolderId: folderId
 			};
 
-			setupTest(<MessageListItem {...props} />);
+			const { user } = setupTest(<MessageListItem {...props} />);
+			const actionWrapper = await screen.findByTestId(`MessageListItem-${props.message.id}`);
+
+			user.hover(actionWrapper);
+
 			const aRandomChild = await screen.findByTestId(`hover-container-${messageId}`);
 
 			// Initally the context menu is not created

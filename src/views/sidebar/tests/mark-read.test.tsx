@@ -42,12 +42,21 @@ describe('Mark all as read', () => {
 
 		const { user } = setupTest(<Sidebar expanded />, options);
 
-		const inboxItem = screen.getByTestId(`accordion-folder-item-${folderId}`);
-		await user.rightClick(inboxItem);
-		await screen.findByTestId(`folder-context-menu-${folderId}`);
+		const inboxItem = await screen.findByTestId(`accordion-folder-item-${folderId}`);
+		await user.hover(inboxItem);
+
+		const contextMenu = await screen.findByTestId(`folder-context-menu-${folderId}`);
+		expect(contextMenu).toBeInTheDocument();
+
+		const child = await screen.findByTestId('folder-context-menu-child');
+		expect(child).toBeInTheDocument();
+
+		await user.rightClick(child);
+
 		const actionMenuItem = await screen.findByTestId(
 			`folder-action-${FolderActionsType.MARK_ALL_READ}`
 		);
+
 		const folderActionInterceptor = createSoapAPIInterceptor<{ action: SoapFolderAction }>(
 			'FolderAction'
 		);
