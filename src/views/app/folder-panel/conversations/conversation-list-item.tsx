@@ -21,9 +21,26 @@ import { useConvSetReadFn } from '../../../../hooks/actions/use-conv-set-read';
 import { useOnMouseHover } from '../../../../hooks/use-on-mouse-hover';
 import { searchConvEmailStoreAction } from '../../../../store/emails/actions/search-conv-action';
 import { useConversationMessages, useConversationStatus } from '../../../../store/emails/store';
-import { ConversationListItemProps } from '../../../../types';
+import { NormalizedConversation } from '../../../../types/conversations';
 import { ConversationPreviewPanel } from '../../detail-panel/conversation-preview-panel';
 
+export type ConversationListItemProps = {
+	conversation: NormalizedConversation;
+	selected: boolean;
+	selecting: boolean;
+	toggleMultipleSelection: (id: string) => void;
+	visible?: boolean;
+	isConvChildren: boolean;
+	active?: boolean;
+	isSearchModule?: boolean;
+	activeItemId: string;
+	dragImageRef?: React.RefObject<HTMLInputElement>;
+	setDraggedIds?: (ids: Record<string, boolean>) => void;
+	draggedIds?: Record<string, boolean> | undefined;
+	selectedItems?: Record<string, boolean>;
+	deselectAll: () => void;
+	folderId?: string;
+};
 const CollapseElement = styled(Container)<{ $open: boolean }>`
 	display: ${({ $open }): string => ($open ? 'block' : 'none')};
 `;
@@ -32,7 +49,7 @@ export const ConversationListItem = memo(function ConversationListItem({
 	conversation,
 	selected,
 	selecting,
-	toggle,
+	toggleMultipleSelection,
 	active,
 	isSearchModule,
 	activeItemId,
@@ -71,7 +88,7 @@ export const ConversationListItem = memo(function ConversationListItem({
 
 	const zimbraPrefMarkMsgRead = useUserSettings()?.prefs?.zimbraPrefMarkMsgRead !== '-1';
 
-	const toggleOpen = useCallback(
+	const toggleCollapseElementCallback = useCallback(
 		(e: React.MouseEvent<HTMLButtonElement> | React.KeyboardEvent | MouseEvent | KeyboardEvent) => {
 			e.preventDefault();
 			setOpen((currentlyOpen) => {
@@ -147,10 +164,10 @@ export const ConversationListItem = memo(function ConversationListItem({
 						conversation={conversation}
 						selected={selected}
 						selecting={selecting}
-						toggle={toggle}
+						toggleMultipleSelection={toggleMultipleSelection}
 						folderParent={folderParent}
 						open={open}
-						toggleOpen={toggleOpen}
+						toggleCollapseElementCallback={toggleCollapseElementCallback}
 					/>
 				</ConversationListItemActionWrapper>
 			) : (
@@ -158,10 +175,10 @@ export const ConversationListItem = memo(function ConversationListItem({
 					conversation={conversation}
 					selected={selected}
 					selecting={selecting}
-					toggle={toggle}
+					toggleMultipleSelection={toggleMultipleSelection}
 					folderParent={folderParent}
 					open={open}
-					toggleOpen={toggleOpen}
+					toggleCollapseElementCallback={toggleCollapseElementCallback}
 				/>
 			)}
 			{open && conversation.messagesInConversation > 1 && (

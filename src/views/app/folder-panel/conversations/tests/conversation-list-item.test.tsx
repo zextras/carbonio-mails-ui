@@ -22,9 +22,9 @@ import {
 } from '../../../../../store/emails/store';
 import { ASSERTIONS } from '../../../../../tests/constants';
 import { populateConversationInEmailStore } from '../../../../../tests/generators/generateConversation';
-import type { ConvActionRequest, ConversationListItemProps } from '../../../../../types';
+import type { ConvActionRequest } from '../../../../../types';
 import { makeAllItemsVisible } from '../../../../settings/filters/tests/test-utils';
-import { ConversationListItem } from '../conversation-list-item';
+import { ConversationListItem, ConversationListItemProps } from '../conversation-list-item';
 
 const canExecuteCallback = jest.fn();
 
@@ -54,7 +54,7 @@ describe('conversation-list-item component', () => {
 					conversation,
 					selected: false,
 					selecting: false,
-					toggle: noop,
+					toggleMultipleSelection: noop,
 					isConvChildren: false,
 					activeItemId: '',
 					deselectAll: noop,
@@ -94,7 +94,7 @@ describe('conversation-list-item component', () => {
 						conversation,
 						selected: false,
 						selecting: false,
-						toggle: noop,
+						toggleMultipleSelection: noop,
 						isConvChildren: false,
 						activeItemId: '',
 						deselectAll: noop,
@@ -136,7 +136,7 @@ describe('conversation-list-item component', () => {
 						conversation,
 						selected: false,
 						selecting: false,
-						toggle: noop,
+						toggleMultipleSelection: noop,
 						isConvChildren: false,
 						activeItemId: '',
 						deselectAll: noop,
@@ -185,7 +185,7 @@ describe('conversation-list-item component', () => {
 						conversation,
 						selected: false,
 						selecting: false,
-						toggle: noop,
+						toggleMultipleSelection: noop,
 						isConvChildren: false,
 						activeItemId: '',
 						deselectAll: noop,
@@ -237,7 +237,7 @@ describe('conversation-list-item component', () => {
 						conversation,
 						selected: false,
 						selecting: false,
-						toggle: noop,
+						toggleMultipleSelection: noop,
 						isConvChildren: false,
 						activeItemId: '',
 						deselectAll: noop,
@@ -285,7 +285,7 @@ describe('conversation-list-item component', () => {
 						conversation,
 						selected: false,
 						selecting: false,
-						toggle: noop,
+						toggleMultipleSelection: noop,
 						isConvChildren: false,
 						activeItemId: '',
 						deselectAll: noop,
@@ -330,7 +330,7 @@ describe('conversation-list-item component', () => {
 						conversation,
 						selected: false,
 						selecting: false,
-						toggle: noop,
+						toggleMultipleSelection: noop,
 						isConvChildren: false,
 						activeItemId: '',
 						deselectAll: noop,
@@ -372,7 +372,7 @@ describe('conversation-list-item component', () => {
 					conversation,
 					selected: false,
 					selecting: false,
-					toggle: noop,
+					toggleMultipleSelection: noop,
 					isConvChildren: false,
 					activeItemId: '',
 					deselectAll: noop,
@@ -406,7 +406,7 @@ describe('conversation-list-item component', () => {
 					conversation,
 					selected: false,
 					selecting: false,
-					toggle: noop,
+					toggleMultipleSelection: noop,
 					isConvChildren: false,
 					activeItemId: '',
 					deselectAll: noop,
@@ -430,7 +430,7 @@ describe('conversation-list-item component', () => {
 					conversation,
 					selected: false,
 					selecting: false,
-					toggle: noop,
+					toggleMultipleSelection: noop,
 					isConvChildren: false,
 					activeItemId: '',
 					deselectAll: noop,
@@ -456,7 +456,7 @@ describe('conversation-list-item component', () => {
 				conversation,
 				selected: false,
 				selecting: false,
-				toggle: noop,
+				toggleMultipleSelection: noop,
 				isConvChildren: false,
 				activeItemId: '',
 				deselectAll: noop,
@@ -490,7 +490,7 @@ describe('conversation-list-item component', () => {
 				conversation,
 				selected: false,
 				selecting: false,
-				toggle: noop,
+				toggleMultipleSelection: noop,
 				isConvChildren: false,
 				activeItemId: '',
 				deselectAll: noop,
@@ -534,7 +534,7 @@ describe('conversation-list-item component', () => {
 				conversation,
 				selected: false,
 				selecting: false,
-				toggle: noop,
+				toggleMultipleSelection: noop,
 				isConvChildren: false,
 				activeItemId: '',
 				deselectAll: noop,
@@ -575,7 +575,7 @@ describe('conversation-list-item component', () => {
 				conversation,
 				selected: false,
 				selecting: false,
-				toggle: noop,
+				toggleMultipleSelection: noop,
 				isConvChildren: false,
 				activeItemId: '',
 				deselectAll: noop,
@@ -619,7 +619,7 @@ describe('conversation-list-item component', () => {
 				conversation,
 				selected: false,
 				selecting: false,
-				toggle: noop,
+				toggleMultipleSelection: noop,
 				isConvChildren: false,
 				activeItemId: '',
 				deselectAll: noop,
@@ -660,7 +660,7 @@ describe('conversation-list-item component', () => {
 				conversation,
 				selected: false,
 				selecting: false,
-				toggle: noop,
+				toggleMultipleSelection: noop,
 				isConvChildren: false,
 				activeItemId: '',
 				deselectAll: noop,
@@ -687,7 +687,7 @@ describe('conversation-list-item component', () => {
 				conversation,
 				selected: false,
 				selecting: false,
-				toggle: noop,
+				toggleMultipleSelection: noop,
 				isConvChildren: false,
 				activeItemId: '',
 				deselectAll: noop,
@@ -695,16 +695,14 @@ describe('conversation-list-item component', () => {
 				folderId: FOLDERS.INBOX
 			};
 
-			const { user } = setupTest(<ConversationListItem {...props} />);
+			setupTest(<ConversationListItem {...props} />);
 
 			const toggleButton = screen.getByTestId('ToggleExpand');
 			await waitFor(() => {
 				expect(toggleButton).toBeVisible();
 			});
 
-			act(() => {
-				user.click(toggleButton);
-			});
+			fireEvent.click(toggleButton);
 
 			makeAllItemsVisible();
 

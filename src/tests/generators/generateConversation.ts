@@ -148,6 +148,8 @@ export const populateConversationInEmailStore = ({
 		messageIds:
 			generatedMessages.map((msg) => msg.id) ?? messageIds ?? conversationMessagesNumberArray
 	});
-	updateConversations([generatedConversation]);
+	const messagesInConversation =
+		messageGeneratorParams?.length ?? messageIds?.length ?? conversationMessagesNumber;
+	updateConversations([{ ...generatedConversation, messagesInConversation }]);
 	return { conversation: generatedConversation, messages: generatedMessages };
 };
