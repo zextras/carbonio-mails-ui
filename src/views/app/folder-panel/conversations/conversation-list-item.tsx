@@ -29,15 +29,11 @@ export type ConversationListItemProps = {
 	selected: boolean;
 	selecting: boolean;
 	toggleMultipleSelection: (id: string) => void;
-	visible?: boolean;
-	isConvChildren: boolean;
 	active?: boolean;
 	isSearchModule?: boolean;
 	activeItemId: string;
 	dragImageRef?: React.RefObject<HTMLInputElement>;
 	setDraggedIds?: (ids: Record<string, boolean>) => void;
-	draggedIds?: Record<string, boolean> | undefined;
-	selectedItems?: Record<string, boolean>;
 	deselectAll: () => void;
 	folderId?: string;
 };

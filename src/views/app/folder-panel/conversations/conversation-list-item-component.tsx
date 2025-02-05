@@ -35,14 +35,12 @@ export const ConversationListItemComponent = ({
 	toggleMultipleSelection,
 	active,
 	setDraggedIds,
-	draggedIds,
 	selectedItems = {},
 	dragImageRef,
 	isSearchModule,
 	selectedIds = [],
 	deselectAll,
-	folderId,
-	visible
+	folderId
 }: ConversationListItemComponentProps): React.JSX.Element => {
 	const conversation = useConversationById(conversationId);
 	return (
@@ -64,14 +62,10 @@ export const ConversationListItemComponent = ({
 					toggleMultipleSelection={toggleMultipleSelection}
 					active={active}
 					setDraggedIds={setDraggedIds}
-					draggedIds={draggedIds}
-					selectedItems={selectedItems}
 					dragImageRef={dragImageRef}
 					isSearchModule={isSearchModule}
-					isConvChildren
 					deselectAll={deselectAll}
 					folderId={folderId}
-					visible={visible}
 				/>
 			</DragItemWrapper>
 		)
