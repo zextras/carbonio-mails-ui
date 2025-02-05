@@ -6,7 +6,7 @@
 
 import React from 'react';
 
-import { screen, waitFor } from '@testing-library/react';
+import { act, screen, waitFor } from '@testing-library/react';
 
 import { checkExistEncryptionPassword } from '../../../../api/check-exist-password-api';
 import { setupTest } from '../../../../carbonio-ui-commons/test/test-setup';
@@ -48,6 +48,17 @@ describe('CertificatesView', () => {
 		await waitFor(() => {
 			expect(mockCheckExistEncryptionPassword).toHaveBeenCalled();
 		});
+	});
+
+	it('should close modal correctly after opening', async () => {
+		setupTest(<CertificatesView />);
+		const modalCloseButton = await screen.findByText('Close');
+
+		await act(async () => {
+			modalCloseButton.click();
+		});
+
+		expect(screen.queryByText('Certificate Password Modal')).not.toBeInTheDocument();
 	});
 
 	it('renders personal and recipient certificates sections when password exists', () => {
