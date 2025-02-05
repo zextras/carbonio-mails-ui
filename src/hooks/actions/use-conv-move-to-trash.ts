@@ -12,7 +12,9 @@ import { useTranslation } from 'react-i18next';
 import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
 import { isTrash } from '../../carbonio-ui-commons/helpers/folders';
 import { ConversationActionsDescriptors } from '../../constants';
+import { isDraft } from '../../helpers/folders';
 import { convActionEmailStoreAction } from '../../store/emails/actions/conv-action-action';
+import { msgActionEmailStoreAction } from '../../store/emails/actions/msg-action-action';
 import type { ActionFn, UIActionDescriptor } from '../../types';
 import { useInSearchModule } from '../../ui-actions/utils';
 
@@ -31,8 +33,10 @@ const useRestoreConversation = (
 	const inSearchModule = useInSearchModule();
 	const [t] = useTranslation();
 
+	const action = isDraft(folderId) ? msgActionEmailStoreAction : convActionEmailStoreAction;
+
 	return useCallback(() => {
-		convActionEmailStoreAction({
+		action({
 			operation: `move`,
 			ids,
 			parent: folderId
@@ -61,7 +65,7 @@ const useRestoreConversation = (
 				});
 			}
 		});
-	}, [createSnackbar, deselectAll, folderId, ids, inSearchModule, t]);
+	}, [action, createSnackbar, deselectAll, folderId, ids, inSearchModule, t]);
 };
 
 export const useConvMoveToTrashFn = ({
@@ -75,11 +79,13 @@ export const useConvMoveToTrashFn = ({
 	const inSearchModule = useInSearchModule();
 	const [t] = useTranslation();
 
+	const action = isDraft(folderId) ? msgActionEmailStoreAction : convActionEmailStoreAction;
+
 	const execute = useCallback((): void => {
 		if (!canExecute()) {
 			return;
 		}
-		convActionEmailStoreAction({
+		action({
 			operation: `trash`,
 			ids
 		}).then((res) => {
@@ -110,6 +116,7 @@ export const useConvMoveToTrashFn = ({
 		});
 	}, [
 		canExecute,
+		action,
 		ids,
 		deselectAll,
 		inSearchModule,
