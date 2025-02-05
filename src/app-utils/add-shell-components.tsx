@@ -16,8 +16,10 @@ import {
 } from '@zextras/carbonio-shell-ui';
 
 import { advancedAccountApi } from '../api/advanced-account-api';
+import { checkIsSmimeEnabled } from '../api/check-is-smime-enable-api';
 import { Spinner } from '../assets/spinner';
 import { CERTIFICATES_ROUTE, MAIL_APP_ID, MAILS_BOARD_VIEW_ID, MAILS_ROUTE } from '../constants';
+import { useSmimeFeatureStore } from '../store/certificates/store';
 import { ExtraWindowsManager } from '../views/app/extra-windows/extra-window-manager';
 import { getSettingsSubSections } from '../views/settings/subsections';
 
@@ -105,6 +107,17 @@ export const addComponentsToShell = async (isCarbonioCE: boolean | undefined): P
 		component: EditView
 	});
 	const { backupSelfUndeleteAllowed } = await advancedAccountApi();
+
+	if (!isCarbonioCE) {
+		await checkIsSmimeEnabled().then((res) => {
+			if ('data' in res) {
+				useSmimeFeatureStore.getState().updateIsSmimeEnabled(true);
+			} else {
+				useSmimeFeatureStore.getState().updateIsSmimeEnabled(false);
+			}
+		});
+	}
+
 	addSettingsView({
 		route: MAILS_ROUTE,
 		label,

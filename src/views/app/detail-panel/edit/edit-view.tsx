@@ -46,7 +46,11 @@ import {
 	getIdentitiesDescriptors,
 	getIdentityDescriptor
 } from '../../../../helpers/identities';
-import { useCertificatesStore, useSmimePasswordStore } from '../../../../store/certificates/store';
+import {
+	useCertificatesStore,
+	useSmimeFeatureStore,
+	useSmimePasswordStore
+} from '../../../../store/certificates/store';
 import {
 	useEditorAutoSendTime,
 	useEditorDraftSave,
@@ -140,7 +144,7 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 	const getCertificate = useCertificatesStore((state) => state.getCertificate);
 	const { smimePassword } = useSmimePasswordStore();
 	const isCarbonioCE = useIsCarbonioCE();
-	const [isSmimeEnabled, setIsSmimeEnabled] = useState(false);
+	const { isSmimeEnabled } = useSmimeFeatureStore();
 
 	useEffect(() => {
 		if (!draftId) saveDraft();
@@ -158,13 +162,13 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 		if (!isCarbonioCE) {
 			checkIsSmimeEnabled().then((res) => {
 				if ('data' in res) {
-					setIsSmimeEnabled(true);
+					useSmimeFeatureStore.getState().updateIsSmimeEnabled(true);
 				} else {
-					setIsSmimeEnabled(false);
+					useSmimeFeatureStore.getState().updateIsSmimeEnabled(false);
 				}
 			});
 		} else {
-			setIsSmimeEnabled(false);
+			useSmimeFeatureStore.getState().updateIsSmimeEnabled(false);
 		}
 	}, [isCarbonioCE]);
 

@@ -44,3 +44,13 @@ export const useSmimePasswordStore = create<SmimePasswordStore>()((set) => ({
 	smimePassword: '',
 	updateSmimePassword: (value: string): void => set({ smimePassword: value })
 }));
+
+export type SmimeFeatureStore = {
+	isSmimeEnabled: boolean;
+	updateIsSmimeEnabled: (value: boolean) => void;
+};
+
+export const useSmimeFeatureStore = create<SmimeFeatureStore>()((set) => ({
+	isSmimeEnabled: false,
+	updateIsSmimeEnabled: (value: boolean): void => set({ isSmimeEnabled: value })
+}));

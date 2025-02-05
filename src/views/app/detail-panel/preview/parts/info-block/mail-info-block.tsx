@@ -6,6 +6,7 @@
 import React, { useCallback } from 'react';
 
 import { Container, Link, Padding, useModal, useSnackbar } from '@zextras/carbonio-design-system';
+import { useIsCarbonioCE } from '@zextras/carbonio-shell-ui';
 import { useTranslation } from 'react-i18next';
 
 import { DistributionListIcon } from './distribution-list-icon';
@@ -13,7 +14,10 @@ import { ExternalDomainIcon } from './external-domain-icon';
 import { MailSensitivityIcon } from './mail-sensitivity-icon';
 import { SmimeIcon } from './smime-icon';
 import { checkExistEncryptionPassword } from '../../../../../../api/check-exist-password-api';
-import { useSmimePasswordStore } from '../../../../../../store/certificates/store';
+import {
+	useSmimeFeatureStore,
+	useSmimePasswordStore
+} from '../../../../../../store/certificates/store';
 import { getMessageDecryptEmailStoreAction } from '../../../../../../store/emails/actions/get-message';
 import { IncompleteMessage } from '../../../../../../types';
 import { EnterPasswordModal } from '../../../../../settings/certificates/enter-password-modal';
@@ -28,6 +32,8 @@ export const MailInfoBlock = ({ msg }: MailInfoProps): React.JSX.Element | null 
 	const { createModal, closeModal } = useModal();
 	const { smimePassword } = useSmimePasswordStore();
 	const createSnackbar = useSnackbar();
+	const isCarbonioCE = useIsCarbonioCE();
+	const { isSmimeEnabled } = useSmimeFeatureStore();
 
 	const signature = msg.signature?.[0];
 	const creationDateFromHeaders = msg.creationDateFromMailHeaders;
@@ -159,7 +165,7 @@ export const MailInfoBlock = ({ msg }: MailInfoProps): React.JSX.Element | null 
 					{t('label.show_details', 'Show Details')}
 				</Link>
 			)}
-			{msg.isEncrypted && (
+			{msg.isEncrypted && isSmimeEnabled && !isCarbonioCE && (
 				<>
 					<Padding right="small" />
 					<Link size="medium" onClick={dencryptMessage}>
