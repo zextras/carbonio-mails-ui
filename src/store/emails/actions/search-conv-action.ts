@@ -9,7 +9,7 @@ import { map } from 'lodash';
 import { searchConvSoapApi } from '../../../api/search-conv-soap-api';
 import { API_REQUEST_STATUS } from '../../../constants';
 import { normalizeCompleteMailMessageFromSoap } from '../../../normalizations/normalize-message';
-import { SearchConvResponse } from '../../../types';
+import { NormalizedConversation, SearchConvResponse } from '../../../types';
 import {
 	updateMessages,
 	getConversationById,
@@ -22,7 +22,11 @@ function handleSearchConvResponse(conversationId: string, response: SearchConvRe
 	updateMessages(messages);
 	const convMessagesIds: Array<string> = map(response?.m ?? [], (msg) => msg.id);
 	const conversation = getConversationById(conversationId);
-	const updatedConversation = { ...conversation, id: conversationId, messages: convMessagesIds };
+	const updatedConversation: NormalizedConversation = {
+		...conversation,
+		id: conversationId,
+		messageIds: convMessagesIds
+	};
 	updateConversations([updatedConversation]);
 }
 
