@@ -41,6 +41,12 @@ describe('get-message', () => {
 							ct: 'multipart/alternative',
 							filename: 'smime.p7m',
 							requiresSmartLinkConversion: false
+						},
+						{
+							part: 'att1',
+							ct: 'multipart/alternative',
+							filename: 'demo.file',
+							requiresSmartLinkConversion: false
 						}
 					]
 				})
@@ -118,6 +124,17 @@ describe('get-message', () => {
 			expect(updateMessages).toHaveBeenCalledWith(expect.any(Array));
 			expect(updateMessageStatus).toHaveBeenCalledWith(mockMessageId, API_REQUEST_STATUS.fulfilled);
 			expect(result).toEqual({ id: '1', subject: 'message 1 Subject' });
+		});
+
+		it('handles decrypt response with fault', async () => {
+			const faultResponse = { Fault: {} };
+			(getMsgDecryptSoapApi as jest.Mock).mockResolvedValueOnce(faultResponse);
+
+			const result = await getMessageDecryptEmailStoreAction(mockMessageId, 'smimePassword');
+
+			expect(updateMessageStatus).toHaveBeenCalledWith(mockMessageId, API_REQUEST_STATUS.pending);
+			expect(updateMessageStatus).toHaveBeenCalledWith(mockMessageId, API_REQUEST_STATUS.error);
+			expect(result).toBeUndefined();
 		});
 
 		it('handles decrypt message empty response', async () => {
