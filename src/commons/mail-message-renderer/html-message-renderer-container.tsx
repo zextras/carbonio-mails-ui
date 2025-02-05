@@ -12,7 +12,7 @@ export const HtmlMessageRendererContainer = ({ html }: { html: string }): React.
 		width={'fit'}
 		height={'100%'}
 		data-testid="message-renderer-container"
-		style={{ overflowY: 'auto', overflowX: 'hidden', padding: '0.75rem 0px' }}
+		style={{ overflowY: 'auto', padding: '0.75rem 0px' }}
 		dangerouslySetInnerHTML={{
 			__html: html
 		}}

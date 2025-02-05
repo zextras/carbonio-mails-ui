@@ -165,10 +165,7 @@ describe('MessageListItem Component', () => {
 
 		user.hover(actionWrapper);
 
-		const hoverContainer = screen.getByTestId(/hover-container-/);
-		await waitFor(() => {
-			expect(screen.getByTestId(/hover-container-/)).toBeInTheDocument();
-		});
+		const hoverContainer = await screen.findByTestId(/hover-container-/);
 
 		await act(async () => {
 			user.click(hoverContainer);
@@ -191,10 +188,7 @@ describe('MessageListItem Component', () => {
 
 		user.hover(actionWrapper);
 
-		const hoverContainer = screen.getByTestId(/hover-container-/);
-		await waitFor(() => {
-			expect(screen.getByTestId(/hover-container-/)).toBeInTheDocument();
-		});
+		const hoverContainer = await screen.findByTestId(/hover-container-/);
 
 		await act(async () => {
 			user.dblClick(hoverContainer);
