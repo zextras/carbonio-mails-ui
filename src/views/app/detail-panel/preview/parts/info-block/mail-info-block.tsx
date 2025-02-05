@@ -127,7 +127,7 @@ export const MailInfoBlock = ({ msg }: MailInfoProps): React.JSX.Element | null 
 						createSnackbar({
 							key: `info-on-password-missing`,
 							replace: true,
-							severity: 'info',
+							severity: 'error',
 							label: t(
 								'settings.uploadCertificate.createPasswordFromSettings',
 								'Please create your encryption password from settings'

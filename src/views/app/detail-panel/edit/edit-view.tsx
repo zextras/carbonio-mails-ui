@@ -442,7 +442,7 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 					createSnackbar({
 						key: `info-on-password-missing`,
 						replace: true,
-						severity: 'info',
+						severity: 'error',
 						label: t(
 							'settings.uploadCertificate.createPasswordFromSettings',
 							'Please create your encryption password from settings'
