@@ -8,18 +8,18 @@ export async function checkPersonalCertificateExist(
 	password: string,
 	email: string
 ): Promise<{ data: Response } | { error: unknown }> {
-	try {
-		const response = await fetch(`/service/extension/encryption/smime/personal/exist`, {
-			method: 'POST',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ password, email })
-		});
+	const apiCall = fetch(`/service/extension/encryption/smime/personal/exist`, {
+		method: 'POST',
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify({ password, email })
+	});
 
-		if (!response.ok) {
-			return { error: response.statusText };
-		}
-		return { data: response };
-	} catch (error) {
-		return { error };
-	}
+	return Promise.allSettled([apiCall])
+		.then(async ([result]) => {
+			if (result.status === 'fulfilled') {
+				return result.value.ok ? { data: result.value } : { error: result.value.statusText };
+			}
+			return { error: result.reason };
+		})
+		.catch((error) => ({ error: error ?? 'Request failed' }));
 }
