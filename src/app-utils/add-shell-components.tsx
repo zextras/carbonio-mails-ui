@@ -109,7 +109,7 @@ export const addComponentsToShell = async (isCarbonioCE: boolean | undefined): P
 	const { backupSelfUndeleteAllowed } = await advancedAccountApi();
 
 	if (!isCarbonioCE) {
-		await checkIsSmimeEnabled().then((res) => {
+		checkIsSmimeEnabled().then((res) => {
 			if ('data' in res) {
 				useSmimeFeatureStore.getState().updateIsSmimeEnabled(true);
 			} else {

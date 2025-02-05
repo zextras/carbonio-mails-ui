@@ -34,8 +34,17 @@ const certificate: Certificate[] = [
 
 describe('ShowAllCertificatesModal', () => {
 	const onClose = jest.fn();
+	const createModal = jest.fn();
+	const closeModal = jest.fn();
 	it('should render the modal with the correct title', async () => {
-		setupTest(<ShowAllCertificatesModal certificates={certificate} onClose={onClose} />);
+		setupTest(
+			<ShowAllCertificatesModal
+				certificates={certificate}
+				onClose={onClose}
+				createModal={createModal}
+				closeModal={closeModal}
+			/>
+		);
 		await waitFor(() => {
 			const header = screen.getByText(`Personal Certificates of ${certificate[0].email}`);
 			expect(header).toBeVisible();
@@ -43,7 +52,14 @@ describe('ShowAllCertificatesModal', () => {
 	});
 
 	it('should show Close and Set Active buttons', async () => {
-		setupTest(<ShowAllCertificatesModal certificates={certificate} onClose={onClose} />);
+		setupTest(
+			<ShowAllCertificatesModal
+				certificates={certificate}
+				onClose={onClose}
+				createModal={createModal}
+				closeModal={closeModal}
+			/>
+		);
 
 		const closeBtn = screen.getByRole('button', {
 			name: 'Close'
@@ -58,7 +74,14 @@ describe('ShowAllCertificatesModal', () => {
 	});
 
 	it.skip('should display the list of personal certificates of selected email', async () => {
-		setupTest(<ShowAllCertificatesModal certificates={certificate} onClose={onClose} />);
+		setupTest(
+			<ShowAllCertificatesModal
+				certificates={certificate}
+				onClose={onClose}
+				createModal={createModal}
+				closeModal={closeModal}
+			/>
+		);
 		await waitFor(() => {
 			const certificateEmail = screen.getByText(certificate[0].issuer);
 			expect(certificateEmail).toBeVisible();

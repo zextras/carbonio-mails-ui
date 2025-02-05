@@ -9,7 +9,7 @@ import { screen, waitFor } from '@testing-library/react';
 
 import { setupTest } from '../../../../carbonio-ui-commons/test/test-setup';
 import RecipientsCertificateSettings from '../recipients-certificates-settings';
-import { createAPIInterceptorToGetRecipientsCertificates } from './utils.test';
+import { createAPIInterceptorToGetRecipientsCertificates } from './utils/utils';
 
 describe('RecipientsCertificateSettings', () => {
 	it('should render the modal with the correct title', async () => {
