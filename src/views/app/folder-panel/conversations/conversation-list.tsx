@@ -36,7 +36,7 @@ export const ConversationList = (): React.JSX.Element => {
 
 	const {
 		selected,
-		toggle,
+		toggle: toggleMultipleSelection,
 		deselectAll,
 		isSelectModeOn,
 		setIsSelectModeOn,
@@ -108,7 +108,7 @@ export const ConversationList = (): React.JSX.Element => {
 									visible={visible}
 									selected={isSelected}
 									activeItemId={itemId}
-									toggle={toggle}
+									toggleMultipleSelection={toggleMultipleSelection}
 									setDraggedIds={setDraggedIds}
 									selectedItems={selected}
 									dragImageRef={dragImageRef}
@@ -125,7 +125,15 @@ export const ConversationList = (): React.JSX.Element => {
 					</ListItem>
 				);
 			}),
-		[conversationsIds, deselectAll, folderId, isSelectModeOn, itemId, selected, toggle]
+		[
+			conversationsIds,
+			deselectAll,
+			folderId,
+			isSelectModeOn,
+			itemId,
+			selected,
+			toggleMultipleSelection
+		]
 	);
 
 	const totalConversations = useMemo(

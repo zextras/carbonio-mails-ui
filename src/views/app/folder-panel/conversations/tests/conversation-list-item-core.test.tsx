@@ -41,10 +41,10 @@ describe('ConversationListItemCore', () => {
 				conversation={conversation}
 				selected={false}
 				selecting={false}
-				toggle={mockToggle}
+				toggleMultipleSelection={mockToggle}
 				folderParent="inbox"
 				open={false}
-				toggleOpen={mockToggleOpen}
+				toggleCollapseElementCallback={mockToggleOpen}
 			/>
 		);
 
@@ -66,17 +66,17 @@ describe('ConversationListItemCore', () => {
 				conversation={{ ...conversation, read: false }}
 				selected={false}
 				selecting={false}
-				toggle={mockToggle}
+				toggleMultipleSelection={mockToggle}
 				folderParent="inbox"
 				open={false}
-				toggleOpen={mockToggleOpen}
+				toggleCollapseElementCallback={mockToggleOpen}
 			/>
 		);
 
 		expect(screen.getByText('Test Subject')).toHaveStyle('font-weight: 700');
 	});
 
-	it('calls toggleOpen when expand button is clicked', async () => {
+	it('calls toggleCollapseElementCallback when expand button is clicked', async () => {
 		const { conversation } = await waitFor(() =>
 			populateConversationInEmailStore({
 				conversationParams: { id: '123', tags: [tagsArray[0].name], subject: 'Test Subject' },
@@ -90,10 +90,10 @@ describe('ConversationListItemCore', () => {
 				conversation={conversation}
 				selected={false}
 				selecting={false}
-				toggle={mockToggle}
+				toggleMultipleSelection={mockToggle}
 				folderParent="inbox"
 				open={false}
-				toggleOpen={mockToggleOpen}
+				toggleCollapseElementCallback={mockToggleOpen}
 			/>
 		);
 
@@ -117,10 +117,10 @@ describe('ConversationListItemCore', () => {
 				conversation={{ ...conversation, urgent: true }}
 				selected={false}
 				selecting={false}
-				toggle={mockToggle}
+				toggleMultipleSelection={mockToggle}
 				folderParent="inbox"
 				open={false}
-				toggleOpen={mockToggleOpen}
+				toggleCollapseElementCallback={mockToggleOpen}
 			/>
 		);
 
@@ -141,10 +141,10 @@ describe('ConversationListItemCore', () => {
 				conversation={conversation}
 				selected={false}
 				selecting={false}
-				toggle={mockToggle}
+				toggleMultipleSelection={mockToggle}
 				folderParent="inbox"
 				open={false}
-				toggleOpen={mockToggleOpen}
+				toggleCollapseElementCallback={mockToggleOpen}
 			/>
 		);
 

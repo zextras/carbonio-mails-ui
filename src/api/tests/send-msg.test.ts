@@ -8,7 +8,7 @@ import { waitFor } from '@testing-library/react';
 
 import { createSoapAPIInterceptor } from '../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { getConvEmailStoreAction } from '../../store/emails/actions/get-conv-action';
-import { getMessageEmailStoreAction } from '../../store/emails/actions/get-message';
+import { getMessageWithExistingParticipantsEmailStoreAction } from '../../store/emails/actions/get-message-with-existing-participants';
 import { generateMessage } from '../../tests/generators/generateMessage';
 import { sendMsg } from '../send-msg';
 
@@ -16,8 +16,8 @@ jest.mock('../../store/emails/actions/get-conv-action', () => ({
 	getConvEmailStoreAction: jest.fn()
 }));
 
-jest.mock('../../store/emails/actions/get-message', () => ({
-	getMessageEmailStoreAction: jest.fn()
+jest.mock('../../store/emails/actions/get-message-with-existing-participants', () => ({
+	getMessageWithExistingParticipantsEmailStoreAction: jest.fn()
 }));
 
 describe('sendMsg', () => {
@@ -33,7 +33,10 @@ describe('sendMsg', () => {
 		await waitFor(async () => {
 			expect(getConvEmailStoreAction).toHaveBeenCalledWith({ id: '123' });
 		});
-		expect(getMessageEmailStoreAction).toHaveBeenCalledWith('1');
+		expect(getMessageWithExistingParticipantsEmailStoreAction).toHaveBeenCalledWith(
+			'1', // messageId
+			expect.arrayContaining([expect.any(Object)]) // participants
+		);
 	});
 
 	it('should skip store actions if response does not include id or cid', async () => {
@@ -48,7 +51,7 @@ describe('sendMsg', () => {
 		await waitFor(async () => {
 			expect(getConvEmailStoreAction).not.toHaveBeenCalled();
 		});
-		expect(getMessageEmailStoreAction).not.toHaveBeenCalled();
+		expect(getMessageWithExistingParticipantsEmailStoreAction).not.toHaveBeenCalled();
 	});
 
 	it('should return the response received from the api call', async () => {

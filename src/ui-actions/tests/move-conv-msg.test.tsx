@@ -6,18 +6,31 @@
 import React from 'react';
 
 import { act, screen } from '@testing-library/react';
+import * as hooks from '@zextras/carbonio-shell-ui';
 import { times } from 'lodash';
 
 import { FOLDER_VIEW } from '../../carbonio-ui-commons/constants';
 import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
 import { getFolder } from '../../carbonio-ui-commons/store/zustand/folder';
 import { createSoapAPIInterceptor } from '../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
+import { generateSettings } from '../../carbonio-ui-commons/test/mocks/settings/settings-generator';
 import { populateFoldersStore } from '../../carbonio-ui-commons/test/mocks/store/folders';
 import { makeListItemsVisible, setupTest } from '../../carbonio-ui-commons/test/test-setup';
 import { generateMessage } from '../../tests/generators/generateMessage';
 import { MailMessage, MsgActionRequest, MsgActionResponse } from '../../types';
 import { MoveConvMessage } from '../move-conv-msg';
 
+const messageViewSettings = generateSettings({
+	prefs: {
+		zimbraPrefGroupMailBy: 'message'
+	}
+});
+
+const convViewSettings = generateSettings({
+	prefs: {
+		zimbraPrefGroupMailBy: 'conversation'
+	}
+});
 describe('MoveConvMsg', () => {
 	const { children: inboxChildren } = getFolder(FOLDERS.INBOX) ?? {};
 	const sourceFolder = inboxChildren?.[0].id ?? '';
@@ -26,12 +39,12 @@ describe('MoveConvMsg', () => {
 
 	describe('Modal title', () => {
 		it('move mode - message view - should display the modal title', async () => {
+			jest.spyOn(hooks, 'useUserSettings').mockReturnValue(messageViewSettings);
 			const component = (
 				<MoveConvMessage
 					folderId={sourceFolder}
 					selectedIDs={msgIds}
 					onClose={jest.fn()}
-					isMessageView
 					isRestore={false}
 					deselectAll={jest.fn()}
 				/>
@@ -43,12 +56,12 @@ describe('MoveConvMsg', () => {
 		});
 
 		it('move mode - conversation view - should be visible', async () => {
+			jest.spyOn(hooks, 'useUserSettings').mockReturnValue(convViewSettings);
 			const component = (
 				<MoveConvMessage
 					folderId={sourceFolder}
 					selectedIDs={msgIds}
 					onClose={jest.fn()}
-					isMessageView={false}
 					isRestore={false}
 					deselectAll={jest.fn()}
 				/>
@@ -65,7 +78,6 @@ describe('MoveConvMsg', () => {
 					folderId={sourceFolder}
 					selectedIDs={msgIds}
 					onClose={jest.fn()}
-					isMessageView
 					isRestore
 					deselectAll={jest.fn()}
 				/>
@@ -84,7 +96,6 @@ describe('MoveConvMsg', () => {
 					folderId={sourceFolder}
 					selectedIDs={msgIds}
 					onClose={jest.fn()}
-					isMessageView
 					isRestore={false}
 					deselectAll={jest.fn()}
 				/>
@@ -108,7 +119,6 @@ describe('MoveConvMsg', () => {
 					folderId={sourceFolder}
 					selectedIDs={msgIds}
 					onClose={jest.fn()}
-					isMessageView
 					isRestore={false}
 					deselectAll={jest.fn()}
 				/>
@@ -116,7 +126,6 @@ describe('MoveConvMsg', () => {
 
 			const { user } = setupTest(component);
 			makeListItemsVisible();
-
 			const inboxFolderListItem = await screen.findByTestId(
 				`folder-accordion-item-${destinationFolder}`,
 				{},
@@ -140,6 +149,8 @@ describe('MoveConvMsg', () => {
 		it('When a destination folder is selected and the user clicks on the confirm the API is called and the success snackbar is displayed', async () => {
 			populateFoldersStore({ view: FOLDER_VIEW.message });
 
+			jest.spyOn(hooks, 'useUserSettings').mockReturnValue(messageViewSettings);
+
 			const { children: inboxChildren } = getFolder(FOLDERS.INBOX) ?? {};
 			const sourceFolder = inboxChildren?.[0].id ?? '';
 			const destinationFolder = FOLDERS.INBOX;
@@ -162,7 +173,6 @@ describe('MoveConvMsg', () => {
 					folderId={sourceFolder}
 					selectedIDs={msgIds}
 					onClose={jest.fn()}
-					isMessageView
 					isRestore={false}
 					deselectAll={jest.fn()}
 				/>

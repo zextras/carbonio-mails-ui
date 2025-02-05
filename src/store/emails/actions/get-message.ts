@@ -3,6 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+
 import { map } from 'lodash';
 
 import { getMsgSoapApi } from '../../../api/get-msg-soap-api';
@@ -19,6 +20,7 @@ function handleGetMsgResponse(response: GetMsgResponse): void {
 	const messages = map(response?.m ?? [], (msg) => normalizeCompleteMailMessageFromSoap(msg));
 	updateMessages(messages);
 }
+
 async function handleRetrieveMessage(
 	messageId: string,
 	apiCall: (id: string) => Promise<GetMsgResponse>

@@ -14,13 +14,17 @@ import { FOLDERS } from '../../../../../carbonio-ui-commons/constants/folders';
 import { ParticipantRole } from '../../../../../carbonio-ui-commons/constants/participants';
 import { createSoapAPIInterceptor } from '../../../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
-import { FOLDERS_DESCRIPTORS } from '../../../../../constants';
+import { API_REQUEST_STATUS, FOLDERS_DESCRIPTORS } from '../../../../../constants';
 import { useConvPreviewOnSeparatedWindowFn } from '../../../../../hooks/actions/use-conv-preview-on-separated-window';
-import { setConversationsInEmailStore } from '../../../../../store/emails/store';
+import {
+	setConversationsInEmailStore,
+	updateConversationStatus
+} from '../../../../../store/emails/store';
 import { ASSERTIONS } from '../../../../../tests/constants';
 import { populateConversationInEmailStore } from '../../../../../tests/generators/generateConversation';
-import type { ConvActionRequest, ConversationListItemProps } from '../../../../../types';
-import { ConversationListItem } from '../conversation-list-item';
+import type { ConvActionRequest } from '../../../../../types';
+import { makeAllItemsVisible } from '../../../../settings/filters/tests/test-utils';
+import { ConversationListItem, ConversationListItemProps } from '../conversation-list-item';
 
 const canExecuteCallback = jest.fn();
 
@@ -50,8 +54,7 @@ describe('conversation-list-item component', () => {
 					conversation,
 					selected: false,
 					selecting: false,
-					toggle: noop,
-					isConvChildren: false,
+					toggleMultipleSelection: noop,
 					activeItemId: '',
 					deselectAll: noop,
 					isSearchModule,
@@ -90,8 +93,7 @@ describe('conversation-list-item component', () => {
 						conversation,
 						selected: false,
 						selecting: false,
-						toggle: noop,
-						isConvChildren: false,
+						toggleMultipleSelection: noop,
 						activeItemId: '',
 						deselectAll: noop,
 						isSearchModule,
@@ -132,8 +134,7 @@ describe('conversation-list-item component', () => {
 						conversation,
 						selected: false,
 						selecting: false,
-						toggle: noop,
-						isConvChildren: false,
+						toggleMultipleSelection: noop,
 						activeItemId: '',
 						deselectAll: noop,
 						isSearchModule,
@@ -181,8 +182,7 @@ describe('conversation-list-item component', () => {
 						conversation,
 						selected: false,
 						selecting: false,
-						toggle: noop,
-						isConvChildren: false,
+						toggleMultipleSelection: noop,
 						activeItemId: '',
 						deselectAll: noop,
 						isSearchModule,
@@ -233,8 +233,7 @@ describe('conversation-list-item component', () => {
 						conversation,
 						selected: false,
 						selecting: false,
-						toggle: noop,
-						isConvChildren: false,
+						toggleMultipleSelection: noop,
 						activeItemId: '',
 						deselectAll: noop,
 						isSearchModule,
@@ -281,8 +280,7 @@ describe('conversation-list-item component', () => {
 						conversation,
 						selected: false,
 						selecting: false,
-						toggle: noop,
-						isConvChildren: false,
+						toggleMultipleSelection: noop,
 						activeItemId: '',
 						deselectAll: noop,
 						isSearchModule,
@@ -326,8 +324,7 @@ describe('conversation-list-item component', () => {
 						conversation,
 						selected: false,
 						selecting: false,
-						toggle: noop,
-						isConvChildren: false,
+						toggleMultipleSelection: noop,
 						activeItemId: '',
 						deselectAll: noop,
 						isSearchModule,
@@ -368,8 +365,7 @@ describe('conversation-list-item component', () => {
 					conversation,
 					selected: false,
 					selecting: false,
-					toggle: noop,
-					isConvChildren: false,
+					toggleMultipleSelection: noop,
 					activeItemId: '',
 					deselectAll: noop,
 					isSearchModule,
@@ -402,8 +398,7 @@ describe('conversation-list-item component', () => {
 					conversation,
 					selected: false,
 					selecting: false,
-					toggle: noop,
-					isConvChildren: false,
+					toggleMultipleSelection: noop,
 					activeItemId: '',
 					deselectAll: noop,
 					isSearchModule,
@@ -426,8 +421,7 @@ describe('conversation-list-item component', () => {
 					conversation,
 					selected: false,
 					selecting: false,
-					toggle: noop,
-					isConvChildren: false,
+					toggleMultipleSelection: noop,
 					activeItemId: '',
 					deselectAll: noop,
 					isSearchModule,
@@ -452,8 +446,7 @@ describe('conversation-list-item component', () => {
 				conversation,
 				selected: false,
 				selecting: false,
-				toggle: noop,
-				isConvChildren: false,
+				toggleMultipleSelection: noop,
 				activeItemId: '',
 				deselectAll: noop,
 				isSearchModule,
@@ -486,8 +479,7 @@ describe('conversation-list-item component', () => {
 				conversation,
 				selected: false,
 				selecting: false,
-				toggle: noop,
-				isConvChildren: false,
+				toggleMultipleSelection: noop,
 				activeItemId: '',
 				deselectAll: noop,
 				isSearchModule: false,
@@ -530,8 +522,7 @@ describe('conversation-list-item component', () => {
 				conversation,
 				selected: false,
 				selecting: false,
-				toggle: noop,
-				isConvChildren: false,
+				toggleMultipleSelection: noop,
 				activeItemId: '',
 				deselectAll: noop,
 				isSearchModule: false,
@@ -571,8 +562,7 @@ describe('conversation-list-item component', () => {
 				conversation,
 				selected: false,
 				selecting: false,
-				toggle: noop,
-				isConvChildren: false,
+				toggleMultipleSelection: noop,
 				activeItemId: '',
 				deselectAll: noop,
 				isSearchModule: true,
@@ -615,8 +605,7 @@ describe('conversation-list-item component', () => {
 				conversation,
 				selected: false,
 				selecting: false,
-				toggle: noop,
-				isConvChildren: false,
+				toggleMultipleSelection: noop,
 				activeItemId: '',
 				deselectAll: noop,
 				isSearchModule: true,
@@ -642,6 +631,68 @@ describe('conversation-list-item component', () => {
 
 			await waitFor(async () => {
 				expect(canExecuteCallback).toHaveBeenCalled();
+			});
+		});
+
+		it('should not show message items when there is only one message in the conversation', async () => {
+			const { conversation } = await waitFor(() =>
+				populateConversationInEmailStore({
+					conversationMessagesNumber: 1
+				})
+			);
+
+			const props: ConversationListItemProps = {
+				conversation,
+				selected: false,
+				selecting: false,
+				toggleMultipleSelection: noop,
+				activeItemId: '',
+				deselectAll: noop,
+				isSearchModule: true,
+				folderId: FOLDERS.INBOX
+			};
+
+			setupTest(<ConversationListItem {...props} />);
+
+			const messageItems = screen.queryAllByTestId(/conversation-message-list-item-/);
+			expect(messageItems).toHaveLength(0);
+		});
+
+		it('should show message items when there are more than one message in the conversation', async () => {
+			const { conversation } = await waitFor(() =>
+				populateConversationInEmailStore({
+					conversationMessagesNumber: 3
+				})
+			);
+
+			updateConversationStatus(conversation.id, API_REQUEST_STATUS.fulfilled);
+
+			const props: ConversationListItemProps = {
+				conversation,
+				selected: false,
+				selecting: false,
+				toggleMultipleSelection: noop,
+				activeItemId: '',
+				deselectAll: noop,
+				isSearchModule: true,
+				folderId: FOLDERS.INBOX
+			};
+
+			setupTest(<ConversationListItem {...props} />);
+
+			const toggleButton = screen.getByTestId('ToggleExpand');
+			await waitFor(() => {
+				expect(toggleButton).toBeVisible();
+			});
+
+			fireEvent.click(toggleButton);
+
+			makeAllItemsVisible();
+
+			const messageItems = await screen.findAllByTestId(/conversation-message-list-item-/);
+
+			await waitFor(() => {
+				expect(messageItems).toHaveLength(3);
 			});
 		});
 	});

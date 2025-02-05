@@ -18,11 +18,11 @@ import { isRoot } from '../helpers/folders';
 import { useUiUtilities } from '../hooks/use-ui-utilities';
 import { convActionEmailStoreAction } from '../store/emails/actions/conv-action-action';
 import { msgActionEmailStoreAction } from '../store/emails/actions/msg-action-action';
+import { useIsMessageView } from '../views/search/search-view-hooks';
 import { FolderSelector } from '../views/sidebar/commons/folder-selector';
 
 type MoveConvMessageProps = {
 	selectedIDs: string[];
-	isMessageView: boolean;
 	isRestore?: boolean;
 	deselectAll?: () => void;
 	onClose: () => void;
@@ -31,13 +31,13 @@ type MoveConvMessageProps = {
 
 export const MoveConvMessage = ({
 	selectedIDs,
-	isMessageView,
 	isRestore,
 	deselectAll,
 	onClose,
 	folderId
 }: MoveConvMessageProps): ReactElement => {
 	const [t] = useTranslation();
+	const isMessageView = useIsMessageView();
 	const { createSnackbar } = useUiUtilities();
 	const [inputValue, setInputValue] = useState('');
 	const [folderDestination, setFolderDestination] = useState<Folder | undefined>();
@@ -134,7 +134,7 @@ export const MoveConvMessage = ({
 		[folderDestination?.children, inputValue]
 	);
 
-	const isDisabled = useMemo(() => {
+	const isDestinationFolderSelectionInvalid = useMemo(() => {
 		if (moveConvModal) {
 			return (
 				!folderDestination || folderDestination?.id === folderId || isRoot(folderDestination?.id)
@@ -233,7 +233,7 @@ export const MoveConvMessage = ({
 			: t('folder_panel.modal.new.create_footer', 'Create and Move');
 	}, [isRestore, moveConvModal, t]);
 
-	const modalFooterTooltip = isDisabled
+	const modalFooterTooltip = isDestinationFolderSelectionInvalid
 		? ''
 		: t('label.folder_not_valid_destination', 'The selected folder is not a valid destination');
 
@@ -302,7 +302,7 @@ export const MoveConvMessage = ({
 					secondaryAction={footerSecondary}
 					label={footerLabel}
 					secondaryLabel={moveConvModal ? t('label.cancel', 'Cancel') : t('go_back', 'Go Back')}
-					disabled={isDisabled}
+					disabled={isDestinationFolderSelectionInvalid}
 				/>
 			</Container>
 		</Container>
