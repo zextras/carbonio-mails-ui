@@ -1,3 +1,4 @@
+/* eslint-disable testing-library/prefer-user-event */
 /*
  * SPDX-FileCopyrightText: 2024 Zextras <https://www.zextras.com>
  *
@@ -6,13 +7,14 @@
 import { act } from 'react';
 
 import { faker } from '@faker-js/faker';
+import { fireEvent } from '@testing-library/react';
 import { times } from 'lodash';
 
 import { FOLDER_VIEW } from '../../../carbonio-ui-commons/constants';
 import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
 import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { populateFoldersStore } from '../../../carbonio-ui-commons/test/mocks/store/folders';
-import { setupHook } from '../../../carbonio-ui-commons/test/test-setup';
+import { setupHook, screen } from '../../../carbonio-ui-commons/test/test-setup';
 import { FOLDERS_DESCRIPTORS } from '../../../constants';
 import { MsgActionRequest, MsgActionResponse } from '../../../types';
 import { useConvMoveToTrashDescriptor, useConvMoveToTrashFn } from '../use-conv-move-to-trash';
@@ -104,6 +106,110 @@ describe('useConMoveToTrash', () => {
 				expect(requestParameter.action.l).toBeUndefined();
 				expect(requestParameter.action.f).toBeUndefined();
 				expect(requestParameter.action.tn).toBeUndefined();
+			});
+
+			it('should restore messages when folder is not DRAFTS and Undo button is clicked', async () => {
+				const apiResponse: MsgActionResponse = {
+					action: {
+						id: conversationsId.join(','),
+						op: 'trash'
+					}
+				};
+				const apiInterceptor = createSoapAPIInterceptor<MsgActionRequest, MsgActionResponse>(
+					'ConvAction',
+					apiResponse
+				);
+
+				const {
+					result: { current: functions }
+				} = setupHook(useConvMoveToTrashFn, {
+					initialProps: [{ ids: conversationsId, deselectAll: jest.fn(), folderId: FOLDERS.INBOX }]
+				});
+
+				await act(async () => {
+					functions.execute();
+				});
+
+				await apiInterceptor;
+
+				const undoButton = await screen.findByText('Undo');
+				const undoInterceptor = createSoapAPIInterceptor<MsgActionRequest, MsgActionResponse>(
+					'ConvAction',
+					apiResponse
+				);
+				fireEvent.click(undoButton);
+				const undoParameters = await undoInterceptor;
+
+				expect(undoParameters.action.id).toBe(conversationsId.join(','));
+				expect(undoParameters.action.op).toBe('move');
+				expect(undoParameters.action.l).toBe(FOLDERS.INBOX);
+			});
+
+			it('should call the MsgActionRequest API when folder is DRAFTS', async () => {
+				const apiResponse: MsgActionResponse = {
+					action: {
+						id: conversationsId.join(','),
+						op: 'trash'
+					}
+				};
+				const apiInterceptor = createSoapAPIInterceptor<MsgActionRequest, MsgActionResponse>(
+					'MsgAction',
+					apiResponse
+				);
+
+				const {
+					result: { current: functions }
+				} = setupHook(useConvMoveToTrashFn, {
+					initialProps: [{ ids: conversationsId, deselectAll: jest.fn(), folderId: FOLDERS.DRAFTS }]
+				});
+
+				await act(async () => {
+					functions.execute();
+				});
+
+				const requestParameter = await apiInterceptor;
+				expect(requestParameter.action.id).toBe(conversationsId.join(','));
+				expect(requestParameter.action.op).toBe('trash');
+				expect(requestParameter.action.l).toBeUndefined();
+				expect(requestParameter.action.f).toBeUndefined();
+				expect(requestParameter.action.tn).toBeUndefined();
+			});
+
+			it('should restore messages when folder is DRAFTS and Undo button is clicked', async () => {
+				const apiResponse: MsgActionResponse = {
+					action: {
+						id: conversationsId.join(','),
+						op: 'trash'
+					}
+				};
+				const apiInterceptor = createSoapAPIInterceptor<MsgActionRequest, MsgActionResponse>(
+					'MsgAction',
+					apiResponse
+				);
+
+				const {
+					result: { current: functions }
+				} = setupHook(useConvMoveToTrashFn, {
+					initialProps: [{ ids: conversationsId, deselectAll: jest.fn(), folderId: FOLDERS.DRAFTS }]
+				});
+
+				await act(async () => {
+					functions.execute();
+				});
+
+				await apiInterceptor;
+
+				const undoButton = await screen.findByText('Undo');
+				const undoInterceptor = createSoapAPIInterceptor<MsgActionRequest, MsgActionResponse>(
+					'MsgAction',
+					apiResponse
+				);
+				fireEvent.click(undoButton);
+				const undoParameters = await undoInterceptor;
+
+				expect(undoParameters.action.id).toBe(conversationsId.join(','));
+				expect(undoParameters.action.op).toBe('move');
+				expect(undoParameters.action.l).toBe(FOLDERS.DRAFTS);
 			});
 
 			it('should not call the API if the action cannot be executed', async () => {
