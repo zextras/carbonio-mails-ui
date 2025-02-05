@@ -41,7 +41,6 @@ export const useConvMoveToFolderFn = ({
 						folderId={folderId}
 						selectedIDs={ids}
 						onClose={(): void => closeModal(id)}
-						isMessageView={false}
 						isRestore={false}
 						deselectAll={deselectAll}
 					/>

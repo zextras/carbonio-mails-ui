@@ -30,10 +30,10 @@ type ConversationListItemCoreProps = {
 	conversation: NormalizedConversation;
 	selected: boolean;
 	selecting: boolean;
-	toggle: (id: string) => void;
+	toggleMultipleSelection: (id: string) => void;
 	folderParent: string;
 	open: boolean;
-	toggleOpen: (
+	toggleCollapseElementCallback: (
 		e: React.MouseEvent<HTMLButtonElement> | React.KeyboardEvent | MouseEvent | KeyboardEvent
 	) => void;
 };
@@ -41,9 +41,9 @@ export const ConversationListItemCore = ({
 	conversation,
 	selected,
 	selecting,
-	toggle,
+	toggleMultipleSelection,
 	folderParent,
-	toggleOpen,
+	toggleCollapseElementCallback,
 	open
 }: ConversationListItemCoreProps): React.JSX.Element => {
 	const tagsFromStore = useTags();
@@ -128,7 +128,7 @@ export const ConversationListItemCore = ({
 					item={conversation}
 					selected={selected}
 					selecting={selecting}
-					toggle={toggle}
+					toggle={toggleMultipleSelection}
 					folderId={folderParent}
 				/>
 				<Padding horizontal="extrasmall" />
@@ -186,7 +186,7 @@ export const ConversationListItemCore = ({
 									labelColor="text"
 									backgroundColor="transparent"
 									icon={open ? 'ArrowIosUpward' : 'ArrowIosDownward'}
-									onClick={toggleOpen}
+									onClick={toggleCollapseElementCallback}
 								/>
 							</Tooltip>
 						)}

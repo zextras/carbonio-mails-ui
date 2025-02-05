@@ -39,7 +39,6 @@ export const useMsgRestoreFn = ({
 							folderId={folderId}
 							selectedIDs={[messageId]}
 							onClose={(): void => closeModal(modalId)}
-							isMessageView
 							isRestore
 							deselectAll={deselectAll ?? noop}
 						/>

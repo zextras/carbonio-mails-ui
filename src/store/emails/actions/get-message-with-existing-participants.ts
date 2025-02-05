@@ -3,7 +3,6 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-
 import { map } from 'lodash';
 
 import { getMsgSoapApi } from '../../../api/get-msg-soap-api';
@@ -12,17 +11,13 @@ import {
 	normalizeCompleteMailMessageFromSoap,
 	normalizeMailMessageFromSoap
 } from '../../../normalizations/normalize-message';
-import { GetMsgResponse, MailMessage } from '../../../types';
+import { GetMsgResponse, MailMessage, Participant } from '../../../types';
 import { updateMessages, updateMessageStatus } from '../store';
 
-function handleGetMsgResponse(response: GetMsgResponse): void {
-	const messages = map(response?.m ?? [], (msg) => normalizeCompleteMailMessageFromSoap(msg));
-	updateMessages(messages);
-}
-
-async function handleRetrieveMessage(
+async function handleRetrieveMessageWithParticipants(
 	messageId: string,
-	apiCall: (id: string) => Promise<GetMsgResponse>
+	apiCall: (id: string) => Promise<GetMsgResponse>,
+	participants: Array<Participant> | undefined
 ): Promise<MailMessage | undefined> {
 	updateMessageStatus(messageId, API_REQUEST_STATUS.pending);
 	const response = await apiCall(messageId).catch(() => {
@@ -32,16 +27,22 @@ async function handleRetrieveMessage(
 		updateMessageStatus(messageId, API_REQUEST_STATUS.error);
 		return undefined;
 	}
-	handleGetMsgResponse(response);
+	const messages = map(response?.m ?? [], (msg) => ({
+		...normalizeCompleteMailMessageFromSoap(msg),
+		participants
+	}));
+	updateMessages(messages);
 	updateMessageStatus(messageId, API_REQUEST_STATUS.fulfilled);
 	return normalizeMailMessageFromSoap(response.m[0], true) as MailMessage;
 }
-export function getMessageEmailStoreAction(messageId: string): Promise<MailMessage | undefined> {
-	return handleRetrieveMessage(messageId, (id) => getMsgSoapApi({ msgId: id, max: 250_000 }));
-}
 
-export function getFullMessageEmailStoreAction(
-	messageId: string
+export function getMessageWithExistingParticipantsEmailStoreAction(
+	messageId: string,
+	participants: Array<Participant> | undefined
 ): Promise<MailMessage | undefined> {
-	return handleRetrieveMessage(messageId, (id) => getMsgSoapApi({ msgId: id }));
+	return handleRetrieveMessageWithParticipants(
+		messageId,
+		(id) => getMsgSoapApi({ msgId: id, max: 250_000 }),
+		participants
+	);
 }

@@ -13,6 +13,7 @@ import { createSoapSendMsgRequestFromEditor } from '../store/editor/editor-trans
 import { generateMailRequest } from '../store/editor-slice-utils';
 import { getConvEmailStoreAction } from '../store/emails/actions/get-conv-action';
 import { getMessageEmailStoreAction } from '../store/emails/actions/get-message';
+import { getMessageWithExistingParticipantsEmailStoreAction } from '../store/emails/actions/get-message-with-existing-participants';
 import { MailMessage, MailsEditorV2, SaveDraftRequest, SaveDraftResponse } from '../types';
 
 export const sendMsg = async ({
@@ -33,7 +34,7 @@ export const sendMsg = async ({
 		account ?? undefined
 	);
 	if (response?.m?.[0]?.id) {
-		getMessageEmailStoreAction(response.m[0].id);
+		getMessageWithExistingParticipantsEmailStoreAction(response.m[0].id, msg?.participants);
 	}
 	if (response?.m?.[0]?.cid) {
 		getConvEmailStoreAction({ id: response.m[0].cid });

@@ -39,7 +39,6 @@ export const useMsgMoveToFolderFn = ({
 							folderId={folderId}
 							selectedIDs={ids}
 							onClose={(): void => closeModal(modalId)}
-							isMessageView
 							isRestore={false}
 							deselectAll={deselectAll ?? noop}
 						/>

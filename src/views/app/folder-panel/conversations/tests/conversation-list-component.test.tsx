@@ -49,7 +49,7 @@ describe('ConversationListComponent', () => {
 					activeItemId=""
 					selected={false}
 					selecting={false}
-					toggle={toggle}
+					toggleMultipleSelection={toggle}
 					deselectAll={deselectAll}
 					folderId={folderId}
 					setDraggedIds={jest.fn()}
@@ -122,7 +122,7 @@ describe('ConversationListComponent', () => {
 					activeItemId=""
 					selected={false}
 					selecting={false}
-					toggle={toggle}
+					toggleMultipleSelection={toggle}
 					isSearchModule
 					deselectAll={deselectAll}
 					folderId={folderId}
