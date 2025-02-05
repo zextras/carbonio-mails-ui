@@ -19,6 +19,9 @@ export const DragItems = ({
 	<>
 		{map(Object.keys(draggedIds), (draggedItemId) => {
 			const item = getMessageById(draggedItemId);
+
+			if (!item) return <></>;
+
 			return (
 				<MessageListItem
 					message={item}

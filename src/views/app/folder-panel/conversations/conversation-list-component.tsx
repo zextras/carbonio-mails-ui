@@ -31,6 +31,9 @@ const DragItems = ({ draggedIds }: { draggedIds: Record<string, boolean> }): Rea
 	<>
 		{map(Object.keys(draggedIds), (draggedItemId) => {
 			const conversation = getConversationById(draggedItemId);
+
+			if (!conversation) return <></>;
+
 			return (
 				<ConversationListItemComponent
 					conversationId={conversation.id}
