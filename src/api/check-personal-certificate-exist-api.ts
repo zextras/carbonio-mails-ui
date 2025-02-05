@@ -16,13 +16,10 @@ export async function checkPersonalCertificateExist(
 		});
 
 		if (!response.ok) {
-			console.error('Response not OK:', response.status, response.statusText);
 			return { error: response.statusText };
 		}
-
 		return { data: response };
 	} catch (error) {
-		console.error('Error during fetch:', error);
 		return { error };
 	}
 }
