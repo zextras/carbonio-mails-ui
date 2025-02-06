@@ -9,6 +9,7 @@ import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useUserSettings } from '@zextras/carbonio-shell-ui';
 
 import { API_REQUEST_STATUS, LIST_LIMIT } from '../constants';
+import { parseMessageSortingOptions } from '../helpers/sorting';
 import { searchEmailStoreAction } from '../store/emails/actions/search-action';
 import {
 	updateMessagesResultsLoadingStatus,
@@ -25,6 +26,12 @@ export const useFetchMessagesByFolder = (folderId: string): MessageIndexSliceSta
 
 	const messageIndexSlice = useMessageIndexSlice();
 	const messageListIndex = useMessagesIdsByFolder(folderId);
+	const prefSortOrder = useMemo(
+		() => prefs?.zimbraPrefSortOrder,
+		[prefs?.zimbraPrefSortOrder]
+	) as string;
+	const { sortType, sortDirection } = parseMessageSortingOptions(folderId, prefSortOrder);
+	const sortBy = useMemo(() => `${sortType}${sortDirection}`, [sortType, sortDirection]);
 
 	const fetchMessages = useCallback(
 		async (signal: AbortSignal | undefined) => {
@@ -34,6 +41,7 @@ export const useFetchMessagesByFolder = (folderId: string): MessageIndexSliceSta
 				limit: LIST_LIMIT.INITIAL_LIMIT,
 				types: 'message',
 				offset: 0,
+				sortBy,
 				locale: prefLocale,
 				abortSignal: signal
 			})
@@ -44,7 +52,7 @@ export const useFetchMessagesByFolder = (folderId: string): MessageIndexSliceSta
 					updateMessagesResultsLoadingStatus(API_REQUEST_STATUS.fulfilled);
 				});
 		},
-		[folderId, prefLocale]
+		[folderId, prefLocale, sortBy]
 	);
 
 	useEffect(() => {

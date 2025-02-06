@@ -14,6 +14,7 @@ import { generateFolder } from '../../carbonio-ui-commons/test/mocks/folders/fol
 import { createSoapAPIInterceptor } from '../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { buildSoapErrorResponseBody } from '../../carbonio-ui-commons/test/mocks/utils/soap';
 import { API_REQUEST_STATUS } from '../../constants';
+import { parseMessageSortingOptions } from '../../helpers/sorting';
 import {
 	resetMessagesAndPopulatedItems,
 	updateMessagesResultsLoadingStatus
@@ -30,9 +31,17 @@ jest.mock('../../store/emails/store', () => ({
 	useMessagesIdsByFolder: jest.fn(),
 	useMessagesSlice: jest.fn()
 }));
+jest.mock('../../helpers/sorting', () => ({
+	parseMessageSortingOptions: jest.fn()
+}));
+
 describe('useMessageListByFolder', () => {
 	it('should make search call with correct params', async () => {
 		const searchInterceptor = createSoapAPIInterceptor<SearchRequest>('Search');
+		(parseMessageSortingOptions as jest.Mock).mockReturnValue({
+			sortType: 'date',
+			sortDirection: 'Desc'
+		});
 
 		useFolderStore.setState({ folders: { folderId: folder } });
 
@@ -55,6 +64,31 @@ describe('useMessageListByFolder', () => {
 				wantContent: 'full'
 			});
 		});
+	});
+
+	it('should use correct sortBy based on preferences', async () => {
+		const firstInterceptor = createSoapAPIInterceptor<SearchRequest>('Search');
+		useFolderStore.setState({ folders: { folderId: folder } });
+		(parseMessageSortingOptions as jest.Mock).mockReturnValue({
+			sortType: 'date',
+			sortDirection: 'Desc'
+		});
+
+		const { rerender } = renderHook((id) => useFetchMessagesByFolder(id), {
+			initialProps: folder.id
+		});
+		await act(async () => {
+			expect((await firstInterceptor).sortBy).toEqual('dateDesc');
+		});
+
+		(parseMessageSortingOptions as jest.Mock).mockReturnValue({
+			sortType: 'subject',
+			sortDirection: 'Asc'
+		});
+
+		const secondInterceptor = createSoapAPIInterceptor<SearchRequest>('Search');
+		rerender(folder.id);
+		expect((await secondInterceptor).sortBy).toEqual('subjectAsc');
 	});
 
 	it('should handle query parse errors', async () => {
