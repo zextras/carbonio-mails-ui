@@ -386,7 +386,7 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 				createSnackbar({
 					key: `info-on-certificate-missing`,
 					replace: true,
-					severity: 'info',
+					severity: 'error',
 					label: t(
 						'settings.uploadCertificate.uploadCertificateInSettings',
 						'Please upload your certificate from settings'
