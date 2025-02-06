@@ -5,10 +5,14 @@
  */
 import React from 'react';
 
-import { screen } from '@testing-library/react';
+import { act, screen } from '@testing-library/react';
 
 import { setupTest } from '../../../../carbonio-ui-commons/test/test-setup';
 import { CertificatePasswordModal } from '../certificate-password-modal';
+
+jest.mock('../../../../api/create-password-api', () => ({
+	createEncryptionPassword: jest.fn()
+}));
 
 describe('CertificatePasswordModal', () => {
 	const onClose = jest.fn();
@@ -84,6 +88,79 @@ describe('CertificatePasswordModal', () => {
 			});
 			expect(enterBtn).toBeInTheDocument();
 			expect(enterBtn).toBeEnabled();
+		});
+
+		it('should show error when passwords do not match', async () => {
+			const { user } = setupTest(
+				<CertificatePasswordModal onClose={(): void => onClose()} isReset={false} />
+			);
+			const passwordInput = screen.getByTestId('password');
+			const confirmPasswordInput = screen.getByTestId('confirm_password');
+
+			await act(async () => {
+				await user.type(passwordInput, 'Password123!');
+			});
+
+			await act(async () => {
+				await user.type(confirmPasswordInput, 'DifferentPassword123!');
+			});
+
+			const enterBtn = screen.getByRole('button', { name: 'Enter' });
+
+			await act(async () => {
+				await user.click(enterBtn);
+			});
+
+			expect(screen.getByText('Passwords do not match')).toBeVisible();
+		});
+		it('should show error if password is shorter than 8 characters', async () => {
+			const { user } = setupTest(
+				<CertificatePasswordModal onClose={(): void => onClose()} isReset={false} />
+			);
+			const passwordInput = screen.getByTestId('password');
+			const confirmPasswordInput = screen.getByTestId('confirm_password');
+
+			await act(async () => {
+				await user.type(passwordInput, 'short');
+			});
+
+			await act(async () => {
+				await user.type(confirmPasswordInput, 'short');
+			});
+
+			const enterBtn = screen.getByRole('button', { name: 'Enter' });
+			await act(async () => {
+				await user.click(enterBtn);
+			});
+
+			expect(screen.getByText('Password must be at least 8 characters long')).toBeVisible();
+		});
+
+		it('should show error if password does not meet complexity requirements', async () => {
+			const { user } = setupTest(
+				<CertificatePasswordModal onClose={(): void => onClose()} isReset={false} />
+			);
+			const passwordInput = screen.getByTestId('password');
+			const confirmPasswordInput = screen.getByTestId('confirm_password');
+
+			await act(async () => {
+				await user.type(passwordInput, 'password');
+			});
+
+			await act(async () => {
+				await user.type(confirmPasswordInput, 'password');
+			});
+
+			const enterBtn = screen.getByRole('button', { name: 'Enter' });
+			await act(async () => {
+				await user.click(enterBtn);
+			});
+
+			expect(
+				screen.getByText(
+					'Password must include uppercase, lowercase, numbers, and special characters'
+				)
+			).toBeVisible();
 		});
 	});
 
