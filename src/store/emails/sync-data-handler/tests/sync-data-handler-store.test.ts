@@ -10,10 +10,14 @@ import { getUserSettings, SoapNotify, useRefresh } from '@zextras/carbonio-shell
 import { useNotify } from '../../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
 import { populateFoldersStore } from '../../../../carbonio-ui-commons/test/mocks/store/folders';
 import { normalizeConversations } from '../../../../normalizations/normalize-conversation';
-import { generateConversation } from '../../../../tests/generators/generateConversation';
+import {
+	generateConversation,
+	populateConversationInEmailStore
+} from '../../../../tests/generators/generateConversation';
 import { generateMessage } from '../../../../tests/generators/generateMessage';
 import { SoapConversation, SoapIncompleteMessage, SoapMailMessage } from '../../../../types';
 import { useSyncDataHandler } from '../../../../views/sidebar/commons/sync-data-handler-hooks';
+import { useCompleteConversationOrFetch } from '../../hooks/hooks';
 import {
 	handleNotifyMessagesCreated,
 	setConversationsInEmailStore,
@@ -169,6 +173,22 @@ describe('sync-data-handler', () => {
 		});
 
 		describe('getOrderedMessagesForConversation', () => {
+			it('should not duplicate messages', async () => {
+				await waitFor(() =>
+					populateConversationInEmailStore({
+						conversationParams: { id: '123' },
+						messageIds: ['2']
+					})
+				);
+
+				const newMessage = { ...generateMessage({ id: '2' }), conversation: '123' };
+				handleNotifyMessagesCreated([newMessage]);
+				const { result } = renderHook(() => useCompleteConversationOrFetch('123'));
+				await waitFor(async () => {
+					expect(result.current.conversation.messageIds).toEqual(['2']);
+				});
+			});
+
 			it('should return messages in descending order when sortOrder is dateDesc', async () => {
 				(getUserSettings as jest.Mock).mockReturnValue({
 					prefs: { zimbraPrefConversationOrder: 'dateDesc' }

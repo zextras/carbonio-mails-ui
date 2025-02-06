@@ -51,7 +51,7 @@ function awaitDebounce(): void {
 }
 
 describe('Searches store hooks', () => {
-	describe('useCompleteConversation', () => {
+	describe('useCompleteConversationOrFetch', () => {
 		it('should retrieve the conversation if no data available', async () => {
 			const message = generateMessage({ id: '1', subject: 'Test Message 1' });
 			const conversation = generateConversation({

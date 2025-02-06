@@ -174,9 +174,9 @@ function handleNotifyMessagesCreated(
 	): Array<string> {
 		const sortOrder = getUserSettings()?.prefs?.zimbraPrefConversationOrder || 'dateDesc';
 		if (sortOrder === 'dateDesc') {
-			return [message.id, ...convMessagesIds];
+			return Array.from(new Set([message.id, ...convMessagesIds]));
 		}
-		return [...convMessagesIds, message.id];
+		return Array.from(new Set([...convMessagesIds, message.id]));
 	}
 
 	function addMessagesToConversation(state: EmailsStoreState): void {
