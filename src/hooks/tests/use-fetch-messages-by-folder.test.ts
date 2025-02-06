@@ -38,6 +38,10 @@ jest.mock('../../helpers/sorting', () => ({
 describe('useMessageListByFolder', () => {
 	it('should make search call with correct params', async () => {
 		const searchInterceptor = createSoapAPIInterceptor<SearchRequest>('Search');
+		(parseMessageSortingOptions as jest.Mock).mockReturnValue({
+			sortType: 'date',
+			sortDirection: 'Desc'
+		});
 
 		useFolderStore.setState({ folders: { folderId: folder } });
 
