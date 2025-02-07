@@ -30,9 +30,10 @@ describe('CertificateDeleteModal', () => {
 			setupTest(
 				<CertificateDeleteModal onClose={onClose} onConfirmDelete={onConfirmDelete} email={email} />
 			);
+			const warningMessage = await screen.findByText(/Are you sure to delete certificate of/);
 			expect(screen.getByText(headetTitle)).toBeVisible();
-			expect(screen.getByText('Are you sure to delete certificate of')).toBeInTheDocument();
-			expect(screen.getByText(`"${email}" ?`)).toBeInTheDocument();
+			expect(warningMessage).toBeInTheDocument();
+			expect(screen.getByText(/test@example.com\?/)).toBeInTheDocument();
 		});
 
 		it('should render the Delete button', async () => {
