@@ -3,6 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import { getUserAccount } from '@zextras/carbonio-shell-ui';
 import { includes, map } from 'lodash';
 
 import type { FetchConversationsReturn, MailMessage, NormalizedConversation } from '../types';
@@ -53,3 +54,15 @@ export const isItemInSearches = ({
 		map(ids, (id) => searchResultsIds.includes(id)),
 		false
 	);
+
+export function getCompleteMessageId(messageId: string | undefined): string | undefined {
+	if (!messageId) return undefined;
+
+	if (!messageId?.includes(':')) {
+		const loggedInAccountId = getUserAccount()?.id;
+		if (!loggedInAccountId) return messageId;
+		return `${loggedInAccountId}:${messageId}`;
+	}
+
+	return messageId;
+}
