@@ -276,6 +276,122 @@ describe('Edit view', () => {
 			});
 		});
 
+		it('should add the logged in account id to the originId field when replying to an email from the primary account', async () => {
+			setupEditorStore({ editors: [] });
+			const originalMessage = generateMessage({ id: '1' });
+			const editor = generateReplyMsgEditor(originalMessage);
+			addEditor({ id: editor.id, editor });
+			const mocksContext = getMocksContext();
+			const loggedInuserAccountId = mocksContext.identities.primary.identity.id;
+
+			const props: EditViewProp = {
+				editorId: editor.id,
+				closeController: noop
+			};
+			const settings = generateSettings({
+				prefs: {
+					zimbraFeatureMailSendLaterEnabled: 'FALSE'
+				},
+				props: [
+					{
+						zimlet: 'carbonio-mails-ui',
+						name: 'mails_snackbar_delay',
+						_content: '0'
+					}
+				]
+			});
+
+			jest.spyOn(hooks, 'getUserSettings').mockReturnValue(settings);
+
+			const { user } = setupTest(<EditView {...props} />);
+
+			// Get the components
+			const btnSend = await screen.findByTestId(/BtnSendMail/i);
+
+			expect(btnSend).toBeVisible();
+
+			// // Check for the status of the "send" button to be enabled
+			await waitFor(() => expect(btnSend).toBeEnabled());
+
+			const response = {
+				m: [
+					{
+						id: '1'
+					}
+				],
+				_jsns: 'urn:zimbraMail'
+			};
+			const sendMsgInterceptor = createSoapAPIInterceptor<
+				{ m: SoapDraftMessageObj },
+				SoapSendMsgResponse
+			>('SendMsg', response);
+
+			await act(async () => {
+				await user.click(btnSend);
+			});
+
+			const { m: msg } = await sendMsgInterceptor;
+
+			expect(msg.origid).toBe(`${loggedInuserAccountId}:${originalMessage.id}`);
+		});
+
+		it('should preserve the shared account id to the originId field when replying to an email from the shared account', async () => {
+			setupEditorStore({ editors: [] });
+			const originalMessage = generateMessage({ id: '40f51428-9c4e-4919-bd16-3b19e39f2843:1' });
+			const editor = generateReplyMsgEditor(originalMessage);
+			addEditor({ id: editor.id, editor });
+
+			const props: EditViewProp = {
+				editorId: editor.id,
+				closeController: noop
+			};
+			const settings = generateSettings({
+				prefs: {
+					zimbraFeatureMailSendLaterEnabled: 'FALSE'
+				},
+				props: [
+					{
+						zimlet: 'carbonio-mails-ui',
+						name: 'mails_snackbar_delay',
+						_content: '0'
+					}
+				]
+			});
+
+			jest.spyOn(hooks, 'getUserSettings').mockReturnValue(settings);
+
+			const { user } = setupTest(<EditView {...props} />);
+
+			// Get the components
+			const btnSend = await screen.findByTestId(/BtnSendMail/i);
+
+			expect(btnSend).toBeVisible();
+
+			// // Check for the status of the "send" button to be enabled
+			await waitFor(() => expect(btnSend).toBeEnabled());
+
+			const response = {
+				m: [
+					{
+						id: '1'
+					}
+				],
+				_jsns: 'urn:zimbraMail'
+			};
+			const sendMsgInterceptor = createSoapAPIInterceptor<
+				{ m: SoapDraftMessageObj },
+				SoapSendMsgResponse
+			>('SendMsg', response);
+
+			await act(async () => {
+				await user.click(btnSend);
+			});
+
+			const { m: msg } = await sendMsgInterceptor;
+
+			expect(msg.origid).toBe(originalMessage.id);
+		});
+
 		it('create a new email and text format should be as per setting', async () => {
 			setupEditorStore({ editors: [] });
 
