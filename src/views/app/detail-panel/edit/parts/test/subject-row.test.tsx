@@ -67,4 +67,16 @@ describe('SubjectRow', () => {
 		const icon = screen.getByTestId('use-certificate-icon');
 		expect(icon).toBeVisible();
 	});
+
+	it('Should display the S/MIME encrypt icon when isSmimeEncrypt is true', async () => {
+		getIntegratedFunction.mockImplementation(() => [jest.fn(), true]);
+		setupEditorStore({ editors: [] });
+		const editor = await readyToBeSentEditorTestCase({
+			isSmimeEncrypt: true
+		});
+		addEditor({ id: editor.id, editor });
+		setupTest(<SubjectRow editorId={editor.id} />);
+		const icon = screen.getByTestId('use-encrypt-sign-icon');
+		expect(icon).toBeVisible();
+	});
 });
