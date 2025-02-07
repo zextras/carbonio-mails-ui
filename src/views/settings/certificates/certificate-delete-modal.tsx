@@ -39,8 +39,7 @@ const CertificateDeleteModal: FC<CertificateDeleteModalProps> = ({
 					{`${t(
 						'settings.uploadCertificate.delete_certificate_text',
 						'Are you sure to delete certificate of'
-					)}
-					${email}?`}
+					)} ${email}?`}
 				</Text>
 			</Container>
 			<ModalFooter
