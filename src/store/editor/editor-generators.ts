@@ -33,7 +33,8 @@ import {
 	MailsEditorV2,
 	UnsavedAttachment,
 	Participant,
-	EditorText
+	EditorText,
+	EditorRecipients
 } from '../../types';
 import {
 	extractBody,
@@ -138,6 +139,35 @@ const normalizeParticipants = (
 		? abstractParticipants.map((abstractParticipant) => normalizeParticipant(abstractParticipant))
 		: [];
 
+const byType =
+	(type: string) =>
+	(participant: Participant): boolean =>
+		participant.type === type;
+
+function getMsgRecipients(compositionData?: EditorPrefillData): EditorRecipients {
+	if (compositionData?.recipients) {
+		return {
+			to: compositionData.recipients.filter(byType(ParticipantRole.TO)),
+			cc: compositionData.recipients.filter(byType(ParticipantRole.CARBON_COPY)),
+			bcc: compositionData.recipients.filter(byType(ParticipantRole.BLIND_CARBON_COPY))
+		};
+	}
+
+	if (compositionData?.to) {
+		return {
+			to: normalizeParticipants(compositionData.to),
+			cc: [],
+			bcc: []
+		};
+	}
+
+	return {
+		to: [],
+		cc: [],
+		bcc: []
+	};
+}
+
 /**
  *
  */
@@ -148,9 +178,7 @@ export const generateIntegratedNewEditor = (compositionData?: EditorPrefillData)
 	const richText =
 		compositionData?.text?.[1] ?? `<p></p><div class="${LineType.SIGNATURE_CLASS}"></div>`;
 
-	const recipients: Array<Participant> = compositionData?.recipients
-		? compositionData.recipients
-		: normalizeParticipants(compositionData?.to);
+	const recipients = getMsgRecipients(compositionData);
 
 	const text = {
 		plainText,
@@ -179,11 +207,7 @@ export const generateIntegratedNewEditor = (compositionData?: EditorPrefillData)
 		savedAttachments: [],
 		isRichText,
 		isUrgent: false,
-		recipients: {
-			to: recipients ?? [],
-			cc: [],
-			bcc: []
-		},
+		recipients,
 		subject: compositionData?.subject ?? '',
 		text: textWithSignature,
 		requestReadReceipt: false,
