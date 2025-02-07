@@ -168,7 +168,7 @@ export const MailInfoBlock = ({ msg }: MailInfoProps): React.JSX.Element | null 
 			{msg.isEncrypted && isSmimeEnabled && !isCarbonioCE && (
 				<>
 					<Padding right="small" />
-					<Link size="medium" onClick={dencryptMessage}>
+					<Link size="medium" onClick={dencryptMessage} data-testid="decrypt-message-link">
 						{t('label.decrypt_message', 'Decrypt Message')}
 					</Link>
 				</>
