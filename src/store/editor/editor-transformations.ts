@@ -6,6 +6,7 @@
 import { getUserSettings } from '@zextras/carbonio-shell-ui';
 import { filter, forEach, map, reduce } from 'lodash';
 
+import { getCompleteMessageId } from '../utils';
 import {
 	filterSavedInlineAttachment,
 	filterSavedStandardAttachment,
@@ -376,21 +377,21 @@ const createSoapMessageRequestFromEditor = (
 		p: participant.fullName ?? participant.name
 	}));
 
-	const result: SoapDraftMessageObj = {
+	const draftMessage: SoapDraftMessageObj = {
 		autoSendTime: editor.autoSendTime,
 		...(command === 'savedraft' ? { id: editor.did } : {}),
 		...(command === 'sendmsg' ? { did: editor.did } : {}),
 		su: { _content: editor.subject ?? '' },
 		rt: editor.replyType,
-		origid: editor.originalId,
+		...(editor.originalId ? { origid: getCompleteMessageId(editor.originalId) } : {}),
 		e: soapParticipants,
 		mp: getMP(editor),
 		...(editor.isUrgent ? { f: '!' } : {})
 	};
 
 	const attach = composeAttachField(editor);
-	attach && (result.attach = attach);
-	return result;
+	attach && (draftMessage.attach = attach);
+	return draftMessage;
 };
 
 export const createSoapDraftRequestFromEditor = (editor: MailsEditorV2): SoapDraftMessageObj =>
