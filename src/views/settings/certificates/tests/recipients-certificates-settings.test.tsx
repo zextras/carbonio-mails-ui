@@ -45,9 +45,4 @@ describe('RecipientsCertificateSettings', () => {
 		const uploadButton = screen.getByTestId('upload-recipients-certificate-btn');
 		expect(uploadButton).toBeVisible();
 	});
-
-	it.skip('should show an error message when there is an error fetching certificates', async () => {
-		createAPIInterceptorToGetRecipientsCertificates();
-		setupTest(<RecipientsCertificateSettings />);
-	});
 });

@@ -47,9 +47,4 @@ describe('PersonalCertificatesSettings', () => {
 		const uploadButton = screen.getByTestId('upload-personal-certificate-btn');
 		expect(uploadButton).toBeVisible();
 	});
-
-	it.skip('should show an error message when there is an error fetching certificates', async () => {
-		createAPIInterceptorToGetPersonalCertificates();
-		setupTest(<PersonalCertificatesSettings />);
-	});
 });

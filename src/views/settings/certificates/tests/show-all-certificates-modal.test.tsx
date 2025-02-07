@@ -72,19 +72,4 @@ describe('ShowAllCertificatesModal', () => {
 		expect(setActiveBtn).toBeInTheDocument();
 		expect(setActiveBtn).toBeDisabled();
 	});
-
-	it.skip('should display the list of personal certificates of selected email', async () => {
-		setupTest(
-			<ShowAllCertificatesModal
-				certificates={certificate}
-				onClose={onClose}
-				createModal={createModal}
-				closeModal={closeModal}
-			/>
-		);
-		await waitFor(() => {
-			const certificateEmail = screen.getByText(certificate[0].issuer);
-			expect(certificateEmail).toBeVisible();
-		});
-	});
 });
