@@ -5,7 +5,7 @@
  */
 import React, { memo } from 'react';
 
-import { EmptyBody } from './empty-body';
+import { EmptyBody, EncryptedMsg } from './empty-body';
 import { HtmlMessageRenderer } from './html-message-renderer';
 import { TextMessageRenderer } from './text-message-renderer';
 import type { MailMessage } from '../../types';
@@ -18,6 +18,9 @@ export const MailMessageRenderer = memo(function MailMessageRenderer({
 	message
 }: MailMessageRendererProps): JSX.Element {
 	const { body, fragment } = message;
+	if (message.isEncrypted) {
+		return <EncryptedMsg />;
+	}
 	if (!body?.content?.length && !fragment) {
 		return <EmptyBody />;
 	}

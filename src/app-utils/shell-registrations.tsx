@@ -5,16 +5,19 @@
  */
 import React, { FC, PropsWithChildren, useEffect } from 'react';
 
+import { useIsCarbonioCE } from '@zextras/carbonio-shell-ui';
+
 import { addComponentsToShell } from './add-shell-components';
 import { registerShellActions } from './register-shell-actions';
 import { registerShellIntegrations } from './register-shell-integrations';
 
 export const ShellRegistrations: FC<PropsWithChildren> = ({ children }) => {
+	const isCarbonioCE = useIsCarbonioCE();
 	useEffect(() => {
-		addComponentsToShell();
+		addComponentsToShell(isCarbonioCE);
 		registerShellIntegrations();
 		registerShellActions();
-	}, []);
+	}, [isCarbonioCE]);
 
 	return <>{children}</>;
 };

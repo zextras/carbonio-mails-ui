@@ -9,6 +9,7 @@ import { Container, Icon, Input, Padding, Tooltip } from '@zextras/carbonio-desi
 import { t } from '@zextras/carbonio-shell-ui';
 
 import {
+	useEditorIsSmimeEncrypt,
 	useEditorIsSmimeSign,
 	useEditorIsUrgent,
 	useEditorRequestReadReceipt,
@@ -25,6 +26,7 @@ export const SubjectRow: FC<SubjectRowProps> = ({ editorId }) => {
 	const { isUrgent } = useEditorIsUrgent(editorId);
 	const { requestReadReceipt } = useEditorRequestReadReceipt(editorId);
 	const { isSmimeSign } = useEditorIsSmimeSign(editorId);
+	const { isSmimeEncrypt } = useEditorIsSmimeEncrypt(editorId);
 
 	const onSubjectChange = useCallback(
 		(event: ChangeEvent<HTMLInputElement>): void => {
@@ -48,7 +50,7 @@ export const SubjectRow: FC<SubjectRowProps> = ({ editorId }) => {
 					onChange={onSubjectChange}
 				/>
 			</Container>
-			{(requestReadReceipt || isUrgent || isSmimeSign) && (
+			{(requestReadReceipt || isUrgent || isSmimeSign || isSmimeEncrypt) && (
 				<Container
 					width="fit"
 					background={'gray5'}
@@ -87,6 +89,18 @@ export const SubjectRow: FC<SubjectRowProps> = ({ editorId }) => {
 									color="secondary"
 									size="large"
 									data-testid="use-certificate-icon"
+								/>
+							</Padding>
+						</Tooltip>
+					)}
+					{isSmimeEncrypt && (
+						<Tooltip label={t('tooltip.markedAsEncryptedSmime', 'Marked as encrypted (S/MIME)')}>
+							<Padding right="small">
+								<Icon
+									icon="LockOutline"
+									color="secondary"
+									size="large"
+									data-testid="use-encrypt-sign-icon"
 								/>
 							</Padding>
 						</Tooltip>

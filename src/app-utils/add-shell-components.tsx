@@ -16,8 +16,10 @@ import {
 } from '@zextras/carbonio-shell-ui';
 
 import { advancedAccountApi } from '../api/advanced-account-api';
+import { checkIsSmimeEnabled } from '../api/check-is-smime-enable-api';
 import { Spinner } from '../assets/spinner';
-import { MAIL_APP_ID, MAILS_BOARD_VIEW_ID, MAILS_ROUTE } from '../constants';
+import { CERTIFICATES_ROUTE, MAIL_APP_ID, MAILS_BOARD_VIEW_ID, MAILS_ROUTE } from '../constants';
+import { useSmimeFeatureStore } from '../store/certificates/store';
 import { ExtraWindowsManager } from '../views/app/extra-windows/extra-window-manager';
 import { getSettingsSubSections } from '../views/settings/subsections';
 
@@ -34,6 +36,13 @@ const LazyEditView = lazy(
 
 const LazySettingsView = lazy(
 	() => import(/* webpackChunkName: "mail-setting-view" */ '../views/settings/settings-view')
+);
+
+const LazyCertificatsView = lazy(
+	() =>
+		import(
+			/* webpackChunkName: "mail-certificates-view" */ '../views/settings/certificates/certificates-view'
+		)
 );
 
 const LazySidebarView = lazy(
@@ -66,6 +75,14 @@ const SettingsView = (): React.JSX.Element => (
 	</Suspense>
 );
 
+const CertificatesView = (): React.JSX.Element => (
+	<Suspense fallback={<Spinner />}>
+		<ModalManager>
+			<LazyCertificatsView />
+		</ModalManager>
+	</Suspense>
+);
+
 const SidebarView = (props: SecondaryBarComponentProps): React.JSX.Element => (
 	<Suspense fallback={<Spinner />}>
 		<ModalManager>
@@ -74,7 +91,7 @@ const SidebarView = (props: SecondaryBarComponentProps): React.JSX.Element => (
 	</Suspense>
 );
 
-export const addComponentsToShell = async (): Promise<void> => {
+export const addComponentsToShell = async (isCarbonioCE: boolean | undefined): Promise<void> => {
 	const label = t('label.app_name', 'Mails');
 	addRoute({
 		route: MAILS_ROUTE,
@@ -90,12 +107,31 @@ export const addComponentsToShell = async (): Promise<void> => {
 		component: EditView
 	});
 	const { backupSelfUndeleteAllowed } = await advancedAccountApi();
+
+	if (!isCarbonioCE) {
+		checkIsSmimeEnabled().then((res) => {
+			if ('data' in res) {
+				useSmimeFeatureStore.getState().updateIsSmimeEnabled(true);
+			} else {
+				useSmimeFeatureStore.getState().updateIsSmimeEnabled(false);
+			}
+		});
+	}
+
 	addSettingsView({
 		route: MAILS_ROUTE,
 		label,
 		subSections: getSettingsSubSections(backupSelfUndeleteAllowed),
 		component: SettingsView
 	});
+	if (!isCarbonioCE) {
+		addSettingsView({
+			icon: 'AwardOutline',
+			route: CERTIFICATES_ROUTE,
+			label: t('settings.smime_certificates', 'S/MIME Certificates'),
+			component: CertificatesView
+		});
+	}
 
 	upsertApp({
 		name: MAIL_APP_ID,

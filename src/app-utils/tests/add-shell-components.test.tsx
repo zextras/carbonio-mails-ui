@@ -14,12 +14,17 @@ import { addComponentsToShell } from '../add-shell-components';
 
 beforeEach(() => {
 	createAPIInterceptor('get', 'zx/login/v3/account', HttpResponse.json({}));
+	createAPIInterceptor(
+		'get',
+		'/service/extension/encryption/password/enabled',
+		HttpResponse.json({ enabled: true })
+	);
 });
 
 describe('addShellComponents', () => {
 	const label = 'label.app_name';
 	it('should call addRoute with the correct parameters', async () => {
-		await addComponentsToShell();
+		await addComponentsToShell(false);
 
 		expect(addRoute).toHaveBeenCalledWith(
 			expect.objectContaining({
@@ -35,7 +40,7 @@ describe('addShellComponents', () => {
 	});
 
 	it('should call addBoardView with the correct parameters', async () => {
-		await addComponentsToShell();
+		await addComponentsToShell(false);
 		expect(addBoardView).toHaveBeenCalledWith(
 			expect.objectContaining({
 				id: MAILS_BOARD_VIEW_ID,
@@ -46,7 +51,7 @@ describe('addShellComponents', () => {
 	it('should call addSettingsView with all the subsections when backupSelfUndeleteAllowed is true', async () => {
 		mockAdvancedAccountAPI({ backupSelfUndeleteAllowed: true });
 
-		await addComponentsToShell();
+		await addComponentsToShell(false);
 
 		expect(addSettingsView).toHaveBeenCalledWith(
 			expect.objectContaining({
@@ -66,7 +71,7 @@ describe('addShellComponents', () => {
 	});
 
 	it('should call upsertApp function', async () => {
-		await addComponentsToShell();
+		await addComponentsToShell(false);
 
 		expect(upsertApp).toHaveBeenCalledWith(
 			expect.objectContaining({
@@ -79,7 +84,7 @@ describe('addShellComponents', () => {
 	it('should not render Recover Messages menu item when backupSelfUndeleteAllowed is false', async () => {
 		mockAdvancedAccountAPI({ backupSelfUndeleteAllowed: false });
 
-		await addComponentsToShell();
+		await addComponentsToShell(false);
 
 		expect(addSettingsView).toHaveBeenCalledWith(
 			expect.objectContaining({

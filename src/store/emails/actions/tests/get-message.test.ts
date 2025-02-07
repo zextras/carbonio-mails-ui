@@ -5,14 +5,20 @@
  */
 
 import { getMsgSoapApi } from '../../../../api/get-msg-soap-api';
+import { getMsgDecryptSoapApi } from '../../../../api/get-msg-soap-api-decrypt';
 import { API_REQUEST_STATUS } from '../../../../constants';
 import { normalizeMailMessageFromSoap } from '../../../../normalizations/normalize-message';
 import { GetMsgResponse } from '../../../../types';
 import { updateMessages, updateMessageStatus } from '../../store';
-import { getMessageEmailStoreAction, getFullMessageEmailStoreAction } from '../get-message';
+import {
+	getMessageEmailStoreAction,
+	getFullMessageEmailStoreAction,
+	getMessageDecryptEmailStoreAction
+} from '../get-message';
 import { getSoapMailMessage } from './test-utils';
 
 jest.mock('../../../../api/get-msg-soap-api');
+jest.mock('../../../../api/get-msg-soap-api-decrypt');
 jest.mock('../../store');
 jest.mock('../../../../normalizations/normalize-message');
 
@@ -22,6 +28,29 @@ describe('get-message', () => {
 		const mockResponse: GetMsgResponse = {
 			// eslint-disable-next-line sonarjs/no-duplicate-string
 			m: [getSoapMailMessage('1', { su: 'message 1 Subject' })]
+		};
+
+		const mockResponseEncryptMessage: GetMsgResponse = {
+			// eslint-disable-next-line sonarjs/no-duplicate-string
+			m: [
+				getSoapMailMessage('1', {
+					su: 'message 1 Subject',
+					mp: [
+						{
+							part: 'att1,att2',
+							ct: 'multipart/alternative',
+							filename: 'smime.p7m',
+							requiresSmartLinkConversion: false
+						},
+						{
+							part: 'att1',
+							ct: 'multipart/alternative',
+							filename: 'demo.file',
+							requiresSmartLinkConversion: false
+						}
+					]
+				})
+			]
 		};
 
 		beforeEach(() => {
@@ -75,6 +104,63 @@ describe('get-message', () => {
 			expect(updateMessages).toHaveBeenCalledWith([]);
 			expect(updateMessageStatus).toHaveBeenCalledWith(mockMessageId, API_REQUEST_STATUS.fulfilled);
 			expect(result).toBeUndefined();
+		});
+
+		it('handles successful decrypt message retrieval', async () => {
+			(getMsgDecryptSoapApi as jest.Mock).mockResolvedValueOnce(mockResponse);
+			(normalizeMailMessageFromSoap as jest.Mock).mockReturnValueOnce({
+				id: '1',
+				subject: 'message 1 Subject'
+			});
+
+			const result = await getMessageDecryptEmailStoreAction(mockMessageId, 'smimePassword');
+
+			expect(updateMessageStatus).toHaveBeenCalledWith(mockMessageId, API_REQUEST_STATUS.pending);
+			expect(getMsgDecryptSoapApi).toHaveBeenCalledWith({
+				msgId: mockMessageId,
+				max: 250_000,
+				smimePassword: 'smimePassword'
+			});
+			expect(updateMessages).toHaveBeenCalledWith(expect.any(Array));
+			expect(updateMessageStatus).toHaveBeenCalledWith(mockMessageId, API_REQUEST_STATUS.fulfilled);
+			expect(result).toEqual({ id: '1', subject: 'message 1 Subject' });
+		});
+
+		it('handles decrypt response with fault', async () => {
+			const faultResponse = { Fault: {} };
+			(getMsgDecryptSoapApi as jest.Mock).mockResolvedValueOnce(faultResponse);
+
+			const result = await getMessageDecryptEmailStoreAction(mockMessageId, 'smimePassword');
+
+			expect(updateMessageStatus).toHaveBeenCalledWith(mockMessageId, API_REQUEST_STATUS.pending);
+			expect(updateMessageStatus).toHaveBeenCalledWith(mockMessageId, API_REQUEST_STATUS.error);
+			expect(result).toBeUndefined();
+		});
+
+		it('handles decrypt message empty response', async () => {
+			const emptyResponse = { m: [] };
+			(getMsgDecryptSoapApi as jest.Mock).mockResolvedValueOnce(emptyResponse);
+
+			const result = await getMessageDecryptEmailStoreAction(mockMessageId, 'smimePassword');
+
+			expect(updateMessageStatus).toHaveBeenCalledWith(mockMessageId, API_REQUEST_STATUS.pending);
+			expect(updateMessages).toHaveBeenCalledWith([]);
+			expect(updateMessageStatus).toHaveBeenCalledWith(mockMessageId, API_REQUEST_STATUS.fulfilled);
+			expect(result).toBeUndefined();
+		});
+
+		it('handles enable to decrypt message response', async () => {
+			(getMsgDecryptSoapApi as jest.Mock).mockResolvedValueOnce(mockResponseEncryptMessage);
+
+			const result = await getMessageDecryptEmailStoreAction(mockMessageId, 'smimePassword');
+
+			expect(updateMessageStatus).toHaveBeenCalledWith(mockMessageId, API_REQUEST_STATUS.pending);
+			expect(getMsgDecryptSoapApi).toHaveBeenCalledWith({
+				msgId: mockMessageId,
+				max: 250_000,
+				smimePassword: 'smimePassword'
+			});
+			expect(result).toEqual(undefined);
 		});
 	});
 

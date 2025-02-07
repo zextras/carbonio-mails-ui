@@ -173,8 +173,12 @@ export type MailsEditorV2 = {
 	signatureId?: string;
 	// the size of the draft
 	size: number;
-	// flag for the S/MIME request
+	// the sum of the size of the attachments requiring smart link conversion
+	totalSmartLinksSize: number;
+	// flag for the S/MIME Sign request
 	isSmimeSign?: boolean;
+	// flag for the S/MIME Encrypt request
+	isSmimeEncrypt?: boolean;
 };
 
 type IdentityType = {

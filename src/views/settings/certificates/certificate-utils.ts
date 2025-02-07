@@ -1,8 +1,9 @@
 /*
- * SPDX-FileCopyrightText: 2024 Zextras <https://www.zextras.com>
+ * SPDX-FileCopyrightText: 2025 Zextras <https://www.zextras.com>
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+
 import { t } from '@zextras/carbonio-shell-ui';
 import * as asn1js from 'asn1js';
 import forge from 'node-forge';
@@ -43,7 +44,6 @@ export const handleCertificateFileUpload = (
 ): Promise<CertificateFileUploadResult> =>
 	new Promise((resolve, reject) => {
 		const reader = new FileReader();
-
 		reader.onload = async (e: ProgressEvent<FileReader>): Promise<void> => {
 			try {
 				const arrayBuffer = e.target?.result;

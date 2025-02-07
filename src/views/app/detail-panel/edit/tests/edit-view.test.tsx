@@ -134,6 +134,13 @@ const createSmartLinkFailureAPIInterceptor = (): Promise<CreateSmartLinksRequest
 		})
 	);
 
+const createCheckSmimeEnabledAPIInterceptor = (): void => {
+	createAPIInterceptor(
+		'get',
+		'/service/extension/encryption/password/enabled',
+		HttpResponse.json({ enabled: true })
+	);
+};
 const clearAndInsertText =
 	(user: UserEvent, target: Element, text: string) => async (): Promise<void> => {
 		await user.click(target);
@@ -151,6 +158,7 @@ describe('Edit view', () => {
 		beforeEach(() => {
 			aSuccessfullSaveDraft();
 			createSoapAPIInterceptor('GetShareInfo');
+			createCheckSmimeEnabledAPIInterceptor();
 		});
 		// warning
 		it('should correctly send a new email', async () => {
@@ -290,6 +298,7 @@ describe('Edit view', () => {
 				'/service/soap/GetShareInfoRequest',
 				HttpResponse.json(getEmptyMSWShareInfoResponse())
 			);
+			createCheckSmimeEnabledAPIInterceptor();
 			// setup api interceptor and mail to send editor
 			const apiInterceptor = createSmartLinkFailureAPIInterceptor();
 			setupEditorStore({ editors: [] });
@@ -330,6 +339,7 @@ describe('Edit view', () => {
 				'/service/soap/GetShareInfoRequest',
 				HttpResponse.json(getEmptyMSWShareInfoResponse())
 			);
+			createCheckSmimeEnabledAPIInterceptor();
 		});
 
 		it('is not autosaved on initialization if draft id is present', async () => {

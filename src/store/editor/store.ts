@@ -353,5 +353,14 @@ export const useEditorsStore = create<EditorsStateTypeV2>()((set) => ({
 				}
 			})
 		);
+	},
+	setIsSmimeEncrypt: (id: MailsEditorV2['id'], value: MailsEditorV2['isSmimeEncrypt']): void => {
+		set(
+			produce((state: EditorsStateTypeV2) => {
+				if (state?.editors?.[id]) {
+					state.editors[id].isSmimeEncrypt = value;
+				}
+			})
+		);
 	}
 }));

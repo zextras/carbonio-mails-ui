@@ -5,14 +5,22 @@
  */
 import React, { useCallback } from 'react';
 
-import { Container, Link, useModal } from '@zextras/carbonio-design-system';
+import { Container, Link, Padding, useModal, useSnackbar } from '@zextras/carbonio-design-system';
+import { useIsCarbonioCE } from '@zextras/carbonio-shell-ui';
 import { useTranslation } from 'react-i18next';
 
 import { DistributionListIcon } from './distribution-list-icon';
 import { ExternalDomainIcon } from './external-domain-icon';
 import { MailSensitivityIcon } from './mail-sensitivity-icon';
 import { SmimeIcon } from './smime-icon';
+import { checkExistEncryptionPassword } from '../../../../../../api/check-exist-password-api';
+import {
+	useSmimeFeatureStore,
+	useSmimePasswordStore
+} from '../../../../../../store/certificates/store';
+import { getMessageDecryptEmailStoreAction } from '../../../../../../store/emails/actions/get-message';
 import { IncompleteMessage } from '../../../../../../types';
+import { EnterPasswordModal } from '../../../../../settings/certificates/enter-password-modal';
 import { MailInfoDetailModal } from '../info-details-modal/mail-info-detail-modal';
 
 type MailInfoProps = {
@@ -22,6 +30,10 @@ type MailInfoProps = {
 export const MailInfoBlock = ({ msg }: MailInfoProps): React.JSX.Element | null => {
 	const [t] = useTranslation();
 	const { createModal, closeModal } = useModal();
+	const { smimePassword } = useSmimePasswordStore();
+	const createSnackbar = useSnackbar();
+	const isCarbonioCE = useIsCarbonioCE();
+	const { isSmimeEnabled } = useSmimeFeatureStore();
 
 	const signature = msg.signature?.[0];
 	const creationDateFromHeaders = msg.creationDateFromMailHeaders;
@@ -68,6 +80,68 @@ export const MailInfoBlock = ({ msg }: MailInfoProps): React.JSX.Element | null 
 		]
 	);
 
+	const decryptMsgAction = useCallback(
+		(msgId: string, password: string) => {
+			getMessageDecryptEmailStoreAction(msgId, password).then((response) => {
+				if (!response) {
+					createSnackbar({
+						key: `unable-to-decrypt`,
+						replace: true,
+						severity: 'error',
+						label: t('settings.uploadCertificate.unableToDecrypt', 'Unable to decrypt'),
+						autoHideTimeout: 3000,
+						hideButton: true
+					});
+				}
+			});
+		},
+		[createSnackbar, t]
+	);
+
+	const dencryptMessage = useCallback(
+		(event: React.MouseEvent): void => {
+			event.stopPropagation();
+			if (smimePassword !== '') {
+				decryptMsgAction(msg.id, smimePassword);
+			} else {
+				checkExistEncryptionPassword().then((res) => {
+					if ('data' in res) {
+						const id = Date.now().toString();
+						createModal(
+							{
+								id,
+								size: 'medium',
+								children: (
+									<Container crossAlignment="baseline">
+										<EnterPasswordModal
+											onConfirm={(password): void => decryptMsgAction(msg.id, password)}
+											onClose={(): void => closeModal?.(id)}
+											hideReset
+										/>
+									</Container>
+								)
+							},
+							true
+						);
+					} else {
+						createSnackbar({
+							key: `info-on-password-missing`,
+							replace: true,
+							severity: 'error',
+							label: t(
+								'settings.uploadCertificate.createPasswordFromSettings',
+								'Please create your encryption password from settings'
+							),
+							autoHideTimeout: 3000,
+							hideButton: true
+						});
+					}
+				});
+			}
+		},
+		[closeModal, createModal, createSnackbar, decryptMsgAction, msg.id, smimePassword, t]
+	);
+
 	const showInfoDetails =
 		!!messageIdFromHeaders ||
 		!!creationDateFromHeaders ||
@@ -90,6 +164,14 @@ export const MailInfoBlock = ({ msg }: MailInfoProps): React.JSX.Element | null 
 				<Link size="medium" onClick={showMailDetailsModal}>
 					{t('label.show_details', 'Show Details')}
 				</Link>
+			)}
+			{msg.isEncrypted && isSmimeEnabled && !isCarbonioCE && (
+				<>
+					<Padding right="small" />
+					<Link size="medium" onClick={dencryptMessage} data-testid="decrypt-message-link">
+						{t('label.decrypt_message', 'Decrypt Message')}
+					</Link>
+				</>
 			)}
 		</Container>
 	);

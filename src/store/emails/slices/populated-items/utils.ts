@@ -7,7 +7,7 @@
 
 import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 import produce from 'immer';
-import { filter, forEach, keyBy, merge } from 'lodash';
+import { assign, filter, forEach, keyBy, merge } from 'lodash';
 import { UseBoundStore, StoreApi } from 'zustand';
 
 import { RemoveAttachmentsResponse } from '../../../../api/delete-all-attachments-soap-api';
@@ -90,7 +90,7 @@ function updateMessages(
 				if (!message?.id) return;
 				const existingMessage = populatedItemsSlice.messages?.[message.id] || {};
 				populatedItemsSlice.messages[message.id] = {
-					...merge(existingMessage, message),
+					...assign(existingMessage, message),
 					participants: message.participants
 				};
 

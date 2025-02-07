@@ -1,8 +1,9 @@
 /*
- * SPDX-FileCopyrightText: 2021 Zextras <https://www.zextras.com>
+ * SPDX-FileCopyrightText: 2025 Zextras <https://www.zextras.com>
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+
 import { filter, find, forEach, isArray, isNil, map, omitBy, reduce } from 'lodash';
 
 import {
@@ -385,6 +386,7 @@ export const normalizeMailMessageFromSoap = (
 			autoSendTime: m.autoSendTime,
 			...flags,
 			isReadReceiptRequested: haveReadReceipt(m.e, m.f, m.l) && !isNil(isComplete) && isComplete,
+			isEncrypted: !!find(m.mp, (part) => part.ct === 'application/pkcs7-mime'),
 			...normalizedMailHeaders
 		},
 		isNil

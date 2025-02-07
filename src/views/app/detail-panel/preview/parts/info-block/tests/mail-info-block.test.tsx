@@ -6,8 +6,15 @@
 import React, { act } from 'react';
 
 import { useModal } from '@zextras/carbonio-design-system';
+import * as CarbonioShellUI from '@zextras/carbonio-shell-ui';
+import { HttpResponse } from 'msw';
 
+import { createAPIInterceptor } from '../../../../../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { setupTest, screen } from '../../../../../../../carbonio-ui-commons/test/test-setup';
+import {
+	useSmimeFeatureStore,
+	useSmimePasswordStore
+} from '../../../../../../../store/certificates/store';
 import { IncompleteMessage } from '../../../../../../../types';
 import { MailInfoBlock } from '../mail-info-block';
 
@@ -46,15 +53,27 @@ const mockMsg: IncompleteMessage = {
 	sensitivity: 'Private',
 	creationDateFromMailHeaders: '2022-01-01',
 	messageIdFromMailHeaders: 'test-message-id',
-	// authenticationHeaders,
 	messageIsFromDistributionList: true,
-	messageIsFromExternalDomain: true
+	messageIsFromExternalDomain: true,
+	parts: [
+		{
+			contentType: 'application/pkcs7-mime',
+			size: 1950,
+			name: '1',
+			requiresSmartLinkConversion: false,
+			filename: 'smime.p7m'
+		}
+	],
+	isEncrypted: true
 } as IncompleteMessage;
 
 describe('MailInfoBlock', () => {
+	const decryptMsgId = 'decrypt-message-link';
+	const showDetailLbl = 'Show Details';
+
 	it('correctly renders the show details link', () => {
 		setupTest(<MailInfoBlock msg={mockMsg} />);
-		expect(screen.getByText('Show Details')).toBeInTheDocument();
+		expect(screen.getByText(showDetailLbl)).toBeInTheDocument();
 	});
 
 	// it('should show the authentication icon with missing headers tooltip if the passed header is an empty object', async () => {
@@ -100,13 +119,56 @@ describe('MailInfoBlock', () => {
 		const { user } = setupTest(<MailInfoBlock msg={mockMsg} />);
 
 		await act(async () => {
-			await user.click(screen.getByText('Show Details'));
+			await user.click(screen.getByText(showDetailLbl));
 		});
 		expect(mockCreateModal).toHaveBeenCalled();
 	});
 
 	it('does not render the show details link when no valid value is passed', () => {
 		setupTest(<MailInfoBlock msg={{} as IncompleteMessage} />);
-		expect(screen.queryByText('Show Details')).not.toBeInTheDocument();
+		expect(screen.queryByText(showDetailLbl)).not.toBeInTheDocument();
+	});
+
+	it('does not render the Decrypt Message link when no valid value is passed', () => {
+		setupTest(<MailInfoBlock msg={{} as IncompleteMessage} />);
+		expect(screen.queryByTestId(decryptMsgId)).not.toBeInTheDocument();
+	});
+
+	it('render the Decrypt Message link when valid value is passed', () => {
+		jest.spyOn(CarbonioShellUI, 'useIsCarbonioCE').mockReturnValue(false);
+		useSmimeFeatureStore.getState().updateIsSmimeEnabled(true);
+		setupTest(<MailInfoBlock msg={mockMsg} />);
+		expect(screen.getByTestId(decryptMsgId)).toBeInTheDocument();
+	});
+
+	it('does not render the Decrypt Message link when CarbonioCE', () => {
+		jest.spyOn(CarbonioShellUI, 'useIsCarbonioCE').mockReturnValue(true);
+		useSmimeFeatureStore.getState().updateIsSmimeEnabled(true);
+		setupTest(<MailInfoBlock msg={mockMsg} />);
+		expect(screen.queryByTestId(decryptMsgId)).not.toBeInTheDocument();
+	});
+
+	it('does not render the Decrypt Message link when isSmimeEnabled is false', () => {
+		jest.spyOn(CarbonioShellUI, 'useIsCarbonioCE').mockReturnValue(false);
+		useSmimeFeatureStore.getState().updateIsSmimeEnabled(false);
+		setupTest(<MailInfoBlock msg={mockMsg} />);
+		expect(screen.queryByTestId(decryptMsgId)).not.toBeInTheDocument();
+	});
+
+	it('render the Decrypt Message link modal should open on click', async () => {
+		createAPIInterceptor(
+			'get',
+			'/service/extension/encryption/password/exist',
+			HttpResponse.json({ status: 200 })
+		);
+		jest.spyOn(CarbonioShellUI, 'useIsCarbonioCE').mockReturnValue(false);
+		useSmimePasswordStore.getState().updateSmimePassword('');
+		useSmimeFeatureStore.getState().updateIsSmimeEnabled(true);
+		const { user } = setupTest(<MailInfoBlock msg={mockMsg} />);
+		const decryptMsg = screen.getByTestId(decryptMsgId);
+		await act(async () => {
+			await user.click(decryptMsg);
+		});
+		expect(mockCreateModal).toHaveBeenCalled();
 	});
 });
