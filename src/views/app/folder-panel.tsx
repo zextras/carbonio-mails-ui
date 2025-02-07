@@ -8,23 +8,18 @@
 import React from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
-import { useAppContext } from '@zextras/carbonio-shell-ui';
-import { isNil } from 'lodash';
 import { useParams } from 'react-router-dom';
 
 import { ConversationList } from './folder-panel/conversations/conversation-list';
 import { MessageList } from './folder-panel/messages/message-list';
 import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
-import type { AppContext } from '../../types';
-import ShimmerList from '../search/shimmer-list';
+import { useIsMessageView } from '../search/search-view-hooks';
 
 const FolderPanel = (): React.JSX.Element => {
 	const { folderId } = useParams<{ folderId: string }>();
-	const { isMessageView } = useAppContext<AppContext>();
+	const isMessageView = useIsMessageView();
 
-	return isNil(isMessageView) ? (
-		<ShimmerList />
-	) : (
+	return (
 		<Container
 			orientation="row"
 			crossAlignment="flex-start"
@@ -37,7 +32,11 @@ const FolderPanel = (): React.JSX.Element => {
 			}}
 		>
 			<Container mainAlignment="flex-start" borderRadius="none" data-testid="list-wrapper">
-				{isMessageView || folderId === FOLDERS.DRAFTS ? <MessageList /> : <ConversationList />}
+				{isMessageView || folderId === FOLDERS.DRAFTS || folderId === FOLDERS.TRASH ? (
+					<MessageList />
+				) : (
+					<ConversationList />
+				)}
 			</Container>
 		</Container>
 	);
