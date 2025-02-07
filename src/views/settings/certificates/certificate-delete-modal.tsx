@@ -29,15 +29,18 @@ const CertificateDeleteModal: FC<CertificateDeleteModalProps> = ({
 				title={t('settings.uploadCertificate.delete_certificate', 'Delete Certificate')}
 				onClose={onClose}
 			/>
-			<Container orientation="horizontal" padding={{ all: 'medium' }}>
+			<Container
+				orientation="horizontal"
+				mainAlignment="flex-start"
+				crossAlignment="flex-start"
+				padding={{ all: 'medium' }}
+			>
 				<Text overflow="break-word">
-					{t(
+					{`${t(
 						'settings.uploadCertificate.delete_certificate_text',
 						'Are you sure to delete certificate of'
 					)}
-				</Text>
-				<Text weight="bold" style={{ paddingLeft: '0.3125rem', paddingRight: '0.3125rem' }}>
-					{`"${email}" ?`}
+					${email}?`}
 				</Text>
 			</Container>
 			<ModalFooter
