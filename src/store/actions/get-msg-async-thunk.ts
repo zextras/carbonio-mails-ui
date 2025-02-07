@@ -23,7 +23,7 @@ export const getMsgCall = async ({
 	return normalizeMailMessageFromSoap(msg, true) as MailMessage;
 };
 
-const getFullMsgCall = async ({ msgId }: GetMsgCallProps): Promise<MailMessage> => {
+export const getFullMsgCall = async ({ msgId }: GetMsgCallProps): Promise<MailMessage> => {
 	const result = await getMsgSoapApi({ msgId });
 	const msg = result?.m[0];
 	return normalizeMailMessageFromSoap(msg, true) as MailMessage;
