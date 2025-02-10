@@ -2,6 +2,35 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.23.0](https://github.com/zextras/carbonio-mails-ui/compare/v1.22.1...v1.23.0) (2025-02-10)
+
+
+### Features
+
+* [ CO-1578] add translation for default identity in signature usages section ([#762](https://github.com/zextras/carbonio-mails-ui/issues/762)) ([5bd10f5](https://github.com/zextras/carbonio-mails-ui/commit/5bd10f590bd6f6f7f49f4277208a6d24ee24c329))
+* refactor Tag import in message list items ([#752](https://github.com/zextras/carbonio-mails-ui/issues/752)) ([c6c2bd8](https://github.com/zextras/carbonio-mails-ui/commit/c6c2bd88594dc6cf81dc08c3182744cdf137004e))
+
+
+### Bug Fixes
+
+* [CO-1598] do not crop attachments names in print preview and print ([#719](https://github.com/zextras/carbonio-mails-ui/issues/719)) ([4bee978](https://github.com/zextras/carbonio-mails-ui/commit/4bee97872d3941bba82fd0640f743aca6e0eb020))
+* [CO-1736]  preserve originalId and replyType when editing draft ([#746](https://github.com/zextras/carbonio-mails-ui/issues/746)) ([1370350](https://github.com/zextras/carbonio-mails-ui/commit/1370350f85407796db24e85f3a512b22bda24e67))
+* [CO-1746] incorrect email grouping in conversation view for delegated cccounts ([#781](https://github.com/zextras/carbonio-mails-ui/issues/781)) ([b6d24e8](https://github.com/zextras/carbonio-mails-ui/commit/b6d24e89f0dbdfde9d7f3e409a7a5f8544e218cb))
+* [CO-1777] sync tag operation in UI ([#761](https://github.com/zextras/carbonio-mails-ui/issues/761)) ([3c8c764](https://github.com/zextras/carbonio-mails-ui/commit/3c8c7644bd5e5788cda36268c1b17765a492d4af))
+* [CO-1784] logic to re-evaluate the size of mail after attachments are flagged as smartlink ([#768](https://github.com/zextras/carbonio-mails-ui/issues/768)) ([7513d4f](https://github.com/zextras/carbonio-mails-ui/commit/7513d4f4e566217bc3ad213419f369cbd11cde34))
+* clicking on a folder will load the messages list ([14b1485](https://github.com/zextras/carbonio-mails-ui/commit/14b1485645c03e9f38fca44d4494ded3f459a448))
+* **conversations:** handle missing conversation items ([#775](https://github.com/zextras/carbonio-mails-ui/issues/775)) ([084dcc9](https://github.com/zextras/carbonio-mails-ui/commit/084dcc9f8dd65594faf26ba9453b289429b7cdd2))
+* **editor:** fix plain text management in editor ([#706](https://github.com/zextras/carbonio-mails-ui/issues/706)) ([6620182](https://github.com/zextras/carbonio-mails-ui/commit/66201825ee9bb62c5abd714f5a4943c3f7e28387))
+* extended editor default font settings to whole content ([27fb640](https://github.com/zextras/carbonio-mails-ui/commit/27fb640b3bf6acd30b13b3b1342469369a01cc1a))
+* junk folder available in filters and actions options ([79fc116](https://github.com/zextras/carbonio-mails-ui/commit/79fc11653bc0e08fd2685551b880bdfb1f0505b1))
+* **mail-message-renderer:** remove redundant overflowX style ([#772](https://github.com/zextras/carbonio-mails-ui/issues/772)) ([5fa6ffb](https://github.com/zextras/carbonio-mails-ui/commit/5fa6ffb164bfde10c2163693449cc31c20350405))
+* remove unnecessary class from div element ([#715](https://github.com/zextras/carbonio-mails-ui/issues/715)) ([221c87c](https://github.com/zextras/carbonio-mails-ui/commit/221c87c8443456e07b4d297d2472df8202fe615c))
+* removed forward as attachment action from hover for conversation items ([1f5006a](https://github.com/zextras/carbonio-mails-ui/commit/1f5006ad59dac8146e253d2ae3f66d3fa9f06bd8))
+* **ShadowDomWrapper:** remove unneccessary code ([#729](https://github.com/zextras/carbonio-mails-ui/issues/729)) ([3e5940d](https://github.com/zextras/carbonio-mails-ui/commit/3e5940d56372d63dac766daba7b70ac4923499a6))
+* stricter check in replaceLinkToAnchor for text that represent links ([#739](https://github.com/zextras/carbonio-mails-ui/issues/739)) ([a680dac](https://github.com/zextras/carbonio-mails-ui/commit/a680dace44e41967ae903173a0360b65ccda8982))
+* unwanted duplication of conversation messages ([#773](https://github.com/zextras/carbonio-mails-ui/issues/773)) ([1b09cb8](https://github.com/zextras/carbonio-mails-ui/commit/1b09cb8106d8985fa4eab8b5476594235d380e8e))
+* **use-conv-move-to-trash:** handle DRAFTS folder separately ([#774](https://github.com/zextras/carbonio-mails-ui/issues/774)) ([d2ec196](https://github.com/zextras/carbonio-mails-ui/commit/d2ec196de8f55924a0518b8cff5513d9d641588b))
+
 ### [1.22.1](https://github.com/zextras/carbonio-mails-ui/compare/v1.22.0...v1.22.1) (2025-01-17)
 
 
