@@ -52,7 +52,7 @@ export const ConversationList = (): React.JSX.Element => {
 	const { prefs } = useUserSettings();
 	const { sortOrder } = parseMessageSortingOptions(folderId, prefs.zimbraPrefSortOrder as string);
 
-	const loadMore = useLoadMoreForConversationList({
+	const loadMoreCallback = useLoadMoreForConversationList({
 		sortBy: sortOrder,
 		offset: conversationsIds.length,
 		limit: LIST_LIMIT.LOAD_MORE_LIMIT,
@@ -153,7 +153,7 @@ export const ConversationList = (): React.JSX.Element => {
 			displayerTitle={displayerTitle}
 			totalConversations={totalConversations}
 			conversationsLoadingCompleted={conversationsLoadingCompleted}
-			loadMore={loadMore}
+			loadMoreCallback={loadMoreCallback}
 			selectedIds={selectedIds}
 			isSelectModeOn={isSelectModeOn}
 			setIsSelectModeOn={setIsSelectModeOn}

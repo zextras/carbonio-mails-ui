@@ -467,10 +467,11 @@ export function resetMessagesAndPopulatedItems(): void {
  */
 export function appendMessagesToMessagesSlice(
 	messages: Array<MailMessage | IncompleteMessage>,
-	offset: number
+	offset: number,
+	more: boolean
 ): void {
 	addTask(async () => {
-		messageIndexSliceUtils.appendMessagesToMessagesSlice(messages, offset, useEmailsStore);
+		messageIndexSliceUtils.appendMessagesToMessagesSlice(messages, offset, more, useEmailsStore);
 	});
 }
 
