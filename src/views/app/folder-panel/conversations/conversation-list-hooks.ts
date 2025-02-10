@@ -12,9 +12,11 @@ import { API_REQUEST_STATUS } from '../../../../constants';
 import { normalizeConversations } from '../../../../normalizations/normalize-conversation';
 import {
 	appendConversationsToConversationIndexSlice,
-	updateConversationsResultsLoadingStatus
+	updateConversationsResultsLoadingStatus,
+	updateMessages
 } from '../../../../store/emails/store';
 import { SearchResponse } from '../../../../types';
+import { extractConvMessage } from '../../../sidebar/commons/sync-data-handler-hooks';
 
 function handleLoadMoreResults({
 	searchResponse,
@@ -23,9 +25,15 @@ function handleLoadMoreResults({
 	searchResponse: SearchResponse;
 	offset: number;
 }): void {
-	if (searchResponse.c) {
+	if (searchResponse.c && searchResponse.c.length > 0) {
 		const normalizedConversations = normalizeConversations(searchResponse.c);
-		appendConversationsToConversationIndexSlice(normalizedConversations, offset);
+		const messages = extractConvMessage(searchResponse.c);
+		if (messages.length > 0) updateMessages(messages);
+		appendConversationsToConversationIndexSlice(
+			normalizedConversations,
+			offset,
+			searchResponse.more
+		);
 	}
 }
 export function useLoadMoreForConversationList({

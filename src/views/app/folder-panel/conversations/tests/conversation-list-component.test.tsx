@@ -10,7 +10,7 @@ import { act, screen, waitFor } from '@testing-library/react';
 
 import { FOLDERS } from '../../../../../carbonio-ui-commons/constants/folders';
 import { populateFoldersStore } from '../../../../../carbonio-ui-commons/test/mocks/store/folders';
-import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
+import { setupTest, triggerLoadMore } from '../../../../../carbonio-ui-commons/test/test-setup';
 import { populateConversationInEmailStore } from '../../../../../tests/generators/generateConversation';
 import {
 	ConversationListComponent,
@@ -18,149 +18,124 @@ import {
 } from '../conversation-list-component';
 import { ConversationListItemComponent } from '../conversation-list-item-component';
 
+function setUpConversationList({
+	folderId,
+	conversationsIds,
+	loadMoreCallback,
+	isSearchModule = false
+}: {
+	folderId: string;
+	conversationsIds: string[];
+	loadMoreCallback?: () => void;
+	isSearchModule?: boolean;
+}): ReturnType<typeof setupTest> {
+	conversationsIds.forEach((_, index) => {
+		populateConversationInEmailStore({
+			conversationParams: { id: index.toString(), folderId: FOLDERS.INBOX }
+		});
+	});
+
+	const toggle = jest.fn();
+	const selectAll = jest.fn();
+	const deselectAll = jest.fn();
+	const selectAllModeOff = jest.fn();
+	const setIsSelectModeOn = jest.fn();
+
+	const listItems = conversationsIds.map((conversationId, index) => (
+		<ConversationListItemComponent
+			key={index}
+			conversationId={conversationId}
+			activeItemId=""
+			selected={false}
+			selecting={false}
+			toggleMultipleSelection={toggle}
+			deselectAll={deselectAll}
+			folderId={FOLDERS.INBOX}
+			setDraggedIds={jest.fn()}
+		/>
+	));
+
+	const dragImageRef = React.createRef<HTMLInputElement>();
+
+	const props: ConversationListComponentProps = {
+		displayerTitle: null,
+		listItems,
+		totalConversations: conversationsIds.length,
+		conversationsLoadingCompleted: true,
+		selectedIds: [],
+		folderId,
+		conversationsIds,
+		isSelectModeOn: false,
+		selected: {},
+		deselectAll,
+		selectAll,
+		isAllSelected: false,
+		selectAllModeOff,
+		isSearchModule,
+		setIsSelectModeOn,
+		dragImageRef,
+		loadMoreCallback
+	};
+
+	return setupTest(<ConversationListComponent {...props} />);
+}
 describe('ConversationListComponent', () => {
 	describe('when in conversation list', () => {
 		test('populate a conversation list and check that the conversations are visible', async () => {
-			const CONVERSATIONS_COUNT = 100;
-			const folderId = FOLDERS.INBOX;
 			populateFoldersStore();
 
-			const conversationsIds = Array.from({ length: CONVERSATIONS_COUNT }).map((_, index) =>
-				index.toString()
-			);
+			const conversationsIds = Array.from({ length: 100 }).map((_, index) => index.toString());
 
-			conversationsIds.forEach((_, index) => {
-				populateConversationInEmailStore({
-					conversationParams: { id: index.toString(), folderId }
-				});
-			});
-
-			const toggle = jest.fn();
-			const selectAll = jest.fn();
-			const deselectAll = jest.fn();
-			const selectAllModeOff = jest.fn();
-			const setIsSelectModeOn = jest.fn();
-			const dragImageRef = React.createRef<HTMLInputElement>();
-
-			const listItems = conversationsIds.map((conversationId, index) => (
-				<ConversationListItemComponent
-					key={index}
-					conversationId={conversationId}
-					activeItemId=""
-					selected={false}
-					selecting={false}
-					toggleMultipleSelection={toggle}
-					deselectAll={deselectAll}
-					folderId={folderId}
-					setDraggedIds={jest.fn()}
-				/>
-			));
-
-			const props: ConversationListComponentProps = {
-				displayerTitle: null,
-				listItems,
-				totalConversations: conversationsIds.length,
-				conversationsLoadingCompleted: true,
-				selectedIds: [],
-				folderId,
-				conversationsIds,
-				isSelectModeOn: false,
-				selected: {},
-				deselectAll,
-				selectAll,
-				isAllSelected: false,
-				selectAllModeOff,
-				isSearchModule: false,
-				setIsSelectModeOn,
-				dragImageRef
-			};
 			await act(async () => {
-				setupTest(<ConversationListComponent {...props} />);
+				setUpConversationList({ folderId: FOLDERS.INBOX, conversationsIds });
 			});
 
-			await screen.findByTestId(`conversation-list-${folderId}`);
+			await screen.findByTestId(`conversation-list-${FOLDERS.INBOX}`);
 			const items = await screen.findAllByTestId(/ConversationListItem-/);
 
-			// Test that there is a list item for each conversation
 			await waitFor(() => {
 				expect(items.length).toBe(conversationsIds.length);
 			});
 
-			// Test that every list item is visible
 			items.forEach((item) => {
 				expect(item).toBeVisible();
 			});
 		});
-	});
-	describe('when in search conversation list', () => {
-		test('populate the search conversation list and check that the conversations are visible', async () => {
-			const CONVERSATIONS_COUNT = 100;
-			const folderId = FOLDERS.INBOX;
-			populateFoldersStore();
 
-			const conversationsIds = Array.from({ length: CONVERSATIONS_COUNT }).map((_, index) =>
-				index.toString()
-			);
+		test('should call loadMore when there are more items to load', async () => {
+			const conversationsIds = Array.from({ length: 100 }).map((_, index) => index.toString());
 
-			conversationsIds.forEach((_, index) => {
-				populateConversationInEmailStore({
-					conversationParams: { id: index.toString(), folderId }
+			const loadMoreCallback = jest.fn();
+
+			await act(async () => {
+				setUpConversationList({
+					folderId: FOLDERS.INBOX,
+					conversationsIds,
+					loadMoreCallback
 				});
 			});
 
-			const toggle = jest.fn();
-			const selectAll = jest.fn();
-			const deselectAll = jest.fn();
-			const selectAllModeOff = jest.fn();
-			const setIsSelectModeOn = jest.fn();
-			const dragImageRef = React.createRef<HTMLInputElement>();
+			triggerLoadMore();
 
-			const listItems = conversationsIds.map((conversationId, index) => (
-				<ConversationListItemComponent
-					key={index}
-					conversationId={conversationId}
-					activeItemId=""
-					selected={false}
-					selecting={false}
-					toggleMultipleSelection={toggle}
-					isSearchModule
-					deselectAll={deselectAll}
-					folderId={folderId}
-					setDraggedIds={jest.fn()}
-				/>
-			));
+			expect(loadMoreCallback).toHaveBeenCalled();
+		});
+	});
+	describe('when in search conversation list', () => {
+		test('populate the search conversation list and check that the conversations are visible', async () => {
+			const conversationsIds = Array.from({ length: 100 }).map((_, index) => index.toString());
 
-			const props: ConversationListComponentProps = {
-				displayerTitle: null,
-				listItems,
-				totalConversations: conversationsIds.length,
-				conversationsLoadingCompleted: true,
-				selectedIds: [],
-				folderId,
-				conversationsIds,
-				isSelectModeOn: true,
-				selected: {},
-				deselectAll,
-				selectAll,
-				isAllSelected: false,
-				selectAllModeOff,
-				isSearchModule: false,
-				setIsSelectModeOn,
-				dragImageRef
-			};
+			const folderId = FOLDERS.INBOX;
 			await act(async () => {
-				setupTest(<ConversationListComponent {...props} />);
+				setUpConversationList({ folderId, conversationsIds, isSearchModule: true });
 			});
 
 			await screen.findByTestId(`conversation-list-${folderId}`);
 			const items = await screen.findAllByTestId(/ConversationListItem-/);
 
-			// Test that there is a list item for each conversation
 			await waitFor(() => {
 				expect(items.length).toBe(conversationsIds.length);
 			});
 
-			// Test that every list item is visible
 			items.forEach((item) => {
 				expect(item).toBeVisible();
 			});

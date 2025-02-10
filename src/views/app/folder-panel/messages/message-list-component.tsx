@@ -3,10 +3,9 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { memo, useCallback, useEffect, useMemo } from 'react';
+import React, { memo, useEffect, useMemo } from 'react';
 
 import { Container, Padding, Text } from '@zextras/carbonio-design-system';
-import { noop } from 'lodash';
 import styled from 'styled-components';
 
 import { DragItems } from './message-list-drag-component';
@@ -31,7 +30,7 @@ export type MessageListComponentProps = {
 	// the list of messages to display
 	listItems: React.JSX.Element[];
 	// the function to call when the list is scrolled to the bottom
-	loadMore?: () => void;
+	loadMoreCallback?: () => void;
 	// the total number of messages in the list
 	totalMessages: number;
 	// true if the call has been fulfilled
@@ -65,13 +64,12 @@ export type MessageListComponentProps = {
 	// the ref to the item being dragged
 	dragImageRef?: React.RefObject<HTMLInputElement>;
 	listRef?: React.RefObject<HTMLDivElement>;
-	hasMore?: boolean;
 };
 
 export const MessageListComponent = memo(function MessageListComponent({
 	displayerTitle,
 	listItems,
-	loadMore = noop,
+	loadMoreCallback,
 	totalMessages,
 	messagesLoadingCompleted,
 	selectedIds,
@@ -88,7 +86,6 @@ export const MessageListComponent = memo(function MessageListComponent({
 	selectAllModeOff,
 	setIsSelectModeOn,
 	dragImageRef,
-	hasMore,
 	listRef
 }: MessageListComponentProps): React.JSX.Element {
 	useEffect(() => {
@@ -109,10 +106,6 @@ export const MessageListComponent = memo(function MessageListComponent({
 		() => getFolderPath(folder, root, isSearchModule),
 		[root, folder, isSearchModule]
 	);
-
-	const onListBottom = useCallback((): void => {
-		loadMore?.();
-	}, [loadMore]);
 
 	return (
 		<>
@@ -141,16 +134,16 @@ export const MessageListComponent = memo(function MessageListComponent({
 			)}
 			<>
 				{!messagesLoadingCompleted && <ShimmerList count={totalMessages} />}
-				{messagesLoadingCompleted && (totalMessages > 0 || hasMore) && (
+				{messagesLoadingCompleted && (totalMessages > 0 || loadMoreCallback) && (
 					<CustomList
-						onListBottom={onListBottom}
+						onListBottom={loadMoreCallback}
 						data-testid={`message-list-${folderId}`}
 						ref={listRef}
 					>
 						{listItems}
 					</CustomList>
 				)}
-				{messagesLoadingCompleted && totalMessages === 0 && !hasMore && (
+				{messagesLoadingCompleted && totalMessages === 0 && !loadMoreCallback && (
 					<Container>
 						<Padding top="medium">
 							<Text

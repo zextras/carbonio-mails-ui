@@ -138,7 +138,7 @@ describe('conversation-index-slice', () => {
 			});
 
 			it('should reset the offset to 0', async () => {
-				appendConversationsToConversationIndexSlice([conversation1], 5);
+				appendConversationsToConversationIndexSlice([conversation1], 5, false);
 				const { result: initialState } = renderHook(() => useConversationIndexSlice());
 				expect(initialState.current.offset).toEqual(5);
 				await act(async () => setConversationsInEmailStore([conversation2], false));
@@ -222,7 +222,9 @@ describe('conversation-index-slice', () => {
 				setConversationsInEmailStore([conversation1], true);
 				const { result: initialState } = renderHook(() => useConversationIndexSlice());
 				expect(initialState.current.conversationListIndex).toEqual(['1']);
-				await act(async () => appendConversationsToConversationIndexSlice([conversation2], 0));
+				await act(async () =>
+					appendConversationsToConversationIndexSlice([conversation2], 0, false)
+				);
 				const { result } = renderHook(() => useConversationIndexSlice());
 				expect(result.current.conversationListIndex).toEqual(['1', '2']);
 			});
@@ -231,7 +233,9 @@ describe('conversation-index-slice', () => {
 				setConversationsInEmailStore([conversation1], true);
 				const { result: initialState } = renderHook(() => useConversationIndexSlice());
 				expect(initialState.current.conversationListIndex).toEqual(['1']);
-				await act(async () => appendConversationsToConversationIndexSlice([conversation2], 555));
+				await act(async () =>
+					appendConversationsToConversationIndexSlice([conversation2], 555, false)
+				);
 				const { result } = renderHook(() => useConversationIndexSlice());
 				expect(result.current.offset).toEqual(555);
 			});
@@ -240,7 +244,9 @@ describe('conversation-index-slice', () => {
 				setConversationsInEmailStore([conversation1], true);
 				const { result: initialState } = renderHook(() => useConversationIndexSlice());
 				expect(initialState.current.conversationListIndex).toEqual(['1']);
-				await act(async () => appendConversationsToConversationIndexSlice([conversation2], 0));
+				await act(async () =>
+					appendConversationsToConversationIndexSlice([conversation2], 0, false)
+				);
 				const { result } = renderHook(() =>
 					getUseEmailStoreAndHooksForTesting().usePopulatedItemsSlice()
 				);
@@ -253,7 +259,7 @@ describe('conversation-index-slice', () => {
 				setConversationsInEmailStore([conversation1], true);
 				const { result: initialState } = renderHook(() => useConversationIndexSlice());
 				expect(initialState.current.conversationListIndex).toEqual(['1']);
-				await act(async () => appendConversationsToConversationIndexSlice([], 555));
+				await act(async () => appendConversationsToConversationIndexSlice([], 555, false));
 				const { result } = renderHook(() => useConversationIndexSlice());
 				expect(result.current.conversationListIndex).toEqual(['1']);
 			});
@@ -262,7 +268,7 @@ describe('conversation-index-slice', () => {
 				setConversationsInEmailStore([conversation1], true);
 				const { result: initialState } = renderHook(() => useConversationIndexSlice());
 				expect(initialState.current.conversationListIndex).toEqual(['1']);
-				await act(async () => appendConversationsToConversationIndexSlice([], 555));
+				await act(async () => appendConversationsToConversationIndexSlice([], 555, false));
 				const { result } = renderHook(() => useConversationIndexSlice());
 				expect(result.current.offset).toEqual(555);
 			});
@@ -271,7 +277,7 @@ describe('conversation-index-slice', () => {
 				setConversationsInEmailStore([conversation1], true);
 				const { result: initialState } = renderHook(() => useConversationIndexSlice());
 				expect(initialState.current.conversationListIndex).toEqual(['1']);
-				await act(async () => appendConversationsToConversationIndexSlice([], 0));
+				await act(async () => appendConversationsToConversationIndexSlice([], 0, false));
 				const { result } = renderHook(() =>
 					getUseEmailStoreAndHooksForTesting().usePopulatedItemsSlice()
 				);
@@ -287,7 +293,8 @@ describe('conversation-index-slice', () => {
 				await act(async () =>
 					appendConversationsToConversationIndexSlice(
 						[conversation2, conversation3, conversation3],
-						555
+						555,
+						false
 					)
 				);
 				const { result } = renderHook(() => useConversationIndexSlice());
@@ -300,7 +307,7 @@ describe('conversation-index-slice', () => {
 				expect(initialState.current.conversationListIndex).toEqual(['1']);
 				const updatedConversation1 = { ...conversation1, subject: 'Updated subject' };
 				await act(async () =>
-					appendConversationsToConversationIndexSlice([updatedConversation1], 555)
+					appendConversationsToConversationIndexSlice([updatedConversation1], 555, false)
 				);
 				const { result } = renderHook(() =>
 					getUseEmailStoreAndHooksForTesting().usePopulatedItemsSlice()
