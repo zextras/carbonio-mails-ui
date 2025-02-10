@@ -3,10 +3,12 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { t } from '@zextras/carbonio-shell-ui';
 import React, { FC, ReactElement, useMemo } from 'react';
+
 import { Container, Text, Divider } from '@zextras/carbonio-design-system';
-import FilterTabs from './parts/filter-tabs';
+import { t } from '@zextras/carbonio-shell-ui';
+
+import { FilterTabs } from './filter-tabs';
 import Heading from '../components/settings-heading';
 import { filtersSubSection } from '../subsections';
 

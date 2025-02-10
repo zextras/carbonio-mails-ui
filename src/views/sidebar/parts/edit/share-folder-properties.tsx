@@ -8,7 +8,6 @@ import React, { FC, useCallback, useContext, useEffect, useMemo, useState } from
 import {
 	Button,
 	Chip,
-	ChipProps,
 	Container,
 	Divider,
 	Padding,
@@ -20,13 +19,12 @@ import { map } from 'lodash';
 import styled from 'styled-components';
 
 import { Context } from './edit-context';
-import { useAppDispatch } from '../../../../hooks/redux';
+import { sendShareNotificationSoapApi } from '../../../../api/send-share-notification-soap-api';
 import { useUiUtilities } from '../../../../hooks/use-ui-utilities';
 import {
 	findLabel,
 	ShareCalendarRoleOptions
 } from '../../../../integrations/shared-invite-reply/parts/utils';
-import { sendShareNotification } from '../../../../store/actions/send-share-notification';
 import type {
 	ActionProps,
 	GranteeInfoProps,
@@ -34,9 +32,9 @@ import type {
 	ShareFolderPropertiesProps
 } from '../../../../types';
 
-const HoverChip = styled(Chip)<ChipProps & { hovered?: boolean }>`
-	background-color: ${({ theme, hovered }): string =>
-		hovered ? theme.palette.gray3.hover : theme.palette.gray3.regular};
+const HoverChip = styled(Chip)<{ $hovered?: boolean }>`
+	background-color: ${({ theme, $hovered }): string =>
+		$hovered ? theme.palette.gray3.hover : theme.palette.gray3.regular};
 `;
 
 export const GranteeInfo: FC<GranteeInfoProps> = ({ grant, shareCalendarRoleOptions, hovered }) => {
@@ -53,23 +51,22 @@ export const GranteeInfo: FC<GranteeInfoProps> = ({ grant, shareCalendarRoleOpti
 	return (
 		<Container crossAlignment="flex-start">
 			<Text>
-				<HoverChip label={label} hovered={hovered} />
+				<HoverChip label={label} $hovered={hovered} />
 			</Text>
 		</Container>
 	);
 };
 
-const Actions: FC<ActionProps> = ({
+const Actions = ({
 	folder,
 	grant,
 	setActiveModal,
 	onMouseLeave,
 	onMouseEnter
-}) => {
+}: ActionProps): React.JSX.Element => {
 	const accounts = useUserAccounts();
 	const { setActiveGrant } = useContext(Context);
 	// eslint-disable-next-line @typescript-eslint/ban-types
-	const dispatch = useAppDispatch() as Function;
 	const onRevoke = useCallback(() => {
 		if (setActiveGrant) setActiveGrant(grant);
 		setActiveModal('revoke');
@@ -78,15 +75,13 @@ const Actions: FC<ActionProps> = ({
 	const { createSnackbar } = useUiUtilities();
 
 	const onResend = useCallback(() => {
-		dispatch(
-			sendShareNotification({
-				standardMessage: '',
-				contacts: [{ email: grant.d }],
-				folder,
-				accounts
-			})
-		).then((res: Response) => {
-			if (res.type.includes('fulfilled')) {
+		sendShareNotificationSoapApi({
+			standardMessage: '',
+			contacts: [{ email: grant.d }],
+			folder,
+			accounts
+		}).then((res) => {
+			if (!('error' in (res as any))) {
 				createSnackbar({
 					key: `resend-${folder.id}`,
 					replace: true,
@@ -97,7 +92,7 @@ const Actions: FC<ActionProps> = ({
 				});
 			}
 		});
-	}, [accounts, createSnackbar, dispatch, folder, grant.d]);
+	}, [accounts, createSnackbar, folder, grant.d]);
 	const onEdit = useCallback(() => {
 		if (setActiveGrant) setActiveGrant(grant);
 		setActiveModal('edit');

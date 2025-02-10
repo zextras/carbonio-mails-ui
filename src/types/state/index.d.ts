@@ -5,7 +5,6 @@
  */
 
 import { type API_REQUEST_STATUS } from '../../constants';
-import type { AppDispatch } from '../../store/redux';
 import type { SavedAttachment, UnsavedAttachment } from '../attachments';
 import type { Conversation } from '../conversations';
 import { type AttachmentUploadProcessStatus, type MailsEditorV2 } from '../editor';
@@ -27,7 +26,6 @@ export type EditorsStateTypeV2 = {
 	setAutoSendTime: (id: MailsEditorV2['id'], autoSendTime: MailsEditorV2['autoSendTime']) => void;
 	setDid: (id: MailsEditorV2['id'], did: MailsEditorV2['did']) => void;
 	setSize: (id: MailsEditorV2['id'], size: MailsEditorV2['size']) => void;
-	setTotalSmartLinksSize: (id: MailsEditorV2['id']) => void;
 	setIsRichText: (id: MailsEditorV2['id'], isRichText: MailsEditorV2['isRichText']) => void;
 	setIsUrgent: (id: MailsEditorV2['id'], isUrgent: MailsEditorV2['isUrgent']) => void;
 	setRequestReadReceipt: (
@@ -78,10 +76,13 @@ export type EditorsStateTypeV2 = {
 	setAttachmentUploadCompleted: (id: MailsEditorV2['id'], uploadId: string, aid: string) => void;
 	removeUnsavedAttachment: (id: MailsEditorV2['id'], uploadId: string) => void;
 	clearStandardAttachments: (id: MailsEditorV2['id']) => void;
-	setMessagesStoreDispatch: (id: MailsEditorV2['id'], dispatch: AppDispatch) => void;
 	toggleSmartLink: (id: MailsEditorV2['id'], partName: string) => void;
 	setSignatureId: (id: MailsEditorV2['id'], signId: MailsEditorV2['signatureId']) => void;
 	setIsSmimeSign: (id: MailsEditorV2['id'], isSmimeSign: MailsEditorV2['isSmimeSign']) => void;
+	setIsSmimeEncrypt: (
+		id: MailsEditorV2['id'],
+		isSmimeEncrypt: MailsEditorV2['isSmimeEncrypt']
+	) => void;
 };
 
 export type MsgStateType = {

@@ -12,7 +12,7 @@ import * as hooks from '@zextras/carbonio-shell-ui';
 
 import { generateSettings } from '../../../carbonio-ui-commons/test/mocks/settings/settings-generator';
 import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
-import { useBackupSearchStore } from '../../../store/zustand/backup-search/store';
+import { useBackupSearchStore } from '../../../store/backup-search/store';
 import { BackupSearchHeader } from '../parts/backup-search-header';
 
 describe('Backup search header', () => {

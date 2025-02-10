@@ -22,7 +22,7 @@ import styled from 'styled-components';
 import * as StyledComp from './edit-view-styled-components';
 import { buildArrayFromFileList } from '../../../../../helpers/files';
 import { isFulfilled } from '../../../../../helpers/promises';
-import { useEditorAttachments, useEditorText } from '../../../../../store/zustand/editor';
+import { useEditorAttachments, useEditorText } from '../../../../../store/editor';
 import { MailsEditorV2 } from '../../../../../types';
 import { useGetPublicUrl, UseGetPublicUrlRespType } from '../edit-utils-hooks/use-get-public-url';
 import {
@@ -194,7 +194,7 @@ export const AddAttachmentsDropdown: FC<AddAttachmentsDropdownProps> = ({ editor
 				)}
 			/>
 			<Tooltip label={t('tooltip.add_attachments', 'Add attachments')}>
-				<Dropdown items={actionsItems} display="inline-block" width="fit">
+				<Dropdown items={actionsItems} display="inline-block">
 					<StyledComp.ResizedIconCheckbox onChange={(): null => null} icon="AttachOutline" />
 				</Dropdown>
 			</Tooltip>

@@ -16,20 +16,18 @@ import {
 	Text
 } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
-import styled, { DefaultTheme } from 'styled-components';
+import styled from 'styled-components';
 
 import LabelRow from './parts/label-row';
 import ResponseActions from './parts/response-actions';
 import { ShareCalendarRoleOptions, findLabel } from './parts/utils';
 import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
-import { useAppDispatch } from '../../hooks/redux';
 import type { MailMessage } from '../../types';
 
 const InviteContainer = styled(Container)`
-	border: 0.0625rem solid
-		${({ theme }: { theme: DefaultTheme }): string => theme.palette.gray2.regular};
+	border: 0.0625rem solid ${({ theme }): string => theme.palette.gray2.regular};
 	border-radius: 0.875rem;
-	margin: ${({ theme }: { theme: DefaultTheme }): string => theme.sizes.padding.extrasmall};
+	margin: ${({ theme }): string => theme.sizes.padding.extrasmall};
 `;
 
 type SharedCalendarResponseReturnType = {
@@ -41,8 +39,6 @@ const SharedCalendarResponse: FC<SharedCalendarResponseReturnType> = ({
 	sharedContent,
 	mailMsg
 }): ReactElement => {
-	const dispatch = useAppDispatch();
-
 	const rights = useMemo(
 		() => sharedContent?.split('<link ')[1].split('perm="')[1].split('" ')[0],
 		[sharedContent]
@@ -54,7 +50,7 @@ const SharedCalendarResponse: FC<SharedCalendarResponseReturnType> = ({
 	);
 
 	const role = useMemo(
-		() => findLabel(shareCalendarRoleOptions, rights || ''),
+		() => findLabel(shareCalendarRoleOptions, rights || '') ?? '',
 		[shareCalendarRoleOptions, rights]
 	);
 
@@ -202,7 +198,6 @@ const SharedCalendarResponse: FC<SharedCalendarResponseReturnType> = ({
 					<>
 						<Divider />
 						<ResponseActions
-							dispatch={dispatch}
 							t={t}
 							zid={zid}
 							view={view}
@@ -213,7 +208,7 @@ const SharedCalendarResponse: FC<SharedCalendarResponseReturnType> = ({
 							owner={owner}
 							role={role}
 							allowedActions={allowedActions}
-							participants={mailMsg.participants}
+							participants={mailMsg.participants ?? []}
 						/>
 					</>
 				)}

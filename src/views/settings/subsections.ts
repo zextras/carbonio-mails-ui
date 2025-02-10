@@ -5,7 +5,7 @@
  */
 import { t, SettingsSubSection } from '@zextras/carbonio-shell-ui';
 
-import { AdvancedAccountStore } from '../../store/zustand/advanced-account/store';
+import { AdvancedAccountStore } from '../../store/advanced-account/store';
 
 export const displayingMessagesSubSection = (): SettingsSubSection => ({
 	label: t('settings.label.display_messages', 'Displaying Messages'),

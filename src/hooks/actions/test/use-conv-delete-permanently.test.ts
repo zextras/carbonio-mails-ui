@@ -1,17 +1,21 @@
+/* eslint-disable testing-library/prefer-user-event */
 /*
  * SPDX-FileCopyrightText: 2024 Zextras <https://www.zextras.com>
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { faker } from '@faker-js/faker';
-import { times } from 'lodash';
 import { act } from 'react';
 
+import { faker } from '@faker-js/faker';
+import { fireEvent } from '@testing-library/react';
+import { times } from 'lodash';
+
 import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
+import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { setupHook, screen } from '../../../carbonio-ui-commons/test/test-setup';
 import { FOLDERS_DESCRIPTORS } from '../../../constants';
 import { TIMERS } from '../../../tests/constants';
-import { generateStore } from '../../../tests/generators/store';
+import { MsgActionRequest } from '../../../types/soap/msg-action';
 import {
 	useConvDeletePermanentlyDescriptor,
 	useConvDeletePermanentlyFn
@@ -22,13 +26,11 @@ describe('useConvDeletePermanently', () => {
 		const ids = times(faker.number.int({ max: 42 }), () =>
 			faker.number.int({ max: 42000 }).toString()
 		);
-		const store = generateStore();
 
 		it('Should return an object with specific id, icon, label and 2 functions', () => {
 			const {
 				result: { current: descriptor }
 			} = setupHook(useConvDeletePermanentlyDescriptor, {
-				store,
 				initialProps: [{ ids, deselectAll: jest.fn(), folderId: FOLDERS.INBOX }]
 			});
 
@@ -45,13 +47,11 @@ describe('useConvDeletePermanently', () => {
 		const ids = times(faker.number.int({ max: 42 }), () =>
 			faker.number.int({ max: 42000 }).toString()
 		);
-		const store = generateStore();
 
 		it('Should return an object with execute and canExecute functions', () => {
 			const {
 				result: { current: functions }
 			} = setupHook(useConvDeletePermanentlyFn, {
-				store,
 				initialProps: [{ ids, deselectAll: jest.fn(), folderId: FOLDERS.INBOX }]
 			});
 
@@ -74,7 +74,6 @@ describe('useConvDeletePermanently', () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useConvDeletePermanentlyFn, {
-					store,
 					initialProps: [{ ids, deselectAll: jest.fn(), folderId: folder.id }]
 				});
 
@@ -87,7 +86,6 @@ describe('useConvDeletePermanently', () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useConvDeletePermanentlyFn, {
-					store,
 					initialProps: [{ ids, deselectAll: jest.fn(), folderId: FOLDERS.TRASH }]
 				});
 
@@ -108,7 +106,6 @@ describe('useConvDeletePermanently', () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useConvDeletePermanentlyFn, {
-					store,
 					initialProps: [{ ids, deselectAll: jest.fn(), folderId: FOLDERS.INBOX }]
 				});
 
@@ -123,6 +120,31 @@ describe('useConvDeletePermanently', () => {
 				expect(
 					screen.queryByText(`Are you sure to permanently delete this element?`)
 				).not.toBeInTheDocument();
+			});
+			it('should call MsgActionRequest when user confirms the deletion of the message', async () => {
+				const interceptor = createSoapAPIInterceptor<MsgActionRequest>('MsgAction');
+				const {
+					result: { current: functions }
+				} = setupHook(useConvDeletePermanentlyFn, {
+					initialProps: [{ ids, deselectAll: jest.fn(), folderId: FOLDERS.TRASH }]
+				});
+
+				act(() => {
+					functions.execute();
+				});
+
+				act(() => {
+					jest.advanceTimersByTime(TIMERS.modal_open_delay);
+				});
+
+				const confirmButton = screen.getByRole('button', { name: 'Delete permanently' });
+				expect(confirmButton).toBeVisible();
+
+				fireEvent.click(confirmButton);
+
+				const request = await act(async () => interceptor);
+
+				expect(request.action.op).toEqual('delete');
 			});
 		});
 	});

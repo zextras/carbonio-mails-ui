@@ -7,7 +7,7 @@ import React, { useCallback } from 'react';
 
 import { Padding } from '@zextras/carbonio-design-system';
 
-import { useMessageById } from '../../../../store/zustand/search/store';
+import { useCompleteMessageOrFetch } from '../../../../store/emails/hooks/hooks';
 import MailPreview from '../../../app/detail-panel/preview/mail-preview';
 
 export type SearchConversationMessagePreviewProps = {
@@ -23,7 +23,7 @@ export const SearchConversationMessagePanel = ({
 	isAlone,
 	isInsideExtraWindow
 }: SearchConversationMessagePreviewProps): React.JSX.Element => {
-	const message = useMessageById(convMessageId);
+	const { message } = useCompleteMessageOrFetch(convMessageId);
 
 	const messagePreviewFactory = useCallback(
 		() => (
@@ -37,6 +37,7 @@ export const SearchConversationMessagePanel = ({
 		[convMessageId, isAlone, isExpanded, isInsideExtraWindow]
 	);
 
+	if (!message) return <></>;
 	return (
 		<Padding bottom="medium" width="100%" data-testid={`ConversationMessagePreview-${message.id}`}>
 			<MailPreview

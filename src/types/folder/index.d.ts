@@ -12,19 +12,11 @@ import { UIActionDescriptor } from '../actions';
 import { Conversation } from '../conversations';
 import { IncompleteMessage, MailMessage } from '../messages';
 import { SearchRequestStatus } from '../state';
-import { TextReadValuesProps } from '../utils';
 
 export type GrantType = { gt: string; perm: string; zid: string; d?: string };
 
-export type SenderNameProps = {
-	item: Conversation | IncompleteMessage;
-	isSearchModule?: boolean;
-	textValues?: TextReadValuesProps;
-	folderId?: string;
-};
-
 export type MessageListItemProps = {
-	item: IncompleteMessage & { isSearchModule?: boolean };
+	message: IncompleteMessage;
 	selected: boolean;
 	selecting: boolean;
 	toggle: (id: string) => void;
@@ -84,22 +76,4 @@ export type ConversationMessagesListProps = {
 	isSearchModule?: boolean;
 	dragImageRef?: React.RefObject<HTMLDivElement>;
 	setDraggedIds?: (ids: Record<string, boolean>) => void;
-};
-
-export type ConversationListItemProps = {
-	item: Conversation;
-	selected: boolean;
-	selecting: boolean;
-	toggle: (id: string) => void;
-	visible?: boolean;
-	isConvChildren: boolean;
-	active?: boolean;
-	isSearchModule?: boolean;
-	activeItemId: string;
-	dragImageRef?: React.RefObject<HTMLInputElement>;
-	setDraggedIds?: (ids: Record<string, boolean>) => void;
-	draggedIds?: Record<string, boolean> | undefined;
-	selectedItems?: Record<string, boolean>;
-	deselectAll: () => void;
-	folderId?: string;
 };

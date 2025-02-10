@@ -10,10 +10,8 @@ import { useTranslation } from 'react-i18next';
 
 import { ConversationActionsDescriptors } from '../../constants';
 import { isTrash } from '../../helpers/folders';
-import { StoreProvider } from '../../store/redux';
 import { ActionFn, UIActionDescriptor } from '../../types';
-import MoveConvMessage from '../../ui-actions/move-conv-msg';
-import { useAppDispatch } from '../redux';
+import { MoveConvMessage } from '../../ui-actions/move-conv-msg';
 import { useUiUtilities } from '../use-ui-utilities';
 
 export const useConvRestoreFn = ({
@@ -26,7 +24,6 @@ export const useConvRestoreFn = ({
 	deselectAll: () => void;
 }): ActionFn => {
 	const { createModal, closeModal } = useUiUtilities();
-	const dispatch = useAppDispatch();
 	const canExecute = useCallback((): boolean => isTrash(folderId), [folderId]);
 
 	const execute = useCallback((): void => {
@@ -38,23 +35,19 @@ export const useConvRestoreFn = ({
 					maxHeight: '90vh',
 					size: 'medium',
 					children: (
-						<StoreProvider>
-							<MoveConvMessage
-								folderId={folderId}
-								selectedIDs={[conversationId]}
-								onClose={(): void => closeModal(modalId)}
-								isMessageView
-								isRestore
-								deselectAll={deselectAll ?? noop}
-								dispatch={dispatch}
-							/>
-						</StoreProvider>
+						<MoveConvMessage
+							folderId={folderId}
+							selectedIDs={[conversationId]}
+							onClose={(): void => closeModal(modalId)}
+							isRestore
+							deselectAll={deselectAll ?? noop}
+						/>
 					)
 				},
 				true
 			);
 		}
-	}, [canExecute, createModal, folderId, conversationId, deselectAll, dispatch, closeModal]);
+	}, [canExecute, createModal, folderId, conversationId, deselectAll, closeModal]);
 
 	return useMemo(() => ({ canExecute, execute }), [canExecute, execute]);
 };

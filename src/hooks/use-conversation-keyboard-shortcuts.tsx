@@ -12,13 +12,12 @@ import { useConvSetReadFn } from './actions/use-conv-set-read';
 import { useConvSetSpamFn } from './actions/use-conv-set-spam';
 import { useConvSetUnflagFn } from './actions/use-conv-set-unflag';
 import { useConvSetUnreadFn } from './actions/use-conv-set-unread';
-import { useAppSelector } from './redux';
-import { selectConversation } from '../store/conversations-slice';
-import { Conversation } from '../types';
+import { useConversationById } from '../store/emails/store';
+import { NormalizedConversation } from '../types';
 
 type HandleKeyboardShortcutsArguments = {
 	deselectAll: () => void;
-	conversationId: Conversation['id'];
+	conversationId: NormalizedConversation['id'];
 	folderId: string;
 };
 
@@ -32,7 +31,7 @@ export const useConversationKeyboardShortcuts = ({
 	deselectAll,
 	folderId
 }: HandleKeyboardShortcutsArguments): ((event: KeyboardEvent) => void) => {
-	const conversation = useAppSelector(selectConversation(conversationId));
+	const conversation = useConversationById(conversationId);
 
 	const markAsSpam = useConvSetSpamFn({
 		ids: [conversationId],

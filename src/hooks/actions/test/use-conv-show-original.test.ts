@@ -20,7 +20,7 @@ describe('useConvShowOriginal', () => {
 			const {
 				result: { current: descriptor }
 			} = setupHook(useConvShowOriginalDescriptor, {
-				initialProps: [conv.messages[0].id, FOLDERS.INBOX]
+				initialProps: [conv.messageIds[0], FOLDERS.INBOX]
 			});
 
 			expect(descriptor).toEqual({
@@ -38,7 +38,7 @@ describe('useConvShowOriginal', () => {
 			const {
 				result: { current: functions }
 			} = setupHook(useConvShowOriginalFn, {
-				initialProps: [conv.messages[0].id, FOLDERS.INBOX]
+				initialProps: [conv.messageIds[0], FOLDERS.INBOX]
 			});
 
 			expect(functions).toEqual({
@@ -60,7 +60,7 @@ describe('useConvShowOriginal', () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useConvShowOriginalFn, {
-					initialProps: [conv.messages[0].id, folder.id]
+					initialProps: [conv.messageIds[0], folder.id]
 				});
 
 				expect(functions.canExecute()).toEqual(assertion);
@@ -74,7 +74,7 @@ describe('useConvShowOriginal', () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useConvShowOriginalFn, {
-					initialProps: [conv.messages[0].id, FOLDERS.INBOX]
+					initialProps: [conv.messageIds[0], FOLDERS.INBOX]
 				});
 
 				await act(async () => {
@@ -82,7 +82,7 @@ describe('useConvShowOriginal', () => {
 				});
 
 				expect(windowOpenSpy).toHaveBeenCalledWith(
-					`/service/home/~/?auth=co&view=text&id=${conv.messages[0].id}`,
+					`/service/home/~/?auth=co&view=text&id=${conv.messageIds[0]}`,
 					'_blank'
 				);
 			});
@@ -91,7 +91,7 @@ describe('useConvShowOriginal', () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useConvShowOriginalFn, {
-					initialProps: [conv.messages[0].id, FOLDERS.TRASH]
+					initialProps: [conv.messageIds[0], FOLDERS.TRASH]
 				});
 
 				await act(async () => {

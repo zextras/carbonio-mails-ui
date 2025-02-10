@@ -12,9 +12,9 @@ import {
 	Divider,
 	Button,
 	Tooltip,
-	TextWithTooltip,
 	Row,
-	ListV2
+	ListV2,
+	Text
 } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import { filter, find } from 'lodash';
@@ -95,7 +95,9 @@ const TrusteeAddresses = ({ settingsObj, updateSettings }: InputProps): React.JS
 					<Heading title={sectionTitle.label} size="medium" />
 				</Container>
 				<Container width="auto" crossAlignment="flex-end">
-					<TextWithTooltip size="extrasmall">{message}</TextWithTooltip>
+					<Tooltip label={message} overflowTooltip>
+						<Text size="extrasmall">{message}</Text>
+					</Tooltip>
 				</Container>
 			</Container>
 			<Divider />

@@ -6,67 +6,68 @@
 import React from 'react';
 
 import { act, screen } from '@testing-library/react';
+import * as hooks from '@zextras/carbonio-shell-ui';
 import { times } from 'lodash';
 
 import { FOLDER_VIEW } from '../../carbonio-ui-commons/constants';
 import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
 import { getFolder } from '../../carbonio-ui-commons/store/zustand/folder';
 import { createSoapAPIInterceptor } from '../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
+import { generateSettings } from '../../carbonio-ui-commons/test/mocks/settings/settings-generator';
 import { populateFoldersStore } from '../../carbonio-ui-commons/test/mocks/store/folders';
 import { makeListItemsVisible, setupTest } from '../../carbonio-ui-commons/test/test-setup';
-import { API_REQUEST_STATUS } from '../../constants';
 import { generateMessage } from '../../tests/generators/generateMessage';
-import { generateStore } from '../../tests/generators/store';
 import { MailMessage, MsgActionRequest, MsgActionResponse } from '../../types';
-import MoveConvMessage from '../move-conv-msg';
+import { MoveConvMessage } from '../move-conv-msg';
 
+const messageViewSettings = generateSettings({
+	prefs: {
+		zimbraPrefGroupMailBy: 'message'
+	}
+});
+
+const convViewSettings = generateSettings({
+	prefs: {
+		zimbraPrefGroupMailBy: 'conversation'
+	}
+});
 describe('MoveConvMsg', () => {
 	const { children: inboxChildren } = getFolder(FOLDERS.INBOX) ?? {};
 	const sourceFolder = inboxChildren?.[0].id ?? '';
 	const msgs: Array<MailMessage> = times(10, () => generateMessage({ folderId: sourceFolder }));
 	const msgIds = msgs.map<string>((msg) => msg.id);
 
-	const store = generateStore({
-		messages: {
-			searchedInFolder: {},
-			messages: msgs,
-			searchRequestStatus: API_REQUEST_STATUS.fulfilled
-		}
-	});
-
 	describe('Modal title', () => {
 		it('move mode - message view - should display the modal title', async () => {
+			jest.spyOn(hooks, 'useUserSettings').mockReturnValue(messageViewSettings);
 			const component = (
 				<MoveConvMessage
 					folderId={sourceFolder}
 					selectedIDs={msgIds}
 					onClose={jest.fn()}
-					isMessageView
 					isRestore={false}
 					deselectAll={jest.fn()}
-					dispatch={store.dispatch}
 				/>
 			);
 
-			setupTest(component, { store });
+			setupTest(component);
 
 			expect(screen.getByText('Move Message')).toBeVisible();
 		});
 
 		it('move mode - conversation view - should be visible', async () => {
+			jest.spyOn(hooks, 'useUserSettings').mockReturnValue(convViewSettings);
 			const component = (
 				<MoveConvMessage
 					folderId={sourceFolder}
 					selectedIDs={msgIds}
 					onClose={jest.fn()}
-					isMessageView={false}
 					isRestore={false}
 					deselectAll={jest.fn()}
-					dispatch={store.dispatch}
 				/>
 			);
 
-			setupTest(component, { store });
+			setupTest(component);
 
 			expect(screen.getByText('Move Conversation')).toBeVisible();
 		});
@@ -77,14 +78,12 @@ describe('MoveConvMsg', () => {
 					folderId={sourceFolder}
 					selectedIDs={msgIds}
 					onClose={jest.fn()}
-					isMessageView
 					isRestore
 					deselectAll={jest.fn()}
-					dispatch={store.dispatch}
 				/>
 			);
 
-			setupTest(component, { store });
+			setupTest(component);
 
 			expect(screen.getByText('Restore')).toBeVisible();
 		});
@@ -97,14 +96,12 @@ describe('MoveConvMsg', () => {
 					folderId={sourceFolder}
 					selectedIDs={msgIds}
 					onClose={jest.fn()}
-					isMessageView
 					isRestore={false}
 					deselectAll={jest.fn()}
-					dispatch={store.dispatch}
 				/>
 			);
 
-			setupTest(component, { store });
+			setupTest(component);
 
 			expect(
 				screen.getByRole('button', {
@@ -122,16 +119,13 @@ describe('MoveConvMsg', () => {
 					folderId={sourceFolder}
 					selectedIDs={msgIds}
 					onClose={jest.fn()}
-					isMessageView
 					isRestore={false}
 					deselectAll={jest.fn()}
-					dispatch={store.dispatch}
 				/>
 			);
 
-			const { user } = setupTest(component, { store });
+			const { user } = setupTest(component);
 			makeListItemsVisible();
-
 			const inboxFolderListItem = await screen.findByTestId(
 				`folder-accordion-item-${destinationFolder}`,
 				{},
@@ -155,20 +149,14 @@ describe('MoveConvMsg', () => {
 		it('When a destination folder is selected and the user clicks on the confirm the API is called and the success snackbar is displayed', async () => {
 			populateFoldersStore({ view: FOLDER_VIEW.message });
 
+			jest.spyOn(hooks, 'useUserSettings').mockReturnValue(messageViewSettings);
+
 			const { children: inboxChildren } = getFolder(FOLDERS.INBOX) ?? {};
 			const sourceFolder = inboxChildren?.[0].id ?? '';
 			const destinationFolder = FOLDERS.INBOX;
 
 			const msgs: Array<MailMessage> = times(10, () => generateMessage({ folderId: sourceFolder }));
 			const msgIds = msgs.map<string>((msg) => msg.id);
-
-			const store = generateStore({
-				messages: {
-					searchedInFolder: {},
-					messages: msgs,
-					searchRequestStatus: API_REQUEST_STATUS.fulfilled
-				}
-			});
 
 			const interceptor = createSoapAPIInterceptor<MsgActionRequest, MsgActionResponse>(
 				'MsgAction',
@@ -185,14 +173,12 @@ describe('MoveConvMsg', () => {
 					folderId={sourceFolder}
 					selectedIDs={msgIds}
 					onClose={jest.fn()}
-					isMessageView
 					isRestore={false}
 					deselectAll={jest.fn()}
-					dispatch={store.dispatch}
 				/>
 			);
 
-			const { user } = setupTest(component, { store });
+			const { user } = setupTest(component);
 			makeListItemsVisible();
 
 			const inboxFolderListItem = await screen.findByTestId(

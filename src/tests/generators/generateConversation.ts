@@ -7,18 +7,19 @@
 import { faker } from '@faker-js/faker';
 import { times } from 'lodash';
 
-import { generateMessage } from './generateMessage';
+import { generateMessage, MessageGenerationParams } from './generateMessage';
 import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
 import {
 	ParticipantRole,
 	ParticipantRoleType
 } from '../../carbonio-ui-commons/constants/participants';
-import type { Conversation, ConvMessage, Participant } from '../../types';
+import { updateConversations, updateMessages } from '../../store/emails/store';
+import type { MailMessage, NormalizedConversation, Participant } from '../../types';
 
 /**
  *
  */
-type ConversationGenerationParams = {
+export type ConversationGenerationParams = {
 	id?: string;
 	folderId?: string;
 	from?: Array<Participant>;
@@ -29,8 +30,7 @@ type ConversationGenerationParams = {
 	isRead?: boolean;
 	isFlagged?: boolean;
 	isSingleMessageConversation?: boolean;
-	// TODO: messages should be of type ConvMessage
-	messages?: Array<ConvMessage>;
+	messageIds?: Array<string>;
 	messageGenerationCount?: number;
 	tags?: Array<string>;
 };
@@ -59,7 +59,7 @@ const generateRandomParticipants = (count: number, type: ParticipantRoleType): A
  * @param messages
  * @param messageGenerationCount
  */
-const generateConversation = ({
+export const generateConversation = ({
 	id = faker.number.int().toString(),
 	folderId = FOLDERS.INBOX,
 	receiveDate = faker.date.recent({ days: 1 }).valueOf(),
@@ -69,17 +69,17 @@ const generateConversation = ({
 	subject = faker.lorem.word(6),
 	isRead = false,
 	isFlagged = false,
-	messages,
+	messageIds,
 	messageGenerationCount = 1,
 	tags = []
-}: ConversationGenerationParams = {}): Conversation => {
+}: ConversationGenerationParams = {}): NormalizedConversation => {
 	const finalFrom =
 		from ?? generateRandomParticipants(messageGenerationCount, ParticipantRole.FROM);
 	const finalTo = to ?? generateRandomParticipants(messageGenerationCount, ParticipantRole.TO);
 	const finalCc =
 		cc ?? generateRandomParticipants(messageGenerationCount, ParticipantRole.CARBON_COPY);
-	const finalMessages =
-		messages ?? times(messageGenerationCount, () => generateMessage({ folderId }));
+	const finalMessageIds =
+		messageIds ?? times(messageGenerationCount, () => generateMessage({ folderId }).id);
 
 	return {
 		date: receiveDate,
@@ -87,16 +87,69 @@ const generateConversation = ({
 		fragment: '',
 		hasAttachment: false,
 		id,
-		parent: folderId,
 		participants: [...finalFrom, ...finalTo, ...finalCc],
 		read: isRead,
 		subject,
 		tags,
 		urgent: false,
-		messages: finalMessages,
-		messagesInConversation: finalMessages.length,
-		sortIndex: Number(Date.now())
+		messageIds: finalMessageIds,
+		messagesInConversation: finalMessageIds.length
 	};
 };
 
-export { ConversationGenerationParams, generateConversation };
+/**
+ * Populates the email store with a conversation and its associated messages, and returns the generated conversation and messages.
+ * The function generates messages based on provided message IDs, message generation parameters, or a default count.
+ * MessageGenerationParams take precedence over messageIds. conversationMessagesNumber is the last fallback.
+ *
+ * It then updates the email store with the generated messages and the corresponding conversation and returns them.
+ *
+ */
+export const populateConversationInEmailStore = ({
+	conversationParams,
+	messageGeneratorParams,
+	messageIds,
+	conversationMessagesNumber = 1
+}: {
+	conversationParams?: ConversationGenerationParams;
+	messageGeneratorParams?: Array<MessageGenerationParams>;
+	messageIds?: Array<string>;
+	conversationMessagesNumber?: number;
+}): { conversation: NormalizedConversation; messages: Array<MailMessage> } => {
+	const conversationId = conversationParams?.id ?? '1';
+	const messagesFromMessageIds = messageIds?.map((messageId) =>
+		generateMessage({
+			id: messageId,
+			folderId: conversationParams?.folderId ?? FOLDERS.INBOX,
+			cid: conversationId
+		})
+	);
+	const messagesFromMessageGeneratorParams = messageGeneratorParams?.map((messageGeneratorParam) =>
+		generateMessage({ ...messageGeneratorParam, cid: conversationId })
+	);
+	const conversationMessagesNumberArray = Array.from({ length: conversationMessagesNumber }).map(
+		(_, index) => (index + 100).toString()
+	);
+	const defaultMessages = conversationMessagesNumberArray.map((id) =>
+		generateMessage({
+			id,
+			folderId: conversationParams?.folderId ?? FOLDERS.INBOX,
+			cid: conversationId
+		})
+	);
+
+	const generatedMessages =
+		messagesFromMessageIds ?? messagesFromMessageGeneratorParams ?? defaultMessages;
+	updateMessages(generatedMessages);
+
+	const generatedConversation = generateConversation({
+		...conversationParams,
+		id: conversationId,
+		messageIds:
+			generatedMessages.map((msg) => msg.id) ?? messageIds ?? conversationMessagesNumberArray
+	});
+	const messagesInConversation =
+		messageGeneratorParams?.length ?? messageIds?.length ?? conversationMessagesNumber;
+	updateConversations([{ ...generatedConversation, messagesInConversation }]);
+	return { conversation: generatedConversation, messages: generatedMessages };
+};

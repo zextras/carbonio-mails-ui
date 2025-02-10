@@ -7,7 +7,7 @@ import { faker } from '@faker-js/faker';
 import { HttpResponse } from 'msw';
 
 import { createAPIInterceptor } from '../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
-import { restoreMessagesAPI } from '../restore-messages';
+import { restoreMessagesApi } from '../restore-messages-api';
 
 describe('restorMessagesAPI', () => {
 	describe('when backend is available', () => {
@@ -20,7 +20,7 @@ describe('restorMessagesAPI', () => {
 		});
 
 		it('should have property data when the response is 202', async () => {
-			const response = await restoreMessagesAPI([faker.number.toString()]);
+			const response = await restoreMessagesApi([faker.number.toString()]);
 			expect(response).toHaveProperty('data');
 		});
 	});
@@ -35,7 +35,7 @@ describe('restorMessagesAPI', () => {
 		});
 
 		it('should reply with a status that is not accepted', async () => {
-			const response = await restoreMessagesAPI([faker.number.toString()]);
+			const response = await restoreMessagesApi([faker.number.toString()]);
 			expect(response).toHaveProperty('error');
 		});
 	});

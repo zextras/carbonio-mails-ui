@@ -3,20 +3,19 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import { act } from 'react';
+
 import { faker } from '@faker-js/faker';
 import { times } from 'lodash';
-import { act } from 'react';
 
 import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
 import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { setupHook } from '../../../carbonio-ui-commons/test/test-setup';
 import { FOLDERS_DESCRIPTORS } from '../../../constants';
-import { generateStore } from '../../../tests/generators/store';
-import { MsgActionRequest } from '../../../types';
+import { MsgActionRequest, MsgActionResponse } from '../../../types';
 import { useMsgSetUnreadDescriptor, useMsgSetUnreadFn } from '../use-msg-set-unread';
 
 describe('useMsgSetUnread', () => {
-	const store = generateStore();
 	const ids = times(faker.number.int({ max: 42 }), () =>
 		faker.number.int({ max: 42000 }).toString()
 	);
@@ -26,7 +25,6 @@ describe('useMsgSetUnread', () => {
 			const {
 				result: { current: descriptor }
 			} = setupHook(useMsgSetUnreadDescriptor, {
-				store,
 				initialProps: [
 					{
 						ids,
@@ -51,7 +49,6 @@ describe('useMsgSetUnread', () => {
 			const {
 				result: { current: descriptor }
 			} = setupHook(useMsgSetUnreadFn, {
-				store,
 				initialProps: [
 					{
 						ids,
@@ -80,7 +77,6 @@ describe('useMsgSetUnread', () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useMsgSetUnreadFn, {
-					store,
 					initialProps: [
 						{
 							ids,
@@ -97,7 +93,6 @@ describe('useMsgSetUnread', () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useMsgSetUnreadFn, {
-					store,
 					initialProps: [
 						{
 							ids,
@@ -114,7 +109,6 @@ describe('useMsgSetUnread', () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useMsgSetUnreadFn, {
-					store,
 					initialProps: [
 						{
 							ids,
@@ -136,7 +130,6 @@ describe('useMsgSetUnread', () => {
 				const {
 					result: { current: functions }
 				} = setupHook(useMsgSetUnreadFn, {
-					store,
 					initialProps: [
 						{
 							ids,
@@ -154,13 +147,21 @@ describe('useMsgSetUnread', () => {
 			});
 
 			it('should call the API with the proper params if the action can be executed', async () => {
-				const apiInterceptor = createSoapAPIInterceptor<MsgActionRequest>('MsgAction');
+				const response: MsgActionResponse = {
+					action: {
+						id: '123',
+						op: 'trash'
+					}
+				};
+				const apiInterceptor = createSoapAPIInterceptor<MsgActionRequest, MsgActionResponse>(
+					'MsgAction',
+					response
+				);
 				const ids = times(faker.number.int({ max: 20 }), () => faker.number.int().toString());
 
 				const {
 					result: { current: functions }
 				} = setupHook(useMsgSetUnreadFn, {
-					store,
 					initialProps: [
 						{
 							ids,

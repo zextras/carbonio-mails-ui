@@ -8,13 +8,13 @@ import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 import { createSoapAPIInterceptor } from '../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { buildSoapErrorResponseBody } from '../../carbonio-ui-commons/test/mocks/utils/soap';
 import {
-	applyFilterRules,
+	applyFilterRulesSoapApi,
 	ApplyFilterRulesSoapRequest,
 	ApplyFilterRulesSoapResponse,
 	composeFoldersIdSoapCriteria,
 	composeMessagesIdSoapCriteria,
 	extractMessagesIdFromSoapResponse
-} from '../apply-filter-rules';
+} from '../apply-filter-rules-soap-api';
 
 describe('composeMessagesIdCriteria', () => {
 	it('returns undefined if an undefined value is provided as parameter', () => {
@@ -118,7 +118,7 @@ describe('applyFilterRules', () => {
 	it('calls the API passing the given rule name', async () => {
 		const ruleName = 'test';
 		const interceptor = createSoapAPIInterceptor<ApplyFilterRulesSoapRequest>('ApplyFilterRules');
-		applyFilterRules({ ruleName });
+		applyFilterRulesSoapApi({ ruleName });
 		const apiParams = await interceptor;
 		expect(apiParams.filterRules[0].filterRule.name).toEqual(ruleName);
 	});
@@ -126,7 +126,7 @@ describe('applyFilterRules', () => {
 	it('calls the API passing the given list of messages id', async () => {
 		const messagesId = ['123', '456', '789'];
 		const interceptor = createSoapAPIInterceptor<ApplyFilterRulesSoapRequest>('ApplyFilterRules');
-		applyFilterRules({ ruleName: 'test', messagesId });
+		applyFilterRulesSoapApi({ ruleName: 'test', messagesId });
 		const apiParams = await interceptor;
 		expect(apiParams.m?.ids).toEqual('123,456,789');
 		expect(apiParams.query).toBeUndefined();
@@ -135,7 +135,7 @@ describe('applyFilterRules', () => {
 	it('calls the API passing the given list of folders id', async () => {
 		const foldersId = ['321', '654', '987'];
 		const interceptor = createSoapAPIInterceptor<ApplyFilterRulesSoapRequest>('ApplyFilterRules');
-		applyFilterRules({ ruleName: 'test', foldersId });
+		applyFilterRulesSoapApi({ ruleName: 'test', foldersId });
 		const apiParams = await interceptor;
 		expect(apiParams.query?._content).toEqual('(inid:"321" OR inid:"654" OR inid:"987")');
 		expect(apiParams.m).toBeUndefined();
@@ -145,7 +145,7 @@ describe('applyFilterRules', () => {
 		const messagesId = ['123', '456', '789'];
 		const foldersId = ['321', '654', '987'];
 		const interceptor = createSoapAPIInterceptor<ApplyFilterRulesSoapRequest>('ApplyFilterRules');
-		applyFilterRules({ ruleName: 'test', messagesId, foldersId });
+		applyFilterRulesSoapApi({ ruleName: 'test', messagesId, foldersId });
 		const apiParams = await interceptor;
 		expect(apiParams.query?._content).toEqual('(inid:"321" OR inid:"654" OR inid:"987")');
 		expect(apiParams.m).toBeUndefined();

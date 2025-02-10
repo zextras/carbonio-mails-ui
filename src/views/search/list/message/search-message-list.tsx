@@ -11,13 +11,13 @@ import { t, useAppContext } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
 import { useParams } from 'react-router-dom';
 
-import { SearchMessageListItem } from './search-message-list-item';
+import { SearchMessageListItemWrapper } from './search-message-list-item-wrapper';
 import { CustomList } from '../../../../carbonio-ui-commons/components/list/list';
 import { CustomListItem } from '../../../../carbonio-ui-commons/components/list/list-item';
 import { useSelection } from '../../../../hooks/use-selection';
 import type { AppContext, SearchListProps } from '../../../../types';
 import { AdvancedFilterButton } from '../../parts/advanced-filter-button';
-import { useLoadMore } from '../../search-view-hooks';
+import { useLoadMoreForSearchSlice } from '../../search-view-hooks';
 import ShimmerList from '../../shimmer-list';
 import { SearchListHeader } from '../parts/search-list-header';
 
@@ -35,9 +35,8 @@ export const SearchMessageList: FC<SearchListProps> = ({
 	const { itemId } = useParams<{ itemId: string }>();
 	const loadingMore = useRef<boolean>(false);
 	const { setCount, count } = useAppContext<AppContext>();
-	const items = [...messageIds].map((messageId) => ({ id: messageId }));
 	const listRef = useRef<HTMLDivElement>(null);
-	const totalMessages = useMemo(() => messageIds.size, [messageIds]);
+	const totalMessages = useMemo(() => messageIds.length, [messageIds]);
 
 	const {
 		selected,
@@ -51,7 +50,7 @@ export const SearchMessageList: FC<SearchListProps> = ({
 	} = useSelection({
 		setCount,
 		count,
-		items
+		items: messageIds
 	});
 
 	const displayerTitle = useMemo(() => {
@@ -66,7 +65,7 @@ export const SearchMessageList: FC<SearchListProps> = ({
 		return null;
 	}, [isInvalidQuery, totalMessages]);
 
-	const onScrollBottom = useLoadMore({
+	const onScrollBottom = useLoadMoreForSearchSlice({
 		query,
 		offset: totalMessages,
 		hasMore,
@@ -76,7 +75,7 @@ export const SearchMessageList: FC<SearchListProps> = ({
 
 	const listItems = useMemo(
 		() =>
-			map([...messageIds], (messageId) => {
+			map(messageIds, (messageId) => {
 				const active = itemId === messageId;
 				const isSelected = selected[messageId];
 				return (
@@ -88,12 +87,11 @@ export const SearchMessageList: FC<SearchListProps> = ({
 					>
 						{(visible: boolean): React.JSX.Element =>
 							visible ? (
-								<SearchMessageListItem
-									itemId={messageId}
+								<SearchMessageListItemWrapper
 									key={messageId}
+									messageId={messageId}
 									selected={isSelected}
 									selecting={isSelectModeOn}
-									isConvChildren={false}
 									toggle={toggle}
 									active={active}
 									deselectAll={deselectAll}
@@ -126,7 +124,7 @@ export const SearchMessageList: FC<SearchListProps> = ({
 			{!isInvalidQuery && !loading && (
 				<>
 					<SearchListHeader
-						items={items}
+						itemIds={messageIds}
 						folderId={''}
 						selected={selected}
 						deselectAll={deselectAll}
@@ -139,9 +137,7 @@ export const SearchMessageList: FC<SearchListProps> = ({
 
 					{totalMessages > 0 || hasMore ? (
 						<CustomList
-							onListBottom={(): void => {
-								onScrollBottom();
-							}}
+							onListBottom={onScrollBottom}
 							data-testid={`message-list-${itemId}`}
 							ref={listRef}
 						>

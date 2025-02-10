@@ -12,11 +12,14 @@ import React, {
 	useState,
 	useEffect
 } from 'react';
+
 import { Input, Container } from '@zextras/carbonio-design-system';
 import type { TFunction } from 'i18next';
-import CustomSelect from '../custom-select';
-import { getConditionStatements, findDefaultValue } from '../utils';
+import { find } from 'lodash';
+
 import { CreateFilterContext } from '../create-filter-context';
+import CustomSelect from '../custom-select';
+import { getConditionStatements } from '../utils';
 
 type ComponentProps = {
 	t: TFunction;
@@ -74,7 +77,7 @@ const DefaultCondition: FC<ComponentProps> = ({ t, activeIndex, defaultValue }):
 	const defaultSelection = useMemo(
 		() =>
 			defaultValue
-				? findDefaultValue(conditionStatementsOptions, previousOption)
+				? find(conditionStatementsOptions, { value: previousOption })
 				: conditionStatementsOptions[2],
 		[conditionStatementsOptions, defaultValue, previousOption]
 	);

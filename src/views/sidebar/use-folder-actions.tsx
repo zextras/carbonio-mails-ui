@@ -14,19 +14,17 @@ import { EditModal } from './edit-modal';
 import { EmptyModal } from './empty-modal';
 import { NewModal } from './new-modal';
 import { SharesInfoModal } from './shares-info-modal';
+import { folderActionSoapApi } from '../../api/folder-action-soap-api';
 import { FolderActionsType, FOLDERS } from '../../carbonio-ui-commons/constants/folders';
 import type { Folder } from '../../carbonio-ui-commons/types/folder';
 import { allowedActionOnSharedAccount } from '../../carbonio-ui-commons/utils/utils';
 import { getFolderIdParts } from '../../helpers/folders';
-import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import { useSelection } from '../../hooks/use-selection';
 import { useUiUtilities } from '../../hooks/use-ui-utilities';
-import { folderAction } from '../../store/actions/folder-action';
-import { selectMessagesArray } from '../../store/messages-slice';
-import { StoreProvider } from '../../store/redux';
+import { useMessagesByFolder } from '../../store/emails/store';
 import { AppContext } from '../../types';
 import { SelectFolderModal } from '../../ui-actions/modals/select-folder-modal';
-import MoveConvMessage from '../../ui-actions/move-conv-msg';
+import { MoveConvMessage } from '../../ui-actions/move-conv-msg';
 
 type FolderActionsProps = {
 	id: string;
@@ -37,17 +35,13 @@ type FolderActionsProps = {
 };
 
 export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
-	const dispatch = useAppDispatch();
 	const { createModal, closeModal } = useModal();
 	const folderIsTrash = getFolderIdParts(folder.id ?? '0').id === FOLDERS.TRASH;
-	const messages = useAppSelector(selectMessagesArray);
-	const trashMessages = messages.filter(
-		(message) => getFolderIdParts(message.parent).id === FOLDERS.TRASH
-	);
-	const moveMessagesIds = useMemo(
-		() => trashMessages.map((message) => message.id),
-		[trashMessages]
-	);
+	const messagesInFolder = useMessagesByFolder(folder.id);
+
+	const trashMessages = messagesInFolder
+		.filter(() => getFolderIdParts(folder.id).id === FOLDERS.TRASH)
+		.map((message) => message.id);
 	const { setCount } = useAppContext<AppContext>();
 
 	const { deselectAll } = useSelection({ setCount, count: 0 });
@@ -71,11 +65,7 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 							id: modalId,
 							maxHeight: '90vh',
 							size: 'medium',
-							children: (
-								<StoreProvider>
-									<NewModal folder={folder} onClose={(): void => closeModal(modalId)} />
-								</StoreProvider>
-							)
+							children: <NewModal folder={folder} onClose={(): void => closeModal(modalId)} />
 						},
 						true
 					);
@@ -103,20 +93,16 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 								maxHeight: '90vh',
 								size: 'medium',
 								children: (
-									<StoreProvider>
-										<MoveConvMessage
-											folderId={folder.id}
-											selectedIDs={moveMessagesIds}
-											// TODO: Fix it in DS
-											// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-											// @ts-ignore
-											onClose={(): void => closeModal()}
-											isMessageView
-											isRestore
-											deselectAll={deselectAll}
-											dispatch={dispatch}
-										/>
-									</StoreProvider>
+									<MoveConvMessage
+										folderId={folder.id}
+										selectedIDs={trashMessages}
+										// TODO: Fix it in DS
+										// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+										// @ts-ignore
+										onClose={(): void => closeModal()}
+										isRestore
+										deselectAll={deselectAll}
+									/>
 								)
 							},
 							true
@@ -132,7 +118,7 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 							onClose: () => void
 						): void => {
 							const restoreFolder = (): Promise<void> =>
-								folderAction({ folder, l: folder.l, op: 'move' }).then((res) => {
+								folderActionSoapApi({ folder, l: folder.l, op: 'move' }).then((res) => {
 									if (!('Fault' in res)) {
 										createSnackbar({
 											key: `move-folder`,
@@ -153,7 +139,7 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 										});
 									}
 								});
-							folderAction({
+							folderActionSoapApi({
 								folder,
 								l: folderDestination?.id ?? FOLDERS.USER_ROOT,
 								op: 'move'
@@ -191,21 +177,19 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 								maxHeight: '90vh',
 								size: 'medium',
 								children: (
-									<StoreProvider>
-										<SelectFolderModal
-											folder={folder}
-											onClose={(): void => closeModal(modalId)}
-											headerTitle={`${t('label.move', 'Move')} ${folder?.name}`}
-											actionLabel={t('label.move', 'Move')}
-											inputLabel={inputLabel}
-											confirmAction={confirmAction}
-											allowFolderCreation={false}
-											allowRootSelection
-											showSharedAccounts={false}
-											showTrashFolder={false}
-											showSpamFolder={false}
-										/>
-									</StoreProvider>
+									<SelectFolderModal
+										folder={folder}
+										onClose={(): void => closeModal(modalId)}
+										headerTitle={`${t('label.move', 'Move')} ${folder?.name}`}
+										actionLabel={t('label.move', 'Move')}
+										inputLabel={inputLabel}
+										confirmAction={confirmAction}
+										allowFolderCreation={false}
+										allowRootSelection
+										showSharedAccounts={false}
+										showTrashFolder={false}
+										showSpamFolder
+									/>
 								)
 							},
 							true
@@ -233,11 +217,7 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 					createModal(
 						{
 							id: modalId,
-							children: (
-								<StoreProvider>
-									<EmptyModal onClose={(): void => closeModal(modalId)} folder={folder} />
-								</StoreProvider>
-							)
+							children: <EmptyModal onClose={(): void => closeModal(modalId)} folder={folder} />
 						},
 						true
 					);
@@ -259,11 +239,7 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 						{
 							id: modalId,
 							maxHeight: '90vh',
-							children: (
-								<StoreProvider>
-									<EditModal onClose={(): void => closeModal(modalId)} folder={folder} />
-								</StoreProvider>
-							)
+							children: <EditModal onClose={(): void => closeModal(modalId)} folder={folder} />
 						},
 						true
 					);
@@ -284,11 +260,7 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 					createModal(
 						{
 							id: modalId,
-							children: (
-								<StoreProvider>
-									<DeleteModal onClose={(): void => closeModal(modalId)} folder={folder} />
-								</StoreProvider>
-							)
+							children: <DeleteModal onClose={(): void => closeModal(modalId)} folder={folder} />
 						},
 						true
 					);
@@ -302,7 +274,7 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 				onClick: (e: SyntheticEvent<HTMLElement, Event> | KeyboardEvent): void => {
 					if (e) {
 						e.stopPropagation();
-						folderAction({ folder, op: 'delete' });
+						folderActionSoapApi({ folder, op: 'delete' });
 					}
 				}
 			},
@@ -320,9 +292,7 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 						{
 							id: modalId,
 							children: (
-								<StoreProvider>
-									<SharesInfoModal onClose={(): void => closeModal(modalId)} folder={folder} />
-								</StoreProvider>
+								<SharesInfoModal onClose={(): void => closeModal(modalId)} folder={folder} />
 							)
 						},
 						true
@@ -337,21 +307,12 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 				onClick: (e: SyntheticEvent<HTMLElement, Event> | KeyboardEvent): void => {
 					if (e) {
 						e.stopPropagation();
-						folderAction({ folder, op: 'read', l: folder.id });
+						folderActionSoapApi({ folder, op: 'read', l: folder.id });
 					}
 				}
 			}
 		],
-		[
-			closeModal,
-			createModal,
-			createSnackbar,
-			deselectAll,
-			dispatch,
-			folder,
-			folderIsTrash,
-			moveMessagesIds
-		]
+		[closeModal, createModal, createSnackbar, deselectAll, folder, folderIsTrash, trashMessages]
 	);
 
 	const defaultFolderActions = useMemo(

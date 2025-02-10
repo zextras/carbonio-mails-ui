@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, ReactElement, useCallback, useContext, useMemo, useRef, useState } from 'react';
+import React, { ReactElement, useCallback, useContext, useMemo, useRef, useState } from 'react';
 
 import {
 	Container,
@@ -37,13 +37,11 @@ import {
 	getAttachmentsLink,
 	getLocationOrigin
 } from './utils';
+import { getMsgsForPrintSoapApi } from '../../../../api';
 import { getFileExtension } from '../../../../commons/utilities';
 import { useAttachmentIconColor } from '../../../../helpers/attachments';
-import { useAppDispatch } from '../../../../hooks/redux';
 import { useUiUtilities } from '../../../../hooks/use-ui-utilities';
-import { getMsgsForPrint } from '../../../../store/actions';
-import { deleteAttachments } from '../../../../store/actions/delete-all-attachments';
-import { StoreProvider } from '../../../../store/redux';
+import { deleteAttachmentsEmailStoreAction } from '../../../../store/emails/actions/delete-attachments-action';
 import type {
 	AppContext,
 	AttachmentPart,
@@ -53,6 +51,11 @@ import type {
 	MailMessage,
 	OpenEmlPreviewType
 } from '../../../../types';
+import {
+	ArrayOneOrMore,
+	NodeWithMetadata,
+	SelectNodesFunctionArgs
+} from '../../../../types/integrations/carbonio-files-ui';
 import { useExtraWindow } from '../../extra-windows/use-extra-window';
 
 /**
@@ -72,15 +75,9 @@ const AttachmentHoverBarContainer = styled(Container)`
 	height: 0;
 `;
 
-const AttachmentContainer = styled(Container).attrs(
-	(props: { requiresSmartLinkConversion: boolean }) => ({
-		requiresSmartLinkConversion: props.requiresSmartLinkConversion
-	})
-)`
-	border-bottom: ${(props): string =>
-		props.requiresSmartLinkConversion
-			? `1px solid ${props.theme.palette.primary.regular}`
-			: 'none'};
+const AttachmentContainer = styled(Container)<{ $requiresSmartLinkConversion: boolean }>`
+	border-bottom: ${({ $requiresSmartLinkConversion, theme }): string =>
+		$requiresSmartLinkConversion ? `1px solid ${theme.palette.primary.regular}` : 'none'};
 
 	border-radius: 0.125rem;
 	width: calc(50% - 0.25rem);
@@ -107,7 +104,7 @@ const AttachmentLink = styled.a`
 `;
 
 const AttachmentExtension = styled(Text)<{
-	background: string;
+	$background: string;
 }>`
 	display: flex;
 	justify-content: center;
@@ -115,14 +112,14 @@ const AttachmentExtension = styled(Text)<{
 	width: 2rem;
 	height: 2rem;
 	border-radius: ${({ theme }): string => theme.borderRadius};
-	background-color: ${({ background }): string => background};
+	background-color: ${({ $background }): string => $background};
 	color: ${({ theme }): string => theme.palette.gray6.regular};
 	font-size: calc(${({ theme }): string => theme.sizes.font.small} - 0.125rem);
 	text-transform: uppercase;
 	margin-right: ${({ theme }): string => theme.sizes.padding.small};
 `;
 
-const Attachment: FC<AttachmentType> = ({
+const Attachment = ({
 	filename,
 	size,
 	link,
@@ -132,7 +129,7 @@ const Attachment: FC<AttachmentType> = ({
 	part,
 	att,
 	openEmlPreview
-}) => {
+}: AttachmentType): React.JSX.Element => {
 	const [t] = useTranslation();
 	const { createPreview } = useContext(PreviewsManagerContext);
 	const { isInsideExtraWindow } = useExtraWindow();
@@ -142,7 +139,6 @@ const Attachment: FC<AttachmentType> = ({
 
 	const inputRef = useRef<HTMLAnchorElement>(null);
 	const inputRef2 = useRef<HTMLAnchorElement>(null);
-	const dispatch = useAppDispatch();
 
 	const pType = previewType(att.contentType);
 	const [createContact, isAvailable] = useIntegratedFunction('create_contact_from_vcard');
@@ -165,8 +161,8 @@ const Attachment: FC<AttachmentType> = ({
 	const isEML = extension === 'EML';
 
 	const onDeleteAttachment = useCallback(() => {
-		dispatch(deleteAttachments({ id: messageId, attachments: [part] }));
-	}, [dispatch, messageId, part]);
+		deleteAttachmentsEmailStoreAction({ id: messageId, attachments: [part] });
+	}, [messageId, part]);
 
 	const onDownloadAndDelete = useCallback(() => {
 		downloadAttachment();
@@ -180,13 +176,11 @@ const Attachment: FC<AttachmentType> = ({
 				id,
 				maxHeight: '90vh',
 				children: (
-					<StoreProvider>
-						<DeleteAttachmentModal
-							onClose={(): void => closeModal(id)}
-							onDownloadAndDelete={onDownloadAndDelete}
-							onDeleteAttachment={onDeleteAttachment}
-						/>
-					</StoreProvider>
+					<DeleteAttachmentModal
+						onClose={(): void => closeModal(id)}
+						onDownloadAndDelete={onDownloadAndDelete}
+						onDeleteAttachment={onDeleteAttachment}
+					/>
 				)
 			},
 			true
@@ -267,7 +261,7 @@ const Attachment: FC<AttachmentType> = ({
 	const [uploadIntegration, isUploadIntegrationAvailable] = getIntegratedFunction('select-nodes');
 
 	const showEMLPreview = useCallback(() => {
-		getMsgsForPrint({ ids: [messageId], part: att?.name })
+		getMsgsForPrintSoapApi({ ids: [messageId], part: att?.name })
 			.then((res) => {
 				openEmlPreview && openEmlPreview(messageId, att?.name, res[0]);
 			})
@@ -416,7 +410,7 @@ const Attachment: FC<AttachmentType> = ({
 			height="fit"
 			background={backgroundColor}
 			data-testid={`attachment-container-${filename}`}
-			requiresSmartLinkConversion={requiresSmartLinkConversion}
+			$requiresSmartLinkConversion={requiresSmartLinkConversion}
 		>
 			<Tooltip key={`${messageId}-Preview`} label={actionTooltipText}>
 				<Row
@@ -425,7 +419,7 @@ const Attachment: FC<AttachmentType> = ({
 					onClick={preview}
 					takeAvailableSpace
 				>
-					<AttachmentExtension background={attachmentExtensionColor}>
+					<AttachmentExtension $background={attachmentExtensionColor}>
 						{attachmentExtensionContent}
 					</AttachmentExtension>
 					<Row orientation="vertical" crossAlignment="flex-start" takeAvailableSpace>
@@ -529,7 +523,7 @@ const Attachment: FC<AttachmentType> = ({
 const copyToFiles = (
 	att: AttachmentPart,
 	messageId: string,
-	nodes: any
+	nodes: ArrayOneOrMore<NodeWithMetadata>
 ): Promise<CopyToFileResponse> =>
 	soapFetch('CopyToFiles', {
 		_jsns: 'urn:zimbraMail',
@@ -537,20 +531,20 @@ const copyToFiles = (
 		part: att.name,
 		destinationFolderId: nodes?.[0]?.id
 	});
-
-const AttachmentsBlock: FC<{
+type AttachmentsBlockProps = {
 	messageId: MailMessage['id'];
 	messageSubject: MailMessage['subject'];
 	messageAttachments: MailMessage['attachments'];
 	isExternalMessage?: boolean;
 	openEmlPreview?: OpenEmlPreviewType;
-}> = ({
+};
+const AttachmentsBlock = ({
 	isExternalMessage = false,
 	openEmlPreview,
 	messageId,
 	messageSubject,
 	messageAttachments
-}): ReactElement => {
+}: AttachmentsBlockProps): React.JSX.Element => {
 	const [t] = useTranslation();
 	const { createSnackbar } = useUiUtilities();
 	const [expanded, setExpanded] = useState(false);
@@ -594,8 +588,8 @@ const AttachmentsBlock: FC<{
 		[t]
 	);
 
-	const confirmAction = useCallback(
-		(nodes: any) => {
+	const confirmAction = useCallback<SelectNodesFunctionArgs['confirmAction']>(
+		(nodes) => {
 			const promises = map(attachments, (att) => copyToFiles(att, messageId, nodes));
 			Promise.allSettled(promises).then((res: CopyToFileResponse[]) => {
 				const isFault = res.length === filter(res, (r) => r?.value?.Fault)?.length;

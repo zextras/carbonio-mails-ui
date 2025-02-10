@@ -5,22 +5,26 @@
  */
 import { createAsyncThunk } from '@reduxjs/toolkit';
 
-import { getMsgSoapAPI } from '../../api/get-msg';
+import { getMsgSoapApi } from '../../api/get-msg-soap-api';
 import { normalizeMailMessageFromSoap } from '../../normalizations/normalize-message';
 import type { MailMessage } from '../../types';
 
 type GetMsgCallProps = {
 	msgId: string;
+	smimePassword?: string;
 };
 
-export const getMsgCall = async ({ msgId }: GetMsgCallProps): Promise<MailMessage> => {
-	const result = await getMsgSoapAPI({ msgId, max: 250000 });
+export const getMsgCall = async ({
+	msgId,
+	smimePassword
+}: GetMsgCallProps): Promise<MailMessage> => {
+	const result = await getMsgSoapApi({ msgId, max: 250000, smimePassword });
 	const msg = result?.m[0];
 	return normalizeMailMessageFromSoap(msg, true) as MailMessage;
 };
 
-const getFullMsgCall = async ({ msgId }: GetMsgCallProps): Promise<MailMessage> => {
-	const result = await getMsgSoapAPI({ msgId });
+export const getFullMsgCall = async ({ msgId }: GetMsgCallProps): Promise<MailMessage> => {
+	const result = await getMsgSoapApi({ msgId });
 	const msg = result?.m[0];
 	return normalizeMailMessageFromSoap(msg, true) as MailMessage;
 };

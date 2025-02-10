@@ -22,15 +22,14 @@ import { isEmpty } from 'lodash';
 
 import { RecoverMessagesModal } from './components/recover-messages-modal';
 import { recoverMessagesSubSection } from './subsections';
-import { searchBackupDeletedMessagesAPI } from '../../api/search-backup-deleted-messages';
+import { searchBackupDeletedMessagesApi } from '../../api/search-backup-deleted-messages-api';
 import {
 	BACKUP_SEARCH_ROUTE,
 	BACKUP_SEARCH_STATUS,
 	RECOVER_MESSAGES_INTERVAL
 } from '../../constants';
-import { StoreProvider } from '../../store/redux';
-import { useAdvancedAccountStore } from '../../store/zustand/advanced-account/store';
-import { useBackupSearchStore } from '../../store/zustand/backup-search/store';
+import { useAdvancedAccountStore } from '../../store/advanced-account/store';
+import { useBackupSearchStore } from '../../store/backup-search/store';
 
 function calculateInterval(recoverDate: Date | null): { startDate?: Date; endDate?: Date } {
 	if (!recoverDate) return {};
@@ -63,7 +62,7 @@ export const RecoverMessages = (): React.JSX.Element => {
 				...interval,
 				...(searchString === '' ? {} : { searchString })
 			};
-			const response = await searchBackupDeletedMessagesAPI(searchParams);
+			const response = await searchBackupDeletedMessagesApi(searchParams);
 			closeModal(id);
 
 			if ('error' in response) {
@@ -116,12 +115,10 @@ export const RecoverMessages = (): React.JSX.Element => {
 			{
 				id: modalId,
 				children: (
-					<StoreProvider>
-						<RecoverMessagesModal
-							onClose={(): void => closeModal(modalId)}
-							onConfirm={(): Promise<void> => restoreMessages(modalId)}
-						/>
-					</StoreProvider>
+					<RecoverMessagesModal
+						onClose={(): void => closeModal(modalId)}
+						onConfirm={(): Promise<void> => restoreMessages(modalId)}
+					/>
 				)
 			},
 			true
@@ -162,7 +159,7 @@ export const RecoverMessages = (): React.JSX.Element => {
 						width="fill"
 						onChange={onDateTimePickerChange}
 						timeCaption={t('label.time', 'Time')}
-						includeTime={false}
+						showTimeSelect={false}
 						locale={zimbraPrefLocale}
 						dateFormat="P"
 					/>

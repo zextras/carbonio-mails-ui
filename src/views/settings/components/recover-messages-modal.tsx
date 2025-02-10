@@ -12,7 +12,7 @@ import { AnimatedLoader } from '../../../assets/animated-loader';
 import ModalFooter from '../../../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../../../carbonio-ui-commons/components/modals/modal-header';
 import { BACKUP_SEARCH_STATUS } from '../../../constants';
-import { useBackupSearchStore } from '../../../store/zustand/backup-search/store';
+import { useBackupSearchStore } from '../../../store/backup-search/store';
 
 type RecoverMessagesModalPropType = {
 	onConfirm: () => void;

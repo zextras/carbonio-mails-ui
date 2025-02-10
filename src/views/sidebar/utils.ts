@@ -5,90 +5,19 @@
  */
 import { type AccordionItemType } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
-import { isNil, omitBy, reduce } from 'lodash';
 
 import { ROOT_NAME, ZIMBRA_STANDARD_COLORS } from '../../carbonio-ui-commons/constants';
 import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
 import { isSystemFolder } from '../../carbonio-ui-commons/helpers/folders';
-import {
-	type AccordionFolder,
-	type Folder,
-	type LinkFolderFields
-} from '../../carbonio-ui-commons/types/folder';
-import { getFolderIdParts } from '../../helpers/folders';
-
-export const normalizeFolder = (
-	folder: Folder & Partial<LinkFolderFields>
-): Partial<Folder & Partial<LinkFolderFields>> =>
-	omitBy(
-		{
-			id: folder.id,
-			uuid: folder.uuid,
-			color: folder.color,
-			name: folder.name,
-			path: folder.absFolderPath,
-			parent: folder.l,
-			parentUuid: folder.luuid,
-			itemsCount: folder.n,
-			size: folder.s,
-			unreadCount: folder.u,
-			synced: true,
-			rgb: folder.rgb,
-			owner: folder.owner,
-			rid: folder.rid,
-			zid: folder.zid,
-			acl: folder.acl,
-			perm: folder.perm,
-			isSharedFolder: !!folder.owner,
-			retentionPolicy: folder.retentionPolicy,
-			view: folder.view
-		},
-		isNil
-	);
-
-export const extractFolders = (accordion: Array<any>, acc = {}): any =>
-	reduce(
-		accordion,
-		(acc2, folder) => {
-			if (folder.folder) {
-				return (folder.view === 'message' &&
-					folder.id !== FOLDERS.IM_LOGS &&
-					folder.id !== FOLDERS.USER_ROOT) ||
-					folder.id === FOLDERS.TRASH
-					? {
-							...acc2,
-							[folder.id]: normalizeFolder(folder),
-							...extractFolders(folder.folder, acc2)
-						}
-					: { ...acc2, ...extractFolders(folder.folder, acc2) };
-			}
-			return (folder.view === 'message' &&
-				folder.id !== FOLDERS.IM_LOGS &&
-				folder.id !== FOLDERS.USER_ROOT) ||
-				folder.id === FOLDERS.TRASH
-				? {
-						...acc2,
-						[folder.id]: normalizeFolder(folder)
-					}
-				: acc2;
-		},
-		acc
-	);
+import { type Folder } from '../../carbonio-ui-commons/types/folder';
+import { DragEnterAction, OnDropActionProps } from '../../carbonio-ui-commons/types/sidebar';
+import { getFolderIdParts, isDraft, isSpam } from '../../helpers/folders';
 
 export const capitalise = (word: string): string => {
 	const asciiRef = word?.charCodeAt(0);
 	const newAsciiRef = asciiRef - 32;
 	const newChar = String.fromCharCode(newAsciiRef);
 	return word ? newChar + word.substring(1) : '';
-};
-
-export const getFolderIconColorForAccordionFolder = (f: AccordionFolder): string => {
-	if (f?.folder?.color) {
-		return f.folder.color < 10
-			? ZIMBRA_STANDARD_COLORS[f.folder.color].hex
-			: (f?.folder.rgb ?? ZIMBRA_STANDARD_COLORS[0].hex);
-	}
-	return ZIMBRA_STANDARD_COLORS[0].hex;
 };
 
 export const getFolderIconColor = (f: Folder | AccordionItemType): string => {
@@ -172,3 +101,43 @@ export const getFolderTranslatedName = ({ folderId, folderName }: GetSystemFolde
 
 	return folderName;
 };
+
+export function handleDragEnter(data: OnDropActionProps, folder: Folder): DragEnterAction {
+	const { type, data: itemData } = data;
+	const { id, isLink, perm } = folder;
+
+	const isInbox = itemData.parentFolderId === FOLDERS.INBOX;
+	const isDrafts = itemData.parentFolderId === FOLDERS.DRAFTS;
+	const isTrash = itemData.parentFolderId === FOLDERS.TRASH;
+
+	if (type === 'conversation' || type === 'message') {
+		const restrictedDestinations = new Set([FOLDERS.USER_ROOT]);
+		const restrictedInboxTargets = new Set([FOLDERS.SENT, FOLDERS.DRAFTS]);
+		const restrictedDraftTargets = new Set([FOLDERS.TRASH]);
+
+		if (
+			itemData.parentFolderId === id || // same folder not allowed
+			(isInbox && restrictedInboxTargets.has(id)) || // Inbox to Draft/Sent not allowed
+			(isDrafts && !restrictedDraftTargets.has(id)) || // Drafts only to Trash
+			(id === FOLDERS.DRAFTS && !isTrash) || // Only Trash to Drafts
+			(isLink && !perm?.includes('w')) || // Shared folder must have write permission
+			restrictedDestinations.has(id) || // Root not allowed
+			(isLink && folder.oname === ROOT_NAME) // Root link not allowed
+		) {
+			return { success: false };
+		}
+	}
+
+	if (type === 'folder') {
+		if (
+			id === itemData.id || // Same folder not allowed
+			isLink || // Shared folder not allowed
+			isDraft(id) || // Drafts not allowed
+			isSpam(id) // Spam not allowed
+		) {
+			return { success: false };
+		}
+	}
+
+	return undefined;
+}

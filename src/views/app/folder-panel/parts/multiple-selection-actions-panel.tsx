@@ -3,19 +3,20 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, useCallback, useEffect, useState } from 'react';
+
+import React, { useCallback, useEffect, useState } from 'react';
 
 import { Button, Container, IconButton, Row, Tooltip } from '@zextras/carbonio-design-system';
 import { t, useUserSettings } from '@zextras/carbonio-shell-ui';
 
 import { useUiUtilities } from '../../../../hooks/use-ui-utilities';
-import type { Conversation, MailMessage } from '../../../../types';
+import { useConversationsByIds, useMessagesByIds } from '../../../../store/emails/store';
 import { getFolderParentId } from '../../../../ui-actions/utils';
 import { ConversationsMultipleSelectionActions } from '../conversations/conversations-multiple-selection-actions';
 import { MessagesMultipleSelectionActions } from '../messages/messages-multiple-selection-actions';
 
 type MultipleSelectionActionsPanelProps = {
-	items: Array<Partial<MailMessage> & Pick<MailMessage, 'id'>> | Array<Conversation>;
+	itemsIds: Array<string>;
 	selectedIds: Array<string>;
 	deselectAll: () => void;
 	selectAll: () => void;
@@ -25,8 +26,8 @@ type MultipleSelectionActionsPanelProps = {
 	folderId: string;
 };
 
-export const MultipleSelectionActionsPanel: FC<MultipleSelectionActionsPanelProps> = ({
-	items,
+export const MultipleSelectionActionsPanel = ({
+	itemsIds,
 	selectedIds,
 	deselectAll,
 	selectAll,
@@ -34,12 +35,15 @@ export const MultipleSelectionActionsPanel: FC<MultipleSelectionActionsPanelProp
 	selectAllModeOff,
 	setIsSelectModeOn,
 	folderId
-}) => {
+}: MultipleSelectionActionsPanelProps): React.JSX.Element => {
 	const { createSnackbar } = useUiUtilities();
 	const { zimbraPrefGroupMailBy } = useUserSettings().prefs;
 	const isConversation = zimbraPrefGroupMailBy === 'conversation';
 
-	const folderParentId = getFolderParentId({ folderId, isConversation, items });
+	const messages = useMessagesByIds(itemsIds);
+	const conversations = useConversationsByIds(itemsIds);
+	const fullItems = isConversation ? conversations : messages;
+	const folderParentId = getFolderParentId({ folderId, isConversation, items: fullItems });
 
 	const [currentFolderId] = useState(folderParentId);
 
@@ -115,17 +119,15 @@ export const MultipleSelectionActionsPanel: FC<MultipleSelectionActionsPanelProp
 					<>
 						{isConversation ? (
 							<ConversationsMultipleSelectionActions
-								ids={selectedIds}
+								selectedConversationsIds={selectedIds}
 								deselectAll={deselectAll}
 								folderId={folderId}
-								items={items as Array<Conversation>}
 							/>
 						) : (
 							<MessagesMultipleSelectionActions
 								ids={selectedIds}
 								deselectAll={deselectAll}
 								folderId={folderId}
-								items={items as Array<MailMessage>}
 							/>
 						)}
 					</>

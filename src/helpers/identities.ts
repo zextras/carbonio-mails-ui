@@ -564,9 +564,10 @@ export function getExtraAccountsIds(): Array<string> {
 }
 
 export {
-	IdentityDescriptor,
-	MatchingReplyIdentity,
-	RecipientWeight,
+	PRIMARY_IDENTITY_NAME,
+	type IdentityDescriptor,
+	type MatchingReplyIdentity,
+	type RecipientWeight,
 	getNoIdentityPlaceholder,
 	getDefaultIdentity,
 	checkMatchingAddress,

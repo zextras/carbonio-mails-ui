@@ -15,6 +15,11 @@ import { find, noop } from 'lodash';
 import { HttpResponse } from 'msw';
 
 import { aFailingSaveDraft, aSuccessfullSaveDraft } from './utils/utils';
+import {
+	GetSignaturesRequest,
+	GetSignaturesResponse
+} from '../../../../../api/get-signatures-soap-api';
+import * as saveDraftAction from '../../../../../api/save-draft-soap-api';
 import { FOLDERS } from '../../../../../carbonio-ui-commons/constants/folders';
 import { ParticipantRole } from '../../../../../carbonio-ui-commons/constants/participants';
 import { defaultBeforeAllTests } from '../../../../../carbonio-ui-commons/test/jest-setup';
@@ -32,22 +37,16 @@ import { buildSoapErrorResponseBody } from '../../../../../carbonio-ui-commons/t
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
 import { EditViewActions, MAILS_ROUTE } from '../../../../../constants';
 import * as useQueryParam from '../../../../../hooks/use-query-param';
-import * as saveDraftAction from '../../../../../store/actions/save-draft';
-import {
-	GetSignaturesRequest,
-	GetSignaturesResponse
-} from '../../../../../store/actions/signatures';
-import { addEditor } from '../../../../../store/zustand/editor';
+import { addEditor } from '../../../../../store/editor';
 import {
 	generateEditAsNewEditor,
 	generateNewMessageEditor,
 	generateReplyAllMsgEditor,
 	generateReplyMsgEditor
-} from '../../../../../store/zustand/editor/editor-generators';
+} from '../../../../../store/editor/editor-generators';
 import { setupEditorStore } from '../../../../../tests/generators/editor-store';
 import { readyToBeSentEditorTestCase } from '../../../../../tests/generators/editors';
 import { generateMessage } from '../../../../../tests/generators/generateMessage';
-import { generateStore } from '../../../../../tests/generators/store';
 import type {
 	CreateSmartLinksRequest,
 	MailsEditorV2,
@@ -135,6 +134,13 @@ const createSmartLinkFailureAPIInterceptor = (): Promise<CreateSmartLinksRequest
 		})
 	);
 
+const createCheckSmimeEnabledAPIInterceptor = (): void => {
+	createAPIInterceptor(
+		'get',
+		'/service/extension/encryption/password/enabled',
+		HttpResponse.json({ enabled: true })
+	);
+};
 const clearAndInsertText =
 	(user: UserEvent, target: Element, text: string) => async (): Promise<void> => {
 		await user.click(target);
@@ -142,8 +148,8 @@ const clearAndInsertText =
 		await user.type(target, text);
 	};
 
-jest.mock('../../../../../store/zustand/editor', () => ({
-	...jest.requireActual('../../../../../store/zustand/editor'),
+jest.mock('../../../../../store/editor', () => ({
+	...jest.requireActual('../../../../../store/editor'),
 	deleteEditor: jest.fn()
 }));
 
@@ -152,12 +158,12 @@ describe('Edit view', () => {
 		beforeEach(() => {
 			aSuccessfullSaveDraft();
 			createSoapAPIInterceptor('GetShareInfo');
+			createCheckSmimeEnabledAPIInterceptor();
 		});
 		// warning
 		it('should correctly send a new email', async () => {
 			setupEditorStore({ editors: [] });
-			const reduxStore = generateStore();
-			const editor = generateNewMessageEditor(reduxStore.dispatch);
+			const editor = generateNewMessageEditor();
 			addEditor({ id: editor.id, editor });
 
 			// Get the default identity address
@@ -188,7 +194,7 @@ describe('Edit view', () => {
 
 			jest.spyOn(hooks, 'getUserSettings').mockReturnValue(settings);
 
-			const { user } = setupTest(<EditView {...props} />, { store: reduxStore });
+			const { user } = setupTest(<EditView {...props} />);
 
 			// Get the components
 			const btnSend = await screen.findByTestId(/BtnSendMail/i);
@@ -270,10 +276,126 @@ describe('Edit view', () => {
 			});
 		});
 
+		it('should add the logged in account id to the originId field when replying to an email from the primary account', async () => {
+			setupEditorStore({ editors: [] });
+			const originalMessage = generateMessage({ id: '1' });
+			const editor = generateReplyMsgEditor(originalMessage);
+			addEditor({ id: editor.id, editor });
+			const mocksContext = getMocksContext();
+			const loggedInuserAccountId = mocksContext.identities.primary.identity.id;
+
+			const props: EditViewProp = {
+				editorId: editor.id,
+				closeController: noop
+			};
+			const settings = generateSettings({
+				prefs: {
+					zimbraFeatureMailSendLaterEnabled: 'FALSE'
+				},
+				props: [
+					{
+						zimlet: 'carbonio-mails-ui',
+						name: 'mails_snackbar_delay',
+						_content: '0'
+					}
+				]
+			});
+
+			jest.spyOn(hooks, 'getUserSettings').mockReturnValue(settings);
+
+			const { user } = setupTest(<EditView {...props} />);
+
+			// Get the components
+			const btnSend = await screen.findByTestId(/BtnSendMail/i);
+
+			expect(btnSend).toBeVisible();
+
+			// // Check for the status of the "send" button to be enabled
+			await waitFor(() => expect(btnSend).toBeEnabled());
+
+			const response = {
+				m: [
+					{
+						id: '1'
+					}
+				],
+				_jsns: 'urn:zimbraMail'
+			};
+			const sendMsgInterceptor = createSoapAPIInterceptor<
+				{ m: SoapDraftMessageObj },
+				SoapSendMsgResponse
+			>('SendMsg', response);
+
+			await act(async () => {
+				await user.click(btnSend);
+			});
+
+			const { m: msg } = await sendMsgInterceptor;
+
+			expect(msg.origid).toBe(`${loggedInuserAccountId}:${originalMessage.id}`);
+		});
+
+		it('should preserve the shared account id to the originId field when replying to an email from the shared account', async () => {
+			setupEditorStore({ editors: [] });
+			const originalMessage = generateMessage({ id: '40f51428-9c4e-4919-bd16-3b19e39f2843:1' });
+			const editor = generateReplyMsgEditor(originalMessage);
+			addEditor({ id: editor.id, editor });
+
+			const props: EditViewProp = {
+				editorId: editor.id,
+				closeController: noop
+			};
+			const settings = generateSettings({
+				prefs: {
+					zimbraFeatureMailSendLaterEnabled: 'FALSE'
+				},
+				props: [
+					{
+						zimlet: 'carbonio-mails-ui',
+						name: 'mails_snackbar_delay',
+						_content: '0'
+					}
+				]
+			});
+
+			jest.spyOn(hooks, 'getUserSettings').mockReturnValue(settings);
+
+			const { user } = setupTest(<EditView {...props} />);
+
+			// Get the components
+			const btnSend = await screen.findByTestId(/BtnSendMail/i);
+
+			expect(btnSend).toBeVisible();
+
+			// // Check for the status of the "send" button to be enabled
+			await waitFor(() => expect(btnSend).toBeEnabled());
+
+			const response = {
+				m: [
+					{
+						id: '1'
+					}
+				],
+				_jsns: 'urn:zimbraMail'
+			};
+			const sendMsgInterceptor = createSoapAPIInterceptor<
+				{ m: SoapDraftMessageObj },
+				SoapSendMsgResponse
+			>('SendMsg', response);
+
+			await act(async () => {
+				await user.click(btnSend);
+			});
+
+			const { m: msg } = await sendMsgInterceptor;
+
+			expect(msg.origid).toBe(originalMessage.id);
+		});
+
 		it('create a new email and text format should be as per setting', async () => {
 			setupEditorStore({ editors: [] });
-			const reduxStore = generateStore();
-			const editor = generateNewMessageEditor(reduxStore.dispatch);
+
+			const editor = generateNewMessageEditor();
 			addEditor({ id: editor.id, editor });
 
 			// Text format should be plain as per the settings done
@@ -286,17 +408,17 @@ describe('Edit view', () => {
 			defaultBeforeAllTests({ onUnhandledRequest: 'error' });
 		});
 
-		it.skip('should show error-try-again snackbar message on CreateSmartLink soap failure ', async () => {
+		it('should show error-try-again snackbar message on CreateSmartLink soap failure ', async () => {
 			createAPIInterceptor(
 				'post',
 				'/service/soap/GetShareInfoRequest',
 				HttpResponse.json(getEmptyMSWShareInfoResponse())
 			);
+			createCheckSmimeEnabledAPIInterceptor();
 			// setup api interceptor and mail to send editor
 			const apiInterceptor = createSmartLinkFailureAPIInterceptor();
 			setupEditorStore({ editors: [] });
-			const store = generateStore();
-			const editor = await readyToBeSentEditorTestCase(store.dispatch, {
+			const editor = await readyToBeSentEditorTestCase({
 				id: '123-testId',
 				did: '123-testId',
 				savedAttachments: [
@@ -313,9 +435,7 @@ describe('Edit view', () => {
 			});
 			addEditor({ id: editor.id, editor });
 
-			const { user } = setupTest(<EditView {...{ editorId: editor.id, closeController: noop }} />, {
-				store
-			});
+			const { user } = setupTest(<EditView {...{ editorId: editor.id, closeController: noop }} />);
 			const btnSend = screen.queryByTestId('BtnSendMailMulti');
 			await waitFor(() => expect(btnSend).toBeEnabled());
 			await act(async () => {
@@ -335,19 +455,20 @@ describe('Edit view', () => {
 				'/service/soap/GetShareInfoRequest',
 				HttpResponse.json(getEmptyMSWShareInfoResponse())
 			);
+			createCheckSmimeEnabledAPIInterceptor();
 		});
 
 		it('is not autosaved on initialization if draft id is present', async () => {
-			const mockedSaveDraft = jest.spyOn(saveDraftAction, 'saveDraftV3');
+			const mockedSaveDraft = jest.spyOn(saveDraftAction, 'saveDraftSoapApi');
 
 			aSuccessfullSaveDraft();
 			setupEditorStore({ editors: [] });
-			const reduxStore = generateStore();
-			const editor = generateNewMessageEditor(reduxStore.dispatch);
+
+			const editor = generateNewMessageEditor();
 			addEditor({ id: editor.id, editor: { ...editor, did: '123' } });
 
 			act(() => {
-				setupTest(<EditView editorId={editor.id} closeController={noop} />, { store: reduxStore });
+				setupTest(<EditView editorId={editor.id} closeController={noop} />);
 			});
 			await act(async () => {
 				jest.advanceTimersByTime(5_000);
@@ -358,11 +479,11 @@ describe('Edit view', () => {
 		it('is autosaved on initialization if draft id is not present', async () => {
 			const interceptor = aSuccessfullSaveDraft();
 			setupEditorStore({ editors: [] });
-			const reduxStore = generateStore();
-			const editor = generateNewMessageEditor(reduxStore.dispatch);
+
+			const editor = generateNewMessageEditor();
 			addEditor({ id: editor.id, editor });
 
-			setupTest(<EditView editorId={editor.id} closeController={noop} />, { store: reduxStore });
+			setupTest(<EditView editorId={editor.id} closeController={noop} />);
 			await interceptor;
 			expect(await screen.findByText('message.email_saved_at')).toBeVisible();
 		});
@@ -379,8 +500,8 @@ describe('Edit view', () => {
 
 			it('clicks on the save button', async () => {
 				setupEditorStore({ editors: [] });
-				const reduxStore = generateStore();
-				const editor = generateNewMessageEditor(reduxStore.dispatch);
+
+				const editor = generateNewMessageEditor();
 				addEditor({ id: editor.id, editor });
 
 				const props = {
@@ -389,7 +510,7 @@ describe('Edit view', () => {
 				};
 
 				const firstSaveDraftInterceptor = aSuccessfullSaveDraft();
-				const { user } = setupTest(<EditView {...props} />, { store: reduxStore });
+				const { user } = setupTest(<EditView {...props} />);
 
 				await firstSaveDraftInterceptor;
 				const draftSavingInterceptor = aSuccessfullSaveDraft();
@@ -451,15 +572,15 @@ describe('Edit view', () => {
 
 			it('changes the subject', async () => {
 				setupEditorStore({ editors: [] });
-				const reduxStore = generateStore();
-				const editor = generateNewMessageEditor(reduxStore.dispatch);
+
+				const editor = generateNewMessageEditor();
 				addEditor({ id: editor.id, editor });
 				const props = {
 					editorId: editor.id,
 					closeController: noop
 				};
 				const firstSaveDraftInterceptor = aSuccessfullSaveDraft();
-				const { user } = setupTest(<EditView {...props} />, { store: reduxStore });
+				const { user } = setupTest(<EditView {...props} />);
 				await firstSaveDraftInterceptor;
 				const draftSavingInterceptor = aSuccessfullSaveDraft();
 				const subjectText =
@@ -477,15 +598,15 @@ describe('Edit view', () => {
 
 			it('changes the recipient (to)', async () => {
 				setupEditorStore({ editors: [] });
-				const reduxStore = generateStore();
-				const editor = generateNewMessageEditor(reduxStore.dispatch);
+
+				const editor = generateNewMessageEditor();
 				addEditor({ id: editor.id, editor });
 				const props = {
 					editorId: editor.id,
 					closeController: noop
 				};
 				const firstSaveDraftInterceptor = aSuccessfullSaveDraft();
-				const { user } = setupTest(<EditView {...props} />, { store: reduxStore });
+				const { user } = setupTest(<EditView {...props} />);
 				await firstSaveDraftInterceptor;
 				const draftSavingInterceptor = aSuccessfullSaveDraft();
 				const recipient = createFakeIdentity().email;
@@ -506,15 +627,15 @@ describe('Edit view', () => {
 
 			it('changes the body', async () => {
 				setupEditorStore({ editors: [] });
-				const reduxStore = generateStore();
-				const editor = generateNewMessageEditor(reduxStore.dispatch);
+
+				const editor = generateNewMessageEditor();
 				addEditor({ id: editor.id, editor });
 				const props = {
 					editorId: editor.id,
 					closeController: noop
 				};
 				const firstSaveDraftInterceptor = aSuccessfullSaveDraft();
-				const { user } = setupTest(<EditView {...props} />, { store: reduxStore });
+				const { user } = setupTest(<EditView {...props} />);
 				await firstSaveDraftInterceptor;
 				const draftSavingInterceptor = aSuccessfullSaveDraft();
 				const body = faker.lorem.text();
@@ -535,17 +656,17 @@ describe('Edit view', () => {
 			it('attaches a file', async () => {
 				setupEditorStore({ editors: [] });
 				createAPIInterceptor('post', '/service/upload', new HttpResponse(null, { status: 200 }));
-				const reduxStore = generateStore();
-				const editor = generateNewMessageEditor(reduxStore.dispatch);
+
+				const editor = generateNewMessageEditor();
 				addEditor({ id: editor.id, editor });
 				const props = {
 					editorId: editor.id,
 					closeController: noop
 				};
-				const saveDraftSpy = jest.spyOn(saveDraftAction, 'saveDraftV3');
+				const saveDraftSpy = jest.spyOn(saveDraftAction, 'saveDraftSoapApi');
 				const firstSaveDraft = aSuccessfullSaveDraft();
 
-				const { user } = setupTest(<EditView {...props} />, { store: reduxStore });
+				const { user } = setupTest(<EditView {...props} />);
 				await firstSaveDraft;
 				const draftSavingInterceptor = aSuccessfullSaveDraft();
 				const fileInput = screen.getByTestId('file-input');
@@ -567,12 +688,10 @@ describe('Edit view', () => {
 
 		describe('send button', () => {
 			describe('is disabled when draft cannot be saved', () => {
-				let reduxStore: ReturnType<typeof generateStore>;
 				let failingSaveDraft: Promise<SaveDraftRequest>;
 				beforeEach(() => {
 					failingSaveDraft = aFailingSaveDraft();
 					setupEditorStore({ editors: [] });
-					reduxStore = generateStore();
 				});
 				const checkSaveBtnIsDisabled = async (editor: MailsEditorV2): Promise<void> => {
 					addEditor({
@@ -592,7 +711,7 @@ describe('Edit view', () => {
 				};
 
 				it('and action is "new editor"', async () => {
-					const editor = generateNewMessageEditor(reduxStore.dispatch);
+					const editor = generateNewMessageEditor();
 					await checkSaveBtnIsDisabled(editor);
 				});
 
@@ -600,17 +719,15 @@ describe('Edit view', () => {
 					const message = generateMessage({
 						isComplete: true
 					});
-					const editor = generateReplyMsgEditor(reduxStore.dispatch, message);
+					const editor = generateReplyMsgEditor(message);
 					await checkSaveBtnIsDisabled(editor);
 				});
 			});
 
 			describe('is enabled when draft is saved', () => {
-				let reduxStore: ReturnType<typeof generateStore>;
 				beforeEach(() => {
 					aSuccessfullSaveDraft();
 					setupEditorStore({ editors: [] });
-					reduxStore = generateStore();
 				});
 				const checkSendBtnEnabled = async (editor: MailsEditorV2): Promise<void> => {
 					addEditor({
@@ -632,7 +749,7 @@ describe('Edit view', () => {
 						isComplete: true
 					});
 
-					const editor = generateReplyMsgEditor(reduxStore.dispatch, message);
+					const editor = generateReplyMsgEditor(message);
 
 					await checkSendBtnEnabled(editor);
 				});
@@ -642,7 +759,7 @@ describe('Edit view', () => {
 						isComplete: true
 					});
 
-					const editor = generateReplyAllMsgEditor(reduxStore.dispatch, message);
+					const editor = generateReplyAllMsgEditor(message);
 
 					await checkSendBtnEnabled(editor);
 				});
@@ -651,10 +768,9 @@ describe('Edit view', () => {
 			it('is enabled when an editor is created with "edit as new" action and a draft is saved', async () => {
 				aSuccessfullSaveDraft();
 				setupEditorStore({ editors: [] });
-				const reduxStore = generateStore();
 
 				const message = generateMessage({ isComplete: true });
-				const editor = generateEditAsNewEditor(reduxStore.dispatch, message);
+				const editor = generateEditAsNewEditor(message);
 
 				addEditor({
 					id: editor.id,
@@ -666,7 +782,7 @@ describe('Edit view', () => {
 					closeController: noop
 				};
 
-				setupTest(<EditView {...props} />, { store: reduxStore });
+				setupTest(<EditView {...props} />);
 				expect(await screen.findByText('message.email_saved_at')).toBeVisible();
 				const btnSend =
 					screen.queryByTestId('BtnSendMail') || screen.queryByTestId('BtnSendMailMulti');
@@ -678,8 +794,6 @@ describe('Edit view', () => {
 
 	describe('Identities selection', () => {
 		test.skip('identity selector must be visible when multiple identities are present', async () => {
-			const store = generateStore();
-
 			// Mock the "action" query param
 			jest.spyOn(useQueryParam, 'useQueryParam').mockImplementation((param) => {
 				if (param === 'action') {
@@ -696,7 +810,7 @@ describe('Edit view', () => {
 			};
 
 			// Create and wait for the component to be rendered
-			setupTest(<EditView {...props} />, { store });
+			setupTest(<EditView {...props} />);
 			await waitFor(
 				() => {
 					expect(screen.getByTestId('edit-view-editor')).toBeInTheDocument();
@@ -714,8 +828,6 @@ describe('Edit view', () => {
 				const mocksContext = getMocksContext();
 				const defaultIdentityAddress = mocksContext.identities.primary.identity.email;
 
-				const store = generateStore();
-
 				// Mock the "action" query param
 				jest.spyOn(useQueryParam, 'useQueryParam').mockImplementation((param) => {
 					if (param === 'action') {
@@ -732,7 +844,7 @@ describe('Edit view', () => {
 				};
 
 				// Create and wait for the component to be rendered
-				setupTest(<EditView {...props} />, { store });
+				setupTest(<EditView {...props} />);
 				await waitFor(
 					() => {
 						expect(screen.getByTestId('edit-view-editor')).toBeInTheDocument();
@@ -755,16 +867,6 @@ describe('Edit view', () => {
 					// Generate the message
 					const msg = generateMessage({ isComplete: true });
 
-					const store = generateStore({
-						messages: {
-							searchedInFolder: {},
-							messages: {
-								[msg.id]: msg
-							},
-							searchRequestStatus: null
-						}
-					});
-
 					// Mock the "action" query param
 					jest.spyOn(useQueryParam, 'useQueryParam').mockImplementation((param) => {
 						if (param === 'action') {
@@ -786,7 +888,7 @@ describe('Edit view', () => {
 					};
 
 					// Create and wait for the component to be rendered
-					setupTest(<EditView {...props} />, { store });
+					setupTest(<EditView {...props} />);
 					await waitFor(
 						() => {
 							expect(screen.getByTestId('edit-view-editor')).toBeInTheDocument();
@@ -824,16 +926,6 @@ describe('Edit view', () => {
 					];
 					const msg = generateMessage({ to, folderId: FOLDERS.INBOX, isComplete: true });
 
-					const store = generateStore({
-						messages: {
-							searchedInFolder: {},
-							messages: {
-								[msg.id]: msg
-							},
-							searchRequestStatus: null
-						}
-					});
-
 					// Mock the "action" query param
 					jest.spyOn(useQueryParam, 'useQueryParam').mockImplementation((param) => {
 						if (param === 'action') {
@@ -855,7 +947,7 @@ describe('Edit view', () => {
 					};
 
 					// Create and wait for the component to be rendered
-					setupTest(<EditView {...props} />, { store });
+					setupTest(<EditView {...props} />);
 					expect(await screen.findByTestId('edit-view-editor')).toBeInTheDocument();
 
 					expect(screen.getByTestId('from-dropdown')).toBeInTheDocument();
@@ -887,16 +979,6 @@ describe('Edit view', () => {
 					const folderId = `${sharedAccountIdentity.id}:${FOLDERS.INBOX}`;
 					const msg = generateMessage({ id: msgId, to, folderId, isComplete: true });
 
-					const store = generateStore({
-						messages: {
-							searchedInFolder: {},
-							messages: {
-								[msg.id]: msg
-							},
-							searchRequestStatus: null
-						}
-					});
-
 					populateFoldersStore();
 
 					// Mock the "action" query param
@@ -920,7 +1002,7 @@ describe('Edit view', () => {
 					};
 
 					// Create and wait for the component to be rendered
-					setupTest(<EditView {...props} />, { store });
+					setupTest(<EditView {...props} />);
 					expect(await screen.findByTestId('edit-view-editor')).toBeInTheDocument();
 
 					expect(screen.getByTestId('from-dropdown')).toBeInTheDocument();

@@ -4,8 +4,10 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { FC, ReactElement, useMemo } from 'react';
+
 import { Row, Select, Text, Padding, Icon, Container } from '@zextras/carbonio-design-system';
 import { map } from 'lodash';
+
 import {
 	ColorContainer,
 	TextUpperCase
@@ -35,7 +37,7 @@ const LabelFactory: FC<LabelFactoryPropsType> = ({
 		padding={{
 			all: 'extrasmall'
 		}}
-		disabled={disabled}
+		$disabled={disabled}
 		minHeight="3rem"
 	>
 		<Row width="100%" takeAvailableSpace mainAlignment="space-between">
@@ -80,13 +82,13 @@ const getItems = (items: Array<{ label: string; value: any }>): GetItemsReturnTy
 
 const CustomSelect: FC<{
 	onChange: (arg: any) => void;
-	defaultSelection: { label: string; value: any };
+	defaultSelection?: { label: string; value: any };
 	label: string;
 	items: Array<{ label: string; value: any }>;
 	background?: string;
 	disabled?: boolean;
 }> = ({ onChange, defaultSelection, label, items, disabled = false }) => {
-	const newItems = useMemo(() => getItems(items), [items]);
+	const internalItems = getItems(items);
 
 	return (
 		<Select
@@ -94,7 +96,7 @@ const CustomSelect: FC<{
 			background="gray4"
 			disabled={disabled}
 			onChange={onChange}
-			items={newItems}
+			items={internalItems}
 			defaultSelection={defaultSelection}
 			LabelFactory={LabelFactory}
 			maxHeight="20vh"

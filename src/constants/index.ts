@@ -26,6 +26,8 @@ export const LOCAL_STORAGE_LAYOUT = 'carbonio-mails-ui-layout';
 
 export const LOCAL_STORAGE_SPLIT_LAYOUT_ORIENTATION = 'carbonio-mails-ui-split-layout_orientation';
 
+export const CERTIFICATES_ROUTE = 'certificates';
+
 export const MAILS_VIEW_LAYOUTS = {
 	NO_SPLIT: 'no-split',
 	SPLIT: 'split'
@@ -479,7 +481,7 @@ export const TIMEOUTS = {
 export const LIST_LIMIT = {
 	INITIAL_LIMIT: 100,
 	LOAD_MORE_LIMIT: 50
-};
+} as const;
 
 export const LOCAL_STORAGES = {
 	EXPANDED_FOLDERS: 'open_mails_folders'

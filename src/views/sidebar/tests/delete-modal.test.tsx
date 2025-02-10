@@ -16,14 +16,13 @@ import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
 import { Folder, FolderView } from '../../../carbonio-ui-commons/types/folder';
 import { FOLDER_ACTIONS } from '../../../commons/utilities';
 import { getFolders } from '../../../hooks/use-folders';
-import { generateStore } from '../../../tests/generators/store';
 import { SoapFolderAction } from '../../../types';
 import { DeleteModal } from '../delete-modal';
 
 describe('delete-modal', () => {
 	test('delete the folder except the child of trash folder', async () => {
 		const closeModal = jest.fn();
-		const store = generateStore();
+
 		const folder: Folder = {
 			id: '106',
 			uuid: faker.string.uuid(),
@@ -51,9 +50,7 @@ describe('delete-modal', () => {
 			depth: 2
 		};
 
-		setupTest(<DeleteModal onClose={(): void => closeModal()} folder={folder} />, {
-			store
-		});
+		setupTest(<DeleteModal onClose={(): void => closeModal()} folder={folder} />, {});
 
 		expect(screen.getByText(/folder_panel\.modal\.delete\.body\.message1/i)).toBeInTheDocument();
 		expect(screen.getByText(/folder_panel\.modal\.delete\.body\.message1/i)).toBeInTheDocument();
@@ -70,7 +67,7 @@ describe('delete-modal', () => {
 	});
 	test('delete the child folder of trash', async () => {
 		const closeModal = jest.fn();
-		const store = generateStore();
+
 		const folder: Folder = {
 			id: '109',
 			uuid: faker.string.uuid(),
@@ -98,9 +95,10 @@ describe('delete-modal', () => {
 			depth: 2
 		};
 
-		const { user } = setupTest(<DeleteModal onClose={(): void => closeModal()} folder={folder} />, {
-			store
-		});
+		const { user } = setupTest(
+			<DeleteModal onClose={(): void => closeModal()} folder={folder} />,
+			{}
+		);
 
 		expect(screen.getByText(/folder_panel\.modal\.delete\.body\.message2/i)).toBeInTheDocument();
 		expect(screen.getByText(/folder_panel\.modal\.delete\.body\.message4/i)).toBeInTheDocument();
@@ -122,15 +120,16 @@ describe('delete-modal', () => {
 
 	test('API is called with the proper parameters to delete normal folder excepting trash', async () => {
 		const closeModal = jest.fn();
-		const store = generateStore();
+
 		populateFoldersStore();
 		const folder = getFolder(FOLDERS.INBOX);
 		if (!folder) {
 			return;
 		}
-		const { user } = setupTest(<DeleteModal onClose={(): void => closeModal()} folder={folder} />, {
-			store
-		});
+		const { user } = setupTest(
+			<DeleteModal onClose={(): void => closeModal()} folder={folder} />,
+			{}
+		);
 
 		const okButton = screen.getByRole('button', {
 			name: /action\.ok/i
@@ -150,15 +149,16 @@ describe('delete-modal', () => {
 
 	test('API is called with the proper parameters to delete folder of trash', async () => {
 		const closeModal = jest.fn();
-		const store = generateStore();
+
 		populateFoldersStore();
 		const folder = getFolder(FOLDERS.TRASH);
 		if (!folder) {
 			return;
 		}
-		const { user } = setupTest(<DeleteModal onClose={(): void => closeModal()} folder={folder} />, {
-			store
-		});
+		const { user } = setupTest(
+			<DeleteModal onClose={(): void => closeModal()} folder={folder} />,
+			{}
+		);
 
 		const okButton = screen.getByRole('button', {
 			name: /action\.ok/i
@@ -176,7 +176,7 @@ describe('delete-modal', () => {
 
 	test('API is called with the proper parameters to delete a folder in a shared account', async () => {
 		const closeModal = jest.fn();
-		const store = generateStore();
+
 		populateFoldersStore();
 		const folders = getFolders();
 		const { children } = folders[1];
@@ -186,9 +186,7 @@ describe('delete-modal', () => {
 		}
 		const { user } = setupTest(
 			<DeleteModal onClose={(): void => closeModal()} folder={sharedAccountSecondFolder} />,
-			{
-				store
-			}
+			{}
 		);
 
 		const okButton = screen.getByRole('button', {

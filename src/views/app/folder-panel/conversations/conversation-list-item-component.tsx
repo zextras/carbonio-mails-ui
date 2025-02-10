@@ -3,18 +3,18 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, RefObject } from 'react';
+import React, { RefObject } from 'react';
 
 import { ConversationListItem } from './conversation-list-item';
-import type { Conversation } from '../../../../types';
+import { useConversationById } from '../../../../store/emails/store';
 import { DragItemWrapper } from '../parts/drag-item-wrapper';
 
 type ConversationListItemComponentProps = {
-	item: Conversation;
+	conversationId: string;
 	activeItemId: string;
 	selected: boolean;
 	selecting: boolean;
-	toggle: (id: string) => void;
+	toggleMultipleSelection: (id: string) => void;
 	active?: boolean;
 	setDraggedIds: (ids: Record<string, boolean>) => void;
 	draggedIds?: Record<string, boolean>;
@@ -27,48 +27,47 @@ type ConversationListItemComponentProps = {
 	visible?: boolean;
 };
 
-export const ConversationListItemComponent: FC<ConversationListItemComponentProps> = ({
+export const ConversationListItemComponent = ({
 	activeItemId,
-	item,
+	conversationId,
 	selected,
 	selecting,
-	toggle,
+	toggleMultipleSelection,
 	active,
 	setDraggedIds,
-	draggedIds,
 	selectedItems = {},
 	dragImageRef,
 	isSearchModule,
 	selectedIds = [],
 	deselectAll,
-	folderId,
-	visible
-}) => (
-	<DragItemWrapper
-		item={item}
-		selectedIds={selectedIds}
-		selectedItems={selectedItems}
-		setDraggedIds={setDraggedIds}
-		dragImageRef={dragImageRef}
-		dragAndDropIsDisabled={!!isSearchModule}
-		deselectAll={deselectAll}
-	>
-		<ConversationListItem
-			activeItemId={activeItemId}
-			item={item}
-			selected={selected}
-			selecting={selecting}
-			toggle={toggle}
-			active={active}
-			setDraggedIds={setDraggedIds}
-			draggedIds={draggedIds}
-			selectedItems={selectedItems}
-			dragImageRef={dragImageRef}
-			isSearchModule={isSearchModule}
-			isConvChildren
-			deselectAll={deselectAll}
-			folderId={folderId}
-			visible={visible}
-		/>
-	</DragItemWrapper>
-);
+	folderId
+}: ConversationListItemComponentProps): React.JSX.Element => {
+	const conversation = useConversationById(conversationId);
+	return (
+		conversation && (
+			<DragItemWrapper
+				item={conversation}
+				selectedIds={selectedIds}
+				selectedItems={selectedItems}
+				setDraggedIds={setDraggedIds}
+				dragImageRef={dragImageRef}
+				dragAndDropIsDisabled={!!isSearchModule}
+				deselectAll={deselectAll}
+			>
+				<ConversationListItem
+					activeItemId={activeItemId}
+					conversation={conversation}
+					selected={selected}
+					selecting={selecting}
+					toggleMultipleSelection={toggleMultipleSelection}
+					active={active}
+					setDraggedIds={setDraggedIds}
+					dragImageRef={dragImageRef}
+					isSearchModule={isSearchModule}
+					deselectAll={deselectAll}
+					folderId={folderId}
+				/>
+			</DragItemWrapper>
+		)
+	);
+};

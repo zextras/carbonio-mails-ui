@@ -15,10 +15,9 @@ import {
 	useModal,
 	useSnackbar
 } from '@zextras/carbonio-design-system';
-import { t } from '@zextras/carbonio-shell-ui';
-import { Trans } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 
-import { applyFilterRules } from '../../api/apply-filter-rules';
+import { applyFilterRulesSoapApi } from '../../api/apply-filter-rules-soap-api';
 import { Folder } from '../../carbonio-ui-commons/types/folder';
 import { GapContainer } from '../../commons/gap-container';
 import { TextStyler } from '../../commons/text-styler';
@@ -33,6 +32,7 @@ export type ApplyFilterModalProps = {
 };
 
 export const ApplyFilterModal: FC<ApplyFilterModalProps> = ({ criteria, onClose }) => {
+	const [t] = useTranslation();
 	const { createModal, closeModal } = useModal();
 	const createSnackbar = useSnackbar();
 	const [folder, setFolder] = useState<Folder>();
@@ -51,7 +51,7 @@ export const ApplyFilterModal: FC<ApplyFilterModalProps> = ({ criteria, onClose 
 		if (!folder) {
 			return;
 		}
-		applyFilterRules({
+		applyFilterRulesSoapApi({
 			ruleName: criteria.filterName,
 			foldersId: [folder?.id]
 		})
@@ -102,7 +102,7 @@ export const ApplyFilterModal: FC<ApplyFilterModalProps> = ({ criteria, onClose 
 			hideButton: true
 		});
 		onClose();
-	}, [createSnackbar, criteria.filterName, folder, onClose]);
+	}, [createSnackbar, criteria.filterName, folder, onClose, t]);
 
 	const onCancelAction = useCallback(() => onClose(), [onClose]);
 

@@ -21,9 +21,9 @@ describe('useConvReply', () => {
 			} = setupHook(useConvReplyDescriptor, {
 				initialProps: [
 					{
-						firstMessageId: conv.messages[0].id,
+						firstMessageId: conv.messageIds[0],
 						folderId: FOLDERS.INBOX,
-						messagesLength: conv.messages.length
+						messagesLength: conv.messageIds.length
 					}
 				]
 			});
@@ -46,9 +46,9 @@ describe('useConvReply', () => {
 			} = setupHook(useConvReplyFn, {
 				initialProps: [
 					{
-						firstMessageId: conv.messages[0].id,
+						firstMessageId: conv.messageIds[0],
 						folderId: FOLDERS.INBOX,
-						messagesLength: conv.messages.length
+						messagesLength: conv.messageIds.length
 					}
 				]
 			});
@@ -74,9 +74,9 @@ describe('useConvReply', () => {
 				} = setupHook(useConvReplyFn, {
 					initialProps: [
 						{
-							firstMessageId: conv.messages[0].id,
+							firstMessageId: conv.messageIds[0],
 							folderId: folder.id,
-							messagesLength: conv.messages.length
+							messagesLength: conv.messageIds.length
 						}
 					]
 				});
@@ -92,9 +92,9 @@ describe('useConvReply', () => {
 				} = setupHook(useConvReplyFn, {
 					initialProps: [
 						{
-							firstMessageId: conv.messages[0].id,
+							firstMessageId: conv.messageIds[0],
 							folderId: FOLDERS.INBOX,
-							messagesLength: conv.messages.length
+							messagesLength: conv.messageIds.length
 						}
 					]
 				});
@@ -106,7 +106,7 @@ describe('useConvReply', () => {
 						boardViewId: 'mails_editor_board_view',
 						context: expect.objectContaining({
 							originAction: 'reply',
-							originActionTargetId: conv.messages[0].id
+							originActionTargetId: conv.messageIds[0]
 						})
 					})
 				);
@@ -118,9 +118,9 @@ describe('useConvReply', () => {
 				} = setupHook(useConvReplyFn, {
 					initialProps: [
 						{
-							firstMessageId: conv.messages[0].id,
+							firstMessageId: conv.messageIds[0],
 							folderId: FOLDERS.DRAFTS,
-							messagesLength: conv.messages.length
+							messagesLength: conv.messageIds.length
 						}
 					]
 				});

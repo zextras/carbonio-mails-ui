@@ -7,15 +7,12 @@
 import React, { ReactElement } from 'react';
 
 import { act, waitFor } from '@testing-library/react';
+import type { QueryChip, SearchViewProps } from '@zextras/carbonio-search-ui';
 import * as hooks from '@zextras/carbonio-shell-ui';
-import {
-	AccountSettings,
-	ErrorSoapBodyResponse,
-	QueryChip,
-	SearchViewProps
-} from '@zextras/carbonio-shell-ui';
+import { AccountSettings, ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 import { noop } from 'lodash';
 
+import * as searchSoapApi from '../../../api/search-soap-api';
 import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { generateSettings } from '../../../carbonio-ui-commons/test/mocks/settings/settings-generator';
 import { buildSoapErrorResponseBody } from '../../../carbonio-ui-commons/test/mocks/utils/soap';
@@ -27,16 +24,15 @@ import {
 } from '../../../carbonio-ui-commons/test/test-setup';
 import { API_REQUEST_STATUS } from '../../../constants';
 import * as useSelection from '../../../hooks/use-selection';
-import * as search from '../../../store/actions/search';
 import {
-	setSearchResultsByConversation,
 	updateConversationStatus,
-	setMessages
-} from '../../../store/zustand/search/store';
+	setSearchResultsByConversation,
+	getUseEmailStoreAndHooksForTesting
+} from '../../../store/emails/store';
 import { TESTID_SELECTORS } from '../../../tests/constants';
+import { generateSoapConversationMessage } from '../../../tests/generators/api';
 import { generateConversation } from '../../../tests/generators/generateConversation';
 import { generateMessage } from '../../../tests/generators/generateMessage';
-import { generateStore } from '../../../tests/generators/store';
 import {
 	ConvActionRequest,
 	ConvActionResponse,
@@ -61,9 +57,17 @@ type SetupTest = {
 	viewBy: 'message' | 'conversation';
 };
 
+const { setMessagesInSearchSlice } = getUseEmailStoreAndHooksForTesting();
+
+const aRandomMsgActionResponse: MsgActionResponse = {
+	action: {
+		id: '123',
+		op: 'trash'
+	}
+};
+
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 const setupSearchViewTest = ({ query, viewBy }: Partial<SetupTest>) => {
-	const store = generateStore();
 	const queryChip: QueryChip = {
 		hasAvatar: false,
 		id: '0',
@@ -77,7 +81,6 @@ const setupSearchViewTest = ({ query, viewBy }: Partial<SetupTest>) => {
 	const settings = generateSettings(customSettings);
 	jest.spyOn(hooks, 'useUserSettings').mockReturnValue(settings);
 	return {
-		store,
 		settings,
 		queryChip
 	};
@@ -93,21 +96,6 @@ const mockedUseSelection: ReturnType<typeof useSelection.useSelection> = {
 	selectAllModeOff: jest.fn()
 };
 
-function getSoapConversationMessage(messageId: string, conversationId: string): SoapMailMessage {
-	return {
-		id: messageId,
-		cid: conversationId,
-		e: [],
-		su: 'conversations Subject',
-		s: 71116,
-		l: '2',
-		f: 'au',
-		fr: 'fragment',
-		mp: [],
-		d: 1717752296000
-	};
-}
-
 async function waitAndMakeConversationVisible(conversationId: string): Promise<void> {
 	await screen.findByTestId(`invisible-conversation-${conversationId}`);
 	makeListItemsVisible();
@@ -120,11 +108,12 @@ async function waitAndMakeMessageVisible(messageId: string): Promise<void> {
 
 function getSoapMessage(
 	messageId: string,
-	initialData?: Partial<SoapIncompleteMessage>
+	initialData?: Partial<SoapIncompleteMessage>,
+	id?: string
 ): SoapMailMessage {
 	return {
 		id: messageId,
-		cid: '1',
+		cid: id ?? '1',
 		e: [],
 		su: 'message Subject',
 		s: 71116,
@@ -145,7 +134,7 @@ function getSoapConversation(id: string): SoapConversation {
 		f: 'flag',
 		tn: 'tag names',
 		d: 123,
-		m: [getSoapMessage('123')],
+		m: [getSoapMessage('123', undefined, id)],
 		e: [],
 		su: 'conversations Subject',
 		fr: 'fragment'
@@ -162,15 +151,9 @@ function fakeCounter(): { count: number; setCount: (value: number) => void } {
 
 describe('SearchView', () => {
 	describe('view by conversations', () => {
-		let store: ReturnType<typeof generateStore>;
-		let queryChip: QueryChip;
-		beforeEach(() => {
-			const searchSettings = setupSearchViewTest({ viewBy: 'conversation', query: 'hello' });
-			store = searchSettings.store;
-			queryChip = searchSettings.queryChip;
-		});
-
 		it('should display label "Results for" when soap API fulfilled', async () => {
+			const searchSettings = setupSearchViewTest({ viewBy: 'conversation', query: 'hello' });
+			const { queryChip } = searchSettings;
 			const searchInterceptor = createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
 				c: [getSoapConversation('123')],
 				more: false
@@ -182,16 +165,17 @@ describe('SearchView', () => {
 				ResultsHeader: resultsHeader
 			};
 
-			setupTest(<SearchView {...searchViewProps} />, {
-				store
-			});
+			setupTest(<SearchView {...searchViewProps} />);
 			await searchInterceptor;
 
 			expect(await screen.findByText('label.results_for')).toBeInTheDocument();
 		});
 
 		it('should display conversation subject when soap API fulfilled and settings is "display by conversation"', async () => {
-			createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
+			const searchSettings = setupSearchViewTest({ viewBy: 'conversation', query: 'hello' });
+			const { queryChip } = searchSettings;
+
+			const interceptor = createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
 				c: [getSoapConversation('123')],
 				more: false
 			});
@@ -202,17 +186,19 @@ describe('SearchView', () => {
 				ResultsHeader: resultsHeader
 			};
 
-			setupTest(<SearchView {...searchViewProps} />, {
-				store
-			});
+			setupTest(<SearchView {...searchViewProps} />);
+			await interceptor;
 			await waitAndMakeConversationVisible('123');
 			const conversation = await screen.findByText('conversations Subject');
 			expect(conversation).toBeInTheDocument();
 		});
 
 		it('should display the number of messages in a conversation when soap API fulfilled', async () => {
-			const message1 = getSoapConversationMessage('100', '123');
-			const message2 = getSoapConversationMessage('200', '123');
+			const searchSettings = setupSearchViewTest({ viewBy: 'conversation', query: 'hello' });
+			const { queryChip } = searchSettings;
+
+			const message1 = generateSoapConversationMessage('100', '123');
+			const message2 = generateSoapConversationMessage('200', '123');
 			const conversation = { ...getSoapConversation('123'), n: 2, m: [message1, message2] };
 			createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
 				c: [conversation],
@@ -225,9 +211,7 @@ describe('SearchView', () => {
 				ResultsHeader: resultsHeader
 			};
 
-			setupTest(<SearchView {...searchViewProps} />, {
-				store
-			});
+			setupTest(<SearchView {...searchViewProps} />);
 			await waitAndMakeConversationVisible('123');
 			expect(await screen.findByText('conversations Subject')).toBeInTheDocument();
 			const chevron = await screen.findByTestId(`ToggleExpand`);
@@ -238,9 +222,12 @@ describe('SearchView', () => {
 		});
 
 		it('should change the route when clicking a conversation in the list', async () => {
+			const searchSettings = setupSearchViewTest({ viewBy: 'conversation', query: 'hello' });
+			const { queryChip } = searchSettings;
+
 			const defaultConversation = getSoapConversation('123');
-			const message1 = getSoapConversationMessage('100', '123');
-			const message2 = getSoapConversationMessage('200', '123');
+			const message1 = generateSoapConversationMessage('100', '123');
+			const message2 = generateSoapConversationMessage('200', '123');
 
 			const conversation = { ...defaultConversation, n: 2, m: [message1, message2] };
 			createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
@@ -256,9 +243,7 @@ describe('SearchView', () => {
 				ResultsHeader: resultsHeader
 			};
 
-			const { user } = setupTest(<SearchView {...searchViewProps} />, {
-				store
-			});
+			const { user } = setupTest(<SearchView {...searchViewProps} />);
 			await waitAndMakeConversationVisible('123');
 			expect(await screen.findByText('conversations Subject')).toBeInTheDocument();
 			const conversationContainer = await screen.findByTestId(
@@ -277,12 +262,12 @@ describe('SearchView', () => {
 		});
 
 		it('should display conversation as selected when user clicks on avatar', async () => {
-			const message = generateMessage({ id: '1' });
+			const message = generateMessage({ id: '1', cid: '123' });
 			setSearchResultsByConversation(
-				[generateConversation({ id: '123', messages: [message] })],
+				[generateConversation({ id: '123', messageIds: [message.id] })],
 				false
 			);
-			setMessages([message]);
+			setMessagesInSearchSlice([message]);
 			updateConversationStatus('123', API_REQUEST_STATUS.fulfilled);
 			const searchViewProps: SearchViewProps = {
 				useQuery: () => [[], noop],
@@ -292,10 +277,11 @@ describe('SearchView', () => {
 			const { count, setCount } = fakeCounter();
 			jest.spyOn(hooks, 'useAppContext').mockReturnValue({ count, setCount });
 
-			const { user } = setupTest(<SearchView {...searchViewProps} />, {
-				store
-			});
+			const { user } = setupTest(<SearchView {...searchViewProps} />);
 			await waitAndMakeConversationVisible('123');
+			const actionWrapper = await screen.findByTestId(`ConversationListItem-123`);
+			await user.hover(actionWrapper);
+
 			const itemAvatar = await screen.findByTestId('conversation-list-item-avatar-123');
 			const avatar = within(itemAvatar).getByTestId('avatar');
 			await act(async () => {
@@ -305,7 +291,42 @@ describe('SearchView', () => {
 			expect(await within(itemAvatar).findByTestId('icon: Checkmark')).toBeVisible();
 		});
 
+		it('should display the conversation view panel', async () => {
+			const searchSettings = setupSearchViewTest({ viewBy: 'conversation', query: 'hello' });
+			const { queryChip } = searchSettings;
+
+			const defaultConversation = getSoapConversation('123');
+			const message1 = generateSoapConversationMessage('100', '123');
+			const message2 = generateSoapConversationMessage('200', '123');
+			const conversation = { ...defaultConversation, n: 2, m: [message1, message2] };
+			createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
+				c: [conversation],
+				more: false
+			});
+			createSoapAPIInterceptor<SearchConvRequest, SearchConvResponse>('SearchConv', {
+				m: [message1, message2],
+				more: false,
+				offset: '0',
+				orderBy: 'dateDesc'
+			});
+
+			const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
+			const searchViewProps: SearchViewProps = {
+				useQuery: () => [[queryChip], noop],
+				useDisableSearch: () => [false, noop],
+				ResultsHeader: resultsHeader
+			};
+
+			setupTest(<SearchView {...searchViewProps} />, {
+				initialEntries: ['/conversation/123']
+			});
+
+			expect(await screen.findByTestId('SearchConversationPanel-123')).toBeInTheDocument();
+		});
 		it('should call ConvActionRequest with operation "trash" when moving conversation to trash in selection mode', async () => {
+			const searchSettings = setupSearchViewTest({ viewBy: 'conversation', query: 'hello' });
+			const { queryChip } = searchSettings;
+
 			createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
 				c: [getSoapConversation('123')],
 				more: false
@@ -317,14 +338,15 @@ describe('SearchView', () => {
 				ResultsHeader: resultsHeader
 			};
 			jest.spyOn(hooks, 'useAppContext').mockReturnValue(fakeCounter());
-			const { user } = setupTest(<SearchView {...searchViewProps} />, {
-				store
-			});
+			const { user } = setupTest(<SearchView {...searchViewProps} />);
 			await waitAndMakeConversationVisible('123');
+			const actionWrapper = await screen.findByTestId(`ConversationListItem-123`);
+			await user.hover(actionWrapper);
+
 			const itemAvatar = await screen.findByTestId('conversation-list-item-avatar-123');
 			const avatar = within(itemAvatar).getByTestId('avatar');
 			await act(async () => {
-				await user.click(avatar);
+				user.click(avatar);
 			});
 			await within(itemAvatar).findByTestId('icon: Checkmark');
 			const multipleSelectionPanel = await screen.findByTestId('MultipleSelectionActionPanel');
@@ -343,62 +365,23 @@ describe('SearchView', () => {
 					}
 				}
 			);
-			await act(async () => {
-				await user.click(multipleSelectionTrashButton);
-			});
-
+			await user.click(multipleSelectionTrashButton);
 			const receivedRequest = await apiInterceptor;
-			expect(receivedRequest.action.id).toBe('123');
-			expect(receivedRequest.action.op).toBe('trash');
-		});
-
-		it('should display the conversation view panel', async () => {
-			const defaultConversation = getSoapConversation('123');
-			const message1 = getSoapConversationMessage('100', '123');
-			const message2 = getSoapConversationMessage('200', '123');
-			const conversation = { ...defaultConversation, n: 2, m: [message1, message2] };
-			const searchApi = createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
-				c: [conversation],
-				more: false
-			});
-			const searchConvApi = createSoapAPIInterceptor<SearchConvRequest, SearchConvResponse>(
-				'SearchConv',
-				{ m: [message1, message2], more: false, offset: '0', orderBy: 'dateDesc' }
-			);
-
-			const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
-			const searchViewProps: SearchViewProps = {
-				useQuery: () => [[queryChip], noop],
-				useDisableSearch: () => [false, noop],
-				ResultsHeader: resultsHeader
-			};
-
-			setupTest(<SearchView {...searchViewProps} />, {
-				store,
-				initialEntries: ['/conversation/123']
-			});
 
 			await act(async () => {
-				await searchApi;
+				expect(receivedRequest.action.id).toBe('123');
 			});
-
 			await act(async () => {
-				await searchConvApi;
+				expect(receivedRequest.action.op).toBe('trash');
 			});
-
-			expect(await screen.findByTestId('SearchConversationPanel-123')).toBeInTheDocument();
 		});
 	});
 
 	describe('view by messages', () => {
-		let store: ReturnType<typeof generateStore>;
-		let queryChip: QueryChip;
-		beforeEach(() => {
-			const searchSettings = setupSearchViewTest({ viewBy: 'message', query: 'hello' });
-			store = searchSettings.store;
-			queryChip = searchSettings.queryChip;
-		});
 		it('should display messages when soap API fulfilled and settings is "display by message"', async () => {
+			const searchSettings = setupSearchViewTest({ viewBy: 'message', query: 'hello' });
+			const { queryChip } = searchSettings;
+
 			const interceptor = createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
 				m: [
 					getSoapMessage('10', { su: 'message 1 Subject' }),
@@ -413,9 +396,7 @@ describe('SearchView', () => {
 				ResultsHeader: resultsHeader
 			};
 
-			setupTest(<SearchView {...searchViewProps} />, {
-				store
-			});
+			setupTest(<SearchView {...searchViewProps} />);
 
 			await act(async () => {
 				await interceptor;
@@ -427,7 +408,11 @@ describe('SearchView', () => {
 			expect(await screen.findByTestId('MessageListItem-10')).toBeInTheDocument();
 			expect(await screen.findByTestId('MessageListItem-11')).toBeInTheDocument();
 		});
+
 		it('should call MsgActionRequest with operation "trash" when moving message to trash in selection mode', async () => {
+			const searchSettings = setupSearchViewTest({ viewBy: 'message', query: 'hello' });
+			const { queryChip } = searchSettings;
+
 			const searchInterceptor = createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
 				m: [getSoapMessage('10', { su: 'message 1 Subject', f: 'u' })],
 				more: false
@@ -439,13 +424,15 @@ describe('SearchView', () => {
 				ResultsHeader: resultsHeader
 			};
 			jest.spyOn(hooks, 'useAppContext').mockReturnValue(fakeCounter());
-			const { user } = setupTest(<SearchView {...searchViewProps} />, {
-				store
-			});
+			const { user } = setupTest(<SearchView {...searchViewProps} />);
 			await waitFor(() => searchInterceptor);
 			await waitAndMakeMessageVisible('10');
+			const actionWrapper = await screen.findByTestId(`MessageListItem-10`);
+			await user.hover(actionWrapper);
+
 			const itemAvatar = await screen.findByTestId('message-list-item-avatar-10');
 			const avatar = await within(itemAvatar).findByTestId('avatar');
+
 			user.click(avatar);
 			await within(itemAvatar).findByTestId('icon: Checkmark');
 			const multipleSelectionPanel = await screen.findByTestId('MultipleSelectionActionPanel');
@@ -472,14 +459,17 @@ describe('SearchView', () => {
 			expect(receivedRequest.action.op).toBe('trash');
 		});
 		it('should display the message view panel', async () => {
+			const searchSettings = setupSearchViewTest({ viewBy: 'message', query: 'hello' });
+			const { queryChip } = searchSettings;
+
 			const messageId = '10';
 			const soapMessage = getSoapMessage(messageId, { su: 'message 1 Subject', f: 'u' });
-			const searchInterceptor = createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
+			createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
 				m: [soapMessage],
 				more: false
 			});
 
-			const getMsgInterceptor = createSoapAPIInterceptor<GetMsgRequest, GetMsgResponse>('GetMsg', {
+			createSoapAPIInterceptor<GetMsgRequest, GetMsgResponse>('GetMsg', {
 				m: [soapMessage]
 			});
 
@@ -491,22 +481,17 @@ describe('SearchView', () => {
 			};
 
 			setupTest(<SearchView {...searchViewProps} />, {
-				store,
 				initialEntries: [`/message/${messageId}`]
 			});
 
-			await act(async () => {
-				await searchInterceptor;
-			});
-
-			await act(async () => {
-				await getMsgInterceptor;
-			});
-
+			// await waitFor(() => searchInterceptor);
 			expect(await screen.findByTestId(`SearchMessagePanel-${messageId}`)).toBeInTheDocument();
 		});
 
 		it('should open message preview when double-clicking message in list', async () => {
+			const searchSettings = setupSearchViewTest({ viewBy: 'message', query: 'hello' });
+			const { queryChip } = searchSettings;
+
 			const interceptor = createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
 				m: [
 					getSoapMessage('10', { su: 'message 1 Subject' }),
@@ -531,9 +516,7 @@ describe('SearchView', () => {
 				createWindow: mockCreateWindow
 			};
 			spyUseGlobalExternalWindowManager.mockReturnValue(context);
-			const { user } = setupTest(<SearchView {...searchViewProps} />, {
-				store
-			});
+			const { user } = setupTest(<SearchView {...searchViewProps} />);
 
 			await act(async () => {
 				await interceptor;
@@ -545,23 +528,35 @@ describe('SearchView', () => {
 			const messageContainer = await screen.findByTestId(`MessageListItem-10`);
 
 			await act(async () => {
-				await user.hover(messageContainer);
+				user.hover(messageContainer);
 			});
 
 			const clickableMessage = await screen.findByTestId(`hover-container-10`);
-			createSoapAPIInterceptor<MsgActionRequest>('MsgAction');
+			const response: MsgActionResponse = {
+				action: {
+					id: '123',
+					op: 'trash'
+				}
+			};
+			createSoapAPIInterceptor<MsgActionRequest, MsgActionResponse>('MsgAction', response);
 			await act(async () => {
-				await user.dblClick(clickableMessage);
+				user.dblClick(clickableMessage);
 			});
 
 			expect(mockCreateWindow).toHaveBeenCalledTimes(1);
 		});
 		it('should call MsgActionRequest with the correct parameters when user click on a message', async () => {
+			const searchSettings = setupSearchViewTest({ viewBy: 'message', query: 'hello' });
+			const { queryChip } = searchSettings;
+
 			const searchInterceptor = createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
 				m: [getSoapMessage('10', { su: 'message 1 Subject', f: 'u' })],
 				more: false
 			});
-			const msgActionInterceptor = createSoapAPIInterceptor<MsgActionRequest>('MsgAction');
+			const msgActionInterceptor = createSoapAPIInterceptor<MsgActionRequest, MsgActionResponse>(
+				'MsgAction',
+				aRandomMsgActionResponse
+			);
 
 			const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
 			const searchViewProps: SearchViewProps = {
@@ -571,9 +566,7 @@ describe('SearchView', () => {
 			};
 
 			jest.spyOn(useSelection, 'useSelection').mockReturnValue(mockedUseSelection);
-			const { user } = setupTest(<SearchView {...searchViewProps} />, {
-				store
-			});
+			const { user } = setupTest(<SearchView {...searchViewProps} />);
 			await waitFor(async () => searchInterceptor);
 
 			expect(await screen.findByText('label.results_for')).toBeInTheDocument();
@@ -590,8 +583,6 @@ describe('SearchView', () => {
 	});
 
 	it('should display a disabled Advanced Filters button when SearchDisabled is true', async () => {
-		const store = generateStore();
-
 		const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
 		const searchViewProps: SearchViewProps = {
 			useQuery: () => [[], noop],
@@ -599,9 +590,7 @@ describe('SearchView', () => {
 			ResultsHeader: resultsHeader
 		};
 
-		setupTest(<SearchView {...searchViewProps} />, {
-			store
-		});
+		setupTest(<SearchView {...searchViewProps} />);
 		const advancedFiltersButton = screen.getByRole('button', {
 			name: /label\.single_advanced_filter/i
 		});
@@ -610,8 +599,7 @@ describe('SearchView', () => {
 	});
 
 	it('should not call search API if query empty', async () => {
-		const store = generateStore();
-		const spySearch = jest.spyOn(search, 'search');
+		const searchSpy = jest.spyOn(searchSoapApi, 'searchSoapApi');
 		const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
 		const searchViewProps: SearchViewProps = {
 			useQuery: () => [[], noop],
@@ -619,20 +607,17 @@ describe('SearchView', () => {
 			ResultsHeader: resultsHeader
 		};
 
-		setupTest(<SearchView {...searchViewProps} />, {
-			store
-		});
+		setupTest(<SearchView {...searchViewProps} />);
 
 		const advancedFiltersButton = screen.getByRole('button', {
 			name: /label\.single_advanced_filter/i
 		});
 		expect(advancedFiltersButton).toBeVisible();
 		expect(advancedFiltersButton).toBeEnabled();
-		expect(spySearch).not.toHaveBeenCalled();
+		expect(searchSpy).not.toHaveBeenCalled();
 	});
 
 	it('should call setSearchDisabled button if Search API fails with mail.QUERY_PARSE_ERROR', async () => {
-		const store = generateStore();
 		const interceptor = createSoapAPIInterceptor<SearchRequest, ErrorSoapBodyResponse>(
 			'Search',
 			buildSoapErrorResponseBody({
@@ -640,6 +625,10 @@ describe('SearchView', () => {
 				reason: 'Failed to execute search'
 			})
 		);
+		createSoapAPIInterceptor<GetMsgRequest, GetMsgResponse>('GetMsg', {
+			m: {}
+		} as GetMsgResponse);
+
 		const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
 		const setSearchDisabled = jest.fn();
 		const queryChip: QueryChip = {
@@ -653,15 +642,12 @@ describe('SearchView', () => {
 			ResultsHeader: resultsHeader
 		};
 
-		setupTest(<SearchView {...searchViewProps} />, {
-			store
-		});
+		setupTest(<SearchView {...searchViewProps} />);
 		await interceptor;
 		await waitFor(() => expect(setSearchDisabled).toHaveBeenCalled());
 	});
 
 	it('should not call setSearchDisabled button if Search API fails with another error', async () => {
-		const store = generateStore();
 		const interceptor = createSoapAPIInterceptor<SearchRequest, ErrorSoapBodyResponse>(
 			'Search',
 			buildSoapErrorResponseBody({
@@ -682,9 +668,7 @@ describe('SearchView', () => {
 			ResultsHeader: resultsHeader
 		};
 
-		setupTest(<SearchView {...searchViewProps} />, {
-			store
-		});
+		setupTest(<SearchView {...searchViewProps} />);
 
 		await interceptor;
 		act(() => {
@@ -695,7 +679,6 @@ describe('SearchView', () => {
 	});
 
 	it('should route to message panel when clicking message in list', async () => {
-		const store = generateStore();
 		const interceptor = createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
 			m: [
 				getSoapMessage('10', { su: 'message 1 Subject' }),
@@ -715,7 +698,6 @@ describe('SearchView', () => {
 		};
 		const settings = generateSettings(customSettings);
 		jest.spyOn(hooks, 'useUserSettings').mockReturnValue(settings);
-
 		const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
 		const searchViewProps: SearchViewProps = {
 			useQuery: () => [[queryChip], noop],
@@ -726,9 +708,7 @@ describe('SearchView', () => {
 		jest.spyOn(useSelection, 'useSelection').mockReturnValue(mockedUseSelection);
 		jest.spyOn(hooks, 'useUserSettings').mockReturnValue(settings);
 		const spyReplaceHistory = jest.spyOn(hooks, 'replaceHistory');
-		const { user } = setupTest(<SearchView {...searchViewProps} />, {
-			store
-		});
+		const { user } = setupTest(<SearchView {...searchViewProps} />);
 
 		await act(async () => {
 			await interceptor;
@@ -744,9 +724,12 @@ describe('SearchView', () => {
 		});
 
 		const clickableMessage = await screen.findByTestId(`hover-container-10`);
-		createSoapAPIInterceptor<MsgActionRequest>('MsgAction');
+		createSoapAPIInterceptor<MsgActionRequest, MsgActionResponse>(
+			'MsgAction',
+			aRandomMsgActionResponse
+		);
 		await act(async () => {
-			await user.click(clickableMessage);
+			user.click(clickableMessage);
 		});
 		expect(spyReplaceHistory).toHaveBeenCalledWith('/message/10');
 	});

@@ -1,0 +1,212 @@
+/*
+ * SPDX-FileCopyrightText: 2024 Zextras <https://www.zextras.com>
+ *
+ * SPDX-License-Identifier: AGPL-3.0-only
+ */
+import React from 'react';
+
+import { act, screen } from '@testing-library/react';
+
+import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
+import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
+import { updateMessages } from '../../../store/emails/store';
+import { generateCompleteMessageFromAPI } from '../../../tests/generators/api';
+import { generateMessage } from '../../../tests/generators/generateMessage';
+import { GetMsgRequest, GetMsgResponse } from '../../../types';
+import { HtmlMessageRenderer } from '../html-message-renderer';
+
+describe('HTML message renderer', () => {
+	describe('Search Module', () => {
+		describe('Message too large banner', () => {
+			it('should display banner if body truncated', async () => {
+				const message = generateMessage({
+					id: '1',
+					body: 'Test',
+					truncated: true
+				});
+				updateMessages([message]);
+
+				setupTest(<HtmlMessageRenderer message={message} />, {
+					initialEntries: ['/search']
+				});
+
+				expect(await screen.findByText('warningBanner.truncatedMessage.label')).toBeVisible();
+			});
+
+			it('should not display banner if body not truncated', async () => {
+				const message = generateMessage({
+					id: '1',
+					body: 'Test',
+					truncated: false
+				});
+				updateMessages([message]);
+
+				setupTest(<HtmlMessageRenderer message={message} />, {
+					initialEntries: ['/search']
+				});
+
+				expect(screen.queryByText('warningBanner.truncatedMessage.label')).not.toBeInTheDocument();
+			});
+
+			it('should call GetMsg API when clicking load message', async () => {
+				const response: GetMsgResponse = {
+					m: [generateCompleteMessageFromAPI({ id: '1' })]
+				};
+				const interceptor = createSoapAPIInterceptor<GetMsgRequest, GetMsgResponse>(
+					'GetMsg',
+					response
+				);
+				const message = generateMessage({
+					id: '1',
+					body: 'Test',
+					truncated: true
+				});
+				updateMessages([message]);
+
+				const { user } = setupTest(<HtmlMessageRenderer message={message} />, {
+					initialEntries: ['/search']
+				});
+
+				const loadMessageButton = await screen.findByText('warningBanner.truncatedMessage.button');
+				await act(async () => {
+					await user.click(loadMessageButton);
+				});
+
+				const request = await interceptor;
+				expect(request.m.id).toBe('1');
+				expect(request.m.max).not.toBeDefined();
+			});
+
+			it('should remove message too large banner after clicking load message', async () => {
+				const message = generateMessage({ id: '1', body: 'Initial body', truncated: true });
+				updateMessages([message]);
+				const interceptor = createSoapAPIInterceptor<GetMsgRequest, GetMsgResponse>('GetMsg', {
+					m: [
+						generateCompleteMessageFromAPI({
+							id: '1',
+							mp: [
+								{
+									ct: 'text/html',
+									part: '0',
+									body: true,
+									requiresSmartLinkConversion: false,
+									truncated: false,
+									content: 'Updated content'
+								}
+							]
+						})
+					]
+				});
+
+				const { user } = setupTest(<HtmlMessageRenderer message={message} />, {
+					initialEntries: ['/search']
+				});
+
+				const loadMessageButton = await screen.findByText('warningBanner.truncatedMessage.button');
+
+				act(() => {
+					user.click(loadMessageButton);
+				});
+
+				await interceptor;
+				await act(async () => {
+					expect(
+						screen.queryByText('warningBanner.truncatedMessage.button')
+					).not.toBeInTheDocument();
+				});
+			});
+		});
+		it('should display empty fragment when message is set only mails store', () => {
+			const messageBody = 'Initial body';
+			const message = generateMessage({
+				id: '1',
+				body: messageBody,
+				truncated: true
+			});
+			setupTest(<HtmlMessageRenderer message={message} />, {
+				initialEntries: ['/search']
+			});
+			expect(screen.queryByText(messageBody)).not.toBeInTheDocument();
+		});
+	});
+
+	describe('Mails Module', () => {
+		it('should display banner if body truncated', async () => {
+			const message = generateMessage({ id: '1', body: 'Initial body', truncated: true });
+			setupTest(<HtmlMessageRenderer message={message} />, {
+				initialEntries: ['/mails']
+			});
+
+			expect(await screen.findByText('warningBanner.truncatedMessage.label')).toBeVisible();
+		});
+
+		it('should not display banner if body not truncated', async () => {
+			const message = generateMessage({ id: '1', body: 'Initial body', truncated: false });
+
+			setupTest(<HtmlMessageRenderer message={message} />, {
+				initialEntries: ['/mails']
+			});
+
+			expect(screen.queryByText('warningBanner.truncatedMessage.label')).not.toBeInTheDocument();
+		});
+
+		it('should call GetMsg API when clicking load message', async () => {
+			const message = generateMessage({ id: '1', body: 'Initial body', truncated: true });
+
+			const response: GetMsgResponse = {
+				m: [generateCompleteMessageFromAPI({ id: '1' })]
+			};
+			const interceptor = createSoapAPIInterceptor<GetMsgRequest, GetMsgResponse>(
+				'GetMsg',
+				response
+			);
+
+			const { user } = setupTest(<HtmlMessageRenderer message={message} />, {
+				initialEntries: ['/mails']
+			});
+
+			const loadMessageButton = await screen.findByText('warningBanner.truncatedMessage.button');
+			await act(async () => {
+				await user.click(loadMessageButton);
+			});
+
+			const request = await interceptor;
+			expect(request.m.id).toBe('1');
+			expect(request.m.max).not.toBeDefined();
+		});
+
+		it('should remove message too large banner after clicking load message', async () => {
+			const message = generateMessage({ id: '1', body: 'Initial body', truncated: true });
+
+			const interceptor = createSoapAPIInterceptor<GetMsgRequest, GetMsgResponse>('GetMsg', {
+				m: [
+					generateCompleteMessageFromAPI({
+						id: '1',
+						mp: [
+							{
+								ct: 'text/html',
+								part: '0',
+								body: true,
+								requiresSmartLinkConversion: false,
+								truncated: false,
+								content: 'Updated content'
+							}
+						]
+					})
+				]
+			});
+
+			const { user } = setupTest(<HtmlMessageRenderer message={message} />, {
+				initialEntries: ['/mails']
+			});
+
+			const loadMessageButton = await screen.findByText('warningBanner.truncatedMessage.button');
+			user.click(loadMessageButton);
+
+			await interceptor;
+			await act(async () => {
+				expect(screen.queryByText('warningBanner.truncatedMessage.button')).not.toBeInTheDocument();
+			});
+		});
+	});
+});

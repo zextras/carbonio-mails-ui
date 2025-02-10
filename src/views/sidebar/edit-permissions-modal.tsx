@@ -1,5 +1,4 @@
 /*
-/*
  * SPDX-FileCopyrightText: 2021 Zextras <https://www.zextras.com>
  *
  * SPDX-License-Identifier: AGPL-3.0-only
@@ -8,8 +7,6 @@ import React, { ChangeEvent, FC, useCallback, useMemo, useState } from 'react';
 
 import {
 	Checkbox,
-	ChipInput,
-	ChipItem,
 	Container,
 	Input,
 	Padding,
@@ -18,21 +15,21 @@ import {
 	SelectItem,
 	Text
 } from '@zextras/carbonio-design-system';
-import { t, useIntegratedComponent, useUserAccounts } from '@zextras/carbonio-shell-ui';
-import { map } from 'lodash';
+import { t, useUserAccounts } from '@zextras/carbonio-shell-ui';
 
 import { GranteeInfo } from './parts/edit/share-folder-properties';
+import { sendShareNotificationSoapApi } from '../../api/send-share-notification-soap-api';
+import { shareFolderSoapApi } from '../../api/share-folder-soap-api';
 import ModalFooter from '../../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../../carbonio-ui-commons/components/modals/modal-header';
+import { useContactInput } from '../../carbonio-ui-commons/integrations/hooks';
+import { ContactInputItem } from '../../carbonio-ui-commons/integrations/types';
 import type { EditPermissionsModalProps } from '../../carbonio-ui-commons/types/sidebar';
-import { useAppDispatch } from '../../hooks/redux';
 import { useUiUtilities } from '../../hooks/use-ui-utilities';
 import {
 	ShareCalendarRoleOptions,
 	findLabel
 } from '../../integrations/shared-invite-reply/parts/utils';
-import { sendShareNotification } from '../../store/actions/send-share-notification';
-import { shareFolder } from '../../store/actions/share-folder';
 
 // TODO refactor IRIS-4324
 const EditPermissionsModal: FC<EditPermissionsModalProps> = ({
@@ -42,12 +39,11 @@ const EditPermissionsModal: FC<EditPermissionsModalProps> = ({
 	grant,
 	goBack
 }) => {
-	const dispatch = useAppDispatch();
-	const [ContactInput, integrationAvailable] = useIntegratedComponent('contact-input');
+	const ContactInput = useContactInput();
 	const shareCalendarRoleOptions = useMemo(() => ShareCalendarRoleOptions(t), []);
 	const [sendNotification, setSendNotification] = useState(true);
 	const [standardMessage, setStandardMessage] = useState('');
-	const [contacts, setContacts] = useState<any>([]);
+	const [contacts, setContacts] = useState<ContactInputItem[]>([]);
 	const [shareWithUserRole, setshareWithUserRole] = useState<string>(editMode ? grant.perm : 'r');
 
 	const { createSnackbar } = useUiUtilities();
@@ -66,55 +62,50 @@ const EditPermissionsModal: FC<EditPermissionsModalProps> = ({
 		setshareWithUserRole(shareRole);
 	}, []);
 
-	const onConfirm = useCallback(() => {
-		dispatch(
-			shareFolder({
-				sendNotification,
+	const onConfirm = useCallback(async (): Promise<void> => {
+		const shareFolderResponse = await shareFolderSoapApi({
+			sendNotification,
+			standardMessage,
+			contacts: editMode
+				? [{ email: grant.d || grant.zid }]
+				: contacts.map((contact) => ({ email: contact.value.email })),
+			shareWithUserRole,
+			folder,
+			accounts
+		});
+		if (!('Fault' in shareFolderResponse)) {
+			createSnackbar({
+				key: `share-${folder.id}`,
+				replace: true,
+				hideButton: true,
+				severity: 'info',
+				label: editMode
+					? t('snackbar.share_updated', '"Access rights updated"')
+					: t('snackbar.folder_shared', 'Folder shared'),
+				autoHideTimeout: 3000
+			});
+			const sendNotificaitonResponse = await sendShareNotificationSoapApi?.({
 				standardMessage,
-				contacts: editMode ? [{ email: grant.d || grant.zid }] : contacts,
-				shareWithUserRole,
+				contacts: editMode
+					? [{ email: grant.d || grant.zid }]
+					: contacts.map((contact) => ({ email: contact.value.email })),
+
 				folder,
 				accounts
-			})
-		).then((res: { type: string }) => {
-			if (!('Fault' in res)) {
+			});
+			if (!sendNotificaitonResponse) {
 				createSnackbar({
 					key: `share-${folder.id}`,
 					replace: true,
+					severity: 'error',
 					hideButton: true,
-					severity: 'info',
-					label: editMode
-						? t('snackbar.share_updated', '"Access rights updated"')
-						: t('snackbar.folder_shared', 'Folder shared'),
+					label: t('label.error_try_again', 'Something went wrong, please try again'),
 					autoHideTimeout: 3000
 				});
-				sendNotification &&
-					dispatch(
-						sendShareNotification({
-							sendNotification,
-							standardMessage,
-							contacts: editMode ? [{ email: grant.d || grant.zid }] : contacts,
-							shareWithUserRole,
-							folder,
-							accounts
-						})
-					).then((res2: { type: string }) => {
-						if (!res2.type.includes('fulfilled')) {
-							createSnackbar({
-								key: `share-${folder.id}`,
-								replace: true,
-								severity: 'error',
-								hideButton: true,
-								label: t('label.error_try_again', 'Something went wrong, please try again'),
-								autoHideTimeout: 3000
-							});
-						}
-					});
 			}
-			onClose();
-		});
+		}
+		onClose();
 	}, [
-		dispatch,
 		sendNotification,
 		standardMessage,
 		editMode,
@@ -152,25 +143,15 @@ const EditPermissionsModal: FC<EditPermissionsModalProps> = ({
 					</Container>
 				) : (
 					<Container height="fit" padding={{ vertical: 'small' }}>
-						{integrationAvailable ? (
-							<ContactInput
-								// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-								// @ts-ignore
-								background="gray4"
-								placeholder={t('share.recipients_address', 'Recipients’ e-mail addresses')}
-								onChange={(ev: ChangeEvent<HTMLInputElement>): void => {
-									setContacts(ev);
-								}}
-								defaultValue={contacts}
-							/>
-						) : (
-							<ChipInput
-								placeholder={t('share.recipients_address', 'Recipients’ e-mail addresses')}
-								onChange={(items: ChipItem[]): void => {
-									setContacts(map(items, (contact) => ({ email: contact })));
-								}}
-							/>
-						)}
+						<ContactInput
+							background="gray4"
+							placeholder={t('share.recipients_address', 'Recipients’ e-mail addresses')}
+							onChange={(contactChips: ContactInputItem[]): void => {
+								setContacts(contactChips);
+							}}
+							defaultValue={contacts}
+						/>
+						)
 					</Container>
 				)}
 

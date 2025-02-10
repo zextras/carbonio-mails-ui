@@ -84,7 +84,6 @@ const ModalAccordionCustomComponent: FC<{
 		<Container
 			data-testid={`folder-accordion-item-${item.id}`}
 			width="fill"
-			main-alignment="flex-start"
 			orientation="vertical"
 			crossAlignment="flex-start"
 			padding="small"

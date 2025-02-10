@@ -6,15 +6,18 @@
 import React from 'react';
 
 import { faker } from '@faker-js/faker';
+import { waitFor } from '@testing-library/react';
 
 import { FOLDERS } from '../../../../../carbonio-ui-commons/constants/folders';
+import { createSoapAPIInterceptor } from '../../../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { populateFoldersStore } from '../../../../../carbonio-ui-commons/test/mocks/store/folders';
 import { setupTest, screen } from '../../../../../carbonio-ui-commons/test/test-setup';
 import { MAILS_VIEW_LAYOUTS } from '../../../../../constants';
+import { setConversationsInEmailStore } from '../../../../../store/emails/store';
 import { TESTID_SELECTORS } from '../../../../../tests/constants';
-import { generateStore } from '../../../../../tests/generators/store';
+import { generateConversation } from '../../../../../tests/generators/generateConversation';
 import { mockLayoutStorage } from '../../../../../tests/layouts-utils';
-import PreviewPanelHeader from '../preview-panel-header';
+import { PreviewPanelHeader } from '../preview-panel-header';
 
 describe('PreviewPanelHeader', () => {
 	it('renders correctly', () => {
@@ -59,25 +62,29 @@ describe('PreviewPanelHeader', () => {
 		).not.toBeInTheDocument();
 	});
 
-	it('should render navigation arrow if the current list layout is "no-split"', () => {
+	it('should render navigation arrow if the current list layout is "no-split"', async () => {
 		mockLayoutStorage({ layout: MAILS_VIEW_LAYOUTS.NO_SPLIT });
 		populateFoldersStore();
-
-		const store = generateStore();
+		const conversation = generateConversation({ id: '1' });
+		createSoapAPIInterceptor('Search');
+		setConversationsInEmailStore([conversation], false);
 
 		setupTest(
 			<PreviewPanelHeader itemType={'conversation'} isRead={false} folderId={FOLDERS.INBOX} />,
 			{
 				initialEntries: [`/mails/folder/2/conversation/1`],
-				path: '/mails/folder/:folderId/conversation/:conversationId',
-				store
+				path: '/mails/folder/:folderId/conversation/:conversationId'
 			}
 		);
-		expect(
-			screen.getByRoleWithIcon('button', { icon: TESTID_SELECTORS.icons.navigatePrevious })
-		).toBeVisible();
-		expect(
-			screen.getByRoleWithIcon('button', { icon: TESTID_SELECTORS.icons.navigateNext })
-		).toBeVisible();
+		await waitFor(async () => {
+			expect(
+				screen.getByRoleWithIcon('button', { icon: TESTID_SELECTORS.icons.navigatePrevious })
+			).toBeVisible();
+		});
+		await waitFor(async () => {
+			expect(
+				screen.getByRoleWithIcon('button', { icon: TESTID_SELECTORS.icons.navigateNext })
+			).toBeVisible();
+		});
 	});
 });

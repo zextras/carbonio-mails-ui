@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { faker } from '@faker-js/faker';
-import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
 
+import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
 import { ParticipantRole } from '../../carbonio-ui-commons/constants/participants';
 import { getRootsMap } from '../../carbonio-ui-commons/store/zustand/folder/hooks';
 import { populateFoldersStore } from '../../carbonio-ui-commons/test/mocks/store/folders';
@@ -15,6 +15,7 @@ import { getMessageOwnerAccountName } from '../folders';
 import {
 	getAddressOwnerAccount,
 	getExtraAccountsIds,
+	getIdentitiesDescriptors,
 	getMessageSenderAccount,
 	getMessageSenderAddress
 } from '../identities';
@@ -188,6 +189,47 @@ describe('getExtraAccountsIds', () => {
 		const result = getExtraAccountsIds();
 		result?.forEach((id) => {
 			expect(rootsArray).toContain(`${id}:${FOLDERS.USER_ROOT}`);
+		});
+	});
+});
+
+describe('getIdentitiesDescriptors', () => {
+	test('returns all identities including primary, aliases, and delegations', () => {
+		const result = getIdentitiesDescriptors();
+		const primaryIdentity = result.find((identity) => identity.type === 'primary');
+		const aliasIdentities = result.filter((identity) => identity.type === 'alias');
+		const delegationIdentities = result.filter((identity) => identity.type === 'delegation');
+
+		expect(primaryIdentity).toBeDefined();
+		expect(aliasIdentities.length).toBeGreaterThan(0);
+		expect(delegationIdentities.length).toBeGreaterThan(0);
+	});
+
+	test('returns unique identities for delegation accounts', () => {
+		const result = getIdentitiesDescriptors();
+		const delegationIdentities = result.filter((identity) => identity.type === 'delegation');
+		const uniqueDelegationIdentities = new Set(
+			delegationIdentities.map((identity) => identity.fromAddress)
+		);
+
+		expect(delegationIdentities.length).toBe(uniqueDelegationIdentities.size);
+	});
+
+	test('returns identities with correct owner account', () => {
+		const result = getIdentitiesDescriptors();
+		result.forEach((identity) => {
+			expect(identity.ownerAccount).toBeDefined();
+		});
+	});
+
+	test('returns identities with correct type and right', () => {
+		const result = getIdentitiesDescriptors();
+		result.forEach((identity) => {
+			if (identity.type === 'delegation') {
+				expect(identity.right).toBeDefined();
+			} else {
+				expect(identity.right).toBeUndefined();
+			}
 		});
 	});
 });

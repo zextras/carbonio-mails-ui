@@ -12,7 +12,6 @@ import { times } from 'lodash';
 
 import { generateSettings } from '../../../carbonio-ui-commons/test/mocks/settings/settings-generator';
 import { screen, setupTest, within } from '../../../carbonio-ui-commons/test/test-setup';
-import { generateStore } from '../../../tests/generators/store';
 import type { InputProps } from '../../../types';
 import TrusteeAddresses from '../trustee-addresses';
 
@@ -48,7 +47,6 @@ describe('Trustee addresses settings', () => {
 	});
 
 	it('should render the list of trustee addresses', async () => {
-		const store = generateStore();
 		const updateSettings = jest.fn();
 
 		const trusteeAddressArray: Array<string> = times(3, () => faker.internet.email());
@@ -58,7 +56,7 @@ describe('Trustee addresses settings', () => {
 			}
 		};
 		const { prefs } = generateSettings(customSettings);
-		setupTest(<TrusteeAddresses updateSettings={updateSettings} settingsObj={prefs} />, { store });
+		setupTest(<TrusteeAddresses updateSettings={updateSettings} settingsObj={prefs} />);
 
 		await screen.findByText(trusteeAddressArray[0], undefined, { timeout: FIND_TIMEOUT });
 		trusteeAddressArray.forEach((trusteeAdress) => {
@@ -67,7 +65,6 @@ describe('Trustee addresses settings', () => {
 	});
 
 	it('should display a delete button when user hover on the trustee address item', async () => {
-		const store = generateStore();
 		const updateSettings = jest.fn();
 
 		const trusteeAddressArray: Array<string> = times(1, () => faker.internet.email());
@@ -79,8 +76,7 @@ describe('Trustee addresses settings', () => {
 		const { prefs } = generateSettings(customSettings);
 
 		const { user } = setupTest(
-			<TrusteeAddresses updateSettings={updateSettings} settingsObj={prefs} />,
-			{ store }
+			<TrusteeAddresses updateSettings={updateSettings} settingsObj={prefs} />
 		);
 
 		await screen.findByText(trusteeAddressArray[0], undefined, { timeout: FIND_TIMEOUT });
@@ -98,7 +94,6 @@ describe('Trustee addresses settings', () => {
 	});
 
 	it('should remove the trustee address from the list if the remove button is clicked', async () => {
-		const store = generateStore();
 		const updateSettings = jest.fn();
 		const trusteeAddressArray: Array<string> = times(1, () => faker.internet.email());
 		const customSettings: Partial<AccountSettings> = {
@@ -108,8 +103,7 @@ describe('Trustee addresses settings', () => {
 		};
 		const { prefs } = generateSettings(customSettings);
 		const { user } = setupTest(
-			<TrusteeAddresses updateSettings={updateSettings} settingsObj={prefs} />,
-			{ store }
+			<TrusteeAddresses updateSettings={updateSettings} settingsObj={prefs} />
 		);
 
 		await screen.findByText(trusteeAddressArray[0], undefined, { timeout: FIND_TIMEOUT });
@@ -127,7 +121,6 @@ describe('Trustee addresses settings', () => {
 	});
 
 	it('should add new trustee address in the list of trustee addresses', async () => {
-		const store = generateStore();
 		const updateSettings = jest.fn();
 		const newTrusteeAddress = faker.internet.email();
 
@@ -139,8 +132,7 @@ describe('Trustee addresses settings', () => {
 		};
 		const { prefs } = generateSettings(customSettings);
 		const { user } = setupTest(
-			<TrusteeAddresses updateSettings={updateSettings} settingsObj={prefs} />,
-			{ store }
+			<TrusteeAddresses updateSettings={updateSettings} settingsObj={prefs} />
 		);
 		trusteeAddressArray.forEach((trusteeAdress) => {
 			expect(screen.getByText(trusteeAdress)).toBeVisible();

@@ -4,7 +4,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 
 import { Collapse, Container, Padding, Row } from '@zextras/carbonio-design-system';
 import {
@@ -15,44 +15,38 @@ import {
 import { filter } from 'lodash';
 
 import { MailMessageRenderer } from '../../../../../commons/mail-message-renderer/mail-message-renderer';
-import { useAppDispatch } from '../../../../../hooks/redux';
-import { useRequestDebouncedMessage } from '../../../../../hooks/use-request-debounced-message';
 import SharedInviteReply from '../../../../../integrations/shared-invite-reply';
-import { msgAction } from '../../../../../store/actions';
-import type { MailMessage, OpenEmlPreviewType } from '../../../../../types';
+import { msgActionEmailStoreAction } from '../../../../../store/emails/actions/msg-action-action';
+import type { IncompleteMessage, MailMessage, OpenEmlPreviewType } from '../../../../../types';
 import AttachmentsBlock from '../attachments-block';
 import ReadReceiptModal from '../read-receipt-modal';
 
 const [InviteResponse, integrationAvailable] = getIntegratedComponent('invites-reply');
 
 type MailPreviewContentProps = {
-	message: MailMessage;
+	message: MailMessage | IncompleteMessage;
 	isMailPreviewOpen: boolean;
 	isExternalMessage?: boolean;
 	isInsideExtraWindow?: boolean;
 	openEmlPreview?: OpenEmlPreviewType;
 };
-export const MailPreviewContent: FC<MailPreviewContentProps> = ({
+export const MailPreviewContent = ({
 	message,
 	isMailPreviewOpen,
 	isExternalMessage = false,
 	openEmlPreview,
 	isInsideExtraWindow = false
-}) => {
+}: MailPreviewContentProps): React.JSX.Element => {
 	const [showModal, setShowModal] = useState(true);
-	const dispatch = useAppDispatch();
+	const messageId = message.id;
 	const accounts = useUserAccounts();
 	const { prefs } = useUserSettings();
 	const moveToTrash = useCallback(() => {
-		dispatch(
-			msgAction({
-				operation: `trash`,
-				ids: [message.id]
-			})
-		);
-	}, [message, dispatch]);
-
-	useRequestDebouncedMessage(message.id, message?.isComplete);
+		msgActionEmailStoreAction({
+			operation: `trash`,
+			ids: [messageId]
+		});
+	}, [messageId]);
 
 	const showAppointmentInvite = useMemo(
 		() =>

@@ -6,56 +6,187 @@
 
 import React from 'react';
 
-import { noop } from 'lodash';
+import { act } from '@testing-library/react';
+import * as hooks from '@zextras/carbonio-shell-ui';
 
-import { calculateMailSize, SizeExceededWarningBanner } from '../size-exceeded-waring-banner';
+import { generateSettings } from '../../../../../../carbonio-ui-commons/test/mocks/settings/settings-generator';
 import { setupTest } from '../../../../../../carbonio-ui-commons/test/test-setup';
-import { addEditor } from '../../../../../../store/zustand/editor';
+import { addEditor, useEditorsStore } from '../../../../../../store/editor';
 import { setupEditorStore } from '../../../../../../tests/generators/editor-store';
 import { generateEditorV2Case } from '../../../../../../tests/generators/editors';
-import { generateStore } from '../../../../../../tests/generators/store';
+import { MailsEditorV2, SavedAttachment } from '../../../../../../types';
+import { calculateMailSize, SizeExceededWarningBanner } from '../size-exceeded-waring-banner';
 
-const ERROR_MSG_EXCEED_LIMIT =
-	'The message size exceeds the limit. Please convert some attachments to smart links.';
 describe('sizeExceededWarningBanner', () => {
+	beforeEach(() => {
+		const settings = generateSettings({
+			attrs: {
+				zimbraMtaMaxMessageSize: 100
+			}
+		});
+		jest.spyOn(hooks, 'useUserSettings').mockReturnValue(settings);
+	});
+
 	it('render warning banner when the mail size exceeds limit', async () => {
 		setupEditorStore({ editors: [] });
-		const editor = await generateEditorV2Case(1, generateStore().dispatch);
-		editor.size = 999999999;
+		const editor = await generateEditorV2Case(1);
+		editor.size = 200;
 		addEditor({ id: editor.id, editor });
 
-		const { getByText } = setupTest(
+		const setIsMailSizeWarningSpy = jest.fn();
+		setupTest(
 			<SizeExceededWarningBanner
 				editorId={editor.id}
-				isMailSizeWarning
-				setIsMailSizeWarning={noop}
+				isMailSizeWarning={false}
+				setIsMailSizeWarning={setIsMailSizeWarningSpy}
 			/>,
 			{}
 		);
-		expect(getByText(ERROR_MSG_EXCEED_LIMIT)).toBeInTheDocument();
+
+		expect(setIsMailSizeWarningSpy).toHaveBeenCalledWith(true);
 	});
 
 	it('does not render warning banner when the mail size does not exceed limit', async () => {
 		setupEditorStore({ editors: [] });
-		const editor = await generateEditorV2Case(1, generateStore().dispatch);
-		editor.size = 0;
+		const editor = await generateEditorV2Case(1);
+		editor.size = 10;
 		addEditor({ id: editor.id, editor });
 
-		const { queryByText } = setupTest(
+		const setIsMailSizeWarningSpy = jest.fn();
+
+		setupTest(
+			<SizeExceededWarningBanner
+				editorId={editor.id}
+				isMailSizeWarning
+				setIsMailSizeWarning={setIsMailSizeWarningSpy}
+			/>
+		);
+
+		expect(setIsMailSizeWarningSpy).toHaveBeenCalledWith(false);
+	});
+
+	it('does not render a warning banner when a smartLink is marked for convertion', async () => {
+		setupEditorStore({ editors: [] });
+		const attachment = { requiresSmartLinkConversion: true, size: 150 } as SavedAttachment;
+		const editor = await generateEditorV2Case(1);
+		editor.size = 200;
+		editor.savedAttachments = [attachment];
+		addEditor({ id: editor.id, editor });
+
+		const setIsMailSizeWarningSpy = jest.fn();
+
+		setupTest(
+			<SizeExceededWarningBanner
+				editorId={editor.id}
+				isMailSizeWarning
+				setIsMailSizeWarning={setIsMailSizeWarningSpy}
+			/>,
+			{}
+		);
+
+		expect(setIsMailSizeWarningSpy).toHaveBeenCalledWith(false);
+	});
+
+	it('toggling smartlink flag toggles the banner', async () => {
+		setupEditorStore({ editors: [] });
+		const attachmentNoSmartLink = {
+			requiresSmartLinkConversion: false,
+			size: 150
+		} as SavedAttachment;
+		const editor = await generateEditorV2Case(1);
+		editor.size = 200;
+		editor.savedAttachments = [attachmentNoSmartLink];
+		addEditor({ id: editor.id, editor });
+
+		const setIsMailSizeWarningSpy = jest.fn();
+
+		const { rerender } = setupTest(
+			<SizeExceededWarningBanner
+				editorId={editor.id}
+				isMailSizeWarning
+				setIsMailSizeWarning={setIsMailSizeWarningSpy}
+			/>
+		);
+
+		expect(setIsMailSizeWarningSpy).toHaveBeenCalledWith(true);
+		const attachmentWithSmartLink = {
+			requiresSmartLinkConversion: true,
+			size: 150
+		} as SavedAttachment;
+		act(() => {
+			useEditorsStore.setState({
+				editors: { [editor.id]: { ...editor, savedAttachments: [attachmentWithSmartLink] } }
+			});
+		});
+
+		const setIsMailSizeWarningSpy2 = jest.fn();
+		rerender(
+			<SizeExceededWarningBanner
+				editorId={editor.id}
+				isMailSizeWarning
+				setIsMailSizeWarning={setIsMailSizeWarningSpy2}
+			/>
+		);
+
+		expect(setIsMailSizeWarningSpy2).toHaveBeenCalledWith(false);
+
+		act(() => {
+			useEditorsStore.setState({
+				editors: { [editor.id]: { ...editor, savedAttachments: [attachmentNoSmartLink] } }
+			});
+		});
+
+		const setIsMailSizeWarningSpy3 = jest.fn();
+		rerender(
 			<SizeExceededWarningBanner
 				editorId={editor.id}
 				isMailSizeWarning={false}
-				setIsMailSizeWarning={noop}
+				setIsMailSizeWarning={setIsMailSizeWarningSpy3}
 			/>
 		);
-		expect(queryByText(ERROR_MSG_EXCEED_LIMIT)).not.toBeInTheDocument();
-	});
-});
 
-describe('calculateMailSize', () => {
-	it('should return the expected size of the email', async () => {
-		const editor = await generateEditorV2Case(1, generateStore().dispatch);
-		const result = calculateMailSize(editor);
-		expect(result).toBe(5433935);
+		expect(setIsMailSizeWarningSpy3).toHaveBeenCalledWith(true);
+	});
+
+	describe('calculateMailSize', () => {
+		const generatedEditor = generateEditorV2Case(1);
+
+		it('returns correct size when editor has size and totalSmartLinksSize', async () => {
+			const attachment = { requiresSmartLinkConversion: true, size: 200 } as SavedAttachment;
+			const editor: MailsEditorV2 = {
+				...(await generatedEditor),
+				size: 1000,
+				savedAttachments: [attachment]
+			};
+			expect(calculateMailSize(editor)).toBe(820);
+		});
+
+		it('returns correct size when editor size is zero', async () => {
+			const attachment = { requiresSmartLinkConversion: true, size: 200 } as SavedAttachment;
+			const editor: MailsEditorV2 = {
+				...(await generatedEditor),
+				size: 0,
+				savedAttachments: [attachment]
+			};
+			expect(calculateMailSize(editor)).toBe(-180);
+		});
+
+		it('returns correct size when totalSmartLinksSize is zero', async () => {
+			const editor: MailsEditorV2 = {
+				...(await generatedEditor),
+				size: 1000,
+				savedAttachments: []
+			};
+			expect(calculateMailSize(editor)).toBe(1000);
+		});
+
+		it('returns correct size when editor has undefined properties', async () => {
+			const editor: MailsEditorV2 = {
+				...(await generatedEditor),
+				size: undefined as never,
+				savedAttachments: undefined as never
+			};
+			expect(calculateMailSize(editor)).toBe(0);
+		});
 	});
 });

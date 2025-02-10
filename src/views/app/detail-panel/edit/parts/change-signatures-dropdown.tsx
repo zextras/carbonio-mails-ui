@@ -10,7 +10,7 @@ import { getUserAccount, t } from '@zextras/carbonio-shell-ui';
 import { map, noop, unescape } from 'lodash';
 
 import { getMailBodyWithSignature } from '../../../../../helpers/signatures';
-import { useEditorSignatureId, useEditorText } from '../../../../../store/zustand/editor';
+import { useEditorSignatureId, useEditorText } from '../../../../../store/editor';
 import { MailsEditorV2, SignItemType } from '../../../../../types';
 
 export type SignaturesDropdownProps = {

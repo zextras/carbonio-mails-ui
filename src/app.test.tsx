@@ -13,6 +13,7 @@ import App from './app';
 import * as addComponentsToShell from './app-utils/add-shell-components';
 import * as registerShellActions from './app-utils/register-shell-actions';
 import * as registerShellIntegrations from './app-utils/register-shell-integrations';
+import * as useSearchRegisterer from './app-utils/use-search-registerer';
 import { generateFolder } from './carbonio-ui-commons/test/mocks/folders/folders-generator';
 import {
 	createAPIInterceptor,
@@ -20,7 +21,7 @@ import {
 } from './carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { setupTest } from './carbonio-ui-commons/test/test-setup';
 import { BACKUP_SEARCH_ROUTE } from './constants';
-import { useBackupSearchStore } from './store/zustand/backup-search/store';
+import { useBackupSearchStore } from './store/backup-search/store';
 import { DeletedMessageFromAPI } from './types';
 
 // Mocking the worker. In commons jest-setup the worker is already mocked, but is improperly defined with wrong types and
@@ -29,6 +30,9 @@ import { DeletedMessageFromAPI } from './types';
 // I think we should consider removing that mock or redefine it or make it configurable
 jest.mock('./carbonio-ui-commons/worker', () => ({
 	folderWorker: {
+		postMessage: jest.fn()
+	},
+	tagsWorker: {
 		postMessage: jest.fn()
 	}
 }));
@@ -78,6 +82,12 @@ describe('App', () => {
 		expect(addComponentsToShellSpy).toHaveBeenCalled();
 		expect(registerShellActionSpy).toHaveBeenCalled();
 		expect(registerShellIntegrationsSpy).toHaveBeenCalled();
+	});
+
+	it('should register the search', () => {
+		const useSearchRegistererSpy = jest.spyOn(useSearchRegisterer, 'useSearchRegisterer');
+		setupTest(<App />);
+		expect(useSearchRegistererSpy).toHaveBeenCalled();
 	});
 
 	it('should add the backup search route when the backup search messages are present', () => {

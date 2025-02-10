@@ -11,7 +11,7 @@ import { map } from 'lodash';
 
 import { AttachmentPreview } from './attachment-preview';
 import * as StyledComp from './parts/edit-view-styled-components';
-import { useEditorAttachments } from '../../../../store/zustand/editor';
+import { useEditorAttachments } from '../../../../store/editor';
 import type { MailsEditorV2, SavedAttachment, UnsavedAttachment } from '../../../../types';
 
 export const EditAttachmentsBlock: FC<{
@@ -42,7 +42,7 @@ export const EditAttachmentsBlock: FC<{
 
 	return allAttachments.length > 0 ? (
 		<StyledComp.RowContainer background="gray6">
-			<StyledComp.ColContainer occupyFull>
+			<StyledComp.ColContainer $occupyFull>
 				<Container crossAlignment="flex-start">
 					<Container orientation="horizontal" mainAlignment="space-between" wrap="wrap">
 						{map(expanded ? allAttachments : allAttachments.slice(0, 2), (attachment, index) =>

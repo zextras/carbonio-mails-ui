@@ -1,0 +1,110 @@
+/*
+ * SPDX-FileCopyrightText: 2024 Zextras <https://www.zextras.com>
+ *
+ * SPDX-License-Identifier: AGPL-3.0-only
+ */
+
+import { setupEditorStore } from '../../../tests/generators/editor-store';
+import {
+	readyToBeSentEditorTestCase,
+	aSmartLinkAttachment,
+	aSavedAttachment
+} from '../../../tests/generators/editors';
+import { SavedAttachment } from '../../../types';
+import { useEditorsStore } from '../store';
+
+const smartLinkAttachment = (size: number): SavedAttachment => ({
+	...aSmartLinkAttachment(),
+	size
+});
+const attachment = (size: number): SavedAttachment => ({ ...aSavedAttachment(), size });
+
+describe('store', () => {
+	test('toggleSmartLink should set to true the requiresSmartLinkConversion value of an attachment', async () => {
+		const oldEditor = await readyToBeSentEditorTestCase({
+			savedAttachments: [attachment(444)]
+		});
+		setupEditorStore({ editors: [oldEditor] });
+
+		useEditorsStore.getState().toggleSmartLink(oldEditor.id, '2');
+
+		const newEditor = useEditorsStore.getState().editors[oldEditor.id];
+		expect(newEditor.savedAttachments[0].requiresSmartLinkConversion).toBe(true);
+	});
+	test('toggleSmartLink should set to false the requiresSmartLinkConversion value of a smartlink attachment', async () => {
+		const oldEditor = await readyToBeSentEditorTestCase({
+			savedAttachments: [smartLinkAttachment(444)]
+		});
+		setupEditorStore({ editors: [oldEditor] });
+
+		useEditorsStore.getState().toggleSmartLink(oldEditor.id, '2');
+
+		const newEditor = useEditorsStore.getState().editors[oldEditor.id];
+		expect(newEditor.savedAttachments[0].requiresSmartLinkConversion).toBe(false);
+	});
+
+	test('toggleSmartLink should not change the value of requiresSmartLinkConversion if there is no current editor', async () => {
+		const oldEditor = await readyToBeSentEditorTestCase({
+			savedAttachments: [attachment(444)]
+		});
+		setupEditorStore({ editors: [oldEditor] });
+
+		useEditorsStore.getState().toggleSmartLink('wrong-editor-id', '2');
+
+		const newEditor = useEditorsStore.getState().editors[oldEditor.id];
+		expect(newEditor.savedAttachments[0].requiresSmartLinkConversion).toBe(false);
+	});
+
+	test('setSize should set the editor size for the provided editor id', async () => {
+		const editor = await readyToBeSentEditorTestCase();
+		setupEditorStore({ editors: [editor] });
+
+		useEditorsStore.getState().setSize(editor.id, 123);
+
+		const newEditor = useEditorsStore.getState().editors[editor.id];
+		expect(newEditor.size).toEqual(123);
+	});
+	test('size should be aligned in the new editor', async () => {
+		const editor = await readyToBeSentEditorTestCase({ size: 123 });
+		setupEditorStore({ editors: [editor] });
+
+		const newEditor = useEditorsStore.getState().editors[editor.id];
+		expect(newEditor.size).toEqual(123);
+	});
+
+	test('setIsSmimeSign should set the isSmimeSign value for the provided editor id', async () => {
+		const editor = await readyToBeSentEditorTestCase();
+		setupEditorStore({ editors: [editor] });
+
+		useEditorsStore.getState().setIsSmimeSign(editor.id, true);
+
+		const newEditor = useEditorsStore.getState().editors[editor.id];
+		expect(newEditor.isSmimeSign).toEqual(true);
+	});
+
+	test('isSmimeSign should be aligned in the new editor', async () => {
+		const editor = await readyToBeSentEditorTestCase({ isSmimeSign: true });
+		setupEditorStore({ editors: [editor] });
+
+		const newEditor = useEditorsStore.getState().editors[editor.id];
+		expect(newEditor.isSmimeSign).toEqual(true);
+	});
+
+	test('setIsSmimeEncrypt should set the isSmimeEncrypt value for the provided editor id', async () => {
+		const editor = await readyToBeSentEditorTestCase();
+		setupEditorStore({ editors: [editor] });
+
+		useEditorsStore.getState().setIsSmimeEncrypt(editor.id, true);
+
+		const newEditor = useEditorsStore.getState().editors[editor.id];
+		expect(newEditor.isSmimeEncrypt).toEqual(true);
+	});
+
+	test('isSmimeEncrypt should be aligned in the new editor', async () => {
+		const editor = await readyToBeSentEditorTestCase({ isSmimeEncrypt: true });
+		setupEditorStore({ editors: [editor] });
+
+		const newEditor = useEditorsStore.getState().editors[editor.id];
+		expect(newEditor.isSmimeEncrypt).toEqual(true);
+	});
+});

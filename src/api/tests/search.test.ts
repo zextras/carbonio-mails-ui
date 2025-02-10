@@ -5,7 +5,7 @@
  */
 import { createSoapAPIInterceptor } from '../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { SearchRequest } from '../../types';
-import { searchSoapApi } from '../search';
+import { searchSoapApi } from '../search-soap-api';
 
 describe('Search', () => {
 	it('should send dateDesc filter if readDesc', async () => {

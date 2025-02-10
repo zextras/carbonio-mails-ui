@@ -23,7 +23,9 @@ import { handleGetConvRequest } from './src/tests/mocks/network/msw/handle-get-c
 import { handleGetMsgRequest } from './src/tests/mocks/network/msw/handle-get-msg';
 
 failOnConsole({
-	...getFailOnConsoleDefaultConfig()
+	...getFailOnConsoleDefaultConfig(),
+	allowMessage: (message) =>
+		message.includes('React does not recognize the `isGeneric` prop on a DOM element')
 });
 
 beforeAll(() => {
@@ -59,7 +61,6 @@ Object.defineProperty(window, 'matchMedia', {
 		addListener: jest.fn(), // deprecated
 		removeListener: jest.fn(), // deprecated
 		addEventListener: jest.fn(),
-		removeEventListener: jest.fn(),
-		dispatchEvent: jest.fn()
+		removeEventListener: jest.fn()
 	}))
 });

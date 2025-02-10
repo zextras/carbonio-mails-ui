@@ -8,16 +8,15 @@ import { faker } from '@faker-js/faker';
 
 import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
 import { ParticipantRole } from '../../carbonio-ui-commons/constants/participants';
-import { convertHtmlToPlainText } from '../../carbonio-ui-commons/utils/text/html';
+import { convertHtmlToPlainText } from '../../commons/utilities';
+import { updateMessages } from '../../store/emails/store';
 import { MailMessage, Participant, Sensitivity } from '../../types';
 
-/**
- *
- */
-type MessageGenerationParams = {
+export type MessageGenerationParams = {
 	id?: string;
 	folderId?: string;
 	from?: Participant;
+	cid?: string;
 	to?: Array<Participant>;
 	cc?: Array<Participant>;
 	receiveDate?: number;
@@ -41,37 +40,19 @@ type MessageGenerationParams = {
 	creationDateFromMailHeaders?: string;
 };
 
-/**
- *
- * @param id
- * @param folderId
- * @param receiveDate
- * @param to
- * @param cc
- * @param from
- * @param subject
- * @param body
- * @param isRead
- * @param isFlagged
- * @param isComplete
- * @param isDeleted
- * @param isDraft
- * @param isForwarded
- * @param isInvite
- * @param isReadReceiptRequested
- * @param isReplied
- * @param isScheduled
- * @param isSentByMe
- */
-const generateMessage = ({
+const loremBody =
+	'Lorem ipsum dolor sit amet, consectetur adipiscing elit.\nInteger nec odio. Praesent libero. Sed cursus ante dapibus diam.\nNam nec ante. Sed lacinia, urna non tincidunt mattis, tortor neque adipiscing diam, a cursus ipsum ante quis turpis.\nFusce nec tellus sed augue semper porta. Mauris massa.';
+
+export const generateMessage = ({
 	id = faker.number.int().toString(),
+	cid = '123',
 	folderId = FOLDERS.INBOX,
 	receiveDate = faker.date.recent({ days: 1 }).valueOf(),
 	to = [{ type: ParticipantRole.TO, address: faker.internet.email() }],
 	cc = [],
 	from = { type: ParticipantRole.FROM, address: faker.internet.email() },
 	subject = faker.lorem.word(6),
-	body = faker.lorem.paragraph(4),
+	body = loremBody,
 	isRead = false,
 	isFlagged = false,
 	isComplete = false,
@@ -92,11 +73,11 @@ const generateMessage = ({
 	attachments: undefined,
 	autoSendTime: 0,
 	body: { content: body, contentType: 'text/plain', truncated },
-	conversation: '',
+	conversation: cid,
 	date: receiveDate,
 	did: '',
 	flagged: isFlagged,
-	fragment: convertHtmlToPlainText(body).substring(0, 40),
+	fragment: convertHtmlToPlainText(body).substring(0, 40).trim(),
 	hasAttachment: false,
 	id,
 	invite: undefined,
@@ -156,4 +137,50 @@ const generateMessage = ({
 	messageIsFromDistributionList: false
 });
 
-export { MessageGenerationParams, generateMessage };
+/**
+ * Populates the email store with messages and returns the generated messages.
+ * The function generates messages based on provided message IDs or message generation parameters.
+ * If neither is provided, it generates a default set of messages.
+ *
+ * It then updates the email store with the generated messages and returns them.
+ */
+export const populateMessagesInEmailStore = ({
+	messageGeneratorParams,
+	messageIds,
+	messagesNumber = 1
+}: {
+	messageGeneratorParams?: Array<MessageGenerationParams>;
+	messageIds?: Array<string>;
+	messagesNumber?: number;
+}): Array<MailMessage> => {
+	// Generate messages based on provided message IDs
+	const messagesFromMessageIds = messageIds?.map((messageId) =>
+		generateMessage({
+			id: messageId,
+			folderId: FOLDERS.INBOX,
+			cid: '1'
+		})
+	);
+
+	// Generate messages based on provided message generation parameters
+	const messagesFromMessageGeneratorParams = messageGeneratorParams?.map((messageGeneratorParam) =>
+		generateMessage({ ...messageGeneratorParam })
+	);
+
+	// Generate default messages if no message IDs or parameters are provided
+	const defaultMessages = Array.from({ length: messagesNumber }).map((_, index) =>
+		generateMessage({
+			id: (index + 100).toString(),
+			folderId: FOLDERS.INBOX,
+			cid: '1'
+		})
+	);
+
+	// Use the provided messages or fall back to default messages
+	const generatedMessages =
+		messagesFromMessageIds ?? messagesFromMessageGeneratorParams ?? defaultMessages;
+
+	updateMessages(generatedMessages);
+
+	return generatedMessages;
+};

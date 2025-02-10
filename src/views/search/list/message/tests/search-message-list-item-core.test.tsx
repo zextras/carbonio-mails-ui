@@ -1,0 +1,123 @@
+/*
+ * SPDX-FileCopyrightText: 2025 Zextras <https://www.zextras.com>
+ *
+ * SPDX-License-Identifier: AGPL-3.0-only
+ */
+import React from 'react';
+
+import { screen } from '@testing-library/react';
+
+import { ZIMBRA_STANDARD_COLORS } from '../../../../../carbonio-ui-commons/constants';
+import { FOLDERS } from '../../../../../carbonio-ui-commons/constants/folders';
+import { useTags } from '../../../../../carbonio-ui-commons/store/zustand/tags';
+import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
+import { populateMessagesInEmailStore } from '../../../../../tests/generators/generateMessage';
+import { SearchMessageListItemCore } from '../search-message-list-item-core';
+
+jest.mock('../../../../../carbonio-ui-commons/store/zustand/tags', () => ({
+	useTags: jest.fn()
+}));
+
+jest.mock('../../../../../ui-actions/tag-actions', () => ({
+	useTagExist: jest.fn().mockReturnValue(true)
+}));
+
+const mockToggle = jest.fn();
+
+describe('SearchMessageListItemCore', () => {
+	beforeEach(() => {
+		jest.clearAllMocks();
+	});
+
+	describe('Tag Icon', () => {
+		const subject = 'Test Subject';
+		it('renders tag icon when tags are present and exist in store', async () => {
+			const generatedMessages = populateMessagesInEmailStore({
+				messageGeneratorParams: [{ id: '123', tags: ['tag1'], subject }]
+			});
+
+			const tagsFromStore = [{ id: 'tag1', name: 'Tag 1', color: 0 }];
+			(useTags as jest.Mock).mockReturnValue(tagsFromStore);
+
+			setupTest(
+				<SearchMessageListItemCore
+					completeMessage={generatedMessages[0]}
+					selected={false}
+					selecting={false}
+					toggle={mockToggle}
+					folderId={FOLDERS.INBOX}
+				/>
+			);
+
+			expect(screen.getByTestId('TagIcon')).toBeInTheDocument();
+		});
+
+		it('does not render tag icon when tags are empty', async () => {
+			const generatedMessages = populateMessagesInEmailStore({
+				messageGeneratorParams: [{ id: '123', tags: [], subject }]
+			});
+
+			const tagsFromStore: { color: number; name: string; id: string }[] = [];
+			(useTags as jest.Mock).mockReturnValue(tagsFromStore);
+
+			setupTest(
+				<SearchMessageListItemCore
+					completeMessage={generatedMessages[0]}
+					selected={false}
+					selecting={false}
+					toggle={mockToggle}
+					folderId={FOLDERS.INBOX}
+				/>
+			);
+
+			expect(screen.queryByTestId('TagIcon')).not.toBeInTheDocument();
+		});
+
+		it('renders tag icon with correct color when a single tag is present', async () => {
+			const generatedMessages = populateMessagesInEmailStore({
+				messageGeneratorParams: [{ id: '123', tags: ['tag1'], subject }]
+			});
+
+			const tagsFromStore = [{ id: 'tag1', name: 'Tag 1', color: 0 }];
+			(useTags as jest.Mock).mockReturnValue(tagsFromStore);
+
+			setupTest(
+				<SearchMessageListItemCore
+					completeMessage={generatedMessages[0]}
+					selected={false}
+					selecting={false}
+					toggle={mockToggle}
+					folderId={FOLDERS.INBOX}
+				/>
+			);
+
+			const tagIcon = screen.getByTestId('TagIcon');
+			expect(tagIcon).toHaveStyle(`color: ${ZIMBRA_STANDARD_COLORS[0].hex}`);
+		});
+
+		it('renders tag icon with default color when multiple tags are present', async () => {
+			const generatedMessages = populateMessagesInEmailStore({
+				messageGeneratorParams: [{ id: '123', tags: ['tag1', 'tag2'], subject }]
+			});
+
+			const tagsFromStore = [
+				{ id: 'tag1', name: 'Tag 1', color: 0 },
+				{ id: 'tag2', name: 'Tag 2', color: 1 }
+			];
+			(useTags as jest.Mock).mockReturnValue(tagsFromStore);
+
+			setupTest(
+				<SearchMessageListItemCore
+					completeMessage={generatedMessages[0]}
+					selected={false}
+					selecting={false}
+					toggle={mockToggle}
+					folderId={FOLDERS.INBOX}
+				/>
+			);
+
+			const tagIcon = screen.getByTestId('TagIcon');
+			expect(tagIcon).toHaveStyle('color: rgb(51,51,51)');
+		});
+	});
+});

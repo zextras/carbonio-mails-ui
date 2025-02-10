@@ -6,6 +6,7 @@
 
 import { t } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
+
 import type { MailMessage } from '../../types';
 
 export const getAttachments = ({ msg }: { msg: MailMessage }): string =>
@@ -24,7 +25,7 @@ export const getAttachments = ({ msg }: { msg: MailMessage }): string =>
          display: flex;
          font-family: Roboto, sans-serif;
          font-size: 1rem;
-         width: fill-content">
+         width: fit-content">
          ${t('label.attachment_plural', 'Attachments')}:
       </div>
    </td>
@@ -60,7 +61,6 @@ export const getAttachments = ({ msg }: { msg: MailMessage }): string =>
             font-family: Roboto, sans-serif;
             font-size: 0.75rem;
             display: flex;
-            line-height: 0;
             ">
             ${item.filename}
          </p>

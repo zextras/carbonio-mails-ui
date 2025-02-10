@@ -12,12 +12,14 @@ import React, {
 	useEffect,
 	useCallback
 } from 'react';
+
 import { Input, Container } from '@zextras/carbonio-design-system';
 import type { TFunction } from 'i18next';
 import { includes } from 'lodash';
+
+import { CreateFilterContext } from '../create-filter-context';
 import CustomSelect from '../custom-select';
 import { getSizeOptions, getSizeUnit, findDefaultValue } from '../utils';
-import { CreateFilterContext } from '../create-filter-context';
 
 type ComponentProps = {
 	t: TFunction;

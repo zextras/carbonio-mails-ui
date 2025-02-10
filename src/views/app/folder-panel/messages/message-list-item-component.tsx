@@ -3,16 +3,16 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, memo } from 'react';
+import React, { memo } from 'react';
 
 import { noop } from 'lodash';
 
 import { MessageListItem } from './message-list-item';
-import type { IncompleteMessage } from '../../../../types';
+import { useMessageById } from '../../../../store/emails/store';
 import { DragItemWrapper } from '../parts/drag-item-wrapper';
 
 export type ListItemComponentProps = {
-	message: IncompleteMessage;
+	messageId: string;
 	selected: Record<string, boolean>;
 	isSelected: boolean;
 	active: boolean;
@@ -27,44 +27,44 @@ export type ListItemComponentProps = {
 	currentFolderId?: string;
 };
 
-export const MessageListItemComponent: FC<ListItemComponentProps> = memo(
-	function MessageListItemComponent({
-		message,
-		selected,
-		isSelected,
-		active,
-		toggle,
-		isSelectModeOn,
-		dragImageRef,
-		isSearchModule,
-		deselectAll,
-		visible,
-		setDraggedIds = noop,
-		currentFolderId
-	}) {
-		return (
-			<DragItemWrapper
-				item={message}
-				selectedIds={[]}
-				selectedItems={selected}
-				setDraggedIds={setDraggedIds}
-				dragImageRef={dragImageRef}
-				dragAndDropIsDisabled={!!isSearchModule}
+export const MessageListItemComponent = memo(function MessageListItemComponent({
+	messageId,
+	selected,
+	isSelected,
+	active,
+	toggle,
+	isSelectModeOn,
+	dragImageRef,
+	isSearchModule,
+	deselectAll,
+	visible,
+	setDraggedIds = noop,
+	currentFolderId
+}: ListItemComponentProps): React.JSX.Element {
+	const message = useMessageById(messageId);
+	if (!message) return <></>;
+	return (
+		<DragItemWrapper
+			item={message}
+			selectedIds={[]}
+			selectedItems={selected}
+			setDraggedIds={setDraggedIds}
+			dragImageRef={dragImageRef}
+			dragAndDropIsDisabled={!!isSearchModule}
+			deselectAll={deselectAll}
+		>
+			<MessageListItem
+				message={message}
+				selected={isSelected}
+				selecting={isSelectModeOn}
+				isConvChildren={false}
+				toggle={toggle}
+				active={active}
+				visible={visible}
+				isSearchModule={isSearchModule}
 				deselectAll={deselectAll}
-			>
-				<MessageListItem
-					item={message}
-					selected={isSelected}
-					selecting={isSelectModeOn}
-					isConvChildren={false}
-					toggle={toggle}
-					active={active}
-					visible={visible}
-					isSearchModule={isSearchModule}
-					deselectAll={deselectAll}
-					currentFolderId={currentFolderId}
-				/>
-			</DragItemWrapper>
-		);
-	}
-);
+				currentFolderId={currentFolderId}
+			/>
+		</DragItemWrapper>
+	);
+});

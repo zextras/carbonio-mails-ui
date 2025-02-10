@@ -3,28 +3,20 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { Tags } from '@zextras/carbonio-shell-ui';
 import { filter, find, isNil, map } from 'lodash';
 
 import { normalizeParticipantsFromSoap } from './normalize-message';
-import { omitBy } from '../commons/utils';
-import type {
-	Conversation,
-	NormalizedConversation,
-	SoapConversation,
-	SoapIncompleteMessage
-} from '../types';
+import { getTags } from '../carbonio-ui-commons/store/zustand/tags';
+import { Tags } from '../carbonio-ui-commons/types/tags';
+import type { NormalizedConversation, SoapConversation, SoapIncompleteMessage } from '../types';
 
 const getTagIdsFromName = (names: string | undefined, tags?: Tags): Array<string | undefined> =>
 	map(
 		(names?.split(',') ?? []).filter((n) => n),
 		(name) => (find(tags, { name }) ? find(tags, { name })?.id : `nil:${name}`)
 	);
-const getTagIds = (
-	t: string | undefined,
-	tn: string | undefined,
-	tags?: Tags
-): Array<string | undefined> => {
+const getTagIds = (t: string | undefined, tn: string | undefined): Array<string | undefined> => {
+	const tags = getTags();
 	if (!isNil(t)) {
 		return filter(t.split(','), (tag) => tag !== '');
 	}
@@ -35,44 +27,8 @@ const getTagIds = (
 };
 
 export type NormalizeConversationProps = {
-	c: SoapConversation;
-	tags: Tags;
-	m?: Array<SoapIncompleteMessage>;
-};
-
-// @deprecated
-export const normalizeConversation = ({
-	c,
-	m,
-	tags
-}: NormalizeConversationProps): Partial<Conversation> => {
-	const filteredMsgs = c?.m ?? filter(m ?? [], ['cid', c?.id]);
-	const messages = filteredMsgs?.length
-		? map(filteredMsgs, (msg) => ({
-				id: msg.id,
-				parent: msg.l,
-				date: Number(msg?.d)
-			}))
-		: undefined;
-
-	return omitBy(
-		{
-			tags: getTagIds(c.t, c.tn, tags),
-			id: c.id,
-			date: c.d,
-			messages,
-			participants: c.e ? map(c.e, normalizeParticipantsFromSoap) : undefined,
-			subject: c.su,
-			fragment: c.fr,
-			read: !isNil(c.f) ? !/u/.test(c.f) : !(c.u > 0),
-			hasAttachment: !isNil(c.f) ? /a/.test(c.f) : undefined,
-			flagged: !isNil(c.f) ? /f/.test(c.f) : undefined,
-			urgent: !isNil(c.f) ? /!/.test(c.f) : undefined,
-			// Number of (nondeleted) messages. messages in trash or spam are in the count
-			messagesInConversation: c.n
-		},
-		isNil
-	);
+	conversation: SoapConversation;
+	messages?: Array<SoapIncompleteMessage>;
 };
 
 function removeUndefinedValues<T>(items: (T | undefined)[]): T[] {
@@ -86,38 +42,30 @@ function removeUndefinedValues<T>(items: (T | undefined)[]): T[] {
 }
 
 export const mapToNormalizedConversation = ({
-	c,
-	m,
-	tags
+	conversation,
+	messages
 }: NormalizeConversationProps): NormalizedConversation => {
-	const filteredMsgs = c?.m ?? filter(m ?? [], ['cid', c?.id]);
-	const messages = filteredMsgs?.length
-		? map(filteredMsgs, (msg) => ({
-				id: msg.id,
-				parent: msg.l,
-				date: Number(msg?.d)
-			}))
-		: undefined;
+	const messagesWithCid = conversation?.m ?? filter(messages ?? [], ['cid', conversation?.id]);
+	const convMessagesIds = map(messagesWithCid, (msg) => msg.id);
 
 	return {
-		tags: removeUndefinedValues(getTagIds(c.t, c.tn, tags)),
-		id: c.id,
-		date: c.d,
-		messages: messages || [],
-		participants: c.e ? map(c.e, normalizeParticipantsFromSoap) : [],
-		subject: c.su,
-		fragment: c.fr,
-		read: !isNil(c.f) ? !/u/.test(c.f) : c.u <= 0,
-		hasAttachment: !isNil(c.f) ? /a/.test(c.f) : false,
-		flagged: !isNil(c.f) ? /f/.test(c.f) : false,
-		urgent: !isNil(c.f) ? /!/.test(c.f) : false,
+		tags: removeUndefinedValues(getTagIds(conversation.t, conversation.tn)),
+		id: conversation.id,
+		date: conversation.d,
+		messageIds: convMessagesIds,
+		participants: conversation.e ? map(conversation.e, normalizeParticipantsFromSoap) : [],
+		subject: conversation.su,
+		fragment: conversation.fr,
+		read: !isNil(conversation.f) ? !/u/.test(conversation.f) : conversation.u <= 0,
+		hasAttachment: !isNil(conversation.f) ? /a/.test(conversation.f) : false,
+		flagged: !isNil(conversation.f) ? /f/.test(conversation.f) : false,
+		urgent: !isNil(conversation.f) ? /!/.test(conversation.f) : false,
 		// Number of (nondeleted) messages. messages in trash or spam are in the count
-		messagesInConversation: c.n
+		messagesInConversation: conversation.n
 	};
 };
 
 export const normalizeConversations = (
-	soapConversations: Array<SoapConversation>,
-	tags: Tags
+	soapConversations: Array<SoapConversation>
 ): Array<NormalizedConversation> =>
-	map(soapConversations, (conv) => mapToNormalizedConversation({ c: conv, tags }));
+	map(soapConversations, (conv) => mapToNormalizedConversation({ conversation: conv }));

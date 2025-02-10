@@ -3,6 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+
 import { Participant } from '../participant';
 import { ConvActionOperation } from '../soap';
 
@@ -13,28 +14,10 @@ export type ConvMessage = {
 	isDraft?: boolean;
 };
 
-export type Conversation = {
-	readonly id: string;
-	date: number;
-	messages: Array<ConvMessage>;
-	participants: Participant[];
-	subject: string;
-	fragment: string;
-	read: boolean;
-	hasAttachment: boolean;
-	flagged: boolean;
-	urgent: boolean;
-	tags: string[];
-	parent: string;
-	messagesInConversation: number;
-	sortIndex: number;
-};
-
-// A Conversation has no parent/folder. Only the messages in it have it.
 export type NormalizedConversation = {
 	readonly id: string;
 	date: number;
-	messages: Array<ConvMessage>;
+	messageIds: Array<string>;
 	participants: Participant[];
 	subject: string;
 	fragment: string;
@@ -53,12 +36,7 @@ export type ConvActionParameters = {
 	tagName?: string;
 };
 
-export type ConvActionResult = {
-	ids: Array<string>;
-	operation: ConvActionOperation;
-};
-
-export type FetchConversationsParameters = {
+export type SearchSoapApiParams = {
 	folderId?: string;
 	limit: number;
 	before?: Date | null;
