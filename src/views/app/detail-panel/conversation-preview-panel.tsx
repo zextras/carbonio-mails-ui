@@ -7,7 +7,7 @@ import React, { useCallback } from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
 import { useUserSettings } from '@zextras/carbonio-shell-ui';
-import { debounce, map } from 'lodash';
+import { map } from 'lodash';
 
 import { ConversationMessagePreviewWrapper } from './conversation-message-preview-wrapper';
 import { Spinner } from '../../../assets/spinner';
@@ -34,11 +34,6 @@ export const ConversationPreviewPanel = ({
 	);
 
 	const { messageIds } = conversation;
-
-	useEffect(() => {
-		requestDebouncedConversation();
-		return () => requestDebouncedConversation.cancel();
-	}, [requestDebouncedConversation]);
 
 	return (
 		<Container
