@@ -56,7 +56,7 @@ describe('useLoadMoreForMessagesSlice', () => {
 			types: 'message',
 			wantContent: 'full'
 		});
-		expect(appendMessagesSpy).toHaveBeenCalledWith(expect.any(Array), 0);
+		expect(appendMessagesSpy).toHaveBeenCalledWith(expect.any(Array), 0, false);
 		expect(loadingMore.current).toBe(false);
 	});
 
