@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React, { RefObject, memo, useEffect, useMemo } from 'react';
+import React, { RefObject, memo, useCallback, useEffect, useMemo } from 'react';
 
 import { Container, Divider, Padding, Text } from '@zextras/carbonio-design-system';
 import { map, noop } from 'lodash';
@@ -139,6 +139,9 @@ export const ConversationListComponent = memo(function ConversationListComponent
 	);
 
 	const selectedIds = useMemo(() => Object.keys(selected), [selected]);
+	const onListBottom = useCallback((): void => {
+		loadMoreCallback?.();
+	}, [loadMoreCallback]);
 
 	return (
 		<>
@@ -170,9 +173,7 @@ export const ConversationListComponent = memo(function ConversationListComponent
 					<Divider color="gray2" />
 					{totalConversations > 0 || hasMore ? (
 						<CustomList
-							onListBottom={(): void => {
-								loadMoreCallback?.();
-							}}
+							onListBottom={onListBottom}
 							data-testid={`conversation-list-${folderId}`}
 							ref={listRef}
 						>
