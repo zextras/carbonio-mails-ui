@@ -209,7 +209,7 @@ describe('message-slice-utils', () => {
 				setMessagesInEmailStore([message1], true);
 				const { result: initialState } = renderHook(() => useMessageIndexSlice());
 				expect(initialState.current.messageListIndex).toEqual(['1']);
-				await act(async () => appendMessagesToMessagesSlice([message2], 0));
+				await act(async () => appendMessagesToMessagesSlice([message2], 0, false));
 				const { result } = renderHook(() => useMessageIndexSlice());
 				expect(result.current.messageListIndex).toEqual(['1', '2']);
 			});
@@ -218,7 +218,7 @@ describe('message-slice-utils', () => {
 				setMessagesInEmailStore([message1], true);
 				const { result: initialState } = renderHook(() => useMessageIndexSlice());
 				expect(initialState.current.messageListIndex).toEqual(['1']);
-				await act(async () => appendMessagesToMessagesSlice([message2], 555));
+				await act(async () => appendMessagesToMessagesSlice([message2], 555, false));
 				const { result } = renderHook(() => useMessageIndexSlice());
 				expect(result.current.offset).toEqual(555);
 			});
@@ -227,7 +227,7 @@ describe('message-slice-utils', () => {
 				setMessagesInEmailStore([message1], true);
 				const { result: initialState } = renderHook(() => useMessageIndexSlice());
 				expect(initialState.current.messageListIndex).toEqual(['1']);
-				await act(async () => appendMessagesToMessagesSlice([message2], 0));
+				await act(async () => appendMessagesToMessagesSlice([message2], 0, false));
 				const { result } = renderHook(() => usePopulatedItemsSlice());
 				expect(result.current.messages).toEqual({ '1': message1, '2': message2 });
 			});
@@ -238,7 +238,7 @@ describe('message-slice-utils', () => {
 				setMessagesInEmailStore([message1], true);
 				const { result: initialState } = renderHook(() => useMessageIndexSlice());
 				expect(initialState.current.messageListIndex).toEqual(['1']);
-				await act(async () => appendMessagesToMessagesSlice([], 555));
+				await act(async () => appendMessagesToMessagesSlice([], 555, false));
 				const { result } = renderHook(() => useMessageIndexSlice());
 				expect(result.current.messageListIndex).toEqual(['1']);
 			});
@@ -247,7 +247,7 @@ describe('message-slice-utils', () => {
 				setMessagesInEmailStore([message1], true);
 				const { result: initialState } = renderHook(() => useMessageIndexSlice());
 				expect(initialState.current.messageListIndex).toEqual(['1']);
-				await act(async () => appendMessagesToMessagesSlice([], 555));
+				await act(async () => appendMessagesToMessagesSlice([], 555, false));
 				const { result } = renderHook(() => useMessageIndexSlice());
 				expect(result.current.offset).toEqual(555);
 			});
@@ -256,7 +256,7 @@ describe('message-slice-utils', () => {
 				setMessagesInEmailStore([message1], true);
 				const { result: initialState } = renderHook(() => useMessageIndexSlice());
 				expect(initialState.current.messageListIndex).toEqual(['1']);
-				await act(async () => appendMessagesToMessagesSlice([], 0));
+				await act(async () => appendMessagesToMessagesSlice([], 0, false));
 				const { result } = renderHook(() => usePopulatedItemsSlice());
 				expect(result.current.messages).toEqual({ '1': message1 });
 			});
@@ -267,7 +267,9 @@ describe('message-slice-utils', () => {
 				setMessagesInEmailStore([message1, message2], true);
 				const { result: initialState } = renderHook(() => useMessageIndexSlice());
 				expect(initialState.current.messageListIndex).toEqual(['1', '2']);
-				await act(async () => appendMessagesToMessagesSlice([message2, message3, message3], 555));
+				await act(async () =>
+					appendMessagesToMessagesSlice([message2, message3, message3], 555, false)
+				);
 				const { result } = renderHook(() => useMessageIndexSlice());
 				expect(result.current.messageListIndex).toEqual(['1', '2', '3']);
 			});
@@ -277,7 +279,7 @@ describe('message-slice-utils', () => {
 				const { result: initialState } = renderHook(() => useMessageIndexSlice());
 				expect(initialState.current.messageListIndex).toEqual(['1']);
 				const updatedMessage1 = { ...message1, subject: 'Updated subject' };
-				await act(async () => appendMessagesToMessagesSlice([updatedMessage1], 555));
+				await act(async () => appendMessagesToMessagesSlice([updatedMessage1], 555, false));
 				const { result } = renderHook(() => usePopulatedItemsSlice());
 				expect(result.current.messages).toEqual({ '1': updatedMessage1 });
 			});
