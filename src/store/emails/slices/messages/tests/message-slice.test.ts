@@ -131,7 +131,7 @@ describe('message-slice-utils', () => {
 			});
 
 			it('should reset the offset to 0', async () => {
-				appendMessagesToMessagesSlice([message1], 5);
+				appendMessagesToMessagesSlice([message1], 5, false);
 				const { result: initialState } = renderHook(() => useMessageIndexSlice());
 				expect(initialState.current.offset).toEqual(5);
 				await act(async () => setMessagesInEmailStore([message2], false));
