@@ -4,15 +4,19 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React, { RefObject, memo, useCallback, useEffect, useMemo } from 'react';
+import React, { RefObject, memo, useCallback, useEffect, useMemo, useRef } from 'react';
 
 import { Container, Divider, Padding, Text } from '@zextras/carbonio-design-system';
+import { useUserSettings } from '@zextras/carbonio-shell-ui';
 import { map, noop } from 'lodash';
 import styled from 'styled-components';
 
+import { useLoadMoreForConversationList } from './conversation-list-hooks';
 import { ConversationListItemComponent } from './conversation-list-item-component';
 import { CustomList } from '../../../../carbonio-ui-commons/components/list/list';
 import { useFolder, useRoot } from '../../../../carbonio-ui-commons/store/zustand/folder/hooks';
+import { LIST_LIMIT } from '../../../../constants';
+import { parseMessageSortingOptions } from '../../../../helpers/sorting';
 import { getConversationById } from '../../../../store/emails/store';
 import ShimmerList from '../../../search/shimmer-list';
 import { Breadcrumbs } from '../parts/breadcrumbs';
@@ -59,8 +63,6 @@ export type ConversationListComponentProps = {
 	// the list of conversations to display
 	listItems: React.JSX.Element[];
 	// the function to call when the list is scrolled to the bottom
-	loadMoreCallback?: () => void;
-	// the total number of conversations in the list
 	totalConversations: number;
 	// true if the call has been fulfilled
 	conversationsLoadingCompleted: boolean;
@@ -111,7 +113,6 @@ export const ConversationListComponent = memo(function ConversationListComponent
 	conversationsLoadingCompleted,
 	draggedIds,
 	setDraggedIds,
-	loadMoreCallback,
 	listItems,
 	totalConversations,
 	dragImageRef,
@@ -122,8 +123,21 @@ export const ConversationListComponent = memo(function ConversationListComponent
 		setDraggedIds?.(selected);
 	}, [selected, setDraggedIds]);
 
+	const loadingMore = useRef<boolean>(false);
 	const folder = useFolder(folderId);
 	const root = useRoot(folder?.id ?? '');
+
+	const { prefs } = useUserSettings();
+	const { sortOrder } = parseMessageSortingOptions(folderId, prefs.zimbraPrefSortOrder as string);
+
+	const loadMoreCallback = useLoadMoreForConversationList({
+		sortBy: sortOrder,
+		offset: conversationsIds.length,
+		limit: LIST_LIMIT.LOAD_MORE_LIMIT,
+		hasMore,
+		loadingMore,
+		folderId
+	});
 
 	const folderPath = useMemo(
 		() => getFolderPath(folder, root, isSearchModule),
@@ -139,6 +153,7 @@ export const ConversationListComponent = memo(function ConversationListComponent
 	);
 
 	const selectedIds = useMemo(() => Object.keys(selected), [selected]);
+
 	const onListBottom = useCallback((): void => {
 		loadMoreCallback?.();
 	}, [loadMoreCallback]);

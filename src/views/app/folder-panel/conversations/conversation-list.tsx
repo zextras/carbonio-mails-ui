@@ -6,18 +6,16 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 
 import { ListItem } from '@zextras/carbonio-design-system';
-import { t, useAppContext, useUserSettings } from '@zextras/carbonio-shell-ui';
+import { t, useAppContext } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
 import { useParams } from 'react-router-dom';
 
 import { ConversationListComponent } from './conversation-list-component';
-import { useLoadMoreForConversationList } from './conversation-list-hooks';
 import { ConversationListItemComponent } from './conversation-list-item-component';
 import { FOLDERS } from '../../../../carbonio-ui-commons/constants/folders';
 import { useFolder } from '../../../../carbonio-ui-commons/store/zustand/folder';
-import { API_REQUEST_STATUS, LIST_LIMIT } from '../../../../constants';
+import { API_REQUEST_STATUS } from '../../../../constants';
 import { getFolderIdParts } from '../../../../helpers/folders';
-import { parseMessageSortingOptions } from '../../../../helpers/sorting';
 import { useConversationKeyboardShortcuts } from '../../../../hooks/use-conversation-keyboard-shortcuts';
 import { useConversationListByFolder } from '../../../../hooks/use-conversations-list-by-folder';
 import { useSelection } from '../../../../hooks/use-selection';
@@ -29,7 +27,6 @@ export const ConversationList = (): React.JSX.Element => {
 	const folder = useFolder(folderId);
 	const { conversationIndexSlice } = useConversationListByFolder(folderId);
 	const { status, conversationListIndex: conversationsIds } = conversationIndexSlice;
-	const loadingMore = useRef<boolean>(false);
 
 	const [draggedIds, setDraggedIds] = useState<Record<string, boolean>>();
 	const dragImageRef = useRef(null);
@@ -47,18 +44,6 @@ export const ConversationList = (): React.JSX.Element => {
 		setCount,
 		count,
 		items: conversationsIds
-	});
-
-	const { prefs } = useUserSettings();
-	const { sortOrder } = parseMessageSortingOptions(folderId, prefs.zimbraPrefSortOrder as string);
-
-	const loadMoreCallback = useLoadMoreForConversationList({
-		sortBy: sortOrder,
-		offset: conversationsIds.length,
-		limit: LIST_LIMIT.LOAD_MORE_LIMIT,
-		hasMore: conversationIndexSlice.more,
-		loadingMore,
-		folderId
 	});
 
 	const keyboardActions = useConversationKeyboardShortcuts({
@@ -153,7 +138,6 @@ export const ConversationList = (): React.JSX.Element => {
 			displayerTitle={displayerTitle}
 			totalConversations={totalConversations}
 			conversationsLoadingCompleted={conversationsLoadingCompleted}
-			loadMoreCallback={loadMoreCallback}
 			selectedIds={selectedIds}
 			isSelectModeOn={isSelectModeOn}
 			setIsSelectModeOn={setIsSelectModeOn}
