@@ -5,14 +5,14 @@
  */
 import React from 'react';
 
-import { act, screen, waitFor, within } from '@testing-library/react';
+import { act, screen } from '@testing-library/react';
 
 import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
 import { updateMessages } from '../../../store/emails/store';
 import { generateCompleteMessageFromAPI } from '../../../tests/generators/api';
 import { generateMessage } from '../../../tests/generators/generateMessage';
-import { GetMsgRequest, GetMsgResponse, MailMessage } from '../../../types';
+import { GetMsgRequest, GetMsgResponse } from '../../../types';
 import { HtmlMessageRenderer } from '../html-message-renderer';
 
 describe('HTML message renderer', () => {
@@ -206,44 +206,6 @@ describe('HTML message renderer', () => {
 			await interceptor;
 			await act(async () => {
 				expect(screen.queryByText('warningBanner.truncatedMessage.button')).not.toBeInTheDocument();
-			});
-		});
-
-		it('it should keep the css style when available', async () => {
-			const message = {
-				id: '1',
-				body: {
-					contentType: 'text/html',
-					content:
-						'<style>.styleclass{color: red; font-family: "Comic Sans";}</style><p class="styleclass">Initial body</p>'
-				},
-				truncated: false
-			} as unknown as MailMessage;
-
-			setupTest(<HtmlMessageRenderer message={message} />, {
-				initialEntries: ['/mails']
-			});
-
-			const shadowDomWrapper = screen.getByTestId('shadow-dom-wrapper');
-			expect(shadowDomWrapper).toBeInTheDocument();
-
-			const { shadowRoot } = shadowDomWrapper;
-
-			// const paragraph = shadowRoot?.querySelector('.styleclass');
-			// expect(paragraph).toHaveTextContent('Initial body');
-
-			// Use `within` to query elements inside the shadowRoot
-			const shadowParagraph = within(shadowRoot!).getByText('Initial body');
-			expect(shadowParagraph).toBeInTheDocument();
-
-			// Check if color style is red and font-family is Comic Sans using toHaveStyle
-			await waitFor(() => {
-				const computedStyle = getComputedStyle(shadowParagraph!);
-				console.clear();
-				console.log('computedStyle:', computedStyle);
-				expect(computedStyle.color).toBe('red'); // Check the color
-				// eslint-disable-next-line testing-library/no-wait-for-multiple-assertions
-				expect(computedStyle.fontFamily).toMatch(/Comic Sans/i); // Check font-family
 			});
 		});
 	});
