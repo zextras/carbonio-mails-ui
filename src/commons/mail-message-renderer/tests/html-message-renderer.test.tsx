@@ -12,7 +12,7 @@ import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
 import { updateMessages } from '../../../store/emails/store';
 import { generateCompleteMessageFromAPI } from '../../../tests/generators/api';
 import { generateMessage } from '../../../tests/generators/generateMessage';
-import { GetMsgRequest, GetMsgResponse } from '../../../types';
+import { GetMsgRequest, GetMsgResponse, MailMessage } from '../../../types';
 import { HtmlMessageRenderer } from '../html-message-renderer';
 
 describe('HTML message renderer', () => {
@@ -207,6 +207,33 @@ describe('HTML message renderer', () => {
 			await act(async () => {
 				expect(screen.queryByText('warningBanner.truncatedMessage.button')).not.toBeInTheDocument();
 			});
+		});
+
+		it('it should keep the css style when available', async () => {
+			const message = {
+				id: '1',
+				body: {
+					contentType: 'text/html',
+					content: `<style>.my-styled-paragraph {color: purple;font-size: 20px;}</style><p class="my-styled-paragraph">test component</p>
+    `
+				},
+				truncated: false
+			} as unknown as MailMessage;
+
+			setupTest(<HtmlMessageRenderer message={message} />, {
+				initialEntries: ['/mails']
+			});
+
+			const shadowDomWrapper = screen.getByTestId('shadow-dom-wrapper');
+			const { shadowRoot } = shadowDomWrapper;
+
+			// eslint-disable-next-line testing-library/no-node-access
+			const shadowParagraph = shadowRoot?.querySelector('style');
+
+			expect(shadowParagraph).toBeInTheDocument();
+
+			expect(shadowParagraph?.textContent).toContain('color: purple');
+			expect(shadowParagraph?.textContent).toContain('font-size: 20px');
 		});
 	});
 });
