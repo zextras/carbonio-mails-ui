@@ -236,4 +236,30 @@ describe('HTML message renderer', () => {
 			expect(shadowParagraph?.textContent).toContain('font-size: 20px');
 		});
 	});
+
+	it('it should keep the html with all its properties', async () => {
+		const message = {
+			id: '1',
+			body: {
+				contentType: 'text/html',
+				content: `<style>.my-styled-paragraph {color: purple;font-size: 20px;}</style><p class="my-styled-paragraph">test component</p>
+    `
+			},
+			truncated: false
+		} as unknown as MailMessage;
+
+		setupTest(<HtmlMessageRenderer message={message} />, {
+			initialEntries: ['/mails']
+		});
+
+		const shadowDomWrapper = screen.getByTestId('shadow-dom-wrapper');
+		const { shadowRoot } = shadowDomWrapper;
+
+		// eslint-disable-next-line testing-library/no-node-access
+		const shadowParagraph = shadowRoot?.querySelector('p');
+
+		expect(shadowParagraph).toBeInTheDocument();
+
+		expect(shadowParagraph?.outerHTML).toBe('<p class="my-styled-paragraph">test component</p>');
+	});
 });
