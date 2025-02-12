@@ -4,10 +4,10 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { Account, getUserSettings, t } from '@zextras/carbonio-shell-ui';
-import { find, isArray } from 'lodash';
+import { find, isArray, reduce } from 'lodash';
 import moment from 'moment';
 
-import type { Participant } from '../types';
+import type { MailMessagePart, Participant } from '../types';
 
 export const getTimeLabel = (date: number): string => {
 	const { zimbraPrefLocale = 'en' } = getUserSettings().prefs;
@@ -131,3 +131,40 @@ export const replaceLinkToAnchor = (content: string): string => {
 		return url;
 	});
 };
+
+/**
+ * Builds a map of image content IDs to their corresponding mail message parts.
+ *
+ */
+export function buildImageMap(parts: Array<MailMessagePart>): Record<string, MailMessagePart> {
+	return reduce(
+		parts,
+		(acc, part) => {
+			const match = _CI_REGEX.exec(part.ci ?? '');
+			// eslint-disable-next-line no-param-reassign
+			if (match) acc[match[1]] = part;
+			return acc;
+		},
+		{} as Record<string, MailMessagePart>
+	);
+}
+
+export function updateImageSrc(
+	img: HTMLImageElement,
+	imgMap: Record<string, { name: string }>,
+	showImage: boolean,
+	msgId: string
+): void {
+	if (img.hasAttribute('dfsrc') && showImage) {
+		img.setAttribute('src', img.getAttribute('dfsrc') ?? '');
+	}
+
+	const match = _CI_SRC_REGEX.exec(img.getAttribute('src') ?? '');
+	if (!match) return;
+
+	const ci = match[1];
+	if (imgMap[ci]) {
+		img.setAttribute('pnsrc', img.getAttribute('src') ?? '');
+		img.setAttribute('src', `/service/home/~/?auth=co&id=${msgId}&part=${imgMap[ci].name}`);
+	}
+}
