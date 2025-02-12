@@ -367,7 +367,7 @@ export function useConversationStatus(id: string): SearchRequestStatus {
  * Updates the messages in the `populatedItemsSlice` of the emails store.
  * It iterates through array of passed mail message and updates the store's state
  * by merging each message with its existing entry (if any), if the message is complete
- * the API_REQUEST_STATUS for the message is also updated to fulfilled.
+ * the API_REQUEST_STATUS for the message is also updated to 'fulfilled'.
  */
 export function updateMessages(messages: MailMessage[]): void {
 	addTask(async () => {
@@ -467,10 +467,11 @@ export function resetMessagesAndPopulatedItems(): void {
  */
 export function appendMessagesToMessagesSlice(
 	messages: Array<MailMessage | IncompleteMessage>,
-	offset: number
+	offset: number,
+	more: boolean
 ): void {
 	addTask(async () => {
-		messageIndexSliceUtils.appendMessagesToMessagesSlice(messages, offset, useEmailsStore);
+		messageIndexSliceUtils.appendMessagesToMessagesSlice(messages, offset, more, useEmailsStore);
 	});
 }
 
@@ -523,16 +524,18 @@ function resetConversationAndPopulatedItems(): void {
 
 /**
  * Appends new conversations to the `conversationIndexSlice` and `populatedItemsSlice` in the store.
- * This function adds new conversation IDs to the existing list, updates the offset, and merges the new conversations into the `populatedItemsSlice`.
+ * This function adds new conversation IDs to the existing list, updates the offset, more, and merges the new conversations into the `populatedItemsSlice`.
  */
 export function appendConversationsToConversationIndexSlice(
 	conversations: Array<NormalizedConversation>,
-	offset: number
+	offset: number,
+	more: boolean
 ): void {
 	addTask(async () => {
 		conversationIndexSliceUtils.appendConversationsToConversationIndexSlice(
 			conversations,
 			offset,
+			more,
 			useEmailsStore
 		);
 	});

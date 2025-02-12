@@ -83,6 +83,7 @@ function resetConversationAndPopulatedItems(
 function appendConversationsToConversationIndexSlice(
 	conversations: Array<NormalizedConversation>,
 	offset: number,
+	more: boolean,
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
 ): void {
 	const newConversationIds = conversations.map((conv) => conv.id);
@@ -94,6 +95,7 @@ function appendConversationsToConversationIndexSlice(
 			});
 			state.conversationIndexSlice.conversationListIndex = Array.from(uniqueConversationIds);
 			state.conversationIndexSlice.offset = offset;
+			state.conversationIndexSlice.more = more;
 			state.populatedItemsSlice.conversations = conversations.reduce((acc, conv) => {
 				acc[conv.id] = conv;
 				return acc;

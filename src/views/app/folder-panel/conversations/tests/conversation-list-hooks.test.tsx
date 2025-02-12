@@ -19,7 +19,7 @@ import { useLoadMoreForConversationList } from '../conversation-list-hooks';
 
 describe('ConversationListHooks', () => {
 	it('should load more results for the current folder', async () => {
-		const hasMore = 0;
+		const hasMore = false;
 		const conversation = generateConversationFromAPI({ id: '1' });
 		const searchResponse = {
 			c: [conversation],
@@ -60,7 +60,7 @@ describe('ConversationListHooks', () => {
 			types: 'conversation',
 			wantContent: 'full'
 		});
-		expect(appendConversationsSpy).toHaveBeenCalledWith(expect.any(Array), hasMore);
+		expect(appendConversationsSpy).toHaveBeenCalledWith(expect.any(Array), 0, hasMore);
 		expect(loadingMore.current).toBe(false);
 	});
 
