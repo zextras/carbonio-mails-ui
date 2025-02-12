@@ -6,7 +6,7 @@
 
 import React from 'react';
 
-import { act } from '@testing-library/react';
+import { act, waitFor } from '@testing-library/react';
 import { useParams } from 'react-router-dom';
 
 import { FOLDERS } from '../../../../../carbonio-ui-commons/constants/folders';
@@ -29,39 +29,59 @@ jest.mock('react-router-dom', () => ({
 	useParams: jest.fn()
 }));
 
-describe('MessageList Component', () => {
+describe('message-list', () => {
+	beforeEach(() => {
+		jest.clearAllMocks();
+	});
+
+	const invisibleItemTestId = 'invisible-item';
+
 	it('should render without crashing', async () => {
+		populateFoldersStore();
+		const folderId = FOLDERS.INBOX;
 		const searchResponse = {
-			m: [generateCompleteMessageFromAPI({ id: '1' })],
+			m: [generateCompleteMessageFromAPI({ id: '1', l: folderId })],
 			more: false
 		};
 		createSoapAPIInterceptor('Search', searchResponse);
-		populateFoldersStore();
-		const folderId = FOLDERS.INBOX;
 		(useParams as jest.Mock).mockReturnValue({ folderId });
+
 		setupTest(<MessageList />);
+
 		expect(await screen.findByTestId(`message-list-${folderId}`)).toBeInTheDocument();
 	});
 
-	it('should display the correct displayer title based on folderId', async () => {
-		const searchResponse = {
-			m: [],
-			more: false
-		};
-		createSoapAPIInterceptor('Search', searchResponse);
-		const folder = generateFolder({ id: FOLDERS.SPAM, n: 0, l: FOLDERS.ROOT });
-		const initialStoreState: FolderState = {
-			linksIdMap: {},
-			folders: { [folder.id]: folder },
-			searches: {},
-			updateFolder: jest.fn()
-		};
-		useFolderStore.setState(initialStoreState, true);
-		const folderId = FOLDERS.SPAM;
-		(useParams as jest.Mock).mockReturnValue({ folderId });
-		setupTest(<MessageList />);
-		expect(await screen.findByText(/There are no spam e-mails/)).toBeVisible();
-	});
+	const displayerTitleTestCases = [
+		{ folderId: FOLDERS.SPAM, expectedText: 'There are no spam e-mails' },
+		{ folderId: FOLDERS.SENT, expectedText: 'You haven’t sent any e-mail yet' },
+		{ folderId: FOLDERS.DRAFTS, expectedText: 'There are no saved drafts' },
+		{ folderId: FOLDERS.TRASH, expectedText: 'The trash is empty' },
+		{ folderId: 'someOtherFolder', expectedText: 'It looks like there are no e-mails yet' }
+	];
+
+	test.each(displayerTitleTestCases)(
+		'should display the correct displayer title for folderId: $folderId',
+		async ({ folderId, expectedText }) => {
+			const searchResponse = {
+				m: [],
+				more: false
+			};
+			createSoapAPIInterceptor('Search', searchResponse);
+			const folder = generateFolder({ id: folderId, n: 0, l: FOLDERS.ROOT });
+			const initialStoreState: FolderState = {
+				linksIdMap: {},
+				folders: { [folder.id]: folder },
+				searches: {},
+				updateFolder: jest.fn()
+			};
+			useFolderStore.setState(initialStoreState, true);
+			(useParams as jest.Mock).mockReturnValue({ folderId });
+
+			setupTest(<MessageList />);
+
+			expect(await screen.findByText(new RegExp(expectedText, 'i'))).toBeVisible();
+		}
+	);
 
 	it('should render the correct number of list items', async () => {
 		const searchResponse = {
@@ -76,24 +96,27 @@ describe('MessageList Component', () => {
 		populateFoldersStore();
 		const folderId = FOLDERS.INBOX;
 		(useParams as jest.Mock).mockReturnValue({ folderId });
+
 		setupTest(<MessageList />);
-		expect(await screen.findAllByTestId('invisible-item')).toHaveLength(3);
+
+		expect(await screen.findAllByTestId(invisibleItemTestId)).toHaveLength(3);
 	});
 
+	const message1Subject = 'message 1 subject';
 	it('loads more messages when reaching bottom of the list', async () => {
 		populateFoldersStore();
 		const folderId = FOLDERS.INBOX;
 		(useParams as jest.Mock).mockReturnValue({ folderId });
 
 		const searchResponse = {
-			m: [generateCompleteMessageFromAPI({ id: '1', su: 'message 1 subject', l: folderId })],
+			m: [generateCompleteMessageFromAPI({ id: '1', su: message1Subject, l: folderId })],
 			more: true
 		};
 		createSoapAPIInterceptor('Search', searchResponse);
 
 		setupTest(<MessageList />);
 
-		expect(await screen.findAllByTestId('invisible-item')).toHaveLength(1);
+		expect(await screen.findAllByTestId(invisibleItemTestId)).toHaveLength(1);
 
 		makeAllItemsVisible();
 
@@ -122,7 +145,7 @@ describe('MessageList Component', () => {
 		(useParams as jest.Mock).mockReturnValue({ folderId });
 
 		const searchResponse = {
-			m: [generateCompleteMessageFromAPI({ id: '1', l: folderId, su: 'message 1 subject' })],
+			m: [generateCompleteMessageFromAPI({ id: '1', l: folderId, su: message1Subject })],
 			more: false
 		};
 
@@ -130,11 +153,11 @@ describe('MessageList Component', () => {
 
 		setupTest(<MessageList />);
 
-		expect(await screen.findAllByTestId('invisible-item')).toHaveLength(1);
+		expect(await screen.findAllByTestId(invisibleItemTestId)).toHaveLength(1);
 
 		makeAllItemsVisible();
 
-		expect(screen.getByText(/message 1 subject/i)).toBeInTheDocument;
+		expect(screen.getByText(/message 1 subject/i)).toBeInTheDocument();
 		expect(screen.queryByTestId('list-bottom-element')).not.toBeInTheDocument();
 	});
 
@@ -144,7 +167,7 @@ describe('MessageList Component', () => {
 		(useParams as jest.Mock).mockReturnValue({ folderId });
 
 		const searchResponse = {
-			m: [generateCompleteMessageFromAPI({ id: '1', l: folderId, su: 'message 1 subject' })],
+			m: [generateCompleteMessageFromAPI({ id: '1', l: folderId, su: message1Subject })],
 			more: true
 		};
 
@@ -152,11 +175,71 @@ describe('MessageList Component', () => {
 
 		setupTest(<MessageList />);
 
-		expect(await screen.findAllByTestId('invisible-item')).toHaveLength(1);
+		expect(await screen.findAllByTestId(invisibleItemTestId)).toHaveLength(1);
 
 		makeAllItemsVisible();
 
-		expect(screen.getByText(/message 1 subject/i)).toBeInTheDocument;
+		expect(screen.getByText(/message 1 subject/i)).toBeInTheDocument();
 		expect(screen.getByTestId('list-bottom-element')).toBeInTheDocument();
+	});
+
+	describe('totalMessages count in BreadCrumb', () => {
+		beforeEach(() => {
+			jest.clearAllMocks();
+		});
+
+		it('should render correct totalMessages count in BreadcrumbCount', async () => {
+			populateFoldersStore();
+			const folderId = FOLDERS.INBOX;
+			const searchResponse = {
+				m: [generateCompleteMessageFromAPI({ id: '1', l: folderId })],
+				more: false
+			};
+			createSoapAPIInterceptor('Search', searchResponse);
+			(useParams as jest.Mock).mockReturnValue({ folderId });
+
+			setupTest(<MessageList />);
+
+			const breadcrumbCountElement = screen.getByTestId('BreadcrumbCount');
+			expect(breadcrumbCountElement).toBeInTheDocument();
+			await waitFor(() => expect(breadcrumbCountElement.innerHTML).toBe('1'));
+		});
+
+		it('should render correct totalMessages count in BreadcrumbCount when more items loaded using loadMore', async () => {
+			populateFoldersStore();
+			const folderId = FOLDERS.INBOX;
+			const initialMessages = Array.from({ length: 100 }, (_, i) =>
+				generateCompleteMessageFromAPI({ id: `${i + 1}`, l: folderId })
+			);
+			const searchResponse = {
+				m: initialMessages,
+				more: true
+			};
+			createSoapAPIInterceptor('Search', searchResponse);
+			(useParams as jest.Mock).mockReturnValue({ folderId });
+
+			setupTest(<MessageList />);
+
+			const breadcrumbCountElement = screen.getByTestId('BreadcrumbCount');
+			expect(breadcrumbCountElement).toBeInTheDocument();
+			await waitFor(() => expect(breadcrumbCountElement.innerHTML).toBe('100'));
+
+			const moreMessages = Array.from({ length: 100 }, (_, i) =>
+				generateCompleteMessageFromAPI({ id: `${i + 101}`, l: folderId })
+			);
+			const searchResponse2 = {
+				m: moreMessages,
+				more: false
+			};
+			createSoapAPIInterceptor('Search', searchResponse2);
+
+			await act(async () => {
+				triggerLoadMore();
+			});
+
+			const breadcrumbCountElementAfterLoadMore = screen.getByTestId('BreadcrumbCount');
+			expect(breadcrumbCountElementAfterLoadMore).toBeInTheDocument();
+			await waitFor(() => expect(breadcrumbCountElementAfterLoadMore.innerHTML).toBe('200'));
+		});
 	});
 });
