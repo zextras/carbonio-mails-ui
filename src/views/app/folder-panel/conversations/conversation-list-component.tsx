@@ -59,8 +59,6 @@ export type ConversationListComponentProps = {
 	// the list of conversations to display
 	listItems: React.JSX.Element[];
 	// the function to call when the list is scrolled to the bottom
-	loadMore?: () => void;
-	// the total number of conversations in the list
 	totalConversations: number;
 	// true if the call has been fulfilled
 	conversationsLoadingCompleted: boolean;
@@ -93,7 +91,7 @@ export type ConversationListComponentProps = {
 	// the reference to the dragged item
 	dragImageRef?: RefObject<HTMLInputElement>;
 	listRef?: React.RefObject<HTMLDivElement>;
-	hasMore?: boolean;
+	loadMoreCallback?: () => void;
 };
 
 export const ConversationListComponent = memo(function ConversationListComponent({
@@ -111,12 +109,11 @@ export const ConversationListComponent = memo(function ConversationListComponent
 	conversationsLoadingCompleted,
 	draggedIds,
 	setDraggedIds,
-	loadMore = noop,
 	listItems,
 	totalConversations,
 	dragImageRef,
 	listRef,
-	hasMore
+	loadMoreCallback
 }: ConversationListComponentProps): React.JSX.Element {
 	useEffect(() => {
 		setDraggedIds?.(selected);
@@ -168,11 +165,9 @@ export const ConversationListComponent = memo(function ConversationListComponent
 			{conversationsLoadingCompleted ? (
 				<>
 					<Divider color="gray2" />
-					{totalConversations > 0 || hasMore ? (
+					{totalConversations > 0 || loadMoreCallback ? (
 						<CustomList
-							onListBottom={(): void => {
-								loadMore && loadMore();
-							}}
+							onListBottom={loadMoreCallback}
 							data-testid={`conversation-list-${folderId}`}
 							ref={listRef}
 						>

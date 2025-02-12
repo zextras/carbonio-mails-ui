@@ -7,7 +7,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import { Button, Row } from '@zextras/carbonio-design-system';
 import { editSettings, t, useUserSettings } from '@zextras/carbonio-shell-ui';
-import { filter, forEach, isArray, reduce, some } from 'lodash';
+import { filter, forEach, isArray, some } from 'lodash';
 import { Trans } from 'react-i18next';
 
 import { BannerMessageTruncated } from './banner-message-truncated';
@@ -18,7 +18,7 @@ import { getAttachmentParts } from '../../helpers/attachments';
 import { getNoIdentityPlaceholder } from '../../helpers/identities';
 import { BodyPart, MailMessage } from '../../types';
 import { getOriginalHtmlContent, getQuotedTextFromOriginalContent } from '../get-quoted-text-util';
-import { _CI_REGEX, _CI_SRC_REGEX, isAvailableInTrusteeList } from '../utils';
+import { buildImageMap, isAvailableInTrusteeList, updateImageSrc } from '../utils';
 import { ShadowDomWrapper } from './shadow-dom-wrapper';
 import { getFullMessageEmailStoreAction } from '../../store/emails/actions/get-message';
 
@@ -129,32 +129,15 @@ export const HtmlMessageRenderer = ({ message }: HtmlMessageRendererType): React
 		() => showExternalImage && displayBanner,
 		[displayBanner, showExternalImage]
 	);
-
 	const msgId = message.id;
+
 	const contentWithImages = useMemo(() => {
-		const imgMap = reduce(
-			parts,
-			(r, v) => {
-				if (!_CI_REGEX.test(v.ci ?? '')) return r;
-				r[_CI_REGEX.exec(v.ci ?? '')?.[1] ?? ''] = v;
-				return r;
-			},
-			{} as any
-		);
-		forEach(images, (p: HTMLImageElement) => {
-			if (p.hasAttribute('dfsrc') && showImage) {
-				p.setAttribute('src', p.getAttribute('dfsrc') ?? '');
-			}
-			if (!_CI_SRC_REGEX.test(p.src)) return;
-			const ci = _CI_SRC_REGEX.exec(p.getAttribute('src') ?? '')?.[1] ?? '';
-			if (imgMap[ci]) {
-				const part = imgMap[ci];
-				p.setAttribute('pnsrc', p.getAttribute('src') ?? '');
-				p.setAttribute('src', `/service/home/~/?auth=co&id=${msgId}&part=${part.name}`);
-			}
+		const imgMap = buildImageMap(parts);
+		forEach(images, (img) => {
+			updateImageSrc(img, imgMap, showImage, msgId);
 		});
-		return htmlDoc.body.innerHTML;
-	}, [htmlDoc.body.innerHTML, images, msgId, parts, showImage]);
+		return htmlDoc.documentElement.outerHTML;
+	}, [htmlDoc.documentElement.outerHTML, images, msgId, parts, showImage]);
 
 	const loadMessage = async (): Promise<void> => {
 		setIsLoadingMessage(true);

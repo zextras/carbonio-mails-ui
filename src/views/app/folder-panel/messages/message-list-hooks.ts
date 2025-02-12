@@ -27,7 +27,7 @@ function handleLoadMoreResults({
 		const messages = searchResponse.m?.map((soapMessage) =>
 			normalizeMailMessageFromSoap(soapMessage, false)
 		);
-		appendMessagesToMessagesSlice(messages, offset);
+		appendMessagesToMessagesSlice(messages, offset, searchResponse.more);
 	}
 }
 export function useLoadMoreForMessageList({

@@ -85,6 +85,7 @@ function resetMessagesAndPopulatedItems(
 function appendMessagesToMessagesSlice(
 	messages: Array<MailMessage | IncompleteMessage>,
 	offset: number,
+	more: boolean,
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
 ): void {
 	const newMessageIds = messages.map((message) => message.id);
@@ -96,6 +97,7 @@ function appendMessagesToMessagesSlice(
 			});
 			state.messageIndexSlice.messageListIndex = Array.from(uniqueMessageIds);
 			state.messageIndexSlice.offset = offset;
+			state.messageIndexSlice.more = more;
 			state.populatedItemsSlice.messages = messages.reduce((acc, msg) => {
 				acc[msg.id] = msg;
 				return acc;

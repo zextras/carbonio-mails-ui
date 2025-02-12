@@ -29,7 +29,6 @@ export const ConversationList = (): React.JSX.Element => {
 	const folder = useFolder(folderId);
 	const { conversationIndexSlice } = useConversationListByFolder(folderId);
 	const { status, conversationListIndex: conversationsIds } = conversationIndexSlice;
-	const loadingMore = useRef<boolean>(false);
 
 	const [draggedIds, setDraggedIds] = useState<Record<string, boolean>>();
 	const dragImageRef = useRef(null);
@@ -47,18 +46,6 @@ export const ConversationList = (): React.JSX.Element => {
 		setCount,
 		count,
 		items: conversationsIds
-	});
-
-	const { prefs } = useUserSettings();
-	const { sortOrder } = parseMessageSortingOptions(folderId, prefs.zimbraPrefSortOrder as string);
-
-	const loadMore = useLoadMoreForConversationList({
-		sortBy: sortOrder,
-		offset: conversationsIds.length,
-		limit: LIST_LIMIT.LOAD_MORE_LIMIT,
-		hasMore: conversationIndexSlice.more,
-		loadingMore,
-		folderId
 	});
 
 	const keyboardActions = useConversationKeyboardShortcuts({
@@ -119,7 +106,7 @@ export const ConversationList = (): React.JSX.Element => {
 									folderId={folderId}
 								/>
 							) : (
-								<div style={{ height: '4rem' }} data-testid="invisible-item" />
+								<div style={{ height: '4rem' }} data-testid="conversation-invisible-item" />
 							)
 						}
 					</ListItem>
@@ -146,6 +133,18 @@ export const ConversationList = (): React.JSX.Element => {
 		() => status === API_REQUEST_STATUS.fulfilled,
 		[status]
 	);
+	const loadingMore = useRef<boolean>(false);
+	const { prefs } = useUserSettings();
+	const { sortOrder } = parseMessageSortingOptions(folderId, prefs.zimbraPrefSortOrder as string);
+
+	const loadMoreCallback = useLoadMoreForConversationList({
+		sortBy: sortOrder,
+		offset: conversationsIds.length,
+		limit: LIST_LIMIT.LOAD_MORE_LIMIT,
+		hasMore: conversationIndexSlice.more,
+		loadingMore,
+		folderId
+	});
 
 	return (
 		<ConversationListComponent
@@ -153,7 +152,6 @@ export const ConversationList = (): React.JSX.Element => {
 			displayerTitle={displayerTitle}
 			totalConversations={totalConversations}
 			conversationsLoadingCompleted={conversationsLoadingCompleted}
-			loadMore={loadMore}
 			selectedIds={selectedIds}
 			isSelectModeOn={isSelectModeOn}
 			setIsSelectModeOn={setIsSelectModeOn}
@@ -166,7 +164,7 @@ export const ConversationList = (): React.JSX.Element => {
 			selected={selected}
 			deselectAll={deselectAll}
 			dragImageRef={dragImageRef}
-			hasMore={conversationIndexSlice.more}
+			loadMoreCallback={conversationIndexSlice.more ? loadMoreCallback : undefined}
 		/>
 	);
 };

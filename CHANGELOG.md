@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.23.2](https://github.com/zextras/carbonio-mails-ui/compare/v1.23.1...v1.23.2) (2025-02-12)
+
+### [1.23.1](https://github.com/zextras/carbonio-mails-ui/compare/v1.23.0...v1.23.1) (2025-02-12)
+
+
+### Bug Fixes
+
+* [CO-1805] abnormal behavior of loadMore in conversation and message view ([b346bf6](https://github.com/zextras/carbonio-mails-ui/commit/b346bf68d26ccc0eae28c68022905047e603a1aa))
+
 ## [1.23.0](https://github.com/zextras/carbonio-mails-ui/compare/v1.22.1...v1.23.0) (2025-02-10)
 
 

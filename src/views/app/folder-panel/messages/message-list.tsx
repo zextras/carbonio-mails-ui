@@ -136,7 +136,7 @@ export const MessageList = (): React.JSX.Element => {
 			totalMessages={totalMessages}
 			displayerTitle={displayerTitle}
 			listItems={listItems}
-			loadMore={loadMoreCallback}
+			loadMoreCallback={hasMore ? loadMoreCallback : undefined}
 			messagesLoadingCompleted={messagesLoadingCompleted}
 			selectedIds={selectedIds}
 			folderId={folderId}
@@ -151,7 +151,6 @@ export const MessageList = (): React.JSX.Element => {
 			selected={selected}
 			selectAllModeOff={selectAllModeOff}
 			dragImageRef={dragImageRef}
-			hasMore={hasMore}
 		/>
 	);
 };
