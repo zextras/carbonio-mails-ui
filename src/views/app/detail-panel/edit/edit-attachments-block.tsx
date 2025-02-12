@@ -88,7 +88,7 @@ export const EditAttachmentsBlock: FC<{
 											<Text color="primary">
 												{t('label.show_all_attachments', {
 													count: allAttachments.length,
-													defaultValue_other: 'Show all {{count}} attachments'
+													defaultValue: 'Show all {{count}} attachments'
 												})}
 											</Text>
 										</Padding>
