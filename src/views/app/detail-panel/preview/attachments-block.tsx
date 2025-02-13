@@ -715,8 +715,7 @@ const AttachmentsBlock = ({
 									<Text color="primary">
 										{t('label.show_all_attachments', {
 											count: attachmentsCount,
-											defaultValue_one: 'Show attachment',
-											defaultValue_other: 'Show all {{count}} attachments'
+											defaultValue: 'Show all {{count}} attachments'
 										})}
 									</Text>
 								</Padding>

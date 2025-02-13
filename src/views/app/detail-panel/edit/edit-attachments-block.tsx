@@ -6,8 +6,8 @@
 import React, { FC, ReactElement, useMemo, useState } from 'react';
 
 import { Container, Icon, Link, Padding, Row, Text } from '@zextras/carbonio-design-system';
-import { t } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
+import { useTranslation } from 'react-i18next';
 
 import { AttachmentPreview } from './attachment-preview';
 import * as StyledComp from './parts/edit-view-styled-components';
@@ -18,6 +18,7 @@ export const EditAttachmentsBlock: FC<{
 	editorId: MailsEditorV2['id'];
 	setLargeFileUploadInfoBannerVisible: (visible: boolean) => void;
 }> = ({ editorId, setLargeFileUploadInfoBannerVisible }): ReactElement => {
+	const [t] = useTranslation();
 	const [expanded, setExpanded] = useState(false);
 	const { savedStandardAttachments, unsavedStandardAttachments, removeStandardAttachments } =
 		useEditorAttachments(editorId);
@@ -87,7 +88,7 @@ export const EditAttachmentsBlock: FC<{
 											<Text color="primary">
 												{t('label.show_all_attachments', {
 													count: allAttachments.length,
-													defaultValue_other: 'Show all {{count}} attachments'
+													defaultValue: 'Show all {{count}} attachments'
 												})}
 											</Text>
 										</Padding>

@@ -15,7 +15,6 @@ import { useLoadMoreForMessageList } from './message-list-hooks';
 import { MessageListItemComponent } from './message-list-item-component';
 import { CustomListItem } from '../../../../carbonio-ui-commons/components/list/list-item';
 import { FOLDERS } from '../../../../carbonio-ui-commons/constants/folders';
-import { useFolder } from '../../../../carbonio-ui-commons/store/zustand/folder/hooks';
 import { API_REQUEST_STATUS, LIST_LIMIT } from '../../../../constants';
 import { getFolderIdParts } from '../../../../helpers/folders';
 import { parseMessageSortingOptions } from '../../../../helpers/sorting';
@@ -28,7 +27,6 @@ export const MessageList = (): React.JSX.Element => {
 	const { itemId, folderId } = useParams<{ itemId: string; folderId: string }>();
 	const loadingMore = useRef<boolean>(false);
 	const dragImageRef = useRef(null);
-	const folder = useFolder(folderId);
 	const { setCount, count } = useAppContext<AppContext>();
 	const [draggedIds, setDraggedIds] = useState<Record<string, boolean>>({});
 
@@ -116,16 +114,10 @@ export const MessageList = (): React.JSX.Element => {
 		[deselectAll, draggedIds, folderId, isSelectModeOn, itemId, messageListIndex, selected, toggle]
 	);
 
-	const totalMessages = useMemo(() => {
-		if (sortOrder === 'readAsc') {
-			return messageListIndex.length;
-		}
-		return folder?.n ?? messageListIndex.length ?? 0;
-	}, [folder?.n, messageListIndex.length, sortOrder]);
-
-	const selectedIds = useMemo(() => Object.keys(selected), [selected]);
-
-	const messagesLoadingCompleted = useMemo(() => status === API_REQUEST_STATUS.fulfilled, [status]);
+	const [totalMessages, selectedIds, messagesLoadingCompleted] = useMemo(
+		() => [messageListIndex.length, Object.keys(selected), status === API_REQUEST_STATUS.fulfilled],
+		[messageListIndex, selected, status]
+	);
 
 	useEffect(() => {
 		setDraggedIds(selected);
