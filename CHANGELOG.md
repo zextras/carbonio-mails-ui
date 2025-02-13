@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.23.3](https://github.com/zextras/carbonio-mails-ui/compare/v1.23.2...v1.23.3) (2025-02-12)
+
+
+### Bug Fixes
+
+* [CO-1809] email counter in message view indicates incorrect items count [#792](https://github.com/zextras/carbonio-mails-ui/issues/792)  ([0b0ff2e](https://github.com/zextras/carbonio-mails-ui/commit/0b0ff2eda419aaff0f76c3dafc56b988d3e201e8))
+
 ### [1.23.2](https://github.com/zextras/carbonio-mails-ui/compare/v1.23.1...v1.23.2) (2025-02-12)
 
 ### [1.23.1](https://github.com/zextras/carbonio-mails-ui/compare/v1.23.0...v1.23.1) (2025-02-12)
