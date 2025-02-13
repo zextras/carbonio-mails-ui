@@ -25,12 +25,37 @@ jest.mock('../../../../../ui-actions/tag-actions', () => ({
 const mockToggle = jest.fn();
 
 describe('SearchMessageListItemCore', () => {
+	const subject = 'Test Subject';
+
 	beforeEach(() => {
 		jest.clearAllMocks();
 	});
 
+	describe('render test', () => {
+		it('renders message subject correctly', async () => {
+			const subject2 = 'Test Subject 2';
+			const generatedMessages = populateMessagesInEmailStore({
+				messageGeneratorParams: [{ id: '123', tags: ['tag1'], subject: subject2 }]
+			});
+
+			const tagsFromStore = [{ id: 'tag1', name: 'Tag 1', color: 0 }];
+			(useTags as jest.Mock).mockReturnValue(tagsFromStore);
+
+			setupTest(
+				<SearchMessageListItemCore
+					completeMessage={generatedMessages[0]}
+					selected={false}
+					selecting={false}
+					toggle={mockToggle}
+					folderId={FOLDERS.INBOX}
+				/>
+			);
+
+			const subjectElement = screen.getByTestId('Subject');
+			expect(subjectElement.innerHTML).toBe(subject2);
+		});
+	});
 	describe('Tag Icon', () => {
-		const subject = 'Test Subject';
 		it('renders tag icon when tags are present and exist in store', async () => {
 			const generatedMessages = populateMessagesInEmailStore({
 				messageGeneratorParams: [{ id: '123', tags: ['tag1'], subject }]
