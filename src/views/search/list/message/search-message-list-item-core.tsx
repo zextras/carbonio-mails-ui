@@ -19,13 +19,12 @@ import { find, includes, isEmpty, reduce } from 'lodash';
 import moment from 'moment';
 import { useTranslation } from 'react-i18next';
 
-import { ZIMBRA_STANDARD_COLORS } from '../../../../carbonio-ui-commons/constants/utils';
+import { ZIMBRA_STANDARD_COLORS } from '../../../../carbonio-ui-commons/constants';
 import { useFolder } from '../../../../carbonio-ui-commons/store/zustand/folder';
 import { useTags } from '../../../../carbonio-ui-commons/store/zustand/tags';
 import { Tag } from '../../../../carbonio-ui-commons/types/tags';
 import { getTimeLabel, participantToString } from '../../../../commons/utils';
-import { TextReadValuesType } from '../../../../types';
-import { MailMessage } from '../../../../types/messages';
+import { TextReadValuesType, MailMessage } from '../../../../types';
 import { useTagExist } from '../../../../ui-actions/tag-actions';
 import { ItemAvatar } from '../../../app/folder-panel/parts/item-avatar';
 import { ParticipantsName } from '../../../app/folder-panel/parts/sender-name';
@@ -75,7 +74,7 @@ export const SearchMessageListItemCore = ({
 			return [true, 'UndoOutline', t('label.replied', 'Replied'), 'RepliedIcon', 'secondary'];
 		}
 		if (
-			completeMessage.read === false &&
+			!completeMessage.read &&
 			!completeMessage.isReplied &&
 			!completeMessage.isDraft &&
 			!completeMessage.isSentByMe &&
@@ -84,7 +83,7 @@ export const SearchMessageListItemCore = ({
 			return [true, 'EmailOutline', t('search.unread', 'Unread'), 'UnreadIcon', 'primary'];
 		}
 		if (
-			completeMessage.read !== false &&
+			completeMessage.read &&
 			!completeMessage.isReplied &&
 			!completeMessage.isDraft &&
 			!completeMessage.isSentByMe &&
@@ -233,6 +232,14 @@ export const SearchMessageListItemCore = ({
 								mainAlignment="flex-start"
 								crossAlignment="baseline"
 							>
+								<Text
+									data-testid="Subject"
+									weight={textReadValues.weight}
+									color={completeMessage.subject ? 'text' : 'secondary'}
+								>
+									{subject}
+								</Text>
+
 								{!isEmpty(completeMessage.fragment) && (
 									<Row
 										takeAvailableSpace
