@@ -12,18 +12,15 @@ import ModalFooter from '../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../carbonio-ui-commons/components/modals/modal-header';
 import { useUiUtilities } from '../hooks/use-ui-utilities';
 import { convActionEmailStoreAction } from '../store/emails/actions/conv-action-action';
-import { msgActionEmailStoreAction } from '../store/emails/actions/msg-action-action';
 
 type DeleteConvConfirmPropType = {
 	selectedIDs: Array<string>;
-	isMessageView: boolean;
 	deselectAll?: () => void | undefined;
 	onClose: () => void;
 };
 
 export const DeleteConvConfirm = ({
 	selectedIDs,
-	isMessageView,
 	deselectAll,
 	onClose
 }: DeleteConvConfirmPropType): React.JSX.Element => {
@@ -31,15 +28,10 @@ export const DeleteConvConfirm = ({
 	const { createSnackbar } = useUiUtilities();
 
 	const onConfirmConvDelete = useCallback(async () => {
-		const response = isMessageView
-			? await msgActionEmailStoreAction({
-					operation: 'delete',
-					ids: selectedIDs
-				})
-			: await convActionEmailStoreAction({
-					operation: 'delete',
-					ids: selectedIDs
-				});
+		const response = await convActionEmailStoreAction({
+			operation: 'delete',
+			ids: selectedIDs
+		});
 		if (!('Fault' in response)) {
 			deselectAll?.();
 			createSnackbar({
@@ -60,7 +52,7 @@ export const DeleteConvConfirm = ({
 			});
 		}
 		onClose();
-	}, [isMessageView, selectedIDs, onClose, deselectAll, createSnackbar, t]);
+	}, [selectedIDs, onClose, deselectAll, createSnackbar, t]);
 
 	return (
 		<Container
