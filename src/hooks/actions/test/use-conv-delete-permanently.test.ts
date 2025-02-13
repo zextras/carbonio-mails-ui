@@ -15,7 +15,7 @@ import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mock
 import { setupHook, screen } from '../../../carbonio-ui-commons/test/test-setup';
 import { FOLDERS_DESCRIPTORS } from '../../../constants';
 import { TIMERS } from '../../../tests/constants';
-import { MsgActionRequest } from '../../../types/soap/msg-action';
+import { ConvActionRequest } from '../../../types/soap/conv-action';
 import {
 	useConvDeletePermanentlyDescriptor,
 	useConvDeletePermanentlyFn
@@ -121,8 +121,9 @@ describe('useConvDeletePermanently', () => {
 					screen.queryByText(`Are you sure to permanently delete this element?`)
 				).not.toBeInTheDocument();
 			});
+
 			it('should call MsgActionRequest when user confirms the deletion of the message', async () => {
-				const interceptor = createSoapAPIInterceptor<MsgActionRequest>('MsgAction');
+				const interceptor = createSoapAPIInterceptor<ConvActionRequest>('ConvAction');
 				const {
 					result: { current: functions }
 				} = setupHook(useConvDeletePermanentlyFn, {

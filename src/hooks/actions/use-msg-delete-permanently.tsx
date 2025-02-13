@@ -36,7 +36,6 @@ export const useMsgDeletePermanentlyFn = ({
 					children: (
 						<DeleteConvConfirm
 							selectedIDs={ids}
-							isMessageView
 							onClose={(): void => closeModal(modalId)}
 							deselectAll={deselectAll || ((): null => null)}
 						/>
