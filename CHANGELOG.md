@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.24.0](https://github.com/zextras/carbonio-mails-ui/compare/v1.23.3...v1.24.0) (2025-02-13)
+
+
+### Features
+
+* [CO-1560] integrate i18next for translation support in edit-attachments-block ([843ac7c](https://github.com/zextras/carbonio-mails-ui/commit/843ac7cc4ecebebecbcc81572dcb91e77120098c))
+
+
+### Bug Fixes
+
+* label.show_all_attachments translation use defaultValue for fallback ([686512f](https://github.com/zextras/carbonio-mails-ui/commit/686512f08131d27e102018472df2ac2177abd528))
+
 ### [1.23.3](https://github.com/zextras/carbonio-mails-ui/compare/v1.23.2...v1.23.3) (2025-02-12)
 
 
