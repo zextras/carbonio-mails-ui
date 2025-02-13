@@ -323,6 +323,7 @@ describe('SearchView', () => {
 
 			expect(await screen.findByTestId('SearchConversationPanel-123')).toBeInTheDocument();
 		});
+
 		it('should call ConvActionRequest with operation "trash" when moving conversation to trash in selection mode', async () => {
 			const searchSettings = setupSearchViewTest({ viewBy: 'conversation', query: 'hello' });
 			const { queryChip } = searchSettings;
@@ -349,6 +350,73 @@ describe('SearchView', () => {
 				user.click(avatar);
 			});
 			await within(itemAvatar).findByTestId('icon: Checkmark');
+			const multipleSelectionPanel = await screen.findByTestId('MultipleSelectionActionPanel');
+			const multipleSelectionTrashButton = await within(multipleSelectionPanel).findByRoleWithIcon(
+				'button',
+				{
+					icon: TESTID_SELECTORS.icons.trash
+				}
+			);
+			const apiInterceptor = createSoapAPIInterceptor<ConvActionRequest, ConvActionResponse>(
+				'ConvAction',
+				{
+					action: {
+						id: '123',
+						op: 'trash'
+					}
+				}
+			);
+			await user.click(multipleSelectionTrashButton);
+			const receivedRequest = await apiInterceptor;
+
+			await act(async () => {
+				expect(receivedRequest.action.id).toBe('123');
+			});
+			await act(async () => {
+				expect(receivedRequest.action.op).toBe('trash');
+			});
+		});
+
+		it('should call ConvActionRequest with operation "trash" when moving multiple conversations to trash in selection mode', async () => {
+			const searchSettings = setupSearchViewTest({ viewBy: 'conversation', query: 'hello' });
+			const { queryChip } = searchSettings;
+
+			createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
+				c: [getSoapConversation('123'), getSoapConversation('456')],
+				more: false
+			});
+			const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
+			const searchViewProps: SearchViewProps = {
+				useQuery: () => [[queryChip], noop],
+				useDisableSearch: () => [false, noop],
+				ResultsHeader: resultsHeader
+			};
+			jest.spyOn(hooks, 'useAppContext').mockReturnValue(fakeCounter());
+			const { user } = setupTest(<SearchView {...searchViewProps} />);
+			await waitAndMakeConversationVisible('123');
+			const actionWrapper = await screen.findByTestId(`ConversationListItem-123`);
+			await user.hover(actionWrapper);
+
+			const itemAvatar123 = await screen.findByTestId('conversation-list-item-avatar-123');
+			const avatar123 = within(itemAvatar123).getByTestId('avatar');
+			await user.click(avatar123);
+			const itemAvatar123AfterClick = await screen.findByTestId(
+				'conversation-list-item-avatar-123'
+			);
+			const avatar123AfterClick = within(itemAvatar123AfterClick).getByTestId('avatar');
+			await within(avatar123AfterClick).findByTestId('icon: Checkmark');
+
+			const itemAvatar456 = await screen.findByTestId('conversation-list-item-avatar-456');
+			const avatar456 = within(itemAvatar456).getByTestId('avatar');
+			await user.click(avatar456);
+
+			const itemAvatar456AfterClick = await screen.findByTestId(
+				'conversation-list-item-avatar-456'
+			);
+			const avatar456AfterClick = within(itemAvatar456AfterClick).getByTestId('avatar');
+
+			await within(avatar456AfterClick).findByTestId('icon: Checkmark');
+
 			const multipleSelectionPanel = await screen.findByTestId('MultipleSelectionActionPanel');
 			const multipleSelectionTrashButton = await within(multipleSelectionPanel).findByRoleWithIcon(
 				'button',
