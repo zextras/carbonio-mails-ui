@@ -13,6 +13,7 @@ import { AccountSettings, ErrorSoapBodyResponse } from '@zextras/carbonio-shell-
 import { noop } from 'lodash';
 
 import * as searchSoapApi from '../../../api/search-soap-api';
+import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
 import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { generateSettings } from '../../../carbonio-ui-commons/test/mocks/settings/settings-generator';
 import { buildSoapErrorResponseBody } from '../../../carbonio-ui-commons/test/mocks/utils/soap';
@@ -126,7 +127,10 @@ function getSoapMessage(
 	};
 }
 
-function getSoapConversation(id: string): SoapConversation {
+function getSoapConversation(
+	id: string,
+	messageInitialData?: Partial<SoapIncompleteMessage>
+): SoapConversation {
 	return {
 		id,
 		n: 1,
@@ -134,13 +138,12 @@ function getSoapConversation(id: string): SoapConversation {
 		f: 'flag',
 		tn: 'tag names',
 		d: 123,
-		m: [getSoapMessage('123', undefined, id)],
+		m: [getSoapMessage('123', messageInitialData, id)],
 		e: [],
 		su: 'conversations Subject',
 		fr: 'fragment'
 	};
 }
-
 function fakeCounter(): { count: number; setCount: (value: number) => void } {
 	let count = 0;
 	const setCount = (value: number): void => {
@@ -291,6 +294,56 @@ describe('SearchView', () => {
 			expect(await within(itemAvatar).findByTestId('icon: Checkmark')).toBeVisible();
 		});
 
+		it('should call ConvActionRequest with operation "delete" when clicking delete permanently action', async () => {
+			const apiInterceptor = createSoapAPIInterceptor<ConvActionRequest, ConvActionResponse>(
+				'ConvAction',
+				{
+					action: {
+						id: '123',
+						op: 'delete'
+					}
+				}
+			);
+
+			const searchSettings = setupSearchViewTest({ viewBy: 'conversation', query: 'hello' });
+			const { queryChip } = searchSettings;
+
+			createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
+				c: [getSoapConversation('123', { l: FOLDERS.TRASH })],
+				more: false
+			});
+			const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
+			const searchViewProps: SearchViewProps = {
+				useQuery: () => [[queryChip], noop],
+				useDisableSearch: () => [false, noop],
+				ResultsHeader: resultsHeader
+			};
+			jest.spyOn(hooks, 'useAppContext').mockReturnValue(fakeCounter());
+			const { user } = setupTest(<SearchView {...searchViewProps} />);
+			await waitAndMakeConversationVisible('123');
+			const actionWrapper = await screen.findByTestId(`ConversationListItem-123`);
+			await user.hover(actionWrapper);
+			expect(actionWrapper).toBeVisible();
+
+			const hoverBar = await screen.findByTestId('primary-actions-bar-123');
+			expect(hoverBar).toBeVisible();
+
+			const deletePermanentlyIconButton = screen.getByTestId('icon: DeletePermanentlyOutline');
+
+			await user.click(deletePermanentlyIconButton);
+			const deleteButton = await screen.findByText('Delete permanently');
+			await user.click(deleteButton);
+
+			const receivedRequest = await apiInterceptor;
+
+			await act(async () => {
+				expect(receivedRequest.action.id).toBe('123');
+			});
+			await act(async () => {
+				expect(receivedRequest.action.op).toBe('delete');
+			});
+		});
+
 		it('should display the conversation view panel', async () => {
 			const searchSettings = setupSearchViewTest({ viewBy: 'conversation', query: 'hello' });
 			const { queryChip } = searchSettings;
@@ -350,73 +403,6 @@ describe('SearchView', () => {
 				user.click(avatar);
 			});
 			await within(itemAvatar).findByTestId('icon: Checkmark');
-			const multipleSelectionPanel = await screen.findByTestId('MultipleSelectionActionPanel');
-			const multipleSelectionTrashButton = await within(multipleSelectionPanel).findByRoleWithIcon(
-				'button',
-				{
-					icon: TESTID_SELECTORS.icons.trash
-				}
-			);
-			const apiInterceptor = createSoapAPIInterceptor<ConvActionRequest, ConvActionResponse>(
-				'ConvAction',
-				{
-					action: {
-						id: '123',
-						op: 'trash'
-					}
-				}
-			);
-			await user.click(multipleSelectionTrashButton);
-			const receivedRequest = await apiInterceptor;
-
-			await act(async () => {
-				expect(receivedRequest.action.id).toBe('123');
-			});
-			await act(async () => {
-				expect(receivedRequest.action.op).toBe('trash');
-			});
-		});
-
-		it('should call ConvActionRequest with operation "trash" when moving multiple conversations to trash in selection mode', async () => {
-			const searchSettings = setupSearchViewTest({ viewBy: 'conversation', query: 'hello' });
-			const { queryChip } = searchSettings;
-
-			createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
-				c: [getSoapConversation('123'), getSoapConversation('456')],
-				more: false
-			});
-			const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
-			const searchViewProps: SearchViewProps = {
-				useQuery: () => [[queryChip], noop],
-				useDisableSearch: () => [false, noop],
-				ResultsHeader: resultsHeader
-			};
-			jest.spyOn(hooks, 'useAppContext').mockReturnValue(fakeCounter());
-			const { user } = setupTest(<SearchView {...searchViewProps} />);
-			await waitAndMakeConversationVisible('123');
-			const actionWrapper = await screen.findByTestId(`ConversationListItem-123`);
-			await user.hover(actionWrapper);
-
-			const itemAvatar123 = await screen.findByTestId('conversation-list-item-avatar-123');
-			const avatar123 = within(itemAvatar123).getByTestId('avatar');
-			await user.click(avatar123);
-			const itemAvatar123AfterClick = await screen.findByTestId(
-				'conversation-list-item-avatar-123'
-			);
-			const avatar123AfterClick = within(itemAvatar123AfterClick).getByTestId('avatar');
-			await within(avatar123AfterClick).findByTestId('icon: Checkmark');
-
-			const itemAvatar456 = await screen.findByTestId('conversation-list-item-avatar-456');
-			const avatar456 = within(itemAvatar456).getByTestId('avatar');
-			await user.click(avatar456);
-
-			const itemAvatar456AfterClick = await screen.findByTestId(
-				'conversation-list-item-avatar-456'
-			);
-			const avatar456AfterClick = within(itemAvatar456AfterClick).getByTestId('avatar');
-
-			await within(avatar456AfterClick).findByTestId('icon: Checkmark');
-
 			const multipleSelectionPanel = await screen.findByTestId('MultipleSelectionActionPanel');
 			const multipleSelectionTrashButton = await within(multipleSelectionPanel).findByRoleWithIcon(
 				'button',
