@@ -15,7 +15,6 @@ import { SearchMessageListItemWrapper } from './search-message-list-item-wrapper
 import { CustomList } from '../../../../carbonio-ui-commons/components/list/list';
 import { CustomListItem } from '../../../../carbonio-ui-commons/components/list/list-item';
 import { useSelection } from '../../../../hooks/use-selection';
-import { getMessageById } from '../../../../store/emails/store';
 import type { AppContext, SearchListProps } from '../../../../types';
 import { MessagesMultipleSelectionActions } from '../../../app/folder-panel/messages/messages-multiple-selection-actions';
 import { AdvancedFilterButton } from '../../parts/advanced-filter-button';
@@ -108,7 +107,6 @@ export const SearchMessageList: FC<SearchListProps> = ({
 		[deselectAll, isSelectModeOn, itemId, messageIds, selected, toggle]
 	);
 
-	const folderId = getMessageById(messageIds[0])?.parent;
 	const selectedIds = useMemo(() => Object.keys(selected), [selected]);
 
 	return (
@@ -137,12 +135,11 @@ export const SearchMessageList: FC<SearchListProps> = ({
 						selectAll={selectAll}
 						isAllSelected={isAllSelected}
 						selectAllModeOff={selectAllModeOff}
-						folderId={folderId}
 					>
 						<MessagesMultipleSelectionActions
 							ids={selectedIds}
 							deselectAll={deselectAll}
-							folderId={folderId}
+							folderId={''}
 						/>
 					</SearchListHeader>
 
