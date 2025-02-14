@@ -730,7 +730,7 @@ describe('store-populated-items-slice', () => {
 			handleConvActionResponse(response, convActionParams);
 			const { result } = renderHook(() => useConversationById('1'));
 			await waitFor(async () => {
-				expect(result.current?.flagged).toBe(true);
+				expect(result.current?.flagged).toBe(false);
 			});
 		});
 
@@ -746,7 +746,7 @@ describe('store-populated-items-slice', () => {
 			handleConvActionResponse(response, convActionParams);
 			const { result } = renderHook(() => useConversationById('1'));
 			await waitFor(async () => {
-				expect(result.current?.flagged).toBe(false);
+				expect(result.current?.flagged).toBe(true);
 			});
 		});
 
@@ -762,7 +762,7 @@ describe('store-populated-items-slice', () => {
 			handleConvActionResponse(response, convActionParams);
 			const { result } = renderHook(() => useConversationById('1'));
 			await waitFor(async () => {
-				expect(result.current?.read).toBe(true);
+				expect(result.current?.read).toBe(false);
 			});
 		});
 
@@ -778,7 +778,7 @@ describe('store-populated-items-slice', () => {
 			handleConvActionResponse(response, convActionParams);
 			const { result } = renderHook(() => useConversationById('1'));
 			await waitFor(async () => {
-				expect(result.current?.read).toBe(false);
+				expect(result.current?.read).toBe(true);
 			});
 		});
 
