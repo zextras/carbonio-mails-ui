@@ -13,7 +13,7 @@ import { createSoapAPIInterceptor } from '../../../../../carbonio-ui-commons/tes
 import { generateSettings } from '../../../../../carbonio-ui-commons/test/mocks/settings/settings-generator';
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
 import { CONVACTIONS } from '../../../../../commons/utilities';
-import { populateConversationInEmailStore } from '../../../../../tests/generators/generateConversation';
+import { populateMessagesInEmailStore } from '../../../../../tests/generators/generateMessage';
 import { MsgActionRequest, MsgActionResponse } from '../../../../../types';
 import { SearchMessageListItem } from '../search-message-list-item';
 
@@ -26,12 +26,7 @@ it('should delete the item when clicking on Delete action when in message mode',
 	const settings = generateSettings(customSettings);
 	useUserSettings.mockReturnValue(settings);
 
-	const { messages } = await waitFor(() =>
-		populateConversationInEmailStore({
-			conversationParams: { subject: 'Test Subject' },
-			conversationMessagesNumber: 3
-		})
-	);
+	const messages = await waitFor(() => populateMessagesInEmailStore({}));
 	const interceptor = createSoapAPIInterceptor<MsgActionRequest, MsgActionResponse>('MsgAction', {
 		action: { op: CONVACTIONS.TRASH, id: '100' }
 	});
