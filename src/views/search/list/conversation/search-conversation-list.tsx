@@ -14,8 +14,10 @@ import { SearchConversationListItem } from './search-conversation-list-item';
 import { CustomList } from '../../../../carbonio-ui-commons/components/list/list';
 import { CustomListItem } from '../../../../carbonio-ui-commons/components/list/list-item';
 import { useSelection } from '../../../../hooks/use-selection';
+import { getConversationMessages } from '../../../../store/emails/store';
 import type { AppContext, SearchListProps } from '../../../../types';
 import { Divider } from '../../../app/detail-panel/edit/parts/edit-view-styled-components';
+import { ConversationsMultipleSelectionActions } from '../../../app/folder-panel/conversations/conversations-multiple-selection-actions';
 import { AdvancedFilterButton } from '../../parts/advanced-filter-button';
 import { useLoadMoreForSearchSlice } from '../../search-view-hooks';
 import ShimmerList from '../../shimmer-list';
@@ -112,6 +114,10 @@ export const SearchConversationList = ({
 			}),
 		[conversationIds, deselectAll, isSelectModeOn, itemId, selected, toggle]
 	);
+
+	const folderId = getConversationMessages(conversationIds[0])?.[0]?.parent;
+	const selectedIds = useMemo(() => Object.keys(selected), [selected]);
+
 	return (
 		<Container background="gray6" width="25%" height="fill" mainAlignment="flex-start">
 			<AdvancedFilterButton
@@ -124,7 +130,6 @@ export const SearchConversationList = ({
 				<>
 					<SearchListHeader
 						itemIds={conversationIds}
-						folderId={''}
 						selected={selected}
 						deselectAll={deselectAll}
 						isSelectModeOn={isSelectModeOn}
@@ -132,7 +137,14 @@ export const SearchConversationList = ({
 						selectAll={selectAll}
 						isAllSelected={isAllSelected}
 						selectAllModeOff={selectAllModeOff}
-					/>
+						folderId={folderId}
+					>
+						<ConversationsMultipleSelectionActions
+							selectedConversationsIds={selectedIds}
+							deselectAll={deselectAll}
+							folderId={folderId}
+						/>
+					</SearchListHeader>
 					<Divider color="gray2" />
 					{totalConversations > 0 || hasMore ? (
 						<CustomList
