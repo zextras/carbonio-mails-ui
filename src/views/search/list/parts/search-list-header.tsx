@@ -18,7 +18,6 @@ type SearchConversationListHeaderProps = {
 	selectAll: () => void;
 	isAllSelected: boolean;
 	selectAllModeOff: () => void;
-	folderId: string;
 };
 export const SearchListHeader = ({
 	itemIds,
@@ -29,7 +28,6 @@ export const SearchListHeader = ({
 	selectAll,
 	isAllSelected,
 	selectAllModeOff,
-	folderId,
 	children
 }: PropsWithChildren<SearchConversationListHeaderProps>): React.JSX.Element => {
 	const totalItems = itemIds.length;
@@ -40,7 +38,7 @@ export const SearchListHeader = ({
 		return (
 			<MultipleSelectionActionsPanel
 				itemsIds={itemIds}
-				folderId={folderId}
+				folderId={''}
 				selectedIds={selectedIds}
 				deselectAll={deselectAll}
 				selectAll={selectAll}
@@ -58,7 +56,7 @@ export const SearchListHeader = ({
 				itemsCount={totalItems}
 				isSelectModeOn={isSelectModeOn}
 				setIsSelectModeOn={setIsSelectModeOn}
-				folderId={folderId}
+				folderId={''}
 				isSearchModule
 			/>
 		);
