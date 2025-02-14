@@ -4,16 +4,12 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { PropsWithChildren, useCallback, useEffect, useRef } from 'react';
 
 import { Button, Container, IconButton, Row, Tooltip } from '@zextras/carbonio-design-system';
-import { t, useUserSettings } from '@zextras/carbonio-shell-ui';
+import { t } from '@zextras/carbonio-shell-ui';
 
 import { useUiUtilities } from '../../../../hooks/use-ui-utilities';
-import { useConversationsByIds, useMessagesByIds } from '../../../../store/emails/store';
-import { getFolderParentId } from '../../../../ui-actions/utils';
-import { ConversationsMultipleSelectionActions } from '../conversations/conversations-multiple-selection-actions';
-import { MessagesMultipleSelectionActions } from '../messages/messages-multiple-selection-actions';
 
 type MultipleSelectionActionsPanelProps = {
 	itemsIds: Array<string>;
@@ -24,39 +20,35 @@ type MultipleSelectionActionsPanelProps = {
 	selectAllModeOff: () => void;
 	setIsSelectModeOn: (value: boolean) => void;
 	folderId: string;
+	children: React.ReactNode;
 };
 
 export const MultipleSelectionActionsPanel = ({
-	itemsIds,
 	selectedIds,
 	deselectAll,
 	selectAll,
 	isAllSelected,
 	selectAllModeOff,
 	setIsSelectModeOn,
-	folderId
-}: MultipleSelectionActionsPanelProps): React.JSX.Element => {
+	folderId,
+	children
+}: PropsWithChildren<MultipleSelectionActionsPanelProps>): React.JSX.Element => {
 	const { createSnackbar } = useUiUtilities();
-	const { zimbraPrefGroupMailBy } = useUserSettings().prefs;
-	const isConversation = zimbraPrefGroupMailBy === 'conversation';
 
-	const messages = useMessagesByIds(itemsIds);
-	const conversations = useConversationsByIds(itemsIds);
-	const fullItems = isConversation ? conversations : messages;
-	const folderParentId = getFolderParentId({ folderId, isConversation, items: fullItems });
-
-	const [currentFolderId] = useState(folderParentId);
+	const currentFolder = useRef<string | null>(null);
 
 	// This useEffect is required to reset the select mode when the user navigates to a different folder
 	useEffect(() => {
-		if (folderId && currentFolderId !== folderParentId) {
+		if (!currentFolder.current) {
+			currentFolder.current = folderId;
+			return;
+		}
+		if (currentFolder.current !== folderId) {
 			deselectAll();
 			setIsSelectModeOn(false);
+			currentFolder.current = folderId;
 		}
-	}, [currentFolderId, deselectAll, folderId, folderParentId, setIsSelectModeOn]);
-
-	const ids = Object.values(selectedIds ?? []);
-	const messagesArrayIsNotEmpty = ids.length > 0;
+	}, [deselectAll, folderId, setIsSelectModeOn]);
 
 	const arrowBackOnClick = useCallback(() => {
 		deselectAll();
@@ -66,15 +58,14 @@ export const MultipleSelectionActionsPanel = ({
 	const selectAllOnClick = useCallback(() => {
 		selectAll();
 		createSnackbar({
-			key: `selected-${ids}`,
+			key: `selected-${selectedIds}`,
 			replace: true,
 			severity: 'info',
 			label: t('label.all_items_selected', 'All visible items have been selected'),
 			autoHideTimeout: 5000,
 			hideButton: true
 		});
-	}, [selectAll, createSnackbar, ids]);
-
+	}, [selectAll, createSnackbar, selectedIds]);
 	const iconButtonTooltip = t('label.exit_selection_mode', 'Exit selection mode');
 
 	return (
@@ -115,23 +106,7 @@ export const MultipleSelectionActionsPanel = ({
 						onClick={isAllSelected ? selectAllModeOff : selectAllOnClick}
 					/>
 				</Row>
-				{messagesArrayIsNotEmpty && (
-					<>
-						{isConversation ? (
-							<ConversationsMultipleSelectionActions
-								selectedConversationsIds={selectedIds}
-								deselectAll={deselectAll}
-								folderId={folderId}
-							/>
-						) : (
-							<MessagesMultipleSelectionActions
-								ids={selectedIds}
-								deselectAll={deselectAll}
-								folderId={folderId}
-							/>
-						)}
-					</>
-				)}
+				{selectedIds.length > 0 && children}
 			</Row>
 		</Container>
 	);

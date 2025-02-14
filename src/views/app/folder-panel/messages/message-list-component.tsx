@@ -9,6 +9,7 @@ import { Container, Padding, Text } from '@zextras/carbonio-design-system';
 import styled from 'styled-components';
 
 import { DragItems } from './message-list-drag-component';
+import { MessagesMultipleSelectionActions } from './messages-multiple-selection-actions';
 import { CustomList } from '../../../../carbonio-ui-commons/components/list/list';
 import { useFolder, useRoot } from '../../../../carbonio-ui-commons/store/zustand/folder/hooks';
 import ShimmerList from '../../../search/shimmer-list';
@@ -119,7 +120,13 @@ export const MessageListComponent = memo(function MessageListComponent({
 					selectAllModeOff={selectAllModeOff}
 					setIsSelectModeOn={setIsSelectModeOn}
 					folderId={folderId}
-				/>
+				>
+					<MessagesMultipleSelectionActions
+						ids={selectedIds}
+						deselectAll={deselectAll}
+						folderId={folderId}
+					/>
+				</MultipleSelectionActionsPanel>
 			) : (
 				showBreadcrumbs && (
 					<Breadcrumbs
