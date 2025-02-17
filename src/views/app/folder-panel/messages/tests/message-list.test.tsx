@@ -242,4 +242,84 @@ describe('message-list', () => {
 			await waitFor(() => expect(breadcrumbCountElementAfterLoadMore.innerHTML).toBe('200'));
 		});
 	});
+
+	it('loads more messages when reaching bottom of the list', async () => {
+		populateFoldersStore();
+		const folderId = FOLDERS.INBOX;
+		(useParams as jest.Mock).mockReturnValue({ folderId });
+
+		const searchResponse = {
+			m: [generateCompleteMessageFromAPI({ id: '1', su: 'message 1 subject', l: folderId })],
+			more: true
+		};
+		createSoapAPIInterceptor('Search', searchResponse);
+
+		setupTest(<MessageList />);
+
+		expect(await screen.findAllByTestId('invisible-item')).toHaveLength(1);
+
+		makeAllItemsVisible();
+
+		expect(screen.getByText(/message 1 subject/i)).toBeInTheDocument();
+
+		const searchResponse2 = {
+			m: [generateCompleteMessageFromAPI({ id: '2', su: 'message 2 subject', l: folderId })],
+			more: false
+		};
+
+		createSoapAPIInterceptor('Search', searchResponse2);
+
+		await act(async () => {
+			triggerLoadMore();
+		});
+
+		makeAllItemsVisible();
+
+		expect(screen.getByText(/message 1 subject/i)).toBeInTheDocument();
+		expect(screen.getByText(/message 2 subject/i)).toBeInTheDocument();
+	});
+
+	it('list-bottom-element should not be in the document when there are no more messages', async () => {
+		populateFoldersStore();
+		const folderId = FOLDERS.INBOX;
+		(useParams as jest.Mock).mockReturnValue({ folderId });
+
+		const searchResponse = {
+			m: [generateCompleteMessageFromAPI({ id: '1', l: folderId, su: 'message 1 subject' })],
+			more: false
+		};
+
+		createSoapAPIInterceptor('Search', searchResponse);
+
+		setupTest(<MessageList />);
+
+		expect(await screen.findAllByTestId('invisible-item')).toHaveLength(1);
+
+		makeAllItemsVisible();
+
+		expect(screen.getByText(/message 1 subject/i)).toBeInTheDocument;
+		expect(screen.queryByTestId('list-bottom-element')).not.toBeInTheDocument();
+	});
+
+	it('list-bottom-element should be in the document when there are more messages', async () => {
+		populateFoldersStore();
+		const folderId = FOLDERS.INBOX;
+		(useParams as jest.Mock).mockReturnValue({ folderId });
+
+		const searchResponse = {
+			m: [generateCompleteMessageFromAPI({ id: '1', l: folderId, su: 'message 1 subject' })],
+			more: true
+		};
+
+		createSoapAPIInterceptor('Search', searchResponse);
+
+		setupTest(<MessageList />);
+
+		expect(await screen.findAllByTestId('invisible-item')).toHaveLength(1);
+
+		makeAllItemsVisible();
+
+		expect(screen.getByText(/message 1 subject/i)).toBeInTheDocument;
+		expect(screen.getByTestId('list-bottom-element')).toBeInTheDocument();
+	});
 });

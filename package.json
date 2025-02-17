@@ -20,7 +20,7 @@
 		"lint-check": "npm run lint-errors; npm run type-check",
 		"test": "TZ=Europe/Rome jest --testTimeout=20000 --maxWorkers=50%",
 		"build:dev": "sdk build --dev --pkgRel $(date +%s)",
-		"dev-deploy": "sdk build && sdk deploy"
+		"dev-deploy": "sdk build --dev --pkgRel $(date +%s) && sdk deploy"
 	},
 	"files": [
 		"src/types/"
