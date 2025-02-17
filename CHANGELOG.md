@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.24.1](https://github.com/zextras/carbonio-mails-ui/compare/v1.24.0...v1.24.1) (2025-02-13)
+
+
+### Bug Fixes
+
+* [CO-1813] add subject rendering test and improve subject display in SearchMessageListItemCore ([9b3bdb7](https://github.com/zextras/carbonio-mails-ui/commit/9b3bdb74c594e526a2f3080d45156a040c28cf0e))
+
 ## [1.24.0](https://github.com/zextras/carbonio-mails-ui/compare/v1.23.3...v1.24.0) (2025-02-13)
 
 
