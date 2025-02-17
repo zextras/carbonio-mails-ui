@@ -11,7 +11,7 @@ import { useTranslation } from 'react-i18next';
 import { MessageActionsDescriptors } from '../../constants';
 import { isTrash } from '../../helpers/folders';
 import { ActionFn, UIActionDescriptor } from '../../types';
-import { MoveConvMessage } from '../../ui-actions/move-conv-msg';
+import { MoveMessage } from '../../ui-actions/move-msg';
 import { useUiUtilities } from '../use-ui-utilities';
 
 export const useMsgRestoreFn = ({
@@ -35,7 +35,7 @@ export const useMsgRestoreFn = ({
 					maxHeight: '90vh',
 					size: 'medium',
 					children: (
-						<MoveConvMessage
+						<MoveMessage
 							folderId={folderId}
 							selectedIDs={[messageId]}
 							onClose={(): void => closeModal(modalId)}
