@@ -132,7 +132,7 @@ const Attachment = ({
 }: AttachmentType): React.JSX.Element => {
 	const [t] = useTranslation();
 	const { createPreview } = useContext(PreviewsManagerContext);
-	const { isInsideExtraWindow } = useExtraWindow();
+	const { isInsideExtraWindow, windowData } = useExtraWindow();
 	const extension = getFileExtension(att).value;
 	const { createSnackbar, createModal, closeModal } = useUiUtilities();
 	const { servicesCatalog } = useAppContext<AppContext>();
@@ -318,6 +318,11 @@ const Attachment = ({
 		t
 	]);
 
+	const pdfPreviewOptions = useMemo(
+		() => (isInsideExtraWindow ? { ownerDocument: windowData?.window?.document } : undefined),
+		[isInsideExtraWindow, windowData]
+	);
+
 	const preview = useCallback(
 		(ev: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
 			ev.preventDefault();
@@ -348,7 +353,9 @@ const Attachment = ({
 					/** Name of the file, shown as info */
 					filename: att.filename,
 					/** Size of the file, shown as info */
-					size: humanFileSize(att.size)
+					size: humanFileSize(att.size),
+					target: isInsideExtraWindow ? 'print' : 'display',
+					documentOptions: pdfPreviewOptions
 				});
 			} else if (isEML) {
 				showEMLPreview();
@@ -372,7 +379,9 @@ const Attachment = ({
 			link,
 			pType,
 			showEMLPreview,
-			t
+			t,
+			isInsideExtraWindow,
+			pdfPreviewOptions
 		]
 	);
 
