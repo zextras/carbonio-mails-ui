@@ -11,7 +11,7 @@ import { useTranslation } from 'react-i18next';
 import { ConversationActionsDescriptors } from '../../constants';
 import { isTrash } from '../../helpers/folders';
 import { ActionFn, UIActionDescriptor } from '../../types';
-import { MoveConvMessage } from '../../ui-actions/move-conv-msg';
+import { MoveConversation } from '../../ui-actions/move-conv';
 import { useUiUtilities } from '../use-ui-utilities';
 
 export const useConvRestoreFn = ({
@@ -35,7 +35,7 @@ export const useConvRestoreFn = ({
 					maxHeight: '90vh',
 					size: 'medium',
 					children: (
-						<MoveConvMessage
+						<MoveConversation
 							folderId={folderId}
 							selectedIDs={[conversationId]}
 							onClose={(): void => closeModal(modalId)}
