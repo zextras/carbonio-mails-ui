@@ -8,7 +8,6 @@ import React from 'react';
 import { act, screen } from '@testing-library/react';
 import { times } from 'lodash';
 
-import { FOLDER_VIEW } from '../../carbonio-ui-commons/constants';
 import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
 import { getFolder } from '../../carbonio-ui-commons/store/zustand/folder';
 import { createSoapAPIInterceptor } from '../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
@@ -25,7 +24,7 @@ describe('MoveMsg', () => {
 	const msgIds = msgs.map<string>((msg) => msg.id);
 
 	describe('Modal title', () => {
-		it('move mode - message view - should display the modal title', async () => {
+		it('should display be visible when in move mode', async () => {
 			const component = (
 				<MoveMessage
 					folderId={sourceFolder}
@@ -41,7 +40,7 @@ describe('MoveMsg', () => {
 			expect(screen.getByText('Move Message')).toBeVisible();
 		});
 
-		it('restore mode - should be visible', async () => {
+		it('should be visible when in restore mode', async () => {
 			const component = (
 				<MoveMessage
 					folderId={sourceFolder}
@@ -80,7 +79,7 @@ describe('MoveMsg', () => {
 		});
 
 		it('should be enabled if the user select a destination folder', async () => {
-			populateFoldersStore({ view: FOLDER_VIEW.message });
+			populateFoldersStore();
 			const destinationFolder = FOLDERS.INBOX;
 
 			const component = (
@@ -115,8 +114,8 @@ describe('MoveMsg', () => {
 			expect(button).toBeEnabled();
 		});
 
-		it('When a destination folder is selected and the user clicks on the confirm the API is called and the success snackbar is displayed', async () => {
-			populateFoldersStore({ view: FOLDER_VIEW.message });
+		it('should call the correct API when a destination folder is selected and the user clicks on the confirm button', async () => {
+			populateFoldersStore();
 
 			const destinationFolder = FOLDERS.INBOX;
 
