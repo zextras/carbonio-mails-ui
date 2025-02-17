@@ -26,7 +26,7 @@ describe('MoveConv', () => {
 	const convIds = conversations.map<string>((msg) => msg.id);
 
 	describe('Modal title', () => {
-		it('move mode should display the modal title', async () => {
+		it('it should be visible in move mode', async () => {
 			const component = (
 				<MoveConversation
 					folderId={sourceFolder}
@@ -42,7 +42,7 @@ describe('MoveConv', () => {
 			expect(screen.getByText('Move')).toBeVisible();
 		});
 
-		it('restore mode should be visible', async () => {
+		it('should be visible in restore mode', async () => {
 			const component = (
 				<MoveConversation
 					folderId={sourceFolder}
@@ -116,7 +116,7 @@ describe('MoveConv', () => {
 			expect(button).toBeEnabled();
 		});
 
-		it('When a destination folder is selected and the user clicks on the confirm the API is called and the success snackbar is displayed', async () => {
+		it('should call the correct API when a destination folder is selected and the user clicks on the confirm button', async () => {
 			populateFoldersStore();
 
 			const destinationFolder = FOLDERS.INBOX;
