@@ -6,44 +6,31 @@
 import React from 'react';
 
 import { act, screen } from '@testing-library/react';
-import * as hooks from '@zextras/carbonio-shell-ui';
 import { times } from 'lodash';
 
-import { FOLDER_VIEW } from '../../carbonio-ui-commons/constants';
 import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
 import { getFolder } from '../../carbonio-ui-commons/store/zustand/folder';
 import { createSoapAPIInterceptor } from '../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
-import { generateSettings } from '../../carbonio-ui-commons/test/mocks/settings/settings-generator';
 import { populateFoldersStore } from '../../carbonio-ui-commons/test/mocks/store/folders';
 import { makeListItemsVisible, setupTest } from '../../carbonio-ui-commons/test/test-setup';
-import { generateMessage } from '../../tests/generators/generateMessage';
-import { MailMessage, MsgActionRequest, MsgActionResponse } from '../../types';
-import { MoveMessage } from '../move-msg';
+import { generateConversation } from '../../tests/generators/generateConversation';
+import { ConvActionRequest, ConvActionResponse, NormalizedConversation } from '../../types';
+import { MoveConversation } from '../move-conv';
 
-const messageViewSettings = generateSettings({
-	prefs: {
-		zimbraPrefGroupMailBy: 'message'
-	}
-});
-
-const convViewSettings = generateSettings({
-	prefs: {
-		zimbraPrefGroupMailBy: 'conversation'
-	}
-});
-describe('MoveConvMsg', () => {
+describe('MoveConv', () => {
 	const { children: inboxChildren } = getFolder(FOLDERS.INBOX) ?? {};
 	const sourceFolder = inboxChildren?.[0].id ?? '';
-	const msgs: Array<MailMessage> = times(10, () => generateMessage({ folderId: sourceFolder }));
-	const msgIds = msgs.map<string>((msg) => msg.id);
+	const conversations: Array<NormalizedConversation> = times(10, () =>
+		generateConversation({ folderId: sourceFolder })
+	);
+	const convIds = conversations.map<string>((msg) => msg.id);
 
 	describe('Modal title', () => {
-		it('move mode - message view - should display the modal title', async () => {
-			jest.spyOn(hooks, 'useUserSettings').mockReturnValue(messageViewSettings);
+		it('move mode should display the modal title', async () => {
 			const component = (
-				<MoveMessage
+				<MoveConversation
 					folderId={sourceFolder}
-					selectedIDs={msgIds}
+					selectedIDs={convIds}
 					onClose={jest.fn()}
 					isRestore={false}
 					deselectAll={jest.fn()}
@@ -52,31 +39,14 @@ describe('MoveConvMsg', () => {
 
 			setupTest(component);
 
-			expect(screen.getByText('Move Message')).toBeVisible();
+			expect(screen.getByText('Move')).toBeVisible();
 		});
 
-		it('move mode - conversation view - should be visible', async () => {
-			jest.spyOn(hooks, 'useUserSettings').mockReturnValue(convViewSettings);
+		it('restore mode should be visible', async () => {
 			const component = (
-				<MoveMessage
+				<MoveConversation
 					folderId={sourceFolder}
-					selectedIDs={msgIds}
-					onClose={jest.fn()}
-					isRestore={false}
-					deselectAll={jest.fn()}
-				/>
-			);
-
-			setupTest(component);
-
-			expect(screen.getByText('Move Conversation')).toBeVisible();
-		});
-
-		it('restore mode - should be visible', async () => {
-			const component = (
-				<MoveMessage
-					folderId={sourceFolder}
-					selectedIDs={msgIds}
+					selectedIDs={convIds}
 					onClose={jest.fn()}
 					isRestore
 					deselectAll={jest.fn()}
@@ -92,9 +62,9 @@ describe('MoveConvMsg', () => {
 	describe('Confirm button', () => {
 		it('should be visible', async () => {
 			const component = (
-				<MoveMessage
+				<MoveConversation
 					folderId={sourceFolder}
-					selectedIDs={msgIds}
+					selectedIDs={convIds}
 					onClose={jest.fn()}
 					isRestore={false}
 					deselectAll={jest.fn()}
@@ -111,13 +81,13 @@ describe('MoveConvMsg', () => {
 		});
 
 		it('should be enabled if the user select a destination folder', async () => {
-			populateFoldersStore({ view: FOLDER_VIEW.message });
+			populateFoldersStore();
 			const destinationFolder = FOLDERS.INBOX;
 
 			const component = (
-				<MoveMessage
+				<MoveConversation
 					folderId={sourceFolder}
-					selectedIDs={msgIds}
+					selectedIDs={convIds}
 					onClose={jest.fn()}
 					isRestore={false}
 					deselectAll={jest.fn()}
@@ -147,31 +117,24 @@ describe('MoveConvMsg', () => {
 		});
 
 		it('When a destination folder is selected and the user clicks on the confirm the API is called and the success snackbar is displayed', async () => {
-			populateFoldersStore({ view: FOLDER_VIEW.message });
+			populateFoldersStore();
 
-			jest.spyOn(hooks, 'useUserSettings').mockReturnValue(messageViewSettings);
-
-			const { children: inboxChildren } = getFolder(FOLDERS.INBOX) ?? {};
-			const sourceFolder = inboxChildren?.[0].id ?? '';
 			const destinationFolder = FOLDERS.INBOX;
 
-			const msgs: Array<MailMessage> = times(10, () => generateMessage({ folderId: sourceFolder }));
-			const msgIds = msgs.map<string>((msg) => msg.id);
-
-			const interceptor = createSoapAPIInterceptor<MsgActionRequest, MsgActionResponse>(
-				'MsgAction',
+			const interceptor = createSoapAPIInterceptor<ConvActionRequest, ConvActionResponse>(
+				'ConvAction',
 				{
 					action: {
-						id: msgIds.join(','),
+						id: convIds.join(','),
 						op: 'move'
 					}
 				}
 			);
 
 			const component = (
-				<MoveMessage
+				<MoveConversation
 					folderId={sourceFolder}
-					selectedIDs={msgIds}
+					selectedIDs={convIds}
 					onClose={jest.fn()}
 					isRestore={false}
 					deselectAll={jest.fn()}
@@ -204,10 +167,9 @@ describe('MoveConvMsg', () => {
 			});
 
 			const requestParameter = await interceptor;
-			expect(requestParameter.action.id).toBe(msgIds.join(','));
+			expect(requestParameter.action.id).toBe(convIds.join(','));
 			expect(requestParameter.action.op).toBe('move');
 			expect(requestParameter.action.l).toBe(destinationFolder);
-			expect(requestParameter.action.f).toBeUndefined();
 			expect(requestParameter.action.tn).toBeUndefined();
 		});
 	});
