@@ -6,25 +6,17 @@
 import React from 'react';
 
 import { act, screen } from '@testing-library/react';
-import * as hooks from '@zextras/carbonio-shell-ui';
 import { times } from 'lodash';
 
 import { FOLDER_VIEW } from '../../carbonio-ui-commons/constants';
 import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
 import { getFolder } from '../../carbonio-ui-commons/store/zustand/folder';
 import { createSoapAPIInterceptor } from '../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
-import { generateSettings } from '../../carbonio-ui-commons/test/mocks/settings/settings-generator';
 import { populateFoldersStore } from '../../carbonio-ui-commons/test/mocks/store/folders';
 import { makeListItemsVisible, setupTest } from '../../carbonio-ui-commons/test/test-setup';
 import { generateMessage } from '../../tests/generators/generateMessage';
 import { MailMessage, MsgActionRequest, MsgActionResponse } from '../../types';
 import { MoveMessage } from '../move-msg';
-
-const messageViewSettings = generateSettings({
-	prefs: {
-		zimbraPrefGroupMailBy: 'message'
-	}
-});
 
 describe('MoveMsg', () => {
 	const { children: inboxChildren } = getFolder(FOLDERS.INBOX) ?? {};
@@ -34,7 +26,6 @@ describe('MoveMsg', () => {
 
 	describe('Modal title', () => {
 		it('move mode - message view - should display the modal title', async () => {
-			jest.spyOn(hooks, 'useUserSettings').mockReturnValue(messageViewSettings);
 			const component = (
 				<MoveMessage
 					folderId={sourceFolder}
@@ -126,8 +117,6 @@ describe('MoveMsg', () => {
 
 		it('When a destination folder is selected and the user clicks on the confirm the API is called and the success snackbar is displayed', async () => {
 			populateFoldersStore({ view: FOLDER_VIEW.message });
-
-			jest.spyOn(hooks, 'useUserSettings').mockReturnValue(messageViewSettings);
 
 			const destinationFolder = FOLDERS.INBOX;
 
