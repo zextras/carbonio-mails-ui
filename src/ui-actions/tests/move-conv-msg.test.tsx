@@ -18,7 +18,7 @@ import { populateFoldersStore } from '../../carbonio-ui-commons/test/mocks/store
 import { makeListItemsVisible, setupTest } from '../../carbonio-ui-commons/test/test-setup';
 import { generateMessage } from '../../tests/generators/generateMessage';
 import { MailMessage, MsgActionRequest, MsgActionResponse } from '../../types';
-import { MoveConvMessage } from '../move-conv-msg';
+import { MoveMessage } from '../move-msg';
 
 const messageViewSettings = generateSettings({
 	prefs: {
@@ -41,7 +41,7 @@ describe('MoveConvMsg', () => {
 		it('move mode - message view - should display the modal title', async () => {
 			jest.spyOn(hooks, 'useUserSettings').mockReturnValue(messageViewSettings);
 			const component = (
-				<MoveConvMessage
+				<MoveMessage
 					folderId={sourceFolder}
 					selectedIDs={msgIds}
 					onClose={jest.fn()}
@@ -58,7 +58,7 @@ describe('MoveConvMsg', () => {
 		it('move mode - conversation view - should be visible', async () => {
 			jest.spyOn(hooks, 'useUserSettings').mockReturnValue(convViewSettings);
 			const component = (
-				<MoveConvMessage
+				<MoveMessage
 					folderId={sourceFolder}
 					selectedIDs={msgIds}
 					onClose={jest.fn()}
@@ -74,7 +74,7 @@ describe('MoveConvMsg', () => {
 
 		it('restore mode - should be visible', async () => {
 			const component = (
-				<MoveConvMessage
+				<MoveMessage
 					folderId={sourceFolder}
 					selectedIDs={msgIds}
 					onClose={jest.fn()}
@@ -92,7 +92,7 @@ describe('MoveConvMsg', () => {
 	describe('Confirm button', () => {
 		it('should be visible', async () => {
 			const component = (
-				<MoveConvMessage
+				<MoveMessage
 					folderId={sourceFolder}
 					selectedIDs={msgIds}
 					onClose={jest.fn()}
@@ -115,7 +115,7 @@ describe('MoveConvMsg', () => {
 			const destinationFolder = FOLDERS.INBOX;
 
 			const component = (
-				<MoveConvMessage
+				<MoveMessage
 					folderId={sourceFolder}
 					selectedIDs={msgIds}
 					onClose={jest.fn()}
@@ -169,7 +169,7 @@ describe('MoveConvMsg', () => {
 			);
 
 			const component = (
-				<MoveConvMessage
+				<MoveMessage
 					folderId={sourceFolder}
 					selectedIDs={msgIds}
 					onClose={jest.fn()}
