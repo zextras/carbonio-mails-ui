@@ -1,3 +1,4 @@
+/* eslint-disable testing-library/prefer-user-event */
 /*
  * SPDX-FileCopyrightText: 2025 Zextras <https://www.zextras.com>
  *
@@ -6,26 +7,40 @@
 
 import React from 'react';
 
-import { act, screen, waitFor } from '@testing-library/react';
+import { act, fireEvent, screen, waitFor } from '@testing-library/react';
 import { useParams } from 'react-router-dom';
 
+import { FOLDERS } from '../../../../../carbonio-ui-commons/constants/folders';
 import { generateFolder } from '../../../../../carbonio-ui-commons/test/mocks/folders/folders-generator';
 import { createSoapAPIInterceptor } from '../../../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { populateFoldersStore } from '../../../../../carbonio-ui-commons/test/mocks/store/folders';
 import { setupTest, triggerLoadMore } from '../../../../../carbonio-ui-commons/test/test-setup';
+import * as useSelection from '../../../../../hooks/use-selection';
 import { updateConversationsResultsLoadingStatus } from '../../../../../store/emails/store';
 import {
 	generateConversationFromAPI,
 	generateConvMessageFromAPI
 } from '../../../../../tests/generators/api';
-import { SearchRequest, SearchResponse } from '../../../../../types';
+import { ConvActionRequest, SearchRequest, SearchResponse } from '../../../../../types';
 import { makeAllItemsVisible } from '../../../../settings/filters/tests/test-utils';
 import { ConversationList } from '../conversation-list';
+
+const mockedUseSelection: ReturnType<typeof useSelection.useSelection> = {
+	selectAll: jest.fn(),
+	selected: { '10': true },
+	toggle: jest.fn(),
+	isSelectModeOn: false,
+	setIsSelectModeOn: jest.fn(),
+	deselectAll: jest.fn(),
+	isAllSelected: false,
+	selectAllModeOff: jest.fn()
+};
 
 jest.mock('react-router-dom', () => ({
 	...jest.requireActual('react-router-dom'),
 	useParams: jest.fn()
 }));
+
 describe('ConversationList Component', () => {
 	beforeEach(() => {
 		jest.clearAllMocks();
@@ -153,5 +168,82 @@ describe('ConversationList Component', () => {
 
 		expect(screen.getByText(/conversation 1 subject/i)).toBeInTheDocument();
 		expect(screen.getByTestId('list-bottom-element')).toBeInTheDocument();
+	});
+
+	it('should move a conversation to trash when the trash action button is clicked', async () => {
+		jest.spyOn(useSelection, 'useSelection').mockReturnValue(mockedUseSelection);
+		const convActionInterceptor = createSoapAPIInterceptor<ConvActionRequest>('ConvAction');
+		await act(async () => {
+			populateFoldersStore();
+		});
+
+		const conversation1 = generateConversationFromAPI({
+			id: '1',
+			m: [generateConvMessageFromAPI({ id: '1', l: '2', cid: '1' })],
+			su: conversation1Subject
+		});
+
+		createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
+			c: [conversation1],
+			more: true
+		});
+
+		const { user } = await act(async () => setupTest(<ConversationList />));
+
+		makeAllItemsVisible();
+
+		const actionWrapper = await screen.findByTestId(`ConversationListItem-1`);
+		await act(async () => {
+			user.hover(actionWrapper);
+		});
+
+		const deleteButton = await screen.findByTestId('icon: Trash2Outline');
+		await user.click(deleteButton);
+		const convActionRequest = await waitFor(async () => convActionInterceptor);
+		expect(convActionRequest.action.op).toBe('trash');
+		expect(convActionRequest.action.id).toBe('1');
+	});
+
+	it('should delete a conversation when the permanently delete action button is clicked', async () => {
+		jest.spyOn(useSelection, 'useSelection').mockReturnValue(mockedUseSelection);
+		const convActionInterceptor = createSoapAPIInterceptor<ConvActionRequest>('ConvAction');
+		await act(async () => {
+			populateFoldersStore();
+		});
+
+		const conversation1 = generateConversationFromAPI({
+			id: '1',
+			m: [generateConvMessageFromAPI({ id: '1', l: FOLDERS.TRASH, cid: '1' })],
+			su: conversation1Subject
+		});
+
+		createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
+			c: [conversation1],
+			more: true
+		});
+		(useParams as jest.Mock).mockReturnValue({
+			folderId: FOLDERS.TRASH
+		});
+		const { user } = await act(async () => setupTest(<ConversationList />));
+
+		makeAllItemsVisible();
+
+		const actionWrapper = await screen.findByTestId(`ConversationListItem-1`);
+		await act(async () => {
+			user.hover(actionWrapper);
+		});
+
+		const deleteButton = await screen.findByTestId('icon: DeletePermanentlyOutline');
+		await user.click(deleteButton);
+		const confirmButton = await screen.findByText('Delete permanently');
+
+		// eslint-disable-next-line testing-library/no-unnecessary-act
+		await act(async () => {
+			fireEvent.click(confirmButton);
+		});
+
+		const convActionRequest = await convActionInterceptor;
+		expect(convActionRequest.action.op).toBe('delete');
+		expect(convActionRequest.action.id).toBe('1');
 	});
 });
