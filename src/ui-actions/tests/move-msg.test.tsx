@@ -125,6 +125,8 @@ describe('MoveMsg', () => {
 		it('should call the correct API when a destination folder is selected and the user clicks on the confirm button', async () => {
 			populateFoldersStore();
 
+			const mockCreateSnackbar = jest.fn((arg) => arg);
+			(useSnackbar as jest.Mock).mockImplementation(() => mockCreateSnackbar);
 			const destinationFolder = FOLDERS.INBOX;
 
 			const interceptor = createSoapAPIInterceptor<MsgActionRequest, MsgActionResponse>(
