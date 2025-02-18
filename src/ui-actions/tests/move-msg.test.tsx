@@ -6,16 +6,24 @@
 import React from 'react';
 
 import { act, screen } from '@testing-library/react';
+import { useSnackbar } from '@zextras/carbonio-design-system';
+import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 import { times } from 'lodash';
 
 import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
 import { getFolder } from '../../carbonio-ui-commons/store/zustand/folder';
 import { createSoapAPIInterceptor } from '../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { populateFoldersStore } from '../../carbonio-ui-commons/test/mocks/store/folders';
+import { buildSoapErrorResponseBody } from '../../carbonio-ui-commons/test/mocks/utils/soap';
 import { makeListItemsVisible, setupTest } from '../../carbonio-ui-commons/test/test-setup';
 import { generateMessage } from '../../tests/generators/generateMessage';
 import { MailMessage, MsgActionRequest, MsgActionResponse } from '../../types';
 import { MoveMessage } from '../move-msg';
+
+jest.mock('@zextras/carbonio-design-system', () => ({
+	...jest.requireActual('@zextras/carbonio-design-system'),
+	useSnackbar: jest.fn()
+}));
 
 describe('MoveMsg', () => {
 	const { children: inboxChildren } = getFolder(FOLDERS.INBOX) ?? {};
@@ -117,6 +125,8 @@ describe('MoveMsg', () => {
 		it('should call the correct API when a destination folder is selected and the user clicks on the confirm button', async () => {
 			populateFoldersStore();
 
+			const mockCreateSnackbar = jest.fn((arg) => arg);
+			(useSnackbar as jest.Mock).mockImplementation(() => mockCreateSnackbar);
 			const destinationFolder = FOLDERS.INBOX;
 
 			const interceptor = createSoapAPIInterceptor<MsgActionRequest, MsgActionResponse>(
@@ -170,6 +180,60 @@ describe('MoveMsg', () => {
 			expect(requestParameter.action.l).toBe(destinationFolder);
 			expect(requestParameter.action.f).toBeUndefined();
 			expect(requestParameter.action.tn).toBeUndefined();
+		});
+		it('should show an error snackbar when the API call fails ', async () => {
+			populateFoldersStore();
+
+			const mockCreateSnackbar = jest.fn((arg) => arg);
+
+			(useSnackbar as jest.Mock).mockImplementation(() => mockCreateSnackbar);
+			const destinationFolder = FOLDERS.INBOX;
+
+			createSoapAPIInterceptor<MsgActionRequest, ErrorSoapBodyResponse>(
+				'MsgAction',
+				buildSoapErrorResponseBody()
+			);
+
+			const component = (
+				<MoveMessage
+					folderId={sourceFolder}
+					selectedIDs={msgIds}
+					onClose={jest.fn()}
+					isRestore={false}
+					deselectAll={jest.fn()}
+				/>
+			);
+
+			const { user } = setupTest(component);
+			makeListItemsVisible();
+
+			const inboxFolderListItem = await screen.findByTestId(
+				`folder-accordion-item-${destinationFolder}`,
+				{},
+				{ timeout: 10000 }
+			);
+
+			act(() => {
+				jest.advanceTimersByTime(1000);
+			});
+
+			await act(async () => {
+				await user.click(inboxFolderListItem);
+			});
+
+			const button = screen.getByRole('button', {
+				name: /Move/
+			});
+
+			await act(async () => {
+				await user.click(button);
+			});
+
+			expect(mockCreateSnackbar).toHaveBeenCalledWith(
+				expect.objectContaining({
+					label: 'Something went wrong, please try again'
+				})
+			);
 		});
 	});
 });
