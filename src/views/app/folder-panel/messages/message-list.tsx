@@ -86,7 +86,13 @@ export const MessageList = (): React.JSX.Element => {
 				const isSelected = selected[id];
 				const active = itemId === id;
 				return (
-					<CustomListItem key={id} selected={isSelected} active={active} background={'transparent'}>
+					<CustomListItem
+						data-testid={`message-item-${id}`}
+						key={id}
+						selected={isSelected}
+						active={active}
+						background={'transparent'}
+					>
 						{(visible: boolean): ReactElement =>
 							visible ? (
 								<MessageListItemComponent
