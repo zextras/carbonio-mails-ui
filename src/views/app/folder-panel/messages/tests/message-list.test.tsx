@@ -6,7 +6,7 @@
 
 import React from 'react';
 
-import { act, waitFor } from '@testing-library/react';
+import { act, fireEvent, waitFor, within } from '@testing-library/react';
 import { useParams } from 'react-router-dom';
 
 import { FOLDERS } from '../../../../../carbonio-ui-commons/constants/folders';
@@ -20,7 +20,7 @@ import {
 	triggerLoadMore
 } from '../../../../../carbonio-ui-commons/test/test-setup';
 import { generateCompleteMessageFromAPI } from '../../../../../tests/generators/api';
-import { FolderState } from '../../../../../types';
+import { FolderState, MsgActionRequest } from '../../../../../types';
 import { makeAllItemsVisible } from '../../../../settings/filters/tests/test-utils';
 import { MessageList } from '../message-list';
 
@@ -34,6 +34,7 @@ describe('message-list', () => {
 		jest.clearAllMocks();
 	});
 
+	const message1Subject = 'message 1 subject';
 	const invisibleItemTestId = 'invisible-item';
 
 	it('should render without crashing', async () => {
@@ -49,6 +50,80 @@ describe('message-list', () => {
 		setupTest(<MessageList />);
 
 		expect(await screen.findByTestId(`message-list-${folderId}`)).toBeInTheDocument();
+	});
+
+	it('should execute MsgAction with op trash when message is in inbox', async () => {
+		populateFoldersStore();
+		(useParams as jest.Mock).mockReturnValue({ folderId: FOLDERS.INBOX });
+
+		const msgActionInterceptor = createSoapAPIInterceptor<MsgActionRequest>('MsgAction');
+		const messageId = '1';
+
+		createSoapAPIInterceptor('Search', {
+			m: [generateCompleteMessageFromAPI({ id: messageId, l: FOLDERS.INBOX, su: message1Subject })],
+			more: false
+		});
+
+		const { user } = setupTest(<MessageList />);
+		expect(await screen.findAllByTestId(invisibleItemTestId)).toHaveLength(1);
+		makeAllItemsVisible();
+
+		const messageListItem = screen.getByTestId(`MessageListItem-${messageId}`);
+		expect(messageListItem).toBeInTheDocument();
+
+		await act(() => user.hover(messageListItem));
+
+		fireEvent.contextMenu(await screen.findByTestId(/hover-container-/));
+
+		const deleteMenuItem = (await screen.findAllByTestId('dropdown-item')).find(
+			(item) => item.textContent === 'Delete'
+		)!;
+
+		await user.click(deleteMenuItem);
+
+		const msgActionRequest = await waitFor(() => msgActionInterceptor);
+
+		expect(msgActionRequest.action).toMatchObject({ op: 'trash', id: messageId });
+	});
+
+	it('should execute MsgAction with op delete when message is in trash', async () => {
+		populateFoldersStore();
+		(useParams as jest.Mock).mockReturnValue({ folderId: FOLDERS.TRASH });
+
+		const msgActionInterceptor = createSoapAPIInterceptor<MsgActionRequest>('MsgAction');
+		const messageId = '1';
+
+		createSoapAPIInterceptor('Search', {
+			m: [generateCompleteMessageFromAPI({ id: messageId, l: FOLDERS.TRASH, su: message1Subject })],
+			more: false
+		});
+
+		const { user } = setupTest(<MessageList />);
+
+		expect(await screen.findAllByTestId(invisibleItemTestId)).toHaveLength(1);
+		makeAllItemsVisible();
+
+		const messageListItem = screen.getByTestId(`MessageListItem-${messageId}`);
+		expect(messageListItem).toBeInTheDocument();
+
+		await act(() => user.hover(messageListItem));
+
+		fireEvent.contextMenu(await screen.findByTestId(/hover-container-/));
+
+		const deletePermanentlyMenuItem = (await screen.findAllByTestId('dropdown-item')).find(
+			(item) => item.textContent === 'Delete Permanently'
+		)!;
+
+		await user.click(deletePermanentlyMenuItem);
+		await user.click(
+			within(await screen.findByTestId('modal')).getByRole('button', {
+				name: /delete permanently/i
+			})
+		);
+
+		const msgActionRequest = await waitFor(() => msgActionInterceptor);
+
+		expect(msgActionRequest.action).toMatchObject({ op: 'delete', id: messageId });
 	});
 
 	const displayerTitleTestCases = [
@@ -102,7 +177,6 @@ describe('message-list', () => {
 		expect(await screen.findAllByTestId(invisibleItemTestId)).toHaveLength(3);
 	});
 
-	const message1Subject = 'message 1 subject';
 	it('loads more messages when reaching bottom of the list', async () => {
 		populateFoldersStore();
 		const folderId = FOLDERS.INBOX;
