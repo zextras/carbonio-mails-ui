@@ -20,6 +20,8 @@ import { populateMessagesInEmailStore } from '../../../tests/generators/generate
 import { Folder } from '../../../types';
 import { FolderActionsProps } from '../../../types/sidebar';
 import { SelectFolderModal } from '../../../ui-actions/modals/select-folder-modal';
+import { DeleteModal } from '../delete-modal';
+import { EditModal } from '../edit-modal';
 import { EmptyModal } from '../empty-modal';
 import { NewModal } from '../new-modal';
 import { useFolderActions } from '../use-folder-actions';
@@ -75,13 +77,11 @@ useAppContextMock.mockReturnValue({
 const defaultFolder = generateFolder({ id: FOLDERS.INBOX });
 
 describe('useFolderActions', () => {
-	beforeEach(() => {
-		jest.clearAllMocks();
-		// allowedActionOnSharedAccountMock.mockReturnValue(true);
-		// getFolderIdPartsMock.mockReturnValue({ id: '1' });
-	});
-
 	it('should return the correct actions for the inbox folder', async () => {
+		(useModal as jest.Mock).mockImplementation(() => ({
+			createModal: jest.fn()
+		}));
+
 		const messages = await waitFor(() =>
 			populateMessagesInEmailStore({
 				messageGeneratorParams: [{ id: '1', folderId: FOLDERS.INBOX }]
@@ -143,6 +143,10 @@ describe('useFolderActions', () => {
 	});
 
 	it('should return the correct actions for a shared folder', async () => {
+		(useModal as jest.Mock).mockImplementation(() => ({
+			createModal: jest.fn()
+		}));
+
 		const messages = await waitFor(() =>
 			populateMessagesInEmailStore({
 				messageGeneratorParams: [{ id: '1', folderId: FOLDERS.INBOX }]
@@ -183,6 +187,10 @@ describe('useFolderActions', () => {
 	});
 
 	it('should disable the new action if the user does not have permission', async () => {
+		(useModal as jest.Mock).mockImplementation(() => ({
+			createModal: jest.fn()
+		}));
+
 		const folderWithReadPermissionsOnly = { ...defaultFolder, perm: 'r' };
 		const messages = await waitFor(() =>
 			populateMessagesInEmailStore({
@@ -281,45 +289,13 @@ describe('useFolderActions', () => {
 			true
 		);
 	});
-	it('should call the EMPTY function with the correct parameters when the MOVE action is clicked', async () => {
-		const createModalSpy = jest.fn();
-		(useModal as jest.Mock).mockImplementation(() => ({ createModal: createModalSpy }));
-		const event = {
-			stopPropagation: jest.fn
-		} as unknown as React.SyntheticEvent<HTMLElement>;
 
-		const messages = await waitFor(() =>
-			populateMessagesInEmailStore({
-				messageGeneratorParams: [{ id: '1', folderId: FOLDERS.INBOX }]
-			})
-		);
-		await waitFor(() => setMessagesInEmailStore(messages, false));
-
-		const { result: actions } = renderHook(() => useFolderActions(defaultFolder));
-		const moveAction = actions.current.find(
-			(action) => action.id === FolderActionsType.EMPTY
-		) as FolderActionsProps;
-
-		act(() => {
-			moveAction.onClick(event);
-		});
-
-		expect(createModalSpy).toHaveBeenCalledTimes(1);
-		const modal = <EmptyModal folder={defaultFolder} onClose={expect.any(Function)} />;
-
-		expect(createModalSpy).toHaveBeenCalledWith(
-			expect.objectContaining({
-				children: modal
-			}),
-			true
-		);
-	});
-
-	it('should call the empty function with the correct parameters when the EMPTY action is clicked', async () => {
+	it('should call the createModal function with the correct parameters when the EMPTY action is clicked', async () => {
 		const createModalSpy = jest.fn();
 		(useModal as jest.Mock).mockImplementation(() => ({
 			createModal: createModalSpy
 		}));
+
 		const event = {
 			stopPropagation: jest.fn
 		} as unknown as React.SyntheticEvent<HTMLElement>;
@@ -352,11 +328,121 @@ describe('useFolderActions', () => {
 		);
 	});
 
-	it('should call the createModal function with the correct parameters when the edit action is clicked', () => {});
+	it('should call the createModal function with the correct parameters when the EDIT action is clicked', async () => {
+		const createModalSpy = jest.fn();
+		(useModal as jest.Mock).mockImplementation(() => ({
+			createModal: createModalSpy
+		}));
 
-	it('should call the createModal function with the correct parameters when the delete action is clicked', () => {});
+		const event = {
+			stopPropagation: jest.fn
+		} as unknown as React.SyntheticEvent<HTMLElement>;
 
-	it('should call the folderActionSoapApi function when the remove from list action is clicked', () => {});
+		const messages = await waitFor(() =>
+			populateMessagesInEmailStore({
+				messageGeneratorParams: [{ id: '1', folderId: FOLDERS.INBOX }]
+			})
+		);
+		await waitFor(() => setMessagesInEmailStore(messages, false));
+
+		const { result: actions } = renderHook(() => useFolderActions(defaultFolder));
+		const editAction = actions.current.find(
+			(action) => action.id === FolderActionsType.EDIT
+		) as FolderActionsProps;
+
+		act(() => {
+			editAction.onClick(event);
+		});
+
+		expect(createModalSpy).toHaveBeenCalledTimes(1);
+		const modal = <EditModal folder={defaultFolder} onClose={expect.any(Function)} />;
+
+		expect(createModalSpy).toHaveBeenCalledWith(
+			{
+				id: expect.any(String),
+				maxHeight: '90vh',
+				children: modal
+			},
+			true
+		);
+	});
+
+	it('should call the createModal function with the correct parameters when the DELETE action is clicked', async () => {
+		const createModalSpy = jest.fn();
+		(useModal as jest.Mock).mockImplementation(() => ({
+			createModal: createModalSpy
+		}));
+		const event = {
+			stopPropagation: jest.fn
+		} as unknown as React.SyntheticEvent<HTMLElement>;
+
+		const messages = await waitFor(() =>
+			populateMessagesInEmailStore({
+				messageGeneratorParams: [{ id: '1', folderId: FOLDERS.INBOX }]
+			})
+		);
+		await waitFor(() => setMessagesInEmailStore(messages, false));
+
+		const { result: actions } = renderHook(() => useFolderActions(defaultFolder));
+		const deleteAction = actions.current.find(
+			(action) => action.id === FolderActionsType.DELETE
+		) as FolderActionsProps;
+
+		act(() => {
+			deleteAction.onClick(event);
+		});
+
+		expect(createModalSpy).toHaveBeenCalledTimes(1);
+		const modal = <DeleteModal folder={defaultFolder} onClose={expect.any(Function)} />;
+
+		expect(createModalSpy).toHaveBeenCalledWith(
+			{
+				id: expect.any(String),
+				children: modal
+			},
+			true
+		);
+	});
+
+	it('should call the folderActionSoapApi function when the REMOVE_FROM_LIST action is clicked', async () => {
+		(folderActionSoapApiMock as jest.Mock).mockImplementation(jest.fn());
+		(useModal as jest.Mock).mockImplementation(() => ({
+			createModal: jest.fn()
+		}));
+
+		const folder = {
+			...defaultFolder,
+			id: 'shared:66',
+			isLink: true
+		} as Folder;
+
+		const event = {
+			stopPropagation: jest.fn
+		} as unknown as React.SyntheticEvent<HTMLElement>;
+
+		const messages = await waitFor(() =>
+			populateMessagesInEmailStore({
+				messageGeneratorParams: [{ id: '1', folderId: folder.id }]
+			})
+		);
+		await waitFor(() => setMessagesInEmailStore(messages, false));
+
+		const { result: actions } = renderHook(() => useFolderActions(folder));
+
+		const removeAction = actions.current.find(
+			(action) => action.id === FolderActionsType.REMOVE_FROM_LIST
+		) as FolderActionsProps;
+
+		act(() => {
+			removeAction.onClick(event);
+		});
+
+		expect(folderActionSoapApiMock).toHaveBeenCalledTimes(1);
+		expect(folderActionSoapApiMock).toHaveBeenCalledWith({
+			folder,
+			op: 'delete'
+		});
+	});
 
 	it('should call the createModal function with the correct parameters when the shares info action is clicked', () => {});
 
