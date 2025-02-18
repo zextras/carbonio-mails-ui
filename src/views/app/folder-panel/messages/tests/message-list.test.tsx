@@ -288,7 +288,7 @@ describe('message-list', () => {
 
 			await user.click(deleteMenuItem);
 
-			const msgActionRequest = await waitFor(() => msgActionInterceptor);
+			const msgActionRequest = await msgActionInterceptor;
 			expect(msgActionRequest.action).toMatchObject({ op: 'trash', id: messageId });
 		});
 
@@ -328,7 +328,7 @@ describe('message-list', () => {
 				})
 			);
 
-			const msgActionRequest = await waitFor(() => msgActionInterceptor);
+			const msgActionRequest = await msgActionInterceptor;
 			expect(msgActionRequest.action).toMatchObject({ op: 'delete', id: messageId });
 		});
 	});
