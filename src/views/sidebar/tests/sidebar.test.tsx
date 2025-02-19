@@ -5,8 +5,9 @@
  */
 import React from 'react';
 
-import { screen } from '@testing-library/react';
+import { act, screen, waitFor } from '@testing-library/react';
 import { useSnackbar } from '@zextras/carbonio-design-system';
+import * as hooks from '@zextras/carbonio-shell-ui';
 
 import { FolderActionsType, FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
 import * as shellMock from '../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
@@ -14,18 +15,24 @@ import { useLocalStorage } from '../../../carbonio-ui-commons/test/mocks/carboni
 import { generateFolder } from '../../../carbonio-ui-commons/test/mocks/folders/folders-generator';
 import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { populateFoldersStore } from '../../../carbonio-ui-commons/test/mocks/store/folders';
-import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
+import { makeListItemsVisible, setupTest } from '../../../carbonio-ui-commons/test/test-setup';
 import { MAIL_APP_ID, MAILS_ROUTE } from '../../../constants';
 import { setMessagesInEmailStore } from '../../../store/emails/store';
 import { generateMessage } from '../../../tests/generators/generateMessage';
-import { SoapFolderAction } from '../../../types';
+import { MsgActionRequest, SoapFolderAction } from '../../../types';
 import Sidebar from '../sidebar';
 
 jest.mock('@zextras/carbonio-design-system', () => ({
 	...jest.requireActual('@zextras/carbonio-design-system'),
 	useSnackbar: jest.fn()
 }));
-
+function fakeCounter(): { count: number; setCount: (value: number) => void } {
+	let count = 0;
+	const setCount = (value: number): void => {
+		count = value;
+	};
+	return { count, setCount };
+}
 describe('Sidebar', () => {
 	shellMock.getCurrentRoute.mockReturnValue({
 		route: MAILS_ROUTE,
@@ -161,6 +168,58 @@ describe('Sidebar', () => {
 			expect(action.op).toBe('empty');
 			expect(action.recursive).toBe(true);
 			expect(action.type).toBe('emails');
+		});
+
+		it('moves the folder messages when the RESTORE action is clicked', async () => {
+			(useSnackbar as jest.Mock).mockReturnValue(jest.fn());
+
+			jest.spyOn(hooks, 'useAppContext').mockReturnValue(fakeCounter());
+			const folderId = FOLDERS.TRASH;
+
+			populateFoldersStore();
+
+			createSoapAPIInterceptor('Search');
+			const message = generateMessage({ folderId: FOLDERS.TRASH });
+			setMessagesInEmailStore([message], false);
+
+			const options = {
+				initialEntries: [`/mails/folder/${FOLDERS.INBOX}`],
+				path: '/mails'
+			};
+
+			const { user } = setupTest(<Sidebar expanded />, options);
+			const interceptor = createSoapAPIInterceptor<MsgActionRequest>('MsgAction');
+			const inboxItem = await screen.findByTestId(`accordion-folder-item-${folderId}`);
+			await user.hover(inboxItem);
+
+			const contextMenu = await screen.findByTestId(`folder-context-menu-${folderId}`);
+			expect(contextMenu).toBeInTheDocument();
+
+			const child = await screen.findByTestId('folder-context-menu-child');
+			expect(child).toBeInTheDocument();
+
+			await user.rightClick(child);
+
+			const actionMenuItem = await screen.findByTestId(`folder-action-${FolderActionsType.MOVE}`);
+
+			await user.click(actionMenuItem);
+			makeListItemsVisible();
+
+			const destinationFolder = screen.getByTestId(`folder-accordion-item-${FOLDERS.INBOX}`);
+
+			act(() => {
+				jest.advanceTimersByTime(1_000);
+			});
+
+			await user.click(destinationFolder);
+
+			const confirmButton = screen.getByRole('button', { name: /move/i });
+			await waitFor(() => expect(confirmButton).toBeEnabled());
+			await user.click(confirmButton);
+			const { action } = await interceptor;
+			expect(action.id).toBe(message.id);
+			expect(action.op).toBe('move');
+			expect(action.l).toBe(FOLDERS.INBOX);
 		});
 
 		it('delete the folder when the DELETE action is clicked', async () => {
