@@ -197,7 +197,7 @@ describe('generateQueryString', () => {
 	});
 
 	it('should generate query string without folders when isSharedFolderIncluded is true but foldersArray is empty', () => {
-		const isSharedFolderIncluded = false;
+		const isSharedFolderIncluded = true;
 
 		const result = generateQueryString(query, isSharedFolderIncluded, {});
 
