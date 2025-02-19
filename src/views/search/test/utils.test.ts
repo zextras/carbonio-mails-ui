@@ -173,7 +173,8 @@ describe('getChipItems function', () => {
 describe('generateQueryString', () => {
 	const query = [
 		{ value: 'value1', label: 'label1' },
-		{ value: '', label: 'label2' }
+		{ value: '', label: 'label2' },
+		{ value: 'one two three', label: 'label3' }
 	];
 	const folder = generateFolder({ id: '1' });
 	const identity = createFakeIdentity();
@@ -184,7 +185,7 @@ describe('generateQueryString', () => {
 		const isSharedFolderIncluded = true;
 		const result = generateQueryString(query, isSharedFolderIncluded, folders);
 
-		expect(result).toBe('(value1 label2) ( inid:"101" OR is:local) ');
+		expect(result).toBe('(value1 label2 "one two three") ( inid:"101" OR is:local) ');
 	});
 
 	it('should generate query string without folders when isSharedFolderIncluded is false', () => {
@@ -192,7 +193,7 @@ describe('generateQueryString', () => {
 
 		const result = generateQueryString(query, isSharedFolderIncluded, folders);
 
-		expect(result).toBe('value1 label2');
+		expect(result).toBe('value1 label2 "one two three"');
 	});
 
 	it('should generate query string without folders when isSharedFolderIncluded is true but foldersArray is empty', () => {
@@ -200,21 +201,8 @@ describe('generateQueryString', () => {
 
 		const result = generateQueryString(query, isSharedFolderIncluded, {});
 
-		expect(result).toBe('value1 label2');
+		expect(result).toBe('value1 label2 "one two three"');
 	});
-});
-
-it('should quote query chip when it is a phrase', () => {
-	const isSharedFolderIncluded = true;
-	const query = [
-		{ value: 'value1', label: 'label1' },
-		{ value: '', label: 'label2' },
-		{ value: 'one two three', label: 'label3' }
-	];
-
-	const result = generateQueryString(query, isSharedFolderIncluded, {});
-
-	expect(result).toBe('value1 label2 "one two three"');
 });
 
 describe('updateQueryChips', () => {
