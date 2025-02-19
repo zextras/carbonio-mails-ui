@@ -282,7 +282,7 @@ describe('ConversationList Component', () => {
 				more: true
 			});
 
-			const { user } = await act(async () => setupTest(<ConversationList />));
+			const { user } = setupTest(<ConversationList />);
 
 			makeAllItemsVisible();
 
@@ -294,7 +294,7 @@ describe('ConversationList Component', () => {
 				}
 			);
 			await user.click(multipleSelectionTrashButton);
-			const request = await convActionInterceptor;
+			const request = await waitFor(() => convActionInterceptor);
 			expect(request.action.op).toBe('trash');
 			expect(request.action.id).toBe('10');
 		});
@@ -319,7 +319,7 @@ describe('ConversationList Component', () => {
 				more: true
 			});
 
-			const { user } = await act(async () => setupTest(<ConversationList />));
+			const { user } = setupTest(<ConversationList />);
 
 			makeAllItemsVisible();
 
@@ -334,7 +334,7 @@ describe('ConversationList Component', () => {
 			const confirmButton = await screen.findByText('Delete permanently');
 
 			await user.click(confirmButton);
-			const request = await convActionInterceptor;
+			const request = await waitFor(() => convActionInterceptor);
 			expect(request.action.op).toBe('delete');
 			expect(request.action.id).toBe('10');
 		});
