@@ -53,37 +53,35 @@ export const MoveConversation = ({
 				operation: `move`,
 				ids: selectedIDs,
 				parent: id
-			})
-				.then((res) => {
-					if (!('Fault' in res)) {
-						deselectAll?.();
-						createSnackbar({
-							key: `edit`,
-							replace: true,
-							severity: 'info',
-							label: isRestore
-								? t('messages.snackbar.email_restored', 'E-mail restored in destination folder')
-								: t('messages.snackbar.conversation_move', 'Conversation successfully moved'),
-							autoHideTimeout: 3000,
-							actionLabel: t('action.goto_folder', 'GO TO FOLDER'),
-							onActionClick: () => {
-								replaceHistory(`/folder/${id}`);
-							}
-						});
-					} else {
-						createSnackbar({
-							key: `edit`,
-							replace: true,
-							severity: 'error',
-							label: t('label.error_try_again', 'Something went wrong, please try again'),
-							autoHideTimeout: 3000,
-							hideButton: true
-						});
-					}
-					setMoveConvModal(false);
-					onCloseModal();
-				})
-				.catch(() => noop);
+			}).then((res) => {
+				if (!('Fault' in res)) {
+					deselectAll?.();
+					createSnackbar({
+						key: `edit`,
+						replace: true,
+						severity: 'info',
+						label: isRestore
+							? t('messages.snackbar.email_restored', 'E-mail restored in destination folder')
+							: t('messages.snackbar.conversation_move', 'Conversation successfully moved'),
+						autoHideTimeout: 3000,
+						actionLabel: t('action.goto_folder', 'GO TO FOLDER'),
+						onActionClick: () => {
+							replaceHistory(`/folder/${id}`);
+						}
+					});
+				} else {
+					createSnackbar({
+						key: `edit`,
+						replace: true,
+						severity: 'error',
+						label: t('label.error_try_again', 'Something went wrong, please try again'),
+						autoHideTimeout: 3000,
+						hideButton: true
+					});
+				}
+				setMoveConvModal(false);
+				onCloseModal();
+			});
 		},
 		[selectedIDs, onCloseModal, deselectAll, createSnackbar, isRestore, t]
 	);
