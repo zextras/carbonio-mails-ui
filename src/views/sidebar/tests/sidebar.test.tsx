@@ -216,7 +216,7 @@ describe('Sidebar', () => {
 			const confirmButton = screen.getByRole('button', { name: /move/i });
 			await waitFor(() => expect(confirmButton).toBeEnabled());
 			await user.click(confirmButton);
-			const { action } = await interceptor;
+			const { action } = await waitFor(() => interceptor);
 			expect(action.id).toBe(message.id);
 			expect(action.op).toBe('move');
 			expect(action.l).toBe(FOLDERS.INBOX);
