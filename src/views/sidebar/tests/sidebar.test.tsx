@@ -6,10 +6,12 @@
 import React from 'react';
 
 import { screen } from '@testing-library/react';
+import { useSnackbar } from '@zextras/carbonio-design-system';
 
 import { FolderActionsType, FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
 import * as shellMock from '../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
 import { useLocalStorage } from '../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
+import { generateFolder } from '../../../carbonio-ui-commons/test/mocks/folders/folders-generator';
 import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { populateFoldersStore } from '../../../carbonio-ui-commons/test/mocks/store/folders';
 import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
@@ -19,6 +21,11 @@ import { generateMessage } from '../../../tests/generators/generateMessage';
 import { SoapFolderAction } from '../../../types';
 import Sidebar from '../sidebar';
 
+jest.mock('@zextras/carbonio-design-system', () => ({
+	...jest.requireActual('@zextras/carbonio-design-system'),
+	useSnackbar: jest.fn()
+}));
+
 describe('Sidebar', () => {
 	shellMock.getCurrentRoute.mockReturnValue({
 		route: MAILS_ROUTE,
@@ -26,9 +33,11 @@ describe('Sidebar', () => {
 		app: MAIL_APP_ID
 	});
 	describe('actions', () => {
+		beforeEach(() => {
+			useLocalStorage.mockReturnValue([[FOLDERS.USER_ROOT], jest.fn()]);
+		});
 		it('Marks all messages as read in the inbox folder', async () => {
 			const folderId = FOLDERS.INBOX;
-			useLocalStorage.mockReturnValue([[FOLDERS.USER_ROOT], jest.fn()]);
 
 			createSoapAPIInterceptor('Search');
 			const message = generateMessage();
@@ -66,6 +75,139 @@ describe('Sidebar', () => {
 			expect(action.l).toBe(folderId);
 			expect(action.op).toBe('read');
 			expect(action.id).toBe(folderId);
+		});
+
+		it('Creates a new folder when the NEW action is clicked', async () => {
+			(useSnackbar as jest.Mock).mockReturnValue(jest.fn());
+			const folderId = FOLDERS.INBOX;
+
+			createSoapAPIInterceptor('Search');
+			const message = generateMessage();
+			setMessagesInEmailStore([message], false);
+
+			populateFoldersStore();
+			const options = {
+				initialEntries: [`/mails/folder/${folderId}`],
+				path: '/mails'
+			};
+
+			const { user } = setupTest(<Sidebar expanded />, options);
+
+			const inboxItem = await screen.findByTestId(`accordion-folder-item-${folderId}`);
+			await user.hover(inboxItem);
+
+			const contextMenu = await screen.findByTestId(`folder-context-menu-${folderId}`);
+			expect(contextMenu).toBeInTheDocument();
+
+			const child = await screen.findByTestId('folder-context-menu-child');
+			expect(child).toBeInTheDocument();
+
+			await user.rightClick(child);
+
+			const actionMenuItem = await screen.findByTestId(`folder-action-${FolderActionsType.NEW}`);
+
+			const interceptor = createSoapAPIInterceptor<{
+				folder: { l: string; name: string; view: string };
+			}>('CreateFolder');
+
+			await user.click(actionMenuItem);
+
+			const createButton = screen.getByRole('button', { name: /label\.create/i });
+			await user.click(createButton);
+			const { folder } = await interceptor;
+			expect(folder.l).toBe(FOLDERS.INBOX);
+			expect(folder.name).toBe('new_folder');
+			expect(folder.view).toBe('message');
+		});
+
+		it('delete all the folder messages when the EMPTY action is clicked', async () => {
+			(useSnackbar as jest.Mock).mockReturnValue(jest.fn());
+			const folderId = FOLDERS.TRASH;
+
+			createSoapAPIInterceptor('Search');
+			const message = generateMessage();
+			setMessagesInEmailStore([message], false);
+
+			populateFoldersStore();
+			const options = {
+				initialEntries: [`/mails/folder/${folderId}`],
+				path: '/mails'
+			};
+
+			const { user } = setupTest(<Sidebar expanded />, options);
+
+			const inboxItem = await screen.findByTestId(`accordion-folder-item-${folderId}`);
+			await user.hover(inboxItem);
+
+			const contextMenu = await screen.findByTestId(`folder-context-menu-${folderId}`);
+			expect(contextMenu).toBeInTheDocument();
+
+			const child = await screen.findByTestId('folder-context-menu-child');
+			expect(child).toBeInTheDocument();
+
+			await user.rightClick(child);
+
+			const actionMenuItem = await screen.findByTestId(`folder-action-${FolderActionsType.EMPTY}`);
+			const interceptor = createSoapAPIInterceptor<{ action: SoapFolderAction & { type: string } }>(
+				'FolderAction'
+			);
+
+			await user.click(actionMenuItem);
+
+			const confirmButton = screen.getByRole('button', { name: /label\.empty/i });
+			await user.click(confirmButton);
+			const { action } = await interceptor;
+			expect(action.id).toBe(folderId);
+			expect(action.op).toBe('empty');
+			expect(action.recursive).toBe(true);
+			expect(action.type).toBe('emails');
+		});
+
+		it('delete the folder when the DELETE action is clicked', async () => {
+			(useSnackbar as jest.Mock).mockReturnValue(jest.fn());
+			const folderId = '666';
+
+			const folderToDelete = generateFolder({
+				id: folderId,
+				name: 'folderToDelete',
+				isLink: false,
+				view: 'message',
+				l: FOLDERS.INBOX
+			});
+			createSoapAPIInterceptor('Search');
+			const message = generateMessage();
+			setMessagesInEmailStore([message], false);
+
+			populateFoldersStore({ customFolders: [folderToDelete] });
+			const options = {
+				initialEntries: [`/mails/folder/${folderId}`],
+				path: '/mails'
+			};
+
+			const { user } = setupTest(<Sidebar expanded />, options);
+
+			const inboxItem = await screen.findByTestId(`accordion-folder-item-${folderId}`);
+			await user.hover(inboxItem);
+
+			const contextMenu = await screen.findByTestId(`folder-context-menu-${folderId}`);
+			expect(contextMenu).toBeInTheDocument();
+
+			const child = await screen.findByTestId('folder-context-menu-child');
+			expect(child).toBeInTheDocument();
+
+			await user.rightClick(child);
+
+			const actionMenuItem = await screen.findByTestId(`folder-action-${FolderActionsType.DELETE}`);
+			const interceptor = createSoapAPIInterceptor<{ action: SoapFolderAction }>('FolderAction');
+
+			await user.click(actionMenuItem);
+
+			const confirmButton = screen.getByRole('button', { name: /action\.ok/i });
+			await user.click(confirmButton);
+			const { action } = await interceptor;
+			expect(action.id).toBe(folderId);
+			expect(action.op).toBe('move');
+			expect(action.l).toBe(FOLDERS.TRASH);
 		});
 	});
 });
