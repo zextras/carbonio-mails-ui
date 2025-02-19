@@ -13,6 +13,7 @@ import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
 import { getFolder } from '../../carbonio-ui-commons/store/zustand/folder';
 import { createSoapAPIInterceptor } from '../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { populateFoldersStore } from '../../carbonio-ui-commons/test/mocks/store/folders';
+import { buildSoapErrorResponseBody } from '../../carbonio-ui-commons/test/mocks/utils/soap';
 import { makeListItemsVisible, setupTest } from '../../carbonio-ui-commons/test/test-setup';
 import { generateConversation } from '../../tests/generators/generateConversation';
 import { ConvActionRequest, ConvActionResponse, NormalizedConversation } from '../../types';
@@ -179,11 +180,8 @@ describe('MoveConversation', () => {
 	});
 	it('should show an error message if API call returns a Fault case', async () => {
 		populateFoldersStore();
-		const interceptor = createSoapAPIInterceptor('ConvAction', {
-			Fault: {
-				reason: 'Server Error'
-			}
-		});
+
+		const interceptor = createSoapAPIInterceptor('ConvAction', buildSoapErrorResponseBody());
 		const { user } = setupTest(
 			<MoveConversation
 				folderId={sourceFolder}
