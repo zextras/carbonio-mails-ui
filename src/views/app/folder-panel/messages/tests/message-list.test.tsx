@@ -6,7 +6,8 @@
 
 import React from 'react';
 
-import { screen, act, waitFor, fireEvent, within } from '@testing-library/react';
+import { screen, act, waitFor, fireEvent } from '@testing-library/react';
+import * as shell from '@zextras/carbonio-shell-ui';
 import { useParams } from 'react-router-dom';
 
 import { FOLDERS } from '../../../../../carbonio-ui-commons/constants/folders';
@@ -17,9 +18,11 @@ import { populateFoldersStore } from '../../../../../carbonio-ui-commons/test/mo
 import {
 	makeListItemsVisible,
 	setupTest,
-	triggerLoadMore
+	triggerLoadMore,
+	within
 } from '../../../../../carbonio-ui-commons/test/test-setup';
 import * as useSelection from '../../../../../hooks/use-selection';
+import { TESTID_SELECTORS } from '../../../../../tests/constants';
 import { generateCompleteMessageFromAPI } from '../../../../../tests/generators/api';
 import { FolderState, MsgActionRequest } from '../../../../../types';
 import { makeAllItemsVisible } from '../../../../settings/filters/tests/test-utils';
@@ -40,6 +43,14 @@ const mockedUseSelection: ReturnType<typeof useSelection.useSelection> = {
 	isAllSelected: false,
 	selectAllModeOff: jest.fn()
 };
+
+function fakeCounter(): { count: number; setCount: (value: number) => void } {
+	let count = 0;
+	const setCount = (value: number): void => {
+		count = value;
+	};
+	return { count, setCount };
+}
 
 describe('message-list', () => {
 	const message1Subject = 'message 1 subject';
@@ -330,6 +341,79 @@ describe('message-list', () => {
 
 			const msgActionRequest = await msgActionInterceptor;
 			expect(msgActionRequest.action).toMatchObject({ op: 'delete', id: messageId });
+		});
+	});
+
+	describe('msgAction from multiple selection mode', () => {
+		it('should move a message to trash when the trash action button is clicked', async () => {
+			const messageId = '10';
+			jest.spyOn(useSelection, 'useSelection').mockReturnValue({
+				...mockedUseSelection,
+				isSelectModeOn: true,
+				selected: { '10': true }
+			});
+			jest.spyOn(shell, 'useAppContext').mockReturnValue(fakeCounter());
+			(useParams as jest.Mock).mockReturnValue({ folderId: FOLDERS.INBOX });
+			const msgActionRequestInterceptor = createSoapAPIInterceptor<MsgActionRequest>('MsgAction');
+			populateFoldersStore();
+
+			createSoapAPIInterceptor('Search', {
+				m: [generateCompleteMessageFromAPI({ id: messageId, l: FOLDERS.INBOX })],
+				more: false
+			});
+
+			const { user } = setupTest(<MessageList />);
+			expect(await screen.findAllByTestId(`message-item-${messageId}`)).toHaveLength(1);
+			makeListItemsVisible();
+
+			const multipleSelectionPanel = await screen.findByTestId('MultipleSelectionActionPanel');
+			const multipleSelectionTrashButton = await within(multipleSelectionPanel).findByRoleWithIcon(
+				'button',
+				{
+					icon: TESTID_SELECTORS.icons.trash
+				}
+			);
+			await user.click(multipleSelectionTrashButton);
+
+			const msgActionRequest = await msgActionRequestInterceptor;
+			expect(msgActionRequest.action).toMatchObject({ op: 'trash', id: messageId });
+		});
+
+		it('should delete a message when the permanently delete action button is clicked', async () => {
+			const messageId = '10';
+			jest.spyOn(useSelection, 'useSelection').mockReturnValue({
+				...mockedUseSelection,
+				isSelectModeOn: true,
+				selected: { '10': true }
+			});
+			jest.spyOn(shell, 'useAppContext').mockReturnValue(fakeCounter());
+			(useParams as jest.Mock).mockReturnValue({ folderId: FOLDERS.TRASH });
+			const msgActionRequestInterceptor = createSoapAPIInterceptor<MsgActionRequest>('MsgAction');
+			populateFoldersStore();
+
+			createSoapAPIInterceptor('Search', {
+				m: [generateCompleteMessageFromAPI({ id: messageId, l: FOLDERS.TRASH })],
+				more: false
+			});
+
+			const { user } = setupTest(<MessageList />);
+			expect(await screen.findAllByTestId(`message-item-${messageId}`)).toHaveLength(1);
+			makeListItemsVisible();
+
+			const multipleSelectionPanel = await screen.findByTestId('MultipleSelectionActionPanel');
+			const multipleSelectionDeletePermanentlyButton = await within(
+				multipleSelectionPanel
+			).findByRoleWithIcon('button', {
+				icon: TESTID_SELECTORS.icons.deletePermanently
+			});
+			await user.click(multipleSelectionDeletePermanentlyButton);
+			const confirmButton = await screen.findByText('Delete permanently');
+
+			await user.click(confirmButton);
+
+			const request = await msgActionRequestInterceptor;
+			expect(request.action.op).toBe('delete');
+			expect(request.action.id).toBe('10');
 		});
 	});
 });
