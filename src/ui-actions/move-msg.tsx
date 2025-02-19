@@ -5,11 +5,9 @@
  */
 import React, { ReactElement, useCallback, useMemo, useState } from 'react';
 
-import { Container, Input, Padding, Text } from '@zextras/carbonio-design-system';
-import { noop, some } from 'lodash';
+import { Container, Text } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
 
-import { createFolderSoapApi } from '../api/create-folder-soap-api';
 import ModalFooter from '../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../carbonio-ui-commons/components/modals/modal-header';
 import { Folder } from '../carbonio-ui-commons/types/folder';
@@ -35,13 +33,9 @@ export const MoveMessage = ({
 }: MoveMessageProps): ReactElement => {
 	const [t] = useTranslation();
 	const { createSnackbar } = useUiUtilities();
-	const [inputValue, setInputValue] = useState('');
 	const [folderDestination, setFolderDestination] = useState<Folder | undefined>();
-	const [moveModal, setMoveModal] = useState(true);
 
 	const onCloseModal = useCallback(() => {
-		setMoveModal(true);
-		setInputValue('');
 		setFolderDestination(undefined);
 		onClose();
 	}, [onClose]);
@@ -75,94 +69,30 @@ export const MoveMessage = ({
 						hideButton: true
 					});
 				}
-				setMoveModal(false);
 				onCloseModal();
 			});
 		},
 		[selectedIDs, onCloseModal, deselectAll, createSnackbar, isRestore, t]
 	);
 
-	const hasSameName = useMemo(
-		() => some(folderDestination?.children, ['name', inputValue]),
-		[folderDestination?.children, inputValue]
+	const isDestinationFolderSelectionInvalid = useMemo(
+		() => !folderDestination || folderDestination?.id === folderId || isRoot(folderDestination?.id),
+		[folderDestination, folderId]
 	);
-
-	const isDestinationFolderSelectionInvalid = useMemo(() => {
-		if (moveModal) {
-			return (
-				!folderDestination || folderDestination?.id === folderId || isRoot(folderDestination?.id)
-			);
-		}
-		return !folderDestination || !inputValue.length || hasSameName;
-	}, [folderDestination, folderId, hasSameName, inputValue?.length, moveModal]);
-
-	const textLabel = useMemo(
-		() =>
-			hasSameName
-				? t('folder_panel.modal.new.input.name_exist')
-				: t('folder_panel.modal.new.input.name', 'Folder Name'),
-		[hasSameName, t]
-	);
-
-	const onConfirm = useCallback(() => {
-		createFolderSoapApi({
-			parentFolderId: folderDestination?.parent ?? '',
-			name: inputValue
-		})
-			.then((res) => {
-				if (!('Fault' in res) && 'folder' in res) {
-					onConfirmMessageMove(res.folder[0].id);
-				} else {
-					createSnackbar({
-						key: `edit`,
-						replace: true,
-						severity: 'error',
-						label: t('label.error_try_again', 'Something went wrong, please try again'),
-						autoHideTimeout: 3000,
-						hideButton: true
-					});
-				}
-			})
-			.catch(() => noop);
-		setInputValue('');
-		setFolderDestination(undefined);
-	}, [createSnackbar, folderDestination?.parent, inputValue, onConfirmMessageMove, t]);
 
 	const headerTitle = useMemo(() => {
-		if (moveModal) {
-			if (isRestore) {
-				return t('label.restore', 'Restore');
-			}
-			return t('folder_panel.modal.move.title_modal_message', 'Move Message');
+		if (isRestore) {
+			return t('label.restore', 'Restore');
 		}
-		return t('folder_panel.modal.new.title', 'Create a new folder');
-	}, [isRestore, moveModal, t]);
+		return t('folder_panel.modal.move.title_modal_message', 'Move Message');
+	}, [isRestore, t]);
 
-	const footerConfirm = useMemo(() => {
-		if (moveModal) {
-			return () => onConfirmMessageMove(folderDestination?.id);
-		}
-		return onConfirm;
-	}, [folderDestination, moveModal, onConfirm, onConfirmMessageMove]);
-
-	const footerSecondary = useMemo(
-		() =>
-			moveModal
-				? onClose
-				: (): void => {
-						setMoveModal(true);
-					},
-		[moveModal, onClose]
+	const footerConfirm = useMemo(
+		() => () => onConfirmMessageMove(folderDestination?.id),
+		[folderDestination, onConfirmMessageMove]
 	);
 
-	const footerLabel = useMemo(() => {
-		if (moveModal) {
-			return t('label.move', 'Move');
-		}
-		return isRestore
-			? t('folder_panel.modal.new.restore_create_footer', 'Create and Restore')
-			: t('folder_panel.modal.new.create_footer', 'Create and Move');
-	}, [isRestore, moveModal, t]);
+	const footerLabel = useMemo(() => t('label.move', 'Move'), [t]);
 
 	const modalFooterTooltip = isDestinationFolderSelectionInvalid
 		? ''
@@ -188,26 +118,6 @@ export const MoveMessage = ({
 					overflowY: 'auto'
 				}}
 			>
-				{!moveModal && (
-					<>
-						<Input
-							label={textLabel}
-							backgroundColor="gray5"
-							hasError={hasSameName}
-							defaultValue={inputValue}
-							onChange={(e): void => {
-								setInputValue(e.target.value);
-							}}
-						/>
-						{hasSameName && (
-							<Padding all="small">
-								<Text size="small" color="error">
-									{t('folder_panel.modal.new.name_exist_warning', 'Name already exists')}
-								</Text>
-							</Padding>
-						)}
-					</>
-				)}
 				<Container padding={{ all: 'small' }} mainAlignment="center" crossAlignment="flex-start">
 					<Text overflow="break-word">
 						{isRestore
@@ -230,9 +140,9 @@ export const MoveMessage = ({
 				<ModalFooter
 					tooltip={modalFooterTooltip}
 					onConfirm={footerConfirm}
-					secondaryAction={footerSecondary}
+					secondaryAction={onClose}
 					label={footerLabel}
-					secondaryLabel={moveModal ? t('label.cancel', 'Cancel') : t('go_back', 'Go Back')}
+					secondaryLabel={t('label.cancel', 'Cancel')}
 					disabled={isDestinationFolderSelectionInvalid}
 				/>
 			</Container>
