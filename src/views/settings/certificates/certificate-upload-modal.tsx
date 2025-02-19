@@ -73,10 +73,7 @@ export const CertificateUploadModal = ({
 					onClose();
 				} else {
 					throw new Error(
-						t(
-							'settings.uploadCertificate.emailNotMatch',
-							'Certificate email does not match with sender email'
-						)
+						t('settings.uploadCertificate.caCertificateNotFound', 'CA certificate can not be found')
 					);
 				}
 			} catch (error) {
