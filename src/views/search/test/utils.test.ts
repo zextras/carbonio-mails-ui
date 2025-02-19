@@ -196,12 +196,25 @@ describe('generateQueryString', () => {
 	});
 
 	it('should generate query string without folders when isSharedFolderIncluded is true but foldersArray is empty', () => {
-		const isSharedFolderIncluded = true;
+		const isSharedFolderIncluded = false;
 
 		const result = generateQueryString(query, isSharedFolderIncluded, {});
 
 		expect(result).toBe('value1 label2');
 	});
+});
+
+it('should quote query chip when it is a phrase', () => {
+	const isSharedFolderIncluded = true;
+	const query = [
+		{ value: 'value1', label: 'label1' },
+		{ value: '', label: 'label2' },
+		{ value: 'one two three', label: 'label3' }
+	];
+
+	const result = generateQueryString(query, isSharedFolderIncluded, {});
+
+	expect(result).toBe('value1 label2 "one two three"');
 });
 
 describe('updateQueryChips', () => {
@@ -233,7 +246,7 @@ describe('updateQueryChips', () => {
 
 		expect(updateQuery).not.toHaveBeenCalled();
 	});
-	//
+
 	it('should not update query chips when query is not empty but isInvalidQuery is true', () => {
 		const query = [{ label: 'has:attachment' }];
 		const isInvalidQuery = true;
