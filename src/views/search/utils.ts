@@ -102,7 +102,7 @@ export function updateQueryChips(
 
 function generateFoldersSearchQuery(foldersArray: string[]): string {
 	const foldersSearchString = foldersArray.map((folder) => `inid:"${folder}"`).join(' OR ');
-	return `( ${foldersSearchString} OR is:local) `;
+	return `(${foldersSearchString} OR is:local)`;
 }
 
 function generateFoldersArray(folders: { [key: string]: Folder }): string[] {

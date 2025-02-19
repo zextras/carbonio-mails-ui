@@ -185,7 +185,7 @@ describe('generateQueryString', () => {
 		const isSharedFolderIncluded = true;
 		const result = generateQueryString(query, isSharedFolderIncluded, folders);
 
-		expect(result).toBe('(value1 label2 "one two three") ( inid:"101" OR is:local) ');
+		expect(result).toBe('(value1 label2 "one two three") (inid:"101" OR is:local)');
 	});
 
 	it('should generate query string without folders when isSharedFolderIncluded is false', () => {
