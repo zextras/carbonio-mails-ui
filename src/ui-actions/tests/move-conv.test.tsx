@@ -5,7 +5,8 @@
  */
 import React from 'react';
 
-import { act, screen } from '@testing-library/react';
+import { act, screen, waitFor } from '@testing-library/react';
+import * as hooks from '@zextras/carbonio-shell-ui';
 import { times } from 'lodash';
 
 import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
@@ -17,7 +18,7 @@ import { generateConversation } from '../../tests/generators/generateConversatio
 import { ConvActionRequest, ConvActionResponse, NormalizedConversation } from '../../types';
 import { MoveConversation } from '../move-conv';
 
-describe('MoveConv', () => {
+describe('MoveConversation', () => {
 	const { children: inboxChildren } = getFolder(FOLDERS.INBOX) ?? {};
 	const sourceFolder = inboxChildren?.[0].id ?? '';
 	const conversations: Array<NormalizedConversation> = times(10, () =>
@@ -25,43 +26,52 @@ describe('MoveConv', () => {
 	);
 	const convIds = conversations.map<string>((msg) => msg.id);
 
-	describe('Modal title', () => {
-		it('it should be visible in move mode', async () => {
-			const component = (
-				<MoveConversation
-					folderId={sourceFolder}
-					selectedIDs={convIds}
-					onClose={jest.fn()}
-					isRestore={false}
-					deselectAll={jest.fn()}
-				/>
-			);
+	it('renders expected title when in restore Mode', () => {
+		setupTest(
+			<MoveConversation
+				folderId={sourceFolder}
+				selectedIDs={convIds}
+				onClose={jest.fn()}
+				isRestore
+				deselectAll={jest.fn()}
+			/>
+		);
+		expect(screen.getByText('Restore')).toBeVisible();
+	});
 
-			setupTest(component);
-
-			expect(screen.getByText('Move')).toBeVisible();
-		});
-
-		it('should be visible in restore mode', async () => {
-			const component = (
-				<MoveConversation
-					folderId={sourceFolder}
-					selectedIDs={convIds}
-					onClose={jest.fn()}
-					isRestore
-					deselectAll={jest.fn()}
-				/>
-			);
-
-			setupTest(component);
-
-			expect(screen.getByText('Restore')).toBeVisible();
-		});
+	it('renders expected title when NOT in restore Mode', () => {
+		setupTest(
+			<MoveConversation
+				folderId={sourceFolder}
+				selectedIDs={convIds}
+				onClose={jest.fn()}
+				isRestore={false}
+				deselectAll={jest.fn()}
+			/>
+		);
+		expect(screen.getByText('Move Conversation')).toBeVisible();
 	});
 
 	describe('Confirm button', () => {
 		it('should be visible', async () => {
-			const component = (
+			setupTest(
+				<MoveConversation
+					folderId={sourceFolder}
+					selectedIDs={convIds}
+					onClose={jest.fn()}
+					isRestore={false}
+					deselectAll={jest.fn()}
+				/>
+			);
+			const moveButton = screen.getByRole('button', {
+				name: /Move/
+			});
+			expect(moveButton).toBeVisible();
+		});
+
+		it('should be disabled if no destination folder is selected', async () => {
+			populateFoldersStore();
+			setupTest(
 				<MoveConversation
 					folderId={sourceFolder}
 					selectedIDs={convIds}
@@ -71,20 +81,17 @@ describe('MoveConv', () => {
 				/>
 			);
 
-			setupTest(component);
-
-			expect(
-				screen.getByRole('button', {
-					name: /Move/
-				})
-			).toBeVisible();
+			makeListItemsVisible();
+			const moveButton = screen.getByRole('button', {
+				name: /Move/
+			});
+			expect(moveButton).toBeDisabled();
 		});
 
 		it('should be enabled if the user select a destination folder', async () => {
 			populateFoldersStore();
 			const destinationFolder = FOLDERS.INBOX;
-
-			const component = (
+			const { user } = setupTest(
 				<MoveConversation
 					folderId={sourceFolder}
 					selectedIDs={convIds}
@@ -93,84 +100,172 @@ describe('MoveConv', () => {
 					deselectAll={jest.fn()}
 				/>
 			);
-
-			const { user } = setupTest(component);
 			makeListItemsVisible();
 			const inboxFolderListItem = await screen.findByTestId(
-				`folder-accordion-item-${destinationFolder}`,
-				{},
-				{ timeout: 10000 }
+				`folder-accordion-item-${destinationFolder}`
 			);
-
 			act(() => {
 				jest.advanceTimersByTime(1000);
 			});
-
 			await act(async () => {
 				await user.click(inboxFolderListItem);
 			});
-
-			const button = screen.getByRole('button', {
+			const moveButton = screen.getByRole('button', {
 				name: /Move/
 			});
-			expect(button).toBeEnabled();
+			expect(moveButton).toBeEnabled();
 		});
+	});
 
-		it('should call the correct API when a destination folder is selected and the user clicks on the confirm button', async () => {
-			populateFoldersStore();
+	it('calls onClose when "Cancel" button is clicked', async () => {
+		const onCloseFn = jest.fn();
+		const { user } = setupTest(
+			<MoveConversation
+				folderId={sourceFolder}
+				selectedIDs={convIds}
+				onClose={onCloseFn}
+				isRestore={false}
+				deselectAll={jest.fn()}
+			/>
+		);
+		await user.click(screen.getByText('Cancel'));
+		expect(onCloseFn).toHaveBeenCalled();
+	});
 
-			const destinationFolder = FOLDERS.INBOX;
-
-			const interceptor = createSoapAPIInterceptor<ConvActionRequest, ConvActionResponse>(
-				'ConvAction',
-				{
-					action: {
-						id: convIds.join(','),
-						op: 'move'
-					}
+	it('should calls API when confirming move', async () => {
+		populateFoldersStore();
+		const destinationFolder = FOLDERS.INBOX;
+		const interceptor = createSoapAPIInterceptor<ConvActionRequest, ConvActionResponse>(
+			'ConvAction',
+			{
+				action: {
+					id: convIds.join(','),
+					op: 'move'
 				}
-			);
+			}
+		);
+		const { user } = setupTest(
+			<MoveConversation
+				folderId={sourceFolder}
+				selectedIDs={convIds}
+				onClose={jest.fn()}
+				isRestore={false}
+				deselectAll={jest.fn()}
+			/>
+		);
+		makeListItemsVisible();
+		const inboxFolderListItem = await screen.findByTestId(
+			`folder-accordion-item-${destinationFolder}`,
+			{},
+			{ timeout: 10000 }
+		);
+		act(() => {
+			jest.advanceTimersByTime(1000);
+		});
+		await act(async () => {
+			await user.click(inboxFolderListItem);
+		});
+		const button = screen.getByRole('button', {
+			name: /Move/
+		});
+		await act(async () => {
+			await user.click(button);
+		});
+		const request = await interceptor;
+		expect(request.action.id).toBe(convIds.join(','));
+		expect(request.action.op).toBe('move');
+		expect(request.action.l).toBe(destinationFolder);
+		expect(request.action.tn).toBeUndefined();
+	});
+	it('should show an error message if API call returns a Fault case', async () => {
+		populateFoldersStore();
+		const interceptor = createSoapAPIInterceptor('ConvAction', {
+			Fault: {
+				reason: 'Server Error'
+			}
+		});
+		const { user } = setupTest(
+			<MoveConversation
+				folderId={sourceFolder}
+				selectedIDs={convIds}
+				onClose={jest.fn()}
+				isRestore={false}
+				deselectAll={jest.fn()}
+			/>
+		);
+		makeListItemsVisible();
+		const inboxFolderListItem = await screen.findByTestId(
+			`folder-accordion-item-${FOLDERS.INBOX}`,
+			{},
+			{ timeout: 10000 }
+		);
+		act(() => {
+			jest.advanceTimersByTime(1000);
+		});
+		await act(async () => {
+			await user.click(inboxFolderListItem);
+		});
+		const button = screen.getByRole('button', {
+			name: /Move/
+		});
+		await act(async () => {
+			await user.click(button);
+		});
+		await interceptor;
 
-			const component = (
-				<MoveConversation
-					folderId={sourceFolder}
-					selectedIDs={convIds}
-					onClose={jest.fn()}
-					isRestore={false}
-					deselectAll={jest.fn()}
-				/>
-			);
+		expect(await screen.findByText('Something went wrong, please try again')).toBeInTheDocument();
+	});
 
-			const { user } = setupTest(component);
-			makeListItemsVisible();
+	it('navigates to folder on success', async () => {
+		populateFoldersStore();
+		const spyReplaceHistory = jest.spyOn(hooks, 'replaceHistory');
+		const interceptor = createSoapAPIInterceptor<ConvActionRequest, ConvActionResponse>(
+			'ConvAction',
+			{
+				action: {
+					id: convIds.join(','),
+					op: 'move'
+				}
+			}
+		);
+		const { user } = setupTest(
+			<MoveConversation
+				folderId={sourceFolder}
+				selectedIDs={convIds}
+				onClose={jest.fn()}
+				isRestore={false}
+				deselectAll={jest.fn()}
+			/>
+		);
 
-			const inboxFolderListItem = await screen.findByTestId(
-				`folder-accordion-item-${destinationFolder}`,
-				{},
-				{ timeout: 10000 }
-			);
-
-			act(() => {
-				jest.advanceTimersByTime(1000);
-			});
-
-			await act(async () => {
-				await user.click(inboxFolderListItem);
-			});
-
-			const button = screen.getByRole('button', {
-				name: /Move/
-			});
-
-			await act(async () => {
-				await user.click(button);
-			});
-
-			const requestParameter = await interceptor;
-			expect(requestParameter.action.id).toBe(convIds.join(','));
-			expect(requestParameter.action.op).toBe('move');
-			expect(requestParameter.action.l).toBe(destinationFolder);
-			expect(requestParameter.action.tn).toBeUndefined();
+		makeListItemsVisible();
+		const inboxFolderListItem = await screen.findByTestId(
+			`folder-accordion-item-${FOLDERS.INBOX}`,
+			{},
+			{ timeout: 10000 }
+		);
+		act(() => {
+			jest.advanceTimersByTime(1000);
+		});
+		await act(async () => {
+			await user.click(inboxFolderListItem);
+		});
+		const button = screen.getByRole('button', {
+			name: /Move/
+		});
+		await act(async () => {
+			await user.click(button);
+		});
+		await interceptor;
+		expect(await screen.findByText('Conversation successfully moved')).toBeInTheDocument();
+		const snackbarBtn = screen.getByRole('button', {
+			name: /GO TO FOLDER/
+		});
+		await act(async () => {
+			await user.click(snackbarBtn);
+		});
+		await waitFor(() => {
+			expect(spyReplaceHistory).toHaveBeenCalledWith('/folder/2');
 		});
 	});
 });

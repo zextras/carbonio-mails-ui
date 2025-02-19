@@ -139,7 +139,7 @@ export const MoveConversation = ({
 			if (isRestore) {
 				return t('label.restore', 'Restore');
 			}
-			t('folder_panel.modal.move.title_modal_conversation', 'Move Conversation');
+			return t('folder_panel.modal.move.title_modal_conversation', 'Move Conversation');
 		}
 		return t('folder_panel.modal.new.title', 'Create a new folder');
 	}, [isRestore, moveConvModal, t]);
