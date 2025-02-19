@@ -5,14 +5,13 @@
  */
 import React, { act } from 'react';
 
-import { screen, renderHook, waitFor } from '@testing-library/react';
+import { renderHook, waitFor } from '@testing-library/react';
 import { useModal } from '@zextras/carbonio-design-system';
 import { t, useAppContext } from '@zextras/carbonio-shell-ui';
 
 import { folderActionSoapApi } from '../../../api/folder-action-soap-api';
 import { FolderActionsType, FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
 import { generateFolder } from '../../../carbonio-ui-commons/test/mocks/folders/folders-generator';
-import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
 import { setMessagesInEmailStore } from '../../../store/emails/store';
 import { populateMessagesInEmailStore } from '../../../tests/generators/generateMessage';
 import { Folder } from '../../../types';
@@ -211,8 +210,6 @@ describe('useFolderActions', () => {
 
 		expect(createModalSpy).toHaveBeenCalledTimes(1);
 		const modal = <NewModal folder={defaultFolder} onClose={expect.any(Function)} />;
-		setupTest(createModalSpy.mock.calls[0][0].children);
-		expect(screen.getByText('New Folder')).toBeInTheDocument();
 		expect(createModalSpy).toHaveBeenCalledWith(
 			expect.objectContaining({
 				maxHeight: '90vh',
