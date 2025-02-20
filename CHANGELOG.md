@@ -2,6 +2,33 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.24.2](https://github.com/zextras/carbonio-mails-ui/compare/v1.24.1...v1.24.2) (2025-02-19)
+
+
+### Bug Fixes
+
+* change error message for ca certificate not found ([18b092c](https://github.com/zextras/carbonio-mails-ui/commit/18b092c5c7d6268e49e771ef8e4844e0f144d43d))
+* **populated-items:** correct flag and read status logic ([#796](https://github.com/zextras/carbonio-mails-ui/issues/796)) ([f4cbb17](https://github.com/zextras/carbonio-mails-ui/commit/f4cbb17f2e55d0aa0687e3a975c30b45236012fc))
+
+### [1.24.1](https://github.com/zextras/carbonio-mails-ui/compare/v1.24.0...v1.24.1) (2025-02-13)
+
+
+### Bug Fixes
+
+* [CO-1813] add subject rendering test and improve subject display in SearchMessageListItemCore ([9b3bdb7](https://github.com/zextras/carbonio-mails-ui/commit/9b3bdb74c594e526a2f3080d45156a040c28cf0e))
+
+## [1.24.0](https://github.com/zextras/carbonio-mails-ui/compare/v1.23.3...v1.24.0) (2025-02-13)
+
+
+### Features
+
+* [CO-1560] integrate i18next for translation support in edit-attachments-block ([843ac7c](https://github.com/zextras/carbonio-mails-ui/commit/843ac7cc4ecebebecbcc81572dcb91e77120098c))
+
+
+### Bug Fixes
+
+* label.show_all_attachments translation use defaultValue for fallback ([686512f](https://github.com/zextras/carbonio-mails-ui/commit/686512f08131d27e102018472df2ac2177abd528))
+
 ### [1.23.3](https://github.com/zextras/carbonio-mails-ui/compare/v1.23.2...v1.23.3) (2025-02-12)
 
 

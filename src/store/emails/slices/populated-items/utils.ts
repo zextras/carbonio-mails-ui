@@ -249,16 +249,16 @@ function handleConvActionResponse(
 					forEach(convActionParams.ids, (id: string) => {
 						if (!populatedItemsSlice.conversations?.[id]) return;
 						if (convActionParams.operation === CONVACTIONS.FLAG) {
-							populatedItemsSlice.conversations[id].flagged = true;
-						}
-						if (convActionParams.operation === CONVACTIONS.UNFLAG) {
 							populatedItemsSlice.conversations[id].flagged = false;
 						}
+						if (convActionParams.operation === CONVACTIONS.UNFLAG) {
+							populatedItemsSlice.conversations[id].flagged = true;
+						}
 						if (convActionParams.operation === CONVACTIONS.MARK_READ) {
-							populatedItemsSlice.conversations[id].read = true;
+							populatedItemsSlice.conversations[id].read = false;
 						}
 						if (convActionParams.operation === CONVACTIONS.MARK_UNREAD) {
-							populatedItemsSlice.conversations[id].read = false;
+							populatedItemsSlice.conversations[id].read = true;
 						}
 					});
 					return;
