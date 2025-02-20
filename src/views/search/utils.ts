@@ -127,7 +127,7 @@ export function generateQueryString(
 	const foldersToSearchInQuery = generateFoldersSearchQuery(foldersArray);
 
 	function chipToString(c: QueryChip): string {
-		const chipString = (c.value ? c.value : c.label) || '';
+		const chipString = (c.value ? c.value : c.label) ?? '';
 		const thereAreAnySpaces = chipString?.indexOf(' ') >= 0;
 		return thereAreAnySpaces ? `"${chipString}"` : `${chipString}`;
 	}
