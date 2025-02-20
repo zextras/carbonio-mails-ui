@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.24.2](https://github.com/zextras/carbonio-mails-ui/compare/v1.24.1...v1.24.2) (2025-02-19)
+
+
+### Bug Fixes
+
+* change error message for ca certificate not found ([18b092c](https://github.com/zextras/carbonio-mails-ui/commit/18b092c5c7d6268e49e771ef8e4844e0f144d43d))
+* **populated-items:** correct flag and read status logic ([#796](https://github.com/zextras/carbonio-mails-ui/issues/796)) ([f4cbb17](https://github.com/zextras/carbonio-mails-ui/commit/f4cbb17f2e55d0aa0687e3a975c30b45236012fc))
+
 ### [1.24.1](https://github.com/zextras/carbonio-mails-ui/compare/v1.24.0...v1.24.1) (2025-02-13)
 
 
