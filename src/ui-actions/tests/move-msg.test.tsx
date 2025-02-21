@@ -6,42 +6,35 @@
 import React from 'react';
 
 import { act, screen } from '@testing-library/react';
-import * as hooks from '@zextras/carbonio-shell-ui';
+import { useSnackbar } from '@zextras/carbonio-design-system';
+import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 import { times } from 'lodash';
 
-import { FOLDER_VIEW } from '../../carbonio-ui-commons/constants';
 import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
 import { getFolder } from '../../carbonio-ui-commons/store/zustand/folder';
 import { createSoapAPIInterceptor } from '../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
-import { generateSettings } from '../../carbonio-ui-commons/test/mocks/settings/settings-generator';
 import { populateFoldersStore } from '../../carbonio-ui-commons/test/mocks/store/folders';
+import { buildSoapErrorResponseBody } from '../../carbonio-ui-commons/test/mocks/utils/soap';
 import { makeListItemsVisible, setupTest } from '../../carbonio-ui-commons/test/test-setup';
 import { generateMessage } from '../../tests/generators/generateMessage';
 import { MailMessage, MsgActionRequest, MsgActionResponse } from '../../types';
-import { MoveConvMessage } from '../move-conv-msg';
+import { MoveMessage } from '../move-msg';
 
-const messageViewSettings = generateSettings({
-	prefs: {
-		zimbraPrefGroupMailBy: 'message'
-	}
-});
+jest.mock('@zextras/carbonio-design-system', () => ({
+	...jest.requireActual('@zextras/carbonio-design-system'),
+	useSnackbar: jest.fn()
+}));
 
-const convViewSettings = generateSettings({
-	prefs: {
-		zimbraPrefGroupMailBy: 'conversation'
-	}
-});
-describe('MoveConvMsg', () => {
+describe('MoveMsg', () => {
 	const { children: inboxChildren } = getFolder(FOLDERS.INBOX) ?? {};
 	const sourceFolder = inboxChildren?.[0].id ?? '';
 	const msgs: Array<MailMessage> = times(10, () => generateMessage({ folderId: sourceFolder }));
 	const msgIds = msgs.map<string>((msg) => msg.id);
 
 	describe('Modal title', () => {
-		it('move mode - message view - should display the modal title', async () => {
-			jest.spyOn(hooks, 'useUserSettings').mockReturnValue(messageViewSettings);
+		it('should display be visible when in move mode', async () => {
 			const component = (
-				<MoveConvMessage
+				<MoveMessage
 					folderId={sourceFolder}
 					selectedIDs={msgIds}
 					onClose={jest.fn()}
@@ -55,26 +48,9 @@ describe('MoveConvMsg', () => {
 			expect(screen.getByText('Move Message')).toBeVisible();
 		});
 
-		it('move mode - conversation view - should be visible', async () => {
-			jest.spyOn(hooks, 'useUserSettings').mockReturnValue(convViewSettings);
+		it('should be visible when in restore mode', async () => {
 			const component = (
-				<MoveConvMessage
-					folderId={sourceFolder}
-					selectedIDs={msgIds}
-					onClose={jest.fn()}
-					isRestore={false}
-					deselectAll={jest.fn()}
-				/>
-			);
-
-			setupTest(component);
-
-			expect(screen.getByText('Move Conversation')).toBeVisible();
-		});
-
-		it('restore mode - should be visible', async () => {
-			const component = (
-				<MoveConvMessage
+				<MoveMessage
 					folderId={sourceFolder}
 					selectedIDs={msgIds}
 					onClose={jest.fn()}
@@ -92,7 +68,7 @@ describe('MoveConvMsg', () => {
 	describe('Confirm button', () => {
 		it('should be visible', async () => {
 			const component = (
-				<MoveConvMessage
+				<MoveMessage
 					folderId={sourceFolder}
 					selectedIDs={msgIds}
 					onClose={jest.fn()}
@@ -111,11 +87,11 @@ describe('MoveConvMsg', () => {
 		});
 
 		it('should be enabled if the user select a destination folder', async () => {
-			populateFoldersStore({ view: FOLDER_VIEW.message });
+			populateFoldersStore();
 			const destinationFolder = FOLDERS.INBOX;
 
 			const component = (
-				<MoveConvMessage
+				<MoveMessage
 					folderId={sourceFolder}
 					selectedIDs={msgIds}
 					onClose={jest.fn()}
@@ -146,17 +122,12 @@ describe('MoveConvMsg', () => {
 			expect(button).toBeEnabled();
 		});
 
-		it('When a destination folder is selected and the user clicks on the confirm the API is called and the success snackbar is displayed', async () => {
-			populateFoldersStore({ view: FOLDER_VIEW.message });
+		it('should call the correct API when a destination folder is selected and the user clicks on the confirm button', async () => {
+			populateFoldersStore();
 
-			jest.spyOn(hooks, 'useUserSettings').mockReturnValue(messageViewSettings);
-
-			const { children: inboxChildren } = getFolder(FOLDERS.INBOX) ?? {};
-			const sourceFolder = inboxChildren?.[0].id ?? '';
+			const mockCreateSnackbar = jest.fn((arg) => arg);
+			(useSnackbar as jest.Mock).mockImplementation(() => mockCreateSnackbar);
 			const destinationFolder = FOLDERS.INBOX;
-
-			const msgs: Array<MailMessage> = times(10, () => generateMessage({ folderId: sourceFolder }));
-			const msgIds = msgs.map<string>((msg) => msg.id);
 
 			const interceptor = createSoapAPIInterceptor<MsgActionRequest, MsgActionResponse>(
 				'MsgAction',
@@ -169,7 +140,7 @@ describe('MoveConvMsg', () => {
 			);
 
 			const component = (
-				<MoveConvMessage
+				<MoveMessage
 					folderId={sourceFolder}
 					selectedIDs={msgIds}
 					onClose={jest.fn()}
@@ -209,6 +180,60 @@ describe('MoveConvMsg', () => {
 			expect(requestParameter.action.l).toBe(destinationFolder);
 			expect(requestParameter.action.f).toBeUndefined();
 			expect(requestParameter.action.tn).toBeUndefined();
+		});
+		it('should show an error snackbar when the API call fails ', async () => {
+			populateFoldersStore();
+
+			const mockCreateSnackbar = jest.fn((arg) => arg);
+
+			(useSnackbar as jest.Mock).mockImplementation(() => mockCreateSnackbar);
+			const destinationFolder = FOLDERS.INBOX;
+
+			createSoapAPIInterceptor<MsgActionRequest, ErrorSoapBodyResponse>(
+				'MsgAction',
+				buildSoapErrorResponseBody()
+			);
+
+			const component = (
+				<MoveMessage
+					folderId={sourceFolder}
+					selectedIDs={msgIds}
+					onClose={jest.fn()}
+					isRestore={false}
+					deselectAll={jest.fn()}
+				/>
+			);
+
+			const { user } = setupTest(component);
+			makeListItemsVisible();
+
+			const inboxFolderListItem = await screen.findByTestId(
+				`folder-accordion-item-${destinationFolder}`,
+				{},
+				{ timeout: 10000 }
+			);
+
+			act(() => {
+				jest.advanceTimersByTime(1000);
+			});
+
+			await act(async () => {
+				await user.click(inboxFolderListItem);
+			});
+
+			const button = screen.getByRole('button', {
+				name: /Move/
+			});
+
+			await act(async () => {
+				await user.click(button);
+			});
+
+			expect(mockCreateSnackbar).toHaveBeenCalledWith(
+				expect.objectContaining({
+					label: 'Something went wrong, please try again'
+				})
+			);
 		});
 	});
 });

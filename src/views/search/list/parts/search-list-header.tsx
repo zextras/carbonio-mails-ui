@@ -4,14 +4,13 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React, { useMemo } from 'react';
+import React, { PropsWithChildren, useMemo } from 'react';
 
 import { Breadcrumbs } from '../../../app/folder-panel/parts/breadcrumbs';
 import { MultipleSelectionActionsPanel } from '../../../app/folder-panel/parts/multiple-selection-actions-panel';
 
 type SearchConversationListHeaderProps = {
 	itemIds: Array<string>;
-	folderId: string;
 	selected: Record<string, boolean>;
 	deselectAll: () => void;
 	isSelectModeOn: boolean;
@@ -22,15 +21,15 @@ type SearchConversationListHeaderProps = {
 };
 export const SearchListHeader = ({
 	itemIds,
-	folderId,
 	selected,
 	deselectAll,
 	isSelectModeOn,
 	setIsSelectModeOn,
 	selectAll,
 	isAllSelected,
-	selectAllModeOff
-}: SearchConversationListHeaderProps): React.JSX.Element => {
+	selectAllModeOff,
+	children
+}: PropsWithChildren<SearchConversationListHeaderProps>): React.JSX.Element => {
 	const totalItems = itemIds.length;
 
 	const selectedIds = useMemo(() => Object.keys(selected), [selected]);
@@ -39,14 +38,16 @@ export const SearchListHeader = ({
 		return (
 			<MultipleSelectionActionsPanel
 				itemsIds={itemIds}
-				folderId={folderId}
+				folderId={''}
 				selectedIds={selectedIds}
 				deselectAll={deselectAll}
 				selectAll={selectAll}
 				isAllSelected={isAllSelected}
 				selectAllModeOff={selectAllModeOff}
 				setIsSelectModeOn={setIsSelectModeOn}
-			/>
+			>
+				{children}
+			</MultipleSelectionActionsPanel>
 		);
 	if (totalItems > 0)
 		return (
@@ -55,7 +56,7 @@ export const SearchListHeader = ({
 				itemsCount={totalItems}
 				isSelectModeOn={isSelectModeOn}
 				setIsSelectModeOn={setIsSelectModeOn}
-				folderId={folderId}
+				folderId={''}
 				isSearchModule
 			/>
 		);
