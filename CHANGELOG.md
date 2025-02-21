@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.24.3](https://github.com/zextras/carbonio-mails-ui/compare/v1.24.2...v1.24.3) (2025-02-21)
+
+
+### Bug Fixes
+
+* delete in search module call the correct api ([d38f23d](https://github.com/zextras/carbonio-mails-ui/commit/d38f23dada02124019e5e01c21e180cd9b6ced8b))
+
 ### [1.24.2](https://github.com/zextras/carbonio-mails-ui/compare/v1.24.1...v1.24.2) (2025-02-19)
 
 
