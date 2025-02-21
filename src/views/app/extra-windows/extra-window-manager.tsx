@@ -64,12 +64,31 @@ const ExtraWindowsManager = ({ children }: { children: ReactNode }): React.JSX.E
 		[windowsData]
 	);
 
+	function updateWindowData(
+		currentData: Array<ExtraWindowsCreationResult>,
+		updatedWindowData: ExtraWindowsCreationResult
+	): Array<ExtraWindowsCreationResult> {
+		const updatedData = [...currentData];
+		currentData.forEach((data, index) => {
+			if (data.id === updatedWindowData.id) {
+				updatedData[index] = updatedWindowData;
+			}
+		});
+		return updatedData;
+	}
+
 	/**
 	 * Adds a new window to the state
 	 * @param addedWindowData
 	 */
 	const addWindow = useCallback((addedWindowData: ExtraWindowsCreationResult): void => {
 		setWindowsData((currentData) => {
+			// CO-1800: in strict mode this function may be called twice.
+			// We should avoid addiing the same window twice.
+			const alreadyExists = currentData.some((data) => data.id === addedWindowData.id);
+			if (alreadyExists) {
+				return updateWindowData(currentData, addedWindowData);
+			}
 			currentData.push(addedWindowData);
 			return [...currentData];
 		});
@@ -80,15 +99,7 @@ const ExtraWindowsManager = ({ children }: { children: ReactNode }): React.JSX.E
 	 * @param updatedWindowData
 	 */
 	const updateWindow = useCallback((updatedWindowData: ExtraWindowsCreationResult): void => {
-		setWindowsData((currentData) => {
-			const updatedData = [...currentData];
-			currentData.forEach((data, index) => {
-				if (data.id === updatedWindowData.id) {
-					updatedData[index] = updatedWindowData;
-				}
-			});
-			return updatedData;
-		});
+		setWindowsData((currentData) => updateWindowData(currentData, updatedWindowData));
 	}, []);
 
 	/**

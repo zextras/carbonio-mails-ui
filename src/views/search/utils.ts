@@ -15,7 +15,6 @@ import {
 	Folder,
 	Folders,
 	KeywordState,
-	Query,
 	SearchQueryItem
 } from '../../types';
 
@@ -103,8 +102,9 @@ export function updateQueryChips(
 
 function generateFoldersSearchQuery(foldersArray: string[]): string {
 	const foldersSearchString = foldersArray.map((folder) => `inid:"${folder}"`).join(' OR ');
-	return `( ${foldersSearchString} OR is:local) `;
+	return `(${foldersSearchString} OR is:local)`;
 }
+
 function generateFoldersArray(folders: { [key: string]: Folder }): string[] {
 	return reduce(
 		folders,
@@ -125,7 +125,16 @@ export function generateQueryString(
 ): string {
 	const foldersArray = generateFoldersArray(folders);
 	const foldersToSearchInQuery = generateFoldersSearchQuery(foldersArray);
+
+	function chipToString(c: QueryChip): string {
+		const chipString = (c.value ? c.value : c.label) ?? '';
+		const thereAreAnySpaces = chipString?.indexOf(' ') >= 0;
+		return thereAreAnySpaces ? `"${chipString}"` : `${chipString}`;
+	}
+
+	const queryString = query.map((c) => chipToString(c)).join(' ');
+
 	return isSharedFolderIncluded && foldersArray?.length > 0
-		? `(${query.map((c) => (c.value ? c.value : c.label)).join(' ')}) ${foldersToSearchInQuery}`
-		: `${query.map((c) => (c.value ? c.value : c.label)).join(' ')}`;
+		? `(${queryString}) ${foldersToSearchInQuery}`
+		: `${queryString}`;
 }
