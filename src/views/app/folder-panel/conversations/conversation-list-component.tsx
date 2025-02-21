@@ -11,6 +11,7 @@ import { map, noop } from 'lodash';
 import styled from 'styled-components';
 
 import { ConversationListItemComponent } from './conversation-list-item-component';
+import { ConversationsMultipleSelectionActions } from './conversations-multiple-selection-actions';
 import { CustomList } from '../../../../carbonio-ui-commons/components/list/list';
 import { useFolder, useRoot } from '../../../../carbonio-ui-commons/store/zustand/folder/hooks';
 import { getConversationById } from '../../../../store/emails/store';
@@ -149,7 +150,13 @@ export const ConversationListComponent = memo(function ConversationListComponent
 					isAllSelected={isAllSelected}
 					selectAllModeOff={selectAllModeOff}
 					setIsSelectModeOn={setIsSelectModeOn}
-				/>
+				>
+					<ConversationsMultipleSelectionActions
+						selectedConversationsIds={selectedIds}
+						deselectAll={deselectAll}
+						folderId={folderId}
+					/>
+				</MultipleSelectionActionsPanel>
 			) : (
 				showBreadcrumbs && (
 					<Breadcrumbs

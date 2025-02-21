@@ -24,7 +24,7 @@ import { useUiUtilities } from '../../hooks/use-ui-utilities';
 import { useMessagesByFolder } from '../../store/emails/store';
 import { AppContext } from '../../types';
 import { SelectFolderModal } from '../../ui-actions/modals/select-folder-modal';
-import { MoveConvMessage } from '../../ui-actions/move-conv-msg';
+import { MoveMessage } from '../../ui-actions/move-msg';
 
 type FolderActionsProps = {
 	id: string;
@@ -93,13 +93,10 @@ export const useFolderActions = (folder: Folder): Array<FolderActionsProps> => {
 								maxHeight: '90vh',
 								size: 'medium',
 								children: (
-									<MoveConvMessage
+									<MoveMessage
 										folderId={folder.id}
 										selectedIDs={trashMessages}
-										// TODO: Fix it in DS
-										// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-										// @ts-ignore
-										onClose={(): void => closeModal()}
+										onClose={(): void => closeModal(modalId)}
 										isRestore
 										deselectAll={deselectAll}
 									/>

@@ -87,7 +87,7 @@ describe('useConvMoveToFolder', () => {
 					jest.advanceTimersByTime(TIMERS.modal_open_delay);
 				});
 
-				expect(screen.getByText(`Move Conversation`)).toBeVisible();
+				expect(screen.getByText(`Move`)).toBeVisible();
 			});
 
 			it('should not open the move modal with if the action cannot be executed', async () => {

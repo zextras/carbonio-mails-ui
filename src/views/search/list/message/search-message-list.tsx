@@ -16,6 +16,7 @@ import { CustomList } from '../../../../carbonio-ui-commons/components/list/list
 import { CustomListItem } from '../../../../carbonio-ui-commons/components/list/list-item';
 import { useSelection } from '../../../../hooks/use-selection';
 import type { AppContext, SearchListProps } from '../../../../types';
+import { MessagesMultipleSelectionActions } from '../../../app/folder-panel/messages/messages-multiple-selection-actions';
 import { AdvancedFilterButton } from '../../parts/advanced-filter-button';
 import { useLoadMoreForSearchSlice } from '../../search-view-hooks';
 import ShimmerList from '../../shimmer-list';
@@ -106,6 +107,8 @@ export const SearchMessageList: FC<SearchListProps> = ({
 		[deselectAll, isSelectModeOn, itemId, messageIds, selected, toggle]
 	);
 
+	const selectedIds = useMemo(() => Object.keys(selected), [selected]);
+
 	return (
 		<Container
 			background={'gray6'}
@@ -125,7 +128,6 @@ export const SearchMessageList: FC<SearchListProps> = ({
 				<>
 					<SearchListHeader
 						itemIds={messageIds}
-						folderId={''}
 						selected={selected}
 						deselectAll={deselectAll}
 						isSelectModeOn={isSelectModeOn}
@@ -133,7 +135,13 @@ export const SearchMessageList: FC<SearchListProps> = ({
 						selectAll={selectAll}
 						isAllSelected={isAllSelected}
 						selectAllModeOff={selectAllModeOff}
-					/>
+					>
+						<MessagesMultipleSelectionActions
+							ids={selectedIds}
+							deselectAll={deselectAll}
+							folderId={''}
+						/>
+					</SearchListHeader>
 
 					{totalMessages > 0 || hasMore ? (
 						<CustomList
