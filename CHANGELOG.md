@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.24.4](https://github.com/zextras/carbonio-mails-ui/compare/v1.24.3...v1.24.4) (2025-02-24)
+
+
+### Bug Fixes
+
+* [CO-1845] update folder panel logic to use helper functions for draft and trash folder checks ([2bad027](https://github.com/zextras/carbonio-mails-ui/commit/2bad0276923304885164ef1dfe1e03fdc6bcbf90))
+
 ### [1.24.3](https://github.com/zextras/carbonio-mails-ui/compare/v1.24.2...v1.24.3) (2025-02-21)
 
 
