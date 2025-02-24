@@ -153,8 +153,8 @@ export const useConvActions = ({
 
 	const previewOnSeparatedWindowDescriptor = useConvPreviewOnSeparatedWindowDescriptor({
 		conversationId: conversation.id,
-		subject: conversation.subject,
-		conversationPreviewFactory
+		folderId,
+		subject: conversation.subject
 	});
 
 	return useMemo(

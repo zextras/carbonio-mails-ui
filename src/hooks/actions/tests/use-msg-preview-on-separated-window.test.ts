@@ -14,6 +14,7 @@ import {
 	useMsgPreviewOnSeparatedWindowDescriptor,
 	useMsgPreviewOnSeparatedWindowFn
 } from '../use-msg-preview-on-separated-window';
+import { getParentFolderId } from '../../../helpers/folders';
 
 describe('useMsgPreviewOnSeparatedWindow', () => {
 	const msg = generateMessage({ isComplete: true });
@@ -24,7 +25,11 @@ describe('useMsgPreviewOnSeparatedWindow', () => {
 				result: { current: descriptor }
 			} = setupHook(useMsgPreviewOnSeparatedWindowDescriptor, {
 				initialProps: [
-					{ messageId: msg.id, subject: msg.subject, messagePreviewFactory: jest.fn() }
+					{
+						messageId: msg.id,
+						folderId: getParentFolderId(msg.parent),
+						subject: msg.subject
+					}
 				]
 			});
 
@@ -44,7 +49,11 @@ describe('useMsgPreviewOnSeparatedWindow', () => {
 				result: { current: functions }
 			} = setupHook(useMsgPreviewOnSeparatedWindowFn, {
 				initialProps: [
-					{ messageId: msg.id, subject: msg.subject, messagePreviewFactory: jest.fn() }
+					{
+						messageId: msg.id,
+						folderId: getParentFolderId(msg.parent),
+						subject: msg.subject
+					}
 				]
 			});
 
@@ -64,7 +73,11 @@ describe('useMsgPreviewOnSeparatedWindow', () => {
 					result: { current: functions }
 				} = setupHook(useMsgPreviewOnSeparatedWindowFn, {
 					initialProps: [
-						{ messageId: msg.id, subject: msg.subject, messagePreviewFactory: jest.fn() }
+						{
+							messageId: msg.id,
+							folderId: getParentFolderId(msg.parent),
+							subject: msg.subject
+						}
 					]
 				});
 
@@ -78,7 +91,11 @@ describe('useMsgPreviewOnSeparatedWindow', () => {
 					result: { current: functions }
 				} = setupHook(useMsgPreviewOnSeparatedWindowFn, {
 					initialProps: [
-						{ messageId: msg.id, subject: msg.subject, messagePreviewFactory: jest.fn() }
+						{
+							messageId: msg.id,
+							folderId: getParentFolderId(msg.parent),
+							subject: msg.subject
+						}
 					]
 				});
 
@@ -101,7 +118,11 @@ describe('useMsgPreviewOnSeparatedWindow', () => {
 					result: { current: functions }
 				} = setupHook(useMsgPreviewOnSeparatedWindowFn, {
 					initialProps: [
-						{ messageId: msg.id, subject: msg.subject, messagePreviewFactory: jest.fn() }
+						{
+							messageId: msg.id,
+							folderId: getParentFolderId(msg.parent),
+							subject: msg.subject
+						}
 					]
 				});
 
@@ -120,7 +141,11 @@ describe('useMsgPreviewOnSeparatedWindow', () => {
 					result: { current: functions }
 				} = setupHook(useMsgPreviewOnSeparatedWindowFn, {
 					initialProps: [
-						{ messageId: msg.id, subject: msg.subject, messagePreviewFactory: jest.fn() }
+						{
+							messageId: msg.id,
+							folderId: getParentFolderId(msg.parent),
+							subject: msg.subject
+						}
 					]
 				});
 

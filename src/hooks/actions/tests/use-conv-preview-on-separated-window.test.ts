@@ -15,6 +15,7 @@ import {
 	useConvPreviewOnSeparatedWindowDescriptor,
 	useConvPreviewOnSeparatedWindowFn
 } from '../use-conv-preview-on-separated-window';
+import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
 
 describe('useConvPreviewOnSeparatedWindow', () => {
 	const conv = generateConversation({ messageGenerationCount: faker.number.int({ max: 42 }) });
@@ -24,9 +25,7 @@ describe('useConvPreviewOnSeparatedWindow', () => {
 			const {
 				result: { current: descriptor }
 			} = setupHook(useConvPreviewOnSeparatedWindowDescriptor, {
-				initialProps: [
-					{ conversationId: conv.id, subject: conv.subject, conversationPreviewFactory: jest.fn() }
-				]
+				initialProps: [{ conversationId: conv.id, folderId: FOLDERS.INBOX, subject: conv.subject }]
 			});
 
 			expect(descriptor).toEqual({
@@ -45,7 +44,11 @@ describe('useConvPreviewOnSeparatedWindow', () => {
 				result: { current: descriptor }
 			} = setupHook(useConvPreviewOnSeparatedWindowFn, {
 				initialProps: [
-					{ conversationId: conv.id, subject: conv.subject, conversationPreviewFactory: jest.fn() }
+					{
+						conversationId: conv.id,
+						folderId: FOLDERS.INBOX,
+						subject: conv.subject
+					}
 				]
 			});
 
@@ -67,8 +70,8 @@ describe('useConvPreviewOnSeparatedWindow', () => {
 					initialProps: [
 						{
 							conversationId: conv.id,
-							subject: conv.subject,
-							conversationPreviewFactory: jest.fn()
+							folderId: FOLDERS.INBOX,
+							subject: conv.subject
 						}
 					]
 				});
@@ -85,8 +88,8 @@ describe('useConvPreviewOnSeparatedWindow', () => {
 					initialProps: [
 						{
 							conversationId: conv.id,
-							subject: conv.subject,
-							conversationPreviewFactory: jest.fn()
+							folderId: FOLDERS.INBOX,
+							subject: conv.subject
 						}
 					]
 				});
@@ -112,8 +115,8 @@ describe('useConvPreviewOnSeparatedWindow', () => {
 					initialProps: [
 						{
 							conversationId: conv.id,
-							subject: conv.subject,
-							conversationPreviewFactory: jest.fn()
+							folderId: FOLDERS.INBOX,
+							subject: conv.subject
 						}
 					]
 				});
@@ -135,8 +138,8 @@ describe('useConvPreviewOnSeparatedWindow', () => {
 					initialProps: [
 						{
 							conversationId: conv.id,
-							subject: conv.subject,
-							conversationPreviewFactory: jest.fn()
+							folderId: FOLDERS.INBOX,
+							subject: conv.subject
 						}
 					]
 				});

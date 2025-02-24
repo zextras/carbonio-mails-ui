@@ -4,23 +4,24 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React, { useCallback, useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 
 import { useTranslation } from 'react-i18next';
 
-import { MessageActionsDescriptors } from '../../constants';
+import { MessageActionsDescriptors, MSG_PREVIEW_ROUTE } from '../../constants';
 import { ActionFn, ExtraWindowCreationParams, UIActionDescriptor } from '../../types';
+import { getLocationOrigin } from '../../views/app/detail-panel/preview/utils';
 import { useGlobalExtraWindowManager } from '../../views/app/extra-windows/global-extra-window-manager';
 import { useExtraWindow } from '../../views/app/extra-windows/use-extra-window';
 
 export const useMsgPreviewOnSeparatedWindowFn = ({
 	messageId,
-	subject,
-	messagePreviewFactory
+	folderId,
+	subject
 }: {
 	messageId: string;
+	folderId: string;
 	subject: string;
-	messagePreviewFactory: () => React.JSX.Element;
 }): ActionFn => {
 	const { createWindow } = useGlobalExtraWindowManager();
 	const { isInsideExtraWindow } = useExtraWindow();
@@ -35,30 +36,30 @@ export const useMsgPreviewOnSeparatedWindowFn = ({
 			const createWindowParams: ExtraWindowCreationParams = {
 				name: `message-${messageId}`,
 				returnComponent: false,
-				children: messagePreviewFactory(),
 				title: subject,
+				url: `${getLocationOrigin()}/carbonio/${MSG_PREVIEW_ROUTE}/folder/${folderId}/message/${messageId}`,
 				closeOnUnmount: false
 			};
 			createWindow(createWindowParams);
 		}
-	}, [canExecute, createWindow, messageId, messagePreviewFactory, subject]);
+	}, [canExecute, createWindow, messageId, folderId, subject]);
 
 	return useMemo(() => ({ canExecute, execute }), [canExecute, execute]);
 };
 
 export const useMsgPreviewOnSeparatedWindowDescriptor = ({
 	messageId,
-	subject,
-	messagePreviewFactory
+	folderId,
+	subject
 }: {
 	messageId: string;
+	folderId: string;
 	subject: string;
-	messagePreviewFactory: () => React.JSX.Element;
 }): UIActionDescriptor => {
 	const { canExecute, execute } = useMsgPreviewOnSeparatedWindowFn({
 		messageId,
-		subject,
-		messagePreviewFactory
+		folderId,
+		subject
 	});
 	const [t] = useTranslation();
 	return {
