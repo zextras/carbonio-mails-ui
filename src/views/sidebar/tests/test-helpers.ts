@@ -145,3 +145,20 @@ export function mockSoapCreateMessageAndConversation(
 	});
 	(useNotify as jest.Mock).mockReturnValue([soapNotify]);
 }
+
+export function mockSoapCreatePositiveId(
+	messages: Array<SoapIncompleteMessage>,
+	conversation: SoapConversation,
+	deletedIds: Array<string>
+): void {
+	mockSoapRefresh(1);
+	const soapNotify = generateSoapAction({
+		created: {
+			m: messages,
+			c: [conversation]
+		},
+		// deleted: [(-Number(conversation.id)).toString()],
+		deleted: deletedIds
+	});
+	(useNotify as jest.Mock).mockReturnValue([soapNotify]);
+}
