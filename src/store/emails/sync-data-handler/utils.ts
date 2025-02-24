@@ -223,13 +223,13 @@ function handleNotifyConversationsCreated(
 ): void {
 	const newConversationIds = conversations.map((conv) => conv.id);
 	useEmailsStore.setState(
-		produce((state: EmailsStoreState) => {
-			state.populatedItemsSlice.conversations = conversations.reduce((acc, conversation) => {
+		produce(({ populatedItemsSlice, conversationIndexSlice }: EmailsStoreState) => {
+			populatedItemsSlice.conversations = conversations.reduce((acc, conversation) => {
 				acc[conversation.id] = conversation;
 				return acc;
-			}, state.populatedItemsSlice.conversations);
-			state.conversationIndexSlice.conversationListIndex = Array.from(
-				new Set([...newConversationIds, ...state.conversationIndexSlice.conversationListIndex])
+			}, populatedItemsSlice.conversations);
+			conversationIndexSlice.conversationListIndex = Array.from(
+				new Set([...newConversationIds, ...conversationIndexSlice.conversationListIndex])
 			);
 		})
 	);
