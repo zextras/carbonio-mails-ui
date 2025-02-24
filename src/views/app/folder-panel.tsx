@@ -10,10 +10,10 @@ import React from 'react';
 import { Container } from '@zextras/carbonio-design-system';
 import { useParams } from 'react-router-dom';
 
+import { isDraft, isTrash } from '../../helpers/folders';
+import { useIsMessageView } from '../search/search-view-hooks';
 import { ConversationList } from './folder-panel/conversations/conversation-list';
 import { MessageList } from './folder-panel/messages/message-list';
-import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
-import { useIsMessageView } from '../search/search-view-hooks';
 
 const FolderPanel = (): React.JSX.Element => {
 	const { folderId } = useParams<{ folderId: string }>();
@@ -32,7 +32,7 @@ const FolderPanel = (): React.JSX.Element => {
 			}}
 		>
 			<Container mainAlignment="flex-start" borderRadius="none" data-testid="list-wrapper">
-				{isMessageView || folderId === FOLDERS.DRAFTS || folderId === FOLDERS.TRASH ? (
+				{isMessageView || isDraft(folderId) || isTrash(folderId) ? (
 					<MessageList />
 				) : (
 					<ConversationList />
