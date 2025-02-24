@@ -7,37 +7,41 @@
 import { waitFor, renderHook, act } from '@testing-library/react';
 import { http } from 'msw';
 
-import { useSyncDataHandler } from './commons/sync-data-handler-hooks';
-import {
-	mockSoapCreateMessage,
-	mockSoapCreateMessageAndConversation,
-	mockSoapDelete,
-	mockSoapMessageActionAndConversationModified,
-	mockSoapModifyConversationAction,
-	mockSoapModifyMessageAction,
-	mockSoapModifyMessageFolder,
-	mockSoapRefresh
-} from './tests/test-helpers';
-import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
-import { useFolderStore } from '../../carbonio-ui-commons/store/zustand/folder';
-import { useTagStore } from '../../carbonio-ui-commons/store/zustand/tags';
-import { getSetupServer } from '../../carbonio-ui-commons/test/jest-setup';
-import { useNotify } from '../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
-import { generateFolder } from '../../carbonio-ui-commons/test/mocks/folders/folders-generator';
-import { handleGetFolderRequest } from '../../carbonio-ui-commons/test/mocks/network/msw/handle-get-folder';
-import { handleGetShareInfoRequest } from '../../carbonio-ui-commons/test/mocks/network/msw/handle-get-share-info';
-import { folderWorker, tagsWorker } from '../../carbonio-ui-commons/worker';
+import { FOLDERS } from '../../../../carbonio-ui-commons/constants/folders';
+import { useFolderStore } from '../../../../carbonio-ui-commons/store/zustand/folder';
+import { getTags, useTagStore } from '../../../../carbonio-ui-commons/store/zustand/tags';
+import { getSetupServer } from '../../../../carbonio-ui-commons/test/jest-setup';
+import { useNotify } from '../../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
+import { generateFolder } from '../../../../carbonio-ui-commons/test/mocks/folders/folders-generator';
+import { handleGetFolderRequest } from '../../../../carbonio-ui-commons/test/mocks/network/msw/handle-get-folder';
+import { handleGetShareInfoRequest } from '../../../../carbonio-ui-commons/test/mocks/network/msw/handle-get-share-info';
+import { folderWorker, tagsWorker } from '../../../../carbonio-ui-commons/worker';
 import {
 	useConversationById,
 	useMessageById,
 	setSearchResultsByMessage,
 	setSearchResultsByConversation,
 	getUseEmailStoreAndHooksForTesting
-} from '../../store/emails/store';
-import { generateConversationFromAPI, generateMessageFromAPI } from '../../tests/generators/api';
-import { generateConversation } from '../../tests/generators/generateConversation';
-import { generateMessage } from '../../tests/generators/generateMessage';
+} from '../../../../store/emails/store';
+import {
+	generateConversationFromAPI,
+	generateMessageFromAPI
+} from '../../../../tests/generators/api';
+import { generateConversation } from '../../../../tests/generators/generateConversation';
+import { generateMessage } from '../../../../tests/generators/generateMessage';
+import {
+	mockSoapModifyConversationAction,
+	mockSoapModifyMessageAction,
+	mockSoapModifyMessageFolder,
+	mockSoapDelete,
+	mockSoapCreateMessage,
+	mockSoapMessageActionAndConversationModified,
+	mockSoapCreateMessageAndConversation,
+	mockSoapRefresh
+} from '../../tests/test-helpers';
+import { useSyncDataHandler } from '../use-sync-data-handler';
 
+getTags();
 const UNREAD = 'u';
 const READ = '';
 const FLAGGED = 'f';
@@ -45,8 +49,8 @@ const NOTFLAGGED = '';
 
 const { setMessagesInSearchSlice } = getUseEmailStoreAndHooksForTesting();
 
-jest.mock('../../carbonio-ui-commons/store/zustand/tags', () => ({
-	...jest.requireActual('../../carbonio-ui-commons/store/zustand/tags'),
+jest.mock('../../../../carbonio-ui-commons/store/zustand/tags', () => ({
+	...jest.requireActual('../../../../carbonio-ui-commons/store/zustand/tags'),
 	getTags: jest.fn()
 }));
 

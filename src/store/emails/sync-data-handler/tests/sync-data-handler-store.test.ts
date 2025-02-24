@@ -16,7 +16,7 @@ import {
 } from '../../../../tests/generators/generateConversation';
 import { generateMessage } from '../../../../tests/generators/generateMessage';
 import { SoapConversation, SoapIncompleteMessage, SoapMailMessage } from '../../../../types';
-import { useSyncDataHandler } from '../../../../views/sidebar/commons/sync-data-handler-hooks';
+import { useSyncDataHandler } from '../../../../views/sidebar/commons/use-sync-data-handler';
 import { useCompleteConversationOrFetch } from '../../hooks/hooks';
 import {
 	handleNotifyMessagesCreated,

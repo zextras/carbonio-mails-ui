@@ -17,7 +17,7 @@ import { API_REQUEST_STATUS } from '../../../constants';
 import { normalizeConversations } from '../../../normalizations/normalize-conversation';
 import { normalizeMailMessageFromSoap } from '../../../normalizations/normalize-message';
 import { SearchResponse, SearchSoapApiParams } from '../../../types';
-import { extractConvMessage } from '../../../views/sidebar/commons/sync-data-handler-hooks';
+import { extractConvMessage } from '../../../views/sidebar/commons/use-sync-data-handler';
 import {
 	updateMessagesResultsLoadingStatus,
 	setMessagesInEmailStore,
