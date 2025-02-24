@@ -5,12 +5,19 @@
  */
 
 import { waitFor, renderHook, act } from '@testing-library/react';
-import { SoapNotify, useRefresh } from '@zextras/carbonio-shell-ui';
 import { http } from 'msw';
 
-import { generateConversationFromAPI, generateMessageFromAPI } from '../../tests/generators/api';
-import { SoapConversation, SoapIncompleteMessage } from '../../types';
 import { useSyncDataHandler } from './commons/sync-data-handler-hooks';
+import {
+	mockSoapCreateMessage,
+	mockSoapCreateMessageAndConversation,
+	mockSoapDelete,
+	mockSoapMessageActionAndConversationModified,
+	mockSoapModifyConversationAction,
+	mockSoapModifyMessageAction,
+	mockSoapModifyMessageFolder,
+	mockSoapRefresh
+} from './tests/test-helpers';
 import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
 import { useFolderStore } from '../../carbonio-ui-commons/store/zustand/folder';
 import { useTagStore } from '../../carbonio-ui-commons/store/zustand/tags';
@@ -27,6 +34,7 @@ import {
 	setSearchResultsByConversation,
 	getUseEmailStoreAndHooksForTesting
 } from '../../store/emails/store';
+import { generateConversationFromAPI, generateMessageFromAPI } from '../../tests/generators/api';
 import { generateConversation } from '../../tests/generators/generateConversation';
 import { generateMessage } from '../../tests/generators/generateMessage';
 
@@ -36,142 +44,6 @@ const FLAGGED = 'f';
 const NOTFLAGGED = '';
 
 const { setMessagesInSearchSlice } = getUseEmailStoreAndHooksForTesting();
-function mockSoapRefresh(mailbox: number): void {
-	(useRefresh as jest.Mock).mockReturnValue({
-		mbx: [{ s: mailbox }]
-	});
-}
-
-function generateSoapAction(partial?: Partial<SoapNotify>): SoapNotify {
-	return {
-		deleted: [],
-		seq: 0,
-		...partial
-	};
-}
-
-function mockSoapModifyConversationAction(mailboxNumber: number, actions: Array<string>): void {
-	mockSoapRefresh(mailboxNumber);
-	const action = actions.join('');
-	const soapNotify = generateSoapAction({
-		modified: {
-			// TODO: mbx is optional and not always received from API, consider removing it in shell-ui
-			mbx: [{ s: mailboxNumber }],
-			c: [
-				{
-					id: '123',
-					f: `s${action}`
-				}
-			]
-		}
-	});
-	(useNotify as jest.Mock).mockReturnValue([soapNotify]);
-}
-function mockSoapModifyMessageAction(
-	mailboxNumber: number,
-	messageId: string,
-	actions: Array<string>
-): void {
-	mockSoapRefresh(mailboxNumber);
-	const action = actions.join('');
-	const soapNotify = generateSoapAction({
-		modified: {
-			mbx: [{ s: mailboxNumber }],
-			m: [
-				{
-					id: messageId,
-					f: `s${action}`
-				}
-			]
-		}
-	});
-	(useNotify as jest.Mock).mockReturnValue([soapNotify]);
-}
-
-function mockSoapMessageActionAndConversationModified(
-	mailboxNumber: number,
-	messageId: string,
-	conversationId: string,
-	actions: Array<string>
-): void {
-	mockSoapRefresh(mailboxNumber);
-	const action = actions.join('');
-	const soapNotify = generateSoapAction({
-		modified: {
-			mbx: [{ s: 1000 }],
-			m: [
-				{
-					id: messageId,
-					f: `s${action}`
-				}
-			],
-			c: [
-				{
-					id: conversationId,
-					f: `s${action}`
-				}
-			]
-		}
-	});
-	(useNotify as jest.Mock).mockReturnValue([soapNotify]);
-}
-
-function mockSoapModifyMessageFolder(
-	mailboxNumber: number,
-	messageId: string,
-	folder: string
-): void {
-	mockSoapRefresh(mailboxNumber);
-	const soapNotify = generateSoapAction({
-		modified: {
-			// TODO: mbx is optional and not always received from API, consider removing it in shell-ui
-			mbx: [{ s: mailboxNumber }],
-			m: [
-				{
-					id: messageId,
-					l: folder
-				}
-			]
-		}
-	});
-	(useNotify as jest.Mock).mockReturnValue([soapNotify]);
-}
-
-function mockSoapDelete(mailboxNumber: number, deletedIds: Array<string>): void {
-	mockSoapRefresh(mailboxNumber);
-	const soapNotify = generateSoapAction({
-		deleted: deletedIds
-	});
-	(useNotify as jest.Mock).mockReturnValue([soapNotify]);
-}
-
-function mockSoapCreateMessage(
-	mailboxNumber: number,
-	messages: Array<SoapIncompleteMessage>
-): void {
-	mockSoapRefresh(mailboxNumber);
-	const soapNotify = generateSoapAction({
-		created: {
-			m: messages
-		}
-	});
-	(useNotify as jest.Mock).mockReturnValue([soapNotify]);
-}
-
-function mockSoapCreateMessageAndConversation(
-	mailboxNumber: number,
-	messages: Array<SoapIncompleteMessage>,
-	conversation: Array<SoapConversation>
-): void {
-	mockSoapRefresh(mailboxNumber);
-	const soapNotify = generateSoapAction({
-		created: {
-			m: messages,
-			c: conversation
-		}
-	});
-	(useNotify as jest.Mock).mockReturnValue([soapNotify]);
-}
 
 jest.mock('../../carbonio-ui-commons/store/zustand/tags', () => ({
 	...jest.requireActual('../../carbonio-ui-commons/store/zustand/tags'),
