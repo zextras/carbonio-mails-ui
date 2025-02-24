@@ -13,6 +13,7 @@ import { AccountSettings, ErrorSoapBodyResponse } from '@zextras/carbonio-shell-
 import { noop } from 'lodash';
 
 import * as searchSoapApi from '../../../api/search-soap-api';
+import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
 import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { generateSettings } from '../../../carbonio-ui-commons/test/mocks/settings/settings-generator';
 import { buildSoapErrorResponseBody } from '../../../carbonio-ui-commons/test/mocks/utils/soap';
@@ -126,7 +127,10 @@ function getSoapMessage(
 	};
 }
 
-function getSoapConversation(id: string): SoapConversation {
+function getSoapConversation(
+	id: string,
+	messageInitialData?: Partial<SoapIncompleteMessage>
+): SoapConversation {
 	return {
 		id,
 		n: 1,
@@ -134,13 +138,12 @@ function getSoapConversation(id: string): SoapConversation {
 		f: 'flag',
 		tn: 'tag names',
 		d: 123,
-		m: [getSoapMessage('123', undefined, id)],
+		m: [getSoapMessage('123', messageInitialData, id)],
 		e: [],
 		su: 'conversations Subject',
 		fr: 'fragment'
 	};
 }
-
 function fakeCounter(): { count: number; setCount: (value: number) => void } {
 	let count = 0;
 	const setCount = (value: number): void => {
@@ -291,6 +294,56 @@ describe('SearchView', () => {
 			expect(await within(itemAvatar).findByTestId('icon: Checkmark')).toBeVisible();
 		});
 
+		it('should call ConvActionRequest with operation "delete" when clicking delete permanently action', async () => {
+			const apiInterceptor = createSoapAPIInterceptor<ConvActionRequest, ConvActionResponse>(
+				'ConvAction',
+				{
+					action: {
+						id: '123',
+						op: 'delete'
+					}
+				}
+			);
+
+			const searchSettings = setupSearchViewTest({ viewBy: 'conversation', query: 'hello' });
+			const { queryChip } = searchSettings;
+
+			createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
+				c: [getSoapConversation('123', { l: FOLDERS.TRASH })],
+				more: false
+			});
+			const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
+			const searchViewProps: SearchViewProps = {
+				useQuery: () => [[queryChip], noop],
+				useDisableSearch: () => [false, noop],
+				ResultsHeader: resultsHeader
+			};
+			jest.spyOn(hooks, 'useAppContext').mockReturnValue(fakeCounter());
+			const { user } = setupTest(<SearchView {...searchViewProps} />);
+			await waitAndMakeConversationVisible('123');
+			const actionWrapper = await screen.findByTestId(`ConversationListItem-123`);
+			await user.hover(actionWrapper);
+			expect(actionWrapper).toBeVisible();
+
+			const hoverBar = await screen.findByTestId('primary-actions-bar-123');
+			expect(hoverBar).toBeVisible();
+
+			const deletePermanentlyIconButton = screen.getByTestId('icon: DeletePermanentlyOutline');
+
+			await user.click(deletePermanentlyIconButton);
+			const deleteButton = await screen.findByText('Delete permanently');
+			await user.click(deleteButton);
+
+			const receivedRequest = await apiInterceptor;
+
+			await act(async () => {
+				expect(receivedRequest.action.id).toBe('123');
+			});
+			await act(async () => {
+				expect(receivedRequest.action.op).toBe('delete');
+			});
+		});
+
 		it('should display the conversation view panel', async () => {
 			const searchSettings = setupSearchViewTest({ viewBy: 'conversation', query: 'hello' });
 			const { queryChip } = searchSettings;
@@ -323,6 +376,7 @@ describe('SearchView', () => {
 
 			expect(await screen.findByTestId('SearchConversationPanel-123')).toBeInTheDocument();
 		});
+
 		it('should call ConvActionRequest with operation "trash" when moving conversation to trash in selection mode', async () => {
 			const searchSettings = setupSearchViewTest({ viewBy: 'conversation', query: 'hello' });
 			const { queryChip } = searchSettings;
