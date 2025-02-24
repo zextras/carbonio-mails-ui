@@ -294,7 +294,9 @@ class NewWindow extends React.PureComponent {
 			} else {
 				// Remove any existing content
 				const staticContainer = this.window.document.getElementById('new-window-container-static');
-				this.window.document.body.removeChild(staticContainer);
+				if (staticContainer) {
+					this.window.document.body.removeChild(staticContainer);
+				}
 			}
 
 			// If specified, copy styles from parent window's document.
