@@ -8,16 +8,14 @@ import { SoapNotify, useNotify, useRefresh } from '@zextras/carbonio-shell-ui';
 
 import { SoapIncompleteMessage, SoapConversation } from '../../../types';
 
-type InternalSoapNotify = Omit<SoapNotify, 'deleted'> & {
-	deleted?: { id: string };
-};
 export function mockSoapRefresh(mailbox: number): void {
 	(useRefresh as jest.Mock).mockReturnValue({
 		mbx: [{ s: mailbox }]
 	});
 }
-function generateSoapAction(partial?: Partial<InternalSoapNotify>): InternalSoapNotify {
+function generateSoapAction(partial?: Partial<SoapNotify>): SoapNotify {
 	return {
+		deleted: [],
 		seq: 0,
 		...partial
 	};
@@ -116,7 +114,7 @@ export function mockSoapDelete(mailboxNumber: number, deletedIds: Array<string>)
 	mockSoapRefresh(mailboxNumber);
 	// TODO: check me, was: Array<string>
 	const soapNotify = generateSoapAction({
-		deleted: { id: deletedIds[0] }
+		deleted: deletedIds
 	});
 	(useNotify as jest.Mock).mockReturnValue([soapNotify]);
 }
@@ -161,8 +159,8 @@ export function mockSoapCreateMessageAndConversation(
 	(useNotify as jest.Mock).mockReturnValue([soapNotify]);
 }
 
-export function mockSoapNotify(notifyReponse: Partial<InternalSoapNotify>): void {
+export function mockShellSoapNotify(shellNotifyResponse: Partial<SoapNotify>): void {
 	mockSoapRefresh(1);
-	const soapNotify = generateSoapAction(notifyReponse);
+	const soapNotify = generateSoapAction(shellNotifyResponse);
 	(useNotify as jest.Mock).mockReturnValue([soapNotify]);
 }

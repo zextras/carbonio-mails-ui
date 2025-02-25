@@ -45,7 +45,7 @@ import {
 	mockSoapCreateMessageAndConversation,
 	mockSoapRefresh,
 	mockSoapCreateConversation,
-	mockSoapNotify
+	mockShellSoapNotify
 } from '../../tests/test-helpers';
 import { useSyncDataHandler } from '../use-sync-data-handler';
 
@@ -154,12 +154,12 @@ describe('sync data handler', () => {
 			setConversationsInEmailStore([generateConversation({ id: '-10' })], false);
 			const newConversation = getSoapConversation('10');
 			const newMessage = getSoapMessage('100');
-			mockSoapNotify({
+			mockShellSoapNotify({
 				created: {
 					// m: [newMessage],
 					c: [newConversation]
 				},
-				deleted: { id: '-10' }
+				deleted: ['-10']
 			});
 
 			// eslint-disable-next-line testing-library/no-unnecessary-act
