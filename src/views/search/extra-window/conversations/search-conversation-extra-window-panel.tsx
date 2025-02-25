@@ -46,6 +46,7 @@ export const SearchConversationExtraWindowPanelContainer: FC<
 			data-testid={`ConversationPreview-${conversation.id}`}
 		>
 			<>
+				{/* FIXME can be removed */}
 				{!isInsideExtraWindow && <SearchExtraWindowPanelHeader item={conversation} />}
 
 				<Container

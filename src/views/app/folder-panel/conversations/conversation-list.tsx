@@ -24,7 +24,7 @@ import { useSelection } from '../../../../hooks/use-selection';
 import type { AppContext } from '../../../../types';
 
 export const ConversationList = (): React.JSX.Element => {
-	const { folderId, itemId } = useParams<{ folderId: string; itemId: string }>();
+	const { folderId, itemId } = useParams() as { folderId: string; itemId?: string };
 	const { setCount, count } = useAppContext<AppContext>();
 	const folder = useFolder(folderId);
 	const { conversationIndexSlice } = useConversationListByFolder(folderId);
@@ -49,7 +49,8 @@ export const ConversationList = (): React.JSX.Element => {
 	});
 
 	const keyboardActions = useConversationKeyboardShortcuts({
-		conversationId: itemId,
+		// FIXME: itemId could be undefined
+		conversationId: itemId!,
 		deselectAll,
 		folderId
 	});
@@ -94,7 +95,8 @@ export const ConversationList = (): React.JSX.Element => {
 									conversationId={id}
 									visible={visible}
 									selected={isSelected}
-									activeItemId={itemId}
+									// FIXME: itemId could be undefined
+									activeItemId={itemId!}
 									toggleMultipleSelection={toggleMultipleSelection}
 									setDraggedIds={setDraggedIds}
 									selectedItems={selected}

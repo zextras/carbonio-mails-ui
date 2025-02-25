@@ -12,14 +12,15 @@ import { usePreviewHeaderNavigation } from '../../../../hooks/use-preview-header
 import { useMessageIndexSlice } from '../../../../store/emails/store';
 
 export const MessagePreviewHeaderNavigation = (): React.JSX.Element => {
-	const { folderId, messageId } = useParams<{ folderId: string; messageId: string }>();
+	// TODO check if folderId and messageId are always defined(check all parents Routes usages)
+	const { folderId, messageId } = useParams() as { folderId?: string; messageId?: string };
 	const { messageListIndex, more, status } = useMessageIndexSlice();
 
 	const { previousActionItem, nextActionItem } = usePreviewHeaderNavigation({
 		itemIds: messageListIndex,
 		hasMore: more,
-		folderId,
-		currentItemId: messageId,
+		folderId: folderId!,
+		currentItemId: messageId!,
 		searchedInFolderStatus: status,
 		itemsType: 'message'
 	});

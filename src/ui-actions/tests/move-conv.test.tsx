@@ -6,8 +6,8 @@
 import React from 'react';
 
 import { act, screen, waitFor } from '@testing-library/react';
-import * as hooks from '@zextras/carbonio-shell-ui';
 import { times } from 'lodash';
+import * as reactRouterDom from 'react-router-dom';
 
 import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
 import { getFolder } from '../../carbonio-ui-commons/store/zustand/folder';
@@ -18,6 +18,11 @@ import { makeListItemsVisible, setupTest } from '../../carbonio-ui-commons/test/
 import { generateConversation } from '../../tests/generators/generateConversation';
 import { ConvActionRequest, ConvActionResponse, NormalizedConversation } from '../../types';
 import { MoveConversation } from '../move-conv';
+
+jest.mock('react-router-dom', () => ({
+	...jest.requireActual('react-router-dom'),
+	useNavigate: jest.fn()
+}));
 
 describe('MoveConversation', () => {
 	const { children: inboxChildren } = getFolder(FOLDERS.INBOX) ?? {};
@@ -215,8 +220,9 @@ describe('MoveConversation', () => {
 	});
 
 	it('navigates to folder on success', async () => {
+		const navigate = jest.fn();
+		(reactRouterDom.useNavigate as jest.Mock).mockReturnValue(navigate);
 		populateFoldersStore();
-		const spyReplaceHistory = jest.spyOn(hooks, 'replaceHistory');
 		const interceptor = createSoapAPIInterceptor<ConvActionRequest, ConvActionResponse>(
 			'ConvAction',
 			{
@@ -263,7 +269,7 @@ describe('MoveConversation', () => {
 			await user.click(snackbarBtn);
 		});
 		await waitFor(() => {
-			expect(spyReplaceHistory).toHaveBeenCalledWith('/folder/2');
+			expect(navigate).toHaveBeenCalledWith('/mails/folder/2', { replace: true });
 		});
 	});
 });

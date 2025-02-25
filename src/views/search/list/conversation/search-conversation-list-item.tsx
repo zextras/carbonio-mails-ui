@@ -7,11 +7,13 @@
 import React, { FC, useCallback, useState } from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
-import { pushHistory, useUserSettings } from '@zextras/carbonio-shell-ui';
+import { useUserSettings } from '@zextras/carbonio-shell-ui';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { SearchConversationListItemCore } from './search-conversation-list-item-core';
 import { SearchConversationMessagesList } from './search-conversation-messages-list';
+import { MAILS_ROUTE } from '../../../../constants';
 import { useConvPreviewOnSeparatedWindowFn } from '../../../../hooks/actions/use-conv-preview-on-separated-window';
 import { useConvSetReadFn } from '../../../../hooks/actions/use-conv-set-read';
 import { useOnMouseHover } from '../../../../hooks/use-on-mouse-hover';
@@ -51,6 +53,7 @@ export const SearchConversationListItem: FC<SearchConversationListItemProps> = (
 	const messages = useConversationMessages(conversationId);
 	const conversationStatus = useConversationStatus(conversationId);
 	const { id, isDraft, parent } = messages[0];
+	const navigate = useNavigate();
 
 	const zimbraPrefMarkMsgRead = useUserSettings()?.prefs?.zimbraPrefMarkMsgRead !== '-1';
 
@@ -78,10 +81,10 @@ export const SearchConversationListItem: FC<SearchConversationListItemProps> = (
 				if (conversation?.read === false && zimbraPrefMarkMsgRead) {
 					markAsRead.canExecute() && markAsRead.execute();
 				}
-				pushHistory(`conversation/${conversationId}`);
+				navigate(`../conversation/${conversationId}`);
 			}
 		},
-		[conversation?.read, zimbraPrefMarkMsgRead, conversationId, markAsRead]
+		[conversation?.read, zimbraPrefMarkMsgRead, navigate, conversationId, markAsRead]
 	);
 
 	const _onDoubleClick = useCallback(
@@ -91,13 +94,14 @@ export const SearchConversationListItem: FC<SearchConversationListItemProps> = (
 			}
 
 			if (isDraft) {
-				pushHistory(`/folder/${parent}/edit/${id}?action=editAsDraft`);
+				// FIXME already do not work
+				navigate(`/${MAILS_ROUTE}/folder/${parent}/edit/${id}?action=editAsDraft`);
 			} else {
 				previewOnSeparatedWindow.canExecute() && previewOnSeparatedWindow.execute();
 			}
 		},
 
-		[id, isDraft, parent, previewOnSeparatedWindow]
+		[id, isDraft, navigate, parent, previewOnSeparatedWindow]
 	);
 
 	return (

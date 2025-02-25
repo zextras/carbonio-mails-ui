@@ -6,7 +6,7 @@
 import React, { useCallback } from 'react';
 
 import { Container, Padding } from '@zextras/carbonio-design-system';
-import { replaceHistory } from '@zextras/carbonio-shell-ui';
+import { useNavigate } from 'react-router-dom';
 
 import { API_REQUEST_STATUS } from '../../../../constants';
 import { useCompleteMessageOrFetch } from '../../../../store/emails/hooks/hooks';
@@ -16,7 +16,7 @@ import { SearchExtraWindowPanelHeader } from '../../extra-window/search-extra-wi
 
 export const SearchMessagePanel = ({ messageId }: { messageId: string }): React.JSX.Element => {
 	const { message, messageStatus } = useCompleteMessageOrFetch(messageId);
-
+	const navigate = useNavigate();
 	const { isInsideExtraWindow } = useExtraWindow();
 
 	const messagePreviewFactory = useCallback(
@@ -25,10 +25,7 @@ export const SearchMessagePanel = ({ messageId }: { messageId: string }): React.
 	);
 
 	if (!message) {
-		replaceHistory({
-			path: '/',
-			route: 'search'
-		});
+		navigate('/search', { replace: true });
 		return <></>;
 	}
 

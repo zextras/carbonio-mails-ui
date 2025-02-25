@@ -33,7 +33,7 @@ export const SearchConversationList = ({
 	invalidQueryTooltip,
 	hasMore
 }: SearchListProps): React.JSX.Element => {
-	const { itemId } = useParams<{ itemId: string }>();
+	const { itemId } = useParams() as { itemId?: string };
 	const loadingMore = useRef<boolean>(false);
 	const { setCount, count } = useAppContext<AppContext>();
 	const listRef = useRef<HTMLDivElement>(null);
@@ -96,7 +96,8 @@ export const SearchConversationList = ({
 									active={active}
 									conversationId={conversationId}
 									selecting={isSelectModeOn}
-									activeItemId={itemId}
+									// FIXME: itemId could be undefined
+									activeItemId={itemId!}
 									toggle={toggle}
 									selected={isSelected}
 									deselectAll={deselectAll}

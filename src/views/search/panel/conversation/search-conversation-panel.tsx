@@ -6,9 +6,9 @@
 import React, { useCallback } from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
-import { replaceHistory, useUserSettings } from '@zextras/carbonio-shell-ui';
+import { useUserSettings } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 import { SearchConversationMessagePanel } from './search-conversation-message-panel';
 import { API_REQUEST_STATUS } from '../../../../constants';
@@ -17,7 +17,8 @@ import { useExtraWindow } from '../../../app/extra-windows/use-extra-window';
 import { SearchExtraWindowPanelHeader } from '../../extra-window/search-extra-window-panel-header';
 
 export const SearchConversationPanel = (): React.JSX.Element => {
-	const { conversationId } = useParams<{ conversationId: string }>();
+	const { conversationId } = useParams() as { conversationId: string };
+	const navigate = useNavigate();
 
 	const { isInsideExtraWindow } = useExtraWindow();
 	const { conversation, conversationStatus } = useCompleteConversationOrFetch(conversationId);
@@ -36,10 +37,7 @@ export const SearchConversationPanel = (): React.JSX.Element => {
 	);
 
 	if (!conversation) {
-		replaceHistory({
-			path: '/',
-			route: 'search'
-		});
+		navigate('/search', { replace: true });
 		return <></>;
 	}
 

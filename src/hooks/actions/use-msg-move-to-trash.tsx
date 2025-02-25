@@ -6,12 +6,12 @@
 import { useCallback, useMemo } from 'react';
 
 import { useSnackbar } from '@zextras/carbonio-design-system';
-import { replaceHistory } from '@zextras/carbonio-shell-ui';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 
 import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
 import { isTrash } from '../../carbonio-ui-commons/helpers/folders';
-import { MessageActionsDescriptors } from '../../constants';
+import { MAILS_ROUTE, MessageActionsDescriptors } from '../../constants';
 import { msgActionEmailStoreAction } from '../../store/emails/actions/msg-action-action';
 import type { ActionFn, UIActionDescriptor } from '../../types';
 import { useInSearchModule } from '../../ui-actions/utils';
@@ -23,12 +23,14 @@ const useRestoreMessage = (): ((
 	closeEditor: boolean | undefined
 ) => void) => {
 	const { createSnackbar } = useUiUtilities();
+	const navigate = useNavigate();
 	const [t] = useTranslation();
 	return useCallback(
 		(ids, folderId, closeEditor): void => {
 			msgActionEmailStoreAction({ ids, parent: folderId, operation: 'move' }).then((res) => {
 				if (!('Fault' in res)) {
-					closeEditor && replaceHistory(`/folder/${folderId}/message/${ids[0]}`);
+					closeEditor &&
+						navigate(`/${MAILS_ROUTE}/folder/${folderId}/message/${ids[0]}`, { replace: true });
 					createSnackbar({
 						key: `move-${ids}`,
 						replace: true,
@@ -49,7 +51,7 @@ const useRestoreMessage = (): ((
 				}
 			});
 		},
-		[createSnackbar, t]
+		[createSnackbar, navigate, t]
 	);
 };
 
@@ -71,6 +73,7 @@ export const useMsgMoveToTrashFn = ({
 	const restoreMessage = useRestoreMessage();
 	const inSearchModule = useInSearchModule();
 	const [t] = useTranslation();
+	const navigate = useNavigate();
 
 	const execute = useCallback((): void => {
 		if (canExecute()) {
@@ -81,7 +84,8 @@ export const useMsgMoveToTrashFn = ({
 				if (!('Fault' in res)) {
 					deselectAll?.();
 					if (!inSearchModule) {
-						shouldReplaceHistory && replaceHistory(`/folder/${folderId}`);
+						shouldReplaceHistory &&
+							navigate(`/${MAILS_ROUTE}/folder/${folderId}`, { replace: true });
 					}
 					createSnackbar({
 						key: `trash-${ids}`,
@@ -113,6 +117,7 @@ export const useMsgMoveToTrashFn = ({
 		createSnackbar,
 		t,
 		shouldReplaceHistory,
+		navigate,
 		folderId,
 		restoreMessage
 	]);

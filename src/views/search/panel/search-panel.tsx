@@ -7,17 +7,29 @@ import React, { useMemo } from 'react';
 
 import { Container, Padding, Text } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
-import { trimEnd } from 'lodash';
-import { useRouteMatch, Switch, Route } from 'react-router-dom';
+import { Route, Routes, useParams } from 'react-router-dom';
 
 import { SearchConversationPanel } from './conversation/search-conversation-panel';
 import { SearchMessagePanel } from './message/search-message-panel';
 import { SearchPanelProps } from '../../../types';
 
-const SearchPanel = ({ searchResults }: SearchPanelProps): React.JSX.Element => {
-	const { path } = useRouteMatch();
+type WithMessageIdProps = {
+	messageId: string;
+};
 
-	const trimmedPath = useMemo(() => trimEnd(path, '/'), [path]);
+const withMessageId = <P extends WithMessageIdProps>(
+	WrappedComponent: React.ComponentType<P>
+): React.ComponentType<Omit<P, 'messageId'>> => {
+	const ComponentWithMessageId = (props: Omit<P, 'messageId'>): React.JSX.Element => {
+		const { messageId } = useParams<{ messageId: string }>();
+		return <WrappedComponent {...(props as P)} messageId={messageId!} />;
+	};
+
+	ComponentWithMessageId.displayName = `withMessageId(${WrappedComponent.displayName || WrappedComponent.name || 'Component'})`;
+
+	return ComponentWithMessageId;
+};
+const SearchPanel = ({ searchResults }: SearchPanelProps): React.JSX.Element => {
 	const displayerMessage = useMemo(() => {
 		if (searchResults.conversationListIndex.length > 0 || searchResults.messageListIndex.length > 0)
 			return {
@@ -42,40 +54,36 @@ const SearchPanel = ({ searchResults }: SearchPanelProps): React.JSX.Element => 
 		[displayerMessage?.description]
 	);
 	return (
-		<Switch>
-			<Route path={`${trimmedPath}/conversation/:conversationId`}>
-				<SearchConversationPanel />
-			</Route>
+		<Routes>
+			<Route path={`conversation/:conversationId`} element={<SearchConversationPanel />} />
+			<Route path={`message/:messageId`} Component={withMessageId(SearchMessagePanel)}></Route>
 			<Route
-				path={`${trimmedPath}/message/:messageId`}
-				render={(props): React.JSX.Element => (
-					<SearchMessagePanel messageId={props.match.params.messageId} />
-				)}
-			></Route>
-			<Route path={trimmedPath}>
-				<Container background="gray5">
-					<Padding all="medium">
+				path={'/'}
+				element={
+					<Container background="gray5">
+						<Padding all="medium">
+							<Text
+								color="gray1"
+								overflow="break-word"
+								weight="bold"
+								size="large"
+								style={{ whiteSpace: 'pre-line', textAlign: 'center' }}
+							>
+								{displayerTitle}
+							</Text>
+						</Padding>
 						<Text
+							size="small"
 							color="gray1"
 							overflow="break-word"
-							weight="bold"
-							size="large"
 							style={{ whiteSpace: 'pre-line', textAlign: 'center' }}
 						>
-							{displayerTitle}
+							{displayerDescription}
 						</Text>
-					</Padding>
-					<Text
-						size="small"
-						color="gray1"
-						overflow="break-word"
-						style={{ whiteSpace: 'pre-line', textAlign: 'center' }}
-					>
-						{displayerDescription}
-					</Text>
-				</Container>
-			</Route>
-		</Switch>
+					</Container>
+				}
+			/>
+		</Routes>
 	);
 };
 

@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, useCallback, useMemo } from 'react';
+import React, { FC, useMemo } from 'react';
 
 import {
 	AccordionItem,
@@ -17,14 +17,8 @@ import {
 	Row,
 	Tooltip
 } from '@zextras/carbonio-design-system';
-import {
-	AppLink,
-	pushHistory,
-	replaceHistory,
-	t,
-	useUserAccount
-} from '@zextras/carbonio-shell-ui';
-import { useParams } from 'react-router-dom';
+import { t, useUserAccount } from '@zextras/carbonio-shell-ui';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { FolderActionWrapper } from './folder-action-wrapper';
@@ -76,6 +70,7 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item: folder }) => {
 	const { ref, hasBeenHovered } = useOnMouseHover();
 	const accountName = useUserAccount().name;
 	const { folderId } = useParams<{ folderId: string }>();
+	const navigate = useNavigate();
 	const { createSnackbar } = useUiUtilities();
 
 	const onDropAction = (data: OnDropActionProps): void => {
@@ -121,7 +116,7 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item: folder }) => {
 				parent: folder.id
 			}).then((res) => {
 				if (!('Fault' in res)) {
-					replaceHistory(`/folder/${folderId}`);
+					navigate(`../folder/${folderId}`, { replace: true });
 					data.data.deselectAll && data.data.deselectAll();
 					createSnackbar({
 						key: `edit`,
@@ -131,7 +126,7 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item: folder }) => {
 						autoHideTimeout: 3000,
 						actionLabel: t('action.goto_folder', 'GO TO FOLDER'),
 						onActionClick: () => {
-							replaceHistory(`/folder/${folder.id}`);
+							navigate(`../folder/${folder.id}`, { replace: true });
 						}
 					});
 				} else {
@@ -161,7 +156,7 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item: folder }) => {
 						autoHideTimeout: 3000,
 						actionLabel: t('action.goto_folder', 'GO TO FOLDER'),
 						onActionClick: () => {
-							replaceHistory(`/folder/${folder.id}`);
+							navigate(`../folder/${folder.id}`, { replace: true });
 						}
 					});
 				} else {
@@ -182,10 +177,6 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item: folder }) => {
 		() => isSystemFolder(folder.id) || folder.isLink, // Default folders and shared folders not allowed to drag
 		[folder.id, folder.isLink]
 	);
-
-	const onClick = useCallback((): void => {
-		pushHistory(`/folder/${folder.id}`);
-	}, [folder.id]);
 
 	const badgeType: 'read' | 'unread' = useMemo(
 		() => (folder.id && folder.id === FOLDERS.DRAFTS ? 'read' : 'unread'),
@@ -288,9 +279,8 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item: folder }) => {
 					dragDisabled={dragFolderDisable}
 					style={{ display: 'block' }}
 				>
-					<AppLink
-						onClick={onClick}
-						to={`/folder/${folder.id}`}
+					<Link
+						to={`../folder/${folder.id}`}
 						style={{ width: '100%', height: '100%', textDecoration: 'none' }}
 					>
 						{hasBeenHovered ? (
@@ -316,7 +306,7 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item: folder }) => {
 								</Tooltip>
 							</Container>
 						)}
-					</AppLink>
+					</Link>
 				</Drag>
 			</Drop>
 		</Row>

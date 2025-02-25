@@ -7,15 +7,15 @@
 import React, { memo, useCallback, useMemo, useState } from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
-import { pushHistory, useUserSettings } from '@zextras/carbonio-shell-ui';
+import { useUserSettings } from '@zextras/carbonio-shell-ui';
 import { debounce } from 'lodash';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { ConversationListItemCore } from './conversation-list-item-core';
 import { ConversationListItemActionWrapper } from './conversation-list-item-wrapper';
 import { ConversationMessagesList } from './conversation-messages-list';
-import { API_REQUEST_STATUS } from '../../../../constants';
+import { API_REQUEST_STATUS, MAILS_ROUTE } from '../../../../constants';
 import { useConvPreviewOnSeparatedWindowFn } from '../../../../hooks/actions/use-conv-preview-on-separated-window';
 import { useConvSetReadFn } from '../../../../hooks/actions/use-conv-set-read';
 import { useOnMouseHover } from '../../../../hooks/use-on-mouse-hover';
@@ -55,6 +55,7 @@ export const ConversationListItem = memo(function ConversationListItem({
 	setDraggedIds
 }: ConversationListItemProps): React.JSX.Element {
 	const { itemId } = useParams<{ itemId: string }>();
+	const navigate = useNavigate();
 	const [open, setOpen] = useState(false);
 	const messages = useConversationMessages(conversation.id);
 	const folderParent = folderId ?? messages?.[0]?.parent;
@@ -103,11 +104,15 @@ export const ConversationListItem = memo(function ConversationListItem({
 
 	const debouncedPushHistory = useMemo(
 		() =>
-			debounce(() => pushHistory(`/folder/${folderParent}/conversation/${conversation.id}`), 200, {
-				leading: false,
-				trailing: true
-			}),
-		[folderParent, conversation.id]
+			debounce(
+				() => navigate(`/${MAILS_ROUTE}/folder/${folderParent}/conversation/${conversation.id}`),
+				200,
+				{
+					leading: false,
+					trailing: true
+				}
+			),
+		[navigate, folderParent, conversation.id]
 	);
 
 	const _onClick = useCallback(
@@ -130,13 +135,14 @@ export const ConversationListItem = memo(function ConversationListItem({
 			debouncedPushHistory.cancel();
 			const { id, isDraft } = messages[0];
 			if (isDraft) {
-				pushHistory(`/folder/${folderParent}/edit/${id}?action=editAsDraft`);
+				// FIXME currently this case is never reached cause drafts are always displayed as messages
+				navigate(`/${MAILS_ROUTE}/folder/${folderParent}/edit/${id}?action=editAsDraft`);
 			} else {
 				previewOnSeparatedWindow.canExecute() && previewOnSeparatedWindow.execute();
 			}
 		},
 
-		[debouncedPushHistory, messages, folderParent, previewOnSeparatedWindow]
+		[debouncedPushHistory, messages, navigate, folderParent, previewOnSeparatedWindow]
 	);
 
 	const shouldReplaceHistory = useMemo(() => itemId === conversation.id, [conversation.id, itemId]);

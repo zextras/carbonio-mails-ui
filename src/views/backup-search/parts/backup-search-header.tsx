@@ -15,7 +15,8 @@ import {
 	Padding,
 	Row
 } from '@zextras/carbonio-design-system';
-import { removeRoute, replaceHistory, t, useUserSettings } from '@zextras/carbonio-shell-ui';
+import { removeRoute, t, useUserSettings } from '@zextras/carbonio-shell-ui';
+import { useNavigate } from 'react-router-dom';
 
 import { BACKUP_SEARCH_ROUTE, MAILS_ROUTE } from '../../../constants';
 import { useBackupSearchStore } from '../../../store/backup-search/store';
@@ -26,6 +27,7 @@ export const BackupSearchHeader = (): React.JSX.Element => {
 	const startDateString = t('label.start_date', 'Start Date');
 	const { searchParams: queryParams } = useBackupSearchStore();
 	const { zimbraPrefLocale } = useUserSettings().prefs;
+	const navigate = useNavigate();
 
 	const queryParamsArray = [];
 
@@ -54,8 +56,8 @@ export const BackupSearchHeader = (): React.JSX.Element => {
 		backupSearchStoreState.setMessages([]);
 		backupSearchStoreState.setSearchParams({});
 		removeRoute(BACKUP_SEARCH_ROUTE);
-		replaceHistory({ route: MAILS_ROUTE, path: '/' });
-	}, []);
+		navigate(`/${MAILS_ROUTE}`, { replace: true });
+	}, [navigate]);
 	return (
 		<>
 			<Container
