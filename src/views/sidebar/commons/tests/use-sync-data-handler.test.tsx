@@ -25,7 +25,8 @@ import {
 	setSearchResultsByConversation,
 	getUseEmailStoreAndHooksForTesting,
 	setConversationsInEmailStore,
-	useConversationsByIds
+	useConversationsByIds,
+	useConversationIndexSlice
 } from '../../../../store/emails/store';
 import {
 	generateConversationFromAPI,
@@ -43,7 +44,8 @@ import {
 	mockSoapMessageActionAndConversationModified,
 	mockSoapCreateMessageAndConversation,
 	mockSoapRefresh,
-	mockSoapCreateConversation
+	mockSoapCreateConversation,
+	mockSoapNotify
 } from '../../tests/test-helpers';
 import { useSyncDataHandler } from '../use-sync-data-handler';
 
@@ -145,6 +147,37 @@ describe('sync data handler', () => {
 			const { result: conversationsInStore } = renderHook(() => useConversationsByIds([]));
 			await waitFor(() => {
 				expect(conversationsInStore.current).toEqual([]);
+			});
+		});
+		it('should add new conversations to the store when the convId changes from negative to positive', async () => {
+			populateFoldersStore();
+			setConversationsInEmailStore([generateConversation({ id: '-10' })], false);
+			const newConversation = getSoapConversation('10');
+			const newMessage = getSoapMessage('100');
+			mockSoapNotify({
+				created: {
+					// m: [newMessage],
+					c: [newConversation]
+				},
+				deleted: { id: '-10' }
+			});
+
+			// eslint-disable-next-line testing-library/no-unnecessary-act
+			await act(async () => {
+				renderHook(() => useSyncDataHandler());
+			});
+
+			const expectedConversationsInStore = ['1'];
+			const { result: conversationsInStore } = renderHook(() => useConversationIndexSlice());
+
+			await waitFor(() => {
+				expect(conversationsInStore.current.conversationListIndex.length).toBe(1);
+			});
+
+			await waitFor(() => {
+				expect(conversationsInStore.current.conversationListIndex).toEqual(
+					expectedConversationsInStore
+				);
 			});
 		});
 		it('should mark conversation as read', async () => {
