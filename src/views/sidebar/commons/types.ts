@@ -4,40 +4,12 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import { SoapNotify } from '@zextras/carbonio-shell-ui';
 import { StoreApi, UseBoundStore } from 'zustand';
 
-import { Tag, TagState } from '../../../carbonio-ui-commons/types/tags';
-import {
-	FolderState,
-	SoapConversation,
-	SoapFolder,
-	SoapIncompleteMessage,
-	SoapLink
-} from '../../../types';
+import { TagState } from '../../../carbonio-ui-commons/types/tags';
+import { FolderState } from '../../../types';
 
-export type SoapNotify = {
-	seq: number;
-	created?: {
-		m?: Array<SoapIncompleteMessage>;
-		c?: Array<SoapConversation>;
-		folder?: Array<SoapFolder>;
-		link?: Array<SoapLink>;
-		tag?: Array<Tag>;
-	};
-	modified?: {
-		m?: Array<SoapIncompleteMessage>;
-		c?: Array<SoapConversation>;
-		folder?: Array<Partial<SoapFolder>>;
-		link?: Array<Partial<SoapLink>>;
-		tag?: Array<Partial<Tag>>;
-		mbx: [
-			{
-				s: number;
-			}
-		];
-	};
-	deleted?: { id: string };
-};
 export type HandleFoldersNotifyProps = {
 	notifyList: Array<SoapNotify>;
 	notify: SoapNotify;

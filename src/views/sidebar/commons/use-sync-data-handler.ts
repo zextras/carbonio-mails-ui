@@ -7,10 +7,10 @@
 
 import { MutableRefObject, useEffect, useRef, useState } from 'react';
 
-import { useNotify, useRefresh } from '@zextras/carbonio-shell-ui';
+import { SoapNotify, useNotify, useRefresh } from '@zextras/carbonio-shell-ui';
 import { flatten, forEach, isEmpty, map, sortBy } from 'lodash';
 
-import { HandleFoldersNotifyProps, HandleTagsNotifyProps, SoapNotify } from './types';
+import { HandleFoldersNotifyProps, HandleTagsNotifyProps } from './types';
 import { useFolderStore } from '../../../carbonio-ui-commons/store/zustand/folder';
 import { useTagStore } from '../../../carbonio-ui-commons/store/zustand/tags';
 import { folderWorker, tagsWorker } from '../../../carbonio-ui-commons/worker';
@@ -27,7 +27,7 @@ import {
 	handleNotifyDeleted,
 	updateMessages
 } from '../../../store/emails/store';
-import { IncompleteMessage, SoapConversation } from '../../../types';
+import { IncompleteMessage, SoapConversation, SoapIncompleteMessage } from '../../../types';
 
 export function extractConvMessage(
 	createdConversations: Array<SoapConversation>
@@ -70,33 +70,38 @@ function handleTagsNotify({ notify, worker, store }: HandleTagsNotifyProps): voi
 
 function processCreatedNotifications(notify: SoapNotify): void {
 	const { c: createdConversations, m: createdMessages } = notify.created || {};
-
+	const newConversations = createdConversations as Array<SoapConversation>;
+	const newMessages = createdMessages as Array<SoapIncompleteMessage>;
+	// in case of created, we have SoapConversation
 	if (createdConversations && createdMessages) {
-		const conversations = map(createdConversations, (conversation) =>
-			mapToNormalizedConversation({ conversation, messages: createdMessages })
+		const conversations = map(newConversations, (conversation) =>
+			mapToNormalizedConversation({ conversation, messages: newMessages })
 		);
 		handleNotifyConversationsCreated(conversations);
-		const convMessages = extractConvMessage(createdConversations);
+		const convMessages = extractConvMessage(newConversations);
 		updateMessages(convMessages);
 	}
 
-	if (createdMessages) {
-		const messages = map(createdMessages, (message) => normalizeMailMessageFromSoap(message));
+	if (newMessages) {
+		const messages = map(newMessages, (message) => normalizeMailMessageFromSoap(message));
 		handleNotifyMessagesCreated(messages);
 	}
 }
 
 function processModifiedNotifications(notify: SoapNotify): void {
-	if (notify.modified?.c) {
-		const updatedConversations = normalizeConversations(notify.modified.c);
+	// TODO: check me, at runtime we do not receive a SoapConversation
+	const modifiedConversations = notify.modified?.c as Array<SoapConversation>;
+	if (modifiedConversations) {
+		const updatedConversations = normalizeConversations(modifiedConversations);
 		handleNotifyConversationsModified(updatedConversations);
 
-		const convMessages = extractConvMessage(notify.modified.c);
+		const convMessages = extractConvMessage(modifiedConversations);
 		updateMessages(convMessages);
 	}
 
-	if (notify.modified?.m) {
-		const messages = map(notify.modified.m, (message) => normalizeMailMessageFromSoap(message));
+	const modifiedMessages = notify.modified?.m as Array<SoapIncompleteMessage>;
+	if (modifiedMessages) {
+		const messages = map(modifiedMessages, (message) => normalizeMailMessageFromSoap(message));
 		handleNotifyMessagesModified(messages);
 	}
 }
@@ -137,8 +142,8 @@ function processNotifications({
 
 		const deletedIds = notify.deleted;
 		if (deletedIds) {
-			const idToDelete = deletedIds.id;
-			handleNotifyDeleted([idToDelete]);
+			const idsToDelete = deletedIds;
+			handleNotifyDeleted(idsToDelete);
 		}
 
 		setSeq(notify.seq);
