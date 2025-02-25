@@ -47,7 +47,7 @@ function handleFoldersNotify({
 		!isEmpty(notifyList) &&
 		(notify?.created?.folder ||
 			notify?.modified?.folder ||
-			notify?.deleted ||
+			notify?.deleted?.length > 0 ||
 			notify?.created?.link ||
 			notify?.modified?.link);
 
