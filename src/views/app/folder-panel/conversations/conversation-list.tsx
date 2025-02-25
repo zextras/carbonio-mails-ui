@@ -87,7 +87,13 @@ export const ConversationList = (): React.JSX.Element => {
 				const active = itemId === id;
 				const isSelected = selected[id];
 				return (
-					<ListItem active={active} selected={isSelected} background={'transparent'} key={id}>
+					<ListItem
+						data-testid={`conversation-list-item-${id}`}
+						active={active}
+						selected={isSelected}
+						background={'transparent'}
+						key={id}
+					>
 						{(visible: boolean): React.JSX.Element =>
 							visible ? (
 								<ConversationListItemComponent
