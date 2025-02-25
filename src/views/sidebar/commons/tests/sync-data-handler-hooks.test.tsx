@@ -67,10 +67,12 @@ function mockSoapModifyConversationAction(mailboxNumber: number, actions: Array<
 	});
 	(useNotify as jest.Mock).mockReturnValue([soapNotify]);
 }
+
 function mockSoapModifyMessageAction(
 	mailboxNumber: number,
 	messageId: string,
-	actions: Array<string>
+	actions: Array<string>,
+	seq?: number
 ): void {
 	mockSoapRefresh(mailboxNumber);
 	const action = actions.join('');

@@ -158,8 +158,17 @@ function processNotifications({
 	processedNotify
 }: ProcessNotificationsProps): void {
 	forEach(sortBy(notifyList, 'seq'), (notify) => {
+		/*
+		 * After a period of inactivity from the client, the server will reset the sequence number to 1.
+		 * In this case, if the client stored sequence number is greater than 1, the client must reset its sequence
+		 * number to 1 as well, to avoid missing any update.
+		 *
+		 * TODO probably the check on the "seq" state is redundant. We keep it at the moment, to avoid
+		 *  possible regressions, but we should remove it in the future
+		 */
+		const isSequenceReset = processedNotify.current > 1 && notify.seq === 1;
 		if (
-			processedNotify.current >= notify.seq ||
+			(processedNotify.current >= notify.seq && !isSequenceReset) ||
 			isEmpty(notify) ||
 			(notify.seq <= seq && !(seq > 1 && notify.seq === 1))
 		) {
