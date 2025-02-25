@@ -149,6 +149,28 @@ describe('sync data handler', () => {
 				expect(conversationsInStore.current).toEqual([]);
 			});
 		});
+
+		it('should delete conversation', async () => {
+			populateFoldersStore();
+			setConversationsInEmailStore([generateConversation({ id: '10' })], false);
+			mockShellSoapNotify({
+				deleted: ['10']
+			});
+			const { result: conversationsInStoreBeforeUpdate } = renderHook(() =>
+				useConversationIndexSlice()
+			);
+			expect(conversationsInStoreBeforeUpdate.current.conversationListIndex.length).toBe(1);
+
+			// eslint-disable-next-line testing-library/no-unnecessary-act
+			await act(async () => {
+				renderHook(() => useSyncDataHandler());
+			});
+
+			const { result: conversationsInStore } = renderHook(() => useConversationIndexSlice());
+			await waitFor(() => {
+				expect(conversationsInStore.current.conversationListIndex.length).toBe(0);
+			});
+		});
 		it('should add new conversations to the store when the convId changes from negative to positive', async () => {
 			populateFoldersStore();
 			setConversationsInEmailStore([generateConversation({ id: '-10' })], false);
