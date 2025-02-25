@@ -8,14 +8,16 @@ import { SoapNotify, useNotify, useRefresh } from '@zextras/carbonio-shell-ui';
 
 import { SoapIncompleteMessage, SoapConversation } from '../../../types';
 
+type InternalSoapNotify = Omit<SoapNotify, 'deleted'> & {
+	deleted?: { id: string };
+};
 export function mockSoapRefresh(mailbox: number): void {
 	(useRefresh as jest.Mock).mockReturnValue({
 		mbx: [{ s: mailbox }]
 	});
 }
-function generateSoapAction(partial?: Partial<SoapNotify>): SoapNotify {
+function generateSoapAction(partial?: Partial<InternalSoapNotify>): InternalSoapNotify {
 	return {
-		deleted: [],
 		seq: 0,
 		...partial
 	};
@@ -112,8 +114,9 @@ export function mockSoapModifyMessageFolder(
 
 export function mockSoapDelete(mailboxNumber: number, deletedIds: Array<string>): void {
 	mockSoapRefresh(mailboxNumber);
+	// TODO: check me, was: Array<string>
 	const soapNotify = generateSoapAction({
-		deleted: deletedIds
+		deleted: { id: deletedIds[0] }
 	});
 	(useNotify as jest.Mock).mockReturnValue([soapNotify]);
 }
@@ -126,6 +129,18 @@ export function mockSoapCreateMessage(
 	const soapNotify = generateSoapAction({
 		created: {
 			m: messages
+		}
+	});
+	(useNotify as jest.Mock).mockReturnValue([soapNotify]);
+}
+
+export function mockSoapCreateConversation(soapConversations: Array<SoapConversation>): void {
+	const mailboxNumber = 1000;
+	mockSoapRefresh(mailboxNumber);
+	const soapNotify = generateSoapAction({
+		created: {
+			c: soapConversations,
+			m: []
 		}
 	});
 	(useNotify as jest.Mock).mockReturnValue([soapNotify]);
@@ -146,19 +161,8 @@ export function mockSoapCreateMessageAndConversation(
 	(useNotify as jest.Mock).mockReturnValue([soapNotify]);
 }
 
-export function mockSoapCreatePositiveId(
-	messages: Array<SoapIncompleteMessage>,
-	conversation: SoapConversation,
-	deletedIds: Array<string>
-): void {
+export function mockSoapNotify(notifyReponse: Partial<InternalSoapNotify>): void {
 	mockSoapRefresh(1);
-	const soapNotify = generateSoapAction({
-		created: {
-			m: messages,
-			c: [conversation]
-		},
-		// deleted: [(-Number(conversation.id)).toString()],
-		deleted: deletedIds
-	});
+	const soapNotify = generateSoapAction(notifyReponse);
 	(useNotify as jest.Mock).mockReturnValue([soapNotify]);
 }

@@ -9,11 +9,10 @@ import { MutableRefObject, useEffect, useRef, useState } from 'react';
 
 import { useNotify, useRefresh } from '@zextras/carbonio-shell-ui';
 import { flatten, forEach, isEmpty, map, sortBy } from 'lodash';
-import { StoreApi, UseBoundStore } from 'zustand';
 
+import { HandleFoldersNotifyProps, HandleTagsNotifyProps, SoapNotify } from './types';
 import { useFolderStore } from '../../../carbonio-ui-commons/store/zustand/folder';
 import { useTagStore } from '../../../carbonio-ui-commons/store/zustand/tags';
-import { Tag, TagState } from '../../../carbonio-ui-commons/types/tags';
 import { folderWorker, tagsWorker } from '../../../carbonio-ui-commons/worker';
 import {
 	mapToNormalizedConversation,
@@ -28,14 +27,7 @@ import {
 	handleNotifyDeleted,
 	updateMessages
 } from '../../../store/emails/store';
-import {
-	FolderState,
-	IncompleteMessage,
-	SoapConversation,
-	SoapFolder,
-	SoapIncompleteMessage,
-	SoapLink
-} from '../../../types';
+import { IncompleteMessage, SoapConversation } from '../../../types';
 
 export function extractConvMessage(
 	createdConversations: Array<SoapConversation>
@@ -45,41 +37,6 @@ export function extractConvMessage(
 	);
 }
 
-type SoapNotify = {
-	seq: number;
-	created?: {
-		m?: Array<SoapIncompleteMessage>;
-		c?: Array<SoapConversation>;
-		folder?: Array<SoapFolder>;
-		link?: Array<SoapLink>;
-		tag?: Array<Tag>;
-	};
-	modified?: {
-		m?: Array<SoapIncompleteMessage>;
-		c?: Array<SoapConversation>;
-		folder?: Array<Partial<SoapFolder>>;
-		link?: Array<Partial<SoapLink>>;
-		tag?: Array<Partial<Tag>>;
-		mbx: [
-			{
-				s: number;
-			}
-		];
-	};
-	deleted: Array<string>;
-};
-type HandleFoldersNotifyProps = {
-	notifyList: Array<SoapNotify>;
-	notify: SoapNotify;
-	worker: Worker;
-	store: UseBoundStore<StoreApi<FolderState>>;
-};
-
-type HandleTagsNotifyProps = {
-	notify: SoapNotify;
-	worker: Worker;
-	store: UseBoundStore<StoreApi<TagState>>;
-};
 function handleFoldersNotify({
 	notifyList,
 	notify,
@@ -90,7 +47,7 @@ function handleFoldersNotify({
 		!isEmpty(notifyList) &&
 		(notify?.created?.folder ||
 			notify?.modified?.folder ||
-			notify?.deleted?.length > 0 ||
+			notify?.deleted ||
 			notify?.created?.link ||
 			notify?.modified?.link);
 
@@ -178,8 +135,10 @@ function processNotifications({
 			processModifiedNotifications(notify);
 		}
 
-		if (notify.deleted) {
-			handleNotifyDeleted(notify.deleted);
+		const deletedIds = notify.deleted;
+		if (deletedIds) {
+			const idToDelete = deletedIds.id;
+			handleNotifyDeleted([idToDelete]);
 		}
 
 		setSeq(notify.seq);
@@ -187,7 +146,7 @@ function processNotifications({
 }
 
 export const useSyncDataHandler = (): void => {
-	const notifyList = useNotify() as Array<SoapNotify>;
+	const notifyList = useNotify() as unknown as Array<SoapNotify>;
 	const [seq, setSeq] = useState(-1);
 	const [initialized, setInitialized] = useState(false);
 	const processedNotify = useRef<number>(-1);

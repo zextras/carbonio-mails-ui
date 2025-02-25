@@ -15,13 +15,17 @@ import { useNotify } from '../../../../carbonio-ui-commons/test/mocks/carbonio-s
 import { generateFolder } from '../../../../carbonio-ui-commons/test/mocks/folders/folders-generator';
 import { handleGetFolderRequest } from '../../../../carbonio-ui-commons/test/mocks/network/msw/handle-get-folder';
 import { handleGetShareInfoRequest } from '../../../../carbonio-ui-commons/test/mocks/network/msw/handle-get-share-info';
+import { populateFoldersStore } from '../../../../carbonio-ui-commons/test/mocks/store/folders';
 import { folderWorker, tagsWorker } from '../../../../carbonio-ui-commons/worker';
+import { normalizeConversations } from '../../../../normalizations/normalize-conversation';
 import {
 	useConversationById,
 	useMessageById,
 	setSearchResultsByMessage,
 	setSearchResultsByConversation,
-	getUseEmailStoreAndHooksForTesting
+	getUseEmailStoreAndHooksForTesting,
+	setConversationsInEmailStore,
+	useConversationsByIds
 } from '../../../../store/emails/store';
 import {
 	generateConversationFromAPI,
@@ -29,6 +33,7 @@ import {
 } from '../../../../tests/generators/api';
 import { generateConversation } from '../../../../tests/generators/generateConversation';
 import { generateMessage } from '../../../../tests/generators/generateMessage';
+import { SoapConversation, SoapIncompleteMessage, SoapMailMessage } from '../../../../types';
 import {
 	mockSoapModifyConversationAction,
 	mockSoapModifyMessageAction,
@@ -37,7 +42,8 @@ import {
 	mockSoapCreateMessage,
 	mockSoapMessageActionAndConversationModified,
 	mockSoapCreateMessageAndConversation,
-	mockSoapRefresh
+	mockSoapRefresh,
+	mockSoapCreateConversation
 } from '../../tests/test-helpers';
 import { useSyncDataHandler } from '../use-sync-data-handler';
 
@@ -54,9 +60,93 @@ jest.mock('../../../../carbonio-ui-commons/store/zustand/tags', () => ({
 	getTags: jest.fn()
 }));
 
+function getSoapMessage(
+	messageId: string,
+	initialData?: Partial<SoapIncompleteMessage>
+): SoapMailMessage {
+	return {
+		id: messageId,
+		cid: '1',
+		e: [],
+		su: 'message Subject',
+		s: 71116,
+		l: '2',
+		f: 'au',
+		fr: 'fragment',
+		mp: [],
+		d: 1717752296000,
+		...initialData
+	};
+}
+function getSoapConversation(id: string): SoapConversation {
+	return {
+		id,
+		n: 1,
+		u: 1,
+		f: 'flag',
+		tn: 'tag names',
+		d: 123,
+		m: [getSoapMessage('123')],
+		e: [],
+		su: 'conversations Subject',
+		fr: 'fragment'
+	};
+}
+
 describe('sync data handler', () => {
 	const mailboxNumber = 1000;
 	describe('conversations', () => {
+		it('should add new conversations to the store when created', async () => {
+			populateFoldersStore();
+			setConversationsInEmailStore(normalizeConversations([getSoapConversation('1')]), false);
+			const newConversation = getSoapConversation('2');
+			mockSoapCreateConversation([newConversation]);
+
+			renderHook(() => useSyncDataHandler());
+
+			const expectedConversationsInStore = ['1', '2'];
+			const { result: conversationsInStore } = renderHook(() =>
+				useConversationsByIds(expectedConversationsInStore)
+			);
+
+			await waitFor(() => {
+				expect(conversationsInStore.current.length).toBe(2);
+			});
+
+			await waitFor(() => {
+				expect(conversationsInStore.current.map((c) => c.id)).toEqual(expectedConversationsInStore);
+			});
+		});
+
+		it('should not duplicate conversations when created', async () => {
+			setConversationsInEmailStore(normalizeConversations([getSoapConversation('1')]), false);
+
+			const newConversation = getSoapConversation('1');
+			mockSoapCreateConversation([newConversation]);
+
+			// eslint-disable-next-line testing-library/no-unnecessary-act
+			await act(async () => {
+				renderHook(() => useSyncDataHandler());
+			});
+			const { result: conversationsInStore } = renderHook(() => useConversationsByIds(['1']));
+
+			expect(conversationsInStore.current.length).toBe(1);
+			expect(conversationsInStore.current.map((c) => c.id)).toEqual(['1']);
+		});
+
+		it('should handle empty conversations array', async () => {
+			mockSoapCreateConversation([]);
+
+			// eslint-disable-next-line testing-library/no-unnecessary-act
+			await act(async () => {
+				renderHook(() => useSyncDataHandler());
+			});
+
+			const { result: conversationsInStore } = renderHook(() => useConversationsByIds([]));
+			await waitFor(() => {
+				expect(conversationsInStore.current).toEqual([]);
+			});
+		});
 		it('should mark conversation as read', async () => {
 			setSearchResultsByConversation(
 				[generateConversation({ id: '123', messageIds: [], isRead: false })],
