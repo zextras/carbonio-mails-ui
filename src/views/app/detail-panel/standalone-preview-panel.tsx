@@ -11,7 +11,7 @@ import { Route, Switch, useParams, useRouteMatch } from 'react-router-dom';
 import { ConversationPreviewPanelContainer } from './conversation-preview-panel-container';
 import { MessagePreviewPanel } from './message-preview-panel';
 
-function StandalonePreviewPanel(): React.JSX.Element {
+export function StandalonePreviewPanel(): React.JSX.Element {
 	const { folderId, type, itemId } = useParams<{
 		folderId: string;
 		type: string;
