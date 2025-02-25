@@ -65,4 +65,15 @@ describe('StandalonePreviewPanel', () => {
 		setupTest(<StandalonePreviewPanel />);
 		expect(screen.getByTestId('ConversationMessagePreview-1')).toBeInTheDocument();
 	});
+
+	it('renders error message when type is unknown', () => {
+		(useParams as jest.Mock).mockReturnValue({
+			folderId: FOLDERS.TRASH,
+			type: 'invalid',
+			itemId: '1'
+		});
+
+		setupTest(<StandalonePreviewPanel />);
+		expect(screen.getByText('Unknown type invalid')).toBeInTheDocument();
+	});
 });
