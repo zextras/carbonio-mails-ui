@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { waitFor, renderHook, act } from '@testing-library/react';
+import { act, renderHook, waitFor } from '@testing-library/react';
 import { http } from 'msw';
 
 import { FOLDERS } from '../../../../carbonio-ui-commons/constants/folders';
@@ -19,14 +19,14 @@ import { populateFoldersStore } from '../../../../carbonio-ui-commons/test/mocks
 import { folderWorker, tagsWorker } from '../../../../carbonio-ui-commons/worker';
 import { normalizeConversations } from '../../../../normalizations/normalize-conversation';
 import {
-	useConversationById,
-	useMessageById,
-	setSearchResultsByMessage,
-	setSearchResultsByConversation,
 	getUseEmailStoreAndHooksForTesting,
 	setConversationsInEmailStore,
+	setSearchResultsByConversation,
+	setSearchResultsByMessage,
+	useConversationById,
+	useConversationIndexSlice,
 	useConversationsByIds,
-	useConversationIndexSlice
+	useMessageById
 } from '../../../../store/emails/store';
 import {
 	generateConversationFromAPI,
@@ -36,16 +36,16 @@ import { generateConversation } from '../../../../tests/generators/generateConve
 import { generateMessage } from '../../../../tests/generators/generateMessage';
 import { SoapConversation, SoapIncompleteMessage, SoapMailMessage } from '../../../../types';
 import {
+	mockShellSoapNotify,
+	mockSoapCreateConversation,
+	mockSoapCreateMessage,
+	mockSoapCreateMessageAndConversation,
+	mockSoapDelete,
+	mockSoapMessageActionAndConversationModified,
 	mockSoapModifyConversationAction,
 	mockSoapModifyMessageAction,
 	mockSoapModifyMessageFolder,
-	mockSoapDelete,
-	mockSoapCreateMessage,
-	mockSoapMessageActionAndConversationModified,
-	mockSoapCreateMessageAndConversation,
-	mockSoapRefresh,
-	mockSoapCreateConversation,
-	mockShellSoapNotify
+	mockSoapRefresh
 } from '../../tests/test-helpers';
 import { useSyncDataHandler } from '../use-sync-data-handler';
 
@@ -60,6 +60,13 @@ const { setMessagesInSearchSlice } = getUseEmailStoreAndHooksForTesting();
 jest.mock('../../../../carbonio-ui-commons/store/zustand/tags', () => ({
 	...jest.requireActual('../../../../carbonio-ui-commons/store/zustand/tags'),
 	getTags: jest.fn()
+}));
+
+jest.mock('../../../../carbonio-ui-commons/worker', () => ({
+	...jest.requireActual('../../../../carbonio-ui-commons/worker'),
+	folderWorker: {
+		postMessage: jest.fn()
+	}
 }));
 
 function getSoapMessage(
@@ -80,6 +87,7 @@ function getSoapMessage(
 		...initialData
 	};
 }
+
 function getSoapConversation(id: string): SoapConversation {
 	return {
 		id,
@@ -171,37 +179,43 @@ describe('sync data handler', () => {
 				expect(conversationsInStore.current.conversationListIndex.length).toBe(0);
 			});
 		});
+
 		it('should add new conversations to the store when the convId changes from negative to positive', async () => {
 			populateFoldersStore();
-			setConversationsInEmailStore([generateConversation({ id: '-10' })], false);
-			const newConversation = getSoapConversation('10');
-			const newMessage = getSoapMessage('100');
-			mockShellSoapNotify({
-				created: {
-					// m: [newMessage],
-					c: [newConversation]
-				},
-				deleted: ['-10']
-			});
-
-			// eslint-disable-next-line testing-library/no-unnecessary-act
-			await act(async () => {
-				renderHook(() => useSyncDataHandler());
-			});
-
-			const expectedConversationsInStore = ['1'];
-			const { result: conversationsInStore } = renderHook(() => useConversationIndexSlice());
 
 			await waitFor(() => {
-				expect(conversationsInStore.current.conversationListIndex.length).toBe(1);
-			});
-
-			await waitFor(() => {
-				expect(conversationsInStore.current.conversationListIndex).toEqual(
-					expectedConversationsInStore
+				setConversationsInEmailStore(
+					[generateConversation({ id: '-1', folderId: FOLDERS.INBOX })],
+					false
 				);
 			});
+
+			const { result: conversationsInStoreBefore } = renderHook(() => useConversationIndexSlice());
+			expect(conversationsInStoreBefore.current.conversationListIndex.length).toBe(1);
+
+			const newConversation = getSoapConversation('1');
+			const newMessages = getSoapMessage('100', { cid: '1', l: FOLDERS.INBOX });
+			mockShellSoapNotify({
+				created: {
+					m: [newMessages],
+					c: [newConversation]
+				},
+				deleted: ['-1']
+			});
+
+			renderHook(() => useSyncDataHandler());
+
+			const { result: conversationSlice } = renderHook(() => useConversationIndexSlice());
+
+			await waitFor(() => expect(conversationSlice.current.conversationListIndex.length).toBe(1));
+			const expectedConversationsInStore = ['1'];
+			await waitFor(() =>
+				expect(conversationSlice.current.conversationListIndex).toEqual(
+					expectedConversationsInStore
+				)
+			);
 		});
+
 		it('should mark conversation as read', async () => {
 			setSearchResultsByConversation(
 				[generateConversation({ id: '123', messageIds: [], isRead: false })],
@@ -216,6 +230,7 @@ describe('sync data handler', () => {
 				expect(result.current?.read).toBe(true);
 			});
 		});
+
 		it('should mark conversation as unread', async () => {
 			setSearchResultsByConversation(
 				[generateConversation({ id: '123', messageIds: [], isRead: true })],
@@ -245,6 +260,7 @@ describe('sync data handler', () => {
 				expect(result.current?.flagged).toBe(true);
 			});
 		});
+
 		it('should mark conversation as not flagged', async () => {
 			setSearchResultsByConversation(
 				[generateConversation({ id: '123', messageIds: [], isFlagged: true })],
