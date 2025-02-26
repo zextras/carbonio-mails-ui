@@ -47,14 +47,12 @@ export const MailPreviewBlock: FC<MailPreviewBlockType> = ({
 
 	const { execute } = useMsgSetNotSpamFn({
 		ids: [message.id],
-		// FIXME folderId could be undefined
-		folderId: folderId!,
+		folderId,
 		shouldReplaceHistory
 	});
 	return (
 		<>
-			{/* FIXME folderId could be undefined */}
-			{getFolderIdParts(folderId!).id === FOLDERS.SPAM && (
+			{getFolderIdParts(folderId).id === FOLDERS.SPAM && (
 				<Container
 					mainAlignment="flex-start"
 					crossAlignment="flex-start"

@@ -17,7 +17,7 @@ import { ActionFn, UIActionDescriptor } from '../../types';
 type MsgSetNotSpam = {
 	ids: Array<string>;
 	shouldReplaceHistory?: boolean;
-	folderId: string;
+	folderId?: string;
 };
 export const useMsgSetNotSpamFn = ({
 	ids,
@@ -27,7 +27,7 @@ export const useMsgSetNotSpamFn = ({
 	const createSnackbar = useSnackbar();
 	const [t] = useTranslation();
 
-	const canExecute = useCallback((): boolean => isSpam(folderId), [folderId]);
+	const canExecute = useCallback((): boolean => (folderId ? isSpam(folderId) : false), [folderId]);
 	const navigate = useNavigate();
 
 	const execute = useCallback((): void => {
