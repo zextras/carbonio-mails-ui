@@ -12,7 +12,7 @@ import {
 	normalizeMailMessageFromSoap
 } from '../../../normalizations/normalize-message';
 import { GetMsgResponse, MailMessage, Participant } from '../../../types';
-import { updateMessages, updateMessageStatus } from '../store';
+import { createOrUpdateMessages, updateMessageStatus } from '../store';
 
 async function handleRetrieveMessageWithParticipants(
 	messageId: string,
@@ -31,7 +31,7 @@ async function handleRetrieveMessageWithParticipants(
 		...normalizeCompleteMailMessageFromSoap(msg),
 		participants
 	}));
-	updateMessages(messages);
+	createOrUpdateMessages(messages);
 	updateMessageStatus(messageId, API_REQUEST_STATUS.fulfilled);
 	return normalizeMailMessageFromSoap(response.m[0], true) as MailMessage;
 }

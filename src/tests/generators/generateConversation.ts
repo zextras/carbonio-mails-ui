@@ -13,7 +13,7 @@ import {
 	ParticipantRole,
 	ParticipantRoleType
 } from '../../carbonio-ui-commons/constants/participants';
-import { updateConversations, updateMessages } from '../../store/emails/store';
+import { createOrUpdateConversations, createOrUpdateMessages } from '../../store/emails/store';
 import type { MailMessage, NormalizedConversation, Participant } from '../../types';
 
 /**
@@ -140,7 +140,7 @@ export const populateConversationInEmailStore = ({
 
 	const generatedMessages =
 		messagesFromMessageIds ?? messagesFromMessageGeneratorParams ?? defaultMessages;
-	updateMessages(generatedMessages);
+	createOrUpdateMessages(generatedMessages);
 
 	const generatedConversation = generateConversation({
 		...conversationParams,
@@ -150,6 +150,6 @@ export const populateConversationInEmailStore = ({
 	});
 	const messagesInConversation =
 		messageGeneratorParams?.length ?? messageIds?.length ?? conversationMessagesNumber;
-	updateConversations([{ ...generatedConversation, messagesInConversation }]);
+	createOrUpdateConversations([{ ...generatedConversation, messagesInConversation }]);
 	return { conversation: generatedConversation, messages: generatedMessages };
 };

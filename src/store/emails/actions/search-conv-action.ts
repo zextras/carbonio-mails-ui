@@ -11,15 +11,15 @@ import { API_REQUEST_STATUS } from '../../../constants';
 import { normalizeCompleteMailMessageFromSoap } from '../../../normalizations/normalize-message';
 import { NormalizedConversation, SearchConvResponse } from '../../../types';
 import {
-	updateMessages,
+	createOrUpdateMessages,
 	getConversationById,
-	updateConversations,
+	createOrUpdateConversations,
 	updateConversationStatus
 } from '../store';
 
 function handleSearchConvResponse(conversationId: string, response: SearchConvResponse): void {
 	const messages = map(response?.m ?? [], (msg) => normalizeCompleteMailMessageFromSoap(msg));
-	updateMessages(messages);
+	createOrUpdateMessages(messages);
 	const convMessagesIds: Array<string> = map(response?.m ?? [], (msg) => msg.id);
 	const conversation = getConversationById(conversationId);
 	const updatedConversation: NormalizedConversation = {
@@ -27,7 +27,7 @@ function handleSearchConvResponse(conversationId: string, response: SearchConvRe
 		id: conversationId,
 		messageIds: convMessagesIds
 	};
-	updateConversations([updatedConversation]);
+	createOrUpdateConversations([updatedConversation]);
 }
 
 export async function searchConvEmailStoreAction(

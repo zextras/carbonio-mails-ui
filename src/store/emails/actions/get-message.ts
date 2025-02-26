@@ -14,11 +14,11 @@ import {
 	normalizeMailMessageFromSoap
 } from '../../../normalizations/normalize-message';
 import { GetMsgResponse, MailMessage } from '../../../types';
-import { updateMessages, updateMessageStatus } from '../store';
+import { createOrUpdateMessages, updateMessageStatus } from '../store';
 
 function handleGetMsgResponse(response: GetMsgResponse): void {
 	const messages = map(response?.m ?? [], (msg) => normalizeCompleteMailMessageFromSoap(msg));
-	updateMessages(messages);
+	createOrUpdateMessages(messages);
 }
 
 async function handleRetrieveMessage(

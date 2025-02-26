@@ -7,25 +7,19 @@
 
 import { MutableRefObject, useEffect, useRef, useState } from 'react';
 
-import { SoapNotify, useNotify, useRefresh } from '@zextras/carbonio-shell-ui';
+import { useNotify, useRefresh } from '@zextras/carbonio-shell-ui';
 import { flatten, forEach, isEmpty, map, sortBy } from 'lodash';
 
-import { HandleFoldersNotifyProps, HandleTagsNotifyProps } from './types';
+import { HandleFoldersNotifyProps, HandleTagsNotifyProps, SoapNotify } from './types';
 import { useFolderStore } from '../../../carbonio-ui-commons/store/zustand/folder';
 import { useTagStore } from '../../../carbonio-ui-commons/store/zustand/tags';
 import { folderWorker, tagsWorker } from '../../../carbonio-ui-commons/worker';
-import {
-	mapToNormalizedConversation,
-	normalizeConversations
-} from '../../../normalizations/normalize-conversation';
+import { mapToNormalizedConversation } from '../../../normalizations/normalize-conversation';
 import { normalizeMailMessageFromSoap } from '../../../normalizations/normalize-message';
 import {
-	handleNotifyConversationsCreated,
-	handleNotifyMessagesCreated,
-	handleNotifyConversationsModified,
-	handleNotifyMessagesModified,
 	handleNotifyDeleted,
-	updateMessages
+	createOrUpdateConversations,
+	createOrUpdateMessages
 } from '../../../store/emails/store';
 import { IncompleteMessage, SoapConversation, SoapIncompleteMessage } from '../../../types';
 
@@ -68,48 +62,6 @@ function handleTagsNotify({ notify, worker, store }: HandleTagsNotifyProps): voi
 	});
 }
 
-function processCreatedNotifications(notify: SoapNotify): void {
-	const { c: createdConversations, m: createdMessages } = notify.created || {};
-	const { m: modifiedMessages } = notify.modified || {};
-	const newConversations = createdConversations as Array<SoapConversation>;
-	const newMessages = createdMessages as Array<SoapIncompleteMessage>;
-	const changedMessages = modifiedMessages as Array<SoapIncompleteMessage>;
-	const allReceivedMessages = [...changedMessages, ...newMessages];
-	// in case of created, we have SoapConversation
-	if (createdConversations && createdMessages) {
-		const conversationsWithMessageIds = map(newConversations, (conversation) =>
-			mapToNormalizedConversation({ conversation, messages: allReceivedMessages })
-		);
-		handleNotifyConversationsCreated(conversationsWithMessageIds);
-		const normalizedMessages = allReceivedMessages.map((message) =>
-			normalizeMailMessageFromSoap(message)
-		);
-		updateMessages(normalizedMessages);
-	}
-
-	if (newMessages) {
-		const messages = map(newMessages, (message) => normalizeMailMessageFromSoap(message));
-		handleNotifyMessagesCreated(messages);
-	}
-}
-
-function processModifiedNotifications(notify: SoapNotify): void {
-	const modifiedConversations = notify.modified?.c as Array<SoapConversation>;
-	if (modifiedConversations) {
-		const updatedConversations = normalizeConversations(modifiedConversations);
-		handleNotifyConversationsModified(updatedConversations);
-
-		const convMessages = extractConvMessage(modifiedConversations);
-		updateMessages(convMessages);
-	}
-
-	const modifiedMessages = notify.modified?.m as Array<SoapIncompleteMessage>;
-	if (modifiedMessages) {
-		const messages = map(modifiedMessages, (message) => normalizeMailMessageFromSoap(message));
-		handleNotifyMessagesModified(messages);
-	}
-}
-
 type ProcessNotificationsProps = {
 	notifyList: SoapNotify[];
 	seq: number;
@@ -136,18 +88,32 @@ function processNotifications({
 		handleFoldersNotify({ notifyList, notify, worker: folderWorker, store: useFolderStore });
 		handleTagsNotify({ notify, worker: tagsWorker, store: useTagStore });
 
-		if (notify.created) {
-			processCreatedNotifications(notify);
-		}
+		const { created, modified } = notify;
+		// TODO: what if we just collect conversation and messages (modified and created) and just call updateMessages and updateConversatioss?
 
-		if (notify.modified) {
-			processModifiedNotifications(notify);
-		}
+		const allReceivedMessages = [] as Array<SoapIncompleteMessage>;
+		const allReceivedConversations = [] as Array<SoapConversation>;
+		const { c: createdConversations, m: createdMessages } = created || {};
+		createdMessages && allReceivedMessages.push(...createdMessages);
+		createdConversations && allReceivedConversations.push(...createdConversations);
+
+		const { c: modifiedConversations, m: modifiedMessages } = modified || {};
+		modifiedMessages && allReceivedMessages.push(...modifiedMessages);
+		modifiedConversations && allReceivedConversations.push(...modifiedConversations);
+
+		const messagesToStore = map(allReceivedMessages, (message) =>
+			normalizeMailMessageFromSoap(message)
+		);
+		const conversationsWithMessageIdsToStore = map(allReceivedConversations, (conversation) =>
+			mapToNormalizedConversation({ conversation, messages: allReceivedMessages })
+		);
+		conversationsWithMessageIdsToStore.length > 0 &&
+			createOrUpdateConversations(conversationsWithMessageIdsToStore);
+		messagesToStore.length > 0 && createOrUpdateMessages(messagesToStore);
 
 		const deletedIds = notify.deleted;
 		if (deletedIds) {
-			const idsToDelete = deletedIds;
-			handleNotifyDeleted(idsToDelete);
+			handleNotifyDeleted(deletedIds);
 		}
 
 		setSeq(notify.seq);

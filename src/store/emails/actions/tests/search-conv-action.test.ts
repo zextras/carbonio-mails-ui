@@ -7,9 +7,9 @@ import { searchConvSoapApi } from '../../../../api/search-conv-soap-api';
 import { API_REQUEST_STATUS } from '../../../../constants';
 import { normalizeCompleteMailMessageFromSoap } from '../../../../normalizations/normalize-message';
 import {
-	updateMessages,
+	createOrUpdateMessages,
 	getConversationById,
-	updateConversations,
+	createOrUpdateConversations,
 	updateConversationStatus
 } from '../../store';
 import { searchConvEmailStoreAction } from '../search-conv-action';
@@ -49,8 +49,8 @@ describe('searchConvEmailStoreAction', () => {
 			conversationId: mockConversationId,
 			fetch: 'all'
 		});
-		expect(updateMessages).toHaveBeenCalledWith(expect.any(Array));
-		expect(updateConversations).toHaveBeenCalledWith(expect.any(Array));
+		expect(createOrUpdateMessages).toHaveBeenCalledWith(expect.any(Array));
+		expect(createOrUpdateConversations).toHaveBeenCalledWith(expect.any(Array));
 		expect(updateConversationStatus).toHaveBeenCalledWith(
 			mockConversationId,
 			API_REQUEST_STATUS.fulfilled
@@ -102,8 +102,8 @@ describe('searchConvEmailStoreAction', () => {
 			mockConversationId,
 			API_REQUEST_STATUS.pending
 		);
-		expect(updateMessages).toHaveBeenCalledWith([]);
-		expect(updateConversations).toHaveBeenCalledWith(expect.any(Array));
+		expect(createOrUpdateMessages).toHaveBeenCalledWith([]);
+		expect(createOrUpdateConversations).toHaveBeenCalledWith(expect.any(Array));
 		expect(updateConversationStatus).toHaveBeenCalledWith(
 			mockConversationId,
 			API_REQUEST_STATUS.fulfilled

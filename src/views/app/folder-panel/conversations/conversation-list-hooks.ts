@@ -13,7 +13,7 @@ import { normalizeConversations } from '../../../../normalizations/normalize-con
 import {
 	appendConversationsToConversationIndexSlice,
 	updateConversationsResultsLoadingStatus,
-	updateMessages
+	createOrUpdateMessages
 } from '../../../../store/emails/store';
 import { SearchResponse } from '../../../../types';
 import { extractConvMessage } from '../../../sidebar/commons/use-sync-data-handler';
@@ -28,7 +28,7 @@ function handleLoadMoreResults({
 	if (searchResponse.c && searchResponse.c.length > 0) {
 		const normalizedConversations = normalizeConversations(searchResponse.c);
 		const messages = extractConvMessage(searchResponse.c);
-		if (messages.length > 0) updateMessages(messages);
+		if (messages.length > 0) createOrUpdateMessages(messages);
 		appendConversationsToConversationIndexSlice(
 			normalizedConversations,
 			offset,

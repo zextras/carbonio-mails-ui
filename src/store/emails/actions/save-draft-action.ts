@@ -8,7 +8,7 @@ import { saveDraftSoapApi } from '../../../api/save-draft-soap-api';
 import { API_REQUEST_STATUS } from '../../../constants';
 import { normalizeMailMessageFromSoap } from '../../../normalizations/normalize-message';
 import { SaveDraftParameters } from '../../../types';
-import { updateMessages, updateMessageStatus } from '../store';
+import { createOrUpdateMessages, updateMessageStatus } from '../store';
 
 export async function saveDraftEmailStoreAction({
 	editor,
@@ -18,7 +18,7 @@ export async function saveDraftEmailStoreAction({
 	if (result.m)
 		result.m.forEach((message) => {
 			const normalizedMessage = normalizeMailMessageFromSoap(message);
-			updateMessages([normalizedMessage]);
+			createOrUpdateMessages([normalizedMessage]);
 			updateMessageStatus(normalizedMessage.id, API_REQUEST_STATUS.fulfilled);
 		});
 	return result;

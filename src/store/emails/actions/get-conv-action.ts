@@ -5,7 +5,7 @@
  */
 
 import { getConvSoapApi } from '../../../api/get-conv-soap-api';
-import { updateConversations, updateMessages } from '../store';
+import { createOrUpdateConversations, createOrUpdateMessages } from '../store';
 
 export async function getConvEmailStoreAction({
 	id,
@@ -15,6 +15,6 @@ export async function getConvEmailStoreAction({
 	onConversationIdChange?: (id: string) => void;
 }): Promise<void> {
 	const getConvResponse = await getConvSoapApi({ conversationId: id, onConversationIdChange });
-	updateMessages(getConvResponse.messages);
-	updateConversations(getConvResponse.conversation);
+	createOrUpdateMessages(getConvResponse.messages);
+	createOrUpdateConversations(getConvResponse.conversation);
 }

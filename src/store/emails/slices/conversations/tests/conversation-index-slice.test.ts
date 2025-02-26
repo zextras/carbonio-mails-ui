@@ -17,7 +17,7 @@ import {
 	useConversationIndexSlice,
 	useConversationsByIds,
 	useConversationsIdsByFolder,
-	updateConversations,
+	createOrUpdateConversations,
 	getUseEmailStoreAndHooksForTesting,
 	setMessagesInEmailStore
 } from '../../../store';
@@ -161,7 +161,7 @@ describe('conversation-index-slice', () => {
 			});
 
 			it('should set populatedItemsSlice.conversations as an empty object', async () => {
-				updateConversations([conversation1]);
+				createOrUpdateConversations([conversation1]);
 				const { result: initialState } = renderHook(() => useConversationsByIds(['1']));
 				expect(initialState.current).toEqual([conversation1]);
 				await act(async () => setConversationsInEmailStore([], false));

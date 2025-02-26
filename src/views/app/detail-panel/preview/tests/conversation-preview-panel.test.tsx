@@ -9,7 +9,10 @@ import React from 'react';
 import { waitFor } from '@testing-library/react';
 
 import { setupTest, screen } from '../../../../../carbonio-ui-commons/test/test-setup';
-import { updateConversations, updateMessages } from '../../../../../store/emails/store';
+import {
+	createOrUpdateConversations,
+	createOrUpdateMessages
+} from '../../../../../store/emails/store';
 import { generateConversation } from '../../../../../tests/generators/generateConversation';
 import { generateMessage } from '../../../../../tests/generators/generateMessage';
 import { ConversationPreviewPanel } from '../../conversation-preview-panel';
@@ -23,12 +26,12 @@ describe('Conversation Preview Panel', () => {
 		const message2 = generateMessage({ id: '2' });
 		const messages = [message1, message2];
 
-		updateMessages(messages);
+		createOrUpdateMessages(messages);
 		const conversation = generateConversation({
 			id: '123',
 			messageIds: messages.map((m) => m.id)
 		});
-		updateConversations([conversation]);
+		createOrUpdateConversations([conversation]);
 		setupTest(<ConversationPreviewPanel conversation={conversation} isInsideExtraWindow={false} />);
 
 		await waitFor(async () => {

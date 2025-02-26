@@ -9,12 +9,7 @@ import produce from 'immer';
 import { filter, find, forEach, merge } from 'lodash';
 import { StoreApi, UseBoundStore } from 'zustand';
 
-import {
-	EmailsStoreState,
-	IncompleteMessage,
-	MailMessage,
-	NormalizedConversation
-} from '../../../types';
+import { EmailsStoreState, IncompleteMessage, MailMessage } from '../../../types';
 
 function deleteConversationsInSearch(
 	state: EmailsStoreState,
@@ -89,36 +84,6 @@ function handleNotifyDeleted(
 			deleteConversationsInConversationIndexSlice(state, ids);
 			deleteMessagesInPopulatedItems(state, ids);
 			deleteConversationsInPopulatedItems(state, ids);
-		})
-	);
-}
-
-/**
- * Updates the conversations in the application state with the modified conversation data.
- *
- * @param updatedConversations - An array of normalized conversation objects containing the updates.
- * Each conversation must include an `id` and any other properties to merge with the existing state.
- *
- * @param useEmailsStore - A state management hook based on Zustand, which provides access
- * to and updates the `EmailsStoreState`. The store maintains the `populatedItemsSlice`
- * that tracks the conversation data.
- *
- * @remarks
- * - The `tags` property is explicitly replaced with the value from the `conversation` parameter.
- * - Other properties are merged into the existing data for the corresponding conversation.
- */
-function handleNotifyConversationsModified(
-	updatedConversations: Array<NormalizedConversation>,
-	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
-): void {
-	useEmailsStore.setState(
-		produce(({ populatedItemsSlice }: EmailsStoreState) => {
-			updatedConversations.forEach((conversation) => {
-				populatedItemsSlice.conversations[conversation.id] = {
-					...merge(populatedItemsSlice.conversations[conversation.id], conversation),
-					tags: conversation.tags
-				};
-			});
 		})
 	);
 }
@@ -219,33 +184,8 @@ function handleNotifyMessagesCreated(
 	);
 }
 
-/**
- * Handles the creation of notify conversations by updating the application's email store state.
- * This function processes incoming conversations and updates the conversation slice and index
- * to include the new conversations.
- */
-function handleNotifyConversationsCreated(
-	conversations: Array<NormalizedConversation>,
-	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
-): void {
-	const newConversationIds = conversations.map((conv) => conv.id);
-	useEmailsStore.setState(
-		produce(({ populatedItemsSlice, conversationIndexSlice }: EmailsStoreState) => {
-			populatedItemsSlice.conversations = conversations.reduce((acc, conversation) => {
-				acc[conversation.id] = conversation;
-				return acc;
-			}, populatedItemsSlice.conversations);
-			conversationIndexSlice.conversationListIndex = Array.from(
-				new Set([...newConversationIds, ...conversationIndexSlice.conversationListIndex])
-			);
-		})
-	);
-}
-
 export const syncDataHandlerUtils = {
 	handleNotifyDeleted,
 	handleNotifyMessagesModified,
-	handleNotifyConversationsModified,
-	handleNotifyConversationsCreated,
 	handleNotifyMessagesCreated
 };

@@ -39,9 +39,9 @@ import {
 	setMessagesInEmailStore,
 	setSearchResultsByConversation,
 	setSearchResultsByMessage,
-	updateConversations,
+	createOrUpdateConversations,
 	updateConversationStatus,
-	updateMessages,
+	createOrUpdateMessages,
 	updateMessageStatus,
 	useConversationById,
 	useConversationIndexSlice,
@@ -65,7 +65,7 @@ describe('store-populated-items-slice', () => {
 		it('updates messages correctly', async () => {
 			const messages = [generateMessage({ id: '1' }), generateMessage({ id: '2' })];
 			act(() => {
-				updateMessages(messages);
+				createOrUpdateMessages(messages);
 			});
 
 			const { result: message1 } = renderHook(() => useMessageById('1'));
@@ -82,7 +82,7 @@ describe('store-populated-items-slice', () => {
 			];
 
 			act(() => {
-				updateMessages(messages);
+				createOrUpdateMessages(messages);
 			});
 
 			// @ts-ignore
@@ -96,7 +96,7 @@ describe('store-populated-items-slice', () => {
 		it('updates message status to fulfilled if complete', () => {
 			const messages = [generateMessage({ id: '1', isComplete: true })];
 			act(() => {
-				updateMessages(messages);
+				createOrUpdateMessages(messages);
 			});
 
 			const { result: message1 } = renderHook(() => useMessageById('1'));
@@ -109,7 +109,7 @@ describe('store-populated-items-slice', () => {
 		it('does not update message status if not complete', () => {
 			const messages = [generateMessage({ id: '1', isComplete: false })];
 			act(() => {
-				updateMessages(messages);
+				createOrUpdateMessages(messages);
 			});
 
 			const { result: message1 } = renderHook(() => useMessageById('1'));
@@ -142,7 +142,7 @@ describe('store-populated-items-slice', () => {
 			});
 
 			await act(async () => {
-				updateConversations([updatedConversation]);
+				createOrUpdateConversations([updatedConversation]);
 			});
 
 			const { result: updatedConversationFromStore } = renderHook(() =>
@@ -160,7 +160,7 @@ describe('store-populated-items-slice', () => {
 			const message2 = generateMessage({ id: '2' });
 			const messages = [message1, message2];
 
-			updateMessages(messages);
+			createOrUpdateMessages(messages);
 
 			const { result } = renderHook(() => useMessagesByIds([message2.id, message1.id]));
 
@@ -225,7 +225,7 @@ describe('store-populated-items-slice', () => {
 			const conversation2 = generateConversation({ id: '2' });
 			const conversations = [conversation1, conversation2];
 
-			updateConversations(conversations);
+			createOrUpdateConversations(conversations);
 
 			const { result } = renderHook(() =>
 				useConversationsByIds([conversation2.id, conversation1.id])
@@ -266,7 +266,7 @@ describe('store-populated-items-slice', () => {
 	describe('useMessageById', () => {
 		it('should update populated store messages', async () => {
 			const message = generateMessage({ id: '1' });
-			updateMessages([message]);
+			createOrUpdateMessages([message]);
 
 			const { result } = renderHook(() => useMessageById('1'));
 
@@ -325,7 +325,7 @@ describe('store-populated-items-slice', () => {
 			setMessagesInSearchSlice([...conversation1Messages, ...conversation2Messages]);
 
 			await act(async () => {
-				updateMessages([generateMessage({ id: '100' })]);
+				createOrUpdateMessages([generateMessage({ id: '100' })]);
 			});
 
 			const { result: conversation2StoreMessages } = renderHook(() => useConversationMessages('2'));
@@ -419,7 +419,7 @@ describe('store-populated-items-slice', () => {
 			};
 
 			await act(async () => {
-				updateConversations([newConversation]);
+				createOrUpdateConversations([newConversation]);
 			});
 			const { result } = renderHook(() => useConversationById('1'));
 			expect(result.current.tags).toEqual([]);
@@ -462,7 +462,7 @@ describe('store-populated-items-slice', () => {
 	describe('handleDeleteAttachments', () => {
 		it('should delete attachment from message', async () => {
 			const message = generateMessage({ id: '1' });
-			updateMessages([message]);
+			createOrUpdateMessages([message]);
 
 			await act(async () => {
 				handleDeleteAttachments({ m: [generateCompleteMessageFromAPI({ id: '1', mp: [] })] });
@@ -474,7 +474,7 @@ describe('store-populated-items-slice', () => {
 
 		it('should not delete attachment from message if API response contains FAULT', async () => {
 			const message = generateMessage({ id: '1' });
-			updateMessages([message]);
+			createOrUpdateMessages([message]);
 			const attachmentCountsBeforeAPICall = message?.parts?.length;
 
 			const response: ErrorSoapBodyResponse = buildSoapErrorResponseBody({ reason: 'any reason' });
@@ -489,7 +489,7 @@ describe('store-populated-items-slice', () => {
 
 		it('should not affect other messages in the store if there is no message in the store to update', async () => {
 			const message = generateMessage({ id: '1' });
-			updateMessages([message]);
+			createOrUpdateMessages([message]);
 
 			await act(async () => {
 				handleDeleteAttachments({ m: [generateCompleteMessageFromAPI({ id: '2', mp: [] })] });
@@ -503,7 +503,7 @@ describe('store-populated-items-slice', () => {
 	describe('optimisticallyHandleMessageActions', () => {
 		it('should flag a message when operation is FLAG', async () => {
 			const message = generateMessage({ id: '1' });
-			updateMessages([{ ...message, flagged: false }]);
+			createOrUpdateMessages([{ ...message, flagged: false }]);
 			optimisticallyHandleMessageActions({
 				ids: ['1'],
 				operation: CONVACTIONS.FLAG
@@ -515,7 +515,7 @@ describe('store-populated-items-slice', () => {
 
 		it('should un-flag a message when operation is UNFLAG', async () => {
 			const message = generateMessage({ id: '1' });
-			updateMessages([{ ...message, flagged: true }]);
+			createOrUpdateMessages([{ ...message, flagged: true }]);
 			optimisticallyHandleMessageActions({
 				ids: ['1'],
 				operation: CONVACTIONS.UNFLAG
@@ -527,7 +527,7 @@ describe('store-populated-items-slice', () => {
 
 		it('should mark a message as read when operation is MARK_READ', async () => {
 			const message = generateMessage({ id: '1' });
-			updateMessages([{ ...message, read: false }]);
+			createOrUpdateMessages([{ ...message, read: false }]);
 			optimisticallyHandleMessageActions({
 				ids: ['1'],
 				operation: CONVACTIONS.MARK_READ
@@ -539,7 +539,7 @@ describe('store-populated-items-slice', () => {
 
 		it('should mark a message as unread when operation is MARK_AS_UNREAD', async () => {
 			const message = generateMessage({ id: '1' });
-			updateMessages([{ ...message, read: true }]);
+			createOrUpdateMessages([{ ...message, read: true }]);
 			optimisticallyHandleMessageActions({
 				ids: ['1'],
 				operation: CONVACTIONS.MARK_UNREAD
@@ -551,7 +551,7 @@ describe('store-populated-items-slice', () => {
 
 		it('should move a message to trash when operation is TRASH', async () => {
 			const message = generateMessage({ id: '1' });
-			updateMessages([message]);
+			createOrUpdateMessages([message]);
 			optimisticallyHandleMessageActions({
 				ids: ['1'],
 				operation: CONVACTIONS.TRASH
@@ -563,7 +563,7 @@ describe('store-populated-items-slice', () => {
 
 		it('should delete a message when operation is DELETE', async () => {
 			const message = generateMessage({ id: '1' });
-			updateMessages([message]);
+			createOrUpdateMessages([message]);
 			optimisticallyHandleMessageActions({
 				ids: ['1'],
 				operation: CONVACTIONS.DELETE
@@ -575,7 +575,7 @@ describe('store-populated-items-slice', () => {
 
 		it('should move a message to a specified folder when operation is MOVE', async () => {
 			const message = generateMessage({ id: '1' });
-			updateMessages([message]);
+			createOrUpdateMessages([message]);
 			optimisticallyHandleMessageActions({
 				ids: ['1'],
 				parent: '77',
@@ -588,7 +588,7 @@ describe('store-populated-items-slice', () => {
 
 		it('should move a message to inbox when operation is MOVE and no parent is specified', async () => {
 			const message = generateMessage({ id: '1' });
-			updateMessages([message]);
+			createOrUpdateMessages([message]);
 			optimisticallyHandleMessageActions({
 				ids: ['1'],
 				operation: CONVACTIONS.MOVE
@@ -600,7 +600,7 @@ describe('store-populated-items-slice', () => {
 
 		it('should mark a message as spam when operation is MARK_SPAM', async () => {
 			const message = generateMessage({ id: '1' });
-			updateMessages([{ ...message, parent: FOLDERS.INBOX }]);
+			createOrUpdateMessages([{ ...message, parent: FOLDERS.INBOX }]);
 			optimisticallyHandleMessageActions({
 				ids: ['1'],
 				operation: CONVACTIONS.MARK_SPAM
@@ -612,7 +612,7 @@ describe('store-populated-items-slice', () => {
 
 		it('should mark a message as not spam when operation is MARK_NOT_SPAM', async () => {
 			const message = generateMessage({ id: '1' });
-			updateMessages([{ ...message, parent: FOLDERS.SPAM }]);
+			createOrUpdateMessages([{ ...message, parent: FOLDERS.SPAM }]);
 			optimisticallyHandleMessageActions({
 				ids: ['1'],
 				operation: CONVACTIONS.MARK_NOT_SPAM
@@ -625,7 +625,7 @@ describe('store-populated-items-slice', () => {
 		it('should tag a message when operation is TAG and tagName is provided', async () => {
 			(useTags as jest.Mock).mockReturnValue(mockTags);
 			const message = generateMessage({ id: '1' });
-			updateMessages([message]);
+			createOrUpdateMessages([message]);
 			optimisticallyHandleMessageActions({
 				ids: ['1'],
 				operation: CONVACTIONS.TAG,
@@ -639,7 +639,7 @@ describe('store-populated-items-slice', () => {
 		it('should untag a message when operation is UNTAG and tagName is provided', async () => {
 			(useTags as jest.Mock).mockReturnValue(mockTags);
 			const message = generateMessage({ id: '1', tags: ['Test555', 'AnotherTag'] });
-			updateMessages([message]);
+			createOrUpdateMessages([message]);
 			optimisticallyHandleMessageActions({
 				ids: ['1'],
 				operation: CONVACTIONS.UNTAG,
@@ -653,7 +653,7 @@ describe('store-populated-items-slice', () => {
 		it('should not untag a message when operation is UNTAG but tagName is not provided or is undefined', async () => {
 			(useTags as jest.Mock).mockReturnValue(mockTags);
 			const message = generateMessage({ id: '1', tags: ['Test555', 'AnotherTag'] });
-			updateMessages([message]);
+			createOrUpdateMessages([message]);
 			optimisticallyHandleMessageActions({
 				ids: ['1'],
 				operation: CONVACTIONS.UNTAG

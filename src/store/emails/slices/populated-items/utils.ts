@@ -60,13 +60,17 @@ function getConversationMessages(
 		.filter(Boolean);
 }
 
-function updateConversations(
-	updatedConversations: Array<NormalizedConversation>,
+function createOrUpdateConversations(
+	conversations: Array<NormalizedConversation>,
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
 ): void {
+	const conversationIds = conversations.map((conv) => conv.id);
 	useEmailsStore.setState(
-		produce(({ populatedItemsSlice }: EmailsStoreState) => {
-			updatedConversations.forEach((conversation) => {
+		produce(({ populatedItemsSlice, conversationIndexSlice }: EmailsStoreState) => {
+			conversationIndexSlice.conversationListIndex = Array.from(
+				new Set([...conversationIds, ...conversationIndexSlice.conversationListIndex])
+			);
+			conversations.forEach((conversation) => {
 				if (populatedItemsSlice.conversations[conversation.id]) {
 					populatedItemsSlice.conversations[conversation.id] = {
 						...merge(populatedItemsSlice.conversations[conversation.id], conversation),
@@ -80,12 +84,16 @@ function updateConversations(
 	);
 }
 
-function updateMessages(
+function createOrUpdateMessages(
 	messages: Array<MailMessage>,
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
 ): void {
+	const messageIds = messages.map((message) => message.id);
 	useEmailsStore.setState(
-		produce(({ populatedItemsSlice }: EmailsStoreState) => {
+		produce(({ populatedItemsSlice, messageIndexSlice }: EmailsStoreState) => {
+			messageIndexSlice.messageListIndex = Array.from(
+				new Set([...messageIds, ...messageIndexSlice.messageListIndex])
+			);
 			messages.forEach((message) => {
 				if (!message?.id) return;
 				const existingMessage = populatedItemsSlice.messages?.[message.id] || {};
@@ -303,13 +311,12 @@ function optimisticallyHandleConvActions({
 		})
 	);
 }
-
 export const populatedItemsSliceUtils = {
 	optimisticallyHandleMessageActions,
-	updateConversations,
+	createOrUpdateConversations,
 	updateMessageStatus,
 	updateConversationStatus,
-	updateMessages,
+	createOrUpdateMessages,
 	useConversationMessages,
 	getConversationMessages,
 	useMessagesByIds,

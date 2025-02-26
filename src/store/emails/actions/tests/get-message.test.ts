@@ -9,7 +9,7 @@ import { getMsgDecryptSoapApi } from '../../../../api/get-msg-soap-api-decrypt';
 import { API_REQUEST_STATUS } from '../../../../constants';
 import { normalizeMailMessageFromSoap } from '../../../../normalizations/normalize-message';
 import { GetMsgResponse } from '../../../../types';
-import { updateMessages, updateMessageStatus } from '../../store';
+import { createOrUpdateMessages, updateMessageStatus } from '../../store';
 import {
 	getMessageEmailStoreAction,
 	getFullMessageEmailStoreAction,
@@ -68,7 +68,7 @@ describe('get-message', () => {
 
 			expect(updateMessageStatus).toHaveBeenCalledWith(mockMessageId, API_REQUEST_STATUS.pending);
 			expect(getMsgSoapApi).toHaveBeenCalledWith({ msgId: mockMessageId, max: 250_000 });
-			expect(updateMessages).toHaveBeenCalledWith(expect.any(Array));
+			expect(createOrUpdateMessages).toHaveBeenCalledWith(expect.any(Array));
 			expect(updateMessageStatus).toHaveBeenCalledWith(mockMessageId, API_REQUEST_STATUS.fulfilled);
 			expect(result).toEqual({ id: '1', subject: 'message 1 Subject' });
 		});
@@ -101,7 +101,7 @@ describe('get-message', () => {
 			const result = await getMessageEmailStoreAction(mockMessageId);
 
 			expect(updateMessageStatus).toHaveBeenCalledWith(mockMessageId, API_REQUEST_STATUS.pending);
-			expect(updateMessages).toHaveBeenCalledWith([]);
+			expect(createOrUpdateMessages).toHaveBeenCalledWith([]);
 			expect(updateMessageStatus).toHaveBeenCalledWith(mockMessageId, API_REQUEST_STATUS.fulfilled);
 			expect(result).toBeUndefined();
 		});
@@ -121,7 +121,7 @@ describe('get-message', () => {
 				max: 250_000,
 				smimePassword: 'smimePassword'
 			});
-			expect(updateMessages).toHaveBeenCalledWith(expect.any(Array));
+			expect(createOrUpdateMessages).toHaveBeenCalledWith(expect.any(Array));
 			expect(updateMessageStatus).toHaveBeenCalledWith(mockMessageId, API_REQUEST_STATUS.fulfilled);
 			expect(result).toEqual({ id: '1', subject: 'message 1 Subject' });
 		});
@@ -144,7 +144,7 @@ describe('get-message', () => {
 			const result = await getMessageDecryptEmailStoreAction(mockMessageId, 'smimePassword');
 
 			expect(updateMessageStatus).toHaveBeenCalledWith(mockMessageId, API_REQUEST_STATUS.pending);
-			expect(updateMessages).toHaveBeenCalledWith([]);
+			expect(createOrUpdateMessages).toHaveBeenCalledWith([]);
 			expect(updateMessageStatus).toHaveBeenCalledWith(mockMessageId, API_REQUEST_STATUS.fulfilled);
 			expect(result).toBeUndefined();
 		});
@@ -185,7 +185,7 @@ describe('get-message', () => {
 
 			expect(updateMessageStatus).toHaveBeenCalledWith(mockMessageId, API_REQUEST_STATUS.pending);
 			expect(getMsgSoapApi).toHaveBeenCalledWith({ msgId: mockMessageId });
-			expect(updateMessages).toHaveBeenCalledWith(expect.any(Array));
+			expect(createOrUpdateMessages).toHaveBeenCalledWith(expect.any(Array));
 			expect(updateMessageStatus).toHaveBeenCalledWith(mockMessageId, API_REQUEST_STATUS.fulfilled);
 			expect(result).toEqual({ id: '1', subject: 'message 1 Subject' });
 		});
@@ -218,7 +218,7 @@ describe('get-message', () => {
 			const result = await getFullMessageEmailStoreAction(mockMessageId);
 
 			expect(updateMessageStatus).toHaveBeenCalledWith(mockMessageId, API_REQUEST_STATUS.pending);
-			expect(updateMessages).toHaveBeenCalledWith([]);
+			expect(createOrUpdateMessages).toHaveBeenCalledWith([]);
 			expect(updateMessageStatus).toHaveBeenCalledWith(mockMessageId, API_REQUEST_STATUS.fulfilled);
 			expect(result).toBeUndefined();
 		});

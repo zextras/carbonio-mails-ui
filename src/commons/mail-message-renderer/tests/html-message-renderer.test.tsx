@@ -9,7 +9,7 @@ import { act, screen } from '@testing-library/react';
 
 import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
-import { updateMessages } from '../../../store/emails/store';
+import { createOrUpdateMessages } from '../../../store/emails/store';
 import { generateCompleteMessageFromAPI } from '../../../tests/generators/api';
 import { generateMessage } from '../../../tests/generators/generateMessage';
 import { GetMsgRequest, GetMsgResponse, MailMessage } from '../../../types';
@@ -24,7 +24,7 @@ describe('HTML message renderer', () => {
 					body: 'Test',
 					truncated: true
 				});
-				updateMessages([message]);
+				createOrUpdateMessages([message]);
 
 				setupTest(<HtmlMessageRenderer message={message} />, {
 					initialEntries: ['/search']
@@ -39,7 +39,7 @@ describe('HTML message renderer', () => {
 					body: 'Test',
 					truncated: false
 				});
-				updateMessages([message]);
+				createOrUpdateMessages([message]);
 
 				setupTest(<HtmlMessageRenderer message={message} />, {
 					initialEntries: ['/search']
@@ -61,7 +61,7 @@ describe('HTML message renderer', () => {
 					body: 'Test',
 					truncated: true
 				});
-				updateMessages([message]);
+				createOrUpdateMessages([message]);
 
 				const { user } = setupTest(<HtmlMessageRenderer message={message} />, {
 					initialEntries: ['/search']
@@ -79,7 +79,7 @@ describe('HTML message renderer', () => {
 
 			it('should remove message too large banner after clicking load message', async () => {
 				const message = generateMessage({ id: '1', body: 'Initial body', truncated: true });
-				updateMessages([message]);
+				createOrUpdateMessages([message]);
 				const interceptor = createSoapAPIInterceptor<GetMsgRequest, GetMsgResponse>('GetMsg', {
 					m: [
 						generateCompleteMessageFromAPI({

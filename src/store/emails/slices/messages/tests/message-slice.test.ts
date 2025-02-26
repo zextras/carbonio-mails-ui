@@ -12,7 +12,7 @@ import {
 	appendMessagesToMessagesSlice,
 	resetMessagesAndPopulatedItems,
 	setMessagesInEmailStore,
-	updateMessages,
+	createOrUpdateMessages,
 	updateMessagesResultsLoadingStatus,
 	useMessageById,
 	useMessagesByIds,
@@ -154,7 +154,7 @@ describe('message-slice-utils', () => {
 			});
 
 			it('should set populatedItemsSlice.messages as an empty object', async () => {
-				updateMessages([message1]);
+				createOrUpdateMessages([message1]);
 				const { result: initialState } = renderHook(() => useMessagesByIds(['1']));
 				expect(initialState.current).toEqual([message1]);
 				await act(async () => setMessagesInEmailStore([], false));

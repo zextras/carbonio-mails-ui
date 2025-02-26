@@ -9,7 +9,7 @@ import { faker } from '@faker-js/faker';
 import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
 import { ParticipantRole } from '../../carbonio-ui-commons/constants/participants';
 import { convertHtmlToPlainText } from '../../commons/utilities';
-import { updateMessages } from '../../store/emails/store';
+import { createOrUpdateMessages } from '../../store/emails/store';
 import { MailMessage, Participant, Sensitivity } from '../../types';
 
 export type MessageGenerationParams = {
@@ -180,7 +180,7 @@ export const populateMessagesInEmailStore = ({
 	const generatedMessages =
 		messagesFromMessageIds ?? messagesFromMessageGeneratorParams ?? defaultMessages;
 
-	updateMessages(generatedMessages);
+	createOrUpdateMessages(generatedMessages);
 
 	return generatedMessages;
 };

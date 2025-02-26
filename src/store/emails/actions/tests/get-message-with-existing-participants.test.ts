@@ -9,7 +9,7 @@ import { ParticipantRole } from '../../../../carbonio-ui-commons/constants/parti
 import { API_REQUEST_STATUS } from '../../../../constants';
 import { normalizeMailMessageFromSoap } from '../../../../normalizations/normalize-message';
 import { GetMsgResponse } from '../../../../types';
-import { updateMessages, updateMessageStatus } from '../../store';
+import { createOrUpdateMessages, updateMessageStatus } from '../../store';
 import { getMessageWithExistingParticipantsEmailStoreAction } from '../get-message-with-existing-participants';
 import { getSoapMailMessage } from './test-utils';
 
@@ -44,7 +44,7 @@ describe('getMessageWithExistingParticipantsEmailStoreAction', () => {
 
 		expect(updateMessageStatus).toHaveBeenCalledWith(messageId, API_REQUEST_STATUS.pending);
 		expect(getMsgSoapApi).toHaveBeenCalledWith({ msgId: messageId, max: 250_000 });
-		expect(updateMessages).toHaveBeenCalledWith(expect.any(Array));
+		expect(createOrUpdateMessages).toHaveBeenCalledWith(expect.any(Array));
 		expect(updateMessageStatus).toHaveBeenCalledWith(messageId, API_REQUEST_STATUS.fulfilled);
 		expect(result).toEqual({
 			id: '1',
@@ -102,7 +102,7 @@ describe('getMessageWithExistingParticipantsEmailStoreAction', () => {
 		);
 
 		expect(updateMessageStatus).toHaveBeenCalledWith(messageId, API_REQUEST_STATUS.pending);
-		expect(updateMessages).toHaveBeenCalledWith([]);
+		expect(createOrUpdateMessages).toHaveBeenCalledWith([]);
 		expect(updateMessageStatus).toHaveBeenCalledWith(messageId, API_REQUEST_STATUS.fulfilled);
 		expect(result).toBeUndefined();
 	});

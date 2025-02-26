@@ -314,9 +314,9 @@ export function getMessageById(id: string): IncompleteMessage | MailMessage {
 /**
  * Updates the state with modified conversation data.
  */
-export function updateConversations(updatedConversations: Array<NormalizedConversation>): void {
+export function createOrUpdateConversations(conversations: Array<NormalizedConversation>): void {
 	addTask(async () => {
-		populatedItemsSliceUtils.updateConversations(updatedConversations, useEmailsStore);
+		populatedItemsSliceUtils.createOrUpdateConversations(conversations, useEmailsStore);
 	});
 }
 
@@ -369,9 +369,9 @@ export function useConversationStatus(id: string): SearchRequestStatus {
  * by merging each message with its existing entry (if any), if the message is complete
  * the API_REQUEST_STATUS for the message is also updated to 'fulfilled'.
  */
-export function updateMessages(messages: MailMessage[]): void {
+export function createOrUpdateMessages(messages: MailMessage[]): void {
 	addTask(async () => {
-		populatedItemsSliceUtils.updateMessages(messages, useEmailsStore);
+		populatedItemsSliceUtils.createOrUpdateMessages(messages, useEmailsStore);
 	});
 }
 
@@ -586,34 +586,6 @@ export function setConversationsInEmailStore(
 export function handleNotifyDeleted(ids: string[]): void {
 	addTask(async () => {
 		syncDataHandlerUtils.handleNotifyDeleted(ids, useEmailsStore);
-	});
-}
-
-/**
- * Queues a task to update the email store state with modified conversation data.
- *
- * @param updatedConversations - An array of `NormalizedConversation` objects,
- * each containing an `id` and other properties to be updated in the state.
- */
-export function handleNotifyConversationsModified(
-	updatedConversations: Array<NormalizedConversation>
-): void {
-	addTask(async () => {
-		syncDataHandlerUtils.handleNotifyConversationsModified(updatedConversations, useEmailsStore);
-	});
-}
-
-/**
- * Queues a task to handle the addition of new conversations by updating the email store state.
- *
- * @param conversations - An array of `NormalizedConversation` objects to be
- * added to the conversation slice and index in the email store.
- */
-export function handleNotifyConversationsCreated(
-	conversations: Array<NormalizedConversation>
-): void {
-	addTask(async () => {
-		syncDataHandlerUtils.handleNotifyConversationsCreated(conversations, useEmailsStore);
 	});
 }
 

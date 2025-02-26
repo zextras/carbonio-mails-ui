@@ -10,13 +10,13 @@ import {
 	generateConvMessageFromAPI
 } from '../../../../tests/generators/api';
 import { GetConvResponse } from '../../../../types/soap/get-conv';
-import { updateConversations, updateMessages } from '../../store';
+import { createOrUpdateConversations, createOrUpdateMessages } from '../../store';
 import { getConvEmailStoreAction } from '../get-conv-action';
 
 jest.mock('../../store', () => ({
 	...jest.requireActual('../../store'),
-	updateMessages: jest.fn(),
-	updateConversations: jest.fn()
+	createOrUpdateMessages: jest.fn(),
+	createOrUpdateConversations: jest.fn()
 }));
 
 describe('getConvEmailStoreAction', () => {
@@ -41,7 +41,7 @@ describe('getConvEmailStoreAction', () => {
 				c: expect.objectContaining({ id: '123' })
 			})
 		);
-		expect(updateMessages).toHaveBeenCalledTimes(1);
-		expect(updateConversations).toHaveBeenCalledTimes(1);
+		expect(createOrUpdateMessages).toHaveBeenCalledTimes(1);
+		expect(createOrUpdateConversations).toHaveBeenCalledTimes(1);
 	});
 });
