@@ -139,11 +139,11 @@ function handleNotifyMessagesModified(
 			updatedMessages.forEach((message) => {
 				const messageId = message.id;
 				const messageAfterMerge = merge(populatedItemsSlice.messages[messageId], message);
-				const conversationId = messageAfterMerge.conversation;
-				const messagesInConversation = populatedItemsSlice.conversations[conversationId].messageIds;
-				if (!messagesInConversation.includes(messageId)) {
-					messagesInConversation.push(messageAfterMerge.id);
-				}
+				// const conversationId = messageAfterMerge.conversation;
+				// const messagesInConversation = populatedItemsSlice.conversations[conversationId].messageIds;
+				// if (!messagesInConversation.includes(messageId)) {
+				// 	messagesInConversation.push(messageAfterMerge.id);
+				// }
 				populatedItemsSlice.messages[messageId] = {
 					...messageAfterMerge,
 					tags: message.tags

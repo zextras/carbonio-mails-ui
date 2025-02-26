@@ -70,16 +70,21 @@ function handleTagsNotify({ notify, worker, store }: HandleTagsNotifyProps): voi
 
 function processCreatedNotifications(notify: SoapNotify): void {
 	const { c: createdConversations, m: createdMessages } = notify.created || {};
+	const { m: modifiedMessages } = notify.modified || {};
 	const newConversations = createdConversations as Array<SoapConversation>;
 	const newMessages = createdMessages as Array<SoapIncompleteMessage>;
+	const changedMessages = modifiedMessages as Array<SoapIncompleteMessage>;
+	const allReceivedMessages = [...changedMessages, ...newMessages];
 	// in case of created, we have SoapConversation
 	if (createdConversations && createdMessages) {
-		const conversations = map(newConversations, (conversation) =>
-			mapToNormalizedConversation({ conversation, messages: newMessages })
+		const conversationsWithMessageIds = map(newConversations, (conversation) =>
+			mapToNormalizedConversation({ conversation, messages: allReceivedMessages })
 		);
-		handleNotifyConversationsCreated(conversations);
-		const convMessages = extractConvMessage(newConversations);
-		updateMessages(convMessages);
+		handleNotifyConversationsCreated(conversationsWithMessageIds);
+		const normalizedMessages = allReceivedMessages.map((message) =>
+			normalizeMailMessageFromSoap(message)
+		);
+		updateMessages(normalizedMessages);
 	}
 
 	if (newMessages) {
@@ -89,7 +94,6 @@ function processCreatedNotifications(notify: SoapNotify): void {
 }
 
 function processModifiedNotifications(notify: SoapNotify): void {
-	// TODO: check me, at runtime we do not receive a SoapConversation
 	const modifiedConversations = notify.modified?.c as Array<SoapConversation>;
 	if (modifiedConversations) {
 		const updatedConversations = normalizeConversations(modifiedConversations);
