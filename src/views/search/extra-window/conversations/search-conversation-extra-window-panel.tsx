@@ -13,16 +13,12 @@ import { Spinner } from '../../../../assets/spinner';
 import { API_REQUEST_STATUS } from '../../../../constants';
 import { useCompleteConversationOrFetch } from '../../../../store/emails/hooks/hooks';
 import { ConversationMessagePreviewWrapper } from '../../../app/detail-panel/conversation-message-preview-wrapper';
-import { useExtraWindow } from '../../../app/extra-windows/use-extra-window';
-import { SearchExtraWindowPanelHeader } from '../search-extra-window-panel-header';
 
 type SearchConversationExtraWindowContainerPanelProps = { conversationId: string };
 
 export const SearchConversationExtraWindowPanelContainer: FC<
 	SearchConversationExtraWindowContainerPanelProps
 > = ({ conversationId }) => {
-	const { isInsideExtraWindow } = useExtraWindow();
-
 	const settings = useUserSettings();
 	const convSortOrder = settings.prefs.zimbraPrefConversationOrder as string;
 
@@ -45,36 +41,32 @@ export const SearchConversationExtraWindowPanelContainer: FC<
 			crossAlignment="flex-start"
 			data-testid={`ConversationPreview-${conversation.id}`}
 		>
-			<>
-				{/* FIXME can be removed */}
-				{!isInsideExtraWindow && <SearchExtraWindowPanelHeader item={conversation} />}
-
-				<Container
-					style={{ overflowY: 'auto' }}
-					height="fill"
-					background={'gray5'}
-					padding={{ horizontal: 'large', bottom: 'small', top: 'large' }}
-					mainAlignment="flex-start"
-				>
-					<Container height="fit" mainAlignment="flex-start" background={'gray5'}>
-						{conversation && conversationStatus === API_REQUEST_STATUS.fulfilled ? (
-							<>
-								{map(conversation.messageIds, (convMessageId, index) => (
-									<ConversationMessagePreviewWrapper
-										key={convMessageId}
-										convMessageId={convMessageId}
-										isExpanded={isExpanded(index)}
-										isAlone={conversation.messageIds?.length === 1}
-										isInsideExtraWindow={isInsideExtraWindow}
-									/>
-								))}
-							</>
-						) : (
-							<Spinner />
-						)}
-					</Container>
+			<Container
+				style={{ overflowY: 'auto' }}
+				height="fill"
+				background={'gray5'}
+				padding={{ horizontal: 'large', bottom: 'small', top: 'large' }}
+				mainAlignment="flex-start"
+			>
+				<Container height="fit" mainAlignment="flex-start" background={'gray5'}>
+					{conversation && conversationStatus === API_REQUEST_STATUS.fulfilled ? (
+						<>
+							{map(conversation.messageIds, (convMessageId, index) => (
+								<ConversationMessagePreviewWrapper
+									key={convMessageId}
+									convMessageId={convMessageId}
+									isExpanded={isExpanded(index)}
+									isAlone={conversation.messageIds?.length === 1}
+									isInsideExtraWindow
+								/>
+							))}
+						</>
+					) : (
+						<Spinner />
+					)}
 				</Container>
-			</>
+			</Container>
+			=
 		</Container>
 	);
 };

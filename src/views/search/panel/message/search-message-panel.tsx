@@ -11,13 +11,11 @@ import { useNavigate } from 'react-router-dom';
 import { API_REQUEST_STATUS } from '../../../../constants';
 import { useCompleteMessageOrFetch } from '../../../../store/emails/hooks/hooks';
 import MailPreview from '../../../app/detail-panel/preview/mail-preview';
-import { useExtraWindow } from '../../../app/extra-windows/use-extra-window';
-import { SearchExtraWindowPanelHeader } from '../../extra-window/search-extra-window-panel-header';
+import { SearchPanelHealer } from '../../extra-window/search-panel-header';
 
 export const SearchMessagePanel = ({ messageId }: { messageId: string }): React.JSX.Element => {
 	const { message, messageStatus } = useCompleteMessageOrFetch(messageId);
 	const navigate = useNavigate();
-	const { isInsideExtraWindow } = useExtraWindow();
 
 	const messagePreviewFactory = useCallback(
 		() => <SearchMessagePanel messageId={messageId} />,
@@ -36,7 +34,7 @@ export const SearchMessagePanel = ({ messageId }: { messageId: string }): React.
 			crossAlignment="flex-start"
 			data-testid={`MessagePanel-${message.id}`}
 		>
-			{!isInsideExtraWindow && <SearchExtraWindowPanelHeader item={message} />}
+			<SearchPanelHealer item={message} />
 			{message?.isComplete && (
 				<Container
 					style={{ overflowY: 'auto' }}
@@ -54,7 +52,6 @@ export const SearchMessagePanel = ({ messageId }: { messageId: string }): React.
 									expanded
 									isAlone
 									isMessageView
-									isInsideExtraWindow={isInsideExtraWindow}
 									messagePreviewFactory={messagePreviewFactory}
 								/>
 							</Padding>

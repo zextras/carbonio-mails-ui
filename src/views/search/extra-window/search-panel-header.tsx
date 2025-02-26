@@ -19,8 +19,8 @@ import { useNavigate } from 'react-router-dom';
 
 import type { MailMessage, NormalizedConversation } from '../../../types';
 
-// FIXME rename and move because is not related to extra-window
-export const SearchExtraWindowPanelHeader: FC<{
+// FIXME move because is not related to extra-window
+export const SearchPanelHealer: FC<{
 	item: NormalizedConversation | (Partial<MailMessage> & Pick<MailMessage, 'id'>);
 }> = ({ item }) => {
 	const navigate = useNavigate();
