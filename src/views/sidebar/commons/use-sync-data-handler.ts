@@ -21,10 +21,10 @@ import {
 import { normalizeMailMessageFromSoap } from '../../../normalizations/normalize-message';
 import {
 	handleNotifyConversationsCreated,
-	handleNotifyMessagesCreated,
 	handleNotifyConversationsModified,
-	handleNotifyMessagesModified,
 	handleNotifyDeleted,
+	handleNotifyMessagesCreated,
+	handleNotifyMessagesModified,
 	updateMessages
 } from '../../../store/emails/store';
 import { IncompleteMessage, SoapConversation, SoapIncompleteMessage } from '../../../types';
@@ -71,9 +71,9 @@ function handleTagsNotify({ notify, worker, store }: HandleTagsNotifyProps): voi
 function processCreatedNotifications(notify: SoapNotify): void {
 	const { c: createdConversations, m: createdMessages } = notify.created || {};
 	const { m: modifiedMessages } = notify.modified || {};
-	const newConversations = createdConversations as Array<SoapConversation>;
-	const newMessages = createdMessages as Array<SoapIncompleteMessage>;
-	const changedMessages = modifiedMessages as Array<SoapIncompleteMessage>;
+	const newConversations = (createdConversations ?? []) as Array<SoapConversation>;
+	const newMessages = (createdMessages ?? []) as Array<SoapIncompleteMessage>;
+	const changedMessages = (modifiedMessages ?? []) as Array<SoapIncompleteMessage>;
 	const allReceivedMessages = [...changedMessages, ...newMessages];
 	// in case of created, we have SoapConversation
 	if (createdConversations && createdMessages) {
@@ -145,9 +145,8 @@ function processNotifications({
 		}
 
 		const deletedIds = notify.deleted;
-		if (deletedIds) {
-			const idsToDelete = deletedIds;
-			handleNotifyDeleted(idsToDelete);
+		if (deletedIds.length > 0) {
+			handleNotifyDeleted(deletedIds);
 		}
 
 		setSeq(notify.seq);
