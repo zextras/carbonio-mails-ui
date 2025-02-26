@@ -54,17 +54,19 @@ const ConversationListDataSyncTest: () => React.JSX.Element = () => {
  - the original message changes to the new conversation id
 */
 function simulateReplyToSingleMessageConversation({
+	deletedConversationId,
 	newConversationId,
 	originalMessageId,
 	newMessageId
 }: {
+	deletedConversationId: string;
 	newConversationId: string;
 	originalMessageId: string;
 	newMessageId: string;
-}) {
+}): void {
 	const realLifeNotifyResponse = {
 		seq: 6,
-		deleted: ['-3'],
+		deleted: [deletedConversationId],
 		created: {
 			m: [
 				{
@@ -177,6 +179,7 @@ describe('conversation-list-data-sync', () => {
 		const newConversationId = '2000';
 		const newMessageId = '101';
 		simulateReplyToSingleMessageConversation({
+			deletedConversationId: singleMessageConversation.id,
 			newConversationId,
 			newMessageId,
 			originalMessageId: originalMessage.id
