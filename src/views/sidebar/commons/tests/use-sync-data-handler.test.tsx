@@ -4,26 +4,30 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { waitFor, renderHook, act } from '@testing-library/react';
-import { SoapNotify, useRefresh } from '@zextras/carbonio-shell-ui';
+import { act, renderHook, waitFor } from '@testing-library/react';
 import { http } from 'msw';
 
 import { FOLDERS } from '../../../../carbonio-ui-commons/constants/folders';
 import { useFolderStore } from '../../../../carbonio-ui-commons/store/zustand/folder';
-import { useTagStore } from '../../../../carbonio-ui-commons/store/zustand/tags';
+import { getTags, useTagStore } from '../../../../carbonio-ui-commons/store/zustand/tags';
 import { getSetupServer } from '../../../../carbonio-ui-commons/test/jest-setup';
 import { useNotify } from '../../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
 import { generateFolder } from '../../../../carbonio-ui-commons/test/mocks/folders/folders-generator';
 import { handleGetFolderRequest } from '../../../../carbonio-ui-commons/test/mocks/network/msw/handle-get-folder';
 import { handleGetShareInfoRequest } from '../../../../carbonio-ui-commons/test/mocks/network/msw/handle-get-share-info';
+import { populateFoldersStore } from '../../../../carbonio-ui-commons/test/mocks/store/folders';
 import { setupHook } from '../../../../carbonio-ui-commons/test/test-setup';
 import { folderWorker, tagsWorker } from '../../../../carbonio-ui-commons/worker';
+import { normalizeConversations } from '../../../../normalizations/normalize-conversation';
 import {
-	useConversationById,
-	useMessageById,
-	setSearchResultsByMessage,
+	getUseEmailStoreAndHooksForTesting,
+	setConversationsInEmailStore,
 	setSearchResultsByConversation,
-	getUseEmailStoreAndHooksForTesting
+	setSearchResultsByMessage,
+	useConversationById,
+	useConversationIndexSlice,
+	useConversationsByIds,
+	useMessageById
 } from '../../../../store/emails/store';
 import {
 	generateConversationFromAPI,
@@ -31,163 +35,188 @@ import {
 } from '../../../../tests/generators/api';
 import { generateConversation } from '../../../../tests/generators/generateConversation';
 import { generateMessage } from '../../../../tests/generators/generateMessage';
-import { SoapConversation, SoapIncompleteMessage } from '../../../../types';
-import { useSyncDataHandler } from '../sync-data-handler-hooks';
+import { SoapConversation, SoapIncompleteMessage, SoapMailMessage } from '../../../../types';
+import {
+	mockShellSoapNotify,
+	mockSoapCreateConversation,
+	mockSoapCreateMessage,
+	mockSoapCreateMessageAndConversation,
+	mockSoapDelete,
+	mockSoapMessageActionAndConversationModified,
+	mockSoapModifyConversationAction,
+	mockSoapModifyMessageAction,
+	mockSoapModifyMessageFolder,
+	mockSoapRefresh
+} from '../../tests/test-helpers';
+import { useSyncDataHandler } from '../use-sync-data-handler';
 
+getTags();
 const UNREAD = 'u';
 const READ = '';
 const FLAGGED = 'f';
 const NOTFLAGGED = '';
 
 const { setMessagesInSearchSlice } = getUseEmailStoreAndHooksForTesting();
-function mockSoapRefresh(mailbox: number): void {
-	(useRefresh as jest.Mock).mockReturnValue({
-		mbx: [{ s: mailbox }]
-	});
-}
-
-function generateSoapAction(partial?: Partial<SoapNotify>): SoapNotify {
-	return {
-		deleted: [],
-		seq: 0,
-		...partial
-	};
-}
-
-function mockSoapModifyConversationAction(mailboxNumber: number, actions: Array<string>): void {
-	mockSoapRefresh(mailboxNumber);
-	const action = actions.join('');
-	const soapNotify = generateSoapAction({
-		modified: {
-			// TODO: mbx is optional and not always received from API, consider removing it in shell-ui
-			mbx: [{ s: mailboxNumber }],
-			c: [
-				{
-					id: '123',
-					f: `s${action}`
-				}
-			]
-		}
-	});
-	(useNotify as jest.Mock).mockReturnValue([soapNotify]);
-}
-
-function mockSoapModifyMessageAction(
-	mailboxNumber: number,
-	messageId: string,
-	actions: Array<string>,
-	seq?: number
-): void {
-	mockSoapRefresh(mailboxNumber);
-	const action = actions.join('');
-	const soapNotify = generateSoapAction({
-		modified: {
-			mbx: [{ s: mailboxNumber }],
-			m: [
-				{
-					id: messageId,
-					f: `s${action}`
-				}
-			]
-		},
-		...(seq ? { seq } : {})
-	});
-	(useNotify as jest.Mock).mockReturnValue([soapNotify]);
-}
-
-function mockSoapMessageActionAndConversationModified(
-	mailboxNumber: number,
-	messageId: string,
-	conversationId: string,
-	actions: Array<string>
-): void {
-	mockSoapRefresh(mailboxNumber);
-	const action = actions.join('');
-	const soapNotify = generateSoapAction({
-		modified: {
-			mbx: [{ s: 1000 }],
-			m: [
-				{
-					id: messageId,
-					f: `s${action}`
-				}
-			],
-			c: [
-				{
-					id: conversationId,
-					f: `s${action}`
-				}
-			]
-		}
-	});
-	(useNotify as jest.Mock).mockReturnValue([soapNotify]);
-}
-
-function mockSoapModifyMessageFolder(
-	mailboxNumber: number,
-	messageId: string,
-	folder: string
-): void {
-	mockSoapRefresh(mailboxNumber);
-	const soapNotify = generateSoapAction({
-		modified: {
-			// TODO: mbx is optional and not always received from API, consider removing it in shell-ui
-			mbx: [{ s: mailboxNumber }],
-			m: [
-				{
-					id: messageId,
-					l: folder
-				}
-			]
-		}
-	});
-	(useNotify as jest.Mock).mockReturnValue([soapNotify]);
-}
-
-function mockSoapDelete(mailboxNumber: number, deletedIds: Array<string>): void {
-	mockSoapRefresh(mailboxNumber);
-	const soapNotify = generateSoapAction({
-		deleted: deletedIds
-	});
-	(useNotify as jest.Mock).mockReturnValue([soapNotify]);
-}
-
-function mockSoapCreateMessage(
-	mailboxNumber: number,
-	messages: Array<SoapIncompleteMessage>
-): void {
-	mockSoapRefresh(mailboxNumber);
-	const soapNotify = generateSoapAction({
-		created: {
-			m: messages
-		}
-	});
-	(useNotify as jest.Mock).mockReturnValue([soapNotify]);
-}
-
-function mockSoapCreateMessageAndConversation(
-	mailboxNumber: number,
-	messages: Array<SoapIncompleteMessage>,
-	conversation: Array<SoapConversation>
-): void {
-	mockSoapRefresh(mailboxNumber);
-	const soapNotify = generateSoapAction({
-		created: {
-			m: messages,
-			c: conversation
-		}
-	});
-	(useNotify as jest.Mock).mockReturnValue([soapNotify]);
-}
 
 jest.mock('../../../../carbonio-ui-commons/store/zustand/tags', () => ({
 	...jest.requireActual('../../../../carbonio-ui-commons/store/zustand/tags'),
 	getTags: jest.fn()
 }));
 
+jest.mock('../../../../carbonio-ui-commons/worker', () => ({
+	...jest.requireActual('../../../../carbonio-ui-commons/worker'),
+	folderWorker: {
+		postMessage: jest.fn()
+	}
+}));
+
+function getSoapMessage(
+	messageId: string,
+	initialData?: Partial<SoapIncompleteMessage>
+): SoapMailMessage {
+	return {
+		id: messageId,
+		cid: '1',
+		e: [],
+		su: 'message Subject',
+		s: 71116,
+		l: '2',
+		f: 'au',
+		fr: 'fragment',
+		mp: [],
+		d: 1717752296000,
+		...initialData
+	};
+}
+
+function getSoapConversation(id: string): SoapConversation {
+	return {
+		id,
+		n: 1,
+		u: 1,
+		f: 'flag',
+		tn: 'tag names',
+		d: 123,
+		m: [getSoapMessage('123')],
+		e: [],
+		su: 'conversations Subject',
+		fr: 'fragment'
+	};
+}
+
 describe('sync data handler', () => {
 	const mailboxNumber = 1000;
 	describe('conversations', () => {
+		it('should add new conversations to the store when created', async () => {
+			populateFoldersStore();
+			setConversationsInEmailStore(normalizeConversations([getSoapConversation('1')]), false);
+			const newConversation = getSoapConversation('2');
+			mockSoapCreateConversation([newConversation]);
+
+			renderHook(() => useSyncDataHandler());
+
+			const expectedConversationsInStore = ['1', '2'];
+			const { result: conversationsInStore } = renderHook(() =>
+				useConversationsByIds(expectedConversationsInStore)
+			);
+
+			await waitFor(() => {
+				expect(conversationsInStore.current.length).toBe(2);
+			});
+
+			await waitFor(() => {
+				expect(conversationsInStore.current.map((c) => c.id)).toEqual(expectedConversationsInStore);
+			});
+		});
+
+		it('should not duplicate conversations when created', async () => {
+			setConversationsInEmailStore(normalizeConversations([getSoapConversation('1')]), false);
+
+			const newConversation = getSoapConversation('1');
+			mockSoapCreateConversation([newConversation]);
+
+			// eslint-disable-next-line testing-library/no-unnecessary-act
+			await act(async () => {
+				renderHook(() => useSyncDataHandler());
+			});
+			const { result: conversationsInStore } = renderHook(() => useConversationsByIds(['1']));
+
+			expect(conversationsInStore.current.length).toBe(1);
+			expect(conversationsInStore.current.map((c) => c.id)).toEqual(['1']);
+		});
+
+		it('should handle empty conversations array', async () => {
+			mockSoapCreateConversation([]);
+
+			// eslint-disable-next-line testing-library/no-unnecessary-act
+			await act(async () => {
+				renderHook(() => useSyncDataHandler());
+			});
+
+			const { result: conversationsInStore } = renderHook(() => useConversationsByIds([]));
+			await waitFor(() => {
+				expect(conversationsInStore.current).toEqual([]);
+			});
+		});
+
+		it('should delete conversation', async () => {
+			populateFoldersStore();
+			setConversationsInEmailStore([generateConversation({ id: '10' })], false);
+			mockShellSoapNotify({
+				deleted: ['10']
+			});
+			const { result: conversationsInStoreBeforeUpdate } = renderHook(() =>
+				useConversationIndexSlice()
+			);
+			expect(conversationsInStoreBeforeUpdate.current.conversationListIndex.length).toBe(1);
+
+			// eslint-disable-next-line testing-library/no-unnecessary-act
+			await act(async () => {
+				renderHook(() => useSyncDataHandler());
+			});
+
+			const { result: conversationsInStore } = renderHook(() => useConversationIndexSlice());
+			await waitFor(() => {
+				expect(conversationsInStore.current.conversationListIndex.length).toBe(0);
+			});
+		});
+
+		it('should add new conversations to the store when the convId changes from negative to positive', async () => {
+			populateFoldersStore();
+
+			await waitFor(() => {
+				setConversationsInEmailStore(
+					[generateConversation({ id: '-1', folderId: FOLDERS.INBOX })],
+					false
+				);
+			});
+
+			const { result: conversationsInStoreBefore } = renderHook(() => useConversationIndexSlice());
+			expect(conversationsInStoreBefore.current.conversationListIndex.length).toBe(1);
+
+			const newConversation = getSoapConversation('1');
+			const newMessages = getSoapMessage('100', { cid: '1', l: FOLDERS.INBOX });
+			mockShellSoapNotify({
+				created: {
+					m: [newMessages],
+					c: [newConversation]
+				},
+				deleted: ['-1']
+			});
+
+			renderHook(() => useSyncDataHandler());
+
+			const { result: conversationSlice } = renderHook(() => useConversationIndexSlice());
+
+			await waitFor(() => expect(conversationSlice.current.conversationListIndex.length).toBe(1));
+			const expectedConversationsInStore = ['1'];
+			await waitFor(() =>
+				expect(conversationSlice.current.conversationListIndex).toEqual(
+					expectedConversationsInStore
+				)
+			);
+		});
+
 		it('should mark conversation as read', async () => {
 			setSearchResultsByConversation(
 				[generateConversation({ id: '123', messageIds: [], isRead: false })],
@@ -202,6 +231,7 @@ describe('sync data handler', () => {
 				expect(result.current?.read).toBe(true);
 			});
 		});
+
 		it('should mark conversation as unread', async () => {
 			setSearchResultsByConversation(
 				[generateConversation({ id: '123', messageIds: [], isRead: true })],
@@ -231,6 +261,7 @@ describe('sync data handler', () => {
 				expect(result.current?.flagged).toBe(true);
 			});
 		});
+
 		it('should mark conversation as not flagged', async () => {
 			setSearchResultsByConversation(
 				[generateConversation({ id: '123', messageIds: [], isFlagged: true })],
