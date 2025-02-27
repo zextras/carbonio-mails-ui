@@ -32,7 +32,7 @@ type SearchConversationListItemProps = {
 	conversationId: string;
 	selecting: boolean;
 	active: boolean;
-	activeItemId: string;
+	activeItemId?: string;
 	toggle: (id: string) => void;
 	selected: boolean;
 	deselectAll: () => void;
@@ -149,7 +149,7 @@ export const SearchConversationListItem: FC<SearchConversationListItemProps> = (
 					height="auto"
 				>
 					<SearchConversationMessagesList
-						active={activeItemId}
+						activeItemId={activeItemId}
 						length={conversation.messagesInConversation}
 						messages={messages}
 						conversationStatus={conversationStatus}

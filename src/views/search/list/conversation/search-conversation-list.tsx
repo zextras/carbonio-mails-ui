@@ -96,8 +96,7 @@ export const SearchConversationList = ({
 									active={active}
 									conversationId={conversationId}
 									selecting={isSelectModeOn}
-									// FIXME: itemId could be undefined
-									activeItemId={itemId!}
+									activeItemId={itemId}
 									toggle={toggle}
 									selected={isSelected}
 									deselectAll={deselectAll}

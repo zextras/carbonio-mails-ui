@@ -18,14 +18,14 @@ import { AppContext, IncompleteMessage, SearchRequestStatus } from '../../../../
 import { MessageListItem } from '../../../app/folder-panel/messages/message-list-item';
 
 type SearchConversationMessagesListProps = {
-	active: string;
+	activeItemId?: string;
 	conversationStatus: SearchRequestStatus | undefined;
 	messages: Array<IncompleteMessage>;
 	length: number;
 };
 
 export const SearchConversationMessagesList = memo(function SearchConversationMessagesList({
-	active,
+	activeItemId,
 	conversationStatus,
 	messages,
 	length
@@ -42,7 +42,7 @@ export const SearchConversationMessagesList = memo(function SearchConversationMe
 	const listItems = useMemo(
 		() =>
 			map(messages, (message) => {
-				const isActive = active === message.id || active === message.conversation;
+				const isActive = activeItemId === message.id || activeItemId === message.conversation;
 				const isSelected = selected[message.id];
 				const handleSearchReplaceHistory = (): void => {
 					navigate(`../message/${message.id}`, { replace: true });
@@ -77,7 +77,7 @@ export const SearchConversationMessagesList = memo(function SearchConversationMe
 					</CustomListItem>
 				);
 			}),
-		[active, deselectAll, isSelectModeOn, messages, navigate, selected, toggle]
+		[activeItemId, deselectAll, isSelectModeOn, messages, navigate, selected, toggle]
 	);
 
 	if (conversationStatus !== API_REQUEST_STATUS.fulfilled) {
