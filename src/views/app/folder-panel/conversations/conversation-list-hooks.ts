@@ -16,7 +16,7 @@ import {
 	updateMessages
 } from '../../../../store/emails/store';
 import { SearchResponse } from '../../../../types';
-import { extractConvMessage } from '../../../sidebar/commons/sync-data-handler-hooks';
+import { extractConvMessage } from '../../../sidebar/commons/use-sync-data-handler';
 
 function handleLoadMoreResults({
 	searchResponse,
