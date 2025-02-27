@@ -23,9 +23,15 @@ describe('replaceLinkToAnchor', () => {
 		expect(replaceLinkToAnchor(content)).toBe(result);
 	});
 
-	it('should replaces URL without protocol with anchor tag', () => {
+	it('should not replace URL without protocol with anchor tag', () => {
 		const content = 'Visit www.example.com';
-		const result = 'Visit <a href="http://www.example.com" target="_blank">www.example.com</a>';
+		const result = 'Visit www.example.com';
+		expect(replaceLinkToAnchor(content)).toBe(result);
+	});
+
+	it('should handle IP address input without modification', () => {
+		const content = '127.0.0.1';
+		const result = '127.0.0.1';
 		expect(replaceLinkToAnchor(content)).toBe(result);
 	});
 
