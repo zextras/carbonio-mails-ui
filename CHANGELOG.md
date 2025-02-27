@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.24.5](https://github.com/zextras/carbonio-mails-ui/compare/v1.24.4...v1.24.5) (2025-02-27)
+
+
+### Bug Fixes
+
+* **emails:** correct state update in handleNotifyConversationsCreated ([c974850](https://github.com/zextras/carbonio-mails-ui/commit/c974850e697968feb382c14250d084f75daca2d1))
+* handle case when modified/created messages and conversations are undefined ([172cb2c](https://github.com/zextras/carbonio-mails-ui/commit/172cb2c087edd123364f27269e05d4fb9a8872e4))
+* reintroduce check on deletedIds length ([b91ccd5](https://github.com/zextras/carbonio-mails-ui/commit/b91ccd5618b0495a05d4d3616736bc4992faeea3))
+* reply to single message conversation makes conversation disappear ([5bdd13d](https://github.com/zextras/carbonio-mails-ui/commit/5bdd13d887aadbf0c83c1bca9b419be59275731d))
+
 ### [1.24.4](https://github.com/zextras/carbonio-mails-ui/compare/v1.24.3...v1.24.4) (2025-02-24)
 
 
