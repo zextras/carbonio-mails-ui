@@ -95,8 +95,7 @@ export const ConversationList = (): React.JSX.Element => {
 									conversationId={id}
 									visible={visible}
 									selected={isSelected}
-									// FIXME: itemId could be undefined
-									activeItemId={itemId!}
+									activeItemId={itemId}
 									toggleMultipleSelection={toggleMultipleSelection}
 									setDraggedIds={setDraggedIds}
 									selectedItems={selected}

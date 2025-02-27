@@ -31,7 +31,7 @@ export type ConversationListItemProps = {
 	toggleMultipleSelection: (id: string) => void;
 	active?: boolean;
 	isSearchModule?: boolean;
-	activeItemId: string;
+	activeItemId?: string;
 	dragImageRef?: React.RefObject<HTMLInputElement>;
 	setDraggedIds?: (ids: Record<string, boolean>) => void;
 	deselectAll: () => void;
@@ -191,7 +191,7 @@ export const ConversationListItem = memo(function ConversationListItem({
 					height="auto"
 				>
 					<ConversationMessagesList
-						active={activeItemId}
+						activeItemId={activeItemId}
 						length={conversation.messagesInConversation}
 						messages={messages}
 						conversationStatus={conversationStatus}
