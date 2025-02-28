@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.24.6](https://github.com/zextras/carbonio-mails-ui/compare/v1.24.5...v1.24.6) (2025-02-28)
+
+
+### Bug Fixes
+
+* composer contact move fixed ([bdb11e4](https://github.com/zextras/carbonio-mails-ui/commit/bdb11e464b5a62cc83f283d4a802aac31eb940c2))
+* connection idle or issue may block the update of mail UI interface ([8a72792](https://github.com/zextras/carbonio-mails-ui/commit/8a72792b9da4440a84eaf18d775226185ba0cf43))
+* process updates notifications after the backend resets the sequence number ([0e071cb](https://github.com/zextras/carbonio-mails-ui/commit/0e071cb987d96af9986dffb2f48b6dcf5678b0c5))
+
 ### [1.24.5](https://github.com/zextras/carbonio-mails-ui/compare/v1.24.4...v1.24.5) (2025-02-27)
 
 
