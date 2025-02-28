@@ -374,7 +374,7 @@ export const AdvancedFilterModal = ({
 
 	const sendDateRowProps = useMemo(
 		() => ({ sentBefore, setSentBefore, sentAfter, setSentAfter, sentOn, setSentOn }),
-		[sentBefore, setSentBefore, sentAfter, setSentAfter, sentOn, setSentOn]
+		[JSON.stringify({ sentBefore, sentAfter, sentOn }), setSentBefore, setSentAfter, setSentOn]
 	);
 	const toggleFiltersProps = useMemo(
 		() => ({
