@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.24.7](https://github.com/zextras/carbonio-mails-ui/compare/v1.24.6...v1.24.7) (2025-02-28)
+
+
+### Bug Fixes
+
+* **tests:** correct URL handling in mail renderer ([436bbc8](https://github.com/zextras/carbonio-mails-ui/commit/436bbc80f0ae9f57d736ed28c8a2f45288c12f36))
+* **utils:** correct regex quantifier in replaceLinkToAnchor ([ec99f40](https://github.com/zextras/carbonio-mails-ui/commit/ec99f40711ee0f55eb0e933dfd99cc64bbc3e96f))
+* **utils:** remove unnecessary escapes in regex ([f4430ff](https://github.com/zextras/carbonio-mails-ui/commit/f4430ffc412044316f113add52a1a9d803630f32))
+* **utils:** update regex to use hex notation ([65e6c4a](https://github.com/zextras/carbonio-mails-ui/commit/65e6c4ae745398baa4334202f7bcffa77a52ab66))
+
 ### [1.24.6](https://github.com/zextras/carbonio-mails-ui/compare/v1.24.5...v1.24.6) (2025-02-28)
 
 
