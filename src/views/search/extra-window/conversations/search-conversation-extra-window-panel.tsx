@@ -14,7 +14,7 @@ import { API_REQUEST_STATUS } from '../../../../constants';
 import { useCompleteConversationOrFetch } from '../../../../store/emails/hooks/hooks';
 import { ConversationMessagePreviewWrapper } from '../../../app/detail-panel/conversation-message-preview-wrapper';
 import { useExtraWindow } from '../../../app/extra-windows/use-extra-window';
-import { SearchExtraWindowPanelHeader } from '../search-extra-window-panel-header';
+import { SearchPanelHeader } from '../search-panel-header';
 
 type SearchConversationExtraWindowContainerPanelProps = { conversationId: string };
 
@@ -46,8 +46,7 @@ export const SearchConversationExtraWindowPanelContainer: FC<
 			data-testid={`ConversationPreview-${conversation.id}`}
 		>
 			<>
-				{/* FIXME can be removed */}
-				{!isInsideExtraWindow && <SearchExtraWindowPanelHeader item={conversation} />}
+				{!isInsideExtraWindow && <SearchPanelHeader item={conversation} />}
 
 				<Container
 					style={{ overflowY: 'auto' }}
