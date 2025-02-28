@@ -43,7 +43,8 @@ export function mockSoapModifyConversationAction(
 export function mockSoapModifyMessageAction(
 	mailboxNumber: number,
 	messageId: string,
-	actions: Array<string>
+	actions: Array<string>,
+	seq?: number
 ): void {
 	mockSoapRefresh(mailboxNumber);
 	const action = actions.join('');
@@ -56,7 +57,8 @@ export function mockSoapModifyMessageAction(
 					f: `s${action}`
 				}
 			]
-		}
+		},
+		...(seq ? { seq } : {})
 	});
 	(useNotify as jest.Mock).mockReturnValue([soapNotify]);
 }

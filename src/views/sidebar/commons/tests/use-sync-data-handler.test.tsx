@@ -16,6 +16,7 @@ import { generateFolder } from '../../../../carbonio-ui-commons/test/mocks/folde
 import { handleGetFolderRequest } from '../../../../carbonio-ui-commons/test/mocks/network/msw/handle-get-folder';
 import { handleGetShareInfoRequest } from '../../../../carbonio-ui-commons/test/mocks/network/msw/handle-get-share-info';
 import { populateFoldersStore } from '../../../../carbonio-ui-commons/test/mocks/store/folders';
+import { setupHook } from '../../../../carbonio-ui-commons/test/test-setup';
 import { folderWorker, tagsWorker } from '../../../../carbonio-ui-commons/worker';
 import { normalizeConversations } from '../../../../normalizations/normalize-conversation';
 import {
@@ -520,6 +521,71 @@ describe('sync data handler', () => {
 			expect(workerSpy).toHaveBeenCalledWith(
 				expect.objectContaining({ op: 'notify', notify, state: expect.any(Object) })
 			);
+		});
+	});
+
+	describe('sequence number logic', () => {
+		beforeAll(() => {
+			/*
+			 * Intercept and stop the postMessage calls to the workers because the current Worker mock is buggy
+			 * and it causes a call to the "onMessage" event listener of the worker without a proper payload.
+			 * This results in a reset of the stores (the tags store in this case) which leads to errors in the test execution
+			 */
+			jest.spyOn(tagsWorker, 'postMessage').mockImplementation(() => {});
+		});
+
+		it('should not process notify if seq is less than or equal to current seq (but not 1)', async () => {
+			const sequence = 5;
+
+			// First notify
+			setMessagesInSearchSlice([generateMessage({ id: '1', isRead: false })]);
+			mockSoapModifyMessageAction(mailboxNumber, '1', [READ], sequence);
+			const { rerender } = await act(async () => setupHook(useSyncDataHandler));
+
+			// Second notify with the same sequence number
+			mockSoapModifyMessageAction(mailboxNumber, '1', [UNREAD], sequence);
+			rerender();
+			const {
+				result: { current: message }
+			} = setupHook(useMessageById, { initialProps: ['1'] });
+
+			expect(message?.read).toBe(true);
+		});
+
+		it('should process notify if seq is 1 and current seq is greater than 1', async () => {
+			const lastSequence = 5;
+
+			// First notify
+			setMessagesInSearchSlice([generateMessage({ id: '1', isRead: false })]);
+			mockSoapModifyMessageAction(mailboxNumber, '1', [READ], lastSequence);
+			const { rerender } = await act(async () => setupHook(useSyncDataHandler));
+
+			// ...the backend resets the sequence number to 1...
+
+			// Next notify after the idle period
+			mockSoapModifyMessageAction(mailboxNumber, '1', [UNREAD], 1);
+			rerender();
+			const {
+				result: { current: message }
+			} = setupHook(useMessageById, { initialProps: ['1'] });
+
+			expect(message?.read).toBe(false);
+		});
+
+		it('should process notify if seq is greater than current seq', async () => {
+			// First notify
+			setMessagesInSearchSlice([generateMessage({ id: '1', isRead: false })]);
+			mockSoapModifyMessageAction(mailboxNumber, '1', [READ], 12);
+			const { rerender } = await act(async () => setupHook(useSyncDataHandler));
+
+			// Next notify
+			mockSoapModifyMessageAction(mailboxNumber, '1', [UNREAD], 13);
+			rerender();
+			const {
+				result: { current: message }
+			} = setupHook(useMessageById, { initialProps: ['1'] });
+
+			expect(message?.read).toBe(false);
 		});
 	});
 });
