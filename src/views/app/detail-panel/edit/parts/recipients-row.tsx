@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, useCallback, useState } from 'react';
+import React, { FC, useCallback, useMemo, useState } from 'react';
 
 import { map, some } from 'lodash';
 
@@ -70,22 +70,26 @@ export const RecipientsRow: FC<RecipientsRowProps> = ({
 		[onRecipientsChange, recipients, type]
 	);
 
-	const recipientsAsContacts = map<Participant, ContactInputItem>(recipients, (recipient) => {
-		const email = recipient.address;
-		const exists = contacts[email];
-		return (
-			exists ?? {
-				id: recipient.address,
-				label: recipient.address,
-				value: {
-					id: recipient.address,
-					email: recipient.address,
-					type: recipient.isGroup ? CONTACT_TYPES.DISTRIBUTION_LIST : CONTACT_TYPES.CONTACT
-				},
-				error: recipient.error
-			}
-		);
-	});
+	const recipientsAsContacts = useMemo(
+		() =>
+			map<Participant, ContactInputItem>(recipients, (recipient) => {
+				const email = recipient.address;
+				const exists = contacts[email];
+				return (
+					exists ?? {
+						id: recipient.address,
+						label: recipient.address,
+						value: {
+							id: recipient.address,
+							email: recipient.address,
+							type: recipient.isGroup ? CONTACT_TYPES.DISTRIBUTION_LIST : CONTACT_TYPES.CONTACT
+						},
+						error: recipient.error
+					}
+				);
+			}),
+		[contacts, recipients]
+	);
 
 	return (
 		<ContactInput

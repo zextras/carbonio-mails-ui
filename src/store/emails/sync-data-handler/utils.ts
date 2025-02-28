@@ -137,8 +137,10 @@ function handleNotifyMessagesModified(
 	useEmailsStore.setState(
 		produce(({ populatedItemsSlice }: EmailsStoreState) => {
 			updatedMessages.forEach((message) => {
-				populatedItemsSlice.messages[message.id] = {
-					...merge(populatedItemsSlice.messages[message.id], message),
+				const messageId = message.id;
+				const messageAfterMerge = merge(populatedItemsSlice.messages[messageId], message);
+				populatedItemsSlice.messages[messageId] = {
+					...messageAfterMerge,
 					tags: message.tags
 				};
 			});
@@ -223,13 +225,13 @@ function handleNotifyConversationsCreated(
 ): void {
 	const newConversationIds = conversations.map((conv) => conv.id);
 	useEmailsStore.setState(
-		produce((state: EmailsStoreState) => {
-			state.populatedItemsSlice.conversations = conversations.reduce((acc, conversation) => {
+		produce(({ populatedItemsSlice, conversationIndexSlice }: EmailsStoreState) => {
+			populatedItemsSlice.conversations = conversations.reduce((acc, conversation) => {
 				acc[conversation.id] = conversation;
 				return acc;
-			}, state.populatedItemsSlice.conversations);
-			state.conversationIndexSlice.conversationListIndex = Array.from(
-				new Set([...newConversationIds, ...state.conversationIndexSlice.conversationListIndex])
+			}, populatedItemsSlice.conversations);
+			conversationIndexSlice.conversationListIndex = Array.from(
+				new Set([...newConversationIds, ...conversationIndexSlice.conversationListIndex])
 			);
 		})
 	);

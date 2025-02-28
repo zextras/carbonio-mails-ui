@@ -30,12 +30,11 @@ const DragImageContainer = styled.div`
 
 const DragItems = ({ draggedIds }: { draggedIds: Record<string, boolean> }): React.JSX.Element => (
 	<>
-		{map(Object.keys(draggedIds), (draggedItemId) => {
-			const conversation = getConversationById(draggedItemId);
-
-			if (!conversation) return <></>;
-
-			return (
+		{map(
+			Object.keys(draggedIds)
+				.map((draggedId) => getConversationById(draggedId))
+				.filter(Boolean),
+			(conversation) => (
 				<ConversationListItemComponent
 					conversationId={conversation.id}
 					key={conversation.id}
@@ -49,8 +48,8 @@ const DragItems = ({ draggedIds }: { draggedIds: Record<string, boolean> }): Rea
 					folderId=""
 					setDraggedIds={noop}
 				/>
-			);
-		})}
+			)
+		)}
 	</>
 );
 
