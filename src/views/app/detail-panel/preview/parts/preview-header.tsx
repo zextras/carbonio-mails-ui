@@ -431,8 +431,7 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 				{open && (
 					<MessageContactsList
 						message={message}
-						// FIXME: folderId could be undefined
-						folderId={folderId!}
+						folderId={folderId}
 						contactListExpandCB={contactListExpandCB}
 					/>
 				)}
