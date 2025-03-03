@@ -7,7 +7,7 @@
 
 import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 import produce from 'immer';
-import { assign, filter, forEach, keyBy, merge } from 'lodash';
+import { filter, forEach, keyBy, merge } from 'lodash';
 import { UseBoundStore, StoreApi } from 'zustand';
 
 import { RemoveAttachmentsResponse } from '../../../../api/delete-all-attachments-soap-api';
@@ -89,11 +89,7 @@ function updateMessages(
 			messages.forEach((message) => {
 				if (!message?.id) return;
 				const existingMessage = populatedItemsSlice.messages?.[message.id] || {};
-				populatedItemsSlice.messages[message.id] = {
-					...assign(existingMessage, message),
-					participants: message.participants
-				};
-
+				populatedItemsSlice.messages[message.id] = merge(existingMessage, message);
 				// Update the status if the message is complete
 				if (populatedItemsSlice.messages[message.id].isComplete) {
 					populatedItemsSlice.messagesStatus[message.id] = API_REQUEST_STATUS.fulfilled;
