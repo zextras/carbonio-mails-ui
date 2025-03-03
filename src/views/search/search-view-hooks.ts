@@ -29,7 +29,7 @@ import {
 	setMessagesInEmailStore
 } from '../../store/emails/store';
 import { IncompleteMessage, MailMessage, SearchResponse, SearchIndexSliceState } from '../../types';
-import { extractConvMessage } from '../sidebar/commons/sync-data-handler-hooks';
+import { extractConvMessage } from '../sidebar/commons/use-sync-data-handler';
 
 type UseRunSearchProps = {
 	query: QueryChip[];

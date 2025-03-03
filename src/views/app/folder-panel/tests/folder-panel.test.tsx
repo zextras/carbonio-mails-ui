@@ -56,6 +56,24 @@ describe('FolderPanel', () => {
 		expect(screen.getByTestId('message-list')).toBeInTheDocument();
 	});
 
+	it('shared account, renders MessageList when folder is DRAFTS and Visualization option is By Conversation', () => {
+		(useIsMessageView as jest.Mock).mockReturnValue(false); // conversation view
+		(useParams as jest.Mock).mockReturnValue({
+			folderId: `d935aa03-16b3-4493-b480-86fd09b45a38:${FOLDERS.DRAFTS}`
+		});
+		setupTest(<FolderPanel />);
+		expect(screen.getByTestId('message-list')).toBeInTheDocument();
+	});
+
+	it(' shared account renders MessageList when folder is TRASH and Visualization option is By Conversation', () => {
+		(useIsMessageView as jest.Mock).mockReturnValue(false); // conversation view
+		(useParams as jest.Mock).mockReturnValue({
+			folderId: `d935aa03-16b3-4493-b480-86fd09b45a38:${FOLDERS.TRASH}`
+		});
+		setupTest(<FolderPanel />);
+		expect(screen.getByTestId('message-list')).toBeInTheDocument();
+	});
+
 	it('renders ConversationList when isMessageView is false and folder is not DRAFTS or TRASH', () => {
 		(useIsMessageView as jest.Mock).mockReturnValue(false);
 		(useParams as jest.Mock).mockReturnValue({
