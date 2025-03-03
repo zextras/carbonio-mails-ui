@@ -14,6 +14,7 @@ import { FOLDERS_DESCRIPTORS, MessageActionsDescriptors } from '../../constants'
 import { ASSERTIONS, MSG_CONV_STATUS_DESCRIPTORS } from '../../tests/constants';
 import { generateMessage } from '../../tests/generators/generateMessage';
 import type { MailMessage } from '../../types';
+import { MessagesMultipleSelectionActions } from '../../views/app/folder-panel/messages/messages-multiple-selection-actions';
 import { MultipleSelectionActionsPanel } from '../../views/app/folder-panel/parts/multiple-selection-actions-panel';
 
 const generalFolders = {
@@ -101,7 +102,15 @@ describe('Actions visibility', () => {
 					selectedIds
 				};
 
-				setupTest(<MultipleSelectionActionsPanel {...testProps} />);
+				setupTest(
+					<MultipleSelectionActionsPanel {...testProps}>
+						<MessagesMultipleSelectionActions
+							ids={selectedIds}
+							deselectAll={deselectAll}
+							folderId={excludedFolder}
+						/>
+					</MultipleSelectionActionsPanel>
+				);
 				expect(
 					screen.queryByTestId(`primary-multi-action-button-${action.id}`)
 				).not.toBeInTheDocument();
@@ -122,7 +131,15 @@ describe('Actions visibility', () => {
 					selectedIds
 				};
 
-				setupTest(<MultipleSelectionActionsPanel {...testProps} />);
+				setupTest(
+					<MultipleSelectionActionsPanel {...testProps}>
+						<MessagesMultipleSelectionActions
+							ids={selectedIds}
+							deselectAll={deselectAll}
+							folderId={excludedFolder}
+						/>
+					</MultipleSelectionActionsPanel>
+				);
 				if (assertion === true)
 					expect(
 						screen.getByTestId(`primary-multi-action-button-${action.id}`)
@@ -155,7 +172,15 @@ describe('Actions visibility', () => {
 					selectedIds
 				};
 
-				setupTest(<MultipleSelectionActionsPanel {...testProps} />);
+				setupTest(
+					<MultipleSelectionActionsPanel {...testProps}>
+						<MessagesMultipleSelectionActions
+							ids={selectedIds}
+							deselectAll={deselectAll}
+							folderId={excludedFolder}
+						/>
+					</MultipleSelectionActionsPanel>
+				);
 				expect(
 					screen.queryByTestId(`primary-multi-action-button-${action.id}`)
 				).not.toBeInTheDocument();
@@ -175,7 +200,15 @@ describe('Actions visibility', () => {
 					selectedIds
 				};
 
-				setupTest(<MultipleSelectionActionsPanel {...testProps} />);
+				setupTest(
+					<MultipleSelectionActionsPanel {...testProps}>
+						<MessagesMultipleSelectionActions
+							ids={selectedIds}
+							deselectAll={deselectAll}
+							folderId={excludedFolder}
+						/>
+					</MultipleSelectionActionsPanel>
+				);
 				if (assertion === true)
 					expect(
 						screen.getByTestId(`primary-multi-action-button-${action.id}`)
@@ -208,7 +241,15 @@ describe('Actions visibility', () => {
 					selectedIds
 				};
 
-				setupTest(<MultipleSelectionActionsPanel {...testProps} />);
+				setupTest(
+					<MultipleSelectionActionsPanel {...testProps}>
+						<MessagesMultipleSelectionActions
+							ids={selectedIds}
+							deselectAll={deselectAll}
+							folderId={excludedFolder}
+						/>
+					</MultipleSelectionActionsPanel>
+				);
 				expect(
 					screen.queryByTestId(`primary-multi-action-button-${action.id}`)
 				).not.toBeInTheDocument();
@@ -228,7 +269,15 @@ describe('Actions visibility', () => {
 					selectedIds
 				};
 
-				setupTest(<MultipleSelectionActionsPanel {...testProps} />);
+				setupTest(
+					<MultipleSelectionActionsPanel {...testProps}>
+						<MessagesMultipleSelectionActions
+							ids={selectedIds}
+							deselectAll={deselectAll}
+							folderId={excludedFolder}
+						/>
+					</MultipleSelectionActionsPanel>
+				);
 				if (assertion.value === true)
 					expect(
 						screen.getByTestId(`primary-multi-action-button-${action.id}`)

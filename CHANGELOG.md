@@ -2,6 +2,49 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.24.7](https://github.com/zextras/carbonio-mails-ui/compare/v1.24.6...v1.24.7) (2025-02-28)
+
+
+### Bug Fixes
+
+* **tests:** correct URL handling in mail renderer ([436bbc8](https://github.com/zextras/carbonio-mails-ui/commit/436bbc80f0ae9f57d736ed28c8a2f45288c12f36))
+* **utils:** correct regex quantifier in replaceLinkToAnchor ([ec99f40](https://github.com/zextras/carbonio-mails-ui/commit/ec99f40711ee0f55eb0e933dfd99cc64bbc3e96f))
+* **utils:** remove unnecessary escapes in regex ([f4430ff](https://github.com/zextras/carbonio-mails-ui/commit/f4430ffc412044316f113add52a1a9d803630f32))
+* **utils:** update regex to use hex notation ([65e6c4a](https://github.com/zextras/carbonio-mails-ui/commit/65e6c4ae745398baa4334202f7bcffa77a52ab66))
+
+### [1.24.6](https://github.com/zextras/carbonio-mails-ui/compare/v1.24.5...v1.24.6) (2025-02-28)
+
+
+### Bug Fixes
+
+* composer contact move fixed ([bdb11e4](https://github.com/zextras/carbonio-mails-ui/commit/bdb11e464b5a62cc83f283d4a802aac31eb940c2))
+* connection idle or issue may block the update of mail UI interface ([8a72792](https://github.com/zextras/carbonio-mails-ui/commit/8a72792b9da4440a84eaf18d775226185ba0cf43))
+* process updates notifications after the backend resets the sequence number ([0e071cb](https://github.com/zextras/carbonio-mails-ui/commit/0e071cb987d96af9986dffb2f48b6dcf5678b0c5))
+
+### [1.24.5](https://github.com/zextras/carbonio-mails-ui/compare/v1.24.4...v1.24.5) (2025-02-27)
+
+
+### Bug Fixes
+
+* **emails:** correct state update in handleNotifyConversationsCreated ([c974850](https://github.com/zextras/carbonio-mails-ui/commit/c974850e697968feb382c14250d084f75daca2d1))
+* handle case when modified/created messages and conversations are undefined ([172cb2c](https://github.com/zextras/carbonio-mails-ui/commit/172cb2c087edd123364f27269e05d4fb9a8872e4))
+* reintroduce check on deletedIds length ([b91ccd5](https://github.com/zextras/carbonio-mails-ui/commit/b91ccd5618b0495a05d4d3616736bc4992faeea3))
+* reply to single message conversation makes conversation disappear ([5bdd13d](https://github.com/zextras/carbonio-mails-ui/commit/5bdd13d887aadbf0c83c1bca9b419be59275731d))
+
+### [1.24.4](https://github.com/zextras/carbonio-mails-ui/compare/v1.24.3...v1.24.4) (2025-02-24)
+
+
+### Bug Fixes
+
+* [CO-1845] update folder panel logic to use helper functions for draft and trash folder checks ([2bad027](https://github.com/zextras/carbonio-mails-ui/commit/2bad0276923304885164ef1dfe1e03fdc6bcbf90))
+
+### [1.24.3](https://github.com/zextras/carbonio-mails-ui/compare/v1.24.2...v1.24.3) (2025-02-21)
+
+
+### Bug Fixes
+
+* delete in search module call the correct api ([d38f23d](https://github.com/zextras/carbonio-mails-ui/commit/d38f23dada02124019e5e01c21e180cd9b6ced8b))
+
 ### [1.24.2](https://github.com/zextras/carbonio-mails-ui/compare/v1.24.1...v1.24.2) (2025-02-19)
 
 

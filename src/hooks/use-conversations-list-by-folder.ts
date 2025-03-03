@@ -28,7 +28,7 @@ export const useConversationListByFolder = (folderId: string): ConversationIndex
 	const previousFolderId = useRef<string | null>(null);
 
 	const conversationIndexSlice = useConversationIndexSlice();
-	const conversationListIndex = useConversationsIdsByFolder(folderId);
+	const conversationListIndexByFolder = useConversationsIdsByFolder(folderId);
 	const prefSortOrder = useMemo(
 		() => prefs?.zimbraPrefSortOrder,
 		[prefs?.zimbraPrefSortOrder]
@@ -77,9 +77,9 @@ export const useConversationListByFolder = (folderId: string): ConversationIndex
 		() => ({
 			conversationIndexSlice: {
 				...conversationIndexSlice,
-				conversationListIndex
+				conversationListIndex: conversationListIndexByFolder
 			}
 		}),
-		[conversationIndexSlice, conversationListIndex]
+		[conversationIndexSlice, conversationListIndexByFolder]
 	);
 };

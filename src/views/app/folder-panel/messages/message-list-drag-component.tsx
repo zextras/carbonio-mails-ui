@@ -15,17 +15,16 @@ export const DragItems = ({
 	draggedIds
 }: {
 	draggedIds: Record<string, boolean>;
-}): React.JSX.Element => (
-	<>
-		{map(Object.keys(draggedIds), (draggedItemId) => {
-			const item = getMessageById(draggedItemId);
-
-			if (!item) return <></>;
-
-			return (
+}): React.JSX.Element => {
+	const items = map(Object.keys(draggedIds), (draggedItemId) =>
+		getMessageById(draggedItemId)
+	).filter(Boolean);
+	return (
+		<>
+			{map(items, (item) => (
 				<MessageListItem
 					message={item}
-					key={item.id}
+					key={`dragged-item-${item.id}`}
 					isConvChildren={false}
 					toggle={noop}
 					selected={false}
@@ -33,7 +32,8 @@ export const DragItems = ({
 					visible={false}
 					deselectAll={noop}
 				/>
-			);
-		})}
-	</>
-);
+			))}
+			)
+		</>
+	);
+};

@@ -11,6 +11,7 @@ import { map, noop } from 'lodash';
 import styled from 'styled-components';
 
 import { ConversationListItemComponent } from './conversation-list-item-component';
+import { ConversationsMultipleSelectionActions } from './conversations-multiple-selection-actions';
 import { CustomList } from '../../../../carbonio-ui-commons/components/list/list';
 import { useFolder, useRoot } from '../../../../carbonio-ui-commons/store/zustand/folder/hooks';
 import { getConversationById } from '../../../../store/emails/store';
@@ -29,12 +30,11 @@ const DragImageContainer = styled.div`
 
 const DragItems = ({ draggedIds }: { draggedIds: Record<string, boolean> }): React.JSX.Element => (
 	<>
-		{map(Object.keys(draggedIds), (draggedItemId) => {
-			const conversation = getConversationById(draggedItemId);
-
-			if (!conversation) return <></>;
-
-			return (
+		{map(
+			Object.keys(draggedIds)
+				.map((draggedId) => getConversationById(draggedId))
+				.filter(Boolean),
+			(conversation) => (
 				<ConversationListItemComponent
 					conversationId={conversation.id}
 					key={conversation.id}
@@ -48,8 +48,8 @@ const DragItems = ({ draggedIds }: { draggedIds: Record<string, boolean> }): Rea
 					folderId=""
 					setDraggedIds={noop}
 				/>
-			);
-		})}
+			)
+		)}
 	</>
 );
 
@@ -149,7 +149,13 @@ export const ConversationListComponent = memo(function ConversationListComponent
 					isAllSelected={isAllSelected}
 					selectAllModeOff={selectAllModeOff}
 					setIsSelectModeOn={setIsSelectModeOn}
-				/>
+				>
+					<ConversationsMultipleSelectionActions
+						selectedConversationsIds={selectedIds}
+						deselectAll={deselectAll}
+						folderId={folderId}
+					/>
+				</MultipleSelectionActionsPanel>
 			) : (
 				showBreadcrumbs && (
 					<Breadcrumbs
