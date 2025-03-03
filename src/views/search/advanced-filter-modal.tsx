@@ -374,6 +374,7 @@ export const AdvancedFilterModal = ({
 
 	const sendDateRowProps = useMemo(
 		() => ({ sentBefore, setSentBefore, sentAfter, setSentAfter, sentOn, setSentOn }),
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[JSON.stringify({ sentBefore, sentAfter, sentOn }), setSentBefore, setSentAfter, setSentOn]
 	);
 	const toggleFiltersProps = useMemo(
