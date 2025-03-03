@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.24.8](https://github.com/zextras/carbonio-mails-ui/compare/v1.24.7...v1.24.8) (2025-03-03)
+
+
+### Bug Fixes
+
+* **folder-panel:** update participants filter logic ([29f7d4d](https://github.com/zextras/carbonio-mails-ui/commit/29f7d4d3b32aaf8fe902ac3a13617adbfe2213e0))
+
 ### [1.24.7](https://github.com/zextras/carbonio-mails-ui/compare/v1.24.6...v1.24.7) (2025-02-28)
 
 
