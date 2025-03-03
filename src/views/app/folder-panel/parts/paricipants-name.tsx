@@ -36,6 +36,7 @@ export const ParticipantsName = ({
 
 	const participantsString = useMemo(() => {
 		const participants = filter(item.participants, (p) => {
+			if (isConversation(item)) return true;
 			if (folderId === FOLDERS.INBOX) return p.type === ParticipantRole.FROM; // inbox
 			if (folderId === FOLDERS.SENT && !isSearchModule) return p.type === ParticipantRole.TO; // sent
 			if (isSearchModule) return p.type === ParticipantRole.FROM; // search module
@@ -54,7 +55,7 @@ export const ParticipantsName = ({
 			(acc, part) => trimStart(`${acc}, ${participantToString(part, [account])}`, ', '),
 			''
 		);
-	}, [account, folderId, isSearchModule, item.participants]);
+	}, [account, folderId, isSearchModule, item]);
 
 	return (
 		<Row wrap="nowrap" takeAvailableSpace mainAlignment="flex-start">
