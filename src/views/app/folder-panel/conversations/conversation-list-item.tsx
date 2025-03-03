@@ -133,16 +133,10 @@ export const ConversationListItem = memo(function ConversationListItem({
 				return;
 			}
 			debouncedPushHistory.cancel();
-			const { id, isDraft } = messages[0];
-			if (isDraft) {
-				// FIXME currently this case is never reached cause drafts are always displayed as messages
-				navigate(`/${MAILS_ROUTE}/folder/${folderParent}/edit/${id}?action=editAsDraft`);
-			} else {
-				previewOnSeparatedWindow.canExecute() && previewOnSeparatedWindow.execute();
-			}
+			previewOnSeparatedWindow.canExecute() && previewOnSeparatedWindow.execute();
 		},
 
-		[debouncedPushHistory, messages, navigate, folderParent, previewOnSeparatedWindow]
+		[debouncedPushHistory, previewOnSeparatedWindow]
 	);
 
 	const shouldReplaceHistory = useMemo(() => itemId === conversation.id, [conversation.id, itemId]);
