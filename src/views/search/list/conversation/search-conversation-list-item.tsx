@@ -93,15 +93,10 @@ export const SearchConversationListItem: FC<SearchConversationListItemProps> = (
 				return;
 			}
 
-			if (isDraft) {
-				// FIXME already do not work
-				navigate(`/${MAILS_ROUTE}/folder/${parent}/edit/${id}?action=editAsDraft`);
-			} else {
-				previewOnSeparatedWindow.canExecute() && previewOnSeparatedWindow.execute();
-			}
+			previewOnSeparatedWindow.canExecute() && previewOnSeparatedWindow.execute();
 		},
 
-		[id, isDraft, navigate, parent, previewOnSeparatedWindow]
+		[previewOnSeparatedWindow]
 	);
 
 	return (
