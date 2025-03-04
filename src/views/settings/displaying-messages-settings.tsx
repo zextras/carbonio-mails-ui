@@ -70,13 +70,17 @@ const DisplayingMessagesSettings: FC<DisplayingMessagesSettingsProps> = ({
 		}),
 		[conversationSortingSettings, settingsObj.zimbraPrefConversationOrder]
 	);
-	const defaultUnsendTime = useMemo(
-		() => ({
-			label: findLabel(unsendTimeOptions, updatedProps?.mails_snackbar_delay?.value as string),
-			value: updatedProps?.mails_snackbar_delay?.value
-		}),
-		[unsendTimeOptions, updatedProps?.mails_snackbar_delay]
-	);
+
+	const defaultUnsendTime = useMemo(() => {
+		const delayValue = updatedProps?.mails_snackbar_delay?.value;
+		return delayValue
+			? {
+					label: findLabel(unsendTimeOptions, delayValue as string),
+					value: delayValue
+				}
+			: // Default to the 3-second option to maintain consistency with the expected default behavior
+				unsendTimeOptions[1];
+	}, [unsendTimeOptions, updatedProps?.mails_snackbar_delay]);
 
 	return (
 		<FormSubSection id={sectionTitle.id} label={sectionTitle.label} padding={{ all: 'medium' }}>
