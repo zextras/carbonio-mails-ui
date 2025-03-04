@@ -39,20 +39,20 @@ export function simulateReplyToSingleMessageConversation({
 					id: newMessageId,
 					e: [
 						{
-							a: 'zextras@demo.zextras.io',
-							d: 'zextras',
-							p: 'zextras',
+							a: 'user@demo.test.io',
+							d: 'user',
+							p: 'user',
 							t: 't'
 						},
 						{
-							a: 'zextras@demo.zextras.io',
+							a: 'user@demo.test.io',
 							d: 'Carbonio',
 							p: 'Carbonio Admin',
 							t: 'f'
 						}
 					],
 					su: 'RE: Email with 1 attachments',
-					fr: '-- From: "undefined" <zextras@demo.zextras.io> To: "undefined" <zextras@demo.zextras.io> Sent: Wednesday, December 11, 2024 2:58 PM Subject: Email ...'
+					fr: '-- From: "undefined" <user@demo.test.io> To: "undefined" <user@demo.test.io> Sent: Wednesday, December 11, 2024 2:58 PM Subject: Email ...'
 				}
 			],
 			c: [
@@ -65,7 +65,7 @@ export function simulateReplyToSingleMessageConversation({
 					su: 'Email with 1 attachments',
 					e: [
 						{
-							a: 'zextras@demo.zextras.io',
+							a: 'user@demo.test.io',
 							d: 'Carbonio',
 							p: 'Carbonio Admin',
 							t: 'f'
