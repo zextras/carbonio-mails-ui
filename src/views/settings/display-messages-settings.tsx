@@ -34,7 +34,7 @@ import { displayingMessagesSubSection } from './subsections';
 import { MAIL_APP_ID } from '../../constants';
 import type { DisplayingMessagesSettingsProps } from '../../types';
 
-const DisplayingMessagesSettings: FC<DisplayingMessagesSettingsProps> = ({
+export const DisplayMessagesSettings: FC<DisplayingMessagesSettingsProps> = ({
 	settingsObj,
 	updateSettings,
 	updateProps,
@@ -246,32 +246,40 @@ const DisplayingMessagesSettings: FC<DisplayingMessagesSettingsProps> = ({
 						label={
 							<Row orientation="column" crossAlignment="flex-start">
 								<Text weight="bold">{t('settings.label.default', 'Default')}</Text>
+								<Padding bottom="0.5rem">
+									<Text>
+										{t(
+											'label.mark_read_message_immediately',
+											'Mark as read when opening the message'
+										)}
+									</Text>
+								</Padding>
 							</Row>
 						}
 						value="0"
 					/>
-					<Padding left="2rem" bottom="0.5rem">
-						<Text>
-							{t('label.mark_read_message_immediately', 'Mark as read when opening the message')}
-						</Text>
-					</Padding>
 					<Radio
 						width="100%"
-						label={<Text weight="bold">{t('settings.label.mark_manually', 'Mark Manually')}</Text>}
+						label={
+							<Row orientation="column" crossAlignment="flex-start">
+								<Text weight="bold">{t('settings.label.mark_manually', 'Mark Manually')}</Text>
+								<Padding bottom="0.5rem">
+									<Text>
+										{t(
+											'label.mark_read_message_manually',
+											'Manually mark as read by clicking this icon'
+										)}
+									</Text>
+									<Padding left="small">
+										<Icon size="medium" icon="EmailReadOutline" />
+									</Padding>
+								</Padding>
+							</Row>
+						}
 						value="-1"
 					/>
-					<Row padding={{ left: '2rem' }} display="inline-flex">
-						<Text>
-							{t('label.mark_read_message_manually', 'Manually mark as read by clicking this icon')}
-						</Text>
-						<Padding left="small">
-							<Icon size="medium" icon="EmailReadOutline" />
-						</Padding>
-					</Row>
 				</RadioGroup>
 			</Container>
 		</FormSubSection>
 	);
 };
-
-export default DisplayingMessagesSettings;

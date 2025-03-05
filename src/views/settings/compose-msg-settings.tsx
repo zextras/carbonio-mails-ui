@@ -76,7 +76,7 @@ const ComposeMessage: FC<ComposeMessagesProps> = ({ settingsObj, updateSettings 
 						crossAlignment="flex-start"
 						mainAlignment="flex-start"
 					>
-						<Heading title={t('labels.compose_colin', 'Compose :')} size="small" />{' '}
+						<Heading title={t('labels.compose_colin', 'Compose :')} size="small" />
 						<RadioGroup
 							style={{ width: '100%' }}
 							value={settingsObj?.zimbraPrefComposeFormat}
