@@ -60,22 +60,20 @@ const Sidebar: FC<SecondaryBarComponentProps> = ({ expanded }) => {
 	const accordions = useFolders();
 
 	return (
-		<>
-			<ThemeProvider theme={themeMui}>
-				{expanded ? (
-					<Routes>
-						<Route
-							path={`folder/:folderId/:type?/:itemId?`}
-							element={<SidebarComponent accordions={accordions} />}
-						/>
-					</Routes>
-				) : (
-					accordions[0].children.map((folder) => (
-						<CollapsedSideBarItems key={folder.id} folder={folder} />
-					))
-				)}
-			</ThemeProvider>
-		</>
+		<ThemeProvider theme={themeMui}>
+			{expanded ? (
+				<Routes>
+					<Route
+						path={`folder/:folderId/:type?/:itemId?`}
+						element={<SidebarComponent accordions={accordions} />}
+					/>
+				</Routes>
+			) : (
+				accordions[0].children.map((folder) => (
+					<CollapsedSideBarItems key={folder.id} folder={folder} />
+				))
+			)}
+		</ThemeProvider>
 	);
 };
 

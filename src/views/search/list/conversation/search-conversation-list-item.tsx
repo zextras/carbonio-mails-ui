@@ -13,7 +13,6 @@ import styled from 'styled-components';
 
 import { SearchConversationListItemCore } from './search-conversation-list-item-core';
 import { SearchConversationMessagesList } from './search-conversation-messages-list';
-import { MAILS_ROUTE } from '../../../../constants';
 import { useConvPreviewOnSeparatedWindowFn } from '../../../../hooks/actions/use-conv-preview-on-separated-window';
 import { useConvSetReadFn } from '../../../../hooks/actions/use-conv-set-read';
 import { useOnMouseHover } from '../../../../hooks/use-on-mouse-hover';

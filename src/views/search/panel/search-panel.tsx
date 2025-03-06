@@ -25,7 +25,7 @@ const withMessageId = <P extends WithMessageIdProps>(
 		return <WrappedComponent {...(props as P)} messageId={messageId!} />;
 	};
 
-	ComponentWithMessageId.displayName = `withMessageId(${WrappedComponent.displayName || WrappedComponent.name || 'Component'})`;
+	ComponentWithMessageId.displayName = `withMessageId(${WrappedComponent.displayName ?? WrappedComponent.name ?? 'Component'})`;
 
 	return ComponentWithMessageId;
 };
