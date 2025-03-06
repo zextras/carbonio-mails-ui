@@ -376,7 +376,7 @@ export const normalizeMailMessageFromSoap = (
 			subject: m.su,
 			participants: m.e ? map(m.e || [], normalizeParticipantsFromSoap) : undefined,
 			tags: getTagIds(m.t, m.tn),
-			parts: m.mp ? map(m.mp || [], normalizeMailPartMapFn) : [],
+			parts: m.mp ? map(m.mp || [], normalizeMailPartMapFn) : undefined,
 			attachments: m.mp ? getAttachmentsFromParts(m.mp) : undefined,
 			invite: m.inv,
 			shr: m.shr,
