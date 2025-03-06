@@ -74,6 +74,78 @@ describe('store-populated-items-slice', () => {
 			expect(message1.current?.id).toBe('1');
 			expect(message2.current?.id).toBe('2');
 		});
+		describe('Updating Parts', () => {
+			it('keeps the message original parts when new parts is an empty array', async () => {
+				const originalParts = [
+					{
+						contentType: 'text/plain',
+						size: 0,
+						name: 'My Part',
+						requiresSmartLinkConversion: false
+					}
+				];
+				populateMessagesInEmailStore({
+					messageGeneratorParams: [
+						{
+							id: '1',
+							parts: originalParts
+						}
+					]
+				});
+				const messages = [
+					generateMessage({
+						id: '1',
+						parts: []
+					})
+				];
+				await act(async () => {
+					updateMessages(messages);
+				});
+
+				const { result: message1 } = renderHook(() => useMessageById('1'));
+
+				expect(message1.current?.parts).toEqual(originalParts);
+			});
+			it('updates the message with the new parts when new parts is a non-empty array', async () => {
+				const originalParts = [
+					{
+						contentType: 'text/plain',
+						size: 0,
+						name: 'My Part',
+						requiresSmartLinkConversion: false
+					}
+				];
+				populateMessagesInEmailStore({
+					messageGeneratorParams: [
+						{
+							id: '1',
+							parts: originalParts
+						}
+					]
+				});
+				const newParts = [
+					{
+						contentType: 'text/html',
+						size: 100,
+						name: 'My Part updated',
+						requiresSmartLinkConversion: true
+					}
+				];
+				const messages = [
+					generateMessage({
+						id: '1',
+						parts: newParts
+					})
+				];
+				await act(async () => {
+					updateMessages(messages);
+				});
+
+				const { result: message1 } = renderHook(() => useMessageById('1'));
+
+				expect(message1.current?.parts).toEqual(newParts);
+			});
+		});
 
 		it('does not update messages without id', async () => {
 			const messages = [
