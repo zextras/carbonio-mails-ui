@@ -374,7 +374,7 @@ export const AdvancedFilterModal = ({
 
 	const sendDateRowProps = useMemo(
 		() => ({ sentBefore, setSentBefore, sentAfter, setSentAfter, sentOn, setSentOn }),
-		/* 
+		/*
 		 * please remove JSON.stringify once https://zextras.atlassian.net/browse/CDS-325 is done.
 		 */
 		// eslint-disable-next-line react-hooks/exhaustive-deps
