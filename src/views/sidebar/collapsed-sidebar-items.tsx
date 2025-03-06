@@ -16,7 +16,7 @@ const CollapsedSideBarItems: FC<{ folder: Folder }> = ({ folder }) => {
 	const folderIconLabel = useMemo(() => getFolderIconName(folder), [folder]);
 
 	return (
-		<Link to={`../folder/${folder.id}`} style={{ width: '100%', textDecoration: 'none' }}>
+		<Link to={`folder/${folder.id}`} style={{ width: '100%', textDecoration: 'none' }}>
 			<Row mainAlignment="flex-start" takeAvailableSpace>
 				<Tooltip
 					label={getSystemFolderTranslatedName({ folderName: folder.name })}
