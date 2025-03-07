@@ -8,7 +8,7 @@ import React from 'react';
 
 import { ModalManager } from '@zextras/carbonio-design-system';
 import { addRoute, removeRoute, t } from '@zextras/carbonio-shell-ui';
-import { Route, useRouteMatch } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 
 import { BACKUP_SEARCH_ROUTE } from '../constants';
 
@@ -19,16 +19,13 @@ const LazyBackupSearchView = React.lazy(
 		)
 );
 
-const BackupSearchViewComponent = (): React.JSX.Element => {
-	const { path } = useRouteMatch();
-	return (
-		<ModalManager>
-			<Route path={`${path}/:itemId?`}>
-				<LazyBackupSearchView />
-			</Route>
-		</ModalManager>
-	);
-};
+const BackupSearchViewComponent = (): React.JSX.Element => (
+	<ModalManager>
+		<Routes>
+			<Route path={`:itemId?`} element={<LazyBackupSearchView />} />
+		</Routes>
+	</ModalManager>
+);
 
 export const toggleBackupSearchComponent = async (hasMessages: boolean): Promise<void> => {
 	if (!hasMessages) {

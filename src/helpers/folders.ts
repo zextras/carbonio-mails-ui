@@ -128,7 +128,7 @@ export const getFolderPathForBreadcrumb = (
  * @param folderId
  * @param folderType
  */
-export const isA = (folderId: string, folderType: keyof Folders): boolean => {
+export const isA = (folderId: string | undefined, folderType: keyof Folders): boolean => {
 	if (!folderId) {
 		return false;
 	}

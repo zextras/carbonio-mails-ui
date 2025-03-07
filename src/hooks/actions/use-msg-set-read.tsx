@@ -5,10 +5,10 @@
  */
 import { useCallback, useMemo } from 'react';
 
-import { replaceHistory } from '@zextras/carbonio-shell-ui';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 
-import { MessageActionsDescriptors } from '../../constants';
+import { MAILS_ROUTE, MessageActionsDescriptors } from '../../constants';
 import { isDraft } from '../../helpers/folders';
 import { msgActionEmailStoreAction } from '../../store/emails/actions/msg-action-action';
 import { ActionFn, UIActionDescriptor } from '../../types';
@@ -32,17 +32,18 @@ export const useMsgSetReadFn = ({
 		(): boolean => !isDraft(folderId) && !isMessageRead,
 		[folderId, isMessageRead]
 	);
+	const navigate = useNavigate();
 
 	const execute = useCallback((): void => {
 		if (canExecute()) {
 			msgActionEmailStoreAction({ operation: 'read', ids }).then((res) => {
 				deselectAll && deselectAll();
 				if (!('Fault' in res) && shouldReplaceHistory) {
-					replaceHistory(`/folder/${folderId}`);
+					navigate(`/${MAILS_ROUTE}/folder/${folderId}`, { replace: true });
 				}
 			});
 		}
-	}, [canExecute, deselectAll, folderId, ids, shouldReplaceHistory]);
+	}, [canExecute, deselectAll, folderId, ids, navigate, shouldReplaceHistory]);
 
 	return useMemo(() => ({ canExecute, execute }), [canExecute, execute]);
 };

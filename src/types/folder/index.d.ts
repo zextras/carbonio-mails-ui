@@ -11,7 +11,6 @@ import { ContainerProps } from '@zextras/carbonio-design-system';
 import { UIActionDescriptor } from '../actions';
 import { Conversation } from '../conversations';
 import { IncompleteMessage, MailMessage } from '../messages';
-import { SearchRequestStatus } from '../state';
 
 export type GrantType = { gt: string; perm: string; zid: string; d?: string };
 
@@ -66,14 +65,3 @@ export type ItemAvatarType = {
 };
 
 export type CustomListItem = Partial<MailMessage> & { id: string; isSearchModule?: boolean };
-
-export type ConversationMessagesListProps = {
-	active: string;
-	conversationStatus: SearchRequestStatus | undefined;
-	messages: Array<IncompleteMessage>;
-	folderId: string;
-	length: number;
-	isSearchModule?: boolean;
-	dragImageRef?: React.RefObject<HTMLDivElement>;
-	setDraggedIds?: (ids: Record<string, boolean>) => void;
-};

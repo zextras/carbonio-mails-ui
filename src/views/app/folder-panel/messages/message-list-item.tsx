@@ -6,13 +6,13 @@
 import React, { memo, MouseEventHandler, useCallback, useMemo } from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
-import { replaceHistory, useUserSettings } from '@zextras/carbonio-shell-ui';
+import { useUserSettings } from '@zextras/carbonio-shell-ui';
 import { debounce } from 'lodash';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 import { MessageListItemActionWrapper } from './message-list-item-action-wrapper';
 import { MessageListItemCore } from './message-list-item-core';
-import { EditViewActions } from '../../../../constants';
+import { EditViewActions, MAILS_ROUTE } from '../../../../constants';
 import { useMsgPreviewOnSeparatedWindowFn } from '../../../../hooks/actions/use-msg-preview-on-separated-window';
 import { useMsgSetReadFn } from '../../../../hooks/actions/use-msg-set-read';
 import { useOnMouseHover } from '../../../../hooks/use-on-mouse-hover';
@@ -37,6 +37,7 @@ export const MessageListItem = memo(function MessageListItem({
 	handleReplaceHistory
 }: MessageListItemProps): React.JSX.Element {
 	const { folderId, itemId } = useParams<RouteParams>();
+	const navigate = useNavigate();
 	const firstChildFolderId = folderId ?? message?.parent;
 	const shouldReplaceHistory = useMemo(() => itemId === message.id, [message.id, itemId]);
 	const zimbraPrefMarkMsgRead = useUserSettings()?.prefs?.zimbraPrefMarkMsgRead !== '-1';
@@ -62,11 +63,18 @@ export const MessageListItem = memo(function MessageListItem({
 
 	const debouncedPushHistory = useMemo(
 		() =>
-			debounce(() => replaceHistory(`/folder/${firstChildFolderId}/message/${message.id}`), 200, {
-				leading: false,
-				trailing: true
-			}),
-		[firstChildFolderId, message.id]
+			debounce(
+				() =>
+					navigate(`/${MAILS_ROUTE}/folder/${firstChildFolderId}/message/${message.id}`, {
+						replace: true
+					}),
+				200,
+				{
+					leading: false,
+					trailing: true
+				}
+			),
+		[firstChildFolderId, message.id, navigate]
 	);
 	const onClickCallback = useCallback<MouseEventHandler<HTMLDivElement>>(
 		(e) => {

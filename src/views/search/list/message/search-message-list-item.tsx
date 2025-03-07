@@ -6,8 +6,8 @@
 import React, { FC, memo, MouseEventHandler, useCallback, useMemo } from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
-import { replaceHistory, useUserSettings } from '@zextras/carbonio-shell-ui';
-import { useParams } from 'react-router-dom';
+import { useUserSettings } from '@zextras/carbonio-shell-ui';
+import { useNavigate, useParams } from 'react-router-dom';
 
 import { SearchMessageListItemCore } from './search-message-list-item-core';
 import { EditViewActions } from '../../../../constants';
@@ -39,6 +39,7 @@ export const SearchMessageListItem: FC<SearchMessageListItemProps> = memo(functi
 	const itemId = completeMessage.id;
 	const folderId = completeMessage.parent;
 	const { itemId: messageId } = useParams<{ itemId: string | undefined }>();
+	const navigate = useNavigate();
 
 	const shouldReplaceHistory = useMemo(() => itemId === messageId, [messageId, itemId]);
 
@@ -71,9 +72,9 @@ export const SearchMessageListItem: FC<SearchMessageListItemProps> = memo(functi
 			if (completeMessage.read === false && zimbraPrefMarkMsgRead) {
 				setAsRead.canExecute() && setAsRead.execute();
 			}
-			replaceHistory(`/message/${completeMessage.id}`);
+			navigate(`../message/${completeMessage.id}`, { replace: true });
 		},
-		[completeMessage.read, completeMessage.id, zimbraPrefMarkMsgRead, setAsRead]
+		[completeMessage.read, completeMessage.id, zimbraPrefMarkMsgRead, navigate, setAsRead]
 	);
 	const onDoubleClick = useCallback(
 		(e: React.MouseEvent) => {

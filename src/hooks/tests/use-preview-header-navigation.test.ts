@@ -5,10 +5,10 @@
  */
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { CreateSnackbarFn, useSnackbar } from '@zextras/carbonio-design-system';
+import * as reactRouterDom from 'react-router-dom';
 
 import * as convRequest from '../../api/conv-action-soap-api';
 import * as searchSoapApi from '../../api/search-soap-api';
-import * as shell from '../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
 import { createSoapAPIInterceptor } from '../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { setConversationsInEmailStore } from '../../store/emails/store';
 import { createSoapAPIInterceptorWithError } from '../../tests/generators/api';
@@ -30,6 +30,11 @@ jest.mock('react-i18next', () => ({
 jest.mock('@zextras/carbonio-design-system', () => ({
 	...jest.requireActual('@zextras/carbonio-design-system'),
 	useSnackbar: jest.fn()
+}));
+
+jest.mock('react-router-dom', () => ({
+	...jest.requireActual('react-router-dom'),
+	useNavigate: jest.fn().mockReturnValue(jest.fn())
 }));
 
 beforeEach(() => {
@@ -152,12 +157,13 @@ describe('usePreviewHeaderNavigation', () => {
 		});
 		describe('calling the action', () => {
 			it('will change the route with the previous message id', async () => {
+				const navigate = jest.fn();
+				(reactRouterDom.useNavigate as jest.Mock).mockReturnValue(navigate);
 				const conv1 = generateConversation({ id: '1' });
 				const conv2 = generateConversation({ id: '2' });
 				const conv3 = generateConversation({ id: '3' });
 				setConversationsInEmailStore([conv1, conv2, conv3], false);
 
-				const replaceHistorySpy = jest.spyOn(shell, 'replaceHistory');
 				const { result } = renderHook(usePreviewHeaderNavigation, {
 					initialProps: {
 						itemIds: ['1', '2', '3'],
@@ -172,7 +178,9 @@ describe('usePreviewHeaderNavigation', () => {
 					result.current.previousActionItem.action();
 				});
 				await waitFor(() => {
-					expect(replaceHistorySpy).toHaveBeenCalledWith('/folder/2/conversation/1');
+					expect(navigate).toHaveBeenCalledWith('/mails/folder/2/conversation/1', {
+						replace: true
+					});
 				});
 			});
 			it('will set the message as read if it was not', async () => {
@@ -375,7 +383,8 @@ describe('usePreviewHeaderNavigation', () => {
 		});
 		describe('calling the action', () => {
 			it('will change the route with the next message id', async () => {
-				const replaceHistorySpy = jest.spyOn(shell, 'replaceHistory');
+				const navigate = jest.fn();
+				(reactRouterDom.useNavigate as jest.Mock).mockReturnValue(navigate);
 				const conv1 = generateConversation({ id: '1' });
 				const conv2 = generateConversation({ id: '2' });
 				const conv3 = generateConversation({ id: '3' });
@@ -394,7 +403,9 @@ describe('usePreviewHeaderNavigation', () => {
 					result.current.nextActionItem.action();
 				});
 				await waitFor(() => {
-					expect(replaceHistorySpy).toHaveBeenCalledWith('/folder/2/conversation/3');
+					expect(navigate).toHaveBeenCalledWith('/mails/folder/2/conversation/3', {
+						replace: true
+					});
 				});
 			});
 			it('will set the message as read if it was not', async () => {

@@ -8,8 +8,7 @@ import React, { Suspense, useCallback, useEffect, useMemo, useState } from 'reac
 import { Container, Spinner } from '@zextras/carbonio-design-system';
 import type { SearchViewProps } from '@zextras/carbonio-search-ui';
 import { setAppContext, t, useUserSettings } from '@zextras/carbonio-shell-ui';
-import { trimEnd } from 'lodash';
-import { Route, Switch, useRouteMatch } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 
 import { AdvancedFilterModal } from './advanced-filter-modal';
 import { SearchConversationList } from './list/conversation/search-conversation-list';
@@ -26,7 +25,6 @@ const SearchView = ({
 }: SearchViewProps): React.JSX.Element => {
 	useUpdateView();
 
-	const { path } = useRouteMatch();
 	const [query, updateQuery] = useQuery();
 	const isMessageView = useIsMessageView();
 	const [showAdvanceFilters, setShowAdvanceFilters] = useState(false);
@@ -76,7 +74,6 @@ const SearchView = ({
 		setShowAdvanceFilters(false);
 	}, [setShowAdvanceFilters]);
 
-	const trimmedPath = useMemo(() => trimEnd(path, '/'), [path]);
 	return (
 		<>
 			<Container>
@@ -93,35 +90,38 @@ const SearchView = ({
 					style={{ overflowY: 'auto' }}
 					mainAlignment="flex-start"
 				>
-					<Switch>
-						<Route path={`${trimmedPath}/:type?/:itemId?`}>
-							{isMessageView ? (
-								<SearchMessageList
-									searchDisabled={searchDisabled}
-									searchResults={searchResults.messageListIndex}
-									query={queryToString}
-									loading={loading}
-									filterCount={filterCount}
-									setShowAdvanceFilters={setShowAdvanceFilters}
-									isInvalidQuery={isInvalidQuery}
-									invalidQueryTooltip={invalidQueryTooltip}
-									hasMore={searchResults.more}
-								/>
-							) : (
-								<SearchConversationList
-									searchDisabled={searchDisabled}
-									searchResults={searchResults.conversationListIndex}
-									query={queryToString}
-									loading={loading}
-									filterCount={filterCount}
-									setShowAdvanceFilters={setShowAdvanceFilters}
-									isInvalidQuery={isInvalidQuery}
-									invalidQueryTooltip={invalidQueryTooltip}
-									hasMore={searchResults.more}
-								/>
-							)}
-						</Route>
-					</Switch>
+					<Routes>
+						<Route
+							path={`:type?/:itemId?`}
+							element={
+								isMessageView ? (
+									<SearchMessageList
+										searchDisabled={searchDisabled}
+										searchResults={searchResults.messageListIndex}
+										query={queryToString}
+										loading={loading}
+										filterCount={filterCount}
+										setShowAdvanceFilters={setShowAdvanceFilters}
+										isInvalidQuery={isInvalidQuery}
+										invalidQueryTooltip={invalidQueryTooltip}
+										hasMore={searchResults.more}
+									/>
+								) : (
+									<SearchConversationList
+										searchDisabled={searchDisabled}
+										searchResults={searchResults.conversationListIndex}
+										query={queryToString}
+										loading={loading}
+										filterCount={filterCount}
+										setShowAdvanceFilters={setShowAdvanceFilters}
+										isInvalidQuery={isInvalidQuery}
+										invalidQueryTooltip={invalidQueryTooltip}
+										hasMore={searchResults.more}
+									/>
+								)
+							}
+						/>
+					</Routes>
 					<Suspense fallback={<Spinner color="gray5" />}>
 						<Container mainAlignment="flex-start" width="75%">
 							<SearchPanel searchResults={searchResults} query={query} />

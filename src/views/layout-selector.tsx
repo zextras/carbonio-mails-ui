@@ -81,10 +81,7 @@ export const LayoutSelector = ({
 	}, [listContainerGeometry?.height, containerRef, isCurrentLayoutHorizontalSplit]);
 
 	const { pathname } = useLocation();
-	const match = matchPath<{ itemId?: string }>(
-		pathname,
-		`/${MAILS_ROUTE}/folder/:folderId/:type?/:itemId?`
-	);
+	const match = matchPath(`/${MAILS_ROUTE}/folder/:folderId/:type?/:itemId?`, pathname);
 	return (
 		<Container
 			data-testid={'LayoutSelectorOuterContainer'}

@@ -6,45 +6,33 @@
 import React, { useCallback, useEffect, useMemo } from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
-import { replaceHistory } from '@zextras/carbonio-shell-ui';
 import { filter, isEmpty } from 'lodash';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 import { ConversationPreviewPanel } from './conversation-preview-panel';
 import { PreviewPanelHeader } from './preview/preview-panel-header';
 import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
-import { API_REQUEST_STATUS } from '../../../constants';
+import { API_REQUEST_STATUS, MAILS_ROUTE } from '../../../constants';
 import { getFolderIdParts } from '../../../helpers/folders';
 import { getConvEmailStoreAction } from '../../../store/emails/actions/get-conv-action';
 import { useCompleteConversationOrFetch } from '../../../store/emails/hooks/hooks';
 import { useConversationMessages } from '../../../store/emails/store';
 import { useExtraWindow } from '../extra-windows/use-extra-window';
 
-type ConversationPreviewPanelProps = { conversationId?: string; folderId?: string };
-
-export const useConversationPreviewPanelParameters = (
-	props: ConversationPreviewPanelProps
-): { conversationId: string; folderId: string } => {
-	const params = useParams<{ conversationId: string; folderId: string }>();
-	return {
-		conversationId: props.conversationId ?? params.conversationId,
-		folderId: props.folderId ?? params.folderId
-	};
-};
-
-export const ConversationPreviewPanelContainer = (
-	props: ConversationPreviewPanelProps
-): React.JSX.Element => {
-	const { conversationId, folderId } = useConversationPreviewPanelParameters(props);
+export const ConversationPreviewPanelContainer = (): React.JSX.Element => {
+	const navigate = useNavigate();
+	const { conversationId, folderId } = useParams() as { conversationId: string; folderId: string };
 	const { isInsideExtraWindow } = useExtraWindow();
 	const { conversation, conversationStatus } = useCompleteConversationOrFetch(conversationId);
 	const messages = useConversationMessages(conversationId);
 
 	const onConversationIdChange = useCallback(
 		(newConversationId: string): void => {
-			replaceHistory(`/folder/${folderId}/conversation/${newConversationId}`);
+			navigate(`/${MAILS_ROUTE}/folder/${folderId}/conversation/${newConversationId}`, {
+				replace: true
+			});
 		},
-		[folderId]
+		[folderId, navigate]
 	);
 
 	useEffect(() => {
