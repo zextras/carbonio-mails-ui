@@ -28,7 +28,7 @@ import { IncompleteMessage, TextReadValuesType } from '../../../../types';
 import { useTagExist } from '../../../../ui-actions/tag-actions';
 import { getFolderTranslatedName } from '../../../sidebar/utils';
 import { ItemAvatar } from '../parts/item-avatar';
-import { ParticipantsName } from '../parts/sender-name';
+import { ParticipantsName } from '../parts/paricipants-name';
 
 type MessageListItemCoreProps = {
 	message: IncompleteMessage;

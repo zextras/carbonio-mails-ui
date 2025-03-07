@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.24.10](https://github.com/zextras/carbonio-mails-ui/compare/v1.24.9...v1.24.10) (2025-03-07)
+
+
+### Bug Fixes
+
+* do not set undefined parts in normalize-message.ts ([d3ab05c](https://github.com/zextras/carbonio-mails-ui/commit/d3ab05cced0dbf7f123b1cbddd790d50bec739b5))
+* **sync-data-handler:** add missing notification trigger ([92a411c](https://github.com/zextras/carbonio-mails-ui/commit/92a411cb43e377a671b0d6cd5e270dacf8c3ebd4))
+* use optional chaining in attachment parts ([f827d74](https://github.com/zextras/carbonio-mails-ui/commit/f827d7467db352b82857c5237195b3da5b9d58d7))
+
+### [1.24.9](https://github.com/zextras/carbonio-mails-ui/compare/v1.24.8...v1.24.9) (2025-03-04)
+
+### [1.24.8](https://github.com/zextras/carbonio-mails-ui/compare/v1.24.7...v1.24.8) (2025-03-03)
+
+
+### Bug Fixes
+
+* **folder-panel:** update participants filter logic ([29f7d4d](https://github.com/zextras/carbonio-mails-ui/commit/29f7d4d3b32aaf8fe902ac3a13617adbfe2213e0))
+
 ### [1.24.7](https://github.com/zextras/carbonio-mails-ui/compare/v1.24.6...v1.24.7) (2025-02-28)
 
 

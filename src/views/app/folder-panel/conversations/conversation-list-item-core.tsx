@@ -24,7 +24,7 @@ import { Tag } from '../../../../carbonio-ui-commons/types/tags';
 import { NormalizedConversation, TextReadValuesProps } from '../../../../types';
 import { ItemAvatar } from '../parts/item-avatar';
 import { RowInfo } from '../parts/row-info';
-import { ParticipantsName } from '../parts/sender-name';
+import { ParticipantsName } from '../parts/paricipants-name';
 
 type ConversationListItemCoreProps = {
 	conversation: NormalizedConversation;

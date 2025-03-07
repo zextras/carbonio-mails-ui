@@ -9,6 +9,7 @@ import produce from 'immer';
 import { filter, find, forEach, merge } from 'lodash';
 import { StoreApi, UseBoundStore } from 'zustand';
 
+import { triggerNotification } from './trigger-notification';
 import {
 	EmailsStoreState,
 	IncompleteMessage,
@@ -159,6 +160,7 @@ function handleNotifyMessagesCreated(
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
 ): void {
 	const newMessageIds = messages.map((message) => message.id);
+	triggerNotification(messages);
 
 	function addMessagesToMessageSlice(state: EmailsStoreState): void {
 		state.populatedItemsSlice.messages = messages.reduce((acc, msg) => {
