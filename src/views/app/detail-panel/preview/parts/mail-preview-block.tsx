@@ -52,7 +52,7 @@ export const MailPreviewBlock: FC<MailPreviewBlockType> = ({
 	});
 	return (
 		<>
-			{getFolderIdParts(folderId).id === FOLDERS.SPAM && (
+			{folderId && getFolderIdParts(folderId).id === FOLDERS.SPAM && (
 				<Container
 					mainAlignment="flex-start"
 					crossAlignment="flex-start"
