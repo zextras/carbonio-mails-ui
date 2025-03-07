@@ -70,6 +70,10 @@ jest.mock('../../../../carbonio-ui-commons/worker', () => ({
 	}
 }));
 
+jest.mock('../../../../store/emails/sync-data-handler/trigger-notification', () => ({
+	triggerNotification: jest.fn()
+}));
+
 function getSoapMessage(
 	messageId: string,
 	initialData?: Partial<SoapIncompleteMessage>
@@ -531,7 +535,7 @@ describe('sync data handler', () => {
 			 * and it causes a call to the "onMessage" event listener of the worker without a proper payload.
 			 * This results in a reset of the stores (the tags store in this case) which leads to errors in the test execution
 			 */
-			jest.spyOn(tagsWorker, 'postMessage').mockImplementation(() => {});
+			jest.spyOn(tagsWorker, 'postMessage').mockImplementation(jest.fn());
 		});
 
 		it('should not process notify if seq is less than or equal to current seq (but not 1)', async () => {
