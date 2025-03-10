@@ -6,10 +6,10 @@
 import { useCallback, useMemo } from 'react';
 
 import { useSnackbar } from '@zextras/carbonio-design-system';
-import { replaceHistory } from '@zextras/carbonio-shell-ui';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 
-import { ConversationActionsDescriptors } from '../../constants';
+import { ConversationActionsDescriptors, MAILS_ROUTE } from '../../constants';
 import { isDraft, isSpam } from '../../helpers/folders';
 import { convActionEmailStoreAction } from '../../store/emails/actions/conv-action-action';
 import { ActionFn, UIActionDescriptor } from '../../types';
@@ -33,6 +33,7 @@ export const useConvSetSpamFn = ({
 		[folderId]
 	);
 
+	const navigate = useNavigate();
 	const execute = useCallback((): void => {
 		let notCanceled = true;
 
@@ -58,7 +59,7 @@ export const useConvSetSpamFn = ({
 					ids
 				}).then((res) => {
 					if (!('Fault' in res) && shouldReplaceHistory) {
-						replaceHistory(`/folder/${folderId}`);
+						navigate(`/${MAILS_ROUTE}/folder/${folderId}`, { replace: true });
 					}
 					if ('Fault' in res) {
 						createSnackbar({
@@ -72,7 +73,7 @@ export const useConvSetSpamFn = ({
 				});
 			}
 		}, 3000);
-	}, [createSnackbar, folderId, ids, shouldReplaceHistory, t]);
+	}, [createSnackbar, folderId, ids, navigate, shouldReplaceHistory, t]);
 
 	return useMemo(() => ({ canExecute, execute }), [canExecute, execute]);
 };

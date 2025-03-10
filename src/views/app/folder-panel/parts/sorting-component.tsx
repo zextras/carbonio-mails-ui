@@ -7,12 +7,13 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { Dropdown, DropdownItem, IconButton, Tooltip } from '@zextras/carbonio-design-system';
-import { t, useUserSettings, useAppContext, replaceHistory } from '@zextras/carbonio-shell-ui';
+import { t, useUserSettings, useAppContext } from '@zextras/carbonio-shell-ui';
 import { noop } from 'lodash';
+import { useNavigate } from 'react-router-dom';
 
 import { getTooltipLabel } from './utils/utils';
 import { FOLDERS } from '../../../../carbonio-ui-commons/constants/folders';
-import { SORTING_DIRECTION, SORTING_OPTIONS, SORT_ICONS } from '../../../../constants';
+import { SORTING_DIRECTION, SORTING_OPTIONS, SORT_ICONS, MAILS_ROUTE } from '../../../../constants';
 import { parseMessageSortingOptions, updateSortingSettings } from '../../../../helpers/sorting';
 import { searchEmailStoreAction } from '../../../../store/emails/actions/search-action';
 import { AppContext } from '../../../../types';
@@ -20,6 +21,7 @@ import { AppContext } from '../../../../types';
 export const SortingComponent = ({ folderId }: { folderId?: string }): React.JSX.Element => {
 	const buttonRef = useRef<HTMLDivElement>(null);
 	const { prefs } = useUserSettings();
+	const navigate = useNavigate();
 
 	const prefSortOrder = useMemo(
 		() => prefs?.zimbraPrefSortOrder,
@@ -79,8 +81,8 @@ export const SortingComponent = ({ folderId }: { folderId?: string }): React.JSX
 			folderId
 		});
 
-		replaceHistory(`/folder/${folderId}`);
-	}, [folderId, performSearch, prefSortOrder, sortDirectionState, sortingTypeState]);
+		navigate(`/${MAILS_ROUTE}/folder/${folderId}`, { replace: true });
+	}, [folderId, navigate, performSearch, prefSortOrder, sortDirectionState, sortingTypeState]);
 
 	const selectSortingType = useCallback(
 		(sortingTypeValue: string) => {
@@ -93,9 +95,9 @@ export const SortingComponent = ({ folderId }: { folderId?: string }): React.JSX
 				folderId
 			});
 
-			replaceHistory(`/folder/${folderId}`);
+			navigate(`/${MAILS_ROUTE}/folder/${folderId}`, { replace: true });
 		},
-		[folderId, performSearch, prefSortOrder, sortDirectionState]
+		[folderId, navigate, performSearch, prefSortOrder, sortDirectionState]
 	);
 
 	const sortUnread = useCallback(() => {

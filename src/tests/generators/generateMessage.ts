@@ -10,7 +10,7 @@ import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
 import { ParticipantRole } from '../../carbonio-ui-commons/constants/participants';
 import { convertHtmlToPlainText } from '../../commons/utilities';
 import { updateMessages } from '../../store/emails/store';
-import { MailMessage, Participant, Sensitivity } from '../../types';
+import { MailMessage, MailMessagePart, Participant, Sensitivity } from '../../types';
 
 export type MessageGenerationParams = {
 	id?: string;
@@ -36,6 +36,7 @@ export type MessageGenerationParams = {
 	tags?: Array<string>;
 	truncated?: boolean;
 	sensitivity?: Sensitivity;
+	parts?: Array<MailMessagePart>;
 	messageIdFromMailHeaders?: string;
 	creationDateFromMailHeaders?: string;
 };
@@ -68,7 +69,8 @@ export const generateMessage = ({
 	truncated = false,
 	sensitivity = 'Private',
 	messageIdFromMailHeaders = '',
-	creationDateFromMailHeaders = ''
+	creationDateFromMailHeaders = '',
+	parts
 }: MessageGenerationParams = {}): MailMessage => ({
 	attachments: undefined,
 	autoSendTime: 0,
@@ -92,7 +94,7 @@ export const generateMessage = ({
 	isSentByMe,
 	parent: folderId,
 	participants: [from, ...to, ...cc],
-	parts: [
+	parts: parts ?? [
 		{
 			name: 'TEXT',
 			contentType: 'multipart/mixed',

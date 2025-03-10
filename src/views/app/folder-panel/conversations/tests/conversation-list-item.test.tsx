@@ -7,8 +7,8 @@
 import React from 'react';
 
 import { act, fireEvent, screen, waitFor } from '@testing-library/react';
-import * as hooks from '@zextras/carbonio-shell-ui';
 import { noop } from 'lodash';
+import * as reactRouterDom from 'react-router-dom';
 
 import { FOLDERS } from '../../../../../carbonio-ui-commons/constants/folders';
 import { ParticipantRole } from '../../../../../carbonio-ui-commons/constants/participants';
@@ -31,6 +31,10 @@ const canExecuteCallback = jest.fn();
 jest.mock('../../../../../hooks/actions/use-conv-preview-on-separated-window', () => ({
 	...jest.requireActual('../../../../../hooks/actions/use-conv-preview-on-separated-window'),
 	useConvPreviewOnSeparatedWindowFn: jest.fn()
+}));
+jest.mock('react-router-dom', () => ({
+	...jest.requireActual('react-router-dom'),
+	useNavigate: jest.fn()
 }));
 
 describe('conversation-list-item component', () => {
@@ -471,6 +475,8 @@ describe('conversation-list-item component', () => {
 
 	describe('conversation-list-item not in search module', () => {
 		it('should call the onClick handler when the message is clicked', async () => {
+			const navigate = jest.fn();
+			(reactRouterDom.useNavigate as jest.Mock).mockReturnValue(navigate);
 			createSoapAPIInterceptor<ConvActionRequest>('ConvAction');
 
 			const { conversation } = await waitFor(() => populateConversationInEmailStore({}));
@@ -488,8 +494,6 @@ describe('conversation-list-item component', () => {
 
 			const { user } = await waitFor(() => setupTest(<ConversationListItem {...props} />));
 
-			const spyPushHistory = jest.spyOn(hooks, 'pushHistory');
-
 			const actionWrapper = await waitFor(() =>
 				screen.findByTestId(`ConversationListItem-${props.conversation.id}`)
 			);
@@ -506,7 +510,7 @@ describe('conversation-list-item component', () => {
 			fireEvent.click(hoverContainer);
 
 			await waitFor(async () => {
-				expect(spyPushHistory).toHaveBeenCalled();
+				expect(navigate).toHaveBeenCalled();
 			});
 		});
 
@@ -554,6 +558,8 @@ describe('conversation-list-item component', () => {
 
 	describe('conversation-list-item in search module', () => {
 		it('should call the onClick handler when the message is clicked', async () => {
+			const navigate = jest.fn();
+			(reactRouterDom.useNavigate as jest.Mock).mockReturnValue(navigate);
 			createSoapAPIInterceptor<ConvActionRequest>('ConvAction');
 
 			const { conversation } = await waitFor(() => populateConversationInEmailStore({}));
@@ -571,8 +577,6 @@ describe('conversation-list-item component', () => {
 
 			const { user } = await waitFor(() => setupTest(<ConversationListItem {...props} />));
 
-			const spyPushHistory = jest.spyOn(hooks, 'pushHistory');
-
 			const actionWrapper = await waitFor(() =>
 				screen.findByTestId(`ConversationListItem-${props.conversation.id}`)
 			);
@@ -589,7 +593,7 @@ describe('conversation-list-item component', () => {
 			fireEvent.click(hoverContainer);
 
 			await waitFor(async () => {
-				expect(spyPushHistory).toHaveBeenCalled();
+				expect(navigate).toHaveBeenCalled();
 			});
 		});
 

@@ -106,9 +106,7 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 	);
 	const attachments = retrieveAttachmentsType(message, 'attachment');
 	const senderContact = find(message.participants, ['type', 's']);
-	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-	// @ts-ignore
-	const { folderId } = useParams();
+	const { folderId } = useParams() as { folderId?: string };
 
 	const contactListExpandCB = useCallback((contactListExpand: boolean) => {
 		setIsContactListExpand(contactListExpand);

@@ -12,7 +12,10 @@ import { usePreviewHeaderNavigation } from '../../../../hooks/use-preview-header
 import { useConversationIndexSlice } from '../../../../store/emails/store';
 
 export const ConversationPreviewHeaderNavigation = (): React.JSX.Element => {
-	const { folderId, conversationId } = useParams<{ folderId: string; conversationId: string }>();
+	const { folderId, conversationId } = useParams() as {
+		folderId: string;
+		conversationId: string;
+	};
 	const { conversationListIndex, more, status } = useConversationIndexSlice();
 
 	const { previousActionItem, nextActionItem } = usePreviewHeaderNavigation({

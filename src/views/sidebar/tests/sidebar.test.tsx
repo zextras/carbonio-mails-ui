@@ -53,7 +53,7 @@ describe('Sidebar', () => {
 			populateFoldersStore();
 			const options = {
 				initialEntries: [`/mails/folder/${folderId}`],
-				path: '/mails'
+				path: '/mails/*'
 			};
 
 			const { user } = setupTest(<Sidebar expanded />, options);
@@ -95,7 +95,7 @@ describe('Sidebar', () => {
 			populateFoldersStore();
 			const options = {
 				initialEntries: [`/mails/folder/${folderId}`],
-				path: '/mails'
+				path: '/mails/*'
 			};
 
 			const { user } = setupTest(<Sidebar expanded />, options);
@@ -138,7 +138,7 @@ describe('Sidebar', () => {
 			populateFoldersStore();
 			const options = {
 				initialEntries: [`/mails/folder/${folderId}`],
-				path: '/mails'
+				path: '/mails/*'
 			};
 
 			const { user } = setupTest(<Sidebar expanded />, options);
@@ -184,7 +184,7 @@ describe('Sidebar', () => {
 
 			const options = {
 				initialEntries: [`/mails/folder/${FOLDERS.INBOX}`],
-				path: '/mails'
+				path: '/mails/*'
 			};
 
 			const { user } = setupTest(<Sidebar expanded />, options);
@@ -240,7 +240,7 @@ describe('Sidebar', () => {
 			populateFoldersStore({ customFolders: [folderToDelete] });
 			const options = {
 				initialEntries: [`/mails/folder/${folderId}`],
-				path: '/mails'
+				path: '/mails/*'
 			};
 
 			const { user } = setupTest(<Sidebar expanded />, options);

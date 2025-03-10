@@ -14,15 +14,18 @@ import {
 	Text,
 	Tooltip
 } from '@zextras/carbonio-design-system';
-import { replaceHistory, t } from '@zextras/carbonio-shell-ui';
+import { t } from '@zextras/carbonio-shell-ui';
+import { useNavigate } from 'react-router-dom';
 
 import type { MailMessage, NormalizedConversation } from '../../../types';
 
-export const SearchExtraWindowPanelHeader: FC<{
+export const SearchPanelHeader: FC<{
 	item: NormalizedConversation | (Partial<MailMessage> & Pick<MailMessage, 'id'>);
 }> = ({ item }) => {
-	const replaceHistoryCallback = useCallback(() => replaceHistory(`/`), []);
-
+	const navigate = useNavigate();
+	const closePanelCallback = useCallback(() => {
+		navigate('/search', { replace: true });
+	}, [navigate]);
 	const subject = useMemo(
 		() => item?.subject ?? t('label.no_subject_with_tags', '<No Subject>'),
 		[item?.subject]
@@ -58,7 +61,7 @@ export const SearchExtraWindowPanelHeader: FC<{
 				<Button
 					data-testid="PreviewPanelCloseIcon"
 					icon="CloseOutline"
-					onClick={replaceHistoryCallback}
+					onClick={closePanelCallback}
 					size="extralarge"
 					shape="regular"
 					type="default"

@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 
 import { ListItem } from '@zextras/carbonio-design-system';
 import { t, useAppContext, useUserSettings } from '@zextras/carbonio-shell-ui';
@@ -13,18 +13,18 @@ import { useParams } from 'react-router-dom';
 import { ConversationListComponent } from './conversation-list-component';
 import { useLoadMoreForConversationList } from './conversation-list-hooks';
 import { ConversationListItemComponent } from './conversation-list-item-component';
+import { ConversationShortcutsRegister } from './conversation-shortcuts-register';
 import { FOLDERS } from '../../../../carbonio-ui-commons/constants/folders';
 import { useFolder } from '../../../../carbonio-ui-commons/store/zustand/folder';
 import { API_REQUEST_STATUS, LIST_LIMIT } from '../../../../constants';
 import { getFolderIdParts } from '../../../../helpers/folders';
 import { parseMessageSortingOptions } from '../../../../helpers/sorting';
-import { useConversationKeyboardShortcuts } from '../../../../hooks/use-conversation-keyboard-shortcuts';
 import { useConversationListByFolder } from '../../../../hooks/use-conversations-list-by-folder';
 import { useSelection } from '../../../../hooks/use-selection';
 import type { AppContext } from '../../../../types';
 
 export const ConversationList = (): React.JSX.Element => {
-	const { folderId, itemId } = useParams<{ folderId: string; itemId: string }>();
+	const { folderId, itemId } = useParams() as { folderId: string; itemId?: string };
 	const { setCount, count } = useAppContext<AppContext>();
 	const folder = useFolder(folderId);
 	const { conversationIndexSlice } = useConversationListByFolder(folderId);
@@ -47,20 +47,6 @@ export const ConversationList = (): React.JSX.Element => {
 		count,
 		items: conversationsIds
 	});
-
-	const keyboardActions = useConversationKeyboardShortcuts({
-		conversationId: itemId,
-		deselectAll,
-		folderId
-	});
-
-	useEffect(() => {
-		const handler = (event: KeyboardEvent): void => keyboardActions(event);
-		document.addEventListener('keydown', handler);
-		return () => {
-			document.removeEventListener('keydown', handler);
-		};
-	}, [folderId, itemId, deselectAll, keyboardActions]);
 
 	const displayerTitle = useMemo(() => {
 		if (conversationsIds?.length === 0) {
@@ -153,24 +139,33 @@ export const ConversationList = (): React.JSX.Element => {
 	});
 
 	return (
-		<ConversationListComponent
-			listItems={listItems}
-			displayerTitle={displayerTitle}
-			totalConversations={totalConversations}
-			conversationsLoadingCompleted={conversationsLoadingCompleted}
-			selectedIds={selectedIds}
-			isSelectModeOn={isSelectModeOn}
-			setIsSelectModeOn={setIsSelectModeOn}
-			selectAll={selectAll}
-			isAllSelected={isAllSelected}
-			selectAllModeOff={selectAllModeOff}
-			draggedIds={draggedIds}
-			folderId={folderId}
-			conversationsIds={conversationsIds}
-			selected={selected}
-			deselectAll={deselectAll}
-			dragImageRef={dragImageRef}
-			loadMoreCallback={conversationIndexSlice.more ? loadMoreCallback : undefined}
-		/>
+		<>
+			{itemId && (
+				<ConversationShortcutsRegister
+					conversationId={itemId}
+					folderId={folderId}
+					deselectAll={deselectAll}
+				/>
+			)}
+			<ConversationListComponent
+				listItems={listItems}
+				displayerTitle={displayerTitle}
+				totalConversations={totalConversations}
+				conversationsLoadingCompleted={conversationsLoadingCompleted}
+				selectedIds={selectedIds}
+				isSelectModeOn={isSelectModeOn}
+				setIsSelectModeOn={setIsSelectModeOn}
+				selectAll={selectAll}
+				isAllSelected={isAllSelected}
+				selectAllModeOff={selectAllModeOff}
+				draggedIds={draggedIds}
+				folderId={folderId}
+				conversationsIds={conversationsIds}
+				selected={selected}
+				deselectAll={deselectAll}
+				dragImageRef={dragImageRef}
+				loadMoreCallback={conversationIndexSlice.more ? loadMoreCallback : undefined}
+			/>
+		</>
 	);
 };

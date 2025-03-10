@@ -1,6 +1,6 @@
 {
 	"name": "carbonio-mails-ui",
-	"version": "1.24.7",
+	"version": "1.24.10",
 	"description": "Mails module",
 	"main": "src/app.tsx",
 	"engines": {
@@ -57,7 +57,6 @@
 		"@types/react-dom": "^18.3.1",
 		"@types/react-redux": "^7.1.25",
 		"react-redux": "^8.0.5",
-		"@types/react-router-dom": "^5.3.3",
 		"@types/styled-components": "^5.1.26",
 		"@types/uuid": "^10.0.0",
 		"@zextras/carbonio-search-ui": "github:zextras/carbonio-search-ui#devel",
@@ -87,7 +86,7 @@
 		"@types/webpack": "^5.28.2",
 		"@types/webpack-env": "^1.18.1",
 		"@zextras/carbonio-design-system": "^9.0.0",
-		"@zextras/carbonio-shell-ui": "^10.0.0",
+		"@zextras/carbonio-shell-ui": "devel",
 		"@zextras/carbonio-ui-preview": "^3.1.1",
 		"axios": "^1.6.7",
 		"babel-jest": "^29.4.3",
@@ -107,7 +106,7 @@
 		"react-dom": "^18.3.1",
 		"react-hook-form": "^7.51.0",
 		"react-i18next": "^12.2.0",
-		"react-router-dom": "^5.3.4",
+		"react-router-dom": "^6.30.0",
 		"styled-components": "^6.1.13",
 		"uuid": "^9.0.0",
 		"zustand": "^4.5.2"

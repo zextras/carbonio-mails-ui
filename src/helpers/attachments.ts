@@ -127,7 +127,7 @@ const getCidReferences = (richText: string): Array<string> => {
  */
 export const getReferredContentIds = (parts: Array<MailMessagePart>): Array<string> => {
 	const result: Array<string> = [];
-	parts.forEach((part) => {
+	parts?.forEach((part) => {
 		if (part.contentType === MIMETYPE_RICHTEXT && part.content) {
 			getCidReferences(part.content).forEach((cidReference) => {
 				const cid = getCidFromReference(cidReference);

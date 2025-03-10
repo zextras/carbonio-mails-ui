@@ -30,7 +30,7 @@ import {
 } from '../../../../types';
 import { ItemAvatar } from '../../../app/folder-panel/parts/item-avatar';
 import { RowInfo } from '../../../app/folder-panel/parts/row-info';
-import { ParticipantsName } from '../../../app/folder-panel/parts/sender-name';
+import { ParticipantsName } from '../../../app/folder-panel/parts/paricipants-name';
 
 type SearchConversationListItemCoreProps = {
 	conversation: NormalizedConversation;

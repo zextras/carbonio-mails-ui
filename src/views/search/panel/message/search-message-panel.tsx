@@ -6,17 +6,17 @@
 import React, { useCallback } from 'react';
 
 import { Container, Padding } from '@zextras/carbonio-design-system';
-import { replaceHistory } from '@zextras/carbonio-shell-ui';
+import { useNavigate } from 'react-router-dom';
 
 import { API_REQUEST_STATUS } from '../../../../constants';
 import { useCompleteMessageOrFetch } from '../../../../store/emails/hooks/hooks';
 import MailPreview from '../../../app/detail-panel/preview/mail-preview';
 import { useExtraWindow } from '../../../app/extra-windows/use-extra-window';
-import { SearchExtraWindowPanelHeader } from '../../extra-window/search-extra-window-panel-header';
+import { SearchPanelHeader } from '../../extra-window/search-panel-header';
 
 export const SearchMessagePanel = ({ messageId }: { messageId: string }): React.JSX.Element => {
 	const { message, messageStatus } = useCompleteMessageOrFetch(messageId);
-
+	const navigate = useNavigate();
 	const { isInsideExtraWindow } = useExtraWindow();
 
 	const messagePreviewFactory = useCallback(
@@ -25,10 +25,7 @@ export const SearchMessagePanel = ({ messageId }: { messageId: string }): React.
 	);
 
 	if (!message) {
-		replaceHistory({
-			path: '/',
-			route: 'search'
-		});
+		navigate('/search', { replace: true });
 		return <></>;
 	}
 
@@ -39,7 +36,7 @@ export const SearchMessagePanel = ({ messageId }: { messageId: string }): React.
 			crossAlignment="flex-start"
 			data-testid={`MessagePanel-${message.id}`}
 		>
-			{!isInsideExtraWindow && <SearchExtraWindowPanelHeader item={message} />}
+			{!isInsideExtraWindow && <SearchPanelHeader item={message} />}
 			{message?.isComplete && (
 				<Container
 					style={{ overflowY: 'auto' }}

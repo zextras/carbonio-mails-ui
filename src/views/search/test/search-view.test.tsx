@@ -11,6 +11,7 @@ import type { QueryChip, SearchViewProps } from '@zextras/carbonio-search-ui';
 import * as hooks from '@zextras/carbonio-shell-ui';
 import { AccountSettings, ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 import { noop } from 'lodash';
+import * as reactRouterDom from 'react-router-dom';
 
 import * as searchSoapApi from '../../../api/search-soap-api';
 import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
@@ -52,6 +53,11 @@ import {
 } from '../../../types';
 import * as externalWindowManager from '../../app/extra-windows/global-extra-window-manager';
 import SearchView from '../search-view';
+
+jest.mock('react-router-dom', () => ({
+	...jest.requireActual('react-router-dom'),
+	useNavigate: jest.fn()
+}));
 
 type SetupTest = {
 	query: string;
@@ -225,6 +231,8 @@ describe('SearchView', () => {
 		});
 
 		it('should change the route when clicking a conversation in the list', async () => {
+			const navigate = jest.fn();
+			(reactRouterDom.useNavigate as jest.Mock).mockReturnValue(navigate);
 			const searchSettings = setupSearchViewTest({ viewBy: 'conversation', query: 'hello' });
 			const { queryChip } = searchSettings;
 
@@ -237,7 +245,6 @@ describe('SearchView', () => {
 				c: [conversation],
 				more: false
 			});
-			const spyPushHistory = jest.spyOn(hooks, 'pushHistory');
 
 			const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
 			const searchViewProps: SearchViewProps = {
@@ -261,7 +268,7 @@ describe('SearchView', () => {
 			await act(async () => {
 				await user.click(clickableConversation);
 			});
-			expect(spyPushHistory).toHaveBeenCalledWith('conversation/123');
+			expect(navigate).toHaveBeenCalledWith('../conversation/123');
 		});
 
 		it('should display conversation as selected when user clicks on avatar', async () => {
@@ -733,6 +740,8 @@ describe('SearchView', () => {
 	});
 
 	it('should route to message panel when clicking message in list', async () => {
+		const navigate = jest.fn();
+		(reactRouterDom.useNavigate as jest.Mock).mockReturnValue(navigate);
 		const interceptor = createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
 			m: [
 				getSoapMessage('10', { su: 'message 1 Subject' }),
@@ -761,7 +770,6 @@ describe('SearchView', () => {
 
 		jest.spyOn(useSelection, 'useSelection').mockReturnValue(mockedUseSelection);
 		jest.spyOn(hooks, 'useUserSettings').mockReturnValue(settings);
-		const spyReplaceHistory = jest.spyOn(hooks, 'replaceHistory');
 		const { user } = setupTest(<SearchView {...searchViewProps} />);
 
 		await act(async () => {
@@ -785,6 +793,7 @@ describe('SearchView', () => {
 		await act(async () => {
 			user.click(clickableMessage);
 		});
-		expect(spyReplaceHistory).toHaveBeenCalledWith('/message/10');
+		expect(navigate).toHaveBeenCalledWith('../message/10', { replace: true });
+		expect(navigate).toHaveBeenCalledTimes(1);
 	});
 });

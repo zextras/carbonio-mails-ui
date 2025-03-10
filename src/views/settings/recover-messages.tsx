@@ -17,8 +17,9 @@ import {
 	Container,
 	DateTimePicker
 } from '@zextras/carbonio-design-system';
-import { replaceHistory, t, useUserSettings } from '@zextras/carbonio-shell-ui';
+import { t, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { isEmpty } from 'lodash';
+import { useNavigate } from 'react-router-dom';
 
 import { RecoverMessagesModal } from './components/recover-messages-modal';
 import { recoverMessagesSubSection } from './subsections';
@@ -50,6 +51,7 @@ export const RecoverMessages = (): React.JSX.Element => {
 	const { zimbraPrefLocale } = useUserSettings().prefs;
 	const [searchString, setSearchString] = useState('');
 	const [recoverDay, setRecoverDay] = useState<Date | null>(null);
+	const navigate = useNavigate();
 
 	const restoreMessages = useCallback(
 		async (id: string) => {
@@ -93,9 +95,9 @@ export const RecoverMessages = (): React.JSX.Element => {
 				});
 				return;
 			}
-			replaceHistory({ route: BACKUP_SEARCH_ROUTE, path: '/' });
+			navigate(`/${BACKUP_SEARCH_ROUTE}`, { replace: true });
 		},
-		[closeModal, createSnackbar, recoverDay, searchString]
+		[closeModal, createSnackbar, navigate, recoverDay, searchString]
 	);
 
 	const informativeText = t(
