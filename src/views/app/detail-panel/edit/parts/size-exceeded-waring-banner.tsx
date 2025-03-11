@@ -20,9 +20,10 @@ function calculateTotalSmartLinksSize(savedAttachments: MailsEditorV2['savedAtta
 	);
 }
 export const calculateMailSize = (editor: MailsEditorV2): number => {
+	const base64conversionRate = 1.33;
 	const saveDraftSize = editor?.size ?? 0;
 	const totalSmartLinksSize = calculateTotalSmartLinksSize(editor.savedAttachments);
-	return saveDraftSize - totalSmartLinksSize * 0.9;
+	return saveDraftSize - totalSmartLinksSize * base64conversionRate;
 };
 
 export const SizeExceededWarningBanner = ({
