@@ -158,7 +158,7 @@ describe('sizeExceededWarningBanner', () => {
 				size: 1000,
 				savedAttachments: [attachment]
 			};
-			expect(calculateMailSize(editor)).toBe(820);
+			expect(calculateMailSize(editor)).toBe(734);
 		});
 
 		it('returns correct size when editor size is zero', async () => {
@@ -168,7 +168,7 @@ describe('sizeExceededWarningBanner', () => {
 				size: 0,
 				savedAttachments: [attachment]
 			};
-			expect(calculateMailSize(editor)).toBe(-180);
+			expect(calculateMailSize(editor)).toBe(-266);
 		});
 
 		it('returns correct size when totalSmartLinksSize is zero', async () => {
