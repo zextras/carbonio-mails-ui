@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { filter, find, forEach, isArray, isNil, map, omitBy, reduce } from 'lodash';
+import { filter, find, forEach, isArray, isNil, map, omitBy, orderBy, reduce } from 'lodash';
 
 import {
 	ParticipantRole,
@@ -374,7 +374,9 @@ export const normalizeMailMessageFromSoap = (
 			originalId: m.origid,
 			fragment: m.fr,
 			subject: m.su,
-			participants: m.e ? map(m.e || [], normalizeParticipantsFromSoap) : undefined,
+			participants: m.e
+				? orderBy(map(m.e || [], normalizeParticipantsFromSoap), ['type'], 'asc')
+				: undefined,
 			tags: getTagIds(m.t, m.tn),
 			parts: m.mp ? map(m.mp || [], normalizeMailPartMapFn) : undefined,
 			attachments: m.mp ? getAttachmentsFromParts(m.mp) : undefined,

@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.24.14](https://github.com/zextras/carbonio-mails-ui/compare/v1.24.13...v1.24.14) (2025-03-11)
+
+
+### Bug Fixes
+
+* **normalize-message:** sort participants by type in message normalization ([ccc15e3](https://github.com/zextras/carbonio-mails-ui/commit/ccc15e3f77167004339a380674326b19139873ad))
+* **store:** [CO-1896] improve message update logic in populatedItemsSlice ([95a48bc](https://github.com/zextras/carbonio-mails-ui/commit/95a48bce21a1bd98554d61ece54ba3e63b71ef50))
+
+### [1.24.13](https://github.com/zextras/carbonio-mails-ui/compare/v1.24.12...v1.24.13) (2025-03-11)
+
+
+### Bug Fixes
+
+* **size-exceeded-warning-banner:** correct size calculation ([01458c2](https://github.com/zextras/carbonio-mails-ui/commit/01458c23889b8b1da62b34929ba95e6a2516602d))
+
+### [1.24.12](https://github.com/zextras/carbonio-mails-ui/compare/v1.24.11...v1.24.12) (2025-03-07)
+
+### [1.24.11](https://github.com/zextras/carbonio-mails-ui/compare/v1.24.10...v1.24.11) (2025-03-07)
+
 ### [1.24.10](https://github.com/zextras/carbonio-mails-ui/compare/v1.24.9...v1.24.10) (2025-03-07)
 
 
