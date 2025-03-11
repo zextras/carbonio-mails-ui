@@ -6,16 +6,12 @@
 import React, { Suspense, lazy, useEffect, useMemo, useState, useRef } from 'react';
 
 import { setAppContext, useUserSettings } from '@zextras/carbonio-shell-ui';
-import { includes } from 'lodash';
 import moment from 'moment';
-import { useParams } from 'react-router-dom';
 
 import { FolderView } from './folder-view';
 import { LayoutSelector } from './layout-selector';
 import { Spinner } from '../assets/spinner';
-import { FOLDERS } from '../carbonio-ui-commons/constants/folders';
 import { useUpdateView } from '../carbonio-ui-commons/hooks/use-update-view';
-import { getFolderIdParts } from '../helpers/folders';
 
 const LazyDetailPanel = lazy(
 	() => import(/* webpackChunkName: "folder-panel-view" */ './app/detail-panel')
@@ -30,15 +26,12 @@ const DetailPanel = (): React.JSX.Element => (
 const AppView = (): React.JSX.Element => {
 	const [count, setCount] = useState(0);
 	const { zimbraPrefGroupMailBy, zimbraPrefLocale } = useUserSettings().prefs;
-	const { folderId } = useParams<{ folderId: string }>();
 	const containerRef = useRef<HTMLDivElement>(null);
 	useUpdateView();
 
 	const isMessageView = useMemo(
-		() =>
-			(zimbraPrefGroupMailBy && zimbraPrefGroupMailBy === 'message') ||
-			includes([FOLDERS.DRAFTS, FOLDERS.TRASH], getFolderIdParts(folderId).id),
-		[folderId, zimbraPrefGroupMailBy]
+		() => (zimbraPrefGroupMailBy && zimbraPrefGroupMailBy === 'message') || false,
+		[zimbraPrefGroupMailBy]
 	);
 
 	if (zimbraPrefLocale) {

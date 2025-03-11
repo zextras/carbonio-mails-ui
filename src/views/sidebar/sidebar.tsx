@@ -10,7 +10,7 @@ import { ThemeProvider } from '@mui/material';
 import { Accordion, Container, Divider } from '@zextras/carbonio-design-system';
 import { SecondaryBarComponentProps } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
-import { Route, Switch, useParams, useRouteMatch } from 'react-router-dom';
+import { Route, Routes, useParams } from 'react-router-dom';
 
 import AccordionCustomComponent from './accordion-custom-component';
 import { ButtonFindShares } from './button-find-shares';
@@ -25,7 +25,7 @@ import useGetTagsAccordion from '../../hooks/use-get-tags-accordions';
 import type { SidebarComponentProps } from '../../types/sidebar';
 
 const SidebarComponent: FC<SidebarComponentProps> = memo(function SidebarComponent({ accordions }) {
-	const { folderId } = useParams<{ folderId: string }>();
+	const { folderId } = useParams() as { folderId: string };
 	const tagsAccordionItems = useGetTagsAccordion();
 
 	const accordionsWithFindShare = useMemo(() => {
@@ -57,25 +57,23 @@ const SidebarComponent: FC<SidebarComponentProps> = memo(function SidebarCompone
 });
 
 const Sidebar: FC<SecondaryBarComponentProps> = ({ expanded }) => {
-	const { path } = useRouteMatch();
 	const accordions = useFolders();
 
 	return (
-		<>
-			<ThemeProvider theme={themeMui}>
-				{expanded ? (
-					<Switch>
-						<Route path={`${path}/folder/:folderId/:type?/:itemId?`}>
-							<SidebarComponent accordions={accordions} />
-						</Route>
-					</Switch>
-				) : (
-					accordions[0].children.map((folder) => (
-						<CollapsedSideBarItems key={folder.id} folder={folder} />
-					))
-				)}
-			</ThemeProvider>
-		</>
+		<ThemeProvider theme={themeMui}>
+			{expanded ? (
+				<Routes>
+					<Route
+						path={`folder/:folderId/:type?/:itemId?`}
+						element={<SidebarComponent accordions={accordions} />}
+					/>
+				</Routes>
+			) : (
+				accordions[0].children.map((folder) => (
+					<CollapsedSideBarItems key={folder.id} folder={folder} />
+				))
+			)}
+		</ThemeProvider>
 	);
 };
 

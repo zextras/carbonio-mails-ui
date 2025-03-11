@@ -34,7 +34,7 @@ import { getFolderTranslatedName } from '../../../../sidebar/utils';
 
 const MessageContactList: FC<{
 	message: MailMessage;
-	folderId: string;
+	folderId?: string;
 	contactListExpandCB: (showMore: boolean) => void;
 }> = ({ message, folderId, contactListExpandCB }): ReactElement => {
 	const [open, setOpen] = useState(false);
@@ -73,7 +73,7 @@ const MessageContactList: FC<{
 	}, [message.read]);
 
 	const messageFolder = useMemo(
-		() => folders[message.parent?.includes(':') ? folderId : message.parent],
+		() => folders[folderId && message.parent?.includes(':') ? folderId : message.parent],
 		[folderId, folders, message.parent]
 	);
 	const labelTo = useMemo(() => `${t('label.to', 'To')}: `, []);

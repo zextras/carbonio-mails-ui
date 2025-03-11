@@ -5,7 +5,7 @@
  */
 import React, { lazy, Suspense, useMemo } from 'react';
 
-import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom';
+import { Navigate, Route, Routes } from 'react-router-dom';
 
 import { ResizableContainer } from './resizable-container';
 import { Spinner } from '../assets/spinner';
@@ -26,7 +26,6 @@ const LazyFolderView = lazy(
 );
 
 export const FolderView = ({ containerRef }: FolderViewProps): React.JSX.Element => {
-	const { path } = useRouteMatch();
 	const { isCurrentLayoutHorizontalSplit, isCurrentLayoutSplit } = useViewLayout();
 	const border = useMemo(
 		() => (isCurrentLayoutHorizontalSplit ? BORDERS.SOUTH : BORDERS.EAST),
@@ -37,14 +36,17 @@ export const FolderView = ({ containerRef }: FolderViewProps): React.JSX.Element
 
 	return (
 		<ResizableContainer border={border} elementToResize={containerRef} disabled={resizeDisabled}>
-			<Switch>
-				<Route path={`${path}/folder/:folderId/:type?/:itemId?`}>
-					<Suspense fallback={<Spinner />}>
-						<LazyFolderView />
-					</Suspense>
-				</Route>
-				<Redirect strict from={path} to={`${path}/folder/2`} />
-			</Switch>
+			<Routes>
+				<Route
+					path={`folder/:folderId/:type?/:itemId?`}
+					element={
+						<Suspense fallback={<Spinner />}>
+							<LazyFolderView />
+						</Suspense>
+					}
+				/>
+				<Route path="/" element={<Navigate to={'folder/2'} replace />} />
+			</Routes>
 		</ResizableContainer>
 	);
 };

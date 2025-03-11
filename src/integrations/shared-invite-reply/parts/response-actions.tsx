@@ -7,11 +7,17 @@ import React, { ChangeEvent, FC, ReactElement, useCallback, useMemo, useState } 
 
 import { Button, Checkbox, Divider, Input, Padding, Row } from '@zextras/carbonio-design-system';
 import { useUserAccounts } from '@zextras/carbonio-shell-ui';
+import { TFunction } from 'i18next';
 
 import ColorSelect from './color-select';
 import { useAccept, useDecline } from './share-folder-actions';
 import { FOLDER_VIEW } from '../../../carbonio-ui-commons/constants';
 import { ResponseActionsProps } from '../../../types';
+
+function getProposedFolderName(sharedFolderName: string, ownerName: string, t: TFunction): string {
+	const of = t('label.of', 'of');
+	return `${sharedFolderName} ${of} ${ownerName}`;
+}
 
 const ResponseActions: FC<ResponseActionsProps> = ({
 	t,
@@ -28,7 +34,9 @@ const ResponseActions: FC<ResponseActionsProps> = ({
 }): ReactElement => {
 	const [customMessage, setCustomMessage] = useState('');
 	const [notifyOrganizer, setNotifyOrganizer] = useState(false);
-	const [folderName, setFolderName] = useState(sharedFolderName);
+	const niceFolderName =
+		view === 'message' ? getProposedFolderName(sharedFolderName, owner, t) : sharedFolderName;
+	const [folderName, setFolderName] = useState(niceFolderName);
 	const [selectedColor, setSelectedColor] = useState<string | null>('0');
 	const accounts = useUserAccounts();
 

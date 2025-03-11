@@ -13,12 +13,23 @@ import { map, noop } from 'lodash';
 import { CustomListItem } from '../../../../carbonio-ui-commons/components/list/list-item';
 import { API_REQUEST_STATUS } from '../../../../constants';
 import { useSelection } from '../../../../hooks/use-selection';
-import type { AppContext, ConversationMessagesListProps } from '../../../../types';
+import type { AppContext, IncompleteMessage, SearchRequestStatus } from '../../../../types';
 import { MessageListItem } from '../messages/message-list-item';
 import { DragItemWrapper } from '../parts/drag-item-wrapper';
 
+type ConversationMessagesListProps = {
+	activeItemId?: string;
+	conversationStatus: SearchRequestStatus | undefined;
+	messages: Array<IncompleteMessage>;
+	folderId: string;
+	length: number;
+	isSearchModule?: boolean;
+	dragImageRef?: React.RefObject<HTMLDivElement>;
+	setDraggedIds?: (ids: Record<string, boolean>) => void;
+};
+
 export const ConversationMessagesList = memo(function ConversationMessagesList({
-	active,
+	activeItemId,
 	conversationStatus,
 	messages,
 	folderId,
@@ -38,7 +49,7 @@ export const ConversationMessagesList = memo(function ConversationMessagesList({
 	const listItems = useMemo(
 		() =>
 			map(messages, (message) => {
-				const isActive = active === message.id || active === message.conversation;
+				const isActive = activeItemId === message.id || activeItemId === message.conversation;
 				const isSelected = selected[message.id];
 
 				return (
@@ -81,7 +92,7 @@ export const ConversationMessagesList = memo(function ConversationMessagesList({
 				);
 			}),
 		[
-			active,
+			activeItemId,
 			deselectAll,
 			dragImageRef,
 			folderId,

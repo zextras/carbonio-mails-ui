@@ -15,7 +15,7 @@ import { getFolderIdParts } from '../../../helpers/folders';
 import { useConversationsIdsByFolder } from '../../../store/emails/store';
 
 export const SelectionInteractive = ({ count }: { count: number }): React.JSX.Element => {
-	const { folderId } = useParams<{ folderId: string }>();
+	const { folderId } = useParams() as { folderId: string };
 	const conversationIds = useConversationsIdsByFolder(folderId);
 	const spamMessages = useMemo(() => SpamMessages(), []);
 	const sentMessages = useMemo(() => SentMessages(), []);

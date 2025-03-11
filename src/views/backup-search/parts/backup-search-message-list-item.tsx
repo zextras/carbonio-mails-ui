@@ -6,10 +6,12 @@
 import React, { useCallback } from 'react';
 
 import { Avatar, Chip, Container, Padding, Row, Text } from '@zextras/carbonio-design-system';
-import { getUserAccount, replaceHistory, t, useUserSettings } from '@zextras/carbonio-shell-ui';
+import { getUserAccount, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { find } from 'lodash';
+import { useNavigate } from 'react-router-dom';
 
 import { getFolder } from '../../../carbonio-ui-commons/store/zustand/folder/hooks';
+import { BACKUP_SEARCH_ROUTE } from '../../../constants';
 import { BackupSearchMessage } from '../../../types';
 import { HoverContainer } from '../../app/folder-panel/parts/hover-container';
 
@@ -24,6 +26,7 @@ export const BackupSearchMessageListItem = ({
 	messageIsSelected,
 	toggle
 }: BackupSearchMessageListmessageProps): React.JSX.Element => {
+	const navigate = useNavigate();
 	const accountName = getUserAccount()?.name;
 	const { zimbraPrefLocale } = useUserSettings().prefs;
 	const active = true;
@@ -35,8 +38,8 @@ export const BackupSearchMessageListItem = ({
 	const folder = getFolder(message.folderId);
 
 	const handleComponentOnClick = useCallback(() => {
-		replaceHistory(`/${messageId}`);
-	}, [messageId]);
+		navigate(`/${BACKUP_SEARCH_ROUTE}/${messageId}`, { replace: true });
+	}, [messageId, navigate]);
 	const handleAvatarOnClick = useCallback(() => {
 		toggle(messageId);
 	}, [messageId, toggle]);

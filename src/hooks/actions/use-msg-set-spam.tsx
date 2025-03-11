@@ -6,10 +6,11 @@
 import { useCallback, useMemo } from 'react';
 
 import { useSnackbar } from '@zextras/carbonio-design-system';
-import { replaceHistory, t } from '@zextras/carbonio-shell-ui';
+import { t } from '@zextras/carbonio-shell-ui';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 
-import { MessageActionsDescriptors, TIMEOUTS } from '../../constants';
+import { MAILS_ROUTE, MessageActionsDescriptors, TIMEOUTS } from '../../constants';
 import { isDraft, isSpam } from '../../helpers/folders';
 import { msgActionEmailStoreAction } from '../../store/emails/actions/msg-action-action';
 import { ActionFn, UIActionDescriptor } from '../../types';
@@ -21,6 +22,7 @@ type MsgSetSpam = {
 };
 export const useMsgSetSpamFn = ({ ids, shouldReplaceHistory, folderId }: MsgSetSpam): ActionFn => {
 	const createSnackbar = useSnackbar();
+	const navigate = useNavigate();
 
 	const canExecute = useCallback(
 		(): boolean => !isDraft(folderId) && !isSpam(folderId),
@@ -48,7 +50,7 @@ export const useMsgSetSpamFn = ({ ids, shouldReplaceHistory, folderId }: MsgSetS
 				if (!notCanceled) return;
 				msgActionEmailStoreAction({ operation: 'spam', ids }).then((res) => {
 					if (!('Fault' in res) && shouldReplaceHistory) {
-						replaceHistory(`/folder/${folderId}`);
+						navigate(`/${MAILS_ROUTE}/folder/${folderId}`, { replace: true });
 					}
 					if ('Fault' in res) {
 						createSnackbar({
@@ -62,7 +64,7 @@ export const useMsgSetSpamFn = ({ ids, shouldReplaceHistory, folderId }: MsgSetS
 				});
 			}, TIMEOUTS.SET_AS_SPAM);
 		}
-	}, [canExecute, createSnackbar, folderId, ids, shouldReplaceHistory]);
+	}, [canExecute, createSnackbar, folderId, ids, navigate, shouldReplaceHistory]);
 
 	return useMemo(() => ({ canExecute, execute }), [canExecute, execute]);
 };

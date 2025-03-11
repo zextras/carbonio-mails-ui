@@ -37,7 +37,7 @@ export const MailPreviewBlock: FC<MailPreviewBlockType> = ({
 	isExternalMessage = false,
 	messagePreviewFactory
 }) => {
-	const { folderId, itemId } = useParams<{ folderId: string; itemId: string }>();
+	const { folderId, itemId } = useParams() as { folderId?: string; itemId?: string };
 	const compProps = useMemo(
 		() => ({ message, onClick, open, isExternalMessage, messagePreviewFactory }),
 		[message, onClick, open, isExternalMessage, messagePreviewFactory]
@@ -45,10 +45,14 @@ export const MailPreviewBlock: FC<MailPreviewBlockType> = ({
 	const shouldReplaceHistory = useMemo(() => itemId === message.id, [message.id, itemId]);
 	const [t] = useTranslation();
 
-	const { execute } = useMsgSetNotSpamFn({ ids: [message.id], folderId, shouldReplaceHistory });
+	const { execute } = useMsgSetNotSpamFn({
+		ids: [message.id],
+		folderId,
+		shouldReplaceHistory
+	});
 	return (
 		<>
-			{getFolderIdParts(folderId).id === FOLDERS.SPAM && (
+			{folderId && getFolderIdParts(folderId).id === FOLDERS.SPAM && (
 				<Container
 					mainAlignment="flex-start"
 					crossAlignment="flex-start"

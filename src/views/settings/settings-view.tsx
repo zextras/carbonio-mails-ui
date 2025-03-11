@@ -20,7 +20,7 @@ import { useTranslation } from 'react-i18next';
 
 import { differenceIdentities, differenceObject, getPropsDiff } from './components/utils';
 import ComposeMessage from './compose-msg-settings';
-import DisplayMessagesSettings from './displaying-messages-settings';
+import { DisplayMessagesSettings } from './display-messages-settings';
 import FilterModule from './filters';
 import { useSignatureSettings } from './hooks/use-signature-settings';
 import ReceivingMessagesSettings from './receiving-messages-settings';

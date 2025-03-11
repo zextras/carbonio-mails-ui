@@ -6,12 +6,12 @@
 import { useCallback, useMemo } from 'react';
 
 import { useSnackbar } from '@zextras/carbonio-design-system';
-import { replaceHistory } from '@zextras/carbonio-shell-ui';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 
 import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
 import { isTrash } from '../../carbonio-ui-commons/helpers/folders';
-import { ConversationActionsDescriptors } from '../../constants';
+import { ConversationActionsDescriptors, MAILS_ROUTE } from '../../constants';
 import { convActionEmailStoreAction } from '../../store/emails/actions/conv-action-action';
 import type { ActionFn, UIActionDescriptor } from '../../types';
 import { useInSearchModule } from '../../ui-actions/utils';
@@ -30,6 +30,7 @@ const useRestoreConversation = (
 	const createSnackbar = useSnackbar();
 	const inSearchModule = useInSearchModule();
 	const [t] = useTranslation();
+	const navigate = useNavigate();
 
 	return useCallback(() => {
 		convActionEmailStoreAction({
@@ -40,7 +41,7 @@ const useRestoreConversation = (
 			if (!('Fault' in res)) {
 				deselectAll?.();
 				if (!inSearchModule) {
-					replaceHistory(`/folder/${folderId}/conversation/${ids[0]}`);
+					navigate(`/${MAILS_ROUTE}/folder/${folderId}/conversation/${ids[0]}`, { replace: true });
 				}
 				createSnackbar({
 					key: `edit`,
@@ -61,7 +62,7 @@ const useRestoreConversation = (
 				});
 			}
 		});
-	}, [createSnackbar, deselectAll, folderId, ids, inSearchModule, t]);
+	}, [createSnackbar, deselectAll, folderId, ids, inSearchModule, navigate, t]);
 };
 
 export const useConvMoveToTrashFn = ({
@@ -74,6 +75,7 @@ export const useConvMoveToTrashFn = ({
 	const restoreConversation = useRestoreConversation(ids, folderId, deselectAll);
 	const inSearchModule = useInSearchModule();
 	const [t] = useTranslation();
+	const navigate = useNavigate();
 
 	const execute = useCallback((): void => {
 		if (!canExecute()) {
@@ -86,7 +88,7 @@ export const useConvMoveToTrashFn = ({
 			if (!('Fault' in res)) {
 				deselectAll?.();
 				if (!inSearchModule) {
-					replaceHistory(`/folder/${folderId}/`);
+					navigate(`/${MAILS_ROUTE}/folder/${folderId}`, { replace: true });
 				}
 				createSnackbar({
 					key: `trash-${ids}`,
@@ -116,6 +118,7 @@ export const useConvMoveToTrashFn = ({
 		createSnackbar,
 		t,
 		restoreConversation,
+		navigate,
 		folderId
 	]);
 
