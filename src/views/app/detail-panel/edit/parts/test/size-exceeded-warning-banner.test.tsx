@@ -67,9 +67,9 @@ describe('sizeExceededWarningBanner', () => {
 
 	it('does not render a warning banner when a smartLink is marked for convertion', async () => {
 		setupEditorStore({ editors: [] });
-		const attachment = { requiresSmartLinkConversion: true, size: 150 } as SavedAttachment;
+		const attachment = { requiresSmartLinkConversion: true, size: 5_000 } as SavedAttachment;
 		const editor = await generateEditorV2Case(1);
-		editor.size = 200;
+		editor.size = 50 + 5_000 * 1.33;
 		editor.savedAttachments = [attachment];
 		addEditor({ id: editor.id, editor });
 
