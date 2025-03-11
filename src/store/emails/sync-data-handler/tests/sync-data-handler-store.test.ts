@@ -29,11 +29,6 @@ jest.mock('../../../../carbonio-ui-commons/store/zustand/tags', () => ({
 describe('handleNotifyMessagesCreated', () => {
 	describe('addMessagesToMessageSlice', () => {
 		it('should add messages to populatedItemsSlice.messages', async () => {
-			const triggerNotificationSpy = jest.fn();
-			jest
-				.spyOn(triggerNotification, 'triggerNotification')
-				.mockImplementation(triggerNotificationSpy);
-
 			const message = generateMessage({ id: '1' });
 			setMessagesInEmailStore([message], false);
 			const newMessage = generateMessage({ id: '2' });
@@ -45,11 +40,6 @@ describe('handleNotifyMessagesCreated', () => {
 		});
 
 		it('should update messageListIndex with new message ids', async () => {
-			const triggerNotificationSpy = jest.fn();
-			jest
-				.spyOn(triggerNotification, 'triggerNotification')
-				.mockImplementation(triggerNotificationSpy);
-
 			const message = generateMessage({ id: '1' });
 			setMessagesInEmailStore([message], false);
 			const newMessage = generateMessage({ id: '2' });
