@@ -57,5 +57,27 @@ describe('Normalize message', () => {
 			expect(normalizedMessage.originalId).toBe('123');
 			expect(normalizedMessage.replyType).toBe('r');
 		});
+		it('should order participants by type in ascending order', () => {
+			const soapIncompleteMessage = generateMessageFromAPI({
+				rt: 'r',
+				origid: '123',
+				e: [
+					{ a: 'a', p: 'name', t: 't' },
+					{ a: 'a', p: 'name', t: 'c' },
+					{ a: 'a', p: 'name', t: 'b' },
+					{ a: 'a', p: 'name', t: 'f' }
+				]
+			});
+
+			const normalizedMessage = normalizeMailMessageFromSoap(soapIncompleteMessage);
+			const expectedResult = [
+				expect.objectContaining({ address: 'a', type: 'b' }),
+				expect.objectContaining({ address: 'a', type: 'c' }),
+				expect.objectContaining({ address: 'a', type: 'f' }),
+				expect.objectContaining({ address: 'a', type: 't' })
+			];
+
+			expect(normalizedMessage.participants).toEqual(expectedResult);
+		});
 	});
 });
