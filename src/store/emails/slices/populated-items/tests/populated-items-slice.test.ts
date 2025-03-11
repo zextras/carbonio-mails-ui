@@ -74,6 +74,34 @@ describe('store-populated-items-slice', () => {
 			expect(message1.current?.id).toBe('1');
 			expect(message2.current?.id).toBe('2');
 		});
+		it('replaces the existing message with the new one when the new message is complete', async () => {
+			const initialMessage = generateMessage({ id: '1', subject: 'initial subject' });
+			await waitFor(async () => {
+				setMessagesInEmailStore([initialMessage], false);
+			});
+			const updatedMessage = { ...initialMessage, isComplete: true, subject: undefined };
+			act(() => {
+				// passing undefined to subject to make sure it is not updated
+				// @ts-ignore
+				updateMessages([updatedMessage]);
+			});
+			const { result: message1 } = renderHook(() => useMessageById('1'));
+			expect(message1.current?.subject).toBe(undefined);
+		});
+		it('merges the existing message with the new one when the new message is not complete', async () => {
+			const initialMessage = generateMessage({ id: '1', subject: 'initial subject' });
+			await waitFor(async () => {
+				setMessagesInEmailStore([initialMessage], false);
+			});
+			const updatedMessage = { ...initialMessage, isComplete: false, subject: undefined };
+			act(() => {
+				// passing undefined to subject to make sure it is not updated
+				// @ts-ignore
+				updateMessages([updatedMessage]);
+			});
+			const { result: message1 } = renderHook(() => useMessageById('1'));
+			expect(message1.current?.subject).toBe(initialMessage.subject);
+		});
 		describe('Updating Parts', () => {
 			it('keeps the message original parts when new parts is an empty array', async () => {
 				const originalParts = [

@@ -88,8 +88,15 @@ function updateMessages(
 		produce(({ populatedItemsSlice }: EmailsStoreState) => {
 			messages.forEach((message) => {
 				if (!message?.id) return;
+
 				const existingMessage = populatedItemsSlice.messages?.[message.id] || {};
-				populatedItemsSlice.messages[message.id] = merge(existingMessage, message);
+
+				if (message.isComplete) {
+					populatedItemsSlice.messages[message.id] = message; // Replace
+				} else {
+					populatedItemsSlice.messages[message.id] = merge(existingMessage, message); // Merge
+				}
+
 				// Update the status if the message is complete
 				if (populatedItemsSlice.messages[message.id].isComplete) {
 					populatedItemsSlice.messagesStatus[message.id] = API_REQUEST_STATUS.fulfilled;
