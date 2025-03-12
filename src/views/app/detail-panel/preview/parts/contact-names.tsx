@@ -8,7 +8,7 @@ import React, { FC, ReactElement, useLayoutEffect, useRef, useState } from 'reac
 
 import { Row, Tooltip, Text } from '@zextras/carbonio-design-system';
 import { useUserAccounts } from '@zextras/carbonio-shell-ui';
-import { capitalize, map } from 'lodash';
+import { map } from 'lodash';
 import styled from 'styled-components';
 
 import { participantToString } from '../../../../../commons/utils';
@@ -46,6 +46,7 @@ const ContactName: FC<{
 				</Text>
 			</Row>
 			<Row
+				data-testid={'contact-names-row'}
 				ref={toRef}
 				mainAlignment="flex-start"
 				takeAvailableSpace
@@ -62,7 +63,7 @@ const ContactName: FC<{
 				{map(contacts, (contact, index) => (
 					<Tooltip label={contact.address} key={index}>
 						<ContactSubText color="secondary" size="small">
-							{capitalize(participantToString(contact, accounts))}
+							{participantToString(contact, accounts)}
 						</ContactSubText>
 					</Tooltip>
 				))}

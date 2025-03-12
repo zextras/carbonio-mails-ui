@@ -7,7 +7,7 @@ import { Account, getUserSettings, t } from '@zextras/carbonio-shell-ui';
 import { find, isArray, reduce } from 'lodash';
 import moment from 'moment';
 
-import type { MailMessagePart, Participant } from '../types';
+import type { MailMessagePart } from '../types';
 
 export const getTimeLabel = (date: number): string => {
 	const { zimbraPrefLocale = 'en' } = getUserSettings().prefs;
@@ -19,7 +19,7 @@ export const getTimeLabel = (date: number): string => {
 };
 
 export const participantToString = (
-	participant: Participant | undefined,
+	participant: Partial<{ fullName: string; name: string; address: string }> | undefined,
 	accounts: Array<Account>
 ): string => {
 	const me = find(accounts, ['name', participant?.address]);

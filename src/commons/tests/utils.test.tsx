@@ -4,12 +4,13 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import { Account } from '@zextras/carbonio-shell-ui';
+
 import * as shell from '../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
 import defaultSettings from '../../carbonio-ui-commons/test/mocks/settings/default-settings';
-import { generateMessage } from '../../tests/generators/generateMessage';
 import { MailMessagePart } from '../../types';
 import { convertHtmlToPlainText } from '../utilities';
-import { buildImageMap, getTimeLabel, updateImageSrc } from '../utils';
+import { buildImageMap, getTimeLabel, participantToString, updateImageSrc } from '../utils';
 
 describe('getTimeLabel', () => {
 	describe('the date is formatted using local', () => {
@@ -218,5 +219,88 @@ describe('buildImageMap', () => {
 
 	test('should handle an empty array input', () => {
 		expect(buildImageMap([])).toEqual({});
+	});
+});
+
+describe('participantToString', () => {
+	beforeEach(() => {
+		jest.clearAllMocks();
+	});
+
+	it('should return "Me" if the participant address matches an account', () => {
+		const participant = { address: 'testAddress' };
+		const accounts = [{ name: 'testAddress' } as Account];
+
+		const result = participantToString(participant, accounts);
+		expect(result).toBe('label.me');
+	});
+
+	it('should return the fullName if available', () => {
+		const participant = { fullName: 'john doe' };
+		const accounts = [] as Array<Account>;
+
+		const result = participantToString(participant, accounts);
+		expect(result).toBe('john doe');
+	});
+
+	it('should not change the casing of the fullName', () => {
+		const participant = { fullName: 'joHn Doe' };
+		const accounts = [] as Array<Account>;
+
+		const result = participantToString(participant, accounts);
+		expect(result).toBe('joHn Doe');
+	});
+
+	it('should not change the casing of the name', () => {
+		const participant = { name: 'joHn' };
+		const accounts = [] as Array<Account>;
+
+		const result = participantToString(participant, accounts);
+		expect(result).toBe('joHn');
+	});
+
+	it('should return the  name if fullName is not available', () => {
+		const participant = { name: 'jane smith' };
+		const accounts = [] as Array<Account>;
+
+		const result = participantToString(participant, accounts);
+		expect(result).toBe('jane smith');
+	});
+
+	it('should return the address if fullName and name are not available', () => {
+		const participant = { address: 'example@test.com' };
+		const accounts = [] as Array<Account>;
+
+		const result = participantToString(participant, accounts);
+		expect(result).toBe('example@test.com');
+	});
+
+	it('should return an empty string if no participant data is available', () => {
+		const accounts = [] as Array<Account>;
+
+		const result = participantToString(undefined, accounts);
+		expect(result).toBe('');
+	});
+
+	it('should handle a single word correctly', () => {
+		const participant = { name: 'single' };
+		const accounts = [] as Array<Account>;
+
+		const result = participantToString(participant, accounts);
+		expect(result).toBe('single');
+	});
+
+	it('should handle an empty string for name and fullname', () => {
+		const participant = { address: 'test@test.com', name: '', fullName: '' };
+		const accounts = [] as Array<Account>;
+		const result = participantToString(participant, accounts);
+		expect(result).toBe('test@test.com');
+	});
+
+	it('should handle an empty string for address', () => {
+		const participant = { address: '', name: 'test', fullName: 'test name' };
+		const accounts = [] as Array<Account>;
+		const result = participantToString(participant, accounts);
+		expect(result).toBe('test name');
 	});
 });
