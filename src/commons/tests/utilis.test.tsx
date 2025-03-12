@@ -235,23 +235,39 @@ describe('participantToString', () => {
 		expect(result).toBe('label.me');
 	});
 
-	it('should return the capitalized fullName if available', () => {
+	it('should return the fullName if available', () => {
 		const participant = { fullName: 'john doe' };
 		const accounts = [] as Array<Account>;
 
 		const result = participantToString(participant, accounts);
-		expect(result).toBe('John Doe');
+		expect(result).toBe('john doe');
 	});
 
-	it('should return the capitalized name if fullName is not available', () => {
+	it('should not change the casing of the fullName', () => {
+		const participant = { fullName: 'joHn Doe' };
+		const accounts = [] as Array<Account>;
+
+		const result = participantToString(participant, accounts);
+		expect(result).toBe('joHn Doe');
+	});
+
+	it('should not change the casing of the name', () => {
+		const participant = { name: 'joHn' };
+		const accounts = [] as Array<Account>;
+
+		const result = participantToString(participant, accounts);
+		expect(result).toBe('joHn');
+	});
+
+	it('should return the  name if fullName is not available', () => {
 		const participant = { name: 'jane smith' };
 		const accounts = [] as Array<Account>;
 
 		const result = participantToString(participant, accounts);
-		expect(result).toBe('Jane Smith');
+		expect(result).toBe('jane smith');
 	});
 
-	it('should return the non capitalized address if fullName and name are not available', () => {
+	it('should return the address if fullName and name are not available', () => {
 		const participant = { address: 'example@test.com' };
 		const accounts = [] as Array<Account>;
 
@@ -266,20 +282,12 @@ describe('participantToString', () => {
 		expect(result).toBe('');
 	});
 
-	it('should handle extra spaces correctly', () => {
-		const participant = { fullName: '  john   doe  ' };
-		const accounts = [] as Array<Account>;
-
-		const result = participantToString(participant, accounts);
-		expect(result).toBe('John Doe');
-	});
-
 	it('should handle a single word correctly', () => {
 		const participant = { name: 'single' };
 		const accounts = [] as Array<Account>;
 
 		const result = participantToString(participant, accounts);
-		expect(result).toBe('Single');
+		expect(result).toBe('single');
 	});
 
 	it('should handle an empty string for name and fullname', () => {
@@ -293,6 +301,6 @@ describe('participantToString', () => {
 		const participant = { address: '', name: 'test', fullName: 'test name' };
 		const accounts = [] as Array<Account>;
 		const result = participantToString(participant, accounts);
-		expect(result).toBe('Test Name');
+		expect(result).toBe('test name');
 	});
 });

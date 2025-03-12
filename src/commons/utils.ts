@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { Account, getUserSettings, t } from '@zextras/carbonio-shell-ui';
-import { find, isArray, reduce, startCase } from 'lodash';
+import { find, isArray, reduce } from 'lodash';
 import moment from 'moment';
 
 import type { MailMessagePart } from '../types';
@@ -26,9 +26,7 @@ export const participantToString = (
 	if (me) {
 		return t('label.me', 'Me');
 	}
-	return (
-		startCase(participant?.fullName) || startCase(participant?.name) || participant?.address || ''
-	);
+	return participant?.fullName || participant?.name || participant?.address || '';
 };
 
 export const isAvailableInTrusteeList = (
