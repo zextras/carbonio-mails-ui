@@ -124,8 +124,4 @@ describe('ContactName component', () => {
 		expect(screen.getByText('Kirpal singh')).toBeInTheDocument();
 		expect(screen.getByText('madan PAul')).toBeInTheDocument();
 	});
-
-	it.todo('renders contact names with overflow');
-
-	it.todo('handles long contact names with overflow');
 });
