@@ -30,9 +30,11 @@ export const ParticipantsName = ({
 }: ParticipantsNameProps): React.JSX.Element => {
 	const account = useUserAccount();
 
+	console.log('ParticipantsNameProps:', item.participants);
 	const parent = isConversation(item) ? getConversationMessages(item.id)[0].parent : item.parent;
 
 	const folderId = getFolderIdParts(parent).id;
+	console.log('ParticipantsNameProps:', folderId);
 
 	const participantsString = useMemo(() => {
 		const participants = filter(item.participants, (p) => {
@@ -42,6 +44,7 @@ export const ParticipantsName = ({
 			if (isSearchModule) return p.type === ParticipantRole.FROM; // search module
 			return true; // keep all
 		});
+		console.log('participants', participants);
 		const meIndex = findIndex(participants, ['address', account?.name]);
 		if (meIndex >= 0) {
 			// swap index me will be at first
@@ -56,6 +59,7 @@ export const ParticipantsName = ({
 			''
 		);
 	}, [account, folderId, isSearchModule, item]);
+	console.log('ParticipantsNameProps:', participantsString);
 
 	return (
 		<Row wrap="nowrap" takeAvailableSpace mainAlignment="flex-start">
