@@ -28,18 +28,7 @@ import {
 	AvatarPropTypes
 } from '@zextras/carbonio-design-system';
 import { useUserAccounts, t } from '@zextras/carbonio-shell-ui';
-import {
-	capitalize,
-	every,
-	filter,
-	find,
-	forEach,
-	includes,
-	isEmpty,
-	map,
-	reduce,
-	uniqBy
-} from 'lodash';
+import { every, filter, find, forEach, includes, isEmpty, map, reduce, uniqBy } from 'lodash';
 import moment from 'moment';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
@@ -297,7 +286,7 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 											color={message.read ? 'text' : 'primary'}
 											weight={message.read ? 'regular' : 'bold'}
 										>
-											{capitalize(participantToString(mainContact, accounts))}
+											{participantToString(mainContact, accounts)}
 										</Text>
 										<Row
 											takeAvailableSpace
@@ -308,7 +297,7 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 										>
 											{!isContactListExpand && (
 												<Text color="gray1" size={message.read ? 'small' : 'medium'}>
-													{mainContact.address && mainContact.address}
+													{mainContact.address}
 												</Text>
 											)}
 											{isContactListExpand && mainContact.address && (

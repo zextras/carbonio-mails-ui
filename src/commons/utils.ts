@@ -4,10 +4,10 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { Account, getUserSettings, t } from '@zextras/carbonio-shell-ui';
-import { find, isArray, reduce } from 'lodash';
+import { find, isArray, reduce, startCase } from 'lodash';
 import moment from 'moment';
 
-import type { MailMessagePart, Participant } from '../types';
+import type { MailMessagePart } from '../types';
 
 export const getTimeLabel = (date: number): string => {
 	const { zimbraPrefLocale = 'en' } = getUserSettings().prefs;
@@ -19,14 +19,16 @@ export const getTimeLabel = (date: number): string => {
 };
 
 export const participantToString = (
-	participant: Participant | undefined,
+	participant: Partial<{ fullName: string; name: string; address: string }> | undefined,
 	accounts: Array<Account>
 ): string => {
 	const me = find(accounts, ['name', participant?.address]);
 	if (me) {
 		return t('label.me', 'Me');
 	}
-	return participant?.fullName || participant?.name || participant?.address || '';
+	return (
+		startCase(participant?.fullName) || startCase(participant?.name) || participant?.address || ''
+	);
 };
 
 export const isAvailableInTrusteeList = (
