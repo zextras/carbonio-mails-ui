@@ -23,8 +23,8 @@ import { useTags } from '../../../../carbonio-ui-commons/store/zustand/tags';
 import { Tag } from '../../../../carbonio-ui-commons/types/tags';
 import { NormalizedConversation, TextReadValuesProps } from '../../../../types';
 import { ItemAvatar } from '../parts/item-avatar';
+import { ParticipantsName } from '../parts/participants-name';
 import { RowInfo } from '../parts/row-info';
-import { ParticipantsName } from '../parts/paricipants-name';
 
 type ConversationListItemCoreProps = {
 	conversation: NormalizedConversation;

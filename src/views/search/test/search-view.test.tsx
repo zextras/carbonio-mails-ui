@@ -641,6 +641,44 @@ describe('SearchView', () => {
 
 			await waitFor(() => expect(requestParameter.action).toEqual({ id: '10', op: 'read' }));
 		});
+
+		it('should not show empty email content when re-executing a search with a different word but relates to same email', async () => {
+			const initialSearchSettings = setupSearchViewTest({ viewBy: 'message', query: 'hello' });
+			const { queryChip } = initialSearchSettings;
+
+			const messageId = '10';
+			const soapMessage = getSoapMessage(messageId, { su: 'message 1 Subject', f: 'u' });
+
+			createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
+				m: [soapMessage],
+				more: false
+			});
+
+			createSoapAPIInterceptor<GetMsgRequest, GetMsgResponse>('GetMsg', {
+				m: [soapMessage]
+			});
+
+			const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
+			const searchViewProps: SearchViewProps = {
+				useQuery: () => [[queryChip], noop],
+				useDisableSearch: () => [false, noop],
+				ResultsHeader: resultsHeader
+			};
+
+			const { rerender } = setupTest(<SearchView {...searchViewProps} />, {
+				initialEntries: [`/message/${messageId}`]
+			});
+
+			expect(await screen.findByTestId(`SearchMessagePanel-${messageId}`)).toBeInTheDocument();
+
+			// Re-execute search with a different word but related to the same email
+			const updatedSearchSettings = setupSearchViewTest({ viewBy: 'message', query: 'subject' });
+			const { queryChip: updatedQueryChip } = updatedSearchSettings;
+
+			rerender(<SearchView {...searchViewProps} useQuery={() => [[updatedQueryChip], noop]} />);
+
+			expect(await screen.findByTestId(`SearchMessagePanel-${messageId}`)).toBeInTheDocument();
+		});
 	});
 
 	it('should display a disabled Advanced Filters button when SearchDisabled is true', async () => {

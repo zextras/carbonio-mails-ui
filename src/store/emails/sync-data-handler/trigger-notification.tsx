@@ -6,18 +6,22 @@
 import {
 	getNotificationManager,
 	getUserSettings,
-	replaceHistory,
 	NotificationConfig,
 	t
 } from '@zextras/carbonio-shell-ui';
 import { filter, sortBy, reverse, find, reject } from 'lodash';
+import { NavigateFunction } from 'react-router-dom';
 
 import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
 import { MAILS_ROUTE } from '../../../constants';
 import { IncompleteMessage, MailMessage } from '../../../types';
 
-export const triggerNotification = (messages: Array<IncompleteMessage | MailMessage>): void => {
+export const triggerNotification = (
+	messages: Array<IncompleteMessage | MailMessage>,
+	navigate: NavigateFunction
+): void => {
 	const { props, prefs } = getUserSettings();
+
 	const isShowNotificationEnabled = prefs?.zimbraPrefMailToasterEnabled ?? 'TRUE';
 	const isAudioEnabled = find(props, ['name', 'mailNotificationSound'])?._content ?? 'TRUE';
 	const showAllNotifications = prefs?.zimbraPrefShowAllNewMailNotifications ?? 'FALSE';
@@ -44,10 +48,7 @@ export const triggerNotification = (messages: Array<IncompleteMessage | MailMess
 		showPopup: isShowNotificationEnabled === 'TRUE',
 		onClick: (): void => {
 			window.focus();
-			replaceHistory({
-				path: `/folder/${msg.parent}/message/${msg.id}`,
-				route: MAILS_ROUTE
-			});
+			navigate(`/${MAILS_ROUTE}/folder/${msg.parent}/message/${msg.id}`, { replace: true });
 		}
 	}));
 

@@ -14,7 +14,7 @@ import { populateFoldersStore } from '../../../../../carbonio-ui-commons/test/mo
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
 import { populateConversationInEmailStore } from '../../../../../tests/generators/generateConversation';
 import { populateMessagesInEmailStore } from '../../../../../tests/generators/generateMessage';
-import { ParticipantsName } from '../paricipants-name';
+import { ParticipantsName } from '../participants-name';
 
 describe('ParticipantsName component', () => {
 	it('renders participants string for inbox folder', async () => {
