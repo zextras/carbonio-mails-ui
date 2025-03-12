@@ -46,6 +46,7 @@ const ContactName: FC<{
 				</Text>
 			</Row>
 			<Row
+				data-testid={'contact-names-row'}
 				ref={toRef}
 				mainAlignment="flex-start"
 				takeAvailableSpace
