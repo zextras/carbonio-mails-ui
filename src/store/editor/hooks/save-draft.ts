@@ -55,13 +55,40 @@ export const useSaveDraftFromEditor = (): {
 					abortReason: err
 				});
 
-				createSnackbar({
-					key: `save-draft`,
-					replace: true,
-					severity: 'error',
-					label: t('label.error_try_again', 'Something went wrong, please try again'),
-					autoHideTimeout: 3000
-				});
+
+				const errExceedQuota = new RegExp('^mailbox exceeded quota');
+				const errUploadTooLarge = new RegExp('^upload too large');
+
+				if (errExceedQuota.test(err)) {
+					const errMessage = 'hai esaurito lo spazio a disposizione della tua casella!.';
+					createSnackbar({
+							key: `mail-${editorId}`,
+							replace: true,
+							severity: 'error',
+							label: 'Non è stato possibile salvare il messaggio: ' + errMessage,
+							autoHideTimeout: 6000
+						});
+
+				} else if (errUploadTooLarge.test(err)) {
+					const errMessage = 'devi creare uno smartlink oppure eliminare uno degli allegati!.';
+					createSnackbar({
+							key: `mail-${editorId}`,
+							replace: true,
+							severity: 'error',
+							label: 'Non è stato possibile salvare il messaggio: ' + errMessage,
+							autoHideTimeout: 6000
+						});
+				} else {
+
+					createSnackbar({
+						key: `save-draft`,
+						replace: true,
+						severity: 'error',
+						label: t('label.error_try_again', 'Something went wrong, please try again'),
+						autoHideTimeout: 3000
+					});
+				}
+
 				computeAndUpdateEditorStatus(editorId);
 				options?.onError && options.onError(err);
 			};
@@ -69,8 +96,14 @@ export const useSaveDraftFromEditor = (): {
 			// Update messages store
 			saveDraftEmailStoreAction({ editor })
 				.then((res) => {
+
 					if ('Fault' in res) {
-						handleError(res.Fault.Detail?.Error?.Detail);
+						if ('Detail' in res.Fault.Detail?.Error) {
+							handleError(res.Fault.Detail?.Error?.Detail);
+						}
+						if ('Reason' in res.Fault) {
+							handleError(res.Fault.Reason?.Text);
+						}
 						return;
 					}
 
