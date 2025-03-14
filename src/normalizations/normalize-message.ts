@@ -293,14 +293,29 @@ const getTagIdsFromName = (names: string | undefined): Array<string | undefined>
 	);
 };
 
-const getTagIds = (t: string | undefined, tn: string | undefined): Array<string | undefined> => {
-	if (!isNil(t)) {
-		return filter(t.split(','), (tag) => tag !== '');
+const getTagIds = (
+	t: string | undefined,
+	tn: string | undefined
+): Array<string | undefined> | undefined => {
+	if (isNil(t) && isNil(tn)) {
+		return undefined;
 	}
+
+	// Check if both t and tn are empty strings
+	// this is the case when the last remaining tag is removed
+	if (t === '' && tn === '') {
+		return [];
+	}
+
+	if (!isNil(t)) {
+		return filter(t.split(','), (tag) => tag.trim() !== '');
+	}
+
 	if (!isNil(tn)) {
 		return getTagIdsFromName(tn);
 	}
-	return [];
+
+	return undefined;
 };
 
 export const haveReadReceipt = (
