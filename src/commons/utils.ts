@@ -7,7 +7,7 @@ import { Account, getUserSettings, t } from '@zextras/carbonio-shell-ui';
 import { find, isArray } from 'lodash';
 import moment from 'moment';
 
-import type { MailMessagePart } from 'types/index.d';
+import type { MailMessagePart, Participant } from 'types/index.d';
 
 // retrieves locale from preferences, fallbacks to "en" if no locale found.
 export const getUserLocale = (): string => {
@@ -42,6 +42,37 @@ export const participantToString = (
 		return t('label.me', 'Me');
 	}
 	return participant?.fullName || participant?.name || participant?.address || '';
+};
+
+export const toTitleCase = (str: string | undefined): string => {
+	if ( str ) {
+		const titleCase = str.toLowerCase().split(' ').map(word => {
+			return word.charAt(0).toUpperCase() + word.slice(1);
+		}).join(' ');
+		return titleCase;
+	}
+
+	return '';
+};
+
+export const participantWithAddressToString = (
+	participant: Participant | undefined,
+	accounts: Array<Account>
+): string => {
+	const me = find(accounts, ['name', participant?.address]);
+	if (me) {
+		return t('label.me', 'Me');
+	}
+
+	if (participant?.fullName && participant?.address ) {
+		return '"' + toTitleCase(participant?.fullName) + '" <' + participant?.address + '>';
+	}
+
+	if (participant?.name && participant?.address ) {
+		return '"' + toTitleCase(participant?.name) + '" <' + participant?.address + '>';
+	}
+
+	return toTitleCase(participant?.fullName) || toTitleCase(participant?.name) || participant?.address || '';
 };
 
 export const isAvailableInTrusteeList = (
