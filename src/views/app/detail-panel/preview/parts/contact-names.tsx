@@ -11,7 +11,7 @@ import { Row, Tooltip, Text } from '@zextras/carbonio-design-system';
 import { useUserAccounts } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
 
-import { participantToString } from 'commons/utils';
+import { participantWithAddressToString } from 'commons/utils';
 import type { Participant } from 'types/index.d';
 
 const ContactSubText = styled(Text)`
@@ -63,7 +63,7 @@ const ContactName: FC<{
 				{map(contacts, (contact, index) => (
 					<Tooltip label={contact.address} key={index}>
 						<ContactSubText color="secondary" size="small">
-							{participantToString(contact, accounts)}
+							{participantWithAddressToString(contact, accounts)}
 						</ContactSubText>
 					</Tooltip>
 				))}
