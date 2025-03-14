@@ -86,7 +86,7 @@ export const useMsgApplyTagSubDescriptors = ({
 	const tagActions = useMemo(
 		() =>
 			map(tags, (tag) => {
-				const isTagIncluded = messageTags.includes(tag.id);
+				const isTagIncluded = !!messageTags?.includes(tag.id);
 
 				const { operation, icon, snackbarSuccessLabel } = getTagOperationDetails(
 					isTagIncluded,
