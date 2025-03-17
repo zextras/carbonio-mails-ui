@@ -4,21 +4,19 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { isNil, filter } from 'lodash';
+import { find, isNil, filter } from 'lodash';
 
 import { getTags } from '../carbonio-ui-commons/store/zustand/tags';
 
-const getTagIdsFromName = (names?: string): string[] => {
-	if (!names) return [];
-
+const getTagIdsFromName = (names: string | undefined): Array<string> => {
 	const tags = getTags();
-	const tagMap = new Map(Object.values(tags).map((tag) => [tag.name, tag.id]));
-
-	return names
-		.split(',')
+	return (names?.split(',') ?? [])
 		.map((name) => name.trim())
-		.filter(Boolean)
-		.map((name) => tagMap.get(name) ?? `nil:${name}`);
+		.filter((name) => name)
+		.map((name) => {
+			const tag = find(tags, { name });
+			return tag ? tag.id : `nil:${name}`;
+		});
 };
 
 export const getTagIds = (
