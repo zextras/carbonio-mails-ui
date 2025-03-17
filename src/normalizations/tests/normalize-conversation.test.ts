@@ -118,4 +118,68 @@ describe('Normalize conversation', () => {
 
 		expect(normalizedConversation.participants).toEqual([]);
 	});
+
+	it('handles conversation with tag IDs from t and tn', () => {
+		const soapConversation = generateConversationFromAPI({
+			id: '1',
+			d: 123456789,
+			t: 'tag1,tag2',
+			tn: 'tag1,tag2'
+		});
+
+		const normalizedConversation = mapToNormalizedConversation({ conversation: soapConversation });
+
+		expect(normalizedConversation.tags).toEqual(['tag1', 'tag2']);
+	});
+
+	it('handles conversation where only tn is present', () => {
+		const soapConversation = generateConversationFromAPI({
+			id: '1',
+			d: 123456789,
+			tn: 'tag3,tag4'
+		});
+
+		const normalizedConversation = mapToNormalizedConversation({ conversation: soapConversation });
+
+		expect(normalizedConversation.tags).toEqual(['nil:tag3', 'nil:tag4']);
+	});
+
+	it('handles conversation without t or tn', () => {
+		// @ts-expect-error - intentionally omitting t and tn
+		const soapConversation: SoapConversation = {
+			id: '1',
+			n: 0,
+			u: 0,
+			f: '',
+			d: 0,
+			m: [],
+			e: [],
+			su: '',
+			fr: ''
+		};
+
+		const normalizedConversation = mapToNormalizedConversation({ conversation: soapConversation });
+
+		expect(normalizedConversation).not.toHaveProperty('tags');
+	});
+
+	it('ensures tags property is omitted when undefined', () => {
+		const soapConversation: SoapConversation = {
+			id: '1',
+			n: 0,
+			u: 0,
+			f: '',
+			d: 0,
+			m: [],
+			e: [],
+			su: '',
+			fr: '',
+			t: undefined,
+			tn: null as unknown as string
+		};
+
+		const normalizedConversation = mapToNormalizedConversation({ conversation: soapConversation });
+
+		expect(normalizedConversation.tags).toBeUndefined();
+	});
 });

@@ -46,9 +46,10 @@ export type SoapMailParticipant = {
 	isGroup?: boolean;
 
 	/**
-	 * Indicates whether the group has been expanded (i.e., individual members of the group are known).
-	 * This is relevant only if `isGroup` is `true`.
-	 * This is an optional field.
+	 * Flags whether the authenticated user can expand group members.
+	 * - 1 (true): The authenticated user has permission to expand members in this group.
+	 * - 0 (false): The authenticated user does not have permission to expand group members.
+	 * Note: This field is present only when {isGroup} is set to `true`.
 	 */
 	exp?: boolean;
 };
