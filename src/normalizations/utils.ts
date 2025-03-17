@@ -10,7 +10,6 @@ import { getTags } from '../carbonio-ui-commons/store/zustand/tags';
 
 const getTagIdsFromName = (names: string | undefined): Array<string> => {
 	const tags = getTags();
-
 	return (names?.split(',') ?? [])
 		.map((name) => name.trim())
 		.filter((name) => name)
@@ -28,8 +27,6 @@ export const getTagIds = (
 		return undefined;
 	}
 
-	// Check if both t and tn are empty strings
-	// this is the case when the last remaining tag is removed
 	if (t === '' && tn === '') {
 		return [];
 	}
@@ -38,9 +35,5 @@ export const getTagIds = (
 		return filter(t.split(','), (tag) => tag.trim() !== '');
 	}
 
-	if (!isNil(tn)) {
-		return getTagIdsFromName(tn);
-	}
-
-	return undefined;
+	return getTagIdsFromName(tn);
 };
