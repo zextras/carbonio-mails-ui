@@ -6,7 +6,7 @@
 
 import { find, isNil, filter } from 'lodash';
 
-import { getTags } from '../carbonio-ui-commons/store/zustand/tags/hooks';
+import { getTags } from '../carbonio-ui-commons/store/zustand/tags';
 
 const getTagIdsFromName = (names: string | undefined): Array<string> => {
 	const tags = getTags();
