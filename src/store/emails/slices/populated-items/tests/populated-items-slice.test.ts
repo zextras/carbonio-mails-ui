@@ -523,6 +523,7 @@ describe('store-populated-items-slice', () => {
 				updateConversations([newConversation]);
 			});
 			const { result } = renderHook(() => useConversationById('1'));
+
 			expect(result.current.tags).toEqual([]);
 		});
 	});

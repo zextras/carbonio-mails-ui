@@ -7,7 +7,7 @@
 
 import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 import produce from 'immer';
-import { filter, forEach, keyBy, merge } from 'lodash';
+import { filter, forEach, isArray, keyBy, merge, mergeWith } from 'lodash';
 import { UseBoundStore, StoreApi } from 'zustand';
 
 import { RemoveAttachmentsResponse } from '../../../../api/delete-all-attachments-soap-api';
@@ -69,7 +69,14 @@ function updateConversations(
 			updatedConversations.forEach((conversation) => {
 				if (populatedItemsSlice.conversations[conversation.id]) {
 					populatedItemsSlice.conversations[conversation.id] = {
-						...merge(populatedItemsSlice.conversations[conversation.id], conversation)
+						...mergeWith(
+							{},
+							populatedItemsSlice.conversations[conversation.id],
+							conversation,
+							(object, newObject) =>
+								// Overwrite arrays even if the source array is empty
+								isArray(object) && isArray(newObject) ? newObject : undefined
+						)
 					};
 				} else {
 					populatedItemsSlice.conversations[conversation.id] = conversation;
