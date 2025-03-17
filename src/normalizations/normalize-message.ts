@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { filter, find, forEach, isArray, isNil, map, omitBy, orderBy, reduce } from 'lodash';
+import { find, forEach, isArray, isNil, map, omitBy, orderBy, reduce } from 'lodash';
 
 import {
 	ParticipantRole,
@@ -13,7 +13,6 @@ import {
 import { getIdentitiesDescriptors } from '../carbonio-ui-commons/helpers/identities';
 import { getFolder } from '../carbonio-ui-commons/store/zustand/folder/hooks';
 import { useFolderStore } from '../carbonio-ui-commons/store/zustand/folder/store';
-import { getTags } from '../carbonio-ui-commons/store/zustand/tags';
 import {
 	AttachmentPart,
 	BodyPart,
@@ -35,6 +34,7 @@ import {
 	getMessageIdFromMailHeadersFromAPI,
 	getSensitivityHeaderFromAPI
 } from './mail-header-utils';
+import { getTagIds } from './utils';
 
 type Flags = {
 	read: boolean;
@@ -285,23 +285,6 @@ export const normalizeParticipantsFromSoap = (e: SoapMailParticipant): Participa
 	exp: e.exp,
 	isGroup: e.isGroup
 });
-
-const getTagIdsFromName = (names: string | undefined): Array<string | undefined> => {
-	const tags = getTags();
-	return map(names?.split(','), (name) =>
-		find(tags, { name }) ? find(tags, { name })?.id : `nil:${name}`
-	);
-};
-
-const getTagIds = (t: string | undefined, tn: string | undefined): Array<string | undefined> => {
-	if (!isNil(t)) {
-		return filter(t.split(','), (tag) => tag !== '');
-	}
-	if (!isNil(tn)) {
-		return getTagIdsFromName(tn);
-	}
-	return [];
-};
 
 export const haveReadReceipt = (
 	participants: Array<SoapMailParticipant> | undefined,

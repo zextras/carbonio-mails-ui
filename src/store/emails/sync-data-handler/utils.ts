@@ -6,7 +6,7 @@
 import { getUserSettings } from '@zextras/carbonio-shell-ui';
 /* eslint-disable no-param-reassign */
 import produce from 'immer';
-import { filter, find, forEach, merge } from 'lodash';
+import { filter, find, forEach, isArray, mergeWith } from 'lodash';
 import { StoreApi, UseBoundStore } from 'zustand';
 
 import {
@@ -113,10 +113,18 @@ function handleNotifyConversationsModified(
 ): void {
 	useEmailsStore.setState(
 		produce(({ populatedItemsSlice }: EmailsStoreState) => {
-			updatedConversations.forEach((conversation) => {
-				populatedItemsSlice.conversations[conversation.id] = {
-					...merge(populatedItemsSlice.conversations[conversation.id], conversation),
-					tags: conversation.tags
+			updatedConversations.forEach((updatedConversation) => {
+				populatedItemsSlice.conversations[updatedConversation.id] = {
+					...mergeWith(
+						{},
+						populatedItemsSlice.conversations[updatedConversation.id],
+						updatedConversation,
+						(object, newObject) =>
+							// Overwrite arrays even if the source array is empty
+							isArray(object) && isArray(newObject) ? newObject : undefined
+					),
+					participants: populatedItemsSlice.conversations[updatedConversation.id].participants,
+					messageIds: populatedItemsSlice.conversations[updatedConversation.id].messageIds
 				};
 			});
 		})
@@ -136,13 +144,15 @@ function handleNotifyMessagesModified(
 ): void {
 	useEmailsStore.setState(
 		produce(({ populatedItemsSlice }: EmailsStoreState) => {
-			updatedMessages.forEach((message) => {
-				const messageId = message.id;
-				const messageAfterMerge = merge(populatedItemsSlice.messages[messageId], message);
-				populatedItemsSlice.messages[messageId] = {
-					...messageAfterMerge,
-					tags: message.tags
-				};
+			updatedMessages.forEach((updatedMessage) => {
+				populatedItemsSlice.messages[updatedMessage.id] = mergeWith(
+					{},
+					populatedItemsSlice.messages[updatedMessage.id],
+					updatedMessage,
+					(object, newObject) =>
+						// Overwrite arrays even if the source array is empty
+						isArray(object) && isArray(newObject) ? newObject : undefined
+				);
 			});
 		})
 	);
