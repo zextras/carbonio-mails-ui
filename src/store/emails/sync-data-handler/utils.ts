@@ -114,7 +114,6 @@ function handleNotifyConversationsModified(
 	useEmailsStore.setState(
 		produce(({ populatedItemsSlice }: EmailsStoreState) => {
 			updatedConversations.forEach((updatedConversation) => {
-				console.log('@@@@@ new', updatedConversation);
 				populatedItemsSlice.conversations[updatedConversation.id] = {
 					...mergeWith(
 						{},
