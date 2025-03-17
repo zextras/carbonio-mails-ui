@@ -69,8 +69,7 @@ function updateConversations(
 			updatedConversations.forEach((conversation) => {
 				if (populatedItemsSlice.conversations[conversation.id]) {
 					populatedItemsSlice.conversations[conversation.id] = {
-						...merge(populatedItemsSlice.conversations[conversation.id], conversation),
-						tags: conversation.tags
+						...merge(populatedItemsSlice.conversations[conversation.id], conversation)
 					};
 				} else {
 					populatedItemsSlice.conversations[conversation.id] = conversation;
