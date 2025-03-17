@@ -76,7 +76,11 @@ function updateConversations(
 							(object, newObject) =>
 								// Overwrite arrays even if the source array is empty
 								isArray(object) && isArray(newObject) ? newObject : undefined
-						)
+						),
+						// messageIds and participants are incorrectly set to empty array when normalizing
+						// adding them back here, but the code should be fixed in the normalization
+						messageIds: populatedItemsSlice.conversations[conversation.id].messageIds,
+						participants: populatedItemsSlice.conversations[conversation.id].participants
 					};
 				} else {
 					populatedItemsSlice.conversations[conversation.id] = conversation;
