@@ -3,53 +3,29 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { filter, find, isNil, map } from 'lodash';
+import { filter, isNil, map } from 'lodash';
 
 import { normalizeParticipantsFromSoap } from './normalize-message';
-import { getTags } from '../carbonio-ui-commons/store/zustand/tags';
-import { Tags } from '../carbonio-ui-commons/types/tags';
 import type { NormalizedConversation, SoapConversation, SoapIncompleteMessage } from '../types';
-
-const getTagIdsFromName = (names: string | undefined, tags?: Tags): Array<string | undefined> =>
-	map(
-		(names?.split(',') ?? []).filter((n) => n),
-		(name) => (find(tags, { name }) ? find(tags, { name })?.id : `nil:${name}`)
-	);
-const getTagIds = (t: string | undefined, tn: string | undefined): Array<string | undefined> => {
-	const tags = getTags();
-	if (!isNil(t)) {
-		return filter(t.split(','), (tag) => tag !== '');
-	}
-	if (!isNil(tn)) {
-		return getTagIdsFromName(tn, tags);
-	}
-	return [];
-};
+import { getTagIds } from './utils';
 
 export type NormalizeConversationProps = {
 	conversation: SoapConversation;
 	messages?: Array<SoapIncompleteMessage>;
 };
-
-function removeUndefinedValues<T>(items: (T | undefined)[]): T[] {
-	const definedItems: T[] = [];
-	items.forEach((item) => {
-		if (item) {
-			definedItems.push(item);
-		}
-	});
-	return definedItems;
-}
-
 export const mapToNormalizedConversation = ({
 	conversation,
 	messages
 }: NormalizeConversationProps): NormalizedConversation => {
 	const messagesWithCid = conversation?.m ?? filter(messages ?? [], ['cid', conversation?.id]);
 	const convMessagesIds = map(messagesWithCid, (msg) => msg.id);
-
+	const tags = getTagIds(conversation.t, conversation.tn);
+	// disabling type check on this line because the tags are optional
+	// the workaround will be removed once proper type is in place
+	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+	// @ts-ignore
 	return {
-		tags: removeUndefinedValues(getTagIds(conversation.t, conversation.tn)),
+		...(tags ? { tags } : {}),
 		id: conversation.id,
 		date: conversation.d,
 		messageIds: convMessagesIds,
