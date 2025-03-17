@@ -6,20 +6,18 @@
 
 import { find, isNil, filter } from 'lodash';
 
-import { getTags } from '../carbonio-ui-commons/store/zustand/tags';
+import { getTags } from '../carbonio-ui-commons/store/zustand/tags/hooks';
 
 const getTagIdsFromName = (names: string | undefined): Array<string> => {
 	const tags = getTags();
 
-	if (!names) return [];
-
-	return names.split(',').map((name) => {
-		const trimmedName = name.trim();
-		const tag = find(tags, { name: trimmedName });
-
-		// Return the tag ID if found, otherwise return a fallback value
-		return tag ? tag.id : `nil:${trimmedName}`;
-	});
+	return (names?.split(',') ?? [])
+		.map((name) => name.trim())
+		.filter((name) => name)
+		.map((name) => {
+			const tag = find(tags, { name });
+			return tag ? tag.id : `nil:${name}`;
+		});
 };
 
 export const getTagIds = (
