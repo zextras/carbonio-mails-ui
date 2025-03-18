@@ -11,7 +11,7 @@ import { SoapNotify, useNotify, useRefresh } from '@zextras/carbonio-shell-ui';
 import { flatten, forEach, isEmpty, map, sortBy } from 'lodash';
 import { NavigateFunction, useNavigate } from 'react-router-dom';
 
-import { HandleFoldersNotifyProps, HandleTagsNotifyProps } from './types';
+import { HandleFoldersNotifyProps, HandleTagsNotifyProps, SoapPartialConversation } from './types';
 import { useFolderStore } from '../../../carbonio-ui-commons/store/zustand/folder';
 import { useTagStore } from '../../../carbonio-ui-commons/store/zustand/tags';
 import { folderWorker, tagsWorker } from '../../../carbonio-ui-commons/worker';
@@ -97,7 +97,7 @@ function processCreatedNotifications(notify: SoapNotify, navigate: NavigateFunct
 }
 
 function processModifiedNotifications(notify: SoapNotify): void {
-	const modifiedConversations = notify.modified?.c as Array<SoapConversation>;
+	const modifiedConversations = notify.modified?.c as Array<SoapPartialConversation>;
 	if (modifiedConversations) {
 		const updatedConversations = normalizeConversations(modifiedConversations);
 		handleNotifyConversationsModified(updatedConversations);
@@ -168,7 +168,7 @@ function processNotifications({
 }
 
 export const useSyncDataHandler = (): void => {
-	const notifyList = useNotify() as unknown as Array<SoapNotify>;
+	const notifyList = useNotify();
 	const navigate = useNavigate();
 	const [seq, setSeq] = useState(-1);
 	const [initialized, setInitialized] = useState(false);
