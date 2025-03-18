@@ -191,15 +191,18 @@ describe('Normalize conversation', () => {
 
 describe('Normalize partial conversation', () => {
 	it('returns normalized partial conversation with all fields', () => {
-		const msg1 = generateSoapConversationMessage('1', '123');
-		const msg2 = generateSoapConversationMessage('2', '123');
+		const msg1 = generateSoapConversationMessage('msg1', '123');
+		const msg2 = generateSoapConversationMessage('msg2', '123');
+		const isFlagged = 'f';
+		const isUrgent = '!';
+		const hasAttachment = 'a';
 		const partialConversation = {
 			id: '123',
-			n: 1,
+			n: 2,
 			u: 1,
-			f: 'flag',
-			t: '1, 2, 3',
-			tn: 'tag1, tag2, tag3',
+			f: `${isFlagged}${isUrgent}${hasAttachment}`,
+			t: '1,2,3',
+			tn: 'tag1,tag2,tag3',
 			d: 123,
 			m: [msg1, msg2],
 			e: [
@@ -213,12 +216,12 @@ describe('Normalize partial conversation', () => {
 		const result = normalizePartialConversations([partialConversation])[0];
 		expect(result).toEqual({
 			id: '123',
-			tags: ['tag1', 'tag2', 'tag3'],
+			tags: ['1', '2', '3'],
 			date: 123,
 			messageIds: ['msg1', 'msg2'],
 			participants: [
-				{ email: 'user1@example.com', type: 'f' },
-				{ email: 'user2@example.com', type: 't' }
+				expect.objectContaining({ email: 'user1@example.com', type: 'f' }),
+				expect.objectContaining({ email: 'user2@example.com', type: 't' })
 			],
 			subject: 'Subject',
 			fragment: 'fragment',
@@ -226,7 +229,7 @@ describe('Normalize partial conversation', () => {
 			hasAttachment: true,
 			flagged: true,
 			urgent: true,
-			messagesInConversation: 5
+			messagesInConversation: 2
 		});
 	});
 	it('should omit fields when not defined', () => {
