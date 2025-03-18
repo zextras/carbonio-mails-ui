@@ -11,7 +11,12 @@ import { SoapNotify, useNotify, useRefresh } from '@zextras/carbonio-shell-ui';
 import { flatten, forEach, isEmpty, map, sortBy } from 'lodash';
 import { NavigateFunction, useNavigate } from 'react-router-dom';
 
-import { HandleFoldersNotifyProps, HandleTagsNotifyProps, SoapPartialConversation } from './types';
+import {
+	HandleFoldersNotifyProps,
+	HandleTagsNotifyProps,
+	SoapPartialConversation,
+	SoapPartialIncompleteMessage
+} from './types';
 import { useFolderStore } from '../../../carbonio-ui-commons/store/zustand/folder';
 import { useTagStore } from '../../../carbonio-ui-commons/store/zustand/tags';
 import { folderWorker, tagsWorker } from '../../../carbonio-ui-commons/worker';
@@ -19,7 +24,10 @@ import {
 	mapToNormalizedConversation,
 	normalizePartialConversations
 } from '../../../normalizations/normalize-conversation';
-import { normalizeMailMessageFromSoap } from '../../../normalizations/normalize-message';
+import {
+	normalizeMailMessageFromSoap,
+	normalizePartialIncompleteMessageFromSoap
+} from '../../../normalizations/normalize-message';
 import {
 	handleNotifyConversationsCreated,
 	handleNotifyConversationsModified,
@@ -106,9 +114,11 @@ function processModifiedNotifications(notify: SoapNotify): void {
 		updateMessages(convMessages);
 	}
 
-	const modifiedMessages = notify.modified?.m as Array<SoapIncompleteMessage>;
+	const modifiedMessages = notify.modified?.m as Array<SoapPartialIncompleteMessage>;
 	if (modifiedMessages) {
-		const messages = map(modifiedMessages, (message) => normalizeMailMessageFromSoap(message));
+		const messages = map(modifiedMessages, (message) =>
+			normalizePartialIncompleteMessageFromSoap(message)
+		);
 		handleNotifyMessagesModified(messages);
 	}
 }

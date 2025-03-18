@@ -7,6 +7,14 @@
 import { find, forEach, isArray, isNil, map, omitBy, orderBy, reduce } from 'lodash';
 
 import {
+	getCreationDateFromMailHeadersFromAPI,
+	getMessageIdFromMailHeadersFromAPI,
+	getMessageIsFromDistributionListFromAPI,
+	getMessageIsFromExternalDomainFromAPI,
+	getSensitivityHeaderFromAPI
+} from './mail-header-utils';
+import { getTagIds } from './utils';
+import {
 	ParticipantRole,
 	ParticipantRoleType
 } from '../carbonio-ui-commons/constants/participants';
@@ -28,13 +36,9 @@ import {
 	SoapMailParticipant
 } from '../types';
 import {
-	getCreationDateFromMailHeadersFromAPI,
-	getMessageIsFromDistributionListFromAPI,
-	getMessageIsFromExternalDomainFromAPI,
-	getMessageIdFromMailHeadersFromAPI,
-	getSensitivityHeaderFromAPI
-} from './mail-header-utils';
-import { getTagIds } from './utils';
+	PartialIncompleteMessage,
+	SoapPartialIncompleteMessage
+} from '../views/sidebar/commons/types';
 
 type Flags = {
 	read: boolean;
@@ -287,12 +291,11 @@ export const normalizeParticipantsFromSoap = (e: SoapMailParticipant): Participa
 });
 
 export const haveReadReceipt = (
-	participants: Array<SoapMailParticipant> | undefined,
+	participants: Array<SoapMailParticipant>,
 	flags: string | undefined,
 	folderId: string
 ): boolean => {
 	const folder = getFolder(folderId);
-	if (isNil(participants)) return false;
 	if (isNil(folder)) {
 		const state = useFolderStore.getState();
 		const linkFolder = state.linksIdMap[folderId] ?? null;
@@ -370,7 +373,9 @@ export const normalizeMailMessageFromSoap = (
 			isScheduled: !!m.autoSendTime,
 			autoSendTime: m.autoSendTime,
 			...flags,
-			isReadReceiptRequested: haveReadReceipt(m.e, m.f, m.l) && !isNil(isComplete) && isComplete,
+			isReadReceiptRequested: m.e
+				? haveReadReceipt(m.e, m.f, m.l) && !isNil(isComplete) && isComplete
+				: undefined,
 			isEncrypted: !!find(m.mp, (part) => part.ct === 'application/pkcs7-mime'),
 			...normalizedMailHeaders
 		},
@@ -380,3 +385,56 @@ export const normalizeMailMessageFromSoap = (
 
 export const normalizeCompleteMailMessageFromSoap = (m: SoapMailMessage): MailMessage =>
 	normalizeMailMessageFromSoap(m, true);
+
+export const normalizePartialIncompleteMessageFromSoap = (
+	m: SoapPartialIncompleteMessage
+): PartialIncompleteMessage => {
+	const { ownerAccount } = getIdentitiesDescriptors().filter(
+		(identity) => identity.type === 'primary'
+	)[0];
+
+	const normalizedMailHeaders: MailHeaders = {
+		signature: m?.signature,
+		messageIsFromExternalDomain: m._attrs
+			? getMessageIsFromExternalDomainFromAPI(m._attrs, ownerAccount)
+			: undefined,
+		// authenticationHeaders: getAuthenticationHeadersFromAPI(m._attrs),
+		sensitivity: getSensitivityHeaderFromAPI(m._attrs),
+		messageIdFromMailHeaders: getMessageIdFromMailHeadersFromAPI(m._attrs),
+		creationDateFromMailHeaders: getCreationDateFromMailHeadersFromAPI(m._attrs),
+		messageIsFromDistributionList: m._attrs
+			? getMessageIsFromDistributionListFromAPI(m._attrs)
+			: undefined
+	};
+	// FIXME: omitBy breaks typing, consider not using it. many types are actually required but are omitted at runtime
+	const partialData = <IncompleteMessage>omitBy(
+		{
+			conversation: m.cid,
+			date: m.d,
+			size: m.s,
+			parent: m.l,
+			replyType: m.rt,
+			originalId: m.origid,
+			fragment: m.fr,
+			subject: m.su,
+			participants: m.e
+				? orderBy(map(m.e || [], normalizeParticipantsFromSoap), ['type'], 'asc')
+				: undefined,
+			tags: getTagIds(m.t, m.tn),
+			parts: m.mp ? map(m.mp || [], normalizeMailPartMapFn) : undefined,
+			attachments: m.mp ? getAttachmentsFromParts(m.mp) : undefined,
+			invite: m.inv,
+			shr: m.shr,
+			body: m.mp ? generateBody(m.mp || [], m.id) : undefined,
+			isScheduled: m.autoSendTime ? m.autoSendTime : undefined,
+			autoSendTime: m.autoSendTime,
+			...(m.f ? getFlags(m.f) : {}),
+			// TODO: this function is accepting undefined values and assuming defaults
+			isReadReceiptRequested: m.e ? haveReadReceipt(m.e, m.f, m.l ?? '') : undefined,
+			isEncrypted: m.mp ? !!find(m.mp, (part) => part.ct === 'application/pkcs7-mime') : undefined,
+			...normalizedMailHeaders
+		},
+		isNil
+	);
+	return { ...partialData, id: m.id };
+};

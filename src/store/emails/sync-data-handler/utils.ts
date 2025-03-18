@@ -6,7 +6,7 @@
 import { getUserSettings } from '@zextras/carbonio-shell-ui';
 /* eslint-disable no-param-reassign */
 import produce from 'immer';
-import { filter, find, forEach, isArray, mergeWith } from 'lodash';
+import { filter, find, forEach } from 'lodash';
 import { StoreApi, UseBoundStore } from 'zustand';
 
 import { NormalizedPartialConversation } from '../../../normalizations/normalize-conversation';
@@ -16,6 +16,7 @@ import {
 	MailMessage,
 	NormalizedConversation
 } from '../../../types';
+import { PartialIncompleteMessage } from '../../../views/sidebar/commons/types';
 
 function deleteConversationsInSearch(
 	state: EmailsStoreState,
@@ -116,10 +117,12 @@ function handleNotifyConversationsModified(
 		produce(({ populatedItemsSlice }: EmailsStoreState) => {
 			partialConversations.forEach((partialData) => {
 				const existingConversation = populatedItemsSlice.conversations[partialData.id];
-				populatedItemsSlice.conversations[partialData.id] = {
-					...existingConversation,
-					...partialData
-				};
+				if (existingConversation) {
+					populatedItemsSlice.conversations[partialData.id] = {
+						...existingConversation,
+						...partialData
+					};
+				}
 			});
 		})
 	);
@@ -128,25 +131,24 @@ function handleNotifyConversationsModified(
 /**
  * Updates the messages in the application state with modified message data.
  *
- * @param updatedMessages - An array of updated message objects, each containing an `id`
+ * @param partialMessages - An array of updated message objects, each containing an `id`
  * and other properties to update in the state.
  * @param useEmailsStore - A state management hook for accessing and updating the `EmailsStoreState`.
  */
 function handleNotifyMessagesModified(
-	updatedMessages: Array<IncompleteMessage>,
+	partialMessages: Array<PartialIncompleteMessage>,
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
 ): void {
 	useEmailsStore.setState(
 		produce(({ populatedItemsSlice }: EmailsStoreState) => {
-			updatedMessages.forEach((updatedMessage) => {
-				populatedItemsSlice.messages[updatedMessage.id] = mergeWith(
-					{},
-					populatedItemsSlice.messages[updatedMessage.id],
-					updatedMessage,
-					(object, newObject) =>
-						// Overwrite arrays even if the source array is empty
-						isArray(object) && isArray(newObject) ? newObject : undefined
-				);
+			partialMessages.forEach((partialData) => {
+				const existingMessage = populatedItemsSlice.messages[partialData.id];
+				if (existingMessage) {
+					populatedItemsSlice.messages[partialData.id] = {
+						...existingMessage,
+						...partialData
+					};
+				}
 			});
 		})
 	);
