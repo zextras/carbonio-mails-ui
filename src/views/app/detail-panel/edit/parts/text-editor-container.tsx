@@ -49,10 +49,24 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 
 	// TODO remove me! - START
 	const editorRef = useRef<Editor>();
-	const resetDirty = useCallback(() => {
-		editorRef.current?.setDirty(false);
-		setEditorDirty(false);
-	}, [editorRef]);
+	const saveEditor = useCallback(() => {
+		if (!editorRef.current) {
+			return;
+		}
+		editorRef.current.setDirty(false);
+		setEditorDirty(editorRef.current.isDirty());
+		const plainText = editorRef.current.getContent({ format: 'text' });
+		const richText = editorRef.current.getContent({ format: 'html' });
+		setText({ plainText, richText });
+	}, [setText]);
+
+	const onEditorDirty = useCallback(() => {
+		if (!editorRef.current) {
+			return;
+		}
+		setEditorDirty(editorRef.current.isDirty());
+		saveEditor();
+	}, [saveEditor]);
 	// TODO remove me! - END
 
 	const { prefs } = useUserSettings();
@@ -88,6 +102,8 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 		].join(' | ')
 	};
 
+	console.count('rerender text-editor-container');
+
 	return (
 		<>
 			{text && (
@@ -103,8 +119,8 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 							mainAlignment="flex-start"
 							style={{ minHeight, overflow: 'hidden' }}
 						>
-							<div>the editor is {isEditorDirty ? '' : 'NOT'} dirty</div>
-							<button onClick={resetDirty}>reset</button>
+							<div>the editor is {editorRef.current?.isDirty() ? '' : 'NOT'} dirty</div>
+							<button onClick={saveEditor}>save</button>
 							<StyledComp.EditorWrapper data-testid="MailEditorWrapper">
 								<Composer
 									// eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -119,9 +135,7 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 									// }}
 									onDragOver={onDragOver}
 									customInitOptions={composerCustomOptions}
-									onDirty={(): void => {
-										setEditorDirty(true);
-									}}
+									onDirty={onEditorDirty}
 									onInit={(event: unknown, editor: Editor): void => {
 										editorRef.current = editor;
 									}}
