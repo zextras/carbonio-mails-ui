@@ -4,11 +4,11 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React, { FC, useCallback, useState } from 'react';
+import React, { FC, useCallback, useRef, useState } from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
 import { useIntegratedComponent, useUserSettings } from '@zextras/carbonio-shell-ui';
-import type { TinyMCE } from 'tinymce/tinymce';
+import { Editor, TinyMCE } from 'tinymce/tinymce';
 
 import * as StyledComp from './edit-view-styled-components';
 import { plainTextToHTML } from '../../../../../commons/utils';
@@ -33,9 +33,11 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 	minHeight,
 	disabled
 }) => {
+	const controlledMode = false;
 	const [Composer, composerIsAvailable] = useIntegratedComponent('composer');
 	const [isFirstChangeEventFired, setIsFirstChangeEventFired] = useState(false);
 	const { text, setText } = useEditorText(editorId);
+	const [isEditorDirty, setEditorDirty] = useState(false);
 	const { isRichText } = useEditorIsRichText(editorId);
 
 	const onTextChanged = useCallback(
@@ -44,6 +46,14 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 		},
 		[setText]
 	);
+
+	// TODO remove me! - START
+	const editorRef = useRef<Editor>();
+	const resetDirty = useCallback(() => {
+		editorRef.current?.setDirty(false);
+		setEditorDirty(false);
+	}, [editorRef]);
+	// TODO remove me! - END
 
 	const { prefs } = useUserSettings();
 	const fontSizesOptions = getFontSizesOptions();
@@ -93,19 +103,28 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 							mainAlignment="flex-start"
 							style={{ minHeight, overflow: 'hidden' }}
 						>
+							<div>the editor is {isEditorDirty ? '' : 'NOT'} dirty</div>
+							<button onClick={resetDirty}>reset</button>
 							<StyledComp.EditorWrapper data-testid="MailEditorWrapper">
 								<Composer
 									// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 									// @ts-ignore
-									value={text.richText}
+									initialValue={text.richText}
+									// value={text.richText}
 									disabled={disabled}
 									onFileSelect={onFilesSelected}
-									onEditorChange={(ev: [string, string]): void => {
-										if (isFirstChangeEventFired)
-											onTextChanged({ plainText: ev[0], richText: ev[1] });
-									}}
+									// onEditorChange={(ev: [string, string]): void => {
+									// 	if (isFirstChangeEventFired)
+									// 		onTextChanged({ plainText: ev[0], richText: ev[1] });
+									// }}
 									onDragOver={onDragOver}
 									customInitOptions={composerCustomOptions}
+									onDirty={(): void => {
+										setEditorDirty(true);
+									}}
+									onInit={(event: unknown, editor: Editor): void => {
+										editorRef.current = editor;
+									}}
 									onFocus={(): void => {
 										if (!isFirstChangeEventFired) setIsFirstChangeEventFired(true);
 									}}
