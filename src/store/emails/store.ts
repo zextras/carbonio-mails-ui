@@ -8,6 +8,7 @@
 import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 import { create, StoreApi, UseBoundStore } from 'zustand';
 
+import { NormalizedPartialConversation } from '../../normalizations/normalize-conversation';
 import {
 	IncompleteMessage,
 	MailMessage,
@@ -594,14 +595,14 @@ export function handleNotifyDeleted(ids: string[]): void {
 /**
  * Queues a task to update the email store state with modified conversation data.
  *
- * @param updatedConversations - An array of `NormalizedConversation` objects,
+ * @param partialConversations - An array of `NormalizedConversation` objects,
  * each containing an `id` and other properties to be updated in the state.
  */
 export function handleNotifyConversationsModified(
-	updatedConversations: Array<NormalizedConversation>
+	partialConversations: Array<NormalizedPartialConversation>
 ): void {
 	addTask(async () => {
-		syncDataHandlerUtils.handleNotifyConversationsModified(updatedConversations, useEmailsStore);
+		syncDataHandlerUtils.handleNotifyConversationsModified(partialConversations, useEmailsStore);
 	});
 }
 

@@ -17,7 +17,7 @@ import { useTagStore } from '../../../carbonio-ui-commons/store/zustand/tags';
 import { folderWorker, tagsWorker } from '../../../carbonio-ui-commons/worker';
 import {
 	mapToNormalizedConversation,
-	normalizeConversations
+	normalizePartialConversations
 } from '../../../normalizations/normalize-conversation';
 import { normalizeMailMessageFromSoap } from '../../../normalizations/normalize-message';
 import {
@@ -32,7 +32,7 @@ import { triggerNotification } from '../../../store/emails/sync-data-handler/tri
 import { IncompleteMessage, SoapConversation, SoapIncompleteMessage } from '../../../types';
 
 export function extractConvMessage(
-	createdConversations: Array<SoapConversation>
+	createdConversations: Array<{ m?: Array<SoapIncompleteMessage> }>
 ): Array<IncompleteMessage> {
 	return flatten(createdConversations.map((conversation) => conversation.m || [])).map((message) =>
 		normalizeMailMessageFromSoap(message)
@@ -99,7 +99,7 @@ function processCreatedNotifications(notify: SoapNotify, navigate: NavigateFunct
 function processModifiedNotifications(notify: SoapNotify): void {
 	const modifiedConversations = notify.modified?.c as Array<SoapPartialConversation>;
 	if (modifiedConversations) {
-		const updatedConversations = normalizeConversations(modifiedConversations);
+		const updatedConversations = normalizePartialConversations(modifiedConversations);
 		handleNotifyConversationsModified(updatedConversations);
 
 		const convMessages = extractConvMessage(modifiedConversations);

@@ -9,6 +9,7 @@ import produce from 'immer';
 import { filter, find, forEach, isArray, mergeWith } from 'lodash';
 import { StoreApi, UseBoundStore } from 'zustand';
 
+import { NormalizedPartialConversation } from '../../../normalizations/normalize-conversation';
 import {
 	EmailsStoreState,
 	IncompleteMessage,
@@ -96,7 +97,7 @@ function handleNotifyDeleted(
 /**
  * Updates the conversations in the application state with the modified conversation data.
  *
- * @param updatedConversations - An array of normalized conversation objects containing the updates.
+ * @param partialConversations - An array of normalized conversation objects containing the updates.
  * Each conversation must include an `id` and any other properties to merge with the existing state.
  *
  * @param useEmailsStore - A state management hook based on Zustand, which provides access
@@ -108,23 +109,16 @@ function handleNotifyDeleted(
  * - Other properties are merged into the existing data for the corresponding conversation.
  */
 function handleNotifyConversationsModified(
-	updatedConversations: Array<NormalizedConversation>,
+	partialConversations: Array<NormalizedPartialConversation>,
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
 ): void {
 	useEmailsStore.setState(
 		produce(({ populatedItemsSlice }: EmailsStoreState) => {
-			updatedConversations.forEach((updatedConversation) => {
-				populatedItemsSlice.conversations[updatedConversation.id] = {
-					...mergeWith(
-						{},
-						populatedItemsSlice.conversations[updatedConversation.id],
-						updatedConversation,
-						(object, newObject) =>
-							// Overwrite arrays even if the source array is empty
-							isArray(object) && isArray(newObject) ? newObject : undefined
-					),
-					participants: populatedItemsSlice.conversations[updatedConversation.id].participants,
-					messageIds: populatedItemsSlice.conversations[updatedConversation.id].messageIds
+			partialConversations.forEach((partialData) => {
+				const existingConversation = populatedItemsSlice.conversations[partialData.id];
+				populatedItemsSlice.conversations[partialData.id] = {
+					...existingConversation,
+					...partialData
 				};
 			});
 		})
