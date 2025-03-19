@@ -70,7 +70,10 @@ function updateConversations(
 	useEmailsStore.setState(
 		produce(({ populatedItemsSlice }: EmailsStoreState) => {
 			updatedConversations.forEach((conversation) => {
-				populatedItemsSlice.conversations[conversation.id] = conversation;
+				populatedItemsSlice.conversations[conversation.id] = {
+					...populatedItemsSlice.conversations[conversation.id],
+					...conversation
+				};
 			});
 		})
 	);
