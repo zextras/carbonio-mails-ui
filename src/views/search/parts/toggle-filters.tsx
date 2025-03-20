@@ -142,7 +142,7 @@ const ToggleFilters: FC<ToggleFiltersProps> = ({ compProps }): ReactElement => {
 							<Switch onClick={toggleAttachment} value={hasAttachment} />
 						</Padding>
 						<Text size="large" weight="bold">
-							{t('label.attachment', 'Attachment')}
+							{t('label.attachment_one', 'Attachment')}
 						</Text>
 					</Container>
 					<Padding bottom="small" />
