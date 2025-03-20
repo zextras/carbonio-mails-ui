@@ -6,9 +6,9 @@
 
 import React, { FC, ReactElement } from 'react';
 
-import { Row, Text, Chip, Container, useSnackbar, Padding } from '@zextras/carbonio-design-system';
+import { Row, Text, Chip, Container, Padding } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
-import { capitalize, map } from 'lodash';
+import { map } from 'lodash';
 
 import { useUiUtilities } from '../../../../../hooks/use-ui-utilities';
 import type { Participant } from '../../../../../types';
@@ -17,21 +17,12 @@ import {
 	sendMsg
 } from '../../../../../ui-actions/participant-displayer-actions';
 
-function capitalizeEveryWord(string: string): string {
-	return string
-		.split(' ')
-		.map((word) => capitalize(word))
-		.join(' ');
-}
-
 export function generateChipName(contact: Participant): string {
-	const capitalizedFullName = contact.fullName ? capitalizeEveryWord(contact.fullName) : null;
-	const capitalizedName = contact.name ? capitalizeEveryWord(contact.name) : null;
-	const capitalizedText = capitalizedFullName ?? capitalizedName ?? '';
-	if (capitalizedText.includes(',')) {
-		return `"${capitalizedText}"`;
+	const chipName = contact.fullName ?? contact.name ?? '';
+	if (chipName.includes(',')) {
+		return `"${chipName}"`;
 	}
-	return capitalizedText;
+	return chipName;
 }
 
 export const ContactNameChip: FC<{

@@ -101,22 +101,22 @@ describe('Attachments visualization', () => {
 });
 
 describe('generateChipName', () => {
-	it('should capitalize the first letter of a single name', () => {
-		const contact = { ...partcipant1, fullName: '', name: 'john' };
+	it('should not capitalize the first letter of a single name', () => {
+		const contact = { ...partcipant1, fullName: undefined, name: 'john' };
 		const result = generateChipName(contact);
-		expect(result).toBe('John');
+		expect(result).toBe('john');
 	});
 
 	it('should use fullName over name if both are present', () => {
 		const contact = { ...partcipant1, fullName: 'john doe', name: 'john' };
 		const result = generateChipName(contact);
-		expect(result).toBe('John Doe');
+		expect(result).toBe('john doe');
 	});
 
-	it('should return capitalized name with quotes if it contains a comma', () => {
+	it('should return name with quotes if it contains a comma', () => {
 		const contact = { ...partcipant1, fullName: 'doe, john' };
 		const result = generateChipName(contact);
-		expect(result).toBe('"Doe, John"');
+		expect(result).toBe('"doe, john"');
 	});
 
 	it('should return an empty string if both name and fullName are missing', () => {

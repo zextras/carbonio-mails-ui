@@ -9,7 +9,7 @@ import { http } from 'msw';
 
 import { FOLDERS } from '../../../../carbonio-ui-commons/constants/folders';
 import { useFolderStore } from '../../../../carbonio-ui-commons/store/zustand/folder';
-import { getTags, useTagStore } from '../../../../carbonio-ui-commons/store/zustand/tags';
+import { useTagStore } from '../../../../carbonio-ui-commons/store/zustand/tags';
 import { getSetupServer } from '../../../../carbonio-ui-commons/test/jest-setup';
 import { useNotify } from '../../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
 import { generateFolder } from '../../../../carbonio-ui-commons/test/mocks/folders/folders-generator';
@@ -29,6 +29,7 @@ import {
 	useConversationsByIds,
 	useMessageById
 } from '../../../../store/emails/store';
+import * as triggerNotification from '../../../../store/emails/sync-data-handler/trigger-notification';
 import {
 	generateConversationFromAPI,
 	generateMessageFromAPI
@@ -49,9 +50,7 @@ import {
 	mockSoapRefresh
 } from '../../tests/test-helpers';
 import { useSyncDataHandler } from '../use-sync-data-handler';
-import * as triggerNotification from '../../../../store/emails/sync-data-handler/trigger-notification';
 
-getTags();
 const UNREAD = 'u';
 const READ = '';
 const FLAGGED = 'f';

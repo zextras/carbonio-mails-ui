@@ -7,22 +7,49 @@
 export type SoapEmailParticipantRole = 'f' | 't' | 'c' | 'b' | 'r' | 's' | 'n' | 'rf';
 
 export type SoapMailParticipant = {
-	/** Address */
+	/**
+	 * The email address of the participant.
+	 * This is a required field.
+	 */
 	a: string;
-	/** Display name */
+
+	/**
+	 * The display name of the participant.
+	 * This is an optional field. If not provided, the email client may display only the email address.
+	 */
 	d?: string;
-	/** Type:
-	 * (f)rom,
-	 * (t)o,
-	 * (c)c,
-	 * (b)cc,
-	 * (r)eply-to,
-	 * (s)ender,
-	 * read-receipt (n)otification,
-	 * (rf) resent-from
+
+	/**
+	 * The personal name of the participant.
+	 * This is a required field.
 	 */
 	p: string;
+
+	/**
+	 * The role of the participant in the email.
+	 * Possible values are:
+	 * - (f)rom: Sender of the email.
+	 * - (t)o: Primary recipient of the email.
+	 * - (c)c: Carbon copy recipient.
+	 * - (b)cc: Blind carbon copy recipient.
+	 * - (r)eply-to: Address to which replies should be sent.
+	 * - (s)ender: The actual sender of the email (if different from the "from" address).
+	 * - (n)otification: Read receipt notification.
+	 * - (rf) resent-from: Resent from address.
+	 */
 	t: SoapEmailParticipantRole;
+
+	/**
+	 * Indicates whether the participant is a group (e.g., a mailing list).
+	 * This is an optional field.
+	 */
 	isGroup?: boolean;
+
+	/**
+	 * Flags whether the authenticated user can expand group members.
+	 * - 1 (true): The authenticated user has permission to expand members in this group.
+	 * - 0 (false): The authenticated user does not have permission to expand group members.
+	 * Note: This field is present only when {isGroup} is set to `true`.
+	 */
 	exp?: boolean;
 };

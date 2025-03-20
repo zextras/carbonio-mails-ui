@@ -53,6 +53,7 @@ import {
 	useMessagesByIds,
 	useMessageStatus
 } from '../../../store';
+import { omit } from 'lodash';
 
 const { setMessagesInSearchSlice } = getUseEmailStoreAndHooksForTesting();
 
@@ -522,11 +523,12 @@ describe('store-populated-items-slice', () => {
 				updateConversations([newConversation]);
 			});
 			const { result } = renderHook(() => useConversationById('1'));
+
 			expect(result.current.tags).toEqual([]);
 		});
 	});
 
-	describe('updateMessagesOnly', () => {
+	describe('handleNotifyMessagesModified', () => {
 		it('should not unset fields on message', async () => {
 			setMessagesInSearchSlice([generateMessage({ id: '1', folderId: FOLDERS.INBOX })]);
 
@@ -538,24 +540,41 @@ describe('store-populated-items-slice', () => {
 
 			expect(result.current?.parent).toEqual(FOLDERS.INBOX);
 		});
-	});
 
-	describe('updateMessagesOnly', () => {
-		it('should apply changes correctly', async () => {
-			const message1 = generateMessage({ id: '1', tags: ['tag1'] });
-			const message2 = generateMessage({ id: '2', tags: ['tag2'] });
-			setSearchResultsByMessage([message1, message2], false);
+		describe('tags', () => {
+			it('should apply changes when tags of the updated message are an empty array', async () => {
+				const message1 = generateMessage({ id: '1', tags: ['tag1'] });
+				const message2 = generateMessage({ id: '2', tags: ['tag2'] });
+				setSearchResultsByMessage([message1, message2], false);
 
-			const newMessage1 = { ...message1, tags: [] };
-			const newMessage2 = { ...message2, tags: [] };
+				const newMessage1 = { ...message1, tags: [] };
+				const newMessage2 = { ...message2, tags: [] };
 
-			await act(async () => {
-				handleNotifyMessagesModified([newMessage1, newMessage2]);
+				await act(async () => {
+					handleNotifyMessagesModified([newMessage1, newMessage2]);
+				});
+				const { result: resultMessage1 } = renderHook(() => useMessageById('1'));
+				const { result: resultMessage2 } = renderHook(() => useMessageById('2'));
+				expect(resultMessage1.current).toEqual(newMessage1);
+				expect(resultMessage2.current).toEqual(newMessage2);
 			});
-			const { result: resultMessage1 } = renderHook(() => useMessageById('1'));
-			const { result: resultMessage2 } = renderHook(() => useMessageById('2'));
-			expect(resultMessage1.current).toEqual(newMessage1);
-			expect(resultMessage2.current).toEqual(newMessage2);
+
+			it('should keep existing tags when updated message has no tags ', async () => {
+				const message1 = generateMessage({ id: '1', tags: ['tag1'] });
+				const message2 = generateMessage({ id: '2', tags: ['tag2'] });
+				setSearchResultsByMessage([message1, message2], false);
+
+				const newMessage1 = omit(message1, 'tags') as MailMessage;
+				const newMessage2 = omit(message2, 'tags') as MailMessage;
+
+				await act(async () => {
+					handleNotifyMessagesModified([newMessage1, newMessage2]);
+				});
+				const { result: resultMessage1 } = renderHook(() => useMessageById('1'));
+				const { result: resultMessage2 } = renderHook(() => useMessageById('2'));
+				expect(resultMessage1.current).toEqual(message1);
+				expect(resultMessage2.current).toEqual(message2);
+			});
 		});
 	});
 
