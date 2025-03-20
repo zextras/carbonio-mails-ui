@@ -54,10 +54,12 @@ export function useCompleteConversationOrFetch(
 		[conversation, conversationId, conversationStatus, folderId]
 	);
 	useEffect(() => {
-		requestDebouncedConversation();
-		return () => {
-			requestDebouncedConversation.cancel();
-		};
+		if ( conversationStatus !== API_REQUEST_STATUS.error ) {
+			requestDebouncedConversation();
+			return () => {
+				requestDebouncedConversation.cancel();
+			};
+		}
 	}, [requestDebouncedConversation]);
 
 	return {
@@ -97,10 +99,12 @@ export function useCompleteMessageOrFetch(messageId: string): MessageWithStatus 
 	);
 
 	useEffect(() => {
-		requestDebouncedMessage();
-		return () => {
-			requestDebouncedMessage.cancel();
-		};
+		if (messageStatus !== API_REQUEST_STATUS.error) {
+			requestDebouncedMessage();
+			return () => {
+				requestDebouncedMessage.cancel();
+			};
+		}
 	}, [requestDebouncedMessage]);
 
 	return {
