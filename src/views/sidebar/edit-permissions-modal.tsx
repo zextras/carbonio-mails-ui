@@ -151,7 +151,6 @@ const EditPermissionsModal: FC<EditPermissionsModalProps> = ({
 							}}
 							defaultValue={contacts}
 						/>
-						)
 					</Container>
 				)}
 
