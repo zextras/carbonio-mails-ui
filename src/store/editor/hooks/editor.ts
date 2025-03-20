@@ -56,7 +56,10 @@ export const useEditorText = (
 	id: MailsEditorV2['id']
 ): {
 	text: MailsEditorV2['text'];
-	setText: (text: MailsEditorV2['text']) => void;
+	setText: (
+		text: MailsEditorV2['text'],
+		options?: { onSaveComplete: (savedText: MailsEditorV2['text']) => void }
+	) => void;
 	resetText: () => void;
 } => {
 	const { debouncedSaveDraft } = useSaveDraftFromEditor();
