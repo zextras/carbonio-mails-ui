@@ -56,19 +56,16 @@ export const useEditorText = (
 	id: MailsEditorV2['id']
 ): {
 	text: MailsEditorV2['text'];
-	setText: (
-		text: MailsEditorV2['text'],
-		options?: { onSaveComplete: (savedText: MailsEditorV2['text']) => void }
-	) => void;
+	setText: (text: MailsEditorV2['text'], options?: { onSaveComplete: () => void }) => void;
 	resetText: () => void;
 } => {
 	const { debouncedSaveDraft } = useSaveDraftFromEditor();
 	const value = useEditorsStore((state) => state.editors[id].text);
 	const setter = useEditorsStore((state) => state.setText);
 	const setText = useCallback(
-		(val: MailsEditorV2['text']): void => {
+		(val: MailsEditorV2['text'], options?: { onSaveComplete: () => void }): void => {
 			setter(id, val);
-			debouncedSaveDraft(id);
+			debouncedSaveDraft(id, { onComplete: options?.onSaveComplete });
 		},
 		[id, debouncedSaveDraft, setter]
 	);

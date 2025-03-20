@@ -33,19 +33,10 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 	minHeight,
 	disabled
 }) => {
-	const controlledMode = false;
 	const [Composer, composerIsAvailable] = useIntegratedComponent('composer');
 	const [isFirstChangeEventFired, setIsFirstChangeEventFired] = useState(false);
 	const { text, setText } = useEditorText(editorId);
-	const [isEditorDirty, setEditorDirty] = useState(false);
 	const { isRichText } = useEditorIsRichText(editorId);
-
-	const onTextChanged = useCallback(
-		(txt: TextEditorContent): void => {
-			setText({ plainText: txt.plainText, richText: txt.richText });
-		},
-		[setText]
-	);
 
 	// TODO remove me! - START
 	const editorRef = useRef<Editor>();
@@ -53,21 +44,43 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 		if (!editorRef.current) {
 			return;
 		}
-		editorRef.current.setDirty(false);
-		setEditorDirty(editorRef.current.isDirty());
 		const plainText = editorRef.current.getContent({ format: 'text' });
 		const richText = editorRef.current.getContent({ format: 'html' });
-		setText({ plainText, richText });
+		setText(
+			{ plainText, richText },
+			{
+				onSaveComplete: () => {
+					if (editorRef?.current) {
+						editorRef.current?.setDirty(false);
+					}
+				}
+			}
+		);
 	}, [setText]);
 
 	const onEditorDirty = useCallback(() => {
 		if (!editorRef.current) {
 			return;
 		}
-		setEditorDirty(editorRef.current.isDirty());
 		saveEditor();
 	}, [saveEditor]);
 	// TODO remove me! - END
+
+	const onTextChanged = useCallback(
+		(txt: TextEditorContent): void => {
+			setText(
+				{ plainText: txt.plainText, richText: txt.richText },
+				{
+					onSaveComplete: () => {
+						if (editorRef?.current) {
+							editorRef.current?.setDirty(false);
+						}
+					}
+				}
+			);
+		},
+		[setText]
+	);
 
 	const { prefs } = useUserSettings();
 	const fontSizesOptions = getFontSizesOptions();
@@ -102,8 +115,7 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 		].join(' | ')
 	};
 
-	console.count('rerender text-editor-container');
-
+	console.count('@@ text-editor');
 	return (
 		<>
 			{text && (
@@ -135,7 +147,7 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 									// }}
 									onDragOver={onDragOver}
 									customInitOptions={composerCustomOptions}
-									onDirty={onEditorDirty}
+									// onDirty={onEditorDirty}
 									onInit={(event: unknown, editor: Editor): void => {
 										editorRef.current = editor;
 									}}
