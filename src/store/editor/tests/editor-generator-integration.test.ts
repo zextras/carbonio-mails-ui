@@ -14,7 +14,7 @@ import { generateMessage } from '../../../tests/generators/generateMessage';
 import { generateReplyAllMsgEditor } from '../editor-generators';
 
 describe('Reply All', () => {
-	const originalFrom = 'someone@test.com';
+	const originalFrom = 'someoneElse@test.com';
 	const meAddress = 'me@test.com';
 	const sharedAccountAddress = 'sharedAccount@test.com';
 	const another = 'another@test.com';
@@ -66,103 +66,104 @@ describe('Reply All', () => {
 	beforeEach(() => {
 		jest.spyOn(shellHooks, 'getUserAccount').mockImplementation(() => mainAccount);
 	});
-	describe('A message sent To: [me, sharedAccount, another person]', () => {
-		const receivedMessage = {
-			...generateMessage(),
-			parent: FOLDERS.INBOX,
-			participants: [
-				{ type: ParticipantRole.FROM, address: originalFrom },
-				{ type: ParticipantRole.TO, address: meAddress },
-				{ type: ParticipantRole.TO, address: sharedAccountAddress },
-				{ type: ParticipantRole.TO, address: another }
-			]
-		};
-		it('should reply with default identity (Me)', () => {
-			const replyMsgEditor = generateReplyAllMsgEditor(receivedMessage);
-			expect(replyMsgEditor.identityId).toEqual('');
-		});
+	describe('Messages sent from someoneElse (outsider)', () => {
+		describe('A message sent To: [me, sharedAccount, another person]', () => {
+			const receivedMessage = {
+				...generateMessage(),
+				parent: FOLDERS.INBOX,
+				participants: [
+					{ type: ParticipantRole.FROM, address: originalFrom },
+					{ type: ParticipantRole.TO, address: meAddress },
+					{ type: ParticipantRole.TO, address: sharedAccountAddress },
+					{ type: ParticipantRole.TO, address: another }
+				]
+			};
+			it('should reply with default identity (Me)', () => {
+				const replyMsgEditor = generateReplyAllMsgEditor(receivedMessage);
+				expect(replyMsgEditor.identityId).toEqual('');
+			});
 
-		it('should reply with CC: [sharedAccount, another person]', () => {
-			const replyMsgEditor = generateReplyAllMsgEditor(receivedMessage);
-			expect(replyMsgEditor.recipients.cc).toEqual([
-				{
-					address: sharedAccountAddress,
-					type: 'c'
-				},
-				{
-					address: another,
-					type: 'c'
-				}
-			]);
+			it('should reply with CC: [sharedAccount, another person]', () => {
+				const replyMsgEditor = generateReplyAllMsgEditor(receivedMessage);
+				expect(replyMsgEditor.recipients.cc).toEqual([
+					{
+						address: sharedAccountAddress,
+						type: 'c'
+					},
+					{
+						address: another,
+						type: 'c'
+					}
+				]);
+			});
+			it('should reply To: [original sender]', () => {
+				const replyMsgEditor = generateReplyAllMsgEditor(receivedMessage);
+				expect(replyMsgEditor.recipients.to).toEqual([
+					{
+						address: originalFrom,
+						type: 't'
+					}
+				]);
+			});
 		});
-		it('should reply To: [original sender]', () => {
-			const replyMsgEditor = generateReplyAllMsgEditor(receivedMessage);
-			expect(replyMsgEditor.recipients.to).toEqual([
-				{
-					address: originalFrom,
-					type: 't'
-				}
-			]);
+		describe('A message sent To: [sharedAccount, another person], CC: [me]', () => {
+			const receivedMessage = {
+				...generateMessage(),
+				parent: FOLDERS.INBOX,
+				participants: [
+					{ type: ParticipantRole.FROM, address: originalFrom },
+					{ type: ParticipantRole.CARBON_COPY, address: meAddress },
+					{ type: ParticipantRole.TO, address: sharedAccountAddress },
+					{ type: ParticipantRole.TO, address: another }
+				]
+			};
+			it('should reply as shared account (To weighs more than CC)', () => {
+				const replyMsgEditor = generateReplyAllMsgEditor(receivedMessage);
+				expect(replyMsgEditor.identityId).toEqual(`${sharedAccountAddress}sendAs`);
+			});
+			it('should reply with CC: [another person, me]', () => {
+				const replyMsgEditor = generateReplyAllMsgEditor(receivedMessage);
+				expect(replyMsgEditor.recipients.cc).toEqual([
+					{
+						address: another,
+						type: 'c'
+					},
+					{ address: meAddress, type: 'c' }
+				]);
+			});
 		});
-	});
-	describe('A message sent To: [sharedAccount, another person], CC: [me]', () => {
-		const receivedMessage = {
-			...generateMessage(),
-			parent: FOLDERS.INBOX,
-			participants: [
-				{ type: ParticipantRole.FROM, address: originalFrom },
-				{ type: ParticipantRole.CARBON_COPY, address: meAddress },
-				{ type: ParticipantRole.TO, address: sharedAccountAddress },
-				{ type: ParticipantRole.TO, address: another }
-			]
-		};
-		it('should reply as shared account (To weighs more than CC)', () => {
-			const replyMsgEditor = generateReplyAllMsgEditor(receivedMessage);
-			expect(replyMsgEditor.identityId).toEqual(`${sharedAccountAddress}sendAs`);
-		});
-		it('should reply with CC: [another person, me]', () => {
-			const replyMsgEditor = generateReplyAllMsgEditor(receivedMessage);
-			expect(replyMsgEditor.recipients.cc).toEqual([
-				{
-					address: another,
-					type: 'c'
-				},
-				{ address: meAddress, type: 'c' }
-			]);
-		});
-	});
-
-	describe('A message sent To: [sharedAccount,another person]', () => {
-		const receivedMessage = {
-			...generateMessage(),
-			parent: FOLDERS.INBOX,
-			participants: [
-				{ type: ParticipantRole.FROM, address: originalFrom },
-				{ type: ParticipantRole.TO, address: sharedAccountAddress },
-				{ type: ParticipantRole.TO, address: another }
-			]
-		};
-		it('should reply as delegated account', () => {
-			const replyMsgEditor = generateReplyAllMsgEditor(receivedMessage);
-			expect(replyMsgEditor.identityId).toEqual(`${sharedAccountAddress}sendAs`);
-		});
-		it('should reply with CC: [another person]', () => {
-			const replyMsgEditor = generateReplyAllMsgEditor(receivedMessage);
-			expect(replyMsgEditor.recipients.cc).toEqual([
-				{
-					address: another,
-					type: 'c'
-				}
-			]);
-		});
-		it('should reply To: [original sender]', () => {
-			const replyMsgEditor = generateReplyAllMsgEditor(receivedMessage);
-			expect(replyMsgEditor.recipients.to).toEqual([
-				{
-					address: originalFrom,
-					type: 't'
-				}
-			]);
+		describe('A message sent To: [sharedAccount,another person]', () => {
+			const receivedMessage = {
+				...generateMessage(),
+				parent: FOLDERS.INBOX,
+				participants: [
+					{ type: ParticipantRole.FROM, address: originalFrom },
+					{ type: ParticipantRole.TO, address: sharedAccountAddress },
+					{ type: ParticipantRole.TO, address: another }
+				]
+			};
+			it('should reply as delegated account', () => {
+				const replyMsgEditor = generateReplyAllMsgEditor(receivedMessage);
+				expect(replyMsgEditor.identityId).toEqual(`${sharedAccountAddress}sendAs`);
+			});
+			it('should reply with CC: [another person]', () => {
+				const replyMsgEditor = generateReplyAllMsgEditor(receivedMessage);
+				expect(replyMsgEditor.recipients.cc).toEqual([
+					{
+						address: another,
+						type: 'c'
+					}
+				]);
+			});
+			it('should reply To: [original sender]', () => {
+				const replyMsgEditor = generateReplyAllMsgEditor(receivedMessage);
+				expect(replyMsgEditor.recipients.to).toEqual([
+					{
+						address: originalFrom,
+						type: 't'
+					}
+				]);
+			});
 		});
 	});
 });
