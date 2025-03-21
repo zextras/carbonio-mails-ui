@@ -144,5 +144,15 @@ describe('Get Quoted Test Utils', () => {
 				`<div class="quoted_text"></div>`
 			);
 		});
+
+		it('should return empty quoted div if it contains a div with OutlookMessageHeader and attributes', () => {
+			const originalContent = '<div>Original content</div>';
+			const extraContent =
+				'<DIV class="OutlookMessageHeader" lang="it" dir="ltr" align="left"></DIV>';
+			const body = originalContent + extraContent;
+			expect(getQuotedTextFromOriginalContent(body, originalContent)).toBe(
+				`<div class="quoted_text"></div>`
+			);
+		});
 	});
 });
