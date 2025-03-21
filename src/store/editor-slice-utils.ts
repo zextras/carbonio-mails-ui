@@ -111,10 +111,13 @@ export function retrieveALL(
 	);
 	if (replyToParticipants.length === 0) {
 		if (original.parent === FOLDERS.SENT || original.isSentByMe || isSentByMe) {
-			return filter(toEmails, (c) => replySenderAccountName !== getAddressOwnerAccount(c.address))
-				.length === 0
-				? toEmails
-				: filter(toEmails, (c) => replySenderAccountName !== getAddressOwnerAccount(c.address));
+			const replyToFrom = changeTypeOfParticipants(fromEmails, ParticipantRole.TO);
+			const replyingTo = [...replyToFrom, ...toEmails];
+			const participantsWithoutSender = filter(
+				replyingTo,
+				(c) => replySenderAccountName !== getAddressOwnerAccount(c.address)
+			);
+			return participantsWithoutSender.length === 0 ? replyToFrom : participantsWithoutSender;
 		}
 		return changeTypeOfParticipants(fromEmails, ParticipantRole.TO);
 	}

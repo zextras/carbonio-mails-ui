@@ -6,9 +6,12 @@
 
 import * as shellHooks from '@zextras/carbonio-shell-ui';
 
+import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
+import { ParticipantRole } from '../../carbonio-ui-commons/constants/participants';
 import { generateAccount } from '../../carbonio-ui-commons/test/mocks/accounts/account-generator';
+import { getAddressOwnerAccount } from '../../helpers/identities';
 import { generateMessage } from '../../tests/generators/generateMessage';
-import { retrieveCC } from '../editor-slice-utils';
+import { retrieveALL, retrieveCC } from '../editor-slice-utils';
 
 describe('retrieveCC', () => {
 	const defaultIdentity = {
@@ -202,6 +205,80 @@ describe('retrieveCC', () => {
 		expect(retrieveCC(message, delegatorAccount.email)).toEqual([
 			{ type: 'c', address: anotherUser },
 			{ type: 'c', address: mainAccount.name }
+		]);
+	});
+});
+
+describe('retrieveALL', () => {
+	it('should return "someone@test.com" when replying as Me to a message sent to me from "someone@test.com"', () => {
+		const receivedMessage = {
+			...generateMessage(),
+			participants: [
+				{ type: ParticipantRole.FROM, address: 'someone@test.com' },
+				{ type: ParticipantRole.TO, address: 'me@test.com' }
+			]
+		};
+		const result = retrieveALL(receivedMessage, 'me@test.com');
+
+		expect(result).toEqual([{ address: 'someone@test.com', type: 't' }]);
+	});
+
+	it('should return "me@test.com" when replying as Me to a message sent to myself', () => {
+		const receivedMessage = {
+			...generateMessage(),
+			participants: [
+				{ type: ParticipantRole.FROM, address: 'me@test.com' },
+				{ type: ParticipantRole.TO, address: 'me@test.com' }
+			]
+		};
+		const result = retrieveALL(receivedMessage, 'me@test.com');
+
+		expect(result).toEqual([{ address: 'me@test.com', type: 't' }]);
+	});
+
+	it('should return [Me and "someoneElse"] in To when replying as "sharedAccount" to a message sent by Me To "someoneElse" and "sharedAccount" is in CC', () => {
+		const sharedAccount = 'sharedAccount@test.com';
+		const me = 'me@test.com';
+		const someoneElse = 'someoneElse@test.com';
+		const receivedMessage = {
+			...generateMessage(),
+			parent: FOLDERS.SENT,
+			participants: [
+				{ type: ParticipantRole.FROM, address: me },
+				{ type: ParticipantRole.TO, address: someoneElse },
+				{ type: ParticipantRole.CARBON_COPY, address: sharedAccount }
+			]
+		};
+		const replyMessageRecipients = retrieveALL(receivedMessage, sharedAccount);
+		const ccResult = retrieveCC(receivedMessage, sharedAccount);
+
+		expect(replyMessageRecipients).toEqual([
+			{ address: me, type: 't' },
+			{ address: someoneElse, type: 't' }
+		]);
+		expect(ccResult).toEqual([{ address: sharedAccount, type: 'c' }]);
+	});
+
+	// TODO: find a way to generate correct identities
+	it.skip('should remove the sender when it was in the recipients of the original message', () => {
+		const sharedAccount = 'sharedAccount@test.com';
+		const me = 'me@test.com';
+		const someoneElse = 'someoneElse@test.com';
+		(getAddressOwnerAccount as jest.Mock).mockReturnValue(sharedAccount);
+		const receivedMessage = {
+			...generateMessage(),
+			parent: FOLDERS.SENT,
+			participants: [
+				{ type: ParticipantRole.FROM, address: me },
+				{ type: ParticipantRole.TO, address: someoneElse },
+				{ type: ParticipantRole.TO, address: sharedAccount }
+			]
+		};
+		const replyMessageRecipients = retrieveALL(receivedMessage, sharedAccount);
+
+		expect(replyMessageRecipients).toEqual([
+			{ address: me, type: 't' },
+			{ address: someoneElse, type: 't' }
 		]);
 	});
 });
