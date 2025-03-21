@@ -647,7 +647,7 @@ export function getQuotedTextFromOriginalContent(body: string, originalContent: 
 			htmlDoc.getElementsByClassName('OutlookMessageHeader').length > 0 &&
 			htmlDoc.getElementsByClassName('OutlookMessageHeader')[0]
 		) {
-			const zimbraQuoted = htmlBody.split(/class="OutlookMessageHeader"\s*[^>]*>/i);
+			const zimbraQuoted = htmlBody.split(/class="OutlookMessageHeader"[^>]*?>/i);
 			htmlDoc.body.innerHTML = '';
 			zimbraQuoted.splice(1).forEach((item) => {
 				const div = htmlDoc.createElement('div');
