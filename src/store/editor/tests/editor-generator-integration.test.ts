@@ -82,7 +82,7 @@ describe('Reply All', () => {
 			expect(replyMsgEditor.identityId).toEqual('');
 		});
 
-		it('should move "To" recipients to CC but exclude myself', () => {
+		it('should reply with CC: [sharedAccount, another person]', () => {
 			const replyMsgEditor = generateReplyAllMsgEditor(receivedMessage);
 			expect(replyMsgEditor.recipients.cc).toEqual([
 				{
@@ -95,7 +95,7 @@ describe('Reply All', () => {
 				}
 			]);
 		});
-		it('should include only the original From address in the "To" field', () => {
+		it('should reply To: [original sender]', () => {
 			const replyMsgEditor = generateReplyAllMsgEditor(receivedMessage);
 			expect(replyMsgEditor.recipients.to).toEqual([
 				{
@@ -105,7 +105,7 @@ describe('Reply All', () => {
 			]);
 		});
 	});
-	describe('A message sent To: [sharedAccount, another], CC: [me]', () => {
+	describe('A message sent To: [sharedAccount, another person], CC: [me]', () => {
 		const receivedMessage = {
 			...generateMessage(),
 			parent: FOLDERS.INBOX,
@@ -116,11 +116,11 @@ describe('Reply All', () => {
 				{ type: ParticipantRole.TO, address: another }
 			]
 		};
-		it('should reply with shared account (To weighs more than CC)', () => {
+		it('should reply as shared account (To weighs more than CC)', () => {
 			const replyMsgEditor = generateReplyAllMsgEditor(receivedMessage);
 			expect(replyMsgEditor.identityId).toEqual(`${sharedAccountAddress}sendAs`);
 		});
-		it('should put only me and another in the CC', () => {
+		it('should reply with CC: [another person, me]', () => {
 			const replyMsgEditor = generateReplyAllMsgEditor(receivedMessage);
 			expect(replyMsgEditor.recipients.cc).toEqual([
 				{
@@ -132,7 +132,7 @@ describe('Reply All', () => {
 		});
 	});
 
-	describe('A message sent To: [sharedAccount,another]', () => {
+	describe('A message sent To: [sharedAccount,another person]', () => {
 		const receivedMessage = {
 			...generateMessage(),
 			parent: FOLDERS.INBOX,
@@ -146,7 +146,7 @@ describe('Reply All', () => {
 			const replyMsgEditor = generateReplyAllMsgEditor(receivedMessage);
 			expect(replyMsgEditor.identityId).toEqual(`${sharedAccountAddress}sendAs`);
 		});
-		it('should move "To" recipients to CC but exclude the sharedAccount', () => {
+		it('should reply with CC: [another person]', () => {
 			const replyMsgEditor = generateReplyAllMsgEditor(receivedMessage);
 			expect(replyMsgEditor.recipients.cc).toEqual([
 				{
@@ -155,7 +155,7 @@ describe('Reply All', () => {
 				}
 			]);
 		});
-		it('should include only the original From address in the "To" field', () => {
+		it('should reply To: [original sender]', () => {
 			const replyMsgEditor = generateReplyAllMsgEditor(receivedMessage);
 			expect(replyMsgEditor.recipients.to).toEqual([
 				{
