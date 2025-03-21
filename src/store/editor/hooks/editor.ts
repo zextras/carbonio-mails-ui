@@ -59,6 +59,7 @@ export const useEditorText = (
 	setText: (text: MailsEditorV2['text'], options?: { onSaveComplete: () => void }) => void;
 	resetText: () => void;
 } => {
+	console.count('@@ hook');
 	const { debouncedSaveDraft } = useSaveDraftFromEditor();
 	const value = useEditorsStore((state) => state.editors[id].text);
 	const setter = useEditorsStore((state) => state.setText);

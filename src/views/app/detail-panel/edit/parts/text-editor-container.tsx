@@ -8,7 +8,7 @@ import React, { FC, useCallback, useRef, useState } from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
 import { useIntegratedComponent, useUserSettings } from '@zextras/carbonio-shell-ui';
-import { Editor, TinyMCE } from 'tinymce/tinymce';
+import type { Editor, TinyMCE } from 'tinymce/tinymce';
 
 import * as StyledComp from './edit-view-styled-components';
 import { plainTextToHTML } from '../../../../../commons/utils';
@@ -37,6 +37,7 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 	const [isFirstChangeEventFired, setIsFirstChangeEventFired] = useState(false);
 	const { text, setText } = useEditorText(editorId);
 	const { isRichText } = useEditorIsRichText(editorId);
+	const editorTextRef = useRef(text.richText);
 
 	// TODO remove me! - START
 	const editorRef = useRef<Editor>();
@@ -51,6 +52,8 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 			{
 				onSaveComplete: () => {
 					if (editorRef?.current) {
+						editorRef.current?.dispatch('blur');
+						editorRef.current?.focus();
 						editorRef.current?.setDirty(false);
 					}
 				}
@@ -115,19 +118,18 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 		].join(' | ')
 	};
 
-	console.count('@@ text-editor');
 	return (
 		<>
 			{text && (
 				<Container
 					height="fit"
 					padding={{ all: 'small' }}
-					background="gray6"
+					background={'gray6'}
 					crossAlignment="flex-end"
 				>
 					{isRichText && composerIsAvailable ? (
 						<Container
-							background="gray6"
+							background={'gray6'}
 							mainAlignment="flex-start"
 							style={{ minHeight, overflow: 'hidden' }}
 						>
@@ -137,7 +139,7 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 								<Composer
 									// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 									// @ts-ignore
-									initialValue={text.richText}
+									initialValue={editorTextRef.current}
 									// value={text.richText}
 									disabled={disabled}
 									onFileSelect={onFilesSelected}
@@ -147,7 +149,7 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 									// }}
 									onDragOver={onDragOver}
 									customInitOptions={composerCustomOptions}
-									// onDirty={onEditorDirty}
+									onDirty={onEditorDirty}
 									onInit={(event: unknown, editor: Editor): void => {
 										editorRef.current = editor;
 									}}
@@ -158,7 +160,7 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 							</StyledComp.EditorWrapper>
 						</Container>
 					) : (
-						<Container background="gray6" height="fit">
+						<Container background={'gray6'} height="fit">
 							<StyledComp.TextArea
 								data-testid="MailPlainTextEditor"
 								value={text.plainText}
