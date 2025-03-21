@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { IdentityAttrs } from '@zextras/carbonio-shell-ui';
 import * as shellHooks from '@zextras/carbonio-shell-ui';
+import { IdentityAttrs } from '@zextras/carbonio-shell-ui';
 
 import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
 import { ParticipantRole } from '../../../carbonio-ui-commons/constants/participants';
@@ -14,8 +14,10 @@ import { generateMessage } from '../../../tests/generators/generateMessage';
 import { generateReplyAllMsgEditor } from '../editor-generators';
 
 describe('Reply All', () => {
+	const originalFrom = 'someone@test.com';
 	const meAddress = 'me@test.com';
 	const sharedAccountAddress = 'sharedAccount@test.com';
+	const another = 'another@test.com';
 	const sendAsIdentityDisplayName = 'Homer Simpson';
 
 	const defaultIdentity = {
@@ -64,9 +66,7 @@ describe('Reply All', () => {
 	beforeEach(() => {
 		jest.spyOn(shellHooks, 'getUserAccount').mockImplementation(() => mainAccount);
 	});
-
-	describe('A message sent to me, the sharedAccount and another person', () => {
-		const originalFrom = 'someone@test.com';
+	describe('A message sent To: [me, sharedAccount, another person]', () => {
 		const receivedMessage = {
 			...generateMessage(),
 			parent: FOLDERS.INBOX,
@@ -74,13 +74,12 @@ describe('Reply All', () => {
 				{ type: ParticipantRole.FROM, address: originalFrom },
 				{ type: ParticipantRole.TO, address: meAddress },
 				{ type: ParticipantRole.TO, address: sharedAccountAddress },
-				{ type: ParticipantRole.TO, address: 'another@test.com' }
+				{ type: ParticipantRole.TO, address: another }
 			]
 		};
 		it('should reply with default identity (Me)', () => {
 			const replyMsgEditor = generateReplyAllMsgEditor(receivedMessage);
-			const defaultIdentity = '';
-			expect(replyMsgEditor.identityId).toEqual(defaultIdentity);
+			expect(replyMsgEditor.identityId).toEqual('');
 		});
 
 		it('should move "To" recipients to CC but exclude myself', () => {
@@ -91,7 +90,7 @@ describe('Reply All', () => {
 					type: 'c'
 				},
 				{
-					address: 'another@test.com',
+					address: another,
 					type: 'c'
 				}
 			]);
@@ -106,16 +105,41 @@ describe('Reply All', () => {
 			]);
 		});
 	});
+	describe('A message sent To: [sharedAccount, another], CC: [me]', () => {
+		const receivedMessage = {
+			...generateMessage(),
+			parent: FOLDERS.INBOX,
+			participants: [
+				{ type: ParticipantRole.FROM, address: originalFrom },
+				{ type: ParticipantRole.CARBON_COPY, address: meAddress },
+				{ type: ParticipantRole.TO, address: sharedAccountAddress },
+				{ type: ParticipantRole.TO, address: another }
+			]
+		};
+		it('should reply with shared account (To weighs more than CC)', () => {
+			const replyMsgEditor = generateReplyAllMsgEditor(receivedMessage);
+			expect(replyMsgEditor.identityId).toEqual(`${sharedAccountAddress}sendAs`);
+		});
+		it('should put only me and another in the CC', () => {
+			const replyMsgEditor = generateReplyAllMsgEditor(receivedMessage);
+			expect(replyMsgEditor.recipients.cc).toEqual([
+				{
+					address: another,
+					type: 'c'
+				},
+				{ address: meAddress, type: 'c' }
+			]);
+		});
+	});
 
-	describe('A message sent only to the sharedAccount and another person', () => {
-		const originalFrom = 'someone@test.com';
+	describe('A message sent To: [sharedAccount,another]', () => {
 		const receivedMessage = {
 			...generateMessage(),
 			parent: FOLDERS.INBOX,
 			participants: [
 				{ type: ParticipantRole.FROM, address: originalFrom },
 				{ type: ParticipantRole.TO, address: sharedAccountAddress },
-				{ type: ParticipantRole.TO, address: 'another@test.com' }
+				{ type: ParticipantRole.TO, address: another }
 			]
 		};
 		it('should reply as delegated account', () => {
@@ -126,7 +150,7 @@ describe('Reply All', () => {
 			const replyMsgEditor = generateReplyAllMsgEditor(receivedMessage);
 			expect(replyMsgEditor.recipients.cc).toEqual([
 				{
-					address: 'another@test.com',
+					address: another,
 					type: 'c'
 				}
 			]);
