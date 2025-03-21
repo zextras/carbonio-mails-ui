@@ -4,10 +4,11 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React, { FC, useCallback, useRef, useState } from 'react';
+import React, { FC, useCallback, useMemo, useRef, useState } from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
 import { useIntegratedComponent, useUserSettings } from '@zextras/carbonio-shell-ui';
+import { debounce } from 'lodash';
 import type { Editor, TinyMCE } from 'tinymce/tinymce';
 
 import * as StyledComp from './edit-view-styled-components';
@@ -15,6 +16,8 @@ import { plainTextToHTML } from '../../../../../commons/utils';
 import { useEditorIsRichText, useEditorText } from '../../../../../store/editor';
 import { MailsEditorV2 } from '../../../../../types';
 import { getFontSizesOptions, getFonts } from '../../../../settings/components/utils';
+
+export const SAVE_EDITOR_DELAY = 700;
 
 export type TextEditorContent = { plainText: string; richText: string };
 
@@ -41,46 +44,31 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 
 	// TODO remove me! - START
 	const editorRef = useRef<Editor>();
-	const saveEditor = useCallback(() => {
-		if (!editorRef.current) {
-			return;
-		}
-		const plainText = editorRef.current.getContent({ format: 'text' });
-		const richText = editorRef.current.getContent({ format: 'html' });
-		setText(
-			{ plainText, richText },
-			{
-				onSaveComplete: () => {
-					if (editorRef?.current) {
-						editorRef.current?.dispatch('blur');
-						editorRef.current?.focus();
-						editorRef.current?.setDirty(false);
-					}
+	const saveEditor = useMemo(
+		() =>
+			debounce(() => {
+				if (!editorRef.current) {
+					return;
 				}
-			}
-		);
-	}, [setText]);
+				editorRef.current?.save();
+			}, SAVE_EDITOR_DELAY),
+		[]
+	);
 
 	const onEditorDirty = useCallback(() => {
 		if (!editorRef.current) {
 			return;
 		}
 		saveEditor();
-	}, [saveEditor]);
+		const plainText = editorRef.current.getContent({ format: 'text' });
+		const richText = editorRef.current.getContent({ format: 'html' });
+		setText({ plainText, richText });
+	}, [saveEditor, setText]);
 	// TODO remove me! - END
 
 	const onTextChanged = useCallback(
 		(txt: TextEditorContent): void => {
-			setText(
-				{ plainText: txt.plainText, richText: txt.richText },
-				{
-					onSaveComplete: () => {
-						if (editorRef?.current) {
-							editorRef.current?.setDirty(false);
-						}
-					}
-				}
-			);
+			setText({ plainText: txt.plainText, richText: txt.richText });
 		},
 		[setText]
 	);
