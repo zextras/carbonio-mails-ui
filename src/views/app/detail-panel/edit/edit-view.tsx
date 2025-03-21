@@ -41,11 +41,8 @@ import { checkPersonalCertificateExist } from '../../../../api/check-personal-ce
 import { GapContainer, GapRow } from '../../../../commons/gap-container';
 import { EDIT_VIEW_CLOSING_REASONS, EditViewActions, TIMEOUTS } from '../../../../constants';
 import { buildArrayFromFileList } from '../../../../helpers/files';
-import {
-	getAvailableAddresses,
-	getIdentitiesDescriptors,
-	getIdentityDescriptor
-} from '../../../../helpers/identities';
+import { getAvailableAddresses } from '../../../../helpers/get_available_addresses';
+import { getIdentitiesDescriptors, getIdentityDescriptor } from '../../../../helpers/identities';
 import {
 	useCertificatesStore,
 	useSmimeFeatureStore,

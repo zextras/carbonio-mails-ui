@@ -94,12 +94,12 @@ export function retrieveALL(
 		original.participants,
 		(c: Participant): boolean => c.type === ParticipantRole.TO
 	);
+
 	const fromEmails = filter(
 		original.participants,
-		(c: Participant): boolean =>
-			c.type === ParticipantRole.FROM &&
-			replySenderAccountName !== getAddressOwnerAccount(c.address)
+		(c: Participant): boolean => c.type === ParticipantRole.FROM
 	);
+
 	const replyToParticipants = filter(
 		original.participants,
 		(c: Participant): boolean => c.type === ParticipantRole.REPLY_TO
@@ -109,6 +109,7 @@ export function retrieveALL(
 		filter(original.participants, (c: Participant): boolean => c.type === ParticipantRole.FROM),
 		(c: Participant): boolean => replySenderAccountName === getAddressOwnerAccount(c.address)
 	);
+
 	if (replyToParticipants.length === 0) {
 		if (original.parent === FOLDERS.SENT || original.isSentByMe || isSentByMe) {
 			const replyToFrom = changeTypeOfParticipants(fromEmails, ParticipantRole.TO);
