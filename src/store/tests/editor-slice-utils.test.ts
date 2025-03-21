@@ -94,7 +94,7 @@ describe('retrieveCC', () => {
 	});
 
 	// Scenario: The main account (who has "Send As" rights) starts a conversation and adds the delegator in CC.
-	// Expected Behavior: On "Reply All," both the main account and delegator remain in CC.
+	// Expected Behavior: On "Reply All," the delegator remains in CC.
 	it('TC1: Main account sends an email, Delegator in CC', () => {
 		jest
 			.spyOn(shellHooks, 'getUserAccount')
@@ -113,7 +113,7 @@ describe('retrieveCC', () => {
 	});
 
 	// Scenario: The delegator starts the conversation and includes the main account in CC.
-	// Expected Behavior: On "Reply All," both accounts remain in CC.
+	// Expected Behavior: On "Reply All," the main account remains in CC.
 	it('TC2: Delegator sends an email, Main Account in CC', () => {
 		jest
 			.spyOn(shellHooks, 'getUserAccount')
