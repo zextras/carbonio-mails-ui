@@ -28,7 +28,7 @@ export const getAvailableAddresses = (): Array<AvailableAddress> => {
 	if (settings.attrs.zimbraMailAlias) {
 		if (isArray(settings.attrs.zimbraMailAlias)) {
 			result.push(
-				...(settings.attrs.zimbraMailAlias as string[]).map<AvailableAddress>((alias: string) => ({
+				...settings.attrs.zimbraMailAlias.map<AvailableAddress>((alias: string) => ({
 					address: alias,
 					type: 'alias',
 					ownerAccount: account?.name ?? NO_ACCOUNT_NAME
@@ -36,7 +36,7 @@ export const getAvailableAddresses = (): Array<AvailableAddress> => {
 			);
 		} else {
 			result.push({
-				address: settings.attrs.zimbraMailAlias as string,
+				address: settings.attrs.zimbraMailAlias,
 				type: 'alias',
 				ownerAccount: account?.name ?? NO_ACCOUNT_NAME
 			});

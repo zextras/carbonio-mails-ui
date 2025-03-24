@@ -10,11 +10,11 @@ import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
 import { ParticipantRole } from '../../carbonio-ui-commons/constants/participants';
 import { generateAccount } from '../../carbonio-ui-commons/test/mocks/accounts/account-generator';
 import { AvailableAddress } from '../../carbonio-ui-commons/types/identities';
-import { getAvailableAddresses } from '../../helpers/get_available_addresses';
+import { getAvailableAddresses } from '../../helpers/get-available-addresses';
 import { generateMessage } from '../../tests/generators/generateMessage';
 import { retrieveALL, retrieveCC, retrieveReplyTo } from '../editor-slice-utils';
 
-jest.mock('../../helpers/get_available_addresses', () => ({
+jest.mock('../../helpers/get-available-addresses', () => ({
 	getAvailableAddresses: jest.fn()
 }));
 

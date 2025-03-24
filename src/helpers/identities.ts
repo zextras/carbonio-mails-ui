@@ -13,7 +13,7 @@ import type { Folders } from '../carbonio-ui-commons/types/folder';
 import { NO_ACCOUNT_NAME } from '../constants';
 import type { MailMessage, Participant } from '../types';
 import { getFolderIdParts, getMessageOwnerAccountName } from './folders';
-import { getAvailableAddresses } from './get_available_addresses';
+import { getAvailableAddresses } from './get-available-addresses';
 
 /**
  * The name of the primary identity
