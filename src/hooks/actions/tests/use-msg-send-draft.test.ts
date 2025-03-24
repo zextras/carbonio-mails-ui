@@ -5,16 +5,16 @@
  */
 import { act } from 'react';
 
+import { SendDraftRequest } from '../../../api/send-draft';
 import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
 import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { setupHook } from '../../../carbonio-ui-commons/test/test-setup';
 import { FOLDERS_DESCRIPTORS } from '../../../constants';
 import { generateMessage } from '../../../tests/generators/generateMessage';
-import { type SaveDraftRequest } from '../../../types';
 import { useMsgSendDraftDescriptor, useMsgSendDraftFn } from '../use-msg-send-draft';
 
 describe('useMsgSendDraft', () => {
-	const msg = generateMessage({ folderId: FOLDERS.DRAFTS });
+	const msg = generateMessage({ folderId: FOLDERS.DRAFTS, id: '1', did: '2', isDraft: true });
 
 	describe('Descriptor', () => {
 		it('Should return an object with specific id, icon, label and 2 functions', () => {
@@ -81,7 +81,7 @@ describe('useMsgSendDraft', () => {
 			});
 
 			it('should call the API with the proper params if the action can be executed', async () => {
-				const apiInterceptor = createSoapAPIInterceptor<SaveDraftRequest>('SendMsg');
+				const apiInterceptor = createSoapAPIInterceptor<SendDraftRequest>('SendMsg');
 
 				const {
 					result: { current: functions }
@@ -94,10 +94,37 @@ describe('useMsgSendDraft', () => {
 				});
 
 				const requestParameter = await apiInterceptor;
-				expect(requestParameter.m.id).toBe(msg.id);
-				expect(requestParameter.m.su).not.toBeUndefined();
-				expect(requestParameter.m.e).not.toBeUndefined();
-				expect(requestParameter.m.mp).not.toBeUndefined();
+				expect(requestParameter).toEqual({
+					_jsns: 'urn:zimbraMail',
+					m: {
+						did: '2',
+						sfd: 1
+					}
+				});
+			});
+
+			it('should call the API with the id when did is not defined', async () => {
+				const apiInterceptor = createSoapAPIInterceptor<SendDraftRequest>('SendMsg');
+
+				const modifiedMsg = { ...msg, did: undefined };
+				const {
+					result: { current: functions }
+				} = setupHook(useMsgSendDraftFn, {
+					initialProps: [modifiedMsg, FOLDERS.DRAFTS]
+				});
+
+				await act(async () => {
+					functions.execute();
+				});
+
+				const requestParameter = await apiInterceptor;
+				expect(requestParameter).toEqual({
+					_jsns: 'urn:zimbraMail',
+					m: {
+						did: modifiedMsg.id,
+						sfd: 1
+					}
+				});
 			});
 		});
 	});
