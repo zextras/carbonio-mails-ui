@@ -14,7 +14,7 @@ import { generateMessage } from '../../../tests/generators/generateMessage';
 import { generateReplyAllMsgEditor } from '../editor-generators';
 
 describe('Reply All', () => {
-	const originalFrom = 'someoneElse@test.com';
+	const outsider = 'someoneElse@test.com';
 	const meAddress = 'me@test.com';
 	const sharedAccountAddress = 'sharedAccount@test.com';
 	const another = 'another@test.com';
@@ -72,7 +72,7 @@ describe('Reply All', () => {
 				...generateMessage(),
 				parent: FOLDERS.INBOX,
 				participants: [
-					{ type: ParticipantRole.FROM, address: originalFrom },
+					{ type: ParticipantRole.FROM, address: outsider },
 					{ type: ParticipantRole.TO, address: meAddress },
 					{ type: ParticipantRole.TO, address: sharedAccountAddress },
 					{ type: ParticipantRole.TO, address: another }
@@ -88,11 +88,11 @@ describe('Reply All', () => {
 				expect(replyMsgEditor.recipients.cc).toEqual([
 					{
 						address: sharedAccountAddress,
-						type: 'c'
+						type: ParticipantRole.CARBON_COPY
 					},
 					{
 						address: another,
-						type: 'c'
+						type: ParticipantRole.CARBON_COPY
 					}
 				]);
 			});
@@ -100,8 +100,8 @@ describe('Reply All', () => {
 				const replyMsgEditor = generateReplyAllMsgEditor(receivedMessage);
 				expect(replyMsgEditor.recipients.to).toEqual([
 					{
-						address: originalFrom,
-						type: 't'
+						address: outsider,
+						type: ParticipantRole.TO
 					}
 				]);
 			});
@@ -111,7 +111,7 @@ describe('Reply All', () => {
 				...generateMessage(),
 				parent: FOLDERS.INBOX,
 				participants: [
-					{ type: ParticipantRole.FROM, address: originalFrom },
+					{ type: ParticipantRole.FROM, address: outsider },
 					{ type: ParticipantRole.CARBON_COPY, address: meAddress },
 					{ type: ParticipantRole.TO, address: sharedAccountAddress },
 					{ type: ParticipantRole.TO, address: another }
@@ -126,9 +126,9 @@ describe('Reply All', () => {
 				expect(replyMsgEditor.recipients.cc).toEqual([
 					{
 						address: another,
-						type: 'c'
+						type: ParticipantRole.CARBON_COPY
 					},
-					{ address: meAddress, type: 'c' }
+					{ address: meAddress, type: ParticipantRole.CARBON_COPY }
 				]);
 			});
 		});
@@ -137,7 +137,7 @@ describe('Reply All', () => {
 				...generateMessage(),
 				parent: FOLDERS.INBOX,
 				participants: [
-					{ type: ParticipantRole.FROM, address: originalFrom },
+					{ type: ParticipantRole.FROM, address: outsider },
 					{ type: ParticipantRole.TO, address: sharedAccountAddress },
 					{ type: ParticipantRole.TO, address: another }
 				]
@@ -151,7 +151,7 @@ describe('Reply All', () => {
 				expect(replyMsgEditor.recipients.cc).toEqual([
 					{
 						address: another,
-						type: 'c'
+						type: ParticipantRole.CARBON_COPY
 					}
 				]);
 			});
@@ -159,11 +159,142 @@ describe('Reply All', () => {
 				const replyMsgEditor = generateReplyAllMsgEditor(receivedMessage);
 				expect(replyMsgEditor.recipients.to).toEqual([
 					{
-						address: originalFrom,
-						type: 't'
+						address: outsider,
+						type: ParticipantRole.TO
 					}
 				]);
 			});
+		});
+	});
+	describe('Message sent from Me', () => {
+		const message = {
+			...generateMessage(),
+			participants: [
+				{ type: ParticipantRole.FROM, address: meAddress },
+				{ type: ParticipantRole.TO, address: meAddress }
+			]
+		};
+
+		it('To [me] should have identity Me when replying to the sent message', () => {
+			const messageInSent = { ...message, parent: FOLDERS.SENT };
+			const replyMsgEditor = generateReplyAllMsgEditor(messageInSent);
+			expect(replyMsgEditor.identityId).toEqual('');
+		});
+
+		it('To [me] should have identity Me when replying to the received message', () => {
+			const messageReceived = { ...message, parent: FOLDERS.INBOX };
+			const replyMsgEditor = generateReplyAllMsgEditor(messageReceived);
+			expect(replyMsgEditor.identityId).toEqual('');
+		});
+
+		it('To [me] should have only Me in TO when replying to the received message', () => {
+			const messageReceived = { ...message, parent: FOLDERS.INBOX };
+			const replyMsgEditor = generateReplyAllMsgEditor(messageReceived);
+			expect(replyMsgEditor.recipients.to).toEqual([
+				{
+					address: meAddress,
+					type: ParticipantRole.TO
+				}
+			]);
+		});
+
+		it('To [me] should have only Me in TO when replying to the sent message', () => {
+			const messageReceived = { ...message, parent: FOLDERS.SENT };
+			const replyMsgEditor = generateReplyAllMsgEditor(messageReceived);
+			expect(replyMsgEditor.recipients.to).toEqual([
+				{
+					address: meAddress,
+					type: ParticipantRole.TO
+				}
+			]);
+		});
+
+		it('To [me] should have nothing in CC', () => {
+			const messageReceived = { ...message, parent: FOLDERS.INBOX };
+			const replyMsgEditor = generateReplyAllMsgEditor(messageReceived);
+			expect(replyMsgEditor.recipients.cc).toEqual([]);
+		});
+
+		describe('A message sent To: [sharedAccount, another person]', () => {
+			const messageFromMeToShared = {
+				...generateMessage(),
+				participants: [
+					{ type: ParticipantRole.FROM, address: meAddress },
+					{ type: ParticipantRole.TO, address: sharedAccountAddress },
+					{ type: ParticipantRole.TO, address: another }
+				]
+			};
+			it('should reply with shared account identity when replying to the sent message', () => {
+				const messageInSent = { ...messageFromMeToShared, parent: FOLDERS.SENT };
+				const replyMsgEditor = generateReplyAllMsgEditor(messageInSent);
+				expect(replyMsgEditor.identityId).toEqual(`${sharedAccountAddress}sendAs`);
+			});
+
+			it('should reply To: [Me and another] when replying to the sent message', () => {
+				const messageInSent = { ...messageFromMeToShared, parent: FOLDERS.SENT };
+				const replyMsgEditor = generateReplyAllMsgEditor(messageInSent);
+				expect(replyMsgEditor.recipients.to).toEqual([
+					{
+						address: meAddress,
+						type: ParticipantRole.TO
+					},
+					{
+						address: another,
+						type: ParticipantRole.TO
+					}
+				]);
+			});
+
+			it('should reply To: [Me] when replying to the received message', () => {
+				const messageInSent = { ...messageFromMeToShared, parent: FOLDERS.INBOX };
+				const replyMsgEditor = generateReplyAllMsgEditor(messageInSent);
+				expect(replyMsgEditor.recipients.to).toEqual([
+					{
+						address: meAddress,
+						type: ParticipantRole.TO
+					}
+				]);
+			});
+
+			it('should reply CC: [another] when replying to the received message', () => {
+				const messageInSent = { ...messageFromMeToShared, parent: FOLDERS.INBOX };
+				const replyMsgEditor = generateReplyAllMsgEditor(messageInSent);
+				expect(replyMsgEditor.recipients.cc).toEqual([
+					{
+						address: another,
+						type: ParticipantRole.CARBON_COPY
+					}
+				]);
+			});
+		});
+	});
+	describe('Identity Selection', () => {
+		it('should use sharedAccount identity when replying to a message with To [sharedAccount] and CC [Me, another]', () => {
+			const receivedMessage = {
+				...generateMessage(),
+				participants: [
+					{ type: ParticipantRole.FROM, address: outsider },
+					{ type: ParticipantRole.TO, address: sharedAccountAddress },
+					{ type: ParticipantRole.CARBON_COPY, address: meAddress },
+					{ type: ParticipantRole.CARBON_COPY, address: another }
+				]
+			};
+			const replyMsgEditor = generateReplyAllMsgEditor(receivedMessage);
+			expect(replyMsgEditor.identityId).toEqual(`${sharedAccountAddress}sendAs`);
+		});
+
+		it('should use default identity when replying to a message with To [sharedAccount, Me] and CC [another]', () => {
+			const receivedMessage = {
+				...generateMessage(),
+				participants: [
+					{ type: ParticipantRole.FROM, address: outsider },
+					{ type: ParticipantRole.TO, address: sharedAccountAddress },
+					{ type: ParticipantRole.TO, address: meAddress },
+					{ type: ParticipantRole.CARBON_COPY, address: another }
+				]
+			};
+			const replyMsgEditor = generateReplyAllMsgEditor(receivedMessage);
+			expect(replyMsgEditor.identityId).toEqual('');
 		});
 	});
 });
