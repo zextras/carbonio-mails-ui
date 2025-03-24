@@ -16,23 +16,6 @@ import { getConvEmailStoreAction } from '../store/emails/actions/get-conv-action
 import { getMessageEmailStoreAction } from '../store/emails/actions/get-message';
 import { getMessageWithExistingParticipantsEmailStoreAction } from '../store/emails/actions/get-message-with-existing-participants';
 import { MailMessage, MailsEditorV2, SaveDraftRequest, SaveDraftResponse } from '../types';
-//
-// function getReplyToAddress(identityId: string): string | undefined {
-// 	const userAccount = getUserAccount();
-// 	const foundIdentity = userAccount?.identities.identity.find(
-// 		(identityVal) => identityVal.id === identityId
-// 	);
-//
-// 	if (foundIdentity) {
-// 		const { _attrs } = foundIdentity;
-// 		const replyToEnabled = _attrs.zimbraPrefReplyToEnabled as BooleanString;
-// 		const replyToAddress = _attrs.zimbraPrefReplyToAddress as string;
-// 		if (replyToEnabled === 'TRUE' && !isEmpty(replyToAddress)) {
-// 			return replyToAddress;
-// 		}
-// 	}
-// 	return undefined;
-// }
 
 export const sendMsg = async ({
 	msg
@@ -68,12 +51,6 @@ export async function sendMsgFromEditor({
 	const msg = createSoapSendMsgRequestFromEditor(editor);
 
 	const identity = getIdentityDescriptor(editor.identityId);
-	// const replyToAddress = getReplyToAddress(editor.identityId);
-	// replyToAddress &&
-	// 	msg.e.push({
-	// 		a: replyToAddress,
-	// 		t: ParticipantRole.REPLY_TO
-	// 	});
 
 	const response = await soapFetch<SaveDraftRequest, SaveDraftResponse>(
 		'SendMsg',
