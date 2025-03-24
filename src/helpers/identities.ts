@@ -3,16 +3,17 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { Account, getUserAccount, getUserSettings, t } from '@zextras/carbonio-shell-ui';
+import { Account, getUserAccount, t } from '@zextras/carbonio-shell-ui';
 import { TFunction } from 'i18next';
-import { filter, findIndex, flatten, isArray, map, remove } from 'lodash';
+import { filter, findIndex, flatten, map, remove } from 'lodash';
 
-import { getFolderIdParts, getMessageOwnerAccountName } from './folders';
 import { ParticipantRole } from '../carbonio-ui-commons/constants/participants';
 import { getRootsMap } from '../carbonio-ui-commons/store/zustand/folder/hooks';
 import type { Folders } from '../carbonio-ui-commons/types/folder';
 import { NO_ACCOUNT_NAME } from '../constants';
 import type { MailMessage, Participant } from '../types';
+import { getFolderIdParts, getMessageOwnerAccountName } from './folders';
+import { getAvailableAddresses } from './get-available-addresses';
 
 /**
  * The name of the primary identity
@@ -128,63 +129,6 @@ const getNoIdentityPlaceholder = (): string =>
 	t('label.no_identity_selected', '<No identity selected>');
 
 /**
- * Returns the list of all the available addresses for the account and their type
- */
-const getAvailableAddresses = (): Array<AvailableAddress> => {
-	const account = getUserAccount();
-	const settings = getUserSettings();
-	const result: Array<AvailableAddress> = [];
-
-	// Adds the email address of the primary account
-	result.push({
-		address: account?.name ?? NO_ACCOUNT_NAME,
-		type: 'primary',
-		ownerAccount: account?.name ?? NO_ACCOUNT_NAME
-	});
-
-	// Adds all the aliases
-	if (settings.attrs.zimbraMailAlias) {
-		if (isArray(settings.attrs.zimbraMailAlias)) {
-			result.push(
-				...(settings.attrs.zimbraMailAlias as string[]).map<AvailableAddress>((alias: string) => ({
-					address: alias,
-					type: 'alias',
-					ownerAccount: account?.name ?? NO_ACCOUNT_NAME
-				}))
-			);
-		} else {
-			result.push({
-				address: settings.attrs.zimbraMailAlias as string,
-				type: 'alias',
-				ownerAccount: account?.name ?? NO_ACCOUNT_NAME
-			});
-		}
-	}
-
-	// Adds the email addresses of all the delegation accounts
-	if (account?.rights?.targets) {
-		account.rights.targets.forEach((target) => {
-			if (target.target && (target.right === 'sendAs' || target.right === 'sendOnBehalfOf')) {
-				target.target.forEach((user) => {
-					if (user.type === 'account' && user.email) {
-						user.email.forEach((email) => {
-							result.push({
-								address: email.addr,
-								type: 'delegation',
-								right: target.right,
-								ownerAccount: email.addr
-							});
-						});
-					}
-				});
-			}
-		});
-	}
-
-	return result;
-};
-
-/**
  * Returns the name of the account that owns the given address
  *
  * @param address
@@ -193,7 +137,8 @@ const getAddressOwnerAccount = (address: string): string | null => {
 	if (!address) {
 		return null;
 	}
-	const addressInfo = getAvailableAddresses().filter((info) => info.address === address);
+	const availableAddresses = getAvailableAddresses();
+	const addressInfo = availableAddresses.filter((info) => info.address === address);
 	if (addressInfo.length === 0) {
 		return null;
 	}
@@ -574,7 +519,6 @@ export {
 	computeIdentityWeight,
 	filterMatchingRecipients,
 	getAddressOwnerAccount,
-	getAvailableAddresses,
 	getIdentitiesDescriptors,
 	getIdentityFromParticipant,
 	getMessageSenderAccount,
