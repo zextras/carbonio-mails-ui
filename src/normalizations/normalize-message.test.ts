@@ -3,7 +3,10 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { normalizeMailMessageFromSoap } from './normalize-message';
+import {
+	normalizeMailMessageFromSoap,
+	normalizePartialIncompleteMessageFromSoap
+} from './normalize-message';
 import { generateMessageFromAPI } from '../tests/generators/api';
 import { SoapMailMessagePart } from '../types';
 
@@ -79,5 +82,17 @@ describe('Normalize message', () => {
 
 			expect(normalizedMessage.participants).toEqual(expectedResult);
 		});
+	});
+});
+
+describe('Normalize partial soap incomplete message', () => {
+	it('should omit fields when not defined', () => {
+		const input = {
+			id: '111'
+		};
+
+		const result = normalizePartialIncompleteMessageFromSoap(input);
+
+		expect(result).toEqual({ id: '111' });
 	});
 });

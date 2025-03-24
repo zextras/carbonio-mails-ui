@@ -7,7 +7,7 @@
 
 import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 import produce from 'immer';
-import { filter, forEach, isArray, keyBy, merge, mergeWith } from 'lodash';
+import { filter, forEach, keyBy, merge } from 'lodash';
 import { UseBoundStore, StoreApi } from 'zustand';
 
 import { RemoveAttachmentsResponse } from '../../../../api/delete-all-attachments-soap-api';
@@ -60,6 +60,9 @@ function getConversationMessages(
 		.filter(Boolean);
 }
 
+// TODO: check this implementation. We found out the merge was handling data incorrectly.
+//  we decided to just override the data and not handle any complex logic in the store
+//  Check also updateMessages method as it may have the same issues
 function updateConversations(
 	updatedConversations: Array<NormalizedConversation>,
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
@@ -67,24 +70,10 @@ function updateConversations(
 	useEmailsStore.setState(
 		produce(({ populatedItemsSlice }: EmailsStoreState) => {
 			updatedConversations.forEach((conversation) => {
-				if (populatedItemsSlice.conversations[conversation.id]) {
-					populatedItemsSlice.conversations[conversation.id] = {
-						...mergeWith(
-							{},
-							populatedItemsSlice.conversations[conversation.id],
-							conversation,
-							(object, newObject) =>
-								// Overwrite arrays even if the source array is empty
-								isArray(object) && isArray(newObject) ? newObject : undefined
-						),
-						// messageIds and participants are incorrectly set to empty array when normalizing
-						// adding them back here, but the code should be fixed in the normalization
-						messageIds: populatedItemsSlice.conversations[conversation.id].messageIds,
-						participants: populatedItemsSlice.conversations[conversation.id].participants
-					};
-				} else {
-					populatedItemsSlice.conversations[conversation.id] = conversation;
-				}
+				populatedItemsSlice.conversations[conversation.id] = {
+					...populatedItemsSlice.conversations[conversation.id],
+					...conversation
+				};
 			});
 		})
 	);
