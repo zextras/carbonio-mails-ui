@@ -388,6 +388,11 @@ const createSoapMessageRequestFromEditor = (
 		participants.push({ ...from, type: ParticipantRole.READ_RECEIPT_NOTIFICATION });
 	}
 
+	const replyToAddress = getReplyToAddress(editor.identityId);
+	if (replyToAddress) {
+		participants.push({ address: replyToAddress, type: ParticipantRole.REPLY_TO });
+	}
+
 	const soapParticipants = map(participants, (participant) => ({
 		t: participant.type,
 		a: participant.address,
@@ -405,13 +410,6 @@ const createSoapMessageRequestFromEditor = (
 		mp: getMP(editor),
 		...(editor.isUrgent ? { f: '!' } : {})
 	};
-
-	const replyToAddress = getReplyToAddress(editor.identityId);
-	replyToAddress &&
-		draftMessage.e.push({
-			a: replyToAddress,
-			t: ParticipantRole.REPLY_TO
-		});
 
 	const attach = composeAttachField(editor);
 	attach && (draftMessage.attach = attach);
