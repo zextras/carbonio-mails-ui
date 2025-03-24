@@ -4,7 +4,13 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { ErrorSoapBodyResponse, soapFetch } from '@zextras/carbonio-shell-ui';
+import {
+	ErrorSoapBodyResponse,
+	soapFetch,
+	BooleanString,
+	getUserAccount
+} from '@zextras/carbonio-shell-ui';
+import { isEmpty } from 'lodash';
 
 import { ParticipantRole } from '../carbonio-ui-commons/constants/participants';
 import { getAddressOwnerAccount, getIdentityDescriptor } from '../helpers/identities';
@@ -51,6 +57,22 @@ export async function sendMsgFromEditor({
 	const msg = createSoapSendMsgRequestFromEditor(editor);
 
 	const identity = getIdentityDescriptor(editor.identityId);
+	const userAccount = getUserAccount();
+	const foundIdentity = userAccount?.identities.identity.find(
+		(identityVal) => identityVal.id === editor.identityId
+	);
+
+	if (foundIdentity) {
+		const { _attrs } = foundIdentity;
+		const replyToEnabled = _attrs.zimbraPrefReplyToEnabled as BooleanString;
+		const replyToAddress = _attrs.zimbraPrefReplyToAddress as string;
+		if (replyToEnabled === 'TRUE' && !isEmpty(replyToAddress)) {
+			msg.e.push({
+				a: replyToAddress,
+				t: ParticipantRole.REPLY_TO
+			});
+		}
+	}
 
 	const response = await soapFetch<SaveDraftRequest, SaveDraftResponse>(
 		'SendMsg',
