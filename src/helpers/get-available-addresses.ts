@@ -10,7 +10,12 @@ import { AvailableAddress } from '../carbonio-ui-commons/types/identities';
 import { NO_ACCOUNT_NAME } from '../constants';
 
 /**
- * Returns the list of all the available addresses for the account and their type
+ * Retrieves the available email addresses for the user, including:
+ * - Primary account email
+ * - Email aliases
+ * - Delegated email addresses (with `sendAs` or `sendOnBehalfOf` rights)
+ *
+ * @returns {Array<AvailableAddress>} An array of available email addresses with their types and owner accounts.
  */
 export const getAvailableAddresses = (): Array<AvailableAddress> => {
 	const account = getUserAccount();
