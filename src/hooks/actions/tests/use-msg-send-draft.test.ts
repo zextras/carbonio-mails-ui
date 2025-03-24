@@ -6,6 +6,7 @@
 import { act } from 'react';
 
 import { SendDraftRequest } from '../../../api/send-draft';
+import { JSNS } from '../../../carbonio-ui-commons/constants';
 import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
 import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { setupHook } from '../../../carbonio-ui-commons/test/test-setup';
@@ -95,7 +96,7 @@ describe('useMsgSendDraft', () => {
 
 				const requestParameter = await apiInterceptor;
 				expect(requestParameter).toEqual({
-					_jsns: 'urn:zimbraMail',
+					_jsns: JSNS.MAIL,
 					m: {
 						did: '2',
 						sfd: 1
@@ -119,7 +120,7 @@ describe('useMsgSendDraft', () => {
 
 				const requestParameter = await apiInterceptor;
 				expect(requestParameter).toEqual({
-					_jsns: 'urn:zimbraMail',
+					_jsns: JSNS.MAIL,
 					m: {
 						did: modifiedMsg.id,
 						sfd: 1

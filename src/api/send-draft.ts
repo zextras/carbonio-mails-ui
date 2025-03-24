@@ -5,11 +5,12 @@
  */
 import { ErrorSoapBodyResponse, soapFetch } from '@zextras/carbonio-shell-ui';
 
+import { JSNS } from '../carbonio-ui-commons/constants';
 import { SaveDraftResponse } from '../types';
 
 export type SendDraftRequest = {
-	_jsns: 'urn:zimbraMail';
-	m: { did: string; sfd: number };
+	_jsns: JSNS.MAIL;
+	m: { did: string; sfd: 1 };
 	account?: string;
 };
 
@@ -20,7 +21,7 @@ export const sendDraft = async (draft: {
 	soapFetch<SendDraftRequest, SaveDraftResponse>(
 		'SendMsg',
 		{
-			_jsns: 'urn:zimbraMail',
+			_jsns: JSNS.MAIL,
 			m: { did: draft.did, sfd: 1 }
 		},
 		draft.account
