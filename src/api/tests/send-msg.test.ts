@@ -15,7 +15,7 @@ import { generateEditor } from '../../store/editor/editor-generators';
 import { getConvEmailStoreAction } from '../../store/emails/actions/get-conv-action';
 import { getMessageWithExistingParticipantsEmailStoreAction } from '../../store/emails/actions/get-message-with-existing-participants';
 import { generateMessage } from '../../tests/generators/generateMessage';
-import { MailsEditorV2 } from '../../types';
+import { MailMessage, MailsEditorV2 } from '../../types';
 import { SoapSendMsgRequest, SoapSendMsgResponse } from '../../types/soap/send-msg';
 import { sendMsg, sendMsgFromEditor } from '../send-msg';
 
@@ -72,46 +72,87 @@ describe('sendMsg', () => {
 	});
 });
 
-describe('sendMsgFromEditor', () => {
-	it('should add reply-to participant when reply-to is set in Mails settings', async () => {
-		const replyToAddress = 'replyTo@test.com';
-		const identityId = '3b778c1d-529f-45b7-b131-5162c83551f7';
-		const defaultIdentity = {
-			id: identityId,
-			name: 'DEFAULT',
-			_attrs: {
-				zimbraPrefReplyToEnabled: 'TRUE',
-				zimbraPrefReplyToAddress: replyToAddress,
-				zimbraPrefIdentityId: '3b778c1d-529f-45b7-b131-5162c83551f7'
-			}
-		} as shellHooks.Identity;
-		const mainAccount: shellHooks.Account = {
-			...generateAccount(),
-			id: defaultIdentity.id,
-			name: 'default@test.com',
-			displayName: 'default account',
-			identities: { identity: [defaultIdentity] },
-			rights: [] as never // cannot import AccountRights from carbonio-shell-ui
-		};
+describe('Reply-To Header', () => {
+	const replyToAddress = 'replyTo@test.com';
+	const identityId = '3b778c1d-529f-45b7-b131-5162c83551f7';
+	const defaultIdentity = {
+		id: identityId,
+		name: 'DEFAULT',
+		_attrs: {
+			zimbraPrefReplyToEnabled: 'TRUE',
+			zimbraPrefReplyToAddress: replyToAddress,
+			zimbraPrefIdentityId: '3b778c1d-529f-45b7-b131-5162c83551f7'
+		}
+	} as shellHooks.Identity;
+	const mainAccountAddress = 'default@test.com';
+	const mainAccount: shellHooks.Account = {
+		...generateAccount(),
+		id: defaultIdentity.id,
+		name: mainAccountAddress,
+		displayName: 'default account',
+		identities: { identity: [defaultIdentity] },
+		rights: [] as never // cannot import AccountRights from carbonio-shell-ui
+	};
+	beforeEach(() => {
 		jest.spyOn(shellSpy, 'getUserAccount').mockReturnValue(mainAccount);
-		const editor = generateEditor({ action: 'new' }) as MailsEditorV2;
-		const response = { _jsns: 'zimbraMail', m: [{ id: '1', cid: '123' }] };
-		const sendMsgInterceptor = createSoapAPIInterceptor<SoapSendMsgRequest, SoapSendMsgResponse>(
-			'SendMsg',
-			response
-		);
+	});
+	describe('Send Msg', () => {
+		it('should add reply-to to existing participants when setting is defined', async () => {
+			const response = { _jsns: 'zimbraMail', m: [{ id: '1', cid: '123' }] };
+			const sendMsgInterceptor = createSoapAPIInterceptor<SoapSendMsgRequest, SoapSendMsgResponse>(
+				'SendMsg',
+				response
+			);
+			const recipient1Address = 'recipient1@test.com';
+			const msg: MailMessage = {
+				...generateMessage({ id: '1' }),
+				participants: [
+					{ type: ParticipantRole.FROM, address: mainAccountAddress },
+					{ type: ParticipantRole.TO, address: recipient1Address }
+				]
+			};
 
-		await sendMsgFromEditor({ editor });
+			await sendMsg({ msg });
 
-		const sendMsgRequest = await sendMsgInterceptor;
-		const participants = sendMsgRequest.m.e;
-		expect(participants).toEqual(
-			expect.arrayContaining([
+			const sendMsgRequest = await sendMsgInterceptor;
+			const participants = sendMsgRequest.m.e;
+			expect(participants).toEqual([
+				{
+					a: mainAccountAddress,
+					t: ParticipantRole.FROM
+				},
+				{
+					a: recipient1Address,
+					t: ParticipantRole.TO
+				},
 				{
 					a: replyToAddress,
 					t: ParticipantRole.REPLY_TO
 				}
-			])
-		);
+			]);
+		});
+	});
+	describe('Send Msg from Editor', () => {
+		it('should add reply-to participant when reply-to is set in Mails settings', async () => {
+			const editor = generateEditor({ action: 'new' }) as MailsEditorV2;
+			const response = { _jsns: 'zimbraMail', m: [{ id: '1', cid: '123' }] };
+			const sendMsgInterceptor = createSoapAPIInterceptor<SoapSendMsgRequest, SoapSendMsgResponse>(
+				'SendMsg',
+				response
+			);
+
+			await sendMsgFromEditor({ editor });
+
+			const sendMsgRequest = await sendMsgInterceptor;
+			const participants = sendMsgRequest.m.e;
+			expect(participants).toEqual(
+				expect.arrayContaining([
+					{
+						a: replyToAddress,
+						t: ParticipantRole.REPLY_TO
+					}
+				])
+			);
+		});
 	});
 });

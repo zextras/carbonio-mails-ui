@@ -3,8 +3,8 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { getUserSettings } from '@zextras/carbonio-shell-ui';
-import { filter, forEach, map, reduce } from 'lodash';
+import { BooleanString, getUserAccount, getUserSettings } from '@zextras/carbonio-shell-ui';
+import { filter, forEach, isEmpty, map, reduce } from 'lodash';
 
 import { getCompleteMessageId } from '../utils';
 import {
@@ -347,6 +347,23 @@ const composeAttachField = (editor: MailsEditorV2): MailAttachment | null => {
 	return null;
 };
 
+function getReplyToAddress(identityId: string): string | undefined {
+	const userAccount = getUserAccount();
+	const foundIdentity = userAccount?.identities.identity.find(
+		(identityVal) => identityVal.id === identityId
+	);
+
+	if (foundIdentity) {
+		const { _attrs } = foundIdentity;
+		const replyToEnabled = _attrs.zimbraPrefReplyToEnabled as BooleanString;
+		const replyToAddress = _attrs.zimbraPrefReplyToAddress as string;
+		if (replyToEnabled === 'TRUE' && !isEmpty(replyToAddress)) {
+			return replyToAddress;
+		}
+	}
+	return undefined;
+}
+
 /**
  *
  * @param editor
@@ -388,6 +405,13 @@ const createSoapMessageRequestFromEditor = (
 		mp: getMP(editor),
 		...(editor.isUrgent ? { f: '!' } : {})
 	};
+
+	const replyToAddress = getReplyToAddress(editor.identityId);
+	replyToAddress &&
+		draftMessage.e.push({
+			a: replyToAddress,
+			t: ParticipantRole.REPLY_TO
+		});
 
 	const attach = composeAttachField(editor);
 	attach && (draftMessage.attach = attach);
