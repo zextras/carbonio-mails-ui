@@ -5,12 +5,18 @@
  */
 
 import { waitFor } from '@testing-library/react';
+import * as shellHooks from '@zextras/carbonio-shell-ui';
 
+import { ParticipantRole } from '../../carbonio-ui-commons/constants/participants';
+import { generateAccount } from '../../carbonio-ui-commons/test/mocks/accounts/account-generator';
 import { createSoapAPIInterceptor } from '../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
+import { generateEditor } from '../../store/editor/editor-generators';
 import { getConvEmailStoreAction } from '../../store/emails/actions/get-conv-action';
 import { getMessageWithExistingParticipantsEmailStoreAction } from '../../store/emails/actions/get-message-with-existing-participants';
 import { generateMessage } from '../../tests/generators/generateMessage';
-import { sendMsg } from '../send-msg';
+import { MailsEditorV2 } from '../../types';
+import { SoapSendMsgRequest, SoapSendMsgResponse } from '../../types/soap/send-msg';
+import { sendMsg, sendMsgFromEditor } from '../send-msg';
 
 jest.mock('../../store/emails/actions/get-conv-action', () => ({
 	getConvEmailStoreAction: jest.fn()
@@ -62,5 +68,55 @@ describe('sendMsg', () => {
 		const result = await sendMsg({ msg });
 
 		expect(result).toEqual(response);
+	});
+
+	describe('Reply-To Header', () => {
+		const replyToAddress = 'replyTo@test.com';
+		const identityId = '3b778c1d-529f-45b7-b131-5162c83551f7';
+		const defaultIdentity = {
+			id: identityId,
+			name: 'DEFAULT',
+			_attrs: {
+				zimbraPrefReplyToEnabled: 'TRUE',
+				zimbraPrefReplyToAddress: replyToAddress,
+				zimbraPrefIdentityId: '3b778c1d-529f-45b7-b131-5162c83551f7'
+			}
+		} as shellHooks.Identity;
+		const mainAccountAddress = 'default@test.com';
+		const mainAccount: shellHooks.Account = {
+			...generateAccount(),
+			id: defaultIdentity.id,
+			name: mainAccountAddress,
+			displayName: 'default account',
+			identities: { identity: [defaultIdentity] },
+			rights: [] as never // cannot import AccountRights from carbonio-shell-ui
+		};
+		beforeEach(() => {
+			jest.spyOn(shellHooks, 'getUserAccount').mockReturnValue(mainAccount);
+		});
+
+		describe('sendMsgFromEditor', () => {
+			it('should add reply-to participant when reply-to is set in Mails settings', async () => {
+				const editor = generateEditor({ action: 'new' }) as MailsEditorV2;
+				const response = { _jsns: 'zimbraMail', m: [{ id: '1', cid: '123' }] };
+				const sendMsgInterceptor = createSoapAPIInterceptor<
+					SoapSendMsgRequest,
+					SoapSendMsgResponse
+				>('SendMsg', response);
+
+				await sendMsgFromEditor({ editor });
+
+				const sendMsgRequest = await sendMsgInterceptor;
+				const participants = sendMsgRequest.m.e;
+				expect(participants).toEqual(
+					expect.arrayContaining([
+						{
+							a: replyToAddress,
+							t: ParticipantRole.REPLY_TO
+						}
+					])
+				);
+			});
+		});
 	});
 });
