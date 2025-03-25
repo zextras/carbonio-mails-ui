@@ -18,8 +18,7 @@ export function StandalonePreviewPanel(): React.JSX.Element {
 		itemId: string;
 	}>();
 	if (type === 'message') return <MessagePreviewPanel folderId={folderId} messageId={itemId} />;
-	if (type === 'conversation')
-		return <ConversationPreviewPanelContainer folderId={folderId} conversationId={itemId} />;
+	if (type === 'conversation') return <ConversationPreviewPanelContainer />;
 	return <span>{`Unknown type ${type}`}</span>;
 }
 
