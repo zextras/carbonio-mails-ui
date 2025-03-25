@@ -4,16 +4,15 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React, { FC, useCallback, useMemo, useRef, useState } from 'react';
+import React, { FC, useCallback, useMemo, useRef } from 'react';
 
+import { Editor, IAllProps } from '@tinymce/tinymce-react';
 import { Container } from '@zextras/carbonio-design-system';
-import { useIntegratedComponent, useUserSettings } from '@zextras/carbonio-shell-ui';
+import { useUserSettings } from '@zextras/carbonio-shell-ui';
 import { debounce } from 'lodash';
-import type { Editor, TinyMCE } from 'tinymce/tinymce';
+import { TinyMCE } from 'tinymce/tinymce';
 
-import * as StyledComp from './edit-view-styled-components';
-import { plainTextToHTML } from '../../../../../commons/utils';
-import { useEditorIsRichText, useEditorText } from '../../../../../store/editor';
+import { useEditorText } from '../../../../../store/editor';
 import { MailsEditorV2 } from '../../../../../types';
 import { getFontSizesOptions, getFonts } from '../../../../settings/components/utils';
 
@@ -36,10 +35,16 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 	minHeight,
 	disabled
 }) => {
+	/*
 	const [Composer, composerIsAvailable] = useIntegratedComponent('composer');
+*/
+	/*
 	const [isFirstChangeEventFired, setIsFirstChangeEventFired] = useState(false);
+*/
 	const { text, setText } = useEditorText(editorId);
+	/*
 	const { isRichText } = useEditorIsRichText(editorId);
+*/
 	const editorTextRef = useRef(text.richText);
 
 	// TODO remove me! - START
@@ -50,9 +55,11 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 				if (!editorRef.current) {
 					return;
 				}
-				editorRef.current?.save();
+				const plainText = editorRef.current.getContent({ format: 'text' });
+				const richText = editorRef.current.getContent({ format: 'html' });
+				setText({ plainText, richText });
 			}, SAVE_EDITOR_DELAY),
-		[]
+		[setText]
 	);
 
 	const onEditorDirty = useCallback(() => {
@@ -60,18 +67,17 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 			return;
 		}
 		saveEditor();
-		const plainText = editorRef.current.getContent({ format: 'text' });
-		const richText = editorRef.current.getContent({ format: 'html' });
-		setText({ plainText, richText });
-	}, [saveEditor, setText]);
-	// TODO remove me! - END
 
+		editorRef.current?.save();
+	}, [saveEditor]);
+	// TODO remove me! - END
+	/*
 	const onTextChanged = useCallback(
 		(txt: TextEditorContent): void => {
 			setText({ plainText: txt.plainText, richText: txt.richText });
 		},
 		[setText]
-	);
+	); */
 
 	const { prefs } = useUserSettings();
 	const fontSizesOptions = getFontSizesOptions();
@@ -86,25 +92,101 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 		(font: { label: string; value: string }) => `${font.label}=${font.value};`
 	);
 
-	const composerCustomOptions = {
-		toolbar_sticky: true,
-		ui_mode: 'split',
-		font_size_formats: fontSizesOptionsToString,
-		font_family_formats: fontsOptionsToString,
-		content_style: `p  {margin: 0;} body {color: ${defaultColor}; font-size: ${defaultFontSize}; font-family: ${defaultFontFamily}; }`,
-		toolbar: [
-			'fontfamily fontsize styles visualblocks',
-			'bold italic underline strikethrough',
-			'removeformat code',
-			'alignleft aligncenter alignright alignjustify',
-			'forecolor backcolor',
-			'bullist numlist outdent indent',
-			'ltr rtl',
-			'link table',
-			'insertfile image',
-			'imageSelector'
-		].join(' | ')
-	};
+	const editorInitConfig = useMemo<IAllProps['init']>(
+		() => ({
+			min_height: 350,
+			auto_focus: true,
+			menubar: false,
+			statusbar: false,
+			branding: false,
+			resize: true,
+			font_size_formats:
+				'8pt 9pt 10pt 11pt 12pt 13pt 14pt 16pt 18pt 24pt 30pt 36pt 48pt 60pt 72pt 96pt',
+			object_resizing: 'img',
+			toolbar_sticky: true,
+			ui_mode: 'split',
+			font_family_formats: fontsOptionsToString.join(' | '),
+			content_style: `p  {margin: 0;} body {color: ${defaultColor}; font-size: ${defaultFontSize}; font-family: ${defaultFontFamily}; }`,
+			style_formats: [
+				{
+					title: 'Headers',
+					items: [
+						{ title: 'h1', block: 'h1' },
+						{ title: 'h2', block: 'h2' },
+						{ title: 'h3', block: 'h3' },
+						{ title: 'h4', block: 'h4' },
+						{ title: 'h5', block: 'h5' },
+						{ title: 'h6', block: 'h6' }
+					]
+				},
+				{
+					title: 'Blocks',
+					items: [
+						{ title: 'p', block: 'p' },
+						{ title: 'div', block: 'div' },
+						{ title: 'pre', block: 'pre' }
+					]
+				},
+				{
+					title: 'Containers',
+					items: [
+						{ title: 'section', block: 'section', wrapper: true, merge_siblings: false },
+						{ title: 'article', block: 'article', wrapper: true, merge_siblings: false },
+						{ title: 'blockquote', block: 'blockquote', wrapper: true },
+						{ title: 'hgroup', block: 'hgroup', wrapper: true },
+						{ title: 'aside', block: 'aside', wrapper: true },
+						{ title: 'figure', block: 'figure', wrapper: true }
+					]
+				}
+			],
+			plugins: [
+				'advlist',
+				'autolink',
+				'lists',
+				'link',
+				'image',
+				'charmap',
+				'preview',
+				'anchor',
+				'searchreplace',
+				'code',
+				'fullscreen',
+				'insertdatetime',
+				'media',
+				'table',
+				'code',
+				'help',
+				'quickbars',
+				'directionality',
+				'autoresize',
+				'visualblocks'
+			],
+			toolbar: [
+				'fontfamily fontsize styles visualblocks',
+				'bold italic underline strikethrough',
+				'removeformat code',
+				'alignleft aligncenter alignright alignjustify',
+				'forecolor backcolor',
+				'bullist numlist outdent indent',
+				'ltr rtl',
+				'link table',
+				'insertfile image',
+				'imageSelector'
+			].join(' | '),
+			quickbars_insert_toolbar: '',
+			quickbars_selection_toolbar: 'link',
+			contextmenu: '',
+			toolbar_mode: 'wrap',
+			visualblocks_default_state: false,
+			end_container_on_empty_block: true,
+			relative_urls: false,
+			remove_script_host: false,
+			newline_behavior: 'default',
+			browser_spellcheck: true,
+			convert_unsafe_embeds: true
+		}),
+		[defaultColor, defaultFontFamily, defaultFontSize, fontsOptionsToString]
+	);
 
 	return (
 		<>
@@ -115,56 +197,14 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 					background={'gray6'}
 					crossAlignment="flex-end"
 				>
-					{isRichText && composerIsAvailable ? (
-						<Container
-							background={'gray6'}
-							mainAlignment="flex-start"
-							style={{ minHeight, overflow: 'hidden' }}
-						>
-							<div>the editor is {editorRef.current?.isDirty() ? '' : 'NOT'} dirty</div>
-							<button onClick={saveEditor}>save</button>
-							<StyledComp.EditorWrapper data-testid="MailEditorWrapper">
-								<Composer
-									// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-									// @ts-ignore
-									initialValue={editorTextRef.current}
-									// value={text.richText}
-									disabled={disabled}
-									onFileSelect={onFilesSelected}
-									// onEditorChange={(ev: [string, string]): void => {
-									// 	if (isFirstChangeEventFired)
-									// 		onTextChanged({ plainText: ev[0], richText: ev[1] });
-									// }}
-									onDragOver={onDragOver}
-									customInitOptions={composerCustomOptions}
-									onDirty={onEditorDirty}
-									onInit={(event: unknown, editor: Editor): void => {
-										editorRef.current = editor;
-									}}
-									onFocus={(): void => {
-										if (!isFirstChangeEventFired) setIsFirstChangeEventFired(true);
-									}}
-								/>
-							</StyledComp.EditorWrapper>
-						</Container>
-					) : (
-						<Container background={'gray6'} height="fit">
-							<StyledComp.TextArea
-								data-testid="MailPlainTextEditor"
-								value={text.plainText}
-								style={{ fontFamily: defaultFontFamily }}
-								onFocus={(ev): void => {
-									ev.currentTarget.setSelectionRange(0, null);
-								}}
-								onChange={(ev): void => {
-									onTextChanged({
-										plainText: ev.target.value,
-										richText: plainTextToHTML(ev.target.value)
-									});
-								}}
-							/>
-						</Container>
-					)}
+					<Editor
+						initialValue={editorTextRef.current}
+						init={editorInitConfig}
+						onInit={(evt, editor) => {
+							editorRef.current = editor;
+						}}
+						onDirty={onEditorDirty}
+					/>
 				</Container>
 			)}
 		</>
