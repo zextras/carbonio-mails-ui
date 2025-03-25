@@ -17,6 +17,13 @@ export function StandalonePreviewPanel(): React.JSX.Element {
 		type: string;
 		itemId: string;
 	}>();
+
+	// FIXME: Maybe there is a better way to handle this
+	// 	- Maybe Route fallback
+	if (!folderId || !type || !itemId) {
+		throw new Error('Missing route parameters');
+	}
+
 	if (type === 'message') return <MessagePreviewPanel folderId={folderId} messageId={itemId} />;
 	if (type === 'conversation') return <ConversationPreviewPanelContainer />;
 	return <span>{`Unknown type ${type}`}</span>;
