@@ -6,7 +6,7 @@
 
 import React from 'react';
 
-import { Route, Switch, useLocation, useParams } from 'react-router-dom';
+import { Route, Routes, useLocation, useParams } from 'react-router-dom';
 
 import { ConversationPreviewPanelContainer } from './conversation-preview-panel-container';
 import { MessagePreviewPanel } from './message-preview-panel';
@@ -26,10 +26,10 @@ export function StandalonePreviewPanel(): React.JSX.Element {
 export default function StandalonePreviewPanelWrapper(): React.JSX.Element {
 	const { pathname } = useLocation();
 	return (
-		<Switch>
-			<Route path={`${pathname}/folder/:folderId/:type?/:itemId?`}>
+		<Routes>
+			<Route path="folder/:folderId/:type?/:itemId?">
 				<StandalonePreviewPanel />
 			</Route>
-		</Switch>
+		</Routes>
 	);
 }
