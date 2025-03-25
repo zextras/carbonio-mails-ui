@@ -115,7 +115,7 @@ export const MailMsgPreviewActions: FC<MailMsgPreviewActionsType> = ({
 			];
 
 	return (
-		<Row mainAlignment="flex-end" wrap="nowrap">
+		<Row mainAlignment="flex-end" wrap="nowrap" data-testid="MailMsgPreviewActions">
 			{actions?.length > 0 &&
 				map(actions, (action) => {
 					if ('items' in action && !isNil(action.items) && action.icon && !action.disabled) {
