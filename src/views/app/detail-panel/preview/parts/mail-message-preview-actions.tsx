@@ -34,6 +34,7 @@ export const MailMsgPreviewActions: FC<MailMsgPreviewActionsType> = ({
 
 	const {
 		replyDescriptor,
+		editDraftDescriptor,
 		replyAllDescriptor,
 		forwardDescriptor,
 		forwardAsAttachmentDescriptor,
@@ -68,6 +69,7 @@ export const MailMsgPreviewActions: FC<MailMsgPreviewActionsType> = ({
 				replyDescriptor,
 				replyAllDescriptor,
 				forwardDescriptor,
+				editDraftDescriptor,
 				moveToTrashDescriptor,
 				deletePermanentlyDescriptor,
 				messageReadDescriptor,
