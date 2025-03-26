@@ -3,6 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import { ApiManager } from '@zextras/carbonio-mailbox-api-ui';
 import { Identity, updateAccount, updateSettings, xmlSoapFetch } from '@zextras/carbonio-shell-ui';
 import { isArray, map } from 'lodash';
 
@@ -116,5 +117,12 @@ export const saveSettings = (
 			};
 			updateAccount({ identities });
 		}
+
+		if (mods.prefs?.zimbraPrefMailPollingInterval !== undefined) {
+			ApiManager.getApiManager().setPollingInterval(
+				mods.prefs?.zimbraPrefMailPollingInterval as string
+			);
+		}
+
 		return resp;
 	});
