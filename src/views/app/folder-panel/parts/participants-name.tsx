@@ -7,7 +7,7 @@ import React, { useMemo } from 'react';
 
 import { Padding, Row, Text, Tooltip } from '@zextras/carbonio-design-system';
 import { t, useUserAccount } from '@zextras/carbonio-shell-ui';
-import { filter, findIndex, reduce, trimStart, uniqBy } from 'lodash';
+import { filter, findIndex, reduce, sortBy, trimStart, uniqBy } from 'lodash';
 
 import { FOLDERS } from '../../../../carbonio-ui-commons/constants/folders';
 import { ParticipantRole } from '../../../../carbonio-ui-commons/constants/participants';
@@ -35,13 +35,16 @@ export const ParticipantsName = ({
 	const folderId = getFolderIdParts(parent).id;
 
 	const participantsString = useMemo(() => {
-		const participants = filter(item.participants, (p) => {
-			if (isConversation(item)) return true;
-			if (folderId === FOLDERS.INBOX) return p.type === ParticipantRole.FROM; // inbox
-			if (folderId === FOLDERS.SENT && !isSearchModule) return p.type === ParticipantRole.TO; // sent
-			if (isSearchModule) return p.type === ParticipantRole.FROM; // search module
-			return true; // keep all
-		});
+		const participants = sortBy(
+			filter(item.participants, (p) => {
+				if (isConversation(item)) return true;
+				if (folderId === FOLDERS.INBOX) return p.type === ParticipantRole.FROM; // inbox
+				if (folderId === FOLDERS.SENT && !isSearchModule) return p.type === ParticipantRole.TO; // sent
+				if (isSearchModule) return p.type === ParticipantRole.FROM; // search module
+				return true; // keep all
+			}),
+			'type'
+		);
 		const meIndex = findIndex(participants, ['address', account?.name]);
 		if (meIndex >= 0) {
 			// swap index me will be at first
