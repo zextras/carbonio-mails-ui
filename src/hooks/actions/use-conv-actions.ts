@@ -61,8 +61,7 @@ type ConversationActionsReturnType = {
 export const useConvActions = ({
 	conversation,
 	deselectAll,
-	shouldReplaceHistory = false,
-	conversationPreviewFactory
+	shouldReplaceHistory = false
 }: ConversationActionsArgumentType): ConversationActionsReturnType => {
 	const messages = useConversationMessages(conversation.id);
 	const firstConversationMessage =
