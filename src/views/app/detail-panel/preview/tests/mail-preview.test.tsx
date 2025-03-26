@@ -6,11 +6,13 @@
 
 import React from 'react';
 
-import { screen } from '@testing-library/react';
+import { screen, within } from '@testing-library/react';
 
 import { getMsgSoapApi } from '../../../../../api/get-msg-soap-api';
+import { FOLDERS } from '../../../../../carbonio-ui-commons/constants/folders';
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
 import { normalizeMailMessageFromSoap } from '../../../../../normalizations/normalize-message';
+import { generateMessage } from '../../../../../tests/generators/generateMessage';
 import MailPreview, { MailPreviewProps } from '../mail-preview';
 
 /**
@@ -82,5 +84,24 @@ describe('Mail preview', () => {
 		const content = shadowRoot?.innerHTML.toString();
 
 		expect(content).toContain('table');
+	});
+
+	describe('Actions', () => {
+		it('should display edit action when message is in draft', async () => {
+			const message = generateMessage({ isDraft: true, folderId: FOLDERS.DRAFTS });
+
+			const props: MailPreviewProps = {
+				message,
+				expanded: true,
+				isAlone: true,
+				isMessageView: true,
+				messagePreviewFactory: () => <></>
+			};
+
+			setupTest(<MailPreview {...props} />);
+			const actionsContainer = screen.getByTestId(/MailMsgPreviewActions/);
+			const actions = within(actionsContainer).getAllByTestId(/icon:/);
+			expect(actions[0]).toHaveAttribute('data-testid', 'icon: Edit2Outline');
+		});
 	});
 });

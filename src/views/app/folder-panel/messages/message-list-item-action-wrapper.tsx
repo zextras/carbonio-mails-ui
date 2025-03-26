@@ -49,7 +49,6 @@ export const MessageListItemActionWrapper = ({
 		messageUnreadDescriptor,
 		flagDescriptor,
 		unflagDescriptor,
-		sendDraftDescriptor,
 		markAsSpamDescriptor,
 		markAsNotSpamDescriptor,
 		applyTagDescriptor,
@@ -83,7 +82,6 @@ export const MessageListItemActionWrapper = ({
 						normalizeDropdownActionItem(forwardAsAttachmentDescriptor)
 					]
 				},
-				normalizeDropdownActionItem(sendDraftDescriptor),
 				normalizeDropdownActionItem(moveToTrashDescriptor),
 				normalizeDropdownActionItem(deletePermanentlyDescriptor),
 				normalizeDropdownActionItem(messageReadDescriptor),
@@ -125,7 +123,6 @@ export const MessageListItemActionWrapper = ({
 			replyAllDescriptor,
 			replyDescriptor,
 			restoreFolderDescriptor,
-			sendDraftDescriptor,
 			showOriginalDescriptor,
 			tagItem,
 			unflagDescriptor,

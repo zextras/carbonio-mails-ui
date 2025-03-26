@@ -6,10 +6,10 @@
 import { AccountSettingsPrefs, ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 
 import { EmailAddresses } from './redirect-message-action';
-import { MailAttachment, SaveDraftResponse } from './save-draft';
+import { MailAttachment, SaveDraftResponse, SoapDraftMessageObj } from './save-draft';
 import { Folder } from '../../carbonio-ui-commons/types/folder';
 import { MAIL_VERIFICATION_HEADERS, MAIL_SENSITIVITY_HEADER } from '../../constants';
-import { MailsEditor, MailsEditorV2 } from '../editor';
+import { MailsEditorV2 } from '../editor';
 
 export type MailVerificationHeader =
 	(typeof MAIL_VERIFICATION_HEADERS)[keyof typeof MAIL_VERIFICATION_HEADERS];
@@ -289,7 +289,7 @@ export type RedirectActionParameters = {
 };
 
 export type SaveDraftNewParameters = {
-	data: MailsEditor;
+	data: MailsEditorV2;
 	prefs?: Partial<AccountSettingsPrefs>;
 	signal?: AbortSignal;
 };
@@ -299,7 +299,7 @@ export type SaveDraftNewResult = {
 };
 
 export type SaveDraftParameters = {
-	editor: MailsEditorV2;
+	soapDraftMessageObj: SoapDraftMessageObj;
 	signal?: AbortSignal;
 	attach?: MailAttachment;
 };

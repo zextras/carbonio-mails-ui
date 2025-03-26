@@ -5,18 +5,17 @@
  */
 import { soapFetch } from '@zextras/carbonio-shell-ui';
 
-import { createSoapDraftRequestFromEditor } from '../store/editor/editor-transformations';
 import type { SaveDraftParameters, SaveDraftRequest, SaveDraftResponse } from '../types';
 
 export const saveDraftSoapApi = ({
-	editor,
+	soapDraftMessageObj,
 	signal
 }: SaveDraftParameters): Promise<SaveDraftResponse> =>
 	soapFetch<SaveDraftRequest, SaveDraftResponse>(
 		'SaveDraft',
 		{
 			_jsns: 'urn:zimbraMail',
-			m: createSoapDraftRequestFromEditor(editor)
+			m: soapDraftMessageObj
 		},
 		undefined,
 		signal
