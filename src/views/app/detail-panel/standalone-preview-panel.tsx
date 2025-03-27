@@ -12,6 +12,7 @@ import { ConversationPreviewPanelContainer } from './conversation-preview-panel-
 import { MessagePreviewPanel } from './message-preview-panel';
 import { MessagePreviewPanelContainer } from './message-preview-panel-container';
 
+// TODO: StandalonePreviewPanelWrapper hold the logic so StandalonePreviewPanel can be removed when tests are fixed
 export function StandalonePreviewPanel(): React.JSX.Element {
 	const { folderId, type, itemId } = useParams<{
 		folderId: string;
