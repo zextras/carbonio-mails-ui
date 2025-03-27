@@ -20,7 +20,7 @@ import { checkIsSmimeEnabled } from '../api/check-is-smime-enable-api';
 import { Spinner } from '../assets/spinner';
 import { CERTIFICATES_ROUTE, MAIL_APP_ID, MAILS_BOARD_VIEW_ID, MAILS_ROUTE } from '../constants';
 import { useSmimeFeatureStore } from '../store/certificates/store';
-import StandalonePreviewPanel from '../views/app/detail-panel/standalone-preview-panel';
+import StandalonePreviewPanelWrapper from '../views/app/detail-panel/standalone-preview-panel';
 import { ExtraWindowsManager } from '../views/app/extra-windows/extra-window-manager';
 import { getSettingsSubSections } from '../views/settings/subsections';
 
@@ -108,7 +108,7 @@ export const addComponentsToShell = async (isCarbonioCE: boolean | undefined): P
 		route: 'msg-preview',
 		visible: false,
 		label: 'Msg',
-		appView: StandalonePreviewPanel,
+		appView: StandalonePreviewPanelWrapper,
 		focusMode: true
 	});
 
