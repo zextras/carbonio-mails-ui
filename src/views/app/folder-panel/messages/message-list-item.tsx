@@ -49,7 +49,7 @@ export const MessageListItem = memo(function MessageListItem({
 
 	const previewOnSeparatedWindow = useMsgPreviewOnSeparatedWindowFn({
 		messageId: message.id,
-		folderId,
+		folderId: firstChildFolderId,
 		subject: message.subject
 	});
 
