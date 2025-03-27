@@ -10,6 +10,7 @@ import { Route, Routes, useParams } from 'react-router-dom';
 
 import { ConversationPreviewPanelContainer } from './conversation-preview-panel-container';
 import { MessagePreviewPanel } from './message-preview-panel';
+import { MessagePreviewPanelContainer } from './message-preview-panel-container';
 
 export function StandalonePreviewPanel(): React.JSX.Element {
 	const { folderId, type, itemId } = useParams<{
@@ -32,9 +33,14 @@ export function StandalonePreviewPanel(): React.JSX.Element {
 export default function StandalonePreviewPanelWrapper(): React.JSX.Element {
 	return (
 		<Routes>
-			<Route path="folder/:folderId/:type?/:itemId?">
-				<StandalonePreviewPanel />
-			</Route>
+			<Route
+				path={`folder/:folderId/conversation/:conversationId`}
+				element={<ConversationPreviewPanelContainer />}
+			/>
+			<Route
+				path={`folder/:folderId/message/:messageId`}
+				element={<MessagePreviewPanelContainer />}
+			/>
 		</Routes>
 	);
 }
