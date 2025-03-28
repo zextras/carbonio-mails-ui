@@ -16,9 +16,11 @@ import MessageContactList from '../parts/message-contact-list';
 
 describe('MessageContactList', () => {
 	const toParticipant = { type: ParticipantRole.TO, address: faker.internet.email() };
+	const ccParticipant = { type: ParticipantRole.CARBON_COPY, address: faker.internet.email() };
 	it('should render the "To" field with contacts', () => {
 		const message = generateMessage({
-			to: [toParticipant]
+			to: [toParticipant],
+			cc: [ccParticipant]
 		});
 
 		setupTest(<MessageContactList message={message} contactListExpandCB={jest.fn()} />);
