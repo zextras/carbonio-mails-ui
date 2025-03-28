@@ -75,7 +75,22 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 			'link table',
 			'insertfile image',
 			'imageSelector'
-		].join(' | ')
+		].join(' | '),
+		init_instance_callback: (editor: TinyMCE): (() => void) => {
+			const mutationObserver = new MutationObserver(() => {
+				editor.dispatch('ResizeWindow');
+			});
+			const boardElement = document.querySelector('[data-testid="NewItemContainer"]');
+			if (boardElement) {
+				mutationObserver.observe(boardElement, {
+					attributes: true,
+					attributeFilter: ['style']
+				});
+			}
+			return () => {
+				mutationObserver.disconnect();
+			};
+		}
 	};
 
 	return (
