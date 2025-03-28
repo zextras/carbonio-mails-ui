@@ -64,15 +64,25 @@ export const ParticipantsName = ({
 					<Text color="error">{t('label.draft_folder', '[DRAFT]')}</Text>
 				</Padding>
 			)}
-			<Tooltip label={participantsString} overflow="break-word" maxWidth="60vw">
+			{participantsString.length > 0 ? (
+				<Tooltip label={participantsString} overflow="break-word" maxWidth="60vw">
+					<Text
+						data-testid="participants-name-label"
+						color={textValues?.color}
+						weight={textValues?.weight}
+					>
+						{participantsString}
+					</Text>
+				</Tooltip>
+			) : (
 				<Text
-					data-testid="participants-name-label"
+					data-testid="participants-empty-label"
 					color={textValues?.color}
 					weight={textValues?.weight}
 				>
-					{participantsString}
+					{t('recipient.toField.missing', `[Empty 'To' Field]`)}
 				</Text>
-			</Tooltip>
+			)}
 		</Row>
 	);
 };
