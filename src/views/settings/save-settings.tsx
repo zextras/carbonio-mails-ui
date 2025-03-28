@@ -3,8 +3,8 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { ApiManager } from '@zextras/carbonio-mailbox-api-ui';
 import { Identity, updateAccount, updateSettings, xmlSoapFetch } from '@zextras/carbonio-shell-ui';
+import { ApiManager } from '@zextras/carbonio-ui-soap-lib';
 import { isArray, map } from 'lodash';
 
 import { MAIL_APP_ID } from '../../constants';
