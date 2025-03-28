@@ -141,19 +141,35 @@ const MessageContactList: FC<{
 			<Container mainAlignment="flex-start" crossAlignment="flex-start" width={badgeWidth}>
 				{!open && (
 					<Container width="calc(100% - 1.5rem)" crossAlignment="flex-start">
-						<Row height="fit" crossAlignment="flex-start" mainAlignment="flex-start">
+						<Row
+							height="fit"
+							crossAlignment="flex-start"
+							mainAlignment="flex-start"
+							data-testid="ContactNamesToRow"
+						>
 							{toContacts.length > 0 ? (
 								<ContactNames showOverflow contacts={toContacts} label={labelTo} />
 							) : (
 								<EmptyToField labelTo={labelTo} />
 							)}
 						</Row>
-						<Row height="fit" crossAlignment="flex-start" mainAlignment="flex-start">
+						<Row
+							height="fit"
+							crossAlignment="flex-start"
+							mainAlignment="flex-start"
+							data-testid="ContactNamesCcRow"
+						>
 							{ccContacts.length > 0 && (
 								<ContactNames showOverflow contacts={ccContacts} label={labelCc} />
 							)}
 						</Row>
-						<Row height="fit" width="100%" crossAlignment="flex-start" mainAlignment="flex-start">
+						<Row
+							height="fit"
+							width="100%"
+							crossAlignment="flex-start"
+							mainAlignment="flex-start"
+							data-testid="ContactNamesBccRow"
+						>
 							{bccContacts.length > 0 && (
 								<ContactNames showOverflow contacts={bccContacts} label={labelBcc} />
 							)}
