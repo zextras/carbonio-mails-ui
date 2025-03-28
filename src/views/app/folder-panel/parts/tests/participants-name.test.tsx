@@ -77,7 +77,7 @@ describe('ParticipantsName component', () => {
 		);
 	});
 
-	it('does not display reply-to partycipants', async () => {
+	it('does not display reply-to participants', async () => {
 		const generatedMessage = generateMessage({ id: '1', folderId: FOLDERS.DRAFTS });
 		const message = {
 			...generatedMessage,
