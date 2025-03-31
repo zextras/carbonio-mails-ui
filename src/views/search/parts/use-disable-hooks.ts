@@ -10,24 +10,16 @@ import { isEqual, sortBy } from 'lodash';
 
 import { UseDisabledPropType, UseSecondaryDisabledType } from '../../../types';
 
-const isQueryArraysAreEqual = (newQuery: QueryChip[], currentQuery: QueryChip[]): boolean => {
-	if (newQuery.length === 0 && currentQuery.length === 0) return true;
-	const sortedNewQuery = sortBy(newQuery.map((item) => item.label));
-	const sortedCurrentQuery = sortBy(currentQuery.map((item) => item.label));
-	return isEqual(sortedNewQuery, sortedCurrentQuery);
-};
-
 export const useDisabled = ({
 	queryToBe,
 	query,
 	isSharedFolderIncluded,
 	isSharedFolderIncludedTobe
-}: UseDisabledPropType): boolean =>
-	useMemo(
-		() =>
-			isSharedFolderIncluded !== isSharedFolderIncludedTobe
-				? false
-				: isQueryArraysAreEqual(queryToBe, query),
+}: UseDisabledPropType): boolean => 
+	useMemo(() => 
+		isSharedFolderIncluded !== isSharedFolderIncludedTobe 
+			? false 
+			: queryToBe.length === 0 && query.length === 0,
 		[isSharedFolderIncluded, isSharedFolderIncludedTobe, query, queryToBe]
 	);
 
