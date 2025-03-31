@@ -79,7 +79,7 @@ describe('getAttachmentsLink', () => {
 			attachments,
 			attachmentType: 'application/msword'
 		});
-		expect(result).toBe('http://localhost/service/preview/document/12345/doc1');
+		expect(result).toBe('http://localhost/service/preview/document/12345/doc1?lang_tag=en');
 		expect(includes).toHaveBeenCalledWith(
 			[
 				'text/csv',
