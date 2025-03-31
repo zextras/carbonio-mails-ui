@@ -425,7 +425,7 @@ export const getStatusOptions = (t: TFunction): StatusOption[] => [
 	{ label: t('settings.date', 'Date'), value: 'date' },
 	{ label: t('settings.body', 'Body'), value: 'body' },
 	{
-		label: t('label.attachment_one', 'Attachment'),
+		label: t('settings.filtersConditions.attachment', 'Attachment'),
 		value: 'attachment'
 	},
 	{
