@@ -9,8 +9,14 @@ import moment from 'moment';
 
 import type { MailMessagePart } from '../types';
 
-export const getTimeLabel = (date: number): string => {
+// retrieves locale from preferences, fallbacks to "en" if no locale found.
+export const getUserLocale = (): string => {
 	const { zimbraPrefLocale = 'en' } = getUserSettings().prefs;
+	return zimbraPrefLocale;
+};
+
+export const getTimeLabel = (date: number): string => {
+	const zimbraPrefLocale = getUserLocale();
 	const momentDate = moment(date).locale(zimbraPrefLocale);
 	if (momentDate.isSame(new Date(), 'day')) {
 		return momentDate.format('LT');

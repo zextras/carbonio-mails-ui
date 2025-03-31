@@ -7,6 +7,7 @@ import { includes, uniqBy } from 'lodash';
 import { DefaultTheme } from 'styled-components';
 
 import { calcColor, getFileExtension } from '../../../../../commons/utilities';
+import { getUserLocale } from '../../../../../commons/utils';
 import {
 	AttachmentPart,
 	EditorAttachmentFiles,
@@ -64,7 +65,8 @@ export const getAttachmentsLink = ({
 			attachmentType
 		)
 	) {
-		return `${getLocationOrigin()}/service/preview/document/${messageId}/${attachments.join(',')}`;
+		const locale = getUserLocale();
+		return `${getLocationOrigin()}/service/preview/document/${messageId}/${attachments.join(',')}?lang_tag=${locale}`;
 	}
 	return `${getLocationOrigin()}/service/home/~/?auth=co&id=${messageId}&part=${attachments.join(
 		','
