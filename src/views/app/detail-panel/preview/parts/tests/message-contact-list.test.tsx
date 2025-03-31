@@ -43,7 +43,7 @@ describe('MessageContactList', () => {
 		expect(toRow).toHaveTextContent(`label.to: recipient.toField.missing`);
 	});
 
-	it(`should render the To and Cc fields with contacts`, () => {
+	it(`should render the To and Cc fields with contacts`, async () => {
 		const message = generateMessage({
 			to: [toParticipant],
 			cc: [ccParticipant]
@@ -58,6 +58,24 @@ describe('MessageContactList', () => {
 		const ccRow = screen.getByTestId('ContactNamesCcRow');
 		expect(ccRow).toBeInTheDocument();
 		expect(ccRow).toHaveTextContent(`label.cc: ${ccParticipant.address}`);
+	});
+
+	it(`should collapse and remove Cc field`, async () => {
+		const message = generateMessage({
+			to: [toParticipant],
+			cc: [ccParticipant]
+		});
+
+		const { user } = setupTest(
+			<MessageContactList message={message} contactListExpandCB={jest.fn()} />
+		);
+
+		const contactsListToggleIcon = screen.getByTestId('contacs-list-toggle-icon');
+		await act(async () => {
+			await user.click(contactsListToggleIcon);
+		});
+
+		expect(screen.queryByTestId(`ContactNamesCcRow`)).not.toBeInTheDocument();
 	});
 
 	it(`should display contact list toggle icon with collapse`, async () => {
