@@ -5,9 +5,6 @@
  */
 import { useMemo } from 'react';
 
-import type { QueryChip } from '@zextras/carbonio-search-ui';
-import { isEqual, sortBy } from 'lodash';
-
 import { UseDisabledPropType, UseSecondaryDisabledType } from '../../../types';
 
 export const useDisabled = ({
@@ -15,11 +12,12 @@ export const useDisabled = ({
 	query,
 	isSharedFolderIncluded,
 	isSharedFolderIncludedTobe
-}: UseDisabledPropType): boolean => 
-	useMemo(() => 
-		isSharedFolderIncluded !== isSharedFolderIncludedTobe 
-			? false 
-			: queryToBe.length === 0 && query.length === 0,
+}: UseDisabledPropType): boolean =>
+	useMemo(
+		() =>
+			isSharedFolderIncluded !== isSharedFolderIncludedTobe
+				? false
+				: queryToBe.length === 0 && query.length === 0,
 		[isSharedFolderIncluded, isSharedFolderIncludedTobe, query, queryToBe]
 	);
 
