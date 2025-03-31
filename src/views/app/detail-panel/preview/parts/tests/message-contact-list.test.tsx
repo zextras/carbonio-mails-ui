@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React from 'react';
+import React, { act } from 'react';
 
 import { faker } from '@faker-js/faker';
 import { screen } from '@testing-library/react';
@@ -58,5 +58,21 @@ describe('MessageContactList', () => {
 		const ccRow = screen.getByTestId('ContactNamesCcRow');
 		expect(ccRow).toBeInTheDocument();
 		expect(ccRow).toHaveTextContent(`label.cc: ${ccParticipant.address}`);
+	});
+
+	it(`should display contact list toggle icon with collapse`, async () => {
+		const message = generateMessage({
+			cc: [ccParticipant]
+		});
+		const { user } = setupTest(
+			<MessageContactList message={message} contactListExpandCB={jest.fn()} />
+		);
+		const toggleDownIcon = await screen.findByTestId('icon: ChevronDown');
+		expect(toggleDownIcon).toBeInTheDocument();
+		await act(async () => {
+			await user.click(toggleDownIcon);
+		});
+		const toggleIcon = await screen.findByTestId('icon: ChevronUp');
+		expect(toggleIcon).toBeInTheDocument();
 	});
 });
