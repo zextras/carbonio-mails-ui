@@ -7,7 +7,7 @@ import React, { useMemo } from 'react';
 
 import { Padding, Row, Text, Tooltip } from '@zextras/carbonio-design-system';
 import { t, useUserAccount } from '@zextras/carbonio-shell-ui';
-import { filter, findIndex, reduce, sortBy, trimStart, uniqBy } from 'lodash';
+import { findIndex, reduce, trimStart, uniqBy } from 'lodash';
 
 import { FOLDERS } from '../../../../carbonio-ui-commons/constants/folders';
 import { ParticipantRole } from '../../../../carbonio-ui-commons/constants/participants';
@@ -15,13 +15,25 @@ import { participantToString } from '../../../../commons/utils';
 import { getFolderIdParts } from '../../../../helpers/folders';
 import { isConversation } from '../../../../helpers/messages';
 import { getConversationMessages } from '../../../../store/emails/store';
-import { NormalizedConversation, IncompleteMessage, TextReadValuesProps } from '../../../../types';
+import {
+	NormalizedConversation,
+	IncompleteMessage,
+	TextReadValuesProps,
+	Participant
+} from '../../../../types';
 
 export type ParticipantsNameProps = {
 	item: NormalizedConversation | IncompleteMessage;
 	isSearchModule?: boolean;
 	textValues?: TextReadValuesProps;
 };
+
+function removeReplyToParticipants(
+	participants: Array<Participant> | undefined
+): Array<Participant> {
+	if (!participants) return [];
+	return participants.filter((p) => p.type !== ParticipantRole.REPLY_TO);
+}
 
 export const ParticipantsName = ({
 	item,
@@ -33,18 +45,16 @@ export const ParticipantsName = ({
 	const parent = isConversation(item) ? getConversationMessages(item.id)[0].parent : item.parent;
 
 	const folderId = getFolderIdParts(parent).id;
+	const participantsWithoutReplyTo = removeReplyToParticipants(item.participants);
 
 	const participantsString = useMemo(() => {
-		const participants = sortBy(
-			filter(item.participants, (p) => {
-				if (isConversation(item)) return true;
-				if (folderId === FOLDERS.INBOX) return p.type === ParticipantRole.FROM; // inbox
-				if (folderId === FOLDERS.SENT && !isSearchModule) return p.type === ParticipantRole.TO; // sent
-				if (isSearchModule) return p.type === ParticipantRole.FROM; // search module
-				return true; // keep all
-			}),
-			'type'
-		);
+		const participants = participantsWithoutReplyTo.filter((p) => {
+			if (isConversation(item)) return true;
+			if (folderId === FOLDERS.INBOX) return p.type === ParticipantRole.FROM; // inbox
+			if (folderId === FOLDERS.SENT && !isSearchModule) return p.type === ParticipantRole.TO; // sent
+			if (isSearchModule) return p.type === ParticipantRole.FROM; // search module
+			return true; // keep all
+		});
 		const meIndex = findIndex(participants, ['address', account?.name]);
 		if (meIndex >= 0) {
 			// swap index me will be at first
@@ -58,7 +68,7 @@ export const ParticipantsName = ({
 			(acc, part) => trimStart(`${acc}, ${participantToString(part, [account])}`, ', '),
 			''
 		);
-	}, [account, folderId, isSearchModule, item]);
+	}, [account, folderId, isSearchModule, item, participantsWithoutReplyTo]);
 
 	return (
 		<Row wrap="nowrap" takeAvailableSpace mainAlignment="flex-start">
