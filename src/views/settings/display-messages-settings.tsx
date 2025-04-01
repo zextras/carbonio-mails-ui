@@ -7,7 +7,6 @@
 import React, { ChangeEvent, FC, useCallback, useMemo } from 'react';
 
 import {
-	Container,
 	Row,
 	FormSubSection,
 	Select,
@@ -17,11 +16,11 @@ import {
 	Radio,
 	SelectItem,
 	Icon,
-	Text
+	Text,
+	FormSection
 } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 
-import Heading from './components/settings-heading';
 import {
 	CheckNewMailOptions,
 	DisplayMailOptions,
@@ -83,16 +82,14 @@ export const DisplayMessagesSettings: FC<DisplayingMessagesSettingsProps> = ({
 	}, [unsendTimeOptions, updatedProps?.mails_snackbar_delay]);
 
 	return (
-		<FormSubSection id={sectionTitle.id} label={sectionTitle.label} padding={{ all: 'medium' }}>
-			<Row width="100%" padding={{ horizontal: 'small', vertical: 'small' }}>
+		<FormSection id={sectionTitle.id} label={sectionTitle.label} padding={{ all: 'medium' }}>
+			<FormSubSection gap={'0.5rem'}>
 				<Select
 					label={t('settings.label.conversation_ordering', 'Conversation ordering')}
 					items={conversationSortingSettings}
 					onChange={onChangeSorting}
 					defaultSelection={defaultSelectionSorting}
 				/>
-			</Row>
-			<Row width="100%" padding={{ horizontal: 'small', bottom: 'small' }}>
 				<Select
 					label={t('settings.label.check_new_mail', 'Check new e-mail')}
 					items={checkNewMailOptions}
@@ -106,15 +103,15 @@ export const DisplayMessagesSettings: FC<DisplayingMessagesSettingsProps> = ({
 						value: settingsObj.zimbraPrefMailPollingInterval
 					}}
 				/>
-			</Row>
-
-			<Row width="100%" padding={{ horizontal: 'small' }}>
 				<Select
 					label={t('settings.label.display_mail', 'Display mail')}
 					items={displayMailOptions}
 					onChange={(view: SelectItem[] | string | null): void =>
 						updateSettings({
-							target: { name: 'zimbraPrefMessageViewHtmlPreferred', value: (view as string) ?? '' }
+							target: {
+								name: 'zimbraPrefMessageViewHtmlPreferred',
+								value: (view as string) ?? ''
+							}
 						})
 					}
 					defaultSelection={{
@@ -122,7 +119,7 @@ export const DisplayMessagesSettings: FC<DisplayingMessagesSettingsProps> = ({
 						value: settingsObj.zimbraPrefMessageViewHtmlPreferred
 					}}
 				/>
-			</Row>
+			</FormSubSection>
 			{/* Will be Implemented in starting months of 2022 */}
 			{/* <Container crossAlignment="baseline">
 				<Heading title={t('settings.label.message_preview_title', 'Message preview and Images')} />
@@ -143,8 +140,7 @@ export const DisplayMessagesSettings: FC<DisplayingMessagesSettingsProps> = ({
 					}
 				/>
 			</Container> */}
-			<Container crossAlignment="baseline" padding={{ all: 'small' }}>
-				<Heading title={t('settings.label.message_selection', 'Message Selection')} />
+			<FormSubSection label={t('settings.label.message_selection', 'Message Selection')}>
 				<Select
 					items={messageSelectionOptions}
 					onChange={(view: SelectItem[] | string | null): void =>
@@ -157,10 +153,8 @@ export const DisplayMessagesSettings: FC<DisplayingMessagesSettingsProps> = ({
 						value: settingsObj.zimbraPrefMailSelectAfterDelete
 					}}
 				/>
-			</Container>
-
-			<Container crossAlignment="baseline" padding={{ all: 'small' }}>
-				<Heading title={t('settings.label.unsend_time', 'Set send time')} />
+			</FormSubSection>
+			<FormSubSection label={t('settings.label.unsend_time', 'Set send time')}>
 				<Select
 					label={t('settings.label.unsend_time', 'Set send time')}
 					items={unsendTimeOptions}
@@ -179,8 +173,7 @@ export const DisplayMessagesSettings: FC<DisplayingMessagesSettingsProps> = ({
 					}
 					defaultSelection={defaultUnsendTime}
 				/>
-			</Container>
-
+			</FormSubSection>
 			{/* <Container crossAlignment="baseline" padding={{ all: 'small' }}>
 				<Heading title={t('settings.label.message_color', 'Message Color')} />
 				<Checkbox
@@ -199,8 +192,7 @@ export const DisplayMessagesSettings: FC<DisplayingMessagesSettingsProps> = ({
 					}
 				/>
 			</Container> */}
-			<Container crossAlignment="baseline" padding={{ all: 'small' }}>
-				<Heading title={t('settings.label.visualization_options', 'Visualization Options')} />
+			<FormSubSection label={t('settings.label.visualization_options', 'Visualization Options')}>
 				<RadioGroup
 					style={{ width: '100%' }}
 					value={settingsObj.zimbraPrefGroupMailBy}
@@ -215,9 +207,8 @@ export const DisplayMessagesSettings: FC<DisplayingMessagesSettingsProps> = ({
 					/>
 					<Radio width="100%" label={t('label.by_message', 'By Message')} value="message" />
 				</RadioGroup>
-			</Container>
-			<Container crossAlignment="baseline" padding={{ all: 'small' }}>
-				<Heading title={t('settings.label.default_mail_search', 'Default Mail Search')} />
+			</FormSubSection>
+			<FormSubSection label={t('settings.label.default_mail_search', 'Default Mail Search')}>
 				<Input
 					label={t('settings.label.search_query', 'Default query')}
 					value={settingsObj.zimbraPrefMailInitialSearch}
@@ -230,10 +221,9 @@ export const DisplayMessagesSettings: FC<DisplayingMessagesSettingsProps> = ({
 						})
 					}
 				/>
-			</Container>
+			</FormSubSection>
 			{/* Read after N seconds option managed as a read immediately */}
-			<Container crossAlignment="baseline" padding={{ all: 'small' }}>
-				<Heading title={t('settings.label.mark_reading_panel', 'Mark as read')} />
+			<FormSubSection label={t('settings.label.mark_reading_panel', 'Mark as read')}>
 				<RadioGroup
 					style={{ width: '100%' }}
 					value={settingsObj.zimbraPrefMarkMsgRead === '-1' ? '-1' : '0'}
@@ -279,7 +269,7 @@ export const DisplayMessagesSettings: FC<DisplayingMessagesSettingsProps> = ({
 						value="-1"
 					/>
 				</RadioGroup>
-			</Container>
-		</FormSubSection>
+			</FormSubSection>
+		</FormSection>
 	);
 };

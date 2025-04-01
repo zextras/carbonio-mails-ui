@@ -6,7 +6,13 @@
 
 import React, { FC, useCallback, useMemo, useState } from 'react';
 
-import { Container, FormSubSection, RadioGroup, Radio } from '@zextras/carbonio-design-system';
+import {
+	Container,
+	FormSubSection,
+	RadioGroup,
+	Radio,
+	FormSection
+} from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
 
@@ -64,75 +70,81 @@ const ComposeMessage: FC<ComposeMessagesProps> = ({ settingsObj, updateSettings 
 		[settingsObj?.zimbraPrefComposeFormat]
 	);
 	return (
-		<FormSubSection id={sectionTitle.id} label={sectionTitle.label} padding={{ all: 'medium' }}>
-			<Container
-				crossAlignment="baseline"
-				padding={{ horizontal: 'small', bottom: 'small', top: 'medium' }}
-			>
-				<Container orientation="horizontal" crossAlignment="flex-start" mainAlignment="flex-start">
+		<FormSection id={sectionTitle.id} label={sectionTitle.label}>
+			<FormSubSection>
+				<Container
+					crossAlignment="baseline"
+					padding={{ horizontal: 'small', bottom: 'small', top: 'medium' }}
+				>
 					<Container
-						width="fit"
 						orientation="horizontal"
 						crossAlignment="flex-start"
 						mainAlignment="flex-start"
 					>
-						<Heading title={t('labels.compose_colin', 'Compose :')} size="small" />
-						<RadioGroup
-							style={{ width: '100%' }}
-							value={settingsObj?.zimbraPrefComposeFormat}
-							onChange={(newValue): void => {
-								updateSettings({
-									target: { name: 'zimbraPrefComposeFormat', value: newValue as string }
-								});
-							}}
+						<Container
+							width="fit"
+							orientation="horizontal"
+							crossAlignment="flex-start"
+							mainAlignment="flex-start"
 						>
-							<Radio width="100%" label={t('label.as_html', 'As HTML')} value="html" />
-							<Radio width="100%" label={t('label.as_text', 'As Text')} value="text" />
-						</RadioGroup>
-					</Container>
-					<Container
-						orientation="horizontal"
-						crossAlignment="flex-start"
-						mainAlignment="space-between"
-						padding={{ left: 'medium' }}
-						maxWidth="40vw"
-					>
-						<Container padding={{ right: 'small' }} minWidth="5.9375rem">
-							<CustomSelect
-								items={fontsOptions}
-								background="gray5"
-								disabled={isDisabled}
-								label={t('settings.font', 'Font')}
-								onChange={(value: string): void =>
+							<Heading title={t('labels.compose_colin', 'Compose :')} size="small" />
+							<RadioGroup
+								style={{ width: '100%' }}
+								value={settingsObj?.zimbraPrefComposeFormat}
+								onChange={(newValue): void => {
 									updateSettings({
-										target: { name: 'zimbraPrefHtmlEditorDefaultFontFamily', value }
-									})
-								}
-								defaultSelection={defaultSelectionFont}
-							/>
+										target: { name: 'zimbraPrefComposeFormat', value: newValue as string }
+									});
+								}}
+							>
+								<Radio width="100%" label={t('label.as_html', 'As HTML')} value="html" />
+								<Radio width="100%" label={t('label.as_text', 'As Text')} value="text" />
+							</RadioGroup>
 						</Container>
+						<Container
+							orientation="horizontal"
+							crossAlignment="flex-start"
+							mainAlignment="space-between"
+							padding={{ left: 'medium' }}
+							maxWidth="40vw"
+						>
+							<Container padding={{ right: 'small' }} minWidth="5.9375rem">
+								<CustomSelect
+									items={fontsOptions}
+									background="gray5"
+									disabled={isDisabled}
+									label={t('settings.font', 'Font')}
+									onChange={(value: string): void =>
+										updateSettings({
+											target: { name: 'zimbraPrefHtmlEditorDefaultFontFamily', value }
+										})
+									}
+									defaultSelection={defaultSelectionFont}
+								/>
+							</Container>
 
-						<Container padding={{ right: 'small' }} minWidth="6.25rem">
-							<CustomSelect
-								items={fontSizesOptionsArray}
-								background="gray5"
-								label={t('label.size', 'Size')}
-								defaultSelection={defaultSelectionFontSize}
-								disabled={isDisabled}
-								onChange={(size: string): void =>
-									updateSettings({
-										target: { name: 'zimbraPrefHtmlEditorDefaultFontSize', value: size }
-									})
-								}
-							/>
-						</Container>
-						<Container padding={{ right: 'small' }} crossAlignment="flex-start">
-							<ColorPicker color={color} onChange={onColorChange} disabled={isDisabled} />
+							<Container padding={{ right: 'small' }} minWidth="6.25rem">
+								<CustomSelect
+									items={fontSizesOptionsArray}
+									background="gray5"
+									label={t('label.size', 'Size')}
+									defaultSelection={defaultSelectionFontSize}
+									disabled={isDisabled}
+									onChange={(size: string): void =>
+										updateSettings({
+											target: { name: 'zimbraPrefHtmlEditorDefaultFontSize', value: size }
+										})
+									}
+								/>
+							</Container>
+							<Container padding={{ right: 'small' }} crossAlignment="flex-start">
+								<ColorPicker color={color} onChange={onColorChange} disabled={isDisabled} />
+							</Container>
 						</Container>
 					</Container>
 				</Container>
-			</Container>
-		</FormSubSection>
+			</FormSubSection>
+		</FormSection>
 	);
 };
 

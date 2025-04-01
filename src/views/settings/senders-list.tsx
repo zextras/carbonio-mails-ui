@@ -7,20 +7,20 @@ import React, { useMemo, useState, useCallback } from 'react';
 
 import {
 	Container,
-	Divider,
 	Padding,
 	Tooltip,
 	Button,
 	Row,
 	Input,
 	ListV2,
-	Text
+	Text,
+	FormSection,
+	FormSubSection
 } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import { filter } from 'lodash';
 
 import { SendersListItem } from './components/senders-list-item';
-import Heading from './components/settings-heading';
 import { allowedSendersSubSection, blockedSendersSubSection } from './subsections';
 import type { InputProps } from '../../types';
 import { isValidEmail } from '../search/parts/utils';
@@ -124,22 +124,14 @@ export const SendersList = ({
 	);
 
 	return (
-		<Container background="gray6" padding={{ horizontal: 'medium', bottom: 'large' }}>
-			<Container orientation="vertical" padding={{ all: 'medium', top: 'medium' }}>
-				<Container id={sectionTitle.id}>
-					<Heading title={sectionTitle.label} size="medium" />
-				</Container>
-				<Container crossAlignment="flex-start" padding={'none'}>
-					<Tooltip label={message} overflowTooltip>
-						<Text size="extrasmall">{message}</Text>
-					</Tooltip>
-				</Container>
-			</Container>
-			<Divider />
-			<Container orientation="vertical">
+		<FormSection id={sectionTitle.id} label={sectionTitle.label}>
+			<FormSubSection>
+				<Tooltip label={message} overflowTooltip>
+					<Text>{message}</Text>
+				</Tooltip>
 				<Container
-					padding={{ top: 'medium', horizontal: 'medium', bottom: 'extrasmall' }}
 					orientation="horizontal"
+					height={'fit'}
 					mainAlignment="flex-start"
 					crossAlignment="flex-start"
 				>
@@ -156,16 +148,16 @@ export const SendersList = ({
 							disabled={!isInsertEnabled}
 						/>
 					</Row>
-					<Padding left="medium" top="extrasmall">
-						<Tooltip label={warningMessage} disabled={isAddEnabled} maxWidth="100%">
+					<Tooltip label={warningMessage} disabled={isAddEnabled} maxWidth="100%">
+						<Padding left="medium" top="extrasmall">
 							<Button
 								label={t('label.add', 'Add')}
 								type="outlined"
 								onClick={onAdd}
 								disabled={!isAddEnabled}
 							/>
-						</Tooltip>
-					</Padding>
+						</Padding>
+					</Tooltip>
 				</Container>
 				{showConflictText ? (
 					<Container
@@ -180,41 +172,41 @@ export const SendersList = ({
 						</Text>
 					</Container>
 				) : null}
-			</Container>
-			<Container
-				padding={{ horizontal: 'medium', bottom: 'small' }}
-				orientation="vertical"
-				mainAlignment="flex-start"
-				crossAlignment="flex-start"
-			>
-				<ListV2 data-testid={'senders-list'}>
-					{sendersList.map((address, idx) => (
-						<SendersListItem key={idx} value={address} onRemove={onRemove} />
-					))}
-				</ListV2>
-
-				{sendersList.length === 0 ? (
-					<Container padding={{ top: '1.9rem' }}>
-						<Text color="secondary">
-							{t('message.senderslist_empty', 'No addresses have been included in the list yet')}
-						</Text>
-					</Container>
-				) : null}
 				<Container
+					orientation="vertical"
 					mainAlignment="flex-start"
 					crossAlignment="flex-start"
-					padding={{ top: 'extralarge', left: 'small' }}
+					height={'fit'}
 				>
-					<Text size="small">
-						{t('label.senderslist_numentries', {
-							count: itemsCount,
-							max: maxItems,
-							defaultValue_one: '{{count}} of {{max}}',
-							defaultValue_other: '{{count}} of {{max}}'
-						})}
-					</Text>
+					<ListV2 data-testid={'senders-list'}>
+						{sendersList.map((address, idx) => (
+							<SendersListItem key={idx} value={address} onRemove={onRemove} />
+						))}
+					</ListV2>
+
+					{sendersList.length === 0 ? (
+						<Container>
+							<Text color="secondary">
+								{t('message.senderslist_empty', 'No addresses have been included in the list yet')}
+							</Text>
+						</Container>
+					) : null}
+					<Container
+						mainAlignment="flex-start"
+						crossAlignment="flex-start"
+						padding={{ top: 'extralarge', left: 'small' }}
+					>
+						<Text size="small">
+							{t('label.senderslist_numentries', {
+								count: itemsCount,
+								max: maxItems,
+								defaultValue_one: '{{count}} of {{max}}',
+								defaultValue_other: '{{count}} of {{max}}'
+							})}
+						</Text>
+					</Container>
 				</Container>
-			</Container>
-		</Container>
+			</FormSubSection>
+		</FormSection>
 	);
 };
