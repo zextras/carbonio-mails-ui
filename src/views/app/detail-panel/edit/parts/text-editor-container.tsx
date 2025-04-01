@@ -6,6 +6,7 @@
 
 import React, { FC, useCallback, useState } from 'react';
 
+import { v4 as uuid } from 'uuid';
 import { Container } from '@zextras/carbonio-design-system';
 import { useIntegratedComponent, useUserSettings } from '@zextras/carbonio-shell-ui';
 import type { TinyMCE } from 'tinymce/tinymce';
@@ -40,6 +41,7 @@ import {
 import { composeAttachmentDownloadUrl } from '../../../../../helpers/attachments';
 import produce from 'immer';
 import { normalizeMailMessageFromSoap } from '../../../../../normalizations/normalize-message';
+import { simpleUploadAttachmentApi } from '../../../../../api/simple-upload-attachments-api';
 
 type ProgressFn = (percent: number) => void;
 
@@ -105,19 +107,19 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 				const file = blobToFile(blobInfo);
 
 				// upload api call
-				const { uploadId } = uploadAttachmentApi(file);
+				const { aid } = await simpleUploadAttachmentApi(file);
 				progress(10);
 
 				// prepare editor for save draft
-				const contentId = `${uploadId}@carbonio`;
+				const contentId = `${aid}@carbonio`;
 
 				const unsavedAttachment: UnsavedAttachment = {
 					filename: file.name,
 					contentType: file.type,
 					size: file.size,
 					contentId,
-					aid: uploadId,
-					uploadId: contentId,
+					aid,
+					uploadId: uuid(),
 					isInline: true,
 					uploadStatus: {
 						status: 'running' as AttachmentUploadProcessStatus['status'],
@@ -152,25 +154,27 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 				useEditorsStore.getState().setSavedAttachments(editorId, savedAttachments);
 
 				// await saveDraftEmailStoreAction({ editor: editorWithUnsavedAttachments });
-				const newEditor = getEditor({ id: editorId });
+				const newEditor = getEditor({ id: editorId }) as MailsEditorV2;
 				console.log('@@ newEditor', { newEditor });
 				const savedInlineAttachment = getSavedInlineAttachmentByContentId(
 					contentId,
 					newEditor.savedAttachments
 				);
 
-				// const inlineInfo = {
-				// 	contentId: savedInlineAttachment.contentId,
-				// 	cidUrl: savedInlineAttachment.contentId
-				// 		? (composeCidUrlFromContentId(savedInlineAttachment.contentId) ?? undefined)
-				// 		: undefined,
-				// 	downloadServiceUrl: composeAttachmentDownloadUrl(savedInlineAttachment)
-				// };
+				const inlineInfo = {
+					contentId: savedInlineAttachment.contentId,
+					cidUrl: savedInlineAttachment.contentId
+						? (composeCidUrlFromContentId(savedInlineAttachment.contentId) ?? undefined)
+						: undefined,
+					downloadServiceUrl: composeAttachmentDownloadUrl(savedInlineAttachment)
+				};
 
 				// const editornew = await saveDraftEmailStoreAction({ editor });
 				// console.log('@@editornew', { editornew });
 				progress(99);
-				return `cid:${savedInlineAttachment?.contentId}`;
+
+				tinymce?.activeEditor?.insertContent(img);
+				return inlineInfo.downloadServiceUrl;
 			} catch (error) {
 				console.error('Upload failed:', error);
 				throw error; // Reject the Promise
