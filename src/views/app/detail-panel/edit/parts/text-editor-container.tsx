@@ -157,21 +157,16 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 				editor.setProgressState(true);
 				uploadImage(file)
 					.then((uploadImageResult: UploadImageResult) => {
-						if (uploadImageResult && uploadImageResult.cidUrl) {
-							editor.insertContent(
-								`<img alt="${uploadImageResult.fileName}" src="${uploadImageResult.downloadServiceUrl}" 
-                          data-mce-src="${uploadImageResult.cidUrl}" />`
-							);
-						} else {
+						if (!(uploadImageResult && uploadImageResult.cidUrl)) {
 							throw new Error('No CID URL found in upload response');
 						}
+						editor.insertContent(
+							`<img alt="${uploadImageResult.fileName}" src="${uploadImageResult.downloadServiceUrl}" 
+                          data-mce-src="${uploadImageResult.cidUrl}" />`
+						);
 					})
-					.catch((error) => {
-						console.error('Image Upload error:', error);
-					})
-					.finally(() => {
-						editor.setProgressState(false);
-					});
+					.catch((error) => console.error('Image Upload error:', error))
+					.finally(() => editor.setProgressState(false));
 			});
 	};
 
