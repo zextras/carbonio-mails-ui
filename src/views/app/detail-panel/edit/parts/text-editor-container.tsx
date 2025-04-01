@@ -29,7 +29,7 @@ import {
 import { getSavedInlineAttachmentByContentId } from '../../../../../store/editor/editor-utils';
 import { saveDraftEmailStoreAction } from '../../../../../store/emails/actions/save-draft-action';
 import { MailsEditorV2, UnsavedAttachment } from '../../../../../types';
-import { getFontSizesOptions, getFonts } from '../../../../settings/components/utils';
+import { getFonts, getFontSizesOptions } from '../../../../settings/components/utils';
 
 export type TextEditorContent = { plainText: string; richText: string };
 
@@ -39,6 +39,13 @@ export type TextEditorContainerProps = {
 	onFilesSelected: ({ editor, files }: { editor: TinyMCE; files: FileList }) => void;
 	minHeight: number;
 	disabled: boolean;
+};
+
+type UploadImageResult = {
+	downloadServiceUrl: string;
+	cidUrl: string | undefined;
+	contentId: string;
+	fileName: string;
 };
 
 export const TextEditorContainer: FC<TextEditorContainerProps> = ({
@@ -73,11 +80,7 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 		(font: { label: string; value: string }) => `${font.label}=${font.value};`
 	);
 
-	async function uploadImage(file: File): Promise<{
-		downloadServiceUrl: string;
-		cidUrl: string | undefined;
-		contentId: string;
-	}> {
+	async function uploadImage(file: File): Promise<UploadImageResult> {
 		const { aid } = await simpleUploadAttachmentApi(file);
 		const contentId = `${aid}@carbonio`;
 
@@ -104,14 +107,14 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 		};
 
 		// Save draft and wait for response
-		const response = await saveDraftEmailStoreAction({ editor: updatedEditor });
+		const saveDraftResponse = await saveDraftEmailStoreAction({ editor: updatedEditor });
 
-		if (!response?.m?.[0]) {
-			throw new Error('Error uploading image: No response data');
+		if (!saveDraftResponse?.m?.[0]) {
+			throw new Error('No message found in save draft response');
 		}
 
 		// Process the response
-		const mailMessage = normalizeMailMessageFromSoap(response.m[0], true);
+		const mailMessage = normalizeMailMessageFromSoap(saveDraftResponse.m[0], true);
 		const editorsStore = useEditorsStore.getState();
 
 		// Update store
@@ -137,7 +140,8 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 		return {
 			contentId: savedInlineAttachment.contentId,
 			cidUrl: composeCidUrlFromContentId(savedInlineAttachment.contentId) ?? undefined,
-			downloadServiceUrl: composeAttachmentDownloadUrl(savedInlineAttachment)
+			downloadServiceUrl: composeAttachmentDownloadUrl(savedInlineAttachment),
+			fileName: file.name
 		};
 	}
 
@@ -148,17 +152,26 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 		Array.from(clipboardData.items)
 			.filter((item) => item.type.includes('image'))
 			.forEach((item) => {
-				event.preventDefault();
 				const file = item.getAsFile();
-				if (file) {
-					uploadImage(file)
-						.then((uploadInfo) => {
+				if (!file) return;
+				editor.setProgressState(true);
+				uploadImage(file)
+					.then((uploadImageResult: UploadImageResult) => {
+						if (uploadImageResult && uploadImageResult.cidUrl) {
 							editor.insertContent(
-								`<img src="${uploadInfo.downloadServiceUrl}" data-mce-src="${uploadInfo.cidUrl}" />`
+								`<img alt="${uploadImageResult.fileName}" src="${uploadImageResult.downloadServiceUrl}" 
+                          data-mce-src="${uploadImageResult.cidUrl}" />`
 							);
-						})
-						.catch(console.error);
-				}
+						} else {
+							throw new Error('No CID URL found in upload response');
+						}
+					})
+					.catch((error) => {
+						console.error('Image Upload error:', error);
+					})
+					.finally(() => {
+						editor.setProgressState(false);
+					});
 			});
 	};
 
