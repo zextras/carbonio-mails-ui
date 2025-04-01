@@ -14,3 +14,16 @@ export const buildArrayFromFileList = (filesList: FileList): Array<File> => {
 
 	return files;
 };
+
+interface BlobInfo {
+	id: () => string;
+	name: () => string;
+	filename: () => string;
+	blob: () => Blob;
+	base64: () => string;
+	blobUri: () => string;
+	uri: () => string | undefined;
+}
+export function blobToFile(blob: BlobInfo): File {
+	return new File([blob.blob()], blob.filename(), { type: blob.blob().type });
+}
