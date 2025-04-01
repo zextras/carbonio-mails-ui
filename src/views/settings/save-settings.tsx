@@ -119,7 +119,7 @@ export const saveSettings = (
 		}
 
 		if (mods.prefs?.zimbraPrefMailPollingInterval !== undefined) {
-			ApiManager.getApiManager().setPollingInterval(
+			ApiManager.getApiManager().setPollingPreference(
 				mods.prefs?.zimbraPrefMailPollingInterval as string
 			);
 		}
