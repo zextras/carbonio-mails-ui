@@ -13,7 +13,7 @@ import type { Editor, TinyMCE } from 'tinymce/tinymce';
 import { v4 as uuid } from 'uuid';
 
 import * as StyledComp from './edit-view-styled-components';
-import { uploadFileApi } from '../../../../../api/simple-upload-attachments-api';
+import { uploadFileApi } from '../../../../../api/upload-file-api';
 import { plainTextToHTML } from '../../../../../commons/utils';
 import { composeAttachmentDownloadUrl } from '../../../../../helpers/attachments';
 import { normalizeMailMessageFromSoap } from '../../../../../normalizations/normalize-message';
