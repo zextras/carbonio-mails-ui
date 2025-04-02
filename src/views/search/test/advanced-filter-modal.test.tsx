@@ -68,6 +68,24 @@ describe('Advanced filter modal', () => {
 
 		expect(actionButton).toBeEnabled();
 	});
+	it('search button should be enabled if query is not empty', async () => {
+		const properties: AdvancedFilterModalProps = {
+			open: true,
+			onClose: jest.fn(),
+			query: [{
+				id: 'query1',
+				label: 'keywords',
+				value: 'keyword'
+			}],
+			updateQuery: jest.fn(),
+			setIsSharedFolderIncluded: jest.fn(),
+			isSharedFolderIncluded: false
+		};
+		setupTest(<AdvancedFilterModal {...properties} />);
+		const actionButton = screen.getByRole('button', { name: /action\.search/i });
+
+		expect(actionButton).toBeEnabled();
+	});
 	it('should add "received from" to query with value and label including "from:" after adding a value in the input', async () => {
 		const mockUpdateQuery = jest.fn();
 		const { user } = setupTest(

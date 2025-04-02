@@ -9,8 +9,9 @@ import type { QueryChip } from '@zextras/carbonio-search-ui';
 
 import { UseDisabledPropType, UseSecondaryDisabledType } from '../../../types';
 
-const isQueryArraysAreEqual = (newQuery: QueryChip[], currentQuery: QueryChip[]): boolean =>
+const areQueryArraysEmpty = (newQuery: QueryChip[], currentQuery: QueryChip[]): boolean =>
 	!!(newQuery.length === 0 && currentQuery.length === 0);
+
 export const useDisabled = ({
 	queryToBe,
 	query,
@@ -21,7 +22,7 @@ export const useDisabled = ({
 		() =>
 			isSharedFolderIncluded !== isSharedFolderIncludedTobe
 				? false
-				: isQueryArraysAreEqual(queryToBe, query),
+				: areQueryArraysEmpty(queryToBe, query),
 		[isSharedFolderIncluded, isSharedFolderIncludedTobe, query, queryToBe]
 	);
 
