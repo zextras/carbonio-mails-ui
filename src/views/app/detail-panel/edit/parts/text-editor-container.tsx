@@ -10,26 +10,12 @@ import { Container } from '@zextras/carbonio-design-system';
 import { useIntegratedComponent, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { noop } from 'lodash';
 import type { Editor, TinyMCE } from 'tinymce/tinymce';
-import { v4 as uuid } from 'uuid';
 
 import * as StyledComp from './edit-view-styled-components';
-import { uploadFileApi } from '../../../../../api/upload-file-api';
+import { handleEditorPaste } from './editor-paste-handler';
 import { plainTextToHTML } from '../../../../../commons/utils';
-import { composeAttachmentDownloadUrl } from '../../../../../helpers/attachments';
-import { normalizeMailMessageFromSoap } from '../../../../../normalizations/normalize-message';
-import {
-	getEditor,
-	useEditorIsRichText,
-	useEditorsStore,
-	useEditorText
-} from '../../../../../store/editor';
-import {
-	buildSavedAttachments,
-	composeCidUrlFromContentId
-} from '../../../../../store/editor/editor-transformations';
-import { getSavedInlineAttachmentByContentId } from '../../../../../store/editor/editor-utils';
-import { saveDraftEmailStoreAction } from '../../../../../store/emails/actions/save-draft-action';
-import { MailsEditorV2, UnsavedAttachment } from '../../../../../types';
+import { useEditorIsRichText, useEditorText } from '../../../../../store/editor';
+import { MailsEditorV2 } from '../../../../../types';
 import { getFonts, getFontSizesOptions } from '../../../../settings/components/utils';
 
 export type TextEditorContent = { plainText: string; richText: string };
@@ -40,13 +26,6 @@ export type TextEditorContainerProps = {
 	onFilesSelected: ({ editor, files }: { editor: TinyMCE; files: FileList }) => void;
 	minHeight: number;
 	disabled: boolean;
-};
-
-type UploadImageResult = {
-	downloadServiceUrl: string;
-	cidUrl: string | undefined;
-	contentId: string;
-	fileName: string;
 };
 
 export const TextEditorContainer: FC<TextEditorContainerProps> = ({
@@ -81,96 +60,6 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 		(font: { label: string; value: string }) => `${font.label}=${font.value};`
 	);
 
-	async function uploadImage(file: File): Promise<UploadImageResult> {
-		const { aid } = await uploadFileApi(file);
-		const contentId = `${aid}@carbonio`;
-
-		// Create unsaved attachment
-		const unsavedAttachment: UnsavedAttachment = {
-			filename: file.name,
-			contentType: file.type,
-			size: file.size,
-			contentId,
-			aid,
-			uploadId: uuid(),
-			isInline: true,
-			uploadStatus: {
-				status: 'running',
-				progress: 0
-			}
-		};
-
-		// Update editor state
-		const editor = getEditor({ id: editorId }) as MailsEditorV2;
-		const updatedEditor: MailsEditorV2 = {
-			...editor,
-			unsavedAttachments: [...editor.unsavedAttachments, unsavedAttachment]
-		};
-
-		// Save draft and wait for response
-		const saveDraftResponse = await saveDraftEmailStoreAction({ editor: updatedEditor });
-
-		if (!saveDraftResponse?.m?.[0]) {
-			throw new Error('No message found in save draft response');
-		}
-
-		// Process the response
-		const mailMessage = normalizeMailMessageFromSoap(saveDraftResponse.m[0], true);
-		const editorsStore = useEditorsStore.getState();
-
-		// Update store
-		editorsStore.setDid(editorId, mailMessage.id);
-		editorsStore.setSize(editorId, mailMessage.size);
-		editorsStore.removeUnsavedAttachments(editorId);
-
-		// Handle saved attachments
-		const savedAttachments = buildSavedAttachments(mailMessage);
-		editorsStore.setSavedAttachments(editorId, savedAttachments);
-
-		// Find the inline attachment
-		const newEditor = getEditor({ id: editorId }) as MailsEditorV2;
-		const savedInlineAttachment = getSavedInlineAttachmentByContentId(
-			contentId,
-			newEditor.savedAttachments
-		);
-
-		if (!savedInlineAttachment?.contentId) {
-			throw new Error('Inline attachment not found after upload');
-		}
-
-		return {
-			contentId: savedInlineAttachment.contentId,
-			cidUrl: composeCidUrlFromContentId(savedInlineAttachment.contentId) ?? undefined,
-			downloadServiceUrl: composeAttachmentDownloadUrl(savedInlineAttachment),
-			fileName: file.name
-		};
-	}
-
-	const handleEditorPaste = (editor: Editor, event: ClipboardEvent): void => {
-		const { clipboardData } = event;
-		if (!clipboardData) return;
-
-		Array.from(clipboardData.items)
-			.filter((item) => item.type.includes('image'))
-			.forEach((item) => {
-				const file = item.getAsFile();
-				if (!file) return;
-				editor.setProgressState(true);
-				uploadImage(file)
-					.then((uploadImageResult: UploadImageResult) => {
-						if (!(uploadImageResult && uploadImageResult.cidUrl)) {
-							throw new Error('No CID URL found in upload response');
-						}
-						editor.insertContent(
-							`<img alt="${uploadImageResult.fileName}" src="${uploadImageResult.downloadServiceUrl}" 
-                          data-mce-src="${uploadImageResult.cidUrl}" />`
-						);
-					})
-					.catch((error) => console.error('Image Upload error:', error))
-					.finally(() => editor.setProgressState(false));
-			});
-	};
-
 	const composerCustomOptions = {
 		toolbar_sticky: true,
 		ui_mode: 'split',
@@ -192,7 +81,7 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 		paste_data_images: false,
 		init_instance_callback: (editor: Editor): (() => void) => {
 			if (!editor) return noop;
-			editor.on('paste', (event) => handleEditorPaste(editor, event));
+			editor.on('paste', (event) => handleEditorPaste(editor, editorId, event));
 			const mutationObserver = new MutationObserver(() => {
 				editor.dispatch('ResizeWindow');
 			});
