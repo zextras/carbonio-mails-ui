@@ -6,17 +6,11 @@
 import { useMemo } from 'react';
 
 import type { QueryChip } from '@zextras/carbonio-search-ui';
-import { isEqual, sortBy } from 'lodash';
 
 import { UseDisabledPropType, UseSecondaryDisabledType } from '../../../types';
 
-const isQueryArraysAreEqual = (newQuery: QueryChip[], currentQuery: QueryChip[]): boolean => {
-	if (newQuery.length === 0 && currentQuery.length === 0) return true;
-	const sortedNewQuery = sortBy(newQuery.map((item) => item.label));
-	const sortedCurrentQuery = sortBy(currentQuery.map((item) => item.label));
-	return isEqual(sortedNewQuery, sortedCurrentQuery);
-};
-
+const isQueryArraysAreEqual = (newQuery: QueryChip[], currentQuery: QueryChip[]): boolean =>
+	!!(newQuery.length === 0 && currentQuery.length === 0);
 export const useDisabled = ({
 	queryToBe,
 	query,

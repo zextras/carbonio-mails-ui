@@ -192,7 +192,15 @@ export function useRunSearch({
 	useEffect(() => {
 		const controller = new AbortController();
 		const { signal } = controller;
+		console.log('searching for====>>>');
+		// , {
+		// 	previousQuery,
+		// 	previousQueryCurrent: previousQuery.current,
+		// 	queryToString,
+		// 	query
+		// });
 		if (previousQuery.current !== queryToString && query.length > 0) {
+			console.log('searching for=== IN =>>>');
 			firstSearchQueryCallback(queryToString, signal);
 			setFilterCount(query.length);
 			previousQuery.current = queryToString;
@@ -201,7 +209,7 @@ export function useRunSearch({
 			controller.abort();
 			previousQuery.current = initialQueryToString;
 		};
-	}, [firstSearchQueryCallback, initialQueryToString, query.length, queryToString]);
+	}, [firstSearchQueryCallback, initialQueryToString, query, queryToString]);
 
 	return {
 		searchDisabled,
