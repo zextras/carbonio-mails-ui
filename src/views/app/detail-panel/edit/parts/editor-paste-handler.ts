@@ -102,7 +102,7 @@ const processNextUpload = async (editor: Editor, editorId: string): Promise<void
 	const file = uploadQueue.shift();
 	if (file) {
 		const uploadImageResult = await uploadImage(file, editorId);
-		if (!uploadImageResult || !uploadImageResult.cidUrl) {
+		if (!uploadImageResult?.cidUrl) {
 			throw new Error('No CID URL found in upload response');
 		}
 
