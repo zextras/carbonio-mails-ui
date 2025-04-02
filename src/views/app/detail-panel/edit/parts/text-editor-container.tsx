@@ -8,11 +8,12 @@ import React, { FC, useCallback, useState } from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
 import { useIntegratedComponent, useUserSettings } from '@zextras/carbonio-shell-ui';
+import { noop } from 'lodash';
 import type { Editor, TinyMCE } from 'tinymce/tinymce';
 import { v4 as uuid } from 'uuid';
 
 import * as StyledComp from './edit-view-styled-components';
-import { simpleUploadAttachmentApi } from '../../../../../api/simple-upload-attachments-api';
+import { uploadFileApi } from '../../../../../api/simple-upload-attachments-api';
 import { plainTextToHTML } from '../../../../../commons/utils';
 import { composeAttachmentDownloadUrl } from '../../../../../helpers/attachments';
 import { normalizeMailMessageFromSoap } from '../../../../../normalizations/normalize-message';
@@ -81,7 +82,7 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 	);
 
 	async function uploadImage(file: File): Promise<UploadImageResult> {
-		const { aid } = await simpleUploadAttachmentApi(file);
+		const { aid } = await uploadFileApi(file);
 		const contentId = `${aid}@carbonio`;
 
 		// Create unsaved attachment
@@ -190,7 +191,7 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 		].join(' | '),
 		paste_data_images: false,
 		init_instance_callback: (editor: Editor): (() => void) => {
-			if (!editor) return () => {};
+			if (!editor) return noop;
 			editor.on('paste', (event) => handleEditorPaste(editor, event));
 			const mutationObserver = new MutationObserver(() => {
 				editor.dispatch('ResizeWindow');

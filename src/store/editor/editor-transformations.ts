@@ -169,7 +169,6 @@ export const getMP = (editor: MailsEditorV2): SoapEmailMessagePartObj[] => {
 	};
 
 	const unsavedInlineAttachment = filterUnsavedInlineAttachment(editor.unsavedAttachments);
-	console.log('@@', { unsavedInlineAttachment });
 	const savedInlineAttachment = filterSavedInlineAttachment(editor.savedAttachments);
 
 	const contentWithCidUrl = {
@@ -374,7 +373,6 @@ const createSoapMessageRequestFromEditor = (
 	editor: MailsEditorV2,
 	command: 'sendmsg' | 'savedraft'
 ): SoapDraftMessageObj => {
-	console.log('@@saveDraftEditor', { editor });
 	const participants: Array<Participant> = [
 		...editor.recipients.to,
 		...editor.recipients.cc,

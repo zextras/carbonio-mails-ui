@@ -36,16 +36,12 @@ export type UploadAttachmentResult = {
 };
 
 /**
- * Uploads a single file and provides a set of callbacks to be notified upon
- * progress, completion or failure of the upload
+ * Uploads a single file to the server and returns the attachment ID.
  *
- * @param file
- * @param options
- *
- * @return An object containing the given uploaded file, the assigned uploadId and
- * the AbortController to cancel the upload connection
+ * @param file - The file to be uploaded.
+ * @returns A promise that resolves to an object containing the attachment ID (`aid`).
  */
-export const simpleUploadAttachmentApi = async (file: File): Promise<{ aid: string }> => {
+export const uploadFileApi = async (file: File): Promise<{ aid: string }> => {
 	const response = await axios.post('/service/upload?fmt=extended,raw&lbfums', file, {
 		headers: {
 			'Cache-Control': 'no-cache',
