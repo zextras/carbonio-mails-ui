@@ -40,7 +40,28 @@ describe('handleEditorPaste', () => {
 		const editor = createMockEditor();
 		const event = {
 			...defaultClipboardEvent,
-			clipboardData: { items: [{ type: 'text/plain', getAsFile: jest.fn(() => null) }] }
+			clipboardData: {
+				items: [{ type: 'text/plain', getAsFile: jest.fn(() => null) }],
+				getData: jest.fn(() => null)
+			}
+		} as unknown as ClipboardEvent;
+		handleEditorPaste(editor, 'editor-1', event);
+		expect(event.preventDefault).not.toHaveBeenCalled();
+	});
+
+	it('should return early if pasted data is a image link', () => {
+		const editor = createMockEditor();
+		const event = {
+			...defaultClipboardEvent,
+			clipboardData: {
+				items: [
+					{
+						type: 'text/plain',
+						getAsFile: jest.fn(() => null)
+					}
+				],
+				getData: jest.fn(() => 'http://example.com/image.png')
+			}
 		} as unknown as ClipboardEvent;
 		handleEditorPaste(editor, 'editor-1', event);
 		expect(event.preventDefault).not.toHaveBeenCalled();

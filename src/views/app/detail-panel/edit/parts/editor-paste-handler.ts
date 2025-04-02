@@ -101,7 +101,9 @@ const processNextUpload = async (editor: Editor, editorId: string): Promise<void
 
 	const file = uploadQueue.shift();
 	if (file) {
-		const uploadImageResult = await uploadImage(file, editorId);
+		const uploadImageResult = await uploadImage(file, editorId).finally(() => {
+			editor.setProgressState(false);
+		});
 		if (!uploadImageResult?.cidUrl) {
 			throw new Error('No CID URL found in upload response');
 		}
@@ -120,6 +122,29 @@ const processNextUpload = async (editor: Editor, editorId: string): Promise<void
 	}
 };
 
+const IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'png', 'gif', 'svg', 'webp'] as const;
+const IMAGE_URL_REGEX = new RegExp(
+	`^https?:\\/\\/.+\\.(${IMAGE_EXTENSIONS.join('|')})(\\?.+)?$`,
+	'i'
+);
+
+const IMG_TAG_REGEX = /<img[^>]+src=["'](http[^"']+)["']/i;
+
+function isImageUrl(text: string): boolean {
+	return IMAGE_URL_REGEX.test(text.trim());
+}
+
+function containsExternalImages(html: string): boolean {
+	return IMG_TAG_REGEX.test(html);
+}
+
+function getImageFilesFromClipboard(clipboardData: DataTransfer): File[] {
+	return Array.from(clipboardData.items)
+		.filter((item) => item.type.includes('image'))
+		.map((item) => item.getAsFile())
+		.filter((file): file is File => file !== null);
+}
+
 export const handleEditorPaste = (
 	editor: Editor,
 	editorId: string,
@@ -128,14 +153,25 @@ export const handleEditorPaste = (
 	const { clipboardData } = event;
 	if (!clipboardData) return;
 
-	const validImages = Array.from(clipboardData.items)
-		.filter((item) => item.type.includes('image'))
-		.map((item) => item.getAsFile())
-		.filter((file): file is File => file !== null);
+	// Check for external image URLs in plain text
+	const pastedText = clipboardData.getData('text/plain');
+	if (pastedText && isImageUrl(pastedText)) {
+		return;
+	}
 
-	if (validImages.length === 0) return;
+	// Check for external images in HTML content
+	const html = clipboardData.getData('text/html');
+	if (html && containsExternalImages(html)) {
+		return;
+	}
+
+	// Process local image files
+	const imageFiles = getImageFilesFromClipboard(clipboardData);
+	if (imageFiles.length === 0) return;
+
 	event.preventDefault();
-	uploadQueue.push(...validImages);
+	uploadQueue.push(...imageFiles);
+
 	if (!isUploading) {
 		processNextUpload(editor, editorId);
 	}
