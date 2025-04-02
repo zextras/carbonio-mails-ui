@@ -192,15 +192,7 @@ export function useRunSearch({
 	useEffect(() => {
 		const controller = new AbortController();
 		const { signal } = controller;
-		console.log('searching for====>>>');
-		// , {
-		// 	previousQuery,
-		// 	previousQueryCurrent: previousQuery.current,
-		// 	queryToString,
-		// 	query
-		// });
 		if (previousQuery.current !== queryToString && query.length > 0) {
-			console.log('searching for=== IN =>>>');
 			firstSearchQueryCallback(queryToString, signal);
 			setFilterCount(query.length);
 			previousQuery.current = queryToString;
