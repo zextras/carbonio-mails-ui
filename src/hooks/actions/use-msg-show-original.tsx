@@ -13,7 +13,10 @@ import { isDraft, isTrash } from '../../helpers/folders';
 import { ActionFn, UIActionDescriptor } from '../../types';
 
 export const useMsgShowOriginalFn = (messageId: string, folderId: string): ActionFn => {
-	const canExecute = useCallback((): boolean => true, []);
+	const canExecute = useCallback(
+		(): boolean => !isDraft(folderId) && !isTrash(folderId),
+		[folderId]
+	);
 
 	const execute = useCallback((): void => {
 		if (canExecute()) {
