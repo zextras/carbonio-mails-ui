@@ -6,32 +6,8 @@
 
 import axios from 'axios';
 
+import { parse } from './upload-attachments-api';
 import { convertToDecimal } from '../commons/utilities';
-
-export type UploadAttachmentResponse = Array<{ aid: string } | null>;
-
-function parse(str: string): Array<Array<{ aid: string }>> {
-	// eslint-disable-next-line no-new-func
-	return Function(`'use strict'; return (${str})`)();
-}
-
-export type UploadCallbacks = {
-	onUploadProgress?: (file: File, uploadId: string, percentage: number) => void;
-	onUploadComplete?: (file: File, uploadId: string, attachmentId: string) => void;
-	onUploadError?: (file: File, uploadId: string, error: string) => void;
-};
-
-export type UploadAttachmentOptions = UploadCallbacks;
-
-export type UploadAttachmentsOptions = UploadCallbacks & {
-	onUploadsEnd?: (completedUploadsId: Array<string>, failedUploadsId: Array<string>) => void;
-};
-
-export type UploadAttachmentResult = {
-	file: File;
-	uploadId: string;
-	abortController: AbortController;
-};
 
 /**
  * Uploads a single file to the server and returns the attachment ID.
