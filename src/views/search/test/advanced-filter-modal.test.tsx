@@ -72,11 +72,13 @@ describe('Advanced filter modal', () => {
 		const properties: AdvancedFilterModalProps = {
 			open: true,
 			onClose: jest.fn(),
-			query: [{
-				id: 'query1',
-				label: 'keywords',
-				value: 'keyword'
-			}],
+			query: [
+				{
+					id: 'query1',
+					label: 'keywords',
+					value: 'keyword'
+				}
+			],
 			updateQuery: jest.fn(),
 			setIsSharedFolderIncluded: jest.fn(),
 			isSharedFolderIncluded: false
