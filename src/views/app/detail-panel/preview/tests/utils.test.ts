@@ -5,6 +5,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import * as shellHooks from '@zextras/carbonio-shell-ui';
 import { includes } from 'lodash';
 
 import { ErrorMessageCode, getAttachmentsLink, getSignedIconColor } from '../utils';
@@ -96,6 +97,33 @@ describe('getAttachmentsLink', () => {
 			],
 			'application/msword'
 		);
+	});
+
+	it('document preview link should have the lang_tag query param with hyphen (-)', () => {
+		jest.spyOn(shellHooks, 'getUserSettings').mockReturnValue({
+			attrs: {
+				zimbraFeatureOptionsEnabled: undefined,
+				zimbraIdentityMaxNumEntries: undefined,
+				zimbraMailAlias: undefined,
+				zimbraAllowFromAddress: undefined
+			},
+			prefs: { zimbraPrefLocale: 'it_IT' },
+			props: []
+		});
+
+		(includes as unknown as jest.Mock)
+			.mockReturnValueOnce(false)
+			.mockReturnValueOnce(false)
+			.mockReturnValueOnce(true); // Simulating document type
+
+		const attachments = ['doc1'];
+		const result = getAttachmentsLink({
+			messageId,
+			messageSubject,
+			attachments,
+			attachmentType: 'application/msword'
+		});
+		expect(result).toBe('http://localhost/service/preview/document/12345/doc1?lang_tag=it-IT');
 	});
 
 	it('should return a default attachment link for unrecognized attachment types', () => {

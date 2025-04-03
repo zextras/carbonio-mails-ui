@@ -65,8 +65,9 @@ export const getAttachmentsLink = ({
 			attachmentType
 		)
 	) {
-		const locale = getUserLocale();
-		return `${getLocationOrigin()}/service/preview/document/${messageId}/${attachments.join(',')}?lang_tag=${locale}`;
+		let localeForPreview = getUserLocale();
+		localeForPreview = localeForPreview.replace(/_/g, '-');
+		return `${getLocationOrigin()}/service/preview/document/${messageId}/${attachments.join(',')}?lang_tag=${localeForPreview}`;
 	}
 	return `${getLocationOrigin()}/service/home/~/?auth=co&id=${messageId}&part=${attachments.join(
 		','
