@@ -47,7 +47,7 @@ async function uploadImage(file: File, editorId: string): Promise<UploadImageRes
 		}
 	};
 
-	// Update editor state
+	// add unsavedAttachment to editor
 	const editor = getEditor({ id: editorId }) as MailsEditorV2;
 	const updatedEditor: MailsEditorV2 = {
 		...editor,
@@ -63,31 +63,30 @@ async function uploadImage(file: File, editorId: string): Promise<UploadImageRes
 
 	// Process the response
 	const mailMessage = normalizeMailMessageFromSoap(saveDraftResponse.m[0], true);
-	const editorsStore = useEditorsStore.getState();
 
-	// Update store
+	// add attachments to editor
+	const editorsStore = useEditorsStore.getState();
 	editorsStore.setDid(editorId, mailMessage.id);
 	editorsStore.setSize(editorId, mailMessage.size);
 	editorsStore.removeUnsavedAttachments(editorId);
-
-	// Handle saved attachments
 	const savedAttachments = buildSavedAttachments(mailMessage);
 	editorsStore.setSavedAttachments(editorId, savedAttachments);
 
-	// Find the inline attachment
+	// Find the inline attachment id
 	const newEditor = getEditor({ id: editorId }) as MailsEditorV2;
 	const savedInlineAttachment = getSavedInlineAttachmentByContentId(
 		contentId,
 		newEditor.savedAttachments
 	);
+	const savedInlineAttachmentId = savedInlineAttachment?.contentId;
 
-	if (!savedInlineAttachment?.contentId) {
+	if (!savedInlineAttachmentId) {
 		throw new Error('Inline attachment not found after upload');
 	}
 
 	return {
-		contentId: savedInlineAttachment.contentId,
-		cidUrl: composeCidUrlFromContentId(savedInlineAttachment.contentId) ?? undefined,
+		contentId: savedInlineAttachmentId,
+		cidUrl: composeCidUrlFromContentId(savedInlineAttachmentId) ?? undefined,
 		downloadServiceUrl: composeAttachmentDownloadUrl(savedInlineAttachment),
 		fileName: file.name
 	};
