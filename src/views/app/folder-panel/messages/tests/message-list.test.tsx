@@ -72,7 +72,7 @@ describe('message-list', () => {
 		expect(await screen.findByTestId(`message-list-${folderId}`)).toBeInTheDocument();
 	});
 
-	it('should render the participants without modifying them', async () => {
+	it('should render the sender without modifying them', async () => {
 		const folder = generateFolder({ id: 'testFolder', parent: FOLDERS.INBOX });
 		populateFoldersStore({ customFolders: [folder] });
 		const folderId = folder.id;
@@ -80,7 +80,7 @@ describe('message-list', () => {
 			{
 				a: 'a',
 				p: 'from nAme',
-				t: ParticipantRole.TO
+				t: ParticipantRole.FROM
 			},
 			{
 				a: 'a',
@@ -101,7 +101,7 @@ describe('message-list', () => {
 
 		makeAllItemsVisible();
 
-		expect(await screen.findByText(/cc nAme/)).toBeInTheDocument();
+		expect(await screen.findByText(/from nAme/)).toBeInTheDocument();
 	});
 
 	it('should render the correct number of list items', async () => {

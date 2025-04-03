@@ -491,11 +491,8 @@ describe('in the drafts folder', () => {
 describe('in the trash folder', () => {
 	const folderId = FOLDERS.TRASH;
 
-	test("(case #2) in a message item the recipients' names, if set, is visible", async () => {
-		const to = [
-			{ type: ParticipantRole.TO, address: 'mario@foo.bar' },
-			{ type: ParticipantRole.TO, address: 'luigi@foo.bar' }
-		];
+	test("(case #2) in a message item the senders' name, if set, is visible", async () => {
+		const to = [{ type: ParticipantRole.FROM, address: 'mario@foo.bar' }];
 		const message = generateMessage({ to, folderId });
 
 		const props: MessageListItemProps = {
@@ -515,7 +512,6 @@ describe('in the trash folder', () => {
 		setupTest(<MessageListItem {...props} />);
 		const participantsLabel = screen.getByTestId('participants-name-label');
 		expect(participantsLabel).toHaveTextContent('mario');
-		expect(participantsLabel).toHaveTextContent('luigi');
 	});
 
 	test.each`
