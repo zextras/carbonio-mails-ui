@@ -7,7 +7,7 @@ import React, { useMemo } from 'react';
 
 import { Padding, Row, Text, Tooltip } from '@zextras/carbonio-design-system';
 import { t, useUserAccount } from '@zextras/carbonio-shell-ui';
-import { filter, findIndex, reduce, trimStart, uniqBy } from 'lodash';
+import { findIndex, reduce, trimStart, uniqBy } from 'lodash';
 
 import { FOLDERS } from '../../../../carbonio-ui-commons/constants/folders';
 import { ParticipantRole } from '../../../../carbonio-ui-commons/constants/participants';
@@ -50,7 +50,8 @@ export const ParticipantsName = ({
 	const participantsString = useMemo(() => {
 		const participants = participantsWithoutReplyTo.filter((p) => {
 			if (isConversation(item)) return true;
-			if (folderId === FOLDERS.INBOX) return p.type === ParticipantRole.FROM; // inbox
+			if (folderId !== FOLDERS.SENT && folderId !== FOLDERS.DRAFTS && !isSearchModule)
+				return p.type === ParticipantRole.FROM; // Not sent or drafts
 			if (folderId === FOLDERS.SENT && !isSearchModule) return p.type === ParticipantRole.TO; // sent
 			if (isSearchModule) return p.type === ParticipantRole.FROM; // search module
 			return true; // keep all
