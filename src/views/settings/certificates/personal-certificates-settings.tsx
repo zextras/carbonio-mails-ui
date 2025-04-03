@@ -9,8 +9,8 @@ import React, { FC, ReactElement, useCallback, useEffect, useState } from 'react
 import {
 	Button,
 	Container,
+	FormSection,
 	FormSubSection,
-	Padding,
 	Table,
 	Text,
 	useModal,
@@ -220,32 +220,39 @@ const PersonalCertificatesSettings: FC = (): ReactElement => {
 	});
 
 	return (
-		<FormSubSection
+		<FormSection
+			id={'personal-certificates'}
 			label={t(
 				'settings.uploadCertificate.personalCertificatesTitle',
 				'Personal certificates for signing, encryption and decryption'
 			)}
-			id={'personal-certificates'}
-			padding={{ all: 'large' }}
 		>
-			<Table rows={items} headers={personalCertificateHeaders} showCheckbox multiSelect={false} />
-			{items.length === 0 && (
-				<Container padding={{ vertical: 'large' }}>
-					<Text>
-						{t(
-							'settings.uploadCertificate.noPersonalCertificate',
-							'Personal certificate list is empty'
-						)}
-					</Text>
+			<FormSubSection gap={'2rem'}>
+				<Container>
+					<Table
+						rows={items}
+						headers={personalCertificateHeaders}
+						showCheckbox
+						multiSelect={false}
+					/>
+					{items.length === 0 && (
+						<Container padding={{ vertical: 'large' }}>
+							<Text>
+								{t(
+									'settings.uploadCertificate.noPersonalCertificate',
+									'Personal certificate list is empty'
+								)}
+							</Text>
+						</Container>
+					)}
 				</Container>
-			)}
-			<Padding all="large" />
-			<Button
-				onClick={(): void => onUploadCertificate()}
-				label={t('settings.uploadCertificate.uploadCertificate', 'Upload Certificate')}
-				data-testid="upload-personal-certificate-btn"
-			/>
-		</FormSubSection>
+				<Button
+					onClick={(): void => onUploadCertificate()}
+					label={t('settings.uploadCertificate.uploadCertificate', 'Upload Certificate')}
+					data-testid="upload-personal-certificate-btn"
+				/>
+			</FormSubSection>
+		</FormSection>
 	);
 };
 
