@@ -175,3 +175,5 @@ export const handleEditorPaste = (
 		processNextUpload(editor, editorId);
 	}
 };
+
+export const testingPurposeOnly = { uploadImage };

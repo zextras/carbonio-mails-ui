@@ -6,15 +6,22 @@
 
 import { type Editor } from 'tinymce';
 
-import { handleEditorPaste } from '../editor-paste-handler';
+import { uploadFileApi } from '../../../../../../api/upload-file-api';
+import { getEditor, useEditorsStore } from '../../../../../../store/editor';
+import { saveDraftEmailStoreAction } from '../../../../../../store/emails/actions/save-draft-action';
+import { testingPurposeOnly, handleEditorPaste } from '../editor-paste-handler';
+
+jest.mock('../../../../../../api/upload-file-api');
+jest.mock('../../../../../../store/emails/actions/save-draft-action');
+jest.mock('../../../../../../store/editor');
+
+jest.mock('axios');
 
 const createMockEditor = (): Editor =>
 	({
 		insertContent: jest.fn(),
 		setProgressState: jest.fn()
 	}) as unknown as Editor;
-
-jest.mock('axios');
 
 describe('handleEditorPaste', () => {
 	const defaultClipboardEvent = {
@@ -65,5 +72,72 @@ describe('handleEditorPaste', () => {
 		} as unknown as ClipboardEvent;
 		handleEditorPaste(editor, 'editor-1', event);
 		expect(event.preventDefault).not.toHaveBeenCalled();
+	});
+
+	describe('uploadImage', () => {
+		it('should upload an image and return the correct result', async () => {
+			const mockFile = new File(['content'], '1.jpg', { type: 'image/jpeg' });
+			const mockAid = '12345';
+			const mockContentId = `${mockAid}@carbonio`;
+			const mockEditorId = 'test-editor';
+
+			(useEditorsStore.getState as jest.Mock).mockReturnValue({
+				setDid: jest.fn(),
+				setSize: jest.fn(),
+				removeUnsavedAttachments: jest.fn(),
+				setSavedAttachments: jest.fn()
+			});
+
+			(saveDraftEmailStoreAction as jest.Mock).mockResolvedValue({
+				m: [
+					{
+						id: 'msg123',
+						s: 1024,
+						mp: [
+							{
+								part: '2.1',
+								ct: 'text/html',
+								s: 632,
+								requiresSmartLinkConversion: false,
+								body: true,
+								content: '<html xmlns="http://www.w3.org/1999/html"></body></body></html>'
+							},
+							{
+								part: '2.2',
+								ct: 'image/jpeg',
+								s: 81571,
+								cd: 'inline',
+								filename: mockFile.name,
+								ci: mockContentId,
+								requiresSmartLinkConversion: false
+							}
+						]
+					}
+				]
+			});
+
+			(uploadFileApi as jest.Mock).mockResolvedValue({ aid: mockAid });
+			(getEditor as jest.Mock).mockReturnValueOnce({ unsavedAttachments: [] }).mockReturnValueOnce({
+				savedAttachments: [
+					{
+						messageId: 'msg123',
+						isInline: true,
+						contentId: mockContentId,
+						filename: mockFile.name,
+						partName: '2.2',
+						contentType: 'image/jpeg',
+						size: 190,
+						requiresSmartLinkConversion: false
+					}
+				]
+			});
+
+			const result = await testingPurposeOnly.uploadImage(mockFile, mockEditorId);
+
+			expect(result.contentId).toBe(mockContentId);
+			expect(result.fileName).toBe(mockFile.name);
+			expect(result.downloadServiceUrl).toBeDefined();
+			expect(result.cidUrl).toBeDefined();
+		});
 	});
 });
