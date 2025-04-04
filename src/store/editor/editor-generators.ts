@@ -266,7 +266,7 @@ const generateReplyAndReplyAllMsgEditor = (
 		unsavedAttachments: [],
 		savedAttachments: savedInlineAttachments,
 		isRichText,
-		isUrgent: originalMessage.urgent,
+		isUrgent: false,
 		recipients: {
 			to: toParticipants,
 			cc: action === EditViewActions.REPLY_ALL ? retrieveCC(originalMessage, accountName) : [],
@@ -328,7 +328,7 @@ export const generateForwardMsgEditor = (originalMessage: MailMessage): MailsEdi
 		unsavedAttachments: [],
 		savedAttachments,
 		isRichText,
-		isUrgent: originalMessage.urgent,
+		isUrgent: false,
 		recipients: {
 			to: [],
 			cc: [],
@@ -381,7 +381,7 @@ export const generateForwardAsAttachmentMsgEditor = (
 		unsavedAttachments: attachments,
 		savedAttachments: [],
 		isRichText,
-		isUrgent: originalMessage.urgent,
+		isUrgent: false,
 		recipients: {
 			to: [],
 			cc: [],
@@ -470,7 +470,7 @@ export const generateEditAsNewEditor = (originalMessage: MailMessage): MailsEdit
 		unsavedAttachments: [],
 		savedAttachments: buildSavedAttachments(originalMessage),
 		isRichText,
-		isUrgent: originalMessage.urgent,
+		isUrgent: false,
 		recipients: {
 			to: retrieveTO(originalMessage),
 			cc: retrieveCCForEditNew(originalMessage),
