@@ -74,7 +74,7 @@ export const SubjectRow: FC<SubjectRowProps> = ({ editorId }) => {
 							<Padding right="small">
 								<Icon
 									icon="ArrowUpward"
-									color="secondary"
+									color="error"
 									size="large"
 									data-testid="mark-important-icon"
 								/>
