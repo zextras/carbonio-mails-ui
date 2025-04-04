@@ -85,4 +85,29 @@ describe('generateEditor', () => {
 
 		expect(result).toBeNull();
 	});
+	describe('urgent flag', () => {
+		it.each`
+			action                                   | assertion
+			${EditViewActions.REPLY}                 | ${false}
+			${EditViewActions.NEW}                   | ${false}
+			${EditViewActions.REPLY_ALL}             | ${false}
+			${EditViewActions.FORWARD}               | ${false}
+			${EditViewActions.COMPOSE}               | ${false}
+			${EditViewActions.RESUME}                | ${true}
+			${EditViewActions.EDIT_AS_DRAFT}         | ${true}
+			${EditViewActions.PREFILL_COMPOSE}       | ${false}
+			${EditViewActions.FORWARD_AS_ATTACHMENT} | ${false}
+			${EditViewActions.EDIT_AS_NEW}           | ${false}
+			${EditViewActions.MAIL_TO}               | ${false}
+		`(`should return $assertion if action is $action`, ({ action, assertion }) => {
+			const urgentMessage = { ...message, isUrgent: true };
+			const replyEditor = generateEditor({
+				action,
+				id: 'test-id',
+				message: urgentMessage
+			});
+
+			expect(replyEditor?.isUrgent).toBe(assertion);
+		});
+	});
 });
