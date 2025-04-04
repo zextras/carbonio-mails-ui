@@ -24,7 +24,9 @@ jest.mock('@zextras/carbonio-shell-ui', () => ({
 
 jest.mock('../../../helpers/identities', () => ({
 	getIdentityFromParticipant: jest.fn(() => ({ id: 'test-identity-id' })),
-	getDefaultIdentity: jest.fn(() => ({ id: 'default-identity-id' }))
+	getDefaultIdentity: jest.fn(() => ({ id: 'default-identity-id' })),
+	getRecipientReplyIdentity: jest.fn(() => ({ id: 'recipient-reply-id' })),
+	getAddressOwnerAccount: jest.fn(() => ({ id: 'address-owner-id' }))
 }));
 
 // Test cases
