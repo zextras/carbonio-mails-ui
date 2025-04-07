@@ -11,7 +11,7 @@ import { Route, Routes } from 'react-router-dom';
 import { ConversationPreviewPanelContainer } from './conversation-preview-panel-container';
 import { MessagePreviewPanelContainer } from './message-preview-panel-container';
 
-export default function StandalonePreviewPanelWrapper(): React.JSX.Element {
+export default function StandalonePreviewPanel(): React.JSX.Element {
 	return (
 		<Routes>
 			<Route
