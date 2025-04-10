@@ -17,7 +17,8 @@ import {
 	SelectItem,
 	Icon,
 	Text,
-	FormSection
+	FormSection,
+	Container
 } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 
@@ -83,42 +84,44 @@ export const DisplayMessagesSettings: FC<DisplayingMessagesSettingsProps> = ({
 
 	return (
 		<FormSection id={sectionTitle.id} label={sectionTitle.label} padding={{ all: 'medium' }}>
-			<FormSubSection gap={'0.5rem'}>
-				<Select
-					label={t('settings.label.conversation_ordering', 'Conversation ordering')}
-					items={conversationSortingSettings}
-					onChange={onChangeSorting}
-					defaultSelection={defaultSelectionSorting}
-				/>
-				<Select
-					label={t('settings.label.check_new_mail', 'Check new e-mail')}
-					items={checkNewMailOptions}
-					onChange={(view: SelectItem[] | string | null): void =>
-						updateSettings({
-							target: { name: 'zimbraPrefMailPollingInterval', value: (view as string) ?? '' }
-						})
-					}
-					defaultSelection={{
-						label: findLabel(checkNewMailOptions, settingsObj.zimbraPrefMailPollingInterval),
-						value: settingsObj.zimbraPrefMailPollingInterval
-					}}
-				/>
-				<Select
-					label={t('settings.label.display_mail', 'Display mail')}
-					items={displayMailOptions}
-					onChange={(view: SelectItem[] | string | null): void =>
-						updateSettings({
-							target: {
-								name: 'zimbraPrefMessageViewHtmlPreferred',
-								value: (view as string) ?? ''
-							}
-						})
-					}
-					defaultSelection={{
-						label: findLabel(displayMailOptions, settingsObj.zimbraPrefMessageViewHtmlPreferred),
-						value: settingsObj.zimbraPrefMessageViewHtmlPreferred
-					}}
-				/>
+			<FormSubSection>
+				<Container gap={'0.5rem'}>
+					<Select
+						label={t('settings.label.conversation_ordering', 'Conversation ordering')}
+						items={conversationSortingSettings}
+						onChange={onChangeSorting}
+						defaultSelection={defaultSelectionSorting}
+					/>
+					<Select
+						label={t('settings.label.check_new_mail', 'Check new e-mail')}
+						items={checkNewMailOptions}
+						onChange={(view: SelectItem[] | string | null): void =>
+							updateSettings({
+								target: { name: 'zimbraPrefMailPollingInterval', value: (view as string) ?? '' }
+							})
+						}
+						defaultSelection={{
+							label: findLabel(checkNewMailOptions, settingsObj.zimbraPrefMailPollingInterval),
+							value: settingsObj.zimbraPrefMailPollingInterval
+						}}
+					/>
+					<Select
+						label={t('settings.label.display_mail', 'Display mail')}
+						items={displayMailOptions}
+						onChange={(view: SelectItem[] | string | null): void =>
+							updateSettings({
+								target: {
+									name: 'zimbraPrefMessageViewHtmlPreferred',
+									value: (view as string) ?? ''
+								}
+							})
+						}
+						defaultSelection={{
+							label: findLabel(displayMailOptions, settingsObj.zimbraPrefMessageViewHtmlPreferred),
+							value: settingsObj.zimbraPrefMessageViewHtmlPreferred
+						}}
+					/>
+				</Container>
 			</FormSubSection>
 			{/* Will be Implemented in starting months of 2022 */}
 			{/* <Container crossAlignment="baseline">
@@ -254,15 +257,15 @@ export const DisplayMessagesSettings: FC<DisplayingMessagesSettingsProps> = ({
 							<Row orientation="column" crossAlignment="flex-start">
 								<Text weight="bold">{t('settings.label.mark_manually', 'Mark Manually')}</Text>
 								<Padding bottom="0.5rem">
-									<Text>
-										{t(
-											'label.mark_read_message_manually',
-											'Manually mark as read by clicking this icon'
-										)}
-									</Text>
-									<Padding left="small">
+									<Row gap={'0.5rem'}>
+										<Text>
+											{t(
+												'label.mark_read_message_manually',
+												'Manually mark as read by clicking this icon'
+											)}
+										</Text>
 										<Icon size="medium" icon="EmailReadOutline" />
-									</Padding>
+									</Row>
 								</Padding>
 							</Row>
 						}

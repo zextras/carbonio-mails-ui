@@ -72,10 +72,7 @@ const ComposeMessage: FC<ComposeMessagesProps> = ({ settingsObj, updateSettings 
 	return (
 		<FormSection id={sectionTitle.id} label={sectionTitle.label}>
 			<FormSubSection>
-				<Container
-					crossAlignment="baseline"
-					padding={{ horizontal: 'small', bottom: 'small', top: 'medium' }}
-				>
+				<Container crossAlignment="baseline">
 					<Container
 						orientation="horizontal"
 						crossAlignment="flex-start"
