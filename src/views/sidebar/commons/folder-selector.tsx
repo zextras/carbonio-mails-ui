@@ -10,13 +10,10 @@ import { t } from '@zextras/carbonio-shell-ui';
 import { filter, startsWith } from 'lodash';
 import styled from 'styled-components';
 
-import { FlatFoldersAccordion } from './flat-folders-accordion/flat-folders-accordion';
 import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
 import { getFolder, useRootsArray } from '../../../carbonio-ui-commons/store/zustand/folder/hooks';
 import type { Folder } from '../../../carbonio-ui-commons/types/folder';
-import { isRoot, isSpam, isTrash, isTrashed } from '../../../helpers/folders';
-import { getSortCriteria, sortFolders } from '../../../hooks/use-folders';
-import { getSystemFolderTranslatedName } from '../utils';
+import { FoldersAccordion } from './folders-accordion';
 
 const ContainerEl = styled(Container)`
 	overflow-y: auto;
@@ -29,72 +26,8 @@ export type FolderSelectorProps = {
 	selectedFolderId?: string;
 	onFolderSelected: (arg: Folder) => void;
 	showSharedAccounts: boolean;
-	showTrashFolder: boolean;
-	showSpamFolder: boolean;
 	allowRootSelection: boolean;
-	allowFolderCreation: boolean;
 };
-
-const flattenFolders = (
-	folders: Array<Folder>,
-	options?: {
-		showTrashFolder?: boolean;
-		showSpamFolder?: boolean;
-	}
-): Array<Folder> => {
-	const result: Array<Folder> = [];
-	const sortedFolders = sortFolders({ children: folders, sortFunction: getSortCriteria });
-
-	sortedFolders.forEach((folder) => {
-		if (!options?.showTrashFolder && (isTrash(folder.id) || isTrashed({ folder }))) {
-			return;
-		}
-
-		if (!options?.showSpamFolder && isSpam(folder.id)) {
-			return;
-		}
-
-		result.push({
-			...folder,
-			name: getSystemFolderTranslatedName({ folderName: folder.name }),
-			children: []
-		});
-		folder.children && result.push(...flattenFolders(folder.children, options));
-	});
-
-	return result;
-};
-
-const flattenRootsFolders = (
-	roots: Array<Folder>,
-	options?: {
-		showTrashFolder?: boolean;
-		showSpamFolder?: boolean;
-	}
-): Array<Folder> =>
-	roots.map((root) => ({
-		...root,
-		children: flattenFolders(root.children, options)
-	}));
-
-function filterRootChildren(folders: Array<Folder>, nameCriteria: string): Array<Folder> {
-	return filter(folders, (folder) => {
-		const folderName = folder.name?.toLowerCase();
-		return startsWith(folderName, nameCriteria.toLowerCase());
-	});
-}
-
-function filterRoots(roots: Array<Folder>, nameCriteria: string): Array<Folder> {
-	return roots.reduce((acc, root) => {
-		if (isRoot(root.id)) {
-			acc.push({
-				...root,
-				children: root.children ? filterRootChildren(root.children, nameCriteria) : []
-			});
-		}
-		return acc.filter((accItem) => !!accItem.children?.length);
-	}, [] as Array<Folder>);
-}
 
 export const FolderSelector = ({
 	inputLabel,
@@ -102,27 +35,17 @@ export const FolderSelector = ({
 	selectedFolderId,
 	onFolderSelected,
 	allowRootSelection,
-	allowFolderCreation,
-	showTrashFolder,
-	showSpamFolder,
 	showSharedAccounts
 }: FolderSelectorProps): ReactElement => {
 	const [inputValue, setInputValue] = useState('');
 	const selectedFolder = selectedFolderId && getFolder(selectedFolderId);
 	const roots = useRootsArray();
-	const filteredAccountsRoots = useMemo<Array<Folder>>(
+	const rootFolders = useMemo<Array<Folder>>(
 		() => (showSharedAccounts ? roots : roots.filter((root) => root.id === FOLDERS.USER_ROOT)),
 		[roots, showSharedAccounts]
 	);
-	const flattenRoots = useMemo(
-		() =>
-			flattenRootsFolders(filteredAccountsRoots, {
-				showTrashFolder,
-				showSpamFolder
-			}),
-		[filteredAccountsRoots, showSpamFolder, showTrashFolder]
-	);
-	const filteredRoots = filterRoots(flattenRoots, inputValue);
+
+	// const filteredRoots = filterRoots(, inputValue);
 	const inputName = selectedFolder ? selectedFolder.name : '';
 	return (
 		<>
@@ -141,8 +64,8 @@ export const FolderSelector = ({
 				minHeight="30vh"
 				maxHeight="60vh"
 			>
-				<FlatFoldersAccordion
-					roots={filteredRoots}
+				<FoldersAccordion
+					folders={rootFolders}
 					onFolderSelected={onFolderSelected}
 					selectedFolderId={selectedFolderId}
 					allowRootSelection={allowRootSelection}

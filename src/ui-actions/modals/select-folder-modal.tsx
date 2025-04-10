@@ -92,9 +92,6 @@ export const SelectFolderModal: FC<SelectFolderModalProps> = ({
 				<FolderSelector
 					selectedFolderId={folderDestination?.id}
 					onFolderSelected={setFolderDestination}
-					showTrashFolder={showTrashFolder}
-					showSpamFolder={showSpamFolder}
-					allowFolderCreation={allowFolderCreation}
 					allowRootSelection={allowRootSelection}
 					showSharedAccounts={showSharedAccounts}
 				/>
