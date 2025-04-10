@@ -19,9 +19,7 @@ import styled from 'styled-components';
 
 import { ROOT_NAME } from '../../../carbonio-ui-commons/constants';
 import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
-import { useOnMouseHover } from '../../../hooks/use-on-mouse-hover';
 import { Folder } from '../../../types';
-import { FolderActionWrapper } from '../folder-action-wrapper';
 import { getFolderTranslatedName, getFolderIconName, getFolderIconColor } from '../utils';
 
 const FittedRow = styled(Row)`
@@ -34,7 +32,6 @@ export const FolderAccordionCustomComponent = ({
 }: {
 	folder: Folder;
 }): React.JSX.Element => {
-	const { ref, hasBeenHovered } = useOnMouseHover();
 	const accountName = useUserAccount().name;
 
 	const textProps: { size: 'small' } = useMemo(
@@ -101,24 +98,14 @@ export const FolderAccordionCustomComponent = ({
 		);
 
 	return (
-		<Row width="fill" minWidth={0} ref={ref}>
-			{hasBeenHovered ? (
-				<FolderActionWrapper folder={folder}>
-					<Tooltip label={accordionItem.label} placement="right" maxWidth="100%">
-						<AccordionItem data-testid={`accordion-folder-item-${folder.id}`} item={accordionItem}>
-							{statusIcon}
-						</AccordionItem>
-					</Tooltip>
-				</FolderActionWrapper>
-			) : (
-				<Container padding={{ left: 'small' }}>
-					<Tooltip label={accordionItem.label} placement="right" maxWidth="100%">
-						<AccordionItem data-testid={`accordion-folder-item-${folder.id}`} item={accordionItem}>
-							{statusIcon}
-						</AccordionItem>
-					</Tooltip>
-				</Container>
-			)}
-		</Row>
+		<FittedRow>
+			<Container padding={{ left: 'small' }}>
+				<Tooltip label={accordionItem.label} placement="right" maxWidth="100%">
+					<AccordionItem data-testid={`accordion-folder-item-${folder.id}`} item={accordionItem}>
+						{statusIcon}
+					</AccordionItem>
+				</Tooltip>
+			</Container>
+		</FittedRow>
 	);
 };

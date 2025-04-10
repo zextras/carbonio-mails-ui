@@ -5,20 +5,22 @@
  */
 import React, { ChangeEvent, ReactElement, useMemo, useState } from 'react';
 
+import { ThemeProvider } from '@mui/material';
 import { Button, Container, Input, Padding } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
-import { filter, startsWith } from 'lodash';
 import styled from 'styled-components';
 
+import { FolderAccordionCustomComponent } from './folder-accordions-custom-component';
+import { FoldersAccordion } from './folders-accordion';
 import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
 import { getFolder, useRootsArray } from '../../../carbonio-ui-commons/store/zustand/folder/hooks';
+import { themeMui } from '../../../carbonio-ui-commons/theme/theme-mui';
 import type { Folder } from '../../../carbonio-ui-commons/types/folder';
-import { FoldersAccordion } from './folders-accordion';
 
-const ContainerEl = styled(Container)`
-	overflow-y: auto;
-	display: block;
-`;
+// const ContainerEl = styled(Container)`
+// 	overflow-y: auto;
+// 	display: block;
+// `;
 
 export type FolderSelectorProps = {
 	inputLabel?: string;
@@ -44,8 +46,6 @@ export const FolderSelector = ({
 		() => (showSharedAccounts ? roots : roots.filter((root) => root.id === FOLDERS.USER_ROOT)),
 		[roots, showSharedAccounts]
 	);
-
-	// const filteredRoots = filterRoots(, inputValue);
 	const inputName = selectedFolder ? selectedFolder.name : '';
 	return (
 		<>
@@ -58,19 +58,25 @@ export const FolderSelector = ({
 				onChange={(e: ChangeEvent<HTMLInputElement>): void => setInputValue(e.target.value)}
 			/>
 			<Padding vertical="medium" />
-			<ContainerEl
+			<Container
+				style={{ overflowY: 'auto', display: 'block' }}
+				height="fit"
+				width="fill"
 				orientation="vertical"
 				mainAlignment="flex-start"
 				minHeight="30vh"
 				maxHeight="60vh"
 			>
-				<FoldersAccordion
-					folders={rootFolders}
-					onFolderSelected={onFolderSelected}
-					selectedFolderId={selectedFolderId}
-					allowRootSelection={allowRootSelection}
-				/>
-			</ContainerEl>
+				<ThemeProvider theme={themeMui}>
+					<FoldersAccordion
+						folders={rootFolders}
+						onFolderSelected={onFolderSelected}
+						selectedFolderId={selectedFolderId}
+						allowRootSelection={allowRootSelection}
+						FolderAccordionCustomComponent={FolderAccordionCustomComponent}
+					/>
+				</ThemeProvider>
+			</Container>
 			{onNewFolderClick && (
 				<Container
 					padding={{ top: 'medium', bottom: 'medium' }}

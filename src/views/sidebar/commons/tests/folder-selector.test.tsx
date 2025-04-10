@@ -33,11 +33,8 @@ describe('Folder selector', () => {
 	test('The selector is visible', () => {
 		populateFoldersStore();
 		const props: FolderSelectorProps = {
-			allowFolderCreation: false,
 			allowRootSelection: false,
 			showSharedAccounts: false,
-			showSpamFolder: false,
-			showTrashFolder: false,
 			selectedFolderId: FOLDERS.INBOX,
 			onFolderSelected: jest.fn()
 		};
@@ -58,11 +55,8 @@ describe('Folder selector', () => {
 				populateFoldersStore();
 				const folders = getFoldersArrayByRoot(rootId);
 				const props: FolderSelectorProps = {
-					allowFolderCreation: false,
 					allowRootSelection: false,
 					showSharedAccounts: true,
-					showSpamFolder: true,
-					showTrashFolder: true,
 					selectedFolderId: FOLDERS.INBOX,
 					onFolderSelected: jest.fn()
 				};
@@ -84,11 +78,8 @@ describe('Folder selector', () => {
 			const ownerAccountName = getFolderOwnerAccountName(rootId, roots);
 
 			const props: FolderSelectorProps = {
-				allowFolderCreation: false,
 				allowRootSelection: false,
 				showSharedAccounts: true,
-				showSpamFolder: false,
-				showTrashFolder: false,
 				onFolderSelected: jest.fn()
 			};
 			setupTest(<FolderSelector {...props} />);
@@ -105,11 +96,8 @@ describe('Folder selector', () => {
 				0
 			);
 			const props: FolderSelectorProps = {
-				allowFolderCreation: false,
 				allowRootSelection: false,
 				showSharedAccounts: true,
-				showSpamFolder: false,
-				showTrashFolder: false,
 				selectedFolderId: FOLDERS.INBOX,
 				onFolderSelected: jest.fn()
 			};
@@ -136,11 +124,8 @@ describe('Folder selector', () => {
 				0
 			);
 			const props: FolderSelectorProps = {
-				allowFolderCreation: false,
 				allowRootSelection: false,
 				showSharedAccounts: true,
-				showSpamFolder: false,
-				showTrashFolder: false,
 				selectedFolderId: FOLDERS.INBOX,
 				onFolderSelected: jest.fn()
 			};
@@ -165,11 +150,8 @@ describe('Folder selector', () => {
 			}
 			const inboxFirstChild = inboxChildren[0];
 			const props: FolderSelectorProps = {
-				allowFolderCreation: false,
 				allowRootSelection: false,
 				showSharedAccounts: false,
-				showSpamFolder: false,
-				showTrashFolder: false,
 				selectedFolderId: FOLDERS.INBOX,
 				onFolderSelected: jest.fn()
 			};
@@ -188,11 +170,8 @@ describe('Folder selector', () => {
 				(folder) => folder.name === 'Confluence'
 			) as Folder;
 			const props: FolderSelectorProps = {
-				allowFolderCreation: false,
 				allowRootSelection: false,
 				showSharedAccounts: false,
-				showSpamFolder: false,
-				showTrashFolder: false,
 				onFolderSelected: jest.fn()
 			};
 			const { user } = setupTest(<FolderSelector {...props} />);
@@ -222,11 +201,9 @@ describe('Folder selector', () => {
 			populateFoldersStore();
 			const roots = getRootsMap();
 			const props: FolderSelectorProps = {
-				allowFolderCreation: false,
 				allowRootSelection: false,
 				showSharedAccounts: false,
-				showSpamFolder: false,
-				showTrashFolder: false,
+
 				onFolderSelected: jest.fn()
 			};
 			setupTest(<FolderSelector {...props} />);
@@ -244,11 +221,9 @@ describe('Folder selector', () => {
 		test('no Trash folder is visible if the showTrashFolder is set to false', () => {
 			populateFoldersStore();
 			const props: FolderSelectorProps = {
-				allowFolderCreation: false,
 				allowRootSelection: false,
 				showSharedAccounts: false,
-				showSpamFolder: false,
-				showTrashFolder: false,
+
 				onFolderSelected: jest.fn()
 			};
 			setupTest(<FolderSelector {...props} />);
@@ -267,11 +242,8 @@ describe('Folder selector', () => {
 		test('Trash folder is visible if the showTrashFolder is set to true', () => {
 			populateFoldersStore();
 			const props: FolderSelectorProps = {
-				allowFolderCreation: false,
 				allowRootSelection: false,
 				showSharedAccounts: false,
-				showSpamFolder: false,
-				showTrashFolder: true,
 				onFolderSelected: jest.fn()
 			};
 			setupTest(<FolderSelector {...props} />);
@@ -288,11 +260,9 @@ describe('Folder selector', () => {
 		test('no trashed folder is visible if the showTrashFolder is set to false', () => {
 			populateFoldersStore();
 			const props: FolderSelectorProps = {
-				allowFolderCreation: false,
 				allowRootSelection: false,
 				showSharedAccounts: false,
-				showSpamFolder: false,
-				showTrashFolder: false,
+
 				onFolderSelected: jest.fn()
 			};
 			setupTest(<FolderSelector {...props} />);
@@ -313,11 +283,8 @@ describe('Folder selector', () => {
 		test('Trashed folder is visible if the showTrashFolder is set to true', () => {
 			populateFoldersStore();
 			const props: FolderSelectorProps = {
-				allowFolderCreation: false,
 				allowRootSelection: false,
 				showSharedAccounts: false,
-				showSpamFolder: false,
-				showTrashFolder: true,
 				onFolderSelected: jest.fn()
 			};
 			setupTest(<FolderSelector {...props} />);
@@ -336,11 +303,8 @@ describe('Folder selector', () => {
 		test('no Spam folder is visible if the showSpamFolder is set to false', () => {
 			populateFoldersStore();
 			const props: FolderSelectorProps = {
-				allowFolderCreation: false,
 				allowRootSelection: false,
 				showSharedAccounts: false,
-				showSpamFolder: false,
-				showTrashFolder: false,
 				onFolderSelected: jest.fn()
 			};
 			setupTest(<FolderSelector {...props} />);
@@ -359,11 +323,8 @@ describe('Folder selector', () => {
 		test('Spam folder is visible if the showSpamFolder is set to true', () => {
 			populateFoldersStore();
 			const props: FolderSelectorProps = {
-				allowFolderCreation: false,
 				allowRootSelection: false,
 				showSharedAccounts: false,
-				showSpamFolder: true,
-				showTrashFolder: false,
 				onFolderSelected: jest.fn()
 			};
 			setupTest(<FolderSelector {...props} />);
