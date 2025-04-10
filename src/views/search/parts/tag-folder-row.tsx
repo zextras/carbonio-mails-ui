@@ -69,7 +69,7 @@ const TagFolderRow: FC<TagFolderRowProps> = ({ compProps }): ReactElement => {
 		[setFolder]
 	);
 
-	const tagPlaceholder = useMemo(() => t('label.tag', 'Tag'), []);
+	const tagPlaceholder = useMemo(() => t('label.tags', 'Tags'), []);
 	const onTagChange = useCallback(
 		(chip: ChipItem[]) => {
 			setTag(chip);
