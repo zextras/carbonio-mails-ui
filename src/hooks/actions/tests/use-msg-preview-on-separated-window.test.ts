@@ -7,14 +7,13 @@ import { act } from 'react';
 
 import { populateFoldersStore } from '../../../carbonio-ui-commons/test/mocks/store/folders';
 import { setupHook } from '../../../carbonio-ui-commons/test/test-setup';
+import { getParentFolderId } from '../../../helpers/folders';
 import { generateMessage } from '../../../tests/generators/generateMessage';
-import * as globalExtraWindowManager from '../../../views/app/extra-windows/global-extra-window-manager';
 import * as extraWindow from '../../../views/app/extra-windows/use-extra-window';
 import {
 	useMsgPreviewOnSeparatedWindowDescriptor,
 	useMsgPreviewOnSeparatedWindowFn
 } from '../use-msg-preview-on-separated-window';
-import { getParentFolderId } from '../../../helpers/folders';
 
 describe('useMsgPreviewOnSeparatedWindow', () => {
 	const msg = generateMessage({ isComplete: true });
@@ -105,10 +104,6 @@ describe('useMsgPreviewOnSeparatedWindow', () => {
 
 		describe('execute', () => {
 			const useExtraWindowSpy = jest.spyOn(extraWindow, 'useExtraWindow');
-			const createWindowSpy = jest.fn();
-			jest
-				.spyOn(globalExtraWindowManager, 'useGlobalExtraWindowManager')
-				.mockImplementation(() => ({ createWindow: createWindowSpy }));
 
 			it('should not call the integrated function if the action cannot be executed', async () => {
 				useExtraWindowSpy.mockReturnValue({ isInsideExtraWindow: true });
@@ -130,7 +125,7 @@ describe('useMsgPreviewOnSeparatedWindow', () => {
 					functions.execute();
 				});
 
-				expect(createWindowSpy).not.toHaveBeenCalled();
+				expect(window.open).not.toHaveBeenCalled();
 			});
 
 			it('should call the API with the proper params if the action can be executed', async () => {
@@ -153,7 +148,10 @@ describe('useMsgPreviewOnSeparatedWindow', () => {
 					functions.execute();
 				});
 
-				expect(createWindowSpy).toHaveBeenCalled();
+				expect(window.open).toHaveBeenCalledWith(
+					`http://localhost/carbonio/focus-mode/msg-preview/folder/2/message/${msg.id}`,
+					msg.subject
+				);
 			});
 		});
 	});
