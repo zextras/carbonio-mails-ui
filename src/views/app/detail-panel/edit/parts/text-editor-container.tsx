@@ -8,13 +8,15 @@ import React, { FC, useCallback, useState } from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
 import { useIntegratedComponent, useUserSettings } from '@zextras/carbonio-shell-ui';
-import type { TinyMCE } from 'tinymce/tinymce';
+import { noop } from 'lodash';
+import type { Editor, TinyMCE } from 'tinymce/tinymce';
 
 import * as StyledComp from './edit-view-styled-components';
+import { handleEditorPaste } from './editor-paste-handler';
 import { plainTextToHTML } from '../../../../../commons/utils';
 import { useEditorIsRichText, useEditorText } from '../../../../../store/editor';
 import { MailsEditorV2 } from '../../../../../types';
-import { getFontSizesOptions, getFonts } from '../../../../settings/components/utils';
+import { getFonts, getFontSizesOptions } from '../../../../settings/components/utils';
 
 export type TextEditorContent = { plainText: string; richText: string };
 
@@ -76,7 +78,10 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 			'insertfile image',
 			'imageSelector'
 		].join(' | '),
-		init_instance_callback: (editor: TinyMCE): (() => void) => {
+		paste_data_images: false,
+		init_instance_callback: (editor: Editor): (() => void) => {
+			if (!editor) return noop;
+			editor.on('paste', (event) => handleEditorPaste(editor, editorId, event));
 			const mutationObserver = new MutationObserver(() => {
 				editor.dispatch('ResizeWindow');
 			});
@@ -110,8 +115,6 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 						>
 							<StyledComp.EditorWrapper data-testid="MailEditorWrapper">
 								<Composer
-									// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-									// @ts-ignore
 									value={text.richText}
 									disabled={disabled}
 									onFileSelect={onFilesSelected}

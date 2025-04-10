@@ -10,6 +10,12 @@ import { EditViewActions } from '../../../constants';
 import { generateMessage } from '../../../tests/generators/generateMessage';
 import { MailMessage } from '../../../types';
 import { generateEditor } from '../editor-generators';
+import { getEditor } from '../hooks/editors';
+
+jest.mock('../hooks/editors', () => ({
+	...jest.requireActual('../hooks/editors'),
+	getEditor: jest.fn()
+}));
 
 jest.mock('uuid', () => ({
 	v4: jest.fn(() => 'test-editor-id')
@@ -24,7 +30,9 @@ jest.mock('@zextras/carbonio-shell-ui', () => ({
 
 jest.mock('../../../helpers/identities', () => ({
 	getIdentityFromParticipant: jest.fn(() => ({ id: 'test-identity-id' })),
-	getDefaultIdentity: jest.fn(() => ({ id: 'default-identity-id' }))
+	getDefaultIdentity: jest.fn(() => ({ id: 'default-identity-id' })),
+	getRecipientReplyIdentity: jest.fn(() => ({ id: 'recipient-reply-id' })),
+	getAddressOwnerAccount: jest.fn(() => ({ id: 'address-owner-id' }))
 }));
 
 // Test cases
@@ -84,5 +92,47 @@ describe('generateEditor', () => {
 		});
 
 		expect(result).toBeNull();
+	});
+	describe('urgent flag', () => {
+		it.each`
+			action                                   | assertion
+			${EditViewActions.REPLY}                 | ${false}
+			${EditViewActions.NEW}                   | ${false}
+			${EditViewActions.REPLY_ALL}             | ${false}
+			${EditViewActions.FORWARD}               | ${false}
+			${EditViewActions.COMPOSE}               | ${false}
+			${EditViewActions.EDIT_AS_DRAFT}         | ${true}
+			${EditViewActions.PREFILL_COMPOSE}       | ${false}
+			${EditViewActions.FORWARD_AS_ATTACHMENT} | ${false}
+			${EditViewActions.EDIT_AS_NEW}           | ${false}
+			${EditViewActions.MAIL_TO}               | ${false}
+		`(`should set urgent in editor to $assertion if action is $action`, ({ action, assertion }) => {
+			const urgentMessage = { ...message, urgent: true };
+			const replyEditor = generateEditor({
+				action,
+				id: 'test-id',
+				message: urgentMessage
+			});
+
+			expect(replyEditor?.isUrgent).toBe(assertion);
+		});
+
+		it('should return true if action is RESUME and message is urgent', () => {
+			const urgentMessage = { ...message, urgent: true };
+			const replyEditor = generateEditor({
+				action: EditViewActions.EDIT_AS_DRAFT,
+				id: 'test-id',
+				message: urgentMessage
+			});
+
+			(getEditor as jest.Mock).mockReturnValueOnce(replyEditor);
+
+			const resumedEditor = generateEditor({
+				action: EditViewActions.RESUME,
+				id: replyEditor?.id
+			});
+
+			expect(resumedEditor?.isUrgent).toBe(true);
+		});
 	});
 });
