@@ -38,7 +38,6 @@ import { generateMessage } from '../../../tests/generators/generateMessage';
 import {
 	ConvActionRequest,
 	ConvActionResponse,
-	ExtraWindowsContextType,
 	GetMsgRequest,
 	GetMsgResponse,
 	MsgActionRequest,
@@ -51,7 +50,6 @@ import {
 	SoapIncompleteMessage,
 	SoapMailMessage
 } from '../../../types';
-import * as externalWindowManager from '../../app/extra-windows/global-extra-window-manager';
 import SearchView from '../search-view';
 
 jest.mock('react-router-dom', () => ({
@@ -159,6 +157,10 @@ function fakeCounter(): { count: number; setCount: (value: number) => void } {
 }
 
 describe('SearchView', () => {
+	beforeAll(() => {
+		jest.spyOn(reactRouterDom, 'useNavigate').mockReturnValue(jest.fn());
+	});
+
 	describe('view by conversations', () => {
 		it('should display label "Results for" when soap API fulfilled', async () => {
 			const searchSettings = setupSearchViewTest({ viewBy: 'conversation', query: 'hello' });
@@ -568,15 +570,7 @@ describe('SearchView', () => {
 				useDisableSearch: () => [false, noop],
 				ResultsHeader: resultsHeader
 			};
-			const spyUseGlobalExternalWindowManager = jest.spyOn(
-				externalWindowManager,
-				'useGlobalExtraWindowManager'
-			);
-			const mockCreateWindow = jest.fn();
-			const context: ExtraWindowsContextType = {
-				createWindow: mockCreateWindow
-			};
-			spyUseGlobalExternalWindowManager.mockReturnValue(context);
+
 			const { user } = setupTest(<SearchView {...searchViewProps} />);
 
 			await act(async () => {
@@ -604,7 +598,7 @@ describe('SearchView', () => {
 				user.dblClick(clickableMessage);
 			});
 
-			expect(mockCreateWindow).toHaveBeenCalledTimes(1);
+			expect(window.open).toHaveBeenCalledTimes(1);
 		});
 		it('should call MsgActionRequest with the correct parameters when user click on a message', async () => {
 			const searchSettings = setupSearchViewTest({ viewBy: 'message', query: 'hello' });
