@@ -15,12 +15,13 @@ import { useCompleteMessageOrFetch } from '../../../store/emails/hooks/hooks';
 import { useMessageStatus } from '../../../store/emails/store';
 import { useExtraWindow } from '../extra-windows/use-extra-window';
 
-export const MessagePreviewPanel: FC<{ folderId: string; messageId: string }> = ({
+export const MessagePreviewPanel: FC<{ folderId: string; messageId: string; part?: string }> = ({
 	folderId,
-	messageId
+	messageId,
+	part
 }) => {
 	const { isInsideExtraWindow } = useExtraWindow();
-	const { message } = useCompleteMessageOrFetch(messageId);
+	const { message } = useCompleteMessageOrFetch(messageId, part);
 	const messageLoadingStatus = useMessageStatus(messageId);
 
 	const messagePreviewFactory = useCallback(

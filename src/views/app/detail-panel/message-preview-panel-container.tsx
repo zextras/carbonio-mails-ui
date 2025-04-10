@@ -10,10 +10,11 @@ import { useParams } from 'react-router-dom';
 import { MessagePreviewPanel } from './message-preview-panel';
 
 export const MessagePreviewPanelContainer = (): React.JSX.Element => {
-	const { folderId, messageId } = useParams() as {
+	const { folderId, messageId, part } = useParams() as {
 		folderId: string;
 		messageId: string;
+		part?: string;
 	};
 
-	return <MessagePreviewPanel messageId={messageId} folderId={folderId} />;
+	return <MessagePreviewPanel messageId={messageId} folderId={folderId} part={part} />;
 };
