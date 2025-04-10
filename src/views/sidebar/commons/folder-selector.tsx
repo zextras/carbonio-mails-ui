@@ -8,7 +8,6 @@ import React, { ChangeEvent, ReactElement, useMemo, useState } from 'react';
 import { ThemeProvider } from '@mui/material';
 import { Button, Container, Input, Padding } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
-import styled from 'styled-components';
 
 import { FolderAccordionCustomComponent } from './folder-accordions-custom-component';
 import { FoldersAccordion } from './folders-accordion';
@@ -16,13 +15,6 @@ import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
 import { getFolder, useRootsArray } from '../../../carbonio-ui-commons/store/zustand/folder/hooks';
 import { themeMui } from '../../../carbonio-ui-commons/theme/theme-mui';
 import type { Folder } from '../../../carbonio-ui-commons/types/folder';
-import { isRoot } from '../../../helpers/folders';
-import { filter, startsWith } from 'lodash';
-
-// const ContainerEl = styled(Container)`
-// 	overflow-y: auto;
-// 	display: block;
-// `;
 
 export type FolderSelectorProps = {
 	inputLabel?: string;
@@ -33,23 +25,23 @@ export type FolderSelectorProps = {
 	allowRootSelection: boolean;
 };
 
-function filterRootChildren(folders: Array<Folder>, nameCriteria: string): Array<Folder> {
-	return filter(folders, (folder) => {
-		const folderName = folder.name?.toLowerCase();
-		return startsWith(folderName, nameCriteria.toLowerCase());
-	});
-}
+function filterFoldersByName(folders: Folder[], search: string): Folder[] {
+	return folders
+		.map((folder) => {
+			const matched = folder.name.toLowerCase().includes(search.toLowerCase());
 
-function filterRoots(roots: Array<Folder>, nameCriteria: string): Array<Folder> {
-	return roots.reduce((acc, root) => {
-		if (isRoot(root.id)) {
-			acc.push({
-				...root,
-				children: root.children ? filterRootChildren(root.children, nameCriteria) : []
-			});
-		}
-		return acc.filter((accItem) => !!accItem.children?.length);
-	}, [] as Array<Folder>);
+			const children = filterFoldersByName(folder.children || [], search);
+
+			if (matched || children.length > 0) {
+				return {
+					...folder,
+					children
+				};
+			}
+
+			return null;
+		})
+		.filter(Boolean) as Folder[];
 }
 
 export const FolderSelector = ({
@@ -68,7 +60,10 @@ export const FolderSelector = ({
 		[roots, showSharedAccounts]
 	);
 
-	const filteredRoots = filterRoots(rootFolders, inputValue);
+	const filteredRoots = useMemo(
+		() => filterFoldersByName(rootFolders, inputValue),
+		[inputValue, rootFolders]
+	);
 
 	const inputName = selectedFolder ? selectedFolder.name : '';
 	return (
