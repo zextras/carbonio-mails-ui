@@ -10,19 +10,15 @@ import { Container, Padding } from '@zextras/carbonio-design-system';
 import MailPreview from './preview/mail-preview';
 import { PreviewPanelHeader } from './preview/preview-panel-header';
 import { Spinner } from '../../../assets/spinner';
-import { API_REQUEST_STATUS } from '../../../constants';
-import { useCompleteMessageOrFetch } from '../../../store/emails/hooks/hooks';
-import { useMessageStatus } from '../../../store/emails/store';
+import { IncompleteMessage, MailMessage } from '../../../types';
 import { useExtraWindow } from '../extra-windows/use-extra-window';
 
-export const MessagePreviewPanel: FC<{ folderId: string; messageId: string; part?: string }> = ({
-	folderId,
-	messageId,
-	part
-}) => {
+export const MessagePreviewPanel: FC<{
+	folderId: string;
+	message: MailMessage | IncompleteMessage | undefined;
+	isMessageLoaded: boolean;
+}> = ({ folderId, message, isMessageLoaded }) => {
 	const { isInsideExtraWindow } = useExtraWindow();
-	const { message } = useCompleteMessageOrFetch(messageId, part);
-	const messageLoadingStatus = useMessageStatus(messageId);
 
 	return (
 		<Container orientation="vertical" mainAlignment="flex-start" crossAlignment="flex-start">
@@ -41,7 +37,7 @@ export const MessagePreviewPanel: FC<{ folderId: string; messageId: string; part
 				padding={{ horizontal: 'large', bottom: 'small', top: 'large' }}
 				mainAlignment="flex-start"
 			>
-				{messageLoadingStatus === API_REQUEST_STATUS.fulfilled ? (
+				{isMessageLoaded ? (
 					<Container height="fit" mainAlignment="flex-start" background="gray5">
 						<Padding bottom="medium" width="100%">
 							{message && (
