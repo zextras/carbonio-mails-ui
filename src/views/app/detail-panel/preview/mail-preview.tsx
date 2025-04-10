@@ -50,7 +50,8 @@ const MailPreview: FC<MailPreviewProps> = ({
 	const openEmlPreview: OpenEmlPreviewType = useCallback(
 		(parentMessageId, attachmentName, emlMessage) => {
 			window.open(
-				`${getLocationOrigin()}/carbonio/${MSG_PREVIEW_ROUTE}/folder/${parentMessageId}/message/${emlMessage.id}/${attachmentName}`
+				`${getLocationOrigin()}/carbonio/${MSG_PREVIEW_ROUTE}/folder/${parentMessageId}/message/${emlMessage.id}/${attachmentName}`,
+				emlMessage.subject
 			);
 		},
 		[]

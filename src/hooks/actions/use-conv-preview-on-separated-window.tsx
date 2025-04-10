@@ -36,9 +36,10 @@ export const useConvPreviewOnSeparatedWindowFn = ({
 		}
 
 		window.open(
-			`${getLocationOrigin()}/carbonio/${MSG_PREVIEW_ROUTE}/folder/${folderId}/conversation/${conversationId}`
+			`${getLocationOrigin()}/carbonio/${MSG_PREVIEW_ROUTE}/folder/${folderId}/conversation/${conversationId}`,
+			subject
 		);
-	}, [createWindow, canExecute, conversationId, folderId]);
+	}, [createWindow, canExecute, folderId, conversationId, subject]);
 
 	return useMemo(() => ({ canExecute, execute }), [canExecute, execute]);
 };
