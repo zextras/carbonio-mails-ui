@@ -10,6 +10,7 @@ import { ModalManager } from '@zextras/carbonio-design-system';
 import { Route, Routes } from 'react-router-dom';
 
 import { ConversationPreviewPanelContainer } from './conversation-preview-panel-container';
+import { EmlPreviewPanelContainer } from './eml-preview-panel-container';
 import { MessagePreviewPanelContainer } from './message-preview-panel-container';
 
 export default function StandalonePreviewPanel(): React.JSX.Element {
@@ -21,7 +22,11 @@ export default function StandalonePreviewPanel(): React.JSX.Element {
 					element={<ConversationPreviewPanelContainer />}
 				/>
 				<Route
-					path={`folder/:folderId/message/:messageId/:part?`}
+					path={`folder/:folderId/message/:messageId/:part`}
+					element={<EmlPreviewPanelContainer />}
+				/>
+				<Route
+					path={`folder/:folderId/message/:messageId`}
 					element={<MessagePreviewPanelContainer />}
 				/>
 			</Routes>
