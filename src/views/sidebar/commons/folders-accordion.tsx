@@ -13,7 +13,6 @@ import {
 	AccordionSummary as MUIAccordionSummary,
 	AccordionDetails as MUIAccordionDetails
 } from '@mui/material';
-import { useParams } from 'react-router-dom';
 
 import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
 import { theme } from '../../../carbonio-ui-commons/theme/theme-mui';
@@ -35,62 +34,61 @@ export const FoldersAccordion = ({
 	selectedFolderId,
 	allowRootSelection
 }: FolderAccordionProps): React.JSX.Element => {
-	const { folderId } = useParams() as { folderId: string };
 	const [openIds, setOpenIds] = useState<Array<string>>([FOLDERS.USER_ROOT]);
 
 	return (
 		<MUIContainer disableGutters>
-			{folders.map((accordion) => (
+			{folders.map((folder) => (
 				<MUIAccordion
 					disableGutters
 					slotProps={{ transition: { unmountOnExit: true } }}
-					expanded={openIds.includes(accordion.id)}
-					key={accordion.id}
+					expanded={openIds.includes(folder.id)}
+					key={folder.id}
 				>
 					<MUIAccordionSummary
 						onClick={(): void => {
-							onFolderSelected?.(accordion);
+							onFolderSelected?.(folder);
 						}}
 						expandIcon={
-							accordion?.children?.length > 0 &&
-							!hasId(accordion, 'all') && (
+							folder?.children?.length > 0 &&
+							!hasId(folder, 'all') && (
 								<ExpandMoreIcon
 									color="primary"
 									onClick={(e): void => {
 										e.preventDefault();
 										setOpenIds((state: Array<string>) =>
-											state.includes(accordion.id)
-												? state.filter((id) => id !== accordion.id)
-												: [...state, accordion.id]
+											state.includes(folder.id)
+												? state.filter((id) => id !== folder.id)
+												: [...state, folder.id]
 										);
 									}}
 								/>
 							)
 						}
 						aria-controls="panel1a-content"
-						id={accordion.id}
+						id={folder.id}
 						sx={{
 							margin: 0,
 							backgroundColor:
-								accordion.id === folderId
+								folder.id === selectedFolderId
 									? theme.palette.highlight.hover
 									: theme.palette.gray6.regular,
 							'&:hover': {
 								backgroundColor:
-									accordion.id === folderId
+									folder.id === selectedFolderId
 										? theme.palette.highlight.active
 										: theme.palette.gray6.hover
 							}
 						}}
 					>
-						<FolderAccordionCustomComponent folder={accordion} />
+						<FolderAccordionCustomComponent folder={folder} />
 					</MUIAccordionSummary>
-					{accordion?.children?.length > 0 && (
+					{folder?.children?.length > 0 && (
 						<MUIAccordionDetails>
 							<FoldersAccordion
-								folders={accordion.children}
+								folders={folder.children}
 								selectedFolderId={selectedFolderId}
-								key={accordion.id}
+								key={folder.id}
 								allowRootSelection={allowRootSelection}
 								FolderAccordionCustomComponent={FolderAccordionCustomComponent}
 								onFolderSelected={onFolderSelected}
