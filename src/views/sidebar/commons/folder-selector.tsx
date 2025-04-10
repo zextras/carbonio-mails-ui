@@ -15,6 +15,7 @@ import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
 import { getFolder, useRootsArray } from '../../../carbonio-ui-commons/store/zustand/folder/hooks';
 import { themeMui } from '../../../carbonio-ui-commons/theme/theme-mui';
 import type { Folder } from '../../../carbonio-ui-commons/types/folder';
+import { useFolders } from '../../../hooks/use-folders';
 
 export type FolderSelectorProps = {
 	inputLabel?: string;
@@ -54,7 +55,7 @@ export const FolderSelector = ({
 }: FolderSelectorProps): ReactElement => {
 	const [inputValue, setInputValue] = useState('');
 	const selectedFolder = selectedFolderId && getFolder(selectedFolderId);
-	const roots = useRootsArray();
+	const roots = useFolders();
 	const rootFolders = useMemo<Array<Folder>>(
 		() => (showSharedAccounts ? roots : roots.filter((root) => root.id === FOLDERS.USER_ROOT)),
 		[roots, showSharedAccounts]
