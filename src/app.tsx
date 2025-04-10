@@ -6,6 +6,7 @@
 
 import React from 'react';
 
+import { AppContextInitializer } from './app-utils/app-context-initializer';
 import { BackupSearchComponentToggler } from './app-utils/backup-search-component-toggler';
 import { SearchRegistration } from './app-utils/search-registration';
 import { ShellRegistrations } from './app-utils/shell-registrations';
@@ -19,6 +20,7 @@ import { SyncDataHandler } from './views/sidebar/sync-data-handler';
 
 const App = (): React.JSX.Element => (
 	<AuthGuard>
+		<AppContextInitializer />
 		<ShellRegistrations />
 		<BackupSearchComponentToggler />
 		<SearchRegistration />

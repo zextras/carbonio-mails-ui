@@ -3,10 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { Suspense, lazy, useEffect, useMemo, useState, useRef } from 'react';
-
-import { setAppContext, useUserSettings } from '@zextras/carbonio-shell-ui';
-import moment from 'moment';
+import React, { Suspense, lazy, useRef } from 'react';
 
 import { FolderView } from './folder-view';
 import { LayoutSelector } from './layout-selector';
@@ -24,27 +21,8 @@ const DetailPanel = (): React.JSX.Element => (
 );
 
 const AppView = (): React.JSX.Element => {
-	const [count, setCount] = useState(0);
-	const { zimbraPrefGroupMailBy, zimbraPrefLocale } = useUserSettings().prefs;
 	const containerRef = useRef<HTMLDivElement>(null);
 	useUpdateView();
-
-	const isMessageView = useMemo(
-		() => (zimbraPrefGroupMailBy && zimbraPrefGroupMailBy === 'message') || false,
-		[zimbraPrefGroupMailBy]
-	);
-
-	if (zimbraPrefLocale) {
-		moment.locale(zimbraPrefLocale as string);
-	}
-
-	useEffect(() => {
-		setAppContext({
-			isMessageView,
-			count,
-			setCount
-		});
-	}, [count, isMessageView]);
 
 	return (
 		<LayoutSelector
