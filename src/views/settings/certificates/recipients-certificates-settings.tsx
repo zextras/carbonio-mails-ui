@@ -233,7 +233,7 @@ const RecipientsCertificateSettings: FC = (): ReactElement => {
 			id={'recipient-certificates'}
 		>
 			<FormSubSection>
-				<Container gap={'2rem'}>
+				<Container gap={'2rem'} mainAlignment={'flex-start'} crossAlignment={'flex-start'}>
 					<Container>
 						<Table
 							rows={items}
