@@ -85,7 +85,7 @@ export const FoldersAccordion = ({
 						<FolderAccordionCustomComponent folder={accordion} />
 					</MUIAccordionSummary>
 					{accordion?.children?.length > 0 && (
-						<MUIAccordionDetails sx={{ padding: 0 }}>
+						<MUIAccordionDetails>
 							<FoldersAccordion
 								folders={accordion.children}
 								selectedFolderId={selectedFolderId}
