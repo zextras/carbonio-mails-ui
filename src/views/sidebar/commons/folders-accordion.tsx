@@ -15,6 +15,7 @@ import {
 } from '@mui/material';
 import { useParams } from 'react-router-dom';
 
+import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
 import { theme } from '../../../carbonio-ui-commons/theme/theme-mui';
 import { hasId } from '../../../carbonio-ui-commons/worker/handle-message';
 import { Folder } from '../../../types';
@@ -35,7 +36,7 @@ export const FoldersAccordion = ({
 	allowRootSelection
 }: FolderAccordionProps): React.JSX.Element => {
 	const { folderId } = useParams() as { folderId: string };
-	const [openIds, setOpenIds] = useState<Array<string>>([]);
+	const [openIds, setOpenIds] = useState<Array<string>>([FOLDERS.USER_ROOT]);
 
 	return (
 		<MUIContainer disableGutters>
