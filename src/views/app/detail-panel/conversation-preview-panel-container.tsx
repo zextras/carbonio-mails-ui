@@ -21,7 +21,10 @@ import { useExtraWindow } from '../extra-windows/use-extra-window';
 
 export const ConversationPreviewPanelContainer = (): React.JSX.Element => {
 	const navigate = useNavigate();
-	const { conversationId, folderId } = useParams() as { conversationId: string; folderId: string };
+	const { conversationId, folderId } = useParams() as {
+		conversationId: string;
+		folderId: string;
+	};
 	const { isInsideExtraWindow } = useExtraWindow();
 	const { conversation, conversationStatus } = useCompleteConversationOrFetch(conversationId);
 	const messages = useConversationMessages(conversationId);

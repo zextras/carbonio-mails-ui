@@ -9,7 +9,7 @@ import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { MessageActionsDescriptors, MSG_PREVIEW_ROUTE } from '../../constants';
-import { ActionFn, ExtraWindowCreationParams, UIActionDescriptor } from '../../types';
+import { ActionFn, UIActionDescriptor } from '../../types';
 import { getLocationOrigin } from '../../views/app/detail-panel/preview/utils';
 import { useGlobalExtraWindowManager } from '../../views/app/extra-windows/global-extra-window-manager';
 import { useExtraWindow } from '../../views/app/extra-windows/use-extra-window';
@@ -32,17 +32,11 @@ export const useMsgPreviewOnSeparatedWindowFn = ({
 			if (!createWindow) {
 				return;
 			}
-
-			const createWindowParams: ExtraWindowCreationParams = {
-				name: `message-${messageId}`,
-				returnComponent: false,
-				title: subject,
-				url: `${getLocationOrigin()}/carbonio/${MSG_PREVIEW_ROUTE}/folder/${folderId}/message/${messageId}`,
-				closeOnUnmount: false
-			};
-			createWindow(createWindowParams);
+			window.open(
+				`${getLocationOrigin()}/carbonio/${MSG_PREVIEW_ROUTE}/folder/${folderId}/message/${messageId}`
+			);
 		}
-	}, [canExecute, createWindow, messageId, folderId, subject]);
+	}, [canExecute, createWindow, messageId, folderId]);
 
 	return useMemo(() => ({ canExecute, execute }), [canExecute, execute]);
 };

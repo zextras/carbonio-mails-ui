@@ -9,9 +9,9 @@ import { Container } from '@zextras/carbonio-design-system';
 
 import { MailPreviewBlock } from './parts/mail-preview-block';
 import { MailPreviewContent } from './parts/mail-preview-content';
+import { getLocationOrigin } from './utils';
+import { MSG_PREVIEW_ROUTE } from '../../../../constants';
 import type { MailMessage, OpenEmlPreviewType } from '../../../../types';
-import { ExtraWindowCreationParams } from '../../../../types';
-import { useGlobalExtraWindowManager } from '../../extra-windows/global-extra-window-manager';
 
 export type MailPreviewProps = {
 	message: MailMessage;
@@ -35,7 +35,6 @@ const MailPreview: FC<MailPreviewProps> = ({
 	const mailContainerRef = useRef<HTMLDivElement>(null);
 	const [isOpen, setIsOpen] = useState(expanded || isAlone);
 	const [containerHeight, setContainerHeight] = useState(isOpen ? '100%' : 'fit-content');
-	const { createWindow } = useGlobalExtraWindowManager();
 
 	const onClick = useCallback(() => setIsOpen((prevOpen) => !prevOpen), []);
 
@@ -50,26 +49,11 @@ const MailPreview: FC<MailPreviewProps> = ({
 
 	const openEmlPreview: OpenEmlPreviewType = useCallback(
 		(parentMessageId, attachmentName, emlMessage) => {
-			const createWindowParams: ExtraWindowCreationParams = {
-				name: `${parentMessageId}-${attachmentName}`,
-				returnComponent: false,
-				children: (
-					<MailPreview
-						message={emlMessage}
-						expanded={false}
-						isAlone
-						isMessageView
-						isExternalMessage
-						isInsideExtraWindow
-						messagePreviewFactory={messagePreviewFactory}
-					/>
-				),
-				title: emlMessage.subject,
-				closeOnUnmount: false
-			};
-			createWindow?.(createWindowParams);
+			window.open(
+				`${getLocationOrigin()}/carbonio/${MSG_PREVIEW_ROUTE}/folder/${parentMessageId}/message/${emlMessage.id}/${attachmentName}`
+			);
 		},
-		[createWindow, messagePreviewFactory]
+		[]
 	);
 
 	return (
