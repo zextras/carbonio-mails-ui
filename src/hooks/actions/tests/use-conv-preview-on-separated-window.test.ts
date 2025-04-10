@@ -3,19 +3,19 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { faker } from '@faker-js/faker';
 import { act } from 'react';
 
+import { faker } from '@faker-js/faker';
+
+import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
 import { populateFoldersStore } from '../../../carbonio-ui-commons/test/mocks/store/folders';
 import { setupHook } from '../../../carbonio-ui-commons/test/test-setup';
 import { generateConversation } from '../../../tests/generators/generateConversation';
-import * as globalExtraWindowManager from '../../../views/app/extra-windows/global-extra-window-manager';
 import * as extraWindow from '../../../views/app/extra-windows/use-extra-window';
 import {
 	useConvPreviewOnSeparatedWindowDescriptor,
 	useConvPreviewOnSeparatedWindowFn
 } from '../use-conv-preview-on-separated-window';
-import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
 
 describe('useConvPreviewOnSeparatedWindow', () => {
 	const conv = generateConversation({ messageGenerationCount: faker.number.int({ max: 42 }) });
@@ -100,10 +100,6 @@ describe('useConvPreviewOnSeparatedWindow', () => {
 
 		describe('execute', () => {
 			const useExtraWindowSpy = jest.spyOn(extraWindow, 'useExtraWindow');
-			const createWindowSpy = jest.fn();
-			jest
-				.spyOn(globalExtraWindowManager, 'useGlobalExtraWindowManager')
-				.mockImplementation(() => ({ createWindow: createWindowSpy }));
 
 			it('should not call the integrated function if the action cannot be executed', async () => {
 				useExtraWindowSpy.mockReturnValue({ isInsideExtraWindow: true });
@@ -125,7 +121,7 @@ describe('useConvPreviewOnSeparatedWindow', () => {
 					functions.execute();
 				});
 
-				expect(createWindowSpy).not.toHaveBeenCalled();
+				expect(window.open).not.toHaveBeenCalled();
 			});
 
 			it('should call the API with the proper params if the action can be executed', async () => {
@@ -148,7 +144,10 @@ describe('useConvPreviewOnSeparatedWindow', () => {
 					functions.execute();
 				});
 
-				expect(createWindowSpy).toHaveBeenCalled();
+				expect(window.open).toHaveBeenCalledWith(
+					`http://localhost/carbonio/focus-mode/msg-preview/folder/2/conversation/${conv.id}`,
+					conv.subject
+				);
 			});
 		});
 	});
