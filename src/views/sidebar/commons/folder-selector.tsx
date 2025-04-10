@@ -16,6 +16,8 @@ import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
 import { getFolder, useRootsArray } from '../../../carbonio-ui-commons/store/zustand/folder/hooks';
 import { themeMui } from '../../../carbonio-ui-commons/theme/theme-mui';
 import type { Folder } from '../../../carbonio-ui-commons/types/folder';
+import { isRoot } from '../../../helpers/folders';
+import { filter, startsWith } from 'lodash';
 
 // const ContainerEl = styled(Container)`
 // 	overflow-y: auto;
@@ -30,6 +32,25 @@ export type FolderSelectorProps = {
 	showSharedAccounts: boolean;
 	allowRootSelection: boolean;
 };
+
+function filterRootChildren(folders: Array<Folder>, nameCriteria: string): Array<Folder> {
+	return filter(folders, (folder) => {
+		const folderName = folder.name?.toLowerCase();
+		return startsWith(folderName, nameCriteria.toLowerCase());
+	});
+}
+
+function filterRoots(roots: Array<Folder>, nameCriteria: string): Array<Folder> {
+	return roots.reduce((acc, root) => {
+		if (isRoot(root.id)) {
+			acc.push({
+				...root,
+				children: root.children ? filterRootChildren(root.children, nameCriteria) : []
+			});
+		}
+		return acc.filter((accItem) => !!accItem.children?.length);
+	}, [] as Array<Folder>);
+}
 
 export const FolderSelector = ({
 	inputLabel,
@@ -46,6 +67,9 @@ export const FolderSelector = ({
 		() => (showSharedAccounts ? roots : roots.filter((root) => root.id === FOLDERS.USER_ROOT)),
 		[roots, showSharedAccounts]
 	);
+
+	const filteredRoots = filterRoots(rootFolders, inputValue);
+
 	const inputName = selectedFolder ? selectedFolder.name : '';
 	return (
 		<>
@@ -69,7 +93,7 @@ export const FolderSelector = ({
 			>
 				<ThemeProvider theme={themeMui}>
 					<FoldersAccordion
-						folders={rootFolders}
+						folders={filteredRoots}
 						onFolderSelected={onFolderSelected}
 						selectedFolderId={selectedFolderId}
 						allowRootSelection={allowRootSelection}
