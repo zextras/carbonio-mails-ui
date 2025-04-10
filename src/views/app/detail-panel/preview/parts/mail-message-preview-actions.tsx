@@ -21,9 +21,7 @@ type MailMsgPreviewActionsType = {
 	message: MailMessage;
 };
 
-export const MailMsgPreviewActions: FC<MailMsgPreviewActionsType> = ({
-	message
-}): ReactElement => {
+export const MailMsgPreviewActions: FC<MailMsgPreviewActionsType> = ({ message }): ReactElement => {
 	const { setCount } = useAppContext<AppContext>();
 	const { deselectAll } = useSelection({ setCount, count: 0 });
 	const { itemId } = useParams<{ itemId: string }>();

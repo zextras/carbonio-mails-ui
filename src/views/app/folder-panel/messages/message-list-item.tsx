@@ -18,7 +18,6 @@ import { useMsgSetReadFn } from '../../../../hooks/actions/use-msg-set-read';
 import { useOnMouseHover } from '../../../../hooks/use-on-mouse-hover';
 import { MessageListItemProps } from '../../../../types';
 import { createEditBoard } from '../../detail-panel/edit/edit-view-board';
-import { MessagePreviewPanel } from '../../detail-panel/message-preview-panel';
 
 type RouteParams = {
 	folderId: string;
