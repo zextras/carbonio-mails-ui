@@ -75,7 +75,7 @@ type MessageWithStatus = {
  * Get the message from the store or fetch it.
  * Ensures that incomplete messages are fetched if their status indicates they are not yet fulfilled.
  */
-export function useCompleteMessageOrFetch(messageId: string, part?: string): MessageWithStatus {
+export function useCompleteMessageOrFetch(messageId: string): MessageWithStatus {
 	const message = useMessageById(messageId);
 	const messageStatus = useMessageStatus(messageId);
 
@@ -87,13 +87,13 @@ export function useCompleteMessageOrFetch(messageId: string, part?: string): Mes
 						messageStatus !== API_REQUEST_STATUS.pending &&
 						(!message?.isComplete || messageStatus === undefined)
 					) {
-						getMessageEmailStoreAction(messageId, part);
+						getMessageEmailStoreAction(messageId);
 					}
 				},
 				DEFAULT_API_DEBOUNCE_TIME,
 				{ leading: false, trailing: true }
 			),
-		[message?.isComplete, messageId, messageStatus, part]
+		[message?.isComplete, messageId, messageStatus]
 	);
 
 	useEffect(() => {

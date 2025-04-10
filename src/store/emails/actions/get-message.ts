@@ -63,11 +63,8 @@ async function handleDecryptRetrieveMessage(
 	return normalizeMailMessageFromSoap(response.m[0], true) as MailMessage;
 }
 
-export function getMessageEmailStoreAction(
-	messageId: string,
-	part?: string
-): Promise<MailMessage | undefined> {
-	return handleRetrieveMessage(messageId, (id) => getMsgSoapApi({ msgId: id, max: 250_000, part }));
+export function getMessageEmailStoreAction(messageId: string): Promise<MailMessage | undefined> {
+	return handleRetrieveMessage(messageId, (id) => getMsgSoapApi({ msgId: id, max: 250_000 }));
 }
 
 export function getMessageDecryptEmailStoreAction(
