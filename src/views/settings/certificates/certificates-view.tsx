@@ -130,18 +130,20 @@ const CertificatesView: FC = () => {
 				</Row>
 			</Container>
 			<Divider />
-			<Container
-				orientation="vertical"
-				mainAlignment="baseline"
-				crossAlignment="baseline"
-				background="gray5"
-				gap="1rem"
-				padding={{ all: 'medium' }}
-				style={{ overflow: 'auto' }}
-			>
-				<PersonalCertificatesSettings />
-				<RecipientsCertificateSettings />
-			</Container>
+			{smimePassword !== '' && (
+				<Container
+					orientation="vertical"
+					mainAlignment="baseline"
+					crossAlignment="baseline"
+					background="gray5"
+					gap="1rem"
+					padding={{ all: 'medium' }}
+					style={{ overflow: 'auto' }}
+				>
+					<PersonalCertificatesSettings />
+					<RecipientsCertificateSettings />
+				</Container>
+			)}
 		</>
 	);
 };
