@@ -20,7 +20,6 @@ export type MailPreviewProps = {
 	isMessageView: boolean;
 	isExternalMessage?: boolean;
 	isInsideExtraWindow?: boolean;
-	messagePreviewFactory: () => React.JSX.Element;
 };
 
 const MailPreview: FC<MailPreviewProps> = ({
@@ -29,8 +28,7 @@ const MailPreview: FC<MailPreviewProps> = ({
 	isAlone,
 	isMessageView,
 	isExternalMessage = false,
-	isInsideExtraWindow = false,
-	messagePreviewFactory
+	isInsideExtraWindow = false
 }) => {
 	const mailContainerRef = useRef<HTMLDivElement>(null);
 	const [isOpen, setIsOpen] = useState(expanded || isAlone);
@@ -70,7 +68,6 @@ const MailPreview: FC<MailPreviewProps> = ({
 				message={message}
 				open={isMailPreviewOpen}
 				isExternalMessage={isExternalMessage}
-				messagePreviewFactory={messagePreviewFactory}
 			/>
 
 			<Container

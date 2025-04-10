@@ -30,8 +30,7 @@ describe('Mail preview', () => {
 			message,
 			expanded: true,
 			isAlone: true,
-			isMessageView: true,
-			messagePreviewFactory: () => <></>
+			isMessageView: true
 		};
 
 		setupTest(<MailPreview {...props} />);
@@ -54,8 +53,7 @@ describe('Mail preview', () => {
 			message,
 			expanded: true,
 			isAlone: true,
-			isMessageView: true,
-			messagePreviewFactory: () => <></>
+			isMessageView: true
 		};
 
 		// Render the component
@@ -74,8 +72,7 @@ describe('Mail preview', () => {
 			message,
 			expanded: true,
 			isAlone: true,
-			isMessageView: true,
-			messagePreviewFactory: () => <></>
+			isMessageView: true
 		};
 
 		// Render the component
@@ -94,8 +91,7 @@ describe('Mail preview', () => {
 				message,
 				expanded: true,
 				isAlone: true,
-				isMessageView: true,
-				messagePreviewFactory: () => <></>
+				isMessageView: true
 			};
 
 			setupTest(<MailPreview {...props} />);

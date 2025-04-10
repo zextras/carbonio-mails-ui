@@ -19,11 +19,6 @@ export const SearchMessagePanel = ({ messageId }: { messageId: string }): React.
 	const navigate = useNavigate();
 	const { isInsideExtraWindow } = useExtraWindow();
 
-	const messagePreviewFactory = useCallback(
-		() => <SearchMessagePanel messageId={messageId} />,
-		[messageId]
-	);
-
 	if (!message) {
 		navigate('/search', { replace: true });
 		return <></>;
@@ -55,7 +50,6 @@ export const SearchMessagePanel = ({ messageId }: { messageId: string }): React.
 									isAlone
 									isMessageView
 									isInsideExtraWindow={isInsideExtraWindow}
-									messagePreviewFactory={messagePreviewFactory}
 								/>
 							</Padding>
 						)}

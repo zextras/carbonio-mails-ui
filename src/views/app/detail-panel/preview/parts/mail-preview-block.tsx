@@ -28,19 +28,17 @@ type MailPreviewBlockType = {
 	open: boolean;
 	onClick: () => void;
 	isExternalMessage?: boolean;
-	messagePreviewFactory: () => React.JSX.Element;
 };
 export const MailPreviewBlock: FC<MailPreviewBlockType> = ({
 	message,
 	open,
 	onClick,
-	isExternalMessage = false,
-	messagePreviewFactory
+	isExternalMessage = false
 }) => {
 	const { folderId, itemId } = useParams() as { folderId?: string; itemId?: string };
 	const compProps = useMemo(
-		() => ({ message, onClick, open, isExternalMessage, messagePreviewFactory }),
-		[message, onClick, open, isExternalMessage, messagePreviewFactory]
+		() => ({ message, onClick, open, isExternalMessage }),
+		[message, onClick, open, isExternalMessage]
 	);
 	const shouldReplaceHistory = useMemo(() => itemId === message.id, [message.id, itemId]);
 	const [t] = useTranslation();

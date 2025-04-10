@@ -35,7 +35,6 @@ export type MessageActionsArgumentType = {
 	message: MailMessage;
 	deselectAll: () => void;
 	shouldReplaceHistory?: boolean;
-	messagePreviewFactory: () => React.JSX.Element;
 };
 
 type MessageActionsReturnType = {

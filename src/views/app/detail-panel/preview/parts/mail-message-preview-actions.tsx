@@ -19,12 +19,10 @@ import { useExtraWindow } from '../../../extra-windows/use-extra-window';
 
 type MailMsgPreviewActionsType = {
 	message: MailMessage;
-	messagePreviewFactory: () => React.JSX.Element;
 };
 
 export const MailMsgPreviewActions: FC<MailMsgPreviewActionsType> = ({
-	message,
-	messagePreviewFactory
+	message
 }): ReactElement => {
 	const { setCount } = useAppContext<AppContext>();
 	const { deselectAll } = useSelection({ setCount, count: 0 });
@@ -58,8 +56,7 @@ export const MailMsgPreviewActions: FC<MailMsgPreviewActionsType> = ({
 	} = useMsgActions({
 		deselectAll,
 		message,
-		shouldReplaceHistory,
-		messagePreviewFactory
+		shouldReplaceHistory
 	});
 
 	const tagItem = useTagDropdownItem(applyTagDescriptor, message.tags);

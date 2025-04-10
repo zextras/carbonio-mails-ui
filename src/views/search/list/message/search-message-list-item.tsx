@@ -43,11 +43,6 @@ export const SearchMessageListItem: FC<SearchMessageListItemProps> = memo(functi
 
 	const shouldReplaceHistory = useMemo(() => itemId === messageId, [messageId, itemId]);
 
-	const messagePreviewFactory = useCallback(
-		() => <SearchMessagePanel messageId={itemId} />,
-		[itemId]
-	);
-
 	const zimbraPrefMarkMsgRead = useUserSettings()?.prefs?.zimbraPrefMarkMsgRead !== '-1';
 
 	const previewOnSeparatedWindow = useMsgPreviewOnSeparatedWindowFn({
@@ -108,7 +103,6 @@ export const SearchMessageListItem: FC<SearchMessageListItemProps> = memo(functi
 					onDoubleClick={onDoubleClick}
 					deselectAll={deselectAll}
 					shouldReplaceHistory={shouldReplaceHistory}
-					messagePreviewFactory={messagePreviewFactory}
 				>
 					<SearchMessageListItemCore
 						completeMessage={completeMessage}

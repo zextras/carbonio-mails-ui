@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, useCallback } from 'react';
+import React, { FC } from 'react';
 
 import { Container, Padding } from '@zextras/carbonio-design-system';
 
@@ -23,11 +23,6 @@ export const MessagePreviewPanel: FC<{ folderId: string; messageId: string; part
 	const { isInsideExtraWindow } = useExtraWindow();
 	const { message } = useCompleteMessageOrFetch(messageId, part);
 	const messageLoadingStatus = useMessageStatus(messageId);
-
-	const messagePreviewFactory = useCallback(
-		() => <MessagePreviewPanel folderId={folderId} messageId={messageId} />,
-		[folderId, messageId]
-	);
 
 	return (
 		<Container orientation="vertical" mainAlignment="flex-start" crossAlignment="flex-start">
@@ -56,7 +51,6 @@ export const MessagePreviewPanel: FC<{ folderId: string; messageId: string; part
 									isAlone
 									isMessageView
 									isInsideExtraWindow={isInsideExtraWindow}
-									messagePreviewFactory={messagePreviewFactory}
 								/>
 							)}
 						</Padding>

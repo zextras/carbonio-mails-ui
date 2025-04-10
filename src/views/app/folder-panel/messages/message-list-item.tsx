@@ -42,11 +42,6 @@ export const MessageListItem = memo(function MessageListItem({
 	const shouldReplaceHistory = useMemo(() => itemId === message.id, [message.id, itemId]);
 	const zimbraPrefMarkMsgRead = useUserSettings()?.prefs?.zimbraPrefMarkMsgRead !== '-1';
 
-	const messagePreviewFactory = useCallback(
-		() => <MessagePreviewPanel folderId={firstChildFolderId} messageId={message.id} />,
-		[firstChildFolderId, message.id]
-	);
-
 	const previewOnSeparatedWindow = useMsgPreviewOnSeparatedWindowFn({
 		messageId: message.id,
 		folderId: firstChildFolderId,
@@ -121,7 +116,6 @@ export const MessageListItem = memo(function MessageListItem({
 					onDoubleClick={onDoubleClickCallback}
 					shouldReplaceHistory={shouldReplaceHistory}
 					deselectAll={deselectAll}
-					messagePreviewFactory={messagePreviewFactory}
 				>
 					<MessageListItemCore
 						message={message}
