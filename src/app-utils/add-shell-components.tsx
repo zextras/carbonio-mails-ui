@@ -21,7 +21,6 @@ import { Spinner } from '../assets/spinner';
 import { CERTIFICATES_ROUTE, MAIL_APP_ID, MAILS_BOARD_VIEW_ID, MAILS_ROUTE } from '../constants';
 import { useSmimeFeatureStore } from '../store/certificates/store';
 import StandalonePreviewPanel from '../views/app/detail-panel/standalone-preview-panel';
-import { ExtraWindowsManager } from '../views/app/extra-windows/extra-window-manager';
 import { getSettingsSubSections } from '../views/settings/subsections';
 
 const LazyAppView = lazy(
@@ -53,9 +52,7 @@ const LazySidebarView = lazy(
 const AppView = (): React.JSX.Element => (
 	<Suspense fallback={<Spinner />}>
 		<ModalManager>
-			<ExtraWindowsManager>
-				<LazyAppView />
-			</ExtraWindowsManager>
+			<LazyAppView />
 		</ModalManager>
 	</Suspense>
 );

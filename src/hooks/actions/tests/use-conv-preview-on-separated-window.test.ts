@@ -11,7 +11,6 @@ import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
 import { populateFoldersStore } from '../../../carbonio-ui-commons/test/mocks/store/folders';
 import { setupHook } from '../../../carbonio-ui-commons/test/test-setup';
 import { generateConversation } from '../../../tests/generators/generateConversation';
-import * as extraWindow from '../../../views/app/extra-windows/use-extra-window';
 import {
 	useConvPreviewOnSeparatedWindowDescriptor,
 	useConvPreviewOnSeparatedWindowFn
