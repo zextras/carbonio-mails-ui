@@ -7,9 +7,9 @@
 import React, { createContext, FC, useCallback, useMemo, useRef, useState } from 'react';
 
 import { ModalManager, ThemeProvider } from '@zextras/carbonio-design-system';
+import type { Theme } from '@zextras/carbonio-design-system';
 import { PreviewManager } from '@zextras/carbonio-ui-preview';
 import { omit } from 'lodash';
-import { DefaultTheme } from 'styled-components';
 
 import NewWindow, { replaceStyles } from './new-window';
 import type { ExtraWindowContextType, ExtraWindowProps } from '../../../types';
@@ -131,7 +131,7 @@ const ExtraWindow: FC<ExtraWindowProps> = (props) => {
 	 * @param theme
 	 */
 	const themeExtension = useCallback(
-		(theme: DefaultTheme): DefaultTheme => ({
+		(theme: Theme): Theme => ({
 			...theme,
 			windowObj: windowObj || theme.windowObj
 		}),

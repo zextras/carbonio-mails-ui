@@ -102,8 +102,8 @@ export const DisplayMessagesSettings: FC<DisplayingMessagesSettingsProps> = ({
 						}
 						defaultSelection={{
 							label:
-							findLabel(checkNewMailOptions, settingsObj.zimbraPrefMailPollingInterval) ??
-							settingsObj.zimbraPrefMailPollingInterval,
+								findLabel(checkNewMailOptions, settingsObj.zimbraPrefMailPollingInterval) ??
+								settingsObj.zimbraPrefMailPollingInterval,
 							value: settingsObj.zimbraPrefMailPollingInterval
 						}}
 					/>
