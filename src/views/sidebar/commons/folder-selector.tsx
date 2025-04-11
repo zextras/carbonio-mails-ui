@@ -9,10 +9,11 @@ import { ThemeProvider } from '@mui/material';
 import { Button, Container, Input, Padding } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 
+import { FlatFolders } from './flatten-folders/flat-folders';
 import { FolderAccordionCustomComponent } from './folder-accordions-custom-component';
 import { FoldersAccordion } from './folders-accordion';
 import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
-import { getFolder, useRootsArray } from '../../../carbonio-ui-commons/store/zustand/folder/hooks';
+import { getFolder } from '../../../carbonio-ui-commons/store/zustand/folder/hooks';
 import { themeMui } from '../../../carbonio-ui-commons/theme/theme-mui';
 import type { Folder } from '../../../carbonio-ui-commons/types/folder';
 import { useFolders } from '../../../hooks/use-folders';
@@ -55,13 +56,13 @@ export const FolderSelector = ({
 }: FolderSelectorProps): ReactElement => {
 	const [inputValue, setInputValue] = useState('');
 	const selectedFolder = selectedFolderId && getFolder(selectedFolderId);
-	const roots = useFolders();
+	const folders = useFolders();
 	const rootFolders = useMemo<Array<Folder>>(
-		() => (showSharedAccounts ? roots : roots.filter((root) => root.id === FOLDERS.USER_ROOT)),
-		[roots, showSharedAccounts]
+		() => (showSharedAccounts ? folders : folders.filter((root) => root.id === FOLDERS.USER_ROOT)),
+		[folders, showSharedAccounts]
 	);
 
-	const filteredRoots = useMemo(
+	const filteredFolders = useMemo(
 		() => filterFoldersByName(rootFolders, inputValue),
 		[inputValue, rootFolders]
 	);
@@ -87,15 +88,24 @@ export const FolderSelector = ({
 				minHeight="30vh"
 				maxHeight="60vh"
 			>
-				<ThemeProvider theme={themeMui}>
-					<FoldersAccordion
-						folders={filteredRoots}
+				{inputValue.length > 0 ? (
+					<FlatFolders
+						folders={filteredFolders}
 						onFolderSelected={onFolderSelected}
 						selectedFolderId={selectedFolderId}
 						allowRootSelection={allowRootSelection}
-						FolderAccordionCustomComponent={FolderAccordionCustomComponent}
 					/>
-				</ThemeProvider>
+				) : (
+					<ThemeProvider theme={themeMui}>
+						<FoldersAccordion
+							folders={filteredFolders}
+							onFolderSelected={onFolderSelected}
+							selectedFolderId={selectedFolderId}
+							allowRootSelection={allowRootSelection}
+							FolderAccordionCustomComponent={FolderAccordionCustomComponent}
+						/>
+					</ThemeProvider>
+				)}
 			</Container>
 			{onNewFolderClick && (
 				<Container
