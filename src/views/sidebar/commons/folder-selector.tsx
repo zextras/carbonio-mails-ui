@@ -27,20 +27,17 @@ export type FolderSelectorProps = {
 	allowRootSelection: boolean;
 };
 
-function filterFoldersByName(folders: Folder[], search: string): Folder[] {
+export function filterFoldersByName(folders: Folder[], search: string): Folder[] {
 	return folders
 		.map((folder) => {
 			const matched = folder.name.toLowerCase().includes(search.toLowerCase());
-
 			const children = filterFoldersByName(folder.children || [], search);
-
 			if (matched || children.length > 0) {
 				return {
 					...folder,
 					children
 				};
 			}
-
 			return null;
 		})
 		.filter(Boolean) as Folder[];

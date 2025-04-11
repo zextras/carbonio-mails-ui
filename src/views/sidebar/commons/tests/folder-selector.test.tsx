@@ -6,6 +6,7 @@
 import React from 'react';
 
 import { screen } from '@testing-library/react';
+import { performance } from 'perf_hooks';
 
 import { FOLDER_VIEW } from '../../../../carbonio-ui-commons/constants';
 import { FOLDERS } from '../../../../carbonio-ui-commons/constants/folders';
@@ -15,6 +16,7 @@ import {
 	getFoldersMap,
 	getRootsMap
 } from '../../../../carbonio-ui-commons/store/zustand/folder';
+import { generateFolder } from '../../../../carbonio-ui-commons/test/mocks/folders/folders-generator';
 import { populateFoldersStore } from '../../../../carbonio-ui-commons/test/mocks/store/folders';
 import { makeListItemsVisible, setupTest } from '../../../../carbonio-ui-commons/test/test-setup';
 import { Folder } from '../../../../carbonio-ui-commons/types/folder';
@@ -27,7 +29,7 @@ import {
 	isTrashed
 } from '../../../../helpers/folders';
 import { getSystemFolderTranslatedName } from '../../utils';
-import { FolderSelector, FolderSelectorProps } from '../folder-selector';
+import { filterFoldersByName, FolderSelector, FolderSelectorProps } from '../folder-selector';
 
 describe('Folder selector', () => {
 	test('The selector is visible', () => {
@@ -337,5 +339,41 @@ describe('Folder selector', () => {
 			}
 			expect(screen.queryByTestId(`folder-accordion-item-${spamFolder.id}`)).toBeVisible();
 		});
+	});
+});
+
+function generateFolderFunction(name: string, n: number, depth: number): Folder {
+	if (depth >= 3) {
+		return generateFolder({ name, children: [] });
+	}
+
+	const children = Array.from({ length: n }, (_, i) =>
+		generateFolderFunction(`Subfolder ${name}-${i + 1}`, n, depth + 1)
+	);
+
+	return generateFolder({ name, children });
+}
+
+function generateLargeFolderStructure(n: number): Folder[] {
+	return Array.from({ length: n }, (_, i) => generateFolderFunction(`Folder ${i + 1}`, n, 0));
+}
+describe('filterFoldersByName performance', () => {
+	const largeFolderStructure: Folder[] = generateLargeFolderStructure(27);
+
+	it('should run within acceptable time limits', () => {
+		const searchTerm = 'test';
+
+		const startTime = performance.now();
+
+		const result = filterFoldersByName(largeFolderStructure, searchTerm);
+
+		const endTime = performance.now();
+
+		const executionTime = endTime - startTime;
+
+		expect(result).toBeDefined();
+		expect(Array.isArray(result)).toBe(true);
+
+		expect(executionTime).toBeLessThan(200);
 	});
 });
