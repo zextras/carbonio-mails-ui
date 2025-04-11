@@ -7,9 +7,9 @@ import { useCallback, useMemo } from 'react';
 
 import { useTranslation } from 'react-i18next';
 
-import { ConversationActionsDescriptors, MSG_PREVIEW_ROUTE } from '../../constants';
+import { ConversationActionsDescriptors } from '../../constants';
 import { ActionFn, UIActionDescriptor } from '../../types';
-import { getLocationOrigin } from '../../views/app/detail-panel/preview/utils';
+import { useStandalonePreview } from '../use-standalone-preview';
 
 export const useConvPreviewOnSeparatedWindowFn = ({
 	conversationId,
@@ -20,19 +20,16 @@ export const useConvPreviewOnSeparatedWindowFn = ({
 	folderId: string;
 	subject: string;
 }): ActionFn => {
-	const { isInsideExtraWindow } = useExtraWindow();
-	const canExecute = useCallback((): boolean => !isInsideExtraWindow, [isInsideExtraWindow]);
+	const { isStandalonePreview, openConversationStandalonePreview } = useStandalonePreview();
+	const canExecute = useCallback((): boolean => !isStandalonePreview(), [isStandalonePreview]);
 
 	const execute = useCallback(() => {
 		if (!canExecute()) {
 			return;
 		}
 
-		window.open(
-			`${getLocationOrigin()}/carbonio/${MSG_PREVIEW_ROUTE}/folder/${folderId}/conversation/${conversationId}`,
-			subject
-		);
-	}, [canExecute, folderId, conversationId, subject]);
+		openConversationStandalonePreview({ folderId, conversationId, subject });
+	}, [canExecute, openConversationStandalonePreview, folderId, conversationId, subject]);
 
 	return useMemo(() => ({ canExecute, execute }), [canExecute, execute]);
 };

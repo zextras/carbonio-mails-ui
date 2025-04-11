@@ -11,6 +11,7 @@ import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
 import { populateFoldersStore } from '../../../carbonio-ui-commons/test/mocks/store/folders';
 import { setupHook } from '../../../carbonio-ui-commons/test/test-setup';
 import { generateConversation } from '../../../tests/generators/generateConversation';
+import * as useStandalonePreviewModule from '../../use-standalone-preview';
 import {
 	useConvPreviewOnSeparatedWindowDescriptor,
 	useConvPreviewOnSeparatedWindowFn
@@ -38,6 +39,8 @@ describe('useConvPreviewOnSeparatedWindow', () => {
 	});
 
 	describe('functions', () => {
+		const useStandalonePreviewSpy = jest.spyOn(useStandalonePreviewModule, 'useStandalonePreview');
+
 		it('Should return an object with execute and canExecute functions', () => {
 			const {
 				result: { current: descriptor }
@@ -58,10 +61,13 @@ describe('useConvPreviewOnSeparatedWindow', () => {
 		});
 
 		describe('canExecute', () => {
-			const useExtraWindowSpy = jest.spyOn(extraWindow, 'useExtraWindow');
-
 			it('should return false if the message is already being previewed in a separated window', () => {
-				useExtraWindowSpy.mockReturnValue({ isInsideExtraWindow: true });
+				useStandalonePreviewSpy.mockReturnValue({
+					isStandalonePreview: () => true,
+					openConversationStandalonePreview: jest.fn(),
+					openEmlStandalonePreview: jest.fn(),
+					openMessageStandalonePreview: jest.fn()
+				});
 
 				const {
 					result: { current: functions }
@@ -79,7 +85,12 @@ describe('useConvPreviewOnSeparatedWindow', () => {
 			});
 
 			it('should return true if the message is not being previewed in a separated window', () => {
-				useExtraWindowSpy.mockReturnValue({ isInsideExtraWindow: false });
+				useStandalonePreviewSpy.mockReturnValue({
+					isStandalonePreview: () => false,
+					openConversationStandalonePreview: jest.fn(),
+					openEmlStandalonePreview: jest.fn(),
+					openMessageStandalonePreview: jest.fn()
+				});
 
 				const {
 					result: { current: functions }
@@ -98,10 +109,7 @@ describe('useConvPreviewOnSeparatedWindow', () => {
 		});
 
 		describe('execute', () => {
-			const useExtraWindowSpy = jest.spyOn(extraWindow, 'useExtraWindow');
-
 			it('should not call the integrated function if the action cannot be executed', async () => {
-				useExtraWindowSpy.mockReturnValue({ isInsideExtraWindow: true });
 				populateFoldersStore();
 
 				const {
@@ -124,7 +132,12 @@ describe('useConvPreviewOnSeparatedWindow', () => {
 			});
 
 			it('should call the API with the proper params if the action can be executed', async () => {
-				useExtraWindowSpy.mockReturnValue({ isInsideExtraWindow: false });
+				useStandalonePreviewSpy.mockReturnValue({
+					isStandalonePreview: () => false,
+					openConversationStandalonePreview: jest.fn(),
+					openEmlStandalonePreview: jest.fn(),
+					openMessageStandalonePreview: jest.fn()
+				});
 				populateFoldersStore();
 
 				const {
