@@ -118,13 +118,11 @@
 		"not dead"
 	],
 	"carbonio": {
-		"translations_repository": "git@github.com:Zextras/carbonio-mails-ui-i18n.git",
 		"name": "carbonio-mails-ui",
 		"priority": 5,
 		"type": "carbonio",
 		"attrKey": "zimbraFeatureMailEnabled",
 		"display": "Mails",
-		"icon": "MailModOutline",
-		"sentryDsn": "https://90672cc95a43460485b50717c4be69ab@feedback.zextras.tools/7"
+		"icon": "MailModOutline"
 	}
 }
