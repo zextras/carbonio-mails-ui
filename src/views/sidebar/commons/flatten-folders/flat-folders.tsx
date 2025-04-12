@@ -7,6 +7,7 @@
 import React, { ReactElement, useMemo } from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
+import { slice } from 'lodash';
 
 import { FlatRoot } from './flat-root';
 import { flattenFolders } from './utils';
@@ -65,7 +66,7 @@ export const FlatFolders = ({
 				<FlatRoot
 					key={folder.id}
 					folder={folder}
-					childrenFolders={folder.children.slice(0, MAX_ALLOWED_RESULTS)}
+					childrenFolders={slice(folder.children, 0, MAX_ALLOWED_RESULTS)}
 					isOpen
 					onFolderSelected={onFolderSelected}
 					selectedFolderId={selectedFolderId}
