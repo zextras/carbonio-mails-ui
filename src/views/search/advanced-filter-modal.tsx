@@ -27,7 +27,7 @@ import SizeSmallerSizeLargerRow from './parts/size-smaller-size-larger-row';
 import SubjectKeywordRow from './parts/subject-keyword-row';
 import TagFolderRow from './parts/tag-folder-row';
 import ToggleFilters from './parts/toggle-filters';
-import { useDisabled, useSecondaryDisabled } from './parts/use-disable-hooks';
+import { useDisabled } from './parts/use-disable-hooks';
 import { getChipItems } from './utils';
 import { ZIMBRA_STANDARD_COLORS } from '../../carbonio-ui-commons/constants/utils';
 import { ContactInputItem } from '../../carbonio-ui-commons/integrations/types';
@@ -192,30 +192,6 @@ export const AdvancedFilterModal = ({
 
 		setOtherKeywords(updatedQuery);
 	}, [query, queryArray]);
-
-	const totalKeywords = useMemo(
-		() => filter(otherKeywords, (q) => q.isGeneric === true || q.isQueryFilter === true).length,
-		[otherKeywords]
-	);
-
-	const secondaryDisabled = useSecondaryDisabled({
-		attachmentFilter,
-		attachmentType,
-		emailStatus,
-		flaggedFilter,
-		folder,
-		receivedFromAddress: receivedFromAddresses,
-		sentAfter,
-		sentBefore,
-		sentFromAddress: sentToAddresses,
-		sentOn,
-		sizeLarger,
-		sizeSmaller,
-		subject,
-		tag,
-		totalKeywords,
-		unreadFilter
-	});
 
 	const resetFilters = useCallback(() => {
 		setOtherKeywords([]);
@@ -401,6 +377,11 @@ export const AdvancedFilterModal = ({
 		isSharedFolderIncludedTobe
 	});
 
+	const secondaryDisabled = useMemo(
+		() => query.length === 0 && queryToBe.length === 0,
+		[query.length, queryToBe.length]
+	);
+
 	return (
 		<CustomModal open={open} onClose={onClose} maxHeight="90vh" size="medium">
 			<ModalHeader
@@ -428,7 +409,7 @@ export const AdvancedFilterModal = ({
 				confirmDisabled={disabled}
 				secondaryActionDisabled={secondaryDisabled}
 				confirmLabel={t('action.search', 'Search')}
-				secondaryActionLabel={t('action.reset', 'Reset')}
+				secondaryActionLabel={t('action.reset', 'Reset filters')}
 				onSecondaryAction={resetFilters}
 			/>
 		</CustomModal>
