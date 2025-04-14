@@ -40,6 +40,6 @@ describe('filterFoldersByName performance', () => {
 		expect(result).toBeDefined();
 		expect(Array.isArray(result)).toBe(true);
 
-		expect(executionTime).toBeLessThan(200);
+		expect(executionTime).toBeLessThan(100);
 	});
 });
