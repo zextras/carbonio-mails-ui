@@ -30,6 +30,7 @@ export type FolderSelectorProps = {
 };
 
 function filterFoldersByName(folders: Folder[], search: string): Folder[] {
+	if (search.length === 0) return folders;
 	const lowerCaseSearch = search.toLowerCase();
 	return folders
 		.map((folder) => {
