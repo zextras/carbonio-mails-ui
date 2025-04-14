@@ -15,7 +15,6 @@ import { useMsgActions } from '../../../../../hooks/actions/use-msg-actions';
 import { useSelection } from '../../../../../hooks/use-selection';
 import { useTagDropdownItem } from '../../../../../hooks/use-tag-dropdown-item';
 import { AppContext, MailMessage } from '../../../../../types';
-import { useExtraWindow } from '../../../extra-windows/use-extra-window';
 
 type MailMsgPreviewActionsType = {
 	message: MailMessage;
@@ -26,7 +25,6 @@ export const MailMsgPreviewActions: FC<MailMsgPreviewActionsType> = ({ message }
 	const { deselectAll } = useSelection({ setCount, count: 0 });
 	const { itemId } = useParams<{ itemId: string }>();
 	const shouldReplaceHistory = useMemo(() => itemId === message.id, [message.id, itemId]);
-	const { isInsideExtraWindow } = useExtraWindow();
 
 	const {
 		replyDescriptor,
@@ -59,55 +57,37 @@ export const MailMsgPreviewActions: FC<MailMsgPreviewActionsType> = ({ message }
 
 	const tagItem = useTagDropdownItem(applyTagDescriptor, message.tags);
 
-	const actions = !isInsideExtraWindow
-		? [
-				replyDescriptor,
-				replyAllDescriptor,
-				forwardDescriptor,
-				editDraftDescriptor,
-				moveToTrashDescriptor,
-				deletePermanentlyDescriptor,
-				messageReadDescriptor,
-				messageUnreadDescriptor,
-				{
-					id: 'More',
-					icon: 'MoreVertical',
-					label: 'More actions',
-					items: [
-						normalizeDropdownActionItem(forwardAsAttachmentDescriptor),
-						normalizeDropdownActionItem(flagDescriptor),
-						normalizeDropdownActionItem(unflagDescriptor),
-						normalizeDropdownActionItem(markAsSpamDescriptor),
-						normalizeDropdownActionItem(markAsNotSpamDescriptor),
-						tagItem,
-						normalizeDropdownActionItem(moveToFolderDescriptor),
-						normalizeDropdownActionItem(createAppointmentDescriptor),
-						normalizeDropdownActionItem(printDescriptor),
-						normalizeDropdownActionItem(previewOnSeparatedWindowDescriptor),
-						normalizeDropdownActionItem(redirectDescriptor),
-						normalizeDropdownActionItem(editAsNewDescriptor),
-						normalizeDropdownActionItem(showOriginalDescriptor),
-						normalizeDropdownActionItem(downloadEmlDescriptor)
-					]
-				}
-			]
-		: [
-				messageReadDescriptor,
-				messageUnreadDescriptor,
+	const actions = [
+		replyDescriptor,
+		replyAllDescriptor,
+		forwardDescriptor,
+		editDraftDescriptor,
+		moveToTrashDescriptor,
+		deletePermanentlyDescriptor,
+		messageReadDescriptor,
+		messageUnreadDescriptor,
+		{
+			id: 'More',
+			icon: 'MoreVertical',
+			label: 'More actions',
+			items: [
+				normalizeDropdownActionItem(forwardAsAttachmentDescriptor),
+				normalizeDropdownActionItem(flagDescriptor),
+				normalizeDropdownActionItem(unflagDescriptor),
+				normalizeDropdownActionItem(markAsSpamDescriptor),
+				normalizeDropdownActionItem(markAsNotSpamDescriptor),
 				tagItem,
-				printDescriptor,
-				flagDescriptor,
-				unflagDescriptor,
-				{
-					id: 'More',
-					icon: 'MoreVertical',
-					label: 'More actions',
-					items: [
-						normalizeDropdownActionItem(showOriginalDescriptor),
-						normalizeDropdownActionItem(downloadEmlDescriptor)
-					]
-				}
-			];
+				normalizeDropdownActionItem(moveToFolderDescriptor),
+				normalizeDropdownActionItem(createAppointmentDescriptor),
+				normalizeDropdownActionItem(printDescriptor),
+				normalizeDropdownActionItem(previewOnSeparatedWindowDescriptor),
+				normalizeDropdownActionItem(redirectDescriptor),
+				normalizeDropdownActionItem(editAsNewDescriptor),
+				normalizeDropdownActionItem(showOriginalDescriptor),
+				normalizeDropdownActionItem(downloadEmlDescriptor)
+			]
+		}
+	];
 
 	return (
 		<Row mainAlignment="flex-end" wrap="nowrap" data-testid="MailMsgPreviewActions">

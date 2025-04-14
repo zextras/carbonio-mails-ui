@@ -17,7 +17,6 @@ import { getFolderIdParts } from '../../../helpers/folders';
 import { getConvEmailStoreAction } from '../../../store/emails/actions/get-conv-action';
 import { useCompleteConversationOrFetch } from '../../../store/emails/hooks/hooks';
 import { useConversationMessages } from '../../../store/emails/store';
-import { useExtraWindow } from '../extra-windows/use-extra-window';
 
 export const ConversationPreviewPanelContainer = (): React.JSX.Element => {
 	const navigate = useNavigate();
@@ -25,7 +24,6 @@ export const ConversationPreviewPanelContainer = (): React.JSX.Element => {
 		conversationId: string;
 		folderId: string;
 	};
-	const { isInsideExtraWindow } = useExtraWindow();
 	const { conversation, conversationStatus } = useCompleteConversationOrFetch(conversationId);
 	const messages = useConversationMessages(conversationId);
 
@@ -56,20 +54,17 @@ export const ConversationPreviewPanelContainer = (): React.JSX.Element => {
 		<Container orientation="vertical" mainAlignment="flex-start" crossAlignment="flex-start">
 			{showPreviewPanel && (
 				<>
-					{!isInsideExtraWindow && (
-						<PreviewPanelHeader
-							itemType={'conversation'}
-							subject={conversation.subject}
-							isRead={conversation.read}
-							folderId={folderId}
-						/>
-					)}
+					<PreviewPanelHeader
+						itemType={'conversation'}
+						subject={conversation.subject}
+						isRead={conversation.read}
+						folderId={folderId}
+					/>
 
 					{conversation && conversationStatus === API_REQUEST_STATUS.fulfilled && (
 						<ConversationPreviewPanel
 							data-testid={`conversation-preview-panel-${conversationId}`}
 							conversation={conversation}
-							isInsideExtraWindow={isInsideExtraWindow}
 						/>
 					)}
 

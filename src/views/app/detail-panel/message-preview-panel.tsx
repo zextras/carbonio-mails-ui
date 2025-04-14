@@ -11,58 +11,45 @@ import MailPreview from './preview/mail-preview';
 import { PreviewPanelHeader } from './preview/preview-panel-header';
 import { Spinner } from '../../../assets/spinner';
 import { IncompleteMessage, MailMessage } from '../../../types';
-import { useExtraWindow } from '../extra-windows/use-extra-window';
 
 export const MessagePreviewPanel: FC<{
 	folderId: string;
 	message: MailMessage | IncompleteMessage | undefined;
 	isMessageLoaded: boolean;
-}> = ({ folderId, message, isMessageLoaded }) => {
-	const { isInsideExtraWindow } = useExtraWindow();
-
-	return (
-		<Container orientation="vertical" mainAlignment="flex-start" crossAlignment="flex-start">
-			{!isInsideExtraWindow && (
-				<PreviewPanelHeader
-					folderId={folderId}
-					itemType={'message'}
-					isRead={message?.read}
-					subject={message?.subject}
-				/>
+}> = ({ folderId, message, isMessageLoaded }) => (
+	<Container orientation="vertical" mainAlignment="flex-start" crossAlignment="flex-start">
+		{
+			<PreviewPanelHeader
+				folderId={folderId}
+				itemType={'message'}
+				isRead={message?.read}
+				subject={message?.subject}
+			/>
+		}
+		<Container
+			style={{ overflowY: 'auto' }}
+			height="fill"
+			background="gray5"
+			padding={{ horizontal: 'large', bottom: 'small', top: 'large' }}
+			mainAlignment="flex-start"
+		>
+			{isMessageLoaded ? (
+				<Container height="fit" mainAlignment="flex-start" background="gray5">
+					<Padding bottom="medium" width="100%">
+						{message && <MailPreview message={message} expanded isAlone isMessageView />}
+					</Padding>
+				</Container>
+			) : (
+				<Container
+					style={{ overflowY: 'auto' }}
+					height="fill"
+					background="gray5"
+					mainAlignment="center"
+					crossAlignment="center"
+				>
+					<Spinner />
+				</Container>
 			)}
-			<Container
-				style={{ overflowY: 'auto' }}
-				height="fill"
-				background="gray5"
-				padding={{ horizontal: 'large', bottom: 'small', top: 'large' }}
-				mainAlignment="flex-start"
-			>
-				{isMessageLoaded ? (
-					<Container height="fit" mainAlignment="flex-start" background="gray5">
-						<Padding bottom="medium" width="100%">
-							{message && (
-								<MailPreview
-									message={message}
-									expanded
-									isAlone
-									isMessageView
-									isInsideExtraWindow={isInsideExtraWindow}
-								/>
-							)}
-						</Padding>
-					</Container>
-				) : (
-					<Container
-						style={{ overflowY: 'auto' }}
-						height="fill"
-						background="gray5"
-						mainAlignment="center"
-						crossAlignment="center"
-					>
-						<Spinner />
-					</Container>
-				)}
-			</Container>
 		</Container>
-	);
-};
+	</Container>
+);

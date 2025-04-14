@@ -35,7 +35,7 @@ export const ConversationListItemActionWrapper = ({
 	deselectAll: () => void;
 }): React.JSX.Element => {
 	const conversationPreviewFactory = useCallback(
-		() => <ConversationPreviewPanel conversation={conversation} isInsideExtraWindow />,
+		() => <ConversationPreviewPanel conversation={conversation} />,
 		[conversation]
 	);
 	const [t] = useTranslation();

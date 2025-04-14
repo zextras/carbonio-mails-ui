@@ -37,9 +37,9 @@ import {
 	getAttachmentsLink,
 	getLocationOrigin
 } from './utils';
-import { getMsgsForPrintSoapApi } from '../../../../api';
 import { getFileExtension } from '../../../../commons/utilities';
 import { useAttachmentIconColor } from '../../../../helpers/attachments';
+import { openEmlStandalonePreview } from '../../../../helpers/external-tabs';
 import { useUiUtilities } from '../../../../hooks/use-ui-utilities';
 import { deleteAttachmentsEmailStoreAction } from '../../../../store/emails/actions/delete-attachments-action';
 import type {
@@ -48,15 +48,13 @@ import type {
 	AttachmentType,
 	CopyToFileRequest,
 	CopyToFileResponse,
-	MailMessage,
-	OpenEmlPreviewType
+	MailMessage
 } from '../../../../types';
 import {
 	ArrayOneOrMore,
 	NodeWithMetadata,
 	SelectNodesFunctionArgs
 } from '../../../../types/integrations/carbonio-files-ui';
-import { useExtraWindow } from '../../extra-windows/use-extra-window';
 
 /**
  * The BE currently doesn't support the preview of PDF attachments
@@ -127,12 +125,10 @@ const Attachment = ({
 	messageId,
 	isExternalMessage = false,
 	part,
-	att,
-	openEmlPreview
+	att
 }: AttachmentType): React.JSX.Element => {
 	const [t] = useTranslation();
 	const { createPreview } = useContext(PreviewsManagerContext);
-	const { isInsideExtraWindow } = useExtraWindow();
 	const extension = getFileExtension(att).value;
 	const { createSnackbar, createModal, closeModal } = useUiUtilities();
 	const { servicesCatalog } = useAppContext<AppContext>();
@@ -261,24 +257,26 @@ const Attachment = ({
 	const [uploadIntegration, isUploadIntegrationAvailable] = getIntegratedFunction('select-nodes');
 
 	const showEMLPreview = useCallback(() => {
-		getMsgsForPrintSoapApi({ ids: [messageId], part: att?.name })
-			.then((res) => {
-				openEmlPreview && openEmlPreview(messageId, att?.name, res[0]);
-			})
-			.catch(() => {
-				createSnackbar({
-					key: `eml-attachment-failed-download`,
-					replace: true,
-					severity: 'error',
-					hideButton: true,
-					label: t(
-						'message.snackbar.eml_download_failed',
-						'The EML attachment could not be downloaded. Try later'
-					),
-					autoHideTimeout: 3000
-				});
-			});
-	}, [att?.name, createSnackbar, messageId, openEmlPreview, t]);
+		openEmlStandalonePreview({ messageId, subject: filename, part });
+		// getMsgsForPrintSoapApi({ ids: [messageId], part: att?.name })
+		// 	.then((res) => {
+		//
+		// 		openEmlPreview && openEmlPreview(messageId, att?.name, res[0]);
+		// 	})
+		// 	.catch(() => {
+		// 		createSnackbar({
+		// 			key: `eml-attachment-failed-download`,
+		// 			replace: true,
+		// 			severity: 'error',
+		// 			hideButton: true,
+		// 			label: t(
+		// 				'message.snackbar.eml_download_failed',
+		// 				'The EML attachment could not be downloaded. Try later'
+		// 			),
+		// 			autoHideTimeout: 3000
+		// 		});
+		// 	});
+	}, [filename, messageId, part]);
 
 	const isCarbonioPreviewAvailable = useMemo(
 		() => includes(servicesCatalog, 'carbonio-preview'),
@@ -445,17 +443,10 @@ const Attachment = ({
 			</Tooltip>
 			<Row orientation="horizontal" crossAlignment="center">
 				<AttachmentHoverBarContainer orientation="horizontal">
-					{isUploadIntegrationAvailable && !isInsideExtraWindow && (
+					{isUploadIntegrationAvailable && (
 						<Tooltip
 							key={`${messageId}-DriveOutline`}
-							label={
-								isInsideExtraWindow
-									? t(
-											'label.extra_window.save_to_files_disabled',
-											'Files’ attachments saving is available only from the main tab'
-										)
-									: t('label.save_to_files', 'Save to Files')
-							}
+							label={t('label.save_to_files', 'Save to Files')}
 						>
 							<IconButton
 								size="medium"
@@ -536,11 +527,9 @@ type AttachmentsBlockProps = {
 	messageSubject: MailMessage['subject'];
 	messageAttachments: MailMessage['attachments'];
 	isExternalMessage?: boolean;
-	openEmlPreview?: OpenEmlPreviewType;
 };
 const AttachmentsBlock = ({
 	isExternalMessage = false,
-	openEmlPreview,
 	messageId,
 	messageSubject,
 	messageAttachments
@@ -634,10 +623,8 @@ const AttachmentsBlock = ({
 
 	const [uploadIntegration, isUploadIntegrationAvailable] = getIntegratedFunction('select-nodes');
 
-	const { isInsideExtraWindow } = useExtraWindow();
-
 	const getSaveToFilesLink = useCallback((): ReactElement | null => {
-		if (!isUploadIntegrationAvailable || isInsideExtraWindow) {
+		if (!isUploadIntegrationAvailable) {
 			return null;
 		}
 
@@ -652,7 +639,7 @@ const AttachmentsBlock = ({
 				{t('label.save_to_files', 'Save to Files')}
 			</Link>
 		);
-	}, [actionTarget, isInsideExtraWindow, isUploadIntegrationAvailable, t, uploadIntegration]);
+	}, [actionTarget, isUploadIntegrationAvailable, t, uploadIntegration]);
 
 	const attachmentsLabel = t('label.attachment', {
 		count: attachmentsCount,
@@ -684,7 +671,6 @@ const AttachmentsBlock = ({
 						part={att?.name ?? ''}
 						iconColors={getAttachmentIconColors({ attachments, theme })}
 						att={att}
-						openEmlPreview={openEmlPreview}
 					/>
 				))}
 			</Container>

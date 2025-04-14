@@ -14,14 +14,12 @@ export type SearchConversationMessagePreviewProps = {
 	convMessageId: string;
 	isExpanded: boolean;
 	isAlone: boolean;
-	isInsideExtraWindow: boolean;
 };
 
 export const SearchConversationMessagePanel = ({
 	convMessageId,
 	isExpanded,
-	isAlone,
-	isInsideExtraWindow
+	isAlone
 }: SearchConversationMessagePreviewProps): React.JSX.Element => {
 	const { message } = useCompleteMessageOrFetch(convMessageId);
 
@@ -33,7 +31,6 @@ export const SearchConversationMessagePanel = ({
 				expanded={isExpanded}
 				isAlone={isAlone}
 				isMessageView={false}
-				isInsideExtraWindow={isInsideExtraWindow}
 			/>
 		</Padding>
 	);

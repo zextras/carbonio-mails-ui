@@ -22,7 +22,7 @@ describe('External tabs', () => {
 
 			mockWindowLocation({
 				origin: 'http://localhost',
-				pathname: `/carbonio/focus-mode/msg-preview/folder/${faker.number.int()}/message/${faker.number.int()}`
+				pathname: `/carbonio/focus-mode/external-view/folder/${faker.number.int()}/message/${faker.number.int()}`
 			});
 
 			expect(isStandalonePreview()).toBe(true);
@@ -44,7 +44,7 @@ describe('External tabs', () => {
 
 			mockWindowLocation({
 				origin: 'http://localhost',
-				pathname: `/carbonio/focus-mode/msg-preview/folder/${faker.number.int()}/message/${faker.number.int()}`
+				pathname: `/carbonio/focus-mode/external-view/folder/${faker.number.int()}/message/${faker.number.int()}`
 			});
 
 			expect(isStandalonePreview()).toBe(false);
@@ -60,7 +60,7 @@ describe('External tabs', () => {
 			openMessageStandalonePreview({ folderId, messageId, subject });
 
 			expect(window.open).toHaveBeenCalledWith(
-				`http://localhost/carbonio/focus-mode/msg-preview/folder/${folderId}/message/${messageId}`,
+				`http://localhost/carbonio/focus-mode/external-view/folder/${folderId}/message/${messageId}`,
 				subject
 			);
 		});
@@ -75,7 +75,7 @@ describe('External tabs', () => {
 			openConversationStandalonePreview({ folderId, conversationId, subject });
 
 			expect(window.open).toHaveBeenCalledWith(
-				`http://localhost/carbonio/focus-mode/msg-preview/folder/${folderId}/conversation/${conversationId}`,
+				`http://localhost/carbonio/focus-mode/external-view/folder/${folderId}/conversation/${conversationId}`,
 				subject
 			);
 		});
@@ -91,7 +91,7 @@ describe('External tabs', () => {
 			openEmlStandalonePreview({ folderId, messageId, part, subject });
 
 			expect(window.open).toHaveBeenCalledWith(
-				`http://localhost/carbonio/focus-mode/msg-preview/folder/${folderId}/message/${messageId}/${part}`,
+				`http://localhost/carbonio/focus-mode/external-view/eml/${messageId}/${part}`,
 				subject
 			);
 		});

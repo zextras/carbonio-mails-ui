@@ -13,7 +13,6 @@ import { API_REQUEST_STATUS } from '../../../../constants';
 import { useCompleteMessageOrFetch } from '../../../../store/emails/hooks/hooks';
 import { updateMessageStatus } from '../../../../store/emails/store';
 import { generateMessage } from '../../../../tests/generators/generateMessage';
-import { useExtraWindow } from '../../extra-windows/use-extra-window';
 import { MessagePreviewPanel } from '../message-preview-panel';
 
 jest.mock('../../../../store/emails/hooks/hooks');
@@ -21,7 +20,6 @@ jest.mock('../../extra-windows/use-extra-window');
 
 describe('MessagePreviewPanel', () => {
 	const mockUseCompleteMessageOrFetch = useCompleteMessageOrFetch as jest.Mock;
-	const mockUseExtraWindow = useExtraWindow as jest.Mock;
 
 	beforeEach(() => {
 		jest.clearAllMocks();
@@ -30,7 +28,6 @@ describe('MessagePreviewPanel', () => {
 	it('renders spinner when message is loading', () => {
 		updateMessageStatus('1', API_REQUEST_STATUS.pending);
 		mockUseCompleteMessageOrFetch.mockReturnValue({ message: null });
-		mockUseExtraWindow.mockReturnValue({ isInsideExtraWindow: false });
 
 		setupTest(<MessagePreviewPanel folderId="1" message={undefined} isMessageLoaded={false} />);
 
@@ -41,7 +38,6 @@ describe('MessagePreviewPanel', () => {
 		const message = generateMessage();
 		updateMessageStatus('1', API_REQUEST_STATUS.fulfilled);
 		mockUseCompleteMessageOrFetch.mockReturnValue({ message });
-		mockUseExtraWindow.mockReturnValue({ isInsideExtraWindow: false });
 
 		setupTest(<MessagePreviewPanel folderId="1" message={message} isMessageLoaded />);
 

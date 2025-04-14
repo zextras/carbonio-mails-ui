@@ -9,9 +9,8 @@ import { Container } from '@zextras/carbonio-design-system';
 
 import { MailPreviewBlock } from './parts/mail-preview-block';
 import { MailPreviewContent } from './parts/mail-preview-content';
-import { getLocationOrigin } from './utils';
-import { MSG_PREVIEW_ROUTE } from '../../../../constants';
-import type { MailMessage, OpenEmlPreviewType } from '../../../../types';
+import { isStandalonePreview } from '../../../../helpers/external-tabs';
+import type { MailMessage } from '../../../../types';
 
 export type MailPreviewProps = {
 	message: MailMessage;
@@ -19,7 +18,6 @@ export type MailPreviewProps = {
 	isAlone: boolean;
 	isMessageView: boolean;
 	isExternalMessage?: boolean;
-	isInsideExtraWindow?: boolean;
 };
 
 const MailPreview: FC<MailPreviewProps> = ({
@@ -27,8 +25,7 @@ const MailPreview: FC<MailPreviewProps> = ({
 	expanded,
 	isAlone,
 	isMessageView,
-	isExternalMessage = false,
-	isInsideExtraWindow = false
+	isExternalMessage = false
 }) => {
 	const mailContainerRef = useRef<HTMLDivElement>(null);
 	const [isOpen, setIsOpen] = useState(expanded || isAlone);
@@ -45,22 +42,12 @@ const MailPreview: FC<MailPreviewProps> = ({
 		setContainerHeight(isOpen ? '100%' : 'fit-content');
 	}, [isOpen]);
 
-	const openEmlPreview: OpenEmlPreviewType = useCallback(
-		(parentMessageId, attachmentName, emlMessage) => {
-			window.open(
-				`${getLocationOrigin()}/carbonio/${MSG_PREVIEW_ROUTE}/folder/${parentMessageId}/message/${emlMessage.id}/${attachmentName}`,
-				emlMessage.subject
-			);
-		},
-		[]
-	);
-
 	return (
 		<Container
 			ref={mailContainerRef}
 			height={containerHeight}
 			data-testid={`MailPreview-${message.id}`}
-			padding={isInsideExtraWindow ? { all: 'large' } : undefined}
+			padding={isStandalonePreview() ? { all: 'large' } : undefined}
 			background="white"
 		>
 			<MailPreviewBlock
@@ -82,9 +69,7 @@ const MailPreview: FC<MailPreviewProps> = ({
 					<MailPreviewContent
 						message={message}
 						isMailPreviewOpen={isMailPreviewOpen}
-						openEmlPreview={openEmlPreview}
 						isExternalMessage={isExternalMessage}
-						isInsideExtraWindow={isInsideExtraWindow}
 					/>
 				)}
 			</Container>

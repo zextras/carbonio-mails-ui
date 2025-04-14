@@ -14,22 +14,14 @@ export type ConversationMessagePreviewProps = {
 	message: MailMessage;
 	isExpanded: boolean;
 	isAlone: boolean;
-	isInsideExtraWindow: boolean;
 };
 
 export const ConversationMessagePreview = ({
 	message,
 	isExpanded,
-	isAlone,
-	isInsideExtraWindow
+	isAlone
 }: ConversationMessagePreviewProps): React.JSX.Element => (
 	<Padding bottom="medium" width="100%" data-testid={`ConversationMessagePreview-${message.id}`}>
-		<MailPreview
-			message={message}
-			expanded={isExpanded}
-			isAlone={isAlone}
-			isMessageView={false}
-			isInsideExtraWindow={isInsideExtraWindow}
-		/>
+		<MailPreview message={message} expanded={isExpanded} isAlone={isAlone} isMessageView={false} />
 	</Padding>
 );

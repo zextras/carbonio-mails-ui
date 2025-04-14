@@ -21,10 +21,7 @@ export default function StandalonePreviewPanel(): React.JSX.Element {
 					path={`folder/:folderId/conversation/:conversationId`}
 					element={<ConversationPreviewPanelContainer />}
 				/>
-				<Route
-					path={`folder/:folderId/message/:messageId/:part`}
-					element={<EmlPreviewPanelContainer />}
-				/>
+				<Route path={`eml/:messageId/:part`} element={<EmlPreviewPanelContainer />} />
 				<Route
 					path={`folder/:folderId/message/:messageId`}
 					element={<MessagePreviewPanelContainer />}

@@ -34,7 +34,6 @@ export type AttachmentType = {
 	part: string;
 	iconColors: IconColors;
 	att: EditorAttachmentFiles;
-	openEmlPreview?: OpenEmlPreviewType;
 };
 
 export type PreviewPanelActionsType = {
