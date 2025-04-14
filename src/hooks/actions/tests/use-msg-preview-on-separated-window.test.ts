@@ -7,9 +7,9 @@ import { act } from 'react';
 
 import { populateFoldersStore } from '../../../carbonio-ui-commons/test/mocks/store/folders';
 import { setupHook } from '../../../carbonio-ui-commons/test/test-setup';
+import * as externalTabs from '../../../helpers/external-tabs';
 import { getParentFolderId } from '../../../helpers/folders';
 import { generateMessage } from '../../../tests/generators/generateMessage';
-import * as extraWindow from '../../../views/app/extra-windows/use-extra-window';
 import {
 	useMsgPreviewOnSeparatedWindowDescriptor,
 	useMsgPreviewOnSeparatedWindowFn
@@ -43,6 +43,8 @@ describe('useMsgPreviewOnSeparatedWindow', () => {
 	});
 
 	describe('Functions', () => {
+		const isStandalonePreviewSpy = jest.spyOn(externalTabs, 'isStandalonePreview');
+
 		it('Should return an object with execute and canExecute functions', () => {
 			const {
 				result: { current: functions }
@@ -63,10 +65,8 @@ describe('useMsgPreviewOnSeparatedWindow', () => {
 		});
 
 		describe('canExecute', () => {
-			const useExtraWindowSpy = jest.spyOn(extraWindow, 'useExtraWindow');
-
 			it('should return false if the message is already being previewed in a separated window', () => {
-				useExtraWindowSpy.mockReturnValue({ isInsideExtraWindow: true });
+				isStandalonePreviewSpy.mockReturnValue(true);
 
 				const {
 					result: { current: functions }
@@ -84,7 +84,7 @@ describe('useMsgPreviewOnSeparatedWindow', () => {
 			});
 
 			it('should return true if the message is not being previewed in a separated window', () => {
-				useExtraWindowSpy.mockReturnValue({ isInsideExtraWindow: false });
+				isStandalonePreviewSpy.mockReturnValue(false);
 
 				const {
 					result: { current: functions }
@@ -103,10 +103,8 @@ describe('useMsgPreviewOnSeparatedWindow', () => {
 		});
 
 		describe('execute', () => {
-			const useExtraWindowSpy = jest.spyOn(extraWindow, 'useExtraWindow');
-
 			it('should not call the integrated function if the action cannot be executed', async () => {
-				useExtraWindowSpy.mockReturnValue({ isInsideExtraWindow: true });
+				isStandalonePreviewSpy.mockReturnValue(true);
 				populateFoldersStore();
 
 				const {
@@ -129,7 +127,7 @@ describe('useMsgPreviewOnSeparatedWindow', () => {
 			});
 
 			it('should call the API with the proper params if the action can be executed', async () => {
-				useExtraWindowSpy.mockReturnValue({ isInsideExtraWindow: false });
+				isStandalonePreviewSpy.mockReturnValue(false);
 				populateFoldersStore();
 
 				const {

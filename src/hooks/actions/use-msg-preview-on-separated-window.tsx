@@ -8,9 +8,9 @@ import { useCallback, useMemo } from 'react';
 
 import { useTranslation } from 'react-i18next';
 
-import { MessageActionsDescriptors, MSG_PREVIEW_ROUTE } from '../../constants';
+import { MessageActionsDescriptors } from '../../constants';
+import { isStandalonePreview, openMessageStandalonePreview } from '../../helpers/external-tabs';
 import { ActionFn, UIActionDescriptor } from '../../types';
-import { getLocationOrigin } from '../../views/app/detail-panel/preview/utils';
 
 export const useMsgPreviewOnSeparatedWindowFn = ({
 	messageId,
@@ -21,15 +21,11 @@ export const useMsgPreviewOnSeparatedWindowFn = ({
 	folderId: string;
 	subject: string;
 }): ActionFn => {
-	const { isInsideExtraWindow } = useExtraWindow();
-	const canExecute = useCallback((): boolean => !isInsideExtraWindow, [isInsideExtraWindow]);
+	const canExecute = useCallback((): boolean => !isStandalonePreview(), []);
 
 	const execute = useCallback(() => {
 		if (canExecute()) {
-			window.open(
-				`${getLocationOrigin()}/carbonio/${MSG_PREVIEW_ROUTE}/folder/${folderId}/message/${messageId}`,
-				subject
-			);
+			openMessageStandalonePreview({ folderId, messageId, subject });
 		}
 	}, [canExecute, folderId, messageId, subject]);
 
