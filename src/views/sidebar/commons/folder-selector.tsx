@@ -13,7 +13,6 @@ import { t } from '@zextras/carbonio-shell-ui';
 import { FlatFolders } from './flatten-folders/flat-folders';
 import { FolderAccordionCustomComponent } from './folder-accordions-custom-component';
 import { FoldersAccordion } from './folders-accordion';
-import { filterFoldersByName } from './utils';
 import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
 import { getFolder } from '../../../carbonio-ui-commons/store/zustand/folder/hooks';
 import { themeMui } from '../../../carbonio-ui-commons/theme/theme-mui';
@@ -49,11 +48,6 @@ export const FolderSelector = ({
 		[folders, showSharedAccounts]
 	);
 
-	const filteredFolders = useMemo(
-		() => filterFoldersByName(rootFolders, inputValue),
-		[inputValue, rootFolders]
-	);
-
 	const inputName = selectedFolder ? selectedFolder.name : '';
 	return (
 		<>
@@ -77,7 +71,8 @@ export const FolderSelector = ({
 			>
 				{inputValue.length > 0 ? (
 					<FlatFolders
-						folders={filteredFolders}
+						folders={rootFolders}
+						searchString={inputValue}
 						onFolderSelected={onFolderSelected}
 						selectedFolderId={selectedFolderId}
 						allowRootSelection={allowRootSelection}
@@ -87,7 +82,7 @@ export const FolderSelector = ({
 				) : (
 					<ThemeProvider theme={themeMui}>
 						<FoldersAccordion
-							folders={filteredFolders}
+							folders={rootFolders}
 							onFolderSelected={onFolderSelected}
 							selectedFolderId={selectedFolderId}
 							allowRootSelection={allowRootSelection}

@@ -11,13 +11,14 @@ import { slice } from 'lodash';
 
 import { FlatRoot } from './flat-root';
 import { flattenFolders } from './utils';
-import { FOLDERS } from '../../../../carbonio-ui-commons/constants/folders';
 import { Folder } from '../../../../carbonio-ui-commons/types/folder';
+import { filterFoldersByName } from '../utils';
 
 const MAX_ALLOWED_RESULTS = 200;
 
 type FlatFoldersProps = {
 	folders: Array<Folder>;
+	searchString: string;
 	selectedFolderId?: string;
 	onFolderSelected?: (folder: Folder) => void;
 	allowRootSelection?: boolean;
@@ -40,24 +41,25 @@ const flattenRootsFolders = (
 
 export const FlatFolders = ({
 	folders,
+	searchString,
 	onFolderSelected,
 	selectedFolderId,
 	allowRootSelection,
-	showSharedAccounts = false,
 	showTrashFolder,
 	showSpamFolder
 }: FlatFoldersProps): React.JSX.Element => {
-	const filteredAccountsRoots = useMemo<Array<Folder>>(
-		() => (showSharedAccounts ? folders : folders.filter((root) => root.id === FOLDERS.USER_ROOT)),
-		[folders, showSharedAccounts]
+	const filteredFolders = useMemo(
+		() => filterFoldersByName(folders, searchString),
+		[folders, searchString]
 	);
+
 	const flatFolders = useMemo(
 		() =>
-			flattenRootsFolders(filteredAccountsRoots, {
+			flattenRootsFolders(filteredFolders, {
 				showTrashFolder,
 				showSpamFolder
 			}),
-		[filteredAccountsRoots, showSpamFolder, showTrashFolder]
+		[filteredFolders, showSpamFolder, showTrashFolder]
 	);
 
 	return (
