@@ -22,8 +22,8 @@ type FlatFoldersProps = {
 	onFolderSelected?: (folder: Folder) => void;
 	allowRootSelection?: boolean;
 	showSharedAccounts?: boolean;
-	showTrashFolder: boolean;
-	showSpamFolder: boolean;
+	showTrashFolder?: boolean;
+	showSpamFolder?: boolean;
 };
 
 const flattenRootsFolders = (

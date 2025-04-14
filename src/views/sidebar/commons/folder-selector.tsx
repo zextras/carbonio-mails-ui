@@ -25,6 +25,8 @@ export type FolderSelectorProps = {
 	onFolderSelected: (arg: Folder) => void;
 	showSharedAccounts: boolean;
 	allowRootSelection: boolean;
+	showSpamFolder?: boolean;
+	showTrashFolder?: boolean;
 };
 
 export function filterFoldersByName(folders: Folder[], search: string): Folder[] {
@@ -49,7 +51,9 @@ export const FolderSelector = ({
 	selectedFolderId,
 	onFolderSelected,
 	allowRootSelection,
-	showSharedAccounts
+	showSharedAccounts,
+	showSpamFolder,
+	showTrashFolder
 }: FolderSelectorProps): ReactElement => {
 	const [inputValue, setInputValue] = useState('');
 	const selectedFolder = selectedFolderId && getFolder(selectedFolderId);
@@ -91,6 +95,8 @@ export const FolderSelector = ({
 						onFolderSelected={onFolderSelected}
 						selectedFolderId={selectedFolderId}
 						allowRootSelection={allowRootSelection}
+						showSpamFolder={showSpamFolder}
+						showTrashFolder={showTrashFolder}
 					/>
 				) : (
 					<ThemeProvider theme={themeMui}>
