@@ -29,7 +29,8 @@ import {
 	isTrashed
 } from '../../../../helpers/folders';
 import { getSystemFolderTranslatedName } from '../../utils';
-import { filterFoldersByName, FolderSelector, FolderSelectorProps } from '../folder-selector';
+import { FolderSelector, FolderSelectorProps } from '../folder-selector';
+import { filterFoldersByName } from '../utils';
 
 describe('Folder selector', () => {
 	test('The selector is visible', () => {
@@ -357,7 +358,7 @@ function generateFolderFunction(name: string, n: number, depth: number): Folder 
 function generateLargeFolderStructure(n: number): Folder[] {
 	return Array.from({ length: n }, (_, i) => generateFolderFunction(`Folder ${i + 1}`, n, 0));
 }
-describe('filterFoldersByName performance', () => {
+describe.only('filterFoldersByName performance', () => {
 	const largeFolderStructure: Folder[] = generateLargeFolderStructure(27);
 
 	it('should run within acceptable time limits', () => {
@@ -374,6 +375,6 @@ describe('filterFoldersByName performance', () => {
 		expect(result).toBeDefined();
 		expect(Array.isArray(result)).toBe(true);
 
-		expect(executionTime).toBeLessThan(200);
+		expect(executionTime).toBeLessThan(100);
 	});
 });

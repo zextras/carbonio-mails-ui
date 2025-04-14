@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-use-before-define */
 /*
  * SPDX-FileCopyrightText: 2022 Zextras <https://www.zextras.com>
  *
@@ -28,24 +29,6 @@ export type FolderSelectorProps = {
 	showSpamFolder?: boolean;
 	showTrashFolder?: boolean;
 };
-
-function filterFoldersByName(folders: Folder[], search: string): Folder[] {
-	if (search.length === 0) return folders;
-	const lowerCaseSearch = search.toLowerCase();
-	return folders
-		.map((folder) => {
-			const matched = folder.name.toLowerCase().startsWith(lowerCaseSearch);
-			const children = filterFoldersByName(folder.children || [], search);
-			if (matched || children.length > 0) {
-				return {
-					...folder,
-					children
-				};
-			}
-			return null;
-		})
-		.filter((folder): folder is Folder => folder !== null);
-}
 
 export const FolderSelector = ({
 	inputLabel,
