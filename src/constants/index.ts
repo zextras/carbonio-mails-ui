@@ -12,6 +12,8 @@ export const MAILS_ROUTE = 'mails';
 
 export const EXTERNAL_VIEW_ROUTE = 'external-view';
 
+export const EML_ROUTE = 'eml';
+
 export const FOCUS_MODE_ROUTE = 'focus-mode';
 
 export const MAILS_BOARD_VIEW_ID = 'mails_editor_board_view';

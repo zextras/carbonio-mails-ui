@@ -16,7 +16,6 @@ import { generateMessage } from '../../../../tests/generators/generateMessage';
 import { MessagePreviewPanel } from '../message-preview-panel';
 
 jest.mock('../../../../store/emails/hooks/hooks');
-jest.mock('../../extra-windows/use-extra-window');
 
 describe('MessagePreviewPanel', () => {
 	const mockUseCompleteMessageOrFetch = useCompleteMessageOrFetch as jest.Mock;

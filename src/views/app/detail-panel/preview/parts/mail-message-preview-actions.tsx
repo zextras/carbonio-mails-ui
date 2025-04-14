@@ -93,7 +93,7 @@ export const MailMsgPreviewActions: FC<MailMsgPreviewActionsType> = ({ message }
 		<Row mainAlignment="flex-end" wrap="nowrap" data-testid="MailMsgPreviewActions">
 			{actions?.length > 0 &&
 				map(actions, (action) => {
-					if ('items' in action && !isNil(action.items) && action.icon && !action.disabled) {
+					if ('items' in action && !isNil(action.items) && action.icon) {
 						return (
 							<Padding key={action.label} right="small">
 								<Tooltip label={action.label}>

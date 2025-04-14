@@ -83,12 +83,11 @@ describe('External tabs', () => {
 
 	describe('openEmlStandalonePreview', () => {
 		it('should invoke the window.open function with the correct url and title', () => {
-			const folderId = faker.string.uuid();
 			const messageId = faker.string.uuid();
 			const part = faker.string.uuid();
 			const subject = faker.lorem.sentence();
 
-			openEmlStandalonePreview({ folderId, messageId, part, subject });
+			openEmlStandalonePreview({ messageId, part, subject });
 
 			expect(window.open).toHaveBeenCalledWith(
 				`http://localhost/carbonio/focus-mode/external-view/eml/${messageId}/${part}`,

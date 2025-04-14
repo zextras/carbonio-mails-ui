@@ -10,6 +10,7 @@ import { faker } from '@faker-js/faker';
 import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
 import { populateFoldersStore } from '../../../carbonio-ui-commons/test/mocks/store/folders';
 import { setupHook } from '../../../carbonio-ui-commons/test/test-setup';
+import { EXTERNAL_VIEW_ROUTE, FOCUS_MODE_ROUTE } from '../../../constants';
 import * as externalTabs from '../../../helpers/external-tabs';
 import { generateConversation } from '../../../tests/generators/generateConversation';
 import {
@@ -143,7 +144,7 @@ describe('useConvPreviewOnSeparatedWindow', () => {
 				});
 
 				expect(window.open).toHaveBeenCalledWith(
-					`http://localhost/carbonio/focus-mode/msg-preview/folder/2/conversation/${conv.id}`,
+					`http://localhost/carbonio/${FOCUS_MODE_ROUTE}/${EXTERNAL_VIEW_ROUTE}/folder/2/conversation/${conv.id}`,
 					conv.subject
 				);
 			});

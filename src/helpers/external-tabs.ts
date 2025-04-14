@@ -5,7 +5,7 @@
  */
 import { IS_FOCUS_MODE } from '@zextras/carbonio-shell-ui';
 
-import { EXTERNAL_VIEW_ROUTE, FOCUS_MODE_ROUTE } from '../constants';
+import { EML_ROUTE, EXTERNAL_VIEW_ROUTE, FOCUS_MODE_ROUTE } from '../constants';
 import { getLocationOrigin } from '../views/app/detail-panel/preview/utils';
 
 export const isStandalonePreview = (): boolean =>
@@ -22,7 +22,7 @@ export const openMessageStandalonePreview = ({
 	subject?: string;
 }): void => {
 	window.open(
-		`${getLocationOrigin()}/carbonio/${EXTERNAL_VIEW_ROUTE}/folder/${folderId}/message/${messageId}`,
+		`${getLocationOrigin()}/carbonio/${FOCUS_MODE_ROUTE}/${EXTERNAL_VIEW_ROUTE}/folder/${folderId}/message/${messageId}`,
 		subject
 	);
 };
@@ -37,7 +37,7 @@ export const openConversationStandalonePreview = ({
 	subject?: string;
 }): void => {
 	window.open(
-		`${getLocationOrigin()}/carbonio/${EXTERNAL_VIEW_ROUTE}/folder/${folderId}/conversation/${conversationId}`,
+		`${getLocationOrigin()}/carbonio/${FOCUS_MODE_ROUTE}/${EXTERNAL_VIEW_ROUTE}/folder/${folderId}/conversation/${conversationId}`,
 		subject
 	);
 };
@@ -52,7 +52,7 @@ export const openEmlStandalonePreview = ({
 	subject?: string;
 }): void => {
 	window.open(
-		`${getLocationOrigin()}/carbonio/${EXTERNAL_VIEW_ROUTE}/eml/${messageId}/${part}`,
+		`${getLocationOrigin()}/carbonio/${FOCUS_MODE_ROUTE}/${EXTERNAL_VIEW_ROUTE}/${EML_ROUTE}/${messageId}/${part}`,
 		subject
 	);
 };
