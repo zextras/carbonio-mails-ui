@@ -27,7 +27,6 @@ export function filterFoldersByName(folders: Folder[], search: string): Folder[]
 
 	const lowerCaseSearch = search.toLowerCase();
 
-	// Filter the folders array in a single pass
 	return folders.reduce<Folder[]>((acc, folder) => {
 		const filteredFolder = filterFolder(folder, lowerCaseSearch);
 		if (filteredFolder) acc.push(filteredFolder);
