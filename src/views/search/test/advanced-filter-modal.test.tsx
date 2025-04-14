@@ -16,7 +16,6 @@ import {
 import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
 import { AdvancedFilterModalProps, SearchQueryItem } from '../../../types';
 import { AdvancedFilterModal } from '../advanced-filter-modal';
-import userEvent from '@testing-library/user-event';
 
 describe('Advanced filter modal', () => {
 	const props: AdvancedFilterModalProps = {
