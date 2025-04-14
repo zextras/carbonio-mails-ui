@@ -29,10 +29,11 @@ export type FolderSelectorProps = {
 	showTrashFolder?: boolean;
 };
 
-export function filterFoldersByName(folders: Folder[], search: string): Folder[] {
+function filterFoldersByName(folders: Folder[], search: string): Folder[] {
+	const lowerCaseSearch = search.toLowerCase();
 	return folders
 		.map((folder) => {
-			const matched = folder.name.toLowerCase().startsWith(search.toLowerCase());
+			const matched = folder.name.toLowerCase().startsWith(lowerCaseSearch);
 			const children = filterFoldersByName(folder.children || [], search);
 			if (matched || children.length > 0) {
 				return {
@@ -42,7 +43,7 @@ export function filterFoldersByName(folders: Folder[], search: string): Folder[]
 			}
 			return null;
 		})
-		.filter(Boolean) as Folder[];
+		.filter((folder): folder is Folder => folder !== null);
 }
 
 export const FolderSelector = ({
