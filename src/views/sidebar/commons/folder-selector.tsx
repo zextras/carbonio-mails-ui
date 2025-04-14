@@ -13,6 +13,7 @@ import { t } from '@zextras/carbonio-shell-ui';
 import { FlatFolders } from './flatten-folders/flat-folders';
 import { FolderAccordionCustomComponent } from './folder-accordions-custom-component';
 import { FoldersAccordion } from './folders-accordion';
+import { filterFoldersByName } from './utils';
 import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
 import { getFolder } from '../../../carbonio-ui-commons/store/zustand/folder/hooks';
 import { themeMui } from '../../../carbonio-ui-commons/theme/theme-mui';
