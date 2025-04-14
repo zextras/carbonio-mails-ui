@@ -18,14 +18,12 @@ export const MessagePreviewPanel: FC<{
 	isMessageLoaded: boolean;
 }> = ({ folderId, message, isMessageLoaded }) => (
 	<Container orientation="vertical" mainAlignment="flex-start" crossAlignment="flex-start">
-		{
-			<PreviewPanelHeader
-				folderId={folderId}
-				itemType={'message'}
-				isRead={message?.read}
-				subject={message?.subject}
-			/>
-		}
+		<PreviewPanelHeader
+			folderId={folderId}
+			itemType={'message'}
+			isRead={message?.read}
+			subject={message?.subject}
+		/>
 		<Container
 			style={{ overflowY: 'auto' }}
 			height="fill"
