@@ -5,14 +5,52 @@
  */
 
 import { faker } from '@faker-js/faker';
+import * as shell from '@zextras/carbonio-shell-ui';
 
+import { mockWindowLocation } from '../../carbonio-ui-commons/test/mocks/utils/window';
 import {
+	isStandalonePreview,
 	openConversationStandalonePreview,
 	openEmlStandalonePreview,
 	openMessageStandalonePreview
 } from '../external-tabs';
 
 describe('External tabs', () => {
+	describe('isStandalonePreview', () => {
+		it('Should return true if the focus-mode is active and the location url matches the preview url pattern', () => {
+			jest.mocked(shell).IS_FOCUS_MODE = true;
+
+			mockWindowLocation({
+				origin: 'http://localhost',
+				pathname: `/carbonio/focus-mode/msg-preview/folder/${faker.number.int()}/message/${faker.number.int()}`
+			});
+
+			expect(isStandalonePreview()).toBe(true);
+		});
+
+		it("should return false if the focus-mode is active and the location url doesn't match the preview url pattern", () => {
+			jest.mocked(shell).IS_FOCUS_MODE = true;
+
+			mockWindowLocation({
+				origin: 'http://localhost',
+				pathname: `/carbonio/focus-mode/other-route`
+			});
+
+			expect(isStandalonePreview()).toBe(false);
+		});
+
+		it('should return false if the focus-mode is not active', () => {
+			jest.mocked(shell).IS_FOCUS_MODE = false;
+
+			mockWindowLocation({
+				origin: 'http://localhost',
+				pathname: `/carbonio/focus-mode/msg-preview/folder/${faker.number.int()}/message/${faker.number.int()}`
+			});
+
+			expect(isStandalonePreview()).toBe(false);
+		});
+	});
+
 	describe('openMessageStandalonePreview', () => {
 		it('should invoke the window.open function with the correct url and title', () => {
 			const folderId = faker.string.uuid();

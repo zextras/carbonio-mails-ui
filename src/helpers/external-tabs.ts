@@ -3,8 +3,13 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import { IS_FOCUS_MODE } from '@zextras/carbonio-shell-ui';
+
 import { MSG_PREVIEW_ROUTE } from '../constants';
 import { getLocationOrigin } from '../views/app/detail-panel/preview/utils';
+
+export const isStandalonePreview = (): boolean =>
+	IS_FOCUS_MODE && window.location.pathname.startsWith(`/carbonio/${MSG_PREVIEW_ROUTE}/`);
 
 export const openMessageStandalonePreview = ({
 	folderId,
