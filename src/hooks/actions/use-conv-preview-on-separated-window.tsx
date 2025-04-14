@@ -8,8 +8,11 @@ import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { ConversationActionsDescriptors } from '../../constants';
+import {
+	isStandalonePreview,
+	openConversationStandalonePreview
+} from '../../helpers/external-tabs';
 import { ActionFn, UIActionDescriptor } from '../../types';
-import { useStandalonePreview } from '../use-standalone-preview';
 
 export const useConvPreviewOnSeparatedWindowFn = ({
 	conversationId,
@@ -20,8 +23,7 @@ export const useConvPreviewOnSeparatedWindowFn = ({
 	folderId: string;
 	subject: string;
 }): ActionFn => {
-	const { isStandalonePreview, openConversationStandalonePreview } = useStandalonePreview();
-	const canExecute = useCallback((): boolean => !isStandalonePreview(), [isStandalonePreview]);
+	const canExecute = useCallback((): boolean => !isStandalonePreview(), []);
 
 	const execute = useCallback(() => {
 		if (!canExecute()) {
@@ -29,7 +31,7 @@ export const useConvPreviewOnSeparatedWindowFn = ({
 		}
 
 		openConversationStandalonePreview({ folderId, conversationId, subject });
-	}, [canExecute, openConversationStandalonePreview, folderId, conversationId, subject]);
+	}, [canExecute, folderId, conversationId, subject]);
 
 	return useMemo(() => ({ canExecute, execute }), [canExecute, execute]);
 };

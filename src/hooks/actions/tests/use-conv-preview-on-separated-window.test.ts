@@ -10,8 +10,8 @@ import { faker } from '@faker-js/faker';
 import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
 import { populateFoldersStore } from '../../../carbonio-ui-commons/test/mocks/store/folders';
 import { setupHook } from '../../../carbonio-ui-commons/test/test-setup';
+import * as externalTabs from '../../../helpers/external-tabs';
 import { generateConversation } from '../../../tests/generators/generateConversation';
-import * as useStandalonePreviewModule from '../../use-standalone-preview';
 import {
 	useConvPreviewOnSeparatedWindowDescriptor,
 	useConvPreviewOnSeparatedWindowFn
@@ -39,7 +39,7 @@ describe('useConvPreviewOnSeparatedWindow', () => {
 	});
 
 	describe('functions', () => {
-		const useStandalonePreviewSpy = jest.spyOn(useStandalonePreviewModule, 'useStandalonePreview');
+		const isStandalonePreviewSpy = jest.spyOn(externalTabs, 'isStandalonePreview');
 
 		it('Should return an object with execute and canExecute functions', () => {
 			const {
@@ -62,12 +62,7 @@ describe('useConvPreviewOnSeparatedWindow', () => {
 
 		describe('canExecute', () => {
 			it('should return false if the message is already being previewed in a separated window', () => {
-				useStandalonePreviewSpy.mockReturnValue({
-					isStandalonePreview: () => true,
-					openConversationStandalonePreview: jest.fn(),
-					openEmlStandalonePreview: jest.fn(),
-					openMessageStandalonePreview: jest.fn()
-				});
+				isStandalonePreviewSpy.mockReturnValue(true);
 
 				const {
 					result: { current: functions }
@@ -85,12 +80,7 @@ describe('useConvPreviewOnSeparatedWindow', () => {
 			});
 
 			it('should return true if the message is not being previewed in a separated window', () => {
-				useStandalonePreviewSpy.mockReturnValue({
-					isStandalonePreview: () => false,
-					openConversationStandalonePreview: jest.fn(),
-					openEmlStandalonePreview: jest.fn(),
-					openMessageStandalonePreview: jest.fn()
-				});
+				isStandalonePreviewSpy.mockReturnValue(false);
 
 				const {
 					result: { current: functions }
@@ -109,7 +99,8 @@ describe('useConvPreviewOnSeparatedWindow', () => {
 		});
 
 		describe('execute', () => {
-			it('should not call the integrated function if the action cannot be executed', async () => {
+			it('should not open a window if the action cannot be executed', async () => {
+				isStandalonePreviewSpy.mockReturnValue(true);
 				populateFoldersStore();
 
 				const {
@@ -131,13 +122,8 @@ describe('useConvPreviewOnSeparatedWindow', () => {
 				expect(window.open).not.toHaveBeenCalled();
 			});
 
-			it('should call the API with the proper params if the action can be executed', async () => {
-				useStandalonePreviewSpy.mockReturnValue({
-					isStandalonePreview: () => false,
-					openConversationStandalonePreview: jest.fn(),
-					openEmlStandalonePreview: jest.fn(),
-					openMessageStandalonePreview: jest.fn()
-				});
+			it('should open a window to the conversation preview url if the action can be executed', async () => {
+				isStandalonePreviewSpy.mockReturnValue(false);
 				populateFoldersStore();
 
 				const {
