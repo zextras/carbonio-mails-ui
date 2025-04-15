@@ -17,7 +17,7 @@ export type MailPreviewProps = {
 	expanded: boolean;
 	isAlone: boolean;
 	isMessageView: boolean;
-	isExternalMessage?: boolean;
+	isEml?: boolean;
 };
 
 const MailPreview: FC<MailPreviewProps> = ({
@@ -25,7 +25,7 @@ const MailPreview: FC<MailPreviewProps> = ({
 	expanded,
 	isAlone,
 	isMessageView,
-	isExternalMessage = false
+	isEml = false
 }) => {
 	const [isOpen, setIsOpen] = useState(expanded || isAlone);
 
@@ -54,7 +54,7 @@ const MailPreview: FC<MailPreviewProps> = ({
 				onClick={onClick}
 				message={message}
 				open={isMailPreviewOpen}
-				isExternalMessage={isExternalMessage}
+				isEml={isEml}
 			/>
 
 			<Container
@@ -69,7 +69,7 @@ const MailPreview: FC<MailPreviewProps> = ({
 					<MailPreviewContent
 						message={message}
 						isMailPreviewOpen={isMailPreviewOpen}
-						isExternalMessage={isExternalMessage}
+						isEml={isEml}
 					/>
 				)}
 			</Container>

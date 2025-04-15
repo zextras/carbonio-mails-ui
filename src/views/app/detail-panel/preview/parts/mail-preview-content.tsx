@@ -27,12 +27,12 @@ const [InviteResponse, integrationAvailable] = getIntegratedComponent('invites-r
 type MailPreviewContentProps = {
 	message: MailMessage | IncompleteMessage;
 	isMailPreviewOpen: boolean;
-	isExternalMessage?: boolean;
+	isEml?: boolean;
 };
 export const MailPreviewContent = ({
 	message,
 	isMailPreviewOpen,
-	isExternalMessage = false
+	isEml = false
 }: MailPreviewContentProps): React.JSX.Element => {
 	const [showModal, setShowModal] = useState(true);
 	const messageId = message.id;
@@ -139,7 +139,7 @@ export const MailPreviewContent = ({
 							messageId={message.id}
 							messageSubject={message.subject}
 							messageAttachments={message.attachments}
-							isExternalMessage={isExternalMessage}
+							isEml={isEml}
 						/>
 					</Row>
 					<Padding height="100%" width="100%" vertical="medium" style={{ overflow: 'auto' }}>

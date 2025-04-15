@@ -16,8 +16,8 @@ export const MessagePreviewPanel: FC<{
 	folderId: string;
 	message: MailMessage | IncompleteMessage | undefined;
 	isMessageLoaded: boolean;
-	isExternalMessage?: boolean;
-}> = ({ folderId, message, isMessageLoaded, isExternalMessage }) => (
+	isEml?: boolean;
+}> = ({ folderId, message, isMessageLoaded, isEml }) => (
 	<Container orientation="vertical" mainAlignment="flex-start" crossAlignment="flex-start">
 		<PreviewPanelHeader
 			folderId={folderId}
@@ -36,13 +36,7 @@ export const MessagePreviewPanel: FC<{
 				<Container height="fit" mainAlignment="flex-start" background="gray5">
 					<Padding bottom="medium" width="100%">
 						{message && (
-							<MailPreview
-								message={message}
-								expanded
-								isAlone
-								isMessageView
-								isExternalMessage={isExternalMessage}
-							/>
+							<MailPreview message={message} expanded isAlone isMessageView isEml={isEml} />
 						)}
 					</Padding>
 				</Container>

@@ -123,7 +123,7 @@ const Attachment = ({
 	link,
 	downloadlink,
 	messageId,
-	isExternalMessage = false,
+	isEml = false,
 	part,
 	att
 }: AttachmentType): React.JSX.Element => {
@@ -468,7 +468,7 @@ const Attachment = ({
 							/>
 						</Tooltip>
 					</Padding>
-					{!isExternalMessage && (
+					{!isEml && (
 						<Padding right="small">
 							<Tooltip
 								key={`${messageId}-DeletePermanentlyOutline`}
@@ -526,10 +526,10 @@ type AttachmentsBlockProps = {
 	messageId: MailMessage['id'];
 	messageSubject: MailMessage['subject'];
 	messageAttachments: MailMessage['attachments'];
-	isExternalMessage?: boolean;
+	isEml?: boolean;
 };
 const AttachmentsBlock = ({
-	isExternalMessage = false,
+	isEml = false,
 	messageId,
 	messageSubject,
 	messageAttachments
@@ -667,7 +667,7 @@ const AttachmentsBlock = ({
 							attachments: [att.name]
 						})}
 						messageId={messageId}
-						isExternalMessage={isExternalMessage}
+						isEml={isEml}
 						part={att?.name ?? ''}
 						iconColors={getAttachmentIconColors({ attachments, theme })}
 						att={att}
