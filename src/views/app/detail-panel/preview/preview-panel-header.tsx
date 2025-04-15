@@ -20,7 +20,7 @@ import { useNavigate } from 'react-router-dom';
 import { ConversationPreviewHeaderNavigation } from './conversation-preview-header-navigation';
 import { MessagePreviewHeaderNavigation } from './message-preview-header-navigation';
 import { MAILS_ROUTE } from '../../../../constants';
-import { isStandalonePreview } from '../../../../helpers/external-tabs';
+import { isFocusModeMailView } from '../../../../helpers/external-tabs';
 import { useViewLayout } from '../../../../hooks/use-view-layout';
 import type { MailMessage } from '../../../../types';
 import { LayoutComponent } from '../../folder-panel/parts/layout-component';
@@ -52,7 +52,7 @@ export const PreviewPanelHeader = ({
 	const [t] = useTranslation();
 	const navigate = useNavigate();
 
-	const isStandAlone = isStandalonePreview();
+	const isStandAlone = isFocusModeMailView();
 
 	const replaceHistoryCallback = useCallback(
 		() => navigate(`/${MAILS_ROUTE}/folder/${folderId}`, { replace: true }),

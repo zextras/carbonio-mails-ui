@@ -9,7 +9,7 @@ import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { MessageActionsDescriptors } from '../../constants';
-import { isStandalonePreview, openMessageStandalonePreview } from '../../helpers/external-tabs';
+import { isFocusModeMailView, openMessageStandalonePreview } from '../../helpers/external-tabs';
 import { ActionFn, UIActionDescriptor } from '../../types';
 
 export const useMsgPreviewOnSeparatedWindowFn = ({
@@ -21,7 +21,7 @@ export const useMsgPreviewOnSeparatedWindowFn = ({
 	folderId: string;
 	subject: string;
 }): ActionFn => {
-	const canExecute = useCallback((): boolean => !isStandalonePreview(), []);
+	const canExecute = useCallback((): boolean => !isFocusModeMailView(), []);
 
 	const execute = useCallback(() => {
 		if (canExecute()) {

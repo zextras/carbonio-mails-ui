@@ -7,9 +7,9 @@
 import { faker } from '@faker-js/faker';
 import * as shell from '@zextras/carbonio-shell-ui';
 
-import { mockWindowLocation } from '../../carbonio-ui-commons/test/mocks/utils/window';
+import { FOCUS_MODE_MAIL_VIEW_ROUTE } from '../../constants';
 import {
-	isStandalonePreview,
+	isFocusModeMailView,
 	openConversationStandalonePreview,
 	openEmlStandalonePreview,
 	openMessageStandalonePreview
@@ -20,34 +20,13 @@ describe('External tabs', () => {
 		it('Should return true if the focus-mode is active and the location url matches the preview url pattern', () => {
 			jest.mocked(shell).IS_FOCUS_MODE = true;
 
-			mockWindowLocation({
-				origin: 'http://localhost',
-				pathname: `/carbonio/focus-mode/external-view/folder/${faker.number.int()}/message/${faker.number.int()}`
-			});
-
-			expect(isStandalonePreview()).toBe(true);
-		});
-
-		it("should return false if the focus-mode is active and the location url doesn't match the preview url pattern", () => {
-			jest.mocked(shell).IS_FOCUS_MODE = true;
-
-			mockWindowLocation({
-				origin: 'http://localhost',
-				pathname: `/carbonio/focus-mode/other-route`
-			});
-
-			expect(isStandalonePreview()).toBe(false);
+			expect(isFocusModeMailView()).toBe(true);
 		});
 
 		it('should return false if the focus-mode is not active', () => {
 			jest.mocked(shell).IS_FOCUS_MODE = false;
 
-			mockWindowLocation({
-				origin: 'http://localhost',
-				pathname: `/carbonio/focus-mode/external-view/folder/${faker.number.int()}/message/${faker.number.int()}`
-			});
-
-			expect(isStandalonePreview()).toBe(false);
+			expect(isFocusModeMailView()).toBe(false);
 		});
 	});
 
@@ -60,7 +39,7 @@ describe('External tabs', () => {
 			openMessageStandalonePreview({ folderId, messageId, subject });
 
 			expect(window.open).toHaveBeenCalledWith(
-				`http://localhost/carbonio/focus-mode/external-view/folder/${folderId}/message/${messageId}`,
+				`http://localhost/carbonio/focus-mode/${FOCUS_MODE_MAIL_VIEW_ROUTE}/folder/${folderId}/message/${messageId}`,
 				subject
 			);
 		});
@@ -75,7 +54,7 @@ describe('External tabs', () => {
 			openConversationStandalonePreview({ folderId, conversationId, subject });
 
 			expect(window.open).toHaveBeenCalledWith(
-				`http://localhost/carbonio/focus-mode/external-view/folder/${folderId}/conversation/${conversationId}`,
+				`http://localhost/carbonio/focus-mode/${FOCUS_MODE_MAIL_VIEW_ROUTE}/folder/${folderId}/conversation/${conversationId}`,
 				subject
 			);
 		});
@@ -90,7 +69,7 @@ describe('External tabs', () => {
 			openEmlStandalonePreview({ messageId, part, subject });
 
 			expect(window.open).toHaveBeenCalledWith(
-				`http://localhost/carbonio/focus-mode/external-view/eml/${messageId}/${part}`,
+				`http://localhost/carbonio/focus-mode/${FOCUS_MODE_MAIL_VIEW_ROUTE}/eml/${messageId}/${part}`,
 				subject
 			);
 		});

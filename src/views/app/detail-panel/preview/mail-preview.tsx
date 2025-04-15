@@ -9,7 +9,7 @@ import { Container } from '@zextras/carbonio-design-system';
 
 import { MailPreviewBlock } from './parts/mail-preview-block';
 import { MailPreviewContent } from './parts/mail-preview-content';
-import { isStandalonePreview } from '../../../../helpers/external-tabs';
+import { isFocusModeMailView } from '../../../../helpers/external-tabs';
 import type { MailMessage } from '../../../../types';
 
 export type MailPreviewProps = {
@@ -47,7 +47,7 @@ const MailPreview: FC<MailPreviewProps> = ({
 		<Container
 			height={containerHeight}
 			data-testid={`MailPreview-${message.id}`}
-			padding={isStandalonePreview() ? { all: 'large' } : undefined}
+			padding={isFocusModeMailView() ? { all: 'large' } : undefined}
 			background="white"
 		>
 			<MailPreviewBlock

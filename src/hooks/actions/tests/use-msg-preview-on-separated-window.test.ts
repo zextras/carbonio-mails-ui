@@ -7,7 +7,7 @@ import { act } from 'react';
 
 import { populateFoldersStore } from '../../../carbonio-ui-commons/test/mocks/store/folders';
 import { setupHook } from '../../../carbonio-ui-commons/test/test-setup';
-import { EXTERNAL_VIEW_ROUTE, FOCUS_MODE_ROUTE } from '../../../constants';
+import { FOCUS_MODE_ROUTE, FOCUS_MODE_MAIL_VIEW_ROUTE } from '../../../constants';
 import * as externalTabs from '../../../helpers/external-tabs';
 import { getParentFolderId } from '../../../helpers/folders';
 import { generateMessage } from '../../../tests/generators/generateMessage';
@@ -44,7 +44,7 @@ describe('useMsgPreviewOnSeparatedWindow', () => {
 	});
 
 	describe('Functions', () => {
-		const isStandalonePreviewSpy = jest.spyOn(externalTabs, 'isStandalonePreview');
+		const isStandalonePreviewSpy = jest.spyOn(externalTabs, 'isFocusModeMailView');
 
 		it('Should return an object with execute and canExecute functions', () => {
 			const {
@@ -148,7 +148,7 @@ describe('useMsgPreviewOnSeparatedWindow', () => {
 				});
 
 				expect(window.open).toHaveBeenCalledWith(
-					`http://localhost/carbonio/${FOCUS_MODE_ROUTE}/${EXTERNAL_VIEW_ROUTE}/folder/2/message/${msg.id}`,
+					`http://localhost/carbonio/${FOCUS_MODE_ROUTE}/${FOCUS_MODE_MAIL_VIEW_ROUTE}/folder/2/message/${msg.id}`,
 					msg.subject
 				);
 			});

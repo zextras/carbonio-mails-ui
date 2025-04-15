@@ -9,7 +9,7 @@ import { useTranslation } from 'react-i18next';
 
 import { ConversationActionsDescriptors } from '../../constants';
 import {
-	isStandalonePreview,
+	isFocusModeMailView,
 	openConversationStandalonePreview
 } from '../../helpers/external-tabs';
 import { ActionFn, UIActionDescriptor } from '../../types';
@@ -23,7 +23,7 @@ export const useConvPreviewOnSeparatedWindowFn = ({
 	folderId: string;
 	subject: string;
 }): ActionFn => {
-	const canExecute = useCallback((): boolean => !isStandalonePreview(), []);
+	const canExecute = useCallback((): boolean => !isFocusModeMailView(), []);
 
 	const execute = useCallback(() => {
 		if (!canExecute()) {

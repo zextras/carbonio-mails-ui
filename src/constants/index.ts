@@ -10,7 +10,7 @@ import { FOLDERS } from '../carbonio-ui-commons/constants/folders';
 
 export const MAILS_ROUTE = 'mails';
 
-export const EXTERNAL_VIEW_ROUTE = 'external-view';
+export const FOCUS_MODE_MAIL_VIEW_ROUTE = 'mail-view';
 
 export const EML_ROUTE = 'eml';
 

@@ -15,7 +15,7 @@ import {
 import { filter } from 'lodash';
 
 import { MailMessageRenderer } from '../../../../../commons/mail-message-renderer/mail-message-renderer';
-import { isStandalonePreview } from '../../../../../helpers/external-tabs';
+import { isFocusModeMailView } from '../../../../../helpers/external-tabs';
 import SharedInviteReply from '../../../../../integrations/shared-invite-reply';
 import { msgActionEmailStoreAction } from '../../../../../store/emails/actions/msg-action-action';
 import type { IncompleteMessage, MailMessage } from '../../../../../types';
@@ -128,7 +128,7 @@ export const MailPreviewContent = ({
 					height="100%"
 					crossAlignment="stretch"
 					padding={
-						isStandalonePreview()
+						isFocusModeMailView()
 							? { vertical: 'small' }
 							: { horizontal: 'large', vertical: 'small' }
 					}
