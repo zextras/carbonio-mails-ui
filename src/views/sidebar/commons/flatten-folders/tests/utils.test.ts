@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { generateFolder } from '../../../../carbonio-ui-commons/test/mocks/folders/folders-generator';
-import { Folder } from '../../../../types';
+import { generateFolder } from '../../../../../carbonio-ui-commons/test/mocks/folders/folders-generator';
+import { Folder } from '../../../../../types';
 import { filterFoldersByName } from '../utils';
 
 function generateFolderFunction(name: string, n: number, depth: number): Folder {

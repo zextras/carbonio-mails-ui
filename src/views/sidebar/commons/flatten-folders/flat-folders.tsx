@@ -10,9 +10,8 @@ import { Container } from '@zextras/carbonio-design-system';
 import { slice } from 'lodash';
 
 import { FlatRoot } from './flat-root';
-import { flattenFolders } from './utils';
+import { filterFoldersByName, flattenRootsFolders } from './utils';
 import { Folder } from '../../../../carbonio-ui-commons/types/folder';
-import { filterFoldersByName } from '../utils';
 
 const MAX_ALLOWED_RESULTS = 200;
 
@@ -26,18 +25,6 @@ type FlatFoldersProps = {
 	showTrashFolder?: boolean;
 	showSpamFolder?: boolean;
 };
-
-const flattenRootsFolders = (
-	roots: Array<Folder>,
-	options?: {
-		showTrashFolder?: boolean;
-		showSpamFolder?: boolean;
-	}
-): Array<Folder> =>
-	roots.map((root) => ({
-		...root,
-		children: flattenFolders(root.children, options)
-	}));
 
 export const FlatFolders = ({
 	folders,
