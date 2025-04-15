@@ -39,6 +39,7 @@ export const EmlPreviewPanelContainer = (): React.JSX.Element => {
 			message={message}
 			folderId={folderId}
 			isMessageLoaded={message !== undefined}
+			isExternalMessage
 		/>
 	);
 };
