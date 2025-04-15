@@ -229,4 +229,61 @@ describe('Advanced filter modal', () => {
 		expect(mockContactInputValues[0]).toHaveTextContent(/"icon":"EditOutline"/);
 		expect(mockContactInputValues[1]).toHaveTextContent(/"icon":"EditOutline"/);
 	});
+	it('reset filters button should be enabled if query is not empty', async () => {
+		const properties: AdvancedFilterModalProps = {
+			open: true,
+			onClose: jest.fn(),
+			query: [
+				{
+					id: 'query1',
+					label: 'keywords',
+					value: 'keyword'
+				}
+			],
+			updateQuery: jest.fn(),
+			setIsSharedFolderIncluded: jest.fn(),
+			isSharedFolderIncluded: false
+		};
+		setupTest(<AdvancedFilterModal {...properties} />);
+		const actionButton = screen.getByRole('button', { name: /action\.reset/i });
+
+		expect(actionButton).toBeEnabled();
+	});
+	it('reset filters button should be disable when modal open', () => {
+		setupTest(<AdvancedFilterModal {...props} />);
+		const fieldLabel = screen.getByText(/label\.single_advanced_filter/i);
+		expect(fieldLabel).toBeInTheDocument();
+
+		const actionButton = screen.getByRole('button', {
+			name: /action\.reset/i
+		});
+		expect(actionButton).toBeInTheDocument();
+		expect(actionButton).toBeDisabled();
+	});
+	it('should clear the query when reset filters button is clicked', async () => {
+		const updateQueryMock = jest.fn();
+		const properties: AdvancedFilterModalProps = {
+			open: true,
+			onClose: jest.fn(),
+			query: [
+				{
+					id: 'query1',
+					label: 'keywords',
+					value: 'some keywords'
+				}
+			],
+			updateQuery: updateQueryMock,
+			setIsSharedFolderIncluded: jest.fn(),
+			isSharedFolderIncluded: false
+		};
+
+		const { user } = setupTest(<AdvancedFilterModal {...properties} />);
+
+		const resetButton = screen.getByRole('button', { name: /action\.reset/i });
+		expect(resetButton).toBeEnabled();
+		await user.click(resetButton);
+		await waitFor(() => {
+			expect(updateQueryMock).toHaveBeenCalledWith([]);
+		});
+	});
 });
