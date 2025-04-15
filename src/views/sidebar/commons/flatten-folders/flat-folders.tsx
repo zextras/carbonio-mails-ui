@@ -6,8 +6,8 @@
 
 import React, { ReactElement, useMemo } from 'react';
 
-import { Container } from '@zextras/carbonio-design-system';
-import { slice } from 'lodash';
+import { Container, Padding, Row, Text } from '@zextras/carbonio-design-system';
+import { useTranslation } from 'react-i18next';
 
 import { FlatRoot } from './flat-root';
 import { flattenAndFilterFoldersWithCap } from './utils';
@@ -37,6 +37,8 @@ export const FlatFolders = ({
 	showTrashFolder,
 	showSpamFolder
 }: FlatFoldersProps): React.JSX.Element => {
+	const [hasMoreResults, setHasMoreResults] = React.useState(false);
+	const [t] = useTranslation();
 	const flatFilteredFolders = useMemo(() => {
 		let remaining = MAX_ALLOWED_RESULTS;
 
@@ -60,25 +62,46 @@ export const FlatFolders = ({
 				};
 				const children = flattenAndFilterFoldersWithCap(folder.children, searchString, remaining);
 				remaining -= children.length;
+				if (remaining <= 0) {
+					setHasMoreResults(true);
+				} else {
+					setHasMoreResults(false);
+				}
 
 				return { ...currentFolder, children };
 			})
 			.filter((folder): folder is Folder => folder !== null);
 	}, [folders, searchString, showSpamFolder, showTrashFolder]);
+	const thereAreMoreResults = t(
+		'modal.messageFilteringList',
+		'Only the first 100 results are displayed. Narrow your search criteria to view the complete list.'
+	);
 
 	return (
-		<Container orientation={'vertical'} style={{ overflowY: 'auto' }}>
-			{flatFilteredFolders.map<ReactElement>((folder) => (
-				<FlatRoot
-					key={folder.id}
-					folder={folder}
-					childrenFolders={slice(folder.children, 0, MAX_ALLOWED_RESULTS)}
-					isOpen
-					onFolderSelected={onFolderSelected}
-					selectedFolderId={selectedFolderId}
-					allowRootSelection={allowRootSelection}
-				/>
-			))}
-		</Container>
+		<>
+			{hasMoreResults && (
+				<Padding top="small" bottom="large">
+					<Row wrap="nowrap" takeAvailableSpace width="fill">
+						<Text textAlign="left" size="small">
+							{thereAreMoreResults}
+						</Text>
+					</Row>
+				</Padding>
+			)}
+			{!hasMoreResults && <Padding vertical="medium" />}
+			<Container orientation={'vertical'} style={{ overflowY: 'auto' }}>
+				{flatFilteredFolders.map<ReactElement>((folder) => (
+					<FlatRoot
+						key={folder.id}
+						folder={folder}
+						childrenFolders={folder.children}
+						isOpen
+						onFolderSelected={onFolderSelected}
+						selectedFolderId={selectedFolderId}
+						allowRootSelection={allowRootSelection}
+					/>
+				))}
+			</Container>
+		</>
 	);
 };

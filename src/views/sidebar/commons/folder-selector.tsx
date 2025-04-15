@@ -59,7 +59,6 @@ export const FolderSelector = ({
 				value={inputValue}
 				onChange={(e: ChangeEvent<HTMLInputElement>): void => setInputValue(e.target.value)}
 			/>
-			<Padding vertical="medium" />
 			<Container
 				style={{ overflowY: 'auto', display: 'block' }}
 				height="fit"
@@ -81,6 +80,7 @@ export const FolderSelector = ({
 					/>
 				) : (
 					<ThemeProvider theme={themeMui}>
+						<Padding vertical="medium" />
 						<FoldersAccordion
 							folders={rootFolders}
 							onFolderSelected={onFolderSelected}
