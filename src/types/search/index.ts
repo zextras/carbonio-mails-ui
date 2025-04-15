@@ -194,25 +194,6 @@ export type UseDisabledPropType = {
 	isSharedFolderIncludedTobe: boolean;
 };
 
-export type UseSecondaryDisabledType = {
-	attachmentFilter: KeywordState;
-	attachmentType: KeywordState;
-	emailStatus: KeywordState;
-	flaggedFilter: KeywordState;
-	folder: KeywordState;
-	receivedFromAddress: Array<QueryChip>;
-	sentAfter: KeywordState;
-	sentBefore: KeywordState;
-	sentFromAddress: Array<QueryChip>;
-	sentOn: KeywordState;
-	sizeLarger: KeywordState;
-	sizeSmaller: KeywordState;
-	subject: KeywordState;
-	tag: KeywordState;
-	totalKeywords: number;
-	unreadFilter: KeywordState;
-};
-
 export type ChipType = {
 	label: string;
 	hasAvatar?: boolean;
