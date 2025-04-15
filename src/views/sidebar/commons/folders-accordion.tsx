@@ -46,6 +46,7 @@ export const FoldersAccordion = ({
 					key={folder.id}
 				>
 					<MUIAccordionSummary
+						data-testid={`folder-accordion-item-${folder.id}`}
 						onClick={(): void => {
 							onFolderSelected?.(folder);
 						}}
