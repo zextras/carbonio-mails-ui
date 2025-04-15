@@ -12,7 +12,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { ConversationPreviewPanel } from './conversation-preview-panel';
 import { PreviewPanelHeader } from './preview/preview-panel-header';
 import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
-import { API_REQUEST_STATUS, MAILS_ROUTE } from '../../../constants';
+import { API_REQUEST_STATUS } from '../../../constants';
 import { getFolderIdParts } from '../../../helpers/folders';
 import { getConvEmailStoreAction } from '../../../store/emails/actions/get-conv-action';
 import { useCompleteConversationOrFetch } from '../../../store/emails/hooks/hooks';
@@ -29,11 +29,12 @@ export const ConversationPreviewPanelContainer = (): React.JSX.Element => {
 
 	const onConversationIdChange = useCallback(
 		(newConversationId: string): void => {
-			navigate(`/${MAILS_ROUTE}/folder/${folderId}/conversation/${newConversationId}`, {
-				replace: true
+			navigate(`../${newConversationId}`, {
+				replace: true,
+				relative: 'path'
 			});
 		},
-		[folderId, navigate]
+		[navigate]
 	);
 
 	useEffect(() => {
