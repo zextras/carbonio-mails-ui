@@ -1,4 +1,4 @@
-import React, { ReactNode, useCallback, useMemo } from 'react';
+import React, { ReactNode, useMemo } from 'react';
 
 import { ContainerProps, Dropdown } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
@@ -7,7 +7,6 @@ import { normalizeDropdownActionItem } from '../../../../helpers/actions';
 import { useConvActions } from '../../../../hooks/actions/use-conv-actions';
 import { useTagDropdownItem } from '../../../../hooks/use-tag-dropdown-item';
 import { NormalizedConversation } from '../../../../types';
-import { ConversationPreviewPanel } from '../../detail-panel/conversation-preview-panel';
 import { HoverBarContainer } from '../parts/hover-bar-container';
 import { HoverContainer } from '../parts/hover-container';
 import { ListItemHoverActions } from '../parts/list-item-hover-actions';
@@ -34,10 +33,6 @@ export const ConversationListItemActionWrapper = ({
 	conversation: NormalizedConversation;
 	deselectAll: () => void;
 }): React.JSX.Element => {
-	const conversationPreviewFactory = useCallback(
-		() => <ConversationPreviewPanel conversation={conversation} />,
-		[conversation]
-	);
 	const [t] = useTranslation();
 	const {
 		replyDescriptor,
@@ -61,7 +56,6 @@ export const ConversationListItemActionWrapper = ({
 	} = useConvActions({
 		conversation,
 		deselectAll,
-		conversationPreviewFactory,
 		shouldReplaceHistory
 	});
 	const hoverActions = useMemo(

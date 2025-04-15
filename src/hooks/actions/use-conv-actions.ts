@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 
 import { find } from 'lodash';
 
@@ -34,7 +34,6 @@ export type ConversationActionsArgumentType = {
 	conversation: NormalizedConversation;
 	deselectAll: () => void;
 	shouldReplaceHistory?: boolean;
-	conversationPreviewFactory: () => React.JSX.Element;
 };
 
 type ConversationActionsReturnType = {

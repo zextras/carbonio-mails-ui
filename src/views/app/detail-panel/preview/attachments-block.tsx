@@ -258,24 +258,6 @@ const Attachment = ({
 
 	const showEMLPreview = useCallback(() => {
 		openEmlStandalonePreview({ messageId, subject: filename, part });
-		// getMsgsForPrintSoapApi({ ids: [messageId], part: att?.name })
-		// 	.then((res) => {
-		//
-		// 		openEmlPreview && openEmlPreview(messageId, att?.name, res[0]);
-		// 	})
-		// 	.catch(() => {
-		// 		createSnackbar({
-		// 			key: `eml-attachment-failed-download`,
-		// 			replace: true,
-		// 			severity: 'error',
-		// 			hideButton: true,
-		// 			label: t(
-		// 				'message.snackbar.eml_download_failed',
-		// 				'The EML attachment could not be downloaded. Try later'
-		// 			),
-		// 			autoHideTimeout: 3000
-		// 		});
-		// 	});
 	}, [filename, messageId, part]);
 
 	const isCarbonioPreviewAvailable = useMemo(
