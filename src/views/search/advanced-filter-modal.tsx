@@ -208,7 +208,14 @@ export const AdvancedFilterModal = ({
 		setSentToAddresses([]);
 		setFolder([]);
 		setTag([]);
-	}, [updateQuery]);
+		setIsSharedFolderIncluded(isSharedFolderIncluded);
+		setIsSharedFolderIncludedTobe(isSharedFolderIncluded);
+	}, [
+		updateQuery,
+		setIsSharedFolderIncluded,
+		isSharedFolderIncluded,
+		setIsSharedFolderIncludedTobe
+	]);
 
 	const queryToBe = useMemo<Array<QueryChip>>(
 		() =>
@@ -378,8 +385,11 @@ export const AdvancedFilterModal = ({
 	});
 
 	const secondaryDisabled = useMemo(
-		() => query.length === 0 && queryToBe.length === 0,
-		[query.length, queryToBe.length]
+		() =>
+			query.length === 0 &&
+			queryToBe.length === 0 &&
+			isSharedFolderIncludedTobe === isSharedFolderIncluded,
+		[query.length, queryToBe.length, isSharedFolderIncludedTobe, isSharedFolderIncluded]
 	);
 
 	return (
