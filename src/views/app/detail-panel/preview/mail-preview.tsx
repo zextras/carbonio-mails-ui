@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { FC, useCallback, useMemo, useState } from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
 
@@ -27,9 +27,14 @@ const MailPreview: FC<MailPreviewProps> = ({
 	isMessageView,
 	isExternalMessage = false
 }) => {
-	const mailContainerRef = useRef<HTMLDivElement>(null);
 	const [isOpen, setIsOpen] = useState(expanded || isAlone);
-	const [containerHeight, setContainerHeight] = useState(isOpen ? '100%' : 'fit-content');
+
+	const containerHeight = useMemo(() => {
+		if (isOpen) {
+			return '100%';
+		}
+		return 'fit-content';
+	}, [isOpen]);
 
 	const onClick = useCallback(() => setIsOpen((prevOpen) => !prevOpen), []);
 
@@ -38,13 +43,8 @@ const MailPreview: FC<MailPreviewProps> = ({
 		[isMessageView, isAlone, isOpen]
 	);
 
-	useEffect(() => {
-		setContainerHeight(isOpen ? '100%' : 'fit-content');
-	}, [isOpen]);
-
 	return (
 		<Container
-			ref={mailContainerRef}
 			height={containerHeight}
 			data-testid={`MailPreview-${message.id}`}
 			padding={isStandalonePreview() ? { all: 'large' } : undefined}
