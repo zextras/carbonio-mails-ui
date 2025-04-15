@@ -36,10 +36,10 @@ export const ConversationPreviewPanelContainer = (): React.JSX.Element => {
 	);
 
 	useEffect(() => {
-		if (isEmpty(conversation)) {
+		if (isEmpty(conversation) && conversationStatus !== API_REQUEST_STATUS.fulfilled) {
 			getConvEmailStoreAction({ id: conversationId, onConversationIdChange });
 		}
-	}, [conversation, conversationId, onConversationIdChange]);
+	}, [conversation, conversationId, conversationStatus, onConversationIdChange]);
 
 	const showPreviewPanel = useMemo(
 		(): boolean | undefined =>
