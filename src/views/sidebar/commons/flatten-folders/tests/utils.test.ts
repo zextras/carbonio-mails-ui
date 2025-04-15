@@ -6,7 +6,7 @@
 
 import { generateFolder } from '../../../../../carbonio-ui-commons/test/mocks/folders/folders-generator';
 import { Folder } from '../../../../../types';
-import { filterFoldersByName } from '../utils';
+import { flattenAndFilterFoldersWithCap } from '../utils';
 
 function generateFolderFunction(name: string, n: number, depth: number): Folder {
 	if (depth >= 3) {
@@ -23,18 +23,29 @@ function generateFolderFunction(name: string, n: number, depth: number): Folder 
 function generateLargeFolderStructure(n: number): Folder[] {
 	return Array.from({ length: n }, (_, i) => generateFolderFunction(`Folder ${i + 1}`, n, 0));
 }
-describe('filterFoldersByName', () => {
+
+const folder1 = generateFolder({ name: 'folder1' });
+const folder2 = generateFolder({ name: 'folder2' });
+const folder3 = generateFolder({ name: 'folder3' });
+const mockFolders: Folder[] = [
+	generateFolder({
+		name: 'inbox',
+		children: [folder1, folder2, folder3]
+	}),
+	generateFolder({
+		name: 'sent',
+		children: [folder1]
+	})
+];
+
+describe('flattenAndFilterFoldersWithCap', () => {
 	const largeFolderStructure: Folder[] = generateLargeFolderStructure(27);
 
 	it('should run within acceptable time limits', () => {
 		const searchTerm = 'test';
-
 		const startTime = performance.now();
-
-		const result = filterFoldersByName(largeFolderStructure, searchTerm);
-
+		const result = flattenAndFilterFoldersWithCap(largeFolderStructure, searchTerm, 100);
 		const endTime = performance.now();
-
 		const executionTime = endTime - startTime;
 
 		expect(result).toBeDefined();
@@ -42,82 +53,38 @@ describe('filterFoldersByName', () => {
 
 		expect(executionTime).toBeLessThan(100);
 	});
-});
 
-const mockFolders: Folder[] = [
-	generateFolder({
-		id: 'folder1',
-		name: 'folder1',
-		children: [
-			generateFolder({ id: 'subfolder1', name: 'subfolder1' }),
-			generateFolder({ id: 'subfolder2', name: 'subfolder2' }),
-			generateFolder({ id: 'subfolder3', name: 'subfolder3' })
-		]
-	}),
-	generateFolder({ id: 'folder2', name: 'folder2' }),
-	generateFolder({
-		id: 'folder3',
-		name: 'folder3',
-		children: [generateFolder({ id: 'subfolder1', name: 'subfolder1' })]
-	})
-];
-
-describe('filterFoldersByName', () => {
-	test('returns all folders when search string is empty', () => {
-		const result = filterFoldersByName(mockFolders, '');
-		expect(result).toEqual(mockFolders);
+	it('returns folders with exact name match', () => {
+		const result = flattenAndFilterFoldersWithCap(mockFolders, 'sent', 100);
+		expect(result).toEqual([{ ...mockFolders[1], children: [] }]);
 	});
 
-	test('returns folders with exact name match', () => {
-		const result = filterFoldersByName(mockFolders, 'folder1');
-		expect(result).toEqual([{ ...mockFolders[0], children: [] }]);
+	it('returns folders with partial name match', () => {
+		const result = flattenAndFilterFoldersWithCap(mockFolders, 'old', 100);
+		expect(result).toEqual([folder1, folder2, folder3, folder1]);
 	});
 
-	test('returns folders with partial name match', () => {
-		const result = filterFoldersByName(mockFolders, 'fol');
-		expect(result).toEqual([
-			{ ...mockFolders[0], children: [] },
-			{ ...mockFolders[1] },
-			{ ...mockFolders[2], children: [] }
-		]);
+	it('performs case-insensitive matching', () => {
+		const result = flattenAndFilterFoldersWithCap(mockFolders, 'fOldeR1', 100);
+		expect(result).toEqual([folder1, folder1]);
 	});
 
-	test('performs case-insensitive matching', () => {
-		const result = filterFoldersByName(mockFolders, 'fOldeR1');
-		expect(result).toEqual([{ ...mockFolders[0], children: [] }]);
-	});
-
-	test('filters nested folders correctly', () => {
-		const result = filterFoldersByName(mockFolders, 'subfolder2');
-		expect(result).toEqual([
-			{
-				...mockFolders[0],
-				children: [mockFolders[0].children[1]]
-			}
-		]);
-	});
-
-	test('returns empty array when no matches are found', () => {
-		const result = filterFoldersByName(mockFolders, 'nonexistent');
+	it('returns empty array when no matches are found', () => {
+		const result = flattenAndFilterFoldersWithCap(mockFolders, 'nonexistent', 100);
 		expect(result).toEqual([]);
 	});
-
-	test('returns multiple matches at different levels', () => {
-		const result = filterFoldersByName(mockFolders, 'subfolder1');
-		expect(result).toEqual([
-			{
-				...mockFolders[0],
-				children: [mockFolders[0].children[0]]
-			},
-			{
-				...mockFolders[2],
-				children: [mockFolders[2].children[0]]
-			}
-		]);
+	it('limits the number of returned results according to the limit', () => {
+		const result = flattenAndFilterFoldersWithCap(mockFolders, 'fol', 2);
+		expect(result.length).toBe(2);
+	});
+	it('does not mutate original folder structure', () => {
+		const deepCopy = JSON.parse(JSON.stringify(mockFolders));
+		flattenAndFilterFoldersWithCap(mockFolders, 'sub', 10);
+		expect(mockFolders).toEqual(deepCopy);
 	});
 
-	test('handles empty input array', () => {
-		const result = filterFoldersByName([], 'inbox');
-		expect(result).toEqual([]);
+	it('returns full results if limit is greater than matches', () => {
+		const result = flattenAndFilterFoldersWithCap(mockFolders, 'fol', 100);
+		expect(result.length).toBe(4);
 	});
 });
