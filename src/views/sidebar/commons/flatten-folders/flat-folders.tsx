@@ -23,7 +23,6 @@ type FlatFoldersProps = {
 	selectedFolderId?: string;
 	onFolderSelected?: (folder: Folder) => void;
 	allowRootSelection?: boolean;
-	showSharedAccounts?: boolean;
 	showTrashFolder?: boolean;
 	showSpamFolder?: boolean;
 };
