@@ -34,7 +34,6 @@ export const FlatFolders = ({
 	onFolderSelected,
 	selectedFolderId,
 	allowRootSelection,
-	showSharedAccounts,
 	showTrashFolder,
 	showSpamFolder
 }: FlatFoldersProps): React.JSX.Element => {
@@ -43,9 +42,7 @@ export const FlatFolders = ({
 	const flatFilteredFolders = useMemo(() => {
 		let remaining = MAX_ALLOWED_RESULTS;
 
-		const roots = showSharedAccounts ? folders : [folders[0]];
-
-		return roots
+		return folders
 			.map((folder) => {
 				if (remaining <= 0) {
 					return { ...folder, children: [] };
@@ -74,7 +71,7 @@ export const FlatFolders = ({
 				return { ...currentFolder, children };
 			})
 			.filter((folder): folder is Folder => folder !== null);
-	}, [folders, searchString, showSharedAccounts, showSpamFolder, showTrashFolder]);
+	}, [folders, searchString, showSpamFolder, showTrashFolder]);
 
 	const thereAreMoreResults = t(
 		'modal.messageFilteringList',

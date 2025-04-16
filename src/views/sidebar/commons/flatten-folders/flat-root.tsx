@@ -83,7 +83,7 @@ export const FlatRoot = ({
 				return;
 			}
 
-			onFolderSelected && onFolderSelected(folder);
+			onFolderSelected?.(folder);
 		},
 		[open, allowRootSelection, onFolderSelected, folder]
 	);
