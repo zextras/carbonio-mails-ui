@@ -122,8 +122,7 @@ const AttachmentTypeEmailStatusRow: FC<AttachTypeEmailStatusRowPropType> = ({
 	);
 
 	const attachmentTypeOnChange = useCallback(
-		(value: ChipItem[]): void =>
-			onChange(value, setAttachmentType),
+		(value: ChipItem[]): void => onChange(value, setAttachmentType),
 		[onChange, setAttachmentType]
 	);
 
@@ -147,43 +146,41 @@ const AttachmentTypeEmailStatusRow: FC<AttachTypeEmailStatusRowPropType> = ({
 	const emailStatusBottomBorderColor = 'transparent';
 
 	return (
-		<>
-			<Container padding={{ bottom: 'small', top: 'medium' }} orientation="horizontal">
-				<Container padding={{ right: 'extrasmall' }} maxWidth="50%">
-					<ChipInput
-						placeholder={attachmentTypePlaceholder}
-						value={attachmentType}
-						options={attachmentTypeOptions}
-						background="gray5"
-						disableOptions={false}
-						onAdd={attachmentTypeChipOnAdd}
-						onChange={attachmentTypeOnChange}
-						maxChips={1}
-						confirmChipOnBlur
-						onInputType={attachmentTypeOnInputType}
-						icon={attachmentIcon}
-						bottomBorderColor={attachmentTypeBottomBorderColor}
-					/>
-				</Container>
-				<Container padding={{ left: 'extrasmall' }} maxWidth="50%">
-					<ChipInput
-						dropdownMaxHeight="40%"
-						confirmChipOnBlur
-						placeholder={emailStatusPlaceholder}
-						value={emailStatus}
-						options={emailStatusOptions}
-						background="gray5"
-						disableOptions={false}
-						onAdd={emailStatusChipOnAdd}
-						onChange={emailStatusOnChange}
-						onInputType={emailStatusOnInputType}
-						icon={emailStatusIcon}
-						bottomBorderColor={emailStatusBottomBorderColor}
-						maxHeight="40%"
-					/>
-				</Container>
+		<Container padding={{ bottom: 'small', top: 'medium' }} orientation="horizontal">
+			<Container padding={{ right: 'extrasmall' }} maxWidth="50%">
+				<ChipInput
+					placeholder={attachmentTypePlaceholder}
+					value={attachmentType}
+					options={attachmentTypeOptions}
+					background="gray5"
+					disableOptions={false}
+					onAdd={attachmentTypeChipOnAdd}
+					onChange={attachmentTypeOnChange}
+					maxChips={1}
+					confirmChipOnBlur
+					onInputType={attachmentTypeOnInputType}
+					icon={attachmentIcon}
+					bottomBorderColor={attachmentTypeBottomBorderColor}
+				/>
 			</Container>
-		</>
+			<Container padding={{ left: 'extrasmall' }} maxWidth="50%">
+				<ChipInput
+					dropdownMaxHeight="40%"
+					confirmChipOnBlur
+					placeholder={emailStatusPlaceholder}
+					value={emailStatus}
+					options={emailStatusOptions}
+					background="gray5"
+					disableOptions={false}
+					onAdd={emailStatusChipOnAdd}
+					onChange={emailStatusOnChange}
+					onInputType={emailStatusOnInputType}
+					icon={emailStatusIcon}
+					bottomBorderColor={emailStatusBottomBorderColor}
+					maxHeight="40%"
+				/>
+			</Container>
+		</Container>
 	);
 };
 
