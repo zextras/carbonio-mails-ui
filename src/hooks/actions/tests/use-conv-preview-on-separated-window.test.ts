@@ -26,7 +26,7 @@ describe('useConvPreviewOnSeparatedWindow', () => {
 			const {
 				result: { current: descriptor }
 			} = setupHook(useConvPreviewOnSeparatedWindowDescriptor, {
-				initialProps: [{ conversationId: conv.id, folderId: FOLDERS.INBOX, subject: conv.subject }]
+				initialProps: [{ conversationId: conv.id, folderId: FOLDERS.INBOX }]
 			});
 
 			expect(descriptor).toEqual({
@@ -49,8 +49,7 @@ describe('useConvPreviewOnSeparatedWindow', () => {
 				initialProps: [
 					{
 						conversationId: conv.id,
-						folderId: FOLDERS.INBOX,
-						subject: conv.subject
+						folderId: FOLDERS.INBOX
 					}
 				]
 			});
@@ -71,8 +70,7 @@ describe('useConvPreviewOnSeparatedWindow', () => {
 					initialProps: [
 						{
 							conversationId: conv.id,
-							folderId: FOLDERS.INBOX,
-							subject: conv.subject
+							folderId: FOLDERS.INBOX
 						}
 					]
 				});
@@ -89,8 +87,7 @@ describe('useConvPreviewOnSeparatedWindow', () => {
 					initialProps: [
 						{
 							conversationId: conv.id,
-							folderId: FOLDERS.INBOX,
-							subject: conv.subject
+							folderId: FOLDERS.INBOX
 						}
 					]
 				});
@@ -110,8 +107,7 @@ describe('useConvPreviewOnSeparatedWindow', () => {
 					initialProps: [
 						{
 							conversationId: conv.id,
-							folderId: FOLDERS.INBOX,
-							subject: conv.subject
+							folderId: FOLDERS.INBOX
 						}
 					]
 				});
@@ -133,8 +129,7 @@ describe('useConvPreviewOnSeparatedWindow', () => {
 					initialProps: [
 						{
 							conversationId: conv.id,
-							folderId: FOLDERS.INBOX,
-							subject: conv.subject
+							folderId: FOLDERS.INBOX
 						}
 					]
 				});

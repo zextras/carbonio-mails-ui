@@ -43,8 +43,7 @@ export const MessageListItem = memo(function MessageListItem({
 
 	const previewOnSeparatedWindow = useMsgPreviewOnSeparatedWindowFn({
 		messageId: message.id,
-		folderId: firstChildFolderId,
-		subject: message.subject
+		folderId: firstChildFolderId
 	});
 
 	const setAsRead = useMsgSetReadFn({

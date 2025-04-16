@@ -257,8 +257,8 @@ const Attachment = ({
 	const [uploadIntegration, isUploadIntegrationAvailable] = getIntegratedFunction('select-nodes');
 
 	const showEMLPreview = useCallback(() => {
-		openEmlStandalonePreview({ messageId, subject: filename, part });
-	}, [filename, messageId, part]);
+		openEmlStandalonePreview({ messageId, part });
+	}, [messageId, part]);
 
 	const isCarbonioPreviewAvailable = useMemo(
 		() => includes(servicesCatalog, 'carbonio-preview'),

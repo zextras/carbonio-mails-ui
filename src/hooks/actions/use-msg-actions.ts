@@ -137,8 +137,7 @@ export const useMsgActions = ({
 
 	const previewOnSeparatedWindowDescriptor = useMsgPreviewOnSeparatedWindowDescriptor({
 		messageId: message.id,
-		folderId,
-		subject: message.subject
+		folderId
 	});
 
 	return useMemo(

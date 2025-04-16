@@ -34,43 +34,37 @@ describe('External tabs', () => {
 		it('should invoke the window.open function with the correct url and title', () => {
 			const folderId = faker.string.uuid();
 			const messageId = faker.string.uuid();
-			const subject = faker.lorem.sentence();
 
-			openMessageStandalonePreview({ folderId, messageId, subject });
+			openMessageStandalonePreview({ folderId, messageId });
 
 			expect(window.open).toHaveBeenCalledWith(
-				`http://localhost/carbonio/focus-mode/${FOCUS_MODE_MAIL_VIEW_ROUTE}/folder/${folderId}/message/${messageId}`,
-				subject
+				`http://localhost/carbonio/focus-mode/${FOCUS_MODE_MAIL_VIEW_ROUTE}/folder/${folderId}/message/${messageId}`
 			);
 		});
 	});
 
 	describe('openConversationStandalonePreview', () => {
-		it('should invoke the window.open function with the correct url and title', () => {
+		it('should invoke the window.open function with the correct url', () => {
 			const folderId = faker.string.uuid();
 			const conversationId = faker.string.uuid();
-			const subject = faker.lorem.sentence();
 
-			openConversationStandalonePreview({ folderId, conversationId, subject });
+			openConversationStandalonePreview({ folderId, conversationId });
 
 			expect(window.open).toHaveBeenCalledWith(
-				`http://localhost/carbonio/focus-mode/${FOCUS_MODE_MAIL_VIEW_ROUTE}/folder/${folderId}/conversation/${conversationId}`,
-				subject
+				`http://localhost/carbonio/focus-mode/${FOCUS_MODE_MAIL_VIEW_ROUTE}/folder/${folderId}/conversation/${conversationId}`
 			);
 		});
 	});
 
 	describe('openEmlStandalonePreview', () => {
-		it('should invoke the window.open function with the correct url and title', () => {
+		it('should invoke the window.open function with the correct url', () => {
 			const messageId = faker.string.uuid();
 			const part = faker.string.uuid();
-			const subject = faker.lorem.sentence();
 
-			openEmlStandalonePreview({ messageId, part, subject });
+			openEmlStandalonePreview({ messageId, part });
 
 			expect(window.open).toHaveBeenCalledWith(
-				`http://localhost/carbonio/focus-mode/${FOCUS_MODE_MAIL_VIEW_ROUTE}/eml/${messageId}/${part}`,
-				subject
+				`http://localhost/carbonio/focus-mode/${FOCUS_MODE_MAIL_VIEW_ROUTE}/eml/${messageId}/${part}`
 			);
 		});
 	});

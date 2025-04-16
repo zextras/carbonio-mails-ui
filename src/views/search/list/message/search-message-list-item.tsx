@@ -17,7 +17,6 @@ import { useOnMouseHover } from '../../../../hooks/use-on-mouse-hover';
 import { MailMessage } from '../../../../types';
 import { createEditBoard } from '../../../app/detail-panel/edit/edit-view-board';
 import { MessageListItemActionWrapper } from '../../../app/folder-panel/messages/message-list-item-action-wrapper';
-import { SearchMessagePanel } from '../../panel/message/search-message-panel';
 
 type SearchMessageListItemProps = {
 	completeMessage: MailMessage;
@@ -47,8 +46,7 @@ export const SearchMessageListItem: FC<SearchMessageListItemProps> = memo(functi
 
 	const previewOnSeparatedWindow = useMsgPreviewOnSeparatedWindowFn({
 		messageId: itemId,
-		folderId,
-		subject: completeMessage.subject
+		folderId
 	});
 
 	const setAsRead = useMsgSetReadFn({

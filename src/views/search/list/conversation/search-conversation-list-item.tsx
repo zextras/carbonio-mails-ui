@@ -57,8 +57,7 @@ export const SearchConversationListItem: FC<SearchConversationListItemProps> = (
 
 	const previewOnSeparatedWindow = useConvPreviewOnSeparatedWindowFn({
 		conversationId,
-		folderId: parent,
-		subject: conversation.subject
+		folderId: parent
 	});
 
 	const markAsRead = useConvSetReadFn({

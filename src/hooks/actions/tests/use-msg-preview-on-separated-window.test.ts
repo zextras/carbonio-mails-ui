@@ -27,8 +27,7 @@ describe('useMsgPreviewOnSeparatedWindow', () => {
 				initialProps: [
 					{
 						messageId: msg.id,
-						folderId: getParentFolderId(msg.parent),
-						subject: msg.subject
+						folderId: getParentFolderId(msg.parent)
 					}
 				]
 			});
@@ -53,8 +52,7 @@ describe('useMsgPreviewOnSeparatedWindow', () => {
 				initialProps: [
 					{
 						messageId: msg.id,
-						folderId: getParentFolderId(msg.parent),
-						subject: msg.subject
+						folderId: getParentFolderId(msg.parent)
 					}
 				]
 			});
@@ -75,8 +73,7 @@ describe('useMsgPreviewOnSeparatedWindow', () => {
 					initialProps: [
 						{
 							messageId: msg.id,
-							folderId: getParentFolderId(msg.parent),
-							subject: msg.subject
+							folderId: getParentFolderId(msg.parent)
 						}
 					]
 				});
@@ -93,8 +90,7 @@ describe('useMsgPreviewOnSeparatedWindow', () => {
 					initialProps: [
 						{
 							messageId: msg.id,
-							folderId: getParentFolderId(msg.parent),
-							subject: msg.subject
+							folderId: getParentFolderId(msg.parent)
 						}
 					]
 				});
@@ -114,8 +110,7 @@ describe('useMsgPreviewOnSeparatedWindow', () => {
 					initialProps: [
 						{
 							messageId: msg.id,
-							folderId: getParentFolderId(msg.parent),
-							subject: msg.subject
+							folderId: getParentFolderId(msg.parent)
 						}
 					]
 				});
@@ -137,8 +132,7 @@ describe('useMsgPreviewOnSeparatedWindow', () => {
 					initialProps: [
 						{
 							messageId: msg.id,
-							folderId: getParentFolderId(msg.parent),
-							subject: msg.subject
+							folderId: getParentFolderId(msg.parent)
 						}
 					]
 				});
@@ -148,8 +142,7 @@ describe('useMsgPreviewOnSeparatedWindow', () => {
 				});
 
 				expect(window.open).toHaveBeenCalledWith(
-					`http://localhost/carbonio/${FOCUS_MODE_ROUTE}/${FOCUS_MODE_MAIL_VIEW_ROUTE}/folder/2/message/${msg.id}`,
-					msg.subject
+					`http://localhost/carbonio/${FOCUS_MODE_ROUTE}/${FOCUS_MODE_MAIL_VIEW_ROUTE}/folder/2/message/${msg.id}`
 				);
 			});
 		});

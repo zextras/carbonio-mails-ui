@@ -12,45 +12,36 @@ export const isFocusModeMailView = (): boolean => IS_FOCUS_MODE;
 
 export const openMessageStandalonePreview = ({
 	folderId,
-	messageId,
-	subject
+	messageId
 }: {
 	folderId: string;
 	messageId: string;
-	subject?: string;
 }): void => {
 	window.open(
-		`${getLocationOrigin()}/carbonio/${FOCUS_MODE_ROUTE}/${FOCUS_MODE_MAIL_VIEW_ROUTE}/folder/${folderId}/message/${messageId}`,
-		subject
+		`${getLocationOrigin()}/carbonio/${FOCUS_MODE_ROUTE}/${FOCUS_MODE_MAIL_VIEW_ROUTE}/folder/${folderId}/message/${messageId}`
 	);
 };
 
 export const openConversationStandalonePreview = ({
 	folderId,
-	conversationId,
-	subject
+	conversationId
 }: {
 	folderId: string;
 	conversationId: string;
-	subject?: string;
 }): void => {
 	window.open(
-		`${getLocationOrigin()}/carbonio/${FOCUS_MODE_ROUTE}/${FOCUS_MODE_MAIL_VIEW_ROUTE}/folder/${folderId}/conversation/${conversationId}`,
-		subject
+		`${getLocationOrigin()}/carbonio/${FOCUS_MODE_ROUTE}/${FOCUS_MODE_MAIL_VIEW_ROUTE}/folder/${folderId}/conversation/${conversationId}`
 	);
 };
 
 export const openEmlStandalonePreview = ({
 	messageId,
-	part,
-	subject
+	part
 }: {
 	messageId: string;
 	part: string;
-	subject?: string;
 }): void => {
 	window.open(
-		`${getLocationOrigin()}/carbonio/${FOCUS_MODE_ROUTE}/${FOCUS_MODE_MAIL_VIEW_ROUTE}/${EML_ROUTE}/${messageId}/${part}`,
-		subject
+		`${getLocationOrigin()}/carbonio/${FOCUS_MODE_ROUTE}/${FOCUS_MODE_MAIL_VIEW_ROUTE}/${EML_ROUTE}/${messageId}/${part}`
 	);
 };

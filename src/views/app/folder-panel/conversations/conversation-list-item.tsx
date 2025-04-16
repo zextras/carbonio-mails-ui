@@ -71,8 +71,7 @@ export const ConversationListItem = memo(function ConversationListItem({
 	const conversationId = conversation.id;
 	const previewOnSeparatedWindow = useConvPreviewOnSeparatedWindowFn({
 		conversationId,
-		folderId: folderParent,
-		subject: conversation.subject
+		folderId: folderParent
 	});
 
 	const conversationStatus = useConversationStatus(conversationId);

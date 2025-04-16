@@ -16,12 +16,10 @@ import { ActionFn, UIActionDescriptor } from '../../types';
 
 export const useConvPreviewOnSeparatedWindowFn = ({
 	conversationId,
-	folderId,
-	subject
+	folderId
 }: {
 	conversationId: string;
 	folderId: string;
-	subject: string;
 }): ActionFn => {
 	const canExecute = useCallback((): boolean => !isFocusModeMailView(), []);
 
@@ -30,25 +28,22 @@ export const useConvPreviewOnSeparatedWindowFn = ({
 			return;
 		}
 
-		openConversationStandalonePreview({ folderId, conversationId, subject });
-	}, [canExecute, folderId, conversationId, subject]);
+		openConversationStandalonePreview({ folderId, conversationId });
+	}, [canExecute, folderId, conversationId]);
 
 	return useMemo(() => ({ canExecute, execute }), [canExecute, execute]);
 };
 
 export const useConvPreviewOnSeparatedWindowDescriptor = ({
 	conversationId,
-	folderId,
-	subject
+	folderId
 }: {
 	conversationId: string;
 	folderId: string;
-	subject: string;
 }): UIActionDescriptor => {
 	const { canExecute, execute } = useConvPreviewOnSeparatedWindowFn({
 		conversationId,
-		folderId,
-		subject
+		folderId
 	});
 	const [t] = useTranslation();
 	return {
