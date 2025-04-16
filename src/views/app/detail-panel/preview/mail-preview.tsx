@@ -3,24 +3,21 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { FC, useCallback, useMemo, useState } from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
 
 import { MailPreviewBlock } from './parts/mail-preview-block';
 import { MailPreviewContent } from './parts/mail-preview-content';
-import type { MailMessage, OpenEmlPreviewType } from '../../../../types';
-import { ExtraWindowCreationParams } from '../../../../types';
-import { useGlobalExtraWindowManager } from '../../extra-windows/global-extra-window-manager';
+import { isFocusModeMailView } from '../../../../helpers/external-tabs';
+import type { MailMessage } from '../../../../types';
 
 export type MailPreviewProps = {
 	message: MailMessage;
 	expanded: boolean;
 	isAlone: boolean;
 	isMessageView: boolean;
-	isExternalMessage?: boolean;
-	isInsideExtraWindow?: boolean;
-	messagePreviewFactory: () => React.JSX.Element;
+	isEml?: boolean;
 };
 
 const MailPreview: FC<MailPreviewProps> = ({
@@ -28,14 +25,16 @@ const MailPreview: FC<MailPreviewProps> = ({
 	expanded,
 	isAlone,
 	isMessageView,
-	isExternalMessage = false,
-	isInsideExtraWindow = false,
-	messagePreviewFactory
+	isEml = false
 }) => {
-	const mailContainerRef = useRef<HTMLDivElement>(null);
 	const [isOpen, setIsOpen] = useState(expanded || isAlone);
-	const [containerHeight, setContainerHeight] = useState(isOpen ? '100%' : 'fit-content');
-	const { createWindow } = useGlobalExtraWindowManager();
+
+	const containerHeight = useMemo(() => {
+		if (isOpen) {
+			return '100%';
+		}
+		return 'fit-content';
+	}, [isOpen]);
 
 	const onClick = useCallback(() => setIsOpen((prevOpen) => !prevOpen), []);
 
@@ -44,48 +43,18 @@ const MailPreview: FC<MailPreviewProps> = ({
 		[isMessageView, isAlone, isOpen]
 	);
 
-	useEffect(() => {
-		setContainerHeight(isOpen ? '100%' : 'fit-content');
-	}, [isOpen]);
-
-	const openEmlPreview: OpenEmlPreviewType = useCallback(
-		(parentMessageId, attachmentName, emlMessage) => {
-			const createWindowParams: ExtraWindowCreationParams = {
-				name: `${parentMessageId}-${attachmentName}`,
-				returnComponent: false,
-				children: (
-					<MailPreview
-						message={emlMessage}
-						expanded={false}
-						isAlone
-						isMessageView
-						isExternalMessage
-						isInsideExtraWindow
-						messagePreviewFactory={messagePreviewFactory}
-					/>
-				),
-				title: emlMessage.subject,
-				closeOnUnmount: false
-			};
-			createWindow?.(createWindowParams);
-		},
-		[createWindow, messagePreviewFactory]
-	);
-
 	return (
 		<Container
-			ref={mailContainerRef}
 			height={containerHeight}
 			data-testid={`MailPreview-${message.id}`}
-			padding={isInsideExtraWindow ? { all: 'large' } : undefined}
+			padding={isFocusModeMailView() ? { all: 'large' } : undefined}
 			background="white"
 		>
 			<MailPreviewBlock
 				onClick={onClick}
 				message={message}
 				open={isMailPreviewOpen}
-				isExternalMessage={isExternalMessage}
-				messagePreviewFactory={messagePreviewFactory}
+				isEml={isEml}
 			/>
 
 			<Container
@@ -100,9 +69,7 @@ const MailPreview: FC<MailPreviewProps> = ({
 					<MailPreviewContent
 						message={message}
 						isMailPreviewOpen={isMailPreviewOpen}
-						openEmlPreview={openEmlPreview}
-						isExternalMessage={isExternalMessage}
-						isInsideExtraWindow={isInsideExtraWindow}
+						isEml={isEml}
 					/>
 				)}
 			</Container>

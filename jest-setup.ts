@@ -64,3 +64,9 @@ Object.defineProperty(window, 'matchMedia', {
 		removeEventListener: jest.fn()
 	}))
 });
+
+// Mock implementation of window.open
+Object.defineProperty(window, 'open', {
+	writable: true,
+	value: jest.fn()
+});

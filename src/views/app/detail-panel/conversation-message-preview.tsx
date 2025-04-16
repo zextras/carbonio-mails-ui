@@ -3,43 +3,25 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useCallback } from 'react';
+import React from 'react';
 
 import { Padding } from '@zextras/carbonio-design-system';
 
-import { MessagePreviewPanel } from './message-preview-panel';
 import MailPreview from './preview/mail-preview';
-import { getParentFolderId } from '../../../helpers/folders';
 import { MailMessage } from '../../../types';
 
 export type ConversationMessagePreviewProps = {
 	message: MailMessage;
 	isExpanded: boolean;
 	isAlone: boolean;
-	isInsideExtraWindow: boolean;
 };
 
 export const ConversationMessagePreview = ({
 	message,
 	isExpanded,
-	isAlone,
-	isInsideExtraWindow
-}: ConversationMessagePreviewProps): React.JSX.Element => {
-	const messagePreviewFactory = useCallback(() => {
-		const folderId = getParentFolderId(message.parent);
-		return <MessagePreviewPanel folderId={folderId} messageId={message.id} />;
-	}, [message]);
-
-	return (
-		<Padding bottom="medium" width="100%" data-testid={`ConversationMessagePreview-${message.id}`}>
-			<MailPreview
-				message={message}
-				expanded={isExpanded}
-				isAlone={isAlone}
-				isMessageView={false}
-				isInsideExtraWindow={isInsideExtraWindow}
-				messagePreviewFactory={messagePreviewFactory}
-			/>
-		</Padding>
-	);
-};
+	isAlone
+}: ConversationMessagePreviewProps): React.JSX.Element => (
+	<Padding bottom="medium" width="100%" data-testid={`ConversationMessagePreview-${message.id}`}>
+		<MailPreview message={message} expanded={isExpanded} isAlone={isAlone} isMessageView={false} />
+	</Padding>
+);

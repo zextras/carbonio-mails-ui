@@ -12,7 +12,6 @@ import { useTranslation } from 'react-i18next';
 
 import { Spinner } from '../assets/spinner';
 import { MAIL_APP_ID, MAILS_ROUTE } from '../constants';
-import { ExtraWindowsManager } from '../views/app/extra-windows/extra-window-manager';
 
 const LazySearchView = lazy(
 	() => import(/* webpackChunkName: "mail-search-view" */ '../views/search/search-view')
@@ -20,11 +19,9 @@ const LazySearchView = lazy(
 
 const SearchView = (props: Search.SearchViewProps): React.JSX.Element => (
 	<Suspense fallback={<Spinner />}>
-		<ExtraWindowsManager>
-			<ModalManager>
-				<LazySearchView {...props} />
-			</ModalManager>
-		</ExtraWindowsManager>
+		<ModalManager>
+			<LazySearchView {...props} />
+		</ModalManager>
 	</Suspense>
 );
 
