@@ -8,7 +8,6 @@ import React, { useMemo } from 'react';
 import {
 	AccordionItem,
 	Avatar,
-	Container,
 	Icon,
 	Padding,
 	Row,
