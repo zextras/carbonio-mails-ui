@@ -10,7 +10,6 @@ export * from './api';
 export * from './conversations';
 export * from './details-pannel';
 export * from './editor';
-export * from './extra-windows';
 export * from './filters';
 export * from './folder';
 export * from './messages';
