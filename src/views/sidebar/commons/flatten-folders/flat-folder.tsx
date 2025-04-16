@@ -84,7 +84,7 @@ export const FlatFolder = ({
 		>
 			<Row mainAlignment="flex-start" wrap="nowrap" width="fill">
 				<Container width="fit">
-					<Icon color={iconColor} icon={iconName || 'FolderOutline'} size="large" />
+					<Icon color={iconColor} icon={iconName ?? 'FolderOutline'} size="large" />
 				</Container>
 				<StaticBreadcrumbs crumbs={crumbs} size="large" />
 			</Row>
