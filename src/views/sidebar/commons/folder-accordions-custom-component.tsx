@@ -5,21 +5,15 @@
  */
 import React, { useMemo } from 'react';
 
-import {
-	AccordionItem,
-	Avatar,
-	Icon,
-	Padding,
-	Row,
-	Tooltip
-} from '@zextras/carbonio-design-system';
-import { t, useUserAccount } from '@zextras/carbonio-shell-ui';
+import { AccordionItem, Avatar, Padding, Row, Tooltip } from '@zextras/carbonio-design-system';
+import { useUserAccount } from '@zextras/carbonio-shell-ui';
 import styled from 'styled-components';
 
 import { ROOT_NAME } from '../../../carbonio-ui-commons/constants';
 import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
 import { Folder } from '../../../types';
 import { getFolderTranslatedName, getFolderIconName, getFolderIconColor } from '../utils';
+import { StatusIcon } from './status-icon';
 
 const FittedRow = styled(Row)`
 	max-width: calc(100% - (2 * ${({ theme }): string => theme.sizes.padding.small}));
@@ -53,32 +47,6 @@ export const FolderAccordionCustomComponent = ({
 		[folder, accountName, textProps]
 	);
 
-	const statusIcon = useMemo(() => {
-		const RowWithIcon = (icon: string, color: string, tooltipText: string): React.JSX.Element => (
-			<Padding left="small">
-				<Tooltip placement="right" label={tooltipText}>
-					<Row>
-						<Icon icon={icon} color={color} size="medium" />
-					</Row>
-				</Tooltip>
-			</Padding>
-		);
-
-		if (folder.acl?.grant) {
-			const tooltipText = t('tooltip.folder_sharing_status', {
-				count: folder.acl.grant.length,
-				defaultValue_one: 'Shared with {{count}} person',
-				defaultValue: 'Shared with {{count}} people'
-			});
-			return RowWithIcon('Shared', 'shared', tooltipText);
-		}
-		if (folder.isLink) {
-			const tooltipText = t('tooltip.folder_linked_status', 'Linked to me');
-			return RowWithIcon('Linked', 'linked', tooltipText);
-		}
-		return '';
-	}, [folder.acl?.grant, folder.isLink]);
-
 	// hide folders where a share was provided and subsequently removed
 	if (folder.isLink && folder.broken) {
 		return <></>;
@@ -86,6 +54,7 @@ export const FolderAccordionCustomComponent = ({
 
 	const showAvatar =
 		folder.id === FOLDERS.USER_ROOT || (folder.isLink && folder.oname === ROOT_NAME);
+
 	return (
 		<FittedRow>
 			{showAvatar && (
@@ -95,7 +64,7 @@ export const FolderAccordionCustomComponent = ({
 			)}
 			<Tooltip label={accordionItem.label} placement="right" maxWidth="100%">
 				<AccordionItem data-testid={`accordion-folder-item-${folder.id}`} item={accordionItem}>
-					{statusIcon}
+					<StatusIcon folder={folder} />
 				</AccordionItem>
 			</Tooltip>
 		</FittedRow>
