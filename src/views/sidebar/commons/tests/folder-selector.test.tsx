@@ -5,7 +5,7 @@
  */
 import React from 'react';
 
-import { screen } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 
 import { FOLDER_VIEW } from '../../../../carbonio-ui-commons/constants';
 import { FOLDERS } from '../../../../carbonio-ui-commons/constants/folders';
@@ -80,6 +80,72 @@ describe('Folder selector', () => {
 
 			expect(screen.getByTestId('folder-accordion-item-2')).toBeVisible();
 			expect(screen.getByTestId('folder-accordion-item-5')).toBeVisible();
+		});
+
+		it('should warn when results are limited to the max available number', async () => {
+			const children = Array.from({ length: 110 }, (_, i) =>
+				generateFolder({ id: `${i}`, name: `folder${i}` })
+			);
+			const mockRoot: Folder = generateFolder({
+				id: FOLDERS.USER_ROOT,
+				children: [
+					generateFolder({
+						id: '2',
+						name: 'inbox',
+						children
+					})
+				]
+			});
+			useFolderStore.setState({ folders: { [mockRoot.id]: mockRoot } });
+			const props: FolderSelectorProps = {
+				allowRootSelection: false,
+				showSharedAccounts: true,
+				showSpamFolder: true,
+				showTrashFolder: true,
+				selectedFolderId: FOLDERS.INBOX,
+				onFolderSelected: jest.fn()
+			};
+			const { user } = setupTest(<FolderSelector {...props} />);
+			makeListItemsVisible();
+			const input = screen.getByTestId('folder-name-filter');
+			user.type(input, 'folder');
+			makeListItemsVisible();
+
+			await waitFor(() => {
+				expect(screen.getByTestId('has-more-results')).toBeVisible();
+			});
+		});
+
+		it('should not warn when all results are shown', async () => {
+			const children = Array.from({ length: 90 }, (_, i) =>
+				generateFolder({ id: `${i}`, name: `folder${i}` })
+			);
+			const mockRoot: Folder = generateFolder({
+				id: FOLDERS.USER_ROOT,
+				children: [
+					generateFolder({
+						id: '2',
+						name: 'inbox',
+						children
+					})
+				]
+			});
+			useFolderStore.setState({ folders: { [mockRoot.id]: mockRoot } });
+			const props: FolderSelectorProps = {
+				allowRootSelection: false,
+				showSharedAccounts: true,
+				showSpamFolder: true,
+				showTrashFolder: true,
+				selectedFolderId: FOLDERS.INBOX,
+				onFolderSelected: jest.fn()
+			};
+			const { user } = setupTest(<FolderSelector {...props} />);
+			makeListItemsVisible();
+			const input = screen.getByTestId('folder-name-filter');
+			user.type(input, 'folder');
+			makeListItemsVisible();
+
+			expect(screen.queryByTestId('has-more-results')).not.toBeInTheDocument();
 		});
 	});
 
@@ -174,7 +240,7 @@ describe('Folder selector', () => {
 			expect(screen.getByText(inboxFirstChild.name)).toBeVisible();
 		});
 
-		test('accounts are not displayed if they dont have results', async () => {
+		test("accounts are not displayed if they don't have results", async () => {
 			populateFoldersStore();
 			const rootIds = Object.keys(getRootsMap());
 			const folders = getFoldersArrayByRoot(rootIds[0]);

@@ -71,7 +71,7 @@ export const FlatFolders = ({
 			.filter((folder): folder is Folder => folder !== null);
 	}, [folders, searchString, showSpamFolder, showTrashFolder]);
 
-	const thereAreMoreResults = t(
+	const hasMoreResultsWarningLabel = t(
 		'modal.messageFilteringList',
 		'Only the first 100 results are displayed. Narrow your search criteria to view the complete list.'
 	);
@@ -81,8 +81,8 @@ export const FlatFolders = ({
 			{hasMoreResults && (
 				<Padding top="small" bottom="large">
 					<Row wrap="nowrap" takeAvailableSpace width="fill">
-						<Text textAlign="left" size="small">
-							{thereAreMoreResults}
+						<Text data-testid={'has-more-results'} textAlign="left" size="small">
+							{hasMoreResultsWarningLabel}
 						</Text>
 					</Row>
 				</Padding>
