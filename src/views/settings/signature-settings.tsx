@@ -17,7 +17,7 @@ import {
 	Tooltip,
 	Text
 } from '@zextras/carbonio-design-system';
-import { t, useIntegratedComponent } from '@zextras/carbonio-shell-ui';
+import { t, useIntegratedComponent, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { map, reject, concat } from 'lodash';
 import styled from 'styled-components';
 import { v4 as uuidv4 } from 'uuid';
@@ -27,6 +27,7 @@ import { ListOld } from './list-old';
 import { signaturesSubSection, setDefaultSignaturesSubSection } from './subsections';
 import { NO_SIGNATURE_ID, NO_SIGNATURE_LABEL } from '../../helpers/signatures';
 import type { SignatureSettingsPropsType, SignItemType } from '../../types';
+import { getFonts, getFontSizesOptions } from './components/utils';
 
 const DeleteButton = styled(Button)`
 	display: none;
@@ -268,9 +269,37 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 		setEditor(editor);
 	};
 
+	const { prefs } = useUserSettings();
+	const fontSizesOptions = getFontSizesOptions();
+	const fontFamilyOptions = getFonts();
+
+	const defaultFontFamily = prefs?.zimbraPrefHtmlEditorDefaultFontFamily;
+	const defaultFontSize = prefs?.zimbraPrefHtmlEditorDefaultFontSize;
+	const defaultColor = prefs?.zimbraPrefHtmlEditorDefaultFontColor;
+
+	const fontSizesOptionsToString = fontSizesOptions.map((fontSize: string) => fontSize).join(' ');
+	const fontsOptionsToString = fontFamilyOptions.map(
+		(font: { label: string; value: string }) => `${font.label}=${font.value};`
+	);
+
 	const composerCustomOptions = {
 		auto_focus: false,
-		content_style: 'p { margin: 0; }',
+		font_size_formats: fontSizesOptionsToString,
+		font_family_formats: fontsOptionsToString,
+		content_style: `p  {margin: 0;} body {color: ${defaultColor}; font-size: ${defaultFontSize}; font-family: ${defaultFontFamily}; }`,
+		toolbar: [
+			'fontfamily fontsize styles visualblocks',
+			'bold italic underline strikethrough',
+			'removeformat code',
+			'alignleft aligncenter alignright alignjustify',
+			'forecolor backcolor',
+			'bullist numlist outdent indent',
+			'ltr rtl',
+			'link table',
+			'insertfile image',
+			'imageSelector'
+		].join(' | '),
+		paste_data_images: false,
 		init_instance_callback: onEditorInitialization
 	};
 
@@ -320,9 +349,7 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 							<EditorWrapper>
 								<Composer
 									data-testid={'signature-editor'}
-									// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-									// @ts-ignore
-									value={currentSignature?.description ?? ''}
+									value={currentSignature?.description}
 									customInitOptions={composerCustomOptions}
 									disabled={editingDisabled}
 									onEditorChange={onSignatureContentChange}
