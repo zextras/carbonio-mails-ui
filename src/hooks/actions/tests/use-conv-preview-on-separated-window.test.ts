@@ -139,8 +139,7 @@ describe('useConvPreviewOnSeparatedWindow', () => {
 				});
 
 				expect(window.open).toHaveBeenCalledWith(
-					`http://localhost/carbonio/${FOCUS_MODE_ROUTE}/${FOCUS_MODE_MAIL_VIEW_ROUTE}/folder/2/conversation/${conv.id}`,
-					conv.subject
+					`http://localhost/carbonio/${FOCUS_MODE_ROUTE}/${FOCUS_MODE_MAIL_VIEW_ROUTE}/folder/2/conversation/${conv.id}`
 				);
 			});
 		});
