@@ -49,6 +49,13 @@ export const FoldersAccordion = ({
 
 	const [openIds, setOpenIds] = useState<Array<string>>([FOLDERS.USER_ROOT]);
 
+	const handleExpandFolderClick = (
+		folderId: string,
+		callback: React.Dispatch<React.SetStateAction<Array<string>>>
+	): void =>
+		callback((state: Array<string>) =>
+			state.includes(folderId) ? state.filter((id) => id !== folderId) : [...state, folderId]
+		);
 	return (
 		<MUIContainer disableGutters>
 			{filteredFolders.map((folder) => (
@@ -70,11 +77,7 @@ export const FoldersAccordion = ({
 									color="primary"
 									onClick={(e): void => {
 										e.preventDefault();
-										setOpenIds((state: Array<string>) =>
-											state.includes(folder.id)
-												? state.filter((id) => id !== folder.id)
-												: [...state, folder.id]
-										);
+										handleExpandFolderClick(folder.id, setOpenIds);
 									}}
 								/>
 							)
