@@ -65,8 +65,8 @@ Object.defineProperty(window, 'matchMedia', {
 	}))
 });
 
-// mock a simplified crypto
-Object.defineProperty(window.crypto, 'randomUUID', {
+// Mock implementation of window.open
+Object.defineProperty(window, 'open', {
 	writable: true,
-	value: jest.fn(() => Math.random().toString())
+	value: jest.fn()
 });

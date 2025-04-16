@@ -22,7 +22,6 @@ import {
 	useConversationStatus
 } from '../../../../store/emails/store';
 import { ConversationListItemActionWrapper } from '../../../app/folder-panel/conversations/conversation-list-item-wrapper';
-import { SearchConversationExtraWindowPanelContainer } from '../../extra-window/conversations/search-conversation-extra-window-panel';
 
 const CollapseElement = styled(Container)<{ $open: boolean }>`
 	display: ${({ $open }): string => ($open ? 'block' : 'none')};
@@ -56,15 +55,9 @@ export const SearchConversationListItem: FC<SearchConversationListItemProps> = (
 
 	const zimbraPrefMarkMsgRead = useUserSettings()?.prefs?.zimbraPrefMarkMsgRead !== '-1';
 
-	const conversationPreviewFactory = useCallback(
-		() => <SearchConversationExtraWindowPanelContainer conversationId={conversationId} />,
-		[conversationId]
-	);
-
 	const previewOnSeparatedWindow = useConvPreviewOnSeparatedWindowFn({
 		conversationId,
-		subject: conversation.subject,
-		conversationPreviewFactory
+		folderId: parent
 	});
 
 	const markAsRead = useConvSetReadFn({

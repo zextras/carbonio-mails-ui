@@ -18,9 +18,15 @@ import {
 import { advancedAccountApi } from '../api/advanced-account-api';
 import { checkIsSmimeEnabled } from '../api/check-is-smime-enable-api';
 import { Spinner } from '../assets/spinner';
-import { CERTIFICATES_ROUTE, MAIL_APP_ID, MAILS_BOARD_VIEW_ID, MAILS_ROUTE } from '../constants';
+import {
+	CERTIFICATES_ROUTE,
+	MAILS_ROUTE,
+	MAIL_APP_ID,
+	MAILS_BOARD_VIEW_ID,
+	FOCUS_MODE_MAIL_VIEW_ROUTE
+} from '../constants';
 import { useSmimeFeatureStore } from '../store/certificates/store';
-import { ExtraWindowsManager } from '../views/app/extra-windows/extra-window-manager';
+import StandalonePreviewPanel from '../views/app/detail-panel/standalone-preview-panel';
 import { getSettingsSubSections } from '../views/settings/subsections';
 
 const LazyAppView = lazy(
@@ -52,9 +58,7 @@ const LazySidebarView = lazy(
 const AppView = (): React.JSX.Element => (
 	<Suspense fallback={<Spinner />}>
 		<ModalManager>
-			<ExtraWindowsManager>
-				<LazyAppView />
-			</ExtraWindowsManager>
+			<LazyAppView />
 		</ModalManager>
 	</Suspense>
 );
@@ -102,6 +106,15 @@ export const addComponentsToShell = async (isCarbonioCE: boolean | undefined): P
 		secondaryBar: SidebarView,
 		appView: AppView
 	});
+
+	addRoute({
+		route: FOCUS_MODE_MAIL_VIEW_ROUTE,
+		visible: false,
+		label: 'Msg',
+		appView: StandalonePreviewPanel,
+		focusMode: true
+	});
+
 	addBoardView({
 		id: MAILS_BOARD_VIEW_ID,
 		component: EditView
@@ -112,6 +125,12 @@ export const addComponentsToShell = async (isCarbonioCE: boolean | undefined): P
 		checkIsSmimeEnabled().then((res) => {
 			if ('data' in res) {
 				useSmimeFeatureStore.getState().updateIsSmimeEnabled(true);
+				addSettingsView({
+					icon: 'AwardOutline',
+					route: CERTIFICATES_ROUTE,
+					label: t('settings.smime_certificates', 'S/MIME Certificates'),
+					component: CertificatesView
+				});
 			} else {
 				useSmimeFeatureStore.getState().updateIsSmimeEnabled(false);
 			}
@@ -124,14 +143,6 @@ export const addComponentsToShell = async (isCarbonioCE: boolean | undefined): P
 		subSections: getSettingsSubSections(backupSelfUndeleteAllowed),
 		component: SettingsView
 	});
-	if (!isCarbonioCE) {
-		addSettingsView({
-			icon: 'AwardOutline',
-			route: CERTIFICATES_ROUTE,
-			label: t('settings.smime_certificates', 'S/MIME Certificates'),
-			component: CertificatesView
-		});
-	}
 
 	upsertApp({
 		name: MAIL_APP_ID,

@@ -29,7 +29,7 @@ describe('Conversation Preview Panel', () => {
 			messageIds: messages.map((m) => m.id)
 		});
 		updateConversations([conversation]);
-		setupTest(<ConversationPreviewPanel conversation={conversation} isInsideExtraWindow={false} />);
+		setupTest(<ConversationPreviewPanel conversation={conversation} />);
 
 		await waitFor(async () => {
 			expect(screen.getByTestId('ConversationMessagePreview-1')).toBeInTheDocument();

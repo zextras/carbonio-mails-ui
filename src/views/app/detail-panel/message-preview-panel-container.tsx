@@ -8,6 +8,9 @@ import React from 'react';
 import { useParams } from 'react-router-dom';
 
 import { MessagePreviewPanel } from './message-preview-panel';
+import { API_REQUEST_STATUS } from '../../../constants';
+import { useCompleteMessageOrFetch } from '../../../store/emails/hooks/hooks';
+import { useMessageStatus } from '../../../store/emails/store';
 
 export const MessagePreviewPanelContainer = (): React.JSX.Element => {
 	const { folderId, messageId } = useParams() as {
@@ -15,5 +18,14 @@ export const MessagePreviewPanelContainer = (): React.JSX.Element => {
 		messageId: string;
 	};
 
-	return <MessagePreviewPanel messageId={messageId} folderId={folderId} />;
+	const { message } = useCompleteMessageOrFetch(messageId);
+	const messageLoadingStatus = useMessageStatus(messageId);
+
+	return (
+		<MessagePreviewPanel
+			message={message}
+			folderId={folderId}
+			isMessageLoaded={messageLoadingStatus === API_REQUEST_STATUS.fulfilled}
+		/>
+	);
 };
