@@ -20,9 +20,6 @@ const AttachmentTypeEmailStatusRow: FC<AttachTypeEmailStatusRowPropType> = ({
 	const emailStatusItems = emailStatusItemsConstant(t);
 	const [attachmentTypeOptions, setAttachmentTypeOptions] = useState<any[]>(attachmentTypeItems);
 	const [emailStatusOptions, setEmailStatusOptions] = useState<any[]>(emailStatusItems);
-	const onChange = useCallback((state: ChipItem[], stateHandler: (state: ChipItem[]) => void) => {
-		stateHandler(state);
-	}, []);
 
 	const chipOnAdd = useCallback(
 		({ items, label, preText, hasAvatar, isGeneric, isQueryFilter }: ChipOnAddProps): ChipOnAdd => {
@@ -122,13 +119,13 @@ const AttachmentTypeEmailStatusRow: FC<AttachTypeEmailStatusRowPropType> = ({
 	);
 
 	const attachmentTypeOnChange = useCallback(
-		(value: ChipItem[]): void => onChange(value, setAttachmentType),
-		[onChange, setAttachmentType]
+		(value: ChipItem[]): void => setAttachmentType(value),
+		[setAttachmentType]
 	);
 
 	const emailStatusOnChange = useCallback(
-		(value: ChipItem[]): void => onChange(value, setEmailStatus),
-		[onChange, setEmailStatus]
+		(value: ChipItem[]): void => setEmailStatus(value),
+		[setEmailStatus]
 	);
 
 	const attachmentTypePlaceholder = useMemo(
