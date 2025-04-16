@@ -12,10 +12,9 @@ import { useTranslation } from 'react-i18next';
 import { FlatRoot } from './flat-root';
 import { flattenAndFilterFoldersWithCap } from './utils';
 import { Folder } from '../../../../carbonio-ui-commons/types/folder';
+import { FOLDER_SELECTOR_MAX_RESULTS } from '../../../../constants';
 import { isTrash, isTrashed, isSpam } from '../../../../helpers/folders';
 import { getSystemFolderTranslatedName } from '../../utils';
-
-const MAX_ALLOWED_RESULTS = 100;
 
 type FlatFoldersProps = {
 	folders: Array<Folder>;
@@ -39,7 +38,7 @@ export const FlatFolders = ({
 	const [hasMoreResults, setHasMoreResults] = React.useState(false);
 	const [t] = useTranslation();
 	const flatFilteredFolders = useMemo(() => {
-		let remaining = MAX_ALLOWED_RESULTS;
+		let remaining = FOLDER_SELECTOR_MAX_RESULTS;
 
 		return folders
 			.map((folder) => {
