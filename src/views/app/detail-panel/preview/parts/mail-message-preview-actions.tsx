@@ -85,7 +85,7 @@ export const MailMsgPreviewActions: FC<MailMsgPreviewActionsType> = ({ message }
 				normalizeDropdownActionItem(editAsNewDescriptor),
 				normalizeDropdownActionItem(showOriginalDescriptor),
 				normalizeDropdownActionItem(downloadEmlDescriptor)
-			]
+			].filter((action) => !action.disabled)
 		}
 	];
 
