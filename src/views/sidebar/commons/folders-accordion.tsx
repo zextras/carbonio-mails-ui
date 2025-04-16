@@ -17,6 +17,7 @@ import {
 import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
 import { theme } from '../../../carbonio-ui-commons/theme/theme-mui';
 import { hasId } from '../../../carbonio-ui-commons/worker/handle-message';
+import { isSpam, isTrash } from '../../../helpers/folders';
 import { Folder } from '../../../types';
 
 type FolderAccordionProps = {
@@ -24,6 +25,8 @@ type FolderAccordionProps = {
 	onFolderSelected: (arg: Folder) => void;
 	selectedFolderId?: string;
 	allowRootSelection: boolean;
+	showTrashFolder?: boolean;
+	showSpamFolder?: boolean;
 	FolderAccordionCustomComponent: React.FC<{ folder: Folder }>;
 };
 
@@ -32,13 +35,23 @@ export const FoldersAccordion = ({
 	onFolderSelected,
 	FolderAccordionCustomComponent,
 	selectedFolderId,
-	allowRootSelection
+	allowRootSelection,
+	showTrashFolder = false,
+	showSpamFolder = false
 }: FolderAccordionProps): React.JSX.Element => {
+	const filteredFolders = folders.map((root) => ({
+		...root,
+		children: root.children.filter((folder) => {
+			if (isTrash(folder.id) && !showTrashFolder) return false;
+			return !(isSpam(folder.id) && !showSpamFolder);
+		})
+	}));
+
 	const [openIds, setOpenIds] = useState<Array<string>>([FOLDERS.USER_ROOT]);
 
 	return (
 		<MUIContainer disableGutters>
-			{folders.map((folder) => (
+			{filteredFolders.map((folder) => (
 				<MUIAccordion
 					disableGutters
 					slotProps={{ transition: { unmountOnExit: true } }}

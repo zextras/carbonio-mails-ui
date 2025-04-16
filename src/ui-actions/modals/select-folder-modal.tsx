@@ -46,7 +46,6 @@ export const SelectFolderModal: FC<SelectFolderModalProps> = ({
 	showSharedAccounts,
 	showTrashFolder,
 	showSpamFolder,
-	allowFolderCreation,
 	allowRootSelection
 }) => {
 	const [folderDestination, setFolderDestination] = useState<Folder | undefined>(folder);
@@ -94,6 +93,8 @@ export const SelectFolderModal: FC<SelectFolderModalProps> = ({
 					onFolderSelected={setFolderDestination}
 					allowRootSelection={allowRootSelection}
 					showSharedAccounts={showSharedAccounts}
+					showSpamFolder={showSpamFolder}
+					showTrashFolder={showTrashFolder}
 				/>
 				<ModalFooter
 					tooltip={confirmActionTooltip}

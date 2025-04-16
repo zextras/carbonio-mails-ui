@@ -87,6 +87,8 @@ export const FolderSelector = ({
 							selectedFolderId={selectedFolderId}
 							allowRootSelection={allowRootSelection}
 							FolderAccordionCustomComponent={FolderAccordionCustomComponent}
+							showSpamFolder={showSpamFolder}
+							showTrashFolder={showTrashFolder}
 						/>
 					</ThemeProvider>
 				)}
