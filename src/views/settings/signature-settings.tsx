@@ -269,38 +269,23 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 		setEditor(editor);
 	};
 
-	const { prefs } = useUserSettings();
-	const fontSizesOptions = getFontSizesOptions();
-	const fontFamilyOptions = getFonts();
-
-	const defaultFontFamily = prefs?.zimbraPrefHtmlEditorDefaultFontFamily;
-	const defaultFontSize = prefs?.zimbraPrefHtmlEditorDefaultFontSize;
-	const defaultColor = prefs?.zimbraPrefHtmlEditorDefaultFontColor;
-
-	const fontSizesOptionsToString = fontSizesOptions.map((fontSize: string) => fontSize).join(' ');
-	const fontsOptionsToString = fontFamilyOptions.map(
+	const fontSizesOptionsToString = getFontSizesOptions()
+		.map((fontSize: string) => fontSize)
+		.join(' ');
+	const fontsOptionsToString = getFonts().map(
 		(font: { label: string; value: string }) => `${font.label}=${font.value};`
 	);
 
 	const composerCustomOptions = {
-		auto_focus: false,
 		font_size_formats: fontSizesOptionsToString,
 		font_family_formats: fontsOptionsToString,
-		content_style: `p  {margin: 0;} body {color: ${defaultColor}; font-size: ${defaultFontSize}; font-family: ${defaultFontFamily}; }`,
-		toolbar: [
-			'fontfamily fontsize styles visualblocks',
-			'bold italic underline strikethrough',
-			'removeformat code',
-			'alignleft aligncenter alignright alignjustify',
-			'forecolor backcolor',
-			'bullist numlist outdent indent',
-			'ltr rtl',
-			'link table',
-			'insertfile image',
-			'imageSelector'
-		].join(' | '),
-		paste_data_images: false,
-		init_instance_callback: onEditorInitialization
+		auto_focus: false,
+		content_style: 'p { margin: 0; }',
+		init_instance_callback: onEditorInitialization,
+		verify_html: false,
+		cleanup: false,
+		forced_root_block: 'p',
+		protect: [/&nbsp;/g]
 	};
 
 	return (
