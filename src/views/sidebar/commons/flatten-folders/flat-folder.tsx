@@ -65,9 +65,10 @@ export const FlatFolder = ({
 		label: index === 0 ? getSystemFolderTranslatedName({ folderName: part }) : part
 	}));
 
-	const selectionHandler = useCallback(() => {
-		onFolderSelected ? onFolderSelected(folder) : noop;
-	}, [onFolderSelected, folder]);
+	const selectionHandler = useCallback(
+		() => onFolderSelected?.(folder) ?? noop,
+		[onFolderSelected, folder]
+	);
 
 	return (
 		<Container
