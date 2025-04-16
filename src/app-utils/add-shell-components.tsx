@@ -125,6 +125,12 @@ export const addComponentsToShell = async (isCarbonioCE: boolean | undefined): P
 		checkIsSmimeEnabled().then((res) => {
 			if ('data' in res) {
 				useSmimeFeatureStore.getState().updateIsSmimeEnabled(true);
+				addSettingsView({
+					icon: 'AwardOutline',
+					route: CERTIFICATES_ROUTE,
+					label: t('settings.smime_certificates', 'S/MIME Certificates'),
+					component: CertificatesView
+				});
 			} else {
 				useSmimeFeatureStore.getState().updateIsSmimeEnabled(false);
 			}
@@ -137,14 +143,6 @@ export const addComponentsToShell = async (isCarbonioCE: boolean | undefined): P
 		subSections: getSettingsSubSections(backupSelfUndeleteAllowed),
 		component: SettingsView
 	});
-	if (!isCarbonioCE) {
-		addSettingsView({
-			icon: 'AwardOutline',
-			route: CERTIFICATES_ROUTE,
-			label: t('settings.smime_certificates', 'S/MIME Certificates'),
-			component: CertificatesView
-		});
-	}
 
 	upsertApp({
 		name: MAIL_APP_ID,
