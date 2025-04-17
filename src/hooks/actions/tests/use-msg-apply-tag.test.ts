@@ -7,7 +7,7 @@ import { act } from '@testing-library/react';
 import { find, forEach } from 'lodash';
 
 import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
-import { useTags } from '../../../carbonio-ui-commons/store/zustand/tags';
+import { useTagStore } from '../../../carbonio-ui-commons/store/zustand/tags/store';
 import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { tags as mockTags } from '../../../carbonio-ui-commons/test/mocks/tags/tags';
 import { setupHook } from '../../../carbonio-ui-commons/test/test-setup';
@@ -16,20 +16,16 @@ import { generateMessage } from '../../../tests/generators/generateMessage';
 import { MsgActionRequest, MsgActionResponse } from '../../../types';
 import { useMsgApplyTagDescriptor, useMsgApplyTagSubDescriptors } from '../use-msg-apply-tag';
 
-jest.mock('../../../carbonio-ui-commons/store/zustand/tags', () => ({
-	useTags: jest.fn()
-}));
-
 describe('useMsgApplyTag', () => {
 	const msg = generateMessage();
 
 	describe('Descriptor', () => {
-		(useTags as jest.Mock).mockReturnValue(mockTags);
 		it('Should return an object with specific id, icon, label and 2 functions', () => {
+			useTagStore.setState({ tags: mockTags });
 			const {
 				result: { current: descriptor }
 			} = setupHook(useMsgApplyTagDescriptor, {
-				initialProps: [{ ids: [msg.id], folderId: FOLDERS.INBOX, messageTags: ['1'] }]
+				initialProps: [{ ids: [msg.id], folderId: FOLDERS.INBOX, messageTags: ['2291'] }]
 			});
 
 			expect(descriptor).toEqual({
@@ -52,7 +48,7 @@ describe('useMsgApplyTag', () => {
 
 	describe('SubDescriptors', () => {
 		it('Should return an object with specific icon if message does not contains the tag', () => {
-			(useTags as jest.Mock).mockReturnValue(mockTags);
+			useTagStore.setState({ tags: mockTags });
 			const {
 				result: { current: descriptor }
 			} = setupHook(useMsgApplyTagSubDescriptors, {
@@ -71,11 +67,11 @@ describe('useMsgApplyTag', () => {
 		});
 
 		it('Should return an object with specific icon if conversation contains the tag', () => {
-			(useTags as jest.Mock).mockReturnValue(mockTags);
+			useTagStore.setState({ tags: mockTags });
 			const {
 				result: { current: descriptor }
 			} = setupHook(useMsgApplyTagSubDescriptors, {
-				initialProps: [{ ids: [msg.id], folderId: FOLDERS.INBOX, messageTags: ['2291'] }]
+				initialProps: [{ ids: [msg.id], folderId: FOLDERS.INBOX, messageTags: ['31308'] }]
 			});
 			expect(descriptor[0]).toEqual({
 				canExecute: expect.any(Function),
@@ -109,7 +105,7 @@ describe('useMsgApplyTag', () => {
 					name: 'tag 5'
 				}
 			};
-			(useTags as jest.Mock).mockReturnValue(tags);
+			useTagStore.setState({ tags });
 			const {
 				result: { current: descriptor }
 			} = setupHook(useMsgApplyTagDescriptor, {
@@ -139,8 +135,8 @@ describe('useMsgApplyTag', () => {
 						name: 'tag 1'
 					}
 				};
-				(useTags as jest.Mock).mockReturnValue(tags);
 
+				useTagStore.setState({ tags });
 				const {
 					result: { current: descriptor }
 				} = setupHook(useMsgApplyTagSubDescriptors, {
@@ -159,13 +155,13 @@ describe('useMsgApplyTag', () => {
 						name: 'tag 1'
 					}
 				};
-				(useTags as jest.Mock).mockReturnValue(tags);
 				const response: MsgActionResponse = {
 					action: {
 						id: '123',
 						op: 'tag'
 					}
 				};
+				useTagStore.setState({ tags });
 				const interceptor = createSoapAPIInterceptor<MsgActionRequest, MsgActionResponse>(
 					'MsgAction',
 					response
@@ -193,7 +189,8 @@ describe('useMsgApplyTag', () => {
 						name: 'tag 1'
 					}
 				};
-				(useTags as jest.Mock).mockReturnValue(tags);
+
+				useTagStore.setState({ tags });
 				const response: MsgActionResponse = {
 					action: {
 						id: '123',

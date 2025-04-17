@@ -84,10 +84,14 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 			'insertfile image',
 			'imageSelector'
 		].join(' | '),
+
 		paste_data_images: false,
 		init_instance_callback: (editor: Editor): (() => void) => {
 			if (!editor) return noop;
-			editor.on('paste', (event) => handleEditorPaste(editor, editorId, event));
+			editor.on('paste', (event) => {
+				handleEditorPaste(editor, editorId, event);
+			});
+
 			const mutationObserver = new MutationObserver(() => {
 				editor.dispatch('ResizeWindow');
 			});
@@ -98,6 +102,7 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 					attributeFilter: ['style']
 				});
 			}
+
 			return () => {
 				mutationObserver.disconnect();
 			};
