@@ -27,20 +27,18 @@ type MailPreviewBlockType = {
 	message: MailMessage;
 	open: boolean;
 	onClick: () => void;
-	isExternalMessage?: boolean;
-	messagePreviewFactory: () => React.JSX.Element;
+	isEml?: boolean;
 };
 export const MailPreviewBlock: FC<MailPreviewBlockType> = ({
 	message,
 	open,
 	onClick,
-	isExternalMessage = false,
-	messagePreviewFactory
+	isEml = false
 }) => {
 	const { folderId, itemId } = useParams() as { folderId?: string; itemId?: string };
 	const compProps = useMemo(
-		() => ({ message, onClick, open, isExternalMessage, messagePreviewFactory }),
-		[message, onClick, open, isExternalMessage, messagePreviewFactory]
+		() => ({ message, onClick, open, isEml }),
+		[message, onClick, open, isEml]
 	);
 	const shouldReplaceHistory = useMemo(() => itemId === message.id, [message.id, itemId]);
 	const [t] = useTranslation();
@@ -86,7 +84,7 @@ export const MailPreviewBlock: FC<MailPreviewBlockType> = ({
 			)}
 
 			{/* External message disclaimer */}
-			{isExternalMessage && (
+			{isEml && (
 				<Container height="fit" background="white" padding={{ top: 'large', bottom: 'large' }}>
 					<Row
 						background="gray2"

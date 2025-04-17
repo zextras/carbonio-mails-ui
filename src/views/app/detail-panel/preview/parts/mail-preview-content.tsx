@@ -15,9 +15,10 @@ import {
 import { filter } from 'lodash';
 
 import { MailMessageRenderer } from '../../../../../commons/mail-message-renderer/mail-message-renderer';
+import { isFocusModeMailView } from '../../../../../helpers/external-tabs';
 import SharedInviteReply from '../../../../../integrations/shared-invite-reply';
 import { msgActionEmailStoreAction } from '../../../../../store/emails/actions/msg-action-action';
-import type { IncompleteMessage, MailMessage, OpenEmlPreviewType } from '../../../../../types';
+import type { IncompleteMessage, MailMessage } from '../../../../../types';
 import AttachmentsBlock from '../attachments-block';
 import ReadReceiptModal from '../read-receipt-modal';
 
@@ -26,16 +27,12 @@ const [InviteResponse, integrationAvailable] = getIntegratedComponent('invites-r
 type MailPreviewContentProps = {
 	message: MailMessage | IncompleteMessage;
 	isMailPreviewOpen: boolean;
-	isExternalMessage?: boolean;
-	isInsideExtraWindow?: boolean;
-	openEmlPreview?: OpenEmlPreviewType;
+	isEml?: boolean;
 };
 export const MailPreviewContent = ({
 	message,
 	isMailPreviewOpen,
-	isExternalMessage = false,
-	openEmlPreview,
-	isInsideExtraWindow = false
+	isEml = false
 }: MailPreviewContentProps): React.JSX.Element => {
 	const [showModal, setShowModal] = useState(true);
 	const messageId = message.id;
@@ -131,7 +128,9 @@ export const MailPreviewContent = ({
 					height="100%"
 					crossAlignment="stretch"
 					padding={
-						isInsideExtraWindow ? { vertical: 'small' } : { horizontal: 'large', vertical: 'small' }
+						isFocusModeMailView()
+							? { vertical: 'small' }
+							: { horizontal: 'large', vertical: 'small' }
 					}
 					background="gray6"
 				>
@@ -140,8 +139,7 @@ export const MailPreviewContent = ({
 							messageId={message.id}
 							messageSubject={message.subject}
 							messageAttachments={message.attachments}
-							isExternalMessage={isExternalMessage}
-							openEmlPreview={openEmlPreview}
+							isEml={isEml}
 						/>
 					</Row>
 					<Padding height="100%" width="100%" vertical="medium" style={{ overflow: 'auto' }}>

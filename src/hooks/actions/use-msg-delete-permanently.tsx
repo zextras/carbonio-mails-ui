@@ -9,6 +9,7 @@ import { useSnackbar } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
 
 import { MessageActionsDescriptors } from '../../constants';
+import { isFocusModeMailView } from '../../helpers/external-tabs';
 import { isSpam, isTrash } from '../../helpers/folders';
 import { msgActionEmailStoreAction } from '../../store/emails/actions/msg-action-action';
 import { ActionFn, UIActionDescriptor } from '../../types';
@@ -60,7 +61,10 @@ export const useMsgDeletePermanentlyFn = ({
 		[ids, deselectAll, createSnackbar, t]
 	);
 
-	const canExecute = useCallback((): boolean => isTrash(folderId) || isSpam(folderId), [folderId]);
+	const canExecute = useCallback(
+		(): boolean => (isTrash(folderId) || isSpam(folderId)) && !isFocusModeMailView(),
+		[folderId]
+	);
 	const execute = useCallback((): void => {
 		if (canExecute()) {
 			const modalId = Date.now().toString();

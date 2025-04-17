@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 
 import { find } from 'lodash';
 
@@ -34,7 +34,6 @@ export type ConversationActionsArgumentType = {
 	conversation: NormalizedConversation;
 	deselectAll: () => void;
 	shouldReplaceHistory?: boolean;
-	conversationPreviewFactory: () => React.JSX.Element;
 };
 
 type ConversationActionsReturnType = {
@@ -61,8 +60,7 @@ type ConversationActionsReturnType = {
 export const useConvActions = ({
 	conversation,
 	deselectAll,
-	shouldReplaceHistory = false,
-	conversationPreviewFactory
+	shouldReplaceHistory = false
 }: ConversationActionsArgumentType): ConversationActionsReturnType => {
 	const messages = useConversationMessages(conversation.id);
 	const firstConversationMessage =
@@ -153,8 +151,7 @@ export const useConvActions = ({
 
 	const previewOnSeparatedWindowDescriptor = useConvPreviewOnSeparatedWindowDescriptor({
 		conversationId: conversation.id,
-		subject: conversation.subject,
-		conversationPreviewFactory
+		folderId
 	});
 
 	return useMemo(

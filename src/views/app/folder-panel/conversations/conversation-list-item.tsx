@@ -22,7 +22,6 @@ import { useOnMouseHover } from '../../../../hooks/use-on-mouse-hover';
 import { searchConvEmailStoreAction } from '../../../../store/emails/actions/search-conv-action';
 import { useConversationMessages, useConversationStatus } from '../../../../store/emails/store';
 import { NormalizedConversation } from '../../../../types/conversations';
-import { ConversationPreviewPanel } from '../../detail-panel/conversation-preview-panel';
 
 export type ConversationListItemProps = {
 	conversation: NormalizedConversation;
@@ -69,16 +68,10 @@ export const ConversationListItem = memo(function ConversationListItem({
 		folderId: folderId ?? ''
 	});
 
-	const conversationPreviewFactory = useCallback(
-		() => <ConversationPreviewPanel conversation={conversation} isInsideExtraWindow />,
-		[conversation]
-	);
-
 	const conversationId = conversation.id;
 	const previewOnSeparatedWindow = useConvPreviewOnSeparatedWindowFn({
 		conversationId,
-		subject: conversation.subject,
-		conversationPreviewFactory
+		folderId: folderParent
 	});
 
 	const conversationStatus = useConversationStatus(conversationId);

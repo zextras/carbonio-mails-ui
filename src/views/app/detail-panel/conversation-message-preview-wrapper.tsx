@@ -12,12 +12,10 @@ import { useCompleteMessageOrFetch } from '../../../store/emails/hooks/hooks';
 export const ConversationMessagePreviewWrapper = ({
 	convMessageId,
 	isExpanded,
-	isInsideExtraWindow,
 	isAlone
 }: {
 	convMessageId: string;
 	isExpanded: boolean;
-	isInsideExtraWindow: boolean;
 	isAlone: boolean;
 }): React.JSX.Element => {
 	const { message } = useCompleteMessageOrFetch(convMessageId);
@@ -27,7 +25,6 @@ export const ConversationMessagePreviewWrapper = ({
 			message={message}
 			isExpanded={isExpanded}
 			isAlone={isAlone}
-			isInsideExtraWindow={isInsideExtraWindow}
 		/>
 	) : (
 		<Spinner />
