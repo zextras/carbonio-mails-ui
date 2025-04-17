@@ -282,8 +282,10 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 		auto_focus: false,
 		content_style: 'p { margin: 0; }',
 		init_instance_callback: onEditorInitialization,
-		verify_html: false,
+		valid_elements: '*[*]',
+		extended_valid_elements: 'p[style|class]',
 		cleanup: false,
+		verify_html: false,
 		forced_root_block: 'p',
 		protect: [/&nbsp;/g]
 	};
