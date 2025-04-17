@@ -5,7 +5,7 @@
  */
 import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
 
-import { Container, Divider, Padding, TabBar, TabBarProps } from '@zextras/carbonio-design-system';
+import { Container, TabBar, TabBarProps } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
 
 import { IncomingFiltersTab } from './incoming-filters-tab';
@@ -44,9 +44,6 @@ export const FilterTabs: FC = (): ReactElement => {
 				{selectedFilterType === 'incoming-messages' && <IncomingFiltersTab />}
 				{selectedFilterType === 'outgoing-messages' && <OutgoingFiltersTab />}
 			</Container>
-
-			<Padding top="medium" />
-			<Divider />
 		</Container>
 	);
 };

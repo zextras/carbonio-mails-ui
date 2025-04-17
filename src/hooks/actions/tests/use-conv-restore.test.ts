@@ -98,6 +98,8 @@ describe('useConvRestore', () => {
 
 				const inboxFolder = screen.getAllByText(/folders\.inbox/i)[1];
 
+				const expandMore = screen.getAllByTestId('ExpandMoreIcon')[1];
+				await user.click(expandMore);
 				await user.click(inboxFolder);
 
 				const moveButton = await screen.findByRole('button', { name: /move/i });

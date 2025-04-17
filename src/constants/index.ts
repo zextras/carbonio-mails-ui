@@ -586,3 +586,4 @@ export const MAIL_SENSITIVITY_HEADER_VALUES = ['Personal', 'Private', 'Company-C
 
 export const SENSITIVITY_VALUES = ['Private', 'Company-Confidential'] as const;
 export const VALID_MAIL_AUTHENTICATION_HEADERS = ['dkim', 'spf', 'dmarc'] as const;
+export const FOLDER_SELECTOR_MAX_RESULTS = 100;

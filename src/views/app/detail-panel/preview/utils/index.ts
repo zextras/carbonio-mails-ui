@@ -3,8 +3,8 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import type { Theme } from '@zextras/carbonio-design-system';
 import { includes, uniqBy } from 'lodash';
-import { DefaultTheme } from 'styled-components';
 
 import { calcColor, getFileExtension } from '../../../../../commons/utilities';
 import { getUserLocale } from '../../../../../commons/utils';
@@ -94,7 +94,7 @@ export const getAttachmentIconColors = ({
 	theme
 }: {
 	attachments: AttachmentPart[] | EditorAttachmentFiles[];
-	theme: DefaultTheme;
+	theme: Theme;
 }): IconColors =>
 	uniqBy(
 		attachments.map((att: AttachmentPart | EditorAttachmentFiles) => {

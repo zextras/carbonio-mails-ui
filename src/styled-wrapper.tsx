@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React, { ReactNode } from 'react';
+import React from 'react';
 
 import { ThemeProvider } from '@zextras/carbonio-design-system';
 import type { Theme as DSTheme } from '@zextras/carbonio-design-system';
@@ -12,7 +12,7 @@ import { createGlobalStyle, DefaultTheme } from 'styled-components';
 
 import { AnimatedLoader } from './assets/animated-loader';
 
-const themeOverride = (theme: DSTheme): DefaultTheme => ({
+const themeOverride = (theme: DSTheme): DSTheme => ({
 	...theme,
 	icons: {
 		...theme.icons,
