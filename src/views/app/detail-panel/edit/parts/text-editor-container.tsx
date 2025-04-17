@@ -65,7 +65,13 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 		ui_mode: 'split',
 		font_size_formats: fontSizesOptionsToString,
 		font_family_formats: fontsOptionsToString,
-		content_style: `p  {margin: 0;} body {color: ${defaultColor}; font-size: ${defaultFontSize}; font-family: ${defaultFontFamily}; }`,
+		content_style: `
+            p { margin: 0; }
+            body *:not(.signature-div):not(.signature-div *) {
+            color: ${defaultColor};
+            font-size: ${defaultFontSize};
+            font-family: ${defaultFontFamily};
+            }`,
 		toolbar: [
 			'fontfamily fontsize styles visualblocks',
 			'bold italic underline strikethrough',
