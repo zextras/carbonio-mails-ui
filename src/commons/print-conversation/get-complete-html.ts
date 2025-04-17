@@ -71,12 +71,18 @@ export function getCompleteHTML({ content }: { content: string }): string {
                         text-align: left;
                         padding-left: 1.25rem;
                     }
-                        
-                    @page {
-                        size: auto;
-                        margin: auto;
+
+                    @media print {
+                        @page {
+                            size: auto;
+                            margin-top: 10mm;
+                            margin-bottom: 10mm;
+                            margin-left: 10mm;
+                            margin-right: 10mm;
+                        }
                     }
-                        
+
+
              </style>
 		</head>
 		<body>
