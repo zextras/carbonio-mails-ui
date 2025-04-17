@@ -145,7 +145,7 @@ export const useGetTagsActions = ({ tag }: ArgumentType): Array<TagActionsReturn
 	);
 };
 
-export const useTagsArrayFromStore = (): Array<ItemType> => {
+const useTagsArrayFromStore = (): Array<ItemType> => {
 	const tagsFromStore = useTags();
 	return useMemo(
 		() =>
