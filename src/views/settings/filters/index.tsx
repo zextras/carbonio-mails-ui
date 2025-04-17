@@ -5,36 +5,23 @@
  */
 import React, { FC, ReactElement, useMemo } from 'react';
 
-import { Container, Text, Divider } from '@zextras/carbonio-design-system';
+import { Text, FormSection, FormSubSection } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 
 import { FilterTabs } from './filter-tabs';
-import Heading from '../components/settings-heading';
 import { filtersSubSection } from '../subsections';
 
 const FilterModule: FC = (): ReactElement => {
 	const sectionTitle = useMemo(() => filtersSubSection(), []);
 	return (
-		<Container background="gray6" padding={{ horizontal: 'medium', bottom: 'large' }}>
-			<Container
-				orientation="horizontal"
-				padding={{ horizontal: 'medium', top: 'medium' }}
-				mainAlignment="space-between"
-			>
-				<Container width="50%" id={sectionTitle.id}>
-					<Heading title={sectionTitle.label} size="medium" />
-				</Container>
-				<Container width="50%" crossAlignment="flex-end">
-					<Text size="extrasmall">
-						{t('filters.filter_note', 'Note: changes to filter rules are saved immediately')}
-					</Text>
-				</Container>
-			</Container>
-			<Divider />
-			<Container padding={{ all: 'medium', bottom: 'small' }}>
+		<FormSection label={sectionTitle.label}>
+			<FormSubSection>
+				<Text>
+					{t('filters.filter_note', 'Note: changes to filter rules are saved immediately')}
+				</Text>
 				<FilterTabs />
-			</Container>
-		</Container>
+			</FormSubSection>
+		</FormSection>
 	);
 };
 
