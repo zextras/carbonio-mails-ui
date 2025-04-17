@@ -10,10 +10,10 @@ import { ThemeProvider } from '@mui/material';
 import { Accordion, Container, Divider } from '@zextras/carbonio-design-system';
 import { SecondaryBarComponentProps } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
-import { Route, Routes, useParams } from 'react-router-dom';
 
 import AccordionCustomComponent from './accordion-custom-component';
 import { ButtonFindShares } from './button-find-shares';
+import { Route, Routes, useParams } from 'react-router-dom';
 import CollapsedSideBarItems from './collapsed-sidebar-items';
 import { SidebarAccordionMui } from '../../carbonio-ui-commons/components/sidebar/sidebar-accordion-mui';
 import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
