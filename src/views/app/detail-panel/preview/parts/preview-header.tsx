@@ -41,7 +41,7 @@ import OnBehalfOfDisplayer from './on-behalf-of-displayer';
 import { ParticipantRole } from '../../../../../carbonio-ui-commons/constants/participants';
 import { ZIMBRA_STANDARD_COLORS } from '../../../../../carbonio-ui-commons/constants/utils';
 import { useRunSearchIntegration } from '../../../../../carbonio-ui-commons/integrations/search/use-run-search';
-import { useTags } from '../../../../../carbonio-ui-commons/store/zustand/tags';
+import { useSortedTagsArray } from '../../../../../carbonio-ui-commons/store/zustand/tags';
 import { Tag } from '../../../../../carbonio-ui-commons/types/tags';
 import { getTimeLabel, participantToString } from '../../../../../commons/utils';
 import { getNoIdentityPlaceholder } from '../../../../../helpers/identities';
@@ -100,7 +100,7 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 		setIsContactListExpand(contactListExpand);
 	}, []);
 
-	const tagsFromStore = useTags();
+	const tagsFromStore = useSortedTagsArray();
 	const tags = useMemo(
 		() =>
 			reduce(
