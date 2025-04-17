@@ -11,7 +11,7 @@ import { noop } from 'lodash';
 
 import { FOLDERS } from '../../../../../carbonio-ui-commons/constants/folders';
 import { ParticipantRole } from '../../../../../carbonio-ui-commons/constants/participants';
-import { useTags } from '../../../../../carbonio-ui-commons/store/zustand/tags/hooks';
+import { useTagStore } from '../../../../../carbonio-ui-commons/store/zustand/tags';
 import { generateFolders } from '../../../../../carbonio-ui-commons/test/mocks/folders/folders-generator';
 import { tags as mockTags } from '../../../../../carbonio-ui-commons/test/mocks/tags/tags';
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
@@ -22,10 +22,6 @@ import { ASSERTIONS } from '../../../../../tests/constants';
 import { generateMessage } from '../../../../../tests/generators/generateMessage';
 import type { MessageListItemProps } from '../../../../../types';
 import { MessageListItem } from '../message-list-item';
-
-jest.mock('../../../../../carbonio-ui-commons/store/zustand/tags/hooks', () => ({
-	useTags: jest.fn()
-}));
 
 describe.each`
 	type                     | isSearchModule
@@ -66,7 +62,7 @@ describe.each`
 		`(
 			`(case #$case) the avatar $assertion.desc for a message in $folder.desc folder`,
 			async ({ folder, assertion }) => {
-				(useTags as jest.Mock).mockReturnValue(mockTags);
+				useTagStore.setState({ tags: mockTags });
 				const message = generateMessage({ folderId: folder.id });
 
 				setMessagesInEmailStore([message], false);
@@ -101,7 +97,7 @@ describe.each`
 		`(
 			`(case #$case) the date $assertion.desc for a message in $folder.desc folder`,
 			async ({ folder, assertion }) => {
-				(useTags as jest.Mock).mockReturnValue(mockTags);
+				useTagStore.setState({ tags: mockTags });
 				const receiveDate = Date.parse('2023-04-07T12:59:06');
 				const message = generateMessage({ receiveDate, folderId: folder.id });
 				setMessagesInEmailStore([message], false);
@@ -141,7 +137,7 @@ describe.each`
 		`(
 			`(case #$case) if set, the subject $assertion.desc for a message in $folder.desc folder`,
 			async ({ folder, assertion }) => {
-				(useTags as jest.Mock).mockReturnValue(mockTags);
+				useTagStore.setState({ tags: mockTags });
 				const subject = 'This is an interesting subject';
 				const message = generateMessage({ subject, folderId: folder.id });
 				setMessagesInEmailStore([message], false);
@@ -182,7 +178,7 @@ describe.each`
 		`(
 			`(case #$case) if set, the subject $assertion.desc for a message in $folder.desc folder`,
 			async ({ folder, assertion }) => {
-				(useTags as jest.Mock).mockReturnValue(mockTags);
+				useTagStore.setState({ tags: mockTags });
 				const subject = '';
 				const message = generateMessage({ subject, folderId: folder.id });
 				setMessagesInEmailStore([message], false);
@@ -223,7 +219,7 @@ describe.each`
 		`(
 			`(case #$case) the sender label $assertion.desc for a message in $folder.desc folder`,
 			async ({ folder, assertion }) => {
-				(useTags as jest.Mock).mockReturnValue(mockTags);
+				useTagStore.setState({ tags: mockTags });
 				const message = generateMessage({ folderId: folder.id });
 				setMessagesInEmailStore([message], false);
 
@@ -261,7 +257,7 @@ describe.each`
 		`(
 			`(case #$case) the sender name must contain the sender name for a message in $folder.desc folder`,
 			async ({ folder, senderAddress, labelContent }) => {
-				(useTags as jest.Mock).mockReturnValue(mockTags);
+				useTagStore.setState({ tags: mockTags });
 				const from = { type: ParticipantRole.FROM, address: senderAddress };
 				const message = generateMessage({ from, folderId: folder.id });
 				setMessagesInEmailStore([message], false);
@@ -506,8 +502,7 @@ describe('in the trash folder', () => {
 			deselectAll: noop,
 			currentFolderId: folderId
 		};
-
-		(useTags as jest.Mock).mockReturnValue(mockTags);
+		useTagStore.setState({ tags: mockTags });
 		setMessagesInEmailStore([message], false);
 		setupTest(<MessageListItem {...props} />);
 		const participantsLabel = screen.getByTestId('participants-name-label');
