@@ -27,6 +27,7 @@ import { ListOld } from './list-old';
 import { signaturesSubSection, setDefaultSignaturesSubSection } from './subsections';
 import { NO_SIGNATURE_ID, NO_SIGNATURE_LABEL } from '../../helpers/signatures';
 import type { SignatureSettingsPropsType, SignItemType } from '../../types';
+import { getFonts, getFontSizesOptions } from './components/utils';
 
 const DeleteButton = styled(Button)`
 	display: none;
@@ -268,10 +269,25 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 		setEditor(editor);
 	};
 
+	const fontSizesOptionsToString = getFontSizesOptions()
+		.map((fontSize: string) => fontSize)
+		.join(' ');
+	const fontsOptionsToString = getFonts().map(
+		(font: { label: string; value: string }) => `${font.label}=${font.value};`
+	);
+
 	const composerCustomOptions = {
+		font_size_formats: fontSizesOptionsToString,
+		font_family_formats: fontsOptionsToString,
 		auto_focus: false,
 		content_style: 'p { margin: 0; }',
-		init_instance_callback: onEditorInitialization
+		init_instance_callback: onEditorInitialization,
+		valid_elements: '*[*]',
+		extended_valid_elements: 'p[style|class]',
+		cleanup: false,
+		verify_html: false,
+		forced_root_block: 'p',
+		protect: [/&nbsp;/g]
 	};
 
 	return (
@@ -308,8 +324,6 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 								<EditorWrapper>
 									<Composer
 										data-testid={'signature-editor'}
-										// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-										// @ts-ignore
 										value={currentSignature?.description ?? ''}
 										customInitOptions={composerCustomOptions}
 										disabled={editingDisabled}
