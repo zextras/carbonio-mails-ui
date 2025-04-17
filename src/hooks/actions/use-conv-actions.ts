@@ -26,7 +26,7 @@ import { useConvSetUnflagDescriptor } from './use-conv-set-unflag';
 import { useConvSetUnreadDescriptor } from './use-conv-set-unread';
 import { useConvShowOriginalDescriptor } from './use-conv-show-original';
 import { isTrash } from '../../carbonio-ui-commons/helpers/folders';
-import { getFolderIdParts, isDraft } from '../../helpers/folders';
+import { getFolderIdParts, getParentFolderId, isDraft } from '../../helpers/folders';
 import { useConversationMessages } from '../../store/emails/store';
 import { NormalizedConversation, UIActionAggregator, UIActionDescriptor } from '../../types';
 
@@ -70,7 +70,7 @@ export const useConvActions = ({
 		}) ?? messages?.[0];
 
 	// TODO: This condition is not the proper one as the first message is not a good indication of the folder id we are currently navigating.
-	const folderId = firstConversationMessage.parent;
+	const folderId = getParentFolderId(firstConversationMessage.parent);
 
 	const replyDescriptor = useConvReplyDescriptor({
 		firstMessageId: firstConversationMessage.id,
