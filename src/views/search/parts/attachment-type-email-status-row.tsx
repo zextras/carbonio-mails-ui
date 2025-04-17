@@ -7,7 +7,7 @@ import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
 
 import { Container, ChipInput, ChipItem } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
-import { filter, find } from 'lodash';
+import { find } from 'lodash';
 
 import { attachmentTypeItemsConstant, emailStatusItemsConstant } from '../../../constants';
 import type { AttachTypeEmailStatusRowPropType, ChipOnAdd, ChipOnAddProps } from '../../../types';
@@ -23,14 +23,14 @@ const AttachmentTypeEmailStatusRow: FC<AttachTypeEmailStatusRowPropType> = ({
 
 	const chipOnAdd = useCallback(
 		({ items, label, preText, hasAvatar, isGeneric, isQueryFilter }: ChipOnAddProps): ChipOnAdd => {
-			const values: any = filter(items, (item: any) => item.label === label)[0];
+			const values = items.filter((item: any) => item.id === label)[0];
 			return {
 				label: `${preText}:${label}`,
 				hasAvatar,
 				isGeneric,
 				isQueryFilter,
 				value: values.searchString,
-				avatarIcon: values.icon,
+				avatarIcon: values.icon ?? 'Tag',
 				avatarColor: 'gray6'
 			};
 		},
@@ -77,7 +77,7 @@ const AttachmentTypeEmailStatusRow: FC<AttachTypeEmailStatusRowPropType> = ({
 				textContent: string | null;
 			}
 		) => {
-			updateAttachmentTypeOptions(ev.currentTarget, attachmentTypeItems);
+			updateAttachmentTypeOptions(ev.target as HTMLInputElement, attachmentTypeItems);
 		},
 		[updateAttachmentTypeOptions, attachmentTypeItems]
 	);
@@ -87,7 +87,7 @@ const AttachmentTypeEmailStatusRow: FC<AttachTypeEmailStatusRowPropType> = ({
 				textContent: string | null;
 			}
 		) => {
-			updateEmailStatusOptions(ev.currentTarget, emailStatusItems);
+			updateEmailStatusOptions(ev.target as HTMLInputElement, emailStatusItems);
 		},
 		[updateEmailStatusOptions, emailStatusItems]
 	);
