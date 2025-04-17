@@ -228,10 +228,7 @@ export const MoveConversation = ({
 					selectedFolderId={folderDestination?.id}
 					onFolderSelected={setFolderDestination}
 					showSharedAccounts
-					showTrashFolder={false}
-					showSpamFolder={false}
 					allowRootSelection={false}
-					allowFolderCreation={false}
 				/>
 				<ModalFooter
 					tooltip={modalFooterTooltip}

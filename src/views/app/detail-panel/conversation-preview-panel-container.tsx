@@ -12,34 +12,36 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { ConversationPreviewPanel } from './conversation-preview-panel';
 import { PreviewPanelHeader } from './preview/preview-panel-header';
 import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
-import { API_REQUEST_STATUS, MAILS_ROUTE } from '../../../constants';
+import { API_REQUEST_STATUS } from '../../../constants';
 import { getFolderIdParts } from '../../../helpers/folders';
 import { getConvEmailStoreAction } from '../../../store/emails/actions/get-conv-action';
 import { useCompleteConversationOrFetch } from '../../../store/emails/hooks/hooks';
 import { useConversationMessages } from '../../../store/emails/store';
-import { useExtraWindow } from '../extra-windows/use-extra-window';
 
 export const ConversationPreviewPanelContainer = (): React.JSX.Element => {
 	const navigate = useNavigate();
-	const { conversationId, folderId } = useParams() as { conversationId: string; folderId: string };
-	const { isInsideExtraWindow } = useExtraWindow();
+	const { conversationId, folderId } = useParams() as {
+		conversationId: string;
+		folderId: string;
+	};
 	const { conversation, conversationStatus } = useCompleteConversationOrFetch(conversationId);
 	const messages = useConversationMessages(conversationId);
 
 	const onConversationIdChange = useCallback(
 		(newConversationId: string): void => {
-			navigate(`/${MAILS_ROUTE}/folder/${folderId}/conversation/${newConversationId}`, {
-				replace: true
+			navigate(`../${newConversationId}`, {
+				replace: true,
+				relative: 'path'
 			});
 		},
-		[folderId, navigate]
+		[navigate]
 	);
 
 	useEffect(() => {
-		if (isEmpty(conversation)) {
+		if (isEmpty(conversation) && conversationStatus !== API_REQUEST_STATUS.fulfilled) {
 			getConvEmailStoreAction({ id: conversationId, onConversationIdChange });
 		}
-	}, [conversation, conversationId, onConversationIdChange]);
+	}, [conversation, conversationId, conversationStatus, onConversationIdChange]);
 
 	const showPreviewPanel = useMemo(
 		(): boolean | undefined =>
@@ -53,20 +55,17 @@ export const ConversationPreviewPanelContainer = (): React.JSX.Element => {
 		<Container orientation="vertical" mainAlignment="flex-start" crossAlignment="flex-start">
 			{showPreviewPanel && (
 				<>
-					{!isInsideExtraWindow && (
-						<PreviewPanelHeader
-							itemType={'conversation'}
-							subject={conversation.subject}
-							isRead={conversation.read}
-							folderId={folderId}
-						/>
-					)}
+					<PreviewPanelHeader
+						itemType={'conversation'}
+						subject={conversation.subject}
+						isRead={conversation.read}
+						folderId={folderId}
+					/>
 
 					{conversation && conversationStatus === API_REQUEST_STATUS.fulfilled && (
 						<ConversationPreviewPanel
 							data-testid={`conversation-preview-panel-${conversationId}`}
 							conversation={conversation}
-							isInsideExtraWindow={isInsideExtraWindow}
 						/>
 					)}
 

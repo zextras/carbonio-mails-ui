@@ -9,8 +9,8 @@ import React, { FC, ReactElement, useCallback, useEffect, useState } from 'react
 import {
 	Button,
 	Container,
+	FormSection,
 	FormSubSection,
-	Padding,
 	Table,
 	Text,
 	Tooltip,
@@ -225,37 +225,41 @@ const RecipientsCertificateSettings: FC = (): ReactElement => {
 	}, [closeModal, createModal, id, onCertificateUploadConfirm]);
 
 	return (
-		<FormSubSection
+		<FormSection
 			label={t(
 				'settings.uploadCertificate.recipientCertificatesTitle',
 				'Recipients certificates for encryption'
 			)}
 			id={'recipient-certificates'}
-			padding={{ all: 'large' }}
 		>
-			<Table
-				rows={items}
-				headers={recipientsCertificateHeaders}
-				showCheckbox={false}
-				multiSelect={false}
-			/>
-			{items.length === 0 && (
-				<Container padding={{ vertical: 'large' }}>
-					<Text>
-						{t(
-							'settings.uploadCertificate.noRecipientCertificate',
-							'Recipients certificate list is empty'
+			<FormSubSection>
+				<Container gap={'2rem'} mainAlignment={'flex-start'} crossAlignment={'flex-start'}>
+					<Container>
+						<Table
+							rows={items}
+							headers={recipientsCertificateHeaders}
+							showCheckbox={false}
+							multiSelect={false}
+						/>
+						{items.length === 0 && (
+							<Container padding={{ vertical: 'large' }}>
+								<Text>
+									{t(
+										'settings.uploadCertificate.noRecipientCertificate',
+										'Recipients certificate list is empty'
+									)}
+								</Text>
+							</Container>
 						)}
-					</Text>
+					</Container>
+					<Button
+						onClick={(): void => onUploadCertificate()}
+						label={t('settings.uploadCertificate.uploadCertificate', 'Upload Certificate')}
+						data-testid="upload-recipients-certificate-btn"
+					/>
 				</Container>
-			)}
-			<Padding all="large" />
-			<Button
-				onClick={(): void => onUploadCertificate()}
-				label={t('settings.uploadCertificate.uploadCertificate', 'Upload Certificate')}
-				data-testid="upload-recipients-certificate-btn"
-			/>
-		</FormSubSection>
+			</FormSubSection>
+		</FormSection>
 	);
 };
 

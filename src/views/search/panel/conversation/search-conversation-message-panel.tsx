@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useCallback } from 'react';
+import React from 'react';
 
 import { Padding } from '@zextras/carbonio-design-system';
 
@@ -14,28 +14,14 @@ export type SearchConversationMessagePreviewProps = {
 	convMessageId: string;
 	isExpanded: boolean;
 	isAlone: boolean;
-	isInsideExtraWindow: boolean;
 };
 
 export const SearchConversationMessagePanel = ({
 	convMessageId,
 	isExpanded,
-	isAlone,
-	isInsideExtraWindow
+	isAlone
 }: SearchConversationMessagePreviewProps): React.JSX.Element => {
 	const { message } = useCompleteMessageOrFetch(convMessageId);
-
-	const messagePreviewFactory = useCallback(
-		() => (
-			<SearchConversationMessagePanel
-				convMessageId={convMessageId}
-				isExpanded={isExpanded}
-				isAlone={isAlone}
-				isInsideExtraWindow={isInsideExtraWindow}
-			/>
-		),
-		[convMessageId, isAlone, isExpanded, isInsideExtraWindow]
-	);
 
 	if (!message) return <></>;
 	return (
@@ -45,8 +31,6 @@ export const SearchConversationMessagePanel = ({
 				expanded={isExpanded}
 				isAlone={isAlone}
 				isMessageView={false}
-				isInsideExtraWindow={isInsideExtraWindow}
-				messagePreviewFactory={messagePreviewFactory}
 			/>
 		</Padding>
 	);

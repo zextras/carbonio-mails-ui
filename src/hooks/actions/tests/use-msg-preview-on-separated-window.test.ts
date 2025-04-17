@@ -7,9 +7,10 @@ import { act } from 'react';
 
 import { populateFoldersStore } from '../../../carbonio-ui-commons/test/mocks/store/folders';
 import { setupHook } from '../../../carbonio-ui-commons/test/test-setup';
+import { FOCUS_MODE_ROUTE, FOCUS_MODE_MAIL_VIEW_ROUTE } from '../../../constants';
+import * as externalTabs from '../../../helpers/external-tabs';
+import { getParentFolderId } from '../../../helpers/folders';
 import { generateMessage } from '../../../tests/generators/generateMessage';
-import * as globalExtraWindowManager from '../../../views/app/extra-windows/global-extra-window-manager';
-import * as extraWindow from '../../../views/app/extra-windows/use-extra-window';
 import {
 	useMsgPreviewOnSeparatedWindowDescriptor,
 	useMsgPreviewOnSeparatedWindowFn
@@ -24,7 +25,10 @@ describe('useMsgPreviewOnSeparatedWindow', () => {
 				result: { current: descriptor }
 			} = setupHook(useMsgPreviewOnSeparatedWindowDescriptor, {
 				initialProps: [
-					{ messageId: msg.id, subject: msg.subject, messagePreviewFactory: jest.fn() }
+					{
+						messageId: msg.id,
+						folderId: getParentFolderId(msg.parent)
+					}
 				]
 			});
 
@@ -39,12 +43,17 @@ describe('useMsgPreviewOnSeparatedWindow', () => {
 	});
 
 	describe('Functions', () => {
+		const isStandalonePreviewSpy = jest.spyOn(externalTabs, 'isFocusModeMailView');
+
 		it('Should return an object with execute and canExecute functions', () => {
 			const {
 				result: { current: functions }
 			} = setupHook(useMsgPreviewOnSeparatedWindowFn, {
 				initialProps: [
-					{ messageId: msg.id, subject: msg.subject, messagePreviewFactory: jest.fn() }
+					{
+						messageId: msg.id,
+						folderId: getParentFolderId(msg.parent)
+					}
 				]
 			});
 
@@ -55,16 +64,17 @@ describe('useMsgPreviewOnSeparatedWindow', () => {
 		});
 
 		describe('canExecute', () => {
-			const useExtraWindowSpy = jest.spyOn(extraWindow, 'useExtraWindow');
-
 			it('should return false if the message is already being previewed in a separated window', () => {
-				useExtraWindowSpy.mockReturnValue({ isInsideExtraWindow: true });
+				isStandalonePreviewSpy.mockReturnValue(true);
 
 				const {
 					result: { current: functions }
 				} = setupHook(useMsgPreviewOnSeparatedWindowFn, {
 					initialProps: [
-						{ messageId: msg.id, subject: msg.subject, messagePreviewFactory: jest.fn() }
+						{
+							messageId: msg.id,
+							folderId: getParentFolderId(msg.parent)
+						}
 					]
 				});
 
@@ -72,13 +82,16 @@ describe('useMsgPreviewOnSeparatedWindow', () => {
 			});
 
 			it('should return true if the message is not being previewed in a separated window', () => {
-				useExtraWindowSpy.mockReturnValue({ isInsideExtraWindow: false });
+				isStandalonePreviewSpy.mockReturnValue(false);
 
 				const {
 					result: { current: functions }
 				} = setupHook(useMsgPreviewOnSeparatedWindowFn, {
 					initialProps: [
-						{ messageId: msg.id, subject: msg.subject, messagePreviewFactory: jest.fn() }
+						{
+							messageId: msg.id,
+							folderId: getParentFolderId(msg.parent)
+						}
 					]
 				});
 
@@ -87,21 +100,18 @@ describe('useMsgPreviewOnSeparatedWindow', () => {
 		});
 
 		describe('execute', () => {
-			const useExtraWindowSpy = jest.spyOn(extraWindow, 'useExtraWindow');
-			const createWindowSpy = jest.fn();
-			jest
-				.spyOn(globalExtraWindowManager, 'useGlobalExtraWindowManager')
-				.mockImplementation(() => ({ createWindow: createWindowSpy }));
-
 			it('should not call the integrated function if the action cannot be executed', async () => {
-				useExtraWindowSpy.mockReturnValue({ isInsideExtraWindow: true });
+				isStandalonePreviewSpy.mockReturnValue(true);
 				populateFoldersStore();
 
 				const {
 					result: { current: functions }
 				} = setupHook(useMsgPreviewOnSeparatedWindowFn, {
 					initialProps: [
-						{ messageId: msg.id, subject: msg.subject, messagePreviewFactory: jest.fn() }
+						{
+							messageId: msg.id,
+							folderId: getParentFolderId(msg.parent)
+						}
 					]
 				});
 
@@ -109,18 +119,21 @@ describe('useMsgPreviewOnSeparatedWindow', () => {
 					functions.execute();
 				});
 
-				expect(createWindowSpy).not.toHaveBeenCalled();
+				expect(window.open).not.toHaveBeenCalled();
 			});
 
 			it('should call the API with the proper params if the action can be executed', async () => {
-				useExtraWindowSpy.mockReturnValue({ isInsideExtraWindow: false });
+				isStandalonePreviewSpy.mockReturnValue(false);
 				populateFoldersStore();
 
 				const {
 					result: { current: functions }
 				} = setupHook(useMsgPreviewOnSeparatedWindowFn, {
 					initialProps: [
-						{ messageId: msg.id, subject: msg.subject, messagePreviewFactory: jest.fn() }
+						{
+							messageId: msg.id,
+							folderId: getParentFolderId(msg.parent)
+						}
 					]
 				});
 
@@ -128,7 +141,9 @@ describe('useMsgPreviewOnSeparatedWindow', () => {
 					functions.execute();
 				});
 
-				expect(createWindowSpy).toHaveBeenCalled();
+				expect(window.open).toHaveBeenCalledWith(
+					`http://localhost/carbonio/${FOCUS_MODE_ROUTE}/${FOCUS_MODE_MAIL_VIEW_ROUTE}/folder/2/message/${msg.id}`
+				);
 			});
 		});
 	});

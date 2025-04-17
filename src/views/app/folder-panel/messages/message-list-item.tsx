@@ -18,7 +18,6 @@ import { useMsgSetReadFn } from '../../../../hooks/actions/use-msg-set-read';
 import { useOnMouseHover } from '../../../../hooks/use-on-mouse-hover';
 import { MessageListItemProps } from '../../../../types';
 import { createEditBoard } from '../../detail-panel/edit/edit-view-board';
-import { MessagePreviewPanel } from '../../detail-panel/message-preview-panel';
 
 type RouteParams = {
 	folderId: string;
@@ -42,15 +41,9 @@ export const MessageListItem = memo(function MessageListItem({
 	const shouldReplaceHistory = useMemo(() => itemId === message.id, [message.id, itemId]);
 	const zimbraPrefMarkMsgRead = useUserSettings()?.prefs?.zimbraPrefMarkMsgRead !== '-1';
 
-	const messagePreviewFactory = useCallback(
-		() => <MessagePreviewPanel folderId={firstChildFolderId} messageId={message.id} />,
-		[firstChildFolderId, message.id]
-	);
-
 	const previewOnSeparatedWindow = useMsgPreviewOnSeparatedWindowFn({
 		messageId: message.id,
-		subject: message.subject,
-		messagePreviewFactory
+		folderId: firstChildFolderId
 	});
 
 	const setAsRead = useMsgSetReadFn({
@@ -121,7 +114,6 @@ export const MessageListItem = memo(function MessageListItem({
 					onDoubleClick={onDoubleClickCallback}
 					shouldReplaceHistory={shouldReplaceHistory}
 					deselectAll={deselectAll}
-					messagePreviewFactory={messagePreviewFactory}
 				>
 					<MessageListItemCore
 						message={message}

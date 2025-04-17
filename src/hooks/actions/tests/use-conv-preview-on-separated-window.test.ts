@@ -3,14 +3,16 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { faker } from '@faker-js/faker';
 import { act } from 'react';
 
+import { faker } from '@faker-js/faker';
+
+import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
 import { populateFoldersStore } from '../../../carbonio-ui-commons/test/mocks/store/folders';
 import { setupHook } from '../../../carbonio-ui-commons/test/test-setup';
+import { FOCUS_MODE_ROUTE, FOCUS_MODE_MAIL_VIEW_ROUTE } from '../../../constants';
+import * as externalTabs from '../../../helpers/external-tabs';
 import { generateConversation } from '../../../tests/generators/generateConversation';
-import * as globalExtraWindowManager from '../../../views/app/extra-windows/global-extra-window-manager';
-import * as extraWindow from '../../../views/app/extra-windows/use-extra-window';
 import {
 	useConvPreviewOnSeparatedWindowDescriptor,
 	useConvPreviewOnSeparatedWindowFn
@@ -24,9 +26,7 @@ describe('useConvPreviewOnSeparatedWindow', () => {
 			const {
 				result: { current: descriptor }
 			} = setupHook(useConvPreviewOnSeparatedWindowDescriptor, {
-				initialProps: [
-					{ conversationId: conv.id, subject: conv.subject, conversationPreviewFactory: jest.fn() }
-				]
+				initialProps: [{ conversationId: conv.id, folderId: FOLDERS.INBOX }]
 			});
 
 			expect(descriptor).toEqual({
@@ -40,12 +40,17 @@ describe('useConvPreviewOnSeparatedWindow', () => {
 	});
 
 	describe('functions', () => {
+		const isStandalonePreviewSpy = jest.spyOn(externalTabs, 'isFocusModeMailView');
+
 		it('Should return an object with execute and canExecute functions', () => {
 			const {
 				result: { current: descriptor }
 			} = setupHook(useConvPreviewOnSeparatedWindowFn, {
 				initialProps: [
-					{ conversationId: conv.id, subject: conv.subject, conversationPreviewFactory: jest.fn() }
+					{
+						conversationId: conv.id,
+						folderId: FOLDERS.INBOX
+					}
 				]
 			});
 
@@ -56,10 +61,8 @@ describe('useConvPreviewOnSeparatedWindow', () => {
 		});
 
 		describe('canExecute', () => {
-			const useExtraWindowSpy = jest.spyOn(extraWindow, 'useExtraWindow');
-
 			it('should return false if the message is already being previewed in a separated window', () => {
-				useExtraWindowSpy.mockReturnValue({ isInsideExtraWindow: true });
+				isStandalonePreviewSpy.mockReturnValue(true);
 
 				const {
 					result: { current: functions }
@@ -67,8 +70,7 @@ describe('useConvPreviewOnSeparatedWindow', () => {
 					initialProps: [
 						{
 							conversationId: conv.id,
-							subject: conv.subject,
-							conversationPreviewFactory: jest.fn()
+							folderId: FOLDERS.INBOX
 						}
 					]
 				});
@@ -77,7 +79,7 @@ describe('useConvPreviewOnSeparatedWindow', () => {
 			});
 
 			it('should return true if the message is not being previewed in a separated window', () => {
-				useExtraWindowSpy.mockReturnValue({ isInsideExtraWindow: false });
+				isStandalonePreviewSpy.mockReturnValue(false);
 
 				const {
 					result: { current: functions }
@@ -85,8 +87,7 @@ describe('useConvPreviewOnSeparatedWindow', () => {
 					initialProps: [
 						{
 							conversationId: conv.id,
-							subject: conv.subject,
-							conversationPreviewFactory: jest.fn()
+							folderId: FOLDERS.INBOX
 						}
 					]
 				});
@@ -96,14 +97,8 @@ describe('useConvPreviewOnSeparatedWindow', () => {
 		});
 
 		describe('execute', () => {
-			const useExtraWindowSpy = jest.spyOn(extraWindow, 'useExtraWindow');
-			const createWindowSpy = jest.fn();
-			jest
-				.spyOn(globalExtraWindowManager, 'useGlobalExtraWindowManager')
-				.mockImplementation(() => ({ createWindow: createWindowSpy }));
-
-			it('should not call the integrated function if the action cannot be executed', async () => {
-				useExtraWindowSpy.mockReturnValue({ isInsideExtraWindow: true });
+			it('should not open a window if the action cannot be executed', async () => {
+				isStandalonePreviewSpy.mockReturnValue(true);
 				populateFoldersStore();
 
 				const {
@@ -112,8 +107,7 @@ describe('useConvPreviewOnSeparatedWindow', () => {
 					initialProps: [
 						{
 							conversationId: conv.id,
-							subject: conv.subject,
-							conversationPreviewFactory: jest.fn()
+							folderId: FOLDERS.INBOX
 						}
 					]
 				});
@@ -122,11 +116,11 @@ describe('useConvPreviewOnSeparatedWindow', () => {
 					functions.execute();
 				});
 
-				expect(createWindowSpy).not.toHaveBeenCalled();
+				expect(window.open).not.toHaveBeenCalled();
 			});
 
-			it('should call the API with the proper params if the action can be executed', async () => {
-				useExtraWindowSpy.mockReturnValue({ isInsideExtraWindow: false });
+			it('should open a window to the conversation preview url if the action can be executed', async () => {
+				isStandalonePreviewSpy.mockReturnValue(false);
 				populateFoldersStore();
 
 				const {
@@ -135,8 +129,7 @@ describe('useConvPreviewOnSeparatedWindow', () => {
 					initialProps: [
 						{
 							conversationId: conv.id,
-							subject: conv.subject,
-							conversationPreviewFactory: jest.fn()
+							folderId: FOLDERS.INBOX
 						}
 					]
 				});
@@ -145,7 +138,9 @@ describe('useConvPreviewOnSeparatedWindow', () => {
 					functions.execute();
 				});
 
-				expect(createWindowSpy).toHaveBeenCalled();
+				expect(window.open).toHaveBeenCalledWith(
+					`http://localhost/carbonio/${FOCUS_MODE_ROUTE}/${FOCUS_MODE_MAIL_VIEW_ROUTE}/folder/2/conversation/${conv.id}`
+				);
 			});
 		});
 	});

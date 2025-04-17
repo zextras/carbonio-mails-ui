@@ -64,3 +64,15 @@ Object.defineProperty(window, 'matchMedia', {
 		removeEventListener: jest.fn()
 	}))
 });
+
+// Mock implementation of window.open
+Object.defineProperty(window, 'open', {
+	writable: true,
+	value: jest.fn()
+});
+
+// mock a simplified crypto
+Object.defineProperty(window.crypto, 'randomUUID', {
+	writable: true,
+	value: jest.fn(() => Math.random().toString())
+});

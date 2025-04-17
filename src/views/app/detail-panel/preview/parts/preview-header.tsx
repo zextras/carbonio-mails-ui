@@ -69,8 +69,7 @@ type PreviewHeaderProps = {
 		message: MailMessage;
 		onClick: (e: SyntheticEvent) => void;
 		open: boolean;
-		isExternalMessage?: boolean;
-		messagePreviewFactory: () => React.JSX.Element;
+		isEml?: boolean;
 	};
 };
 
@@ -82,7 +81,7 @@ const fallbackContact = {
 };
 
 const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
-	const { message, onClick, open, isExternalMessage, messagePreviewFactory } = compProps;
+	const { message, onClick, open, isEml } = compProps;
 
 	const textRef = useRef<HTMLInputElement>(null);
 	const accounts = useUserAccounts();
@@ -312,7 +311,7 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 								)}
 							</Row>
 
-							{!isExternalMessage && (
+							{!isEml && (
 								<Row
 									wrap="nowrap"
 									mainAlignment="flex-end"
@@ -361,18 +360,13 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 										)}
 									</Row>
 
-									{open && message && (
-										<MailMsgPreviewActions
-											message={message}
-											messagePreviewFactory={messagePreviewFactory}
-										/>
-									)}
+									{open && message && <MailMsgPreviewActions message={message} />}
 								</Row>
 							)}
 						</Container>
 					</Row>
 				</Container>
-				{!isExternalMessage && tags?.length > 0 && open && (
+				{!isEml && tags?.length > 0 && open && (
 					<Container
 						orientation="horizontal"
 						crossAlignment="flex-start"

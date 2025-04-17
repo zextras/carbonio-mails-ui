@@ -10,6 +10,12 @@ import { FOLDERS } from '../carbonio-ui-commons/constants/folders';
 
 export const MAILS_ROUTE = 'mails';
 
+export const FOCUS_MODE_MAIL_VIEW_ROUTE = 'mail-view';
+
+export const EML_ROUTE = 'eml';
+
+export const FOCUS_MODE_ROUTE = 'focus-mode';
+
 export const MAILS_BOARD_VIEW_ID = 'mails_editor_board_view';
 
 export const BACKUP_SEARCH_ROUTE = 'backup-search';
@@ -580,3 +586,4 @@ export const MAIL_SENSITIVITY_HEADER_VALUES = ['Personal', 'Private', 'Company-C
 
 export const SENSITIVITY_VALUES = ['Private', 'Company-Confidential'] as const;
 export const VALID_MAIL_AUTHENTICATION_HEADERS = ['dkim', 'spf', 'dmarc'] as const;
+export const FOLDER_SELECTOR_MAX_RESULTS = 100;

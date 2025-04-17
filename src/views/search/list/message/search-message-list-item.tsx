@@ -17,7 +17,6 @@ import { useOnMouseHover } from '../../../../hooks/use-on-mouse-hover';
 import { MailMessage } from '../../../../types';
 import { createEditBoard } from '../../../app/detail-panel/edit/edit-view-board';
 import { MessageListItemActionWrapper } from '../../../app/folder-panel/messages/message-list-item-action-wrapper';
-import { SearchMessagePanel } from '../../panel/message/search-message-panel';
 
 type SearchMessageListItemProps = {
 	completeMessage: MailMessage;
@@ -43,17 +42,11 @@ export const SearchMessageListItem: FC<SearchMessageListItemProps> = memo(functi
 
 	const shouldReplaceHistory = useMemo(() => itemId === messageId, [messageId, itemId]);
 
-	const messagePreviewFactory = useCallback(
-		() => <SearchMessagePanel messageId={itemId} />,
-		[itemId]
-	);
-
 	const zimbraPrefMarkMsgRead = useUserSettings()?.prefs?.zimbraPrefMarkMsgRead !== '-1';
 
 	const previewOnSeparatedWindow = useMsgPreviewOnSeparatedWindowFn({
 		messageId: itemId,
-		subject: completeMessage.subject,
-		messagePreviewFactory
+		folderId
 	});
 
 	const setAsRead = useMsgSetReadFn({
@@ -108,7 +101,6 @@ export const SearchMessageListItem: FC<SearchMessageListItemProps> = memo(functi
 					onDoubleClick={onDoubleClick}
 					deselectAll={deselectAll}
 					shouldReplaceHistory={shouldReplaceHistory}
-					messagePreviewFactory={messagePreviewFactory}
 				>
 					<SearchMessageListItemCore
 						completeMessage={completeMessage}
