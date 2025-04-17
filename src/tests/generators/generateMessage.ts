@@ -156,7 +156,7 @@ export const populateMessagesInEmailStore = ({
 	messageGeneratorParams?: Array<MessageGenerationParams>;
 	messageIds?: Array<string>;
 	messagesNumber?: number;
-}): Array<MailMessage> => {
+} = {}): Array<MailMessage> => {
 	// Generate messages based on provided message IDs
 	const messagesFromMessageIds = messageIds?.map((messageId) =>
 		generateMessage({
