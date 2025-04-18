@@ -26,6 +26,7 @@ function deleteConversationsInSearch(
 		state.searchIndexSlice.conversationListIndex.filter((id) => !conversationIds.includes(id));
 	conversationIds.forEach((id) => {
 		delete state.populatedItemsSlice.conversations[id];
+		delete state.populatedItemsSlice.conversationsStatus[id];
 	});
 }
 function deleteMessagesInSearch(state: EmailsStoreState, messageIds: Array<string>): void {
@@ -34,6 +35,7 @@ function deleteMessagesInSearch(state: EmailsStoreState, messageIds: Array<strin
 	);
 	messageIds.forEach((id) => {
 		delete state.populatedItemsSlice.messages[id];
+		delete state.populatedItemsSlice.messagesStatus[id];
 		forEach(state.populatedItemsSlice.conversations, (conversation) => {
 			state.populatedItemsSlice.conversations[conversation.id].messageIds = filter(
 				conversation.messageIds,
