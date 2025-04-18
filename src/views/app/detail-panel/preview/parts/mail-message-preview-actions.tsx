@@ -98,7 +98,7 @@ export const MailMsgPreviewActions: FC<MailMsgPreviewActionsType> = ({ message }
 							<Padding key={action.label} right="small">
 								<Tooltip label={action.label}>
 									<Dropdown items={action.items}>
-										<IconButton icon={action.icon} size="small" onClick={noop} />
+										<IconButton icon={action.icon} size="medium" onClick={noop} />
 									</Dropdown>
 								</Tooltip>
 							</Padding>
@@ -107,7 +107,7 @@ export const MailMsgPreviewActions: FC<MailMsgPreviewActionsType> = ({ message }
 					if ('execute' in action && action.canExecute()) {
 						return (
 							<Tooltip key={`${action.icon}`} label={action.label}>
-								<IconButton size="small" icon={action.icon} onClick={action.execute} />
+								<IconButton size="medium" icon={action.icon} onClick={action.execute} />
 							</Tooltip>
 						);
 					}
