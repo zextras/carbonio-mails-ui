@@ -92,6 +92,22 @@ describe('Advanced filter modal', () => {
 		expect(actionButton).toBeEnabled();
 	});
 
+	it('search button should be disabled if there is no query', async () => {
+		const properties: AdvancedFilterModalProps = {
+			open: true,
+			onClose: jest.fn(),
+			query: [],
+			updateQuery: jest.fn(),
+			setIsSharedFolderIncluded: jest.fn(),
+			isSharedFolderIncluded: false,
+			executeSearch: jest.fn()
+		};
+		setupTest(<AdvancedFilterModal {...properties} />);
+		const actionButton = screen.getByRole('button', { name: /action\.search/i });
+
+		expect(actionButton).toBeDisabled();
+	});
+
 	it('should call executeSearch with AbortSignal when confirm button is clicked', async () => {
 		const mockExecuteSearch = jest.fn();
 		const mockUpdateQuery = jest.fn();
