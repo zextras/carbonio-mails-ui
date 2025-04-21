@@ -411,7 +411,7 @@ export const AdvancedFilterModal = ({
 			<Divider />
 			<ModalFooter
 				onConfirm={onConfirm}
-				confirmDisabled={false}
+				confirmDisabled={queryToBe.length === 0}
 				secondaryActionDisabled={secondaryDisabled}
 				confirmLabel={t('action.search', 'Search')}
 				secondaryActionLabel={t('action.reset', 'Reset filters')}
