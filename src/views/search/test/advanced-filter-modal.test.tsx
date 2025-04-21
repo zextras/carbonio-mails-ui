@@ -69,6 +69,71 @@ describe('Advanced filter modal', () => {
 
 		expect(actionButton).toBeEnabled();
 	});
+
+	it('search button should be enabled if query is not empty', async () => {
+		const properties: AdvancedFilterModalProps = {
+			open: true,
+			onClose: jest.fn(),
+			query: [
+				{
+					id: 'query1',
+					label: 'keywords',
+					value: 'keyword'
+				}
+			],
+			updateQuery: jest.fn(),
+			setIsSharedFolderIncluded: jest.fn(),
+			isSharedFolderIncluded: false,
+			executeSearch: jest.fn()
+		};
+		setupTest(<AdvancedFilterModal {...properties} />);
+		const actionButton = screen.getByRole('button', { name: /action\.search/i });
+
+		expect(actionButton).toBeEnabled();
+	});
+
+	it('should call executeSearch with AbortSignal when confirm button is clicked', async () => {
+		const mockExecuteSearch = jest.fn();
+		const mockUpdateQuery = jest.fn();
+		const mockOnClose = jest.fn();
+
+		const properties: AdvancedFilterModalProps = {
+			open: true,
+			onClose: mockOnClose,
+			query: [],
+			updateQuery: mockUpdateQuery,
+			setIsSharedFolderIncluded: jest.fn(),
+			isSharedFolderIncluded: false,
+			executeSearch: mockExecuteSearch
+		};
+
+		const { user } = setupTest(<AdvancedFilterModal {...properties} />);
+
+		const confirmButton = screen.getByRole('button', { name: /action\.search/i });
+		expect(confirmButton).toBeInTheDocument();
+		expect(confirmButton).toBeDisabled();
+
+		const keywordInput = screen.getByTestId('keywords-input');
+		const keywordInputEle = within(keywordInput).getByRole('textbox');
+		await user.click(keywordInputEle);
+		await user.clear(keywordInputEle);
+		await user.type(keywordInputEle, 'test keyword');
+		await user.click(keywordInput);
+
+		expect(confirmButton).toBeEnabled();
+
+		await user.click(confirmButton);
+
+		await waitFor(() => {
+			expect(mockExecuteSearch).toHaveBeenCalledTimes(1);
+			// eslint-disable-next-line testing-library/no-wait-for-multiple-assertions
+			expect(mockExecuteSearch.mock.calls[0][0]).toBeInstanceOf(AbortSignal);
+		});
+
+		expect(mockUpdateQuery).toHaveBeenCalled();
+		expect(mockOnClose).toHaveBeenCalled();
+	});
+
 	it('should add "received from" to query with value and label including "from:" after adding a value in the input', async () => {
 		const mockUpdateQuery = jest.fn();
 		const { user } = setupTest(
