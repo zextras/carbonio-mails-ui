@@ -24,7 +24,8 @@ describe('Advanced filter modal', () => {
 		query: [],
 		updateQuery: jest.fn(),
 		setIsSharedFolderIncluded: jest.fn(),
-		isSharedFolderIncluded: false
+		isSharedFolderIncluded: false,
+		executeSearch: jest.fn()
 	};
 	it('render the advanced filter modal', () => {
 		setupTest(<AdvancedFilterModal {...props} />);
@@ -78,6 +79,7 @@ describe('Advanced filter modal', () => {
 				query={[]}
 				updateQuery={mockUpdateQuery}
 				setIsSharedFolderIncluded={jest.fn()}
+				executeSearch={jest.fn()}
 			/>
 		);
 		const sentTo = screen.getByTestId('received-from-input');
@@ -106,6 +108,7 @@ describe('Advanced filter modal', () => {
 				query={[]}
 				updateQuery={mockUpdateQuery}
 				setIsSharedFolderIncluded={jest.fn()}
+				executeSearch={jest.fn()}
 			/>
 		);
 		const sentTo = screen.getByTestId('sent-to-input');
@@ -138,6 +141,7 @@ describe('Advanced filter modal', () => {
 				query={[query]}
 				updateQuery={mockUpdateQuery}
 				setIsSharedFolderIncluded={jest.fn()}
+				executeSearch={jest.fn()}
 			/>
 		);
 		const sentTo = screen.getByTestId('sent-to-input');
@@ -176,6 +180,7 @@ describe('Advanced filter modal', () => {
 				query={[]}
 				updateQuery={mockUpdateQuery}
 				setIsSharedFolderIncluded={jest.fn()}
+				executeSearch={jest.fn()}
 			/>
 		);
 		const sentTo = screen.getByTestId('sent-to-input');
@@ -213,6 +218,7 @@ describe('Advanced filter modal', () => {
 				query={[]}
 				updateQuery={mockUpdateQuery}
 				setIsSharedFolderIncluded={jest.fn()}
+				executeSearch={jest.fn()}
 			/>
 		);
 
@@ -242,7 +248,8 @@ describe('Advanced filter modal', () => {
 			],
 			updateQuery: jest.fn(),
 			setIsSharedFolderIncluded: jest.fn(),
-			isSharedFolderIncluded: false
+			isSharedFolderIncluded: false,
+			executeSearch: jest.fn()
 		};
 		setupTest(<AdvancedFilterModal {...properties} />);
 		const actionButton = screen.getByRole('button', { name: /action\.reset/i });
@@ -274,7 +281,8 @@ describe('Advanced filter modal', () => {
 			],
 			updateQuery: updateQueryMock,
 			setIsSharedFolderIncluded: jest.fn(),
-			isSharedFolderIncluded: false
+			isSharedFolderIncluded: false,
+			executeSearch: jest.fn()
 		};
 
 		const { user } = setupTest(<AdvancedFilterModal {...properties} />);
