@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { act, renderHook, waitFor } from '@testing-library/react';
-import type { QueryChip } from '@zextras/carbonio-search-ui';
+import { QueryChip } from '@zextras/carbonio-search-ui';
 import * as hooks from '@zextras/carbonio-shell-ui';
 import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 import { noop } from 'lodash';
@@ -187,6 +187,62 @@ describe('search view hooks', () => {
 		await waitFor(() => {
 			expect(renderHook(() => useMessageById('1')).result.current).toBeDefined();
 		});
+	});
+
+	it('should execute the search again when executeSearch is called', async () => {
+		const settings = generateSettings({
+			prefs: {
+				zimbraPrefGroupMailBy: 'conversation'
+			}
+		});
+		// eslint-disable-next-line @typescript-eslint/ban-types
+		const useDisableSearch = (): [boolean, Function] => [false, noop];
+		jest.spyOn(hooks, 'useUserSettings').mockReturnValue(settings);
+		const message = generateConvMessageFromAPI({ id: '1' });
+		const searchResponse = {
+			c: [generateConversationFromAPI({ id: '123', su: 'Subject', m: [message] })],
+			more: false
+		};
+		const interceptor = createSoapAPIInterceptor<SearchRequest, SearchResponse>(
+			'Search',
+			searchResponse
+		);
+
+		const { result } = renderHook(() =>
+			useRunSearch({
+				query: [
+					{
+						hasAvatar: false,
+						id: '0',
+						label: 'hello there'
+					}
+				],
+				updateQuery: noop,
+				useDisableSearch,
+				invalidQueryTooltip: 'INVALID',
+				isSharedFolderIncluded: false
+			})
+		);
+
+		await act(async () => {
+			await interceptor;
+		});
+
+		expect(renderHook(() => useConversationById('123')).result.current).toBeDefined();
+		expect(renderHook(() => useMessageById('1')).result.current).toBeDefined();
+
+		const newInterceptor = createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
+			c: [],
+			more: false
+		});
+
+		await act(async () => {
+			await result.current.executeSearch(new AbortController().signal);
+			await newInterceptor;
+		});
+
+		expect(renderHook(() => useConversationById('123')).result.current).toBeUndefined();
+		expect(renderHook(() => useMessageById('1')).result.current).toBeUndefined();
 	});
 });
 
