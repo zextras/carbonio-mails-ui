@@ -27,9 +27,8 @@ import SizeSmallerSizeLargerRow from './parts/size-smaller-size-larger-row';
 import SubjectKeywordRow from './parts/subject-keyword-row';
 import TagFolderRow from './parts/tag-folder-row';
 import ToggleFilters from './parts/toggle-filters';
-import { useDisabled } from './parts/use-disable-hooks';
 import { getChipItems } from './utils';
-import { ZIMBRA_STANDARD_COLORS } from '../../carbonio-ui-commons/constants/utils';
+import { ZIMBRA_STANDARD_COLORS } from '../../carbonio-ui-commons/constants';
 import { ContactInputItem } from '../../carbonio-ui-commons/integrations/types';
 import { getTags } from '../../carbonio-ui-commons/store/zustand/tags';
 import { ScrollableContainer } from '../../commons/scrollable-container';
@@ -41,7 +40,8 @@ export const AdvancedFilterModal = ({
 	query,
 	updateQuery,
 	setIsSharedFolderIncluded,
-	isSharedFolderIncluded
+	isSharedFolderIncluded,
+	executeSearch
 }: AdvancedFilterModalProps): React.JSX.Element => {
 	const [otherKeywords, setOtherKeywords] = useState<KeywordState>([]);
 	const [attachmentFilter, setAttachmentFilter] = useState<KeywordState>([]);
@@ -256,12 +256,26 @@ export const AdvancedFilterModal = ({
 	);
 
 	const onConfirm = useCallback(() => {
-		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-		// @ts-ignore
-		updateQuery(queryToBe);
-		setIsSharedFolderIncluded(isSharedFolderIncludedTobe);
-		onClose();
-	}, [updateQuery, queryToBe, setIsSharedFolderIncluded, isSharedFolderIncludedTobe, onClose]);
+		const controller = new AbortController();
+		try {
+			updateQuery(queryToBe);
+			setIsSharedFolderIncluded(isSharedFolderIncludedTobe);
+			executeSearch(controller.signal);
+			onClose();
+		} catch (error) {
+			controller.abort();
+		}
+		return () => {
+			controller.abort();
+		};
+	}, [
+		updateQuery,
+		queryToBe,
+		executeSearch,
+		setIsSharedFolderIncluded,
+		isSharedFolderIncludedTobe,
+		onClose
+	]);
 
 	const subjectKeywordRowProps = useMemo(
 		() => ({
@@ -368,15 +382,6 @@ export const AdvancedFilterModal = ({
 		[query, isSharedFolderIncludedTobe]
 	);
 
-	const disabled = useDisabled({
-		query,
-		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-		// @ts-ignore
-		queryToBe,
-		isSharedFolderIncluded,
-		isSharedFolderIncludedTobe
-	});
-
 	const secondaryDisabled = useMemo(
 		() => query.length === 0 && queryToBe.length === 0,
 		[query.length, queryToBe.length]
@@ -406,7 +411,7 @@ export const AdvancedFilterModal = ({
 			<Divider />
 			<ModalFooter
 				onConfirm={onConfirm}
-				confirmDisabled={disabled}
+				confirmDisabled={false}
 				secondaryActionDisabled={secondaryDisabled}
 				confirmLabel={t('action.search', 'Search')}
 				secondaryActionLabel={t('action.reset', 'Reset filters')}

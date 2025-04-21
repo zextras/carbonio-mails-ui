@@ -53,6 +53,7 @@ export type AdvancedFilterModalProps = {
 	updateQuery: (arg: Array<QueryChip>) => void;
 	isSharedFolderIncluded: boolean;
 	setIsSharedFolderIncluded: (arg: boolean) => void;
+	executeSearch: (abortSignal: AbortSignal) => Promise<void>;
 };
 
 export type AdvancedFilterButtonProps = {

@@ -43,14 +43,20 @@ const SearchView = ({
 		setAppContext({ isMessageView, count, setCount });
 	}, [count, isMessageView]);
 
-	const { searchDisabled, filterCount, searchResults, isInvalidQuery, queryToString } =
-		useRunSearch({
-			query,
-			updateQuery,
-			useDisableSearch,
-			invalidQueryTooltip,
-			isSharedFolderIncluded
-		});
+	const {
+		searchDisabled,
+		filterCount,
+		searchResults,
+		isInvalidQuery,
+		queryToString,
+		executeSearch
+	} = useRunSearch({
+		query,
+		updateQuery,
+		useDisableSearch,
+		invalidQueryTooltip,
+		isSharedFolderIncluded
+	});
 
 	const resultLabelType = isInvalidQuery ? 'warning' : undefined;
 
@@ -142,6 +148,7 @@ const SearchView = ({
 				setIsSharedFolderIncluded={setIsSharedFolderIncluded}
 				open={showAdvanceFilters}
 				onClose={onCloseCallback}
+				executeSearch={executeSearch}
 			/>
 		</>
 	);

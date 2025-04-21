@@ -4,7 +4,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import type { QueryChip } from '@zextras/carbonio-search-ui';
 import { type ErrorSoapBodyResponse, useUserSettings } from '@zextras/carbonio-shell-ui';
@@ -138,6 +138,7 @@ export function useRunSearch({
 	searchResults: SearchIndexSliceState['searchIndexSlice'];
 	isInvalidQuery: boolean;
 	filterCount: number;
+	executeSearch: (abortSignal: AbortSignal) => Promise<void>;
 } {
 	const [searchDisabled, setSearchDisabled] = useDisableSearch();
 	const settings = useUserSettings();
@@ -145,9 +146,7 @@ export function useRunSearch({
 	const folders = useFoldersMap();
 	const [filterCount, setFilterCount] = useState(0);
 	const [isInvalidQuery, setIsInvalidQuery] = useState<boolean>(false);
-	const initialQueryToString = generateQueryString([], true, folders);
-	const previousQuery = useRef(initialQueryToString);
-
+	generateQueryString([], true, folders);
 	updateQueryChips(query, isInvalidQuery, updateQuery);
 
 	const searchResults = useSearchResults();
@@ -162,11 +161,11 @@ export function useRunSearch({
 	);
 	updateQueryChips(query, isInvalidQuery, updateQuery);
 
-	const firstSearchQueryCallback = useCallback(
-		async (queryString: string, abortSignal: AbortSignal | undefined) => {
+	const executeSearch = useCallback(
+		async (abortSignal: AbortSignal) => {
 			updateSearchResultsLoadingStatus(API_REQUEST_STATUS.pending);
 			const searchResponse = await searchSoapApi({
-				query: queryString,
+				query: queryToString,
 				limit: LIST_LIMIT.INITIAL_LIMIT,
 				sortBy: 'dateDesc',
 				types: isMessageView ? 'message' : 'conversation',
@@ -186,29 +185,25 @@ export function useRunSearch({
 				handleSearchResults({ searchResponse });
 			}
 		},
-		[invalidQueryTooltip, isMessageView, prefLocale, setSearchDisabled]
+		[invalidQueryTooltip, isMessageView, prefLocale, queryToString, setSearchDisabled]
 	);
 
 	useEffect(() => {
 		const controller = new AbortController();
-		const { signal } = controller;
-		if (previousQuery.current !== queryToString && query.length > 0) {
-			firstSearchQueryCallback(queryToString, signal);
+		if (query.length > 0) {
+			executeSearch(controller.signal);
 			setFilterCount(query.length);
-			previousQuery.current = queryToString;
 		}
-		return () => {
-			controller.abort();
-			previousQuery.current = initialQueryToString;
-		};
-	}, [firstSearchQueryCallback, initialQueryToString, query.length, queryToString]);
+		return () => controller.abort();
+	}, [executeSearch, query.length, queryToString]);
 
 	return {
 		searchDisabled,
 		filterCount,
 		searchResults,
 		isInvalidQuery,
-		queryToString
+		queryToString,
+		executeSearch
 	};
 }
 
