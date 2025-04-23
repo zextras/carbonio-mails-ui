@@ -286,4 +286,41 @@ describe('Advanced filter modal', () => {
 			expect(updateQueryMock).toHaveBeenCalledWith([]);
 		});
 	});
+
+	it('should include email status in the query', async () => {
+		jest.spyOn(console, 'error').mockImplementation();
+		const updateQueryMock = jest.fn();
+		const properties: AdvancedFilterModalProps = {
+			open: true,
+			onClose: jest.fn(),
+			query: [],
+			updateQuery: updateQueryMock,
+			setIsSharedFolderIncluded: jest.fn(),
+			isSharedFolderIncluded: false
+		};
+		const { user } = setupTest(<AdvancedFilterModal {...properties} />);
+
+		const emailStatus = screen.getByPlaceholderText('label.attachment_status');
+		expect(emailStatus).toBeInTheDocument();
+		await user.type(emailStatus, 'read');
+		await user.type(emailStatus, '[Enter]');
+
+		const fieldLabel = screen.getByText(/label\.single_advanced_filter/i);
+		expect(fieldLabel).toBeInTheDocument();
+
+		const actionButton = screen.getByRole('button', {
+			name: /action\.search/i
+		});
+		expect(actionButton).toBeInTheDocument();
+		expect(actionButton).toBeEnabled();
+
+		await user.click(actionButton);
+		await waitFor(() => {
+			expect(updateQueryMock).toHaveBeenCalledWith([
+				expect.objectContaining({
+					label: 'Is:read'
+				})
+			]);
+		});
+	});
 });
