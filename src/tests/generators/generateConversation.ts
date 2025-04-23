@@ -115,7 +115,7 @@ export const populateConversationInEmailStore = ({
 	messageGeneratorParams?: Array<MessageGenerationParams>;
 	messageIds?: Array<string>;
 	conversationMessagesNumber?: number;
-}): { conversation: NormalizedConversation; messages: Array<MailMessage> } => {
+} = {}): { conversation: NormalizedConversation; messages: Array<MailMessage> } => {
 	const conversationId = conversationParams?.id ?? '1';
 	const messagesFromMessageIds = messageIds?.map((messageId) =>
 		generateMessage({
