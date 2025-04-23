@@ -120,7 +120,6 @@ export const SearchConversationList = ({
 		<Container background="gray6" width="25%" height="fill" mainAlignment="flex-start">
 			<AdvancedFilterButton
 				setShowAdvanceFilters={setShowAdvanceFilters}
-				filterCount={filterCount}
 				searchDisabled={searchDisabled}
 				invalidQueryTooltip={invalidQueryTooltip}
 			/>

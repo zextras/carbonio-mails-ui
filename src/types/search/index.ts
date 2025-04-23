@@ -57,7 +57,6 @@ export type AdvancedFilterModalProps = {
 
 export type AdvancedFilterButtonProps = {
 	searchDisabled: boolean;
-	filterCount: number;
 	setShowAdvanceFilters: (arg: boolean) => void;
 	invalidQueryTooltip?: string;
 };
