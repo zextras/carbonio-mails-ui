@@ -26,7 +26,7 @@ import {
 	FOCUS_MODE_MAIL_VIEW_ROUTE
 } from '../constants';
 import { useSmimeFeatureStore } from '../store/certificates/store';
-import StandalonePreviewPanel from '../views/app/detail-panel/standalone-preview-panel';
+import FocusModeMailView from '../views/app/detail-panel/focus-mode-mail-view';
 import { getSettingsSubSections } from '../views/settings/subsections';
 
 const LazyAppView = lazy(
@@ -111,7 +111,7 @@ export const addComponentsToShell = async (isCarbonioCE: boolean | undefined): P
 		route: FOCUS_MODE_MAIL_VIEW_ROUTE,
 		visible: false,
 		label: 'Msg',
-		appView: StandalonePreviewPanel,
+		appView: FocusModeMailView,
 		focusMode: true
 	});
 

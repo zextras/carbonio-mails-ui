@@ -13,7 +13,7 @@ import { ConversationPreviewPanelContainer } from './conversation-preview-panel-
 import { EmlPreviewPanelContainer } from './eml-preview-panel-container';
 import { MessagePreviewPanelContainer } from './message-preview-panel-container';
 
-export default function StandalonePreviewPanel(): React.JSX.Element {
+export default function FocusModeMailView(): React.JSX.Element {
 	return (
 		<ModalManager>
 			<Routes>

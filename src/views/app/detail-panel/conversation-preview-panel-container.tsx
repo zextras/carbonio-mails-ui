@@ -13,6 +13,7 @@ import { ConversationPreviewPanel } from './conversation-preview-panel';
 import { PreviewPanelHeader } from './preview/preview-panel-header';
 import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
 import { API_REQUEST_STATUS } from '../../../constants';
+import { isFocusModeMailView } from '../../../helpers/external-tabs';
 import { getFolderIdParts } from '../../../helpers/folders';
 import { getConvEmailStoreAction } from '../../../store/emails/actions/get-conv-action';
 import { useCompleteConversationOrFetch } from '../../../store/emails/hooks/hooks';
@@ -42,6 +43,12 @@ export const ConversationPreviewPanelContainer = (): React.JSX.Element => {
 			getConvEmailStoreAction({ id: conversationId, onConversationIdChange });
 		}
 	}, [conversation, conversationId, conversationStatus, onConversationIdChange]);
+
+	useEffect(() => {
+		if (isFocusModeMailView() && conversation?.subject) {
+			document.title = conversation.subject;
+		}
+	}, [conversation?.subject]);
 
 	const showPreviewPanel = useMemo(
 		(): boolean | undefined =>
