@@ -6,14 +6,15 @@
 
 import React, { FC, useCallback, useEffect, useMemo, useRef } from 'react';
 
+import { Editor as Composer } from '@tinymce/tinymce-react';
 import { Container } from '@zextras/carbonio-design-system';
-import { useIntegratedComponent, useUserSettings } from '@zextras/carbonio-shell-ui';
+import { useUserSettings } from '@zextras/carbonio-shell-ui';
+import { t } from 'i18next';
 import { debounce, noop } from 'lodash';
-import type { Editor, TinyMCE } from 'tinymce/tinymce';
+import { Ui, Editor, TinyMCE } from 'tinymce';
+// import type { Editor, TinyMCE } from 'tinymce/tinymce';
 
-import * as StyledComp from './edit-view-styled-components';
 import { handleEditorPaste } from './editor-paste-handler';
-import { plainTextToHTML } from '../../../../../commons/utils';
 import { useEditorIsRichText, useEditorText } from '../../../../../store/editor';
 import { MailsEditorV2 } from '../../../../../types';
 import { getFonts, getFontSizesOptions } from '../../../../settings/components/utils';
@@ -68,11 +69,11 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 	}, []);
 
 	const onEditorDirty = useCallback(() => {
-		saveEditor();
-		setEditorDirty();
+		// saveEditor();
+		// setEditorDirty();
 	}, [saveEditor, setEditorDirty]);
 
-	const [Composer, composerIsAvailable] = useIntegratedComponent('composer');
+	// const [Composer, composerIsAvailable] = useIntegratedComponent('composer');
 	const { isRichText } = useEditorIsRichText(editorId);
 
 	const onTextChanged = useCallback(
@@ -145,6 +146,115 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 	};
 
 	useEffect(() => (): void => clearTimeout(resetDirtyTimeoutHandle.current), []);
+
+	const setupCallback = useCallback(
+		(editor) => {
+			if (onFilesSelected)
+				editor.ui.registry.addMenuButton('imageSelector', {
+					icon: 'gallery',
+					tooltip: t('label.select_image', 'Select image'),
+					fetch: (callback) => {
+						const items: Ui.Menu.MenuItemSpec[] = [
+							{
+								type: 'menuitem',
+								text: 'ciccio',
+								onAction: (): void => {
+									noop();
+								}
+							}
+						];
+						callback(items);
+					}
+				});
+		},
+		[onFilesSelected]
+	);
+
+	const editorInitConfig = useMemo(
+		() => ({
+			// content_css: `${BASE_PATH}/tinymce/skins/content/default/content.css`,
+			// language_url: `${BASE_PATH}tinymce/langs/${language}.js`,
+			// language,
+			setup: setupCallback,
+			min_height: 350,
+			auto_focus: true,
+			menubar: false,
+			statusbar: false,
+			branding: false,
+			resize: true,
+			inline: false,
+			object_resizing: 'img',
+			style_formats: [
+				{
+					title: 'Headers',
+					items: [
+						{ title: 'h1', block: 'h1' },
+						{ title: 'h2', block: 'h2' },
+						{ title: 'h3', block: 'h3' },
+						{ title: 'h4', block: 'h4' },
+						{ title: 'h5', block: 'h5' },
+						{ title: 'h6', block: 'h6' }
+					]
+				},
+				{
+					title: 'Blocks',
+					items: [
+						{ title: 'p', block: 'p' },
+						{ title: 'div', block: 'div' },
+						{ title: 'pre', block: 'pre' }
+					]
+				},
+				{
+					title: 'Containers',
+					items: [
+						{ title: 'section', block: 'section', wrapper: true, merge_siblings: false },
+						{ title: 'article', block: 'article', wrapper: true, merge_siblings: false },
+						{ title: 'blockquote', block: 'blockquote', wrapper: true },
+						{ title: 'hgroup', block: 'hgroup', wrapper: true },
+						{ title: 'aside', block: 'aside', wrapper: true },
+						{ title: 'figure', block: 'figure', wrapper: true }
+					]
+				}
+			],
+			plugins: [
+				'advlist',
+				'autolink',
+				'lists',
+				'link',
+				'image',
+				'charmap',
+				'preview',
+				'anchor',
+				'searchreplace',
+				'code',
+				'fullscreen',
+				'insertdatetime',
+				'media',
+				'table',
+				'code',
+				'help',
+				'quickbars',
+				'directionality',
+				'autoresize',
+				'visualblocks'
+			],
+			quickbars_insert_toolbar: '',
+			quickbars_selection_toolbar: 'link',
+			contextmenu: '',
+			toolbar_mode: 'wrap',
+			visualblocks_default_state: false,
+			end_container_on_empty_block: true,
+			relative_urls: false,
+			remove_script_host: false,
+			newline_behavior: 'default',
+			browser_spellcheck: true,
+			convert_unsafe_embeds: true,
+			height: '500px', dfgksl;fk sdl;kf ls;kf ls;kf;l sk;
+			...composerCustomOptions
+		}),
+		[composerCustomOptions, setupCallback]
+	);
+
 	return (
 		<>
 			{text && (
@@ -154,44 +264,49 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 					background="gray6"
 					crossAlignment="flex-end"
 				>
-					{isRichText && composerIsAvailable ? (
-						<Container
-							background="gray6"
-							mainAlignment="flex-start"
-							style={{ minHeight, overflow: 'hidden' }}
-						>
-							<StyledComp.EditorWrapper data-testid="MailEditorWrapper">
-								<Composer
-									initialValue={editorTextRef.current}
-									disabled={disabled}
-									onFileSelect={onFilesSelected}
-									onDragOver={onDragOver}
-									customInitOptions={composerCustomOptions}
-									onInit={(evt: Event, editor: Editor) => {
-										editorRef.current = editor;
-									}}
-									onDirty={onEditorDirty}
-								/>
-							</StyledComp.EditorWrapper>
-						</Container>
-					) : (
-						<Container background="gray6" height="fit">
-							<StyledComp.TextArea
-								data-testid="MailPlainTextEditor"
-								value={text.plainText}
-								style={{ fontFamily: defaultFontFamily }}
-								onFocus={(ev): void => {
-									ev.currentTarget.setSelectionRange(0, null);
-								}}
-								onChange={(ev): void => {
-									onTextChanged({
-										plainText: ev.target.value,
-										richText: plainTextToHTML(ev.target.value)
-									});
-								}}
-							/>
-						</Container>
-					)}
+					<Composer
+						apiKey="a73bpt8nuwzn1fjpu4ybbw3ai0aa40duhorng25ht81smzep"
+						init={editorInitConfig}
+						initialValue={editorTextRef.current}
+					/>
+					{/* {isRichText && composerIsAvailable ? ( */}
+					{/*	<Container */}
+					{/*		background="gray6" */}
+					{/*		mainAlignment="flex-start" */}
+					{/*		style={{ minHeight, overflow: 'hidden' }} */}
+					{/*	> */}
+					{/*		<StyledComp.EditorWrapper data-testid="MailEditorWrapper"> */}
+					{/*			<Composer */}
+					{/*				initialValue={editorTextRef.current} */}
+					{/*				disabled={disabled} */}
+					{/*				onFileSelect={onFilesSelected} */}
+					{/*				onDragOver={onDragOver} */}
+					{/*				customInitOptions={composerCustomOptions} */}
+					{/*				onInit={(evt: Event, editor: Editor) => { */}
+					{/*					editorRef.current = editor; */}
+					{/*				}} */}
+					{/*				onDirty={onEditorDirty} */}
+					{/*			/> */}
+					{/*		</StyledComp.EditorWrapper> */}
+					{/*	</Container> */}
+					{/* ) : ( */}
+					{/*	<Container background="gray6" height="fit"> */}
+					{/*		<StyledComp.TextArea */}
+					{/*			data-testid="MailPlainTextEditor" */}
+					{/*			value={text.plainText} */}
+					{/*			style={{ fontFamily: defaultFontFamily }} */}
+					{/*			onFocus={(ev): void => { */}
+					{/*				ev.currentTarget.setSelectionRange(0, null); */}
+					{/*			}} */}
+					{/*			onChange={(ev): void => { */}
+					{/*				onTextChanged({ */}
+					{/*					plainText: ev.target.value, */}
+					{/*					richText: plainTextToHTML(ev.target.value) */}
+					{/*				}); */}
+					{/*			}} */}
+					{/*		/> */}
+					{/*	</Container> */}
+					{/* )} */}
 				</Container>
 			)}
 		</>
