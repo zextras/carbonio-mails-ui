@@ -4,11 +4,11 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React, { FC, useCallback, useState } from 'react';
+import React, { FC, useCallback, useEffect, useMemo, useRef } from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
 import { useIntegratedComponent, useUserSettings } from '@zextras/carbonio-shell-ui';
-import { noop } from 'lodash';
+import { debounce, noop } from 'lodash';
 import type { Editor, TinyMCE } from 'tinymce/tinymce';
 
 import * as StyledComp from './edit-view-styled-components';
@@ -28,6 +28,8 @@ export type TextEditorContainerProps = {
 	disabled: boolean;
 };
 
+export const SAVE_EDITOR_DELAY = 700;
+
 export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 	editorId,
 	onDragOver,
@@ -35,9 +37,42 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 	minHeight,
 	disabled
 }) => {
-	const [Composer, composerIsAvailable] = useIntegratedComponent('composer');
-	const [isFirstChangeEventFired, setIsFirstChangeEventFired] = useState(false);
 	const { text, setText } = useEditorText(editorId);
+
+	const editorTextRef = useRef(text.richText);
+	const resetDirtyTimeoutHandle = useRef<NodeJS.Timeout>();
+	const editorRef = useRef<Editor>();
+
+	const saveEditor = useMemo(
+		() =>
+			debounce(() => {
+				if (!editorRef.current) {
+					return;
+				}
+
+				const plainText = editorRef.current.getContent({ format: 'text' });
+				const richText = editorRef.current.getContent({ format: 'html' });
+				setText({ plainText, richText });
+			}, SAVE_EDITOR_DELAY),
+		[setText]
+	);
+
+	const setEditorDirty = useCallback(() => {
+		clearTimeout(resetDirtyTimeoutHandle.current);
+		resetDirtyTimeoutHandle.current = setTimeout(() => {
+			if (!editorRef.current) {
+				return;
+			}
+			editorRef.current?.save();
+		}, SAVE_EDITOR_DELAY / 2);
+	}, []);
+
+	const onEditorDirty = useCallback(() => {
+		saveEditor();
+		setEditorDirty();
+	}, [saveEditor, setEditorDirty]);
+
+	const [Composer, composerIsAvailable] = useIntegratedComponent('composer');
 	const { isRichText } = useEditorIsRichText(editorId);
 
 	const onTextChanged = useCallback(
@@ -109,6 +144,7 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 		}
 	};
 
+	useEffect(() => (): void => clearTimeout(resetDirtyTimeoutHandle.current), []);
 	return (
 		<>
 			{text && (
@@ -126,18 +162,15 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 						>
 							<StyledComp.EditorWrapper data-testid="MailEditorWrapper">
 								<Composer
-									value={text.richText}
+									initialValue={editorTextRef.current}
 									disabled={disabled}
 									onFileSelect={onFilesSelected}
-									onEditorChange={(ev: [string, string]): void => {
-										if (isFirstChangeEventFired)
-											onTextChanged({ plainText: ev[0], richText: ev[1] });
-									}}
 									onDragOver={onDragOver}
 									customInitOptions={composerCustomOptions}
-									onFocus={(): void => {
-										if (!isFirstChangeEventFired) setIsFirstChangeEventFired(true);
+									onInit={(evt: Event, editor: Editor) => {
+										editorRef.current = editor;
 									}}
+									onDirty={onEditorDirty}
 								/>
 							</StyledComp.EditorWrapper>
 						</Container>
