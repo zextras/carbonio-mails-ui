@@ -3,6 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+// noinspection HtmlRequiredLangAttribute
 
 import type { MailMessagePart } from '../types';
 import { filterAttachmentsParts, getReferredContentIds } from './attachments';
