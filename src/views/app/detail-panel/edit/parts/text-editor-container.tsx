@@ -11,9 +11,10 @@ import { Container } from '@zextras/carbonio-design-system';
 import { useUserSettings } from '@zextras/carbonio-shell-ui';
 import { t } from 'i18next';
 import { debounce, noop } from 'lodash';
-import { Ui, Editor, TinyMCE } from 'tinymce';
-// import type { Editor, TinyMCE } from 'tinymce/tinymce';
+import styled from 'styled-components';
+import tinymce, { Editor, TinyMCE, Ui } from 'tinymce/tinymce';
 
+import * as StyledComp from './edit-view-styled-components';
 import { handleEditorPaste } from './editor-paste-handler';
 import { useEditorIsRichText, useEditorText } from '../../../../../store/editor';
 import { MailsEditorV2 } from '../../../../../types';
@@ -24,12 +25,22 @@ export type TextEditorContent = { plainText: string; richText: string };
 export type TextEditorContainerProps = {
 	editorId: MailsEditorV2['id'];
 	onDragOver: (event: React.DragEvent) => void;
-	onFilesSelected: ({ editor, files }: { editor: TinyMCE; files: FileList }) => void;
+	onFilesSelected: ({
+		editor,
+		files
+	}: {
+		editor: TinyMCE;
+		files: FileList | null | undefined;
+	}) => void;
 	minHeight: number;
 	disabled: boolean;
 };
 
 export const SAVE_EDITOR_DELAY = 700;
+
+export const FileInput = styled.input`
+	display: none;
+`;
 
 export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 	editorId,
@@ -43,6 +54,14 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 	const editorTextRef = useRef(text.richText);
 	const resetDirtyTimeoutHandle = useRef<NodeJS.Timeout>();
 	const editorRef = useRef<Editor>();
+	const inputRef = useRef<HTMLInputElement>(null);
+
+	const onFileClick = useCallback(() => {
+		if (inputRef.current) {
+			inputRef.current.value = '';
+			inputRef.current.click();
+		}
+	}, []);
 
 	const saveEditor = useMemo(
 		() =>
@@ -71,7 +90,7 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 	const onEditorDirty = useCallback(() => {
 		// saveEditor();
 		// setEditorDirty();
-	}, [saveEditor, setEditorDirty]);
+	}, []);
 
 	// const [Composer, composerIsAvailable] = useIntegratedComponent('composer');
 	const { isRichText } = useEditorIsRichText(editorId);
@@ -96,54 +115,64 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 		(font: { label: string; value: string }) => `${font.label}=${font.value};`
 	);
 
-	const composerCustomOptions = {
-		toolbar_sticky: true,
-		ui_mode: 'split',
-		font_size_formats: fontSizesOptionsToString,
-		font_family_formats: fontsOptionsToString,
-		content_style: `
+	const composerCustomOptions = useMemo(
+		() => ({
+			toolbar_sticky: true,
+			ui_mode: 'split',
+			font_size_formats: fontSizesOptionsToString,
+			font_family_formats: fontsOptionsToString,
+			content_style: `
             p { margin: 0; }
             body *:not(.signature-div):not(.signature-div *) {
             color: ${defaultColor};
             font-size: ${defaultFontSize};
             font-family: ${defaultFontFamily};
             }`,
-		toolbar: [
-			'fontfamily fontsize styles visualblocks',
-			'bold italic underline strikethrough',
-			'removeformat code',
-			'alignleft aligncenter alignright alignjustify',
-			'forecolor backcolor',
-			'bullist numlist outdent indent',
-			'ltr rtl',
-			'link table',
-			'insertfile image',
-			'imageSelector'
-		].join(' | '),
+			toolbar: [
+				'fontfamily fontsize styles visualblocks',
+				'bold italic underline strikethrough',
+				'removeformat code',
+				'alignleft aligncenter alignright alignjustify',
+				'forecolor backcolor',
+				'bullist numlist outdent indent',
+				'ltr rtl',
+				'link table',
+				'insertfile image',
+				'imageSelector'
+			].join(' | '),
 
-		paste_data_images: false,
-		init_instance_callback: (editor: Editor): (() => void) => {
-			if (!editor) return noop;
-			editor.on('paste', (event) => {
-				handleEditorPaste(editor, editorId, event);
-			});
-
-			const mutationObserver = new MutationObserver(() => {
-				editor.dispatch('ResizeWindow');
-			});
-			const boardElement = document.querySelector('[data-testid="NewItemContainer"]');
-			if (boardElement) {
-				mutationObserver.observe(boardElement, {
-					attributes: true,
-					attributeFilter: ['style']
+			paste_data_images: false,
+			init_instance_callback: (editor: Editor): (() => void) => {
+				if (!editor) return noop;
+				editor.on('paste', (event) => {
+					handleEditorPaste(editor, editorId, event);
 				});
-			}
 
-			return () => {
-				mutationObserver.disconnect();
-			};
-		}
-	};
+				const mutationObserver = new MutationObserver(() => {
+					editor.dispatch('ResizeWindow');
+				});
+				const boardElement = document.querySelector('[data-testid="NewItemContainer"]');
+				if (boardElement) {
+					mutationObserver.observe(boardElement, {
+						attributes: true,
+						attributeFilter: ['style']
+					});
+				}
+
+				return () => {
+					mutationObserver.disconnect();
+				};
+			}
+		}),
+		[
+			defaultColor,
+			defaultFontFamily,
+			defaultFontSize,
+			editorId,
+			fontSizesOptionsToString,
+			fontsOptionsToString
+		]
+	);
 
 	useEffect(() => (): void => clearTimeout(resetDirtyTimeoutHandle.current), []);
 
@@ -249,11 +278,14 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 			newline_behavior: 'default',
 			browser_spellcheck: true,
 			convert_unsafe_embeds: true,
-			height: '500px', dfgksl;fk sdl;kf ls;kf ls;kf;l sk;
 			...composerCustomOptions
 		}),
 		[composerCustomOptions, setupCallback]
 	);
+
+	const fileInputOnChange = useCallback((): void => {
+		onFilesSelected?.({ editor: tinymce, files: inputRef?.current?.files });
+	}, [onFilesSelected]);
 
 	return (
 		<>
@@ -264,49 +296,53 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 					background="gray6"
 					crossAlignment="flex-end"
 				>
-					<Composer
+					{/* <Composer
 						apiKey="a73bpt8nuwzn1fjpu4ybbw3ai0aa40duhorng25ht81smzep"
 						init={editorInitConfig}
 						initialValue={editorTextRef.current}
-					/>
+					/> */}
 					{/* {isRichText && composerIsAvailable ? ( */}
-					{/*	<Container */}
-					{/*		background="gray6" */}
-					{/*		mainAlignment="flex-start" */}
-					{/*		style={{ minHeight, overflow: 'hidden' }} */}
-					{/*	> */}
-					{/*		<StyledComp.EditorWrapper data-testid="MailEditorWrapper"> */}
-					{/*			<Composer */}
-					{/*				initialValue={editorTextRef.current} */}
-					{/*				disabled={disabled} */}
-					{/*				onFileSelect={onFilesSelected} */}
-					{/*				onDragOver={onDragOver} */}
-					{/*				customInitOptions={composerCustomOptions} */}
-					{/*				onInit={(evt: Event, editor: Editor) => { */}
-					{/*					editorRef.current = editor; */}
-					{/*				}} */}
-					{/*				onDirty={onEditorDirty} */}
-					{/*			/> */}
-					{/*		</StyledComp.EditorWrapper> */}
-					{/*	</Container> */}
-					{/* ) : ( */}
-					{/*	<Container background="gray6" height="fit"> */}
-					{/*		<StyledComp.TextArea */}
-					{/*			data-testid="MailPlainTextEditor" */}
-					{/*			value={text.plainText} */}
-					{/*			style={{ fontFamily: defaultFontFamily }} */}
-					{/*			onFocus={(ev): void => { */}
-					{/*				ev.currentTarget.setSelectionRange(0, null); */}
-					{/*			}} */}
-					{/*			onChange={(ev): void => { */}
-					{/*				onTextChanged({ */}
-					{/*					plainText: ev.target.value, */}
-					{/*					richText: plainTextToHTML(ev.target.value) */}
-					{/*				}); */}
-					{/*			}} */}
-					{/*		/> */}
-					{/*	</Container> */}
-					{/* )} */}
+					<Container
+						background="gray6"
+						mainAlignment="flex-start"
+						style={{ minHeight, overflow: 'hidden' }}
+					>
+						<StyledComp.EditorWrapper data-testid="MailEditorWrapper">
+							<Container
+								height="100%"
+								crossAlignment="baseline"
+								mainAlignment="flex-start"
+								style={{ overflowY: 'hidden' }}
+							>
+								<FileInput
+									type="file"
+									ref={inputRef}
+									accept="image/*"
+									onChange={fileInputOnChange}
+									multiple
+								/>
+								<Composer init={editorInitConfig} initialValue={editorTextRef.current} />
+							</Container>
+						</StyledComp.EditorWrapper>
+					</Container>
+					{/* ) : (
+					<Container background="gray6" height="fit">
+						<StyledComp.TextArea
+							data-testid="MailPlainTextEditor"
+							value={text.plainText}
+							style={{ fontFamily: defaultFontFamily }}
+							onFocus={(ev): void => {
+								ev.currentTarget.setSelectionRange(0, null);
+							}}
+							onChange={(ev): void => {
+								onTextChanged({
+									plainText: ev.target.value,
+									richText: plainTextToHTML(ev.target.value)
+								});
+							}}
+						/>
+					</Container>
+					)} */}
 				</Container>
 			)}
 		</>

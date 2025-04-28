@@ -46,14 +46,14 @@ export const TextArea = styled.textarea`
 
 export const EditorWrapper = styled.div`
 	width: 100%;
+	height: auto;
 	position: relative;
-	height: 500px;
 
 	> .tox:not(.tox-tinymce-inline) {
 		width: 100%;
 		border: none;
 		.tox-editor-container {
-			//min-height: 18.75rem;
+			min-height: 18.75rem;
 		}
 		.tox-editor-header {
 			padding: ${(props): string => props.theme.sizes.padding.large};
@@ -69,14 +69,14 @@ export const EditorWrapper = styled.div`
 		.tox-edit-area {
 			margin-left: calc(-1rem + ${(props): string => props.theme.sizes.padding.large});
 			overflow-y: auto;
-			//max-height: 100%;
+			max-height: 100%;
 		}
 		.tox-edit-area__iframe {
-			//height: 100%;
+			height: 100%;
 			padding-bottom: ${(props): string => props.theme.sizes.padding.large};
 		}
 		&.tox-tinymce {
-			//height: 100% !important;
+			height: 100% !important;
 		}
 	}
 `;
