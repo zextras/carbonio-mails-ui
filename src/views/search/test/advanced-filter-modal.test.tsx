@@ -260,7 +260,7 @@ describe('Advanced filter modal', () => {
 		expect(actionButton).toBeInTheDocument();
 		expect(actionButton).toBeDisabled();
 	});
-	it('should clear the query when reset filters button is clicked', async () => {
+	it('should clear only inputs inside the modal when reset filters button is clicked', async () => {
 		const updateQueryMock = jest.fn();
 		const properties: AdvancedFilterModalProps = {
 			open: true,
@@ -283,7 +283,7 @@ describe('Advanced filter modal', () => {
 		expect(resetButton).toBeEnabled();
 		await user.click(resetButton);
 		await waitFor(() => {
-			expect(updateQueryMock).toHaveBeenCalledWith([]);
+			expect(updateQueryMock).not.toHaveBeenCalled();
 		});
 	});
 
