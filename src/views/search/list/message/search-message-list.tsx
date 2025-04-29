@@ -27,7 +27,6 @@ export const SearchMessageList: FC<SearchListProps> = ({
 	searchResults: messageIds,
 	query,
 	loading,
-	filterCount,
 	setShowAdvanceFilters,
 	isInvalidQuery,
 	invalidQueryTooltip,
@@ -119,7 +118,6 @@ export const SearchMessageList: FC<SearchListProps> = ({
 		>
 			<AdvancedFilterButton
 				setShowAdvanceFilters={setShowAdvanceFilters}
-				filterCount={filterCount}
 				searchDisabled={searchDisabled}
 				invalidQueryTooltip={invalidQueryTooltip}
 			/>

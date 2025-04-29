@@ -137,13 +137,11 @@ export function useRunSearch({
 	queryToString: string;
 	searchResults: SearchIndexSliceState['searchIndexSlice'];
 	isInvalidQuery: boolean;
-	filterCount: number;
 } {
 	const [searchDisabled, setSearchDisabled] = useDisableSearch();
 	const settings = useUserSettings();
 	const isMessageView = useIsMessageView();
 	const folders = useFoldersMap();
-	const [filterCount, setFilterCount] = useState(0);
 	const [isInvalidQuery, setIsInvalidQuery] = useState<boolean>(false);
 	const initialQueryToString = generateQueryString([], true, folders);
 	const previousQuery = useRef(initialQueryToString);
@@ -194,7 +192,6 @@ export function useRunSearch({
 		const { signal } = controller;
 		if (previousQuery.current !== queryToString && query.length > 0) {
 			firstSearchQueryCallback(queryToString, signal);
-			setFilterCount(query.length);
 			previousQuery.current = queryToString;
 		}
 		return () => {
@@ -205,7 +202,6 @@ export function useRunSearch({
 
 	return {
 		searchDisabled,
-		filterCount,
 		searchResults,
 		isInvalidQuery,
 		queryToString

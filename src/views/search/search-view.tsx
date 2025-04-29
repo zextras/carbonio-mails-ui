@@ -43,7 +43,7 @@ const SearchView = ({
 		setAppContext({ isMessageView, count, setCount });
 	}, [count, isMessageView]);
 
-	const { searchDisabled, filterCount, searchResults, isInvalidQuery, queryToString } =
+	const { searchDisabled, searchResults, isInvalidQuery, queryToString } =
 		useRunSearch({
 			query,
 			updateQuery,
@@ -100,7 +100,6 @@ const SearchView = ({
 										searchResults={searchResults.messageListIndex}
 										query={queryToString}
 										loading={loading}
-										filterCount={filterCount}
 										setShowAdvanceFilters={setShowAdvanceFilters}
 										isInvalidQuery={isInvalidQuery}
 										invalidQueryTooltip={invalidQueryTooltip}
@@ -112,7 +111,6 @@ const SearchView = ({
 										searchResults={searchResults.conversationListIndex}
 										query={queryToString}
 										loading={loading}
-										filterCount={filterCount}
 										setShowAdvanceFilters={setShowAdvanceFilters}
 										isInvalidQuery={isInvalidQuery}
 										invalidQueryTooltip={invalidQueryTooltip}

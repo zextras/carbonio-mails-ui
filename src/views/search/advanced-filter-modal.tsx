@@ -209,11 +209,7 @@ export const AdvancedFilterModal = ({
 		setTag([]);
 		setIsSharedFolderIncluded(isSharedFolderIncluded);
 		setIsSharedFolderIncludedTobe(isSharedFolderIncluded);
-	}, [
-		setIsSharedFolderIncluded,
-		isSharedFolderIncluded,
-		setIsSharedFolderIncludedTobe
-	]);
+	}, [setIsSharedFolderIncluded, isSharedFolderIncluded, setIsSharedFolderIncludedTobe]);
 
 	const queryToBe = useMemo<Array<QueryChip>>(
 		() =>
