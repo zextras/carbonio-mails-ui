@@ -97,7 +97,7 @@ const SearchView = ({
 								isMessageView ? (
 									<SearchMessageList
 										searchDisabled={searchDisabled}
-										searchResults={searchResults.messageListIndex}
+										searchResults={query.length > 0 ? searchResults.messageListIndex : []}
 										query={queryToString}
 										loading={loading}
 										setShowAdvanceFilters={setShowAdvanceFilters}
@@ -108,7 +108,7 @@ const SearchView = ({
 								) : (
 									<SearchConversationList
 										searchDisabled={searchDisabled}
-										searchResults={searchResults.conversationListIndex}
+										searchResults={query.length > 0 ? searchResults.conversationListIndex : []}
 										query={queryToString}
 										loading={loading}
 										setShowAdvanceFilters={setShowAdvanceFilters}
