@@ -107,7 +107,8 @@ const SearchView = ({
 								) : (
 									<SearchConversationList
 										searchDisabled={searchDisabled}
-										searchResults={searchResults.conversationListIndex}
+										searchResults={query.length > 0 ? searchResults.conversationListIndex : []}
+										//searchResults={query.length > 0 ? searchResults.conversationListIndex : []}
 										query={queryToString}
 										loading={loading}
 										setShowAdvanceFilters={setShowAdvanceFilters}
