@@ -203,7 +203,6 @@ export const AdvancedFilterModal = ({
 		setSizeLarger([]);
 		setSizeSmallerErrorLabel('');
 		setSizeLargerErrorLabel('');
-		updateQuery([]);
 		setReceivedFromAddresses([]);
 		setSentToAddresses([]);
 		setFolder([]);
@@ -211,7 +210,6 @@ export const AdvancedFilterModal = ({
 		setIsSharedFolderIncluded(isSharedFolderIncluded);
 		setIsSharedFolderIncludedTobe(isSharedFolderIncluded);
 	}, [
-		updateQuery,
 		setIsSharedFolderIncluded,
 		isSharedFolderIncluded,
 		setIsSharedFolderIncludedTobe
