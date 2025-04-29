@@ -148,13 +148,6 @@ function getSoapConversation(
 		fr: 'fragment'
 	};
 }
-function fakeCounter(): { count: number; setCount: (value: number) => void } {
-	let count = 0;
-	const setCount = (value: number): void => {
-		count = value;
-	};
-	return { count, setCount };
-}
 
 describe('SearchView', () => {
 	beforeAll(() => {
@@ -286,8 +279,6 @@ describe('SearchView', () => {
 				useDisableSearch: () => [false, noop],
 				ResultsHeader: (props: { label: string }): ReactElement => <>{props.label}</>
 			};
-			const { count, setCount } = fakeCounter();
-			jest.spyOn(hooks, 'useAppContext').mockReturnValue({ count, setCount });
 
 			const { user } = setupTest(<SearchView {...searchViewProps} />);
 			await waitAndMakeConversationVisible('123');
@@ -327,7 +318,6 @@ describe('SearchView', () => {
 				useDisableSearch: () => [false, noop],
 				ResultsHeader: resultsHeader
 			};
-			jest.spyOn(hooks, 'useAppContext').mockReturnValue(fakeCounter());
 			const { user } = setupTest(<SearchView {...searchViewProps} />);
 			await waitAndMakeConversationVisible('123');
 			const actionWrapper = await screen.findByTestId(`ConversationListItem-123`);
@@ -400,7 +390,6 @@ describe('SearchView', () => {
 				useDisableSearch: () => [false, noop],
 				ResultsHeader: resultsHeader
 			};
-			jest.spyOn(hooks, 'useAppContext').mockReturnValue(fakeCounter());
 			const { user } = setupTest(<SearchView {...searchViewProps} />);
 			await waitAndMakeConversationVisible('123');
 			const actionWrapper = await screen.findByTestId(`ConversationListItem-123`);
@@ -486,7 +475,6 @@ describe('SearchView', () => {
 				useDisableSearch: () => [false, noop],
 				ResultsHeader: resultsHeader
 			};
-			jest.spyOn(hooks, 'useAppContext').mockReturnValue(fakeCounter());
 			const { user } = setupTest(<SearchView {...searchViewProps} />);
 			await waitFor(() => searchInterceptor);
 			await waitAndMakeMessageVisible('10');
