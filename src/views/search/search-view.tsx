@@ -43,14 +43,13 @@ const SearchView = ({
 		setAppContext({ isMessageView, count, setCount });
 	}, [count, isMessageView]);
 
-	const { searchDisabled, searchResults, isInvalidQuery, queryToString } =
-		useRunSearch({
-			query,
-			updateQuery,
-			useDisableSearch,
-			invalidQueryTooltip,
-			isSharedFolderIncluded
-		});
+	const { searchDisabled, searchResults, isInvalidQuery, queryToString } = useRunSearch({
+		query,
+		updateQuery,
+		useDisableSearch,
+		invalidQueryTooltip,
+		isSharedFolderIncluded
+	});
 
 	const resultLabelType = isInvalidQuery ? 'warning' : undefined;
 
