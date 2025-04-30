@@ -10,6 +10,7 @@ import { useParams } from 'react-router-dom';
 
 import { MessagePreviewPanel } from './message-preview-panel';
 import { getMsgSoapApi } from '../../../api/get-msg-soap-api';
+import { isFocusModeMailView } from '../../../helpers/external-tabs';
 import { normalizeMailMessageFromSoap } from '../../../normalizations/normalize-message';
 import { MailMessage } from '../../../types';
 
@@ -33,6 +34,12 @@ export const EmlPreviewPanelContainer = (): React.JSX.Element => {
 			setMessage(normalizeMailMessageFromSoap(response.m[0], true) as MailMessage);
 		});
 	}, [message, messageId, part]);
+
+	useEffect(() => {
+		if (isFocusModeMailView() && message?.subject) {
+			document.title = message.subject;
+		}
+	}, [message?.subject]);
 
 	return (
 		<MessagePreviewPanel

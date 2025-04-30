@@ -3,10 +3,12 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, ReactElement, useCallback, useMemo, useState, useRef, useEffect } from 'react';
+import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
+
 import { Container, ChipInput, ChipItem } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
-import { filter, find } from 'lodash';
+import { find } from 'lodash';
+
 import { attachmentTypeItemsConstant, emailStatusItemsConstant } from '../../../constants';
 import type { AttachTypeEmailStatusRowPropType, ChipOnAdd, ChipOnAddProps } from '../../../types';
 
@@ -15,61 +17,25 @@ const AttachmentTypeEmailStatusRow: FC<AttachTypeEmailStatusRowPropType> = ({
 }): ReactElement => {
 	const { attachmentType, setAttachmentType, emailStatus, setEmailStatus } = compProps;
 	const attachmentTypeItems = attachmentTypeItemsConstant(t);
-
 	const emailStatusItems = emailStatusItemsConstant(t);
-
-	const attachmentTypeRef: any = useRef();
-	const emailStatusRef: any = useRef();
-	const [attachmentTypeRefHasFocus, setAttachmentTypeRefHasFocus] = useState(false);
-	const [emailStatusRefHasFocus, setEmailStatusRefHasFocus] = useState(false);
-
 	const [attachmentTypeOptions, setAttachmentTypeOptions] = useState<any[]>(attachmentTypeItems);
 	const [emailStatusOptions, setEmailStatusOptions] = useState<any[]>(emailStatusItems);
-	const onChange = useCallback((state: ChipItem[], stateHandler: (state: ChipItem[]) => void) => {
-		stateHandler(state);
-	}, []);
 
 	const chipOnAdd = useCallback(
 		({ items, label, preText, hasAvatar, isGeneric, isQueryFilter }: ChipOnAddProps): ChipOnAdd => {
-			const values: any = filter(items, (item: any) => item.label === label)[0];
+			const values = items.filter((item: any) => item.id === label)[0];
 			return {
 				label: `${preText}:${label}`,
 				hasAvatar,
 				isGeneric,
 				isQueryFilter,
 				value: values.searchString,
-				avatarIcon: values.icon,
+				avatarIcon: values.icon ?? 'Tag',
 				avatarColor: 'gray6'
 			};
 		},
 		[]
 	);
-
-	const handlerAttachmentType = useCallback(() => {
-		setAttachmentTypeRefHasFocus(!attachmentTypeRefHasFocus);
-	}, [attachmentTypeRefHasFocus]);
-
-	useEffect(() => {
-		const ref: HTMLElement = attachmentTypeRef.current;
-
-		if (ref) {
-			ref.addEventListener('click', handlerAttachmentType);
-		}
-		return (): void => ref?.removeEventListener('click', handlerAttachmentType);
-	}, [attachmentTypeRefHasFocus, handlerAttachmentType]);
-
-	const handlerEmailStatus = useCallback(() => {
-		setEmailStatusRefHasFocus(!emailStatusRefHasFocus);
-	}, [emailStatusRefHasFocus]);
-
-	useEffect(() => {
-		const ref: HTMLElement = emailStatusRef.current;
-
-		if (ref) {
-			ref.addEventListener('click', handlerEmailStatus);
-		}
-		return (): void => ref?.removeEventListener('click', handlerEmailStatus);
-	}, [emailStatusRefHasFocus, handlerEmailStatus]);
 
 	const updateAttachmentTypeOptions = useCallback(
 		(target: HTMLInputElement, q: Array<any>): void => {
@@ -153,16 +119,13 @@ const AttachmentTypeEmailStatusRow: FC<AttachTypeEmailStatusRowPropType> = ({
 	);
 
 	const attachmentTypeOnChange = useCallback(
-		(value: ChipItem[]): void => {
-			setAttachmentTypeRefHasFocus(false);
-			return onChange(value, setAttachmentType);
-		},
-		[onChange, setAttachmentType]
+		(value: ChipItem[]): void => setAttachmentType(value),
+		[setAttachmentType]
 	);
 
 	const emailStatusOnChange = useCallback(
-		(value: ChipItem[]): void => onChange(value, setEmailStatus),
-		[onChange, setEmailStatus]
+		(value: ChipItem[]): void => setEmailStatus(value),
+		[setEmailStatus]
 	);
 
 	const attachmentTypePlaceholder = useMemo(
@@ -174,64 +137,47 @@ const AttachmentTypeEmailStatusRow: FC<AttachTypeEmailStatusRowPropType> = ({
 		() => t('label.attachment_status', 'Status of e-mail item'),
 		[]
 	);
-	const attachmentIcon = useMemo(
-		() => (attachmentTypeRefHasFocus ? 'ChevronDown' : 'ChevronUp'),
-		[attachmentTypeRefHasFocus]
-	);
+	const attachmentIcon = 'ChevronDown';
+	const emailStatusIcon = 'ChevronDown';
+	const attachmentTypeBottomBorderColor = 'transparent';
+	const emailStatusBottomBorderColor = 'transparent';
 
-	const emailStatusIcon = useMemo(
-		() => (emailStatusRefHasFocus ? 'ChevronDown' : 'ChevronUp'),
-		[emailStatusRefHasFocus]
-	);
-
-	const attachmentTypeBottomBorderColor = useMemo(
-		(): string => (attachmentTypeRefHasFocus ? 'primary' : 'transparent'),
-		[attachmentTypeRefHasFocus]
-	);
-	const emailStatusBottomBorderColor = useMemo(
-		(): string => (emailStatusRefHasFocus ? 'primary' : 'transparent'),
-		[emailStatusRefHasFocus]
-	);
 	return (
-		<>
-			<Container padding={{ bottom: 'small', top: 'medium' }} orientation="horizontal">
-				<Container padding={{ right: 'extrasmall' }} maxWidth="50%">
-					<ChipInput
-						ref={attachmentTypeRef}
-						placeholder={attachmentTypePlaceholder}
-						defaultValue={attachmentType}
-						options={attachmentTypeOptions}
-						background="gray5"
-						disableOptions={false}
-						onAdd={attachmentTypeChipOnAdd}
-						onChange={attachmentTypeOnChange}
-						maxChips={1}
-						confirmChipOnBlur
-						onInputType={attachmentTypeOnInputType}
-						icon={attachmentIcon}
-						bottomBorderColor={attachmentTypeBottomBorderColor}
-					/>
-				</Container>
-				<Container padding={{ left: 'extrasmall' }} maxWidth="50%">
-					<ChipInput
-						dropdownMaxHeight="40%"
-						confirmChipOnBlur
-						ref={emailStatusRef}
-						placeholder={emailStatusPlaceholder}
-						defaultValue={emailStatus}
-						options={emailStatusOptions}
-						background="gray5"
-						disableOptions={false}
-						onAdd={emailStatusChipOnAdd}
-						onChange={emailStatusOnChange}
-						onInputType={emailStatusOnInputType}
-						icon={emailStatusIcon}
-						bottomBorderColor={emailStatusBottomBorderColor}
-						maxHeight="40%"
-					/>
-				</Container>
+		<Container padding={{ bottom: 'small', top: 'medium' }} orientation="horizontal">
+			<Container padding={{ right: 'extrasmall' }} maxWidth="50%">
+				<ChipInput
+					placeholder={attachmentTypePlaceholder}
+					value={attachmentType}
+					options={attachmentTypeOptions}
+					background="gray5"
+					disableOptions={false}
+					onAdd={attachmentTypeChipOnAdd}
+					onChange={attachmentTypeOnChange}
+					maxChips={1}
+					confirmChipOnBlur
+					onInputType={attachmentTypeOnInputType}
+					icon={attachmentIcon}
+					bottomBorderColor={attachmentTypeBottomBorderColor}
+				/>
 			</Container>
-		</>
+			<Container padding={{ left: 'extrasmall' }} maxWidth="50%">
+				<ChipInput
+					dropdownMaxHeight="40%"
+					confirmChipOnBlur
+					placeholder={emailStatusPlaceholder}
+					value={emailStatus}
+					options={emailStatusOptions}
+					background="gray5"
+					disableOptions={false}
+					onAdd={emailStatusChipOnAdd}
+					onChange={emailStatusOnChange}
+					onInputType={emailStatusOnInputType}
+					icon={emailStatusIcon}
+					bottomBorderColor={emailStatusBottomBorderColor}
+					maxHeight="40%"
+				/>
+			</Container>
+		</Container>
 	);
 };
 
