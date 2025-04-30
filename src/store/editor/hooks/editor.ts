@@ -59,21 +59,21 @@ export const useEditorText = (
 	setText: (text: MailsEditorV2['text']) => void;
 	resetText: () => void;
 } => {
-	const { debouncedSaveDraft } = useSaveDraftFromEditor();
+	const { immediateSaveDraft } = useSaveDraftFromEditor();
 	const value = useEditorsStore((state) => state.editors[id].text);
 	const setter = useEditorsStore((state) => state.setText);
 	const setText = useCallback(
 		(val: MailsEditorV2['text']): void => {
 			setter(id, val);
-			debouncedSaveDraft(id);
+			immediateSaveDraft(id);
 		},
-		[id, debouncedSaveDraft, setter]
+		[id, immediateSaveDraft, setter]
 	);
 
 	const resetText = useCallback((): void => {
 		setter(id, { plainText: '', richText: '' });
-		debouncedSaveDraft(id);
-	}, [id, debouncedSaveDraft, setter]);
+		immediateSaveDraft(id);
+	}, [id, immediateSaveDraft, setter]);
 
 	return useMemo(
 		() => ({
