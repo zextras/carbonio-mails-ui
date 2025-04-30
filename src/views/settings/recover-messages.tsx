@@ -140,7 +140,6 @@ export const RecoverMessages = (): React.JSX.Element => {
                         Once the search is completed you will be redirected to the results page where you can choose which items to restore.`
 					)}
 				</Text>
-				<Padding top="large" />
 				<Container width="100%" crossAlignment="flex-start">
 					<Row width="30%" mainAlignment="flex-start">
 						<Input
