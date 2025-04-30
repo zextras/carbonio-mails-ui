@@ -46,16 +46,6 @@ export type SearchQueryItem = {
 
 export type Query = Array<SearchQueryItem>;
 
-export type AdvancedFilterModalProps = {
-	open: boolean;
-	onClose: () => void;
-	query: Query;
-	updateQuery: (arg: Array<QueryChip>) => void;
-	isSharedFolderIncluded: boolean;
-	setIsSharedFolderIncluded: (arg: boolean) => void;
-	executeSearch: (abortSignal: AbortSignal) => Promise<void>;
-};
-
 export type AdvancedFilterButtonProps = {
 	searchDisabled: boolean;
 	filterCount: number;

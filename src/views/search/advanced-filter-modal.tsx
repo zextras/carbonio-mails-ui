@@ -16,7 +16,6 @@ import {
 	Tooltip,
 	Text
 } from '@zextras/carbonio-design-system';
-import type { QueryChip } from '@zextras/carbonio-search-ui';
 import { t } from '@zextras/carbonio-shell-ui';
 import { concat, filter, includes, map, reject } from 'lodash';
 
@@ -32,16 +31,22 @@ import { ZIMBRA_STANDARD_COLORS } from '../../carbonio-ui-commons/constants';
 import { ContactInputItem } from '../../carbonio-ui-commons/integrations/types';
 import { getTags } from '../../carbonio-ui-commons/store/zustand/tags';
 import { ScrollableContainer } from '../../commons/scrollable-container';
-import { AdvancedFilterModalProps, KeywordState } from '../../types';
+import { KeywordState, Query } from '../../types';
+
+export type AdvancedFilterModalProps = {
+	open: boolean;
+	onClose: () => void;
+	query: Query;
+	isSharedFolderIncludedInitialValue: boolean;
+	onSearchConfirm: (request: { query: Query; includeSharedFolders: boolean }) => void;
+};
 
 export const AdvancedFilterModal = ({
 	open,
 	onClose,
 	query,
-	updateQuery,
-	setIsSharedFolderIncluded,
-	isSharedFolderIncluded,
-	executeSearch
+	isSharedFolderIncludedInitialValue,
+	onSearchConfirm
 }: AdvancedFilterModalProps): React.JSX.Element => {
 	const [otherKeywords, setOtherKeywords] = useState<KeywordState>([]);
 	const [attachmentFilter, setAttachmentFilter] = useState<KeywordState>([]);
@@ -61,8 +66,9 @@ export const AdvancedFilterModal = ({
 	const [sizeLarger, setSizeLarger] = useState<KeywordState>([]);
 	const [sizeSmallerErrorLabel, setSizeSmallerErrorLabel] = useState('');
 	const [sizeLargerErrorLabel, setSizeLargerErrorLabel] = useState('');
-	const [isSharedFolderIncludedTobe, setIsSharedFolderIncludedTobe] =
-		useState(isSharedFolderIncluded);
+	const [isSharedFolderIncluded, setIsSharedFolderIncluded] = useState(
+		isSharedFolderIncludedInitialValue
+	);
 	const queryArray = useMemo(() => ['has:attachment', 'is:flagged', 'is:unread'], []);
 	const tagOptions = useMemo(
 		() =>
@@ -203,14 +209,13 @@ export const AdvancedFilterModal = ({
 		setSizeLarger([]);
 		setSizeSmallerErrorLabel('');
 		setSizeLargerErrorLabel('');
-		updateQuery([]);
 		setReceivedFromAddresses([]);
 		setSentToAddresses([]);
 		setFolder([]);
 		setTag([]);
-	}, [updateQuery]);
+	}, []);
 
-	const queryToBe = useMemo<Array<QueryChip>>(
+	const queryToBe = useMemo<Query>(
 		() =>
 			concat(
 				otherKeywords,
@@ -258,9 +263,7 @@ export const AdvancedFilterModal = ({
 	const onConfirm = useCallback(() => {
 		const controller = new AbortController();
 		try {
-			updateQuery(queryToBe);
-			setIsSharedFolderIncluded(isSharedFolderIncludedTobe);
-			executeSearch(controller.signal);
+			onSearchConfirm({ query: queryToBe, includeSharedFolders: isSharedFolderIncluded });
 			onClose();
 		} catch (error) {
 			controller.abort();
@@ -268,14 +271,7 @@ export const AdvancedFilterModal = ({
 		return () => {
 			controller.abort();
 		};
-	}, [
-		updateQuery,
-		queryToBe,
-		executeSearch,
-		setIsSharedFolderIncluded,
-		isSharedFolderIncludedTobe,
-		onClose
-	]);
+	}, [onSearchConfirm, queryToBe, isSharedFolderIncluded, onClose]);
 
 	const subjectKeywordRowProps = useMemo(
 		() => ({
@@ -376,10 +372,10 @@ export const AdvancedFilterModal = ({
 			setUnreadFilter,
 			setFlaggedFilter,
 			setAttachmentFilter,
-			setIsSharedFolderIncludedTobe,
-			isSharedFolderIncludedTobe
+			setIsSharedFolderIncludedTobe: setIsSharedFolderIncluded,
+			isSharedFolderIncludedTobe: isSharedFolderIncluded
 		}),
-		[query, isSharedFolderIncludedTobe]
+		[query, isSharedFolderIncluded]
 	);
 
 	const secondaryDisabled = useMemo(

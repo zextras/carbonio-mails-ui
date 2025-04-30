@@ -4,7 +4,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 import type { QueryChip } from '@zextras/carbonio-search-ui';
 import { type ErrorSoapBodyResponse, useUserSettings } from '@zextras/carbonio-shell-ui';
@@ -126,28 +126,26 @@ export function useIsMessageView(): boolean {
 	return settings.prefs.zimbraPrefGroupMailBy === 'message';
 }
 
+type UseRunSearchReturnType = {
+	searchDisabled: boolean;
+	queryToString: string;
+	searchResults: SearchIndexSliceState['searchIndexSlice'];
+	isInvalidQuery: boolean;
+	executeSearch: (abortSignal: AbortSignal) => Promise<void>;
+};
+
 export function useRunSearch({
 	query,
 	updateQuery,
 	useDisableSearch,
 	invalidQueryTooltip,
 	isSharedFolderIncluded
-}: UseRunSearchProps): {
-	searchDisabled: boolean;
-	queryToString: string;
-	searchResults: SearchIndexSliceState['searchIndexSlice'];
-	isInvalidQuery: boolean;
-	filterCount: number;
-	executeSearch: (abortSignal: AbortSignal) => Promise<void>;
-} {
+}: UseRunSearchProps): UseRunSearchReturnType {
 	const [searchDisabled, setSearchDisabled] = useDisableSearch();
 	const settings = useUserSettings();
 	const isMessageView = useIsMessageView();
 	const folders = useFoldersMap();
-	const [filterCount, setFilterCount] = useState(0);
 	const [isInvalidQuery, setIsInvalidQuery] = useState<boolean>(false);
-	generateQueryString([], true, folders);
-	updateQueryChips(query, isInvalidQuery, updateQuery);
 
 	const searchResults = useSearchResults();
 
@@ -188,18 +186,8 @@ export function useRunSearch({
 		[invalidQueryTooltip, isMessageView, prefLocale, queryToString, setSearchDisabled]
 	);
 
-	useEffect(() => {
-		const controller = new AbortController();
-		if (query.length > 0) {
-			executeSearch(controller.signal);
-			setFilterCount(query.length);
-		}
-		return () => controller.abort();
-	}, [executeSearch, query.length, queryToString]);
-
 	return {
 		searchDisabled,
-		filterCount,
 		searchResults,
 		isInvalidQuery,
 		queryToString,
