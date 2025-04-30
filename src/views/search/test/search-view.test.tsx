@@ -275,7 +275,7 @@ describe('SearchView', () => {
 			setMessagesInSearchSlice([message]);
 			updateConversationStatus('123', API_REQUEST_STATUS.fulfilled);
 			const searchViewProps: SearchViewProps = {
-				useQuery: () => [[], noop],
+				useQuery: () => [[{}], noop],
 				useDisableSearch: () => [false, noop],
 				ResultsHeader: (props: { label: string }): ReactElement => <>{props.label}</>
 			};

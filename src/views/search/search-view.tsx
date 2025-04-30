@@ -17,6 +17,7 @@ import SearchPanel from './panel/search-panel';
 import { useIsMessageView, useRunSearch } from './search-view-hooks';
 import { useUpdateView } from '../../carbonio-ui-commons/hooks/use-update-view';
 import { API_REQUEST_STATUS } from '../../constants';
+import { resetSearchAndPopulatedItems } from '../../store/emails/store';
 
 const SearchView = ({
 	useDisableSearch,
@@ -37,6 +38,11 @@ const SearchView = ({
 		() => t('label.invalid_query', 'Unable to parse the search query, clear it and retry'),
 		[]
 	);
+	useEffect(() => {
+		if (query.length === 0) {
+			resetSearchAndPopulatedItems();
+		}
+	}, [query.length]);
 
 	const [count, setCount] = useState(0);
 	useEffect(() => {
@@ -96,7 +102,7 @@ const SearchView = ({
 								isMessageView ? (
 									<SearchMessageList
 										searchDisabled={searchDisabled}
-										searchResults={query.length > 0 ? searchResults.messageListIndex : []}
+										searchResults={searchResults.messageListIndex}
 										query={queryToString}
 										loading={loading}
 										setShowAdvanceFilters={setShowAdvanceFilters}
@@ -108,7 +114,6 @@ const SearchView = ({
 									<SearchConversationList
 										searchDisabled={searchDisabled}
 										searchResults={searchResults.conversationListIndex}
-										// searchResults={query.length > 0 ? searchResults.conversationListIndex : []}
 										query={queryToString}
 										loading={loading}
 										setShowAdvanceFilters={setShowAdvanceFilters}
