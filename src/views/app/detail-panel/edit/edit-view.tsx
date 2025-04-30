@@ -193,6 +193,7 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 
 				keepOrDiscardDraft({
 					onConfirm: (): void => {
+						saveDraft();
 						deleteEditor({ id: editorId });
 						close(EDIT_VIEW_CLOSING_REASONS.EXTERNAL_CLOSE_REQUEST);
 					},
@@ -201,7 +202,7 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 				});
 			}
 		}),
-		[close, draftId, editorId, keepOrDiscardDraft]
+		[close, draftId, editorId, keepOrDiscardDraft, saveDraft]
 	);
 
 	const onSendCountdownTick = useCallback(
