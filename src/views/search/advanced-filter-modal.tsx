@@ -97,6 +97,8 @@ export const AdvancedFilterModal = ({
 	const [tag, setTag] = useState<KeywordState>([]);
 
 	useEffect(() => {
+		if (!open) return;
+
 		const updatedQuery = map(
 			filter(
 				query,
@@ -197,7 +199,7 @@ export const AdvancedFilterModal = ({
 		setFolder(folderInQuery);
 
 		setOtherKeywords(updatedQuery);
-	}, [query, queryArray]);
+	}, [open, query, queryArray]);
 
 	const resetFilters = useCallback(() => {
 		setOtherKeywords([]);
