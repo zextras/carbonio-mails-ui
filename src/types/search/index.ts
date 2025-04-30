@@ -53,6 +53,7 @@ export type AdvancedFilterModalProps = {
 	updateQuery: (arg: Array<QueryChip>) => void;
 	isSharedFolderIncluded: boolean;
 	setIsSharedFolderIncluded: (arg: boolean) => void;
+	includeSharedItemsInSearchPref: boolean;
 };
 
 export type AdvancedFilterButtonProps = {
@@ -69,6 +70,12 @@ export type AttachTypeEmailStatusRowPropType = {
 		emailStatus: KeywordState;
 		setEmailStatus: (arg: any) => void;
 	};
+};
+
+export type ChipOnAddItem = {
+	label: string;
+	icon?: string;
+	searchString: string;
 };
 
 export type ChipOnAddProps = {

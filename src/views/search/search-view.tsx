@@ -142,6 +142,7 @@ const SearchView = ({
 				setIsSharedFolderIncluded={setIsSharedFolderIncluded}
 				open={showAdvanceFilters}
 				onClose={onCloseCallback}
+				includeSharedItemsInSearchPref={includeSharedItemsInSearch}
 			/>
 		</>
 	);

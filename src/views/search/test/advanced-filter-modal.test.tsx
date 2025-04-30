@@ -24,7 +24,8 @@ describe('Advanced filter modal', () => {
 		query: [],
 		updateQuery: jest.fn(),
 		setIsSharedFolderIncluded: jest.fn(),
-		isSharedFolderIncluded: false
+		isSharedFolderIncluded: false,
+		includeSharedItemsInSearchPref: false
 	};
 	it('render the advanced filter modal', () => {
 		setupTest(<AdvancedFilterModal {...props} />);
@@ -74,6 +75,7 @@ describe('Advanced filter modal', () => {
 			<AdvancedFilterModal
 				open
 				isSharedFolderIncluded={false}
+				includeSharedItemsInSearchPref={false}
 				onClose={jest.fn()}
 				query={[]}
 				updateQuery={mockUpdateQuery}
@@ -102,6 +104,7 @@ describe('Advanced filter modal', () => {
 			<AdvancedFilterModal
 				open
 				isSharedFolderIncluded={false}
+				includeSharedItemsInSearchPref={false}
 				onClose={jest.fn()}
 				query={[]}
 				updateQuery={mockUpdateQuery}
@@ -134,6 +137,7 @@ describe('Advanced filter modal', () => {
 			<AdvancedFilterModal
 				open
 				isSharedFolderIncluded={false}
+				includeSharedItemsInSearchPref={false}
 				onClose={jest.fn()}
 				query={[query]}
 				updateQuery={mockUpdateQuery}
@@ -172,6 +176,7 @@ describe('Advanced filter modal', () => {
 			<AdvancedFilterModal
 				open
 				isSharedFolderIncluded={false}
+				includeSharedItemsInSearchPref={false}
 				onClose={jest.fn()}
 				query={[]}
 				updateQuery={mockUpdateQuery}
@@ -209,6 +214,7 @@ describe('Advanced filter modal', () => {
 			<AdvancedFilterModal
 				open
 				isSharedFolderIncluded={false}
+				includeSharedItemsInSearchPref={false}
 				onClose={jest.fn()}
 				query={[]}
 				updateQuery={mockUpdateQuery}
@@ -242,7 +248,8 @@ describe('Advanced filter modal', () => {
 			],
 			updateQuery: jest.fn(),
 			setIsSharedFolderIncluded: jest.fn(),
-			isSharedFolderIncluded: false
+			isSharedFolderIncluded: false,
+			includeSharedItemsInSearchPref: false
 		};
 		setupTest(<AdvancedFilterModal {...properties} />);
 		const actionButton = screen.getByRole('button', { name: /action\.reset/i });
@@ -274,7 +281,8 @@ describe('Advanced filter modal', () => {
 			],
 			updateQuery: updateQueryMock,
 			setIsSharedFolderIncluded: jest.fn(),
-			isSharedFolderIncluded: false
+			isSharedFolderIncluded: false,
+			includeSharedItemsInSearchPref: false
 		};
 
 		const { user } = setupTest(<AdvancedFilterModal {...properties} />);
@@ -296,13 +304,14 @@ describe('Advanced filter modal', () => {
 			query: [],
 			updateQuery: updateQueryMock,
 			setIsSharedFolderIncluded: jest.fn(),
-			isSharedFolderIncluded: false
+			isSharedFolderIncluded: false,
+			includeSharedItemsInSearchPref: false
 		};
 		const { user } = setupTest(<AdvancedFilterModal {...properties} />);
 
 		const emailStatus = screen.getByPlaceholderText('label.attachment_status');
 		expect(emailStatus).toBeInTheDocument();
-		await user.type(emailStatus, 'read');
+		await user.type(emailStatus, 'email_status.read');
 		await user.type(emailStatus, '[Enter]');
 
 		const fieldLabel = screen.getByText(/label\.single_advanced_filter/i);
@@ -318,7 +327,7 @@ describe('Advanced filter modal', () => {
 		await waitFor(() => {
 			expect(updateQueryMock).toHaveBeenCalledWith([
 				expect.objectContaining({
-					label: 'Is:read'
+					label: 'Is:email_status.read'
 				})
 			]);
 		});

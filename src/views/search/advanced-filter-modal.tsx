@@ -41,7 +41,8 @@ export const AdvancedFilterModal = ({
 	query,
 	updateQuery,
 	setIsSharedFolderIncluded,
-	isSharedFolderIncluded
+	isSharedFolderIncluded,
+	includeSharedItemsInSearchPref
 }: AdvancedFilterModalProps): React.JSX.Element => {
 	const [otherKeywords, setOtherKeywords] = useState<KeywordState>([]);
 	const [attachmentFilter, setAttachmentFilter] = useState<KeywordState>([]);
@@ -63,6 +64,7 @@ export const AdvancedFilterModal = ({
 	const [sizeLargerErrorLabel, setSizeLargerErrorLabel] = useState('');
 	const [isSharedFolderIncludedTobe, setIsSharedFolderIncludedTobe] =
 		useState(isSharedFolderIncluded);
+
 	const queryArray = useMemo(() => ['has:attachment', 'is:flagged', 'is:unread'], []);
 	const tagOptions = useMemo(
 		() =>
@@ -208,12 +210,12 @@ export const AdvancedFilterModal = ({
 		setSentToAddresses([]);
 		setFolder([]);
 		setTag([]);
-		setIsSharedFolderIncluded(isSharedFolderIncluded);
-		setIsSharedFolderIncludedTobe(isSharedFolderIncluded);
+		setIsSharedFolderIncluded(includeSharedItemsInSearchPref);
+		setIsSharedFolderIncludedTobe(includeSharedItemsInSearchPref);
 	}, [
 		updateQuery,
 		setIsSharedFolderIncluded,
-		isSharedFolderIncluded,
+		includeSharedItemsInSearchPref,
 		setIsSharedFolderIncludedTobe
 	]);
 

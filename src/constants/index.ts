@@ -51,7 +51,7 @@ export const BORDERS = {
 	WEST: 'w'
 } as const;
 
-type AttachmentTypeItemsConstantProps = {
+export type AttachmentTypeItemsConstantProps = {
 	id: string;
 	label: string;
 	icon: string;
@@ -129,7 +129,7 @@ export const attachmentTypeItemsConstant = (
 	}
 ];
 
-type EmailStatusItemsConstantProps = {
+export type EmailStatusItemsConstantProps = {
 	id: string;
 	label: string;
 	searchString: string;
