@@ -56,18 +56,6 @@ const SearchView = ({
 			isSharedFolderIncluded
 		});
 
-	useEffect(() => {
-		const controller = new AbortController();
-		if (query.length > 0) {
-			executeSearch(controller.signal);
-		} else {
-			resetSearchAndPopulatedItems();
-		}
-		return () => {
-			controller.abort();
-		};
-	}, [executeSearch, query]);
-
 	const resultLabelType = isInvalidQuery ? 'warning' : undefined;
 
 	const resultLabel = useMemo(() => {
@@ -93,6 +81,18 @@ const SearchView = ({
 		},
 		[updateQuery]
 	);
+
+	useEffect(() => {
+		const controller = new AbortController();
+		if (query.length > 0) {
+			executeSearch(controller.signal);
+		} else {
+			resetSearchAndPopulatedItems();
+		}
+		return () => {
+			controller.abort();
+		};
+	}, [executeSearch, query]);
 
 	return (
 		<>
