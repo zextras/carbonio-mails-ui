@@ -58,6 +58,11 @@ describe('search view hooks', () => {
 				isSharedFolderIncluded: false
 			})
 		);
+
+		await act(async () => {
+			await result.current.executeSearch(new AbortController().signal);
+		});
+
 		await act(async () => {
 			await interceptor;
 		});
@@ -95,6 +100,10 @@ describe('search view hooks', () => {
 				isSharedFolderIncluded: false
 			})
 		);
+
+		await act(async () => {
+			await result.current.executeSearch(new AbortController().signal);
+		});
 
 		await act(async () => {
 			await interceptor;
@@ -140,6 +149,10 @@ describe('search view hooks', () => {
 		);
 
 		await act(async () => {
+			await result.current.executeSearch(new AbortController().signal);
+		});
+
+		await act(async () => {
 			await interceptor;
 		});
 
@@ -164,7 +177,7 @@ describe('search view hooks', () => {
 		};
 		createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', searchResponse);
 
-		renderHook(() =>
+		const { result } = renderHook(() =>
 			useRunSearch({
 				query: [
 					{
@@ -179,6 +192,10 @@ describe('search view hooks', () => {
 				isSharedFolderIncluded: false
 			})
 		);
+
+		await act(async () => {
+			await result.current.executeSearch(new AbortController().signal);
+		});
 
 		await waitFor(() => {
 			expect(renderHook(() => useConversationById('123')).result.current).toBeDefined();
@@ -223,6 +240,10 @@ describe('search view hooks', () => {
 				isSharedFolderIncluded: false
 			})
 		);
+
+		await act(async () => {
+			await result.current.executeSearch(new AbortController().signal);
+		});
 
 		await act(async () => {
 			await interceptor;
