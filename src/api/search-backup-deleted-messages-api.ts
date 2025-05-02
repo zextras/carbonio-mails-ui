@@ -4,7 +4,8 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { apiWrapper } from '../carbonio-ui-commons/helpers/api-wrapper';
+import axios from 'axios';
+
 import type {
 	SearchBackupDeletedMessagesResponse,
 	SearchBackupDeletedMessagesAPIProps
@@ -31,11 +32,11 @@ export async function searchBackupDeletedMessagesApi({
 	if (searchString) {
 		searchParams.set('searchString', searchString);
 	}
-
-	const apiCall = fetch(`${searchURL}?${searchParams}`, {
-		method: 'GET',
-		credentials: 'same-origin'
-	});
-
-	return apiWrapper(apiCall);
+	return axios
+		.get(`${searchURL}`, {
+			params: searchParams,
+			withCredentials: true
+		})
+		.then((res) => ({ data: res.data }))
+		.catch((error) => ({ error }));
 }
