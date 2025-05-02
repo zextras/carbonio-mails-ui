@@ -4,8 +4,6 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import axios from 'axios';
-
 import type {
 	SearchBackupDeletedMessagesResponse,
 	SearchBackupDeletedMessagesAPIProps
@@ -32,11 +30,10 @@ export async function searchBackupDeletedMessagesApi({
 	if (searchString) {
 		searchParams.set('searchString', searchString);
 	}
-	return axios
-		.get(`${searchURL}`, {
-			params: searchParams,
-			withCredentials: true
-		})
-		.then((res) => ({ data: res.data }))
+	return fetch(`${searchURL}?${searchParams}`, {
+		method: 'GET',
+		credentials: 'same-origin'
+	})
+		.then(async (res) => ({ data: (await res.json()) as SearchBackupDeletedMessagesResponse }))
 		.catch((error) => ({ error }));
 }

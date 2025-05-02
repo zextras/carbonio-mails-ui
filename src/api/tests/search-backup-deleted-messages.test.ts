@@ -4,31 +4,31 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import axios from 'axios';
+import { HttpResponse } from 'msw';
 
+import { createAPIInterceptor } from '../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { searchBackupDeletedMessagesApi } from '../search-backup-deleted-messages-api';
-
-jest.mock('axios');
-const mockedAxios = axios as jest.Mocked<typeof axios>;
 
 describe('search backup deleted messages', () => {
 	it('should return the correct response when status is 200', async () => {
 		const expectedResponseBody = { data: { messages: [{ id: '1' }] } };
 		const apiResponse = { messages: [{ id: '1' }] };
-		mockedAxios.get.mockResolvedValue({
-			data: apiResponse
-		});
+		createAPIInterceptor(
+			'get',
+			'/zx/backup/v1/searchDeleted',
+			HttpResponse.json(apiResponse, { status: 200 })
+		);
 
 		expect(await searchBackupDeletedMessagesApi({})).toMatchObject(expectedResponseBody);
 	});
 
 	it('should pass the correct parameters to the fetch call', async () => {
 		const mockedResponse = { messages: [{ id: '1' }] };
-
-		mockedAxios.get.mockResolvedValue({
-			data: mockedResponse
-		});
-
+		const interceptor = createAPIInterceptor(
+			'get',
+			'/zx/backup/v1/searchDeleted',
+			HttpResponse.json(mockedResponse, { status: 200 })
+		);
 		const response = await searchBackupDeletedMessagesApi({
 			startDate: new Date('2022-01-05T00:00:00.000+02:00'),
 			endDate: new Date('2022-01-06T00:00:00.000+02:00'),
@@ -36,15 +36,12 @@ describe('search backup deleted messages', () => {
 		});
 
 		expect(response).toEqual({ data: mockedResponse });
-		const calledUrl = mockedAxios.get.mock.calls[0][0];
-		const calledConfig = mockedAxios.get.mock.calls[0][1];
-		expect(calledUrl).toBe('/zx/backup/v1/searchDeleted');
-		expect(calledConfig?.params).toEqual(
-			new URLSearchParams({
-				after: '2022-01-04T22:00:00.000Z',
-				before: '2022-01-05T22:00:00.000Z',
-				searchString: 'test'
-			})
+		expect(interceptor.getCalledTimes()).toBe(1);
+		expect(interceptor.getLastRequest().url).toBe(
+			'http://localhost/zx/backup/v1/searchDeleted?' +
+				'after=2022-01-04T22%3A00%3A00.000Z&' +
+				'before=2022-01-05T22%3A00%3A00.000Z&' +
+				'searchString=test'
 		);
 	});
 });

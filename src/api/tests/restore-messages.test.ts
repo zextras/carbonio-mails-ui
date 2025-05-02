@@ -9,7 +9,7 @@ import { HttpResponse } from 'msw';
 import { createAPIInterceptor } from '../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { restoreMessagesApi } from '../restore-messages-api';
 
-describe('restorMessagesAPI', () => {
+describe('restoreMessagesAPI', () => {
 	describe('when backend is available', () => {
 		it('should reply with a status that is accepted', async () => {
 			createAPIInterceptor(

@@ -4,13 +4,14 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import axios from 'axios';
-
 export async function restoreMessagesApi(
 	messages: Array<string>
 ): Promise<object | { error: unknown }> {
-	return axios
-		.post('/zx/backup/v1/restoreMessages', { messages }, { withCredentials: true })
+	return fetch(`/zx/backup/v1/restoreMessages`, {
+		method: 'POST',
+		credentials: 'same-origin',
+		body: JSON.stringify({ messages })
+	})
 		.then(() => ({}))
 		.catch((error) => ({ error }));
 }
