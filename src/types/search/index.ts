@@ -17,7 +17,6 @@ export type SearchListProps = {
 	searchResults: Array<string>;
 	query: string;
 	loading: boolean;
-	filterCount: number;
 	setShowAdvanceFilters: (show: boolean) => void;
 	isInvalidQuery: boolean;
 	searchDisabled: boolean;
@@ -48,7 +47,6 @@ export type Query = Array<SearchQueryItem>;
 
 export type AdvancedFilterButtonProps = {
 	searchDisabled: boolean;
-	filterCount: number;
 	setShowAdvanceFilters: (arg: boolean) => void;
 	invalidQueryTooltip?: string;
 };

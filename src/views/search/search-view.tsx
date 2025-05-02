@@ -27,8 +27,6 @@ const SearchView = ({
 }: SearchViewProps): React.JSX.Element => {
 	useUpdateView();
 
-	// TODO: remove this before merge
-	const filterCount = 0;
 	const [query, updateQuery] = useQuery();
 	const isMessageView = useIsMessageView();
 	const [showAdvanceFilters, setShowAdvanceFilters] = useState(false);
@@ -120,7 +118,6 @@ const SearchView = ({
 										searchResults={searchResults.messageListIndex}
 										query={queryToString}
 										loading={loading}
-										filterCount={filterCount}
 										setShowAdvanceFilters={setShowAdvanceFilters}
 										isInvalidQuery={isInvalidQuery}
 										invalidQueryTooltip={invalidQueryTooltip}
@@ -132,7 +129,6 @@ const SearchView = ({
 										searchResults={searchResults.conversationListIndex}
 										query={queryToString}
 										loading={loading}
-										filterCount={filterCount}
 										setShowAdvanceFilters={setShowAdvanceFilters}
 										isInvalidQuery={isInvalidQuery}
 										invalidQueryTooltip={invalidQueryTooltip}
