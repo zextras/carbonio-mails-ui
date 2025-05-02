@@ -14,17 +14,16 @@ import {
 	mockContactInput
 } from '../../../carbonio-ui-commons/test/mocks/integrations/mock-contact-input';
 import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
-import { AdvancedFilterModalProps, SearchQueryItem } from '../../../types';
-import { AdvancedFilterModal } from '../advanced-filter-modal';
+import { SearchQueryItem } from '../../../types';
+import { AdvancedFilterModal, AdvancedFilterModalProps } from '../advanced-filter-modal';
 
 describe('Advanced filter modal', () => {
 	const props: AdvancedFilterModalProps = {
 		open: true,
 		onClose: jest.fn(),
 		query: [],
-		updateQuery: jest.fn(),
-		setIsSharedFolderIncluded: jest.fn(),
-		isSharedFolderIncluded: false
+		isSharedFolderIncludedInitialValue: false,
+		onSearchConfirm: jest.fn()
 	};
 	it('render the advanced filter modal', () => {
 		setupTest(<AdvancedFilterModal {...props} />);
@@ -68,16 +67,97 @@ describe('Advanced filter modal', () => {
 
 		expect(actionButton).toBeEnabled();
 	});
+
+	it('search button should be enabled if query is not empty', async () => {
+		const properties: AdvancedFilterModalProps = {
+			open: true,
+			onClose: jest.fn(),
+			query: [
+				{
+					id: 'query1',
+					label: 'keywords',
+					value: 'keyword'
+				}
+			],
+			onSearchConfirm: jest.fn(),
+			isSharedFolderIncludedInitialValue: false
+		};
+		setupTest(<AdvancedFilterModal {...properties} />);
+		const actionButton = screen.getByRole('button', { name: /action\.search/i });
+
+		expect(actionButton).toBeEnabled();
+	});
+
+	it('search button should be disabled if there is no query', async () => {
+		const properties: AdvancedFilterModalProps = {
+			open: true,
+			onClose: jest.fn(),
+			query: [],
+			onSearchConfirm: jest.fn(),
+			isSharedFolderIncludedInitialValue: false
+		};
+		setupTest(<AdvancedFilterModal {...properties} />);
+		const actionButton = screen.getByRole('button', { name: /action\.search/i });
+
+		expect(actionButton).toBeDisabled();
+	});
+
+	it('should call onSearchConfirm with correct args when confirm button is clicked', async () => {
+		const mockOnSearchConfirm = jest.fn();
+		const mockOnClose = jest.fn();
+
+		const properties: AdvancedFilterModalProps = {
+			open: true,
+			onClose: mockOnClose,
+			query: [],
+			onSearchConfirm: mockOnSearchConfirm,
+			isSharedFolderIncludedInitialValue: false
+		};
+
+		const { user } = setupTest(<AdvancedFilterModal {...properties} />);
+
+		const confirmButton = screen.getByRole('button', { name: /action\.search/i });
+		expect(confirmButton).toBeInTheDocument();
+		expect(confirmButton).toBeDisabled();
+
+		const keywordInput = screen.getByTestId('keywords-input');
+		const keywordInputEle = within(keywordInput).getByRole('textbox');
+		await user.click(keywordInputEle);
+		await user.clear(keywordInputEle);
+		await user.type(keywordInputEle, 'test keyword');
+		await user.click(keywordInput);
+
+		expect(confirmButton).toBeEnabled();
+
+		await user.click(confirmButton);
+
+		await waitFor(() => {
+			expect(mockOnSearchConfirm).toHaveBeenCalledTimes(1);
+			// eslint-disable-next-line testing-library/no-wait-for-multiple-assertions
+			expect(mockOnSearchConfirm).toHaveBeenCalledWith(
+				expect.objectContaining({
+					query: [
+						expect.objectContaining({
+							label: 'test keyword'
+						})
+					],
+					includeSharedFolders: false
+				})
+			);
+		});
+
+		expect(mockOnClose).toHaveBeenCalledTimes(1);
+	});
+
 	it('should add "received from" to query with value and label including "from:" after adding a value in the input', async () => {
-		const mockUpdateQuery = jest.fn();
+		const mockOnSearchConfirm = jest.fn();
 		const { user } = setupTest(
 			<AdvancedFilterModal
 				open
-				isSharedFolderIncluded={false}
+				isSharedFolderIncludedInitialValue={false}
 				onClose={jest.fn()}
 				query={[]}
-				updateQuery={mockUpdateQuery}
-				setIsSharedFolderIncluded={jest.fn()}
+				onSearchConfirm={mockOnSearchConfirm}
 			/>
 		);
 		const sentTo = screen.getByTestId('received-from-input');
@@ -87,25 +167,31 @@ describe('Advanced filter modal', () => {
 		const confirmButton = screen.getByText('action.search');
 		await user.click(confirmButton);
 		await waitFor(() => {
-			expect(mockUpdateQuery).toHaveBeenCalledWith([
+			expect(mockOnSearchConfirm).toHaveBeenCalledTimes(1);
+			// eslint-disable-next-line testing-library/no-wait-for-multiple-assertions
+			expect(mockOnSearchConfirm).toHaveBeenCalledWith(
 				expect.objectContaining({
-					label: 'from:validEmail@test.com',
-					value: 'from:validEmail@test.com'
+					query: [
+						expect.objectContaining({
+							label: 'from:validEmail@test.com',
+							value: 'from:validEmail@test.com'
+						})
+					],
+					includeSharedFolders: false
 				})
-			]);
+			);
 		});
 	});
 
 	it('should add "sent to" to query with value and label including "to:" after adding a value in the input', async () => {
-		const mockUpdateQuery = jest.fn();
+		const mockOnSearchConfirm = jest.fn();
 		const { user } = setupTest(
 			<AdvancedFilterModal
 				open
-				isSharedFolderIncluded={false}
+				isSharedFolderIncludedInitialValue={false}
 				onClose={jest.fn()}
 				query={[]}
-				updateQuery={mockUpdateQuery}
-				setIsSharedFolderIncluded={jest.fn()}
+				onSearchConfirm={mockOnSearchConfirm}
 			/>
 		);
 		const sentTo = screen.getByTestId('sent-to-input');
@@ -115,16 +201,23 @@ describe('Advanced filter modal', () => {
 		const confirmButton = screen.getByText('action.search');
 		await user.click(confirmButton);
 		await waitFor(() => {
-			expect(mockUpdateQuery).toHaveBeenCalledWith([
+			expect(mockOnSearchConfirm).toHaveBeenCalledTimes(1);
+			// eslint-disable-next-line testing-library/no-wait-for-multiple-assertions
+			expect(mockOnSearchConfirm).toHaveBeenCalledWith(
 				expect.objectContaining({
-					label: 'to:validEmail@test.com',
-					value: 'to:validEmail@test.com'
+					query: [
+						expect.objectContaining({
+							label: 'to:validEmail@test.com',
+							value: 'to:validEmail@test.com'
+						})
+					],
+					includeSharedFolders: false
 				})
-			]);
+			);
 		});
 	});
 	it('should keep previous query first value after adding a new value in "sent to" input', async () => {
-		const mockUpdateQuery = jest.fn();
+		const mockOnSearchConfirm = jest.fn();
 		const query: SearchQueryItem = {
 			id: 'query1',
 			label: 'from:someone@test.com',
@@ -133,11 +226,10 @@ describe('Advanced filter modal', () => {
 		const { user } = setupTest(
 			<AdvancedFilterModal
 				open
-				isSharedFolderIncluded={false}
+				isSharedFolderIncludedInitialValue={false}
 				onClose={jest.fn()}
 				query={[query]}
-				updateQuery={mockUpdateQuery}
-				setIsSharedFolderIncluded={jest.fn()}
+				onSearchConfirm={mockOnSearchConfirm}
 			/>
 		);
 		const sentTo = screen.getByTestId('sent-to-input');
@@ -147,18 +239,25 @@ describe('Advanced filter modal', () => {
 		const confirmButton = screen.getByText('action.search');
 		await user.click(confirmButton);
 		await waitFor(() => {
-			expect(mockUpdateQuery).toHaveBeenCalledWith([
+			expect(mockOnSearchConfirm).toHaveBeenCalledTimes(1);
+			// eslint-disable-next-line testing-library/no-wait-for-multiple-assertions
+			expect(mockOnSearchConfirm).toHaveBeenCalledWith(
 				expect.objectContaining({
-					id: 'query1',
-					label: 'from:someone@test.com',
-					value: 'from:someone@test.com'
-				}),
-				expect.objectContaining({
-					id: 'validEmail@test.com',
-					label: 'to:validEmail@test.com',
-					value: 'to:validEmail@test.com'
+					query: [
+						expect.objectContaining({
+							id: 'query1',
+							label: 'from:someone@test.com',
+							value: 'from:someone@test.com'
+						}),
+						expect.objectContaining({
+							id: 'validEmail@test.com',
+							label: 'to:validEmail@test.com',
+							value: 'to:validEmail@test.com'
+						})
+					],
+					includeSharedFolders: false
 				})
-			]);
+			);
 		});
 	});
 
@@ -167,15 +266,14 @@ describe('Advanced filter modal', () => {
 		valueToAdd.actions = [EDIT_ACTION];
 		mockContactInput({ valueToAdd });
 
-		const mockUpdateQuery = jest.fn();
+		const mockOnSearchConfirm = jest.fn();
 		const { user } = setupTest(
 			<AdvancedFilterModal
 				open
-				isSharedFolderIncluded={false}
+				isSharedFolderIncludedInitialValue={false}
 				onClose={jest.fn()}
 				query={[]}
-				updateQuery={mockUpdateQuery}
-				setIsSharedFolderIncluded={jest.fn()}
+				onSearchConfirm={mockOnSearchConfirm}
 			/>
 		);
 		const sentTo = screen.getByTestId('sent-to-input');
@@ -188,14 +286,21 @@ describe('Advanced filter modal', () => {
 		const confirmButton = screen.getByText('action.search');
 		await user.click(confirmButton);
 		await waitFor(() => {
-			expect(mockUpdateQuery).toHaveBeenCalledWith([
+			expect(mockOnSearchConfirm).toHaveBeenCalledTimes(1);
+			// eslint-disable-next-line testing-library/no-wait-for-multiple-assertions
+			expect(mockOnSearchConfirm).toHaveBeenCalledWith(
 				expect.objectContaining({
-					actions: []
-				}),
-				expect.objectContaining({
-					actions: []
+					query: [
+						expect.objectContaining({
+							actions: []
+						}),
+						expect.objectContaining({
+							actions: []
+						})
+					],
+					includeSharedFolders: false
 				})
-			]);
+			);
 		});
 	});
 	it('should display "to" and "from" with edit action in their inputs', async () => {
@@ -203,16 +308,15 @@ describe('Advanced filter modal', () => {
 		valueToAdd.actions = [EDIT_ACTION];
 		mockContactInput({ valueToAdd });
 
-		const mockUpdateQuery = jest.fn();
+		const mockOnSearchConfirm = jest.fn();
 
 		const { user } = setupTest(
 			<AdvancedFilterModal
 				open
-				isSharedFolderIncluded={false}
+				isSharedFolderIncludedInitialValue={false}
 				onClose={jest.fn()}
 				query={[]}
-				updateQuery={mockUpdateQuery}
-				setIsSharedFolderIncluded={jest.fn()}
+				onSearchConfirm={mockOnSearchConfirm}
 			/>
 		);
 
@@ -240,9 +344,8 @@ describe('Advanced filter modal', () => {
 					value: 'keyword'
 				}
 			],
-			updateQuery: jest.fn(),
-			setIsSharedFolderIncluded: jest.fn(),
-			isSharedFolderIncluded: false
+			onSearchConfirm: jest.fn(),
+			isSharedFolderIncludedInitialValue: false
 		};
 		setupTest(<AdvancedFilterModal {...properties} />);
 		const actionButton = screen.getByRole('button', { name: /action\.reset/i });
@@ -260,8 +363,8 @@ describe('Advanced filter modal', () => {
 		expect(actionButton).toBeInTheDocument();
 		expect(actionButton).toBeDisabled();
 	});
-	it('should clear the query when reset filters button is clicked', async () => {
-		const updateQueryMock = jest.fn();
+	it('should disable search button when reset filters button is clicked', async () => {
+		const mockOnSearchConfirm = jest.fn();
 		const properties: AdvancedFilterModalProps = {
 			open: true,
 			onClose: jest.fn(),
@@ -272,31 +375,31 @@ describe('Advanced filter modal', () => {
 					value: 'some keywords'
 				}
 			],
-			updateQuery: updateQueryMock,
-			setIsSharedFolderIncluded: jest.fn(),
-			isSharedFolderIncluded: false
+			onSearchConfirm: mockOnSearchConfirm,
+			isSharedFolderIncludedInitialValue: false
 		};
 
 		const { user } = setupTest(<AdvancedFilterModal {...properties} />);
-
+		const confirmButton = screen.getByRole('button', { name: /action\.search/i });
 		const resetButton = screen.getByRole('button', { name: /action\.reset/i });
+
+		expect(confirmButton).toBeEnabled();
 		expect(resetButton).toBeEnabled();
+
 		await user.click(resetButton);
-		await waitFor(() => {
-			expect(updateQueryMock).toHaveBeenCalledWith([]);
-		});
+
+		expect(confirmButton).toBeDisabled();
 	});
 
 	it('should include email status in the query', async () => {
 		jest.spyOn(console, 'error').mockImplementation();
-		const updateQueryMock = jest.fn();
+		const onSearchConfirmMock = jest.fn();
 		const properties: AdvancedFilterModalProps = {
 			open: true,
 			onClose: jest.fn(),
 			query: [],
-			updateQuery: updateQueryMock,
-			setIsSharedFolderIncluded: jest.fn(),
-			isSharedFolderIncluded: false
+			onSearchConfirm: onSearchConfirmMock,
+			isSharedFolderIncludedInitialValue: false
 		};
 		const { user } = setupTest(<AdvancedFilterModal {...properties} />);
 
@@ -316,11 +419,18 @@ describe('Advanced filter modal', () => {
 
 		await user.click(actionButton);
 		await waitFor(() => {
-			expect(updateQueryMock).toHaveBeenCalledWith([
+			expect(onSearchConfirmMock).toHaveBeenCalledTimes(1);
+			// eslint-disable-next-line testing-library/no-wait-for-multiple-assertions
+			expect(onSearchConfirmMock).toHaveBeenCalledWith(
 				expect.objectContaining({
-					label: 'Is:read'
+					query: [
+						expect.objectContaining({
+							label: 'Is:read'
+						})
+					],
+					includeSharedFolders: false
 				})
-			]);
+			);
 		});
 	});
 });
