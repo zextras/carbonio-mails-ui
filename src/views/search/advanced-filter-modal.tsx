@@ -16,7 +16,6 @@ import {
 	Tooltip,
 	Text
 } from '@zextras/carbonio-design-system';
-import type { QueryChip } from '@zextras/carbonio-search-ui';
 import { t } from '@zextras/carbonio-shell-ui';
 import { concat, filter, includes, map, reject } from 'lodash';
 
@@ -27,21 +26,27 @@ import SizeSmallerSizeLargerRow from './parts/size-smaller-size-larger-row';
 import SubjectKeywordRow from './parts/subject-keyword-row';
 import TagFolderRow from './parts/tag-folder-row';
 import ToggleFilters from './parts/toggle-filters';
-import { useDisabled } from './parts/use-disable-hooks';
 import { getChipItems } from './utils';
-import { ZIMBRA_STANDARD_COLORS } from '../../carbonio-ui-commons/constants/utils';
+import { ZIMBRA_STANDARD_COLORS } from '../../carbonio-ui-commons/constants';
 import { ContactInputItem } from '../../carbonio-ui-commons/integrations/types';
 import { getTags } from '../../carbonio-ui-commons/store/zustand/tags';
 import { ScrollableContainer } from '../../commons/scrollable-container';
-import { AdvancedFilterModalProps, KeywordState } from '../../types';
+import { KeywordState, Query } from '../../types';
+
+export type AdvancedFilterModalProps = {
+	open: boolean;
+	onClose: () => void;
+	query: Query;
+	isSharedFolderIncludedInitialValue: boolean;
+	onSearchConfirm: (request: { query: Query; includeSharedFolders: boolean }) => void;
+};
 
 export const AdvancedFilterModal = ({
 	open,
 	onClose,
 	query,
-	updateQuery,
-	setIsSharedFolderIncluded,
-	isSharedFolderIncluded
+	isSharedFolderIncludedInitialValue,
+	onSearchConfirm
 }: AdvancedFilterModalProps): React.JSX.Element => {
 	const [otherKeywords, setOtherKeywords] = useState<KeywordState>([]);
 	const [attachmentFilter, setAttachmentFilter] = useState<KeywordState>([]);
@@ -61,8 +66,9 @@ export const AdvancedFilterModal = ({
 	const [sizeLarger, setSizeLarger] = useState<KeywordState>([]);
 	const [sizeSmallerErrorLabel, setSizeSmallerErrorLabel] = useState('');
 	const [sizeLargerErrorLabel, setSizeLargerErrorLabel] = useState('');
-	const [isSharedFolderIncludedTobe, setIsSharedFolderIncludedTobe] =
-		useState(isSharedFolderIncluded);
+	const [isSharedFolderIncluded, setIsSharedFolderIncluded] = useState(
+		isSharedFolderIncludedInitialValue
+	);
 	const queryArray = useMemo(() => ['has:attachment', 'is:flagged', 'is:unread'], []);
 	const tagOptions = useMemo(
 		() =>
@@ -91,6 +97,8 @@ export const AdvancedFilterModal = ({
 	const [tag, setTag] = useState<KeywordState>([]);
 
 	useEffect(() => {
+		if (!open) return;
+
 		const updatedQuery = map(
 			filter(
 				query,
@@ -191,7 +199,7 @@ export const AdvancedFilterModal = ({
 		setFolder(folderInQuery);
 
 		setOtherKeywords(updatedQuery);
-	}, [query, queryArray]);
+	}, [open, query, queryArray]);
 
 	const resetFilters = useCallback(() => {
 		setOtherKeywords([]);
@@ -203,21 +211,13 @@ export const AdvancedFilterModal = ({
 		setSizeLarger([]);
 		setSizeSmallerErrorLabel('');
 		setSizeLargerErrorLabel('');
-		updateQuery([]);
 		setReceivedFromAddresses([]);
 		setSentToAddresses([]);
 		setFolder([]);
 		setTag([]);
-		setIsSharedFolderIncluded(isSharedFolderIncluded);
-		setIsSharedFolderIncludedTobe(isSharedFolderIncluded);
-	}, [
-		updateQuery,
-		setIsSharedFolderIncluded,
-		isSharedFolderIncluded,
-		setIsSharedFolderIncludedTobe
-	]);
+	}, []);
 
-	const queryToBe = useMemo<Array<QueryChip>>(
+	const queryToBe = useMemo<Query>(
 		() =>
 			concat(
 				otherKeywords,
@@ -263,12 +263,17 @@ export const AdvancedFilterModal = ({
 	);
 
 	const onConfirm = useCallback(() => {
-		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-		// @ts-ignore
-		updateQuery(queryToBe);
-		setIsSharedFolderIncluded(isSharedFolderIncludedTobe);
-		onClose();
-	}, [updateQuery, queryToBe, setIsSharedFolderIncluded, isSharedFolderIncludedTobe, onClose]);
+		const controller = new AbortController();
+		try {
+			onSearchConfirm({ query: queryToBe, includeSharedFolders: isSharedFolderIncluded });
+			onClose();
+		} catch (error) {
+			controller.abort();
+		}
+		return () => {
+			controller.abort();
+		};
+	}, [onSearchConfirm, queryToBe, isSharedFolderIncluded, onClose]);
 
 	const subjectKeywordRowProps = useMemo(
 		() => ({
@@ -369,27 +374,15 @@ export const AdvancedFilterModal = ({
 			setUnreadFilter,
 			setFlaggedFilter,
 			setAttachmentFilter,
-			setIsSharedFolderIncludedTobe,
-			isSharedFolderIncludedTobe
+			setIsSharedFolderIncludedTobe: setIsSharedFolderIncluded,
+			isSharedFolderIncludedTobe: isSharedFolderIncluded
 		}),
-		[query, isSharedFolderIncludedTobe]
+		[query, isSharedFolderIncluded]
 	);
 
-	const disabled = useDisabled({
-		query,
-		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-		// @ts-ignore
-		queryToBe,
-		isSharedFolderIncluded,
-		isSharedFolderIncludedTobe
-	});
-
 	const secondaryDisabled = useMemo(
-		() =>
-			query.length === 0 &&
-			queryToBe.length === 0 &&
-			isSharedFolderIncludedTobe === isSharedFolderIncluded,
-		[query.length, queryToBe.length, isSharedFolderIncludedTobe, isSharedFolderIncluded]
+		() => query.length === 0 && queryToBe.length === 0,
+		[query.length, queryToBe.length]
 	);
 
 	return (
@@ -416,7 +409,7 @@ export const AdvancedFilterModal = ({
 			<Divider />
 			<ModalFooter
 				onConfirm={onConfirm}
-				confirmDisabled={disabled}
+				confirmDisabled={queryToBe.length === 0}
 				secondaryActionDisabled={secondaryDisabled}
 				confirmLabel={t('action.search', 'Search')}
 				secondaryActionLabel={t('action.reset', 'Reset filters')}

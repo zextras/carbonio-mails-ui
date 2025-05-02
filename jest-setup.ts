@@ -24,7 +24,7 @@ import { handleGetMsgRequest } from './src/tests/mocks/network/msw/handle-get-ms
 
 failOnConsole({
 	...getFailOnConsoleDefaultConfig(),
-	allowMessage: (message) =>
+	silenceMessage: (message) =>
 		message.includes('React does not recognize the `isGeneric` prop on a DOM element')
 });
 
