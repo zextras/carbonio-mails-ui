@@ -35,17 +35,20 @@ const AttachmentTypeEmailStatusRow: FC<AttachTypeEmailStatusRowPropType> = ({
 		() => emailStatusItems,
 		[emailStatusItems]
 	);
+    const onChange = useCallback((state: ChipItem[], stateHandler: (state: ChipItem[]) => void) => {
+		stateHandler(state);
+	}, []);
 
 	const chipOnAdd = useCallback(
 		({ items, label, preText, hasAvatar, isGeneric, isQueryFilter }: ChipOnAddProps): ChipOnAdd => {
-			const values = items.filter((item: ChipOnAddItem) => item.label === label)[0];
+			const value = items.filter((item: ChipOnAddItem) => item.label === label)[0];
 			return {
 				label: `${preText}:${label}`,
 				hasAvatar,
 				isGeneric,
 				isQueryFilter,
-				value: values.searchString,
-				avatarIcon: values.icon ?? 'Tag',
+				value: value.searchString,
+				avatarIcon: value.icon ?? 'Tag',
 				avatarColor: 'gray6'
 			};
 		},
@@ -79,12 +82,12 @@ const AttachmentTypeEmailStatusRow: FC<AttachTypeEmailStatusRowPropType> = ({
 	);
 
 	const attachmentTypeOnChange = useCallback(
-		(value: ChipItem[]): void => setAttachmentType(value),
+		(value: ChipItem[]): void => onChange(value, setAttachmentType),
 		[setAttachmentType]
 	);
 
 	const emailStatusOnChange = useCallback(
-		(value: ChipItem[]): void => setEmailStatus(value),
+		(value: ChipItem[]): void => onChange(value, setEmailStatus),
 		[setEmailStatus]
 	);
 
@@ -97,32 +100,26 @@ const AttachmentTypeEmailStatusRow: FC<AttachTypeEmailStatusRowPropType> = ({
 		() => t('label.attachment_status', 'Status of e-mail item'),
 		[]
 	);
-	const attachmentIcon = 'ChevronDown';
-	const emailStatusIcon = 'ChevronDown';
-	const attachmentTypeBottomBorderColor = 'transparent';
-	const emailStatusBottomBorderColor = 'transparent';
 
 	return (
 		<Container padding={{ bottom: 'small', top: 'medium' }} orientation="horizontal">
 			<Container padding={{ right: 'extrasmall' }} maxWidth="50%">
 				<ChipInput
+					disabled
 					placeholder={attachmentTypePlaceholder}
 					value={attachmentType}
 					options={attachmentTypeOptions}
-					background="gray5"
 					disableOptions={false}
+					background="gray5"
 					onAdd={attachmentTypeChipOnAdd}
 					onChange={attachmentTypeOnChange}
-					maxChips={1}
-					confirmChipOnBlur
-					icon={attachmentIcon}
-					bottomBorderColor={attachmentTypeBottomBorderColor}
+					icon="ChevronDown"
+					requireUniqueChips
 				/>
 			</Container>
 			<Container padding={{ left: 'extrasmall' }} maxWidth="50%">
 				<ChipInput
-					dropdownMaxHeight="40%"
-					confirmChipOnBlur
+					disabled
 					placeholder={emailStatusPlaceholder}
 					value={emailStatus}
 					options={emailStatusOptions}
@@ -130,9 +127,9 @@ const AttachmentTypeEmailStatusRow: FC<AttachTypeEmailStatusRowPropType> = ({
 					disableOptions={false}
 					onAdd={emailStatusChipOnAdd}
 					onChange={emailStatusOnChange}
-					icon={emailStatusIcon}
-					bottomBorderColor={emailStatusBottomBorderColor}
-					maxHeight="40%"
+					icon="ChevronDown"
+					bottomBorderColor="transparent"
+					requireUniqueChips
 				/>
 			</Container>
 		</Container>

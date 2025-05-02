@@ -17,7 +17,6 @@ export type SearchListProps = {
 	searchResults: Array<string>;
 	query: string;
 	loading: boolean;
-	filterCount: number;
 	setShowAdvanceFilters: (show: boolean) => void;
 	isInvalidQuery: boolean;
 	searchDisabled: boolean;
@@ -46,19 +45,8 @@ export type SearchQueryItem = {
 
 export type Query = Array<SearchQueryItem>;
 
-export type AdvancedFilterModalProps = {
-	open: boolean;
-	onClose: () => void;
-	query: Query;
-	updateQuery: (arg: Array<QueryChip>) => void;
-	isSharedFolderIncluded: boolean;
-	setIsSharedFolderIncluded: (arg: boolean) => void;
-	includeSharedItemsInSearchPref: boolean;
-};
-
 export type AdvancedFilterButtonProps = {
 	searchDisabled: boolean;
-	filterCount: number;
 	setShowAdvanceFilters: (arg: boolean) => void;
 	invalidQueryTooltip?: string;
 };

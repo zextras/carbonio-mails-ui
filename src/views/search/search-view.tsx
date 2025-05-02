@@ -11,12 +11,14 @@ import { setAppContext, t, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { Route, Routes } from 'react-router-dom';
 
 import { AdvancedFilterModal } from './advanced-filter-modal';
+import { Query } from '../../types';
 import { SearchConversationList } from './list/conversation/search-conversation-list';
 import { SearchMessageList } from './list/message/search-message-list';
 import SearchPanel from './panel/search-panel';
 import { useIsMessageView, useRunSearch } from './search-view-hooks';
 import { useUpdateView } from '../../carbonio-ui-commons/hooks/use-update-view';
 import { API_REQUEST_STATUS } from '../../constants';
+import { resetSearchAndPopulatedItems } from '../../store/emails/store';
 
 const SearchView = ({
 	useDisableSearch,
@@ -43,7 +45,7 @@ const SearchView = ({
 		setAppContext({ isMessageView, count, setCount });
 	}, [count, isMessageView]);
 
-	const { searchDisabled, filterCount, searchResults, isInvalidQuery, queryToString } =
+	const { searchDisabled, searchResults, isInvalidQuery, queryToString, executeSearch } =
 		useRunSearch({
 			query,
 			updateQuery,
@@ -70,9 +72,25 @@ const SearchView = ({
 
 	const loading = searchResults.status === API_REQUEST_STATUS.pending;
 
-	const onCloseCallback = useCallback(() => {
-		setShowAdvanceFilters(false);
-	}, [setShowAdvanceFilters]);
+	const onModalConfirm = useCallback(
+		(request: { query: Query; includeSharedFolders: boolean }) => {
+			setIsSharedFolderIncluded(request.includeSharedFolders);
+			updateQuery(request.query);
+		},
+		[updateQuery]
+	);
+
+	useEffect(() => {
+		const controller = new AbortController();
+		if (query.length > 0) {
+			executeSearch(controller.signal);
+		} else {
+			resetSearchAndPopulatedItems();
+		}
+		return () => {
+			controller.abort();
+		};
+	}, [executeSearch, query]);
 
 	return (
 		<>
@@ -100,7 +118,6 @@ const SearchView = ({
 										searchResults={searchResults.messageListIndex}
 										query={queryToString}
 										loading={loading}
-										filterCount={filterCount}
 										setShowAdvanceFilters={setShowAdvanceFilters}
 										isInvalidQuery={isInvalidQuery}
 										invalidQueryTooltip={invalidQueryTooltip}
@@ -112,7 +129,6 @@ const SearchView = ({
 										searchResults={searchResults.conversationListIndex}
 										query={queryToString}
 										loading={loading}
-										filterCount={filterCount}
 										setShowAdvanceFilters={setShowAdvanceFilters}
 										isInvalidQuery={isInvalidQuery}
 										invalidQueryTooltip={invalidQueryTooltip}
@@ -134,14 +150,11 @@ const SearchView = ({
 				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 				// @ts-ignore
 				query={query}
-				// TOFIX-SHELL: fix updateQUeryFunction inside shell type
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-				// @ts-ignore
-				updateQuery={updateQuery}
-				isSharedFolderIncluded={isSharedFolderIncluded}
-				setIsSharedFolderIncluded={setIsSharedFolderIncluded}
 				open={showAdvanceFilters}
-				onClose={onCloseCallback}
+				onSearchConfirm={onModalConfirm}
+				setIsSharedFolderIncluded={setIsSharedFolderIncluded}
+				isSharedFolderIncludedInitialValue={isSharedFolderIncluded}
+				onClose={(): void => setShowAdvanceFilters(false)}
 				includeSharedItemsInSearchPref={includeSharedItemsInSearch}
 			/>
 		</>

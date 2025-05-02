@@ -169,7 +169,7 @@ export const emailStatusItemsConstant = (t: TFunction): Array<EmailStatusItemsCo
 	{
 		id: 'received-by-me',
 		label: t('email_status.received', 'received by me'),
-		searchString: 'is:recevided'
+		searchString: 'is:received'
 	},
 	{
 		id: 'answered-by-me',
