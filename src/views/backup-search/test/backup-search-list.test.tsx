@@ -72,7 +72,7 @@ describe('Backup search list', () => {
 		const apiInterceptor = createAPIInterceptor(
 			'post',
 			'/zx/backup/v1/restoreMessages',
-			HttpResponse.json(null, { status: 202 })
+			new HttpResponse(null, { status: 204 })
 		);
 		useBackupSearchStore.getState().setMessages([message1]);
 
