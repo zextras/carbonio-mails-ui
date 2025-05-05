@@ -12,6 +12,7 @@ import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
 import { ZIMBRA_STANDARD_COLORS } from '../../../carbonio-ui-commons/constants/utils';
 import { getFolder } from '../../../carbonio-ui-commons/store/zustand/folder';
+import { generateFolder } from '../../../carbonio-ui-commons/test/mocks/folders/folders-generator';
 import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { populateFoldersStore } from '../../../carbonio-ui-commons/test/mocks/store/folders';
 import { buildSoapErrorResponseBody } from '../../../carbonio-ui-commons/test/mocks/utils/soap';
@@ -20,6 +21,10 @@ import { Folder, FolderView } from '../../../carbonio-ui-commons/types/folder';
 import { SoapFolderAction } from '../../../types';
 import { EditModal } from '../edit-modal';
 
+const aFolderWithoutSharePermission = (folder: Partial<Folder> = {}): Folder => ({
+	...generateFolder(folder),
+	acl: undefined
+});
 describe('edit-modal', () => {
 	test('edit the folder excepting the system folders', async () => {
 		const closeModal = jest.fn();
@@ -56,10 +61,10 @@ describe('edit-modal', () => {
 			{}
 		);
 
-		expect(screen.getByText(/label\.folder_name/i)).toBeInTheDocument();
-		expect(screen.getByText(/label\.folder_name/i)).toBeEnabled();
+		const folderInputElement = screen.getByRole('textbox', { name: /folder name/i });
+		expect(folderInputElement).toBeEnabled();
 
-		const selectColor = screen.getByText(/label\.select_color/i);
+		const selectColor = screen.getByText(/select color/i);
 		expect(selectColor).toBeInTheDocument();
 		await act(async () => {
 			await user.click(selectColor);
@@ -112,9 +117,9 @@ describe('edit-modal', () => {
 			{}
 		);
 
-		expect(screen.getByText(/label\.folder_name/i)).toBeInTheDocument();
+		expect(screen.getByText(/folder name/i)).toBeInTheDocument();
 
-		const selectColor = screen.getByText(/label\.select_color/i);
+		const selectColor = screen.getByText(/select color/i);
 		expect(selectColor).toBeInTheDocument();
 		await act(async () => {
 			await user.click(selectColor);
@@ -165,8 +170,8 @@ describe('edit-modal', () => {
 
 		setupTest(<EditModal onClose={(): void => closeModal()} folder={folder} />, {});
 
-		expect(screen.getByText(/label\.folder_name/i)).toBeInTheDocument();
-		expect(screen.getByText(/label\.folder_name/i)).toBeEnabled();
+		expect(screen.getByText(/folder name/i)).toBeInTheDocument();
+		expect(screen.getByText(/folder name/i)).toBeEnabled();
 		const retentionPolicy = within(screen.getByTestId('retention_policy-icon')).getByTestId(
 			'icon: ChevronDownOutline'
 		);
@@ -205,8 +210,8 @@ describe('edit-modal', () => {
 
 		setupTest(<EditModal onClose={(): void => closeModal()} folder={folder} />, {});
 
-		expect(screen.getByText(/label\.folder_name/i)).toBeInTheDocument();
-		expect(screen.getByText(/label\.folder_name/i)).toBeEnabled();
+		expect(screen.getByText(/folder name/i)).toBeInTheDocument();
+		expect(screen.getByText(/folder name/i)).toBeEnabled();
 		const retentionPolicy = within(screen.getByTestId('retention_policy-icon')).getByTestId(
 			'icon: ChevronDownOutline'
 		);
@@ -360,54 +365,77 @@ describe('edit-modal', () => {
 		expect(editButton).toBeEnabled();
 	});
 
-	test('error message display and edit button disable if syatem folder name use', async () => {
-		const closeModal = jest.fn();
+	describe('Folder name input', () => {
+		it('should disable the submit button when folder name input is empty', async () => {
+			const folder: Folder = aFolderWithoutSharePermission({ name: 'Test' });
 
-		const folder: Folder = {
-			id: '106',
-			uuid: faker.string.uuid(),
-			name: 'Confluence',
-			absFolderPath: '/Inbox/Confluence',
-			l: FOLDERS.INBOX,
-			luuid: faker.string.uuid(),
-			checked: false,
-			f: 'u',
-			u: 25,
-			view: 'message' as FolderView,
-			rev: 27896,
-			ms: 27896,
-			n: 101,
-			s: 5550022,
-			i4ms: 33607,
-			i4next: 17183,
-			activesyncdisabled: false,
-			webOfflineSyncDays: 0,
-			recursive: false,
-			deletable: true,
-			isLink: false,
-			children: [],
-			parent: undefined,
-			depth: 2
-		};
+			const { user } = setupTest(<EditModal onClose={jest.fn()} folder={folder} />, {});
 
-		const { user } = setupTest(
-			<EditModal onClose={(): void => closeModal()} folder={folder} />,
-			{}
-		);
+			const newFolder = screen.getByTestId('folder-name');
+			const folderInputElement = within(newFolder).getByRole('textbox');
+			expect(folderInputElement).toHaveValue('Test');
+			await user.clear(folderInputElement);
+			expect(folderInputElement).toHaveValue('');
 
-		expect(screen.getByTestId('folder-name')).toBeInTheDocument();
-		const newFolder = screen.getByTestId('folder-name');
-		const folderInputElement = within(newFolder).getByRole('textbox');
-		expect(folderInputElement).toBeEnabled();
-		expect(newFolder).toBeInTheDocument();
-
-		// Insert the new folder name into the text input with system folder name
-		await user.type(folderInputElement, '/folders.inbox/i');
-		expect(screen.getByTestId('rename-error-msg')).toBeVisible();
-
-		const editButton = screen.getByRole('button', {
-			name: /label\.edit/i
+			const editButton = screen.getByRole('button', {
+				name: /label\.edit/i
+			});
+			expect(editButton).toBeDisabled();
 		});
-		expect(editButton).toBeDisabled();
+
+		it('should enable the edit submit button when folder name input is not empty', async () => {
+			const folder: Folder = aFolderWithoutSharePermission({ name: 'Test' });
+
+			setupTest(<EditModal onClose={jest.fn()} folder={folder} />, {});
+
+			const newFolder = screen.getByTestId('folder-name');
+			const folderInputElement = within(newFolder).getByRole('textbox');
+			expect(folderInputElement).toHaveValue('Test');
+
+			const editButton = screen.getByRole('button', {
+				name: /label\.edit/i
+			});
+			expect(editButton).toBeEnabled();
+		});
+
+		it('should display the "Cannot use a system folder name" error when folder name input is equal to a system folder', async () => {
+			const folder: Folder = aFolderWithoutSharePermission({ name: 'Test' });
+
+			const { user } = setupTest(<EditModal onClose={jest.fn()} folder={folder} />, {});
+
+			const newFolder = screen.getByTestId('folder-name');
+			const folderInputElement = within(newFolder).getByRole('textbox');
+			expect(folderInputElement).toHaveValue('Test');
+			await user.clear(folderInputElement);
+			await user.type(folderInputElement, 'Inbox');
+
+			expect(await screen.findByText('You cannot rename a folder as a system one')).toBeVisible();
+		});
+
+		it('should display the error message "Special characters not allowed" when folder name uses special chars', async () => {
+			const folder: Folder = aFolderWithoutSharePermission({ name: 'Test' });
+
+			const { user } = setupTest(
+				<EditModal onClose={(): void => jest.fn()()} folder={folder} />,
+				{}
+			);
+
+			expect(screen.getByTestId('folder-name')).toBeInTheDocument();
+			const newFolder = screen.getByTestId('folder-name');
+			const folderInputElement = within(newFolder).getByRole('textbox');
+			expect(folderInputElement).toBeEnabled();
+			expect(newFolder).toBeInTheDocument();
+
+			// Insert the new folder name into the text input with system folder name
+			await user.type(folderInputElement, '/something.with.dots/i');
+			expect(
+				await screen.findByText('Special characters not allowed. Max lenght is 128 characters.')
+			).toBeVisible();
+
+			const editButton = screen.getByRole('button', {
+				name: /label\.edit/i
+			});
+			expect(editButton).toBeDisabled();
+		});
 	});
 });

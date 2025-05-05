@@ -6,7 +6,7 @@
 import React, { ChangeEvent, FC } from 'react';
 
 import { Container, Input, Padding, Text } from '@zextras/carbonio-design-system';
-import { t } from '@zextras/carbonio-shell-ui';
+import { useTranslation } from 'react-i18next';
 
 import { isValidFolderName } from '../../../../carbonio-ui-commons/utils/utils';
 import ColorPicker from '../../../../integrations/shared-invite-reply/parts/color-select';
@@ -26,36 +26,39 @@ const NameInputRow: FC<NameInputRowProps> = ({
 	inputValue,
 	folderColor,
 	setFolderColor
-}) => (
-	<Container mainAlignment="center" crossAlignment="flex-start">
-		<Input
-			label={t('label.folder_name', 'Folder name')}
-			onChange={(e: ChangeEvent<HTMLInputElement>): void => setInputValue(e.target.value)}
-			disabled={inpDisable}
-			value={inputValue}
-			hasError={showWarning && !inpDisable}
-			data-testid="folder-name"
-		/>
-		{showWarning && !inpDisable && (
-			<Padding all="small">
-				<Text size="small" color="error" data-testid="rename-error-msg">
-					{inputValue && !isValidFolderName(inputValue)
-						? t(
-								'folder.modal.edit.invalid_folder_name_warning_msg',
-								'Special characters not allowed. Max lenght is 128 characters.'
-							)
-						: t('folder.modal.edit.rename_warning', 'You cannot rename a folder as a system one')}
-				</Text>
-			</Padding>
-		)}
-		<Padding top="small" />
-		<ColorPicker
-			onChange={(color: string | null): void => setFolderColor(Number(color))}
-			label={t('label.select_color', 'Select Color')}
-			defaultColor={folderColor}
-			data-testid="folder-color"
-		/>
-	</Container>
-);
+}) => {
+	const [t] = useTranslation();
+	return (
+		<Container mainAlignment="center" crossAlignment="flex-start">
+			<Input
+				label={t('label.folder_name', 'Folder name')}
+				onChange={(e: ChangeEvent<HTMLInputElement>): void => setInputValue(e.target.value)}
+				disabled={inpDisable}
+				value={inputValue}
+				hasError={showWarning && !inpDisable}
+				data-testid="folder-name"
+			/>
+			{showWarning && !inpDisable && (
+				<Padding all="small">
+					<Text size="small" color="error" data-testid="rename-error-msg">
+						{inputValue && !isValidFolderName(inputValue)
+							? t(
+									'folder.modal.edit.invalid_folder_name_warning_msg',
+									'Special characters not allowed. Max lenght is 128 characters.'
+								)
+							: t('folder.modal.edit.rename_warning', 'You cannot rename a folder as a system one')}
+					</Text>
+				</Padding>
+			)}
+			<Padding top="small" />
+			<ColorPicker
+				onChange={(color: string | null): void => setFolderColor(Number(color))}
+				label={t('label.select_color', 'Select Color')}
+				defaultColor={folderColor}
+				data-testid="folder-color"
+			/>
+		</Container>
+	);
+};
 
 export default NameInputRow;

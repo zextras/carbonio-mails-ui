@@ -23,7 +23,7 @@ import {
 } from '../../../../carbonio-ui-commons/utils/utils';
 import { useUiUtilities } from '../../../../hooks/use-ui-utilities';
 import { ModalProps } from '../../../../types';
-import { getFolderTranslatedName, translatedSystemFolders } from '../../utils';
+import { getFolderTranslatedName, useTranslatedSystemFolders } from '../../utils';
 
 const numberRegex = /^\d+$/;
 const DAYS_LABEL = 'label.days';
@@ -35,7 +35,7 @@ type MainEditModalProps = ModalProps & {
 	setActiveModal: (modal: string) => void;
 };
 const MainEditModal: FC<MainEditModalProps> = ({ folder, onClose, setActiveModal }) => {
-	const [inputValue, setInputValue] = useState(folder.name);
+	const [folderNameInputValue, setFolderNameInputValue] = useState(folder.name);
 	const [showPolicy, setShowPolicy] = useState(false);
 	const [rtnValue, setRtnValue] = useState<number | string>(0);
 	const [purgeValue, setPurgeValue] = useState<number | string>(0);
@@ -143,9 +143,16 @@ const MainEditModal: FC<MainEditModalProps> = ({ folder, onClose, setActiveModal
 		}
 	}, [folder.retentionPolicy]);
 
-	const showWarning = useMemo(
-		() => includes(translatedSystemFolders(), inputValue) || !isValidFolderName(inputValue),
-		[inputValue]
+	const isFolderNameInputEmpty = useMemo(
+		() => isEmpty(folderNameInputValue),
+		[folderNameInputValue]
+	);
+	const systemFolderNames = useTranslatedSystemFolders();
+	const showIsSystemFolderNameWarning = useMemo(
+		() =>
+			includes(systemFolderNames, folderNameInputValue) ||
+			(!isFolderNameInputEmpty && !isValidFolderName(folderNameInputValue)),
+		[folderNameInputValue, isFolderNameInputEmpty, systemFolderNames]
 	);
 
 	const inpDisable = useMemo(
@@ -158,8 +165,8 @@ const MainEditModal: FC<MainEditModalProps> = ({ folder, onClose, setActiveModal
 	);
 
 	const disableSubmit = useMemo(
-		() => (showWarning || emptyRtnValue) && !inpDisable,
-		[showWarning, emptyRtnValue, inpDisable]
+		() => (isFolderNameInputEmpty || showIsSystemFolderNameWarning || emptyRtnValue) && !inpDisable,
+		[isFolderNameInputEmpty, showIsSystemFolderNameWarning, emptyRtnValue, inpDisable]
 	);
 
 	const onConfirm = useCallback(() => {
@@ -183,7 +190,7 @@ const MainEditModal: FC<MainEditModalProps> = ({ folder, onClose, setActiveModal
 				return;
 			}
 		}
-		if (inputValue && submit) {
+		if (folderNameInputValue && submit) {
 			let lt;
 			let pr;
 
@@ -203,7 +210,7 @@ const MainEditModal: FC<MainEditModalProps> = ({ folder, onClose, setActiveModal
 					parent: folder.l || '',
 					children: []
 				},
-				name: inputValue,
+				name: folderNameInputValue,
 				op: 'update',
 				color: Number(folderColor),
 				retentionPolicy:
@@ -249,12 +256,12 @@ const MainEditModal: FC<MainEditModalProps> = ({ folder, onClose, setActiveModal
 				}
 			});
 		}
-		setInputValue('');
+		setFolderNameInputValue('');
 		onClose();
 	}, [
 		dsblMsgRet,
 		dsblMsgDis,
-		inputValue,
+		folderNameInputValue,
 		onClose,
 		rtnValue,
 		purgeValue,
@@ -276,9 +283,9 @@ const MainEditModal: FC<MainEditModalProps> = ({ folder, onClose, setActiveModal
 			/>
 
 			<NameInputRow
-				showWarning={showWarning}
-				setInputValue={setInputValue}
-				inputValue={inputValue}
+				showWarning={showIsSystemFolderNameWarning}
+				setInputValue={setFolderNameInputValue}
+				inputValue={folderNameInputValue}
 				inpDisable={inpDisable}
 				folderColor={folderColor}
 				setFolderColor={setFolderColor}

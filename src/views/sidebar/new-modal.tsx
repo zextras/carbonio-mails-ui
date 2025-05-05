@@ -10,7 +10,7 @@ import { t } from '@zextras/carbonio-shell-ui';
 import { find, includes, noop } from 'lodash';
 
 import { FolderSelector } from './commons/folder-selector';
-import { translatedSystemFolders } from './utils';
+import { useTranslatedSystemFolders } from './utils';
 import { createFolderSoapApi } from '../../api/create-folder-soap-api';
 import ModalFooter from '../../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../../carbonio-ui-commons/components/modals/modal-header';
@@ -31,7 +31,7 @@ export const NewModal: FC<ModalProps> = ({ folder, onClose }) => {
 		t('folder.modal.edit.rename_warning', 'You cannot rename a folder as a system one.')
 	);
 	const showWarning = useMemo(() => {
-		if (includes(translatedSystemFolders(), inputValue)) {
+		if (includes(useTranslatedSystemFolders(), inputValue)) {
 			setErrorMsg(
 				t('folder.modal.edit.rename_warning', 'You cannot rename a folder as a system one.')
 			);
