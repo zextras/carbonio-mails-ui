@@ -60,6 +60,7 @@ export const AdvancedFilterModal = ({
 	const [isFlagged, setIsFlagged] = useState<boolean>(
 		query.some((item) => item.label === 'is:flagged')
 	);
+
 	const [receivedFromAddresses, setReceivedFromAddresses] = useState<KeywordState>([]);
 	const [sentToAddresses, setSentToAddresses] = useState<KeywordState>([]);
 	const [folder, setFolder] = useState<KeywordState>([]);
@@ -129,6 +130,10 @@ export const AdvancedFilterModal = ({
 			),
 			(q) => ({ ...q, hasAvatar: false })
 		);
+
+		setHasAttachment(query.some((item) => item.label === 'has:attachment'));
+		setIsUnread(query.some((item) => item.label === 'is:unread'));
+		setIsFlagged(query.some((item) => item.label === 'is:flagged'));
 
 		const subjectsInQuery = map(
 			filter(query, (v) => /^Subject:/.test(v.label)),

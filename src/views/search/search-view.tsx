@@ -152,7 +152,6 @@ const SearchView = ({
 				query={query}
 				open={showAdvanceFilters}
 				onSearchConfirm={onModalConfirm}
-				setIsSharedFolderIncluded={setIsSharedFolderIncluded}
 				isSharedFolderIncludedInitialValue={isSharedFolderIncluded}
 				onClose={(): void => setShowAdvanceFilters(false)}
 				includeSharedItemsInSearchPref={includeSharedItemsInSearch}
