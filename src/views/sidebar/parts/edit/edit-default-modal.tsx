@@ -147,6 +147,7 @@ const MainEditModal: FC<MainEditModalProps> = ({ folder, onClose, setActiveModal
 		() => includes(translatedSystemFolders(), inputValue) || !isValidFolderName(inputValue),
 		[inputValue]
 	);
+
 	const inpDisable = useMemo(
 		() =>
 			includes(

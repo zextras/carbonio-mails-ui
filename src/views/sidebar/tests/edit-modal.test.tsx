@@ -6,7 +6,7 @@
 import React from 'react';
 
 import { faker } from '@faker-js/faker';
-import { act, screen, within } from '@testing-library/react';
+import { act, screen, waitFor, within } from '@testing-library/react';
 import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 
 import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
@@ -288,28 +288,29 @@ describe('edit-modal', () => {
 		const folderInputElement = within(newFolder).getByRole('textbox');
 
 		expect(folderInputElement).toBeInTheDocument();
-		await act(async () => {
-			await user.clear(folderInputElement);
-		});
-
-		const editButton = screen.getByRole('button', {
-			name: /label\.edit/i
-		});
-		expect(editButton).toBeEnabled();
+		await user.clear(folderInputElement);
 
 		const folderName = faker.lorem.word();
-		// update the existing folder name into the text input
-		await act(async () => {
-			await user.type(folderInputElement, folderName);
+		await user.type(folderInputElement, folderName);
+
+		await waitFor(() => {
+			expect(
+				screen.getByRole('button', {
+					name: /label\.edit/i
+				})
+			).toBeEnabled();
 		});
+
 		const wipeInterceptor = createSoapAPIInterceptor<
 			{ action: SoapFolderAction },
 			ErrorSoapBodyResponse
 		>('FolderAction', buildSoapErrorResponseBody());
 
-		await act(async () => {
-			await user.click(editButton);
-		});
+		await user.click(
+			screen.getByRole('button', {
+				name: /label\.edit/i
+			})
+		);
 		const { action } = await wipeInterceptor;
 
 		expect(action.id).toBe(folder.id);
