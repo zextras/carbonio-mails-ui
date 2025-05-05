@@ -113,6 +113,7 @@ const SendReceivedDateRow: FC<SendReceivedDateRowPropType> = ({ compProps }): Re
 					showTimeSelect={false}
 					defaultValue={sentBeforeDefault}
 					onChange={onSentBeforeChange}
+					data-testid="sentBeforeInput"
 				/>
 			</Container>
 			<Container padding={{ horizontal: 'extrasmall' }}>
@@ -126,6 +127,7 @@ const SendReceivedDateRow: FC<SendReceivedDateRowPropType> = ({ compProps }): Re
 					showTimeSelect={false}
 					defaultValue={sentAfterDefault}
 					onChange={onSentAfterChange}
+					data-testid="sentAfterInput"
 				/>
 			</Container>
 			<Container padding={{ left: 'extrasmall' }}>
@@ -139,6 +141,7 @@ const SendReceivedDateRow: FC<SendReceivedDateRowPropType> = ({ compProps }): Re
 					showTimeSelect={false}
 					onChange={onSentOnChange}
 					defaultValue={sentOnDefault}
+					data-testid="sentOnInput"
 				/>
 			</Container>
 		</Container>

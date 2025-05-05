@@ -3,17 +3,18 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useCallback, useState, useEffect, FC, ReactElement, useId } from 'react';
+import React, { useCallback, useEffect, FC, ReactElement, useId } from 'react';
 
 import { Container, Switch, Text, Padding } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
-import { filter } from 'lodash';
 
 import type { ToggleFiltersProps } from '../../../types';
 
 const ToggleFilters: FC<ToggleFiltersProps> = ({ compProps }): ReactElement => {
 	const {
-		query,
+		unreadFilter,
+		flaggedFilter,
+		attachmentFilter,
 		setUnreadFilter,
 		setFlaggedFilter,
 		setAttachmentFilter,
@@ -21,13 +22,12 @@ const ToggleFilters: FC<ToggleFiltersProps> = ({ compProps }): ReactElement => {
 		setIsSharedFolderIncludedTobe
 	} = compProps;
 
-	const [isUnread, setIsUnread] = useState(false);
-	const [hasAttachment, setHasAttachment] = useState(false);
-	const [isFlagged, setIsFlagged] = useState(false);
+	const isUnread = unreadFilter.some((item) => item.value === 'is:unread');
+	const isFlagged = flaggedFilter.some((item) => item.value === 'is:flagged');
+	const hasAttachment = attachmentFilter.some((item) => item.value === 'has:attachment');
 	const id = useId();
 
 	const toggleUnread = useCallback(() => {
-		setIsUnread(!isUnread);
 		isUnread
 			? setUnreadFilter([])
 			: setUnreadFilter([
@@ -43,7 +43,6 @@ const ToggleFilters: FC<ToggleFiltersProps> = ({ compProps }): ReactElement => {
 	}, [id, isUnread, setUnreadFilter]);
 
 	const toggleFlagged = useCallback(() => {
-		setIsFlagged(!isFlagged);
 		isFlagged
 			? setFlaggedFilter([])
 			: setFlaggedFilter([
@@ -59,7 +58,6 @@ const ToggleFilters: FC<ToggleFiltersProps> = ({ compProps }): ReactElement => {
 	}, [id, isFlagged, setFlaggedFilter]);
 
 	const toggleAttachment = useCallback(() => {
-		setHasAttachment(!hasAttachment);
 		hasAttachment
 			? setAttachmentFilter([])
 			: setAttachmentFilter([
@@ -79,11 +77,9 @@ const ToggleFilters: FC<ToggleFiltersProps> = ({ compProps }): ReactElement => {
 	}, [isSharedFolderIncludedTobe, setIsSharedFolderIncludedTobe]);
 
 	useEffect(() => {
-		if (filter(query, (q) => q.value === 'is:unread' || q.label === 'is:unread').length === 0) {
-			setIsUnread(false);
+		if (!isUnread) {
 			setUnreadFilter([]);
 		} else {
-			setIsUnread(true);
 			setUnreadFilter([
 				{
 					id,
@@ -95,11 +91,9 @@ const ToggleFilters: FC<ToggleFiltersProps> = ({ compProps }): ReactElement => {
 			]);
 		}
 
-		if (filter(query, (q) => q.value === 'is:flagged' || q.label === 'is:flagged').length === 0) {
-			setIsFlagged(false);
+		if (!isFlagged) {
 			setFlaggedFilter([]);
 		} else {
-			setIsFlagged(true);
 			setFlaggedFilter([
 				{
 					id,
@@ -113,14 +107,9 @@ const ToggleFilters: FC<ToggleFiltersProps> = ({ compProps }): ReactElement => {
 			]);
 		}
 
-		if (
-			filter(query, (q) => q.value === 'has:attachment' || q.label === 'has:attachment').length ===
-			0
-		) {
-			setHasAttachment(false);
+		if (!hasAttachment) {
 			setAttachmentFilter([]);
 		} else {
-			setHasAttachment(true);
 			setAttachmentFilter([
 				{
 					id,
@@ -131,7 +120,15 @@ const ToggleFilters: FC<ToggleFiltersProps> = ({ compProps }): ReactElement => {
 				}
 			]);
 		}
-	}, [id, query, setAttachmentFilter, setFlaggedFilter, setUnreadFilter]);
+	}, [
+		id,
+		isUnread,
+		isFlagged,
+		hasAttachment,
+		setAttachmentFilter,
+		setFlaggedFilter,
+		setUnreadFilter
+	]);
 
 	return (
 		<>
@@ -139,7 +136,11 @@ const ToggleFilters: FC<ToggleFiltersProps> = ({ compProps }): ReactElement => {
 				<Container padding={{ all: 'extrasmall' }}>
 					<Container orientation="horizontal" mainAlignment="flex-start" crossAlignment="center">
 						<Padding right="small">
-							<Switch onClick={toggleAttachment} value={hasAttachment} />
+							<Switch
+								data-testid="hasAttachmentToggle"
+								onClick={toggleAttachment}
+								value={hasAttachment}
+							/>
 						</Padding>
 						<Text size="large" weight="bold">
 							{t('label.advancedFilters.attachment', 'Attachment')}
@@ -157,7 +158,7 @@ const ToggleFilters: FC<ToggleFiltersProps> = ({ compProps }): ReactElement => {
 				>
 					<Container orientation="horizontal" mainAlignment="flex-start" crossAlignment="center">
 						<Padding right="small">
-							<Switch onClick={toggleFlagged} value={isFlagged} />
+							<Switch data-testid="isFlaggedToggle" onClick={toggleFlagged} value={isFlagged} />
 						</Padding>
 						<Text size="large" weight="bold">
 							{t('label.flagged', 'Flagged')}
@@ -179,7 +180,7 @@ const ToggleFilters: FC<ToggleFiltersProps> = ({ compProps }): ReactElement => {
 				>
 					<Container orientation="horizontal" mainAlignment="flex-start" crossAlignment="center">
 						<Padding right="small">
-							<Switch onClick={toggleUnread} value={isUnread} />
+							<Switch data-testid="isUnreadToggle" onClick={toggleUnread} value={isUnread} />
 						</Padding>
 						<Text size="large" weight="bold">
 							{t('search.unread', 'Unread')}
@@ -198,7 +199,11 @@ const ToggleFilters: FC<ToggleFiltersProps> = ({ compProps }): ReactElement => {
 				>
 					<Container orientation="horizontal" mainAlignment="flex-start" crossAlignment="center">
 						<Padding right="small">
-							<Switch onClick={toggleSharedFolder} value={isSharedFolderIncludedTobe} />
+							<Switch
+								data-testid="isSharedFolderIncludedToggle"
+								onClick={toggleSharedFolder}
+								value={isSharedFolderIncludedTobe}
+							/>
 						</Padding>
 						<Text size="large" weight="bold">
 							{t('label.include_shared_folders', 'Include Shared Folders')}

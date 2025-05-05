@@ -112,6 +112,7 @@ const AttachmentTypeEmailStatusRow: FC<AttachTypeEmailStatusRowPropType> = ({
 					onChange={attachmentTypeOnChange}
 					icon="ChevronDown"
 					requireUniqueChips
+					data-testid="attachmentTypeSelect"
 				/>
 			</Container>
 			<Container padding={{ left: 'extrasmall' }} maxWidth="50%">
@@ -127,6 +128,7 @@ const AttachmentTypeEmailStatusRow: FC<AttachTypeEmailStatusRowPropType> = ({
 					icon="ChevronDown"
 					bottomBorderColor="transparent"
 					requireUniqueChips
+					data-testid="emailStatusSelect"
 				/>
 			</Container>
 		</Container>

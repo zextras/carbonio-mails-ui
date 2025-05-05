@@ -206,6 +206,8 @@ export const AdvancedFilterModal = ({
 	const resetFilters = useCallback(() => {
 		setOtherKeywords([]);
 		setAttachmentFilter([]);
+		setFlaggedFilter([]);
+		setUnreadFilter([]);
 		setSubject([]);
 		setAttachmentType([]);
 		setEmailStatus([]);
@@ -217,6 +219,9 @@ export const AdvancedFilterModal = ({
 		setSentToAddresses([]);
 		setFolder([]);
 		setTag([]);
+		setSentBefore([]);
+		setSentAfter([]);
+		setSentOn([]);
 		setIsSharedFolderIncluded(includeSharedItemsInSearchPref);
 	}, [includeSharedItemsInSearchPref, setIsSharedFolderIncluded]);
 
@@ -365,27 +370,20 @@ export const AdvancedFilterModal = ({
 
 	const sendDateRowProps = useMemo(
 		() => ({ sentBefore, setSentBefore, sentAfter, setSentAfter, sentOn, setSentOn }),
-		/*
-		 * please remove JSON.stringify once https://zextras.atlassian.net/browse/CDS-325 is done.
-		 */
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-		[JSON.stringify({ sentBefore, sentAfter, sentOn }), setSentBefore, setSentAfter, setSentOn]
+		[sentBefore, sentAfter, sentOn, setSentBefore, setSentAfter, setSentOn]
 	);
 	const toggleFiltersProps = useMemo(
 		() => ({
-			query,
+			unreadFilter,
+			flaggedFilter,
+			attachmentFilter,
 			setUnreadFilter,
 			setFlaggedFilter,
 			setAttachmentFilter,
 			setIsSharedFolderIncludedTobe: setIsSharedFolderIncluded,
 			isSharedFolderIncludedTobe: isSharedFolderIncluded
 		}),
-		[query, isSharedFolderIncluded]
-	);
-
-	const secondaryDisabled = useMemo(
-		() => query.length === 0 && queryToBe.length === 0,
-		[query.length, queryToBe.length]
+		[isSharedFolderIncluded, unreadFilter, flaggedFilter, attachmentFilter]
 	);
 
 	return (
@@ -413,7 +411,9 @@ export const AdvancedFilterModal = ({
 			<ModalFooter
 				onConfirm={onConfirm}
 				confirmDisabled={queryToBe.length === 0}
-				secondaryActionDisabled={secondaryDisabled}
+				secondaryActionDisabled={
+					queryToBe.length === 0 && isSharedFolderIncluded === includeSharedItemsInSearchPref
+				}
 				confirmLabel={t('action.search', 'Search')}
 				secondaryActionLabel={t('action.reset', 'Reset filters')}
 				onSecondaryAction={resetFilters}

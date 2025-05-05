@@ -7,6 +7,7 @@ import React from 'react';
 
 import { faker } from '@faker-js/faker';
 import { screen, waitFor, within } from '@testing-library/react';
+import { UserEvent } from '@testing-library/user-event';
 
 import {
 	EDIT_ACTION,
@@ -16,6 +17,55 @@ import {
 import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
 import { SearchQueryItem } from '../../../types';
 import { AdvancedFilterModal, AdvancedFilterModalProps } from '../advanced-filter-modal';
+
+async function selectOption(
+	user: UserEvent,
+	selectTestId: string,
+	optionText: string
+): Promise<void> {
+	const selectElement = within(screen.getByTestId(selectTestId)).getByTestId('icon: ChevronDown');
+	expect(selectElement).toBeInTheDocument();
+	await user.click(selectElement);
+	const selectOption = await screen.findByText(optionText);
+	await user.click(selectOption);
+}
+
+async function checkResetAndSearchButton(f: (user: UserEvent) => Promise<void>): Promise<void> {
+	jest.spyOn(console, 'error').mockImplementation();
+	const onSearchConfirmMock = jest.fn();
+	const properties: AdvancedFilterModalProps = {
+		open: true,
+		onClose: jest.fn(),
+		query: [],
+		onSearchConfirm: onSearchConfirmMock,
+		isSharedFolderIncludedInitialValue: false,
+		includeSharedItemsInSearchPref: false
+	};
+	const { user } = setupTest(<AdvancedFilterModal {...properties} />);
+
+	await f(user);
+
+	const actionButton = screen.getByRole('button', {
+		name: /action\.search/i
+	});
+	expect(actionButton).toBeInTheDocument();
+	expect(actionButton).toBeEnabled();
+
+	const resetButton = screen.getByRole('button', {
+		name: /action\.reset/i
+	});
+	expect(resetButton).toBeInTheDocument();
+	expect(resetButton).toBeEnabled();
+
+	await user.click(resetButton);
+
+	await waitFor(() => {
+		expect(actionButton).toBeDisabled();
+	});
+	await waitFor(() => {
+		expect(resetButton).toBeDisabled();
+	});
+}
 
 describe('Advanced filter modal', () => {
 	const props: AdvancedFilterModalProps = {
@@ -402,8 +452,7 @@ describe('Advanced filter modal', () => {
 		expect(confirmButton).toBeDisabled();
 	});
 
-	/**
-	it('should include email status in the query', async () => {
+	it('should include attachment type in the query', async () => {
 		jest.spyOn(console, 'error').mockImplementation();
 		const onSearchConfirmMock = jest.fn();
 		const properties: AdvancedFilterModalProps = {
@@ -416,14 +465,7 @@ describe('Advanced filter modal', () => {
 		};
 		const { user } = setupTest(<AdvancedFilterModal {...properties} />);
 
-		const emailStatus = screen.getByPlaceholderText('label.attachment_status');
-		expect(emailStatus).toBeInTheDocument();
-		await user.selectOptions(emailStatus, 'read');
-		await user.type(emailStatus, '[Enter]');
-
-		const fieldLabel = screen.getByText(/label\.single_advanced_filter/i);
-		expect(fieldLabel).toBeInTheDocument();
-
+		await selectOption(user, 'attachmentTypeSelect', 'attachment_type.application');
 		const actionButton = screen.getByRole('button', {
 			name: /action\.search/i
 		});
@@ -438,7 +480,7 @@ describe('Advanced filter modal', () => {
 				expect.objectContaining({
 					query: [
 						expect.objectContaining({
-							label: 'Is:read'
+							value: 'attachment:application/*'
 						})
 					],
 					includeSharedFolders: false
@@ -446,5 +488,170 @@ describe('Advanced filter modal', () => {
 			);
 		});
 	});
-	 */
+
+	it('should include email status in the query', async () => {
+		jest.spyOn(console, 'error').mockImplementation();
+		const onSearchConfirmMock = jest.fn();
+		const properties: AdvancedFilterModalProps = {
+			open: true,
+			onClose: jest.fn(),
+			query: [],
+			onSearchConfirm: onSearchConfirmMock,
+			isSharedFolderIncludedInitialValue: false,
+			includeSharedItemsInSearchPref: false
+		};
+		const { user } = setupTest(<AdvancedFilterModal {...properties} />);
+
+		await selectOption(user, 'emailStatusSelect', 'email_status.unread');
+		const actionButton = screen.getByRole('button', {
+			name: /action\.search/i
+		});
+		expect(actionButton).toBeInTheDocument();
+		expect(actionButton).toBeEnabled();
+
+		await user.click(actionButton);
+		await waitFor(() => {
+			expect(onSearchConfirmMock).toHaveBeenCalledTimes(1);
+			// eslint-disable-next-line testing-library/no-wait-for-multiple-assertions
+			expect(onSearchConfirmMock).toHaveBeenCalledWith(
+				expect.objectContaining({
+					query: [
+						expect.objectContaining({
+							value: 'is:unread'
+						})
+					],
+					includeSharedFolders: false
+				})
+			);
+		});
+	});
+
+	it('should reset keyword when reset button is pressed', async () => {
+		await checkResetAndSearchButton(async (user) => {
+			const keywordComponent = screen.getByTestId('keywords-input');
+			const keywordInputEle = within(keywordComponent).getByRole('textbox');
+			await user.type(keywordInputEle, 'test');
+			await user.type(keywordInputEle, '[Enter]');
+		});
+	});
+
+	it('should reset subject when reset button is pressed', async () => {
+		await checkResetAndSearchButton(async (user) => {
+			const subjectComponent = screen.getByTestId('subject-input');
+			const subjectInputEle = within(subjectComponent).getByRole('textbox');
+			await user.type(subjectInputEle, 'test@test.com');
+			await user.type(subjectInputEle, '[Enter]');
+		});
+	});
+
+	it(`should reset 'received from' when reset button is pressed`, async () => {
+		await checkResetAndSearchButton(async (user) => {
+			const receivedFrom = screen.getByTestId('received-from-input');
+			expect(receivedFrom).toBeInTheDocument();
+			await user.type(receivedFrom, 'validEmail2@test.com');
+			await user.type(receivedFrom, '[Enter]');
+		});
+	});
+
+	it(`should reset 'sent to' when reset button is pressed`, async () => {
+		await checkResetAndSearchButton(async (user) => {
+			const sentTo = screen.getByTestId('sent-to-input');
+			expect(sentTo).toBeInTheDocument();
+			await user.type(sentTo, 'validEmail@test.com');
+			await user.type(sentTo, '[Enter]');
+		});
+	});
+
+	it(`should reset 'attachment type' when reset button is pressed`, async () => {
+		await checkResetAndSearchButton(async (user) => {
+			await selectOption(user, 'attachmentTypeSelect', 'attachment_type.application');
+		});
+	});
+
+	it(`should reset 'email status' when reset button is pressed`, async () => {
+		await checkResetAndSearchButton(async (user) => {
+			await selectOption(user, 'emailStatusSelect', 'email_status.unread');
+		});
+	});
+
+	it(`should reset 'size smaller than' when reset button is pressed`, async () => {
+		await checkResetAndSearchButton(async (user) => {
+			const sizeSmaller = screen.getByTestId('sizeSmallerInput');
+			const sizeSmallerEle = within(sizeSmaller).getByRole('textbox');
+			await user.type(sizeSmallerEle, '42');
+			await user.type(sizeSmallerEle, '[Enter]');
+		});
+	});
+
+	it(`should reset 'size larger than' when reset button is pressed`, async () => {
+		await checkResetAndSearchButton(async (user) => {
+			const sizeLarger = screen.getByTestId('sizeLargerInput');
+			const sizeLargerEle = within(sizeLarger).getByRole('textbox');
+			await user.type(sizeLargerEle, '442');
+			await user.type(sizeLargerEle, '[Enter]');
+		});
+	});
+
+	it('should reset attachment toggle when reset button is pressed', async () => {
+		await checkResetAndSearchButton(async (user) => {
+			const hasAttachmentToggle = screen.getByTestId('hasAttachmentToggle');
+			expect(hasAttachmentToggle).toBeInTheDocument();
+			await user.click(hasAttachmentToggle);
+		});
+	});
+
+	it(`should reset 'is flagged' toggle when reset button is pressed`, async () => {
+		await checkResetAndSearchButton(async (user) => {
+			const isFlaggedToggle = screen.getByTestId('isFlaggedToggle');
+			expect(isFlaggedToggle).toBeInTheDocument();
+			await user.click(isFlaggedToggle);
+		});
+	});
+
+	it(`should reset unread toggle when reset button is pressed`, async () => {
+		await checkResetAndSearchButton(async (user) => {
+			const isUnreadToggle = screen.getByTestId('isUnreadToggle');
+			expect(isUnreadToggle).toBeInTheDocument();
+			await user.click(isUnreadToggle);
+		});
+	});
+
+	it(`should reset 'include shared folder' toggle when reset button is pressed`, async () => {
+		jest.spyOn(console, 'error').mockImplementation();
+		const onSearchConfirmMock = jest.fn();
+		const properties: AdvancedFilterModalProps = {
+			open: true,
+			onClose: jest.fn(),
+			query: [],
+			onSearchConfirm: onSearchConfirmMock,
+			isSharedFolderIncludedInitialValue: false,
+			includeSharedItemsInSearchPref: false
+		};
+		const { user } = setupTest(<AdvancedFilterModal {...properties} />);
+
+		const isSharedFolderIncludedToggle = screen.getByTestId('isSharedFolderIncludedToggle');
+		expect(isSharedFolderIncludedToggle).toBeInTheDocument();
+		await user.click(isSharedFolderIncludedToggle);
+
+		const actionButton = screen.getByRole('button', {
+			name: /action\.search/i
+		});
+		expect(actionButton).toBeInTheDocument();
+		expect(actionButton).toBeDisabled();
+
+		const resetButton = screen.getByRole('button', {
+			name: /action\.reset/i
+		});
+		expect(resetButton).toBeInTheDocument();
+		expect(resetButton).toBeEnabled();
+
+		await user.click(resetButton);
+
+		await waitFor(() => {
+			expect(actionButton).toBeDisabled();
+		});
+		await waitFor(() => {
+			expect(resetButton).toBeDisabled();
+		});
+	});
 });

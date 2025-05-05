@@ -166,14 +166,16 @@ export type ToggleFilters = Array<{
 	id: string;
 	avatarIcon?: string;
 	label: string;
-	value: string;
+	value?: string;
 	isQueryFilter?: boolean;
 	isGeneric?: boolean;
 	avatarBackground?: ChipProps['background'];
 }>;
 export type ToggleFiltersProps = {
 	compProps: {
-		query: Array<QueryChip>;
+		unreadFilter: ToggleFilters;
+		flaggedFilter: ToggleFilters;
+		attachmentFilter: ToggleFilters;
 		setUnreadFilter: (arg: ToggleFilters) => void;
 		setFlaggedFilter: (arg: ToggleFilters) => void;
 		setAttachmentFilter: (arg: ToggleFilters) => void;
