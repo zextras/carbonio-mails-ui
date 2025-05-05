@@ -5,9 +5,9 @@
  */
 import React from 'react';
 
+import { ZIMBRA_STANDARD_COLORS } from '../../../../../carbonio-ui-commons/constants';
 import { setupTest, screen } from '../../../../../carbonio-ui-commons/test/test-setup';
 import NameInputRow from '../name-input';
-import { ZIMBRA_STANDARD_COLORS } from '../../../../../carbonio-ui-commons/constants';
 
 describe('NameInputRow', () => {
 	const inputValue = 'Test Folder';
@@ -31,11 +31,11 @@ describe('NameInputRow', () => {
 			/>
 		);
 
-		expect(screen.getByText('label.select_color')).toBeVisible();
+		expect(screen.getByText(/select color/i)).toBeVisible();
 		expect(screen.getByText('color.blue')).toBeVisible();
 
-		expect(screen.getByText('label.folder_name')).toBeVisible();
-		const folderName = screen.getByRole('textbox', { name: /label\.folder_name/i });
+		expect(screen.getByText(/folder name/i)).toBeVisible();
+		const folderName = screen.getByRole('textbox', { name: /folder name/i });
 		expect(folderName).toBeVisible();
 		expect(folderName).toHaveValue(inputValue);
 	});

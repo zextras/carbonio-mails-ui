@@ -30,8 +30,9 @@ export const NewModal: FC<ModalProps> = ({ folder, onClose }) => {
 	const [errorMsg, setErrorMsg] = useState<string>(
 		t('folder.modal.edit.rename_warning', 'You cannot rename a folder as a system one.')
 	);
+	const systemFolderNames = useTranslatedSystemFolders();
 	const showWarning = useMemo(() => {
-		if (includes(useTranslatedSystemFolders(), inputValue)) {
+		if (includes(systemFolderNames, inputValue)) {
 			setErrorMsg(
 				t('folder.modal.edit.rename_warning', 'You cannot rename a folder as a system one.')
 			);
@@ -47,7 +48,7 @@ export const NewModal: FC<ModalProps> = ({ folder, onClose }) => {
 			return true;
 		}
 		return false;
-	}, [inputValue]);
+	}, [inputValue, systemFolderNames]);
 
 	const { createSnackbar } = useUiUtilities();
 
