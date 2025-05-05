@@ -14,7 +14,11 @@ import type { Editor, TinyMCE } from 'tinymce/tinymce';
 import * as StyledComp from './edit-view-styled-components';
 import { handleEditorPaste } from './editor-paste-handler';
 import { plainTextToHTML } from '../../../../../commons/utils';
-import { useEditorIsRichText, useEditorText } from '../../../../../store/editor';
+import {
+	useEditorIsRichText,
+	useEditorText,
+	useEditorTextProvider
+} from '../../../../../store/editor';
 import { MailsEditorV2 } from '../../../../../types';
 import { getFonts, getFontSizesOptions } from '../../../../settings/components/utils';
 
@@ -37,9 +41,30 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 	minHeight,
 	disabled
 }) => {
-	const { text, setText } = useEditorText(editorId);
-	const editorTextRef = useRef(text.richText);
 	const editorRef = useRef<Editor>();
+	const getCurrentText = useCallback((): MailsEditorV2['text'] | null => {
+		if (!editorRef.current) {
+			return null;
+		}
+
+		const plainText = editorRef.current.getContent({ format: 'text' });
+		const richText = editorRef.current.getContent({ format: 'html' });
+
+		return { plainText, richText };
+	}, []);
+
+	const onExternalTextChanges = useCallback((text: MailsEditorV2['text']): void => {
+		if (!editorRef.current) {
+			return;
+		}
+		editorRef.current.setContent(text.richText); // TODO handle plain text too!!!!!
+	}, []);
+
+	const { setTextProvider } = useEditorTextProvider(editorId);
+
+	const { getText, setText } = useEditorText(editorId);
+	const text = useMemo(() => getText(), [getText]);
+	const editorTextRef = useRef(text.richText);
 
 	const saveEditor = useCallback(() => {
 		if (!editorRef.current) {
@@ -48,8 +73,19 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 
 		const plainText = editorRef.current.getContent({ format: 'text' });
 		const richText = editorRef.current.getContent({ format: 'html' });
-		setText({ plainText, richText });
+		setText({ plainText, richText }, { syncTextProvider: false });
 	}, [setText]);
+
+	const onEditorInit = useCallback(
+		(evt: Event, editor: Editor) => {
+			editorRef.current = editor;
+			setTextProvider({
+				setCurrentText: onExternalTextChanges,
+				getCurrentText
+			});
+		},
+		[getCurrentText, onExternalTextChanges, setTextProvider]
+	);
 
 	const onInput = useMemo(
 		() =>
@@ -167,9 +203,7 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 									onFileSelect={onFilesSelected}
 									onDragOver={onDragOver}
 									customInitOptions={composerCustomOptions}
-									onInit={(evt: Event, editor: Editor) => {
-										editorRef.current = editor;
-									}}
+									onInit={onEditorInit}
 									onDirty={onEditorDirty}
 								/>
 							</StyledComp.EditorWrapper>

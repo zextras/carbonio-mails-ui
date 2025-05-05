@@ -48,6 +48,30 @@ export const useEditorSubject = (
 	);
 };
 
+export const useEditorTextProvider = (
+	id: MailsEditorV2['id']
+): {
+	textProvider: MailsEditorV2['textProvider'];
+	setTextProvider: (textProvider: MailsEditorV2['textProvider']) => void;
+} => {
+	const value = useEditorsStore((state) => state.editors[id].textProvider);
+	const setter = useEditorsStore((state) => state.setTextProvider);
+
+	return useMemo(
+		() => ({
+			textProvider: value,
+			setTextProvider: (val: MailsEditorV2['textProvider']): void => {
+				setter(id, val);
+			}
+		}),
+		[id, setter, value]
+	);
+};
+
+type EditorSetTextOptions = {
+	syncTextProvider?: boolean;
+};
+
 /**
  * Returns reactive references to the text values and to their setter
  * @param id
@@ -55,33 +79,39 @@ export const useEditorSubject = (
 export const useEditorText = (
 	id: MailsEditorV2['id']
 ): {
-	text: MailsEditorV2['text'];
-	setText: (text: MailsEditorV2['text']) => void;
-	resetText: () => void;
+	getText: () => MailsEditorV2['text'];
+	setText: (text: MailsEditorV2['text'], options?: EditorSetTextOptions) => void;
 } => {
 	const { immediateSaveDraft } = useSaveDraftFromEditor();
 	const value = useEditorsStore((state) => state.editors[id].text);
 	const setter = useEditorsStore((state) => state.setText);
+	const { textProvider } = useEditorTextProvider(id);
+
+	const getText = useCallback(
+		(): MailsEditorV2['text'] => textProvider?.getCurrentText() ?? value,
+		[textProvider, value]
+	);
+
 	const setText = useCallback(
-		(val: MailsEditorV2['text']): void => {
+		(
+			val: MailsEditorV2['text'],
+			options: EditorSetTextOptions = { syncTextProvider: true }
+		): void => {
+			if (textProvider && options.syncTextProvider) {
+				textProvider.setCurrentText(val);
+			}
 			setter(id, val);
 			immediateSaveDraft(id);
 		},
-		[id, immediateSaveDraft, setter]
+		[id, immediateSaveDraft, setter, textProvider]
 	);
-
-	const resetText = useCallback((): void => {
-		setter(id, { plainText: '', richText: '' });
-		immediateSaveDraft(id);
-	}, [id, immediateSaveDraft, setter]);
 
 	return useMemo(
 		() => ({
-			text: value,
-			setText,
-			resetText
+			getText,
+			setText
 		}),
-		[resetText, setText, value]
+		[getText, setText]
 	);
 };
 

@@ -85,6 +85,7 @@ function setUpMocks({ composerIsAvailable = false, isRichText = false }: setupMo
 	(useEditorIsRichText as jest.Mock).mockReturnValue({ isRichText });
 	(useEditorText as jest.Mock).mockReturnValue({
 		text: { plainText: 'PlainText', richText: '<p>RichText</p>' },
-		setText: jest.fn()
+		setText: jest.fn(),
+		replaceText: jest.fn()
 	});
 }

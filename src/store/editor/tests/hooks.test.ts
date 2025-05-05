@@ -97,9 +97,9 @@ describe('all editor hooks', () => {
 			addEditor({ id: editor.id, editor });
 
 			const { result: hookResult } = setupHook(useEditorText, { initialProps: [editor.id] });
-			const { text } = hookResult.current;
-			expect(text.plainText).toEqual(initialPlainText);
-			expect(text.richText).toEqual(initialRichText);
+			const { getText } = hookResult.current;
+			expect(getText().plainText).toEqual(initialPlainText);
+			expect(getText().richText).toEqual(initialRichText);
 		});
 
 		test('set the editor text', async () => {
