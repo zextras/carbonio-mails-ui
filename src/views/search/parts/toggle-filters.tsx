@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useCallback, useEffect, FC, ReactElement, useId } from 'react';
+import React, { useCallback, FC, ReactElement } from 'react';
 
 import { Container, Switch, Text, Padding } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
@@ -12,123 +12,31 @@ import type { ToggleFiltersProps } from '../../../types';
 
 const ToggleFilters: FC<ToggleFiltersProps> = ({ compProps }): ReactElement => {
 	const {
-		unreadFilter,
-		flaggedFilter,
-		attachmentFilter,
-		setUnreadFilter,
-		setFlaggedFilter,
-		setAttachmentFilter,
+		isUnread,
+		isFlagged,
+		hasAttachment,
+		setIsUnread,
+		setIsFlagged,
+		setHasAttachment,
 		isSharedFolderIncludedTobe,
 		setIsSharedFolderIncludedTobe
 	} = compProps;
 
-	const isUnread = unreadFilter.some((item) => item.value === 'is:unread');
-	const isFlagged = flaggedFilter.some((item) => item.value === 'is:flagged');
-	const hasAttachment = attachmentFilter.some((item) => item.value === 'has:attachment');
-	const id = useId();
-
 	const toggleUnread = useCallback(() => {
-		isUnread
-			? setUnreadFilter([])
-			: setUnreadFilter([
-					{
-						id,
-						label: 'is:unread',
-						value: 'is:unread',
-						isQueryFilter: true,
-						avatarIcon: 'EmailOutline',
-						avatarBackground: 'gray1'
-					}
-				]);
-	}, [id, isUnread, setUnreadFilter]);
+		setIsUnread(!isUnread);
+	}, [isUnread, setIsUnread]);
 
 	const toggleFlagged = useCallback(() => {
-		isFlagged
-			? setFlaggedFilter([])
-			: setFlaggedFilter([
-					{
-						id,
-						label: 'is:flagged',
-						value: 'is:flagged',
-						isQueryFilter: true,
-						avatarIcon: 'FlagOutline',
-						avatarBackground: 'error'
-					}
-				]);
-	}, [id, isFlagged, setFlaggedFilter]);
+		setIsFlagged(!isFlagged);
+	}, [isFlagged, setIsFlagged]);
 
 	const toggleAttachment = useCallback(() => {
-		hasAttachment
-			? setAttachmentFilter([])
-			: setAttachmentFilter([
-					{
-						id,
-						label: 'has:attachment',
-						value: 'has:attachment',
-						isQueryFilter: true,
-						avatarIcon: 'AttachOutline',
-						avatarBackground: 'gray1'
-					}
-				]);
-	}, [hasAttachment, id, setAttachmentFilter]);
+		setHasAttachment(!hasAttachment);
+	}, [hasAttachment, setHasAttachment]);
 
 	const toggleSharedFolder = useCallback(() => {
 		setIsSharedFolderIncludedTobe(!isSharedFolderIncludedTobe);
 	}, [isSharedFolderIncludedTobe, setIsSharedFolderIncludedTobe]);
-
-	useEffect(() => {
-		if (!isUnread) {
-			setUnreadFilter([]);
-		} else {
-			setUnreadFilter([
-				{
-					id,
-					label: 'is:unread',
-					value: 'is:unread',
-					isQueryFilter: true,
-					isGeneric: false
-				}
-			]);
-		}
-
-		if (!isFlagged) {
-			setFlaggedFilter([]);
-		} else {
-			setFlaggedFilter([
-				{
-					id,
-					label: 'is:flagged',
-					value: 'is:flagged',
-					isQueryFilter: true,
-					isGeneric: false,
-					avatarIcon: 'FlagOutline',
-					avatarBackground: 'error'
-				}
-			]);
-		}
-
-		if (!hasAttachment) {
-			setAttachmentFilter([]);
-		} else {
-			setAttachmentFilter([
-				{
-					id,
-					label: 'has:attachment',
-					value: 'has:attachment',
-					isQueryFilter: true,
-					isGeneric: false
-				}
-			]);
-		}
-	}, [
-		id,
-		isUnread,
-		isFlagged,
-		hasAttachment,
-		setAttachmentFilter,
-		setFlaggedFilter,
-		setUnreadFilter
-	]);
 
 	return (
 		<>

@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useState, useCallback, useMemo, useEffect } from 'react';
+import React, { useState, useCallback, useMemo, useEffect, useId } from 'react';
 
 import {
 	CustomModal,
@@ -51,10 +51,15 @@ export const AdvancedFilterModal = ({
 	includeSharedItemsInSearchPref
 }: AdvancedFilterModalProps): React.JSX.Element => {
 	const [otherKeywords, setOtherKeywords] = useState<KeywordState>([]);
-	const [attachmentFilter, setAttachmentFilter] = useState<KeywordState>([]);
-	const [unreadFilter, setUnreadFilter] = useState<KeywordState>([]);
-	const [flaggedFilter, setFlaggedFilter] = useState<KeywordState>([]);
-
+	const [hasAttachment, setHasAttachment] = useState<boolean>(
+		query.some((item) => item.label === 'has:attachment')
+	);
+	const [isUnread, setIsUnread] = useState<boolean>(
+		query.some((item) => item.label === 'is:unread')
+	);
+	const [isFlagged, setIsFlagged] = useState<boolean>(
+		query.some((item) => item.label === 'is:flagged')
+	);
 	const [receivedFromAddresses, setReceivedFromAddresses] = useState<KeywordState>([]);
 	const [sentToAddresses, setSentToAddresses] = useState<KeywordState>([]);
 	const [folder, setFolder] = useState<KeywordState>([]);
@@ -97,6 +102,7 @@ export const AdvancedFilterModal = ({
 		[]
 	);
 	const [tag, setTag] = useState<KeywordState>([]);
+	const id = useId();
 
 	useEffect(() => {
 		if (!open) return;
@@ -205,9 +211,9 @@ export const AdvancedFilterModal = ({
 
 	const resetFilters = useCallback(() => {
 		setOtherKeywords([]);
-		setAttachmentFilter([]);
-		setFlaggedFilter([]);
-		setUnreadFilter([]);
+		setHasAttachment(false);
+		setIsFlagged(false);
+		setIsUnread(false);
 		setSubject([]);
 		setAttachmentType([]);
 		setEmailStatus([]);
@@ -229,9 +235,42 @@ export const AdvancedFilterModal = ({
 		() =>
 			concat(
 				otherKeywords,
-				unreadFilter,
-				flaggedFilter,
-				attachmentFilter,
+				isUnread
+					? [
+							{
+								id: `${id}--is:unread`,
+								label: 'is:unread',
+								value: 'is:unread',
+								isQueryFilter: true,
+								avatarIcon: 'EmailOutline',
+								avatarBackground: 'gray1'
+							}
+						]
+					: [],
+				isFlagged
+					? [
+							{
+								id: `${id}--is:flagged`,
+								label: 'is:flagged',
+								value: 'is:flagged',
+								isQueryFilter: true,
+								avatarIcon: 'FlagOutline',
+								avatarBackground: 'error'
+							}
+						]
+					: [],
+				hasAttachment
+					? [
+							{
+								id: `${id}--has:attachment`,
+								label: 'has:attachment',
+								value: 'has:attachment',
+								isQueryFilter: true,
+								avatarIcon: 'AttachOutline',
+								avatarBackground: 'gray1'
+							}
+						]
+					: [],
 				folder,
 				sentBefore,
 				sentAfter,
@@ -251,10 +290,10 @@ export const AdvancedFilterModal = ({
 				sentToAddresses
 			),
 		[
-			attachmentFilter,
+			hasAttachment,
 			attachmentType,
 			emailStatus,
-			flaggedFilter,
+			isFlagged,
 			folder,
 			otherKeywords,
 			receivedFromAddresses,
@@ -266,7 +305,8 @@ export const AdvancedFilterModal = ({
 			sizeSmaller,
 			subject,
 			tag,
-			unreadFilter
+			isUnread,
+			id
 		]
 	);
 
@@ -374,16 +414,16 @@ export const AdvancedFilterModal = ({
 	);
 	const toggleFiltersProps = useMemo(
 		() => ({
-			unreadFilter,
-			flaggedFilter,
-			attachmentFilter,
-			setUnreadFilter,
-			setFlaggedFilter,
-			setAttachmentFilter,
+			isUnread,
+			isFlagged,
+			hasAttachment,
+			setIsUnread,
+			setIsFlagged,
+			setHasAttachment,
 			setIsSharedFolderIncludedTobe: setIsSharedFolderIncluded,
 			isSharedFolderIncludedTobe: isSharedFolderIncluded
 		}),
-		[isSharedFolderIncluded, unreadFilter, flaggedFilter, attachmentFilter]
+		[isSharedFolderIncluded, isUnread, isFlagged, hasAttachment]
 	);
 
 	return (

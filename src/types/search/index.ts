@@ -173,12 +173,12 @@ export type ToggleFilters = Array<{
 }>;
 export type ToggleFiltersProps = {
 	compProps: {
-		unreadFilter: ToggleFilters;
-		flaggedFilter: ToggleFilters;
-		attachmentFilter: ToggleFilters;
-		setUnreadFilter: (arg: ToggleFilters) => void;
-		setFlaggedFilter: (arg: ToggleFilters) => void;
-		setAttachmentFilter: (arg: ToggleFilters) => void;
+		isUnread: boolean;
+		isFlagged: boolean;
+		hasAttachment: boolean;
+		setIsUnread: (arg: boolean) => void;
+		setIsFlagged: (arg: boolean) => void;
+		setHasAttachment: (arg: boolean) => void;
 		isSharedFolderIncludedTobe: boolean;
 		setIsSharedFolderIncludedTobe: (arg: boolean) => void;
 	};
