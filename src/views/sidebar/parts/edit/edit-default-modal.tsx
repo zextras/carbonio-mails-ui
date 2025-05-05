@@ -264,14 +264,15 @@ const MainEditModal: FC<MainEditModalProps> = ({ folder, onClose, setActiveModal
 		createSnackbar
 	]);
 
-	const title = t('label.edit_folder_properties', {
-		name: getFolderTranslatedName({ folderId: folder.id, folderName: folder.name }),
-		defaultValue: 'Edit {{name}} properties'
-	});
-
 	return (
 		<>
-			<ModalHeader onClose={onClose} title={title} />
+			<ModalHeader
+				onClose={onClose}
+				title={t('label.edit_folder_properties', {
+					name: getFolderTranslatedName({ folderId: folder.id, folderName: folder.name }),
+					defaultValue: 'Edit {{name}} properties'
+				})}
+			/>
 
 			<NameInputRow
 				showWarning={showWarning}
@@ -283,7 +284,7 @@ const MainEditModal: FC<MainEditModalProps> = ({ folder, onClose, setActiveModal
 			/>
 			<Container mainAlignment="flex-start" crossAlignment="flex-start" padding={{ top: 'medium' }}>
 				<FolderDetails folder={folder} />
-				{!isEmpty(folder?.acl) && !folder.owner && (
+				{!isEmpty(folder?.acl) && (
 					<ShareFolderProperties folder={folder} setActiveModal={setActiveModal} />
 				)}
 				<RetentionPolicies

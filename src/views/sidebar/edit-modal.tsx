@@ -3,10 +3,12 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { Container } from '@zextras/carbonio-design-system';
 import React, { FC, useCallback, useState } from 'react';
-import type { ModalProps } from '../../types';
+
+import { Container } from '@zextras/carbonio-design-system';
+
 import EditPermissionsModal from './edit-permissions-modal';
+import type { ModalProps } from '../../types';
 import { Context } from './parts/edit/edit-context';
 import MainEditModal from './parts/edit/edit-default-modal';
 import ShareRevokeModal from './parts/edit/share-revoke-modal';
