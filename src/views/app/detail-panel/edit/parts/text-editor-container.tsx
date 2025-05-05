@@ -94,9 +94,10 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 					return;
 				}
 				saveEditor();
-				editorRef.current?.dispatch('blur');
+				const alreadyFocused = editorRef.current.hasFocus();
+				alreadyFocused && editorRef.current?.dispatch('blur');
 				editorRef.current?.setDirty(false);
-				editorRef.current?.focus();
+				alreadyFocused && editorRef.current?.focus();
 			}, SAVE_EDITOR_DELAY),
 		[saveEditor]
 	);
