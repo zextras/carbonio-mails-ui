@@ -293,13 +293,11 @@ describe('edit-modal', () => {
 		const folderName = faker.lorem.word();
 		await user.type(folderInputElement, folderName);
 
-		await waitFor(() => {
-			expect(
-				screen.getByRole('button', {
-					name: /label\.edit/i
-				})
-			).toBeEnabled();
-		});
+		expect(
+			screen.getByRole('button', {
+				name: /label\.edit/i
+			})
+		).toBeEnabled();
 
 		const wipeInterceptor = createSoapAPIInterceptor<
 			{ action: SoapFolderAction },
