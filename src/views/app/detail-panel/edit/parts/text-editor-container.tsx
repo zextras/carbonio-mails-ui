@@ -51,7 +51,7 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 		setText({ plainText, richText });
 	}, [setText]);
 
-	const handleKeyDown = useMemo(
+	const onInput = useMemo(
 		() =>
 			debounce(() => {
 				if (!editorRef.current) {
@@ -66,8 +66,8 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 	);
 
 	const onEditorDirty = useCallback(() => {
-		handleKeyDown();
-	}, [handleKeyDown]);
+		onInput();
+	}, [onInput]);
 
 	const [Composer, composerIsAvailable] = useIntegratedComponent('composer');
 	const { isRichText } = useEditorIsRichText(editorId);
@@ -124,8 +124,8 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 				handleEditorPaste(editor, editorId, event);
 			});
 
-			editor.on('keyDown', () => {
-				handleKeyDown();
+			editor.on('input', () => {
+				onInput();
 			});
 
 			const mutationObserver = new MutationObserver(() => {
