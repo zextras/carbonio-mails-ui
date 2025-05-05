@@ -17,13 +17,13 @@ import { folderActionSoapApi } from '../../../../api/folder-action-soap-api';
 import ModalFooter from '../../../../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../../../../carbonio-ui-commons/components/modals/modal-header';
 import { FolderActionsType, FOLDERS } from '../../../../carbonio-ui-commons/constants/folders';
-import type { MainEditModalPropType } from '../../../../carbonio-ui-commons/types/sidebar';
 import {
 	allowedActionOnSharedAccount,
 	isValidFolderName
 } from '../../../../carbonio-ui-commons/utils/utils';
 import { useUiUtilities } from '../../../../hooks/use-ui-utilities';
-import { translatedSystemFolders } from '../../utils';
+import { ModalProps } from '../../../../types';
+import { getFolderTranslatedName, translatedSystemFolders } from '../../utils';
 
 const numberRegex = /^\d+$/;
 const DAYS_LABEL = 'label.days';
@@ -31,7 +31,10 @@ const WEEKS_LABEL = 'label.weeks';
 const MONTHS_LABEL = 'label.months';
 const YEARS_LABEL = 'label.years';
 
-const MainEditModal: FC<MainEditModalPropType> = ({ folder, onClose, setActiveModal }) => {
+type MainEditModalProps = ModalProps & {
+	setActiveModal: (modal: string) => void;
+};
+const MainEditModal: FC<MainEditModalProps> = ({ folder, onClose, setActiveModal }) => {
 	const [inputValue, setInputValue] = useState(folder.name);
 	const [showPolicy, setShowPolicy] = useState(false);
 	const [rtnValue, setRtnValue] = useState<number | string>(0);
@@ -44,7 +47,7 @@ const MainEditModal: FC<MainEditModalPropType> = ({ folder, onClose, setActiveMo
 	const [dsblMsgRet, setDsblMsgRet] = useState(false);
 	const [emptyRtnValue, setEmptyRtnValue] = useState(false);
 	const [emptyDisValue, setEmptyDisValue] = useState(false);
-	const [folderColor, setFolderColor] = useState(folder?.color ?? 0);
+	const [folderColor, setFolderColor] = useState<number>(folder.color ?? 0);
 
 	const retentionPeriod = [
 		{
@@ -141,9 +144,7 @@ const MainEditModal: FC<MainEditModalPropType> = ({ folder, onClose, setActiveMo
 	}, [folder.retentionPolicy]);
 
 	const showWarning = useMemo(
-		() =>
-			includes(translatedSystemFolders(), inputValue) ||
-			(inputValue && !isValidFolderName(inputValue)),
+		() => includes(translatedSystemFolders(), inputValue) || !isValidFolderName(inputValue),
 		[inputValue]
 	);
 	const inpDisable = useMemo(
@@ -199,8 +200,6 @@ const MainEditModal: FC<MainEditModalPropType> = ({ folder, onClose, setActiveMo
 				folder: {
 					...folder,
 					parent: folder.l || '',
-					path: folder.absFolderPath,
-					absParent: '2',
 					children: []
 				},
 				name: inputValue,
@@ -266,7 +265,7 @@ const MainEditModal: FC<MainEditModalPropType> = ({ folder, onClose, setActiveMo
 	]);
 
 	const title = t('label.edit_folder_properties', {
-		name: folder.name,
+		name: getFolderTranslatedName({ folderId: folder.id, folderName: folder.name }),
 		defaultValue: 'Edit {{name}} properties'
 	});
 
@@ -279,12 +278,11 @@ const MainEditModal: FC<MainEditModalPropType> = ({ folder, onClose, setActiveMo
 				setInputValue={setInputValue}
 				inputValue={inputValue}
 				inpDisable={inpDisable}
-				folderColor={String(folderColor)}
+				folderColor={folderColor}
 				setFolderColor={setFolderColor}
 			/>
 			<Container mainAlignment="flex-start" crossAlignment="flex-start" padding={{ top: 'medium' }}>
 				<FolderDetails folder={folder} />
-
 				{!isEmpty(folder?.acl) && !folder.owner && (
 					<ShareFolderProperties folder={folder} setActiveModal={setActiveModal} />
 				)}

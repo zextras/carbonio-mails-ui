@@ -8,10 +8,17 @@ import React, { ChangeEvent, FC } from 'react';
 import { Container, Input, Padding, Text } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 
-import type { NameInputRowProps } from '../../../../carbonio-ui-commons/types/sidebar';
 import { isValidFolderName } from '../../../../carbonio-ui-commons/utils/utils';
 import ColorPicker from '../../../../integrations/shared-invite-reply/parts/color-select';
 
+type NameInputRowProps = {
+	setInputValue: (value: string) => void;
+	inputValue: string;
+	showWarning: boolean;
+	inpDisable: boolean;
+	folderColor: number;
+	setFolderColor: (value: number) => void;
+};
 const NameInputRow: FC<NameInputRowProps> = ({
 	setInputValue,
 	inpDisable,
@@ -43,9 +50,9 @@ const NameInputRow: FC<NameInputRowProps> = ({
 		)}
 		<Padding top="small" />
 		<ColorPicker
-			onChange={(color: string | null): void => setFolderColor(color ?? '')}
+			onChange={(color: string | null): void => setFolderColor(Number(color))}
 			label={t('label.select_color', 'Select Color')}
-			defaultColor={parseInt(folderColor ?? '0', 10)}
+			defaultColor={folderColor}
 			data-testid="folder-color"
 		/>
 	</Container>
