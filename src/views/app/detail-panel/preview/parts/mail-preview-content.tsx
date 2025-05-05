@@ -146,16 +146,8 @@ export const MailPreviewContent = ({
 						{showAppointmentInvite && (
 							<Container width="100%">
 								<InviteResponse
-									onLoadChange={(): null => null}
 									mailMsg={message}
-									inviteId={inviteId}
-									participationStatus={participationStatus}
-									to={filter(message.participants, { type: 'f' })}
-									invite={message.invite}
-									method={message.invite[0]?.comp[0]?.method}
 									moveToTrash={moveToTrash}
-									isAttendee={isAttendee}
-									parent={message.parent}
 								/>
 							</Container>
 						)}
