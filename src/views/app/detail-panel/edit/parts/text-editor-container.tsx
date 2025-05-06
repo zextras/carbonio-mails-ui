@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React, { FC, useCallback, useMemo, useRef } from 'react';
+import React, { FC, useCallback, useEffect, useMemo, useRef } from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
 import { useIntegratedComponent, useUserSettings } from '@zextras/carbonio-shell-ui';
@@ -42,6 +42,25 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 	disabled
 }) => {
 	const editorRef = useRef<Editor>();
+	const textAreaRef = useRef<HTMLTextAreaElement>(null);
+
+	const getTextareaCurrentText = useCallback((): MailsEditorV2['text'] | null => {
+		if (!textAreaRef.current) {
+			return null;
+		}
+
+		const plainText = textAreaRef.current.value;
+		const richText = plainTextToHTML(plainText);
+
+		return { plainText, richText };
+	}, []);
+
+	const onTextareaExternalTextChanges = useCallback((text: MailsEditorV2['text']): void => {
+		if (!textAreaRef.current) {
+			return;
+		}
+		textAreaRef.current.value = text.plainText;
+	}, []);
 
 	const getCurrentText = useCallback((): MailsEditorV2['text'] | null => {
 		if (!editorRef.current) {
@@ -58,14 +77,14 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 		if (!editorRef.current) {
 			return;
 		}
-		editorRef.current.setContent(text.richText); // TODO handle plain text too!!!!!
+		editorRef.current.setContent(text.richText);
 	}, []);
 
 	const { setTextProvider } = useEditorTextProvider(editorId);
 
 	const { getText, setText } = useEditorText(editorId);
 	const text = useMemo(() => getText(), [getText]);
-	const editorTextRef = useRef(text.richText);
+	const editorTextRef = useRef(text);
 
 	const saveEditor = useCallback(() => {
 		if (!editorRef.current) {
@@ -116,10 +135,11 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 	const [Composer, composerIsAvailable] = useIntegratedComponent('composer');
 	const { isRichText } = useEditorIsRichText(editorId);
 
-	const onTextChanged = useCallback(
-		(txt: TextEditorContent): void => {
-			setText({ plainText: txt.plainText, richText: txt.richText });
-		},
+	const onTextChanged = useMemo(
+		() =>
+			debounce((txt: TextEditorContent): void => {
+				setText({ plainText: txt.plainText, richText: txt.richText }, { syncTextProvider: false });
+			}, SAVE_EDITOR_DELAY),
 		[setText]
 	);
 
@@ -193,6 +213,19 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 		}
 	};
 
+	const textProviderValue = useMemo(
+		() => ({
+			setCurrentText: onTextareaExternalTextChanges,
+			getCurrentText: getTextareaCurrentText
+		}),
+		[getTextareaCurrentText, onTextareaExternalTextChanges]
+	);
+	useEffect(() => {
+		if (!isRichText) {
+			setTextProvider(textProviderValue);
+		}
+	}, [isRichText, setTextProvider, textProviderValue]);
+
 	return (
 		<>
 			{text && (
@@ -210,7 +243,7 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 						>
 							<StyledComp.EditorWrapper data-testid="MailEditorWrapper">
 								<Composer
-									initialValue={editorTextRef.current}
+									initialValue={editorTextRef.current.richText}
 									disabled={disabled}
 									onFileSelect={onFilesSelected}
 									onDragOver={onDragOver}
@@ -224,7 +257,8 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 						<Container background="gray6" height="fit">
 							<StyledComp.TextArea
 								data-testid="MailPlainTextEditor"
-								value={text.plainText}
+								ref={textAreaRef}
+								defaultValue={editorTextRef.current.plainText}
 								style={{ fontFamily: defaultFontFamily }}
 								onFocus={(ev): void => {
 									ev.currentTarget.setSelectionRange(0, null);
