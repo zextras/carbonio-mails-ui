@@ -8,6 +8,7 @@ import React from 'react';
 
 import { DropdownItem } from '@zextras/carbonio-design-system';
 import { filter, intersection, map, some } from 'lodash';
+import { useTranslation } from 'react-i18next';
 
 import { normalizeDropdownActionItem } from '../../../../helpers/actions';
 import { useMsgApplyTagDescriptor } from '../../../../hooks/actions/use-msg-apply-tag';
@@ -71,6 +72,7 @@ export const MessagesMultipleSelectionActions = ({
 		shouldReplaceHistory: false,
 		folderId
 	});
+	const [t] = useTranslation();
 	const actions = [
 		setAsRead,
 		setAsUnread,
@@ -79,7 +81,7 @@ export const MessagesMultipleSelectionActions = ({
 		{
 			id: 'More',
 			icon: 'MoreVertical',
-			label: 'More actions',
+			label: t('tooltip.moreActions', 'More actions'),
 			items: [
 				normalizeDropdownActionItem(flagDescriptor),
 				normalizeDropdownActionItem(unflagDescriptor),

@@ -8,6 +8,7 @@ import React, { FC, ReactElement, useMemo } from 'react';
 import { Dropdown, IconButton, Padding, Row, Tooltip } from '@zextras/carbonio-design-system';
 import { useAppContext } from '@zextras/carbonio-shell-ui';
 import { isNil, map, noop } from 'lodash';
+import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 
 import { normalizeDropdownActionItem } from '../../../../../helpers/actions';
@@ -57,6 +58,7 @@ export const MailMsgPreviewActions: FC<MailMsgPreviewActionsType> = ({ message }
 
 	const tagItem = useTagDropdownItem(applyTagDescriptor, message.tags);
 
+	const [t] = useTranslation();
 	const actions = [
 		replyDescriptor,
 		replyAllDescriptor,
@@ -69,7 +71,7 @@ export const MailMsgPreviewActions: FC<MailMsgPreviewActionsType> = ({ message }
 		{
 			id: 'More',
 			icon: 'MoreVertical',
-			label: 'More actions',
+			label: t('tooltip.moreActions', 'More actions'),
 			items: [
 				normalizeDropdownActionItem(forwardAsAttachmentDescriptor),
 				normalizeDropdownActionItem(flagDescriptor),
