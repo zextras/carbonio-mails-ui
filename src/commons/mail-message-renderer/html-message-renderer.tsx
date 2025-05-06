@@ -143,7 +143,7 @@ export const HtmlMessageRenderer = ({ message }: HtmlMessageRendererType): React
 		});
 		const html = htmlDoc.documentElement.outerHTML;
 
-		// Decode surrogate pairs
+		// Decode surrogate pairs (broken emojis handling)
 		return decodeSurrogatePairs(html);
 	}, [htmlDoc.documentElement.outerHTML, images, msgId, parts, showImage]);
 
