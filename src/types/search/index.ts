@@ -127,12 +127,12 @@ export type ChipOnAdd = ChipItem & {
 
 export type SendReceivedDateRowPropType = {
 	compProps: {
-		sentBefore: Array<any>;
-		setSentBefore: (arg: any) => void;
-		sentAfter: Array<any>;
-		setSentAfter: (arg: any) => void;
-		sentOn: Array<any>;
-		setSentOn: (arg: any) => void;
+		sentBefore: Date | null;
+		setSentBefore: (arg: Date | null) => void;
+		sentAfter: Date | null;
+		setSentAfter: (arg: Date | null) => void;
+		sentOn: Date | null;
+		setSentOn: (arg: Date | null) => void;
 	};
 };
 export type SizeLargerSizeSmallerRowProps = {
