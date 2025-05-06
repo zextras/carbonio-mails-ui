@@ -6,6 +6,7 @@
 import React from 'react';
 
 import { DropdownItem } from '@zextras/carbonio-design-system';
+import { t } from '@zextras/carbonio-shell-ui';
 import { intersection, map, some } from 'lodash';
 
 import { normalizeDropdownActionItem } from '../../../../helpers/actions';
@@ -97,7 +98,7 @@ export const ConversationsMultipleSelectionActions = ({
 		{
 			id: 'More',
 			icon: 'MoreVertical',
-			label: 'More actions',
+			label: t('tooltip.moreActions', 'More actions'),
 			items: [
 				normalizeDropdownActionItem(flagDescriptor),
 				normalizeDropdownActionItem(unflagDescriptor),
