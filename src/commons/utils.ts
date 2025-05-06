@@ -179,3 +179,18 @@ export function updateImageSrc(
 		img.setAttribute('src', `/service/home/~/?auth=co&id=${msgId}&part=${imgMap[ci].name}`);
 	}
 }
+
+export function decodeSurrogatePairs(str: string): string {
+	return str.replace(/\\u([\dA-F]{4})\\u([\dA-F]{4})/gi, (_, p1, p2) => {
+		const high = parseInt(p1, 16);
+		const low = parseInt(p2, 16);
+
+		// Validate surrogate pair range
+		if (high >= 0xd800 && high <= 0xdbff && low >= 0xdc00 && low <= 0xdfff) {
+			return String.fromCodePoint(high, low);
+		}
+
+		// Return original if not a valid surrogate pair
+		return `\\u${p1}\\u${p2}`;
+	});
+}
