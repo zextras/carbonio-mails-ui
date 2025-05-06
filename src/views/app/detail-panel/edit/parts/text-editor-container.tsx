@@ -42,6 +42,7 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 	disabled
 }) => {
 	const editorRef = useRef<Editor>();
+
 	const getCurrentText = useCallback((): MailsEditorV2['text'] | null => {
 		if (!editorRef.current) {
 			return null;
@@ -88,8 +89,10 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 	);
 
 	const onEditorClose = useCallback(() => {
+		saveEditor();
+		editorRef.current = undefined;
 		setTextProvider(undefined);
-	}, [setTextProvider]);
+	}, [saveEditor, setTextProvider]);
 
 	const onInput = useMemo(
 		() =>
