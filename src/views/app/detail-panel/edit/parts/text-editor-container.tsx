@@ -87,6 +87,10 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 		[getCurrentText, onExternalTextChanges, setTextProvider]
 	);
 
+	const onEditorClose = useCallback(() => {
+		setTextProvider(undefined);
+	}, [setTextProvider]);
+
 	const onInput = useMemo(
 		() =>
 			debounce(() => {
@@ -163,6 +167,10 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 
 			editor.on('input', () => {
 				onInput();
+			});
+
+			editor.on('remove', () => {
+				onEditorClose();
 			});
 
 			const mutationObserver = new MutationObserver(() => {
