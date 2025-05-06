@@ -57,14 +57,19 @@ export const useEditorTextProvider = (
 	const value = useEditorsStore((state) => state.editors[id].textProvider);
 	const setter = useEditorsStore((state) => state.setTextProvider);
 
+	const setTextProvider = useCallback(
+		(val: MailsEditorV2['textProvider']): void => {
+			setter(id, val);
+		},
+		[id, setter]
+	);
+
 	return useMemo(
 		() => ({
 			textProvider: value,
-			setTextProvider: (val: MailsEditorV2['textProvider']): void => {
-				setter(id, val);
-			}
+			setTextProvider
 		}),
-		[id, setter, value]
+		[setTextProvider, value]
 	);
 };
 
