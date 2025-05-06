@@ -6,8 +6,8 @@
 import React from 'react';
 
 import { DropdownItem } from '@zextras/carbonio-design-system';
-import { t } from '@zextras/carbonio-shell-ui';
 import { intersection, map, some } from 'lodash';
+import { useTranslation } from 'react-i18next';
 
 import { normalizeDropdownActionItem } from '../../../../helpers/actions';
 import { useConvApplyTagDescriptor } from '../../../../hooks/actions/use-conv-apply-tag';
@@ -33,6 +33,7 @@ export const ConversationsMultipleSelectionActions = ({
 	deselectAll: () => void;
 	folderId: string;
 }): React.JSX.Element => {
+	const [t] = useTranslation();
 	const selectedItems = useConversationsByIds(selectedConversationsIds);
 	const conversationstags: Array<Array<string>> = map(selectedItems, (item) => item.tags);
 	const atLeastOneConvIsUnread = some(selectedItems, (item) => !item.read);
