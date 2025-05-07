@@ -8,6 +8,7 @@ import React from 'react';
 import { faker } from '@faker-js/faker';
 import { screen, waitFor, within } from '@testing-library/react';
 import { UserEvent } from '@testing-library/user-event';
+import { format } from 'date-fns';
 
 import {
 	EDIT_ACTION,
@@ -571,6 +572,33 @@ describe('Advanced filter modal', () => {
 	it(`should reset 'email status' when reset button is pressed`, async () => {
 		await checkResetAndSearchButton(async (user) => {
 			await selectOption(user, 'emailStatusSelect', 'email_status.unread');
+		});
+	});
+
+	it(`should reset 'sent before' when reset button is pressed`, async () => {
+		await checkResetAndSearchButton(async (user) => {
+			const inputElement = screen.getByPlaceholderText('search.sent_before');
+			const dateString = format(new Date(42424242), 'MM/dd/yyyy HH:mm');
+			await user.type(inputElement, dateString);
+			await user.keyboard('[Enter]');
+		});
+	});
+
+	it(`should reset 'sent after' when reset button is pressed`, async () => {
+		await checkResetAndSearchButton(async (user) => {
+			const inputElement = screen.getByPlaceholderText('search.sent_after');
+			const dateString = format(new Date(42424242), 'MM/dd/yyyy HH:mm');
+			await user.type(inputElement, dateString);
+			await user.keyboard('[Enter]');
+		});
+	});
+
+	it(`should reset 'sent on' when reset button is pressed`, async () => {
+		await checkResetAndSearchButton(async (user) => {
+			const inputElement = screen.getByPlaceholderText('search.sent_on');
+			const dateString = format(new Date(42424242), 'MM/dd/yyyy HH:mm');
+			await user.type(inputElement, dateString);
+			await user.keyboard('[Enter]');
 		});
 	});
 
