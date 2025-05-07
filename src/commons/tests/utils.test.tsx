@@ -10,7 +10,13 @@ import * as shell from '../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
 import defaultSettings from '../../carbonio-ui-commons/test/mocks/settings/default-settings';
 import { MailMessagePart } from '../../types';
 import { convertHtmlToPlainText } from '../utilities';
-import { buildImageMap, getTimeLabel, participantToString, updateImageSrc } from '../utils';
+import {
+	buildImageMap,
+	decodeSurrogatePairs,
+	getTimeLabel,
+	participantToString,
+	updateImageSrc
+} from '../utils';
 
 describe('getTimeLabel', () => {
 	describe('the date is formatted using local', () => {
@@ -302,5 +308,55 @@ describe('participantToString', () => {
 		const accounts = [] as Array<Account>;
 		const result = participantToString(participant, accounts);
 		expect(result).toBe('test name');
+	});
+});
+
+describe('decodeSurrogatePairs', () => {
+	it('decodes valid surrogate pairs', () => {
+		const input = '\\uD83D\\uDE00'; // 😀 emoji
+		const expected = '😀';
+		expect(decodeSurrogatePairs(input)).toBe(expected);
+	});
+
+	it('returns original string for invalid surrogate pairs', () => {
+		const input = '\\uD83D\\u1234'; // Invalid low surrogate
+		const expected = '\\uD83D\\u1234';
+		expect(decodeSurrogatePairs(input)).toBe(expected);
+	});
+
+	it('handles multiple valid surrogate pairs', () => {
+		const input = '\\uD83D\\uDE00\\uD83D\\uDE02'; // 😀😂 emojis
+		const expected = '😀😂';
+		expect(decodeSurrogatePairs(input)).toBe(expected);
+	});
+
+	it('handles mixed valid and invalid surrogate pairs', () => {
+		const input = '\\uD83D\\uDE00\\uD83D\\u1234'; // 😀 and invalid pair
+		const expected = '😀\\uD83D\\u1234';
+		expect(decodeSurrogatePairs(input)).toBe(expected);
+	});
+
+	it('returns original string if no surrogate pairs are present', () => {
+		const input = 'Hello World';
+		const expected = 'Hello World';
+		expect(decodeSurrogatePairs(input)).toBe(expected);
+	});
+
+	it('handles edge case with only high surrogate', () => {
+		const input = '\\uD83D';
+		const expected = '\\uD83D';
+		expect(decodeSurrogatePairs(input)).toBe(expected);
+	});
+
+	it('handles edge case with only low surrogate', () => {
+		const input = '\\uDE00';
+		const expected = '\\uDE00';
+		expect(decodeSurrogatePairs(input)).toBe(expected);
+	});
+
+	it('handles empty string input', () => {
+		const input = '';
+		const expected = '';
+		expect(decodeSurrogatePairs(input)).toBe(expected);
 	});
 });
