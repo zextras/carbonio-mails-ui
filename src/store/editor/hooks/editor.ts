@@ -88,13 +88,13 @@ export const useEditorText = (
 	setText: (text: MailsEditorV2['text'], options?: EditorSetTextOptions) => void;
 } => {
 	const { immediateSaveDraft } = useSaveDraftFromEditor();
-	const value = useEditorsStore((state) => state.editors[id].text);
 	const setter = useEditorsStore((state) => state.setText);
 	const { textProvider } = useEditorTextProvider(id);
 
 	const getText = useCallback(
-		(): MailsEditorV2['text'] => textProvider?.getCurrentText() ?? value,
-		[textProvider, value]
+		(): MailsEditorV2['text'] =>
+			textProvider?.getCurrentText() ?? useEditorsStore.getState().editors[id].text,
+		[id, textProvider]
 	);
 
 	const setText = useCallback(
