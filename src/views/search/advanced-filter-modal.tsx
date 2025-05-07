@@ -163,6 +163,10 @@ export const AdvancedFilterModal = ({
 	}, [includeSharedItemsInSearchPref]);
 
 	useEffect(() => {
+		setIsSharedFolderIncluded(isSharedFolderIncludedInitialValue);
+	}, [isSharedFolderIncludedInitialValue]);
+
+	useEffect(() => {
 		const updatedQuery = map(
 			filter(
 				query,
@@ -424,9 +428,10 @@ export const AdvancedFilterModal = ({
 		[folder, tagOptions, tag]
 	);
 
-	const sendDateRowProps = useMemo(() => {
-		return { sentBefore, setSentBefore, sentAfter, setSentAfter, sentOn, setSentOn };
-	}, [sentBefore, sentAfter, sentOn]);
+	const sendDateRowProps = useMemo(
+		() => ({ sentBefore, setSentBefore, sentAfter, setSentAfter, sentOn, setSentOn }),
+		[sentBefore, sentAfter, sentOn]
+	);
 
 	const toggleFiltersProps = useMemo(
 		() => ({

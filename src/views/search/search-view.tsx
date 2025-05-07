@@ -86,11 +86,12 @@ const SearchView = ({
 			executeSearch(controller.signal);
 		} else {
 			resetSearchAndPopulatedItems();
+			setIsSharedFolderIncluded(includeSharedItemsInSearch);
 		}
 		return () => {
 			controller.abort();
 		};
-	}, [executeSearch, query]);
+	}, [executeSearch, query, includeSharedItemsInSearch]);
 
 	return (
 		<>
