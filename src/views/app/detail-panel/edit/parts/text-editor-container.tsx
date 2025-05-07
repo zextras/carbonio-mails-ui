@@ -22,8 +22,6 @@ import {
 import { MailsEditorV2 } from '../../../../../types';
 import { getFonts, getFontSizesOptions } from '../../../../settings/components/utils';
 
-export type TextEditorContent = { plainText: string; richText: string };
-
 export type TextEditorContainerProps = {
 	editorId: MailsEditorV2['id'];
 	onDragOver: (event: React.DragEvent) => void;
@@ -34,100 +32,27 @@ export type TextEditorContainerProps = {
 
 export const SAVE_EDITOR_DELAY = 2000;
 
-export const TextEditorContainer: FC<TextEditorContainerProps> = ({
+const RichTextEditorContainer = ({
 	editorId,
-	onDragOver,
-	onFilesSelected,
 	minHeight,
-	disabled
-}) => {
-	const editorRef = useRef<Editor>();
-	const textAreaRef = useRef<HTMLTextAreaElement>(null);
-
-	const getTextareaCurrentText = useCallback((): MailsEditorV2['text'] | null => {
-		if (!textAreaRef.current) {
-			return null;
-		}
-
-		const plainText = textAreaRef.current.value;
-		const richText = plainTextToHTML(plainText);
-
-		return { plainText, richText };
-	}, []);
-
-	const onTextareaExternalTextChanges = useCallback((text: MailsEditorV2['text']): void => {
-		if (!textAreaRef.current) {
-			return;
-		}
-		textAreaRef.current.value = text.plainText;
-	}, []);
-
-	const getCurrentText = useCallback((): MailsEditorV2['text'] | null => {
-		if (!editorRef.current) {
-			return null;
-		}
-
-		const plainText = editorRef.current.getContent({ format: 'text' });
-		const richText = editorRef.current.getContent({ format: 'html' });
-
-		return { plainText, richText };
-	}, []);
-
-	const onExternalTextChanges = useCallback((text: MailsEditorV2['text']): void => {
-		if (!editorRef.current) {
-			return;
-		}
-		editorRef.current.setContent(text.richText);
-	}, []);
-
-	const { setTextProvider } = useEditorTextProvider(editorId);
+	disabled,
+	onDragOver,
+	onFilesSelected
+}: {
+	editorId: MailsEditorV2['id'];
+	onDragOver: (event: React.DragEvent) => void;
+	onFilesSelected: ({ editor, files }: { editor: TinyMCE; files: FileList }) => void;
+	minHeight: number;
+	disabled: boolean;
+}): JSX.Element => {
+	const [Composer] = useIntegratedComponent('composer');
 
 	const { getText, setText } = useEditorText(editorId);
 	const text = useMemo(() => getText(), [getText]);
+	const editorRef = useRef<Editor>();
 	const editorTextRef = useRef(text);
-
-	const saveEditor = useCallback(() => {
-		if (!editorRef.current) {
-			return;
-		}
-
-		const plainText = editorRef.current.getContent({ format: 'text' });
-		const richText = editorRef.current.getContent({ format: 'html' });
-		setText({ plainText, richText }, { syncTextProvider: false });
-	}, [setText]);
-
-	const onEditorInit = useCallback(
-		(evt: Event, editor: Editor) => {
-			editorRef.current = editor;
-			setTextProvider({
-				setCurrentText: onExternalTextChanges,
-				getCurrentText
-			});
-		},
-		[getCurrentText, onExternalTextChanges, setTextProvider]
-	);
-
-	const onEditorClose = useCallback(() => {
-		saveEditor();
-		editorRef.current = undefined;
-		setTextProvider(undefined);
-	}, [saveEditor, setTextProvider]);
-
 	const timeoutId = useRef<NodeJS.Timeout>();
-
-	const [Composer, composerIsAvailable] = useIntegratedComponent('composer');
-	const { isRichText } = useEditorIsRichText(editorId);
-
-	const onTextChanged = useMemo(
-		() =>
-			debounce((ev: ChangeEvent<HTMLTextAreaElement>): void => {
-				setText(
-					{ plainText: ev.target.value, richText: plainTextToHTML(ev.target.value) },
-					{ syncTextProvider: false }
-				);
-			}, SAVE_EDITOR_DELAY),
-		[setText]
-	);
+	const { setTextProvider } = useEditorTextProvider(editorId);
 
 	const { prefs } = useUserSettings();
 	const fontSizesOptions = getFontSizesOptions();
@@ -141,6 +66,45 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 	const fontsOptionsToString = fontFamilyOptions.map(
 		(font: { label: string; value: string }) => `${font.label}=${font.value};`
 	);
+
+	const getCurrentText = useCallback((): MailsEditorV2['text'] | null => {
+		if (!editorRef.current) {
+			return null;
+		}
+
+		const plainText = editorRef.current.getContent({ format: 'text' });
+		const richText = editorRef.current.getContent({ format: 'html' });
+
+		return { plainText, richText };
+	}, []);
+
+	const onExternalTextChanges = useCallback((value: MailsEditorV2['text']): void => {
+		if (!editorRef.current) {
+			return;
+		}
+		editorRef.current.setContent(value.richText);
+	}, []);
+
+	const onEditorInit = useCallback(
+		(evt: Event, editor: Editor) => {
+			editorRef.current = editor;
+			setTextProvider({
+				setCurrentText: onExternalTextChanges,
+				getCurrentText
+			});
+		},
+		[getCurrentText, onExternalTextChanges, setTextProvider]
+	);
+
+	const saveEditor = useCallback(() => {
+		if (!editorRef.current) {
+			return;
+		}
+
+		const plainText = editorRef.current.getContent({ format: 'text' });
+		const richText = editorRef.current.getContent({ format: 'html' });
+		setText({ plainText, richText }, { syncTextProvider: false });
+	}, [setText]);
 
 	const onRichTextChange = useCallback(() => {
 		if (timeoutId.current) {
@@ -157,6 +121,12 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 			alreadyFocused && editorRef.current?.focus();
 		}, SAVE_EDITOR_DELAY);
 	}, [saveEditor]);
+
+	const onEditorClose = useCallback(() => {
+		saveEditor();
+		editorRef.current = undefined;
+		setTextProvider(undefined);
+	}, [saveEditor, setTextProvider]);
 
 	const composerCustomOptions = useMemo(
 		() => ({
@@ -223,6 +193,69 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 		]
 	);
 
+	return (
+		<Container
+			background={'gray6'}
+			mainAlignment="flex-start"
+			style={{ minHeight, overflow: 'hidden' }}
+		>
+			<StyledComp.EditorWrapper data-testid="MailEditorWrapper">
+				<Composer
+					initialValue={editorTextRef.current.richText}
+					disabled={disabled}
+					onFileSelect={onFilesSelected}
+					onDragOver={onDragOver}
+					customInitOptions={composerCustomOptions}
+					onInit={onEditorInit}
+					onDirty={onRichTextChange}
+				/>
+			</StyledComp.EditorWrapper>
+		</Container>
+	);
+};
+
+export const PlainTextEditorContainer = ({
+	editorId
+}: {
+	editorId: MailsEditorV2['id'];
+}): JSX.Element => {
+	const textAreaRef = useRef<HTMLTextAreaElement>(null);
+	const { getText, setText } = useEditorText(editorId);
+	const { prefs } = useUserSettings();
+	const { setTextProvider } = useEditorTextProvider(editorId);
+	const text = useMemo(() => getText(), [getText]);
+	const editorTextRef = useRef(text);
+	const defaultFontFamily = prefs?.zimbraPrefHtmlEditorDefaultFontFamily;
+
+	const getTextareaCurrentText = useCallback((): MailsEditorV2['text'] | null => {
+		if (!textAreaRef.current) {
+			return null;
+		}
+
+		const plainText = textAreaRef.current.value;
+		const richText = plainTextToHTML(plainText);
+
+		return { plainText, richText };
+	}, []);
+
+	const onTextareaExternalTextChanges = useCallback((value: MailsEditorV2['text']): void => {
+		if (!textAreaRef.current) {
+			return;
+		}
+		textAreaRef.current.value = value.plainText;
+	}, []);
+
+	const onTextChanged = useMemo(
+		() =>
+			debounce((ev: ChangeEvent<HTMLTextAreaElement>): void => {
+				setText(
+					{ plainText: ev.target.value, richText: plainTextToHTML(ev.target.value) },
+					{ syncTextProvider: false }
+				);
+			}, SAVE_EDITOR_DELAY),
+		[setText]
+	);
+
 	const textProviderValue = useMemo(
 		() => ({
 			setCurrentText: onTextareaExternalTextChanges,
@@ -230,55 +263,68 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 		}),
 		[getTextareaCurrentText, onTextareaExternalTextChanges]
 	);
+
 	useEffect(() => {
-		if (!isRichText) {
-			setTextProvider(textProviderValue);
-		}
-	}, [isRichText, setTextProvider, textProviderValue]);
+		setTextProvider(textProviderValue);
+		const ref = textAreaRef?.current;
+		return (): void => {
+			if (ref) {
+				setText(
+					{
+						plainText: ref.value,
+						richText: plainTextToHTML(ref.value)
+					},
+					{ syncTextProvider: false }
+				);
+			}
+			setTextProvider(undefined);
+		};
+	}, [setText, setTextProvider, textProviderValue]);
 
 	return (
-		<>
-			{text && (
-				<Container
-					height="fit"
-					padding={{ all: 'small' }}
-					background="gray6"
-					crossAlignment="flex-end"
-				>
-					{isRichText && composerIsAvailable ? (
-						<Container
-							background="gray6"
-							mainAlignment="flex-start"
-							style={{ minHeight, overflow: 'hidden' }}
-						>
-							<StyledComp.EditorWrapper data-testid="MailEditorWrapper">
-								<Composer
-									initialValue={editorTextRef.current.richText}
-									disabled={disabled}
-									onFileSelect={onFilesSelected}
-									onDragOver={onDragOver}
-									customInitOptions={composerCustomOptions}
-									onInit={onEditorInit}
-									onDirty={onRichTextChange}
-								/>
-							</StyledComp.EditorWrapper>
-						</Container>
-					) : (
-						<Container background="gray6" height="fit">
-							<StyledComp.TextArea
-								data-testid="MailPlainTextEditor"
-								ref={textAreaRef}
-								defaultValue={editorTextRef.current.plainText}
-								style={{ fontFamily: defaultFontFamily }}
-								onFocus={(ev): void => {
-									ev.currentTarget.setSelectionRange(0, null);
-								}}
-								onChange={onTextChanged}
-							/>
-						</Container>
-					)}
-				</Container>
+		<Container background={'gray6'} height="fit">
+			<StyledComp.TextArea
+				data-testid="MailPlainTextEditor"
+				ref={textAreaRef}
+				defaultValue={editorTextRef.current.plainText}
+				style={{ fontFamily: defaultFontFamily }}
+				onFocus={(ev): void => {
+					ev.currentTarget.setSelectionRange(0, null);
+				}}
+				onChange={onTextChanged}
+			/>
+		</Container>
+	);
+};
+
+export const TextEditorContainer: FC<TextEditorContainerProps> = ({
+	editorId,
+	onDragOver,
+	onFilesSelected,
+	minHeight,
+	disabled
+}) => {
+	const [composerIsAvailable] = useIntegratedComponent('composer');
+	const { isRichText } = useEditorIsRichText(editorId);
+
+	return (
+		<Container
+			height="fit"
+			padding={{ all: 'small' }}
+			background={'gray6'}
+			crossAlignment="flex-end"
+		>
+			{isRichText && composerIsAvailable ? (
+				<RichTextEditorContainer
+					editorId={editorId}
+					disabled={disabled}
+					minHeight={minHeight}
+					onDragOver={onDragOver}
+					onFilesSelected={onFilesSelected}
+				/>
+			) : (
+				<PlainTextEditorContainer editorId={editorId} />
 			)}
-		</>
+		</Container>
 	);
 };
