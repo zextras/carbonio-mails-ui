@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React, { FC, useCallback, useEffect, useMemo, useRef } from 'react';
+import React, { ChangeEvent, FC, useCallback, useEffect, useMemo, useRef } from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
 import { useIntegratedComponent, useUserSettings } from '@zextras/carbonio-shell-ui';
@@ -113,32 +113,18 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 		setTextProvider(undefined);
 	}, [saveEditor, setTextProvider]);
 
-	const onInput = useMemo(
-		() =>
-			debounce(() => {
-				if (!editorRef.current) {
-					return;
-				}
-				saveEditor();
-				const alreadyFocused = editorRef.current.hasFocus();
-				alreadyFocused && editorRef.current?.dispatch('blur');
-				editorRef.current?.setDirty(false);
-				alreadyFocused && editorRef.current?.focus();
-			}, SAVE_EDITOR_DELAY),
-		[saveEditor]
-	);
-
-	const onEditorDirty = useCallback(() => {
-		onInput();
-	}, [onInput]);
+	const timeoutId = useRef<NodeJS.Timeout>();
 
 	const [Composer, composerIsAvailable] = useIntegratedComponent('composer');
 	const { isRichText } = useEditorIsRichText(editorId);
 
 	const onTextChanged = useMemo(
 		() =>
-			debounce((txt: TextEditorContent): void => {
-				setText({ plainText: txt.plainText, richText: txt.richText }, { syncTextProvider: false });
+			debounce((ev: ChangeEvent<HTMLTextAreaElement>): void => {
+				setText(
+					{ plainText: ev.target.value, richText: plainTextToHTML(ev.target.value) },
+					{ syncTextProvider: false }
+				);
 			}, SAVE_EDITOR_DELAY),
 		[setText]
 	);
@@ -156,62 +142,86 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 		(font: { label: string; value: string }) => `${font.label}=${font.value};`
 	);
 
-	const composerCustomOptions = {
-		toolbar_sticky: true,
-		ui_mode: 'split',
-		font_size_formats: fontSizesOptionsToString,
-		font_family_formats: fontsOptionsToString,
-		content_style: `
+	const onRichTextChange = useCallback(() => {
+		if (timeoutId.current) {
+			clearTimeout(timeoutId.current);
+		}
+		timeoutId.current = setTimeout(() => {
+			if (!editorRef.current) {
+				return;
+			}
+			saveEditor();
+			const alreadyFocused = editorRef.current.hasFocus();
+			alreadyFocused && editorRef.current?.dispatch('blur');
+			editorRef.current?.setDirty(false);
+			alreadyFocused && editorRef.current?.focus();
+		}, SAVE_EDITOR_DELAY);
+	}, [saveEditor]);
+
+	const composerCustomOptions = useMemo(
+		() => ({
+			toolbar_sticky: true,
+			ui_mode: 'split',
+			font_size_formats: fontSizesOptionsToString,
+			font_family_formats: fontsOptionsToString,
+			content_style: `
             p { margin: 0; }
             body *:not(.signature-div):not(.signature-div *) {
             color: ${defaultColor};
             font-size: ${defaultFontSize};
             font-family: ${defaultFontFamily};
             }`,
-		toolbar: [
-			'fontfamily fontsize styles visualblocks',
-			'bold italic underline strikethrough',
-			'removeformat code',
-			'alignleft aligncenter alignright alignjustify',
-			'forecolor backcolor',
-			'bullist numlist outdent indent',
-			'ltr rtl',
-			'link table',
-			'insertfile image',
-			'imageSelector'
-		].join(' | '),
+			toolbar: [
+				'fontfamily fontsize styles visualblocks',
+				'bold italic underline strikethrough',
+				'removeformat code',
+				'alignleft aligncenter alignright alignjustify',
+				'forecolor backcolor',
+				'bullist numlist outdent indent',
+				'ltr rtl',
+				'link table',
+				'insertfile image',
+				'imageSelector'
+			].join(' | '),
 
-		paste_data_images: false,
-		init_instance_callback: (editor: Editor): (() => void) => {
-			if (!editor) return noop;
-			editor.on('paste', (event) => {
-				handleEditorPaste(editor, editorId, event);
-			});
-
-			editor.on('input', () => {
-				onInput();
-			});
-
-			editor.on('remove', () => {
-				onEditorClose();
-			});
-
-			const mutationObserver = new MutationObserver(() => {
-				editor.dispatch('ResizeWindow');
-			});
-			const boardElement = document.querySelector('[data-testid="NewItemContainer"]');
-			if (boardElement) {
-				mutationObserver.observe(boardElement, {
-					attributes: true,
-					attributeFilter: ['style']
+			paste_data_images: false,
+			init_instance_callback: (editor: Editor): (() => void) => {
+				if (!editor) return noop;
+				editor.on('paste', (event) => {
+					handleEditorPaste(editor, editorId, event);
 				});
-			}
 
-			return () => {
-				mutationObserver.disconnect();
-			};
-		}
-	};
+				editor.on('input', onRichTextChange);
+
+				editor.on('remove', onEditorClose);
+
+				const mutationObserver = new MutationObserver(() => {
+					editor.dispatch('ResizeWindow');
+				});
+				const boardElement = document.querySelector('[data-testid="NewItemContainer"]');
+				if (boardElement) {
+					mutationObserver.observe(boardElement, {
+						attributes: true,
+						attributeFilter: ['style']
+					});
+				}
+
+				return () => {
+					mutationObserver.disconnect();
+				};
+			}
+		}),
+		[
+			defaultColor,
+			defaultFontFamily,
+			defaultFontSize,
+			editorId,
+			fontSizesOptionsToString,
+			fontsOptionsToString,
+			onEditorClose,
+			onRichTextChange
+		]
+	);
 
 	const textProviderValue = useMemo(
 		() => ({
@@ -249,7 +259,7 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 									onDragOver={onDragOver}
 									customInitOptions={composerCustomOptions}
 									onInit={onEditorInit}
-									onDirty={onEditorDirty}
+									onDirty={onRichTextChange}
 								/>
 							</StyledComp.EditorWrapper>
 						</Container>
@@ -263,12 +273,7 @@ export const TextEditorContainer: FC<TextEditorContainerProps> = ({
 								onFocus={(ev): void => {
 									ev.currentTarget.setSelectionRange(0, null);
 								}}
-								onChange={(ev): void => {
-									onTextChanged({
-										plainText: ev.target.value,
-										richText: plainTextToHTML(ev.target.value)
-									});
-								}}
+								onChange={onTextChanged}
 							/>
 						</Container>
 					)}
