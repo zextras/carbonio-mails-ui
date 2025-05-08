@@ -6,6 +6,7 @@
 
 import { ChipProps, ChipItem } from '@zextras/carbonio-design-system';
 import type { QueryChip } from '@zextras/carbonio-search-ui';
+import { Control } from 'react-hook-form';
 
 import { SortBy } from '../../carbonio-ui-commons/types';
 import { NormalizedConversation } from '../conversations';
@@ -144,12 +145,9 @@ export type SizeLargerSizeSmallerRowProps = {
 	};
 };
 export type SubjectKeywordRowProps = {
-	compProps: {
-		otherKeywords: Array<any>;
-		setOtherKeywords: (arg: any) => void;
-		subject: Array<any>;
-		setSubject: (arg: any) => void;
-	};
+	control: Control;
+	keywordsInputName: string;
+	subjectInputName: string;
 };
 
 export type TagFolderRowProps = {

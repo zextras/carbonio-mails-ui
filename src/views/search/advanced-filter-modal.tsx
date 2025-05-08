@@ -19,6 +19,7 @@ import {
 import { t } from '@zextras/carbonio-shell-ui';
 import { concat, filter, includes, map, reject } from 'lodash';
 import moment from 'moment';
+import { useForm } from 'react-hook-form';
 
 import AttachmentTypeEmailStatusRow from './parts/attachment-type-email-status-row';
 import { ReceivedSentAddressRow } from './parts/received-sent-address-row';
@@ -102,7 +103,6 @@ export const AdvancedFilterModal = ({
 	const [sentBefore, setSentBefore] = useState<Date | null>(null);
 	const [sentOn, setSentOn] = useState<Date | null>(null);
 	const [sentAfter, setSentAfter] = useState<Date | null>(null);
-	const [subject, setSubject] = useState<KeywordState>([]);
 	const [attachmentType, setAttachmentType] = useState<KeywordState>([]);
 	const [emailStatus, setEmailStatus] = useState<KeywordState>([]);
 	const [sizeSmaller, setSizeSmaller] = useState<KeywordState>([]);
@@ -112,6 +112,9 @@ export const AdvancedFilterModal = ({
 	const [isSharedFolderIncluded, setIsSharedFolderIncluded] = useState(
 		isSharedFolderIncludedInitialValue
 	);
+	const { control, watch } = useForm();
+	const keywordInput = watch('keyword-input');
+	const subjectInput = watch('subject-input');
 	const queryArray = useMemo(() => ['has:attachment', 'is:flagged', 'is:unread'], []);
 	const tagOptions = useMemo(
 		() =>
@@ -145,7 +148,7 @@ export const AdvancedFilterModal = ({
 		setHasAttachment(false);
 		setIsFlagged(false);
 		setIsUnread(false);
-		setSubject([]);
+		// TODO: reset subject
 		setAttachmentType([]);
 		setEmailStatus([]);
 		setSizeSmaller([]);
@@ -198,7 +201,7 @@ export const AdvancedFilterModal = ({
 			filter(query, (v) => /^Subject:/.test(v.label)),
 			(q) => ({ ...q, hasAvatar: false })
 		);
-		setSubject(subjectsInQuery);
+		// TODO: initialize subject, can be passed as default value in Controller
 
 		const attachmentTypeInQuery = map(
 			filter(query, (v) => /^Attachment:/.test(v.label)),
@@ -305,7 +308,7 @@ export const AdvancedFilterModal = ({
 				dateToKeywordState({ id: `${id}--after`, prefix: 'after', date: sentAfter }),
 				dateToKeywordState({ id: `${id}--date`, prefix: 'date', date: sentOn }),
 				tag,
-				map(subject, (q) => ({
+				map(subjectInput, (q) => ({
 					...q,
 					hasAvatar: true,
 					icon: 'EmailOutline',
@@ -319,23 +322,23 @@ export const AdvancedFilterModal = ({
 				sentToAddresses
 			),
 		[
+			otherKeywords,
+			isUnread,
+			id,
+			isFlagged,
 			hasAttachment,
+			folder,
+			sentBefore,
+			sentAfter,
+			sentOn,
+			tag,
+			subjectInput,
 			attachmentType,
 			emailStatus,
-			isFlagged,
-			folder,
-			otherKeywords,
-			receivedFromAddresses,
-			sentAfter,
-			sentBefore,
-			sentToAddresses,
-			sentOn,
 			sizeLarger,
 			sizeSmaller,
-			subject,
-			tag,
-			isUnread,
-			id
+			receivedFromAddresses,
+			sentToAddresses
 		]
 	);
 
@@ -351,16 +354,6 @@ export const AdvancedFilterModal = ({
 			controller.abort();
 		};
 	}, [onSearchConfirm, queryToBe, isSharedFolderIncluded, onClose]);
-
-	const subjectKeywordRowProps = useMemo(
-		() => ({
-			otherKeywords,
-			setOtherKeywords,
-			subject,
-			setSubject
-		}),
-		[otherKeywords, subject]
-	);
 
 	const handleReceivedFromInput = (values: Array<ContactInputItem>): void => {
 		const newValues = values.map((val) => ({
@@ -461,7 +454,11 @@ export const AdvancedFilterModal = ({
 				mainAlignment={'flex-start'}
 			>
 				<ToggleFilters compProps={toggleFiltersProps} />
-				<SubjectKeywordRow compProps={subjectKeywordRowProps} />
+				<SubjectKeywordRow
+					control={control}
+					keywordsInputName={'keyword-input'}
+					subjectInputName={'subject-input'}
+				/>
 				<ReceivedSentAddressRow compProps={receivedSentAddressRowProps} />
 				<AttachmentTypeEmailStatusRow compProps={attachmentTypeEmailStatusRowProps} />
 				<SizeSmallerSizeLargerRow compProps={sizeSmallerSizeLargerRowProps} />
