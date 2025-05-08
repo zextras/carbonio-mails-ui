@@ -14,7 +14,8 @@ import {
 	Divider,
 	ModalFooter,
 	Tooltip,
-	Text
+	Text,
+	ChipItem
 } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import { concat, filter, map } from 'lodash';
@@ -83,15 +84,15 @@ export const AdvancedFilterModal = ({
 	const [isSharedFolderIncluded, setIsSharedFolderIncluded] = useState(
 		isSharedFolderIncludedInitialValue
 	);
-	const { control, watch, setValue, resetField } = useForm();
-	const keywordInput = watch('keyword-input');
-	const subjectInput = watch('subject-input');
-	const hasAttachment = watch('has-attachment');
-	const isFlagged = watch('is-flagged');
-	const isUnread = watch('is-unread');
-	const sentBefore = watch('sent-before');
-	const sentAfter = watch('sent-after');
-	const sentOn = watch('sent-on');
+	const { control, setValue, watch } = useForm();
+	const keywordInput: Array<ChipItem> = watch('keyword-input', []);
+	const subjectInput: Array<ChipItem> = watch('subject-input');
+	const hasAttachment: boolean = watch('has-attachment');
+	const isFlagged: boolean = watch('is-flagged');
+	const isUnread: boolean = watch('is-unread');
+	const sentBefore: Date | null = watch('sent-before');
+	const sentAfter: Date | null = watch('sent-after');
+	const sentOn: Date | null = watch('sent-on');
 	const sizeSmaller = watch('size-smaller');
 	const sizeLarger = watch('size-larger');
 	const receivedFrom: Array<ContactInputItem> = watch('received-from', []);
@@ -128,23 +129,21 @@ export const AdvancedFilterModal = ({
 	const id = useId();
 
 	const resetFilters = useCallback(() => {
-		setValue('subject-input', []);
 		setValue('keyword-input', []);
-		// setAttachmentType([]);
-		// setEmailStatus([]);
-		// setSizeSmaller([]);
-		// setSizeLarger([]);
-		// setSizeSmallerErrorLabel('');
-		// setSizeLargerErrorLabel('');
-		// setReceivedFromAddresses([]);
-		// setSentToAddresses([]);
-		setFolder([]);
-		setTag([]);
-		// setSentBefore(null);
-		// setSentAfter(null);
-		// setSentOn(null);
-		setIsSharedFolderIncluded(includeSharedItemsInSearchPref);
-	}, [includeSharedItemsInSearchPref, setValue]);
+		setValue('subject-input', []);
+		setValue('has-attachment', false);
+		setValue('is-flagged', false);
+		setValue('is-unread', false);
+		setValue('sent-before', null);
+		setValue('sent-after', null);
+		setValue('sent-on', null);
+		setValue('size-smaller', undefined);
+		setValue('size-larger', undefined);
+		setValue('received-from', []);
+		setValue('sent-to', []);
+		setValue('attachment-type', undefined);
+		setValue('email-status', undefined);
+	}, [setValue]);
 
 	useEffect(() => {
 		setIsSharedFolderIncluded(isSharedFolderIncludedInitialValue);
@@ -270,70 +269,76 @@ export const AdvancedFilterModal = ({
 	);
 
 	return (
-		<CustomModal open={open} onClose={onClose} maxHeight="90vh" size="medium">
-			<ModalHeader
-				onClose={onClose}
-				title={t('label.single_advanced_filter', 'Advanced Filters')}
-				showCloseIcon
-			/>
-			<Divider />
+		<>
+			{open ? (
+				<CustomModal open={open} onClose={onClose} maxHeight="90vh" size="medium">
+					<ModalHeader
+						onClose={onClose}
+						title={t('label.single_advanced_filter', 'Advanced Filters')}
+						showCloseIcon
+					/>
+					<Divider />
 
-			<ScrollableContainer
-				padding={{ horizontal: 'medium', vertical: 'small' }}
-				mainAlignment={'flex-start'}
-			>
-				<ToggleFilters
-					query={query}
-					control={control}
-					isSharedFolderIncludedToggleName={'is-shared-folder-included'}
-					hasAttachmentToggleName={'has-attachment'}
-					isFlaggedToggleName={'is-flagged'}
-					isUnreadToggleName={'is-unread'}
-				/>
-				<SubjectKeywordRow
-					query={query}
-					control={control}
-					keywordsInputName={'keyword-input'}
-					subjectInputName={'subject-input'}
-				/>
-				<ReceivedSentAddressRow
-					query={query}
-					control={control}
-					receivedFromInputName={'received-from'}
-					sentToInputName={'sent-to'}
-				/>
-				<AttachmentTypeEmailStatusRow
-					query={query}
-					control={control}
-					attachmentTypeInputName={'attachment-type'}
-					emailStatusInputName={'email-status'}
-				/>
-				<SizeSmallerSizeLargerRow
-					query={query}
-					control={control}
-					sizeLargerInputName={'size-larger'}
-					sizeSmallerInputName={'size-smaller'}
-				/>
-				<SendReceivedDateRow
-					control={control}
-					query={query}
-					sentBeforeInputName={'sent-before'}
-					sentAfterInputName={'sent-after'}
-					sentOnInputName={'sent-on'}
-				/>
-				<TagFolderRow compProps={tagFolderRowProps} />
-			</ScrollableContainer>
-			<Divider />
-			<ModalFooter
-				onConfirm={onConfirm}
-				confirmDisabled={queryToBe.length === 0}
-				secondaryActionDisabled={
-					queryToBe.length === 0 && isSharedFolderIncluded === includeSharedItemsInSearchPref
-				}
-				confirmLabel={t('action.search', 'Search')}
-				secondaryActionLabel={t('action.reset', 'Reset filters')}
-				onSecondaryAction={resetFilters}
-			/>
-		</CustomModal>
+					<ScrollableContainer
+						padding={{ horizontal: 'medium', vertical: 'small' }}
+						mainAlignment={'flex-start'}
+					>
+						<ToggleFilters
+							query={query}
+							control={control}
+							isSharedFolderIncludedToggleName={'is-shared-folder-included'}
+							hasAttachmentToggleName={'has-attachment'}
+							isFlaggedToggleName={'is-flagged'}
+							isUnreadToggleName={'is-unread'}
+						/>
+						<SubjectKeywordRow
+							query={query}
+							control={control}
+							keywordsInputName={'keyword-input'}
+							subjectInputName={'subject-input'}
+						/>
+						<ReceivedSentAddressRow
+							query={query}
+							control={control}
+							receivedFromInputName={'received-from'}
+							sentToInputName={'sent-to'}
+						/>
+						<AttachmentTypeEmailStatusRow
+							query={query}
+							control={control}
+							attachmentTypeInputName={'attachment-type'}
+							emailStatusInputName={'email-status'}
+						/>
+						<SizeSmallerSizeLargerRow
+							query={query}
+							control={control}
+							sizeLargerInputName={'size-larger'}
+							sizeSmallerInputName={'size-smaller'}
+						/>
+						<SendReceivedDateRow
+							control={control}
+							query={query}
+							sentBeforeInputName={'sent-before'}
+							sentAfterInputName={'sent-after'}
+							sentOnInputName={'sent-on'}
+						/>
+						<TagFolderRow compProps={tagFolderRowProps} />
+					</ScrollableContainer>
+					<Divider />
+					<ModalFooter
+						onConfirm={onConfirm}
+						confirmDisabled={queryToBe.length === 0}
+						secondaryActionDisabled={
+							queryToBe.length === 0 && isSharedFolderIncluded === includeSharedItemsInSearchPref
+						}
+						confirmLabel={t('action.search', 'Search')}
+						secondaryActionLabel={t('action.reset', 'Reset filters')}
+						onSecondaryAction={resetFilters}
+					/>
+				</CustomModal>
+			) : (
+				<></>
+			)}{' '}
+		</>
 	);
 };
