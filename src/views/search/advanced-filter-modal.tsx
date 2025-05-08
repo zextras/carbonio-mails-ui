@@ -7,14 +7,9 @@ import React, { useState, useCallback, useMemo, useEffect, useId } from 'react';
 
 import {
 	CustomModal,
-	Icon,
-	Row,
-	Padding,
 	ModalHeader,
 	Divider,
 	ModalFooter,
-	Tooltip,
-	Text,
 	ChipItem
 } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
@@ -29,9 +24,7 @@ import SizeSmallerSizeLargerRow from './parts/size-smaller-size-larger-row';
 import SubjectKeywordRow from './parts/subject-keyword-row';
 import TagFolderRow from './parts/tag-folder-row';
 import ToggleFilters from './parts/toggle-filters';
-import { ZIMBRA_STANDARD_COLORS } from '../../carbonio-ui-commons/constants';
 import { ContactInputItem } from '../../carbonio-ui-commons/integrations/types';
-import { getTags } from '../../carbonio-ui-commons/store/zustand/tags';
 import { ScrollableContainer } from '../../commons/scrollable-container';
 import { KeywordState, Query } from '../../types';
 
@@ -101,30 +94,6 @@ export const AdvancedFilterModal = ({
 	const emailStatus = watch('email-status');
 
 	const queryArray = useMemo(() => ['has:attachment', 'is:flagged', 'is:unread'], []);
-	const tagOptions = useMemo(
-		() =>
-			map(getTags(), (item) => ({
-				...item,
-				label: item.name,
-				customComponent: (
-					<Row takeAvailableSpace mainAlignment="flex-start">
-						<Row takeAvailableSpace mainAlignment="space-between">
-							<Row mainAlignment="flex-end">
-								<Padding right="small">
-									<Icon icon="Tag" color={ZIMBRA_STANDARD_COLORS[item.color ?? 0].hex} />
-								</Padding>
-							</Row>
-							<Row takeAvailableSpace mainAlignment="flex-start">
-								<Tooltip label={item.name} overflowTooltip>
-									<Text>{item.name}</Text>
-								</Tooltip>
-							</Row>
-						</Row>
-					</Row>
-				)
-			})),
-		[]
-	);
 	const [tag, setTag] = useState<KeywordState>([]);
 	const id = useId();
 
@@ -263,11 +232,6 @@ export const AdvancedFilterModal = ({
 		};
 	}, [onSearchConfirm, queryToBe, isSharedFolderIncluded, onClose]);
 
-	const tagFolderRowProps = useMemo(
-		() => ({ folder, setFolder, tagOptions, tag, setTag }),
-		[folder, tagOptions, tag]
-	);
-
 	return (
 		<>
 			{open ? (
@@ -322,7 +286,12 @@ export const AdvancedFilterModal = ({
 							sentAfterInputName={'sent-after'}
 							sentOnInputName={'sent-on'}
 						/>
-						<TagFolderRow compProps={tagFolderRowProps} />
+						<TagFolderRow
+							control={control}
+							query={query}
+							tagInputName={'tag-input'}
+							folderInputName={'folder-input'}
+						/>
 					</ScrollableContainer>
 					<Divider />
 					<ModalFooter

@@ -10,7 +10,6 @@ import { Control } from 'react-hook-form';
 
 import { SortBy } from '../../carbonio-ui-commons/types';
 import { NormalizedConversation } from '../conversations';
-import { KeywordState } from '../filters';
 import { IncompleteMessage, MailMessage } from '../messages';
 import { ErrorType, SearchRequestStatus } from '../state';
 
@@ -145,13 +144,10 @@ export type SubjectKeywordRowProps = {
 };
 
 export type TagFolderRowProps = {
-	compProps: {
-		folder: KeywordState;
-		setFolder: (arg: any) => void;
-		tagOptions: Array<any>;
-		tag: Array<any>;
-		setTag: (arg: any) => void;
-	};
+	control: Control;
+	query: Query;
+	folderInputName: string;
+	tagInputName: string;
 };
 
 export type ToggleFilters = Array<{
