@@ -51,7 +51,7 @@ export const BORDERS = {
 	WEST: 'w'
 } as const;
 
-type AttachmentTypeItemsConstantProps = {
+export type AttachmentTypeItemsConstantProps = {
 	id: string;
 	label: string;
 	icon: string;
@@ -129,7 +129,7 @@ export const attachmentTypeItemsConstant = (
 	}
 ];
 
-type EmailStatusItemsConstantProps = {
+export type EmailStatusItemsConstantProps = {
 	id: string;
 	label: string;
 	searchString: string;
@@ -169,7 +169,7 @@ export const emailStatusItemsConstant = (t: TFunction): Array<EmailStatusItemsCo
 	{
 		id: 'received-by-me',
 		label: t('email_status.received', 'received by me'),
-		searchString: 'is:recevided'
+		searchString: 'is:received'
 	},
 	{
 		id: 'answered-by-me',

@@ -127,6 +127,7 @@ const SizeLargerSizeSmallerRow: FC<SizeLargerSizeSmallerRowProps> = ({
 					onChange={sizeSmallerOnChange}
 					maxChips={1}
 					confirmChipOnBlur
+					data-testid="sizeSmallerInput"
 				/>
 			</Container>
 			<Container padding={{ left: 'extrasmall' }}>
@@ -142,6 +143,7 @@ const SizeLargerSizeSmallerRow: FC<SizeLargerSizeSmallerRowProps> = ({
 					onChange={sizeLargerOnChange}
 					maxChips={1}
 					confirmChipOnBlur
+					data-testid="sizeLargerInput"
 				/>
 			</Container>
 		</Container>
