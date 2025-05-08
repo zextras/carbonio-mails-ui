@@ -111,7 +111,7 @@ export const AdvancedFilterModal = ({
 	const [isSharedFolderIncluded, setIsSharedFolderIncluded] = useState(
 		isSharedFolderIncludedInitialValue
 	);
-	const { control, watch } = useForm();
+	const { control, watch, setValue, resetField } = useForm();
 	const keywordInput = watch('keyword-input');
 	const subjectInput = watch('subject-input');
 	const queryArray = useMemo(() => ['has:attachment', 'is:flagged', 'is:unread'], []);
@@ -143,11 +143,11 @@ export const AdvancedFilterModal = ({
 	const id = useId();
 
 	const resetFilters = useCallback(() => {
-		// TODO: reset other keywords
+		setValue('subject-input', []);
+		setValue('keyword-input', []);
 		setHasAttachment(false);
 		setIsFlagged(false);
 		setIsUnread(false);
-		// TODO: reset subject
 		setAttachmentType([]);
 		setEmailStatus([]);
 		setSizeSmaller([]);
