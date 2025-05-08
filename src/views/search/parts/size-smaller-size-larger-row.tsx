@@ -7,14 +7,17 @@ import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
 
 import { Container, ChipInput, ChipItem } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
+import { filter, map } from 'lodash';
+import { Controller } from 'react-hook-form';
 
 import type { SizeLargerSizeSmallerRowProps } from '../../../types';
 
 const SizeLargerSizeSmallerRow: FC<SizeLargerSizeSmallerRowProps> = ({
-	compProps
+	sizeSmallerInputName,
+	sizeLargerInputName,
+	control,
+	query
 }): ReactElement => {
-	const { sizeSmaller, setSizeSmaller, sizeLarger, setSizeLarger } = compProps;
-
 	const [isInvalidSmallSize, setIsInvalidSmallSize] = useState(false);
 	const [isInvalidLargeSize, setIsInvalidLargeSize] = useState(false);
 	const errorLabel = useMemo(() => t('search.size_error', 'Only numbers are allowed'), []);
@@ -89,61 +92,67 @@ const SizeLargerSizeSmallerRow: FC<SizeLargerSizeSmallerRowProps> = ({
 		[chipOnAdd, checkErrorSizeLarger]
 	);
 
-	const sizeSmallerOnChange = useCallback(
-		(value: ChipItem[]): void => {
-			onChange(value, setSizeSmaller);
-			if (value.length === 0) setIsInvalidSmallSize(false);
-		},
-		[onChange, setSizeSmaller, setIsInvalidSmallSize]
-	);
-
-	const sizeLargerOnChange = useCallback(
-		(value: ChipItem[]): void => {
-			onChange(value, setSizeLarger);
-			if (value.length === 0) setIsInvalidLargeSize(false);
-		},
-		[onChange, setSizeLarger, setIsInvalidLargeSize]
-	);
-
 	const sizeSmallerPlaceholder = useMemo(
 		() => t('label.size_smaller', 'Size smaller than (MB)'),
 		[]
 	);
 
 	const sizeLargerPlaceholder = useMemo(() => t('label.size_larger', 'Size larger than (MB)'), []);
+	const sizeSmallerInQuery: ChipItem[] = map(
+		filter(query, (v) => /^Smaller:/.test(v.label)),
+		(q) => ({ ...q })
+	);
 
+	const sizeLargerInQuery: ChipItem[] = map(
+		filter(query, (v) => /^Larger:/.test(v.label)),
+		(q) => ({ ...q })
+	);
 	return (
 		<Container padding={{ bottom: 'small', top: 'medium' }} orientation="horizontal">
 			<Container padding={{ right: 'extrasmall' }}>
-				<ChipInput
-					placeholder={sizeSmallerPlaceholder}
-					defaultValue={[]}
-					background="gray5"
-					value={sizeSmaller}
-					onAdd={sizeSmallerChipOnAdd}
-					hasError={isInvalidSmallSize}
-					description={isInvalidSmallSize ? errorLabel : undefined}
-					errorBackgroundColor="gray6"
-					onChange={sizeSmallerOnChange}
-					maxChips={1}
-					confirmChipOnBlur
-					data-testid="sizeSmallerInput"
+				<Controller
+					control={control}
+					name={sizeSmallerInputName}
+					defaultValue={sizeSmallerInQuery}
+					render={({ field: { onChange, value }, fieldState: { error } }) => (
+						<ChipInput
+							placeholder={sizeSmallerPlaceholder}
+							defaultValue={[]}
+							background="gray5"
+							value={value}
+							onAdd={sizeSmallerChipOnAdd}
+							hasError={isInvalidSmallSize}
+							description={isInvalidSmallSize ? errorLabel : undefined}
+							errorBackgroundColor="gray6"
+							onChange={onChange}
+							maxChips={1}
+							confirmChipOnBlur
+							data-testid="sizeSmallerInput"
+						/>
+					)}
 				/>
 			</Container>
 			<Container padding={{ left: 'extrasmall' }}>
-				<ChipInput
-					placeholder={sizeLargerPlaceholder}
-					defaultValue={[]}
-					background="gray5"
-					value={sizeLarger}
-					onAdd={sizeLargerChipOnAdd}
-					hasError={isInvalidLargeSize}
-					description={isInvalidLargeSize ? errorLabel : undefined}
-					errorBackgroundColor="gray6"
-					onChange={sizeLargerOnChange}
-					maxChips={1}
-					confirmChipOnBlur
-					data-testid="sizeLargerInput"
+				<Controller
+					control={control}
+					name={sizeLargerInputName}
+					defaultValue={sizeLargerInQuery}
+					render={({ field: { onChange, value }, fieldState: { error } }) => (
+						<ChipInput
+							placeholder={sizeLargerPlaceholder}
+							defaultValue={[]}
+							background="gray5"
+							value={value}
+							onAdd={sizeLargerChipOnAdd}
+							hasError={isInvalidLargeSize}
+							description={isInvalidLargeSize ? errorLabel : undefined}
+							errorBackgroundColor="gray6"
+							onChange={onChange}
+							maxChips={1}
+							confirmChipOnBlur
+							data-testid="sizeLargerInput"
+						/>
+					)}
 				/>
 			</Container>
 		</Container>

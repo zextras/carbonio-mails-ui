@@ -72,18 +72,6 @@ function dateToKeywordState({
 	];
 }
 
-function toDate(prefix: string, query: Query): Date | null {
-	const prefixColon = `${prefix}:`;
-	const dateQuery = map(
-		filter(query, (v) => v.label.startsWith(prefixColon)),
-		(q) => q.label.substring(prefixColon.length)
-	);
-	if (dateQuery.length === 0) {
-		return null;
-	}
-	return moment(dateQuery[0]).toDate();
-}
-
 export const AdvancedFilterModal = ({
 	open,
 	onClose,
@@ -97,10 +85,6 @@ export const AdvancedFilterModal = ({
 	const [folder, setFolder] = useState<KeywordState>([]);
 	const [attachmentType, setAttachmentType] = useState<KeywordState>([]);
 	const [emailStatus, setEmailStatus] = useState<KeywordState>([]);
-	const [sizeSmaller, setSizeSmaller] = useState<KeywordState>([]);
-	const [sizeLarger, setSizeLarger] = useState<KeywordState>([]);
-	const [sizeSmallerErrorLabel, setSizeSmallerErrorLabel] = useState('');
-	const [sizeLargerErrorLabel, setSizeLargerErrorLabel] = useState('');
 	const [isSharedFolderIncluded, setIsSharedFolderIncluded] = useState(
 		isSharedFolderIncludedInitialValue
 	);
@@ -113,6 +97,8 @@ export const AdvancedFilterModal = ({
 	const sentBefore = watch('sent-before');
 	const sentAfter = watch('sent-after');
 	const sentOn = watch('sent-on');
+	const sizeSmaller = watch('size-smaller');
+	const sizeLarger = watch('size-larger');
 
 	const queryArray = useMemo(() => ['has:attachment', 'is:flagged', 'is:unread'], []);
 	const tagOptions = useMemo(
@@ -147,10 +133,10 @@ export const AdvancedFilterModal = ({
 		setValue('keyword-input', []);
 		setAttachmentType([]);
 		setEmailStatus([]);
-		setSizeSmaller([]);
-		setSizeLarger([]);
-		setSizeSmallerErrorLabel('');
-		setSizeLargerErrorLabel('');
+		// setSizeSmaller([]);
+		// setSizeLarger([]);
+		// setSizeSmallerErrorLabel('');
+		// setSizeLargerErrorLabel('');
 		setReceivedFromAddresses([]);
 		setSentToAddresses([]);
 		setFolder([]);
@@ -177,18 +163,6 @@ export const AdvancedFilterModal = ({
 			(q) => ({ ...q })
 		);
 		setEmailStatus(emailStatusInQuery);
-
-		const sizeSmallerInQuery = map(
-			filter(query, (v) => /^Smaller:/.test(v.label)),
-			(q) => ({ ...q })
-		);
-		setSizeSmaller(sizeSmallerInQuery);
-
-		const sizeLargerInQuery = map(
-			filter(query, (v) => /^Larger:/.test(v.label)),
-			(q) => ({ ...q })
-		);
-		setSizeLarger(sizeLargerInQuery);
 
 		const tagInQuery = map(
 			filter(query, (v) => /^tag:/.test(v.label)),
@@ -224,6 +198,7 @@ export const AdvancedFilterModal = ({
 		() =>
 			concat(
 				keywordInput,
+				subjectInput,
 				isUnread
 					? [
 							{
@@ -265,12 +240,6 @@ export const AdvancedFilterModal = ({
 				dateToKeywordState({ id: `${id}--after`, prefix: 'after', date: sentAfter }),
 				dateToKeywordState({ id: `${id}--date`, prefix: 'date', date: sentOn }),
 				tag,
-				map(subjectInput, (q) => ({
-					...q,
-					hasAvatar: true,
-					icon: 'EmailOutline',
-					iconBackground: 'gray1'
-				})),
 				attachmentType,
 				emailStatus,
 				sizeLarger,
@@ -358,21 +327,6 @@ export const AdvancedFilterModal = ({
 		[attachmentType, emailStatus]
 	);
 
-	const sizeSmallerSizeLargerRowProps = useMemo(
-		() => ({
-			t,
-			sizeSmaller,
-			setSizeSmaller,
-			sizeLarger,
-			setSizeLarger,
-			sizeSmallerErrorLabel,
-			setSizeSmallerErrorLabel,
-			sizeLargerErrorLabel,
-			setSizeLargerErrorLabel
-		}),
-		[sizeSmaller, sizeLarger, sizeSmallerErrorLabel, sizeLargerErrorLabel]
-	);
-
 	const tagFolderRowProps = useMemo(
 		() => ({ folder, setFolder, tagOptions, tag, setTag }),
 		[folder, tagOptions, tag]
@@ -407,7 +361,12 @@ export const AdvancedFilterModal = ({
 				/>
 				<ReceivedSentAddressRow compProps={receivedSentAddressRowProps} />
 				<AttachmentTypeEmailStatusRow compProps={attachmentTypeEmailStatusRowProps} />
-				<SizeSmallerSizeLargerRow compProps={sizeSmallerSizeLargerRowProps} />
+				<SizeSmallerSizeLargerRow
+					query={query}
+					control={control}
+					sizeLargerInputName={'size-larger'}
+					sizeSmallerInputName={'size-smaller'}
+				/>
 				<SendReceivedDateRow
 					control={control}
 					query={query}

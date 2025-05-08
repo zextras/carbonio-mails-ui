@@ -134,12 +134,10 @@ export type SendReceivedDateRowPropType = {
 	sentOnInputName: string;
 };
 export type SizeLargerSizeSmallerRowProps = {
-	compProps: {
-		sizeSmaller: any;
-		setSizeSmaller: (arg: any) => any;
-		sizeLarger: any;
-		setSizeLarger: (arg: any) => any;
-	};
+	control: Control;
+	query: Query;
+	sizeSmallerInputName: string;
+	sizeLargerInputName: string;
 };
 export type SubjectKeywordRowProps = {
 	control: Control;
