@@ -95,9 +95,6 @@ export const AdvancedFilterModal = ({
 	const [receivedFromAddresses, setReceivedFromAddresses] = useState<KeywordState>([]);
 	const [sentToAddresses, setSentToAddresses] = useState<KeywordState>([]);
 	const [folder, setFolder] = useState<KeywordState>([]);
-	const [sentBefore, setSentBefore] = useState<Date | null>(null);
-	const [sentOn, setSentOn] = useState<Date | null>(null);
-	const [sentAfter, setSentAfter] = useState<Date | null>(null);
 	const [attachmentType, setAttachmentType] = useState<KeywordState>([]);
 	const [emailStatus, setEmailStatus] = useState<KeywordState>([]);
 	const [sizeSmaller, setSizeSmaller] = useState<KeywordState>([]);
@@ -113,6 +110,9 @@ export const AdvancedFilterModal = ({
 	const hasAttachment = watch('has-attachment');
 	const isFlagged = watch('is-flagged');
 	const isUnread = watch('is-unread');
+	const sentBefore = watch('sent-before');
+	const sentAfter = watch('sent-after');
+	const sentOn = watch('sent-on');
 
 	const queryArray = useMemo(() => ['has:attachment', 'is:flagged', 'is:unread'], []);
 	const tagOptions = useMemo(
@@ -155,9 +155,9 @@ export const AdvancedFilterModal = ({
 		setSentToAddresses([]);
 		setFolder([]);
 		setTag([]);
-		setSentBefore(null);
-		setSentAfter(null);
-		setSentOn(null);
+		// setSentBefore(null);
+		// setSentAfter(null);
+		// setSentOn(null);
 		setIsSharedFolderIncluded(includeSharedItemsInSearchPref);
 	}, [includeSharedItemsInSearchPref, setValue]);
 
@@ -189,10 +189,6 @@ export const AdvancedFilterModal = ({
 			(q) => ({ ...q })
 		);
 		setSizeLarger(sizeLargerInQuery);
-
-		setSentBefore(toDate('before', query));
-		setSentAfter(toDate('after', query));
-		setSentOn(toDate('date', query));
 
 		const tagInQuery = map(
 			filter(query, (v) => /^tag:/.test(v.label)),
@@ -382,11 +378,6 @@ export const AdvancedFilterModal = ({
 		[folder, tagOptions, tag]
 	);
 
-	const sendDateRowProps = useMemo(
-		() => ({ sentBefore, setSentBefore, sentAfter, setSentAfter, sentOn, setSentOn }),
-		[sentBefore, sentAfter, sentOn]
-	);
-
 	return (
 		<CustomModal open={open} onClose={onClose} maxHeight="90vh" size="medium">
 			<ModalHeader
@@ -417,7 +408,13 @@ export const AdvancedFilterModal = ({
 				<ReceivedSentAddressRow compProps={receivedSentAddressRowProps} />
 				<AttachmentTypeEmailStatusRow compProps={attachmentTypeEmailStatusRowProps} />
 				<SizeSmallerSizeLargerRow compProps={sizeSmallerSizeLargerRowProps} />
-				<SendReceivedDateRow compProps={sendDateRowProps} />
+				<SendReceivedDateRow
+					control={control}
+					query={query}
+					sentBeforeInputName={'sent-before'}
+					sentAfterInputName={'sent-after'}
+					sentOnInputName={'sent-on'}
+				/>
 				<TagFolderRow compProps={tagFolderRowProps} />
 			</ScrollableContainer>
 			<Divider />

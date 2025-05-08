@@ -7,59 +7,90 @@ import React, { FC, ReactElement } from 'react';
 
 import { Container, DateTimePicker } from '@zextras/carbonio-design-system';
 import { t, useUserSettings } from '@zextras/carbonio-shell-ui';
+import { Controller } from 'react-hook-form';
 
 import type { SendReceivedDateRowPropType } from '../../../types';
+import { extractDateFieldFromQuery } from '../extract-date-field-from-query';
 
 const PICKER_DATE_FORMAT = 'P';
 
-const SendReceivedDateRow: FC<SendReceivedDateRowPropType> = ({ compProps }): ReactElement => {
+const SendReceivedDateRow: FC<SendReceivedDateRowPropType> = ({
+	control,
+	query,
+	sentBeforeInputName,
+	sentOnInputName,
+	sentAfterInputName
+}): ReactElement => {
 	const { zimbraPrefLocale: prefLocale } = useUserSettings().prefs;
-	const { sentBefore, setSentBefore, sentAfter, setSentAfter, sentOn, setSentOn } = compProps;
+	const sentBefore = extractDateFieldFromQuery('before', query);
+	const sentAfter = extractDateFieldFromQuery('after', query);
+	const sentOn = extractDateFieldFromQuery('on', query);
 	return (
 		<Container padding={{ bottom: 'small', top: 'medium' }} orientation="horizontal">
 			<Container padding={{ right: 'extrasmall' }}>
-				<DateTimePicker
-					width="fill"
-					label={t('search.sent_before', 'Sent before')}
-					enableChips
-					chipProps={{ avatarBackground: 'gray1', avatarIcon: 'CalendarOutline' }}
-					dateFormat={PICKER_DATE_FORMAT}
-					locale={prefLocale}
-					showTimeSelect={false}
-					selected={sentBefore}
+				<Controller
+					control={control}
+					name={sentBeforeInputName}
 					defaultValue={sentBefore}
-					onChange={setSentBefore}
-					data-testid="sentBeforeInput"
+					render={({ field: { onChange, value } }) => (
+						<DateTimePicker
+							width="fill"
+							label={t('search.sent_before', 'Sent before')}
+							enableChips
+							chipProps={{ avatarBackground: 'gray1', avatarIcon: 'CalendarOutline' }}
+							dateFormat={PICKER_DATE_FORMAT}
+							locale={prefLocale}
+							showTimeSelect={false}
+							selected={value}
+							defaultValue={value}
+							onChange={onChange}
+							data-testid="sentBeforeInput"
+						/>
+					)}
 				/>
 			</Container>
 			<Container padding={{ horizontal: 'extrasmall' }}>
-				<DateTimePicker
-					width="fill"
-					label={t('search.sent_after', 'Sent after')}
-					enableChips
-					chipProps={{ avatarBackground: 'gray1', avatarIcon: 'CalendarOutline' }}
-					dateFormat={PICKER_DATE_FORMAT}
-					locale={prefLocale}
-					showTimeSelect={false}
-					selected={sentAfter}
+				<Controller
+					control={control}
+					name={sentAfterInputName}
 					defaultValue={sentAfter}
-					onChange={setSentAfter}
-					data-testid="sentAfterInput"
+					render={({ field: { onChange, value } }) => (
+						<DateTimePicker
+							width="fill"
+							label={t('search.sent_after', 'Sent after')}
+							enableChips
+							chipProps={{ avatarBackground: 'gray1', avatarIcon: 'CalendarOutline' }}
+							dateFormat={PICKER_DATE_FORMAT}
+							locale={prefLocale}
+							showTimeSelect={false}
+							selected={value}
+							defaultValue={value}
+							onChange={onChange}
+							data-testid="sentAfterInput"
+						/>
+					)}
 				/>
 			</Container>
 			<Container padding={{ left: 'extrasmall' }}>
-				<DateTimePicker
-					width="fill"
-					label={t('search.sent_on', 'Sent on')}
-					enableChips
-					chipProps={{ avatarBackground: 'gray1', avatarIcon: 'CalendarOutline' }}
-					dateFormat={PICKER_DATE_FORMAT}
-					locale={prefLocale}
-					showTimeSelect={false}
-					onChange={setSentOn}
-					selected={sentOn}
+				<Controller
+					control={control}
+					name={sentOnInputName}
 					defaultValue={sentOn}
-					data-testid="sentOnInput"
+					render={({ field: { onChange, value } }) => (
+						<DateTimePicker
+							width="fill"
+							label={t('search.sent_on', 'Sent on')}
+							enableChips
+							chipProps={{ avatarBackground: 'gray1', avatarIcon: 'CalendarOutline' }}
+							dateFormat={PICKER_DATE_FORMAT}
+							locale={prefLocale}
+							showTimeSelect={false}
+							onChange={onChange}
+							selected={value}
+							defaultValue={value}
+							data-testid="sentOnInput"
+						/>
+					)}
 				/>
 			</Container>
 		</Container>
