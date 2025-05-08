@@ -53,12 +53,10 @@ export type AdvancedFilterButtonProps = {
 };
 
 export type AttachTypeEmailStatusRowPropType = {
-	compProps: {
-		attachmentType: KeywordState;
-		setAttachmentType: (arg: any) => void;
-		emailStatus: KeywordState;
-		setEmailStatus: (arg: any) => void;
-	};
+	query: Query;
+	control: Control;
+	attachmentTypeInputName: string;
+	emailStatusInputName: string;
 };
 
 export type ChipOnAddItem = {

@@ -5,8 +5,10 @@
  */
 import React, { FC, ReactElement, useCallback, useMemo } from 'react';
 
-import { Container, ChipInput, ChipItem } from '@zextras/carbonio-design-system';
+import { Container, ChipInput } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
+import { filter, map } from 'lodash';
+import { Controller } from 'react-hook-form';
 
 import {
 	attachmentTypeItemsConstant,
@@ -22,9 +24,19 @@ import type {
 } from '../../../types';
 
 const AttachmentTypeEmailStatusRow: FC<AttachTypeEmailStatusRowPropType> = ({
-	compProps
+	control,
+	query,
+	attachmentTypeInputName,
+	emailStatusInputName
 }): ReactElement => {
-	const { attachmentType, setAttachmentType, emailStatus, setEmailStatus } = compProps;
+	const attachmentTypeInQuery = map(
+		filter(query, (v) => /^Attachment:/.test(v.label)),
+		(q) => ({ ...q })
+	);
+	const emailStatusInQuery = map(
+		filter(query, (v) => /^Is:/.test(v.label)),
+		(q) => ({ ...q })
+	);
 	const attachmentTypeItems = attachmentTypeItemsConstant(t);
 	const emailStatusItems = emailStatusItemsConstant(t);
 	const attachmentTypeOptions = useMemo<AttachmentTypeItemsConstantProps[]>(
@@ -78,16 +90,6 @@ const AttachmentTypeEmailStatusRow: FC<AttachTypeEmailStatusRowPropType> = ({
 		[chipOnAdd, emailStatusItems]
 	);
 
-	const attachmentTypeOnChange = useCallback(
-		(value: ChipItem[]): void => setAttachmentType(value),
-		[setAttachmentType]
-	);
-
-	const emailStatusOnChange = useCallback(
-		(value: ChipItem[]): void => setEmailStatus(value),
-		[setEmailStatus]
-	);
-
 	const attachmentTypePlaceholder = useMemo(
 		() => t('label.attachment_type', 'Attachment type'),
 		[]
@@ -101,34 +103,48 @@ const AttachmentTypeEmailStatusRow: FC<AttachTypeEmailStatusRowPropType> = ({
 	return (
 		<Container padding={{ bottom: 'small', top: 'medium' }} orientation="horizontal">
 			<Container padding={{ right: 'extrasmall' }} maxWidth="50%">
-				<ChipInput
-					disabled
-					placeholder={attachmentTypePlaceholder}
-					value={attachmentType}
-					options={attachmentTypeOptions}
-					disableOptions={false}
-					background="gray5"
-					onAdd={attachmentTypeChipOnAdd}
-					onChange={attachmentTypeOnChange}
-					icon="ChevronDown"
-					requireUniqueChips
-					data-testid="attachmentTypeSelect"
+				<Controller
+					control={control}
+					defaultValue={attachmentTypeInQuery}
+					name={attachmentTypeInputName}
+					render={({ field: { onChange, value } }) => (
+						<ChipInput
+							disabled
+							placeholder={attachmentTypePlaceholder}
+							value={value}
+							options={attachmentTypeOptions}
+							disableOptions={false}
+							background="gray5"
+							onAdd={attachmentTypeChipOnAdd}
+							onChange={onChange}
+							icon="ChevronDown"
+							requireUniqueChips
+							data-testid="attachmentTypeSelect"
+						/>
+					)}
 				/>
 			</Container>
 			<Container padding={{ left: 'extrasmall' }} maxWidth="50%">
-				<ChipInput
-					disabled
-					placeholder={emailStatusPlaceholder}
-					value={emailStatus}
-					options={emailStatusOptions}
-					background="gray5"
-					disableOptions={false}
-					onAdd={emailStatusChipOnAdd}
-					onChange={emailStatusOnChange}
-					icon="ChevronDown"
-					bottomBorderColor="transparent"
-					requireUniqueChips
-					data-testid="emailStatusSelect"
+				<Controller
+					control={control}
+					defaultValue={emailStatusInQuery}
+					name={emailStatusInputName}
+					render={({ field: { onChange, value } }) => (
+						<ChipInput
+							disabled
+							placeholder={emailStatusPlaceholder}
+							value={value}
+							options={emailStatusOptions}
+							background="gray5"
+							disableOptions={false}
+							onAdd={emailStatusChipOnAdd}
+							onChange={onChange}
+							icon="ChevronDown"
+							bottomBorderColor="transparent"
+							requireUniqueChips
+							data-testid="emailStatusSelect"
+						/>
+					)}
 				/>
 			</Container>
 		</Container>

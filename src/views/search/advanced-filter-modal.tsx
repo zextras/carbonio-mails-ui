@@ -80,8 +80,6 @@ export const AdvancedFilterModal = ({
 	includeSharedItemsInSearchPref
 }: AdvancedFilterModalProps): React.JSX.Element => {
 	const [folder, setFolder] = useState<KeywordState>([]);
-	const [attachmentType, setAttachmentType] = useState<KeywordState>([]);
-	const [emailStatus, setEmailStatus] = useState<KeywordState>([]);
 	const [isSharedFolderIncluded, setIsSharedFolderIncluded] = useState(
 		isSharedFolderIncludedInitialValue
 	);
@@ -98,6 +96,8 @@ export const AdvancedFilterModal = ({
 	const sizeLarger = watch('size-larger');
 	const receivedFrom: Array<ContactInputItem> = watch('received-from', []);
 	const sentTo: Array<ContactInputItem> = watch('sent-to', []);
+	const attachmentType = watch('attachment-type');
+	const emailStatus = watch('email-status');
 
 	const queryArray = useMemo(() => ['has:attachment', 'is:flagged', 'is:unread'], []);
 	const tagOptions = useMemo(
@@ -130,8 +130,8 @@ export const AdvancedFilterModal = ({
 	const resetFilters = useCallback(() => {
 		setValue('subject-input', []);
 		setValue('keyword-input', []);
-		setAttachmentType([]);
-		setEmailStatus([]);
+		// setAttachmentType([]);
+		// setEmailStatus([]);
 		// setSizeSmaller([]);
 		// setSizeLarger([]);
 		// setSizeSmallerErrorLabel('');
@@ -151,18 +151,6 @@ export const AdvancedFilterModal = ({
 	}, [isSharedFolderIncludedInitialValue]);
 
 	useEffect(() => {
-		const attachmentTypeInQuery = map(
-			filter(query, (v) => /^Attachment:/.test(v.label)),
-			(q) => ({ ...q })
-		);
-		setAttachmentType(attachmentTypeInQuery);
-
-		const emailStatusInQuery = map(
-			filter(query, (v) => /^Is:/.test(v.label)),
-			(q) => ({ ...q })
-		);
-		setEmailStatus(emailStatusInQuery);
-
 		const tagInQuery = map(
 			filter(query, (v) => /^tag:/.test(v.label)),
 			(q) => ({ ...q, hasAvatar: true, icon: 'TagOutline' })
@@ -276,16 +264,6 @@ export const AdvancedFilterModal = ({
 		};
 	}, [onSearchConfirm, queryToBe, isSharedFolderIncluded, onClose]);
 
-	const attachmentTypeEmailStatusRowProps = useMemo(
-		() => ({
-			attachmentType,
-			setAttachmentType,
-			emailStatus,
-			setEmailStatus
-		}),
-		[attachmentType, emailStatus]
-	);
-
 	const tagFolderRowProps = useMemo(
 		() => ({ folder, setFolder, tagOptions, tag, setTag }),
 		[folder, tagOptions, tag]
@@ -324,7 +302,12 @@ export const AdvancedFilterModal = ({
 					receivedFromInputName={'received-from'}
 					sentToInputName={'sent-to'}
 				/>
-				<AttachmentTypeEmailStatusRow compProps={attachmentTypeEmailStatusRowProps} />
+				<AttachmentTypeEmailStatusRow
+					query={query}
+					control={control}
+					attachmentTypeInputName={'attachment-type'}
+					emailStatusInputName={'email-status'}
+				/>
 				<SizeSmallerSizeLargerRow
 					query={query}
 					control={control}
