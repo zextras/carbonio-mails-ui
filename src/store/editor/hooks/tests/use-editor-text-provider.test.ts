@@ -6,11 +6,11 @@
 
 import { act } from '@testing-library/react';
 
-import { setupHook } from '../../../carbonio-ui-commons/test/test-setup';
-import { setupEditorStore } from '../../../tests/generators/editor-store';
-import { generateNewMessageEditor } from '../editor-generators';
-import { useEditorsStore } from '../store';
-import { useEditorTextProvider } from './editor';
+import { setupHook } from '../../../../carbonio-ui-commons/test/test-setup';
+import { setupEditorStore } from '../../../../tests/generators/editor-store';
+import { generateNewMessageEditor } from '../../editor-generators';
+import { useEditorsStore } from '../../store';
+import { useEditorTextProvider } from '../editor';
 
 describe('useEditorTextProvider', () => {
 	it('should return an object with the current textProvider and its setter', () => {
@@ -48,23 +48,5 @@ describe('useEditorTextProvider', () => {
 
 		expect(useEditorsStore.getState().editors[editor.id].textProvider).toBe(textProvider);
 		expect(result.current.textProvider).toBe(textProvider);
-	});
-});
-
-describe('useEditorText', () => {
-	it.todo('should return an object with the current text and its setter');
-
-	it.todo('should set the text when the setter is called');
-
-	it.todo('should return the current text when the getter is called');
-
-	describe('Text provider', () => {
-		it.todo('should return the text from the test provider when the provider is set');
-
-		it.todo('should return the text from the store when the provider is not set');
-
-		it.todo(
-			'should invoke the provider function when the setText is invoked and the provider is set'
-		);
 	});
 });
