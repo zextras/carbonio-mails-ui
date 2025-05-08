@@ -146,6 +146,7 @@ export type SizeLargerSizeSmallerRowProps = {
 };
 export type SubjectKeywordRowProps = {
 	control: Control;
+	query: Query;
 	keywordsInputName: string;
 	subjectInputName: string;
 };

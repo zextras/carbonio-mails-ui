@@ -3,19 +3,49 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, ReactElement, useCallback } from 'react';
+import React, { FC, ReactElement, useCallback, useMemo } from 'react';
 
 import { Container, ChipInput } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
+import { filter, includes, map } from 'lodash';
 import { Controller } from 'react-hook-form';
 
 import type { SubjectKeywordRowProps } from '../../../types';
 
 const SubjectKeywordRow: FC<SubjectKeywordRowProps> = ({
 	control,
+	query,
 	subjectInputName,
 	keywordsInputName
 }): ReactElement => {
+	const queryArray = useMemo(() => ['has:attachment', 'is:flagged', 'is:unread'], []);
+	const otherKeywords = map(
+		filter(
+			query,
+			(v) =>
+				!includes(queryArray, v.label) &&
+				!/^Subject:/.test(v.label) &&
+				!/^Attachment:/.test(v.label) &&
+				!/^Is:/.test(v.label) &&
+				!/^Smaller:/.test(v.label) &&
+				!/^Larger:/.test(v.label) &&
+				!/^subject:/.test(v.label) &&
+				!/^in:/.test(v.label) &&
+				!/^before:/.test(v.label) &&
+				!/^after:/.test(v.label) &&
+				!/^date:/.test(v.label) &&
+				!/^tag:/.test(v.label) &&
+				!/^to:/.test(v.label) &&
+				!/^from:/.test(v.label) &&
+				!v.isQueryFilter
+		),
+		(q) => ({ ...q, hasAvatar: false })
+	);
+
+	const subjectsInQuery = map(
+		filter(query, (v) => /^Subject:/.test(v.label)),
+		(q) => ({ ...q, hasAvatar: false })
+	);
 	const keywordChipOnAdd = useCallback(
 		(label: unknown) => ({
 			label: label as string,
@@ -55,6 +85,7 @@ const SubjectKeywordRow: FC<SubjectKeywordRowProps> = ({
 					<Controller
 						control={control}
 						name={keywordsInputName}
+						defaultValue={otherKeywords}
 						render={({ field: { onChange, value } }) => (
 							<ChipInput
 								placeholder={t('label.keywords', 'Keywords')}
@@ -75,6 +106,7 @@ const SubjectKeywordRow: FC<SubjectKeywordRowProps> = ({
 					<Controller
 						control={control}
 						name={subjectInputName}
+						defaultValue={subjectsInQuery}
 						render={({ field: { onChange, value } }) => (
 							<ChipInput
 								placeholder={subjectPlaceholder}

@@ -17,7 +17,7 @@ import {
 	Text
 } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
-import { concat, filter, includes, map, reject } from 'lodash';
+import { concat, filter, map, reject } from 'lodash';
 import moment from 'moment';
 import { useForm } from 'react-hook-form';
 
@@ -92,7 +92,6 @@ export const AdvancedFilterModal = ({
 	onSearchConfirm,
 	includeSharedItemsInSearchPref
 }: AdvancedFilterModalProps): React.JSX.Element => {
-	const [otherKeywords, setOtherKeywords] = useState<KeywordState>([]);
 	const [hasAttachment, setHasAttachment] = useState<boolean>(false);
 	const [isUnread, setIsUnread] = useState<boolean>(false);
 	const [isFlagged, setIsFlagged] = useState<boolean>(false);
@@ -144,7 +143,7 @@ export const AdvancedFilterModal = ({
 	const id = useId();
 
 	const resetFilters = useCallback(() => {
-		setOtherKeywords([]);
+		// TODO: reset other keywords
 		setHasAttachment(false);
 		setIsFlagged(false);
 		setIsUnread(false);
@@ -170,39 +169,9 @@ export const AdvancedFilterModal = ({
 	}, [isSharedFolderIncludedInitialValue]);
 
 	useEffect(() => {
-		const updatedQuery = map(
-			filter(
-				query,
-				(v) =>
-					!includes(queryArray, v.label) &&
-					!/^Subject:/.test(v.label) &&
-					!/^Attachment:/.test(v.label) &&
-					!/^Is:/.test(v.label) &&
-					!/^Smaller:/.test(v.label) &&
-					!/^Larger:/.test(v.label) &&
-					!/^subject:/.test(v.label) &&
-					!/^in:/.test(v.label) &&
-					!/^before:/.test(v.label) &&
-					!/^after:/.test(v.label) &&
-					!/^date:/.test(v.label) &&
-					!/^tag:/.test(v.label) &&
-					!/^to:/.test(v.label) &&
-					!/^from:/.test(v.label) &&
-					!v.isQueryFilter
-			),
-			(q) => ({ ...q, hasAvatar: false })
-		);
-
 		setHasAttachment(query.some((item) => item.label === 'has:attachment'));
 		setIsUnread(query.some((item) => item.label === 'is:unread'));
 		setIsFlagged(query.some((item) => item.label === 'is:flagged'));
-
-		const subjectsInQuery = map(
-			filter(query, (v) => /^Subject:/.test(v.label)),
-			(q) => ({ ...q, hasAvatar: false })
-		);
-		// TODO: initialize subject, can be passed as default value in Controller
-
 		const attachmentTypeInQuery = map(
 			filter(query, (v) => /^Attachment:/.test(v.label)),
 			(q) => ({ ...q })
@@ -259,14 +228,12 @@ export const AdvancedFilterModal = ({
 		);
 
 		setFolder(folderInQuery);
-
-		setOtherKeywords(updatedQuery);
 	}, [open, query, queryArray]);
 
 	const queryToBe = useMemo<Query>(
 		() =>
 			concat(
-				otherKeywords,
+				keywordInput,
 				isUnread
 					? [
 							{
@@ -322,7 +289,7 @@ export const AdvancedFilterModal = ({
 				sentToAddresses
 			),
 		[
-			otherKeywords,
+			keywordInput,
 			isUnread,
 			id,
 			isFlagged,
@@ -455,6 +422,7 @@ export const AdvancedFilterModal = ({
 			>
 				<ToggleFilters compProps={toggleFiltersProps} />
 				<SubjectKeywordRow
+					query={query}
 					control={control}
 					keywordsInputName={'keyword-input'}
 					subjectInputName={'subject-input'}
