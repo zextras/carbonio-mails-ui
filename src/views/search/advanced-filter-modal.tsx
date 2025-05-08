@@ -17,7 +17,7 @@ import {
 	Text
 } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
-import { concat, filter, map, reject } from 'lodash';
+import { concat, filter, map } from 'lodash';
 import moment from 'moment';
 import { useForm } from 'react-hook-form';
 
@@ -28,7 +28,6 @@ import SizeSmallerSizeLargerRow from './parts/size-smaller-size-larger-row';
 import SubjectKeywordRow from './parts/subject-keyword-row';
 import TagFolderRow from './parts/tag-folder-row';
 import ToggleFilters from './parts/toggle-filters';
-import { getChipItems } from './utils';
 import { ZIMBRA_STANDARD_COLORS } from '../../carbonio-ui-commons/constants';
 import { ContactInputItem } from '../../carbonio-ui-commons/integrations/types';
 import { getTags } from '../../carbonio-ui-commons/store/zustand/tags';
@@ -80,8 +79,6 @@ export const AdvancedFilterModal = ({
 	onSearchConfirm,
 	includeSharedItemsInSearchPref
 }: AdvancedFilterModalProps): React.JSX.Element => {
-	const [receivedFromAddresses, setReceivedFromAddresses] = useState<KeywordState>([]);
-	const [sentToAddresses, setSentToAddresses] = useState<KeywordState>([]);
 	const [folder, setFolder] = useState<KeywordState>([]);
 	const [attachmentType, setAttachmentType] = useState<KeywordState>([]);
 	const [emailStatus, setEmailStatus] = useState<KeywordState>([]);
@@ -99,6 +96,8 @@ export const AdvancedFilterModal = ({
 	const sentOn = watch('sent-on');
 	const sizeSmaller = watch('size-smaller');
 	const sizeLarger = watch('size-larger');
+	const receivedFrom: Array<ContactInputItem> = watch('received-from', []);
+	const sentTo: Array<ContactInputItem> = watch('sent-to', []);
 
 	const queryArray = useMemo(() => ['has:attachment', 'is:flagged', 'is:unread'], []);
 	const tagOptions = useMemo(
@@ -137,8 +136,8 @@ export const AdvancedFilterModal = ({
 		// setSizeLarger([]);
 		// setSizeSmallerErrorLabel('');
 		// setSizeLargerErrorLabel('');
-		setReceivedFromAddresses([]);
-		setSentToAddresses([]);
+		// setReceivedFromAddresses([]);
+		// setSentToAddresses([]);
 		setFolder([]);
 		setTag([]);
 		// setSentBefore(null);
@@ -169,18 +168,6 @@ export const AdvancedFilterModal = ({
 			(q) => ({ ...q, hasAvatar: true, icon: 'TagOutline' })
 		);
 		setTag(tagInQuery);
-
-		const sentToInQuery = getChipItems(
-			query.filter((queryItem) => /^to:*/.test(queryItem.label)),
-			'to'
-		);
-		setSentToAddresses(sentToInQuery);
-
-		const receivedFromInQuery = getChipItems(
-			query.filter((queryItem) => /^from:*/.test(queryItem.label)),
-			'from'
-		);
-		setReceivedFromAddresses(receivedFromInQuery);
 
 		const folderInQuery = map(
 			filter(query, (v) => /^in:/.test(v.label)),
@@ -244,11 +231,20 @@ export const AdvancedFilterModal = ({
 				emailStatus,
 				sizeLarger,
 				sizeSmaller,
-				receivedFromAddresses.map((x) => x),
-				sentToAddresses
+				receivedFrom.map((item) => ({
+					...item,
+					label: `from:${item.value.email}`,
+					value: `from:${item.value.email}`
+				})),
+				sentTo.map((item) => ({
+					...item,
+					label: `to:${item.value.email}`,
+					value: `to:${item.value.email}`
+				}))
 			),
 		[
 			keywordInput,
+			subjectInput,
 			isUnread,
 			id,
 			isFlagged,
@@ -258,13 +254,12 @@ export const AdvancedFilterModal = ({
 			sentAfter,
 			sentOn,
 			tag,
-			subjectInput,
 			attachmentType,
 			emailStatus,
 			sizeLarger,
 			sizeSmaller,
-			receivedFromAddresses,
-			sentToAddresses
+			receivedFrom,
+			sentTo
 		]
 	);
 
@@ -280,42 +275,6 @@ export const AdvancedFilterModal = ({
 			controller.abort();
 		};
 	}, [onSearchConfirm, queryToBe, isSharedFolderIncluded, onClose]);
-
-	const handleReceivedFromInput = (values: Array<ContactInputItem>): void => {
-		const newValues = values.map((val) => ({
-			id: val.id ?? val.value.email,
-			label: `from:${val.label}`,
-			value: `from:${val.value.email}`,
-			actions: reject(val?.actions, ['icon', 'EditOutline'])
-		}));
-		setReceivedFromAddresses(newValues);
-	};
-
-	// TODO: search chip have actions but they don't work except remove
-	const handleSentToInput = (values: Array<ContactInputItem>): void => {
-		const newValues = values.map((val) => ({
-			id: val.id ?? val.value.email,
-			label: `to:${val.label}`,
-			value: `to:${val.value.email}`,
-			actions: reject(val?.actions, ['icon', 'EditOutline'])
-		}));
-		setSentToAddresses(newValues);
-	};
-
-	// FIXME: how can a value of a query be undefined?
-	const receivedSentAddressRowProps = useMemo(
-		() => ({
-			receivedFromAddresses: receivedFromAddresses.map((val) => ({
-				email: val.value?.replace('from:', '') ?? ''
-			})),
-			handleReceivedFromInput,
-			sentToAddresses: sentToAddresses.map((val) => ({
-				email: val.value?.replace('to:', '') ?? ''
-			})),
-			handleSentToInput
-		}),
-		[receivedFromAddresses, sentToAddresses]
-	);
 
 	const attachmentTypeEmailStatusRowProps = useMemo(
 		() => ({
@@ -359,7 +318,12 @@ export const AdvancedFilterModal = ({
 					keywordsInputName={'keyword-input'}
 					subjectInputName={'subject-input'}
 				/>
-				<ReceivedSentAddressRow compProps={receivedSentAddressRowProps} />
+				<ReceivedSentAddressRow
+					query={query}
+					control={control}
+					receivedFromInputName={'received-from'}
+					sentToInputName={'sent-to'}
+				/>
 				<AttachmentTypeEmailStatusRow compProps={attachmentTypeEmailStatusRowProps} />
 				<SizeSmallerSizeLargerRow
 					query={query}
