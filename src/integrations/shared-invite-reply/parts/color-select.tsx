@@ -12,6 +12,7 @@ import { t } from '@zextras/carbonio-shell-ui';
 import { ColorContainer, Square, TextUpperCase } from './styled-components';
 import { ZIMBRA_STANDARD_COLORS } from '../../../carbonio-ui-commons/constants/utils';
 import { CustomLabelFactoryProps } from '../../../carbonio-ui-commons/types/select';
+import _ from 'lodash';
 
 const LabelFactory = ({
 	selected,
@@ -59,14 +60,9 @@ const LabelFactory = ({
 	);
 };
 
-function getColorLabel(color: string): string {
-	/* i18next-extract-disable-next-line */
-	return t(`color.${color}`, '{{color}}', {
-		context: ZIMBRA_STANDARD_COLORS,
-		replace: {
-			color
-		}
-	});
+function getColorLabel(colorName: string): string {
+	const capitalizedColor = _.capitalize(colorName);
+	return t(`label.color${capitalizedColor}`, colorName);
 }
 
 export default function ColorSelect({
@@ -80,23 +76,26 @@ export default function ColorSelect({
 }>): React.JSX.Element {
 	const colors = useMemo(
 		() =>
-			ZIMBRA_STANDARD_COLORS.map((el, index) => ({
-				label: getColorLabel(el.zLabel),
-				value: index.toString(),
-				customComponent: (
-					<Container
-						width="100%"
-						mainAlignment="space-between"
-						orientation="horizontal"
-						height="fit"
-					>
-						<Padding left="small">
-							<TextUpperCase>{getColorLabel(el.zLabel)}</TextUpperCase>
-						</Padding>
-						<Square $color={el.hex} />
-					</Container>
-				)
-			})),
+			ZIMBRA_STANDARD_COLORS.map((el, index) => {
+				const colorLabel = getColorLabel(el.zLabel);
+				return {
+					label: colorLabel,
+					value: index.toString(),
+					customComponent: (
+						<Container
+							width="100%"
+							mainAlignment="space-between"
+							orientation="horizontal"
+							height="fit"
+						>
+							<Padding left="small">
+								<TextUpperCase>{colorLabel}</TextUpperCase>
+							</Padding>
+							<Square $color={el.hex} />
+						</Container>
+					)
+				};
+			}),
 		[]
 	);
 	// FIXME: potential unsafe access to array, how do you know that colors[defaultColor] is not undefined and array is not empty?
