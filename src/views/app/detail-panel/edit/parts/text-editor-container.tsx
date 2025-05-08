@@ -267,8 +267,9 @@ export const PlainTextEditorContainer = ({
 	useEffect(() => {
 		setTextProvider(textProviderValue);
 		const ref = textAreaRef?.current;
+		const ref2 = editorTextRef?.current;
 		return (): void => {
-			if (ref) {
+			if (ref && ref2 && ref.value !== ref2.plainText) {
 				setText(
 					{
 						plainText: ref.value,
