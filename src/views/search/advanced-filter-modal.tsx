@@ -92,10 +92,6 @@ export const AdvancedFilterModal = ({
 	onSearchConfirm,
 	includeSharedItemsInSearchPref
 }: AdvancedFilterModalProps): React.JSX.Element => {
-	const [hasAttachment, setHasAttachment] = useState<boolean>(false);
-	const [isUnread, setIsUnread] = useState<boolean>(false);
-	const [isFlagged, setIsFlagged] = useState<boolean>(false);
-
 	const [receivedFromAddresses, setReceivedFromAddresses] = useState<KeywordState>([]);
 	const [sentToAddresses, setSentToAddresses] = useState<KeywordState>([]);
 	const [folder, setFolder] = useState<KeywordState>([]);
@@ -114,6 +110,10 @@ export const AdvancedFilterModal = ({
 	const { control, watch, setValue, resetField } = useForm();
 	const keywordInput = watch('keyword-input');
 	const subjectInput = watch('subject-input');
+	const hasAttachment = watch('has-attachment');
+	const isFlagged = watch('is-flagged');
+	const isUnread = watch('is-unread');
+
 	const queryArray = useMemo(() => ['has:attachment', 'is:flagged', 'is:unread'], []);
 	const tagOptions = useMemo(
 		() =>
@@ -145,9 +145,6 @@ export const AdvancedFilterModal = ({
 	const resetFilters = useCallback(() => {
 		setValue('subject-input', []);
 		setValue('keyword-input', []);
-		setHasAttachment(false);
-		setIsFlagged(false);
-		setIsUnread(false);
 		setAttachmentType([]);
 		setEmailStatus([]);
 		setSizeSmaller([]);
@@ -162,16 +159,13 @@ export const AdvancedFilterModal = ({
 		setSentAfter(null);
 		setSentOn(null);
 		setIsSharedFolderIncluded(includeSharedItemsInSearchPref);
-	}, [includeSharedItemsInSearchPref]);
+	}, [includeSharedItemsInSearchPref, setValue]);
 
 	useEffect(() => {
 		setIsSharedFolderIncluded(isSharedFolderIncludedInitialValue);
 	}, [isSharedFolderIncludedInitialValue]);
 
 	useEffect(() => {
-		setHasAttachment(query.some((item) => item.label === 'has:attachment'));
-		setIsUnread(query.some((item) => item.label === 'is:unread'));
-		setIsFlagged(query.some((item) => item.label === 'is:flagged'));
 		const attachmentTypeInQuery = map(
 			filter(query, (v) => /^Attachment:/.test(v.label)),
 			(q) => ({ ...q })
@@ -393,20 +387,6 @@ export const AdvancedFilterModal = ({
 		[sentBefore, sentAfter, sentOn]
 	);
 
-	const toggleFiltersProps = useMemo(
-		() => ({
-			isUnread,
-			isFlagged,
-			hasAttachment,
-			setIsUnread,
-			setIsFlagged,
-			setHasAttachment,
-			setIsSharedFolderIncludedTobe: setIsSharedFolderIncluded,
-			isSharedFolderIncludedTobe: isSharedFolderIncluded
-		}),
-		[isSharedFolderIncluded, isUnread, isFlagged, hasAttachment]
-	);
-
 	return (
 		<CustomModal open={open} onClose={onClose} maxHeight="90vh" size="medium">
 			<ModalHeader
@@ -420,7 +400,14 @@ export const AdvancedFilterModal = ({
 				padding={{ horizontal: 'medium', vertical: 'small' }}
 				mainAlignment={'flex-start'}
 			>
-				<ToggleFilters compProps={toggleFiltersProps} />
+				<ToggleFilters
+					query={query}
+					control={control}
+					isSharedFolderIncludedToggleName={'is-shared-folder-included'}
+					hasAttachmentToggleName={'has-attachment'}
+					isFlaggedToggleName={'is-flagged'}
+					isUnreadToggleName={'is-unread'}
+				/>
 				<SubjectKeywordRow
 					query={query}
 					control={control}

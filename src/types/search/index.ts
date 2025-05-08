@@ -171,16 +171,12 @@ export type ToggleFilters = Array<{
 	avatarBackground?: ChipProps['background'];
 }>;
 export type ToggleFiltersProps = {
-	compProps: {
-		isUnread: boolean;
-		isFlagged: boolean;
-		hasAttachment: boolean;
-		setIsUnread: (arg: boolean) => void;
-		setIsFlagged: (arg: boolean) => void;
-		setHasAttachment: (arg: boolean) => void;
-		isSharedFolderIncludedTobe: boolean;
-		setIsSharedFolderIncludedTobe: (arg: boolean) => void;
-	};
+	control: Control;
+	query: Query;
+	isSharedFolderIncludedToggleName: string;
+	hasAttachmentToggleName: string;
+	isFlaggedToggleName: string;
+	isUnreadToggleName: string;
 };
 
 export type UseDisabledPropType = {
