@@ -8,6 +8,7 @@ import { ChipProps, ChipItem } from '@zextras/carbonio-design-system';
 import type { QueryChip } from '@zextras/carbonio-search-ui';
 
 import { SortBy } from '../../carbonio-ui-commons/types';
+import { FormValues } from '../../views/search/types/types';
 import { NormalizedConversation } from '../conversations';
 import { IncompleteMessage, MailMessage } from '../messages';
 import { ErrorType, SearchRequestStatus } from '../state';
@@ -134,7 +135,7 @@ export type SizeLargerSizeSmallerRowProps = {
 };
 export type SubjectKeywordRowProps = {
 	query: Query;
-	keywordsInputName: string;
+	keywordsInputName: keyof FormValues;
 	subjectInputName: string;
 };
 

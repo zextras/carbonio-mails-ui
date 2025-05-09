@@ -3,21 +3,18 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, ReactElement, useCallback, useMemo } from 'react';
+import React, { ReactElement, useCallback, useMemo } from 'react';
 
 import { Container, ChipInput } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import { filter, includes, map } from 'lodash';
 import { Controller, useFormContext } from 'react-hook-form';
 
-import type { SubjectKeywordRowProps } from '../../../types';
+import { SubjectKeywordRowProps } from '../../../types';
+import { FormValues } from '../types/types';
 
-export const SubjectKeywordRow: FC<SubjectKeywordRowProps> = ({
-	query,
-	subjectInputName,
-	keywordsInputName
-}): ReactElement => {
-	const { control } = useFormContext();
+export const SubjectKeywordRow = ({ query }: SubjectKeywordRowProps): ReactElement => {
+	const { control } = useFormContext<FormValues>();
 	const queryArray = useMemo(() => ['has:attachment', 'is:flagged', 'is:unread'], []);
 	const otherKeywords = map(
 		filter(
@@ -83,7 +80,7 @@ export const SubjectKeywordRow: FC<SubjectKeywordRowProps> = ({
 			<Container padding={{ right: 'extrasmall' }} maxWidth="50%">
 				<Controller
 					control={control}
-					name={keywordsInputName}
+					name={'keywordInput'}
 					defaultValue={otherKeywords}
 					render={({ field: { onChange, value } }): React.JSX.Element => (
 						<ChipInput
@@ -104,7 +101,7 @@ export const SubjectKeywordRow: FC<SubjectKeywordRowProps> = ({
 			<Container padding={{ left: 'extrasmall' }} maxWidth="50%">
 				<Controller
 					control={control}
-					name={subjectInputName}
+					name={'subjectInput'}
 					defaultValue={subjectsInQuery}
 					render={({ field: { onChange, value } }): React.JSX.Element => (
 						<ChipInput
