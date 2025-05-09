@@ -17,7 +17,7 @@ import {
 } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import { filter, map } from 'lodash';
-import { Controller } from 'react-hook-form';
+import { Controller, useFormContext } from 'react-hook-form';
 
 import { ZIMBRA_STANDARD_COLORS } from '../../../carbonio-ui-commons/constants/utils';
 import { getTags } from '../../../carbonio-ui-commons/store/zustand/tags';
@@ -28,11 +28,11 @@ import { SelectFolderModal } from '../../../ui-actions/modals/select-folder-moda
 import { getFolderIconColor } from '../../sidebar/utils';
 
 const TagFolderRow: FC<TagFolderRowProps> = ({
-	control,
 	query,
 	tagInputName,
 	folderInputName
 }): ReactElement => {
+	const { control } = useFormContext();
 	const tagOptions: Array<Tag & { label: string; customComponent: React.JSX.Element }> = useMemo(
 		() =>
 			map(getTags(), (item) => ({

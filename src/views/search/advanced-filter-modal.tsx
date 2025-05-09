@@ -15,7 +15,7 @@ import {
 import { t } from '@zextras/carbonio-shell-ui';
 import { concat, filter, map } from 'lodash';
 import moment from 'moment';
-import { useForm } from 'react-hook-form';
+import { FormProvider, useForm } from 'react-hook-form';
 
 import AttachmentTypeEmailStatusRow from './parts/attachment-type-email-status-row';
 import { ReceivedSentAddressRow } from './parts/received-sent-address-row';
@@ -77,42 +77,42 @@ export const AdvancedFilterModal = ({
 	const [isSharedFolderIncluded, setIsSharedFolderIncluded] = useState(
 		isSharedFolderIncludedInitialValue
 	);
-	const { control, setValue, watch } = useForm();
-	const keywordInput: Array<ChipItem> = watch('keyword-input', []);
-	const subjectInput: Array<ChipItem> = watch('subject-input');
-	const hasAttachment: boolean = watch('has-attachment');
-	const isFlagged: boolean = watch('is-flagged');
-	const isUnread: boolean = watch('is-unread');
-	const sentBefore: Date | null = watch('sent-before');
-	const sentAfter: Date | null = watch('sent-after');
-	const sentOn: Date | null = watch('sent-on');
-	const sizeSmaller = watch('size-smaller');
-	const sizeLarger = watch('size-larger');
-	const receivedFrom: Array<ContactInputItem> = watch('received-from', []);
-	const sentTo: Array<ContactInputItem> = watch('sent-to', []);
-	const attachmentType = watch('attachment-type');
-	const emailStatus = watch('email-status');
+	const methods = useForm();
+	const keywordInput: Array<ChipItem> = methods.watch('keyword-input', []);
+	const subjectInput: Array<ChipItem> = methods.watch('subject-input');
+	const hasAttachment: boolean = methods.watch('has-attachment');
+	const isFlagged: boolean = methods.watch('is-flagged');
+	const isUnread: boolean = methods.watch('is-unread');
+	const sentBefore: Date | null = methods.watch('sent-before');
+	const sentAfter: Date | null = methods.watch('sent-after');
+	const sentOn: Date | null = methods.watch('sent-on');
+	const sizeSmaller = methods.watch('size-smaller');
+	const sizeLarger = methods.watch('size-larger');
+	const receivedFrom: Array<ContactInputItem> = methods.watch('received-from', []);
+	const sentTo: Array<ContactInputItem> = methods.watch('sent-to', []);
+	const attachmentType = methods.watch('attachment-type');
+	const emailStatus = methods.watch('email-status');
 
 	const queryArray = useMemo(() => ['has:attachment', 'is:flagged', 'is:unread'], []);
 	const [tag, setTag] = useState<KeywordState>([]);
 	const id = useId();
 
 	const resetFilters = useCallback(() => {
-		setValue('keyword-input', []);
-		setValue('subject-input', []);
-		setValue('has-attachment', false);
-		setValue('is-flagged', false);
-		setValue('is-unread', false);
-		setValue('sent-before', null);
-		setValue('sent-after', null);
-		setValue('sent-on', null);
-		setValue('size-smaller', undefined);
-		setValue('size-larger', undefined);
-		setValue('received-from', []);
-		setValue('sent-to', []);
-		setValue('attachment-type', undefined);
-		setValue('email-status', undefined);
-	}, [setValue]);
+		methods.setValue('keyword-input', []);
+		methods.setValue('subject-input', []);
+		methods.setValue('has-attachment', false);
+		methods.setValue('is-flagged', false);
+		methods.setValue('is-unread', false);
+		methods.setValue('sent-before', null);
+		methods.setValue('sent-after', null);
+		methods.setValue('sent-on', null);
+		methods.setValue('size-smaller', undefined);
+		methods.setValue('size-larger', undefined);
+		methods.setValue('received-from', []);
+		methods.setValue('sent-to', []);
+		methods.setValue('attachment-type', undefined);
+		methods.setValue('email-status', undefined);
+	}, [methods]);
 
 	useEffect(() => {
 		setIsSharedFolderIncluded(isSharedFolderIncludedInitialValue);
@@ -247,51 +247,46 @@ export const AdvancedFilterModal = ({
 						padding={{ horizontal: 'medium', vertical: 'small' }}
 						mainAlignment={'flex-start'}
 					>
-						<ToggleFilters
-							query={query}
-							control={control}
-							isSharedFolderIncludedToggleName={'is-shared-folder-included'}
-							hasAttachmentToggleName={'has-attachment'}
-							isFlaggedToggleName={'is-flagged'}
-							isUnreadToggleName={'is-unread'}
-						/>
-						<SubjectKeywordRow
-							query={query}
-							control={control}
-							keywordsInputName={'keyword-input'}
-							subjectInputName={'subject-input'}
-						/>
-						<ReceivedSentAddressRow
-							query={query}
-							control={control}
-							receivedFromInputName={'received-from'}
-							sentToInputName={'sent-to'}
-						/>
-						<AttachmentTypeEmailStatusRow
-							query={query}
-							control={control}
-							attachmentTypeInputName={'attachment-type'}
-							emailStatusInputName={'email-status'}
-						/>
-						<SizeSmallerSizeLargerRow
-							query={query}
-							control={control}
-							sizeLargerInputName={'size-larger'}
-							sizeSmallerInputName={'size-smaller'}
-						/>
-						<SendReceivedDateRow
-							control={control}
-							query={query}
-							sentBeforeInputName={'sent-before'}
-							sentAfterInputName={'sent-after'}
-							sentOnInputName={'sent-on'}
-						/>
-						<TagFolderRow
-							control={control}
-							query={query}
-							tagInputName={'tag-input'}
-							folderInputName={'folder-input'}
-						/>
+						<FormProvider {...methods}>
+							<ToggleFilters
+								query={query}
+								isSharedFolderIncludedToggleName={'is-shared-folder-included'}
+								hasAttachmentToggleName={'has-attachment'}
+								isFlaggedToggleName={'is-flagged'}
+								isUnreadToggleName={'is-unread'}
+							/>
+							<SubjectKeywordRow
+								query={query}
+								keywordsInputName={'keyword-input'}
+								subjectInputName={'subject-input'}
+							/>
+							<ReceivedSentAddressRow
+								query={query}
+								receivedFromInputName={'received-from'}
+								sentToInputName={'sent-to'}
+							/>
+							<AttachmentTypeEmailStatusRow
+								query={query}
+								attachmentTypeInputName={'attachment-type'}
+								emailStatusInputName={'email-status'}
+							/>
+							<SizeSmallerSizeLargerRow
+								query={query}
+								sizeLargerInputName={'size-larger'}
+								sizeSmallerInputName={'size-smaller'}
+							/>
+							<SendReceivedDateRow
+								query={query}
+								sentBeforeInputName={'sent-before'}
+								sentAfterInputName={'sent-after'}
+								sentOnInputName={'sent-on'}
+							/>
+							<TagFolderRow
+								query={query}
+								tagInputName={'tag-input'}
+								folderInputName={'folder-input'}
+							/>
+						</FormProvider>
 					</ScrollableContainer>
 					<Divider />
 					<ModalFooter

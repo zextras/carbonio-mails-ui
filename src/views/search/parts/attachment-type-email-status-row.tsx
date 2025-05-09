@@ -8,7 +8,7 @@ import React, { FC, ReactElement, useCallback, useMemo } from 'react';
 import { Container, ChipInput } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import { filter, map } from 'lodash';
-import { Controller } from 'react-hook-form';
+import { Controller, useFormContext } from 'react-hook-form';
 
 import {
 	attachmentTypeItemsConstant,
@@ -24,11 +24,11 @@ import type {
 } from '../../../types';
 
 const AttachmentTypeEmailStatusRow: FC<AttachTypeEmailStatusRowPropType> = ({
-	control,
 	query,
 	attachmentTypeInputName,
 	emailStatusInputName
 }): ReactElement => {
+	const { control } = useFormContext();
 	const attachmentTypeInQuery = map(
 		filter(query, (v) => /^Attachment:/.test(v.label)),
 		(q) => ({ ...q })

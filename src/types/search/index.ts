@@ -6,7 +6,6 @@
 
 import { ChipProps, ChipItem } from '@zextras/carbonio-design-system';
 import type { QueryChip } from '@zextras/carbonio-search-ui';
-import { Control } from 'react-hook-form';
 
 import { SortBy } from '../../carbonio-ui-commons/types';
 import { NormalizedConversation } from '../conversations';
@@ -53,7 +52,6 @@ export type AdvancedFilterButtonProps = {
 
 export type AttachTypeEmailStatusRowPropType = {
 	query: Query;
-	control: Control;
 	attachmentTypeInputName: string;
 	emailStatusInputName: string;
 };
@@ -124,27 +122,23 @@ export type ChipOnAdd = ChipItem & {
 };
 
 export type SendReceivedDateRowPropType = {
-	control: Control;
 	query: Query;
 	sentBeforeInputName: string;
 	sentAfterInputName: string;
 	sentOnInputName: string;
 };
 export type SizeLargerSizeSmallerRowProps = {
-	control: Control;
 	query: Query;
 	sizeSmallerInputName: string;
 	sizeLargerInputName: string;
 };
 export type SubjectKeywordRowProps = {
-	control: Control;
 	query: Query;
 	keywordsInputName: string;
 	subjectInputName: string;
 };
 
 export type TagFolderRowProps = {
-	control: Control;
 	query: Query;
 	folderInputName: string;
 	tagInputName: string;
@@ -160,7 +154,6 @@ export type ToggleFilters = Array<{
 	avatarBackground?: ChipProps['background'];
 }>;
 export type ToggleFiltersProps = {
-	control: Control;
 	query: Query;
 	isSharedFolderIncludedToggleName: string;
 	hasAttachmentToggleName: string;

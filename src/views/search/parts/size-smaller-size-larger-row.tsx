@@ -8,23 +8,19 @@ import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
 import { Container, ChipInput, ChipItem } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import { filter, map } from 'lodash';
-import { Controller } from 'react-hook-form';
+import { Controller, useFormContext } from 'react-hook-form';
 
 import type { SizeLargerSizeSmallerRowProps } from '../../../types';
 
 const SizeLargerSizeSmallerRow: FC<SizeLargerSizeSmallerRowProps> = ({
 	sizeSmallerInputName,
 	sizeLargerInputName,
-	control,
 	query
 }): ReactElement => {
+	const { control } = useFormContext();
 	const [isInvalidSmallSize, setIsInvalidSmallSize] = useState(false);
 	const [isInvalidLargeSize, setIsInvalidLargeSize] = useState(false);
 	const errorLabel = useMemo(() => t('search.size_error', 'Only numbers are allowed'), []);
-
-	const onChange = useCallback((state: ChipItem[], stateHandler: (state: ChipItem[]) => void) => {
-		stateHandler(state);
-	}, []);
 
 	const chipOnAdd = useCallback(
 		(

@@ -8,7 +8,7 @@ import React, { FC, ReactElement } from 'react';
 import { Container } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import { replace } from 'lodash';
-import { Control, Controller } from 'react-hook-form';
+import { Controller, useFormContext } from 'react-hook-form';
 
 import { CONTACT_TYPES } from '../../../carbonio-ui-commons/integrations/constants';
 import { useContactInput } from '../../../carbonio-ui-commons/integrations/hooks';
@@ -16,7 +16,6 @@ import { ContactInputItem } from '../../../carbonio-ui-commons/integrations/type
 import { Query, SearchQueryItem } from '../../../types';
 
 type ReceivedSentAddressRowProps = {
-	control: Control;
 	query: Query;
 	receivedFromInputName: string;
 	sentToInputName: string;
@@ -35,11 +34,11 @@ function toContactInput(item: SearchQueryItem): ContactInputItem {
 	};
 }
 export const ReceivedSentAddressRow: FC<ReceivedSentAddressRowProps> = ({
-	control,
 	query,
 	receivedFromInputName,
 	sentToInputName
 }): ReactElement => {
+	const { control } = useFormContext();
 	const sentToInQuery = query
 		.filter((queryItem) => /^to:*/.test(queryItem.label))
 		.map((queryItem) => ({ ...queryItem, label: replace(queryItem.label, 'to:', '') }))

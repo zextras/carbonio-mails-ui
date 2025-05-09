@@ -8,16 +8,16 @@ import React, { FC, ReactElement, useCallback, useMemo } from 'react';
 import { Container, ChipInput } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import { filter, includes, map } from 'lodash';
-import { Controller } from 'react-hook-form';
+import { Controller, useFormContext } from 'react-hook-form';
 
 import type { SubjectKeywordRowProps } from '../../../types';
 
 const SubjectKeywordRow: FC<SubjectKeywordRowProps> = ({
-	control,
 	query,
 	subjectInputName,
 	keywordsInputName
 }): ReactElement => {
+	const { control } = useFormContext();
 	const queryArray = useMemo(() => ['has:attachment', 'is:flagged', 'is:unread'], []);
 	const otherKeywords = map(
 		filter(

@@ -7,7 +7,7 @@ import React, { FC, ReactElement } from 'react';
 
 import { Container, DateTimePicker } from '@zextras/carbonio-design-system';
 import { t, useUserSettings } from '@zextras/carbonio-shell-ui';
-import { Controller } from 'react-hook-form';
+import { Controller, useFormContext } from 'react-hook-form';
 
 import type { SendReceivedDateRowPropType } from '../../../types';
 import { extractDateFieldFromQuery } from '../extract-date-field-from-query';
@@ -15,12 +15,12 @@ import { extractDateFieldFromQuery } from '../extract-date-field-from-query';
 const PICKER_DATE_FORMAT = 'P';
 
 const SendReceivedDateRow: FC<SendReceivedDateRowPropType> = ({
-	control,
 	query,
 	sentBeforeInputName,
 	sentOnInputName,
 	sentAfterInputName
 }): ReactElement => {
+	const { control } = useFormContext();
 	const { zimbraPrefLocale: prefLocale } = useUserSettings().prefs;
 	const sentBefore = extractDateFieldFromQuery('before', query);
 	const sentAfter = extractDateFieldFromQuery('after', query);
