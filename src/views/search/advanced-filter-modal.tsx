@@ -5,13 +5,7 @@
  */
 import React, { useState, useCallback, useMemo, useEffect, useId } from 'react';
 
-import {
-	CustomModal,
-	ModalHeader,
-	Divider,
-	ModalFooter,
-	ChipItem
-} from '@zextras/carbonio-design-system';
+import { CustomModal, ModalHeader, Divider, ModalFooter } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import { concat } from 'lodash';
 import moment from 'moment';
@@ -65,6 +59,25 @@ function dateToKeywordState({
 	];
 }
 
+type FormValues = {
+	['keyword-input']: KeywordState;
+	['subject-input']: KeywordState;
+	['has-attachment']: boolean;
+	['is-flagged']: boolean;
+	['is-unread']: boolean;
+	['sent-before']: Date | null;
+	['sent-after']: Date | null;
+	['sent-on']: Date | null;
+	['size-smaller']: KeywordState;
+	['size-larger']: KeywordState;
+	['received-from']: Array<ContactInputItem>;
+	['sent-to']: Array<ContactInputItem>;
+	['attachment-type']: KeywordState;
+	['email-status']: KeywordState;
+	['tag-input']: KeywordState;
+	['folder-input']: KeywordState;
+};
+
 export const AdvancedFilterModal = ({
 	open,
 	onClose,
@@ -76,21 +89,21 @@ export const AdvancedFilterModal = ({
 	const [isSharedFolderIncluded, setIsSharedFolderIncluded] = useState(
 		isSharedFolderIncludedInitialValue
 	);
-	const methods = useForm();
+	const methods = useForm<FormValues>();
 	const { watch, setValue } = methods;
 
-	const keywordInput: Array<ChipItem> = watch('keyword-input', []);
-	const subjectInput: Array<ChipItem> = watch('subject-input');
-	const hasAttachment: boolean = watch('has-attachment');
-	const isFlagged: boolean = watch('is-flagged');
-	const isUnread: boolean = watch('is-unread');
-	const sentBefore: Date | null = watch('sent-before');
-	const sentAfter: Date | null = watch('sent-after');
-	const sentOn: Date | null = watch('sent-on');
+	const keywordInput = watch('keyword-input', []);
+	const subjectInput = watch('subject-input');
+	const hasAttachment = watch('has-attachment');
+	const isFlagged = watch('is-flagged');
+	const isUnread = watch('is-unread');
+	const sentBefore = watch('sent-before');
+	const sentAfter = watch('sent-after');
+	const sentOn = watch('sent-on');
 	const sizeSmaller = watch('size-smaller');
 	const sizeLarger = watch('size-larger');
-	const receivedFrom: Array<ContactInputItem> = watch('received-from', []);
-	const sentTo: Array<ContactInputItem> = watch('sent-to', []);
+	const receivedFrom = watch('received-from', []);
+	const sentTo = watch('sent-to', []);
 	const attachmentType = watch('attachment-type');
 	const emailStatus = watch('email-status');
 	const tag = watch('tag-input', []);
@@ -107,12 +120,12 @@ export const AdvancedFilterModal = ({
 		setValue('sent-before', null);
 		setValue('sent-after', null);
 		setValue('sent-on', null);
-		setValue('size-smaller', undefined);
-		setValue('size-larger', undefined);
+		setValue('size-smaller', []);
+		setValue('size-larger', []);
 		setValue('received-from', []);
 		setValue('sent-to', []);
-		setValue('attachment-type', undefined);
-		setValue('email-status', undefined);
+		setValue('attachment-type', []);
+		setValue('email-status', []);
 	}, [setValue]);
 
 	useEffect(() => {
@@ -171,13 +184,19 @@ export const AdvancedFilterModal = ({
 				sizeSmaller,
 				receivedFrom.map((item) => ({
 					...item,
+					id: '',
 					label: `from:${item.value.email}`,
-					value: `from:${item.value.email}`
+					value: `from:${item.value.email}`,
+					avatarBackground: item.background,
+					error: false
 				})),
 				sentTo.map((item) => ({
 					...item,
 					label: `to:${item.value.email}`,
-					value: `to:${item.value.email}`
+					value: `to:${item.value.email}`,
+					avatarBackground: item.background,
+					error: false,
+					id: ''
 				}))
 			),
 		[
