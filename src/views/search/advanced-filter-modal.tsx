@@ -13,20 +13,20 @@ import {
 	ChipItem
 } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
-import { concat, filter, map } from 'lodash';
+import { concat } from 'lodash';
 import moment from 'moment';
 import { FormProvider, useForm } from 'react-hook-form';
 
-import AttachmentTypeEmailStatusRow from './parts/attachment-type-email-status-row';
+import { AttachmentTypeEmailStatusRow } from './parts/attachment-type-email-status-row';
 import { ReceivedSentAddressRow } from './parts/received-sent-address-row';
-import SendReceivedDateRow from './parts/send-date-row';
-import SizeSmallerSizeLargerRow from './parts/size-smaller-size-larger-row';
-import SubjectKeywordRow from './parts/subject-keyword-row';
-import TagFolderRow from './parts/tag-folder-row';
-import ToggleFilters from './parts/toggle-filters';
+import { SendReceivedDateRow } from './parts/send-date-row';
+import { SubjectKeywordRow } from './parts/subject-keyword-row';
+import { TagFolderRow } from './parts/tag-folder-row';
+import { ToggleFilters } from './parts/toggle-filters';
 import { ContactInputItem } from '../../carbonio-ui-commons/integrations/types';
 import { ScrollableContainer } from '../../commons/scrollable-container';
 import { KeywordState, Query } from '../../types';
+import { SizeLargerSizeSmallerRow } from './parts/size-smaller-size-larger-row';
 
 export type AdvancedFilterModalProps = {
 	open: boolean;
@@ -73,69 +73,51 @@ export const AdvancedFilterModal = ({
 	onSearchConfirm,
 	includeSharedItemsInSearchPref
 }: AdvancedFilterModalProps): React.JSX.Element => {
-	const [folder, setFolder] = useState<KeywordState>([]);
 	const [isSharedFolderIncluded, setIsSharedFolderIncluded] = useState(
 		isSharedFolderIncludedInitialValue
 	);
 	const methods = useForm();
-	const keywordInput: Array<ChipItem> = methods.watch('keyword-input', []);
-	const subjectInput: Array<ChipItem> = methods.watch('subject-input');
-	const hasAttachment: boolean = methods.watch('has-attachment');
-	const isFlagged: boolean = methods.watch('is-flagged');
-	const isUnread: boolean = methods.watch('is-unread');
-	const sentBefore: Date | null = methods.watch('sent-before');
-	const sentAfter: Date | null = methods.watch('sent-after');
-	const sentOn: Date | null = methods.watch('sent-on');
-	const sizeSmaller = methods.watch('size-smaller');
-	const sizeLarger = methods.watch('size-larger');
-	const receivedFrom: Array<ContactInputItem> = methods.watch('received-from', []);
-	const sentTo: Array<ContactInputItem> = methods.watch('sent-to', []);
-	const attachmentType = methods.watch('attachment-type');
-	const emailStatus = methods.watch('email-status');
+	const { watch, setValue } = methods;
 
-	const queryArray = useMemo(() => ['has:attachment', 'is:flagged', 'is:unread'], []);
-	const [tag, setTag] = useState<KeywordState>([]);
+	const keywordInput: Array<ChipItem> = watch('keyword-input', []);
+	const subjectInput: Array<ChipItem> = watch('subject-input');
+	const hasAttachment: boolean = watch('has-attachment');
+	const isFlagged: boolean = watch('is-flagged');
+	const isUnread: boolean = watch('is-unread');
+	const sentBefore: Date | null = watch('sent-before');
+	const sentAfter: Date | null = watch('sent-after');
+	const sentOn: Date | null = watch('sent-on');
+	const sizeSmaller = watch('size-smaller');
+	const sizeLarger = watch('size-larger');
+	const receivedFrom: Array<ContactInputItem> = watch('received-from', []);
+	const sentTo: Array<ContactInputItem> = watch('sent-to', []);
+	const attachmentType = watch('attachment-type');
+	const emailStatus = watch('email-status');
+	const tag = watch('tag-input', []);
+	const folder = watch('folder-input', []);
+
 	const id = useId();
 
 	const resetFilters = useCallback(() => {
-		methods.setValue('keyword-input', []);
-		methods.setValue('subject-input', []);
-		methods.setValue('has-attachment', false);
-		methods.setValue('is-flagged', false);
-		methods.setValue('is-unread', false);
-		methods.setValue('sent-before', null);
-		methods.setValue('sent-after', null);
-		methods.setValue('sent-on', null);
-		methods.setValue('size-smaller', undefined);
-		methods.setValue('size-larger', undefined);
-		methods.setValue('received-from', []);
-		methods.setValue('sent-to', []);
-		methods.setValue('attachment-type', undefined);
-		methods.setValue('email-status', undefined);
-	}, [methods]);
+		setValue('keyword-input', []);
+		setValue('subject-input', []);
+		setValue('has-attachment', false);
+		setValue('is-flagged', false);
+		setValue('is-unread', false);
+		setValue('sent-before', null);
+		setValue('sent-after', null);
+		setValue('sent-on', null);
+		setValue('size-smaller', undefined);
+		setValue('size-larger', undefined);
+		setValue('received-from', []);
+		setValue('sent-to', []);
+		setValue('attachment-type', undefined);
+		setValue('email-status', undefined);
+	}, [setValue]);
 
 	useEffect(() => {
 		setIsSharedFolderIncluded(isSharedFolderIncludedInitialValue);
 	}, [isSharedFolderIncludedInitialValue]);
-
-	useEffect(() => {
-		const tagInQuery = map(
-			filter(query, (v) => /^tag:/.test(v.label)),
-			(q) => ({ ...q, hasAvatar: true, icon: 'TagOutline' })
-		);
-		setTag(tagInQuery);
-
-		const folderInQuery = map(
-			filter(query, (v) => /^in:/.test(v.label)),
-			(q) => ({
-				...q,
-				hasAvatar: true,
-				icon: 'FolderOutline'
-			})
-		);
-
-		setFolder(folderInQuery);
-	}, [open, query, queryArray]);
 
 	const queryToBe = useMemo<Query>(
 		() =>
@@ -270,7 +252,7 @@ export const AdvancedFilterModal = ({
 								attachmentTypeInputName={'attachment-type'}
 								emailStatusInputName={'email-status'}
 							/>
-							<SizeSmallerSizeLargerRow
+							<SizeLargerSizeSmallerRow
 								query={query}
 								sizeLargerInputName={'size-larger'}
 								sizeSmallerInputName={'size-smaller'}

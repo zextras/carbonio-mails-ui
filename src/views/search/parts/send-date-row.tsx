@@ -14,7 +14,7 @@ import { extractDateFieldFromQuery } from '../extract-date-field-from-query';
 
 const PICKER_DATE_FORMAT = 'P';
 
-const SendReceivedDateRow: FC<SendReceivedDateRowPropType> = ({
+export const SendReceivedDateRow: FC<SendReceivedDateRowPropType> = ({
 	query,
 	sentBeforeInputName,
 	sentOnInputName,
@@ -96,5 +96,3 @@ const SendReceivedDateRow: FC<SendReceivedDateRowPropType> = ({
 		</Container>
 	);
 };
-
-export default SendReceivedDateRow;

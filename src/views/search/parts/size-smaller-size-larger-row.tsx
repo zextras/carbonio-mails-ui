@@ -12,7 +12,7 @@ import { Controller, useFormContext } from 'react-hook-form';
 
 import type { SizeLargerSizeSmallerRowProps } from '../../../types';
 
-const SizeLargerSizeSmallerRow: FC<SizeLargerSizeSmallerRowProps> = ({
+export const SizeLargerSizeSmallerRow: FC<SizeLargerSizeSmallerRowProps> = ({
 	sizeSmallerInputName,
 	sizeLargerInputName,
 	query
@@ -154,5 +154,3 @@ const SizeLargerSizeSmallerRow: FC<SizeLargerSizeSmallerRowProps> = ({
 		</Container>
 	);
 };
-
-export default SizeLargerSizeSmallerRow;

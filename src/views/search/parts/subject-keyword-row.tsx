@@ -12,7 +12,7 @@ import { Controller, useFormContext } from 'react-hook-form';
 
 import type { SubjectKeywordRowProps } from '../../../types';
 
-const SubjectKeywordRow: FC<SubjectKeywordRowProps> = ({
+export const SubjectKeywordRow: FC<SubjectKeywordRowProps> = ({
 	query,
 	subjectInputName,
 	keywordsInputName
@@ -79,54 +79,50 @@ const SubjectKeywordRow: FC<SubjectKeywordRowProps> = ({
 	const subjectPlaceholder = t('label.subject', 'Subject');
 
 	return (
-		<React.Fragment>
-			<Container padding={{ bottom: 'small', top: 'medium' }} orientation="horizontal">
-				<Container padding={{ right: 'extrasmall' }} maxWidth="50%">
-					<Controller
-						control={control}
-						name={keywordsInputName}
-						defaultValue={otherKeywords}
-						render={({ field: { onChange, value } }) => (
-							<ChipInput
-								placeholder={t('label.keywords', 'Keywords')}
-								data-testid={'keywords-input'}
-								background="gray5"
-								value={value}
-								separators={[
-									{ key: 'Enter', ctrlKey: false },
-									{ key: ',', ctrlKey: false }
-								]}
-								onChange={onChange}
-								onAdd={keywordChipOnAdd}
-							/>
-						)}
-					/>
-				</Container>
-				<Container padding={{ left: 'extrasmall' }} maxWidth="50%">
-					<Controller
-						control={control}
-						name={subjectInputName}
-						defaultValue={subjectsInQuery}
-						render={({ field: { onChange, value } }) => (
-							<ChipInput
-								placeholder={subjectPlaceholder}
-								data-testid={'subject-input'}
-								background="gray5"
-								value={value}
-								separators={[
-									{ key: 'Enter', ctrlKey: false },
-									{ key: ',', ctrlKey: false }
-								]}
-								onChange={onChange}
-								onAdd={subjectChipOnAdd}
-								maxChips={1}
-							/>
-						)}
-					/>
-				</Container>
+		<Container padding={{ bottom: 'small', top: 'medium' }} orientation="horizontal">
+			<Container padding={{ right: 'extrasmall' }} maxWidth="50%">
+				<Controller
+					control={control}
+					name={keywordsInputName}
+					defaultValue={otherKeywords}
+					render={({ field: { onChange, value } }): React.JSX.Element => (
+						<ChipInput
+							placeholder={t('label.keywords', 'Keywords')}
+							data-testid={'keywords-input'}
+							background="gray5"
+							value={value}
+							separators={[
+								{ key: 'Enter', ctrlKey: false },
+								{ key: ',', ctrlKey: false }
+							]}
+							onChange={onChange}
+							onAdd={keywordChipOnAdd}
+						/>
+					)}
+				/>
 			</Container>
-		</React.Fragment>
+			<Container padding={{ left: 'extrasmall' }} maxWidth="50%">
+				<Controller
+					control={control}
+					name={subjectInputName}
+					defaultValue={subjectsInQuery}
+					render={({ field: { onChange, value } }): React.JSX.Element => (
+						<ChipInput
+							placeholder={subjectPlaceholder}
+							data-testid={'subject-input'}
+							background="gray5"
+							value={value}
+							separators={[
+								{ key: 'Enter', ctrlKey: false },
+								{ key: ',', ctrlKey: false }
+							]}
+							onChange={onChange}
+							onAdd={subjectChipOnAdd}
+							maxChips={1}
+						/>
+					)}
+				/>
+			</Container>
+		</Container>
 	);
 };
-
-export default SubjectKeywordRow;

@@ -23,7 +23,7 @@ import type {
 	ChipOnAddProps
 } from '../../../types';
 
-const AttachmentTypeEmailStatusRow: FC<AttachTypeEmailStatusRowPropType> = ({
+export const AttachmentTypeEmailStatusRow: FC<AttachTypeEmailStatusRowPropType> = ({
 	query,
 	attachmentTypeInputName,
 	emailStatusInputName
@@ -150,5 +150,3 @@ const AttachmentTypeEmailStatusRow: FC<AttachTypeEmailStatusRowPropType> = ({
 		</Container>
 	);
 };
-
-export default AttachmentTypeEmailStatusRow;

@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, ReactElement } from 'react';
+import React, { ReactElement } from 'react';
 
 import { Container, Switch, Text, Padding } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
@@ -11,13 +11,13 @@ import { Controller, useFormContext } from 'react-hook-form';
 
 import type { ToggleFiltersProps } from '../../../types';
 
-const ToggleFilters: FC<ToggleFiltersProps> = ({
+export const ToggleFilters = ({
 	query,
 	isSharedFolderIncludedToggleName,
 	isFlaggedToggleName,
 	hasAttachmentToggleName,
 	isUnreadToggleName
-}): ReactElement => {
+}: ToggleFiltersProps): ReactElement => {
 	const { control } = useFormContext();
 	const hasAttachment = query.some((item) => item.label === 'has:attachment');
 	const isUnread = query.some((item) => item.label === 'is:unread');
@@ -146,5 +146,3 @@ const ToggleFilters: FC<ToggleFiltersProps> = ({
 		</>
 	);
 };
-
-export default ToggleFilters;

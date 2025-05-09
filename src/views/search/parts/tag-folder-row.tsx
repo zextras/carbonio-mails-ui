@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
+import React, { ReactElement, useCallback, useMemo, useState } from 'react';
 
 import {
 	ChipInput,
@@ -27,12 +27,12 @@ import type { ChipOnAdd, Folder, TagFolderRowProps } from '../../../types';
 import { SelectFolderModal } from '../../../ui-actions/modals/select-folder-modal';
 import { getFolderIconColor } from '../../sidebar/utils';
 
-const TagFolderRow: FC<TagFolderRowProps> = ({
+export const TagFolderRow = ({
 	query,
 	tagInputName,
 	folderInputName
-}): ReactElement => {
-	const { control } = useFormContext();
+}: TagFolderRowProps): ReactElement => {
+	const { control, setValue } = useFormContext();
 	const tagOptions: Array<Tag & { label: string; customComponent: React.JSX.Element }> = useMemo(
 		() =>
 			map(getTags(), (item) => ({
@@ -130,7 +130,7 @@ const TagFolderRow: FC<TagFolderRowProps> = ({
 			_onClose: () => void
 		) => {
 			folderDestination &&
-				setFolder([
+				setValue(folderInputName, [
 					{
 						label: `in:${folderDestination?.absFolderPath}`,
 						hasAvatar: true,
@@ -147,7 +147,7 @@ const TagFolderRow: FC<TagFolderRowProps> = ({
 				]);
 			_onClose();
 		},
-		[]
+		[folderInputName, setValue]
 	);
 
 	return (
@@ -157,7 +157,7 @@ const TagFolderRow: FC<TagFolderRowProps> = ({
 					control={control}
 					defaultValue={tagInQuery}
 					name={tagInputName}
-					render={({ field: { onChange, value } }) => (
+					render={({ field: { onChange, value } }): React.JSX.Element => (
 						<ChipInput
 							placeholder={t('label.tags', 'Tags')}
 							background="gray5"
@@ -178,7 +178,7 @@ const TagFolderRow: FC<TagFolderRowProps> = ({
 					control={control}
 					defaultValue={folderInQuery}
 					name={folderInputName}
-					render={({ field: { onChange, value } }) => (
+					render={({ field: { onChange, value } }): React.JSX.Element => (
 						<ChipInput
 							background="gray5"
 							icon="FolderOutline"
@@ -210,5 +210,3 @@ const TagFolderRow: FC<TagFolderRowProps> = ({
 		</Container>
 	);
 };
-
-export default TagFolderRow;
