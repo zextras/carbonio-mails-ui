@@ -38,6 +38,8 @@ describe('useEditorText', () => {
 		const newPlainText = 'new plain text';
 		const newRichText = 'new <b>rich</b> text';
 
+		createSoapAPIInterceptor('SaveDraft');
+
 		setupEditorStore({ editors: [] });
 		const editor = await generateEditorV2Case(1);
 		editor.text = {
@@ -48,9 +50,11 @@ describe('useEditorText', () => {
 
 		const { result: hookResult } = setupHook(useEditorText, { initialProps: [editor.id] });
 		const { setText } = hookResult.current;
-		act(() => {
+
+		await act(async () => {
 			setText({ plainText: newPlainText, richText: newRichText });
 		});
+
 		const editorFromStore = getEditor({ id: editor.id });
 		expect(editorFromStore?.text.plainText).toEqual(newPlainText);
 		expect(editorFromStore?.text.richText).toEqual(newRichText);
