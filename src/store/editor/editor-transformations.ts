@@ -162,6 +162,10 @@ const getHtmlWithPreAppliedStyled = (
 export const getMP = (editor: MailsEditorV2): SoapEmailMessagePartObj[] => {
 	const { prefs } = getUserSettings();
 
+	// The stored text could be out of sync with the current text of the composer.
+	// TODO: This logic should be encapsulated in the editor or the store
+	const text = editor.textProvider?.getCurrentText() ?? editor.text;
+
 	const style = {
 		font: prefs?.zimbraPrefHtmlEditorDefaultFontFamily as string,
 		fontSize: prefs?.zimbraPrefHtmlEditorDefaultFontSize as string,
@@ -172,8 +176,8 @@ export const getMP = (editor: MailsEditorV2): SoapEmailMessagePartObj[] => {
 	const savedInlineAttachment = filterSavedInlineAttachment(editor.savedAttachments);
 
 	const contentWithCidUrl = {
-		plainText: editor.text.plainText,
-		richText: replaceServiceUrlWithCidUrl(editor.text.richText)
+		plainText: text?.plainText,
+		richText: replaceServiceUrlWithCidUrl(text?.richText)
 	};
 
 	if (editor.isRichText) {
@@ -241,7 +245,9 @@ export const getMP = (editor: MailsEditorV2): SoapEmailMessagePartObj[] => {
 		{
 			ct: 'text/plain',
 			body: true,
-			content: { _content: editor.text.plainText ?? '' }
+			content: {
+				_content: text?.plainText ?? ''
+			}
 		}
 	];
 };
