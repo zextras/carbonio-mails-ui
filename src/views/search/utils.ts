@@ -5,7 +5,8 @@
  */
 
 import type { QueryChip } from '@zextras/carbonio-search-ui';
-import { includes, map, reduce } from 'lodash';
+import { concat, includes, map, reduce } from 'lodash';
+import moment from 'moment';
 import { v4 as uuid } from 'uuid';
 
 import { findIconFromChip } from './parts/use-find-icon';
@@ -15,8 +16,10 @@ import {
 	Folder,
 	Folders,
 	KeywordState,
+	Query,
 	SearchQueryItem
 } from '../../types';
+import { FormValues } from './types/types';
 
 function getRegex(prefix?: string): RegExp {
 	return new RegExp(`^${prefix}:.*`, 'i');
@@ -137,4 +140,118 @@ export function generateQueryString(
 	return isSharedFolderIncluded && foldersArray?.length > 0
 		? `(${queryString}) ${foldersToSearchInQuery}`
 		: `${queryString}`;
+}
+
+const QUERY_DATE_FORMAT = 'L';
+
+function dateToKeywordState({
+	id,
+	prefix,
+	date
+}: {
+	id: string;
+	prefix: string;
+	date: Date | null;
+}): KeywordState {
+	if (date === null) {
+		return [];
+	}
+	const value = `${prefix}:${moment(date).format(QUERY_DATE_FORMAT)}`;
+	return [
+		{
+			id,
+			hasAvatar: true,
+			avatarBackground: 'gray1',
+			label: value,
+			value,
+			isQueryFilter: true,
+			avatarIcon: 'CalendarOutline'
+		}
+	];
+}
+export function getQueryToBe(formValues: FormValues): Query {
+	const id = 'id';
+	const {
+		keywordInput,
+		subjectInput,
+		isUnread,
+		isFlagged,
+		hasAttachment,
+		folderInput,
+		sentBefore,
+		sentAfter,
+		sentOn,
+		tagInput,
+		attachmentType,
+		emailStatus,
+		sizeLarger,
+		sizeSmaller,
+		receivedFrom,
+		sentTo
+	} = formValues;
+	return concat(
+		keywordInput,
+		subjectInput,
+		isUnread
+			? [
+					{
+						id: `${id}--is:unread`,
+						label: 'is:unread',
+						value: 'is:unread',
+						isQueryFilter: true,
+						avatarIcon: 'EmailOutline',
+						avatarBackground: 'gray1'
+					}
+				]
+			: [],
+		isFlagged
+			? [
+					{
+						id: `${id}--is:flagged`,
+						label: 'is:flagged',
+						value: 'is:flagged',
+						isQueryFilter: true,
+						avatarIcon: 'FlagOutline',
+						avatarBackground: 'error'
+					}
+				]
+			: [],
+		hasAttachment
+			? [
+					{
+						id: `${id}--has:attachment`,
+						label: 'has:attachment',
+						value: 'has:attachment',
+						isQueryFilter: true,
+						avatarIcon: 'AttachOutline',
+						avatarBackground: 'gray1'
+					}
+				]
+			: [],
+		folderInput,
+		dateToKeywordState({ id: `${id}--before`, prefix: 'before', date: sentBefore }),
+		dateToKeywordState({ id: `${id}--after`, prefix: 'after', date: sentAfter }),
+		dateToKeywordState({ id: `${id}--date`, prefix: 'date', date: sentOn }),
+		tagInput,
+		attachmentType,
+		emailStatus,
+		sizeLarger,
+		sizeSmaller,
+		receivedFrom.map((item) => ({
+			...item,
+			id: '',
+			label: `from:${item.value.email}`,
+			value: `from:${item.value.email}`,
+			avatarBackground: item.background,
+			error: false
+		})),
+		sentTo.map((item) => ({
+			...item,
+			label: `to:${item.value.email}`,
+			value: `to:${item.value.email}`,
+			avatarBackground: item.background,
+			error: false,
+			id: ''
+		}))
+	);
 }
