@@ -84,9 +84,6 @@ const createMockTextEditorContainerProps = (
 ): TextEditorContainerProps => ({
 	editorId: 'editor-123',
 	onDragOver: jest.fn(),
-	onFilesSelected: jest.fn(),
-	minHeight: 300,
-	disabled: false,
 	...overrides
 });
 
