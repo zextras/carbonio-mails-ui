@@ -233,77 +233,69 @@ export const AdvancedFilterModal = ({
 		};
 	}, [onSearchConfirm, queryToBe, isSharedFolderIncluded, onClose]);
 
-	return (
-		<>
-			{open ? (
-				<CustomModal open={open} onClose={onClose} maxHeight="90vh" size="medium">
-					<ModalHeader
-						onClose={onClose}
-						title={t('label.single_advanced_filter', 'Advanced Filters')}
-						showCloseIcon
-					/>
-					<Divider />
+	if (!open) return <></>;
 
-					<ScrollableContainer
-						padding={{ horizontal: 'medium', vertical: 'small' }}
-						mainAlignment={'flex-start'}
-					>
-						<FormProvider {...methods}>
-							<ToggleFilters
-								query={query}
-								isSharedFolderIncludedToggleName={'is-shared-folder-included'}
-								hasAttachmentToggleName={'has-attachment'}
-								isFlaggedToggleName={'is-flagged'}
-								isUnreadToggleName={'is-unread'}
-							/>
-							<SubjectKeywordRow
-								query={query}
-								keywordsInputName={'keyword-input'}
-								subjectInputName={'subject-input'}
-							/>
-							<ReceivedSentAddressRow
-								query={query}
-								receivedFromInputName={'received-from'}
-								sentToInputName={'sent-to'}
-							/>
-							<AttachmentTypeEmailStatusRow
-								query={query}
-								attachmentTypeInputName={'attachment-type'}
-								emailStatusInputName={'email-status'}
-							/>
-							<SizeLargerSizeSmallerRow
-								query={query}
-								sizeLargerInputName={'size-larger'}
-								sizeSmallerInputName={'size-smaller'}
-							/>
-							<SendReceivedDateRow
-								query={query}
-								sentBeforeInputName={'sent-before'}
-								sentAfterInputName={'sent-after'}
-								sentOnInputName={'sent-on'}
-							/>
-							<TagFolderRow
-								query={query}
-								tagInputName={'tag-input'}
-								folderInputName={'folder-input'}
-							/>
-						</FormProvider>
-					</ScrollableContainer>
-					<Divider />
-					<ModalFooter
-						onConfirm={onConfirm}
-						confirmDisabled={queryToBe.length === 0}
-						secondaryActionDisabled={
-							queryToBe.length === 0 && isSharedFolderIncluded === includeSharedItemsInSearchPref
-						}
-						confirmLabel={t('action.search', 'Search')}
-						secondaryActionLabel={t('action.reset', 'Reset filters')}
-						onSecondaryAction={resetFilters}
+	return (
+		<CustomModal open={open} onClose={onClose} maxHeight="90vh" size="medium">
+			<ModalHeader
+				onClose={onClose}
+				title={t('label.single_advanced_filter', 'Advanced Filters')}
+				showCloseIcon
+			/>
+			<Divider />
+
+			<ScrollableContainer
+				padding={{ horizontal: 'medium', vertical: 'small' }}
+				mainAlignment={'flex-start'}
+			>
+				<FormProvider {...methods}>
+					<ToggleFilters
+						query={query}
+						isSharedFolderIncludedToggleName={'is-shared-folder-included'}
+						hasAttachmentToggleName={'has-attachment'}
+						isFlaggedToggleName={'is-flagged'}
+						isUnreadToggleName={'is-unread'}
 					/>
-				</CustomModal>
-			) : (
-				<></>
-			)}{' '}
-		</>
+					<SubjectKeywordRow
+						query={query}
+						keywordsInputName={'keyword-input'}
+						subjectInputName={'subject-input'}
+					/>
+					<ReceivedSentAddressRow
+						query={query}
+						receivedFromInputName={'received-from'}
+						sentToInputName={'sent-to'}
+					/>
+					<AttachmentTypeEmailStatusRow
+						query={query}
+						attachmentTypeInputName={'attachment-type'}
+						emailStatusInputName={'email-status'}
+					/>
+					<SizeLargerSizeSmallerRow
+						query={query}
+						sizeLargerInputName={'size-larger'}
+						sizeSmallerInputName={'size-smaller'}
+					/>
+					<SendReceivedDateRow
+						query={query}
+						sentBeforeInputName={'sent-before'}
+						sentAfterInputName={'sent-after'}
+						sentOnInputName={'sent-on'}
+					/>
+					<TagFolderRow query={query} tagInputName={'tag-input'} folderInputName={'folder-input'} />
+				</FormProvider>
+			</ScrollableContainer>
+			<Divider />
+			<ModalFooter
+				onConfirm={onConfirm}
+				confirmDisabled={queryToBe.length === 0}
+				secondaryActionDisabled={
+					queryToBe.length === 0 && isSharedFolderIncluded === includeSharedItemsInSearchPref
+				}
+				confirmLabel={t('action.search', 'Search')}
+				secondaryActionLabel={t('action.reset', 'Reset filters')}
+				onSecondaryAction={resetFilters}
+			/>
+		</CustomModal>
 	);
 };
