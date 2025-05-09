@@ -87,13 +87,7 @@ export const AdvancedFilterModal = ({
 				mainAlignment={'flex-start'}
 			>
 				<FormProvider {...methods}>
-					<ToggleFilters
-						query={query}
-						isSharedFolderIncludedToggleName={'is-shared-folder-included'}
-						hasAttachmentToggleName={'hasAttachment'}
-						isFlaggedToggleName={'isFlagged'}
-						isUnreadToggleName={'isUnread'}
-					/>
+					<ToggleFilters query={query} />
 					<SubjectKeywordRow
 						query={query}
 						keywordsInputName={'keywordInput'}

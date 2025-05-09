@@ -9,16 +9,11 @@ import { Container, Switch, Text, Padding } from '@zextras/carbonio-design-syste
 import { t } from '@zextras/carbonio-shell-ui';
 import { Controller, useFormContext } from 'react-hook-form';
 
-import type { ToggleFiltersProps } from '../../../types';
+import { Query } from '../../../types';
+import { FormValues } from '../types/types';
 
-export const ToggleFilters = ({
-	query,
-	isSharedFolderIncludedToggleName,
-	isFlaggedToggleName,
-	hasAttachmentToggleName,
-	isUnreadToggleName
-}: ToggleFiltersProps): ReactElement => {
-	const { control } = useFormContext();
+export const ToggleFilters = ({ query }: { query: Query }): ReactElement => {
+	const { control } = useFormContext<FormValues>();
 	const hasAttachment = query.some((item) => item.label === 'has:attachment');
 	const isUnread = query.some((item) => item.label === 'is:unread');
 	const isFlagged = query.some((item) => item.label === 'is:flagged');
@@ -31,11 +26,11 @@ export const ToggleFilters = ({
 							<Controller
 								control={control}
 								defaultValue={hasAttachment}
-								name={hasAttachmentToggleName}
-								render={({ field: { onChange, value } }) => (
+								name={'hasAttachment'}
+								render={({ field: { onChange, value } }): React.JSX.Element => (
 									<Switch
 										data-testid="hasAttachmentToggle"
-										onClick={() => onChange(!value)}
+										onClick={(): void => onChange(!value)}
 										value={value}
 									/>
 								)}
@@ -60,11 +55,11 @@ export const ToggleFilters = ({
 							<Controller
 								control={control}
 								defaultValue={isFlagged}
-								name={isFlaggedToggleName}
-								render={({ field: { onChange, value } }) => (
+								name={'isFlagged'}
+								render={({ field: { onChange, value } }): React.JSX.Element => (
 									<Switch
 										data-testid="isFlaggedToggle"
-										onClick={() => onChange(!value)}
+										onClick={(): void => onChange(!value)}
 										value={value}
 									/>
 								)}
@@ -92,12 +87,12 @@ export const ToggleFilters = ({
 						<Padding right="small">
 							<Controller
 								control={control}
-								name={isUnreadToggleName}
+								name={'isUnread'}
 								defaultValue={isUnread}
-								render={({ field: { onChange, value } }) => (
+								render={({ field: { onChange, value } }): React.JSX.Element => (
 									<Switch
 										data-testid="isUnreadToggle"
-										onClick={() => onChange(!value)}
+										onClick={(): void => onChange(!value)}
 										value={value}
 									/>
 								)}
@@ -122,11 +117,11 @@ export const ToggleFilters = ({
 						<Padding right="small">
 							<Controller
 								control={control}
-								name={isSharedFolderIncludedToggleName}
-								render={({ field: { onChange, value } }) => (
+								name={'isSharedFolderIncluded'}
+								render={({ field: { onChange, value } }): React.JSX.Element => (
 									<Switch
 										data-testid="isSharedFolderIncludedToggle"
-										onClick={() => onChange(!value)}
+										onClick={(): void => onChange(!value)}
 										value={value}
 									/>
 								)}

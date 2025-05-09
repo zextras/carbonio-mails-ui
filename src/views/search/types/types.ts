@@ -11,6 +11,7 @@ export type FormValues = {
 	keywordInput: KeywordState;
 	subjectInput: KeywordState;
 	hasAttachment: boolean;
+	isSharedFolderIncluded: boolean;
 	isFlagged: boolean;
 	isUnread: boolean;
 	sentBefore: Date | null;
