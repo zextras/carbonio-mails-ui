@@ -16,7 +16,6 @@ import {
 } from '@zextras/carbonio-design-system';
 import { t, useIsCarbonioCE } from '@zextras/carbonio-shell-ui';
 import { filter, map } from 'lodash';
-import type { TinyMCE } from 'tinymce/tinymce';
 
 import { checkSubjectAndAttachment } from './check-subject-attachment';
 import DropZoneAttachment from './dropzone-attachment';
@@ -74,10 +73,6 @@ export type EditViewHandle = {
 	closeEditView: () => void;
 };
 
-type FileSelectProps = {
-	editor: TinyMCE;
-	files: FileList;
-};
 const MemoizedTextEditorContainer = memo(TextEditorContainer);
 const MemoizedRecipientsRows = memo(RecipientsRows);
 const MemoizedSubjectRow = memo(SubjectRow);
@@ -151,7 +146,7 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 	const draftSaveProcessStatus = useEditorDraftSaveProcessStatus(editorId);
 	const createSnackbar = useSnackbar();
 	const [dropZoneEnabled, setDropZoneEnabled] = useState<boolean>(false);
-	const { addStandardAttachments, addInlineAttachments } = useEditorAttachments(editorId);
+	const { addStandardAttachments } = useEditorAttachments(editorId);
 
 	const keepOrDiscardDraft = useKeepOrDiscardDraft();
 
@@ -294,20 +289,6 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 	}, []);
 
 	const flexStart = 'flex-start';
-	const onInlineAttachmentsSelected = useCallback(
-		({ editor: tinymce, files: fileList }: FileSelectProps): void => {
-			const files = buildArrayFromFileList(fileList);
-			addInlineAttachments(files, {
-				onSaveComplete: (inlineAttachments) => {
-					inlineAttachments.forEach((inlineAttachment) => {
-						const img = `&nbsp;<img pnsrc="${inlineAttachment.cidUrl}" data-mce-src="${inlineAttachment.cidUrl}" src="${inlineAttachment.downloadServiceUrl}" /><br/>`;
-						tinymce?.activeEditor?.insertContent(img);
-					});
-				}
-			});
-		},
-		[addInlineAttachments]
-	);
 
 	const { savedStandardAttachments } = useEditorAttachments(editorId);
 
@@ -637,13 +618,7 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 						setLargeFileUploadInfoBannerVisible={setLargeFileUploadInfoBannerVisible}
 					/>
 
-					<MemoizedTextEditorContainer
-						onDragOver={onDragOverEvent}
-						onFilesSelected={onInlineAttachmentsSelected}
-						editorId={editorId}
-						minHeight={0}
-						disabled={false}
-					/>
+					<MemoizedTextEditorContainer onDragOver={onDragOverEvent} editorId={editorId} />
 					<EditViewDraftSaveInfo processStatus={draftSaveProcessStatus} />
 				</GapContainer>
 			</GapContainer>
