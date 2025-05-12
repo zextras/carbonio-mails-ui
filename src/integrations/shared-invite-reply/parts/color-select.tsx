@@ -7,7 +7,7 @@ import React, { useMemo } from 'react';
 
 import type { SingleSelectionOnChange } from '@zextras/carbonio-design-system';
 import { Container, Icon, Padding, Row, Select, Text } from '@zextras/carbonio-design-system';
-import { t } from '@zextras/carbonio-shell-ui';
+import { useTranslation } from 'react-i18next';
 
 import { ColorContainer, Square, TextUpperCase } from './styled-components';
 import { ZIMBRA_STANDARD_COLORS } from '../../../carbonio-ui-commons/constants/utils';
@@ -59,11 +59,6 @@ const LabelFactory = ({
 	);
 };
 
-// function getColorLabel(colorName: string): string {
-// 	const [t] = useTranslation();
-// 	return t(`colors.${colorName}`);
-// }
-
 export default function ColorSelect({
 	onChange,
 	defaultColor,
@@ -73,6 +68,7 @@ export default function ColorSelect({
 	defaultColor: number;
 	label: string;
 }>): React.JSX.Element {
+	const [t] = useTranslation();
 	const colors = useMemo(
 		() =>
 			ZIMBRA_STANDARD_COLORS.map((el, index) => {
@@ -95,7 +91,7 @@ export default function ColorSelect({
 					)
 				};
 			}),
-		[]
+		[t]
 	);
 	// FIXME: potential unsafe access to array, how do you know that colors[defaultColor] is not undefined and array is not empty?
 	const defaultSelection = useMemo(() => colors[defaultColor], [colors, defaultColor]);
