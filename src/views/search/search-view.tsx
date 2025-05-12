@@ -11,13 +11,13 @@ import { setAppContext, t, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { Route, Routes } from 'react-router-dom';
 
 import { AdvancedFilterModal } from './advanced-filter-modal';
-import { Query } from '../../types';
 import { SearchConversationList } from './list/conversation/search-conversation-list';
 import { SearchMessageList } from './list/message/search-message-list';
 import SearchPanel from './panel/search-panel';
 import { useIsMessageView, useRunSearch } from './search-view-hooks';
 import { useUpdateView } from '../../carbonio-ui-commons/hooks/use-update-view';
 import { API_REQUEST_STATUS } from '../../constants';
+import { Query } from './types/types';
 import { resetSearchAndPopulatedItems } from '../../store/emails/store';
 
 const SearchView = ({

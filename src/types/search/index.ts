@@ -8,7 +8,7 @@ import { ChipProps, ChipItem } from '@zextras/carbonio-design-system';
 import type { QueryChip } from '@zextras/carbonio-search-ui';
 
 import { SortBy } from '../../carbonio-ui-commons/types';
-import { FormValues } from '../../views/search/types/types';
+import { FormValues, Query } from '../../views/search/types/types';
 import { NormalizedConversation } from '../conversations';
 import { IncompleteMessage, MailMessage } from '../messages';
 import { ErrorType, SearchRequestStatus } from '../state';
@@ -34,16 +34,6 @@ export type SearchPanelProps = {
 	searchResults: SearchIndexSliceState['searchIndexSlice'];
 	query: Array<QueryChip>;
 };
-
-export type SearchQueryItem = {
-	id: string;
-	label: string;
-	value?: string;
-	isGeneric?: boolean;
-	isQueryFilter?: boolean;
-};
-
-export type Query = Array<SearchQueryItem>;
 
 export type AdvancedFilterButtonProps = {
 	searchDisabled: boolean;

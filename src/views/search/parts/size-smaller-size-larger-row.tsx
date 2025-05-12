@@ -3,21 +3,17 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 
 import { Container, ChipInput, ChipItem } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import { filter, map } from 'lodash';
 import { Controller, useFormContext } from 'react-hook-form';
 
-import type { SizeLargerSizeSmallerRowProps } from '../../../types';
+import { FormValues, Query } from '../types/types';
 
-export const SizeLargerSizeSmallerRow: FC<SizeLargerSizeSmallerRowProps> = ({
-	sizeSmallerInputName,
-	sizeLargerInputName,
-	query
-}): ReactElement => {
-	const { control } = useFormContext();
+export const SizeLargerSizeSmallerRow = ({ query }: { query: Query }): React.JSX.Element => {
+	const { control } = useFormContext<FormValues>();
 	const [isInvalidSmallSize, setIsInvalidSmallSize] = useState(false);
 	const [isInvalidLargeSize, setIsInvalidLargeSize] = useState(false);
 	const errorLabel = useMemo(() => t('search.size_error', 'Only numbers are allowed'), []);
@@ -94,9 +90,9 @@ export const SizeLargerSizeSmallerRow: FC<SizeLargerSizeSmallerRowProps> = ({
 	);
 
 	const sizeLargerPlaceholder = useMemo(() => t('label.size_larger', 'Size larger than (MB)'), []);
-	const sizeSmallerInQuery: ChipItem[] = map(
+	const sizeSmallerInQuery: Array<ChipItem<string> & { id: string }> = map(
 		filter(query, (v) => /^Smaller:/.test(v.label)),
-		(q) => ({ ...q })
+		(q) => ({ ...q, id: '' })
 	);
 
 	const sizeLargerInQuery: ChipItem[] = map(
@@ -108,9 +104,9 @@ export const SizeLargerSizeSmallerRow: FC<SizeLargerSizeSmallerRowProps> = ({
 			<Container padding={{ right: 'extrasmall' }}>
 				<Controller
 					control={control}
-					name={sizeSmallerInputName}
+					name={'sizeSmaller'}
 					defaultValue={sizeSmallerInQuery}
-					render={({ field: { onChange, value }, fieldState: { error } }) => (
+					render={({ field: { onChange, value }, fieldState: { error } }): React.JSX.Element => (
 						<ChipInput
 							placeholder={sizeSmallerPlaceholder}
 							defaultValue={[]}
@@ -131,9 +127,9 @@ export const SizeLargerSizeSmallerRow: FC<SizeLargerSizeSmallerRowProps> = ({
 			<Container padding={{ left: 'extrasmall' }}>
 				<Controller
 					control={control}
-					name={sizeLargerInputName}
+					name={'sizeLarger'}
 					defaultValue={sizeLargerInQuery}
-					render={({ field: { onChange, value }, fieldState: { error } }) => (
+					render={({ field: { onChange, value }, fieldState: { error } }): React.JSX.Element => (
 						<ChipInput
 							placeholder={sizeLargerPlaceholder}
 							defaultValue={[]}

@@ -3,24 +3,19 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, ReactElement } from 'react';
+import React from 'react';
 
 import { Container, DateTimePicker } from '@zextras/carbonio-design-system';
 import { t, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { Controller, useFormContext } from 'react-hook-form';
 
-import type { SendReceivedDateRowPropType } from '../../../types';
 import { extractDateFieldFromQuery } from '../extract-date-field-from-query';
+import { FormValues, Query } from '../types/types';
 
 const PICKER_DATE_FORMAT = 'P';
 
-export const SendReceivedDateRow: FC<SendReceivedDateRowPropType> = ({
-	query,
-	sentBeforeInputName,
-	sentOnInputName,
-	sentAfterInputName
-}): ReactElement => {
-	const { control } = useFormContext();
+export const SendReceivedDateRow = ({ query }: { query: Query }): React.JSX.Element => {
+	const { control } = useFormContext<FormValues>();
 	const { zimbraPrefLocale: prefLocale } = useUserSettings().prefs;
 	const sentBefore = extractDateFieldFromQuery('before', query);
 	const sentAfter = extractDateFieldFromQuery('after', query);
@@ -30,9 +25,9 @@ export const SendReceivedDateRow: FC<SendReceivedDateRowPropType> = ({
 			<Container padding={{ right: 'extrasmall' }}>
 				<Controller
 					control={control}
-					name={sentBeforeInputName}
+					name={'sentBefore'}
 					defaultValue={sentBefore}
-					render={({ field: { onChange, value } }) => (
+					render={({ field: { onChange, value } }): React.JSX.Element => (
 						<DateTimePicker
 							width="fill"
 							label={t('search.sent_before', 'Sent before')}
@@ -52,9 +47,9 @@ export const SendReceivedDateRow: FC<SendReceivedDateRowPropType> = ({
 			<Container padding={{ horizontal: 'extrasmall' }}>
 				<Controller
 					control={control}
-					name={sentAfterInputName}
+					name={'sentAfter'}
 					defaultValue={sentAfter}
-					render={({ field: { onChange, value } }) => (
+					render={({ field: { onChange, value } }): React.JSX.Element => (
 						<DateTimePicker
 							width="fill"
 							label={t('search.sent_after', 'Sent after')}
@@ -74,9 +69,9 @@ export const SendReceivedDateRow: FC<SendReceivedDateRowPropType> = ({
 			<Container padding={{ left: 'extrasmall' }}>
 				<Controller
 					control={control}
-					name={sentOnInputName}
+					name={'sentOn'}
 					defaultValue={sentOn}
-					render={({ field: { onChange, value } }) => (
+					render={({ field: { onChange, value } }): React.JSX.Element => (
 						<DateTimePicker
 							width="fill"
 							label={t('search.sent_on', 'Sent on')}

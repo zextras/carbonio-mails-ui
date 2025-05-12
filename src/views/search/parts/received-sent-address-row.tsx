@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, ReactElement } from 'react';
+import React from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
@@ -13,13 +13,7 @@ import { Controller, useFormContext } from 'react-hook-form';
 import { CONTACT_TYPES } from '../../../carbonio-ui-commons/integrations/constants';
 import { useContactInput } from '../../../carbonio-ui-commons/integrations/hooks';
 import { ContactInputItem } from '../../../carbonio-ui-commons/integrations/types';
-import { Query, SearchQueryItem } from '../../../types';
-
-type ReceivedSentAddressRowProps = {
-	query: Query;
-	receivedFromInputName: string;
-	sentToInputName: string;
-};
+import { FormValues, Query, SearchQueryItem } from '../types/types';
 
 function toContactInput(item: SearchQueryItem): ContactInputItem {
 	const email = item.value ?? '';
@@ -33,12 +27,8 @@ function toContactInput(item: SearchQueryItem): ContactInputItem {
 		}
 	};
 }
-export const ReceivedSentAddressRow: FC<ReceivedSentAddressRowProps> = ({
-	query,
-	receivedFromInputName,
-	sentToInputName
-}): ReactElement => {
-	const { control } = useFormContext();
+export const ReceivedSentAddressRow = ({ query }: { query: Query }): React.JSX.Element => {
+	const { control } = useFormContext<FormValues>();
 	const sentToInQuery = query
 		.filter((queryItem) => /^to:*/.test(queryItem.label))
 		.map((queryItem) => ({ ...queryItem, label: replace(queryItem.label, 'to:', '') }))
@@ -56,9 +46,9 @@ export const ReceivedSentAddressRow: FC<ReceivedSentAddressRowProps> = ({
 			<Container padding={{ right: 'extrasmall' }} maxWidth="50%">
 				<Controller
 					control={control}
-					name={receivedFromInputName}
+					name={'receivedFrom'}
 					defaultValue={receivedFromInQuery}
-					render={({ field: { onChange, value } }) => (
+					render={({ field: { onChange, value } }): React.JSX.Element => (
 						<ContactInput
 							data-testid={'received-from-input'}
 							placeholder={t('label.from', 'From')}
@@ -71,9 +61,9 @@ export const ReceivedSentAddressRow: FC<ReceivedSentAddressRowProps> = ({
 			<Container padding={{ left: 'extrasmall' }} maxWidth="50%">
 				<Controller
 					control={control}
-					name={sentToInputName}
+					name={'sentTo'}
 					defaultValue={sentToInQuery}
-					render={({ field: { onChange, value }, fieldState: { error } }) => (
+					render={({ field: { onChange, value }, fieldState: { error } }): React.JSX.Element => (
 						<ContactInput
 							data-testid={'sent-to-input'}
 							placeholder={t('label.to', 'To')}

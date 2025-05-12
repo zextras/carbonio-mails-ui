@@ -10,10 +10,9 @@ import { t } from '@zextras/carbonio-shell-ui';
 import { filter, includes, map } from 'lodash';
 import { Controller, useFormContext } from 'react-hook-form';
 
-import { SubjectKeywordRowProps } from '../../../types';
-import { FormValues } from '../types/types';
+import { FormValues, Query } from '../types/types';
 
-export const SubjectKeywordRow = ({ query }: SubjectKeywordRowProps): ReactElement => {
+export const SubjectKeywordRow = ({ query }: { query: Query }): ReactElement => {
 	const { control } = useFormContext<FormValues>();
 	const queryArray = useMemo(() => ['has:attachment', 'is:flagged', 'is:unread'], []);
 	const otherKeywords = map(

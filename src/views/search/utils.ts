@@ -10,16 +10,8 @@ import moment from 'moment';
 import { v4 as uuid } from 'uuid';
 
 import { findIconFromChip } from './parts/use-find-icon';
-import {
-	ChipType,
-	ContactInputItem,
-	Folder,
-	Folders,
-	KeywordState,
-	Query,
-	SearchQueryItem
-} from '../../types';
-import { FormValues } from './types/types';
+import { ChipType, ContactInputItem, Folder, Folders } from '../../types';
+import { FormValues, KeywordState, Query, SearchQueryItem } from './types/types';
 
 function getRegex(prefix?: string): RegExp {
 	return new RegExp(`^${prefix}:.*`, 'i');

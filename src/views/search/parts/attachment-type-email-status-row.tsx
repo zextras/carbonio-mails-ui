@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, ReactElement, useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 
 import { Container, ChipInput } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
@@ -16,19 +16,11 @@ import {
 	emailStatusItemsConstant,
 	EmailStatusItemsConstantProps
 } from '../../../constants';
-import type {
-	AttachTypeEmailStatusRowPropType,
-	ChipOnAdd,
-	ChipOnAddItem,
-	ChipOnAddProps
-} from '../../../types';
+import type { ChipOnAdd, ChipOnAddItem, ChipOnAddProps } from '../../../types';
+import { FormValues, Query } from '../types/types';
 
-export const AttachmentTypeEmailStatusRow: FC<AttachTypeEmailStatusRowPropType> = ({
-	query,
-	attachmentTypeInputName,
-	emailStatusInputName
-}): ReactElement => {
-	const { control } = useFormContext();
+export const AttachmentTypeEmailStatusRow = ({ query }: { query: Query }): React.JSX.Element => {
+	const { control } = useFormContext<FormValues>();
 	const attachmentTypeInQuery = map(
 		filter(query, (v) => /^Attachment:/.test(v.label)),
 		(q) => ({ ...q })
@@ -106,8 +98,8 @@ export const AttachmentTypeEmailStatusRow: FC<AttachTypeEmailStatusRowPropType> 
 				<Controller
 					control={control}
 					defaultValue={attachmentTypeInQuery}
-					name={attachmentTypeInputName}
-					render={({ field: { onChange, value } }) => (
+					name={'attachmentType'}
+					render={({ field: { onChange, value } }): React.JSX.Element => (
 						<ChipInput
 							disabled
 							placeholder={attachmentTypePlaceholder}
@@ -128,8 +120,8 @@ export const AttachmentTypeEmailStatusRow: FC<AttachTypeEmailStatusRowPropType> 
 				<Controller
 					control={control}
 					defaultValue={emailStatusInQuery}
-					name={emailStatusInputName}
-					render={({ field: { onChange, value } }) => (
+					name={'emailStatus'}
+					render={({ field: { onChange, value } }): React.JSX.Element => (
 						<ChipInput
 							disabled
 							placeholder={emailStatusPlaceholder}

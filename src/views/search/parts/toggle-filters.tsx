@@ -9,8 +9,7 @@ import { Container, Switch, Text, Padding } from '@zextras/carbonio-design-syste
 import { t } from '@zextras/carbonio-shell-ui';
 import { Controller, useFormContext } from 'react-hook-form';
 
-import { Query } from '../../../types';
-import { FormValues } from '../types/types';
+import { FormValues, Query } from '../types/types';
 
 export const ToggleFilters = ({ query }: { query: Query }): ReactElement => {
 	const { control } = useFormContext<FormValues>();

@@ -4,8 +4,33 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import { ChipProps } from '@zextras/carbonio-design-system';
+
 import { ContactInputItem } from '../../../carbonio-ui-commons/integrations/types';
-import { KeywordState, Query } from '../../../types';
+
+export type SearchQueryItem = {
+	id: string;
+	label: string;
+	value?: string;
+	isGeneric?: boolean;
+	isQueryFilter?: boolean;
+};
+
+export type Query = Array<SearchQueryItem>;
+
+export type KeywordState = Array<{
+	id: string;
+	label: string;
+	hasAvatar?: boolean;
+	value?: string;
+	isQueryFilter?: boolean;
+	isGeneric?: boolean;
+	avatarIcon?: string;
+	avatarBackground?: ChipProps['background'];
+	hasError?: boolean;
+	error?: boolean;
+	fullName?: string;
+}>;
 
 export type FormValues = {
 	keywordInput: KeywordState;

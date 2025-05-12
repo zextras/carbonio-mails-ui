@@ -7,7 +7,7 @@
 import { filter, map } from 'lodash';
 import moment from 'moment/moment';
 
-import { Query } from '../../types';
+import { Query } from './types/types';
 
 export function extractDateFieldFromQuery(prefix: string, query: Query): Date | null {
 	const prefixColon = `${prefix}:`;

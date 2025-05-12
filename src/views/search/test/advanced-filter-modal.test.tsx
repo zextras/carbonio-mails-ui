@@ -16,9 +16,8 @@ import {
 	mockContactInput
 } from '../../../carbonio-ui-commons/test/mocks/integrations/mock-contact-input';
 import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
-import { SearchQueryItem } from '../../../types';
 import { AdvancedFilterModal } from '../advanced-filter-modal';
-import { AdvancedFilterModalProps } from '../types/types';
+import { AdvancedFilterModalProps, SearchQueryItem } from '../types/types';
 
 async function selectOption(
 	user: UserEvent,

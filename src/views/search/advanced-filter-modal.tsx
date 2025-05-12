@@ -88,33 +88,12 @@ export const AdvancedFilterModal = ({
 			>
 				<FormProvider {...methods}>
 					<ToggleFilters query={query} />
-					<SubjectKeywordRow
-						query={query}
-						keywordsInputName={'keywordInput'}
-						subjectInputName={'subjectInput'}
-					/>
-					<ReceivedSentAddressRow
-						query={query}
-						receivedFromInputName={'receivedFrom'}
-						sentToInputName={'sentTo'}
-					/>
-					<AttachmentTypeEmailStatusRow
-						query={query}
-						attachmentTypeInputName={'attachmentType'}
-						emailStatusInputName={'emailStatus'}
-					/>
-					<SizeLargerSizeSmallerRow
-						query={query}
-						sizeLargerInputName={'sizeLarger'}
-						sizeSmallerInputName={'sizeSmaller'}
-					/>
-					<SendReceivedDateRow
-						query={query}
-						sentBeforeInputName={'sentBefore'}
-						sentAfterInputName={'sentAfter'}
-						sentOnInputName={'sentOn'}
-					/>
-					<TagFolderRow query={query} tagInputName={'tagInput'} folderInputName={'folderInput'} />
+					<SubjectKeywordRow query={query} />
+					<ReceivedSentAddressRow query={query} />
+					<AttachmentTypeEmailStatusRow query={query} />
+					<SizeLargerSizeSmallerRow query={query} />
+					<SendReceivedDateRow query={query} />
+					<TagFolderRow query={query} />
 				</FormProvider>
 			</ScrollableContainer>
 			<Divider />

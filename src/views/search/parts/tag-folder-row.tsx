@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { ReactElement, useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 
 import {
 	ChipInput,
@@ -23,16 +23,13 @@ import { ZIMBRA_STANDARD_COLORS } from '../../../carbonio-ui-commons/constants/u
 import { getTags } from '../../../carbonio-ui-commons/store/zustand/tags';
 import { Tag } from '../../../carbonio-ui-commons/types/tags';
 import { isSharedAccountFolder } from '../../../helpers/folders';
-import type { ChipOnAdd, Folder, TagFolderRowProps } from '../../../types';
+import type { ChipOnAdd, Folder } from '../../../types';
 import { SelectFolderModal } from '../../../ui-actions/modals/select-folder-modal';
 import { getFolderIconColor } from '../../sidebar/utils';
+import { FormValues, Query } from '../types/types';
 
-export const TagFolderRow = ({
-	query,
-	tagInputName,
-	folderInputName
-}: TagFolderRowProps): ReactElement => {
-	const { control, setValue } = useFormContext();
+export const TagFolderRow = ({ query }: { query: Query }): React.JSX.Element => {
+	const { control, setValue } = useFormContext<FormValues>();
 	const tagOptions: Array<Tag & { label: string; customComponent: React.JSX.Element }> = useMemo(
 		() =>
 			map(getTags(), (item) => ({
@@ -130,7 +127,7 @@ export const TagFolderRow = ({
 			_onClose: () => void
 		) => {
 			folderDestination &&
-				setValue(folderInputName, [
+				setValue('folderInput', [
 					{
 						label: `in:${folderDestination?.absFolderPath}`,
 						hasAvatar: true,
@@ -147,7 +144,7 @@ export const TagFolderRow = ({
 				]);
 			_onClose();
 		},
-		[folderInputName, setValue]
+		[setValue]
 	);
 
 	return (
@@ -156,7 +153,7 @@ export const TagFolderRow = ({
 				<Controller
 					control={control}
 					defaultValue={tagInQuery}
-					name={tagInputName}
+					name={'tagInput'}
 					render={({ field: { onChange, value } }): React.JSX.Element => (
 						<ChipInput
 							placeholder={t('label.tags', 'Tags')}
@@ -177,7 +174,7 @@ export const TagFolderRow = ({
 				<Controller
 					control={control}
 					defaultValue={folderInQuery}
-					name={folderInputName}
+					name={'folderInput'}
 					render={({ field: { onChange, value } }): React.JSX.Element => (
 						<ChipInput
 							background="gray5"
