@@ -61,8 +61,7 @@ const LabelFactory = ({
 };
 
 function getColorLabel(colorName: string): string {
-	const capitalizedColor = _.capitalize(colorName);
-	return t(`label.color${capitalizedColor}`, colorName);
+	return t(`colors.${colorName}`, colorName);
 }
 
 export default function ColorSelect({
