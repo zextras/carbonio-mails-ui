@@ -12,7 +12,6 @@ import { t } from '@zextras/carbonio-shell-ui';
 import { ColorContainer, Square, TextUpperCase } from './styled-components';
 import { ZIMBRA_STANDARD_COLORS } from '../../../carbonio-ui-commons/constants/utils';
 import { CustomLabelFactoryProps } from '../../../carbonio-ui-commons/types/select';
-import _ from 'lodash';
 
 const LabelFactory = ({
 	selected,
@@ -60,9 +59,10 @@ const LabelFactory = ({
 	);
 };
 
-function getColorLabel(colorName: string): string {
-	return t(`colors.${colorName}`, colorName);
-}
+// function getColorLabel(colorName: string): string {
+// 	const [t] = useTranslation();
+// 	return t(`colors.${colorName}`);
+// }
 
 export default function ColorSelect({
 	onChange,
@@ -76,7 +76,7 @@ export default function ColorSelect({
 	const colors = useMemo(
 		() =>
 			ZIMBRA_STANDARD_COLORS.map((el, index) => {
-				const colorLabel = getColorLabel(el.zLabel);
+				const colorLabel = t(`colors.${el.zLabel}`, el.zLabel);
 				return {
 					label: colorLabel,
 					value: index.toString(),
