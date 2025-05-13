@@ -5,59 +5,36 @@
  */
 
 import type { QueryChip } from '@zextras/carbonio-search-ui';
-import { concat, includes, map, reduce } from 'lodash';
+import { concat, filter, includes, map, reduce, replace } from 'lodash';
 import moment from 'moment';
-import { v4 as uuid } from 'uuid';
 
+import { extractDateFieldFromQuery } from './extract-date-field-from-query';
 import { findIconFromChip } from './parts/use-find-icon';
-import { ChipType, ContactInputItem, Folder, Folders } from '../../types';
+import { ChipType, Folder, Folders } from '../../types';
 import { FormValues, KeywordState, Query, SearchQueryItem } from './types/types';
+import { CONTACT_TYPES } from '../../carbonio-ui-commons/integrations/constants';
+import { ContactInputItem } from '../../carbonio-ui-commons/integrations/types';
 
 function getRegex(prefix?: string): RegExp {
 	return new RegExp(`^${prefix}:.*`, 'i');
 }
 
-export function getChipString(item: SearchQueryItem | ContactInputItem, prefix: string): string {
+function formatWithPrefix(resultString: string, prefix: string): string {
 	const regex = getRegex(prefix);
-	let resultString = '';
-	if ((item as SearchQueryItem).label) {
-		resultString = (item as SearchQueryItem).label;
-	}
-	if ((item as ContactInputItem).fullName) {
-		resultString = (item as ContactInputItem).fullName ?? '';
-	}
 	return regex.test(resultString) ? resultString : `${prefix}:${resultString}`;
 }
 
-function getChipValue(item: SearchQueryItem | ContactInputItem, prefix: string): string {
-	const regex = getRegex(prefix);
-	let resultString = '';
-	if ((item as SearchQueryItem).value) {
-		resultString = (item as SearchQueryItem).value ?? '';
+export function getChipString(
+	{ label, fullName }: { label?: string; fullName?: string },
+	prefix: string
+): string {
+	if (fullName) {
+		return formatWithPrefix(fullName, prefix);
 	}
-	if ((item as ContactInputItem).email) {
-		resultString = (item as ContactInputItem).email ?? '';
+	if (label) {
+		return formatWithPrefix(label, prefix);
 	}
-	if ((item as ContactInputItem).fullName) {
-		resultString = (item as ContactInputItem).fullName ?? '';
-	}
-	return regex.test(resultString) ? resultString : `${prefix}:${resultString}`;
-}
-
-export function getChipItems(chips: Array<ContactInputItem>, prefix: string): KeywordState {
-	return chips.map((chip) => ({
-		...chip,
-		error: false,
-		id: chip.id ?? `${uuid()} ${chip.label}`,
-		avatarBackground: chip.avatarBackground ?? 'secondary',
-		hasAvatar: true,
-		avatarIcon: 'EmailOutline',
-		isGeneric: false,
-		isQueryFilter: true,
-		label: getChipString(chip, prefix),
-		fullName: getChipString(chip, prefix),
-		value: getChipValue(chip, prefix)
-	}));
+	return '';
 }
 
 export function updateQueryChips(
@@ -246,4 +223,122 @@ export function getQueryToBe(formValues: FormValues): Query {
 			id: ''
 		}))
 	);
+}
+
+export function getAttachmentTypeDefaultValue(query: Query): KeywordState {
+	return filter(query, (v) => /^Attachment:/.test(v.label));
+}
+
+export function getSubjectInputDefaultValue(query: Query): KeywordState {
+	return filter(query, (v) => /^Subject:/.test(v.label));
+}
+
+export function getOtherKeywordsDefaultValue(query: Query): KeywordState {
+	const queryArray = ['has:attachment', 'is:flagged', 'is:unread'];
+	return map(
+		filter(
+			query,
+			(v) =>
+				!includes(queryArray, v.label) &&
+				!/^Subject:/.test(v.label) &&
+				!/^Attachment:/.test(v.label) &&
+				!/^Is:/.test(v.label) &&
+				!/^Smaller:/.test(v.label) &&
+				!/^Larger:/.test(v.label) &&
+				!/^subject:/.test(v.label) &&
+				!/^in:/.test(v.label) &&
+				!/^before:/.test(v.label) &&
+				!/^after:/.test(v.label) &&
+				!/^date:/.test(v.label) &&
+				!/^tag:/.test(v.label) &&
+				!/^to:/.test(v.label) &&
+				!/^from:/.test(v.label) &&
+				!v.isQueryFilter
+		),
+		(q) => ({ ...q, hasAvatar: false })
+	);
+}
+
+function toContactInput(item: SearchQueryItem): ContactInputItem {
+	const email = item.value ?? '';
+	return {
+		id: email,
+		label: email,
+		value: {
+			id: email,
+			email,
+			type: CONTACT_TYPES.CONTACT
+		}
+	};
+}
+
+export function getSentToDefaultValue(query: Query): Array<ContactInputItem> {
+	return query
+		.filter((queryItem) => /^to:*/.test(queryItem.label))
+		.map((queryItem) => ({ ...queryItem, label: replace(queryItem.label, 'to:', '') }))
+		.map((item) => toContactInput(item));
+}
+
+export function getReceivedFromDefaultValue(query: Query): Array<ContactInputItem> {
+	return query
+		.filter((queryItem) => /^from:*/.test(queryItem.label))
+		.map((queryItem) => ({ ...queryItem, label: replace(queryItem.label, 'from:', '') }))
+		.map((item) => toContactInput(item));
+}
+
+export function getSizeSmallerDefaultValue(
+	query: Query
+): { id: string; label: string; value?: string; isGeneric?: boolean; isQueryFilter?: boolean }[] {
+	return map(
+		filter(query, (v) => /^Smaller:/.test(v.label)),
+		(q) => ({ ...q, id: '', label: '' })
+	);
+}
+
+export function getSizeLargerDefaultValue(query: Query): SearchQueryItem[] {
+	return filter(query, (v) => /^Larger:/.test(v.label));
+}
+export function getTagInQueryDefaultValue(query: Query): KeywordState {
+	return map(
+		filter(query, (v) => /^tag:/.test(v.label)),
+		(q) => ({ ...q, hasAvatar: true, icon: 'TagOutline' })
+	);
+}
+
+export function getFolderInQueryDefaultValue(query: Query): KeywordState {
+	return map(
+		filter(query, (v) => /^in:/.test(v.label)),
+		(q) => ({
+			...q,
+			hasAvatar: true,
+			icon: 'FolderOutline'
+		})
+	);
+}
+export function getEmailStatusDefaultValue(query: Query): KeywordState {
+	return filter(query, (v) => /^Is:/.test(v.label));
+}
+export function getAdvancedFiltersDefaultValues(
+	query: Query,
+	isSharedFolderIncluded: boolean
+): FormValues {
+	return {
+		attachmentType: getAttachmentTypeDefaultValue(query),
+		emailStatus: getEmailStatusDefaultValue(query),
+		keywordInput: getOtherKeywordsDefaultValue(query),
+		subjectInput: getSubjectInputDefaultValue(query),
+		hasAttachment: query.some((item) => item.label === 'has:attachment'),
+		isFlagged: query.some((item) => item.label === 'is:flagged'),
+		isUnread: query.some((item) => item.label === 'is:unread'),
+		sentBefore: extractDateFieldFromQuery('before', query),
+		sentAfter: extractDateFieldFromQuery('after', query),
+		sentOn: extractDateFieldFromQuery('on', query),
+		sizeSmaller: getSizeSmallerDefaultValue(query),
+		sizeLarger: getSizeLargerDefaultValue(query),
+		receivedFrom: getReceivedFromDefaultValue(query),
+		sentTo: getSentToDefaultValue(query),
+		tagInput: getTagInQueryDefaultValue(query),
+		folderInput: getFolderInQueryDefaultValue(query),
+		isSharedFolderIncluded
+	};
 }

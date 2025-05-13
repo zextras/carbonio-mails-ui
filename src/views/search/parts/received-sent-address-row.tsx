@@ -7,38 +7,13 @@ import React from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
-import { replace } from 'lodash';
 import { Controller, useFormContext } from 'react-hook-form';
 
-import { CONTACT_TYPES } from '../../../carbonio-ui-commons/integrations/constants';
 import { useContactInput } from '../../../carbonio-ui-commons/integrations/hooks';
-import { ContactInputItem } from '../../../carbonio-ui-commons/integrations/types';
-import { FormValues, Query, SearchQueryItem } from '../types/types';
+import { FormValues } from '../types/types';
 
-function toContactInput(item: SearchQueryItem): ContactInputItem {
-	const email = item.value ?? '';
-	return {
-		id: email,
-		label: email,
-		value: {
-			id: email,
-			email,
-			type: CONTACT_TYPES.CONTACT
-		}
-	};
-}
-export const ReceivedSentAddressRow = ({ query }: { query: Query }): React.JSX.Element => {
+export const ReceivedSentAddressRow = (): React.JSX.Element => {
 	const { control } = useFormContext<FormValues>();
-	const sentToInQuery = query
-		.filter((queryItem) => /^to:*/.test(queryItem.label))
-		.map((queryItem) => ({ ...queryItem, label: replace(queryItem.label, 'to:', '') }))
-		.map((item) => toContactInput(item));
-
-	const receivedFromInQuery = query
-		.filter((queryItem) => /^from:*/.test(queryItem.label))
-		.map((queryItem) => ({ ...queryItem, label: replace(queryItem.label, 'from:', '') }))
-		.map((item) => toContactInput(item));
-
 	const ContactInput = useContactInput();
 
 	return (
@@ -47,7 +22,6 @@ export const ReceivedSentAddressRow = ({ query }: { query: Query }): React.JSX.E
 				<Controller
 					control={control}
 					name={'receivedFrom'}
-					defaultValue={receivedFromInQuery}
 					render={({ field: { onChange, value } }): React.JSX.Element => (
 						<ContactInput
 							data-testid={'received-from-input'}
@@ -62,7 +36,6 @@ export const ReceivedSentAddressRow = ({ query }: { query: Query }): React.JSX.E
 				<Controller
 					control={control}
 					name={'sentTo'}
-					defaultValue={sentToInQuery}
 					render={({ field: { onChange, value }, fieldState: { error } }): React.JSX.Element => (
 						<ContactInput
 							data-testid={'sent-to-input'}

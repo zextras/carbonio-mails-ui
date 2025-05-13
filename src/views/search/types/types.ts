@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { ChipProps } from '@zextras/carbonio-design-system';
+import { Theme } from '@zextras/carbonio-design-system';
 
 import { ContactInputItem } from '../../../carbonio-ui-commons/integrations/types';
 
@@ -26,10 +26,12 @@ export type KeywordState = Array<{
 	isQueryFilter?: boolean;
 	isGeneric?: boolean;
 	avatarIcon?: string;
-	avatarBackground?: ChipProps['background'];
+	avatarBackground?: string;
 	hasError?: boolean;
 	error?: boolean;
 	fullName?: string;
+	maxWidth?: string;
+	background?: keyof Theme['palette'];
 }>;
 
 export type FormValues = {

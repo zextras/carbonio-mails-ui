@@ -7,7 +7,6 @@ import React, { useCallback, useMemo } from 'react';
 
 import { Container, ChipInput } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
-import { filter, map } from 'lodash';
 import { Controller, useFormContext } from 'react-hook-form';
 
 import {
@@ -17,18 +16,11 @@ import {
 	EmailStatusItemsConstantProps
 } from '../../../constants';
 import type { ChipOnAdd, ChipOnAddItem, ChipOnAddProps } from '../../../types';
-import { FormValues, Query } from '../types/types';
+import { FormValues } from '../types/types';
 
-export const AttachmentTypeEmailStatusRow = ({ query }: { query: Query }): React.JSX.Element => {
+export const AttachmentTypeEmailStatusRow = (): React.JSX.Element => {
 	const { control } = useFormContext<FormValues>();
-	const attachmentTypeInQuery = map(
-		filter(query, (v) => /^Attachment:/.test(v.label)),
-		(q) => ({ ...q })
-	);
-	const emailStatusInQuery = map(
-		filter(query, (v) => /^Is:/.test(v.label)),
-		(q) => ({ ...q })
-	);
+
 	const attachmentTypeItems = attachmentTypeItemsConstant(t);
 	const emailStatusItems = emailStatusItemsConstant(t);
 	const attachmentTypeOptions = useMemo<AttachmentTypeItemsConstantProps[]>(
@@ -97,7 +89,6 @@ export const AttachmentTypeEmailStatusRow = ({ query }: { query: Query }): React
 			<Container padding={{ right: 'extrasmall' }} maxWidth="50%">
 				<Controller
 					control={control}
-					defaultValue={attachmentTypeInQuery}
 					name={'attachmentType'}
 					render={({ field: { onChange, value } }): React.JSX.Element => (
 						<ChipInput
@@ -119,7 +110,6 @@ export const AttachmentTypeEmailStatusRow = ({ query }: { query: Query }): React
 			<Container padding={{ left: 'extrasmall' }} maxWidth="50%">
 				<Controller
 					control={control}
-					defaultValue={emailStatusInQuery}
 					name={'emailStatus'}
 					render={({ field: { onChange, value } }): React.JSX.Element => (
 						<ChipInput

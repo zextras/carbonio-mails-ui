@@ -3,45 +3,17 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { ReactElement, useCallback, useMemo } from 'react';
+import React, { ReactElement, useCallback } from 'react';
 
 import { Container, ChipInput } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
-import { filter, includes, map } from 'lodash';
 import { Controller, useFormContext } from 'react-hook-form';
 
-import { FormValues, Query } from '../types/types';
+import { FormValues } from '../types/types';
 
-export const SubjectKeywordRow = ({ query }: { query: Query }): ReactElement => {
+export const SubjectKeywordRow = (): ReactElement => {
 	const { control } = useFormContext<FormValues>();
-	const queryArray = useMemo(() => ['has:attachment', 'is:flagged', 'is:unread'], []);
-	const otherKeywords = map(
-		filter(
-			query,
-			(v) =>
-				!includes(queryArray, v.label) &&
-				!/^Subject:/.test(v.label) &&
-				!/^Attachment:/.test(v.label) &&
-				!/^Is:/.test(v.label) &&
-				!/^Smaller:/.test(v.label) &&
-				!/^Larger:/.test(v.label) &&
-				!/^subject:/.test(v.label) &&
-				!/^in:/.test(v.label) &&
-				!/^before:/.test(v.label) &&
-				!/^after:/.test(v.label) &&
-				!/^date:/.test(v.label) &&
-				!/^tag:/.test(v.label) &&
-				!/^to:/.test(v.label) &&
-				!/^from:/.test(v.label) &&
-				!v.isQueryFilter
-		),
-		(q) => ({ ...q, hasAvatar: false })
-	);
 
-	const subjectsInQuery = map(
-		filter(query, (v) => /^Subject:/.test(v.label)),
-		(q) => ({ ...q, hasAvatar: false })
-	);
 	const keywordChipOnAdd = useCallback(
 		(label: unknown) => ({
 			label: label as string,
@@ -80,7 +52,6 @@ export const SubjectKeywordRow = ({ query }: { query: Query }): ReactElement => 
 				<Controller
 					control={control}
 					name={'keywordInput'}
-					defaultValue={otherKeywords}
 					render={({ field: { onChange, value } }): React.JSX.Element => (
 						<ChipInput
 							placeholder={t('label.keywords', 'Keywords')}
@@ -101,7 +72,6 @@ export const SubjectKeywordRow = ({ query }: { query: Query }): ReactElement => 
 				<Controller
 					control={control}
 					name={'subjectInput'}
-					defaultValue={subjectsInQuery}
 					render={({ field: { onChange, value } }): React.JSX.Element => (
 						<ChipInput
 							placeholder={subjectPlaceholder}

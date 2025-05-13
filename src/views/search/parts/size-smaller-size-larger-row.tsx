@@ -7,12 +7,11 @@ import React, { useCallback, useMemo, useState } from 'react';
 
 import { Container, ChipInput, ChipItem } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
-import { filter, map } from 'lodash';
 import { Controller, useFormContext } from 'react-hook-form';
 
-import { FormValues, Query } from '../types/types';
+import { FormValues } from '../types/types';
 
-export const SizeLargerSizeSmallerRow = ({ query }: { query: Query }): React.JSX.Element => {
+export const SizeLargerSizeSmallerRow = (): React.JSX.Element => {
 	const { control } = useFormContext<FormValues>();
 	const [isInvalidSmallSize, setIsInvalidSmallSize] = useState(false);
 	const [isInvalidLargeSize, setIsInvalidLargeSize] = useState(false);
@@ -90,22 +89,13 @@ export const SizeLargerSizeSmallerRow = ({ query }: { query: Query }): React.JSX
 	);
 
 	const sizeLargerPlaceholder = useMemo(() => t('label.size_larger', 'Size larger than (MB)'), []);
-	const sizeSmallerInQuery: Array<ChipItem<string> & { id: string }> = map(
-		filter(query, (v) => /^Smaller:/.test(v.label)),
-		(q) => ({ ...q, id: '' })
-	);
 
-	const sizeLargerInQuery: ChipItem[] = map(
-		filter(query, (v) => /^Larger:/.test(v.label)),
-		(q) => ({ ...q })
-	);
 	return (
 		<Container padding={{ bottom: 'small', top: 'medium' }} orientation="horizontal">
 			<Container padding={{ right: 'extrasmall' }}>
 				<Controller
 					control={control}
 					name={'sizeSmaller'}
-					defaultValue={sizeSmallerInQuery}
 					render={({ field: { onChange, value }, fieldState: { error } }): React.JSX.Element => (
 						<ChipInput
 							placeholder={sizeSmallerPlaceholder}
@@ -128,7 +118,6 @@ export const SizeLargerSizeSmallerRow = ({ query }: { query: Query }): React.JSX
 				<Controller
 					control={control}
 					name={'sizeLarger'}
-					defaultValue={sizeLargerInQuery}
 					render={({ field: { onChange, value }, fieldState: { error } }): React.JSX.Element => (
 						<ChipInput
 							placeholder={sizeLargerPlaceholder}

@@ -16,7 +16,7 @@ import {
 	Tooltip
 } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
-import { filter, map } from 'lodash';
+import { map } from 'lodash';
 import { Controller, useFormContext } from 'react-hook-form';
 
 import { ZIMBRA_STANDARD_COLORS } from '../../../carbonio-ui-commons/constants/utils';
@@ -26,9 +26,9 @@ import { isSharedAccountFolder } from '../../../helpers/folders';
 import type { ChipOnAdd, Folder } from '../../../types';
 import { SelectFolderModal } from '../../../ui-actions/modals/select-folder-modal';
 import { getFolderIconColor } from '../../sidebar/utils';
-import { FormValues, Query } from '../types/types';
+import { FormValues } from '../types/types';
 
-export const TagFolderRow = ({ query }: { query: Query }): React.JSX.Element => {
+export const TagFolderRow = (): React.JSX.Element => {
 	const { control, setValue } = useFormContext<FormValues>();
 	const tagOptions: Array<Tag & { label: string; customComponent: React.JSX.Element }> = useMemo(
 		() =>
@@ -55,10 +55,6 @@ export const TagFolderRow = ({ query }: { query: Query }): React.JSX.Element => 
 		[]
 	);
 	const [open, setOpen] = useState(false);
-	const tagInQuery = map(
-		filter(query, (v) => /^tag:/.test(v.label)),
-		(q) => ({ ...q, hasAvatar: true, icon: 'TagOutline' })
-	);
 	const onClose = useCallback(() => setOpen(false), []);
 	const openFolderModal = useCallback(() => setOpen(true), []);
 
@@ -104,14 +100,6 @@ export const TagFolderRow = ({ query }: { query: Query }): React.JSX.Element => 
 		},
 		[chipOnAdd, tagOptions]
 	);
-	const folderInQuery = map(
-		filter(query, (v) => /^in:/.test(v.label)),
-		(q) => ({
-			...q,
-			hasAvatar: true,
-			icon: 'FolderOutline'
-		})
-	);
 
 	const headerTitle = t('share.is_contained_in', 'Is contained in');
 	const actionLabel = t('label.choose_folder', 'Choose folder');
@@ -129,6 +117,7 @@ export const TagFolderRow = ({ query }: { query: Query }): React.JSX.Element => 
 			folderDestination &&
 				setValue('folderInput', [
 					{
+						id: '',
 						label: `in:${folderDestination?.absFolderPath}`,
 						hasAvatar: true,
 						maxWidth: '12.5rem',
@@ -152,7 +141,6 @@ export const TagFolderRow = ({ query }: { query: Query }): React.JSX.Element => 
 			<Container padding={{ right: 'extrasmall' }} maxWidth="50%">
 				<Controller
 					control={control}
-					defaultValue={tagInQuery}
 					name={'tagInput'}
 					render={({ field: { onChange, value } }): React.JSX.Element => (
 						<ChipInput
@@ -173,7 +161,6 @@ export const TagFolderRow = ({ query }: { query: Query }): React.JSX.Element => 
 			<Container padding={{ left: 'extrasmall' }} maxWidth="50%">
 				<Controller
 					control={control}
-					defaultValue={folderInQuery}
 					name={'folderInput'}
 					render={({ field: { onChange, value } }): React.JSX.Element => (
 						<ChipInput

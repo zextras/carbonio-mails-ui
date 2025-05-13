@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { CustomModal, ModalHeader, Divider, ModalFooter } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
@@ -17,7 +17,7 @@ import { SubjectKeywordRow } from './parts/subject-keyword-row';
 import { TagFolderRow } from './parts/tag-folder-row';
 import { ToggleFilters } from './parts/toggle-filters';
 import { AdvancedFilterModalProps, FormValues } from './types/types';
-import { getQueryToBe } from './utils';
+import { getAdvancedFiltersDefaultValues, getQueryToBe } from './utils';
 import { ScrollableContainer } from '../../commons/scrollable-container';
 
 export const AdvancedFilterModal = ({
@@ -31,7 +31,13 @@ export const AdvancedFilterModal = ({
 	const [isSharedFolderIncluded, setIsSharedFolderIncluded] = useState(
 		isSharedFolderIncludedInitialValue
 	);
-	const methods = useForm<FormValues>();
+
+	const defaultValues: FormValues = useMemo(
+		() => getAdvancedFiltersDefaultValues(query, isSharedFolderIncludedInitialValue),
+		[isSharedFolderIncludedInitialValue, query]
+	);
+
+	const methods = useForm<FormValues>({ defaultValues });
 	const { watch, setValue } = methods;
 
 	const formValues = watch();
@@ -71,6 +77,10 @@ export const AdvancedFilterModal = ({
 		};
 	}, [onSearchConfirm, queryToBe, isSharedFolderIncluded, onClose]);
 
+	useEffect(() => {
+		methods.reset(defaultValues);
+	}, [defaultValues, methods, query]);
+
 	if (!open) return <></>;
 
 	return (
@@ -87,13 +97,13 @@ export const AdvancedFilterModal = ({
 				mainAlignment={'flex-start'}
 			>
 				<FormProvider {...methods}>
-					<ToggleFilters query={query} />
-					<SubjectKeywordRow query={query} />
-					<ReceivedSentAddressRow query={query} />
-					<AttachmentTypeEmailStatusRow query={query} />
-					<SizeLargerSizeSmallerRow query={query} />
-					<SendReceivedDateRow query={query} />
-					<TagFolderRow query={query} />
+					<ToggleFilters />
+					<SubjectKeywordRow />
+					<ReceivedSentAddressRow />
+					<AttachmentTypeEmailStatusRow />
+					<SizeLargerSizeSmallerRow />
+					<SendReceivedDateRow />
+					<TagFolderRow />
 				</FormProvider>
 			</ScrollableContainer>
 			<Divider />

@@ -3,19 +3,16 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { ReactElement } from 'react';
+import React from 'react';
 
 import { Container, Switch, Text, Padding } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import { Controller, useFormContext } from 'react-hook-form';
 
-import { FormValues, Query } from '../types/types';
+import { FormValues } from '../types/types';
 
-export const ToggleFilters = ({ query }: { query: Query }): ReactElement => {
+export const ToggleFilters = (): React.JSX.Element => {
 	const { control } = useFormContext<FormValues>();
-	const hasAttachment = query.some((item) => item.label === 'has:attachment');
-	const isUnread = query.some((item) => item.label === 'is:unread');
-	const isFlagged = query.some((item) => item.label === 'is:flagged');
 	return (
 		<>
 			<Container orientation="horizontal" mainAlignment="center" crossAlignment="center">
@@ -24,7 +21,6 @@ export const ToggleFilters = ({ query }: { query: Query }): ReactElement => {
 						<Padding right="small">
 							<Controller
 								control={control}
-								defaultValue={hasAttachment}
 								name={'hasAttachment'}
 								render={({ field: { onChange, value } }): React.JSX.Element => (
 									<Switch
@@ -53,7 +49,6 @@ export const ToggleFilters = ({ query }: { query: Query }): ReactElement => {
 						<Padding right="small">
 							<Controller
 								control={control}
-								defaultValue={isFlagged}
 								name={'isFlagged'}
 								render={({ field: { onChange, value } }): React.JSX.Element => (
 									<Switch
@@ -87,7 +82,6 @@ export const ToggleFilters = ({ query }: { query: Query }): ReactElement => {
 							<Controller
 								control={control}
 								name={'isUnread'}
-								defaultValue={isUnread}
 								render={({ field: { onChange, value } }): React.JSX.Element => (
 									<Switch
 										data-testid="isUnreadToggle"

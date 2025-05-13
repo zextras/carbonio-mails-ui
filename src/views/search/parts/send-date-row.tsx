@@ -9,24 +9,19 @@ import { Container, DateTimePicker } from '@zextras/carbonio-design-system';
 import { t, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { Controller, useFormContext } from 'react-hook-form';
 
-import { extractDateFieldFromQuery } from '../extract-date-field-from-query';
-import { FormValues, Query } from '../types/types';
+import { FormValues } from '../types/types';
 
 const PICKER_DATE_FORMAT = 'P';
 
-export const SendReceivedDateRow = ({ query }: { query: Query }): React.JSX.Element => {
+export const SendReceivedDateRow = (): React.JSX.Element => {
 	const { control } = useFormContext<FormValues>();
 	const { zimbraPrefLocale: prefLocale } = useUserSettings().prefs;
-	const sentBefore = extractDateFieldFromQuery('before', query);
-	const sentAfter = extractDateFieldFromQuery('after', query);
-	const sentOn = extractDateFieldFromQuery('on', query);
 	return (
 		<Container padding={{ bottom: 'small', top: 'medium' }} orientation="horizontal">
 			<Container padding={{ right: 'extrasmall' }}>
 				<Controller
 					control={control}
 					name={'sentBefore'}
-					defaultValue={sentBefore}
 					render={({ field: { onChange, value } }): React.JSX.Element => (
 						<DateTimePicker
 							width="fill"
@@ -48,7 +43,6 @@ export const SendReceivedDateRow = ({ query }: { query: Query }): React.JSX.Elem
 				<Controller
 					control={control}
 					name={'sentAfter'}
-					defaultValue={sentAfter}
 					render={({ field: { onChange, value } }): React.JSX.Element => (
 						<DateTimePicker
 							width="fill"
@@ -70,7 +64,6 @@ export const SendReceivedDateRow = ({ query }: { query: Query }): React.JSX.Elem
 				<Controller
 					control={control}
 					name={'sentOn'}
-					defaultValue={sentOn}
 					render={({ field: { onChange, value } }): React.JSX.Element => (
 						<DateTimePicker
 							width="fill"
