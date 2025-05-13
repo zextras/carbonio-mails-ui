@@ -225,15 +225,15 @@ export function getQueryToBe(formValues: FormValues): Query {
 	);
 }
 
-export function getAttachmentTypeDefaultValue(query: Query): KeywordState {
+function getAttachmentTypeDefaultValue(query: Query): KeywordState {
 	return filter(query, (v) => /^Attachment:/.test(v.label));
 }
 
-export function getSubjectInputDefaultValue(query: Query): KeywordState {
+function getSubjectInputDefaultValue(query: Query): KeywordState {
 	return filter(query, (v) => /^Subject:/.test(v.label));
 }
 
-export function getOtherKeywordsDefaultValue(query: Query): KeywordState {
+function getOtherKeywordsDefaultValue(query: Query): KeywordState {
 	const queryArray = ['has:attachment', 'is:flagged', 'is:unread'];
 	return map(
 		filter(
@@ -272,21 +272,21 @@ function toContactInput(item: SearchQueryItem): ContactInputItem {
 	};
 }
 
-export function getSentToDefaultValue(query: Query): Array<ContactInputItem> {
+function getSentToDefaultValue(query: Query): Array<ContactInputItem> {
 	return query
 		.filter((queryItem) => /^to:*/.test(queryItem.label))
 		.map((queryItem) => ({ ...queryItem, label: replace(queryItem.label, 'to:', '') }))
 		.map((item) => toContactInput(item));
 }
 
-export function getReceivedFromDefaultValue(query: Query): Array<ContactInputItem> {
+function getReceivedFromDefaultValue(query: Query): Array<ContactInputItem> {
 	return query
 		.filter((queryItem) => /^from:*/.test(queryItem.label))
 		.map((queryItem) => ({ ...queryItem, label: replace(queryItem.label, 'from:', '') }))
 		.map((item) => toContactInput(item));
 }
 
-export function getSizeSmallerDefaultValue(
+function getSizeSmallerDefaultValue(
 	query: Query
 ): { id: string; label: string; value?: string; isGeneric?: boolean; isQueryFilter?: boolean }[] {
 	return map(
@@ -295,17 +295,18 @@ export function getSizeSmallerDefaultValue(
 	);
 }
 
-export function getSizeLargerDefaultValue(query: Query): SearchQueryItem[] {
+function getSizeLargerDefaultValue(query: Query): SearchQueryItem[] {
 	return filter(query, (v) => /^Larger:/.test(v.label));
 }
-export function getTagInQueryDefaultValue(query: Query): KeywordState {
+
+function getTagInQueryDefaultValue(query: Query): KeywordState {
 	return map(
 		filter(query, (v) => /^tag:/.test(v.label)),
 		(q) => ({ ...q, hasAvatar: true, icon: 'TagOutline' })
 	);
 }
 
-export function getFolderInQueryDefaultValue(query: Query): KeywordState {
+function getFolderInQueryDefaultValue(query: Query): KeywordState {
 	return map(
 		filter(query, (v) => /^in:/.test(v.label)),
 		(q) => ({
@@ -315,9 +316,11 @@ export function getFolderInQueryDefaultValue(query: Query): KeywordState {
 		})
 	);
 }
-export function getEmailStatusDefaultValue(query: Query): KeywordState {
+
+function getEmailStatusDefaultValue(query: Query): KeywordState {
 	return filter(query, (v) => /^Is:/.test(v.label));
 }
+
 export function getAdvancedFiltersDefaultValues(
 	query: Query,
 	isSharedFolderIncluded: boolean
