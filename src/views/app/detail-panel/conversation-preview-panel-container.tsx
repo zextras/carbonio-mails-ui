@@ -84,7 +84,7 @@ export const ConversationPreviewPanelContainer = (): React.JSX.Element => {
 					)}
 					{conversationStatus === API_REQUEST_STATUS.pending && (
 						<Spinner
-							text={t('text.loading_conversation', 'Loading conversation, please wait...')}
+							text={t('displayer.loading_conversation', 'Loading conversation, please wait...')}
 						/>
 					)}
 				</>

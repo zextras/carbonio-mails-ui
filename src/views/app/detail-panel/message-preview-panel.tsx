@@ -51,7 +51,7 @@ export const MessagePreviewPanel: FC<{
 						mainAlignment="center"
 						crossAlignment="center"
 					>
-						<Spinner text={t('text.loading_message', 'Loading message, please wait...')} />
+						<Spinner text={t('displayer.loading_message', 'Loading message, please wait...')} />
 					</Container>
 				)}
 			</Container>
