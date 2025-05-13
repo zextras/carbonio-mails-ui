@@ -11,6 +11,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 
 import { ConversationPreviewPanel } from './conversation-preview-panel';
 import { PreviewPanelHeader } from './preview/preview-panel-header';
+import { Spinner } from '../../../assets/spinner';
 import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
 import { API_REQUEST_STATUS } from '../../../constants';
 import { isFocusModeMailView } from '../../../helpers/external-tabs';
@@ -78,6 +79,9 @@ export const ConversationPreviewPanelContainer = (): React.JSX.Element => {
 
 					{(conversationStatus === API_REQUEST_STATUS.error || conversationStatus === null) && (
 						<></>
+					)}
+					{conversationStatus === API_REQUEST_STATUS.pending && (
+						<Spinner text={'Loading message, please wait...'} />
 					)}
 				</>
 			)}
