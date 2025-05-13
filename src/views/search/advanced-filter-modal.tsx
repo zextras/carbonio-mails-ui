@@ -38,7 +38,7 @@ export const AdvancedFilterModal = ({
 	);
 
 	const methods = useForm<FormValues>({ defaultValues });
-	const { watch, setValue } = methods;
+	const { watch, setValue, control } = methods;
 
 	const formValues = watch();
 	const resetFilters = useCallback(() => {
@@ -98,7 +98,7 @@ export const AdvancedFilterModal = ({
 			>
 				<FormProvider {...methods}>
 					<ToggleFilters />
-					<SubjectKeywordRow />
+					<SubjectKeywordRow control={control} />
 					<ReceivedSentAddressRow />
 					<AttachmentTypeEmailStatusRow />
 					<SizeLargerSizeSmallerRow />

@@ -7,13 +7,11 @@ import React, { ReactElement, useCallback } from 'react';
 
 import { Container, ChipInput } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
-import { Controller, useFormContext } from 'react-hook-form';
+import { Control, Controller } from 'react-hook-form';
 
 import { FormValues } from '../types/types';
 
-export const SubjectKeywordRow = (): ReactElement => {
-	const { control } = useFormContext<FormValues>();
-
+export const SubjectKeywordRow = ({ control }: { control: Control<FormValues> }): ReactElement => {
 	const keywordChipOnAdd = useCallback(
 		(label: unknown) => ({
 			label: label as string,
