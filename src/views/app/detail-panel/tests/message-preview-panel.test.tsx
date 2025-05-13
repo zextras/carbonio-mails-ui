@@ -33,6 +33,15 @@ describe('MessagePreviewPanel', () => {
 		expect(screen.getByTestId('spinner')).toBeInTheDocument();
 	});
 
+	it('renders text when message is loading', () => {
+		updateMessageStatus('1', API_REQUEST_STATUS.pending);
+		mockUseCompleteMessageOrFetch.mockReturnValue({ message: null });
+
+		setupTest(<MessagePreviewPanel folderId="1" message={undefined} isMessageLoaded={false} />);
+
+		expect(screen.getByText(/Loading message, please wait.../i)).toBeVisible();
+	});
+
 	it('renders message preview when message is complete', () => {
 		const message = generateMessage();
 		updateMessageStatus('1', API_REQUEST_STATUS.fulfilled);

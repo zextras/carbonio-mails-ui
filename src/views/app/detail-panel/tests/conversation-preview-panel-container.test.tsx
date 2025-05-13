@@ -5,10 +5,11 @@
  */
 import React from 'react';
 
-import { act } from '@testing-library/react';
+import { act, screen } from '@testing-library/react';
 import * as shell from '@zextras/carbonio-shell-ui';
 
 import { setupTest } from '../../../../carbonio-ui-commons/test/test-setup';
+import { updateConversationStatus } from '../../../../store/emails/store';
 import { populateConversationInEmailStore } from '../../../../tests/generators/generateConversation';
 import { ConversationPreviewPanelContainer } from '../conversation-preview-panel-container';
 
@@ -17,6 +18,19 @@ describe('ConversationPreviewPanelContainer', () => {
 
 	beforeEach(() => {
 		document.title = defaultTitle;
+	});
+
+	it('should show a loading message and spinner if the conversation is not ready', async () => {
+		const { conversation: mockedConversation, messages: mockedMessages } = await act(() =>
+			populateConversationInEmailStore()
+		);
+		await act(() => updateConversationStatus(mockedConversation.id, 'pending'));
+		setupTest(<ConversationPreviewPanelContainer />, {
+			initialEntries: [`/folder/${mockedMessages[0].parent}/conversation/${mockedConversation.id}`],
+			path: '/folder/:folderId/conversation/:conversationId'
+		});
+
+		expect(screen.getByText(/Loading conversation, please wait.../i)).toBeVisible();
 	});
 
 	it('should not set the window title if the focus mode is disabled', async () => {
