@@ -7,11 +7,13 @@ import React, { useCallback, useMemo, useState } from 'react';
 
 import { Container, ChipInput, ChipItem } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
-import { Controller, useFormContext } from 'react-hook-form';
+import { Controller } from 'react-hook-form';
 
-import { FormValues, FormValuesControlProps } from '../types/types';
+import { FormValuesControlProps } from '../types/types';
 
-export const SizeLargerSizeSmallerRow = ({ control }: FormValuesControlProps): React.JSX.Element => {
+export const SizeLargerSizeSmallerRow = ({
+	control
+}: FormValuesControlProps): React.JSX.Element => {
 	const [isInvalidSmallSize, setIsInvalidSmallSize] = useState(false);
 	const [isInvalidLargeSize, setIsInvalidLargeSize] = useState(false);
 	const errorLabel = useMemo(() => t('search.size_error', 'Only numbers are allowed'), []);
