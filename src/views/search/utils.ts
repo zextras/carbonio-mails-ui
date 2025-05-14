@@ -212,34 +212,34 @@ export function getQueryToBe(formValues: FormValues): Query {
 }
 
 function getAttachmentTypeDefaultValue(query: Query): KeywordState {
-	return filter(query, (v) => /^Attachment:/.test(v.label));
+	return filter(query, (queryItem) => queryItem.label.startsWith('Attachment:'));
 }
 
 function getSubjectInputDefaultValue(query: Query): KeywordState {
-	return filter(query, (v) => /^Subject:/.test(v.label));
+	return filter(query, (queryItem) => queryItem.label.startsWith('Subject:'));
 }
-
 function getOtherKeywordsDefaultValue(query: Query): KeywordState {
 	const queryArray = ['has:attachment', 'is:flagged', 'is:unread'];
+
 	return map(
 		filter(
 			query,
-			(v) =>
-				!includes(queryArray, v.label) &&
-				!/^Subject:/.test(v.label) &&
-				!/^Attachment:/.test(v.label) &&
-				!/^Is:/.test(v.label) &&
-				!/^Smaller:/.test(v.label) &&
-				!/^Larger:/.test(v.label) &&
-				!/^subject:/.test(v.label) &&
-				!/^in:/.test(v.label) &&
-				!/^before:/.test(v.label) &&
-				!/^after:/.test(v.label) &&
-				!/^date:/.test(v.label) &&
-				!/^tag:/.test(v.label) &&
-				!/^to:/.test(v.label) &&
-				!/^from:/.test(v.label) &&
-				!v.isQueryFilter
+			(queryItem) =>
+				!includes(queryArray, queryItem.label) &&
+				!queryItem.label.startsWith('Subject:') &&
+				!queryItem.label.startsWith('Attachment:') &&
+				!queryItem.label.startsWith('Is:') &&
+				!queryItem.label.startsWith('Smaller:') &&
+				!queryItem.label.startsWith('Larger:') &&
+				!queryItem.label.startsWith('subject:') &&
+				!queryItem.label.startsWith('in:') &&
+				!queryItem.label.startsWith('before:') &&
+				!queryItem.label.startsWith('after:') &&
+				!queryItem.label.startsWith('date:') &&
+				!queryItem.label.startsWith('tag:') &&
+				!queryItem.label.startsWith('to:') &&
+				!queryItem.label.startsWith('from:') &&
+				!queryItem.isQueryFilter
 		),
 		(q) => ({ ...q, hasAvatar: false })
 	);
