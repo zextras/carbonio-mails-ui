@@ -12,7 +12,6 @@ import {
 	useUserAccounts,
 	useUserSettings
 } from '@zextras/carbonio-shell-ui';
-import { filter } from 'lodash';
 
 import { MailMessageRenderer } from '../../../../../commons/mail-message-renderer/mail-message-renderer';
 import { isFocusModeMailView } from '../../../../../helpers/external-tabs';
@@ -84,34 +83,7 @@ export const MailPreviewContent = ({
 		setShowModal(false);
 	}, []);
 	const loggedInUser = useMemo(() => accounts[0]?.name, [accounts]);
-	const isAttendee = useMemo(
-		() => message.invite?.[0]?.comp?.[0]?.or?.a !== loggedInUser,
-		[loggedInUser, message]
-	);
-
-	const { inviteId, participationStatus } = {
-		/*
-		 * Compose the invite ID
-		 * The invite ID is composed by the following fields:
-		 * - the appointment ID (if present)
-		 * - the message ID
-		 * If the 2 fields are both present they will be separated by a hyphen otherwise only the message ID will be used
-		 *
-		 * The appointment ID is present only if the appointment was automatically added to the calendar (following the
-		 * user's preferences)
-		 */
-		inviteId: showAppointmentInvite
-			? message.invite[0].comp[0].apptId
-				? `${message.invite[0].comp[0].apptId}-${message.id}`
-				: message.id
-			: '',
-
-		// Compose the participation status
-		participationStatus:
-			showAppointmentInvite && message.invite[0].replies
-				? message.invite[0].replies[0].reply[0].ptst
-				: ''
-	};
+	useMemo(() => message.invite?.[0]?.comp?.[0]?.or?.a !== loggedInUser, [loggedInUser, message]);
 	return (
 		<Collapse
 			open={isMailPreviewOpen}
@@ -145,10 +117,7 @@ export const MailPreviewContent = ({
 					<Padding height="100%" width="100%" vertical="medium" style={{ overflow: 'auto' }}>
 						{showAppointmentInvite && (
 							<Container width="100%">
-								<InviteResponse
-									mailMsg={message}
-									moveToTrash={moveToTrash}
-								/>
+								<InviteResponse mailMsg={message} moveToTrash={moveToTrash} />
 							</Container>
 						)}
 						{!showAppointmentInvite && showShareInvite && (
