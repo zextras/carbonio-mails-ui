@@ -7,7 +7,7 @@ import React from 'react';
 
 import { Container, DateTimePicker } from '@zextras/carbonio-design-system';
 import { t, useUserSettings } from '@zextras/carbonio-shell-ui';
-import { Controller, useFormContext } from 'react-hook-form';
+import { Controller } from 'react-hook-form';
 
 import { FormValuesControlProps } from '../types/types';
 
