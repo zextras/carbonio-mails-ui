@@ -15,28 +15,6 @@ import { FormValues, KeywordState, Query, SearchQueryItem } from './types/types'
 import { CONTACT_TYPES } from '../../carbonio-ui-commons/integrations/constants';
 import { ContactInputItem } from '../../carbonio-ui-commons/integrations/types';
 
-function getRegex(prefix?: string): RegExp {
-	return new RegExp(`^${prefix}:.*`, 'i');
-}
-
-function formatWithPrefix(resultString: string, prefix: string): string {
-	const regex = getRegex(prefix);
-	return regex.test(resultString) ? resultString : `${prefix}:${resultString}`;
-}
-
-export function getChipString(
-	{ label, fullName }: { label?: string; fullName?: string },
-	prefix: string
-): string {
-	if (fullName) {
-		return formatWithPrefix(fullName, prefix);
-	}
-	if (label) {
-		return formatWithPrefix(label, prefix);
-	}
-	return '';
-}
-
 export function updateQueryChips(
 	query: Array<QueryChip>,
 	isInvalidQuery: boolean,
@@ -63,7 +41,7 @@ export function updateQueryChips(
 				_count += 1;
 				return findIconFromChip(q as ChipType);
 			}
-			return { ...q };
+			return q;
 		});
 
 		if (_count > 0) {
@@ -271,16 +249,6 @@ function toContactInput(item: SearchQueryItem): ContactInputItem {
 			type: CONTACT_TYPES.CONTACT
 		}
 	};
-}
-
-function getChipValue(item: { email?: string; fullName?: string }, prefix: string): string {
-	if (item.fullName) {
-		return formatWithPrefix(item.fullName, prefix);
-	}
-	if (item.email) {
-		return formatWithPrefix(item.email, prefix);
-	}
-	return '';
 }
 
 function getSentToDefaultValue(query: Query): Array<ContactInputItem> {
