@@ -12,7 +12,8 @@ import type { GetMsgParameters, GetMsgRequest, GetMsgResponse } from '../types';
 export async function getMsgDecryptSoapApi({
 	msgId,
 	max,
-	smimePassword
+	smimePassword,
+	read = 0
 }: GetMsgParameters): Promise<GetMsgResponse> {
 	return soapFetch<GetMsgRequest, GetMsgResponse>('GetMsg', {
 		_jsns: 'urn:zimbraMail',
@@ -20,6 +21,7 @@ export async function getMsgDecryptSoapApi({
 			html: 1,
 			id: msgId,
 			needExp: 1,
+			read,
 			header: map(MAIL_VERIFICATION_HEADERS, (header) => ({ n: header })),
 			...{ max }
 		},

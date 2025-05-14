@@ -6,7 +6,7 @@
 import React, { useCallback } from 'react';
 
 import { Container, Link, Padding, useModal, useSnackbar } from '@zextras/carbonio-design-system';
-import { useIsCarbonioCE } from '@zextras/carbonio-shell-ui';
+import { useIsCarbonioCE, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { useTranslation } from 'react-i18next';
 
 import { DistributionListIcon } from './distribution-list-icon';
@@ -81,8 +81,8 @@ export const MailInfoBlock = ({ msg }: MailInfoProps): React.JSX.Element | null 
 	);
 
 	const decryptMsgAction = useCallback(
-		(msgId: string, password: string) => {
-			getMessageDecryptEmailStoreAction(msgId, password).then((response) => {
+		(msgId: string, password: string, read: 0 | 1) => {
+			getMessageDecryptEmailStoreAction(msgId, password, read).then((response) => {
 				if (!response) {
 					createSnackbar({
 						key: `unable-to-decrypt`,
@@ -98,11 +98,12 @@ export const MailInfoBlock = ({ msg }: MailInfoProps): React.JSX.Element | null 
 		[createSnackbar, t]
 	);
 
+	const zimbraPrefMarkMsgRead = useUserSettings()?.prefs?.zimbraPrefMarkMsgRead !== '-1';
 	const dencryptMessage = useCallback(
 		(event: React.MouseEvent): void => {
 			event.stopPropagation();
 			if (smimePassword !== '') {
-				decryptMsgAction(msg.id, smimePassword);
+				decryptMsgAction(msg.id, smimePassword, zimbraPrefMarkMsgRead ? 1 : 0);
 			} else {
 				checkExistEncryptionPassword().then((res) => {
 					if ('data' in res) {
@@ -114,7 +115,9 @@ export const MailInfoBlock = ({ msg }: MailInfoProps): React.JSX.Element | null 
 								children: (
 									<Container crossAlignment="baseline">
 										<EnterPasswordModal
-											onConfirm={(password): void => decryptMsgAction(msg.id, password)}
+											onConfirm={(password): void =>
+												decryptMsgAction(msg.id, password, zimbraPrefMarkMsgRead ? 1 : 0)
+											}
 											onClose={(): void => closeModal?.(id)}
 											hideReset
 										/>
@@ -139,7 +142,16 @@ export const MailInfoBlock = ({ msg }: MailInfoProps): React.JSX.Element | null 
 				});
 			}
 		},
-		[closeModal, createModal, createSnackbar, decryptMsgAction, msg.id, smimePassword, t]
+		[
+			closeModal,
+			createModal,
+			createSnackbar,
+			decryptMsgAction,
+			msg.id,
+			smimePassword,
+			t,
+			zimbraPrefMarkMsgRead
+		]
 	);
 
 	const showInfoDetails =

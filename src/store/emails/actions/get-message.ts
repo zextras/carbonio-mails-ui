@@ -26,16 +26,25 @@ async function handleRetrieveMessage(
 	apiCall: (id: string) => Promise<GetMsgResponse>
 ): Promise<MailMessage | undefined> {
 	updateMessageStatus(messageId, API_REQUEST_STATUS.pending);
-	const response = await apiCall(messageId).catch(() => {
-		updateMessageStatus(messageId, API_REQUEST_STATUS.error);
-	});
-	if (!response || 'Fault' in response) {
+
+	let response: GetMsgResponse | undefined;
+	try {
+		response = await apiCall(messageId);
+	} catch {
 		updateMessageStatus(messageId, API_REQUEST_STATUS.error);
 		return undefined;
 	}
-	handleGetMsgResponse(response);
+
+	if (!response || 'Fault' in response || !response.m?.length) {
+		updateMessageStatus(messageId, API_REQUEST_STATUS.error);
+		return undefined;
+	}
+
+	const messages = map(response.m, normalizeCompleteMailMessageFromSoap);
+	updateMessages(messages);
 	updateMessageStatus(messageId, API_REQUEST_STATUS.fulfilled);
-	return normalizeMailMessageFromSoap(response.m[0], true) as MailMessage;
+
+	return messages[0];
 }
 
 async function handleDecryptRetrieveMessage(
@@ -63,16 +72,20 @@ async function handleDecryptRetrieveMessage(
 	return normalizeMailMessageFromSoap(response.m[0], true) as MailMessage;
 }
 
-export function getMessageEmailStoreAction(messageId: string): Promise<MailMessage | undefined> {
-	return handleRetrieveMessage(messageId, (id) => getMsgSoapApi({ msgId: id, max: 250_000 }));
+export function getMessageEmailStoreAction(
+	messageId: string,
+	read?: 0 | 1
+): Promise<MailMessage | undefined> {
+	return handleRetrieveMessage(messageId, (id) => getMsgSoapApi({ msgId: id, max: 250_000, read }));
 }
 
 export function getMessageDecryptEmailStoreAction(
 	messageId: string,
-	smimePassword: string
+	smimePassword: string,
+	read?: 0 | 1
 ): Promise<MailMessage | undefined> {
 	return handleDecryptRetrieveMessage(messageId, (id) =>
-		getMsgDecryptSoapApi({ msgId: id, max: 250_000, smimePassword })
+		getMsgDecryptSoapApi({ msgId: id, max: 250_000, smimePassword, read })
 	);
 }
 
