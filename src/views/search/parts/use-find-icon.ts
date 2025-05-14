@@ -4,9 +4,9 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import type { ChipType } from '../../../types';
+import type { SearchChipItem } from '../../../types';
 
-export const findIconFromChip = (chip: ChipType): ChipType => {
+export const findIconFromChip = (chip: SearchChipItem & { label: string }): SearchChipItem => {
 	switch (chip.label) {
 		case 'is:flagged':
 			return {
@@ -64,26 +64,9 @@ export const findIconFromChip = (chip: ChipType): ChipType => {
 				avatarBackground: 'gray1'
 			};
 
-		case chip.label.match(/^before:*/)?.input:
-			return {
-				...chip,
-				hasAvatar: true,
-				value: chip.label,
-				avatarIcon: 'CalendarOutline',
-				isQueryFilter: true,
-				avatarBackground: 'gray1'
-			};
-
 		case chip.label.match(/^after:*/)?.input:
-			return {
-				...chip,
-				hasAvatar: true,
-				value: chip.label,
-				avatarIcon: 'CalendarOutline',
-				isQueryFilter: true,
-				avatarBackground: 'gray1'
-			};
 		case chip.label.match(/^date:*/)?.input:
+		case chip.label.match(/^before:*/)?.input:
 			return {
 				...chip,
 				hasAvatar: true,
