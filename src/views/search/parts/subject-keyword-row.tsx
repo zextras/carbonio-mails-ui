@@ -7,9 +7,9 @@ import React, { ReactElement, useCallback } from 'react';
 
 import { Container, ChipInput } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
-import { Control, Controller } from 'react-hook-form';
+import { Controller } from 'react-hook-form';
 
-import { FormValues, FormValuesControlProps } from '../types/types';
+import { FormValuesControlProps } from '../types/types';
 
 export const SubjectKeywordRow = ({ control }: FormValuesControlProps): ReactElement => {
 	const keywordChipOnAdd = useCallback(
