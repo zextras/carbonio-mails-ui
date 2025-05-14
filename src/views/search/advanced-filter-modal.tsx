@@ -33,8 +33,8 @@ export const AdvancedFilterModal = ({
 	);
 
 	const defaultValues: FormValues = useMemo(
-		() => getAdvancedFiltersDefaultValues(query, isSharedFolderIncludedInitialValue),
-		[isSharedFolderIncludedInitialValue, query]
+		() => getAdvancedFiltersDefaultValues(query, isSharedFolderIncluded),
+		[query, isSharedFolderIncluded]
 	);
 
 	const methods = useForm<FormValues>({ defaultValues });
@@ -56,11 +56,13 @@ export const AdvancedFilterModal = ({
 		setValue('sentTo', []);
 		setValue('attachmentType', []);
 		setValue('emailStatus', []);
-	}, [setValue]);
+		setValue('isSharedFolderIncluded', includeSharedItemsInSearchPref);
+		setIsSharedFolderIncluded(includeSharedItemsInSearchPref);
+	}, [setValue, includeSharedItemsInSearchPref]);
 
 	useEffect(() => {
-		setIsSharedFolderIncluded(isSharedFolderIncludedInitialValue);
-	}, [isSharedFolderIncludedInitialValue]);
+		setIsSharedFolderIncluded(formValues.isSharedFolderIncluded);
+	}, [formValues.isSharedFolderIncluded]);
 
 	const queryToBe = getQueryToBe(formValues);
 
