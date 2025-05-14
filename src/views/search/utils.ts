@@ -213,17 +213,19 @@ export function getQueryToBe(formValues: FormValues): Query {
 		sizeSmaller,
 		receivedFrom.map((item) => ({
 			...item,
-			id: '',
+			id: item.value.email,
 			label: `from:${item.value.email}`,
+			actions: [],
 			value: item.value.email,
 			avatarBackground: item.background,
 			error: false
 		})),
 		sentTo.map((item) => ({
 			...item,
-			id: '',
+			id: item.value.email,
 			label: `to:${item.value.email}`,
 			value: item.value.email,
+			actions: [],
 			avatarBackground: item.background,
 			error: false
 		}))
