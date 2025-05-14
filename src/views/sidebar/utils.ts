@@ -5,6 +5,7 @@
  */
 import { type AccordionItemType } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
+import { useTranslation } from 'react-i18next';
 
 import { ROOT_NAME, ZIMBRA_STANDARD_COLORS } from '../../carbonio-ui-commons/constants';
 import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
@@ -57,14 +58,17 @@ export const getFolderIconName = (folder: Folder | AccordionItemType): string | 
 	return 'FolderOutline';
 };
 
-export const translatedSystemFolders = (): Array<string> => [
-	t('folders.inbox', 'Inbox'),
-	t('folders.sent', 'Sent'),
-	t('folders.drafts', 'Drafts'),
-	t('folders.trash', 'Trash'),
-	t('folders.spam', 'Spam'),
-	t('folders.junk', 'Junk')
-];
+export const useTranslatedSystemFolders = (): Array<string> => {
+	const [translate] = useTranslation();
+	return [
+		translate('folders.inbox', 'Inbox'),
+		translate('folders.sent', 'Sent'),
+		translate('folders.drafts', 'Drafts'),
+		translate('folders.trash', 'Trash'),
+		translate('folders.spam', 'Spam'),
+		translate('folders.junk', 'Junk')
+	];
+};
 
 type GetSystemFolderProps = {
 	folderId?: string;

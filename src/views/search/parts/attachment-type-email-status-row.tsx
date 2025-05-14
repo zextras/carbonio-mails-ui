@@ -3,14 +3,23 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
+import React, { FC, ReactElement, useCallback, useMemo } from 'react';
 
 import { Container, ChipInput, ChipItem } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
-import { find } from 'lodash';
 
-import { attachmentTypeItemsConstant, emailStatusItemsConstant } from '../../../constants';
-import type { AttachTypeEmailStatusRowPropType, ChipOnAdd, ChipOnAddProps } from '../../../types';
+import {
+	attachmentTypeItemsConstant,
+	AttachmentTypeItemsConstantProps,
+	emailStatusItemsConstant,
+	EmailStatusItemsConstantProps
+} from '../../../constants';
+import type {
+	AttachTypeEmailStatusRowPropType,
+	ChipOnAdd,
+	ChipOnAddItem,
+	ChipOnAddProps
+} from '../../../types';
 
 const AttachmentTypeEmailStatusRow: FC<AttachTypeEmailStatusRowPropType> = ({
 	compProps
@@ -18,78 +27,29 @@ const AttachmentTypeEmailStatusRow: FC<AttachTypeEmailStatusRowPropType> = ({
 	const { attachmentType, setAttachmentType, emailStatus, setEmailStatus } = compProps;
 	const attachmentTypeItems = attachmentTypeItemsConstant(t);
 	const emailStatusItems = emailStatusItemsConstant(t);
-	const [attachmentTypeOptions, setAttachmentTypeOptions] = useState<any[]>(attachmentTypeItems);
-	const [emailStatusOptions, setEmailStatusOptions] = useState<any[]>(emailStatusItems);
+	const attachmentTypeOptions = useMemo<AttachmentTypeItemsConstantProps[]>(
+		() => attachmentTypeItems,
+		[attachmentTypeItems]
+	);
+	const emailStatusOptions = useMemo<EmailStatusItemsConstantProps[]>(
+		() => emailStatusItems,
+		[emailStatusItems]
+	);
 
 	const chipOnAdd = useCallback(
 		({ items, label, preText, hasAvatar, isGeneric, isQueryFilter }: ChipOnAddProps): ChipOnAdd => {
-			const values = items.filter((item: any) => item.id === label)[0];
+			const value = items.filter((item: ChipOnAddItem) => item.label === label)[0];
 			return {
 				label: `${preText}:${label}`,
 				hasAvatar,
 				isGeneric,
 				isQueryFilter,
-				value: values.searchString,
-				avatarIcon: values.icon ?? 'Tag',
+				value: value.searchString,
+				avatarIcon: value.icon ?? 'Tag',
 				avatarColor: 'gray6'
 			};
 		},
 		[]
-	);
-
-	const updateAttachmentTypeOptions = useCallback(
-		(target: HTMLInputElement, q: Array<any>): void => {
-			if (target.textContent && target.textContent.length > 0) {
-				setAttachmentTypeOptions(
-					attachmentTypeItems.filter(
-						(v: any): boolean =>
-							v.label?.toLowerCase().indexOf(target.textContent) !== -1 &&
-							!find(q, (i) => i.value === v.label)
-					)
-				);
-			} else {
-				setAttachmentTypeOptions(attachmentTypeItems);
-			}
-		},
-		[attachmentTypeItems]
-	);
-
-	const updateEmailStatusOptions = useCallback(
-		(target: HTMLInputElement, q: Array<any>): void => {
-			if (target.textContent && target.textContent.length > 0) {
-				setEmailStatusOptions(
-					emailStatusItems.filter(
-						(v: any): boolean =>
-							v.label?.toLowerCase().indexOf(target.textContent as string) !== -1 &&
-							!find(q, (i) => i.value === v.label)
-					)
-				);
-			} else {
-				setEmailStatusOptions(emailStatusItems);
-			}
-		},
-		[emailStatusItems]
-	);
-
-	const attachmentTypeOnInputType = useCallback(
-		(
-			ev: React.KeyboardEvent<HTMLInputElement> & {
-				textContent: string | null;
-			}
-		) => {
-			updateAttachmentTypeOptions(ev.target as HTMLInputElement, attachmentTypeItems);
-		},
-		[updateAttachmentTypeOptions, attachmentTypeItems]
-	);
-	const emailStatusOnInputType = useCallback(
-		(
-			ev: React.KeyboardEvent<HTMLInputElement> & {
-				textContent: string | null;
-			}
-		) => {
-			updateEmailStatusOptions(ev.target as HTMLInputElement, emailStatusItems);
-		},
-		[updateEmailStatusOptions, emailStatusItems]
 	);
 
 	const attachmentTypeChipOnAdd = useCallback(
@@ -137,33 +97,27 @@ const AttachmentTypeEmailStatusRow: FC<AttachTypeEmailStatusRowPropType> = ({
 		() => t('label.attachment_status', 'Status of e-mail item'),
 		[]
 	);
-	const attachmentIcon = 'ChevronDown';
-	const emailStatusIcon = 'ChevronDown';
-	const attachmentTypeBottomBorderColor = 'transparent';
-	const emailStatusBottomBorderColor = 'transparent';
 
 	return (
 		<Container padding={{ bottom: 'small', top: 'medium' }} orientation="horizontal">
 			<Container padding={{ right: 'extrasmall' }} maxWidth="50%">
 				<ChipInput
+					disabled
 					placeholder={attachmentTypePlaceholder}
 					value={attachmentType}
 					options={attachmentTypeOptions}
-					background="gray5"
 					disableOptions={false}
+					background="gray5"
 					onAdd={attachmentTypeChipOnAdd}
 					onChange={attachmentTypeOnChange}
-					maxChips={1}
-					confirmChipOnBlur
-					onInputType={attachmentTypeOnInputType}
-					icon={attachmentIcon}
-					bottomBorderColor={attachmentTypeBottomBorderColor}
+					icon="ChevronDown"
+					requireUniqueChips
+					data-testid="attachmentTypeSelect"
 				/>
 			</Container>
 			<Container padding={{ left: 'extrasmall' }} maxWidth="50%">
 				<ChipInput
-					dropdownMaxHeight="40%"
-					confirmChipOnBlur
+					disabled
 					placeholder={emailStatusPlaceholder}
 					value={emailStatus}
 					options={emailStatusOptions}
@@ -171,10 +125,10 @@ const AttachmentTypeEmailStatusRow: FC<AttachTypeEmailStatusRowPropType> = ({
 					disableOptions={false}
 					onAdd={emailStatusChipOnAdd}
 					onChange={emailStatusOnChange}
-					onInputType={emailStatusOnInputType}
-					icon={emailStatusIcon}
-					bottomBorderColor={emailStatusBottomBorderColor}
-					maxHeight="40%"
+					icon="ChevronDown"
+					bottomBorderColor="transparent"
+					requireUniqueChips
+					data-testid="emailStatusSelect"
 				/>
 			</Container>
 		</Container>
