@@ -6,13 +6,15 @@
 
 import type { QueryChip } from '@zextras/carbonio-search-ui';
 import { keyBy } from 'lodash';
+import moment from 'moment';
 
 import { createFakeIdentity } from '../../../carbonio-ui-commons/test/mocks/accounts/fakeAccounts';
 import {
 	generateFolder,
 	generateFolderLink
 } from '../../../carbonio-ui-commons/test/mocks/folders/folders-generator';
-import { generateQueryString, updateQueryChips } from '../utils';
+import { Query } from '../types/types';
+import { generateQueryString, getAdvancedFiltersDefaultValues, updateQueryChips } from '../utils';
 
 describe('generateQueryString', () => {
 	const query = [
@@ -108,5 +110,176 @@ describe('updateQueryChips', () => {
 		updateQueryChips(mockQuery, false, updateQuery);
 
 		expect(updateQuery).not.toHaveBeenCalled();
+	});
+});
+
+describe('getAdvancedFiltersDefaultValues', () => {
+	it('should return default values when query is empty', () => {
+		const result = getAdvancedFiltersDefaultValues([], false);
+		expect(result).toEqual({
+			attachmentType: [],
+			emailStatus: [],
+			keywordInput: [],
+			subjectInput: [],
+			hasAttachment: false,
+			isFlagged: false,
+			isUnread: false,
+			sentBefore: null,
+			sentAfter: null,
+			sentOn: null,
+			sizeSmaller: [],
+			sizeLarger: [],
+			receivedFrom: [],
+			sentTo: [],
+			tagInput: [],
+			folderInput: [],
+			isSharedFolderIncluded: false
+		});
+	});
+
+	it('should detect "is:unread"', () => {
+		const query = [{ label: 'is:unread' }] as Query;
+		const result = getAdvancedFiltersDefaultValues(query, false);
+		expect(result.isUnread).toBe(true);
+	});
+
+	it('should detect "is:flagged"', () => {
+		const query = [{ label: 'is:flagged' }] as Query;
+		const result = getAdvancedFiltersDefaultValues(query, false);
+		expect(result.isFlagged).toBe(true);
+	});
+
+	it('should detect "has:attachment"', () => {
+		const query = [{ label: 'has:attachment' }] as Query;
+		const result = getAdvancedFiltersDefaultValues(query, false);
+		expect(result.hasAttachment).toBe(true);
+	});
+
+	it('should extract sentBefore date', () => {
+		const dateStr = '2023-12-01';
+		const query = [{ label: `before:${dateStr}` }] as Query;
+		const result = getAdvancedFiltersDefaultValues(query, false);
+		expect(moment(result.sentBefore).format('YYYY-MM-DD')).toBe(dateStr);
+	});
+
+	it('should extract sentAfter date', () => {
+		const dateStr = '2023-12-01';
+		const query = [{ label: `after:${dateStr}` }] as Query;
+		const result = getAdvancedFiltersDefaultValues(query, false);
+		expect(moment(result.sentAfter).format('YYYY-MM-DD')).toBe(dateStr);
+	});
+
+	it('should extract sentOn date', () => {
+		const dateStr = '2023-12-01';
+		const query = [{ label: `date:${dateStr}` }] as Query;
+		const result = getAdvancedFiltersDefaultValues(query, false);
+		expect(moment(result.sentOn).format('YYYY-MM-DD')).toBe(dateStr);
+	});
+
+	it('should extract multiple dates correctly without conflict', () => {
+		const beforeStr = '2023-12-01';
+		const afterStr = '2023-12-05';
+		const dateStr = '2023-12-10';
+
+		const query = [
+			{ label: `before:${beforeStr}` },
+			{ label: `after:${afterStr}` },
+			{ label: `date:${dateStr}` }
+		] as Query;
+
+		const result = getAdvancedFiltersDefaultValues(query, false);
+
+		expect(moment(result.sentBefore).format('YYYY-MM-DD')).toBe(beforeStr);
+		expect(moment(result.sentAfter).format('YYYY-MM-DD')).toBe(afterStr);
+		expect(moment(result.sentOn).format('YYYY-MM-DD')).toBe(dateStr);
+	});
+
+	it('should extract sizeSmaller filter', () => {
+		const query = [{ label: 'Smaller:100KB' }] as Query;
+		const result = getAdvancedFiltersDefaultValues(query, false);
+		expect(result.sizeSmaller).toHaveLength(1);
+		expect(result.sizeSmaller[0].label).toBe('Smaller:100KB');
+	});
+
+	it('should extract sizeLarger filter', () => {
+		const query = [{ label: 'Larger:5MB' }] as Query;
+		const result = getAdvancedFiltersDefaultValues(query, false);
+		expect(result.sizeLarger).toHaveLength(1);
+		expect(result.sizeLarger[0].label).toBe('Larger:5MB');
+	});
+
+	it('should extract sentTo email', () => {
+		const query = [{ label: 'to:test@example.com', value: 'test@example.com' }] as Query;
+		const result = getAdvancedFiltersDefaultValues(query, false);
+		expect(result.sentTo).toHaveLength(1);
+		expect(result.sentTo[0].value.email).toBe('test@example.com');
+	});
+
+	it('should extract receivedFrom email', () => {
+		const query = [{ label: 'from:test@example.com', value: 'test@example.com' }] as Query;
+		const result = getAdvancedFiltersDefaultValues(query, false);
+		expect(result.receivedFrom).toHaveLength(1);
+		expect(result.receivedFrom[0].value.email).toBe('test@example.com');
+	});
+
+	it('should extract tagInput', () => {
+		const query = [{ label: 'tag:Work' }] as Query;
+		const result = getAdvancedFiltersDefaultValues(query, false);
+		expect(result.tagInput).toHaveLength(1);
+		expect(result.tagInput[0].label).toBe('tag:Work');
+	});
+
+	it('should extract folderInput', () => {
+		const query = [{ label: 'in:Inbox' }] as Query;
+		const result = getAdvancedFiltersDefaultValues(query, false);
+		expect(result.folderInput).toHaveLength(1);
+		expect(result.folderInput[0].label).toBe('in:Inbox');
+	});
+
+	it('should extract emailStatus (Is:*)', () => {
+		const query = [{ label: 'Is:replied' }] as Query;
+		const result = getAdvancedFiltersDefaultValues(query, false);
+		expect(result.emailStatus).toHaveLength(1);
+		expect(result.emailStatus[0].label).toBe('Is:replied');
+	});
+
+	it('should extract attachmentType', () => {
+		const query = [{ label: 'Attachment:.pdf' }] as Query;
+		const result = getAdvancedFiltersDefaultValues(query, false);
+		expect(result.attachmentType).toHaveLength(1);
+		expect(result.attachmentType[0].label).toBe('Attachment:.pdf');
+	});
+
+	it('should extract subjectInput', () => {
+		const query = [{ label: 'Subject:Meeting Reminder' }] as Query;
+		const result = getAdvancedFiltersDefaultValues(query, false);
+		expect(result.subjectInput).toHaveLength(1);
+		expect(result.subjectInput[0].label).toBe('Subject:Meeting Reminder');
+	});
+
+	it('should extract keywordInput as fallback for non-matching queries', () => {
+		const query = [{ label: 'project alpha' }] as Query;
+		const result = getAdvancedFiltersDefaultValues(query, false);
+		expect(result.keywordInput).toHaveLength(1);
+		expect(result.keywordInput[0].label).toBe('project alpha');
+	});
+
+	it('should ignore excluded prefixes in keywordInput', () => {
+		const query = [
+			{ label: 'has:attachment' },
+			{ label: 'Subject:test' },
+			{ label: 'in:Inbox' },
+			{ label: 'before:2024-01-01' },
+			{ label: 'random keyword' }
+		] as Query;
+
+		const result = getAdvancedFiltersDefaultValues(query, false);
+		expect(result.keywordInput).toHaveLength(1);
+		expect(result.keywordInput[0].label).toBe('random keyword');
+	});
+
+	it('should set isSharedFolderIncluded flag properly', () => {
+		const result = getAdvancedFiltersDefaultValues([], true);
+		expect(result.isSharedFolderIncluded).toBe(true);
 	});
 });
