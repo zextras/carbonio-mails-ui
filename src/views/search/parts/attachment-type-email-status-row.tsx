@@ -7,7 +7,7 @@ import React, { useCallback, useMemo } from 'react';
 
 import { Container, ChipInput } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
-import { Controller, useFormContext } from 'react-hook-form';
+import { Controller } from 'react-hook-form';
 
 import {
 	attachmentTypeItemsConstant,
@@ -18,7 +18,9 @@ import {
 import type { ChipOnAdd, ChipOnAddItem, ChipOnAddProps } from '../../../types';
 import { FormValuesControlProps } from '../types/types';
 
-export const AttachmentTypeEmailStatusRow = ({ control }: FormValuesControlProps): React.JSX.Element => {
+export const AttachmentTypeEmailStatusRow = ({
+	control
+}: FormValuesControlProps): React.JSX.Element => {
 	const attachmentTypeItems = attachmentTypeItemsConstant(t);
 	const emailStatusItems = emailStatusItemsConstant(t);
 	const attachmentTypeOptions = useMemo<AttachmentTypeItemsConstantProps[]>(
