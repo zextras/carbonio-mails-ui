@@ -99,11 +99,11 @@ export const AdvancedFilterModal = ({
 				<FormProvider {...methods}>
 					<ToggleFilters />
 					<SubjectKeywordRow control={control} />
-					<ReceivedSentAddressRow />
-					<AttachmentTypeEmailStatusRow />
-					<SizeLargerSizeSmallerRow />
-					<SendReceivedDateRow />
-					<TagFolderRow />
+					<ReceivedSentAddressRow control={control} />
+					<AttachmentTypeEmailStatusRow control={control} />
+					<SizeLargerSizeSmallerRow control={control} />
+					<SendReceivedDateRow control={control} />
+					<TagFolderRow control={control} setValue={setValue} />
 				</FormProvider>
 			</ScrollableContainer>
 			<Divider />

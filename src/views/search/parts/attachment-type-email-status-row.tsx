@@ -16,11 +16,9 @@ import {
 	EmailStatusItemsConstantProps
 } from '../../../constants';
 import type { ChipOnAdd, ChipOnAddItem, ChipOnAddProps } from '../../../types';
-import { FormValues } from '../types/types';
+import { FormValuesControlProps } from '../types/types';
 
-export const AttachmentTypeEmailStatusRow = (): React.JSX.Element => {
-	const { control } = useFormContext<FormValues>();
-
+export const AttachmentTypeEmailStatusRow = ({ control }: FormValuesControlProps): React.JSX.Element => {
 	const attachmentTypeItems = attachmentTypeItemsConstant(t);
 	const emailStatusItems = emailStatusItemsConstant(t);
 	const attachmentTypeOptions = useMemo<AttachmentTypeItemsConstantProps[]>(

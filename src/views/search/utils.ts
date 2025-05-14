@@ -158,6 +158,7 @@ export function getQueryToBe(formValues: FormValues): Query {
 		receivedFrom,
 		sentTo
 	} = formValues;
+
 	return concat(
 		keywordInput,
 		subjectInput,
@@ -209,15 +210,15 @@ export function getQueryToBe(formValues: FormValues): Query {
 		receivedFrom.map((item) => ({
 			...item,
 			id: '',
-			label: `from:${item.value.email}`,
-			value: `from:${item.value.email}`,
+			label: item.value.email?.startsWith("from:") ? `from:${item.value.email}` : item.value.email,
+			value: item.value.email?.startsWith("from:") ? `from:${item.value.email}` : item.value.email,
 			avatarBackground: item.background,
 			error: false
 		})),
 		sentTo.map((item) => ({
 			...item,
-			label: `to:${item.value.email}`,
-			value: `to:${item.value.email}`,
+			label: item.value.email?.startsWith("to:") ? `to:${item.value.email}` : item.value.email,
+			value: item.value.email?.startsWith("to:") ? `to:${item.value.email}` : item.value.email,
 			avatarBackground: item.background,
 			error: false,
 			id: ''
@@ -272,30 +273,49 @@ function toContactInput(item: SearchQueryItem): ContactInputItem {
 	};
 }
 
+function getChipValue(item: { email?: string, fullName?: string }, prefix: string): string {
+	if (item.fullName) {
+		return formatWithPrefix(item.fullName, prefix);
+	}
+	if (item.email) {
+		return formatWithPrefix(item.email, prefix);
+	}
+	return "";
+}
+
 function getSentToDefaultValue(query: Query): Array<ContactInputItem> {
+	const prefix = "to";
 	return query
 		.filter((queryItem) => /^to:*/.test(queryItem.label))
-		.map((queryItem) => ({ ...queryItem, label: replace(queryItem.label, 'to:', '') }))
-		.map((item) => toContactInput(item));
+		//.map((queryItem) => ({ ...queryItem, label: replace(queryItem.label, 'to:', '') }))
+		//.map((item) => toContactInput(item))
+		.map((chip:SearchQueryItem) => ({
+			...chip,
+			error: false,
+			id: chip.id ?? "",
+			avatarBackground: chip.avatarBackground ?? 'secondary',
+			hasAvatar: true,
+			avatarIcon: 'EmailOutline',
+			isGeneric: false,
+			isQueryFilter: true,
+			label: getChipString(chip, prefix),
+			fullName: getChipString(chip, prefix),
+			value: getChipValue(chip, prefix)
+		}))
 }
 
 function getReceivedFromDefaultValue(query: Query): Array<ContactInputItem> {
 	return query
 		.filter((queryItem) => /^from:*/.test(queryItem.label))
-		.map((queryItem) => ({ ...queryItem, label: replace(queryItem.label, 'from:', '') }))
+		//.map((queryItem) => ({ ...queryItem, label: replace(queryItem.label, 'from:', '') }))
 		.map((item) => toContactInput(item));
 }
 
-function getSizeSmallerDefaultValue(
-	query: Query
-): { id: string; label: string; value?: string; isGeneric?: boolean; isQueryFilter?: boolean }[] {
-	return map(
-		filter(query, (v) => /^Smaller:/.test(v.label)),
-		(q) => ({ ...q, id: '', label: '' })
-	);
+function getSizeSmallerDefaultValue(query: Query): Array<SearchQueryItem> {
+	return filter(query, (v) => /^Smaller:/.test(v.label));
 }
 
-function getSizeLargerDefaultValue(query: Query): SearchQueryItem[] {
+function getSizeLargerDefaultValue(query: Query): Array<SearchQueryItem> {
 	return filter(query, (v) => /^Larger:/.test(v.label));
 }
 
@@ -335,7 +355,7 @@ export function getAdvancedFiltersDefaultValues(
 		isUnread: query.some((item) => item.label === 'is:unread'),
 		sentBefore: extractDateFieldFromQuery('before', query),
 		sentAfter: extractDateFieldFromQuery('after', query),
-		sentOn: extractDateFieldFromQuery('on', query),
+		sentOn: extractDateFieldFromQuery('date', query),
 		sizeSmaller: getSizeSmallerDefaultValue(query),
 		sizeLarger: getSizeLargerDefaultValue(query),
 		receivedFrom: getReceivedFromDefaultValue(query),

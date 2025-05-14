@@ -9,12 +9,11 @@ import { Container, DateTimePicker } from '@zextras/carbonio-design-system';
 import { t, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { Controller, useFormContext } from 'react-hook-form';
 
-import { FormValues } from '../types/types';
+import { FormValuesControlProps } from '../types/types';
 
 const PICKER_DATE_FORMAT = 'P';
 
-export const SendReceivedDateRow = (): React.JSX.Element => {
-	const { control } = useFormContext<FormValues>();
+export const SendReceivedDateRow = ({ control }: FormValuesControlProps): React.JSX.Element => {
 	const { zimbraPrefLocale: prefLocale } = useUserSettings().prefs;
 	return (
 		<Container padding={{ bottom: 'small', top: 'medium' }} orientation="horizontal">

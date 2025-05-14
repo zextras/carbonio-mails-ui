@@ -17,7 +17,7 @@ import {
 } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
-import { Controller, useFormContext } from 'react-hook-form';
+import { Controller, useFormContext, UseFormSetValue } from 'react-hook-form';
 
 import { ZIMBRA_STANDARD_COLORS } from '../../../carbonio-ui-commons/constants/utils';
 import { getTags } from '../../../carbonio-ui-commons/store/zustand/tags';
@@ -26,10 +26,13 @@ import { isSharedAccountFolder } from '../../../helpers/folders';
 import type { ChipOnAdd, Folder } from '../../../types';
 import { SelectFolderModal } from '../../../ui-actions/modals/select-folder-modal';
 import { getFolderIconColor } from '../../sidebar/utils';
-import { FormValues } from '../types/types';
+import { FormValues, FormValuesControlProps } from '../types/types';
 
-export const TagFolderRow = (): React.JSX.Element => {
-	const { control, setValue } = useFormContext<FormValues>();
+type TagFolderRowControlProps = FormValuesControlProps & {
+	setValue: UseFormSetValue<FormValues> 
+}
+
+export const TagFolderRow = ({ control, setValue }: TagFolderRowControlProps): React.JSX.Element => {
 	const tagOptions: Array<Tag & { label: string; customComponent: React.JSX.Element }> = useMemo(
 		() =>
 			map(getTags(), (item) => ({
