@@ -265,29 +265,28 @@ function toContactInput(item: SearchQueryItem): ContactInputItem {
 
 function getSentToDefaultValue(query: Query): Array<ContactInputItem> {
 	return query
-		.filter((queryItem) => /^to:*/.test(queryItem.label))
+		.filter((queryItem) => queryItem.label.startsWith('to:'))
 		.map((item) => toContactInput(item));
 }
 
 function getReceivedFromDefaultValue(query: Query): Array<ContactInputItem> {
 	return query
-		.filter((queryItem) => /^from:*/.test(queryItem.label))
+		.filter((queryItem) => queryItem.label.startsWith('from:'))
 		.map((item) => toContactInput(item));
 }
 
 function getSizeSmallerDefaultValue(query: Query): Array<SearchQueryItem> {
-	return filter(query, (v) => /^Smaller:/.test(v.label));
+	return query.filter((v) => v.label.startsWith('Smaller:'));
 }
 
 function getSizeLargerDefaultValue(query: Query): Array<SearchQueryItem> {
-	return filter(query, (v) => /^Larger:/.test(v.label));
+	return query.filter((v) => v.label.startsWith('Larger:'));
 }
 
 function getTagInQueryDefaultValue(query: Query): KeywordState {
-	return map(
-		filter(query, (v) => /^tag:/.test(v.label)),
-		(q) => ({ ...q, hasAvatar: true, icon: 'TagOutline' })
-	);
+	return query
+		.filter((v) => v.label.startsWith('tag:'))
+		.map((q) => ({ ...q, hasAvatar: true, icon: 'TagOutline' }));
 }
 
 function getFolderInQueryDefaultValue(query: Query): KeywordState {
