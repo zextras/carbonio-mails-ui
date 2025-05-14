@@ -8,16 +8,15 @@ import { soapFetch } from '@zextras/carbonio-shell-ui';
 import { isNull, map, omitBy } from 'lodash';
 
 import { normalizeMailMessageFromSoap } from '../normalizations/normalize-message';
-import type {
-	GetMsgForPrintParameter,
-	GetMsgResponse as GetMsgResponseType,
-	MailMessage
-} from '../types';
+import type { GetMsgResponse as GetMsgResponseType, MailMessage } from '../types';
 
 export const getMsgsForPrintSoapApi = async ({
 	ids,
 	part
-}: GetMsgForPrintParameter): Promise<Array<MailMessage>> => {
+}: {
+	ids: Array<string>;
+	part?: string;
+}): Promise<Array<MailMessage>> => {
 	const { GetMsgResponse } = (await soapFetch('Batch', {
 		GetMsgRequest: map(ids, (id) => ({
 			m: omitBy(
