@@ -5,7 +5,7 @@
  */
 
 import type { QueryChip } from '@zextras/carbonio-search-ui';
-import { concat, filter, includes, map, reduce } from 'lodash';
+import { concat, filter, map, reduce } from 'lodash';
 import moment from 'moment';
 
 import { extractDateFieldFromQuery } from './extract-date-field-from-query';
@@ -15,6 +15,23 @@ import { FormValues, KeywordState, Query, SearchQueryItem } from './types/types'
 import { CONTACT_TYPES } from '../../carbonio-ui-commons/integrations/constants';
 import { ContactInputItem } from '../../carbonio-ui-commons/integrations/types';
 
+const excludeLabels = ['has:attachment', 'is:flagged', 'is:unread'];
+
+const excludePrefixes = [
+	'Subject:',
+	'Attachment:',
+	'Is:',
+	'Smaller:',
+	'Larger:',
+	'subject:',
+	'in:',
+	'before:',
+	'after:',
+	'date:',
+	'tag:',
+	'to:',
+	'from:'
+];
 export function updateQueryChips(
 	query: Array<QueryChip>,
 	isInvalidQuery: boolean,
@@ -218,29 +235,17 @@ function getAttachmentTypeDefaultValue(query: Query): KeywordState {
 function getSubjectInputDefaultValue(query: Query): KeywordState {
 	return filter(query, (queryItem) => queryItem.label.startsWith('Subject:'));
 }
-function getOtherKeywordsDefaultValue(query: Query): KeywordState {
-	const queryArray = ['has:attachment', 'is:flagged', 'is:unread'];
 
+function getOtherKeywordsDefaultValue(query: Query): KeywordState {
 	return map(
-		filter(
-			query,
-			(queryItem) =>
-				!includes(queryArray, queryItem.label) &&
-				!queryItem.label.startsWith('Subject:') &&
-				!queryItem.label.startsWith('Attachment:') &&
-				!queryItem.label.startsWith('Is:') &&
-				!queryItem.label.startsWith('Smaller:') &&
-				!queryItem.label.startsWith('Larger:') &&
-				!queryItem.label.startsWith('subject:') &&
-				!queryItem.label.startsWith('in:') &&
-				!queryItem.label.startsWith('before:') &&
-				!queryItem.label.startsWith('after:') &&
-				!queryItem.label.startsWith('date:') &&
-				!queryItem.label.startsWith('tag:') &&
-				!queryItem.label.startsWith('to:') &&
-				!queryItem.label.startsWith('from:') &&
-				!queryItem.isQueryFilter
-		),
+		filter(query, (queryItem) => {
+			const isExcluded =
+				excludeLabels.includes(queryItem.label) ||
+				excludePrefixes.some((prefix) => queryItem.label.startsWith(prefix)) ||
+				queryItem.isQueryFilter;
+
+			return !isExcluded;
+		}),
 		(q) => ({ ...q, hasAvatar: false })
 	);
 }
