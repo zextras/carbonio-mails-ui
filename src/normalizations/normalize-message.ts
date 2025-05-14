@@ -348,11 +348,23 @@ export const normalizeMailMessageFromSoap = (
 		creationDateFromMailHeaders: getCreationDateFromMailHeadersFromAPI(m._attrs),
 		messageIsFromDistributionList: getMessageIsFromDistributionListFromAPI(m._attrs)
 	};
+
+	const getNormalizedMessageId = (message: SoapIncompleteMessage): string => {
+		const apptId = message?.inv?.[0]?.comp?.[0]?.apptId;
+		const rawId = message?.id;
+
+		if (apptId && rawId && !rawId.startsWith(`${apptId}-`)) {
+			return `${apptId}-${rawId}`;
+		}
+
+		return rawId;
+	};
+
 	// FIXME: omitBy breaks typing, consider not using it. many types are actually required but are omitted at runtime
 	return <IncompleteMessage>omitBy(
 		{
 			conversation: m.cid,
-			id: m.id,
+			id: getNormalizedMessageId(m),
 			date: m.d,
 			size: m.s,
 			parent: m.l,
