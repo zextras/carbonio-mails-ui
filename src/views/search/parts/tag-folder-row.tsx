@@ -17,7 +17,7 @@ import {
 } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
-import { Controller, useFormContext, UseFormSetValue } from 'react-hook-form';
+import { Controller, UseFormSetValue } from 'react-hook-form';
 
 import { ZIMBRA_STANDARD_COLORS } from '../../../carbonio-ui-commons/constants/utils';
 import { getTags } from '../../../carbonio-ui-commons/store/zustand/tags';
@@ -29,10 +29,13 @@ import { getFolderIconColor } from '../../sidebar/utils';
 import { FormValues, FormValuesControlProps } from '../types/types';
 
 type TagFolderRowControlProps = FormValuesControlProps & {
-	setValue: UseFormSetValue<FormValues> 
-}
+	setValue: UseFormSetValue<FormValues>;
+};
 
-export const TagFolderRow = ({ control, setValue }: TagFolderRowControlProps): React.JSX.Element => {
+export const TagFolderRow = ({
+	control,
+	setValue
+}: TagFolderRowControlProps): React.JSX.Element => {
 	const tagOptions: Array<Tag & { label: string; customComponent: React.JSX.Element }> = useMemo(
 		() =>
 			map(getTags(), (item) => ({
