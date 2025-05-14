@@ -7,7 +7,7 @@ import React from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
-import { Controller, useFormContext } from 'react-hook-form';
+import { Controller } from 'react-hook-form';
 
 import { useContactInput } from '../../../carbonio-ui-commons/integrations/hooks';
 import { FormValuesControlProps } from '../types/types';
