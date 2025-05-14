@@ -295,7 +295,7 @@ function getTagInQueryDefaultValue(query: Query): KeywordState {
 
 function getFolderInQueryDefaultValue(query: Query): KeywordState {
 	return map(
-		filter(query, (v) => /^in:/.test(v.label)),
+		filter(query, (v) => v.label.startsWith('in:')),
 		(q) => ({
 			...q,
 			hasAvatar: true,
@@ -305,7 +305,7 @@ function getFolderInQueryDefaultValue(query: Query): KeywordState {
 }
 
 function getEmailStatusDefaultValue(query: Query): KeywordState {
-	return filter(query, (v) => /^Is:/.test(v.label));
+	return filter(query, (v) => v.label.startsWith('Is:'));
 }
 
 export function getAdvancedFiltersDefaultValues(
