@@ -18,35 +18,42 @@ import { ContactInputItem } from '../../carbonio-ui-commons/integrations/types';
 export function updateQueryChips(
 	query: Array<QueryChip>,
 	isInvalidQuery: boolean,
-	// TOFIX: fix type definition in shell-ui
-	// eslint-disable-next-line @typescript-eslint/ban-types
-	updateQuery: Function
+	updateQuery: (updated: Array<QueryChip>) => void
 ): void {
+	if (!Array.isArray(query) || query.length === 0 || isInvalidQuery) return;
+
 	const queryArray = ['has:attachment', 'is:flagged', 'is:unread'];
 
-	let _count = 0;
-	if (query?.length > 0 && !isInvalidQuery) {
-		const modifiedQuery = map(query, (q) => {
-			if (
-				(includes(queryArray, q.label) ||
-					q.label?.startsWith('subject') ||
-					q.label?.startsWith('in') ||
-					q.label?.startsWith('before') ||
-					q.label?.startsWith('after') ||
-					q.label?.startsWith('tag') ||
-					q.label?.startsWith('date')) &&
-				!includes(Object.keys(q), 'isGeneric') &&
-				!includes(Object.keys(q), 'isQueryFilter')
-			) {
-				_count += 1;
-				return findIconFromChip(q as ChipType);
-			}
-			return q;
-		});
+	const isTargetChip = (q: QueryChip): boolean =>
+		!!q.label &&
+		(queryArray.includes(q.label) ||
+			q.label?.startsWith('subject') ||
+			q.label?.startsWith('in') ||
+			q.label?.startsWith('before') ||
+			q.label?.startsWith('after') ||
+			q.label?.startsWith('tag') ||
+			q.label?.startsWith('date')) &&
+		!('isGeneric' in q) &&
+		!('isQueryFilter' in q);
 
-		if (_count > 0) {
-			updateQuery(modifiedQuery);
-		}
+	const { modifiedQuery, hasChanged } = query.reduce<{
+		modifiedQuery: Array<QueryChip>;
+		hasChanged: boolean;
+	}>(
+		(acc, q) => {
+			if (isTargetChip(q)) {
+				return {
+					modifiedQuery: acc.modifiedQuery.concat(findIconFromChip(q as ChipType) as QueryChip),
+					hasChanged: true
+				};
+			}
+			return { ...acc, modifiedQuery: acc.modifiedQuery.concat(q) };
+		},
+		{ modifiedQuery: [], hasChanged: false }
+	);
+
+	if (hasChanged) {
+		updateQuery(modifiedQuery);
 	}
 }
 
