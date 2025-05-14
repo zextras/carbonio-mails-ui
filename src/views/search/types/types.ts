@@ -5,9 +5,9 @@
  */
 
 import { Theme } from '@zextras/carbonio-design-system';
+import { Control } from 'react-hook-form';
 
 import { ContactInputItem } from '../../../carbonio-ui-commons/integrations/types';
-import { Control, UseFormSetValue } from 'react-hook-form';
 
 export type SearchQueryItem = {
 	id: string;
@@ -55,8 +55,8 @@ export type FormValues = {
 	folderInput: KeywordState;
 };
 
-export type FormValuesControlProps = { 
-	control: Control<FormValues> 
+export type FormValuesControlProps = {
+	control: Control<FormValues>;
 };
 
 export type AdvancedFilterModalProps = {
