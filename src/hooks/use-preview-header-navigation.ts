@@ -13,7 +13,6 @@ import { useNavigate } from 'react-router-dom';
 import { API_REQUEST_STATUS, LIST_LIMIT, MAILS_ROUTE } from '../constants';
 import { parseMessageSortingOptions } from '../helpers/sorting';
 import { convActionEmailStoreAction } from '../store/emails/actions/conv-action-action';
-import { msgActionEmailStoreAction } from '../store/emails/actions/msg-action-action';
 import {
 	useConversationsByIds,
 	useConversationsResultsLoadingStatus,
@@ -121,15 +120,11 @@ export const usePreviewHeaderNavigation = ({
 
 	const isPreviousActionDisabled = useMemo(() => isTheFirstListItem, [isTheFirstListItem]);
 
+	// TODO: CO-2064 remove this use read prop to mark conv as read in searchConv API
 	const setItemAsRead = useCallback(
 		(itemId: string) => {
 			if (itemsType === 'conversation') {
 				convActionEmailStoreAction({
-					operation: 'read',
-					ids: [itemId]
-				});
-			} else if (itemsType === 'message') {
-				msgActionEmailStoreAction({
 					operation: 'read',
 					ids: [itemId]
 				});
