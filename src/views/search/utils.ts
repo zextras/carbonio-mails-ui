@@ -5,7 +5,7 @@
  */
 
 import type { QueryChip } from '@zextras/carbonio-search-ui';
-import { concat, filter, includes, map, reduce, replace } from 'lodash';
+import { concat, filter, includes, map, reduce } from 'lodash';
 import moment from 'moment';
 
 import { extractDateFieldFromQuery } from './extract-date-field-from-query';
@@ -210,18 +210,18 @@ export function getQueryToBe(formValues: FormValues): Query {
 		receivedFrom.map((item) => ({
 			...item,
 			id: '',
-			label: item.value.email?.startsWith("from:") ? `from:${item.value.email}` : item.value.email,
-			value: item.value.email?.startsWith("from:") ? `from:${item.value.email}` : item.value.email,
+			label: `from:${item.value.email}`,
+			value: item.value.email,
 			avatarBackground: item.background,
 			error: false
 		})),
 		sentTo.map((item) => ({
 			...item,
-			label: item.value.email?.startsWith("to:") ? `to:${item.value.email}` : item.value.email,
-			value: item.value.email?.startsWith("to:") ? `to:${item.value.email}` : item.value.email,
+			id: '',
+			label: `to:${item.value.email}`,
+			value: item.value.email,
 			avatarBackground: item.background,
-			error: false,
-			id: ''
+			error: false
 		}))
 	);
 }
@@ -273,41 +273,25 @@ function toContactInput(item: SearchQueryItem): ContactInputItem {
 	};
 }
 
-function getChipValue(item: { email?: string, fullName?: string }, prefix: string): string {
+function getChipValue(item: { email?: string; fullName?: string }, prefix: string): string {
 	if (item.fullName) {
 		return formatWithPrefix(item.fullName, prefix);
 	}
 	if (item.email) {
 		return formatWithPrefix(item.email, prefix);
 	}
-	return "";
+	return '';
 }
 
 function getSentToDefaultValue(query: Query): Array<ContactInputItem> {
-	const prefix = "to";
 	return query
 		.filter((queryItem) => /^to:*/.test(queryItem.label))
-		//.map((queryItem) => ({ ...queryItem, label: replace(queryItem.label, 'to:', '') }))
-		//.map((item) => toContactInput(item))
-		.map((chip:SearchQueryItem) => ({
-			...chip,
-			error: false,
-			id: chip.id ?? "",
-			avatarBackground: chip.avatarBackground ?? 'secondary',
-			hasAvatar: true,
-			avatarIcon: 'EmailOutline',
-			isGeneric: false,
-			isQueryFilter: true,
-			label: getChipString(chip, prefix),
-			fullName: getChipString(chip, prefix),
-			value: getChipValue(chip, prefix)
-		}))
+		.map((item) => toContactInput(item));
 }
 
 function getReceivedFromDefaultValue(query: Query): Array<ContactInputItem> {
 	return query
 		.filter((queryItem) => /^from:*/.test(queryItem.label))
-		//.map((queryItem) => ({ ...queryItem, label: replace(queryItem.label, 'from:', '') }))
 		.map((item) => toContactInput(item));
 }
 
