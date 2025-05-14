@@ -389,7 +389,8 @@ export const normalizeMailMessageFromSoap = (
 				? haveReadReceipt(m.e, m.f, m.l) && !isNil(isComplete) && isComplete
 				: undefined,
 			isEncrypted: !!find(m.mp, (part) => part.ct === 'application/pkcs7-mime'),
-			...normalizedMailHeaders
+			...normalizedMailHeaders,
+			isInvite: !!m?.inv?.[0]?.comp?.[0]?.apptId
 		},
 		isNil
 	);
