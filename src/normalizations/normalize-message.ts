@@ -325,7 +325,6 @@ const getFlags = (flags: string | undefined): Flags => ({
 	isDraft: !isNil(flags) ? /d/.test(flags) : undefined,
 	isForwarded: !isNil(flags) ? /w/.test(flags) : undefined,
 	isSentByMe: !isNil(flags) ? /s/.test(flags) : undefined,
-	isInvite: !isNil(flags) ? /v/.test(flags) : undefined,
 	isReplied: !isNil(flags) ? /r/.test(flags) : undefined
 });
 
@@ -390,7 +389,7 @@ export const normalizeMailMessageFromSoap = (
 				: undefined,
 			isEncrypted: !!find(m.mp, (part) => part.ct === 'application/pkcs7-mime'),
 			...normalizedMailHeaders,
-			isInvite: !!m?.inv?.[0]?.comp?.[0]?.apptId
+			isInvite: m?.inv?.[0]?.comp?.[0]?.apptId || (m.f && /v/.test(m.f))
 		},
 		isNil
 	);
@@ -445,7 +444,8 @@ export const normalizePartialIncompleteMessageFromSoap = (
 			// TODO: this function is accepting undefined values and assuming defaults
 			isReadReceiptRequested: m.e ? haveReadReceipt(m.e, m.f, m.l ?? '') : undefined,
 			isEncrypted: m.mp ? !!find(m.mp, (part) => part.ct === 'application/pkcs7-mime') : undefined,
-			...normalizedMailHeaders
+			...normalizedMailHeaders,
+			isInvite: m?.inv?.[0]?.comp?.[0]?.apptId || (m.f && /v/.test(m.f))
 		},
 		isNil
 	);
