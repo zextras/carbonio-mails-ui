@@ -35,7 +35,9 @@ const excludePrefixes = [
 export function updateQueryChips(
 	query: Array<QueryChip>,
 	isInvalidQuery: boolean,
-	updateQuery: (updated: Array<QueryChip>) => void
+	// disabling type check until the proper types is defined in shell
+	// eslint-disable-next-line @typescript-eslint/ban-types
+	updateQuery: Function
 ): void {
 	if (!Array.isArray(query) || query.length === 0 || isInvalidQuery) return;
 
