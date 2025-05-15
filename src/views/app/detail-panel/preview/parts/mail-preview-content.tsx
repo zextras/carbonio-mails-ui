@@ -12,7 +12,6 @@ import {
 	useUserAccounts,
 	useUserSettings
 } from '@zextras/carbonio-shell-ui';
-import { filter } from 'lodash';
 
 import { MailMessageRenderer } from '../../../../../commons/mail-message-renderer/mail-message-renderer';
 import { isFocusModeMailView } from '../../../../../helpers/external-tabs';
@@ -145,18 +144,7 @@ export const MailPreviewContent = ({
 					<Padding height="100%" width="100%" vertical="medium" style={{ overflow: 'auto' }}>
 						{showAppointmentInvite && (
 							<Container width="100%">
-								<InviteResponse
-									onLoadChange={(): null => null}
-									mailMsg={message}
-									inviteId={inviteId}
-									participationStatus={participationStatus}
-									to={filter(message.participants, { type: 'f' })}
-									invite={message.invite}
-									method={message.invite[0]?.comp[0]?.method}
-									moveToTrash={moveToTrash}
-									isAttendee={isAttendee}
-									parent={message.parent}
-								/>
+								<InviteResponse mailMsg={message} moveToTrash={moveToTrash} />
 							</Container>
 						)}
 						{!showAppointmentInvite && showShareInvite && (
