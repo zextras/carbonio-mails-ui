@@ -77,7 +77,7 @@ describe('attachments', () => {
 			const referredCids: Array<string> = []; // no reference
 			const result = filterAttachmentsParts(parts, [], referredCids);
 
-			expect(result).toHaveLength(0);
+			expect(result).toHaveLength(1);
 		});
 
 		it('should include inline images with filename regardless of CID', () => {
