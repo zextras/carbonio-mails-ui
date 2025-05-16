@@ -166,14 +166,28 @@ export function filterAttachmentsParts(
 			if (
 				part.disposition === 'attachment' ||
 				(part.disposition === 'inline' && (part.filename || isReferredByCid)) ||
-				(part.disposition === undefined && isReferredByCid)
+				(part.disposition === 'inline' && part.name) ||
+				(part.disposition === undefined &&
+					(isReferredByCid ||
+						(!part.parts &&
+							part.contentType !== MIMETYPE_MULTIPART_ALTERNATIVE &&
+							part.contentType !== MIMETYPE_PLAINTEXT &&
+							part.contentType !== MIMETYPE_RICHTEXT &&
+							part.name)))
 			) {
 				// Force the inline disposition if the part is referred by something else in the body
-				if (part.disposition === undefined && isReferredByCid) {
-					filtered.push({
-						...part,
-						disposition: 'inline'
-					});
+				if (part.disposition === undefined) {
+					if (isReferredByCid) {
+						filtered.push({
+							...part,
+							disposition: 'inline'
+						});
+					} else {
+						filtered.push({
+							...part,
+							disposition: 'attachment'
+						});
+					}
 				} else {
 					filtered.push(part);
 				}
