@@ -195,11 +195,6 @@ export const getMP = (editor: MailsEditorV2): SoapEmailMessagePartObj[] => {
 										_content: getHtmlWithPreAppliedStyled(contentWithCidUrl.richText, style) ?? ''
 									}
 								},
-								...unsavedInlineAttachment.map((inlineAttachment) => ({
-									ci: inlineAttachment.contentId,
-									ct: inlineAttachment.contentType,
-									attach: { aid: inlineAttachment.aid }
-								})),
 								...savedInlineAttachment.map((inlineAttachment) => ({
 									ci: inlineAttachment.contentId,
 									ct: inlineAttachment.contentType,
@@ -211,6 +206,12 @@ export const getMP = (editor: MailsEditorV2): SoapEmailMessagePartObj[] => {
 											}
 										]
 									}
+								})),
+								// keep this order saved -> unsaved
+								...unsavedInlineAttachment.map((inlineAttachment) => ({
+									ci: inlineAttachment.contentId,
+									ct: inlineAttachment.contentType,
+									attach: { aid: inlineAttachment.aid }
 								}))
 							]
 						}
