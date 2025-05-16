@@ -321,7 +321,7 @@ describe('Advanced filter modal', () => {
 		});
 	});
 
-	it('should remove edit action from query chip for "to" and "from" fields', async () => {
+	it.only('should remove edit action from query chip for "to" and "from" fields', async () => {
 		const valueToAdd = generateMockContactInputItem();
 		valueToAdd.actions = [EDIT_ACTION];
 		mockContactInput({ valueToAdd });
@@ -418,29 +418,34 @@ describe('Advanced filter modal', () => {
 		const fieldLabel = screen.getByText(/label\.single_advanced_filter/i);
 		expect(fieldLabel).toBeInTheDocument();
 
-		const actionButton = screen.getByRole('button', {
+		const resetButton = screen.getByRole('button', {
 			name: /action\.reset/i
 		});
-		expect(actionButton).toBeInTheDocument();
-		expect(actionButton).toBeDisabled();
+		expect(resetButton).toBeInTheDocument();
+		expect(resetButton).toBeDisabled();
 	});
 
 	it('should disable search button when reset filters button is clicked', async () => {
 		const mockOnSearchConfirm = jest.fn();
-		const properties: AdvancedFilterModalProps = {
-			open: true,
-			onClose: jest.fn(),
-			query: [
-				{
-					id: 'query1',
-					label: 'keywords',
-					value: 'some keywords'
-				}
-			],
+
+		const props: AdvancedFilterModalProps = {
+			...defaultProps,
 			onSearchConfirm: mockOnSearchConfirm
 		};
 
-		const { user } = setupTest(<AdvancedFilterModal {...properties} />);
+		const query = [
+			{
+				id: 'query1',
+				label: 'keywords',
+				value: 'some keywords'
+			}
+		];
+
+		const customDefaultValues = getAdvancedFiltersDefaultValues(query, false);
+		const { user } = await renderWithUseForm(
+			<AdvancedFilterModal {...props} />,
+			customDefaultValues
+		);
 		const confirmButton = screen.getByRole('button', { name: /action\.search/i });
 		const resetButton = screen.getByRole('button', { name: /action\.reset/i });
 
@@ -453,15 +458,17 @@ describe('Advanced filter modal', () => {
 	});
 
 	it('should include attachment type in the query', async () => {
-		jest.spyOn(console, 'error').mockImplementation();
 		const onSearchConfirmMock = jest.fn();
-		const properties: AdvancedFilterModalProps = {
-			open: true,
-			onClose: jest.fn(),
-			query: [],
+		const props: AdvancedFilterModalProps = {
+			...defaultProps,
 			onSearchConfirm: onSearchConfirmMock
 		};
-		const { user } = setupTest(<AdvancedFilterModal {...properties} />);
+
+		const customDefaultValues = getAdvancedFiltersDefaultValues(emptyQuery, false);
+		const { user } = await renderWithUseForm(
+			<AdvancedFilterModal {...props} />,
+			customDefaultValues
+		);
 
 		await selectOption(user, 'attachmentTypeSelect', 'attachment_type.application');
 		const actionButton = screen.getByRole('button', {

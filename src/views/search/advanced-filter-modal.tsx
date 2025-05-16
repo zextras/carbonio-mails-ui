@@ -5,7 +5,7 @@
  */
 import React, { useCallback } from 'react';
 
-import { CustomModal, ModalHeader, Divider, ModalFooter } from '@zextras/carbonio-design-system';
+import { ModalHeader, Divider, ModalFooter } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import { useFormContext } from 'react-hook-form';
 
@@ -49,6 +49,7 @@ export const AdvancedFilterModal = ({
 
 	const queryToBe = getQueryToBe(formValues);
 
+	const isSharedFolderIncluded = watch('isSharedFolderIncluded');
 	const onConfirm = useCallback(() => {
 		const controller = new AbortController();
 		const includeSharedFolders = watch('isSharedFolderIncluded');
@@ -68,10 +69,8 @@ export const AdvancedFilterModal = ({
 		onClose();
 	}, [onClose, resetFilters]);
 
-	const isSharedFolderIncluded = watch('isSharedFolderIncluded');
-
 	return (
-		<CustomModal open onClose={onClose} maxHeight="" size="medium">
+		<>
 			<ModalHeader
 				onClose={onCloseCallback}
 				title={t('label.single_advanced_filter', 'Advanced Filters')}
@@ -95,11 +94,13 @@ export const AdvancedFilterModal = ({
 			<ModalFooter
 				onConfirm={onConfirm}
 				confirmDisabled={queryToBe.length === 0}
-				secondaryActionDisabled={queryToBe.length === 0 && isSharedFolderIncluded}
+				secondaryActionDisabled={
+					queryToBe.length === 0 && isSharedFolderIncluded === includeSharedItemsInSearchDefaultPref
+				}
 				confirmLabel={t('action.search', 'Search')}
 				secondaryActionLabel={t('action.reset', 'Reset filters')}
 				onSecondaryAction={resetFilters}
 			/>
-		</CustomModal>
+		</>
 	);
 };

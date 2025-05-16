@@ -5,7 +5,7 @@
  */
 import React, { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 
-import { Container, Spinner } from '@zextras/carbonio-design-system';
+import { Button, Container, Spinner, useModal } from '@zextras/carbonio-design-system';
 import type { SearchViewProps } from '@zextras/carbonio-search-ui';
 import { setAppContext, t, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { FormProvider, useForm } from 'react-hook-form';
@@ -116,6 +116,8 @@ const SearchView = ({
 			controller.abort();
 		};
 	}, [executeSearch, query, setValue, includeSharedItemsInSearchDefaultPref]);
+	const modalId = 'advanced-filters-modal';
+	const { createModal, closeModal } = useModal();
 
 	return (
 		<>
@@ -171,15 +173,26 @@ const SearchView = ({
 				</Container>
 			</Container>
 
-			{showAdvanceFilters && (
-				<FormProvider {...methods}>
-					<AdvancedFilterModal
-						onSearchConfirm={onModalConfirm}
-						onClose={(): void => setShowAdvanceFilters(false)}
-						includeSharedItemsInSearchDefaultPref={includeSharedItemsInSearchDefaultPref}
-					/>
-				</FormProvider>
-			)}
+			<Button
+				label={t('label.advanced_filters', 'Advanced Filters')}
+				onClick={(): void => {
+					createModal({
+						id: modalId,
+						maxHeight: '90vh',
+						children: (
+							<FormProvider {...methods}>
+								<AdvancedFilterModal
+									onSearchConfirm={onModalConfirm}
+									onClose={(): void => {
+										closeModal(modalId);
+									}}
+									includeSharedItemsInSearchDefaultPref={includeSharedItemsInSearchDefaultPref}
+								/>
+							</FormProvider>
+						)
+					});
+				}}
+			/>
 		</>
 	);
 };
