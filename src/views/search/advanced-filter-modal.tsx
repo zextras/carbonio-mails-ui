@@ -21,7 +21,6 @@ import { getQueryToBe } from './utils';
 import { ScrollableContainer } from '../../commons/scrollable-container';
 
 export const AdvancedFilterModal = ({
-	open,
 	onClose,
 	onSearchConfirm,
 	includeSharedItemsInSearchDefaultPref
@@ -64,12 +63,15 @@ export const AdvancedFilterModal = ({
 		};
 	}, [onSearchConfirm, queryToBe, watch, onClose]);
 
-	if (!open) return <></>;
+	const onCloseCallback = useCallback(() => {
+		resetFilters();
+		onClose();
+	}, [onClose, resetFilters]);
 
 	return (
-		<CustomModal open={open} onClose={onClose} maxHeight="" size="medium">
+		<CustomModal open onClose={onClose} maxHeight="" size="medium">
 			<ModalHeader
-				onClose={onClose}
+				onClose={onCloseCallback}
 				title={t('label.single_advanced_filter', 'Advanced Filters')}
 				showCloseIcon
 			/>

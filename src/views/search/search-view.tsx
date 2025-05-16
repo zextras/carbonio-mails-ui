@@ -170,14 +170,15 @@ const SearchView = ({
 				</Container>
 			</Container>
 
-			<FormProvider {...methods}>
-				<AdvancedFilterModal
-					open={showAdvanceFilters}
-					onSearchConfirm={onModalConfirm}
-					onClose={(): void => setShowAdvanceFilters(false)}
-					includeSharedItemsInSearchDefaultPref={includeSharedItemsInSearchDefaultPref}
-				/>
-			</FormProvider>
+			{showAdvanceFilters && (
+				<FormProvider {...methods}>
+					<AdvancedFilterModal
+						onSearchConfirm={onModalConfirm}
+						onClose={(): void => setShowAdvanceFilters(false)}
+						includeSharedItemsInSearchDefaultPref={includeSharedItemsInSearchDefaultPref}
+					/>
+				</FormProvider>
+			)}
 		</>
 	);
 };
