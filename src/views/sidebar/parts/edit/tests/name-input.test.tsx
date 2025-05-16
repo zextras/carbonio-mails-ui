@@ -32,7 +32,7 @@ describe('NameInputRow', () => {
 		);
 
 		expect(screen.getByText(/select color/i)).toBeVisible();
-		expect(screen.getByText('color.blue')).toBeVisible();
+		expect(screen.getByText(/blue/i)).toBeVisible();
 
 		expect(screen.getByText(/folder name/i)).toBeVisible();
 		const folderName = screen.getByRole('textbox', { name: /folder name/i });
@@ -53,7 +53,7 @@ describe('NameInputRow', () => {
 		);
 
 		await user.click(screen.getByTestId('icon: ChevronDownOutline'));
-		await user.click(screen.getByText('color.red'));
+		await user.click(screen.getByText(/red/i));
 
 		expect(setFolderColor).toHaveBeenCalledWith(ZIMBRA_STANDARD_COLORS[5].zValue);
 	});
