@@ -38,9 +38,7 @@ async function checkResetAndSearchButton(f: (user: UserEvent) => Promise<void>):
 		open: true,
 		onClose: jest.fn(),
 		query: [],
-		onSearchConfirm: onSearchConfirmMock,
-		isSharedFolderIncludedInitialValue: false,
-		includeSharedItemsInSearchPref: false
+		onSearchConfirm: onSearchConfirmMock
 	};
 	const { user } = setupTest(<AdvancedFilterModal {...properties} />);
 
@@ -73,8 +71,6 @@ describe('Advanced filter modal', () => {
 		open: true,
 		onClose: jest.fn(),
 		query: [],
-		isSharedFolderIncludedInitialValue: false,
-		includeSharedItemsInSearchPref: false,
 		onSearchConfirm: jest.fn()
 	};
 	it('render the advanced filter modal', () => {
@@ -131,9 +127,7 @@ describe('Advanced filter modal', () => {
 					value: 'keyword'
 				}
 			],
-			onSearchConfirm: jest.fn(),
-			isSharedFolderIncludedInitialValue: false,
-			includeSharedItemsInSearchPref: false
+			onSearchConfirm: jest.fn()
 		};
 		setupTest(<AdvancedFilterModal {...properties} />);
 		const actionButton = screen.getByRole('button', { name: /action\.search/i });
@@ -146,9 +140,7 @@ describe('Advanced filter modal', () => {
 			open: true,
 			onClose: jest.fn(),
 			query: [],
-			onSearchConfirm: jest.fn(),
-			isSharedFolderIncludedInitialValue: false,
-			includeSharedItemsInSearchPref: false
+			onSearchConfirm: jest.fn()
 		};
 		setupTest(<AdvancedFilterModal {...properties} />);
 		const actionButton = screen.getByRole('button', { name: /action\.search/i });
@@ -164,9 +156,7 @@ describe('Advanced filter modal', () => {
 			open: true,
 			onClose: mockOnClose,
 			query: [],
-			onSearchConfirm: mockOnSearchConfirm,
-			isSharedFolderIncludedInitialValue: false,
-			includeSharedItemsInSearchPref: false
+			onSearchConfirm: mockOnSearchConfirm
 		};
 
 		const { user } = setupTest(<AdvancedFilterModal {...properties} />);
@@ -209,11 +199,9 @@ describe('Advanced filter modal', () => {
 		const { user } = setupTest(
 			<AdvancedFilterModal
 				open
-				isSharedFolderIncludedInitialValue={false}
 				onClose={jest.fn()}
 				query={[]}
 				onSearchConfirm={mockOnSearchConfirm}
-				includeSharedItemsInSearchPref={false}
 			/>
 		);
 		const sentTo = screen.getByTestId('received-from-input');
@@ -244,8 +232,6 @@ describe('Advanced filter modal', () => {
 		const { user } = setupTest(
 			<AdvancedFilterModal
 				open
-				isSharedFolderIncludedInitialValue={false}
-				includeSharedItemsInSearchPref={false}
 				onClose={jest.fn()}
 				query={[]}
 				onSearchConfirm={mockOnSearchConfirm}
@@ -283,8 +269,6 @@ describe('Advanced filter modal', () => {
 		const { user } = setupTest(
 			<AdvancedFilterModal
 				open
-				isSharedFolderIncludedInitialValue={false}
-				includeSharedItemsInSearchPref={false}
 				onClose={jest.fn()}
 				query={[query]}
 				onSearchConfirm={mockOnSearchConfirm}
@@ -328,8 +312,6 @@ describe('Advanced filter modal', () => {
 		const { user } = setupTest(
 			<AdvancedFilterModal
 				open
-				isSharedFolderIncludedInitialValue={false}
-				includeSharedItemsInSearchPref={false}
 				onClose={jest.fn()}
 				query={[]}
 				onSearchConfirm={mockOnSearchConfirm}
@@ -372,8 +354,6 @@ describe('Advanced filter modal', () => {
 		const { user } = setupTest(
 			<AdvancedFilterModal
 				open
-				isSharedFolderIncludedInitialValue={false}
-				includeSharedItemsInSearchPref={false}
 				onClose={jest.fn()}
 				query={[]}
 				onSearchConfirm={mockOnSearchConfirm}
@@ -404,9 +384,7 @@ describe('Advanced filter modal', () => {
 					value: 'keyword'
 				}
 			],
-			onSearchConfirm: jest.fn(),
-			isSharedFolderIncludedInitialValue: false,
-			includeSharedItemsInSearchPref: false
+			onSearchConfirm: jest.fn()
 		};
 		setupTest(<AdvancedFilterModal {...properties} />);
 		const actionButton = screen.getByRole('button', { name: /action\.reset/i });
@@ -436,9 +414,7 @@ describe('Advanced filter modal', () => {
 					value: 'some keywords'
 				}
 			],
-			onSearchConfirm: mockOnSearchConfirm,
-			isSharedFolderIncludedInitialValue: false,
-			includeSharedItemsInSearchPref: false
+			onSearchConfirm: mockOnSearchConfirm
 		};
 
 		const { user } = setupTest(<AdvancedFilterModal {...properties} />);
@@ -460,9 +436,7 @@ describe('Advanced filter modal', () => {
 			open: true,
 			onClose: jest.fn(),
 			query: [],
-			onSearchConfirm: onSearchConfirmMock,
-			isSharedFolderIncludedInitialValue: false,
-			includeSharedItemsInSearchPref: false
+			onSearchConfirm: onSearchConfirmMock
 		};
 		const { user } = setupTest(<AdvancedFilterModal {...properties} />);
 
@@ -497,9 +471,7 @@ describe('Advanced filter modal', () => {
 			open: true,
 			onClose: jest.fn(),
 			query: [],
-			onSearchConfirm: onSearchConfirmMock,
-			isSharedFolderIncludedInitialValue: false,
-			includeSharedItemsInSearchPref: false
+			onSearchConfirm: onSearchConfirmMock
 		};
 		const { user } = setupTest(<AdvancedFilterModal {...properties} />);
 
@@ -651,9 +623,7 @@ describe('Advanced filter modal', () => {
 			open: true,
 			onClose: jest.fn(),
 			query: [],
-			onSearchConfirm: onSearchConfirmMock,
-			isSharedFolderIncludedInitialValue: false,
-			includeSharedItemsInSearchPref: false
+			onSearchConfirm: onSearchConfirmMock
 		};
 		const { user } = setupTest(<AdvancedFilterModal {...properties} />);
 

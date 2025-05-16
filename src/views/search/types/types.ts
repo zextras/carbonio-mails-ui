@@ -63,7 +63,5 @@ export type AdvancedFilterModalProps = {
 	open: boolean;
 	onClose: () => void;
 	query: Query;
-	isSharedFolderIncludedInitialValue: boolean;
 	onSearchConfirm: (request: { query: Query; includeSharedFolders: boolean }) => void;
-	includeSharedItemsInSearchPref: boolean;
 };
