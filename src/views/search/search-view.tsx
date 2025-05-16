@@ -8,6 +8,7 @@ import React, { Suspense, useCallback, useEffect, useMemo, useState } from 'reac
 import { Container, Spinner } from '@zextras/carbonio-design-system';
 import type { SearchViewProps } from '@zextras/carbonio-search-ui';
 import { setAppContext, t, useUserSettings } from '@zextras/carbonio-shell-ui';
+import { FormProvider, useForm } from 'react-hook-form';
 import { Route, Routes } from 'react-router-dom';
 
 import { AdvancedFilterModal } from './advanced-filter-modal';
@@ -17,7 +18,8 @@ import SearchPanel from './panel/search-panel';
 import { useIsMessageView, useRunSearch } from './search-view-hooks';
 import { useUpdateView } from '../../carbonio-ui-commons/hooks/use-update-view';
 import { API_REQUEST_STATUS } from '../../constants';
-import { Query } from './types/types';
+import { FormValues, Query } from './types/types';
+import { getAdvancedFiltersDefaultValues } from './utils';
 import { resetSearchAndPopulatedItems } from '../../store/emails/store';
 
 const SearchView = ({
@@ -28,19 +30,34 @@ const SearchView = ({
 	useUpdateView();
 
 	const [query, updateQuery] = useQuery();
+	const settings = useUserSettings();
+	const includeSharedItemsInSearchDefaultPref =
+		settings.prefs.zimbraPrefIncludeSharedItemsInSearch === 'TRUE';
+
+	const defaultValues: FormValues = useMemo(
+		() => getAdvancedFiltersDefaultValues(query as any, includeSharedItemsInSearchDefaultPref),
+		[query, includeSharedItemsInSearchDefaultPref]
+	);
+
+	const methods = useForm<FormValues>({ defaultValues });
 	const isMessageView = useIsMessageView();
 	const [showAdvanceFilters, setShowAdvanceFilters] = useState(false);
-	const settings = useUserSettings();
-	const includeSharedItemsInSearch = settings.prefs.zimbraPrefIncludeSharedItemsInSearch === 'TRUE';
-	const [isSharedFolderIncluded, setIsSharedFolderIncluded] = useState<boolean>(
-		includeSharedItemsInSearch
-	);
+
 	const invalidQueryTooltip = useMemo(
 		() => t('label.invalid_query', 'Unable to parse the search query, clear it and retry'),
 		[]
 	);
 
+	const { watch, setValue } = useForm<FormValues>();
+
+	const isSharedFolderIncluded = watch('isSharedFolderIncluded');
+
 	const [count, setCount] = useState(0);
+
+	useEffect(() => {
+		methods.reset(defaultValues);
+	}, [defaultValues, methods, query]);
+
 	useEffect(() => {
 		setAppContext({ isMessageView, count, setCount });
 	}, [count, isMessageView]);
@@ -73,11 +90,17 @@ const SearchView = ({
 	const loading = searchResults.status === API_REQUEST_STATUS.pending;
 
 	const onModalConfirm = useCallback(
-		(request: { query: Query; includeSharedFolders: boolean }) => {
-			setIsSharedFolderIncluded(request.includeSharedFolders);
-			updateQuery(request.query);
+		({
+			query: searchQuery,
+			includeSharedFolders
+		}: {
+			query: Query;
+			includeSharedFolders: boolean;
+		}) => {
+			setValue('isSharedFolderIncluded', includeSharedFolders);
+			updateQuery(searchQuery);
 		},
-		[updateQuery]
+		[setValue, updateQuery]
 	);
 
 	useEffect(() => {
@@ -86,12 +109,12 @@ const SearchView = ({
 			executeSearch(controller.signal);
 		} else {
 			resetSearchAndPopulatedItems();
-			setIsSharedFolderIncluded(includeSharedItemsInSearch);
+			setValue('isSharedFolderIncluded', includeSharedItemsInSearchDefaultPref);
 		}
 		return () => {
 			controller.abort();
 		};
-	}, [executeSearch, query, includeSharedItemsInSearch]);
+	}, [executeSearch, query, setValue, includeSharedItemsInSearchDefaultPref]);
 
 	return (
 		<>
@@ -146,17 +169,15 @@ const SearchView = ({
 					</Suspense>
 				</Container>
 			</Container>
-			<AdvancedFilterModal
-				// TOFIX: fix type definition
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-				// @ts-ignore
-				query={query}
-				open={showAdvanceFilters}
-				onSearchConfirm={onModalConfirm}
-				isSharedFolderIncludedInitialValue={isSharedFolderIncluded}
-				onClose={(): void => setShowAdvanceFilters(false)}
-				includeSharedItemsInSearchPref={includeSharedItemsInSearch}
-			/>
+
+			<FormProvider {...methods}>
+				<AdvancedFilterModal
+					open={showAdvanceFilters}
+					onSearchConfirm={onModalConfirm}
+					onClose={(): void => setShowAdvanceFilters(false)}
+					includeSharedItemsInSearchDefaultPref={includeSharedItemsInSearchDefaultPref}
+				/>
+			</FormProvider>
 		</>
 	);
 };

@@ -62,6 +62,6 @@ export type FormValuesControlProps = {
 export type AdvancedFilterModalProps = {
 	open: boolean;
 	onClose: () => void;
-	query: Query;
 	onSearchConfirm: (request: { query: Query; includeSharedFolders: boolean }) => void;
+	includeSharedItemsInSearchDefaultPref: boolean;
 };

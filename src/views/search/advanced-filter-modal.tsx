@@ -3,11 +3,11 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useCallback, useEffect, useMemo } from 'react';
+import React, { useCallback } from 'react';
 
 import { CustomModal, ModalHeader, Divider, ModalFooter } from '@zextras/carbonio-design-system';
-import { t, useUserSettings } from '@zextras/carbonio-shell-ui';
-import { FormProvider, useForm } from 'react-hook-form';
+import { t } from '@zextras/carbonio-shell-ui';
+import { useFormContext } from 'react-hook-form';
 
 import { AttachmentTypeEmailStatusRow } from './parts/attachment-type-email-status-row';
 import { ReceivedSentAddressRow } from './parts/received-sent-address-row';
@@ -17,24 +17,16 @@ import { SubjectKeywordRow } from './parts/subject-keyword-row';
 import { TagFolderRow } from './parts/tag-folder-row';
 import { ToggleFilters } from './parts/toggle-filters';
 import { AdvancedFilterModalProps, FormValues } from './types/types';
-import { getAdvancedFiltersDefaultValues, getQueryToBe } from './utils';
+import { getQueryToBe } from './utils';
 import { ScrollableContainer } from '../../commons/scrollable-container';
 
 export const AdvancedFilterModal = ({
 	open,
 	onClose,
-	query,
-	onSearchConfirm
+	onSearchConfirm,
+	includeSharedItemsInSearchDefaultPref
 }: AdvancedFilterModalProps): React.JSX.Element => {
-	const settings = useUserSettings();
-	const includeSharedItemsInSearch = settings.prefs.zimbraPrefIncludeSharedItemsInSearch === 'TRUE';
-
-	const defaultValues: FormValues = useMemo(
-		() => getAdvancedFiltersDefaultValues(query, includeSharedItemsInSearch),
-		[query, includeSharedItemsInSearch]
-	);
-
-	const methods = useForm<FormValues>({ defaultValues });
+	const methods = useFormContext<FormValues>();
 	const { watch, setValue, control } = methods;
 
 	const formValues = watch();
@@ -53,15 +45,16 @@ export const AdvancedFilterModal = ({
 		setValue('sentTo', []);
 		setValue('attachmentType', []);
 		setValue('emailStatus', []);
-		setValue('isSharedFolderIncluded', includeSharedItemsInSearch);
-	}, [setValue, includeSharedItemsInSearch]);
+		setValue('isSharedFolderIncluded', includeSharedItemsInSearchDefaultPref);
+	}, [setValue, includeSharedItemsInSearchDefaultPref]);
 
 	const queryToBe = getQueryToBe(formValues);
 
 	const onConfirm = useCallback(() => {
 		const controller = new AbortController();
+		const includeSharedFolders = watch('isSharedFolderIncluded');
 		try {
-			onSearchConfirm({ query: queryToBe, includeSharedFolders: includeSharedItemsInSearch });
+			onSearchConfirm({ query: queryToBe, includeSharedFolders });
 			onClose();
 		} catch (error) {
 			controller.abort();
@@ -69,16 +62,12 @@ export const AdvancedFilterModal = ({
 		return () => {
 			controller.abort();
 		};
-	}, [onSearchConfirm, queryToBe, includeSharedItemsInSearch, onClose]);
-
-	useEffect(() => {
-		methods.reset(defaultValues);
-	}, [defaultValues, methods, query]);
+	}, [onSearchConfirm, queryToBe, watch, onClose]);
 
 	if (!open) return <></>;
 
 	return (
-		<CustomModal open={open} onClose={onClose} maxHeight="90vh" size="medium">
+		<CustomModal open={open} onClose={onClose} maxHeight="" size="medium">
 			<ModalHeader
 				onClose={onClose}
 				title={t('label.single_advanced_filter', 'Advanced Filters')}
@@ -90,22 +79,21 @@ export const AdvancedFilterModal = ({
 				padding={{ horizontal: 'medium', vertical: 'small' }}
 				mainAlignment={'flex-start'}
 			>
-				<FormProvider {...methods}>
-					<ToggleFilters />
-					<SubjectKeywordRow control={control} />
-					<ReceivedSentAddressRow control={control} />
-					<AttachmentTypeEmailStatusRow control={control} />
-					<SizeLargerSizeSmallerRow control={control} />
-					<SendReceivedDateRow control={control} />
-					<TagFolderRow control={control} setValue={setValue} />
-				</FormProvider>
+				<ToggleFilters />
+				<SubjectKeywordRow control={control} />
+				<ReceivedSentAddressRow control={control} />
+				<AttachmentTypeEmailStatusRow control={control} />
+				<SizeLargerSizeSmallerRow control={control} />
+				<SendReceivedDateRow control={control} />
+				<TagFolderRow control={control} setValue={setValue} />
 			</ScrollableContainer>
 			<Divider />
 			<ModalFooter
 				onConfirm={onConfirm}
 				confirmDisabled={queryToBe.length === 0}
 				secondaryActionDisabled={
-					queryToBe.length === 0 && includeSharedItemsInSearch === watch('isSharedFolderIncluded')
+					queryToBe.length === 0 &&
+					includeSharedItemsInSearchDefaultPref === watch('isSharedFolderIncluded')
 				}
 				confirmLabel={t('action.search', 'Search')}
 				secondaryActionLabel={t('action.reset', 'Reset filters')}
