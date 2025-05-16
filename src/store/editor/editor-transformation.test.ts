@@ -58,7 +58,7 @@ describe('buildSavedAttachments', () => {
 				contentId: '65766eee-4439-438c-a375-1ac111ed1a07@zimbra',
 				contentType: 'text/html',
 				filename: '',
-				isInline: false,
+				isInline: true,
 				messageId: message.id,
 				partName: 'filename.jpg',
 				requiresSmartLinkConversion: true,
