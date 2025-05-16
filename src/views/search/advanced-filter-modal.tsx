@@ -68,6 +68,8 @@ export const AdvancedFilterModal = ({
 		onClose();
 	}, [onClose, resetFilters]);
 
+	const isSharedFolderIncluded = watch('isSharedFolderIncluded');
+
 	return (
 		<CustomModal open onClose={onClose} maxHeight="" size="medium">
 			<ModalHeader
@@ -93,10 +95,7 @@ export const AdvancedFilterModal = ({
 			<ModalFooter
 				onConfirm={onConfirm}
 				confirmDisabled={queryToBe.length === 0}
-				secondaryActionDisabled={
-					queryToBe.length === 0 &&
-					includeSharedItemsInSearchDefaultPref === watch('isSharedFolderIncluded')
-				}
+				secondaryActionDisabled={queryToBe.length === 0 && isSharedFolderIncluded}
 				confirmLabel={t('action.search', 'Search')}
 				secondaryActionLabel={t('action.reset', 'Reset filters')}
 				onSecondaryAction={resetFilters}
