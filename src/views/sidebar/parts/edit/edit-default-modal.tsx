@@ -11,7 +11,7 @@ import { includes, isEmpty } from 'lodash';
 
 import { FolderDetails } from './folder-details';
 import NameInputRow from './name-input';
-import RetentionPolicies from './retention-policies';
+import { RetentionPolicies } from './retention-policies';
 import { ShareFolderProperties } from './share-folder-properties';
 import { folderActionSoapApi } from '../../../../api/folder-action-soap-api';
 import ModalFooter from '../../../../carbonio-ui-commons/components/modals/modal-footer';
@@ -37,15 +37,10 @@ type MainEditModalProps = ModalProps & {
 const MainEditModal: FC<MainEditModalProps> = ({ folder, onClose, setActiveModal }) => {
 	const [folderNameInputValue, setFolderNameInputValue] = useState(folder.name);
 	const [showPolicy, setShowPolicy] = useState(false);
-	const [rtnValue, setRtnValue] = useState<number | string>(0);
 	const [purgeValue, setPurgeValue] = useState<number | string>(0);
-	const [rtnYear, setRtnYear] = useState<string | null>('d');
 	const [dspYear, setDspYear] = useState<string | null>('d');
-	const [rtnRange, setRtnRange] = useState('');
 	const [dspRange, setDspRange] = useState<string>('');
 	const [dsblMsgDis, setDsblMsgDis] = useState(false);
-	const [dsblMsgRet, setDsblMsgRet] = useState(false);
-	const [emptyRtnValue, setEmptyRtnValue] = useState(false);
 	const [emptyDisValue, setEmptyDisValue] = useState(false);
 	const [folderColor, setFolderColor] = useState<number>(folder.color ?? 0);
 
@@ -71,43 +66,6 @@ const MainEditModal: FC<MainEditModalProps> = ({ folder, onClose, setActiveModal
 	const { createSnackbar } = useUiUtilities();
 
 	useEffect(() => {
-		if (
-			folder.retentionPolicy &&
-			folder.retentionPolicy?.length &&
-			folder.retentionPolicy[0].keep !== undefined &&
-			folder.retentionPolicy[0].keep &&
-			Object.keys(folder.retentionPolicy[0].keep[0]).length !== 0
-		) {
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-ignore
-			const lifetime = folder.retentionPolicy[0]?.keep[0]?.policy[0]?.lifetime;
-			// eslint-disable-next-line radix
-			const d = parseInt(lifetime);
-			setDsblMsgRet(true);
-			setShowPolicy(true);
-
-			if (d % 365 === 0) {
-				setRtnYear('y');
-				setRtnValue(d / 365);
-				setRtnRange(t(YEARS_LABEL, 'Years'));
-			} else if (d % 31 === 0) {
-				setRtnYear('m');
-				setRtnValue(d / 31);
-				setRtnRange(t(MONTHS_LABEL, 'Months'));
-			} else if (d % 7 === 0) {
-				setRtnYear('w');
-				setRtnValue(d / 7);
-				setRtnRange(t(WEEKS_LABEL, 'Weeks'));
-			} else {
-				setRtnYear('d');
-				setRtnValue(d);
-				setRtnRange(t(DAYS_LABEL, 'Days'));
-			}
-		} else {
-			setRtnYear('d');
-			setRtnRange(t(DAYS_LABEL, 'Days'));
-		}
-
 		if (
 			folder.retentionPolicy &&
 			folder.retentionPolicy.length &&
@@ -165,22 +123,12 @@ const MainEditModal: FC<MainEditModalProps> = ({ folder, onClose, setActiveModal
 	);
 
 	const disableSubmit = useMemo(
-		() => (isFolderNameInputEmpty || showIsSystemFolderNameWarning || emptyRtnValue) && !inpDisable,
-		[isFolderNameInputEmpty, showIsSystemFolderNameWarning, emptyRtnValue, inpDisable]
+		() => (isFolderNameInputEmpty || showIsSystemFolderNameWarning) && !inpDisable,
+		[isFolderNameInputEmpty, showIsSystemFolderNameWarning, inpDisable]
 	);
 
 	const onConfirm = useCallback(() => {
 		let submit = true;
-		if (dsblMsgRet) {
-			submit = false;
-			if (rtnValue && numberRegex.test(rtnValue.toString())) {
-				submit = true;
-			} else {
-				setEmptyRtnValue(true);
-				return;
-			}
-		}
-
 		if (dsblMsgDis) {
 			submit = false;
 			if (purgeValue && numberRegex.test(purgeValue.toString())) {
@@ -191,14 +139,7 @@ const MainEditModal: FC<MainEditModalProps> = ({ folder, onClose, setActiveModal
 			}
 		}
 		if (folderNameInputValue && submit) {
-			let lt;
 			let pr;
-
-			if (rtnYear === 'w') lt = Number(rtnValue) * 7;
-			else if (rtnYear === 'm') lt = Number(rtnValue) * 31;
-			else if (rtnYear === 'y') lt = Number(rtnValue) * 365;
-			else lt = Number(rtnValue);
-
 			if (dspYear === 'w') pr = Number(purgeValue) * 7;
 			else if (dspYear === 'm') pr = Number(purgeValue) * 31;
 			else if (dspYear === 'y') pr = Number(purgeValue) * 365;
@@ -214,16 +155,8 @@ const MainEditModal: FC<MainEditModalProps> = ({ folder, onClose, setActiveModal
 				op: 'update',
 				color: Number(folderColor),
 				retentionPolicy:
-					dsblMsgRet || dsblMsgDis || folder?.retentionPolicy
+					dsblMsgDis || folder?.retentionPolicy
 						? {
-								keep: dsblMsgRet
-									? {
-											policy: {
-												lifetime: `${lt}d`,
-												type: 'user'
-											}
-										}
-									: {},
 								purge: dsblMsgDis
 									? {
 											policy: {
@@ -259,13 +192,10 @@ const MainEditModal: FC<MainEditModalProps> = ({ folder, onClose, setActiveModal
 		setFolderNameInputValue('');
 		onClose();
 	}, [
-		dsblMsgRet,
 		dsblMsgDis,
 		folderNameInputValue,
 		onClose,
-		rtnValue,
 		purgeValue,
-		rtnYear,
 		dspYear,
 		folder,
 		folderColor,
@@ -290,30 +220,21 @@ const MainEditModal: FC<MainEditModalProps> = ({ folder, onClose, setActiveModal
 				folderColor={folderColor}
 				setFolderColor={setFolderColor}
 			/>
-			<Container mainAlignment="flex-start" crossAlignment="flex-start" padding={{ top: 'medium' }}>
+			<Container mainAlignment="flex-start" crossAlignment="flex-start" padding={{ top: 'small' }}>
 				<FolderDetails folder={folder} />
 				{!isEmpty(folder?.acl) && (
 					<ShareFolderProperties folder={folder} setActiveModal={setActiveModal} />
 				)}
 				<RetentionPolicies
 					setShowPolicy={setShowPolicy}
-					emptyRtnValue={emptyRtnValue}
-					setEmptyRtnValue={setEmptyRtnValue}
 					showPolicy={showPolicy}
-					dsblMsgRet={dsblMsgRet}
-					setDsblMsgRet={setDsblMsgRet}
-					setRtnValue={setRtnValue}
-					rtnValue={rtnValue}
 					retentionPeriod={retentionPeriod}
-					setRtnYear={setRtnYear}
 					dsblMsgDis={dsblMsgDis}
 					emptyDisValue={emptyDisValue}
 					setEmptyDisValue={setEmptyDisValue}
 					setDsblMsgDis={setDsblMsgDis}
 					setPurgeValue={setPurgeValue}
 					setDspYear={setDspYear}
-					rtnYear={rtnYear}
-					rtnRange={rtnRange}
 					dspYear={dspYear}
 					dspRange={dspRange}
 					purgeValue={purgeValue}
