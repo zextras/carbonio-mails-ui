@@ -40,6 +40,7 @@ const SearchView = ({
 	);
 
 	const methods = useForm<FormValues>({ defaultValues });
+	const { reset } = methods;
 	const isMessageView = useIsMessageView();
 	const [showAdvanceFilters, setShowAdvanceFilters] = useState(false);
 
@@ -55,8 +56,8 @@ const SearchView = ({
 	const [count, setCount] = useState(0);
 
 	useEffect(() => {
-		methods.reset(defaultValues);
-	}, [defaultValues, methods, query]);
+		reset(defaultValues);
+	}, [defaultValues, reset]);
 
 	useEffect(() => {
 		setAppContext({ isMessageView, count, setCount });
