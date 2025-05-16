@@ -3,10 +3,10 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 
 import { CustomModal, ModalHeader, Divider, ModalFooter } from '@zextras/carbonio-design-system';
-import { t } from '@zextras/carbonio-shell-ui';
+import { t, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { FormProvider, useForm } from 'react-hook-form';
 
 import { AttachmentTypeEmailStatusRow } from './parts/attachment-type-email-status-row';
@@ -24,17 +24,14 @@ export const AdvancedFilterModal = ({
 	open,
 	onClose,
 	query,
-	isSharedFolderIncludedInitialValue,
-	onSearchConfirm,
-	includeSharedItemsInSearchPref
+	onSearchConfirm
 }: AdvancedFilterModalProps): React.JSX.Element => {
-	const [isSharedFolderIncluded, setIsSharedFolderIncluded] = useState(
-		isSharedFolderIncludedInitialValue
-	);
+	const settings = useUserSettings();
+	const includeSharedItemsInSearch = settings.prefs.zimbraPrefIncludeSharedItemsInSearch === 'TRUE';
 
 	const defaultValues: FormValues = useMemo(
-		() => getAdvancedFiltersDefaultValues(query, isSharedFolderIncluded),
-		[query, isSharedFolderIncluded]
+		() => getAdvancedFiltersDefaultValues(query, includeSharedItemsInSearch),
+		[query, includeSharedItemsInSearch]
 	);
 
 	const methods = useForm<FormValues>({ defaultValues });
@@ -56,20 +53,15 @@ export const AdvancedFilterModal = ({
 		setValue('sentTo', []);
 		setValue('attachmentType', []);
 		setValue('emailStatus', []);
-		setValue('isSharedFolderIncluded', includeSharedItemsInSearchPref);
-		setIsSharedFolderIncluded(includeSharedItemsInSearchPref);
-	}, [setValue, includeSharedItemsInSearchPref]);
-
-	useEffect(() => {
-		setIsSharedFolderIncluded(formValues.isSharedFolderIncluded);
-	}, [formValues.isSharedFolderIncluded]);
+		setValue('isSharedFolderIncluded', includeSharedItemsInSearch);
+	}, [setValue, includeSharedItemsInSearch]);
 
 	const queryToBe = getQueryToBe(formValues);
 
 	const onConfirm = useCallback(() => {
 		const controller = new AbortController();
 		try {
-			onSearchConfirm({ query: queryToBe, includeSharedFolders: isSharedFolderIncluded });
+			onSearchConfirm({ query: queryToBe, includeSharedFolders: includeSharedItemsInSearch });
 			onClose();
 		} catch (error) {
 			controller.abort();
@@ -77,7 +69,7 @@ export const AdvancedFilterModal = ({
 		return () => {
 			controller.abort();
 		};
-	}, [onSearchConfirm, queryToBe, isSharedFolderIncluded, onClose]);
+	}, [onSearchConfirm, queryToBe, includeSharedItemsInSearch, onClose]);
 
 	useEffect(() => {
 		methods.reset(defaultValues);
@@ -113,7 +105,7 @@ export const AdvancedFilterModal = ({
 				onConfirm={onConfirm}
 				confirmDisabled={queryToBe.length === 0}
 				secondaryActionDisabled={
-					queryToBe.length === 0 && isSharedFolderIncluded === includeSharedItemsInSearchPref
+					queryToBe.length === 0 && includeSharedItemsInSearch === watch('isSharedFolderIncluded')
 				}
 				confirmLabel={t('action.search', 'Search')}
 				secondaryActionLabel={t('action.reset', 'Reset filters')}
