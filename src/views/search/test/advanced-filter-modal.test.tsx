@@ -3,12 +3,13 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React from 'react';
+import React, { ReactNode } from 'react';
 
 import { faker } from '@faker-js/faker';
 import { screen, waitFor, within } from '@testing-library/react';
 import { UserEvent } from '@testing-library/user-event';
 import { format } from 'date-fns';
+import { useForm, FormProvider } from 'react-hook-form';
 
 import {
 	EDIT_ACTION,
@@ -17,7 +18,8 @@ import {
 } from '../../../carbonio-ui-commons/test/mocks/integrations/mock-contact-input';
 import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
 import { AdvancedFilterModal } from '../advanced-filter-modal';
-import { AdvancedFilterModalProps, SearchQueryItem } from '../types/types';
+import { AdvancedFilterModalProps, FormValues, Query, SearchQueryItem } from '../types/types';
+import { getAdvancedFiltersDefaultValues } from '../utils';
 
 async function selectOption(
 	user: UserEvent,
@@ -31,16 +33,32 @@ async function selectOption(
 	await user.click(selectOption);
 }
 
+const emptyQuery: Query = [];
+const defaultValues = getAdvancedFiltersDefaultValues(emptyQuery, false);
+
+const renderWithUseForm = async (
+	component: React.JSX.Element,
+	formValues: Partial<FormValues> = {}
+): Promise<{ user: UserEvent }> => {
+	const Wrapper = ({ children }: { children: ReactNode }): JSX.Element => {
+		const methods = useForm<FormValues>({ defaultValues: formValues });
+		return <FormProvider {...methods}>{children}</FormProvider>;
+	};
+
+	const { user } = setupTest(<Wrapper>{component}</Wrapper>);
+	return { user };
+};
+
 async function checkResetAndSearchButton(f: (user: UserEvent) => Promise<void>): Promise<void> {
 	jest.spyOn(console, 'error').mockImplementation();
 	const onSearchConfirmMock = jest.fn();
 	const properties: AdvancedFilterModalProps = {
-		open: true,
 		onClose: jest.fn(),
-		query: [],
-		onSearchConfirm: onSearchConfirmMock
+		onSearchConfirm: onSearchConfirmMock,
+		includeSharedItemsInSearchDefaultPref: false
 	};
-	const { user } = setupTest(<AdvancedFilterModal {...properties} />);
+
+	const { user } = await renderWithUseForm(<AdvancedFilterModal {...properties} />, defaultValues);
 
 	await f(user);
 
@@ -67,19 +85,20 @@ async function checkResetAndSearchButton(f: (user: UserEvent) => Promise<void>):
 }
 
 describe('Advanced filter modal', () => {
-	const props: AdvancedFilterModalProps = {
-		open: true,
+	const defaultProps: AdvancedFilterModalProps = {
 		onClose: jest.fn(),
-		query: [],
-		onSearchConfirm: jest.fn()
+		onSearchConfirm: jest.fn(),
+		includeSharedItemsInSearchDefaultPref: false
 	};
+
 	it('render the advanced filter modal', () => {
-		setupTest(<AdvancedFilterModal {...props} />);
+		renderWithUseForm(<AdvancedFilterModal {...defaultProps} />, defaultValues);
 		const fieldLabel = screen.getByText(/label\.single_advanced_filter/i);
 		expect(fieldLabel).toBeInTheDocument();
 	});
+
 	it('search button should be disable when modal open', () => {
-		setupTest(<AdvancedFilterModal {...props} />);
+		renderWithUseForm(<AdvancedFilterModal {...defaultProps} />, defaultValues);
 		const fieldLabel = screen.getByText(/label\.single_advanced_filter/i);
 		expect(fieldLabel).toBeInTheDocument();
 
@@ -89,8 +108,12 @@ describe('Advanced filter modal', () => {
 		expect(actionButton).toBeInTheDocument();
 		expect(actionButton).toBeDisabled();
 	});
+
 	it('search button should be enable on keyword, subject change', async () => {
-		const { user } = setupTest(<AdvancedFilterModal {...props} />);
+		const { user } = await renderWithUseForm(
+			<AdvancedFilterModal {...defaultProps} />,
+			defaultValues
+		);
 		const fieldLabel = screen.getByText(/label\.single_advanced_filter/i);
 		expect(fieldLabel).toBeInTheDocument();
 
@@ -118,31 +141,26 @@ describe('Advanced filter modal', () => {
 
 	it('search button should be enabled if query is not empty', async () => {
 		const properties: AdvancedFilterModalProps = {
-			open: true,
 			onClose: jest.fn(),
-			query: [
-				{
-					id: 'query1',
-					label: 'keywords',
-					value: 'keyword'
-				}
-			],
-			onSearchConfirm: jest.fn()
+			onSearchConfirm: jest.fn(),
+			includeSharedItemsInSearchDefaultPref: false
 		};
-		setupTest(<AdvancedFilterModal {...properties} />);
+		const query = [
+			{
+				id: 'query1',
+				label: 'keywords',
+				value: 'keyword'
+			}
+		];
+		const customDefaultValues = getAdvancedFiltersDefaultValues(query, false);
+		await renderWithUseForm(<AdvancedFilterModal {...properties} />, customDefaultValues);
 		const actionButton = screen.getByRole('button', { name: /action\.search/i });
 
 		expect(actionButton).toBeEnabled();
 	});
 
 	it('search button should be disabled if there is no query', async () => {
-		const properties: AdvancedFilterModalProps = {
-			open: true,
-			onClose: jest.fn(),
-			query: [],
-			onSearchConfirm: jest.fn()
-		};
-		setupTest(<AdvancedFilterModal {...properties} />);
+		await renderWithUseForm(<AdvancedFilterModal {...defaultProps} />, defaultValues);
 		const actionButton = screen.getByRole('button', { name: /action\.search/i });
 
 		expect(actionButton).toBeDisabled();
@@ -153,13 +171,15 @@ describe('Advanced filter modal', () => {
 		const mockOnClose = jest.fn();
 
 		const properties: AdvancedFilterModalProps = {
-			open: true,
 			onClose: mockOnClose,
-			query: [],
-			onSearchConfirm: mockOnSearchConfirm
+			onSearchConfirm: mockOnSearchConfirm,
+			includeSharedItemsInSearchDefaultPref: false
 		};
 
-		const { user } = setupTest(<AdvancedFilterModal {...properties} />);
+		const { user } = await renderWithUseForm(
+			<AdvancedFilterModal {...properties} />,
+			defaultValues
+		);
 
 		const confirmButton = screen.getByRole('button', { name: /action\.search/i });
 		expect(confirmButton).toBeInTheDocument();
@@ -196,14 +216,12 @@ describe('Advanced filter modal', () => {
 
 	it('should add "received from" to query with value and label including "from:" after adding a value in the input', async () => {
 		const mockOnSearchConfirm = jest.fn();
-		const { user } = setupTest(
-			<AdvancedFilterModal
-				open
-				onClose={jest.fn()}
-				query={[]}
-				onSearchConfirm={mockOnSearchConfirm}
-			/>
-		);
+
+		const props: AdvancedFilterModalProps = {
+			...defaultProps,
+			onSearchConfirm: mockOnSearchConfirm
+		};
+		const { user } = await renderWithUseForm(<AdvancedFilterModal {...props} />, defaultValues);
 		const sentTo = screen.getByTestId('received-from-input');
 		await user.type(sentTo, 'validEmail@test.com');
 		await user.type(sentTo, '[Enter]');
@@ -229,14 +247,13 @@ describe('Advanced filter modal', () => {
 
 	it('should add "sent to" to query with value and label including "to:" after adding a value in the input', async () => {
 		const mockOnSearchConfirm = jest.fn();
-		const { user } = setupTest(
-			<AdvancedFilterModal
-				open
-				onClose={jest.fn()}
-				query={[]}
-				onSearchConfirm={mockOnSearchConfirm}
-			/>
-		);
+
+		const props: AdvancedFilterModalProps = {
+			...defaultProps,
+			onSearchConfirm: mockOnSearchConfirm
+		};
+
+		const { user } = await renderWithUseForm(<AdvancedFilterModal {...props} />, defaultValues);
 		const sentTo = screen.getByTestId('sent-to-input');
 		await user.type(sentTo, 'validEmail@test.com');
 		await user.type(sentTo, '[Enter]');
@@ -261,19 +278,20 @@ describe('Advanced filter modal', () => {
 	});
 	it('should keep previous query first value after adding a new value in "sent to" input', async () => {
 		const mockOnSearchConfirm = jest.fn();
+
+		const props: AdvancedFilterModalProps = {
+			...defaultProps,
+			onSearchConfirm: mockOnSearchConfirm
+		};
+
 		const query: SearchQueryItem = {
 			id: 'query1',
 			label: 'from:someone@test.com',
 			value: 'someone@test.com'
 		};
-		const { user } = setupTest(
-			<AdvancedFilterModal
-				open
-				onClose={jest.fn()}
-				query={[query]}
-				onSearchConfirm={mockOnSearchConfirm}
-			/>
-		);
+
+		const customValues = getAdvancedFiltersDefaultValues([query], false);
+		const { user } = await renderWithUseForm(<AdvancedFilterModal {...props} />, customValues);
 		const sentTo = screen.getByTestId('sent-to-input');
 		await user.type(sentTo, 'validEmail@test.com');
 		await user.type(sentTo, '[Enter]');
@@ -309,13 +327,22 @@ describe('Advanced filter modal', () => {
 		mockContactInput({ valueToAdd });
 
 		const mockOnSearchConfirm = jest.fn();
-		const { user } = setupTest(
-			<AdvancedFilterModal
-				open
-				onClose={jest.fn()}
-				query={[]}
-				onSearchConfirm={mockOnSearchConfirm}
-			/>
+
+		const props: AdvancedFilterModalProps = {
+			...defaultProps,
+			onSearchConfirm: mockOnSearchConfirm
+		};
+
+		const query: SearchQueryItem = {
+			id: 'query1',
+			label: 'from:someone@test.com',
+			value: 'someone@test.com'
+		};
+
+		const customDefaultValues = getAdvancedFiltersDefaultValues([query], false);
+		const { user } = await renderWithUseForm(
+			<AdvancedFilterModal {...props} />,
+			customDefaultValues
 		);
 		const sentTo = screen.getByTestId('sent-to-input');
 		await user.type(sentTo, 'validEmail@test.com');
@@ -351,14 +378,12 @@ describe('Advanced filter modal', () => {
 
 		const mockOnSearchConfirm = jest.fn();
 
-		const { user } = setupTest(
-			<AdvancedFilterModal
-				open
-				onClose={jest.fn()}
-				query={[]}
-				onSearchConfirm={mockOnSearchConfirm}
-			/>
-		);
+		const props: AdvancedFilterModalProps = {
+			...defaultProps,
+			onSearchConfirm: mockOnSearchConfirm
+		};
+
+		const { user } = await renderWithUseForm(<AdvancedFilterModal {...props} />, defaultValues);
 
 		const sentTo = screen.getByTestId('sent-to-input');
 		await user.type(sentTo, 'validEmail@test.com');
@@ -373,26 +398,23 @@ describe('Advanced filter modal', () => {
 		expect(mockContactInputValues[0]).toHaveTextContent(/"icon":"EditOutline"/);
 		expect(mockContactInputValues[1]).toHaveTextContent(/"icon":"EditOutline"/);
 	});
-	it('reset filters button should be enabled if query is not empty', async () => {
-		const properties: AdvancedFilterModalProps = {
-			open: true,
-			onClose: jest.fn(),
-			query: [
-				{
-					id: 'query1',
-					label: 'keywords',
-					value: 'keyword'
-				}
-			],
-			onSearchConfirm: jest.fn()
-		};
-		setupTest(<AdvancedFilterModal {...properties} />);
-		const actionButton = screen.getByRole('button', { name: /action\.reset/i });
 
+	it('reset filters button should be enabled if query is not empty', async () => {
+		const query = [
+			{
+				id: 'query1',
+				label: 'keywords',
+				value: 'keyword'
+			}
+		];
+		const customDefaultValues = getAdvancedFiltersDefaultValues(query, false);
+		await renderWithUseForm(<AdvancedFilterModal {...defaultProps} />, customDefaultValues);
+		const actionButton = screen.getByRole('button', { name: /action\.reset/i });
 		expect(actionButton).toBeEnabled();
 	});
-	it('reset filters button should be disable when modal open', () => {
-		setupTest(<AdvancedFilterModal {...props} />);
+
+	it('reset filters button should be disabled on render', async () => {
+		await renderWithUseForm(<AdvancedFilterModal {...defaultProps} />, defaultValues);
 		const fieldLabel = screen.getByText(/label\.single_advanced_filter/i);
 		expect(fieldLabel).toBeInTheDocument();
 
@@ -402,6 +424,7 @@ describe('Advanced filter modal', () => {
 		expect(actionButton).toBeInTheDocument();
 		expect(actionButton).toBeDisabled();
 	});
+
 	it('should disable search button when reset filters button is clicked', async () => {
 		const mockOnSearchConfirm = jest.fn();
 		const properties: AdvancedFilterModalProps = {
