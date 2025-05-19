@@ -17,7 +17,6 @@ export type SearchListProps = {
 	searchResults: Array<string>;
 	query: string;
 	loading: boolean;
-	filterCount: number;
 	setShowAdvanceFilters: (show: boolean) => void;
 	isInvalidQuery: boolean;
 	searchDisabled: boolean;
@@ -46,18 +45,8 @@ export type SearchQueryItem = {
 
 export type Query = Array<SearchQueryItem>;
 
-export type AdvancedFilterModalProps = {
-	open: boolean;
-	onClose: () => void;
-	query: Query;
-	updateQuery: (arg: Array<QueryChip>) => void;
-	isSharedFolderIncluded: boolean;
-	setIsSharedFolderIncluded: (arg: boolean) => void;
-};
-
 export type AdvancedFilterButtonProps = {
 	searchDisabled: boolean;
-	filterCount: number;
 	setShowAdvanceFilters: (arg: boolean) => void;
 	invalidQueryTooltip?: string;
 };
@@ -69,6 +58,12 @@ export type AttachTypeEmailStatusRowPropType = {
 		emailStatus: KeywordState;
 		setEmailStatus: (arg: any) => void;
 	};
+};
+
+export type ChipOnAddItem = {
+	label: string;
+	icon?: string;
+	searchString: string;
 };
 
 export type ChipOnAddProps = {
@@ -132,12 +127,12 @@ export type ChipOnAdd = ChipItem & {
 
 export type SendReceivedDateRowPropType = {
 	compProps: {
-		sentBefore: Array<any>;
-		setSentBefore: (arg: any) => void;
-		sentAfter: Array<any>;
-		setSentAfter: (arg: any) => void;
-		sentOn: Array<any>;
-		setSentOn: (arg: any) => void;
+		sentBefore: Date | null;
+		setSentBefore: (arg: Date | null) => void;
+		sentAfter: Date | null;
+		setSentAfter: (arg: Date | null) => void;
+		sentOn: Date | null;
+		setSentOn: (arg: Date | null) => void;
 	};
 };
 export type SizeLargerSizeSmallerRowProps = {
@@ -171,17 +166,19 @@ export type ToggleFilters = Array<{
 	id: string;
 	avatarIcon?: string;
 	label: string;
-	value: string;
+	value?: string;
 	isQueryFilter?: boolean;
 	isGeneric?: boolean;
 	avatarBackground?: ChipProps['background'];
 }>;
 export type ToggleFiltersProps = {
 	compProps: {
-		query: Array<QueryChip>;
-		setUnreadFilter: (arg: ToggleFilters) => void;
-		setFlaggedFilter: (arg: ToggleFilters) => void;
-		setAttachmentFilter: (arg: ToggleFilters) => void;
+		isUnread: boolean;
+		isFlagged: boolean;
+		hasAttachment: boolean;
+		setIsUnread: (arg: boolean) => void;
+		setIsFlagged: (arg: boolean) => void;
+		setHasAttachment: (arg: boolean) => void;
 		isSharedFolderIncludedTobe: boolean;
 		setIsSharedFolderIncludedTobe: (arg: boolean) => void;
 	};
@@ -192,25 +189,6 @@ export type UseDisabledPropType = {
 	query: Array<QueryChip>;
 	isSharedFolderIncluded: boolean;
 	isSharedFolderIncludedTobe: boolean;
-};
-
-export type UseSecondaryDisabledType = {
-	attachmentFilter: KeywordState;
-	attachmentType: KeywordState;
-	emailStatus: KeywordState;
-	flaggedFilter: KeywordState;
-	folder: KeywordState;
-	receivedFromAddress: Array<QueryChip>;
-	sentAfter: KeywordState;
-	sentBefore: KeywordState;
-	sentFromAddress: Array<QueryChip>;
-	sentOn: KeywordState;
-	sizeLarger: KeywordState;
-	sizeSmaller: KeywordState;
-	subject: KeywordState;
-	tag: KeywordState;
-	totalKeywords: number;
-	unreadFilter: KeywordState;
 };
 
 export type ChipType = {

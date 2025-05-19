@@ -262,4 +262,46 @@ describe('HTML message renderer', () => {
 
 		expect(shadowParagraph?.outerHTML).toBe('<p class="my-styled-paragraph">test component</p>');
 	});
+
+	describe('html content processing', () => {
+		it('should render multiple valid surrogate pairs emoji', () => {
+			const message = {
+				id: '1',
+				body: {
+					contentType: 'text/html',
+					content: '\\uD83D\\uDE00\\uD83D\\uDE01'
+				},
+				truncated: false
+			} as unknown as MailMessage;
+
+			setupTest(<HtmlMessageRenderer message={message} />, {
+				initialEntries: ['/mails']
+			});
+
+			const shadowDomWrapper = screen.getByTestId('shadow-dom-wrapper');
+			const { shadowRoot } = shadowDomWrapper;
+
+			expect(shadowRoot?.innerHTML).toContain('😀😁');
+		});
+
+		it('handles mixed valid and invalid surrogate pairs', () => {
+			const message = {
+				id: '1',
+				body: {
+					contentType: 'text/html',
+					content: '\\uD83D\\uDE00\\uD83D\\u1234'
+				},
+				truncated: false
+			} as unknown as MailMessage;
+
+			setupTest(<HtmlMessageRenderer message={message} />, {
+				initialEntries: ['/mails']
+			});
+
+			const shadowDomWrapper = screen.getByTestId('shadow-dom-wrapper');
+			const { shadowRoot } = shadowDomWrapper;
+
+			expect(shadowRoot?.innerHTML).toContain('😀\\uD83D\\u1234');
+		});
+	});
 });

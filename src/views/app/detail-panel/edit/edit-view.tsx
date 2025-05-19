@@ -16,7 +16,6 @@ import {
 } from '@zextras/carbonio-design-system';
 import { t, useIsCarbonioCE } from '@zextras/carbonio-shell-ui';
 import { filter, map } from 'lodash';
-import type { TinyMCE } from 'tinymce/tinymce';
 
 import { checkSubjectAndAttachment } from './check-subject-attachment';
 import DropZoneAttachment from './dropzone-attachment';
@@ -41,11 +40,8 @@ import { checkPersonalCertificateExist } from '../../../../api/check-personal-ce
 import { GapContainer, GapRow } from '../../../../commons/gap-container';
 import { EDIT_VIEW_CLOSING_REASONS, EditViewActions, TIMEOUTS } from '../../../../constants';
 import { buildArrayFromFileList } from '../../../../helpers/files';
-import {
-	getAvailableAddresses,
-	getIdentitiesDescriptors,
-	getIdentityDescriptor
-} from '../../../../helpers/identities';
+import { getAvailableAddresses } from '../../../../helpers/get-available-addresses';
+import { getIdentitiesDescriptors, getIdentityDescriptor } from '../../../../helpers/identities';
 import {
 	useCertificatesStore,
 	useSmimeFeatureStore,
@@ -77,10 +73,6 @@ export type EditViewHandle = {
 	closeEditView: () => void;
 };
 
-type FileSelectProps = {
-	editor: TinyMCE;
-	files: FileList;
-};
 const MemoizedTextEditorContainer = memo(TextEditorContainer);
 const MemoizedRecipientsRows = memo(RecipientsRows);
 const MemoizedSubjectRow = memo(SubjectRow);
@@ -154,7 +146,7 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 	const draftSaveProcessStatus = useEditorDraftSaveProcessStatus(editorId);
 	const createSnackbar = useSnackbar();
 	const [dropZoneEnabled, setDropZoneEnabled] = useState<boolean>(false);
-	const { addStandardAttachments, addInlineAttachments } = useEditorAttachments(editorId);
+	const { addStandardAttachments } = useEditorAttachments(editorId);
 
 	const keepOrDiscardDraft = useKeepOrDiscardDraft();
 
@@ -196,6 +188,7 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 
 				keepOrDiscardDraft({
 					onConfirm: (): void => {
+						saveDraft();
 						deleteEditor({ id: editorId });
 						close(EDIT_VIEW_CLOSING_REASONS.EXTERNAL_CLOSE_REQUEST);
 					},
@@ -204,7 +197,7 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 				});
 			}
 		}),
-		[close, draftId, editorId, keepOrDiscardDraft]
+		[close, draftId, editorId, keepOrDiscardDraft, saveDraft]
 	);
 
 	const onSendCountdownTick = useCallback(
@@ -297,20 +290,6 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 	}, []);
 
 	const flexStart = 'flex-start';
-	const onInlineAttachmentsSelected = useCallback(
-		({ editor: tinymce, files: fileList }: FileSelectProps): void => {
-			const files = buildArrayFromFileList(fileList);
-			addInlineAttachments(files, {
-				onSaveComplete: (inlineAttachments) => {
-					inlineAttachments.forEach((inlineAttachment) => {
-						const img = `&nbsp;<img pnsrc="${inlineAttachment.cidUrl}" data-mce-src="${inlineAttachment.cidUrl}" src="${inlineAttachment.downloadServiceUrl}" /><br/>`;
-						tinymce?.activeEditor?.insertContent(img);
-					});
-				}
-			});
-		},
-		[addInlineAttachments]
-	);
 
 	const { savedStandardAttachments } = useEditorAttachments(editorId);
 
@@ -549,6 +528,7 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 		<Container
 			data-testid={'edit-view-editor'}
 			mainAlignment={flexStart}
+			height={'fit'}
 			crossAlignment={flexStart}
 			padding={{ all: 'large' }}
 			background={'gray5'}
@@ -640,13 +620,7 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 						setLargeFileUploadInfoBannerVisible={setLargeFileUploadInfoBannerVisible}
 					/>
 
-					<MemoizedTextEditorContainer
-						onDragOver={onDragOverEvent}
-						onFilesSelected={onInlineAttachmentsSelected}
-						editorId={editorId}
-						minHeight={0}
-						disabled={false}
-					/>
+					<MemoizedTextEditorContainer onDragOver={onDragOverEvent} editorId={editorId} />
 					<EditViewDraftSaveInfo processStatus={draftSaveProcessStatus} />
 				</GapContainer>
 			</GapContainer>

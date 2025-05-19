@@ -7,7 +7,7 @@ import React, { FC } from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
 import { useAppContext } from '@zextras/carbonio-shell-ui';
-import { Route, Switch, useRouteMatch } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 
 import { MessagePreviewPanelContainer } from './detail-panel/message-preview-panel-container';
 import { SelectionInteractive } from './detail-panel/selection-interactive';
@@ -15,21 +15,20 @@ import type { AppContext } from '../../types';
 import { ConversationPreviewPanelContainer } from './detail-panel/conversation-preview-panel-container';
 
 const DetailPanel: FC = () => {
-	const { path } = useRouteMatch();
 	const { count } = useAppContext<AppContext>();
 	return (
 		<Container width="fill" data-testid="third-panel" style={{ overflowY: 'auto' }}>
-			<Switch>
-				<Route exact path={`${path}/folder/:folderId`}>
-					<SelectionInteractive count={count} />
-				</Route>
-				<Route exact path={`${path}/folder/:folderId/conversation/:conversationId`}>
-					<ConversationPreviewPanelContainer />
-				</Route>
-				<Route exact path={`${path}/folder/:folderId/message/:messageId`}>
-					<MessagePreviewPanelContainer />
-				</Route>
-			</Switch>
+			<Routes>
+				<Route path={`folder/:folderId`} element={<SelectionInteractive count={count} />} />
+				<Route
+					path={`folder/:folderId/conversation/:conversationId`}
+					element={<ConversationPreviewPanelContainer />}
+				/>
+				<Route
+					path={`folder/:folderId/message/:messageId`}
+					element={<MessagePreviewPanelContainer />}
+				/>
+			</Routes>
 		</Container>
 	);
 };

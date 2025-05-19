@@ -16,7 +16,7 @@ import { ConversationList } from './folder-panel/conversations/conversation-list
 import { MessageList } from './folder-panel/messages/message-list';
 
 const FolderPanel = (): React.JSX.Element => {
-	const { folderId } = useParams<{ folderId: string }>();
+	const { folderId } = useParams() as { folderId: string };
 	const isMessageView = useIsMessageView();
 
 	return (

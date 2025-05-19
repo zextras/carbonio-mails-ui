@@ -12,6 +12,7 @@ import { getUnsavedAttachmentIndex } from './store-utils';
 import {
 	AttachmentUploadProcessStatus,
 	EditorsStateTypeV2,
+	EditorTextProvider,
 	MailsEditorV2,
 	SavedAttachment,
 	UnsavedAttachment
@@ -359,6 +360,15 @@ export const useEditorsStore = create<EditorsStateTypeV2>()((set) => ({
 			produce((state: EditorsStateTypeV2) => {
 				if (state?.editors?.[id]) {
 					state.editors[id].isSmimeEncrypt = value;
+				}
+			})
+		);
+	},
+	setTextProvider: (id: MailsEditorV2['id'], provider: EditorTextProvider): void => {
+		set(
+			produce((state: EditorsStateTypeV2) => {
+				if (state?.editors?.[id]) {
+					state.editors[id].textProvider = provider;
 				}
 			})
 		);

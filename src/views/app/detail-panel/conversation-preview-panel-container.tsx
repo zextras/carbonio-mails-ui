@@ -6,52 +6,52 @@
 import React, { useCallback, useEffect, useMemo } from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
-import { replaceHistory } from '@zextras/carbonio-shell-ui';
 import { filter, isEmpty } from 'lodash';
-import { useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { useNavigate, useParams } from 'react-router-dom';
 
 import { ConversationPreviewPanel } from './conversation-preview-panel';
 import { PreviewPanelHeader } from './preview/preview-panel-header';
+import { Spinner } from '../../../assets/spinner';
 import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
 import { API_REQUEST_STATUS } from '../../../constants';
+import { isFocusModeMailView } from '../../../helpers/external-tabs';
 import { getFolderIdParts } from '../../../helpers/folders';
 import { getConvEmailStoreAction } from '../../../store/emails/actions/get-conv-action';
 import { useCompleteConversationOrFetch } from '../../../store/emails/hooks/hooks';
 import { useConversationMessages } from '../../../store/emails/store';
-import { useExtraWindow } from '../extra-windows/use-extra-window';
 
-type ConversationPreviewPanelProps = { conversationId?: string; folderId?: string };
-
-export const useConversationPreviewPanelParameters = (
-	props: ConversationPreviewPanelProps
-): { conversationId: string; folderId: string } => {
-	const params = useParams<{ conversationId: string; folderId: string }>();
-	return {
-		conversationId: props.conversationId ?? params.conversationId,
-		folderId: props.folderId ?? params.folderId
+export const ConversationPreviewPanelContainer = (): React.JSX.Element => {
+	const [t] = useTranslation();
+	const navigate = useNavigate();
+	const { conversationId, folderId } = useParams() as {
+		conversationId: string;
+		folderId: string;
 	};
-};
-
-export const ConversationPreviewPanelContainer = (
-	props: ConversationPreviewPanelProps
-): React.JSX.Element => {
-	const { conversationId, folderId } = useConversationPreviewPanelParameters(props);
-	const { isInsideExtraWindow } = useExtraWindow();
 	const { conversation, conversationStatus } = useCompleteConversationOrFetch(conversationId);
 	const messages = useConversationMessages(conversationId);
 
 	const onConversationIdChange = useCallback(
 		(newConversationId: string): void => {
-			replaceHistory(`/folder/${folderId}/conversation/${newConversationId}`);
+			navigate(`../${newConversationId}`, {
+				replace: true,
+				relative: 'path'
+			});
 		},
-		[folderId]
+		[navigate]
 	);
 
 	useEffect(() => {
-		if (isEmpty(conversation)) {
+		if (isEmpty(conversation) && conversationStatus !== API_REQUEST_STATUS.fulfilled) {
 			getConvEmailStoreAction({ id: conversationId, onConversationIdChange });
 		}
-	}, [conversation, conversationId, onConversationIdChange]);
+	}, [conversation, conversationId, conversationStatus, onConversationIdChange]);
+
+	useEffect(() => {
+		if (isFocusModeMailView() && conversation?.subject) {
+			document.title = conversation.subject;
+		}
+	}, [conversation?.subject]);
 
 	const showPreviewPanel = useMemo(
 		(): boolean | undefined =>
@@ -65,25 +65,27 @@ export const ConversationPreviewPanelContainer = (
 		<Container orientation="vertical" mainAlignment="flex-start" crossAlignment="flex-start">
 			{showPreviewPanel && (
 				<>
-					{!isInsideExtraWindow && (
-						<PreviewPanelHeader
-							itemType={'conversation'}
-							subject={conversation.subject}
-							isRead={conversation.read}
-							folderId={folderId}
-						/>
-					)}
+					<PreviewPanelHeader
+						itemType={'conversation'}
+						subject={conversation.subject}
+						isRead={conversation.read}
+						folderId={folderId}
+					/>
 
 					{conversation && conversationStatus === API_REQUEST_STATUS.fulfilled && (
 						<ConversationPreviewPanel
 							data-testid={`conversation-preview-panel-${conversationId}`}
 							conversation={conversation}
-							isInsideExtraWindow={isInsideExtraWindow}
 						/>
 					)}
 
 					{(conversationStatus === API_REQUEST_STATUS.error || conversationStatus === null) && (
 						<></>
+					)}
+					{conversationStatus === API_REQUEST_STATUS.pending && (
+						<Spinner
+							text={t('displayer.loading_conversation', 'Loading conversation, please wait...')}
+						/>
 					)}
 				</>
 			)}

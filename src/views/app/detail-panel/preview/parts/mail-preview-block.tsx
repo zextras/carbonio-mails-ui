@@ -27,28 +27,30 @@ type MailPreviewBlockType = {
 	message: MailMessage;
 	open: boolean;
 	onClick: () => void;
-	isExternalMessage?: boolean;
-	messagePreviewFactory: () => React.JSX.Element;
+	isEml?: boolean;
 };
 export const MailPreviewBlock: FC<MailPreviewBlockType> = ({
 	message,
 	open,
 	onClick,
-	isExternalMessage = false,
-	messagePreviewFactory
+	isEml = false
 }) => {
-	const { folderId, itemId } = useParams<{ folderId: string; itemId: string }>();
+	const { folderId, itemId } = useParams() as { folderId?: string; itemId?: string };
 	const compProps = useMemo(
-		() => ({ message, onClick, open, isExternalMessage, messagePreviewFactory }),
-		[message, onClick, open, isExternalMessage, messagePreviewFactory]
+		() => ({ message, onClick, open, isEml }),
+		[message, onClick, open, isEml]
 	);
 	const shouldReplaceHistory = useMemo(() => itemId === message.id, [message.id, itemId]);
 	const [t] = useTranslation();
 
-	const { execute } = useMsgSetNotSpamFn({ ids: [message.id], folderId, shouldReplaceHistory });
+	const { execute } = useMsgSetNotSpamFn({
+		ids: [message.id],
+		folderId,
+		shouldReplaceHistory
+	});
 	return (
 		<>
-			{getFolderIdParts(folderId).id === FOLDERS.SPAM && (
+			{folderId && getFolderIdParts(folderId).id === FOLDERS.SPAM && (
 				<Container
 					mainAlignment="flex-start"
 					crossAlignment="flex-start"
@@ -82,7 +84,7 @@ export const MailPreviewBlock: FC<MailPreviewBlockType> = ({
 			)}
 
 			{/* External message disclaimer */}
-			{isExternalMessage && (
+			{isEml && (
 				<Container height="fit" background="white" padding={{ top: 'large', bottom: 'large' }}>
 					<Row
 						background="gray2"

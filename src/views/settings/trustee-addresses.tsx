@@ -6,21 +6,21 @@
 import React, { useMemo, useState, useCallback, useEffect } from 'react';
 
 import {
-	Container,
-	Input,
-	Padding,
-	Divider,
-	Button,
 	Tooltip,
+	Text,
+	FormSection,
+	FormSubSection,
+	Input,
+	Button,
+	Container,
 	Row,
-	ListV2,
-	Text
+	Padding,
+	ListV2
 } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import { filter, find } from 'lodash';
 
 import { SendersListItem } from './components/senders-list-item';
-import Heading from './components/settings-heading';
 import LoadingShimmer from './filters/parts/loading-shimmer';
 import { trustedAddressesSubSection } from './subsections';
 import type { InputProps } from '../../types';
@@ -89,61 +89,53 @@ const TrusteeAddresses = ({ settingsObj, updateSettings }: InputProps): React.JS
 	);
 
 	return (
-		<Container background="gray6" padding={{ horizontal: 'medium', bottom: 'large' }}>
-			<Container orientation="horizontal" padding={{ horizontal: 'medium', top: 'medium' }}>
-				<Container id={sectionTitle.id}>
-					<Heading title={sectionTitle.label} size="medium" />
-				</Container>
-				<Container width="auto" crossAlignment="flex-end">
-					<Tooltip label={message} overflowTooltip>
-						<Text size="extrasmall">{message}</Text>
-					</Tooltip>
-				</Container>
-			</Container>
-			<Divider />
-			<Container
-				padding={{ all: 'medium', bottom: 'small' }}
-				orientation="horizontal"
-				mainAlignment="flex-start"
-				crossAlignment="flex-start"
-			>
-				<Row mainAlignment="flex-start" width="50vw">
-					<Input
-						label={t('label.enter_email_address', 'Enter email address or domain')}
-						value={address}
-						hasError={isInvalid}
-						description={warningMessage}
-						backgroundColor="gray5"
-						onChange={(e: React.ChangeEvent<HTMLInputElement>): void => setAddress(e.target.value)}
-					/>
-				</Row>
-				<Padding left="medium" top="extrasmall">
-					<Tooltip label={warningMessage} disabled={!isInvalid} maxWidth="100%">
-						<Button
-							label={t('label.add', 'Add')}
-							type="outlined"
-							onClick={onAdd}
-							disabled={isInvalid}
+		<FormSection label={sectionTitle.label} id={sectionTitle.id}>
+			<FormSubSection>
+				<Tooltip label={message} overflowTooltip>
+					<Text>{message}</Text>
+				</Tooltip>
+				<Container
+					orientation="horizontal"
+					height={'fit'}
+					mainAlignment="flex-start"
+					crossAlignment="flex-start"
+				>
+					<Row mainAlignment="flex-start" width="50vw">
+						<Input
+							label={t('label.enter_email_address', 'Enter email address or domain')}
+							value={address}
+							hasError={isInvalid}
+							description={warningMessage}
+							backgroundColor="gray5"
+							onChange={(e: React.ChangeEvent<HTMLInputElement>): void =>
+								setAddress(e.target.value)
+							}
 						/>
-					</Tooltip>
-				</Padding>
-			</Container>
-			<Container
-				padding={{ horizontal: 'medium', bottom: 'small' }}
-				orientation="horizontal"
-				mainAlignment="flex-start"
-			>
-				{isLoading ? (
-					<LoadingShimmer />
-				) : (
-					<ListV2 data-testid={'trustee-list'}>
-						{trusteeAddressesList.map((trustee, idx) => (
-							<SendersListItem key={idx} value={trustee} onRemove={onRemove} />
-						))}
-					</ListV2>
-				)}
-			</Container>
-		</Container>
+					</Row>
+					<Padding left="medium" top="extrasmall">
+						<Tooltip label={warningMessage} disabled={!isInvalid} maxWidth="100%">
+							<Button
+								label={t('label.add', 'Add')}
+								type="outlined"
+								onClick={onAdd}
+								disabled={isInvalid}
+							/>
+						</Tooltip>
+					</Padding>
+				</Container>
+				<Container orientation="horizontal" mainAlignment="flex-start" height={'fit'}>
+					{isLoading ? (
+						<LoadingShimmer />
+					) : (
+						<ListV2 data-testid={'trustee-list'}>
+							{trusteeAddressesList.map((trustee, idx) => (
+								<SendersListItem key={idx} value={trustee} onRemove={onRemove} />
+							))}
+						</ListV2>
+					)}
+				</Container>
+			</FormSubSection>
+		</FormSection>
 	);
 };
 

@@ -26,7 +26,6 @@ type MessageListItemActionWrapperProps = {
 	active?: boolean;
 	item: MailMessage;
 	deselectAll: () => void;
-	messagePreviewFactory: () => React.JSX.Element;
 };
 export const MessageListItemActionWrapper = ({
 	item,
@@ -35,8 +34,7 @@ export const MessageListItemActionWrapper = ({
 	onDoubleClick,
 	deselectAll,
 	shouldReplaceHistory,
-	children,
-	messagePreviewFactory
+	children
 }: MessageListItemActionWrapperProps): React.JSX.Element => {
 	const {
 		replyDescriptor,
@@ -49,7 +47,6 @@ export const MessageListItemActionWrapper = ({
 		messageUnreadDescriptor,
 		flagDescriptor,
 		unflagDescriptor,
-		sendDraftDescriptor,
 		markAsSpamDescriptor,
 		markAsNotSpamDescriptor,
 		applyTagDescriptor,
@@ -63,7 +60,7 @@ export const MessageListItemActionWrapper = ({
 		editAsNewDescriptor,
 		showOriginalDescriptor,
 		downloadEmlDescriptor
-	} = useMsgActions({ message: item, deselectAll, shouldReplaceHistory, messagePreviewFactory });
+	} = useMsgActions({ message: item, deselectAll, shouldReplaceHistory });
 
 	const tagItem = useTagDropdownItem(applyTagDescriptor, item.tags);
 	const draftItem = isDraft(item.parent);
@@ -83,7 +80,6 @@ export const MessageListItemActionWrapper = ({
 						normalizeDropdownActionItem(forwardAsAttachmentDescriptor)
 					]
 				},
-				normalizeDropdownActionItem(sendDraftDescriptor),
 				normalizeDropdownActionItem(moveToTrashDescriptor),
 				normalizeDropdownActionItem(deletePermanentlyDescriptor),
 				normalizeDropdownActionItem(messageReadDescriptor),
@@ -125,7 +121,6 @@ export const MessageListItemActionWrapper = ({
 			replyAllDescriptor,
 			replyDescriptor,
 			restoreFolderDescriptor,
-			sendDraftDescriptor,
 			showOriginalDescriptor,
 			tagItem,
 			unflagDescriptor,

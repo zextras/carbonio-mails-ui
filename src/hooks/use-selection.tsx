@@ -37,7 +37,7 @@ export const useSelection = ({
 		(id: string) => {
 			if (selected.current[id]) {
 				selected.current = omit(selected.current, [id]);
-				setCount((prev: number) => prev - 1);
+				setCount?.((prev: number) => prev - 1);
 				if (count - 1 === 0) {
 					setIsSelectModeOn(false);
 				} else if (count === 0) {
@@ -45,7 +45,7 @@ export const useSelection = ({
 				}
 			} else {
 				selected.current = { ...selected.current, [id]: true };
-				setCount((prev: number) => prev + 1);
+				setCount?.((prev: number) => prev + 1);
 				setIsSelectModeOn(true);
 			}
 		},
@@ -54,7 +54,7 @@ export const useSelection = ({
 
 	const deselectAll = useCallback(() => {
 		selected.current = {};
-		setCount(0);
+		setCount?.(0);
 		setIsSelectModeOn(false);
 	}, [setCount, setIsSelectModeOn]);
 
@@ -68,7 +68,7 @@ export const useSelection = ({
 
 	const selectAllModeOff = useCallback(() => {
 		selected.current = {};
-		setCount(0);
+		setCount?.(0);
 		setTimeout(() => {
 			setIsSelectModeOn(true);
 		});

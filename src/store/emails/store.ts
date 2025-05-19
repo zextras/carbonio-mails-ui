@@ -8,6 +8,7 @@
 import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 import { create, StoreApi, UseBoundStore } from 'zustand';
 
+import { NormalizedPartialConversation } from '../../normalizations/normalize-conversation';
 import {
 	IncompleteMessage,
 	MailMessage,
@@ -31,6 +32,7 @@ import { searchSliceUtils } from './slices/search/utils';
 import { syncDataHandlerUtils } from './sync-data-handler/utils';
 import { createTaskQueueManager } from './task-management/create-task-queue-manager';
 import { RemoveAttachmentsResponse } from '../../api/delete-all-attachments-soap-api';
+import { PartialIncompleteMessage } from '../../views/sidebar/commons/types';
 
 type TaskManagement = {
 	queue: Array<() => Promise<void>>;
@@ -594,14 +596,14 @@ export function handleNotifyDeleted(ids: string[]): void {
 /**
  * Queues a task to update the email store state with modified conversation data.
  *
- * @param updatedConversations - An array of `NormalizedConversation` objects,
+ * @param partialConversations - An array of `NormalizedConversation` objects,
  * each containing an `id` and other properties to be updated in the state.
  */
 export function handleNotifyConversationsModified(
-	updatedConversations: Array<NormalizedConversation>
+	partialConversations: Array<NormalizedPartialConversation>
 ): void {
 	addTask(async () => {
-		syncDataHandlerUtils.handleNotifyConversationsModified(updatedConversations, useEmailsStore);
+		syncDataHandlerUtils.handleNotifyConversationsModified(partialConversations, useEmailsStore);
 	});
 }
 
@@ -622,12 +624,14 @@ export function handleNotifyConversationsCreated(
 /**
  * Queues a task to update the email store state with modified message data.
  *
- * @param updatedMessages - An array of `IncompleteMessage` objects, each
+ * @param partialMessages - An array of `IncompleteMessage` objects, each
  * containing an `id` and other properties to be updated in the state.
  */
-export function handleNotifyMessagesModified(updatedMessages: Array<IncompleteMessage>): void {
+export function handleNotifyMessagesModified(
+	partialMessages: Array<PartialIncompleteMessage>
+): void {
 	addTask(async () => {
-		syncDataHandlerUtils.handleNotifyMessagesModified(updatedMessages, useEmailsStore);
+		syncDataHandlerUtils.handleNotifyMessagesModified(partialMessages, useEmailsStore);
 	});
 }
 

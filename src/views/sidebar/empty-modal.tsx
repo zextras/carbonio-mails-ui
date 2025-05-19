@@ -8,6 +8,7 @@ import React, { FC, useCallback, useMemo } from 'react';
 import { Container, Text } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 
+import { getFolderTranslatedName } from './utils';
 import { folderActionSoapApi } from '../../api/folder-action-soap-api';
 import ModalFooter from '../../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../../carbonio-ui-commons/components/modals/modal-header';
@@ -50,8 +51,8 @@ export const EmptyModal: FC<ModalProps> = ({ folder, onClose }) => {
 	const title = useMemo(
 		() =>
 			getFolderIdParts(folder.id).id === FOLDERS.TRASH
-				? `${t('label.empty', 'Empty')} ${folder.name}`
-				: `${t('label.wipe', 'Wipe')} ${folder.name}`,
+				? `${t('label.empty', 'Empty')} ${getFolderTranslatedName({ folderName: folder.name, folderId: folder.id })}`
+				: `${t('label.wipe', 'Wipe')} ${getFolderTranslatedName({ folderName: folder.name, folderId: folder.id })}`,
 		[folder.id, folder.name]
 	);
 	return (

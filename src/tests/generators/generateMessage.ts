@@ -39,6 +39,7 @@ export type MessageGenerationParams = {
 	parts?: Array<MailMessagePart>;
 	messageIdFromMailHeaders?: string;
 	creationDateFromMailHeaders?: string;
+	did?: string;
 };
 
 const loremBody =
@@ -70,14 +71,15 @@ export const generateMessage = ({
 	sensitivity = 'Private',
 	messageIdFromMailHeaders = '',
 	creationDateFromMailHeaders = '',
-	parts
+	parts,
+	did = ''
 }: MessageGenerationParams = {}): MailMessage => ({
 	attachments: undefined,
 	autoSendTime: 0,
 	body: { content: body, contentType: 'text/plain', truncated },
 	conversation: cid,
 	date: receiveDate,
-	did: '',
+	did,
 	flagged: isFlagged,
 	fragment: convertHtmlToPlainText(body).substring(0, 40).trim(),
 	hasAttachment: false,
@@ -154,7 +156,7 @@ export const populateMessagesInEmailStore = ({
 	messageGeneratorParams?: Array<MessageGenerationParams>;
 	messageIds?: Array<string>;
 	messagesNumber?: number;
-}): Array<MailMessage> => {
+} = {}): Array<MailMessage> => {
 	// Generate messages based on provided message IDs
 	const messagesFromMessageIds = messageIds?.map((messageId) =>
 		generateMessage({

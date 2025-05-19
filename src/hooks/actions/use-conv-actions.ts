@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 
 import { find } from 'lodash';
 
@@ -26,7 +26,7 @@ import { useConvSetUnflagDescriptor } from './use-conv-set-unflag';
 import { useConvSetUnreadDescriptor } from './use-conv-set-unread';
 import { useConvShowOriginalDescriptor } from './use-conv-show-original';
 import { isTrash } from '../../carbonio-ui-commons/helpers/folders';
-import { getFolderIdParts, isDraft } from '../../helpers/folders';
+import { getFolderIdParts, getParentFolderId, isDraft } from '../../helpers/folders';
 import { useConversationMessages } from '../../store/emails/store';
 import { NormalizedConversation, UIActionAggregator, UIActionDescriptor } from '../../types';
 
@@ -34,7 +34,6 @@ export type ConversationActionsArgumentType = {
 	conversation: NormalizedConversation;
 	deselectAll: () => void;
 	shouldReplaceHistory?: boolean;
-	conversationPreviewFactory: () => React.JSX.Element;
 };
 
 type ConversationActionsReturnType = {
@@ -61,8 +60,7 @@ type ConversationActionsReturnType = {
 export const useConvActions = ({
 	conversation,
 	deselectAll,
-	shouldReplaceHistory = false,
-	conversationPreviewFactory
+	shouldReplaceHistory = false
 }: ConversationActionsArgumentType): ConversationActionsReturnType => {
 	const messages = useConversationMessages(conversation.id);
 	const firstConversationMessage =
@@ -72,7 +70,7 @@ export const useConvActions = ({
 		}) ?? messages?.[0];
 
 	// TODO: This condition is not the proper one as the first message is not a good indication of the folder id we are currently navigating.
-	const folderId = firstConversationMessage.parent;
+	const folderId = getParentFolderId(firstConversationMessage.parent);
 
 	const replyDescriptor = useConvReplyDescriptor({
 		firstMessageId: firstConversationMessage.id,
@@ -153,8 +151,7 @@ export const useConvActions = ({
 
 	const previewOnSeparatedWindowDescriptor = useConvPreviewOnSeparatedWindowDescriptor({
 		conversationId: conversation.id,
-		subject: conversation.subject,
-		conversationPreviewFactory
+		folderId
 	});
 
 	return useMemo(

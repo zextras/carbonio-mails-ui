@@ -3,63 +3,47 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useCallback, useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 
 import { useTranslation } from 'react-i18next';
 
 import { ConversationActionsDescriptors } from '../../constants';
-import { ActionFn, ExtraWindowCreationParams, UIActionDescriptor } from '../../types';
-import { useGlobalExtraWindowManager } from '../../views/app/extra-windows/global-extra-window-manager';
-import { useExtraWindow } from '../../views/app/extra-windows/use-extra-window';
+import {
+	isFocusModeMailView,
+	openConversationStandalonePreview
+} from '../../helpers/external-tabs';
+import { ActionFn, UIActionDescriptor } from '../../types';
 
 export const useConvPreviewOnSeparatedWindowFn = ({
 	conversationId,
-	subject,
-	conversationPreviewFactory
+	folderId
 }: {
 	conversationId: string;
-	subject: string;
-	conversationPreviewFactory: () => React.JSX.Element;
+	folderId: string;
 }): ActionFn => {
-	const { createWindow } = useGlobalExtraWindowManager();
-	const { isInsideExtraWindow } = useExtraWindow();
-	const canExecute = useCallback((): boolean => !isInsideExtraWindow, [isInsideExtraWindow]);
+	const canExecute = useCallback((): boolean => !isFocusModeMailView(), []);
 
 	const execute = useCallback(() => {
-		if (!createWindow) {
-			return;
-		}
-
 		if (!canExecute()) {
 			return;
 		}
 
-		const createWindowParams: ExtraWindowCreationParams = {
-			name: `conversation-${conversationId}`,
-			returnComponent: false,
-			children: conversationPreviewFactory(),
-			title: subject,
-			closeOnUnmount: false
-		};
-		createWindow(createWindowParams);
-	}, [createWindow, canExecute, conversationId, conversationPreviewFactory, subject]);
+		openConversationStandalonePreview({ folderId, conversationId });
+	}, [canExecute, folderId, conversationId]);
 
 	return useMemo(() => ({ canExecute, execute }), [canExecute, execute]);
 };
 
 export const useConvPreviewOnSeparatedWindowDescriptor = ({
 	conversationId,
-	subject,
-	conversationPreviewFactory
+	folderId
 }: {
 	conversationId: string;
-	subject: string;
-	conversationPreviewFactory: () => React.JSX.Element;
+	folderId: string;
 }): UIActionDescriptor => {
 	const { canExecute, execute } = useConvPreviewOnSeparatedWindowFn({
 		conversationId,
-		subject,
-		conversationPreviewFactory
+		folderId
 	});
 	const [t] = useTranslation();
 	return {

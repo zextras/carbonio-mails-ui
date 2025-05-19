@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useState, useCallback, useMemo, useEffect } from 'react';
+import React, { useState, useCallback, useMemo, useEffect, useId } from 'react';
 
 import {
 	CustomModal,
@@ -16,9 +16,9 @@ import {
 	Tooltip,
 	Text
 } from '@zextras/carbonio-design-system';
-import type { QueryChip } from '@zextras/carbonio-search-ui';
 import { t } from '@zextras/carbonio-shell-ui';
 import { concat, filter, includes, map, reject } from 'lodash';
+import moment from 'moment';
 
 import AttachmentTypeEmailStatusRow from './parts/attachment-type-email-status-row';
 import { ReceivedSentAddressRow } from './parts/received-sent-address-row';
@@ -27,33 +27,81 @@ import SizeSmallerSizeLargerRow from './parts/size-smaller-size-larger-row';
 import SubjectKeywordRow from './parts/subject-keyword-row';
 import TagFolderRow from './parts/tag-folder-row';
 import ToggleFilters from './parts/toggle-filters';
-import { useDisabled, useSecondaryDisabled } from './parts/use-disable-hooks';
 import { getChipItems } from './utils';
-import { ZIMBRA_STANDARD_COLORS } from '../../carbonio-ui-commons/constants/utils';
+import { ZIMBRA_STANDARD_COLORS } from '../../carbonio-ui-commons/constants';
 import { ContactInputItem } from '../../carbonio-ui-commons/integrations/types';
 import { getTags } from '../../carbonio-ui-commons/store/zustand/tags';
 import { ScrollableContainer } from '../../commons/scrollable-container';
-import { AdvancedFilterModalProps, KeywordState } from '../../types';
+import { KeywordState, Query } from '../../types';
+
+export type AdvancedFilterModalProps = {
+	open: boolean;
+	onClose: () => void;
+	query: Query;
+	isSharedFolderIncludedInitialValue: boolean;
+	onSearchConfirm: (request: { query: Query; includeSharedFolders: boolean }) => void;
+	includeSharedItemsInSearchPref: boolean;
+};
+
+const QUERY_DATE_FORMAT = 'L';
+
+function dateToKeywordState({
+	id,
+	prefix,
+	date
+}: {
+	id: string;
+	prefix: string;
+	date: Date | null;
+}): KeywordState {
+	if (date === null) {
+		return [];
+	}
+	const value = `${prefix}:${moment(date).format(QUERY_DATE_FORMAT)}`;
+	return [
+		{
+			id,
+			hasAvatar: true,
+			avatarBackground: 'gray1',
+			label: value,
+			value,
+			isQueryFilter: true,
+			avatarIcon: 'CalendarOutline'
+		}
+	];
+}
+
+function toDate(prefix: string, query: Query): Date | null {
+	const prefixColon = `${prefix}:`;
+	const dateQuery = map(
+		filter(query, (v) => v.label.startsWith(prefixColon)),
+		(q) => q.label.substring(prefixColon.length)
+	);
+	if (dateQuery.length === 0) {
+		return null;
+	}
+	return moment(dateQuery[0]).toDate();
+}
 
 export const AdvancedFilterModal = ({
 	open,
 	onClose,
 	query,
-	updateQuery,
-	setIsSharedFolderIncluded,
-	isSharedFolderIncluded
+	isSharedFolderIncludedInitialValue,
+	onSearchConfirm,
+	includeSharedItemsInSearchPref
 }: AdvancedFilterModalProps): React.JSX.Element => {
 	const [otherKeywords, setOtherKeywords] = useState<KeywordState>([]);
-	const [attachmentFilter, setAttachmentFilter] = useState<KeywordState>([]);
-	const [unreadFilter, setUnreadFilter] = useState<KeywordState>([]);
-	const [flaggedFilter, setFlaggedFilter] = useState<KeywordState>([]);
+	const [hasAttachment, setHasAttachment] = useState<boolean>(false);
+	const [isUnread, setIsUnread] = useState<boolean>(false);
+	const [isFlagged, setIsFlagged] = useState<boolean>(false);
 
 	const [receivedFromAddresses, setReceivedFromAddresses] = useState<KeywordState>([]);
 	const [sentToAddresses, setSentToAddresses] = useState<KeywordState>([]);
 	const [folder, setFolder] = useState<KeywordState>([]);
-	const [sentBefore, setSentBefore] = useState<KeywordState>([]);
-	const [sentOn, setSentOn] = useState<KeywordState>([]);
-	const [sentAfter, setSentAfter] = useState<KeywordState>([]);
+	const [sentBefore, setSentBefore] = useState<Date | null>(null);
+	const [sentOn, setSentOn] = useState<Date | null>(null);
+	const [sentAfter, setSentAfter] = useState<Date | null>(null);
 	const [subject, setSubject] = useState<KeywordState>([]);
 	const [attachmentType, setAttachmentType] = useState<KeywordState>([]);
 	const [emailStatus, setEmailStatus] = useState<KeywordState>([]);
@@ -61,8 +109,9 @@ export const AdvancedFilterModal = ({
 	const [sizeLarger, setSizeLarger] = useState<KeywordState>([]);
 	const [sizeSmallerErrorLabel, setSizeSmallerErrorLabel] = useState('');
 	const [sizeLargerErrorLabel, setSizeLargerErrorLabel] = useState('');
-	const [isSharedFolderIncludedTobe, setIsSharedFolderIncludedTobe] =
-		useState(isSharedFolderIncluded);
+	const [isSharedFolderIncluded, setIsSharedFolderIncluded] = useState(
+		isSharedFolderIncludedInitialValue
+	);
 	const queryArray = useMemo(() => ['has:attachment', 'is:flagged', 'is:unread'], []);
 	const tagOptions = useMemo(
 		() =>
@@ -89,6 +138,33 @@ export const AdvancedFilterModal = ({
 		[]
 	);
 	const [tag, setTag] = useState<KeywordState>([]);
+	const id = useId();
+
+	const resetFilters = useCallback(() => {
+		setOtherKeywords([]);
+		setHasAttachment(false);
+		setIsFlagged(false);
+		setIsUnread(false);
+		setSubject([]);
+		setAttachmentType([]);
+		setEmailStatus([]);
+		setSizeSmaller([]);
+		setSizeLarger([]);
+		setSizeSmallerErrorLabel('');
+		setSizeLargerErrorLabel('');
+		setReceivedFromAddresses([]);
+		setSentToAddresses([]);
+		setFolder([]);
+		setTag([]);
+		setSentBefore(null);
+		setSentAfter(null);
+		setSentOn(null);
+		setIsSharedFolderIncluded(includeSharedItemsInSearchPref);
+	}, [includeSharedItemsInSearchPref]);
+
+	useEffect(() => {
+		setIsSharedFolderIncluded(isSharedFolderIncludedInitialValue);
+	}, [isSharedFolderIncludedInitialValue]);
 
 	useEffect(() => {
 		const updatedQuery = map(
@@ -113,6 +189,10 @@ export const AdvancedFilterModal = ({
 			),
 			(q) => ({ ...q, hasAvatar: false })
 		);
+
+		setHasAttachment(query.some((item) => item.label === 'has:attachment'));
+		setIsUnread(query.some((item) => item.label === 'is:unread'));
+		setIsFlagged(query.some((item) => item.label === 'is:flagged'));
 
 		const subjectsInQuery = map(
 			filter(query, (v) => /^Subject:/.test(v.label)),
@@ -143,29 +223,16 @@ export const AdvancedFilterModal = ({
 			(q) => ({ ...q })
 		);
 		setSizeLarger(sizeLargerInQuery);
-		const sentBeforeInQuery = map(
-			filter(query, (v) => /^before:/.test(v.label)),
-			(q) => ({ ...q, hasAvatar: true, icon: 'CalendarOutline' })
-		);
-		setSentBefore(sentBeforeInQuery);
 
-		const sentAfterInQuery = map(
-			filter(query, (v) => /^after:/.test(v.label)),
-			(q) => ({ ...q, hasAvatar: true, icon: 'CalendarOutline' })
-		);
-		setSentAfter(sentAfterInQuery);
+		setSentBefore(toDate('before', query));
+		setSentAfter(toDate('after', query));
+		setSentOn(toDate('date', query));
 
 		const tagInQuery = map(
 			filter(query, (v) => /^tag:/.test(v.label)),
 			(q) => ({ ...q, hasAvatar: true, icon: 'TagOutline' })
 		);
 		setTag(tagInQuery);
-
-		const sentOnInQuery = map(
-			filter(query, (v) => /^date:/.test(v.label)),
-			(q) => ({ ...q, hasAvatar: true, icon: 'CalendarOutline' })
-		);
-		setSentOn(sentOnInQuery);
 
 		const sentToInQuery = getChipItems(
 			query.filter((queryItem) => /^to:*/.test(queryItem.label)),
@@ -191,60 +258,52 @@ export const AdvancedFilterModal = ({
 		setFolder(folderInQuery);
 
 		setOtherKeywords(updatedQuery);
-	}, [query, queryArray]);
+	}, [open, query, queryArray]);
 
-	const totalKeywords = useMemo(
-		() => filter(otherKeywords, (q) => q.isGeneric === true || q.isQueryFilter === true).length,
-		[otherKeywords]
-	);
-
-	const secondaryDisabled = useSecondaryDisabled({
-		attachmentFilter,
-		attachmentType,
-		emailStatus,
-		flaggedFilter,
-		folder,
-		receivedFromAddress: receivedFromAddresses,
-		sentAfter,
-		sentBefore,
-		sentFromAddress: sentToAddresses,
-		sentOn,
-		sizeLarger,
-		sizeSmaller,
-		subject,
-		tag,
-		totalKeywords,
-		unreadFilter
-	});
-
-	const resetFilters = useCallback(() => {
-		setOtherKeywords([]);
-		setAttachmentFilter([]);
-		setSubject([]);
-		setAttachmentType([]);
-		setEmailStatus([]);
-		setSizeSmaller([]);
-		setSizeLarger([]);
-		setSizeSmallerErrorLabel('');
-		setSizeLargerErrorLabel('');
-		updateQuery([]);
-		setReceivedFromAddresses([]);
-		setSentToAddresses([]);
-		setFolder([]);
-		setTag([]);
-	}, [updateQuery]);
-
-	const queryToBe = useMemo<Array<QueryChip>>(
+	const queryToBe = useMemo<Query>(
 		() =>
 			concat(
 				otherKeywords,
-				unreadFilter,
-				flaggedFilter,
-				attachmentFilter,
+				isUnread
+					? [
+							{
+								id: `${id}--is:unread`,
+								label: 'is:unread',
+								value: 'is:unread',
+								isQueryFilter: true,
+								avatarIcon: 'EmailOutline',
+								avatarBackground: 'gray1'
+							}
+						]
+					: [],
+				isFlagged
+					? [
+							{
+								id: `${id}--is:flagged`,
+								label: 'is:flagged',
+								value: 'is:flagged',
+								isQueryFilter: true,
+								avatarIcon: 'FlagOutline',
+								avatarBackground: 'error'
+							}
+						]
+					: [],
+				hasAttachment
+					? [
+							{
+								id: `${id}--has:attachment`,
+								label: 'has:attachment',
+								value: 'has:attachment',
+								isQueryFilter: true,
+								avatarIcon: 'AttachOutline',
+								avatarBackground: 'gray1'
+							}
+						]
+					: [],
 				folder,
-				sentBefore,
-				sentAfter,
-				sentOn,
+				dateToKeywordState({ id: `${id}--before`, prefix: 'before', date: sentBefore }),
+				dateToKeywordState({ id: `${id}--after`, prefix: 'after', date: sentAfter }),
+				dateToKeywordState({ id: `${id}--date`, prefix: 'date', date: sentOn }),
 				tag,
 				map(subject, (q) => ({
 					...q,
@@ -260,10 +319,10 @@ export const AdvancedFilterModal = ({
 				sentToAddresses
 			),
 		[
-			attachmentFilter,
+			hasAttachment,
 			attachmentType,
 			emailStatus,
-			flaggedFilter,
+			isFlagged,
 			folder,
 			otherKeywords,
 			receivedFromAddresses,
@@ -275,17 +334,23 @@ export const AdvancedFilterModal = ({
 			sizeSmaller,
 			subject,
 			tag,
-			unreadFilter
+			isUnread,
+			id
 		]
 	);
 
 	const onConfirm = useCallback(() => {
-		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-		// @ts-ignore
-		updateQuery(queryToBe);
-		setIsSharedFolderIncluded(isSharedFolderIncludedTobe);
-		onClose();
-	}, [updateQuery, queryToBe, setIsSharedFolderIncluded, isSharedFolderIncludedTobe, onClose]);
+		const controller = new AbortController();
+		try {
+			onSearchConfirm({ query: queryToBe, includeSharedFolders: isSharedFolderIncluded });
+			onClose();
+		} catch (error) {
+			controller.abort();
+		}
+		return () => {
+			controller.abort();
+		};
+	}, [onSearchConfirm, queryToBe, isSharedFolderIncluded, onClose]);
 
 	const subjectKeywordRowProps = useMemo(
 		() => ({
@@ -340,7 +405,7 @@ export const AdvancedFilterModal = ({
 			emailStatus,
 			setEmailStatus
 		}),
-		[attachmentType, setAttachmentType, emailStatus, setEmailStatus]
+		[attachmentType, emailStatus]
 	);
 
 	const sizeSmallerSizeLargerRowProps = useMemo(
@@ -355,47 +420,32 @@ export const AdvancedFilterModal = ({
 			sizeLargerErrorLabel,
 			setSizeLargerErrorLabel
 		}),
-		[
-			sizeSmaller,
-			setSizeSmaller,
-			sizeLarger,
-			setSizeLarger,
-			sizeSmallerErrorLabel,
-			setSizeSmallerErrorLabel,
-			sizeLargerErrorLabel,
-			setSizeLargerErrorLabel
-		]
+		[sizeSmaller, sizeLarger, sizeSmallerErrorLabel, sizeLargerErrorLabel]
 	);
 
 	const tagFolderRowProps = useMemo(
 		() => ({ folder, setFolder, tagOptions, tag, setTag }),
-		[folder, setFolder, tagOptions, tag, setTag]
+		[folder, tagOptions, tag]
 	);
 
 	const sendDateRowProps = useMemo(
 		() => ({ sentBefore, setSentBefore, sentAfter, setSentAfter, sentOn, setSentOn }),
-		[sentBefore, setSentBefore, sentAfter, setSentAfter, sentOn, setSentOn]
-	);
-	const toggleFiltersProps = useMemo(
-		() => ({
-			query,
-			setUnreadFilter,
-			setFlaggedFilter,
-			setAttachmentFilter,
-			setIsSharedFolderIncludedTobe,
-			isSharedFolderIncludedTobe
-		}),
-		[query, isSharedFolderIncludedTobe]
+		[sentBefore, sentAfter, sentOn]
 	);
 
-	const disabled = useDisabled({
-		query,
-		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-		// @ts-ignore
-		queryToBe,
-		isSharedFolderIncluded,
-		isSharedFolderIncludedTobe
-	});
+	const toggleFiltersProps = useMemo(
+		() => ({
+			isUnread,
+			isFlagged,
+			hasAttachment,
+			setIsUnread,
+			setIsFlagged,
+			setHasAttachment,
+			setIsSharedFolderIncludedTobe: setIsSharedFolderIncluded,
+			isSharedFolderIncludedTobe: isSharedFolderIncluded
+		}),
+		[isSharedFolderIncluded, isUnread, isFlagged, hasAttachment]
+	);
 
 	return (
 		<CustomModal open={open} onClose={onClose} maxHeight="90vh" size="medium">
@@ -421,10 +471,12 @@ export const AdvancedFilterModal = ({
 			<Divider />
 			<ModalFooter
 				onConfirm={onConfirm}
-				confirmDisabled={disabled}
-				secondaryActionDisabled={secondaryDisabled}
+				confirmDisabled={queryToBe.length === 0}
+				secondaryActionDisabled={
+					queryToBe.length === 0 && isSharedFolderIncluded === includeSharedItemsInSearchPref
+				}
 				confirmLabel={t('action.search', 'Search')}
-				secondaryActionLabel={t('action.reset', 'Reset')}
+				secondaryActionLabel={t('action.reset', 'Reset filters')}
 				onSecondaryAction={resetFilters}
 			/>
 		</CustomModal>

@@ -14,11 +14,13 @@ import {
 	Text,
 	Tooltip
 } from '@zextras/carbonio-design-system';
-import { replaceHistory } from '@zextras/carbonio-shell-ui';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 
 import { ConversationPreviewHeaderNavigation } from './conversation-preview-header-navigation';
 import { MessagePreviewHeaderNavigation } from './message-preview-header-navigation';
+import { MAILS_ROUTE } from '../../../../constants';
+import { isFocusModeMailView } from '../../../../helpers/external-tabs';
 import { useViewLayout } from '../../../../hooks/use-view-layout';
 import type { MailMessage } from '../../../../types';
 import { LayoutComponent } from '../../folder-panel/parts/layout-component';
@@ -48,10 +50,13 @@ export const PreviewPanelHeader = ({
 	itemType
 }: PreviewPanelHeaderProps): React.JSX.Element => {
 	const [t] = useTranslation();
+	const navigate = useNavigate();
+
+	const isStandAlone = isFocusModeMailView();
 
 	const replaceHistoryCallback = useCallback(
-		() => replaceHistory(`/folder/${folderId}`),
-		[folderId]
+		() => navigate(`/${MAILS_ROUTE}/folder/${folderId}`, { replace: true }),
+		[folderId, navigate]
 	);
 
 	const subjectLabel = useMemo(
@@ -73,7 +78,7 @@ export const PreviewPanelHeader = ({
 				padding={{ left: 'large', right: 'extrasmall' }}
 				style={{ minHeight: '3rem' }}
 			>
-				{isCurrentLayoutNoSplit && (
+				{isCurrentLayoutNoSplit && !isStandAlone && (
 					<Row padding={{ right: 'large' }}>
 						<PreviewHeaderNavigation itemType={itemType} />
 					</Row>
@@ -90,17 +95,19 @@ export const PreviewPanelHeader = ({
 						</Text>
 					</Tooltip>
 				</Row>
-				{isCurrentLayoutNoSplit && <LayoutComponent />}
-				<Button
-					data-testid="PreviewPanelCloseIcon"
-					icon="CloseOutline"
-					onClick={replaceHistoryCallback}
-					size="extralarge"
-					shape="regular"
-					type="default"
-					labelColor="text"
-					backgroundColor="transparent"
-				/>
+				{isCurrentLayoutNoSplit && !isStandAlone && <LayoutComponent />}
+				{!isStandAlone && (
+					<Button
+						data-testid="PreviewPanelCloseIcon"
+						icon="CloseOutline"
+						onClick={replaceHistoryCallback}
+						size="extralarge"
+						shape="regular"
+						type="default"
+						labelColor="text"
+						backgroundColor="transparent"
+					/>
+				)}
 			</Container>
 			<Divider />
 		</>

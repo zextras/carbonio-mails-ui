@@ -33,7 +33,6 @@ export const DragItems = ({
 					deselectAll={noop}
 				/>
 			))}
-			)
 		</>
 	);
 };

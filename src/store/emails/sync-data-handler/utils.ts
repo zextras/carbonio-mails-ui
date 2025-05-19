@@ -6,16 +6,17 @@
 import { getUserSettings } from '@zextras/carbonio-shell-ui';
 /* eslint-disable no-param-reassign */
 import produce from 'immer';
-import { filter, find, forEach, merge } from 'lodash';
+import { filter, find, forEach } from 'lodash';
 import { StoreApi, UseBoundStore } from 'zustand';
 
-import { triggerNotification } from './trigger-notification';
+import { NormalizedPartialConversation } from '../../../normalizations/normalize-conversation';
 import {
 	EmailsStoreState,
 	IncompleteMessage,
 	MailMessage,
 	NormalizedConversation
 } from '../../../types';
+import { PartialIncompleteMessage } from '../../../views/sidebar/commons/types';
 
 function deleteConversationsInSearch(
 	state: EmailsStoreState,
@@ -25,6 +26,7 @@ function deleteConversationsInSearch(
 		state.searchIndexSlice.conversationListIndex.filter((id) => !conversationIds.includes(id));
 	conversationIds.forEach((id) => {
 		delete state.populatedItemsSlice.conversations[id];
+		delete state.populatedItemsSlice.conversationsStatus[id];
 	});
 }
 function deleteMessagesInSearch(state: EmailsStoreState, messageIds: Array<string>): void {
@@ -33,6 +35,7 @@ function deleteMessagesInSearch(state: EmailsStoreState, messageIds: Array<strin
 	);
 	messageIds.forEach((id) => {
 		delete state.populatedItemsSlice.messages[id];
+		delete state.populatedItemsSlice.messagesStatus[id];
 		forEach(state.populatedItemsSlice.conversations, (conversation) => {
 			state.populatedItemsSlice.conversations[conversation.id].messageIds = filter(
 				conversation.messageIds,
@@ -97,7 +100,7 @@ function handleNotifyDeleted(
 /**
  * Updates the conversations in the application state with the modified conversation data.
  *
- * @param updatedConversations - An array of normalized conversation objects containing the updates.
+ * @param partialConversations - An array of normalized conversation objects containing the updates.
  * Each conversation must include an `id` and any other properties to merge with the existing state.
  *
  * @param useEmailsStore - A state management hook based on Zustand, which provides access
@@ -109,16 +112,19 @@ function handleNotifyDeleted(
  * - Other properties are merged into the existing data for the corresponding conversation.
  */
 function handleNotifyConversationsModified(
-	updatedConversations: Array<NormalizedConversation>,
+	partialConversations: Array<NormalizedPartialConversation>,
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
 ): void {
 	useEmailsStore.setState(
 		produce(({ populatedItemsSlice }: EmailsStoreState) => {
-			updatedConversations.forEach((conversation) => {
-				populatedItemsSlice.conversations[conversation.id] = {
-					...merge(populatedItemsSlice.conversations[conversation.id], conversation),
-					tags: conversation.tags
-				};
+			partialConversations.forEach((partialData) => {
+				const existingConversation = populatedItemsSlice.conversations[partialData.id];
+				if (existingConversation) {
+					populatedItemsSlice.conversations[partialData.id] = {
+						...existingConversation,
+						...partialData
+					};
+				}
 			});
 		})
 	);
@@ -127,23 +133,24 @@ function handleNotifyConversationsModified(
 /**
  * Updates the messages in the application state with modified message data.
  *
- * @param updatedMessages - An array of updated message objects, each containing an `id`
+ * @param partialMessages - An array of updated message objects, each containing an `id`
  * and other properties to update in the state.
  * @param useEmailsStore - A state management hook for accessing and updating the `EmailsStoreState`.
  */
 function handleNotifyMessagesModified(
-	updatedMessages: Array<IncompleteMessage>,
+	partialMessages: Array<PartialIncompleteMessage>,
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
 ): void {
 	useEmailsStore.setState(
 		produce(({ populatedItemsSlice }: EmailsStoreState) => {
-			updatedMessages.forEach((message) => {
-				const messageId = message.id;
-				const messageAfterMerge = merge(populatedItemsSlice.messages[messageId], message);
-				populatedItemsSlice.messages[messageId] = {
-					...messageAfterMerge,
-					tags: message.tags
-				};
+			partialMessages.forEach((partialData) => {
+				const existingMessage = populatedItemsSlice.messages[partialData.id];
+				if (existingMessage) {
+					populatedItemsSlice.messages[partialData.id] = {
+						...existingMessage,
+						...partialData
+					};
+				}
 			});
 		})
 	);
@@ -160,7 +167,6 @@ function handleNotifyMessagesCreated(
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
 ): void {
 	const newMessageIds = messages.map((message) => message.id);
-	triggerNotification(messages);
 
 	function addMessagesToMessageSlice(state: EmailsStoreState): void {
 		state.populatedItemsSlice.messages = messages.reduce((acc, msg) => {

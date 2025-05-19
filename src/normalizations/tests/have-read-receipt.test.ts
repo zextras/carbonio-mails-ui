@@ -8,8 +8,17 @@ import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
 import { haveReadReceipt } from '../normalize-message';
 
 describe('Have Read Receipt', () => {
-	test('returns false if participants and flag undefined', () => {
-		expect(haveReadReceipt(undefined, undefined, FOLDERS.INBOX)).toBe(false);
+	test('returns false if flag undefined', () => {
+		expect(
+			haveReadReceipt(
+				[
+					{ a: 'test@domain.com', d: 'User Name', p: 'Title', t: 'f' },
+					{ a: 'test1@domain.com', d: 'User Name1', p: 'Title', t: 't' }
+				],
+				undefined,
+				FOLDERS.INBOX
+			)
+		).toBe(false);
 	});
 
 	test('returns false if no participants notify and flag not NIL than accept to not show notify', () => {

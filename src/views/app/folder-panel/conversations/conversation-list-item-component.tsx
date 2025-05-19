@@ -11,7 +11,7 @@ import { DragItemWrapper } from '../parts/drag-item-wrapper';
 
 type ConversationListItemComponentProps = {
 	conversationId: string;
-	activeItemId: string;
+	activeItemId?: string;
 	selected: boolean;
 	selecting: boolean;
 	toggleMultipleSelection: (id: string) => void;

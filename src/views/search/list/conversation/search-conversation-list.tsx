@@ -26,14 +26,13 @@ export const SearchConversationList = ({
 	searchResults: conversationIds,
 	query,
 	loading,
-	filterCount,
 	setShowAdvanceFilters,
 	isInvalidQuery,
 	searchDisabled,
 	invalidQueryTooltip,
 	hasMore
 }: SearchListProps): React.JSX.Element => {
-	const { itemId } = useParams<{ itemId: string }>();
+	const { itemId } = useParams() as { itemId?: string };
 	const loadingMore = useRef<boolean>(false);
 	const { setCount, count } = useAppContext<AppContext>();
 	const listRef = useRef<HTMLDivElement>(null);
@@ -120,7 +119,6 @@ export const SearchConversationList = ({
 		<Container background="gray6" width="25%" height="fill" mainAlignment="flex-start">
 			<AdvancedFilterButton
 				setShowAdvanceFilters={setShowAdvanceFilters}
-				filterCount={filterCount}
 				searchDisabled={searchDisabled}
 				invalidQueryTooltip={invalidQueryTooltip}
 			/>

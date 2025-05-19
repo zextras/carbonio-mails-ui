@@ -11,6 +11,7 @@ import * as shell from '@zextras/carbonio-shell-ui';
 import { useParams } from 'react-router-dom';
 
 import { FOLDERS } from '../../../../../carbonio-ui-commons/constants/folders';
+import { ParticipantRole } from '../../../../../carbonio-ui-commons/constants/participants';
 import { useFolderStore } from '../../../../../carbonio-ui-commons/store/zustand/folder';
 import { generateFolder } from '../../../../../carbonio-ui-commons/test/mocks/folders/folders-generator';
 import { createSoapAPIInterceptor } from '../../../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
@@ -69,6 +70,38 @@ describe('message-list', () => {
 		setupTest(<MessageList />);
 
 		expect(await screen.findByTestId(`message-list-${folderId}`)).toBeInTheDocument();
+	});
+
+	it('should render the sender without modifying them', async () => {
+		const folder = generateFolder({ id: 'testFolder', parent: FOLDERS.INBOX });
+		populateFoldersStore({ customFolders: [folder] });
+		const folderId = folder.id;
+		const participants = [
+			{
+				a: 'a',
+				p: 'from nAme',
+				t: ParticipantRole.FROM
+			},
+			{
+				a: 'a',
+				p: 'cc nAme',
+				t: ParticipantRole.CARBON_COPY
+			}
+		];
+		const searchResponse = {
+			m: [generateCompleteMessageFromAPI({ id: '1', l: folderId, e: participants })],
+			more: false
+		};
+		createSoapAPIInterceptor('Search', searchResponse);
+		(useParams as jest.Mock).mockReturnValue({ folderId });
+
+		setupTest(<MessageList />);
+
+		expect(await screen.findAllByTestId(invisibleItemTestId)).toHaveLength(1);
+
+		makeAllItemsVisible();
+
+		expect(await screen.findByText(/from nAme/)).toBeInTheDocument();
 	});
 
 	it('should render the correct number of list items', async () => {

@@ -3,53 +3,36 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { filter, find, isNil, map } from 'lodash';
+import { filter, isNil, map, omitBy } from 'lodash';
 
 import { normalizeParticipantsFromSoap } from './normalize-message';
-import { getTags } from '../carbonio-ui-commons/store/zustand/tags';
-import { Tags } from '../carbonio-ui-commons/types/tags';
 import type { NormalizedConversation, SoapConversation, SoapIncompleteMessage } from '../types';
-
-const getTagIdsFromName = (names: string | undefined, tags?: Tags): Array<string | undefined> =>
-	map(
-		(names?.split(',') ?? []).filter((n) => n),
-		(name) => (find(tags, { name }) ? find(tags, { name })?.id : `nil:${name}`)
-	);
-const getTagIds = (t: string | undefined, tn: string | undefined): Array<string | undefined> => {
-	const tags = getTags();
-	if (!isNil(t)) {
-		return filter(t.split(','), (tag) => tag !== '');
-	}
-	if (!isNil(tn)) {
-		return getTagIdsFromName(tn, tags);
-	}
-	return [];
-};
+import { getTagIds } from './utils';
+import { OptionalExcept, SoapPartialConversation } from '../views/sidebar/commons/types';
 
 export type NormalizeConversationProps = {
 	conversation: SoapConversation;
 	messages?: Array<SoapIncompleteMessage>;
 };
 
-function removeUndefinedValues<T>(items: (T | undefined)[]): T[] {
-	const definedItems: T[] = [];
-	items.forEach((item) => {
-		if (item) {
-			definedItems.push(item);
-		}
-	});
-	return definedItems;
-}
+export type NormalizePartialConversationProps = {
+	conversation: SoapPartialConversation;
+};
 
+export type NormalizedPartialConversation = OptionalExcept<NormalizedConversation, 'id'>;
 export const mapToNormalizedConversation = ({
 	conversation,
 	messages
 }: NormalizeConversationProps): NormalizedConversation => {
 	const messagesWithCid = conversation?.m ?? filter(messages ?? [], ['cid', conversation?.id]);
 	const convMessagesIds = map(messagesWithCid, (msg) => msg.id);
-
+	const tags = getTagIds(conversation.t, conversation.tn);
+	// disabling type check on this line because the tags are optional
+	// the workaround will be removed once proper type is in place
+	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+	// @ts-ignore
 	return {
-		tags: removeUndefinedValues(getTagIds(conversation.t, conversation.tn)),
+		...(tags ? { tags } : {}),
 		id: conversation.id,
 		date: conversation.d,
 		messageIds: convMessagesIds,
@@ -69,3 +52,37 @@ export const normalizeConversations = (
 	soapConversations: Array<SoapConversation>
 ): Array<NormalizedConversation> =>
 	map(soapConversations, (conv) => mapToNormalizedConversation({ conversation: conv }));
+
+function calculateReadFlag(conversation: SoapPartialConversation): boolean | undefined {
+	if (conversation.f) return !/u/.test(conversation.f);
+	if (conversation.u) return conversation.u <= 0;
+	return undefined;
+}
+const mapToNormalizedPartialConversation = ({
+	conversation
+}: NormalizePartialConversationProps): NormalizedPartialConversation => {
+	// const messagesWithCid = conversation?.m ?? filter(messages ?? [], ['cid', conversation?.id]);
+	const convMessagesIds = conversation.m ? map(conversation.m, (msg) => msg.id) : undefined;
+	const result = omitBy(
+		{
+			tags: getTagIds(conversation.t, conversation.tn),
+			date: conversation.d,
+			messageIds: convMessagesIds,
+			participants: conversation.e ? map(conversation.e, normalizeParticipantsFromSoap) : undefined,
+			subject: conversation.su,
+			fragment: conversation.fr,
+			read: calculateReadFlag(conversation),
+			hasAttachment: conversation.f ? /a/.test(conversation.f) : undefined,
+			flagged: conversation.f ? /f/.test(conversation.f) : undefined,
+			urgent: !isNil(conversation.f) ? /!/.test(conversation.f) : undefined,
+			// Number of (nondeleted) messages. messages in trash or spam are in the count
+			messagesInConversation: conversation.n
+		},
+		isNil
+	);
+	return { ...result, id: conversation.id };
+};
+export const normalizePartialConversations = (
+	soapConversations: Array<SoapPartialConversation>
+): Array<NormalizedPartialConversation> =>
+	map(soapConversations, (conv) => mapToNormalizedPartialConversation({ conversation: conv }));

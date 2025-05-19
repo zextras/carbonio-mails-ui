@@ -9,13 +9,13 @@ import { includes, map, reduce } from 'lodash';
 import { v4 as uuid } from 'uuid';
 
 import { findIconFromChip } from './parts/use-find-icon';
+import { convertSearchChipToString } from '../../carbonio-ui-commons/helpers/search';
 import {
 	ChipType,
 	ContactInputItem,
 	Folder,
 	Folders,
 	KeywordState,
-	Query,
 	SearchQueryItem
 } from '../../types';
 
@@ -103,8 +103,9 @@ export function updateQueryChips(
 
 function generateFoldersSearchQuery(foldersArray: string[]): string {
 	const foldersSearchString = foldersArray.map((folder) => `inid:"${folder}"`).join(' OR ');
-	return `( ${foldersSearchString} OR is:local) `;
+	return `(${foldersSearchString} OR is:local)`;
 }
+
 function generateFoldersArray(folders: { [key: string]: Folder }): string[] {
 	return reduce(
 		folders,
@@ -125,7 +126,10 @@ export function generateQueryString(
 ): string {
 	const foldersArray = generateFoldersArray(folders);
 	const foldersToSearchInQuery = generateFoldersSearchQuery(foldersArray);
+
+	const queryString = query.map((c) => convertSearchChipToString(c)).join(' ');
+
 	return isSharedFolderIncluded && foldersArray?.length > 0
-		? `(${query.map((c) => (c.value ? c.value : c.label)).join(' ')}) ${foldersToSearchInQuery}`
-		: `${query.map((c) => (c.value ? c.value : c.label)).join(' ')}`;
+		? `(${queryString}) ${foldersToSearchInQuery}`
+		: `${queryString}`;
 }

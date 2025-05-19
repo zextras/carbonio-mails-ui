@@ -60,6 +60,9 @@ function getConversationMessages(
 		.filter(Boolean);
 }
 
+// TODO: check this implementation. We found out the merge was handling data incorrectly.
+//  we decided to just override the data and not handle any complex logic in the store
+//  Check also updateMessages method as it may have the same issues
 function updateConversations(
 	updatedConversations: Array<NormalizedConversation>,
 	useEmailsStore: UseBoundStore<StoreApi<EmailsStoreState>>
@@ -67,14 +70,10 @@ function updateConversations(
 	useEmailsStore.setState(
 		produce(({ populatedItemsSlice }: EmailsStoreState) => {
 			updatedConversations.forEach((conversation) => {
-				if (populatedItemsSlice.conversations[conversation.id]) {
-					populatedItemsSlice.conversations[conversation.id] = {
-						...merge(populatedItemsSlice.conversations[conversation.id], conversation),
-						tags: conversation.tags
-					};
-				} else {
-					populatedItemsSlice.conversations[conversation.id] = conversation;
-				}
+				populatedItemsSlice.conversations[conversation.id] = {
+					...populatedItemsSlice.conversations[conversation.id],
+					...conversation
+				};
 			});
 		})
 	);

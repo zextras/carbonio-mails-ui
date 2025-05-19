@@ -7,7 +7,7 @@ import React, { useMemo } from 'react';
 
 import { Padding, Row, Text, Tooltip } from '@zextras/carbonio-design-system';
 import { t, useUserAccount } from '@zextras/carbonio-shell-ui';
-import { filter, findIndex, reduce, trimStart, uniqBy } from 'lodash';
+import { findIndex, reduce, trimStart, uniqBy } from 'lodash';
 
 import { FOLDERS } from '../../../../carbonio-ui-commons/constants/folders';
 import { ParticipantRole } from '../../../../carbonio-ui-commons/constants/participants';
@@ -15,13 +15,25 @@ import { participantToString } from '../../../../commons/utils';
 import { getFolderIdParts } from '../../../../helpers/folders';
 import { isConversation } from '../../../../helpers/messages';
 import { getConversationMessages } from '../../../../store/emails/store';
-import { NormalizedConversation, IncompleteMessage, TextReadValuesProps } from '../../../../types';
+import {
+	NormalizedConversation,
+	IncompleteMessage,
+	TextReadValuesProps,
+	Participant
+} from '../../../../types';
 
 export type ParticipantsNameProps = {
 	item: NormalizedConversation | IncompleteMessage;
 	isSearchModule?: boolean;
 	textValues?: TextReadValuesProps;
 };
+
+function removeReplyToParticipants(
+	participants: Array<Participant> | undefined
+): Array<Participant> {
+	if (!participants) return [];
+	return participants.filter((p) => p.type !== ParticipantRole.REPLY_TO);
+}
 
 export const ParticipantsName = ({
 	item,
@@ -33,11 +45,13 @@ export const ParticipantsName = ({
 	const parent = isConversation(item) ? getConversationMessages(item.id)[0].parent : item.parent;
 
 	const folderId = getFolderIdParts(parent).id;
+	const participantsWithoutReplyTo = removeReplyToParticipants(item.participants);
 
 	const participantsString = useMemo(() => {
-		const participants = filter(item.participants, (p) => {
+		const participants = participantsWithoutReplyTo.filter((p) => {
 			if (isConversation(item)) return true;
-			if (folderId === FOLDERS.INBOX) return p.type === ParticipantRole.FROM; // inbox
+			if (folderId !== FOLDERS.SENT && folderId !== FOLDERS.DRAFTS && !isSearchModule)
+				return p.type === ParticipantRole.FROM; // Not sent or drafts
 			if (folderId === FOLDERS.SENT && !isSearchModule) return p.type === ParticipantRole.TO; // sent
 			if (isSearchModule) return p.type === ParticipantRole.FROM; // search module
 			return true; // keep all
@@ -55,7 +69,7 @@ export const ParticipantsName = ({
 			(acc, part) => trimStart(`${acc}, ${participantToString(part, [account])}`, ', '),
 			''
 		);
-	}, [account, folderId, isSearchModule, item]);
+	}, [account, folderId, isSearchModule, item, participantsWithoutReplyTo]);
 
 	return (
 		<Row wrap="nowrap" takeAvailableSpace mainAlignment="flex-start">
@@ -64,15 +78,25 @@ export const ParticipantsName = ({
 					<Text color="error">{t('label.draft_folder', '[DRAFT]')}</Text>
 				</Padding>
 			)}
-			<Tooltip label={participantsString} overflow="break-word" maxWidth="60vw">
+			{participantsString.length > 0 ? (
+				<Tooltip label={participantsString} overflow="break-word" maxWidth="60vw">
+					<Text
+						data-testid="participants-name-label"
+						color={textValues?.color}
+						weight={textValues?.weight}
+					>
+						{participantsString}
+					</Text>
+				</Tooltip>
+			) : (
 				<Text
-					data-testid="participants-name-label"
+					data-testid="participants-empty-label"
 					color={textValues?.color}
 					weight={textValues?.weight}
 				>
-					{participantsString}
+					{t('recipient.toField.missing', `[Empty 'To' Field]`)}
 				</Text>
-			</Tooltip>
+			)}
 		</Row>
 	);
 };

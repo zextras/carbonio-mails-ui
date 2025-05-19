@@ -21,7 +21,6 @@ import { useMsgRedirectDescriptor } from './use-msg-redirect';
 import { useMsgReplyDescriptor } from './use-msg-reply';
 import { useMsgReplyAllDescriptor } from './use-msg-reply-all';
 import { useMsgRestoreDescriptor } from './use-msg-restore';
-import { useMsgSendDraftDescriptor } from './use-msg-send-draft';
 import { useMsgSetFlagDescriptor } from './use-msg-set-flag';
 import { useMsgSetNotSpamDescriptor } from './use-msg-set-not-spam';
 import { useMsgSetReadDescriptor } from './use-msg-set-read';
@@ -36,7 +35,6 @@ export type MessageActionsArgumentType = {
 	message: MailMessage;
 	deselectAll: () => void;
 	shouldReplaceHistory?: boolean;
-	messagePreviewFactory: () => React.JSX.Element;
 };
 
 type MessageActionsReturnType = {
@@ -50,7 +48,6 @@ type MessageActionsReturnType = {
 	messageUnreadDescriptor: UIActionDescriptor;
 	flagDescriptor: UIActionDescriptor;
 	unflagDescriptor: UIActionDescriptor;
-	sendDraftDescriptor: UIActionDescriptor;
 	markAsSpamDescriptor: UIActionDescriptor;
 	markAsNotSpamDescriptor: UIActionDescriptor;
 	applyTagDescriptor: UIActionAggregator;
@@ -69,8 +66,7 @@ type MessageActionsReturnType = {
 export const useMsgActions = ({
 	deselectAll,
 	message,
-	shouldReplaceHistory = false,
-	messagePreviewFactory
+	shouldReplaceHistory = false
 }: MessageActionsArgumentType): MessageActionsReturnType => {
 	const folderId = getParentFolderId(message.parent);
 
@@ -105,7 +101,6 @@ export const useMsgActions = ({
 	});
 	const flagDescriptor = useMsgSetFlagDescriptor([message.id], message.flagged);
 	const unflagDescriptor = useMsgSetUnflagDescriptor([message.id], message.flagged);
-	const sendDraftDescriptor = useMsgSendDraftDescriptor(message, folderId);
 	const markAsSpamDescriptor = useMsgSetSpamDescriptor({
 		ids: [message.id],
 		shouldReplaceHistory,
@@ -142,8 +137,7 @@ export const useMsgActions = ({
 
 	const previewOnSeparatedWindowDescriptor = useMsgPreviewOnSeparatedWindowDescriptor({
 		messageId: message.id,
-		subject: message.subject,
-		messagePreviewFactory
+		folderId
 	});
 
 	return useMemo(
@@ -158,7 +152,6 @@ export const useMsgActions = ({
 			messageUnreadDescriptor,
 			flagDescriptor,
 			unflagDescriptor,
-			sendDraftDescriptor,
 			markAsSpamDescriptor,
 			markAsNotSpamDescriptor,
 			applyTagDescriptor,
@@ -195,7 +188,6 @@ export const useMsgActions = ({
 			replyAllDescriptor,
 			replyDescriptor,
 			restoreFolderDescriptor,
-			sendDraftDescriptor,
 			showOriginalDescriptor,
 			unflagDescriptor
 		]

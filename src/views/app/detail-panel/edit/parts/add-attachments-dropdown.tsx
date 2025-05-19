@@ -46,7 +46,7 @@ export const AddAttachmentsDropdown: FC<AddAttachmentsDropdownProps> = ({ editor
 	const { control } = useForm();
 	const inputRef = useRef<HTMLInputElement>(null);
 
-	const { text, setText } = useEditorText(editorId);
+	const { getText, setText } = useEditorText(editorId);
 	const { addStandardAttachments, addUploadedAttachment } = useEditorAttachments(editorId);
 
 	const addFilesFromLocal = useCallback(
@@ -77,15 +77,15 @@ export const AddAttachmentsDropdown: FC<AddAttachmentsDropdownProps> = ({ editor
 			const textWithLink = {
 				plainText: map(filesResponse, (i: { value: { url: string } }) => i.value.url)
 					.join('\n')
-					.concat(text.plainText),
+					.concat(getText().plainText),
 				richText: ` ${map(
 					filesResponse,
 					(i: { value: { url: string } }) => `<p><a href="${i.value.url}"> ${i.value.url}</a></p>`
-				).join('')}`.concat(text.richText)
+				).join('')}`.concat(getText().richText)
 			};
 			setText(textWithLink);
 		},
-		[setText, text]
+		[setText, getText]
 	);
 
 	const [uploadFromFiles, isUploadFromFiles] = useUploadFromFiles({

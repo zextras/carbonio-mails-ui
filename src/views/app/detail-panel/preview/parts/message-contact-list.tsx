@@ -6,6 +6,7 @@
 
 import React, {
 	FC,
+	memo,
 	ReactElement,
 	useCallback,
 	useLayoutEffect,
@@ -21,6 +22,7 @@ import {
 	IconButton,
 	Padding,
 	Row,
+	Text,
 	Tooltip
 } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
@@ -32,9 +34,18 @@ import { useFoldersMap } from '../../../../../carbonio-ui-commons/store/zustand/
 import type { MailMessage, TextReadValuesProps } from '../../../../../types';
 import { getFolderTranslatedName } from '../../../../sidebar/utils';
 
+const EmptyToField: FC<{ labelTo: string }> = memo(({ labelTo }) => (
+	<Row mainAlignment="flex-start">
+		<Text color="secondary" size="small" style={{ paddingRight: '0.25rem' }}>
+			{labelTo} {t('recipient.toField.missing', `[Empty 'To' Field]`)}
+		</Text>
+	</Row>
+));
+EmptyToField.displayName = 'EmptyToField';
+
 const MessageContactList: FC<{
 	message: MailMessage;
-	folderId: string;
+	folderId?: string;
 	contactListExpandCB: (showMore: boolean) => void;
 }> = ({ message, folderId, contactListExpandCB }): ReactElement => {
 	const [open, setOpen] = useState(false);
@@ -73,7 +84,7 @@ const MessageContactList: FC<{
 	}, [message.read]);
 
 	const messageFolder = useMemo(
-		() => folders[message.parent?.includes(':') ? folderId : message.parent],
+		() => folders[folderId && message.parent?.includes(':') ? folderId : message.parent],
 		[folderId, folders, message.parent]
 	);
 	const labelTo = useMemo(() => `${t('label.to', 'To')}: `, []);
@@ -130,17 +141,35 @@ const MessageContactList: FC<{
 			<Container mainAlignment="flex-start" crossAlignment="flex-start" width={badgeWidth}>
 				{!open && (
 					<Container width="calc(100% - 1.5rem)" crossAlignment="flex-start">
-						<Row height="fit" crossAlignment="flex-start" mainAlignment="flex-start">
-							{toContacts.length > 0 && (
+						<Row
+							height="fit"
+							crossAlignment="flex-start"
+							mainAlignment="flex-start"
+							data-testid="ContactNamesToRow"
+						>
+							{toContacts.length > 0 ? (
 								<ContactNames showOverflow contacts={toContacts} label={labelTo} />
+							) : (
+								<EmptyToField labelTo={labelTo} />
 							)}
 						</Row>
-						<Row height="fit" crossAlignment="flex-start" mainAlignment="flex-start">
+						<Row
+							height="fit"
+							crossAlignment="flex-start"
+							mainAlignment="flex-start"
+							data-testid="ContactNamesCcRow"
+						>
 							{ccContacts.length > 0 && (
 								<ContactNames showOverflow contacts={ccContacts} label={labelCc} />
 							)}
 						</Row>
-						<Row height="fit" width="100%" crossAlignment="flex-start" mainAlignment="flex-start">
+						<Row
+							height="fit"
+							width="100%"
+							crossAlignment="flex-start"
+							mainAlignment="flex-start"
+							data-testid="ContactNamesBccRow"
+						>
 							{bccContacts.length > 0 && (
 								<ContactNames showOverflow contacts={bccContacts} label={labelBcc} />
 							)}
@@ -157,17 +186,23 @@ const MessageContactList: FC<{
 								mainAlignment="flex-start"
 								padding={{ bottom: 'small' }}
 							>
-								{toContacts.length > 0 && <ContactNameChip contacts={toContacts} label={labelTo} />}
+								{toContacts.length > 0 ? (
+									<ContactNameChip contacts={toContacts} label={labelTo} />
+								) : (
+									<EmptyToField labelTo={labelTo} />
+								)}
 							</Row>
-							<Row
-								height="fit"
-								width="100%"
-								crossAlignment="flex-start"
-								mainAlignment="flex-start"
-								padding={{ bottom: 'small' }}
-							>
-								{ccContacts.length > 0 && <ContactNameChip contacts={ccContacts} label={labelCc} />}
-							</Row>
+							{ccContacts.length > 0 && (
+								<Row
+									height="fit"
+									width="100%"
+									crossAlignment="flex-start"
+									mainAlignment="flex-start"
+									padding={{ bottom: 'small' }}
+								>
+									<ContactNameChip contacts={ccContacts} label={labelCc} />
+								</Row>
+							)}
 							<Row height="fit" width="100%" crossAlignment="flex-start" mainAlignment="flex-start">
 								{bccContacts.length > 0 && (
 									<ContactNameChip contacts={bccContacts} label={labelBcc} />

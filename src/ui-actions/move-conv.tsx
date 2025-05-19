@@ -6,14 +6,15 @@
 import React, { ReactElement, useCallback, useMemo, useState } from 'react';
 
 import { Container, Input, Padding, Text } from '@zextras/carbonio-design-system';
-import { replaceHistory } from '@zextras/carbonio-shell-ui';
 import { noop, some } from 'lodash';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 
 import { createFolderSoapApi } from '../api/create-folder-soap-api';
 import ModalFooter from '../carbonio-ui-commons/components/modals/modal-footer';
 import ModalHeader from '../carbonio-ui-commons/components/modals/modal-header';
 import { Folder } from '../carbonio-ui-commons/types/folder';
+import { MAILS_ROUTE } from '../constants';
 import { isRoot } from '../helpers/folders';
 import { useUiUtilities } from '../hooks/use-ui-utilities';
 import { convActionEmailStoreAction } from '../store/emails/actions/conv-action-action';
@@ -39,6 +40,7 @@ export const MoveConversation = ({
 	const [inputValue, setInputValue] = useState('');
 	const [folderDestination, setFolderDestination] = useState<Folder | undefined>();
 	const [moveConvModal, setMoveConvModal] = useState(true);
+	const navigate = useNavigate();
 
 	const onCloseModal = useCallback(() => {
 		setMoveConvModal(true);
@@ -66,7 +68,7 @@ export const MoveConversation = ({
 						autoHideTimeout: 3000,
 						actionLabel: t('action.goto_folder', 'GO TO FOLDER'),
 						onActionClick: () => {
-							replaceHistory(`/folder/${id}`);
+							navigate(`/${MAILS_ROUTE}/folder/${id}`, { replace: true });
 						}
 					});
 				} else {
@@ -83,7 +85,7 @@ export const MoveConversation = ({
 				onCloseModal();
 			});
 		},
-		[selectedIDs, onCloseModal, deselectAll, createSnackbar, isRestore, t]
+		[selectedIDs, onCloseModal, deselectAll, createSnackbar, isRestore, t, navigate]
 	);
 
 	const hasSameName = useMemo(
@@ -226,10 +228,7 @@ export const MoveConversation = ({
 					selectedFolderId={folderDestination?.id}
 					onFolderSelected={setFolderDestination}
 					showSharedAccounts
-					showTrashFolder={false}
-					showSpamFolder={false}
 					allowRootSelection={false}
-					allowFolderCreation={false}
 				/>
 				<ModalFooter
 					tooltip={modalFooterTooltip}

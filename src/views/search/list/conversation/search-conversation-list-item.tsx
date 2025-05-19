@@ -7,7 +7,8 @@
 import React, { FC, useCallback, useState } from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
-import { pushHistory, useUserSettings } from '@zextras/carbonio-shell-ui';
+import { useUserSettings } from '@zextras/carbonio-shell-ui';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { SearchConversationListItemCore } from './search-conversation-list-item-core';
@@ -21,7 +22,6 @@ import {
 	useConversationStatus
 } from '../../../../store/emails/store';
 import { ConversationListItemActionWrapper } from '../../../app/folder-panel/conversations/conversation-list-item-wrapper';
-import { SearchConversationExtraWindowPanelContainer } from '../../extra-window/conversations/search-conversation-extra-window-panel';
 
 const CollapseElement = styled(Container)<{ $open: boolean }>`
 	display: ${({ $open }): string => ($open ? 'block' : 'none')};
@@ -30,7 +30,7 @@ type SearchConversationListItemProps = {
 	conversationId: string;
 	selecting: boolean;
 	active: boolean;
-	activeItemId: string;
+	activeItemId?: string;
 	toggle: (id: string) => void;
 	selected: boolean;
 	deselectAll: () => void;
@@ -51,18 +51,13 @@ export const SearchConversationListItem: FC<SearchConversationListItemProps> = (
 	const messages = useConversationMessages(conversationId);
 	const conversationStatus = useConversationStatus(conversationId);
 	const { id, isDraft, parent } = messages[0];
+	const navigate = useNavigate();
 
 	const zimbraPrefMarkMsgRead = useUserSettings()?.prefs?.zimbraPrefMarkMsgRead !== '-1';
 
-	const conversationPreviewFactory = useCallback(
-		() => <SearchConversationExtraWindowPanelContainer conversationId={conversationId} />,
-		[conversationId]
-	);
-
 	const previewOnSeparatedWindow = useConvPreviewOnSeparatedWindowFn({
 		conversationId,
-		subject: conversation.subject,
-		conversationPreviewFactory
+		folderId: parent
 	});
 
 	const markAsRead = useConvSetReadFn({
@@ -78,10 +73,10 @@ export const SearchConversationListItem: FC<SearchConversationListItemProps> = (
 				if (conversation?.read === false && zimbraPrefMarkMsgRead) {
 					markAsRead.canExecute() && markAsRead.execute();
 				}
-				pushHistory(`conversation/${conversationId}`);
+				navigate(`../conversation/${conversationId}`);
 			}
 		},
-		[conversation?.read, zimbraPrefMarkMsgRead, conversationId, markAsRead]
+		[conversation?.read, zimbraPrefMarkMsgRead, navigate, conversationId, markAsRead]
 	);
 
 	const _onDoubleClick = useCallback(
@@ -90,14 +85,10 @@ export const SearchConversationListItem: FC<SearchConversationListItemProps> = (
 				return;
 			}
 
-			if (isDraft) {
-				pushHistory(`/folder/${parent}/edit/${id}?action=editAsDraft`);
-			} else {
-				previewOnSeparatedWindow.canExecute() && previewOnSeparatedWindow.execute();
-			}
+			previewOnSeparatedWindow.canExecute() && previewOnSeparatedWindow.execute();
 		},
 
-		[id, isDraft, parent, previewOnSeparatedWindow]
+		[previewOnSeparatedWindow]
 	);
 
 	return (
@@ -145,7 +136,7 @@ export const SearchConversationListItem: FC<SearchConversationListItemProps> = (
 					height="auto"
 				>
 					<SearchConversationMessagesList
-						active={activeItemId}
+						activeItemId={activeItemId}
 						length={conversation.messagesInConversation}
 						messages={messages}
 						conversationStatus={conversationStatus}

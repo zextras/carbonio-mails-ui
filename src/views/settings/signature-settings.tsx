@@ -8,17 +8,17 @@ import React, { useMemo, useState, useEffect, useCallback, FC, ReactElement, use
 import {
 	Container,
 	FormSubSection,
-	Input,
 	Row,
 	Button,
-	Padding,
 	SelectItem,
 	ButtonProps,
 	Tooltip,
-	Text
+	Text,
+	FormSection,
+	Input
 } from '@zextras/carbonio-design-system';
 import { t, useIntegratedComponent } from '@zextras/carbonio-shell-ui';
-import { map, reject, concat } from 'lodash';
+import { reject, concat, map } from 'lodash';
 import styled from 'styled-components';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -27,6 +27,7 @@ import { ListOld } from './list-old';
 import { signaturesSubSection, setDefaultSignaturesSubSection } from './subsections';
 import { NO_SIGNATURE_ID, NO_SIGNATURE_LABEL } from '../../helpers/signatures';
 import type { SignatureSettingsPropsType, SignItemType } from '../../types';
+import { getFonts, getFontSizesOptions } from './components/utils';
 
 const DeleteButton = styled(Button)`
 	display: none;
@@ -268,32 +269,39 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 		setEditor(editor);
 	};
 
+	const fontSizesOptionsToString = getFontSizesOptions()
+		.map((fontSize: string) => fontSize)
+		.join(' ');
+	const fontsOptionsToString = getFonts().map(
+		(font: { label: string; value: string }) => `${font.label}=${font.value};`
+	);
+
 	const composerCustomOptions = {
+		font_size_formats: fontSizesOptionsToString,
+		font_family_formats: fontsOptionsToString,
 		auto_focus: false,
 		content_style: 'p { margin: 0; }',
-		init_instance_callback: onEditorInitialization
+		init_instance_callback: onEditorInitialization,
+		valid_elements: '*[*]',
+		extended_valid_elements: 'p[style|class]',
+		cleanup: false,
+		verify_html: false,
+		forced_root_block: 'p',
+		protect: [/&nbsp;/g]
 	};
 
 	return (
 		<>
-			<FormSubSection
-				label={sectionTitleSignatures.label}
-				id={sectionTitleSignatures.id}
-				padding={{ all: 'large' }}
-			>
-				<Container crossAlignment="flex-start" orientation="horizontal" padding={{ all: 'medium' }}>
-					<Container width="25%" padding={{ right: 'medium' }}>
-						<Container mainAlignment="flex-start">
-							<Container>
-								<Button
-									label={t('signatures.add_signature', 'Add signature')}
-									type="outlined"
-									onClick={addNewSignature}
-									disabled={signatures?.length > 0 && !currentSignature?.name}
-								/>
-							</Container>
-							<Padding all="small" />
-
+			<FormSection label={sectionTitleSignatures.label} id={sectionTitleSignatures.id}>
+				<FormSubSection>
+					<Container crossAlignment="flex-start" orientation="horizontal" gap={'0.5rem'}>
+						<Container width="25%" gap={'1rem'}>
+							<Button
+								label={t('signatures.add_signature', 'Add signature')}
+								type="outlined"
+								onClick={addNewSignature}
+								disabled={signatures?.length > 0 && !currentSignature?.name}
+							/>
 							<Container height="31.25rem">
 								{signatures.length > 0 && (
 									<ListOld
@@ -304,9 +312,7 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 								)}
 							</Container>
 						</Container>
-					</Container>
-					<Container width="75%" mainAlignment="flex-start">
-						<Container orientation="vertical" mainAlignment="space-around" width="100%">
+						<Container width="75%" mainAlignment="flex-start">
 							<Input
 								label={t('signatures.name', 'Name')}
 								value={currentSignature?.name ?? ''}
@@ -314,41 +320,36 @@ const SignatureSettings: FC<SignatureSettingsPropsType> = ({
 								backgroundColor="gray5"
 								onChange={onSignatureNameChange}
 							/>
+							{composerIsAvailable && (
+								<EditorWrapper>
+									<Composer
+										data-testid={'signature-editor'}
+										value={currentSignature?.description ?? ''}
+										customInitOptions={composerCustomOptions}
+										disabled={editingDisabled}
+										onEditorChange={onSignatureContentChange}
+									/>
+								</EditorWrapper>
+							)}
 						</Container>
-						<Padding all="small" />
-						{composerIsAvailable && (
-							<EditorWrapper>
-								<Composer
-									data-testid={'signature-editor'}
-									// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-									// @ts-ignore
-									value={currentSignature?.description ?? ''}
-									customInitOptions={composerCustomOptions}
-									disabled={editingDisabled}
-									onEditorChange={onSignatureContentChange}
-								/>
-							</EditorWrapper>
-						)}
 					</Container>
-				</Container>
-			</FormSubSection>
-			<FormSubSection
-				label={sectionTitleSetSignatures.label}
-				id={sectionTitleSetSignatures.id}
-				padding={{ all: 'large' }}
-			>
-				<Container crossAlignment="baseline" padding={{ all: 'small' }}>
-					{signatures.length > 0 &&
-						map(updatedIdentities, (acc) => (
-							<SelectIdentitySignature
-								acc={acc}
-								signatures={signatures}
-								signatureSelectItems={signatureSelectItems}
-								updateIdentities={updateIdentities}
-							/>
-						))}
-				</Container>
-			</FormSubSection>
+				</FormSubSection>
+			</FormSection>
+			<FormSection label={sectionTitleSetSignatures.label} id={sectionTitleSetSignatures.id}>
+				<FormSubSection>
+					<Container crossAlignment="baseline" padding={{ all: 'small' }}>
+						{signatures.length > 0 &&
+							map(updatedIdentities, (acc) => (
+								<SelectIdentitySignature
+									acc={acc}
+									signatures={signatures}
+									signatureSelectItems={signatureSelectItems}
+									updateIdentities={updateIdentities}
+								/>
+							))}
+					</Container>
+				</FormSubSection>
+			</FormSection>
 		</>
 	);
 };

@@ -24,7 +24,7 @@ import type { AppContext } from '../../../../types';
 
 export const MessageList = (): React.JSX.Element => {
 	const [t] = useTranslation();
-	const { itemId, folderId } = useParams<{ itemId: string; folderId: string }>();
+	const { itemId, folderId } = useParams() as { itemId?: string; folderId: string };
 	const loadingMore = useRef<boolean>(false);
 	const dragImageRef = useRef(null);
 	const { setCount, count } = useAppContext<AppContext>();

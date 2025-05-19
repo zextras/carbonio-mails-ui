@@ -35,11 +35,11 @@ export const BackupSearchPanel = (): React.JSX.Element => {
 	const sender = { title: t('label.from', 'From'), text: message?.sender };
 	const to = { title: t('label.to', 'To'), text: message?.to };
 	const dateCreated = {
-		title: t('label.date_created', 'Date created'),
+		title: t('label.date_created', 'Creation date'),
 		text: new Date(message?.creationDate).toUTCString()
 	};
 	const dateDeleted = {
-		title: t('label.date_deleted', 'Date deleted'),
+		title: t('label.date_deleted', 'Deletion date'),
 		text: new Date(message?.deletionDate).toUTCString()
 	};
 

@@ -9,16 +9,25 @@ import { MutableRefObject, useEffect, useRef, useState } from 'react';
 
 import { SoapNotify, useNotify, useRefresh } from '@zextras/carbonio-shell-ui';
 import { flatten, forEach, isEmpty, map, sortBy } from 'lodash';
+import { NavigateFunction, useNavigate } from 'react-router-dom';
 
-import { HandleFoldersNotifyProps, HandleTagsNotifyProps } from './types';
+import {
+	HandleFoldersNotifyProps,
+	HandleTagsNotifyProps,
+	SoapPartialConversation,
+	SoapPartialIncompleteMessage
+} from './types';
 import { useFolderStore } from '../../../carbonio-ui-commons/store/zustand/folder';
 import { useTagStore } from '../../../carbonio-ui-commons/store/zustand/tags';
 import { folderWorker, tagsWorker } from '../../../carbonio-ui-commons/worker';
 import {
 	mapToNormalizedConversation,
-	normalizeConversations
+	normalizePartialConversations
 } from '../../../normalizations/normalize-conversation';
-import { normalizeMailMessageFromSoap } from '../../../normalizations/normalize-message';
+import {
+	normalizeMailMessageFromSoap,
+	normalizePartialIncompleteMessageFromSoap
+} from '../../../normalizations/normalize-message';
 import {
 	handleNotifyConversationsCreated,
 	handleNotifyConversationsModified,
@@ -27,10 +36,11 @@ import {
 	handleNotifyMessagesModified,
 	updateMessages
 } from '../../../store/emails/store';
+import { triggerNotification } from '../../../store/emails/sync-data-handler/trigger-notification';
 import { IncompleteMessage, SoapConversation, SoapIncompleteMessage } from '../../../types';
 
 export function extractConvMessage(
-	createdConversations: Array<SoapConversation>
+	createdConversations: Array<{ m?: Array<SoapIncompleteMessage> }>
 ): Array<IncompleteMessage> {
 	return flatten(createdConversations.map((conversation) => conversation.m || [])).map((message) =>
 		normalizeMailMessageFromSoap(message)
@@ -68,7 +78,7 @@ function handleTagsNotify({ notify, worker, store }: HandleTagsNotifyProps): voi
 	});
 }
 
-function processCreatedNotifications(notify: SoapNotify): void {
+function processCreatedNotifications(notify: SoapNotify, navigate: NavigateFunction): void {
 	const { c: createdConversations, m: createdMessages } = notify.created || {};
 	const { m: modifiedMessages } = notify.modified || {};
 	const newConversations = (createdConversations ?? []) as Array<SoapConversation>;
@@ -90,22 +100,25 @@ function processCreatedNotifications(notify: SoapNotify): void {
 	if (newMessages) {
 		const messages = map(newMessages, (message) => normalizeMailMessageFromSoap(message));
 		handleNotifyMessagesCreated(messages);
+		triggerNotification(messages, navigate);
 	}
 }
 
 function processModifiedNotifications(notify: SoapNotify): void {
-	const modifiedConversations = notify.modified?.c as Array<SoapConversation>;
+	const modifiedConversations = notify.modified?.c as Array<SoapPartialConversation>;
 	if (modifiedConversations) {
-		const updatedConversations = normalizeConversations(modifiedConversations);
+		const updatedConversations = normalizePartialConversations(modifiedConversations);
 		handleNotifyConversationsModified(updatedConversations);
 
 		const convMessages = extractConvMessage(modifiedConversations);
 		updateMessages(convMessages);
 	}
 
-	const modifiedMessages = notify.modified?.m as Array<SoapIncompleteMessage>;
+	const modifiedMessages = notify.modified?.m as Array<SoapPartialIncompleteMessage>;
 	if (modifiedMessages) {
-		const messages = map(modifiedMessages, (message) => normalizeMailMessageFromSoap(message));
+		const messages = map(modifiedMessages, (message) =>
+			normalizePartialIncompleteMessageFromSoap(message)
+		);
 		handleNotifyMessagesModified(messages);
 	}
 }
@@ -115,13 +128,15 @@ type ProcessNotificationsProps = {
 	seq: number;
 	setSeq: (arg: number) => void;
 	processedNotify: MutableRefObject<number>;
+	navigate: NavigateFunction;
 };
 
 function processNotifications({
 	notifyList,
 	seq,
 	setSeq,
-	processedNotify
+	processedNotify,
+	navigate
 }: ProcessNotificationsProps): void {
 	forEach(sortBy(notifyList, 'seq'), (notify) => {
 		/*
@@ -146,7 +161,7 @@ function processNotifications({
 		handleTagsNotify({ notify, worker: tagsWorker, store: useTagStore });
 
 		if (notify.created) {
-			processCreatedNotifications(notify);
+			processCreatedNotifications(notify, navigate);
 		}
 
 		if (notify.modified) {
@@ -163,11 +178,11 @@ function processNotifications({
 }
 
 export const useSyncDataHandler = (): void => {
-	const notifyList = useNotify() as unknown as Array<SoapNotify>;
+	const notifyList = useNotify();
+	const navigate = useNavigate();
 	const [seq, setSeq] = useState(-1);
 	const [initialized, setInitialized] = useState(false);
 	const processedNotify = useRef<number>(-1);
-
 	const refresh = useRefresh();
 	useEffect(() => {
 		if (!isEmpty(refresh) && !initialized) {
@@ -177,7 +192,7 @@ export const useSyncDataHandler = (): void => {
 
 	useEffect(() => {
 		if (initialized && notifyList.length > 0) {
-			processNotifications({ notifyList, seq, setSeq, processedNotify });
+			processNotifications({ notifyList, seq, setSeq, processedNotify, navigate });
 		}
-	}, [initialized, notifyList, seq]);
+	}, [initialized, navigate, notifyList, seq]);
 };

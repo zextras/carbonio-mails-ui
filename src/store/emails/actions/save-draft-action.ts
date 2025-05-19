@@ -7,14 +7,22 @@
 import { saveDraftSoapApi } from '../../../api/save-draft-soap-api';
 import { API_REQUEST_STATUS } from '../../../constants';
 import { normalizeMailMessageFromSoap } from '../../../normalizations/normalize-message';
-import { SaveDraftParameters } from '../../../types';
+import { MailAttachment, MailsEditorV2 } from '../../../types';
+import { createSoapDraftRequestFromEditor } from '../../editor/editor-transformations';
 import { updateMessages, updateMessageStatus } from '../store';
+
+type SaveDraftEmailStoreAction = {
+	editor: MailsEditorV2;
+	signal?: AbortSignal;
+	attach?: MailAttachment;
+};
 
 export async function saveDraftEmailStoreAction({
 	editor,
 	signal
-}: SaveDraftParameters): ReturnType<typeof saveDraftSoapApi> {
-	const result = await saveDraftSoapApi({ editor, signal });
+}: SaveDraftEmailStoreAction): ReturnType<typeof saveDraftSoapApi> {
+	const soapDraftMessageObj = createSoapDraftRequestFromEditor(editor);
+	const result = await saveDraftSoapApi({ soapDraftMessageObj, signal });
 	if (result.m)
 		result.m.forEach((message) => {
 			const normalizedMessage = normalizeMailMessageFromSoap(message);

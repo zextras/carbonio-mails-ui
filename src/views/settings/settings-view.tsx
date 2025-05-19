@@ -5,7 +5,7 @@
  */
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
-import { Container, FormSection } from '@zextras/carbonio-design-system';
+import { Container } from '@zextras/carbonio-design-system';
 import {
 	AccountSettings,
 	IdentityAttrs,
@@ -20,7 +20,7 @@ import { useTranslation } from 'react-i18next';
 
 import { differenceIdentities, differenceObject, getPropsDiff } from './components/utils';
 import ComposeMessage from './compose-msg-settings';
-import DisplayMessagesSettings from './displaying-messages-settings';
+import { DisplayMessagesSettings } from './display-messages-settings';
 import FilterModule from './filters';
 import { useSignatureSettings } from './hooks/use-signature-settings';
 import ReceivingMessagesSettings from './receiving-messages-settings';
@@ -437,51 +437,51 @@ const SettingsView = (): React.JSX.Element => {
 				mainAlignment="baseline"
 				crossAlignment="baseline"
 				background="gray5"
+				padding={{ all: 'medium' }}
 				style={{ overflowY: 'auto' }}
+				gap={'1rem'}
 			>
-				<FormSection minWidth="calc(min(100%, 32rem))">
-					<DisplayMessagesSettings
-						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-						// @ts-ignore
-						settingsObj={currentPrefs}
-						updateSettings={updatePrefs}
-						updatedProps={updatedProps}
-						updateProps={updateProps}
-					/>
-					<ReceivingMessagesSettings
-						settingsObj={currentPrefs as PrefsType}
-						updateSettings={updatePrefs}
-						updatedProps={updatedProps}
-						updateProps={updateProps}
-					/>
-					<RecoverMessages />
-					<SignatureSettings
-						setSignatures={setSignatures}
-						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-						// @ts-ignore
-						updatedIdentities={updatedIdentities}
-						updateIdentities={updateIdentities}
-						setDisabled={setDisabled}
-						signatures={signatures}
-					/>
-					{/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
-					{/* @ts-ignore */}
-					<ComposeMessage settingsObj={currentPrefs} updateSettings={updatePrefs} />
-					<FilterModule />
-					<TrusteeAddresses settingsObj={currentPrefs} updateSettings={updatePrefs} />
-					<SendersList
-						settingsObj={currentAttrs}
-						updateSettings={updateAttrs}
-						listType="Allowed"
-						showConflictText={addressesConflict}
-					/>
-					<SendersList
-						settingsObj={currentAttrs}
-						updateSettings={updateAttrs}
-						listType="Blocked"
-						showConflictText={addressesConflict}
-					/>
-				</FormSection>
+				<DisplayMessagesSettings
+					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+					// @ts-ignore
+					settingsObj={currentPrefs}
+					updateSettings={updatePrefs}
+					updatedProps={updatedProps}
+					updateProps={updateProps}
+				/>
+				<ReceivingMessagesSettings
+					settingsObj={currentPrefs as PrefsType}
+					updateSettings={updatePrefs}
+					updatedProps={updatedProps}
+					updateProps={updateProps}
+				/>
+				<RecoverMessages />
+				<SignatureSettings
+					setSignatures={setSignatures}
+					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+					// @ts-ignore
+					updatedIdentities={updatedIdentities}
+					updateIdentities={updateIdentities}
+					setDisabled={setDisabled}
+					signatures={signatures}
+				/>
+				{/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
+				{/* @ts-ignore */}
+				<ComposeMessage settingsObj={currentPrefs} updateSettings={updatePrefs} />
+				<FilterModule />
+				<TrusteeAddresses settingsObj={currentPrefs} updateSettings={updatePrefs} />
+				<SendersList
+					settingsObj={currentAttrs}
+					updateSettings={updateAttrs}
+					listType="Allowed"
+					showConflictText={addressesConflict}
+				/>
+				<SendersList
+					settingsObj={currentAttrs}
+					updateSettings={updateAttrs}
+					listType="Blocked"
+					showConflictText={addressesConflict}
+				/>
 			</Container>
 		</>
 	);

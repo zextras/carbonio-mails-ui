@@ -14,7 +14,6 @@ import {
 	getEditor,
 	deleteEditor,
 	useEditorSubject,
-	useEditorText,
 	useEditorAutoSendTime
 	// useEditorIsUrgent,
 	// useEditorRequestReadReceipt,
@@ -81,49 +80,6 @@ describe('all editor hooks', () => {
 			});
 			const editorFromStore = getEditor({ id: editor.id });
 			expect(editorFromStore?.subject).toEqual(newText);
-		});
-	});
-
-	describe('useEditorText', () => {
-		test('get the editor text', async () => {
-			const initialPlainText = 'initial plain text';
-			const initialRichText = 'initial <b>rich</b> text';
-			setupEditorStore({ editors: [] });
-			const editor = await generateEditorV2Case(1);
-			editor.text = {
-				plainText: initialPlainText,
-				richText: initialRichText
-			};
-			addEditor({ id: editor.id, editor });
-
-			const { result: hookResult } = setupHook(useEditorText, { initialProps: [editor.id] });
-			const { text } = hookResult.current;
-			expect(text.plainText).toEqual(initialPlainText);
-			expect(text.richText).toEqual(initialRichText);
-		});
-
-		test('set the editor text', async () => {
-			const initialPlainText = 'initial plain text';
-			const initialRichText = 'initial <b>rich</b> text';
-			const newPlainText = 'new plain text';
-			const newRichText = 'new <b>rich</b> text';
-
-			setupEditorStore({ editors: [] });
-			const editor = await generateEditorV2Case(1);
-			editor.text = {
-				plainText: initialPlainText,
-				richText: initialRichText
-			};
-			addEditor({ id: editor.id, editor });
-
-			const { result: hookResult } = setupHook(useEditorText, { initialProps: [editor.id] });
-			const { setText } = hookResult.current;
-			act(() => {
-				setText({ plainText: newPlainText, richText: newRichText });
-			});
-			const editorFromStore = getEditor({ id: editor.id });
-			expect(editorFromStore?.text.plainText).toEqual(newPlainText);
-			expect(editorFromStore?.text.richText).toEqual(newRichText);
 		});
 	});
 

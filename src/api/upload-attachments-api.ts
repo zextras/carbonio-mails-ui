@@ -12,7 +12,7 @@ import { convertToDecimal } from '../commons/utilities';
 
 export type UploadAttachmentResponse = Array<{ aid: string } | null>;
 
-function parse(str: string): Array<Array<{ aid: string }>> {
+export function parse(str: string): Array<Array<{ aid: string }>> {
 	// eslint-disable-next-line no-new-func
 	return Function(`'use strict'; return (${str})`)();
 }

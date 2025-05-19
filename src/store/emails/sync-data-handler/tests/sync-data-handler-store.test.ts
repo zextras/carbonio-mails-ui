@@ -21,21 +21,15 @@ import {
 	useMessageById,
 	useMessageIndexSlice
 } from '../../store';
-import * as triggerNotification from '../trigger-notification';
+import { triggerNotification } from '../trigger-notification';
 
 jest.mock('../../../../carbonio-ui-commons/store/zustand/tags', () => ({
 	...jest.requireActual('../../../../carbonio-ui-commons/store/zustand/tags'),
 	getTags: jest.fn()
 }));
-
 describe('handleNotifyMessagesCreated', () => {
 	describe('addMessagesToMessageSlice', () => {
 		it('should add messages to populatedItemsSlice.messages', async () => {
-			const triggerNotificationSpy = jest.fn();
-			jest
-				.spyOn(triggerNotification, 'triggerNotification')
-				.mockImplementation(triggerNotificationSpy);
-
 			const message = generateMessage({ id: '1' });
 			setMessagesInEmailStore([message], false);
 			const newMessage = generateMessage({ id: '2' });
@@ -47,11 +41,6 @@ describe('handleNotifyMessagesCreated', () => {
 		});
 
 		it('should update messageListIndex with new message ids', async () => {
-			const triggerNotificationSpy = jest.fn();
-			jest
-				.spyOn(triggerNotification, 'triggerNotification')
-				.mockImplementation(triggerNotificationSpy);
-
 			const message = generateMessage({ id: '1' });
 			setMessagesInEmailStore([message], false);
 			const newMessage = generateMessage({ id: '2' });
@@ -59,21 +48,6 @@ describe('handleNotifyMessagesCreated', () => {
 			const { result } = renderHook(() => useMessageIndexSlice());
 			await waitFor(async () => {
 				expect(result.current?.messageListIndex).toEqual(['2', '1']);
-			});
-		});
-
-		it('should trigger a notification when a new message is received', async () => {
-			const triggerNotificationSpy = jest.fn();
-			jest
-				.spyOn(triggerNotification, 'triggerNotification')
-				.mockImplementation(triggerNotificationSpy);
-			const message = generateMessage({ id: '1' });
-			setMessagesInEmailStore([message], false);
-			const newMessage = generateMessage({ id: '2' });
-			handleNotifyMessagesCreated([newMessage]);
-
-			await waitFor(async () => {
-				expect(triggerNotificationSpy).toHaveBeenCalled();
 			});
 		});
 	});
@@ -130,5 +104,39 @@ describe('handleNotifyMessagesCreated', () => {
 				expect(messagesIds).toEqual(['1', '2']);
 			});
 		});
+	});
+});
+
+let mockIsFocusMode = false;
+
+const mockedMultipleNotify = jest.fn();
+
+jest.mock('@zextras/carbonio-shell-ui', () => ({
+	get IS_FOCUS_MODE(): boolean {
+		return mockIsFocusMode;
+	},
+	getNotificationManager: jest.fn(() => ({
+		multipleNotify: mockedMultipleNotify
+	})),
+	getUserSettings: jest.fn(() => ({
+		props: [],
+		prefs: {
+			zimbraPrefMailToasterEnabled: 'TRUE',
+			zimbraPrefShowAllNewMailNotifications: 'TRUE'
+		}
+	}))
+}));
+
+describe('triggerNotification', () => {
+	it('multipleNotify is not called if IS_FOCUS_MODE is true', () => {
+		mockIsFocusMode = true;
+		triggerNotification([generateMessage({ id: 'id-1' })], jest.fn());
+		expect(mockedMultipleNotify).not.toHaveBeenCalled();
+	});
+
+	it('multipleNotify is called if IS_FOCUS_MODE is false', () => {
+		mockIsFocusMode = false;
+		triggerNotification([generateMessage({ id: 'id-1' })], jest.fn());
+		expect(mockedMultipleNotify).toHaveBeenCalled();
 	});
 });

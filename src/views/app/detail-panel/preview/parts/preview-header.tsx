@@ -28,18 +28,7 @@ import {
 	AvatarPropTypes
 } from '@zextras/carbonio-design-system';
 import { useUserAccounts, t } from '@zextras/carbonio-shell-ui';
-import {
-	capitalize,
-	every,
-	filter,
-	find,
-	forEach,
-	includes,
-	isEmpty,
-	map,
-	reduce,
-	uniqBy
-} from 'lodash';
+import { every, filter, find, forEach, includes, isEmpty, map, reduce, uniqBy } from 'lodash';
 import moment from 'moment';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
@@ -52,7 +41,7 @@ import OnBehalfOfDisplayer from './on-behalf-of-displayer';
 import { ParticipantRole } from '../../../../../carbonio-ui-commons/constants/participants';
 import { ZIMBRA_STANDARD_COLORS } from '../../../../../carbonio-ui-commons/constants/utils';
 import { useRunSearchIntegration } from '../../../../../carbonio-ui-commons/integrations/search/use-run-search';
-import { useTags } from '../../../../../carbonio-ui-commons/store/zustand/tags';
+import { useSortedTagsArray } from '../../../../../carbonio-ui-commons/store/zustand/tags';
 import { Tag } from '../../../../../carbonio-ui-commons/types/tags';
 import { getTimeLabel, participantToString } from '../../../../../commons/utils';
 import { getNoIdentityPlaceholder } from '../../../../../helpers/identities';
@@ -80,8 +69,7 @@ type PreviewHeaderProps = {
 		message: MailMessage;
 		onClick: (e: SyntheticEvent) => void;
 		open: boolean;
-		isExternalMessage?: boolean;
-		messagePreviewFactory: () => React.JSX.Element;
+		isEml?: boolean;
 	};
 };
 
@@ -93,7 +81,7 @@ const fallbackContact = {
 };
 
 const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
-	const { message, onClick, open, isExternalMessage, messagePreviewFactory } = compProps;
+	const { message, onClick, open, isEml } = compProps;
 
 	const textRef = useRef<HTMLInputElement>(null);
 	const accounts = useUserAccounts();
@@ -106,15 +94,13 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 	);
 	const attachments = retrieveAttachmentsType(message, 'attachment');
 	const senderContact = find(message.participants, ['type', 's']);
-	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-	// @ts-ignore
-	const { folderId } = useParams();
+	const { folderId } = useParams() as { folderId?: string };
 
 	const contactListExpandCB = useCallback((contactListExpand: boolean) => {
 		setIsContactListExpand(contactListExpand);
 	}, []);
 
-	const tagsFromStore = useTags();
+	const tagsFromStore = useSortedTagsArray();
 	const tags = useMemo(
 		() =>
 			reduce(
@@ -299,7 +285,7 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 											color={message.read ? 'text' : 'primary'}
 											weight={message.read ? 'regular' : 'bold'}
 										>
-											{capitalize(participantToString(mainContact, accounts))}
+											{participantToString(mainContact, accounts)}
 										</Text>
 										<Row
 											takeAvailableSpace
@@ -310,7 +296,7 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 										>
 											{!isContactListExpand && (
 												<Text color="gray1" size={message.read ? 'small' : 'medium'}>
-													{mainContact.address && mainContact.address}
+													{mainContact.address}
 												</Text>
 											)}
 											{isContactListExpand && mainContact.address && (
@@ -325,7 +311,7 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 								)}
 							</Row>
 
-							{!isExternalMessage && (
+							{!isEml && (
 								<Row
 									wrap="nowrap"
 									mainAlignment="flex-end"
@@ -334,7 +320,8 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 										flexGrow: 1,
 										flexBasis: 'fit-content',
 										whiteSpace: 'nowrap',
-										overflow: 'hidden'
+										overflow: 'hidden',
+										minWidth: '8rem'
 									}}
 								>
 									{showTagIcon && (
@@ -373,18 +360,13 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ compProps }): ReactElement => {
 										)}
 									</Row>
 
-									{open && message && (
-										<MailMsgPreviewActions
-											message={message}
-											messagePreviewFactory={messagePreviewFactory}
-										/>
-									)}
+									{open && message && <MailMsgPreviewActions message={message} />}
 								</Row>
 							)}
 						</Container>
 					</Row>
 				</Container>
-				{!isExternalMessage && tags?.length > 0 && open && (
+				{!isEml && tags?.length > 0 && open && (
 					<Container
 						orientation="horizontal"
 						crossAlignment="flex-start"

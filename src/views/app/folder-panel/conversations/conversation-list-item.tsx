@@ -7,22 +7,21 @@
 import React, { memo, useCallback, useMemo, useState } from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
-import { pushHistory, useUserSettings } from '@zextras/carbonio-shell-ui';
+import { useUserSettings } from '@zextras/carbonio-shell-ui';
 import { debounce } from 'lodash';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { ConversationListItemCore } from './conversation-list-item-core';
 import { ConversationListItemActionWrapper } from './conversation-list-item-wrapper';
 import { ConversationMessagesList } from './conversation-messages-list';
-import { API_REQUEST_STATUS } from '../../../../constants';
+import { API_REQUEST_STATUS, MAILS_ROUTE } from '../../../../constants';
 import { useConvPreviewOnSeparatedWindowFn } from '../../../../hooks/actions/use-conv-preview-on-separated-window';
 import { useConvSetReadFn } from '../../../../hooks/actions/use-conv-set-read';
 import { useOnMouseHover } from '../../../../hooks/use-on-mouse-hover';
 import { searchConvEmailStoreAction } from '../../../../store/emails/actions/search-conv-action';
 import { useConversationMessages, useConversationStatus } from '../../../../store/emails/store';
 import { NormalizedConversation } from '../../../../types/conversations';
-import { ConversationPreviewPanel } from '../../detail-panel/conversation-preview-panel';
 
 export type ConversationListItemProps = {
 	conversation: NormalizedConversation;
@@ -31,7 +30,7 @@ export type ConversationListItemProps = {
 	toggleMultipleSelection: (id: string) => void;
 	active?: boolean;
 	isSearchModule?: boolean;
-	activeItemId: string;
+	activeItemId?: string;
 	dragImageRef?: React.RefObject<HTMLInputElement>;
 	setDraggedIds?: (ids: Record<string, boolean>) => void;
 	deselectAll: () => void;
@@ -55,6 +54,7 @@ export const ConversationListItem = memo(function ConversationListItem({
 	setDraggedIds
 }: ConversationListItemProps): React.JSX.Element {
 	const { itemId } = useParams<{ itemId: string }>();
+	const navigate = useNavigate();
 	const [open, setOpen] = useState(false);
 	const messages = useConversationMessages(conversation.id);
 	const folderParent = folderId ?? messages?.[0]?.parent;
@@ -68,16 +68,10 @@ export const ConversationListItem = memo(function ConversationListItem({
 		folderId: folderId ?? ''
 	});
 
-	const conversationPreviewFactory = useCallback(
-		() => <ConversationPreviewPanel conversation={conversation} isInsideExtraWindow />,
-		[conversation]
-	);
-
 	const conversationId = conversation.id;
 	const previewOnSeparatedWindow = useConvPreviewOnSeparatedWindowFn({
 		conversationId,
-		subject: conversation.subject,
-		conversationPreviewFactory
+		folderId: folderParent
 	});
 
 	const conversationStatus = useConversationStatus(conversationId);
@@ -103,11 +97,15 @@ export const ConversationListItem = memo(function ConversationListItem({
 
 	const debouncedPushHistory = useMemo(
 		() =>
-			debounce(() => pushHistory(`/folder/${folderParent}/conversation/${conversation.id}`), 200, {
-				leading: false,
-				trailing: true
-			}),
-		[folderParent, conversation.id]
+			debounce(
+				() => navigate(`/${MAILS_ROUTE}/folder/${folderParent}/conversation/${conversation.id}`),
+				200,
+				{
+					leading: false,
+					trailing: true
+				}
+			),
+		[navigate, folderParent, conversation.id]
 	);
 
 	const _onClick = useCallback(
@@ -128,15 +126,10 @@ export const ConversationListItem = memo(function ConversationListItem({
 				return;
 			}
 			debouncedPushHistory.cancel();
-			const { id, isDraft } = messages[0];
-			if (isDraft) {
-				pushHistory(`/folder/${folderParent}/edit/${id}?action=editAsDraft`);
-			} else {
-				previewOnSeparatedWindow.canExecute() && previewOnSeparatedWindow.execute();
-			}
+			previewOnSeparatedWindow.canExecute() && previewOnSeparatedWindow.execute();
 		},
 
-		[debouncedPushHistory, messages, folderParent, previewOnSeparatedWindow]
+		[debouncedPushHistory, previewOnSeparatedWindow]
 	);
 
 	const shouldReplaceHistory = useMemo(() => itemId === conversation.id, [conversation.id, itemId]);
@@ -185,7 +178,7 @@ export const ConversationListItem = memo(function ConversationListItem({
 					height="auto"
 				>
 					<ConversationMessagesList
-						active={activeItemId}
+						activeItemId={activeItemId}
 						length={conversation.messagesInConversation}
 						messages={messages}
 						conversationStatus={conversationStatus}

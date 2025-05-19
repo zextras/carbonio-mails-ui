@@ -24,7 +24,7 @@ import { handleGetMsgRequest } from './src/tests/mocks/network/msw/handle-get-ms
 
 failOnConsole({
 	...getFailOnConsoleDefaultConfig(),
-	allowMessage: (message) =>
+	silenceMessage: (message) =>
 		message.includes('React does not recognize the `isGeneric` prop on a DOM element')
 });
 
@@ -63,4 +63,16 @@ Object.defineProperty(window, 'matchMedia', {
 		addEventListener: jest.fn(),
 		removeEventListener: jest.fn()
 	}))
+});
+
+// Mock implementation of window.open
+Object.defineProperty(window, 'open', {
+	writable: true,
+	value: jest.fn()
+});
+
+// mock a simplified crypto
+Object.defineProperty(window.crypto, 'randomUUID', {
+	writable: true,
+	value: jest.fn(() => Math.random().toString())
 });

@@ -14,9 +14,9 @@ import {
 	useModal,
 	useSnackbar
 } from '@zextras/carbonio-design-system';
-import { replaceHistory, t } from '@zextras/carbonio-shell-ui';
+import { t } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 import { BackupSearchMessageListItem } from './backup-search-message-list-item';
 import { BackupSearchRecoveryModal } from './backup-search-recovery-modal';
@@ -31,6 +31,7 @@ export const BackupSearchList = (): React.JSX.Element => {
 	const [count, setCount] = useState(0);
 	const { messages } = useBackupSearchStore();
 	const { itemId } = useParams<{ itemId: string }>();
+	const navigate = useNavigate();
 
 	const {
 		selected: selectedMessage,
@@ -63,7 +64,7 @@ export const BackupSearchList = (): React.JSX.Element => {
 			}
 			useBackupSearchStore.getState().setStatus(BACKUP_SEARCH_STATUS.empty);
 			useBackupSearchStore.getState().setMessages([]);
-			replaceHistory({ route: MAILS_ROUTE, path: '/' });
+			navigate(`/${MAILS_ROUTE}`, { replace: true });
 			createSnackbar({
 				replace: true,
 				severity: 'info',
@@ -75,7 +76,7 @@ export const BackupSearchList = (): React.JSX.Element => {
 				hideButton: true
 			});
 		},
-		[createSnackbar, selectedIds]
+		[createSnackbar, navigate, selectedIds]
 	);
 
 	const { createModal, closeModal } = useModal();

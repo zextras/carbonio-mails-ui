@@ -9,6 +9,7 @@ import React from 'react';
 import { DropdownItem } from '@zextras/carbonio-design-system';
 import { filter, intersection, map, some } from 'lodash';
 
+import { useTranslation } from 'react-i18next';
 import { normalizeDropdownActionItem } from '../../../../helpers/actions';
 import { useMsgApplyTagDescriptor } from '../../../../hooks/actions/use-msg-apply-tag';
 import { useMsgDeletePermanentlyDescriptor } from '../../../../hooks/actions/use-msg-delete-permanently';
@@ -34,6 +35,8 @@ export const MessagesMultipleSelectionActions = ({
 	deselectAll: () => void;
 	folderId: string;
 }): React.JSX.Element => {
+	const [t] = useTranslation();
+
 	const items = useMessagesByIds(ids);
 	const selectedItems = filter(items, (item) => ids.includes(item.id));
 	const messagesTags: Array<Array<string>> = map(selectedItems, (item) => item.tags);
@@ -79,7 +82,7 @@ export const MessagesMultipleSelectionActions = ({
 		{
 			id: 'More',
 			icon: 'MoreVertical',
-			label: 'More actions',
+			label: t('tooltip.moreActions', 'More actions'),
 			items: [
 				normalizeDropdownActionItem(flagDescriptor),
 				normalizeDropdownActionItem(unflagDescriptor),

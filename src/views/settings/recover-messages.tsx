@@ -15,10 +15,12 @@ import {
 	Row,
 	Input,
 	Container,
-	DateTimePicker
+	DateTimePicker,
+	FormSection
 } from '@zextras/carbonio-design-system';
-import { replaceHistory, t, useUserSettings } from '@zextras/carbonio-shell-ui';
+import { t, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { isEmpty } from 'lodash';
+import { useNavigate } from 'react-router-dom';
 
 import { RecoverMessagesModal } from './components/recover-messages-modal';
 import { recoverMessagesSubSection } from './subsections';
@@ -33,14 +35,11 @@ import { useBackupSearchStore } from '../../store/backup-search/store';
 
 function calculateInterval(recoverDate: Date | null): { startDate?: Date; endDate?: Date } {
 	if (!recoverDate) return {};
-
 	const startDate = new Date(recoverDate);
 	const endDate = new Date(recoverDate);
-
 	startDate.setUTCDate(recoverDate.getUTCDate() - RECOVER_MESSAGES_INTERVAL);
 	endDate.setUTCDate(recoverDate.getUTCDate() + RECOVER_MESSAGES_INTERVAL + 1);
 	endDate.setMilliseconds(endDate.getMilliseconds() - 1);
-
 	return { startDate, endDate };
 }
 
@@ -50,6 +49,7 @@ export const RecoverMessages = (): React.JSX.Element => {
 	const { zimbraPrefLocale } = useUserSettings().prefs;
 	const [searchString, setSearchString] = useState('');
 	const [recoverDay, setRecoverDay] = useState<Date | null>(null);
+	const navigate = useNavigate();
 
 	const restoreMessages = useCallback(
 		async (id: string) => {
@@ -93,19 +93,11 @@ export const RecoverMessages = (): React.JSX.Element => {
 				});
 				return;
 			}
-			replaceHistory({ route: BACKUP_SEARCH_ROUTE, path: '/' });
+			navigate(`/${BACKUP_SEARCH_ROUTE}`, { replace: true });
 		},
-		[closeModal, createSnackbar, recoverDay, searchString]
+		[closeModal, createSnackbar, navigate, recoverDay, searchString]
 	);
 
-	const informativeText = t(
-		'settings.label.recover_messages_infotext',
-		`Recover e-mails deleted from the Trash by typing a keyword included within the first 100 characters of the message or by selecting a date.\n
-        The selected date will include emails deleted 3 days before and 3 days after.\n
-        Once the search is completed you will be redirected to the results page where you can choose which items to restore.`
-	);
-	const buttonLabel = t('label.search_emails', 'SEARCH E-MAILS');
-	const datePickerLabel = t('label.select_recovery_date', 'Select recovery date');
 	const sectionTitle = recoverMessagesSubSection();
 	const { backupSelfUndeleteAllowed } = useAdvancedAccountStore();
 
@@ -134,47 +126,54 @@ export const RecoverMessages = (): React.JSX.Element => {
 	}, []);
 
 	return backupSelfUndeleteAllowed ? (
-		<FormSubSection
+		<FormSection
+			label={sectionTitle.label}
 			id={sectionTitle.id}
 			data-testid="recover-messages-form"
-			label={sectionTitle.label}
-			padding={{ all: 'medium' }}
 		>
-			<Padding top="large" />
-			<Text style={{ whiteSpace: 'pre-line' }}>{informativeText}</Text>
-			<Padding top="large" />
-			<Container width="100%" crossAlignment="flex-start">
-				<Row width="30%" mainAlignment="flex-start">
-					<Input
-						value={searchString}
-						onChange={handleTextFilterValueChange}
-						label={t('settings.keyword', 'Keyword')}
-					/>
-				</Row>
-				<Padding top="large" />
-				<Row width="30%" mainAlignment="flex-start">
-					<DateTimePicker
-						label={datePickerLabel}
-						isClearable
-						width="fill"
-						onChange={onDateTimePickerChange}
-						timeCaption={t('label.time', 'Time')}
-						showTimeSelect={false}
-						locale={zimbraPrefLocale}
-						dateFormat="P"
-					/>
-				</Row>
-				<Padding top="large" />
-				<Row width="30%" mainAlignment="flex-start">
-					<Button
-						type={'outlined'}
-						onClick={handleModalConfirmOnClick}
-						label={buttonLabel}
-						disabled={!recoverDay && !searchString}
-					/>
-				</Row>
-			</Container>
-		</FormSubSection>
+			<FormSubSection>
+				<Text overflow="break-word" style={{ whiteSpace: 'pre-line' }}>
+					{t(
+						'settings.label.recover_messages_infotext',
+						`Recover e-mails deleted from the Trash by typing a keyword included within the first 100 characters of the message or by selecting a date.\n
+                        The selected date will include emails deleted 3 days before and 3 days after.\n
+                        Once the search is completed you will be redirected to the results page where you can choose which items to restore.`
+					)}
+				</Text>
+				<Container width="100%" crossAlignment="flex-start">
+					<Row width="30%" mainAlignment="flex-start">
+						<Input
+							value={searchString}
+							onChange={handleTextFilterValueChange}
+							label={t('settings.keyword', 'Keyword')}
+						/>
+					</Row>
+					<Padding top="large" />
+					<Row width="30%" mainAlignment="flex-start">
+						<DateTimePicker
+							label={t('label.select_recovery_date', 'Select recovery date')}
+							isClearable
+							width="fill"
+							onChange={onDateTimePickerChange}
+							timeCaption={t('label.time', 'Time')}
+							showTimeSelect={false}
+							locale={zimbraPrefLocale}
+							dateFormat="P"
+							maxDate={new Date()}
+						/>
+					</Row>
+					<Padding top="large" />
+					<Row width="30%" mainAlignment="flex-start">
+						<Button
+							type={'outlined'}
+							onClick={handleModalConfirmOnClick}
+							label={t('label.search_emails', 'SEARCH E-MAILS')}
+							disabled={!recoverDay && !searchString}
+						/>
+					</Row>
+				</Container>
+			</FormSubSection>
+		</FormSection>
 	) : (
 		<></>
 	);

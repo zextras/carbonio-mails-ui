@@ -7,7 +7,7 @@ import { faker } from '@faker-js/faker';
 
 import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
 import { ParticipantRole } from '../../carbonio-ui-commons/constants/participants';
-import { getRootsMap } from '../../carbonio-ui-commons/store/zustand/folder/hooks';
+import { getRootsMap } from '../../carbonio-ui-commons/store/zustand/folder';
 import { populateFoldersStore } from '../../carbonio-ui-commons/test/mocks/store/folders';
 import { getMocksContext } from '../../carbonio-ui-commons/test/mocks/utils/mocks-context';
 import { generateMessage } from '../../tests/generators/generateMessage';

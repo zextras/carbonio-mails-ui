@@ -8,16 +8,17 @@ import React, { Suspense, useCallback, useEffect, useMemo, useState } from 'reac
 import { Container, Spinner } from '@zextras/carbonio-design-system';
 import type { SearchViewProps } from '@zextras/carbonio-search-ui';
 import { setAppContext, t, useUserSettings } from '@zextras/carbonio-shell-ui';
-import { trimEnd } from 'lodash';
-import { Route, Switch, useRouteMatch } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 
 import { AdvancedFilterModal } from './advanced-filter-modal';
+import { Query } from '../../types';
 import { SearchConversationList } from './list/conversation/search-conversation-list';
 import { SearchMessageList } from './list/message/search-message-list';
 import SearchPanel from './panel/search-panel';
 import { useIsMessageView, useRunSearch } from './search-view-hooks';
 import { useUpdateView } from '../../carbonio-ui-commons/hooks/use-update-view';
 import { API_REQUEST_STATUS } from '../../constants';
+import { resetSearchAndPopulatedItems } from '../../store/emails/store';
 
 const SearchView = ({
 	useDisableSearch,
@@ -26,7 +27,6 @@ const SearchView = ({
 }: SearchViewProps): React.JSX.Element => {
 	useUpdateView();
 
-	const { path } = useRouteMatch();
 	const [query, updateQuery] = useQuery();
 	const isMessageView = useIsMessageView();
 	const [showAdvanceFilters, setShowAdvanceFilters] = useState(false);
@@ -45,7 +45,7 @@ const SearchView = ({
 		setAppContext({ isMessageView, count, setCount });
 	}, [count, isMessageView]);
 
-	const { searchDisabled, filterCount, searchResults, isInvalidQuery, queryToString } =
+	const { searchDisabled, searchResults, isInvalidQuery, queryToString, executeSearch } =
 		useRunSearch({
 			query,
 			updateQuery,
@@ -72,11 +72,27 @@ const SearchView = ({
 
 	const loading = searchResults.status === API_REQUEST_STATUS.pending;
 
-	const onCloseCallback = useCallback(() => {
-		setShowAdvanceFilters(false);
-	}, [setShowAdvanceFilters]);
+	const onModalConfirm = useCallback(
+		(request: { query: Query; includeSharedFolders: boolean }) => {
+			setIsSharedFolderIncluded(request.includeSharedFolders);
+			updateQuery(request.query);
+		},
+		[updateQuery]
+	);
 
-	const trimmedPath = useMemo(() => trimEnd(path, '/'), [path]);
+	useEffect(() => {
+		const controller = new AbortController();
+		if (query.length > 0) {
+			executeSearch(controller.signal);
+		} else {
+			resetSearchAndPopulatedItems();
+			setIsSharedFolderIncluded(includeSharedItemsInSearch);
+		}
+		return () => {
+			controller.abort();
+		};
+	}, [executeSearch, query, includeSharedItemsInSearch]);
+
 	return (
 		<>
 			<Container>
@@ -93,35 +109,36 @@ const SearchView = ({
 					style={{ overflowY: 'auto' }}
 					mainAlignment="flex-start"
 				>
-					<Switch>
-						<Route path={`${trimmedPath}/:type?/:itemId?`}>
-							{isMessageView ? (
-								<SearchMessageList
-									searchDisabled={searchDisabled}
-									searchResults={searchResults.messageListIndex}
-									query={queryToString}
-									loading={loading}
-									filterCount={filterCount}
-									setShowAdvanceFilters={setShowAdvanceFilters}
-									isInvalidQuery={isInvalidQuery}
-									invalidQueryTooltip={invalidQueryTooltip}
-									hasMore={searchResults.more}
-								/>
-							) : (
-								<SearchConversationList
-									searchDisabled={searchDisabled}
-									searchResults={searchResults.conversationListIndex}
-									query={queryToString}
-									loading={loading}
-									filterCount={filterCount}
-									setShowAdvanceFilters={setShowAdvanceFilters}
-									isInvalidQuery={isInvalidQuery}
-									invalidQueryTooltip={invalidQueryTooltip}
-									hasMore={searchResults.more}
-								/>
-							)}
-						</Route>
-					</Switch>
+					<Routes>
+						<Route
+							path={`:type?/:itemId?`}
+							element={
+								isMessageView ? (
+									<SearchMessageList
+										searchDisabled={searchDisabled}
+										searchResults={searchResults.messageListIndex}
+										query={queryToString}
+										loading={loading}
+										setShowAdvanceFilters={setShowAdvanceFilters}
+										isInvalidQuery={isInvalidQuery}
+										invalidQueryTooltip={invalidQueryTooltip}
+										hasMore={searchResults.more}
+									/>
+								) : (
+									<SearchConversationList
+										searchDisabled={searchDisabled}
+										searchResults={searchResults.conversationListIndex}
+										query={queryToString}
+										loading={loading}
+										setShowAdvanceFilters={setShowAdvanceFilters}
+										isInvalidQuery={isInvalidQuery}
+										invalidQueryTooltip={invalidQueryTooltip}
+										hasMore={searchResults.more}
+									/>
+								)
+							}
+						/>
+					</Routes>
 					<Suspense fallback={<Spinner color="gray5" />}>
 						<Container mainAlignment="flex-start" width="75%">
 							<SearchPanel searchResults={searchResults} query={query} />
@@ -134,14 +151,11 @@ const SearchView = ({
 				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 				// @ts-ignore
 				query={query}
-				// TOFIX-SHELL: fix updateQUeryFunction inside shell type
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-				// @ts-ignore
-				updateQuery={updateQuery}
-				isSharedFolderIncluded={isSharedFolderIncluded}
-				setIsSharedFolderIncluded={setIsSharedFolderIncluded}
 				open={showAdvanceFilters}
-				onClose={onCloseCallback}
+				onSearchConfirm={onModalConfirm}
+				isSharedFolderIncludedInitialValue={isSharedFolderIncluded}
+				onClose={(): void => setShowAdvanceFilters(false)}
+				includeSharedItemsInSearchPref={includeSharedItemsInSearch}
 			/>
 		</>
 	);

@@ -6,7 +6,7 @@
 
 import { SyntheticEvent } from 'react';
 
-import { Action, ACTION_TYPES, NewAction, registerActions, t } from '@zextras/carbonio-shell-ui';
+import { Action, NewAction, registerActions, t } from '@zextras/carbonio-shell-ui';
 import { isArray, isString, some } from 'lodash';
 
 import { ParticipantRole } from '../carbonio-ui-commons/constants/participants';
@@ -134,7 +134,7 @@ export const registerShellActions = (): void => {
 	registerActions<NewAction>({
 		action: newEmailAction,
 		id: 'new-email',
-		type: ACTION_TYPES.NEW
+		type: 'new'
 	});
 	registerActions<MailToActionType>({
 		action: mailToAction,
