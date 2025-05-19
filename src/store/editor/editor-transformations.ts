@@ -32,6 +32,7 @@ import {
 	MailAttachment,
 	MailAttachmentParts,
 	MailMessage,
+	MailMessagePart,
 	MailsEditorV2,
 	MsgAttach,
 	Participant,
@@ -195,11 +196,6 @@ export const getMP = (editor: MailsEditorV2): SoapEmailMessagePartObj[] => {
 										_content: getHtmlWithPreAppliedStyled(contentWithCidUrl.richText, style) ?? ''
 									}
 								},
-								...unsavedInlineAttachment.map((inlineAttachment) => ({
-									ci: inlineAttachment.contentId,
-									ct: inlineAttachment.contentType,
-									attach: { aid: inlineAttachment.aid }
-								})),
 								...savedInlineAttachment.map((inlineAttachment) => ({
 									ci: inlineAttachment.contentId,
 									ct: inlineAttachment.contentType,
@@ -211,6 +207,12 @@ export const getMP = (editor: MailsEditorV2): SoapEmailMessagePartObj[] => {
 											}
 										]
 									}
+								})),
+								// keep this order saved -> unsaved
+								...unsavedInlineAttachment.map((inlineAttachment) => ({
+									ci: inlineAttachment.contentId,
+									ct: inlineAttachment.contentType,
+									attach: { aid: inlineAttachment.aid }
 								}))
 							]
 						}
@@ -424,10 +426,12 @@ export const createSoapSendMsgRequestFromEditor = (editor: MailsEditorV2): SoapD
 
 export const buildSavedAttachments = (message: MailMessage): Array<SavedAttachment> => {
 	const attachmentsParts = getAttachmentParts(message.parts);
+	const isProbablyInline = (part: MailMessagePart): boolean =>
+		part.disposition === 'inline' || (!!part.ci && part.contentType?.startsWith('image/'));
+
 	return attachmentsParts.map<SavedAttachment>((part) => ({
 		messageId: message.id,
-		// TODO create a function to determine if the attachment is an inline even when the disposition is not set
-		isInline: part.disposition === 'inline' && !!part.filename && !!part.ci,
+		isInline: isProbablyInline(part),
 		contentId: (part.ci && extractContentIdInnerPart(part.ci)) ?? undefined,
 		filename: part.filename ?? '',
 		partName: part.name,
