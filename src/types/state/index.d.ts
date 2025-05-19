@@ -83,6 +83,7 @@ export type EditorsStateTypeV2 = {
 		id: MailsEditorV2['id'],
 		isSmimeEncrypt: MailsEditorV2['isSmimeEncrypt']
 	) => void;
+	setTextProvider: (id: MailsEditorV2['id'], textProvider: EditorTextProvider) => void;
 };
 
 export type MsgStateType = {
