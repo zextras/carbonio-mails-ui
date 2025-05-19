@@ -6,53 +6,69 @@
  */
 import React from 'react';
 
-import { useIntegratedComponent, useUserSettings } from '@zextras/carbonio-shell-ui';
-
+import {
+	useIntegratedComponent,
+	useUserSettings
+} from '../../../../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
 import { setupTest, screen } from '../../../../../../carbonio-ui-commons/test/test-setup';
-import { useEditorIsRichText, useEditorText } from '../../../../../../store/editor';
+import { generateNewMessageEditor } from '../../../../../../store/editor/editor-generators';
+import { setupEditorStore } from '../../../../../../tests/generators/editor-store';
+import { MailsEditorV2 } from '../../../../../../types';
 import { TextEditorContainer, TextEditorContainerProps } from '../text-editor-container';
-
-jest.mock('@zextras/carbonio-shell-ui', () => ({
-	useIntegratedComponent: jest.fn(),
-	useUserSettings: jest.fn()
-}));
-
-jest.mock('../../../../../../store/editor', () => ({
-	useEditorIsRichText: jest.fn(),
-	useEditorText: jest.fn()
-}));
 
 describe('TextEditorContainer', () => {
 	it('should render textarea when composer is not available and RichText is not enabled', () => {
-		setUpMocks({ composerIsAvailable: false, isRichText: false });
+		const editor = generateNewMessageEditor();
+		const editors = [{ ...editor, text: { plainText: 'PlainText', richText: '<p>RichText</p>' } }];
+		setupEditorStore({ editors });
+		setUpMocks({ composerIsAvailable: false });
 
-		setupTest(<TextEditorContainer {...createMockTextEditorContainerProps()} />);
+		setupTest(
+			<TextEditorContainer {...createMockTextEditorContainerProps({ editorId: editor.id })} />
+		);
 
 		expect(screen.getByTestId('MailPlainTextEditor')).toBeInTheDocument();
 		expect(screen.getByText('PlainText')).toBeInTheDocument();
 	});
 
 	it('should render textarea when composer is available and RichText is not enabled', () => {
-		setUpMocks({ composerIsAvailable: true, isRichText: false });
+		const editor = generateNewMessageEditor();
+		const editors = [{ ...editor, text: { plainText: 'PlainText', richText: '<p>RichText</p>' } }];
+		setupEditorStore({ editors });
+		setUpMocks({ composerIsAvailable: true });
 
-		setupTest(<TextEditorContainer {...createMockTextEditorContainerProps()} />);
+		setupTest(
+			<TextEditorContainer {...createMockTextEditorContainerProps({ editorId: editor.id })} />
+		);
 
 		expect(screen.getByTestId('MailPlainTextEditor')).toBeInTheDocument();
 		expect(screen.getByText('PlainText')).toBeInTheDocument();
 	});
 
 	it('should render textarea when composer is not available and RichText is enabled', () => {
-		setUpMocks({ composerIsAvailable: false, isRichText: true });
+		const editor = generateNewMessageEditor();
+		const editors = [{ ...editor, text: { plainText: 'PlainText', richText: '<p>RichText</p>' } }];
+		setupEditorStore({ editors });
+		setUpMocks({ composerIsAvailable: false });
 
-		setupTest(<TextEditorContainer {...createMockTextEditorContainerProps()} />);
+		setupTest(
+			<TextEditorContainer {...createMockTextEditorContainerProps({ editorId: editor.id })} />
+		);
 
 		expect(screen.getByTestId('MailPlainTextEditor')).toBeInTheDocument();
 		expect(screen.getByText('PlainText')).toBeInTheDocument();
 	});
 
 	it('should render composer with rich text editor when composer is available and RichText is enabled', () => {
-		setUpMocks({ composerIsAvailable: true, isRichText: true });
-		setupTest(<TextEditorContainer {...createMockTextEditorContainerProps()} />);
+		const editor = generateNewMessageEditor();
+		const editors: Array<MailsEditorV2> = [
+			{ ...editor, isRichText: true, text: { plainText: 'PlainText', richText: '<p>RichText</p>' } }
+		];
+		setupEditorStore({ editors });
+		setUpMocks({ composerIsAvailable: true });
+		setupTest(
+			<TextEditorContainer {...createMockTextEditorContainerProps({ editorId: editor.id })} />
+		);
 
 		expect(screen.getByTestId('MailEditorWrapper')).toBeInTheDocument();
 		expect(screen.getByText('Composer with RichText')).toBeInTheDocument();
@@ -61,7 +77,6 @@ describe('TextEditorContainer', () => {
 
 type setupMockProp = {
 	composerIsAvailable: boolean;
-	isRichText: boolean;
 };
 
 const createMockTextEditorContainerProps = (
@@ -69,22 +84,13 @@ const createMockTextEditorContainerProps = (
 ): TextEditorContainerProps => ({
 	editorId: 'editor-123',
 	onDragOver: jest.fn(),
-	onFilesSelected: jest.fn(),
-	minHeight: 300,
-	disabled: false,
 	...overrides
 });
 
-function setUpMocks({ composerIsAvailable = false, isRichText = false }: setupMockProp): void {
-	(useIntegratedComponent as jest.Mock).mockReturnValue([
-		(): JSX.Element => <div>Composer with RichText</div>,
+function setUpMocks({ composerIsAvailable = false }: setupMockProp): void {
+	useIntegratedComponent.mockReturnValue([
+		jest.fn().mockImplementation((): JSX.Element => <div>Composer with RichText</div>),
 		composerIsAvailable
 	]);
-	(useUserSettings as jest.Mock).mockReturnValue({ prefs: {} });
-
-	(useEditorIsRichText as jest.Mock).mockReturnValue({ isRichText });
-	(useEditorText as jest.Mock).mockReturnValue({
-		text: { plainText: 'PlainText', richText: '<p>RichText</p>' },
-		setText: jest.fn()
-	});
+	useUserSettings.mockReturnValue({ prefs: {}, attrs: {}, props: [] });
 }

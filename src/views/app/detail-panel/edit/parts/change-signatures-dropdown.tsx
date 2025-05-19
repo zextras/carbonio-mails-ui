@@ -20,7 +20,7 @@ export type SignaturesDropdownProps = {
 export const ChangeSignaturesDropdown: FC<SignaturesDropdownProps> = ({ editorId }) => {
 	const account = getUserAccount();
 	const { signatureId, setSignatureId } = useEditorSignatureId(editorId);
-	const { text, setText } = useEditorText(editorId);
+	const { getText, setText } = useEditorText(editorId);
 	const doNotUseSignatureLabel = t('label.do_not_use_signature', 'Do not use a signature');
 
 	const signaturesItems = useMemo(
@@ -45,10 +45,10 @@ export const ChangeSignaturesDropdown: FC<SignaturesDropdownProps> = ({ editorId
 	const onSignatureSelected = useCallback(
 		(signature: SignItemType): void => {
 			setSignatureId(signature.id);
-			const textWithSignature = getMailBodyWithSignature(text, signature.id);
+			const textWithSignature = getMailBodyWithSignature(getText(), signature.id);
 			setText(textWithSignature);
 		},
-		[setSignatureId, setText, text]
+		[setSignatureId, setText, getText]
 	);
 
 	const dropdownEntries = useMemo<Array<DropdownItem>>(

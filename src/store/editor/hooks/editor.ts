@@ -48,6 +48,35 @@ export const useEditorSubject = (
 	);
 };
 
+export const useEditorTextProvider = (
+	id: MailsEditorV2['id']
+): {
+	textProvider: MailsEditorV2['textProvider'];
+	setTextProvider: (textProvider: MailsEditorV2['textProvider']) => void;
+} => {
+	const value = useEditorsStore((state) => state.editors[id].textProvider);
+	const setter = useEditorsStore((state) => state.setTextProvider);
+
+	const setTextProvider = useCallback(
+		(val: MailsEditorV2['textProvider']): void => {
+			setter(id, val);
+		},
+		[id, setter]
+	);
+
+	return useMemo(
+		() => ({
+			textProvider: value,
+			setTextProvider
+		}),
+		[setTextProvider, value]
+	);
+};
+
+type EditorSetTextOptions = {
+	syncTextProvider?: boolean;
+};
+
 /**
  * Returns reactive references to the text values and to their setter
  * @param id
@@ -55,33 +84,39 @@ export const useEditorSubject = (
 export const useEditorText = (
 	id: MailsEditorV2['id']
 ): {
-	text: MailsEditorV2['text'];
-	setText: (text: MailsEditorV2['text']) => void;
-	resetText: () => void;
+	getText: () => MailsEditorV2['text'];
+	setText: (text: MailsEditorV2['text'], options?: EditorSetTextOptions) => void;
 } => {
-	const { debouncedSaveDraft } = useSaveDraftFromEditor();
-	const value = useEditorsStore((state) => state.editors[id].text);
+	const { immediateSaveDraft } = useSaveDraftFromEditor();
 	const setter = useEditorsStore((state) => state.setText);
-	const setText = useCallback(
-		(val: MailsEditorV2['text']): void => {
-			setter(id, val);
-			debouncedSaveDraft(id);
-		},
-		[id, debouncedSaveDraft, setter]
+	const { textProvider } = useEditorTextProvider(id);
+
+	const getText = useCallback(
+		(): MailsEditorV2['text'] =>
+			textProvider?.getCurrentText() ?? useEditorsStore.getState().editors[id].text,
+		[id, textProvider]
 	);
 
-	const resetText = useCallback((): void => {
-		setter(id, { plainText: '', richText: '' });
-		debouncedSaveDraft(id);
-	}, [id, debouncedSaveDraft, setter]);
+	const setText = useCallback(
+		(
+			val: MailsEditorV2['text'],
+			options: EditorSetTextOptions = { syncTextProvider: true }
+		): void => {
+			if (textProvider && options.syncTextProvider) {
+				textProvider.setCurrentText(val);
+			}
+			setter(id, val);
+			immediateSaveDraft(id);
+		},
+		[id, immediateSaveDraft, setter, textProvider]
+	);
 
 	return useMemo(
 		() => ({
-			text: value,
-			setText,
-			resetText
+			getText,
+			setText
 		}),
-		[resetText, setText, value]
+		[getText, setText]
 	);
 };
 
