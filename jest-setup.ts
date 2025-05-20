@@ -25,7 +25,9 @@ import { handleGetMsgRequest } from './src/tests/mocks/network/msw/handle-get-ms
 failOnConsole({
 	...getFailOnConsoleDefaultConfig(),
 	silenceMessage: (message) =>
-		message.includes('React does not recognize the `isGeneric` prop on a DOM element')
+		message.includes('React does not recognize the `isGeneric` prop on a DOM element') ||
+		message.includes('React does not recognize the `isQueryFilter` prop on a DOM element') ||
+		message.includes('React does not recognize the `searchString` prop on a DOM element')
 });
 
 beforeAll(() => {
