@@ -12,6 +12,7 @@ import { extractDateFieldFromQuery } from './extract-date-field-from-query';
 import { findIconFromChip } from './parts/use-find-icon';
 import { ChipType, Folder, Folders } from '../../types';
 import { AdvancedFilterModalFormValues, KeywordState, Query, SearchQueryItem } from './types/types';
+import { convertSearchChipToString } from '../../carbonio-ui-commons/helpers/search';
 import { CONTACT_TYPES } from '../../carbonio-ui-commons/integrations/constants';
 import { ContactInputItem } from '../../carbonio-ui-commons/integrations/types';
 
