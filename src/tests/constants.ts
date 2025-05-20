@@ -39,6 +39,14 @@ export const ASSERTIONS = {
 	NOT_CONTAINS: {
 		value: false,
 		desc: 'not contains'
+	},
+	IS: {
+		value: true,
+		desc: 'is'
+	},
+	IS_NOT: {
+		value: false,
+		desc: "isn't"
 	}
 };
 

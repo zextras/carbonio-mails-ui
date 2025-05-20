@@ -102,13 +102,7 @@ export function generateQueryString(
 	const foldersArray = generateFoldersArray(folders);
 	const foldersToSearchInQuery = generateFoldersSearchQuery(foldersArray);
 
-	function chipToString(c: QueryChip): string {
-		const chipString = (c.value ? c.value : c.label) ?? '';
-		const thereAreAnySpaces = chipString?.indexOf(' ') >= 0;
-		return thereAreAnySpaces ? `"${chipString}"` : `${chipString}`;
-	}
-
-	const queryString = query.map((c) => chipToString(c)).join(' ');
+	const queryString = query.map((c) => convertSearchChipToString(c)).join(' ');
 
 	return isSharedFolderIncluded && foldersArray?.length > 0
 		? `(${queryString}) ${foldersToSearchInQuery}`

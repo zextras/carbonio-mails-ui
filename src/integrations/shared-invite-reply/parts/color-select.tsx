@@ -7,7 +7,7 @@ import React, { useMemo } from 'react';
 
 import type { SingleSelectionOnChange } from '@zextras/carbonio-design-system';
 import { Container, Icon, Padding, Row, Select, Text } from '@zextras/carbonio-design-system';
-import { t } from '@zextras/carbonio-shell-ui';
+import { useTranslation } from 'react-i18next';
 
 import { ColorContainer, Square, TextUpperCase } from './styled-components';
 import { ZIMBRA_STANDARD_COLORS } from '../../../carbonio-ui-commons/constants/utils';
@@ -59,16 +59,6 @@ const LabelFactory = ({
 	);
 };
 
-function getColorLabel(color: string): string {
-	/* i18next-extract-disable-next-line */
-	return t(`color.${color}`, '{{color}}', {
-		context: ZIMBRA_STANDARD_COLORS,
-		replace: {
-			color
-		}
-	});
-}
-
 export default function ColorSelect({
 	onChange,
 	defaultColor,
@@ -78,26 +68,30 @@ export default function ColorSelect({
 	defaultColor: number;
 	label: string;
 }>): React.JSX.Element {
+	const [t] = useTranslation();
 	const colors = useMemo(
 		() =>
-			ZIMBRA_STANDARD_COLORS.map((el, index) => ({
-				label: getColorLabel(el.zLabel),
-				value: index.toString(),
-				customComponent: (
-					<Container
-						width="100%"
-						mainAlignment="space-between"
-						orientation="horizontal"
-						height="fit"
-					>
-						<Padding left="small">
-							<TextUpperCase>{getColorLabel(el.zLabel)}</TextUpperCase>
-						</Padding>
-						<Square $color={el.hex} />
-					</Container>
-				)
-			})),
-		[]
+			ZIMBRA_STANDARD_COLORS.map((el, index) => {
+				const colorLabel = t(`colors.${el.zLabel}`, el.zLabel);
+				return {
+					label: colorLabel,
+					value: index.toString(),
+					customComponent: (
+						<Container
+							width="100%"
+							mainAlignment="space-between"
+							orientation="horizontal"
+							height="fit"
+						>
+							<Padding left="small">
+								<TextUpperCase>{colorLabel}</TextUpperCase>
+							</Padding>
+							<Square $color={el.hex} />
+						</Container>
+					)
+				};
+			}),
+		[t]
 	);
 	// FIXME: potential unsafe access to array, how do you know that colors[defaultColor] is not undefined and array is not empty?
 	const defaultSelection = useMemo(() => colors[defaultColor], [colors, defaultColor]);

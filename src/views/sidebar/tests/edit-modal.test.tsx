@@ -70,7 +70,7 @@ describe('edit-modal', () => {
 			await user.click(selectColor);
 		});
 		ZIMBRA_STANDARD_COLORS.forEach((el) => {
-			within(screen.getByTestId('dropdown-popper-list')).getByText(`color.${el.zLabel}`);
+			within(screen.getByTestId('dropdown-popper-list')).getByText(el.zLabel);
 		});
 		const addShareButton = screen.getByRole('button', {
 			name: /folder\.modal\.edit\.add_share/i
@@ -125,7 +125,7 @@ describe('edit-modal', () => {
 			await user.click(selectColor);
 		});
 		ZIMBRA_STANDARD_COLORS.forEach((el) => {
-			within(screen.getByTestId('dropdown-popper-list')).getByText(`color.${el.zLabel}`);
+			within(screen.getByTestId('dropdown-popper-list')).getByText(el.zLabel);
 		});
 		const addShareButton = screen.getByRole('button', {
 			name: /folder\.modal\.edit\.add_share/i

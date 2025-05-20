@@ -125,6 +125,11 @@ export type EditorPrefillData = {
 
 export type EditViewActionsType = (typeof EditViewActions)[keyof typeof EditViewActions];
 
+type EditorTextProvider = {
+	getCurrentText: () => MailsEditorV2['text'] | null;
+	setCurrentText: (text: MailsEditorV2['text']) => void;
+};
+
 export type AddEditorParams = {
 	id: MailsEditorV2['id'];
 	editor: MailsEditorV2;
@@ -177,6 +182,7 @@ export type MailsEditorV2 = {
 	isSmimeSign?: boolean;
 	// flag for the S/MIME Encrypt request
 	isSmimeEncrypt?: boolean;
+	textProvider?: EditorTextProvider;
 };
 
 type IdentityType = {
