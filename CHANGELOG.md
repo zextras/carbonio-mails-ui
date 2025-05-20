@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.25.1](https://github.com/zextras/carbonio-mails-ui/compare/v1.25.0...v1.25.1) (2025-05-20)
+
+
+### Bug Fixes
+
+* **mail-message-preview-actions.tsx:** adjust IconButton size ([5fb2926](https://github.com/zextras/carbonio-mails-ui/commit/5fb2926236ff59e25a7a4c63da1095b19b5fce78))
+
 ## [1.25.0](https://github.com/zextras/carbonio-mails-ui/compare/v1.24.14...v1.25.0) (2025-05-19)
 
 
