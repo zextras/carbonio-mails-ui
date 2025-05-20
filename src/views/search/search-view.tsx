@@ -91,67 +91,65 @@ const SearchView = ({
 	}, [executeSearch, query, setValue, includeSharedItemsInSearchDefaultPref]);
 
 	return (
-		<>
-			<Container>
-				{/* TOFIX-SHELL: labetype is missing in shell type declaration as optional and string */}
-				<ResultsHeader
-					label={resultLabel}
-					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-					// @ts-ignore
-					labelType={resultLabelType}
-				/>
-				<Container
-					orientation="horizontal"
-					background="gray4"
-					style={{ overflowY: 'auto' }}
-					mainAlignment="flex-start"
-				>
-					<Routes>
-						<Route
-							path={`:type?/:itemId?`}
-							element={
-								<Container
-									background={'gray6'}
-									width="25%"
-									height="fill"
-									mainAlignment="flex-start"
-									data-testid="MailsSearchResultListContainer"
-								>
-									<AdvancedFilterButton
-										query={query as Query}
-										updateQuery={updateQuery}
-										searchDisabled={searchDisabled}
-										invalidQueryTooltip={invalidQueryTooltip}
+		<Container>
+			{/* TOFIX-SHELL: labetype is missing in shell type declaration as optional and string */}
+			<ResultsHeader
+				label={resultLabel}
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// @ts-ignore
+				labelType={resultLabelType}
+			/>
+			<Container
+				orientation="horizontal"
+				background="gray4"
+				style={{ overflowY: 'auto' }}
+				mainAlignment="flex-start"
+			>
+				<Routes>
+					<Route
+						path={`:type?/:itemId?`}
+						element={
+							<Container
+								background={'gray6'}
+								width="25%"
+								height="fill"
+								mainAlignment="flex-start"
+								data-testid="MailsSearchResultListContainer"
+							>
+								<AdvancedFilterButton
+									query={query as Query}
+									updateQuery={updateQuery}
+									searchDisabled={searchDisabled}
+									invalidQueryTooltip={invalidQueryTooltip}
+								/>
+								{isMessageView ? (
+									<SearchMessageList
+										searchResults={searchResults.messageListIndex}
+										query={queryToString}
+										loading={loading}
+										isInvalidQuery={isInvalidQuery}
+										hasMore={searchResults.more}
 									/>
-									{isMessageView ? (
-										<SearchMessageList
-											searchResults={searchResults.messageListIndex}
-											query={queryToString}
-											loading={loading}
-											isInvalidQuery={isInvalidQuery}
-											hasMore={searchResults.more}
-										/>
-									) : (
-										<SearchConversationList
-											searchResults={searchResults.conversationListIndex}
-											query={queryToString}
-											loading={loading}
-											isInvalidQuery={isInvalidQuery}
-											hasMore={searchResults.more}
-										/>
-									)}
-								</Container>
-							}
-						/>
-					</Routes>
-					<Suspense fallback={<Spinner color="gray5" />}>
-						<Container mainAlignment="flex-start" width="75%">
-							<SearchPanel searchResults={searchResults} query={query} />
-						</Container>
-					</Suspense>
-				</Container>
+								) : (
+									<SearchConversationList
+										searchResults={searchResults.conversationListIndex}
+										query={queryToString}
+										loading={loading}
+										isInvalidQuery={isInvalidQuery}
+										hasMore={searchResults.more}
+									/>
+								)}
+							</Container>
+						}
+					/>
+				</Routes>
+				<Suspense fallback={<Spinner color="gray5" />}>
+					<Container mainAlignment="flex-start" width="75%">
+						<SearchPanel searchResults={searchResults} query={query} />
+					</Container>
+				</Suspense>
 			</Container>
-		</>
+		</Container>
 	);
 };
 
