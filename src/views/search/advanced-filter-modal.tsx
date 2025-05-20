@@ -3,11 +3,11 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 
 import { ModalHeader, Divider, ModalFooter } from '@zextras/carbonio-design-system';
-import { t } from '@zextras/carbonio-shell-ui';
-import { useFormContext } from 'react-hook-form';
+import { t, useUserSettings } from '@zextras/carbonio-shell-ui';
+import { FormProvider, useForm } from 'react-hook-form';
 
 import { AttachmentTypeEmailStatusRow } from './parts/attachment-type-email-status-row';
 import { ReceivedSentAddressRow } from './parts/received-sent-address-row';
@@ -16,19 +16,28 @@ import { SizeLargerSizeSmallerRow } from './parts/size-smaller-size-larger-row';
 import { SubjectKeywordRow } from './parts/subject-keyword-row';
 import { TagFolderRow } from './parts/tag-folder-row';
 import { ToggleFilters } from './parts/toggle-filters';
-import { AdvancedFilterModalProps, FormValues } from './types/types';
-import { getQueryToBe } from './utils';
+import { AdvancedFilterModalProps, FormValues, Query } from './types/types';
+import { getAdvancedFiltersDefaultValues, getQueryToBe } from './utils';
 import { ScrollableContainer } from '../../commons/scrollable-container';
 
 export const AdvancedFilterModal = ({
-	onClose,
-	onSearchConfirm,
-	includeSharedItemsInSearchDefaultPref
+	query,
+	updateQuery,
+	onClose
 }: AdvancedFilterModalProps): React.JSX.Element => {
-	const methods = useFormContext<FormValues>();
-	const { watch, setValue, control } = methods;
+	const settings = useUserSettings();
+	const includeSharedItemsInSearchDefaultPref =
+		settings.prefs.zimbraPrefIncludeSharedItemsInSearch === 'TRUE';
 
+	const defaultValues: FormValues = useMemo(
+		() => getAdvancedFiltersDefaultValues(query as any, includeSharedItemsInSearchDefaultPref),
+		[includeSharedItemsInSearchDefaultPref, query]
+	);
+
+	const methods = useForm({ defaultValues });
+	const { reset, watch, setValue, control } = methods;
 	const formValues = watch();
+
 	const resetFilters = useCallback(() => {
 		setValue('keywordInput', []);
 		setValue('subjectInput', []);
@@ -49,12 +58,25 @@ export const AdvancedFilterModal = ({
 
 	const queryToBe = getQueryToBe(formValues);
 
+	const onModalConfirm = useCallback(
+		({
+			query: searchQuery,
+			includeSharedFolders
+		}: {
+			query: Query;
+			includeSharedFolders: boolean;
+		}) => {
+			setValue('isSharedFolderIncluded', includeSharedFolders);
+			updateQuery(searchQuery);
+		},
+		[setValue, updateQuery]
+	);
 	const isSharedFolderIncluded = watch('isSharedFolderIncluded');
 	const onConfirm = useCallback(() => {
 		const controller = new AbortController();
 		const includeSharedFolders = watch('isSharedFolderIncluded');
 		try {
-			onSearchConfirm({ query: queryToBe, includeSharedFolders });
+			onModalConfirm({ query: queryToBe, includeSharedFolders });
 			onClose();
 		} catch (error) {
 			controller.abort();
@@ -62,7 +84,11 @@ export const AdvancedFilterModal = ({
 		return () => {
 			controller.abort();
 		};
-	}, [onSearchConfirm, queryToBe, watch, onClose]);
+	}, [watch, onModalConfirm, queryToBe, onClose]);
+
+	useEffect(() => {
+		reset(defaultValues);
+	}, [defaultValues, reset]);
 
 	const onCloseCallback = useCallback(() => {
 		resetFilters();
@@ -82,13 +108,15 @@ export const AdvancedFilterModal = ({
 				padding={{ horizontal: 'medium', vertical: 'small' }}
 				mainAlignment={'flex-start'}
 			>
-				<ToggleFilters />
-				<SubjectKeywordRow control={control} />
-				<ReceivedSentAddressRow control={control} />
-				<AttachmentTypeEmailStatusRow control={control} />
-				<SizeLargerSizeSmallerRow control={control} />
-				<SendReceivedDateRow control={control} />
-				<TagFolderRow control={control} setValue={setValue} />
+				<FormProvider {...methods}>
+					<ToggleFilters />
+					<SubjectKeywordRow control={control} />
+					<ReceivedSentAddressRow control={control} />
+					<AttachmentTypeEmailStatusRow control={control} />
+					<SizeLargerSizeSmallerRow control={control} />
+					<SendReceivedDateRow control={control} />
+					<TagFolderRow control={control} setValue={setValue} />
+				</FormProvider>
 			</ScrollableContainer>
 			<Divider />
 			<ModalFooter

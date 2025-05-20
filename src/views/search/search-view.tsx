@@ -3,23 +3,22 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { Suspense, useEffect, useMemo, useState } from 'react';
 
-import { Button, Container, Spinner, useModal } from '@zextras/carbonio-design-system';
+import { Container, Spinner } from '@zextras/carbonio-design-system';
 import type { SearchViewProps } from '@zextras/carbonio-search-ui';
 import { setAppContext, t, useUserSettings } from '@zextras/carbonio-shell-ui';
-import { FormProvider, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { Route, Routes } from 'react-router-dom';
 
-import { AdvancedFilterModal } from './advanced-filter-modal';
 import { SearchConversationList } from './list/conversation/search-conversation-list';
 import { SearchMessageList } from './list/message/search-message-list';
 import SearchPanel from './panel/search-panel';
+import { AdvancedFilterButton } from './parts/advanced-filter-button';
 import { useIsMessageView, useRunSearch } from './search-view-hooks';
 import { useUpdateView } from '../../carbonio-ui-commons/hooks/use-update-view';
 import { API_REQUEST_STATUS } from '../../constants';
 import { FormValues, Query } from './types/types';
-import { getAdvancedFiltersDefaultValues } from './utils';
 import { resetSearchAndPopulatedItems } from '../../store/emails/store';
 
 const SearchView = ({
@@ -34,15 +33,7 @@ const SearchView = ({
 	const includeSharedItemsInSearchDefaultPref =
 		settings.prefs.zimbraPrefIncludeSharedItemsInSearch === 'TRUE';
 
-	const defaultValues: FormValues = useMemo(
-		() => getAdvancedFiltersDefaultValues(query as any, includeSharedItemsInSearchDefaultPref),
-		[query, includeSharedItemsInSearchDefaultPref]
-	);
-
-	const methods = useForm<FormValues>({ defaultValues });
-	const { reset } = methods;
 	const isMessageView = useIsMessageView();
-	const [showAdvanceFilters, setShowAdvanceFilters] = useState(false);
 
 	const invalidQueryTooltip = useMemo(
 		() => t('label.invalid_query', 'Unable to parse the search query, clear it and retry'),
@@ -54,10 +45,6 @@ const SearchView = ({
 	const isSharedFolderIncluded = watch('isSharedFolderIncluded');
 
 	const [count, setCount] = useState(0);
-
-	useEffect(() => {
-		reset(defaultValues);
-	}, [defaultValues, reset]);
 
 	useEffect(() => {
 		setAppContext({ isMessageView, count, setCount });
@@ -90,20 +77,6 @@ const SearchView = ({
 
 	const loading = searchResults.status === API_REQUEST_STATUS.pending;
 
-	const onModalConfirm = useCallback(
-		({
-			query: searchQuery,
-			includeSharedFolders
-		}: {
-			query: Query;
-			includeSharedFolders: boolean;
-		}) => {
-			setValue('isSharedFolderIncluded', includeSharedFolders);
-			updateQuery(searchQuery);
-		},
-		[setValue, updateQuery]
-	);
-
 	useEffect(() => {
 		const controller = new AbortController();
 		if (query.length > 0) {
@@ -116,8 +89,6 @@ const SearchView = ({
 			controller.abort();
 		};
 	}, [executeSearch, query, setValue, includeSharedItemsInSearchDefaultPref]);
-	const modalId = 'advanced-filters-modal';
-	const { createModal, closeModal } = useModal();
 
 	return (
 		<>
@@ -139,29 +110,37 @@ const SearchView = ({
 						<Route
 							path={`:type?/:itemId?`}
 							element={
-								isMessageView ? (
-									<SearchMessageList
+								<Container
+									background={'gray6'}
+									width="25%"
+									height="fill"
+									mainAlignment="flex-start"
+									data-testid="MailsSearchResultListContainer"
+								>
+									<AdvancedFilterButton
+										query={query as Query}
+										updateQuery={updateQuery}
 										searchDisabled={searchDisabled}
-										searchResults={searchResults.messageListIndex}
-										query={queryToString}
-										loading={loading}
-										setShowAdvanceFilters={setShowAdvanceFilters}
-										isInvalidQuery={isInvalidQuery}
 										invalidQueryTooltip={invalidQueryTooltip}
-										hasMore={searchResults.more}
 									/>
-								) : (
-									<SearchConversationList
-										searchDisabled={searchDisabled}
-										searchResults={searchResults.conversationListIndex}
-										query={queryToString}
-										loading={loading}
-										setShowAdvanceFilters={setShowAdvanceFilters}
-										isInvalidQuery={isInvalidQuery}
-										invalidQueryTooltip={invalidQueryTooltip}
-										hasMore={searchResults.more}
-									/>
-								)
+									{isMessageView ? (
+										<SearchMessageList
+											searchResults={searchResults.messageListIndex}
+											query={queryToString}
+											loading={loading}
+											isInvalidQuery={isInvalidQuery}
+											hasMore={searchResults.more}
+										/>
+									) : (
+										<SearchConversationList
+											searchResults={searchResults.conversationListIndex}
+											query={queryToString}
+											loading={loading}
+											isInvalidQuery={isInvalidQuery}
+											hasMore={searchResults.more}
+										/>
+									)}
+								</Container>
 							}
 						/>
 					</Routes>
@@ -172,27 +151,6 @@ const SearchView = ({
 					</Suspense>
 				</Container>
 			</Container>
-
-			<Button
-				label={t('label.advanced_filters', 'Advanced Filters')}
-				onClick={(): void => {
-					createModal({
-						id: modalId,
-						maxHeight: '90vh',
-						children: (
-							<FormProvider {...methods}>
-								<AdvancedFilterModal
-									onSearchConfirm={onModalConfirm}
-									onClose={(): void => {
-										closeModal(modalId);
-									}}
-									includeSharedItemsInSearchDefaultPref={includeSharedItemsInSearchDefaultPref}
-								/>
-							</FormProvider>
-						)
-					});
-				}}
-			/>
 		</>
 	);
 };

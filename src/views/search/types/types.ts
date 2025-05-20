@@ -60,7 +60,7 @@ export type FormValuesControlProps = {
 };
 
 export type AdvancedFilterModalProps = {
+	query: Query;
+	updateQuery: (query: Query) => void;
 	onClose: () => void;
-	onSearchConfirm: (request: { query: Query; includeSharedFolders: boolean }) => void;
-	includeSharedItemsInSearchDefaultPref: boolean;
 };
