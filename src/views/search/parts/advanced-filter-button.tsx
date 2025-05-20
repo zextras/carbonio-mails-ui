@@ -47,6 +47,7 @@ export const AdvancedFilterButton = ({
 							{
 								id: modalId,
 								maxHeight: '90vh',
+								size: 'medium',
 								children: (
 									<AdvancedFilterModal
 										query={query}
