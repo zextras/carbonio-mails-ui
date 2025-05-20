@@ -43,41 +43,6 @@ describe('RetentionPolicies Component', () => {
 		expect(defaultProps.setShowPolicy).toHaveBeenCalledWith(!defaultProps.showPolicy);
 	});
 
-	// it('toggles disposal checkbox and resets empty value flag', async () => {
-	// 	const { user } = setupTest(<RetentionPolicies {...defaultProps} emptyDisValue />);
-	// 	const checkbox = screen.getByTestId('enableMsgDisposal');
-	// 	await user.click(checkbox);
-	// 	expect(defaultProps.setEmptyDisValue).toHaveBeenCalledWith(false);
-	// 	expect(defaultProps.setDsblMsgDis).toHaveBeenCalledWith(true);
-	// });
-
-	// it('updates input value when changed', async () => {
-	// 	const setEmptyDisValue = jest.fn();
-	// 	const setPurgeValue = jest.fn();
-
-	// 	const { user } = setupTest(
-	// 		<RetentionPolicies
-	// 			{...defaultProps}
-	// 			emptyDisValue
-	// 			setEmptyDisValue={setEmptyDisValue}
-	// 			setPurgeValue={setPurgeValue}
-	// 		/>
-	// 	);
-	// 	const toggleButton = screen.getByTestId('retention_policy-icon');
-	// 	await user.click(toggleButton);
-	// 	const enableMsgDisposal = screen.getByTestId('enableMsgDisposal');
-	// 	console.clear();
-	// 	screen.logTestingPlaygroundURL();
-	// 	await user.click(enableMsgDisposal);
-	// 	const input = screen.getByRole('textbox', { name: /disposal threshold/i });
-	// 	// console.log(input);
-	// 	await user.clear(input); // optional
-	// 	await user.type(input, '10');
-
-	// 	expect(setEmptyDisValue).toHaveBeenCalledWith(false);
-	// 	expect(setPurgeValue).toHaveBeenCalledWith('10');
-	// });
-
 	it('displays warning message when emptyDisValue is true', () => {
 		setupTest(<RetentionPolicies {...defaultProps} emptyDisValue />);
 		expect(
