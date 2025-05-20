@@ -30,11 +30,11 @@ export const AdvancedFilterModal = ({
 		settings.prefs.zimbraPrefIncludeSharedItemsInSearch === 'TRUE';
 
 	const defaultValues: AdvancedFilterModalFormValues = useMemo(
-		() => getAdvancedFiltersDefaultValues(query as any, includeSharedItemsInSearchDefaultPref),
+		() => getAdvancedFiltersDefaultValues(query, includeSharedItemsInSearchDefaultPref),
 		[includeSharedItemsInSearchDefaultPref, query]
 	);
 
-	const methods = useForm({ defaultValues });
+	const methods = useForm<AdvancedFilterModalFormValues>({ defaultValues });
 	const { reset, watch, setValue, control } = methods;
 	const formValues = watch();
 
