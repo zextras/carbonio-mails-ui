@@ -16,7 +16,7 @@ import { SizeLargerSizeSmallerRow } from './parts/size-smaller-size-larger-row';
 import { SubjectKeywordRow } from './parts/subject-keyword-row';
 import { TagFolderRow } from './parts/tag-folder-row';
 import { ToggleFilters } from './parts/toggle-filters';
-import { AdvancedFilterModalProps, FormValues, Query } from './types/types';
+import { AdvancedFilterModalProps, AdvancedFilterModalFormValues, Query } from './types/types';
 import { getAdvancedFiltersDefaultValues, getQueryToBe } from './utils';
 import { ScrollableContainer } from '../../commons/scrollable-container';
 
@@ -29,7 +29,7 @@ export const AdvancedFilterModal = ({
 	const includeSharedItemsInSearchDefaultPref =
 		settings.prefs.zimbraPrefIncludeSharedItemsInSearch === 'TRUE';
 
-	const defaultValues: FormValues = useMemo(
+	const defaultValues: AdvancedFilterModalFormValues = useMemo(
 		() => getAdvancedFiltersDefaultValues(query as any, includeSharedItemsInSearchDefaultPref),
 		[includeSharedItemsInSearchDefaultPref, query]
 	);

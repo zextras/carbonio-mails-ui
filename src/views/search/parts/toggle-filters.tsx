@@ -9,10 +9,10 @@ import { Container, Switch, Text, Padding } from '@zextras/carbonio-design-syste
 import { t } from '@zextras/carbonio-shell-ui';
 import { Controller, useFormContext } from 'react-hook-form';
 
-import { FormValues } from '../types/types';
+import { AdvancedFilterModalFormValues } from '../types/types';
 
 export const ToggleFilters = (): React.JSX.Element => {
-	const { control } = useFormContext<FormValues>();
+	const { control } = useFormContext<AdvancedFilterModalFormValues>();
 	return (
 		<>
 			<Container orientation="horizontal" mainAlignment="center" crossAlignment="center">

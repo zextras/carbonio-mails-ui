@@ -18,7 +18,12 @@ import {
 } from '../../../carbonio-ui-commons/test/mocks/integrations/mock-contact-input';
 import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
 import { AdvancedFilterModal } from '../advanced-filter-modal';
-import { AdvancedFilterModalProps, FormValues, Query, SearchQueryItem } from '../types/types';
+import {
+	AdvancedFilterModalProps,
+	AdvancedFilterModalFormValues,
+	Query,
+	SearchQueryItem
+} from '../types/types';
 import { getAdvancedFiltersDefaultValues } from '../utils';
 
 async function selectOption(
@@ -38,10 +43,10 @@ const defaultValues = getAdvancedFiltersDefaultValues(emptyQuery, false);
 
 const renderWithUseForm = async (
 	component: React.JSX.Element,
-	formValues: Partial<FormValues> = {}
+	formValues: Partial<AdvancedFilterModalFormValues> = {}
 ): Promise<{ user: UserEvent }> => {
 	const Wrapper = ({ children }: { children: ReactNode }): JSX.Element => {
-		const methods = useForm<FormValues>({ defaultValues: formValues });
+		const methods = useForm<AdvancedFilterModalFormValues>({ defaultValues: formValues });
 		return <FormProvider {...methods}>{children}</FormProvider>;
 	};
 

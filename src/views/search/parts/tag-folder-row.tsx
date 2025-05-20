@@ -26,10 +26,10 @@ import { isSharedAccountFolder } from '../../../helpers/folders';
 import type { ChipOnAdd, Folder } from '../../../types';
 import { SelectFolderModal } from '../../../ui-actions/modals/select-folder-modal';
 import { getFolderIconColor } from '../../sidebar/utils';
-import { FormValues, FormValuesControlProps } from '../types/types';
+import { AdvancedFilterModalFormValues, FormValuesControlProps } from '../types/types';
 
 type TagFolderRowControlProps = FormValuesControlProps & {
-	setValue: UseFormSetValue<FormValues>;
+	setValue: UseFormSetValue<AdvancedFilterModalFormValues>;
 };
 
 export const TagFolderRow = ({

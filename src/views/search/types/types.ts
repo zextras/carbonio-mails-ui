@@ -35,7 +35,7 @@ export type KeywordState = Array<{
 	background?: keyof Theme['palette'];
 }>;
 
-export type FormValues = {
+export type AdvancedFilterModalFormValues = {
 	keywordInput: KeywordState;
 	subjectInput: KeywordState;
 	hasAttachment: boolean;
@@ -56,7 +56,7 @@ export type FormValues = {
 };
 
 export type FormValuesControlProps = {
-	control: Control<FormValues>;
+	control: Control<AdvancedFilterModalFormValues>;
 };
 
 export type AdvancedFilterModalProps = {

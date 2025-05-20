@@ -11,7 +11,7 @@ import moment from 'moment';
 import { extractDateFieldFromQuery } from './extract-date-field-from-query';
 import { findIconFromChip } from './parts/use-find-icon';
 import { ChipType, Folder, Folders } from '../../types';
-import { FormValues, KeywordState, Query, SearchQueryItem } from './types/types';
+import { AdvancedFilterModalFormValues, KeywordState, Query, SearchQueryItem } from './types/types';
 import { CONTACT_TYPES } from '../../carbonio-ui-commons/integrations/constants';
 import { ContactInputItem } from '../../carbonio-ui-commons/integrations/types';
 
@@ -142,7 +142,7 @@ function dateToKeywordState({
 		}
 	];
 }
-export function getQueryToBe(formValues: FormValues): Query {
+export function getQueryToBe(formValues: AdvancedFilterModalFormValues): Query {
 	const id = 'id';
 	const {
 		keywordInput,
@@ -311,7 +311,7 @@ function getEmailStatusDefaultValue(query: Query): KeywordState {
 export function getAdvancedFiltersDefaultValues(
 	query: Query,
 	isSharedFolderIncluded: boolean
-): FormValues {
+): AdvancedFilterModalFormValues {
 	return {
 		attachmentType: getAttachmentTypeDefaultValue(query),
 		emailStatus: getEmailStatusDefaultValue(query),

@@ -18,7 +18,7 @@ import { AdvancedFilterButton } from './parts/advanced-filter-button';
 import { useIsMessageView, useRunSearch } from './search-view-hooks';
 import { useUpdateView } from '../../carbonio-ui-commons/hooks/use-update-view';
 import { API_REQUEST_STATUS } from '../../constants';
-import { FormValues, Query } from './types/types';
+import { AdvancedFilterModalFormValues, Query } from './types/types';
 import { resetSearchAndPopulatedItems } from '../../store/emails/store';
 
 const SearchView = ({
@@ -40,7 +40,7 @@ const SearchView = ({
 		[]
 	);
 
-	const { watch, setValue } = useForm<FormValues>();
+	const { watch, setValue } = useForm<AdvancedFilterModalFormValues>();
 
 	const isSharedFolderIncluded = watch('isSharedFolderIncluded');
 
