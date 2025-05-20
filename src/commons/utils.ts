@@ -9,8 +9,14 @@ import moment from 'moment';
 
 import type { MailMessagePart } from '../types';
 
-export const getTimeLabel = (date: number): string => {
+// retrieves locale from preferences, fallbacks to "en" if no locale found.
+export const getUserLocale = (): string => {
 	const { zimbraPrefLocale = 'en' } = getUserSettings().prefs;
+	return zimbraPrefLocale;
+};
+
+export const getTimeLabel = (date: number): string => {
+	const zimbraPrefLocale = getUserLocale();
 	const momentDate = moment(date).locale(zimbraPrefLocale);
 	if (momentDate.isSame(new Date(), 'day')) {
 		return momentDate.format('LT');
@@ -172,4 +178,19 @@ export function updateImageSrc(
 		img.setAttribute('pnsrc', img.getAttribute('src') ?? '');
 		img.setAttribute('src', `/service/home/~/?auth=co&id=${msgId}&part=${imgMap[ci].name}`);
 	}
+}
+
+export function decodeSurrogatePairs(str: string): string {
+	return str.replace(/\\u([\dA-F]{4})\\u([\dA-F]{4})/gi, (_, p1, p2) => {
+		const high = parseInt(p1, 16);
+		const low = parseInt(p2, 16);
+
+		// Validate surrogate pair range
+		if (high >= 0xd800 && high <= 0xdbff && low >= 0xdc00 && low <= 0xdfff) {
+			return String.fromCodePoint(high, low);
+		}
+
+		// Return original if not a valid surrogate pair
+		return `\\u${p1}\\u${p2}`;
+	});
 }

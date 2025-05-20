@@ -7,51 +7,49 @@ import { act } from '@testing-library/react';
 import { find, forEach } from 'lodash';
 
 import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
-import { useTags } from '../../../carbonio-ui-commons/store/zustand/tags';
+import { useTagStore } from '../../../carbonio-ui-commons/store/zustand/tags/store';
 import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
-import { tags as mockTags } from '../../../carbonio-ui-commons/test/mocks/tags/tags';
 import { setupHook } from '../../../carbonio-ui-commons/test/test-setup';
 import { FOLDERS_DESCRIPTORS } from '../../../constants';
 import { generateConversation } from '../../../tests/generators/generateConversation';
 import { ConvActionRequest } from '../../../types';
 import { useConvApplyTagDescriptor, useConvApplyTagSubDescriptors } from '../use-conv-apply-tag';
 
-jest.mock('../../../carbonio-ui-commons/store/zustand/tags', () => ({
-	useTags: jest.fn()
-}));
+const tagA = { id: '1', name: 'a', label: 'a', color: 3 };
+const tagB = { id: '2', name: 'b', label: 'b', color: 3 };
+const tagC = { id: '3', name: 'c', label: 'c', color: 3 };
 
 describe('useConvApplyTag', () => {
 	const conv = generateConversation();
 	describe('Descriptor', () => {
 		it('Should return an object with specific id, icon, label and 2 functions', () => {
-			(useTags as jest.Mock).mockReturnValue(mockTags);
-			const {
-				result: { current: descriptor }
-			} = setupHook(useConvApplyTagDescriptor, {
+			useTagStore.setState({ tags: { [tagA.id]: tagA } });
+
+			const { result } = setupHook(useConvApplyTagDescriptor, {
 				initialProps: [{ ids: [conv.id], folderId: FOLDERS.INBOX, conversationTags: ['1'] }]
 			});
 
-			expect(descriptor).toEqual({
+			expect(result.current).toEqual({
 				id: 'conversation-apply-tag',
 				icon: 'TagsMoreOutline',
 				label: 'Tag',
-				items: expect.arrayContaining([
+				items: [
 					expect.objectContaining({
-						canExecute: expect.any(Function),
 						execute: expect.any(Function),
-						color: expect.any(Number),
+						canExecute: expect.any(Function),
+						color: 3,
 						icon: expect.any(String),
-						id: expect.any(String),
-						label: expect.any(String)
+						id: '1',
+						label: 'a'
 					})
-				])
+				]
 			});
 		});
 	});
 
 	describe('SubDescriptors', () => {
 		it('Should return an object with specific icon if conversation does not contains the tag', () => {
-			(useTags as jest.Mock).mockReturnValue(mockTags);
+			useTagStore.setState({ tags: { [tagA.id]: tagA } });
 			const {
 				result: { current: descriptor }
 			} = setupHook(useConvApplyTagSubDescriptors, {
@@ -69,11 +67,11 @@ describe('useConvApplyTag', () => {
 			);
 		});
 		it('Should return an object with specific icon if conversation contains the tag', () => {
-			(useTags as jest.Mock).mockReturnValue(mockTags);
+			useTagStore.setState({ tags: { [tagA.id]: tagA } });
 			const {
 				result: { current: descriptor }
 			} = setupHook(useConvApplyTagSubDescriptors, {
-				initialProps: [{ ids: [conv.id], folderId: FOLDERS.INBOX, conversationTags: ['2291'] }]
+				initialProps: [{ ids: [conv.id], folderId: FOLDERS.INBOX, conversationTags: ['1'] }]
 			});
 			expect(descriptor[0]).toEqual({
 				canExecute: expect.any(Function),
@@ -85,38 +83,17 @@ describe('useConvApplyTag', () => {
 			});
 		});
 		it('Should return a descriptor for every existing tag', () => {
-			const tags = {
-				'1': {
-					id: '1',
-					name: 'tag 1'
-				},
-				'2': {
-					id: '2',
-					name: 'tag 2'
-				},
-				'3': {
-					id: '3',
-					name: 'tag 3'
-				},
-				'4': {
-					id: '4',
-					name: 'tag 4'
-				},
-				'5': {
-					id: '5',
-					name: 'tag 5'
-				}
-			};
-
-			(useTags as jest.Mock).mockReturnValue(tags);
-
+			const tags = { [tagA.id]: tagA, [tagB.id]: tagB, [tagC.id]: tagC };
+			useTagStore.setState({ tags });
 			const {
 				result: { current: descriptor }
 			} = setupHook(useConvApplyTagDescriptor, {
-				initialProps: [{ ids: [conv.id], folderId: FOLDERS.INBOX, conversationTags: conv.tags }]
+				initialProps: [
+					{ ids: [conv.id], folderId: FOLDERS.INBOX, conversationTags: ['1', '2', '3'] }
+				]
 			});
 
-			expect(descriptor.items).toHaveLength(5);
+			expect(descriptor.items).toHaveLength(3);
 			forEach(tags, (tag) => {
 				const item = find(descriptor.items, (subDescriptor) => subDescriptor.id === tag.id);
 				expect(item).toBeDefined();
@@ -139,7 +116,7 @@ describe('useConvApplyTag', () => {
 					}
 				};
 
-				(useTags as jest.Mock).mockReturnValue(tags);
+				useTagStore.setState({ tags });
 				const {
 					result: { current: descriptor }
 				} = setupHook(useConvApplyTagSubDescriptors, {
@@ -157,8 +134,8 @@ describe('useConvApplyTag', () => {
 						name: 'tag 1'
 					}
 				};
-				(useTags as jest.Mock).mockReturnValue(tags);
 
+				useTagStore.setState({ tags });
 				const interceptor = createSoapAPIInterceptor<ConvActionRequest>('ConvAction');
 				const {
 					result: { current: descriptor }
@@ -181,7 +158,7 @@ describe('useConvApplyTag', () => {
 						name: 'tag 1'
 					}
 				};
-				(useTags as jest.Mock).mockReturnValue(tags);
+				useTagStore.setState({ tags });
 				const interceptor = createSoapAPIInterceptor<ConvActionRequest>('ConvAction');
 				const {
 					result: { current: descriptor }

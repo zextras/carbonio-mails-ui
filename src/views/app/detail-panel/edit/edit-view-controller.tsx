@@ -166,8 +166,8 @@ const EditViewController = (): React.JSX.Element => {
 	const message = useMessageById(id ?? '');
 
 	const isMessageLoadingRequired = useMemo<boolean>(
-		(): boolean => isMessageRequired && !message?.isComplete,
-		[isMessageRequired, message?.isComplete]
+		(): boolean => isMessageRequired && (!message?.isComplete || message?.body?.truncated === true),
+		[isMessageRequired, message?.body?.truncated, message?.isComplete]
 	);
 
 	/**

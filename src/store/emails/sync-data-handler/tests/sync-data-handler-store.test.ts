@@ -21,6 +21,7 @@ import {
 	useMessageById,
 	useMessageIndexSlice
 } from '../../store';
+import { triggerNotification } from '../trigger-notification';
 
 jest.mock('../../../../carbonio-ui-commons/store/zustand/tags', () => ({
 	...jest.requireActual('../../../../carbonio-ui-commons/store/zustand/tags'),
@@ -103,5 +104,39 @@ describe('handleNotifyMessagesCreated', () => {
 				expect(messagesIds).toEqual(['1', '2']);
 			});
 		});
+	});
+});
+
+let mockIsFocusMode = false;
+
+const mockedMultipleNotify = jest.fn();
+
+jest.mock('@zextras/carbonio-shell-ui', () => ({
+	get IS_FOCUS_MODE(): boolean {
+		return mockIsFocusMode;
+	},
+	getNotificationManager: jest.fn(() => ({
+		multipleNotify: mockedMultipleNotify
+	})),
+	getUserSettings: jest.fn(() => ({
+		props: [],
+		prefs: {
+			zimbraPrefMailToasterEnabled: 'TRUE',
+			zimbraPrefShowAllNewMailNotifications: 'TRUE'
+		}
+	}))
+}));
+
+describe('triggerNotification', () => {
+	it('multipleNotify is not called if IS_FOCUS_MODE is true', () => {
+		mockIsFocusMode = true;
+		triggerNotification([generateMessage({ id: 'id-1' })], jest.fn());
+		expect(mockedMultipleNotify).not.toHaveBeenCalled();
+	});
+
+	it('multipleNotify is called if IS_FOCUS_MODE is false', () => {
+		mockIsFocusMode = false;
+		triggerNotification([generateMessage({ id: 'id-1' })], jest.fn());
+		expect(mockedMultipleNotify).toHaveBeenCalled();
 	});
 });

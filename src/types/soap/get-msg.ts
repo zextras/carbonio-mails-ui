@@ -28,6 +28,7 @@ export type GetMsgParameters = {
 	msgId: string;
 	max?: number;
 	smimePassword?: string;
+	part?: string;
 };
 
 export type GetMsgForPrintParameter = {

@@ -3,14 +3,22 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import React, { FC } from 'react';
+
 import { Container, Divider, Padding, Row, Text } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
-import React, { FC } from 'react';
+
 import type { Folder } from '../../../../carbonio-ui-commons/types/folder';
 
 const bytesToSize = (bytes: number): string => {
-	const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
-	if (bytes === 0) return '0 Byte';
+	const sizes = [
+		t('settings.b', 'B'),
+		t('settings.kb', 'KB'),
+		t('settings.mb', 'Mb'),
+		t('settings.gb', 'GB'),
+		t('settings.tb', 'TB')
+	];
+	if (bytes === 0) return `0 ${sizes[0]}`;
 	const i = Math.floor(Math.log(bytes) / Math.log(1024));
 	return `${Math.round(bytes / 1024 ** i)} ${sizes[i]}`;
 };

@@ -21,7 +21,7 @@ import { themeMui } from '../../carbonio-ui-commons/theme/theme-mui';
 import type { Folder } from '../../carbonio-ui-commons/types/folder';
 import { LOCAL_STORAGES } from '../../constants';
 import { useFolders } from '../../hooks/use-folders';
-import useGetTagsAccordion from '../../hooks/use-get-tags-accordions';
+import { useGetTagsAccordion } from '../../hooks/use-get-tags-accordions';
 import type { SidebarComponentProps } from '../../types/sidebar';
 
 const SidebarComponent: FC<SidebarComponentProps> = memo(function SidebarComponent({ accordions }) {

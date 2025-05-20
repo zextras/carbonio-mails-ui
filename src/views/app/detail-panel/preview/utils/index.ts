@@ -3,10 +3,11 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import type { Theme } from '@zextras/carbonio-design-system';
 import { includes, uniqBy } from 'lodash';
-import { DefaultTheme } from 'styled-components';
 
 import { calcColor, getFileExtension } from '../../../../../commons/utilities';
+import { getUserLocale } from '../../../../../commons/utils';
 import {
 	AttachmentPart,
 	EditorAttachmentFiles,
@@ -64,7 +65,9 @@ export const getAttachmentsLink = ({
 			attachmentType
 		)
 	) {
-		return `${getLocationOrigin()}/service/preview/document/${messageId}/${attachments.join(',')}`;
+		let localeForPreview = getUserLocale();
+		localeForPreview = localeForPreview.replace(/_/g, '-');
+		return `${getLocationOrigin()}/service/preview/document/${messageId}/${attachments.join(',')}?lang_tag=${localeForPreview}`;
 	}
 	return `${getLocationOrigin()}/service/home/~/?auth=co&id=${messageId}&part=${attachments.join(
 		','
@@ -91,7 +94,7 @@ export const getAttachmentIconColors = ({
 	theme
 }: {
 	attachments: AttachmentPart[] | EditorAttachmentFiles[];
-	theme: DefaultTheme;
+	theme: Theme;
 }): IconColors =>
 	uniqBy(
 		attachments.map((att: AttachmentPart | EditorAttachmentFiles) => {

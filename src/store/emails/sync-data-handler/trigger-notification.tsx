@@ -6,6 +6,7 @@
 import {
 	getNotificationManager,
 	getUserSettings,
+	IS_FOCUS_MODE,
 	NotificationConfig,
 	t
 } from '@zextras/carbonio-shell-ui';
@@ -37,7 +38,11 @@ export const triggerNotification = (
 		)
 	);
 
-	if (!messagesToNotify?.length || !(isAudioEnabled || isShowNotificationEnabled)) {
+	if (
+		!messagesToNotify?.length ||
+		!(isAudioEnabled || isShowNotificationEnabled) ||
+		IS_FOCUS_MODE
+	) {
 		return;
 	}
 

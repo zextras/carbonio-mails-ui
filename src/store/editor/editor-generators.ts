@@ -72,7 +72,10 @@ export const generateNewMessageEditor = (): MailsEditorV2 => {
 	};
 	const defaultIdentity = getDefaultIdentity();
 	const textWithSignature = getMailBodyWithSignature(text, defaultIdentity.defaultSignatureId);
-	const isRichText = getUserSettings().prefs?.zimbraPrefComposeFormat === 'html';
+	const userSettings = getUserSettings();
+	const prefs = userSettings?.prefs ?? {};
+	const isRichText = prefs.zimbraPrefComposeFormat === 'html';
+	const isRequestReadReceipt = prefs.zimbraPrefMailRequestReadReceipts === 'TRUE';
 
 	const editor: MailsEditorV2 = {
 		action: EditViewActions.NEW,
@@ -89,7 +92,7 @@ export const generateNewMessageEditor = (): MailsEditorV2 => {
 		},
 		subject: '',
 		text: textWithSignature,
-		requestReadReceipt: false,
+		requestReadReceipt: isRequestReadReceipt,
 		signatureId: defaultIdentity.defaultSignatureId,
 
 		size: 0
@@ -184,7 +187,10 @@ export const generateIntegratedNewEditor = (compositionData?: EditorPrefillData)
 		plainText,
 		richText
 	};
-	const isRichText = getUserSettings().prefs?.zimbraPrefComposeFormat === 'html';
+	const userSettings = getUserSettings();
+	const prefs = userSettings?.prefs ?? {};
+	const isRichText = prefs.zimbraPrefComposeFormat === 'html';
+	const isRequestReadReceipt = prefs.zimbraPrefMailRequestReadReceipts === 'TRUE';
 	const defaultIdentity = getDefaultIdentity();
 	const textWithSignature = getMailBodyWithSignature(text, defaultIdentity.defaultSignatureId);
 	const unsavedAttachments: Array<UnsavedAttachment> = !compositionData?.aid
@@ -210,7 +216,7 @@ export const generateIntegratedNewEditor = (compositionData?: EditorPrefillData)
 		recipients,
 		subject: compositionData?.subject ?? '',
 		text: textWithSignature,
-		requestReadReceipt: false,
+		requestReadReceipt: isRequestReadReceipt,
 		size: 0,
 		signatureId: defaultIdentity.defaultSignatureId
 	};
@@ -253,7 +259,10 @@ const generateReplyAndReplyAllMsgEditor = (
 		richText
 	};
 	const accountName = getAddressOwnerAccount(from.address) ?? NO_ACCOUNT_NAME;
-	const isRichText = getUserSettings().prefs?.zimbraPrefComposeFormat === 'html';
+	const userSettings = getUserSettings();
+	const prefs = userSettings?.prefs ?? {};
+	const isRichText = prefs.zimbraPrefComposeFormat === 'html';
+	const isRequestReadReceipt = prefs.zimbraPrefMailRequestReadReceipts === 'TRUE';
 	const toParticipants =
 		action === EditViewActions.REPLY
 			? retrieveReplyTo(originalMessage)
@@ -266,7 +275,7 @@ const generateReplyAndReplyAllMsgEditor = (
 		unsavedAttachments: [],
 		savedAttachments: savedInlineAttachments,
 		isRichText,
-		isUrgent: originalMessage.urgent,
+		isUrgent: false,
 		recipients: {
 			to: toParticipants,
 			cc: action === EditViewActions.REPLY_ALL ? retrieveCC(originalMessage, accountName) : [],
@@ -276,7 +285,7 @@ const generateReplyAndReplyAllMsgEditor = (
 			originalMessage.subject ? originalMessage.subject.replace(REPLY_REGEX, '') : ''
 		}`,
 		text: textWithSignatureRepliesForwards,
-		requestReadReceipt: false,
+		requestReadReceipt: isRequestReadReceipt,
 		replyType: 'r',
 		originalId: originalMessage.id,
 		originalMessage,
@@ -320,7 +329,10 @@ export const generateForwardMsgEditor = (originalMessage: MailMessage): MailsEdi
 			savedAttachments
 		)
 	};
-	const isRichText = getUserSettings().prefs?.zimbraPrefComposeFormat === 'html';
+	const userSettings = getUserSettings();
+	const prefs = userSettings?.prefs ?? {};
+	const isRichText = prefs.zimbraPrefComposeFormat === 'html';
+	const isRequestReadReceipt = prefs.zimbraPrefMailRequestReadReceipts === 'TRUE';
 	const editor: MailsEditorV2 = {
 		action: EditViewActions.REPLY,
 		identityId: from.identityId ?? defaultIdentity.id,
@@ -328,7 +340,7 @@ export const generateForwardMsgEditor = (originalMessage: MailMessage): MailsEdi
 		unsavedAttachments: [],
 		savedAttachments,
 		isRichText,
-		isUrgent: originalMessage.urgent,
+		isUrgent: false,
 		recipients: {
 			to: [],
 			cc: [],
@@ -338,7 +350,7 @@ export const generateForwardMsgEditor = (originalMessage: MailMessage): MailsEdi
 			originalMessage.subject ? originalMessage.subject.replace(FORWARD_REGEX, '') : ''
 		}`,
 		text: textWithSignatureRepliesForwards,
-		requestReadReceipt: false,
+		requestReadReceipt: isRequestReadReceipt,
 		replyType: 'w',
 		originalId: originalMessage.id,
 		originalMessage,
@@ -373,7 +385,10 @@ export const generateForwardAsAttachmentMsgEditor = (
 		plainText: `${textWithSignature.plainText}`,
 		richText: `${textWithSignature.richText}`
 	};
-	const isRichText = getUserSettings().prefs?.zimbraPrefComposeFormat === 'html';
+	const userSettings = getUserSettings();
+	const prefs = userSettings?.prefs ?? {};
+	const isRichText = prefs.zimbraPrefComposeFormat === 'html';
+	const isRequestReadReceipt = prefs.zimbraPrefMailRequestReadReceipts === 'TRUE';
 	const editor: MailsEditorV2 = {
 		action: EditViewActions.REPLY,
 		identityId: from.identityId ?? defaultIdentity.id,
@@ -381,7 +396,7 @@ export const generateForwardAsAttachmentMsgEditor = (
 		unsavedAttachments: attachments,
 		savedAttachments: [],
 		isRichText,
-		isUrgent: originalMessage.urgent,
+		isUrgent: false,
 		recipients: {
 			to: [],
 			cc: [],
@@ -391,7 +406,7 @@ export const generateForwardAsAttachmentMsgEditor = (
 			originalMessage.subject ? originalMessage.subject.replace(FORWARD_REGEX, '') : ''
 		}`,
 		text: textWithSignatureRepliesForwards,
-		requestReadReceipt: false,
+		requestReadReceipt: isRequestReadReceipt,
 		replyType: 'w',
 		originalId: originalMessage.id,
 		originalMessage,
@@ -416,8 +431,10 @@ export const generateEditAsDraftEditor = (originalMessage: MailMessage): MailsEd
 		plainText: convertHtmlToPlainText(richText),
 		richText
 	};
-
-	const isRichText = getUserSettings().prefs?.zimbraPrefComposeFormat === 'html';
+	const userSettings = getUserSettings();
+	const prefs = userSettings?.prefs ?? {};
+	const isRichText = prefs.zimbraPrefComposeFormat === 'html';
+	const isRequestReadReceipt = prefs.zimbraPrefMailRequestReadReceipts === 'TRUE';
 	const fromParticipant = getFromParticipantFromMessage(originalMessage);
 	const fromIdentity = fromParticipant && getIdentityFromParticipant(fromParticipant);
 	const editor: MailsEditorV2 = {
@@ -437,7 +454,7 @@ export const generateEditAsDraftEditor = (originalMessage: MailMessage): MailsEd
 		},
 		subject: originalMessage.subject,
 		text,
-		requestReadReceipt: false,
+		requestReadReceipt: isRequestReadReceipt,
 		did: originalMessage.id,
 		size: originalMessage.size
 	};
@@ -460,7 +477,10 @@ export const generateEditAsNewEditor = (originalMessage: MailMessage): MailsEdit
 		plainText: convertHtmlToPlainText(richText),
 		richText
 	};
-	const isRichText = getUserSettings().prefs?.zimbraPrefComposeFormat === 'html';
+	const userSettings = getUserSettings();
+	const prefs = userSettings?.prefs ?? {};
+	const isRichText = prefs.zimbraPrefComposeFormat === 'html';
+	const isRequestReadReceipt = prefs.zimbraPrefMailRequestReadReceipts === 'TRUE';
 	const fromParticipant = getFromParticipantFromMessage(originalMessage);
 	const fromIdentity = fromParticipant && getIdentityFromParticipant(fromParticipant);
 	const editor: MailsEditorV2 = {
@@ -470,7 +490,7 @@ export const generateEditAsNewEditor = (originalMessage: MailMessage): MailsEdit
 		unsavedAttachments: [],
 		savedAttachments: buildSavedAttachments(originalMessage),
 		isRichText,
-		isUrgent: originalMessage.urgent,
+		isUrgent: false,
 		recipients: {
 			to: retrieveTO(originalMessage),
 			cc: retrieveCCForEditNew(originalMessage),
@@ -478,7 +498,7 @@ export const generateEditAsNewEditor = (originalMessage: MailMessage): MailsEdit
 		},
 		subject: originalMessage.subject,
 		text,
-		requestReadReceipt: false,
+		requestReadReceipt: isRequestReadReceipt,
 		originalId: originalMessage.id,
 		originalMessage,
 		size: originalMessage.size

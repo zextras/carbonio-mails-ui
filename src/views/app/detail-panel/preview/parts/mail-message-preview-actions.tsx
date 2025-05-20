@@ -8,6 +8,7 @@ import React, { FC, ReactElement, useMemo } from 'react';
 import { Dropdown, IconButton, Padding, Row, Tooltip } from '@zextras/carbonio-design-system';
 import { useAppContext } from '@zextras/carbonio-shell-ui';
 import { isNil, map, noop } from 'lodash';
+import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 
 import { normalizeDropdownActionItem } from '../../../../../helpers/actions';
@@ -15,22 +16,18 @@ import { useMsgActions } from '../../../../../hooks/actions/use-msg-actions';
 import { useSelection } from '../../../../../hooks/use-selection';
 import { useTagDropdownItem } from '../../../../../hooks/use-tag-dropdown-item';
 import { AppContext, MailMessage } from '../../../../../types';
-import { useExtraWindow } from '../../../extra-windows/use-extra-window';
 
 type MailMsgPreviewActionsType = {
 	message: MailMessage;
-	messagePreviewFactory: () => React.JSX.Element;
 };
 
-export const MailMsgPreviewActions: FC<MailMsgPreviewActionsType> = ({
-	message,
-	messagePreviewFactory
-}): ReactElement => {
+export const MailMsgPreviewActions: FC<MailMsgPreviewActionsType> = ({ message }): ReactElement => {
+	const [t] = useTranslation();
+
 	const { setCount } = useAppContext<AppContext>();
 	const { deselectAll } = useSelection({ setCount, count: 0 });
 	const { itemId } = useParams<{ itemId: string }>();
 	const shouldReplaceHistory = useMemo(() => itemId === message.id, [message.id, itemId]);
-	const { isInsideExtraWindow } = useExtraWindow();
 
 	const {
 		replyDescriptor,
@@ -58,72 +55,53 @@ export const MailMsgPreviewActions: FC<MailMsgPreviewActionsType> = ({
 	} = useMsgActions({
 		deselectAll,
 		message,
-		shouldReplaceHistory,
-		messagePreviewFactory
+		shouldReplaceHistory
 	});
 
 	const tagItem = useTagDropdownItem(applyTagDescriptor, message.tags);
 
-	const actions = !isInsideExtraWindow
-		? [
-				replyDescriptor,
-				replyAllDescriptor,
-				forwardDescriptor,
-				editDraftDescriptor,
-				moveToTrashDescriptor,
-				deletePermanentlyDescriptor,
-				messageReadDescriptor,
-				messageUnreadDescriptor,
-				{
-					id: 'More',
-					icon: 'MoreVertical',
-					label: 'More actions',
-					items: [
-						normalizeDropdownActionItem(forwardAsAttachmentDescriptor),
-						normalizeDropdownActionItem(flagDescriptor),
-						normalizeDropdownActionItem(unflagDescriptor),
-						normalizeDropdownActionItem(markAsSpamDescriptor),
-						normalizeDropdownActionItem(markAsNotSpamDescriptor),
-						tagItem,
-						normalizeDropdownActionItem(moveToFolderDescriptor),
-						normalizeDropdownActionItem(createAppointmentDescriptor),
-						normalizeDropdownActionItem(printDescriptor),
-						normalizeDropdownActionItem(previewOnSeparatedWindowDescriptor),
-						normalizeDropdownActionItem(redirectDescriptor),
-						normalizeDropdownActionItem(editAsNewDescriptor),
-						normalizeDropdownActionItem(showOriginalDescriptor),
-						normalizeDropdownActionItem(downloadEmlDescriptor)
-					]
-				}
-			]
-		: [
-				messageReadDescriptor,
-				messageUnreadDescriptor,
+	const actions = [
+		replyDescriptor,
+		replyAllDescriptor,
+		forwardDescriptor,
+		editDraftDescriptor,
+		moveToTrashDescriptor,
+		deletePermanentlyDescriptor,
+		messageReadDescriptor,
+		messageUnreadDescriptor,
+		{
+			id: 'More',
+			icon: 'MoreVertical',
+			label: t('tooltip.moreActions', 'More actions'),
+			items: [
+				normalizeDropdownActionItem(forwardAsAttachmentDescriptor),
+				normalizeDropdownActionItem(flagDescriptor),
+				normalizeDropdownActionItem(unflagDescriptor),
+				normalizeDropdownActionItem(markAsSpamDescriptor),
+				normalizeDropdownActionItem(markAsNotSpamDescriptor),
 				tagItem,
-				printDescriptor,
-				flagDescriptor,
-				unflagDescriptor,
-				{
-					id: 'More',
-					icon: 'MoreVertical',
-					label: 'More actions',
-					items: [
-						normalizeDropdownActionItem(showOriginalDescriptor),
-						normalizeDropdownActionItem(downloadEmlDescriptor)
-					]
-				}
-			];
+				normalizeDropdownActionItem(moveToFolderDescriptor),
+				normalizeDropdownActionItem(createAppointmentDescriptor),
+				normalizeDropdownActionItem(printDescriptor),
+				normalizeDropdownActionItem(previewOnSeparatedWindowDescriptor),
+				normalizeDropdownActionItem(redirectDescriptor),
+				normalizeDropdownActionItem(editAsNewDescriptor),
+				normalizeDropdownActionItem(showOriginalDescriptor),
+				normalizeDropdownActionItem(downloadEmlDescriptor)
+			].filter((action) => !action.disabled)
+		}
+	];
 
 	return (
 		<Row mainAlignment="flex-end" wrap="nowrap" data-testid="MailMsgPreviewActions">
 			{actions?.length > 0 &&
 				map(actions, (action) => {
-					if ('items' in action && !isNil(action.items) && action.icon && !action.disabled) {
+					if ('items' in action && !isNil(action.items) && action.icon) {
 						return (
 							<Padding key={action.label} right="small">
 								<Tooltip label={action.label}>
 									<Dropdown items={action.items}>
-										<IconButton icon={action.icon} size="small" onClick={noop} />
+										<IconButton icon={action.icon} size="medium" onClick={noop} />
 									</Dropdown>
 								</Tooltip>
 							</Padding>
@@ -132,7 +110,7 @@ export const MailMsgPreviewActions: FC<MailMsgPreviewActionsType> = ({
 					if ('execute' in action && action.canExecute()) {
 						return (
 							<Tooltip key={`${action.icon}`} label={action.label}>
-								<IconButton size="small" icon={action.icon} onClick={action.execute} />
+								<IconButton size="medium" icon={action.icon} onClick={action.execute} />
 							</Tooltip>
 						);
 					}

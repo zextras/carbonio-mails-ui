@@ -1,10 +1,10 @@
 {
 	"name": "carbonio-mails-ui",
-	"version": "1.24.14",
+	"version": "1.25.0",
 	"description": "Mails module",
 	"main": "src/app.tsx",
 	"engines": {
-		"node": "v18",
+		"node": "v20",
 		"npm": "v10"
 	},
 	"scripts": {
@@ -59,8 +59,8 @@
 		"@types/styled-components": "^5.1.26",
 		"@types/uuid": "^10.0.0",
 		"@zextras/carbonio-search-ui": "github:zextras/carbonio-search-ui#devel",
-		"@zextras/carbonio-ui-configs": "^2.0.1",
-		"@zextras/carbonio-ui-sdk": "^1.7.12",
+		"@zextras/carbonio-ui-configs": "^2.1.0",
+		"@zextras/carbonio-ui-sdk": "^2.1.0",
 		"babel-plugin-styled-components": "^2.0.7",
 		"babel-plugin-transform-import-meta": "^2.2.0",
 		"eslint-plugin-jest-dom": "^5.4.0",
@@ -85,10 +85,10 @@
 		"@mui/material": "^5.15.12",
 		"@types/webpack": "^5.28.2",
 		"@types/webpack-env": "^1.18.1",
-		"@zextras/carbonio-design-system": "^9.0.0",
-		"@zextras/carbonio-shell-ui": "devel",
-		"@zextras/carbonio-ui-preview": "^3.1.1",
-		"@zextras/carbonio-ui-soap-lib": "file:zextras-carbonio-ui-soap-lib-0.0.0-semantically-released.tgz",
+		"@zextras/carbonio-design-system": "^10.1.1",
+		"@zextras/carbonio-shell-ui": "^11.0.1",
+		"@zextras/carbonio-ui-preview": "^3.2.1",
+		"@zextras/carbonio-ui-soap-lib": "^1.0.1",
 		"axios": "^1.6.7",
 		"babel-jest": "^29.4.3",
 		"core-js": "^3.36.0",
@@ -119,13 +119,11 @@
 		"not dead"
 	],
 	"carbonio": {
-		"translations_repository": "git@github.com:Zextras/carbonio-mails-ui-i18n.git",
 		"name": "carbonio-mails-ui",
 		"priority": 5,
 		"type": "carbonio",
 		"attrKey": "zimbraFeatureMailEnabled",
 		"display": "Mails",
-		"icon": "MailModOutline",
-		"sentryDsn": "https://90672cc95a43460485b50717c4be69ab@feedback.zextras.tools/7"
+		"icon": "MailModOutline"
 	}
 }

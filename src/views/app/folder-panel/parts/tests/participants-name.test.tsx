@@ -13,7 +13,10 @@ import { ParticipantRole } from '../../../../../carbonio-ui-commons/constants/pa
 import { populateFoldersStore } from '../../../../../carbonio-ui-commons/test/mocks/store/folders';
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
 import { populateConversationInEmailStore } from '../../../../../tests/generators/generateConversation';
-import { populateMessagesInEmailStore } from '../../../../../tests/generators/generateMessage';
+import {
+	generateMessage,
+	populateMessagesInEmailStore
+} from '../../../../../tests/generators/generateMessage';
 import { ParticipantsName } from '../participants-name';
 
 describe('ParticipantsName component', () => {
@@ -52,6 +55,39 @@ describe('ParticipantsName component', () => {
 		expect(screen.getByTestId('participants-name-label')).toHaveTextContent(
 			'recipient@example.com'
 		);
+	});
+
+	it('renders participants string for sent folder', async () => {
+		populateFoldersStore();
+		const message = await waitFor(() =>
+			populateMessagesInEmailStore({
+				messageGeneratorParams: [
+					{
+						id: '1',
+						from: { address: 'recipient@example.com', type: ParticipantRole.TO },
+						folderId: FOLDERS.SENT
+					}
+				]
+			})
+		);
+
+		setupTest(<ParticipantsName item={message[0]} />);
+		expect(screen.getByTestId('participants-name-label')).toHaveTextContent(
+			'recipient@example.com'
+		);
+	});
+
+	it('does not display reply-to participants', async () => {
+		const generatedMessage = generateMessage({ id: '1', folderId: FOLDERS.DRAFTS });
+		const message = {
+			...generatedMessage,
+			participants: [
+				{ name: 'toAddress', type: ParticipantRole.TO, address: 'to@example.com' },
+				{ name: 'replyToAddress', type: ParticipantRole.REPLY_TO, address: 'replyTo@example.com' }
+			]
+		};
+		setupTest(<ParticipantsName item={message} />);
+		expect(screen.getByTestId('participants-name-label')).toHaveTextContent('toAddress');
 	});
 
 	it('renders participants string for search module', async () => {

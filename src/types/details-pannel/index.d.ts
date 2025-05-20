@@ -30,11 +30,10 @@ export type AttachmentType = {
 	link: string;
 	downloadlink: string;
 	messageId: string;
-	isExternalMessage?: boolean;
+	isEml?: boolean;
 	part: string;
 	iconColors: IconColors;
 	att: EditorAttachmentFiles;
-	openEmlPreview?: OpenEmlPreviewType;
 };
 
 export type PreviewPanelActionsType = {

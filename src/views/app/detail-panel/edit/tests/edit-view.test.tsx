@@ -207,20 +207,25 @@ describe('Edit view', () => {
 
 			expect(btnSend).toBeVisible();
 
-			await waitFor(clearAndInsertText(user, toInputElement, address));
-			await waitFor(async () => {
-				await user.tab();
-				await user.click(btnCc);
-			});
+			await act(() => user.click(toInputElement));
+			await act(() => user.clear(toInputElement));
+			await act(() => user.type(toInputElement, address));
+
+			await user.tab();
+			await act(() => user.click(btnCc));
 
 			// Click on the "CC" button to show CC Recipient field
 			const ccComponent = screen.getByTestId('RecipientCc');
 			const ccInputElement = within(ccComponent).getByRole('textbox');
 
-			await waitFor(clearAndInsertText(user, ccInputElement, ccAddress));
+			await act(() => user.click(ccInputElement));
+			await act(() => user.clear(ccInputElement));
+			await act(() => user.type(ccInputElement, ccAddress));
 
 			// Insert a subject
-			await waitFor(clearAndInsertText(user, subjectInputElement, subject));
+			await act(() => user.click(subjectInputElement));
+			await act(() => user.clear(subjectInputElement));
+			await act(() => user.type(subjectInputElement, subject));
 
 			const optionIcon = screen.getByTestId('options-dropdown-icon');
 			expect(optionIcon).toBeInTheDocument();
@@ -234,10 +239,18 @@ describe('Edit view', () => {
 			expect(markAsImportantOption).toBeVisible();
 
 			await act(async () => {
-				awaitDebouncedSaveDraft();
+				await awaitDebouncedSaveDraft();
 			});
 
-			await waitFor(clearAndInsertText(user, editorTextareaElement, body));
+			await act(async () => {
+				await user.click(editorTextareaElement);
+				await user.clear(editorTextareaElement);
+				await user.type(editorTextareaElement, body);
+			});
+
+			await act(async () => {
+				await awaitDebouncedSaveDraft();
+			});
 
 			// // Check for the status of the "send" button to be enabled
 			await waitFor(() => expect(btnSend).toBeEnabled());
@@ -513,7 +526,6 @@ describe('Edit view', () => {
 				const { user } = setupTest(<EditView {...props} />);
 
 				await firstSaveDraftInterceptor;
-				const draftSavingInterceptor = aSuccessfullSaveDraft();
 				createSoapAPIInterceptor<GetSignaturesRequest, GetSignaturesResponse>('GetSignatures', {
 					signature: [],
 					_jsns: 'urn:zimbraAccount'
@@ -534,9 +546,11 @@ describe('Edit view', () => {
 				const toInputElement = within(toComponent).getByRole('textbox');
 				const subjectComponent = screen.getByTestId('subject');
 				const subjectInputElement = within(subjectComponent).getByRole('textbox');
-				const editorTextareaElement = await screen.findByTestId('MailPlainTextEditor');
+				const editorTextareaElement = screen.getByTestId('MailPlainTextEditor');
 
-				await waitFor(clearAndInsertText(user, toInputElement, recipient));
+				await act(() => user.click(toInputElement));
+				await act(() => user.clear(toInputElement));
+				await act(() => user.type(toInputElement, recipient));
 
 				await act(async () => {
 					await user.click(btnCc);
@@ -545,11 +559,29 @@ describe('Edit view', () => {
 				const ccComponent = screen.getByTestId('RecipientCc');
 				const ccInputElement = within(ccComponent).getByRole('textbox');
 
-				await waitFor(clearAndInsertText(user, ccInputElement, cc));
+				await act(() => user.click(ccInputElement));
+				await act(() => user.clear(ccInputElement));
+				await act(() => user.type(ccInputElement, cc));
 
-				await waitFor(clearAndInsertText(user, subjectInputElement, subject));
+				await act(() => user.click(subjectInputElement));
+				await act(() => user.clear(subjectInputElement));
+				await act(() => user.type(subjectInputElement, subject));
 
-				await waitFor(clearAndInsertText(user, editorTextareaElement, body));
+				await act(async () => {
+					await awaitDebouncedSaveDraft();
+				});
+
+				await act(async () => {
+					await user.click(editorTextareaElement);
+					await user.clear(editorTextareaElement);
+					await user.type(editorTextareaElement, body);
+				});
+
+				const draftSavingInterceptor = aSuccessfullSaveDraft();
+
+				await act(async () => {
+					await awaitDebouncedSaveDraft();
+				});
 
 				await act(async () => {
 					await user.click(btnSave);
@@ -589,7 +621,7 @@ describe('Edit view', () => {
 				await waitFor(clearAndInsertText(user, subjectInputElement, subjectText));
 
 				await act(async () => {
-					awaitDebouncedSaveDraft();
+					await awaitDebouncedSaveDraft();
 				});
 
 				const { m: msg } = await draftSavingInterceptor;

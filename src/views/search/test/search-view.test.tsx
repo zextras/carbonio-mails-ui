@@ -24,21 +24,12 @@ import {
 	setupTest,
 	within
 } from '../../../carbonio-ui-commons/test/test-setup';
-import { API_REQUEST_STATUS } from '../../../constants';
 import * as useSelection from '../../../hooks/use-selection';
-import {
-	updateConversationStatus,
-	setSearchResultsByConversation,
-	getUseEmailStoreAndHooksForTesting
-} from '../../../store/emails/store';
 import { TESTID_SELECTORS } from '../../../tests/constants';
 import { generateSoapConversationMessage } from '../../../tests/generators/api';
-import { generateConversation } from '../../../tests/generators/generateConversation';
-import { generateMessage } from '../../../tests/generators/generateMessage';
 import {
 	ConvActionRequest,
 	ConvActionResponse,
-	ExtraWindowsContextType,
 	GetMsgRequest,
 	GetMsgResponse,
 	MsgActionRequest,
@@ -51,7 +42,6 @@ import {
 	SoapIncompleteMessage,
 	SoapMailMessage
 } from '../../../types';
-import * as externalWindowManager from '../../app/extra-windows/global-extra-window-manager';
 import SearchView from '../search-view';
 
 jest.mock('react-router-dom', () => ({
@@ -63,8 +53,6 @@ type SetupTest = {
 	query: string;
 	viewBy: 'message' | 'conversation';
 };
-
-const { setMessagesInSearchSlice } = getUseEmailStoreAndHooksForTesting();
 
 const aRandomMsgActionResponse: MsgActionResponse = {
 	action: {
@@ -159,52 +147,61 @@ function fakeCounter(): { count: number; setCount: (value: number) => void } {
 }
 
 describe('SearchView', () => {
+	beforeAll(() => {
+		jest.spyOn(reactRouterDom, 'useNavigate').mockReturnValue(jest.fn());
+	});
+
 	describe('view by conversations', () => {
 		it('should display label "Results for" when soap API fulfilled', async () => {
-			const searchSettings = setupSearchViewTest({ viewBy: 'conversation', query: 'hello' });
-			const { queryChip } = searchSettings;
-			const searchInterceptor = createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
-				c: [getSoapConversation('123')],
-				more: false
-			});
+			const { queryChip } = setupSearchViewTest({ viewBy: 'conversation', query: 'hello' });
+
+			const mockUseQuery = jest.fn();
+			mockUseQuery.mockReturnValue([[queryChip], noop]);
 			const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
 			const searchViewProps: SearchViewProps = {
-				useQuery: () => [[queryChip], noop],
+				useQuery: mockUseQuery,
 				useDisableSearch: () => [false, noop],
 				ResultsHeader: resultsHeader
 			};
 
+			createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
+				c: [getSoapConversation('123')],
+				more: false
+			});
+
 			setupTest(<SearchView {...searchViewProps} />);
-			await searchInterceptor;
 
 			expect(await screen.findByText('label.results_for')).toBeInTheDocument();
 		});
 
 		it('should display conversation subject when soap API fulfilled and settings is "display by conversation"', async () => {
-			const searchSettings = setupSearchViewTest({ viewBy: 'conversation', query: 'hello' });
-			const { queryChip } = searchSettings;
+			const { queryChip } = setupSearchViewTest({ viewBy: 'conversation', query: 'hello' });
+			const mockUseQuery = jest.fn();
+			mockUseQuery.mockReturnValue([[queryChip], noop]);
 
-			const interceptor = createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
-				c: [getSoapConversation('123')],
-				more: false
-			});
 			const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
 			const searchViewProps: SearchViewProps = {
-				useQuery: () => [[queryChip], noop],
+				useQuery: mockUseQuery,
 				useDisableSearch: () => [false, noop],
 				ResultsHeader: resultsHeader
 			};
 
+			createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
+				c: [getSoapConversation('123')],
+				more: false
+			});
 			setupTest(<SearchView {...searchViewProps} />);
-			await interceptor;
+
 			await waitAndMakeConversationVisible('123');
 			const conversation = await screen.findByText('conversations Subject');
 			expect(conversation).toBeInTheDocument();
 		});
 
 		it('should display the number of messages in a conversation when soap API fulfilled', async () => {
-			const searchSettings = setupSearchViewTest({ viewBy: 'conversation', query: 'hello' });
-			const { queryChip } = searchSettings;
+			const { queryChip } = setupSearchViewTest({ viewBy: 'conversation', query: 'hello' });
+
+			const mockUseQuery = jest.fn();
+			mockUseQuery.mockReturnValue([[queryChip], noop]);
 
 			const message1 = generateSoapConversationMessage('100', '123');
 			const message2 = generateSoapConversationMessage('200', '123');
@@ -215,7 +212,7 @@ describe('SearchView', () => {
 			});
 			const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
 			const searchViewProps: SearchViewProps = {
-				useQuery: () => [[queryChip], noop],
+				useQuery: mockUseQuery,
 				useDisableSearch: () => [false, noop],
 				ResultsHeader: resultsHeader
 			};
@@ -233,8 +230,9 @@ describe('SearchView', () => {
 		it('should change the route when clicking a conversation in the list', async () => {
 			const navigate = jest.fn();
 			(reactRouterDom.useNavigate as jest.Mock).mockReturnValue(navigate);
-			const searchSettings = setupSearchViewTest({ viewBy: 'conversation', query: 'hello' });
-			const { queryChip } = searchSettings;
+			const { queryChip } = setupSearchViewTest({ viewBy: 'conversation', query: 'hello' });
+			const mockUseQuery = jest.fn();
+			mockUseQuery.mockReturnValue([[queryChip], noop]);
 
 			const defaultConversation = getSoapConversation('123');
 			const message1 = generateSoapConversationMessage('100', '123');
@@ -248,7 +246,7 @@ describe('SearchView', () => {
 
 			const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
 			const searchViewProps: SearchViewProps = {
-				useQuery: () => [[queryChip], noop],
+				useQuery: mockUseQuery,
 				useDisableSearch: () => [false, noop],
 				ResultsHeader: resultsHeader
 			};
@@ -272,15 +270,20 @@ describe('SearchView', () => {
 		});
 
 		it('should display conversation as selected when user clicks on avatar', async () => {
-			const message = generateMessage({ id: '1', cid: '123' });
-			setSearchResultsByConversation(
-				[generateConversation({ id: '123', messageIds: [message.id] })],
-				false
-			);
-			setMessagesInSearchSlice([message]);
-			updateConversationStatus('123', API_REQUEST_STATUS.fulfilled);
+			const defaultConversation = getSoapConversation('123');
+			const message1 = generateSoapConversationMessage('1', '123');
+
+			const conversation = { ...defaultConversation, n: 2, m: [message1] };
+			createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
+				c: [conversation],
+				more: false
+			});
+
+			const { queryChip } = setupSearchViewTest({ viewBy: 'conversation', query: 'hello' });
+			const mockUseQuery = jest.fn();
+			mockUseQuery.mockReturnValue([[queryChip], noop]);
 			const searchViewProps: SearchViewProps = {
-				useQuery: () => [[], noop],
+				useQuery: mockUseQuery,
 				useDisableSearch: () => [false, noop],
 				ResultsHeader: (props: { label: string }): ReactElement => <>{props.label}</>
 			};
@@ -312,20 +315,22 @@ describe('SearchView', () => {
 				}
 			);
 
-			const searchSettings = setupSearchViewTest({ viewBy: 'conversation', query: 'hello' });
-			const { queryChip } = searchSettings;
+			const { queryChip } = setupSearchViewTest({ viewBy: 'conversation', query: 'hello' });
+
+			const mockUseQuery = jest.fn();
+			mockUseQuery.mockReturnValue([[queryChip], noop]);
+			const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
+			const searchViewProps: SearchViewProps = {
+				useQuery: mockUseQuery,
+				useDisableSearch: () => [false, noop],
+				ResultsHeader: resultsHeader
+			};
+			jest.spyOn(hooks, 'useAppContext').mockReturnValue(fakeCounter());
 
 			createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
 				c: [getSoapConversation('123', { l: FOLDERS.TRASH })],
 				more: false
 			});
-			const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
-			const searchViewProps: SearchViewProps = {
-				useQuery: () => [[queryChip], noop],
-				useDisableSearch: () => [false, noop],
-				ResultsHeader: resultsHeader
-			};
-			jest.spyOn(hooks, 'useAppContext').mockReturnValue(fakeCounter());
 			const { user } = setupTest(<SearchView {...searchViewProps} />);
 			await waitAndMakeConversationVisible('123');
 			const actionWrapper = await screen.findByTestId(`ConversationListItem-123`);
@@ -352,8 +357,7 @@ describe('SearchView', () => {
 		});
 
 		it('should display the conversation view panel', async () => {
-			const searchSettings = setupSearchViewTest({ viewBy: 'conversation', query: 'hello' });
-			const { queryChip } = searchSettings;
+			const { queryChip } = setupSearchViewTest({ viewBy: 'conversation', query: 'hello' });
 
 			const defaultConversation = getSoapConversation('123');
 			const message1 = generateSoapConversationMessage('100', '123');
@@ -369,10 +373,11 @@ describe('SearchView', () => {
 				offset: '0',
 				orderBy: 'dateDesc'
 			});
-
+			const mockUseQuery = jest.fn();
+			mockUseQuery.mockReturnValue([[queryChip], noop]);
 			const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
 			const searchViewProps: SearchViewProps = {
-				useQuery: () => [[queryChip], noop],
+				useQuery: mockUseQuery,
 				useDisableSearch: () => [false, noop],
 				ResultsHeader: resultsHeader
 			};
@@ -385,16 +390,17 @@ describe('SearchView', () => {
 		});
 
 		it('should call ConvActionRequest with operation "trash" when moving conversation to trash in selection mode', async () => {
-			const searchSettings = setupSearchViewTest({ viewBy: 'conversation', query: 'hello' });
-			const { queryChip } = searchSettings;
+			const { queryChip } = setupSearchViewTest({ viewBy: 'conversation', query: 'hello' });
 
 			createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
 				c: [getSoapConversation('123')],
 				more: false
 			});
+			const mockUseQuery = jest.fn();
+			mockUseQuery.mockReturnValue([[queryChip], noop]);
 			const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
 			const searchViewProps: SearchViewProps = {
-				useQuery: () => [[queryChip], noop],
+				useQuery: mockUseQuery,
 				useDisableSearch: () => [false, noop],
 				ResultsHeader: resultsHeader
 			};
@@ -440,8 +446,7 @@ describe('SearchView', () => {
 
 	describe('view by messages', () => {
 		it('should display messages when soap API fulfilled and settings is "display by message"', async () => {
-			const searchSettings = setupSearchViewTest({ viewBy: 'message', query: 'hello' });
-			const { queryChip } = searchSettings;
+			const { queryChip } = setupSearchViewTest({ viewBy: 'message', query: 'hello' });
 
 			const interceptor = createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
 				m: [
@@ -450,9 +455,11 @@ describe('SearchView', () => {
 				],
 				more: false
 			});
+			const mockUseQuery = jest.fn();
+			mockUseQuery.mockReturnValue([[queryChip], noop]);
 			const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
 			const searchViewProps: SearchViewProps = {
-				useQuery: () => [[queryChip], noop],
+				useQuery: mockUseQuery,
 				useDisableSearch: () => [false, noop],
 				ResultsHeader: resultsHeader
 			};
@@ -471,16 +478,17 @@ describe('SearchView', () => {
 		});
 
 		it('should call MsgActionRequest with operation "trash" when moving message to trash in selection mode', async () => {
-			const searchSettings = setupSearchViewTest({ viewBy: 'message', query: 'hello' });
-			const { queryChip } = searchSettings;
+			const { queryChip } = setupSearchViewTest({ viewBy: 'message', query: 'hello' });
 
 			const searchInterceptor = createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
 				m: [getSoapMessage('10', { su: 'message 1 Subject', f: 'u' })],
 				more: false
 			});
+			const mockUseQuery = jest.fn();
+			mockUseQuery.mockReturnValue([[queryChip], noop]);
 			const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
 			const searchViewProps: SearchViewProps = {
-				useQuery: () => [[queryChip], noop],
+				useQuery: mockUseQuery,
 				useDisableSearch: () => [false, noop],
 				ResultsHeader: resultsHeader
 			};
@@ -520,8 +528,7 @@ describe('SearchView', () => {
 			expect(receivedRequest.action.op).toBe('trash');
 		});
 		it('should display the message view panel', async () => {
-			const searchSettings = setupSearchViewTest({ viewBy: 'message', query: 'hello' });
-			const { queryChip } = searchSettings;
+			const { queryChip } = setupSearchViewTest({ viewBy: 'message', query: 'hello' });
 
 			const messageId = '10';
 			const soapMessage = getSoapMessage(messageId, { su: 'message 1 Subject', f: 'u' });
@@ -534,9 +541,11 @@ describe('SearchView', () => {
 				m: [soapMessage]
 			});
 
+			const mockUseQuery = jest.fn();
+			mockUseQuery.mockReturnValue([[queryChip], noop]);
 			const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
 			const searchViewProps: SearchViewProps = {
-				useQuery: () => [[queryChip], noop],
+				useQuery: mockUseQuery,
 				useDisableSearch: () => [false, noop],
 				ResultsHeader: resultsHeader
 			};
@@ -550,8 +559,7 @@ describe('SearchView', () => {
 		});
 
 		it('should open message preview when double-clicking message in list', async () => {
-			const searchSettings = setupSearchViewTest({ viewBy: 'message', query: 'hello' });
-			const { queryChip } = searchSettings;
+			const { queryChip } = setupSearchViewTest({ viewBy: 'message', query: 'hello' });
 
 			const interceptor = createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
 				m: [
@@ -562,21 +570,15 @@ describe('SearchView', () => {
 			});
 			jest.spyOn(useSelection, 'useSelection').mockReturnValue(mockedUseSelection);
 
+			const mockUseQuery = jest.fn();
+			mockUseQuery.mockReturnValue([[queryChip], noop]);
 			const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
 			const searchViewProps: SearchViewProps = {
-				useQuery: () => [[queryChip], noop],
+				useQuery: mockUseQuery,
 				useDisableSearch: () => [false, noop],
 				ResultsHeader: resultsHeader
 			};
-			const spyUseGlobalExternalWindowManager = jest.spyOn(
-				externalWindowManager,
-				'useGlobalExtraWindowManager'
-			);
-			const mockCreateWindow = jest.fn();
-			const context: ExtraWindowsContextType = {
-				createWindow: mockCreateWindow
-			};
-			spyUseGlobalExternalWindowManager.mockReturnValue(context);
+
 			const { user } = setupTest(<SearchView {...searchViewProps} />);
 
 			await act(async () => {
@@ -604,11 +606,10 @@ describe('SearchView', () => {
 				user.dblClick(clickableMessage);
 			});
 
-			expect(mockCreateWindow).toHaveBeenCalledTimes(1);
+			expect(window.open).toHaveBeenCalledTimes(1);
 		});
 		it('should call MsgActionRequest with the correct parameters when user click on a message', async () => {
-			const searchSettings = setupSearchViewTest({ viewBy: 'message', query: 'hello' });
-			const { queryChip } = searchSettings;
+			const { queryChip } = setupSearchViewTest({ viewBy: 'message', query: 'hello' });
 
 			const searchInterceptor = createSoapAPIInterceptor<SearchRequest, SearchResponse>('Search', {
 				m: [getSoapMessage('10', { su: 'message 1 Subject', f: 'u' })],
@@ -619,9 +620,11 @@ describe('SearchView', () => {
 				aRandomMsgActionResponse
 			);
 
+			const mockUseQuery = jest.fn();
+			mockUseQuery.mockReturnValue([[queryChip], noop]);
 			const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
 			const searchViewProps: SearchViewProps = {
-				useQuery: () => [[queryChip], noop],
+				useQuery: mockUseQuery,
 				useDisableSearch: () => [false, noop],
 				ResultsHeader: resultsHeader
 			};
@@ -643,8 +646,7 @@ describe('SearchView', () => {
 		});
 
 		it('should not show empty email content when re-executing a search with a different word but relates to same email', async () => {
-			const initialSearchSettings = setupSearchViewTest({ viewBy: 'message', query: 'hello' });
-			const { queryChip } = initialSearchSettings;
+			const { queryChip } = setupSearchViewTest({ viewBy: 'message', query: 'hello' });
 
 			const messageId = '10';
 			const soapMessage = getSoapMessage(messageId, { su: 'message 1 Subject', f: 'u' });
@@ -658,9 +660,11 @@ describe('SearchView', () => {
 				m: [soapMessage]
 			});
 
+			const mockUseQuery = jest.fn();
+			mockUseQuery.mockReturnValue([[queryChip], noop]);
 			const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
 			const searchViewProps: SearchViewProps = {
-				useQuery: () => [[queryChip], noop],
+				useQuery: mockUseQuery,
 				useDisableSearch: () => [false, noop],
 				ResultsHeader: resultsHeader
 			};
@@ -735,8 +739,11 @@ describe('SearchView', () => {
 			id: '0',
 			label: 'ciao'
 		};
+
+		const mockUseQuery = jest.fn();
+		mockUseQuery.mockReturnValue([[queryChip], noop]);
 		const searchViewProps: SearchViewProps = {
-			useQuery: () => [[queryChip], noop],
+			useQuery: mockUseQuery,
 			useDisableSearch: () => [false, setSearchDisabled],
 			ResultsHeader: resultsHeader
 		};
@@ -797,11 +804,13 @@ describe('SearchView', () => {
 				zimbraPrefGroupMailBy: 'message'
 			}
 		};
+		const mockUseQuery = jest.fn();
+		mockUseQuery.mockReturnValue([[queryChip], noop]);
 		const settings = generateSettings(customSettings);
 		jest.spyOn(hooks, 'useUserSettings').mockReturnValue(settings);
 		const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
 		const searchViewProps: SearchViewProps = {
-			useQuery: () => [[queryChip], noop],
+			useQuery: mockUseQuery,
 			useDisableSearch: () => [false, noop],
 			ResultsHeader: resultsHeader
 		};

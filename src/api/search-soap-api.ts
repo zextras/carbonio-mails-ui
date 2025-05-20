@@ -42,8 +42,12 @@ export async function searchSoapApi({
 			queryPart.push('is:flagged');
 			break;
 		case 'attachAsc':
+			queryPart.push('has:attachment');
+			finalsortBy = 'sizeAsc';
+			break;
 		case 'attachDesc':
 			queryPart.push('has:attachment');
+			finalsortBy = 'sizeDesc';
 			break;
 		default:
 			break;

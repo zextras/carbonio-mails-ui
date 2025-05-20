@@ -4,17 +4,18 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { FC, useMemo } from 'react';
+
 import {
-	Container,
-	FormSubSection,
 	Select,
 	Input,
 	Checkbox,
-	Padding
+	FormSection,
+	FormSubSection,
+	Container
 } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import { isNil } from 'lodash';
-import Heading from './components/settings-heading';
+
 import { NotifyFolderOpts, ReadReceiptOpts, MsgsFromMeOpts, findLabel } from './components/utils';
 import { receivingMessagesSubSection } from './subsections';
 import { MAIL_APP_ID } from '../../constants';
@@ -40,9 +41,8 @@ const ReceivingMessagesSettings: FC<ReceivingMessagesSettingsType> = ({
 	);
 
 	return (
-		<FormSubSection label={sectionTitle.label} id={sectionTitle.id}>
-			<Container crossAlignment="baseline" padding={{ all: 'small' }}>
-				<Heading title={t('label.message_arrival', 'Message Arrival')} />
+		<FormSection label={sectionTitle.label} id={sectionTitle.id}>
+			<FormSubSection label={t('label.message_arrival', 'Message Arrival')}>
 				<Input
 					label={t('label.send_notification', 'Send a notification message to')}
 					value={settingsObj.zimbraPrefNewMailNotificationAddress}
@@ -55,22 +55,27 @@ const ReceivingMessagesSettings: FC<ReceivingMessagesSettingsType> = ({
 						});
 					}}
 				/>
-			</Container>
-			<Container crossAlignment="baseline" padding={{ all: 'small' }}>
-				<Heading title={t('label.arrival_notifications', 'Arrival Notifications')} />
-				<Checkbox
-					label={t('label.show_popup', 'Show a popup notification')}
-					value={settingsObj.zimbraPrefMailToasterEnabled === 'TRUE'}
-					onClick={(): void =>
-						updateSettings({
-							target: {
-								name: 'zimbraPrefMailToasterEnabled',
-								value: settingsObj.zimbraPrefMailToasterEnabled === 'TRUE' ? 'FALSE' : 'TRUE'
-							}
-						})
-					}
-				/>
-				{/* todo: disabled because unsupported yet
+			</FormSubSection>
+			<FormSubSection label={t('label.arrival_notifications', 'Arrival Notifications')}>
+				<Container
+					gap={'0.5rem'}
+					mainAlignment={'flex-start'}
+					crossAlignment={'flex-start'}
+					height={'fit'}
+				>
+					<Checkbox
+						label={t('label.show_popup', 'Show a popup notification')}
+						value={settingsObj.zimbraPrefMailToasterEnabled === 'TRUE'}
+						onClick={(): void =>
+							updateSettings({
+								target: {
+									name: 'zimbraPrefMailToasterEnabled',
+									value: settingsObj.zimbraPrefMailToasterEnabled === 'TRUE' ? 'FALSE' : 'TRUE'
+								}
+							})
+						}
+					/>
+					{/* todo: disabled because unsupported yet
 				<Padding bottom="small" />
 				<Checkbox
 					label={t('label.highlight_tab', 'Highlight the Mail tab')}
@@ -97,27 +102,26 @@ const ReceivingMessagesSettings: FC<ReceivingMessagesSettingsType> = ({
 						})
 					}
 				/> */}
-				<Padding bottom="small" />
-				<Checkbox
-					label={t('label.notification_audio', 'Play audio hint when new notification appears')}
-					value={mailNotificationSoundDefault}
-					onClick={(): void => {
-						updateProps({
-							target: {
-								name: 'mailNotificationSound',
-								value: {
-									// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-									// @ts-ignore
-									app: MAIL_APP_ID,
-									value: mailNotificationSoundDefault ? 'FALSE' : 'TRUE'
+					<Checkbox
+						label={t('label.notification_audio', 'Play audio hint when new notification appears')}
+						value={mailNotificationSoundDefault}
+						onClick={(): void => {
+							updateProps({
+								target: {
+									name: 'mailNotificationSound',
+									value: {
+										// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+										// @ts-ignore
+										app: MAIL_APP_ID,
+										value: mailNotificationSoundDefault ? 'FALSE' : 'TRUE'
+									}
 								}
-							}
-						});
-					}}
-				/>
-			</Container>
-			<Container crossAlignment="baseline" padding={{ all: 'small' }}>
-				<Heading title={t('label.notification_folders', 'Notification Folders')} />
+							});
+						}}
+					/>
+				</Container>
+			</FormSubSection>
+			<FormSubSection label={t('label.notification_folders', 'Notification Folders')}>
 				<Select
 					label={t('label.select_folder', 'Select folder')}
 					items={notifyFolderOptn}
@@ -131,9 +135,8 @@ const ReceivingMessagesSettings: FC<ReceivingMessagesSettingsType> = ({
 						value: settingsObj.zimbraPrefShowAllNewMailNotifications
 					}}
 				/>
-			</Container>
-			<Container crossAlignment="baseline" padding={{ all: 'small' }}>
-				<Heading title={t('label.read_receipt', 'Read Receipt')} />
+			</FormSubSection>
+			<FormSubSection label={t('label.read_receipt', 'Read Receipt')}>
 				<Select
 					items={readReceiptOptn}
 					onChange={(view: any): void =>
@@ -144,9 +147,8 @@ const ReceivingMessagesSettings: FC<ReceivingMessagesSettingsType> = ({
 						value: settingsObj.zimbraPrefMailSendReadReceipts
 					}}
 				/>
-			</Container>
-			<Container crossAlignment="baseline" padding={{ all: 'small' }}>
-				<Heading title={t('label.message_from_me', 'Messages from me')} />
+			</FormSubSection>
+			<FormSubSection label={t('label.message_from_me', 'Messages from me')}>
 				<Select
 					items={msgsFromMeOpts}
 					onChange={(view: any): void =>
@@ -159,9 +161,8 @@ const ReceivingMessagesSettings: FC<ReceivingMessagesSettingsType> = ({
 						value: settingsObj.zimbraPrefDedupeMessagesSentToSelf
 					}}
 				/>
-			</Container>
-			<Container crossAlignment="baseline" padding={{ all: 'small' }}>
-				<Heading title={t('label.duplicate_messages', 'Duplicate Messages')} />
+			</FormSubSection>
+			<FormSubSection label={t('label.duplicate_messages', 'Duplicate Messages')}>
 				<Checkbox
 					label={t(
 						'label.automatically_delete_duplicates',
@@ -177,8 +178,8 @@ const ReceivingMessagesSettings: FC<ReceivingMessagesSettingsType> = ({
 						})
 					}
 				/>
-			</Container>
-		</FormSubSection>
+			</FormSubSection>
+		</FormSection>
 	);
 };
 

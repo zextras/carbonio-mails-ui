@@ -11,7 +11,6 @@ import {
 	Container,
 	Crumb,
 	Divider,
-	FormSection,
 	Row,
 	useModal
 } from '@zextras/carbonio-design-system';
@@ -137,12 +136,12 @@ const CertificatesView: FC = () => {
 					mainAlignment="baseline"
 					crossAlignment="baseline"
 					background="gray5"
-					style={{ overflowY: 'auto' }}
+					gap="1rem"
+					padding={{ all: 'medium' }}
+					style={{ overflow: 'auto' }}
 				>
-					<FormSection minWidth="calc(min(100%, 32rem))">
-						<PersonalCertificatesSettings />
-						<RecipientsCertificateSettings />
-					</FormSection>
+					<PersonalCertificatesSettings />
+					<RecipientsCertificateSettings />
 				</Container>
 			)}
 		</>

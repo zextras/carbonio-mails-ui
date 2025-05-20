@@ -9,19 +9,17 @@ import { HttpResponse } from 'msw';
 import { createAPIInterceptor } from '../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { restoreMessagesApi } from '../restore-messages-api';
 
-describe('restorMessagesAPI', () => {
+describe('restoreMessagesAPI', () => {
 	describe('when backend is available', () => {
-		beforeAll(() => {
+		it('should reply with a status that is accepted', async () => {
 			createAPIInterceptor(
 				'post',
 				'/zx/backup/v1/restoreMessages',
-				HttpResponse.json({ operationId: 42 }, { status: 202 })
+				new HttpResponse(null, { status: 204 })
 			);
-		});
-
-		it('should have property data when the response is 202', async () => {
 			const response = await restoreMessagesApi([faker.number.toString()]);
-			expect(response).toHaveProperty('data');
+			expect(response).toEqual({});
+			expect(response).not.toHaveProperty('error');
 		});
 	});
 

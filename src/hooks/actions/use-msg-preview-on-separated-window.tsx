@@ -4,61 +4,42 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React, { useCallback, useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 
 import { useTranslation } from 'react-i18next';
 
 import { MessageActionsDescriptors } from '../../constants';
-import { ActionFn, ExtraWindowCreationParams, UIActionDescriptor } from '../../types';
-import { useGlobalExtraWindowManager } from '../../views/app/extra-windows/global-extra-window-manager';
-import { useExtraWindow } from '../../views/app/extra-windows/use-extra-window';
+import { isFocusModeMailView, openMessageStandalonePreview } from '../../helpers/external-tabs';
+import { ActionFn, UIActionDescriptor } from '../../types';
 
 export const useMsgPreviewOnSeparatedWindowFn = ({
 	messageId,
-	subject,
-	messagePreviewFactory
+	folderId
 }: {
 	messageId: string;
-	subject: string;
-	messagePreviewFactory: () => React.JSX.Element;
+	folderId: string;
 }): ActionFn => {
-	const { createWindow } = useGlobalExtraWindowManager();
-	const { isInsideExtraWindow } = useExtraWindow();
-	const canExecute = useCallback((): boolean => !isInsideExtraWindow, [isInsideExtraWindow]);
+	const canExecute = useCallback((): boolean => !isFocusModeMailView(), []);
 
 	const execute = useCallback(() => {
 		if (canExecute()) {
-			if (!createWindow) {
-				return;
-			}
-
-			const createWindowParams: ExtraWindowCreationParams = {
-				name: `message-${messageId}`,
-				returnComponent: false,
-				children: messagePreviewFactory(),
-				title: subject,
-				closeOnUnmount: false
-			};
-			createWindow(createWindowParams);
+			openMessageStandalonePreview({ folderId, messageId });
 		}
-	}, [canExecute, createWindow, messageId, messagePreviewFactory, subject]);
+	}, [canExecute, folderId, messageId]);
 
 	return useMemo(() => ({ canExecute, execute }), [canExecute, execute]);
 };
 
 export const useMsgPreviewOnSeparatedWindowDescriptor = ({
 	messageId,
-	subject,
-	messagePreviewFactory
+	folderId
 }: {
 	messageId: string;
-	subject: string;
-	messagePreviewFactory: () => React.JSX.Element;
+	folderId: string;
 }): UIActionDescriptor => {
 	const { canExecute, execute } = useMsgPreviewOnSeparatedWindowFn({
 		messageId,
-		subject,
-		messagePreviewFactory
+		folderId
 	});
 	const [t] = useTranslation();
 	return {

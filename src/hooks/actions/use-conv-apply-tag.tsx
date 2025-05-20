@@ -10,7 +10,7 @@ import { TFunction } from 'i18next';
 import { includes, map } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
-import { useTags } from '../../carbonio-ui-commons/store/zustand/tags';
+import { useSortedTagsArray } from '../../carbonio-ui-commons/store/zustand/tags';
 import { Tag } from '../../carbonio-ui-commons/types/tags';
 import { ConversationActionsDescriptors, TIMEOUTS } from '../../constants';
 import { isSpam } from '../../helpers/folders';
@@ -95,7 +95,7 @@ export const useConvApplyTagSubDescriptors = ({
 }): UIActionDescriptor[] => {
 	const { createSnackbar } = useUiUtilities();
 	const [t] = useTranslation();
-	const tags = useTags();
+	const tags = useSortedTagsArray();
 
 	const tagActions = useMemo(
 		() =>

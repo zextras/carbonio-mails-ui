@@ -12,15 +12,13 @@ import { setupTest } from '../../../../carbonio-ui-commons/test/test-setup';
 import { API_REQUEST_STATUS } from '../../../../constants';
 import { useCompleteMessageOrFetch } from '../../../../store/emails/hooks/hooks';
 import { updateMessageStatus } from '../../../../store/emails/store';
-import { useExtraWindow } from '../../extra-windows/use-extra-window';
+import { generateMessage } from '../../../../tests/generators/generateMessage';
 import { MessagePreviewPanel } from '../message-preview-panel';
 
 jest.mock('../../../../store/emails/hooks/hooks');
-jest.mock('../../extra-windows/use-extra-window');
 
 describe('MessagePreviewPanel', () => {
 	const mockUseCompleteMessageOrFetch = useCompleteMessageOrFetch as jest.Mock;
-	const mockUseExtraWindow = useExtraWindow as jest.Mock;
 
 	beforeEach(() => {
 		jest.clearAllMocks();
@@ -29,22 +27,28 @@ describe('MessagePreviewPanel', () => {
 	it('renders spinner when message is loading', () => {
 		updateMessageStatus('1', API_REQUEST_STATUS.pending);
 		mockUseCompleteMessageOrFetch.mockReturnValue({ message: null });
-		mockUseExtraWindow.mockReturnValue({ isInsideExtraWindow: false });
 
-		setupTest(<MessagePreviewPanel folderId="1" messageId="1" />);
+		setupTest(<MessagePreviewPanel folderId="1" message={undefined} isMessageLoaded={false} />);
 
 		expect(screen.getByTestId('spinner')).toBeInTheDocument();
 	});
 
+	it('renders text when message is loading', () => {
+		updateMessageStatus('1', API_REQUEST_STATUS.pending);
+		mockUseCompleteMessageOrFetch.mockReturnValue({ message: null });
+
+		setupTest(<MessagePreviewPanel folderId="1" message={undefined} isMessageLoaded={false} />);
+
+		expect(screen.getByText(/Loading message, please wait.../i)).toBeVisible();
+	});
+
 	it('renders message preview when message is complete', () => {
-		// eslint-disable-next-line sonarjs/no-duplicate-string
-		const message = { isComplete: true, read: true, subject: 'Test Subject' };
+		const message = generateMessage();
 		updateMessageStatus('1', API_REQUEST_STATUS.fulfilled);
 		mockUseCompleteMessageOrFetch.mockReturnValue({ message });
-		mockUseExtraWindow.mockReturnValue({ isInsideExtraWindow: false });
 
-		setupTest(<MessagePreviewPanel folderId="1" messageId="1" />);
+		setupTest(<MessagePreviewPanel folderId="1" message={message} isMessageLoaded />);
 
-		expect(screen.getByText('Test Subject')).toBeInTheDocument();
+		expect(screen.getByText(message.subject)).toBeInTheDocument();
 	});
 });

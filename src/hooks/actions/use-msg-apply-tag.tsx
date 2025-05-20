@@ -8,7 +8,7 @@ import { useCallback, useMemo } from 'react';
 import { map } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
-import { useTags } from '../../carbonio-ui-commons/store/zustand/tags';
+import { useSortedTagsArray } from '../../carbonio-ui-commons/store/zustand/tags';
 import { Tag } from '../../carbonio-ui-commons/types/tags';
 import { MessageActionsDescriptors, TIMEOUTS } from '../../constants';
 import { isSpam } from '../../helpers/folders';
@@ -32,7 +32,7 @@ export const useMsgApplyTagSubDescriptors = ({
 }): UIActionDescriptor[] => {
 	const { createSnackbar } = useUiUtilities();
 	const [t] = useTranslation();
-	const tags = useTags();
+	const tags = useSortedTagsArray();
 
 	const getTagOperationDetails = useCallback(
 		(

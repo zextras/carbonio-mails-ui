@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useCallback } from 'react';
+import React from 'react';
 
 import { Container, Padding } from '@zextras/carbonio-design-system';
 import { useNavigate } from 'react-router-dom';
@@ -11,18 +11,11 @@ import { useNavigate } from 'react-router-dom';
 import { API_REQUEST_STATUS } from '../../../../constants';
 import { useCompleteMessageOrFetch } from '../../../../store/emails/hooks/hooks';
 import MailPreview from '../../../app/detail-panel/preview/mail-preview';
-import { useExtraWindow } from '../../../app/extra-windows/use-extra-window';
 import { SearchPanelHeader } from '../../extra-window/search-panel-header';
 
 export const SearchMessagePanel = ({ messageId }: { messageId: string }): React.JSX.Element => {
 	const { message, messageStatus } = useCompleteMessageOrFetch(messageId);
 	const navigate = useNavigate();
-	const { isInsideExtraWindow } = useExtraWindow();
-
-	const messagePreviewFactory = useCallback(
-		() => <SearchMessagePanel messageId={messageId} />,
-		[messageId]
-	);
 
 	if (!message) {
 		navigate('/search', { replace: true });
@@ -36,7 +29,7 @@ export const SearchMessagePanel = ({ messageId }: { messageId: string }): React.
 			crossAlignment="flex-start"
 			data-testid={`MessagePanel-${message.id}`}
 		>
-			{!isInsideExtraWindow && <SearchPanelHeader item={message} />}
+			<SearchPanelHeader item={message} />
 			{message?.isComplete && (
 				<Container
 					style={{ overflowY: 'auto' }}
@@ -49,14 +42,7 @@ export const SearchMessagePanel = ({ messageId }: { messageId: string }): React.
 					<Container height="fit" mainAlignment="flex-start" background="gray5">
 						{message && messageStatus === API_REQUEST_STATUS.fulfilled && (
 							<Padding bottom="medium" width="100%">
-								<MailPreview
-									message={message}
-									expanded
-									isAlone
-									isMessageView
-									isInsideExtraWindow={isInsideExtraWindow}
-									messagePreviewFactory={messagePreviewFactory}
-								/>
+								<MailPreview message={message} expanded isAlone isMessageView />
 							</Padding>
 						)}
 						{(messageStatus === API_REQUEST_STATUS.error || messageStatus === null) && (

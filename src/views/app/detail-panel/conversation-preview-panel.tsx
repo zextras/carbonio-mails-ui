@@ -14,11 +14,9 @@ import { Spinner } from '../../../assets/spinner';
 import { NormalizedConversation } from '../../../types';
 
 export const ConversationPreviewPanel = ({
-	conversation,
-	isInsideExtraWindow
+	conversation
 }: {
 	conversation: NormalizedConversation;
-	isInsideExtraWindow: boolean;
 }): React.JSX.Element => {
 	const settings = useUserSettings();
 	const convSortOrder = settings.prefs.zimbraPrefConversationOrder as string;
@@ -51,7 +49,6 @@ export const ConversationPreviewPanel = ({
 							convMessageId={convMessageId}
 							isExpanded={isExpanded(index)}
 							isAlone={conversation.messageIds?.length === 1}
-							isInsideExtraWindow={isInsideExtraWindow}
 						/>
 					) : (
 						<Spinner />

@@ -13,7 +13,6 @@ import { Spinner } from '../../../../assets/spinner';
 import { API_REQUEST_STATUS } from '../../../../constants';
 import { useCompleteConversationOrFetch } from '../../../../store/emails/hooks/hooks';
 import { ConversationMessagePreviewWrapper } from '../../../app/detail-panel/conversation-message-preview-wrapper';
-import { useExtraWindow } from '../../../app/extra-windows/use-extra-window';
 import { SearchPanelHeader } from '../search-panel-header';
 
 type SearchConversationExtraWindowContainerPanelProps = { conversationId: string };
@@ -21,8 +20,6 @@ type SearchConversationExtraWindowContainerPanelProps = { conversationId: string
 export const SearchConversationExtraWindowPanelContainer: FC<
 	SearchConversationExtraWindowContainerPanelProps
 > = ({ conversationId }) => {
-	const { isInsideExtraWindow } = useExtraWindow();
-
 	const settings = useUserSettings();
 	const convSortOrder = settings.prefs.zimbraPrefConversationOrder as string;
 
@@ -46,7 +43,7 @@ export const SearchConversationExtraWindowPanelContainer: FC<
 			data-testid={`ConversationPreview-${conversation.id}`}
 		>
 			<>
-				{!isInsideExtraWindow && <SearchPanelHeader item={conversation} />}
+				<SearchPanelHeader item={conversation} />
 
 				<Container
 					style={{ overflowY: 'auto' }}
@@ -64,7 +61,6 @@ export const SearchConversationExtraWindowPanelContainer: FC<
 										convMessageId={convMessageId}
 										isExpanded={isExpanded(index)}
 										isAlone={conversation.messageIds?.length === 1}
-										isInsideExtraWindow={isInsideExtraWindow}
 									/>
 								))}
 							</>
