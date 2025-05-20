@@ -5,20 +5,24 @@
  */
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-import { Button, Row } from '@zextras/carbonio-design-system';
+import { Button, Container, Row } from '@zextras/carbonio-design-system';
 import { editSettings, t, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { filter, forEach, isArray, some } from 'lodash';
 import { Trans } from 'react-i18next';
 
 import { BannerMessageTruncated } from './banner-message-truncated';
 import { BannerViewExternalImages } from './banner-view-external-images';
-import { HtmlMessageRendererContainer } from './html-message-renderer-container';
 import { ParticipantRole } from '../../carbonio-ui-commons/constants/participants';
 import { getAttachmentParts } from '../../helpers/attachments';
 import { getNoIdentityPlaceholder } from '../../helpers/identities';
 import { BodyPart, MailMessage } from '../../types';
 import { getOriginalHtmlContent, getQuotedTextFromOriginalContent } from '../get-quoted-text-util';
-import { buildImageMap, isAvailableInTrusteeList, updateImageSrc } from '../utils';
+import {
+	buildImageMap,
+	decodeSurrogatePairs,
+	isAvailableInTrusteeList,
+	updateImageSrc
+} from '../utils';
 import { ShadowDomWrapper } from './shadow-dom-wrapper';
 import { getFullMessageEmailStoreAction } from '../../store/emails/actions/get-message';
 
@@ -131,12 +135,16 @@ export const HtmlMessageRenderer = ({ message }: HtmlMessageRendererType): React
 	);
 	const msgId = message.id;
 
-	const contentWithImages = useMemo(() => {
+	const processedContent = useMemo(() => {
+		// Handle images
 		const imgMap = buildImageMap(parts);
 		forEach(images, (img) => {
 			updateImageSrc(img, imgMap, showImage, msgId);
 		});
-		return htmlDoc.documentElement.outerHTML;
+		const html = htmlDoc.documentElement.outerHTML;
+
+		// Decode surrogate pairs (broken emojis handling)
+		return decodeSurrogatePairs(html);
 	}, [htmlDoc.documentElement.outerHTML, images, msgId, parts, showImage]);
 
 	const loadMessage = async (): Promise<void> => {
@@ -159,7 +167,15 @@ export const HtmlMessageRenderer = ({ message }: HtmlMessageRendererType): React
 				<BannerMessageTruncated loadMessage={loadMessage} isLoadingMessage={isLoadingMessage} />
 			)}
 			<ShadowDomWrapper>
-				<HtmlMessageRendererContainer html={contentWithImages} />
+				<Container
+					width={'fit'}
+					height={'100%'}
+					data-testid="message-renderer-container"
+					style={{ overflowY: 'auto', padding: '0.75rem 0px' }}
+					dangerouslySetInnerHTML={{
+						__html: processedContent
+					}}
+				/>
 			</ShadowDomWrapper>
 			{!showQuotedText && quoted.length > 0 && (
 				<Row mainAlignment="center" crossAlignment="center">

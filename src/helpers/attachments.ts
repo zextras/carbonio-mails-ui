@@ -150,9 +150,9 @@ export const isReferredCid = (cid: string, referredCids: Array<string>): boolean
 /**
  * Filters the message parts to collect body content and attachments.
  *
- *
  * @param parts
  * @param filtered
+ * @param referredCids
  */
 export function filterAttachmentsParts(
 	parts: Array<MailMessagePart>,
@@ -165,15 +165,29 @@ export function filterAttachmentsParts(
 			const isReferredByCid = part.ci && isReferredCid(part.ci, referredCids);
 			if (
 				part.disposition === 'attachment' ||
-				(part.disposition === 'inline' && part.filename) ||
-				(part.disposition === undefined && isReferredByCid)
+				(part.disposition === 'inline' && (part.filename || isReferredByCid)) ||
+				(part.disposition === 'inline' && part.name) ||
+				(part.disposition === undefined &&
+					(isReferredByCid ||
+						(!part.parts &&
+							part.contentType !== MIMETYPE_MULTIPART_ALTERNATIVE &&
+							part.contentType !== MIMETYPE_PLAINTEXT &&
+							part.contentType !== MIMETYPE_RICHTEXT &&
+							part.name)))
 			) {
 				// Force the inline disposition if the part is referred by something else in the body
-				if (part.disposition === undefined && isReferredByCid) {
-					filtered.push({
-						...part,
-						disposition: 'inline'
-					});
+				if (part.disposition === undefined) {
+					if (isReferredByCid) {
+						filtered.push({
+							...part,
+							disposition: 'inline'
+						});
+					} else {
+						filtered.push({
+							...part,
+							disposition: 'attachment'
+						});
+					}
 				} else {
 					filtered.push(part);
 				}

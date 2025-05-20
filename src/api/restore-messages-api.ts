@@ -4,16 +4,14 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { apiWrapper } from '../carbonio-ui-commons/helpers/api-wrapper';
-
 export async function restoreMessagesApi(
 	messages: Array<string>
-): Promise<{ data: Response } | { error: unknown }> {
-	const apiCall = fetch(`/zx/backup/v1/restoreMessages`, {
+): Promise<object | { error: unknown }> {
+	return fetch(`/zx/backup/v1/restoreMessages`, {
 		method: 'POST',
 		credentials: 'same-origin',
 		body: JSON.stringify({ messages })
-	});
-
-	return apiWrapper(apiCall);
+	})
+		.then(() => ({}))
+		.catch((error) => ({ error }));
 }

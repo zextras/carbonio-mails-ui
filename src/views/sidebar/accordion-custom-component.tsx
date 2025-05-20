@@ -68,7 +68,8 @@ const badgeCount = (v?: number): number | undefined => (v && v > 0 ? v : undefin
 
 const AccordionCustomComponent: FC<{ item: Folder }> = ({ item: folder }) => {
 	const { ref, hasBeenHovered } = useOnMouseHover();
-	const accountName = useUserAccount().name;
+	const { displayName, name } = useUserAccount();
+	const accountName = displayName ?? name;
 	const { folderId } = useParams<{ folderId: string }>();
 	const navigate = useNavigate();
 	const { createSnackbar } = useUiUtilities();
