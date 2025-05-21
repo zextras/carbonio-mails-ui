@@ -6,6 +6,7 @@
  */
 
 import { updateAccount, updateSettings, xmlSoapFetch } from '@zextras/carbonio-shell-ui';
+import { ApiManager } from '@zextras/carbonio-ui-soap-lib';
 
 import { saveSettings } from '../save-settings';
 
@@ -94,5 +95,26 @@ describe('saveSettings', () => {
 				newIdentities: mockSoapResponse.CreateIdentityResponse.map((item) => item.identity[0])
 			}
 		});
+	});
+
+	it('should call the ApiManager to set the polling interval if its value is not undefined', async () => {
+		// mods.prefs?.zimbraPrefMailPollingInterval
+		jest.mocked(xmlSoapFetch).mockResolvedValue(mockSoapResponse);
+
+		const pollingSetting = '60s';
+		const settings = {
+			...settingsToUpdate,
+			prefs: {
+				...settingsToUpdate.prefs,
+				zimbraPrefMailPollingInterval: pollingSetting
+			}
+		};
+
+		const apiManagerInstance = ApiManager.getApiManager();
+
+		await saveSettings(settings, APP_ID);
+		expect(jest.mocked(apiManagerInstance.setPollingPreference)).toHaveBeenCalledWith(
+			pollingSetting
+		);
 	});
 });

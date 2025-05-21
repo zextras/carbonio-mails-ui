@@ -11,7 +11,6 @@ import { FOLDERS } from '../../../../carbonio-ui-commons/constants/folders';
 import { useFolderStore } from '../../../../carbonio-ui-commons/store/zustand/folder';
 import { useTagStore } from '../../../../carbonio-ui-commons/store/zustand/tags';
 import { getSetupServer } from '../../../../carbonio-ui-commons/test/jest-setup';
-import { useNotify } from '../../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
 import { generateFolder } from '../../../../carbonio-ui-commons/test/mocks/folders/folders-generator';
 import { handleGetFolderRequest } from '../../../../carbonio-ui-commons/test/mocks/network/msw/handle-get-folder';
 import { handleGetShareInfoRequest } from '../../../../carbonio-ui-commons/test/mocks/network/msw/handle-get-share-info';
@@ -47,7 +46,8 @@ import {
 	mockSoapModifyConversationAction,
 	mockSoapModifyMessageAction,
 	mockSoapModifyMessageFolder,
-	mockSoapRefresh
+	mockSoapRefresh,
+	mockSoapSync
 } from '../../tests/test-helpers';
 import { useSyncDataHandler } from '../use-sync-data-handler';
 
@@ -57,6 +57,11 @@ const FLAGGED = 'f';
 const NOTFLAGGED = '';
 
 const { setMessagesInSearchSlice } = getUseEmailStoreAndHooksForTesting();
+
+jest.mock('../../../../carbonio-ui-commons/store/zustand/tags', () => ({
+	...jest.requireActual('../../../../carbonio-ui-commons/store/zustand/tags'),
+	getTags: jest.fn()
+}));
 
 jest.mock('../../../../carbonio-ui-commons/store/zustand/tags', () => ({
 	...jest.requireActual('../../../../carbonio-ui-commons/store/zustand/tags'),
@@ -528,7 +533,7 @@ describe('sync data handler', () => {
 				http.post('/service/soap/GetShareInfoRequest', handleGetShareInfoRequest)
 			);
 
-			useNotify.mockReturnValueOnce([notify]);
+			mockSoapSync([notify]);
 			setupHook(() => useSyncDataHandler());
 
 			expect(workerSpy).toHaveBeenCalledTimes(1);

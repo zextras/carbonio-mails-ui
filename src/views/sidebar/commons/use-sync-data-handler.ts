@@ -7,7 +7,8 @@
 
 import { MutableRefObject, useEffect, useRef, useState } from 'react';
 
-import { SoapNotify, useNotify, useRefresh } from '@zextras/carbonio-shell-ui';
+import { SoapNotify } from '@zextras/carbonio-shell-ui';
+import { useInfoRefresh, useSync } from '@zextras/carbonio-ui-soap-lib';
 import { flatten, forEach, isEmpty, map, sortBy } from 'lodash';
 import { NavigateFunction, useNavigate } from 'react-router-dom';
 
@@ -178,12 +179,12 @@ function processNotifications({
 }
 
 export const useSyncDataHandler = (): void => {
-	const notifyList = useNotify();
+	const notifyList = useSync();
 	const navigate = useNavigate();
 	const [seq, setSeq] = useState(-1);
 	const [initialized, setInitialized] = useState(false);
 	const processedNotify = useRef<number>(-1);
-	const refresh = useRefresh();
+	const refresh = useInfoRefresh();
 	useEffect(() => {
 		if (!isEmpty(refresh) && !initialized) {
 			setInitialized(true);
