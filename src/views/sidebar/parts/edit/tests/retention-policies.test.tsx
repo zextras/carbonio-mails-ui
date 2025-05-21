@@ -11,22 +11,18 @@ import { screen } from '@testing-library/react';
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
 import { RetentionPolicies } from '../retention-policies';
 
-const defaultProps = {
+const defaultRetentionState = {
 	showPolicy: true,
-	setShowPolicy: jest.fn(),
 	dsblMsgDis: false,
-	setDsblMsgDis: jest.fn(),
 	emptyDisValue: false,
-	setEmptyDisValue: jest.fn(),
 	purgeValue: '',
-	setPurgeValue: jest.fn(),
-	retentionPeriod: [
-		{ label: 'Days', value: 'd' },
-		{ label: 'Weeks', value: 'w' }
-	],
 	dspYear: 'd',
-	setDspYear: jest.fn(),
 	dspRange: 'Days'
+};
+
+const defaultProps = {
+	retentionState: defaultRetentionState,
+	setRetentionState: jest.fn()
 };
 
 describe('RetentionPolicies Component', () => {
@@ -36,34 +32,82 @@ describe('RetentionPolicies Component', () => {
 		expect(screen.getByTestId('retention_policy-icon')).toBeInTheDocument();
 	});
 
-	it('calls setShowPolicy when toggle button is clicked', async () => {
+	it('calls setRetentionState to toggle showPolicy', async () => {
 		const { user } = setupTest(<RetentionPolicies {...defaultProps} />);
 		const toggleButton = screen.getByTestId('retention_policy-icon');
 		await user.click(toggleButton);
-		expect(defaultProps.setShowPolicy).toHaveBeenCalledWith(!defaultProps.showPolicy);
+		expect(defaultProps.setRetentionState).toHaveBeenCalledWith({ showPolicy: false });
 	});
 
 	it('displays warning message when emptyDisValue is true', () => {
-		setupTest(<RetentionPolicies {...defaultProps} emptyDisValue />);
+		setupTest(
+			<RetentionPolicies
+				retentionState={{ ...defaultRetentionState, emptyDisValue: true }}
+				setRetentionState={jest.fn()}
+			/>
+		);
 		expect(
 			screen.getByText('The retention duration must be a positive number')
 		).toBeInTheDocument();
 	});
 
 	it('does not render select dropdown when dspYear is null', () => {
-		setupTest(<RetentionPolicies {...defaultProps} dspYear={null} />);
+		setupTest(
+			<RetentionPolicies
+				retentionState={{ ...defaultRetentionState, dspYear: null }}
+				setRetentionState={jest.fn()}
+			/>
+		);
 		expect(screen.queryByLabelText('Select')).not.toBeInTheDocument();
 	});
 
 	it('input should be disabled when dsblMsgDis is false', () => {
-		setupTest(<RetentionPolicies {...defaultProps} dsblMsgDis={false} />);
+		setupTest(
+			<RetentionPolicies
+				retentionState={{ ...defaultRetentionState, dsblMsgDis: false }}
+				setRetentionState={jest.fn()}
+			/>
+		);
 		const input = screen.getByLabelText('Disposal Threshold');
 		expect(input).toBeDisabled();
 	});
 
 	it('input should be enabled when dsblMsgDis is true', () => {
-		setupTest(<RetentionPolicies {...defaultProps} dsblMsgDis />);
+		setupTest(
+			<RetentionPolicies
+				retentionState={{ ...defaultRetentionState, dsblMsgDis: true }}
+				setRetentionState={jest.fn()}
+			/>
+		);
 		const input = screen.getByLabelText('Disposal Threshold');
 		expect(input).toBeEnabled();
 	});
+
+	it('shows the correct selected value in the select dropdown', () => {
+		setupTest(
+			<RetentionPolicies
+				retentionState={{ ...defaultRetentionState, dsblMsgDis: true }}
+				setRetentionState={jest.fn()}
+			/>
+		);
+		expect(screen.getByText(/days/i)).toBeVisible();
+	});
+
+	// it('calls setRetentionState when selecting a new retention period', async () => {
+	// 	const setRetentionState = jest.fn();
+	// 	const { user } = setupTest(
+	// 		<RetentionPolicies
+	// 			retentionState={{ ...defaultRetentionState, dsblMsgDis: true }}
+	// 			setRetentionState={setRetentionState}
+	// 		/>
+	// 	);
+
+	// 	await user.click(screen.getByText(/days/i));
+	// 	await user.click(screen.getByText(/years/i));
+
+	// 	expect(setRetentionState).toHaveBeenCalledWith({
+	// 		dspYear: 'y',
+	// 		dspRange: 'Years'
+	// 	});
+	// });
 });

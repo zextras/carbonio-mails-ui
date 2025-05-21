@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: 2021 Zextras <https://www.zextras.com>
+ * SPDX-FileCopyrightText: 2025 Zextras <https://www.zextras.com>
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
@@ -19,71 +19,44 @@ import {
 } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
 
+import { RetentionPolicyState } from '../../commons/types';
+
 type RetentionPoliciesProps = {
-	showPolicy: boolean;
-	setShowPolicy: (val: boolean) => void;
-	dsblMsgDis: boolean;
-	setDsblMsgDis: (val: boolean) => void;
-	emptyDisValue: boolean;
-	setEmptyDisValue: (val: boolean) => void;
-	purgeValue: number | string;
-	setPurgeValue: (val: string) => void;
-	retentionPeriod: Array<{ label: string; value: string }>;
-	dspYear: string | null;
-	setDspYear: (val: string | null) => void;
-	dspRange: string;
+	retentionState: RetentionPolicyState;
+	setRetentionState: (state: Partial<RetentionPolicyState>) => void;
 };
 
 export const RetentionPolicies: FC<RetentionPoliciesProps> = ({
-	showPolicy,
-	setShowPolicy,
-	dsblMsgDis,
-	setDsblMsgDis,
-	emptyDisValue,
-	setEmptyDisValue,
-	purgeValue,
-	setPurgeValue,
-	retentionPeriod,
-	dspYear,
-	setDspYear,
-	dspRange
+	retentionState,
+	setRetentionState
 }) => {
 	const [t] = useTranslation();
+
+	const retentionPeriod = [
+		{ label: t('label.days', 'Days'), value: 'd' },
+		{ label: t('label.weeks', 'Weeks'), value: 'w' },
+		{ label: t('label.months', 'Months'), value: 'm' },
+		{ label: t('label.years', 'Years'), value: 'y' }
+	];
+
+	const {
+		showPolicy = false,
+		dsblMsgDis = false,
+		emptyDisValue = false,
+		purgeValue = 0,
+		dspYear = 'd',
+		dspRange = ''
+	} = retentionState || {};
+
 	const handleDisposalToggle = (): void => {
-		if (emptyDisValue) setEmptyDisValue(false);
-		setDsblMsgDis(!dsblMsgDis);
+		if (emptyDisValue) setRetentionState({ emptyDisValue: false });
+		setRetentionState({ dsblMsgDis: !dsblMsgDis });
 	};
 
 	const handleThresholdChange = (e: ChangeEvent<HTMLInputElement>): void => {
-		if (emptyDisValue) setEmptyDisValue(false);
-		setPurgeValue(e.target.value);
+		if (emptyDisValue) setRetentionState({ emptyDisValue: false });
+		setRetentionState({ purgeValue: e.target.value });
 	};
-
-	const renderDisposalWarning = (): false | React.JSX.Element =>
-		emptyDisValue && (
-			<Padding all="small">
-				<Text size="small" color="error">
-					{t(
-						'folder.modal.edit.retention_duration_warning',
-						'The retention duration must be a positive number'
-					)}
-				</Text>
-			</Padding>
-		);
-
-	const renderDisposalSelect = (): '' | React.JSX.Element | null =>
-		dspRange &&
-		dspYear && (
-			<Select
-				disabled={!dsblMsgDis}
-				items={retentionPeriod}
-				background="gray5"
-				label={t('label.select', 'Select')}
-				disablePortal
-				onChange={setDspYear}
-				defaultSelection={{ value: dspYear, label: dspRange }}
-			/>
-		);
 
 	return (
 		<>
@@ -96,7 +69,7 @@ export const RetentionPolicies: FC<RetentionPoliciesProps> = ({
 					type="ghost"
 					color="gray0"
 					style={{ padding: 0, margin: 0 }}
-					onClick={(): void => setShowPolicy(!showPolicy)}
+					onClick={(): void => setRetentionState({ showPolicy: !showPolicy })}
 					icon={showPolicy ? 'ChevronUpOutline' : 'ChevronDownOutline'}
 					data-testid="retention_policy-icon"
 				/>
@@ -113,7 +86,6 @@ export const RetentionPolicies: FC<RetentionPoliciesProps> = ({
 						label={t('label.enable_message_disposal', 'Enable Message Disposal')}
 						data-testid="enableMsgDisposal"
 					/>
-
 					<Container padding={{ vertical: 'small' }}>
 						<Text overflow="break-word">
 							{t(
@@ -122,7 +94,6 @@ export const RetentionPolicies: FC<RetentionPoliciesProps> = ({
 							)}
 						</Text>
 					</Container>
-
 					<Row
 						mainAlignment="space-between"
 						padding={{ vertical: 'small' }}
@@ -138,11 +109,33 @@ export const RetentionPolicies: FC<RetentionPoliciesProps> = ({
 								disabled={!dsblMsgDis}
 								value={purgeValue === 0 ? '' : purgeValue}
 							/>
-							{renderDisposalWarning()}
+							{emptyDisValue && (
+								<Padding all="small">
+									<Text size="small" color="error">
+										{t(
+											'folder.modal.edit.retention_duration_warning',
+											'The retention duration must be a positive number'
+										)}
+									</Text>
+								</Padding>
+							)}
 						</Row>
-
 						<Row orientation="vertical" width="48%" crossAlignment="flex-start">
-							{renderDisposalSelect()}
+							<Select
+								disabled={!dsblMsgDis}
+								items={retentionPeriod}
+								background="gray5"
+								label={t('label.select', 'Select')}
+								disablePortal
+								onChange={(val): void => {
+									const selected = retentionPeriod.find((item) => item.value === val);
+									setRetentionState({
+										dspYear: val ?? null,
+										dspRange: selected?.label ?? ''
+									});
+								}}
+								selection={{ value: dspYear, label: dspRange }}
+							/>
 						</Row>
 					</Row>
 				</Container>

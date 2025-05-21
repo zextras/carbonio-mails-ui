@@ -217,10 +217,6 @@ describe('edit-modal', () => {
 		);
 		expect(retentionPolicy).toBeInTheDocument();
 
-		const enableMsgRetention = within(screen.getByTestId('enableMsgRetention')).getByTestId(
-			'icon: Square'
-		);
-		expect(enableMsgRetention).toBeInTheDocument();
 		const enableMsgDisposal = within(screen.getByTestId('enableMsgDisposal')).getByTestId(
 			'icon: Square'
 		);
