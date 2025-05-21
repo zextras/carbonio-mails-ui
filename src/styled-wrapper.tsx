@@ -11,17 +11,22 @@ import { createGlobalStyle } from 'styled-components';
 
 import { AnimatedLoader } from './assets/animated-loader';
 
-declare type IconComponent = (props: SVGProps<SVGSVGElement>) => React.JSX.Element;
+type IconComponent = (props: SVGProps<SVGSVGElement>) => React.JSX.Element;
 
 const createDottedIcon =
 	(BaseIcon: IconComponent): IconComponent =>
 	// eslint-disable-next-line react/display-name
-	(props) => (
-		<svg {...props}>
-			<BaseIcon {...props} />
-			<circle cx={'20'} cy={'19'} r={'4'} fill={'#2B73D2'} stroke={'white'} strokeWidth={'1'} />
-		</svg>
-	);
+	(props) => {
+		const iconProps = { ...props };
+		// @ts-expect-error remove data-testid from props for better testing
+		delete iconProps['data-testid'];
+		return (
+			<svg {...props}>
+				<BaseIcon {...iconProps} />
+				<circle cx={'19'} cy={'19'} r={'4'} fill={'#2B73D2'} stroke={'white'} strokeWidth={'1'} />
+			</svg>
+		);
+	};
 
 const themeOverride = (theme: Theme): Theme => {
 	const outlineIconsWithNotificationDot = Object.entries(theme.icons).reduce(
