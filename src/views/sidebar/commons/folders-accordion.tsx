@@ -17,7 +17,7 @@ import {
 import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
 import { theme } from '../../../carbonio-ui-commons/theme/theme-mui';
 import { hasId } from '../../../carbonio-ui-commons/worker/handle-message';
-import { isSpam, isTrash } from '../../../helpers/folders';
+import { isRoot, isSpam, isTrash } from '../../../helpers/folders';
 import { Folder } from '../../../types';
 
 type FolderAccordionProps = {
@@ -68,6 +68,9 @@ export const FoldersAccordion = ({
 					<MUIAccordionSummary
 						data-testid={`folder-accordion-item-${folder.id}`}
 						onClick={(): void => {
+							if (isRoot(folder.id) && !allowRootSelection) {
+								return;
+							}
 							onFolderSelected?.(folder);
 						}}
 						expandIcon={
