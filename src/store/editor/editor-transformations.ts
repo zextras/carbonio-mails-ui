@@ -32,6 +32,7 @@ import {
 	MailAttachment,
 	MailAttachmentParts,
 	MailMessage,
+	MailMessagePart,
 	MailsEditorV2,
 	MsgAttach,
 	Participant,
@@ -162,6 +163,10 @@ const getHtmlWithPreAppliedStyled = (
 export const getMP = (editor: MailsEditorV2): SoapEmailMessagePartObj[] => {
 	const { prefs } = getUserSettings();
 
+	// The stored text could be out of sync with the current text of the composer.
+	// TODO: This logic should be encapsulated in the editor or the store
+	const text = editor.textProvider?.getCurrentText() ?? editor.text;
+
 	const style = {
 		font: prefs?.zimbraPrefHtmlEditorDefaultFontFamily as string,
 		fontSize: prefs?.zimbraPrefHtmlEditorDefaultFontSize as string,
@@ -172,8 +177,8 @@ export const getMP = (editor: MailsEditorV2): SoapEmailMessagePartObj[] => {
 	const savedInlineAttachment = filterSavedInlineAttachment(editor.savedAttachments);
 
 	const contentWithCidUrl = {
-		plainText: editor.text.plainText,
-		richText: replaceServiceUrlWithCidUrl(editor.text.richText)
+		plainText: text?.plainText,
+		richText: replaceServiceUrlWithCidUrl(text?.richText)
 	};
 
 	if (editor.isRichText) {
@@ -195,11 +200,6 @@ export const getMP = (editor: MailsEditorV2): SoapEmailMessagePartObj[] => {
 										_content: getHtmlWithPreAppliedStyled(contentWithCidUrl.richText, style) ?? ''
 									}
 								},
-								...unsavedInlineAttachment.map((inlineAttachment) => ({
-									ci: inlineAttachment.contentId,
-									ct: inlineAttachment.contentType,
-									attach: { aid: inlineAttachment.aid }
-								})),
 								...savedInlineAttachment.map((inlineAttachment) => ({
 									ci: inlineAttachment.contentId,
 									ct: inlineAttachment.contentType,
@@ -211,6 +211,12 @@ export const getMP = (editor: MailsEditorV2): SoapEmailMessagePartObj[] => {
 											}
 										]
 									}
+								})),
+								// keep this order saved -> unsaved
+								...unsavedInlineAttachment.map((inlineAttachment) => ({
+									ci: inlineAttachment.contentId,
+									ct: inlineAttachment.contentType,
+									attach: { aid: inlineAttachment.aid }
 								}))
 							]
 						}
@@ -241,7 +247,9 @@ export const getMP = (editor: MailsEditorV2): SoapEmailMessagePartObj[] => {
 		{
 			ct: 'text/plain',
 			body: true,
-			content: { _content: editor.text.plainText ?? '' }
+			content: {
+				_content: text?.plainText ?? ''
+			}
 		}
 	];
 };
@@ -424,10 +432,12 @@ export const createSoapSendMsgRequestFromEditor = (editor: MailsEditorV2): SoapD
 
 export const buildSavedAttachments = (message: MailMessage): Array<SavedAttachment> => {
 	const attachmentsParts = getAttachmentParts(message.parts);
+	const isProbablyInline = (part: MailMessagePart): boolean =>
+		part.disposition === 'inline' || (!!part.ci && part.contentType?.startsWith('image/'));
+
 	return attachmentsParts.map<SavedAttachment>((part) => ({
 		messageId: message.id,
-		// TODO create a function to determine if the attachment is an inline even when the disposition is not set
-		isInline: part.disposition === 'inline' && !!part.filename && !!part.ci,
+		isInline: isProbablyInline(part),
 		contentId: (part.ci && extractContentIdInnerPart(part.ci)) ?? undefined,
 		filename: part.filename ?? '',
 		partName: part.name,

@@ -7,10 +7,12 @@ import React, { useCallback, useEffect, useMemo } from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
 import { filter, isEmpty } from 'lodash';
+import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { ConversationPreviewPanel } from './conversation-preview-panel';
 import { PreviewPanelHeader } from './preview/preview-panel-header';
+import { Spinner } from '../../../assets/spinner';
 import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
 import { API_REQUEST_STATUS } from '../../../constants';
 import { isFocusModeMailView } from '../../../helpers/external-tabs';
@@ -20,6 +22,7 @@ import { useCompleteConversationOrFetch } from '../../../store/emails/hooks/hook
 import { useConversationMessages } from '../../../store/emails/store';
 
 export const ConversationPreviewPanelContainer = (): React.JSX.Element => {
+	const [t] = useTranslation();
 	const navigate = useNavigate();
 	const { conversationId, folderId } = useParams() as {
 		conversationId: string;
@@ -78,6 +81,11 @@ export const ConversationPreviewPanelContainer = (): React.JSX.Element => {
 
 					{(conversationStatus === API_REQUEST_STATUS.error || conversationStatus === null) && (
 						<></>
+					)}
+					{conversationStatus === API_REQUEST_STATUS.pending && (
+						<Spinner
+							text={t('displayer.loading_conversation', 'Loading conversation, please wait...')}
+						/>
 					)}
 				</>
 			)}

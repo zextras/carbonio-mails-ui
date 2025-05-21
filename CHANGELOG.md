@@ -2,6 +2,105 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.25.2](https://github.com/zextras/carbonio-mails-ui/compare/v1.25.1...v1.25.2) (2025-05-20)
+
+
+### Bug Fixes
+
+* **rich-text-editor:** restore scroll position on paste event ([a4df8f6](https://github.com/zextras/carbonio-mails-ui/commit/a4df8f695f2559a9366a823a9a112fb0dabcdd9d))
+* **tinymce:** [CO-1979] restore scroll position on paste event in firefox ([#905](https://github.com/zextras/carbonio-mails-ui/issues/905)) ([db04556](https://github.com/zextras/carbonio-mails-ui/commit/db045567964009323d323ca77fbfe88f94c83177))
+
+### [1.25.1](https://github.com/zextras/carbonio-mails-ui/compare/v1.25.0...v1.25.1) (2025-05-20)
+
+
+### Bug Fixes
+
+* **mail-message-preview-actions.tsx:** adjust IconButton size ([5fb2926](https://github.com/zextras/carbonio-mails-ui/commit/5fb2926236ff59e25a7a4c63da1095b19b5fce78))
+
+## [1.25.0](https://github.com/zextras/carbonio-mails-ui/compare/v1.24.14...v1.25.0) (2025-05-19)
+
+
+### Features
+
+* [CO-1910] do not change case of participant name in list message and in preview  ([1ef94b7](https://github.com/zextras/carbonio-mails-ui/commit/1ef94b7353d704b75021fdd83dd1d09097abcf7f))
+* [CO-1912] Reply-to handling ([#841](https://github.com/zextras/carbonio-mails-ui/issues/841)) ([1ac7e94](https://github.com/zextras/carbonio-mails-ui/commit/1ac7e9446baebef08f5119bffa3e2d31b89c1a9f))
+* [CO-1954] add locale as lang_tag query parameter when previewing a document ([#849](https://github.com/zextras/carbonio-mails-ui/issues/849)) ([684ea15](https://github.com/zextras/carbonio-mails-ui/commit/684ea15fc22283e3253c94bb83d41aad92d9b3cb)), closes [zextras/carbonio-mailbox#687](https://github.com/zextras/carbonio-mailbox/issues/687)
+* [CO-1955] reply reply all and forward an important mail ([#856](https://github.com/zextras/carbonio-mails-ui/issues/856)) ([6a8d7b8](https://github.com/zextras/carbonio-mails-ui/commit/6a8d7b8e19f89affb2a4c03de3daeb12ff362ecc))
+* add loading message and spin in preview panel ([535ac63](https://github.com/zextras/carbonio-mails-ui/commit/535ac63b1d7824c8ce5841d08270199caa26984c))
+* **editor:** support editing of emails with very long body text ([2c41ccf](https://github.com/zextras/carbonio-mails-ui/commit/2c41ccf51f206af7e5f32cf86d16d1f70286478d)), closes [#890](https://github.com/zextras/carbonio-mails-ui/issues/890)
+* message, conversation and eml preview in focus-mode ([64fad99](https://github.com/zextras/carbonio-mails-ui/commit/64fad9958cfc1a5faec1394a841486bc372671dd))
+
+
+### Bug Fixes
+
+* [CO-1487] recover messages - limit the date picker to not select dates in the future ([#883](https://github.com/zextras/carbonio-mails-ui/issues/883)) ([f1a400f](https://github.com/zextras/carbonio-mails-ui/commit/f1a400ff65c4bbe1ce52a99cbf44f8f54f9e7bf4))
+* [CO-1902] translation key for attachment ([#836](https://github.com/zextras/carbonio-mails-ui/issues/836)) ([980d4eb](https://github.com/zextras/carbonio-mails-ui/commit/980d4eb4873af1a1ae40e069852a5cca6b4f7b64))
+* [CO-1903] mail shared folder name conflict ([#829](https://github.com/zextras/carbonio-mails-ui/issues/829)) ([761d7a3](https://github.com/zextras/carbonio-mails-ui/commit/761d7a384a722c250f6ec26f442482541d59cc66))
+* [CO-1914] original sender missing from cc ([#840](https://github.com/zextras/carbonio-mails-ui/issues/840)) ([462b05b](https://github.com/zextras/carbonio-mails-ui/commit/462b05bf6e000390e682429ee6d20933b9450d8b))
+* [CO-1920] notify modified conversations/messages data handling ([#837](https://github.com/zextras/carbonio-mails-ui/issues/837)) ([793dbf5](https://github.com/zextras/carbonio-mails-ui/commit/793dbf5fb24dffa4a56316cf58844423ee9d40fc))
+* [CO-1925] remove bracket from edit-permissions-modal.tsx ([#838](https://github.com/zextras/carbonio-mails-ui/issues/838)) ([f1acf7d](https://github.com/zextras/carbonio-mails-ui/commit/f1acf7d298303a190f68279b67ce1eebfa6e0348))
+* [CO-1978] include CID-referenced inline parts without filename ([#879](https://github.com/zextras/carbonio-mails-ui/issues/879)) ([e857e2b](https://github.com/zextras/carbonio-mails-ui/commit/e857e2bb0e589acf670dbe87329755234fa0d42d))
+* [CO-1996] avoid showing browser notifications in focus mode ([ae35aef](https://github.com/zextras/carbonio-mails-ui/commit/ae35aefc413535c05d3f430c9647f4e6ddda058e))
+* [CO-1998] reset button in Advanced Filters should be enabled when query is not empty ([#862](https://github.com/zextras/carbonio-mails-ui/issues/862)) ([a67bb0a](https://github.com/zextras/carbonio-mails-ui/commit/a67bb0a3411e0ec4613c247e1a6f25c03362267d))
+* [CO-2009] reset 'Include Shared Folders' toggle to user preference when resetting filters ([#884](https://github.com/zextras/carbonio-mails-ui/issues/884)) ([06ee2e8](https://github.com/zextras/carbonio-mails-ui/commit/06ee2e8170da3f4a563df962387968f1c9445f8b))
+* [CO-2048] allow searching for the same query from search filter modal ([#876](https://github.com/zextras/carbonio-mails-ui/issues/876)) ([137d006](https://github.com/zextras/carbonio-mails-ui/commit/137d006a9db908d347452a3504de0cf91f9a97ec))
+* [CO-2058] emoji processing ([#889](https://github.com/zextras/carbonio-mails-ui/issues/889)) ([150e660](https://github.com/zextras/carbonio-mails-ui/commit/150e660ee78d4f336e4f02a0077047b9cbb29c3c))
+* [CO-2064] simplify InviteResponse component usage in mail preview ([#896](https://github.com/zextras/carbonio-mails-ui/issues/896)) ([b9102b0](https://github.com/zextras/carbonio-mails-ui/commit/b9102b0bb54d1aead819f0e4c846e167b78a7c4b))
+* [CO-2090] Editor, fix inline image preview handling ([#899](https://github.com/zextras/carbonio-mails-ui/issues/899)) ([a9b081a](https://github.com/zextras/carbonio-mails-ui/commit/a9b081a766cabcbef689b352c61396d8f13e75f9))
+* action buttons disappear when the sender name is too long ([acece2c](https://github.com/zextras/carbonio-mails-ui/commit/acece2c8a86a6419bc9380f5a8051ab7e1c5474a))
+* add translation to edit folder modal ([a3d5fdc](https://github.com/zextras/carbonio-mails-ui/commit/a3d5fdc3dc060cf50508bc31b5cd8517e4a545e3))
+* align default composer signature settings with composing messages options ([50f870b](https://github.com/zextras/carbonio-mails-ui/commit/50f870b2bbfced35eba7c59a2c8acc5eff9e9b4d))
+* apply editor height to fit content ([386d8cc](https://github.com/zextras/carbonio-mails-ui/commit/386d8cc05c13f12674c1599764b0cb3dfc53d887))
+* attachment disappearing after forwarding an mail ([#897](https://github.com/zextras/carbonio-mails-ui/issues/897)) ([8cc520f](https://github.com/zextras/carbonio-mails-ui/commit/8cc520f8d5de42c6537b5d3ef347aa6652f256ee))
+* attachment translation in advance search and filters ([91ce2da](https://github.com/zextras/carbonio-mails-ui/commit/91ce2da9d30cefbf595b3a8374f0e01319a7e068))
+* carriage return ([24816be](https://github.com/zextras/carbonio-mails-ui/commit/24816be6a19abdeaa7ee5402f5a88957338f258d))
+* changed signature composer options to handle empty string with applied style ([38e776e](https://github.com/zextras/carbonio-mails-ui/commit/38e776e82af1b4af82db29ccc751942df6ef8bf4))
+* **CO-1458:** quote query chip in case of phrase ([#800](https://github.com/zextras/carbonio-mails-ui/issues/800)) ([a184829](https://github.com/zextras/carbonio-mails-ui/commit/a184829c67deb1f6fa1cf04824ac29a83f5d64b5))
+* code cleanup ([3297e9b](https://github.com/zextras/carbonio-mails-ui/commit/3297e9b06838d0b8caa08aea36edcfc9ef6623db))
+* colors translations ([4a2b87f](https://github.com/zextras/carbonio-mails-ui/commit/4a2b87f3c9083643af2244411de4fcecb3284250))
+* common type change ([ffec65d](https://github.com/zextras/carbonio-mails-ui/commit/ffec65dae8cfedeb2bb71672ca983c574b8e4881))
+* content loss when editing an email body larger than 250KB ([#892](https://github.com/zextras/carbonio-mails-ui/issues/892)) ([f69cc34](https://github.com/zextras/carbonio-mails-ui/commit/f69cc3420b9bffe71161435dafad52db86498d4f))
+* custom handling of toolbar fixed position when moving the open board ([3c2b4b2](https://github.com/zextras/carbonio-mails-ui/commit/3c2b4b2b61a6c887069775442fc4258b15417461))
+* default unsend time option fallback ([5610801](https://github.com/zextras/carbonio-mails-ui/commit/56108011ef84f1faed7190a4073a165c128391c1))
+* displayed sender name in message list view ([78c501d](https://github.com/zextras/carbonio-mails-ui/commit/78c501da6f4109999990da2b522cedce118ba4e9))
+* do not call useTranslatedSystemFolders hook conditionally ([21ad126](https://github.com/zextras/carbonio-mails-ui/commit/21ad1264463c3192f5fcb7fbea6d3943f823655f))
+* edit modal confirm button ([d46566a](https://github.com/zextras/carbonio-mails-ui/commit/d46566a4be5c0cba17d07a835536254e3144e3cc))
+* empty folder translation issue fixed ([4a21b6e](https://github.com/zextras/carbonio-mails-ui/commit/4a21b6e5561f7e483466503260e0245a4b2b6df4))
+* enable search by subject with 2 or more words description ([89691bc](https://github.com/zextras/carbonio-mails-ui/commit/89691bc52a625f09b5e27461635e2aac383fe7f7)), closes [#900](https://github.com/zextras/carbonio-mails-ui/issues/900)
+* exclude signature from composer message settings ([#870](https://github.com/zextras/carbonio-mails-ui/issues/870)) ([94b40b6](https://github.com/zextras/carbonio-mails-ui/commit/94b40b69bfe59244a531721693661746c2e4f80d))
+* folder panel params tipization ([cacfda6](https://github.com/zextras/carbonio-mails-ui/commit/cacfda673885d055fa224bd2df3b3749402f3169))
+* handle any value for polling interval setting ([9f29a9c](https://github.com/zextras/carbonio-mails-ui/commit/9f29a9c660288fb6b43f390ec175c24f4a5aa919))
+* mail view is reset after deleting a conv from shared mailbox folder ([#864](https://github.com/zextras/carbonio-mails-ui/issues/864)) ([81481ac](https://github.com/zextras/carbonio-mails-ui/commit/81481ac9f8b5fd37b305b0e03ff07d90d7c23d62))
+* missing translations "More actions"([#888](https://github.com/zextras/carbonio-mails-ui/issues/888)) ([a165b4e](https://github.com/zextras/carbonio-mails-ui/commit/a165b4ea046b44e79f7812d56c108f2a6dea3ba7))
+* msg contact list type ([8deb6b8](https://github.com/zextras/carbonio-mails-ui/commit/8deb6b8b55fd5c3ace47effae21e0d48c4499bc6))
+* order attachments by size ([#842](https://github.com/zextras/carbonio-mails-ui/issues/842)) ([b85d134](https://github.com/zextras/carbonio-mails-ui/commit/b85d1341065c8f062e9154c0f039e07ad7c45f77))
+* **participants-name:** [CO-1947] filter out reply-to participants ([#848](https://github.com/zextras/carbonio-mails-ui/issues/848)) ([ab671dd](https://github.com/zextras/carbonio-mails-ui/commit/ab671dd10e67e13cb8e674ed25be17bfed0b8ea9))
+* remove dead route ([f88f0c3](https://github.com/zextras/carbonio-mails-ui/commit/f88f0c33963269cf044d638a8df9b749d55a968a))
+* remove fixme refactoring related code ([bfa30fd](https://github.com/zextras/carbonio-mails-ui/commit/bfa30fd86b231314277253a4d16bd94cf7737c70))
+* remove Ref usage from AttachmentTypeEmailStatusRow ([ee628be](https://github.com/zextras/carbonio-mails-ui/commit/ee628be52aeb0520155cd5671af1018a7ebc4e37))
+* removed FIXME and update component prop type ([875ef8e](https://github.com/zextras/carbonio-mails-ui/commit/875ef8eaf7635957695c6b6a2cbc4b73df07660f))
+* removed FIXME and update component prop type ([7001e11](https://github.com/zextras/carbonio-mails-ui/commit/7001e1185df180fd5ab07b9a51c64590df04bd2d))
+* removed unused import ([c410518](https://github.com/zextras/carbonio-mails-ui/commit/c4105180e525cee829d7807699059ada6032056c))
+* Request Read Receipt Enabled via zimbraPrefMailRequestReadReceipt ([#875](https://github.com/zextras/carbonio-mails-ui/issues/875)) ([1171e32](https://github.com/zextras/carbonio-mails-ui/commit/1171e329ff8736e913ae89fd1b894b441ec56e5a))
+* save draft on editor close ([423cf73](https://github.com/zextras/carbonio-mails-ui/commit/423cf73f1cd88bdd798ff55df350f05e8b9f6690))
+* search etra window panel usages ([86df12c](https://github.com/zextras/carbonio-mails-ui/commit/86df12c6959895b61ba185d871f1b272dfd3160f))
+* set the tab title opening a message/conversation in a new tab ([8204df2](https://github.com/zextras/carbonio-mails-ui/commit/8204df2a5286c6ae99deb844b97004e1b8516450))
+* signature composer keeps empty paragraphs applied style ([0c552df](https://github.com/zextras/carbonio-mails-ui/commit/0c552dfe05cb9cd435a4407ef28a330c8b6d8a07))
+* signature composer keeps empty paragraphs applied style ([8c6f420](https://github.com/zextras/carbonio-mails-ui/commit/8c6f420601e79a6e807c99c4f955a7f2f0c50a9a))
+* sonarlint warnings ([dbd7db2](https://github.com/zextras/carbonio-mails-ui/commit/dbd7db2a6f01e93520561d809c10ca6ec65bc9af))
+* sonarqube complaint ([2c060af](https://github.com/zextras/carbonio-mails-ui/commit/2c060af18c1361a6de3b42aeb46b7a17a7220844))
+* standardise display name or email in sidebar ([#893](https://github.com/zextras/carbonio-mails-ui/issues/893)) ([ddd96f9](https://github.com/zextras/carbonio-mails-ui/commit/ddd96f9c646622a2399c3ee54ae7fc0e7867a049))
+* test ([eaeae0f](https://github.com/zextras/carbonio-mails-ui/commit/eaeae0f9afacd1afbb7ad7dcbd60ea4edcaf5622))
+* test cleanup ([63b6a4f](https://github.com/zextras/carbonio-mails-ui/commit/63b6a4fba331f01bc6a347edc4ea051145263782))
+* todos and fixme related changes ([207e01e](https://github.com/zextras/carbonio-mails-ui/commit/207e01e6eb5d96cf3f1798200bacbd2c8270e706))
+* translation for Polish ([3173f1c](https://github.com/zextras/carbonio-mails-ui/commit/3173f1cb092fc6be54df1d64ce8533eb44eb3d55))
+* translations name ([11dbc8a](https://github.com/zextras/carbonio-mails-ui/commit/11dbc8ac0d51692b40ded82486ca733ae2224619))
+* translations name ([0b89d46](https://github.com/zextras/carbonio-mails-ui/commit/0b89d460d1c18403497f595761e0def6db0f0934))
+* translations name ([3540a07](https://github.com/zextras/carbonio-mails-ui/commit/3540a075a07eabe7d26373f174c5d81188b8650e))
+* update broken Link prop value in CollapsedSideBarItem ([c61bbcc](https://github.com/zextras/carbonio-mails-ui/commit/c61bbccb799db753841d3f90004839faaa15ea20))
+* update default translation to match with weblate changes ([#844](https://github.com/zextras/carbonio-mails-ui/issues/844)) ([1dc9401](https://github.com/zextras/carbonio-mails-ui/commit/1dc9401844b288707b01984ad638d74bef1e43ec))
+* useMsgSetNotSpamFn types change ([24c3fb0](https://github.com/zextras/carbonio-mails-ui/commit/24c3fb06f51756add83794349e4e6fb570a497cd))
+
 ### [1.24.14](https://github.com/zextras/carbonio-mails-ui/compare/v1.24.13...v1.24.14) (2025-03-11)
 
 

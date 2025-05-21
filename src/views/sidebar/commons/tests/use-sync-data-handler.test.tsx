@@ -77,6 +77,10 @@ jest.mock('../../../../store/emails/sync-data-handler/trigger-notification', () 
 	triggerNotification: jest.fn()
 }));
 
+jest.mock('../../../../store/emails/sync-data-handler/trigger-notification', () => ({
+	triggerNotification: jest.fn()
+}));
+
 function getSoapMessage(
 	messageId: string,
 	initialData?: Partial<SoapIncompleteMessage>
