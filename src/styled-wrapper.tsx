@@ -4,21 +4,45 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React from 'react';
+import React, { SVGProps } from 'react';
 
-import { ThemeProvider } from '@zextras/carbonio-design-system';
-import type { Theme as DSTheme } from '@zextras/carbonio-design-system';
-import { createGlobalStyle, DefaultTheme } from 'styled-components';
+import { Theme, ThemeProvider } from '@zextras/carbonio-design-system';
+import { createGlobalStyle } from 'styled-components';
 
 import { AnimatedLoader } from './assets/animated-loader';
 
-const themeOverride = (theme: DSTheme): DSTheme => ({
-	...theme,
-	icons: {
-		...theme.icons,
-		AnimatedLoader
-	} as DefaultTheme['icons'] // FIXME check how to remove this cast
-});
+declare type IconComponent = (props: SVGProps<SVGSVGElement>) => React.JSX.Element;
+
+const createDottedIcon =
+	(BaseIcon: IconComponent): IconComponent =>
+	// eslint-disable-next-line react/display-name
+	(props) => (
+		<svg {...props}>
+			<BaseIcon {...props} />
+			<circle cx={'20'} cy={'19'} r={'4'} fill={'#2B73D2'} stroke={'white'} strokeWidth={'1'} />
+		</svg>
+	);
+
+const themeOverride = (theme: Theme): Theme => {
+	const outlineIconsWithNotificationDot = Object.entries(theme.icons).reduce(
+		(acc, [name, Icon]) => {
+			if (name.endsWith('Outline')) {
+				return { ...acc, [`${name}WithDot`]: createDottedIcon(Icon) };
+			}
+			return acc;
+		},
+		{} as Record<string, IconComponent>
+	);
+
+	return {
+		...theme,
+		icons: {
+			...theme.icons,
+			...outlineIconsWithNotificationDot,
+			AnimatedLoader
+		}
+	};
+};
 
 const GlobalStyle = createGlobalStyle`
   .disable-hover, .disable-hover * {

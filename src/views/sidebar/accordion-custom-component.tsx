@@ -23,9 +23,11 @@ import styled from 'styled-components';
 
 import { FolderActionWrapper } from './folder-action-wrapper';
 import {
+	folderHasChildren,
 	getFolderIconColor,
 	getFolderIconName,
 	getFolderTranslatedName,
+	getTotalUnreadCountInSubfolders,
 	handleDragEnter
 } from './utils';
 import { folderActionSoapApi } from '../../api/folder-action-soap-api';
@@ -38,6 +40,7 @@ import { useOnMouseHover } from '../../hooks/use-on-mouse-hover';
 import { useUiUtilities } from '../../hooks/use-ui-utilities';
 import { convActionEmailStoreAction } from '../../store/emails/actions/conv-action-action';
 import { msgActionEmailStoreAction } from '../../store/emails/actions/msg-action-action';
+import StyledWrapper from '../../styled-wrapper';
 
 const FittedRow = styled(Row)`
 	max-width: calc(100% - (2 * ${({ theme }): string => theme.sizes.padding.small}));
@@ -190,22 +193,44 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item: folder }) => {
 		}),
 		[]
 	);
-	const accordionItem = useMemo(
-		() => ({
+
+	const accordionItem = useMemo(() => {
+		const hasSubfolderUnreads =
+			folderHasChildren(folder) && getTotalUnreadCountInSubfolders(folder) > 0;
+		return {
 			...folder,
 			label:
 				folder.id === FOLDERS.USER_ROOT
 					? accountName
 					: (getFolderTranslatedName({ folderId: folder.id, folderName: folder.name }) ?? ''),
-			icon: getFolderIconName(folder) ?? undefined,
+			icon: getFolderIconName(folder, hasSubfolderUnreads) ?? undefined,
 			iconColor: getFolderIconColor(folder) ?? '',
 			badgeCounter: badgeCount(folder.id === FOLDERS.DRAFTS ? folder.n : folder?.u),
 			badgeType,
 			to: `/folder/${folder.id}`,
 			textProps
-		}),
-		[folder, accountName, badgeType, textProps]
-	);
+		};
+	}, [folder, accountName, badgeType, textProps]);
+
+	const accordionItemToolTip = useMemo(() => {
+		const folderLabel =
+			folder.id === FOLDERS.USER_ROOT
+				? accountName
+				: (getFolderTranslatedName({ folderId: folder.id, folderName: folder.name }) ?? '');
+
+		const subfolderUnread = folderHasChildren(folder) ? getTotalUnreadCountInSubfolders(folder) : 0;
+		const hasSubfolderUnread = subfolderUnread > 0;
+
+		if (hasSubfolderUnread) {
+			return t(
+				'tooltip.subfolder_unread_status',
+				'{{folderLabel}} ({{subfolder}} unread in subfolders)',
+				{ folderLabel, subfolder: subfolderUnread }
+			);
+		}
+
+		return folderLabel;
+	}, [folder, accountName]);
 
 	const statusIcon = useMemo(() => {
 		const RowWithIcon = (icon: string, color: string, tooltipText: string): React.JSX.Element => (
@@ -251,66 +276,68 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item: folder }) => {
 		);
 
 	return (
-		<Row width="fill" minWidth={0} ref={ref}>
-			<Drop
-				acceptType={['message', 'conversation', 'folder']}
-				onDrop={(data: DragObj): void => {
-					onDropAction({
-						type: data.type ?? '',
-						data: data.data,
-						event: data.event
-					} as OnDropActionProps);
-				}}
-				onDragEnter={(data: DragObj): { success: boolean } | undefined =>
-					handleDragEnter(
-						{
+		<StyledWrapper>
+			<Row width="fill" minWidth={0} ref={ref}>
+				<Drop
+					acceptType={['message', 'conversation', 'folder']}
+					onDrop={(data: DragObj): void => {
+						onDropAction({
 							type: data.type ?? '',
 							data: data.data,
 							event: data.event
-						} as OnDropActionProps,
-						folder
-					)
-				}
-				overlayAcceptComponent={<DropOverlayContainer $folder={folder} />}
-				overlayDenyComponent={<DropDenyOverlayContainer $folder={folder} />}
-			>
-				<Drag
-					type="folder"
-					data={folder}
-					dragDisabled={dragFolderDisable}
-					style={{ display: 'block' }}
+						} as OnDropActionProps);
+					}}
+					onDragEnter={(data: DragObj): { success: boolean } | undefined =>
+						handleDragEnter(
+							{
+								type: data.type ?? '',
+								data: data.data,
+								event: data.event
+							} as OnDropActionProps,
+							folder
+						)
+					}
+					overlayAcceptComponent={<DropOverlayContainer $folder={folder} />}
+					overlayDenyComponent={<DropDenyOverlayContainer $folder={folder} />}
 				>
-					<Link
-						to={`../folder/${folder.id}`}
-						style={{ width: '100%', height: '100%', textDecoration: 'none' }}
+					<Drag
+						type="folder"
+						data={folder}
+						dragDisabled={dragFolderDisable}
+						style={{ display: 'block' }}
 					>
-						{hasBeenHovered ? (
-							<FolderActionWrapper folder={folder}>
-								<Tooltip label={accordionItem.label} placement="right" maxWidth="100%">
-									<AccordionItem
-										data-testid={`accordion-folder-item-${folder.id}`}
-										item={accordionItem}
-									>
-										{statusIcon}
-									</AccordionItem>
-								</Tooltip>
-							</FolderActionWrapper>
-						) : (
-							<Container padding={{ left: 'small' }}>
-								<Tooltip label={accordionItem.label} placement="right" maxWidth="100%">
-									<AccordionItem
-										data-testid={`accordion-folder-item-${folder.id}`}
-										item={accordionItem}
-									>
-										{statusIcon}
-									</AccordionItem>
-								</Tooltip>
-							</Container>
-						)}
-					</Link>
-				</Drag>
-			</Drop>
-		</Row>
+						<Link
+							to={`../folder/${folder.id}`}
+							style={{ width: '100%', height: '100%', textDecoration: 'none' }}
+						>
+							{hasBeenHovered ? (
+								<FolderActionWrapper folder={folder}>
+									<Tooltip label={accordionItemToolTip} placement="right" maxWidth="100%">
+										<AccordionItem
+											data-testid={`accordion-folder-item-${folder.id}`}
+											item={accordionItem}
+										>
+											{statusIcon}
+										</AccordionItem>
+									</Tooltip>
+								</FolderActionWrapper>
+							) : (
+								<Container padding={{ left: 'small' }}>
+									<Tooltip label={accordionItemToolTip} placement="right" maxWidth="100%">
+										<AccordionItem
+											data-testid={`accordion-folder-item-${folder.id}`}
+											item={accordionItem}
+										>
+											{statusIcon}
+										</AccordionItem>
+									</Tooltip>
+								</Container>
+							)}
+						</Link>
+					</Drag>
+				</Drop>
+			</Row>
+		</StyledWrapper>
 	);
 };
 

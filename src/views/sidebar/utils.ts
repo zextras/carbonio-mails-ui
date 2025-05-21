@@ -30,8 +30,20 @@ export const getFolderIconColor = (f: Folder | AccordionItemType): string => {
 	return ZIMBRA_STANDARD_COLORS[0].hex;
 };
 
-export const getFolderIconName = (folder: Folder | AccordionItemType): string | null => {
+/**
+ * Get the icon name for a folder
+ * @param folder - The folder object
+ * @param withNotificationDot - Whether to add a notification dot to the icon name
+ *
+ * NOTE: Icons with dots are not available in the design system, they are provided by the
+ * {@link StyledWrapper} component.
+ */
+export const getFolderIconName = (
+	folder: Folder | AccordionItemType,
+	withNotificationDot = false
+): string | null => {
 	const { id } = getFolderIdParts(folder.id);
+
 	if (
 		id === FOLDERS.USER_ROOT ||
 		('isLink' in folder && folder.isLink && folder.oname === ROOT_NAME)
@@ -39,23 +51,33 @@ export const getFolderIconName = (folder: Folder | AccordionItemType): string | 
 		return null;
 	}
 
+	let iconName: string;
+
 	if (id && isSystemFolder(id)) {
 		switch (id) {
 			case FOLDERS.INBOX:
-				return 'InboxOutline';
+				iconName = 'InboxOutline';
+				break;
 			case FOLDERS.DRAFTS:
-				return 'FileOutline';
+				iconName = 'FileOutline';
+				break;
 			case FOLDERS.SENT:
-				return 'PaperPlaneOutline';
+				iconName = 'PaperPlaneOutline';
+				break;
 			case FOLDERS.SPAM:
-				return 'SlashOutline';
+				iconName = 'SlashOutline';
+				break;
 			case FOLDERS.TRASH:
-				return 'Trash2Outline';
+				iconName = 'Trash2Outline';
+				break;
 			default:
-				return 'FolderOutline';
+				iconName = 'FolderOutline';
 		}
+	} else {
+		iconName = 'FolderOutline';
 	}
-	return 'FolderOutline';
+
+	return withNotificationDot ? `${iconName}WithDot` : iconName;
 };
 
 export const useTranslatedSystemFolders = (): Array<string> => {
@@ -144,4 +166,28 @@ export function handleDragEnter(data: OnDropActionProps, folder: Folder): DragEn
 	}
 
 	return undefined;
+}
+
+export function getTotalUnreadCount(folder: Folder): number {
+	let count = folder.u ?? 0;
+
+	folder.children?.forEach((subfolder) => {
+		count += getTotalUnreadCount(subfolder);
+	});
+
+	return count;
+}
+
+export function getTotalUnreadCountInSubfolders(folder: Folder): number {
+	let count = 0;
+	if (folder.children?.length) {
+		folder.children.forEach((subfolder) => {
+			count += getTotalUnreadCount(subfolder);
+		});
+	}
+	return count;
+}
+
+export function folderHasChildren(folder: Folder): boolean {
+	return folder.children?.length > 0;
 }
