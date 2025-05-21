@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.25.2](https://github.com/zextras/carbonio-mails-ui/compare/v1.25.1...v1.25.2) (2025-05-20)
+
+
+### Bug Fixes
+
+* **rich-text-editor:** restore scroll position on paste event ([a4df8f6](https://github.com/zextras/carbonio-mails-ui/commit/a4df8f695f2559a9366a823a9a112fb0dabcdd9d))
+* **tinymce:** [CO-1979] restore scroll position on paste event in firefox ([#905](https://github.com/zextras/carbonio-mails-ui/issues/905)) ([db04556](https://github.com/zextras/carbonio-mails-ui/commit/db045567964009323d323ca77fbfe88f94c83177))
+
+### [1.25.1](https://github.com/zextras/carbonio-mails-ui/compare/v1.25.0...v1.25.1) (2025-05-20)
+
+
+### Bug Fixes
+
+* **mail-message-preview-actions.tsx:** adjust IconButton size ([5fb2926](https://github.com/zextras/carbonio-mails-ui/commit/5fb2926236ff59e25a7a4c63da1095b19b5fce78))
+
 ## [1.25.0](https://github.com/zextras/carbonio-mails-ui/compare/v1.24.14...v1.25.0) (2025-05-19)
 
 
