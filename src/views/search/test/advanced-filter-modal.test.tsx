@@ -683,12 +683,13 @@ describe('Advanced filter modal', () => {
 		});
 	});
 
-	it(`should reset shared folder inclusion state when modal is closed`, async () => {
+	it('should reset shared folder toggle to initial state when modal is closed without search confirmation', async () => {
 		jest.spyOn(console, 'error').mockImplementation();
+		const onCloseMock = jest.fn();
 		const onSearchConfirmMock = jest.fn();
 		const properties: AdvancedFilterModalProps = {
 			open: true,
-			onClose: jest.fn(),
+			onClose: onCloseMock,
 			query: [],
 			onSearchConfirm: onSearchConfirmMock,
 			isSharedFolderIncludedInitialValue: false,
@@ -696,19 +697,32 @@ describe('Advanced filter modal', () => {
 		};
 		const { user, rerender } = setupTest(<AdvancedFilterModal {...properties} />);
 
+		// Initial state check
 		const isSharedFolderIncludedToggle = screen.getByTestId('isSharedFolderIncludedToggle');
 		expect(isSharedFolderIncludedToggle).toBeInTheDocument();
+		expect(
+			within(isSharedFolderIncludedToggle).getByTestId('icon: ToggleLeftOutline')
+		).toBeInTheDocument();
+
+		// Toggle the shared folder inclusion
 		await user.click(isSharedFolderIncludedToggle);
+		expect(
+			within(isSharedFolderIncludedToggle).getByTestId('icon: ToggleRight')
+		).toBeInTheDocument();
 
 		// Close the modal
 		rerender(<AdvancedFilterModal {...properties} open={false} />);
 
 		// Reopen the modal
-		rerender(<AdvancedFilterModal {...properties} open={true} />);
+		rerender(<AdvancedFilterModal {...properties} open />);
 
-		// Check if the shared folder inclusion state is reset
-		await waitFor(() => {
-			expect(isSharedFolderIncludedToggle).not.toBeChecked();
-		});
+		// Wait for the modal to be fully rendered and state to be reset
+		await waitFor(
+			() => {
+				const toggle = screen.getByTestId('isSharedFolderIncludedToggle');
+				expect(within(toggle).getByTestId('icon: ToggleLeftOutline')).toBeInTheDocument();
+			},
+			{ timeout: 3000 }
+		);
 	});
 });
