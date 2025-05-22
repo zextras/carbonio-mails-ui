@@ -95,6 +95,7 @@ export const AdvancedFilterModal = ({
 	const [hasAttachment, setHasAttachment] = useState<boolean>(false);
 	const [isUnread, setIsUnread] = useState<boolean>(false);
 	const [isFlagged, setIsFlagged] = useState<boolean>(false);
+	const [hasPerformedSearch, setHasPerformedSearch] = useState<boolean>(false);
 
 	const [receivedFromAddresses, setReceivedFromAddresses] = useState<KeywordState>([]);
 	const [sentToAddresses, setSentToAddresses] = useState<KeywordState>([]);
@@ -163,8 +164,13 @@ export const AdvancedFilterModal = ({
 	}, [includeSharedItemsInSearchPref]);
 
 	useEffect(() => {
-		setIsSharedFolderIncluded(isSharedFolderIncludedInitialValue);
-	}, [isSharedFolderIncludedInitialValue]);
+		if (!open) {
+			setHasPerformedSearch(false);
+		}
+		if (!hasPerformedSearch) {
+			setIsSharedFolderIncluded(isSharedFolderIncludedInitialValue);
+		}
+	}, [open, isSharedFolderIncludedInitialValue, hasPerformedSearch]);
 
 	useEffect(() => {
 		const updatedQuery = map(
@@ -342,6 +348,7 @@ export const AdvancedFilterModal = ({
 	const onConfirm = useCallback(() => {
 		const controller = new AbortController();
 		try {
+			setHasPerformedSearch(true);
 			onSearchConfirm({ query: queryToBe, includeSharedFolders: isSharedFolderIncluded });
 			onClose();
 		} catch (error) {
