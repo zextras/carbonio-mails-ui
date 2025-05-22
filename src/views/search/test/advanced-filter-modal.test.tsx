@@ -617,7 +617,7 @@ describe('Advanced filter modal', () => {
 		});
 	});
 
-	it.only(`should reset 'tags' when reset button is pressed`, async () => {
+	it(`should reset 'tags' when reset button is pressed`, async () => {
 		(getTags as jest.Mock).mockReturnValue(mockTags);
 		await checkResetAndSearchButton(async (user) => {
 			const selectElement = screen.getByTestId('tagInput')
