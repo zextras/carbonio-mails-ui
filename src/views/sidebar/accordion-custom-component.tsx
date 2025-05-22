@@ -216,7 +216,7 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item: folder }) => {
 		const folderLabel =
 			folder.id === FOLDERS.USER_ROOT
 				? accountName
-				: (getFolderTranslatedName({ folderId: folder.id, folderName: folder.name }) ?? '');
+				: getFolderTranslatedName({ folderId: folder.id, folderName: folder.name });
 
 		const subfolderUnread = folderHasChildren(folder) ? getTotalUnreadCountInSubfolders(folder) : 0;
 		const hasSubfolderUnread = subfolderUnread > 0;
