@@ -9,6 +9,7 @@ import React from 'react';
 import { screen, within } from '@testing-library/react';
 import assert from 'node:assert';
 
+import { ROOT_NAME } from '../../../carbonio-ui-commons/constants';
 import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
 import { createFakeIdentity } from '../../../carbonio-ui-commons/test/mocks/accounts/fakeAccounts';
 import {
@@ -116,7 +117,7 @@ describe('accordion-custom-component', () => {
 			id: FOLDERS.USER_ROOT,
 			isLink: false,
 			view: 'message',
-			name: 'USER_ROOT',
+			name: ROOT_NAME,
 			absFolderPath: '/'
 		});
 
