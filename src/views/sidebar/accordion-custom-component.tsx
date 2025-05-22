@@ -222,11 +222,13 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item: folder }) => {
 		const hasSubfolderUnread = subfolderUnread > 0;
 
 		if (hasSubfolderUnread) {
-			return t(
+			return `${folderLabel} (${t(
 				'tooltip.subfolder_unread_status',
-				'{{folderLabel}} ({{subfolder}} unread mails in subfolders)',
-				{ folderLabel, subfolder: subfolderUnread }
-			);
+				'{{count}} unread mails in subfolders',
+				{
+					count: subfolderUnread
+				}
+			)})`;
 		}
 
 		return folderLabel;
