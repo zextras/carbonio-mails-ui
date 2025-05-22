@@ -23,7 +23,7 @@ const createDottedIcon =
 		return (
 			<svg {...props}>
 				<BaseIcon {...iconProps} />
-				<circle cx={'19'} cy={'19'} r={'4'} fill={'#2B73D2'} stroke={'#f5f6f8'} strokeWidth={'1'} />
+				<circle cx={'19'} cy={'5'} r={'4'} fill={'#2B73D2'} stroke={'#f5f6f8'} strokeWidth={'1'} />
 			</svg>
 		);
 	};
