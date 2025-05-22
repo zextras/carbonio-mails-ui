@@ -19,7 +19,8 @@ const BorderContainer = styled(Container)`
 
 export const AdvancedFilterButton = ({
 	query,
-	updateQuery,
+	onSearchConfirm,
+	isSharedFolderIncluded,
 	searchDisabled,
 	invalidQueryTooltip
 }: AdvancedFilterButtonProps): React.JSX.Element => {
@@ -51,7 +52,8 @@ export const AdvancedFilterButton = ({
 								children: (
 									<AdvancedFilterModal
 										query={query}
-										updateQuery={updateQuery}
+										isSharedFolderIncluded={isSharedFolderIncluded}
+										onSearchConfirm={onSearchConfirm}
 										onClose={(): void => closeModal(modalId)}
 									/>
 								)

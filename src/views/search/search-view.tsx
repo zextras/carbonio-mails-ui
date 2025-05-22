@@ -3,12 +3,11 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { Suspense, useEffect, useMemo, useState } from 'react';
+import React, { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 
 import { Container, Spinner } from '@zextras/carbonio-design-system';
 import type { SearchViewProps } from '@zextras/carbonio-search-ui';
-import { setAppContext, t } from '@zextras/carbonio-shell-ui';
-import { useForm } from 'react-hook-form';
+import { setAppContext, t, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { Route, Routes } from 'react-router-dom';
 
 import { SearchConversationList } from './list/conversation/search-conversation-list';
@@ -18,7 +17,7 @@ import { AdvancedFilterButton } from './parts/advanced-filter-button';
 import { useIsMessageView, useRunSearch } from './search-view-hooks';
 import { useUpdateView } from '../../carbonio-ui-commons/hooks/use-update-view';
 import { API_REQUEST_STATUS } from '../../constants';
-import { AdvancedFilterModalFormValues, Query } from './types/types';
+import { Query } from './types/types';
 import { resetSearchAndPopulatedItems } from '../../store/emails/store';
 
 const SearchView = ({
@@ -37,7 +36,12 @@ const SearchView = ({
 		[]
 	);
 
-	const { getValues } = useForm<AdvancedFilterModalFormValues>();
+	const settings = useUserSettings();
+	const includeSharedItemsInSearchDefaultPref =
+		settings.prefs.zimbraPrefIncludeSharedItemsInSearch === 'TRUE';
+	const [isSharedFolderIncluded, setIsSharedFolderIncluded] = useState<boolean>(
+		includeSharedItemsInSearchDefaultPref
+	);
 
 	const [count, setCount] = useState(0);
 
@@ -51,7 +55,7 @@ const SearchView = ({
 			updateQuery,
 			useDisableSearch,
 			invalidQueryTooltip,
-			isSharedFolderIncluded: getValues('isSharedFolderIncluded')
+			isSharedFolderIncluded
 		});
 
 	const resultLabelType = isInvalidQuery ? 'warning' : undefined;
@@ -77,12 +81,21 @@ const SearchView = ({
 		if (query.length > 0) {
 			executeSearch(controller.signal);
 		} else {
+			setIsSharedFolderIncluded(includeSharedItemsInSearchDefaultPref);
 			resetSearchAndPopulatedItems();
 		}
 		return () => {
 			controller.abort();
 		};
-	}, [executeSearch, query]);
+	}, [executeSearch, query, includeSharedItemsInSearchDefaultPref, updateQuery]);
+
+	const onSearchConfirm = useCallback(
+		(options: { query: Query; includeSharedFolders: boolean }): void => {
+			updateQuery(options.query);
+			setIsSharedFolderIncluded(options.includeSharedFolders);
+		},
+		[updateQuery]
+	);
 
 	return (
 		<Container>
@@ -112,7 +125,8 @@ const SearchView = ({
 							>
 								<AdvancedFilterButton
 									query={query as Query}
-									updateQuery={updateQuery}
+									isSharedFolderIncluded={isSharedFolderIncluded}
+									onSearchConfirm={onSearchConfirm}
 									searchDisabled={searchDisabled}
 									invalidQueryTooltip={invalidQueryTooltip}
 								/>

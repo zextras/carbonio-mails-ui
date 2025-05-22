@@ -22,7 +22,8 @@ import { ScrollableContainer } from '../../commons/scrollable-container';
 
 export const AdvancedFilterModal = ({
 	query,
-	updateQuery,
+	isSharedFolderIncluded,
+	onSearchConfirm,
 	onClose
 }: AdvancedFilterModalProps): React.JSX.Element => {
 	const settings = useUserSettings();
@@ -30,8 +31,8 @@ export const AdvancedFilterModal = ({
 		settings.prefs.zimbraPrefIncludeSharedItemsInSearch === 'TRUE';
 
 	const defaultValues: AdvancedFilterModalFormValues = useMemo(
-		() => getAdvancedFiltersDefaultValues(query, includeSharedItemsInSearchDefaultPref),
-		[includeSharedItemsInSearchDefaultPref, query]
+		() => getAdvancedFiltersDefaultValues(query, isSharedFolderIncluded),
+		[query, isSharedFolderIncluded]
 	);
 
 	const methods = useForm<AdvancedFilterModalFormValues>({ defaultValues });
@@ -63,7 +64,7 @@ export const AdvancedFilterModal = ({
 	const onConfirm = useCallback(() => {
 		const controller = new AbortController();
 		try {
-			updateQuery(queryToBe);
+			onSearchConfirm({ query: queryToBe, includeSharedFolders: watch('isSharedFolderIncluded') });
 			onClose();
 		} catch (error) {
 			controller.abort();
@@ -71,15 +72,14 @@ export const AdvancedFilterModal = ({
 		return () => {
 			controller.abort();
 		};
-	}, [updateQuery, queryToBe, onClose]);
+	}, [onSearchConfirm, queryToBe, onClose, watch]);
 
 	const onCloseCallback = useCallback(() => {
 		resetFilters();
 		onClose();
 	}, [onClose, resetFilters]);
 
-	const isSharedFolderIncluded = watch('isSharedFolderIncluded');
-
+	const isSharedFolderIncludedInput = watch('isSharedFolderIncluded');
 	return (
 		<>
 			<ModalHeader
@@ -108,7 +108,8 @@ export const AdvancedFilterModal = ({
 				onConfirm={onConfirm}
 				confirmDisabled={queryToBe.length === 0}
 				secondaryActionDisabled={
-					queryToBe.length === 0 && isSharedFolderIncluded === includeSharedItemsInSearchDefaultPref
+					queryToBe.length === 0 &&
+					isSharedFolderIncludedInput === includeSharedItemsInSearchDefaultPref
 				}
 				confirmLabel={t('action.search', 'Search')}
 				secondaryActionLabel={t('action.reset', 'Reset filters')}
