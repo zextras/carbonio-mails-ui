@@ -209,7 +209,8 @@ describe('Advanced filter modal', () => {
 
 		await waitFor(() => {
 			expect(updateQueryMock).toHaveBeenCalledTimes(1);
-			// eslint-disable-next-line testing-library/no-wait-for-multiple-assertions
+		});
+		await waitFor(() => {
 			expect(updateQueryMock).toHaveBeenCalledWith(
 				expect.objectContaining({
 					query: [
@@ -238,7 +239,8 @@ describe('Advanced filter modal', () => {
 		await user.click(confirmButton);
 		await waitFor(() => {
 			expect(updateQueryMock).toHaveBeenCalledTimes(1);
-			// eslint-disable-next-line testing-library/no-wait-for-multiple-assertions
+		});
+		await waitFor(() => {
 			expect(updateQueryMock).toHaveBeenCalledWith({
 				includeSharedFolders: false,
 				query: [
@@ -268,7 +270,8 @@ describe('Advanced filter modal', () => {
 		await user.click(confirmButton);
 		await waitFor(() => {
 			expect(updateQueryMock).toHaveBeenCalledTimes(1);
-			// eslint-disable-next-line testing-library/no-wait-for-multiple-assertions
+		});
+		await waitFor(() => {
 			expect(updateQueryMock).toHaveBeenCalledWith({
 				includeSharedFolders: false,
 				query: [
@@ -306,7 +309,8 @@ describe('Advanced filter modal', () => {
 		await user.click(confirmButton);
 		await waitFor(() => {
 			expect(updateQueryMock).toHaveBeenCalledTimes(1);
-			// eslint-disable-next-line testing-library/no-wait-for-multiple-assertions
+		});
+		await waitFor(() => {
 			expect(updateQueryMock).toHaveBeenCalledWith(
 				expect.objectContaining({
 					query: [
@@ -360,7 +364,8 @@ describe('Advanced filter modal', () => {
 		await user.click(confirmButton);
 		await waitFor(() => {
 			expect(updateQueryMock).toHaveBeenCalledTimes(1);
-			// eslint-disable-next-line testing-library/no-wait-for-multiple-assertions
+		});
+		await waitFor(() => {
 			expect(updateQueryMock).toHaveBeenCalledWith(
 				expect.objectContaining({
 					query: [
@@ -489,7 +494,8 @@ describe('Advanced filter modal', () => {
 		await user.click(confirmButton);
 		await waitFor(() => {
 			expect(updateQueryMock).toHaveBeenCalledTimes(1);
-			// eslint-disable-next-line testing-library/no-wait-for-multiple-assertions
+		});
+		await waitFor(() => {
 			expect(updateQueryMock).toHaveBeenCalledWith(
 				expect.objectContaining({
 					query: [
@@ -762,7 +768,7 @@ describe('Advanced filter modal', () => {
 		});
 	});
 
-	it.only('should preserve shared folder toggle after a search', async () => {
+	it('should preserve shared folder toggle after a search', async () => {
 		const updateQueryMock = jest.fn();
 		const propertiesInitialSearch: AdvancedFilterModalProps = {
 			isSharedFolderIncluded: false,

@@ -100,12 +100,7 @@ const SearchView = ({
 	return (
 		<Container>
 			{/* TOFIX-SHELL: labetype is missing in shell type declaration as optional and string */}
-			<ResultsHeader
-				label={resultLabel}
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-				// @ts-ignore
-				labelType={resultLabelType}
-			/>
+			<ResultsHeader label={resultLabel} labelType={resultLabelType} />
 			<Container
 				orientation="horizontal"
 				background="gray4"
