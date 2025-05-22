@@ -34,7 +34,7 @@ import { folderActionSoapApi } from '../../api/folder-action-soap-api';
 import { ROOT_NAME } from '../../carbonio-ui-commons/constants';
 import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
 import { isSystemFolder } from '../../carbonio-ui-commons/helpers/folders';
-import type { Folder } from '../../carbonio-ui-commons/types/folder';
+import type { Folder } from '../../carbonio-ui-commons/types';
 import type { OnDropActionProps } from '../../carbonio-ui-commons/types/sidebar';
 import { useOnMouseHover } from '../../hooks/use-on-mouse-hover';
 import { useUiUtilities } from '../../hooks/use-ui-utilities';
@@ -202,9 +202,9 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item: folder }) => {
 			label:
 				folder.id === FOLDERS.USER_ROOT
 					? accountName
-					: (getFolderTranslatedName({ folderId: folder.id, folderName: folder.name }) ?? ''),
+					: getFolderTranslatedName({ folderId: folder.id, folderName: folder.name }),
 			icon: getFolderIconName(folder, hasSubfolderUnreads) ?? undefined,
-			iconColor: getFolderIconColor(folder) ?? '',
+			iconColor: getFolderIconColor(folder),
 			badgeCounter: badgeCount(folder.id === FOLDERS.DRAFTS ? folder.n : folder?.u),
 			badgeType,
 			to: `/folder/${folder.id}`,
