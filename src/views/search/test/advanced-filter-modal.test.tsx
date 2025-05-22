@@ -25,6 +25,12 @@ import {
 	SearchQueryItem
 } from '../types/types';
 import { getAdvancedFiltersDefaultValues } from '../utils';
+import { getTags } from '../../../carbonio-ui-commons/store/zustand/tags';
+import { tags as mockTags } from '../../../carbonio-ui-commons/test/mocks/tags/tags';
+
+jest.mock('../../../carbonio-ui-commons/store/zustand/tags/hooks', () => ({
+	getTags: jest.fn()
+}));
 
 async function selectOption(
 	user: UserEvent,
@@ -45,6 +51,7 @@ const renderWithUseForm = async (
 	component: React.JSX.Element,
 	formValues: Partial<AdvancedFilterModalFormValues> = {}
 ): Promise<{ user: UserEvent }> => {
+	
 	const Wrapper = ({ children }: { children: ReactNode }): JSX.Element => {
 		const methods = useForm<AdvancedFilterModalFormValues>({ defaultValues: formValues });
 		return <FormProvider {...methods}>{children}</FormProvider>;
@@ -607,6 +614,17 @@ describe('Advanced filter modal', () => {
 			const isUnreadToggle = screen.getByTestId('isUnreadToggle');
 			expect(isUnreadToggle).toBeInTheDocument();
 			await user.click(isUnreadToggle);
+		});
+	});
+
+	it.only(`should reset 'tags' when reset button is pressed`, async () => {
+		(getTags as jest.Mock).mockReturnValue(mockTags);
+		await checkResetAndSearchButton(async (user) => {
+			const selectElement = screen.getByTestId('tagInput')
+			expect(selectElement).toBeInTheDocument();
+			await user.click(selectElement);
+			const selectOption = screen.getAllByTestId('dropdown-item')[0];
+			await user.click(selectOption);
 		});
 	});
 

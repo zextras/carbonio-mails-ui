@@ -160,6 +160,7 @@ export const TagFolderRow = ({
 							disableOptions={false}
 							disabled
 							requireUniqueChips
+							data-testid="tagInput"
 						/>
 					)}
 				/>
