@@ -9,7 +9,7 @@ import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
 import { generateFolder } from '../../../carbonio-ui-commons/test/mocks/folders/folders-generator';
 import { Folder } from '../../../carbonio-ui-commons/types';
 import { OnDropActionProps } from '../../../carbonio-ui-commons/types/sidebar';
-import { getFolderIconName, handleDragEnter } from '../utils';
+import { getFolderIconName, getTotalUnreadCountInSubfolders, handleDragEnter } from '../utils';
 
 describe('utils', () => {
 	describe('handleDragEnter', () => {
@@ -114,5 +114,49 @@ describe('utils', () => {
 		it('returns null for shared root link', () => {
 			expect(getFolderIconName({ id: 'someid', isLink: true, oname: ROOT_NAME })).toBeNull();
 		});
+	});
+
+	describe('getTotalUnreadCountInSubfolders', () => {
+		it('should return 0 when no subfolders', () => {
+			const folder = generateFolder({
+				id: 'folder1',
+				isLink: false,
+				perm: 'rw',
+				oname: 'folder1',
+				u: 0,
+				n: 0
+			});
+			expect(getTotalUnreadCountInSubfolders(folder)).toBe(0);
+		});
+		it('should return 0 when all subfolders have 0 unread messages', () => {
+			const folder = generateFolder({
+				id: 'folder1',
+				isLink: false,
+				perm: 'rw',
+				oname: 'folder1',
+				u: 0,
+				n: 0,
+				children: [
+					generateFolder({ id: 'subfolder1', u: 0, n: 0 }),
+					generateFolder({ id: 'subfolder2', u: 0, n: 0 })
+				]
+			});
+			expect(getTotalUnreadCountInSubfolders(folder)).toBe(0);
+		});
+	});
+	it('should return the sum of unread messages in subfolders', () => {
+		const folder = generateFolder({
+			id: 'folder1',
+			isLink: false,
+			perm: 'rw',
+			oname: 'folder1',
+			u: 0,
+			n: 0,
+			children: [
+				generateFolder({ id: 'subfolder1', u: 5, n: 0 }),
+				generateFolder({ id: 'subfolder2', u: 3, n: 0 })
+			]
+		});
+		expect(getTotalUnreadCountInSubfolders(folder)).toBe(8);
 	});
 });
