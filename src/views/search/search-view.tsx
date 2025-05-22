@@ -7,7 +7,7 @@ import React, { Suspense, useEffect, useMemo, useState } from 'react';
 
 import { Container, Spinner } from '@zextras/carbonio-design-system';
 import type { SearchViewProps } from '@zextras/carbonio-search-ui';
-import { setAppContext, t, useUserSettings } from '@zextras/carbonio-shell-ui';
+import { setAppContext, t } from '@zextras/carbonio-shell-ui';
 import { useForm } from 'react-hook-form';
 import { Route, Routes } from 'react-router-dom';
 
@@ -29,9 +29,6 @@ const SearchView = ({
 	useUpdateView();
 
 	const [query, updateQuery] = useQuery();
-	const settings = useUserSettings();
-	const includeSharedItemsInSearchDefaultPref =
-		settings.prefs.zimbraPrefIncludeSharedItemsInSearch === 'TRUE';
 
 	const isMessageView = useIsMessageView();
 
@@ -40,9 +37,7 @@ const SearchView = ({
 		[]
 	);
 
-	const { watch, setValue } = useForm<AdvancedFilterModalFormValues>();
-
-	const isSharedFolderIncluded = watch('isSharedFolderIncluded');
+	const { getValues } = useForm<AdvancedFilterModalFormValues>();
 
 	const [count, setCount] = useState(0);
 
@@ -56,7 +51,7 @@ const SearchView = ({
 			updateQuery,
 			useDisableSearch,
 			invalidQueryTooltip,
-			isSharedFolderIncluded
+			isSharedFolderIncluded: getValues('isSharedFolderIncluded')
 		});
 
 	const resultLabelType = isInvalidQuery ? 'warning' : undefined;
@@ -83,12 +78,11 @@ const SearchView = ({
 			executeSearch(controller.signal);
 		} else {
 			resetSearchAndPopulatedItems();
-			setValue('isSharedFolderIncluded', includeSharedItemsInSearchDefaultPref);
 		}
 		return () => {
 			controller.abort();
 		};
-	}, [executeSearch, query, setValue, includeSharedItemsInSearchDefaultPref]);
+	}, [executeSearch, query]);
 
 	return (
 		<Container>

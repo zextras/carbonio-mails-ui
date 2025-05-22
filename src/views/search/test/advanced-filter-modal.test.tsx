@@ -75,11 +75,11 @@ async function checkResetAndSearchButton(f: (user: UserEvent) => Promise<void>):
 
 	await f(user);
 
-	const actionButton = screen.getByRole('button', {
+	const confirmButton = screen.getByRole('button', {
 		name: /action\.search/i
 	});
-	expect(actionButton).toBeInTheDocument();
-	expect(actionButton).toBeEnabled();
+	expect(confirmButton).toBeInTheDocument();
+	expect(confirmButton).toBeEnabled();
 
 	const resetButton = screen.getByRole('button', {
 		name: /action\.reset/i
@@ -90,7 +90,7 @@ async function checkResetAndSearchButton(f: (user: UserEvent) => Promise<void>):
 	await user.click(resetButton);
 
 	await waitFor(() => {
-		expect(actionButton).toBeDisabled();
+		expect(confirmButton).toBeDisabled();
 	});
 	await waitFor(() => {
 		expect(resetButton).toBeDisabled();
@@ -115,11 +115,11 @@ describe('Advanced filter modal', () => {
 		const fieldLabel = screen.getByText(/label\.single_advanced_filter/i);
 		expect(fieldLabel).toBeInTheDocument();
 
-		const actionButton = screen.getByRole('button', {
+		const confirmButton = screen.getByRole('button', {
 			name: /action\.search/i
 		});
-		expect(actionButton).toBeInTheDocument();
-		expect(actionButton).toBeDisabled();
+		expect(confirmButton).toBeInTheDocument();
+		expect(confirmButton).toBeDisabled();
 	});
 
 	it('search button should be enable on keyword, subject change', async () => {
@@ -130,11 +130,11 @@ describe('Advanced filter modal', () => {
 		const fieldLabel = screen.getByText(/label\.single_advanced_filter/i);
 		expect(fieldLabel).toBeInTheDocument();
 
-		const actionButton = screen.getByRole('button', {
+		const confirmButton = screen.getByRole('button', {
 			name: /action\.search/i
 		});
-		expect(actionButton).toBeInTheDocument();
-		expect(actionButton).toBeDisabled();
+		expect(confirmButton).toBeInTheDocument();
+		expect(confirmButton).toBeDisabled();
 
 		const keyword = faker.lorem.word();
 		const keywordComponent = screen.getByTestId('keywords-input');
@@ -149,7 +149,7 @@ describe('Advanced filter modal', () => {
 		const subjectInputEle = within(subjectComponent).getByRole('textbox');
 		await user.click(subjectInputEle);
 
-		expect(actionButton).toBeEnabled();
+		expect(confirmButton).toBeEnabled();
 	});
 
 	it('search button should be enabled if query is not empty', async () => {
@@ -165,16 +165,16 @@ describe('Advanced filter modal', () => {
 			<AdvancedFilterModal {...defaultProps} query={query} />,
 			customDefaultValues
 		);
-		const actionButton = screen.getByRole('button', { name: /action\.search/i });
+		const confirmButton = screen.getByRole('button', { name: /action\.search/i });
 
-		expect(actionButton).toBeEnabled();
+		expect(confirmButton).toBeEnabled();
 	});
 
 	it('search button should be disabled if there is no query', async () => {
 		await renderWithUseForm(<AdvancedFilterModal {...defaultProps} />, defaultValues);
-		const actionButton = screen.getByRole('button', { name: /action\.search/i });
+		const confirmButton = screen.getByRole('button', { name: /action\.search/i });
 
-		expect(actionButton).toBeDisabled();
+		expect(confirmButton).toBeDisabled();
 	});
 
 	it('should call updateQuery with correct args when confirm button is clicked', async () => {
@@ -393,8 +393,8 @@ describe('Advanced filter modal', () => {
 			<AdvancedFilterModal {...defaultProps} query={query} />,
 			customDefaultValues
 		);
-		const actionButton = screen.getByRole('button', { name: /action\.reset/i });
-		expect(actionButton).toBeEnabled();
+		const confirmButton = screen.getByRole('button', { name: /action\.reset/i });
+		expect(confirmButton).toBeEnabled();
 	});
 
 	it('reset filters button should be disabled on render', async () => {
@@ -456,13 +456,13 @@ describe('Advanced filter modal', () => {
 		);
 
 		await selectOption(user, 'attachmentTypeSelect', 'attachment_type.application');
-		const actionButton = screen.getByRole('button', {
+		const confirmButton = screen.getByRole('button', {
 			name: /action\.search/i
 		});
-		expect(actionButton).toBeInTheDocument();
-		expect(actionButton).toBeEnabled();
+		expect(confirmButton).toBeInTheDocument();
+		expect(confirmButton).toBeEnabled();
 
-		await user.click(actionButton);
+		await user.click(confirmButton);
 		await waitFor(() => {
 			expect(updateQueryMock).toHaveBeenCalledTimes(1);
 			// eslint-disable-next-line testing-library/no-wait-for-multiple-assertions
@@ -484,13 +484,13 @@ describe('Advanced filter modal', () => {
 		const { user } = setupTest(<AdvancedFilterModal {...properties} />);
 
 		await selectOption(user, 'emailStatusSelect', 'email_status.unread');
-		const actionButton = screen.getByRole('button', {
+		const confirmButton = screen.getByRole('button', {
 			name: /action\.search/i
 		});
-		expect(actionButton).toBeInTheDocument();
-		expect(actionButton).toBeEnabled();
+		expect(confirmButton).toBeInTheDocument();
+		expect(confirmButton).toBeEnabled();
 
-		await user.click(actionButton);
+		await user.click(confirmButton);
 		await waitFor(() => {
 			expect(updateQueryMock).toHaveBeenCalledTimes(1);
 			// eslint-disable-next-line testing-library/no-wait-for-multiple-assertions
@@ -669,11 +669,11 @@ describe('Advanced filter modal', () => {
 		expect(isSharedFolderIncludedToggle).toBeInTheDocument();
 		await user.click(isSharedFolderIncludedToggle);
 
-		const actionButton = screen.getByRole('button', {
+		const confirmButton = screen.getByRole('button', {
 			name: /action\.search/i
 		});
-		expect(actionButton).toBeInTheDocument();
-		expect(actionButton).toBeDisabled();
+		expect(confirmButton).toBeInTheDocument();
+		expect(confirmButton).toBeDisabled();
 
 		const resetButton = screen.getByRole('button', {
 			name: /action\.reset/i
@@ -684,7 +684,7 @@ describe('Advanced filter modal', () => {
 		await user.click(resetButton);
 
 		await waitFor(() => {
-			expect(actionButton).toBeDisabled();
+			expect(confirmButton).toBeDisabled();
 		});
 		await waitFor(() => {
 			expect(resetButton).toBeDisabled();
@@ -692,18 +692,14 @@ describe('Advanced filter modal', () => {
 	});
 
 	it('should reset shared folder toggle to initial state when modal is closed without search confirmation', async () => {
-		jest.spyOn(console, 'error').mockImplementation();
-		const onCloseMock = jest.fn();
-		const onSearchConfirmMock = jest.fn();
-		const properties: AdvancedFilterModalProps = {
-			open: true,
-			onClose: onCloseMock,
-			query: [],
-			onSearchConfirm: onSearchConfirmMock,
-			isSharedFolderIncludedInitialValue: false,
-			includeSharedItemsInSearchPref: false
+		const updateQueryMock = jest.fn();
+		const propertiesInitialSearch: AdvancedFilterModalProps = {
+			updateQuery: updateQueryMock,
+			onClose: jest.fn(),
+			query: []
 		};
-		const { user, rerender } = setupTest(<AdvancedFilterModal {...properties} />);
+
+		const { user, rerender } = setupTest(<AdvancedFilterModal {...propertiesInitialSearch} />);
 
 		// Initial state check
 		const isSharedFolderIncludedToggle = screen.getByTestId('isSharedFolderIncludedToggle');
@@ -718,19 +714,60 @@ describe('Advanced filter modal', () => {
 			within(isSharedFolderIncludedToggle).getByTestId('icon: ToggleRight')
 		).toBeInTheDocument();
 
-		// Close the modal
-		rerender(<AdvancedFilterModal {...properties} open={false} />);
+		const closeButton = screen.getByTestId('icon: Close');
+		await user.click(closeButton);
 
-		// Reopen the modal
-		rerender(<AdvancedFilterModal {...properties} open />);
+		rerender(<AdvancedFilterModal {...propertiesInitialSearch} />);
 
 		// Wait for the modal to be fully rendered and state to be reset
-		await waitFor(
-			() => {
-				const toggle = screen.getByTestId('isSharedFolderIncludedToggle');
-				expect(within(toggle).getByTestId('icon: ToggleLeftOutline')).toBeInTheDocument();
-			},
-			{ timeout: 3000 }
-		);
+		await waitFor(() => {
+			const toggle = screen.getByTestId('isSharedFolderIncludedToggle');
+			expect(within(toggle).getByTestId('icon: ToggleLeftOutline')).toBeInTheDocument();
+		});
+	});
+
+	it('should preserve shared folder toggle after a search', async () => {
+		const updateQueryMock = jest.fn();
+		const propertiesInitialSearch: AdvancedFilterModalProps = {
+			updateQuery: updateQueryMock,
+			onClose: jest.fn(),
+			query: [
+				{
+					id: 'query1',
+					label: 'keywords',
+					value: 'keyword'
+				}
+			]
+		};
+
+		const { user, rerender } = setupTest(<AdvancedFilterModal {...propertiesInitialSearch} />);
+
+		// Initial state check
+		const isSharedFolderIncludedToggle = screen.getByTestId('isSharedFolderIncludedToggle');
+		expect(isSharedFolderIncludedToggle).toBeInTheDocument();
+		expect(
+			within(isSharedFolderIncludedToggle).getByTestId('icon: ToggleLeftOutline')
+		).toBeInTheDocument();
+
+		// Toggle the shared folder inclusion
+		await user.click(isSharedFolderIncludedToggle);
+		expect(
+			within(isSharedFolderIncludedToggle).getByTestId('icon: ToggleRight')
+		).toBeInTheDocument();
+
+		const confirmButton = screen.getByRole('button', {
+			name: /action\.search/i
+		});
+		expect(confirmButton).toBeEnabled();
+
+		await user.click(confirmButton);
+
+		rerender(<AdvancedFilterModal {...propertiesInitialSearch} query={[]} />);
+
+		// Wait for the modal to be fully rendered and state to be reset
+		await waitFor(() => {
+			const toggle = screen.getByTestId('isSharedFolderIncludedToggle');
+			expect(within(toggle).getByTestId('icon: ToggleRight')).toBeInTheDocument();
+		});
 	});
 });

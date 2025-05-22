@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useCallback, useEffect, useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 
 import { ModalHeader, Divider, ModalFooter } from '@zextras/carbonio-design-system';
 import { t, useUserSettings } from '@zextras/carbonio-shell-ui';
@@ -16,7 +16,7 @@ import { SizeLargerSizeSmallerRow } from './parts/size-smaller-size-larger-row';
 import { SubjectKeywordRow } from './parts/subject-keyword-row';
 import { TagFolderRow } from './parts/tag-folder-row';
 import { ToggleFilters } from './parts/toggle-filters';
-import { AdvancedFilterModalProps, AdvancedFilterModalFormValues, Query } from './types/types';
+import { AdvancedFilterModalProps, AdvancedFilterModalFormValues } from './types/types';
 import { getAdvancedFiltersDefaultValues, getQueryToBe } from './utils';
 import { ScrollableContainer } from '../../commons/scrollable-container';
 
@@ -34,9 +34,8 @@ export const AdvancedFilterModal = ({
 		[includeSharedItemsInSearchDefaultPref, query]
 	);
 
-	const hasPerformedSearch = useRef(false);
 	const methods = useForm<AdvancedFilterModalFormValues>({ defaultValues });
-	const { reset, watch, setValue, control } = methods;
+	const { watch, setValue, control } = methods;
 	const formValues = watch();
 
 	const resetFilters = useCallback(() => {
@@ -61,26 +60,10 @@ export const AdvancedFilterModal = ({
 
 	const queryToBe = getQueryToBe(formValues);
 
-	const onModalConfirm = useCallback(
-		({
-			query: searchQuery,
-			includeSharedFolders
-		}: {
-			query: Query;
-			includeSharedFolders: boolean;
-		}) => {
-			setValue('isSharedFolderIncluded', includeSharedFolders);
-			updateQuery(searchQuery);
-		},
-		[setValue, updateQuery]
-	);
-	const isSharedFolderIncluded = watch('isSharedFolderIncluded');
 	const onConfirm = useCallback(() => {
 		const controller = new AbortController();
-		const includeSharedFolders = watch('isSharedFolderIncluded');
 		try {
-			hasPerformedSearch.current(true);
-			onModalConfirm({ query: queryToBe, includeSharedFolders: isSharedFolderIncluded });
+			updateQuery(queryToBe);
 			onClose();
 		} catch (error) {
 			controller.abort();
@@ -88,16 +71,14 @@ export const AdvancedFilterModal = ({
 		return () => {
 			controller.abort();
 		};
-	}, [watch, onModalConfirm, queryToBe, isSharedFolderIncluded, onClose]);
-
-	useEffect(() => {
-		reset(defaultValues);
-	}, [defaultValues, reset]);
+	}, [updateQuery, queryToBe, onClose]);
 
 	const onCloseCallback = useCallback(() => {
 		resetFilters();
 		onClose();
 	}, [onClose, resetFilters]);
+
+	const isSharedFolderIncluded = watch('isSharedFolderIncluded');
 
 	return (
 		<>
