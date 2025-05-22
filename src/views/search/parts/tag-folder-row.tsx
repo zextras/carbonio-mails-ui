@@ -180,6 +180,7 @@ export const TagFolderRow = ({
 							disabled
 							iconAction={openFolderModal}
 							requireUniqueChips
+							data-testid="folderInput"
 						/>
 					)}
 				/>
@@ -195,6 +196,7 @@ export const TagFolderRow = ({
 						showSharedAccounts
 						showTrashFolder
 						showSpamFolder
+						data-testid="selectFolderModal"
 					/>
 				</CustomModal>
 			</Container>

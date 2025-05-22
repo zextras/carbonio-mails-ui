@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { ReactNode } from 'react';
+import React, { act, ReactNode } from 'react';
 
 import { faker } from '@faker-js/faker';
 import { screen, waitFor, within } from '@testing-library/react';
@@ -11,12 +11,17 @@ import { UserEvent } from '@testing-library/user-event';
 import { format } from 'date-fns';
 import { useForm, FormProvider } from 'react-hook-form';
 
+import { getTags } from '../../../carbonio-ui-commons/store/zustand/tags';
+import { generateFolder } from '../../../carbonio-ui-commons/test/mocks/folders/folders-generator';
 import {
 	EDIT_ACTION,
 	generateMockContactInputItem,
 	mockContactInput
 } from '../../../carbonio-ui-commons/test/mocks/integrations/mock-contact-input';
+import { populateFoldersStore } from '../../../carbonio-ui-commons/test/mocks/store/folders';
+import { tags as mockTags } from '../../../carbonio-ui-commons/test/mocks/tags/tags';
 import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
+import { TIMERS } from '../../../tests/constants';
 import { AdvancedFilterModal } from '../advanced-filter-modal';
 import {
 	AdvancedFilterModalProps,
@@ -25,8 +30,6 @@ import {
 	SearchQueryItem
 } from '../types/types';
 import { getAdvancedFiltersDefaultValues } from '../utils';
-import { getTags } from '../../../carbonio-ui-commons/store/zustand/tags';
-import { tags as mockTags } from '../../../carbonio-ui-commons/test/mocks/tags/tags';
 
 jest.mock('../../../carbonio-ui-commons/store/zustand/tags/hooks', () => ({
 	getTags: jest.fn()
@@ -51,7 +54,6 @@ const renderWithUseForm = async (
 	component: React.JSX.Element,
 	formValues: Partial<AdvancedFilterModalFormValues> = {}
 ): Promise<{ user: UserEvent }> => {
-	
 	const Wrapper = ({ children }: { children: ReactNode }): JSX.Element => {
 		const methods = useForm<AdvancedFilterModalFormValues>({ defaultValues: formValues });
 		return <FormProvider {...methods}>{children}</FormProvider>;
@@ -620,11 +622,37 @@ describe('Advanced filter modal', () => {
 	it(`should reset 'tags' when reset button is pressed`, async () => {
 		(getTags as jest.Mock).mockReturnValue(mockTags);
 		await checkResetAndSearchButton(async (user) => {
-			const selectElement = screen.getByTestId('tagInput')
+			const selectElement = screen.getByTestId('tagInput');
 			expect(selectElement).toBeInTheDocument();
 			await user.click(selectElement);
 			const selectOption = screen.getAllByTestId('dropdown-item')[0];
 			await user.click(selectOption);
+		});
+	});
+
+	it(`should reset 'Is contained in' input when reset button is pressed`, async () => {
+		const folderName = 'random-inbox';
+		populateFoldersStore({
+			customFolders: [generateFolder({ id: '222', name: folderName })]
+		});
+		await checkResetAndSearchButton(async (user) => {
+			const openFolderDialogButton = within(screen.getByTestId('folderInput')).getByTestId(
+				'icon: FolderOutline'
+			);
+			expect(openFolderDialogButton).toBeInTheDocument();
+			await user.click(openFolderDialogButton);
+
+			act(() => {
+				jest.advanceTimersByTime(TIMERS.modal_open_delay);
+			});
+
+			const folderOption = screen.getByText(folderName);
+
+			await user.click(folderOption);
+
+			const chooseFolderButton = screen.getByRole('button', { name: 'label.choose_folder' });
+
+			await user.click(chooseFolderButton);
 		});
 	});
 

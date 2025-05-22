@@ -55,6 +55,7 @@ export const AdvancedFilterModal = ({
 		setValue('emailStatus', []);
 		setValue('isSharedFolderIncluded', includeSharedItemsInSearchDefaultPref);
 		setValue('tagInput', []);
+		setValue('folderInput', []);
 	}, [setValue, includeSharedItemsInSearchDefaultPref]);
 
 	const queryToBe = getQueryToBe(formValues);
