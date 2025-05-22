@@ -78,7 +78,8 @@ export const AdvancedFilterModal = ({
 		const controller = new AbortController();
 		const includeSharedFolders = watch('isSharedFolderIncluded');
 		try {
-			onModalConfirm({ query: queryToBe, includeSharedFolders });
+			setHasPerformedSearch(true);
+			onSearchConfirm({ query: queryToBe, includeSharedFolders: isSharedFolderIncluded });
 			onClose();
 		} catch (error) {
 			controller.abort();
