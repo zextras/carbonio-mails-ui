@@ -34,6 +34,7 @@ export const AdvancedFilterModal = ({
 		[includeSharedItemsInSearchDefaultPref, query]
 	);
 
+	const hasPerformedSearch = useRef(false);
 	const methods = useForm<AdvancedFilterModalFormValues>({ defaultValues });
 	const { reset, watch, setValue, control } = methods;
 	const formValues = watch();
@@ -78,8 +79,8 @@ export const AdvancedFilterModal = ({
 		const controller = new AbortController();
 		const includeSharedFolders = watch('isSharedFolderIncluded');
 		try {
-			setHasPerformedSearch(true);
-			onSearchConfirm({ query: queryToBe, includeSharedFolders: isSharedFolderIncluded });
+			hasPerformedSearch.current(true);
+			onModalConfirm({ query: queryToBe, includeSharedFolders: isSharedFolderIncluded });
 			onClose();
 		} catch (error) {
 			controller.abort();
@@ -87,7 +88,7 @@ export const AdvancedFilterModal = ({
 		return () => {
 			controller.abort();
 		};
-	}, [watch, onModalConfirm, queryToBe, onClose]);
+	}, [watch, onModalConfirm, queryToBe, isSharedFolderIncluded, onClose]);
 
 	useEffect(() => {
 		reset(defaultValues);
