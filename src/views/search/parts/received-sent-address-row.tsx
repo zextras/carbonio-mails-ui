@@ -17,7 +17,7 @@ import { FormValuesControlProps } from '../types/types';
 export const ReceivedSentAddressRow = ({ control }: FormValuesControlProps): React.JSX.Element => {
 	const ContactInput = useContactInput();
 
-	const labelFactory = useCallback<NonNullable<ContactInputProps['labelFactory']>>(
+	const chipLabelFactory = useCallback<NonNullable<ContactInputProps['chipLabelFactory']>>(
 		(value, defaultLabel): string => {
 			if (value.type === CONTACT_TYPES.CONTACT) {
 				return value.email;
@@ -39,7 +39,7 @@ export const ReceivedSentAddressRow = ({ control }: FormValuesControlProps): Rea
 							placeholder={t('label.from', 'From')}
 							onChange={onChange}
 							defaultValue={value}
-							labelFactory={labelFactory}
+							chipLabelFactory={chipLabelFactory}
 						/>
 					)}
 				/>
@@ -54,7 +54,7 @@ export const ReceivedSentAddressRow = ({ control }: FormValuesControlProps): Rea
 							placeholder={t('label.to', 'To')}
 							onChange={onChange}
 							defaultValue={value}
-							labelFactory={labelFactory}
+							chipLabelFactory={chipLabelFactory}
 						/>
 					)}
 				/>
