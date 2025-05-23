@@ -4,9 +4,6 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
-import { generateFolder } from '../../../carbonio-ui-commons/test/mocks/folders/folders-generator';
-import { OnDropActionProps } from '../../../carbonio-ui-commons/types/sidebar';
 import { handleDragEnter } from '../utils';
 
 describe('handleDragEnter', () => {

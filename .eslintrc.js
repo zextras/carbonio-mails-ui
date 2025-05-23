@@ -4,5 +4,5 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 module.exports = {
-	extends: ['./src/carbonio-ui-commons/.eslintrc.js']
+	extends: require.resolve('@zextras/carbonio-ui-commons/.eslintrc.js')
 };
