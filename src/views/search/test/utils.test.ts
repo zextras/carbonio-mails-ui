@@ -4,171 +4,17 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { faker } from '@faker-js/faker';
 import type { QueryChip } from '@zextras/carbonio-search-ui';
 import { keyBy } from 'lodash';
+import moment from 'moment';
 
 import { createFakeIdentity } from '../../../carbonio-ui-commons/test/mocks/accounts/fakeAccounts';
 import {
 	generateFolder,
 	generateFolderLink
 } from '../../../carbonio-ui-commons/test/mocks/folders/folders-generator';
-import { generateQueryString, getChipItems, getChipString, updateQueryChips } from '../utils';
-
-const name1 = faker.person.firstName();
-const name2 = faker.person.firstName();
-const surname1 = faker.person.lastName();
-const surname2 = faker.person.lastName();
-const domain = faker.internet.domainName();
-const email1 = `${name1}.${surname1}@${domain}`;
-const email2 = `${name2}.${surname2}@${domain}`;
-const fullName1 = `${name1} ${surname1}`;
-const fullName2 = `${name2} ${surname2}`;
-
-const mockContactInputItem1 = {
-	id: `undefined ${email1}`,
-	email: email1,
-	firstName: name1,
-	lastName: surname1,
-	fullName: fullName1,
-	isGroup: false,
-	label: fullName1
-};
-
-const mockContactInputItem2 = {
-	id: `undefined ${email2}`,
-	email: email2,
-	firstName: name2,
-	lastName: surname2,
-	fullName: fullName2,
-	isGroup: false,
-	label: fullName2
-};
-
-const mockSearchQueryItem1 = {
-	label: fullName1,
-	hasAvatar: false,
-	value: fullName1
-};
-
-const mockSearchQueryItem2 = {
-	label: fullName2,
-	hasAvatar: false,
-	value: fullName2
-};
-
-describe('getChipString function', () => {
-	it('should return the label for SearchQueryItem when it matches the regex', () => {
-		const prefix = 'to';
-		const result = getChipString(mockSearchQueryItem1, prefix);
-		const expected = `${prefix}:${mockSearchQueryItem1.label}`;
-		expect(result).toBe(expected);
-	});
-
-	it('should prefix the label for SearchQueryItem when it does not match the regex', () => {
-		const prefix = 'nonMatchingPrefix';
-		const result = getChipString(mockSearchQueryItem1, prefix);
-		expect(result).toBe(`${prefix}:${mockSearchQueryItem1.label}`);
-	});
-
-	it('should return the fullName for ContactInputItem when there is a prefix', () => {
-		const prefix = 'from';
-		const result = getChipString(mockContactInputItem1, prefix);
-		const prefixedMockContactInputItem = `${prefix}:${mockContactInputItem1.fullName}`;
-		expect(result).toBe(prefixedMockContactInputItem);
-	});
-
-	it('should prefix the fullName for ContactInputItem when it does not match the regex', () => {
-		const prefix = 'nonMatchingPrefix';
-		const result = getChipString(mockContactInputItem1, prefix);
-		expect(result).toBe(`${prefix}:${mockContactInputItem1.fullName}`);
-	});
-
-	it('should handle missing label in SearchQueryItem by returning prefixed empty string', () => {
-		const item = {};
-		const prefix = 'test';
-		const result = getChipString(item, prefix);
-		expect(result).toBe(`${prefix}:`);
-	});
-
-	it('should handle missing fullName in ContactInputItem by returning prefixed empty string', () => {
-		const item = {};
-		const prefix = 'test';
-		const result = getChipString(item, prefix);
-		expect(result).toBe(`${prefix}:`);
-	});
-});
-
-describe('getChipItems function', () => {
-	const prefix = 'to';
-
-	const mockPrefixedSearchQueryItem1 = {
-		label: `${prefix}:${mockSearchQueryItem1.label}`,
-		value: `${prefix}:${mockSearchQueryItem1.label}`
-	};
-	const mockPrefixedSearchQueryItem2 = {
-		label: `${prefix}:${mockSearchQueryItem2.label}`,
-		value: `${prefix}:${mockSearchQueryItem2.label}`
-	};
-	const expectedResult1 = {
-		label: mockPrefixedSearchQueryItem1.label,
-		value: mockPrefixedSearchQueryItem1.value,
-		fullName: mockPrefixedSearchQueryItem1.label,
-		id: expect.stringContaining(surname1),
-		hasAvatar: true,
-		isGeneric: false,
-		isQueryFilter: true,
-		error: false,
-		avatarIcon: 'EmailOutline',
-		avatarBackground: 'secondary'
-	};
-	const expectedResult2 = {
-		...expectedResult1,
-		label: mockPrefixedSearchQueryItem2.label,
-		value: mockPrefixedSearchQueryItem2.value,
-		fullName: mockPrefixedSearchQueryItem2.label,
-		id: expect.stringContaining(surname2)
-	};
-
-	it('should return an empty array when input is an empty array', () => {
-		const result = getChipItems([], 'testPrefix');
-		expect(result).toEqual([]);
-	});
-
-	it('should handle a single SearchQueryItem correctly', () => {
-		const result = getChipItems([mockPrefixedSearchQueryItem1], prefix);
-		expect(result).toBeInstanceOf(Array);
-		expect(result).toHaveLength(1);
-		expect(result[0]).toMatchObject(expectedResult1);
-	});
-
-	it('should handle an single ContactInputItem objects correctly', () => {
-		const result = getChipItems([mockContactInputItem1], prefix);
-		expect(result).toBeInstanceOf(Array);
-		expect(result).toHaveLength(1);
-		expect(result[0]).toMatchObject(expectedResult1);
-	});
-
-	it('should handle an array of SearchQueryItem correctly', () => {
-		const result = getChipItems(
-			[mockPrefixedSearchQueryItem1, mockPrefixedSearchQueryItem2],
-			prefix
-		);
-
-		expect(result).toBeInstanceOf(Array);
-		expect(result).toHaveLength(2);
-		expect(result[0]).toMatchObject(expectedResult1);
-		expect(result[1]).toMatchObject(expectedResult2);
-	});
-
-	it('should handle an array of ContactInputItem correctly', () => {
-		const result = getChipItems([mockContactInputItem1, mockContactInputItem2], prefix);
-		expect(result).toBeInstanceOf(Array);
-		expect(result).toHaveLength(2);
-		expect(result[0]).toMatchObject(expectedResult1);
-		expect(result[1]).toMatchObject(expectedResult2);
-	});
-});
+import { Query } from '../types/types';
+import { generateQueryString, getAdvancedFiltersDefaultValues, updateQueryChips } from '../utils';
 
 describe('generateQueryString', () => {
 	const query = [
@@ -243,5 +89,197 @@ describe('updateQueryChips', () => {
 		updateQueryChips(query, isInvalidQuery, updateQuery);
 
 		expect(updateQuery).not.toHaveBeenCalled();
+	});
+
+	it('should skip processing chips that have isGeneric or isQueryFilter', () => {
+		const query = [
+			{ label: 'has:attachment', isGeneric: true },
+			{ label: 'is:unread', isQueryFilter: true }
+		];
+		const updateQuery = jest.fn();
+		updateQueryChips(query, false, updateQuery);
+
+		expect(updateQuery).not.toHaveBeenCalled();
+	});
+
+	it('should not call updateQuery if no chips were modified', () => {
+		const mockQuery = [{ label: 'unknown:field' }, { label: 'has:attachment', isGeneric: true }];
+
+		const updateQuery = jest.fn();
+
+		updateQueryChips(mockQuery, false, updateQuery);
+
+		expect(updateQuery).not.toHaveBeenCalled();
+	});
+});
+
+describe('getAdvancedFiltersDefaultValues', () => {
+	it('should return default values when query is empty', () => {
+		const result = getAdvancedFiltersDefaultValues([], false);
+		expect(result).toEqual({
+			attachmentType: [],
+			emailStatus: [],
+			keywordInput: [],
+			subjectInput: [],
+			hasAttachment: false,
+			isFlagged: false,
+			isUnread: false,
+			sentBefore: null,
+			sentAfter: null,
+			sentOn: null,
+			sizeSmaller: [],
+			sizeLarger: [],
+			receivedFrom: [],
+			sentTo: [],
+			tagInput: [],
+			folderInput: [],
+			isSharedFolderIncluded: false
+		});
+	});
+
+	it('should detect "is:unread"', () => {
+		const query = [{ label: 'is:unread' }] as Query;
+		const result = getAdvancedFiltersDefaultValues(query, false);
+		expect(result.isUnread).toBe(true);
+	});
+
+	it('should detect "is:flagged"', () => {
+		const query = [{ label: 'is:flagged' }] as Query;
+		const result = getAdvancedFiltersDefaultValues(query, false);
+		expect(result.isFlagged).toBe(true);
+	});
+
+	it('should detect "has:attachment"', () => {
+		const query = [{ label: 'has:attachment' }] as Query;
+		const result = getAdvancedFiltersDefaultValues(query, false);
+		expect(result.hasAttachment).toBe(true);
+	});
+
+	it('should extract sentBefore date', () => {
+		const dateStr = '2023-12-01';
+		const query = [{ label: `before:${dateStr}` }] as Query;
+		const result = getAdvancedFiltersDefaultValues(query, false);
+		expect(moment(result.sentBefore).format('YYYY-MM-DD')).toBe(dateStr);
+	});
+
+	it('should extract sentAfter date', () => {
+		const dateStr = '2023-12-01';
+		const query = [{ label: `after:${dateStr}` }] as Query;
+		const result = getAdvancedFiltersDefaultValues(query, false);
+		expect(moment(result.sentAfter).format('YYYY-MM-DD')).toBe(dateStr);
+	});
+
+	it('should extract sentOn date', () => {
+		const dateStr = '2023-12-01';
+		const query = [{ label: `date:${dateStr}` }] as Query;
+		const result = getAdvancedFiltersDefaultValues(query, false);
+		expect(moment(result.sentOn).format('YYYY-MM-DD')).toBe(dateStr);
+	});
+
+	it('should extract multiple dates correctly without conflict', () => {
+		const beforeStr = '2023-12-01';
+		const afterStr = '2023-12-05';
+		const dateStr = '2023-12-10';
+
+		const query = [
+			{ label: `before:${beforeStr}` },
+			{ label: `after:${afterStr}` },
+			{ label: `date:${dateStr}` }
+		] as Query;
+
+		const result = getAdvancedFiltersDefaultValues(query, false);
+
+		expect(moment(result.sentBefore).format('YYYY-MM-DD')).toBe(beforeStr);
+		expect(moment(result.sentAfter).format('YYYY-MM-DD')).toBe(afterStr);
+		expect(moment(result.sentOn).format('YYYY-MM-DD')).toBe(dateStr);
+	});
+
+	it('should extract sizeSmaller filter', () => {
+		const query = [{ label: 'Smaller:100KB' }] as Query;
+		const result = getAdvancedFiltersDefaultValues(query, false);
+		expect(result.sizeSmaller).toHaveLength(1);
+		expect(result.sizeSmaller[0].label).toBe('Smaller:100KB');
+	});
+
+	it('should extract sizeLarger filter', () => {
+		const query = [{ label: 'Larger:5MB' }] as Query;
+		const result = getAdvancedFiltersDefaultValues(query, false);
+		expect(result.sizeLarger).toHaveLength(1);
+		expect(result.sizeLarger[0].label).toBe('Larger:5MB');
+	});
+
+	it('should extract sentTo email', () => {
+		const query = [{ label: 'to:test@example.com', value: 'test@example.com' }] as Query;
+		const result = getAdvancedFiltersDefaultValues(query, false);
+		expect(result.sentTo).toHaveLength(1);
+		expect(result.sentTo[0].value.email).toBe('test@example.com');
+	});
+
+	it('should extract receivedFrom email', () => {
+		const query = [{ label: 'from:test@example.com', value: 'test@example.com' }] as Query;
+		const result = getAdvancedFiltersDefaultValues(query, false);
+		expect(result.receivedFrom).toHaveLength(1);
+		expect(result.receivedFrom[0].value.email).toBe('test@example.com');
+	});
+
+	it('should extract tagInput', () => {
+		const query = [{ label: 'tag:Work' }] as Query;
+		const result = getAdvancedFiltersDefaultValues(query, false);
+		expect(result.tagInput).toHaveLength(1);
+		expect(result.tagInput[0].label).toBe('tag:Work');
+	});
+
+	it('should extract folderInput', () => {
+		const query = [{ label: 'in:Inbox' }] as Query;
+		const result = getAdvancedFiltersDefaultValues(query, false);
+		expect(result.folderInput).toHaveLength(1);
+		expect(result.folderInput[0].label).toBe('in:Inbox');
+	});
+
+	it('should extract emailStatus (Is:*)', () => {
+		const query = [{ label: 'Is:replied' }] as Query;
+		const result = getAdvancedFiltersDefaultValues(query, false);
+		expect(result.emailStatus).toHaveLength(1);
+		expect(result.emailStatus[0].label).toBe('Is:replied');
+	});
+
+	it('should extract attachmentType', () => {
+		const query = [{ label: 'Attachment:.pdf' }] as Query;
+		const result = getAdvancedFiltersDefaultValues(query, false);
+		expect(result.attachmentType).toHaveLength(1);
+		expect(result.attachmentType[0].label).toBe('Attachment:.pdf');
+	});
+
+	it('should extract subjectInput', () => {
+		const query = [{ label: 'Subject:Meeting Reminder' }] as Query;
+		const result = getAdvancedFiltersDefaultValues(query, false);
+		expect(result.subjectInput).toHaveLength(1);
+		expect(result.subjectInput[0].label).toBe('Subject:Meeting Reminder');
+	});
+
+	it('should extract keywordInput as fallback for non-matching queries', () => {
+		const query = [{ label: 'project alpha' }] as Query;
+		const result = getAdvancedFiltersDefaultValues(query, false);
+		expect(result.keywordInput).toHaveLength(1);
+		expect(result.keywordInput[0].label).toBe('project alpha');
+	});
+
+	it('should ignore excluded prefixes in keywordInput', () => {
+		const query = [
+			{ label: 'has:attachment' },
+			{ label: 'Subject:test' },
+			{ label: 'in:Inbox' },
+			{ label: 'before:2024-01-01' },
+			{ label: 'random keyword' }
+		] as Query;
+
+		const result = getAdvancedFiltersDefaultValues(query, false);
+		expect(result.keywordInput).toHaveLength(1);
+		expect(result.keywordInput[0].label).toBe('random keyword');
+	});
+
+	it('should set isSharedFolderIncluded flag properly', () => {
+		const result = getAdvancedFiltersDefaultValues([], true);
+		expect(result.isSharedFolderIncluded).toBe(true);
 	});
 });
