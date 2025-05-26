@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React from 'react';
 import React, { useCallback, useState } from 'react';
 
 import {
@@ -15,9 +14,9 @@ import {
 	Text,
 	useSnackbar
 } from '@zextras/carbonio-design-system';
+import { default as ModalFooter, default as ModalHeader } from '@zextras/carbonio-ui-commons';
 import { useTranslation } from 'react-i18next';
 
-import { default as ModalFooter, default as ModalHeader } from '@zextras/carbonio-ui-commons';
 import { checkEncryptionPassword } from '../../../api/check-password-api';
 import { useSmimePasswordStore } from '../../../store/certificates/store';
 

@@ -4,19 +4,18 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React from 'react';
 import React, { ReactElement, useCallback, useMemo, useState } from 'react';
 
 import { Container, Divider, Text } from '@zextras/carbonio-design-system';
-import { map, some } from 'lodash';
-import { useTranslation } from 'react-i18next';
-
 import {
 	ContactInputItem,
 	default as ModalFooter,
 	default as ModalHeader,
 	useContactInput
 } from '@zextras/carbonio-ui-commons';
+import { map, some } from 'lodash';
+import { useTranslation } from 'react-i18next';
+
 import { redirectMessageSoapApi } from '../api';
 import { TIMEOUTS } from '../constants';
 import { useUiUtilities } from '../hooks/use-ui-utilities';

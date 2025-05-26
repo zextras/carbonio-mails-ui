@@ -1,16 +1,14 @@
-/* eslint-disable sonarjs/no-duplicate-string */
-// noinspection DuplicatedCode
-
 /*
- * SPDX-FileCopyrightText: 2022 Zextras <https://www.zextras.com>
+ * SPDX-FileCopyrightText: 2025 Zextras <https://www.zextras.com>
  *
-import React from 'react';
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { screen } from '@testing-library/react';
+import React from 'react';
 
+import { screen } from '@testing-library/react';
 import { previewContextMock, setupTest, useAppContext } from '@zextras/carbonio-ui-commons';
+
 import { getMessageById } from '../../../../../store/emails/store';
 import AttachmentsBlock from '../attachments-block';
 

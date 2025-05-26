@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React from 'react';
 import React, { useCallback, useRef, useState } from 'react';
 
 import {
@@ -18,12 +17,12 @@ import {
 	Tooltip,
 	useSnackbar
 } from '@zextras/carbonio-design-system';
+import { default as ModalFooter, default as ModalHeader } from '@zextras/carbonio-ui-commons';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 
-import { default as ModalFooter, default as ModalHeader } from '@zextras/carbonio-ui-commons';
-import { PersonalCertificate } from '../../../store/certificates/store';
 import { handleCertificateFileUpload } from './certificate-utils';
+import { PersonalCertificate } from '../../../store/certificates/store';
 
 const FileInput = styled.input`
 	display: none;

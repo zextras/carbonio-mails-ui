@@ -4,17 +4,16 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React from 'react';
 import React, { useCallback } from 'react';
 
 import { Padding, Text } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
-
 import {
 	FOLDERS,
 	default as ModalFooter,
 	default as ModalHeader
 } from '@zextras/carbonio-ui-commons';
+
 import { useMsgMoveToTrashFn } from '../../../../../hooks/actions/use-msg-move-to-trash';
 import { deleteEditor } from '../../../../../store/editor';
 import { MailsEditorV2 } from '../../../../../types';
