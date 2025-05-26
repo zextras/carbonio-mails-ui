@@ -53,6 +53,32 @@ const MainEditModal: FC<MainEditModalProps> = ({ folder, onClose, setActiveModal
 
 	const { createSnackbar } = useUiUtilities();
 
+	const getRetentionDisplayValues = (
+		lifetime: string
+	): { dspYear: string; purgeValue: number | string; dspRange: string } => {
+		const d = parseInt(lifetime, 10);
+
+		let dspYear = 'd';
+		let purgeValue: number | string = d;
+		let dspRange = t(DAYS_LABEL, 'Days');
+
+		if (d % 365 === 0) {
+			dspYear = 'y';
+			purgeValue = d / 365;
+			dspRange = t(YEARS_LABEL, 'Years');
+		} else if (d % 31 === 0) {
+			dspYear = 'm';
+			purgeValue = d / 31;
+			dspRange = t(MONTHS_LABEL, 'Months');
+		} else if (d % 7 === 0) {
+			dspYear = 'w';
+			purgeValue = d / 7;
+			dspRange = t(WEEKS_LABEL, 'Weeks');
+		}
+
+		return { dspYear, purgeValue, dspRange };
+	};
+
 	useEffect(() => {
 		if (
 			folder.retentionPolicy &&
@@ -62,25 +88,7 @@ const MainEditModal: FC<MainEditModalProps> = ({ folder, onClose, setActiveModal
 			Object.keys(folder.retentionPolicy[0].purge[0]).length !== 0
 		) {
 			const lifetime = folder.retentionPolicy[0]?.purge[0]?.policy[0]?.lifetime;
-			const d = parseInt(lifetime, 10);
-
-			let dspYear = 'd';
-			let purgeValue: number | string = d;
-			let dspRange = t(DAYS_LABEL, 'Days');
-
-			if (d % 365 === 0) {
-				dspYear = 'y';
-				purgeValue = d / 365;
-				dspRange = t(YEARS_LABEL, 'Years');
-			} else if (d % 31 === 0) {
-				dspYear = 'm';
-				purgeValue = d / 31;
-				dspRange = t(MONTHS_LABEL, 'Months');
-			} else if (d % 7 === 0) {
-				dspYear = 'w';
-				purgeValue = d / 7;
-				dspRange = t(WEEKS_LABEL, 'Weeks');
-			}
+			const { dspYear, purgeValue, dspRange } = getRetentionDisplayValues(lifetime);
 
 			setRetentionState({
 				showPolicy: true,
@@ -177,7 +185,7 @@ const MainEditModal: FC<MainEditModalProps> = ({ folder, onClose, setActiveModal
 		const retentionPolicy = buildRetentionPolicy(dsblMsgDis, numericValue, dspYear);
 
 		folderActionSoapApi({
-			folder: { ...folder, parent: folder.l || '', children: [] },
+			folder: { ...folder, parent: folder.l ?? '', children: [] },
 			name: folderNameInputValue,
 			op: 'update',
 			color: Number(folderColor),

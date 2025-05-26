@@ -22,8 +22,8 @@ import { useTranslation } from 'react-i18next';
 import { RetentionPolicyState } from '../../commons/types';
 
 type RetentionPoliciesProps = {
-	retentionState: RetentionPolicyState;
-	setRetentionState: (state: Partial<RetentionPolicyState>) => void;
+	retentionState?: RetentionPolicyState;
+	setRetentionState: (partial: Partial<RetentionPolicyState>) => void;
 };
 
 export const RetentionPolicies: FC<RetentionPoliciesProps> = ({

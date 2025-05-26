@@ -9,8 +9,8 @@ import React from 'react';
 import { screen } from '@testing-library/react';
 
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
-import { RetentionPolicies } from '../retention-policies';
 import { makeAllItemsVisible } from '../../../../settings/filters/tests/test-utils';
+import { RetentionPolicies } from '../retention-policies';
 
 const defaultRetentionState = {
 	showPolicy: true,
@@ -26,6 +26,10 @@ const defaultProps = {
 	setRetentionState: jest.fn()
 };
 describe('RetentionPolicies Component', () => {
+	afterEach(() => {
+		jest.clearAllMocks();
+	});
+
 	it('renders the header and toggle button', () => {
 		setupTest(<RetentionPolicies {...defaultProps} />);
 		expect(screen.getByText('Retention policy')).toBeInTheDocument();
@@ -39,17 +43,18 @@ describe('RetentionPolicies Component', () => {
 		expect(defaultProps.setRetentionState).toHaveBeenCalledWith({ showPolicy: false });
 	});
 
-	// it('calls setRetentionState when checkbox is toggled', async () => {
-	// 	const setRetentionState = jest.fn();
-	// 	const { user } = setupTest(
-	// 		<RetentionPolicies
-	// 			retentionState={{ ...defaultRetentionState, dsblMsgDis: false }}
-	// 			setRetentionState={setRetentionState}
-	// 		/>
-	// 	);
-	// 	await user.click(screen.getByTestId('enableMsgDisposal'));
-	// 	expect(setRetentionState).toHaveBeenCalledWith({ dsblMsgDis: true });
-	// });
+	it('calls setRetentionState when checkbox is toggled', async () => {
+		const setRetentionState = jest.fn();
+		const { user } = setupTest(
+			<RetentionPolicies
+				retentionState={{ ...defaultRetentionState, dsblMsgDis: false }}
+				setRetentionState={setRetentionState}
+			/>
+		);
+		makeAllItemsVisible();
+		await user.click(screen.getByTestId('enableMsgDisposal'));
+		expect(setRetentionState).toHaveBeenCalledWith({ dsblMsgDis: true });
+	});
 
 	it('displays warning message when emptyDisValue is true', () => {
 		setupTest(
@@ -156,5 +161,34 @@ describe('RetentionPolicies Component', () => {
 			dspYear: 'y',
 			dspRange: 'Years'
 		});
+	});
+
+	test('uses default values when retentionState is undefined', () => {
+		setupTest(<RetentionPolicies setRetentionState={jest.fn()} />);
+
+		expect(screen.getByTestId('retention_policy-icon')).toBeInTheDocument();
+		const input = screen.getByLabelText(/disposal threshold/i);
+		expect(input).toBeDisabled();
+		expect(input).toHaveValue('');
+	});
+
+	test('handles empty retentionState object and defaults values', () => {
+		setupTest(
+			<RetentionPolicies
+				retentionState={{
+					showPolicy: true,
+					dsblMsgDis: false,
+					emptyDisValue: false,
+					purgeValue: '',
+					dspYear: 'd',
+					dspRange: 'Days'
+				}}
+				setRetentionState={jest.fn()}
+			/>
+		);
+
+		const input = screen.getByLabelText(/disposal threshold/i);
+		expect(input).toBeDisabled();
+		expect(input).toHaveValue('');
 	});
 });
