@@ -24,7 +24,6 @@ const defaultProps = {
 	retentionState: defaultRetentionState,
 	setRetentionState: jest.fn()
 };
-
 describe('RetentionPolicies Component', () => {
 	it('renders the header and toggle button', () => {
 		setupTest(<RetentionPolicies {...defaultProps} />);
@@ -38,6 +37,18 @@ describe('RetentionPolicies Component', () => {
 		await user.click(toggleButton);
 		expect(defaultProps.setRetentionState).toHaveBeenCalledWith({ showPolicy: false });
 	});
+
+	// it('calls setRetentionState when checkbox is toggled', async () => {
+	// 	const setRetentionState = jest.fn();
+	// 	const { user } = setupTest(
+	// 		<RetentionPolicies
+	// 			retentionState={{ ...defaultRetentionState, dsblMsgDis: false }}
+	// 			setRetentionState={setRetentionState}
+	// 		/>
+	// 	);
+	// 	await user.click(screen.getByTestId('enableMsgDisposal'));
+	// 	expect(setRetentionState).toHaveBeenCalledWith({ dsblMsgDis: true });
+	// });
 
 	it('displays warning message when emptyDisValue is true', () => {
 		setupTest(
@@ -82,6 +93,40 @@ describe('RetentionPolicies Component', () => {
 		const input = screen.getByLabelText('Disposal Threshold');
 		expect(input).toBeEnabled();
 	});
+
+	it('updates purgeValue when input is changed', async () => {
+		const setRetentionState = jest.fn();
+		const { user } = setupTest(
+			<RetentionPolicies
+				retentionState={{ ...defaultRetentionState, dsblMsgDis: true }}
+				setRetentionState={setRetentionState}
+			/>
+		);
+		screen.logTestingPlaygroundURL();
+		const input = screen.getByRole('textbox', { name: /disposal threshold/i });
+		// const input = screen.getByLabelText(/disposal threshold/i);
+		expect(input).toBeEnabled();
+		await user.type(input, '30');
+		expect(setRetentionState).toHaveBeenLastCalledWith({ purgeValue: '30' });
+	});
+
+	// it('resets emptyDisValue when typing into the input', async () => {
+	// 	const setRetentionState = jest.fn();
+	// 	const { user } = setupTest(
+	// 		<RetentionPolicies
+	// 			retentionState={{
+	// 				...defaultRetentionState,
+	// 				dsblMsgDis: true,
+	// 				emptyDisValue: true
+	// 			}}
+	// 			setRetentionState={setRetentionState}
+	// 		/>
+	// 	);
+	// 	const input = screen.getByRole('textbox', { name: /disposal threshold/i });
+	// 	await user.type(input, '5');
+	// 	expect(setRetentionState).toHaveBeenCalledWith({ emptyDisValue: false });
+	// 	expect(setRetentionState).toHaveBeenLastCalledWith({ purgeValue: '5' });
+	// });
 
 	it('shows the correct selected value in the select dropdown', () => {
 		setupTest(
