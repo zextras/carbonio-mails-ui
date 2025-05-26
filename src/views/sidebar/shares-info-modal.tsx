@@ -7,7 +7,7 @@ import { Container, Icon, Row, Text } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import type { Folder } from '@zextras/carbonio-ui-commons';
 import ModalHeader from '@zextras/carbonio-ui-commons';
-import { FC, useMemo } from 'react';
+import React, { FC, useMemo } from 'react';
 
 export const ShareInfoRow: FC<{
 	icon: string;

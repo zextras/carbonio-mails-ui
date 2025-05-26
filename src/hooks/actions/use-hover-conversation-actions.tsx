@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { useMemo } from 'react';
+import React, { useMemo } from 'react';
 
 import { getParentFolderId } from '../../helpers/folders';
 import { UIActionDescriptor } from '../../types';

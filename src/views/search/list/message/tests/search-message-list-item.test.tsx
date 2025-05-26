@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { act } from 'react';
+import React, { act } from 'react';
 
 import { screen, waitFor } from '@testing-library/react';
 import { AccountSettings } from '@zextras/carbonio-shell-ui';

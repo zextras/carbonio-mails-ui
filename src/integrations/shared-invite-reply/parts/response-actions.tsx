@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { ChangeEvent, FC, ReactElement, useCallback, useMemo, useState } from 'react';
+import React, { ChangeEvent, FC, ReactElement, useCallback, useMemo, useState } from 'react';
 
 import { Button, Checkbox, Divider, Input, Padding, Row } from '@zextras/carbonio-design-system';
 import { useUserAccounts } from '@zextras/carbonio-shell-ui';

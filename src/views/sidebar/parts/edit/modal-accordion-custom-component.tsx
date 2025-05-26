@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { FC } from 'react';
+import React, { FC } from 'react';
 
 import {
 	AccordionItem,

@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { act } from 'react';
+import React, { act } from 'react';
 
 import { faker } from '@faker-js/faker';
 import { screen } from '@testing-library/react';

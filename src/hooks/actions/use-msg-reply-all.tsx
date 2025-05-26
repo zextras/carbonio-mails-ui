@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 
 import { useTranslation } from 'react-i18next';
 

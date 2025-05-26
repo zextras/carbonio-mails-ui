@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { useCallback } from 'react';
+import React, { useCallback } from 'react';
 
 import { useConversationById } from '../store/emails/store';
 import { NormalizedConversation } from '../types';

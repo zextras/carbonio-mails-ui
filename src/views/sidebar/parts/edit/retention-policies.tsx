@@ -16,7 +16,7 @@ import {
 } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import type { RetentionPoliciesProps } from '@zextras/carbonio-ui-commons';
-import { ChangeEvent, FC } from 'react';
+import React, { ChangeEvent, FC } from 'react';
 
 const RetentionPolicies: FC<RetentionPoliciesProps> = ({
 	showPolicy,

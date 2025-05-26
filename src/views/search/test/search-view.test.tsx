@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { ReactElement } from 'react';
+import React, { ReactElement } from 'react';
 
 import { act, waitFor } from '@testing-library/react';
 import type { QueryChip, SearchViewProps } from '@zextras/carbonio-search-ui';

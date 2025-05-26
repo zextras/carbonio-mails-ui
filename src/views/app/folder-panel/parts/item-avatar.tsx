@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { FC, SyntheticEvent, useCallback, useMemo } from 'react';
+import React, { FC, SyntheticEvent, useCallback, useMemo } from 'react';
 
 import { Avatar, Container } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';

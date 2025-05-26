@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { useCallback, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 
 import { map, omit } from 'lodash';
 

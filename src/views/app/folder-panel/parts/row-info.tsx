@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { FC, useMemo } from 'react';
+import React, { FC, useMemo } from 'react';
 
 import { Icon, Padding, Row, Text } from '@zextras/carbonio-design-system';
 

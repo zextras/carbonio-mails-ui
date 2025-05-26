@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { act } from 'react';
+import React, { act } from 'react';
 
 import { useModal } from '@zextras/carbonio-design-system';
 import * as CarbonioShellUI from '@zextras/carbonio-shell-ui';

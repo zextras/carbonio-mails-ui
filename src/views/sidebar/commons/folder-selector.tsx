@@ -4,7 +4,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { ChangeEvent, ReactElement, useMemo, useState } from 'react';
+import React, { ChangeEvent, ReactElement, useMemo, useState } from 'react';
 
 import { ThemeProvider } from '@mui/material';
 import { Button, Container, Input, Padding } from '@zextras/carbonio-design-system';

@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { FC, useCallback, useMemo, useState } from 'react';
+import React, { FC, useCallback, useMemo, useState } from 'react';
 
 import {
 	ChipInput,

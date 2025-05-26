@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { useMemo } from 'react';
+import React, { useMemo } from 'react';
 
 import { CreateSnackbarFn, CreateSnackbarFnArgs } from '@zextras/carbonio-design-system';
 import { TFunction } from 'i18next';

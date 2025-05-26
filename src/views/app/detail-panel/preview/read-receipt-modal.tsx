@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { FC, ReactElement, useCallback, useEffect, useMemo } from 'react';
+import React, { FC, ReactElement, useCallback, useEffect, useMemo } from 'react';
 
 import { Container, CustomModal, Padding, Text } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';

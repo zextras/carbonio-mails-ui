@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { RefObject, useEffect } from 'react';
+import React, { RefObject, useEffect } from 'react';
 
 type StartedWhenMounted = null | boolean | HTMLInputElement;
 type StartedInside = null | boolean;

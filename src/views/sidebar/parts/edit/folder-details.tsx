@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { FC } from 'react';
+import React, { FC } from 'react';
 
 import { Container, Divider, Padding, Row, Text } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';

@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 
 import { useConversationKeyboardShortcuts } from '../../../../hooks/use-conversation-keyboard-shortcuts';
 

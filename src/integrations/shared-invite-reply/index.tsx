@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { FC, ReactElement, useMemo, useState } from 'react';
+import React, { FC, ReactElement, useMemo, useState } from 'react';
 
 import {
 	Button,

@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { ChangeEvent, FC, useCallback, useMemo, useState } from 'react';
+import React, { ChangeEvent, FC, useCallback, useMemo, useState } from 'react';
 
 import {
 	Checkbox,

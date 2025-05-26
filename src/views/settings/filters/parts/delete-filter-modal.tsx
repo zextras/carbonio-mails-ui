@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { FC, ReactElement } from 'react';
+import React, { FC, ReactElement } from 'react';
 
 import { Container, Text } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
