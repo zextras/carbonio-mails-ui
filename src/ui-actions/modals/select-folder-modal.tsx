@@ -4,14 +4,13 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { FC, useCallback, useMemo, useState } from 'react';
-import React from react;
 
 import { Container, Text } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
-import { isNil } from 'lodash';
-
 import type { Folder, RootFolder } from '@zextras/carbonio-ui-commons';
 import { default as ModalFooter, default as ModalHeader } from '@zextras/carbonio-ui-commons';
+import { isNil } from 'lodash';
+
 import { FolderSelector } from '../../views/sidebar/commons/folder-selector';
 
 type SelectFolderModalProps = {

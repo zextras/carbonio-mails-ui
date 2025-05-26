@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React from react;
+import React from 'react';
 import { screen } from '@testing-library/react';
 
 import { FOLDERS, setupTest, useTags, ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-ui-commons';

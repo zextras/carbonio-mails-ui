@@ -4,16 +4,15 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { ReactElement, useCallback, useMemo, useState } from 'react';
-import React from react;
 
 import { Container, Text } from '@zextras/carbonio-design-system';
-import { useTranslation } from 'react-i18next';
-
 import {
 	Folder,
 	default as ModalFooter,
 	default as ModalHeader
 } from '@zextras/carbonio-ui-commons';
+import { useTranslation } from 'react-i18next';
+
 import { isRoot } from '../helpers/folders';
 import { useUiUtilities } from '../hooks/use-ui-utilities';
 import { msgActionEmailStoreAction } from '../store/emails/actions/msg-action-action';

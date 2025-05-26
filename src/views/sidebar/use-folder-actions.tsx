@@ -26,6 +26,7 @@ import { useSelection } from '../../hooks/use-selection';
 import { useUiUtilities } from '../../hooks/use-ui-utilities';
 import { useMessagesByFolder } from '../../store/emails/store';
 import { AppContext } from '../../types';
+// import { SelectFolderModal } from '../../ui-actions/modals/select-folder-modal';
 import { SelectFolderModal } from '../../ui-actions/modals/select-folder-modal';
 import { MoveMessage } from '../../ui-actions/move-msg';
 
