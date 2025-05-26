@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 /* eslint-disable testing-library/prefer-user-event */
+import React from react;
 
 import { act, fireEvent, screen, waitFor } from '@testing-library/react';
 import { noop } from 'lodash';

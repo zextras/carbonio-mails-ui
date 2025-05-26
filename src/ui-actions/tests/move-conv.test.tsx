@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import React from react;
 import { act, screen, waitFor } from '@testing-library/react';
 import { times } from 'lodash';
 import * as reactRouterDom from 'react-router-dom';

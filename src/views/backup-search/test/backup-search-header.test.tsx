@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import React from react;
 import { screen } from '@testing-library/react';
 import * as hooks from '@zextras/carbonio-shell-ui';
 import { removeRoute } from '@zextras/carbonio-shell-ui';

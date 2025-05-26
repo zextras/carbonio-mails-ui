@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import React from react;
 import React, { ReactElement, useCallback, useMemo, useState } from 'react';
 
 import { Container, Divider, Text } from '@zextras/carbonio-design-system';

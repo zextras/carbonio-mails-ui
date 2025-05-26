@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import React from react;
 import { act, renderHook, within } from '@testing-library/react';
 import * as hooks from '@zextras/carbonio-shell-ui';
 import { AccountSettings } from '@zextras/carbonio-shell-ui';

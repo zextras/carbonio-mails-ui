@@ -4,6 +4,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import React from react;
 
 import { screen, waitFor, within } from '@testing-library/react';
 import userEvent, { UserEvent } from '@testing-library/user-event';

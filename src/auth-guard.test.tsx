@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import React from react;
 import { screen, setupTest } from '@zextras/carbonio-ui-commons';
 import { useAuthenticated } from '../__mocks__/@zextras/carbonio-shell-ui';
 import { AuthGuard } from './auth-guard';
