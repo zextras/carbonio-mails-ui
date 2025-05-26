@@ -58,7 +58,7 @@ import {
 
 const { setMessagesInSearchSlice } = getUseEmailStoreAndHooksForTesting();
 
-jest.mock('../../../../../carbonio-ui-commons/store/zustand/tags/hooks', () => ({
+jest.mock('@zextras/carbonio-ui-commons', () => ({
 	useTags: jest.fn()
 }));
 

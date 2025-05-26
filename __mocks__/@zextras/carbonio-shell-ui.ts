@@ -5,8 +5,9 @@
  */
 
 import shell from '@zextras/carbonio-shell-ui';
+import * as shellMock from '@zextras/carbonio-ui-commons/carbonio-shell-ui-mock';
 
-export * from '../../src/carbonio-ui-commons/test/mocks/carbonio-shell-ui';
+export default shellMock;
 
 // TODO move it in the Commons submodule
 export const useAuthenticated = jest
