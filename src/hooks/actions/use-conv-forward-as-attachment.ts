@@ -8,11 +8,11 @@ import { useCallback, useMemo } from 'react';
 
 import { useTranslation } from 'react-i18next';
 
-import { useMsgForwardAsAttachmentFn } from './use-msg-forward-as-attachment';
 import { ConversationActionsDescriptors, EditViewActions } from '../../constants';
 import { MIMETYPE_EML } from '../../helpers/attachments';
 import { ActionFn, UIActionDescriptor, UnsavedAttachment } from '../../types';
 import { createEditBoard } from '../../views/app/detail-panel/edit/edit-view-board';
+import { useMsgForwardAsAttachmentFn } from './use-msg-forward-as-attachment';
 
 type ConvForwardAsAttachmentAction = {
 	firstMessageId: string;

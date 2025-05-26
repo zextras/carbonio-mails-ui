@@ -5,6 +5,8 @@
  */
 import { useCallback } from 'react';
 
+import { useConversationById } from '../store/emails/store';
+import { NormalizedConversation } from '../types';
 import { useConvMoveToTrashFn } from './actions/use-conv-move-to-trash';
 import { useConvSetFlagFn } from './actions/use-conv-set-flag';
 import { useConvSetNotSpamFn } from './actions/use-conv-set-not-spam';
@@ -12,8 +14,6 @@ import { useConvSetReadFn } from './actions/use-conv-set-read';
 import { useConvSetSpamFn } from './actions/use-conv-set-spam';
 import { useConvSetUnflagFn } from './actions/use-conv-set-unflag';
 import { useConvSetUnreadFn } from './actions/use-conv-set-unread';
-import { useConversationById } from '../store/emails/store';
-import { NormalizedConversation } from '../types';
 
 type HandleKeyboardShortcutsArguments = {
 	deselectAll: () => void;

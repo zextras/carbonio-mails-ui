@@ -4,7 +4,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 
 import type { QueryChip } from '@zextras/carbonio-search-ui';
 import { type ErrorSoapBodyResponse, useUserSettings } from '@zextras/carbonio-shell-ui';

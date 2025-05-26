@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { useCallback } from 'react';
+import React, { useCallback } from 'react';
 
 import { searchSoapApi } from '../../../../api/search-soap-api';
 import { API_REQUEST_STATUS } from '../../../../constants';

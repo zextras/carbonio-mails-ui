@@ -17,8 +17,8 @@ import { msgActionEmailStoreAction } from '../store/emails/actions/msg-action-ac
 import {
 	useConversationsByIds,
 	useConversationsResultsLoadingStatus,
-	useMessagesByIds,
-	useMessageLoadingStatus
+	useMessageLoadingStatus,
+	useMessagesByIds
 } from '../store/emails/store';
 import { SearchRequestStatus } from '../types';
 import { useLoadMoreForConversationList } from '../views/app/folder-panel/conversations/conversation-list-hooks';

@@ -5,11 +5,11 @@
  */
 import { useMemo } from 'react';
 
-import { computeAndUpdateEditorStatus } from './commons';
-import { useSaveDraftFromEditor } from './save-draft';
 import { AttachmentUploadProcessStatus, MailsEditorV2 } from '../../../types';
 import { useEditorsStore } from '../store';
 import { getUnsavedAttachmentIndex } from '../store-utils';
+import { computeAndUpdateEditorStatus } from './commons';
+import { useSaveDraftFromEditor } from './save-draft';
 
 export const useEditorUploadProcess = (
 	editorId: MailsEditorV2['id'],

@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { useState, useRef, useEffect, MutableRefObject } from 'react';
+import { MutableRefObject, useEffect, useRef, useState } from 'react';
 
 /**
  * Custom hook to track mouse hover state on a referenced DOM element.

@@ -8,8 +8,6 @@ import { useCallback, useMemo } from 'react';
 import { debounce } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
-import { computeAndUpdateEditorStatus } from './commons';
-import { getEditor } from './editors';
 import { useUiUtilities } from '../../../hooks/use-ui-utilities';
 import { normalizeMailMessageFromSoap } from '../../../normalizations/normalize-message';
 import { MailsEditorV2 } from '../../../types';
@@ -17,6 +15,8 @@ import { saveDraftEmailStoreAction } from '../../emails/actions/save-draft-actio
 import { buildSavedAttachments } from '../editor-transformations';
 import { useEditorsStore } from '../store';
 import { getDraftSaveDelay } from '../store-utils';
+import { computeAndUpdateEditorStatus } from './commons';
+import { getEditor } from './editors';
 
 export type SaveDraftOptions = {
 	onComplete?: () => void;

@@ -8,9 +8,6 @@ import { useCallback } from 'react';
 import { t } from '@zextras/carbonio-shell-ui';
 import { omit, reject } from 'lodash';
 
-import { computeAndUpdateEditorStatus } from './commons';
-import { getEditor } from './editors';
-import { useSaveDraftFromEditor, SaveDraftOptions } from './save-draft';
 import {
 	uploadAttachmentsApi,
 	UploadAttachmentsOptions,
@@ -26,6 +23,9 @@ import {
 	getSavedInlineAttachmentsByContentId
 } from '../editor-utils';
 import { useEditorsStore } from '../store';
+import { computeAndUpdateEditorStatus } from './commons';
+import { getEditor } from './editors';
+import { SaveDraftOptions, useSaveDraftFromEditor } from './save-draft';
 
 const useNotifyUploadError = (): ((file: File) => void) => {
 	const { createSnackbar } = useUiUtilities();

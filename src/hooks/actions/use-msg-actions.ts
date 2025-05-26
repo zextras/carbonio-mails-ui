@@ -5,6 +5,8 @@
  */
 import { useMemo } from 'react';
 
+import { getParentFolderId } from '../../helpers/folders';
+import { MailMessage, UIActionAggregator, UIActionDescriptor } from '../../types';
 import { useMsgApplyTagDescriptor } from './use-msg-apply-tag';
 import { useMsgCreateAppointmentDescriptor } from './use-msg-create-appointment';
 import { useMsgDeletePermanentlyDescriptor } from './use-msg-delete-permanently';
@@ -28,8 +30,6 @@ import { useMsgSetSpamDescriptor } from './use-msg-set-spam';
 import { useMsgSetUnflagDescriptor } from './use-msg-set-unflag';
 import { useMsgSetUnreadDescriptor } from './use-msg-set-unread';
 import { useMsgShowOriginalDescriptor } from './use-msg-show-original';
-import { getParentFolderId } from '../../helpers/folders';
-import { MailMessage, UIActionAggregator, UIActionDescriptor } from '../../types';
 
 export type MessageActionsArgumentType = {
 	message: MailMessage;

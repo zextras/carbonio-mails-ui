@@ -5,9 +5,9 @@
  */
 import { useMemo } from 'react';
 
-import { useConvReplyDescriptor } from './use-conv-reply';
 import { getParentFolderId } from '../../helpers/folders';
 import { UIActionDescriptor } from '../../types';
+import { useConvReplyDescriptor } from './use-conv-reply';
 
 export type HoverMessageActionsType = {
 	firstMessageId: string;

@@ -13,8 +13,8 @@ import { parseMessageSortingOptions } from '../helpers/sorting';
 import { searchEmailStoreAction } from '../store/emails/actions/search-action';
 import {
 	updateMessagesResultsLoadingStatus,
-	useMessagesIdsByFolder,
-	useMessageIndexSlice
+	useMessageIndexSlice,
+	useMessagesIdsByFolder
 } from '../store/emails/store';
 import { MessageIndexSliceState } from '../types';
 
