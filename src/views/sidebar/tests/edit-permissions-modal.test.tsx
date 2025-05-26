@@ -5,17 +5,19 @@
  */
 
 import React from 'react';
+
 import { faker } from '@faker-js/faker';
 import { act, screen, within } from '@testing-library/react';
 import { CreateSnackbarFn, useSnackbar } from '@zextras/carbonio-design-system';
-
 import {
 	createSoapAPIInterceptor,
+	Folder,
 	FOLDERS,
 	getFolder,
 	populateFoldersStore,
 	setupTest
 } from '@zextras/carbonio-ui-commons';
+
 import * as shareFolderModule from '../../../api/share-folder-soap-api';
 import EditPermissionsModal from '../edit-permissions-modal';
 
@@ -45,7 +47,7 @@ describe('edit-permissions-modal', () => {
 			} as const
 		];
 
-		const folder = {
+		const folder: Folder = {
 			id: FOLDERS.INBOX,
 			uuid: faker.string.uuid(),
 			name: 'Inbox',

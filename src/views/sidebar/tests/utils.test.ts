@@ -4,6 +4,8 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import { FOLDERS, generateFolder, OnDropActionProps } from '@zextras/carbonio-ui-commons';
+
 import { handleDragEnter } from '../utils';
 
 describe('handleDragEnter', () => {

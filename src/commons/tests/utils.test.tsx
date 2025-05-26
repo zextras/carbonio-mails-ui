@@ -5,8 +5,8 @@
  */
 
 import { Account } from '@zextras/carbonio-shell-ui';
-
 import defaultSettings, * as shell from '@zextras/carbonio-ui-commons';
+
 import { MailMessagePart } from '../../types';
 import { convertHtmlToPlainText } from '../utilities';
 import {

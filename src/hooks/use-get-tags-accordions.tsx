@@ -17,14 +17,14 @@ import {
 } from '@zextras/carbonio-design-system';
 import type { QueryChip } from '@zextras/carbonio-search-ui';
 import { t } from '@zextras/carbonio-shell-ui';
-import { reduce } from 'lodash';
-
 import type { TagsAccordionItems } from '@zextras/carbonio-ui-commons';
 import {
 	useRunSearchIntegration,
 	useSortedTagsArray,
 	ZIMBRA_STANDARD_COLORS
 } from '@zextras/carbonio-ui-commons';
+import { reduce } from 'lodash';
+
 import type { ItemType } from '../types';
 import { createTag, useGetTagsActions } from '../ui-actions/tag-actions';
 
