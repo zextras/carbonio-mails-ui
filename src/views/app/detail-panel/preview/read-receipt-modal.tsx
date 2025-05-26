@@ -7,7 +7,7 @@ import React, { FC, ReactElement, useCallback, useEffect, useMemo } from 'react'
 
 import { Container, CustomModal, Padding, Text } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
-import { default as ModalFooter, default as ModalHeader } from '@zextras/carbonio-ui-commons';
+import { ModalFooter, ModalHeader } from '@zextras/carbonio-ui-commons';
 
 import { sendDeliveryReportSoapApi } from '../../../../api/send-delivery-request-soap-api';
 import { useUiUtilities } from '../../../../hooks/use-ui-utilities';

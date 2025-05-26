@@ -7,11 +7,7 @@ import React, { FC, useCallback, useMemo } from 'react';
 
 import { Container, Text } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
-import {
-	FOLDERS,
-	default as ModalFooter,
-	default as ModalHeader
-} from '@zextras/carbonio-ui-commons';
+import { FOLDERS, ModalFooter, ModalHeader } from '@zextras/carbonio-ui-commons';
 
 import { getFolderTranslatedName } from './utils';
 import { folderActionSoapApi } from '../../api/folder-action-soap-api';

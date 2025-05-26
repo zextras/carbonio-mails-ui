@@ -15,7 +15,7 @@ import {
 	Text,
 	useSnackbar
 } from '@zextras/carbonio-design-system';
-import { default as ModalFooter, default as ModalHeader } from '@zextras/carbonio-ui-commons';
+import { ModalFooter, ModalHeader } from '@zextras/carbonio-ui-commons';
 import { useTranslation } from 'react-i18next';
 
 import { createEncryptionPassword } from '../../../api/create-password-api';

@@ -19,8 +19,8 @@ import { t, useUserAccounts } from '@zextras/carbonio-shell-ui';
 import type { EditPermissionsModalProps } from '@zextras/carbonio-ui-commons';
 import {
 	ContactInputItem,
-	default as ModalFooter,
-	default as ModalHeader,
+	ModalFooter,
+	ModalHeader,
 	useContactInput
 } from '@zextras/carbonio-ui-commons';
 

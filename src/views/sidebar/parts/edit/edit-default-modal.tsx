@@ -12,8 +12,8 @@ import {
 	FolderActionsType,
 	FOLDERS,
 	isValidFolderName,
-	default as ModalFooter,
-	default as ModalHeader
+	ModalFooter,
+	ModalHeader
 } from '@zextras/carbonio-ui-commons';
 import { includes, isEmpty } from 'lodash';
 

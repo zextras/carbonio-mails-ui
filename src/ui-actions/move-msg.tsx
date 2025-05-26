@@ -6,11 +6,7 @@
 import React, { ReactElement, useCallback, useMemo, useState } from 'react';
 
 import { Container, Text } from '@zextras/carbonio-design-system';
-import {
-	Folder,
-	default as ModalFooter,
-	default as ModalHeader
-} from '@zextras/carbonio-ui-commons';
+import { Folder, ModalFooter, ModalHeader } from '@zextras/carbonio-ui-commons';
 import { useTranslation } from 'react-i18next';
 
 import { isRoot } from '../helpers/folders';

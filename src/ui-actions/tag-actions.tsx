@@ -15,14 +15,15 @@ import {
 	useModal
 } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
-import { find, reduce, some } from 'lodash';
-
-import DeleteTagModal, {
+import {
 	Tag,
 	TagsActionsType,
 	useTags,
-	ZIMBRA_STANDARD_COLORS
+	ZIMBRA_STANDARD_COLORS,
+	DeleteTagModal
 } from '@zextras/carbonio-ui-commons';
+import { find, reduce, some } from 'lodash';
+
 import type { ArgumentType, ItemType, TagActionsReturnType, UIActionDescriptor } from '../types';
 import CreateUpdateTagModal from '../views/sidebar/parts/tags/create-update-tag-modal';
 

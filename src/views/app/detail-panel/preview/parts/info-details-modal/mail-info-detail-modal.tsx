@@ -8,7 +8,7 @@ import React from 'react';
 import { Container } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
 
-import { default as ModalFooter, default as ModalHeader } from '@zextras/carbonio-ui-commons';
+import { ModalFooter, ModalHeader } from '@zextras/carbonio-ui-commons';
 import { IncompleteMessage, MessageSignature } from '../../../../../../types';
 import { MailGeneralInfoSubsection } from './subsections/mail-general-info-subsection';
 import { SmimeSubsection } from './subsections/smime-subsection';

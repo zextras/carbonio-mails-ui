@@ -8,11 +8,7 @@ import React, { ChangeEvent, FC, useCallback, useEffect, useMemo, useState } fro
 import { Container, Input, Padding, Text } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import type { Folder } from '@zextras/carbonio-ui-commons';
-import {
-	isValidFolderName,
-	default as ModalFooter,
-	default as ModalHeader
-} from '@zextras/carbonio-ui-commons';
+import { isValidFolderName, ModalFooter, ModalHeader } from '@zextras/carbonio-ui-commons';
 import { find, includes, noop } from 'lodash';
 
 import { createFolderSoapApi } from '../../api/create-folder-soap-api';

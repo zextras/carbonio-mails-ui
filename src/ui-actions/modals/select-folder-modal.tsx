@@ -8,7 +8,7 @@ import React, { FC, useCallback, useMemo, useState } from 'react';
 import { Container, Text } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import type { Folder, RootFolder } from '@zextras/carbonio-ui-commons';
-import { default as ModalFooter, default as ModalHeader } from '@zextras/carbonio-ui-commons';
+import { ModalFooter, ModalHeader } from '@zextras/carbonio-ui-commons';
 import { isNil } from 'lodash';
 
 import { FolderSelector } from '../../views/sidebar/commons/folder-selector';

@@ -8,7 +8,7 @@ import React, { FC, useCallback, useMemo, useState } from 'react';
 import { Checkbox, Container, Input, Row, Text } from '@zextras/carbonio-design-system';
 import { t, useUserAccounts } from '@zextras/carbonio-shell-ui';
 import type { ShareRevokeModalType } from '@zextras/carbonio-ui-commons';
-import { default as ModalFooter, default as ModalHeader } from '@zextras/carbonio-ui-commons';
+import { ModalFooter, ModalHeader } from '@zextras/carbonio-ui-commons';
 
 import { GranteeInfo } from './share-folder-properties';
 import { folderActionSoapApi } from '../../../../api/folder-action-soap-api';

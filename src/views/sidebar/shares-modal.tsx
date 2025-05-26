@@ -19,7 +19,7 @@ import {
 	Text
 } from '@zextras/carbonio-design-system';
 import type { GroupedShare, ShareModalProps, SharedObject } from '@zextras/carbonio-ui-commons';
-import { default as ModalFooter, default as ModalHeader } from '@zextras/carbonio-ui-commons';
+import { ModalFooter, ModalHeader } from '@zextras/carbonio-ui-commons';
 import {
 	filter,
 	groupBy,

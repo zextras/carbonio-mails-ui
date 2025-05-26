@@ -12,8 +12,8 @@ import type { CreateUpdateTagModalPropType } from '@zextras/carbonio-ui-commons'
 import {
 	changeTagColor,
 	createTag,
-	default as ModalFooter,
-	default as ModalHeader,
+	ModalFooter,
+	ModalHeader,
 	renameTag
 } from '@zextras/carbonio-ui-commons';
 

@@ -9,8 +9,8 @@ import React, { ReactElement, useCallback, useMemo, useState } from 'react';
 import { Container, Divider, Text } from '@zextras/carbonio-design-system';
 import {
 	ContactInputItem,
-	default as ModalFooter,
-	default as ModalHeader,
+	ModalFooter,
+	ModalHeader,
 	useContactInput
 } from '@zextras/carbonio-ui-commons';
 import { map, some } from 'lodash';

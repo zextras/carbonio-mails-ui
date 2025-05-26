@@ -7,7 +7,7 @@ import React, { FC, useCallback, useMemo, useState } from 'react';
 
 import { Container, DateTimePicker, Text } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
-import { default as ModalFooter, default as ModalHeader } from '@zextras/carbonio-ui-commons';
+import { ModalFooter, ModalHeader } from '@zextras/carbonio-ui-commons';
 import { noop } from 'lodash';
 import moment from 'moment';
 
