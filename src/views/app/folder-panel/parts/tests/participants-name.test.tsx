@@ -3,15 +3,16 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React from 'react';
 
 import { screen, waitFor } from '@testing-library/react';
 import { useUserAccount } from '@zextras/carbonio-shell-ui';
 
-import { FOLDERS } from '../../../../../carbonio-ui-commons/constants/folders';
-import { ParticipantRole } from '../../../../../carbonio-ui-commons/constants/participants';
-import { populateFoldersStore } from '../../../../../carbonio-ui-commons/test/mocks/store/folders';
-import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
+import {
+	FOLDERS,
+	ParticipantRole,
+	populateFoldersStore,
+	setupTest
+} from '@zextras/carbonio-ui-commons';
 import { populateConversationInEmailStore } from '../../../../../tests/generators/generateConversation';
 import {
 	generateMessage,

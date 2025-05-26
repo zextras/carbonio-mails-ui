@@ -4,20 +4,21 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React from 'react';
-
 import { act } from '@testing-library/react';
 
-import { getIntegratedFunction } from '../../../../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
-import { createSoapAPIInterceptor } from '../../../../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
-import { setupTest, screen } from '../../../../../../carbonio-ui-commons/test/test-setup';
+import {
+	createSoapAPIInterceptor,
+	getIntegratedFunction,
+	screen,
+	setupTest
+} from '@zextras/carbonio-ui-commons';
 import { addEditor, useEditorsStore } from '../../../../../../store/editor';
 import { setupEditorStore } from '../../../../../../tests/generators/editor-store';
 import {
-	readyToBeSentEditorTestCase,
 	anUnsavedAttachment,
 	aSavedAttachment,
-	aSmartLinkAttachment
+	aSmartLinkAttachment,
+	readyToBeSentEditorTestCase
 } from '../../../../../../tests/generators/editors';
 import { ToggleSmartLinkButton } from '../toggle-smart-link-button';
 

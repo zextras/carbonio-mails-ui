@@ -7,7 +7,7 @@
 
 import { DefaultBodyType, http, HttpResponse } from 'msw';
 
-import { getSetupServer } from '../../carbonio-ui-commons/test/jest-setup';
+import { getSetupServer } from '@zextras/carbonio-ui-commons';
 import {
 	SoapConversation,
 	SoapIncompleteMessage,

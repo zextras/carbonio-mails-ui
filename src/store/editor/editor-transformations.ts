@@ -6,14 +6,7 @@
 import { BooleanString, getUserAccount, getUserSettings } from '@zextras/carbonio-shell-ui';
 import { filter, forEach, isEmpty, map, reduce } from 'lodash';
 
-import { getCompleteMessageId } from '../utils';
-import {
-	filterSavedInlineAttachment,
-	filterSavedStandardAttachment,
-	filterUnsavedInlineAttachment,
-	filterUnsavedStandardAttachment
-} from './editor-utils';
-import { ParticipantRole } from '../../carbonio-ui-commons/constants/participants';
+import { ParticipantRole } from '@zextras/carbonio-ui-commons';
 import {
 	composeAttachmentDownloadUrl,
 	extractContentIdInnerPart,
@@ -41,6 +34,13 @@ import {
 	SoapEmailMessagePartObj,
 	UnsavedAttachment
 } from '../../types';
+import { getCompleteMessageId } from '../utils';
+import {
+	filterSavedInlineAttachment,
+	filterSavedStandardAttachment,
+	filterUnsavedInlineAttachment,
+	filterUnsavedStandardAttachment
+} from './editor-utils';
 
 export const composeCidUrlFromContentId = (contentId: string): string | null => {
 	const contentIdInnerPart = extractContentIdInnerPart(contentId);

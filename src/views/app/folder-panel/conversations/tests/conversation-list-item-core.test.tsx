@@ -4,14 +4,9 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React from 'react';
-
 import { screen, waitFor } from '@testing-library/react';
 
-import { useTags } from '../../../../../carbonio-ui-commons/store/zustand/tags';
-import { populateFoldersStore } from '../../../../../carbonio-ui-commons/test/mocks/store/folders';
-import { tags } from '../../../../../carbonio-ui-commons/test/mocks/tags/tags';
-import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
+import { populateFoldersStore, setupTest, tags, useTags } from '@zextras/carbonio-ui-commons';
 import { populateConversationInEmailStore } from '../../../../../tests/generators/generateConversation';
 import { ConversationListItemCore } from '../conversation-list-item-core';
 

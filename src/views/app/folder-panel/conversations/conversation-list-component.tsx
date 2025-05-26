@@ -10,15 +10,14 @@ import { Container, Divider, Padding, Text } from '@zextras/carbonio-design-syst
 import { map, noop } from 'lodash';
 import styled from 'styled-components';
 
-import { ConversationListItemComponent } from './conversation-list-item-component';
-import { ConversationsMultipleSelectionActions } from './conversations-multiple-selection-actions';
-import { CustomList } from '../../../../carbonio-ui-commons/components/list/list';
-import { useFolder, useRoot } from '../../../../carbonio-ui-commons/store/zustand/folder/hooks';
+import { CustomList, useFolder, useRoot } from '@zextras/carbonio-ui-commons';
 import { getConversationById } from '../../../../store/emails/store';
 import ShimmerList from '../../../search/shimmer-list';
 import { Breadcrumbs } from '../parts/breadcrumbs';
 import { MultipleSelectionActionsPanel } from '../parts/multiple-selection-actions-panel';
 import { getFolderPath } from '../parts/utils/utils';
+import { ConversationListItemComponent } from './conversation-list-item-component';
+import { ConversationsMultipleSelectionActions } from './conversations-multiple-selection-actions';
 
 const DragImageContainer = styled.div`
 	position: absolute;

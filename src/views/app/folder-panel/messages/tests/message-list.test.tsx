@@ -4,24 +4,22 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React from 'react';
-
-import { screen, act, waitFor, fireEvent } from '@testing-library/react';
+import { act, fireEvent, screen, waitFor } from '@testing-library/react';
 import * as shell from '@zextras/carbonio-shell-ui';
 import { useParams } from 'react-router-dom';
 
-import { FOLDERS } from '../../../../../carbonio-ui-commons/constants/folders';
-import { ParticipantRole } from '../../../../../carbonio-ui-commons/constants/participants';
-import { useFolderStore } from '../../../../../carbonio-ui-commons/store/zustand/folder';
-import { generateFolder } from '../../../../../carbonio-ui-commons/test/mocks/folders/folders-generator';
-import { createSoapAPIInterceptor } from '../../../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
-import { populateFoldersStore } from '../../../../../carbonio-ui-commons/test/mocks/store/folders';
 import {
+	createSoapAPIInterceptor,
+	FOLDERS,
+	generateFolder,
 	makeListItemsVisible,
+	ParticipantRole,
+	populateFoldersStore,
 	setupTest,
 	triggerLoadMore,
+	useFolderStore,
 	within
-} from '../../../../../carbonio-ui-commons/test/test-setup';
+} from '@zextras/carbonio-ui-commons';
 import * as useSelection from '../../../../../hooks/use-selection';
 import { TESTID_SELECTORS } from '../../../../../tests/constants';
 import { generateCompleteMessageFromAPI } from '../../../../../tests/generators/api';

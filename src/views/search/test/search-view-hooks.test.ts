@@ -9,10 +9,12 @@ import * as hooks from '@zextras/carbonio-shell-ui';
 import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 import { noop } from 'lodash';
 
+import {
+	buildSoapErrorResponseBody,
+	createSoapAPIInterceptor,
+	generateSettings
+} from '@zextras/carbonio-ui-commons';
 import * as searchSoapApi from '../../../api/search-soap-api';
-import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
-import { generateSettings } from '../../../carbonio-ui-commons/test/mocks/settings/settings-generator';
-import { buildSoapErrorResponseBody } from '../../../carbonio-ui-commons/test/mocks/utils/soap';
 import { API_REQUEST_STATUS } from '../../../constants';
 import {
 	setSearchResultsByConversation,
@@ -26,7 +28,7 @@ import {
 } from '../../../tests/generators/api';
 import { generateConversation } from '../../../tests/generators/generateConversation';
 import { SearchRequest, SearchResponse } from '../../../types';
-import { useRunSearch, useLoadMoreForSearchSlice } from '../search-view-hooks';
+import { useLoadMoreForSearchSlice, useRunSearch } from '../search-view-hooks';
 
 describe('search view hooks', () => {
 	it('should reset conversations list when api result empty', async () => {

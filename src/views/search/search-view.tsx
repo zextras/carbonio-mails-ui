@@ -10,15 +10,15 @@ import type { SearchViewProps } from '@zextras/carbonio-search-ui';
 import { setAppContext, t, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { Route, Routes } from 'react-router-dom';
 
-import { AdvancedFilterModal } from './advanced-filter-modal';
+import { useUpdateView } from '@zextras/carbonio-ui-commons';
+import { API_REQUEST_STATUS } from '../../constants';
+import { resetSearchAndPopulatedItems } from '../../store/emails/store';
 import { Query } from '../../types';
+import { AdvancedFilterModal } from './advanced-filter-modal';
 import { SearchConversationList } from './list/conversation/search-conversation-list';
 import { SearchMessageList } from './list/message/search-message-list';
 import SearchPanel from './panel/search-panel';
 import { useIsMessageView, useRunSearch } from './search-view-hooks';
-import { useUpdateView } from '../../carbonio-ui-commons/hooks/use-update-view';
-import { API_REQUEST_STATUS } from '../../constants';
-import { resetSearchAndPopulatedItems } from '../../store/emails/store';
 
 const SearchView = ({
 	useDisableSearch,

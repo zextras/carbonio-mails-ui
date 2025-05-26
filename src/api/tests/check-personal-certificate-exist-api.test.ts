@@ -5,7 +5,7 @@
  */
 import { HttpResponse } from 'msw';
 
-import { createAPIInterceptor } from '../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
+import { createAPIInterceptor } from '@zextras/carbonio-ui-commons';
 import { checkPersonalCertificateExist } from '../check-personal-certificate-exist-api';
 
 const checkPersonalCertificateExistEndpoint = '/service/extension/encryption/smime/personal/exist';

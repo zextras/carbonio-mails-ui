@@ -4,12 +4,9 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React from 'react';
-
 import { act, screen } from '@testing-library/react';
 
-import { createSoapAPIInterceptor } from '../../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
-import { setupTest } from '../../../../carbonio-ui-commons/test/test-setup';
+import { createSoapAPIInterceptor, setupTest } from '@zextras/carbonio-ui-commons';
 import { FilterTabs } from '../filter-tabs';
 import { mockFilter } from './test-utils';
 

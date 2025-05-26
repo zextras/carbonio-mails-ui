@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { setupHook } from '../../../../carbonio-ui-commons/test/test-setup';
+import { setupHook } from '@zextras/carbonio-ui-commons';
 import { setupEditorStore } from '../../../../tests/generators/editor-store';
 import { generateNewMessageEditor } from '../../editor-generators';
 import { useEditorDraftSave } from '../save-draft';

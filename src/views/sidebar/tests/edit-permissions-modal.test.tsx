@@ -3,18 +3,19 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React from 'react';
 
 import { faker } from '@faker-js/faker';
 import { act, screen, within } from '@testing-library/react';
 import { CreateSnackbarFn, useSnackbar } from '@zextras/carbonio-design-system';
 
+import {
+	createSoapAPIInterceptor,
+	FOLDERS,
+	getFolder,
+	populateFoldersStore,
+	setupTest
+} from '@zextras/carbonio-ui-commons';
 import * as shareFolderModule from '../../../api/share-folder-soap-api';
-import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
-import { getFolder } from '../../../carbonio-ui-commons/store/zustand/folder';
-import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
-import { populateFoldersStore } from '../../../carbonio-ui-commons/test/mocks/store/folders';
-import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
 import EditPermissionsModal from '../edit-permissions-modal';
 
 const createSnackbar = (arg: any): CreateSnackbarFn => arg;

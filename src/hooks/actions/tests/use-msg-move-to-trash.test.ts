@@ -8,10 +8,12 @@ import { act } from 'react';
 import { faker } from '@faker-js/faker';
 import { times } from 'lodash';
 
-import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
-import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
-import { populateFoldersStore } from '../../../carbonio-ui-commons/test/mocks/store/folders';
-import { setupHook } from '../../../carbonio-ui-commons/test/test-setup';
+import {
+	createSoapAPIInterceptor,
+	FOLDERS,
+	populateFoldersStore,
+	setupHook
+} from '@zextras/carbonio-ui-commons';
 import { FOLDERS_DESCRIPTORS } from '../../../constants';
 import { MsgActionRequest, MsgActionResponse } from '../../../types';
 import { useMsgMoveToTrashDescriptor, useMsgMoveToTrashFn } from '../use-msg-move-to-trash';

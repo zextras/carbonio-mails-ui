@@ -3,14 +3,16 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { act } from 'react';
+import { act } from 'react';
 
 import { faker } from '@faker-js/faker';
 import * as shell from '@zextras/carbonio-shell-ui';
 
-import { createFakeIdentity } from '../../../../carbonio-ui-commons/test/mocks/accounts/fakeAccounts';
-import { createSoapAPIInterceptor } from '../../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
-import { setupTest } from '../../../../carbonio-ui-commons/test/test-setup';
+import {
+	createFakeIdentity,
+	createSoapAPIInterceptor,
+	setupTest
+} from '@zextras/carbonio-ui-commons';
 import { EmlPreviewPanelContainer } from '../eml-preview-panel-container';
 
 describe('EmlPreviewPanelContainer', () => {

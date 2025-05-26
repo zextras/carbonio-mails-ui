@@ -4,13 +4,10 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React from 'react';
-
 import { screen } from '@testing-library/react';
 import { noop, times } from 'lodash';
 
-import { FOLDERS } from '../../../../../carbonio-ui-commons/constants/folders';
-import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
+import { FOLDERS, setupTest } from '@zextras/carbonio-ui-commons';
 import { setMessagesInEmailStore } from '../../../../../store/emails/store';
 import { generateMessage } from '../../../../../tests/generators/generateMessage';
 import { MessageListComponent, MessageListComponentProps } from '../message-list-component';

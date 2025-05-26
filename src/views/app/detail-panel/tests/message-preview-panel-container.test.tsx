@@ -3,11 +3,10 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React from 'react';
 
 import * as shell from '@zextras/carbonio-shell-ui';
 
-import { setupTest } from '../../../../carbonio-ui-commons/test/test-setup';
+import { setupTest } from '@zextras/carbonio-ui-commons';
 import { populateMessagesInEmailStore } from '../../../../tests/generators/generateMessage';
 import { MessagePreviewPanelContainer } from '../message-preview-panel-container';
 

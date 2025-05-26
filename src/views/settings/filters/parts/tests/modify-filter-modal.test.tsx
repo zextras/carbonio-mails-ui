@@ -5,11 +5,11 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React, { act } from 'react';
+import { act } from 'react';
 
 import { screen } from '@testing-library/react';
 
-import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
+import { setupTest } from '@zextras/carbonio-ui-commons';
 import { Filter } from '../../../../../types';
 import { ModifyFilterModal } from '../modify-filter/modify-filter-modal';
 

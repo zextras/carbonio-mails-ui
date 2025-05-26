@@ -4,16 +4,16 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import { getRootsMap } from '@zextras/carbonio-ui-commons';
+import { NO_ACCOUNT_NAME } from '../constants';
+import { retrieveALL, retrieveCC } from '../store/editor-slice-utils';
+import type { MailMessage } from '../types';
+import { Attendee, MatchingReplyIdentity, SenderType } from '../types/calendar';
 import {
 	getAddressOwnerAccount,
 	getIdentitiesDescriptors,
 	getRecipientReplyIdentity
 } from './identities';
-import { getRootsMap } from '../carbonio-ui-commons/store/zustand/folder/hooks';
-import { NO_ACCOUNT_NAME } from '../constants';
-import { retrieveALL, retrieveCC } from '../store/editor-slice-utils';
-import type { MailMessage } from '../types';
-import { Attendee, MatchingReplyIdentity, SenderType } from '../types/calendar';
 
 /**
  * Analyze the message and return the identity that should be used as organizer.
@@ -71,4 +71,4 @@ const getSenderByOwner = (address?: string): SenderType | null => {
 		: null;
 };
 
-export { getOrganizer, getAttendees, getOptionalsAttendees, getSenderByOwner };
+export { getAttendees, getOptionalsAttendees, getOrganizer, getSenderByOwner };

@@ -5,7 +5,7 @@
  */
 import { ErrorSoapBodyResponse, soapFetch } from '@zextras/carbonio-shell-ui';
 
-import { GenericSoapApiError } from '../carbonio-ui-commons/soap/errors/generic-soap-api-error';
+import { GenericSoapApiError } from '@zextras/carbonio-ui-commons';
 import { generateRequest } from '../store/editor-slice-utils';
 import type { MailsEditor, SaveDraftRequest, SaveDraftResponse } from '../types';
 

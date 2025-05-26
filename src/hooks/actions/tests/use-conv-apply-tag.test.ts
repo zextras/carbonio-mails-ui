@@ -6,10 +6,12 @@
 import { act } from '@testing-library/react';
 import { find, forEach } from 'lodash';
 
-import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
-import { useTagStore } from '../../../carbonio-ui-commons/store/zustand/tags/store';
-import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
-import { setupHook } from '../../../carbonio-ui-commons/test/test-setup';
+import {
+	createSoapAPIInterceptor,
+	FOLDERS,
+	setupHook,
+	useTagStore
+} from '@zextras/carbonio-ui-commons';
 import { FOLDERS_DESCRIPTORS } from '../../../constants';
 import { generateConversation } from '../../../tests/generators/generateConversation';
 import { ConvActionRequest } from '../../../types';

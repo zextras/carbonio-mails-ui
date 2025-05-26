@@ -8,10 +8,10 @@ import React, { useCallback, useMemo } from 'react';
 
 import { map } from 'lodash';
 
-import { ShowTag } from './show-tag';
-import { getTags } from '../../../../../carbonio-ui-commons/store/zustand/tags';
+import { getTags } from '@zextras/carbonio-ui-commons';
 import { FilterTag, MailFilterTag } from '../../../../../types';
 import { ActionComponentProps } from '../../types';
+import { ShowTag } from './show-tag';
 
 export const ActionTagComponent = ({
 	value,

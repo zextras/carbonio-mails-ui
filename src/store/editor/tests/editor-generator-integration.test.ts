@@ -7,9 +7,7 @@
 import * as shellHooks from '@zextras/carbonio-shell-ui';
 import { IdentityAttrs } from '@zextras/carbonio-shell-ui';
 
-import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
-import { ParticipantRole } from '../../../carbonio-ui-commons/constants/participants';
-import { generateAccount } from '../../../carbonio-ui-commons/test/mocks/accounts/account-generator';
+import { FOLDERS, generateAccount, ParticipantRole } from '@zextras/carbonio-ui-commons';
 import { generateMessage } from '../../../tests/generators/generateMessage';
 import { generateReplyAllMsgEditor } from '../editor-generators';
 

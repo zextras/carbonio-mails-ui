@@ -4,19 +4,17 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React from 'react';
-
 import { act, screen, within } from '@testing-library/react';
 
-import { FOLDER_VIEW } from '../../../../../carbonio-ui-commons/constants';
-import { FOLDERS } from '../../../../../carbonio-ui-commons/constants/folders';
-import { useTagStore } from '../../../../../carbonio-ui-commons/store/zustand/tags';
-import { generateFolder } from '../../../../../carbonio-ui-commons/test/mocks/folders/folders-generator';
-import { populateFoldersStore } from '../../../../../carbonio-ui-commons/test/mocks/store/folders';
 import {
+	FOLDER_VIEW,
+	FOLDERS,
+	generateFolder,
 	makeListItemsVisible,
-	setupTest
-} from '../../../../../carbonio-ui-commons/test/test-setup';
+	populateFoldersStore,
+	setupTest,
+	useTagStore
+} from '@zextras/carbonio-ui-commons';
 import { FilterAction } from '../../../../../types';
 import { FilterActionRow, FilterActionRowProps } from '../filter-action-row';
 import { getActionTranslations } from '../utils';

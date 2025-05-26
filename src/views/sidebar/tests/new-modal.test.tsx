@@ -3,16 +3,18 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React from 'react';
 
 import { faker } from '@faker-js/faker';
 import { act, screen, within } from '@testing-library/react';
 
-import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
-import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
-import { populateFoldersStore } from '../../../carbonio-ui-commons/test/mocks/store/folders';
-import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
-import { Folder, SoapFolder } from '../../../carbonio-ui-commons/types/folder';
+import {
+	createSoapAPIInterceptor,
+	Folder,
+	FOLDERS,
+	populateFoldersStore,
+	setupTest,
+	SoapFolder
+} from '@zextras/carbonio-ui-commons';
 import { NewModal } from '../new-modal';
 
 describe('new-modal', () => {

@@ -6,21 +6,19 @@
 import React, { useCallback, useMemo } from 'react';
 
 import {
-	Text,
 	Badge,
+	Button,
 	Container,
 	Icon,
 	Padding,
 	Row,
-	Tooltip,
-	Button
+	Text,
+	Tooltip
 } from '@zextras/carbonio-design-system';
-import { uniqBy, reduce, includes, forEach, filter, isEmpty } from 'lodash';
+import { filter, forEach, includes, isEmpty, reduce, uniqBy } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
-import { ZIMBRA_STANDARD_COLORS } from '../../../../carbonio-ui-commons/constants/utils';
-import { useTags } from '../../../../carbonio-ui-commons/store/zustand/tags';
-import { Tag } from '../../../../carbonio-ui-commons/types/tags';
+import { Tag, useTags, ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-ui-commons';
 import { NormalizedConversation, TextReadValuesProps } from '../../../../types';
 import { ItemAvatar } from '../parts/item-avatar';
 import { ParticipantsName } from '../parts/participants-name';

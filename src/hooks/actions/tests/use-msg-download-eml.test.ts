@@ -4,8 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
-import { setupHook } from '../../../carbonio-ui-commons/test/test-setup';
+import { FOLDERS, setupHook } from '@zextras/carbonio-ui-commons';
 import { FOLDERS_DESCRIPTORS } from '../../../constants';
 import { generateMessage } from '../../../tests/generators/generateMessage';
 import { useMsgDownloadEmlDescriptor, useMsgDownloadEmlFn } from '../use-msg-download-eml';

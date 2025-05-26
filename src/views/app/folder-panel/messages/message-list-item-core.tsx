@@ -19,10 +19,7 @@ import { t, useUserAccounts } from '@zextras/carbonio-shell-ui';
 import { find, includes, isEmpty, noop, reduce } from 'lodash';
 import moment from 'moment/moment';
 
-import { ZIMBRA_STANDARD_COLORS } from '../../../../carbonio-ui-commons/constants';
-import { useFolder } from '../../../../carbonio-ui-commons/store/zustand/folder';
-import { useTags } from '../../../../carbonio-ui-commons/store/zustand/tags';
-import { Tag } from '../../../../carbonio-ui-commons/types/tags';
+import { Tag, useFolder, useTags, ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-ui-commons';
 import { getTimeLabel, participantToString } from '../../../../commons/utils';
 import { IncompleteMessage, TextReadValuesType } from '../../../../types';
 import { useTagExist } from '../../../../ui-actions/tag-actions';

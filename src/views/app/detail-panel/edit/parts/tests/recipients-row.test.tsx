@@ -8,15 +8,16 @@ import React, { useCallback, useState } from 'react';
 
 import { act, screen } from '@testing-library/react';
 
-import { ParticipantRole } from '../../../../../../carbonio-ui-commons/constants/participants';
-import { CONTACT_TYPES } from '../../../../../../carbonio-ui-commons/integrations/constants';
-import { DefaultContactInput } from '../../../../../../carbonio-ui-commons/integrations/default-contact-input';
-import * as contactInput from '../../../../../../carbonio-ui-commons/integrations/hooks';
+import * as contactInput from '@zextras/carbonio-ui-commons';
 import {
+	CONTACT_TYPES,
+	DefaultContactInput,
+	ParticipantRole,
+	UserEvent,
 	generateMockContactInputItem,
-	mockContactInput
-} from '../../../../../../carbonio-ui-commons/test/mocks/integrations/mock-contact-input';
-import { UserEvent, setupTest } from '../../../../../../carbonio-ui-commons/test/test-setup';
+	mockContactInput,
+	setupTest
+} from '@zextras/carbonio-ui-commons';
 import { Participant } from '../../../../../../types';
 import { RecipientsRow } from '../recipients-row';
 

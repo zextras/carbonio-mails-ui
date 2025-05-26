@@ -8,9 +8,8 @@ import React from 'react';
 import { Container, Text } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 
+import { default as ModalFooter, default as ModalHeader } from '@zextras/carbonio-ui-commons';
 import { AnimatedLoader } from '../../../assets/animated-loader';
-import ModalFooter from '../../../carbonio-ui-commons/components/modals/modal-footer';
-import ModalHeader from '../../../carbonio-ui-commons/components/modals/modal-header';
 import { BACKUP_SEARCH_STATUS } from '../../../constants';
 import { useBackupSearchStore } from '../../../store/backup-search/store';
 

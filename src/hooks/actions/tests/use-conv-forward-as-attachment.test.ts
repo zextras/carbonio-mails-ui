@@ -6,8 +6,7 @@
 
 import { addBoard } from '@zextras/carbonio-shell-ui';
 
-import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
-import { setupHook } from '../../../carbonio-ui-commons/test/test-setup';
+import { FOLDERS, setupHook } from '@zextras/carbonio-ui-commons';
 import { FOLDERS_DESCRIPTORS } from '../../../constants';
 import { generateMessage } from '../../../tests/generators/generateMessage';
 import {

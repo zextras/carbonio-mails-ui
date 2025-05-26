@@ -6,7 +6,7 @@
 
 import { act } from '@testing-library/react';
 
-import { setupHook } from '../../../../carbonio-ui-commons/test/test-setup';
+import { setupHook } from '@zextras/carbonio-ui-commons';
 import { setupEditorStore } from '../../../../tests/generators/editor-store';
 import { generateNewMessageEditor } from '../../editor-generators';
 import { useEditorsStore } from '../../store';

@@ -6,10 +6,10 @@
 
 import React from 'react';
 
-import { Padding, Tooltip, Row, Icon } from '@zextras/carbonio-design-system';
+import { Icon, Padding, Row, Tooltip } from '@zextras/carbonio-design-system';
 import { t } from 'i18next';
 
-import { Folder } from '../../../carbonio-ui-commons/types/folder';
+import { Folder } from '@zextras/carbonio-ui-commons';
 
 const RowWithIcon = (icon: string, color: string, tooltipText: string): React.JSX.Element => (
 	<Padding left="small">

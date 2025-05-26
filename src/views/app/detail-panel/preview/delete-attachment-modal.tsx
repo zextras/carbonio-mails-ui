@@ -6,9 +6,8 @@
 
 import { Container, Text } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
-import React, { FC, useCallback } from 'react';
-import ModalFooter from '../../../../carbonio-ui-commons/components/modals/modal-footer';
-import ModalHeader from '../../../../carbonio-ui-commons/components/modals/modal-header';
+import { default as ModalFooter, default as ModalHeader } from '@zextras/carbonio-ui-commons';
+import { FC, useCallback } from 'react';
 
 export type DeleteAttachmentModalPropsType = {
 	onClose: () => void;

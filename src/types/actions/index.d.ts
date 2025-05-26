@@ -9,8 +9,8 @@ import React, { SyntheticEvent } from 'react';
 import { CreateModalFn } from '@zextras/carbonio-design-system';
 import { DefaultTheme } from 'styled-components';
 
-import type { Folder } from '../../carbonio-ui-commons/types/folder';
-import { ItemType } from '../../carbonio-ui-commons/types/tags';
+import type { Folder } from '@zextras/carbonio-ui-commons';
+import { ItemType } from '@zextras/carbonio-ui-commons';
 import type { TagActionItemType } from '../tags';
 
 export type ActionFn = {

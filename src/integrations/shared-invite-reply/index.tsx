@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, ReactElement, useMemo, useState } from 'react';
+import { FC, ReactElement, useMemo, useState } from 'react';
 
 import {
 	Button,
@@ -18,11 +18,11 @@ import {
 import { t } from '@zextras/carbonio-shell-ui';
 import styled from 'styled-components';
 
+import { FOLDERS } from '@zextras/carbonio-ui-commons';
+import type { MailMessage } from '../../types';
 import LabelRow from './parts/label-row';
 import ResponseActions from './parts/response-actions';
 import { ShareCalendarRoleOptions, findLabel } from './parts/utils';
-import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
-import type { MailMessage } from '../../types';
 
 const InviteContainer = styled(Container)`
 	border: 0.0625rem solid ${({ theme }): string => theme.palette.gray2.regular};

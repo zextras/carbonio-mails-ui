@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { generateFolder } from '../../../../../carbonio-ui-commons/test/mocks/folders/folders-generator';
+import { generateFolder } from '@zextras/carbonio-ui-commons';
 import { Folder } from '../../../../../types';
 import { flattenAndFilterFoldersWithCap } from '../utils';
 

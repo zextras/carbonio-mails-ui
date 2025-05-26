@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import type { Folder } from '../../carbonio-ui-commons/types/folder';
+import type { Folder } from '@zextras/carbonio-ui-commons';
 import { EDIT_VIEW_CLOSING_REASONS, EditViewActions } from '../../constants';
 import { SavedAttachment, UnsavedAttachment } from '../attachments';
 import type { MailMessage } from '../messages';

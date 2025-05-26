@@ -5,20 +5,19 @@
  */
 import { act, renderHook } from '@testing-library/react';
 
-import { useFolderStore } from '../../../../../carbonio-ui-commons/store/zustand/folder';
-import { generateFolder } from '../../../../../carbonio-ui-commons/test/mocks/folders/folders-generator';
+import { generateFolder, useFolderStore } from '@zextras/carbonio-ui-commons';
 import { generateMessage } from '../../../../../tests/generators/generateMessage';
 import {
 	appendMessagesToMessagesSlice,
+	getUseEmailStoreAndHooksForTesting,
 	resetMessagesAndPopulatedItems,
 	setMessagesInEmailStore,
 	updateMessages,
 	updateMessagesResultsLoadingStatus,
 	useMessageById,
-	useMessagesByIds,
-	useMessagesIdsByFolder,
 	useMessageIndexSlice,
-	getUseEmailStoreAndHooksForTesting
+	useMessagesByIds,
+	useMessagesIdsByFolder
 } from '../../../store';
 import { POPULATED_ITEMS_SLICE_INITIAL_STATE } from '../../populated-items/populated-items-slice';
 import { MESSAGE_INDEX_SLICE_INITIAL_STATE } from '../messages-slice';

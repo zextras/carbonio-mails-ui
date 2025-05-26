@@ -5,11 +5,9 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React from 'react';
-
 import { act, screen, waitFor } from '@testing-library/react';
 
-import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
+import { setupTest } from '@zextras/carbonio-ui-commons';
 import { UpdateSettingsProps } from '../../../types/settings';
 import ComposeMessage from '../compose-msg-settings';
 

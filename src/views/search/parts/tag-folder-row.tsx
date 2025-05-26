@@ -3,13 +3,13 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
+import { FC, ReactElement, useCallback, useMemo, useState } from 'react';
 
 import { ChipInput, ChipItem, Container, CustomModal } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import { filter } from 'lodash';
 
-import { ZIMBRA_STANDARD_COLORS } from '../../../carbonio-ui-commons/constants/utils';
+import { ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-ui-commons';
 import { isSharedAccountFolder } from '../../../helpers/folders';
 import type { ChipOnAdd, Folder, TagFolderRowProps } from '../../../types';
 import { SelectFolderModal } from '../../../ui-actions/modals/select-folder-modal';

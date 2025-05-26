@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, useCallback, useMemo, useState } from 'react';
+import { FC, useCallback, useMemo, useState } from 'react';
 
 import {
 	ChipInput,
@@ -17,8 +17,8 @@ import {
 } from '@zextras/carbonio-design-system';
 import { Trans, useTranslation } from 'react-i18next';
 
+import { Folder } from '@zextras/carbonio-ui-commons';
 import { applyFilterRulesSoapApi } from '../../api/apply-filter-rules-soap-api';
-import { Folder } from '../../carbonio-ui-commons/types/folder';
 import { GapContainer } from '../../commons/gap-container';
 import { TextStyler } from '../../commons/text-styler';
 import { TIMEOUTS } from '../../constants';

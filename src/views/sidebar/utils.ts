@@ -5,13 +5,17 @@
  */
 import { type AccordionItemType } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
+import {
+	DragEnterAction,
+	Folder,
+	FOLDERS,
+	isSystemFolder,
+	OnDropActionProps,
+	ROOT_NAME,
+	ZIMBRA_STANDARD_COLORS
+} from '@zextras/carbonio-ui-commons';
 import { useTranslation } from 'react-i18next';
 
-import { ROOT_NAME, ZIMBRA_STANDARD_COLORS } from '../../carbonio-ui-commons/constants';
-import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
-import { isSystemFolder } from '../../carbonio-ui-commons/helpers/folders';
-import { type Folder } from '../../carbonio-ui-commons/types/folder';
-import { DragEnterAction, OnDropActionProps } from '../../carbonio-ui-commons/types/sidebar';
 import { getFolderIdParts, isDraft, isSpam } from '../../helpers/folders';
 
 export const capitalise = (word: string): string => {

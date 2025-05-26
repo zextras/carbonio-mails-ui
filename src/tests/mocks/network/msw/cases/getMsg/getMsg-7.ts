@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { faker } from '@faker-js/faker';
-import { createFakeIdentity } from '../../../../../../carbonio-ui-commons/test/mocks/accounts/fakeAccounts';
+import { createFakeIdentity } from '@zextras/carbonio-ui-commons';
 
 /**
  * Email with 2 inline images attachments

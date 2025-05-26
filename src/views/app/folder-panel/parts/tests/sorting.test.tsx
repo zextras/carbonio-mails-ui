@@ -4,18 +4,19 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React from 'react';
-
 import { act, renderHook, within } from '@testing-library/react';
 import * as hooks from '@zextras/carbonio-shell-ui';
 import { AccountSettings } from '@zextras/carbonio-shell-ui';
 import { forEach, indexOf, noop, without } from 'lodash';
 
-import { FOLDERS } from '../../../../../carbonio-ui-commons/constants/folders';
-import { createSoapAPIInterceptor } from '../../../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
-import { generateSettings } from '../../../../../carbonio-ui-commons/test/mocks/settings/settings-generator';
-import { setupTest, screen } from '../../../../../carbonio-ui-commons/test/test-setup';
-import { SORTING_OPTIONS, SORTING_DIRECTION } from '../../../../../constants';
+import {
+	createSoapAPIInterceptor,
+	FOLDERS,
+	generateSettings,
+	screen,
+	setupTest
+} from '@zextras/carbonio-ui-commons';
+import { SORTING_DIRECTION, SORTING_OPTIONS } from '../../../../../constants';
 import { setMessagesInEmailStore, useMessageIndexSlice } from '../../../../../store/emails/store';
 import { generateMessage } from '../../../../../tests/generators/generateMessage';
 import { SearchRequest } from '../../../../../types';

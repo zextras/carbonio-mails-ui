@@ -4,26 +4,26 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React, { useState, useCallback, ReactElement } from 'react';
+import React, { ReactElement, useCallback, useState } from 'react';
 
 import {
-	Text,
-	Container,
-	Padding,
 	Avatar,
-	Tooltip,
-	IconButton,
 	Collapse,
+	Container,
+	IconButton,
 	List,
+	ListItem,
+	Padding,
 	Row,
-	ListItem
+	Text,
+	Tooltip
 } from '@zextras/carbonio-design-system';
 import { useUserAccount } from '@zextras/carbonio-shell-ui';
 import styled from 'styled-components';
 
-import { FlatFolder, type FlaFolderProps } from './flat-folder';
-import { FOLDERS } from '../../../../carbonio-ui-commons/constants/folders';
+import { FOLDERS } from '@zextras/carbonio-ui-commons';
 import { Folder } from '../../../../types';
+import { FlatFolder, type FlaFolderProps } from './flat-folder';
 
 type FlatRootProps = FlaFolderProps & {
 	childrenFolders: Array<Folder>;

@@ -7,20 +7,12 @@
 import { find, forEach, isArray, isNil, map, omitBy, orderBy, reduce } from 'lodash';
 
 import {
-	getCreationDateFromMailHeadersFromAPI,
-	getMessageIdFromMailHeadersFromAPI,
-	getMessageIsFromDistributionListFromAPI,
-	getMessageIsFromExternalDomainFromAPI,
-	getSensitivityHeaderFromAPI
-} from './mail-header-utils';
-import { getTagIds } from './utils';
-import {
+	getFolder,
+	getIdentitiesDescriptors,
 	ParticipantRole,
-	ParticipantRoleType
-} from '../carbonio-ui-commons/constants/participants';
-import { getIdentitiesDescriptors } from '../carbonio-ui-commons/helpers/identities';
-import { getFolder } from '../carbonio-ui-commons/store/zustand/folder/hooks';
-import { useFolderStore } from '../carbonio-ui-commons/store/zustand/folder/store';
+	ParticipantRoleType,
+	useFolderStore
+} from '@zextras/carbonio-ui-commons';
 import {
 	AttachmentPart,
 	BodyPart,
@@ -39,6 +31,14 @@ import {
 	PartialIncompleteMessage,
 	SoapPartialIncompleteMessage
 } from '../views/sidebar/commons/types';
+import {
+	getCreationDateFromMailHeadersFromAPI,
+	getMessageIdFromMailHeadersFromAPI,
+	getMessageIsFromDistributionListFromAPI,
+	getMessageIsFromExternalDomainFromAPI,
+	getSensitivityHeaderFromAPI
+} from './mail-header-utils';
+import { getTagIds } from './utils';
 
 type Flags = {
 	read: boolean;

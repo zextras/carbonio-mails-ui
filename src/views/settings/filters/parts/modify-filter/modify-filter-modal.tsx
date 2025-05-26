@@ -14,18 +14,18 @@ import React, {
 } from 'react';
 
 import { Checkbox, Container, Divider, Input, Padding, Row } from '@zextras/carbonio-design-system';
-import { useUserSettings, BooleanString } from '@zextras/carbonio-shell-ui';
+import { BooleanString, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { forEach, isEqual, map, omit, reduce } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { v4 as uuidv4 } from 'uuid';
 
-import ModalHeader from '../../../../../carbonio-ui-commons/components/modals/modal-header';
+import ModalHeader from '@zextras/carbonio-ui-commons';
 import type {
-	Filter,
-	ApiFilterAction,
 	AllFiltersTest,
-	FilterTest,
-	FilterActions
+	ApiFilterAction,
+	Filter,
+	FilterActions,
+	FilterTest
 } from '../../../../../types';
 import { capitalise } from '../../../../sidebar/utils';
 import { CreateFilterContext } from '../create-filter-context';

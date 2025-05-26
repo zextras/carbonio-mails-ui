@@ -5,11 +5,13 @@
  */
 import { faker } from '@faker-js/faker';
 
-import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
-import { ParticipantRole } from '../../carbonio-ui-commons/constants/participants';
-import { getRootsMap } from '../../carbonio-ui-commons/store/zustand/folder';
-import { populateFoldersStore } from '../../carbonio-ui-commons/test/mocks/store/folders';
-import { getMocksContext } from '../../carbonio-ui-commons/test/mocks/utils/mocks-context';
+import {
+	FOLDERS,
+	getMocksContext,
+	getRootsMap,
+	ParticipantRole,
+	populateFoldersStore
+} from '@zextras/carbonio-ui-commons';
 import { generateMessage } from '../../tests/generators/generateMessage';
 import { getMessageOwnerAccountName } from '../folders';
 import {

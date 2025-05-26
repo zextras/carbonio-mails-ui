@@ -7,16 +7,16 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { Dropdown, DropdownItem, IconButton, Tooltip } from '@zextras/carbonio-design-system';
-import { t, useUserSettings, useAppContext } from '@zextras/carbonio-shell-ui';
+import { t, useAppContext, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { noop } from 'lodash';
 import { useNavigate } from 'react-router-dom';
 
-import { getTooltipLabel } from './utils/utils';
-import { FOLDERS } from '../../../../carbonio-ui-commons/constants/folders';
-import { SORTING_DIRECTION, SORTING_OPTIONS, SORT_ICONS, MAILS_ROUTE } from '../../../../constants';
+import { FOLDERS } from '@zextras/carbonio-ui-commons';
+import { MAILS_ROUTE, SORTING_DIRECTION, SORTING_OPTIONS, SORT_ICONS } from '../../../../constants';
 import { parseMessageSortingOptions, updateSortingSettings } from '../../../../helpers/sorting';
 import { searchEmailStoreAction } from '../../../../store/emails/actions/search-action';
 import { AppContext } from '../../../../types';
+import { getTooltipLabel } from './utils/utils';
 
 export const SortingComponent = ({ folderId }: { folderId?: string }): React.JSX.Element => {
 	const buttonRef = useRef<HTMLDivElement>(null);

@@ -9,13 +9,13 @@ import React from 'react';
 import { act, screen, within } from '@testing-library/react';
 import { useParams } from 'react-router-dom';
 
-import { FOLDERS } from '../../../../../carbonio-ui-commons/constants/folders';
-import { createSoapAPIInterceptor } from '../../../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
-import { populateFoldersStore } from '../../../../../carbonio-ui-commons/test/mocks/store/folders';
 import {
+	createSoapAPIInterceptor,
+	FOLDERS,
 	makeListItemsVisible,
+	populateFoldersStore,
 	setupTest
-} from '../../../../../carbonio-ui-commons/test/test-setup';
+} from '@zextras/carbonio-ui-commons';
 import { generateMessageFromAPI } from '../../../../../tests/generators/api';
 import { SearchRequest, SearchResponse } from '../../../../../types';
 import { useSyncDataHandler } from '../../../../sidebar/commons/use-sync-data-handler';

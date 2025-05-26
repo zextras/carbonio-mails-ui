@@ -5,7 +5,7 @@
  */
 import { HttpResponse } from 'msw';
 
-import { createAPIInterceptor } from '../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
+import { createAPIInterceptor } from '@zextras/carbonio-ui-commons';
 import { checkExistEncryptionPassword } from '../check-exist-password-api';
 
 const api = '/service/extension/encryption/password/exist';

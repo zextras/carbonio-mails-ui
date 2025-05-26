@@ -7,9 +7,9 @@ import { act, renderHook, waitFor } from '@testing-library/react';
 import { CreateSnackbarFn, useSnackbar } from '@zextras/carbonio-design-system';
 import * as reactRouterDom from 'react-router-dom';
 
+import { createSoapAPIInterceptor } from '@zextras/carbonio-ui-commons';
 import * as convRequest from '../../api/conv-action-soap-api';
 import * as searchSoapApi from '../../api/search-soap-api';
-import { createSoapAPIInterceptor } from '../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { setConversationsInEmailStore } from '../../store/emails/store';
 import { createSoapAPIInterceptorWithError } from '../../tests/generators/api';
 import { generateConversation } from '../../tests/generators/generateConversation';

@@ -6,15 +6,17 @@
 import { faker } from '@faker-js/faker';
 import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 
-import { FOLDER_VIEW } from '../../carbonio-ui-commons/constants';
-import { createSoapAPIInterceptor } from '../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
-import { buildSoapErrorResponseBody } from '../../carbonio-ui-commons/test/mocks/utils/soap';
+import {
+	buildSoapErrorResponseBody,
+	createSoapAPIInterceptor,
+	FOLDER_VIEW
+} from '@zextras/carbonio-ui-commons';
 import { ISoapFolderObj } from '../../types';
 import { CreateMountpointError } from '../errors/create-mountpoint-error';
 import {
 	CreateMountpointResponse,
-	mountSharedFolderSoapApi,
-	MountSharedFolderParams
+	MountSharedFolderParams,
+	mountSharedFolderSoapApi
 } from '../mount-shared-folder-soap-api';
 
 describe('mountShareCalendar', () => {

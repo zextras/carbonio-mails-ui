@@ -8,11 +8,11 @@ import { faker } from '@faker-js/faker';
 import type { QueryChip } from '@zextras/carbonio-search-ui';
 import { keyBy } from 'lodash';
 
-import { createFakeIdentity } from '../../../carbonio-ui-commons/test/mocks/accounts/fakeAccounts';
 import {
+	createFakeIdentity,
 	generateFolder,
 	generateFolderLink
-} from '../../../carbonio-ui-commons/test/mocks/folders/folders-generator';
+} from '@zextras/carbonio-ui-commons';
 import { generateQueryString, getChipItems, getChipString, updateQueryChips } from '../utils';
 
 const name1 = faker.person.firstName();

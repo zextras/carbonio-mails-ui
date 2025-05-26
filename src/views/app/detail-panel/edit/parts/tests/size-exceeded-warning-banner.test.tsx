@@ -4,13 +4,10 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React from 'react';
-
 import { act } from '@testing-library/react';
 import * as hooks from '@zextras/carbonio-shell-ui';
 
-import { generateSettings } from '../../../../../../carbonio-ui-commons/test/mocks/settings/settings-generator';
-import { setupTest } from '../../../../../../carbonio-ui-commons/test/test-setup';
+import { generateSettings, setupTest } from '@zextras/carbonio-ui-commons';
 import { addEditor, useEditorsStore } from '../../../../../../store/editor';
 import { setupEditorStore } from '../../../../../../tests/generators/editor-store';
 import { generateEditorV2Case } from '../../../../../../tests/generators/editors';

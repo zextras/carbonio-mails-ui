@@ -7,7 +7,7 @@
 import { faker } from '@faker-js/faker';
 import { ErrorSoapBodyResponse, SoapFault } from '@zextras/carbonio-shell-ui';
 
-import { createSoapAPIInterceptor } from '../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
+import { createSoapAPIInterceptor } from '@zextras/carbonio-ui-commons';
 import { parseTextToHTMLDocument } from '../../helpers/text';
 import { useEditorsStore } from '../../store/editor/store';
 import { setupEditorStore } from '../../tests/generators/editor-store';
@@ -15,9 +15,9 @@ import { generateEditorV2Case } from '../../tests/generators/editors';
 import { CreateSmartLinksRequest, CreateSmartLinksResponse, MessageAction } from '../../types';
 import {
 	addSmartLinksToText,
-	updateEditorWithSmartLinks,
 	findMessageActionById,
-	generateSmartLinkHtml
+	generateSmartLinkHtml,
+	updateEditorWithSmartLinks
 } from '../utils';
 
 describe('findMessageActionById', () => {

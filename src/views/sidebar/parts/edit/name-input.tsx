@@ -3,12 +3,12 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { ChangeEvent, FC } from 'react';
+import { ChangeEvent, FC } from 'react';
 
 import { Container, Input, Padding, Text } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
 
-import { isValidFolderName } from '../../../../carbonio-ui-commons/utils/utils';
+import { isValidFolderName } from '@zextras/carbonio-ui-commons';
 import ColorPicker from '../../../../integrations/shared-invite-reply/parts/color-select';
 
 type NameInputRowProps = {

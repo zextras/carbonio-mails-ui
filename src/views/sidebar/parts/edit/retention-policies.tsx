@@ -3,20 +3,20 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { ChangeEvent, FC } from 'react';
 import {
-	Container,
 	Checkbox,
-	Row,
-	Padding,
-	Text,
-	IconButton,
 	Collapse,
+	Container,
+	IconButton,
 	Input,
-	Select
+	Padding,
+	Row,
+	Select,
+	Text
 } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
-import type { RetentionPoliciesProps } from '../../../../carbonio-ui-commons/types/sidebar';
+import type { RetentionPoliciesProps } from '@zextras/carbonio-ui-commons';
+import { ChangeEvent, FC } from 'react';
 
 const RetentionPolicies: FC<RetentionPoliciesProps> = ({
 	showPolicy,

@@ -6,7 +6,7 @@
 import { getUserAccount, getUserSettings } from '@zextras/carbonio-shell-ui';
 import { isArray } from 'lodash';
 
-import { AvailableAddress } from '../carbonio-ui-commons/types/identities';
+import { AvailableAddress } from '@zextras/carbonio-ui-commons';
 import { NO_ACCOUNT_NAME } from '../constants';
 
 /**

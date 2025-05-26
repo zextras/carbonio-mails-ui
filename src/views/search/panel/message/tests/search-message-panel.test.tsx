@@ -3,12 +3,11 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React from 'react';
 
 import { waitFor } from '@testing-library/react';
 import { useParams } from 'react-router-dom';
 
-import { screen, setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
+import { screen, setupTest } from '@zextras/carbonio-ui-commons';
 import { API_REQUEST_STATUS } from '../../../../../constants';
 import { setSearchResultsByMessage, updateMessageStatus } from '../../../../../store/emails/store';
 import { generateMessage } from '../../../../../tests/generators/generateMessage';

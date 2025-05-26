@@ -3,18 +3,19 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React from 'react';
 
 import { act, screen, within } from '@testing-library/react';
 import { CreateSnackbarFn, useSnackbar } from '@zextras/carbonio-design-system';
 import { times } from 'lodash';
 
-import { FOLDER_VIEW } from '../../carbonio-ui-commons/constants';
-import { ParticipantRole } from '../../carbonio-ui-commons/constants/participants';
-import { createFakeIdentity } from '../../carbonio-ui-commons/test/mocks/accounts/fakeAccounts';
-import { createSoapAPIInterceptor } from '../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
-import { populateFoldersStore } from '../../carbonio-ui-commons/test/mocks/store/folders';
-import { setupTest } from '../../carbonio-ui-commons/test/test-setup';
+import {
+	createFakeIdentity,
+	createSoapAPIInterceptor,
+	FOLDER_VIEW,
+	ParticipantRole,
+	populateFoldersStore,
+	setupTest
+} from '@zextras/carbonio-ui-commons';
 import { generateMessage } from '../../tests/generators/generateMessage';
 import { RedirectMessageActionRequest } from '../../types';
 import RedirectMessageAction from '../redirect-message-action';

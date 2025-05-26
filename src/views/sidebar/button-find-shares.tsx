@@ -10,10 +10,9 @@ import { Button, Container } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import { filter, isEqual, uniqWith } from 'lodash';
 
-import { SharesModal } from './shares-modal';
-import { getShareInfoRequest } from '../../carbonio-ui-commons/soap/get-share-info';
-import { ResFolder } from '../../carbonio-ui-commons/utils';
+import { getShareInfoRequest, ResFolder } from '@zextras/carbonio-ui-commons';
 import { useUiUtilities } from '../../hooks/use-ui-utilities';
+import { SharesModal } from './shares-modal';
 
 export const ButtonFindShares = (): React.JSX.Element => {
 	const { createModal, closeModal } = useUiUtilities();

@@ -4,14 +4,11 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React from 'react';
-
 import { faker } from '@faker-js/faker';
 import { useSnackbar } from '@zextras/carbonio-design-system';
 import { omit } from 'lodash';
 
-import { ParticipantRoleType } from '../../../../../../carbonio-ui-commons/constants/participants';
-import { setupTest, screen } from '../../../../../../carbonio-ui-commons/test/test-setup';
+import { ParticipantRoleType, screen, setupTest } from '@zextras/carbonio-ui-commons';
 import { Participant } from '../../../../../../types';
 import {
 	copyEmailToClipboard,

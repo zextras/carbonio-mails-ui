@@ -3,18 +3,20 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React from 'react';
 
 import { act, screen, waitFor } from '@testing-library/react';
 import { times } from 'lodash';
 import * as reactRouterDom from 'react-router-dom';
 
-import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
-import { getFolder } from '../../carbonio-ui-commons/store/zustand/folder';
-import { createSoapAPIInterceptor } from '../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
-import { populateFoldersStore } from '../../carbonio-ui-commons/test/mocks/store/folders';
-import { buildSoapErrorResponseBody } from '../../carbonio-ui-commons/test/mocks/utils/soap';
-import { makeListItemsVisible, setupTest } from '../../carbonio-ui-commons/test/test-setup';
+import {
+	buildSoapErrorResponseBody,
+	createSoapAPIInterceptor,
+	FOLDERS,
+	getFolder,
+	makeListItemsVisible,
+	populateFoldersStore,
+	setupTest
+} from '@zextras/carbonio-ui-commons';
 import { generateConversation } from '../../tests/generators/generateConversation';
 import { ConvActionRequest, ConvActionResponse, NormalizedConversation } from '../../types';
 import { MoveConversation } from '../move-conv';

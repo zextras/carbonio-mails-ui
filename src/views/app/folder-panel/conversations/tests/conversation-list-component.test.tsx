@@ -8,9 +8,12 @@ import React from 'react';
 
 import { act, screen, waitFor } from '@testing-library/react';
 
-import { FOLDERS } from '../../../../../carbonio-ui-commons/constants/folders';
-import { populateFoldersStore } from '../../../../../carbonio-ui-commons/test/mocks/store/folders';
-import { setupTest, triggerLoadMore } from '../../../../../carbonio-ui-commons/test/test-setup';
+import {
+	FOLDERS,
+	populateFoldersStore,
+	setupTest,
+	triggerLoadMore
+} from '@zextras/carbonio-ui-commons';
 import { populateConversationInEmailStore } from '../../../../../tests/generators/generateConversation';
 import {
 	ConversationListComponent,

@@ -9,8 +9,7 @@ import { useSnackbar } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
-import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
-import { isTrash } from '../../carbonio-ui-commons/helpers/folders';
+import { FOLDERS, isTrash } from '@zextras/carbonio-ui-commons';
 import { MAILS_ROUTE, MessageActionsDescriptors } from '../../constants';
 import { isFocusModeMailView } from '../../helpers/external-tabs';
 import { msgActionEmailStoreAction } from '../../store/emails/actions/msg-action-action';

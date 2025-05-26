@@ -6,7 +6,7 @@
 import { faker } from '@faker-js/faker';
 import { HttpResponse } from 'msw';
 
-import { createAPIInterceptor } from '../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
+import { createAPIInterceptor } from '@zextras/carbonio-ui-commons';
 import { restoreMessagesApi } from '../restore-messages-api';
 
 describe('restoreMessagesAPI', () => {

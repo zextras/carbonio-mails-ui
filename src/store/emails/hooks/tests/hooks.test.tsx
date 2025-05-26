@@ -10,8 +10,8 @@
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { cloneDeep, map } from 'lodash';
 
+import { createSoapAPIInterceptor } from '@zextras/carbonio-ui-commons';
 import * as getMsg from '../../../../api/get-msg-soap-api';
-import { createSoapAPIInterceptor } from '../../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { API_REQUEST_STATUS, DEFAULT_API_DEBOUNCE_TIME } from '../../../../constants';
 import {
 	generateCompleteMessageFromAPI,

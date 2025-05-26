@@ -8,8 +8,7 @@ import { act } from 'react';
 import { faker } from '@faker-js/faker';
 import { times } from 'lodash';
 
-import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
-import { setupHook, screen } from '../../../carbonio-ui-commons/test/test-setup';
+import { FOLDERS, screen, setupHook } from '@zextras/carbonio-ui-commons';
 import { FOLDERS_DESCRIPTORS } from '../../../constants';
 import { TIMERS } from '../../../tests/constants';
 import {

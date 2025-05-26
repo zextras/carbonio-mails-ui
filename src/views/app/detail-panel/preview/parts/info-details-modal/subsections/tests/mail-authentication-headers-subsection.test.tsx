@@ -4,9 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React from 'react';
-
-import { setupTest, screen } from '../../../../../../../../carbonio-ui-commons/test/test-setup';
+import { screen, setupTest } from '@zextras/carbonio-ui-commons';
 import { MailAuthenticationHeadersSubsection } from '../mail-authentication-headers-subsection';
 
 describe('MailAuthenticationHeadersSubsection', () => {

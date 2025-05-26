@@ -3,23 +3,26 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useState, useCallback, useMemo, useEffect, useId } from 'react';
+import React, { useCallback, useEffect, useId, useMemo, useState } from 'react';
 
 import {
 	CustomModal,
-	Icon,
-	Row,
-	Padding,
-	ModalHeader,
 	Divider,
+	Icon,
 	ModalFooter,
-	Tooltip,
-	Text
+	ModalHeader,
+	Padding,
+	Row,
+	Text,
+	Tooltip
 } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import { concat, filter, includes, map, reject } from 'lodash';
 import moment from 'moment';
 
+import { ContactInputItem, getTags, ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-ui-commons';
+import { ScrollableContainer } from '../../commons/scrollable-container';
+import { KeywordState, Query } from '../../types';
 import AttachmentTypeEmailStatusRow from './parts/attachment-type-email-status-row';
 import { ReceivedSentAddressRow } from './parts/received-sent-address-row';
 import SendReceivedDateRow from './parts/send-date-row';
@@ -28,11 +31,6 @@ import SubjectKeywordRow from './parts/subject-keyword-row';
 import TagFolderRow from './parts/tag-folder-row';
 import ToggleFilters from './parts/toggle-filters';
 import { getChipItems } from './utils';
-import { ZIMBRA_STANDARD_COLORS } from '../../carbonio-ui-commons/constants';
-import { ContactInputItem } from '../../carbonio-ui-commons/integrations/types';
-import { getTags } from '../../carbonio-ui-commons/store/zustand/tags';
-import { ScrollableContainer } from '../../commons/scrollable-container';
-import { KeywordState, Query } from '../../types';
 
 export type AdvancedFilterModalProps = {
 	open: boolean;

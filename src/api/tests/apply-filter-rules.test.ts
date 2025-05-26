@@ -5,8 +5,7 @@
  */
 import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 
-import { createSoapAPIInterceptor } from '../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
-import { buildSoapErrorResponseBody } from '../../carbonio-ui-commons/test/mocks/utils/soap';
+import { buildSoapErrorResponseBody, createSoapAPIInterceptor } from '@zextras/carbonio-ui-commons';
 import {
 	applyFilterRulesSoapApi,
 	ApplyFilterRulesSoapRequest,

@@ -4,13 +4,10 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React from 'react';
-
 import { screen, within } from '@testing-library/react';
 
+import { FOLDERS, setupTest } from '@zextras/carbonio-ui-commons';
 import { getMsgSoapApi } from '../../../../../api/get-msg-soap-api';
-import { FOLDERS } from '../../../../../carbonio-ui-commons/constants/folders';
-import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
 import { normalizeMailMessageFromSoap } from '../../../../../normalizations/normalize-message';
 import { generateMessage } from '../../../../../tests/generators/generateMessage';
 import MailPreview, { MailPreviewProps } from '../mail-preview';

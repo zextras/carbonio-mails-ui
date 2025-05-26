@@ -10,9 +10,7 @@ import { t, useAppContext } from '@zextras/carbonio-shell-ui';
 import { isEmpty, map } from 'lodash';
 import { useParams } from 'react-router-dom';
 
-import { SearchConversationListItem } from './search-conversation-list-item';
-import { CustomList } from '../../../../carbonio-ui-commons/components/list/list';
-import { CustomListItem } from '../../../../carbonio-ui-commons/components/list/list-item';
+import { CustomList, CustomListItem } from '@zextras/carbonio-ui-commons';
 import { useSelection } from '../../../../hooks/use-selection';
 import type { AppContext, SearchListProps } from '../../../../types';
 import { Divider } from '../../../app/detail-panel/edit/parts/edit-view-styled-components';
@@ -21,6 +19,7 @@ import { AdvancedFilterButton } from '../../parts/advanced-filter-button';
 import { useLoadMoreForSearchSlice } from '../../search-view-hooks';
 import ShimmerList from '../../shimmer-list';
 import { SearchListHeader } from '../parts/search-list-header';
+import { SearchConversationListItem } from './search-conversation-list-item';
 
 export const SearchConversationList = ({
 	searchResults: conversationIds,

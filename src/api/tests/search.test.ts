@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { createSoapAPIInterceptor } from '../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
+import { createSoapAPIInterceptor } from '@zextras/carbonio-ui-commons';
 import { SearchRequest } from '../../types';
 import { searchSoapApi } from '../search-soap-api';
 

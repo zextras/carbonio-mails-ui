@@ -7,9 +7,7 @@
 import { AccountSettings } from '@zextras/carbonio-shell-ui';
 import { useTranslation } from 'react-i18next';
 
-import { useUserSettings } from '../../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
-import { generateSettings } from '../../../../carbonio-ui-commons/test/mocks/settings/settings-generator';
-import { setupHook } from '../../../../carbonio-ui-commons/test/test-setup';
+import { generateSettings, setupHook, useUserSettings } from '@zextras/carbonio-ui-commons';
 import { buildSignature } from '../../../../tests/generators/signatures';
 import { SignItemType } from '../../../../types';
 import {

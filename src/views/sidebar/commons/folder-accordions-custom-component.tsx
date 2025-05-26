@@ -9,10 +9,9 @@ import { AccordionItem, Avatar, Padding, Row, Tooltip } from '@zextras/carbonio-
 import { useUserAccount } from '@zextras/carbonio-shell-ui';
 import styled from 'styled-components';
 
-import { ROOT_NAME } from '../../../carbonio-ui-commons/constants';
-import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
+import { FOLDERS, ROOT_NAME } from '@zextras/carbonio-ui-commons';
 import { Folder } from '../../../types';
-import { getFolderTranslatedName, getFolderIconName, getFolderIconColor } from '../utils';
+import { getFolderIconColor, getFolderIconName, getFolderTranslatedName } from '../utils';
 import { StatusIcon } from './status-icon';
 
 const FittedRow = styled(Row)`

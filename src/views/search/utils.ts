@@ -8,8 +8,7 @@ import type { QueryChip } from '@zextras/carbonio-search-ui';
 import { includes, map, reduce } from 'lodash';
 import { v4 as uuid } from 'uuid';
 
-import { findIconFromChip } from './parts/use-find-icon';
-import { convertSearchChipToString } from '../../carbonio-ui-commons/helpers/search';
+import { convertSearchChipToString } from '@zextras/carbonio-ui-commons';
 import {
 	ChipType,
 	ContactInputItem,
@@ -18,6 +17,7 @@ import {
 	KeywordState,
 	SearchQueryItem
 } from '../../types';
+import { findIconFromChip } from './parts/use-find-icon';
 
 function getRegex(prefix?: string): RegExp {
 	return new RegExp(`^${prefix}:.*`, 'i');

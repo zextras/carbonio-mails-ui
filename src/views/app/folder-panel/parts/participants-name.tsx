@@ -9,17 +9,16 @@ import { Padding, Row, Text, Tooltip } from '@zextras/carbonio-design-system';
 import { t, useUserAccount } from '@zextras/carbonio-shell-ui';
 import { findIndex, reduce, trimStart, uniqBy } from 'lodash';
 
-import { FOLDERS } from '../../../../carbonio-ui-commons/constants/folders';
-import { ParticipantRole } from '../../../../carbonio-ui-commons/constants/participants';
+import { FOLDERS, ParticipantRole } from '@zextras/carbonio-ui-commons';
 import { participantToString } from '../../../../commons/utils';
 import { getFolderIdParts } from '../../../../helpers/folders';
 import { isConversation } from '../../../../helpers/messages';
 import { getConversationMessages } from '../../../../store/emails/store';
 import {
-	NormalizedConversation,
 	IncompleteMessage,
-	TextReadValuesProps,
-	Participant
+	NormalizedConversation,
+	Participant,
+	TextReadValuesProps
 } from '../../../../types';
 
 export type ParticipantsNameProps = {

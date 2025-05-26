@@ -6,13 +6,11 @@
 
 import React, { useCallback } from 'react';
 
-import { Container, Row, Icon } from '@zextras/carbonio-design-system';
+import { Container, Icon, Row } from '@zextras/carbonio-design-system';
 import { noop } from 'lodash';
 
-import { StaticBreadcrumbs } from '../../../../carbonio-ui-commons/components/breadcrumbs/static-breadcrumbs';
-import { isRoot } from '../../../../carbonio-ui-commons/helpers/folders';
-import { Folder } from '../../../../carbonio-ui-commons/types/folder';
-import { getFolderIconName, getFolderIconColor, getSystemFolderTranslatedName } from '../../utils';
+import { Folder, isRoot, StaticBreadcrumbs } from '@zextras/carbonio-ui-commons';
+import { getFolderIconColor, getFolderIconName, getSystemFolderTranslatedName } from '../../utils';
 
 /**
  * Process the absolute path of the given folder, removing

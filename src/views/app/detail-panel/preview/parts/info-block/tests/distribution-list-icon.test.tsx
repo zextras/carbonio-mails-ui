@@ -3,11 +3,10 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React from 'react';
 
 import { screen } from '@testing-library/react';
 
-import { setupTest } from '../../../../../../../carbonio-ui-commons/test/test-setup';
+import { setupTest } from '@zextras/carbonio-ui-commons';
 import { DistributionListIcon } from '../distribution-list-icon';
 
 describe('DistributionListIcon', () => {

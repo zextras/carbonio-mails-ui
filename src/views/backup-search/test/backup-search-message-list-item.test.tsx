@@ -3,14 +3,11 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React from 'react';
 
 import { screen } from '@testing-library/react';
 
-import * as folderHooks from '../../../carbonio-ui-commons/store/zustand/folder/hooks';
-import { getUserAccount } from '../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
-import { generateFolder } from '../../../carbonio-ui-commons/test/mocks/folders/folders-generator';
-import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
+import * as folderHooks from '@zextras/carbonio-ui-commons';
+import { generateFolder, getUserAccount, setupTest } from '@zextras/carbonio-ui-commons';
 import { useBackupSearchStore } from '../../../store/backup-search/store';
 import { BackupSearchMessageListItem } from '../parts/backup-search-message-list-item';
 

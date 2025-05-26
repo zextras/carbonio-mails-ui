@@ -3,13 +3,11 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React from 'react';
 
 import { screen } from '@testing-library/react';
 import { useParams } from 'react-router-dom';
 
-import { FOLDERS } from '../../../../carbonio-ui-commons/constants/folders';
-import { setupTest } from '../../../../carbonio-ui-commons/test/test-setup';
+import { FOLDERS, setupTest } from '@zextras/carbonio-ui-commons';
 import { useIsMessageView } from '../../../search/search-view-hooks';
 import FolderPanel from '../../folder-panel';
 

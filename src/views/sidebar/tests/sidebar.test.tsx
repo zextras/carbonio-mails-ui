@@ -3,19 +3,22 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React from 'react';
 
 import { act, screen, waitFor } from '@testing-library/react';
 import { useSnackbar } from '@zextras/carbonio-design-system';
 import * as hooks from '@zextras/carbonio-shell-ui';
 
-import { FolderActionsType, FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
-import * as shellMock from '../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
-import { useLocalStorage } from '../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
-import { generateFolder } from '../../../carbonio-ui-commons/test/mocks/folders/folders-generator';
-import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
-import { populateFoldersStore } from '../../../carbonio-ui-commons/test/mocks/store/folders';
-import { makeListItemsVisible, setupTest } from '../../../carbonio-ui-commons/test/test-setup';
+import * as shellMock from '@zextras/carbonio-ui-commons';
+import {
+	createSoapAPIInterceptor,
+	FolderActionsType,
+	FOLDERS,
+	generateFolder,
+	makeListItemsVisible,
+	populateFoldersStore,
+	setupTest,
+	useLocalStorage
+} from '@zextras/carbonio-ui-commons';
 import { MAIL_APP_ID, MAILS_ROUTE } from '../../../constants';
 import { setMessagesInEmailStore } from '../../../store/emails/store';
 import { generateMessage } from '../../../tests/generators/generateMessage';

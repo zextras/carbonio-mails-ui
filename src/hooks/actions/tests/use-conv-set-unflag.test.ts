@@ -8,8 +8,7 @@ import { act } from 'react';
 import { faker } from '@faker-js/faker';
 import { times } from 'lodash';
 
-import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
-import { setupHook } from '../../../carbonio-ui-commons/test/test-setup';
+import { createSoapAPIInterceptor, setupHook } from '@zextras/carbonio-ui-commons';
 import { ConvActionRequest } from '../../../types';
 import { useConvSetUnflagDescriptor, useConvSetUnflagFn } from '../use-conv-set-unflag';
 

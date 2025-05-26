@@ -8,8 +8,8 @@ import { act } from 'react';
 
 import { renderHook } from '@testing-library/react';
 
+import { createSoapAPIInterceptor } from '@zextras/carbonio-ui-commons';
 import * as searchSoapApi from '../../../../../api/search-soap-api';
-import { createSoapAPIInterceptor } from '../../../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { API_REQUEST_STATUS } from '../../../../../constants';
 import * as storeHooks from '../../../../../store/emails/store';
 import {

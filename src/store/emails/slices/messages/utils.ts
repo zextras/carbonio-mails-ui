@@ -8,8 +8,7 @@
 import produce from 'immer';
 import { StoreApi, UseBoundStore } from 'zustand';
 
-import { MESSAGE_INDEX_SLICE_INITIAL_STATE } from './messages-slice';
-import { useFolder } from '../../../../carbonio-ui-commons/store/zustand/folder';
+import { useFolder } from '@zextras/carbonio-ui-commons';
 import { API_REQUEST_STATUS } from '../../../../constants';
 import {
 	EmailsStoreState,
@@ -19,6 +18,7 @@ import {
 	SearchRequestStatus
 } from '../../../../types';
 import { POPULATED_ITEMS_SLICE_INITIAL_STATE } from '../populated-items/populated-items-slice';
+import { MESSAGE_INDEX_SLICE_INITIAL_STATE } from './messages-slice';
 
 function setMessagesInEmailStore(
 	messages: Array<MailMessage | IncompleteMessage>,

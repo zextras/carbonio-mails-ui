@@ -6,12 +6,12 @@
 
 import { ErrorSoapBodyResponse, soapFetch } from '@zextras/carbonio-shell-ui';
 
-import { ParticipantRole } from '../carbonio-ui-commons/constants/participants';
+import { ParticipantRole } from '@zextras/carbonio-ui-commons';
 import { getAddressOwnerAccount, getIdentityDescriptor } from '../helpers/identities';
 import { getParticipantsFromMessage } from '../helpers/messages';
 import { getCertificatesPassword } from '../store/certificates/certificate';
-import { createSoapSendMsgRequestFromEditor } from '../store/editor/editor-transformations';
 import { generateMailRequest } from '../store/editor-slice-utils';
+import { createSoapSendMsgRequestFromEditor } from '../store/editor/editor-transformations';
 import { getConvEmailStoreAction } from '../store/emails/actions/get-conv-action';
 import { getMessageEmailStoreAction } from '../store/emails/actions/get-message';
 import { getMessageWithExistingParticipantsEmailStoreAction } from '../store/emails/actions/get-message-with-existing-participants';

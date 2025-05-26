@@ -5,7 +5,7 @@
  */
 import * as Shell from '@zextras/carbonio-shell-ui';
 
-import { setupHook } from '../../carbonio-ui-commons/test/test-setup';
+import { setupHook } from '@zextras/carbonio-ui-commons';
 import { MAIL_APP_ID, MAILS_ROUTE } from '../../constants';
 import { useSearchRegisterer } from '../use-search-registerer';
 

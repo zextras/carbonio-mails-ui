@@ -3,15 +3,13 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
+import { FC, ReactElement, useCallback, useMemo, useState } from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
 
-import { CONTACT_TYPES } from '../../../carbonio-ui-commons/integrations/constants';
-import { useContactInput } from '../../../carbonio-ui-commons/integrations/hooks';
-import { ContactInputItem } from '../../../carbonio-ui-commons/integrations/types';
+import { CONTACT_TYPES, ContactInputItem, useContactInput } from '@zextras/carbonio-ui-commons';
 import { SearchEmailValue } from '../../../types';
 
 type ReceivedSentAddressRowProps = {

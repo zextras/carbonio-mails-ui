@@ -4,12 +4,10 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React from 'react';
-
 import { screen } from '@testing-library/react';
 import { forEach, noop, reduce } from 'lodash';
 
-import { setupTest } from '../../carbonio-ui-commons/test/test-setup';
+import { setupTest } from '@zextras/carbonio-ui-commons';
 import { FOLDERS_DESCRIPTORS, MessageActionsDescriptors } from '../../constants';
 import { ASSERTIONS, MSG_CONV_STATUS_DESCRIPTORS } from '../../tests/constants';
 import { generateMessage } from '../../tests/generators/generateMessage';

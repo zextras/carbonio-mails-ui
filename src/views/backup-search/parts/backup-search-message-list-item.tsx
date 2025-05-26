@@ -10,7 +10,7 @@ import { getUserAccount, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { find } from 'lodash';
 import { useNavigate } from 'react-router-dom';
 
-import { getFolder } from '../../../carbonio-ui-commons/store/zustand/folder/hooks';
+import { getFolder } from '@zextras/carbonio-ui-commons';
 import { BACKUP_SEARCH_ROUTE } from '../../../constants';
 import { BackupSearchMessage } from '../../../types';
 import { HoverContainer } from '../../app/folder-panel/parts/hover-container';

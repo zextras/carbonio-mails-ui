@@ -28,11 +28,11 @@ import {
 import { t } from '@zextras/carbonio-shell-ui';
 import { filter } from 'lodash';
 
-import ContactNames from './contact-names';
-import { ContactNameChip } from './contact-names-chips';
-import { useFoldersMap } from '../../../../../carbonio-ui-commons/store/zustand/folder';
+import { useFoldersMap } from '@zextras/carbonio-ui-commons';
 import type { MailMessage, TextReadValuesProps } from '../../../../../types';
 import { getFolderTranslatedName } from '../../../../sidebar/utils';
+import ContactNames from './contact-names';
+import { ContactNameChip } from './contact-names-chips';
 
 const EmptyToField: FC<{ labelTo: string }> = memo(({ labelTo }) => (
 	<Row mainAlignment="flex-start">

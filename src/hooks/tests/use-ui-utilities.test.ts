@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { setupHook } from '../../carbonio-ui-commons/test/test-setup';
+import { setupHook } from '@zextras/carbonio-ui-commons';
 import { useUiUtilities } from '../use-ui-utilities';
 
 describe('useUiUtilities', () => {

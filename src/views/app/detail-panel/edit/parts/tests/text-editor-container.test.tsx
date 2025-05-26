@@ -4,13 +4,13 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React from 'react';
 
 import {
+	screen,
+	setupTest,
 	useIntegratedComponent,
 	useUserSettings
-} from '../../../../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
-import { setupTest, screen } from '../../../../../../carbonio-ui-commons/test/test-setup';
+} from '@zextras/carbonio-ui-commons';
 import { generateNewMessageEditor } from '../../../../../../store/editor/editor-generators';
 import { setupEditorStore } from '../../../../../../tests/generators/editor-store';
 import { MailsEditorV2 } from '../../../../../../types';

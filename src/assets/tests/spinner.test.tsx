@@ -3,11 +3,10 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React from 'react';
 
 import { useTheme } from '@zextras/carbonio-design-system';
 
-import { setupTest, screen, setupHook } from '../../carbonio-ui-commons/test/test-setup';
+import { screen, setupHook, setupTest } from '@zextras/carbonio-ui-commons';
 import { Spinner } from '../spinner';
 
 describe('Spinner', () => {

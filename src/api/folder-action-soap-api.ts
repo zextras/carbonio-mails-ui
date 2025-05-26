@@ -6,8 +6,8 @@
 import { soapFetch } from '@zextras/carbonio-shell-ui';
 import { isEmpty, isNil, omitBy } from 'lodash';
 
-import type { Folder } from '../carbonio-ui-commons/types';
-import { DataProps } from '../carbonio-ui-commons/types/sidebar';
+import type { Folder } from '@zextras/carbonio-ui-commons';
+import { DataProps } from '@zextras/carbonio-ui-commons';
 import { FolderActionResponse } from '../types';
 
 export type FolderActionProps = {

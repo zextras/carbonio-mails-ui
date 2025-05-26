@@ -7,9 +7,11 @@
 import { waitFor } from '@testing-library/react';
 import * as shellHooks from '@zextras/carbonio-shell-ui';
 
-import { ParticipantRole } from '../../carbonio-ui-commons/constants/participants';
-import { generateAccount } from '../../carbonio-ui-commons/test/mocks/accounts/account-generator';
-import { createSoapAPIInterceptor } from '../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
+import {
+	createSoapAPIInterceptor,
+	generateAccount,
+	ParticipantRole
+} from '@zextras/carbonio-ui-commons';
 import { generateEditor } from '../../store/editor/editor-generators';
 import { getConvEmailStoreAction } from '../../store/emails/actions/get-conv-action';
 import { getMessageWithExistingParticipantsEmailStoreAction } from '../../store/emails/actions/get-message-with-existing-participants';

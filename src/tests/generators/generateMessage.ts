@@ -6,8 +6,7 @@
 
 import { faker } from '@faker-js/faker';
 
-import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
-import { ParticipantRole } from '../../carbonio-ui-commons/constants/participants';
+import { FOLDERS, ParticipantRole } from '@zextras/carbonio-ui-commons';
 import { convertHtmlToPlainText } from '../../commons/utilities';
 import { updateMessages } from '../../store/emails/store';
 import { MailMessage, MailMessagePart, Participant, Sensitivity } from '../../types';

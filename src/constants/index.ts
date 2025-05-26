@@ -6,7 +6,7 @@
 
 import { TFunction } from 'i18next';
 
-import { FOLDERS } from '../carbonio-ui-commons/constants/folders';
+import { FOLDERS } from '@zextras/carbonio-ui-commons';
 
 export const MAILS_ROUTE = 'mails';
 

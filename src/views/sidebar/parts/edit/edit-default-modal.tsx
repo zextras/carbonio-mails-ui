@@ -3,27 +3,28 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
+import { FC, useCallback, useEffect, useMemo, useState } from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import { includes, isEmpty } from 'lodash';
 
+import {
+	allowedActionOnSharedAccount,
+	FolderActionsType,
+	FOLDERS,
+	isValidFolderName,
+	default as ModalFooter,
+	default as ModalHeader
+} from '@zextras/carbonio-ui-commons';
+import { folderActionSoapApi } from '../../../../api/folder-action-soap-api';
+import { useUiUtilities } from '../../../../hooks/use-ui-utilities';
+import { ModalProps } from '../../../../types';
+import { getFolderTranslatedName, useTranslatedSystemFolders } from '../../utils';
 import { FolderDetails } from './folder-details';
 import NameInputRow from './name-input';
 import RetentionPolicies from './retention-policies';
 import { ShareFolderProperties } from './share-folder-properties';
-import { folderActionSoapApi } from '../../../../api/folder-action-soap-api';
-import ModalFooter from '../../../../carbonio-ui-commons/components/modals/modal-footer';
-import ModalHeader from '../../../../carbonio-ui-commons/components/modals/modal-header';
-import { FolderActionsType, FOLDERS } from '../../../../carbonio-ui-commons/constants/folders';
-import {
-	allowedActionOnSharedAccount,
-	isValidFolderName
-} from '../../../../carbonio-ui-commons/utils/utils';
-import { useUiUtilities } from '../../../../hooks/use-ui-utilities';
-import { ModalProps } from '../../../../types';
-import { getFolderTranslatedName, useTranslatedSystemFolders } from '../../utils';
 
 const numberRegex = /^\d+$/;
 const DAYS_LABEL = 'label.days';

@@ -35,14 +35,9 @@ import {
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 
+import type { GroupedShare, ShareModalProps, SharedObject } from '@zextras/carbonio-ui-commons';
+import { default as ModalFooter, default as ModalHeader } from '@zextras/carbonio-ui-commons';
 import { createMountpointSoapApi } from '../../api/create-mountpoint-soap-api';
-import ModalFooter from '../../carbonio-ui-commons/components/modals/modal-footer';
-import ModalHeader from '../../carbonio-ui-commons/components/modals/modal-header';
-import type {
-	GroupedShare,
-	ShareModalProps,
-	SharedObject
-} from '../../carbonio-ui-commons/types/sidebar';
 
 const ContainerEl = styled(Container)`
 	overflow-y: auto;

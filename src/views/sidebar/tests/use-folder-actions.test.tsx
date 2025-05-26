@@ -8,13 +8,11 @@ import React, { act } from 'react';
 import { renderHook, waitFor } from '@testing-library/react';
 import { useModal } from '@zextras/carbonio-design-system';
 import { t, useAppContext } from '@zextras/carbonio-shell-ui';
+import { FOLDERS, FolderActionsType, Folder, generateFolder } from '@zextras/carbonio-ui-commons';
 
 import { folderActionSoapApi } from '../../../api/folder-action-soap-api';
-import { FolderActionsType, FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
-import { generateFolder } from '../../../carbonio-ui-commons/test/mocks/folders/folders-generator';
 import { setMessagesInEmailStore } from '../../../store/emails/store';
 import { populateMessagesInEmailStore } from '../../../tests/generators/generateMessage';
-import { Folder } from '../../../types';
 import { FolderActionsProps } from '../../../types/sidebar';
 import { SelectFolderModal } from '../../../ui-actions/modals/select-folder-modal';
 import { DeleteModal } from '../delete-modal';

@@ -3,11 +3,11 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { soapFetch } from '@zextras/carbonio-shell-ui';
 import type { Account, BatchRequest, BatchResponse } from '@zextras/carbonio-shell-ui';
+import { soapFetch } from '@zextras/carbonio-shell-ui';
 import { trim } from 'lodash';
 
-import { Folder } from '../carbonio-ui-commons/types/folder';
+import { Folder } from '@zextras/carbonio-ui-commons';
 import { FolderActionGrant, FolderActionRequest } from '../types';
 
 export type ShareFolderDataType = {

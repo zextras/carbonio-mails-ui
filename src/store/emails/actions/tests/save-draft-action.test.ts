@@ -6,9 +6,11 @@
 
 import * as shellHooks from '@zextras/carbonio-shell-ui';
 
-import { ParticipantRole } from '../../../../carbonio-ui-commons/constants/participants';
-import { generateAccount } from '../../../../carbonio-ui-commons/test/mocks/accounts/account-generator';
-import { createSoapAPIInterceptor } from '../../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
+import {
+	createSoapAPIInterceptor,
+	generateAccount,
+	ParticipantRole
+} from '@zextras/carbonio-ui-commons';
 import { MailsEditorV2, SaveDraftRequest } from '../../../../types';
 import { generateEditor } from '../../../editor/editor-generators';
 import { saveDraftEmailStoreAction } from '../save-draft-action';

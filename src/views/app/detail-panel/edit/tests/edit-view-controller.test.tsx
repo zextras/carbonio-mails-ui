@@ -3,19 +3,18 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React from 'react';
 
 import { faker } from '@faker-js/faker';
 import { act } from '@testing-library/react';
 import { Board } from '@zextras/carbonio-shell-ui';
 import { HttpResponse } from 'msw';
 
-import { useBoard } from '../../../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
 import {
 	createAPIInterceptor,
-	createSoapAPIInterceptor
-} from '../../../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
-import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
+	createSoapAPIInterceptor,
+	setupTest,
+	useBoard
+} from '@zextras/carbonio-ui-commons';
 import { EditViewActions } from '../../../../../constants';
 import { generateNewMessageEditor } from '../../../../../store/editor/editor-generators';
 import { getSoapMailMessage } from '../../../../../store/emails/actions/tests/test-utils';

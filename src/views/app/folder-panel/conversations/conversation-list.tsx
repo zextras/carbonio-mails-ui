@@ -10,18 +10,17 @@ import { t, useAppContext, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
 import { useParams } from 'react-router-dom';
 
-import { ConversationListComponent } from './conversation-list-component';
-import { useLoadMoreForConversationList } from './conversation-list-hooks';
-import { ConversationListItemComponent } from './conversation-list-item-component';
-import { ConversationShortcutsRegister } from './conversation-shortcuts-register';
-import { FOLDERS } from '../../../../carbonio-ui-commons/constants/folders';
-import { useFolder } from '../../../../carbonio-ui-commons/store/zustand/folder';
+import { FOLDERS, useFolder } from '@zextras/carbonio-ui-commons';
 import { API_REQUEST_STATUS, LIST_LIMIT } from '../../../../constants';
 import { getFolderIdParts } from '../../../../helpers/folders';
 import { parseMessageSortingOptions } from '../../../../helpers/sorting';
 import { useConversationListByFolder } from '../../../../hooks/use-conversations-list-by-folder';
 import { useSelection } from '../../../../hooks/use-selection';
 import type { AppContext } from '../../../../types';
+import { ConversationListComponent } from './conversation-list-component';
+import { useLoadMoreForConversationList } from './conversation-list-hooks';
+import { ConversationListItemComponent } from './conversation-list-item-component';
+import { ConversationShortcutsRegister } from './conversation-shortcuts-register';
 
 export const ConversationList = (): React.JSX.Element => {
 	const { folderId, itemId } = useParams() as { folderId: string; itemId?: string };

@@ -3,19 +3,20 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React from 'react';
 
 import { faker } from '@faker-js/faker';
 import { fireEvent, screen, waitFor } from '@testing-library/react';
 import { noop } from 'lodash';
 
-import { FOLDERS } from '../../../../../carbonio-ui-commons/constants/folders';
-import { ParticipantRole } from '../../../../../carbonio-ui-commons/constants/participants';
-import { useTagStore } from '../../../../../carbonio-ui-commons/store/zustand/tags';
-import { generateFolders } from '../../../../../carbonio-ui-commons/test/mocks/folders/folders-generator';
-import { tags as mockTags } from '../../../../../carbonio-ui-commons/test/mocks/tags/tags';
-import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
-import type { Folder } from '../../../../../carbonio-ui-commons/types/folder';
+import type { Folder } from '@zextras/carbonio-ui-commons';
+import {
+	FOLDERS,
+	generateFolders,
+	tags as mockTags,
+	ParticipantRole,
+	setupTest,
+	useTagStore
+} from '@zextras/carbonio-ui-commons';
 import { FOLDERS_DESCRIPTORS } from '../../../../../constants';
 import { setMessagesInEmailStore } from '../../../../../store/emails/store';
 import { ASSERTIONS } from '../../../../../tests/constants';

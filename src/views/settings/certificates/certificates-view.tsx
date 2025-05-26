@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React, { FC, useCallback, useEffect, useMemo, useRef } from 'react';
+import { FC, useCallback, useEffect, useMemo, useRef } from 'react';
 
 import {
 	Breadcrumbs,
@@ -17,13 +17,13 @@ import {
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 
+import { useUpdateView } from '@zextras/carbonio-ui-commons';
+import { checkExistEncryptionPassword } from '../../../api/check-exist-password-api';
+import { useSmimePasswordStore } from '../../../store/certificates/store';
 import { CertificatePasswordModal } from './certificate-password-modal';
 import { EnterPasswordModal } from './enter-password-modal';
 import PersonalCertificatesSettings from './personal-certificates-settings';
 import RecipientsCertificateSettings from './recipients-certificates-settings';
-import { checkExistEncryptionPassword } from '../../../api/check-exist-password-api';
-import { useUpdateView } from '../../../carbonio-ui-commons/hooks/use-update-view';
-import { useSmimePasswordStore } from '../../../store/certificates/store';
 
 const CustomBreadcrumbs = styled(Breadcrumbs)`
 	.breadcrumbCrumb {

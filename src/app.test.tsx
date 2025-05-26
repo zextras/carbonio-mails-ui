@@ -3,23 +3,22 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React from 'react';
 
 import { act } from '@testing-library/react';
 import * as shellUi from '@zextras/carbonio-shell-ui';
 import { HttpResponse } from 'msw';
 
+import {
+	createAPIInterceptor,
+	createSoapAPIInterceptor,
+	generateFolder,
+	setupTest
+} from '@zextras/carbonio-ui-commons';
 import App from './app';
 import * as addComponentsToShell from './app-utils/add-shell-components';
 import * as registerShellActions from './app-utils/register-shell-actions';
 import * as registerShellIntegrations from './app-utils/register-shell-integrations';
 import * as useSearchRegisterer from './app-utils/use-search-registerer';
-import { generateFolder } from './carbonio-ui-commons/test/mocks/folders/folders-generator';
-import {
-	createAPIInterceptor,
-	createSoapAPIInterceptor
-} from './carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
-import { setupTest } from './carbonio-ui-commons/test/test-setup';
 import { BACKUP_SEARCH_ROUTE } from './constants';
 import { useBackupSearchStore } from './store/backup-search/store';
 import { DeletedMessageFromAPI } from './types';

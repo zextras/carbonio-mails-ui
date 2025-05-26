@@ -7,13 +7,15 @@
 import { faker } from '@faker-js/faker';
 import { http, HttpResponse } from 'msw';
 
-import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
-import { getFolder } from '../../carbonio-ui-commons/store/zustand/folder/hooks';
-import { getSetupServer } from '../../carbonio-ui-commons/test/jest-setup';
-import { populateFoldersStore } from '../../carbonio-ui-commons/test/mocks/store/folders';
-import { Folder } from '../../carbonio-ui-commons/types/folder';
+import {
+	Folder,
+	FOLDERS,
+	getFolder,
+	getSetupServer,
+	populateFoldersStore
+} from '@zextras/carbonio-ui-commons';
 import { FolderActionGrant } from '../../types';
-import { shareFolderSoapApi, ShareFolderDataType } from '../share-folder-soap-api';
+import { ShareFolderDataType, shareFolderSoapApi } from '../share-folder-soap-api';
 
 const setupInterceptor = (): Promise<Array<{ action: FolderActionGrant }>> =>
 	new Promise<Array<{ action: FolderActionGrant }>>((resolve, reject) => {

@@ -3,19 +3,21 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, useCallback, useMemo } from 'react';
+import { FC, useCallback, useMemo } from 'react';
 
 import { Container, Text } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 
-import { getFolderTranslatedName } from './utils';
+import {
+	FOLDERS,
+	default as ModalFooter,
+	default as ModalHeader
+} from '@zextras/carbonio-ui-commons';
 import { folderActionSoapApi } from '../../api/folder-action-soap-api';
-import ModalFooter from '../../carbonio-ui-commons/components/modals/modal-footer';
-import ModalHeader from '../../carbonio-ui-commons/components/modals/modal-header';
-import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
 import { getFolderIdParts } from '../../helpers/folders';
 import { useUiUtilities } from '../../hooks/use-ui-utilities';
 import type { ModalProps } from '../../types';
+import { getFolderTranslatedName } from './utils';
 
 export const EmptyModal: FC<ModalProps> = ({ folder, onClose }) => {
 	const { createSnackbar } = useUiUtilities();

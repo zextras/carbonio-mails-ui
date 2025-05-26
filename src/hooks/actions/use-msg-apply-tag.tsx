@@ -8,8 +8,7 @@ import { useCallback, useMemo } from 'react';
 import { map } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
-import { useSortedTagsArray } from '../../carbonio-ui-commons/store/zustand/tags';
-import { Tag } from '../../carbonio-ui-commons/types/tags';
+import { Tag, useSortedTagsArray } from '@zextras/carbonio-ui-commons';
 import { MessageActionsDescriptors, TIMEOUTS } from '../../constants';
 import { isSpam } from '../../helpers/folders';
 import { msgActionEmailStoreAction } from '../../store/emails/actions/msg-action-action';

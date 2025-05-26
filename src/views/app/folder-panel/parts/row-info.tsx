@@ -4,11 +4,11 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React, { FC, useMemo } from 'react';
+import { FC, useMemo } from 'react';
 
 import { Icon, Padding, Row, Text } from '@zextras/carbonio-design-system';
 
-import { Tag } from '../../../../carbonio-ui-commons/types/tags';
+import { Tag } from '@zextras/carbonio-ui-commons';
 import { getTimeLabel } from '../../../../commons/utils';
 import { NormalizedConversation } from '../../../../types';
 import { useTagExist } from '../../../../ui-actions/tag-actions';

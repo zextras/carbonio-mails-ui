@@ -7,17 +7,20 @@
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { http } from 'msw';
 
-import { FOLDERS } from '../../../../carbonio-ui-commons/constants/folders';
-import { useFolderStore } from '../../../../carbonio-ui-commons/store/zustand/folder';
-import { useTagStore } from '../../../../carbonio-ui-commons/store/zustand/tags';
-import { getSetupServer } from '../../../../carbonio-ui-commons/test/jest-setup';
-import { useNotify } from '../../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
-import { generateFolder } from '../../../../carbonio-ui-commons/test/mocks/folders/folders-generator';
-import { handleGetFolderRequest } from '../../../../carbonio-ui-commons/test/mocks/network/msw/handle-get-folder';
-import { handleGetShareInfoRequest } from '../../../../carbonio-ui-commons/test/mocks/network/msw/handle-get-share-info';
-import { populateFoldersStore } from '../../../../carbonio-ui-commons/test/mocks/store/folders';
-import { setupHook } from '../../../../carbonio-ui-commons/test/test-setup';
-import { folderWorker, tagsWorker } from '../../../../carbonio-ui-commons/worker';
+import {
+	FOLDERS,
+	folderWorker,
+	generateFolder,
+	getSetupServer,
+	handleGetFolderRequest,
+	handleGetShareInfoRequest,
+	populateFoldersStore,
+	setupHook,
+	tagsWorker,
+	useFolderStore,
+	useNotify,
+	useTagStore
+} from '@zextras/carbonio-ui-commons';
 import { normalizeConversations } from '../../../../normalizations/normalize-conversation';
 import {
 	getUseEmailStoreAndHooksForTesting,

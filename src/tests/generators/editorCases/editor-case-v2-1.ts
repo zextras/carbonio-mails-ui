@@ -6,7 +6,7 @@
 
 import { faker } from '@faker-js/faker';
 
-import { getMocksContext } from '../../../carbonio-ui-commons/test/mocks/utils/mocks-context';
+import { getMocksContext } from '@zextras/carbonio-ui-commons';
 import { EditViewActions } from '../../../constants';
 import { MailsEditorV2 } from '../../../types';
 

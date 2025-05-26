@@ -5,15 +5,10 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React from 'react';
-
 import { act, screen, within } from '@testing-library/react';
 import { useSnackbar } from '@zextras/carbonio-design-system';
 
-import {
-	makeListItemsVisible,
-	setupTest
-} from '../../../../../carbonio-ui-commons/test/test-setup';
+import { makeListItemsVisible, setupTest } from '@zextras/carbonio-ui-commons';
 import { Filter } from '../../../../../types';
 import { ListType } from '../actions';
 import { getFiltermanager } from '../filter-manager';

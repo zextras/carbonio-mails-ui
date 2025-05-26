@@ -7,14 +7,10 @@
 import { faker } from '@faker-js/faker';
 import { times } from 'lodash';
 
-import { generateMessage, MessageGenerationParams } from './generateMessage';
-import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
-import {
-	ParticipantRole,
-	ParticipantRoleType
-} from '../../carbonio-ui-commons/constants/participants';
+import { FOLDERS, ParticipantRole, ParticipantRoleType } from '@zextras/carbonio-ui-commons';
 import { updateConversations, updateMessages } from '../../store/emails/store';
 import type { MailMessage, NormalizedConversation, Participant } from '../../types';
+import { generateMessage, MessageGenerationParams } from './generateMessage';
 
 /**
  *

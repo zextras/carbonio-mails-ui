@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { useLocalStorage } from '../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
+import { useLocalStorage } from '@zextras/carbonio-ui-commons';
 import {
 	LOCAL_STORAGE_LAYOUT,
 	LOCAL_STORAGE_SPLIT_LAYOUT_ORIENTATION,

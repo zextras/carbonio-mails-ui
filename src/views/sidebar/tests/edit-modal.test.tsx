@@ -3,21 +3,23 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React from 'react';
 
 import { faker } from '@faker-js/faker';
 import { act, screen, within } from '@testing-library/react';
 import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 
-import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
-import { ZIMBRA_STANDARD_COLORS } from '../../../carbonio-ui-commons/constants/utils';
-import { getFolder } from '../../../carbonio-ui-commons/store/zustand/folder';
-import { generateFolder } from '../../../carbonio-ui-commons/test/mocks/folders/folders-generator';
-import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
-import { populateFoldersStore } from '../../../carbonio-ui-commons/test/mocks/store/folders';
-import { buildSoapErrorResponseBody } from '../../../carbonio-ui-commons/test/mocks/utils/soap';
-import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
-import { Folder, FolderView } from '../../../carbonio-ui-commons/types/folder';
+import {
+	buildSoapErrorResponseBody,
+	createSoapAPIInterceptor,
+	Folder,
+	FOLDERS,
+	FolderView,
+	generateFolder,
+	getFolder,
+	populateFoldersStore,
+	setupTest,
+	ZIMBRA_STANDARD_COLORS
+} from '@zextras/carbonio-ui-commons';
 import { SoapFolderAction } from '../../../types';
 import { EditModal } from '../edit-modal';
 

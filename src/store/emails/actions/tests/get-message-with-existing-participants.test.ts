@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import { ParticipantRole } from '@zextras/carbonio-ui-commons';
 import { getMsgSoapApi } from '../../../../api/get-msg-soap-api';
-import { ParticipantRole } from '../../../../carbonio-ui-commons/constants/participants';
 import { API_REQUEST_STATUS } from '../../../../constants';
 import { normalizeMailMessageFromSoap } from '../../../../normalizations/normalize-message';
 import { GetMsgResponse } from '../../../../types';

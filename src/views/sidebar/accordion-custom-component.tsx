@@ -18,9 +18,16 @@ import {
 	Tooltip
 } from '@zextras/carbonio-design-system';
 import { t, useUserAccount } from '@zextras/carbonio-shell-ui';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import styled from 'styled-components';
 
+import type { Folder, OnDropActionProps } from '@zextras/carbonio-ui-commons';
+import { FOLDERS, isSystemFolder, ROOT_NAME } from '@zextras/carbonio-ui-commons';
+import { folderActionSoapApi } from '../../api/folder-action-soap-api';
+import { useOnMouseHover } from '../../hooks/use-on-mouse-hover';
+import { useUiUtilities } from '../../hooks/use-ui-utilities';
+import { convActionEmailStoreAction } from '../../store/emails/actions/conv-action-action';
+import { msgActionEmailStoreAction } from '../../store/emails/actions/msg-action-action';
 import { FolderActionWrapper } from './folder-action-wrapper';
 import {
 	getFolderIconColor,
@@ -28,16 +35,6 @@ import {
 	getFolderTranslatedName,
 	handleDragEnter
 } from './utils';
-import { folderActionSoapApi } from '../../api/folder-action-soap-api';
-import { ROOT_NAME } from '../../carbonio-ui-commons/constants';
-import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
-import { isSystemFolder } from '../../carbonio-ui-commons/helpers/folders';
-import type { Folder } from '../../carbonio-ui-commons/types/folder';
-import type { OnDropActionProps } from '../../carbonio-ui-commons/types/sidebar';
-import { useOnMouseHover } from '../../hooks/use-on-mouse-hover';
-import { useUiUtilities } from '../../hooks/use-ui-utilities';
-import { convActionEmailStoreAction } from '../../store/emails/actions/conv-action-action';
-import { msgActionEmailStoreAction } from '../../store/emails/actions/msg-action-action';
 
 const FittedRow = styled(Row)`
 	max-width: calc(100% - (2 * ${({ theme }): string => theme.sizes.padding.small}));

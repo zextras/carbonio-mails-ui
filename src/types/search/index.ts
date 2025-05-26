@@ -4,10 +4,10 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { ChipProps, ChipItem } from '@zextras/carbonio-design-system';
+import { ChipItem, ChipProps } from '@zextras/carbonio-design-system';
 import type { QueryChip } from '@zextras/carbonio-search-ui';
 
-import { SortBy } from '../../carbonio-ui-commons/types';
+import { SortBy } from '@zextras/carbonio-ui-commons';
 import { NormalizedConversation } from '../conversations';
 import { KeywordState } from '../filters';
 import { IncompleteMessage, MailMessage } from '../messages';

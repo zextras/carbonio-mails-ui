@@ -8,23 +8,22 @@
 import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 import produce from 'immer';
 import { filter, forEach, keyBy, merge } from 'lodash';
-import { UseBoundStore, StoreApi } from 'zustand';
+import { StoreApi, UseBoundStore } from 'zustand';
 
+import { FOLDERS, useFolder } from '@zextras/carbonio-ui-commons';
 import { RemoveAttachmentsResponse } from '../../../../api/delete-all-attachments-soap-api';
-import { FOLDERS } from '../../../../carbonio-ui-commons/constants/folders';
-import { useFolder } from '../../../../carbonio-ui-commons/store/zustand/folder';
 import { CONVACTIONS } from '../../../../commons/utilities';
 import { API_REQUEST_STATUS } from '../../../../constants';
 import { normalizeMailMessageFromSoap } from '../../../../normalizations/normalize-message';
 import {
-	MailMessage,
-	IncompleteMessage,
+	ConvActionParameters,
 	EmailsStoreState,
+	IncompleteMessage,
+	MailMessage,
+	MsgActionParameters,
 	NormalizedConversation,
 	SearchRequestStatus,
-	type ConvActionResponse,
-	MsgActionParameters,
-	ConvActionParameters
+	type ConvActionResponse
 } from '../../../../types';
 
 function useConversationMessages(

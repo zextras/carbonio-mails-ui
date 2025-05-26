@@ -10,8 +10,7 @@ import { TFunction } from 'i18next';
 import { includes, map } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
-import { useSortedTagsArray } from '../../carbonio-ui-commons/store/zustand/tags';
-import { Tag } from '../../carbonio-ui-commons/types/tags';
+import { Tag, useSortedTagsArray } from '@zextras/carbonio-ui-commons';
 import { ConversationActionsDescriptors, TIMEOUTS } from '../../constants';
 import { isSpam } from '../../helpers/folders';
 import { convActionEmailStoreAction } from '../../store/emails/actions/conv-action-action';

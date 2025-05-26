@@ -3,12 +3,11 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React from 'react';
 
 import { screen } from '@testing-library/react';
 import { t as mockT } from '@zextras/carbonio-shell-ui';
 
-import { setupTest } from '../../../../carbonio-ui-commons/test/test-setup';
+import { setupTest } from '@zextras/carbonio-ui-commons';
 import { PRIMARY_IDENTITY_NAME } from '../../../../helpers/identities';
 import { SignItemType } from '../../../../types';
 import SelectIdentitySignature from '../select-identity-signature';

@@ -7,7 +7,7 @@
 import { SoapNotify } from '@zextras/carbonio-shell-ui';
 import { StoreApi, UseBoundStore } from 'zustand';
 
-import { TagState } from '../../../carbonio-ui-commons/types/tags';
+import { TagState } from '@zextras/carbonio-ui-commons';
 import {
 	FolderState,
 	IncompleteMessage,

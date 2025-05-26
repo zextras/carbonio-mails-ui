@@ -10,26 +10,24 @@ import type { QueryChip } from '@zextras/carbonio-search-ui';
 import { type ErrorSoapBodyResponse, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
 
-import { generateQueryString, updateQueryChips } from './utils';
+import { getTags, Tags, useFoldersMap } from '@zextras/carbonio-ui-commons';
 import { searchSoapApi } from '../../api/search-soap-api';
-import { useFoldersMap } from '../../carbonio-ui-commons/store/zustand/folder';
-import { getTags } from '../../carbonio-ui-commons/store/zustand/tags';
-import { Tags } from '../../carbonio-ui-commons/types/tags';
 import { API_REQUEST_STATUS, LIST_LIMIT } from '../../constants';
 import { mapToNormalizedConversation } from '../../normalizations/normalize-conversation';
 import { normalizeMailMessageFromSoap } from '../../normalizations/normalize-message';
 import {
 	appendConversations,
 	appendMessagesToSearch,
-	updateSearchResultsLoadingStatus,
-	useSearchResults,
-	setSearchResultsByMessage,
-	setSearchResultsByConversation,
 	resetSearchAndPopulatedItems,
-	setMessagesInEmailStore
+	setMessagesInEmailStore,
+	setSearchResultsByConversation,
+	setSearchResultsByMessage,
+	updateSearchResultsLoadingStatus,
+	useSearchResults
 } from '../../store/emails/store';
-import { IncompleteMessage, MailMessage, SearchResponse, SearchIndexSliceState } from '../../types';
+import { IncompleteMessage, MailMessage, SearchIndexSliceState, SearchResponse } from '../../types';
 import { extractConvMessage } from '../sidebar/commons/use-sync-data-handler';
+import { generateQueryString, updateQueryChips } from './utils';
 
 type UseRunSearchProps = {
 	query: QueryChip[];

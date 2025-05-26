@@ -3,14 +3,16 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, useCallback, useMemo, useState } from 'react';
+import { FC, useCallback, useMemo, useState } from 'react';
 
 import { map, some } from 'lodash';
 
-import { ParticipantRoleType } from '../../../../../carbonio-ui-commons/constants/participants';
-import { CONTACT_TYPES } from '../../../../../carbonio-ui-commons/integrations/constants';
-import { useContactInput } from '../../../../../carbonio-ui-commons/integrations/hooks';
-import { ContactInputItem } from '../../../../../carbonio-ui-commons/integrations/types';
+import {
+	CONTACT_TYPES,
+	ContactInputItem,
+	ParticipantRoleType,
+	useContactInput
+} from '@zextras/carbonio-ui-commons';
 import { Participant } from '../../../../../types';
 
 export type RecipientsRowProps = {

@@ -6,8 +6,7 @@
 import { faker } from '@faker-js/faker';
 import { act } from '@testing-library/react';
 
-import { createSoapAPIInterceptor } from '../../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
-import { setupHook } from '../../../../carbonio-ui-commons/test/test-setup';
+import { createSoapAPIInterceptor, setupHook } from '@zextras/carbonio-ui-commons';
 import { setupEditorStore } from '../../../../tests/generators/editor-store';
 import { generateEditorV2Case } from '../../../../tests/generators/editors';
 import { generateNewMessageEditor } from '../../editor-generators';

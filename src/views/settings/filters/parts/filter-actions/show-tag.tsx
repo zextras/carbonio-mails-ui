@@ -17,7 +17,7 @@ import {
 import { find } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
-import { ZIMBRA_STANDARD_COLORS } from '../../../../../carbonio-ui-commons/constants';
+import { ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-ui-commons';
 import { MailFilterTag } from '../../../../../types';
 
 type ShowTagProps = {

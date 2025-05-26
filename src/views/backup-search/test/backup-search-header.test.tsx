@@ -4,14 +4,11 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React from 'react';
-
 import { screen } from '@testing-library/react';
-import { removeRoute } from '@zextras/carbonio-shell-ui';
 import * as hooks from '@zextras/carbonio-shell-ui';
+import { removeRoute } from '@zextras/carbonio-shell-ui';
 
-import { generateSettings } from '../../../carbonio-ui-commons/test/mocks/settings/settings-generator';
-import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
+import { generateSettings, setupTest } from '@zextras/carbonio-ui-commons';
 import { useBackupSearchStore } from '../../../store/backup-search/store';
 import { BackupSearchHeader } from '../parts/backup-search-header';
 

@@ -4,16 +4,15 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React from 'react';
 
 import { act, screen, within } from '@testing-library/react';
 import { UserEvent } from '@testing-library/user-event';
 
-import { populateFoldersStore } from '../../../../../carbonio-ui-commons/test/mocks/store/folders';
 import {
 	makeListItemsVisible,
+	populateFoldersStore,
 	setupTest
-} from '../../../../../carbonio-ui-commons/test/test-setup';
+} from '@zextras/carbonio-ui-commons';
 import CreateFilterModal from '../create-filter-modal';
 
 const addAction = async (user: UserEvent): Promise<void> => {

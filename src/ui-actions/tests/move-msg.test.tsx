@@ -3,19 +3,21 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React from 'react';
 
 import { act, screen } from '@testing-library/react';
 import { useSnackbar } from '@zextras/carbonio-design-system';
 import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 import { times } from 'lodash';
 
-import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
-import { getFolder } from '../../carbonio-ui-commons/store/zustand/folder';
-import { createSoapAPIInterceptor } from '../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
-import { populateFoldersStore } from '../../carbonio-ui-commons/test/mocks/store/folders';
-import { buildSoapErrorResponseBody } from '../../carbonio-ui-commons/test/mocks/utils/soap';
-import { makeListItemsVisible, setupTest } from '../../carbonio-ui-commons/test/test-setup';
+import {
+	buildSoapErrorResponseBody,
+	createSoapAPIInterceptor,
+	FOLDERS,
+	getFolder,
+	makeListItemsVisible,
+	populateFoldersStore,
+	setupTest
+} from '@zextras/carbonio-ui-commons';
 import { generateMessage } from '../../tests/generators/generateMessage';
 import { MailMessage, MsgActionRequest, MsgActionResponse } from '../../types';
 import { MoveMessage } from '../move-msg';

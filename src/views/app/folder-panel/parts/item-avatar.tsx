@@ -3,17 +3,16 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, SyntheticEvent, useCallback, useMemo } from 'react';
+import { FC, SyntheticEvent, useCallback, useMemo } from 'react';
 
 import { Avatar, Container } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import styled from 'styled-components';
 
-import { TooltipWrapper } from './tooltip-wrapper';
-import { FOLDERS } from '../../../../carbonio-ui-commons/constants/folders';
-import { ParticipantRole } from '../../../../carbonio-ui-commons/constants/participants';
+import { FOLDERS, ParticipantRole } from '@zextras/carbonio-ui-commons';
 import { getFolderIdParts } from '../../../../helpers/folders';
 import type { ItemAvatarType, Participant } from '../../../../types';
+import { TooltipWrapper } from './tooltip-wrapper';
 
 const AvatarElement = styled(Avatar)`
 	width: 2.625rem !important;

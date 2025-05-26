@@ -5,10 +5,10 @@
  */
 import React, { Suspense, lazy, useRef } from 'react';
 
+import { useUpdateView } from '@zextras/carbonio-ui-commons';
+import { Spinner } from '../assets/spinner';
 import { FolderView } from './folder-view';
 import { LayoutSelector } from './layout-selector';
-import { Spinner } from '../assets/spinner';
-import { useUpdateView } from '../carbonio-ui-commons/hooks/use-update-view';
 
 const LazyDetailPanel = lazy(
 	() => import(/* webpackChunkName: "folder-panel-view" */ './app/detail-panel')

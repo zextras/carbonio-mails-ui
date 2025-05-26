@@ -3,25 +3,24 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, useMemo } from 'react';
+import { FC, useMemo } from 'react';
 
 import {
-	Container,
-	Row,
-	Padding,
-	Icon,
-	Text,
 	Button,
-	Divider
+	Container,
+	Divider,
+	Icon,
+	Padding,
+	Row,
+	Text
 } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 
-import PreviewHeader from './preview-header';
-import { FOLDERS } from '../../../../../carbonio-ui-commons/constants/folders';
-import { getFolderIdParts } from '../../../../../carbonio-ui-commons/helpers/folders';
+import { FOLDERS, getFolderIdParts } from '@zextras/carbonio-ui-commons';
 import { useMsgSetNotSpamFn } from '../../../../../hooks/actions/use-msg-set-not-spam';
 import { MailMessage } from '../../../../../types';
+import PreviewHeader from './preview-header';
 
 type MailPreviewBlockType = {
 	message: MailMessage;

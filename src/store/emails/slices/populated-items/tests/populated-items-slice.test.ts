@@ -5,15 +5,17 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { awaitExpression } from '@babel/types';
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 
-import { FOLDERS } from '../../../../../carbonio-ui-commons/constants/folders';
-import { useTags } from '../../../../../carbonio-ui-commons/store/zustand/tags';
-import { populateFoldersStore } from '../../../../../carbonio-ui-commons/test/mocks/store/folders';
-import { tags as mockTags } from '../../../../../carbonio-ui-commons/test/mocks/tags/tags';
-import { buildSoapErrorResponseBody } from '../../../../../carbonio-ui-commons/test/mocks/utils/soap';
+import {
+	buildSoapErrorResponseBody,
+	FOLDERS,
+	tags as mockTags,
+	populateFoldersStore,
+	useTags
+} from '@zextras/carbonio-ui-commons';
+import { omit } from 'lodash';
 import { CONVACTIONS } from '../../../../../commons/utilities';
 import { API_REQUEST_STATUS } from '../../../../../constants';
 import { generateCompleteMessageFromAPI } from '../../../../../tests/generators/api';
@@ -25,7 +27,7 @@ import {
 	generateMessage,
 	populateMessagesInEmailStore
 } from '../../../../../tests/generators/generateMessage';
-import { ConvActionResponse, IncompleteMessage, MailMessage } from '../../../../../types';
+import { ConvActionResponse, MailMessage } from '../../../../../types';
 import {
 	appendConversations,
 	getConversationMessages,
@@ -53,7 +55,6 @@ import {
 	useMessagesByIds,
 	useMessageStatus
 } from '../../../store';
-import { omit } from 'lodash';
 
 const { setMessagesInSearchSlice } = getUseEmailStoreAndHooksForTesting();
 

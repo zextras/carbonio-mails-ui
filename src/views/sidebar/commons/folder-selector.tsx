@@ -4,20 +4,18 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { ChangeEvent, ReactElement, useMemo, useState } from 'react';
+import { ChangeEvent, ReactElement, useMemo, useState } from 'react';
 
 import { ThemeProvider } from '@mui/material';
 import { Button, Container, Input, Padding } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 
+import type { Folder } from '@zextras/carbonio-ui-commons';
+import { FOLDERS, getFolder, themeMui } from '@zextras/carbonio-ui-commons';
+import { useFolders } from '../../../hooks/use-folders';
 import { FlatFolders } from './flatten-folders/flat-folders';
 import { FolderAccordionCustomComponent } from './folder-accordions-custom-component';
 import { FoldersAccordion } from './folders-accordion';
-import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
-import { getFolder } from '../../../carbonio-ui-commons/store/zustand/folder/hooks';
-import { themeMui } from '../../../carbonio-ui-commons/theme/theme-mui';
-import type { Folder } from '../../../carbonio-ui-commons/types/folder';
-import { useFolders } from '../../../hooks/use-folders';
 
 export type FolderSelectorProps = {
 	inputLabel?: string;

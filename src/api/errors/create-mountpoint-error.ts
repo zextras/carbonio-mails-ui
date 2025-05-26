@@ -5,7 +5,7 @@
  */
 import { TFunction } from 'i18next';
 
-import { GenericSoapApiError } from '../../carbonio-ui-commons/soap/errors/generic-soap-api-error';
+import { GenericSoapApiError } from '@zextras/carbonio-ui-commons';
 
 export class CreateMountpointError extends GenericSoapApiError {
 	public static readonly FOLDER_ALREADY_EXISTS = 'mail.ALREADY_EXISTS';

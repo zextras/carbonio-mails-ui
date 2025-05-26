@@ -4,11 +4,10 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { renderHook, act } from '@testing-library/react';
+import { act, renderHook } from '@testing-library/react';
 
+import { createSoapAPIInterceptor, generateFolder } from '@zextras/carbonio-ui-commons';
 import * as searchSoapApi from '../../../../../api/search-soap-api';
-import { generateFolder } from '../../../../../carbonio-ui-commons/test/mocks/folders/folders-generator';
-import { createSoapAPIInterceptor } from '../../../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
 import { API_REQUEST_STATUS } from '../../../../../constants';
 import * as storeHooks from '../../../../../store/emails/store';
 import {

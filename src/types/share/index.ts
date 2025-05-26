@@ -7,7 +7,7 @@
 import type { Grant } from '@zextras/carbonio-shell-ui';
 import { TFunction } from 'i18next';
 
-import type { Folder } from '../../carbonio-ui-commons/types/folder';
+import type { Folder } from '@zextras/carbonio-ui-commons';
 import type { Participant } from '../participant';
 
 export type ShareCalendarModalProps = {

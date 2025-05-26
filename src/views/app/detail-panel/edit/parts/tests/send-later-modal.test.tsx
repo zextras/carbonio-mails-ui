@@ -3,12 +3,11 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React from 'react';
 
 import { screen } from '@testing-library/react';
 import { noop } from 'lodash';
 
-import { setupTest } from '../../../../../../carbonio-ui-commons/test/test-setup';
+import { setupTest } from '@zextras/carbonio-ui-commons';
 import { SendLaterModal } from '../send-later-modal';
 
 describe('send-later-modal', () => {

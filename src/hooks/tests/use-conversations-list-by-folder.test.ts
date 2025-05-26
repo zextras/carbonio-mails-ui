@@ -6,7 +6,7 @@
 import { renderHook, waitFor } from '@testing-library/react';
 import { useUserSettings } from '@zextras/carbonio-shell-ui';
 
-import { createSoapAPIInterceptor } from '../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
+import { createSoapAPIInterceptor } from '@zextras/carbonio-ui-commons';
 import { API_REQUEST_STATUS, LIST_LIMIT } from '../../constants';
 import { parseMessageSortingOptions } from '../../helpers/sorting';
 import { searchEmailStoreAction } from '../../store/emails/actions/search-action';

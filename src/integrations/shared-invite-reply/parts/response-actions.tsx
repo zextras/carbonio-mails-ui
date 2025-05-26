@@ -3,16 +3,16 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { ChangeEvent, FC, ReactElement, useCallback, useMemo, useState } from 'react';
+import { ChangeEvent, FC, ReactElement, useCallback, useMemo, useState } from 'react';
 
 import { Button, Checkbox, Divider, Input, Padding, Row } from '@zextras/carbonio-design-system';
 import { useUserAccounts } from '@zextras/carbonio-shell-ui';
 import { TFunction } from 'i18next';
 
+import { FOLDER_VIEW } from '@zextras/carbonio-ui-commons';
+import { ResponseActionsProps } from '../../../types';
 import ColorSelect from './color-select';
 import { useAccept, useDecline } from './share-folder-actions';
-import { FOLDER_VIEW } from '../../../carbonio-ui-commons/constants';
-import { ResponseActionsProps } from '../../../types';
 
 function getProposedFolderName(sharedFolderName: string, ownerName: string, t: TFunction): string {
 	const of = t('label.of', 'of');

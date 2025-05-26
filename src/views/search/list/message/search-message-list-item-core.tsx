@@ -6,12 +6,12 @@
 import React, { useMemo } from 'react';
 
 import {
-	Text,
 	Badge,
 	Container,
 	Icon,
 	Padding,
 	Row,
+	Text,
 	Tooltip
 } from '@zextras/carbonio-design-system';
 import { useUserAccounts } from '@zextras/carbonio-shell-ui';
@@ -19,12 +19,9 @@ import { find, includes, isEmpty, reduce } from 'lodash';
 import moment from 'moment';
 import { useTranslation } from 'react-i18next';
 
-import { ZIMBRA_STANDARD_COLORS } from '../../../../carbonio-ui-commons/constants';
-import { useFolder } from '../../../../carbonio-ui-commons/store/zustand/folder';
-import { useTags } from '../../../../carbonio-ui-commons/store/zustand/tags';
-import { Tag } from '../../../../carbonio-ui-commons/types/tags';
+import { Tag, useFolder, useTags, ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-ui-commons';
 import { getTimeLabel, participantToString } from '../../../../commons/utils';
-import { TextReadValuesType, MailMessage } from '../../../../types';
+import { MailMessage, TextReadValuesType } from '../../../../types';
 import { useTagExist } from '../../../../ui-actions/tag-actions';
 import { ItemAvatar } from '../../../app/folder-panel/parts/item-avatar';
 import { ParticipantsName } from '../../../app/folder-panel/parts/participants-name';

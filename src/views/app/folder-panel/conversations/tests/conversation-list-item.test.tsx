@@ -4,16 +4,17 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 /* eslint-disable testing-library/prefer-user-event */
-import React from 'react';
 
 import { act, fireEvent, screen, waitFor } from '@testing-library/react';
 import { noop } from 'lodash';
 import * as reactRouterDom from 'react-router-dom';
 
-import { FOLDERS } from '../../../../../carbonio-ui-commons/constants/folders';
-import { ParticipantRole } from '../../../../../carbonio-ui-commons/constants/participants';
-import { createSoapAPIInterceptor } from '../../../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
-import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
+import {
+	createSoapAPIInterceptor,
+	FOLDERS,
+	ParticipantRole,
+	setupTest
+} from '@zextras/carbonio-ui-commons';
 import { API_REQUEST_STATUS, FOLDERS_DESCRIPTORS } from '../../../../../constants';
 import { useConvPreviewOnSeparatedWindowFn } from '../../../../../hooks/actions/use-conv-preview-on-separated-window';
 import {

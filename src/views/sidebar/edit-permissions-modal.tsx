@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { ChangeEvent, FC, useCallback, useMemo, useState } from 'react';
+import { ChangeEvent, FC, useCallback, useMemo, useState } from 'react';
 
 import {
 	Checkbox,
@@ -17,19 +17,21 @@ import {
 } from '@zextras/carbonio-design-system';
 import { t, useUserAccounts } from '@zextras/carbonio-shell-ui';
 
-import { GranteeInfo } from './parts/edit/share-folder-properties';
+import type { EditPermissionsModalProps } from '@zextras/carbonio-ui-commons';
+import {
+	ContactInputItem,
+	default as ModalFooter,
+	default as ModalHeader,
+	useContactInput
+} from '@zextras/carbonio-ui-commons';
 import { sendShareNotificationSoapApi } from '../../api/send-share-notification-soap-api';
 import { shareFolderSoapApi } from '../../api/share-folder-soap-api';
-import ModalFooter from '../../carbonio-ui-commons/components/modals/modal-footer';
-import ModalHeader from '../../carbonio-ui-commons/components/modals/modal-header';
-import { useContactInput } from '../../carbonio-ui-commons/integrations/hooks';
-import { ContactInputItem } from '../../carbonio-ui-commons/integrations/types';
-import type { EditPermissionsModalProps } from '../../carbonio-ui-commons/types/sidebar';
 import { useUiUtilities } from '../../hooks/use-ui-utilities';
 import {
 	ShareCalendarRoleOptions,
 	findLabel
 } from '../../integrations/shared-invite-reply/parts/utils';
+import { GranteeInfo } from './parts/edit/share-folder-properties';
 
 // TODO refactor IRIS-4324
 const EditPermissionsModal: FC<EditPermissionsModalProps> = ({

@@ -5,7 +5,7 @@
  */
 import { faker } from '@faker-js/faker';
 
-import { ParticipantRole } from '../../carbonio-ui-commons/constants/participants';
+import { ParticipantRole } from '@zextras/carbonio-ui-commons';
 import {
 	computeDraftSaveAllowedStatus,
 	computeSendAllowedStatus

@@ -4,8 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
-import { createSoapAPIInterceptor } from '../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
+import { createSoapAPIInterceptor, FOLDERS } from '@zextras/carbonio-ui-commons';
 import { SearchConvRequest } from '../../types';
 import { searchConvSoapApi } from '../search-conv-soap-api';
 

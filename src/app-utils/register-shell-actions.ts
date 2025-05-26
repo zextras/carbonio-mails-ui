@@ -9,7 +9,7 @@ import { SyntheticEvent } from 'react';
 import { Action, NewAction, registerActions, t } from '@zextras/carbonio-shell-ui';
 import { isArray, isString, some } from 'lodash';
 
-import { ParticipantRole } from '../carbonio-ui-commons/constants/participants';
+import { ParticipantRole } from '@zextras/carbonio-ui-commons';
 import { EditViewActions, MAIL_APP_ID } from '../constants';
 import { mailToSharedFunction } from '../integrations/shared-functions';
 import { createEditBoard } from '../views/app/detail-panel/edit/edit-view-board';

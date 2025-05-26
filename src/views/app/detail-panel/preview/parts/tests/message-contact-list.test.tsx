@@ -4,13 +4,12 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React, { act } from 'react';
+import { act } from 'react';
 
 import { faker } from '@faker-js/faker';
 import { screen } from '@testing-library/react';
 
-import { ParticipantRole } from '../../../../../../carbonio-ui-commons/constants/participants';
-import { setupTest } from '../../../../../../carbonio-ui-commons/test/test-setup';
+import { ParticipantRole, setupTest } from '@zextras/carbonio-ui-commons';
 import { generateMessage } from '../../../../../../tests/generators/generateMessage';
 import MessageContactList from '../message-contact-list';
 

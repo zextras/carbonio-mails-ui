@@ -3,15 +3,19 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React from 'react';
 
 import { faker } from '@faker-js/faker';
 import { act, fireEvent } from '@testing-library/react';
 import { AccountSettings, AccountSettingsPrefs } from '@zextras/carbonio-shell-ui';
 import { times } from 'lodash';
 
-import { generateSettings } from '../../../carbonio-ui-commons/test/mocks/settings/settings-generator';
-import { screen, setupTest, UserEvent, within } from '../../../carbonio-ui-commons/test/test-setup';
+import {
+	generateSettings,
+	screen,
+	setupTest,
+	UserEvent,
+	within
+} from '@zextras/carbonio-ui-commons';
 import { SendersList, SendersListProps } from '../senders-list';
 
 const SENDERS_LIST = 'senders-list';

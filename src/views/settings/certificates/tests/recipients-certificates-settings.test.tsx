@@ -4,11 +4,9 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React from 'react';
-
 import { screen, waitFor } from '@testing-library/react';
 
-import { setupTest } from '../../../../carbonio-ui-commons/test/test-setup';
+import { setupTest } from '@zextras/carbonio-ui-commons';
 import RecipientsCertificateSettings from '../recipients-certificates-settings';
 import { createAPIInterceptorToGetRecipientsCertificates } from './utils/utils';
 

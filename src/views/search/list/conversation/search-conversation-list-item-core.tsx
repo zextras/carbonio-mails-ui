@@ -6,21 +6,19 @@
 import React, { useCallback, useMemo } from 'react';
 
 import {
-	Text,
+	Badge,
+	Button,
+	Container,
+	Icon,
 	Padding,
 	Row,
-	Container,
-	Badge,
-	Tooltip,
-	Icon,
-	Button
+	Text,
+	Tooltip
 } from '@zextras/carbonio-design-system';
 import { filter, forEach, includes, isEmpty, reduce, uniqBy } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
-import { ZIMBRA_STANDARD_COLORS } from '../../../../carbonio-ui-commons/constants/utils';
-import { useTags } from '../../../../carbonio-ui-commons/store/zustand/tags/hooks';
-import { Tag } from '../../../../carbonio-ui-commons/types/tags';
+import { Tag, useTags, ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-ui-commons';
 import { API_REQUEST_STATUS } from '../../../../constants';
 import { searchConvEmailStoreAction } from '../../../../store/emails/actions/search-conv-action';
 import {

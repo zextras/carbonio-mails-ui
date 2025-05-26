@@ -9,10 +9,10 @@ import { Container, Padding, Text } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import { useParams } from 'react-router-dom';
 
-import { DraftMessages, SentMessages, SpamMessages, TrashMessages } from './utils';
-import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
+import { FOLDERS } from '@zextras/carbonio-ui-commons';
 import { getFolderIdParts } from '../../../helpers/folders';
 import { useConversationsIdsByFolder } from '../../../store/emails/store';
+import { DraftMessages, SentMessages, SpamMessages, TrashMessages } from './utils';
 
 export const SelectionInteractive = ({ count }: { count: number }): React.JSX.Element => {
 	const { folderId } = useParams() as { folderId: string };

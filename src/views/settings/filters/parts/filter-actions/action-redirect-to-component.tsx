@@ -8,11 +8,10 @@ import React, { useCallback } from 'react';
 
 import { v4 as uuidv4 } from 'uuid';
 
-import { RedirectTo } from './redirect-to';
-import { CONTACT_TYPES } from '../../../../../carbonio-ui-commons/integrations/constants';
-import { ContactInputItem } from '../../../../../carbonio-ui-commons/integrations/types';
+import { CONTACT_TYPES, ContactInputItem } from '@zextras/carbonio-ui-commons';
 import { FilterRedirect } from '../../../../../types';
 import { ActionComponentProps } from '../../types';
+import { RedirectTo } from './redirect-to';
 
 export const ActionRedirectToComponent = ({
 	value,

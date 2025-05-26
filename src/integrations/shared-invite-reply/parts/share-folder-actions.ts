@@ -9,10 +9,9 @@ import { TFunction } from 'i18next';
 import { map } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
+import { getErrorMessage, ParticipantRole } from '@zextras/carbonio-ui-commons';
 import { acceptSharedFolderReply } from '../../../api/accept-shared-folder-reply';
 import { mountSharedFolderSoapApi } from '../../../api/mount-shared-folder-soap-api';
-import { ParticipantRole } from '../../../carbonio-ui-commons/constants/participants';
-import { getErrorMessage } from '../../../carbonio-ui-commons/helpers/errors';
 import { useUiUtilities } from '../../../hooks/use-ui-utilities';
 import { msgActionEmailStoreAction } from '../../../store/emails/actions/msg-action-action';
 import type { Participant, SaveDraftResponse } from '../../../types';

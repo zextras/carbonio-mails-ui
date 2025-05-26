@@ -9,9 +9,7 @@ import { faker } from '@faker-js/faker';
 import * as hooks from '@zextras/carbonio-shell-ui';
 import { times } from 'lodash';
 
-import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
-import { generateSettings } from '../../../carbonio-ui-commons/test/mocks/settings/settings-generator';
-import { setupHook, screen } from '../../../carbonio-ui-commons/test/test-setup';
+import { FOLDERS, generateSettings, screen, setupHook } from '@zextras/carbonio-ui-commons';
 import { FOLDERS_DESCRIPTORS } from '../../../constants';
 import { TIMERS } from '../../../tests/constants';
 import { useMsgMoveToFolderDescriptor, useMsgMoveToFolderFn } from '../use-msg-move-to-folder';

@@ -7,13 +7,9 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React from 'react';
-
 import { screen } from '@testing-library/react';
 
-import { useAppContext } from '../../../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
-import { previewContextMock } from '../../../../../carbonio-ui-commons/test/mocks/carbonio-ui-preview';
-import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
+import { previewContextMock, setupTest, useAppContext } from '@zextras/carbonio-ui-commons';
 import { getMessageById } from '../../../../../store/emails/store';
 import AttachmentsBlock from '../attachments-block';
 

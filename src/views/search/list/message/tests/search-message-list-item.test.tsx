@@ -3,15 +3,17 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { act } from 'react';
+import { act } from 'react';
 
-import { waitFor, screen } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import { AccountSettings } from '@zextras/carbonio-shell-ui';
 
-import { useUserSettings } from '../../../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
-import { createSoapAPIInterceptor } from '../../../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
-import { generateSettings } from '../../../../../carbonio-ui-commons/test/mocks/settings/settings-generator';
-import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
+import {
+	createSoapAPIInterceptor,
+	generateSettings,
+	setupTest,
+	useUserSettings
+} from '@zextras/carbonio-ui-commons';
 import { CONVACTIONS } from '../../../../../commons/utilities';
 import { populateMessagesInEmailStore } from '../../../../../tests/generators/generateMessage';
 import { MsgActionRequest, MsgActionResponse } from '../../../../../types';

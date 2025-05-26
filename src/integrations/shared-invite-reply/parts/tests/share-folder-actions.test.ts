@@ -6,12 +6,16 @@
 import { faker } from '@faker-js/faker';
 import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 
+import {
+	buildSoapErrorResponseBody,
+	createSoapAPIInterceptor,
+	FOLDER_VIEW,
+	screen,
+	setupHook,
+	within
+} from '@zextras/carbonio-ui-commons';
 import { CreateMountpointError } from '../../../../api/errors/create-mountpoint-error';
 import { CreateMountpointResponse } from '../../../../api/mount-shared-folder-soap-api';
-import { FOLDER_VIEW } from '../../../../carbonio-ui-commons/constants';
-import { createSoapAPIInterceptor } from '../../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
-import { buildSoapErrorResponseBody } from '../../../../carbonio-ui-commons/test/mocks/utils/soap';
-import { setupHook, screen, within } from '../../../../carbonio-ui-commons/test/test-setup';
 import { ISoapFolderObj } from '../../../../types';
 import { useAccept } from '../share-folder-actions';
 

@@ -5,16 +5,16 @@
  */
 import { getUserAccount } from '@zextras/carbonio-shell-ui';
 
-import { FOLDER_VIEW } from '../../carbonio-ui-commons/constants';
-import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
 import {
+	FOLDER_VIEW,
+	FOLDERS,
 	getFolder,
 	getFoldersMap,
 	getLinksArray,
-	getRootsMap
-} from '../../carbonio-ui-commons/store/zustand/folder/hooks';
-import { populateFoldersStore } from '../../carbonio-ui-commons/test/mocks/store/folders';
-import { getMocksContext } from '../../carbonio-ui-commons/test/mocks/utils/mocks-context';
+	getMocksContext,
+	getRootsMap,
+	populateFoldersStore
+} from '@zextras/carbonio-ui-commons';
 import { NO_ACCOUNT_NAME } from '../../constants';
 import { generateMessage } from '../../tests/generators/generateMessage';
 import {

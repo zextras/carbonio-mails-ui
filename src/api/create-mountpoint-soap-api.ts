@@ -6,8 +6,7 @@
 import { soapFetch } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
 
-import { FOLDERS } from '../carbonio-ui-commons/constants/folders';
-import { SharedObject } from '../carbonio-ui-commons/types/sidebar';
+import { FOLDERS, SharedObject } from '@zextras/carbonio-ui-commons';
 
 export const createMountpointSoapApi = async (links: Array<SharedObject>): Promise<unknown> =>
 	soapFetch('Batch', {

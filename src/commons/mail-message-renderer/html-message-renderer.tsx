@@ -10,11 +10,10 @@ import { editSettings, t, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { filter, forEach, isArray, some } from 'lodash';
 import { Trans } from 'react-i18next';
 
-import { BannerMessageTruncated } from './banner-message-truncated';
-import { BannerViewExternalImages } from './banner-view-external-images';
-import { ParticipantRole } from '../../carbonio-ui-commons/constants/participants';
+import { ParticipantRole } from '@zextras/carbonio-ui-commons';
 import { getAttachmentParts } from '../../helpers/attachments';
 import { getNoIdentityPlaceholder } from '../../helpers/identities';
+import { getFullMessageEmailStoreAction } from '../../store/emails/actions/get-message';
 import { BodyPart, MailMessage } from '../../types';
 import { getOriginalHtmlContent, getQuotedTextFromOriginalContent } from '../get-quoted-text-util';
 import {
@@ -23,8 +22,9 @@ import {
 	isAvailableInTrusteeList,
 	updateImageSrc
 } from '../utils';
+import { BannerMessageTruncated } from './banner-message-truncated';
+import { BannerViewExternalImages } from './banner-view-external-images';
 import { ShadowDomWrapper } from './shadow-dom-wrapper';
-import { getFullMessageEmailStoreAction } from '../../store/emails/actions/get-message';
 
 type HtmlMessageRendererType = {
 	message: MailMessage;

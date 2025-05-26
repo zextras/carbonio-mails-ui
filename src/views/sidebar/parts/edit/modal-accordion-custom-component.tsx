@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC } from 'react';
+import { FC } from 'react';
 
 import {
 	AccordionItem,
@@ -17,7 +17,7 @@ import {
 } from '@zextras/carbonio-design-system';
 import styled from 'styled-components';
 
-import { StaticBreadcrumbs } from '../../../../carbonio-ui-commons/components/breadcrumbs/static-breadcrumbs';
+import { StaticBreadcrumbs } from '@zextras/carbonio-ui-commons';
 import { isRoot } from '../../../../helpers/folders';
 import { getFolderIconColor, getFolderIconName, getSystemFolderTranslatedName } from '../../utils';
 

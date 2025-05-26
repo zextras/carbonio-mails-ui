@@ -7,7 +7,7 @@
 import { addBoardView, addRoute, addSettingsView, upsertApp } from '@zextras/carbonio-shell-ui';
 import { HttpResponse } from 'msw';
 
-import { createAPIInterceptor } from '../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
+import { createAPIInterceptor } from '@zextras/carbonio-ui-commons';
 import { MAIL_APP_ID, MAILS_BOARD_VIEW_ID } from '../../constants';
 import { mockAdvancedAccountAPI } from '../../tests/utils';
 import { addComponentsToShell } from '../add-shell-components';

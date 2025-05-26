@@ -3,11 +3,10 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React from 'react';
 
 import { act, screen } from '@testing-library/react';
 
-import { setupTest } from '../../../../../../carbonio-ui-commons/test/test-setup';
+import { setupTest } from '@zextras/carbonio-ui-commons';
 import { generateNewMessageEditor } from '../../../../../../store/editor/editor-generators';
 import { setupEditorStore } from '../../../../../../tests/generators/editor-store';
 import { OptionsDropdown, OptionsDropdownProps } from '../options-dropdown';

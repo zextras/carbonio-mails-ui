@@ -6,7 +6,7 @@
 
 import { waitFor } from '@testing-library/react';
 
-import { createSoapAPIInterceptor } from '../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
+import { createSoapAPIInterceptor } from '@zextras/carbonio-ui-commons';
 import {
 	generateConversationFromAPI,
 	generateConvMessageFromAPI

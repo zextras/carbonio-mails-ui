@@ -7,6 +7,10 @@ import { useMemo } from 'react';
 
 import { find } from 'lodash';
 
+import { isTrash } from '@zextras/carbonio-ui-commons';
+import { getFolderIdParts, getParentFolderId, isDraft } from '../../helpers/folders';
+import { useConversationMessages } from '../../store/emails/store';
+import { NormalizedConversation, UIActionAggregator, UIActionDescriptor } from '../../types';
 import { useConvApplyTagDescriptor } from './use-conv-apply-tag';
 import { useConvDeletePermanentlyDescriptor } from './use-conv-delete-permanently';
 import { useConvForwardDescriptor } from './use-conv-forward';
@@ -25,10 +29,6 @@ import { useConvSetSpamDescriptor } from './use-conv-set-spam';
 import { useConvSetUnflagDescriptor } from './use-conv-set-unflag';
 import { useConvSetUnreadDescriptor } from './use-conv-set-unread';
 import { useConvShowOriginalDescriptor } from './use-conv-show-original';
-import { isTrash } from '../../carbonio-ui-commons/helpers/folders';
-import { getFolderIdParts, getParentFolderId, isDraft } from '../../helpers/folders';
-import { useConversationMessages } from '../../store/emails/store';
-import { NormalizedConversation, UIActionAggregator, UIActionDescriptor } from '../../types';
 
 export type ConversationActionsArgumentType = {
 	conversation: NormalizedConversation;

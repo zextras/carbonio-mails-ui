@@ -4,37 +4,34 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React from 'react';
-
 import { faker } from '@faker-js/faker';
 import { act, screen, waitFor, within } from '@testing-library/react';
 import { UserEvent } from '@testing-library/user-event';
-import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 import * as hooks from '@zextras/carbonio-shell-ui';
+import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 import { find, noop } from 'lodash';
 import { HttpResponse } from 'msw';
 
-import { aFailingSaveDraft, aSuccessfullSaveDraft } from './utils/utils';
+import {
+	buildSoapErrorResponseBody,
+	createAPIInterceptor,
+	createFakeIdentity,
+	createSoapAPIInterceptor,
+	defaultBeforeAllTests,
+	FOLDERS,
+	generateSettings,
+	getEmptyMSWShareInfoResponse,
+	getMocksContext,
+	useBoard as mockedUseBoard,
+	ParticipantRole,
+	populateFoldersStore,
+	setupTest
+} from '@zextras/carbonio-ui-commons';
 import {
 	GetSignaturesRequest,
 	GetSignaturesResponse
 } from '../../../../../api/get-signatures-soap-api';
 import * as saveDraftAction from '../../../../../api/save-draft-soap-api';
-import { FOLDERS } from '../../../../../carbonio-ui-commons/constants/folders';
-import { ParticipantRole } from '../../../../../carbonio-ui-commons/constants/participants';
-import { defaultBeforeAllTests } from '../../../../../carbonio-ui-commons/test/jest-setup';
-import { createFakeIdentity } from '../../../../../carbonio-ui-commons/test/mocks/accounts/fakeAccounts';
-import { useBoard as mockedUseBoard } from '../../../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
-import {
-	createAPIInterceptor,
-	createSoapAPIInterceptor
-} from '../../../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
-import { getEmptyMSWShareInfoResponse } from '../../../../../carbonio-ui-commons/test/mocks/network/msw/handle-get-share-info';
-import { generateSettings } from '../../../../../carbonio-ui-commons/test/mocks/settings/settings-generator';
-import { populateFoldersStore } from '../../../../../carbonio-ui-commons/test/mocks/store/folders';
-import { getMocksContext } from '../../../../../carbonio-ui-commons/test/mocks/utils/mocks-context';
-import { buildSoapErrorResponseBody } from '../../../../../carbonio-ui-commons/test/mocks/utils/soap';
-import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
 import { EditViewActions, MAILS_ROUTE } from '../../../../../constants';
 import * as useQueryParam from '../../../../../hooks/use-query-param';
 import { addEditor } from '../../../../../store/editor';
@@ -58,6 +55,7 @@ import type {
 } from '../../../../../types';
 import { SoapSendMsgResponse } from '../../../../../types/soap/send-msg';
 import { EditView, EditViewProp } from '../edit-view';
+import { aFailingSaveDraft, aSuccessfullSaveDraft } from './utils/utils';
 
 const CT_HTML = 'text/html' as const;
 const CT_PLAIN = 'text/plain' as const;

@@ -6,15 +6,7 @@
 import { getUserSettings, t } from '@zextras/carbonio-shell-ui';
 import { v4 as uuid } from 'uuid';
 
-import { buildSavedAttachments, replaceCidUrlWithServiceUrl } from './editor-transformations';
-import {
-	computeDraftSaveAllowedStatus,
-	computeSendAllowedStatus,
-	filterSavedInlineAttachment
-} from './editor-utils';
-import { getEditor } from './hooks';
-import { ParticipantRole } from '../../carbonio-ui-commons/constants/participants';
-import { getRootsMap } from '../../carbonio-ui-commons/store/zustand/folder';
+import { ParticipantRole, getRootsMap } from '@zextras/carbonio-ui-commons';
 import { convertHtmlToPlainText } from '../../commons/utilities';
 import { LineType } from '../../commons/utils';
 import { EditViewActions, NO_ACCOUNT_NAME } from '../../constants';
@@ -29,12 +21,12 @@ import { getMailBodyWithSignature } from '../../helpers/signatures';
 import {
 	EditViewActionsType,
 	EditorPrefillData,
+	EditorRecipients,
+	EditorText,
 	MailMessage,
 	MailsEditorV2,
-	UnsavedAttachment,
 	Participant,
-	EditorText,
-	EditorRecipients
+	UnsavedAttachment
 } from '../../types';
 import {
 	extractBody,
@@ -46,6 +38,13 @@ import {
 	retrieveReplyTo,
 	retrieveTO
 } from '../editor-slice-utils';
+import { buildSavedAttachments, replaceCidUrlWithServiceUrl } from './editor-transformations';
+import {
+	computeDraftSaveAllowedStatus,
+	computeSendAllowedStatus,
+	filterSavedInlineAttachment
+} from './editor-utils';
+import { getEditor } from './hooks';
 
 // Regex reply msg title
 const REPLY_REGEX = /(^(re:\s)+)/i;

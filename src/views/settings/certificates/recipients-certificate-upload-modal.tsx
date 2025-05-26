@@ -10,8 +10,7 @@ import { Button, Container, Input, Padding, Row, Tooltip } from '@zextras/carbon
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 
-import ModalFooter from '../../../carbonio-ui-commons/components/modals/modal-footer';
-import ModalHeader from '../../../carbonio-ui-commons/components/modals/modal-header';
+import { default as ModalFooter, default as ModalHeader } from '@zextras/carbonio-ui-commons';
 
 const FileInput = styled.input`
 	display: none;

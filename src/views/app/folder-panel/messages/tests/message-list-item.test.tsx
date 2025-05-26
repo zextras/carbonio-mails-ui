@@ -3,17 +3,19 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { act } from 'react';
+import { act } from 'react';
 
 import { screen, waitFor } from '@testing-library/react';
 import { useParams } from 'react-router-dom';
 
-import { FOLDERS } from '../../../../../carbonio-ui-commons/constants/folders';
-import { useTagStore } from '../../../../../carbonio-ui-commons/store/zustand/tags';
-import { createSoapAPIInterceptor } from '../../../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
-import { populateFoldersStore } from '../../../../../carbonio-ui-commons/test/mocks/store/folders';
-import { tags as mockTags } from '../../../../../carbonio-ui-commons/test/mocks/tags/tags';
-import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
+import {
+	createSoapAPIInterceptor,
+	FOLDERS,
+	tags as mockTags,
+	populateFoldersStore,
+	setupTest,
+	useTagStore
+} from '@zextras/carbonio-ui-commons';
 import { useMsgPreviewOnSeparatedWindowFn } from '../../../../../hooks/actions/use-msg-preview-on-separated-window';
 import { generateMessage } from '../../../../../tests/generators/generateMessage';
 import { MessageListItemProps, MsgActionRequest } from '../../../../../types';

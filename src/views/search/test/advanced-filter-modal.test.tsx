@@ -3,7 +3,6 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React from 'react';
 
 import { faker } from '@faker-js/faker';
 import { screen, waitFor, within } from '@testing-library/react';
@@ -13,9 +12,9 @@ import { format } from 'date-fns';
 import {
 	EDIT_ACTION,
 	generateMockContactInputItem,
-	mockContactInput
-} from '../../../carbonio-ui-commons/test/mocks/integrations/mock-contact-input';
-import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
+	mockContactInput,
+	setupTest
+} from '@zextras/carbonio-ui-commons';
 import { SearchQueryItem } from '../../../types';
 import { AdvancedFilterModal, AdvancedFilterModalProps } from '../advanced-filter-modal';
 

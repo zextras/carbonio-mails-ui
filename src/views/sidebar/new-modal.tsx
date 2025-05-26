@@ -3,21 +3,23 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { ChangeEvent, FC, useCallback, useEffect, useMemo, useState } from 'react';
+import { ChangeEvent, FC, useCallback, useEffect, useMemo, useState } from 'react';
 
 import { Container, Input, Padding, Text } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import { find, includes, noop } from 'lodash';
 
-import { FolderSelector } from './commons/folder-selector';
-import { useTranslatedSystemFolders } from './utils';
+import type { Folder } from '@zextras/carbonio-ui-commons';
+import {
+	isValidFolderName,
+	default as ModalFooter,
+	default as ModalHeader
+} from '@zextras/carbonio-ui-commons';
 import { createFolderSoapApi } from '../../api/create-folder-soap-api';
-import ModalFooter from '../../carbonio-ui-commons/components/modals/modal-footer';
-import ModalHeader from '../../carbonio-ui-commons/components/modals/modal-header';
-import type { Folder } from '../../carbonio-ui-commons/types/folder';
-import { isValidFolderName } from '../../carbonio-ui-commons/utils/utils';
 import { useUiUtilities } from '../../hooks/use-ui-utilities';
 import type { ModalProps } from '../../types';
+import { FolderSelector } from './commons/folder-selector';
+import { useTranslatedSystemFolders } from './utils';
 
 export const NewModal: FC<ModalProps> = ({ folder, onClose }) => {
 	const [inputValue, setInputValue] = useState(() => t('new_folder', 'New Folder'));

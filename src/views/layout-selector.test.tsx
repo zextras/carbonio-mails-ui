@@ -5,10 +5,10 @@
  */
 import React from 'react';
 
-import { LayoutSelector } from './layout-selector';
-import { screen, setupTest } from '../carbonio-ui-commons/test/test-setup';
+import { screen, setupTest } from '@zextras/carbonio-ui-commons';
 import { MAILS_VIEW_LAYOUTS, MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS } from '../constants';
 import { mockLayoutStorage } from '../tests/layouts-utils';
+import { LayoutSelector } from './layout-selector';
 import mock = jest.mock;
 
 const MockedView = ({ id = '0' }: { id?: string }): React.JSX.Element => (

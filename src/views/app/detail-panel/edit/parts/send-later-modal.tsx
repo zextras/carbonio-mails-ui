@@ -3,16 +3,15 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, useCallback, useMemo, useState } from 'react';
+import { FC, useCallback, useMemo, useState } from 'react';
 
 import { Container, DateTimePicker, Text } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import { noop } from 'lodash';
 import moment from 'moment';
 
+import { default as ModalFooter, default as ModalHeader } from '@zextras/carbonio-ui-commons';
 import { DatePickerCustomComponent } from './date-picker-custom-component';
-import ModalFooter from '../../../../../carbonio-ui-commons/components/modals/modal-footer';
-import ModalHeader from '../../../../../carbonio-ui-commons/components/modals/modal-header';
 
 type SendLaterModalProps = {
 	onAutoSendTimeSelected: (autoSendTime: number) => void;

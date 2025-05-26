@@ -4,12 +4,10 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React from 'react';
-
 import { act, screen, waitFor } from '@testing-library/react';
 
+import { setupTest } from '@zextras/carbonio-ui-commons';
 import { checkExistEncryptionPassword } from '../../../../api/check-exist-password-api';
-import { setupTest } from '../../../../carbonio-ui-commons/test/test-setup';
 import { useSmimePasswordStore } from '../../../../store/certificates/store';
 import CertificatesView from '../certificates-view';
 import {

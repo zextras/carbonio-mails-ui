@@ -5,11 +5,11 @@
  */
 import { AccountSettingsPrefs, ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 
+import { Folder } from '@zextras/carbonio-ui-commons';
+import { MAIL_SENSITIVITY_HEADER, MAIL_VERIFICATION_HEADERS } from '../../constants';
+import { MailsEditorV2 } from '../editor';
 import { EmailAddresses } from './redirect-message-action';
 import { MailAttachment, SaveDraftResponse, SoapDraftMessageObj } from './save-draft';
-import { Folder } from '../../carbonio-ui-commons/types/folder';
-import { MAIL_VERIFICATION_HEADERS, MAIL_SENSITIVITY_HEADER } from '../../constants';
-import { MailsEditorV2 } from '../editor';
 
 export type MailVerificationHeader =
 	(typeof MAIL_VERIFICATION_HEADERS)[keyof typeof MAIL_VERIFICATION_HEADERS];

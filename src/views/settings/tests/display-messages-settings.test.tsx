@@ -4,12 +4,9 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React from 'react';
-
 import { screen } from '@testing-library/react';
 
-import { generateSettings } from '../../../carbonio-ui-commons/test/mocks/settings/settings-generator';
-import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
+import { generateSettings, setupTest } from '@zextras/carbonio-ui-commons';
 import { DisplayMessagesSettings } from '../display-messages-settings';
 
 describe('Displaying messages settings', () => {

@@ -9,14 +9,12 @@ import React, { useState } from 'react';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import {
 	Accordion as MUIAccordion,
-	Container as MUIContainer,
+	AccordionDetails as MUIAccordionDetails,
 	AccordionSummary as MUIAccordionSummary,
-	AccordionDetails as MUIAccordionDetails
+	Container as MUIContainer
 } from '@mui/material';
 
-import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
-import { theme } from '../../../carbonio-ui-commons/theme/theme-mui';
-import { hasId } from '../../../carbonio-ui-commons/worker/handle-message';
+import { FOLDERS, hasId, theme } from '@zextras/carbonio-ui-commons';
 import { isSpam, isTrash } from '../../../helpers/folders';
 import { Folder } from '../../../types';
 

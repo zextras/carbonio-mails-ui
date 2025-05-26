@@ -5,11 +5,13 @@
  */
 import { act } from 'react';
 
-import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
-import { useIntegratedFunction } from '../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
-import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
-import { populateFoldersStore } from '../../../carbonio-ui-commons/test/mocks/store/folders';
-import { setupHook } from '../../../carbonio-ui-commons/test/test-setup';
+import {
+	createSoapAPIInterceptor,
+	FOLDERS,
+	populateFoldersStore,
+	setupHook,
+	useIntegratedFunction
+} from '@zextras/carbonio-ui-commons';
 import { FOLDERS_DESCRIPTORS } from '../../../constants';
 import { generateMessage } from '../../../tests/generators/generateMessage';
 import { GetMsgRequest } from '../../../types';

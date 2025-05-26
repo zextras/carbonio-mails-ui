@@ -3,11 +3,10 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React from 'react';
 
 import { act } from '@testing-library/react';
 
-import { screen, setupTest, within } from '../../../../../carbonio-ui-commons/test/test-setup';
+import { screen, setupTest, within } from '@zextras/carbonio-ui-commons';
 import { MAILS_VIEW_LAYOUTS, MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS } from '../../../../../constants';
 import { TESTID_SELECTORS } from '../../../../../tests/constants';
 import { mockLayoutStorage } from '../../../../../tests/layouts-utils';

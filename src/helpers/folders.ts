@@ -6,9 +6,8 @@
 import { getUserAccount } from '@zextras/carbonio-shell-ui';
 import { find } from 'lodash';
 
-import { FOLDERS } from '../carbonio-ui-commons/constants/folders';
-import { useFolderStore } from '../carbonio-ui-commons/store/zustand/folder/store';
-import type { Folder, Folders } from '../carbonio-ui-commons/types/folder';
+import type { Folder, Folders } from '@zextras/carbonio-ui-commons';
+import { FOLDERS, useFolderStore } from '@zextras/carbonio-ui-commons';
 import { NO_ACCOUNT_NAME } from '../constants';
 import type { MailMessage } from '../types';
 

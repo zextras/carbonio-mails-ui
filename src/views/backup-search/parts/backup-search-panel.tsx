@@ -10,9 +10,9 @@ import { t } from '@zextras/carbonio-shell-ui';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 
-import { BackupSearchPanelTextLine } from './backup-search-panel-text-line';
-import { getFolder } from '../../../carbonio-ui-commons/store/zustand/folder';
+import { getFolder } from '@zextras/carbonio-ui-commons';
 import { useBackupSearchStore } from '../../../store/backup-search/store';
+import { BackupSearchPanelTextLine } from './backup-search-panel-text-line';
 
 const SearchIcon = styled(Icon)`
 	width: 3.3rem;

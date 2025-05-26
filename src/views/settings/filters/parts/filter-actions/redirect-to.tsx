@@ -8,8 +8,7 @@ import React from 'react';
 import { Row } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
 
-import { useContactInput } from '../../../../../carbonio-ui-commons/integrations/hooks';
-import { ContactInputItem } from '../../../../../carbonio-ui-commons/integrations/types';
+import { ContactInputItem, useContactInput } from '@zextras/carbonio-ui-commons';
 
 type RedirectToProps = {
 	defaultValue: ContactInputItem[];

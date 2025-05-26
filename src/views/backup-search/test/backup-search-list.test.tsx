@@ -4,15 +4,12 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React from 'react';
-
 import { screen, waitFor } from '@testing-library/react';
 import { CreateSnackbarFn, useSnackbar } from '@zextras/carbonio-design-system';
 import { HttpResponse } from 'msw';
 import { useParams } from 'react-router-dom';
 
-import { createAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
-import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
+import { createAPIInterceptor, setupTest } from '@zextras/carbonio-ui-commons';
 import { useBackupSearchStore } from '../../../store/backup-search/store';
 import { BackupSearchList } from '../parts/backup-search-list';
 

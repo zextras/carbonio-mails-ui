@@ -11,7 +11,7 @@ import { useAppContext } from '@zextras/carbonio-shell-ui';
 import { map, noop } from 'lodash';
 import { useNavigate } from 'react-router-dom';
 
-import { CustomListItem } from '../../../../carbonio-ui-commons/components/list/list-item';
+import { CustomListItem } from '@zextras/carbonio-ui-commons';
 import { API_REQUEST_STATUS } from '../../../../constants';
 import { useSelection } from '../../../../hooks/use-selection';
 import { AppContext, IncompleteMessage, SearchRequestStatus } from '../../../../types';

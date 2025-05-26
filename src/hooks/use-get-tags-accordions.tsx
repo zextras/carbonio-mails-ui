@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, SyntheticEvent, useCallback, useMemo } from 'react';
+import { FC, SyntheticEvent, useCallback, useMemo } from 'react';
 
 import {
 	AccordionItem,
@@ -19,10 +19,12 @@ import type { QueryChip } from '@zextras/carbonio-search-ui';
 import { t } from '@zextras/carbonio-shell-ui';
 import { reduce } from 'lodash';
 
-import { ZIMBRA_STANDARD_COLORS } from '../carbonio-ui-commons/constants/utils';
-import { useRunSearchIntegration } from '../carbonio-ui-commons/integrations/search/use-run-search';
-import { useSortedTagsArray } from '../carbonio-ui-commons/store/zustand/tags/hooks';
-import type { TagsAccordionItems } from '../carbonio-ui-commons/types/tags';
+import type { TagsAccordionItems } from '@zextras/carbonio-ui-commons';
+import {
+	useRunSearchIntegration,
+	useSortedTagsArray,
+	ZIMBRA_STANDARD_COLORS
+} from '@zextras/carbonio-ui-commons';
 import type { ItemType } from '../types';
 import { createTag, useGetTagsActions } from '../ui-actions/tag-actions';
 

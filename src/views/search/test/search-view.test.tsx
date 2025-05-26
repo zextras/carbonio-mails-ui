@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React, { ReactElement } from 'react';
+import { ReactElement } from 'react';
 
 import { act, waitFor } from '@testing-library/react';
 import type { QueryChip, SearchViewProps } from '@zextras/carbonio-search-ui';
@@ -13,17 +13,17 @@ import { AccountSettings, ErrorSoapBodyResponse } from '@zextras/carbonio-shell-
 import { noop } from 'lodash';
 import * as reactRouterDom from 'react-router-dom';
 
-import * as searchSoapApi from '../../../api/search-soap-api';
-import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
-import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
-import { generateSettings } from '../../../carbonio-ui-commons/test/mocks/settings/settings-generator';
-import { buildSoapErrorResponseBody } from '../../../carbonio-ui-commons/test/mocks/utils/soap';
 import {
-	screen,
+	buildSoapErrorResponseBody,
+	createSoapAPIInterceptor,
+	FOLDERS,
+	generateSettings,
 	makeListItemsVisible,
+	screen,
 	setupTest,
 	within
-} from '../../../carbonio-ui-commons/test/test-setup';
+} from '@zextras/carbonio-ui-commons';
+import * as searchSoapApi from '../../../api/search-soap-api';
 import * as useSelection from '../../../hooks/use-selection';
 import { TESTID_SELECTORS } from '../../../tests/constants';
 import { generateSoapConversationMessage } from '../../../tests/generators/api';

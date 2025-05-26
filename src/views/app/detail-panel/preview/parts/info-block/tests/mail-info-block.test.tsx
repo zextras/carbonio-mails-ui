@@ -3,14 +3,13 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { act } from 'react';
+import { act } from 'react';
 
 import { useModal } from '@zextras/carbonio-design-system';
 import * as CarbonioShellUI from '@zextras/carbonio-shell-ui';
 import { HttpResponse } from 'msw';
 
-import { createAPIInterceptor } from '../../../../../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
-import { setupTest, screen } from '../../../../../../../carbonio-ui-commons/test/test-setup';
+import { createAPIInterceptor, screen, setupTest } from '@zextras/carbonio-ui-commons';
 import {
 	useSmimeFeatureStore,
 	useSmimePasswordStore

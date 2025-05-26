@@ -9,12 +9,12 @@ import React, { ReactElement, useMemo } from 'react';
 import { Container, Padding, Row, Text } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
 
+import { Folder } from '@zextras/carbonio-ui-commons';
+import { FOLDER_SELECTOR_MAX_RESULTS } from '../../../../constants';
+import { isSpam, isTrash, isTrashed } from '../../../../helpers/folders';
+import { getSystemFolderTranslatedName } from '../../utils';
 import { FlatRoot } from './flat-root';
 import { flattenAndFilterFoldersWithCap } from './utils';
-import { Folder } from '../../../../carbonio-ui-commons/types/folder';
-import { FOLDER_SELECTOR_MAX_RESULTS } from '../../../../constants';
-import { isTrash, isTrashed, isSpam } from '../../../../helpers/folders';
-import { getSystemFolderTranslatedName } from '../../utils';
 
 type FlatFoldersProps = {
 	folders: Array<Folder>;

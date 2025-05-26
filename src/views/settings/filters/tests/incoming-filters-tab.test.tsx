@@ -5,15 +5,12 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 // eslint-disable-next-line @typescript-eslint/no-use-before-define
-import React from 'react';
 
 import { act, screen, within } from '@testing-library/react';
 import { useSnackbar } from '@zextras/carbonio-design-system';
 
-import * as folderHooks from '../../../../carbonio-ui-commons/store/zustand/folder/hooks';
-import { generateFolder } from '../../../../carbonio-ui-commons/test/mocks/folders/folders-generator';
-import { createSoapAPIInterceptor } from '../../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
-import { setupTest } from '../../../../carbonio-ui-commons/test/test-setup';
+import * as folderHooks from '@zextras/carbonio-ui-commons';
+import { createSoapAPIInterceptor, generateFolder, setupTest } from '@zextras/carbonio-ui-commons';
 import { Filter, type Folder } from '../../../../types';
 import { IncomingFiltersTab } from '../incoming-filters-tab';
 import { makeAllItemsVisible, mockFilter } from './test-utils';

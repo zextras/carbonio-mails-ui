@@ -18,19 +18,8 @@ import {
 import { cloneDeep, filter, find, isEmpty, isEqual, map, reduce, remove, unescape } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
-import { differenceIdentities, differenceObject, getPropsDiff } from './components/utils';
-import ComposeMessage from './compose-msg-settings';
-import { DisplayMessagesSettings } from './display-messages-settings';
-import FilterModule from './filters';
-import { useSignatureSettings } from './hooks/use-signature-settings';
-import ReceivingMessagesSettings from './receiving-messages-settings';
-import { RecoverMessages } from './recover-messages';
-import { saveSettings } from './save-settings';
-import { SendersList, getList } from './senders-list';
-import SignatureSettings from './signature-settings';
-import TrusteeAddresses from './trustee-addresses';
+import { useUpdateView } from '@zextras/carbonio-ui-commons';
 import { GetSignaturesSoapApi, signatureRequest } from '../../api/get-signatures-soap-api';
-import { useUpdateView } from '../../carbonio-ui-commons/hooks/use-update-view';
 import { TIMEOUTS } from '../../constants';
 import { NO_SIGNATURE_ID } from '../../helpers/signatures';
 import { useUiUtilities } from '../../hooks/use-ui-utilities';
@@ -42,6 +31,17 @@ import type {
 	Signature,
 	UpdateSettingsProps
 } from '../../types';
+import { differenceIdentities, differenceObject, getPropsDiff } from './components/utils';
+import ComposeMessage from './compose-msg-settings';
+import { DisplayMessagesSettings } from './display-messages-settings';
+import FilterModule from './filters';
+import { useSignatureSettings } from './hooks/use-signature-settings';
+import ReceivingMessagesSettings from './receiving-messages-settings';
+import { RecoverMessages } from './recover-messages';
+import { saveSettings } from './save-settings';
+import { SendersList, getList } from './senders-list';
+import SignatureSettings from './signature-settings';
+import TrusteeAddresses from './trustee-addresses';
 
 /* to keep track of changes done to props we use 3 different values:
  * - originalProps is the status of the props when you open the settings for the first time

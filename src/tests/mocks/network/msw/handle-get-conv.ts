@@ -5,7 +5,7 @@
  */
 import { HttpResponse, HttpResponseResolver } from 'msw';
 
-import { CarbonioMailboxRestGenericRequest } from '../../../../carbonio-ui-commons/test/mocks/network/msw/handlers';
+import { CarbonioMailboxRestGenericRequest } from '@zextras/carbonio-ui-commons';
 
 export const handleGetConvRequest: HttpResponseResolver<
 	never,

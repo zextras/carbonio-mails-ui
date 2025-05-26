@@ -9,10 +9,12 @@ import React from 'react';
 import { act, screen } from '@testing-library/react';
 import { useParams } from 'react-router-dom';
 
-import { FOLDERS } from '../../../../../carbonio-ui-commons/constants/folders';
-import { createSoapAPIInterceptor } from '../../../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
-import { populateFoldersStore } from '../../../../../carbonio-ui-commons/test/mocks/store/folders';
-import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
+import {
+	createSoapAPIInterceptor,
+	FOLDERS,
+	populateFoldersStore,
+	setupTest
+} from '@zextras/carbonio-ui-commons';
 import {
 	generateConversationFromAPI,
 	generateConvMessageFromAPI

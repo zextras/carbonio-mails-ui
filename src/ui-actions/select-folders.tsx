@@ -3,15 +3,14 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React from 'react';
 
 import { CloseModalFn, CreateModalFn, ModalManager } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 
-import { SelectFolderModal } from './modals/select-folder-modal';
-import { Folder } from '../carbonio-ui-commons/types/folder';
+import { Folder } from '@zextras/carbonio-ui-commons';
 import { GenericActionDescriptors } from '../constants';
 import { UIAction, UIActionExecutionParams } from '../types';
+import { SelectFolderModal } from './modals/select-folder-modal';
 
 export type SelectFoldersUIActionExecutionConfig = {
 	showSharedAccounts: boolean;

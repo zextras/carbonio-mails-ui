@@ -4,11 +4,9 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React from 'react';
-
 import { act, screen } from '@testing-library/react';
 
-import { setupTest } from '../../../../carbonio-ui-commons/test/test-setup';
+import { setupTest } from '@zextras/carbonio-ui-commons';
 import { CertificatePasswordModal } from '../certificate-password-modal';
 
 jest.mock('../../../../api/create-password-api', () => ({

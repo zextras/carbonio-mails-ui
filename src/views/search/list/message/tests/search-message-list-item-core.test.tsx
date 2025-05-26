@@ -3,14 +3,10 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React from 'react';
 
 import { screen } from '@testing-library/react';
 
-import { ZIMBRA_STANDARD_COLORS } from '../../../../../carbonio-ui-commons/constants';
-import { FOLDERS } from '../../../../../carbonio-ui-commons/constants/folders';
-import { useTags } from '../../../../../carbonio-ui-commons/store/zustand/tags';
-import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
+import { FOLDERS, setupTest, useTags, ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-ui-commons';
 import { populateMessagesInEmailStore } from '../../../../../tests/generators/generateMessage';
 import { SearchMessageListItemCore } from '../search-message-list-item-core';
 

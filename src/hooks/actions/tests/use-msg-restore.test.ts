@@ -7,10 +7,13 @@ import { act } from 'react';
 
 import { faker } from '@faker-js/faker';
 
-import { FOLDER_VIEW } from '../../../carbonio-ui-commons/constants';
-import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
-import { populateFoldersStore } from '../../../carbonio-ui-commons/test/mocks/store/folders';
-import { setupHook, screen } from '../../../carbonio-ui-commons/test/test-setup';
+import {
+	FOLDER_VIEW,
+	FOLDERS,
+	populateFoldersStore,
+	screen,
+	setupHook
+} from '@zextras/carbonio-ui-commons';
 import { FOLDERS_DESCRIPTORS } from '../../../constants';
 import { TIMERS } from '../../../tests/constants';
 import { useMsgRestoreDescriptor, useMsgRestoreFn } from '../use-msg-restore';

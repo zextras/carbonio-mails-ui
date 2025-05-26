@@ -5,21 +5,20 @@
  */
 import { act, renderHook, waitFor } from '@testing-library/react';
 
-import { useFolderStore } from '../../../../../carbonio-ui-commons/store/zustand/folder';
-import { generateFolder } from '../../../../../carbonio-ui-commons/test/mocks/folders/folders-generator';
+import { generateFolder, useFolderStore } from '@zextras/carbonio-ui-commons';
 import { generateConversation } from '../../../../../tests/generators/generateConversation';
 import { generateMessage } from '../../../../../tests/generators/generateMessage';
 import {
 	appendConversationsToConversationIndexSlice,
+	getUseEmailStoreAndHooksForTesting,
 	setConversationsInEmailStore,
+	setMessagesInEmailStore,
+	updateConversations,
 	updateConversationsResultsLoadingStatus,
 	useConversationById,
 	useConversationIndexSlice,
 	useConversationsByIds,
-	useConversationsIdsByFolder,
-	updateConversations,
-	getUseEmailStoreAndHooksForTesting,
-	setMessagesInEmailStore
+	useConversationsIdsByFolder
 } from '../../../store';
 import { POPULATED_ITEMS_SLICE_INITIAL_STATE } from '../../populated-items/populated-items-slice';
 import { CONVERSATION_INDEX_SLICE_INITIAL_STATE } from '../conversations-index-slice';

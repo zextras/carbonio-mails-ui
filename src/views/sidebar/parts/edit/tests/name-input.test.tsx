@@ -3,10 +3,8 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React from 'react';
 
-import { ZIMBRA_STANDARD_COLORS } from '../../../../../carbonio-ui-commons/constants';
-import { setupTest, screen } from '../../../../../carbonio-ui-commons/test/test-setup';
+import { screen, setupTest, ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-ui-commons';
 import NameInputRow from '../name-input';
 
 describe('NameInputRow', () => {

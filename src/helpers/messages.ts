@@ -3,10 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import {
-	ParticipantRole,
-	ParticipantRoleType
-} from '../carbonio-ui-commons/constants/participants';
+import { ParticipantRole, ParticipantRoleType } from '@zextras/carbonio-ui-commons';
 import type { MailMessage, NormalizedConversation, Participant } from '../types';
 
 /**

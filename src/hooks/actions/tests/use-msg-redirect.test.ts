@@ -5,8 +5,7 @@
  */
 import { act } from 'react';
 
-import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
-import { setupHook, screen } from '../../../carbonio-ui-commons/test/test-setup';
+import { FOLDERS, screen, setupHook } from '@zextras/carbonio-ui-commons';
 import { FOLDERS_DESCRIPTORS } from '../../../constants';
 import { TIMERS } from '../../../tests/constants';
 import { generateMessage } from '../../../tests/generators/generateMessage';

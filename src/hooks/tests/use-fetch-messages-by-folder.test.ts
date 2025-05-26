@@ -9,10 +9,12 @@ import { act } from 'react';
 import { renderHook, waitFor } from '@testing-library/react';
 import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 
-import { useFolderStore } from '../../carbonio-ui-commons/store/zustand/folder';
-import { generateFolder } from '../../carbonio-ui-commons/test/mocks/folders/folders-generator';
-import { createSoapAPIInterceptor } from '../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
-import { buildSoapErrorResponseBody } from '../../carbonio-ui-commons/test/mocks/utils/soap';
+import {
+	buildSoapErrorResponseBody,
+	createSoapAPIInterceptor,
+	generateFolder,
+	useFolderStore
+} from '@zextras/carbonio-ui-commons';
 import { API_REQUEST_STATUS } from '../../constants';
 import { parseMessageSortingOptions } from '../../helpers/sorting';
 import {

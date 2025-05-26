@@ -3,15 +3,17 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React from 'react';
 
 import { faker } from '@faker-js/faker';
 import { waitFor } from '@testing-library/react';
 
-import { FOLDERS } from '../../../../../carbonio-ui-commons/constants/folders';
-import { createSoapAPIInterceptor } from '../../../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
-import { populateFoldersStore } from '../../../../../carbonio-ui-commons/test/mocks/store/folders';
-import { setupTest, screen } from '../../../../../carbonio-ui-commons/test/test-setup';
+import {
+	createSoapAPIInterceptor,
+	FOLDERS,
+	populateFoldersStore,
+	screen,
+	setupTest
+} from '@zextras/carbonio-ui-commons';
 import { MAILS_VIEW_LAYOUTS } from '../../../../../constants';
 import { setConversationsInEmailStore } from '../../../../../store/emails/store';
 import { TESTID_SELECTORS } from '../../../../../tests/constants';

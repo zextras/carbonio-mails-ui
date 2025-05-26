@@ -20,10 +20,9 @@ import {
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 
-import { handleCertificateFileUpload } from './certificate-utils';
-import ModalFooter from '../../../carbonio-ui-commons/components/modals/modal-footer';
-import ModalHeader from '../../../carbonio-ui-commons/components/modals/modal-header';
+import { default as ModalFooter, default as ModalHeader } from '@zextras/carbonio-ui-commons';
 import { PersonalCertificate } from '../../../store/certificates/store';
+import { handleCertificateFileUpload } from './certificate-utils';
 
 const FileInput = styled.input`
 	display: none;

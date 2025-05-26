@@ -10,7 +10,7 @@ import { Button, Container, List } from '@zextras/carbonio-design-system';
 import { useAppContext } from '@zextras/carbonio-shell-ui';
 import { map, noop } from 'lodash';
 
-import { CustomListItem } from '../../../../carbonio-ui-commons/components/list/list-item';
+import { CustomListItem } from '@zextras/carbonio-ui-commons';
 import { API_REQUEST_STATUS } from '../../../../constants';
 import { useSelection } from '../../../../hooks/use-selection';
 import type { AppContext, IncompleteMessage, SearchRequestStatus } from '../../../../types';

@@ -10,11 +10,14 @@ import { faker } from '@faker-js/faker';
 import { fireEvent } from '@testing-library/react';
 import { times } from 'lodash';
 
-import { FOLDER_VIEW } from '../../../carbonio-ui-commons/constants';
-import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
-import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
-import { populateFoldersStore } from '../../../carbonio-ui-commons/test/mocks/store/folders';
-import { setupHook, screen } from '../../../carbonio-ui-commons/test/test-setup';
+import {
+	createSoapAPIInterceptor,
+	FOLDER_VIEW,
+	FOLDERS,
+	populateFoldersStore,
+	screen,
+	setupHook
+} from '@zextras/carbonio-ui-commons';
 import { FOLDERS_DESCRIPTORS } from '../../../constants';
 import { MsgActionRequest, MsgActionResponse } from '../../../types';
 import { useConvMoveToTrashDescriptor, useConvMoveToTrashFn } from '../use-conv-move-to-trash';

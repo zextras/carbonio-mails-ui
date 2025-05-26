@@ -4,17 +4,17 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React from 'react';
-
 import { screen, waitFor } from '@testing-library/react';
 import { getUserAccount } from '@zextras/carbonio-shell-ui';
 
-import { FOLDERS } from '../../../../../carbonio-ui-commons/constants/folders';
-import { ParticipantRole } from '../../../../../carbonio-ui-commons/constants/participants';
-import { useBoard as mockedUseBoard } from '../../../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
-import { populateFoldersStore } from '../../../../../carbonio-ui-commons/test/mocks/store/folders';
-import { getMocksContext } from '../../../../../carbonio-ui-commons/test/mocks/utils/mocks-context';
-import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
+import {
+	FOLDERS,
+	getMocksContext,
+	useBoard as mockedUseBoard,
+	ParticipantRole,
+	populateFoldersStore,
+	setupTest
+} from '@zextras/carbonio-ui-commons';
 import { convertHtmlToPlainText } from '../../../../../commons/utilities';
 import { EditViewActions, MAILS_ROUTE } from '../../../../../constants';
 import {

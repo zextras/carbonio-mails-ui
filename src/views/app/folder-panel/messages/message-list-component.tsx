@@ -8,14 +8,13 @@ import React, { memo, useEffect, useMemo } from 'react';
 import { Container, Padding, Text } from '@zextras/carbonio-design-system';
 import styled from 'styled-components';
 
-import { DragItems } from './message-list-drag-component';
-import { MessagesMultipleSelectionActions } from './messages-multiple-selection-actions';
-import { CustomList } from '../../../../carbonio-ui-commons/components/list/list';
-import { useFolder, useRoot } from '../../../../carbonio-ui-commons/store/zustand/folder/hooks';
+import { CustomList, useFolder, useRoot } from '@zextras/carbonio-ui-commons';
 import ShimmerList from '../../../search/shimmer-list';
 import { Breadcrumbs } from '../parts/breadcrumbs';
 import { MultipleSelectionActionsPanel } from '../parts/multiple-selection-actions-panel';
 import { getFolderPath } from '../parts/utils/utils';
+import { DragItems } from './message-list-drag-component';
+import { MessagesMultipleSelectionActions } from './messages-multiple-selection-actions';
 
 const DragImageContainer = styled.div`
 	position: absolute;
