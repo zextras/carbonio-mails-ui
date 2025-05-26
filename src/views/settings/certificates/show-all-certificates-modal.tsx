@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { useCallback, useMemo, useState } from 'react';
-import React from 'react';
 
 import {
 	Button,
@@ -15,14 +14,14 @@ import {
 	Tooltip,
 	useSnackbar
 } from '@zextras/carbonio-design-system';
+import { default as ModalFooter, default as ModalHeader } from '@zextras/carbonio-ui-commons';
 import { useTranslation } from 'react-i18next';
 
-import { default as ModalFooter, default as ModalHeader } from '@zextras/carbonio-ui-commons';
+import CertificateDeleteModal from './certificate-delete-modal';
 import { deletePersonalCertificate } from '../../../api/delete-personal-certificate-api';
 import { selectPersonalCertificate } from '../../../api/select-personal-certificate-api';
 import { useSmimePasswordStore } from '../../../store/certificates/store';
 import { Certificate } from '../../../types/certificates/certificates';
-import CertificateDeleteModal from './certificate-delete-modal';
 
 type ShowAllCertificatesModalPropType = {
 	certificates: Certificate[];

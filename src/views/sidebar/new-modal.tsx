@@ -4,18 +4,17 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { ChangeEvent, FC, useCallback, useEffect, useMemo, useState } from 'react';
-import React from 'react';
 
 import { Container, Input, Padding, Text } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
-import { find, includes, noop } from 'lodash';
-
 import type { Folder } from '@zextras/carbonio-ui-commons';
 import {
 	isValidFolderName,
 	default as ModalFooter,
 	default as ModalHeader
 } from '@zextras/carbonio-ui-commons';
+import { find, includes, noop } from 'lodash';
+
 import { createFolderSoapApi } from '../../api/create-folder-soap-api';
 import { useUiUtilities } from '../../hooks/use-ui-utilities';
 import type { ModalProps } from '../../types';

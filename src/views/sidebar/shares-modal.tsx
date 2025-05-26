@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
-import React from 'react';
 
 import {
 	Accordion,
@@ -19,6 +18,8 @@ import {
 	Row,
 	Text
 } from '@zextras/carbonio-design-system';
+import type { GroupedShare, ShareModalProps, SharedObject } from '@zextras/carbonio-ui-commons';
+import { default as ModalFooter, default as ModalHeader } from '@zextras/carbonio-ui-commons';
 import {
 	filter,
 	groupBy,
@@ -36,8 +37,6 @@ import {
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 
-import type { GroupedShare, ShareModalProps, SharedObject } from '@zextras/carbonio-ui-commons';
-import { default as ModalFooter, default as ModalHeader } from '@zextras/carbonio-ui-commons';
 import { createMountpointSoapApi } from '../../api/create-mountpoint-soap-api';
 
 const ContainerEl = styled(Container)`

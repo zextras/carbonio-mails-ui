@@ -4,18 +4,17 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { FC, useCallback, useMemo, useState } from 'react';
-import React from 'react';
 
 import { Checkbox, Container, Input, Row, Text } from '@zextras/carbonio-design-system';
 import { t, useUserAccounts } from '@zextras/carbonio-shell-ui';
-
 import type { ShareRevokeModalType } from '@zextras/carbonio-ui-commons';
 import { default as ModalFooter, default as ModalHeader } from '@zextras/carbonio-ui-commons';
+
+import { GranteeInfo } from './share-folder-properties';
 import { folderActionSoapApi } from '../../../../api/folder-action-soap-api';
 import { sendShareNotificationSoapApi } from '../../../../api/send-share-notification-soap-api';
 import { useUiUtilities } from '../../../../hooks/use-ui-utilities';
 import { ShareCalendarRoleOptions } from '../../../../integrations/shared-invite-reply/parts/utils';
-import { GranteeInfo } from './share-folder-properties';
 
 const ShareRevokeModal: FC<ShareRevokeModalType> = ({ folder, onClose, grant, goBack }) => {
 	const [sendNotification, setSendNotification] = useState(false);

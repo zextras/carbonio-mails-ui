@@ -4,12 +4,9 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
-import React from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
-import { includes, isEmpty } from 'lodash';
-
 import {
 	allowedActionOnSharedAccount,
 	FolderActionsType,
@@ -18,14 +15,16 @@ import {
 	default as ModalFooter,
 	default as ModalHeader
 } from '@zextras/carbonio-ui-commons';
-import { folderActionSoapApi } from '../../../../api/folder-action-soap-api';
-import { useUiUtilities } from '../../../../hooks/use-ui-utilities';
-import { ModalProps } from '../../../../types';
-import { getFolderTranslatedName, useTranslatedSystemFolders } from '../../utils';
+import { includes, isEmpty } from 'lodash';
+
 import { FolderDetails } from './folder-details';
 import NameInputRow from './name-input';
 import RetentionPolicies from './retention-policies';
 import { ShareFolderProperties } from './share-folder-properties';
+import { folderActionSoapApi } from '../../../../api/folder-action-soap-api';
+import { useUiUtilities } from '../../../../hooks/use-ui-utilities';
+import { ModalProps } from '../../../../types';
+import { getFolderTranslatedName, useTranslatedSystemFolders } from '../../utils';
 
 const numberRegex = /^\d+$/;
 const DAYS_LABEL = 'label.days';

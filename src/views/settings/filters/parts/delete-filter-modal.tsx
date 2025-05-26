@@ -4,12 +4,10 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import React, { FC, ReactElement } from 'react';
-import React from 'react';
 
 import { Container, Text } from '@zextras/carbonio-design-system';
-import { useTranslation } from 'react-i18next';
-
 import { default as ModalFooter, default as ModalHeader } from '@zextras/carbonio-ui-commons';
+import { useTranslation } from 'react-i18next';
 
 type DeleteFilterModalProps = {
 	onClose: () => void;

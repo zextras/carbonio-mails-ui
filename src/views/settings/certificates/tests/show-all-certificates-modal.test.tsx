@@ -5,9 +5,10 @@
  */
 
 import React from 'react';
-import { screen, waitFor } from '@testing-library/react';
 
+import { screen, waitFor } from '@testing-library/react';
 import { setupTest } from '@zextras/carbonio-ui-commons';
+
 import { Certificate } from '../../../../types/certificates/certificates';
 import ShowAllCertificatesModal from '../show-all-certificates-modal';
 
