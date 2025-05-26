@@ -10,6 +10,7 @@ import { screen } from '@testing-library/react';
 
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
 import { RetentionPolicies } from '../retention-policies';
+import { makeAllItemsVisible } from '../../../../settings/filters/tests/test-utils';
 
 const defaultRetentionState = {
 	showPolicy: true,
@@ -102,31 +103,31 @@ describe('RetentionPolicies Component', () => {
 				setRetentionState={setRetentionState}
 			/>
 		);
-		screen.logTestingPlaygroundURL();
+		makeAllItemsVisible();
 		const input = screen.getByRole('textbox', { name: /disposal threshold/i });
-		// const input = screen.getByLabelText(/disposal threshold/i);
-		expect(input).toBeEnabled();
-		await user.type(input, '30');
-		expect(setRetentionState).toHaveBeenLastCalledWith({ purgeValue: '30' });
+		await user.type(input, '5');
+		expect(setRetentionState).toHaveBeenLastCalledWith({ purgeValue: '5' });
 	});
 
-	// it('resets emptyDisValue when typing into the input', async () => {
-	// 	const setRetentionState = jest.fn();
-	// 	const { user } = setupTest(
-	// 		<RetentionPolicies
-	// 			retentionState={{
-	// 				...defaultRetentionState,
-	// 				dsblMsgDis: true,
-	// 				emptyDisValue: true
-	// 			}}
-	// 			setRetentionState={setRetentionState}
-	// 		/>
-	// 	);
-	// 	const input = screen.getByRole('textbox', { name: /disposal threshold/i });
-	// 	await user.type(input, '5');
-	// 	expect(setRetentionState).toHaveBeenCalledWith({ emptyDisValue: false });
-	// 	expect(setRetentionState).toHaveBeenLastCalledWith({ purgeValue: '5' });
-	// });
+	it('resets emptyDisValue when typing into the input', async () => {
+		const setRetentionState = jest.fn();
+		const { user } = setupTest(
+			<RetentionPolicies
+				retentionState={{
+					...defaultRetentionState,
+					dsblMsgDis: true,
+					emptyDisValue: true
+				}}
+				setRetentionState={setRetentionState}
+			/>
+		);
+		makeAllItemsVisible();
+
+		const input = screen.getByRole('textbox', { name: /disposal threshold/i });
+		await user.type(input, '5');
+		expect(setRetentionState).toHaveBeenCalledWith({ emptyDisValue: false });
+		expect(setRetentionState).toHaveBeenLastCalledWith({ purgeValue: '5' });
+	});
 
 	it('shows the correct selected value in the select dropdown', () => {
 		setupTest(
@@ -138,21 +139,22 @@ describe('RetentionPolicies Component', () => {
 		expect(screen.getByText(/days/i)).toBeVisible();
 	});
 
-	// it('calls setRetentionState when selecting a new retention period', async () => {
-	// 	const setRetentionState = jest.fn();
-	// 	const { user } = setupTest(
-	// 		<RetentionPolicies
-	// 			retentionState={{ ...defaultRetentionState, dsblMsgDis: true }}
-	// 			setRetentionState={setRetentionState}
-	// 		/>
-	// 	);
+	it('calls setRetentionState when selecting a new retention period', async () => {
+		const setRetentionState = jest.fn();
+		const { user } = setupTest(
+			<RetentionPolicies
+				retentionState={{ ...defaultRetentionState, dsblMsgDis: true }}
+				setRetentionState={setRetentionState}
+			/>
+		);
+		makeAllItemsVisible();
 
-	// 	await user.click(screen.getByText(/days/i));
-	// 	await user.click(screen.getByText(/years/i));
+		await user.click(screen.getByText(/days/i));
+		await user.click(screen.getByText(/years/i));
 
-	// 	expect(setRetentionState).toHaveBeenCalledWith({
-	// 		dspYear: 'y',
-	// 		dspRange: 'Years'
-	// 	});
-	// });
+		expect(setRetentionState).toHaveBeenCalledWith({
+			dspYear: 'y',
+			dspRange: 'Years'
+		});
+	});
 });
