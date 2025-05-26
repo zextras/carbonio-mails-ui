@@ -5,20 +5,20 @@
  */
 
 import '@testing-library/jest-dom';
-
-import failOnConsole from 'jest-fail-on-console';
-import fetchMock from 'jest-fetch-mock';
-import { http } from 'msw';
-
 import {
 	defaultAfterAllTests,
 	defaultAfterEachTest,
 	defaultBeforeAllTests,
 	defaultBeforeEachTest,
-	getFailOnConsoleDefaultConfig
-} from './src/carbonio-ui-commons/test/jest-setup';
-import { useLocalStorage } from './src/carbonio-ui-commons/test/mocks/carbonio-shell-ui';
-import { registerRestHandler } from './src/carbonio-ui-commons/test/mocks/network/msw/handlers';
+	getFailOnConsoleDefaultConfig,
+	registerRestHandler,
+	useLocalStorage
+} from '@zextras/carbonio-ui-commons';
+import failOnConsole from 'jest-fail-on-console';
+import fetchMock from 'jest-fetch-mock';
+import { noop } from 'lodash';
+import { http } from 'msw';
+
 import { handleGetConvRequest } from './src/tests/mocks/network/msw/handle-get-conv';
 import { handleGetMsgRequest } from './src/tests/mocks/network/msw/handle-get-msg';
 
@@ -76,3 +76,35 @@ Object.defineProperty(window.crypto, 'randomUUID', {
 	writable: true,
 	value: jest.fn(() => Math.random().toString())
 });
+
+/**
+ * Mocks the Worker class
+ */
+
+type MessageHandler = (msg: string) => void;
+
+class Worker {
+	url: string;
+
+	onmessage: MessageHandler;
+
+	constructor(stringUrl: string) {
+		this.url = stringUrl;
+		this.onmessage = noop;
+	}
+
+	postMessage(msg: string): void {
+		this.onmessage(msg);
+	}
+}
+
+Object.defineProperty(window, 'Worker', {
+	writable: true,
+	value: Worker
+});
+
+window.ResizeObserver = jest.fn().mockImplementation(() => ({
+	observe: jest.fn(),
+	unobserve: jest.fn(),
+	disconnect: jest.fn()
+}));
