@@ -3,8 +3,8 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { HistoryNavigation } from '../../../helpers/use-history-navigation';
-import * as historyNavigation from '../../../helpers/use-history-navigation';
+import { HistoryNavigation } from '@zextras/carbonio-ui-commons';
+import * as historyNavigation from '@zextras/carbonio-ui-commons';
 
 /**
  * Generates a mock for useHistoryNavigation hook and returns the result of the
