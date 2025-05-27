@@ -486,127 +486,125 @@ describe('edit-modal', () => {
 			});
 		});
 
-		// test('is displayed in months if divisible by 31, onConfirm should also pass the correct data', async () => {
-		// 	getSetupServer().use(http.post('/service/soap/GetFolderRequest', handleGetFolderRequest));
-		// 	(folderActionSoapApiMock as jest.Mock).mockResolvedValue({});
-		// 	const folder: Folder = aFolderWithoutSharePermission({
-		// 		retentionPolicy: [
-		// 			{
-		// 				purge: [
-		// 					{
-		// 						policy: [{ lifetime: '62d' }]
-		// 					}
-		// 				]
-		// 			}
-		// 		]
-		// 	});
-		// 	const { user } = setupTest(<EditModal onClose={jest.fn()} folder={folder} />, {});
-		// 	makeAllItemsVisible();
-		//
-		// 	const input = screen.getByRole('textbox', { name: /disposal threshold/i });
-		// 	expect(input).toHaveValue('2');
-		// 	const unitDropdown = screen.getByText(/months/i);
-		// 	expect(unitDropdown).toBeInTheDocument();
-		//
-		// 	const confirmButton = screen.getByRole('button', { name: /label.edit/i });
-		// 	await user.click(confirmButton);
-		//
-		// 	await waitFor(() => {
-		// 		expect(folderActionSoapApiMock).toHaveBeenCalledWith(
-		// 			expect.objectContaining({
-		// 				retentionPolicy: {
-		// 					purge: {
-		// 						policy: {
-		// 							type: 'user',
-		// 							lifetime: '62d'
-		// 						}
-		// 					}
-		// 				}
-		// 			})
-		// 		);
-		// 	});
-		// });
-		//
-		// test('is displayed in weeks if divisible by 7, onConfirm should also pass the correct data', async () => {
-		// 	getSetupServer().use(http.post('/service/soap/GetFolderRequest', handleGetFolderRequest));
-		// 	(folderActionSoapApiMock as jest.Mock).mockResolvedValue({});
-		// 	const folder: Folder = aFolderWithoutSharePermission({
-		// 		retentionPolicy: [
-		// 			{
-		// 				purge: [
-		// 					{
-		// 						policy: [{ lifetime: '14d' }]
-		// 					}
-		// 				]
-		// 			}
-		// 		]
-		// 	});
-		// 	const { user } = setupTest(<EditModal onClose={jest.fn()} folder={folder} />, {});
-		// 	makeAllItemsVisible();
-		//
-		// 	const input = screen.getByRole('textbox', { name: /disposal threshold/i });
-		// 	expect(input).toHaveValue('2');
-		// 	const unitDropdown = screen.getByText(/weeks/i);
-		// 	expect(unitDropdown).toBeInTheDocument();
-		//
-		// 	const confirmButton = screen.getByRole('button', { name: /label.edit/i });
-		// 	await user.click(confirmButton);
-		//
-		// 	await waitFor(() => {
-		// 		expect(folderActionSoapApiMock).toHaveBeenCalledWith(
-		// 			expect.objectContaining({
-		// 				retentionPolicy: {
-		// 					purge: {
-		// 						policy: {
-		// 							type: 'user',
-		// 							lifetime: '14d'
-		// 						}
-		// 					}
-		// 				}
-		// 			})
-		// 		);
-		// 	});
-		// });
-		//
-		// test('defaults to days if not divisible by 7, 31, or 365, onConfirm should also pass the correct data', async () => {
-		// 	getSetupServer().use(http.post('/service/soap/GetFolderRequest', handleGetFolderRequest));
-		// 	(folderActionSoapApiMock as jest.Mock).mockResolvedValue({});
-		// 	const folder: Folder = aFolderWithoutSharePermission({
-		// 		retentionPolicy: [
-		// 			{
-		// 				purge: [
-		// 					{
-		// 						policy: [{ lifetime: '10d' }]
-		// 					}
-		// 				]
-		// 			}
-		// 		]
-		// 	});
-		// 	const { user } = setupTest(<EditModal onClose={jest.fn()} folder={folder} />, {});
-		// 	makeAllItemsVisible();
-		//
-		// 	const input = screen.getByRole('textbox', { name: /disposal threshold/i });
-		// 	expect(input).toHaveValue('10');
-		// 	const unitDropdown = screen.getByText(/days/i);
-		// 	expect(unitDropdown).toBeInTheDocument();
-		//
-		// 	const confirmButton = screen.getByRole('button', { name: /label.edit/i });
-		// 	await user.click(confirmButton);
-		//
-		// 	await waitFor(() => {
-		// 		expect(folderActionSoapApiMock).toHaveBeenCalledWith(
-		// 			expect.objectContaining({
-		// 				retentionPolicy: {
-		// 					purge: {
-		// 						policy: {
-		// 							type: 'user',
-		// 							lifetime: '10d'
-		// 						}
-		// 					}
-		// 				}
-		// 			})
-		// 		);
-		// 	});
-		// });
+		test('is displayed in months if divisible by 31, onConfirm should also pass the correct data', async () => {
+			getSetupServer().use(http.post('/service/soap/GetFolderRequest', handleGetFolderRequest));
+			const interceptor = createSoapAPIInterceptor<BatchRequest, BatchResponse>('Batch');
+			const folder: Folder = aFolderWithoutSharePermission({
+				retentionPolicy: [
+					{
+						purge: [
+							{
+								policy: [{ lifetime: '62d' }]
+							}
+						]
+					}
+				]
+			});
+			const { user } = setupTest(<EditModal onClose={jest.fn()} folder={folder} />, {});
+			makeAllItemsVisible();
+
+			const input = screen.getByRole('textbox', { name: /disposal threshold/i });
+			expect(input).toHaveValue('2');
+			const unitDropdown = screen.getByText(/months/i);
+			expect(unitDropdown).toBeInTheDocument();
+
+			const confirmButton = screen.getByRole('button', { name: /label.edit/i });
+			await user.click(confirmButton);
+
+			await screen.findByTestId('snackbar');
+			const request = await interceptor;
+			expect(request.FolderActionRequest?.[1].action).toEqual({
+				id: folder.id,
+				op: 'retentionpolicy',
+				retentionPolicy: {
+					purge: {
+						policy: {
+							type: 'user',
+							lifetime: '62d'
+						}
+					}
+				}
+			});
+		});
+
+		test('is displayed in weeks if divisible by 7, onConfirm should also pass the correct data', async () => {
+			getSetupServer().use(http.post('/service/soap/GetFolderRequest', handleGetFolderRequest));
+			const interceptor = createSoapAPIInterceptor<BatchRequest, BatchResponse>('Batch');
+			const folder: Folder = aFolderWithoutSharePermission({
+				retentionPolicy: [
+					{
+						purge: [
+							{
+								policy: [{ lifetime: '14d' }]
+							}
+						]
+					}
+				]
+			});
+			const { user } = setupTest(<EditModal onClose={jest.fn()} folder={folder} />, {});
+			makeAllItemsVisible();
+
+			const input = screen.getByRole('textbox', { name: /disposal threshold/i });
+			expect(input).toHaveValue('2');
+			const unitDropdown = screen.getByText(/weeks/i);
+			expect(unitDropdown).toBeInTheDocument();
+
+			const confirmButton = screen.getByRole('button', { name: /label.edit/i });
+			await user.click(confirmButton);
+			await screen.findByTestId('snackbar');
+			const request = await interceptor;
+			expect(request.FolderActionRequest?.[1].action).toEqual({
+				id: folder.id,
+				op: 'retentionpolicy',
+				retentionPolicy: {
+					purge: {
+						policy: {
+							type: 'user',
+							lifetime: '14d'
+						}
+					}
+				}
+			});
+		});
+
+		test('defaults to days if not divisible by 7, 31, or 365, onConfirm should also pass the correct data', async () => {
+			getSetupServer().use(http.post('/service/soap/GetFolderRequest', handleGetFolderRequest));
+			const interceptor = createSoapAPIInterceptor<BatchRequest, BatchResponse>('Batch');
+			const folder: Folder = aFolderWithoutSharePermission({
+				retentionPolicy: [
+					{
+						purge: [
+							{
+								policy: [{ lifetime: '10d' }]
+							}
+						]
+					}
+				]
+			});
+			const { user } = setupTest(<EditModal onClose={jest.fn()} folder={folder} />, {});
+			makeAllItemsVisible();
+
+			const input = screen.getByRole('textbox', { name: /disposal threshold/i });
+			expect(input).toHaveValue('10');
+			const unitDropdown = screen.getByText(/days/i);
+			expect(unitDropdown).toBeInTheDocument();
+
+			const confirmButton = screen.getByRole('button', { name: /label.edit/i });
+			await user.click(confirmButton);
+			await screen.findByTestId('snackbar');
+			const request = await interceptor;
+			expect(request.FolderActionRequest?.[1].action).toEqual({
+				id: folder.id,
+				op: 'retentionpolicy',
+				retentionPolicy: {
+					purge: {
+						policy: {
+							type: 'user',
+							lifetime: '10d'
+						}
+					}
+				}
+			});
+		});
 	});
 });
