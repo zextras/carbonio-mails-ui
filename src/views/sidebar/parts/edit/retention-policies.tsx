@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React, { ChangeEvent, FC } from 'react';
+import React, { ChangeEvent, FC, useCallback, useMemo } from 'react';
 
 import {
 	Container,
@@ -32,12 +32,15 @@ export const RetentionPolicies: FC<RetentionPoliciesProps> = ({
 }) => {
 	const [t] = useTranslation();
 
-	const retentionPeriod = [
-		{ label: t('label.days', 'Days'), value: 'd' },
-		{ label: t('label.weeks', 'Weeks'), value: 'w' },
-		{ label: t('label.months', 'Months'), value: 'm' },
-		{ label: t('label.years', 'Years'), value: 'y' }
-	];
+	const retentionPeriod = useMemo(
+		() => [
+			{ label: t('label.days', 'Days'), value: 'd' },
+			{ label: t('label.weeks', 'Weeks'), value: 'w' },
+			{ label: t('label.months', 'Months'), value: 'm' },
+			{ label: t('label.years', 'Years'), value: 'y' }
+		],
+		[t]
+	);
 
 	const {
 		showPolicy = false,
@@ -48,15 +51,29 @@ export const RetentionPolicies: FC<RetentionPoliciesProps> = ({
 		dspRange = ''
 	} = retentionState || {};
 
-	const handleDisposalToggle = (): void => {
+	const handleDisposalToggle = useCallback((): void => {
 		if (emptyDisValue) setRetentionState({ emptyDisValue: false });
 		setRetentionState({ dsblMsgDis: !dsblMsgDis });
-	};
+	}, [dsblMsgDis, emptyDisValue, setRetentionState]);
 
-	const handleThresholdChange = (e: ChangeEvent<HTMLInputElement>): void => {
-		if (emptyDisValue) setRetentionState({ emptyDisValue: false });
-		setRetentionState({ purgeValue: e.target.value });
-	};
+	const handleThresholdChange = useCallback(
+		(e: ChangeEvent<HTMLInputElement>): void => {
+			if (emptyDisValue) setRetentionState({ emptyDisValue: false });
+			setRetentionState({ purgeValue: e.target.value });
+		},
+		[emptyDisValue, setRetentionState]
+	);
+
+	const onRetentionChange = useCallback(
+		(val: string | null): void => {
+			const selected = retentionPeriod.find((item) => item.value === val);
+			setRetentionState({
+				dspYear: val ?? undefined,
+				dspRange: selected?.label ?? ''
+			});
+		},
+		[retentionPeriod, setRetentionState]
+	);
 
 	return (
 		<>
@@ -127,13 +144,7 @@ export const RetentionPolicies: FC<RetentionPoliciesProps> = ({
 								background="gray5"
 								label={t('label.select', 'Select')}
 								disablePortal
-								onChange={(val): void => {
-									const selected = retentionPeriod.find((item) => item.value === val);
-									setRetentionState({
-										dspYear: val ?? null,
-										dspRange: selected?.label ?? ''
-									});
-								}}
+								onChange={onRetentionChange}
 								selection={{ value: dspYear, label: dspRange }}
 							/>
 						</Row>

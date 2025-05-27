@@ -43,6 +43,6 @@ export type RetentionPolicyState = {
 	dsblMsgDis: boolean;
 	emptyDisValue: boolean;
 	purgeValue: number | string;
-	dspYear: string | null;
+	dspYear: string | undefined;
 	dspRange: string;
 };
