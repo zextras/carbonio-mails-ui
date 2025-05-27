@@ -6,10 +6,11 @@
 import React from 'react';
 
 import { faker } from '@faker-js/faker';
-import { act, screen, within } from '@testing-library/react';
+import { act, screen, waitFor, within } from '@testing-library/react';
 import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 import { http } from 'msw';
 
+import { folderActionSoapApi } from '../../../api/folder-action-soap-api';
 import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
 import { ZIMBRA_STANDARD_COLORS } from '../../../carbonio-ui-commons/constants/utils';
 import { getFolder } from '../../../carbonio-ui-commons/store/zustand/folder';
@@ -20,15 +21,20 @@ import { handleGetFolderRequest } from '../../../carbonio-ui-commons/test/mocks/
 import { populateFoldersStore } from '../../../carbonio-ui-commons/test/mocks/store/folders';
 import { buildSoapErrorResponseBody } from '../../../carbonio-ui-commons/test/mocks/utils/soap';
 import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
-import { Folder, FolderView } from '../../../carbonio-ui-commons/types/folder';
+import { Folder, FolderView, LinkFolder } from '../../../carbonio-ui-commons/types/folder';
 import { SoapFolderAction } from '../../../types';
 import { makeAllItemsVisible } from '../../settings/filters/tests/test-utils';
 import { EditModal } from '../edit-modal';
 
 const aFolderWithoutSharePermission = (folder: Partial<Folder> = {}): Folder => ({
 	...generateFolder(folder),
+	...(folder as LinkFolder),
 	acl: undefined
 });
+const folderActionSoapApiMock = folderActionSoapApi as jest.Mock;
+jest.mock('../../../api/folder-action-soap-api', () => ({
+	folderActionSoapApi: jest.fn()
+}));
 
 describe('edit-modal', () => {
 	test('edit the folder excepting the system folders', async () => {
@@ -441,33 +447,11 @@ describe('edit-modal', () => {
 	});
 
 	describe('retention lifetime ', () => {
-		test('is displayed in years if divisible by 365', async () => {
+		test('is displayed in years if divisible by 365, onConfirm should also pass the correct data', async () => {
+			getSetupServer().use(http.post('/service/soap/GetFolderRequest', handleGetFolderRequest));
+			(folderActionSoapApiMock as jest.Mock).mockResolvedValue({});
 			const closeModal = jest.fn();
-			const folder: Folder = {
-				id: '123',
-				uuid: faker.string.uuid(),
-				name: 'Retention Folder',
-				absFolderPath: '/Inbox/Retention',
-				l: FOLDERS.INBOX,
-				luuid: faker.string.uuid(),
-				checked: false,
-				f: 'u',
-				u: 25,
-				view: 'message' as FolderView,
-				rev: 1,
-				ms: 1,
-				n: 1,
-				s: 1,
-				i4ms: 1,
-				i4next: 1,
-				activesyncdisabled: false,
-				webOfflineSyncDays: 0,
-				recursive: false,
-				deletable: true,
-				isLink: false,
-				children: [],
-				parent: undefined,
-				depth: 1,
+			const folder: Folder = aFolderWithoutSharePermission({
 				retentionPolicy: [
 					{
 						purge: [
@@ -477,9 +461,8 @@ describe('edit-modal', () => {
 						]
 					}
 				]
-			};
-
-			setupTest(<EditModal onClose={closeModal} folder={folder} />, {});
+			});
+			const { user } = setupTest(<EditModal onClose={closeModal} folder={folder} />, {});
 
 			makeAllItemsVisible();
 			const input = screen.getByRole('textbox', { name: /disposal threshold/i });
@@ -487,12 +470,30 @@ describe('edit-modal', () => {
 
 			const unitDropdown = screen.getByText(/years/i);
 			expect(unitDropdown).toBeInTheDocument();
+
+			const confirmButton = screen.getByRole('button', { name: /label.edit/i });
+			await user.click(confirmButton);
+
+			await waitFor(() => {
+				expect(folderActionSoapApiMock).toHaveBeenCalledWith(
+					expect.objectContaining({
+						retentionPolicy: {
+							purge: {
+								policy: {
+									type: 'user',
+									lifetime: '730d'
+								}
+							}
+						}
+					})
+				);
+			});
 		});
 
-		test('is displayed in months if divisible by 31', async () => {
+		test('is displayed in months if divisible by 31, onConfirm should also pass the correct data', async () => {
 			getSetupServer().use(http.post('/service/soap/GetFolderRequest', handleGetFolderRequest));
-			const folder: Folder = {
-				...generateFolder({}),
+			(folderActionSoapApiMock as jest.Mock).mockResolvedValue({});
+			const folder: Folder = aFolderWithoutSharePermission({
 				retentionPolicy: [
 					{
 						purge: [
@@ -502,20 +503,38 @@ describe('edit-modal', () => {
 						]
 					}
 				]
-			};
-			setupTest(<EditModal onClose={jest.fn()} folder={folder} />, {});
+			});
+			const { user } = setupTest(<EditModal onClose={jest.fn()} folder={folder} />, {});
 			makeAllItemsVisible();
 
 			const input = screen.getByRole('textbox', { name: /disposal threshold/i });
 			expect(input).toHaveValue('2');
 			const unitDropdown = screen.getByText(/months/i);
 			expect(unitDropdown).toBeInTheDocument();
+
+			const confirmButton = screen.getByRole('button', { name: /label.edit/i });
+			await user.click(confirmButton);
+
+			await waitFor(() => {
+				expect(folderActionSoapApiMock).toHaveBeenCalledWith(
+					expect.objectContaining({
+						retentionPolicy: {
+							purge: {
+								policy: {
+									type: 'user',
+									lifetime: '62d'
+								}
+							}
+						}
+					})
+				);
+			});
 		});
 
-		test('is displayed in weeks if divisible by 7', async () => {
+		test('is displayed in weeks if divisible by 7, onConfirm should also pass the correct data', async () => {
 			getSetupServer().use(http.post('/service/soap/GetFolderRequest', handleGetFolderRequest));
-			const folder: Folder = {
-				...generateFolder({}),
+			(folderActionSoapApiMock as jest.Mock).mockResolvedValue({});
+			const folder: Folder = aFolderWithoutSharePermission({
 				retentionPolicy: [
 					{
 						purge: [
@@ -525,33 +544,38 @@ describe('edit-modal', () => {
 						]
 					}
 				]
-			};
-
-			// const folder: Folder = generateFolder({
-			// 	retentionPolicy: [
-			// 		{
-			// 			purge: [
-			// 				{
-			// 					policy: [{ lifetime: '14d' }]
-			// 				}
-			// 			]
-			// 		}
-			// 	]
-			// });
-
-			setupTest(<EditModal onClose={jest.fn()} folder={folder} />, {});
+			});
+			const { user } = setupTest(<EditModal onClose={jest.fn()} folder={folder} />, {});
 			makeAllItemsVisible();
 
 			const input = screen.getByRole('textbox', { name: /disposal threshold/i });
 			expect(input).toHaveValue('2');
 			const unitDropdown = screen.getByText(/weeks/i);
 			expect(unitDropdown).toBeInTheDocument();
+
+			const confirmButton = screen.getByRole('button', { name: /label.edit/i });
+			await user.click(confirmButton);
+
+			await waitFor(() => {
+				expect(folderActionSoapApiMock).toHaveBeenCalledWith(
+					expect.objectContaining({
+						retentionPolicy: {
+							purge: {
+								policy: {
+									type: 'user',
+									lifetime: '14d'
+								}
+							}
+						}
+					})
+				);
+			});
 		});
 
-		test('defaults to days if not divisible by 7, 31, or 365', async () => {
+		test('defaults to days if not divisible by 7, 31, or 365, onConfirm should also pass the correct data', async () => {
 			getSetupServer().use(http.post('/service/soap/GetFolderRequest', handleGetFolderRequest));
-			const folder: Folder = {
-				...generateFolder({}),
+			(folderActionSoapApiMock as jest.Mock).mockResolvedValue({});
+			const folder: Folder = aFolderWithoutSharePermission({
 				retentionPolicy: [
 					{
 						purge: [
@@ -561,14 +585,32 @@ describe('edit-modal', () => {
 						]
 					}
 				]
-			};
-			setupTest(<EditModal onClose={jest.fn()} folder={folder} />, {});
+			});
+			const { user } = setupTest(<EditModal onClose={jest.fn()} folder={folder} />, {});
 			makeAllItemsVisible();
 
 			const input = screen.getByRole('textbox', { name: /disposal threshold/i });
 			expect(input).toHaveValue('10');
 			const unitDropdown = screen.getByText(/days/i);
 			expect(unitDropdown).toBeInTheDocument();
+
+			const confirmButton = screen.getByRole('button', { name: /label.edit/i });
+			await user.click(confirmButton);
+
+			await waitFor(() => {
+				expect(folderActionSoapApiMock).toHaveBeenCalledWith(
+					expect.objectContaining({
+						retentionPolicy: {
+							purge: {
+								policy: {
+									type: 'user',
+									lifetime: '10d'
+								}
+							}
+						}
+					})
+				);
+			});
 		});
 	});
 });
