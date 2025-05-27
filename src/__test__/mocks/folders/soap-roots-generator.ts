@@ -4,10 +4,15 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { faker } from '@faker-js/faker';
+import {
+	BaseFolder,
+	FOLDERS,
+	FolderView,
+	SoapFolder,
+	SoapLink
+} from '@zextras/carbonio-ui-commons';
 import { map, orderBy } from 'lodash';
 
-import { FOLDERS } from '../../../constants/folders';
-import { BaseFolder, FolderView, SoapFolder, SoapLink } from '../../../types/folder';
 import { getMocksContext } from '../utils/mocks-context';
 
 let luuid: string | undefined = '';
