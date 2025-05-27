@@ -5,15 +5,15 @@
  */
 
 import { faker } from '@faker-js/faker';
-
-import { FOLDERS } from '../../../constants/folders';
-import type {
+import {
 	Folder,
-	FolderView,
+	FOLDERS,
 	Folders,
+	FolderView,
 	LinkFolder,
 	PopulateFoldersStoreOptions
-} from '../../../types/folder';
+} from '@zextras/carbonio-ui-commons';
+
 import { FakeIdentity } from '../accounts/fakeAccounts';
 import {
 	getMocksContext,
@@ -204,7 +204,7 @@ const generateSharedAccountSystemFolders = (
  *
  * @param parentId
  * @param parentUuid
- * @param ownerContextIdentity
+ * @param ownerIdentity
  */
 export const generateFolderLink = (
 	parentId: string,
