@@ -472,7 +472,7 @@ describe('edit-modal', () => {
 					{
 						purge: [
 							{
-								policy: [{ lifetime: '730d' }] // 2 years
+								policy: [{ lifetime: '730d' }]
 							}
 						]
 					}
@@ -490,7 +490,7 @@ describe('edit-modal', () => {
 		});
 
 		test('is displayed in months if divisible by 31', async () => {
-			const closeModal = jest.fn();
+			getSetupServer().use(http.post('/service/soap/GetFolderRequest', handleGetFolderRequest));
 			const folder: Folder = {
 				...generateFolder({}),
 				retentionPolicy: [
@@ -503,20 +503,17 @@ describe('edit-modal', () => {
 					}
 				]
 			};
-
-			setupTest(<EditModal onClose={closeModal} folder={folder} />, {});
+			setupTest(<EditModal onClose={jest.fn()} folder={folder} />, {});
 			makeAllItemsVisible();
+
 			const input = screen.getByRole('textbox', { name: /disposal threshold/i });
 			expect(input).toHaveValue('2');
-
 			const unitDropdown = screen.getByText(/months/i);
 			expect(unitDropdown).toBeInTheDocument();
 		});
 
 		test('is displayed in weeks if divisible by 7', async () => {
 			getSetupServer().use(http.post('/service/soap/GetFolderRequest', handleGetFolderRequest));
-
-			const closeModal = jest.fn();
 			const folder: Folder = {
 				...generateFolder({}),
 				retentionPolicy: [
@@ -530,37 +527,48 @@ describe('edit-modal', () => {
 				]
 			};
 
-			setupTest(<EditModal onClose={closeModal} folder={folder} />, {});
+			// const folder: Folder = generateFolder({
+			// 	retentionPolicy: [
+			// 		{
+			// 			purge: [
+			// 				{
+			// 					policy: [{ lifetime: '14d' }]
+			// 				}
+			// 			]
+			// 		}
+			// 	]
+			// });
+
+			setupTest(<EditModal onClose={jest.fn()} folder={folder} />, {});
 			makeAllItemsVisible();
+
 			const input = screen.getByRole('textbox', { name: /disposal threshold/i });
 			expect(input).toHaveValue('2');
-
 			const unitDropdown = screen.getByText(/weeks/i);
 			expect(unitDropdown).toBeInTheDocument();
 		});
 
-		// test('defaults to days if not divisible by 7, 31, or 365', async () => {
-		// 	const closeModal = jest.fn();
-		// 	const folder: Folder = {
-		// 		...generateFolder({}),
-		// 		retentionPolicy: [
-		// 			{
-		// 				purge: [
-		// 					{
-		// 						policy: [{ lifetime: '10d' }]
-		// 					}
-		// 				]
-		// 			}
-		// 		]
-		// 	};
+		test('defaults to days if not divisible by 7, 31, or 365', async () => {
+			getSetupServer().use(http.post('/service/soap/GetFolderRequest', handleGetFolderRequest));
+			const folder: Folder = {
+				...generateFolder({}),
+				retentionPolicy: [
+					{
+						purge: [
+							{
+								policy: [{ lifetime: '10d' }]
+							}
+						]
+					}
+				]
+			};
+			setupTest(<EditModal onClose={jest.fn()} folder={folder} />, {});
+			makeAllItemsVisible();
 
-		// 	setupTest(<EditModal onClose={closeModal} folder={folder} />, {});
-		// 	makeAllItemsVisible();
-		// 	const input = screen.getByRole('textbox', { name: /disposal threshold/i });
-		// 	expect(input).toHaveValue('10');
-
-		// 	const unitDropdown = screen.getByText(/days/i);
-		// 	expect(unitDropdown).toBeInTheDocument();
-		// });
+			const input = screen.getByRole('textbox', { name: /disposal threshold/i });
+			expect(input).toHaveValue('10');
+			const unitDropdown = screen.getByText(/days/i);
+			expect(unitDropdown).toBeInTheDocument();
+		});
 	});
 });
