@@ -21,14 +21,13 @@ import { handleGetFolderRequest } from '../../../carbonio-ui-commons/test/mocks/
 import { populateFoldersStore } from '../../../carbonio-ui-commons/test/mocks/store/folders';
 import { buildSoapErrorResponseBody } from '../../../carbonio-ui-commons/test/mocks/utils/soap';
 import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
-import { Folder, FolderView, LinkFolder } from '../../../carbonio-ui-commons/types/folder';
+import { Folder, FolderView } from '../../../carbonio-ui-commons/types/folder';
 import { BatchRequest, SoapFolderAction } from '../../../types';
 import { makeAllItemsVisible } from '../../settings/filters/tests/test-utils';
 import { EditModal } from '../edit-modal';
 
 const aFolderWithoutSharePermission = (folder: Partial<Folder> = {}): Folder => ({
 	...generateFolder(folder),
-	...(folder as LinkFolder),
 	acl: undefined
 });
 
@@ -447,7 +446,8 @@ describe('edit-modal', () => {
 			getSetupServer().use(http.post('/service/soap/GetFolderRequest', handleGetFolderRequest));
 			const interceptor = createSoapAPIInterceptor<BatchRequest, BatchResponse>('Batch');
 			const closeModal = jest.fn();
-			const folder: Folder = aFolderWithoutSharePermission({
+			const folder: Folder = {
+				...aFolderWithoutSharePermission(),
 				retentionPolicy: [
 					{
 						purge: [
@@ -457,7 +457,7 @@ describe('edit-modal', () => {
 						]
 					}
 				]
-			});
+			};
 			const { user } = setupTest(<EditModal onClose={closeModal} folder={folder} />, {});
 
 			makeAllItemsVisible();
@@ -489,7 +489,8 @@ describe('edit-modal', () => {
 		test('is displayed in months if divisible by 31, onConfirm should also pass the correct data', async () => {
 			getSetupServer().use(http.post('/service/soap/GetFolderRequest', handleGetFolderRequest));
 			const interceptor = createSoapAPIInterceptor<BatchRequest, BatchResponse>('Batch');
-			const folder: Folder = aFolderWithoutSharePermission({
+			const folder: Folder = {
+				...aFolderWithoutSharePermission(),
 				retentionPolicy: [
 					{
 						purge: [
@@ -499,7 +500,7 @@ describe('edit-modal', () => {
 						]
 					}
 				]
-			});
+			};
 			const { user } = setupTest(<EditModal onClose={jest.fn()} folder={folder} />, {});
 			makeAllItemsVisible();
 
@@ -530,7 +531,8 @@ describe('edit-modal', () => {
 		test('is displayed in weeks if divisible by 7, onConfirm should also pass the correct data', async () => {
 			getSetupServer().use(http.post('/service/soap/GetFolderRequest', handleGetFolderRequest));
 			const interceptor = createSoapAPIInterceptor<BatchRequest, BatchResponse>('Batch');
-			const folder: Folder = aFolderWithoutSharePermission({
+			const folder: Folder = {
+				...aFolderWithoutSharePermission(),
 				retentionPolicy: [
 					{
 						purge: [
@@ -540,7 +542,7 @@ describe('edit-modal', () => {
 						]
 					}
 				]
-			});
+			};
 			const { user } = setupTest(<EditModal onClose={jest.fn()} folder={folder} />, {});
 			makeAllItemsVisible();
 
@@ -570,7 +572,8 @@ describe('edit-modal', () => {
 		test('defaults to days if not divisible by 7, 31, or 365, onConfirm should also pass the correct data', async () => {
 			getSetupServer().use(http.post('/service/soap/GetFolderRequest', handleGetFolderRequest));
 			const interceptor = createSoapAPIInterceptor<BatchRequest, BatchResponse>('Batch');
-			const folder: Folder = aFolderWithoutSharePermission({
+			const folder: Folder = {
+				...aFolderWithoutSharePermission(),
 				retentionPolicy: [
 					{
 						purge: [
@@ -580,7 +583,7 @@ describe('edit-modal', () => {
 						]
 					}
 				]
-			});
+			};
 			const { user } = setupTest(<EditModal onClose={jest.fn()} folder={folder} />, {});
 			makeAllItemsVisible();
 
