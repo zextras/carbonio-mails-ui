@@ -3,11 +3,15 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+import {
+	FolderState,
+	getLinkIdMapKey,
+	LinkFolder,
+	PopulateFoldersStoreOptions,
+	useFolderStore
+} from '@zextras/carbonio-ui-commons';
 import { filter, values } from 'lodash';
 
-import { useFolderStore } from '../../../store/zustand/folder/store';
-import { FolderState, LinkFolder, PopulateFoldersStoreOptions } from '../../../types/folder';
-import { getLinkIdMapKey } from '../../../worker/utils';
 import { generateFolders } from '../folders/folders-generator';
 
 /**
