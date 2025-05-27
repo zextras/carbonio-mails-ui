@@ -4,4 +4,6 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-export * from '../../src/carbonio-ui-commons/test/mocks/carbonio-ui-preview';
+import * as previewUiMock from '@zextras/carbonio-ui-commons/carbonio-preview-ui-mock';
+
+export default previewUiMock;
