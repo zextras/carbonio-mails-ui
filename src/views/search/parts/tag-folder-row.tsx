@@ -3,22 +3,64 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 
-import { ChipInput, ChipItem, Container, CustomModal } from '@zextras/carbonio-design-system';
+import {
+	ChipInput,
+	Container,
+	CustomModal,
+	Icon,
+	Padding,
+	Row,
+	Text,
+	Tooltip
+} from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
-import { filter } from 'lodash';
+import { map } from 'lodash';
+import { Controller, UseFormSetValue } from 'react-hook-form';
 
 import { ZIMBRA_STANDARD_COLORS } from '../../../carbonio-ui-commons/constants/utils';
+import { getTags } from '../../../carbonio-ui-commons/store/zustand/tags';
+import { Tag } from '../../../carbonio-ui-commons/types/tags';
 import { isSharedAccountFolder } from '../../../helpers/folders';
-import type { ChipOnAdd, Folder, TagFolderRowProps } from '../../../types';
+import type { ChipOnAdd, Folder } from '../../../types';
 import { SelectFolderModal } from '../../../ui-actions/modals/select-folder-modal';
 import { getFolderIconColor } from '../../sidebar/utils';
+import { AdvancedFilterModalFormValues, FormValuesControlProps } from '../types/types';
 
-const TagFolderRow: FC<TagFolderRowProps> = ({ compProps }): ReactElement => {
-	const { folder, setFolder, tagOptions, tag, setTag } = compProps;
+type TagFolderRowControlProps = FormValuesControlProps & {
+	setValue: UseFormSetValue<AdvancedFilterModalFormValues>;
+};
+
+export const TagFolderRow = ({
+	control,
+	setValue
+}: TagFolderRowControlProps): React.JSX.Element => {
+	const tagOptions: Array<Tag & { label: string; customComponent: React.JSX.Element }> = useMemo(
+		() =>
+			map(getTags(), (item) => ({
+				...item,
+				label: item.name,
+				customComponent: (
+					<Row takeAvailableSpace mainAlignment="flex-start">
+						<Row takeAvailableSpace mainAlignment="space-between">
+							<Row mainAlignment="flex-end">
+								<Padding right="small">
+									<Icon icon="Tag" color={ZIMBRA_STANDARD_COLORS[item.color ?? 0].hex} />
+								</Padding>
+							</Row>
+							<Row takeAvailableSpace mainAlignment="flex-start">
+								<Tooltip label={item.name} overflowTooltip>
+									<Text>{item.name}</Text>
+								</Tooltip>
+							</Row>
+						</Row>
+					</Row>
+				)
+			})),
+		[]
+	);
 	const [open, setOpen] = useState(false);
-
 	const onClose = useCallback(() => setOpen(false), []);
 	const openFolderModal = useCallback(() => setOpen(true), []);
 
@@ -51,7 +93,7 @@ const TagFolderRow: FC<TagFolderRowProps> = ({ compProps }): ReactElement => {
 
 	const tagChipOnAdd = useCallback(
 		(label: unknown): ChipOnAdd => {
-			const chipBg = filter(tagOptions, { label })[0];
+			const chipBg = tagOptions.filter((tag) => tag.label === label);
 			return chipOnAdd(
 				label as string,
 				'tag',
@@ -59,22 +101,10 @@ const TagFolderRow: FC<TagFolderRowProps> = ({ compProps }): ReactElement => {
 				false,
 				true,
 				'Tag',
-				ZIMBRA_STANDARD_COLORS[chipBg.color ?? 0].hex
+				ZIMBRA_STANDARD_COLORS[chipBg[0]?.color ?? 0].hex
 			);
 		},
 		[chipOnAdd, tagOptions]
-	);
-	const folderOnChange = useCallback(
-		(folderChips: ChipItem[]) => setFolder(folderChips),
-		[setFolder]
-	);
-
-	const tagPlaceholder = useMemo(() => t('label.tags', 'Tags'), []);
-	const onTagChange = useCallback(
-		(chip: ChipItem[]) => {
-			setTag(chip);
-		},
-		[setTag]
 	);
 
 	const headerTitle = t('share.is_contained_in', 'Is contained in');
@@ -91,8 +121,9 @@ const TagFolderRow: FC<TagFolderRowProps> = ({ compProps }): ReactElement => {
 			_onClose: () => void
 		) => {
 			folderDestination &&
-				setFolder([
+				setValue('folderInput', [
 					{
+						id: '',
 						label: `in:${folderDestination?.absFolderPath}`,
 						hasAvatar: true,
 						maxWidth: '12.5rem',
@@ -108,36 +139,50 @@ const TagFolderRow: FC<TagFolderRowProps> = ({ compProps }): ReactElement => {
 				]);
 			_onClose();
 		},
-		[setFolder]
+		[setValue]
 	);
 
 	return (
 		<Container padding={{ bottom: 'small', top: 'medium' }} orientation="horizontal">
 			<Container padding={{ right: 'extrasmall' }} maxWidth="50%">
-				<ChipInput
-					placeholder={tagPlaceholder}
-					background="gray5"
-					defaultValue={[]}
-					options={tagOptions}
-					value={tag}
-					onChange={onTagChange}
-					onAdd={tagChipOnAdd}
-					disableOptions={false}
-					disabled
-					requireUniqueChips
+				<Controller
+					control={control}
+					name={'tagInput'}
+					render={({ field: { onChange, value } }): React.JSX.Element => (
+						<ChipInput
+							placeholder={t('label.tags', 'Tags')}
+							background="gray5"
+							defaultValue={[]}
+							options={tagOptions}
+							value={value}
+							onChange={onChange}
+							onAdd={tagChipOnAdd}
+							disableOptions={false}
+							disabled
+							requireUniqueChips
+							data-testid="tagInput"
+						/>
+					)}
 				/>
 			</Container>
 			<Container padding={{ left: 'extrasmall' }} maxWidth="50%">
-				<ChipInput
-					background="gray5"
-					icon="FolderOutline"
-					placeholder={t('share.is_contained_in', 'Is contained in')}
-					value={folder}
-					onChange={folderOnChange}
-					onAdd={folderChipOnAdd}
-					disabled
-					iconAction={openFolderModal}
-					requireUniqueChips
+				<Controller
+					control={control}
+					name={'folderInput'}
+					render={({ field: { onChange, value } }): React.JSX.Element => (
+						<ChipInput
+							background="gray5"
+							icon="FolderOutline"
+							placeholder={t('share.is_contained_in', 'Is contained in')}
+							value={value}
+							onChange={onChange}
+							onAdd={folderChipOnAdd}
+							disabled
+							iconAction={openFolderModal}
+							requireUniqueChips
+							data-testid="folderInput"
+						/>
+					)}
 				/>
 				<CustomModal open={open} onClose={onClose} maxHeight="90vh" size={'medium'}>
 					<SelectFolderModal
@@ -151,11 +196,10 @@ const TagFolderRow: FC<TagFolderRowProps> = ({ compProps }): ReactElement => {
 						showSharedAccounts
 						showTrashFolder
 						showSpamFolder
+						data-testid="selectFolderModal"
 					/>
 				</CustomModal>
 			</Container>
 		</Container>
 	);
 };
-
-export default TagFolderRow;

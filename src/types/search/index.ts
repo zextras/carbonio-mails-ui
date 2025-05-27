@@ -8,8 +8,8 @@ import { ChipProps, ChipItem } from '@zextras/carbonio-design-system';
 import type { QueryChip } from '@zextras/carbonio-search-ui';
 
 import { SortBy } from '../../carbonio-ui-commons/types';
+import { AdvancedFilterModalFormValues, Query } from '../../views/search/types/types';
 import { NormalizedConversation } from '../conversations';
-import { KeywordState } from '../filters';
 import { IncompleteMessage, MailMessage } from '../messages';
 import { ErrorType, SearchRequestStatus } from '../state';
 
@@ -17,10 +17,7 @@ export type SearchListProps = {
 	searchResults: Array<string>;
 	query: string;
 	loading: boolean;
-	setShowAdvanceFilters: (show: boolean) => void;
 	isInvalidQuery: boolean;
-	searchDisabled: boolean;
-	invalidQueryTooltip?: string;
 	hasMore?: boolean;
 };
 
@@ -35,29 +32,18 @@ export type SearchPanelProps = {
 	query: Array<QueryChip>;
 };
 
-export type SearchQueryItem = {
-	id: string;
-	label: string;
-	value?: string;
-	isGeneric?: boolean;
-	isQueryFilter?: boolean;
-};
-
-export type Query = Array<SearchQueryItem>;
-
 export type AdvancedFilterButtonProps = {
+	query: Query;
+	isSharedFolderIncluded: boolean;
+	onSearchConfirm: (options: { query: Query; includeSharedFolders: boolean }) => void;
 	searchDisabled: boolean;
-	setShowAdvanceFilters: (arg: boolean) => void;
 	invalidQueryTooltip?: string;
 };
 
 export type AttachTypeEmailStatusRowPropType = {
-	compProps: {
-		attachmentType: KeywordState;
-		setAttachmentType: (arg: any) => void;
-		emailStatus: KeywordState;
-		setEmailStatus: (arg: any) => void;
-	};
+	query: Query;
+	attachmentTypeInputName: string;
+	emailStatusInputName: string;
 };
 
 export type ChipOnAddItem = {
@@ -126,40 +112,26 @@ export type ChipOnAdd = ChipItem & {
 };
 
 export type SendReceivedDateRowPropType = {
-	compProps: {
-		sentBefore: Date | null;
-		setSentBefore: (arg: Date | null) => void;
-		sentAfter: Date | null;
-		setSentAfter: (arg: Date | null) => void;
-		sentOn: Date | null;
-		setSentOn: (arg: Date | null) => void;
-	};
+	query: Query;
+	sentBeforeInputName: string;
+	sentAfterInputName: string;
+	sentOnInputName: string;
 };
 export type SizeLargerSizeSmallerRowProps = {
-	compProps: {
-		sizeSmaller: any;
-		setSizeSmaller: (arg: any) => any;
-		sizeLarger: any;
-		setSizeLarger: (arg: any) => any;
-	};
+	query: Query;
+	sizeSmallerInputName: string;
+	sizeLargerInputName: string;
 };
 export type SubjectKeywordRowProps = {
-	compProps: {
-		otherKeywords: Array<any>;
-		setOtherKeywords: (arg: any) => void;
-		subject: Array<any>;
-		setSubject: (arg: any) => void;
-	};
+	query: Query;
+	keywordsInputName: keyof AdvancedFilterModalFormValues;
+	subjectInputName: string;
 };
 
 export type TagFolderRowProps = {
-	compProps: {
-		folder: KeywordState;
-		setFolder: (arg: any) => void;
-		tagOptions: Array<any>;
-		tag: Array<any>;
-		setTag: (arg: any) => void;
-	};
+	query: Query;
+	folderInputName: string;
+	tagInputName: string;
 };
 
 export type ToggleFilters = Array<{
@@ -172,16 +144,11 @@ export type ToggleFilters = Array<{
 	avatarBackground?: ChipProps['background'];
 }>;
 export type ToggleFiltersProps = {
-	compProps: {
-		isUnread: boolean;
-		isFlagged: boolean;
-		hasAttachment: boolean;
-		setIsUnread: (arg: boolean) => void;
-		setIsFlagged: (arg: boolean) => void;
-		setHasAttachment: (arg: boolean) => void;
-		isSharedFolderIncludedTobe: boolean;
-		setIsSharedFolderIncludedTobe: (arg: boolean) => void;
-	};
+	query: Query;
+	isSharedFolderIncludedToggleName: string;
+	hasAttachmentToggleName: string;
+	isFlaggedToggleName: string;
+	isUnreadToggleName: string;
 };
 
 export type UseDisabledPropType = {

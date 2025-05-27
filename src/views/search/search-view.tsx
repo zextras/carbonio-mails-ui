@@ -10,14 +10,14 @@ import type { SearchViewProps } from '@zextras/carbonio-search-ui';
 import { setAppContext, t, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { Route, Routes } from 'react-router-dom';
 
-import { AdvancedFilterModal } from './advanced-filter-modal';
-import { Query } from '../../types';
 import { SearchConversationList } from './list/conversation/search-conversation-list';
 import { SearchMessageList } from './list/message/search-message-list';
 import SearchPanel from './panel/search-panel';
+import { AdvancedFilterButton } from './parts/advanced-filter-button';
 import { useIsMessageView, useRunSearch } from './search-view-hooks';
 import { useUpdateView } from '../../carbonio-ui-commons/hooks/use-update-view';
 import { API_REQUEST_STATUS } from '../../constants';
+import { Query } from './types/types';
 import { resetSearchAndPopulatedItems } from '../../store/emails/store';
 
 const SearchView = ({
@@ -28,19 +28,23 @@ const SearchView = ({
 	useUpdateView();
 
 	const [query, updateQuery] = useQuery();
+
 	const isMessageView = useIsMessageView();
-	const [showAdvanceFilters, setShowAdvanceFilters] = useState(false);
-	const settings = useUserSettings();
-	const includeSharedItemsInSearch = settings.prefs.zimbraPrefIncludeSharedItemsInSearch === 'TRUE';
-	const [isSharedFolderIncluded, setIsSharedFolderIncluded] = useState<boolean>(
-		includeSharedItemsInSearch
-	);
+
 	const invalidQueryTooltip = useMemo(
 		() => t('label.invalid_query', 'Unable to parse the search query, clear it and retry'),
 		[]
 	);
 
+	const settings = useUserSettings();
+	const includeSharedItemsInSearchDefaultPref =
+		settings.prefs.zimbraPrefIncludeSharedItemsInSearch === 'TRUE';
+	const [isSharedFolderIncluded, setIsSharedFolderIncluded] = useState<boolean>(
+		includeSharedItemsInSearchDefaultPref
+	);
+
 	const [count, setCount] = useState(0);
+
 	useEffect(() => {
 		setAppContext({ isMessageView, count, setCount });
 	}, [count, isMessageView]);
@@ -72,92 +76,83 @@ const SearchView = ({
 
 	const loading = searchResults.status === API_REQUEST_STATUS.pending;
 
-	const onModalConfirm = useCallback(
-		(request: { query: Query; includeSharedFolders: boolean }) => {
-			setIsSharedFolderIncluded(request.includeSharedFolders);
-			updateQuery(request.query);
-		},
-		[updateQuery]
-	);
-
 	useEffect(() => {
 		const controller = new AbortController();
 		if (query.length > 0) {
 			executeSearch(controller.signal);
 		} else {
+			setIsSharedFolderIncluded(includeSharedItemsInSearchDefaultPref);
 			resetSearchAndPopulatedItems();
-			setIsSharedFolderIncluded(includeSharedItemsInSearch);
 		}
 		return () => {
 			controller.abort();
 		};
-	}, [executeSearch, query, includeSharedItemsInSearch]);
+	}, [executeSearch, query, includeSharedItemsInSearchDefaultPref, updateQuery]);
+
+	const onSearchConfirm = useCallback(
+		(options: { query: Query; includeSharedFolders: boolean }): void => {
+			updateQuery(options.query);
+			setIsSharedFolderIncluded(options.includeSharedFolders);
+		},
+		[updateQuery]
+	);
 
 	return (
-		<>
-			<Container>
-				{/* TOFIX-SHELL: labetype is missing in shell type declaration as optional and string */}
-				<ResultsHeader
-					label={resultLabel}
-					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-					// @ts-ignore
-					labelType={resultLabelType}
-				/>
-				<Container
-					orientation="horizontal"
-					background="gray4"
-					style={{ overflowY: 'auto' }}
-					mainAlignment="flex-start"
-				>
-					<Routes>
-						<Route
-							path={`:type?/:itemId?`}
-							element={
-								isMessageView ? (
+		<Container>
+			{/* TOFIX-SHELL: labetype is missing in shell type declaration as optional and string */}
+			<ResultsHeader label={resultLabel} labelType={resultLabelType} />
+			<Container
+				orientation="horizontal"
+				background="gray4"
+				style={{ overflowY: 'auto' }}
+				mainAlignment="flex-start"
+			>
+				<Routes>
+					<Route
+						path={`:type?/:itemId?`}
+						element={
+							<Container
+								background={'gray6'}
+								width="25%"
+								height="fill"
+								mainAlignment="flex-start"
+								data-testid="MailsSearchResultListContainer"
+							>
+								<AdvancedFilterButton
+									query={query as Query}
+									isSharedFolderIncluded={isSharedFolderIncluded}
+									onSearchConfirm={onSearchConfirm}
+									searchDisabled={searchDisabled}
+									invalidQueryTooltip={invalidQueryTooltip}
+								/>
+								{isMessageView ? (
 									<SearchMessageList
-										searchDisabled={searchDisabled}
 										searchResults={searchResults.messageListIndex}
 										query={queryToString}
 										loading={loading}
-										setShowAdvanceFilters={setShowAdvanceFilters}
 										isInvalidQuery={isInvalidQuery}
-										invalidQueryTooltip={invalidQueryTooltip}
 										hasMore={searchResults.more}
 									/>
 								) : (
 									<SearchConversationList
-										searchDisabled={searchDisabled}
 										searchResults={searchResults.conversationListIndex}
 										query={queryToString}
 										loading={loading}
-										setShowAdvanceFilters={setShowAdvanceFilters}
 										isInvalidQuery={isInvalidQuery}
-										invalidQueryTooltip={invalidQueryTooltip}
 										hasMore={searchResults.more}
 									/>
-								)
-							}
-						/>
-					</Routes>
-					<Suspense fallback={<Spinner color="gray5" />}>
-						<Container mainAlignment="flex-start" width="75%">
-							<SearchPanel searchResults={searchResults} query={query} />
-						</Container>
-					</Suspense>
-				</Container>
+								)}
+							</Container>
+						}
+					/>
+				</Routes>
+				<Suspense fallback={<Spinner color="gray5" />}>
+					<Container mainAlignment="flex-start" width="75%">
+						<SearchPanel searchResults={searchResults} query={query} />
+					</Container>
+				</Suspense>
 			</Container>
-			<AdvancedFilterModal
-				// TOFIX: fix type definition
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-				// @ts-ignore
-				query={query}
-				open={showAdvanceFilters}
-				onSearchConfirm={onModalConfirm}
-				isSharedFolderIncludedInitialValue={isSharedFolderIncluded}
-				onClose={(): void => setShowAdvanceFilters(false)}
-				includeSharedItemsInSearchPref={includeSharedItemsInSearch}
-			/>
-		</>
+		</Container>
 	);
 };
 
