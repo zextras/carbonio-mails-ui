@@ -8,23 +8,28 @@ import React from 'react';
 import { faker } from '@faker-js/faker';
 import { act, screen, within } from '@testing-library/react';
 import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
+import { http } from 'msw';
 
 import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
 import { ZIMBRA_STANDARD_COLORS } from '../../../carbonio-ui-commons/constants/utils';
 import { getFolder } from '../../../carbonio-ui-commons/store/zustand/folder';
+import { getSetupServer } from '../../../carbonio-ui-commons/test/jest-setup';
 import { generateFolder } from '../../../carbonio-ui-commons/test/mocks/folders/folders-generator';
 import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
+import { handleGetFolderRequest } from '../../../carbonio-ui-commons/test/mocks/network/msw/handle-get-folder';
 import { populateFoldersStore } from '../../../carbonio-ui-commons/test/mocks/store/folders';
 import { buildSoapErrorResponseBody } from '../../../carbonio-ui-commons/test/mocks/utils/soap';
 import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
 import { Folder, FolderView } from '../../../carbonio-ui-commons/types/folder';
 import { SoapFolderAction } from '../../../types';
+import { makeAllItemsVisible } from '../../settings/filters/tests/test-utils';
 import { EditModal } from '../edit-modal';
 
 const aFolderWithoutSharePermission = (folder: Partial<Folder> = {}): Folder => ({
 	...generateFolder(folder),
 	acl: undefined
 });
+
 describe('edit-modal', () => {
 	test('edit the folder excepting the system folders', async () => {
 		const closeModal = jest.fn();
@@ -433,5 +438,129 @@ describe('edit-modal', () => {
 			});
 			expect(editButton).toBeDisabled();
 		});
+	});
+
+	describe('retention lifetime ', () => {
+		test('is displayed in years if divisible by 365', async () => {
+			const closeModal = jest.fn();
+			const folder: Folder = {
+				id: '123',
+				uuid: faker.string.uuid(),
+				name: 'Retention Folder',
+				absFolderPath: '/Inbox/Retention',
+				l: FOLDERS.INBOX,
+				luuid: faker.string.uuid(),
+				checked: false,
+				f: 'u',
+				u: 25,
+				view: 'message' as FolderView,
+				rev: 1,
+				ms: 1,
+				n: 1,
+				s: 1,
+				i4ms: 1,
+				i4next: 1,
+				activesyncdisabled: false,
+				webOfflineSyncDays: 0,
+				recursive: false,
+				deletable: true,
+				isLink: false,
+				children: [],
+				parent: undefined,
+				depth: 1,
+				retentionPolicy: [
+					{
+						purge: [
+							{
+								policy: [{ lifetime: '730d' }] // 2 years
+							}
+						]
+					}
+				]
+			};
+
+			setupTest(<EditModal onClose={closeModal} folder={folder} />, {});
+
+			makeAllItemsVisible();
+			const input = screen.getByRole('textbox', { name: /disposal threshold/i });
+			expect(input).toHaveValue('2');
+
+			const unitDropdown = screen.getByText(/years/i);
+			expect(unitDropdown).toBeInTheDocument();
+		});
+
+		test('is displayed in months if divisible by 31', async () => {
+			const closeModal = jest.fn();
+			const folder: Folder = {
+				...generateFolder({}),
+				retentionPolicy: [
+					{
+						purge: [
+							{
+								policy: [{ lifetime: '62d' }]
+							}
+						]
+					}
+				]
+			};
+
+			setupTest(<EditModal onClose={closeModal} folder={folder} />, {});
+			makeAllItemsVisible();
+			const input = screen.getByRole('textbox', { name: /disposal threshold/i });
+			expect(input).toHaveValue('2');
+
+			const unitDropdown = screen.getByText(/months/i);
+			expect(unitDropdown).toBeInTheDocument();
+		});
+
+		test('is displayed in weeks if divisible by 7', async () => {
+			getSetupServer().use(http.post('/service/soap/GetFolderRequest', handleGetFolderRequest));
+
+			const closeModal = jest.fn();
+			const folder: Folder = {
+				...generateFolder({}),
+				retentionPolicy: [
+					{
+						purge: [
+							{
+								policy: [{ lifetime: '14d' }]
+							}
+						]
+					}
+				]
+			};
+
+			setupTest(<EditModal onClose={closeModal} folder={folder} />, {});
+			makeAllItemsVisible();
+			const input = screen.getByRole('textbox', { name: /disposal threshold/i });
+			expect(input).toHaveValue('2');
+
+			const unitDropdown = screen.getByText(/weeks/i);
+			expect(unitDropdown).toBeInTheDocument();
+		});
+
+		// test('defaults to days if not divisible by 7, 31, or 365', async () => {
+		// 	const closeModal = jest.fn();
+		// 	const folder: Folder = {
+		// 		...generateFolder({}),
+		// 		retentionPolicy: [
+		// 			{
+		// 				purge: [
+		// 					{
+		// 						policy: [{ lifetime: '10d' }]
+		// 					}
+		// 				]
+		// 			}
+		// 		]
+		// 	};
+
+		// 	setupTest(<EditModal onClose={closeModal} folder={folder} />, {});
+		// 	makeAllItemsVisible();
+		// 	const input = screen.getByRole('textbox', { name: /disposal threshold/i });
+		// 	expect(input).toHaveValue('10');
+
+		// 	const unitDropdown = screen.getByText(/days/i);
+		// 	expect(unitDropdown).toBeInTheDocument();
+		// });
 	});
 });
