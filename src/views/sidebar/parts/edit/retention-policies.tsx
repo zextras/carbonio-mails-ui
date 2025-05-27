@@ -68,7 +68,7 @@ export const RetentionPolicies: FC<RetentionPoliciesProps> = ({
 		(val: string | null): void => {
 			const selected = retentionPeriod.find((item) => item.value === val);
 			setRetentionState({
-				dspYear: val ?? undefined,
+				dspYear: val,
 				dspRange: selected?.label ?? ''
 			});
 		},
@@ -138,7 +138,7 @@ export const RetentionPolicies: FC<RetentionPoliciesProps> = ({
 							)}
 						</Row>
 						<Row orientation="vertical" width="48%" crossAlignment="flex-start">
-							<Select
+							<Select<string | null>
 								disabled={!dsblMsgDis}
 								items={retentionPeriod}
 								background="gray5"
