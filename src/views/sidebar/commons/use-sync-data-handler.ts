@@ -8,15 +8,21 @@
 import { MutableRefObject, useEffect, useRef, useState } from 'react';
 
 import { SoapNotify, useNotify, useRefresh } from '@zextras/carbonio-shell-ui';
-import { flatten, forEach, isEmpty, map, sortBy } from 'lodash';
-import { NavigateFunction, useNavigate } from 'react-router-dom';
-
 import {
 	folderWorker,
 	tagsWorker,
 	useFolderStore,
 	useTagStore
 } from '@zextras/carbonio-ui-commons';
+import { flatten, forEach, isEmpty, map, sortBy } from 'lodash';
+import { NavigateFunction, useNavigate } from 'react-router-dom';
+
+import {
+	HandleFoldersNotifyProps,
+	HandleTagsNotifyProps,
+	SoapPartialConversation,
+	SoapPartialIncompleteMessage
+} from './types';
 import {
 	mapToNormalizedConversation,
 	normalizePartialConversations
@@ -35,12 +41,6 @@ import {
 } from '../../../store/emails/store';
 import { triggerNotification } from '../../../store/emails/sync-data-handler/trigger-notification';
 import { IncompleteMessage, SoapConversation, SoapIncompleteMessage } from '../../../types';
-import {
-	HandleFoldersNotifyProps,
-	HandleTagsNotifyProps,
-	SoapPartialConversation,
-	SoapPartialIncompleteMessage
-} from './types';
 
 export function extractConvMessage(
 	createdConversations: Array<{ m?: Array<SoapIncompleteMessage> }>
