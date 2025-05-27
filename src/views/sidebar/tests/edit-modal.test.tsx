@@ -10,7 +10,6 @@ import { act, screen, within } from '@testing-library/react';
 import { BatchResponse, ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 import { http } from 'msw';
 
-import anything = jasmine.anything;
 import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
 import { ZIMBRA_STANDARD_COLORS } from '../../../carbonio-ui-commons/constants/utils';
 import { getFolder } from '../../../carbonio-ui-commons/store/zustand/folder';
@@ -610,6 +609,70 @@ describe('edit-modal', () => {
 					}
 				}
 			});
+		});
+		test('changing the retention should send the updated values', async () => {
+			getSetupServer().use(http.post('/service/soap/GetFolderRequest', handleGetFolderRequest));
+			const interceptor = createSoapAPIInterceptor<BatchRequest, BatchResponse>('Batch');
+			const folder: Folder = {
+				...aFolderWithoutSharePermission(),
+				retentionPolicy: [
+					{
+						purge: [
+							{
+								policy: [{ lifetime: '1d' }]
+							}
+						]
+					}
+				]
+			};
+			const { user } = setupTest(<EditModal onClose={jest.fn()} folder={folder} />, {});
+			makeAllItemsVisible();
+
+			const input = screen.getByRole('textbox', { name: /disposal threshold/i });
+			await user.clear(input);
+			await user.type(input, '2');
+			const confirmButton = screen.getByRole('button', { name: /label.edit/i });
+			await user.click(confirmButton);
+			await screen.findByTestId('snackbar');
+			const request = await interceptor;
+			expect(request.FolderActionRequest?.[1].action).toEqual({
+				id: folder.id,
+				op: 'retentionpolicy',
+				retentionPolicy: {
+					purge: {
+						policy: {
+							type: 'user',
+							lifetime: '2d'
+						}
+					}
+				}
+			});
+		});
+		test('should display an error message when the input is not a valid number', async () => {
+			getSetupServer().use(http.post('/service/soap/GetFolderRequest', handleGetFolderRequest));
+			const folder: Folder = {
+				...aFolderWithoutSharePermission(),
+				retentionPolicy: [
+					{
+						purge: [
+							{
+								policy: [{ lifetime: '1d' }]
+							}
+						]
+					}
+				]
+			};
+			const { user } = setupTest(<EditModal onClose={jest.fn()} folder={folder} />, {});
+			makeAllItemsVisible();
+
+			const input = screen.getByRole('textbox', { name: /disposal threshold/i });
+			await user.clear(input);
+			await user.type(input, 'a');
+			const confirmButton = screen.getByRole('button', { name: /label.edit/i });
+			await user.click(confirmButton);
+			expect(
+				await screen.findByText('The retention duration must be a positive number')
+			).toBeVisible();
 		});
 	});
 });
