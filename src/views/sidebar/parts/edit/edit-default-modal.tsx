@@ -208,6 +208,8 @@ const MainEditModal: FC<MainEditModalProps> = ({ folder, onClose, setActiveModal
 		onClose();
 	}, [retentionState, folderNameInputValue, folder, folderColor, onClose, createSnackbar]);
 
+	const openShareModal = useCallback((): void => setActiveModal('share'), [setActiveModal]);
+
 	return (
 		<>
 			<ModalHeader
@@ -240,7 +242,7 @@ const MainEditModal: FC<MainEditModalProps> = ({ folder, onClose, setActiveModal
 			<ModalFooter
 				onConfirm={onConfirm}
 				label={t('label.edit', 'Edit')}
-				secondaryAction={(): void => setActiveModal('share')}
+				secondaryAction={openShareModal}
 				secondaryLabel={t('folder.modal.edit.add_share', 'Add Share')}
 				disabled={disableSubmit}
 				secondaryDisabled={!allowedActionOnSharedAccount(folder, FolderActionsType.SHARE)}
