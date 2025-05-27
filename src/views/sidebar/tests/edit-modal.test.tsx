@@ -316,6 +316,8 @@ describe('edit-modal', () => {
 				name: /label\.edit/i
 			})
 		);
+
+		await screen.findByTestId('snackbar');
 		const { action } = await wipeInterceptor;
 
 		expect(action.id).toBe(folder.id);
