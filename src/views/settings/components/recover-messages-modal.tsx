@@ -55,6 +55,9 @@ export const RecoverMessagesModal = ({
 					disabled={isLoading}
 					onConfirm={onConfirm}
 					label={modalFooterLabel}
+					// TODO: CO-2067 fix type
+					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+					// @ts-ignore
 					primaryButtonIcon={isLoading && AnimatedLoader}
 				/>
 			</Container>

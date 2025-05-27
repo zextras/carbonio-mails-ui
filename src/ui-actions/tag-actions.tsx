@@ -27,6 +27,9 @@ import { find, reduce, some } from 'lodash';
 import type { ArgumentType, ItemType, TagActionsReturnType, UIActionDescriptor } from '../types';
 import CreateUpdateTagModal from '../views/sidebar/parts/tags/create-update-tag-modal';
 
+// TODO: CO-2067 fix type
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 export const createTag = ({ createModal, closeModal }: ArgumentType): DropdownItem => ({
 	id: TagsActionsType.NEW,
 	icon: 'TagOutline',
@@ -47,6 +50,9 @@ export const createTag = ({ createModal, closeModal }: ArgumentType): DropdownIt
 	}
 });
 
+// TODO: CO-2067 fix type
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 export const editTag = ({ createModal, closeModal, tag }: ArgumentType): DropdownItem => ({
 	id: TagsActionsType.EDIT,
 	icon: 'Edit2Outline',
@@ -73,6 +79,9 @@ export const editTag = ({ createModal, closeModal, tag }: ArgumentType): Dropdow
 	}
 });
 
+// TODO: CO-2067 fix type
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 export const deleteTag = ({ createModal, closeModal, tag }: ArgumentType): DropdownItem => ({
 	id: TagsActionsType.DELETE,
 	icon: 'Untag',
@@ -140,8 +149,17 @@ export const useGetTagsActions = ({ tag }: ArgumentType): Array<TagActionsReturn
 	return useMemo(
 		() =>
 			[
+				// TODO: CO-2067 fix type
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// @ts-ignore
 				createTag({ createModal, closeModal }),
+				// TODO: CO-2067 fix type
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// @ts-ignore
 				editTag({ createModal, closeModal, tag }),
+				// TODO: CO-2067 fix type
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// @ts-ignore
 				deleteTag({ tag, createModal, closeModal })
 			] as Array<TagActionsReturnType>,
 		[closeModal, createModal, tag]

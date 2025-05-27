@@ -16,7 +16,6 @@ import {
 	Text
 } from '@zextras/carbonio-design-system';
 import { t, useUserAccounts } from '@zextras/carbonio-shell-ui';
-import type { EditPermissionsModalProps } from '@zextras/carbonio-ui-commons';
 import {
 	ContactInputItem,
 	ModalFooter,
@@ -27,6 +26,7 @@ import {
 import { sendShareNotificationSoapApi } from '../../api/send-share-notification-soap-api';
 import { shareFolderSoapApi } from '../../api/share-folder-soap-api';
 import { useUiUtilities } from '../../hooks/use-ui-utilities';
+import { EditPermissionsModalProps } from '../../types/sidebar';
 import { GranteeInfo } from './parts/edit/share-folder-properties';
 import {
 	ShareCalendarRoleOptions,

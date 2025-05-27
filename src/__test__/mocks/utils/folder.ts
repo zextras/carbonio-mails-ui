@@ -4,8 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { faker } from '@faker-js/faker';
-
-import { FolderView } from '../../../types/folder';
+import { FolderView } from '@zextras/carbonio-ui-commons';
 
 type RandomInRange = { min?: number; max?: number };
 

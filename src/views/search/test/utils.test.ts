@@ -6,13 +6,13 @@
 
 import { faker } from '@faker-js/faker';
 import type { QueryChip } from '@zextras/carbonio-search-ui';
-import { keyBy } from 'lodash';
-
 import {
 	createFakeIdentity,
 	generateFolder,
 	generateFolderLink
 } from '@zextras/carbonio-ui-commons';
+import { keyBy } from 'lodash';
+
 import { generateQueryString, getChipItems, getChipString, updateQueryChips } from '../utils';
 
 const name1 = faker.person.firstName();
@@ -60,6 +60,9 @@ const mockSearchQueryItem2 = {
 describe('getChipString function', () => {
 	it('should return the label for SearchQueryItem when it matches the regex', () => {
 		const prefix = 'to';
+		// TODO: CO-2067 fix type
+		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+		// @ts-ignore
 		const result = getChipString(mockSearchQueryItem1, prefix);
 		const expected = `${prefix}:${mockSearchQueryItem1.label}`;
 		expect(result).toBe(expected);
@@ -67,6 +70,9 @@ describe('getChipString function', () => {
 
 	it('should prefix the label for SearchQueryItem when it does not match the regex', () => {
 		const prefix = 'nonMatchingPrefix';
+		// TODO: CO-2067 fix type
+		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+		// @ts-ignore
 		const result = getChipString(mockSearchQueryItem1, prefix);
 		expect(result).toBe(`${prefix}:${mockSearchQueryItem1.label}`);
 	});
@@ -87,6 +93,9 @@ describe('getChipString function', () => {
 	it('should handle missing label in SearchQueryItem by returning prefixed empty string', () => {
 		const item = {};
 		const prefix = 'test';
+		// TODO: CO-2067 fix type
+		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+		// @ts-ignore
 		const result = getChipString(item, prefix);
 		expect(result).toBe(`${prefix}:`);
 	});
@@ -94,6 +103,9 @@ describe('getChipString function', () => {
 	it('should handle missing fullName in ContactInputItem by returning prefixed empty string', () => {
 		const item = {};
 		const prefix = 'test';
+		// TODO: CO-2067 fix type
+		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+		// @ts-ignore
 		const result = getChipString(item, prefix);
 		expect(result).toBe(`${prefix}:`);
 	});
@@ -136,6 +148,9 @@ describe('getChipItems function', () => {
 	});
 
 	it('should handle a single SearchQueryItem correctly', () => {
+		// TODO: CO-2067 fix type
+		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+		// @ts-ignore
 		const result = getChipItems([mockPrefixedSearchQueryItem1], prefix);
 		expect(result).toBeInstanceOf(Array);
 		expect(result).toHaveLength(1);
@@ -143,6 +158,9 @@ describe('getChipItems function', () => {
 	});
 
 	it('should handle an single ContactInputItem objects correctly', () => {
+		// TODO: CO-2067 fix type
+		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+		// @ts-ignore
 		const result = getChipItems([mockContactInputItem1], prefix);
 		expect(result).toBeInstanceOf(Array);
 		expect(result).toHaveLength(1);
@@ -151,6 +169,9 @@ describe('getChipItems function', () => {
 
 	it('should handle an array of SearchQueryItem correctly', () => {
 		const result = getChipItems(
+			// TODO: CO-2067 fix type
+			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+			// @ts-ignore
 			[mockPrefixedSearchQueryItem1, mockPrefixedSearchQueryItem2],
 			prefix
 		);
@@ -162,6 +183,9 @@ describe('getChipItems function', () => {
 	});
 
 	it('should handle an array of ContactInputItem correctly', () => {
+		// TODO: CO-2067 fix type
+		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+		// @ts-ignore
 		const result = getChipItems([mockContactInputItem1, mockContactInputItem2], prefix);
 		expect(result).toBeInstanceOf(Array);
 		expect(result).toHaveLength(2);

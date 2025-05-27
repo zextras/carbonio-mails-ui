@@ -5,8 +5,9 @@
  */
 
 import { Account } from '@zextras/carbonio-shell-ui';
-import defaultSettings, * as shell from '@zextras/carbonio-ui-commons';
 
+import * as shellMock from '../../__test__/mocks/carbonio-shell-ui/carbonio-shell-ui';
+import defaultSettings from '../../__test__/mocks/settings/default-settings';
 import { MailMessagePart } from '../../types';
 import { convertHtmlToPlainText } from '../utilities';
 import {
@@ -23,7 +24,7 @@ describe('getTimeLabel', () => {
 			{ locale: 'en', output: 'MM/DD/YYYY', expected: '07/01/2020 12:00 AM' },
 			{ locale: 'it', output: 'DD/MM/YYYY', expected: '01/07/2020 00:00' }
 		])('when locale is $locale the output is $output', ({ locale, expected }) => {
-			shell.getUserSettings.mockReturnValueOnce({
+			shellMock.getUserSettings.mockReturnValueOnce({
 				...defaultSettings,
 				prefs: {
 					...defaultSettings.prefs,

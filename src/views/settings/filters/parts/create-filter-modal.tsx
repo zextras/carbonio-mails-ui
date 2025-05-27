@@ -7,18 +7,18 @@ import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
 
 import { Checkbox, Container, Divider, Input, Padding, Row } from '@zextras/carbonio-design-system';
 import { BooleanString, useUserSettings } from '@zextras/carbonio-shell-ui';
+import ModalHeader from '@zextras/carbonio-ui-commons';
 import { map, omit, reduce } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { v4 as uuidv4 } from 'uuid';
 
-import ModalHeader from '@zextras/carbonio-ui-commons';
-import type { Filter, FilterActions } from '../../../../types';
 import { CreateFilterContext } from './create-filter-context';
 import ModalFooter from './create-filter-modal-footer';
 import DefaultCondition from './create-filters-conditions/default';
 import { FilterActionsPanel } from './filter-actions-panel';
 import { FilterConditionsPanel } from './filter-conditions-panel';
 import { getButtonInfo } from './utils';
+import type { Filter, FilterActions } from '../../../../types';
 
 type ComponentProps = {
 	onClose: () => void;
@@ -163,6 +163,9 @@ const CreateFilterModal: FC<ComponentProps> = ({
 				maxHeight="100%"
 				style={{ overflowY: 'scroll', overflowX: 'hidden' }}
 			>
+				{/* TODO: CO-2067 fix type */}
+				{/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
+				{/* @ts-ignore */}
 				<ModalHeader
 					title={t('settings.create_new_filter', 'Create new Filter')}
 					onClose={onClose}

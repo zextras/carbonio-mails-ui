@@ -5,10 +5,10 @@
  */
 import { faker } from '@faker-js/faker';
 import { ErrorSoapResponse, SoapHeader } from '@zextras/carbonio-shell-ui';
+import { BaseFolder, FolderView } from '@zextras/carbonio-ui-commons';
 import { filter } from 'lodash';
 import { HttpResponse, HttpResponseResolver } from 'msw';
 
-import { BaseFolder, FolderView } from '../../../../types/folder';
 import { generateSoapRoot } from '../../folders/soap-roots-generator';
 import { getRandomFolderFlags } from '../../utils/folder';
 import { getMocksContext } from '../../utils/mocks-context';

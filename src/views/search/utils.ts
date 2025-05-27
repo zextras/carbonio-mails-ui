@@ -5,10 +5,10 @@
  */
 
 import type { QueryChip } from '@zextras/carbonio-search-ui';
+import { convertSearchChipToString } from '@zextras/carbonio-ui-commons';
 import { includes, map, reduce } from 'lodash';
 import { v4 as uuid } from 'uuid';
 
-import { convertSearchChipToString } from '@zextras/carbonio-ui-commons';
 import {
 	ChipType,
 	ContactInputItem,
@@ -29,7 +29,13 @@ export function getChipString(item: SearchQueryItem | ContactInputItem, prefix: 
 	if ((item as SearchQueryItem).label) {
 		resultString = (item as SearchQueryItem).label;
 	}
+	// TODO: CO-2067 fix type
+	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+	// @ts-ignore
 	if ((item as ContactInputItem).fullName) {
+		// TODO: CO-2067 fix type
+		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+		// @ts-ignore
 		resultString = (item as ContactInputItem).fullName ?? '';
 	}
 	return regex.test(resultString) ? resultString : `${prefix}:${resultString}`;
@@ -41,16 +47,31 @@ function getChipValue(item: SearchQueryItem | ContactInputItem, prefix: string):
 	if ((item as SearchQueryItem).value) {
 		resultString = (item as SearchQueryItem).value ?? '';
 	}
+	// TODO: CO-2067 fix type
+	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+	// @ts-ignore
 	if ((item as ContactInputItem).email) {
+		// TODO: CO-2067 fix type
+		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+		// @ts-ignore
 		resultString = (item as ContactInputItem).email ?? '';
 	}
+	// TODO: CO-2067 fix type
+	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+	// @ts-ignore
 	if ((item as ContactInputItem).fullName) {
+		// TODO: CO-2067 fix type
+		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+		// @ts-ignore
 		resultString = (item as ContactInputItem).fullName ?? '';
 	}
 	return regex.test(resultString) ? resultString : `${prefix}:${resultString}`;
 }
 
 export function getChipItems(chips: Array<ContactInputItem>, prefix: string): KeywordState {
+	// TODO: CO-2067 fix type
+	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+	// @ts-ignore
 	return chips.map((chip) => ({
 		...chip,
 		error: false,

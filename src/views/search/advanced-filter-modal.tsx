@@ -17,10 +17,10 @@ import {
 	Tooltip
 } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
+import { ContactInputItem, getTags, ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-ui-commons';
 import { concat, filter, includes, map, reject } from 'lodash';
 import moment from 'moment';
 
-import { ContactInputItem, getTags, ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-ui-commons';
 import { ScrollableContainer } from '../../commons/scrollable-container';
 import { KeywordState, Query } from '../../types';
 import AttachmentTypeEmailStatusRow from './parts/attachment-type-email-status-row';
@@ -233,12 +233,18 @@ export const AdvancedFilterModal = ({
 		setTag(tagInQuery);
 
 		const sentToInQuery = getChipItems(
+			// TODO: CO-2067 fix type
+			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+			// @ts-ignore
 			query.filter((queryItem) => /^to:*/.test(queryItem.label)),
 			'to'
 		);
 		setSentToAddresses(sentToInQuery);
 
 		const receivedFromInQuery = getChipItems(
+			// TODO: CO-2067 fix type
+			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+			// @ts-ignore
 			query.filter((queryItem) => /^from:*/.test(queryItem.label)),
 			'from'
 		);

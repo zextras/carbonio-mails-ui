@@ -15,11 +15,11 @@ import React, {
 
 import { Checkbox, Container, Divider, Input, Padding, Row } from '@zextras/carbonio-design-system';
 import { BooleanString, useUserSettings } from '@zextras/carbonio-shell-ui';
+import ModalHeader from '@zextras/carbonio-ui-commons';
 import { forEach, isEqual, map, omit, reduce } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { v4 as uuidv4 } from 'uuid';
 
-import ModalHeader from '@zextras/carbonio-ui-commons';
 import type {
 	AllFiltersTest,
 	ApiFilterAction,
@@ -330,6 +330,9 @@ export const ModifyFilterModal: FC<ModifyFilterModalProps> = ({
 				maxHeight="100%"
 				style={{ overflowY: 'scroll', overflowX: 'hidden' }}
 			>
+				{/* TODO: CO-2067 fix type */}
+				{/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
+				{/* @ts-ignore */}
 				<ModalHeader title={modalTitle} onClose={onClose} />
 				<Input
 					label={`${t('settings.filter_name', 'Filter Name')}*`}
