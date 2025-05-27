@@ -5,25 +5,26 @@
  */
 
 import '@testing-library/jest-dom';
-import {
-	defaultAfterAllTests,
-	defaultAfterEachTest,
-	defaultBeforeAllTests,
-	defaultBeforeEachTest,
-	getFailOnConsoleDefaultConfig,
-	registerRestHandler,
-	useLocalStorage
-} from '@zextras/carbonio-ui-commons';
+
 import failOnConsole from 'jest-fail-on-console';
 import fetchMock from 'jest-fetch-mock';
 import { noop } from 'lodash';
 import { http } from 'msw';
 
+import {
+	defaultAfterAllTests,
+	defaultAfterEachTest,
+	defaultBeforeAllTests,
+	defaultBeforeEachTest
+} from './src/__test__/jest-setup';
+import { useLocalStorage } from './src/__test__/mocks/carbonio-shell-ui/carbonio-shell-ui';
+import { registerRestHandler } from './src/__test__/mocks/network/msw/handlers';
 import { handleGetConvRequest } from './src/tests/mocks/network/msw/handle-get-conv';
 import { handleGetMsgRequest } from './src/tests/mocks/network/msw/handle-get-msg';
 
 failOnConsole({
-	...getFailOnConsoleDefaultConfig(),
+	shouldFailOnError: true,
+	shouldFailOnWarn: true,
 	silenceMessage: (message) =>
 		message.includes('React does not recognize the `isGeneric` prop on a DOM element')
 });

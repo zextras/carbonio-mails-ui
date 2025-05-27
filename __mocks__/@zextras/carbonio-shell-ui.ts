@@ -4,10 +4,9 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import shell from '@zextras/carbonio-shell-ui';
-import * as shellMock from '@zextras/carbonio-ui-commons/carbonio-shell-ui-mock';
+import * as shell from '@zextras/carbonio-shell-ui';
 
-export default shellMock;
+export * from '../../src/__test__/mocks/carbonio-shell-ui';
 
 // TODO move it in the Commons submodule
 export const useAuthenticated = jest

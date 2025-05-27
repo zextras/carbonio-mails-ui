@@ -33,7 +33,7 @@ const config: Config = {
 		'\\.(css|less)$': '<rootDir>/__mocks__/fileMock.js'
 	},
 	reporters: ['default', 'jest-junit'],
-	testEnvironment: '<rootDir>/tests/setup/jsdom-extended.ts',
+	testEnvironment: '<rootDir>/src/__test__/jsdom-extended.ts',
 	testEnvironmentOptions: {
 		customExportConditions: ['']
 	},
