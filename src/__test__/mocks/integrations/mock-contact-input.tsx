@@ -7,11 +7,14 @@
 import React, { FunctionComponent, ReactElement, useCallback } from 'react';
 
 import { ChipAction } from '@zextras/carbonio-design-system';
-
-import { EDIT_ACTION_ID, CONTACT_TYPES } from '../../../integrations/constants';
-import { DefaultContactInput } from '../../../integrations/default-contact-input';
-import * as contactInput from '../../../integrations/hooks';
-import { ContactInputItem, ContactInputProps } from '../../../integrations/types';
+import {
+	CONTACT_TYPES,
+	ContactInputItem,
+	ContactInputProps,
+	DefaultContactInput,
+	EDIT_ACTION_ID
+} from '@zextras/carbonio-ui-commons';
+import * as contactInput from '@zextras/carbonio-ui-commons';
 
 function generateMockedContactInput(
 	valueToAdd?: ContactInputItem
