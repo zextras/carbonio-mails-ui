@@ -71,7 +71,7 @@ describe('RetentionPolicies Component', () => {
 	it('does not render select dropdown when dspYear is null', () => {
 		setupTest(
 			<RetentionPolicies
-				retentionState={{ ...defaultRetentionState, dspYear: null }}
+				retentionState={{ ...defaultRetentionState, dspYear: undefined }}
 				setRetentionState={jest.fn()}
 			/>
 		);

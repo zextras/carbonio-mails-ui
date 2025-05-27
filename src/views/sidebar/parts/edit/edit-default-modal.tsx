@@ -136,7 +136,7 @@ const MainEditModal: FC<MainEditModalProps> = ({ folder, onClose, setActiveModal
 		[isFolderNameInputEmpty, showIsSystemFolderNameWarning, inpDisable]
 	);
 
-	const calculateLifetimeDays = (value: number, unit: string | null): number => {
+	const calculateLifetimeDays = (value: number, unit: string | undefined): number => {
 		switch (unit) {
 			case 'w':
 				return value * 7;
@@ -156,7 +156,7 @@ const MainEditModal: FC<MainEditModalProps> = ({ folder, onClose, setActiveModal
 		const buildRetentionPolicy = (
 			enabled: boolean,
 			value: number,
-			unit: string | null
+			unit: string | undefined
 		): object | undefined => {
 			if (!enabled && !folder?.retentionPolicy) return undefined;
 
