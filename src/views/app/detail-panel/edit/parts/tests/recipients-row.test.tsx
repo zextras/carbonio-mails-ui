@@ -7,17 +7,21 @@
 import React, { useCallback, useState } from 'react';
 
 import { act, screen } from '@testing-library/react';
-import { UserEvent } from '@testing-library/user-event';
 import * as contactInput from '@zextras/carbonio-ui-commons';
 import { CONTACT_TYPES, DefaultContactInput, ParticipantRole } from '@zextras/carbonio-ui-commons';
 
 import { Participant } from '../../../../../../types';
 import { RecipientsRow } from '../recipients-row';
-import { setupTest } from '@test-setup';
+import { setupTest, UserEvent } from '@test-setup';
 import {
 	generateMockContactInputItem,
 	mockContactInput
 } from '@test-utils/integrations/mock-contact-input';
+
+jest.mock('@zextras/carbonio-ui-commons', () => ({
+	...jest.requireActual('@zextras/carbonio-ui-commons'),
+	useContactInput: jest.fn()
+}));
 
 const triggerOnAdd = async (user: UserEvent): Promise<void> => {
 	await paste(user, screen.getByTestId('mockedContactInput'), 'any value is ok');
