@@ -36,6 +36,7 @@ import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
 import { isSystemFolder } from '../../carbonio-ui-commons/helpers/folders';
 import type { Folder } from '../../carbonio-ui-commons/types';
 import type { OnDropActionProps } from '../../carbonio-ui-commons/types/sidebar';
+import { isDraft } from '../../helpers/folders';
 import { useOnMouseHover } from '../../hooks/use-on-mouse-hover';
 import { useUiUtilities } from '../../hooks/use-ui-utilities';
 import { convActionEmailStoreAction } from '../../store/emails/actions/conv-action-action';
@@ -183,7 +184,7 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item: folder }) => {
 	);
 
 	const badgeType: 'read' | 'unread' = useMemo(
-		() => (folder.id && folder.id === FOLDERS.DRAFTS ? 'read' : 'unread'),
+		() => (isDraft(folder.id) ? 'read' : 'unread'),
 		[folder.id]
 	);
 
@@ -205,7 +206,7 @@ const AccordionCustomComponent: FC<{ item: Folder }> = ({ item: folder }) => {
 					: getFolderTranslatedName({ folderId: folder.id, folderName: folder.name }),
 			icon: getFolderIconName(folder, hasSubfolderUnreads) ?? undefined,
 			iconColor: getFolderIconColor(folder),
-			badgeCounter: badgeCount(folder.id === FOLDERS.DRAFTS ? folder.n : folder?.u),
+			badgeCounter: badgeCount(isDraft(folder.id) ? folder.n : folder?.u),
 			badgeType,
 			to: `/folder/${folder.id}`,
 			textProps
