@@ -61,17 +61,14 @@ const NOTFLAGGED = '';
 
 const { setMessagesInSearchSlice } = getUseEmailStoreAndHooksForTesting();
 
-jest.mock('../../../../carbonio-ui-commons/store/zustand/tags', () => ({
-	...jest.requireActual('../../../../carbonio-ui-commons/store/zustand/tags'),
-	getTags: jest.fn()
-}));
-
-jest.mock('../../../../carbonio-ui-commons/worker', () => ({
-	...jest.requireActual('../../../../carbonio-ui-commons/worker'),
+jest.mock('@zextras/carbonio-ui-commons', () => ({
+	...jest.requireActual('@zextras/carbonio-ui-commons'),
+	getTags: jest.fn(),
 	folderWorker: {
 		postMessage: jest.fn()
 	}
 }));
+
 jest.mock('../../../../store/emails/sync-data-handler/trigger-notification', () => ({
 	triggerNotification: jest.fn()
 }));

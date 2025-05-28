@@ -19,7 +19,8 @@ import { tags } from '@test-utils/tags/tags';
 import { populateFoldersStore } from '@test-utils/store/folders';
 import { setupTest } from '@test-setup';
 
-jest.mock('../../../../../carbonio-ui-commons/store/zustand/tags', () => ({
+jest.mock('@zextras/carbonio-ui-commons', () => ({
+	...jest.requireActual('@zextras/carbonio-ui-commons'),
 	useTags: jest.fn()
 }));
 jest.mock('../../../../../ui-actions/tag-actions', () => ({

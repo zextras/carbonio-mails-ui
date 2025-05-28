@@ -7,7 +7,8 @@
 import { getTags } from '@zextras/carbonio-ui-commons';
 import { getTagIds } from '../utils';
 
-jest.mock('../../carbonio-ui-commons/store/zustand/tags', () => ({
+jest.mock('@zextras/carbonio-ui-commons', () => ({
+	...jest.requireActual('@zextras/carbonio-ui-commons'),
 	getTags: jest.fn()
 }));
 

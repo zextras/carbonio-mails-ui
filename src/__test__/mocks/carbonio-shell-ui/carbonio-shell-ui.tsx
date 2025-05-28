@@ -118,3 +118,5 @@ export const useIntegratedFunction: jest.Mock<
 	ReturnType<typeof shell.useIntegratedFunction>,
 	Parameters<typeof shell.useIntegratedFunction>
 >((id) => [jest.fn(), false]);
+
+export const JSNS = {...shell.JSNS};

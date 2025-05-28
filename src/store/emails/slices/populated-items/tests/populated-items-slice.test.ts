@@ -56,7 +56,8 @@ import {
 const { setMessagesInSearchSlice } = getUseEmailStoreAndHooksForTesting();
 
 jest.mock('@zextras/carbonio-ui-commons', () => ({
-	useTags: jest.fn()
+	...jest.requireActual('@zextras/carbonio-ui-commons'),
+	useTags: jest.fn(),
 }));
 
 describe('store-populated-items-slice', () => {

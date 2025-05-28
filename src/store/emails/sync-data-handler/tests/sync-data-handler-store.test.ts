@@ -23,8 +23,8 @@ import {
 } from '../../store';
 import { triggerNotification } from '../trigger-notification';
 
-jest.mock('../../../../carbonio-ui-commons/store/zustand/tags', () => ({
-	...jest.requireActual('../../../../carbonio-ui-commons/store/zustand/tags'),
+jest.mock('@zextras/carbonio-ui-commons', () => ({
+	...jest.requireActual('@zextras/carbonio-ui-commons'),
 	getTags: jest.fn()
 }));
 describe('handleNotifyMessagesCreated', () => {

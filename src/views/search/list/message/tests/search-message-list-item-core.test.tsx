@@ -12,7 +12,8 @@ import { populateMessagesInEmailStore } from '../../../../../tests/generators/ge
 import { SearchMessageListItemCore } from '../search-message-list-item-core';
 import { setupTest } from '@test-setup';
 
-jest.mock('../../../../../carbonio-ui-commons/store/zustand/tags', () => ({
+jest.mock('@zextras/carbonio-ui-commons', () => ({
+	...jest.requireActual('@zextras/carbonio-ui-commons'),
 	useTags: jest.fn()
 }));
 

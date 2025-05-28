@@ -26,8 +26,8 @@ jest.mock('react-router-dom', () => ({
 	useParams: jest.fn()
 }));
 
-jest.mock('../../../../../carbonio-ui-commons/worker', () => ({
-	...jest.requireActual('../../../../../carbonio-ui-commons/worker'),
+jest.mock('@zextras/carbonio-ui-commons', () => ({
+	...jest.requireActual('@zextras/carbonio-ui-commons'),
 	folderWorker: {
 		postMessage: jest.fn()
 	},

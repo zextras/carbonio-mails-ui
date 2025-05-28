@@ -5,18 +5,15 @@
  */
 
 import React from 'react';
+
 import { faker } from '@faker-js/faker';
 import { act, screen, waitFor, within } from '@testing-library/react';
 import { UserEvent } from '@testing-library/user-event';
 import * as hooks from '@zextras/carbonio-shell-ui';
 import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
+import { FOLDERS, ParticipantRole } from '@zextras/carbonio-ui-commons';
 import { find, noop } from 'lodash';
 import { HttpResponse } from 'msw';
-
-import {
-	FOLDERS,
-	ParticipantRole,
-} from '@zextras/carbonio-ui-commons';
 
 import {
 	GetSignaturesRequest,
@@ -47,16 +44,22 @@ import type {
 import { SoapSendMsgResponse } from '../../../../../types/soap/send-msg';
 import { EditView, EditViewProp } from '../edit-view';
 import { aFailingSaveDraft, aSuccessfullSaveDraft } from './utils/utils';
-import { useBoard as mockedUseBoard, useBoard } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
-import { createAPIInterceptor, createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
-import { buildSoapErrorResponseBody } from '@test-utils/utils/soap';
-import { getMocksContext } from '@test-utils/utils/mocks-context';
-import { generateSettings } from '@test-utils/settings/settings-generator';
-import { setupTest } from '@test-setup';
 import { defaultBeforeAllTests } from '@jest-setup';
-import { getEmptyMSWShareInfoResponse } from '@test-utils/network/msw/handle-get-share-info';
+import { setupTest } from '@test-setup';
 import { createFakeIdentity } from '@test-utils/accounts/fakeAccounts';
+import {
+	useBoard as mockedUseBoard,
+	useBoard
+} from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
+import {
+	createAPIInterceptor,
+	createSoapAPIInterceptor
+} from '@test-utils/network/msw/create-api-interceptor';
+import { getEmptyMSWShareInfoResponse } from '@test-utils/network/msw/handle-get-share-info';
+import { generateSettings } from '@test-utils/settings/settings-generator';
 import { populateFoldersStore } from '@test-utils/store/folders';
+import { getMocksContext } from '@test-utils/utils/mocks-context';
+import { buildSoapErrorResponseBody } from '@test-utils/utils/soap';
 
 const CT_HTML = 'text/html' as const;
 const CT_PLAIN = 'text/plain' as const;

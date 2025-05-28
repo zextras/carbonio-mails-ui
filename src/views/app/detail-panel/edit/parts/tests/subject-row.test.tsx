@@ -5,17 +5,16 @@
  */
 
 import React from 'react';
+
 import { screen } from '@testing-library/react';
 
-import {
-	setupTest
-} from '@test-setup';
 import { addEditor } from '../../../../../../store/editor';
 import { setupEditorStore } from '../../../../../../tests/generators/editor-store';
 import { readyToBeSentEditorTestCase } from '../../../../../../tests/generators/editors';
 import { SubjectRow } from '../subject-row';
-import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import { setupTest } from '@test-setup';
 import { getIntegratedFunction } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
+import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 
 beforeEach(() => {
 	createSoapAPIInterceptor('SaveDraft');
