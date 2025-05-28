@@ -10,6 +10,7 @@ import { screen, waitFor } from '@testing-library/react';
 
 import PersonalCertificatesSettings from '../personal-certificates-settings';
 import { createAPIInterceptorToGetPersonalCertificates } from './utils/utils';
+import { setupTest } from '@test-setup';
 
 describe('PersonalCertificatesSettings', () => {
 	it('should render the modal with the correct title', async () => {

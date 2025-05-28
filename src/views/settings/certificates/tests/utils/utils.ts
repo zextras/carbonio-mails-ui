@@ -7,6 +7,7 @@
 import { HttpResponse } from 'msw';
 
 import { Certificate } from '../../../../../types/certificates/certificates';
+import { createAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 
 export const createAPIInterceptorToGetPersonalCertificates = (res?: Certificate[]): void => {
 	const response = [

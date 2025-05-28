@@ -12,6 +12,7 @@ import { t as mockT } from '@zextras/carbonio-shell-ui';
 import { PRIMARY_IDENTITY_NAME } from '../../../../helpers/identities';
 import { SignItemType } from '../../../../types';
 import SelectIdentitySignature from '../select-identity-signature';
+import { setupTest } from '@test-setup';
 
 jest.mock('@zextras/carbonio-shell-ui', () => ({
 	t: jest.fn((key, defaultValue) => defaultValue)

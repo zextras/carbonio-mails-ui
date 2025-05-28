@@ -6,14 +6,11 @@
 
 import { faker } from '@faker-js/faker';
 import type { QueryChip } from '@zextras/carbonio-search-ui';
-import {
-	createFakeIdentity,
-	generateFolder,
-	generateFolderLink
-} from '@zextras/carbonio-ui-commons';
 import { keyBy } from 'lodash';
 
 import { generateQueryString, getChipItems, getChipString, updateQueryChips } from '../utils';
+import { generateFolder, generateFolderLink } from '@test-utils/folders/folders-generator';
+import { createFakeIdentity } from '@test-utils/accounts/fakeAccounts';
 
 const name1 = faker.person.firstName();
 const name2 = faker.person.firstName();

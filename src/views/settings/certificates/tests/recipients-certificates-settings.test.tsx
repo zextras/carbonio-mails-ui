@@ -10,6 +10,7 @@ import { screen, waitFor } from '@testing-library/react';
 
 import RecipientsCertificateSettings from '../recipients-certificates-settings';
 import { createAPIInterceptorToGetRecipientsCertificates } from './utils/utils';
+import { setupTest } from '@test-setup';
 
 describe('RecipientsCertificateSettings', () => {
 	it('should render the modal with the correct title', async () => {

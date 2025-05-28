@@ -9,6 +9,7 @@ import React from 'react';
 import { screen } from '@testing-library/react';
 
 import { EnterPasswordModal } from '../enter-password-modal';
+import { setupTest } from '@test-setup';
 
 describe('EnterPasswordModal', () => {
 	const onClose = jest.fn();

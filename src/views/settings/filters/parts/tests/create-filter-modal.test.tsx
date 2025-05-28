@@ -9,12 +9,9 @@ import React from 'react';
 import { act, screen, within } from '@testing-library/react';
 import { UserEvent } from '@testing-library/user-event';
 
-import {
-	makeListItemsVisible,
-	populateFoldersStore,
-	setupTest
-} from '@zextras/carbonio-ui-commons';
 import CreateFilterModal from '../create-filter-modal';
+import { populateFoldersStore } from '@test-utils/store/folders';
+import { makeListItemsVisible, setupTest } from '@test-setup';
 
 const addAction = async (user: UserEvent): Promise<void> => {
 	await user.click(within(screen.getByTestId('actions-panel')).getByTestId('icon: PlusOutline'));

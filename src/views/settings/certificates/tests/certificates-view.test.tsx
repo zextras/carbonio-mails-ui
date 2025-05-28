@@ -15,6 +15,7 @@ import {
 	createAPIInterceptorToGetPersonalCertificates,
 	createAPIInterceptorToGetRecipientsCertificates
 } from './utils/utils';
+import { setupTest } from '@test-setup';
 
 jest.mock('../../../../store/certificates/store', () => {
 	const actual = jest.requireActual('../../../../store/certificates/store');

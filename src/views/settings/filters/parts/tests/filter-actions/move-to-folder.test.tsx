@@ -9,13 +9,12 @@ import { act, screen } from '@testing-library/react';
 
 import {
 	FOLDER_VIEW,
-	FOLDERS,
-	generateFolder,
-	makeListItemsVisible,
-	populateFoldersStore,
-	setupTest
+	FOLDERS
 } from '@zextras/carbonio-ui-commons';
 import { MovetoFolder } from '../../filter-actions/move-to-folder';
+import { makeListItemsVisible, setupTest } from '@test-setup';
+import { generateFolder } from '@test-utils/folders/folders-generator';
+import { populateFoldersStore } from '@test-utils/store/folders';
 
 describe('Move to Folder', () => {
 	it('should render initial folder destination in input', async () => {

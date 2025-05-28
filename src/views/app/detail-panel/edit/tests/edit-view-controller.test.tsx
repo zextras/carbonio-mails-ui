@@ -5,6 +5,7 @@
  */
 
 import React from 'react';
+
 import { faker } from '@faker-js/faker';
 import { act } from '@testing-library/react';
 import { Board } from '@zextras/carbonio-shell-ui';
@@ -19,9 +20,12 @@ import { populateMessagesInEmailStore } from '../../../../../tests/generators/ge
 import { GetMsgRequest, GetMsgResponse } from '../../../../../types';
 import { EditViewBoardContext } from '../edit-view-board';
 import EditViewController from '../edit-view-controller';
-import { createAPIInterceptor, createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
-import { useBoard } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
 import { setupTest } from '@test-setup';
+import { useBoard } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
+import {
+	createAPIInterceptor,
+	createSoapAPIInterceptor
+} from '@test-utils/network/msw/create-api-interceptor';
 
 const createBoardMock = (contextModel: EditViewBoardContext): Board<EditViewBoardContext> => ({
 	id: faker.string.uuid(),

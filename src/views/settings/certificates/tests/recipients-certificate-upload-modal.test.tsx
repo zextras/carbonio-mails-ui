@@ -9,6 +9,7 @@ import React from 'react';
 import { screen } from '@testing-library/react';
 
 import { RecipientsCertificateUploadModal } from '../recipients-certificate-upload-modal';
+import { setupTest } from '@test-setup';
 
 describe('RecipientsCertificateUploadModal', () => {
 	const onConfirm = jest.fn();

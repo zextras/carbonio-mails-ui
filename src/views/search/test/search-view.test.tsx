@@ -6,7 +6,7 @@
 
 import React, { ReactElement } from 'react';
 
-import { act, waitFor } from '@testing-library/react';
+import { act, screen, waitFor } from '@testing-library/react';
 import type { QueryChip, SearchViewProps } from '@zextras/carbonio-search-ui';
 import * as hooks from '@zextras/carbonio-shell-ui';
 import { AccountSettings, ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
@@ -14,14 +14,7 @@ import { noop } from 'lodash';
 import * as reactRouterDom from 'react-router-dom';
 
 import {
-	buildSoapErrorResponseBody,
-	createSoapAPIInterceptor,
 	FOLDERS,
-	generateSettings,
-	makeListItemsVisible,
-	screen,
-	setupTest,
-	within
 } from '@zextras/carbonio-ui-commons';
 import * as searchSoapApi from '../../../api/search-soap-api';
 import * as useSelection from '../../../hooks/use-selection';
@@ -43,6 +36,10 @@ import {
 	SoapMailMessage
 } from '../../../types';
 import SearchView from '../search-view';
+import { generateSettings } from '@test-utils/settings/settings-generator';
+import { within, makeListItemsVisible, setupTest } from '@test-setup';
+import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import { buildSoapErrorResponseBody } from '@test-utils/utils/soap';
 
 jest.mock('react-router-dom', () => ({
 	...jest.requireActual('react-router-dom'),

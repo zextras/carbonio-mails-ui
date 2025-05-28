@@ -7,10 +7,8 @@
 import React from 'react';
 
 import { act, screen, waitFor } from '@testing-library/react';
+import { FOLDERS } from '@zextras/carbonio-ui-commons';
 
-import {
-	FOLDERS,
-} from '@zextras/carbonio-ui-commons';
 import { populateConversationInEmailStore } from '../../../../../tests/generators/generateConversation';
 import {
 	ConversationListComponent,

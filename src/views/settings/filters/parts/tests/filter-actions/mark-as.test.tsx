@@ -10,6 +10,7 @@ import { screen } from '@testing-library/react';
 
 import { MarkAsOption } from '../../../../../../types';
 import { MarkAs } from '../../filter-actions/mark-as';
+import { setupTest } from '@test-setup';
 
 describe('Mark As', () => {
 	it('it should render selected option in the input', async () => {

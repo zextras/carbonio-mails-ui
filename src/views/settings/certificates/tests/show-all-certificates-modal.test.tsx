@@ -10,6 +10,7 @@ import { screen, waitFor } from '@testing-library/react';
 
 import { Certificate } from '../../../../types/certificates/certificates';
 import ShowAllCertificatesModal from '../show-all-certificates-modal';
+import { setupTest } from '@test-setup';
 
 const certificate: Certificate[] = [
 	{
