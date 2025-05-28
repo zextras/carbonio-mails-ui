@@ -10,11 +10,7 @@ import { getUserAccount } from '@zextras/carbonio-shell-ui';
 
 import {
 	FOLDERS,
-	getMocksContext,
-	useBoard as mockedUseBoard,
 	ParticipantRole,
-	populateFoldersStore,
-	setupTest
 } from '@zextras/carbonio-ui-commons';
 import { convertHtmlToPlainText } from '../../../../../commons/utilities';
 import { EditViewActions, MAILS_ROUTE } from '../../../../../constants';
@@ -25,6 +21,10 @@ import {
 import * as useQueryParam from '../../../../../hooks/use-query-param';
 import { generateMessage } from '../../../../../tests/generators/generateMessage';
 import { EditView, EditViewProp } from '../edit-view';
+import { getMocksContext } from '@test-utils/utils/mocks-context';
+import { populateFoldersStore } from '@test-utils/store/folders';
+import { setupTest } from '@test-setup';
+import { useBoard as mockedUseBoard } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
 
 /**
  * Test the EditView component for set signature for selected from identity

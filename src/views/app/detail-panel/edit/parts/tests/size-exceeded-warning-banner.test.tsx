@@ -8,12 +8,13 @@ import React from 'react';
 import { act } from '@testing-library/react';
 import * as hooks from '@zextras/carbonio-shell-ui';
 
-import { generateSettings, setupTest } from '@zextras/carbonio-ui-commons';
 import { addEditor, useEditorsStore } from '../../../../../../store/editor';
 import { setupEditorStore } from '../../../../../../tests/generators/editor-store';
 import { generateEditorV2Case } from '../../../../../../tests/generators/editors';
 import { MailsEditorV2, SavedAttachment } from '../../../../../../types';
 import { calculateMailSize, SizeExceededWarningBanner } from '../size-exceeded-waring-banner';
+import { setupTest } from '@test-setup';
+import { generateSettings } from '@test-utils/settings/settings-generator';
 
 describe('sizeExceededWarningBanner', () => {
 	beforeEach(() => {

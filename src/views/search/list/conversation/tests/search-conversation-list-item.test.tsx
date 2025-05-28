@@ -9,16 +9,16 @@ import { screen, waitFor } from '@testing-library/react';
 import { AccountSettings } from '@zextras/carbonio-shell-ui';
 
 import {
-	createSoapAPIInterceptor,
 	FOLDERS,
-	generateSettings,
-	setupTest,
-	useUserSettings
 } from '@zextras/carbonio-ui-commons';
 import { CONVACTIONS } from '../../../../../commons/utilities';
 import { populateConversationInEmailStore } from '../../../../../tests/generators/generateConversation';
 import { ConvActionRequest, ConvActionResponse } from '../../../../../types';
 import { SearchConversationListItem } from '../search-conversation-list-item';
+import { generateSettings } from '@test-utils/settings/settings-generator';
+import { useUserSettings } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
+import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import { setupTest } from '@test-setup';
 
 const conversationId = '-123';
 describe('SearchConversationListItem', () => {

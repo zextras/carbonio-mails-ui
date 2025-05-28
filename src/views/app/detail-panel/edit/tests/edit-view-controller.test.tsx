@@ -10,12 +10,6 @@ import { act } from '@testing-library/react';
 import { Board } from '@zextras/carbonio-shell-ui';
 import { HttpResponse } from 'msw';
 
-import {
-	createAPIInterceptor,
-	createSoapAPIInterceptor,
-	setupTest,
-	useBoard
-} from '@zextras/carbonio-ui-commons';
 import { EditViewActions } from '../../../../../constants';
 import { generateNewMessageEditor } from '../../../../../store/editor/editor-generators';
 import { getSoapMailMessage } from '../../../../../store/emails/actions/tests/test-utils';
@@ -25,6 +19,9 @@ import { populateMessagesInEmailStore } from '../../../../../tests/generators/ge
 import { GetMsgRequest, GetMsgResponse } from '../../../../../types';
 import { EditViewBoardContext } from '../edit-view-board';
 import EditViewController from '../edit-view-controller';
+import { createAPIInterceptor, createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import { useBoard } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
+import { setupTest } from '@test-setup';
 
 const createBoardMock = (contextModel: EditViewBoardContext): Board<EditViewBoardContext> => ({
 	id: faker.string.uuid(),

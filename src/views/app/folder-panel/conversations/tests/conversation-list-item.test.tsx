@@ -11,10 +11,8 @@ import { noop } from 'lodash';
 import * as reactRouterDom from 'react-router-dom';
 
 import {
-	createSoapAPIInterceptor,
 	FOLDERS,
 	ParticipantRole,
-	setupTest
 } from '@zextras/carbonio-ui-commons';
 import { API_REQUEST_STATUS, FOLDERS_DESCRIPTORS } from '../../../../../constants';
 import { useConvPreviewOnSeparatedWindowFn } from '../../../../../hooks/actions/use-conv-preview-on-separated-window';
@@ -27,6 +25,8 @@ import { populateConversationInEmailStore } from '../../../../../tests/generator
 import type { ConvActionRequest } from '../../../../../types';
 import { makeAllItemsVisible } from '../../../../settings/filters/tests/test-utils';
 import { ConversationListItem, ConversationListItemProps } from '../conversation-list-item';
+import { setupTest } from '@test-setup';
+import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 
 const canExecuteCallback = jest.fn();
 

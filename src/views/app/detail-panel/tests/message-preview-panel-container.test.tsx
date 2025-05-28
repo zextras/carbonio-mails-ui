@@ -10,6 +10,7 @@ import * as shell from '@zextras/carbonio-shell-ui';
 
 import { populateMessagesInEmailStore } from '../../../../tests/generators/generateMessage';
 import { MessagePreviewPanelContainer } from '../message-preview-panel-container';
+import { setupTest } from '@test-setup';
 
 describe('MessagePreviewPanelContainer', () => {
 	const defaultTitle = 'test title';

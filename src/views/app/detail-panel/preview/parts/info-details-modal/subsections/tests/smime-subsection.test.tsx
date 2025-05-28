@@ -10,6 +10,7 @@ import { screen } from '@testing-library/react';
 
 import { MessageSignature } from '../../../../../../../../types';
 import { SmimeSubsection } from '../smime-subsection';
+import { setupTest } from '@test-setup';
 
 describe('SmimeSubsection', () => {
 	const signature: MessageSignature = {

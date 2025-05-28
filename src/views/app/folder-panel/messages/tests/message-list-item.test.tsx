@@ -9,17 +9,17 @@ import { screen, waitFor } from '@testing-library/react';
 import { useParams } from 'react-router-dom';
 
 import {
-	createSoapAPIInterceptor,
 	FOLDERS,
-	tags as mockTags,
-	populateFoldersStore,
-	setupTest,
 	useTagStore
 } from '@zextras/carbonio-ui-commons';
 import { useMsgPreviewOnSeparatedWindowFn } from '../../../../../hooks/actions/use-msg-preview-on-separated-window';
 import { generateMessage } from '../../../../../tests/generators/generateMessage';
 import { MessageListItemProps, MsgActionRequest } from '../../../../../types';
 import { MessageListItem } from '../message-list-item';
+import { setupTest } from '@test-setup';
+import { tags as mockTags } from '@test-utils/tags/tags';
+import { populateFoldersStore } from '@test-utils/store/folders';
+import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 
 jest.mock('react-router-dom', () => ({
 	...jest.requireActual('react-router-dom'),

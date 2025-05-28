@@ -10,6 +10,7 @@ import { screen } from '@testing-library/react';
 
 import { MAIL_SENSITIVITY_HEADER } from '../../../../../../../constants';
 import { MailSensitivityIcon } from '../mail-sensitivity-icon';
+import { setupTest } from '@test-setup';
 
 describe('MailSensitivityIcon', () => {
 	test('renders icon when hasSensitivity private', async () => {

@@ -9,6 +9,7 @@ import React from 'react';
 import { screen } from '@testing-library/react';
 
 import { ExternalDomainIcon } from '../external-domain-icon';
+import { setupTest } from '@test-setup';
 
 describe('ExternalDomainIcon', () => {
 	test('renders without crashing', async () => {

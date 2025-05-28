@@ -10,10 +10,7 @@ import { act, screen } from '@testing-library/react';
 import { useParams } from 'react-router-dom';
 
 import {
-	createSoapAPIInterceptor,
 	FOLDERS,
-	populateFoldersStore,
-	setupTest
 } from '@zextras/carbonio-ui-commons';
 import {
 	generateConversationFromAPI,
@@ -23,6 +20,9 @@ import { SearchRequest, SearchResponse } from '../../../../../types';
 import { useSyncDataHandler } from '../../../../sidebar/commons/use-sync-data-handler';
 import { simulateReplyToSingleMessageConversation } from '../../tests/utils';
 import { ConversationList } from '../conversation-list';
+import { populateFoldersStore } from '@test-utils/store/folders';
+import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import { setupTest } from '@test-setup';
 
 jest.mock('react-router-dom', () => ({
 	...jest.requireActual('react-router-dom'),

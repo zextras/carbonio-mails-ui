@@ -10,9 +10,6 @@ import { act, screen, waitFor } from '@testing-library/react';
 
 import {
 	FOLDERS,
-	populateFoldersStore,
-	setupTest,
-	triggerLoadMore
 } from '@zextras/carbonio-ui-commons';
 import { populateConversationInEmailStore } from '../../../../../tests/generators/generateConversation';
 import {
@@ -20,6 +17,8 @@ import {
 	ConversationListComponentProps
 } from '../conversation-list-component';
 import { ConversationListItemComponent } from '../conversation-list-item-component';
+import { setupTest, triggerLoadMore } from '@test-setup';
+import { populateFoldersStore } from '@test-utils/store/folders';
 
 function setUpConversationList({
 	folderId,

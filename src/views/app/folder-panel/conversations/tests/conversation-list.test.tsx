@@ -11,13 +11,7 @@ import * as hooks from '@zextras/carbonio-shell-ui';
 import { useParams } from 'react-router-dom';
 
 import {
-	createSoapAPIInterceptor,
 	FOLDERS,
-	generateFolder,
-	populateFoldersStore,
-	setupTest,
-	triggerLoadMore,
-	within
 } from '@zextras/carbonio-ui-commons';
 import * as useSelection from '../../../../../hooks/use-selection';
 import { updateConversationsResultsLoadingStatus } from '../../../../../store/emails/store';
@@ -29,6 +23,10 @@ import {
 import { ConvActionRequest, SearchRequest, SearchResponse } from '../../../../../types';
 import { makeAllItemsVisible } from '../../../../settings/filters/tests/test-utils';
 import { ConversationList } from '../conversation-list';
+import { populateFoldersStore } from '@test-utils/store/folders';
+import { generateFolder } from '@test-utils/folders/folders-generator';
+import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import { within, setupTest, triggerLoadMore } from '@test-setup';
 
 const mockedUseSelection: ReturnType<typeof useSelection.useSelection> = {
 	selectAll: jest.fn(),

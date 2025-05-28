@@ -8,9 +8,11 @@ import React from 'react';
 import { screen } from '@testing-library/react';
 
 import * as folderHooks from '@zextras/carbonio-ui-commons';
-import { generateFolder, getUserAccount, setupTest } from '@zextras/carbonio-ui-commons';
 import { useBackupSearchStore } from '../../../store/backup-search/store';
 import { BackupSearchMessageListItem } from '../parts/backup-search-message-list-item';
+import { getUserAccount } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
+import { setupTest } from '@test-setup';
+import { generateFolder } from '@test-utils/folders/folders-generator';
 
 const deletedMessage = {
 	messageId: '1',

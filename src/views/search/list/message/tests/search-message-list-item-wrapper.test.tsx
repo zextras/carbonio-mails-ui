@@ -12,6 +12,7 @@ import * as storeModule from '../../../../../store/emails/store';
 import { populateMessagesInEmailStore } from '../../../../../tests/generators/generateMessage';
 import { MailMessage } from '../../../../../types';
 import { SearchMessageListItemWrapper } from '../search-message-list-item-wrapper';
+import { setupTest } from '@test-setup';
 
 describe('SearchMessageListItemWrapper', () => {
 	beforeEach(() => {

@@ -7,9 +7,12 @@
 import React from 'react';
 import { screen, waitFor } from '@testing-library/react';
 
-import { populateFoldersStore, setupTest, tags, useTags } from '@zextras/carbonio-ui-commons';
+import { useTags } from '@zextras/carbonio-ui-commons';
 import { populateConversationInEmailStore } from '../../../../../tests/generators/generateConversation';
 import { ConversationListItemCore } from '../conversation-list-item-core';
+import { tags } from '@test-utils/tags/tags';
+import { populateFoldersStore } from '@test-utils/store/folders';
+import { setupTest } from '@test-setup';
 
 jest.mock('../../../../../carbonio-ui-commons/store/zustand/tags', () => ({
 	useTags: jest.fn()

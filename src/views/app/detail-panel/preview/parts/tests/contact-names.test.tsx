@@ -11,6 +11,7 @@ import { useUserAccounts } from '@zextras/carbonio-shell-ui';
 
 import { Participant } from '../../../../../../types';
 import ContactName from '../contact-names';
+import { setupTest } from '@test-setup';
 
 jest.mock('@zextras/carbonio-shell-ui', () => ({
 	useUserAccounts: jest.fn()

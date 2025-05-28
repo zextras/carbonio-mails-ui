@@ -7,9 +7,10 @@
 import React from 'react';
 import { screen } from '@testing-library/react';
 
-import { FOLDERS, setupTest, useTags, ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-ui-commons';
+import { FOLDERS, useTags, ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-ui-commons';
 import { populateMessagesInEmailStore } from '../../../../../tests/generators/generateMessage';
 import { SearchMessageListItemCore } from '../search-message-list-item-core';
+import { setupTest } from '@test-setup';
 
 jest.mock('../../../../../carbonio-ui-commons/store/zustand/tags', () => ({
 	useTags: jest.fn()

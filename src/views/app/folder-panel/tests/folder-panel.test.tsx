@@ -8,9 +8,10 @@ import React from 'react';
 import { screen } from '@testing-library/react';
 import { useParams } from 'react-router-dom';
 
-import { FOLDERS, setupTest } from '@zextras/carbonio-ui-commons';
+import { FOLDERS } from '@zextras/carbonio-ui-commons';
 import { useIsMessageView } from '../../../search/search-view-hooks';
 import FolderPanel from '../../folder-panel';
+import { setupTest } from '@test-setup';
 
 jest.mock('../../../search/search-view-hooks', () => ({ useIsMessageView: jest.fn() }));
 jest.mock('react-router-dom', () => ({

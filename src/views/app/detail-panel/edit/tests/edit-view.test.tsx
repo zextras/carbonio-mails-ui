@@ -14,20 +14,10 @@ import { find, noop } from 'lodash';
 import { HttpResponse } from 'msw';
 
 import {
-	buildSoapErrorResponseBody,
-	createAPIInterceptor,
-	createFakeIdentity,
-	createSoapAPIInterceptor,
-	defaultBeforeAllTests,
 	FOLDERS,
-	generateSettings,
-	getEmptyMSWShareInfoResponse,
-	getMocksContext,
-	useBoard as mockedUseBoard,
 	ParticipantRole,
-	populateFoldersStore,
-	setupTest
 } from '@zextras/carbonio-ui-commons';
+
 import {
 	GetSignaturesRequest,
 	GetSignaturesResponse
@@ -57,6 +47,16 @@ import type {
 import { SoapSendMsgResponse } from '../../../../../types/soap/send-msg';
 import { EditView, EditViewProp } from '../edit-view';
 import { aFailingSaveDraft, aSuccessfullSaveDraft } from './utils/utils';
+import { useBoard as mockedUseBoard, useBoard } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
+import { createAPIInterceptor, createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import { buildSoapErrorResponseBody } from '@test-utils/utils/soap';
+import { getMocksContext } from '@test-utils/utils/mocks-context';
+import { generateSettings } from '@test-utils/settings/settings-generator';
+import { setupTest } from '@test-setup';
+import { defaultBeforeAllTests } from '@jest-setup';
+import { getEmptyMSWShareInfoResponse } from '@test-utils/network/msw/handle-get-share-info';
+import { createFakeIdentity } from '@test-utils/accounts/fakeAccounts';
+import { populateFoldersStore } from '@test-utils/store/folders';
 
 const CT_HTML = 'text/html' as const;
 const CT_PLAIN = 'text/plain' as const;
@@ -907,7 +907,7 @@ describe('Edit view', () => {
 					});
 
 					// Mock the board context
-					mockedUseBoard.mockImplementation(() => ({
+					useBoard.mockImplementation(() => ({
 						url: `${MAILS_ROUTE}/edit/${msg.id}?action=${EditViewActions.REPLY}`,
 						context: { editorId: msg.id, folderId: FOLDERS.INBOX },
 						title: ''

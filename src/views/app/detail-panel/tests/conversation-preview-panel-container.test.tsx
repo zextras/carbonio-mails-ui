@@ -12,6 +12,7 @@ import * as shell from '@zextras/carbonio-shell-ui';
 import { updateConversationStatus } from '../../../../store/emails/store';
 import { populateConversationInEmailStore } from '../../../../tests/generators/generateConversation';
 import { ConversationPreviewPanelContainer } from '../conversation-preview-panel-container';
+import { setupTest } from '@test-setup';
 
 describe('ConversationPreviewPanelContainer', () => {
 	const defaultTitle = 'test title';

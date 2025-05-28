@@ -10,9 +10,7 @@ import { useUserAccount } from '@zextras/carbonio-shell-ui';
 
 import {
 	FOLDERS,
-	ParticipantRole,
-	populateFoldersStore,
-	setupTest
+	ParticipantRole
 } from '@zextras/carbonio-ui-commons';
 import { populateConversationInEmailStore } from '../../../../../tests/generators/generateConversation';
 import {
@@ -20,6 +18,8 @@ import {
 	populateMessagesInEmailStore
 } from '../../../../../tests/generators/generateMessage';
 import { ParticipantsName } from '../participants-name';
+import { populateFoldersStore } from '@test-utils/store/folders';
+import { setupTest } from '@test-setup';
 
 describe('ParticipantsName component', () => {
 	it('renders participants string for inbox folder', async () => {

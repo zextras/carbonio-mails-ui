@@ -9,15 +9,15 @@ import { screen, waitFor } from '@testing-library/react';
 
 import {
 	FOLDERS,
-	populateFoldersStore,
-	setupTest,
-	tags,
 	useTags
 } from '@zextras/carbonio-ui-commons';
 import { API_REQUEST_STATUS } from '../../../../../constants';
 import { populateConversationInEmailStore } from '../../../../../tests/generators/generateConversation';
 import { useTagExist } from '../../../../../ui-actions/tag-actions';
 import { SearchConversationListItemCore } from '../search-conversation-list-item-core';
+import { tags } from '@test-utils/tags/tags';
+import { populateFoldersStore } from '@test-utils/store/folders';
+import { setupTest } from '@test-setup';
 
 jest.mock('../../../../../carbonio-ui-commons/store/zustand/tags', () => ({
 	useTags: jest.fn()

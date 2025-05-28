@@ -7,10 +7,12 @@
 import React from 'react';
 
 import { screen } from '@testing-library/react';
-import { previewContextMock, setupTest, useAppContext } from '@zextras/carbonio-ui-commons';
 
 import { getMessageById } from '../../../../../store/emails/store';
 import AttachmentsBlock from '../attachments-block';
+import { useAppContext } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
+import { setupTest } from '@test-setup';
+import { previewContextMock } from '@test-utils/carbonio-ui-preview';
 
 describe('attachments-block', () => {
 	test('carbonio-preview available, file is a pdf, tooltip says click to preview', async () => {

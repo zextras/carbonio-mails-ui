@@ -9,6 +9,7 @@ import React from 'react';
 import { screen } from '@testing-library/react';
 
 import { MailInfoDetailModal } from '../mail-info-detail-modal';
+import { setupTest } from '@test-setup';
 
 const signature = {
 	type: 'SMIME',

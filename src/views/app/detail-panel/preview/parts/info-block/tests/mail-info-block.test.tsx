@@ -9,13 +9,15 @@ import { useModal } from '@zextras/carbonio-design-system';
 import * as CarbonioShellUI from '@zextras/carbonio-shell-ui';
 import { HttpResponse } from 'msw';
 
-import { createAPIInterceptor, screen, setupTest } from '@zextras/carbonio-ui-commons';
 import {
 	useSmimeFeatureStore,
 	useSmimePasswordStore
 } from '../../../../../../../store/certificates/store';
 import { IncompleteMessage } from '../../../../../../../types';
 import { MailInfoBlock } from '../mail-info-block';
+import { setupTest } from '@test-setup';
+import { screen } from '@testing-library/dom';
+import { createAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 
 // Mock useModal hook
 jest.mock('@zextras/carbonio-design-system', () => ({

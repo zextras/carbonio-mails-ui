@@ -8,11 +8,12 @@ import React from 'react';
 import { screen } from '@testing-library/react';
 import { noop, times } from 'lodash';
 
-import { FOLDERS, setupTest } from '@zextras/carbonio-ui-commons';
+import { FOLDERS } from '@zextras/carbonio-ui-commons';
 import { setMessagesInEmailStore } from '../../../../../store/emails/store';
 import { generateMessage } from '../../../../../tests/generators/generateMessage';
 import { MessageListComponent, MessageListComponentProps } from '../message-list-component';
 import { MessageListItemComponent } from '../message-list-item-component';
+import { setupTest } from '@test-setup';
 
 describe.each`
 	type                     | isSearchModule

@@ -8,9 +8,9 @@ import React from 'react';
 import { act, screen } from '@testing-library/react';
 import { useTheme } from '@zextras/carbonio-design-system';
 
-import { setupHook, setupTest } from '@zextras/carbonio-ui-commons';
 import { getFolderPathForBreadcrumb } from '../../../../../helpers/folders';
 import { Breadcrumbs } from '../breadcrumbs';
+import { setupHook, setupTest } from '@test-setup';
 
 jest.mock('../../../../../helpers/folders', () => ({
 	getFolderPathForBreadcrumb: jest.fn()

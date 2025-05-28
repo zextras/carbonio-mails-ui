@@ -9,6 +9,7 @@ import React from 'react';
 import { screen } from '@testing-library/react';
 
 import { DistributionListIcon } from '../distribution-list-icon';
+import { setupTest } from '@test-setup';
 
 describe('DistributionListIcon', () => {
 	it('correctly renders the component', async () => {

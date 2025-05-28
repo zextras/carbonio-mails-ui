@@ -8,10 +8,12 @@ import React from 'react';
 import { act, screen, waitFor, within } from '@testing-library/react';
 import { map } from 'lodash';
 
-import { FOLDERS, setupTest, tags, useTagStore } from '@zextras/carbonio-ui-commons';
+import { FOLDERS, useTagStore } from '@zextras/carbonio-ui-commons';
 import { updateConversations } from '../../../../../store/emails/store';
 import { generateConversation } from '../../../../../tests/generators/generateConversation';
 import { ConversationsMultipleSelectionActions } from '../conversations-multiple-selection-actions';
+import { setupTest } from '@test-setup';
+import { tags } from '@test-utils/tags/tags';
 
 describe('ConversationsMultipleSelectionActions', () => {
 	describe('Mark as read action', () => {

@@ -9,6 +9,7 @@ import React from 'react';
 import { screen } from '@testing-library/react';
 
 import { MultipleSelectionActionsPanel } from '../multiple-selection-actions-panel';
+import { setupTest } from '@test-setup';
 
 describe('MultipleSelectionActionsPanel', () => {
 	let deselectAll: jest.Mock;

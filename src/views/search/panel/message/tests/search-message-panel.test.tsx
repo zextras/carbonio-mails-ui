@@ -5,14 +5,14 @@
  */
 
 import React from 'react';
-import { waitFor } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import { useParams } from 'react-router-dom';
 
-import { screen, setupTest } from '@zextras/carbonio-ui-commons';
 import { API_REQUEST_STATUS } from '../../../../../constants';
 import { setSearchResultsByMessage, updateMessageStatus } from '../../../../../store/emails/store';
 import { generateMessage } from '../../../../../tests/generators/generateMessage';
 import { SearchMessagePanel } from '../search-message-panel';
+import { setupTest } from '@test-setup';
 
 jest.mock('react-router-dom', () => ({
 	...jest.requireActual('react-router-dom'),

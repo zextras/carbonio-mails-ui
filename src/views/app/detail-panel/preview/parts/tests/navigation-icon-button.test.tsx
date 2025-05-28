@@ -5,8 +5,8 @@
  */
 
 import React from 'react';
-import { screen, setupTest } from '@zextras/carbonio-ui-commons';
 import { NavigationIconButton } from '../navigation-icon-button';
+import { screen, setupTest } from '@test-setup';
 
 describe('NavigationIconButton', () => {
 	test('renders correctly', () => {

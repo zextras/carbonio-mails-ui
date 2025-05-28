@@ -9,9 +9,10 @@ import { screen } from '@testing-library/react';
 import * as hooks from '@zextras/carbonio-shell-ui';
 import { removeRoute } from '@zextras/carbonio-shell-ui';
 
-import { generateSettings, setupTest } from '@zextras/carbonio-ui-commons';
 import { useBackupSearchStore } from '../../../store/backup-search/store';
 import { BackupSearchHeader } from '../parts/backup-search-header';
+import { generateSettings } from '@test-utils/settings/settings-generator';
+import { setupTest } from '@test-setup';
 
 describe('Backup search header', () => {
 	it('renders correctly queryParams with italian locale', () => {

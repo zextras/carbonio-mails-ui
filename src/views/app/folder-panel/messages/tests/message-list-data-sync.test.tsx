@@ -10,17 +10,16 @@ import { act, screen, within } from '@testing-library/react';
 import { useParams } from 'react-router-dom';
 
 import {
-	createSoapAPIInterceptor,
-	FOLDERS,
-	makeListItemsVisible,
-	populateFoldersStore,
-	setupTest
+	FOLDERS
 } from '@zextras/carbonio-ui-commons';
 import { generateMessageFromAPI } from '../../../../../tests/generators/api';
 import { SearchRequest, SearchResponse } from '../../../../../types';
 import { useSyncDataHandler } from '../../../../sidebar/commons/use-sync-data-handler';
 import { simulateReplyToSingleMessageConversation } from '../../tests/utils';
 import { MessageList } from '../message-list';
+import { populateFoldersStore } from '@test-utils/store/folders';
+import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import { makeListItemsVisible, setupTest } from '@test-setup';
 
 jest.mock('react-router-dom', () => ({
 	...jest.requireActual('react-router-dom'),

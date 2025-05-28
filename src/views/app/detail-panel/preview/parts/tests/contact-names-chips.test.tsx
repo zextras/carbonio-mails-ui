@@ -9,13 +9,14 @@ import { faker } from '@faker-js/faker';
 import { useSnackbar } from '@zextras/carbonio-design-system';
 import { omit } from 'lodash';
 
-import { ParticipantRoleType, screen, setupTest } from '@zextras/carbonio-ui-commons';
+import { ParticipantRoleType } from '@zextras/carbonio-ui-commons';
 import { Participant } from '../../../../../../types';
 import {
 	copyEmailToClipboard,
 	sendMsg
 } from '../../../../../../ui-actions/participant-displayer-actions';
 import { ContactNameChip, generateChipName } from '../contact-names-chips';
+import { screen, setupTest } from '@test-setup';
 
 jest.mock('../../../../../../ui-actions/participant-displayer-actions', () => ({
 	sendMsg: jest.fn(),

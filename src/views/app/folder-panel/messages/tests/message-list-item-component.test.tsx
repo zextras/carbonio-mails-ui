@@ -12,10 +12,7 @@ import { noop } from 'lodash';
 import type { Folder } from '@zextras/carbonio-ui-commons';
 import {
 	FOLDERS,
-	generateFolders,
-	tags as mockTags,
 	ParticipantRole,
-	setupTest,
 	useTagStore
 } from '@zextras/carbonio-ui-commons';
 import { FOLDERS_DESCRIPTORS } from '../../../../../constants';
@@ -24,6 +21,9 @@ import { ASSERTIONS } from '../../../../../tests/constants';
 import { generateMessage } from '../../../../../tests/generators/generateMessage';
 import type { MessageListItemProps } from '../../../../../types';
 import { MessageListItem } from '../message-list-item';
+import { generateFolders } from '@test-utils/folders/folders-generator';
+import { tags as mockTags } from '@test-utils/tags/tags';
+import { setupTest } from '@test-setup';
 
 describe.each`
 	type                     | isSearchModule

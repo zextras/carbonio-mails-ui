@@ -9,9 +9,10 @@ import React, { act } from 'react';
 import { faker } from '@faker-js/faker';
 import { screen } from '@testing-library/react';
 
-import { ParticipantRole, setupTest } from '@zextras/carbonio-ui-commons';
+import { ParticipantRole } from '@zextras/carbonio-ui-commons';
 import { generateMessage } from '../../../../../../tests/generators/generateMessage';
 import MessageContactList from '../message-contact-list';
+import { setupTest } from '@test-setup';
 
 describe('MessageContactList', () => {
 	const toParticipant = { type: ParticipantRole.TO, address: faker.internet.email() };

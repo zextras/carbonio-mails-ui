@@ -9,11 +9,7 @@ import { faker } from '@faker-js/faker';
 import { waitFor } from '@testing-library/react';
 
 import {
-	createSoapAPIInterceptor,
 	FOLDERS,
-	populateFoldersStore,
-	screen,
-	setupTest
 } from '@zextras/carbonio-ui-commons';
 import { MAILS_VIEW_LAYOUTS } from '../../../../../constants';
 import { setConversationsInEmailStore } from '../../../../../store/emails/store';
@@ -21,6 +17,9 @@ import { TESTID_SELECTORS } from '../../../../../tests/constants';
 import { generateConversation } from '../../../../../tests/generators/generateConversation';
 import { mockLayoutStorage } from '../../../../../tests/layouts-utils';
 import { PreviewPanelHeader } from '../preview-panel-header';
+import { populateFoldersStore } from '@test-utils/store/folders';
+import { screen, setupTest } from '@test-setup';
+import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 
 describe('PreviewPanelHeader', () => {
 	it('renders correctly', () => {

@@ -33,7 +33,7 @@ type DefaultBeforeAllTestsProps = {
 	onUnhandledRequest: 'warn' | 'error';
 };
 
-const defaultBeforeAllTests = (
+export const defaultBeforeAllTests = (
 	{ onUnhandledRequest }: DefaultBeforeAllTestsProps = { onUnhandledRequest: 'warn' }
 ): void => {
 	// Do not useFakeTimers with `whatwg-fetch` if using mocked server

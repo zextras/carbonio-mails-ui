@@ -11,17 +11,16 @@ import { AccountSettings } from '@zextras/carbonio-shell-ui';
 import { forEach, indexOf, noop, without } from 'lodash';
 
 import {
-	createSoapAPIInterceptor,
 	FOLDERS,
-	generateSettings,
-	screen,
-	setupTest
 } from '@zextras/carbonio-ui-commons';
 import { SORTING_DIRECTION, SORTING_OPTIONS } from '../../../../../constants';
 import { setMessagesInEmailStore, useMessageIndexSlice } from '../../../../../store/emails/store';
 import { generateMessage } from '../../../../../tests/generators/generateMessage';
 import { SearchRequest } from '../../../../../types';
 import { Breadcrumbs } from '../breadcrumbs';
+import { screen, setupTest } from '@test-setup';
+import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import { generateSettings } from '@test-utils/settings/settings-generator';
 
 function findStringsContainingRadiobutton(strings: Array<string>): Array<string> {
 	const resultArray = [] as Array<string>;

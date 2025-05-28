@@ -7,12 +7,6 @@
 import React from 'react';
 import { act } from '@testing-library/react';
 
-import {
-	createSoapAPIInterceptor,
-	getIntegratedFunction,
-	screen,
-	setupTest
-} from '@zextras/carbonio-ui-commons';
 import { addEditor, useEditorsStore } from '../../../../../../store/editor';
 import { setupEditorStore } from '../../../../../../tests/generators/editor-store';
 import {
@@ -22,6 +16,9 @@ import {
 	readyToBeSentEditorTestCase
 } from '../../../../../../tests/generators/editors';
 import { ToggleSmartLinkButton } from '../toggle-smart-link-button';
+import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import { getIntegratedFunction } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
+import { screen, setupTest } from '@test-setup';
 
 beforeEach(() => {
 	createSoapAPIInterceptor('SaveDraft');

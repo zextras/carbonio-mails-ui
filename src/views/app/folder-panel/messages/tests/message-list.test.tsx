@@ -10,16 +10,9 @@ import * as shell from '@zextras/carbonio-shell-ui';
 import { useParams } from 'react-router-dom';
 
 import {
-	createSoapAPIInterceptor,
 	FOLDERS,
-	generateFolder,
-	makeListItemsVisible,
 	ParticipantRole,
-	populateFoldersStore,
-	setupTest,
-	triggerLoadMore,
 	useFolderStore,
-	within
 } from '@zextras/carbonio-ui-commons';
 import * as useSelection from '../../../../../hooks/use-selection';
 import { TESTID_SELECTORS } from '../../../../../tests/constants';
@@ -27,6 +20,10 @@ import { generateCompleteMessageFromAPI } from '../../../../../tests/generators/
 import { FolderState, MsgActionRequest } from '../../../../../types';
 import { makeAllItemsVisible } from '../../../../settings/filters/tests/test-utils';
 import { MessageList } from '../message-list';
+import { populateFoldersStore } from '@test-utils/store/folders';
+import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import { within, setupTest, triggerLoadMore, makeListItemsVisible } from '@test-setup';
+import { generateFolder } from '@test-utils/folders/folders-generator';
 
 jest.mock('react-router-dom', () => ({
 	...jest.requireActual('react-router-dom'),

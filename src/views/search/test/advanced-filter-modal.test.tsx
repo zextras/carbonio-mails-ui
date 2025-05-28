@@ -10,14 +10,10 @@ import { screen, waitFor, within } from '@testing-library/react';
 import { UserEvent } from '@testing-library/user-event';
 import { format } from 'date-fns';
 
-import {
-	EDIT_ACTION,
-	generateMockContactInputItem,
-	mockContactInput,
-	setupTest
-} from '@zextras/carbonio-ui-commons';
 import { SearchQueryItem } from '../../../types';
 import { AdvancedFilterModal, AdvancedFilterModalProps } from '../advanced-filter-modal';
+import { setupTest } from '@test-setup';
+import { EDIT_ACTION, generateMockContactInputItem, mockContactInput } from '@test-utils/integrations/mock-contact-input';
 
 async function selectOption(
 	user: UserEvent,

@@ -6,7 +6,6 @@
 
 import { act, renderHook } from '@testing-library/react';
 
-import { createSoapAPIInterceptor, generateFolder } from '@zextras/carbonio-ui-commons';
 import * as searchSoapApi from '../../../../../api/search-soap-api';
 import { API_REQUEST_STATUS } from '../../../../../constants';
 import * as storeHooks from '../../../../../store/emails/store';
@@ -15,6 +14,8 @@ import {
 	generateConversationFromAPI
 } from '../../../../../tests/generators/api';
 import { useLoadMoreForConversationList } from '../conversation-list-hooks';
+import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import { generateFolder } from '@test-utils/folders/folders-generator';
 
 describe('ConversationListHooks', () => {
 	it('should load more results for the current folder', async () => {
