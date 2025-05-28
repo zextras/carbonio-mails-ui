@@ -5,10 +5,11 @@
  */
 
 import React from 'react';
+
 import { screen } from '@testing-library/react';
+import * as folderHooks from '@zextras/carbonio-ui-commons';
 import { useParams } from 'react-router-dom';
 
-import * as folderHooks from '@zextras/carbonio-ui-commons';
 import { useBackupSearchStore } from '../../../store/backup-search/store';
 import { DeletedMessageFromAPI, Folder } from '../../../types';
 import { BackupSearchPanel } from '../parts/backup-search-panel';

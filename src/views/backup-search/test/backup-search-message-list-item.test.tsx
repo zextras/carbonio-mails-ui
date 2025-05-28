@@ -5,14 +5,20 @@
  */
 
 import React from 'react';
-import { screen } from '@testing-library/react';
 
-import * as folderHooks from '@zextras/carbonio-ui-commons';
+import { screen } from '@testing-library/react';
+import { getFolder } from '@zextras/carbonio-ui-commons';
+
 import { useBackupSearchStore } from '../../../store/backup-search/store';
 import { BackupSearchMessageListItem } from '../parts/backup-search-message-list-item';
-import { getUserAccount } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
 import { setupTest } from '@test-setup';
+import { getUserAccount } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
 import { generateFolder } from '@test-utils/folders/folders-generator';
+
+jest.mock('@zextras/carbonio-ui-commons', () => ({
+	...jest.requireActual('@zextras/carbonio-ui-commons'),
+	getFolder: jest.fn()
+}));
 
 const deletedMessage = {
 	messageId: '1',
@@ -27,8 +33,11 @@ const deletedMessage = {
 };
 
 describe('Backup search list', () => {
+	beforeEach(() => {
+		jest.clearAllMocks();
+	});
+
 	it('should display To when sender is the owner', async () => {
-		jest.spyOn(folderHooks, 'getFolder').mockReturnValue(undefined);
 		(getUserAccount as jest.Mock).mockReturnValue({
 			name: 'francesco@example.com'
 		});
@@ -53,7 +62,7 @@ describe('Backup search list', () => {
 	});
 
 	it('should display inbox chip', async () => {
-		jest.spyOn(folderHooks, 'getFolder').mockReturnValue(generateFolder({ name: 'Inbox' }));
+		(getFolder as jest.Mock).mockReturnValue(generateFolder({ name: 'Inbox' }));
 
 		useBackupSearchStore.getState().setMessages([deletedMessage]);
 		const backupSearchStoreStateMessages = useBackupSearchStore.getState().messages;
@@ -73,8 +82,7 @@ describe('Backup search list', () => {
 	});
 
 	it('should not display the chip if no folder is found', async () => {
-		jest.spyOn(folderHooks, 'getFolder').mockReturnValue(undefined);
-
+		(getFolder as jest.Mock).mockReturnValue(undefined);
 		useBackupSearchStore.getState().setMessages([deletedMessage]);
 		const backupSearchStoreStateMessages = useBackupSearchStore.getState().messages;
 		const message = backupSearchStoreStateMessages['1'];
