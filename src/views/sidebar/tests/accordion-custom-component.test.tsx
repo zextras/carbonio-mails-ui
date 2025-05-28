@@ -128,4 +128,19 @@ describe('accordion-custom-component', () => {
 		expect(userRootItem).toBeInTheDocument();
 		expect(within(userRootItem).getByText(fullName)).toBeInTheDocument();
 	});
+
+	it('should display Drafts folder counter on shared Account', () => {
+		const identity = createFakeIdentity();
+		const sharedDraft = {
+			...generateFolderLink('100', '101', identity),
+			absFolderPath: '/Drafts',
+			id: FOLDERS.DRAFTS,
+			n: 87
+		};
+
+		setupTest(<AccordionCustomComponent item={sharedDraft} />);
+		screen.logTestingPlaygroundURL();
+
+		expect(screen.getByText(87)).toBeInTheDocument();
+	});
 });
