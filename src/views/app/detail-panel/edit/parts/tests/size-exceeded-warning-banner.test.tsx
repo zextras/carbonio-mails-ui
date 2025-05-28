@@ -5,6 +5,7 @@
  */
 
 import React from 'react';
+
 import { act } from '@testing-library/react';
 import * as hooks from '@zextras/carbonio-shell-ui';
 

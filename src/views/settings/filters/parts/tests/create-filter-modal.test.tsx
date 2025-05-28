@@ -10,8 +10,8 @@ import { act, screen, within } from '@testing-library/react';
 import { UserEvent } from '@testing-library/user-event';
 
 import CreateFilterModal from '../create-filter-modal';
-import { populateFoldersStore } from '@test-utils/store/folders';
 import { makeListItemsVisible, setupTest } from '@test-setup';
+import { populateFoldersStore } from '@test-utils/store/folders';
 
 const addAction = async (user: UserEvent): Promise<void> => {
 	await user.click(within(screen.getByTestId('actions-panel')).getByTestId('icon: PlusOutline'));
