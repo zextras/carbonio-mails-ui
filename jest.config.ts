@@ -6,6 +6,8 @@
 import { Config } from 'jest';
 
 const config: Config = {
+	testEnvironment: '<rootDir>/src/__test__/jsdom-extended.ts',
+	setupFilesAfterEnv: ['<rootDir>/jest-setup.ts'],
 	clearMocks: true,
 	collectCoverage: true,
 	collectCoverageFrom: [
@@ -30,15 +32,18 @@ const config: Config = {
 		'\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$':
 			'<rootDir>/__mocks__/fileMock.js',
 		uuid: require.resolve('uuid'),
-		'\\.(css|less)$': '<rootDir>/__mocks__/fileMock.js'
+		'\\.(css|less)$': '<rootDir>/__mocks__/fileMock.js',
+		'^@test-utils/(.*)$': '<rootDir>/src/__test__/mocks/$1',
+		'^@test-setup$': '<rootDir>/src/__test__/test-setup.tsx',
+		'^@jest-setup$': '<rootDir>/jest-setup.ts'
 	},
 	reporters: ['default', 'jest-junit'],
-	testEnvironment: '<rootDir>/src/__test__/jsdom-extended.ts',
 	testEnvironmentOptions: {
 		customExportConditions: ['']
 	},
+	transformIgnorePatterns: ['/node_modules/(?!@zextras/carbonio-ui-commons).+\\.js$'],
 	transform: {
-		'^.+\\.[t|j]sx?$': ['babel-jest', { configFile: './babel.config.jest.js' }]
+		'^.+\\.(ts|tsx|js|jsx)$': ['babel-jest', { configFile: './babel.config.jest.js' }]
 	}
 };
 
