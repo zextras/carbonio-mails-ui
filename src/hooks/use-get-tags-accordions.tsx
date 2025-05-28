@@ -85,9 +85,6 @@ export const TagLabel: FC<ItemType> = (props) => {
 			contextMenu
 			display="block"
 			width="fit"
-			// TODO: CO-2067 fix type
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-ignore
 			items={[createTag({ createModal, closeModal })]}
 		>
 			<Row mainAlignment="flex-start" padding={{ horizontal: 'large' }} takeAvailableSpace>
