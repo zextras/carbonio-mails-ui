@@ -9,6 +9,7 @@ import React from 'react';
 import { screen } from '@testing-library/react';
 
 import { FilterConditionsPanel } from '../filter-conditions-panel';
+import { setupTest } from '@test-setup';
 
 describe('Filter Condition Panel', () => {
 	const compProps = {

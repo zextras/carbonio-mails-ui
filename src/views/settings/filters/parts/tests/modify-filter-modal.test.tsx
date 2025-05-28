@@ -11,6 +11,7 @@ import { screen } from '@testing-library/react';
 
 import { Filter } from '../../../../../types';
 import { ModifyFilterModal } from '../modify-filter/modify-filter-modal';
+import { setupTest } from '@test-setup';
 
 describe('modify filter modal', () => {
 	it('should display modal with current saved actions', async () => {

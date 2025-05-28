@@ -7,7 +7,6 @@
 import { AccountSettings } from '@zextras/carbonio-shell-ui';
 import { useTranslation } from 'react-i18next';
 
-import { generateSettings, setupHook, useUserSettings } from '@zextras/carbonio-ui-commons';
 import { buildSignature } from '../../../../tests/generators/signatures';
 import { SignItemType } from '../../../../types';
 import {
@@ -15,6 +14,9 @@ import {
 	getNameLengthErrorMessageKey,
 	useSignatureSettings
 } from '../use-signature-settings';
+import { setupHook } from '@test-setup';
+import { useUserSettings } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
+import { generateSettings } from '@test-utils/settings/settings-generator';
 
 describe('useSignatureSettings', () => {
 	describe('getNameLengthErrorMessageKey', () => {

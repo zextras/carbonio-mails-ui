@@ -5,10 +5,12 @@
  */
 
 import React from 'react';
+
 import { screen } from '@testing-library/react';
 
-import { generateSettings, setupTest } from '@zextras/carbonio-ui-commons';
 import { DisplayMessagesSettings } from '../display-messages-settings';
+import { setupTest } from '@test-setup';
+import { generateSettings } from '@test-utils/settings/settings-generator';
 
 describe('Displaying messages settings', () => {
 	const { prefs: settingsObj } = generateSettings({

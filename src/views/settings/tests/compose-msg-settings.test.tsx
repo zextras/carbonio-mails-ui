@@ -10,6 +10,7 @@ import { act, screen, waitFor } from '@testing-library/react';
 
 import { UpdateSettingsProps } from '../../../types/settings';
 import ComposeMessage from '../compose-msg-settings';
+import { setupTest } from '@test-setup';
 
 jest.mock('@zextras/carbonio-shell-ui', () => ({
 	t: jest.fn((key) => key)

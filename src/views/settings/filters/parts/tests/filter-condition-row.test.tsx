@@ -9,6 +9,7 @@ import React from 'react';
 import { screen } from '@testing-library/react';
 
 import { FilterConditionRow } from '../filter-condition-row';
+import { setupTest } from '@test-setup';
 
 describe('Filter Condition Row', () => {
 	const compProps = {

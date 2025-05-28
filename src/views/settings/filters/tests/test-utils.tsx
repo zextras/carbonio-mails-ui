@@ -6,8 +6,8 @@
 
 import { act } from '@testing-library/react';
 
-import { makeListItemsVisible } from '@zextras/carbonio-ui-commons';
 import { Filter } from '../../../../types';
+import { makeListItemsVisible } from '@test-setup';
 
 export function mockFilter({
 	name,

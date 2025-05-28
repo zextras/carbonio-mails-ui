@@ -5,11 +5,13 @@
  */
 
 import React from 'react';
+
 import { act, screen } from '@testing-library/react';
 
-import { createSoapAPIInterceptor, setupTest } from '@zextras/carbonio-ui-commons';
 import { FilterTabs } from '../filter-tabs';
 import { mockFilter } from './test-utils';
+import { setupTest } from '@test-setup';
+import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 
 describe('FilterTabs', () => {
 	it('should display Incoming and Outgoing filters tab titles', async () => {

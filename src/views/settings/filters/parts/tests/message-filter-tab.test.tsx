@@ -15,6 +15,7 @@ import { Filter } from '../../../../../types';
 import { makeAllItemsVisible, mockFilter } from '../../tests/test-utils';
 import { getFiltermanager } from '../filter-manager';
 import { MessageFilterTab } from '../message-filter-tab';
+import { setupTest } from '@test-setup';
 
 jest.mock('@zextras/carbonio-design-system', () => ({
 	...jest.requireActual('@zextras/carbonio-design-system'),

@@ -5,19 +5,15 @@
  */
 
 import React from 'react';
+
 import { faker } from '@faker-js/faker';
 import { act, fireEvent } from '@testing-library/react';
 import { AccountSettings, AccountSettingsPrefs } from '@zextras/carbonio-shell-ui';
 import { times } from 'lodash';
 
-import {
-	generateSettings,
-	screen,
-	setupTest,
-	UserEvent,
-	within
-} from '@zextras/carbonio-ui-commons';
 import { SendersList, SendersListProps } from '../senders-list';
+import { setupTest, screen, UserEvent, within } from '@test-setup';
+import { generateSettings } from '@test-utils/settings/settings-generator';
 
 const SENDERS_LIST = 'senders-list';
 const FIND_TIMEOUT = 2000;
