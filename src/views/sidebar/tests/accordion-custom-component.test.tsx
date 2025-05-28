@@ -139,8 +139,21 @@ describe('accordion-custom-component', () => {
 		};
 
 		setupTest(<AccordionCustomComponent item={sharedDraft} />);
-		screen.logTestingPlaygroundURL();
 
 		expect(screen.getByText(87)).toBeInTheDocument();
+	});
+
+	it('should not display message counter on shared account Trash folder', () => {
+		const identity = createFakeIdentity();
+		const sharedDraft = {
+			...generateFolderLink('100', '101', identity),
+			absFolderPath: '/Drafts',
+			id: FOLDERS.TRASH,
+			n: 87
+		};
+
+		setupTest(<AccordionCustomComponent item={sharedDraft} />);
+
+		expect(screen.queryByText(87)).not.toBeInTheDocument();
 	});
 });
