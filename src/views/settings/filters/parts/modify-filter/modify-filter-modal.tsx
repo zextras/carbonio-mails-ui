@@ -13,19 +13,26 @@ import React, {
 	useState
 } from 'react';
 
-import { Checkbox, Container, Divider, Input, Padding, Row } from '@zextras/carbonio-design-system';
-import { BooleanString, useUserSettings } from '@zextras/carbonio-shell-ui';
-import ModalHeader from '@zextras/carbonio-ui-commons';
+import {
+	Checkbox,
+	Container,
+	Divider,
+	Input,
+	ModalHeader,
+	Padding,
+	Row
+} from '@zextras/carbonio-design-system';
+import { useUserSettings, BooleanString } from '@zextras/carbonio-shell-ui';
 import { forEach, isEqual, map, omit, reduce } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { v4 as uuidv4 } from 'uuid';
 
 import type {
-	AllFiltersTest,
-	ApiFilterAction,
 	Filter,
-	FilterActions,
-	FilterTest
+	ApiFilterAction,
+	AllFiltersTest,
+	FilterTest,
+	FilterActions
 } from '../../../../../types';
 import { capitalise } from '../../../../sidebar/utils';
 import { CreateFilterContext } from '../create-filter-context';
@@ -330,9 +337,6 @@ export const ModifyFilterModal: FC<ModifyFilterModalProps> = ({
 				maxHeight="100%"
 				style={{ overflowY: 'scroll', overflowX: 'hidden' }}
 			>
-				{/* TODO: CO-2067 fix type */}
-				{/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
-				{/* @ts-ignore */}
 				<ModalHeader title={modalTitle} onClose={onClose} />
 				<Input
 					label={`${t('settings.filter_name', 'Filter Name')}*`}
