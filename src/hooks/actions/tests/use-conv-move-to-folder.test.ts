@@ -3,15 +3,17 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+
 import { act } from 'react';
 
 import { faker } from '@faker-js/faker';
+import { FOLDERS } from '@zextras/carbonio-ui-commons';
 import { times } from 'lodash';
 
-import { FOLDERS, screen, setupHook } from '@zextras/carbonio-ui-commons';
 import { FOLDERS_DESCRIPTORS } from '../../../constants';
 import { TIMERS } from '../../../tests/constants';
 import { useConvMoveToFolderDescriptor, useConvMoveToFolderFn } from '../use-conv-move-to-folder';
+import { setupHook, screen } from '@test-setup';
 
 describe('useConvMoveToFolder', () => {
 	const conversationsId = times(faker.number.int({ max: 42 }), () =>

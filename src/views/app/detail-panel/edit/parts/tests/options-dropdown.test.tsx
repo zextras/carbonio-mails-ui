@@ -5,12 +5,13 @@
  */
 
 import React from 'react';
+
 import { act, screen } from '@testing-library/react';
 
-import { setupTest } from '@zextras/carbonio-ui-commons';
 import { generateNewMessageEditor } from '../../../../../../store/editor/editor-generators';
 import { setupEditorStore } from '../../../../../../tests/generators/editor-store';
 import { OptionsDropdown, OptionsDropdownProps } from '../options-dropdown';
+import { setupTest } from '@test-setup';
 
 const OPTION_DROPDOWN_ICON = 'options-dropdown-icon';
 const DROPDOWN_POPPER_LIST = 'dropdown-popper-list';

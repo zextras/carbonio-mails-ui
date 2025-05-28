@@ -6,12 +6,13 @@
 import { faker } from '@faker-js/faker';
 import { act } from '@testing-library/react';
 
-import { createSoapAPIInterceptor, setupHook } from '@zextras/carbonio-ui-commons';
 import { setupEditorStore } from '../../../../tests/generators/editor-store';
 import { generateEditorV2Case } from '../../../../tests/generators/editors';
 import { generateNewMessageEditor } from '../../editor-generators';
 import { useEditorText } from '../editor';
 import { addEditor, getEditor } from '../editors';
+import { setupHook } from '@test-setup';
+import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 
 describe('useEditorText', () => {
 	test('get the editor text', async () => {

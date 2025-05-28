@@ -5,12 +5,14 @@
  */
 import { faker } from '@faker-js/faker';
 import { act } from '@testing-library/react';
+import { FOLDERS } from '@zextras/carbonio-ui-commons';
 import { times } from 'lodash';
 
-import { createSoapAPIInterceptor, FOLDERS, setupHook } from '@zextras/carbonio-ui-commons';
 import { FOLDERS_DESCRIPTORS, TIMEOUTS } from '../../../constants';
 import { ConvActionRequest, ConvActionResponse } from '../../../types';
 import { useConvSetSpamDescriptor, useConvSetSpamFn } from '../use-conv-set-spam';
+import { setupHook } from '@test-setup';
+import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 
 describe('useConvSetSpam', () => {
 	describe('descriptor', () => {

@@ -5,10 +5,10 @@
  */
 import { faker } from '@faker-js/faker';
 
-import { setupHook } from '@zextras/carbonio-ui-commons';
 import { MAILS_VIEW_LAYOUTS, MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS } from '../../constants';
 import { mockLayoutStorage } from '../../tests/layouts-utils';
 import { useViewLayout } from '../use-view-layout';
+import { setupHook } from '@test-setup';
 
 describe('useViewLayout', () => {
 	it('should return an object with proper fields', () => {

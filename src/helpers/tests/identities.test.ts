@@ -4,14 +4,8 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { faker } from '@faker-js/faker';
+import { FOLDERS, getRootsMap, ParticipantRole } from '@zextras/carbonio-ui-commons';
 
-import {
-	FOLDERS,
-	getMocksContext,
-	getRootsMap,
-	ParticipantRole,
-	populateFoldersStore
-} from '@zextras/carbonio-ui-commons';
 import { generateMessage } from '../../tests/generators/generateMessage';
 import { getMessageOwnerAccountName } from '../folders';
 import {
@@ -21,6 +15,8 @@ import {
 	getMessageSenderAccount,
 	getMessageSenderAddress
 } from '../identities';
+import { populateFoldersStore } from '@test-utils/store/folders';
+import { getMocksContext } from '@test-utils/utils/mocks-context';
 
 describe('Message sender address', () => {
 	test('returns the address if sender is a participant of type FROM', () => {

@@ -6,15 +6,16 @@
 import { act } from 'react';
 
 import { faker } from '@faker-js/faker';
+import { FOLDERS } from '@zextras/carbonio-ui-commons';
 import { times } from 'lodash';
 
-import { FOLDERS, screen, setupHook } from '@zextras/carbonio-ui-commons';
 import { FOLDERS_DESCRIPTORS } from '../../../constants';
 import { TIMERS } from '../../../tests/constants';
 import {
 	useMsgDeletePermanentlyDescriptor,
 	useMsgDeletePermanentlyFn
 } from '../use-msg-delete-permanently';
+import { setupHook, screen } from '@test-setup';
 
 describe('useMsgDeletePermanently', () => {
 	const messagesId = times(faker.number.int({ max: 42 }), () =>

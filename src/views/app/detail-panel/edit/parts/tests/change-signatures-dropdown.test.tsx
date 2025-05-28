@@ -5,24 +5,24 @@
  */
 
 import React from 'react';
+
 import { act } from '@testing-library/react';
 import * as hooks from '@zextras/carbonio-shell-ui';
 import { getUserAccount } from '@zextras/carbonio-shell-ui';
 import { cloneDeep, noop } from 'lodash';
 import { HttpResponse } from 'msw';
 
-import {
-	createAPIInterceptor,
-	createSoapAPIInterceptor,
-	screen,
-	setupTest
-} from '@zextras/carbonio-ui-commons';
 import { addEditor } from '../../../../../../store/editor';
 import { generateNewMessageEditor } from '../../../../../../store/editor/editor-generators';
 import { setupEditorStore } from '../../../../../../tests/generators/editor-store';
 import { Signature } from '../../../../../../types';
 import { EditView, EditViewProp } from '../../edit-view';
 import { aSuccessfullSaveDraft } from '../../tests/utils/utils';
+import { setupTest, screen } from '@test-setup';
+import {
+	createAPIInterceptor,
+	createSoapAPIInterceptor
+} from '@test-utils/network/msw/create-api-interceptor';
 
 describe('Change signature while composing mail', () => {
 	/**

@@ -5,21 +5,19 @@
  */
 
 import React from 'react';
+
 import { act, screen, within } from '@testing-library/react';
 import { CreateSnackbarFn, useSnackbar } from '@zextras/carbonio-design-system';
+import { FOLDER_VIEW, ParticipantRole } from '@zextras/carbonio-ui-commons';
 import { times } from 'lodash';
 
-import {
-	createFakeIdentity,
-	createSoapAPIInterceptor,
-	FOLDER_VIEW,
-	ParticipantRole,
-	populateFoldersStore,
-	setupTest
-} from '@zextras/carbonio-ui-commons';
 import { generateMessage } from '../../tests/generators/generateMessage';
 import { RedirectMessageActionRequest } from '../../types';
 import RedirectMessageAction from '../redirect-message-action';
+import { setupTest } from '@test-setup';
+import { createFakeIdentity } from '@test-utils/accounts/fakeAccounts';
+import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import { populateFoldersStore } from '@test-utils/store/folders';
 
 const createSnackbar = (arg: any): CreateSnackbarFn => arg;
 const createSnackbarSpy = jest.fn(createSnackbar);

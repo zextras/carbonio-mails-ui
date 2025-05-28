@@ -3,9 +3,9 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { createSoapAPIInterceptor } from '@zextras/carbonio-ui-commons';
 import { SearchRequest } from '../../types';
 import { searchSoapApi } from '../search-soap-api';
+import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 
 describe('Search', () => {
 	it('should send dateDesc filter if readDesc', async () => {

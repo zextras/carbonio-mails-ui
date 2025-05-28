@@ -5,7 +5,7 @@
  */
 import { faker } from '@faker-js/faker';
 
-import { createFakeIdentity } from '@zextras/carbonio-ui-commons';
+import { createFakeIdentity } from '@test-utils/accounts/fakeAccounts';
 
 /**
  * Email with 1 PDF attachment

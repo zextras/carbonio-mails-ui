@@ -5,9 +5,9 @@
  */
 
 import React from 'react';
+
 import { screen } from '@testing-library/react';
 
-import { setupTest } from '@zextras/carbonio-ui-commons';
 import { MailGeneralInfoSubsection } from '../mail-general-info-subsection';
 
 describe('MailInfoSubsection', () => {

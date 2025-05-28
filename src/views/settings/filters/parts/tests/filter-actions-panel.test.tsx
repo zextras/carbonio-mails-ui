@@ -5,11 +5,12 @@
  */
 
 import React from 'react';
+
 import { screen, within } from '@testing-library/react';
 
-import { setupTest } from '@zextras/carbonio-ui-commons';
 import { FilterActionsProps } from '../../../../../types';
 import { FilterActionsPanel } from '../filter-actions-panel';
+import { setupTest } from '@test-setup';
 
 describe('FilterActionsPanel', () => {
 	it('should update actions when switching an existing action for another one', async () => {

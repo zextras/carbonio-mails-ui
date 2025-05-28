@@ -6,17 +6,15 @@
 import { act } from 'react';
 
 import { faker } from '@faker-js/faker';
+import { FOLDERS } from '@zextras/carbonio-ui-commons';
 import { times } from 'lodash';
 
-import {
-	createSoapAPIInterceptor,
-	FOLDERS,
-	populateFoldersStore,
-	setupHook
-} from '@zextras/carbonio-ui-commons';
 import { FOLDERS_DESCRIPTORS } from '../../../constants';
 import { MsgActionRequest, MsgActionResponse } from '../../../types';
 import { useMsgMoveToTrashDescriptor, useMsgMoveToTrashFn } from '../use-msg-move-to-trash';
+import { setupHook } from '@test-setup';
+import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import { populateFoldersStore } from '@test-utils/store/folders';
 
 describe('useMsgMoveToTrash', () => {
 	populateFoldersStore();

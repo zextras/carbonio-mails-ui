@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { createFakeIdentity } from '@zextras/carbonio-ui-commons';
+import { createFakeIdentity } from '@test-utils/accounts/fakeAccounts';
 
 /**
  * MIME formatted email with PDF attachment

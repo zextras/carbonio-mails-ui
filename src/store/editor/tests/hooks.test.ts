@@ -6,7 +6,6 @@
 
 import { act } from '@testing-library/react';
 
-import { setupHook } from '@zextras/carbonio-ui-commons';
 import { setupEditorStore } from '../../../tests/generators/editor-store';
 import { generateEditorV2Case } from '../../../tests/generators/editors';
 import {
@@ -24,6 +23,7 @@ import {
 	// useEditorSend
 	useEditorSubject
 } from '../hooks';
+import { setupHook } from '@test-setup';
 
 describe('all editor hooks', () => {
 	describe('adding, updating, removing editors', () => {

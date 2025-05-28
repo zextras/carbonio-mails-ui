@@ -3,11 +3,12 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+
 import { HttpResponse } from 'msw';
 
-import { createAPIInterceptor } from '@zextras/carbonio-ui-commons';
 import { useAdvancedAccountStore } from '../../store/advanced-account/store';
 import { advancedAccountApi } from '../advanced-account-api';
+import { createAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 
 const api = '/zx/login/v3/account';
 describe('advancedAccountAPI', () => {

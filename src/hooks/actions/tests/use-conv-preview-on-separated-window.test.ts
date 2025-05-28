@@ -6,8 +6,8 @@
 import { act } from 'react';
 
 import { faker } from '@faker-js/faker';
+import { FOLDERS } from '@zextras/carbonio-ui-commons';
 
-import { FOLDERS, populateFoldersStore, setupHook } from '@zextras/carbonio-ui-commons';
 import { FOCUS_MODE_MAIL_VIEW_ROUTE, FOCUS_MODE_ROUTE } from '../../../constants';
 import * as externalTabs from '../../../helpers/external-tabs';
 import { generateConversation } from '../../../tests/generators/generateConversation';
@@ -15,6 +15,8 @@ import {
 	useConvPreviewOnSeparatedWindowDescriptor,
 	useConvPreviewOnSeparatedWindowFn
 } from '../use-conv-preview-on-separated-window';
+import { setupHook } from '@test-setup';
+import { populateFoldersStore } from '@test-utils/store/folders';
 
 describe('useConvPreviewOnSeparatedWindow', () => {
 	const conv = generateConversation({ messageGenerationCount: faker.number.int({ max: 42 }) });

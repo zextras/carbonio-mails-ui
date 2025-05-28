@@ -4,18 +4,15 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { act } from '@testing-library/react';
+import { FOLDERS, useTagStore } from '@zextras/carbonio-ui-commons';
 import { find, forEach } from 'lodash';
 
-import {
-	createSoapAPIInterceptor,
-	FOLDERS,
-	setupHook,
-	useTagStore
-} from '@zextras/carbonio-ui-commons';
 import { FOLDERS_DESCRIPTORS } from '../../../constants';
 import { generateConversation } from '../../../tests/generators/generateConversation';
 import { ConvActionRequest } from '../../../types';
 import { useConvApplyTagDescriptor, useConvApplyTagSubDescriptors } from '../use-conv-apply-tag';
+import { setupHook } from '@test-setup';
+import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 
 const tagA = { id: '1', name: 'a', label: 'a', color: 3 };
 const tagB = { id: '2', name: 'b', label: 'b', color: 3 };

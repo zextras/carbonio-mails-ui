@@ -6,13 +6,13 @@
 
 import { waitFor } from '@testing-library/react';
 
-import { createSoapAPIInterceptor } from '@zextras/carbonio-ui-commons';
 import {
 	generateConversationFromAPI,
 	generateConvMessageFromAPI
 } from '../../tests/generators/api';
 import { GetConvResponse } from '../../types';
 import { getConvSoapApi } from '../get-conv-soap-api';
+import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 
 describe('getConvSoapApi', () => {
 	it('should fetch with the correct parameters', async () => {

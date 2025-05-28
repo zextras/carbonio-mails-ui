@@ -5,14 +5,15 @@
  */
 
 import React from 'react';
+
 import { screen } from '@testing-library/react';
 
-import { setupTest } from '@zextras/carbonio-ui-commons';
 import { API_REQUEST_STATUS } from '../../../../constants';
 import { useCompleteMessageOrFetch } from '../../../../store/emails/hooks/hooks';
 import { updateMessageStatus } from '../../../../store/emails/store';
 import { generateMessage } from '../../../../tests/generators/generateMessage';
 import { MessagePreviewPanel } from '../message-preview-panel';
+import { setupTest } from '@test-setup';
 
 jest.mock('../../../../store/emails/hooks/hooks');
 

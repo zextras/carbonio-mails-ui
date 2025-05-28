@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { createSoapAPIInterceptor } from '@zextras/carbonio-ui-commons';
 import { sendDeliveryReportSoapApi } from '../send-delivery-request-soap-api';
+import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 
 describe('sendDeliveryReportSoapApi', () => {
 	it('should call soapFetch with the correct parameters', async () => {

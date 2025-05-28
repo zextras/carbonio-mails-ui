@@ -5,15 +5,13 @@
  */
 
 import * as shellHooks from '@zextras/carbonio-shell-ui';
+import { ParticipantRole } from '@zextras/carbonio-ui-commons';
 
-import {
-	createSoapAPIInterceptor,
-	generateAccount,
-	ParticipantRole
-} from '@zextras/carbonio-ui-commons';
 import { MailsEditorV2, SaveDraftRequest } from '../../../../types';
 import { generateEditor } from '../../../editor/editor-generators';
 import { saveDraftEmailStoreAction } from '../save-draft-action';
+import { generateAccount } from '@test-utils/accounts/account-generator';
+import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 
 describe('saveDraftEmailStoreAction', () => {
 	describe('Reply-To', () => {

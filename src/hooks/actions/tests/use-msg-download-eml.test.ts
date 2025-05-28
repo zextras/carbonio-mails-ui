@@ -4,10 +4,12 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { FOLDERS, setupHook } from '@zextras/carbonio-ui-commons';
+import { FOLDERS } from '@zextras/carbonio-ui-commons';
+
 import { FOLDERS_DESCRIPTORS } from '../../../constants';
 import { generateMessage } from '../../../tests/generators/generateMessage';
 import { useMsgDownloadEmlDescriptor, useMsgDownloadEmlFn } from '../use-msg-download-eml';
+import { setupHook } from '@test-setup';
 
 describe('useMsgDownloadEml', () => {
 	const msg = generateMessage({ isComplete: true });

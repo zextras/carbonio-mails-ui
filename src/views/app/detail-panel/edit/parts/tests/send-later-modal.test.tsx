@@ -5,11 +5,12 @@
  */
 
 import React from 'react';
+
 import { screen } from '@testing-library/react';
 import { noop } from 'lodash';
 
-import { setupTest } from '@zextras/carbonio-ui-commons';
 import { SendLaterModal } from '../send-later-modal';
+import { setupTest } from '@test-setup';
 
 describe('send-later-modal', () => {
 	it('all elements of the component are visible', async () => {

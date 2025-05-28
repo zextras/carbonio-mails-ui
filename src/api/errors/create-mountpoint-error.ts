@@ -3,9 +3,8 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { TFunction } from 'i18next';
-
 import { GenericSoapApiError } from '@zextras/carbonio-ui-commons';
+import { TFunction } from 'i18next';
 
 export class CreateMountpointError extends GenericSoapApiError {
 	public static readonly FOLDER_ALREADY_EXISTS = 'mail.ALREADY_EXISTS';

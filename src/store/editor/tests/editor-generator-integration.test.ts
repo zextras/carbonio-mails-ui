@@ -6,10 +6,11 @@
 
 import * as shellHooks from '@zextras/carbonio-shell-ui';
 import { IdentityAttrs } from '@zextras/carbonio-shell-ui';
+import { FOLDERS, ParticipantRole } from '@zextras/carbonio-ui-commons';
 
-import { FOLDERS, generateAccount, ParticipantRole } from '@zextras/carbonio-ui-commons';
 import { generateMessage } from '../../../tests/generators/generateMessage';
 import { generateReplyAllMsgEditor } from '../editor-generators';
+import { generateAccount } from '@test-utils/accounts/account-generator';
 
 describe('Reply All', () => {
 	const outsider = 'someoneElse@test.com';

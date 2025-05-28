@@ -5,19 +5,15 @@
  */
 import { faker } from '@faker-js/faker';
 import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
+import { FOLDER_VIEW } from '@zextras/carbonio-ui-commons';
 
-import {
-	buildSoapErrorResponseBody,
-	createSoapAPIInterceptor,
-	FOLDER_VIEW,
-	screen,
-	setupHook,
-	within
-} from '@zextras/carbonio-ui-commons';
 import { CreateMountpointError } from '../../../../api/errors/create-mountpoint-error';
 import { CreateMountpointResponse } from '../../../../api/mount-shared-folder-soap-api';
 import { ISoapFolderObj } from '../../../../types';
 import { useAccept } from '../share-folder-actions';
+import { setupHook, within, screen } from '@test-setup';
+import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import { buildSoapErrorResponseBody } from '@test-utils/utils/soap';
 
 describe('share folder actions', () => {
 	it('should mount shared folder on accept', async () => {

@@ -4,10 +4,13 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { addBoard, FOLDERS, setupHook } from '@zextras/carbonio-ui-commons';
+import { FOLDERS } from '@zextras/carbonio-ui-commons';
+
 import { FOLDERS_DESCRIPTORS } from '../../../constants';
 import { generateMessage } from '../../../tests/generators/generateMessage';
 import { useMsgEditAsNewDescriptor, useMsgEditAsNewFn } from '../use-msg-edit-as-new';
+import { setupHook } from '@test-setup';
+import { addBoard } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
 
 describe('useMsgEditAsNew', () => {
 	const msg = generateMessage();

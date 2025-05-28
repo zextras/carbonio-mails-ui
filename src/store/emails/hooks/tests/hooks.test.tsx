@@ -10,7 +10,6 @@
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { cloneDeep, map } from 'lodash';
 
-import { createSoapAPIInterceptor } from '@zextras/carbonio-ui-commons';
 import * as getMsg from '../../../../api/get-msg-soap-api';
 import { API_REQUEST_STATUS, DEFAULT_API_DEBOUNCE_TIME } from '../../../../constants';
 import {
@@ -43,6 +42,7 @@ import {
 	useMessageStatus
 } from '../../store';
 import { useCompleteConversationOrFetch, useCompleteMessageOrFetch } from '../hooks';
+import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 
 function awaitDebounce(): void {
 	act(() => {

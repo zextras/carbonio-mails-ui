@@ -5,7 +5,6 @@
  */
 import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 
-import { buildSoapErrorResponseBody, createSoapAPIInterceptor } from '@zextras/carbonio-ui-commons';
 import {
 	applyFilterRulesSoapApi,
 	ApplyFilterRulesSoapRequest,
@@ -14,6 +13,8 @@ import {
 	composeMessagesIdSoapCriteria,
 	extractMessagesIdFromSoapResponse
 } from '../apply-filter-rules-soap-api';
+import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import { buildSoapErrorResponseBody } from '@test-utils/utils/soap';
 
 describe('composeMessagesIdCriteria', () => {
 	it('returns undefined if an undefined value is provided as parameter', () => {

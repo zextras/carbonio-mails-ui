@@ -7,19 +7,15 @@ import { act } from 'react';
 
 import { faker } from '@faker-js/faker';
 import { waitFor } from '@testing-library/react';
+import { FOLDER_VIEW, FOLDERS } from '@zextras/carbonio-ui-commons';
 
-import {
-	createSoapAPIInterceptor,
-	FOLDER_VIEW,
-	FOLDERS,
-	populateFoldersStore,
-	screen,
-	setupHook
-} from '@zextras/carbonio-ui-commons';
 import { FOLDERS_DESCRIPTORS } from '../../../constants';
 import { TIMERS } from '../../../tests/constants';
 import { makeAllItemsVisible } from '../../../views/settings/filters/tests/test-utils';
 import { useConvRestoreDescriptor, useConvRestoreFn } from '../use-conv-restore';
+import { setupHook, screen } from '@test-setup';
+import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import { populateFoldersStore } from '@test-utils/store/folders';
 
 describe('useConvRestore', () => {
 	const conversationId = faker.number.int({ max: 42000 }).toString();

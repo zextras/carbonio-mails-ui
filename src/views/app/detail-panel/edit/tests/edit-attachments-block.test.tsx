@@ -5,13 +5,14 @@
  */
 
 import React from 'react';
+
 import { screen } from '@testing-library/react';
 
-import { setupTest } from '@zextras/carbonio-ui-commons';
 import { addEditor } from '../../../../../store/editor';
 import { setupEditorStore } from '../../../../../tests/generators/editor-store';
 import { generateEditorV2Case } from '../../../../../tests/generators/editors';
 import { EditAttachmentsBlock } from '../edit-attachments-block';
+import { setupTest } from '@test-setup';
 
 describe('Attachments visualization', () => {
 	const setLargeFileUploadInfoBannerVisible = jest.fn();

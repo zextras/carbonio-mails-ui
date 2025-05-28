@@ -5,14 +5,16 @@
  */
 
 import React from 'react';
+
 import { act, screen } from '@testing-library/react';
 
-import { createSoapAPIInterceptor, setupTest } from '@zextras/carbonio-ui-commons';
 import { updateMessages } from '../../../store/emails/store';
 import { generateCompleteMessageFromAPI } from '../../../tests/generators/api';
 import { generateMessage } from '../../../tests/generators/generateMessage';
 import { GetMsgRequest, GetMsgResponse, MailMessage } from '../../../types';
 import { HtmlMessageRenderer } from '../html-message-renderer';
+import { setupTest } from '@test-setup';
+import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 
 describe('HTML message renderer', () => {
 	describe('Search Module', () => {

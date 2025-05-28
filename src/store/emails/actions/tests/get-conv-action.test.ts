@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { createSoapAPIInterceptor } from '@zextras/carbonio-ui-commons';
 import {
 	generateConversationFromAPI,
 	generateConvMessageFromAPI
@@ -12,6 +11,7 @@ import {
 import { GetConvResponse } from '../../../../types/soap/get-conv';
 import { updateConversations, updateMessages } from '../../store';
 import { getConvEmailStoreAction } from '../get-conv-action';
+import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 
 jest.mock('../../store', () => ({
 	...jest.requireActual('../../store'),

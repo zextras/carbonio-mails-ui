@@ -5,9 +5,9 @@
  */
 
 import React from 'react';
+
 import { render, screen, waitFor } from '@testing-library/react';
 
-import { setupTest } from '@zextras/carbonio-ui-commons';
 import * as storeModule from '../../../../../store/emails/store';
 import { populateMessagesInEmailStore } from '../../../../../tests/generators/generateMessage';
 import { MailMessage } from '../../../../../types';

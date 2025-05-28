@@ -5,21 +5,21 @@
  */
 
 import React from 'react';
+
 import { faker } from '@faker-js/faker';
 import { forEach, reduce, times } from 'lodash';
 
-import {
-	getIntegratedFunction,
-	screen,
-	setupTest,
-	useIntegratedFunction
-} from '@zextras/carbonio-ui-commons';
 import { getEditor } from '../../../../../../store/editor';
 import { generateNewMessageEditor } from '../../../../../../store/editor/editor-generators';
 import { TESTID_SELECTORS } from '../../../../../../tests/constants';
 import { setupEditorStore } from '../../../../../../tests/generators/editor-store';
 import { FileNode } from '../../edit-utils-hooks/use-upload-from-files';
 import { AddAttachmentsDropdown } from '../add-attachments-dropdown';
+import { setupTest, screen } from '@test-setup';
+import {
+	getIntegratedFunction,
+	useIntegratedFunction
+} from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
 
 type FilesNode = { id: string; name: string; size: number; mime_type: string };
 type FilesUploadResult = { attachmentId: string };

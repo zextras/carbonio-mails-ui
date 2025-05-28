@@ -7,7 +7,6 @@
 import React from 'react';
 
 import { screen } from '@testing-library/react';
-import { setupTest } from '@zextras/carbonio-ui-commons';
 
 import { RecipientsCertificateUploadModal } from '../recipients-certificate-upload-modal';
 

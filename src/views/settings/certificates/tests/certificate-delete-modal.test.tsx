@@ -5,9 +5,9 @@
  */
 
 import React from 'react';
+
 import { screen } from '@testing-library/react';
 
-import { setupTest } from '@zextras/carbonio-ui-commons';
 import CertificateDeleteModal from '../certificate-delete-modal';
 
 describe('CertificateDeleteModal', () => {

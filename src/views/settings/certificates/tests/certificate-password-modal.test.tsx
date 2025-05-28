@@ -5,9 +5,9 @@
  */
 
 import React from 'react';
+
 import { act, screen } from '@testing-library/react';
 
-import { setupTest } from '@zextras/carbonio-ui-commons';
 import { CertificatePasswordModal } from '../certificate-password-modal';
 
 jest.mock('../../../../api/create-password-api', () => ({

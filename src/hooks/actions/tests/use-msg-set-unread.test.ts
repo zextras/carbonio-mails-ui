@@ -6,12 +6,14 @@
 import { act } from 'react';
 
 import { faker } from '@faker-js/faker';
+import { FOLDERS } from '@zextras/carbonio-ui-commons';
 import { times } from 'lodash';
 
-import { createSoapAPIInterceptor, FOLDERS, setupHook } from '@zextras/carbonio-ui-commons';
 import { FOLDERS_DESCRIPTORS } from '../../../constants';
 import { MsgActionRequest, MsgActionResponse } from '../../../types';
 import { useMsgSetUnreadDescriptor, useMsgSetUnreadFn } from '../use-msg-set-unread';
+import { setupHook } from '@test-setup';
+import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 
 describe('useMsgSetUnread', () => {
 	const ids = times(faker.number.int({ max: 42 }), () =>

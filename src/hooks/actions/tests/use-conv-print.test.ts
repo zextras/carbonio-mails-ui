@@ -5,12 +5,14 @@
  */
 
 import { act } from '@testing-library/react';
+import { FOLDERS } from '@zextras/carbonio-ui-commons';
 
-import { createSoapAPIInterceptor, FOLDERS, setupHook } from '@zextras/carbonio-ui-commons';
 import { FOLDERS_DESCRIPTORS } from '../../../constants';
 import { generateConversation } from '../../../tests/generators/generateConversation';
 import { NormalizedConversation } from '../../../types';
 import { useConvPrintDescriptor, useConvPrintFn } from '../use-conv-print';
+import { setupHook } from '@test-setup';
+import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 
 describe('useConvPrint', () => {
 	describe('Descriptor', () => {

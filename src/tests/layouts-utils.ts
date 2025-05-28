@@ -3,7 +3,6 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { useLocalStorage } from '@zextras/carbonio-ui-commons';
 import {
 	LOCAL_STORAGE_LAYOUT,
 	LOCAL_STORAGE_SPLIT_LAYOUT_ORIENTATION,
@@ -13,6 +12,7 @@ import {
 } from '../constants';
 import { Geometry } from '../hooks/use-resize';
 import { MailsListLayout, MailsSplitLayoutOrientation } from '../views/folder-view';
+import { useLocalStorage } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
 
 export const mockLayoutStorage = ({
 	layout = MAILS_VIEW_LAYOUTS.SPLIT,

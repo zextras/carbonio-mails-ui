@@ -14,8 +14,8 @@ import {
 	MAILS_VIEW_LAYOUTS,
 	MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS
 } from '../constants';
-import type { MailsListLayout, MailsSplitLayoutOrientation } from '../views/folder-view';
 import type { Geometry } from './use-resize';
+import type { MailsListLayout, MailsSplitLayoutOrientation } from '../views/folder-view';
 
 export type UseViewLayoutResult = {
 	readonly currentLayout: MailsListLayout;

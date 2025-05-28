@@ -8,19 +8,15 @@ import { act } from 'react';
 
 import { faker } from '@faker-js/faker';
 import { fireEvent } from '@testing-library/react';
+import { FOLDER_VIEW, FOLDERS } from '@zextras/carbonio-ui-commons';
 import { times } from 'lodash';
 
-import {
-	createSoapAPIInterceptor,
-	FOLDER_VIEW,
-	FOLDERS,
-	populateFoldersStore,
-	screen,
-	setupHook
-} from '@zextras/carbonio-ui-commons';
 import { FOLDERS_DESCRIPTORS } from '../../../constants';
 import { MsgActionRequest, MsgActionResponse } from '../../../types';
 import { useConvMoveToTrashDescriptor, useConvMoveToTrashFn } from '../use-conv-move-to-trash';
+import { setupHook, screen } from '@test-setup';
+import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import { populateFoldersStore } from '@test-utils/store/folders';
 
 describe('useConMoveToTrash', () => {
 	populateFoldersStore({ view: FOLDER_VIEW.message });

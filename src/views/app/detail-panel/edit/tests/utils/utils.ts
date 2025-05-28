@@ -3,8 +3,8 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { createSoapAPIInterceptor } from '@zextras/carbonio-ui-commons';
 import { SaveDraftRequest, SaveDraftResponse, SoapMailMessage } from '../../../../../../types';
+import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 
 export function aSuccessfullSaveDraft(): Promise<SaveDraftRequest> {
 	const msg: SoapMailMessage = {

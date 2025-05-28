@@ -4,9 +4,9 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { createSoapAPIInterceptor } from '@zextras/carbonio-ui-commons';
 import { GetMsgRequest } from '../../types';
 import { getMsgSoapApi } from '../get-msg-soap-api';
+import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 
 describe('GetMsg', () => {
 	it('should send max parameter if present', async () => {

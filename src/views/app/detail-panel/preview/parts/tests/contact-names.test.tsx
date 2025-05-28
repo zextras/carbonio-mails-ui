@@ -5,10 +5,10 @@
  */
 
 import React from 'react';
+
 import { screen } from '@testing-library/react';
 import { useUserAccounts } from '@zextras/carbonio-shell-ui';
 
-import { setupTest } from '@zextras/carbonio-ui-commons';
 import { Participant } from '../../../../../../types';
 import ContactName from '../contact-names';
 

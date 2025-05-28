@@ -7,12 +7,14 @@ import { act } from 'react';
 
 import { faker } from '@faker-js/faker';
 import * as hooks from '@zextras/carbonio-shell-ui';
+import { FOLDERS } from '@zextras/carbonio-ui-commons';
 import { times } from 'lodash';
 
-import { FOLDERS, generateSettings, screen, setupHook } from '@zextras/carbonio-ui-commons';
 import { FOLDERS_DESCRIPTORS } from '../../../constants';
 import { TIMERS } from '../../../tests/constants';
 import { useMsgMoveToFolderDescriptor, useMsgMoveToFolderFn } from '../use-msg-move-to-folder';
+import { setupHook, screen } from '@test-setup';
+import { generateSettings } from '@test-utils/settings/settings-generator';
 
 const settings = generateSettings({
 	prefs: {

@@ -1,4 +1,5 @@
 /* eslint-disable testing-library/prefer-user-event */
+
 /*
  * SPDX-FileCopyrightText: 2024 Zextras <https://www.zextras.com>
  *
@@ -8,16 +9,18 @@ import { act } from 'react';
 
 import { faker } from '@faker-js/faker';
 import { fireEvent } from '@testing-library/react';
+import { FOLDERS } from '@zextras/carbonio-ui-commons';
 import { times } from 'lodash';
 
-import { createSoapAPIInterceptor, FOLDERS, screen, setupHook } from '@zextras/carbonio-ui-commons';
 import { FOLDERS_DESCRIPTORS } from '../../../constants';
 import { TIMERS } from '../../../tests/constants';
-import { ConvActionRequest } from '../../../types/soap/conv-action';
+import { ConvActionRequest } from '../../../types';
 import {
 	useConvDeletePermanentlyDescriptor,
 	useConvDeletePermanentlyFn
 } from '../use-conv-delete-permanently';
+import { setupHook, screen } from '@test-setup';
+import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 
 describe('useConvDeletePermanently', () => {
 	describe('Descriptor', () => {

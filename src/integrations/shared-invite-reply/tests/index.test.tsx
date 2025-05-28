@@ -5,11 +5,12 @@
  */
 
 import React from 'react';
+
 import { screen } from '@testing-library/react';
 
-import { setupTest } from '@zextras/carbonio-ui-commons';
 import { generateMessage } from '../../../tests/generators/generateMessage';
 import SharedCalendarResponse from '../index';
+import { setupTest } from '@test-setup';
 
 describe('SharedCalendarResponse component', () => {
 	it('should use a non-ambiguous name for the folder', async () => {

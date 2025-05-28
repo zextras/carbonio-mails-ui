@@ -5,11 +5,13 @@
  */
 import { act } from 'react';
 
-import { FOLDERS, screen, setupHook } from '@zextras/carbonio-ui-commons';
+import { FOLDERS } from '@zextras/carbonio-ui-commons';
+
 import { FOLDERS_DESCRIPTORS } from '../../../constants';
 import { TIMERS } from '../../../tests/constants';
 import { generateMessage } from '../../../tests/generators/generateMessage';
 import { useMsgRedirectDescriptor, useMsgRedirectFn } from '../use-msg-redirect';
+import { setupHook, screen } from '@test-setup';
 
 describe('useMsgRedirect', () => {
 	const msg = generateMessage();

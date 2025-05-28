@@ -9,7 +9,6 @@ import React, { act } from 'react';
 
 import { screen } from '@testing-library/react';
 
-import { setupTest } from '@zextras/carbonio-ui-commons';
 import { Filter } from '../../../../../types';
 import { ModifyFilterModal } from '../modify-filter/modify-filter-modal';
 

@@ -5,16 +5,13 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import { populateFoldersStore } from '@test-utils/store/folders';
+import { tags as mockTags } from '@test-utils/tags/tags';
+import { buildSoapErrorResponseBody } from '@test-utils/utils/soap';
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 
-import {
-	buildSoapErrorResponseBody,
-	FOLDERS,
-	tags as mockTags,
-	populateFoldersStore,
-	useTags
-} from '@zextras/carbonio-ui-commons';
+import { FOLDERS, useTags } from '@zextras/carbonio-ui-commons';
 import { omit } from 'lodash';
 import { CONVACTIONS } from '../../../../../commons/utilities';
 import { API_REQUEST_STATUS } from '../../../../../constants';

@@ -8,9 +8,10 @@ import { act } from 'react';
 import { faker } from '@faker-js/faker';
 import { times } from 'lodash';
 
-import { createSoapAPIInterceptor, setupHook } from '@zextras/carbonio-ui-commons';
 import { ConvActionRequest } from '../../../types';
 import { useConvSetUnflagDescriptor, useConvSetUnflagFn } from '../use-conv-set-unflag';
+import { setupHook } from '@test-setup';
+import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 
 describe('useConvSetUnflag', () => {
 	describe('Descriptor', () => {

@@ -5,10 +5,11 @@
  */
 
 import React from 'react';
+
 import { screen } from '@testing-library/react';
 
-import { setupTest } from '@zextras/carbonio-ui-commons';
 import { TextStyler } from '../text-styler';
+import { setupTest } from '@test-setup';
 
 describe('TextStyler', () => {
 	it('displays a regular font weight if the bold attribute is not set', () => {

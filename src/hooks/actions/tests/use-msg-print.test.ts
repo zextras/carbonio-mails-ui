@@ -5,12 +5,14 @@
  */
 
 import { act } from '@testing-library/react';
+import { FOLDERS } from '@zextras/carbonio-ui-commons';
 
-import { createSoapAPIInterceptor, FOLDERS, setupHook } from '@zextras/carbonio-ui-commons';
 import { FOLDERS_DESCRIPTORS } from '../../../constants';
 import { generateMessage } from '../../../tests/generators/generateMessage';
 import { MailMessage } from '../../../types';
 import { useMsgPrintDescriptor, useMsgPrintFn } from '../use-msg-print';
+import { setupHook } from '@test-setup';
+import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 
 describe('useMsgPrintDescripto', () => {
 	const msg = generateMessage({ isComplete: true });

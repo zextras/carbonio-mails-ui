@@ -5,9 +5,9 @@
  */
 
 import React from 'react';
+
 import { screen } from '@testing-library/react';
 
-import { setupTest } from '@zextras/carbonio-ui-commons';
 import { MAIL_SENSITIVITY_HEADER } from '../../../../../../../constants';
 import { MailSensitivityIcon } from '../mail-sensitivity-icon';
 

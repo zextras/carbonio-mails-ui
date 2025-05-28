@@ -4,17 +4,15 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { getUserAccount } from '@zextras/carbonio-shell-ui';
-
 import {
 	FOLDER_VIEW,
 	FOLDERS,
 	getFolder,
 	getFoldersMap,
 	getLinksArray,
-	getMocksContext,
-	getRootsMap,
-	populateFoldersStore
+	getRootsMap
 } from '@zextras/carbonio-ui-commons';
+
 import { NO_ACCOUNT_NAME } from '../../constants';
 import { generateMessage } from '../../tests/generators/generateMessage';
 import {
@@ -30,6 +28,8 @@ import {
 	isTrash,
 	isTrashed
 } from '../folders';
+import { populateFoldersStore } from '@test-utils/store/folders';
+import { getMocksContext } from '@test-utils/utils/mocks-context';
 
 describe('Folder id', () => {
 	test('with zid', () => {

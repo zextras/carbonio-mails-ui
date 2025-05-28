@@ -4,9 +4,10 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { FOLDERS, generateFolder, OnDropActionProps } from '@zextras/carbonio-ui-commons';
+import { FOLDERS, OnDropActionProps } from '@zextras/carbonio-ui-commons';
 
 import { handleDragEnter } from '../utils';
+import { generateFolder } from '@test-utils/folders/folders-generator';
 
 describe('handleDragEnter', () => {
 	const folder = generateFolder({

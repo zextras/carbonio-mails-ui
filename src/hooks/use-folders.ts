@@ -6,9 +6,9 @@
 
 import { useMemo } from 'react';
 
+import { Folder, FOLDERS, getRootsArray, useRootsArray } from '@zextras/carbonio-ui-commons';
 import { sortBy } from 'lodash';
 
-import { Folder, FOLDERS, getRootsArray, useRootsArray } from '@zextras/carbonio-ui-commons';
 import { getFolderIdParts } from '../helpers/folders';
 
 /**

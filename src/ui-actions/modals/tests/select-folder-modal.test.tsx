@@ -5,21 +5,19 @@
  */
 
 import React from 'react';
+
 import { faker } from '@faker-js/faker';
 import { screen } from '@testing-library/react';
 import { t } from '@zextras/carbonio-shell-ui';
+import { Folder, RootFolder } from '@zextras/carbonio-ui-commons';
 
-import {
-	createSoapAPIInterceptor,
-	Folder,
-	populateFoldersStore,
-	RootFolder,
-	setupTest
-} from '@zextras/carbonio-ui-commons';
 import { folderActionSoapApi } from '../../../api/folder-action-soap-api';
 import { FOLDER_ACTIONS } from '../../../commons/utilities';
 import { FolderActionResponse, SoapFolderAction } from '../../../types';
 import { SelectFolderModal } from '../select-folder-modal';
+import { setupTest } from '@test-setup';
+import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import { populateFoldersStore } from '@test-utils/store/folders';
 
 const folderToMove: Folder = {
 	id: 'ce25dc9b-8be2-48ea-acb1-340f724f6352:1933',

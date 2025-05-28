@@ -5,10 +5,11 @@
  */
 
 import React from 'react';
+
 import { useTheme } from '@zextras/carbonio-design-system';
 
-import { screen, setupHook, setupTest } from '@zextras/carbonio-ui-commons';
 import { Spinner } from '../spinner';
+import { setupTest, screen, setupHook } from '@test-setup';
 
 describe('Spinner', () => {
 	it('renders the spinner', () => {

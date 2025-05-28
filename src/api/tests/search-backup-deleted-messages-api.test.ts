@@ -6,8 +6,8 @@
 
 import { HttpResponse } from 'msw';
 
-import { createAPIInterceptor } from '@zextras/carbonio-ui-commons';
 import { searchBackupDeletedMessagesApi } from '../search-backup-deleted-messages-api';
+import { createAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 
 describe('search backup deleted messages', () => {
 	it('should return the correct response when status is 200', async () => {

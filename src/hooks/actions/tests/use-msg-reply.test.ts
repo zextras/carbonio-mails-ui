@@ -4,10 +4,13 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { addBoard, FOLDERS, setupHook } from '@zextras/carbonio-ui-commons';
+import { FOLDERS } from '@zextras/carbonio-ui-commons';
+
 import { FOLDERS_DESCRIPTORS } from '../../../constants';
 import { generateMessage } from '../../../tests/generators/generateMessage';
 import { useMsgReplyDescriptor, useMsgReplyFn } from '../use-msg-reply';
+import { setupHook } from '@test-setup';
+import { addBoard } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
 
 describe('useMsgReply', () => {
 	const msg = generateMessage();

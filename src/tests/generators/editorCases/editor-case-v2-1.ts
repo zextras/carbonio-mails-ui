@@ -6,9 +6,9 @@
 
 import { faker } from '@faker-js/faker';
 
-import { getMocksContext } from '@zextras/carbonio-ui-commons';
 import { EditViewActions } from '../../../constants';
 import { MailsEditorV2 } from '../../../types';
+import { getMocksContext } from '@test-utils/utils/mocks-context';
 
 const FAKE_MESSAGE_ID = '11215';
 

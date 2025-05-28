@@ -8,7 +8,6 @@ import { act } from 'react';
 
 import { renderHook } from '@testing-library/react';
 
-import { createSoapAPIInterceptor } from '@zextras/carbonio-ui-commons';
 import * as searchSoapApi from '../../../../../api/search-soap-api';
 import { API_REQUEST_STATUS } from '../../../../../constants';
 import * as storeHooks from '../../../../../store/emails/store';
@@ -17,6 +16,7 @@ import {
 	generateCompleteMessageFromAPI
 } from '../../../../../tests/generators/api';
 import { useLoadMoreForMessageList } from '../message-list-hooks';
+import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 
 describe('useLoadMoreForMessagesSlice', () => {
 	it('should load more results and append messages to the slice', async () => {

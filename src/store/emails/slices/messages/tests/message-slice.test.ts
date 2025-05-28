@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { act, renderHook } from '@testing-library/react';
+import { useFolderStore } from '@zextras/carbonio-ui-commons';
 
-import { generateFolder, useFolderStore } from '@zextras/carbonio-ui-commons';
 import { generateMessage } from '../../../../../tests/generators/generateMessage';
 import {
 	appendMessagesToMessagesSlice,
@@ -21,6 +21,7 @@ import {
 } from '../../../store';
 import { POPULATED_ITEMS_SLICE_INITIAL_STATE } from '../../populated-items/populated-items-slice';
 import { MESSAGE_INDEX_SLICE_INITIAL_STATE } from '../messages-slice';
+import { generateFolder } from '@test-utils/folders/folders-generator';
 
 const { usePopulatedItemsSlice } = getUseEmailStoreAndHooksForTesting();
 

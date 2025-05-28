@@ -7,7 +7,6 @@
 
 import { DefaultBodyType, http, HttpResponse } from 'msw';
 
-import { getSetupServer } from '@zextras/carbonio-ui-commons';
 import {
 	SoapConversation,
 	SoapIncompleteMessage,
@@ -15,6 +14,7 @@ import {
 	SoapMailMessagePart,
 	SoapMailParticipant
 } from '../../types';
+import { getSetupServer } from '@jest-setup';
 
 export function generateMessagePartFromAPI(
 	params: Partial<SoapMailMessagePart> = {}

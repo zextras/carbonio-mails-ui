@@ -6,7 +6,6 @@
 
 import { HttpResponse } from 'msw';
 
-import { createAPIInterceptor } from '@zextras/carbonio-ui-commons';
 import { Certificate } from '../../../../../types/certificates/certificates';
 
 export const createAPIInterceptorToGetPersonalCertificates = (res?: Certificate[]): void => {

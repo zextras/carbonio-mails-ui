@@ -5,9 +5,9 @@
  */
 
 import React from 'react';
+
 import { act, screen, waitFor } from '@testing-library/react';
 
-import { setupTest } from '@zextras/carbonio-ui-commons';
 import { checkExistEncryptionPassword } from '../../../../api/check-exist-password-api';
 import { useSmimePasswordStore } from '../../../../store/certificates/store';
 import CertificatesView from '../certificates-view';

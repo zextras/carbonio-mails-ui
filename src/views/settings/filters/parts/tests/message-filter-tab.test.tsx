@@ -10,7 +10,6 @@ import { screen, waitFor, within } from '@testing-library/react';
 import userEvent, { UserEvent } from '@testing-library/user-event';
 import { useSnackbar } from '@zextras/carbonio-design-system';
 
-import { setupTest } from '@zextras/carbonio-ui-commons';
 import { FilterRulesAPIResponse } from '../../../../../api/get-filters';
 import { Filter } from '../../../../../types';
 import { makeAllItemsVisible, mockFilter } from '../../tests/test-utils';

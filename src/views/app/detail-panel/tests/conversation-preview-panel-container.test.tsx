@@ -5,10 +5,10 @@
  */
 
 import React from 'react';
+
 import { act, screen } from '@testing-library/react';
 import * as shell from '@zextras/carbonio-shell-ui';
 
-import { setupTest } from '@zextras/carbonio-ui-commons';
 import { updateConversationStatus } from '../../../../store/emails/store';
 import { populateConversationInEmailStore } from '../../../../tests/generators/generateConversation';
 import { ConversationPreviewPanelContainer } from '../conversation-preview-panel-container';

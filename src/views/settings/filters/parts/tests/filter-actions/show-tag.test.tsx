@@ -5,9 +5,9 @@
  */
 
 import React from 'react';
+
 import { screen, within } from '@testing-library/react';
 
-import { setupTest } from '@zextras/carbonio-ui-commons';
 import { ShowTag } from '../../filter-actions/show-tag';
 
 const BLACK = '#000000';

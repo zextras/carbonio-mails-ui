@@ -5,10 +5,11 @@
  */
 
 import React from 'react';
+
 import { act, screen } from '@testing-library/react';
 
-import { setupTest } from '@zextras/carbonio-ui-commons';
 import { ApplyFilterModal } from './apply-filter-modal';
+import { setupTest } from '@test-setup';
 
 describe('Apply Filter Modal', () => {
 	test('should render the modal', async () => {
