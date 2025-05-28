@@ -8,7 +8,7 @@ import React from 'react';
 
 import { act, screen, within } from '@testing-library/react';
 import { useSnackbar } from '@zextras/carbonio-design-system';
-import * as folderHooks from '@zextras/carbonio-ui-commons';
+import { useRootsArray } from '@zextras/carbonio-ui-commons';
 
 import { Filter, type Folder } from '../../../../types';
 import { IncomingFiltersTab } from '../incoming-filters-tab';
@@ -20,6 +20,11 @@ import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-int
 jest.mock('@zextras/carbonio-design-system', () => ({
 	...jest.requireActual('@zextras/carbonio-design-system'),
 	useSnackbar: jest.fn()
+}));
+
+jest.mock('@zextras/carbonio-ui-commons', () => ({
+	...jest.requireActual('@zextras/carbonio-ui-commons'),
+	useRootsArray: jest.fn()
 }));
 
 describe('Incoming Filters', () => {
@@ -93,7 +98,14 @@ describe('Incoming Filters', () => {
 		});
 
 		it('should add folder chip when a folder is selected', async () => {
-			mockFoldersToReturnASingleFolder(TEST_FOLDER_NAME);
+			(useRootsArray as jest.Mock).mockReturnValue(
+				rootFolderWith([
+					generateFolder({
+						name: TEST_FOLDER_NAME,
+						absFolderPath: `/${TEST_FOLDER_NAME}`
+					})
+				])
+			);
 
 			const filters = [mockFilter({ name: 'Filter 1', active: true })];
 			const getIncomingFiltersInterceptor = createGetIncomingFiltersInterceptor(filters);
@@ -116,7 +128,14 @@ describe('Incoming Filters', () => {
 		});
 
 		it('should "apply" filters and show the snackbar related to the process started when confirming folder', async () => {
-			mockFoldersToReturnASingleFolder(TEST_FOLDER_NAME);
+			(useRootsArray as jest.Mock).mockReturnValue(
+				rootFolderWith([
+					generateFolder({
+						name: TEST_FOLDER_NAME,
+						absFolderPath: `/${TEST_FOLDER_NAME}`
+					})
+				])
+			);
 
 			const filters = [mockFilter({ name: 'Filter 1', active: true })];
 			const getIncomingFiltersInterceptor = createGetIncomingFiltersInterceptor(filters);
@@ -175,14 +194,4 @@ function rootFolderWith(children: Array<Folder>): Array<Folder> {
 			depth: 0
 		}
 	];
-}
-function mockFoldersToReturnASingleFolder(folderName: string): void {
-	jest.spyOn(folderHooks, 'useRootsArray').mockReturnValue(
-		rootFolderWith([
-			generateFolder({
-				name: folderName,
-				absFolderPath: `/${folderName}`
-			})
-		])
-	);
 }
