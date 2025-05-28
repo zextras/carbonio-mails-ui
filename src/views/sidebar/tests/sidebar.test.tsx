@@ -5,26 +5,22 @@
  */
 
 import React from 'react';
+
 import { act, screen, waitFor } from '@testing-library/react';
 import { useSnackbar } from '@zextras/carbonio-design-system';
 import * as hooks from '@zextras/carbonio-shell-ui';
+import { FolderActionsType, FOLDERS } from '@zextras/carbonio-ui-commons';
 
-import * as shellMock from '@zextras/carbonio-ui-commons';
-import {
-	createSoapAPIInterceptor,
-	FolderActionsType,
-	FOLDERS,
-	generateFolder,
-	makeListItemsVisible,
-	populateFoldersStore,
-	setupTest,
-	useLocalStorage
-} from '@zextras/carbonio-ui-commons';
 import { MAIL_APP_ID, MAILS_ROUTE } from '../../../constants';
 import { setMessagesInEmailStore } from '../../../store/emails/store';
 import { generateMessage } from '../../../tests/generators/generateMessage';
 import { MsgActionRequest, SoapFolderAction } from '../../../types';
 import Sidebar from '../sidebar';
+import { makeListItemsVisible, setupTest } from '@test-setup';
+import { getCurrentRoute, useLocalStorage } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
+import { generateFolder } from '@test-utils/folders/folders-generator';
+import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import { populateFoldersStore } from '@test-utils/store/folders';
 
 jest.mock('@zextras/carbonio-design-system', () => ({
 	...jest.requireActual('@zextras/carbonio-design-system'),
@@ -38,7 +34,7 @@ function fakeCounter(): { count: number; setCount: (value: number) => void } {
 	return { count, setCount };
 }
 describe('Sidebar', () => {
-	shellMock.getCurrentRoute.mockReturnValue({
+	getCurrentRoute.mockReturnValue({
 		route: MAILS_ROUTE,
 		id: MAIL_APP_ID,
 		app: MAIL_APP_ID

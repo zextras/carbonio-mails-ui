@@ -5,14 +5,15 @@
  */
 
 import React from 'react';
-import { screen, waitFor } from '@testing-library/react';
+
+ import {waitFor } from '@testing-library/react';
 import { useParams } from 'react-router-dom';
 
 import { API_REQUEST_STATUS } from '../../../../../constants';
 import { setSearchResultsByMessage, updateMessageStatus } from '../../../../../store/emails/store';
 import { generateMessage } from '../../../../../tests/generators/generateMessage';
 import { SearchMessagePanel } from '../search-message-panel';
-import { setupTest } from '@test-setup';
+import { setupTest, screen } from '@test-setup';
 
 jest.mock('react-router-dom', () => ({
 	...jest.requireActual('react-router-dom'),

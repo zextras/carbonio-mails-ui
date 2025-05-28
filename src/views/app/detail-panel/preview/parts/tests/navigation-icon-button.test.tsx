@@ -5,6 +5,7 @@
  */
 
 import React from 'react';
+
 import { NavigationIconButton } from '../navigation-icon-button';
 import { screen, setupTest } from '@test-setup';
 

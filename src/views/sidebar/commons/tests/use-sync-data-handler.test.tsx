@@ -5,22 +5,15 @@
  */
 
 import { act, renderHook, waitFor } from '@testing-library/react';
-import { http } from 'msw';
-
 import {
 	FOLDERS,
 	folderWorker,
-	generateFolder,
-	getSetupServer,
-	handleGetFolderRequest,
-	handleGetShareInfoRequest,
-	populateFoldersStore,
-	setupHook,
 	tagsWorker,
 	useFolderStore,
-	useNotify,
 	useTagStore
 } from '@zextras/carbonio-ui-commons';
+import { http } from 'msw';
+
 import { normalizeConversations } from '../../../../normalizations/normalize-conversation';
 import {
 	getUseEmailStoreAndHooksForTesting,
@@ -53,6 +46,13 @@ import {
 	mockSoapRefresh
 } from '../../tests/test-helpers';
 import { useSyncDataHandler } from '../use-sync-data-handler';
+import { getSetupServer } from '@jest-setup';
+import { setupHook } from '@test-setup';
+import { useNotify } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
+import { generateFolder } from '@test-utils/folders/folders-generator';
+import { handleGetFolderRequest } from '@test-utils/network/msw/handle-get-folder';
+import { handleGetShareInfoRequest } from '@test-utils/network/msw/handle-get-share-info';
+import { populateFoldersStore } from '@test-utils/store/folders';
 
 const UNREAD = 'u';
 const READ = '';

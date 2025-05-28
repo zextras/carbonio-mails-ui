@@ -5,22 +5,19 @@
  */
 
 import React from 'react';
-import { screen, waitFor } from '@testing-library/react';
 
+import { screen, waitFor } from '@testing-library/react';
 import {
 	Folder,
 	FOLDER_VIEW,
 	FOLDERS,
-	generateFolder,
 	getFolder,
 	getFoldersArrayByRoot,
 	getFoldersMap,
 	getRootsMap,
-	makeListItemsVisible,
-	populateFoldersStore,
-	setupTest,
 	useFolderStore
 } from '@zextras/carbonio-ui-commons';
+
 import {
 	getFolderOwnerAccountName,
 	getFoldersArray,
@@ -30,6 +27,9 @@ import {
 	isTrashed
 } from '../../../../helpers/folders';
 import { FolderSelector, FolderSelectorProps } from '../folder-selector';
+import { makeListItemsVisible, setupTest } from '@test-setup';
+import { generateFolder } from '@test-utils/folders/folders-generator';
+import { populateFoldersStore } from '@test-utils/store/folders';
 
 describe('Folder selector', () => {
 	test('The selector is visible', () => {

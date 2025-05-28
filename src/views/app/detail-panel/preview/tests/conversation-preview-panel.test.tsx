@@ -5,6 +5,7 @@
  */
 
 import React from 'react';
+
 import { waitFor } from '@testing-library/react';
 
 import { updateConversations, updateMessages } from '../../../../../store/emails/store';

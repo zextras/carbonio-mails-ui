@@ -5,9 +5,9 @@
  */
 
 import React from 'react';
+
 import { MailAuthenticationHeaderIcon } from '../mail-authentication-header-icon';
-import { setupTest } from '@test-setup';
-import { screen } from '@testing-library/dom';
+import { setupTest, screen } from '@test-setup';
 
 const authenticationHeaders = {
 	spf: { value: 'spf-value', pass: true },

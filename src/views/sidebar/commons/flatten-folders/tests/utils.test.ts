@@ -4,9 +4,9 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { generateFolder } from '@zextras/carbonio-ui-commons';
 import { Folder } from '../../../../../types';
 import { flattenAndFilterFoldersWithCap } from '../utils';
+import { generateFolder } from '@test-utils/folders/folders-generator';
 
 function generateFolderFunction(name: string, n: number, depth: number): Folder {
 	if (depth >= 3) {

@@ -5,17 +5,14 @@
  */
 
 import React from 'react';
-import { screen } from '@testing-library/react';
 
-import {
-	Folder,
-	FOLDERS,
-	getFolder,
-	populateFoldersStore,
-	setupTest
-} from '@zextras/carbonio-ui-commons';
+import { screen } from '@testing-library/react';
+import { Folder, FOLDERS, getFolder } from '@zextras/carbonio-ui-commons';
+
 import { FolderActionWrapper } from '../folder-action-wrapper';
 import { useFolderActions } from '../use-folder-actions';
+import { setupTest } from '@test-setup';
+import { populateFoldersStore } from '@test-utils/store/folders';
 
 jest.mock('../use-folder-actions', () => ({
 	useFolderActions: jest.fn()

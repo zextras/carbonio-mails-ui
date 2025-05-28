@@ -8,7 +8,7 @@ import React, { act } from 'react';
 import { renderHook, waitFor } from '@testing-library/react';
 import { useModal } from '@zextras/carbonio-design-system';
 import { t, useAppContext } from '@zextras/carbonio-shell-ui';
-import { FOLDERS, FolderActionsType, Folder, generateFolder } from '@zextras/carbonio-ui-commons';
+import { FOLDERS, FolderActionsType, Folder } from '@zextras/carbonio-ui-commons';
 
 import { folderActionSoapApi } from '../../../api/folder-action-soap-api';
 import { setMessagesInEmailStore } from '../../../store/emails/store';
@@ -21,6 +21,7 @@ import { EmptyModal } from '../empty-modal';
 import { NewModal } from '../new-modal';
 import { SharesInfoModal } from '../shares-info-modal';
 import { useFolderActions } from '../use-folder-actions';
+import { generateFolder } from '@test-utils/folders/folders-generator';
 
 jest.mock('@zextras/carbonio-design-system', () => ({
 	...jest.requireActual('@zextras/carbonio-design-system'),

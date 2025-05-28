@@ -5,8 +5,11 @@
  */
 
 import React from 'react';
-import { screen, setupTest, ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-ui-commons';
+
+import { ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-ui-commons';
+
 import NameInputRow from '../name-input';
+import { setupTest, screen } from '@test-setup';
 
 describe('NameInputRow', () => {
 	const inputValue = 'Test Folder';

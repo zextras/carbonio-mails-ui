@@ -9,17 +9,13 @@ import React from 'react';
 import { faker } from '@faker-js/faker';
 import { act, screen, within } from '@testing-library/react';
 import { CreateSnackbarFn, useSnackbar } from '@zextras/carbonio-design-system';
-import {
-	createSoapAPIInterceptor,
-	Folder,
-	FOLDERS,
-	getFolder,
-	populateFoldersStore,
-	setupTest
-} from '@zextras/carbonio-ui-commons';
+import { Folder, FOLDERS, getFolder } from '@zextras/carbonio-ui-commons';
 
 import * as shareFolderModule from '../../../api/share-folder-soap-api';
 import EditPermissionsModal from '../edit-permissions-modal';
+import { setupTest } from '@test-setup';
+import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import { populateFoldersStore } from '@test-utils/store/folders';
 
 const createSnackbar = (arg: any): CreateSnackbarFn => arg;
 const createSnackbarSpy = jest.fn(createSnackbar);
