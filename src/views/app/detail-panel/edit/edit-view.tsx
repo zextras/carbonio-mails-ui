@@ -15,7 +15,7 @@ import {
 	useModal
 } from '@zextras/carbonio-design-system';
 import { t, useIsCarbonioCE } from '@zextras/carbonio-shell-ui';
-import { filter, map } from 'lodash';
+import { filter, map, some } from 'lodash';
 
 import { checkSubjectAndAttachment } from './check-subject-attachment';
 import DropZoneAttachment from './dropzone-attachment';
@@ -58,11 +58,13 @@ import {
 	useEditorsStore,
 	useEditorIsSmimeSign,
 	useEditorIdentityId,
-	useEditorIsSmimeEncrypt
+	useEditorIsSmimeEncrypt,
+	useEditorToRecipients
 } from '../../../../store/editor';
 import { EditViewClosingReasons } from '../../../../types';
 import { updateEditorWithSmartLinks } from '../../../../ui-actions/utils';
 import { EnterPasswordModal } from '../../../settings/certificates/enter-password-modal';
+import { isValidEmail } from '../../../../carbonio-ui-commons/helpers/email-parser';
 
 export type EditViewProp = {
 	editorId: string;
@@ -137,6 +139,13 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 	const { smimePassword } = useSmimePasswordStore();
 	const isCarbonioCE = useIsCarbonioCE();
 	const { isSmimeEnabled } = useSmimeFeatureStore();
+
+	const { toRecipients } = useEditorToRecipients(editorId);
+
+	const invalidEmailsPresent = useMemo(
+		() => some(toRecipients, (recipient) => !isValidEmail(recipient.address)),
+		[toRecipients]
+	);
 
 	useEffect(() => {
 		if (!draftId) saveDraft();
@@ -584,7 +593,8 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 								isMailSizeWarning ||
 								!sendAllowedStatus?.allowed ||
 								isConvertingToSmartLink ||
-								!draftId
+								!draftId ||
+								invalidEmailsPresent
 							}
 							tooltip={sendAllowedStatus?.reason ?? ''}
 							isLoading={isConvertingToSmartLink}
