@@ -12,9 +12,14 @@ import {
 	ContactInputItem,
 	ContactInputProps,
 	DefaultContactInput,
-	EDIT_ACTION_ID
+	EDIT_ACTION_ID,
+	useContactInput
 } from '@zextras/carbonio-ui-commons';
-import * as contactInput from '@zextras/carbonio-ui-commons';
+
+jest.mock('@zextras/carbonio-ui-commons', () => ({
+	...jest.requireActual('@zextras/carbonio-ui-commons'),
+	useContactInput: jest.fn()
+}));
 
 function generateMockedContactInput(
 	valueToAdd?: ContactInputItem
@@ -42,9 +47,7 @@ function generateMockedContactInput(
 }
 
 export function mockContactInput({ valueToAdd }: { valueToAdd?: ContactInputItem } = {}): void {
-	jest
-		.spyOn(contactInput, 'useContactInput')
-		.mockReturnValue(generateMockedContactInput(valueToAdd));
+	(useContactInput as jest.Mock).mockReturnValue(generateMockedContactInput(valueToAdd));
 }
 export const generateMockContactInputItem = (): ContactInputItem => ({
 	id: '1',
