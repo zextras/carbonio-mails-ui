@@ -30,6 +30,18 @@ const aFolderWithoutSharePermission = (folder: Partial<Folder> = {}): Folder => 
 	acl: undefined
 });
 
+const aSharedFolder = (folder: Partial<Folder> = {}): Folder => ({
+	...generateFolder(folder),
+	acl: {
+		grant: [
+			{
+				perm: 'r',
+				gt: 'all'
+			}
+		]
+	}
+});
+
 describe('edit-modal', () => {
 	test('edit the folder excepting the system folders', async () => {
 		const closeModal = jest.fn();
@@ -366,6 +378,41 @@ describe('edit-modal', () => {
 			name: /label\.edit/i
 		});
 		expect(editButton).toBeEnabled();
+	});
+
+	describe('Shared folder', () => {
+		it('should display "Sharing of this folder" panel acl is present', async () => {
+			const acl = {
+				grant: [
+					{
+						zid: '123',
+						d: 'sharedTo@test.com',
+						perm: 'r',
+						gt: 'all' as const
+					}
+				]
+			};
+			createSoapAPIInterceptor('GetFolder', {
+				folder: [
+					{
+						acl
+					}
+				]
+			});
+			const folder = {
+				...generateFolder({ name: 'Test' }),
+				acl
+			};
+
+			setupTest(<EditModal onClose={jest.fn()} folder={folder} />, {});
+
+			expect(await screen.findByText('label.shares_folder_edit')).toBeVisible();
+			expect(await screen.findByText('label.revoke')).toBeVisible();
+			expect(await screen.findByText('label.resend')).toBeVisible();
+			expect(
+				await screen.findByText('sharedTo@test.com - share.options.share_calendar_role.viewer')
+			).toBeVisible();
+		});
 	});
 
 	describe('Folder name input', () => {
