@@ -10,9 +10,7 @@ import * as hooks from '@zextras/carbonio-shell-ui';
 import { AccountSettings } from '@zextras/carbonio-shell-ui';
 import { forEach, indexOf, noop, without } from 'lodash';
 
-import {
-	FOLDERS,
-} from '@zextras/carbonio-ui-commons';
+import { FOLDERS } from '@zextras/carbonio-ui-commons';
 import { SORTING_DIRECTION, SORTING_OPTIONS } from '../../../../../constants';
 import { setMessagesInEmailStore, useMessageIndexSlice } from '../../../../../store/emails/store';
 import { generateMessage } from '../../../../../tests/generators/generateMessage';

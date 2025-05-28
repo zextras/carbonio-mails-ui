@@ -6,7 +6,7 @@
 
 import React from 'react';
 
- import {waitFor } from '@testing-library/react';
+import { waitFor } from '@testing-library/react';
 import { useParams } from 'react-router-dom';
 
 import { API_REQUEST_STATUS } from '../../../../../constants';

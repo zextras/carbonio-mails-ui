@@ -7,10 +7,7 @@
 import React from 'react';
 import { screen, waitFor } from '@testing-library/react';
 
-import {
-	FOLDERS,
-	useTags
-} from '@zextras/carbonio-ui-commons';
+import { FOLDERS, useTags } from '@zextras/carbonio-ui-commons';
 import { API_REQUEST_STATUS } from '../../../../../constants';
 import { populateConversationInEmailStore } from '../../../../../tests/generators/generateConversation';
 import { useTagExist } from '../../../../../ui-actions/tag-actions';

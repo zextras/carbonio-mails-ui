@@ -10,11 +10,7 @@ import { fireEvent, screen, waitFor } from '@testing-library/react';
 import { noop } from 'lodash';
 
 import type { Folder } from '@zextras/carbonio-ui-commons';
-import {
-	FOLDERS,
-	ParticipantRole,
-	useTagStore
-} from '@zextras/carbonio-ui-commons';
+import { FOLDERS, ParticipantRole, useTagStore } from '@zextras/carbonio-ui-commons';
 import { FOLDERS_DESCRIPTORS } from '../../../../../constants';
 import { setMessagesInEmailStore } from '../../../../../store/emails/store';
 import { ASSERTIONS } from '../../../../../tests/constants';

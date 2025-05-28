@@ -10,10 +10,7 @@ import { act, fireEvent, screen, waitFor } from '@testing-library/react';
 import { noop } from 'lodash';
 import * as reactRouterDom from 'react-router-dom';
 
-import {
-	FOLDERS,
-	ParticipantRole,
-} from '@zextras/carbonio-ui-commons';
+import { FOLDERS, ParticipantRole } from '@zextras/carbonio-ui-commons';
 import { API_REQUEST_STATUS, FOLDERS_DESCRIPTORS } from '../../../../../constants';
 import { useConvPreviewOnSeparatedWindowFn } from '../../../../../hooks/actions/use-conv-preview-on-separated-window';
 import {

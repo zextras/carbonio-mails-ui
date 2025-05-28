@@ -8,9 +8,7 @@ import React, { act } from 'react';
 import { screen, waitFor } from '@testing-library/react';
 import { AccountSettings } from '@zextras/carbonio-shell-ui';
 
-import {
-	FOLDERS,
-} from '@zextras/carbonio-ui-commons';
+import { FOLDERS } from '@zextras/carbonio-ui-commons';
 import { CONVACTIONS } from '../../../../../commons/utilities';
 import { populateConversationInEmailStore } from '../../../../../tests/generators/generateConversation';
 import { ConvActionRequest, ConvActionResponse } from '../../../../../types';

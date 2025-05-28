@@ -8,10 +8,7 @@ import React from 'react';
 import { screen, waitFor } from '@testing-library/react';
 import { useUserAccount } from '@zextras/carbonio-shell-ui';
 
-import {
-	FOLDERS,
-	ParticipantRole
-} from '@zextras/carbonio-ui-commons';
+import { FOLDERS, ParticipantRole } from '@zextras/carbonio-ui-commons';
 import { populateConversationInEmailStore } from '../../../../../tests/generators/generateConversation';
 import {
 	generateMessage,

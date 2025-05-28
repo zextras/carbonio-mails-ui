@@ -8,7 +8,7 @@ import React from 'react';
 import { MAILS_VIEW_LAYOUTS, MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS } from '../constants';
 import { LayoutSelector } from './layout-selector';
 import { mockLayoutStorage } from '../tests/layouts-utils';
- import { setupTest, screen } from '@test-setup';
+import { setupTest, screen } from '@test-setup';
 
 const MockedView = ({ id = '0' }: { id?: string }): React.JSX.Element => (
 	<div data-testid={`MockedView${id}`} />

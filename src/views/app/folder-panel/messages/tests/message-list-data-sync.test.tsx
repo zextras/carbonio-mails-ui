@@ -9,9 +9,7 @@ import React from 'react';
 import { act, screen, within } from '@testing-library/react';
 import { useParams } from 'react-router-dom';
 
-import {
-	FOLDERS
-} from '@zextras/carbonio-ui-commons';
+import { FOLDERS } from '@zextras/carbonio-ui-commons';
 import { generateMessageFromAPI } from '../../../../../tests/generators/api';
 import { SearchRequest, SearchResponse } from '../../../../../types';
 import { useSyncDataHandler } from '../../../../sidebar/commons/use-sync-data-handler';

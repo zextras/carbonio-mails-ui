@@ -13,9 +13,7 @@ import { AccountSettings, ErrorSoapBodyResponse } from '@zextras/carbonio-shell-
 import { noop } from 'lodash';
 import * as reactRouterDom from 'react-router-dom';
 
-import {
-	FOLDERS,
-} from '@zextras/carbonio-ui-commons';
+import { FOLDERS } from '@zextras/carbonio-ui-commons';
 import * as searchSoapApi from '../../../api/search-soap-api';
 import * as useSelection from '../../../hooks/use-selection';
 import { TESTID_SELECTORS } from '../../../tests/constants';

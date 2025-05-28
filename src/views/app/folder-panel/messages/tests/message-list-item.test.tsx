@@ -8,10 +8,7 @@ import React, { act } from 'react';
 import { screen, waitFor } from '@testing-library/react';
 import { useParams } from 'react-router-dom';
 
-import {
-	FOLDERS,
-	useTagStore
-} from '@zextras/carbonio-ui-commons';
+import { FOLDERS, useTagStore } from '@zextras/carbonio-ui-commons';
 import { useMsgPreviewOnSeparatedWindowFn } from '../../../../../hooks/actions/use-msg-preview-on-separated-window';
 import { generateMessage } from '../../../../../tests/generators/generateMessage';
 import { MessageListItemProps, MsgActionRequest } from '../../../../../types';

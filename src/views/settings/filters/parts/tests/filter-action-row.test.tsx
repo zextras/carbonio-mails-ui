@@ -7,11 +7,7 @@
 import React from 'react';
 import { act, screen, within } from '@testing-library/react';
 
-import {
-	FOLDER_VIEW,
-	FOLDERS,
-	useTagStore
-} from '@zextras/carbonio-ui-commons';
+import { FOLDER_VIEW, FOLDERS, useTagStore } from '@zextras/carbonio-ui-commons';
 import { FilterAction } from '../../../../../types';
 import { FilterActionRow, FilterActionRowProps } from '../filter-action-row';
 import { getActionTranslations } from '../utils';

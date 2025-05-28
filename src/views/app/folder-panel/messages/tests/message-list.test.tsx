@@ -9,11 +9,7 @@ import { act, fireEvent, screen, waitFor } from '@testing-library/react';
 import * as shell from '@zextras/carbonio-shell-ui';
 import { useParams } from 'react-router-dom';
 
-import {
-	FOLDERS,
-	ParticipantRole,
-	useFolderStore,
-} from '@zextras/carbonio-ui-commons';
+import { FOLDERS, ParticipantRole, useFolderStore } from '@zextras/carbonio-ui-commons';
 import * as useSelection from '../../../../../hooks/use-selection';
 import { TESTID_SELECTORS } from '../../../../../tests/constants';
 import { generateCompleteMessageFromAPI } from '../../../../../tests/generators/api';

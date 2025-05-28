@@ -10,9 +10,7 @@ import { act, fireEvent, screen, waitFor } from '@testing-library/react';
 import * as hooks from '@zextras/carbonio-shell-ui';
 import { useParams } from 'react-router-dom';
 
-import {
-	FOLDERS,
-} from '@zextras/carbonio-ui-commons';
+import { FOLDERS } from '@zextras/carbonio-ui-commons';
 import * as useSelection from '../../../../../hooks/use-selection';
 import { updateConversationsResultsLoadingStatus } from '../../../../../store/emails/store';
 import { TESTID_SELECTORS } from '../../../../../tests/constants';

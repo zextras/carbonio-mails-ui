@@ -7,10 +7,7 @@
 import React from 'react';
 import { act, screen } from '@testing-library/react';
 
-import {
-	FOLDER_VIEW,
-	FOLDERS
-} from '@zextras/carbonio-ui-commons';
+import { FOLDER_VIEW, FOLDERS } from '@zextras/carbonio-ui-commons';
 import { MovetoFolder } from '../../filter-actions/move-to-folder';
 import { makeListItemsVisible, setupTest } from '@test-setup';
 import { generateFolder } from '@test-utils/folders/folders-generator';
