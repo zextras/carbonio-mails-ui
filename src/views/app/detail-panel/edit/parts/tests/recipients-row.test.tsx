@@ -7,8 +7,7 @@
 import React, { useCallback, useState } from 'react';
 
 import { act, screen } from '@testing-library/react';
-import * as contactInput from '@zextras/carbonio-ui-commons';
-import { CONTACT_TYPES, DefaultContactInput, ParticipantRole } from '@zextras/carbonio-ui-commons';
+import { CONTACT_TYPES, ParticipantRole } from '@zextras/carbonio-ui-commons';
 
 import { Participant } from '../../../../../../types';
 import { RecipientsRow } from '../recipients-row';
@@ -18,14 +17,15 @@ import {
 	mockContactInput
 } from '@test-utils/integrations/mock-contact-input';
 
+const triggerOnAdd = async (user: UserEvent): Promise<void> => {
+	await paste(user, screen.getByTestId('mockedContactInput'), 'any value is ok');
+};
+
 jest.mock('@zextras/carbonio-ui-commons', () => ({
 	...jest.requireActual('@zextras/carbonio-ui-commons'),
 	useContactInput: jest.fn()
 }));
 
-const triggerOnAdd = async (user: UserEvent): Promise<void> => {
-	await paste(user, screen.getByTestId('mockedContactInput'), 'any value is ok');
-};
 describe('recipients-row', () => {
 	describe('when contact input integration available', () => {
 		it('should call onChange with value of given type when adding a new value in input', async () => {
@@ -145,10 +145,6 @@ describe('recipients-row', () => {
 	});
 
 	describe('when ContactInput is available', () => {
-		beforeEach(() => {
-			jest.spyOn(contactInput, 'useContactInput').mockReturnValue(DefaultContactInput);
-		});
-
 		it('create a chip rendering the entire text when invalid', async () => {
 			const { user } = setupTest(<TestableRecipientsRow />);
 

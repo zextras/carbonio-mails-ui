@@ -8,22 +8,25 @@ import React from 'react';
 import { faker } from '@faker-js/faker';
 import { act, screen, within } from '@testing-library/react';
 import { BatchResponse, ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
+import {
+	Folder,
+	FOLDERS,
+	FolderView,
+	getFolder,
+	ZIMBRA_STANDARD_COLORS
+} from '@zextras/carbonio-ui-commons';
 import { http } from 'msw';
 
-import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
-import { ZIMBRA_STANDARD_COLORS } from '../../../carbonio-ui-commons/constants/utils';
-import { getFolder } from '../../../carbonio-ui-commons/store/zustand/folder';
-import { getSetupServer } from '../../../carbonio-ui-commons/test/jest-setup';
-import { generateFolder } from '../../../carbonio-ui-commons/test/mocks/folders/folders-generator';
-import { createSoapAPIInterceptor } from '../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
-import { handleGetFolderRequest } from '../../../carbonio-ui-commons/test/mocks/network/msw/handle-get-folder';
-import { populateFoldersStore } from '../../../carbonio-ui-commons/test/mocks/store/folders';
-import { buildSoapErrorResponseBody } from '../../../carbonio-ui-commons/test/mocks/utils/soap';
-import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
-import { Folder, FolderView } from '../../../carbonio-ui-commons/types/folder';
 import { BatchRequest, SoapFolderAction } from '../../../types';
 import { makeAllItemsVisible } from '../../settings/filters/tests/test-utils';
 import { EditModal } from '../edit-modal';
+import { getSetupServer } from '@jest-setup';
+import { setupTest } from '@test-setup';
+import { generateFolder } from '@test-utils/folders/folders-generator';
+import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import { handleGetFolderRequest } from '@test-utils/network/msw/handle-get-folder';
+import { populateFoldersStore } from '@test-utils/store/folders';
+import { buildSoapErrorResponseBody } from '@test-utils/utils/soap';
 
 const aFolderWithoutSharePermission = (folder: Partial<Folder> = {}): Folder => ({
 	...generateFolder(folder),

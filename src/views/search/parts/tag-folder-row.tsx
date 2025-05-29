@@ -16,12 +16,10 @@ import {
 	Tooltip
 } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
+import { getTags, Tag, ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-ui-commons';
 import { map } from 'lodash';
 import { Controller, UseFormSetValue } from 'react-hook-form';
 
-import { ZIMBRA_STANDARD_COLORS } from '../../../carbonio-ui-commons/constants/utils';
-import { getTags } from '../../../carbonio-ui-commons/store/zustand/tags';
-import { Tag } from '../../../carbonio-ui-commons/types/tags';
 import { isSharedAccountFolder } from '../../../helpers/folders';
 import type { ChipOnAdd, Folder } from '../../../types';
 import { SelectFolderModal } from '../../../ui-actions/modals/select-folder-modal';

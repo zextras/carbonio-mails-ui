@@ -8,9 +8,9 @@ import React from 'react';
 
 import { screen } from '@testing-library/react';
 
-import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
 import { makeAllItemsVisible } from '../../../../settings/filters/tests/test-utils';
 import { RetentionPolicies } from '../retention-policies';
+import { setupTest } from '@test-setup';
 
 const defaultRetentionState = {
 	showPolicy: true,

@@ -5,14 +5,14 @@
  */
 import React, { FC, useCallback, useMemo, useState } from 'react';
 
-import { map, some } from 'lodash';
-
 import {
 	CONTACT_TYPES,
 	ContactInputItem,
 	ParticipantRoleType,
 	useContactInput
 } from '@zextras/carbonio-ui-commons';
+import { map, some } from 'lodash';
+
 import { Participant } from '../../../../../types';
 
 export type RecipientsRowProps = {

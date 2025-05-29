@@ -18,6 +18,13 @@ import {
 	Tooltip
 } from '@zextras/carbonio-design-system';
 import { t, useUserAccount } from '@zextras/carbonio-shell-ui';
+import {
+	Folder,
+	FOLDERS,
+	isSystemFolder,
+	OnDropActionProps,
+	ROOT_NAME
+} from '@zextras/carbonio-ui-commons';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
@@ -31,11 +38,6 @@ import {
 	handleDragEnter
 } from './utils';
 import { folderActionSoapApi } from '../../api/folder-action-soap-api';
-import { ROOT_NAME } from '../../carbonio-ui-commons/constants';
-import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
-import { isSystemFolder } from '../../carbonio-ui-commons/helpers/folders';
-import type { Folder } from '../../carbonio-ui-commons/types';
-import type { OnDropActionProps } from '../../carbonio-ui-commons/types/sidebar';
 import { isDraft } from '../../helpers/folders';
 import { useOnMouseHover } from '../../hooks/use-on-mouse-hover';
 import { useUiUtilities } from '../../hooks/use-ui-utilities';

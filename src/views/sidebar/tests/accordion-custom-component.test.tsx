@@ -7,18 +7,14 @@
 import React from 'react';
 
 import { screen, within } from '@testing-library/react';
+import { FOLDERS, ROOT_NAME } from '@zextras/carbonio-ui-commons';
 import assert from 'node:assert';
 
-import { ROOT_NAME } from '../../../carbonio-ui-commons/constants';
-import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
-import { createFakeIdentity } from '../../../carbonio-ui-commons/test/mocks/accounts/fakeAccounts';
-import {
-	generateFolder,
-	generateFolderLink
-} from '../../../carbonio-ui-commons/test/mocks/folders/folders-generator';
-import { getMocksContext } from '../../../carbonio-ui-commons/test/mocks/utils/mocks-context';
-import { setupTest } from '../../../carbonio-ui-commons/test/test-setup';
 import AccordionCustomComponent from '../accordion-custom-component';
+import { setupTest } from '@test-setup';
+import { createFakeIdentity } from '@test-utils/accounts/fakeAccounts';
+import { generateFolder, generateFolderLink } from '@test-utils/folders/folders-generator';
+import { getMocksContext } from '@test-utils/utils/mocks-context';
 
 describe('accordion-custom-component', () => {
 	it('should render without crashing', () => {
