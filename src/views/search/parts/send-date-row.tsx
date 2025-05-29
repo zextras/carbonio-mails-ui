@@ -18,7 +18,7 @@ export const SendReceivedDateRow = ({ control }: FormValuesControlProps): React.
 	return (
 		<Container padding={{ bottom: 'small', top: 'medium' }} orientation="horizontal">
 			<Container padding={{ right: 'extrasmall' }}>
-			<Controller
+				<Controller
 					control={control}
 					name={'sentAfter'}
 					render={({ field: { onChange, value } }): React.JSX.Element => (
@@ -39,7 +39,7 @@ export const SendReceivedDateRow = ({ control }: FormValuesControlProps): React.
 				/>
 			</Container>
 			<Container padding={{ left: 'extrasmall' }}>
-			<Controller
+				<Controller
 					control={control}
 					name={'sentBefore'}
 					render={({ field: { onChange, value } }): React.JSX.Element => (
