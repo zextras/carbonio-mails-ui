@@ -16,12 +16,7 @@ import {
 	useContactInput
 } from '@zextras/carbonio-ui-commons';
 
-jest.mock('@zextras/carbonio-ui-commons', () => ({
-	...jest.requireActual('@zextras/carbonio-ui-commons'),
-	useContactInput: jest.fn()
-}));
-
-function generateMockedContactInput(
+export function generateMockedContactInput(
 	valueToAdd?: ContactInputItem
 ): FunctionComponent<Record<string, unknown>> {
 	function MockedContactInput({
