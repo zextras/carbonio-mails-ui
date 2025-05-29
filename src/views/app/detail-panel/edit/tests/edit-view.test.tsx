@@ -155,6 +155,41 @@ jest.mock('../../../../../store/editor', () => ({
 }));
 
 describe('Edit view', () => {
+	it('should disable the send button when there`s an invalid recipient', async () => {
+		createCheckSmimeEnabledAPIInterceptor();
+		createSoapAPIInterceptor('GetShareInfo');
+		const wrongEmailAddress = 'wrongmailaddress.com';
+		const editor = {
+			...generateNewMessageEditor(),
+			did: '123',
+			recipients: {
+				to: [
+					{
+						address: wrongEmailAddress,
+						id: 'dsadsadas',
+						isGroup: false,
+						name: undefined,
+						type: ParticipantRole.TO
+					}
+				],
+				cc: [],
+				bcc: []
+			}
+		};
+		setupEditorStore({ editors: [editor] });
+
+		setupTest(<EditView editorId={editor.id} closeController={noop} />);
+
+		// TODO: act is used to ensure entire render lifecycle is completed.
+		//  it would be better to ensure lifecycle is completed by awaiting the DOM (e.g.: await a button is visible).
+		//  act is a gimmick and not really required.
+		await act(async () => {
+			expect(screen.getByTestId('edit-view-editor')).toBeVisible();
+			expect(await screen.findByText('DEFAULT')).toBeVisible();
+			expect(await screen.findByText(wrongEmailAddress)).toBeVisible();
+			expect(await screen.findByRole('button', { name: /label\.send/i })).toBeDisabled();
+		});
+	});
 	describe('Mail creation', () => {
 		beforeEach(() => {
 			aSuccessfullSaveDraft();
@@ -162,34 +197,6 @@ describe('Edit view', () => {
 			createCheckSmimeEnabledAPIInterceptor();
 		});
 
-		it('should disable the send button when there`s a invalid recipient', async () => {
-			const wrongEmailAddress = 'wrongmailaddress.com';
-			const editor = {
-				...generateNewMessageEditor(),
-				recipients: {
-					to: [
-						{
-							address: wrongEmailAddress,
-							id: 'dsadsadas',
-							isGroup: false,
-							name: undefined,
-							type: ParticipantRole.TO
-						}
-					],
-					cc: [],
-					bcc: []
-				}
-			};
-			setupEditorStore({ editors: [editor] });
-
-			setupTest(<EditView editorId={editor.id} closeController={noop} />);
-			jest.advanceTimersByTime(5000);
-
-			act(() => expect(screen.getByTestId('edit-view-editor')).toBeVisible());
-			expect(await screen.findByText('DEFAULT')).toBeVisible();
-			expect(await screen.findByText(wrongEmailAddress)).toBeVisible();
-			expect(await screen.findByRole('button', { name: /label\.send/i })).toBeDisabled();
-		});
 		// warning
 		it('should correctly send a new email', async () => {
 			setupEditorStore({ editors: [] });
