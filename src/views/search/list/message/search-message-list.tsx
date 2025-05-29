@@ -15,20 +15,16 @@ import { CustomList, CustomListItem } from '@zextras/carbonio-ui-commons';
 import { useSelection } from '../../../../hooks/use-selection';
 import type { AppContext, SearchListProps } from '../../../../types';
 import { MessagesMultipleSelectionActions } from '../../../app/folder-panel/messages/messages-multiple-selection-actions';
-import { AdvancedFilterButton } from '../../parts/advanced-filter-button';
 import { useLoadMoreForSearchSlice } from '../../search-view-hooks';
 import ShimmerList from '../../shimmer-list';
 import { SearchListHeader } from '../parts/search-list-header';
 import { SearchMessageListItemWrapper } from './search-message-list-item-wrapper';
 
 export const SearchMessageList: FC<SearchListProps> = ({
-	searchDisabled,
 	searchResults: messageIds,
 	query,
 	loading,
-	setShowAdvanceFilters,
 	isInvalidQuery,
-	invalidQueryTooltip,
 	hasMore
 }) => {
 	const { itemId } = useParams<{ itemId: string }>();
@@ -108,19 +104,7 @@ export const SearchMessageList: FC<SearchListProps> = ({
 	const selectedIds = useMemo(() => Object.keys(selected), [selected]);
 
 	return (
-		<Container
-			background={'gray6'}
-			width="25%"
-			height="fill"
-			mainAlignment="flex-start"
-			data-testid="MailsSearchResultListContainer"
-		>
-			<AdvancedFilterButton
-				setShowAdvanceFilters={setShowAdvanceFilters}
-				searchDisabled={searchDisabled}
-				invalidQueryTooltip={invalidQueryTooltip}
-			/>
-
+		<>
 			{!isInvalidQuery && !loading && (
 				<>
 					<SearchListHeader
@@ -165,6 +149,6 @@ export const SearchMessageList: FC<SearchListProps> = ({
 				</>
 			)}
 			{loading && <ShimmerList count={33} delay={0} />}
-		</Container>
+		</>
 	);
 };

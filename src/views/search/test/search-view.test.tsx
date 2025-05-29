@@ -681,26 +681,36 @@ describe('SearchView', () => {
 	});
 
 	it('should display a disabled Advanced Filters button when SearchDisabled is true', async () => {
+		const mockUseQuery = jest.fn();
+		mockUseQuery.mockReturnValue([[], noop]);
+
 		const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
 		const searchViewProps: SearchViewProps = {
-			useQuery: () => [[], noop],
+			useQuery: mockUseQuery,
 			useDisableSearch: () => [true, noop],
 			ResultsHeader: resultsHeader
 		};
 
-		setupTest(<SearchView {...searchViewProps} />);
-		const advancedFiltersButton = screen.getByRole('button', {
-			name: /label\.single_advanced_filter/i
+		await waitFor(async () => {
+			setupTest(<SearchView {...searchViewProps} />);
 		});
+
+		const advancedFiltersButton = screen.getByRole('button', {
+			name: 'Advanced Filters'
+		});
+
 		expect(advancedFiltersButton).toBeVisible();
 		expect(advancedFiltersButton).toBeDisabled();
 	});
 
 	it('should not call search API if query empty', async () => {
 		const searchSpy = jest.spyOn(searchSoapApi, 'searchSoapApi');
+		const mockUseQuery = jest.fn();
+		mockUseQuery.mockReturnValue([[], noop]);
+
 		const resultsHeader = (props: { label: string }): ReactElement => <>{props.label}</>;
 		const searchViewProps: SearchViewProps = {
-			useQuery: () => [[], noop],
+			useQuery: mockUseQuery,
 			useDisableSearch: () => [false, noop],
 			ResultsHeader: resultsHeader
 		};
@@ -708,8 +718,9 @@ describe('SearchView', () => {
 		setupTest(<SearchView {...searchViewProps} />);
 
 		const advancedFiltersButton = screen.getByRole('button', {
-			name: /label\.single_advanced_filter/i
+			name: 'Advanced Filters'
 		});
+
 		expect(advancedFiltersButton).toBeVisible();
 		expect(advancedFiltersButton).toBeEnabled();
 		expect(searchSpy).not.toHaveBeenCalled();

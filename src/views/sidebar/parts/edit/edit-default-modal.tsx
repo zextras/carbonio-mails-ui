@@ -19,11 +19,12 @@ import { includes, isEmpty } from 'lodash';
 
 import { FolderDetails } from './folder-details';
 import NameInputRow from './name-input';
-import RetentionPolicies from './retention-policies';
+import { RetentionPolicies } from './retention-policies';
 import { ShareFolderProperties } from './share-folder-properties';
 import { folderActionSoapApi } from '../../../../api/folder-action-soap-api';
 import { useUiUtilities } from '../../../../hooks/use-ui-utilities';
 import { ModalProps } from '../../../../types';
+import { RetentionPolicyState } from '../../commons/types';
 import { getFolderTranslatedName, useTranslatedSystemFolders } from '../../utils';
 
 const numberRegex = /^\d+$/;
@@ -35,80 +36,51 @@ const YEARS_LABEL = 'label.years';
 type MainEditModalProps = ModalProps & {
 	setActiveModal: (modal: string) => void;
 };
+
 const MainEditModal: FC<MainEditModalProps> = ({ folder, onClose, setActiveModal }) => {
 	const [folderNameInputValue, setFolderNameInputValue] = useState(folder.name);
-	const [showPolicy, setShowPolicy] = useState(false);
-	const [rtnValue, setRtnValue] = useState<number | string>(0);
-	const [purgeValue, setPurgeValue] = useState<number | string>(0);
-	const [rtnYear, setRtnYear] = useState<string | null>('d');
-	const [dspYear, setDspYear] = useState<string | null>('d');
-	const [rtnRange, setRtnRange] = useState('');
-	const [dspRange, setDspRange] = useState<string>('');
-	const [dsblMsgDis, setDsblMsgDis] = useState(false);
-	const [dsblMsgRet, setDsblMsgRet] = useState(false);
-	const [emptyRtnValue, setEmptyRtnValue] = useState(false);
-	const [emptyDisValue, setEmptyDisValue] = useState(false);
 	const [folderColor, setFolderColor] = useState<number>(folder.color ?? 0);
+	const [retentionState, setRetentionState] = useState<RetentionPolicyState>({
+		showPolicy: false,
+		dsblMsgDis: false,
+		emptyDisValue: false,
+		purgeValue: 0,
+		dspYear: 'd',
+		dspRange: t(DAYS_LABEL, 'Days')
+	});
 
-	const retentionPeriod = [
-		{
-			label: t(DAYS_LABEL, 'Days'),
-			value: 'd'
-		},
-		{
-			label: t(WEEKS_LABEL, 'Weeks'),
-			value: 'w'
-		},
-		{
-			label: t(MONTHS_LABEL, 'Months'),
-			value: 'm'
-		},
-		{
-			label: t(YEARS_LABEL, 'Years'),
-			value: 'y'
-		}
-	];
+	const updateRetentionState = (partial: Partial<RetentionPolicyState>): void =>
+		setRetentionState((prev) => ({ ...prev, ...partial }));
 
 	const { createSnackbar } = useUiUtilities();
 
-	useEffect(() => {
-		if (
-			folder.retentionPolicy &&
-			folder.retentionPolicy?.length &&
-			folder.retentionPolicy[0].keep !== undefined &&
-			folder.retentionPolicy[0].keep &&
-			Object.keys(folder.retentionPolicy[0].keep[0]).length !== 0
-		) {
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-ignore
-			const lifetime = folder.retentionPolicy[0]?.keep[0]?.policy[0]?.lifetime;
-			// eslint-disable-next-line radix
-			const d = parseInt(lifetime);
-			setDsblMsgRet(true);
-			setShowPolicy(true);
+	const getRetentionDisplayValues = (
+		lifetime: string
+	): { dspYear: string; purgeValue: number | string; dspRange: string } => {
+		const d = parseInt(lifetime, 10);
 
-			if (d % 365 === 0) {
-				setRtnYear('y');
-				setRtnValue(d / 365);
-				setRtnRange(t(YEARS_LABEL, 'Years'));
-			} else if (d % 31 === 0) {
-				setRtnYear('m');
-				setRtnValue(d / 31);
-				setRtnRange(t(MONTHS_LABEL, 'Months'));
-			} else if (d % 7 === 0) {
-				setRtnYear('w');
-				setRtnValue(d / 7);
-				setRtnRange(t(WEEKS_LABEL, 'Weeks'));
-			} else {
-				setRtnYear('d');
-				setRtnValue(d);
-				setRtnRange(t(DAYS_LABEL, 'Days'));
-			}
-		} else {
-			setRtnYear('d');
-			setRtnRange(t(DAYS_LABEL, 'Days'));
+		let dspYear = 'd';
+		let purgeValue: number | string = d;
+		let dspRange = t(DAYS_LABEL, 'Days');
+
+		if (d % 365 === 0) {
+			dspYear = 'y';
+			purgeValue = d / 365;
+			dspRange = t(YEARS_LABEL, 'Years');
+		} else if (d % 31 === 0) {
+			dspYear = 'm';
+			purgeValue = d / 31;
+			dspRange = t(MONTHS_LABEL, 'Months');
+		} else if (d % 7 === 0) {
+			dspYear = 'w';
+			purgeValue = d / 7;
+			dspRange = t(WEEKS_LABEL, 'Weeks');
 		}
 
+		return { dspYear, purgeValue, dspRange };
+	};
+
+	useEffect(() => {
 		if (
 			folder.retentionPolicy &&
 			folder.retentionPolicy.length &&
@@ -117,32 +89,27 @@ const MainEditModal: FC<MainEditModalProps> = ({ folder, onClose, setActiveModal
 			Object.keys(folder.retentionPolicy[0].purge[0]).length !== 0
 		) {
 			const lifetime = folder.retentionPolicy[0]?.purge[0]?.policy[0]?.lifetime;
-			const d = parseInt(lifetime, 10);
-			setDsblMsgDis(true);
-			setShowPolicy(true);
+			const { dspYear, purgeValue, dspRange } = getRetentionDisplayValues(lifetime);
 
-			if (d % 365 === 0) {
-				setDspYear('y');
-				setPurgeValue(d / 365);
-				setDspRange(t(YEARS_LABEL, 'Years'));
-			} else if (d % 31 === 0) {
-				setDspYear('m');
-				setPurgeValue(d / 31);
-				setDspRange(t(MONTHS_LABEL, 'Months'));
-			} else if (d % 7 === 0) {
-				setDspYear('w');
-				setPurgeValue(d / 7);
-				setDspRange(t(WEEKS_LABEL, 'Weeks'));
-			} else {
-				setDspYear('d');
-				setPurgeValue(d);
-				setDspRange(t(DAYS_LABEL, 'Days'));
-			}
+			setRetentionState({
+				showPolicy: true,
+				dsblMsgDis: true,
+				purgeValue,
+				dspYear,
+				dspRange,
+				emptyDisValue: false
+			});
 		} else {
-			setDspYear('d');
-			setDspRange(t(DAYS_LABEL, 'Days'));
+			setRetentionState({
+				showPolicy: false,
+				dsblMsgDis: false,
+				purgeValue: '',
+				dspYear: 'd',
+				dspRange: t(DAYS_LABEL, 'Days'),
+				emptyDisValue: false
+			});
 		}
-	}, [folder.retentionPolicy]);
+	}, [folder.retentionPolicy, setRetentionState]);
 
 	const isFolderNameInputEmpty = useMemo(
 		() => isEmpty(folderNameInputValue),
@@ -166,112 +133,83 @@ const MainEditModal: FC<MainEditModalProps> = ({ folder, onClose, setActiveModal
 	);
 
 	const disableSubmit = useMemo(
-		() => (isFolderNameInputEmpty || showIsSystemFolderNameWarning || emptyRtnValue) && !inpDisable,
-		[isFolderNameInputEmpty, showIsSystemFolderNameWarning, emptyRtnValue, inpDisable]
+		() => (isFolderNameInputEmpty || showIsSystemFolderNameWarning) && !inpDisable,
+		[isFolderNameInputEmpty, showIsSystemFolderNameWarning, inpDisable]
 	);
 
+	const calculateLifetimeDays = (value: number, unit: string | null): number => {
+		switch (unit) {
+			case 'w':
+				return value * 7;
+			case 'm':
+				return value * 31;
+			case 'y':
+				return value * 365;
+			default:
+				return value;
+		}
+	};
+
+	const isRetentionValid = (enabled: boolean, value: number | string): boolean =>
+		!enabled || !!(value && numberRegex.test(value.toString()));
+
 	const onConfirm = useCallback(() => {
-		let submit = true;
-		if (dsblMsgRet) {
-			submit = false;
-			if (rtnValue && numberRegex.test(rtnValue.toString())) {
-				submit = true;
-			} else {
-				setEmptyRtnValue(true);
-				return;
-			}
-		}
+		const buildRetentionPolicy = (
+			enabled: boolean,
+			value: number,
+			unit: string | null
+		): object | undefined => {
+			if (!enabled && !folder?.retentionPolicy) return undefined;
 
-		if (dsblMsgDis) {
-			submit = false;
-			if (purgeValue && numberRegex.test(purgeValue.toString())) {
-				submit = true;
-			} else {
-				setEmptyDisValue(true);
-				return;
-			}
-		}
-		if (folderNameInputValue && submit) {
-			let lt;
-			let pr;
-
-			if (rtnYear === 'w') lt = Number(rtnValue) * 7;
-			else if (rtnYear === 'm') lt = Number(rtnValue) * 31;
-			else if (rtnYear === 'y') lt = Number(rtnValue) * 365;
-			else lt = Number(rtnValue);
-
-			if (dspYear === 'w') pr = Number(purgeValue) * 7;
-			else if (dspYear === 'm') pr = Number(purgeValue) * 31;
-			else if (dspYear === 'y') pr = Number(purgeValue) * 365;
-			else pr = Number(purgeValue);
-
-			folderActionSoapApi({
-				folder: {
-					...folder,
-					parent: folder.l || '',
-					children: []
-				},
-				name: folderNameInputValue,
-				op: 'update',
-				color: Number(folderColor),
-				retentionPolicy:
-					dsblMsgRet || dsblMsgDis || folder?.retentionPolicy
-						? {
-								keep: dsblMsgRet
-									? {
-											policy: {
-												lifetime: `${lt}d`,
-												type: 'user'
-											}
-										}
-									: {},
-								purge: dsblMsgDis
-									? {
-											policy: {
-												lifetime: `${pr}d`,
-												type: 'user'
-											}
-										}
-									: {}
+			return {
+				purge: enabled
+					? {
+							policy: {
+								lifetime: `${calculateLifetimeDays(value, unit)}d`,
+								type: 'user'
 							}
-						: {}
-			}).then((res) => {
-				if (!('Fault' in res)) {
-					createSnackbar({
-						key: `edit`,
-						replace: true,
-						severity: 'info',
-						hideButton: true,
-						label: t('messages.snackbar.folder_edited', 'Changes correctly saved'),
-						autoHideTimeout: 3000
-					});
-				} else {
-					createSnackbar({
-						key: `edit`,
-						replace: true,
-						severity: 'error',
-						hideButton: true,
-						label: t('label.error_try_again', 'Something went wrong, please try again'),
-						autoHideTimeout: 3000
-					});
-				}
-			});
+						}
+					: {}
+			};
+		};
+
+		const { dsblMsgDis, purgeValue, dspYear } = retentionState;
+
+		if (!isRetentionValid(dsblMsgDis, purgeValue)) {
+			setRetentionState((prev) => ({ ...prev, emptyDisValue: true }));
+			return;
 		}
+
+		if (!folderNameInputValue) return;
+
+		const numericValue = Number(purgeValue);
+		const retentionPolicy = buildRetentionPolicy(dsblMsgDis, numericValue, dspYear);
+
+		folderActionSoapApi({
+			folder: { ...folder, parent: folder.l ?? '', children: [] },
+			name: folderNameInputValue,
+			op: 'update',
+			color: Number(folderColor),
+			retentionPolicy
+		}).then((res) => {
+			const isSuccess = !('Fault' in res);
+			createSnackbar({
+				key: 'edit',
+				replace: true,
+				severity: isSuccess ? 'info' : 'error',
+				hideButton: true,
+				label: isSuccess
+					? t('messages.snackbar.folder_edited', 'Changes correctly saved')
+					: t('label.error_try_again', 'Something went wrong, please try again'),
+				autoHideTimeout: 3000
+			});
+		});
+
 		setFolderNameInputValue('');
 		onClose();
-	}, [
-		dsblMsgRet,
-		dsblMsgDis,
-		folderNameInputValue,
-		onClose,
-		rtnValue,
-		purgeValue,
-		rtnYear,
-		dspYear,
-		folder,
-		folderColor,
-		createSnackbar
-	]);
+	}, [retentionState, folderNameInputValue, folder, folderColor, onClose, createSnackbar]);
+
+	const openShareModal = useCallback((): void => setActiveModal('share'), [setActiveModal]);
 
 	return (
 		<>
@@ -291,40 +229,21 @@ const MainEditModal: FC<MainEditModalProps> = ({ folder, onClose, setActiveModal
 				folderColor={folderColor}
 				setFolderColor={setFolderColor}
 			/>
-			<Container mainAlignment="flex-start" crossAlignment="flex-start" padding={{ top: 'medium' }}>
+			<Container mainAlignment="flex-start" crossAlignment="flex-start" padding={{ top: 'small' }}>
 				<FolderDetails folder={folder} />
 				{!isEmpty(folder?.acl) && (
 					<ShareFolderProperties folder={folder} setActiveModal={setActiveModal} />
 				)}
 				<RetentionPolicies
-					setShowPolicy={setShowPolicy}
-					emptyRtnValue={emptyRtnValue}
-					setEmptyRtnValue={setEmptyRtnValue}
-					showPolicy={showPolicy}
-					dsblMsgRet={dsblMsgRet}
-					setDsblMsgRet={setDsblMsgRet}
-					setRtnValue={setRtnValue}
-					rtnValue={rtnValue}
-					retentionPeriod={retentionPeriod}
-					setRtnYear={setRtnYear}
-					dsblMsgDis={dsblMsgDis}
-					emptyDisValue={emptyDisValue}
-					setEmptyDisValue={setEmptyDisValue}
-					setDsblMsgDis={setDsblMsgDis}
-					setPurgeValue={setPurgeValue}
-					setDspYear={setDspYear}
-					rtnYear={rtnYear}
-					rtnRange={rtnRange}
-					dspYear={dspYear}
-					dspRange={dspRange}
-					purgeValue={purgeValue}
+					retentionState={retentionState}
+					setRetentionState={updateRetentionState}
 				/>
 			</Container>
 
 			<ModalFooter
 				onConfirm={onConfirm}
 				label={t('label.edit', 'Edit')}
-				secondaryAction={(): void => setActiveModal('share')}
+				secondaryAction={openShareModal}
 				secondaryLabel={t('folder.modal.edit.add_share', 'Add Share')}
 				disabled={disableSubmit}
 				secondaryDisabled={!allowedActionOnSharedAccount(folder, FolderActionsType.SHARE)}

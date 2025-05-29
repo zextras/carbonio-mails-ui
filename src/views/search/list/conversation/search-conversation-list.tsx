@@ -15,7 +15,6 @@ import { useSelection } from '../../../../hooks/use-selection';
 import type { AppContext, SearchListProps } from '../../../../types';
 import { Divider } from '../../../app/detail-panel/edit/parts/edit-view-styled-components';
 import { ConversationsMultipleSelectionActions } from '../../../app/folder-panel/conversations/conversations-multiple-selection-actions';
-import { AdvancedFilterButton } from '../../parts/advanced-filter-button';
 import { useLoadMoreForSearchSlice } from '../../search-view-hooks';
 import ShimmerList from '../../shimmer-list';
 import { SearchListHeader } from '../parts/search-list-header';
@@ -25,10 +24,7 @@ export const SearchConversationList = ({
 	searchResults: conversationIds,
 	query,
 	loading,
-	setShowAdvanceFilters,
 	isInvalidQuery,
-	searchDisabled,
-	invalidQueryTooltip,
 	hasMore
 }: SearchListProps): React.JSX.Element => {
 	const { itemId } = useParams() as { itemId?: string };
@@ -115,12 +111,7 @@ export const SearchConversationList = ({
 	const selectedIds = useMemo(() => Object.keys(selected), [selected]);
 
 	return (
-		<Container background="gray6" width="25%" height="fill" mainAlignment="flex-start">
-			<AdvancedFilterButton
-				setShowAdvanceFilters={setShowAdvanceFilters}
-				searchDisabled={searchDisabled}
-				invalidQueryTooltip={invalidQueryTooltip}
-			/>
+		<>
 			{!isInvalidQuery && !loading && (
 				<>
 					<SearchListHeader
@@ -167,6 +158,6 @@ export const SearchConversationList = ({
 				</>
 			)}
 			{loading && <ShimmerList count={33} delay={0} />}
-		</Container>
+		</>
 	);
 };

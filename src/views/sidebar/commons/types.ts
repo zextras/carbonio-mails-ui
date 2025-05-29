@@ -37,3 +37,12 @@ export type HandleTagsNotifyProps = {
 export type SoapPartialConversation = OptionalExcept<SoapConversation, 'id'>;
 export type SoapPartialIncompleteMessage = OptionalExcept<SoapIncompleteMessage, 'id'>;
 export type PartialIncompleteMessage = OptionalExcept<IncompleteMessage, 'id'>;
+
+export type RetentionPolicyState = {
+	showPolicy: boolean;
+	dsblMsgDis: boolean;
+	emptyDisValue: boolean;
+	purgeValue: number | string;
+	dspYear: string | null;
+	dspRange: string;
+};

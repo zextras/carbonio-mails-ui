@@ -9,13 +9,15 @@ import React, { useState } from 'react';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import {
 	Accordion as MUIAccordion,
-	AccordionDetails as MUIAccordionDetails,
+	Container as MUIContainer,
 	AccordionSummary as MUIAccordionSummary,
-	Container as MUIContainer
+	AccordionDetails as MUIAccordionDetails
 } from '@mui/material';
 
-import { FOLDERS, hasId, theme } from '@zextras/carbonio-ui-commons';
-import { isSpam, isTrash } from '../../../helpers/folders';
+import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
+import { theme } from '../../../carbonio-ui-commons/theme/theme-mui';
+import { hasId } from '../../../carbonio-ui-commons/worker/handle-message';
+import { isRoot, isSpam, isTrash } from '../../../helpers/folders';
 import { Folder } from '../../../types';
 
 type FolderAccordionProps = {
@@ -66,6 +68,9 @@ export const FoldersAccordion = ({
 					<MUIAccordionSummary
 						data-testid={`folder-accordion-item-${folder.id}`}
 						onClick={(): void => {
+							if (isRoot(folder.id) && !allowRootSelection) {
+								return;
+							}
 							onFolderSelected?.(folder);
 						}}
 						expandIcon={
