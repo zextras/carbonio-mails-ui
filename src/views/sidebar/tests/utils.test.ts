@@ -4,12 +4,10 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { ROOT_NAME } from '../../../carbonio-ui-commons/constants';
-import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
-import { generateFolder } from '../../../carbonio-ui-commons/test/mocks/folders/folders-generator';
-import { Folder } from '../../../carbonio-ui-commons/types';
-import { OnDropActionProps } from '../../../carbonio-ui-commons/types/sidebar';
+import { Folder, FOLDERS, OnDropActionProps, ROOT_NAME } from '@zextras/carbonio-ui-commons';
+
 import { getFolderIconName, getTotalUnreadCountInSubfolders, handleDragEnter } from '../utils';
+import { generateFolder } from '@test-utils/folders/folders-generator';
 
 describe('utils', () => {
 	describe('handleDragEnter', () => {

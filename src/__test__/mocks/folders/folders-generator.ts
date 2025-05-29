@@ -343,6 +343,7 @@ export const generateFolder = (model: Partial<Folder & { oname: string }> = {}):
 		ms: model.ms ?? 12599,
 		n: model.n ?? 0,
 		s: model.s ?? 0,
+		u: model.u ?? 0,
 		i4ms: model.i4ms ?? 1378,
 		i4next: model.i4next ?? 684,
 		activesyncdisabled: model.activesyncdisabled ?? false,
