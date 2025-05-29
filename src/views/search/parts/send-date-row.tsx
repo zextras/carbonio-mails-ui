@@ -38,7 +38,7 @@ export const SendReceivedDateRow = ({ control }: FormValuesControlProps): React.
 					)}
 				/>
 			</Container>
-			<Container padding={{ horizontal: 'extrasmall' }}>
+			<Container padding={{ left: 'extrasmall' }}>
 				<Controller
 					control={control}
 					name={'sentAfter'}
@@ -55,27 +55,6 @@ export const SendReceivedDateRow = ({ control }: FormValuesControlProps): React.
 							defaultValue={value}
 							onChange={onChange}
 							data-testid="sentAfterInput"
-						/>
-					)}
-				/>
-			</Container>
-			<Container padding={{ left: 'extrasmall' }}>
-				<Controller
-					control={control}
-					name={'sentOn'}
-					render={({ field: { onChange, value } }): React.JSX.Element => (
-						<DateTimePicker
-							width="fill"
-							label={t('search.sent_on', 'Sent on')}
-							enableChips
-							chipProps={{ avatarBackground: 'gray1', avatarIcon: 'CalendarOutline' }}
-							dateFormat={PICKER_DATE_FORMAT}
-							locale={prefLocale}
-							showTimeSelect={false}
-							onChange={onChange}
-							selected={value}
-							defaultValue={value}
-							data-testid="sentOnInput"
 						/>
 					)}
 				/>
