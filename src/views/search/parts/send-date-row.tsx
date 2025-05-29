@@ -18,28 +18,7 @@ export const SendReceivedDateRow = ({ control }: FormValuesControlProps): React.
 	return (
 		<Container padding={{ bottom: 'small', top: 'medium' }} orientation="horizontal">
 			<Container padding={{ right: 'extrasmall' }}>
-				<Controller
-					control={control}
-					name={'sentBefore'}
-					render={({ field: { onChange, value } }): React.JSX.Element => (
-						<DateTimePicker
-							width="fill"
-							label={t('search.sent_before', 'Sent before')}
-							enableChips
-							chipProps={{ avatarBackground: 'gray1', avatarIcon: 'CalendarOutline' }}
-							dateFormat={PICKER_DATE_FORMAT}
-							locale={prefLocale}
-							showTimeSelect={false}
-							selected={value}
-							defaultValue={value}
-							onChange={onChange}
-							data-testid="sentBeforeInput"
-						/>
-					)}
-				/>
-			</Container>
-			<Container padding={{ left: 'extrasmall' }}>
-				<Controller
+			<Controller
 					control={control}
 					name={'sentAfter'}
 					render={({ field: { onChange, value } }): React.JSX.Element => (
@@ -55,6 +34,27 @@ export const SendReceivedDateRow = ({ control }: FormValuesControlProps): React.
 							defaultValue={value}
 							onChange={onChange}
 							data-testid="sentAfterInput"
+						/>
+					)}
+				/>
+			</Container>
+			<Container padding={{ left: 'extrasmall' }}>
+			<Controller
+					control={control}
+					name={'sentBefore'}
+					render={({ field: { onChange, value } }): React.JSX.Element => (
+						<DateTimePicker
+							width="fill"
+							label={t('search.sent_before', 'Sent before')}
+							enableChips
+							chipProps={{ avatarBackground: 'gray1', avatarIcon: 'CalendarOutline' }}
+							dateFormat={PICKER_DATE_FORMAT}
+							locale={prefLocale}
+							showTimeSelect={false}
+							selected={value}
+							defaultValue={value}
+							onChange={onChange}
+							data-testid="sentBeforeInput"
 						/>
 					)}
 				/>
