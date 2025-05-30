@@ -6,17 +6,17 @@
 import { faker } from '@faker-js/faker';
 import { FOLDERS, getRootsMap, ParticipantRole } from '@zextras/carbonio-ui-commons';
 
-import { generateMessage } from '../../tests/generators/generateMessage';
-import { getMessageOwnerAccountName } from '../folders';
+import { populateFoldersStore } from '@test-utils/store/folders';
+import { getMocksContext } from '@test-utils/utils/mocks-context';
+import { getMessageOwnerAccountName } from 'helpers/folders';
 import {
 	getAddressOwnerAccount,
 	getExtraAccountsIds,
 	getIdentitiesDescriptors,
 	getMessageSenderAccount,
 	getMessageSenderAddress
-} from '../identities';
-import { populateFoldersStore } from '@test-utils/store/folders';
-import { getMocksContext } from '@test-utils/utils/mocks-context';
+} from 'helpers/identities';
+import { generateMessage } from 'tests/generators/generateMessage';
 
 describe('Message sender address', () => {
 	test('returns the address if sender is a participant of type FROM', () => {

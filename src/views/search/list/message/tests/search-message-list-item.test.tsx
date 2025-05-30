@@ -8,14 +8,14 @@ import React, { act } from 'react';
 import { screen, waitFor } from '@testing-library/react';
 import { AccountSettings } from '@zextras/carbonio-shell-ui';
 
-import { CONVACTIONS } from '../../../../../commons/utilities';
-import { populateMessagesInEmailStore } from '../../../../../tests/generators/generateMessage';
-import { MsgActionRequest, MsgActionResponse } from '../../../../../types';
-import { SearchMessageListItem } from '../search-message-list-item';
-import { generateSettings } from '@test-utils/settings/settings-generator';
+import { setupTest } from '@test-setup';
 import { useUserSettings } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
-import { setupTest } from '@test-setup';
+import { generateSettings } from '@test-utils/settings/settings-generator';
+import { CONVACTIONS } from 'commons/utilities';
+import { populateMessagesInEmailStore } from 'tests/generators/generateMessage';
+import { MsgActionRequest, MsgActionResponse } from 'types/index.d';
+import { SearchMessageListItem } from 'views/search/list/message/search-message-list-item';
 
 it('should delete the item when clicking on Delete action when in message mode', async () => {
 	const customSettings: Partial<AccountSettings> = {

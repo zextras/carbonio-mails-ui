@@ -10,18 +10,18 @@ import { useModal } from '@zextras/carbonio-design-system';
 import { t, useAppContext } from '@zextras/carbonio-shell-ui';
 import { FOLDERS, FolderActionsType, Folder } from '@zextras/carbonio-ui-commons';
 
-import { folderActionSoapApi } from '../../../api/folder-action-soap-api';
-import { setMessagesInEmailStore } from '../../../store/emails/store';
-import { populateMessagesInEmailStore } from '../../../tests/generators/generateMessage';
-import { FolderActionsProps } from '../../../types/sidebar';
-import { SelectFolderModal } from '../../../ui-actions/modals/select-folder-modal';
-import { DeleteModal } from '../delete-modal';
-import { EditModal } from '../edit-modal';
-import { EmptyModal } from '../empty-modal';
-import { NewModal } from '../new-modal';
-import { SharesInfoModal } from '../shares-info-modal';
-import { useFolderActions } from '../use-folder-actions';
 import { generateFolder } from '@test-utils/folders/folders-generator';
+import { folderActionSoapApi } from 'api/folder-action-soap-api';
+import { setMessagesInEmailStore } from 'store/emails/store';
+import { populateMessagesInEmailStore } from 'tests/generators/generateMessage';
+import { FolderActionsProps } from 'types/sidebar/index.d';
+import { SelectFolderModal } from 'ui-actions/modals/select-folder-modal';
+import { DeleteModal } from 'views/sidebar/delete-modal';
+import { EditModal } from 'views/sidebar/edit-modal';
+import { EmptyModal } from 'views/sidebar/empty-modal';
+import { NewModal } from 'views/sidebar/new-modal';
+import { SharesInfoModal } from 'views/sidebar/shares-info-modal';
+import { useFolderActions } from 'views/sidebar/use-folder-actions';
 
 jest.mock('@zextras/carbonio-design-system', () => ({
 	...jest.requireActual('@zextras/carbonio-design-system'),

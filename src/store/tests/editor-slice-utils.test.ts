@@ -7,10 +7,10 @@
 import * as shellHooks from '@zextras/carbonio-shell-ui';
 import { AvailableAddress, FOLDERS, ParticipantRole } from '@zextras/carbonio-ui-commons';
 
-import { getAvailableAddresses } from '../../helpers/get-available-addresses';
-import { generateMessage } from '../../tests/generators/generateMessage';
-import { retrieveALL, retrieveCC, retrieveReplyTo } from '../editor-slice-utils';
 import { generateAccount } from '@test-utils/accounts/account-generator';
+import { getAvailableAddresses } from 'helpers/get-available-addresses';
+import { retrieveALL, retrieveCC, retrieveReplyTo } from 'store/editor-slice-utils';
+import { generateMessage } from 'tests/generators/generateMessage';
 
 jest.mock('../../helpers/get-available-addresses', () => ({
 	getAvailableAddresses: jest.fn()

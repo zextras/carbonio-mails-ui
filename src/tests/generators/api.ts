@@ -7,14 +7,14 @@
 
 import { DefaultBodyType, http, HttpResponse } from 'msw';
 
+import { getSetupServer } from '@jest-setup';
 import {
 	SoapConversation,
 	SoapIncompleteMessage,
 	SoapMailMessage,
 	SoapMailMessagePart,
 	SoapMailParticipant
-} from '../../types';
-import { getSetupServer } from '@jest-setup';
+} from 'types/index.d';
 
 export function generateMessagePartFromAPI(
 	params: Partial<SoapMailMessagePart> = {}

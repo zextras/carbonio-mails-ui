@@ -4,30 +4,30 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { getUserSettings, t } from '@zextras/carbonio-shell-ui';
+import { ParticipantRole, getRootsMap } from '@zextras/carbonio-ui-commons';
 import { v4 as uuid } from 'uuid';
 
-import { ParticipantRole, getRootsMap } from '@zextras/carbonio-ui-commons';
-import { convertHtmlToPlainText } from '../../commons/utilities';
-import { LineType } from '../../commons/utils';
-import { EditViewActions, NO_ACCOUNT_NAME } from '../../constants';
+import { convertHtmlToPlainText } from 'commons/utilities';
+import { LineType } from 'commons/utils';
+import { EditViewActions, NO_ACCOUNT_NAME } from 'constants/index';
 import {
 	getAddressOwnerAccount,
 	getDefaultIdentity,
 	getIdentityFromParticipant,
 	getRecipientReplyIdentity
-} from '../../helpers/identities';
-import { getFromParticipantFromMessage } from '../../helpers/messages';
-import { getMailBodyWithSignature } from '../../helpers/signatures';
+} from 'helpers/identities';
+import { getFromParticipantFromMessage } from 'helpers/messages';
+import { getMailBodyWithSignature } from 'helpers/signatures';
 import {
-	EditViewActionsType,
-	EditorPrefillData,
-	EditorRecipients,
-	EditorText,
-	MailMessage,
-	MailsEditorV2,
-	Participant,
-	UnsavedAttachment
-} from '../../types';
+	buildSavedAttachments,
+	replaceCidUrlWithServiceUrl
+} from 'store/editor/editor-transformations';
+import {
+	computeDraftSaveAllowedStatus,
+	computeSendAllowedStatus,
+	filterSavedInlineAttachment
+} from 'store/editor/editor-utils';
+import { getEditor } from 'store/editor/hooks';
 import {
 	extractBody,
 	generateReplyText,
@@ -37,14 +37,17 @@ import {
 	retrieveCCForEditNew,
 	retrieveReplyTo,
 	retrieveTO
-} from '../editor-slice-utils';
-import { buildSavedAttachments, replaceCidUrlWithServiceUrl } from './editor-transformations';
+} from 'store/editor-slice-utils';
 import {
-	computeDraftSaveAllowedStatus,
-	computeSendAllowedStatus,
-	filterSavedInlineAttachment
-} from './editor-utils';
-import { getEditor } from './hooks';
+	EditViewActionsType,
+	EditorPrefillData,
+	EditorRecipients,
+	EditorText,
+	MailMessage,
+	MailsEditorV2,
+	Participant,
+	UnsavedAttachment
+} from 'types/index.d';
 
 // Regex reply msg title
 const REPLY_REGEX = /(^(re:\s)+)/i;

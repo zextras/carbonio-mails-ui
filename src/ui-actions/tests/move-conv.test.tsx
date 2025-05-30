@@ -11,13 +11,13 @@ import { FOLDERS, getFolder } from '@zextras/carbonio-ui-commons';
 import { times } from 'lodash';
 import * as reactRouterDom from 'react-router-dom';
 
-import { generateConversation } from '../../tests/generators/generateConversation';
-import { ConvActionRequest, ConvActionResponse, NormalizedConversation } from '../../types';
-import { MoveConversation } from '../move-conv';
 import { makeListItemsVisible, setupTest } from '@test-setup';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 import { populateFoldersStore } from '@test-utils/store/folders';
 import { buildSoapErrorResponseBody } from '@test-utils/utils/soap';
+import { generateConversation } from 'tests/generators/generateConversation';
+import { ConvActionRequest, ConvActionResponse, NormalizedConversation } from 'types/index.d';
+import { MoveConversation } from 'ui-actions/move-conv';
 
 jest.mock('react-router-dom', () => ({
 	...jest.requireActual('react-router-dom'),

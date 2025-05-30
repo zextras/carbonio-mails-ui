@@ -20,11 +20,11 @@ import { getTags, Tag, ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-ui-commo
 import { map } from 'lodash';
 import { Controller, UseFormSetValue } from 'react-hook-form';
 
-import { isSharedAccountFolder } from '../../../helpers/folders';
-import type { ChipOnAdd, Folder } from '../../../types';
-import { SelectFolderModal } from '../../../ui-actions/modals/select-folder-modal';
-import { getFolderIconColor } from '../../sidebar/utils';
-import { AdvancedFilterModalFormValues, FormValuesControlProps } from '../types/types';
+import { isSharedAccountFolder } from 'helpers/folders';
+import type { ChipOnAdd, Folder } from 'types/index.d';
+import { SelectFolderModal } from 'ui-actions/modals/select-folder-modal';
+import { AdvancedFilterModalFormValues, FormValuesControlProps } from 'views/search/types/types';
+import { getFolderIconColor } from 'views/sidebar/utils';
 
 type TagFolderRowControlProps = FormValuesControlProps & {
 	setValue: UseFormSetValue<AdvancedFilterModalFormValues>;

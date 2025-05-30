@@ -10,11 +10,11 @@ import { report, t } from '@zextras/carbonio-shell-ui';
 import { FOLDERS, ModalFooter, ModalHeader } from '@zextras/carbonio-ui-commons';
 import { startsWith } from 'lodash';
 
-import { folderActionSoapApi } from '../../api/folder-action-soap-api';
-import { FOLDER_ACTIONS } from '../../commons/utilities';
-import { isSharedAccountFolder, isTrashed } from '../../helpers/folders';
-import { useUiUtilities } from '../../hooks/use-ui-utilities';
-import type { ModalProps } from '../../types';
+import { folderActionSoapApi } from 'api/folder-action-soap-api';
+import { FOLDER_ACTIONS } from 'commons/utilities';
+import { isSharedAccountFolder, isTrashed } from 'helpers/folders';
+import { useUiUtilities } from 'hooks/use-ui-utilities';
+import type { ModalProps } from 'types/index.d';
 
 export const DeleteModal: FC<ModalProps> = ({ folder, onClose }) => {
 	const { createSnackbar } = useUiUtilities();

@@ -3,16 +3,16 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useCallback, useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 
 import { useTranslation } from 'react-i18next';
 
-import { getMsgsForPrintSoapApi } from '../../api';
-import { getContentForPrint } from '../../commons/print-conversation/print-conversation';
-import { MessageActionsDescriptors } from '../../constants';
-import { isDraft, isTrash } from '../../helpers/folders';
-import type { ActionFn, MailMessage, UIActionDescriptor } from '../../types';
-import { errorPage } from '../../ui-actions/error-page';
+import { getMsgsForPrintSoapApi } from 'api/index';
+import { getContentForPrint } from 'commons/print-conversation/print-conversation';
+import { MessageActionsDescriptors } from 'constants/index';
+import { isDraft, isTrash } from 'helpers/folders';
+import type { ActionFn, MailMessage, UIActionDescriptor } from 'types/index.d';
+import { errorPage } from 'ui-actions/error-page';
 
 export const useMsgPrintFn = (message: MailMessage, folderId: string): ActionFn => {
 	const canExecute = useCallback(

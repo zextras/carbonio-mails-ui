@@ -3,14 +3,14 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useCallback, useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 
 import { useTranslation } from 'react-i18next';
 
-import { ConversationActionsDescriptors } from '../../constants';
-import { isDraft } from '../../helpers/folders';
-import { convActionEmailStoreAction } from '../../store/emails/actions/conv-action-action';
-import { ActionFn, UIActionDescriptor } from '../../types';
+import { ConversationActionsDescriptors } from 'constants/index';
+import { isDraft } from 'helpers/folders';
+import { convActionEmailStoreAction } from 'store/emails/actions/conv-action-action';
+import { ActionFn, UIActionDescriptor } from 'types/index.d';
 
 type ConvSetMsgReadFunctionsParameter = {
 	ids: Array<string>;

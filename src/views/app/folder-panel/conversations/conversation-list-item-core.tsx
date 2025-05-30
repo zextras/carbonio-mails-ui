@@ -15,14 +15,14 @@ import {
 	Text,
 	Tooltip
 } from '@zextras/carbonio-design-system';
+import { Tag, useTags, ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-ui-commons';
 import { filter, forEach, includes, isEmpty, reduce, uniqBy } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
-import { Tag, useTags, ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-ui-commons';
-import { NormalizedConversation, TextReadValuesProps } from '../../../../types';
-import { ItemAvatar } from '../parts/item-avatar';
-import { ParticipantsName } from '../parts/participants-name';
-import { RowInfo } from '../parts/row-info';
+import { NormalizedConversation, TextReadValuesProps } from 'types/index.d';
+import { ItemAvatar } from 'views/app/folder-panel/parts/item-avatar';
+import { ParticipantsName } from 'views/app/folder-panel/parts/participants-name';
+import { RowInfo } from 'views/app/folder-panel/parts/row-info';
 
 type ConversationListItemCoreProps = {
 	conversation: NormalizedConversation;

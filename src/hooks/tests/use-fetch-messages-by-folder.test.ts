@@ -10,17 +10,17 @@ import { renderHook, waitFor } from '@testing-library/react';
 import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 import { useFolderStore } from '@zextras/carbonio-ui-commons';
 
-import { API_REQUEST_STATUS } from '../../constants';
-import { parseMessageSortingOptions } from '../../helpers/sorting';
-import {
-	resetMessagesAndPopulatedItems,
-	updateMessagesResultsLoadingStatus
-} from '../../store/emails/store';
-import { SearchRequest, SearchResponse } from '../../types';
-import { useFetchMessagesByFolder } from '../use-fetch-messages-by-folder';
 import { generateFolder } from '@test-utils/folders/folders-generator';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 import { buildSoapErrorResponseBody } from '@test-utils/utils/soap';
+import { API_REQUEST_STATUS } from 'constants/index';
+import { parseMessageSortingOptions } from 'helpers/sorting';
+import { useFetchMessagesByFolder } from 'hooks/use-fetch-messages-by-folder';
+import {
+	resetMessagesAndPopulatedItems,
+	updateMessagesResultsLoadingStatus
+} from 'store/emails/store';
+import { SearchRequest, SearchResponse } from 'types/index.d';
 
 const folder = generateFolder({ id: '2' });
 jest.mock('../../store/emails/store', () => ({

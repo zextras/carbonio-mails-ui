@@ -10,14 +10,29 @@
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { cloneDeep, map } from 'lodash';
 
-import * as getMsg from '../../../../api/get-msg-soap-api';
-import { API_REQUEST_STATUS, DEFAULT_API_DEBOUNCE_TIME } from '../../../../constants';
+import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import * as getMsg from 'api/get-msg-soap-api';
+import { API_REQUEST_STATUS, DEFAULT_API_DEBOUNCE_TIME } from 'constants/index';
 import {
-	generateCompleteMessageFromAPI,
-	generateConvMessageFromAPI
-} from '../../../../tests/generators/api';
-import { generateConversation } from '../../../../tests/generators/generateConversation';
-import { generateMessage } from '../../../../tests/generators/generateMessage';
+	useCompleteConversationOrFetch,
+	useCompleteMessageOrFetch
+} from 'store/emails/hooks/hooks';
+import { CONVERSATION_INDEX_SLICE_INITIAL_STATE } from 'store/emails/slices/conversations/conversations-index-slice';
+import { MESSAGE_INDEX_SLICE_INITIAL_STATE } from 'store/emails/slices/messages/messages-slice';
+import { deleteMessagesFromConversation } from 'store/emails/slices/populated-items/utils';
+import { SEARCH_INDEX_SLICE_INITIAL_STATE } from 'store/emails/slices/search/search-slice';
+import {
+	setMessagesInEmailStore,
+	setSearchResultsByConversation,
+	setSearchResultsByMessage,
+	updateConversationStatus,
+	updateMessageStatus,
+	useConversationStatus,
+	useMessageStatus
+} from 'store/emails/store';
+import { generateCompleteMessageFromAPI, generateConvMessageFromAPI } from 'tests/generators/api';
+import { generateConversation } from 'tests/generators/generateConversation';
+import { generateMessage } from 'tests/generators/generateMessage';
 import {
 	ConvMessage,
 	EmailsStoreState,
@@ -27,22 +42,7 @@ import {
 	NormalizedConversation,
 	SearchConvRequest,
 	SearchConvResponse
-} from '../../../../types';
-import { CONVERSATION_INDEX_SLICE_INITIAL_STATE } from '../../slices/conversations/conversations-index-slice';
-import { MESSAGE_INDEX_SLICE_INITIAL_STATE } from '../../slices/messages/messages-slice';
-import { deleteMessagesFromConversation } from '../../slices/populated-items/utils';
-import { SEARCH_INDEX_SLICE_INITIAL_STATE } from '../../slices/search/search-slice';
-import {
-	setMessagesInEmailStore,
-	setSearchResultsByConversation,
-	setSearchResultsByMessage,
-	updateConversationStatus,
-	updateMessageStatus,
-	useConversationStatus,
-	useMessageStatus
-} from '../../store';
-import { useCompleteConversationOrFetch, useCompleteMessageOrFetch } from '../hooks';
-import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+} from 'types/index.d';
 
 function awaitDebounce(): void {
 	act(() => {

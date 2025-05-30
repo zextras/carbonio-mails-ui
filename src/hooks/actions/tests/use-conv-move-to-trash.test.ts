@@ -11,12 +11,15 @@ import { fireEvent } from '@testing-library/react';
 import { FOLDER_VIEW, FOLDERS } from '@zextras/carbonio-ui-commons';
 import { times } from 'lodash';
 
-import { FOLDERS_DESCRIPTORS } from '../../../constants';
-import { MsgActionRequest, MsgActionResponse } from '../../../types';
-import { useConvMoveToTrashDescriptor, useConvMoveToTrashFn } from '../use-conv-move-to-trash';
 import { setupHook, screen } from '@test-setup';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 import { populateFoldersStore } from '@test-utils/store/folders';
+import { FOLDERS_DESCRIPTORS } from 'constants/index';
+import {
+	useConvMoveToTrashDescriptor,
+	useConvMoveToTrashFn
+} from 'hooks/actions/use-conv-move-to-trash';
+import { MsgActionRequest, MsgActionResponse } from 'types/index.d';
 
 describe('useConMoveToTrash', () => {
 	populateFoldersStore({ view: FOLDER_VIEW.message });

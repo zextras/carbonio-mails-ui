@@ -7,16 +7,16 @@
 
 import React, { useCallback } from 'react';
 
-import { searchSoapApi } from '../../../../api/search-soap-api';
-import { API_REQUEST_STATUS } from '../../../../constants';
-import { normalizeConversations } from '../../../../normalizations/normalize-conversation';
+import { searchSoapApi } from 'api/search-soap-api';
+import { API_REQUEST_STATUS } from 'constants/index';
+import { normalizeConversations } from 'normalizations/normalize-conversation';
 import {
 	appendConversationsToConversationIndexSlice,
 	updateConversationsResultsLoadingStatus,
 	updateMessages
-} from '../../../../store/emails/store';
-import { SearchResponse } from '../../../../types';
-import { extractConvMessage } from '../../../sidebar/commons/use-sync-data-handler';
+} from 'store/emails/store';
+import { SearchResponse } from 'types/index.d';
+import { extractConvMessage } from 'views/sidebar/commons/use-sync-data-handler';
 
 function handleLoadMoreResults({
 	searchResponse,

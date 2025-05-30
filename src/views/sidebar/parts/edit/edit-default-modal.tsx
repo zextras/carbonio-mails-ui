@@ -17,15 +17,15 @@ import {
 } from '@zextras/carbonio-ui-commons';
 import { includes, isEmpty } from 'lodash';
 
-import { FolderDetails } from './folder-details';
-import NameInputRow from './name-input';
-import { RetentionPolicies } from './retention-policies';
-import { ShareFolderProperties } from './share-folder-properties';
-import { folderActionSoapApi } from '../../../../api/folder-action-soap-api';
-import { useUiUtilities } from '../../../../hooks/use-ui-utilities';
-import { ModalProps } from '../../../../types';
-import { RetentionPolicyState } from '../../commons/types';
-import { getFolderTranslatedName, useTranslatedSystemFolders } from '../../utils';
+import { folderActionSoapApi } from 'api/folder-action-soap-api';
+import { useUiUtilities } from 'hooks/use-ui-utilities';
+import { ModalProps } from 'types/index.d';
+import { RetentionPolicyState } from 'views/sidebar/commons/types';
+import { FolderDetails } from 'views/sidebar/parts/edit/folder-details';
+import NameInputRow from 'views/sidebar/parts/edit/name-input';
+import { RetentionPolicies } from 'views/sidebar/parts/edit/retention-policies';
+import { ShareFolderProperties } from 'views/sidebar/parts/edit/share-folder-properties';
+import { getFolderTranslatedName, useTranslatedSystemFolders } from 'views/sidebar/utils';
 
 const numberRegex = /^\d+$/;
 const DAYS_LABEL = 'label.days';

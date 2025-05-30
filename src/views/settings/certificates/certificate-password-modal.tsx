@@ -18,8 +18,8 @@ import {
 import { ModalFooter, ModalHeader } from '@zextras/carbonio-ui-commons';
 import { useTranslation } from 'react-i18next';
 
-import { createEncryptionPassword } from '../../../api/create-password-api';
-import { useSmimePasswordStore } from '../../../store/certificates/store';
+import { createEncryptionPassword } from 'api/create-password-api';
+import { useSmimePasswordStore } from 'store/certificates/store';
 
 type CertificatePasswordModalPropType = {
 	isReset?: boolean;

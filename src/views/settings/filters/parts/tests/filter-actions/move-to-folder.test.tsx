@@ -5,13 +5,14 @@
  */
 
 import React from 'react';
-import { act, screen } from '@testing-library/react';
 
+import { act, screen } from '@testing-library/react';
 import { FOLDER_VIEW, FOLDERS } from '@zextras/carbonio-ui-commons';
-import { MovetoFolder } from '../../filter-actions/move-to-folder';
+
 import { makeListItemsVisible, setupTest } from '@test-setup';
 import { generateFolder } from '@test-utils/folders/folders-generator';
 import { populateFoldersStore } from '@test-utils/store/folders';
+import { MovetoFolder } from 'views/settings/filters/parts/filter-actions/move-to-folder';
 
 describe('Move to Folder', () => {
 	it('should render initial folder destination in input', async () => {

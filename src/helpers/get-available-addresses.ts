@@ -7,7 +7,7 @@ import { getUserAccount, getUserSettings } from '@zextras/carbonio-shell-ui';
 import { AvailableAddress } from '@zextras/carbonio-ui-commons';
 import { isArray } from 'lodash';
 
-import { NO_ACCOUNT_NAME } from '../constants';
+import { NO_ACCOUNT_NAME } from 'constants/index';
 
 /**
  * Retrieves the available email addresses for the user, including:

@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { getMocksContext, getRandomIdentities } from '../mocks-context';
+import { getMocksContext, getRandomIdentities } from '@test-utils/utils/mocks-context';
 
 describe('mocks-context', () => {
 	describe('getRandomIdentities', () => {

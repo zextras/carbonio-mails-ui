@@ -8,11 +8,11 @@ import React from 'react';
 
 import { screen } from '@testing-library/react';
 
-import { getMessageById } from '../../../../../store/emails/store';
-import AttachmentsBlock from '../attachments-block';
-import { useAppContext } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
 import { setupTest } from '@test-setup';
+import { useAppContext } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
 import { previewContextMock } from '@test-utils/carbonio-ui-preview';
+import { getMessageById } from 'store/emails/store';
+import AttachmentsBlock from 'views/app/detail-panel/preview/attachments-block';
 
 describe('attachments-block', () => {
 	test('carbonio-preview available, file is a pdf, tooltip says click to preview', async () => {

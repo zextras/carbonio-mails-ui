@@ -17,11 +17,11 @@ import {
 import { ModalFooter, ModalHeader } from '@zextras/carbonio-ui-commons';
 import { useTranslation } from 'react-i18next';
 
-import CertificateDeleteModal from './certificate-delete-modal';
-import { deletePersonalCertificate } from '../../../api/delete-personal-certificate-api';
-import { selectPersonalCertificate } from '../../../api/select-personal-certificate-api';
-import { useSmimePasswordStore } from '../../../store/certificates/store';
-import { Certificate } from '../../../types/certificates/certificates';
+import { deletePersonalCertificate } from 'api/delete-personal-certificate-api';
+import { selectPersonalCertificate } from 'api/select-personal-certificate-api';
+import { useSmimePasswordStore } from 'store/certificates/store';
+import { Certificate } from 'types/certificates/certificates';
+import CertificateDeleteModal from 'views/settings/certificates/certificate-delete-modal';
 
 type ShowAllCertificatesModalPropType = {
 	certificates: Certificate[];

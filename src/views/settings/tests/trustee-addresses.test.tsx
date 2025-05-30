@@ -11,10 +11,10 @@ import { act } from '@testing-library/react';
 import { AccountSettings } from '@zextras/carbonio-shell-ui';
 import { times } from 'lodash';
 
-import type { InputProps } from '../../../types';
-import TrusteeAddresses from '../trustee-addresses';
 import { setupTest, within, screen } from '@test-setup';
 import { generateSettings } from '@test-utils/settings/settings-generator';
+import type { InputProps } from 'types/index.d';
+import TrusteeAddresses from 'views/settings/trustee-addresses';
 
 const FIND_TIMEOUT = 2000;
 const TRUSTEE_LIST = 'trustee-list';

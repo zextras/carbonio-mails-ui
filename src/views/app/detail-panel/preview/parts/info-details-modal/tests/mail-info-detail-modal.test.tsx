@@ -8,8 +8,8 @@ import React from 'react';
 
 import { screen } from '@testing-library/react';
 
-import { MailInfoDetailModal } from '../mail-info-detail-modal';
 import { setupTest } from '@test-setup';
+import { MailInfoDetailModal } from 'views/app/detail-panel/preview/parts/info-details-modal/mail-info-detail-modal';
 
 const signature = {
 	type: 'SMIME',

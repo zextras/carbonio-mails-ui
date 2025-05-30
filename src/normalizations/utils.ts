@@ -4,9 +4,8 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { filter, find, isNil } from 'lodash';
-
 import { getTags } from '@zextras/carbonio-ui-commons';
+import { filter, find, isNil } from 'lodash';
 
 const getTagIdsFromName = (names: string | undefined): Array<string> => {
 	const tags = getTags();

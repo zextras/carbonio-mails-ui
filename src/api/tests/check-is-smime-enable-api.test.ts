@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { checkIsSmimeEnabled } from '../check-is-smime-enable-api';
+import { checkIsSmimeEnabled } from 'api/check-is-smime-enable-api';
 
 const apiURL = '/service/extension/encryption/password/enabled';
 

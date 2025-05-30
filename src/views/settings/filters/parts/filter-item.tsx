@@ -8,7 +8,7 @@ import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
 import { Container, Text, Row, Icon, Padding } from '@zextras/carbonio-design-system';
 import styled from 'styled-components';
 
-import { Filter } from '../../../../types';
+import { Filter } from 'types/index.d';
 
 const StyledFilterRow = styled(Row)`
 	border-bottom: 0.0625rem solid ${({ theme }): string => theme.palette.gray2.regular};

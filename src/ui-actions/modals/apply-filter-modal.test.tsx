@@ -8,8 +8,8 @@ import React from 'react';
 
 import { act, screen } from '@testing-library/react';
 
-import { ApplyFilterModal } from './apply-filter-modal';
 import { setupTest } from '@test-setup';
+import { ApplyFilterModal } from 'ui-actions/modals/apply-filter-modal';
 
 describe('Apply Filter Modal', () => {
 	test('should render the modal', async () => {

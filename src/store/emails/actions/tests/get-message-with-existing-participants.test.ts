@@ -5,13 +5,14 @@
  */
 
 import { ParticipantRole } from '@zextras/carbonio-ui-commons';
-import { getMsgSoapApi } from '../../../../api/get-msg-soap-api';
-import { API_REQUEST_STATUS } from '../../../../constants';
-import { normalizeMailMessageFromSoap } from '../../../../normalizations/normalize-message';
-import { GetMsgResponse } from '../../../../types';
-import { updateMessages, updateMessageStatus } from '../../store';
-import { getMessageWithExistingParticipantsEmailStoreAction } from '../get-message-with-existing-participants';
-import { getSoapMailMessage } from './test-utils';
+
+import { getMsgSoapApi } from 'api/get-msg-soap-api';
+import { API_REQUEST_STATUS } from 'constants/index';
+import { normalizeMailMessageFromSoap } from 'normalizations/normalize-message';
+import { getMessageWithExistingParticipantsEmailStoreAction } from 'store/emails/actions/get-message-with-existing-participants';
+import { getSoapMailMessage } from 'store/emails/actions/tests/test-utils';
+import { updateMessages, updateMessageStatus } from 'store/emails/store';
+import { GetMsgResponse } from 'types/index.d';
 
 jest.mock('../../../../api/get-msg-soap-api');
 jest.mock('../../store');

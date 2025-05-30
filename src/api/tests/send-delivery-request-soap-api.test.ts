@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { sendDeliveryReportSoapApi } from '../send-delivery-request-soap-api';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import { sendDeliveryReportSoapApi } from 'api/send-delivery-request-soap-api';
 
 describe('sendDeliveryReportSoapApi', () => {
 	it('should call soapFetch with the correct parameters', async () => {

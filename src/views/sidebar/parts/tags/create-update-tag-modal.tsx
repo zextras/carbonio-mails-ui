@@ -17,8 +17,8 @@ import {
 	renameTag
 } from '@zextras/carbonio-ui-commons';
 
-import { useUiUtilities } from '../../../../hooks/use-ui-utilities';
-import ColorPicker from '../../../../integrations/shared-invite-reply/parts/color-select';
+import { useUiUtilities } from 'hooks/use-ui-utilities';
+import ColorPicker from 'integrations/shared-invite-reply/parts/color-select';
 
 const NonSupportedCharacters = /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]+/;
 const CreateUpdateTagModal: FC<CreateUpdateTagModalPropType> = ({

@@ -6,15 +6,15 @@
 /* eslint-disable no-param-reassign */
 
 import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
+import { FOLDERS, useFolder } from '@zextras/carbonio-ui-commons';
 import produce from 'immer';
 import { filter, forEach, keyBy, merge } from 'lodash';
 import { StoreApi, UseBoundStore } from 'zustand';
 
-import { FOLDERS, useFolder } from '@zextras/carbonio-ui-commons';
-import { RemoveAttachmentsResponse } from '../../../../api/delete-all-attachments-soap-api';
-import { CONVACTIONS } from '../../../../commons/utilities';
-import { API_REQUEST_STATUS } from '../../../../constants';
-import { normalizeMailMessageFromSoap } from '../../../../normalizations/normalize-message';
+import { RemoveAttachmentsResponse } from 'api/delete-all-attachments-soap-api';
+import { CONVACTIONS } from 'commons/utilities';
+import { API_REQUEST_STATUS } from 'constants/index';
+import { normalizeMailMessageFromSoap } from 'normalizations/normalize-message';
 import {
 	ConvActionParameters,
 	EmailsStoreState,
@@ -24,7 +24,7 @@ import {
 	NormalizedConversation,
 	SearchRequestStatus,
 	type ConvActionResponse
-} from '../../../../types';
+} from 'types/index.d';
 
 function useConversationMessages(
 	conversationId: string,

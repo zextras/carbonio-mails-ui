@@ -12,7 +12,7 @@ import {
 } from '@zextras/carbonio-ui-commons';
 import { filter, values } from 'lodash';
 
-import { generateFolders } from '../folders/folders-generator';
+import { generateFolders } from '@test-utils/folders/folders-generator';
 
 /**
  * Initialize the folder's store with roots and folders provided by

@@ -6,8 +6,12 @@
 
 import { Folder, FOLDERS, OnDropActionProps, ROOT_NAME } from '@zextras/carbonio-ui-commons';
 
-import { getFolderIconName, getTotalUnreadCountInSubfolders, handleDragEnter } from '../utils';
 import { generateFolder } from '@test-utils/folders/folders-generator';
+import {
+	getFolderIconName,
+	getTotalUnreadCountInSubfolders,
+	handleDragEnter
+} from 'views/sidebar/utils';
 
 describe('utils', () => {
 	describe('handleDragEnter', () => {

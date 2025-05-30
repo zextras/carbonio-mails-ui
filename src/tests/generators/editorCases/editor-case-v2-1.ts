@@ -6,9 +6,9 @@
 
 import { faker } from '@faker-js/faker';
 
-import { EditViewActions } from '../../../constants';
-import { MailsEditorV2 } from '../../../types';
 import { getMocksContext } from '@test-utils/utils/mocks-context';
+import { EditViewActions } from 'constants/index';
+import { MailsEditorV2 } from 'types/index.d';
 
 const FAKE_MESSAGE_ID = '11215';
 

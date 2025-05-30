@@ -13,18 +13,18 @@ import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 
 import { FOLDERS, useTags } from '@zextras/carbonio-ui-commons';
 import { omit } from 'lodash';
-import { CONVACTIONS } from '../../../../../commons/utilities';
-import { API_REQUEST_STATUS } from '../../../../../constants';
-import { generateCompleteMessageFromAPI } from '../../../../../tests/generators/api';
+import { CONVACTIONS } from 'commons/utilities';
+import { API_REQUEST_STATUS } from 'constants/index';
+import { generateCompleteMessageFromAPI } from 'tests/generators/api';
 import {
 	generateConversation,
 	populateConversationInEmailStore
-} from '../../../../../tests/generators/generateConversation';
+} from 'tests/generators/generateConversation';
 import {
 	generateMessage,
 	populateMessagesInEmailStore
-} from '../../../../../tests/generators/generateMessage';
-import { ConvActionResponse, MailMessage } from '../../../../../types';
+} from 'tests/generators/generateMessage';
+import { ConvActionResponse, MailMessage } from 'types/index.d';
 import {
 	appendConversations,
 	getConversationMessages,
@@ -51,7 +51,7 @@ import {
 	useMessagesByFolder,
 	useMessagesByIds,
 	useMessageStatus
-} from '../../../store';
+} from 'store/emails/store';
 
 const { setMessagesInSearchSlice } = getUseEmailStoreAndHooksForTesting();
 

@@ -3,11 +3,11 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 
-import { getParentFolderId } from '../../helpers/folders';
-import { UIActionDescriptor } from '../../types';
-import { useConvReplyDescriptor } from './use-conv-reply';
+import { getParentFolderId } from 'helpers/folders';
+import { useConvReplyDescriptor } from 'hooks/actions/use-conv-reply';
+import { UIActionDescriptor } from 'types/index.d';
 
 export type HoverMessageActionsType = {
 	firstMessageId: string;

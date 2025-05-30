@@ -7,15 +7,15 @@ import { faker } from '@faker-js/faker';
 import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 import { FOLDER_VIEW } from '@zextras/carbonio-ui-commons';
 
-import { ISoapFolderObj } from '../../types';
-import { CreateMountpointError } from '../errors/create-mountpoint-error';
+import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import { buildSoapErrorResponseBody } from '@test-utils/utils/soap';
+import { CreateMountpointError } from 'api/errors/create-mountpoint-error';
 import {
 	CreateMountpointResponse,
 	MountSharedFolderParams,
 	mountSharedFolderSoapApi
-} from '../mount-shared-folder-soap-api';
-import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
-import { buildSoapErrorResponseBody } from '@test-utils/utils/soap';
+} from 'api/mount-shared-folder-soap-api';
+import { ISoapFolderObj } from 'types/index.d';
 
 describe('mountShareCalendar', () => {
 	it('raise an error if the response is an error', async () => {

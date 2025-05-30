@@ -10,11 +10,14 @@ import * as hooks from '@zextras/carbonio-shell-ui';
 import { FOLDERS } from '@zextras/carbonio-ui-commons';
 import { times } from 'lodash';
 
-import { FOLDERS_DESCRIPTORS } from '../../../constants';
-import { TIMERS } from '../../../tests/constants';
-import { useMsgMoveToFolderDescriptor, useMsgMoveToFolderFn } from '../use-msg-move-to-folder';
 import { setupHook, screen } from '@test-setup';
 import { generateSettings } from '@test-utils/settings/settings-generator';
+import { FOLDERS_DESCRIPTORS } from 'constants/index';
+import {
+	useMsgMoveToFolderDescriptor,
+	useMsgMoveToFolderFn
+} from 'hooks/actions/use-msg-move-to-folder';
+import { TIMERS } from 'tests/constants';
 
 const settings = generateSettings({
 	prefs: {

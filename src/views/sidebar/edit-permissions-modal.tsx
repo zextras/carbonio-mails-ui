@@ -23,15 +23,12 @@ import {
 	useContactInput
 } from '@zextras/carbonio-ui-commons';
 
-import { sendShareNotificationSoapApi } from '../../api/send-share-notification-soap-api';
-import { shareFolderSoapApi } from '../../api/share-folder-soap-api';
-import { useUiUtilities } from '../../hooks/use-ui-utilities';
-import { EditPermissionsModalProps } from '../../types/sidebar';
-import { GranteeInfo } from './parts/edit/share-folder-properties';
-import {
-	ShareCalendarRoleOptions,
-	findLabel
-} from '../../integrations/shared-invite-reply/parts/utils';
+import { sendShareNotificationSoapApi } from 'api/send-share-notification-soap-api';
+import { shareFolderSoapApi } from 'api/share-folder-soap-api';
+import { useUiUtilities } from 'hooks/use-ui-utilities';
+import { ShareCalendarRoleOptions, findLabel } from 'integrations/shared-invite-reply/parts/utils';
+import { EditPermissionsModalProps } from 'types/sidebar/index.d';
+import { GranteeInfo } from 'views/sidebar/parts/edit/share-folder-properties';
 
 // TODO refactor IRIS-4324
 const EditPermissionsModal: FC<EditPermissionsModalProps> = ({

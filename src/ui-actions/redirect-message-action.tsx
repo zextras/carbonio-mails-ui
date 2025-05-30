@@ -16,9 +16,9 @@ import {
 import { map, some } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
-import { redirectMessageSoapApi } from '../api';
-import { TIMEOUTS } from '../constants';
-import { useUiUtilities } from '../hooks/use-ui-utilities';
+import { redirectMessageSoapApi } from 'api/index';
+import { TIMEOUTS } from 'constants/index';
+import { useUiUtilities } from 'hooks/use-ui-utilities';
 
 type RedirectActionProps = { onClose: () => void; id: string };
 

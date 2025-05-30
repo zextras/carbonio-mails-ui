@@ -14,9 +14,9 @@ import {
 	AttachmentTypeItemsConstantProps,
 	emailStatusItemsConstant,
 	EmailStatusItemsConstantProps
-} from '../../../constants';
-import type { ChipOnAdd, ChipOnAddItem, ChipOnAddProps } from '../../../types';
-import { FormValuesControlProps } from '../types/types';
+} from 'constants/index';
+import type { ChipOnAdd, ChipOnAddItem, ChipOnAddProps } from 'types/index.d';
+import { FormValuesControlProps } from 'views/search/types/types';
 
 export const AttachmentTypeEmailStatusRow = ({
 	control

@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { ACTION_OPTION_KEYS } from '../../views/settings/filters/constants';
+import { ACTION_OPTION_KEYS } from 'views/settings/filters/constants';
 
 const TEST_CONDITIONS = [
 	'bodyTest',

@@ -9,13 +9,13 @@ import React, { useCallback, useState } from 'react';
 import { act, screen } from '@testing-library/react';
 import { CONTACT_TYPES, ParticipantRole } from '@zextras/carbonio-ui-commons';
 
-import { Participant } from '../../../../../../types';
-import { RecipientsRow } from '../recipients-row';
 import { setupTest, UserEvent } from '@test-setup';
 import {
 	generateMockContactInputItem,
 	mockContactInput
 } from '@test-utils/integrations/mock-contact-input';
+import { Participant } from 'types/index.d';
+import { RecipientsRow } from 'views/app/detail-panel/edit/parts/recipients-row';
 
 const triggerOnAdd = async (user: UserEvent): Promise<void> => {
 	await paste(user, screen.getByTestId('mockedContactInput'), 'any value is ok');

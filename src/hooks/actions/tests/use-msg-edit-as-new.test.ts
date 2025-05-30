@@ -6,11 +6,11 @@
 
 import { FOLDERS } from '@zextras/carbonio-ui-commons';
 
-import { FOLDERS_DESCRIPTORS } from '../../../constants';
-import { generateMessage } from '../../../tests/generators/generateMessage';
-import { useMsgEditAsNewDescriptor, useMsgEditAsNewFn } from '../use-msg-edit-as-new';
 import { setupHook } from '@test-setup';
 import { addBoard } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
+import { FOLDERS_DESCRIPTORS } from 'constants/index';
+import { useMsgEditAsNewDescriptor, useMsgEditAsNewFn } from 'hooks/actions/use-msg-edit-as-new';
+import { generateMessage } from 'tests/generators/generateMessage';
 
 describe('useMsgEditAsNew', () => {
 	const msg = generateMessage();

@@ -9,11 +9,11 @@ import React from 'react';
 import { screen } from '@testing-library/react';
 import { getFolder } from '@zextras/carbonio-ui-commons';
 
-import { useBackupSearchStore } from '../../../store/backup-search/store';
-import { BackupSearchMessageListItem } from '../parts/backup-search-message-list-item';
 import { setupTest } from '@test-setup';
 import { getUserAccount } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
 import { generateFolder } from '@test-utils/folders/folders-generator';
+import { useBackupSearchStore } from 'store/backup-search/store';
+import { BackupSearchMessageListItem } from 'views/backup-search/parts/backup-search-message-list-item';
 
 jest.mock('@zextras/carbonio-ui-commons', () => ({
 	...jest.requireActual('@zextras/carbonio-ui-commons'),

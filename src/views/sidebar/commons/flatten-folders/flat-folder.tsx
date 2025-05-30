@@ -7,10 +7,14 @@
 import React, { useCallback } from 'react';
 
 import { Container, Icon, Row } from '@zextras/carbonio-design-system';
+import { Folder, isRoot, StaticBreadcrumbs } from '@zextras/carbonio-ui-commons';
 import { noop } from 'lodash';
 
-import { Folder, isRoot, StaticBreadcrumbs } from '@zextras/carbonio-ui-commons';
-import { getFolderIconColor, getFolderIconName, getSystemFolderTranslatedName } from '../../utils';
+import {
+	getFolderIconColor,
+	getFolderIconName,
+	getSystemFolderTranslatedName
+} from 'views/sidebar/utils';
 
 /**
  * Process the absolute path of the given folder, removing

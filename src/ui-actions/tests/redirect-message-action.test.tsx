@@ -11,13 +11,13 @@ import { CreateSnackbarFn, useSnackbar } from '@zextras/carbonio-design-system';
 import { FOLDER_VIEW, ParticipantRole } from '@zextras/carbonio-ui-commons';
 import { times } from 'lodash';
 
-import { generateMessage } from '../../tests/generators/generateMessage';
-import { RedirectMessageActionRequest } from '../../types';
-import RedirectMessageAction from '../redirect-message-action';
 import { setupTest } from '@test-setup';
 import { createFakeIdentity } from '@test-utils/accounts/fakeAccounts';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 import { populateFoldersStore } from '@test-utils/store/folders';
+import { generateMessage } from 'tests/generators/generateMessage';
+import { RedirectMessageActionRequest } from 'types/index.d';
+import RedirectMessageAction from 'ui-actions/redirect-message-action';
 
 const createSnackbar = (arg: any): CreateSnackbarFn => arg;
 const createSnackbarSpy = jest.fn(createSnackbar);

@@ -8,10 +8,10 @@ import React, { act } from 'react';
 import { faker } from '@faker-js/faker';
 import * as shell from '@zextras/carbonio-shell-ui';
 
-import { EmlPreviewPanelContainer } from '../eml-preview-panel-container';
-import { createFakeIdentity } from '@test-utils/accounts/fakeAccounts';
 import { setupTest } from '@test-setup';
+import { createFakeIdentity } from '@test-utils/accounts/fakeAccounts';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import { EmlPreviewPanelContainer } from 'views/app/detail-panel/eml-preview-panel-container';
 
 describe('EmlPreviewPanelContainer', () => {
 	const defaultTitle = 'test title';

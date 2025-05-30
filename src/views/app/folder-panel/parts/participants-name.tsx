@@ -7,19 +7,19 @@ import React, { useMemo } from 'react';
 
 import { Padding, Row, Text, Tooltip } from '@zextras/carbonio-design-system';
 import { t, useUserAccount } from '@zextras/carbonio-shell-ui';
+import { FOLDERS, ParticipantRole } from '@zextras/carbonio-ui-commons';
 import { findIndex, reduce, trimStart, uniqBy } from 'lodash';
 
-import { FOLDERS, ParticipantRole } from '@zextras/carbonio-ui-commons';
-import { participantToString } from '../../../../commons/utils';
-import { getFolderIdParts } from '../../../../helpers/folders';
-import { isConversation } from '../../../../helpers/messages';
-import { getConversationMessages } from '../../../../store/emails/store';
+import { participantToString } from 'commons/utils';
+import { getFolderIdParts } from 'helpers/folders';
+import { isConversation } from 'helpers/messages';
+import { getConversationMessages } from 'store/emails/store';
 import {
 	IncompleteMessage,
 	NormalizedConversation,
 	Participant,
 	TextReadValuesProps
-} from '../../../../types';
+} from 'types/index.d';
 
 export type ParticipantsNameProps = {
 	item: NormalizedConversation | IncompleteMessage;

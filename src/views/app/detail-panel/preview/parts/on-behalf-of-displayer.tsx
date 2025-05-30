@@ -10,7 +10,7 @@ import { t } from '@zextras/carbonio-shell-ui';
 import { capitalize } from 'lodash';
 import styled from 'styled-components';
 
-import type { Participant, MailMessage } from '../../../../../types';
+import type { Participant, MailMessage } from 'types/index.d';
 
 const StyledText = styled.span<{ $isRead?: string | boolean; $color?: string }>`
 	padding: 0 0.125rem;

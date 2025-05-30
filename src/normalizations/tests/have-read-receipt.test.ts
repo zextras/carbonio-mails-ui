@@ -5,7 +5,8 @@
  */
 
 import { FOLDERS } from '@zextras/carbonio-ui-commons';
-import { haveReadReceipt } from '../normalize-message';
+
+import { haveReadReceipt } from 'normalizations/normalize-message';
 
 describe('Have Read Receipt', () => {
 	test('returns false if flag undefined', () => {

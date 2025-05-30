@@ -8,8 +8,8 @@ import React from 'react';
 
 import { screen } from '@testing-library/react';
 
-import { DistributionListIcon } from '../distribution-list-icon';
 import { setupTest } from '@test-setup';
+import { DistributionListIcon } from 'views/app/detail-panel/preview/parts/info-block/distribution-list-icon';
 
 describe('DistributionListIcon', () => {
 	it('correctly renders the component', async () => {

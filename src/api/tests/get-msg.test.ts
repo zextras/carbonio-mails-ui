@@ -4,9 +4,9 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { GetMsgRequest } from '../../types';
-import { getMsgSoapApi } from '../get-msg-soap-api';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import { getMsgSoapApi } from 'api/get-msg-soap-api';
+import { GetMsgRequest } from 'types/index.d';
 
 describe('GetMsg', () => {
 	it('should send max parameter if present', async () => {

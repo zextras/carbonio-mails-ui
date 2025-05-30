@@ -5,16 +5,16 @@
  */
 import { useCallback } from 'react';
 
+import { getErrorMessage, ParticipantRole } from '@zextras/carbonio-ui-commons';
 import { TFunction } from 'i18next';
 import { map } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
-import { getErrorMessage, ParticipantRole } from '@zextras/carbonio-ui-commons';
-import { acceptSharedFolderReply } from '../../../api/accept-shared-folder-reply';
-import { mountSharedFolderSoapApi } from '../../../api/mount-shared-folder-soap-api';
-import { useUiUtilities } from '../../../hooks/use-ui-utilities';
-import { msgActionEmailStoreAction } from '../../../store/emails/actions/msg-action-action';
-import type { Participant, SaveDraftResponse } from '../../../types';
+import { acceptSharedFolderReply } from 'api/accept-shared-folder-reply';
+import { mountSharedFolderSoapApi } from 'api/mount-shared-folder-soap-api';
+import { useUiUtilities } from 'hooks/use-ui-utilities';
+import { msgActionEmailStoreAction } from 'store/emails/actions/msg-action-action';
+import type { Participant, SaveDraftResponse } from 'types/index.d';
 
 type Accept = {
 	zid: string;

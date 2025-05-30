@@ -5,10 +5,10 @@
  */
 import React from 'react';
 
-import { MAILS_VIEW_LAYOUTS, MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS } from '../constants';
-import { LayoutSelector } from './layout-selector';
-import { mockLayoutStorage } from '../tests/layouts-utils';
 import { setupTest, screen } from '@test-setup';
+import { MAILS_VIEW_LAYOUTS, MAILS_VIEW_SPLIT_LAYOUT_ORIENTATIONS } from 'constants/index';
+import { mockLayoutStorage } from 'tests/layouts-utils';
+import { LayoutSelector } from 'views/layout-selector';
 
 const MockedView = ({ id = '0' }: { id?: string }): React.JSX.Element => (
 	<div data-testid={`MockedView${id}`} />

@@ -10,15 +10,15 @@ import { faker } from '@faker-js/faker';
 import { waitFor } from '@testing-library/react';
 import { FOLDERS } from '@zextras/carbonio-ui-commons';
 
-import { MAILS_VIEW_LAYOUTS } from '../../../../../constants';
-import { setConversationsInEmailStore } from '../../../../../store/emails/store';
-import { TESTID_SELECTORS } from '../../../../../tests/constants';
-import { generateConversation } from '../../../../../tests/generators/generateConversation';
-import { mockLayoutStorage } from '../../../../../tests/layouts-utils';
-import { PreviewPanelHeader } from '../preview-panel-header';
 import { screen, setupTest } from '@test-setup';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 import { populateFoldersStore } from '@test-utils/store/folders';
+import { MAILS_VIEW_LAYOUTS } from 'constants/index';
+import { setConversationsInEmailStore } from 'store/emails/store';
+import { TESTID_SELECTORS } from 'tests/constants';
+import { generateConversation } from 'tests/generators/generateConversation';
+import { mockLayoutStorage } from 'tests/layouts-utils';
+import { PreviewPanelHeader } from 'views/app/detail-panel/preview/preview-panel-header';
 
 describe('PreviewPanelHeader', () => {
 	it('renders correctly', () => {

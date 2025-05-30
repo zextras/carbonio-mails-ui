@@ -6,7 +6,9 @@
 import { act, renderHook } from '@testing-library/react';
 import { useFolderStore } from '@zextras/carbonio-ui-commons';
 
-import { generateMessage } from '../../../../../tests/generators/generateMessage';
+import { generateFolder } from '@test-utils/folders/folders-generator';
+import { MESSAGE_INDEX_SLICE_INITIAL_STATE } from 'store/emails/slices/messages/messages-slice';
+import { POPULATED_ITEMS_SLICE_INITIAL_STATE } from 'store/emails/slices/populated-items/populated-items-slice';
 import {
 	appendMessagesToMessagesSlice,
 	getUseEmailStoreAndHooksForTesting,
@@ -18,10 +20,8 @@ import {
 	useMessageIndexSlice,
 	useMessagesByIds,
 	useMessagesIdsByFolder
-} from '../../../store';
-import { POPULATED_ITEMS_SLICE_INITIAL_STATE } from '../../populated-items/populated-items-slice';
-import { MESSAGE_INDEX_SLICE_INITIAL_STATE } from '../messages-slice';
-import { generateFolder } from '@test-utils/folders/folders-generator';
+} from 'store/emails/store';
+import { generateMessage } from 'tests/generators/generateMessage';
 
 const { usePopulatedItemsSlice } = getUseEmailStoreAndHooksForTesting();
 

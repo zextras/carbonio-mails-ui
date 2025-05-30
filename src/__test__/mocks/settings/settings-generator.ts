@@ -5,7 +5,7 @@
  */
 import { AccountSettings } from '@zextras/carbonio-shell-ui';
 
-import defaultSettings from './default-settings';
+import defaultSettings from '@test-utils/settings/default-settings';
 
 /**
  *

@@ -18,6 +18,9 @@ import {
 	useFolderStore
 } from '@zextras/carbonio-ui-commons';
 
+import { makeListItemsVisible, setupTest } from '@test-setup';
+import { generateFolder } from '@test-utils/folders/folders-generator';
+import { populateFoldersStore } from '@test-utils/store/folders';
 import {
 	getFolderOwnerAccountName,
 	getFoldersArray,
@@ -25,11 +28,8 @@ import {
 	isSpam,
 	isTrash,
 	isTrashed
-} from '../../../../helpers/folders';
-import { FolderSelector, FolderSelectorProps } from '../folder-selector';
-import { makeListItemsVisible, setupTest } from '@test-setup';
-import { generateFolder } from '@test-utils/folders/folders-generator';
-import { populateFoldersStore } from '@test-utils/store/folders';
+} from 'helpers/folders';
+import { FolderSelector, FolderSelectorProps } from 'views/sidebar/commons/folder-selector';
 
 describe('Folder selector', () => {
 	test('The selector is visible', () => {

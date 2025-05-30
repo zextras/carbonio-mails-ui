@@ -11,21 +11,21 @@ import { act } from '@testing-library/react';
 import { Board } from '@zextras/carbonio-shell-ui';
 import { HttpResponse } from 'msw';
 
-import { EditViewActions } from '../../../../../constants';
-import { generateNewMessageEditor } from '../../../../../store/editor/editor-generators';
-import { getSoapMailMessage } from '../../../../../store/emails/actions/tests/test-utils';
-import { ASSERTIONS } from '../../../../../tests/constants';
-import { setupEditorStore } from '../../../../../tests/generators/editor-store';
-import { populateMessagesInEmailStore } from '../../../../../tests/generators/generateMessage';
-import { GetMsgRequest, GetMsgResponse } from '../../../../../types';
-import { EditViewBoardContext } from '../edit-view-board';
-import EditViewController from '../edit-view-controller';
 import { setupTest } from '@test-setup';
 import { useBoard } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
 import {
 	createAPIInterceptor,
 	createSoapAPIInterceptor
 } from '@test-utils/network/msw/create-api-interceptor';
+import { EditViewActions } from 'constants/index';
+import { generateNewMessageEditor } from 'store/editor/editor-generators';
+import { getSoapMailMessage } from 'store/emails/actions/tests/test-utils';
+import { ASSERTIONS } from 'tests/constants';
+import { setupEditorStore } from 'tests/generators/editor-store';
+import { populateMessagesInEmailStore } from 'tests/generators/generateMessage';
+import { GetMsgRequest, GetMsgResponse } from 'types/index.d';
+import { EditViewBoardContext } from 'views/app/detail-panel/edit/edit-view-board';
+import EditViewController from 'views/app/detail-panel/edit/edit-view-controller';
 
 const createBoardMock = (contextModel: EditViewBoardContext): Board<EditViewBoardContext> => ({
 	id: faker.string.uuid(),

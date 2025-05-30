@@ -8,14 +8,14 @@ import React from 'react';
 
 import { act, screen, waitFor } from '@testing-library/react';
 
-import { checkExistEncryptionPassword } from '../../../../api/check-exist-password-api';
-import { useSmimePasswordStore } from '../../../../store/certificates/store';
-import CertificatesView from '../certificates-view';
+import { setupTest } from '@test-setup';
+import { checkExistEncryptionPassword } from 'api/check-exist-password-api';
+import { useSmimePasswordStore } from 'store/certificates/store';
+import CertificatesView from 'views/settings/certificates/certificates-view';
 import {
 	createAPIInterceptorToGetPersonalCertificates,
 	createAPIInterceptorToGetRecipientsCertificates
-} from './utils/utils';
-import { setupTest } from '@test-setup';
+} from 'views/settings/certificates/tests/utils/utils';
 
 jest.mock('../../../../store/certificates/store', () => {
 	const actual = jest.requireActual('../../../../store/certificates/store');

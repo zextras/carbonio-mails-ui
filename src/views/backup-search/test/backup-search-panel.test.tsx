@@ -10,11 +10,11 @@ import { screen } from '@testing-library/react';
 import { getFolder } from '@zextras/carbonio-ui-commons';
 import { useParams } from 'react-router-dom';
 
-import { useBackupSearchStore } from '../../../store/backup-search/store';
-import { DeletedMessageFromAPI } from '../../../types';
-import { BackupSearchPanel } from '../parts/backup-search-panel';
 import { setupTest } from '@test-setup';
 import { generateFolder } from '@test-utils/folders/folders-generator';
+import { useBackupSearchStore } from 'store/backup-search/store';
+import { DeletedMessageFromAPI } from 'types/index.d';
+import { BackupSearchPanel } from 'views/backup-search/parts/backup-search-panel';
 
 jest.mock('react-router-dom', () => ({
 	...jest.requireActual('react-router-dom'),

@@ -5,16 +5,16 @@
  */
 import { act } from 'react';
 
-import { FOCUS_MODE_MAIL_VIEW_ROUTE, FOCUS_MODE_ROUTE } from '../../../constants';
-import * as externalTabs from '../../../helpers/external-tabs';
-import { getParentFolderId } from '../../../helpers/folders';
-import { generateMessage } from '../../../tests/generators/generateMessage';
+import { setupHook } from '@test-setup';
+import { populateFoldersStore } from '@test-utils/store/folders';
+import { FOCUS_MODE_MAIL_VIEW_ROUTE, FOCUS_MODE_ROUTE } from 'constants/index';
+import * as externalTabs from 'helpers/external-tabs';
+import { getParentFolderId } from 'helpers/folders';
 import {
 	useMsgPreviewOnSeparatedWindowDescriptor,
 	useMsgPreviewOnSeparatedWindowFn
-} from '../use-msg-preview-on-separated-window';
-import { setupHook } from '@test-setup';
-import { populateFoldersStore } from '@test-utils/store/folders';
+} from 'hooks/actions/use-msg-preview-on-separated-window';
+import { generateMessage } from 'tests/generators/generateMessage';
 
 describe('useMsgPreviewOnSeparatedWindow', () => {
 	const msg = generateMessage({ isComplete: true });

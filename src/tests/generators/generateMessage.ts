@@ -5,11 +5,11 @@
  */
 
 import { faker } from '@faker-js/faker';
-
 import { FOLDERS, ParticipantRole } from '@zextras/carbonio-ui-commons';
-import { convertHtmlToPlainText } from '../../commons/utilities';
-import { updateMessages } from '../../store/emails/store';
-import { MailMessage, MailMessagePart, Participant, Sensitivity } from '../../types';
+
+import { convertHtmlToPlainText } from 'commons/utilities';
+import { updateMessages } from 'store/emails/store';
+import { MailMessage, MailMessagePart, Participant, Sensitivity } from 'types/index.d';
 
 export type MessageGenerationParams = {
 	id?: string;

@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { deleteAttachmentsSoapApi } from '../../../api/delete-all-attachments-soap-api';
-import { handleDeleteAttachments } from '../store';
+import { deleteAttachmentsSoapApi } from 'api/delete-all-attachments-soap-api';
+import { handleDeleteAttachments } from 'store/emails/store';
 
 export async function deleteAttachmentsEmailStoreAction({
 	id,

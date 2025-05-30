@@ -4,12 +4,12 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { getUserAccount } from '@zextras/carbonio-shell-ui';
-import { find } from 'lodash';
-
 import type { Folder, Folders } from '@zextras/carbonio-ui-commons';
 import { FOLDERS, useFolderStore } from '@zextras/carbonio-ui-commons';
-import { NO_ACCOUNT_NAME } from '../constants';
-import type { MailMessage } from '../types';
+import { find } from 'lodash';
+
+import { NO_ACCOUNT_NAME } from 'constants/index';
+import type { MailMessage } from 'types/index.d';
 
 /*
  * Describe the folder id syntax

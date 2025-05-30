@@ -20,10 +20,10 @@ import {
 import { t } from '@zextras/carbonio-shell-ui';
 import { filter, find } from 'lodash';
 
-import { SendersListItem } from './components/senders-list-item';
-import LoadingShimmer from './filters/parts/loading-shimmer';
-import { trustedAddressesSubSection } from './subsections';
-import type { InputProps } from '../../types';
+import type { InputProps } from 'types/index.d';
+import { SendersListItem } from 'views/settings/components/senders-list-item';
+import LoadingShimmer from 'views/settings/filters/parts/loading-shimmer';
+import { trustedAddressesSubSection } from 'views/settings/subsections';
 
 const NonSupportedCharacters = /[!#$%^&*()+=[\]{};':"\\|,<>/?|/^\s*$/]+/;
 const TrusteeAddresses = ({ settingsObj, updateSettings }: InputProps): React.JSX.Element => {

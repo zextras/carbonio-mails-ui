@@ -5,10 +5,10 @@
  */
 import { useCallback, useMemo } from 'react';
 
-import { MailsEditorV2 } from '../../../types';
-import { useEditorsStore } from '../store';
-import { computeAndUpdateEditorStatus } from './commons';
-import { useSaveDraftFromEditor } from './save-draft';
+import { computeAndUpdateEditorStatus } from 'store/editor/hooks/commons';
+import { useSaveDraftFromEditor } from 'store/editor/hooks/save-draft';
+import { useEditorsStore } from 'store/editor/store';
+import { MailsEditorV2 } from 'types/index.d';
 
 /**
  * TODO for future refactors

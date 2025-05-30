@@ -10,11 +10,11 @@ import { faker } from '@faker-js/faker';
 import { act, screen } from '@testing-library/react';
 import { Folder, FOLDERS, getFolder } from '@zextras/carbonio-ui-commons';
 
-import { SoapFolderAction } from '../../../types';
-import { EmptyModal } from '../empty-modal';
 import { setupTest } from '@test-setup';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 import { populateFoldersStore } from '@test-utils/store/folders';
+import { SoapFolderAction } from 'types/index.d';
+import { EmptyModal } from 'views/sidebar/empty-modal';
 
 describe('empty-modal', () => {
 	test('empty the folder except the trash folder', async () => {

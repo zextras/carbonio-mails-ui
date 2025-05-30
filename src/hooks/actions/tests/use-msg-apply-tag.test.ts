@@ -7,13 +7,16 @@ import { act } from '@testing-library/react';
 import { FOLDERS, useTagStore } from '@zextras/carbonio-ui-commons';
 import { find, forEach } from 'lodash';
 
-import { FOLDERS_DESCRIPTORS } from '../../../constants';
-import { generateMessage } from '../../../tests/generators/generateMessage';
-import { MsgActionRequest, MsgActionResponse } from '../../../types';
-import { useMsgApplyTagDescriptor, useMsgApplyTagSubDescriptors } from '../use-msg-apply-tag';
 import { setupHook } from '@test-setup';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 import { tags as mockTags } from '@test-utils/tags/tags';
+import { FOLDERS_DESCRIPTORS } from 'constants/index';
+import {
+	useMsgApplyTagDescriptor,
+	useMsgApplyTagSubDescriptors
+} from 'hooks/actions/use-msg-apply-tag';
+import { generateMessage } from 'tests/generators/generateMessage';
+import { MsgActionRequest, MsgActionResponse } from 'types/index.d';
 
 describe('useMsgApplyTag', () => {
 	const msg = generateMessage();

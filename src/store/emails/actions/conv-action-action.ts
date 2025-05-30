@@ -4,9 +4,9 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { convActionSoapApi } from '../../../api';
-import { ConvActionParameters } from '../../../types/conversations';
-import { handleConvActionResponse, optimisticallyHandleConvActions } from '../store';
+import { convActionSoapApi } from 'api/index';
+import { handleConvActionResponse, optimisticallyHandleConvActions } from 'store/emails/store';
+import { ConvActionParameters } from 'types/conversations/index.d';
 
 export async function convActionEmailStoreAction({
 	ids,

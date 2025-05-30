@@ -8,9 +8,9 @@ import React from 'react';
 
 import { screen } from '@testing-library/react';
 
-import { generateMessage } from '../../../tests/generators/generateMessage';
-import SharedCalendarResponse from '../index';
 import { setupTest } from '@test-setup';
+import SharedCalendarResponse from 'integrations/shared-invite-reply/index';
+import { generateMessage } from 'tests/generators/generateMessage';
 
 describe('SharedCalendarResponse component', () => {
 	it('should use a non-ambiguous name for the folder', async () => {

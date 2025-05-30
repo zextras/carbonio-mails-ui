@@ -9,11 +9,11 @@ import { Container, Text } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import { FOLDERS, ModalFooter, ModalHeader } from '@zextras/carbonio-ui-commons';
 
-import { getFolderTranslatedName } from './utils';
-import { folderActionSoapApi } from '../../api/folder-action-soap-api';
-import { getFolderIdParts } from '../../helpers/folders';
-import { useUiUtilities } from '../../hooks/use-ui-utilities';
-import type { ModalProps } from '../../types';
+import { folderActionSoapApi } from 'api/folder-action-soap-api';
+import { getFolderIdParts } from 'helpers/folders';
+import { useUiUtilities } from 'hooks/use-ui-utilities';
+import type { ModalProps } from 'types/index.d';
+import { getFolderTranslatedName } from 'views/sidebar/utils';
 
 export const EmptyModal: FC<ModalProps> = ({ folder, onClose }) => {
 	const { createSnackbar } = useUiUtilities();

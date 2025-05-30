@@ -15,7 +15,7 @@ import {
 } from '@zextras/carbonio-shell-ui';
 import { find, map, maxBy } from 'lodash';
 
-import { getMocksContext } from '../utils/mocks-context';
+import { getMocksContext } from '@test-utils/utils/mocks-context';
 
 const userAgent = faker.internet.userAgent();
 const identities = getMocksContext();

@@ -8,23 +8,20 @@ import React from 'react';
 
 import { act, fireEvent, screen, waitFor } from '@testing-library/react';
 import * as hooks from '@zextras/carbonio-shell-ui';
+import { FOLDERS } from '@zextras/carbonio-ui-commons';
 import { useParams } from 'react-router-dom';
 
-import { FOLDERS } from '@zextras/carbonio-ui-commons';
-import * as useSelection from '../../../../../hooks/use-selection';
-import { updateConversationsResultsLoadingStatus } from '../../../../../store/emails/store';
-import { TESTID_SELECTORS } from '../../../../../tests/constants';
-import {
-	generateConversationFromAPI,
-	generateConvMessageFromAPI
-} from '../../../../../tests/generators/api';
-import { ConvActionRequest, SearchRequest, SearchResponse } from '../../../../../types';
-import { makeAllItemsVisible } from '../../../../settings/filters/tests/test-utils';
-import { ConversationList } from '../conversation-list';
-import { populateFoldersStore } from '@test-utils/store/folders';
+import { within, setupTest, triggerLoadMore } from '@test-setup';
 import { generateFolder } from '@test-utils/folders/folders-generator';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
-import { within, setupTest, triggerLoadMore } from '@test-setup';
+import { populateFoldersStore } from '@test-utils/store/folders';
+import * as useSelection from 'hooks/use-selection';
+import { updateConversationsResultsLoadingStatus } from 'store/emails/store';
+import { TESTID_SELECTORS } from 'tests/constants';
+import { generateConversationFromAPI, generateConvMessageFromAPI } from 'tests/generators/api';
+import { ConvActionRequest, SearchRequest, SearchResponse } from 'types/index.d';
+import { ConversationList } from 'views/app/folder-panel/conversations/conversation-list';
+import { makeAllItemsVisible } from 'views/settings/filters/tests/test-utils';
 
 const mockedUseSelection: ReturnType<typeof useSelection.useSelection> = {
 	selectAll: jest.fn(),

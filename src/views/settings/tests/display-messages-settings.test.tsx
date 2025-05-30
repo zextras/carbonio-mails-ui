@@ -8,9 +8,9 @@ import React from 'react';
 
 import { screen } from '@testing-library/react';
 
-import { DisplayMessagesSettings } from '../display-messages-settings';
 import { setupTest } from '@test-setup';
 import { generateSettings } from '@test-utils/settings/settings-generator';
+import { DisplayMessagesSettings } from 'views/settings/display-messages-settings';
 
 describe('Displaying messages settings', () => {
 	const { prefs: settingsObj } = generateSettings({

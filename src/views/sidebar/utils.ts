@@ -16,7 +16,7 @@ import {
 } from '@zextras/carbonio-ui-commons';
 import { useTranslation } from 'react-i18next';
 
-import { getFolderIdParts, isDraft, isSpam } from '../../helpers/folders';
+import { getFolderIdParts, isDraft, isSpam } from 'helpers/folders';
 
 export const capitalise = (word: string): string => {
 	const asciiRef = word?.charCodeAt(0);

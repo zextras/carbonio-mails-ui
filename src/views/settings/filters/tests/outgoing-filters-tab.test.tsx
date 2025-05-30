@@ -8,10 +8,10 @@ import React from 'react';
 
 import { screen } from '@testing-library/react';
 
-import { OutgoingFiltersTab } from '../outgoing-filters-tab';
-import { mockFilter } from './test-utils';
 import { setupTest } from '@test-setup';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import { OutgoingFiltersTab } from 'views/settings/filters/outgoing-filters-tab';
+import { mockFilter } from 'views/settings/filters/tests/test-utils';
 
 jest.mock('@zextras/carbonio-design-system', () => ({
 	...jest.requireActual('@zextras/carbonio-design-system'),

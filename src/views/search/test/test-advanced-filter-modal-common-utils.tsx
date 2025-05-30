@@ -8,9 +8,13 @@ import React, { ReactNode } from 'react';
 import { UserEvent } from '@testing-library/user-event';
 import { FormProvider, useForm } from 'react-hook-form';
 
-import { AdvancedFilterModalFormValues, AdvancedFilterModalProps, Query } from '../types/types';
-import { getAdvancedFiltersDefaultValues } from '../utils';
 import { setupTest } from '@test-setup';
+import {
+	AdvancedFilterModalFormValues,
+	AdvancedFilterModalProps,
+	Query
+} from 'views/search/types/types';
+import { getAdvancedFiltersDefaultValues } from 'views/search/utils';
 
 export const emptyQuery: Query = [];
 

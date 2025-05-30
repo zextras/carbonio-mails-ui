@@ -12,10 +12,10 @@ import { noop } from 'lodash';
 import { http } from 'msw';
 import { SetupServer, setupServer } from 'msw/node';
 
-import { useLocalStorage } from './src/__test__/mocks/carbonio-shell-ui/carbonio-shell-ui';
-import { getRestHandlers, registerRestHandler } from './src/__test__/mocks/network/msw/handlers';
 import { handleGetConvRequest } from './src/tests/mocks/network/msw/handle-get-conv';
 import { handleGetMsgRequest } from './src/tests/mocks/network/msw/handle-get-msg';
+import { useLocalStorage } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
+import { getRestHandlers, registerRestHandler } from '@test-utils/network/msw/handlers';
 
 let server: SetupServer;
 

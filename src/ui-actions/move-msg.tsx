@@ -9,10 +9,10 @@ import { Container, Text } from '@zextras/carbonio-design-system';
 import { Folder, ModalFooter, ModalHeader } from '@zextras/carbonio-ui-commons';
 import { useTranslation } from 'react-i18next';
 
-import { isRoot } from '../helpers/folders';
-import { useUiUtilities } from '../hooks/use-ui-utilities';
-import { msgActionEmailStoreAction } from '../store/emails/actions/msg-action-action';
-import { FolderSelector } from '../views/sidebar/commons/folder-selector';
+import { isRoot } from 'helpers/folders';
+import { useUiUtilities } from 'hooks/use-ui-utilities';
+import { msgActionEmailStoreAction } from 'store/emails/actions/msg-action-action';
+import { FolderSelector } from 'views/sidebar/commons/folder-selector';
 
 type MoveMessageProps = {
 	selectedIDs: string[];

@@ -4,10 +4,10 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { setupEditorStore } from '../../../../tests/generators/editor-store';
-import { generateNewMessageEditor } from '../../editor-generators';
-import { useEditorDraftSave } from '../save-draft';
 import { setupHook } from '@test-setup';
+import { generateNewMessageEditor } from 'store/editor/editor-generators';
+import { useEditorDraftSave } from 'store/editor/hooks/save-draft';
+import { setupEditorStore } from 'tests/generators/editor-store';
 
 describe('useEditorDraftSave', () => {
 	it('should return an object with specific data and callbacks', () => {

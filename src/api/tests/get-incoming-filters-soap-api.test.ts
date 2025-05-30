@@ -7,12 +7,12 @@
 import { renderHook, waitFor } from '@testing-library/react';
 import { HttpResponse } from 'msw';
 
-import { createSoapAPIInterceptorWithError } from '../../tests/generators/api';
-import { getIncomingFiltersSoapApi } from '../get-incoming-filters-soap-api';
 import {
 	createAPIInterceptor,
 	createSoapAPIInterceptor
 } from '@test-utils/network/msw/create-api-interceptor';
+import { getIncomingFiltersSoapApi } from 'api/get-incoming-filters-soap-api';
+import { createSoapAPIInterceptorWithError } from 'tests/generators/api';
 
 describe('getIncomingFiltersSoapApi', () => {
 	it('should fetch filter rules using soapFetch and normalize them', async () => {

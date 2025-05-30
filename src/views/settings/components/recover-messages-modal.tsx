@@ -9,9 +9,9 @@ import { Container, Text } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import { ModalFooter, ModalHeader } from '@zextras/carbonio-ui-commons';
 
-import { AnimatedLoader } from '../../../assets/animated-loader';
-import { BACKUP_SEARCH_STATUS } from '../../../constants';
-import { useBackupSearchStore } from '../../../store/backup-search/store';
+import { AnimatedLoader } from 'assets/animated-loader';
+import { BACKUP_SEARCH_STATUS } from 'constants/index';
+import { useBackupSearchStore } from 'store/backup-search/store';
 
 type RecoverMessagesModalPropType = {
 	onConfirm: () => void;

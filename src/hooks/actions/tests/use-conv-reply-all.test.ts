@@ -6,11 +6,11 @@
 
 import { FOLDERS } from '@zextras/carbonio-ui-commons';
 
-import { FOLDERS_DESCRIPTORS } from '../../../constants';
-import { generateConversation } from '../../../tests/generators/generateConversation';
-import { useConvReplyAllDescriptor, useConvReplyAllFn } from '../use-conv-reply-all';
 import { setupHook } from '@test-setup';
 import { addBoard } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
+import { FOLDERS_DESCRIPTORS } from 'constants/index';
+import { useConvReplyAllDescriptor, useConvReplyAllFn } from 'hooks/actions/use-conv-reply-all';
+import { generateConversation } from 'tests/generators/generateConversation';
 
 describe('useConvReplyAll', () => {
 	describe('Descriptor', () => {

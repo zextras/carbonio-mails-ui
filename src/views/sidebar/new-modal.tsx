@@ -11,11 +11,11 @@ import type { Folder } from '@zextras/carbonio-ui-commons';
 import { isValidFolderName, ModalFooter, ModalHeader } from '@zextras/carbonio-ui-commons';
 import { find, includes, noop } from 'lodash';
 
-import { createFolderSoapApi } from '../../api/create-folder-soap-api';
-import { useUiUtilities } from '../../hooks/use-ui-utilities';
-import type { ModalProps } from '../../types';
-import { FolderSelector } from './commons/folder-selector';
-import { useTranslatedSystemFolders } from './utils';
+import { createFolderSoapApi } from 'api/create-folder-soap-api';
+import { useUiUtilities } from 'hooks/use-ui-utilities';
+import type { ModalProps } from 'types/index.d';
+import { FolderSelector } from 'views/sidebar/commons/folder-selector';
+import { useTranslatedSystemFolders } from 'views/sidebar/utils';
 
 export const NewModal: FC<ModalProps> = ({ folder, onClose }) => {
 	const [inputValue, setInputValue] = useState(() => t('new_folder', 'New Folder'));

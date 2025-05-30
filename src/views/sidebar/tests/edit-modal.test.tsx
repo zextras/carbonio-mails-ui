@@ -17,9 +17,6 @@ import {
 } from '@zextras/carbonio-ui-commons';
 import { http } from 'msw';
 
-import { BatchRequest, SoapFolderAction } from '../../../types';
-import { makeAllItemsVisible } from '../../settings/filters/tests/test-utils';
-import { EditModal } from '../edit-modal';
 import { getSetupServer } from '@jest-setup';
 import { setupTest } from '@test-setup';
 import { generateFolder } from '@test-utils/folders/folders-generator';
@@ -27,6 +24,9 @@ import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-int
 import { handleGetFolderRequest } from '@test-utils/network/msw/handle-get-folder';
 import { populateFoldersStore } from '@test-utils/store/folders';
 import { buildSoapErrorResponseBody } from '@test-utils/utils/soap';
+import { BatchRequest, SoapFolderAction } from 'types/index.d';
+import { makeAllItemsVisible } from 'views/settings/filters/tests/test-utils';
+import { EditModal } from 'views/sidebar/edit-modal';
 
 const aFolderWithoutSharePermission = (folder: Partial<Folder> = {}): Folder => ({
 	...generateFolder(folder),

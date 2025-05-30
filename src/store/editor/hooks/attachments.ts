@@ -12,20 +12,20 @@ import {
 	uploadAttachmentsApi,
 	UploadAttachmentsOptions,
 	UploadCallbacks
-} from '../../../api/upload-attachments-api';
-import { TIMEOUTS } from '../../../constants';
-import { composeAttachmentDownloadUrl } from '../../../helpers/attachments';
-import { useUiUtilities } from '../../../hooks/use-ui-utilities';
-import { AttachmentUploadProcessStatus, MailsEditorV2, UnsavedAttachment } from '../../../types';
-import { composeCidUrlFromContentId } from '../editor-transformations';
+} from 'api/upload-attachments-api';
+import { TIMEOUTS } from 'constants/index';
+import { composeAttachmentDownloadUrl } from 'helpers/attachments';
+import { useUiUtilities } from 'hooks/use-ui-utilities';
+import { composeCidUrlFromContentId } from 'store/editor/editor-transformations';
 import {
 	filterUnsavedAttachmentsByUploadId,
 	getSavedInlineAttachmentsByContentId
-} from '../editor-utils';
-import { useEditorsStore } from '../store';
-import { computeAndUpdateEditorStatus } from './commons';
-import { getEditor } from './editors';
-import { SaveDraftOptions, useSaveDraftFromEditor } from './save-draft';
+} from 'store/editor/editor-utils';
+import { computeAndUpdateEditorStatus } from 'store/editor/hooks/commons';
+import { getEditor } from 'store/editor/hooks/editors';
+import { SaveDraftOptions, useSaveDraftFromEditor } from 'store/editor/hooks/save-draft';
+import { useEditorsStore } from 'store/editor/store';
+import { AttachmentUploadProcessStatus, MailsEditorV2, UnsavedAttachment } from 'types/index.d';
 
 const useNotifyUploadError = (): ((file: File) => void) => {
 	const { createSnackbar } = useUiUtilities();

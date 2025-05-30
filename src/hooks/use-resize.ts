@@ -8,7 +8,7 @@ import { CSSProperties, useCallback, useEffect, useRef } from 'react';
 
 import { find } from 'lodash';
 
-import { BORDERS } from '../constants';
+import { BORDERS } from 'constants/index';
 
 /**
  * Define the border following the cardinal points (north, south, west, east).

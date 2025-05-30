@@ -28,11 +28,6 @@ import {
 	getColor
 } from '@zextras/carbonio-design-system';
 import { t, useUserAccounts } from '@zextras/carbonio-shell-ui';
-import { every, filter, find, forEach, includes, isEmpty, map, reduce, uniqBy } from 'lodash';
-import moment from 'moment';
-import { useParams } from 'react-router-dom';
-import styled from 'styled-components';
-
 import {
 	ParticipantRole,
 	Tag,
@@ -40,16 +35,21 @@ import {
 	useRunSearchIntegration,
 	useSortedTagsArray
 } from '@zextras/carbonio-ui-commons';
-import { getTimeLabel, participantToString } from '../../../../../commons/utils';
-import { getNoIdentityPlaceholder } from '../../../../../helpers/identities';
-import { retrieveAttachmentsType } from '../../../../../store/editor-slice-utils';
-import type { MailMessage } from '../../../../../types';
-import { useTagExist } from '../../../../../ui-actions/tag-actions';
-import { ContactNameChip } from './contact-names-chips';
-import { MailInfoBlock } from './info-block/mail-info-block';
-import { MailMsgPreviewActions } from './mail-message-preview-actions';
-import MessageContactsList from './message-contact-list';
-import OnBehalfOfDisplayer from './on-behalf-of-displayer';
+import { every, filter, find, forEach, includes, isEmpty, map, reduce, uniqBy } from 'lodash';
+import moment from 'moment';
+import { useParams } from 'react-router-dom';
+import styled from 'styled-components';
+
+import { getTimeLabel, participantToString } from 'commons/utils';
+import { getNoIdentityPlaceholder } from 'helpers/identities';
+import { retrieveAttachmentsType } from 'store/editor-slice-utils';
+import type { MailMessage } from 'types/index.d';
+import { useTagExist } from 'ui-actions/tag-actions';
+import { ContactNameChip } from 'views/app/detail-panel/preview/parts/contact-names-chips';
+import { MailInfoBlock } from 'views/app/detail-panel/preview/parts/info-block/mail-info-block';
+import { MailMsgPreviewActions } from 'views/app/detail-panel/preview/parts/mail-message-preview-actions';
+import MessageContactsList from 'views/app/detail-panel/preview/parts/message-contact-list';
+import OnBehalfOfDisplayer from 'views/app/detail-panel/preview/parts/on-behalf-of-displayer';
 
 const HoverContainer = styled(Container)<{ $isExpanded: boolean }>`
 	cursor: pointer;

@@ -9,9 +9,9 @@ import React, { act } from 'react';
 
 import { screen } from '@testing-library/react';
 
-import { Filter } from '../../../../../types';
-import { ModifyFilterModal } from '../modify-filter/modify-filter-modal';
 import { setupTest } from '@test-setup';
+import { Filter } from 'types/index.d';
+import { ModifyFilterModal } from 'views/settings/filters/parts/modify-filter/modify-filter-modal';
 
 describe('modify filter modal', () => {
 	it('should display modal with current saved actions', async () => {

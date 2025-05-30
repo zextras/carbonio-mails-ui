@@ -10,20 +10,20 @@ import { act } from '@testing-library/react';
 import * as shellUi from '@zextras/carbonio-shell-ui';
 import { HttpResponse } from 'msw';
 
-import App from './app';
-import * as addComponentsToShell from './app-utils/add-shell-components';
-import * as registerShellActions from './app-utils/register-shell-actions';
-import * as registerShellIntegrations from './app-utils/register-shell-integrations';
-import * as useSearchRegisterer from './app-utils/use-search-registerer';
-import { BACKUP_SEARCH_ROUTE } from './constants';
-import { useBackupSearchStore } from './store/backup-search/store';
-import { DeletedMessageFromAPI } from './types';
 import { setupTest } from '@test-setup';
 import { generateFolder } from '@test-utils/folders/folders-generator';
 import {
 	createAPIInterceptor,
 	createSoapAPIInterceptor
 } from '@test-utils/network/msw/create-api-interceptor';
+import App from 'app';
+import * as addComponentsToShell from 'app-utils/add-shell-components';
+import * as registerShellActions from 'app-utils/register-shell-actions';
+import * as registerShellIntegrations from 'app-utils/register-shell-integrations';
+import * as useSearchRegisterer from 'app-utils/use-search-registerer';
+import { BACKUP_SEARCH_ROUTE } from 'constants/index';
+import { useBackupSearchStore } from 'store/backup-search/store';
+import { DeletedMessageFromAPI } from 'types/index.d';
 
 // Mocking the worker. In commons jest-setup the worker is already mocked, but is improperly defined with wrong types and
 // is causing a call to "onMessage", which tries to alter the folders store and overrides the folders, breaking the test.

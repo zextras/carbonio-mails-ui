@@ -7,10 +7,13 @@
 import { act } from '@testing-library/react';
 import { FOLDERS } from '@zextras/carbonio-ui-commons';
 
-import { FOLDERS_DESCRIPTORS } from '../../../constants';
-import { generateConversation } from '../../../tests/generators/generateConversation';
-import { useConvShowOriginalDescriptor, useConvShowOriginalFn } from '../use-conv-show-original';
 import { setupHook } from '@test-setup';
+import { FOLDERS_DESCRIPTORS } from 'constants/index';
+import {
+	useConvShowOriginalDescriptor,
+	useConvShowOriginalFn
+} from 'hooks/actions/use-conv-show-original';
+import { generateConversation } from 'tests/generators/generateConversation';
 
 describe('useConvShowOriginal', () => {
 	const conv = generateConversation({ messageGenerationCount: 3 });

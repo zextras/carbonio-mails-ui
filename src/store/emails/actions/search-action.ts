@@ -12,19 +12,19 @@
 import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
 
-import { searchSoapApi } from '../../../api/search-soap-api';
-import { API_REQUEST_STATUS } from '../../../constants';
-import { normalizeConversations } from '../../../normalizations/normalize-conversation';
-import { normalizeMailMessageFromSoap } from '../../../normalizations/normalize-message';
-import { SearchResponse, SearchSoapApiParams } from '../../../types';
-import { extractConvMessage } from '../../../views/sidebar/commons/use-sync-data-handler';
+import { searchSoapApi } from 'api/search-soap-api';
+import { API_REQUEST_STATUS } from 'constants/index';
+import { normalizeConversations } from 'normalizations/normalize-conversation';
+import { normalizeMailMessageFromSoap } from 'normalizations/normalize-message';
 import {
 	updateMessagesResultsLoadingStatus,
 	setMessagesInEmailStore,
 	setConversationsInEmailStore,
 	resetMessagesAndPopulatedItems,
 	updateConversationsResultsLoadingStatus
-} from '../store';
+} from 'store/emails/store';
+import { SearchResponse, SearchSoapApiParams } from 'types/index.d';
+import { extractConvMessage } from 'views/sidebar/commons/use-sync-data-handler';
 
 const handleSearchSoapApiResults = ({
 	searchResponse,

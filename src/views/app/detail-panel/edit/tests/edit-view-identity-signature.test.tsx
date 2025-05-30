@@ -10,19 +10,16 @@ import { screen, waitFor } from '@testing-library/react';
 import { getUserAccount } from '@zextras/carbonio-shell-ui';
 import { FOLDERS, ParticipantRole } from '@zextras/carbonio-ui-commons';
 
-import { convertHtmlToPlainText } from '../../../../../commons/utilities';
-import { EditViewActions, MAILS_ROUTE } from '../../../../../constants';
-import {
-	getSignatureValue,
-	replaceSignatureOnPlainTextBody
-} from '../../../../../helpers/signatures';
-import * as useQueryParam from '../../../../../hooks/use-query-param';
-import { generateMessage } from '../../../../../tests/generators/generateMessage';
-import { EditView, EditViewProp } from '../edit-view';
 import { setupTest } from '@test-setup';
 import { useBoard as mockedUseBoard } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
 import { populateFoldersStore } from '@test-utils/store/folders';
 import { getMocksContext } from '@test-utils/utils/mocks-context';
+import { convertHtmlToPlainText } from 'commons/utilities';
+import { EditViewActions, MAILS_ROUTE } from 'constants/index';
+import { getSignatureValue, replaceSignatureOnPlainTextBody } from 'helpers/signatures';
+import * as useQueryParam from 'hooks/use-query-param';
+import { generateMessage } from 'tests/generators/generateMessage';
+import { EditView, EditViewProp } from 'views/app/detail-panel/edit/edit-view';
 
 /**
  * Test the EditView component for set signature for selected from identity

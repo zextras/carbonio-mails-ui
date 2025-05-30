@@ -29,7 +29,7 @@ import { MemoryRouter, MemoryRouterProps, Route, RouteProps, Routes } from 'reac
 import { Store } from 'redux';
 
 import { getAppI18n } from './i18n/i18n-test-factory';
-import { previewContextMock, PreviewsManagerContext } from './mocks/carbonio-ui-preview';
+import { previewContextMock, PreviewsManagerContext } from '@test-utils/carbonio-ui-preview';
 
 type ByRoleWithIconOptions = ByRoleOptions & {
 	icon: string | RegExp;

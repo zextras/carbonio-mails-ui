@@ -6,8 +6,7 @@
 
 import { act } from '@testing-library/react';
 
-import { setupEditorStore } from '../../../tests/generators/editor-store';
-import { generateEditorV2Case } from '../../../tests/generators/editors';
+import { setupHook } from '@test-setup';
 import {
 	addEditor,
 	deleteEditor,
@@ -22,8 +21,9 @@ import {
 	// useEditorDraftSaveProcessStatus,
 	// useEditorSend
 	useEditorSubject
-} from '../hooks';
-import { setupHook } from '@test-setup';
+} from 'store/editor/hooks';
+import { setupEditorStore } from 'tests/generators/editor-store';
+import { generateEditorV2Case } from 'tests/generators/editors';
 
 describe('all editor hooks', () => {
 	describe('adding, updating, removing editors', () => {

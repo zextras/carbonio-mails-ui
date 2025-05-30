@@ -6,7 +6,7 @@
 import { getUserAccount } from '@zextras/carbonio-shell-ui';
 import { includes, map } from 'lodash';
 
-import type { FetchConversationsReturn, MailMessage, NormalizedConversation } from '../types';
+import type { FetchConversationsReturn, MailMessage, NormalizedConversation } from 'types/index.d';
 
 /**
  * Extracts all ids from conversations and messages

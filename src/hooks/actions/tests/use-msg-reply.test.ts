@@ -6,11 +6,11 @@
 
 import { FOLDERS } from '@zextras/carbonio-ui-commons';
 
-import { FOLDERS_DESCRIPTORS } from '../../../constants';
-import { generateMessage } from '../../../tests/generators/generateMessage';
-import { useMsgReplyDescriptor, useMsgReplyFn } from '../use-msg-reply';
 import { setupHook } from '@test-setup';
 import { addBoard } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
+import { FOLDERS_DESCRIPTORS } from 'constants/index';
+import { useMsgReplyDescriptor, useMsgReplyFn } from 'hooks/actions/use-msg-reply';
+import { generateMessage } from 'tests/generators/generateMessage';
 
 describe('useMsgReply', () => {
 	const msg = generateMessage();

@@ -5,15 +5,15 @@
  */
 
 /* eslint-disable no-param-reassign */
+import { useFolder } from '@zextras/carbonio-ui-commons';
 import produce from 'immer';
 import { filter } from 'lodash';
 import { StoreApi, UseBoundStore } from 'zustand';
 
-import { useFolder } from '@zextras/carbonio-ui-commons';
-import { API_REQUEST_STATUS } from '../../../../constants';
-import { EmailsStoreState, NormalizedConversation, SearchRequestStatus } from '../../../../types';
-import { POPULATED_ITEMS_SLICE_INITIAL_STATE } from '../populated-items/populated-items-slice';
-import { CONVERSATION_INDEX_SLICE_INITIAL_STATE } from './conversations-index-slice';
+import { API_REQUEST_STATUS } from 'constants/index';
+import { CONVERSATION_INDEX_SLICE_INITIAL_STATE } from 'store/emails/slices/conversations/conversations-index-slice';
+import { POPULATED_ITEMS_SLICE_INITIAL_STATE } from 'store/emails/slices/populated-items/populated-items-slice';
+import { EmailsStoreState, NormalizedConversation, SearchRequestStatus } from 'types/index.d';
 
 function setConversationsInEmailStore(
 	conversations: Array<NormalizedConversation>,

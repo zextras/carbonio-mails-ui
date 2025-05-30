@@ -26,13 +26,13 @@ import {
 	Tooltip
 } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
+import { useFoldersMap } from '@zextras/carbonio-ui-commons';
 import { filter } from 'lodash';
 
-import { useFoldersMap } from '@zextras/carbonio-ui-commons';
-import type { MailMessage, TextReadValuesProps } from '../../../../../types';
-import { getFolderTranslatedName } from '../../../../sidebar/utils';
-import ContactNames from './contact-names';
-import { ContactNameChip } from './contact-names-chips';
+import type { MailMessage, TextReadValuesProps } from 'types/index.d';
+import ContactNames from 'views/app/detail-panel/preview/parts/contact-names';
+import { ContactNameChip } from 'views/app/detail-panel/preview/parts/contact-names-chips';
+import { getFolderTranslatedName } from 'views/sidebar/utils';
 
 const EmptyToField: FC<{ labelTo: string }> = memo(({ labelTo }) => (
 	<Row mainAlignment="flex-start">

@@ -5,14 +5,15 @@
  */
 
 import React from 'react';
-import { screen, waitFor } from '@testing-library/react';
 
+import { screen, waitFor } from '@testing-library/react';
 import { useTags } from '@zextras/carbonio-ui-commons';
-import { populateConversationInEmailStore } from '../../../../../tests/generators/generateConversation';
-import { ConversationListItemCore } from '../conversation-list-item-core';
-import { tags } from '@test-utils/tags/tags';
-import { populateFoldersStore } from '@test-utils/store/folders';
+
 import { setupTest } from '@test-setup';
+import { populateFoldersStore } from '@test-utils/store/folders';
+import { tags } from '@test-utils/tags/tags';
+import { populateConversationInEmailStore } from 'tests/generators/generateConversation';
+import { ConversationListItemCore } from 'views/app/folder-panel/conversations/conversation-list-item-core';
 
 jest.mock('@zextras/carbonio-ui-commons', () => ({
 	...jest.requireActual('@zextras/carbonio-ui-commons'),

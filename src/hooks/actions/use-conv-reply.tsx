@@ -3,13 +3,13 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useCallback, useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 
 import { useTranslation } from 'react-i18next';
 
-import { ConversationActionsDescriptors } from '../../constants';
-import { ActionFn, UIActionDescriptor } from '../../types';
-import { useMsgReplyFn } from './use-msg-reply';
+import { ConversationActionsDescriptors } from 'constants/index';
+import { useMsgReplyFn } from 'hooks/actions/use-msg-reply';
+import { ActionFn, UIActionDescriptor } from 'types/index.d';
 
 type ConvReplyFunctionsParameter = {
 	firstMessageId: string;

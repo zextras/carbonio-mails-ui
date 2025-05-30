@@ -7,10 +7,14 @@ import React, { useMemo } from 'react';
 
 import type { SingleSelectionOnChange } from '@zextras/carbonio-design-system';
 import { Container, Icon, Padding, Row, Select, Text } from '@zextras/carbonio-design-system';
+import { CustomLabelFactoryProps, ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-ui-commons';
 import { useTranslation } from 'react-i18next';
 
-import { CustomLabelFactoryProps, ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-ui-commons';
-import { ColorContainer, Square, TextUpperCase } from './styled-components';
+import {
+	ColorContainer,
+	Square,
+	TextUpperCase
+} from 'integrations/shared-invite-reply/parts/styled-components';
 
 const LabelFactory = ({
 	selected,

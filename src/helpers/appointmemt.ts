@@ -5,15 +5,16 @@
  */
 
 import { getRootsMap } from '@zextras/carbonio-ui-commons';
-import { NO_ACCOUNT_NAME } from '../constants';
-import { retrieveALL, retrieveCC } from '../store/editor-slice-utils';
-import type { MailMessage } from '../types';
-import { Attendee, MatchingReplyIdentity, SenderType } from '../types/calendar';
+
+import { NO_ACCOUNT_NAME } from 'constants/index';
 import {
 	getAddressOwnerAccount,
 	getIdentitiesDescriptors,
 	getRecipientReplyIdentity
-} from './identities';
+} from 'helpers/identities';
+import { retrieveALL, retrieveCC } from 'store/editor-slice-utils';
+import { Attendee, MatchingReplyIdentity, SenderType } from 'types/calendar/index.d';
+import type { MailMessage } from 'types/index.d';
 
 /**
  * Analyze the message and return the identity that should be used as organizer.

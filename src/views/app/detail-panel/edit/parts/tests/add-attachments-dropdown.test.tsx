@@ -9,17 +9,17 @@ import React from 'react';
 import { faker } from '@faker-js/faker';
 import { forEach, reduce, times } from 'lodash';
 
-import { getEditor } from '../../../../../../store/editor';
-import { generateNewMessageEditor } from '../../../../../../store/editor/editor-generators';
-import { TESTID_SELECTORS } from '../../../../../../tests/constants';
-import { setupEditorStore } from '../../../../../../tests/generators/editor-store';
-import { FileNode } from '../../edit-utils-hooks/use-upload-from-files';
-import { AddAttachmentsDropdown } from '../add-attachments-dropdown';
 import { setupTest, screen } from '@test-setup';
 import {
 	getIntegratedFunction,
 	useIntegratedFunction
 } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
+import { generateNewMessageEditor } from 'store/editor/editor-generators';
+import { getEditor } from 'store/editor/index';
+import { TESTID_SELECTORS } from 'tests/constants';
+import { setupEditorStore } from 'tests/generators/editor-store';
+import { FileNode } from 'views/app/detail-panel/edit/edit-utils-hooks/use-upload-from-files';
+import { AddAttachmentsDropdown } from 'views/app/detail-panel/edit/parts/add-attachments-dropdown';
 
 type FilesNode = { id: string; name: string; size: number; mime_type: string };
 type FilesUploadResult = { attachmentId: string };

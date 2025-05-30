@@ -8,8 +8,8 @@ import React from 'react';
 
 import { screen } from '@testing-library/react';
 
-import { RedirectTo } from '../../filter-actions/redirect-to';
 import { setupTest } from '@test-setup';
+import { RedirectTo } from 'views/settings/filters/parts/filter-actions/redirect-to';
 
 describe('Redirect To', () => {
 	it('it should render selected option in the input', async () => {

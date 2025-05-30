@@ -7,11 +7,11 @@
 import React, { FC, useMemo } from 'react';
 
 import { Icon, Padding, Row, Text } from '@zextras/carbonio-design-system';
-
 import { Tag } from '@zextras/carbonio-ui-commons';
-import { getTimeLabel } from '../../../../commons/utils';
-import { NormalizedConversation } from '../../../../types';
-import { useTagExist } from '../../../../ui-actions/tag-actions';
+
+import { getTimeLabel } from 'commons/utils';
+import { NormalizedConversation } from 'types/index.d';
+import { useTagExist } from 'ui-actions/tag-actions';
 
 type RowInfoProps = {
 	item: NormalizedConversation;

@@ -6,8 +6,8 @@
 
 import axios from 'axios';
 
-import { parse } from './upload-attachments-api';
-import { convertToDecimal } from '../commons/utilities';
+import { parse } from 'api/upload-attachments-api';
+import { convertToDecimal } from 'commons/utilities';
 
 /**
  * Uploads a single file to the server and returns the attachment ID.

@@ -7,11 +7,11 @@ import React, { useCallback, useMemo } from 'react';
 
 import { useTranslation } from 'react-i18next';
 
-import { ConversationActionsDescriptors } from '../../constants';
-import { isTrash } from '../../helpers/folders';
-import { ActionFn, UIActionDescriptor } from '../../types';
-import { MoveConversation } from '../../ui-actions/move-conv';
-import { useUiUtilities } from '../use-ui-utilities';
+import { ConversationActionsDescriptors } from 'constants/index';
+import { isTrash } from 'helpers/folders';
+import { useUiUtilities } from 'hooks/use-ui-utilities';
+import { ActionFn, UIActionDescriptor } from 'types/index.d';
+import { MoveConversation } from 'ui-actions/move-conv';
 
 export const useConvMoveToFolderFn = ({
 	folderId,

@@ -11,7 +11,6 @@ import {
 	CloseModalFn,
 	CreateModalFn
 } from '@zextras/carbonio-design-system';
-
 import { Tag } from '@zextras/carbonio-ui-commons';
 
 export type TagActionItemType = {

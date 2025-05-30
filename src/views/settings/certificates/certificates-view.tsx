@@ -14,16 +14,16 @@ import {
 	Row,
 	useModal
 } from '@zextras/carbonio-design-system';
+import { useUpdateView } from '@zextras/carbonio-ui-commons';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 
-import { useUpdateView } from '@zextras/carbonio-ui-commons';
-import { checkExistEncryptionPassword } from '../../../api/check-exist-password-api';
-import { useSmimePasswordStore } from '../../../store/certificates/store';
-import { CertificatePasswordModal } from './certificate-password-modal';
-import { EnterPasswordModal } from './enter-password-modal';
-import PersonalCertificatesSettings from './personal-certificates-settings';
-import RecipientsCertificateSettings from './recipients-certificates-settings';
+import { checkExistEncryptionPassword } from 'api/check-exist-password-api';
+import { useSmimePasswordStore } from 'store/certificates/store';
+import { CertificatePasswordModal } from 'views/settings/certificates/certificate-password-modal';
+import { EnterPasswordModal } from 'views/settings/certificates/enter-password-modal';
+import PersonalCertificatesSettings from 'views/settings/certificates/personal-certificates-settings';
+import RecipientsCertificateSettings from 'views/settings/certificates/recipients-certificates-settings';
 
 const CustomBreadcrumbs = styled(Breadcrumbs)`
 	.breadcrumbCrumb {

@@ -5,12 +5,13 @@
  */
 
 import React from 'react';
-import { screen } from '@testing-library/react';
 
+import { screen } from '@testing-library/react';
 import { FOLDERS, useTags, ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-ui-commons';
-import { populateMessagesInEmailStore } from '../../../../../tests/generators/generateMessage';
-import { SearchMessageListItemCore } from '../search-message-list-item-core';
+
 import { setupTest } from '@test-setup';
+import { populateMessagesInEmailStore } from 'tests/generators/generateMessage';
+import { SearchMessageListItemCore } from 'views/search/list/message/search-message-list-item-core';
 
 jest.mock('@zextras/carbonio-ui-commons', () => ({
 	...jest.requireActual('@zextras/carbonio-ui-commons'),

@@ -10,11 +10,11 @@ import { screen, within } from '@testing-library/react';
 import { FOLDERS, ROOT_NAME } from '@zextras/carbonio-ui-commons';
 import assert from 'node:assert';
 
-import AccordionCustomComponent from '../accordion-custom-component';
 import { setupTest } from '@test-setup';
 import { createFakeIdentity } from '@test-utils/accounts/fakeAccounts';
 import { generateFolder, generateFolderLink } from '@test-utils/folders/folders-generator';
 import { getMocksContext } from '@test-utils/utils/mocks-context';
+import AccordionCustomComponent from 'views/sidebar/accordion-custom-component';
 
 describe('accordion-custom-component', () => {
 	it('should render without crashing', () => {

@@ -12,13 +12,13 @@ import { map, omit, reduce } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { v4 as uuidv4 } from 'uuid';
 
-import { CreateFilterContext } from './create-filter-context';
-import ModalFooter from './create-filter-modal-footer';
-import DefaultCondition from './create-filters-conditions/default';
-import { FilterActionsPanel } from './filter-actions-panel';
-import { FilterConditionsPanel } from './filter-conditions-panel';
-import { getButtonInfo } from './utils';
-import type { Filter, FilterActions } from '../../../../types';
+import type { Filter, FilterActions } from 'types/index.d';
+import { CreateFilterContext } from 'views/settings/filters/parts/create-filter-context';
+import ModalFooter from 'views/settings/filters/parts/create-filter-modal-footer';
+import DefaultCondition from 'views/settings/filters/parts/create-filters-conditions/default';
+import { FilterActionsPanel } from 'views/settings/filters/parts/filter-actions-panel';
+import { FilterConditionsPanel } from 'views/settings/filters/parts/filter-conditions-panel';
+import { getButtonInfo } from 'views/settings/filters/parts/utils';
 
 type ComponentProps = {
 	onClose: () => void;

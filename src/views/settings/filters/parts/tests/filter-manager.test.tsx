@@ -9,10 +9,10 @@ import React from 'react';
 import { act, screen, within } from '@testing-library/react';
 import { useSnackbar } from '@zextras/carbonio-design-system';
 
-import { Filter } from '../../../../../types';
-import { ListType } from '../actions';
-import { getFiltermanager } from '../filter-manager';
 import { makeListItemsVisible, setupTest } from '@test-setup';
+import { Filter } from 'types/index.d';
+import { ListType } from 'views/settings/filters/parts/actions';
+import { getFiltermanager } from 'views/settings/filters/parts/filter-manager';
 
 jest.mock('@zextras/carbonio-design-system', () => ({
 	...jest.requireActual('@zextras/carbonio-design-system'),

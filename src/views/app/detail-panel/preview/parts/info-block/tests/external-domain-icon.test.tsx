@@ -8,8 +8,8 @@ import React from 'react';
 
 import { screen } from '@testing-library/react';
 
-import { ExternalDomainIcon } from '../external-domain-icon';
 import { setupTest } from '@test-setup';
+import { ExternalDomainIcon } from 'views/app/detail-panel/preview/parts/info-block/external-domain-icon';
 
 describe('ExternalDomainIcon', () => {
 	test('renders without crashing', async () => {

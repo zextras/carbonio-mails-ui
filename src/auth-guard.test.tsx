@@ -6,9 +6,9 @@
 
 import React from 'react';
 
-import { AuthGuard } from './auth-guard';
 import { useAuthenticated } from '../__mocks__/@zextras/carbonio-shell-ui';
 import { setupTest, screen } from '@test-setup';
+import { AuthGuard } from 'auth-guard';
 
 describe('AuthGuard', () => {
 	it('should render the child component when the user is authenticated', () => {

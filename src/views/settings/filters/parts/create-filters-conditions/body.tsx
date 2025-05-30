@@ -3,8 +3,6 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { Container, Input } from '@zextras/carbonio-design-system';
-import type { TFunction } from 'i18next';
 import React, {
 	FC,
 	ReactElement,
@@ -14,9 +12,13 @@ import React, {
 	useMemo,
 	useState
 } from 'react';
-import { CreateFilterContext } from '../create-filter-context';
-import CustomSelect from '../custom-select';
-import { getBodyOptions } from '../utils';
+
+import { Container, Input } from '@zextras/carbonio-design-system';
+import type { TFunction } from 'i18next';
+
+import { CreateFilterContext } from 'views/settings/filters/parts/create-filter-context';
+import CustomSelect from 'views/settings/filters/parts/custom-select';
+import { getBodyOptions } from 'views/settings/filters/parts/utils';
 
 type ComponentProps = {
 	t: TFunction;

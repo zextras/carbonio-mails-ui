@@ -10,11 +10,11 @@ import { t, useUserAccounts } from '@zextras/carbonio-shell-ui';
 import type { ShareRevokeModalType } from '@zextras/carbonio-ui-commons';
 import { ModalFooter, ModalHeader } from '@zextras/carbonio-ui-commons';
 
-import { GranteeInfo } from './share-folder-properties';
-import { folderActionSoapApi } from '../../../../api/folder-action-soap-api';
-import { sendShareNotificationSoapApi } from '../../../../api/send-share-notification-soap-api';
-import { useUiUtilities } from '../../../../hooks/use-ui-utilities';
-import { ShareCalendarRoleOptions } from '../../../../integrations/shared-invite-reply/parts/utils';
+import { folderActionSoapApi } from 'api/folder-action-soap-api';
+import { sendShareNotificationSoapApi } from 'api/send-share-notification-soap-api';
+import { useUiUtilities } from 'hooks/use-ui-utilities';
+import { ShareCalendarRoleOptions } from 'integrations/shared-invite-reply/parts/utils';
+import { GranteeInfo } from 'views/sidebar/parts/edit/share-folder-properties';
 
 const ShareRevokeModal: FC<ShareRevokeModalType> = ({ folder, onClose, grant, goBack }) => {
 	const [sendNotification, setSendNotification] = useState(false);

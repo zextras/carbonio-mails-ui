@@ -9,7 +9,7 @@ import { Container, DateTimePicker } from '@zextras/carbonio-design-system';
 import { t, useUserSettings } from '@zextras/carbonio-shell-ui';
 import { Controller } from 'react-hook-form';
 
-import { FormValuesControlProps } from '../types/types';
+import { FormValuesControlProps } from 'views/search/types/types';
 
 const PICKER_DATE_FORMAT = 'P';
 

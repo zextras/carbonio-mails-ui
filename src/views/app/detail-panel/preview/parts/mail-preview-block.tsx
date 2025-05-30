@@ -14,13 +14,13 @@ import {
 	Row,
 	Text
 } from '@zextras/carbonio-design-system';
+import { FOLDERS, getFolderIdParts } from '@zextras/carbonio-ui-commons';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 
-import { FOLDERS, getFolderIdParts } from '@zextras/carbonio-ui-commons';
-import { useMsgSetNotSpamFn } from '../../../../../hooks/actions/use-msg-set-not-spam';
-import { MailMessage } from '../../../../../types';
-import PreviewHeader from './preview-header';
+import { useMsgSetNotSpamFn } from 'hooks/actions/use-msg-set-not-spam';
+import { MailMessage } from 'types/index.d';
+import PreviewHeader from 'views/app/detail-panel/preview/parts/preview-header';
 
 type MailPreviewBlockType = {
 	message: MailMessage;

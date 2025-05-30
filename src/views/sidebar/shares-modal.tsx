@@ -37,7 +37,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 
-import { createMountpointSoapApi } from '../../api/create-mountpoint-soap-api';
+import { createMountpointSoapApi } from 'api/create-mountpoint-soap-api';
 
 const ContainerEl = styled(Container)`
 	overflow-y: auto;

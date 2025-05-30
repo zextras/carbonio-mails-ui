@@ -8,10 +8,10 @@ import { act } from 'react';
 import { faker } from '@faker-js/faker';
 import { times } from 'lodash';
 
-import { ConvActionRequest } from '../../../types';
-import { useConvSetUnflagDescriptor, useConvSetUnflagFn } from '../use-conv-set-unflag';
 import { setupHook } from '@test-setup';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import { useConvSetUnflagDescriptor, useConvSetUnflagFn } from 'hooks/actions/use-conv-set-unflag';
+import { ConvActionRequest } from 'types/index.d';
 
 describe('useConvSetUnflag', () => {
 	describe('Descriptor', () => {

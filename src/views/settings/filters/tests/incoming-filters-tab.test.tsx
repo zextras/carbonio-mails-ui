@@ -10,12 +10,12 @@ import { act, screen, within } from '@testing-library/react';
 import { useSnackbar } from '@zextras/carbonio-design-system';
 import { useRootsArray } from '@zextras/carbonio-ui-commons';
 
-import { Filter, type Folder } from '../../../../types';
-import { IncomingFiltersTab } from '../incoming-filters-tab';
-import { makeAllItemsVisible, mockFilter } from './test-utils';
 import { setupTest } from '@test-setup';
 import { generateFolder } from '@test-utils/folders/folders-generator';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import { Filter, type Folder } from 'types/index.d';
+import { IncomingFiltersTab } from 'views/settings/filters/incoming-filters-tab';
+import { makeAllItemsVisible, mockFilter } from 'views/settings/filters/tests/test-utils';
 
 jest.mock('@zextras/carbonio-design-system', () => ({
 	...jest.requireActual('@zextras/carbonio-design-system'),

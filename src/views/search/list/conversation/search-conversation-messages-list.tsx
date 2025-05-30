@@ -8,14 +8,14 @@ import React, { memo, useMemo } from 'react';
 
 import { Button, Container, ListV2 } from '@zextras/carbonio-design-system';
 import { useAppContext } from '@zextras/carbonio-shell-ui';
+import { CustomListItem } from '@zextras/carbonio-ui-commons';
 import { map, noop } from 'lodash';
 import { useNavigate } from 'react-router-dom';
 
-import { CustomListItem } from '@zextras/carbonio-ui-commons';
-import { API_REQUEST_STATUS } from '../../../../constants';
-import { useSelection } from '../../../../hooks/use-selection';
-import { AppContext, IncompleteMessage, SearchRequestStatus } from '../../../../types';
-import { MessageListItem } from '../../../app/folder-panel/messages/message-list-item';
+import { API_REQUEST_STATUS } from 'constants/index';
+import { useSelection } from 'hooks/use-selection';
+import { AppContext, IncompleteMessage, SearchRequestStatus } from 'types/index.d';
+import { MessageListItem } from 'views/app/folder-panel/messages/message-list-item';
 
 type SearchConversationMessagesListProps = {
 	activeItemId?: string;

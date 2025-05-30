@@ -4,9 +4,9 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { BooleanString, getUserAccount, getUserSettings } from '@zextras/carbonio-shell-ui';
+import { ParticipantRole } from '@zextras/carbonio-ui-commons';
 import { filter, forEach, isEmpty, map, reduce } from 'lodash';
 
-import { ParticipantRole } from '@zextras/carbonio-ui-commons';
 import {
 	composeAttachmentDownloadUrl,
 	extractContentIdInnerPart,
@@ -15,12 +15,15 @@ import {
 	isCidUrl,
 	isContentIdEqual,
 	isDownloadServicedUrl
-} from '../../helpers/attachments';
+} from 'helpers/attachments';
+import { getDefaultIdentity, getIdentityDescriptor, IdentityDescriptor } from 'helpers/identities';
 import {
-	getDefaultIdentity,
-	getIdentityDescriptor,
-	IdentityDescriptor
-} from '../../helpers/identities';
+	filterSavedInlineAttachment,
+	filterSavedStandardAttachment,
+	filterUnsavedInlineAttachment,
+	filterUnsavedStandardAttachment
+} from 'store/editor/editor-utils';
+import { getCompleteMessageId } from 'store/utils';
 import {
 	MailAttachment,
 	MailAttachmentParts,
@@ -33,14 +36,7 @@ import {
 	SoapDraftMessageObj,
 	SoapEmailMessagePartObj,
 	UnsavedAttachment
-} from '../../types';
-import { getCompleteMessageId } from '../utils';
-import {
-	filterSavedInlineAttachment,
-	filterSavedStandardAttachment,
-	filterUnsavedInlineAttachment,
-	filterUnsavedStandardAttachment
-} from './editor-utils';
+} from 'types/index.d';
 
 export const composeCidUrlFromContentId = (contentId: string): string | null => {
 	const contentIdInnerPart = extractContentIdInnerPart(contentId);

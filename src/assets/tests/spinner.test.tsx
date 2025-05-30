@@ -8,8 +8,8 @@ import React from 'react';
 
 import { useTheme } from '@zextras/carbonio-design-system';
 
-import { Spinner } from '../spinner';
 import { setupTest, screen, setupHook } from '@test-setup';
+import { Spinner } from 'assets/spinner';
 
 describe('Spinner', () => {
 	it('renders the spinner', () => {

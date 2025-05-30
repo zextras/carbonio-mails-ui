@@ -4,17 +4,18 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { ParticipantRole } from '@zextras/carbonio-ui-commons';
-import {
-	generateCompleteMessageFromAPI,
-	generateConversationFromAPI,
-	generateSoapConversationMessage
-} from '../../tests/generators/api';
-import { Participant, SoapConversation } from '../../types';
+
 import {
 	mapToNormalizedConversation,
 	normalizeConversations,
 	normalizePartialConversations
-} from '../normalize-conversation';
+} from 'normalizations/normalize-conversation';
+import {
+	generateCompleteMessageFromAPI,
+	generateConversationFromAPI,
+	generateSoapConversationMessage
+} from 'tests/generators/api';
+import { Participant, SoapConversation } from 'types/index.d';
 
 describe('Normalize conversation', () => {
 	it('returns normalized conversation with all fields', () => {

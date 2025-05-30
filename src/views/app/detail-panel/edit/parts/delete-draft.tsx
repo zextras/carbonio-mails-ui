@@ -10,10 +10,10 @@ import { Padding, Text } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
 import { FOLDERS, ModalFooter, ModalHeader } from '@zextras/carbonio-ui-commons';
 
-import { useMsgMoveToTrashFn } from '../../../../../hooks/actions/use-msg-move-to-trash';
-import { deleteEditor } from '../../../../../store/editor';
-import { MailsEditorV2 } from '../../../../../types';
-import { useGlobalModal } from '../../../../global-modal-manager';
+import { useMsgMoveToTrashFn } from 'hooks/actions/use-msg-move-to-trash';
+import { deleteEditor } from 'store/editor/index';
+import { MailsEditorV2 } from 'types/index.d';
+import { useGlobalModal } from 'views/global-modal-manager';
 
 type DeleteDraftModalProps = {
 	ids: Array<string>;

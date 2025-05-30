@@ -8,8 +8,8 @@ import React from 'react';
 
 import { screen } from '@testing-library/react';
 
-import { FilterConditionRow } from '../filter-condition-row';
 import { setupTest } from '@test-setup';
+import { FilterConditionRow } from 'views/settings/filters/parts/filter-condition-row';
 
 describe('Filter Condition Row', () => {
 	const compProps = {

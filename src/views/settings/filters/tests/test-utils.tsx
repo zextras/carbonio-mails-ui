@@ -6,8 +6,8 @@
 
 import { act } from '@testing-library/react';
 
-import { Filter } from '../../../../types';
 import { makeListItemsVisible } from '@test-setup';
+import { Filter } from 'types/index.d';
 
 export function mockFilter({
 	name,

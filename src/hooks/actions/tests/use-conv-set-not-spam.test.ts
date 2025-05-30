@@ -8,11 +8,14 @@ import { act } from '@testing-library/react';
 import { FOLDERS } from '@zextras/carbonio-ui-commons';
 import { times } from 'lodash';
 
-import { FOLDERS_DESCRIPTORS, TIMEOUTS } from '../../../constants';
-import { ConvActionRequest, ConvActionResponse } from '../../../types';
-import { useConvSetNotSpamDescriptor, useConvSetNotSpamFn } from '../use-conv-set-not-spam';
 import { setupHook } from '@test-setup';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import { FOLDERS_DESCRIPTORS, TIMEOUTS } from 'constants/index';
+import {
+	useConvSetNotSpamDescriptor,
+	useConvSetNotSpamFn
+} from 'hooks/actions/use-conv-set-not-spam';
+import { ConvActionRequest, ConvActionResponse } from 'types/index.d';
 
 describe('useConvSetNotSpam', () => {
 	describe('Descriptor', () => {

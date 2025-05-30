@@ -7,7 +7,7 @@
 import { faker } from '@faker-js/faker';
 import { cloneDeep, floor, merge, times } from 'lodash';
 
-import { createFakeIdentity, FakeIdentity } from '../accounts/fakeAccounts';
+import { createFakeIdentity, FakeIdentity } from '@test-utils/accounts/fakeAccounts';
 
 /**
  * Number of alias identities to generate

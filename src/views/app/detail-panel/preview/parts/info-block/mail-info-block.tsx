@@ -9,19 +9,16 @@ import { Container, Link, Padding, useModal, useSnackbar } from '@zextras/carbon
 import { useIsCarbonioCE } from '@zextras/carbonio-shell-ui';
 import { useTranslation } from 'react-i18next';
 
-import { DistributionListIcon } from './distribution-list-icon';
-import { ExternalDomainIcon } from './external-domain-icon';
-import { MailSensitivityIcon } from './mail-sensitivity-icon';
-import { SmimeIcon } from './smime-icon';
-import { checkExistEncryptionPassword } from '../../../../../../api/check-exist-password-api';
-import {
-	useSmimeFeatureStore,
-	useSmimePasswordStore
-} from '../../../../../../store/certificates/store';
-import { getMessageDecryptEmailStoreAction } from '../../../../../../store/emails/actions/get-message';
-import { IncompleteMessage } from '../../../../../../types';
-import { EnterPasswordModal } from '../../../../../settings/certificates/enter-password-modal';
-import { MailInfoDetailModal } from '../info-details-modal/mail-info-detail-modal';
+import { checkExistEncryptionPassword } from 'api/check-exist-password-api';
+import { useSmimeFeatureStore, useSmimePasswordStore } from 'store/certificates/store';
+import { getMessageDecryptEmailStoreAction } from 'store/emails/actions/get-message';
+import { IncompleteMessage } from 'types/index.d';
+import { DistributionListIcon } from 'views/app/detail-panel/preview/parts/info-block/distribution-list-icon';
+import { ExternalDomainIcon } from 'views/app/detail-panel/preview/parts/info-block/external-domain-icon';
+import { MailSensitivityIcon } from 'views/app/detail-panel/preview/parts/info-block/mail-sensitivity-icon';
+import { SmimeIcon } from 'views/app/detail-panel/preview/parts/info-block/smime-icon';
+import { MailInfoDetailModal } from 'views/app/detail-panel/preview/parts/info-details-modal/mail-info-detail-modal';
+import { EnterPasswordModal } from 'views/settings/certificates/enter-password-modal';
 
 type MailInfoProps = {
 	msg: IncompleteMessage;

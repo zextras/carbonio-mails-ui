@@ -4,14 +4,11 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import {
-	generateConversationFromAPI,
-	generateConvMessageFromAPI
-} from '../../../../tests/generators/api';
-import { GetConvResponse } from '../../../../types/soap/get-conv';
-import { updateConversations, updateMessages } from '../../store';
-import { getConvEmailStoreAction } from '../get-conv-action';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import { getConvEmailStoreAction } from 'store/emails/actions/get-conv-action';
+import { updateConversations, updateMessages } from 'store/emails/store';
+import { generateConversationFromAPI, generateConvMessageFromAPI } from 'tests/generators/api';
+import { GetConvResponse } from 'types/soap/get-conv';
 
 jest.mock('../../store', () => ({
 	...jest.requireActual('../../store'),

@@ -12,17 +12,17 @@ import { getUserAccount } from '@zextras/carbonio-shell-ui';
 import { cloneDeep, noop } from 'lodash';
 import { HttpResponse } from 'msw';
 
-import { addEditor } from '../../../../../../store/editor';
-import { generateNewMessageEditor } from '../../../../../../store/editor/editor-generators';
-import { setupEditorStore } from '../../../../../../tests/generators/editor-store';
-import { Signature } from '../../../../../../types';
-import { EditView, EditViewProp } from '../../edit-view';
-import { aSuccessfullSaveDraft } from '../../tests/utils/utils';
 import { setupTest, screen } from '@test-setup';
 import {
 	createAPIInterceptor,
 	createSoapAPIInterceptor
 } from '@test-utils/network/msw/create-api-interceptor';
+import { generateNewMessageEditor } from 'store/editor/editor-generators';
+import { addEditor } from 'store/editor/index';
+import { setupEditorStore } from 'tests/generators/editor-store';
+import { Signature } from 'types/index.d';
+import { EditView, EditViewProp } from 'views/app/detail-panel/edit/edit-view';
+import { aSuccessfullSaveDraft } from 'views/app/detail-panel/edit/tests/utils/utils';
 
 describe('Change signature while composing mail', () => {
 	/**

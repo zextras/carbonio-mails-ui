@@ -4,8 +4,6 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { find, forEach, isArray, isNil, map, omitBy, orderBy, reduce } from 'lodash';
-
 import {
 	getFolder,
 	getIdentitiesDescriptors,
@@ -13,6 +11,16 @@ import {
 	ParticipantRoleType,
 	useFolderStore
 } from '@zextras/carbonio-ui-commons';
+import { find, forEach, isArray, isNil, map, omitBy, orderBy, reduce } from 'lodash';
+
+import {
+	getCreationDateFromMailHeadersFromAPI,
+	getMessageIdFromMailHeadersFromAPI,
+	getMessageIsFromDistributionListFromAPI,
+	getMessageIsFromExternalDomainFromAPI,
+	getSensitivityHeaderFromAPI
+} from 'normalizations/mail-header-utils';
+import { getTagIds } from 'normalizations/utils';
 import {
 	AttachmentPart,
 	BodyPart,
@@ -26,19 +34,11 @@ import {
 	SoapMailMessage,
 	SoapMailMessagePart,
 	SoapMailParticipant
-} from '../types';
+} from 'types/index.d';
 import {
 	PartialIncompleteMessage,
 	SoapPartialIncompleteMessage
-} from '../views/sidebar/commons/types';
-import {
-	getCreationDateFromMailHeadersFromAPI,
-	getMessageIdFromMailHeadersFromAPI,
-	getMessageIsFromDistributionListFromAPI,
-	getMessageIsFromExternalDomainFromAPI,
-	getSensitivityHeaderFromAPI
-} from './mail-header-utils';
-import { getTagIds } from './utils';
+} from 'views/sidebar/commons/types';
 
 type Flags = {
 	read: boolean;

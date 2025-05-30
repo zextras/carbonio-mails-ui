@@ -7,14 +7,14 @@
 import React, { ReactElement, useMemo } from 'react';
 
 import { Container, Padding, Row, Text } from '@zextras/carbonio-design-system';
+import { Folder } from '@zextras/carbonio-ui-commons';
 import { useTranslation } from 'react-i18next';
 
-import { Folder } from '@zextras/carbonio-ui-commons';
-import { FOLDER_SELECTOR_MAX_RESULTS } from '../../../../constants';
-import { isSpam, isTrash, isTrashed } from '../../../../helpers/folders';
-import { getSystemFolderTranslatedName } from '../../utils';
-import { FlatRoot } from './flat-root';
-import { flattenAndFilterFoldersWithCap } from './utils';
+import { FOLDER_SELECTOR_MAX_RESULTS } from 'constants/index';
+import { isSpam, isTrash, isTrashed } from 'helpers/folders';
+import { FlatRoot } from 'views/sidebar/commons/flatten-folders/flat-root';
+import { flattenAndFilterFoldersWithCap } from 'views/sidebar/commons/flatten-folders/utils';
+import { getSystemFolderTranslatedName } from 'views/sidebar/utils';
 
 type FlatFoldersProps = {
 	folders: Array<Folder>;

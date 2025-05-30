@@ -7,12 +7,12 @@ import React, { ChangeEvent, FC, ReactElement, useCallback, useMemo, useState } 
 
 import { Button, Checkbox, Divider, Input, Padding, Row } from '@zextras/carbonio-design-system';
 import { useUserAccounts } from '@zextras/carbonio-shell-ui';
+import { FOLDER_VIEW } from '@zextras/carbonio-ui-commons';
 import { TFunction } from 'i18next';
 
-import { FOLDER_VIEW } from '@zextras/carbonio-ui-commons';
-import { ResponseActionsProps } from '../../../types';
-import ColorSelect from './color-select';
-import { useAccept, useDecline } from './share-folder-actions';
+import ColorSelect from 'integrations/shared-invite-reply/parts/color-select';
+import { useAccept, useDecline } from 'integrations/shared-invite-reply/parts/share-folder-actions';
+import { ResponseActionsProps } from 'types/index.d';
 
 function getProposedFolderName(sharedFolderName: string, ownerName: string, t: TFunction): string {
 	const of = t('label.of', 'of');

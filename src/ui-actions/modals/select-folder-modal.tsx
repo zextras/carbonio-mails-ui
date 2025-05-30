@@ -11,7 +11,7 @@ import type { Folder, RootFolder } from '@zextras/carbonio-ui-commons';
 import { ModalFooter, ModalHeader } from '@zextras/carbonio-ui-commons';
 import { isNil } from 'lodash';
 
-import { FolderSelector } from '../../views/sidebar/commons/folder-selector';
+import { FolderSelector } from 'views/sidebar/commons/folder-selector';
 
 type SelectFolderModalProps = {
 	folder?: Folder | RootFolder;

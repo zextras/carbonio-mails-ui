@@ -8,8 +8,8 @@ import React from 'react';
 
 import { screen } from '@testing-library/react';
 
-import { MailGeneralInfoSubsection } from '../mail-general-info-subsection';
 import { setupTest } from '@test-setup';
+import { MailGeneralInfoSubsection } from 'views/app/detail-panel/preview/parts/info-details-modal/subsections/mail-general-info-subsection';
 
 describe('MailInfoSubsection', () => {
 	it('correctly renders the component when both attributes are present', () => {

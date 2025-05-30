@@ -8,11 +8,11 @@ import React, { SyntheticEvent, useCallback, useMemo } from 'react';
 
 import { Button, Container } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
+import { getShareInfoRequest, ResFolder } from '@zextras/carbonio-ui-commons';
 import { filter, isEqual, uniqWith } from 'lodash';
 
-import { getShareInfoRequest, ResFolder } from '@zextras/carbonio-ui-commons';
-import { useUiUtilities } from '../../hooks/use-ui-utilities';
-import { SharesModal } from './shares-modal';
+import { useUiUtilities } from 'hooks/use-ui-utilities';
+import { SharesModal } from 'views/sidebar/shares-modal';
 
 export const ButtonFindShares = (): React.JSX.Element => {
 	const { createModal, closeModal } = useUiUtilities();

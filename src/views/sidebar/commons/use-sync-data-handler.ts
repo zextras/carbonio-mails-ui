@@ -18,19 +18,13 @@ import { flatten, forEach, isEmpty, map, sortBy } from 'lodash';
 import { NavigateFunction, useNavigate } from 'react-router-dom';
 
 import {
-	HandleFoldersNotifyProps,
-	HandleTagsNotifyProps,
-	SoapPartialConversation,
-	SoapPartialIncompleteMessage
-} from './types';
-import {
 	mapToNormalizedConversation,
 	normalizePartialConversations
-} from '../../../normalizations/normalize-conversation';
+} from 'normalizations/normalize-conversation';
 import {
 	normalizeMailMessageFromSoap,
 	normalizePartialIncompleteMessageFromSoap
-} from '../../../normalizations/normalize-message';
+} from 'normalizations/normalize-message';
 import {
 	handleNotifyConversationsCreated,
 	handleNotifyConversationsModified,
@@ -38,9 +32,15 @@ import {
 	handleNotifyMessagesCreated,
 	handleNotifyMessagesModified,
 	updateMessages
-} from '../../../store/emails/store';
-import { triggerNotification } from '../../../store/emails/sync-data-handler/trigger-notification';
-import { IncompleteMessage, SoapConversation, SoapIncompleteMessage } from '../../../types';
+} from 'store/emails/store';
+import { triggerNotification } from 'store/emails/sync-data-handler/trigger-notification';
+import { IncompleteMessage, SoapConversation, SoapIncompleteMessage } from 'types/index.d';
+import {
+	HandleFoldersNotifyProps,
+	HandleTagsNotifyProps,
+	SoapPartialConversation,
+	SoapPartialIncompleteMessage
+} from 'views/sidebar/commons/types';
 
 export function extractConvMessage(
 	createdConversations: Array<{ m?: Array<SoapIncompleteMessage> }>

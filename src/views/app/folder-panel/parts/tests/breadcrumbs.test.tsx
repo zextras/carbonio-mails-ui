@@ -5,12 +5,13 @@
  */
 
 import React from 'react';
+
 import { act, screen } from '@testing-library/react';
 import { useTheme } from '@zextras/carbonio-design-system';
 
-import { getFolderPathForBreadcrumb } from '../../../../../helpers/folders';
-import { Breadcrumbs } from '../breadcrumbs';
 import { setupHook, setupTest } from '@test-setup';
+import { getFolderPathForBreadcrumb } from 'helpers/folders';
+import { Breadcrumbs } from 'views/app/folder-panel/parts/breadcrumbs';
 
 jest.mock('../../../../../helpers/folders', () => ({
 	getFolderPathForBreadcrumb: jest.fn()

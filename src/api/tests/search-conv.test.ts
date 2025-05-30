@@ -6,9 +6,9 @@
 
 import { FOLDERS } from '@zextras/carbonio-ui-commons';
 
-import { SearchConvRequest } from '../../types';
-import { searchConvSoapApi } from '../search-conv-soap-api';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import { searchConvSoapApi } from 'api/search-conv-soap-api';
+import { SearchConvRequest } from 'types/index.d';
 
 describe('searchConvSoapApi', () => {
 	test('the max property is set to 250_000', async () => {

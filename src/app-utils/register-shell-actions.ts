@@ -7,12 +7,12 @@
 import { SyntheticEvent } from 'react';
 
 import { Action, NewAction, registerActions, t } from '@zextras/carbonio-shell-ui';
+import { ParticipantRole } from '@zextras/carbonio-ui-commons';
 import { isArray, isString, some } from 'lodash';
 
-import { ParticipantRole } from '@zextras/carbonio-ui-commons';
-import { EditViewActions, MAIL_APP_ID } from '../constants';
-import { mailToSharedFunction } from '../integrations/shared-functions';
-import { createEditBoard } from '../views/app/detail-panel/edit/edit-view-board';
+import { EditViewActions, MAIL_APP_ID } from 'constants/index';
+import { mailToSharedFunction } from 'integrations/shared-functions';
+import { createEditBoard } from 'views/app/detail-panel/edit/edit-view-board';
 
 interface MailToActionType extends Action {
 	id: string;

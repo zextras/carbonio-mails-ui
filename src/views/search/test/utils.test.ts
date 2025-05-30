@@ -8,10 +8,14 @@ import type { QueryChip } from '@zextras/carbonio-search-ui';
 import { keyBy } from 'lodash';
 import moment from 'moment';
 
-import { Query } from '../types/types';
-import { generateQueryString, getAdvancedFiltersDefaultValues, updateQueryChips } from '../utils';
 import { createFakeIdentity } from '@test-utils/accounts/fakeAccounts';
 import { generateFolder, generateFolderLink } from '@test-utils/folders/folders-generator';
+import { Query } from 'views/search/types/types';
+import {
+	generateQueryString,
+	getAdvancedFiltersDefaultValues,
+	updateQueryChips
+} from 'views/search/utils';
 
 describe('generateQueryString', () => {
 	const query = [

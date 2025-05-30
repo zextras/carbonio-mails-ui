@@ -5,16 +5,17 @@
  */
 
 import React from 'react';
-import { screen, waitFor } from '@testing-library/react';
 
+import { screen, waitFor } from '@testing-library/react';
 import { FOLDERS, useTags } from '@zextras/carbonio-ui-commons';
-import { API_REQUEST_STATUS } from '../../../../../constants';
-import { populateConversationInEmailStore } from '../../../../../tests/generators/generateConversation';
-import { useTagExist } from '../../../../../ui-actions/tag-actions';
-import { SearchConversationListItemCore } from '../search-conversation-list-item-core';
-import { tags } from '@test-utils/tags/tags';
-import { populateFoldersStore } from '@test-utils/store/folders';
+
 import { setupTest } from '@test-setup';
+import { populateFoldersStore } from '@test-utils/store/folders';
+import { tags } from '@test-utils/tags/tags';
+import { API_REQUEST_STATUS } from 'constants/index';
+import { populateConversationInEmailStore } from 'tests/generators/generateConversation';
+import { useTagExist } from 'ui-actions/tag-actions';
+import { SearchConversationListItemCore } from 'views/search/list/conversation/search-conversation-list-item-core';
 
 jest.mock('@zextras/carbonio-ui-commons', () => ({
 	...jest.requireActual('@zextras/carbonio-ui-commons'),

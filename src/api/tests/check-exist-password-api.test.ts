@@ -5,8 +5,8 @@
  */
 import { HttpResponse } from 'msw';
 
-import { checkExistEncryptionPassword } from '../check-exist-password-api';
 import { createAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import { checkExistEncryptionPassword } from 'api/check-exist-password-api';
 
 const api = '/service/extension/encryption/password/exist';
 describe('checkExistEncryptionPassword', () => {

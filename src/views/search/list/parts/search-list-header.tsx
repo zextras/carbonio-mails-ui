@@ -6,8 +6,8 @@
 
 import React, { PropsWithChildren, useMemo } from 'react';
 
-import { Breadcrumbs } from '../../../app/folder-panel/parts/breadcrumbs';
-import { MultipleSelectionActionsPanel } from '../../../app/folder-panel/parts/multiple-selection-actions-panel';
+import { Breadcrumbs } from 'views/app/folder-panel/parts/breadcrumbs';
+import { MultipleSelectionActionsPanel } from 'views/app/folder-panel/parts/multiple-selection-actions-panel';
 
 type SearchConversationListHeaderProps = {
 	itemIds: Array<string>;

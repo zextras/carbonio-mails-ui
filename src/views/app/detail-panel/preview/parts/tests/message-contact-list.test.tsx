@@ -8,11 +8,11 @@ import React, { act } from 'react';
 
 import { faker } from '@faker-js/faker';
 import { screen } from '@testing-library/react';
-
 import { ParticipantRole } from '@zextras/carbonio-ui-commons';
-import { generateMessage } from '../../../../../../tests/generators/generateMessage';
-import MessageContactList from '../message-contact-list';
+
 import { setupTest } from '@test-setup';
+import { generateMessage } from 'tests/generators/generateMessage';
+import MessageContactList from 'views/app/detail-panel/preview/parts/message-contact-list';
 
 describe('MessageContactList', () => {
 	const toParticipant = { type: ParticipantRole.TO, address: faker.internet.email() };

@@ -9,11 +9,11 @@ import { faker } from '@faker-js/faker';
 import { FOLDERS } from '@zextras/carbonio-ui-commons';
 import { times } from 'lodash';
 
-import { FOLDERS_DESCRIPTORS } from '../../../constants';
-import { ConvActionRequest } from '../../../types';
-import { useConvSetReadDescriptor, useConvSetReadFn } from '../use-conv-set-read';
 import { setupHook } from '@test-setup';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import { FOLDERS_DESCRIPTORS } from 'constants/index';
+import { useConvSetReadDescriptor, useConvSetReadFn } from 'hooks/actions/use-conv-set-read';
+import { ConvActionRequest } from 'types/index.d';
 
 describe('useConvSetRead', () => {
 	describe('Descriptor', () => {

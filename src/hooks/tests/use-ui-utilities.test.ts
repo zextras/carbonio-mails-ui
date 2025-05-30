@@ -3,8 +3,8 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { useUiUtilities } from '../use-ui-utilities';
 import { setupHook } from '@test-setup';
+import { useUiUtilities } from 'hooks/use-ui-utilities';
 
 describe('useUiUtilities', () => {
 	test('the result contains the createModal function', () => {

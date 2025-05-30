@@ -9,10 +9,10 @@ import { Container, CustomModal, Padding, Text } from '@zextras/carbonio-design-
 import { t } from '@zextras/carbonio-shell-ui';
 import { ModalFooter, ModalHeader } from '@zextras/carbonio-ui-commons';
 
-import { sendDeliveryReportSoapApi } from '../../../../api/send-delivery-request-soap-api';
-import { useUiUtilities } from '../../../../hooks/use-ui-utilities';
-import { msgActionEmailStoreAction } from '../../../../store/emails/actions/msg-action-action';
-import type { MailMessage } from '../../../../types';
+import { sendDeliveryReportSoapApi } from 'api/send-delivery-request-soap-api';
+import { useUiUtilities } from 'hooks/use-ui-utilities';
+import { msgActionEmailStoreAction } from 'store/emails/actions/msg-action-action';
+import type { MailMessage } from 'types/index.d';
 
 type CompProps = {
 	open: boolean;

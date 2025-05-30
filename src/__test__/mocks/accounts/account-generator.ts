@@ -5,7 +5,7 @@
  */
 import { Account } from '@zextras/carbonio-shell-ui';
 
-import { defaultAccount } from './default-account';
+import { defaultAccount } from '@test-utils/accounts/default-account';
 
 /**
  * Generate an account with the customAccount if pass otherwise retunr default Account

@@ -10,14 +10,18 @@ import { act, screen, waitFor } from '@testing-library/react';
 import type { QueryChip, SearchViewProps } from '@zextras/carbonio-search-ui';
 import * as hooks from '@zextras/carbonio-shell-ui';
 import { AccountSettings, ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
+import { FOLDERS } from '@zextras/carbonio-ui-commons';
 import { noop } from 'lodash';
 import * as reactRouterDom from 'react-router-dom';
 
-import { FOLDERS } from '@zextras/carbonio-ui-commons';
-import * as searchSoapApi from '../../../api/search-soap-api';
-import * as useSelection from '../../../hooks/use-selection';
-import { TESTID_SELECTORS } from '../../../tests/constants';
-import { generateSoapConversationMessage } from '../../../tests/generators/api';
+import { within, makeListItemsVisible, setupTest } from '@test-setup';
+import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import { generateSettings } from '@test-utils/settings/settings-generator';
+import { buildSoapErrorResponseBody } from '@test-utils/utils/soap';
+import * as searchSoapApi from 'api/search-soap-api';
+import * as useSelection from 'hooks/use-selection';
+import { TESTID_SELECTORS } from 'tests/constants';
+import { generateSoapConversationMessage } from 'tests/generators/api';
 import {
 	ConvActionRequest,
 	ConvActionResponse,
@@ -32,12 +36,8 @@ import {
 	SoapConversation,
 	SoapIncompleteMessage,
 	SoapMailMessage
-} from '../../../types';
-import SearchView from '../search-view';
-import { generateSettings } from '@test-utils/settings/settings-generator';
-import { within, makeListItemsVisible, setupTest } from '@test-setup';
-import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
-import { buildSoapErrorResponseBody } from '@test-utils/utils/soap';
+} from 'types/index.d';
+import SearchView from 'views/search/search-view';
 
 jest.mock('react-router-dom', () => ({
 	...jest.requireActual('react-router-dom'),

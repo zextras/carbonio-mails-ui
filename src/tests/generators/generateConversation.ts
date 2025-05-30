@@ -5,12 +5,12 @@
  */
 
 import { faker } from '@faker-js/faker';
+import { FOLDERS, ParticipantRole, ParticipantRoleType } from '@zextras/carbonio-ui-commons';
 import { times } from 'lodash';
 
-import { FOLDERS, ParticipantRole, ParticipantRoleType } from '@zextras/carbonio-ui-commons';
-import { updateConversations, updateMessages } from '../../store/emails/store';
-import type { MailMessage, NormalizedConversation, Participant } from '../../types';
-import { generateMessage, MessageGenerationParams } from './generateMessage';
+import { updateConversations, updateMessages } from 'store/emails/store';
+import { generateMessage, MessageGenerationParams } from 'tests/generators/generateMessage';
+import type { MailMessage, NormalizedConversation, Participant } from 'types/index.d';
 
 /**
  *

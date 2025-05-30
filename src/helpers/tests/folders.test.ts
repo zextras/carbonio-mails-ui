@@ -13,8 +13,9 @@ import {
 	getRootsMap
 } from '@zextras/carbonio-ui-commons';
 
-import { NO_ACCOUNT_NAME } from '../../constants';
-import { generateMessage } from '../../tests/generators/generateMessage';
+import { populateFoldersStore } from '@test-utils/store/folders';
+import { getMocksContext } from '@test-utils/utils/mocks-context';
+import { NO_ACCOUNT_NAME } from 'constants/index';
 import {
 	getFolderIdParts,
 	getFolderOwnerAccountName,
@@ -27,9 +28,8 @@ import {
 	isSent,
 	isTrash,
 	isTrashed
-} from '../folders';
-import { populateFoldersStore } from '@test-utils/store/folders';
-import { getMocksContext } from '@test-utils/utils/mocks-context';
+} from 'helpers/folders';
+import { generateMessage } from 'tests/generators/generateMessage';
 
 describe('Folder id', () => {
 	test('with zid', () => {

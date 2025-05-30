@@ -15,8 +15,8 @@ import {
 } from '@mui/material';
 import { FOLDERS, hasId, theme } from '@zextras/carbonio-ui-commons';
 
-import { isRoot, isSpam, isTrash } from '../../../helpers/folders';
-import { Folder } from '../../../types';
+import { isRoot, isSpam, isTrash } from 'helpers/folders';
+import { Folder } from 'types/index.d';
 
 type FolderAccordionProps = {
 	folders: Array<Folder>;

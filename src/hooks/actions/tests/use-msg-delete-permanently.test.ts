@@ -9,13 +9,13 @@ import { faker } from '@faker-js/faker';
 import { FOLDERS } from '@zextras/carbonio-ui-commons';
 import { times } from 'lodash';
 
-import { FOLDERS_DESCRIPTORS } from '../../../constants';
-import { TIMERS } from '../../../tests/constants';
+import { setupHook, screen } from '@test-setup';
+import { FOLDERS_DESCRIPTORS } from 'constants/index';
 import {
 	useMsgDeletePermanentlyDescriptor,
 	useMsgDeletePermanentlyFn
-} from '../use-msg-delete-permanently';
-import { setupHook, screen } from '@test-setup';
+} from 'hooks/actions/use-msg-delete-permanently';
+import { TIMERS } from 'tests/constants';
 
 describe('useMsgDeletePermanently', () => {
 	const messagesId = times(faker.number.int({ max: 42 }), () =>

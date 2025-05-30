@@ -6,8 +6,8 @@
 
 import React from 'react';
 
-import { NavigationIconButton } from '../navigation-icon-button';
 import { screen, setupTest } from '@test-setup';
+import { NavigationIconButton } from 'views/app/detail-panel/preview/parts/navigation-icon-button';
 
 describe('NavigationIconButton', () => {
 	test('renders correctly', () => {

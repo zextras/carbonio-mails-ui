@@ -6,17 +6,17 @@
 
 import { Account } from '@zextras/carbonio-shell-ui';
 
-import * as shellMock from '../../__test__/mocks/carbonio-shell-ui/carbonio-shell-ui';
-import defaultSettings from '../../__test__/mocks/settings/default-settings';
-import { MailMessagePart } from '../../types';
-import { convertHtmlToPlainText } from '../utilities';
+import * as shellMock from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
+import defaultSettings from '@test-utils/settings/default-settings';
+import { convertHtmlToPlainText } from 'commons/utilities';
 import {
 	buildImageMap,
 	decodeSurrogatePairs,
 	getTimeLabel,
 	participantToString,
 	updateImageSrc
-} from '../utils';
+} from 'commons/utils';
+import { MailMessagePart } from 'types/index.d';
 
 describe('getTimeLabel', () => {
 	describe('the date is formatted using local', () => {

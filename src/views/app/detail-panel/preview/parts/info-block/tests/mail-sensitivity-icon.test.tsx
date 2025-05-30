@@ -8,9 +8,9 @@ import React from 'react';
 
 import { screen } from '@testing-library/react';
 
-import { MAIL_SENSITIVITY_HEADER } from '../../../../../../../constants';
-import { MailSensitivityIcon } from '../mail-sensitivity-icon';
 import { setupTest } from '@test-setup';
+import { MAIL_SENSITIVITY_HEADER } from 'constants/index';
+import { MailSensitivityIcon } from 'views/app/detail-panel/preview/parts/info-block/mail-sensitivity-icon';
 
 describe('MailSensitivityIcon', () => {
 	test('renders icon when hasSensitivity private', async () => {

@@ -11,12 +11,12 @@ import { noop, some } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
-import { createFolderSoapApi } from '../api/create-folder-soap-api';
-import { MAILS_ROUTE } from '../constants';
-import { isRoot } from '../helpers/folders';
-import { useUiUtilities } from '../hooks/use-ui-utilities';
-import { convActionEmailStoreAction } from '../store/emails/actions/conv-action-action';
-import { FolderSelector } from '../views/sidebar/commons/folder-selector';
+import { createFolderSoapApi } from 'api/create-folder-soap-api';
+import { MAILS_ROUTE } from 'constants/index';
+import { isRoot } from 'helpers/folders';
+import { useUiUtilities } from 'hooks/use-ui-utilities';
+import { convActionEmailStoreAction } from 'store/emails/actions/conv-action-action';
+import { FolderSelector } from 'views/sidebar/commons/folder-selector';
 
 type MoveMessageProps = {
 	selectedIDs: string[];

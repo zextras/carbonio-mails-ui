@@ -11,17 +11,17 @@ import { useUserSettings } from '@zextras/carbonio-shell-ui';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
-import { SearchConversationListItemCore } from './search-conversation-list-item-core';
-import { SearchConversationMessagesList } from './search-conversation-messages-list';
-import { useConvPreviewOnSeparatedWindowFn } from '../../../../hooks/actions/use-conv-preview-on-separated-window';
-import { useConvSetReadFn } from '../../../../hooks/actions/use-conv-set-read';
-import { useOnMouseHover } from '../../../../hooks/use-on-mouse-hover';
+import { useConvPreviewOnSeparatedWindowFn } from 'hooks/actions/use-conv-preview-on-separated-window';
+import { useConvSetReadFn } from 'hooks/actions/use-conv-set-read';
+import { useOnMouseHover } from 'hooks/use-on-mouse-hover';
 import {
 	useConversationById,
 	useConversationMessages,
 	useConversationStatus
-} from '../../../../store/emails/store';
-import { ConversationListItemActionWrapper } from '../../../app/folder-panel/conversations/conversation-list-item-wrapper';
+} from 'store/emails/store';
+import { ConversationListItemActionWrapper } from 'views/app/folder-panel/conversations/conversation-list-item-wrapper';
+import { SearchConversationListItemCore } from 'views/search/list/conversation/search-conversation-list-item-core';
+import { SearchConversationMessagesList } from 'views/search/list/conversation/search-conversation-messages-list';
 
 const CollapseElement = styled(Container)<{ $open: boolean }>`
 	display: ${({ $open }): string => ($open ? 'block' : 'none')};

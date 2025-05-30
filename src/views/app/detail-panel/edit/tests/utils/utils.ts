@@ -3,8 +3,8 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import { SaveDraftRequest, SaveDraftResponse, SoapMailMessage } from '../../../../../../types';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import { SaveDraftRequest, SaveDraftResponse, SoapMailMessage } from 'types/index.d';
 
 export function aSuccessfullSaveDraft(): Promise<SaveDraftRequest> {
 	const msg: SoapMailMessage = {

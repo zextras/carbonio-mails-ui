@@ -4,9 +4,8 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { soapFetch } from '@zextras/carbonio-shell-ui';
-import { map } from 'lodash';
-
 import { FOLDERS, SharedObject } from '@zextras/carbonio-ui-commons';
+import { map } from 'lodash';
 
 export const createMountpointSoapApi = async (links: Array<SharedObject>): Promise<unknown> =>
 	soapFetch('Batch', {

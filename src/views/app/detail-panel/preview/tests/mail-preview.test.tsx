@@ -5,14 +5,15 @@
  */
 
 import React from 'react';
-import { screen, within } from '@testing-library/react';
 
+import { screen, within } from '@testing-library/react';
 import { FOLDERS } from '@zextras/carbonio-ui-commons';
-import { getMsgSoapApi } from '../../../../../api/get-msg-soap-api';
-import { normalizeMailMessageFromSoap } from '../../../../../normalizations/normalize-message';
-import { generateMessage } from '../../../../../tests/generators/generateMessage';
-import MailPreview, { MailPreviewProps } from '../mail-preview';
+
 import { setupTest } from '@test-setup';
+import { getMsgSoapApi } from 'api/get-msg-soap-api';
+import { normalizeMailMessageFromSoap } from 'normalizations/normalize-message';
+import { generateMessage } from 'tests/generators/generateMessage';
+import MailPreview, { MailPreviewProps } from 'views/app/detail-panel/preview/mail-preview';
 
 /**
  * Test the Mail Preview component in different scenarios

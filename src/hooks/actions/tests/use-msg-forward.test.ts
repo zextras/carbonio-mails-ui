@@ -6,11 +6,11 @@
 
 import { FOLDERS } from '@zextras/carbonio-ui-commons';
 
-import { FOLDERS_DESCRIPTORS } from '../../../constants';
-import { generateMessage } from '../../../tests/generators/generateMessage';
-import { useMsgForwardDescriptor, useMsgForwardFn } from '../use-msg-forward';
 import { setupHook } from '@test-setup';
 import { addBoard } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
+import { FOLDERS_DESCRIPTORS } from 'constants/index';
+import { useMsgForwardDescriptor, useMsgForwardFn } from 'hooks/actions/use-msg-forward';
+import { generateMessage } from 'tests/generators/generateMessage';
 
 describe('useMsgForward', () => {
 	const msg = generateMessage();

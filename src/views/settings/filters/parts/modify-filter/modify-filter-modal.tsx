@@ -33,15 +33,15 @@ import type {
 	AllFiltersTest,
 	FilterTest,
 	FilterActions
-} from '../../../../../types';
-import { capitalise } from '../../../../sidebar/utils';
-import { CreateFilterContext } from '../create-filter-context';
-import ModalFooter from '../create-filter-modal-footer';
-import DefaultCondition from '../create-filters-conditions/default';
-import { FilterActionsPanel } from '../filter-actions-panel';
-import { FilterConditionsPanel } from '../filter-conditions-panel';
-import { findRowKey, getTestComponent } from '../get-test-component';
-import { getButtonInfo } from '../utils';
+} from 'types/index.d';
+import { CreateFilterContext } from 'views/settings/filters/parts/create-filter-context';
+import ModalFooter from 'views/settings/filters/parts/create-filter-modal-footer';
+import DefaultCondition from 'views/settings/filters/parts/create-filters-conditions/default';
+import { FilterActionsPanel } from 'views/settings/filters/parts/filter-actions-panel';
+import { FilterConditionsPanel } from 'views/settings/filters/parts/filter-conditions-panel';
+import { findRowKey, getTestComponent } from 'views/settings/filters/parts/get-test-component';
+import { getButtonInfo } from 'views/settings/filters/parts/utils';
+import { capitalise } from 'views/sidebar/utils';
 
 type ModifyFilterModalProps = {
 	onClose: () => void;

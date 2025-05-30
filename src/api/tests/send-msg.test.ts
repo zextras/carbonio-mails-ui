@@ -8,15 +8,15 @@ import { waitFor } from '@testing-library/react';
 import * as shellHooks from '@zextras/carbonio-shell-ui';
 import { ParticipantRole } from '@zextras/carbonio-ui-commons';
 
-import { generateEditor } from '../../store/editor/editor-generators';
-import { getConvEmailStoreAction } from '../../store/emails/actions/get-conv-action';
-import { getMessageWithExistingParticipantsEmailStoreAction } from '../../store/emails/actions/get-message-with-existing-participants';
-import { generateMessage } from '../../tests/generators/generateMessage';
-import { MailsEditorV2 } from '../../types';
-import { SoapSendMsgRequest, SoapSendMsgResponse } from '../../types/soap/send-msg';
-import { sendMsg, sendMsgFromEditor } from '../send-msg';
 import { generateAccount } from '@test-utils/accounts/account-generator';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import { sendMsg, sendMsgFromEditor } from 'api/send-msg';
+import { generateEditor } from 'store/editor/editor-generators';
+import { getConvEmailStoreAction } from 'store/emails/actions/get-conv-action';
+import { getMessageWithExistingParticipantsEmailStoreAction } from 'store/emails/actions/get-message-with-existing-participants';
+import { generateMessage } from 'tests/generators/generateMessage';
+import { MailsEditorV2 } from 'types/index.d';
+import { SoapSendMsgRequest, SoapSendMsgResponse } from 'types/soap/send-msg';
 
 jest.mock('../../store/emails/actions/get-conv-action', () => ({
 	getConvEmailStoreAction: jest.fn()

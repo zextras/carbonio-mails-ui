@@ -5,7 +5,7 @@
  */
 import { Account } from '@zextras/carbonio-shell-ui';
 
-import { getMocksContext } from '../utils/mocks-context';
+import { getMocksContext } from '@test-utils/utils/mocks-context';
 
 /**
  * Generate an account consistent data based on the current mocksContext

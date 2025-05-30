@@ -13,7 +13,7 @@ import {
 } from '@zextras/carbonio-ui-commons';
 import { map, some } from 'lodash';
 
-import { Participant } from '../../../../../types';
+import { Participant } from 'types/index.d';
 
 export type RecipientsRowProps = {
 	type: ParticipantRoleType;

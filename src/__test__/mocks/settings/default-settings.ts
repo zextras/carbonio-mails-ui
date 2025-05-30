@@ -6,7 +6,7 @@
 
 import { AccountSettings } from '@zextras/carbonio-shell-ui';
 
-import { getMocksContext } from '../utils/mocks-context';
+import { getMocksContext } from '@test-utils/utils/mocks-context';
 
 const mocksContext = getMocksContext();
 const { identity, signatures } = mocksContext.identities.primary;

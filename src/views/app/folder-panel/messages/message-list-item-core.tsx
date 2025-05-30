@@ -16,16 +16,16 @@ import {
 	Tooltip
 } from '@zextras/carbonio-design-system';
 import { t, useUserAccounts } from '@zextras/carbonio-shell-ui';
+import { Tag, useFolder, useTags, ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-ui-commons';
 import { find, includes, isEmpty, noop, reduce } from 'lodash';
 import moment from 'moment/moment';
 
-import { Tag, useFolder, useTags, ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-ui-commons';
-import { getTimeLabel, participantToString } from '../../../../commons/utils';
-import { IncompleteMessage, TextReadValuesType } from '../../../../types';
-import { useTagExist } from '../../../../ui-actions/tag-actions';
-import { getFolderTranslatedName } from '../../../sidebar/utils';
-import { ItemAvatar } from '../parts/item-avatar';
-import { ParticipantsName } from '../parts/participants-name';
+import { getTimeLabel, participantToString } from 'commons/utils';
+import { IncompleteMessage, TextReadValuesType } from 'types/index.d';
+import { useTagExist } from 'ui-actions/tag-actions';
+import { ItemAvatar } from 'views/app/folder-panel/parts/item-avatar';
+import { ParticipantsName } from 'views/app/folder-panel/parts/participants-name';
+import { getFolderTranslatedName } from 'views/sidebar/utils';
 
 type MessageListItemCoreProps = {
 	message: IncompleteMessage;

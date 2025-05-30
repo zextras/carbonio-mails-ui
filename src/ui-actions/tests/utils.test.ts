@@ -7,18 +7,18 @@
 import { faker } from '@faker-js/faker';
 import { ErrorSoapBodyResponse, SoapFault } from '@zextras/carbonio-shell-ui';
 
-import { parseTextToHTMLDocument } from '../../helpers/text';
-import { useEditorsStore } from '../../store/editor/store';
-import { setupEditorStore } from '../../tests/generators/editor-store';
-import { generateEditorV2Case } from '../../tests/generators/editors';
-import { CreateSmartLinksRequest, CreateSmartLinksResponse, MessageAction } from '../../types';
+import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import { parseTextToHTMLDocument } from 'helpers/text';
+import { useEditorsStore } from 'store/editor/store';
+import { setupEditorStore } from 'tests/generators/editor-store';
+import { generateEditorV2Case } from 'tests/generators/editors';
+import { CreateSmartLinksRequest, CreateSmartLinksResponse, MessageAction } from 'types/index.d';
 import {
 	addSmartLinksToText,
 	findMessageActionById,
 	generateSmartLinkHtml,
 	updateEditorWithSmartLinks
-} from '../utils';
-import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+} from 'ui-actions/utils';
 
 describe('findMessageActionById', () => {
 	test('returns undefined if an empty actions array is passed', () => {

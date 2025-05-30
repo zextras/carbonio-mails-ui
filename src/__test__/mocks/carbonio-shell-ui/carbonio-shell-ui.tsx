@@ -9,9 +9,9 @@ import React, { FC, ReactNode } from 'react';
 import * as shell from '@zextras/carbonio-shell-ui';
 import { useActions as realUseActions } from '@zextras/carbonio-shell-ui';
 
-import { generateAccount } from '../accounts/account-generator';
-import { getSoapFetch } from '../network/fetch';
-import { generateSettings } from '../settings/settings-generator';
+import { generateAccount } from '@test-utils/accounts/account-generator';
+import { getSoapFetch } from '@test-utils/network/fetch';
+import { generateSettings } from '@test-utils/settings/settings-generator';
 
 export const mockedAccount = generateAccount();
 const mockedAccounts = [mockedAccount];

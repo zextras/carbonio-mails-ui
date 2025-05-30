@@ -5,15 +5,19 @@
  */
 
 import React from 'react';
-import { act, screen, within } from '@testing-library/react';
 
+import { act, screen, within } from '@testing-library/react';
 import { FOLDER_VIEW, FOLDERS, useTagStore } from '@zextras/carbonio-ui-commons';
-import { FilterAction } from '../../../../../types';
-import { FilterActionRow, FilterActionRowProps } from '../filter-action-row';
-import { getActionTranslations } from '../utils';
+
 import { makeListItemsVisible, setupTest } from '@test-setup';
 import { generateFolder } from '@test-utils/folders/folders-generator';
 import { populateFoldersStore } from '@test-utils/store/folders';
+import { FilterAction } from 'types/index.d';
+import {
+	FilterActionRow,
+	FilterActionRowProps
+} from 'views/settings/filters/parts/filter-action-row';
+import { getActionTranslations } from 'views/settings/filters/parts/utils';
 
 const REDIRECT_TO_ADDRESS = /Redirect To Address/i;
 

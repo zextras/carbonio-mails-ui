@@ -7,13 +7,13 @@ import { act, renderHook, waitFor } from '@testing-library/react';
 import { CreateSnackbarFn, useSnackbar } from '@zextras/carbonio-design-system';
 import * as reactRouterDom from 'react-router-dom';
 
-import * as convRequest from '../../api/conv-action-soap-api';
-import * as searchSoapApi from '../../api/search-soap-api';
-import { setConversationsInEmailStore } from '../../store/emails/store';
-import { createSoapAPIInterceptorWithError } from '../../tests/generators/api';
-import { generateConversation } from '../../tests/generators/generateConversation';
-import { usePreviewHeaderNavigation } from '../use-preview-header-navigation';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import * as convRequest from 'api/conv-action-soap-api';
+import * as searchSoapApi from 'api/search-soap-api';
+import { usePreviewHeaderNavigation } from 'hooks/use-preview-header-navigation';
+import { setConversationsInEmailStore } from 'store/emails/store';
+import { createSoapAPIInterceptorWithError } from 'tests/generators/api';
+import { generateConversation } from 'tests/generators/generateConversation';
 
 const createSnackbar = (arg: any): CreateSnackbarFn => arg;
 const createSnackbarSpy = jest.fn(createSnackbar);

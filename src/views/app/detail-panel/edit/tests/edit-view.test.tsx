@@ -15,35 +15,6 @@ import { FOLDERS, ParticipantRole } from '@zextras/carbonio-ui-commons';
 import { find, noop } from 'lodash';
 import { HttpResponse } from 'msw';
 
-import {
-	GetSignaturesRequest,
-	GetSignaturesResponse
-} from '../../../../../api/get-signatures-soap-api';
-import * as saveDraftAction from '../../../../../api/save-draft-soap-api';
-import { EditViewActions, MAILS_ROUTE } from '../../../../../constants';
-import * as useQueryParam from '../../../../../hooks/use-query-param';
-import { addEditor } from '../../../../../store/editor';
-import {
-	generateEditAsNewEditor,
-	generateNewMessageEditor,
-	generateReplyAllMsgEditor,
-	generateReplyMsgEditor
-} from '../../../../../store/editor/editor-generators';
-import { setupEditorStore } from '../../../../../tests/generators/editor-store';
-import { readyToBeSentEditorTestCase } from '../../../../../tests/generators/editors';
-import { generateMessage } from '../../../../../tests/generators/generateMessage';
-import type {
-	CreateSmartLinksRequest,
-	MailsEditorV2,
-	SaveDraftRequest,
-	SoapDraftMessageObj,
-	SoapEmailMessagePartObj,
-	SoapMailMessage,
-	SoapMailMessagePart
-} from '../../../../../types';
-import { SoapSendMsgResponse } from '../../../../../types/soap/send-msg';
-import { EditView, EditViewProp } from '../edit-view';
-import { aFailingSaveDraft, aSuccessfullSaveDraft } from './utils/utils';
 import { defaultBeforeAllTests } from '@jest-setup';
 import { setupTest } from '@test-setup';
 import { createFakeIdentity } from '@test-utils/accounts/fakeAccounts';
@@ -60,6 +31,35 @@ import { generateSettings } from '@test-utils/settings/settings-generator';
 import { populateFoldersStore } from '@test-utils/store/folders';
 import { getMocksContext } from '@test-utils/utils/mocks-context';
 import { buildSoapErrorResponseBody } from '@test-utils/utils/soap';
+import { GetSignaturesRequest, GetSignaturesResponse } from 'api/get-signatures-soap-api';
+import * as saveDraftAction from 'api/save-draft-soap-api';
+import { EditViewActions, MAILS_ROUTE } from 'constants/index';
+import * as useQueryParam from 'hooks/use-query-param';
+import { addEditor } from 'store/editor/index';
+import {
+	generateEditAsNewEditor,
+	generateNewMessageEditor,
+	generateReplyAllMsgEditor,
+	generateReplyMsgEditor
+} from 'store/editor/editor-generators';
+import { setupEditorStore } from 'tests/generators/editor-store';
+import { readyToBeSentEditorTestCase } from 'tests/generators/editors';
+import { generateMessage } from 'tests/generators/generateMessage';
+import type {
+	CreateSmartLinksRequest,
+	MailsEditorV2,
+	SaveDraftRequest,
+	SoapDraftMessageObj,
+	SoapEmailMessagePartObj,
+	SoapMailMessage,
+	SoapMailMessagePart
+} from 'types/index.d';
+import { SoapSendMsgResponse } from 'types/soap/send-msg';
+import { EditView, EditViewProp } from 'views/app/detail-panel/edit/edit-view';
+import {
+	aFailingSaveDraft,
+	aSuccessfullSaveDraft
+} from 'views/app/detail-panel/edit/tests/utils/utils';
 
 const CT_HTML = 'text/html' as const;
 const CT_PLAIN = 'text/plain' as const;

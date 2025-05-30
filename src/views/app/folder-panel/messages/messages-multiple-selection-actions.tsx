@@ -8,23 +8,23 @@ import React from 'react';
 
 import { DropdownItem } from '@zextras/carbonio-design-system';
 import { filter, intersection, map, some } from 'lodash';
-
 import { useTranslation } from 'react-i18next';
-import { normalizeDropdownActionItem } from '../../../../helpers/actions';
-import { useMsgApplyTagDescriptor } from '../../../../hooks/actions/use-msg-apply-tag';
-import { useMsgDeletePermanentlyDescriptor } from '../../../../hooks/actions/use-msg-delete-permanently';
-import { useMsgForwardAsAttachmentDescriptor } from '../../../../hooks/actions/use-msg-forward-as-attachment';
-import { useMsgMoveToFolderDescriptor } from '../../../../hooks/actions/use-msg-move-to-folder';
-import { useMsgMoveToTrashDescriptor } from '../../../../hooks/actions/use-msg-move-to-trash';
-import { useMsgSetFlagDescriptor } from '../../../../hooks/actions/use-msg-set-flag';
-import { useMsgSetNotSpamDescriptor } from '../../../../hooks/actions/use-msg-set-not-spam';
-import { useMsgSetReadDescriptor } from '../../../../hooks/actions/use-msg-set-read';
-import { useMsgSetSpamDescriptor } from '../../../../hooks/actions/use-msg-set-spam';
-import { useMsgSetUnflagDescriptor } from '../../../../hooks/actions/use-msg-set-unflag';
-import { useMsgSetUnreadDescriptor } from '../../../../hooks/actions/use-msg-set-unread';
-import { useTagDropdownItem } from '../../../../hooks/use-tag-dropdown-item';
-import { useMessagesByIds } from '../../../../store/emails/store';
-import { MultipleSelectionActionsComponent } from '../parts/multiple-selection-actions-component';
+
+import { normalizeDropdownActionItem } from 'helpers/actions';
+import { useMsgApplyTagDescriptor } from 'hooks/actions/use-msg-apply-tag';
+import { useMsgDeletePermanentlyDescriptor } from 'hooks/actions/use-msg-delete-permanently';
+import { useMsgForwardAsAttachmentDescriptor } from 'hooks/actions/use-msg-forward-as-attachment';
+import { useMsgMoveToFolderDescriptor } from 'hooks/actions/use-msg-move-to-folder';
+import { useMsgMoveToTrashDescriptor } from 'hooks/actions/use-msg-move-to-trash';
+import { useMsgSetFlagDescriptor } from 'hooks/actions/use-msg-set-flag';
+import { useMsgSetNotSpamDescriptor } from 'hooks/actions/use-msg-set-not-spam';
+import { useMsgSetReadDescriptor } from 'hooks/actions/use-msg-set-read';
+import { useMsgSetSpamDescriptor } from 'hooks/actions/use-msg-set-spam';
+import { useMsgSetUnflagDescriptor } from 'hooks/actions/use-msg-set-unflag';
+import { useMsgSetUnreadDescriptor } from 'hooks/actions/use-msg-set-unread';
+import { useTagDropdownItem } from 'hooks/use-tag-dropdown-item';
+import { useMessagesByIds } from 'store/emails/store';
+import { MultipleSelectionActionsComponent } from 'views/app/folder-panel/parts/multiple-selection-actions-component';
 
 export const MessagesMultipleSelectionActions = ({
 	ids,

@@ -15,17 +15,17 @@ import {
 	Tooltip
 } from '@zextras/carbonio-design-system';
 import { useUserAccounts } from '@zextras/carbonio-shell-ui';
+import { Tag, useFolder, useTags, ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-ui-commons';
 import { find, includes, isEmpty, reduce } from 'lodash';
 import moment from 'moment';
 import { useTranslation } from 'react-i18next';
 
-import { Tag, useFolder, useTags, ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-ui-commons';
-import { getTimeLabel, participantToString } from '../../../../commons/utils';
-import { MailMessage, TextReadValuesType } from '../../../../types';
-import { useTagExist } from '../../../../ui-actions/tag-actions';
-import { ItemAvatar } from '../../../app/folder-panel/parts/item-avatar';
-import { ParticipantsName } from '../../../app/folder-panel/parts/participants-name';
-import { getFolderTranslatedName } from '../../../sidebar/utils';
+import { getTimeLabel, participantToString } from 'commons/utils';
+import { MailMessage, TextReadValuesType } from 'types/index.d';
+import { useTagExist } from 'ui-actions/tag-actions';
+import { ItemAvatar } from 'views/app/folder-panel/parts/item-avatar';
+import { ParticipantsName } from 'views/app/folder-panel/parts/participants-name';
+import { getFolderTranslatedName } from 'views/sidebar/utils';
 
 type SearchMessageListItemCoreProps = {
 	completeMessage: MailMessage;

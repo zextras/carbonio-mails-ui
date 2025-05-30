@@ -5,15 +5,15 @@
  */
 import { useCallback } from 'react';
 
-import { useConversationById } from '../store/emails/store';
-import { NormalizedConversation } from '../types';
-import { useConvMoveToTrashFn } from './actions/use-conv-move-to-trash';
-import { useConvSetFlagFn } from './actions/use-conv-set-flag';
-import { useConvSetNotSpamFn } from './actions/use-conv-set-not-spam';
-import { useConvSetReadFn } from './actions/use-conv-set-read';
-import { useConvSetSpamFn } from './actions/use-conv-set-spam';
-import { useConvSetUnflagFn } from './actions/use-conv-set-unflag';
-import { useConvSetUnreadFn } from './actions/use-conv-set-unread';
+import { useConvMoveToTrashFn } from 'hooks/actions/use-conv-move-to-trash';
+import { useConvSetFlagFn } from 'hooks/actions/use-conv-set-flag';
+import { useConvSetNotSpamFn } from 'hooks/actions/use-conv-set-not-spam';
+import { useConvSetReadFn } from 'hooks/actions/use-conv-set-read';
+import { useConvSetSpamFn } from 'hooks/actions/use-conv-set-spam';
+import { useConvSetUnflagFn } from 'hooks/actions/use-conv-set-unflag';
+import { useConvSetUnreadFn } from 'hooks/actions/use-conv-set-unread';
+import { useConversationById } from 'store/emails/store';
+import { NormalizedConversation } from 'types/index.d';
 
 type HandleKeyboardShortcutsArguments = {
 	deselectAll: () => void;

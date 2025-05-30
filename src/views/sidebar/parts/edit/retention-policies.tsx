@@ -19,7 +19,7 @@ import {
 } from '@zextras/carbonio-design-system';
 import { useTranslation } from 'react-i18next';
 
-import { RetentionPolicyState } from '../../commons/types';
+import { RetentionPolicyState } from 'views/sidebar/commons/types';
 
 type RetentionPoliciesProps = {
 	retentionState?: RetentionPolicyState;

@@ -7,23 +7,23 @@
 import React from 'react';
 
 import { act, fireEvent, screen, waitFor } from '@testing-library/react';
+import { FOLDERS, ParticipantRole } from '@zextras/carbonio-ui-commons';
 import { noop } from 'lodash';
 import * as reactRouterDom from 'react-router-dom';
 
-import { FOLDERS, ParticipantRole } from '@zextras/carbonio-ui-commons';
-import { API_REQUEST_STATUS, FOLDERS_DESCRIPTORS } from '../../../../../constants';
-import { useConvPreviewOnSeparatedWindowFn } from '../../../../../hooks/actions/use-conv-preview-on-separated-window';
-import {
-	setConversationsInEmailStore,
-	updateConversationStatus
-} from '../../../../../store/emails/store';
-import { ASSERTIONS } from '../../../../../tests/constants';
-import { populateConversationInEmailStore } from '../../../../../tests/generators/generateConversation';
-import type { ConvActionRequest } from '../../../../../types';
-import { makeAllItemsVisible } from '../../../../settings/filters/tests/test-utils';
-import { ConversationListItem, ConversationListItemProps } from '../conversation-list-item';
 import { setupTest } from '@test-setup';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import { API_REQUEST_STATUS, FOLDERS_DESCRIPTORS } from 'constants/index';
+import { useConvPreviewOnSeparatedWindowFn } from 'hooks/actions/use-conv-preview-on-separated-window';
+import { setConversationsInEmailStore, updateConversationStatus } from 'store/emails/store';
+import { ASSERTIONS } from 'tests/constants';
+import { populateConversationInEmailStore } from 'tests/generators/generateConversation';
+import type { ConvActionRequest } from 'types/index.d';
+import {
+	ConversationListItem,
+	ConversationListItemProps
+} from 'views/app/folder-panel/conversations/conversation-list-item';
+import { makeAllItemsVisible } from 'views/settings/filters/tests/test-utils';
 
 const canExecuteCallback = jest.fn();
 

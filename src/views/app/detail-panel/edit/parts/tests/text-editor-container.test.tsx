@@ -8,15 +8,18 @@ import React from 'react';
 
 import { screen } from '@testing-library/react';
 
-import { generateNewMessageEditor } from '../../../../../../store/editor/editor-generators';
-import { setupEditorStore } from '../../../../../../tests/generators/editor-store';
-import { MailsEditorV2 } from '../../../../../../types';
-import { TextEditorContainer, TextEditorContainerProps } from '../text-editor-container';
 import { setupTest } from '@test-setup';
 import {
 	useIntegratedComponent,
 	useUserSettings
 } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
+import { generateNewMessageEditor } from 'store/editor/editor-generators';
+import { setupEditorStore } from 'tests/generators/editor-store';
+import { MailsEditorV2 } from 'types/index.d';
+import {
+	TextEditorContainer,
+	TextEditorContainerProps
+} from 'views/app/detail-panel/edit/parts/text-editor-container';
 
 describe('TextEditorContainer', () => {
 	it('should render textarea when composer is not available and RichText is not enabled', () => {

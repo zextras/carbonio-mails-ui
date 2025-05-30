@@ -8,8 +8,8 @@ import React from 'react';
 
 import { screen } from '@testing-library/react';
 
-import CertificateDeleteModal from '../certificate-delete-modal';
 import { setupTest } from '@test-setup';
+import CertificateDeleteModal from 'views/settings/certificates/certificate-delete-modal';
 
 describe('CertificateDeleteModal', () => {
 	const onClose = jest.fn();

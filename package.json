@@ -61,6 +61,7 @@
 		"@zextras/carbonio-search-ui": "github:zextras/carbonio-search-ui#devel",
 		"@zextras/carbonio-ui-configs": "^2.1.0",
 		"@zextras/carbonio-ui-sdk": "^2.1.0",
+		"babel-jest": "^29.4.3",
 		"babel-plugin-styled-components": "^2.0.7",
 		"babel-plugin-transform-import-meta": "^2.2.0",
 		"eslint-plugin-jest-dom": "^5.4.0",
@@ -75,9 +76,9 @@
 		"msw": "^2.2.3",
 		"npm": "^10.5.0",
 		"react-redux": "^8.0.5",
+		"ts-morph": "^26.0.0",
 		"ts-node": "^10.9.1",
-		"typescript": "^5.7.2",
-		"babel-jest": "^29.4.3"
+		"typescript": "^5.7.2"
 	},
 	"dependencies": {
 		"@emotion/react": "^11.11.4",
@@ -86,9 +87,9 @@
 		"@mui/material": "^5.15.12",
 		"@types/webpack": "^5.28.2",
 		"@types/webpack-env": "^1.18.1",
-		"@zextras/carbonio-ui-commons": "github:zextras/test-co-2067#main",
 		"@zextras/carbonio-design-system": "^10.1.1",
 		"@zextras/carbonio-shell-ui": "^11.0.1",
+		"@zextras/carbonio-ui-commons": "github:zextras/test-co-2067#main",
 		"@zextras/carbonio-ui-preview": "^3.2.1",
 		"axios": "^1.6.7",
 		"core-js": "^3.36.0",

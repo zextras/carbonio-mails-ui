@@ -25,8 +25,8 @@ import {
 } from '@zextras/carbonio-ui-commons';
 import { reduce } from 'lodash';
 
-import type { ItemType } from '../types';
-import { createTag, useGetTagsActions } from '../ui-actions/tag-actions';
+import type { ItemType } from 'types/index.d';
+import { createTag, useGetTagsActions } from 'ui-actions/tag-actions';
 
 type ItemProps = {
 	item: ItemType;

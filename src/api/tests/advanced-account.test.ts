@@ -6,9 +6,9 @@
 
 import { HttpResponse } from 'msw';
 
-import { useAdvancedAccountStore } from '../../store/advanced-account/store';
-import { advancedAccountApi } from '../advanced-account-api';
 import { createAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import { advancedAccountApi } from 'api/advanced-account-api';
+import { useAdvancedAccountStore } from 'store/advanced-account/store';
 
 const api = '/zx/login/v3/account';
 describe('advancedAccountAPI', () => {

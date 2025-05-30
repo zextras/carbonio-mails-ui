@@ -5,20 +5,21 @@
  */
 
 import React from 'react';
+
 import { act, renderHook, within } from '@testing-library/react';
 import * as hooks from '@zextras/carbonio-shell-ui';
 import { AccountSettings } from '@zextras/carbonio-shell-ui';
+import { FOLDERS } from '@zextras/carbonio-ui-commons';
 import { forEach, indexOf, noop, without } from 'lodash';
 
-import { FOLDERS } from '@zextras/carbonio-ui-commons';
-import { SORTING_DIRECTION, SORTING_OPTIONS } from '../../../../../constants';
-import { setMessagesInEmailStore, useMessageIndexSlice } from '../../../../../store/emails/store';
-import { generateMessage } from '../../../../../tests/generators/generateMessage';
-import { SearchRequest } from '../../../../../types';
-import { Breadcrumbs } from '../breadcrumbs';
 import { screen, setupTest } from '@test-setup';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 import { generateSettings } from '@test-utils/settings/settings-generator';
+import { SORTING_DIRECTION, SORTING_OPTIONS } from 'constants/index';
+import { setMessagesInEmailStore, useMessageIndexSlice } from 'store/emails/store';
+import { generateMessage } from 'tests/generators/generateMessage';
+import { SearchRequest } from 'types/index.d';
+import { Breadcrumbs } from 'views/app/folder-panel/parts/breadcrumbs';
 
 function findStringsContainingRadiobutton(strings: Array<string>): Array<string> {
 	const resultArray = [] as Array<string>;

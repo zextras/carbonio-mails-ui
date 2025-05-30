@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { uploadPersonalCertificate } from '../upload-personal-certificate-api';
+import { uploadPersonalCertificate } from 'api/upload-personal-certificate-api';
 
 describe('uploadPersonalCertificate', () => {
 	beforeEach(() => {

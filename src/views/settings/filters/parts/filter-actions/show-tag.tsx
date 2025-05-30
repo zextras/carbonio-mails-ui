@@ -14,11 +14,11 @@ import {
 	Row,
 	Text
 } from '@zextras/carbonio-design-system';
+import { ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-ui-commons';
 import { find } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
-import { ZIMBRA_STANDARD_COLORS } from '@zextras/carbonio-ui-commons';
-import { MailFilterTag } from '../../../../../types';
+import { MailFilterTag } from 'types/index.d';
 
 type ShowTagProps = {
 	value: MailFilterTag[];

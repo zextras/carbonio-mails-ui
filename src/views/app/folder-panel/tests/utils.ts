@@ -11,7 +11,8 @@
  - the original message changes to the new conversation id
 */
 import { FOLDERS } from '@zextras/carbonio-ui-commons';
-import { mockShellSoapNotify } from '../../../sidebar/tests/test-helpers';
+
+import { mockShellSoapNotify } from 'views/sidebar/tests/test-helpers';
 
 export function simulateReplyToSingleMessageConversation({
 	deletedConversationId,

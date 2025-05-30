@@ -9,19 +9,19 @@ import React from 'react';
 import { screen, waitFor } from '@testing-library/react';
 import { useContactInput } from '@zextras/carbonio-ui-commons';
 
-import { AdvancedFilterModal } from '../advanced-filter-modal';
-import { AdvancedFilterModalProps, SearchQueryItem } from '../types/types';
-import { getAdvancedFiltersDefaultValues } from '../utils';
-import {
-	defaultProps,
-	defaultValues,
-	renderWithUseForm
-} from './test-advanced-filter-modal-common-utils';
 import {
 	EDIT_ACTION,
 	generateMockContactInputItem,
 	generateMockedContactInput
 } from '@test-utils/integrations/mock-contact-input';
+import { AdvancedFilterModal } from 'views/search/advanced-filter-modal';
+import {
+	defaultProps,
+	defaultValues,
+	renderWithUseForm
+} from 'views/search/test/test-advanced-filter-modal-common-utils';
+import { AdvancedFilterModalProps, SearchQueryItem } from 'views/search/types/types';
+import { getAdvancedFiltersDefaultValues } from 'views/search/utils';
 
 jest.mock('@zextras/carbonio-ui-commons', () => ({
 	...jest.requireActual('@zextras/carbonio-ui-commons'),

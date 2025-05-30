@@ -8,8 +8,8 @@ import React from 'react';
 
 import { screen } from '@testing-library/react';
 
-import { TextStyler } from '../text-styler';
 import { setupTest } from '@test-setup';
+import { TextStyler } from 'commons/text-styler';
 
 describe('TextStyler', () => {
 	it('displays a regular font weight if the bold attribute is not set', () => {

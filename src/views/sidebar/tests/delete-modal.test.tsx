@@ -10,13 +10,13 @@ import { faker } from '@faker-js/faker';
 import { act, screen } from '@testing-library/react';
 import { Folder, FOLDERS, FolderView, getFolder } from '@zextras/carbonio-ui-commons';
 
-import { FOLDER_ACTIONS } from '../../../commons/utilities';
-import { getFolders } from '../../../hooks/use-folders';
-import { SoapFolderAction } from '../../../types';
-import { DeleteModal } from '../delete-modal';
 import { setupTest } from '@test-setup';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 import { populateFoldersStore } from '@test-utils/store/folders';
+import { FOLDER_ACTIONS } from 'commons/utilities';
+import { getFolders } from 'hooks/use-folders';
+import { SoapFolderAction } from 'types/index.d';
+import { DeleteModal } from 'views/sidebar/delete-modal';
 
 describe('delete-modal', () => {
 	test('delete the folder except the child of trash folder', async () => {

@@ -10,10 +10,13 @@ import { faker } from '@faker-js/faker';
 import { FOLDERS } from '@zextras/carbonio-ui-commons';
 import { times } from 'lodash';
 
-import { FOLDERS_DESCRIPTORS } from '../../../constants';
-import { TIMERS } from '../../../tests/constants';
-import { useConvMoveToFolderDescriptor, useConvMoveToFolderFn } from '../use-conv-move-to-folder';
 import { setupHook, screen } from '@test-setup';
+import { FOLDERS_DESCRIPTORS } from 'constants/index';
+import {
+	useConvMoveToFolderDescriptor,
+	useConvMoveToFolderFn
+} from 'hooks/actions/use-conv-move-to-folder';
+import { TIMERS } from 'tests/constants';
 
 describe('useConvMoveToFolder', () => {
 	const conversationsId = times(faker.number.int({ max: 42 }), () =>

@@ -13,10 +13,15 @@ import {
 import { concat, filter, map, reduce } from 'lodash';
 import moment from 'moment';
 
-import { extractDateFieldFromQuery } from './extract-date-field-from-query';
-import { findIconFromChip } from './parts/use-find-icon';
-import { ChipType, Folder, Folders } from '../../types';
-import { AdvancedFilterModalFormValues, KeywordState, Query, SearchQueryItem } from './types/types';
+import { ChipType, Folder, Folders } from 'types/index.d';
+import { extractDateFieldFromQuery } from 'views/search/extract-date-field-from-query';
+import { findIconFromChip } from 'views/search/parts/use-find-icon';
+import {
+	AdvancedFilterModalFormValues,
+	KeywordState,
+	Query,
+	SearchQueryItem
+} from 'views/search/types/types';
 
 const excludeLabels = ['has:attachment', 'is:flagged', 'is:unread'];
 

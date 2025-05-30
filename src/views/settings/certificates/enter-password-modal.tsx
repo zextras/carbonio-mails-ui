@@ -17,8 +17,8 @@ import {
 import { ModalFooter, ModalHeader } from '@zextras/carbonio-ui-commons';
 import { useTranslation } from 'react-i18next';
 
-import { checkEncryptionPassword } from '../../../api/check-password-api';
-import { useSmimePasswordStore } from '../../../store/certificates/store';
+import { checkEncryptionPassword } from 'api/check-password-api';
+import { useSmimePasswordStore } from 'store/certificates/store';
 
 type EnterPasswordModalPropType = {
 	onPasswordReset?: () => void;

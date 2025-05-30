@@ -3,13 +3,13 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useCallback, useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 
 import { useTranslation } from 'react-i18next';
 
-import { ConversationActionsDescriptors } from '../../constants';
-import { convActionEmailStoreAction } from '../../store/emails/actions/conv-action-action';
-import { ActionFn, UIActionDescriptor } from '../../types';
+import { ConversationActionsDescriptors } from 'constants/index';
+import { convActionEmailStoreAction } from 'store/emails/actions/conv-action-action';
+import { ActionFn, UIActionDescriptor } from 'types/index.d';
 
 export const useConvSetFlagFn = (ids: Array<string>, isFlagged: boolean): ActionFn => {
 	const canExecute = useCallback((): boolean => !isFlagged, [isFlagged]);

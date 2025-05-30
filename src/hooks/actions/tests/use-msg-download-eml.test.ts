@@ -6,10 +6,13 @@
 
 import { FOLDERS } from '@zextras/carbonio-ui-commons';
 
-import { FOLDERS_DESCRIPTORS } from '../../../constants';
-import { generateMessage } from '../../../tests/generators/generateMessage';
-import { useMsgDownloadEmlDescriptor, useMsgDownloadEmlFn } from '../use-msg-download-eml';
 import { setupHook } from '@test-setup';
+import { FOLDERS_DESCRIPTORS } from 'constants/index';
+import {
+	useMsgDownloadEmlDescriptor,
+	useMsgDownloadEmlFn
+} from 'hooks/actions/use-msg-download-eml';
+import { generateMessage } from 'tests/generators/generateMessage';
 
 describe('useMsgDownloadEml', () => {
 	const msg = generateMessage({ isComplete: true });

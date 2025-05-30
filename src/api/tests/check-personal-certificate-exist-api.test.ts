@@ -5,8 +5,8 @@
  */
 import { HttpResponse } from 'msw';
 
-import { checkPersonalCertificateExist } from '../check-personal-certificate-exist-api';
 import { createAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import { checkPersonalCertificateExist } from 'api/check-personal-certificate-exist-api';
 
 const checkPersonalCertificateExistEndpoint = '/service/extension/encryption/smime/personal/exist';
 describe('checkPersonalCertificateExist', () => {

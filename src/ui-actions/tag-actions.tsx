@@ -24,9 +24,9 @@ import {
 } from '@zextras/carbonio-ui-commons';
 import { find, reduce, some } from 'lodash';
 
-import type { ItemType, TagActionsReturnType, UIActionDescriptor } from '../types';
-import CreateUpdateTagModal from '../views/sidebar/parts/tags/create-update-tag-modal';
+import type { ItemType, TagActionsReturnType, UIActionDescriptor } from 'types/index.d';
 import { ArgumentType } from 'types/tags';
+import CreateUpdateTagModal from 'views/sidebar/parts/tags/create-update-tag-modal';
 
 export const createTag = ({ createModal, closeModal }: ArgumentType): DropdownItem => ({
 	id: TagsActionsType.NEW,

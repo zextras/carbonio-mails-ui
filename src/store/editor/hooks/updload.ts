@@ -5,11 +5,11 @@
  */
 import { useMemo } from 'react';
 
-import { AttachmentUploadProcessStatus, MailsEditorV2 } from '../../../types';
-import { useEditorsStore } from '../store';
-import { getUnsavedAttachmentIndex } from '../store-utils';
-import { computeAndUpdateEditorStatus } from './commons';
-import { useSaveDraftFromEditor } from './save-draft';
+import { computeAndUpdateEditorStatus } from 'store/editor/hooks/commons';
+import { useSaveDraftFromEditor } from 'store/editor/hooks/save-draft';
+import { useEditorsStore } from 'store/editor/store';
+import { getUnsavedAttachmentIndex } from 'store/editor/store-utils';
+import { AttachmentUploadProcessStatus, MailsEditorV2 } from 'types/index.d';
 
 export const useEditorUploadProcess = (
 	editorId: MailsEditorV2['id'],

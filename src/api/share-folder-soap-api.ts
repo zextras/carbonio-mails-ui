@@ -5,10 +5,10 @@
  */
 import type { Account, BatchRequest, BatchResponse } from '@zextras/carbonio-shell-ui';
 import { soapFetch } from '@zextras/carbonio-shell-ui';
+import { Folder } from '@zextras/carbonio-ui-commons';
 import { trim } from 'lodash';
 
-import { Folder } from '@zextras/carbonio-ui-commons';
-import { FolderActionGrant, FolderActionRequest } from '../types';
+import { FolderActionGrant, FolderActionRequest } from 'types/index.d';
 
 export type ShareFolderDataType = {
 	sendNotification?: boolean;

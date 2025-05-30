@@ -7,18 +7,18 @@ import React, { useCallback, useEffect, useState } from 'react';
 
 import { Button, Container, Padding, useSnackbar } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
-
 import { getOrderedAccountIds, ParticipantRole } from '@zextras/carbonio-ui-commons';
-import { GapContainer } from '../../../../../commons/gap-container';
-import { getIdentityDescriptor } from '../../../../../helpers/identities';
+
+import { GapContainer } from 'commons/gap-container';
+import { getIdentityDescriptor } from 'helpers/identities';
 import {
 	useEditorBccRecipients,
 	useEditorCcRecipients,
 	useEditorIdentityId,
 	useEditorToRecipients
-} from '../../../../../store/editor';
-import { MailsEditorV2, Participant } from '../../../../../types';
-import { RecipientsRow } from './recipients-row';
+} from 'store/editor/index';
+import { MailsEditorV2, Participant } from 'types/index.d';
+import { RecipientsRow } from 'views/app/detail-panel/edit/parts/recipients-row';
 
 export type RecipientsRowsProps = {
 	editorId: MailsEditorV2['id'];

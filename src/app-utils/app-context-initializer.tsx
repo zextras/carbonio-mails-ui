@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import { setAppContext, useUserSettings } from '@zextras/carbonio-shell-ui';
 import moment from 'moment/moment';

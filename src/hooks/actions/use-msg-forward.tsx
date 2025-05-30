@@ -3,14 +3,14 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-import React, { useCallback, useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 
 import { useTranslation } from 'react-i18next';
 
-import { EditViewActions, MessageActionsDescriptors } from '../../constants';
-import { isDraft, isSpam } from '../../helpers/folders';
-import { ActionFn, UIActionDescriptor } from '../../types';
-import { createEditBoard } from '../../views/app/detail-panel/edit/edit-view-board';
+import { EditViewActions, MessageActionsDescriptors } from 'constants/index';
+import { isDraft, isSpam } from 'helpers/folders';
+import { ActionFn, UIActionDescriptor } from 'types/index.d';
+import { createEditBoard } from 'views/app/detail-panel/edit/edit-view-board';
 
 export const useMsgForwardFn = (messageId: string, folderId: string): ActionFn => {
 	const canExecute = useCallback(

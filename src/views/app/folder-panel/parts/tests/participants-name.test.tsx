@@ -5,18 +5,16 @@
  */
 
 import React from 'react';
+
 import { screen, waitFor } from '@testing-library/react';
 import { useUserAccount } from '@zextras/carbonio-shell-ui';
-
 import { FOLDERS, ParticipantRole } from '@zextras/carbonio-ui-commons';
-import { populateConversationInEmailStore } from '../../../../../tests/generators/generateConversation';
-import {
-	generateMessage,
-	populateMessagesInEmailStore
-} from '../../../../../tests/generators/generateMessage';
-import { ParticipantsName } from '../participants-name';
-import { populateFoldersStore } from '@test-utils/store/folders';
+
 import { setupTest } from '@test-setup';
+import { populateFoldersStore } from '@test-utils/store/folders';
+import { populateConversationInEmailStore } from 'tests/generators/generateConversation';
+import { generateMessage, populateMessagesInEmailStore } from 'tests/generators/generateMessage';
+import { ParticipantsName } from 'views/app/folder-panel/parts/participants-name';
 
 describe('ParticipantsName component', () => {
 	it('renders participants string for inbox folder', async () => {

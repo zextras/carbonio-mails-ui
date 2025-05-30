@@ -14,7 +14,14 @@ import {
 } from '@zextras/carbonio-ui-commons';
 import { http } from 'msw';
 
-import { normalizeConversations } from '../../../../normalizations/normalize-conversation';
+import { getSetupServer } from '@jest-setup';
+import { setupHook } from '@test-setup';
+import { useNotify } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
+import { generateFolder } from '@test-utils/folders/folders-generator';
+import { handleGetFolderRequest } from '@test-utils/network/msw/handle-get-folder';
+import { handleGetShareInfoRequest } from '@test-utils/network/msw/handle-get-share-info';
+import { populateFoldersStore } from '@test-utils/store/folders';
+import { normalizeConversations } from 'normalizations/normalize-conversation';
 import {
 	getUseEmailStoreAndHooksForTesting,
 	setConversationsInEmailStore,
@@ -24,15 +31,13 @@ import {
 	useConversationIndexSlice,
 	useConversationsByIds,
 	useMessageById
-} from '../../../../store/emails/store';
-import * as triggerNotification from '../../../../store/emails/sync-data-handler/trigger-notification';
-import {
-	generateConversationFromAPI,
-	generateMessageFromAPI
-} from '../../../../tests/generators/api';
-import { generateConversation } from '../../../../tests/generators/generateConversation';
-import { generateMessage } from '../../../../tests/generators/generateMessage';
-import { SoapConversation, SoapIncompleteMessage, SoapMailMessage } from '../../../../types';
+} from 'store/emails/store';
+import * as triggerNotification from 'store/emails/sync-data-handler/trigger-notification';
+import { generateConversationFromAPI, generateMessageFromAPI } from 'tests/generators/api';
+import { generateConversation } from 'tests/generators/generateConversation';
+import { generateMessage } from 'tests/generators/generateMessage';
+import { SoapConversation, SoapIncompleteMessage, SoapMailMessage } from 'types/index.d';
+import { useSyncDataHandler } from 'views/sidebar/commons/use-sync-data-handler';
 import {
 	mockShellSoapNotify,
 	mockSoapCreateConversation,
@@ -44,15 +49,7 @@ import {
 	mockSoapModifyMessageAction,
 	mockSoapModifyMessageFolder,
 	mockSoapRefresh
-} from '../../tests/test-helpers';
-import { useSyncDataHandler } from '../use-sync-data-handler';
-import { getSetupServer } from '@jest-setup';
-import { setupHook } from '@test-setup';
-import { useNotify } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
-import { generateFolder } from '@test-utils/folders/folders-generator';
-import { handleGetFolderRequest } from '@test-utils/network/msw/handle-get-folder';
-import { handleGetShareInfoRequest } from '@test-utils/network/msw/handle-get-share-info';
-import { populateFoldersStore } from '@test-utils/store/folders';
+} from 'views/sidebar/tests/test-helpers';
 
 const UNREAD = 'u';
 const READ = '';

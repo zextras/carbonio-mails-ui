@@ -8,8 +8,8 @@ import React from 'react';
 
 import { screen } from '@testing-library/react';
 
-import { SmimeIcon } from '../smime-icon';
 import { setupTest } from '@test-setup';
+import { SmimeIcon } from 'views/app/detail-panel/preview/parts/info-block/smime-icon';
 
 describe('SmimeIcon', () => {
 	const validSignature = {

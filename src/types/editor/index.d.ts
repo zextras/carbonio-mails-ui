@@ -4,10 +4,11 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import type { Folder } from '@zextras/carbonio-ui-commons';
-import { EDIT_VIEW_CLOSING_REASONS, EditViewActions } from '../../constants';
-import { SavedAttachment, UnsavedAttachment } from '../attachments';
-import type { MailMessage } from '../messages';
-import type { Participant } from '../participant';
+
+import { EDIT_VIEW_CLOSING_REASONS, EditViewActions } from 'constants/index';
+import { SavedAttachment, UnsavedAttachment } from 'types/attachments/index.d';
+import type { MailMessage } from 'types/messages/index.d';
+import type { Participant } from 'types/participant/index.d';
 
 /**
  * @deprecated

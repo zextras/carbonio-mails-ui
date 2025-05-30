@@ -5,13 +5,14 @@
  */
 
 import React from 'react';
+
 import { CloseModalFn, CreateModalFn, ModalManager } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
-
 import { Folder } from '@zextras/carbonio-ui-commons';
-import { GenericActionDescriptors } from '../constants';
-import { UIAction, UIActionExecutionParams } from '../types';
-import { SelectFolderModal } from './modals/select-folder-modal';
+
+import { GenericActionDescriptors } from 'constants/index';
+import { UIAction, UIActionExecutionParams } from 'types/index.d';
+import { SelectFolderModal } from 'ui-actions/modals/select-folder-modal';
 
 export type SelectFoldersUIActionExecutionConfig = {
 	showSharedAccounts: boolean;

@@ -5,7 +5,8 @@
  */
 
 import { ParticipantRoleType } from '@zextras/carbonio-ui-commons';
-import { SoapMailMessage } from './soap-mail-message';
+
+import { SoapMailMessage } from 'types/soap/soap-mail-message';
 
 export type MailAttachmentParts = {
 	mid: string;

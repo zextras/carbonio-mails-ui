@@ -4,13 +4,13 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import React, { useCallback, useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 
 import { useTranslation } from 'react-i18next';
 
-import { MessageActionsDescriptors } from '../../constants';
-import { isFocusModeMailView, openMessageStandalonePreview } from '../../helpers/external-tabs';
-import { ActionFn, UIActionDescriptor } from '../../types';
+import { MessageActionsDescriptors } from 'constants/index';
+import { isFocusModeMailView, openMessageStandalonePreview } from 'helpers/external-tabs';
+import { ActionFn, UIActionDescriptor } from 'types/index.d';
 
 export const useMsgPreviewOnSeparatedWindowFn = ({
 	messageId,

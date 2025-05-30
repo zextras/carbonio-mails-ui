@@ -8,17 +8,17 @@ import React, { FC, useMemo, useRef } from 'react';
 
 import { Container, Padding, Text } from '@zextras/carbonio-design-system';
 import { t, useAppContext } from '@zextras/carbonio-shell-ui';
+import { CustomList, CustomListItem } from '@zextras/carbonio-ui-commons';
 import { map } from 'lodash';
 import { useParams } from 'react-router-dom';
 
-import { CustomList, CustomListItem } from '@zextras/carbonio-ui-commons';
-import { useSelection } from '../../../../hooks/use-selection';
-import type { AppContext, SearchListProps } from '../../../../types';
-import { MessagesMultipleSelectionActions } from '../../../app/folder-panel/messages/messages-multiple-selection-actions';
-import { useLoadMoreForSearchSlice } from '../../search-view-hooks';
-import ShimmerList from '../../shimmer-list';
-import { SearchListHeader } from '../parts/search-list-header';
-import { SearchMessageListItemWrapper } from './search-message-list-item-wrapper';
+import { useSelection } from 'hooks/use-selection';
+import type { AppContext, SearchListProps } from 'types/index.d';
+import { MessagesMultipleSelectionActions } from 'views/app/folder-panel/messages/messages-multiple-selection-actions';
+import { SearchMessageListItemWrapper } from 'views/search/list/message/search-message-list-item-wrapper';
+import { SearchListHeader } from 'views/search/list/parts/search-list-header';
+import { useLoadMoreForSearchSlice } from 'views/search/search-view-hooks';
+import ShimmerList from 'views/search/shimmer-list';
 
 export const SearchMessageList: FC<SearchListProps> = ({
 	searchResults: messageIds,

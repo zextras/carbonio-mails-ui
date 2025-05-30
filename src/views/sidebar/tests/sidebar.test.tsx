@@ -11,16 +11,16 @@ import { useSnackbar } from '@zextras/carbonio-design-system';
 import * as hooks from '@zextras/carbonio-shell-ui';
 import { FolderActionsType, FOLDERS } from '@zextras/carbonio-ui-commons';
 
-import { MAIL_APP_ID, MAILS_ROUTE } from '../../../constants';
-import { setMessagesInEmailStore } from '../../../store/emails/store';
-import { generateMessage } from '../../../tests/generators/generateMessage';
-import { MsgActionRequest, SoapFolderAction } from '../../../types';
-import Sidebar from '../sidebar';
 import { makeListItemsVisible, setupTest } from '@test-setup';
 import { getCurrentRoute, useLocalStorage } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
 import { generateFolder } from '@test-utils/folders/folders-generator';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 import { populateFoldersStore } from '@test-utils/store/folders';
+import { MAIL_APP_ID, MAILS_ROUTE } from 'constants/index';
+import { setMessagesInEmailStore } from 'store/emails/store';
+import { generateMessage } from 'tests/generators/generateMessage';
+import { MsgActionRequest, SoapFolderAction } from 'types/index.d';
+import Sidebar from 'views/sidebar/sidebar';
 
 jest.mock('@zextras/carbonio-design-system', () => ({
 	...jest.requireActual('@zextras/carbonio-design-system'),

@@ -11,9 +11,9 @@ import { act, fireEvent } from '@testing-library/react';
 import { AccountSettings, AccountSettingsPrefs } from '@zextras/carbonio-shell-ui';
 import { times } from 'lodash';
 
-import { SendersList, SendersListProps } from '../senders-list';
 import { setupTest, screen, UserEvent, within } from '@test-setup';
 import { generateSettings } from '@test-utils/settings/settings-generator';
+import { SendersList, SendersListProps } from 'views/settings/senders-list';
 
 const SENDERS_LIST = 'senders-list';
 const FIND_TIMEOUT = 2000;

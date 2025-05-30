@@ -10,10 +10,10 @@ import { faker } from '@faker-js/faker';
 import { act, screen, within } from '@testing-library/react';
 import { Folder, FOLDERS, SoapFolder } from '@zextras/carbonio-ui-commons';
 
-import { NewModal } from '../new-modal';
 import { setupTest } from '@test-setup';
 import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
 import { populateFoldersStore } from '@test-utils/store/folders';
+import { NewModal } from 'views/sidebar/new-modal';
 
 describe('new-modal', () => {
 	test('add folder name and create button should enabled', async () => {

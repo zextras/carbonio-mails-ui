@@ -10,19 +10,19 @@ import { findIndex } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
-import { API_REQUEST_STATUS, LIST_LIMIT, MAILS_ROUTE } from '../constants';
-import { parseMessageSortingOptions } from '../helpers/sorting';
-import { convActionEmailStoreAction } from '../store/emails/actions/conv-action-action';
-import { msgActionEmailStoreAction } from '../store/emails/actions/msg-action-action';
+import { API_REQUEST_STATUS, LIST_LIMIT, MAILS_ROUTE } from 'constants/index';
+import { parseMessageSortingOptions } from 'helpers/sorting';
+import { convActionEmailStoreAction } from 'store/emails/actions/conv-action-action';
+import { msgActionEmailStoreAction } from 'store/emails/actions/msg-action-action';
 import {
 	useConversationsByIds,
 	useConversationsResultsLoadingStatus,
 	useMessageLoadingStatus,
 	useMessagesByIds
-} from '../store/emails/store';
-import { SearchRequestStatus } from '../types';
-import { useLoadMoreForConversationList } from '../views/app/folder-panel/conversations/conversation-list-hooks';
-import { useLoadMoreForMessageList } from '../views/app/folder-panel/messages/message-list-hooks';
+} from 'store/emails/store';
+import { SearchRequestStatus } from 'types/index.d';
+import { useLoadMoreForConversationList } from 'views/app/folder-panel/conversations/conversation-list-hooks';
+import { useLoadMoreForMessageList } from 'views/app/folder-panel/messages/message-list-hooks';
 
 export type HeaderNavigationActionItem = {
 	tooltipLabel: string | undefined;

@@ -12,15 +12,15 @@ import { fireEvent } from '@testing-library/react';
 import { FOLDERS } from '@zextras/carbonio-ui-commons';
 import { times } from 'lodash';
 
-import { FOLDERS_DESCRIPTORS } from '../../../constants';
-import { TIMERS } from '../../../tests/constants';
-import { ConvActionRequest } from '../../../types';
+import { setupHook, screen } from '@test-setup';
+import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import { FOLDERS_DESCRIPTORS } from 'constants/index';
 import {
 	useConvDeletePermanentlyDescriptor,
 	useConvDeletePermanentlyFn
-} from '../use-conv-delete-permanently';
-import { setupHook, screen } from '@test-setup';
-import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+} from 'hooks/actions/use-conv-delete-permanently';
+import { TIMERS } from 'tests/constants';
+import { ConvActionRequest } from 'types/index.d';
 
 describe('useConvDeletePermanently', () => {
 	describe('Descriptor', () => {

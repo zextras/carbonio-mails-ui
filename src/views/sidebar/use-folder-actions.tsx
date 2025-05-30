@@ -15,20 +15,20 @@ import {
 } from '@zextras/carbonio-ui-commons';
 import { noop, startsWith } from 'lodash';
 
-import { DeleteModal } from './delete-modal';
-import { EditModal } from './edit-modal';
-import { EmptyModal } from './empty-modal';
-import { NewModal } from './new-modal';
-import { SharesInfoModal } from './shares-info-modal';
-import { folderActionSoapApi } from '../../api/folder-action-soap-api';
-import { getFolderIdParts } from '../../helpers/folders';
-import { useSelection } from '../../hooks/use-selection';
-import { useUiUtilities } from '../../hooks/use-ui-utilities';
-import { useMessagesByFolder } from '../../store/emails/store';
-import { AppContext } from '../../types';
+import { folderActionSoapApi } from 'api/folder-action-soap-api';
+import { getFolderIdParts } from 'helpers/folders';
+import { useSelection } from 'hooks/use-selection';
+import { useUiUtilities } from 'hooks/use-ui-utilities';
+import { useMessagesByFolder } from 'store/emails/store';
+import { AppContext } from 'types/index.d';
 // import { SelectFolderModal } from '../../ui-actions/modals/select-folder-modal';
-import { SelectFolderModal } from '../../ui-actions/modals/select-folder-modal';
-import { MoveMessage } from '../../ui-actions/move-msg';
+import { SelectFolderModal } from 'ui-actions/modals/select-folder-modal';
+import { MoveMessage } from 'ui-actions/move-msg';
+import { DeleteModal } from 'views/sidebar/delete-modal';
+import { EditModal } from 'views/sidebar/edit-modal';
+import { EmptyModal } from 'views/sidebar/empty-modal';
+import { NewModal } from 'views/sidebar/new-modal';
+import { SharesInfoModal } from 'views/sidebar/shares-info-modal';
 
 type FolderActionsProps = {
 	id: string;

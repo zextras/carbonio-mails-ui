@@ -8,8 +8,8 @@ import React from 'react';
 
 import { act, screen } from '@testing-library/react';
 
-import { CertificatePasswordModal } from '../certificate-password-modal';
 import { setupTest } from '@test-setup';
+import { CertificatePasswordModal } from 'views/settings/certificates/certificate-password-modal';
 
 jest.mock('../../../../api/create-password-api', () => ({
 	createEncryptionPassword: jest.fn()

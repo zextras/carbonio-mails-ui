@@ -2,8 +2,9 @@
 	"extends": "@zextras/carbonio-ui-configs/rules/tsconfig.type-check.json",
 	"compilerOptions": {
 		"noUncheckedIndexedAccess": false,
-		"baseUrl": "src",
+		"baseUrl": "./src",
 		"paths": {
+			"*": ["*"],
 			"@test-utils/*": ["__test__/mocks/*"],
 			"@test-setup": ["__test__/test-setup.tsx"],
 			"@jest-setup": ["../jest-setup.ts"]
