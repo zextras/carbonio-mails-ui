@@ -62,7 +62,8 @@ import {
 	useEditorIsSmimeEncrypt,
 	useEditorToRecipients,
 	useEditorCcRecipients,
-	useEditorBccRecipients
+	useEditorBccRecipients,
+	useEditorRecipients
 } from '../../../../store/editor';
 import { EditViewClosingReasons } from '../../../../types';
 import { updateEditorWithSmartLinks } from '../../../../ui-actions/utils';
@@ -142,23 +143,13 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 	const isCarbonioCE = useIsCarbonioCE();
 	const { isSmimeEnabled } = useSmimeFeatureStore();
 
-	const { toRecipients } = useEditorToRecipients(editorId);
-	const { ccRecipients } = useEditorCcRecipients(editorId);
-	const { bccRecipients } = useEditorBccRecipients(editorId);
+	const {
+		recipients: { to, cc, bcc }
+	} = useEditorRecipients(editorId);
 
-	const invalidTOEmailsPresent = useMemo(
-		() => some(toRecipients, (recipient) => !isValidEmail(recipient.address)),
-		[toRecipients]
-	);
-
-	const invalidCCEmailsPresent = useMemo(
-		() => some(ccRecipients, (recipient) => !isValidEmail(recipient.address)),
-		[ccRecipients]
-	);
-
-	const invalidBCCEmailsPresent = useMemo(
-		() => some(bccRecipients, (recipient) => !isValidEmail(recipient.address)),
-		[bccRecipients]
+	const invalidEmailsPresent = useMemo(
+		() => some([...to, ...cc, ...bcc], (recipient) => !isValidEmail(recipient.address)),
+		[bcc, cc, to]
 	);
 
 	useEffect(() => {
@@ -552,9 +543,7 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 		!sendAllowedStatus?.allowed ||
 		isConvertingToSmartLink ||
 		!draftId ||
-		invalidTOEmailsPresent ||
-		invalidCCEmailsPresent ||
-		invalidBCCEmailsPresent;
+		invalidEmailsPresent;
 	return (
 		<Container
 			data-testid={'edit-view-editor'}
