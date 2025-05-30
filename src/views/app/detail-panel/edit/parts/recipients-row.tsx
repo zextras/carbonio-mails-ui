@@ -12,6 +12,7 @@ import { CONTACT_TYPES } from '../../../../../carbonio-ui-commons/integrations/c
 import { useContactInput } from '../../../../../carbonio-ui-commons/integrations/hooks';
 import { ContactInputItem } from '../../../../../carbonio-ui-commons/integrations/types';
 import { Participant } from '../../../../../types';
+import { isValidEmail } from '../../../../../carbonio-ui-commons/helpers/email-parser';
 
 export type RecipientsRowProps = {
 	type: ParticipantRoleType;
@@ -84,7 +85,7 @@ export const RecipientsRow: FC<RecipientsRowProps> = ({
 							email: recipient.address,
 							type: recipient.isGroup ? CONTACT_TYPES.DISTRIBUTION_LIST : CONTACT_TYPES.CONTACT
 						},
-						error: recipient.error
+						error: !isValidEmail(recipient.address)
 					}
 				);
 			}),
@@ -97,7 +98,7 @@ export const RecipientsRow: FC<RecipientsRowProps> = ({
 			placeholder={label}
 			onChange={onContactInputChange}
 			defaultValue={recipientsAsContacts}
-			hasError={some(recipients ?? [], { error: true })}
+			hasError={some(recipientsAsContacts ?? [], { error: true })}
 			dragAndDropEnabled
 			orderedAccountIds={orderedAccountIds}
 		/>
