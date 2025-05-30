@@ -6,7 +6,7 @@
 
 import * as shell from '@zextras/carbonio-shell-ui';
 
-export * from '../../src/__test__/mocks/carbonio-shell-ui/carbonio-shell-ui';
+export * from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
 
 export const useAuthenticated = jest
 	.fn<ReturnType<typeof shell.useAuthenticated>, Parameters<typeof shell.useAuthenticated>>()
