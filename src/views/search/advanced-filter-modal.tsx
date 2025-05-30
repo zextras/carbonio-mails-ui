@@ -47,7 +47,6 @@ export const AdvancedFilterModal = ({
 		setValue('isUnread', false);
 		setValue('sentBefore', null);
 		setValue('sentAfter', null);
-		setValue('sentOn', null);
 		setValue('sizeSmaller', []);
 		setValue('sizeLarger', []);
 		setValue('receivedFrom', []);
