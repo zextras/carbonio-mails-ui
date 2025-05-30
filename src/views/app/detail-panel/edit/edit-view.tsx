@@ -37,6 +37,7 @@ import { WarningBanner } from './parts/warning-banner';
 import { checkExistEncryptionPassword } from '../../../../api/check-exist-password-api';
 import { checkIsSmimeEnabled } from '../../../../api/check-is-smime-enable-api';
 import { checkPersonalCertificateExist } from '../../../../api/check-personal-certificate-exist-api';
+import { isValidEmail } from '../../../../carbonio-ui-commons/helpers/email-parser';
 import { GapContainer, GapRow } from '../../../../commons/gap-container';
 import { EDIT_VIEW_CLOSING_REASONS, EditViewActions, TIMEOUTS } from '../../../../constants';
 import { buildArrayFromFileList } from '../../../../helpers/files';
@@ -59,12 +60,12 @@ import {
 	useEditorIsSmimeSign,
 	useEditorIdentityId,
 	useEditorIsSmimeEncrypt,
-	useEditorToRecipients
+	useEditorToRecipients,
+	useEditorCcRecipients
 } from '../../../../store/editor';
 import { EditViewClosingReasons } from '../../../../types';
 import { updateEditorWithSmartLinks } from '../../../../ui-actions/utils';
 import { EnterPasswordModal } from '../../../settings/certificates/enter-password-modal';
-import { isValidEmail } from '../../../../carbonio-ui-commons/helpers/email-parser';
 
 export type EditViewProp = {
 	editorId: string;
@@ -141,9 +142,15 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 	const { isSmimeEnabled } = useSmimeFeatureStore();
 
 	const { toRecipients } = useEditorToRecipients(editorId);
+	const { ccRecipients } = useEditorCcRecipients(editorId);
 
-	const invalidEmailsPresent = useMemo(
+	const invalidTOEmailsPresent = useMemo(
 		() => some(toRecipients, (recipient) => !isValidEmail(recipient.address)),
+		[toRecipients]
+	);
+
+	const invalidCCEmailsPresent = useMemo(
+		() => some(ccRecipients, (recipient) => !isValidEmail(recipient.address)),
 		[toRecipients]
 	);
 
@@ -533,6 +540,13 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 			onSendError
 		]
 	);
+	const sendDisabled =
+		isMailSizeWarning ||
+		!sendAllowedStatus?.allowed ||
+		isConvertingToSmartLink ||
+		!draftId ||
+		invalidTOEmailsPresent ||
+		invalidCCEmailsPresent;
 	return (
 		<Container
 			data-testid={'edit-view-editor'}
@@ -589,13 +603,7 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 						<EditViewSendButtons
 							onSendLater={onSendLaterClick}
 							onSendNow={onSendClick}
-							disabled={
-								isMailSizeWarning ||
-								!sendAllowedStatus?.allowed ||
-								isConvertingToSmartLink ||
-								!draftId ||
-								invalidEmailsPresent
-							}
+							disabled={sendDisabled}
 							tooltip={sendAllowedStatus?.reason ?? ''}
 							isLoading={isConvertingToSmartLink}
 						/>

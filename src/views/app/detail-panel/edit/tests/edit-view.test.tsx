@@ -13,6 +13,7 @@ import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 import * as hooks from '@zextras/carbonio-shell-ui';
 import { find, noop } from 'lodash';
 import { HttpResponse } from 'msw';
+import { undefined } from 'zod';
 
 import { aFailingSaveDraft, aSuccessfullSaveDraft } from './utils/utils';
 import {
@@ -36,6 +37,7 @@ import { getMocksContext } from '../../../../../carbonio-ui-commons/test/mocks/u
 import { buildSoapErrorResponseBody } from '../../../../../carbonio-ui-commons/test/mocks/utils/soap';
 import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
 import { EditViewActions, MAILS_ROUTE } from '../../../../../constants';
+import { getDefaultIdentity } from '../../../../../helpers/identities';
 import * as useQueryParam from '../../../../../hooks/use-query-param';
 import { addEditor } from '../../../../../store/editor';
 import {
@@ -154,21 +156,42 @@ jest.mock('../../../../../store/editor', () => ({
 	deleteEditor: jest.fn()
 }));
 
+function generateNewEditor(): MailsEditorV2 {
+	return {
+		recipients: { to: [], cc: [], bcc: [] },
+		id: '',
+		isRichText: false,
+		isUrgent: false,
+		sendAllowedStatus: {
+			allowed: true
+		},
+		requestReadReceipt: false,
+		savedAttachments: [],
+		size: 0,
+		subject: '',
+		text: {
+			plainText: 'Hello',
+			richText: '<p>Hello</p>'
+		},
+		unsavedAttachments: [],
+		action: EditViewActions.NEW,
+		identityId: getDefaultIdentity().id,
+		did: '123'
+	};
+}
+
 describe('Edit view', () => {
-	it('should disable the send button when there`s an invalid recipient', async () => {
+	it('should disable the send button when there`s an invalid TO recipient', async () => {
 		createCheckSmimeEnabledAPIInterceptor();
 		createSoapAPIInterceptor('GetShareInfo');
 		const wrongEmailAddress = 'wrongmailaddress.com';
-		const editor = {
-			...generateNewMessageEditor(),
-			did: '123',
+		const editor: MailsEditorV2 = {
+			...generateNewEditor(),
 			recipients: {
 				to: [
 					{
 						address: wrongEmailAddress,
-						id: 'dsadsadas',
 						isGroup: false,
-						name: undefined,
 						type: ParticipantRole.TO
 					}
 				],
@@ -183,6 +206,35 @@ describe('Edit view', () => {
 		// TODO: act is used to ensure entire render lifecycle is completed.
 		//  it would be better to ensure lifecycle is completed by awaiting the DOM (e.g.: await a button is visible).
 		//  act is a gimmick and not really required.
+		await act(async () => {
+			expect(screen.getByTestId('edit-view-editor')).toBeVisible();
+			expect(await screen.findByText('DEFAULT')).toBeVisible();
+			expect(await screen.findByText(wrongEmailAddress)).toBeVisible();
+			expect(await screen.findByRole('button', { name: /label\.send/i })).toBeDisabled();
+		});
+	});
+	it('should disable the send button when there`s an invalid CC recipient', async () => {
+		createCheckSmimeEnabledAPIInterceptor();
+		createSoapAPIInterceptor('GetShareInfo');
+		const wrongEmailAddress = 'wrongmailaddress.com';
+		const editor: MailsEditorV2 = {
+			...generateNewEditor(),
+			recipients: {
+				to: [],
+				cc: [
+					{
+						address: wrongEmailAddress,
+						isGroup: false,
+						type: ParticipantRole.CARBON_COPY
+					}
+				],
+				bcc: []
+			}
+		};
+		setupEditorStore({ editors: [editor] });
+
+		setupTest(<EditView editorId={editor.id} closeController={noop} />);
+
 		await act(async () => {
 			expect(screen.getByTestId('edit-view-editor')).toBeVisible();
 			expect(await screen.findByText('DEFAULT')).toBeVisible();
