@@ -156,7 +156,7 @@ jest.mock('../../../../../store/editor', () => ({
 	deleteEditor: jest.fn()
 }));
 
-function generateNewEditor(): MailsEditorV2 {
+function generateNewEditor(customData: Partial<MailsEditorV2> = {}): MailsEditorV2 {
 	return {
 		recipients: { to: [], cc: [], bcc: [] },
 		id: '',
@@ -176,7 +176,8 @@ function generateNewEditor(): MailsEditorV2 {
 		unsavedAttachments: [],
 		action: EditViewActions.NEW,
 		identityId: getDefaultIdentity().id,
-		did: '123'
+		did: '123',
+		...customData
 	};
 }
 
@@ -188,8 +189,7 @@ describe('Edit view', () => {
 			createSoapAPIInterceptor('GetShareInfo');
 		});
 		test('when there`s an invalid TO recipient', async () => {
-			const editor: MailsEditorV2 = {
-				...generateNewEditor(),
+			const editor: MailsEditorV2 = generateNewEditor({
 				recipients: {
 					to: [
 						{
@@ -201,7 +201,7 @@ describe('Edit view', () => {
 					cc: [],
 					bcc: []
 				}
-			};
+			});
 			setupEditorStore({ editors: [editor] });
 
 			setupTest(<EditView editorId={editor.id} closeController={noop} />);
@@ -217,8 +217,7 @@ describe('Edit view', () => {
 			});
 		});
 		test('when there`s an invalid CC recipient', async () => {
-			const editor: MailsEditorV2 = {
-				...generateNewEditor(),
+			const editor: MailsEditorV2 = generateNewEditor({
 				recipients: {
 					to: [],
 					cc: [
@@ -230,7 +229,7 @@ describe('Edit view', () => {
 					],
 					bcc: []
 				}
-			};
+			});
 			setupEditorStore({ editors: [editor] });
 
 			setupTest(<EditView editorId={editor.id} closeController={noop} />);
