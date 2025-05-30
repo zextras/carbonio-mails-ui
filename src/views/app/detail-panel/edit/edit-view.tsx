@@ -151,7 +151,7 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 
 	const invalidCCEmailsPresent = useMemo(
 		() => some(ccRecipients, (recipient) => !isValidEmail(recipient.address)),
-		[toRecipients]
+		[ccRecipients]
 	);
 
 	useEffect(() => {
