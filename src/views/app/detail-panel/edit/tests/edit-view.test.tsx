@@ -181,67 +181,70 @@ function generateNewEditor(): MailsEditorV2 {
 }
 
 describe('Edit view', () => {
-	it('should disable the send button when there`s an invalid TO recipient', async () => {
-		createCheckSmimeEnabledAPIInterceptor();
-		createSoapAPIInterceptor('GetShareInfo');
-		const wrongEmailAddress = 'wrongmailaddress.com';
-		const editor: MailsEditorV2 = {
-			...generateNewEditor(),
-			recipients: {
-				to: [
-					{
-						address: wrongEmailAddress,
-						isGroup: false,
-						type: ParticipantRole.TO
-					}
-				],
-				cc: [],
-				bcc: []
-			}
-		};
-		setupEditorStore({ editors: [editor] });
+	describe('Send button is disabled', () => {
+		beforeEach(() => {
+			createCheckSmimeEnabledAPIInterceptor();
+			createSoapAPIInterceptor('GetShareInfo');
+		});
+		test('when there`s an invalid TO recipient', async () => {
+			const wrongEmailAddress = 'wrongmailaddress.com';
+			const editor: MailsEditorV2 = {
+				...generateNewEditor(),
+				recipients: {
+					to: [
+						{
+							address: wrongEmailAddress,
+							isGroup: false,
+							type: ParticipantRole.TO
+						}
+					],
+					cc: [],
+					bcc: []
+				}
+			};
+			setupEditorStore({ editors: [editor] });
 
-		setupTest(<EditView editorId={editor.id} closeController={noop} />);
+			setupTest(<EditView editorId={editor.id} closeController={noop} />);
 
-		// TODO: act is used to ensure entire render lifecycle is completed.
-		//  it would be better to ensure lifecycle is completed by awaiting the DOM (e.g.: await a button is visible).
-		//  act is a gimmick and not really required.
-		await act(async () => {
-			expect(screen.getByTestId('edit-view-editor')).toBeVisible();
-			expect(await screen.findByText('DEFAULT')).toBeVisible();
-			expect(await screen.findByText(wrongEmailAddress)).toBeVisible();
-			expect(await screen.findByRole('button', { name: /label\.send/i })).toBeDisabled();
+			// TODO: act is used to ensure entire render lifecycle is completed.
+			//  it would be better to ensure lifecycle is completed by awaiting the DOM (e.g.: await a button is visible).
+			//  act is a gimmick and not really required.
+			await act(async () => {
+				expect(screen.getByTestId('edit-view-editor')).toBeVisible();
+				expect(await screen.findByText('DEFAULT')).toBeVisible();
+				expect(await screen.findByText(wrongEmailAddress)).toBeVisible();
+				expect(await screen.findByRole('button', { name: /label\.send/i })).toBeDisabled();
+			});
+		});
+		test('when there`s an invalid CC recipient', async () => {
+			const wrongEmailAddress = 'wrongmailaddress.com';
+			const editor: MailsEditorV2 = {
+				...generateNewEditor(),
+				recipients: {
+					to: [],
+					cc: [
+						{
+							address: wrongEmailAddress,
+							isGroup: false,
+							type: ParticipantRole.CARBON_COPY
+						}
+					],
+					bcc: []
+				}
+			};
+			setupEditorStore({ editors: [editor] });
+
+			setupTest(<EditView editorId={editor.id} closeController={noop} />);
+
+			await act(async () => {
+				expect(screen.getByTestId('edit-view-editor')).toBeVisible();
+				expect(await screen.findByText('DEFAULT')).toBeVisible();
+				expect(await screen.findByText(wrongEmailAddress)).toBeVisible();
+				expect(await screen.findByRole('button', { name: /label\.send/i })).toBeDisabled();
+			});
 		});
 	});
-	it('should disable the send button when there`s an invalid CC recipient', async () => {
-		createCheckSmimeEnabledAPIInterceptor();
-		createSoapAPIInterceptor('GetShareInfo');
-		const wrongEmailAddress = 'wrongmailaddress.com';
-		const editor: MailsEditorV2 = {
-			...generateNewEditor(),
-			recipients: {
-				to: [],
-				cc: [
-					{
-						address: wrongEmailAddress,
-						isGroup: false,
-						type: ParticipantRole.CARBON_COPY
-					}
-				],
-				bcc: []
-			}
-		};
-		setupEditorStore({ editors: [editor] });
 
-		setupTest(<EditView editorId={editor.id} closeController={noop} />);
-
-		await act(async () => {
-			expect(screen.getByTestId('edit-view-editor')).toBeVisible();
-			expect(await screen.findByText('DEFAULT')).toBeVisible();
-			expect(await screen.findByText(wrongEmailAddress)).toBeVisible();
-			expect(await screen.findByRole('button', { name: /label\.send/i })).toBeDisabled();
-		});
-	});
 	describe('Mail creation', () => {
 		beforeEach(() => {
 			aSuccessfullSaveDraft();
