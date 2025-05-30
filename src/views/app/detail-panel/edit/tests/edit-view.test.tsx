@@ -13,7 +13,6 @@ import { ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
 import * as hooks from '@zextras/carbonio-shell-ui';
 import { find, noop } from 'lodash';
 import { HttpResponse } from 'msw';
-import { undefined } from 'zod';
 
 import { aFailingSaveDraft, aSuccessfullSaveDraft } from './utils/utils';
 import {
