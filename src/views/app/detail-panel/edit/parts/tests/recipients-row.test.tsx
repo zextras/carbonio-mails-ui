@@ -25,9 +25,13 @@ const triggerOnAdd = async (user: UserEvent): Promise<void> => {
 	await paste(user, screen.getByTestId('mockedContactInput'), 'any value is ok');
 };
 
-const ContactInputWithError = ({ hasError }: ContactInputProps): React.JSX.Element =>
-	hasError ? <p data-testid="recipient-error"></p> : <></>;
-
+const ContactInputWithError = ({ defaultValue }: ContactInputProps): React.JSX.Element => (
+	<>
+		{defaultValue.map((value, i) =>
+			value.error ? <p key={i} data-testid={`recipient-error-${i}`}></p> : <></>
+		)}
+	</>
+);
 describe('recipients-row', () => {
 	describe('when contact input integration available', () => {
 		it('should call onChange with value of given type when adding a new value in input', async () => {
@@ -188,7 +192,7 @@ describe('RecipientsRow', () => {
 				onRecipientsChange={jest.fn()}
 			/>
 		);
-		expect(await screen.findByTestId('recipient-error')).toBeInTheDocument();
+		expect(await screen.findByTestId('recipient-error-0')).toBeInTheDocument();
 	});
 
 	test('should display error when email is invalid and error is missing', async () => {
@@ -205,7 +209,7 @@ describe('RecipientsRow', () => {
 				onRecipientsChange={jest.fn()}
 			/>
 		);
-		expect(await screen.findByTestId('recipient-error')).toBeInTheDocument();
+		expect(await screen.findByTestId('recipient-error-0')).toBeInTheDocument();
 	});
 
 	test('should display error when email is invalid and error is false', async () => {
@@ -223,7 +227,7 @@ describe('RecipientsRow', () => {
 				onRecipientsChange={jest.fn()}
 			/>
 		);
-		expect(await screen.findByTestId('recipient-error')).toBeInTheDocument();
+		expect(await screen.findByTestId('recipient-error-0')).toBeInTheDocument();
 	});
 });
 
