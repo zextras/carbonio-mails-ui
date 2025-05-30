@@ -187,6 +187,7 @@ describe('Edit view', () => {
 			createCheckSmimeEnabledAPIInterceptor();
 			createSoapAPIInterceptor('GetShareInfo');
 		});
+		test.todo('and says recipients are invalid when there`s at least an invalid recipient');
 		test('when there`s an invalid TO recipient', async () => {
 			const editor: MailsEditorV2 = generateNewEditor({
 				recipients: {

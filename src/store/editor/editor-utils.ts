@@ -64,7 +64,7 @@ export const computeSendAllowedStatus = (editor: MailsEditorV2): EditorOperation
 	if (editor.draftSaveProcessStatus?.status === PROCESS_STATUS.RUNNING) {
 		return {
 			allowed: false,
-			reason: t('label.draft_save_in_progress', 'Saving draft in progress         ')
+			reason: t('label.draft_save_in_progress', 'Saving draft in progress')
 		};
 	}
 
@@ -89,6 +89,7 @@ export const computeSendAllowedStatus = (editor: MailsEditorV2): EditorOperation
 	) {
 		return {
 			allowed: false,
+			// TODO: revisit this translation on weblate because it says 'there is no valid recipient'
 			reason: t('label.missing_recipients', 'At least one recipient is required to send the email')
 		};
 	}
@@ -97,7 +98,8 @@ export const computeSendAllowedStatus = (editor: MailsEditorV2): EditorOperation
 	if (some(participants, { error: true })) {
 		return {
 			allowed: false,
-			reason: t('label.invalid_recipients', `A recipient's address is spelled incorrectly`)
+			// TODO: revisit this translation on weblate
+			reason: t('label.invalid_recipients', `One or more recipients are invalid`)
 		};
 	}
 

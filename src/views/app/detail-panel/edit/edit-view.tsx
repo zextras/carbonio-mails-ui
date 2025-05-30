@@ -37,7 +37,6 @@ import { WarningBanner } from './parts/warning-banner';
 import { checkExistEncryptionPassword } from '../../../../api/check-exist-password-api';
 import { checkIsSmimeEnabled } from '../../../../api/check-is-smime-enable-api';
 import { checkPersonalCertificateExist } from '../../../../api/check-personal-certificate-exist-api';
-import { isValidEmail } from '../../../../carbonio-ui-commons/helpers/email-parser';
 import { GapContainer, GapRow } from '../../../../commons/gap-container';
 import { EDIT_VIEW_CLOSING_REASONS, EditViewActions, TIMEOUTS } from '../../../../constants';
 import { buildArrayFromFileList } from '../../../../helpers/files';
@@ -60,13 +59,11 @@ import {
 	useEditorIsSmimeSign,
 	useEditorIdentityId,
 	useEditorIsSmimeEncrypt,
-	useEditorToRecipients,
-	useEditorCcRecipients,
-	useEditorBccRecipients,
 	useEditorRecipients
 } from '../../../../store/editor';
 import { EditViewClosingReasons } from '../../../../types';
 import { updateEditorWithSmartLinks } from '../../../../ui-actions/utils';
+import { isValidEmail } from '../../../search/parts/utils';
 import { EnterPasswordModal } from '../../../settings/certificates/enter-password-modal';
 
 export type EditViewProp = {
@@ -146,10 +143,13 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 	const {
 		recipients: { to, cc, bcc }
 	} = useEditorRecipients(editorId);
-
-	const invalidEmailsPresent = useMemo(
+	const invalidRecipientsPresent = useMemo(
 		() => some([...to, ...cc, ...bcc], (recipient) => !isValidEmail(recipient.address)),
 		[bcc, cc, to]
+	);
+	const invalidRecipientsError = t(
+		'label.invalid_recipients',
+		`One or more recipients are invalid`
 	);
 
 	useEffect(() => {
@@ -543,7 +543,12 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 		!sendAllowedStatus?.allowed ||
 		isConvertingToSmartLink ||
 		!draftId ||
-		invalidEmailsPresent;
+		invalidRecipientsPresent;
+
+	// TODO: sendAllowedStatus is completely flawed and full of logical errors
+	const sendDisabledReason = invalidRecipientsPresent
+		? invalidRecipientsError
+		: sendAllowedStatus?.reason;
 	return (
 		<Container
 			data-testid={'edit-view-editor'}
@@ -601,7 +606,7 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 							onSendLater={onSendLaterClick}
 							onSendNow={onSendClick}
 							disabled={sendDisabled}
-							tooltip={sendAllowedStatus?.reason ?? ''}
+							tooltip={sendDisabledReason ?? ''}
 							isLoading={isConvertingToSmartLink}
 						/>
 					</GapRow>
