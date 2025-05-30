@@ -240,6 +240,31 @@ describe('Edit view', () => {
 				expect(await screen.findByRole('button', { name: /label\.send/i })).toBeDisabled();
 			});
 		});
+		test('when there`s an invalid BCC recipient', async () => {
+			const editor: MailsEditorV2 = generateNewEditor({
+				recipients: {
+					to: [],
+					cc: [],
+					bcc: [
+						{
+							address: invalidEmailAddress,
+							isGroup: false,
+							type: ParticipantRole.BLIND_CARBON_COPY
+						}
+					]
+				}
+			});
+			setupEditorStore({ editors: [editor] });
+
+			setupTest(<EditView editorId={editor.id} closeController={noop} />);
+
+			await act(async () => {
+				expect(screen.getByTestId('edit-view-editor')).toBeVisible();
+				expect(await screen.findByText('DEFAULT')).toBeVisible();
+				expect(await screen.findByText(invalidEmailAddress)).toBeVisible();
+				expect(await screen.findByRole('button', { name: /label\.send/i })).toBeDisabled();
+			});
+		});
 	});
 
 	describe('Mail creation', () => {

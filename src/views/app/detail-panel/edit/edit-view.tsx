@@ -61,7 +61,8 @@ import {
 	useEditorIdentityId,
 	useEditorIsSmimeEncrypt,
 	useEditorToRecipients,
-	useEditorCcRecipients
+	useEditorCcRecipients,
+	useEditorBccRecipients
 } from '../../../../store/editor';
 import { EditViewClosingReasons } from '../../../../types';
 import { updateEditorWithSmartLinks } from '../../../../ui-actions/utils';
@@ -143,6 +144,7 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 
 	const { toRecipients } = useEditorToRecipients(editorId);
 	const { ccRecipients } = useEditorCcRecipients(editorId);
+	const { bccRecipients } = useEditorBccRecipients(editorId);
 
 	const invalidTOEmailsPresent = useMemo(
 		() => some(toRecipients, (recipient) => !isValidEmail(recipient.address)),
@@ -152,6 +154,11 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 	const invalidCCEmailsPresent = useMemo(
 		() => some(ccRecipients, (recipient) => !isValidEmail(recipient.address)),
 		[ccRecipients]
+	);
+
+	const invalidBCCEmailsPresent = useMemo(
+		() => some(bccRecipients, (recipient) => !isValidEmail(recipient.address)),
+		[bccRecipients]
 	);
 
 	useEffect(() => {
@@ -546,7 +553,8 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 		isConvertingToSmartLink ||
 		!draftId ||
 		invalidTOEmailsPresent ||
-		invalidCCEmailsPresent;
+		invalidCCEmailsPresent ||
+		invalidBCCEmailsPresent;
 	return (
 		<Container
 			data-testid={'edit-view-editor'}
