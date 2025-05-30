@@ -182,18 +182,18 @@ function generateNewEditor(): MailsEditorV2 {
 
 describe('Edit view', () => {
 	describe('Send button is disabled', () => {
+		const invalidEmailAddress = 'invalidmailaddress.com';
 		beforeEach(() => {
 			createCheckSmimeEnabledAPIInterceptor();
 			createSoapAPIInterceptor('GetShareInfo');
 		});
 		test('when there`s an invalid TO recipient', async () => {
-			const wrongEmailAddress = 'wrongmailaddress.com';
 			const editor: MailsEditorV2 = {
 				...generateNewEditor(),
 				recipients: {
 					to: [
 						{
-							address: wrongEmailAddress,
+							address: invalidEmailAddress,
 							isGroup: false,
 							type: ParticipantRole.TO
 						}
@@ -212,19 +212,18 @@ describe('Edit view', () => {
 			await act(async () => {
 				expect(screen.getByTestId('edit-view-editor')).toBeVisible();
 				expect(await screen.findByText('DEFAULT')).toBeVisible();
-				expect(await screen.findByText(wrongEmailAddress)).toBeVisible();
+				expect(await screen.findByText(invalidEmailAddress)).toBeVisible();
 				expect(await screen.findByRole('button', { name: /label\.send/i })).toBeDisabled();
 			});
 		});
 		test('when there`s an invalid CC recipient', async () => {
-			const wrongEmailAddress = 'wrongmailaddress.com';
 			const editor: MailsEditorV2 = {
 				...generateNewEditor(),
 				recipients: {
 					to: [],
 					cc: [
 						{
-							address: wrongEmailAddress,
+							address: invalidEmailAddress,
 							isGroup: false,
 							type: ParticipantRole.CARBON_COPY
 						}
@@ -239,7 +238,7 @@ describe('Edit view', () => {
 			await act(async () => {
 				expect(screen.getByTestId('edit-view-editor')).toBeVisible();
 				expect(await screen.findByText('DEFAULT')).toBeVisible();
-				expect(await screen.findByText(wrongEmailAddress)).toBeVisible();
+				expect(await screen.findByText(invalidEmailAddress)).toBeVisible();
 				expect(await screen.findByRole('button', { name: /label\.send/i })).toBeDisabled();
 			});
 		});
