@@ -89,7 +89,6 @@ export const computeSendAllowedStatus = (editor: MailsEditorV2): EditorOperation
 	) {
 		return {
 			allowed: false,
-			// TODO: revisit this translation on weblate because it says 'there is no valid recipient'
 			reason: t('label.missing_recipients', 'At least one recipient is required to send the email')
 		};
 	}
@@ -98,7 +97,6 @@ export const computeSendAllowedStatus = (editor: MailsEditorV2): EditorOperation
 	if (some(participants, { error: true })) {
 		return {
 			allowed: false,
-			// TODO: revisit this translation on weblate
 			reason: t('label.invalid_recipients', `One or more recipients are invalid`)
 		};
 	}
