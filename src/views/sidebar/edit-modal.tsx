@@ -34,9 +34,6 @@ export const EditModal: FC<ModalProps> = ({ folder, onClose }) => {
 
 				{activeModal === 'edit' && (
 					<EditPermissionsModal
-						// TODO: CO-2067 fix type
-						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-						// @ts-ignore
 						folder={folder}
 						onClose={onClose}
 						goBack={goBack}
@@ -53,15 +50,7 @@ export const EditModal: FC<ModalProps> = ({ folder, onClose }) => {
 					/>
 				)}
 
-				{activeModal === 'share' && (
-					<EditPermissionsModal
-						// TODO: CO-2067 fix type
-						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-						// @ts-ignore
-						folder={folder}
-						onClose={onClose}
-					/>
-				)}
+				{activeModal === 'share' && <EditPermissionsModal folder={folder} onClose={onClose} />}
 			</Container>
 		</Context.Provider>
 	);
