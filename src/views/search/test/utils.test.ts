@@ -127,7 +127,6 @@ describe('getAdvancedFiltersDefaultValues', () => {
 			isUnread: false,
 			sentBefore: null,
 			sentAfter: null,
-			sentOn: null,
 			sizeSmaller: [],
 			sizeLarger: [],
 			receivedFrom: [],
@@ -170,13 +169,6 @@ describe('getAdvancedFiltersDefaultValues', () => {
 		expect(moment(result.sentAfter).format('YYYY-MM-DD')).toBe(dateStr);
 	});
 
-	it('should extract sentOn date', () => {
-		const dateStr = '2023-12-01';
-		const query = [{ label: `date:${dateStr}` }] as Query;
-		const result = getAdvancedFiltersDefaultValues(query, false);
-		expect(moment(result.sentOn).format('YYYY-MM-DD')).toBe(dateStr);
-	});
-
 	it('should extract multiple dates correctly without conflict', () => {
 		const beforeStr = '2023-12-01';
 		const afterStr = '2023-12-05';
@@ -192,7 +184,6 @@ describe('getAdvancedFiltersDefaultValues', () => {
 
 		expect(moment(result.sentBefore).format('YYYY-MM-DD')).toBe(beforeStr);
 		expect(moment(result.sentAfter).format('YYYY-MM-DD')).toBe(afterStr);
-		expect(moment(result.sentOn).format('YYYY-MM-DD')).toBe(dateStr);
 	});
 
 	it('should extract sizeSmaller filter', () => {

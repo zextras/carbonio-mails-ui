@@ -43,7 +43,6 @@ export type AdvancedFilterModalFormValues = {
 	isUnread: boolean;
 	sentBefore: Date | null;
 	sentAfter: Date | null;
-	sentOn: Date | null;
 	sizeSmaller: KeywordState;
 	sizeLarger: KeywordState;
 	receivedFrom: Array<ContactInputItem>;

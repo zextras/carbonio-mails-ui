@@ -1,6 +1,6 @@
 {
 	"name": "carbonio-mails-ui",
-	"version": "1.25.2",
+	"version": "1.25.3",
 	"description": "Mails module",
 	"main": "src/app.tsx",
 	"engines": {
@@ -110,7 +110,6 @@
 		"react-router-dom": "^6.30.0",
 		"styled-components": "^6.1.13",
 		"uuid": "^9.0.0",
-		"zod": "^3.24.4",
 		"zustand": "^4.5.2"
 	},
 	"browserslist": [

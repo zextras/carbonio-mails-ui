@@ -502,15 +502,6 @@ describe('Advanced filter modal', () => {
 		});
 	});
 
-	it(`should reset 'sent on' when reset button is pressed`, async () => {
-		await checkResetAndSearchButton(async (user) => {
-			const inputElement = screen.getByPlaceholderText('search.sent_on');
-			const dateString = format(new Date(42424242), 'MM/dd/yyyy HH:mm');
-			await user.type(inputElement, dateString);
-			await user.tab();
-		});
-	});
-
 	it(`should reset 'size smaller than' when reset button is pressed`, async () => {
 		await checkResetAndSearchButton(async (user) => {
 			const sizeSmaller = screen.getByTestId('sizeSmallerInput');
