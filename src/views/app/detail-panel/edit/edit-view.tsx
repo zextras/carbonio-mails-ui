@@ -15,7 +15,20 @@ import {
 	useModal
 } from '@zextras/carbonio-design-system';
 import { t, useIsCarbonioCE } from '@zextras/carbonio-shell-ui';
+import { checkExistEncryptionPassword } from 'api/check-exist-password-api';
+import * as checkIsSmimeEnableApi from 'api/check-is-smime-enable-api';
+import { checkPersonalCertificateExist } from 'api/check-personal-certificate-exist-api';
+import { GapContainer, GapRow } from 'commons/gap-container';
+import { EDIT_VIEW_CLOSING_REASONS, EditViewActions, TIMEOUTS } from 'constants/index';
+import { buildArrayFromFileList } from 'helpers/files';
+import { getAvailableAddresses } from 'helpers/get-available-addresses';
+import { getIdentitiesDescriptors, getIdentityDescriptor } from 'helpers/identities';
 import { filter, map, some } from 'lodash';
+import {
+	useCertificatesStore,
+	useSmimeFeatureStore,
+	useSmimePasswordStore
+} from 'store/certificates/store';
 
 import { checkSubjectAndAttachment } from './check-subject-attachment';
 import DropZoneAttachment from './dropzone-attachment';
@@ -33,6 +46,7 @@ import { RecipientsRows } from './parts/recipients-rows';
 import { SizeExceededWarningBanner } from './parts/size-exceeded-waring-banner';
 import { SubjectRow } from './parts/subject-row';
 import { TextEditorContainer } from './parts/text-editor-container';
+import { WarningBanner } from './parts/warning-banner';
 import {
 	useEditorAutoSendTime,
 	useEditorDraftSave,
@@ -51,20 +65,6 @@ import { EditorOperationAllowedStatus, EditViewClosingReasons } from '../../../.
 import { updateEditorWithSmartLinks } from '../../../../ui-actions/utils';
 import { isValidEmail } from '../../../search/parts/utils';
 import { EnterPasswordModal } from '../../../settings/certificates/enter-password-modal';
-import { checkExistEncryptionPassword } from 'api/check-exist-password-api';
-import { checkIsSmimeEnabled } from 'api/check-is-smime-enable-api';
-import { checkPersonalCertificateExist } from 'api/check-personal-certificate-exist-api';
-import { GapContainer, GapRow } from 'commons/gap-container';
-import { WarningBanner } from 'commons/mail-message-renderer/warning-banner';
-import { EDIT_VIEW_CLOSING_REASONS, EditViewActions, TIMEOUTS } from 'constants/index';
-import { buildArrayFromFileList } from 'helpers/files';
-import { getAvailableAddresses } from 'helpers/get-available-addresses';
-import { getIdentitiesDescriptors, getIdentityDescriptor } from 'helpers/identities';
-import {
-	useCertificatesStore,
-	useSmimeFeatureStore,
-	useSmimePasswordStore
-} from 'store/certificates/store';
 
 export type EditViewProp = {
 	editorId: string;
@@ -179,7 +179,7 @@ export const EditView = React.forwardRef<EditViewHandle, EditViewProp>(function 
 
 	useEffect(() => {
 		if (!isCarbonioCE) {
-			checkIsSmimeEnabled().then((res) => {
+			checkIsSmimeEnableApi.checkIsSmimeEnabled().then((res) => {
 				if ('data' in res) {
 					useSmimeFeatureStore.getState().updateIsSmimeEnabled(true);
 				} else {

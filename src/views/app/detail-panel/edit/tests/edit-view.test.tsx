@@ -49,6 +49,7 @@ import { populateFoldersStore } from '@test-utils/store/folders';
 import { getMocksContext } from '@test-utils/utils/mocks-context';
 import { buildSoapErrorResponseBody } from '@test-utils/utils/soap';
 import { GetSignaturesRequest, GetSignaturesResponse } from 'api/get-signatures-soap-api';
+import * as saveDraftAction from 'api/save-draft-soap-api';
 import {
 	generateEditAsNewEditor,
 	generateNewMessageEditor,
@@ -614,7 +615,6 @@ describe('Edit view', () => {
 			);
 			createCheckSmimeEnabledAPIInterceptor();
 		});
-
 		it('is not autosaved on initialization if draft id is present', async () => {
 			const mockedSaveDraft = jest.spyOn(saveDraftAction, 'saveDraftSoapApi');
 

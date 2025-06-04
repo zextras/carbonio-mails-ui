@@ -7,7 +7,12 @@
 import React, { useCallback, useState } from 'react';
 
 import { act, screen } from '@testing-library/react';
-import { CONTACT_TYPES, ContactInputProps, ParticipantRole } from '@zextras/carbonio-ui-commons';
+import {
+	CONTACT_TYPES,
+	ContactInputProps,
+	ParticipantRole,
+	useContactInput
+} from '@zextras/carbonio-ui-commons';
 
 import { UserEvent, setupTest } from '@test-setup';
 import {
@@ -20,6 +25,10 @@ import { RecipientsRow } from 'views/app/detail-panel/edit/parts/recipients-row'
 const triggerOnAdd = async (user: UserEvent): Promise<void> => {
 	await paste(user, screen.getByTestId('mockedContactInput'), 'any value is ok');
 };
+jest.mock('@zextras/carbonio-ui-commons', () => ({
+	...jest.requireActual('@zextras/carbonio-ui-commons'),
+	useContactInput: jest.fn()
+}));
 
 const ContactInputWithError = ({ defaultValue }: ContactInputProps): React.JSX.Element => (
 	<>
@@ -166,7 +175,7 @@ describe('recipients-row', () => {
 
 describe('RecipientsRow', () => {
 	beforeEach(() => {
-		jest.spyOn(contactInput, 'useContactInput').mockReturnValue(ContactInputWithError);
+		(useContactInput as jest.Mock).mockReturnValue(ContactInputWithError);
 	});
 	test('should display error when email is invalid and error true', async () => {
 		setupTest(
