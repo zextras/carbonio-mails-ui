@@ -59,6 +59,7 @@ import type {
 } from '../../../../../types';
 import { SoapSendMsgResponse } from '../../../../../types/soap/send-msg';
 import { EditView, EditViewProp } from '../edit-view';
+import { makeAllItemsVisible } from '../../../../settings/filters/tests/test-utils';
 
 const CT_HTML = 'text/html' as const;
 const CT_PLAIN = 'text/plain' as const;
@@ -187,7 +188,37 @@ describe('Edit view', () => {
 			createCheckSmimeEnabledAPIInterceptor();
 			createSoapAPIInterceptor('GetShareInfo');
 		});
-		test.todo('and says recipients are invalid when there`s at least an invalid recipient');
+		test('and says recipients are invalid when there`s at least an invalid recipient', async () => {
+			const editor: MailsEditorV2 = generateNewEditor({
+				recipients: {
+					to: [
+						{
+							address: invalidEmailAddress,
+							isGroup: false,
+							type: ParticipantRole.TO
+						}
+					],
+					cc: [],
+					bcc: []
+				}
+			});
+			setupEditorStore({ editors: [editor] });
+
+			const { user } = setupTest(<EditView editorId={editor.id} closeController={noop} />);
+
+			await user.hover(
+				screen.getByRole('button', {
+					name: /label\.send/i
+				})
+			);
+
+			makeAllItemsVisible();
+			await act(async () => {
+				const tooltip = await screen.findByTestId('tooltip');
+				expect(tooltip).toBeInTheDocument();
+				expect(tooltip).toHaveTextContent(/label.invalid_recipients/);
+			});
+		});
 		test('when there`s an invalid TO recipient', async () => {
 			const editor: MailsEditorV2 = generateNewEditor({
 				recipients: {
