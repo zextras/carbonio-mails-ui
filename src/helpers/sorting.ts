@@ -6,8 +6,8 @@
 import { editSettings } from '@zextras/carbonio-shell-ui';
 import { find } from 'lodash';
 
-import { SORTING_OPTIONS } from '../constants';
-import { FolderSortOrder } from '../types';
+import { SORTING_OPTIONS } from 'constants/index';
+import { FolderSortOrder } from 'types/index.d';
 
 const fallbackSortOrder = {
 	sortType: 'date',

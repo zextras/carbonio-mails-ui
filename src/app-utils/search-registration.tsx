@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { useSearchRegisterer } from './use-search-registerer';
+import { useSearchRegisterer } from 'app-utils/use-search-registerer';
 
 export const SearchRegistration = (): null => {
 	useSearchRegisterer();

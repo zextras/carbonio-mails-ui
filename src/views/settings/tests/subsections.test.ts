@@ -15,7 +15,7 @@ import {
 	setDefaultSignaturesSubSection,
 	signaturesSubSection,
 	trustedAddressesSubSection
-} from '../subsections';
+} from 'views/settings/subsections';
 
 describe('Settings subsections', () => {
 	test('displayingMessagesSubSection should return a specific result', () => {

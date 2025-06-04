@@ -9,16 +9,20 @@ import { Button, Padding, useModal, useSnackbar } from '@zextras/carbonio-design
 import { find, findIndex } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
-import { Filter } from '../../../../types';
+import { Filter } from 'types/index.d';
 import {
 	ApplyFilterUIActionExecutionParams,
 	getApplyFilterUIAction
-} from '../../../../ui-actions/apply-filter';
-import { FiltersListType } from '../types';
-import { useAddFilter, useDeleteFilter, useRemoveFilter } from './actions';
-import CreateFilterModal from './create-filter-modal';
-import DeleteFilterModal from './delete-filter-modal';
-import { ModifyFilterModal } from './modify-filter/modify-filter-modal';
+} from 'ui-actions/apply-filter';
+import {
+	useAddFilter,
+	useDeleteFilter,
+	useRemoveFilter
+} from 'views/settings/filters/parts/actions';
+import CreateFilterModal from 'views/settings/filters/parts/create-filter-modal';
+import DeleteFilterModal from 'views/settings/filters/parts/delete-filter-modal';
+import { ModifyFilterModal } from 'views/settings/filters/parts/modify-filter/modify-filter-modal';
+import { FiltersListType } from 'views/settings/filters/types';
 
 export type FilterManagerProps = {
 	availableList: FiltersListType;

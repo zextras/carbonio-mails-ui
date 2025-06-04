@@ -7,8 +7,8 @@ import React from 'react';
 
 import { Row } from '@zextras/carbonio-design-system';
 
-import { MarkAsOption } from '../../../../../types';
-import CustomSelect from '../custom-select';
+import { MarkAsOption } from 'types/index.d';
+import CustomSelect from 'views/settings/filters/parts/custom-select';
 
 type MarkAsProps = {
 	onChange: (option: MarkAsOption['value']) => void;

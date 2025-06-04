@@ -19,16 +19,19 @@ import { compact, map } from 'lodash';
 import { Controller, useForm } from 'react-hook-form';
 import styled from 'styled-components';
 
-import * as StyledComp from './edit-view-styled-components';
-import { buildArrayFromFileList } from '../../../../../helpers/files';
-import { isFulfilled } from '../../../../../helpers/promises';
-import { useEditorAttachments, useEditorText } from '../../../../../store/editor';
-import { MailsEditorV2 } from '../../../../../types';
-import { useGetPublicUrl, UseGetPublicUrlRespType } from '../edit-utils-hooks/use-get-public-url';
+import { buildArrayFromFileList } from 'helpers/files';
+import { isFulfilled } from 'helpers/promises';
+import { useEditorAttachments, useEditorText } from 'store/editor/index';
+import { MailsEditorV2 } from 'types/index.d';
+import {
+	useGetPublicUrl,
+	UseGetPublicUrlRespType
+} from 'views/app/detail-panel/edit/edit-utils-hooks/use-get-public-url';
 import {
 	useUploadFromFiles,
 	UseUploadFromFilesResult
-} from '../edit-utils-hooks/use-upload-from-files';
+} from 'views/app/detail-panel/edit/edit-utils-hooks/use-upload-from-files';
+import * as StyledComp from 'views/app/detail-panel/edit/parts/edit-view-styled-components';
 
 const SelectorContainer = styled(Row)`
 	border-radius: 4px;

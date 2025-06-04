@@ -3,21 +3,21 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+
 import React from 'react';
 
-import { act, screen, waitFor } from '@testing-library/react';
+import { act, screen } from '@testing-library/react';
+import { FOLDERS, getFolder } from '@zextras/carbonio-ui-commons';
 import { times } from 'lodash';
 import * as reactRouterDom from 'react-router-dom';
 
-import { FOLDERS } from '../../carbonio-ui-commons/constants/folders';
-import { getFolder } from '../../carbonio-ui-commons/store/zustand/folder';
-import { createSoapAPIInterceptor } from '../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
-import { populateFoldersStore } from '../../carbonio-ui-commons/test/mocks/store/folders';
-import { buildSoapErrorResponseBody } from '../../carbonio-ui-commons/test/mocks/utils/soap';
-import { makeListItemsVisible, setupTest } from '../../carbonio-ui-commons/test/test-setup';
-import { generateConversation } from '../../tests/generators/generateConversation';
-import { ConvActionRequest, ConvActionResponse, NormalizedConversation } from '../../types';
-import { MoveConversation } from '../move-conv';
+import { makeListItemsVisible, setupTest } from '@test-setup';
+import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import { populateFoldersStore } from '@test-utils/store/folders';
+import { buildSoapErrorResponseBody } from '@test-utils/utils/soap';
+import { generateConversation } from 'tests/generators/generateConversation';
+import { ConvActionRequest, ConvActionResponse, NormalizedConversation } from 'types/index.d';
+import { MoveConversation } from 'ui-actions/move-conv';
 
 jest.mock('react-router-dom', () => ({
 	...jest.requireActual('react-router-dom'),
@@ -223,15 +223,14 @@ describe('MoveConversation', () => {
 		const navigate = jest.fn();
 		(reactRouterDom.useNavigate as jest.Mock).mockReturnValue(navigate);
 		populateFoldersStore();
-		const interceptor = createSoapAPIInterceptor<ConvActionRequest, ConvActionResponse>(
-			'ConvAction',
-			{
-				action: {
-					id: convIds.join(','),
-					op: 'move'
-				}
+
+		createSoapAPIInterceptor<ConvActionRequest, ConvActionResponse>('ConvAction', {
+			action: {
+				id: convIds.join(','),
+				op: 'move'
 			}
-		);
+		});
+
 		const { user } = setupTest(
 			<MoveConversation
 				folderId={sourceFolder}
@@ -243,33 +242,15 @@ describe('MoveConversation', () => {
 		);
 
 		makeListItemsVisible();
-		const inboxFolderListItem = await screen.findByTestId(
-			`folder-accordion-item-${FOLDERS.INBOX}`,
-			{},
-			{ timeout: 10000 }
-		);
-		act(() => {
-			jest.advanceTimersByTime(1000);
-		});
-		await act(async () => {
-			await user.click(inboxFolderListItem);
-		});
-		const button = screen.getByRole('button', {
-			name: /Move/
-		});
-		await act(async () => {
-			await user.click(button);
-		});
-		await interceptor;
-		expect(await screen.findByText('Conversation successfully moved')).toBeInTheDocument();
-		const snackbarBtn = screen.getByRole('button', {
-			name: /GO TO FOLDER/
-		});
-		await act(async () => {
-			await user.click(snackbarBtn);
-		});
-		await waitFor(() => {
-			expect(navigate).toHaveBeenCalledWith('/mails/folder/2', { replace: true });
-		});
+
+		const inboxFolderListItem = await screen.findByTestId(`folder-accordion-item-${FOLDERS.INBOX}`);
+
+		await user.click(inboxFolderListItem);
+		await user.click(await screen.findByRole('button', { name: /Move/ }));
+
+		await expect(screen.findByText('Conversation successfully moved')).resolves.toBeInTheDocument();
+
+		await user.click(await screen.findByRole('button', { name: /GO TO FOLDER/ }));
+		expect(navigate).toHaveBeenCalledWith('/mails/folder/2', { replace: true });
 	});
 });

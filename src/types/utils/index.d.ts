@@ -4,8 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import type { TextProps } from '@zextras/carbonio-design-system';
-
-import type { Folder } from '../../carbonio-ui-commons/types/folder';
+import type { Folder } from '@zextras/carbonio-ui-commons';
 
 export type ModalProps = {
 	folder: Folder;

@@ -6,9 +6,9 @@
 
 import { t } from '@zextras/carbonio-shell-ui';
 
-import { SORTING_DIRECTION, SORTING_OPTIONS } from '../../../../../constants';
-import { Folder } from '../../../../../types';
-import { getFolderTranslatedName } from '../../../../sidebar/utils';
+import { SORTING_DIRECTION, SORTING_OPTIONS } from 'constants/index';
+import { Folder } from 'types/index.d';
+import { getFolderTranslatedName } from 'views/sidebar/utils';
 
 export function getTooltipLabel(sortingType: string, sortingDirection: string): string {
 	const sortingString = `${sortingType}${sortingDirection}`;

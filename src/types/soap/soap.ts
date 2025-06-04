@@ -4,12 +4,12 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 import { AccountSettingsPrefs, ErrorSoapBodyResponse } from '@zextras/carbonio-shell-ui';
+import { Folder } from '@zextras/carbonio-ui-commons';
 
-import { EmailAddresses } from './redirect-message-action';
-import { MailAttachment, SaveDraftResponse, SoapDraftMessageObj } from './save-draft';
-import { Folder } from '../../carbonio-ui-commons/types/folder';
-import { MAIL_VERIFICATION_HEADERS, MAIL_SENSITIVITY_HEADER } from '../../constants';
-import { MailsEditorV2 } from '../editor';
+import { MAIL_SENSITIVITY_HEADER, MAIL_VERIFICATION_HEADERS } from 'constants/index';
+import { MailsEditorV2 } from 'types/editor/index.d';
+import { EmailAddresses } from 'types/soap/redirect-message-action';
+import { MailAttachment, SaveDraftResponse, SoapDraftMessageObj } from 'types/soap/save-draft';
 
 export type MailVerificationHeader =
 	(typeof MAIL_VERIFICATION_HEADERS)[keyof typeof MAIL_VERIFICATION_HEADERS];

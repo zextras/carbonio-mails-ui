@@ -8,22 +8,18 @@ import React from 'react';
 
 import { screen, waitFor } from '@testing-library/react';
 import { getUserAccount } from '@zextras/carbonio-shell-ui';
+import { FOLDERS, ParticipantRole } from '@zextras/carbonio-ui-commons';
 
-import { FOLDERS } from '../../../../../carbonio-ui-commons/constants/folders';
-import { ParticipantRole } from '../../../../../carbonio-ui-commons/constants/participants';
-import { useBoard as mockedUseBoard } from '../../../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
-import { populateFoldersStore } from '../../../../../carbonio-ui-commons/test/mocks/store/folders';
-import { getMocksContext } from '../../../../../carbonio-ui-commons/test/mocks/utils/mocks-context';
-import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
-import { convertHtmlToPlainText } from '../../../../../commons/utilities';
-import { EditViewActions, MAILS_ROUTE } from '../../../../../constants';
-import {
-	getSignatureValue,
-	replaceSignatureOnPlainTextBody
-} from '../../../../../helpers/signatures';
-import * as useQueryParam from '../../../../../hooks/use-query-param';
-import { generateMessage } from '../../../../../tests/generators/generateMessage';
-import { EditView, EditViewProp } from '../edit-view';
+import { setupTest } from '@test-setup';
+import { useBoard as mockedUseBoard } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
+import { populateFoldersStore } from '@test-utils/store/folders';
+import { getMocksContext } from '@test-utils/utils/mocks-context';
+import { convertHtmlToPlainText } from 'commons/utilities';
+import { EditViewActions, MAILS_ROUTE } from 'constants/index';
+import { getSignatureValue, replaceSignatureOnPlainTextBody } from 'helpers/signatures';
+import * as useQueryParam from 'hooks/use-query-param';
+import { generateMessage } from 'tests/generators/generateMessage';
+import { EditView, EditViewProp } from 'views/app/detail-panel/edit/edit-view';
 
 /**
  * Test the EditView component for set signature for selected from identity

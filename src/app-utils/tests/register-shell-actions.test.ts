@@ -6,7 +6,6 @@
 
 import { addBoard, registerActions } from '@zextras/carbonio-shell-ui';
 
-import * as sharedFunctions from '../../integrations/shared-functions';
 import {
 	mailToAction,
 	mailToActionOnClick,
@@ -15,7 +14,8 @@ import {
 	newEmailAction,
 	newEmailActionOnClick,
 	registerShellActions
-} from '../register-shell-actions';
+} from 'app-utils/register-shell-actions';
+import * as sharedFunctions from 'integrations/shared-functions';
 
 describe('registerShellActions', () => {
 	it('should register the correct objects', async () => {

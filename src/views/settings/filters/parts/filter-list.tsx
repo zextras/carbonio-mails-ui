@@ -9,8 +9,8 @@ import React, { useCallback } from 'react';
 import { List, ListItem } from '@zextras/carbonio-design-system';
 import { map } from 'lodash';
 
-import { FilterItem } from './filter-item';
-import { Filter } from '../../../../types';
+import { Filter } from 'types/index.d';
+import { FilterItem } from 'views/settings/filters/parts/filter-item';
 
 type FilterListProps = {
 	filters: Array<Filter>;

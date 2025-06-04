@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { Participant } from '../participant';
-import { ConvActionOperation } from '../soap';
+import { Participant } from 'types/participant/index.d';
+import { ConvActionOperation } from 'types/soap/index.d';
 
 export type ConvMessage = {
 	id: string;

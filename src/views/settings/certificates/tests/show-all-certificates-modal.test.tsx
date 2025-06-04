@@ -8,9 +8,9 @@ import React from 'react';
 
 import { screen, waitFor } from '@testing-library/react';
 
-import { setupTest } from '../../../../carbonio-ui-commons/test/test-setup';
-import { Certificate } from '../../../../types/certificates/certificates';
-import ShowAllCertificatesModal from '../show-all-certificates-modal';
+import { setupTest } from '@test-setup';
+import { Certificate } from 'types/certificates/certificates';
+import ShowAllCertificatesModal from 'views/settings/certificates/show-all-certificates-modal';
 
 const certificate: Certificate[] = [
 	{

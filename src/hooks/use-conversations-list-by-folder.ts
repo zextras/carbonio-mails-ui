@@ -7,15 +7,15 @@ import { useCallback, useEffect, useMemo, useRef } from 'react';
 
 import { useUserSettings } from '@zextras/carbonio-shell-ui';
 
-import { API_REQUEST_STATUS, LIST_LIMIT } from '../constants';
-import { parseMessageSortingOptions } from '../helpers/sorting';
-import { searchEmailStoreAction } from '../store/emails/actions/search-action';
+import { API_REQUEST_STATUS, LIST_LIMIT } from 'constants/index';
+import { parseMessageSortingOptions } from 'helpers/sorting';
+import { searchEmailStoreAction } from 'store/emails/actions/search-action';
 import {
 	updateConversationsResultsLoadingStatus,
 	useConversationIndexSlice,
 	useConversationsIdsByFolder
-} from '../store/emails/store';
-import { ConversationIndexSliceState } from '../types';
+} from 'store/emails/store';
+import { ConversationIndexSliceState } from 'types/index.d';
 
 /**
  * Manages the state and logic for retrieving and maintaining a list of conversation indices

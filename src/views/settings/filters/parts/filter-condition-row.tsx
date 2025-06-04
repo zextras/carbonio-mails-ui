@@ -7,10 +7,10 @@ import React, { FC, ReactElement, useMemo, useCallback } from 'react';
 
 import { Button, Container, Padding, Tooltip } from '@zextras/carbonio-design-system';
 
-import DefaultCondition from './create-filters-conditions/default';
-import CustomSelect from './custom-select';
-import { getRowFunc } from './get-row';
-import { getStatusOptions, findDefaultValue } from './utils';
+import DefaultCondition from 'views/settings/filters/parts/create-filters-conditions/default';
+import CustomSelect from 'views/settings/filters/parts/custom-select';
+import { getRowFunc } from 'views/settings/filters/parts/get-row';
+import { getStatusOptions, findDefaultValue } from 'views/settings/filters/parts/utils';
 
 type FilterConditionRowrops = {
 	tmpFilter: {

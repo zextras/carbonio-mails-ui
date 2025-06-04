@@ -6,18 +6,17 @@
 import React, { act } from 'react';
 
 import { screen, waitFor } from '@testing-library/react';
+import { FOLDERS, useTagStore } from '@zextras/carbonio-ui-commons';
 import { useParams } from 'react-router-dom';
 
-import { FOLDERS } from '../../../../../carbonio-ui-commons/constants/folders';
-import { useTagStore } from '../../../../../carbonio-ui-commons/store/zustand/tags';
-import { createSoapAPIInterceptor } from '../../../../../carbonio-ui-commons/test/mocks/network/msw/create-api-interceptor';
-import { populateFoldersStore } from '../../../../../carbonio-ui-commons/test/mocks/store/folders';
-import { tags as mockTags } from '../../../../../carbonio-ui-commons/test/mocks/tags/tags';
-import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
-import { useMsgPreviewOnSeparatedWindowFn } from '../../../../../hooks/actions/use-msg-preview-on-separated-window';
-import { generateMessage } from '../../../../../tests/generators/generateMessage';
-import { MessageListItemProps, MsgActionRequest } from '../../../../../types';
-import { MessageListItem } from '../message-list-item';
+import { setupTest } from '@test-setup';
+import { createSoapAPIInterceptor } from '@test-utils/network/msw/create-api-interceptor';
+import { populateFoldersStore } from '@test-utils/store/folders';
+import { tags as mockTags } from '@test-utils/tags/tags';
+import { useMsgPreviewOnSeparatedWindowFn } from 'hooks/actions/use-msg-preview-on-separated-window';
+import { generateMessage } from 'tests/generators/generateMessage';
+import { MessageListItemProps, MsgActionRequest } from 'types/index.d';
+import { MessageListItem } from 'views/app/folder-panel/messages/message-list-item';
 
 jest.mock('react-router-dom', () => ({
 	...jest.requireActual('react-router-dom'),

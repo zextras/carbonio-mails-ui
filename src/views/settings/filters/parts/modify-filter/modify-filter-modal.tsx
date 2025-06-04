@@ -13,28 +13,35 @@ import React, {
 	useState
 } from 'react';
 
-import { Checkbox, Container, Divider, Input, Padding, Row } from '@zextras/carbonio-design-system';
+import {
+	Checkbox,
+	Container,
+	Divider,
+	Input,
+	ModalHeader,
+	Padding,
+	Row
+} from '@zextras/carbonio-design-system';
 import { useUserSettings, BooleanString } from '@zextras/carbonio-shell-ui';
 import { forEach, isEqual, map, omit, reduce } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { v4 as uuidv4 } from 'uuid';
 
-import ModalHeader from '../../../../../carbonio-ui-commons/components/modals/modal-header';
 import type {
 	Filter,
 	ApiFilterAction,
 	AllFiltersTest,
 	FilterTest,
 	FilterActions
-} from '../../../../../types';
-import { capitalise } from '../../../../sidebar/utils';
-import { CreateFilterContext } from '../create-filter-context';
-import ModalFooter from '../create-filter-modal-footer';
-import DefaultCondition from '../create-filters-conditions/default';
-import { FilterActionsPanel } from '../filter-actions-panel';
-import { FilterConditionsPanel } from '../filter-conditions-panel';
-import { findRowKey, getTestComponent } from '../get-test-component';
-import { getButtonInfo } from '../utils';
+} from 'types/index.d';
+import { CreateFilterContext } from 'views/settings/filters/parts/create-filter-context';
+import ModalFooter from 'views/settings/filters/parts/create-filter-modal-footer';
+import DefaultCondition from 'views/settings/filters/parts/create-filters-conditions/default';
+import { FilterActionsPanel } from 'views/settings/filters/parts/filter-actions-panel';
+import { FilterConditionsPanel } from 'views/settings/filters/parts/filter-conditions-panel';
+import { findRowKey, getTestComponent } from 'views/settings/filters/parts/get-test-component';
+import { getButtonInfo } from 'views/settings/filters/parts/utils';
+import { capitalise } from 'views/sidebar/utils';
 
 type ModifyFilterModalProps = {
 	onClose: () => void;

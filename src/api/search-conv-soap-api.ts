@@ -6,8 +6,8 @@
 import { AccountSettings, getUserSettings, soapFetch } from '@zextras/carbonio-shell-ui';
 import { map } from 'lodash';
 
-import { MAIL_VERIFICATION_HEADERS } from '../constants';
-import type { SearchConvRequest, SearchConvResponse } from '../types';
+import { MAIL_VERIFICATION_HEADERS } from 'constants/index';
+import type { SearchConvRequest, SearchConvResponse } from 'types/index.d';
 
 type SearchConvParameters = {
 	conversationId: string;

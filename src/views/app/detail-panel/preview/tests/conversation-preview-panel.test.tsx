@@ -8,11 +8,11 @@ import React from 'react';
 
 import { waitFor } from '@testing-library/react';
 
-import { setupTest, screen } from '../../../../../carbonio-ui-commons/test/test-setup';
-import { updateConversations, updateMessages } from '../../../../../store/emails/store';
-import { generateConversation } from '../../../../../tests/generators/generateConversation';
-import { generateMessage } from '../../../../../tests/generators/generateMessage';
-import { ConversationPreviewPanel } from '../../conversation-preview-panel';
+import { screen, setupTest } from '@test-setup';
+import { updateConversations, updateMessages } from 'store/emails/store';
+import { generateConversation } from 'tests/generators/generateConversation';
+import { generateMessage } from 'tests/generators/generateMessage';
+import { ConversationPreviewPanel } from 'views/app/detail-panel/conversation-preview-panel';
 
 /**
  * Test the Conversation Preview Panel component in different scenarios

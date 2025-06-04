@@ -7,10 +7,10 @@ import React from 'react';
 
 import { Container } from '@zextras/carbonio-design-system';
 import { t } from '@zextras/carbonio-shell-ui';
+import { useContactInput } from '@zextras/carbonio-ui-commons';
 import { Controller } from 'react-hook-form';
 
-import { useContactInput } from '../../../carbonio-ui-commons/integrations/hooks';
-import { FormValuesControlProps } from '../types/types';
+import { FormValuesControlProps } from 'views/search/types/types';
 
 export const ReceivedSentAddressRow = ({ control }: FormValuesControlProps): React.JSX.Element => {
 	const ContactInput = useContactInput();

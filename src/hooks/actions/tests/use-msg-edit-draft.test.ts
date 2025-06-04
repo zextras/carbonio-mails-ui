@@ -4,12 +4,13 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { FOLDERS } from '../../../carbonio-ui-commons/constants/folders';
-import { addBoard } from '../../../carbonio-ui-commons/test/mocks/carbonio-shell-ui';
-import { setupHook } from '../../../carbonio-ui-commons/test/test-setup';
-import { FOLDERS_DESCRIPTORS } from '../../../constants';
-import { generateMessage } from '../../../tests/generators/generateMessage';
-import { useMsgEditDraftDescriptor, useMsgEditDraftFn } from '../use-msg-edit-draft';
+import { FOLDERS } from '@zextras/carbonio-ui-commons';
+
+import { setupHook } from '@test-setup';
+import { addBoard } from '@test-utils/carbonio-shell-ui/carbonio-shell-ui';
+import { FOLDERS_DESCRIPTORS } from 'constants/index';
+import { useMsgEditDraftDescriptor, useMsgEditDraftFn } from 'hooks/actions/use-msg-edit-draft';
+import { generateMessage } from 'tests/generators/generateMessage';
 
 describe('useMsgEditDraft', () => {
 	const msg = generateMessage();

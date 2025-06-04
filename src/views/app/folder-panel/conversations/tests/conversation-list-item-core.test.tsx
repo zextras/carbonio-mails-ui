@@ -7,15 +7,16 @@
 import React from 'react';
 
 import { screen, waitFor } from '@testing-library/react';
+import { useTags } from '@zextras/carbonio-ui-commons';
 
-import { useTags } from '../../../../../carbonio-ui-commons/store/zustand/tags';
-import { populateFoldersStore } from '../../../../../carbonio-ui-commons/test/mocks/store/folders';
-import { tags } from '../../../../../carbonio-ui-commons/test/mocks/tags/tags';
-import { setupTest } from '../../../../../carbonio-ui-commons/test/test-setup';
-import { populateConversationInEmailStore } from '../../../../../tests/generators/generateConversation';
-import { ConversationListItemCore } from '../conversation-list-item-core';
+import { setupTest } from '@test-setup';
+import { populateFoldersStore } from '@test-utils/store/folders';
+import { tags } from '@test-utils/tags/tags';
+import { populateConversationInEmailStore } from 'tests/generators/generateConversation';
+import { ConversationListItemCore } from 'views/app/folder-panel/conversations/conversation-list-item-core';
 
-jest.mock('../../../../../carbonio-ui-commons/store/zustand/tags', () => ({
+jest.mock('@zextras/carbonio-ui-commons', () => ({
+	...jest.requireActual('@zextras/carbonio-ui-commons'),
 	useTags: jest.fn()
 }));
 
