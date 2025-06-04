@@ -141,10 +141,9 @@ describe('recipients-row', () => {
 					onRecipientsChange={mockOnChange}
 				></RecipientsRow>
 			);
-
 			expect(
 				await screen.findByText(
-					'[{"id":"someone@test.com","label":"someone@test.com","value":{"id":"someone@test.com","email":"someone@test.com","type":"DISTRIBUTION_LIST"},"error":true}]'
+					'[{"id":"someone@test.com","label":"someone@test.com","value":{"id":"someone@test.com","email":"someone@test.com","type":"DISTRIBUTION_LIST"},"error":false}]'
 				)
 			).toBeInTheDocument();
 		});
