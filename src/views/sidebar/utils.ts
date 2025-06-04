@@ -141,9 +141,9 @@ export function handleDragEnter(data: OnDropActionProps, folder: Folder): DragEn
 	const isTrash = itemData.parentFolderId === FOLDERS.TRASH;
 
 	if (type === 'conversation' || type === 'message') {
-		const restrictedDestinations = new Set([FOLDERS.USER_ROOT]);
-		const restrictedInboxTargets = new Set([FOLDERS.SENT, FOLDERS.DRAFTS]);
-		const restrictedDraftTargets = new Set([FOLDERS.TRASH]);
+		const restrictedDestinations = new Set<string>([FOLDERS.USER_ROOT]);
+		const restrictedInboxTargets = new Set<string>([FOLDERS.SENT, FOLDERS.DRAFTS]);
+		const restrictedDraftTargets = new Set<string>([FOLDERS.TRASH]);
 
 		if (
 			itemData.parentFolderId === id || // same folder not allowed
